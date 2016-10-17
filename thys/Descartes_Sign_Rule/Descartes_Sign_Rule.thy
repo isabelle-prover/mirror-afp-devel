@@ -143,11 +143,11 @@ proof (induction xs arbitrary: n rule: psums.induct[case_names Nil sng rec])
     also from rec.prems Suc have "\<dots> = (\<Sum>i\<le>m. ((x+y) # xs) ! i)" 
       by (intro rec.IH) simp_all
     also have "\<dots> = x + y + (\<Sum>i=1..m. (y#xs) ! i)"
-      by (auto simp: atLeast0AtMost [symmetric] setsum_head_Suc[of 0])
+      by (auto simp: atLeast0AtMost [symmetric] sum_head_Suc[of 0])
     also have "(\<Sum>i=1..m. (y#xs) ! i) = (\<Sum>i=Suc 1..Suc m. (x#y#xs) ! i)"
-      by (subst setsum_shift_bounds_cl_Suc_ivl) simp
+      by (subst sum_shift_bounds_cl_Suc_ivl) simp
     also from Suc have "x + y + \<dots> = (\<Sum>i\<le>n. (x#y#xs) ! i)"
-      by (auto simp: atLeast0AtMost [symmetric] setsum_head_Suc add_ac)
+      by (auto simp: atLeast0AtMost [symmetric] sum_head_Suc add_ac)
     finally show ?thesis .
   qed simp
 qed simp_all
@@ -550,14 +550,14 @@ proof -
 
   have "count_roots_with P q = (\<Sum>x\<in>roots_with P q. order x q)" by (simp add: count_roots_with_def)
   also from a q_nz have "\<dots> = order a q + (\<Sum>x\<in>roots_with P q - {a}. order x q)"
-    by (subst setsum.remove) simp_all
+    by (subst sum.remove) simp_all
   also have "order a q = order a [:a, -1:] + order a p" unfolding q_def
     by (subst order_mult[OF no_zero_divisors]) (simp_all add: assms)
   also have "order a [:a, -1:] = 1"
     by (subst order_smult [of "-1", symmetric])
        (insert order_power_n_n[of a 1], simp_all add: order_1)
   also have "(\<Sum>x\<in>roots_with P q - {a}. order x q) = (\<Sum>x\<in>roots_with P q - {a}. order x p)"
-  proof (intro setsum.cong refl)
+  proof (intro sum.cong refl)
     fix x assume x: "x \<in> roots_with P q - {a}"
     from assms have "order x q = order x [:a, -1:] + order x p" unfolding q_def
       by (subst order_mult[OF no_zero_divisors]) (simp_all add: assms)
@@ -566,9 +566,9 @@ proof -
   qed
   also from a q_nz have "1 + order a p + (\<Sum>x\<in>roots_with P q - {a}. order x p) = 
                            1 + (\<Sum>x\<in>roots_with P q. order x p)"
-    by (subst add.assoc, subst setsum.remove[symmetric]) simp_all
+    by (subst add.assoc, subst sum.remove[symmetric]) simp_all
   also from q_nz have "(\<Sum>x\<in>roots_with P q. order x p) = (\<Sum>x\<in>roots_with P p. order x p)"
-  proof (intro setsum.mono_neutral_right)
+  proof (intro sum.mono_neutral_right)
     show "roots_with P p \<subseteq> roots_with P q" 
       by (auto simp: roots_with_def q_def simp del: mult_pCons_left)
     show "\<forall>x\<in>roots_with P q - roots_with P p. order x p = 0"

@@ -26,8 +26,8 @@ proof induct
   moreover have "\<And>x. x \<subseteq> S \<Longrightarrow> card (insert s x) = Suc (card x)"
     using insert(1-2) by (subst card.insert) (auto dest: finite_subset)
   ultimately show ?case
-    by (simp add: setsum.reindex setsum_distrib_left[symmetric] ac_simps
-                  insert.hyps setsum.union_disjoint Pow_insert)
+    by (simp add: sum.reindex sum_distrib_left[symmetric] ac_simps
+                  insert.hyps sum.union_disjoint Pow_insert)
 qed simp
 
 text {* Definition of the probability space on edges: *}
@@ -94,11 +94,11 @@ begin
 
 lemma prob_eq:
   "prob A = (if A \<subseteq> Pow S_edges then (\<Sum>edges\<in>A. p^card edges * (1 - p)^card (S_edges - edges)) else 0)"
-  using emeasure_eq[of A] p_prob unfolding emeasure_eq_measure by (simp add: setsum_nonneg)
+  using emeasure_eq[of A] p_prob unfolding emeasure_eq_measure by (simp add: sum_nonneg)
 
 lemma integral_finite_singleton: "integral\<^sup>L P f = (\<Sum>x\<in>Pow S_edges. f x * measure P {x})"
   using p_prob prob_eq unfolding P_def
-  by (subst lebesgue_integral_point_measure_finite) (auto intro!: setsum.cong)
+  by (subst lebesgue_integral_point_measure_finite) (auto intro!: sum.cong)
 
 text {* Probability of cylinder sets: *}
 lemma cylinder_prob:
@@ -116,7 +116,7 @@ proof -
       = (\<Sum>T \<in> cylinder S_edges A B. p^(card A + card (T - A)) * (1 - p)^(card B + card ((S_edges - B) - T)))"
     using finite_edges by (simp add: card_Un_Int)
   also have "\<dots> = ?pp A B * (\<Sum>T\<in>cylinder S_edges A B. ?pp (T - A) (S_edges - B - T))"
-    by (simp add: power_add setsum_distrib_left ac_simps)
+    by (simp add: power_add sum_distrib_left ac_simps)
   also have "\<dots> = ?pp A B"
   proof -
     have "\<And>T. T \<in> cylinder S_edges A B \<Longrightarrow> S_edges - B - T = (S_edges - A) - B - (T - A)"
@@ -124,7 +124,7 @@ proof -
          "inj_on (\<lambda>x. x - A) (cylinder S_edges A B)"
          "finite (S_edges - A - B)"
       using assms by (auto simp: cylinder_def intro!: inj_onI)
-    with full_sum[of "S_edges - A - B"] show ?thesis by (simp add: setsum.reindex)
+    with full_sum[of "S_edges - A - B"] show ?thesis by (simp add: sum.reindex)
   qed
   finally show ?thesis by (auto simp add: prob_eq cylinder_def)
 qed
@@ -472,12 +472,12 @@ proof -
     have "(\<Sum>x\<in>space P. card (XG x) * prob {x}) = (\<Sum>x\<in>space P. (\<Sum>c \<in> XG x. prob {x}))"
       by simp
     also have "\<dots> = (\<Sum>x\<in>space P. (\<Sum>c \<in> C k. if c \<in> XG x then prob {x} else 0))"
-      using fin_C by (simp add: setsum.If_cases) (simp add: XG_Int_C)
+      using fin_C by (simp add: sum.If_cases) (simp add: XG_Int_C)
     also have "\<dots> = (\<Sum>c \<in> C k. (\<Sum> x \<in> space P \<inter> XC c. prob {x}))"
-      using finite_edges by (subst setsum.commute) (simp add: setsum.inter_restrict XG_def XC_def space_eq)
+      using finite_edges by (subst sum.commute) (simp add: sum.inter_restrict XG_def XC_def space_eq)
     also have "\<dots> = (\<Sum>c \<in> C k. prob (XC c))"
       using fin_XC XC_in_sets
-      by (auto simp add: prob_eq sets_eq space_eq intro!: setsum.cong)
+      by (auto simp add: prob_eq sets_eq space_eq intro!: sum.cong)
     finally show ?thesis by (simp add: XC_cyl)
   qed
   also have "\<dots> = (\<Sum>c\<in>C k. p ^ k)"
@@ -585,15 +585,15 @@ proof -
 
       have "mean_short_count = (\<Sum>i=3..k. \<integral>es. card {c \<in> ucycles (?ug n es). uwalk_length c = i} \<partial> pG.P)"
         unfolding mean_short_count_def short_count_conv
-        by (subst Bochner_Integration.integral_setsum) (auto intro: pG.integral_finite_singleton)
+        by (subst Bochner_Integration.integral_sum) (auto intro: pG.integral_finite_singleton)
       also have "\<dots> = (\<Sum>i\<in>{3..k}. of_nat (fact n div fact (n - i)) * p n ^ i)"
         using A by (simp add: pG.mean_k_cycles)
       also have "\<dots> \<le> (\<Sum> i\<in>{3..k}. n ^ i * p n ^ i)"
-        apply (rule setsum_mono)
+        apply (rule sum_mono)
         by (meson A fact_div_fact_le_pow  Suc_leD atLeastAtMost_iff of_nat_le_iff order_trans real_mult_le_cancel_iff1 zero_less_power)
       also have "... \<le> (\<Sum> i\<in>{3..k}. n powr (\<epsilon> * k))"
         using `1 \<le> n` `0 < \<epsilon>` A
-        by (intro setsum_mono) (auto simp: p_def field_simps powr_mult_base powr_powr
+        by (intro sum_mono) (auto simp: p_def field_simps powr_mult_base powr_powr
           powr_realpow[symmetric] powr_mult[symmetric] powr_add[symmetric])
       finally show ?thesis by simp
     qed

@@ -43,10 +43,10 @@ proof -
   hence "(\<Sum>a\<in>\<Union>set (weak_ranking le). u a * pmf p a) =
            (\<Sum>A\<leftarrow>weak_ranking le. \<Sum>a\<in>A. u a * pmf p a)" (is "_ = sum_list ?xs")
     using weak_ranking_total_preorder
-    by (subst setsum.Union_disjoint)
-       (auto simp: is_weak_ranking_iff disjoint_def setsum.distinct_set_conv_list)
+    by (subst sum.Union_disjoint)
+       (auto simp: is_weak_ranking_iff disjoint_def sum.distinct_set_conv_list)
   also have "?xs  = map (\<lambda>A. \<Sum>a\<in>A. u (SOME a. a\<in>A) * pmf p a) (weak_ranking le)"
-  proof (intro map_cong HOL.refl setsum.cong)
+  proof (intro map_cong HOL.refl sum.cong)
     fix x A assume x: "x \<in> A" and A: "A \<in> set (weak_ranking le)"
     have "(SOME x. x \<in> A) \<in> A" by (rule someI_ex) (insert x, blast)
     from weak_ranking_eqclass1[OF A x this] weak_ranking_eqclass1[OF A this x] x this A
@@ -56,7 +56,7 @@ proof -
   qed
   also have "\<dots> = map (\<lambda>A. u (SOME a. a \<in> A) * measure_pmf.prob p A) (weak_ranking le)"
     using finite by (intro map_cong HOL.refl)
-                    (auto simp: setsum_distrib_left measure_measure_pmf_finite)
+                    (auto simp: sum_distrib_left measure_measure_pmf_finite)
   finally show ?thesis .
 qed
 

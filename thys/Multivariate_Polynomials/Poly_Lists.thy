@@ -109,8 +109,8 @@ proof transfer
     have eq: "map (lookup xs) (map fst (AList.clearjunk xs)) = map snd (AList.clearjunk xs)"
       unfolding lookup_def by simp
 
-  have "setsum (lookup xs) UNIV = setsum (lookup xs) (set (map fst xs))"
-  proof (rule setsum.mono_neutral_right, simp_all, intro ballI)
+  have "sum (lookup xs) UNIV = sum (lookup xs) (set (map fst xs))"
+  proof (rule sum.mono_neutral_right, simp_all, intro ballI)
     fix x
     assume "x \<in> UNIV - fst ` set xs"
     hence a: "x \<notin> (fst ` set xs)" by simp
@@ -122,13 +122,13 @@ proof transfer
       from this a show "e = 0" by simp
     qed
   qed
-  also have "\<dots> = setsum (lookup xs) (set (map fst (AList.clearjunk xs)))"
+  also have "\<dots> = sum (lookup xs) (set (map fst (AList.clearjunk xs)))"
     using clearjunk_keys_set[of xs] by simp
   also have "\<dots> = sum_list (map (lookup xs) (map fst (AList.clearjunk xs)))"
-    using setsum_code[of "lookup xs" "map fst (AList.clearjunk xs)"]
+    using sum_code[of "lookup xs" "map fst (AList.clearjunk xs)"]
           distinct_remdups_id[OF distinct_clearjunk[of xs]] by simp
   also have "\<dots> = sum_list (map snd (AList.clearjunk xs))" by (simp only: eq)
-  finally show "setsum (lookup xs) UNIV = sum_list (map snd (AList.clearjunk xs))" .
+  finally show "sum (lookup xs) UNIV = sum_list (map snd (AList.clearjunk xs))" .
 qed
 
 lemma compute_dvd_pp:

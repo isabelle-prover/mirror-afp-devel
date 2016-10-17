@@ -318,10 +318,10 @@ lemma poly_exp_expand:
   by (rule setprod.cong, auto)
 
 lemma pderiv_exp_setprod: 
-  "pderiv p = (setprod (\<lambda> (a,i). a ^ i) as * setsum (\<lambda> (a,i). 
+  "pderiv p = (setprod (\<lambda> (a,i). a ^ i) as * sum (\<lambda> (a,i). 
     setprod (\<lambda> (b,j). b) (as - {(a,i)}) * smult (of_nat (Suc i)) (pderiv a)) as)"
-  unfolding p pderiv_setprod setsum_distrib_left
-proof (rule setsum.cong[OF refl])
+  unfolding p pderiv_setprod sum_distrib_left
+proof (rule sum.cong[OF refl])
   fix x
   assume "x \<in> as"
   then obtain a i where x: "x = (a,i)" and mem: "(a,i) \<in> as" by (cases x, auto)
@@ -390,15 +390,15 @@ proof -
       hence ap': "p = smult (1/c) a" by auto
       let ?setprod = "\<lambda> a i. (\<Prod>(b, j)\<in>bs - {(a, i)}. b) * smult (of_nat (f i)) (pderiv a)"
       let ?setprod' = "\<lambda> aa ii a i. (\<Prod>(b, j)\<in>bs - {(a, i),(aa,ii)}. b) * smult (of_nat (f i)) (pderiv a)"
-      def factor \<equiv> "setsum (\<lambda> (b,j). ?setprod' a i b j ) (bs - {(a,i)})"
+      def factor \<equiv> "sum (\<lambda> (b,j). ?setprod' a i b j ) (bs - {(a,i)})"
       def fac \<equiv> "q * factor"
       from fin finite_subset[OF bs] have fin: "finite bs" by auto
-      have "?onederiv = ?setprod a i + setsum (\<lambda> (b,j). ?setprod b j) (bs - {(a,i)})"
-        by (subst setsum.remove[OF fin ai], auto)
-      also have "setsum (\<lambda> (b,j). ?setprod b j) (bs - {(a,i)})
+      have "?onederiv = ?setprod a i + sum (\<lambda> (b,j). ?setprod b j) (bs - {(a,i)})"
+        by (subst sum.remove[OF fin ai], auto)
+      also have "sum (\<lambda> (b,j). ?setprod b j) (bs - {(a,i)})
         = a * factor"
-        unfolding factor_def setsum_distrib_left
-      proof (rule setsum.cong[OF refl])
+        unfolding factor_def sum_distrib_left
+      proof (rule sum.cong[OF refl])
         fix bj
         assume mem: "bj \<in> bs - {(a,i)}"
         obtain b j where bj: "bj = (b,j)" by force
@@ -525,10 +525,10 @@ next
   let ?f = "\<lambda> (a,i). (\<Prod>(b, j)\<in>as - UNIV \<times> {0 ..< n} - {(a, i)}. b) * (smult (of_nat (i - n)) (pderiv a))"
   have "D n = (\<Sum> (a,i)\<in>as - UNIV \<times> {0 ..< n}. (\<Prod>(b, j)\<in>as - UNIV \<times> {0 ..< n} - {(a, i)}. b) * 
     (smult (of_nat (Suc i - n)) (pderiv a) - pderiv a))"
-    unfolding D.simps 6 pderiv_setprod setsum_subtractf[symmetric] right_diff_distrib
-    by (rule setsum.cong, auto)
-  also have "\<dots> = setsum ?f (as - UNIV \<times> {0 ..< n})"
-  proof (rule setsum.cong[OF refl])
+    unfolding D.simps 6 pderiv_setprod sum_subtractf[symmetric] right_diff_distrib
+    by (rule sum.cong, auto)
+  also have "\<dots> = sum ?f (as - UNIV \<times> {0 ..< n})"
+  proof (rule sum.cong[OF refl])
     fix x
     assume "x \<in> as - UNIV \<times> {0 ..< n}"
     then obtain a i where x: "x = (a,i)" and i: "Suc i > n" by (cases x, auto)
@@ -546,13 +546,13 @@ next
       unfolding x split id
       by (rule cong, auto)
   qed
-  also have "\<dots> = setsum ?f (as - UNIV \<times> {0 ..< Suc n}) + setsum ?f (as \<inter> UNIV \<times> {n})"
-    by (subst setsum.union_disjoint[symmetric], insert fin, auto intro: setsum.cong)
-  also have "setsum ?f (as \<inter> UNIV \<times> {n}) = 0"
-    by (rule setsum.neutral, auto)
-  finally have id: "D n = setsum ?f (as - UNIV \<times> {0 ..< Suc n})" by simp
-  show ?case unfolding id setsum_distrib_left
-  proof (rule setsum.cong[OF refl])
+  also have "\<dots> = sum ?f (as - UNIV \<times> {0 ..< Suc n}) + sum ?f (as \<inter> UNIV \<times> {n})"
+    by (subst sum.union_disjoint[symmetric], insert fin, auto intro: sum.cong)
+  also have "sum ?f (as \<inter> UNIV \<times> {n}) = 0"
+    by (rule sum.neutral, auto)
+  finally have id: "D n = sum ?f (as - UNIV \<times> {0 ..< Suc n})" by simp
+  show ?case unfolding id sum_distrib_left
+  proof (rule sum.cong[OF refl])
     fix x
     assume mem: "x \<in> as - UNIV \<times> {0 ..< Suc n}"
     obtain a i where x: "x = (a,i)" by force

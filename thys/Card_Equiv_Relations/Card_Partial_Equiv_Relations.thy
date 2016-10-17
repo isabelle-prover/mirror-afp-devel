@@ -212,7 +212,7 @@ proof -
       by (subst card_bind) auto
   qed
   also have "\<dots> = (\<Sum>k\<le>card A. (card A choose k) * Bell k)"
-    by (auto intro: setsum.cong)
+    by (auto intro: sum.cong)
   also have "\<dots> = Bell (card A + 1)"
     using Bell_recursive_eq by simp
   finally show ?thesis .

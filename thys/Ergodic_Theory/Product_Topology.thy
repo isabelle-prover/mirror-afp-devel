@@ -941,11 +941,11 @@ proof -
     using that by force
   have "(\<Sum>n< Suc N. (1 / 2) ^ n * min (dist (x (from_nat n)) (y (from_nat n))) 1) \<le>
       (\<Sum>n< Suc N. M * (1 / 2) ^ n)"
-    by (rule setsum_mono, simp add: i)
+    by (rule sum_mono, simp add: i)
   also have "... = M * (\<Sum>n<Suc N. (1 / 2) ^ n)"
-    by (rule setsum_distrib_left[symmetric])
+    by (rule sum_distrib_left[symmetric])
   also have "... \<le> M * (\<Sum>n. (1 / 2) ^ n)"
-    by (rule mult_left_mono, rule setsum_le_suminf, auto simp add: summable_geometric_iff)
+    by (rule mult_left_mono, rule sum_le_suminf, auto simp add: summable_geometric_iff)
   also have "... = M * 2"
     using suminf_geometric[of "1/2"] by auto
   finally have **: "(\<Sum>n< Suc N. (1 / 2) ^ n * min (dist (x (from_nat n)) (y (from_nat n))) 1) \<le> 2 * M"
@@ -1003,7 +1003,7 @@ proof -
         by (rule summable_comparison_test'[of "\<lambda>n. (1/2)^n"], auto simp add: summable_geometric_iff)
       define n where "n = to_nat i"
       have "(1/2)^n * min (dist (x (from_nat n)) (y (from_nat n))) 1 < m"
-        using `dist x y < m` unfolding dist_fun_def using setsum_le_suminf[OF *, of "{n}"] by auto
+        using `dist x y < m` unfolding dist_fun_def using sum_le_suminf[OF *, of "{n}"] by auto
       then have "(1/2)^(to_nat i) * min (dist (x i) (y i)) 1 < m"
         using `n = to_nat i` by auto
       also have "... \<le> (1/2)^(to_nat i) * e i"
@@ -1196,10 +1196,10 @@ proof
     proof (auto)
       fix m n::nat assume "m \<ge> N" "n \<ge> N"
       have "(1/2)^k * min (dist (u m i) (u n i)) 1
-              = setsum (\<lambda>p. (1/2)^p * min (dist (u m (from_nat p)) (u n (from_nat p))) 1) {k}"
+              = sum (\<lambda>p. (1/2)^p * min (dist (u m (from_nat p)) (u n (from_nat p))) 1) {k}"
         using `i = from_nat k` by auto
       also have "... \<le> (\<Sum>p. (1/2)^p * min (dist (u m (from_nat p)) (u n (from_nat p))) 1)"
-        apply (rule setsum_le_suminf)
+        apply (rule sum_le_suminf)
         by (rule summable_comparison_test'[of "\<lambda>n. (1/2)^n"], auto simp add: summable_geometric_iff)
       also have "... = dist (u m) (u n)"
         unfolding dist_fun_def by auto

@@ -170,7 +170,7 @@ qed
 lemma opp_powsum_def: 
   "dioid_one_zero.powsum op + op \<odot> 1 0 x m n = x\<^bsub>m\<^esub>\<^bsup>n\<^esup>"
 proof -
-  have "setsum (power.power 1 op \<odot> x) {m..n + m} = setsum (op ^ x) {m..n + m}"
+  have "sum (power.power 1 op \<odot> x) {m..n + m} = sum (op ^ x) {m..n + m}"
     by (induction n, simp_all add:opp_power_def)
   thus ?thesis
     by (simp add: dioid_one_zero.powsum_def[of _ _ _ _ "op \<le>" "op <"] dual_dioid_one_zero powsum_def)
@@ -187,11 +187,11 @@ proof -
   also have "... = (x\<^bsup>n+1\<^esup>)\<^sup>\<star> \<cdot> (\<Sum>i=0..n. x^i)"
     by (subst powsum_def, auto)
   also have "... = (\<Sum>i=0..n. (x\<^bsup>n+1\<^esup>)\<^sup>\<star> \<cdot> x^i)"
-    by (metis le0 setsum_interval_distl)
+    by (metis le0 sum_interval_distl)
   also have "... = (\<Sum>i=0..n. x^i \<cdot> (x\<^bsup>n+1\<^esup>)\<^sup>\<star>)"
-    by (auto intro: setsum_interval_cong simp only:C14_aux)
+    by (auto intro: sum_interval_cong simp only:C14_aux)
   also have "... = x\<^bsub>0\<^esub>\<^bsup>n\<^esup> \<cdot> (x\<^bsup>n+1\<^esup>)\<^sup>\<star>"
-    by (simp only: setsum_interval_distr[THEN sym] powsum_def Nat.add_0_right)
+    by (simp only: sum_interval_distr[THEN sym] powsum_def Nat.add_0_right)
   finally show ?thesis .
 qed
 
@@ -745,7 +745,7 @@ proof -
   also have "... = \<Sum> (Rep_boffa_mon x ` (insert 1 (UNIV - {1})))"
     by (metis fset_to_im)
   also have "... = x\<^bsub>1\<^esub> + \<Sum> (Rep_boffa_mon x ` (UNIV - {1}))"
-    by (subst setsum_fun_insert, auto)
+    by (subst sum_fun_insert, auto)
   also have "... = x\<^bsub>1\<^esub> + \<Sum> { x\<^bsub>i\<^esub> | i. i\<in>(UNIV - {1})}"
     by (metis fset_to_im)
   also from assms have unfld:"... = 1 + x\<^bsub>1\<^esub> + \<Sum> { x\<^bsub>i\<^esub> | i. i\<in>(UNIV - {1})}"
@@ -757,9 +757,9 @@ qed
 lemma boffa_mon_aux1: "{x\<^bsub>i\<cdot>j \<^esub>| i j. i \<in> UNIV \<and> j \<in> UNIV} = {x\<^bsub>i\<^esub> | i. i \<in> UNIV}"
   by (auto, metis monoid_mult_class.mult.left_neutral)
 
-lemma setsum_intro' [intro]:
+lemma sum_intro' [intro]:
   "\<lbrakk>finite (A :: 'a::join_semilattice_zero set); finite B; \<forall>a\<in>A. \<exists>b\<in>B. a \<le> b \<rbrakk> \<Longrightarrow> \<Sum>A \<le> \<Sum>B"
-  by (metis setsum_intro)  
+  by (metis sum_intro)  
 
 lemma boffa_aux2: 
   "conway_assm1 x \<Longrightarrow>
@@ -792,7 +792,7 @@ proof -
   also have "... = 1 + (\<Sum> {x\<^bsub>i\<^esub>|i. i\<in>UNIV}) + ((\<Sum> {x\<^bsub>i\<^esub>|i. i\<in>UNIV}) \<cdot> (\<Sum> {x\<^bsub>i\<^esub>|i. i\<in>UNIV}))"
     by (metis (lifting, no_types) calculation less_eq_def mult_isol mult_isol_equiv_subdistl mult_oner)
   also have "... = 1 + (\<Sum> {x\<^bsub>i\<^esub>|i. i\<in>UNIV}) + (\<Sum> {x\<^bsub>i \<^esub>\<cdot> x\<^bsub>j\<^esub> | i j. i\<in>UNIV \<and> j\<in>UNIV})"
-    by (simp only: dioid_setsum_prod finite_UNIV)
+    by (simp only: dioid_sum_prod finite_UNIV)
   finally have "\<Sum> {x\<^bsub>i\<^esub> |i. i \<in> UNIV} \<cdot> \<Sum> {x\<^bsub>i\<^esub> |i. i \<in> UNIV} = \<Sum> {x\<^bsub>i\<^esub> |i. i \<in> UNIV}"
     apply (simp only:)
 proof -

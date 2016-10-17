@@ -32,7 +32,7 @@ lemma M_minus[simp]: "M (M x - y) = M (x - y)" "M (x - M y) = M (x - y)" unfoldi
 lemma M_times[simp]: "M (M x * y) = M (x * y)" "M (x * M y) = M (x * y)" unfolding M_def
   by (auto simp: zmod_simps)
 
-lemma M_setsum: "M (setsum (\<lambda> x. M (f x)) A) = M (setsum f A)"
+lemma M_sum: "M (sum (\<lambda> x. M (f x)) A) = M (sum f A)"
 proof (induct A rule: infinite_finite_induct) 
   case (insert x A)
   from insert(1-2) have "M (\<Sum>x\<in>insert x A. M (f x)) = M (f x + M ((\<Sum>x\<in>A. M (f x))))" by simp
@@ -75,7 +75,7 @@ proof -
     proof 
       fix n
       show "M (\<Sum>i\<le>n. M (coeff f i) * coeff g (n - i)) = M (\<Sum>i\<le>n. coeff f i * coeff g (n - i))"
-        by (subst M_setsum[symmetric], rule sym, subst M_setsum[symmetric], unfold M_times, simp)
+        by (subst M_sum[symmetric], rule sym, subst M_sum[symmetric], unfold M_times, simp)
     qed
   }
   from this[of f g] this[of g f] show "Mp (Mp f * g) = Mp (f * g)" "Mp (f * Mp g) = Mp (f * g)"

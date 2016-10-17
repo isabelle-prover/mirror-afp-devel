@@ -785,12 +785,12 @@ proof (cases "{x. a< x\<and> x< b \<and> poly p x=0 }\<noteq>{}", induct "degree
         by (metis (mono_tags) Int_insert_right_if0 inf_bot_right mem_Collect_eq poly_eq_0_iff_dvd)
       moreover have "finite roots'"
         using  p' `p\<noteq>0` by (metis `finite roots` calculation(1) calculation(2) finite_Un)
-      ultimately show ?thesis using setsum.union_disjoint by auto
+      ultimately show ?thesis using sum.union_disjoint by auto
     qed
   moreover have "(\<Sum>x\<in>roots'. sjump p x) = max_r_sign * cross p' a b"
     proof -
       have "(\<Sum>x\<in>roots'. sjump p x) = (\<Sum>x\<in>roots'. max_r_sign * sjump p' x)"
-        proof (rule setsum.cong,rule refl)
+        proof (rule sum.cong,rule refl)
           fix x assume "x \<in> roots'"
           hence "x\<noteq>max_r" using not_dvd unfolding roots'_def
             by (metis (mono_tags, lifting) mem_Collect_eq poly_eq_0_iff_dvd )
@@ -809,7 +809,7 @@ proof (cases "{x. a< x\<and> x< b \<and> poly p x=0 }\<noteq>{}", induct "degree
             using sjump_mult[of x p' max_rp] `p\<noteq>0` unfolding p' by auto
         qed
       also have "... = max_r_sign * (\<Sum>x\<in>roots'. sjump p' x)"
-        by (metis setsum_distrib_left)
+        by (metis sum_distrib_left)
       also have "... = max_r_sign * cross p' a b"
         proof (cases "roots'={}")
           case True
@@ -822,7 +822,7 @@ proof (cases "{x. a< x\<and> x< b \<and> poly p x=0 }\<noteq>{}", induct "degree
             by (metis "1.prems"(1) `poly p max_r = 0` order_root)
           hence  "degree p' < degree p" unfolding p' degree_mult_eq[OF `p'\<noteq>0` `max_rp\<noteq>0`]
             by auto
-          ultimately have "setsum (sjump p') roots' =  cross p' a b"
+          ultimately have "sum (sjump p') roots' =  cross p' a b"
             unfolding roots'_def using "1.hyps" `p'\<noteq>0` `poly p' a\<noteq>0` `poly p' b\<noteq>0` by auto
           thus ?thesis by auto
         qed
@@ -888,7 +888,7 @@ proof (cases "{x. a< x\<and> x< b \<and> poly p x=0 }\<noteq>{}", induct "degree
 next
   case False
   hence "cross p a b=0" using cross_no_root[OF `a<b`] by auto
-  thus ?thesis using False by (metis setsum.empty)
+  thus ?thesis using False by (metis sum.empty)
 qed
 
 section {*Cauchy index*}
@@ -904,7 +904,7 @@ lemma cindex_mult:
   assumes "p \<noteq> 0" "p'\<noteq> 0"
   shows "cindex a b (p' * q ) (p' * p) = cindex a b q p"
 unfolding cindex_def
-proof (rule Groups_Big.comm_monoid_add_class.setsum.mono_neutral_cong_right)
+proof (rule Groups_Big.comm_monoid_add_class.sum.mono_neutral_cong_right)
   show "finite {x. poly (p' * p) x = 0 \<and> a < x \<and> x < b}"
     using poly_roots_finite assms
     by (metis (poly_guards_query) finite_Collect_conjI mult_eq_0_iff)
@@ -929,7 +929,7 @@ lemma cindex_smult_1:
   assumes "p\<noteq>0"
   shows "cindex a b (smult c q) p =  (sign c) * cindex a b q p"
 unfolding cindex_def
-using setsum_distrib_left[THEN sym, of "sign c" "\<lambda>x. jump q p x"
+using sum_distrib_left[THEN sym, of "sign c" "\<lambda>x. jump q p x"
     "{x. poly p x = (0::real) \<and> a < x \<and> x < b}"] jump_smult_1[OF `p\<noteq>0`]
   by auto
 
@@ -937,8 +937,8 @@ lemma cindex_smult_2:
   fixes p q::"real poly" and c::real
   assumes "p\<noteq>0" "c\<noteq> 0"
   shows "cindex a b q (smult c p) =  (sgn c) * cindex a b q p"
-unfolding cindex_def of_int_setsum jump_smult_2[OF `p\<noteq>0` `c\<noteq>0`,of q]
-using setsum_distrib_left[THEN sym, of "sgn c" "\<lambda>x. jump q p x"
+unfolding cindex_def of_int_sum jump_smult_2[OF `p\<noteq>0` `c\<noteq>0`,of q]
+using sum_distrib_left[THEN sym, of "sgn c" "\<lambda>x. jump q p x"
     "{x. poly p x = (0::real) \<and> a < x \<and> x < b}"]
   by (simp add: `c\<noteq>0`)
 
@@ -956,14 +956,14 @@ lemma cindex_sjump:
 proof -
   def A\<equiv>"{x. poly p x = 0 \<and> a < x \<and> x < b}"
   def B\<equiv>"{x. poly q x = 0 \<and> a < x \<and> x < b}"
-  have "?L = setsum (\<lambda>x. sjump (p*q) x) A + setsum (\<lambda>x. sjump (p*q) x) B"
+  have "?L = sum (\<lambda>x. sjump (p*q) x) A + sum (\<lambda>x. sjump (p*q) x) B"
     proof -
-      have "cindex a b q p = setsum (\<lambda>x. sjump (p*q) x) A" unfolding A_def cindex_def
+      have "cindex a b q p = sum (\<lambda>x. sjump (p*q) x) A" unfolding A_def cindex_def
         using jump_coprime[OF `p\<noteq>0` `q\<noteq>0` _ `coprime p q`,folded mult.commute] by auto
       moreover have "coprime q p" using `coprime p q`
       thm gcd.commute[of p]
         by (simp add: ac_simps)
-      hence "cindex a b p q = setsum (\<lambda>x. sjump (p*q) x) B" unfolding B_def cindex_def
+      hence "cindex a b p q = sum (\<lambda>x. sjump (p*q) x) B" unfolding B_def cindex_def
         using jump_coprime[OF `q\<noteq>0` `p\<noteq>0`] by auto
       ultimately show ?thesis by auto
     qed
@@ -978,7 +978,7 @@ proof -
     qed
   moreover have "finite A" and "finite B"
     unfolding A_def B_def using poly_roots_finite assms by fast+
-  ultimately show ?thesis using setsum.union_disjoint by metis
+  ultimately show ?thesis using sum.union_disjoint by metis
 qed
 
 lemma cindex_cross:
@@ -1039,7 +1039,7 @@ lemma cindex_congr:
   assumes "\<forall>x. ((a<x\<and>x\<le>a') \<or> (b'\<le>x \<and> x<b)) \<longrightarrow> poly p x \<noteq>0"
   shows "cindex a b q p=cindex a' b' q p"
 unfolding cindex_def
-proof (rule setsum.mono_neutral_right)
+proof (rule sum.mono_neutral_right)
   show "finite {x. poly p x = 0 \<and> a < x \<and> x < b}" using poly_roots_finite[OF `p\<noteq>0`] by auto
 next
   show "{x. poly p x = 0 \<and> a' < x \<and> x < b'} \<subseteq> {x. poly p x = 0 \<and> a < x \<and> x < b}"
@@ -1054,7 +1054,7 @@ lemma cindex_taq:
   assumes "p\<noteq>0"
   shows "taq {x. poly p x = 0 \<and> a < x \<and> x < b} q=cindex a b (pderiv p * q) p"
 unfolding cindex_def taq_def
-by (rule setsum.cong,auto simp add:jump_sgn[OF `p\<noteq>0`])
+by (rule sum.cong,auto simp add:jump_sgn[OF `p\<noteq>0`])
 
 section{*Signed remainder sequence*}
 
@@ -1393,7 +1393,7 @@ proof -
     using root_list_ub[OF no_0_in_smods,of p "pderiv p * q",folded ps_def]
     by auto
   have "taq {x. poly p x=0 \<and> a<x} q = taq {x. poly p x=0 \<and> a<x \<and> x<ub} q"
-    unfolding taq_def by (rule setsum.cong,insert ub `p\<in>set ps`,auto)
+    unfolding taq_def by (rule sum.cong,insert ub `p\<in>set ps`,auto)
   moreover have "changes_gt_smods a p (pderiv p * q) = changes_itv_smods a ub p (pderiv p * q)"
     proof -
       have "map (sgn \<circ> (\<lambda>p. poly p ub)) ps = map sgn_pos_inf ps"
@@ -1421,7 +1421,7 @@ proof -
     using root_list_lb[OF no_0_in_smods,of p "pderiv p * q",folded ps_def]
     by auto
   have "taq {x. poly p x=0 \<and> x<b} q = taq {x. poly p x=0 \<and> lb<x \<and> x<b} q"
-    unfolding taq_def by (rule setsum.cong,insert lb `p\<in>set ps`,auto)
+    unfolding taq_def by (rule sum.cong,insert lb `p\<in>set ps`,auto)
   moreover have "changes_le_smods b p (pderiv p * q) = changes_itv_smods lb b p (pderiv p * q)"
     proof -
       have "map (sgn \<circ> (\<lambda>p. poly p lb)) ps = map sgn_neg_inf ps"
@@ -1454,7 +1454,7 @@ proof -
     using root_list_ub[OF no_0_in_smods,of p "pderiv p * q",folded ps_def]
     by auto
   have "taq {x. poly p x=0} q = taq {x. poly p x=0 \<and> lb<x \<and> x<ub} q"
-    unfolding taq_def by (rule setsum.cong,insert lb ub `p\<in>set ps`,auto)
+    unfolding taq_def by (rule sum.cong,insert lb ub `p\<in>set ps`,auto)
   moreover have "changes_R_smods p (pderiv p * q) = changes_itv_smods lb ub p (pderiv p * q)"
     proof -
       have "map (sgn \<circ> (\<lambda>p. poly p lb)) ps = map sgn_neg_inf ps"

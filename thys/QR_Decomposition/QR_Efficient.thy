@@ -257,11 +257,11 @@ next
   have proj_eq: "proj_onto (column b G) {column i G |i. i < b} 
     = sum_list (map ?f (map ?g [0..<to_nat b]))"
   proof -
-    have "proj_onto (column b G) {column i G |i. i < b} = setsum ?f {column i G |i. i < b}" 
+    have "proj_onto (column b G) {column i G |i. i < b} = sum ?f {column i G |i. i < b}" 
       unfolding proj_onto_def proj_def[abs_def] by simp
-    also have "... = setsum ?f (set (map ?g [0..<to_nat b]))"
-      by (rule setsum.cong, auto simp add: set_map_column[symmetric])    
-    also have "... = sum_list (map ?f (remdups (map ?g [0..<to_nat b])))" unfolding setsum_code ..
+    also have "... = sum ?f (set (map ?g [0..<to_nat b]))"
+      by (rule sum.cong, auto simp add: set_map_column[symmetric])    
+    also have "... = sum_list (map ?f (remdups (map ?g [0..<to_nat b])))" unfolding sum_code ..
     also have "... = sum_list ((map ?f ((map ?g [0..<to_nat b]))))" 
     proof (rule sum_list_remdups_2, auto)
       fix i j assume i: "i < to_nat b"
@@ -552,7 +552,7 @@ proof (unfold iarray_exhaust2 list_eq_iff_nth_eq, rule conjI, auto,
           \<bullet>i column_iarray x (matrix_to_iarray A) / (column_iarray x (matrix_to_iarray A) 
           \<bullet>i column_iarray x (matrix_to_iarray A))) *\<^sub>R column_iarray x (matrix_to_iarray A)) 
           = sum_list (map (vec_to_iarray \<circ> ?f) [0..<k])"            
-          proof (unfold interv_sum_list_conv_setsum_set_nat, rule setsum.cong, auto)
+          proof (unfold interv_sum_list_conv_sum_set_nat, rule sum.cong, auto)
             fix x assume "x<k"
             hence x: "x<ncols A" using k by auto
             show "(column_iarray k (matrix_to_iarray A) \<bullet>i column_iarray x (matrix_to_iarray A) /
@@ -671,12 +671,12 @@ lemma inner_iarray_code[code]:
   "inner_iarray A B = sum_list (map (\<lambda>n. A !! n * B !! n) [0..<IArray.length A])"
 proof -
   have set_Eq: "{0..<IArray.length A} = set ([0..<IArray.length A])" using atLeastLessThan_upt by blast
-  have "inner_iarray A B = setsum (\<lambda>n. A !! n * B !! n) {0..<IArray.length A}" 
+  have "inner_iarray A B = sum (\<lambda>n. A !! n * B !! n) {0..<IArray.length A}" 
     unfolding inner_iarray_def ..
-  also have "... = setsum (\<lambda>n. A !! n * B !! n) (set [0..<IArray.length A])"
+  also have "... = sum (\<lambda>n. A !! n * B !! n) (set [0..<IArray.length A])"
     unfolding set_Eq ..
   also have "... = sum_list (map (\<lambda>n. A !! n * B !! n) [0..<IArray.length A])"
-    unfolding setsum_set_upt_conv_sum_list_nat ..
+    unfolding sum_set_upt_conv_sum_list_nat ..
   finally show ?thesis .
 qed
 

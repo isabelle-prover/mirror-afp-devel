@@ -50,7 +50,7 @@ lemma cong_scalar2_poly: "[(a::'b::field poly)= b] (mod m) \<Longrightarrow> [k 
   by (rule cong_mult_poly, simp add: cong_poly_def)
 
 
-lemma cong_setsum_poly [rule_format]:
+lemma cong_sum_poly [rule_format]:
     "(\<forall>x\<in>A. [((f x)::'b::field poly) = g x] (mod m)) \<longrightarrow>
       [(\<Sum>x\<in>A. f x) = (\<Sum>x\<in>A. g x)] (mod m)"
   apply (cases "finite A")
@@ -163,7 +163,7 @@ proof -
     proof -
       from fin a have "?x = (\<Sum>j \<in> {i}. u j * b j) +
           (\<Sum>j \<in> A - {i}. u j * b j)"
-        by (subst setsum.union_disjoint [symmetric], auto intro: setsum.cong)
+        by (subst sum.union_disjoint [symmetric], auto intro: sum.cong)
       then have "[?x = u i * b i + (\<Sum>j \<in> A - {i}. u j * b j)] (mod m i)"
         unfolding cong_poly_def
         by auto
@@ -172,7 +172,7 @@ proof -
         apply (rule cong_add_poly)
         apply (rule cong_scalar2_poly)
         using bprop a apply blast
-        apply (rule cong_setsum_poly)
+        apply (rule cong_sum_poly)
         apply (rule cong_scalar2_poly)
         using bprop apply auto
         apply (rule cong_dvd_modulus_poly)
@@ -184,7 +184,7 @@ proof -
         done
        thus ?thesis
        by (metis (no_types, lifting) a add.right_neutral fin mult_cancel_left1 mult_cancel_right1 
-         setsum.not_neutral_contains_not_neutral setsum.remove)
+         sum.not_neutral_contains_not_neutral sum.remove)
     qed
   qed
 qed
@@ -243,13 +243,13 @@ proof -
   obtain y where one: "(ALL i:A. [y = u i] (mod m i))"
     by blast
   let ?x = "y mod (\<Prod>i\<in>A. m i)"
-  have degree_setprod_setsum: "degree (setprod m A) = (\<Sum>i\<in>A. degree (m i))" 
-    by (rule degree_setprod_eq_setsum_degree[OF nz])
+  have degree_setprod_sum: "degree (setprod m A) = (\<Sum>i\<in>A. degree (m i))" 
+    by (rule degree_setprod_eq_sum_degree[OF nz])
   from fin nz have prodnz: "(\<Prod>i\<in>A. (m i)) \<noteq> 0"
      by auto
   (*This would hold without the premise not_constant if degree 0 = -\<infinity>*)
   have less: "degree ?x < (\<Sum>i\<in>A. degree (m i))" 
-    unfolding degree_setprod_setsum[symmetric]
+    unfolding degree_setprod_sum[symmetric]
     using degree_mod_less[OF prodnz, of y]
     using not_constant
     by auto    
@@ -272,7 +272,7 @@ proof -
     assume zless: "degree z < (\<Sum>i\<in>A. degree (m i))"
     assume zcong: "(ALL i:A. [z = u i] (mod m i))"   
     have deg1: "degree z < degree (setprod m A)"
-      using degree_setprod_setsum zless by simp
+      using degree_setprod_sum zless by simp
     have deg2: "degree ?x < degree (setprod m A)"
       by (metis deg1 degree_0 degree_mod_less gr0I gr_implies_not0)
     have "ALL i:A. [?x = z] (mod m i)"

@@ -44,13 +44,13 @@ proof -
     by(simp add: pmf_bind mult_ac)
   also have "\<dots> = (\<Sum>a\<in>(\<Union>x. set_pmf (f x)). (a * pmf (f True) a * p)
                                     + (a * pmf (f False) a * (1 - p)))"
-    apply(rule setsum.cong) apply(simp) by algebra
+    apply(rule sum.cong) apply(simp) by algebra
   also have "\<dots> = (\<Sum>a\<in>(\<Union>x. set_pmf (f x)). (a * pmf (f True) a * p))
                   + (\<Sum>a\<in>(\<Union>x. set_pmf (f x)). (a * pmf (f False) a * (1 - p)))"
-    by (simp add: setsum.distrib)
+    by (simp add: sum.distrib)
   also have "\<dots> = (\<Sum>a\<in>(\<Union>x. set_pmf (f x)). (a * pmf (f True) a)) * p
                   + (\<Sum>a\<in>(\<Union>x. set_pmf (f x)). (a * pmf (f False) a )) * (1 - p)"
-    by (simp add: setsum_distrib_right)    
+    by (simp add: sum_distrib_right)    
   also have "\<dots> = ?R" unfolding T F by simp
   finally show ?thesis .
 qed 

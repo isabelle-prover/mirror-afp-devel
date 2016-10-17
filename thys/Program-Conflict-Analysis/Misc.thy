@@ -54,12 +54,12 @@ abbreviation ilt :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool"  (infix "
 
 
 subsection {* Sets *}
-  lemma setsum_subset_split: assumes P: "finite A" "B\<subseteq>A" shows T: "setsum f A = setsum f (A-B) + setsum f B" proof -
+  lemma sum_subset_split: assumes P: "finite A" "B\<subseteq>A" shows T: "sum f A = sum f (A-B) + sum f B" proof -
     from P have 1: "A = (A-B) \<union> B" by auto
     have 2: "(A-B) \<inter> B = {}" by auto
     from P have 3: "finite B" by (simp add: finite_subset)
     from P have 4: "finite (A-B)" by simp
-    from 2 3 4 setsum.union_disjoint have "setsum f ((A-B) \<union> B) = setsum f (A-B) + setsum f B" by blast
+    from 2 3 4 sum.union_disjoint have "sum f ((A-B) \<union> B) = sum f (A-B) + sum f B" by blast
     with 1 show ?thesis by simp
   qed
 
@@ -105,34 +105,34 @@ subsubsection {* Count *}
 subsubsection {* Union, difference and intersection *}
 
   lemma size_diff_se: "\<lbrakk>t \<in># S\<rbrakk> \<Longrightarrow> size S = size (S - {#t#}) + 1" proof (unfold size_multiset_overloaded_eq)
-    let ?SIZE = "setsum (count S) (set_mset S)"
+    let ?SIZE = "sum (count S) (set_mset S)"
     assume A: "t \<in># S"
     from A have SPLITPRE: "finite (set_mset S) & {t}\<subseteq>(set_mset S)" by auto
-    hence "?SIZE = setsum (count S) (set_mset S - {t}) + setsum (count S) {t}" by (blast dest: setsum_subset_split)
-    hence "?SIZE = setsum (count S) (set_mset S - {t}) + count (S) t" by auto
+    hence "?SIZE = sum (count S) (set_mset S - {t}) + sum (count S) {t}" by (blast dest: sum_subset_split)
+    hence "?SIZE = sum (count S) (set_mset S - {t}) + count (S) t" by auto
     moreover with A have "count S t = count (S-{#t#}) t + 1" by auto
-    ultimately have D: "?SIZE = setsum (count S) (set_mset S - {t}) + count (S-{#t#}) t + 1" by (arith)
-    moreover have "setsum (count S) (set_mset S - {t}) = setsum (count (S-{#t#})) (set_mset S - {t})" proof -
+    ultimately have D: "?SIZE = sum (count S) (set_mset S - {t}) + count (S-{#t#}) t + 1" by (arith)
+    moreover have "sum (count S) (set_mset S - {t}) = sum (count (S-{#t#})) (set_mset S - {t})" proof -
       have "ALL x:(set_mset S - {t}) . count S x = count (S-{#t#}) x" by (auto iff add: count_ne_remove)
       thus ?thesis by simp
     qed
-    ultimately have D: "?SIZE = setsum (count (S-{#t#})) (set_mset S - {t}) + count (S-{#t#}) t + 1" by (simp)
+    ultimately have D: "?SIZE = sum (count (S-{#t#})) (set_mset S - {t}) + count (S-{#t#}) t + 1" by (simp)
     moreover
     { assume CASE: "t \<notin># S - {#t#}"
       from CASE have "set_mset S - {t} = set_mset (S - {#t#})"
         by (simp add: at_most_one_mset_mset_diff)
-      with CASE D have "?SIZE = setsum (count (S-{#t#})) (set_mset (S - {#t#})) + 1"
+      with CASE D have "?SIZE = sum (count (S-{#t#})) (set_mset (S - {#t#})) + 1"
         by (simp add: not_in_iff)
     }
     moreover
     { assume CASE: "t \<in># S - {#t#}"
       from CASE have 1: "set_mset S = set_mset (S-{#t#})"
         by (rule more_than_one_mset_mset_diff [symmetric])
-      moreover from D have "?SIZE = setsum (count (S-{#t#})) (set_mset S - {t}) + setsum (count (S-{#t#})) {t} + 1" by simp
-      moreover from SPLITPRE setsum_subset_split have "setsum (count (S-{#t#})) (set_mset S) = setsum (count (S-{#t#})) (set_mset S - {t}) + setsum (count (S-{#t#})) {t}" by (blast)
-      ultimately have "?SIZE = setsum (count (S-{#t#})) (set_mset (S-{#t#})) + 1" by simp
+      moreover from D have "?SIZE = sum (count (S-{#t#})) (set_mset S - {t}) + sum (count (S-{#t#})) {t} + 1" by simp
+      moreover from SPLITPRE sum_subset_split have "sum (count (S-{#t#})) (set_mset S) = sum (count (S-{#t#})) (set_mset S - {t}) + sum (count (S-{#t#})) {t}" by (blast)
+      ultimately have "?SIZE = sum (count (S-{#t#})) (set_mset (S-{#t#})) + 1" by simp
     }
-    ultimately show "?SIZE = setsum (count (S-{#t#})) (set_mset (S - {#t#})) + 1" by blast
+    ultimately show "?SIZE = sum (count (S-{#t#})) (set_mset (S - {#t#})) + 1" by blast
   qed
 
   (* TODO: Check whether this proof can be done simpler *)

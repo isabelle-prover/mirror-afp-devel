@@ -293,9 +293,9 @@ proof
   let ?C = "(q - 1) / of_int q ^ (fact (n+2))"
 
   have "a n / b n = (\<Sum>k\<le>n. p k * (of_int q ^ (fact (n+1) - fact (k+1)) / of_int q ^ (fact (n+1))))"
-    by (simp add: a_def b_def setsum_divide_distrib of_int_setsum)
+    by (simp add: a_def b_def sum_divide_distrib of_int_sum)
   also have "\<dots> = (\<Sum>k\<le>n. p k / of_int q ^ (fact (Suc k)))"
-    by (intro setsum.cong refl, subst inverse_divide [symmetric], subst power_diff [symmetric])
+    by (intro sum.cong refl, subst inverse_divide [symmetric], subst power_diff [symmetric])
        (insert assms(1), simp_all add: divide_simps fact_mono_nat del: fact_Suc)
   also have "standard_liouville p q - \<dots> = ?S" unfolding standard_liouville_def
     by (subst diff_eq_eq) (intro suminf_split_initial_segment' summable)

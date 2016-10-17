@@ -523,9 +523,9 @@ proof(intro healthy_parts bounded_byI nnegI le_funI, simp_all add:wp_eval)
   from sP and bP and healthy have "\<And>a s. a \<in> supp (p s) \<Longrightarrow> wp (f a) P s \<le> b"
     by(blast dest:healthy_bounded_byD)
   with sound have "(\<Sum>a\<in>supp (p s). p s a * wp (f a) P s) \<le> (\<Sum>a\<in>supp (p s). p s a * b)"
-    by(blast intro:setsum_mono mult_left_mono)
+    by(blast intro:sum_mono mult_left_mono)
   also have "... = (\<Sum>a\<in>supp (p s). p s a) * b"
-    by(simp add:setsum_distrib_right)
+    by(simp add:sum_distrib_right)
   also {
     from bP and nP have "0 \<le> b" by(blast)
     with sub_dist have "(\<Sum>a\<in>supp (p s). p s a) * b \<le> 1 * b"
@@ -535,7 +535,7 @@ proof(intro healthy_parts bounded_byI nnegI le_funI, simp_all add:wp_eval)
   finally show "(\<Sum>a\<in>supp (p s). p s a * wp (f a) P s) \<le> b" .
 
   show "0 \<le> (\<Sum>a\<in>supp (p s). p s a * wp (f a) P s)"
-  proof(rule setsum_nonneg, clarify, rule mult_nonneg_nonneg)
+  proof(rule sum_nonneg, clarify, rule mult_nonneg_nonneg)
     fix x
     from sound show "0 \<le> p s x" by(blast)
     assume "x \<in> supp (p s)" with sP and healthy
@@ -548,14 +548,14 @@ next
     by(blast)
   with sound show "(\<Sum>a\<in>supp (p s). p s a * wp (f a) P s) \<le>
                    (\<Sum>a\<in>supp (p s). p s a * wp (f a) Q s)"
-    by(blast intro:setsum_mono mult_left_mono)
+    by(blast intro:sum_mono mult_left_mono)
 next
   fix P::"'s \<Rightarrow> real" and c::real and s::'s
   assume sound: "sound P" and pos: "0 \<le> c"
   have "c * (\<Sum>a\<in>supp (p s). p s a * wp (f a) P s) =
         (\<Sum>a\<in>supp (p s). p s a * (c * wp (f a) P s))"
        (is "?A = ?B")
-    by(simp add:setsum_distrib_left ac_simps)
+    by(simp add:sum_distrib_left ac_simps)
   also from sound and pos and healthy
   have "... = (\<Sum>a\<in>supp (p s). p s a * wp (f a) (\<lambda>s. c * P s) s)"
     by(auto simp:scalingD[OF healthy_scalingD])
@@ -576,13 +576,13 @@ proof(intro nearly_healthyI unitaryI2 bounded_byI nnegI le_funI, simp_all only:w
   from uP healthy have "\<And>a. a \<in> supp (p s) \<Longrightarrow> unitary (wlp (f a) P)" by(auto)
   hence "\<And>a. a \<in> supp (p s) \<Longrightarrow> wlp (f a) P s \<le> 1" by(auto)
   with sound have "(\<Sum>a\<in>supp (p s). p s a * wlp (f a) P s) \<le> (\<Sum>a\<in>supp (p s). p s a * 1)"
-    by(blast intro:setsum_mono mult_left_mono)
+    by(blast intro:sum_mono mult_left_mono)
   also have "... = (\<Sum>a\<in>supp (p s). p s a)"
-    by(simp add:setsum_distrib_right)
+    by(simp add:sum_distrib_right)
   also note sub_dist
   finally show "(\<Sum>a\<in>supp (p s). p s a * wlp (f a) P s) \<le> 1" .
   show "0 \<le> (\<Sum>a\<in>supp (p s). p s a * wlp (f a) P s)"
-  proof(rule setsum_nonneg, clarify, rule mult_nonneg_nonneg)
+  proof(rule sum_nonneg, clarify, rule mult_nonneg_nonneg)
     fix x
     from sound show "0 \<le> p s x" by(blast)
     assume "x \<in> supp (p s)" with uP healthy
@@ -595,7 +595,7 @@ next
     by(blast intro:le_funD[OF nearly_healthy_monoD, OF healthy])
   with sound show "(\<Sum>a\<in>supp (p s). p s a * wlp (f a) P s) \<le>
                    (\<Sum>a\<in>supp (p s). p s a * wlp (f a) Q s)"
-    by(blast intro:setsum_mono mult_left_mono)
+    by(blast intro:sum_mono mult_left_mono)
 qed
 
 lemma healthy_wp_Apply:

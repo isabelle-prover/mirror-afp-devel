@@ -68,24 +68,24 @@ next
         def p \<equiv> "\<lambda> i. vec n f $ i * col (jordan_block n a) j $ i"
         have "vec n f \<bullet> col (jordan_block n a) j = (\<Sum>i = 0 ..< n. p i)"
           unfolding scalar_prod_def p_def by simp
-        also have "\<dots> = p j + setsum p ({0 ..< n} - {j})" using j
-          by (subst setsum.remove[of _ j], auto)
+        also have "\<dots> = p j + sum p ({0 ..< n} - {j})" using j
+          by (subst sum.remove[of _ j], auto)
         also have "p j = f j * a" unfolding p_def col using j by auto
-        also have "setsum p ({0 ..< n} - {j}) = (if j = 0 then 0 else f (j - 1))"
+        also have "sum p ({0 ..< n} - {j}) = (if j = 0 then 0 else f (j - 1))"
         proof (cases j)
           case 0
-          have "setsum p ({0 ..< n} - {j}) = 0"
-            by (rule setsum.neutral, auto simp: p_def col 0)
+          have "sum p ({0 ..< n} - {j}) = 0"
+            by (rule sum.neutral, auto simp: p_def col 0)
           thus ?thesis using 0 by simp
         next
           case (Suc jj)
           with j have jj: "jj \<in> {0 ..< n} - {j}" by auto
-          have "setsum p ({0 ..< n} - {j}) = p jj + setsum p ({0 ..< n} - {j} - {jj})"
-            by (subst setsum.remove[OF _ jj], auto)
+          have "sum p ({0 ..< n} - {j}) = p jj + sum p ({0 ..< n} - {j} - {jj})"
+            by (subst sum.remove[OF _ jj], auto)
           also have "p jj = f (j - 1)" unfolding p_def col using jj
             by (auto simp: Suc)
-          also have "setsum p ({0 ..< n} - {j} - {jj}) = 0"
-            by (rule setsum.neutral, auto simp: p_def col, auto simp: Suc)
+          also have "sum p ({0 ..< n} - {j} - {jj}) = 0"
+            by (rule sum.neutral, auto simp: p_def col, auto simp: Suc)
           finally show ?thesis unfolding Suc by simp
         qed
         finally show ?thesis .
@@ -575,7 +575,7 @@ proof
   also have "\<dots> = (\<Sum> k = 0 ..< n. v1 k * v2 k)" unfolding scalar_prod_def 
     using dim i j v1_def v2_def by simp
   also have "norm (\<dots>) \<le> (\<Sum> k = 0 ..< n. b1 * b2)" 
-    by (rule setsum_norm_le, insert bound, simp)
+    by (rule sum_norm_le, insert bound, simp)
   also have "\<dots> = b1 * b2 * ?n" by simp
   finally show "norm (?A $$ (i,j)) \<le> b1 * b2 * ?n" .
 qed

@@ -79,13 +79,13 @@ lemma resCap_gzero: "isAugmentingPath p \<Longrightarrow> 0<resCap p"
 
 text \<open>As all edges of the augmenting flow have the same value, we can factor 
   this out from a summation:\<close>
-lemma setsum_augmenting_alt:
+lemma sum_augmenting_alt:
   assumes "finite A"          
   shows "(\<Sum>e \<in> A. (augmentingFlow p) e) 
         = resCap p * of_nat (card (A\<inter>set p))"
 proof -
-  have "(\<Sum>e \<in> A. (augmentingFlow p) e) = setsum (\<lambda>_. resCap p) (A\<inter>set p)"
-    apply (subst setsum.inter_restrict)
+  have "(\<Sum>e \<in> A. (augmentingFlow p) e) = sum (\<lambda>_. resCap p) (A\<inter>set p)"
+    apply (subst sum.inter_restrict)
     apply (auto simp: augmentingFlow_def assms)
     done
   thus ?thesis by auto
@@ -147,7 +147,7 @@ proof (unfold_locales; intro allI ballI)
     qed  
     thus "(\<Sum>e \<in> Graph.incoming cf v. (augmentingFlow p) e) =
       (\<Sum>e \<in> Graph.outgoing cf v. (augmentingFlow p) e)"
-      by (auto simp: setsum_augmenting_alt)
+      by (auto simp: sum_augmenting_alt)
   }
 qed
 
@@ -177,7 +177,7 @@ proof -
       simp: cf.isSimplePath_append cf.isSimplePath_cons)  
   ultimately show ?thesis
     unfolding f.val_def
-    by (auto simp: setsum_augmenting_alt)
+    by (auto simp: sum_augmenting_alt)
 qed    
 
 end -- \<open>Network with flow\<close>

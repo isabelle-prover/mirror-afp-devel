@@ -619,12 +619,12 @@ qed
 abbreviation 
   "bidMonotonicity b i == 
   (\<forall> t t'. (trivial t & trivial t' & Union t \<subseteq> Union t') \<longrightarrow> 
-           setsum b ({i}\<times>t) \<le> setsum b ({i}\<times>t'))" 
+           sum b ({i}\<times>t) \<le> sum b ({i}\<times>t'))" 
 
 (* adding the goods in X weakly increases the revenue *)
 lemma lm048: 
   assumes "bidMonotonicity b i" "runiq a" 
-  shows  "setsum b ({i}\<times>((a outside X)``{i})) \<le> setsum b ({i}\<times>{\<Union>(a``(X\<union>{i}))})"
+  shows  "sum b ({i}\<times>((a outside X)``{i})) \<le> sum b ({i}\<times>{\<Union>(a``(X\<union>{i}))})"
 proof -
   let ?u = runiq 
   let ?I = "{i}" 
@@ -718,8 +718,8 @@ lemma lm054:
           "a \<in> allocationsUniverse" 
           "Domain a \<inter> X \<noteq> {}" 
           "finite a"
-  shows   "setsum b (a outside X) \<le> 
-           setsum b (a outside (X \<union> {i}) \<union> ({i} \<times> {\<Union>(a``(X\<union>{i}))}))"
+  shows   "sum b (a outside X) \<le> 
+           sum b (a outside (X \<union> {i}) \<union> ({i} \<times> {\<Union>(a``(X\<union>{i}))}))"
 proof -
   let ?R = "a outside X" 
   let ?I = "{i}" 
@@ -742,14 +742,14 @@ proof -
       finite ({i} \<times> {?U(a``(X\<union>{i}))}) & (?R -- i) \<inter> ({i} \<times> {?U(a``(X\<union>{i}))})={}" 
     using Outside_def trivial_implies_finite by fast 
   have "?R = (?R -- i) \<union> ({i}\<times>?R``{i})" by (metis outsideUnion)
-  then have "setsum b ?R = setsum b (?R -- i) + setsum b ({i}\<times>(?R``{i}))" 
-    using 1 setsum.union_disjoint by (metis (lifting) setsum.union_disjoint)
-  moreover have "setsum b ({i}\<times>(?R``{i})) \<le> setsum b ({i}\<times>{?U(a``(X\<union>{i}))})" 
+  then have "sum b ?R = sum b (?R -- i) + sum b ({i}\<times>(?R``{i}))" 
+    using 1 sum.union_disjoint by (metis (lifting) sum.union_disjoint)
+  moreover have "sum b ({i}\<times>(?R``{i})) \<le> sum b ({i}\<times>{?U(a``(X\<union>{i}))})" 
     using lm048 assms(1) 0 by metis
-  ultimately have "setsum b ?R \<le> setsum b (?R -- i) + setsum b ({i}\<times>{?U(a``(X\<union>{i}))})" by linarith
-  moreover have "... = setsum b (?R -- i \<union> ({i} \<times> {?U(a``(X\<union>{i}))}))" 
-  using 1 setsum.union_disjoint by auto
-  moreover have "... = setsum b ?aa" by (metis outsideOutside)
+  ultimately have "sum b ?R \<le> sum b (?R -- i) + sum b ({i}\<times>{?U(a``(X\<union>{i}))})" by linarith
+  moreover have "... = sum b (?R -- i \<union> ({i} \<times> {?U(a``(X\<union>{i}))}))" 
+  using 1 sum.union_disjoint by auto
+  moreover have "... = sum b ?aa" by (metis outsideOutside)
   ultimately show ?thesis by simp
 qed
 
@@ -780,8 +780,8 @@ corollary lm056:
           "Domain a \<inter> X \<noteq> {}" 
           "finite N" 
           "finite G" 
-  shows   "Max ((setsum b)`(allAllocations (N-X) G)) \<ge> 
-           setsum b (a outside X)"
+  shows   "Max ((sum b)`(allAllocations (N-X) G)) \<ge> 
+           sum b (a outside X)"
 proof -
   let ?aa = "a outside (X \<union> {i}) \<union> ({i} \<times> {\<Union>(a``(X\<union>{i}))})"
   have "bidMonotonicity (b::_ => real) i" using assms(1) by fast
@@ -789,47 +789,47 @@ proof -
   moreover have "Domain a \<inter> X \<noteq> {}" using assms(4) by auto
   moreover have "finite a" using assms lm055 by metis 
   ultimately have 
-  0: "setsum b (a outside X) \<le> setsum b ?aa" by (rule lm054)
+  0: "sum b (a outside X) \<le> sum b ?aa" by (rule lm054)
   have "?aa \<in> allAllocations (N-X) (\<Union> (Range a))" using assms lm053 by metis
   moreover have "\<Union> (Range a) = G" 
     using assms allocationInverseRangeDomainProperty is_partition_of_def by metis
-  ultimately have "setsum b ?aa \<in> (setsum b)`(allAllocations (N-X) G)" by (metis imageI)
-  moreover have "finite ((setsum b)`(allAllocations (N-X) G))" 
+  ultimately have "sum b ?aa \<in> (sum b)`(allAllocations (N-X) G)" by (metis imageI)
+  moreover have "finite ((sum b)`(allAllocations (N-X) G))" 
     using assms allAllocationsFinite assms(5,6) by (metis finite_Diff finite_imageI)
-  ultimately have "setsum b ?aa \<le> Max ((setsum b)`(allAllocations (N-X) G))" by auto
+  ultimately have "sum b ?aa \<le> Max ((sum b)`(allAllocations (N-X) G))" by auto
   then show ?thesis using 0 by linarith
 qed
 
 lemma cardinalityPreservation: 
   assumes "finite XX" "\<forall>X \<in> XX. finite X" "is_non_overlapping XX" 
-  shows   "card (\<Union> XX) = setsum card XX" 
+  shows   "card (\<Union> XX) = sum card XX" 
   using assms is_non_overlapping_def card_Union_disjoint by fast
 
 corollary cardSetsumCommute: 
   assumes "XX partitions X" "finite X" "finite XX" 
-  shows   "card (\<Union> XX) = setsum card XX" 
+  shows   "card (\<Union> XX) = sum card XX" 
   using assms cardinalityPreservation by (metis is_partition_of_def familyUnionFiniteEverySetFinite)
 
 (* \<Sigma>_x\<in> (Union C) (f x)   is the same as \<Sigma>_x\<in> C (\<Sigma>_set\<in> C (\<Sigma>_x\<in>set (f x))) *)
-lemma setsumUnionDisjoint1: 
+lemma sumUnionDisjoint1: 
   assumes "\<forall>A\<in>C. finite A" "\<forall>A\<in>C. \<forall>B\<in>C. A \<noteq> B \<longrightarrow> A Int B = {}" 
-  shows "setsum f (Union C) = setsum (setsum f) C" 
-  using assms setsum.Union_disjoint by fastforce
+  shows "sum f (Union C) = sum (sum f) C" 
+  using assms sum.Union_disjoint by fastforce
 
-corollary setsumUnionDisjoint2: 
+corollary sumUnionDisjoint2: 
   assumes "\<forall>x\<in>X. finite x" "is_non_overlapping X" 
-  shows "setsum f (\<Union> X) = setsum (setsum f) X" 
-  using assms setsumUnionDisjoint1 is_non_overlapping_def by fast
+  shows "sum f (\<Union> X) = sum (sum f) X" 
+  using assms sumUnionDisjoint1 is_non_overlapping_def by fast
 
-corollary setsumUnionDisjoint3: 
+corollary sumUnionDisjoint3: 
   assumes "\<forall>x\<in>X. finite x" "X partitions XX" 
-  shows "setsum f XX = setsum (setsum f) X" 
-  using assms by (metis is_partition_of_def setsumUnionDisjoint2)
+  shows "sum f XX = sum (sum f) X" 
+  using assms by (metis is_partition_of_def sumUnionDisjoint2)
  
-corollary setsum_associativity: 
+corollary sum_associativity: 
   assumes "finite x" "X partitions x" 
-  shows  "setsum f x = setsum (setsum f) X" 
-  using assms setsumUnionDisjoint3 
+  shows  "sum f x = sum (sum f) X" 
+  using assms sumUnionDisjoint3 
   by (metis is_partition_of_def familyUnionFiniteEverySetFinite)
 
 lemma lm057: 

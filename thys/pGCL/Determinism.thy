@@ -63,7 +63,7 @@ lemma additive_wp_SetPC:
   "\<lbrakk> \<And>x s. x \<in> supp (p s) \<Longrightarrow> additive (wp (a x)); \<And>s. finite (supp (p s)) \<rbrakk> \<Longrightarrow>
    additive (wp (SetPC a p))"
   by(rule additiveI,
-     simp add:wp_eval additiveD distrib_left setsum.distrib)
+     simp add:wp_eval additiveD distrib_left sum.distrib)
 
 lemma additive_wp_Bind:
   "\<lbrakk> \<And>x. additive (wp (a (f x))) \<rbrakk> \<Longrightarrow> additive (wp (Bind f a))"
@@ -109,7 +109,7 @@ lemma max_wp_DC:
 lemma max_wp_SetPC:
   "\<lbrakk> \<And>s a. a \<in> supp (P s) \<Longrightarrow> maximal (wp (p a)); \<And>s. (\<Sum>a\<in>supp (P s). P s a) = 1 \<rbrakk> \<Longrightarrow>
   maximal (wp (SetPC p P))"
-  by(auto simp:maximalD wp_def SetPC_def setsum_distrib_right[symmetric])
+  by(auto simp:maximalD wp_def SetPC_def sum_distrib_right[symmetric])
 
 lemma max_wp_SetDC:
   fixes p::"'a \<Rightarrow> 's prog"
@@ -195,7 +195,7 @@ lemma det_wp_PC:
 lemma det_wp_SetPC:
   "(\<And>x s. x \<in> supp (p s) \<Longrightarrow> determ (wp (a x))) \<Longrightarrow>
    (\<And>s. finite (supp (p s))) \<Longrightarrow>
-   (\<And>s. setsum (p s) (supp (p s)) = 1) \<Longrightarrow>
+   (\<And>s. sum (p s) (supp (p s)) = 1) \<Longrightarrow>
    determ (wp (SetPC a p))"
   by(intro determI fa_intros max_intros, auto)
 

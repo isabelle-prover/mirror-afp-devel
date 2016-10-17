@@ -86,20 +86,20 @@ lemma union_insert_0:
   "(\<Union>n::nat. A n) = A 0 \<union> (\<Union>n\<in>{1..}. A n)"
 by (metis UN_insert Un_insert_left sup_bot.left_neutral One_nat_def atLeast_0 atLeast_Suc_greaterThan ivl_disj_un_singleton(1))
 
-text {*Next one could be close to \verb+setsum_nat_group+*}
+text {*Next one could be close to \verb+sum_nat_group+*}
 
-lemma setsum_arith_progression:
+lemma sum_arith_progression:
   "(\<Sum>r<(N::nat). (\<Sum>i<a. f (i*N+r))) = (\<Sum>j<a*N. f j)"
 proof -
   have *: "(\<Sum>r<N. f (i*N+r)) = (\<Sum> j \<in> {i*N..<i*N + N}. f j)" for i
-    by (rule setsum.reindex_bij_betw, rule bij_betw_byWitness[where ?f'= "\<lambda>r. r-i*N"], auto)
+    by (rule sum.reindex_bij_betw, rule bij_betw_byWitness[where ?f'= "\<lambda>r. r-i*N"], auto)
 
   have "(\<Sum>r<N. (\<Sum>i<a. f (i*N+r))) = (\<Sum>i<a. (\<Sum>r<N. f (i*N+r)))"
-    using setsum.commute by auto
+    using sum.commute by auto
   also have "... = (\<Sum>i<a. (\<Sum> j \<in> {i*N..<i*N + N}. f j))"
     using * by auto
   also have "... = (\<Sum>j<a*N. f j)"
-    by (rule setsum_nat_group)
+    by (rule sum_nat_group)
   finally show ?thesis by simp
 qed
 
@@ -1189,7 +1189,7 @@ lemma ereal_abs_diff:
   shows "abs(a-b) \<le> abs a + abs b"
 by (cases rule: ereal2_cases[of a b]) (auto)
 
-lemma setsum_constant_ereal:
+lemma sum_constant_ereal:
   fixes a::ereal
   shows "(\<Sum>i\<in>I. a) = a * card I"
 apply (cases "finite I", induct set: finite, simp_all)
@@ -1227,7 +1227,7 @@ text {*The next few lemmas remove an unnecessary assumption in \verb+tendsto_add
 in \verb+tendsto_add_ereal_general+ which essentially says that the addition
 is continuous on ereal times ereal, except at $(-\infty, \infty)$ and $(\infty, -\infty)$.
 It is much more convenient in many situations, see for instance the proof of
-\verb+tendsto_setsum_ereal+ below. *}
+\verb+tendsto_sum_ereal+ below. *}
 
 lemma tendsto_add_ereal_PInf:
   fixes y :: ereal
@@ -1730,8 +1730,8 @@ next
   ultimately show ?thesis using MInf by auto
 qed (simp add: assms)
 
-text {* the next one is copied from \verb+tendsto_setsum+. *}
-lemma tendsto_setsum_ereal [tendsto_intros]:
+text {* the next one is copied from \verb+tendsto_sum+. *}
+lemma tendsto_sum_ereal [tendsto_intros]:
   fixes f :: "'a \<Rightarrow> 'b \<Rightarrow> ereal"
   assumes "\<And>i. i \<in> S \<Longrightarrow> (f i \<longlongrightarrow> a i) F"
           "\<And>i. abs(a i) \<noteq> \<infinity>"
@@ -2178,15 +2178,15 @@ by (cases "c = 0", insert assms, auto intro!: tendsto_intros)
 
 subsection {*Indicator.thy*}
 
-text {*There is something weird with \verb+setsum_mult_indicator+: it is defined both
+text {*There is something weird with \verb+sum_mult_indicator+: it is defined both
 in Indicator.thy and BochnerIntegration.thy, with a different meaning. I am surprised
 there is no name collision... Here, I am using the version from BochnerIntegration.*}
 
-lemma setsum_indicator_eq_card2:
+lemma sum_indicator_eq_card2:
   assumes "finite I"
   shows "(\<Sum>i\<in>I. (indicator (P i) x)::nat) = card {i\<in>I. x \<in> P i}"
-using setsum_mult_indicator [OF assms, of "\<lambda>y. 1::nat" P "\<lambda>y. x"]
-unfolding card_eq_setsum by auto
+using sum_mult_indicator [OF assms, of "\<lambda>y. 1::nat" P "\<lambda>y. x"]
+unfolding card_eq_sum by auto
 
 
 subsection {*sigma-algebra.thy*}
@@ -2354,7 +2354,7 @@ proof -
   then show ?thesis by auto
 qed
 
-lemma measurable_setsum_nat [measurable (raw)]:
+lemma measurable_sum_nat [measurable (raw)]:
   fixes f :: "'c \<Rightarrow> 'a \<Rightarrow> nat"
   assumes "\<And>i. i \<in> S \<Longrightarrow> f i \<in> measurable M (count_space UNIV)"
   shows "(\<lambda>x. \<Sum>i\<in>S. f i x) \<in> measurable M (count_space UNIV)"
@@ -2458,7 +2458,7 @@ lemma AE_E3:
   obtains N where "\<And>x. x \<in> space M - N \<Longrightarrow> P x" "N \<in> null_sets M"
 using assms unfolding eventually_ae_filter by auto
 
-lemma AE_equal_setsum:
+lemma AE_equal_sum:
   assumes "\<And>i. AE x in M. f i x = g i x"
   shows "AE x in M. (\<Sum>i\<in>I. f i x) = (\<Sum>i\<in>I. g i x)"
 proof (cases)
@@ -2512,7 +2512,7 @@ proof -
   moreover have "emeasure M (B N) \<le> ennreal (\<Sum>n. measure M (A n))" for N
   proof -
     have *: "(\<Sum>n\<in>{..<N}. measure M (A n)) \<le> (\<Sum>n. measure M (A n))"
-      using assms(3) measure_nonneg setsum_le_suminf by blast
+      using assms(3) measure_nonneg sum_le_suminf by blast
 
     have "emeasure M (B N) \<le> (\<Sum>n\<in>{..<N}. emeasure M (A n))"
       unfolding B_def by (rule emeasure_subadditive_finite, auto)
@@ -2937,7 +2937,7 @@ subsection {*Set-Integral.thy *}
 
 text{* I introduce a notation for positive set integrals, which is not available in
 \verb+Set_Integral.thy+. The notation I use is not directly in line with the
-notations in this file, they are more in line with setsum, and more readable I think. *}
+notations in this file, they are more in line with sum, and more readable I think. *}
 
 abbreviation "set_nn_integral M A f \<equiv> nn_integral M (\<lambda>x. f x * indicator A x)"
 

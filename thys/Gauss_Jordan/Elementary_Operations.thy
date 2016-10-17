@@ -21,18 +21,18 @@ lemma mat1_sum_eq:
 proof (unfold mat_def, auto)
   let ?f="\<lambda>k. (if t = k then 1::'a else (0::'a)) * (if k = t then 1::'a else (0::'a))"
   have univ_eq: "UNIV = (UNIV - {t}) \<union> {t}" by fast
-  have "setsum ?f UNIV = setsum ?f ((UNIV - {t}) \<union> {t}) " using univ_eq by simp
-  also have "... = setsum ?f (UNIV - {t}) + setsum ?f {t}" by (rule setsum.union_disjoint, auto)
-  also have "... = 0 + setsum ?f {t}" by auto
-  also have "... = setsum ?f {t}" by simp
+  have "sum ?f UNIV = sum ?f ((UNIV - {t}) \<union> {t}) " using univ_eq by simp
+  also have "... = sum ?f (UNIV - {t}) + sum ?f {t}" by (rule sum.union_disjoint, auto)
+  also have "... = 0 + sum ?f {t}" by auto
+  also have "... = sum ?f {t}" by simp
   also have "... = 1" by simp
-  finally show "setsum ?f UNIV = 1" .
+  finally show "sum ?f UNIV = 1" .
 next
   assume s_not_t: "s \<noteq> t"
   let ?g="\<lambda>k. (if s = k then 1::'a else 0) * (if k = t then 1 else 0)"
-  have "setsum ?g UNIV = setsum (\<lambda>k. 0::'a) (UNIV::'b set)" by (rule setsum.cong, auto simp add: s_not_t)
+  have "sum ?g UNIV = sum (\<lambda>k. 0::'a) (UNIV::'b set)" by (rule sum.cong, auto simp add: s_not_t)
   also have "... = 0" by simp
-  finally show "setsum ?g UNIV = 0" .
+  finally show "sum ?g UNIV = 0" .
 qed
 
 
@@ -48,8 +48,8 @@ proof (unfold invertible_def, rule exI[of _ "mat (inverse n)"], rule conjI)
     have UNIV_rw: "(UNIV::'n set) = insert ia (UNIV-{ia})" by auto
     have "(\<Sum>k\<in>(UNIV::'n set). (if ia = k then n else 0) * (if k = ia then inverse n else 0)) = 
       (\<Sum>k\<in>insert ia (UNIV-{ia}). (if ia = k then n else 0) * (if k = ia then inverse n else 0))" using UNIV_rw by simp
-    also have "... = ?f ia + setsum ?f (UNIV-{ia})"
-    proof (rule setsum.insert)
+    also have "... = ?f ia + sum ?f (UNIV-{ia})"
+    proof (rule sum.insert)
       show "finite (UNIV - {ia})"  using finite_UNIV by fastforce
       show "ia \<notin> UNIV - {ia}" by fast
     qed
@@ -57,7 +57,7 @@ proof (unfold invertible_def, rule exI[of _ "mat (inverse n)"], rule conjI)
     finally show " (\<Sum>k\<in>(UNIV::'n set). (if ia = k then n else 0) * (if k = ia then inverse n else 0)) = (1::'a)" .
     fix i::'n
     assume i_not_ia: "i \<noteq> ia"
-    show "(\<Sum>k\<in>(UNIV::'n set). (if i = k then n else 0) * (if k = ia then inverse n else 0)) = 0" by (rule setsum.neutral, simp add: i_not_ia)
+    show "(\<Sum>k\<in>(UNIV::'n set). (if i = k then n else 0) * (if k = ia then inverse n else 0)) = 0" by (rule sum.neutral, simp add: i_not_ia)
   qed
 next
   show "mat (inverse n) ** mat n = ((mat 1)::'a^'n^'n)"
@@ -67,8 +67,8 @@ next
     have UNIV_rw: "(UNIV::'n set) = insert ia (UNIV-{ia})" by auto
     have "(\<Sum>k\<in>(UNIV::'n set). (if ia = k then inverse n else 0) * (if k = ia then n else 0)) = 
       (\<Sum>k\<in>insert ia (UNIV-{ia}). (if ia = k then inverse n else 0) * (if k = ia then n else 0))" using UNIV_rw by simp
-    also have "... = ?f ia + setsum ?f (UNIV-{ia})"
-    proof (rule setsum.insert)
+    also have "... = ?f ia + sum ?f (UNIV-{ia})"
+    proof (rule sum.insert)
       show "finite (UNIV - {ia})"  using finite_UNIV by fastforce
       show "ia \<notin> UNIV - {ia}" by fast
     qed
@@ -76,7 +76,7 @@ next
     finally show " (\<Sum>k\<in>(UNIV::'n set). (if ia = k then inverse n else 0) * (if k = ia then n else 0)) = (1::'a)" .
     fix i::'n
     assume i_not_ia: "i \<noteq> ia"
-    show "(\<Sum>k\<in>(UNIV::'n set). (if i = k then inverse n else 0) * (if k = ia then n else 0)) = 0" by (rule setsum.neutral, simp add: i_not_ia)
+    show "(\<Sum>k\<in>(UNIV::'n set). (if i = k then inverse n else 0) * (if k = ia then n else 0)) = 0" by (rule sum.neutral, simp add: i_not_ia)
   qed
 qed
 
@@ -132,23 +132,23 @@ proof (unfold matrix_matrix_mult_def interchange_rows_def, vector, auto)
   fix ia
   let ?f="(\<lambda>k. mat (1::'a) $ a $ k * A $ k $ ia)"
   have univ_rw:"UNIV = (UNIV-{a}) \<union> {a}" by auto
-  have "setsum ?f UNIV = setsum ?f ((UNIV-{a}) \<union> {a})" using univ_rw by auto
-  also have "... = setsum ?f (UNIV-{a}) + setsum ?f {a}"
-  proof (rule setsum.union_disjoint)
+  have "sum ?f UNIV = sum ?f ((UNIV-{a}) \<union> {a})" using univ_rw by auto
+  also have "... = sum ?f (UNIV-{a}) + sum ?f {a}"
+  proof (rule sum.union_disjoint)
     show "finite (UNIV - {a})" by (metis finite_code) 
     show "finite {a}" by simp
     show "(UNIV - {a}) \<inter> {a} = {}" by simp
   qed
-  also have "... = setsum ?f {a}" unfolding mat_def by auto
+  also have "... = sum ?f {a}" unfolding mat_def by auto
   also have "... = ?f a" by auto
   also have "... = A $ a $ ia" unfolding mat_def by auto
   finally show "(\<Sum>k\<in>UNIV. mat (1::'a) $ a $ k * A $ k $ ia) = A $ a $ ia" .
   assume i: " a \<noteq> b"
   let ?g= "\<lambda>k. mat (1::'a) $ b $ k * A $ k $ ia"
   have univ_rw':"UNIV = (UNIV-{b}) \<union> {b}" by auto
-  have "setsum ?g UNIV = setsum ?g ((UNIV-{b}) \<union> {b})" using univ_rw' by auto
-  also have "... = setsum ?g (UNIV-{b}) + setsum ?g {b}" by (rule setsum.union_disjoint, auto)
-  also have "... = setsum ?g {b}"  unfolding mat_def by auto
+  have "sum ?g UNIV = sum ?g ((UNIV-{b}) \<union> {b})" using univ_rw' by auto
+  also have "... = sum ?g (UNIV-{b}) + sum ?g {b}" by (rule sum.union_disjoint, auto)
+  also have "... = sum ?g {b}"  unfolding mat_def by auto
   also have "... = ?g b" by simp
   finally show "(\<Sum>k\<in>UNIV. mat (1::'a) $ b $ k * A $ k $ ia) = A $ b $ ia" unfolding mat_def by simp
 next
@@ -156,9 +156,9 @@ next
   assume ib: "i \<noteq> b" and ia:"i \<noteq> a"
   let ?h="\<lambda>k. mat (1::'a) $ i $ k * A $ k $ j"
   have univ_rw'':"UNIV = (UNIV-{i}) \<union> {i}" by auto
-  have "setsum ?h UNIV = setsum ?h ((UNIV-{i}) \<union> {i})" using univ_rw'' by auto
-  also have "... = setsum ?h (UNIV-{i}) + setsum ?h {i}"  by (rule setsum.union_disjoint, auto)
-  also have "... =  setsum ?h {i}" unfolding mat_def by auto  
+  have "sum ?h UNIV = sum ?h ((UNIV-{i}) \<union> {i})" using univ_rw'' by auto
+  also have "... = sum ?h (UNIV-{i}) + sum ?h {i}"  by (rule sum.union_disjoint, auto)
+  also have "... =  sum ?h {i}" unfolding mat_def by auto  
   also have "... = ?h i" by simp
   finally show " (\<Sum>k\<in>UNIV. mat (1::'a) $ i $ k * A $ k $ j) = A $ i $ j" unfolding mat_def by auto
 qed
@@ -169,31 +169,31 @@ proof (unfold invertible_def, rule exI[of _ "interchange_rows (mat 1) a b"], sim
   fix s t::"'b"   
   assume s_not_t: "s \<noteq> t"
   show " (\<Sum>k::'b\<in>UNIV. (if s = k then 1::'a else (0::'a)) * (if k = t then 1::'a else if k = t then 1::'a else if k = t then 1::'a else (0::'a))) = (0::'a)"
-    by (rule setsum.neutral, simp add: s_not_t)
+    by (rule sum.neutral, simp add: s_not_t)
   assume b_not_t: "b \<noteq> t"
   show "(\<Sum>k\<in>UNIV. (if s = b then if t = k then 1::'a else (0::'a) else if s = k then 1::'a else (0::'a)) *
     (if k = t then 0::'a else if k = b then 1::'a else if k = t then 1::'a else (0::'a))) =
-    (0::'a)" by (rule setsum.neutral, simp)
+    (0::'a)" by (rule sum.neutral, simp)
   assume a_not_t: "a \<noteq> t"
   show "(\<Sum>k\<in>UNIV. (if s = a then if b = k then 1::'a else (0::'a) else if s = b then if a = k then 1::'a else (0::'a) else if s = k then 1::'a else (0::'a)) *
     (if k = a then 0::'a else if k = b then 0::'a else if k = t then 1::'a else (0::'a))) =
-    (0::'a)" by (rule setsum.neutral, auto simp add: s_not_t)
+    (0::'a)" by (rule sum.neutral, auto simp add: s_not_t)
 next
   fix s t::"'b"
   assume a_noteq_t: "a\<noteq>t" and s_noteq_t: "s \<noteq> t"
   show " (\<Sum>k\<in>UNIV. (if s = a then if t = k then 1::'a else (0::'a) else if s = t then if a = k then 1::'a else (0::'a) else if s = k then 1::'a else (0::'a)) *
     (if k = a then 1::'a else if k = t then 0::'a else if k = t then 1::'a else (0::'a))) =
-    (0::'a)" apply (rule setsum.neutral) using s_noteq_t by fastforce
+    (0::'a)" apply (rule sum.neutral) using s_noteq_t by fastforce
 next
   fix s t::"'b"
   show "(\<Sum>k\<in>UNIV. (if t = k then 1::'a else (0::'a)) * (if k = t then 1::'a else if k = t then 1::'a else if k = t then 1::'a else (0::'a))) = (1::'a)"
   proof - 
     let ?f="(\<lambda>k. (if t = k then 1::'a else (0::'a)) * (if k = t then 1::'a else if k = t then 1::'a else if k = t then 1::'a else (0::'a)))"
     have univ_eq: "UNIV = ((UNIV - {t}) \<union> {t})" by auto
-    have "setsum ?f UNIV = setsum ?f ((UNIV - {t}) \<union> {t}) " using univ_eq by simp
-    also have "... = setsum ?f (UNIV - {t}) + setsum ?f {t}" by (rule setsum.union_disjoint, auto)
-    also have "... = 0 + setsum ?f {t}" by auto
-    also have "... = setsum ?f {t}" by simp
+    have "sum ?f UNIV = sum ?f ((UNIV - {t}) \<union> {t}) " using univ_eq by simp
+    also have "... = sum ?f (UNIV - {t}) + sum ?f {t}" by (rule sum.union_disjoint, auto)
+    also have "... = 0 + sum ?f {t}" by auto
+    also have "... = sum ?f {t}" by simp
     also have "... = 1" by simp
     finally show ?thesis .
   qed
@@ -204,10 +204,10 @@ next
   proof -
     let ?f="(\<lambda>k. (if b = k then 1::'a else (0::'a)) * (if k = t then 0::'a else if k = b then 1::'a else if k = t then 1::'a else (0::'a)))"
     have univ_eq: "UNIV = ((UNIV - {b}) \<union> {b})" by auto
-    have "setsum ?f UNIV = setsum ?f ((UNIV - {b}) \<union> {b}) " using univ_eq by simp
-    also have "... = setsum ?f (UNIV - {b}) + setsum ?f {b}" by (rule setsum.union_disjoint, auto)
-    also have "... = 0 + setsum ?f {b}" by auto
-    also have "... = setsum ?f {b}" by simp
+    have "sum ?f UNIV = sum ?f ((UNIV - {b}) \<union> {b}) " using univ_eq by simp
+    also have "... = sum ?f (UNIV - {b}) + sum ?f {b}" by (rule sum.union_disjoint, auto)
+    also have "... = 0 + sum ?f {b}" by auto
+    also have "... = sum ?f {b}" by simp
     also have "... = 1" using b_noteq_t by simp
     finally show ?thesis .
   qed
@@ -216,10 +216,10 @@ next
   proof -
     let ?f="(\<lambda>k.  (if t = k then 1::'a else (0::'a)) * (if k = a then 0::'a else if k = b then 0::'a else if k = t then 1::'a else (0::'a)))"
     have univ_eq: "UNIV = ((UNIV - {t}) \<union> {t})" by auto
-    have "setsum ?f UNIV = setsum ?f ((UNIV - {t}) \<union> {t}) " using univ_eq by simp
-    also have "... = setsum ?f (UNIV - {t}) + setsum ?f {t}" by (rule setsum.union_disjoint, auto)
-    also have "... = 0 + setsum ?f {t}" by auto
-    also have "... = setsum ?f {t}" by simp
+    have "sum ?f UNIV = sum ?f ((UNIV - {t}) \<union> {t}) " using univ_eq by simp
+    also have "... = sum ?f (UNIV - {t}) + sum ?f {t}" by (rule sum.union_disjoint, auto)
+    also have "... = 0 + sum ?f {t}" by auto
+    also have "... = sum ?f {t}" by simp
     also have "... = 1" using b_noteq_t a_noteq_t by simp
     finally show ?thesis .
   qed
@@ -230,10 +230,10 @@ next
   proof -
     let ?f="\<lambda>k.  (if a = k then 1::'a else (0::'a)) * (if k = a then 1::'a else if k = t then 0::'a else if k = t then 1::'a else (0::'a))"
     have univ_eq: "UNIV = ((UNIV - {a}) \<union> {a})" by auto
-    have "setsum ?f UNIV = setsum ?f ((UNIV - {a}) \<union> {a}) " using univ_eq by simp
-    also have "... = setsum ?f (UNIV - {a}) + setsum ?f {a}" by (rule setsum.union_disjoint, auto)
-    also have "... = 0 + setsum ?f {a}" by auto
-    also have "... = setsum ?f {a}" by simp
+    have "sum ?f UNIV = sum ?f ((UNIV - {a}) \<union> {a}) " using univ_eq by simp
+    also have "... = sum ?f (UNIV - {a}) + sum ?f {a}" by (rule sum.union_disjoint, auto)
+    also have "... = 0 + sum ?f {a}" by auto
+    also have "... = sum ?f {a}" by simp
     also have "... = 1" using a_noteq_t by simp
     finally show ?thesis .    
   qed
@@ -247,9 +247,9 @@ proof (unfold matrix_matrix_mult_def mult_row_def, vector, auto)
   fix ia
   let ?f="\<lambda>k. q * mat (1::'a) $ a $ k * A $ k $ ia"
   have univ_rw:"UNIV = (UNIV-{a}) \<union> {a}" by auto
-  have "setsum ?f UNIV = setsum ?f ((UNIV-{a}) \<union> {a})" using univ_rw by auto
-  also have "... = setsum ?f (UNIV-{a}) + setsum ?f {a}" by (rule setsum.union_disjoint, auto)
-  also have "... = setsum ?f {a}" unfolding mat_def by auto  
+  have "sum ?f UNIV = sum ?f ((UNIV-{a}) \<union> {a})" using univ_rw by auto
+  also have "... = sum ?f (UNIV-{a}) + sum ?f {a}" by (rule sum.union_disjoint, auto)
+  also have "... = sum ?f {a}" unfolding mat_def by auto  
   also have "... = ?f a" by auto
   also have "... = q * A $ a $ ia" unfolding mat_def by auto
   finally show  "(\<Sum>k\<in>UNIV. q * mat (1::'a) $ a $ k * A $ k $ ia) = q * A $ a $ ia" .
@@ -257,9 +257,9 @@ proof (unfold matrix_matrix_mult_def mult_row_def, vector, auto)
   assume i: "i \<noteq> a"
   let ?g="\<lambda>k. mat (1::'a) $ i $ k * A $ k $ ia"
   have univ_rw'':"UNIV = (UNIV-{i}) \<union> {i}" by auto
-  have "setsum ?g UNIV = setsum ?g ((UNIV-{i}) \<union> {i})" using univ_rw'' by auto
-  also have "... = setsum ?g (UNIV-{i}) + setsum ?g {i}"  by (rule setsum.union_disjoint, auto)
-  also have "... =  setsum ?g {i}" unfolding mat_def by auto 
+  have "sum ?g UNIV = sum ?g ((UNIV-{i}) \<union> {i})" using univ_rw'' by auto
+  also have "... = sum ?g (UNIV-{i}) + sum ?g {i}"  by (rule sum.union_disjoint, auto)
+  also have "... =  sum ?g {i}" unfolding mat_def by auto 
   also have "... = ?g i" by simp
   finally show "(\<Sum>k\<in>UNIV. mat (1::'a) $ i $ k * A $ k $ ia) = A $ i $ ia" unfolding mat_def by simp
 qed
@@ -274,10 +274,10 @@ proof (unfold invertible_def, rule exI[of _ "mult_row (mat 1) a k"],rule conjI)
     proof -
       let ?f="\<lambda>ka. q * (if a = ka then 1::'a else (0::'a)) * (if ka = a then k * (1::'a) else if ka = a then 1::'a else (0::'a)) "
       have univ_eq: "UNIV = ((UNIV - {a}) \<union> {a})" by auto
-      have "setsum ?f UNIV = setsum ?f ((UNIV - {a}) \<union> {a}) " using univ_eq by simp
-      also have "... = setsum ?f (UNIV - {a}) + setsum ?f {a}" by (rule setsum.union_disjoint, auto)
-      also have "... = 0 + setsum ?f {a}" by auto
-      also have "... = setsum ?f {a}" by simp
+      have "sum ?f UNIV = sum ?f ((UNIV - {a}) \<union> {a}) " using univ_eq by simp
+      also have "... = sum ?f (UNIV - {a}) + sum ?f {a}" by (rule sum.union_disjoint, auto)
+      also have "... = 0 + sum ?f {a}" by auto
+      also have "... = sum ?f {a}" by simp
       also have "... = 1" using qk by simp
       finally show ?thesis .        
     qed
@@ -285,7 +285,7 @@ proof (unfold invertible_def, rule exI[of _ "mult_row (mat 1) a k"],rule conjI)
     fix s
     assume s_noteq_a: "s\<noteq>a"
     show "(\<Sum>ka\<in>UNIV. (if s = ka then 1::'a else (0::'a)) * (if ka = a then k * (1::'a) else if ka = a then 1::'a else 0)) = 0"
-      by (rule setsum.neutral, simp add: s_noteq_a)
+      by (rule sum.neutral, simp add: s_noteq_a)
   next
     fix t
     assume a_noteq_t: "a\<noteq>t"
@@ -293,9 +293,9 @@ proof (unfold invertible_def, rule exI[of _ "mult_row (mat 1) a k"],rule conjI)
     proof -
       let ?f="\<lambda>ka. (if t = ka then 1::'a else (0::'a)) * (if ka = a then k * (0::'a) else if ka = t then 1::'a else (0::'a)) "
       have univ_eq: "UNIV = ((UNIV - {t}) \<union> {t})" by auto
-      have "setsum ?f UNIV = setsum ?f ((UNIV - {t}) \<union> {t}) " using univ_eq by simp
-      also have "... = setsum ?f (UNIV - {t}) + setsum ?f {t}" by (rule setsum.union_disjoint, auto)
-      also have "... = setsum ?f {t}" by simp
+      have "sum ?f UNIV = sum ?f ((UNIV - {t}) \<union> {t}) " using univ_eq by simp
+      also have "... = sum ?f (UNIV - {t}) + sum ?f {t}" by (rule sum.union_disjoint, auto)
+      also have "... = sum ?f {t}" by simp
       also have "... = 1" using a_noteq_t by auto
       finally show ?thesis .
     qed            
@@ -303,7 +303,7 @@ proof (unfold invertible_def, rule exI[of _ "mult_row (mat 1) a k"],rule conjI)
     assume s_not_t: "s\<noteq>t"
     show "(\<Sum>ka\<in>UNIV. (if s = a then q * (if a = ka then 1::'a else (0::'a)) else if s = ka then 1::'a else (0::'a)) *
       (if ka = a then k * (0::'a) else if ka = t then 1::'a else (0::'a))) = (0::'a)"
-      by (rule setsum.neutral, simp add: s_not_t a_noteq_t)
+      by (rule sum.neutral, simp add: s_not_t a_noteq_t)
   qed            
   show "mult_row (mat (1::'a)) a k ** mult_row (mat (1::'a)) a q = mat (1::'a)"
   proof (unfold matrix_matrix_mult_def, vector, clarify, unfold mult_row_def, vector, unfold mat_1_fun, auto)
@@ -311,10 +311,10 @@ proof (unfold invertible_def, rule exI[of _ "mult_row (mat 1) a k"],rule conjI)
     proof -
       let ?f="\<lambda>ka. k * (if a = ka then 1::'a else (0::'a)) * (if ka = a then q * (1::'a) else if ka = a then 1::'a else (0::'a)) "
       have univ_eq: "UNIV = ((UNIV - {a}) \<union> {a})" by auto
-      have "setsum ?f UNIV = setsum ?f ((UNIV - {a}) \<union> {a}) " using univ_eq by simp
-      also have "... = setsum ?f (UNIV - {a}) + setsum ?f {a}" by (rule setsum.union_disjoint, auto)
-      also have "... = 0 + setsum ?f {a}" by auto
-      also have "... = setsum ?f {a}" by simp
+      have "sum ?f UNIV = sum ?f ((UNIV - {a}) \<union> {a}) " using univ_eq by simp
+      also have "... = sum ?f (UNIV - {a}) + sum ?f {a}" by (rule sum.union_disjoint, auto)
+      also have "... = 0 + sum ?f {a}" by auto
+      also have "... = sum ?f {a}" by simp
       also have "... = 1" using kq by simp
       finally show ?thesis .        
     qed
@@ -322,7 +322,7 @@ proof (unfold invertible_def, rule exI[of _ "mult_row (mat 1) a k"],rule conjI)
     fix s
     assume s_not_a: "s\<noteq>a"
     show "(\<Sum>k\<in>UNIV. (if s = k then 1::'a else (0::'a)) * (if k = a then q * (1::'a) else if k = a then 1::'a else (0::'a))) = (0::'a)"
-      by (rule setsum.neutral, simp add: s_not_a)
+      by (rule sum.neutral, simp add: s_not_a)
   next
     fix t
     assume a_not_t: "a\<noteq>t"
@@ -330,9 +330,9 @@ proof (unfold invertible_def, rule exI[of _ "mult_row (mat 1) a k"],rule conjI)
     proof -
       let ?f="\<lambda>k. (if t = k then 1::'a else (0::'a)) * (if k = a then q * (0::'a) else if k = t then 1::'a else (0::'a))"
       have univ_eq: "UNIV = ((UNIV - {t}) \<union> {t})" by auto
-      have "setsum ?f UNIV = setsum ?f ((UNIV - {t}) \<union> {t}) " using univ_eq by simp
-      also have "... = setsum ?f (UNIV - {t}) + setsum ?f {t}" by (rule setsum.union_disjoint, auto)
-      also have "... = setsum ?f {t}" by simp
+      have "sum ?f UNIV = sum ?f ((UNIV - {t}) \<union> {t}) " using univ_eq by simp
+      also have "... = sum ?f (UNIV - {t}) + sum ?f {t}" by (rule sum.union_disjoint, auto)
+      also have "... = sum ?f {t}" by simp
       also have "... = 1" using a_not_t by simp
       finally show ?thesis .
     qed
@@ -340,7 +340,7 @@ proof (unfold invertible_def, rule exI[of _ "mult_row (mat 1) a k"],rule conjI)
     assume s_not_t: "s\<noteq>t"
     show " (\<Sum>ka\<in>UNIV. (if s = a then k * (if a = ka then 1::'a else (0::'a)) else if s = ka then 1::'a else (0::'a)) *
       (if ka = a then q * (0::'a) else if ka = t then 1::'a else (0::'a))) = (0::'a)"
-      by (rule setsum.neutral, simp add: s_not_t)    
+      by (rule sum.neutral, simp add: s_not_t)    
   qed
 qed
 
@@ -356,18 +356,18 @@ lemma row_add_mat_1: "row_add (mat 1) a b q ** A = row_add A a b q"
 proof (unfold matrix_matrix_mult_def row_add_def, vector, auto)
   fix j
   let ?f=" (\<lambda>k. (mat (1::'a) $ a $ k + q * mat (1::'a) $ b $ k) * A $ k $ j)"
-  show "setsum ?f UNIV = A $ a $ j + q * A $ b $ j"
+  show "sum ?f UNIV = A $ a $ j + q * A $ b $ j"
   proof (cases "a=b")
     case False
     have univ_rw: "UNIV = {a} \<union> ({b} \<union> (UNIV - {a} - {b}))" by auto
-    have setsum_rw: "setsum ?f ({b} \<union> (UNIV - {a} - {b})) = setsum ?f {b} + setsum ?f (UNIV - {a} - {b})" by (rule setsum.union_disjoint, auto simp add: False)
-    have "setsum ?f UNIV = setsum ?f ({a} \<union> ({b} \<union> (UNIV - {a} - {b})))" using univ_rw by simp
-    also have "... = setsum ?f {a} + setsum ?f ({b} \<union> (UNIV - {a} - {b}))" by (rule setsum.union_disjoint, auto simp add: False)
-    also have "... = setsum ?f {a} + setsum ?f {b} + setsum ?f (UNIV - {a} - {b})" unfolding setsum_rw add.assoc ..
-    also have "... = setsum ?f {a} + setsum ?f {b}"
+    have sum_rw: "sum ?f ({b} \<union> (UNIV - {a} - {b})) = sum ?f {b} + sum ?f (UNIV - {a} - {b})" by (rule sum.union_disjoint, auto simp add: False)
+    have "sum ?f UNIV = sum ?f ({a} \<union> ({b} \<union> (UNIV - {a} - {b})))" using univ_rw by simp
+    also have "... = sum ?f {a} + sum ?f ({b} \<union> (UNIV - {a} - {b}))" by (rule sum.union_disjoint, auto simp add: False)
+    also have "... = sum ?f {a} + sum ?f {b} + sum ?f (UNIV - {a} - {b})" unfolding sum_rw add.assoc ..
+    also have "... = sum ?f {a} + sum ?f {b}"
     proof -
-      have "setsum ?f (UNIV - {a} - {b}) = setsum (\<lambda>k. 0) (UNIV - {a} - {b})" unfolding mat_def by (rule setsum.cong, auto)
-      also have "... = 0" unfolding setsum.neutral_const ..
+      have "sum ?f (UNIV - {a} - {b}) = sum (\<lambda>k. 0) (UNIV - {a} - {b})" unfolding mat_def by (rule sum.cong, auto)
+      also have "... = 0" unfolding sum.neutral_const ..
       finally show ?thesis by simp
     qed
     also have "... = A $ a $ j + q * A $ b $ j" using False unfolding mat_def by simp
@@ -375,12 +375,12 @@ proof (unfold matrix_matrix_mult_def row_add_def, vector, auto)
   next
     case True
     have univ_rw: "UNIV = {b} \<union> (UNIV - {b})" by auto
-    have "setsum ?f UNIV = setsum ?f ({b} \<union> (UNIV - {b}))" using univ_rw by simp
-    also have "... = setsum ?f {b} + setsum ?f (UNIV  - {b})" by (rule setsum.union_disjoint, auto)
-    also have "... = setsum ?f {b}"
+    have "sum ?f UNIV = sum ?f ({b} \<union> (UNIV - {b}))" using univ_rw by simp
+    also have "... = sum ?f {b} + sum ?f (UNIV  - {b})" by (rule sum.union_disjoint, auto)
+    also have "... = sum ?f {b}"
     proof -
-      have "setsum ?f (UNIV - {b}) = setsum (\<lambda>k. 0) (UNIV - {b})" using True unfolding mat_def by auto
-      also have "... = 0" unfolding setsum.neutral_const ..
+      have "sum ?f (UNIV - {b}) = sum (\<lambda>k. 0) (UNIV - {b})" using True unfolding mat_def by auto
+      also have "... = 0" unfolding sum.neutral_const ..
       finally show ?thesis by simp
     qed
     also have "... = A $ a $ j + q * A $ b $ j" 
@@ -390,12 +390,12 @@ proof (unfold matrix_matrix_mult_def row_add_def, vector, auto)
   fix i assume i: "i\<noteq>a"
   let ?g="\<lambda>k.  mat (1::'a) $ i $ k * A $ k $ j"
   have univ_rw: "UNIV = {i} \<union> (UNIV - {i})" by auto
-  have "setsum ?g UNIV = setsum ?g ({i} \<union> (UNIV - {i}))" using univ_rw by simp
-  also have "... = setsum ?g {i} + setsum ?g (UNIV - {i})" by (rule setsum.union_disjoint, auto)
-  also have "... = setsum ?g {i}"
+  have "sum ?g UNIV = sum ?g ({i} \<union> (UNIV - {i}))" using univ_rw by simp
+  also have "... = sum ?g {i} + sum ?g (UNIV - {i})" by (rule sum.union_disjoint, auto)
+  also have "... = sum ?g {i}"
   proof -
-    have "setsum ?g (UNIV - {i}) = setsum (\<lambda>k. 0) (UNIV - {i})" unfolding mat_def by auto
-    also have "... = 0" unfolding setsum.neutral_const ..
+    have "sum ?g (UNIV - {i}) = sum (\<lambda>k. 0) (UNIV - {i})" unfolding mat_def by auto
+    also have "... = 0" unfolding sum.neutral_const ..
     finally show ?thesis by simp
   qed
   also have "... =  A $ i $ j" unfolding mat_def by simp
@@ -412,10 +412,10 @@ proof (unfold invertible_def, rule exI[of _ "(row_add (mat 1) a b (-q))"], rule 
     proof -
       let ?f="\<lambda>k. (if b = k then 1::'a else (0::'a)) * (if k = a then (0::'a) + - q * (1::'a) else if k = b then 1::'a else (0::'a))"
       have univ_eq: "UNIV = ((UNIV - {b}) \<union> {b})" by auto
-      have "setsum ?f UNIV = setsum ?f ((UNIV - {b}) \<union> {b}) " using univ_eq by simp
-      also have "... = setsum ?f (UNIV - {b}) + setsum ?f {b}" by (rule setsum.union_disjoint, auto)
-      also have "... = 0 + setsum ?f {b}" by auto
-      also have "... = setsum ?f {b}" by simp
+      have "sum ?f UNIV = sum ?f ((UNIV - {b}) \<union> {b}) " using univ_eq by simp
+      also have "... = sum ?f (UNIV - {b}) + sum ?f {b}" by (rule sum.union_disjoint, auto)
+      also have "... = 0 + sum ?f {b}" by auto
+      also have "... = sum ?f {b}" by simp
       also have "... = 1" using a_noteq_b by simp
       finally show ?thesis .
     qed
@@ -425,10 +425,10 @@ proof (unfold invertible_def, rule exI[of _ "(row_add (mat 1) a b (-q))"], rule 
       let ?f="\<lambda>k.  ((if a = k then 1::'a else (0::'a)) + q * (if b = k then 1::'a else (0::'a))) * (if k = a then (1::'a) + - 
         q * (0::'a) else if k = a then 1::'a else (0::'a))"
       have univ_eq: "UNIV = ((UNIV - {a}) \<union> {a})" by auto
-      have "setsum ?f UNIV = setsum ?f ((UNIV - {a}) \<union> {a}) " using univ_eq by simp
-      also have "... = setsum ?f (UNIV - {a}) + setsum ?f {a}" by (rule setsum.union_disjoint, auto)
-      also have "... = 0 + setsum ?f {a}" by auto
-      also have "... = setsum ?f {a}" by simp
+      have "sum ?f UNIV = sum ?f ((UNIV - {a}) \<union> {a}) " using univ_eq by simp
+      also have "... = sum ?f (UNIV - {a}) + sum ?f {a}" by (rule sum.union_disjoint, auto)
+      also have "... = 0 + sum ?f {a}" by auto
+      also have "... = sum ?f {a}" by simp
       also have "... = 1" using a_noteq_b by simp
       finally show ?thesis .
     qed
@@ -436,7 +436,7 @@ proof (unfold invertible_def, rule exI[of _ "(row_add (mat 1) a b (-q))"], rule 
     fix s
     assume s_not_a: "s \<noteq> a"
     show "(\<Sum>k::'b\<in>UNIV. (if s = k then 1::'a else (0::'a)) * (if k = a then (1::'a) + - q * (0::'a) else if k = a then 1::'a else (0::'a))) = (0::'a)"
-      by (rule setsum.neutral, auto simp add: s_not_a)       
+      by (rule sum.neutral, auto simp add: s_not_a)       
   next
     fix t
     assume b_not_t: "b \<noteq> t" and a_not_t: "a \<noteq> t"
@@ -444,10 +444,10 @@ proof (unfold invertible_def, rule exI[of _ "(row_add (mat 1) a b (-q))"], rule 
     proof -
       let ?f="\<lambda>k. (if t = k then 1::'a else (0::'a)) * (if k = a then (0::'a) + - q * (0::'a) else if k = t then 1::'a else (0::'a)) "
       have univ_eq: "UNIV = ((UNIV - {t}) \<union> {t})" by auto
-      have "setsum ?f UNIV = setsum ?f ((UNIV - {t}) \<union> {t}) " using univ_eq by simp
-      also have "... = setsum ?f (UNIV - {t}) + setsum ?f {t}" by (rule setsum.union_disjoint, auto)
-      also have "... = 0 + setsum ?f {t}" by auto
-      also have "... = setsum ?f {t}" by simp
+      have "sum ?f UNIV = sum ?f ((UNIV - {t}) \<union> {t}) " using univ_eq by simp
+      also have "... = sum ?f (UNIV - {t}) + sum ?f {t}" by (rule sum.union_disjoint, auto)
+      also have "... = 0 + sum ?f {t}" by auto
+      also have "... = sum ?f {t}" by simp
       also have "... = 1" using b_not_t a_not_t by simp
       finally show ?thesis .
     qed
@@ -455,26 +455,26 @@ proof (unfold invertible_def, rule exI[of _ "(row_add (mat 1) a b (-q))"], rule 
     fix s t
     assume  b_not_t: "b \<noteq> t" and a_not_t: "a \<noteq> t" and  s_not_t: "s \<noteq> t"
     show " (\<Sum>k\<in>UNIV. (if s = a then (if a = k then 1::'a else (0::'a)) + q * (if b = k then 1::'a else (0::'a)) else if s = k then 1::'a else (0::'a)) *
-      (if k = a then (0::'a) + - q * (0::'a) else if k = t then 1::'a else (0::'a))) = (0::'a)" by (rule setsum.neutral, auto simp add: b_not_t a_not_t s_not_t)     
+      (if k = a then (0::'a) + - q * (0::'a) else if k = t then 1::'a else (0::'a))) = (0::'a)" by (rule sum.neutral, auto simp add: b_not_t a_not_t s_not_t)     
   next         
     fix s
     assume s_not_b: "s\<noteq>b"
     let ?f="\<lambda>k. (if s = a then (if a = k then 1::'a else (0::'a)) + q * (if b = k then 1::'a else (0::'a)) else if s = k then 1::'a else (0::'a)) *
       (if k = a then (0::'a) + - q * (1::'a) else if k = b then 1::'a else (0::'a))"
-    show "setsum ?f UNIV = (0::'a)"         
+    show "sum ?f UNIV = (0::'a)"         
     proof (cases "s=a")         
       case False
-      show ?thesis by (rule setsum.neutral, auto simp add: False s_not_b a_noteq_b)
+      show ?thesis by (rule sum.neutral, auto simp add: False s_not_b a_noteq_b)
     next         
       case True --"This case is different from the other cases"                  
       have univ_eq: "UNIV = ((UNIV - {a}- {b}) \<union> ({b} \<union> {a}))" by auto
-      have setsum_a: "setsum ?f {a} = -q"  unfolding True using s_not_b using a_noteq_b by auto
-      have setsum_b: "setsum ?f {b} = q" unfolding True using s_not_b using a_noteq_b by auto
-      have setsum_rest: "setsum ?f (UNIV - {a} - {b}) = 0"  by (rule setsum.neutral, auto simp add: True s_not_b a_noteq_b)
-      have "setsum ?f UNIV = setsum ?f ((UNIV - {a}- {b}) \<union> ({b} \<union> {a}))"  using univ_eq by simp
-      also have "... = setsum ?f (UNIV - {a} - {b}) + setsum ?f ({b} \<union> {a})" by (rule setsum.union_disjoint, auto)
-      also have "... = setsum ?f (UNIV - {a} - {b}) + setsum ?f {b} + setsum ?f {a}" by (auto simp add: setsum.union_disjoint a_noteq_b)     
-      also have "... = 0" unfolding setsum_a setsum_b setsum_rest by simp
+      have sum_a: "sum ?f {a} = -q"  unfolding True using s_not_b using a_noteq_b by auto
+      have sum_b: "sum ?f {b} = q" unfolding True using s_not_b using a_noteq_b by auto
+      have sum_rest: "sum ?f (UNIV - {a} - {b}) = 0"  by (rule sum.neutral, auto simp add: True s_not_b a_noteq_b)
+      have "sum ?f UNIV = sum ?f ((UNIV - {a}- {b}) \<union> ({b} \<union> {a}))"  using univ_eq by simp
+      also have "... = sum ?f (UNIV - {a} - {b}) + sum ?f ({b} \<union> {a})" by (rule sum.union_disjoint, auto)
+      also have "... = sum ?f (UNIV - {a} - {b}) + sum ?f {b} + sum ?f {a}" by (auto simp add: sum.union_disjoint a_noteq_b)     
+      also have "... = 0" unfolding sum_a sum_b sum_rest by simp
       finally show ?thesis .
     qed
   qed
@@ -485,10 +485,10 @@ next
     proof -
       let ?f="\<lambda>k. (if b = k then 1::'a else (0::'a)) * (if k = a then (0::'a) + q * (1::'a) else if k = b then 1::'a else (0::'a))"
       have univ_eq: "UNIV = ((UNIV - {b}) \<union> {b})" by auto
-      have "setsum ?f UNIV = setsum ?f ((UNIV - {b}) \<union> {b}) " using univ_eq by simp
-      also have "... = setsum ?f (UNIV - {b}) + setsum ?f {b}" by (rule setsum.union_disjoint, auto)
-      also have "... = 0 + setsum ?f {b}" by auto
-      also have "... = setsum ?f {b}" by simp
+      have "sum ?f UNIV = sum ?f ((UNIV - {b}) \<union> {b}) " using univ_eq by simp
+      also have "... = sum ?f (UNIV - {b}) + sum ?f {b}" by (rule sum.union_disjoint, auto)
+      also have "... = 0 + sum ?f {b}" by auto
+      also have "... = sum ?f {b}" by simp
       also have "... = 1" using a_noteq_b by simp
       finally show ?thesis .
     qed
@@ -497,10 +497,10 @@ next
     proof -
       let ?f="\<lambda>k. ((if a = k then 1::'a else (0::'a)) + - (q * (if b = k then 1::'a else (0::'a)))) * (if k = a then (1::'a) + q * (0::'a) else if k = a then 1::'a else (0::'a))"
       have univ_eq: "UNIV = ((UNIV - {a}) \<union> {a})" by auto
-      have "setsum ?f UNIV = setsum ?f ((UNIV - {a}) \<union> {a}) " using univ_eq by simp
-      also have "... = setsum ?f (UNIV - {a}) + setsum ?f {a}" by (rule setsum.union_disjoint, auto)
-      also have "... = 0 + setsum ?f {a}" by auto
-      also have "... = setsum ?f {a}" by simp
+      have "sum ?f UNIV = sum ?f ((UNIV - {a}) \<union> {a}) " using univ_eq by simp
+      also have "... = sum ?f (UNIV - {a}) + sum ?f {a}" by (rule sum.union_disjoint, auto)
+      also have "... = 0 + sum ?f {a}" by auto
+      also have "... = sum ?f {a}" by simp
       also have "... = 1" using a_noteq_b by simp
       finally show ?thesis by simp
     qed
@@ -508,7 +508,7 @@ next
     fix s
     assume s_not_a: "s\<noteq>a"
     show "(\<Sum>k\<in>UNIV. (if s = k then 1::'a else (0::'a)) * (if k = a then (1::'a) + q * (0::'a) else if k = a then 1::'a else (0::'a))) = (0::'a)"
-      by (rule setsum.neutral, auto simp add: s_not_a)
+      by (rule sum.neutral, auto simp add: s_not_a)
   next 
     fix t
     assume b_not_t: "b \<noteq> t" and a_not_t: "a \<noteq> t"
@@ -516,10 +516,10 @@ next
     proof -
       let ?f="\<lambda>k. (if t = k then 1::'a else (0::'a)) * (if k = a then (0::'a) + q * (0::'a) else if k = t then 1::'a else (0::'a))"
       have univ_eq: "UNIV = ((UNIV - {t}) \<union> {t})" by auto
-      have "setsum ?f UNIV = setsum ?f ((UNIV - {t}) \<union> {t}) " using univ_eq by simp
-      also have "... = setsum ?f (UNIV - {t}) + setsum ?f {t}" by (rule setsum.union_disjoint, auto)
-      also have "... = 0 + setsum ?f {t}" by auto
-      also have "... = setsum ?f {t}" by simp
+      have "sum ?f UNIV = sum ?f ((UNIV - {t}) \<union> {t}) " using univ_eq by simp
+      also have "... = sum ?f (UNIV - {t}) + sum ?f {t}" by (rule sum.union_disjoint, auto)
+      also have "... = 0 + sum ?f {t}" by auto
+      also have "... = sum ?f {t}" by simp
       also have "... = 1" using b_not_t a_not_t by simp
       finally show ?thesis .
     qed
@@ -528,26 +528,26 @@ next
     assume b_not_t: "b \<noteq> t" and a_not_t: "a \<noteq> t" and s_not_t: "s \<noteq> t"     
     show "(\<Sum>k\<in>UNIV. (if s = a then (if a = k then 1::'a else (0::'a)) + - q * (if b = k then 1::'a else (0::'a)) else if s = k then 1::'a else (0::'a)) *
       (if k = a then (0::'a) + q * (0::'a) else if k = t then 1::'a else (0::'a))) = (0::'a)"
-      by (rule setsum.neutral, auto simp add: b_not_t a_not_t s_not_t)
+      by (rule sum.neutral, auto simp add: b_not_t a_not_t s_not_t)
   next
     fix s
     assume s_not_b: "s\<noteq>b"
     let ?f="\<lambda>k.(if s = a then (if a = k then 1::'a else (0::'a)) + - q * (if b = k then 1::'a else (0::'a)) else if s = k then 1::'a else (0::'a)) 
       * (if k = a then (0::'a) + q * (1::'a) else if k = b then 1::'a else (0::'a))"
-    show "setsum ?f UNIV = 0"
+    show "sum ?f UNIV = 0"
     proof (cases "s=a")         
       case False
-      show ?thesis by (rule setsum.neutral, auto simp add: False s_not_b a_noteq_b)
+      show ?thesis by (rule sum.neutral, auto simp add: False s_not_b a_noteq_b)
     next         
       case True --"This case is different from the other cases"                  
       have univ_eq: "UNIV = ((UNIV - {a}- {b}) \<union> ({b} \<union> {a}))" by auto
-      have setsum_a: "setsum ?f {a} = q"  unfolding True using s_not_b using a_noteq_b by auto
-      have setsum_b: "setsum ?f {b} = -q" unfolding True using s_not_b using a_noteq_b by auto
-      have setsum_rest: "setsum ?f (UNIV - {a} - {b}) = 0"  by (rule setsum.neutral, auto simp add: True s_not_b a_noteq_b)
-      have "setsum ?f UNIV = setsum ?f ((UNIV - {a}- {b}) \<union> ({b} \<union> {a}))"  using univ_eq by simp
-      also have "... = setsum ?f (UNIV - {a} - {b}) + setsum ?f ({b} \<union> {a})" by (rule setsum.union_disjoint, auto)
-      also have "... = setsum ?f (UNIV - {a} - {b}) + setsum ?f {b} + setsum ?f {a}" by (auto simp add: setsum.union_disjoint a_noteq_b)
-      also have "... = 0" unfolding setsum_a setsum_b setsum_rest by simp
+      have sum_a: "sum ?f {a} = q"  unfolding True using s_not_b using a_noteq_b by auto
+      have sum_b: "sum ?f {b} = -q" unfolding True using s_not_b using a_noteq_b by auto
+      have sum_rest: "sum ?f (UNIV - {a} - {b}) = 0"  by (rule sum.neutral, auto simp add: True s_not_b a_noteq_b)
+      have "sum ?f UNIV = sum ?f ((UNIV - {a}- {b}) \<union> ({b} \<union> {a}))"  using univ_eq by simp
+      also have "... = sum ?f (UNIV - {a} - {b}) + sum ?f ({b} \<union> {a})" by (rule sum.union_disjoint, auto)
+      also have "... = sum ?f (UNIV - {a} - {b}) + sum ?f {b} + sum ?f {a}" by (auto simp add: sum.union_disjoint a_noteq_b)
+      also have "... = 0" unfolding sum_a sum_b sum_rest by simp
       finally show ?thesis .
     qed
   qed
@@ -564,9 +564,9 @@ proof (unfold matrix_matrix_mult_def, unfold interchange_columns_def, vector, au
   proof -
     let ?f="(\<lambda>k. A $ i $ k * mat (1::'a) $ k $ a)"
     have univ_rw:"UNIV = (UNIV-{a}) \<union> {a}" by auto
-    have "setsum ?f UNIV = setsum ?f ((UNIV-{a}) \<union> {a})" using univ_rw by auto
-    also have "... = setsum ?f (UNIV-{a}) + setsum ?f {a}" by (rule setsum.union_disjoint, auto)
-    also have "... = setsum ?f {a}" unfolding mat_def by auto
+    have "sum ?f UNIV = sum ?f ((UNIV-{a}) \<union> {a})" using univ_rw by auto
+    also have "... = sum ?f (UNIV-{a}) + sum ?f {a}" by (rule sum.union_disjoint, auto)
+    also have "... = sum ?f {a}" unfolding mat_def by auto
     finally show ?thesis unfolding mat_def by simp
   qed    
   assume a_not_b: "a\<noteq>b"
@@ -574,9 +574,9 @@ proof (unfold matrix_matrix_mult_def, unfold interchange_columns_def, vector, au
   proof -
     let ?f="(\<lambda>k. A $ i $ k * mat (1::'a) $ k $ b)"
     have univ_rw:"UNIV = (UNIV-{b}) \<union> {b}" by auto
-    have "setsum ?f UNIV = setsum ?f ((UNIV-{b}) \<union> {b})" using univ_rw by auto
-    also have "... = setsum ?f (UNIV-{b}) + setsum ?f {b}" by (rule setsum.union_disjoint, auto)
-    also have "... = setsum ?f {b}" unfolding mat_def by auto
+    have "sum ?f UNIV = sum ?f ((UNIV-{b}) \<union> {b})" using univ_rw by auto
+    also have "... = sum ?f (UNIV-{b}) + sum ?f {b}" by (rule sum.union_disjoint, auto)
+    also have "... = sum ?f {b}" unfolding mat_def by auto
     finally show ?thesis unfolding mat_def by simp
   qed
 next
@@ -586,9 +586,9 @@ next
   proof -
     let ?f="(\<lambda>k. A $ i $ k * mat (1::'a) $ k $ j)"
     have univ_rw:"UNIV = (UNIV-{j}) \<union> {j}" by auto
-    have "setsum ?f UNIV = setsum ?f ((UNIV-{j}) \<union> {j})" using univ_rw by auto
-    also have "... = setsum ?f (UNIV-{j}) + setsum ?f {j}" by (rule setsum.union_disjoint, auto)
-    also have "... = setsum ?f {j}" unfolding mat_def using j_not_b j_not_a by auto
+    have "sum ?f UNIV = sum ?f ((UNIV-{j}) \<union> {j})" using univ_rw by auto
+    also have "... = sum ?f (UNIV-{j}) + sum ?f {j}" by (rule sum.union_disjoint, auto)
+    also have "... = sum ?f {j}" unfolding mat_def using j_not_b j_not_a by auto
     finally show ?thesis unfolding mat_def by simp
   qed
 qed
@@ -600,9 +600,9 @@ proof (unfold invertible_def, rule exI[of _ "interchange_columns (mat 1) a b"], 
   proof -
     let ?f="(\<lambda>k. (if k = b then 1::'a else if k = b then 1::'a else if b = k then 1::'a else (0::'a)) * (if k = b then 1::'a else (0::'a)))"
     have univ_rw:"UNIV = (UNIV-{b}) \<union> {b}" by auto
-    have "setsum ?f UNIV = setsum ?f ((UNIV-{b}) \<union> {b})" using univ_rw by auto
-    also have "... = setsum ?f (UNIV-{b}) + setsum ?f {b}" by (rule setsum.union_disjoint, auto)
-    also have "... = setsum ?f {b}" by auto
+    have "sum ?f UNIV = sum ?f ((UNIV-{b}) \<union> {b})" using univ_rw by auto
+    also have "... = sum ?f (UNIV-{b}) + sum ?f {b}" by (rule sum.union_disjoint, auto)
+    also have "... = sum ?f {b}" by auto
     finally show ?thesis by simp
   qed
   assume a_not_b: "a \<noteq> b"
@@ -610,35 +610,35 @@ proof (unfold invertible_def, rule exI[of _ "interchange_columns (mat 1) a b"], 
   proof -
     let ?f="\<lambda>k. (if k = a then 0::'a else if k = b then 1::'a else if a = k then 1::'a else (0::'a)) * (if k = b then 1::'a else (0::'a))"
     have univ_rw:"UNIV = (UNIV-{b}) \<union> {b}" by auto
-    have "setsum ?f UNIV = setsum ?f ((UNIV-{b}) \<union> {b})" using univ_rw by auto
-    also have "... = setsum ?f (UNIV-{b}) + setsum ?f {b}" by (rule setsum.union_disjoint, auto)
-    also have "... = setsum ?f {b}" using a_not_b by simp
+    have "sum ?f UNIV = sum ?f ((UNIV-{b}) \<union> {b})" using univ_rw by auto
+    also have "... = sum ?f (UNIV-{b}) + sum ?f {b}" by (rule sum.union_disjoint, auto)
+    also have "... = sum ?f {b}" using a_not_b by simp
     finally show ?thesis using a_not_b by auto
   qed
 next
   fix t
   assume b_not_t: "b \<noteq> t"
   show " (\<Sum>k\<in>UNIV. (if k = b then 1::'a else if k = b then 1::'a else if b = k then 1::'a else (0::'a)) * (if k = t then 1::'a else (0::'a))) = (0::'a)"
-    apply (rule setsum.neutral) using b_not_t by auto
+    apply (rule sum.neutral) using b_not_t by auto
   assume b_not_a: "b \<noteq> a"
   show "(\<Sum>k\<in>UNIV. (if k = a then 1::'a else if k = b then 0::'a else if b = k then 1::'a else (0::'a)) *
     (if t = a then if k = b then 1::'a else (0::'a) else if t = b then if k = a then 1::'a else (0::'a) else if k = t then 1::'a else (0::'a))) =
-    (0::'a)" apply (rule setsum.neutral) using b_not_t by auto
+    (0::'a)" apply (rule sum.neutral) using b_not_t by auto
 next
   fix t
   assume a_not_b: "a \<noteq> b" and a_not_t: "a \<noteq> t"
   show "(\<Sum>k\<in>UNIV. (if k = a then 0::'a else if k = b then 1::'a else if a = k then 1::'a else (0::'a)) *
     (if t = b then if k = a then 1::'a else (0::'a) else if k = t then 1::'a else (0::'a))) = (0::'a)"
-    by (rule setsum.neutral, auto simp add: a_not_b a_not_t)
+    by (rule sum.neutral, auto simp add: a_not_b a_not_t)
 next
   assume b_not_a: "b \<noteq> a"
   show "(\<Sum>k\<in>UNIV. (if k = a then 1::'a else if k = b then 0::'a else if b = k then 1::'a else (0::'a)) * (if k = a then 1::'a else (0::'a))) = (1::'a)"
   proof -
     let ?f="\<lambda>k.  (if k = a then 1::'a else if k = b then 0::'a else if b = k then 1::'a else (0::'a)) * (if k = a then 1::'a else (0::'a))"
     have univ_rw:"UNIV = (UNIV-{a}) \<union> {a}" by auto
-    have "setsum ?f UNIV = setsum ?f ((UNIV-{a}) \<union> {a})" using univ_rw by auto
-    also have "... = setsum ?f (UNIV-{a}) + setsum ?f {a}" by (rule setsum.union_disjoint, auto)
-    also have "... = setsum ?f {a}" using b_not_a by simp
+    have "sum ?f UNIV = sum ?f ((UNIV-{a}) \<union> {a})" using univ_rw by auto
+    also have "... = sum ?f (UNIV-{a}) + sum ?f {a}" by (rule sum.union_disjoint, auto)
+    also have "... = sum ?f {a}" using b_not_a by simp
     finally show ?thesis using b_not_a by auto
   qed
 next
@@ -648,9 +648,9 @@ next
   proof -
     let ?f="\<lambda>k. (if k = a then 0::'a else if k = b then 0::'a else if t = k then 1::'a else (0::'a)) * (if k = t then 1::'a else (0::'a))"
     have univ_rw:"UNIV = (UNIV-{t}) \<union> {t}" by auto
-    have "setsum ?f UNIV = setsum ?f ((UNIV-{t}) \<union> {t})" using univ_rw by auto
-    also have "... = setsum ?f (UNIV-{t}) + setsum ?f {t}" by (rule setsum.union_disjoint, auto)
-    also have "... = setsum ?f {t}" using t_not_a t_not_b by simp
+    have "sum ?f UNIV = sum ?f ((UNIV-{t}) \<union> {t})" using univ_rw by auto
+    also have "... = sum ?f (UNIV-{t}) + sum ?f {t}" by (rule sum.union_disjoint, auto)
+    also have "... = sum ?f {t}" using t_not_a t_not_b by simp
     also have "... = 1"  using t_not_a t_not_b by simp
     finally show ?thesis .
   qed
@@ -660,7 +660,7 @@ next
   show "(\<Sum>k\<in>UNIV. (if k = a then 0::'a else if k = b then 0::'a else if s = k then 1::'a else (0::'a)) *
     (if t = a then if k = b then 1::'a else (0::'a) else if t = b then if k = a then 1::'a else (0::'a) else if k = t then 1::'a else (0::'a))) =
     (0::'a)"
-    by (rule setsum.neutral, auto simp add: s_not_a s_not_b s_not_t)
+    by (rule sum.neutral, auto simp add: s_not_a s_not_b s_not_t)
 qed
 
 subsubsection{*Properties about multiplying a column by a constant*}
@@ -673,9 +673,9 @@ proof (unfold matrix_matrix_mult_def, unfold mult_column_def, vector, auto)
   proof -
     let ?f="\<lambda>k.  A $ i $ k * (mat (1::'a) $ k $ a * q)"
     have univ_rw:"UNIV = (UNIV-{a}) \<union> {a}" by auto
-    have "setsum ?f UNIV = setsum ?f ((UNIV-{a}) \<union> {a})" using univ_rw by auto
-    also have "... = setsum ?f (UNIV-{a}) + setsum ?f {a}" by (rule setsum.union_disjoint, auto)
-    also have "... = setsum ?f {a}" unfolding mat_def by auto
+    have "sum ?f UNIV = sum ?f ((UNIV-{a}) \<union> {a})" using univ_rw by auto
+    also have "... = sum ?f (UNIV-{a}) + sum ?f {a}" by (rule sum.union_disjoint, auto)
+    also have "... = sum ?f {a}" unfolding mat_def by auto
     also have "... = A $ i $ a * q" unfolding mat_def by auto
     finally show ?thesis .
   qed
@@ -684,9 +684,9 @@ proof (unfold matrix_matrix_mult_def, unfold mult_column_def, vector, auto)
   proof -
     let ?f="\<lambda>k. A $ i $ k * mat (1::'a) $ k $ j"
     have univ_rw:"UNIV = (UNIV-{j}) \<union> {j}" by auto
-    have "setsum ?f UNIV = setsum ?f ((UNIV-{j}) \<union> {j})" using univ_rw by auto
-    also have "... = setsum ?f (UNIV-{j}) + setsum ?f {j}" by (rule setsum.union_disjoint, auto)
-    also have "... = setsum ?f {j}" unfolding mat_def by auto
+    have "sum ?f UNIV = sum ?f ((UNIV-{j}) \<union> {j})" using univ_rw by auto
+    also have "... = sum ?f (UNIV-{j}) + sum ?f {j}" by (rule sum.union_disjoint, auto)
+    also have "... = sum ?f {j}" unfolding mat_def by auto
     also have "... = A $ i $ j" unfolding mat_def by auto
     finally show ?thesis .
   qed
@@ -706,9 +706,9 @@ proof (unfold invertible_def, rule exI[of _ "mult_column (mat 1) a k"], rule con
       let ?f=" \<lambda>ka. (if ka = a then (if t = ka then 1::'a else (0::'a)) * q else if t = ka then 1::'a else (0::'a)) *
         (if t = a then (if ka = t then 1::'a else (0::'a)) * k else if ka = t then 1::'a else (0::'a))"
       have univ_rw:"UNIV = (UNIV-{t}) \<union> {t}" by auto
-      have "setsum ?f UNIV = setsum ?f ((UNIV-{t}) \<union> {t})" using univ_rw by auto
-      also have "... = setsum ?f (UNIV-{t}) + setsum ?f {t}" by (rule setsum.union_disjoint, auto)
-      also have "... = setsum ?f {t}" by auto
+      have "sum ?f UNIV = sum ?f ((UNIV-{t}) \<union> {t})" using univ_rw by auto
+      also have "... = sum ?f (UNIV-{t}) + sum ?f {t}" by (rule sum.union_disjoint, auto)
+      also have "... = sum ?f {t}" by auto
       also have "... = 1" using qk by auto
       finally show ?thesis .     
     qed   
@@ -717,7 +717,7 @@ proof (unfold invertible_def, rule exI[of _ "mult_column (mat 1) a k"], rule con
     show "(\<Sum>ka\<in>UNIV. (if ka = a then (if s = ka then 1::'a else (0::'a)) * q else if s = ka then 1::'a else (0::'a)) *
       (if t = a then (if ka = t then 1::'a else (0::'a)) * k else if ka = t then 1::'a else (0::'a))) =
       (0::'a)"
-      apply (rule setsum.neutral) using s_not_t by auto
+      apply (rule sum.neutral) using s_not_t by auto
   qed       
   show "mult_column (mat (1::'a)) a k ** mult_column (mat (1::'a)) a q = mat (1::'a)"
   proof (unfold matrix_matrix_mult_def, vector, clarify, unfold mult_column_def, vector, unfold mat_1_fun, auto)
@@ -728,16 +728,16 @@ proof (unfold invertible_def, rule exI[of _ "mult_column (mat 1) a k"], rule con
       let ?f=" \<lambda>ka. (if ka = a then (if t = ka then 1::'a else (0::'a)) * k else if t = ka then 1::'a else (0::'a)) *
         (if t = a then (if ka = t then 1::'a else (0::'a)) * q else if ka = t then 1::'a else (0::'a))"
       have univ_rw:"UNIV = (UNIV-{t}) \<union> {t}" by auto
-      have "setsum ?f UNIV = setsum ?f ((UNIV-{t}) \<union> {t})" using univ_rw by auto
-      also have "... = setsum ?f (UNIV-{t}) + setsum ?f {t}" by (rule setsum.union_disjoint, auto)
-      also have "... = setsum ?f {t}" by auto
+      have "sum ?f UNIV = sum ?f ((UNIV-{t}) \<union> {t})" using univ_rw by auto
+      also have "... = sum ?f (UNIV-{t}) + sum ?f {t}" by (rule sum.union_disjoint, auto)
+      also have "... = sum ?f {t}" by auto
       also have "... = 1" using kq by auto
       finally show ?thesis .
     qed   
     fix s assume s_not_t: "s \<noteq> t"
     show "(\<Sum>ka\<in>UNIV. (if ka = a then (if s = ka then 1::'a else (0::'a)) * k else if s = ka then 1::'a else (0::'a)) *
       (if t = a then (if ka = t then 1::'a else (0::'a)) * q else if ka = t then 1::'a else (0::'a))) = 0"
-      apply (rule setsum.neutral) using s_not_t by auto
+      apply (rule sum.neutral) using s_not_t by auto
   qed
 qed
 
@@ -754,25 +754,25 @@ proof (unfold matrix_matrix_mult_def,
     unfold column_add_def, vector, auto)
   fix i
   let ?f="\<lambda>k. A $ i $ k * (mat (1::'a) $ k $ a + mat (1::'a) $ k $ b * q)"
-  show "setsum ?f UNIV =  A $ i $ a + A $ i $ b * q"
+  show "sum ?f UNIV =  A $ i $ a + A $ i $ b * q"
   proof (cases "a=b")
     case True
     have univ_rw:"UNIV = (UNIV-{a}) \<union> {a}" by auto
-    have "setsum ?f UNIV = setsum ?f ((UNIV-{a}) \<union> {a})" using univ_rw by auto
-    also have "... = setsum ?f (UNIV-{a}) + setsum ?f {a}" by (rule setsum.union_disjoint, auto)
-    also have "... = setsum ?f {a}" unfolding mat_def True by auto
+    have "sum ?f UNIV = sum ?f ((UNIV-{a}) \<union> {a})" using univ_rw by auto
+    also have "... = sum ?f (UNIV-{a}) + sum ?f {a}" by (rule sum.union_disjoint, auto)
+    also have "... = sum ?f {a}" unfolding mat_def True by auto
     also have "... = ?f a" by auto
     also have "... = A $ i $ a + A $ i $ b * q" using True unfolding mat_1_fun using distrib_left[of "A $ i $ b" 1 q] by auto
     finally show ?thesis .
   next
     case False
     have univ_rw: "UNIV = {a} \<union> ({b} \<union> (UNIV - {a} - {b}))" by auto
-    have setsum_rw: "setsum ?f ({b} \<union> (UNIV - {a} - {b})) = setsum ?f {b} + setsum ?f (UNIV - {a} - {b})" by (rule setsum.union_disjoint, auto simp add: False)
-    have "setsum ?f UNIV = setsum ?f ({a} \<union> ({b} \<union> (UNIV - {a} - {b})))" using univ_rw by simp
-    also have "... = setsum ?f {a} + setsum ?f ({b} \<union> (UNIV - {a} - {b}))" by (rule setsum.union_disjoint, auto simp add: False)
-    also have "... = setsum ?f {a} + setsum ?f {b} + setsum ?f (UNIV - {a} - {b})" 
-      unfolding setsum_rw add.assoc[symmetric] ..
-    also have "... = setsum ?f {a} + setsum ?f {b}" unfolding mat_def by auto    
+    have sum_rw: "sum ?f ({b} \<union> (UNIV - {a} - {b})) = sum ?f {b} + sum ?f (UNIV - {a} - {b})" by (rule sum.union_disjoint, auto simp add: False)
+    have "sum ?f UNIV = sum ?f ({a} \<union> ({b} \<union> (UNIV - {a} - {b})))" using univ_rw by simp
+    also have "... = sum ?f {a} + sum ?f ({b} \<union> (UNIV - {a} - {b}))" by (rule sum.union_disjoint, auto simp add: False)
+    also have "... = sum ?f {a} + sum ?f {b} + sum ?f (UNIV - {a} - {b})" 
+      unfolding sum_rw add.assoc[symmetric] ..
+    also have "... = sum ?f {a} + sum ?f {b}" unfolding mat_def by auto    
     also have "... =  A $ i $ a + A $ i $ b * q" using False unfolding mat_def by simp
     finally show ?thesis .
   qed    
@@ -782,9 +782,9 @@ proof (unfold matrix_matrix_mult_def,
   proof -
     let ?f="\<lambda>k. A $ i $ k * mat (1::'a) $ k $ j"
     have univ_rw:"UNIV = (UNIV-{j}) \<union> {j}" by auto
-    have "setsum ?f UNIV = setsum ?f ((UNIV-{j}) \<union> {j})" using univ_rw by auto
-    also have "... = setsum ?f (UNIV-{j}) + setsum ?f {j}" by (rule setsum.union_disjoint, auto)
-    also have "... = setsum ?f {j}" unfolding mat_def by auto
+    have "sum ?f UNIV = sum ?f ((UNIV-{j}) \<union> {j})" using univ_rw by auto
+    also have "... = sum ?f (UNIV-{j}) + sum ?f {j}" by (rule sum.union_disjoint, auto)
+    also have "... = sum ?f {j}" unfolding mat_def by auto
     also have "... =  A $ i $ j" unfolding mat_def by simp
     finally show ?thesis .
   qed
@@ -801,9 +801,9 @@ proof (unfold invertible_def, rule exI[of _ "(column_add (mat 1) a b (-q))"], ru
     proof -
       let ?f="\<lambda>k.  (if k = a then (0::'a) + (1::'a) * q else if b = k then 1::'a else (0::'a)) * (if k = b then 1::'a else (0::'a))"
       have univ_rw:"UNIV = (UNIV-{b}) \<union> {b}" by auto
-      have "setsum ?f UNIV = setsum ?f ((UNIV-{b}) \<union> {b})" using univ_rw by auto
-      also have "... = setsum ?f (UNIV-{b}) + setsum ?f {b}" by (rule setsum.union_disjoint, auto)
-      also have "... = setsum ?f {b}" by auto 
+      have "sum ?f UNIV = sum ?f ((UNIV-{b}) \<union> {b})" using univ_rw by auto
+      also have "... = sum ?f (UNIV-{b}) + sum ?f {b}" by (rule sum.union_disjoint, auto)
+      also have "... = sum ?f {b}" by auto 
       also have "... =  1" using a_noteq_b by simp
       finally show ?thesis .
     qed
@@ -811,9 +811,9 @@ proof (unfold invertible_def, rule exI[of _ "(column_add (mat 1) a b (-q))"], ru
     proof -
       let ?f="\<lambda>k. (if k = a then (1::'a) + (0::'a) * q else if a = k then 1::'a else (0::'a)) * ((if k = a then 1::'a else (0::'a)) + - ((if k = b then 1::'a else (0::'a)) * q))"
       have univ_rw:"UNIV = (UNIV-{a}) \<union> {a}" by auto
-      have "setsum ?f UNIV = setsum ?f ((UNIV-{a}) \<union> {a})" using univ_rw by auto
-      also have "... = setsum ?f (UNIV-{a}) + setsum ?f {a}" by (rule setsum.union_disjoint, auto)
-      also have "... = setsum ?f {a}" by auto 
+      have "sum ?f UNIV = sum ?f ((UNIV-{a}) \<union> {a})" using univ_rw by auto
+      also have "... = sum ?f (UNIV-{a}) + sum ?f {a}" by (rule sum.union_disjoint, auto)
+      also have "... = sum ?f {a}" by auto 
       also have "... =  1" using a_noteq_b by simp
       finally show ?thesis by simp
     qed  
@@ -821,12 +821,12 @@ proof (unfold invertible_def, rule exI[of _ "(column_add (mat 1) a b (-q))"], ru
     assume i_not_b: "i \<noteq> b" and i_not_a: "i \<noteq> a" and i_not_j: "i \<noteq> j"
     show "(\<Sum>k\<in>UNIV. (if k = a then (0::'a) + (0::'a) * q else if i = k then 1::'a else (0::'a)) *
       (if j = a then (if k = a then 1::'a else (0::'a)) + (if k = b then 1::'a else (0::'a)) * - q else if k = j then 1::'a else (0::'a))) = (0::'a)"
-      by (rule setsum.neutral, auto simp add: i_not_b i_not_a i_not_j)
+      by (rule sum.neutral, auto simp add: i_not_b i_not_a i_not_j)
   next
     fix j
     assume a_not_j: "a\<noteq>j"
     show " (\<Sum>k\<in>UNIV. (if k = a then (1::'a) + (0::'a) * q else if a = k then 1::'a else (0::'a)) * (if k = j then 1::'a else (0::'a))) = (0::'a)"
-      apply (rule setsum.neutral) using a_not_j a_noteq_b by auto
+      apply (rule sum.neutral) using a_not_j a_noteq_b by auto
   next
     fix j
     assume j_not_b: "j \<noteq> b" and j_not_a: "j \<noteq> a"
@@ -834,9 +834,9 @@ proof (unfold invertible_def, rule exI[of _ "(column_add (mat 1) a b (-q))"], ru
     proof -
       let ?f="\<lambda>k. (if k = a then (0::'a) + (0::'a) * q else if j = k then 1::'a else (0::'a)) * (if k = j then 1::'a else (0::'a))"
       have univ_rw:"UNIV = (UNIV-{j}) \<union> {j}" by auto
-      have "setsum ?f UNIV = setsum ?f ((UNIV-{j}) \<union> {j})" using univ_rw by auto
-      also have "... = setsum ?f (UNIV-{j}) + setsum ?f {j}" by (rule setsum.union_disjoint, auto)
-      also have "... = setsum ?f {j}" using j_not_b j_not_a by auto 
+      have "sum ?f UNIV = sum ?f ((UNIV-{j}) \<union> {j})" using univ_rw by auto
+      also have "... = sum ?f (UNIV-{j}) + sum ?f {j}" by (rule sum.union_disjoint, auto)
+      also have "... = sum ?f {j}" using j_not_b j_not_a by auto 
       also have "... =  1" using j_not_b j_not_a by auto 
       finally show ?thesis .
     qed
@@ -847,19 +847,19 @@ proof (unfold invertible_def, rule exI[of _ "(column_add (mat 1) a b (-q))"], ru
       (if j = a then (if k = a then 1 else 0) + (if k = b then 1 else 0) * - q else if k = j then 1 else 0)) = 0"
     proof (cases "j=a")
       case False
-      show ?thesis by (rule setsum.neutral, auto simp add: False b_not_j)
+      show ?thesis by (rule sum.neutral, auto simp add: False b_not_j)
     next
       case True --"This case is different from the other cases"
       let ?f="\<lambda>k. (if k = a then 0 + 1 * q else if b = k then 1 else 0) *
         (if j = a then (if k = a then 1 else 0) + (if k = b then 1 else 0) * - q else if k = j then 1 else 0)"
       have univ_eq: "UNIV = ((UNIV - {a}- {b}) \<union> ({b} \<union> {a}))" by auto
-      have setsum_a: "setsum ?f {a} = q"  unfolding True using b_not_j using a_noteq_b by auto
-      have setsum_b: "setsum ?f {b} = -q" unfolding True using b_not_j using a_noteq_b by auto
-      have setsum_rest: "setsum ?f (UNIV - {a} - {b}) = 0"  by (rule setsum.neutral, auto simp add: True b_not_j a_noteq_b)
-      have "setsum ?f UNIV = setsum ?f ((UNIV - {a}- {b}) \<union> ({b} \<union> {a}))"  using univ_eq by simp
-      also have "... = setsum ?f (UNIV - {a} - {b}) + setsum ?f ({b} \<union> {a})" by (rule setsum.union_disjoint, auto)
-      also have "... = setsum ?f (UNIV - {a} - {b}) + setsum ?f {b} + setsum ?f {a}" by (auto simp add: setsum.union_disjoint a_noteq_b)     
-      also have "... = 0" unfolding setsum_a setsum_b setsum_rest by simp
+      have sum_a: "sum ?f {a} = q"  unfolding True using b_not_j using a_noteq_b by auto
+      have sum_b: "sum ?f {b} = -q" unfolding True using b_not_j using a_noteq_b by auto
+      have sum_rest: "sum ?f (UNIV - {a} - {b}) = 0"  by (rule sum.neutral, auto simp add: True b_not_j a_noteq_b)
+      have "sum ?f UNIV = sum ?f ((UNIV - {a}- {b}) \<union> ({b} \<union> {a}))"  using univ_eq by simp
+      also have "... = sum ?f (UNIV - {a} - {b}) + sum ?f ({b} \<union> {a})" by (rule sum.union_disjoint, auto)
+      also have "... = sum ?f (UNIV - {a} - {b}) + sum ?f {b} + sum ?f {a}" by (auto simp add: sum.union_disjoint a_noteq_b)     
+      also have "... = 0" unfolding sum_a sum_b sum_rest by simp
       finally show ?thesis .
     qed                        
   qed
@@ -870,9 +870,9 @@ next
     proof -
       let ?f="\<lambda>k. (if k = a then (0::'a) + (1::'a) * - q else if b = k then 1::'a else (0::'a)) * (if k = b then 1::'a else (0::'a))"
       have univ_rw:"UNIV = (UNIV-{b}) \<union> {b}" by auto
-      have "setsum ?f UNIV = setsum ?f ((UNIV-{b}) \<union> {b})" using univ_rw by auto
-      also have "... = setsum ?f (UNIV-{b}) + setsum ?f {b}" by (rule setsum.union_disjoint, auto)
-      also have "... = setsum ?f {b}" by auto 
+      have "sum ?f UNIV = sum ?f ((UNIV-{b}) \<union> {b})" using univ_rw by auto
+      also have "... = sum ?f (UNIV-{b}) + sum ?f {b}" by (rule sum.union_disjoint, auto)
+      also have "... = sum ?f {b}" by auto 
       also have "... =  1" using a_noteq_b by auto
       finally show ?thesis .
     qed
@@ -882,16 +882,16 @@ next
     proof -
       let ?f="\<lambda>k. (if k = a then (1::'a) + (0::'a) * - q else if a = k then 1::'a else (0::'a)) * ((if k = a then 1::'a else (0::'a)) + (if k = b then 1::'a else (0::'a)) * q) "
       have univ_rw:"UNIV = (UNIV-{a}) \<union> {a}" by auto
-      have "setsum ?f UNIV = setsum ?f ((UNIV-{a}) \<union> {a})" using univ_rw by auto
-      also have "... = setsum ?f (UNIV-{a}) + setsum ?f {a}" by (rule setsum.union_disjoint, auto)
-      also have "... = setsum ?f {a}" by auto 
+      have "sum ?f UNIV = sum ?f ((UNIV-{a}) \<union> {a})" using univ_rw by auto
+      also have "... = sum ?f (UNIV-{a}) + sum ?f {a}" by (rule sum.union_disjoint, auto)
+      also have "... = sum ?f {a}" by auto 
       also have "... =  1" using a_noteq_b by auto
       finally show ?thesis .
     qed
   next
     fix j
     assume a_not_j: "a \<noteq> j" show "(\<Sum>k\<in>UNIV. (if k = a then (1::'a) + (0::'a) * - q else if a = k then 1::'a else (0::'a)) * (if k = j then 1::'a else (0::'a))) = (0::'a)"
-      apply (rule setsum.neutral) using a_not_j by auto
+      apply (rule sum.neutral) using a_not_j by auto
   next
     fix j
     assume j_not_b: "j \<noteq> b" and j_not_a: "j \<noteq> a" 
@@ -899,9 +899,9 @@ next
     proof -
       let ?f="\<lambda>k.(if k = a then (0::'a) + (0::'a) * - q else if j = k then 1::'a else (0::'a)) * (if k = j then 1::'a else (0::'a))"
       have univ_rw:"UNIV = (UNIV-{j}) \<union> {j}" by auto
-      have "setsum ?f UNIV = setsum ?f ((UNIV-{j}) \<union> {j})" using univ_rw by auto
-      also have "... = setsum ?f (UNIV-{j}) + setsum ?f {j}" by (rule setsum.union_disjoint, auto)
-      also have "... = setsum ?f {j}" by auto 
+      have "sum ?f UNIV = sum ?f ((UNIV-{j}) \<union> {j})" using univ_rw by auto
+      also have "... = sum ?f (UNIV-{j}) + sum ?f {j}" by (rule sum.union_disjoint, auto)
+      also have "... = sum ?f {j}" by auto 
       also have "... =  1" using a_noteq_b j_not_b j_not_a by auto
       finally show ?thesis .
     qed
@@ -910,7 +910,7 @@ next
     assume i_not_b: "i \<noteq> b" and i_not_a: "i \<noteq> a" and i_not_j: "i \<noteq> j"
     show "(\<Sum>k\<in>UNIV. (if k = a then (0::'a) + (0::'a) * - q else if i = k then 1::'a else (0::'a)) *
       (if j = a then (if k = a then 1::'a else (0::'a)) + (if k = b then 1::'a else (0::'a)) * q else if k = j then 1::'a else (0::'a))) = (0::'a)"
-      by (rule setsum.neutral, auto simp add: i_not_b i_not_a i_not_j)
+      by (rule sum.neutral, auto simp add: i_not_b i_not_a i_not_j)
   next
     fix j
     assume b_not_j: "b \<noteq> j"
@@ -918,19 +918,19 @@ next
       (if j = a then (if k = a then 1::'a else (0::'a)) + (if k = b then 1::'a else (0::'a)) * q else if k = j then 1::'a else (0::'a))) = 0"
     proof (cases "j=a")
       case False
-      show ?thesis by (rule setsum.neutral, auto simp add: False b_not_j)
+      show ?thesis by (rule sum.neutral, auto simp add: False b_not_j)
     next
       case True --"This case is different from the other cases"
       let ?f="\<lambda>k. (if k = a then (0::'a) + (1::'a) * - q else if b = k then 1::'a else (0::'a)) *
         (if j = a then (if k = a then 1::'a else (0::'a)) + (if k = b then 1::'a else (0::'a)) * q else if k = j then 1::'a else (0::'a))"
       have univ_eq: "UNIV = ((UNIV - {a}- {b}) \<union> ({b} \<union> {a}))" by auto
-      have setsum_a: "setsum ?f {a} = -q"  unfolding True using b_not_j using a_noteq_b by auto
-      have setsum_b: "setsum ?f {b} = q" unfolding True using b_not_j using a_noteq_b by auto
-      have setsum_rest: "setsum ?f (UNIV - {a} - {b}) = 0"  by (rule setsum.neutral, auto simp add: True b_not_j a_noteq_b)
-      have "setsum ?f UNIV = setsum ?f ((UNIV - {a}- {b}) \<union> ({b} \<union> {a}))"  using univ_eq by simp
-      also have "... = setsum ?f (UNIV - {a} - {b}) + setsum ?f ({b} \<union> {a})" by (rule setsum.union_disjoint, auto)
-      also have "... = setsum ?f (UNIV - {a} - {b}) + setsum ?f {b} + setsum ?f {a}" by (auto simp add: setsum.union_disjoint a_noteq_b)     
-      also have "... = 0" unfolding setsum_a setsum_b setsum_rest by simp
+      have sum_a: "sum ?f {a} = -q"  unfolding True using b_not_j using a_noteq_b by auto
+      have sum_b: "sum ?f {b} = q" unfolding True using b_not_j using a_noteq_b by auto
+      have sum_rest: "sum ?f (UNIV - {a} - {b}) = 0"  by (rule sum.neutral, auto simp add: True b_not_j a_noteq_b)
+      have "sum ?f UNIV = sum ?f ((UNIV - {a}- {b}) \<union> ({b} \<union> {a}))"  using univ_eq by simp
+      also have "... = sum ?f (UNIV - {a} - {b}) + sum ?f ({b} \<union> {a})" by (rule sum.union_disjoint, auto)
+      also have "... = sum ?f (UNIV - {a} - {b}) + sum ?f {b} + sum ?f {a}" by (auto simp add: sum.union_disjoint a_noteq_b)     
+      also have "... = 0" unfolding sum_a sum_b sum_rest by simp
       finally show ?thesis .
     qed                   
   qed

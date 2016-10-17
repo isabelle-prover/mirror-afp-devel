@@ -186,22 +186,22 @@ definition
 lemma poly_y_x_fix_y_deg:
   assumes ydeg: "\<forall>i\<le>degree p. degree (coeff p i) \<le> d"
   shows "poly_y_x p = (\<Sum>i\<le>degree p. \<Sum>j\<le>d. monom (monom (coeff (coeff p i) j) i) j)"
-    (is "_ = setsum (\<lambda>i. setsum (?f i) _) _")
+    (is "_ = sum (\<lambda>i. sum (?f i) _) _")
   unfolding poly_y_x_def
-  apply (rule setsum.cong,simp)
+  apply (rule sum.cong,simp)
   unfolding atMost_iff
 proof -
   fix i assume i: "i \<le> degree p"
   let ?d = "degree (coeff p i)"
   have "{..d} = {..?d} \<union> {Suc ?d .. d}" using ydeg[rule_format, OF i] by auto
-  also have "setsum (?f i) ... = setsum (?f i) {..?d} + setsum (?f i) {Suc ?d .. d}"
-    by(rule setsum.union_disjoint,auto)
+  also have "sum (?f i) ... = sum (?f i) {..?d} + sum (?f i) {Suc ?d .. d}"
+    by(rule sum.union_disjoint,auto)
   also { fix j
     assume j: "j \<in> { Suc ?d .. d }"
     have "coeff (coeff p i) j = 0" apply (rule coeff_eq_0) using j by auto
     hence "?f i j = 0" by auto
-  } hence "setsum (?f i) {Suc ?d .. d} = 0" by auto
-  finally show "setsum (?f i) {..?d} = setsum (?f i) {..d}" by auto
+  } hence "sum (?f i) {Suc ?d .. d} = 0" by auto
+  finally show "sum (?f i) {..?d} = sum (?f i) {..d}" by auto
 qed
 
 lemma poly_y_x_fixed_deg:
@@ -216,17 +216,17 @@ lemma poly_y_x_swapped:
   fixes p :: "'a :: comm_monoid_add poly poly"
   defines "d \<equiv> Max { degree (coeff p i) | i. i \<le> degree p }" 
   shows "poly_y_x p = (\<Sum>j\<le>d. \<Sum>i\<le>degree p. monom (monom (coeff (coeff p i) j) i) j)"
-  using poly_y_x_fixed_deg[of p, folded d_def] setsum.commute by auto
+  using poly_y_x_fixed_deg[of p, folded d_def] sum.commute by auto
 
 lemma poly2_poly_y_x[simp]: "poly2 (poly_y_x p) x y = poly2 p y x"
   using [[unfold_abs_def = false]]
   apply(subst(3) poly_as_sum_of_monoms[symmetric])
   apply(subst poly_as_sum_of_monoms[symmetric,of "coeff p _"])
   unfolding poly_y_x_def
-  unfolding coeff_setsum monom_setsum
-  unfolding poly2_hom.hom_setsum
-  apply(rule setsum.cong, simp)
-  apply(rule setsum.cong, simp)
+  unfolding coeff_sum monom_sum
+  unfolding poly2_hom.hom_sum
+  apply(rule sum.cong, simp)
+  apply(rule sum.cong, simp)
   unfolding poly2_monom poly_monom
   unfolding mult.assoc
   unfolding mult.commute..
@@ -247,10 +247,10 @@ lemma poly_poly_y_x:
   apply(subst(5) poly_as_sum_of_monoms[symmetric])
   apply(subst poly_as_sum_of_monoms[symmetric,of "coeff p _"])
   unfolding poly_y_x_def
-  unfolding coeff_setsum monom_setsum
-  unfolding poly_semiring_hom.hom_setsum
-  apply(rule setsum.cong, simp)
-  apply(rule setsum.cong, simp)
+  unfolding coeff_sum monom_sum
+  unfolding poly_semiring_hom.hom_sum
+  apply(rule sum.cong, simp)
+  apply(rule sum.cong, simp)
   unfolding atMost_iff
   unfolding poly2_monom poly_monom
   apply(subst poly_monom_mult)..
@@ -265,7 +265,7 @@ proof -
   have "?l = (\<Sum>j\<le>degree p. monom [:coeff p j:] j)"
     unfolding poly_y_x_def by (simp add: monom_0)
   also have "... = poly_lift (\<Sum>x\<le>degree p. monom (coeff p x) x)"
-    unfolding rhp.irh.hom_setsum unfolding poly_lift_def by simp
+    unfolding rhp.irh.hom_sum unfolding poly_lift_def by simp
   also have "... = poly_lift p" unfolding poly_as_sum_of_monoms..
   finally show ?thesis.
 qed
@@ -300,9 +300,9 @@ locale ring_hom_poly_y_x begin
     by(unfold_locales; force simp: poly_poly_y_x)
 end
 
-lemma map_poly_setsum_commute:
+lemma map_poly_sum_commute:
   assumes "h 0 = 0" "\<forall>p q. h (p + q) = h p + h q"
-  shows "setsum (\<lambda>i. map_poly h (f i)) S = map_poly h (setsum f S)"
+  shows "sum (\<lambda>i. map_poly h (f i)) S = map_poly h (sum f S)"
   apply(induct S rule: infinite_finite_induct)
   using map_poly_add[OF assms] by auto
 
@@ -317,23 +317,23 @@ proof(cases "p = 0")
     unfolding degree_pCons_eq[OF False]
     apply(subst(2) atLeast0AtMost[symmetric])
     apply(subst atLeastAtMost_insertL[OF le0,symmetric])
-    apply(subst setsum.insert,simp,simp)
+    apply(subst sum.insert,simp,simp)
     unfolding coeff_pCons_0
     unfolding monom_0
     unfolding rh.monom_hom
-    unfolding rhm.hom_setsum[symmetric]
+    unfolding rhm.hom_sum[symmetric]
     apply(subst poly_as_sum_of_monoms')
       apply(subst Max_ge,simp,simp,force,simp)
     apply(rule cong[of "\<lambda>x. map_poly coeff_lift a + x", OF refl])
     unfolding image_Suc_atLeastAtMost[symmetric]
     unfolding atLeast0AtMost
-    apply(subst setsum.reindex,simp)
+    apply(subst sum.reindex,simp)
     unfolding o_def
     unfolding coeff_pCons_Suc
     unfolding monom_Suc
     unfolding monom_pCons_0_monom
-    apply(subst map_poly_setsum_commute,simp,force)
-    apply(subst map_poly_setsum_commute,simp,force)
+    apply(subst map_poly_sum_commute,simp,force)
+    apply(subst map_poly_sum_commute,simp,force)
     apply(rule cong[of "map_poly (pCons 0)",OF refl])
     apply(rule poly_y_x_fix_y_deg[symmetric])
     apply(intro allI impI)
@@ -361,7 +361,7 @@ lemma poly_y_x_poly_lift:
   shows "poly_y_x (poly_lift p) = monom p 0"
   apply(subst poly_y_x_fix_y_deg[of _ 0],force)
   apply(subst(10) poly_as_sum_of_monoms[symmetric])
-  by (auto simp add: monom_setsum)
+  by (auto simp add: monom_sum)
 
 lemma Max_degree_coeff_pCons:
   "Max { degree (coeff (pCons a p) i) | i. i \<le> degree (pCons a p)} =

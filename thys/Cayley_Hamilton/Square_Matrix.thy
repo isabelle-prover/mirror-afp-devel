@@ -165,13 +165,13 @@ instance sq_matrix :: (cancel_ab_semigroup_add, finite) cancel_ab_semigroup_add
 instance sq_matrix :: (comm_monoid_add, finite) comm_monoid_add
   by (standard; transfer, simp add: field_simps)
 
-lemma map_sq_matrix_setsum:
+lemma map_sq_matrix_sum:
   "f 0 = 0 \<Longrightarrow> (\<And>a b. f (a + b) = f a + f b) \<Longrightarrow>
   map_sq_matrix f (\<Sum>i\<in>I. A i) = (\<Sum>i\<in>I. map_sq_matrix f (A i))"
   by (induction I rule: infinite_finite_induct)
      (auto simp: zero_map_sq_matrix map_sq_matrix_add)
 
-lemma setsum_map_sq_matrix: "(\<Sum>i\<in>I. map_sq_matrix (f i) A) = map_sq_matrix (\<lambda>x. \<Sum>i\<in>I. f i x) A"
+lemma sum_map_sq_matrix: "(\<Sum>i\<in>I. map_sq_matrix (f i) A) = map_sq_matrix (\<lambda>x. \<Sum>i\<in>I. f i x) A"
   by (induction I rule: infinite_finite_induct) (simp_all add: add_map_sq_matrix)
 
 lemma smult_zero[simp]: fixes a :: "'a::ring_1" shows "a *\<^sub>S 0 = 0"
@@ -180,7 +180,7 @@ lemma smult_zero[simp]: fixes a :: "'a::ring_1" shows "a *\<^sub>S 0 = 0"
 lemma smult_right_add: fixes a :: "'a::ring_1" shows "a *\<^sub>S (x + y) = a *\<^sub>S x + a *\<^sub>S y"
   by transfer (simp add: vec_eq_iff field_simps)
 
-lemma smult_setsum: fixes a :: "'a::ring_1" shows "(\<Sum>i\<in>I. a *\<^sub>S f i) = a *\<^sub>S (setsum f I)"
+lemma smult_sum: fixes a :: "'a::ring_1" shows "(\<Sum>i\<in>I. a *\<^sub>S f i) = a *\<^sub>S (sum f I)"
   by (induction I rule: infinite_finite_induct)
      (simp_all add: smult_right_add vec_eq_iff)
 
@@ -197,23 +197,23 @@ instance
 proof
   fix a b c :: "'a^^'b" show "a * b * c = a * (b * c)"
     by transfer
-       (auto simp: fun_eq_iff setsum_distrib_left setsum_distrib_right field_simps intro: setsum.commute)
-qed (transfer, simp add: vec_eq_iff setsum.distrib field_simps)+
+       (auto simp: fun_eq_iff sum_distrib_left sum_distrib_right field_simps intro: sum.commute)
+qed (transfer, simp add: vec_eq_iff sum.distrib field_simps)+
 end
 
 lemma diag_mult: "diag x * A = x *\<^sub>S A"
-  by transfer  (simp add: if_distrib[where f="\<lambda>x. x * a" for a] setsum.If_cases)
+  by transfer  (simp add: if_distrib[where f="\<lambda>x. x * a" for a] sum.If_cases)
 
 lemma mult_diag:
   fixes x :: "'a::comm_ring_1"
   shows "A * diag x = x *\<^sub>S A"
-  by transfer (simp add: if_distrib[where f="\<lambda>x. a * x" for a] mult.commute setsum.If_cases)
+  by transfer (simp add: if_distrib[where f="\<lambda>x. a * x" for a] mult.commute sum.If_cases)
 
 lemma smult_mult1: fixes a :: "'a::comm_ring_1" shows "a *\<^sub>S (A * B) = (a *\<^sub>S A) * B"
-  by transfer (simp add: setsum_distrib_left field_simps)
+  by transfer (simp add: sum_distrib_left field_simps)
 
 lemma smult_mult2: fixes a :: "'a::comm_ring_1" shows "a *\<^sub>S (A * B) = A * (a *\<^sub>S B)"
-  by transfer (simp add: setsum_distrib_left field_simps)
+  by transfer (simp add: sum_distrib_left field_simps)
 
 lemma map_sq_matrix_mult:
   fixes f :: "'a::semiring_1 \<Rightarrow> 'b::semiring_1"
@@ -237,7 +237,7 @@ lift_definition one_sq_matrix :: "'a^^'b" is
   "\<lambda>i j. if i = j then 1 else 0" .
 
 instance
-  by standard (transfer, simp add: fun_eq_iff setsum.If_cases
+  by standard (transfer, simp add: fun_eq_iff sum.If_cases
        if_distrib[where f="\<lambda>x. x * b" for b] if_distrib[where f="\<lambda>x. b * x" for b])+
 end
 
@@ -309,16 +309,16 @@ lemma trace_1[simp]: "trace (1::'a::semiring_1^^'n) = of_nat CARD('n)"
   by transfer simp
 
 lemma trace_plus[simp]: "trace (A + B) = trace A + trace B"
-  by transfer (simp add: setsum.distrib)
+  by transfer (simp add: sum.distrib)
 
 lemma trace_minus[simp]: "trace (A - B) = (trace A - trace B::_::ab_group_add)"
-  by transfer (simp add: setsum_subtractf)
+  by transfer (simp add: sum_subtractf)
 
 lemma trace_uminus[simp]: "trace (- A) = - (trace A::_::ab_group_add)"
-  by transfer (simp add: setsum_negf)
+  by transfer (simp add: sum_negf)
 
 lemma trace_smult[simp]: "trace (s *\<^sub>S A) = (s * trace A::_::semiring_0)"
-  by transfer (simp add: setsum_distrib_left)
+  by transfer (simp add: sum_distrib_left)
 
 lemma trace_transpose[simp]: "trace (transpose A) = trace A"
   by transfer simp
@@ -326,7 +326,7 @@ lemma trace_transpose[simp]: "trace (transpose A) = trace A"
 lemma trace_mult_symm:
   fixes A B :: "'a::comm_semiring_0^^'n"
   shows "trace (A * B) = trace (B * A)"
-  by transfer (auto intro: setsum.commute simp: mult.commute)
+  by transfer (auto intro: sum.commute simp: mult.commute)
 
 lift_definition det :: "'a::comm_ring_1^^'n \<Rightarrow> 'a" is
   "\<lambda>A. (\<Sum>p|p permutes UNIV. of_int (sign p) * (\<Prod>i\<in>UNIV. A i (p i)))" .
@@ -342,8 +342,8 @@ lemma det_0[simp]: "det 0 = 0"
 
 lemma det_transpose: "det (transpose A) = det A"
   apply transfer
-  apply (subst setsum_permutations_inverse)
-  apply (rule setsum.cong[OF refl])
+  apply (subst sum_permutations_inverse)
+  apply (rule sum.cong[OF refl])
   apply (simp add: sign_inverse permutes_UNIV_permutation)
   apply (subst setprod.reindex_bij_betw[symmetric])
   apply (rule permutes_imp_bij)
@@ -364,7 +364,7 @@ proof transfer
     with neq[OF i] have "(\<Prod>i\<in>UNIV. A i (p i)) = 0"
       by (intro setprod_zero) auto }
   then have "(\<Sum>p | p permutes UNIV. ?pp p) = (\<Sum>p\<in>{id}. ?pp p)"
-    by (intro setsum.mono_neutral_cong_right) (auto intro: permutes_id)
+    by (intro sum.mono_neutral_cong_right) (auto intro: permutes_id)
   then show "(\<Sum>p | p permutes UNIV. ?pp p) = (\<Prod>i\<in>UNIV. A i i)"
      by (simp add: sign_id)
 qed
@@ -385,7 +385,7 @@ proof transfer
     with ld[OF i] have "(\<Prod>i\<in>UNIV. A i (p i)) = 0"
       by (intro setprod_zero) auto }
   then have "(\<Sum>p | p permutes UNIV. ?pp p) = (\<Sum>p\<in>{id}. ?pp p)"
-    by (intro setsum.mono_neutral_cong_right) (auto intro: permutes_id)
+    by (intro sum.mono_neutral_cong_right) (auto intro: permutes_id)
   then show "(\<Sum>p | p permutes UNIV. ?pp p) = (\<Prod>i\<in>UNIV. A i i)"
      by (simp add: sign_id)
 qed
@@ -516,11 +516,11 @@ proof (transfer fixing: p)
   fix A :: "'n \<Rightarrow> 'n \<Rightarrow> 'a"
   from p have "(\<Sum>q | q permutes UNIV. of_int (sign q) * (\<Prod>i\<in>UNIV. A i (p (q i)))) =
     (\<Sum>q | q permutes UNIV. of_int (sign (inv p \<circ> q)) * (\<Prod>i\<in>UNIV. A i (q i)))"
-    by (intro setsum.reindex_bij_witness[where j="\<lambda>q. p \<circ> q" and i="\<lambda>q. inv p \<circ> q"])
+    by (intro sum.reindex_bij_witness[where j="\<lambda>q. p \<circ> q" and i="\<lambda>q. inv p \<circ> q"])
        (auto simp: comp_assoc[symmetric] permutes_inv_o permutes_compose permutes_inv)
   with p show "(\<Sum>q | q permutes UNIV. of_int (sign q) * (\<Prod>i\<in>UNIV. A i (p (q i)))) =
       of_int (sign p) * (\<Sum>p | p permutes UNIV. of_int (sign p) * (\<Prod>i\<in>UNIV. A i (p i)))"
-    by (auto intro!: setsum.cong simp: setsum_distrib_left sign_compose permutes_inv sign_inverse permutes_UNIV_permutation)
+    by (auto intro!: sum.cong simp: sum_distrib_left sign_compose permutes_inv sign_inverse permutes_UNIV_permutation)
 qed
 
 lemma det_perm_rows:
@@ -530,10 +530,10 @@ lemma det_perm_rows:
   using det_perm_cols[OF p, of "transpose A"] by (simp add: det_transpose perm_cols_transpose)
 
 lemma det_row_add: "det (upd_row M i (a + b)) = det (upd_row M i a) + det (upd_row M i b)"
-  by transfer (simp add: setprod.If_cases setsum.distrib[symmetric] field_simps)
+  by transfer (simp add: setprod.If_cases sum.distrib[symmetric] field_simps)
 
 lemma det_row_mul: "det (upd_row M i (c *s a)) = c * det (upd_row M i a)"
-  by transfer (simp add: setprod.If_cases setsum_distrib_left field_simps)
+  by transfer (simp add: setprod.If_cases sum_distrib_left field_simps)
 
 lemma det_row_uminus: "det (upd_row M i (- a)) = - det (upd_row M i a)"
   by (simp add: vector_sneg_minus1 det_row_mul)
@@ -544,7 +544,7 @@ lemma det_row_minus: "det (upd_row M i (a - b)) = det (upd_row M i a) - det (upd
 lemma det_row_0: "det (upd_row M i 0) = 0"
   using det_row_mul[of M i 0] by simp
 
-lemma det_row_setsum: "det (upd_row M i (\<Sum>s\<in>S. a s)) = (\<Sum>s\<in>S. det (upd_row M i (a s)))"
+lemma det_row_sum: "det (upd_row M i (\<Sum>s\<in>S. a s)) = (\<Sum>s\<in>S. det (upd_row M i (a s)))"
   by (induction S rule: infinite_finite_induct) (simp_all add: det_row_0 det_row_add)
 
 lemma det_col_add: "det (upd_col M i (a + b)) = det (upd_col M i a) + det (upd_col M i b)"
@@ -562,7 +562,7 @@ lemma det_col_minus: "det (upd_col M i (a - b)) = det (upd_col M i a) - det (upd
 lemma det_col_0: "det (upd_col M i 0) = 0"
   using det_col_mul[of M i 0] by simp
 
-lemma det_col_setsum: "det (upd_col M i (\<Sum>s\<in>S. a s)) = (\<Sum>s\<in>S. det (upd_col M i (a s)))"
+lemma det_col_sum: "det (upd_col M i (\<Sum>s\<in>S. a s)) = (\<Sum>s\<in>S. det (upd_col M i (a s)))"
   by (induction S rule: infinite_finite_induct) (simp_all add: det_col_0 det_col_add)
 
 (* Proof by Jose Divason *)
@@ -585,38 +585,38 @@ proof (transfer fixing: i i')
   { fix q assume "q \<notin> ?s`?E" "q permutes UNIV" with `i \<noteq> i'` have "evenperm q"
       by (auto simp add: comp_assoc[symmetric] image_iff p elim!: allE[of _ "?s q"]) }
   then have "(\<Sum>p | p permutes UNIV. ?p p) = (\<Sum>p\<in>?E. ?p p) + (\<Sum>p\<in>?s`?E. ?p p)"
-    by (intro setsum_union_disjoint') (auto simp: p `i \<noteq> i'`)
+    by (intro sum_union_disjoint') (auto simp: p `i \<noteq> i'`)
   also have "(\<Sum>p\<in>?s`?E. ?p p) = (\<Sum>p\<in>?E. - ?p p)"
-    using `i \<noteq> i'` by (subst setsum.reindex) (auto intro!: setsum.cong simp: p)
+    using `i \<noteq> i'` by (subst sum.reindex) (auto intro!: sum.cong simp: p)
   finally show "(\<Sum>p | p permutes UNIV. ?p p) = 0"
-    by (simp add: setsum_negf)
+    by (simp add: sum_negf)
 qed
 
 lemma det_identical_rows: "i \<noteq> i' \<Longrightarrow> row A i = row A i' \<Longrightarrow> det A = 0"
   using det_identical_cols[of i i' "transpose A"] by (simp add: det_transpose col_transpose)
 
-lemma det_cols_setsum:
+lemma det_cols_sum:
   "det (upd_cols M T (\<lambda>i. \<Sum>s\<in>S. a i s)) = (\<Sum>f\<in>T \<rightarrow>\<^sub>E S. det (upd_cols M T (\<lambda>i. a i (f i))))"
 proof (induct T arbitrary: M rule: infinite_finite_induct)
   case (insert i T)
   have "(\<Sum>f\<in>insert i T \<rightarrow>\<^sub>E S. det (upd_cols M (insert i T) (\<lambda>i. a i (f i)))) =
     (\<Sum>s\<in>S. \<Sum>f\<in>T \<rightarrow>\<^sub>E S. det (upd_cols (upd_col M i (a i s)) T (\<lambda>i. a i (f i))))"
-    unfolding setsum.cartesian_product PiE_insert_eq using `i \<notin> T`
-    by (subst setsum.reindex[OF inj_combinator[OF `i \<notin> T`]])
-       (auto intro!: setsum.cong arg_cong[where f=det] upd_cols_cong
+    unfolding sum.cartesian_product PiE_insert_eq using `i \<notin> T`
+    by (subst sum.reindex[OF inj_combinator[OF `i \<notin> T`]])
+       (auto intro!: sum.cong arg_cong[where f=det] upd_cols_cong
              simp: upd_cols_insert_rev simp_implies_def)
-  also have "\<dots> = det (upd_col (upd_cols M T (\<lambda>i. setsum (a i) S)) i (\<Sum>s\<in>S. a i s))"
-    unfolding insert(3)[symmetric] by (simp add: upd_cols_upd_col_swap[OF `i \<notin> T`] det_col_setsum)
+  also have "\<dots> = det (upd_col (upd_cols M T (\<lambda>i. sum (a i) S)) i (\<Sum>s\<in>S. a i s))"
+    unfolding insert(3)[symmetric] by (simp add: upd_cols_upd_col_swap[OF `i \<notin> T`] det_col_sum)
   finally show ?case
     by (simp add: upd_cols_insert)
 qed auto
 
-lemma det_rows_setsum:
+lemma det_rows_sum:
   "det (upd_rows M T (\<lambda>i. \<Sum>s\<in>S. a i s)) = (\<Sum>f\<in>T \<rightarrow>\<^sub>E S. det (upd_rows M T (\<lambda>i. a i (f i))))"
-  using det_cols_setsum[of "transpose M" T a S] by (simp add: upd_cols_transpose det_transpose)
+  using det_cols_sum[of "transpose M" T a S] by (simp add: upd_cols_transpose det_transpose)
 
 lemma det_rows_mult: "det (upd_rows M T (\<lambda>i. c i *s a i)) = (\<Prod>i\<in>T. c i) * det (upd_rows M T a)"
-  by transfer (simp add: setprod.If_cases setsum_distrib_left field_simps setprod.distrib)
+  by transfer (simp add: setprod.If_cases sum_distrib_left field_simps setprod.distrib)
 
 lemma det_cols_mult: "det (upd_cols M T (\<lambda>i. c i *s a i)) = (\<Prod>i\<in>T. c i) * det (upd_cols M T a)"
   using det_rows_mult[of "transpose M" T c a] by (simp add: det_transpose upd_rows_transpose)
@@ -645,8 +645,8 @@ proof -
   moreover have "det A = (\<Sum>p | p permutes UNIV. of_int (sign p) * (\<Prod>i\<in>UNIV. to_fun A i (p i)))"
     by transfer rule
   ultimately show ?thesis
-    by (auto simp add: det_rows_setsum det_rows_mult setsum_distrib_right det_perm_rows_If
-             split: if_split_asm intro!: setsum.mono_neutral_cong_right)
+    by (auto simp add: det_rows_sum det_rows_mult sum_distrib_right det_perm_rows_If
+             split: if_split_asm intro!: sum.mono_neutral_cong_right)
 qed
 
 lift_definition minor :: "'a^^'b \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> 'a::semiring_1^^'b" is
@@ -727,9 +727,9 @@ proof (intro to_fun_inject[THEN iffD1] fun_eq_iff[THEN iffD2] allI)
   have "to_fun (adjugate A * A) i k = (\<Sum>j\<in>UNIV. to_fun A j k * det (minor A j i))"
     by (simp add: adjugate_def times_sq_matrix.rep_eq transpose.rep_eq cofactor_def mult.commute of_fun_inverse)
   also have "\<dots> = det (upd_col A i (\<Sum>j\<in>UNIV. to_fun A j k *s axis j 1))"
-    by (simp add: det_minor_col det_col_mul det_col_setsum)
+    by (simp add: det_minor_col det_col_mul det_col_sum)
   also have "(\<Sum>j\<in>UNIV. to_fun A j k *s axis j 1) = col A k"
-    by transfer (simp add: smult_axis vec_eq_iff, simp add: axis_def setsum.If_cases)
+    by transfer (simp add: smult_axis vec_eq_iff, simp add: axis_def sum.If_cases)
   also have "det (upd_col A i (col A k)) = (if i = k then det A else 0)"
     by (auto simp: col_upd_col_If det_identical_cols[of i k])
   also have "\<dots> = to_fun (diag (det A)) i k"

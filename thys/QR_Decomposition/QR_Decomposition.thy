@@ -388,8 +388,8 @@ proof -
   have "(\<Sum>x\<in>{column i (fst (QR_decomposition A))|i. i < k}. (x \<bullet> ?ak / (x \<bullet> x)) *\<^sub>R x) 
     = (\<Sum>x\<in>(f`{column i (Gram_Schmidt_matrix A)|i. i < k}). (x \<bullet> ?ak / (x \<bullet> x)) *\<^sub>R x)" 
     unfolding set_rw ..
-  also have "... = setsum (?g  \<circ> f) {column i (Gram_Schmidt_matrix A)|i. i < k}"
-  proof (rule setsum.reindex, unfold inj_on_def, auto)
+  also have "... = sum (?g  \<circ> f) {column i (Gram_Schmidt_matrix A)|i. i < k}"
+  proof (rule sum.reindex, unfold inj_on_def, auto)
     fix i ia assume i: "i < k" and ia: "ia < k"
       and f_eq: "f (column i (Gram_Schmidt_matrix A)) = f (column ia (Gram_Schmidt_matrix A))"
     have fi: "f (column i (Gram_Schmidt_matrix A)) = column i (fst (QR_decomposition A))"
@@ -405,7 +405,7 @@ proof -
     i < k}. ((1 / norm x) *\<^sub>R x \<bullet> ?ak / ((1 / norm x) *\<^sub>R x \<bullet> (1 / norm x) *\<^sub>R x)) *\<^sub>R (1 / norm x) *\<^sub>R x)" unfolding o_def f_def ..
   also have "... =  (\<Sum>x\<in>{column i (Gram_Schmidt_matrix A) |i.
     i < k}. ((1 / norm x) *\<^sub>R x \<bullet> ?ak)  *\<^sub>R (1 / norm x) *\<^sub>R x)"
-  proof (rule setsum.cong, simp)
+  proof (rule sum.cong, simp)
     fix x assume x: "x \<in> {column i (Gram_Schmidt_matrix A) |i. i < k}"
     have "vec.independent {column i (Gram_Schmidt_matrix A) |i. i < k}"
     proof (rule vec.independent_mono[of "columns (Gram_Schmidt_matrix A)"])
@@ -422,7 +422,7 @@ proof -
       ((1 / norm x) *\<^sub>R x \<bullet> column k A) *\<^sub>R (1 / norm x) *\<^sub>R x" by auto
   qed
   also have "... = (\<Sum>x\<in>{column i (Gram_Schmidt_matrix A) |i. i < k}. (((x \<bullet> ?ak)) / (x \<bullet> x)) *\<^sub>R x)"
-  proof (rule setsum.cong, simp)
+  proof (rule sum.cong, simp)
     fix x
     assume x: "x \<in> {column i (Gram_Schmidt_matrix A) |i. i < k}"
     show "((1 / norm x) *\<^sub>R x \<bullet> column k A) *\<^sub>R (1 / norm x) *\<^sub>R x = (x \<bullet> column k A / (x \<bullet> x)) *\<^sub>R x"
@@ -451,15 +451,15 @@ proof -
   let ?uk="column k ((Gram_Schmidt_matrix A))"
   let ?qk="column k (fst(QR_decomposition A))"
   let ?ak="(column k A)"
-  have setsum_rw: "(?uk \<bullet> (\<Sum>x\<in>{column i (Gram_Schmidt_matrix A) |i. i < k}. (x \<bullet> ?ak / (x \<bullet> x)) *\<^sub>R x)) = 0"
+  have sum_rw: "(?uk \<bullet> (\<Sum>x\<in>{column i (Gram_Schmidt_matrix A) |i. i < k}. (x \<bullet> ?ak / (x \<bullet> x)) *\<^sub>R x)) = 0"
   proof -
     have "(?uk \<bullet> (\<Sum>x\<in>{column i (Gram_Schmidt_matrix A) |i. i < k}. (x \<bullet> ?ak / (x \<bullet> x)) *\<^sub>R x))
       = ((\<Sum>x\<in>{column i (Gram_Schmidt_matrix A) |i. i < k}. ?uk \<bullet> ((x \<bullet> ?ak / (x \<bullet> x)) *\<^sub>R x)))" 
-      unfolding inner_setsum_right ..
+      unfolding inner_sum_right ..
     also have "... = (\<Sum>x\<in>{column i (Gram_Schmidt_matrix A) |i. i < k}. ((x \<bullet> ?ak / (x \<bullet> x)) * (?uk \<bullet> x)))"
       unfolding inner_scaleR_right ..
     also have "... = 0"
-    proof (rule setsum.neutral, clarify)
+    proof (rule sum.neutral, clarify)
       fix x i assume "i<k" 
       hence "?uk \<bullet> column i (Gram_Schmidt_matrix A) = 0" 
         by (metis less_irrefl r scaleR_columns_Gram_Schmidt_matrix)
@@ -475,7 +475,7 @@ proof -
     using column_Gram_Schmidt_matrix2[of k A] by auto
   also have "... = (1/(norm ?uk)) * ((?uk \<bullet> ?uk) + (?uk \<bullet> (\<Sum>x\<in>{column i (Gram_Schmidt_matrix A) |i. i < k}. (x \<bullet> ?ak / (x \<bullet> x)) *\<^sub>R x)))"
     unfolding inner_add_right ..
-  also have "... = (1/(norm ?uk)) * (?uk \<bullet> ?uk)" unfolding setsum_rw by auto
+  also have "... = (1/(norm ?uk)) * (?uk \<bullet> ?uk)" unfolding sum_rw by auto
   also have "... = norm ?uk"
     by (metis abs_of_nonneg divide_eq_imp div_by_0 inner_commute inner_ge_zero inner_real_def 
       norm_mult_vec real_inner_1_right real_norm_def times_divide_eq_right)
@@ -520,7 +520,7 @@ proof -
   also have "... = ((?qk \<bullet> ?ak)/(?qk \<bullet> ?qk)) *\<^sub>R ?qk
     + (\<Sum>x\<in>{column i (fst (QR_decomposition A))|i. i < k}. (x \<bullet> ?ak / (x \<bullet> x)) *\<^sub>R x)" using norm_qk_1 by fastforce
   also have "... = (\<Sum>x\<in>insert ?qk {column i (fst (QR_decomposition A))|i. i < k}. (x \<bullet> ?ak / (x \<bullet> x)) *\<^sub>R x)"
-  proof (rule setsum.insert[symmetric])
+  proof (rule sum.insert[symmetric])
     show "finite {column i (fst (QR_decomposition A)) |i. i < k}" by simp
     show "column k (fst (QR_decomposition A)) \<notin> {column i (fst (QR_decomposition A)) |i. i < k}"
     proof (rule ccontr, simp)
@@ -531,7 +531,7 @@ proof -
     qed
   qed
   also have "... = (\<Sum>x\<in>{column i (fst (QR_decomposition A))|i. i \<le> k}. (x \<bullet> (column k A)) *\<^sub>R x)"
-  proof (rule setsum.cong, simp add: set_rw)
+  proof (rule sum.cong, simp add: set_rw)
     fix x assume x: "x \<in> {column i (fst (QR_decomposition A)) |i. i \<le> k}"
     from this obtain i where i: "x=column i (fst (QR_decomposition A))" by blast
     hence "(x \<bullet> x) = 1" using norm_eq_1 norm_columns_fst_QR_decomposition[OF r]
@@ -563,11 +563,11 @@ proof -
     = column i (fst (QR_decomposition A)) \<bullet> (\<Sum>x\<in>{column i (fst (QR_decomposition A))|i. i \<le> j}. (x \<bullet> (column j A)) *\<^sub>R x)"
     using column_QR_decomposition2[OF r] by presburger
   also have "... = (\<Sum>x\<in>{column i (fst (QR_decomposition A))|i. i \<le> j}. 
-    column i (fst (QR_decomposition A)) \<bullet> (x \<bullet> (column j A)) *\<^sub>R x)" unfolding real_inner_class.inner_setsum_right ..
+    column i (fst (QR_decomposition A)) \<bullet> (x \<bullet> (column j A)) *\<^sub>R x)" unfolding real_inner_class.inner_sum_right ..
   also have "... = (\<Sum>x\<in>{column i (fst (QR_decomposition A))|i. i \<le> j}. 
     (x \<bullet> (column j A)) *(column i (fst (QR_decomposition A)) \<bullet> x))" unfolding real_inner_class.inner_scaleR_right ..
   also have "... = 0"
-  proof (rule setsum.neutral, clarify)
+  proof (rule sum.neutral, clarify)
     fix ia assume ia: "ia \<le> j"
     have i_not_ia: "i \<noteq> ia" using i ia by simp
     hence "(column i (fst (QR_decomposition A)) \<noteq> column ia (fst (QR_decomposition A)))"
@@ -586,11 +586,11 @@ lemma R_Qi_Aj:
   unfolding QR_decomposition_def Let_def snd_conv matrix_matrix_mult_inner_mult 
   unfolding row_transpose by auto
 
-lemma setsums_columns_Q_0:
+lemma sums_columns_Q_0:
   fixes A::"real^'n::{mod_type}^'m::{mod_type}"
   assumes r: "rank A = ncols A"
   shows "(\<Sum>x\<in>{column i (fst (QR_decomposition A)) |i. i>b}. x \<bullet> column b A * x $ a) = 0"
-proof (rule setsum.neutral, auto) 
+proof (rule sum.neutral, auto) 
   fix i assume "b<i"
   thus "column i (fst (QR_decomposition A)) \<bullet> column b A = 0"
     by (rule scaler_column_fst_QR_decomposition, simp add: r)
@@ -628,13 +628,13 @@ proof -
         have "(\<Sum>x\<in>?c. x \<bullet> column b A * x $ a) 
           = (\<Sum>x\<in>(?d \<union> ?f). x \<bullet> column b A * x $ a)" using set_rw by simp
         also have "... = (\<Sum>x\<in>?d. x \<bullet> column b A * x $ a) + (\<Sum>x\<in>?f. x \<bullet> column b A * x $ a)" 
-          by (rule setsum.union_disjoint, auto, metis f_def inj_eq inj_f not_le)
-        also have "... = (\<Sum>x\<in>?d. x \<bullet> column b A * x $ a)" using setsums_columns_Q_0[OF r] by auto
+          by (rule sum.union_disjoint, auto, metis f_def inj_eq inj_f not_le)
+        also have "... = (\<Sum>x\<in>?d. x \<bullet> column b A * x $ a)" using sums_columns_Q_0[OF r] by auto
         finally show ?thesis ..
       qed
       also have "... = (\<Sum>x\<in>f`UNIV. x \<bullet> column b A * x $ a)" using f_eq by auto
       also have "... = (\<Sum>k\<in>UNIV. fst (QR_decomposition A) $ a $ k * (column k (fst (QR_decomposition A)) \<bullet> column b A))"
-        unfolding setsum.reindex[OF inj_f] unfolding f_def column_def by (rule setsum.cong, simp_all)
+        unfolding sum.reindex[OF inj_f] unfolding f_def column_def by (rule sum.cong, simp_all)
       finally show " (\<Sum>k\<in>UNIV. fst (QR_decomposition A) $ a $ k * (column k (fst (QR_decomposition A)) \<bullet> column b A)) =
         (\<Sum>x\<in>{column i (fst (QR_decomposition A)) |i. i \<le> b}. x \<bullet> column b A * x $ a)" ..
     qed

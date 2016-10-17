@@ -29,10 +29,10 @@ qed
 
 subsection {* Additions to Groups-Big Theory *}
 
-lemma setsum_card_image:
+lemma sum_card_image:
   assumes "finite A"
   assumes "\<forall>s\<in>A. \<forall>t\<in>A. s \<noteq> t \<longrightarrow> (f s) \<inter> (f t) = {}"
-  shows "setsum card (f ` A) = setsum (\<lambda>a. card (f a)) A"
+  shows "sum card (f ` A) = sum (\<lambda>a. card (f a)) A"
 using assms
 proof (induct A)
   case empty
@@ -43,11 +43,11 @@ next
   proof cases
     assume "f a = {}"
     from this insert show ?case
-      by (subst setsum.mono_neutral_right[where S="f ` A"]) auto
+      by (subst sum.mono_neutral_right[where S="f ` A"]) auto
   next
     assume "f a \<noteq> {}"
-    from this have "setsum card (insert (f a) (f ` A)) = card (f a) + setsum card (f ` A)"
-      using insert by (subst setsum.insert) auto
+    from this have "sum card (insert (f a) (f ` A)) = card (f a) + sum card (f ` A)"
+      using insert by (subst sum.insert) auto
     from this insert show ?case by simp
   qed
 qed
@@ -56,22 +56,22 @@ lemma card_Union_image:
   assumes "finite S"
   assumes "\<forall>s\<in>f ` S. finite s"
   assumes "\<forall>s\<in>S. \<forall>t\<in>S. s \<noteq> t \<longrightarrow> (f s) \<inter> (f t) = {}"
-  shows "card (\<Union>(f ` S)) = setsum (\<lambda>x. card (f x)) S"
+  shows "card (\<Union>(f ` S)) = sum (\<lambda>x. card (f x)) S"
 proof -
   have "\<forall>A\<in>f ` S. \<forall>B\<in>f ` S. A \<noteq> B \<longrightarrow> A \<inter> B = {}"
     using assms(3) by (metis image_iff)
-  from this have "card (\<Union>(f ` S)) = setsum card (f ` S)"
+  from this have "card (\<Union>(f ` S)) = sum card (f ` S)"
     using assms(1, 2) by (subst card_Union_disjoint) auto
-  also have "... = setsum (\<lambda>x. card (f x)) S"
-    using assms(1, 3) by (auto simp add: setsum_card_image)
+  also have "... = sum (\<lambda>x. card (f x)) S"
+    using assms(1, 3) by (auto simp add: sum_card_image)
   finally show ?thesis .
 qed
 
 subsection {* Addition to Set-Interval Theory *}
 
-lemma setsum_atMost_remove_nat:
+lemma sum_atMost_remove_nat:
   assumes "k \<le> (n :: nat)"
   shows "(\<Sum>i\<le>n. f i) = f k + (\<Sum>i\<in>{..n}-{k}. f i)"
-using assms by (auto simp add: setsum.remove[where x=k])
+using assms by (auto simp add: sum.remove[where x=k])
 
 end

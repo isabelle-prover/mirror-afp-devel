@@ -8,7 +8,7 @@ begin
 
 subsection{* Preliminaries *}
 
-lemma dist_setsum:
+lemma dist_sum:
   fixes f :: "'a \<Rightarrow> real" and g :: "'a \<Rightarrow> real"
   assumes "\<And>i. i \<in> I \<Longrightarrow> dist (f i) (g i) \<le> e i"
   shows "dist (\<Sum>i\<in>I. f i) (\<Sum>i\<in>I. g i) \<le> (\<Sum>i\<in>I. e i)"
@@ -30,7 +30,7 @@ lemma dist_mult[simp]: "dist (x * y) (x * z) = \<bar>x\<bar> * dist y z"
 lemma dist_divide[simp]: "dist (y / r) (z / r) = dist y z / \<bar>r\<bar>"
   unfolding dist_real_def abs_divide[symmetric] diff_divide_distrib ..
 
-lemma dist_weighted_setsum:
+lemma dist_weighted_sum:
   fixes f :: "'a \<Rightarrow> real" and g :: "'b \<Rightarrow> real"
   assumes eps: "\<And>i j. i \<in> I \<Longrightarrow> j \<in> J \<Longrightarrow> w i \<noteq> 0 \<Longrightarrow> v j \<noteq> 0 \<Longrightarrow> dist (f i) (g j) \<le> d i + e j"
     and pos: "\<And>i. i\<in>I \<Longrightarrow> 0 \<le> w i" "\<And>j. j\<in>J \<Longrightarrow> 0 \<le> v j"
@@ -42,22 +42,22 @@ proof -
     have "(\<Sum>j\<in>J. v j * g j) = (\<Sum>i\<in>I. w i) * (\<Sum>j\<in>J. v j * g j)"
       using sum by simp
     also have "\<dots> = ?W (g\<circ>snd)"
-      by (simp add: ac_simps setsum_product setsum.cartesian_product)
+      by (simp add: ac_simps sum_product sum.cartesian_product)
     finally have "(\<Sum>j\<in>J. v j * g j) = ?W (g\<circ>snd)" . }
   moreover
   { fix f :: "'a \<Rightarrow> real"
     have "(\<Sum>i\<in>I. w i * f i) = (\<Sum>i\<in>I. w i * f i) * (\<Sum>j\<in>J. v j)"
       using sum by simp
     also have "\<dots> = ?W (f\<circ>fst)"
-      unfolding setsum_product setsum.cartesian_product by (simp add: ac_simps)
+      unfolding sum_product sum.cartesian_product by (simp add: ac_simps)
     finally have "(\<Sum>i\<in>I. w i * f i) = ?W (f\<circ>fst)" . }
   moreover
   { have "dist (?W (f\<circ>fst)) (?W (g\<circ>snd)) \<le> ?W (\<lambda>(i,j). d i + e j)"
       using eps pos
-      by (intro dist_setsum)
+      by (intro dist_sum)
          (auto simp: mult_le_cancel_left zero_less_mult_iff mult_le_0_iff not_le[symmetric])
     also have "\<dots> = ?W (d \<circ> fst) + ?W (e \<circ> snd)"
-      by (auto simp add: setsum.distrib[symmetric] field_simps intro!: setsum.cong)
+      by (auto simp add: sum.distrib[symmetric] field_simps intro!: sum.cong)
     finally have "dist (?W (f\<circ>fst)) (?W (g\<circ>snd)) \<le> ?W (d \<circ> fst) + ?W (e \<circ> snd)" by simp }
   ultimately show ?thesis by simp
 qed
@@ -130,7 +130,7 @@ proof -
     using f
     apply (subst integral_real_density)
     apply (auto simp add: integral_real_density lebesgue_integral_count_space_finite_support eq
-      intro!: setsum.cong)
+      intro!: sum.cong)
     done
 qed
 
@@ -166,18 +166,18 @@ lemma Least_eq_0_iff: "(\<exists>i::nat. P i) \<Longrightarrow> (LEAST i. P i) =
 lemma case_nat_comp_Suc[simp]: "case_nat x f \<circ> Suc = f"
   by auto
 
-lemma setsum_eq_0_iff:
+lemma sum_eq_0_iff:
   fixes f :: "_ \<Rightarrow> 'a :: {comm_monoid_add,ordered_ab_group_add}"
   shows "finite A \<Longrightarrow> (\<And>i. i \<in> A \<Longrightarrow> 0 \<le> f i) \<Longrightarrow> (\<Sum>i\<in>A. f i) = 0 \<longleftrightarrow> (\<forall>i\<in>A. f i = 0)"
   apply rule
-  apply (blast intro: setsum_nonneg_0)
+  apply (blast intro: sum_nonneg_0)
   apply simp
   done
 
-lemma setsum_less_0_iff:
+lemma sum_less_0_iff:
   fixes f :: "_ \<Rightarrow> 'a :: {comm_monoid_add,ordered_ab_group_add}"
   shows "finite A \<Longrightarrow> (\<And>i. i \<in> A \<Longrightarrow> 0 \<le> f i) \<Longrightarrow> 0 < (\<Sum>i\<in>A. f i) \<longleftrightarrow> (\<exists>i\<in>A. 0 < f i)"
-  using setsum_nonneg[of A f] setsum_eq_0_iff[of A f] by (simp add: less_le)
+  using sum_nonneg[of A f] sum_eq_0_iff[of A f] by (simp add: less_le)
 
 context PL_Indis
 begin
@@ -347,7 +347,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
   note `proper (fst cf1)`[simp, intro]
   note `proper (fst cf2)`[simp, intro]
 
-  def W \<equiv> "\<lambda>c. setsum (wt (fst c) (snd c))"
+  def W \<equiv> "\<lambda>c. sum (wt (fst c) (snd c))"
   from ZObis_mC_ZOC[OF `fst cf1 \<approx>01 fst cf2` `snd cf1 \<approx> snd cf2`]
   obtain I0 P F where mC: "mC_ZOC ZObis (fst cf1) (fst cf2) (snd cf1) (snd cf2) I0 P F" by blast
   then have P: "{} \<notin> P - {I0}" "part {..<brn (fst cf1)} P" and "I0 \<in> P"
@@ -382,12 +382,12 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
 
   { fix I assume "I \<in> P"
     then have "0 \<le> W cf1 I"
-      unfolding W_def by (auto intro!: setsum_nonneg) }
+      unfolding W_def by (auto intro!: sum_nonneg) }
   note W1_nneg[intro] = this
 
   { fix I assume "I \<in> P"
     then have "0 \<le> W cf2 (F I)"
-      unfolding W_def by (auto intro!: setsum_nonneg) }
+      unfolding W_def by (auto intro!: sum_nonneg) }
   note W2_nneg[intro] = this
 
   show ?case
@@ -450,7 +450,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
     { fix I assume "I \<in> P" "I \<noteq> I0" and W: "W cf1 I \<noteq> 0" "W cf2 (F I) \<noteq> 0"
       then have "dist (ps cf1 I) (ps cf2 (F I)) \<le> pn cf1 I n' + pn cf2 (F I) m'"
         unfolding ps_def pn_def
-      proof (intro dist_weighted_setsum)
+      proof (intro dist_weighted_sum)
         fix i j assume ij: "i \<in> I" "j \<in> F I"
         assume "wt (fst cf1) (snd cf1) i / W cf1 I \<noteq> 0"
           and "wt (fst cf2) (snd cf2) j / W cf2 (F I) \<noteq> 0"
@@ -469,7 +469,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
       next
         show "(\<Sum>b\<in>F I. wt (fst cf2) (snd cf2) b / W cf2 (F I)) = 1"
           "(\<Sum>b\<in>I. wt (fst cf1) (snd cf1) b / W cf1 I) = 1"
-          using W by (auto simp: setsum_divide_distrib[symmetric] setsum_nonneg W_def)
+          using W by (auto simp: sum_divide_distrib[symmetric] sum_nonneg W_def)
       qed auto }
     note dist_n'_m' = this
 
@@ -489,7 +489,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
     { fix I j assume W: "W cf2 (F I0) \<noteq> 0"
       from `I0 \<in> P` have "dist (\<Sum>i\<in>{()}. 1 * Ps cf1) (ps cf2 (F I0)) \<le> (\<Sum>i\<in>{()}. 1 * Pn cf1 n) + pn cf2 (F I0) m'"
         unfolding ps_def pn_def
-      proof (intro dist_weighted_setsum)
+      proof (intro dist_weighted_sum)
         fix j assume "j \<in> F I0"
         with FP(2) `I0 \<in> P` have br: "j < brn (fst cf2)"
           by (auto dest: part_is_subset)
@@ -505,7 +505,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
         qed
       next
         show "(\<Sum>b\<in>F I0. wt (fst cf2) (snd cf2) b / W cf2 (F I0)) = 1"
-          using W `I0 \<in> P` by (auto simp: setsum_divide_distrib[symmetric] setsum_nonneg W_def)
+          using W `I0 \<in> P` by (auto simp: sum_divide_distrib[symmetric] sum_nonneg W_def)
       qed auto
       then have "dist (Ps cf1) (ps cf2 (F I0)) \<le> Pn cf1 n + pn cf2 (F I0) m'"
         by simp }
@@ -514,7 +514,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
     { fix I j assume W: "W cf1 I0 \<noteq> 0"
       from `I0 \<in> P` have "dist (ps cf1 I0) (\<Sum>i\<in>{()}. 1 * Ps cf2) \<le> pn cf1 I0 n' + (\<Sum>i\<in>{()}. 1 * Pn cf2 m)"
         unfolding ps_def pn_def
-      proof (intro dist_weighted_setsum)
+      proof (intro dist_weighted_sum)
         fix i assume "i \<in> I0"
         with P(2) `I0 \<in> P` have br: "i < brn (fst cf1)"
           by (auto dest: part_is_subset)
@@ -530,7 +530,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
         qed
       next
         show "(\<Sum>b\<in>I0. wt (fst cf1) (snd cf1) b / W cf1 I0) = 1"
-          using W `I0 \<in> P` by (auto simp: setsum_divide_distrib[symmetric] setsum_nonneg W_def)
+          using W `I0 \<in> P` by (auto simp: sum_divide_distrib[symmetric] sum_nonneg W_def)
       qed auto
       then have "dist (ps cf1 I0) (Ps cf2) \<le> pn cf1 I0 n' + Pn cf2 m"
         by simp }
@@ -583,12 +583,12 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
         apply auto
         done
       also have "\<dots> = (\<Sum>I\<in>P. ?P I)"
-        unfolding integral_trans[OF cf] by (simp add: part_setsum[OF P])
+        unfolding integral_trans[OF cf] by (simp add: part_sum[OF P])
       also have "\<dots> = (\<Sum>I\<in>P. ?P' I)"
         using finite_I
-        by (auto intro!: setsum.cong simp add: setsum_distrib_left setsum_nonneg_eq_0_iff W_def)
+        by (auto intro!: sum.cong simp add: sum_distrib_left sum_nonneg_eq_0_iff W_def)
       also have "\<dots> = ?P' I0 + (\<Sum>I\<in>P-{I0}. ?P' I)"
-        unfolding setsum.remove[OF `finite P` `I0 \<in> P`] ..
+        unfolding sum.remove[OF `finite P` `I0 \<in> P`] ..
       finally have "\<P>(bT in T.T cf. S cf (Suc n) bT) = \<dots>" . }
     note P_split = this
 
@@ -600,7 +600,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
     moreover have F_diff: "F ` P - {F I0} = F ` (P - {I0})"
       by (auto simp: `inj_on F P`[THEN inj_on_eq_iff] `I0 \<in> P`)
     ultimately have Ps2: "Ps cf2 = W cf2 (F I0) * ps cf2 (F I0) + (\<Sum>I\<in>P-{I0}. W cf2 (F I) * ps cf2 (F I))"
-      by (simp add: setsum.reindex `inj_on F (P-{I0})`)
+      by (simp add: sum.reindex `inj_on F (P-{I0})`)
 
     have Pn1: "Pn cf1 n = W cf1 I0 * pn cf1 I0 n' + (\<Sum>I\<in>P-{I0}. W cf1 I * pn cf1 I n')"
       unfolding Pn_def pn_def nm using P(2) `finite P` `I0 \<in> P` by (intro P_split) (simp_all add: N_def)
@@ -608,7 +608,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
     have "Pn cf2 m = W cf2 (F I0) * pn cf2 (F I0) m' + (\<Sum>I\<in>F`P-{F I0}. W cf2 I * pn cf2 I m')"
       unfolding Pn_def pn_def nm using FP(2) `finite P` `I0 \<in> P` by (intro P_split) (simp_all add: N_def)
     with F_diff have Pn2: "Pn cf2 m = W cf2 (F I0) * pn cf2 (F I0) m' + (\<Sum>I\<in>P-{I0}. W cf2 (F I) * pn cf2 (F I) m')"
-      by (simp add: setsum.reindex `inj_on F (P-{I0})`)
+      by (simp add: sum.reindex `inj_on F (P-{I0})`)
 
     show ?thesis
     proof cases
@@ -618,11 +618,11 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
         assume *: "W cf1 I0 = 1"
         then have "W cf1 I0 = W cf1 {..<brn (fst cf1)}" by (simp add: W_def)
         also have "\<dots> = W cf1 I0 + (\<Sum>I\<in>P - {I0}. W cf1 I)"
-          unfolding `part {..<brn (fst cf1)} P`[THEN part_setsum] W_def
-          unfolding setsum.remove[OF `finite P` `I0 \<in> P`] ..
+          unfolding `part {..<brn (fst cf1)} P`[THEN part_sum] W_def
+          unfolding sum.remove[OF `finite P` `I0 \<in> P`] ..
         finally have "(\<Sum>I\<in>P - {I0}. W cf1 I) = 0" by simp
         then have "\<forall>I\<in>P - {I0}. W cf1 I = 0"
-          using `finite P` by (subst (asm) setsum_nonneg_eq_0_iff) auto
+          using `finite P` by (subst (asm) sum_nonneg_eq_0_iff) auto
         then have "Ps cf1 = ps cf1 I0" "Pn cf1 n = pn cf1 I0 n'"
           unfolding Ps1 Pn1 * by simp_all
         moreover note dist_n'_m *
@@ -631,11 +631,11 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
         assume *: "W cf2 (F I0) = 1"
         then have "W cf2 (F I0) = W cf2 {..<brn (fst cf2)}" by (simp add: W_def)
         also have "\<dots> = W cf2 (F I0) + (\<Sum>I\<in>F ` P - {F I0}. W cf2 I)"
-          unfolding FP(2)[THEN part_setsum] W_def
-          unfolding setsum.remove[OF FP'] ..
+          unfolding FP(2)[THEN part_sum] W_def
+          unfolding sum.remove[OF FP'] ..
         finally have "(\<Sum>I\<in>F`P - {F I0}. W cf2 I) = 0" by simp
         then have "\<forall>I\<in>F`P - {F I0}. W cf2 I = 0"
-          using `finite P` by (subst (asm) setsum_nonneg_eq_0_iff) auto
+          using `finite P` by (subst (asm) sum_nonneg_eq_0_iff) auto
         then have "Ps cf2 = ps cf2 (F I0)" "Pn cf2 m = pn cf2 (F I0) m'"
           unfolding Ps2 Pn2 * by (simp_all add: F_diff)
         moreover note dist_n_m' *
@@ -648,7 +648,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
         assume "proper (fst cf)" "part {..<brn (fst (cf))} P" "I \<in> P"
         then have "W cf I \<le> W cf {..<brn (fst (cf))}"
           unfolding W_def
-          by (intro setsum_mono2 part_is_subset) auto
+          by (intro sum_mono2 part_is_subset) auto
         then have "W cf I \<le> 1" using `proper (fst cf)` by (simp add: W_def) }
       ultimately have wt_less1: "W cf1 I0 < 1" "W cf2 (F I0) < 1"
         using FP(2) FP'(2) P(2) `I0 \<in> P`
@@ -692,23 +692,23 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
         { have "?wP = (\<Sum>I\<in>P-{I0}. W cf1 I * ps cf1 I) / ?v1"
             unfolding Ps1 by (simp add: field_simps)
           also have "\<dots> = (\<Sum>I\<in>P-{I0}. W cf1 I / ?v1 * ps cf1 I)"
-            by (subst setsum_divide_distrib) simp
+            by (subst sum_divide_distrib) simp
           finally have "?wP = (\<Sum>I\<in>P-{I0}. W cf1 I / ?v1 * ps cf1 I)" . }
         moreover
         { have "?wQ = (\<Sum>I\<in>P-{I0}. W cf2 (F I) * ps cf2 (F I)) / ?w1"
             using Ps2 by (simp add: field_simps)
           also have "\<dots> = (\<Sum>I\<in>P-{I0}. W cf2 (F I) / ?w1 * ps cf2 (F I))"
-            by (subst setsum_divide_distrib) simp
+            by (subst sum_divide_distrib) simp
           also have "\<dots> = (\<Sum>I\<in>P-{I0}. W cf1 I / ?v1 * ps cf2 (F I))"
             using wt[OF _ wt_less1] by simp
           finally have "?wQ = (\<Sum>I\<in>P-{I0}. W cf1 I / ?v1 * ps cf2 (F I))" . }
         ultimately
         have "dist ?wP ?wQ \<le> (\<Sum>I\<in>P-{I0}. W cf1 I / ?v1 * (pn cf1 I n' + pn cf2 (F I) m'))"
           using wt_less1 dist_eps
-          by (simp, intro dist_setsum)
-             (simp add: setsum_nonneg divide_le_cancel mult_le_cancel_left not_le[symmetric] W1_nneg)
+          by (simp, intro dist_sum)
+             (simp add: sum_nonneg divide_le_cancel mult_le_cancel_left not_le[symmetric] W1_nneg)
         also have "\<dots> = ?e1"
-          unfolding setsum.distrib[symmetric] using  wt[OF _ wt_less1]
+          unfolding sum.distrib[symmetric] using  wt[OF _ wt_less1]
           by (simp add: field_simps add_divide_distrib)
         finally have "dist (?v1 * ?w1 * ?wP) (?v1 * ?w1 * ?wQ) \<le> ?v1 * ?w1 * ?e1"
           using wt_less1 unfolding dist_mult by simp
@@ -737,17 +737,17 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
         proof (rule add_mono)
           show "dist (?v1 * ?w0 * Ps cf1) (?v1 * ?w0 * ps cf2 (F I0)) \<le> ?v1 * ?w0 * (Pn cf1 n + pn cf2 (F I0) m')"
             using wt_less1 dist_n_m' `I0 \<in> P`
-            by (simp add: setsum_nonneg mult_le_cancel_left not_le[symmetric] mult_le_0_iff W2_nneg)
+            by (simp add: sum_nonneg mult_le_cancel_left not_le[symmetric] mult_le_0_iff W2_nneg)
           show "dist (?w1 * ?v0 * Ps cf2) (?w1 * ?v0 * ps cf1 I0) \<le> ?w1 * ?v0 * (pn cf1 I0 n' + Pn cf2 m)"
             using wt_less1 dist_n'_m `I0 \<in> P`
             by (subst dist_commute)
-               (simp add: setsum_nonneg mult_le_cancel_left not_le[symmetric] mult_le_0_iff W1_nneg)
+               (simp add: sum_nonneg mult_le_cancel_left not_le[symmetric] mult_le_0_iff W1_nneg)
         qed
         finally show "dist ?D ?E \<le> ?v1 * ?w0 * (Pn cf1 n + pn cf2 (F I0) m') + ?w1 * ?v0 * (pn cf1 I0 n' + Pn cf2 m)" .
       qed
       also  have "\<dots> = ?w1 * (\<Sum>I\<in>P-{I0}. W cf1 I * pn cf1 I n') + ?v1 * (\<Sum>I\<in>P-{I0}. W cf2 (F I) * pn cf2 (F I) m') +
         ?v1 * ?w0 * (Pn cf1 n + pn cf2 (F I0) m') + ?w1 * ?v0 * (pn cf1 I0 n' + Pn cf2 m)"
-        using W_neq1 by (simp add: setsum_divide_distrib[symmetric] add_divide_eq_iff divide_add_eq_iff)
+        using W_neq1 by (simp add: sum_divide_distrib[symmetric] add_divide_eq_iff divide_add_eq_iff)
       also have "\<dots> = (1 - ?w0 * ?v0) * (Pn cf1 n + Pn cf2 m)"
         unfolding Pn1 Pn2 by (simp add: field_simps)
       finally show "dist (Ps cf1) (Ps cf2) \<le> Pn cf1 n + Pn cf2 m"
@@ -838,7 +838,7 @@ next
   then have
     P: "part {..<brn (fst cf1)} P" "{} \<notin> P" and
     FP: "part {..<brn (fst cf2)} (F`P)" "{} \<notin> F ` P" "inj_on F P" and
-    W: "\<And>I. I \<in> P \<Longrightarrow> setsum (wt (fst cf1) (snd cf1)) I = setsum (wt (fst cf2) (snd cf2)) (F I)" and
+    W: "\<And>I. I \<in> P \<Longrightarrow> sum (wt (fst cf1) (snd cf1)) I = sum (wt (fst cf2) (snd cf2)) (F I)" and
     eff: "\<And>I i j. I \<in> P \<Longrightarrow> i \<in> I \<Longrightarrow> j \<in> F I \<Longrightarrow>
       eff (fst cf1) (snd cf1) i \<approx> eff (fst cf2) (snd cf2) j" and
     cont: "\<And>I i j. I \<in> P \<Longrightarrow> i \<in> I \<Longrightarrow> j \<in> F I \<Longrightarrow>
@@ -850,7 +850,7 @@ next
     also have "\<dots> = (\<Sum>b<brn (fst cf1). wt (fst cf1) (snd cf1) b * ?P (cont_eff cf1 b) n)"
       unfolding integral_trans[OF cf] ..
     also have "\<dots> = (\<Sum>I\<in>P. \<Sum>b\<in>I. wt (fst cf1) (snd cf1) b * ?P (cont_eff cf1 b) n)"
-      unfolding part_setsum[OF P] ..
+      unfolding part_sum[OF P] ..
     finally have "?P cf1 (Suc n) = \<dots>" . }
   note split = this
 
@@ -882,11 +882,11 @@ next
       then have "?P (cont_eff cf1 a) n = ?P (cont_eff cf1 i) n" by simp }
     then have "(\<Sum>b\<in>I. wt (fst cf1) (snd cf1) b * ?P (cont_eff cf1 b) n) =
         (\<Sum>b\<in>I. wt (fst cf1) (snd cf1) b) * ?P (cont_eff cf1 i) n"
-      by (simp add: setsum_distrib_right)
+      by (simp add: sum_distrib_right)
     also have "\<dots> = (\<Sum>b\<in>F I. wt (fst cf2) (snd cf2) b) * ?P (cont_eff cf1 i) n"
       using W `I \<in> P` by auto
     also have "\<dots> = (\<Sum>b\<in>F I. wt (fst cf2) (snd cf2) b * ?P (cont_eff cf2 b) n)"
-      using cont_d_const by (auto simp add: setsum_distrib_right)
+      using cont_d_const by (auto simp add: sum_distrib_right)
     finally have "(\<Sum>b\<in>I. wt (fst cf1) (snd cf1) b * ?P (cont_eff cf1 b) n) = \<dots>" . }
   note sum_eq = this
 
@@ -895,7 +895,7 @@ next
   also have "\<dots> = (\<Sum>I\<in>P. \<Sum>b\<in>F I. wt (fst cf2) (snd cf2) b * ?P (cont_eff cf2 b) n)"
     using sum_eq by simp
   also have "\<dots> = (\<Sum>I\<in>F`P. \<Sum>b\<in>I. wt (fst cf2) (snd cf2) b * ?P (cont_eff cf2 b) n)"
-    using `inj_on F P` by (simp add: setsum.reindex)
+    using `inj_on F P` by (simp add: sum.reindex)
   also have "\<dots> = ?P cf2 (Suc n)"
     using `proper (fst cf2)` FP(1) by (rule split[symmetric])
   finally show ?case .

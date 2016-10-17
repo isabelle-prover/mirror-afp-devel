@@ -186,7 +186,7 @@ proof -
     hence "{j. j \<in> I \<and> ineq_dep i j} = {}"
       using assms by auto
     hence "(\<Sum>j | j \<in> I \<and> ineq_dep i j. prob (A i \<inter> A j)) = 0"
-      using setsum.empty by metis
+      using sum.empty by metis
   }
   hence "\<Delta>\<^sub>d = (0 :: real) * card I"
     unfolding \<Delta>\<^sub>d_def by simp
@@ -207,19 +207,19 @@ unfolding X_def using prob_non_zero expectation_indicator by simp
 corollary \<mu>_non_zero[simp]: "0 < \<mu>"
 unfolding expectation_X_Y
 using expectation_X_non_zero
-by (auto intro!: setsum_lower finite_I
+by (auto intro!: sum_lower finite_I
          simp add: expectation_indicator X_def)
 
 lemma \<Delta>\<^sub>d_nonneg: "0 \<le> \<Delta>\<^sub>d"
 unfolding \<Delta>\<^sub>d_def
-by (simp add: setsum_nonneg)
+by (simp add: sum_nonneg)
 
 corollary \<mu>_sq_non_zero[simp]: "0 < \<mu>^2"
 by (rule zero_less_power) simp
 
 lemma Y_square_unfold: "(\<lambda>x. (Y x)^2) = (\<lambda>x. \<Sum>i \<in> I. \<Sum>j \<in> I. rind (A i \<inter> A j) x)"
 unfolding fun_eq_iff Y_def X_def
-by (auto simp: setsum_square product_indicator)
+by (auto simp: sum_square product_indicator)
 
 lemma integrable_Y_sq[simp]: "integrable M (\<lambda>y. (Y y)^2)"
 unfolding Y_square_unfold
@@ -237,9 +237,9 @@ proof -
   also have "\<dots> = (\<Sum>i \<in> I. \<Sum>j \<in> I. if i = j then ?ei i j else ?ei i j)"
     by simp
   also have "\<dots> = (\<Sum>i \<in> I. (\<Sum>j | j \<in> I \<and> i = j. ?ei i j) + (\<Sum>j | j \<in> I \<and> i \<noteq> j. ?ei i j))"
-    by (simp only: setsum_split[OF finite_I])
+    by (simp only: sum_split[OF finite_I])
   also have "\<dots> = (\<Sum>i \<in> I. \<Sum>j | j \<in> I \<and> i = j. ?ei i j) + (\<Sum>i \<in> I. \<Sum>j | j \<in> I \<and> i \<noteq> j. ?ei i j)" (is "_ = ?lhs + ?rhs")
-    by (fact setsum.distrib)
+    by (fact sum.distrib)
   also have "\<dots> =  \<mu> + \<Delta>\<^sub>a"
     proof -
       have "?lhs = \<mu>"
@@ -288,22 +288,22 @@ proof -
   have "\<Delta>\<^sub>a = (\<Sum>i \<in> I. \<Sum>j | j \<in> I \<and> i \<noteq> j. if ?ie i j then ?p i j else ?p i j)"
     unfolding \<Delta>\<^sub>a_def by simp
   also have "\<dots> = (\<Sum>i \<in> I. (\<Sum>j | j \<in> I \<and> ineq_indep i j. ?p i j) + (\<Sum>j | j \<in> I \<and> ineq_dep i j. ?p i j))"
-    by (simp only: setsum_split2[OF finite_I])
+    by (simp only: sum_split2[OF finite_I])
   also have "\<dots> = (\<Sum>i \<in> I. \<Sum>j | j \<in> I \<and> ineq_indep i j. ?p i j) + \<Delta>\<^sub>d" (is "_ = ?lhs + _")
-    unfolding \<Delta>\<^sub>d_def by (fact setsum.distrib)
+    unfolding \<Delta>\<^sub>d_def by (fact sum.distrib)
   also have "\<dots> \<le> \<mu>^2 + \<Delta>\<^sub>d"
     proof (rule add_right_mono)
       have "(\<Sum>i\<in>I. \<Sum>j | j \<in> I \<and> ineq_indep i j. ?p i j) = (\<Sum>i \<in> I. \<Sum>j | j \<in> I \<and> ineq_indep i j. ?p' i j)"
         unfolding indep_def by simp
       also have "\<dots> \<le> (\<Sum>i \<in> I. \<Sum>j \<in> I. ?p' i j)"
-        proof (rule setsum_mono)
+        proof (rule sum_mono)
           fix i
           assume "i \<in> I"
           show "(\<Sum>j | j \<in> I \<and> ineq_indep i j. ?p' i j) \<le> (\<Sum>j\<in>I. ?p' i j)"
-            by (rule setsum_upper[OF finite_I]) (simp add: zero_le_mult_iff)
+            by (rule sum_upper[OF finite_I]) (simp add: zero_le_mult_iff)
         qed
       also have "\<dots> = (\<Sum>i \<in> I. prob (A i))^2"
-        by (fact setsum_square[symmetric])
+        by (fact sum_square[symmetric])
       also have "\<dots> = (\<Sum>i \<in> I. expectation (X i))^2"
         unfolding X_def using expectation_indicator A by simp
       also have "\<dots> = \<mu>^2"

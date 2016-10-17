@@ -203,7 +203,7 @@ proof-
       ultimately show ?case by blast
     next
       case (Suc n)
-      from Suc.hyps(2)[symmetric, THEN setsum_SucD]
+      from Suc.hyps(2)[symmetric, THEN sum_SucD]
       obtain i where i: "i:I" "2 \<le> card(A i)" by auto
       then obtain x1 x2 where "x1 : A i" "x2 : A i" "x1 \<noteq> x2"
         using Suc(3) by (fastforce simp: card_le_Suc_iff eval_nat_numeral)
@@ -211,10 +211,10 @@ proof-
       let "?U J" = "UNION J A" let "?Ui J x" = "?U J \<union> ?Ai x"
       have n1: "n = (\<Sum>j\<in>I. card (?A x1 j) - 1)"
         using Suc.hyps(2) Suc.prems(1) i `finite I` `x1:A i`
-        by (auto simp: setsum.remove card_Diff_singleton)
+        by (auto simp: sum.remove card_Diff_singleton)
       have n2: "n = (\<Sum>j\<in>I. card (?A x2 j) - 1)"
         using Suc.hyps(2) Suc.prems(1) i `finite I` `x2:A i`
-        by (auto simp: setsum.remove card_Diff_singleton)
+        by (auto simp: sum.remove card_Diff_singleton)
       have finx1: "\<forall>j\<in>I. finite (?A x1 j)" by (simp add: Suc(3))
       have finx2: "\<forall>j\<in>I. finite (?A x2 j)" by (simp add: Suc(3))
       { fix x assume "\<not> ?M (A(i:= ?Ai x))"

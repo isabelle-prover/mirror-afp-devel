@@ -1021,7 +1021,7 @@ proof (rule real_cond_exp_charact)
   finally show "set_lebesgue_integral M A (real_cond_exp M G f) = set_lebesgue_integral M A (real_cond_exp M F f)" by auto
 qed (auto simp add: assms real_cond_exp_int(1))
 
-lemma real_cond_exp_setsum [intro, simp]:
+lemma real_cond_exp_sum [intro, simp]:
   fixes f::"'b \<Rightarrow> 'a \<Rightarrow> real"
   assumes [measurable]: "\<And>i. integrable M (f i)"
   shows "AE x in M. real_cond_exp M F (\<lambda>x. \<Sum>i\<in>I. f i x) x = (\<Sum>i\<in>I. real_cond_exp M F (f i) x)"
@@ -1036,15 +1036,15 @@ proof (rule real_cond_exp_charact)
     by (rule real_cond_exp_intg(2)[symmetric], auto simp add: *)
 
   have "(\<integral>x\<in>A. (\<Sum>i\<in>I. f i x)\<partial>M) = (\<integral>x. (\<Sum>i\<in>I. indicator A x * f i x)\<partial>M)"
-    by (simp add: setsum_distrib_left)
+    by (simp add: sum_distrib_left)
   also have "... = (\<Sum>i\<in>I. (\<integral>x. indicator A x * f i x \<partial>M))"
-    by (rule Bochner_Integration.integral_setsum, simp add: *)
+    by (rule Bochner_Integration.integral_sum, simp add: *)
   also have "... = (\<Sum>i\<in>I. (\<integral>x. indicator A x * real_cond_exp M F (f i) x \<partial>M))"
     using inti by auto
   also have "... = (\<integral>x. (\<Sum>i\<in>I. indicator A x * real_cond_exp M F (f i) x)\<partial>M)"
-    by (rule Bochner_Integration.integral_setsum[symmetric], simp add: **)
+    by (rule Bochner_Integration.integral_sum[symmetric], simp add: **)
   also have "... = (\<integral>x\<in>A. (\<Sum>i\<in>I. real_cond_exp M F (f i) x)\<partial>M)"
-    by (simp add: setsum_distrib_left)
+    by (simp add: sum_distrib_left)
   finally show "(\<integral>x\<in>A. (\<Sum>i\<in>I. f i x)\<partial>M) = (\<integral>x\<in>A. (\<Sum>i\<in>I. real_cond_exp M F (f i) x)\<partial>M)" by auto
 qed (auto simp add: assms real_cond_exp_int(1)[OF assms(1)])
 

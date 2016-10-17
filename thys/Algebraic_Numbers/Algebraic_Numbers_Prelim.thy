@@ -324,10 +324,10 @@ next
   proof 
     fix n
     have "coeff (poly_inverse p) n = (if n \<le> degree p then coeff p (degree p - n) else 0)"
-      unfolding poly_inverse_def coeff_setsum coeff_monom
-      by (cases "n \<le> degree p", auto, subst setsum.remove[of _ n], auto)
+      unfolding poly_inverse_def coeff_sum coeff_monom
+      by (cases "n \<le> degree p", auto, subst sum.remove[of _ n], auto)
     also have "\<dots> = coeff (Poly (rev (coeffs p))) n"
-      unfolding poly_inverse_def coeff_setsum coeff_monom coeff_Poly
+      unfolding poly_inverse_def coeff_sum coeff_monom coeff_Poly
       by (cases "n < length (coeffs p)", 
         auto simp: nth_default_def length_coeffs_degree[OF False], subst rev_nth,
         auto simp: length_coeffs_degree[OF False] coeffs_nth[OF False])
@@ -337,7 +337,7 @@ qed
 
 lemma degree_poly_inverse_le: "degree (poly_inverse p) \<le> degree p"
   unfolding poly_inverse_def 
-  by (rule degree_setsum_le, force, rule order_trans[OF degree_monom_le], auto)
+  by (rule degree_sum_le, force, rule order_trans[OF degree_monom_le], auto)
 
 lemma inverse_pow_minus: assumes "x \<noteq> (0 :: 'a :: field)"
   and "i \<le> n"
@@ -351,16 +351,16 @@ proof -
   have id: "poly p x = poly ((\<Sum>x\<le>degree p. monom (coeff p x) x)) x" by simp
   let ?f = "\<lambda> k. poly (monom (coeff p (degree p - k)) k) (inverse x)"
   have "?r = (\<Sum>n\<le>degree p. inverse x ^ degree p * poly (monom (coeff p n) n) x)" 
-    unfolding id poly_setsum setsum_distrib_left by simp  
+    unfolding id poly_sum sum_distrib_left by simp  
   have "?l = (\<Sum>k\<le>degree p. ?f k)"
-    unfolding poly_inverse_def poly_setsum by simp 
+    unfolding poly_inverse_def poly_sum by simp 
   also have "\<dots> = (\<Sum>k \<le> degree p. ?f (degree p - k))"
-    by (subst setsum.reindex_cong[of "\<lambda> i. degree p - i" "{..degree p}"], auto simp: inj_on_def)
+    by (subst sum.reindex_cong[of "\<lambda> i. degree p - i" "{..degree p}"], auto simp: inj_on_def)
      (metis (full_types) atMost_iff diff_diff_cancel diff_le_mono2 diff_zero image_iff le0)
   also have "\<dots> = (\<Sum>n\<le>degree p. inverse x ^ degree p * poly (monom (coeff p n) n) x)"
-    by (rule setsum.cong, auto simp: poly_monom inverse_pow_minus[OF x])
+    by (rule sum.cong, auto simp: poly_monom inverse_pow_minus[OF x])
   also have "\<dots> = ?r"
-    unfolding id poly_setsum setsum_distrib_left by simp  
+    unfolding id poly_sum sum_distrib_left by simp  
   finally show ?thesis .
 qed
 
@@ -372,8 +372,8 @@ proof (cases "x = 0")
   show ?thesis using poly_inverse[OF ix] False by auto
 next
   case True
-  show ?thesis unfolding True poly_inverse_def poly_setsum
-    by (subst setsum.remove[of _ 0], insert p, auto simp: poly_monom)
+  show ?thesis unfolding True poly_inverse_def poly_sum
+    by (subst sum.remove[of _ 0], insert p, auto simp: poly_monom)
 qed
 
 lemma (in inj_field_hom) poly_inverse_hom: 
@@ -396,7 +396,7 @@ qed
 
 lemma poly_inverse_0[simp]: "poly_inverse p = 0 \<longleftrightarrow> p = 0"
   unfolding poly_inverse_def 
-  by (subst setsum_monom_0_iff, force+)
+  by (subst sum_monom_0_iff, force+)
 
 lemma alg_poly_inverse: assumes x: "x \<noteq> 0"
   and alg: "alg_poly x p"
@@ -667,8 +667,8 @@ proof -
 qed
 
 lemma coeff_poly_inverse_degree: "coeff (poly_inverse p) (degree p) = coeff p 0"
-  unfolding poly_inverse_def coeff_setsum
-  by (subst setsum.remove[of _ "degree p"], auto)
+  unfolding poly_inverse_def coeff_sum
+  by (subst sum.remove[of _ "degree p"], auto)
 
 lemma degree_poly_inverse_no_0: assumes 0: "coeff p 0 \<noteq> 0" 
   shows "degree (poly_inverse p) = degree p"
@@ -698,8 +698,8 @@ proof -
     assume "degree ?ip \<noteq> n" 
     with dp deg have "degree ?ip < n" by auto
     hence "coeff ?ip n = 0" by (rule coeff_eq_0)
-    also have "coeff ?ip n = coeff p 1" unfolding poly_inverse_def coeff_setsum dp
-      by (subst setsum.remove[of _ "Suc n"], force+, subst setsum.remove[of _ n], auto)
+    also have "coeff ?ip n = coeff p 1" unfolding poly_inverse_def coeff_sum dp
+      by (subst sum.remove[of _ "Suc n"], force+, subst sum.remove[of _ n], auto)
     finally have 1: "coeff p 1 = 0" .
     from 0 have "poly p 0 = 0" unfolding poly_altdef by auto
     hence "[:0,1:] dvd p" by (simp add: dvd_iff_poly_eq_0)    

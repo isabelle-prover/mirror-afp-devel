@@ -262,11 +262,11 @@ next
     hence "degree (prod_list P) = degree (\<Prod>(set P))" by simp
     also have "... = degree (setprod id (set P))" by simp
     also have "... = (\<Sum>i\<in>(set P). degree (id i))"
-    proof (rule degree_setprod_eq_setsum_degree)
+    proof (rule degree_setprod_eq_sum_degree)
       show "\<forall>i\<in>set P. id i \<noteq> 0" using Cons.prems(2) by force
     qed
     also have "... > 0"
-      by (metis Cons.prems(2) List.finite_set set_P gr0I id_apply insert_iff list.set(2) setsum_pos)
+      by (metis Cons.prems(2) List.finite_set set_P gr0I id_apply insert_iff list.set(2) sum_pos)
     finally show "degree (prod_list P) \<noteq> 0" by simp
     show "\<And>u. u \<in> set P \<Longrightarrow> degree u \<noteq> 0 \<and> monic u" using Cons.prems by auto
   qed
@@ -591,10 +591,10 @@ proof -
   qed
   have degree_rhs_card: "degree ?rhs = CARD('a)"
   proof -
-    have "degree (setprod ?f UNIV) = setsum (degree \<circ> ?f) UNIV
-      \<and> coeff (setprod ?f UNIV) (setsum (degree \<circ> ?f) UNIV) = 1"
-      by (rule degree_setprod_setsum_monic, auto)
-    moreover have "setsum (degree \<circ> ?f) UNIV = CARD('a)" by auto
+    have "degree (setprod ?f UNIV) = sum (degree \<circ> ?f) UNIV
+      \<and> coeff (setprod ?f UNIV) (sum (degree \<circ> ?f) UNIV) = 1"
+      by (rule degree_setprod_sum_monic, auto)
+    moreover have "sum (degree \<circ> ?f) UNIV = CARD('a)" by auto
     ultimately show ?thesis by presburger
   qed
   have monic_lhs: "monic ?lhs" using degree_lhs_card by auto
@@ -1018,10 +1018,10 @@ qed
 
 
 
-lemma poly_mod_setsum:
+lemma poly_mod_sum:
   fixes x y z :: "'b::field poly"
   assumes f: "finite A"
-  shows "setsum f A mod z = setsum (\<lambda>i. f i mod z) A"
+  shows "sum f A mod z = sum (\<lambda>i. f i mod z) A"
 using f
 by (induct, auto simp add: poly_mod_add_left)
 
@@ -1077,8 +1077,8 @@ proof -
   let ?f="\<lambda>k. of_nat (CARD('a) choose k) * x ^ k * y ^ (CARD('a) - k)"
   have A_rw: "?A = insert CARD('a) (insert 0 (?A - {0} - {CARD('a)}))"
     by fastforce
-  have setsum0: "setsum ?f (?A - {0} - {CARD('a)}) = 0"
-  proof (rule setsum.neutral, rule)
+  have sum0: "sum ?f (?A - {0} - {CARD('a)}) = 0"
+  proof (rule sum.neutral, rule)
     fix xa assume xa: "xa \<in> {0..CARD('a)} - {0} - {CARD('a)}"
     have card_dvd_choose: "CARD('a) dvd  (CARD('a) choose xa)"
     proof (rule dvd_choose_prime)
@@ -1097,18 +1097,18 @@ proof -
   have "(x + y)^CARD('a)
     = (\<Sum>k = 0..CARD('a). of_nat (CARD('a) choose k) * x ^ k * y ^ (CARD('a) - k))"
     unfolding binomial_ring ..
-  also have "... = setsum ?f (insert CARD('a) (insert 0 (?A - {0} - {CARD('a)})))"
+  also have "... = sum ?f (insert CARD('a) (insert 0 (?A - {0} - {CARD('a)})))"
     using A_rw by simp
-  also have "... = ?f 0 + ?f CARD('a) + setsum ?f (?A - {0} - {CARD('a)})" by auto
-  also have "... = x^CARD('a) + y^CARD('a)" unfolding setsum0 by auto
+  also have "... = ?f 0 + ?f CARD('a) + sum ?f (?A - {0} - {CARD('a)})" by auto
+  also have "... = x^CARD('a) + y^CARD('a)" unfolding sum0 by auto
   finally show ?thesis .
 qed
 
 
-lemma power_poly_setsum_mod_ring:
+lemma power_poly_sum_mod_ring:
 fixes f :: "'b \<Rightarrow> 'a mod_ring poly"
 assumes f: "finite A"
-shows "(setsum f A) ^ CARD('a) = setsum (\<lambda>i. (f i) ^ CARD('a)) A"
+shows "(sum f A) ^ CARD('a) = sum (\<lambda>i. (f i) ^ CARD('a)) A"
 using f by (induct, auto simp add: add_power_poly_mod_ring)
 
 
@@ -1119,9 +1119,9 @@ proof -
   have "h ^ CARD('a) = (\<Sum>i\<le>degree h. monom (coeff h i) i) ^ CARD('a)"
     by (simp add: poly_as_sum_of_monoms)
   also have "... = (\<Sum>i\<le>degree h. (monom (coeff h i) i) ^ CARD('a))"
-    by (simp add: power_poly_setsum_mod_ring)
+    by (simp add: power_poly_sum_mod_ring)
   also have "... = (\<Sum>i\<le>degree h. monom (coeff h i) (CARD('a)*i))"
-  proof (rule setsum.cong, rule)
+  proof (rule sum.cong, rule)
     fix x assume x: "x \<in> {..degree h}"
     show "monom (coeff h x) x ^ CARD('a) = monom (coeff h x) (CARD('a) * x)"
       by (unfold poly_eq_iff, auto simp add: monom_power)
@@ -1140,7 +1140,7 @@ by (metis Poly_berlekamp_mat degree_0 degree_mod_less gr_implies_not0 i linorder
   Equation 12: alternative statement.
 *)
 
-lemma monom_card_pow_mod_setsum_berlekamp:
+lemma monom_card_pow_mod_sum_berlekamp:
 assumes i: "i < degree u"
 shows "monom 1 (CARD('a) * i) mod u = (\<Sum>j<degree u. monom ((berlekamp_mat u) $$ (i,j)) j)"
 proof -
@@ -1158,7 +1158,7 @@ proof -
         using degree_le2 poly_as_sum_of_monoms' by fastforce
   also have "... = (\<Sum>i<degree u. monom (coeff ?p i) i)" using set_rw by auto
   also have "... = (\<Sum>j<degree u. monom ((berlekamp_mat u) $$ (i,j)) j)"
-  proof (rule setsum.cong, rule)
+  proof (rule sum.cong, rule)
     fix x assume x: "x \<in> {..<degree u}"
     have "coeff ?p x = berlekamp_mat u $$ (i, x)"
     proof (rule coeff_Poly_list_of_vec_nth)
@@ -1172,50 +1172,50 @@ qed
 
 
 
-lemma col_scalar_prod_as_setsum:
+lemma col_scalar_prod_as_sum:
 assumes "dim\<^sub>v v = dim\<^sub>r A"
 shows "col A j \<bullet> v = (\<Sum>i = 0..<dim\<^sub>v v. A $$ (i,j) * v $ i)"
   using assms
   unfolding col_def scalar_prod_def
-  by transfer' (rule setsum.cong, transfer', auto simp add: mk_vec_def mk_mat_def )
+  by transfer' (rule sum.cong, transfer', auto simp add: mk_vec_def mk_mat_def )
 
-lemma row_transpose_scalar_prod_as_setsum:
+lemma row_transpose_scalar_prod_as_sum:
 assumes j: "j < dim\<^sub>c A" and dim_v: "dim\<^sub>v v = dim\<^sub>r A"
 shows "row (transpose\<^sub>m A) j \<bullet> v = (\<Sum>i = 0..<dim\<^sub>v v. A $$ (i,j) * v $ i)"
 proof -
   have "row (transpose\<^sub>m A) j \<bullet> v = col A j \<bullet> v" using j row_transpose by auto
   also have "... = (\<Sum>i = 0..<dim\<^sub>v v. A $$ (i,j) * v $ i)"
-    by (rule col_scalar_prod_as_setsum[OF dim_v])
+    by (rule col_scalar_prod_as_sum[OF dim_v])
   finally show ?thesis .
 qed
 
 
-lemma poly_as_setsum_eq_monoms:
+lemma poly_as_sum_eq_monoms:
 assumes ss_eq: "(\<Sum>i<n. monom (f i) i) = (\<Sum>i<n. monom (g i) i)"
 and a_less_n: "a<n"
 shows "f a = g a"
 proof -
   let ?f="\<lambda>i. if i = a then f i else 0"
   let ?g="\<lambda>i. if i = a then g i else 0"
-  have setsum_f_0: "setsum ?f ({..<n} - {a}) = 0" by (rule setsum.neutral, auto)
+  have sum_f_0: "sum ?f ({..<n} - {a}) = 0" by (rule sum.neutral, auto)
   have "coeff (\<Sum>i<n. monom (f i) i) a = coeff (\<Sum>i<n. monom (g i) i) a"
     using ss_eq unfolding poly_eq_iff by simp
   hence "(\<Sum>i<n. coeff (monom (f i) i) a) = (\<Sum>i<n. coeff (monom (g i) i) a)"
-    by (simp add: coeff_setsum)
+    by (simp add: coeff_sum)
   hence 1: "(\<Sum>i<n. if i = a then f i else 0) = (\<Sum>i<n. if i = a then g i else 0)"
     unfolding coeff_monom by auto
   have set_rw: "{..<n} = (insert a ({..<n} - {a}))" using a_less_n by auto
-  have "(\<Sum>i<n. if i = a then f i else 0) = setsum ?f (insert a ({..<n} - {a}))"
+  have "(\<Sum>i<n. if i = a then f i else 0) = sum ?f (insert a ({..<n} - {a}))"
     using set_rw by auto
-  also have "... = ?f a + setsum ?f ({..<n} - {a})"
-    by (simp add: setsum.insert_remove)
-  also have "... = ?f a" using setsum_f_0 by simp
+  also have "... = ?f a + sum ?f ({..<n} - {a})"
+    by (simp add: sum.insert_remove)
+  also have "... = ?f a" using sum_f_0 by simp
   finally have 2: "(\<Sum>i<n. if i = a then f i else 0) = ?f a" .
-  have "setsum ?g {..<n} = setsum ?g (insert a ({..<n} - {a}))"
+  have "sum ?g {..<n} = sum ?g (insert a ({..<n} - {a}))"
     using set_rw by auto
-  also have "... = ?g a + setsum ?g ({..<n} - {a})"
-    by (simp add: setsum.insert_remove)
-  also have "... = ?g a" using setsum_f_0 by simp
+  also have "... = ?g a + sum ?g ({..<n} - {a})"
+    by (simp add: sum.insert_remove)
+  also have "... = ?g a" using sum_f_0 by simp
   finally have 3: "(\<Sum>i<n. if i = a then g i else 0) = ?g a" .
   show ?thesis using 1 2 3 by auto
 qed
@@ -1299,7 +1299,7 @@ proof -
   hence "h = (\<Sum>j\<le>degree u - 1. monom (coeff h j) j)" using poly_as_sum_of_monoms' by fastforce
   also have "... = (\<Sum>j<degree u. monom (coeff h j) j)" using set_rw by simp
     also have "... = (\<Sum>j<degree u. monom (?f j) j)"
-    proof (rule setsum.cong, rule+)
+    proof (rule sum.cong, rule+)
       fix j assume i: "j \<in> {..<degree u}"
       have "(coeff h j) = ?f j"
         using rhs vec_of_list_coeffs_replicate_nth[OF i deg_le]
@@ -1308,40 +1308,40 @@ proof -
         by simp
     qed
     also have "... = (\<Sum>j<degree u. monom (row (transpose\<^sub>m ?B) j \<bullet> H) j)"
-      by (rule setsum.cong, auto)
+      by (rule sum.cong, auto)
     also have "... = (\<Sum>j<degree u. monom (\<Sum>i = 0..<dim\<^sub>v H. ?B $$ (i,j) * H $ i) j)"
-    proof (rule setsum.cong, rule)
+    proof (rule sum.cong, rule)
       fix x assume x: "x \<in> {..<degree u}"
       show "monom (row (transpose\<^sub>m ?B) x \<bullet> H) x =
       monom (\<Sum>i = 0..<dim\<^sub>v H. ?B $$ (i, x) * H $ i) x"
-      proof (unfold monom_eq_iff, rule row_transpose_scalar_prod_as_setsum[OF _ dimv_h_dimr_B])
+      proof (unfold monom_eq_iff, rule row_transpose_scalar_prod_as_sum[OF _ dimv_h_dimr_B])
         show "x < dim\<^sub>c ?B" using x deg_le by auto
       qed
     qed
     also have "... = (\<Sum>j<degree u. \<Sum>i = 0..<dim\<^sub>v H. monom (?B $$ (i,j) * H $ i) j)"
-      by (auto simp add: monom_setsum)
+      by (auto simp add: monom_sum)
     also have "... = (\<Sum>i = 0..<dim\<^sub>v H. \<Sum>j<degree u. monom (?B $$ (i,j) * H $ i) j)"
-      by (rule setsum.commute)
+      by (rule sum.commute)
     also have "... = (\<Sum>i = 0..<dim\<^sub>v H. \<Sum>j<degree u.  monom (H $ i) 0 * monom (?B $$ (i,j)) j)"
-    proof (rule setsum.cong, rule, rule setsum.cong, rule)
+    proof (rule sum.cong, rule, rule sum.cong, rule)
        fix x xa
        show "monom (?B $$ (x, xa) * H $ x) xa = monom (H $ x) 0 * monom (?B $$ (x, xa)) xa"
         by (simp add: mult_monom)
     qed
     also have "... = (\<Sum>i = 0..<dim\<^sub>v H. (monom (H $ i) 0) * (\<Sum>j<degree u. monom (?B $$ (i,j)) j))"
-      by (rule setsum.cong, auto simp: setsum_distrib_left)
+      by (rule sum.cong, auto simp: sum_distrib_left)
     also have "... = (\<Sum>i = 0..<dim\<^sub>v H. (monom (H $ i) 0) * (monom 1 (CARD('a) * i) mod u))"
-    proof (rule setsum.cong, rule)
+    proof (rule sum.cong, rule)
       fix x assume x: "x \<in> {0..<dim\<^sub>v H}"
       have "(\<Sum>j<degree u. monom (?B $$ (x, j)) j) = (monom 1 (CARD('a) * x) mod u)"
-      proof (rule monom_card_pow_mod_setsum_berlekamp[symmetric])
+      proof (rule monom_card_pow_mod_sum_berlekamp[symmetric])
         show "x < degree u" using x dimv_h_dimr_B by auto
       qed
       thus "monom (H $ x) 0 * (\<Sum>j<degree u. monom (?B $$ (x, j)) j) =
          monom (H $ x) 0 * (monom 1 (CARD('a) * x) mod u)" by presburger
     qed
     also have "... =  (\<Sum>i = 0..<dim\<^sub>v H. monom (H $ i) (CARD('a) * i) mod u)"
-    proof (rule setsum.cong, rule)
+    proof (rule sum.cong, rule)
       fix x
       have h_rw: "monom (H $ x) 0 mod u = monom (H $ x) 0"
         by (metis deg_le degree_pCons_eq_if gr_implies_not_zero
@@ -1358,9 +1358,9 @@ proof -
         = monom (H $ x) (CARD('a) * x) mod u" ..
     qed
     also have "... = (\<Sum>i = 0..<dim\<^sub>v H. monom (H $ i) (CARD('a) * i)) mod u"
-      by (simp add: poly_mod_setsum)
+      by (simp add: poly_mod_sum)
     also have "... = (\<Sum>i = 0..<dim\<^sub>v H. monom (coeff h i) (CARD('a) * i)) mod u"
-    proof (rule arg_cong[of _ _ "\<lambda>x. x  mod u"], rule setsum.cong, rule)
+    proof (rule arg_cong[of _ _ "\<lambda>x. x  mod u"], rule sum.cong, rule)
        fix x assume x: "x \<in> {0..<dim\<^sub>v H}"
        have "H $ x = (coeff h x)"
        proof (unfold H, rule vec_of_list_coeffs_replicate_nth[OF _ deg_le])
@@ -1373,11 +1373,11 @@ proof -
     proof (rule arg_cong[of _ _ "\<lambda>x. x mod u"])
       let ?f="\<lambda>i. monom (coeff h i) (CARD('a) * i)"
       have ss0: "(\<Sum>i = degree h + 1 ..< dim\<^sub>v H. ?f i) = 0"
-        by (rule setsum.neutral, simp add: coeff_eq_0)
+        by (rule sum.neutral, simp add: coeff_eq_0)
       have set_rw: "{0..< dim\<^sub>v H} = {0..degree h} \<union> {degree h + 1 ..< dim\<^sub>v H}"
         using degree_h_less_dim_H by auto
       have "(\<Sum>i = 0..<dim\<^sub>v H. ?f i) = (\<Sum>i = 0..degree h. ?f i) + (\<Sum>i = degree h + 1 ..< dim\<^sub>v H. ?f i)"
-        unfolding set_rw by (rule setsum.union_disjoint, auto)
+        unfolding set_rw by (rule sum.union_disjoint, auto)
       also have "... = (\<Sum>i = 0..degree h. ?f i)" unfolding ss0 by auto
       finally show "(\<Sum>i = 0..<dim\<^sub>v H. ?f i) = (\<Sum>i\<le>degree h. ?f i)"
         by (simp add: atLeast0AtMost)
@@ -1403,11 +1403,11 @@ next
      unfolding cong_poly_def poly_as_sum_of_monoms poly_power_card_as_sum_of_monoms
      by auto
   also have "... = (\<Sum>i\<le>degree h. monom (coeff h i) 0 * monom 1 (CARD('a)*i)) mod u"
-    by (rule arg_cong[of _ _ "\<lambda>x. x mod u"], rule setsum.cong, simp_all add: mult_monom)
+    by (rule arg_cong[of _ _ "\<lambda>x. x mod u"], rule sum.cong, simp_all add: mult_monom)
   also have "... = (\<Sum>i\<le>degree h. monom (coeff h i) 0 * monom 1 (CARD('a)*i) mod u)"
-    by (simp add: poly_mod_setsum)
+    by (simp add: poly_mod_sum)
   also have "... = (\<Sum>i\<le>degree h. monom (coeff h i) 0 * (monom 1 (CARD('a)*i) mod u))"
-  proof (rule setsum.cong, rule)
+  proof (rule sum.cong, rule)
     fix x assume x: "x \<in> {..degree h}"
     have h_rw: "monom (coeff h x) 0 mod u = monom (coeff h x) 0"
         by (metis deg_le degree_pCons_eq_if gr_implies_not_zero
@@ -1422,10 +1422,10 @@ next
       = monom (coeff h x) 0 * (monom 1 (CARD('a) * x) mod u)" .
   qed
   also have "... = (\<Sum>i\<le>degree h. monom (coeff h i) 0 * (\<Sum>j<degree u. monom (?B $$ (i, j)) j))"
-  proof (rule setsum.cong, rule)
+  proof (rule sum.cong, rule)
     fix x assume x: "x \<in> {..degree h}"
     have "(monom 1 (CARD('a) * x) mod u) = (\<Sum>j<degree u. monom (?B $$ (x, j)) j)"
-    proof (rule monom_card_pow_mod_setsum_berlekamp)
+    proof (rule monom_card_pow_mod_sum_berlekamp)
       show " x < degree u" using x deg_le by auto
     qed
     thus "monom (coeff h x) 0 * (monom 1 (CARD('a) * x) mod u) =
@@ -1435,33 +1435,33 @@ next
   proof -
     let ?f="\<lambda>i. monom (coeff h i) 0 * (\<Sum>j<degree u. monom (?B $$ (i, j)) j)"
     have ss0: "(\<Sum>i=degree h+1 ..< degree u. ?f i) = 0"
-      by (rule setsum.neutral, simp add: coeff_eq_0)
+      by (rule sum.neutral, simp add: coeff_eq_0)
     have set_rw: "{0..<degree u} = {0..degree h} \<union> {degree h+1..<degree u}" using deg_le by auto
     have "(\<Sum>i=0..<degree u. ?f i) = (\<Sum>i=0..degree h. ?f i) + (\<Sum>i=degree h+1 ..< degree u. ?f i)"
-    unfolding set_rw by (rule setsum.union_disjoint, auto)
+    unfolding set_rw by (rule sum.union_disjoint, auto)
     also have "... = (\<Sum>i=0..degree h. ?f i)" using ss0 by simp
     finally show ?thesis
       by (simp add: atLeast0AtMost atLeast0LessThan)
   qed
   also have "... = (\<Sum>i<degree u. (\<Sum>j<degree u. monom (coeff h i) 0 * monom (?B $$ (i, j)) j))"
-    by (simp add: setsum_distrib_left)
+    by (simp add: sum_distrib_left)
   also have "... = (\<Sum>i<degree u. (\<Sum>j<degree u. monom (coeff h i * ?B $$ (i, j)) j))"
     by (simp add: mult_monom)
   also have "... = (\<Sum>j<degree u. (\<Sum>i<degree u. monom (coeff h i * ?B $$ (i, j)) j))"
-    using setsum.commute by auto
+    using sum.commute by auto
   also have "... = (\<Sum>j<degree u. monom (\<Sum>i<degree u.  (coeff h i * ?B $$ (i, j))) j)"
-    by (simp add: monom_setsum)
+    by (simp add: monom_sum)
   finally have ss_rw: "(\<Sum>i<degree u. monom (coeff h i) i)
     = (\<Sum>j<degree u. monom (\<Sum>i<degree u. coeff h i * ?B $$ (i, j)) j)" .
-  have coeff_eq_setsum: "\<forall>i. i < degree u \<longrightarrow> coeff h i = (\<Sum>j<degree u. coeff h j * ?B $$ (j, i))"
-    using poly_as_setsum_eq_monoms[OF ss_rw] by fast
-  have coeff_eq_setsum': "\<forall>i. i < degree u \<longrightarrow> H $ i = (\<Sum>j<degree u. H $ j * ?B $$ (j, i))"
+  have coeff_eq_sum: "\<forall>i. i < degree u \<longrightarrow> coeff h i = (\<Sum>j<degree u. coeff h j * ?B $$ (j, i))"
+    using poly_as_sum_eq_monoms[OF ss_rw] by fast
+  have coeff_eq_sum': "\<forall>i. i < degree u \<longrightarrow> H $ i = (\<Sum>j<degree u. H $ j * ?B $$ (j, i))"
   proof (rule+)
     fix i assume i: "i < degree u"
     have "H $ i = coeff h i" by (simp add: H deg_le i vec_of_list_coeffs_replicate_nth)
-    also have "... = (\<Sum>j<degree u. coeff h j * ?B $$ (j, i))" using coeff_eq_setsum i by blast
+    also have "... = (\<Sum>j<degree u. coeff h j * ?B $$ (j, i))" using coeff_eq_sum i by blast
     also have "... = (\<Sum>j<degree u. H $ j * ?B $$ (j, i))"
-      by (rule setsum.cong, auto simp add: H deg_le vec_of_list_coeffs_replicate_nth)
+      by (rule sum.cong, auto simp add: H deg_le vec_of_list_coeffs_replicate_nth)
     finally show "H $ i = (\<Sum>j<degree u. H $ j * ?B $$ (j, i))" .
   qed
   show "(transpose\<^sub>m (?B)) \<otimes>\<^sub>m\<^sub>v H = H"
@@ -1471,12 +1471,12 @@ next
     assume i: "i < dim\<^sub>v (H)"
     have "(transpose\<^sub>m ?B \<otimes>\<^sub>m\<^sub>v H) $ i = row (transpose\<^sub>m ?B) i \<bullet> H" using i by simp
     also have "... = (\<Sum>j = 0..<dim\<^sub>v H. ?B $$ (j, i) * H $ j)"
-    proof (rule row_transpose_scalar_prod_as_setsum)
+    proof (rule row_transpose_scalar_prod_as_sum)
       show "i < dim\<^sub>c ?B" using i by simp
       show "dim\<^sub>v H = dim\<^sub>r ?B" by simp
     qed
-    also have "... = (\<Sum>j<degree u. H $ j * ?B $$ (j, i))" by (rule setsum.cong, auto)
-    also have "... = H $ i" using coeff_eq_setsum'[rule_format, symmetric, of i] i by simp
+    also have "... = (\<Sum>j<degree u. H $ j * ?B $$ (j, i))" by (rule sum.cong, auto)
+    also have "... = H $ i" using coeff_eq_sum'[rule_format, symmetric, of i] i by simp
     finally show "(transpose\<^sub>m ?B \<otimes>\<^sub>m\<^sub>v H) $ i = H $ i" .
   qed
  qed
@@ -2130,19 +2130,19 @@ proof (unfold set_berlekamp_basis_eq, rule linear_map.linear_inj_image_is_basis)
 qed
 
 
-lemma finsum_setsum:
+lemma finsum_sum:
 fixes f::"'a mod_ring poly"
 assumes f: "finite B"
 and a_Pi: "a \<in> B \<rightarrow> carrier R"
 and V: "B \<subseteq> carrier W"
-shows "(\<Oplus>\<^bsub>W\<^esub>v\<in>B. a v \<odot>\<^bsub>W\<^esub> v) = setsum (\<lambda>v. smult (a v) v) B"
+shows "(\<Oplus>\<^bsub>W\<^esub>v\<in>B. a v \<odot>\<^bsub>W\<^esub> v) = sum (\<lambda>v. smult (a v) v) B"
 using f a_Pi V
 proof (induct B)
   case empty
   thus ?case unfolding Berlekamp_subspace.module.M.finsum_empty by auto
   next
   case (insert x V)
-  have hyp: "(\<Oplus>\<^bsub>W\<^esub>v \<in> V. a v \<odot>\<^bsub>W\<^esub> v) = setsum (\<lambda>v. smult (a v) v) V"
+  have hyp: "(\<Oplus>\<^bsub>W\<^esub>v \<in> V. a v \<odot>\<^bsub>W\<^esub> v) = sum (\<lambda>v. smult (a v) v) V"
   proof (rule insert.hyps)
     show "a \<in> V \<rightarrow> carrier R"
       using insert.prems unfolding class_field_def  by auto
@@ -2171,9 +2171,9 @@ proof (induct B)
     qed
   qed
   also have "... = (a x \<odot>\<^bsub>W\<^esub> x) + (\<Oplus>\<^bsub>W\<^esub>v \<in> V. a v \<odot>\<^bsub>W\<^esub> v)" by auto
-  also have "... = (a x \<odot>\<^bsub>W\<^esub> x) + setsum (\<lambda>v. smult (a v) v) V" unfolding hyp by simp
-  also have "... = (smult (a x) x) + setsum (\<lambda>v. smult (a v) v) V" by simp
-  also have "... = setsum (\<lambda>v. smult (a v) v) (insert x V)"
+  also have "... = (a x \<odot>\<^bsub>W\<^esub> x) + sum (\<lambda>v. smult (a v) v) V" unfolding hyp by simp
+  also have "... = (smult (a x) x) + sum (\<lambda>v. smult (a v) v) V" by simp
+  also have "... = sum (\<lambda>v. smult (a v) v) (insert x V)"
     by (simp add: insert.hyps(1) insert.hyps(2))
   finally show ?case .
 qed
@@ -2292,7 +2292,7 @@ proof -
     show "degree v < degree u"
     proof -
       have "(\<Sum>i | i < n. degree (m i)) = degree (setprod m {i. i < n})"
-        by (rule degree_setprod_eq_setsum_degree[symmetric, OF not_zero])
+        by (rule degree_setprod_eq_sum_degree[symmetric, OF not_zero])
       thus ?thesis using degree_v unfolding degree_setprod by auto
     qed
   qed
@@ -2328,21 +2328,21 @@ proof (rule ccontr, auto)
   from this obtain a where a_Pi: "a \<in> B \<rightarrow>\<^sub>E carrier R"
     and lincomb_x: "Berlekamp_subspace.lincomb a B = x"
     by blast
-  have fs_ss: "(\<Oplus>\<^bsub>W\<^esub>v\<in>B. a v \<odot>\<^bsub>W\<^esub> v) = setsum (\<lambda>v. smult (a v) v) B"
-  proof (rule finsum_setsum)
+  have fs_ss: "(\<Oplus>\<^bsub>W\<^esub>v\<in>B. a v \<odot>\<^bsub>W\<^esub> v) = sum (\<lambda>v. smult (a v) v) B"
+  proof (rule finsum_sum)
     show "finite B" by fact
     show "a \<in> B \<rightarrow> carrier R" using a_Pi by auto
     show "B \<subseteq> carrier W" by (rule V_in_carrier)
   qed
   have "x mod p_i = Berlekamp_subspace.lincomb a B mod p_i" using lincomb_x by simp
   also have " ... = (\<Oplus>\<^bsub>W\<^esub>v\<in>B. a v \<odot>\<^bsub>W\<^esub> v) mod p_i" unfolding Berlekamp_subspace.lincomb_def ..
-  also have "... = (setsum (\<lambda>v. smult (a v) v) B) mod p_i" unfolding fs_ss ..
-  also have "... = setsum (\<lambda>v. smult (a v) v mod p_i) B" using finite_V poly_mod_setsum by blast
-  also have "... = setsum (\<lambda>v. smult (a v) (v mod p_i)) B" by (meson mod_smult_left)
-  also have "... = setsum (\<lambda>v. smult (a v) (v mod p_j)) B" using all_eq by auto
-  also have "... = setsum (\<lambda>v. smult (a v) v mod p_j) B" by (metis mod_smult_left)
-  also have "... = (setsum (\<lambda>v. smult (a v) v) B) mod p_j"
-  by (metis (mono_tags, lifting) finite_V poly_mod_setsum setsum.cong)
+  also have "... = (sum (\<lambda>v. smult (a v) v) B) mod p_i" unfolding fs_ss ..
+  also have "... = sum (\<lambda>v. smult (a v) v mod p_i) B" using finite_V poly_mod_sum by blast
+  also have "... = sum (\<lambda>v. smult (a v) (v mod p_i)) B" by (meson mod_smult_left)
+  also have "... = sum (\<lambda>v. smult (a v) (v mod p_j)) B" using all_eq by auto
+  also have "... = sum (\<lambda>v. smult (a v) v mod p_j) B" by (metis mod_smult_left)
+  also have "... = (sum (\<lambda>v. smult (a v) v) B) mod p_j"
+  by (metis (mono_tags, lifting) finite_V poly_mod_sum sum.cong)
   also have "... = (\<Oplus>\<^bsub>W\<^esub>v\<in>B. a v \<odot>\<^bsub>W\<^esub> v) mod p_j" unfolding fs_ss ..
   also have "... = Berlekamp_subspace.lincomb a B mod p_j"
     unfolding Berlekamp_subspace.lincomb_def ..
@@ -2430,8 +2430,8 @@ proof -
     by (metis P_m u_desc_square_free inj_on_m setprod.reindex_cong)
   have not_zero: "\<forall>i\<in>{i. i < n}. m i \<noteq> 0"
     using P_m u_desc_square_free u_not_0 by auto
-  have deg_setsum_eq: "(\<Sum>i\<in>{i. i < n}. degree (m i)) = degree u"
-    by (metis degree_setprod degree_setprod_eq_setsum_degree not_zero)
+  have deg_sum_eq: "(\<Sum>i\<in>{i. i < n}. degree (m i)) = degree u"
+    by (metis degree_setprod degree_setprod_eq_sum_degree not_zero)
   have coprime_mi_mj:"\<forall>i\<in>{i. i < n}. \<forall>j\<in>{i. i < n}. i \<noteq> j \<longrightarrow> coprime (m i) (m j)"
   proof (rule+)
     fix i j assume i: "i \<in> {i. i < n}"
@@ -2472,11 +2472,11 @@ proof -
         by (auto, metis i leading_coeff_neq_0 mem_Collect_eq vec_index_vec vec_zero_index(1))
      qed
      moreover have deg_x2: "degree x < (\<Sum>i\<in>{i. i < n}. degree (m i))"
-      using deg_setsum_eq deg_x by simp
+      using deg_sum_eq deg_x by simp
      moreover have "\<forall>i\<in>{i. i < n}. [0 = (\<lambda>i. 0) i] (mod m i)"
       by (auto simp add: cong_poly_def)
      moreover have "degree 0 < (\<Sum>i\<in>{i. i < n}. degree (m i))"
-      using degree_setprod deg_setsum_eq deg_u0 by force
+      using degree_setprod deg_sum_eq deg_u0 by force
      moreover have "\<exists>!x. degree x < (\<Sum>i\<in>{i. i < n}. degree (m i))
         \<and> (\<forall>i\<in>{i. i < n}. [x = (\<lambda>i. 0) i] (mod m i))"
      proof (rule chinese_remainder_unique_poly[OF not_zero coprime_mi_mj])
@@ -2520,7 +2520,7 @@ proof -
         fix p1 p2 assume "p1 \<in> P" and "p2 \<in> P" and "p1 \<noteq> p2" thus "coprime p1 p2"
           by (rule coprime_polynomial_factorization[OF P finite_P])
       qed
-      show "degree v < degree u" using deg_v deg_setsum_eq degree_setprod by presburger
+      show "degree v < degree u" using deg_v deg_sum_eq degree_setprod by presburger
       show "x = vec n (\<lambda>i. coeff (v mod m i) 0)"
       proof (unfold vec_eq_iff, rule conjI)
          show "dim\<^sub>v x = dim\<^sub>v (vec n (\<lambda>i. coeff (v mod m i) 0))" using x n by simp

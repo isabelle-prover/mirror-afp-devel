@@ -25,15 +25,15 @@ proof (induction k)
   finally show ?case .
 qed simp_all
 
-lemma Ints_setsum:
+lemma Ints_sum:
   assumes "\<And>x. x \<in> A \<Longrightarrow> f x \<in> \<int>"
-  shows   "setsum f A \<in> \<int>"
+  shows   "sum f A \<in> \<int>"
   by (cases "finite A", insert assms, induction A rule: finite_induct)
      (auto intro!: Ints_add)
 
 lemma suminf_split_initial_segment':
   "summable (f :: nat \<Rightarrow> 'a::real_normed_vector) \<Longrightarrow> 
-       suminf f = (\<Sum>n. f (n + k + 1)) + setsum f {..k}"
+       suminf f = (\<Sum>n. f (n + k + 1)) + sum f {..k}"
   by (subst suminf_split_initial_segment[of _ "Suc k"], assumption, subst lessThan_Suc_atMost) 
      simp_all
 
@@ -68,8 +68,8 @@ lemma int_poly_rat_no_root_ge:
 proof -
   let ?S = "(\<Sum>i\<le>n. coeff p i * of_int a ^ i * (of_int b ^ (n - i)))"
   from \<open>b > 0\<close> have eq: "?S = of_int b ^ n * poly p (a / b)"
-    by (simp add: poly_altdef power_divide mult_ac n_def setsum_distrib_left power_diff)
-  have "?S \<in> \<int>" by (intro Ints_setsum Ints_mult assms Ints_power) simp_all
+    by (simp add: poly_altdef power_divide mult_ac n_def sum_distrib_left power_diff)
+  have "?S \<in> \<int>" by (intro Ints_sum Ints_mult assms Ints_power) simp_all
   moreover from assms have "?S \<noteq> 0" by (subst eq) auto
   ultimately have "abs ?S \<ge> 1" by (elim Ints_cases) simp
   with eq \<open>b > 0\<close> show ?thesis by (simp add: field_simps abs_mult)

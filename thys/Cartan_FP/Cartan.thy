@@ -119,7 +119,7 @@ next
     qed
     then show ?thesis
       apply (simp only: funpow_Suc_right o_def)
-      apply (rule comm_monoid_add_class.setsum.mono_neutral_right, auto)
+      apply (rule comm_monoid_add_class.sum.mono_neutral_right, auto)
       done
   qed
   also have "... = (deriv ^^ i) (deriv g) (f z)"
@@ -234,10 +234,10 @@ next
         then show ?thesis by (simp add: funpow_swap1 nz)
       qed
       show ?thesis
-        by (rule comm_monoid_add_class.setsum.mono_neutral_right) (auto simp: *)
+        by (rule comm_monoid_add_class.sum.mono_neutral_right) (auto simp: *)
     qed
     also have "... = of_nat (Suc m) * (deriv ^^ n) (deriv f) z"
-      apply (subst Groups_Big.comm_monoid_add_class.setsum.insert)
+      apply (subst Groups_Big.comm_monoid_add_class.sum.insert)
       apply (simp_all add: deriv_nffm [unfolded o_def] of_nat_Suc [of 0] del: of_nat_Suc)
       using n_Suc(2) Suc
       apply (auto simp del: funpow.simps simp: algebra_simps funpow_simps_right)

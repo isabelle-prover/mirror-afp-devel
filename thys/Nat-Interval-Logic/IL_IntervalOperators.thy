@@ -2189,9 +2189,9 @@ lemma iT_Div_0_card_if: "
   card (I \<oslash> 0) = (if I ={} then 0 else Suc 0)"
 by (fastforce simp: iT_Div_empty iT_Div_0 iTILL_0)
 
-lemma Int_empty_setsum:"
+lemma Int_empty_sum:"
   (\<Sum>k\<le>(n::nat). if {} \<inter> (I k) = {} then 0 else Suc 0) = 0"
-apply (rule setsum_eq_0_iff[THEN iffD2])
+apply (rule sum_eq_0_iff[THEN iffD2])
  apply (rule finite_atMost)
 apply simp
 done

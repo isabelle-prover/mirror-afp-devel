@@ -300,20 +300,20 @@ lemma vec_scalar_mult_closed[simp]: "(a \<odot>\<^sub>v v \<in> carrier\<^sub>v 
  
 lemma scalar_prod_left_zero[simp]: "v \<in> carrier\<^sub>v n \<Longrightarrow> \<zero>\<^sub>v n \<bullet> v = 0"
   unfolding scalar_prod_def
-  by (rule setsum.neutral, auto)
+  by (rule sum.neutral, auto)
 
 lemma scalar_prod_right_zero[simp]: "v \<in> carrier\<^sub>v n \<Longrightarrow> v \<bullet> \<zero>\<^sub>v n = 0"
   unfolding scalar_prod_def
-  by (rule setsum.neutral, auto)
+  by (rule sum.neutral, auto)
 
 lemma scalar_prod_left_unit[simp]: assumes v: "(v :: 'a :: semiring_1 vec) \<in> carrier\<^sub>v n" and i: "i < n"
   shows "unit\<^sub>v n i \<bullet> v = v $ i"
 proof -
   let ?f = "\<lambda> k. unit\<^sub>v n i $ k * v $ k"
   have id: "(\<Sum>k\<in>{0..<n}. ?f k) = unit\<^sub>v n i $ i * v $ i + (\<Sum>k\<in>{0..<n} - {i}. ?f k)"
-    by (rule setsum.remove, insert i, auto)
+    by (rule sum.remove, insert i, auto)
   also have "(\<Sum> k\<in>{0..<n} - {i}. ?f k) = 0"
-    by (rule setsum.neutral, insert i, auto)
+    by (rule sum.neutral, insert i, auto)
   finally
   show ?thesis unfolding scalar_prod_def using i v by simp
 qed
@@ -323,9 +323,9 @@ lemma scalar_prod_right_unit[simp]: assumes i: "i < n"
 proof -
   let ?f = "\<lambda> k. v $ k * unit\<^sub>v n i $ k"
   have id: "(\<Sum>k\<in>{0..<n}. ?f k) = v $ i * unit\<^sub>v n i $ i + (\<Sum>k\<in>{0..<n} - {i}. ?f k)"
-    by (rule setsum.remove, insert i, auto)
+    by (rule sum.remove, insert i, auto)
   also have "(\<Sum>k\<in>{0..<n} - {i}. ?f k) = 0"
-    by (rule setsum.neutral, insert i, auto)
+    by (rule sum.neutral, insert i, auto)
   finally
   show ?thesis unfolding scalar_prod_def using i by simp
 qed
@@ -334,32 +334,32 @@ lemma scalar_prod_left_distrib: assumes v: "v\<^sub>1 \<in> carrier\<^sub>v n" "
   shows "(v\<^sub>1 \<oplus>\<^sub>v v\<^sub>2) \<bullet> v\<^sub>3 = v\<^sub>1 \<bullet> v\<^sub>3 + v\<^sub>2 \<bullet> v\<^sub>3"
 proof -
   have "(\<Sum>i\<in>{0..<dim\<^sub>v v\<^sub>3}. (v\<^sub>1 \<oplus>\<^sub>v v\<^sub>2) $ i * v\<^sub>3 $ i) = (\<Sum>i\<in>{0..<dim\<^sub>v v\<^sub>3}. v\<^sub>1 $ i * v\<^sub>3 $ i + v\<^sub>2 $ i * v\<^sub>3 $ i)"
-    by (rule setsum.cong, insert v, auto simp: algebra_simps)
-  thus ?thesis unfolding scalar_prod_def using v by (auto simp: setsum.distrib)
+    by (rule sum.cong, insert v, auto simp: algebra_simps)
+  thus ?thesis unfolding scalar_prod_def using v by (auto simp: sum.distrib)
 qed
 
 lemma scalar_prod_right_distrib: assumes v: "v\<^sub>1 \<in> carrier\<^sub>v n" "v\<^sub>2 \<in> carrier\<^sub>v n" "v\<^sub>3 \<in> carrier\<^sub>v n"
   shows "v\<^sub>1 \<bullet> (v\<^sub>2 \<oplus>\<^sub>v v\<^sub>3) = v\<^sub>1 \<bullet> v\<^sub>2 + v\<^sub>1 \<bullet> v\<^sub>3"
 proof -
   have "(\<Sum>i\<in>{0..<dim\<^sub>v v\<^sub>3}. v\<^sub>1 $ i * (v\<^sub>2 \<oplus>\<^sub>v v\<^sub>3) $ i) = (\<Sum>i\<in>{0..<dim\<^sub>v v\<^sub>3}. v\<^sub>1 $ i * v\<^sub>2 $ i + v\<^sub>1 $ i * v\<^sub>3 $ i)"
-    by (rule setsum.cong, insert v, auto simp: algebra_simps)
-  thus ?thesis unfolding scalar_prod_def using v by (auto intro: setsum.distrib)
+    by (rule sum.cong, insert v, auto simp: algebra_simps)
+  thus ?thesis unfolding scalar_prod_def using v by (auto intro: sum.distrib)
 qed
 
 lemma scalar_scalar_prod_assoc[simp]: assumes v: "v\<^sub>1 \<in> carrier\<^sub>v n" "v\<^sub>2 \<in> carrier\<^sub>v n" 
   shows "(a \<odot>\<^sub>v v\<^sub>1) \<bullet> v\<^sub>2 = a * (v\<^sub>1 \<bullet> v\<^sub>2)"
-  unfolding scalar_prod_def setsum_distrib_left
-  by (rule setsum.cong, insert v, auto simp: ac_simps)
+  unfolding scalar_prod_def sum_distrib_left
+  by (rule sum.cong, insert v, auto simp: ac_simps)
 
 lemma scalar_prod_scalar_assoc[simp]: assumes v: "v\<^sub>1 \<in> carrier\<^sub>v n" "v\<^sub>2 \<in> carrier\<^sub>v n" 
   shows "v\<^sub>1 \<bullet> (a \<odot>\<^sub>v v\<^sub>2) = (a :: 'a :: comm_ring) * (v\<^sub>1 \<bullet> v\<^sub>2)"
-  unfolding scalar_prod_def setsum_distrib_left
-  by (rule setsum.cong, insert v, auto simp: ac_simps)
+  unfolding scalar_prod_def sum_distrib_left
+  by (rule sum.cong, insert v, auto simp: ac_simps)
 
 lemma scalar_prod_comm: assumes "(v\<^sub>1 :: 'a :: comm_semiring_0 vec) \<in> carrier\<^sub>v n" "v\<^sub>2 \<in> carrier\<^sub>v n" 
   shows "v\<^sub>1 \<bullet> v\<^sub>2 = v\<^sub>2 \<bullet> v\<^sub>1"
   unfolding scalar_prod_def
-  by (rule setsum.cong, insert assms, auto simp: ac_simps)
+  by (rule sum.cong, insert assms, auto simp: ac_simps)
 
 lemma vec_smult_l_distr:
   "((a::'a::ring) + b) \<odot>\<^sub>v v = a \<odot>\<^sub>v v \<oplus>\<^sub>v b \<odot>\<^sub>v v"
@@ -384,14 +384,14 @@ lemma vec_smult_one [simp]:
 
 lemma finsum_vec_index: assumes "finite F" and i: "i < n"
   and vs: "vs \<in> F \<rightarrow> carrier\<^sub>v n"
-  shows "finsum_vec TYPE('a :: comm_monoid_add) n vs F $ i = setsum (\<lambda> f. vs f $ i) F"
+  shows "finsum_vec TYPE('a :: comm_monoid_add) n vs F $ i = sum (\<lambda> f. vs f $ i) F"
   using `finite F` vs
 proof (induct F)
   case (insert f F)
   hence IH: "finsum_vec TYPE('a) n vs F $ i = (\<Sum>f\<in>F. vs f $ i)" 
     and vs: "vs \<in> F \<rightarrow> carrier\<^sub>v n" "vs f \<in> carrier\<^sub>v n" by auto
   show ?case unfolding finsum_vec_insert[OF insert(1-2) vs]
-    unfolding setsum.insert[OF insert(1-2)]
+    unfolding sum.insert[OF insert(1-2)]
     unfolding IH[symmetric]
     by (rule vec_index_add, insert i, insert finsum_vec_closed[OF vs(1)], auto)
 qed (insert i, auto simp: finsum_vec_empty)
@@ -970,7 +970,7 @@ proof
     unfolding vec_index_vec[OF i] vec_index_vec[OF i2]
     unfolding mat_mult_vec_def vec_scalar_mult_def
     unfolding scalar_prod_def vec_index_vec[OF i]
-    by (simp add: mult.left_commute setsum_distrib_left)
+    by (simp add: mult.left_commute sum_distrib_left)
   qed
 qed
 
@@ -980,15 +980,15 @@ proof -
   have "vec nc (\<lambda>j. v\<^sub>1 \<bullet> col A j) \<bullet> v\<^sub>2 = (\<Sum>i\<in>{0..<nc}. vec nc (\<lambda>j. \<Sum>k\<in>{0..<nr}. v\<^sub>1 $ k * col A j $ k) $ i * v\<^sub>2 $ i)"
     unfolding scalar_prod_def using * by auto
   also have "\<dots> = (\<Sum>i\<in>{0..<nc}. (\<Sum>k\<in>{0..<nr}. v\<^sub>1 $ k * col A i $ k) * v\<^sub>2 $ i)"
-    by (rule setsum.cong, auto)
+    by (rule sum.cong, auto)
   also have "\<dots> = (\<Sum>i\<in>{0..<nc}. (\<Sum>k\<in>{0..<nr}. v\<^sub>1 $ k * col A i $ k * v\<^sub>2 $ i))"
-    unfolding setsum_distrib_right ..
+    unfolding sum_distrib_right ..
   also have "\<dots> = (\<Sum>k\<in>{0..<nr}. (\<Sum>i\<in>{0..<nc}. v\<^sub>1 $ k * col A i $ k * v\<^sub>2 $ i))"
-    by (rule setsum.commute)
+    by (rule sum.commute)
   also have "\<dots> = (\<Sum>k\<in>{0..<nr}. (\<Sum>i\<in>{0..<nc}. v\<^sub>1 $ k * (col A i $ k * v\<^sub>2 $ i)))"
     by (simp add: ac_simps)
   also have "\<dots> = (\<Sum>k\<in>{0..<nr}. v\<^sub>1 $ k * (\<Sum>i\<in>{0..<nc}. col A i $ k * v\<^sub>2 $ i))"
-    unfolding setsum_distrib_left ..
+    unfolding sum_distrib_left ..
   also have "\<dots> = (\<Sum>k\<in>{0..<nr}. v\<^sub>1 $ k * vec nr (\<lambda>k. \<Sum>i\<in>{0..<nc}. row A k $ i * v\<^sub>2 $ i) $ k)"
     using * by auto
   also have "\<dots> = v\<^sub>1 \<bullet> vec nr (\<lambda>i. row A i \<bullet> v\<^sub>2)" unfolding scalar_prod_def using * by simp
@@ -1035,7 +1035,7 @@ lemma row_uminus[simp]: assumes i: "i < dim\<^sub>r A"
 lemma scalar_prod_uminus_left[simp]: assumes dim: "dim\<^sub>v v = dim\<^sub>v (w :: 'a :: ring vec)"
   shows "\<ominus>\<^sub>v v \<bullet> w = - (v \<bullet> w)"
   unfolding scalar_prod_def dim[symmetric]
-  by (subst setsum_negf[symmetric], rule setsum.cong, auto)
+  by (subst sum_negf[symmetric], rule sum.cong, auto)
 
 lemma col_uminus[simp]: assumes i: "i < dim\<^sub>c A"
   shows "col (\<ominus>\<^sub>m A) i = \<ominus>\<^sub>v (col A i)" 
@@ -1044,7 +1044,7 @@ lemma col_uminus[simp]: assumes i: "i < dim\<^sub>c A"
 lemma scalar_prod_uminus_right[simp]: assumes dim: "dim\<^sub>v v = dim\<^sub>v (w :: 'a :: ring vec)"
   shows "v \<bullet> \<ominus>\<^sub>v w = - (v \<bullet> w)"
   unfolding scalar_prod_def dim
-  by (subst setsum_negf[symmetric], rule setsum.cong, auto)
+  by (subst sum_negf[symmetric], rule sum.cong, auto)
 
 context fixes A B :: "'a :: ring mat" 
   assumes dim: "dim\<^sub>c A = dim\<^sub>r B"
@@ -1089,13 +1089,13 @@ lemma scalar_vec_one[simp]: "1 \<odot>\<^sub>v (v :: 'a :: semiring_1 vec) = v"
 
 lemma scalar_prod_scalar_right[simp]: 
   "dim\<^sub>v w = dim\<^sub>v v \<Longrightarrow> w \<bullet> (k \<odot>\<^sub>v v) = (k :: 'a :: comm_semiring_0) * (w \<bullet> v)"
-  unfolding scalar_prod_def setsum_distrib_left
-  by (auto intro: setsum.cong simp: ac_simps)
+  unfolding scalar_prod_def sum_distrib_left
+  by (auto intro: sum.cong simp: ac_simps)
 
 lemma scalar_prod_scalar_left[simp]: 
   "dim\<^sub>v w = dim\<^sub>v v \<Longrightarrow> (k \<odot>\<^sub>v w) \<bullet> v = (k :: 'a :: comm_semiring_0) * (w \<bullet> v)"
-  unfolding scalar_prod_def setsum_distrib_left
-  by (auto intro: setsum.cong simp: ac_simps)
+  unfolding scalar_prod_def sum_distrib_left
+  by (auto intro: sum.cong simp: ac_simps)
 
 lemma mat_mult_scalar_comm: assumes A: "A \<in> carrier\<^sub>m nr n" and B: "B \<in> carrier\<^sub>m n nc"
   shows "A \<otimes>\<^sub>m (k \<odot>\<^sub>m B) = (k :: 'a :: comm_semiring_0) \<odot>\<^sub>m (A \<otimes>\<^sub>m B)"
@@ -1176,11 +1176,11 @@ definition diagonal_mat :: "'a::zero mat \<Rightarrow> bool" where
   "diagonal_mat A \<equiv> \<forall>i<dim\<^sub>r A. \<forall>j<dim\<^sub>c A. i \<noteq> j \<longrightarrow> A $$ (i,j) = 0"
 
 definition (in comm_monoid_add) mat_sum :: "'a mat \<Rightarrow> 'a" where 
-  "mat_sum A = setsum (\<lambda> ij. A $$ ij) ({0 ..< dim\<^sub>r A} \<times> {0 ..< dim\<^sub>c A})"
+  "mat_sum A = sum (\<lambda> ij. A $$ ij) ({0 ..< dim\<^sub>r A} \<times> {0 ..< dim\<^sub>c A})"
 
 lemma mat_sum_0[simp]: "mat_sum (\<zero>\<^sub>m nr nc) = (0 :: 'a :: comm_monoid_add)"
   unfolding mat_sum_def
-  by (rule setsum.neutral, auto)
+  by (rule sum.neutral, auto)
 
 lemma mat_sum_add: assumes A: "(A :: 'a :: comm_monoid_add mat) \<in> carrier\<^sub>m nr nc" and B: "B \<in> carrier\<^sub>m nr nc" 
   shows "mat_sum (A \<oplus>\<^sub>m B) = mat_sum A + mat_sum B"
@@ -1188,7 +1188,7 @@ proof -
   from A B have id: "dim\<^sub>r A = nr" "dim\<^sub>r B = nr" "dim\<^sub>c A = nc" "dim\<^sub>c B = nc" 
     by auto
   show ?thesis unfolding mat_sum_def id
-    by (subst setsum.distrib[symmetric], rule setsum.cong, insert A B, auto)
+    by (subst sum.distrib[symmetric], rule sum.cong, insert A B, auto)
 qed
 
 subsection \<open>Update Operators\<close>
@@ -1254,10 +1254,10 @@ proof -
   have "(v1 @\<^sub>v v2) \<bullet> (w1 @\<^sub>v w2) = (\<Sum>i = 0..<n1. v1 $ i * w1 $ i) +
     (\<Sum>i = n1..<n1 + n2. v2 $ (i - n1) * w2 $ (i - n1))"
   unfolding scalar_prod_def
-    by (auto simp: dim id, subst setsum.union_disjoint, insert assms, force+)
+    by (auto simp: dim id, subst sum.union_disjoint, insert assms, force+)
   also have "(\<Sum>i = n1..<n1 + n2. v2 $ (i - n1) * w2 $ (i - n1))
     = (\<Sum>i = 0..< n2. v2 $ i * w2 $ i)"
-    by (rule setsum.reindex_cong[OF _ id2], auto)
+    by (rule sum.reindex_cong[OF _ id2], auto)
   finally show ?thesis by (simp, insert assms, auto simp: scalar_prod_def)
 qed
 
@@ -1806,8 +1806,8 @@ lemma vec_uminus_sprod:
   assumes [simp]: "v : carrier\<^sub>v n" "w : carrier\<^sub>v n"
   shows "- ((v::'a::field vec) \<bullet> w) = (\<ominus>\<^sub>v v) \<bullet> w"
   unfolding scalar_prod_def vec_uminus_def
-  apply (subst setsum_negf[symmetric])
-proof (rule setsum.cong[OF refl])
+  apply (subst sum_negf[symmetric])
+proof (rule sum.cong[OF refl])
   fix i assume i: "i : {0 ..<dim\<^sub>v w}"
   have [simp]: "dim\<^sub>v v = n" "dim\<^sub>v w = n" by auto
   show "- (v $ i * w $ i) = vec (dim\<^sub>v v) (\<lambda>i. - v $ i) $ i * w $ i"
@@ -2141,7 +2141,7 @@ proof -
     also have "\<dots> = row ?A i \<bullet> col ?B j" unfolding scalar_prod_def id using finite I
     proof (induct I)
       case (insert k I)
-      show ?case unfolding setsum.insert[OF insert(1-2)] hom_add hom_mult
+      show ?case unfolding sum.insert[OF insert(1-2)] hom_add hom_mult
         using insert(3-) * A B by auto
     qed simp
     also have "\<dots> = ?R $$ (i,j)" using A B * by auto
@@ -2173,7 +2173,7 @@ proof -
     also have "\<dots> = row ?A i \<bullet> ?v" unfolding scalar_prod_def id using finite I
     proof (induct I)
       case (insert k I)
-      show ?case unfolding setsum.insert[OF insert(1-2)] hom_add hom_mult
+      show ?case unfolding sum.insert[OF insert(1-2)] hom_add hom_mult
         using insert(3-) * A v by auto
     qed simp
     also have "\<dots> = ?R $ i" using A v * by auto
@@ -2224,7 +2224,7 @@ qed (simp add: mat_hom_one)
 
 lemma (in semiring_hom) hom_mat_sum: "hom (mat_sum A) = mat_sum (mat\<^sub>h A)"
 proof -
-  obtain B where id: "?thesis = (hom (setsum (op $$ A) B) = setsum (op $$ (mat\<^sub>h A)) B)"
+  obtain B where id: "?thesis = (hom (sum (op $$ A) B) = sum (op $$ (mat\<^sub>h A)) B)"
     and B: "B \<subseteq> {0..<dim\<^sub>r A} \<times> {0..<dim\<^sub>c A}"
   unfolding mat_sum_def by auto
   from B have "finite B" 
@@ -2232,7 +2232,7 @@ proof -
   thus ?thesis unfolding id using B
   proof (induct B)
     case (insert x F)
-    show ?case unfolding setsum.insert[OF insert(1-2)] hom_add 
+    show ?case unfolding sum.insert[OF insert(1-2)] hom_add 
       using insert(3-) by auto
   qed simp
 qed

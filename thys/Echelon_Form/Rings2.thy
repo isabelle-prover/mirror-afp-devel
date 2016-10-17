@@ -30,30 +30,30 @@ qed
 context ring
 begin
 
-lemma setsum_add:
+lemma sum_add:
   assumes A: "finite A"
   and B: "finite B"
-  shows "setsum f A + setsum g B = setsum f (A - B) + setsum g (B - A) + setsum (\<lambda>x. f x + g x) (A \<inter> B)"
+  shows "sum f A + sum g B = sum f (A - B) + sum g (B - A) + sum (\<lambda>x. f x + g x) (A \<inter> B)"
 proof -
-  have 1: "setsum f A = setsum f (A - B) + setsum f (A \<inter> B)"
+  have 1: "sum f A = sum f (A - B) + sum f (A \<inter> B)"
     by (metis (mono_tags, hide_lams) A Diff_Diff_Int
-      Diff_subset add_commute setsum.subset_diff)
-  have 2: "setsum g B = setsum g (B - A) + setsum g (A \<inter> B)"
+      Diff_subset add_commute sum.subset_diff)
+  have 2: "sum g B = sum g (B - A) + sum g (A \<inter> B)"
     by (metis (mono_tags, hide_lams) Int_commute[of A B] B
-      Diff_Diff_Int Diff_subset add_commute setsum.subset_diff)
-  have 3: "setsum f (A \<inter> B) + setsum g (A \<inter> B) = setsum (\<lambda>x. f x + g x) (A \<inter> B)"
-    by (simp add: setsum.distrib)
+      Diff_Diff_Int Diff_subset add_commute sum.subset_diff)
+  have 3: "sum f (A \<inter> B) + sum g (A \<inter> B) = sum (\<lambda>x. f x + g x) (A \<inter> B)"
+    by (simp add: sum.distrib)
   show ?thesis
     unfolding 1 unfolding 2
     unfolding add_assoc
-    unfolding add.left_commute[of "setsum f (A \<inter> B)"]
+    unfolding add.left_commute[of "sum f (A \<inter> B)"]
     unfolding 3 by fast
 qed
 
 text{*This lemma is presented in the library but for additive abelian groups*}
 
-lemma setsum_negf:
-  "setsum (%x. - (f x)::'a) A = - setsum f A"
+lemma sum_negf:
+  "sum (%x. - (f x)::'a) A = - sum f A"
 proof (cases "finite A")
   case True thus ?thesis by (induct set: finite) auto
 next
@@ -63,8 +63,8 @@ qed
 
 text{*The following lemmas are presented in the library but for other type classes (semiring\_0)*}
 
-lemma setsum_distrib_left:
-  shows "r * setsum f A = setsum (%n. r * f n) A"
+lemma sum_distrib_left:
+  shows "r * sum f A = sum (%n. r * f n) A"
 proof (cases "finite A")
   case True
   thus ?thesis
@@ -77,8 +77,8 @@ next
   case False thus ?thesis by simp
 qed
 
-lemma setsum_distrib_right:
-  "setsum f A * r = (\<Sum>n\<in>A. f n * r)"
+lemma sum_distrib_right:
+  "sum f A * r = (\<Sum>n\<in>A. f n * r)"
 proof (cases "finite A")
   case True
   then show ?thesis
@@ -97,14 +97,14 @@ end
 context comm_monoid_add
 begin
 
-lemma setsum_two_elements:
+lemma sum_two_elements:
   assumes "a \<noteq> b"
-  shows "setsum f {a,b} = f a + f b"
+  shows "sum f {a,b} = f a + f b"
   by (metis Diff_cancel assms empty_Diff finite.emptyI infinite_remove add_0_right
-    setsum.empty setsum.insert setsum.insert_remove singletonD)
+    sum.empty sum.insert sum.insert_remove singletonD)
 
-lemma setsum_singleton: "setsum f {x} = f x"
-by (metis add_commute empty_iff finite.emptyI add_0_left setsum.empty setsum.insert)
+lemma sum_singleton: "sum f {x} = f x"
+by (metis add_commute empty_iff finite.emptyI add_0_left sum.empty sum.insert)
 end
 
 subsection{*Subgroups*}
@@ -282,7 +282,7 @@ lemma ideal_ideal_generated: "ideal (ideal_generated S)"
   unfolding ideal_def left_ideal_def subgroup_def right_ideal_def
   by blast
 
-lemma setsum_left_ideal:
+lemma sum_left_ideal:
   assumes li_X: "left_ideal X"
   and U_X: "U \<subseteq> X" and U: "finite U"
   shows "(\<Sum>i\<in>U. f i * i) \<in> X"
@@ -293,14 +293,14 @@ next
   case (insert x U)
   have x_in_X: "x \<in> X" using insert.prems by simp
   have fx_x_X: "f x * x \<in> X" using li_X x_in_X unfolding left_ideal_def by simp
-  have setsum_in_X: "(\<Sum>i\<in>U. f i * i) \<in> X" using insert.prems insert.hyps(3) by simp
+  have sum_in_X: "(\<Sum>i\<in>U. f i * i) \<in> X" using insert.prems insert.hyps(3) by simp
   have "(\<Sum>i\<in>(insert x U). f i * i) = f x * x + (\<Sum>i\<in>U. f i * i)"
     by (simp add: insert.hyps(1) insert.hyps(2))
-  also have "... \<in> X" using li_X fx_x_X setsum_in_X unfolding left_ideal_def subgroup_def by auto
+  also have "... \<in> X" using li_X fx_x_X sum_in_X unfolding left_ideal_def subgroup_def by auto
   finally show "(\<Sum>i\<in>(insert x U). f i * i) \<in> X" .
 qed
 
-lemma setsum_right_ideal:
+lemma sum_right_ideal:
   assumes li_X: "right_ideal X"
   and U_X: "U \<subseteq> X" and U: "finite U"
   shows "(\<Sum>i\<in>U. i * f i) \<in> X"
@@ -311,10 +311,10 @@ next
   case (insert x U)
   have x_in_X: "x \<in> X" using insert.prems by simp
   have fx_x_X: "x * f x \<in> X" using li_X x_in_X unfolding right_ideal_def by simp
-  have setsum_in_X: "(\<Sum>i\<in>U. i * f i) \<in> X" using insert.prems insert.hyps(3) by simp
+  have sum_in_X: "(\<Sum>i\<in>U. i * f i) \<in> X" using insert.prems insert.hyps(3) by simp
   have "(\<Sum>i\<in>(insert x U). i * f i) =  x * f x + (\<Sum>i\<in>U. i * f i)"
     by (simp add: insert.hyps(1) insert.hyps(2))
-  also have "... \<in> X" using li_X fx_x_X setsum_in_X unfolding right_ideal_def subgroup_def by auto
+  also have "... \<in> X" using li_X fx_x_X sum_in_X unfolding right_ideal_def subgroup_def by auto
   finally show "(\<Sum>i\<in>(insert x U). i * f i) \<in> X" .
 qed
 
@@ -347,7 +347,7 @@ context ring_1
 begin
 
 lemma left_ideal_explicit:
-  "left_ideal_generated S = {y. \<exists>f U. finite U \<and> U \<subseteq> S \<and> setsum (\<lambda>i. f i * i) U = y}" (is "?S = ?B")
+  "left_ideal_generated S = {y. \<exists>f U. finite U \<and> U \<subseteq> S \<and> sum (\<lambda>i. f i * i) U = y}" (is "?S = ?B")
 proof
   have S_in_B: "S \<subseteq> ?B"
   proof (auto)
@@ -364,7 +364,7 @@ proof
       fix f A assume A: "finite A" and AS: "A \<subseteq> S"
       show"\<exists>fa Ua. finite Ua \<and> Ua \<subseteq> S \<and> (\<Sum>i\<in>Ua. fa i * i) = - (\<Sum>i\<in>A. f i * i)"
         by (rule exI[of _ "\<lambda>i. - f i"], rule exI[of _ A],
-            auto simp add: A AS setsum_negf[of "\<lambda>i. f i * i" A])
+            auto simp add: A AS sum_negf[of "\<lambda>i. f i * i" A])
       fix fa B assume B: "finite B" and BS: "B \<subseteq> S"
       let ?g="\<lambda>i. if i \<in> A - B then f i else if i \<in> B - A then fa i else f i + fa i"
       show "\<exists>fb Ub. finite Ub \<and> Ub \<subseteq> S \<and> (\<Sum>i\<in>Ub. fb i * i)
@@ -374,19 +374,19 @@ proof
           if i \<in> B - A then fa i else f i + fa i) * i)"
         have "(\<Sum>i\<in>A. f i * i) + (\<Sum>i\<in>B. fa i * i)
           = (\<Sum>i\<in>A - B. f i * i) + (\<Sum>i\<in>B - A. fa i * i) + (\<Sum>i\<in>A\<inter>B. (f i * i) + (fa i * i))"
-          by (rule setsum_add[OF A B])
+          by (rule sum_add[OF A B])
         also have "... = (\<Sum>i\<in>A - B. f i * i) + (\<Sum>i\<in>B - A. fa i * i)
           + (\<Sum>i\<in>A \<inter> B. (f i + fa i) * i)"
           by (simp add: distrib_right)
-        also have "... =  setsum ?g2 (A - B) + setsum ?g2 (B - A) + setsum ?g2 (A \<inter> B)" by auto
-        also have "... = setsum ?g2 (A \<union> B)" by (rule setsum.union_diff2[OF A B, symmetric])
-        finally show "setsum ?g2 (A \<union> B) = (\<Sum>i\<in>A. f i * i) + (\<Sum>i\<in>B. fa i * i)" ..
+        also have "... =  sum ?g2 (A - B) + sum ?g2 (B - A) + sum ?g2 (A \<inter> B)" by auto
+        also have "... = sum ?g2 (A \<union> B)" by (rule sum.union_diff2[OF A B, symmetric])
+        finally show "sum ?g2 (A \<union> B) = (\<Sum>i\<in>A. f i * i) + (\<Sum>i\<in>B. fa i * i)" ..
       qed
     qed
     fix f U r assume U: "finite U" and U_in_S: "U \<subseteq> S"
     show "\<exists>fa Ua. finite Ua \<and> Ua \<subseteq> S \<and> (\<Sum>i\<in>Ua. fa i * i) = r * (\<Sum>i\<in>U. f i * i)"
       by (rule exI[of _ "\<lambda>i. r * f i"], rule exI[of _ U])
-    (simp add: U U_in_S setsum_distrib_left mult_assoc)
+    (simp add: U U_in_S sum_distrib_left mult_assoc)
   qed
   thus "?S \<subseteq> ?B" using S_in_B unfolding left_ideal_generated_def by auto
 next
@@ -396,13 +396,13 @@ next
     assume li_X: "left_ideal X" and S_X: "S \<subseteq> X" and U: "finite U" and U_in_S: "U \<subseteq> S"
     have U_in_X: "U \<subseteq> X" using U_in_S S_X by simp
     show "(\<Sum>i\<in>U. f i * i) \<in> X"
-      by (rule setsum_left_ideal[OF li_X U_in_X U])
+      by (rule sum_left_ideal[OF li_X U_in_X U])
   qed
 qed
 
 
 lemma right_ideal_explicit:
-  "right_ideal_generated S = {y. \<exists>f U. finite U \<and> U \<subseteq> S \<and> setsum (\<lambda>i. i * f i) U = y}" (is "?S = ?B")
+  "right_ideal_generated S = {y. \<exists>f U. finite U \<and> U \<subseteq> S \<and> sum (\<lambda>i. i * f i) U = y}" (is "?S = ?B")
 proof
   have S_in_B: "S \<subseteq> ?B"
   proof (auto)
@@ -419,7 +419,7 @@ proof
       fix f A assume A: "finite A" and AS: "A \<subseteq> S"
       show"\<exists>fa Ua. finite Ua \<and> Ua \<subseteq> S \<and> (\<Sum>i\<in>Ua.  i * fa i) = - (\<Sum>i\<in>A.  i * f i)"
         by (rule exI[of _ "\<lambda>i. - f i"], rule exI[of _ A],
-            auto simp add: A AS setsum_negf[of "\<lambda>i. i * f i" A])
+            auto simp add: A AS sum_negf[of "\<lambda>i. i * f i" A])
       fix fa B assume B: "finite B" and BS: "B \<subseteq> S"
       let ?g="\<lambda>i. if i \<in> A - B then f i else if i \<in> B - A then fa i else f i + fa i"
       show "\<exists>fb Ub. finite Ub \<and> Ub \<subseteq> S \<and> (\<Sum>i\<in>Ub. i * fb i)
@@ -429,19 +429,19 @@ proof
           if i \<in> B - A then fa i else f i + fa i))"
         have "(\<Sum>i\<in>A.  i * f i) + (\<Sum>i\<in>B.  i * fa i)
           = (\<Sum>i\<in>A - B.  i * f i) + (\<Sum>i\<in>B - A.  i * fa i) + (\<Sum>i\<in>A\<inter>B. (i * f i) + (i * fa i))"
-          by (rule setsum_add[OF A B])
+          by (rule sum_add[OF A B])
         also have "... = (\<Sum>i\<in>A - B. i * f i) + (\<Sum>i\<in>B - A.  i * fa i)
           + (\<Sum>i\<in>A \<inter> B. i * (f i + fa i))"
           by (simp add: distrib_left)
-        also have "... =  setsum ?g2 (A - B) + setsum ?g2 (B - A) + setsum ?g2 (A \<inter> B)" by auto
-        also have "... = setsum ?g2 (A \<union> B)" by (rule setsum.union_diff2[OF A B, symmetric])
-        finally show "setsum ?g2 (A \<union> B) = (\<Sum>i\<in>A. i * f i) + (\<Sum>i\<in>B. i * fa i)" ..
+        also have "... =  sum ?g2 (A - B) + sum ?g2 (B - A) + sum ?g2 (A \<inter> B)" by auto
+        also have "... = sum ?g2 (A \<union> B)" by (rule sum.union_diff2[OF A B, symmetric])
+        finally show "sum ?g2 (A \<union> B) = (\<Sum>i\<in>A. i * f i) + (\<Sum>i\<in>B. i * fa i)" ..
       qed
     qed
     fix f U r assume U: "finite U" and U_in_S: "U \<subseteq> S"
     show "\<exists>fa Ua. finite Ua \<and> Ua \<subseteq> S \<and> (\<Sum>i\<in>Ua. i * fa i) = (\<Sum>i\<in>U. i * f i) * r"
       by (rule exI[of _ "\<lambda>i. f i * r"], rule exI[of _ U])
-    (simp add: U U_in_S setsum_distrib_right mult_assoc)
+    (simp add: U U_in_S sum_distrib_right mult_assoc)
   qed
   thus "?S \<subseteq> ?B" using S_in_B unfolding right_ideal_generated_def by auto
 next
@@ -451,7 +451,7 @@ next
     assume li_X: "right_ideal X" and S_X: "S \<subseteq> X" and U: "finite U" and U_in_S: "U \<subseteq> S"
     have U_in_X: "U \<subseteq> X" using U_in_S S_X by simp
     show "(\<Sum>i\<in>U. i * f i) \<in> X"
-      by (rule setsum_right_ideal[OF li_X U_in_X U])
+      by (rule sum_right_ideal[OF li_X U_in_X U])
   qed
 qed
 
@@ -489,21 +489,21 @@ lemma ideal_generated_eq_right_ideal: "ideal_generated A = right_ideal_generated
   by (metis (no_types, lifting) Collect_cong left_ideal_eq_right_ideal right_ideal_generated_def)
 
 
-lemma obtain_setsum_ideal_generated:
+lemma obtain_sum_ideal_generated:
   assumes a: "a \<in> ideal_generated A" and A: "finite A"
-  obtains f where "setsum (\<lambda>i. f i * i) A = a"
+  obtains f where "sum (\<lambda>i. f i * i) A = a"
 proof -
-  obtain g U where g: "setsum (\<lambda>i. g i * i) U = a" and UA: "U \<subseteq> A" and U: "finite U"
+  obtain g U where g: "sum (\<lambda>i. g i * i) U = a" and UA: "U \<subseteq> A" and U: "finite U"
     using a unfolding ideal_generated_eq_left_ideal
     unfolding left_ideal_explicit by blast
   let ?f="\<lambda>i. if i \<in> A - U then 0 else g i"
   have A_union: "A = (A - U) \<union> U" using UA by auto
-  have "setsum (\<lambda>i. ?f i * i) A = setsum (\<lambda>i. ?f i * i) ((A - U) \<union> U)" using A_union by simp
-  also have "... = setsum (\<lambda>i. ?f i * i) (A - U) + setsum (\<lambda>i. ?f i * i) U"
-    by (rule setsum.union_disjoint[OF _ U], auto simp add: A U UA)
-  also have "... = setsum (\<lambda>i. ?f i * i) U" by auto
+  have "sum (\<lambda>i. ?f i * i) A = sum (\<lambda>i. ?f i * i) ((A - U) \<union> U)" using A_union by simp
+  also have "... = sum (\<lambda>i. ?f i * i) (A - U) + sum (\<lambda>i. ?f i * i) U"
+    by (rule sum.union_disjoint[OF _ U], auto simp add: A U UA)
+  also have "... = sum (\<lambda>i. ?f i * i) U" by auto
   also have "... = a" using g by auto
-  finally have "setsum (\<lambda>i. ?f i * i) A = a" .
+  finally have "sum (\<lambda>i. ?f i * i) A = a" .
   with that show ?thesis .
 qed
 
@@ -513,8 +513,8 @@ lemma dvd_ideal_generated_singleton:
 proof -
  have "a \<in> ideal_generated {a}" by (simp add: ideal_generated_in)
  hence a: "a \<in> ideal_generated {b}" by (metis subset subsetCE)
- obtain f where "setsum (\<lambda>i. f i * i) {b} = a" by (rule obtain_setsum_ideal_generated[OF a], simp)
- hence fb_b_a: "f b * b = a" unfolding setsum_singleton .
+ obtain f where "sum (\<lambda>i. f i * i) {b} = a" by (rule obtain_sum_ideal_generated[OF a], simp)
+ hence fb_b_a: "f b * b = a" unfolding sum_singleton .
  show ?thesis unfolding dvd_def by (rule exI[of _ "f b"], metis fb_b_a mult_commute)
 qed
 
@@ -528,7 +528,7 @@ proof (auto simp add: ideal_generated_eq_left_ideal left_ideal_explicit)
   next
     case False
     hence Ua: "U = {a}" using U_in_a by auto
-    show ?thesis by (rule exI[of _ "f a"]) (simp add: Ua setsum_singleton)
+    show ?thesis by (rule exI[of _ "f a"]) (simp add: Ua sum_singleton)
   qed
 next
   fix k
@@ -566,9 +566,9 @@ proof
       using dvd_ideal_generated_singleton[OF ac] unfolding dvd_def by auto
     obtain k' where k': "b = c * k'"
       using dvd_ideal_generated_singleton[OF bc] unfolding dvd_def by auto
-    obtain f where f: "setsum (\<lambda>i. f i * i) {a,b} = x"
-      by (rule obtain_setsum_ideal_generated[OF x], simp)
-    hence "x = f a * a + f b * b " unfolding setsum_two_elements[OF False] by simp
+    obtain f where f: "sum (\<lambda>i. f i * i) {a,b} = x"
+      by (rule obtain_sum_ideal_generated[OF x], simp)
+    hence "x = f a * a + f b * b " unfolding sum_two_elements[OF False] by simp
     also have "... = f a * (c * k) + f b * (c * k')" unfolding k k' by simp
     also have "... = (f a * k) * c + (f b * k') * c"
       by (simp only: mult_assoc) (simp only: mult_commute)
@@ -766,7 +766,7 @@ proof
   have b_subset_d: "ideal_generated {b} \<subseteq> ideal_generated {d}"
     by (metis S_def d insert_iff ideal_generated_subset subsetI)
   have d_in_S: "d \<in> S" by (metis d insert_subset ideal_generated_subset_generator)
-  obtain f U where U: "U \<subseteq> {a,b}" and f: "setsum (\<lambda>i. f i * i) U = d"
+  obtain f U where U: "U \<subseteq> {a,b}" and f: "sum (\<lambda>i. f i * i) U = d"
     using left_ideal_explicit[of "{a,b}"] d_in_S unfolding S_def ideal_generated_eq_left_ideal
     by auto
   def g\<equiv>"\<lambda>i. if i \<in> U then f i else 0"
@@ -781,7 +781,7 @@ proof
         assume "a \<in> U"
         hence Ua: "U = {a}" using U True by auto
         show "f a * a = d" using f unfolding Ua
-          unfolding setsum_singleton .
+          unfolding sum_singleton .
       next
         assume "a \<notin> U"
         hence U_empty: "U = {}" using U True by auto
@@ -800,15 +800,15 @@ proof
       proof (auto simp add: g_def)
         assume a: "a \<in> U" and b: "b \<in> U"
         hence U_ab: "U = {a,b}" using U by auto
-        show "f a * a + f b * b = d"  using f unfolding U_ab setsum_two_elements[OF False] .
+        show "f a * a + f b * b = d"  using f unfolding U_ab sum_two_elements[OF False] .
       next
         assume a: "a \<in> U" and b: "b \<notin> U"
         hence U_a: "U = {a}" using U by auto
-        show "f a * a = d" using f unfolding U_a setsum_singleton .
+        show "f a * a = d" using f unfolding U_a sum_singleton .
       next
         assume a: "a \<notin> U" and b: "b \<in> U"
         hence U_b: "U = {b}" using U by auto
-        show "f b * b = d" using f unfolding U_b setsum_singleton .
+        show "f b * b = d" using f unfolding U_b sum_singleton .
       next
         assume a: "a \<notin> U" and b: "b \<notin> U"
         hence "U = {}" using U by auto

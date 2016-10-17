@@ -34,9 +34,9 @@ lemma single_l:
   shows "(\<Sum>s'\<in>S. (if s' = s then 1 else 0) * l s') = x \<longleftrightarrow> l s = x"
 proof -
   have "(\<Sum>s'\<in>S. (if s' = s then 1 else 0) * l s') = (\<Sum>s'\<in>S. (if s' = s then l s' else 0))"
-    using `s \<in> S` by (auto intro!: setsum.cong)
+    using `s \<in> S` by (auto intro!: sum.cong)
   with `s \<in> S` show ?thesis
-    using finite_S by (auto simp add: setsum.If_cases)
+    using finite_S by (auto simp add: sum.If_cases)
 qed
 
 definition "order = (SOME f. bij_betw f {..< card S} S)"
@@ -100,7 +100,7 @@ proof -
     unfolding solution_def M'_def by (simp add: atLeast0LessThan)
   then show ?thesis
     unfolding iorder_image_eq[symmetric] f using inj_iorder
-    by (subst (asm) setsum.reindex) (auto simp: order_iorder)
+    by (subst (asm) sum.reindex) (auto simp: order_iorder)
 qed
 
 lemma gauss_jordan'_complete:
@@ -120,7 +120,7 @@ proof -
     also have "\<dots> \<longleftrightarrow> (\<forall>s\<in>S. (\<Sum>s'\<in>S. M s s' * x (iorder s')) = a s)"
       unfolding iorder_image_eq[symmetric] M'_def
       using inj_iorder iorder_neq_card_S
-      by (simp add: setsum.reindex order_iorder)
+      by (simp add: sum.reindex order_iorder)
     finally have "solution2 M' (card S) (card S) x \<longleftrightarrow>
       (\<forall>s\<in>S. (\<Sum>s'\<in>S. M s s' * x (iorder s')) = a s)" . }
   note sol2_eq = this
@@ -584,9 +584,9 @@ next
   fix s assume s: "s \<in> S" "s \<notin> Prob0 (svalid F1) (svalid F2) \<union> svalid F2"
   have "(\<Sum>s'\<in>S. (if s' = s then \<tau> s s' - 1 else \<tau> s s') * l s') =
     (\<Sum>s'\<in>S. \<tau> s s' * l s' - (if s' = s then 1 else 0) * l s')"
-    by (auto intro!: setsum.cong simp: field_simps)
+    by (auto intro!: sum.cong simp: field_simps)
   also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * l s') - l s"
-    using `s \<in> S` by (simp add: setsum_subtractf single_l)
+    using `s \<in> S` by (simp add: sum_subtractf single_l)
   finally show "l s - 0 = (\<Sum>s'\<in>S. \<tau> s s' * l s')"
     using sol[THEN bspec, of s] s by (simp add: LES_def)
 next
@@ -675,7 +675,7 @@ proof -
 
   let ?E = "\<lambda>s'. \<integral>\<^sup>+ \<omega>. reward (Future F) (s' ## \<omega>) \<partial>T s'"
   have *: "(\<Sum>s'\<in>S. \<tau> s s' * ?E s') = (\<Sum>s'\<in>S. ennreal (\<tau> s s' * enn2real (?E s')))"
-  proof (rule setsum.cong)
+  proof (rule sum.cong)
     fix s' assume "s' \<in> S"
     show "\<tau> s s' * ?E s' = ennreal (\<tau> s s' * enn2real (?E s'))"
     proof cases
@@ -703,11 +703,11 @@ proof -
   also have "\<dots> = ennreal (\<rho> s + (\<Sum>s'\<in>S. \<tau> s s' * \<iota> s s')) + (\<integral>\<^sup>+\<omega>. ?R \<omega> \<partial>T s)"
     using `s \<in> S`
     by (subst nn_integral_eq_sum)
-       (auto simp: field_simps setsum.distrib setsum_distrib_left[symmetric] ennreal_mult[symmetric] setsum_nonneg)
+       (auto simp: field_simps sum.distrib sum_distrib_left[symmetric] ennreal_mult[symmetric] sum_nonneg)
   finally show ?thesis
     apply (simp del: reward.simps)
     apply (subst nn_integral_eq_sum[OF `s \<in> S` reward_measurable])
-    apply (simp del: reward.simps ennreal_plus add: * ennreal_plus[symmetric] setsum_nonneg)
+    apply (simp del: reward.simps ennreal_plus add: * ennreal_plus[symmetric] sum_nonneg)
     done
 qed
 
@@ -735,9 +735,9 @@ next
   then have "s \<in> Y" "s \<notin> ?F" by auto
   have "(\<Sum>s'\<in>S. (if s' = s then \<tau> s s' - 1 else \<tau> s s') * l s') =
     (\<Sum>s'\<in>S. \<tau> s s' * l s' - (if s' = s then 1 else 0) * l s')"
-    by (auto intro!: setsum.cong simp: field_simps)
+    by (auto intro!: sum.cong simp: field_simps)
   also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * l s') - l s"
-    using `s \<in> S` by (simp add: setsum_subtractf single_l)
+    using `s \<in> S` by (simp add: sum_subtractf single_l)
   finally have "l s = (\<Sum>s'\<in>S. \<tau> s s' * l s') - (\<Sum>s'\<in>S. (if s' = s then \<tau> s s' - 1 else \<tau> s s') * l s')"
     by (simp add: field_simps)
   then show "l s - (\<rho> s + (\<Sum>s'\<in>S. \<tau> s s' * \<iota> s s')) = (\<Sum>s'\<in>S. \<tau> s s' * l s')"
@@ -766,8 +766,8 @@ theorem Sat_sound:
 proof (induct F rule: Sat.induct)
   case (5 rel r F)
   { fix q assume "q \<in> S"
-    with svalid_subset_S have "setsum (\<tau> q) (svalid F) = \<P>(\<omega> in T q. HLD (svalid F) \<omega>)"
-      by (subst prob_sum[OF `q\<in>S`]) (auto intro!: setsum.mono_neutral_cong_left) }
+    with svalid_subset_S have "sum (\<tau> q) (svalid F) = \<P>(\<omega> in T q. HLD (svalid F) \<omega>)"
+      by (subst prob_sum[OF `q\<in>S`]) (auto intro!: sum.mono_neutral_cong_left) }
   with 5 show ?case
     by (auto split: bind_split_asm)
 
@@ -808,22 +808,22 @@ next
         = (\<integral>\<^sup>+\<omega>. ennreal (\<rho> s + \<iota> s (\<omega> !! 0)) + ennreal (\<Sum>i<k. \<rho> (\<omega> !! i) + \<iota> (\<omega> !! i) (\<omega> !! (Suc i))) \<partial>T s)"
         by (auto intro!: nn_integral_cong
                  simp del: ennreal_plus
-                 simp: ennreal_plus[symmetric] setsum_nonneg setsum.reindex lessThan_Suc_eq_insert_0 Zero_notin_Suc)
+                 simp: ennreal_plus[symmetric] sum_nonneg sum.reindex lessThan_Suc_eq_insert_0 Zero_notin_Suc)
       also have "\<dots> = (\<integral>\<^sup>+\<omega>. \<rho> s + \<iota> s (\<omega> !! 0) \<partial>T s) +
           (\<integral>\<^sup>+\<omega>. (\<Sum>i<k. \<rho> (\<omega> !! i) + \<iota> (\<omega> !! i) (\<omega> !! (Suc i))) \<partial>T s)"
         using `s \<in> S`
-        by (intro nn_integral_add AE_I2) (auto simp: setsum_nonneg)
+        by (intro nn_integral_add AE_I2) (auto simp: sum_nonneg)
       also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * (\<rho> s + \<iota> s s')) +
         (\<integral>\<^sup>+\<omega>. (\<Sum>i<k. \<rho> (\<omega> !! i) + \<iota> (\<omega> !! i) (\<omega> !! (Suc i))) \<partial>T s)"
         using `s \<in> S` by (subst nn_integral_eq_sum)
-          (auto simp del: ennreal_plus simp: ennreal_plus[symmetric] ennreal_mult[symmetric] setsum_nonneg)
+          (auto simp del: ennreal_plus simp: ennreal_plus[symmetric] ennreal_mult[symmetric] sum_nonneg)
       also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * (\<rho> s + \<iota> s s')) +
         (\<Sum>s'\<in>S. \<tau> s s' * ExpCumm s' k)"
         using `s \<in> S` by (subst nn_integral_eq_sum) (auto simp: Suc)
       also have "\<dots> = ExpCumm s (Suc k)"
         using `s \<in> S`
-        by (simp add: field_simps setsum.distrib setsum_distrib_left[symmetric] ennreal_mult[symmetric]
-            ennreal_plus[symmetric] setsum_nonneg del: ennreal_plus)
+        by (simp add: field_simps sum.distrib sum_distrib_left[symmetric] ennreal_mult[symmetric]
+            ennreal_plus[symmetric] sum_nonneg del: ennreal_plus)
       finally show ?case by simp
     qed }
   then show ?case by auto
@@ -916,9 +916,9 @@ proof (induct F rule: Sat.induct)
 
         have "(\<Sum>s'\<in>S. (if s' = s then \<tau> s s' - 1 else \<tau> s s') * ?x s') =
           (\<Sum>s'\<in>S. \<tau> s s' * ?x s' - (if s' = s then 1 else 0) * ?x s')"
-          by (auto intro!: setsum.cong simp: field_simps)
+          by (auto intro!: sum.cong simp: field_simps)
         also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * ?x s') - ?x s"
-          using s by (simp add: single_l setsum_subtractf)
+          using s by (simp add: single_l sum_subtractf)
         finally show ?thesis
           using * prob_sum[OF `s \<in> S`] s_not_0 by (simp del: pvalid.simps)
       qed
@@ -961,9 +961,9 @@ next
 
         have "(\<Sum>s'\<in>S. (if s' = s then \<tau> s s' - 1 else \<tau> s s') * enn2real (?E s')) =
           (\<Sum>s'\<in>S. \<tau> s s' * enn2real (?E s') - (if s' = s then 1 else 0) * enn2real (?E s'))"
-          by (auto intro!: setsum.cong simp: field_simps)
+          by (auto intro!: sum.cong simp: field_simps)
         also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * enn2real (?E s')) - enn2real (?E s)"
-          using `s \<in> S` by (simp add: setsum_subtractf single_l)
+          using `s \<in> S` by (simp add: sum_subtractf single_l)
         finally show ?thesis
           using s `s \<in> S` existence_of_ExpFuture[OF N_def Y_def `s \<in> S` s]
           by (simp add: LES_def const_def del: reward.simps)

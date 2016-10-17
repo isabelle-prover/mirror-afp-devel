@@ -27,10 +27,10 @@ lemma [code abstract]: "vec_nth (c *s x) = (\<lambda>i. c * (x$i))" unfolding ve
 lemma [code abstract]: "vec_nth (a - b) =  (%i. a$i - b$i)" by (metis vector_minus_component)
 
 definition mat_mult_row 
-  where "mat_mult_row m m' f = vec_lambda (%c. setsum (%k. ((m$f)$k) * ((m'$k)$c)) (UNIV :: 'n::finite set))"
+  where "mat_mult_row m m' f = vec_lambda (%c. sum (%k. ((m$f)$k) * ((m'$k)$c)) (UNIV :: 'n::finite set))"
 
 lemma mat_mult_row_code [code abstract]:
-  "vec_nth (mat_mult_row m m' f) = (%c. setsum (%k. ((m$f)$k) * ((m'$k)$c)) (UNIV :: 'n::finite set))"
+  "vec_nth (mat_mult_row m m' f) = (%c. sum (%k. ((m$f)$k) * ((m'$k)$c)) (UNIV :: 'n::finite set))"
   by(simp add: mat_mult_row_def fun_eq_iff)
 
 lemma mat_mult [code abstract]: "vec_nth (m ** m') = mat_mult_row m m'"

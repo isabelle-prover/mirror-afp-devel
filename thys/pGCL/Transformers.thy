@@ -858,7 +858,7 @@ proof -
   finally show ?thesis .
 qed
 
-lemma sub_add_setsum:
+lemma sub_add_sum:
   fixes t::"'s trans" and S::"'a set"
   assumes sat: "sub_add t"
       and ht: "healthy t"
@@ -879,7 +879,7 @@ proof(cases "infinite S", simp_all add:ht)
       by(auto intro:add_left_mono)
     also from sat sP
     have "... \<le> t (\<lambda>xa. P x xa + (\<Sum>y\<in>F. P y xa)) s"
-      by(auto intro!:sub_addD[OF sat] setsum_sound)
+      by(auto intro!:sub_addD[OF sat] sum_sound)
     finally
     show "t (P x) s + (\<Sum>y\<in>F. t (P y) s) \<le>
           t (\<lambda>xa. P x xa + (\<Sum>y\<in>F. P y xa)) s" .
@@ -898,7 +898,7 @@ proof -
   hence "(\<Sum>y\<in>{s. G s}.  P y * t \<guillemotleft> \<lambda>z. z = y \<guillemotright> s) +
          (\<Sum>y\<in>{s. \<not>G s}. P y * t \<guillemotleft> \<lambda>z. z = y \<guillemotright> s) =
          (\<Sum>y\<in>({s. G s} \<union> {s. \<not>G s}). P y * t \<guillemotleft> \<lambda>z. z = y \<guillemotright> s)"
-    by(auto intro: setsum.union_disjoint[symmetric])
+    by(auto intro: sum.union_disjoint[symmetric])
   also {
     have "{s. G s} \<union> {s. \<not>G s} = UNIV" by (blast)
     hence "(\<Sum>y\<in>({s. G s} \<union> {s. \<not>G s}). P y * t \<guillemotleft> \<lambda>z. z = y \<guillemotright> s) =
@@ -916,19 +916,19 @@ proof -
     from sat ht sP
     have "(\<lambda>x. \<Sum>y\<in>UNIV. t (\<lambda>x. P y * \<guillemotleft>\<lambda>z. z = y\<guillemotright> x) x) \<le>
           t (\<lambda>x. \<Sum>y\<in>UNIV. P y * \<guillemotleft>\<lambda>z. z = y\<guillemotright> x)"
-      by(intro sub_add_setsum sound_intros, auto)
+      by(intro sub_add_sum sound_intros, auto)
     hence "(\<lambda>x. \<Sum>y\<in>UNIV. t (\<lambda>x. P y * \<guillemotleft>\<lambda>z. z = y\<guillemotright> x) x) s \<le>
           t (\<lambda>x. \<Sum>y\<in>UNIV. P y * \<guillemotleft>\<lambda>z. z = y\<guillemotright> x) s" by(auto)
   }
   also {
     have rw1: "(\<lambda>x. \<Sum>y\<in>UNIV. P y * \<guillemotleft>\<lambda>z. z = y\<guillemotright> x) =
                (\<lambda>x. \<Sum>y\<in>UNIV. if y = x then P y else 0)"
-      by(auto intro!:setsum.cong)
+      by(auto intro!:sum.cong)
     also from sP have "... \<tturnstile> P"
-      by(cases "finite (UNIV::'s set)", auto simp:setsum.delta)
+      by(cases "finite (UNIV::'s set)", auto simp:sum.delta)
     finally have leP: "\<lambda>x. \<Sum>y\<in>UNIV. P y * \<guillemotleft> \<lambda>z. z = y \<guillemotright> x \<tturnstile> P" .
     moreover have "sound (\<lambda>x. \<Sum>y\<in>UNIV. P y * \<guillemotleft>\<lambda>z. z = y\<guillemotright> x)"
-    proof(intro soundI2 bounded_byI nnegI setsum_nonneg ballI)
+    proof(intro soundI2 bounded_byI nnegI sum_nonneg ballI)
       fix x
       from leP have "(\<Sum>y\<in>UNIV. P y * \<guillemotleft> \<lambda>z. z = y \<guillemotright> x) \<le> P x" by(auto)
       also from sP have "... \<le> bound_of P" by(auto)
@@ -1180,7 +1180,7 @@ lemma additive_sub_add:
   by(simp add:sub_addI additiveD)
 
 text {* The additivity property extends to finite summation. *}
-lemma additive_setsum:
+lemma additive_sum:
   fixes S::"'s set"
   assumes additive: "additive t"
       and healthy:  "healthy t"
@@ -1195,7 +1195,7 @@ proof(rule finite_induct, simp_all add:assms)
   from additive sPz
   have "t (\<lambda>x. P z x + (\<Sum>y\<in>T. P y x)) =
         (\<lambda>x. t (P z) x +  t (\<lambda>x. \<Sum>y\<in>T. P y x) x)"
-    by(auto intro!:setsum_sound additiveD)
+    by(auto intro!:sum_sound additiveD)
   also from IH
   have "... = (\<lambda>x. t (P z) x + (\<Sum>y\<in>T. t (P y) x))"
     by(simp)
@@ -1216,9 +1216,9 @@ lemma additive_delta_split:
 proof -
   have "\<And>x. (\<Sum>y\<in>UNIV. P y * \<guillemotleft>\<lambda>z. z = y\<guillemotright> x) =
             (\<Sum>y\<in>UNIV. if y = x then P y else 0)"
-    by(auto intro:setsum.cong)
+    by(auto intro:sum.cong)
   also have "\<And>x. ... x = P x"
-    by(simp add:setsum.delta)
+    by(simp add:sum.delta)
   finally
   have "t P x = t (\<lambda>x. \<Sum>y\<in>UNIV. P y * \<guillemotleft>\<lambda>z. z = y\<guillemotright> x) x"
     by(simp)
@@ -1227,7 +1227,7 @@ proof -
       by(auto intro!:mult_sound)
     hence "t (\<lambda>x. \<Sum>y\<in>UNIV. P y * \<guillemotleft>\<lambda>z. z = y\<guillemotright> x) x =
            (\<Sum>y\<in>UNIV. t (\<lambda>x. P y * \<guillemotleft>\<lambda>z. z = y\<guillemotright> x) x)"
-      by(subst additive_setsum, simp_all add:assms)
+      by(subst additive_sum, simp_all add:assms)
   }
   also from sP
   have "(\<Sum>y\<in>UNIV. t (\<lambda>x. P y * \<guillemotleft>\<lambda>z. z = y\<guillemotright> x) x) =
@@ -1260,7 +1260,7 @@ proof -
   have "(\<Sum>y\<in>{s. G s} \<union> {s. \<not> G s}. P y * t \<guillemotleft>\<lambda>z. z = y\<guillemotright> x) =
         (\<Sum>y\<in>{s.   G s}. P y * t \<guillemotleft>\<lambda>z. z = y\<guillemotright> x) +
         (\<Sum>y\<in>{s. \<not> G s}. P y * t \<guillemotleft>\<lambda>z. z = y\<guillemotright> x)"
-    by(auto intro:setsum.union_disjoint)
+    by(auto intro:sum.union_disjoint)
   finally show ?thesis .
 qed
 

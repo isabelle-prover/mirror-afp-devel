@@ -86,11 +86,11 @@ lemma assumes un: "(\<Union>i\<in>R. B i) = UNIV" and fin: "finite R"
   with un obtain j where jR: "j\<in>R" and tj: "t \<in> A \<inter> B j" by fast
   from tj have "\<chi> (A \<inter> B j) t = 1" by (simp add: characteristic_function_def)
   with fin jR have "(\<Sum>i\<in>R-{j}. \<chi> (A \<inter> B i) t) = (\<Sum>i\<in>R. \<chi> (A \<inter> B i) t) - 1"
-    by (simp add: setsum_diff1)
+    by (simp add: sum_diff1)
   also 
   from dis jR tj have "R-{j} = R-{j}" and "\<And>x. x \<in> R-{j} \<Longrightarrow> \<chi> (A \<inter> B x) t = 0" 
     by (auto simp add: characteristic_function_def) 
-  hence "(\<Sum>i\<in>R-{j}. \<chi> (A \<inter> B i) t) = (\<Sum>i\<in>R-{j}. 0)" by (rule setsum.cong) 
+  hence "(\<Sum>i\<in>R-{j}. \<chi> (A \<inter> B i) t) = (\<Sum>i\<in>R-{j}. 0)" by (rule sum.cong) 
   finally have "1 = (\<Sum>i\<in>R. \<chi> (A \<inter> B i) t)" by (simp)
   with True show ?thesis by (simp add: characteristic_function_def)
 next
@@ -124,7 +124,7 @@ lemma assumes ms: "measure_space M" and dis: "\<forall>j1\<in>(R::nat set). \<fo
     by simp
 qed(*>*)
 
-lemma sumr_setsum:
+lemma sumr_sum:
  "(\<Sum>i=0..<k::nat. if i \<in> R then f i else (0::real)) = (\<Sum>i\<in>(R\<inter>{..<k}). f i)" 
 (*<*)proof (induct k)
   case 0
@@ -154,7 +154,7 @@ qed(*>*)
      
 lemma assumes ms: "measure_space M" and dis: "\<forall>j1\<in>(R::nat set). \<forall>j2\<in>R. j1 \<noteq> j2 \<longrightarrow> (B j1) \<inter> (B j2) = {}"
   and meas: "\<forall>j\<in>R. B j \<in> measurable_sets M" and fin: "finite R"
-  shows measure_setsum: "measure M (\<Union>i\<in>R. B i) = (\<Sum>j\<in>R. measure M (B j))"
+  shows measure_sum: "measure M (\<Union>i\<in>R. B i) = (\<Sum>j\<in>R. measure M (B j))"
 (*<*)proof (cases "R={}")
   case False
   with fin have leR: "\<forall>r\<in>R. r  \<le> Max R"
@@ -166,7 +166,7 @@ lemma assumes ms: "measure_space M" and dis: "\<forall>j1\<in>(R::nat set). \<fo
   finally have "(\<Sum>j\<in>R. measure M (B j)) = (\<Sum>j\<in>R\<inter> {..<Suc (Max R)} . measure M (B j))"
     by simp
   also have "\<dots> = (\<Sum>x=0..<Suc(Max R). if x \<in> R then measure M (B x) else 0)"
-    by (rule sumr_setsum[THEN sym])
+    by (rule sumr_sum[THEN sym])
   also { 
     fix x 
     from ms have "(if x \<in> R then measure M (B x) else 0) = (measure M (if x\<in>R then B x else {}))"
@@ -209,7 +209,7 @@ lemma assumes ms: "measure_space M" and un: "(\<Union>i\<in>R. B i) = UNIV" and
     by (simp add: measure_space_def sigma_algebra_inter)
   moreover note fin
   ultimately have "measure M (\<Union>i\<in>R. A \<inter> B i) = (\<Sum>j\<in>R. measure M (A \<inter> B j))"
-    by (rule measure_setsum)
+    by (rule measure_sum)
   also
   from un have "A = (\<Union>i\<in>R. A \<inter> B i)"
     by auto
@@ -267,7 +267,7 @@ txt{*\nopagebreak*}
         from Bun S Bdis have "\<chi> (A i) t = (\<Sum>j\<in>S. \<chi> (A i \<inter> B j) t)" 
           by (rule char_split)
         hence "x i * \<chi> (A i) t = (\<Sum>j\<in>S. x i * \<chi> (A i \<inter> B j) t)" 
-          by (simp add: setsum_distrib_left)
+          by (simp add: sum_distrib_left)
         also 
         { fix j
           have "S=S" and 
@@ -275,11 +275,11 @@ txt{*\nopagebreak*}
             by (auto simp add: C_def z1_def Let_def)
         }
         hence "\<dots> = (\<Sum>j\<in>S. let k=prod_encode (i,j) in z1 k * \<chi> (C k) t)"
-          by (rule setsum.cong)
+          by (rule sum.cong)
 
         also from S have "\<dots> = (\<Sum>k\<in>(G i). z1 k * \<chi> (C k) t)"
           by (simp add: G_def Let_def o_def
-                setsum.reindex[OF subset_inj_on[OF prod_encode_snd_inj]])
+                sum.reindex[OF subset_inj_on[OF prod_encode_snd_inj]])
 
         finally have eq: "x i * \<chi> (A i) t = (\<Sum>k\<in> G i. z1 k * \<chi> (C k) t)" .
           (*Repeat with measure instead of char*)
@@ -322,7 +322,7 @@ txt{*\nopagebreak*}
           "measure M (A i) = (\<Sum>j\<in>S. measure M (A i \<inter> B j))" 
           by (simp add: measure_split)
         hence "x i * measure M (A i) = (\<Sum>j\<in>S. x i * measure M (A i \<inter> B j))" 
-          by (simp add: setsum_distrib_left)
+          by (simp add: sum_distrib_left)
         
         also 
         { fix j 
@@ -332,11 +332,11 @@ txt{*\nopagebreak*}
         }
         
         hence "\<dots> = (\<Sum>j\<in>S. let k=prod_encode (i,j) in z1 k * measure M (C k))"
-          by (rule setsum.cong)
+          by (rule sum.cong)
         
         also from S have "\<dots> = (\<Sum>k\<in>(G i). z1 k * measure M (C k))"
           by (simp add: G_def Let_def o_def
-                setsum.reindex[OF subset_inj_on[OF prod_encode_snd_inj]])
+                sum.reindex[OF subset_inj_on[OF prod_encode_snd_inj]])
         
         finally have 
           "x i * measure M (A i) = (\<Sum>k\<in>(G i). z1 k * measure M (C k))" .
@@ -344,7 +344,7 @@ txt{*\nopagebreak*}
       with refl[of R] have
         "(\<Sum>i\<in>R. x i * measure M (A i)) 
         = (\<Sum>i\<in>R. (\<Sum>k\<in>(G i). z1 k * measure M (C k)))"  
-        by (rule setsum.cong)
+        by (rule sum.cong)
       with eq f a have "f t = (\<Sum>i\<in>R. (\<Sum>k\<in>G i. z1 k * \<chi> (C k) t))"
         and "a = (\<Sum>i\<in>R. (\<Sum>k\<in>(G i). z1 k * measure M (C k)))" 
         by auto
@@ -353,13 +353,13 @@ txt{*\nopagebreak*}
       moreover note G Gdis R
       ultimately have f: "f t = (\<Sum>k\<in>K. z1 k * \<chi> (C k) t)" 
         and a: "a = (\<Sum>k\<in>K. z1 k * measure M (C k))"
-        by (auto simp add: setsum.UNION_disjoint)
+        by (auto simp add: sum.UNION_disjoint)
           (*And now (almost) the same for g*)
       { fix j
         from Aun R Adis have "\<chi> (B j) t = (\<Sum>i\<in>R. \<chi> (B j \<inter> A i) t)" 
           by (rule char_split) 
         hence "y j * \<chi> (B j) t = (\<Sum>i\<in>R. y j * \<chi> (A i \<inter> B j) t)" 
-          by (simp add: setsum_distrib_left Int_commute)
+          by (simp add: sum_distrib_left Int_commute)
         also 
         { fix i
           have "R=R" and 
@@ -367,10 +367,10 @@ txt{*\nopagebreak*}
             by (auto simp add: C_def z2_def Let_def)
         }
         hence "\<dots> = (\<Sum>i\<in>R. let k=prod_encode (i,j) in z2 k * \<chi> (C k) t)"
-          by (rule setsum.cong)
+          by (rule sum.cong)
         also from R have "\<dots> = (\<Sum>k\<in>(H j). z2 k * \<chi> (C k) t)" 
           by (simp add: H_def Let_def o_def
-                setsum.reindex[OF subset_inj_on[OF prod_encode_fst_inj]])
+                sum.reindex[OF subset_inj_on[OF prod_encode_fst_inj]])
         finally have eq: "y j * \<chi> (B j) t = (\<Sum>k\<in> H j. z2 k * \<chi> (C k) t)" .
                 
         from R have H: "finite (H j)"  by (simp add: H_def)
@@ -409,7 +409,7 @@ txt{*\nopagebreak*}
           (\<Sum>i\<in>R. measure M (B j \<inter> A i))" 
           by (simp add: measure_split)
         hence "y j * measure M (B j) = (\<Sum>i\<in>R. y j * measure M (A i \<inter> B j))"
-          by (simp add: setsum_distrib_left Int_commute)
+          by (simp add: sum_distrib_left Int_commute)
         also 
         { fix i 
           have "R=R" and "y j * measure M (A i \<inter> B j) = 
@@ -417,15 +417,15 @@ txt{*\nopagebreak*}
             by (auto simp add: C_def z2_def Let_def)
         }
         hence "\<dots> = (\<Sum>i\<in>R. let k=prod_encode(i,j) in z2 k * measure M (C k))"
-          by (rule setsum.cong)
+          by (rule sum.cong)
         also from R have "\<dots> = (\<Sum>k\<in>(H j). z2 k * measure M (C k))"
           by (simp add: H_def Let_def o_def
-                setsum.reindex[OF subset_inj_on[OF prod_encode_fst_inj]])
+                sum.reindex[OF subset_inj_on[OF prod_encode_fst_inj]])
         finally have eq2: 
           "y j * measure M (B j) = (\<Sum>k\<in>(H j). z2 k * measure M (C k))" .
       }
       with refl have "(\<Sum>j\<in>S. y j * measure M (B j)) = (\<Sum>j\<in>S. (\<Sum>k\<in>(H j). z2 k * measure M (C k)))"
-        by (rule setsum.cong)
+        by (rule sum.cong)
       with b have "b = (\<Sum>j\<in>S. (\<Sum>k\<in>(H j). z2 k * measure M (C k)))" 
         by simp
       moreover have "K = (\<Union>j\<in>S. H j)" 
@@ -433,7 +433,7 @@ txt{*\nopagebreak*}
       moreover note H Hdis S
       ultimately have g: "g t = (\<Sum>k\<in>K. z2 k * \<chi> (C k) t)" and K: "finite K"
         and b: "b = (\<Sum>k\<in>K. z2 k * measure M (C k))"
-        by (auto simp add: setsum.UNION_disjoint)
+        by (auto simp add: sum.UNION_disjoint)
       
       { fix i 
         from Bun have "(\<Union>k\<in>G i. C k) = A i" 
@@ -520,7 +520,7 @@ proof -
       "f t + g t = (\<Sum>i\<in>K. z1 i * \<chi> (C i) t) + (\<Sum>i\<in>K. z2 i * \<chi> (C i) t)" 
       by simp
     also have "\<dots> = (\<Sum>i\<in>K. z1 i * \<chi> (C i) t + z2 i * \<chi> (C i) t)" 
-      by (rule setsum.distrib[THEN sym])
+      by (rule sum.distrib[THEN sym])
     also have "\<dots> = (\<Sum>i\<in>K. (z1 i + z2 i) * \<chi> (C i) t)" 
       by (simp add: distrib_right)
     finally have "f t + g t = (\<Sum>i\<in>K. (z1 i + z2 i) * \<chi> (C i) t)" .
@@ -544,7 +544,7 @@ proof -
     by (auto simp add: sfis.base)
   also 
   from a2 b2 have "a+b = (\<Sum>i\<in>K. (z1 i + z2 i) * measure M (C i))" 
-    by (simp add: setsum.distrib[THEN sym] distrib_right)
+    by (simp add: sum.distrib[THEN sym] distrib_right)
   ultimately show ?thesis by simp
 qed
 
@@ -580,9 +580,9 @@ proof - txt{*\nopagebreak*}
         and "\<And>x. x \<in> K-{i} \<Longrightarrow> z1 x * \<chi> (C x) t = 0" 
         by (auto simp add: characteristic_function_def) 
       hence "0 = (\<Sum>k\<in>K-{i}. z1 k * \<chi> (C k) t)" 
-        by (simp only: setsum.neutral_const setsum.cong)
+        by (simp only: sum.neutral_const sum.cong)
       with K iK have "z1 i * \<chi> (C i) t = (\<Sum>k\<in>K. z1 k * \<chi> (C k) t)" 
-        by (simp add: setsum_diff1)
+        by (simp add: sum_diff1)
       also  
       from fg f g have "(\<Sum>i\<in>K. z1 i * \<chi> (C i) t) \<le> (\<Sum>i\<in>K. z2 i * \<chi> (C i) t)" 
         by (simp add: le_fun_def)
@@ -591,9 +591,9 @@ proof - txt{*\nopagebreak*}
         and "\<And>x. x \<in> K-{i} \<Longrightarrow> z2 x * \<chi> (C x) t = 0" 
         by (auto simp add: characteristic_function_def)
       hence "0 = (\<Sum>k\<in>K-{i}. z2 k * \<chi> (C k) t)" 
-        by (simp only: setsum.neutral_const setsum.cong)
+        by (simp only: sum.neutral_const sum.cong)
       with K iK have "(\<Sum>k\<in>K. z2 k * \<chi> (C k) t) = z2 i * \<chi> (C i) t" 
-        by (simp add: setsum_diff1)
+        by (simp add: sum_diff1)
       also
       from ti have "\<dots> = z2 i" 
         by (simp add: characteristic_function_def)
@@ -618,7 +618,7 @@ proof - txt{*\nopagebreak*}
         by (simp add: mult_right_mono)
     qed
   }
-  with a2 b2 show ?thesis by (simp add: setsum_mono)
+  with a2 b2 show ?thesis by (simp add: sum_mono)
 qed
 
 lemma sfis_unique: 
@@ -634,7 +634,7 @@ qed
 text {*The integral of characteristic functions, as well as the effect of
   multiplication with a constant, follows directly from the
     definition. Together with a generalization of the addition theorem
-    to setsums, a less restrictive introduction rule emerges, making
+    to sums, a less restrictive introduction rule emerges, making
     normal forms obsolete. It is only valid in measure spaces though.*}
 
 lemma sfis_char:
@@ -657,7 +657,7 @@ lemma sfis_char:
     { fix i 
       have "K=K" and "\<chi> (A \<inter> R i) t = x i * \<chi> (R i) t" 
         by (auto simp add: R_def x_def characteristic_function_def)}
-    hence "\<dots> = (\<Sum>i\<in>K. x i * \<chi> (R i) t)" by (rule setsum.cong)
+    hence "\<dots> = (\<Sum>i\<in>K. x i * \<chi> (R i) t)" by (rule sum.cong)
     finally have "\<chi> A t = (\<Sum>i\<in>K. x i * \<chi> (R i) t)" .
   }
   hence "\<chi> A = (\<lambda>t. \<Sum>i\<in>K. x i * \<chi> (R i) t)" by (simp add: ext)
@@ -669,7 +669,7 @@ lemma sfis_char:
     from ms have "K=K" and "x i * measure M (R i) = measure M (A \<inter> R i)" 
       by (auto simp add: R_def x_def measure_space_def positive_def)
   } hence "(\<Sum>i\<in>K. x i * measure M (R i)) = (\<Sum>i\<in>K. measure M (A \<inter> R i))" 
-    by (rule setsum.cong)
+    by (rule sum.cong)
   also from ms un fin dis Rms mA have "\<dots> = measure M A"
     by (rule measure_split[THEN sym]) 
   
@@ -686,9 +686,9 @@ proof cases
   {
     fix t
     from base have "z*f t = (\<Sum>i\<in>S. z * (x i * \<chi> (A i) t))"
-      by (simp add: setsum_distrib_left)
+      by (simp add: sum_distrib_left)
     also have "\<dots> = (\<Sum>i\<in>S. (z * x i) * \<chi> (A i) t)"
-    proof (rule setsum.cong)
+    proof (rule sum.cong)
       show "S = S" ..
       fix i show "z * (x i * \<chi> (A i) t) = (z * x i) * \<chi> (A i) t" by auto
     qed
@@ -700,24 +700,24 @@ proof cases
   with base zf have "(\<Sum>i\<in>S. z * x i * measure M (A i)) \<in> sfis (\<lambda>w. z*f w) M" 
     by (simp add: sfis.base)
   also have "(\<Sum>i\<in>S. z * x i * measure M (A i)) = (\<Sum>i\<in>S. z * (x i * measure M (A i)))"
-  proof (rule setsum.cong)
+  proof (rule sum.cong)
     show "S = S" ..
     fix i show "(z * x i) * measure M (A i) = z * (x i * measure M (A i))" by auto
   qed
-  also from base have "\<dots> = z*a" by (simp add: setsum_distrib_left)
+  also from base have "\<dots> = z*a" by (simp add: sum_distrib_left)
   finally show ?thesis .
 qed(*>*)
 
 
 lemma assumes ms: "measure_space M" 
   and a: "\<forall>i\<in>S. a i \<in> sfis (f i) M" and S: "finite S"
-  shows sfis_setsum: "(\<Sum>i\<in>S. a i) \<in> sfis (\<lambda>t. \<Sum>i\<in>S. f i t) M" (*<*)using S a
+  shows sfis_sum: "(\<Sum>i\<in>S. a i) \<in> sfis (\<lambda>t. \<Sum>i\<in>S. f i t) M" (*<*)using S a
 proof induct
   case empty
   with ms have "measure M {} \<in> sfis \<chi> {} M"
     by (simp add: measure_space_def sigma_algebra_def sfis_char)
   with ms show ?case
-    by (simp add: setsum.empty measure_space_def positive_def char_empty)
+    by (simp add: sum.empty measure_space_def positive_def char_empty)
 next
   case (insert s S)
   then have "\<And>t. (\<Sum>i \<in> insert s S. f i t) = f s t + (\<Sum>i\<in>S. f i t)" by simp
@@ -741,7 +741,7 @@ proof -
       by (simp add: nonnegative_def sfis_times) 
   }
   with ms S show ?thesis 
-    by (simp add: sfis_setsum)
+    by (simp add: sfis_sum)
 qed
 
 text{*That is nearly all there is to know about simple function
@@ -758,13 +758,13 @@ proof (cases)
     from base have "\<And>i. 0 \<le> x i * \<chi> (A i) t"
       by (simp add: nonnegative_def characteristic_function_def)
     with base have "(\<Sum>i\<in>S. 0) \<le> f t"
-      by (simp del: setsum.neutral_const setsum_constant add: setsum_mono)
+      by (simp del: sum.neutral_const sum_constant add: sum_mono)
     hence "0 \<le> f t" by simp
   }
   thus ?thesis by (simp add: nonnegative_def)
 qed(*>*)
 
-lemma setsum_rv:
+lemma sum_rv:
   assumes rvs: "\<forall>k\<in>K. (f k) \<in> rv M" and ms: "measure_space M"
   shows "(\<lambda>t. \<Sum>k\<in>K. f k t) \<in> rv M"
 (*<*)proof (cases "finite K")
@@ -810,7 +810,7 @@ proof (cases)
       by (simp add: char_rv const_rv rv_times_rv)
   } with ms
   have "\<dots> \<in> rv M"
-    by (simp add: setsum_rv)
+    by (simp add: sum_rv)
   ultimately show ?thesis 
     by simp
 qed(*>*)(*>*)(*nonnegative function integral set*)(*>*)
@@ -922,12 +922,12 @@ proof cases
               by (auto simp add: characteristic_function_def) }
           hence "(\<Sum>i\<in>S. a i * \<chi> (A i \<inter> B n) t) = 
             (\<Sum>i\<in>S. \<chi> (B n) t * (a i * \<chi> (A i) t))" 
-            by (rule setsum.cong)
+            by (rule sum.cong)
           hence "z*(\<Sum>i\<in>S. a i * \<chi> (A i \<inter> B n) t) = 
             z*(\<Sum>i\<in>S. \<chi> (B n) t * (a i * \<chi> (A i) t))" 
             by simp
           also have "\<dots> = z * \<chi> (B n) t * (\<Sum>i\<in>S. a i * \<chi> (A i) t)" 
-            by (simp add: setsum_distrib_left[THEN sym])
+            by (simp add: sum_distrib_left[THEN sym])
           also 
           from sr have "nonnegative s" by (simp add: sfis_nn)
           with nnu B_def base_a
@@ -1031,7 +1031,7 @@ proof cases
     }
     hence "(\<lambda>n. \<Sum>j\<in>S. a j * measure M (A j \<inter> B n)) 
       \<longlonglongrightarrow> (\<Sum>j\<in>S. a j * measure M (A j))" 
-      by (rule tendsto_setsum)
+      by (rule tendsto_sum)
     hence "(\<lambda>n. z* (\<Sum>j\<in>S. a j * measure M (A j \<inter> B n)))
       \<longlonglongrightarrow> z*(\<Sum>j\<in>S. a j * measure M (A j))" 
       by (simp add: tendsto_const tendsto_mult)
@@ -1178,14 +1178,14 @@ lemma sf_norm_help:
   moreover
   from fin have finat2: "finite (K-{j})" and "j \<notin> (K-{j})"  by simp_all
   hence "(\<Sum>i\<in>insert j (K-{j}). (z i) * \<chi> (C i) t) = (z j * \<chi> (C j) t) + (\<Sum>i\<in>K-{j}. (z i) * \<chi> (C i) t)"
-    by (rule setsum.insert)
+    by (rule sum.insert)
   moreover from tj have "\<dots> = z j + (\<Sum>i\<in>K-{j}. (z i) * \<chi> (C i) t)"
     by (simp add: characteristic_function_def)
   moreover
   { from iK have "\<forall>i\<in>K-{j}. (z i) * \<chi> (C i) t = 0"
       by (auto simp add: characteristic_function_def)
   }
-  hence "\<dots> = z j"  by (simp add:setsum.neutral)
+  hence "\<dots> = z j"  by (simp add:sum.neutral)
   ultimately show ?thesis by simp
 qed(*>*)
 
@@ -1595,9 +1595,9 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
           by force
         with refl have "(\<Sum>j\<in>{..<(m*2^m)}-{0}-{i}. real j / (2::real)^m * \<chi> (A m j) t) = 
           (\<Sum>j\<in>{..<(m*2^m)}-{0}-{i}. 0)" 
-          by (rule setsum.cong)
+          by (rule sum.cong)
         also have "\<dots> = 0"
-          by (rule setsum.neutral_const)
+          by (rule sum.neutral_const)
         finally have sum0: "(\<Sum>j\<in>{..<(m*2^m)}-{0}-{i}. real j / (2::real)^m * \<chi> (A m j) t) = 0" .
         
         have "u m t = real i / (2::real)^m"
@@ -1630,7 +1630,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
           with fin have "(\<Sum>j\<in>insert i ({..<(m*2^m)}-{0}-{i}). real j / (2::real)^m * \<chi> (A m j) t)
             = real i / (2::real)^m * \<chi> (A m i) t +
             (\<Sum>j\<in>{..<(m*2^m)}-{0}-{i}. real j / (2::real)^m * \<chi> (A m j) t)"
-            by (rule setsum.insert)
+            by (rule sum.insert)
           with ins tai have "(\<Sum>j\<in>{..<(m*2^m)}-{0}. real j / (2::real)^m * \<chi> (A m j) t)
             = real i / (2::real)^m +
             (\<Sum>j\<in>{..<(m*2^m)}-{0}-{i}. real j / (2::real)^m * \<chi> (A m j) t)"
@@ -1761,7 +1761,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
           }
           with refl have "(\<Sum>i\<in>{..<n * 2 ^ n} - {0}. real i / (2::real)^n * \<chi> (A n i) t)
             = (\<Sum>i\<in>{..<n * 2 ^ n} - {0}. 0)"
-            by (rule setsum.cong)
+            by (rule sum.cong)
           hence "u n t = 0"  by (simp add: u_def)
             
           also 
@@ -1771,7 +1771,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
                 by (simp add: characteristic_function_def zero_le_divide_iff)
             } hence "\<forall>i\<in>{..<(m*2^m)}-{0}. 0 \<le> real i / (2::real)^m * \<chi> (A m i) t"
               by fast
-            hence "0 \<le> u m t"  by (simp add: u_def setsum_nonneg)
+            hence "0 \<le> u m t"  by (simp add: u_def sum_nonneg)
           }
           hence "0 \<le> u (Suc n) t" .
 

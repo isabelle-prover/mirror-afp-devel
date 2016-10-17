@@ -55,7 +55,7 @@ lemmas [integrable_on_simps] =
   integrable_on_cdivide_iff
   integrable_diff
   integrable_add
-  integrable_setsum
+  integrable_sum
 
 lemma dist_cancel_add1: "dist (t0 + et) t0 = norm et"
   by (simp add: dist_norm)

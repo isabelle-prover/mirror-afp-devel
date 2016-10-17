@@ -75,13 +75,13 @@ lemma E_linear_plus2: "finite (set_pmf A) \<Longrightarrow> E (map_pmf f A) + E 
 unfolding E_def integral_map_pmf apply(rule Bochner_Integration.integral_add[of "measure_pmf A" f g, symmetric])
  by (simp_all add: integrable_measure_pmf_finite)
 
-lemma E_linear_setsum2: "finite (set_pmf D) \<Longrightarrow> E(map_pmf (\<lambda>x. (\<Sum>i<up. f i x)) D)
+lemma E_linear_sum2: "finite (set_pmf D) \<Longrightarrow> E(map_pmf (\<lambda>x. (\<Sum>i<up. f i x)) D)
       = (\<Sum>i<(up::nat). E(map_pmf (f i) D))"
-unfolding E_def integral_map_pmf apply(rule Bochner_Integration.integral_setsum) by (simp add: integrable_measure_pmf_finite)
+unfolding E_def integral_map_pmf apply(rule Bochner_Integration.integral_sum) by (simp add: integrable_measure_pmf_finite)
 
-lemma E_linear_setsum_allg: "finite (set_pmf D) \<Longrightarrow> E(map_pmf (\<lambda>x. (\<Sum>i\<in> A. f i x)) D)
+lemma E_linear_sum_allg: "finite (set_pmf D) \<Longrightarrow> E(map_pmf (\<lambda>x. (\<Sum>i\<in> A. f i x)) D)
       = (\<Sum>i\<in> (A::'a set). E(map_pmf (f i) D))"
-unfolding E_def integral_map_pmf apply(rule Bochner_Integration.integral_setsum) by (simp add: integrable_measure_pmf_finite)
+unfolding E_def integral_map_pmf apply(rule Bochner_Integration.integral_sum) by (simp add: integrable_measure_pmf_finite)
 
 lemma E_finite_sum_fun: "finite (set_pmf X) \<Longrightarrow>
     E (map_pmf f X) = (\<Sum>x\<in>set_pmf X. pmf X x * f x)"

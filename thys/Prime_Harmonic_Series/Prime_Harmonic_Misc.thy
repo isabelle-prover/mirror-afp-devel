@@ -14,7 +14,7 @@ begin
 lemma sum_list_nonneg: "\<forall>x\<in>set xs. x \<ge> 0 \<Longrightarrow> sum_list xs \<ge> (0 :: 'a :: ordered_ab_group_add)"
   by (induction xs) auto
 
-lemma setsum_telescope':
+lemma sum_telescope':
   assumes "m \<le> n"
   shows   "(\<Sum>k = Suc m..n. f k - f (Suc k)) = f (Suc m) - (f (Suc n) :: 'a :: ab_group_add)"
   by (rule dec_induct[OF assms]) (simp_all add: algebra_simps)

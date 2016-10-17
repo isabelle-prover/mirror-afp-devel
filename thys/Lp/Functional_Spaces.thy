@@ -59,9 +59,9 @@ by (standard, rule ext, auto)
 instance "fun"::(type, comm_monoid_add) comm_monoid_add
 by (standard, rule ext, auto)
 
-lemma fun_setsum_apply:
+lemma fun_sum_apply:
   fixes u::"'i \<Rightarrow> 'a \<Rightarrow> ('b::comm_monoid_add)"
-  shows "(setsum u I) x = setsum (\<lambda>i. u i x) I"
+  shows "(sum u I) x = sum (\<lambda>i. u i x) I"
 by (induction I rule: infinite_finite_induct, auto)
 
 instance "fun"::(type, cancel_semigroup_add) cancel_semigroup_add
@@ -129,11 +129,11 @@ lemma borel_measurable_diff'[measurable (raw)]:
   shows "f - g \<in> borel_measurable M"
 unfolding fun_diff_def using assms by auto
 
-lemma borel_measurable_setsum'[measurable (raw)]:
+lemma borel_measurable_sum'[measurable (raw)]:
   fixes f::"'i \<Rightarrow> 'a \<Rightarrow> 'b::{second_countable_topology, real_normed_vector}"
   assumes "\<And>i. i \<in> I \<Longrightarrow> f i \<in> borel_measurable M"
   shows "(\<Sum>i\<in>I. f i) \<in> borel_measurable M"
-using borel_measurable_setsum[of I f, OF assms] unfolding fun_setsum_apply[symmetric] by simp
+using borel_measurable_sum[of I f, OF assms] unfolding fun_sum_apply[symmetric] by simp
 
 lemma zero_applied_to [simp]:
   "(0::('a \<Rightarrow> ('b::real_vector))) x = 0"
@@ -221,7 +221,7 @@ lemma eNorm_uminus [simp]:
   "eNorm N (-x) = eNorm N x"
 using eNorm_cmult[of N "-1" x] by auto
 
-lemma eNorm_setsum:
+lemma eNorm_sum:
   "eNorm N (\<Sum>i\<in>{..<n}. u i) \<le> (\<Sum>i\<in>{..<n}. (defect N)^(Suc i) * eNorm N (u i))"
 proof (cases "n=0")
   case True
@@ -240,10 +240,10 @@ next
     fix v::"nat \<Rightarrow> 'a"
     define w where "w = (\<lambda>i. if i = n then v n + v (Suc n) else v i)"
     have "(\<Sum>i\<in>{..Suc n}. v i) = (\<Sum>i\<in>{..<n}. v i) + v n + v (Suc n)"
-      using lessThan_Suc_atMost setsum_lessThan_Suc by auto
+      using lessThan_Suc_atMost sum_lessThan_Suc by auto
     also have "... = (\<Sum>i\<in>{..<n}. w i) + w n" unfolding w_def by auto
     finally have "(\<Sum>i\<in>{..Suc n}. v i) = (\<Sum>i\<in>{..n}. w i)"
-      by (metis lessThan_Suc_atMost setsum_lessThan_Suc)
+      by (metis lessThan_Suc_atMost sum_lessThan_Suc)
     then have "eNorm N (\<Sum>i\<in>{..Suc n}. v i) = eNorm N (\<Sum>i\<in>{..n}. w i)" by simp
     also have "... \<le> (\<Sum>i\<in>{..<n}. (defect N)^(Suc i) * eNorm N (w i)) + (defect N)^n * eNorm N (w n)"
       using Suc.IH by auto
@@ -379,7 +379,7 @@ lemma spaceN_contains_zero [simp]:
   "0 \<in> space\<^sub>N N"
 unfolding space\<^sub>N_def by auto
 
-lemma spaceN_setsum [simp]:
+lemma spaceN_sum [simp]:
   assumes "\<And>i. i \<in> I \<Longrightarrow> x i \<in> space\<^sub>N N"
   shows "(\<Sum>i\<in>I. x i) \<in> space\<^sub>N N"
 using assms by (induction I rule: infinite_finite_induct, auto)
@@ -495,7 +495,7 @@ lemma zero_spaceN_iff':
   "x \<in> zero_space\<^sub>N N \<longleftrightarrow> (x \<in> space\<^sub>N N \<and> Norm N x = 0)"
 using eNorm_Norm unfolding space\<^sub>N_def zero_space\<^sub>N_def by (auto simp add: Norm_def, fastforce)
 
-lemma Norm_setsum:
+lemma Norm_sum:
   assumes "\<And>i. i < n \<Longrightarrow> u i \<in> space\<^sub>N N"
   shows "Norm N (\<Sum>i\<in>{..<n}. u i) \<le> (\<Sum>i\<in>{..<n}. (defect N)^(Suc i) * Norm N (u i))"
 proof -
@@ -503,19 +503,19 @@ proof -
     by (meson Norm_nonneg defect_ge_1 dual_order.trans linear mult_nonneg_nonneg not_one_le_zero zero_le_power)
 
   have "ennreal (Norm N (\<Sum>i\<in>{..<n}. u i)) = eNorm N (\<Sum>i\<in>{..<n}. u i)"
-    apply (rule eNorm_Norm[symmetric], rule spaceN_setsum) using assms by auto
+    apply (rule eNorm_Norm[symmetric], rule spaceN_sum) using assms by auto
   also have "... \<le> (\<Sum>i\<in>{..<n}. (defect N)^(Suc i) * eNorm N (u i))"
-    using eNorm_setsum by simp
+    using eNorm_sum by simp
   also have "... = (\<Sum>i\<in>{..<n}. (defect N)^(Suc i) * ennreal (Norm N (u i)))"
     using eNorm_Norm[OF assms] by auto
   also have "... = (\<Sum>i\<in>{..<n}. ennreal((defect N)^(Suc i) * Norm N (u i)))"
     by (subst ennreal_mult'', auto)
   also have "... = ennreal (\<Sum>i\<in>{..<n}. (defect N)^(Suc i) * Norm N (u i))"
-    by (auto intro!: setsum_ennreal simp add: *)
+    by (auto intro!: sum_ennreal simp add: *)
   finally have **: "ennreal (Norm N (\<Sum>i\<in>{..<n}. u i)) \<le> ennreal (\<Sum>i\<in>{..<n}. (defect N)^(Suc i) * Norm N (u i))"
     by simp
   show ?thesis
-    apply (subst ennreal_le_iff[symmetric], rule setsum_nonneg) using * ** by auto
+    apply (subst ennreal_le_iff[symmetric], rule sum_nonneg) using * ** by auto
 qed
 
 subsection {*An example: the ambient norm in a normed vector space*}

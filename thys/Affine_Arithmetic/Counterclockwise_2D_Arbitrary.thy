@@ -82,10 +82,10 @@ lemma nlex_sum:
   shows "lex (a + b) 0"
   using assms by (auto simp: lex_def)
 
-lemma nlex_setsum:
+lemma nlex_sum:
   assumes "finite X"
   assumes "\<And>x. x \<in> X \<Longrightarrow> lex (f x) 0"
-  shows "lex (setsum f X) 0"
+  shows "lex (sum f X) 0"
   using assms
   by induction (auto intro!: nlex_sum)
 
@@ -142,7 +142,7 @@ lemma lex_diff1: "lex (a - b) c = lex a (c + b)"
 lemma sum_list_eq_0_iff_nonpos:
   fixes xs::"'a::ordered_ab_group_add list"
   shows "list_all (\<lambda>x. x \<le> 0) xs \<Longrightarrow> sum_list xs = 0 \<longleftrightarrow> (\<forall>n\<in>set xs. n = 0)"
-  by (auto simp: list_all_iff sum_list_setsum_nth setsum_nonpos_eq_0_iff)
+  by (auto simp: list_all_iff sum_list_sum_nth sum_nonpos_eq_0_iff)
     (auto simp add: in_set_conv_nth)
 
 lemma sum_list_nlex_eq_zeroI:

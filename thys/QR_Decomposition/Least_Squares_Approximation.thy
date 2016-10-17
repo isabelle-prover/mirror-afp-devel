@@ -70,7 +70,7 @@ proof -
   proof (rule phytagorean_theorem_norm, rule in_orthogonal_complement_imp_orthogonal) 
     show "?p - y \<in> S" unfolding proj_onto_def proj_def[abs_def]
     proof (rule real_vector.subspace_diff[OF subspace_S _ y], 
-        rule real_vector.subspace_setsum[OF subspace_S])
+        rule real_vector.subspace_sum[OF subspace_S])
       show "finite X" by (metis euclidean_space.independent_bound_general ind_X)
       show "\<forall>x\<in>X. (v \<bullet> x / (x \<bullet> x)) *\<^sub>R x \<in> S" 
         by (metis S_eq_spanX real_vector.span_superset subspace_S real_vector.subspace_mul)
@@ -108,7 +108,7 @@ proof -
     qed
     show "?p \<in> S" 
       using [[unfold_abs_def = false]]
-    proof (unfold proj_onto_def proj_def, rule real_vector.subspace_setsum)
+    proof (unfold proj_onto_def proj_def, rule real_vector.subspace_sum)
       show "real_vector.subspace S" using subspace_S .
       show "finite X" by (metis euclidean_space.independent_bound_general ind_X)
       show "\<forall>x\<in>X.  proj v x \<in> S" 
@@ -146,7 +146,7 @@ proof -
       by (rule v_minus_p_orthogonal_complement[OF subspace_S ind_X X span_X o])
   next
     show "?p \<in> S" 
-    proof (unfold proj_onto_def, rule real_vector.subspace_setsum)
+    proof (unfold proj_onto_def, rule real_vector.subspace_sum)
       show "real_vector.subspace S" using subspace_S .
       show "finite X" by (metis euclidean_space.independent_bound_general ind_X)
       show "\<forall>x\<in>X. proj v x \<in> S"
@@ -186,9 +186,9 @@ proof (auto)
     and span_X: "S \<subseteq> real_vector.span X"
     and o: "pairwise orthogonal X" 
     by (metis Generalizations.real_vector.span_eq Miscellaneous_QR.orthogonal_basis_exists subspace_S)
-  let ?p="setsum (proj v) X"
+  let ?p="sum (proj v) X"
   show "\<exists>p. p \<in> S \<and> (\<forall>y\<in>S - {p}. norm (v - p) < norm (v - y))"
-  proof (rule exI[of _ ?p], rule conjI,  rule real_vector.subspace_setsum)
+  proof (rule exI[of _ ?p], rule conjI,  rule real_vector.subspace_sum)
     show "real_vector.subspace S" using subspace_S .
     show "finite X" by (metis euclidean_space.independent_bound_general ind_X)
     show "\<forall>x\<in>X. proj v x \<in> S" 
@@ -216,9 +216,9 @@ proof (auto)
     and span_X: "S \<subseteq> real_vector.span X"
     and o: "pairwise orthogonal X"
     by (metis Generalizations.real_vector.span_eq Miscellaneous_QR.orthogonal_basis_exists subspace_S)
-  let ?p="setsum (proj v) X"
+  let ?p="sum (proj v) X"
   show "\<exists>p. p \<in> S \<and> (\<forall>y\<in>S. norm (v - p) \<le> norm (v - y))"
-  proof (rule exI[of _ ?p], rule conjI, rule real_vector.subspace_setsum)
+  proof (rule exI[of _ ?p], rule conjI, rule real_vector.subspace_sum)
     show "real_vector.subspace S" using subspace_S .
     show "finite X" by (metis euclidean_space.independent_bound_general ind_X)
     show "\<forall>x\<in>X. proj v x \<in> S" 
@@ -251,9 +251,9 @@ proof (auto)
     and span_X: "S \<subseteq> real_vector.span X"
     and o: "pairwise orthogonal X"
     by (metis Generalizations.real_vector.span_eq Miscellaneous_QR.orthogonal_basis_exists subspace_S)
-  let ?p="setsum (proj v) X"
+  let ?p="sum (proj v) X"
   show "\<exists>p. p \<in> S \<and> (\<forall>y\<in>S - {p}. norm (v - p) < norm (v - y) \<and> v - p \<in> orthogonal_complement S)"
-  proof (rule exI[of _ ?p], rule conjI, rule real_vector.subspace_setsum)
+  proof (rule exI[of _ ?p], rule conjI, rule real_vector.subspace_sum)
     show "real_vector.subspace S" using subspace_S .
     show "finite X" by (metis euclidean_space.independent_bound_general ind_X)
     show "\<forall>x\<in>X. proj v x \<in> S" 

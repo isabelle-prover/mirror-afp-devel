@@ -48,7 +48,7 @@ lemma aa1: "a f i \<le> U (f i) (state f i)"
 by(simp add: a_def U inv_state)
 
 lemma ub: "(\<Sum>i<n. t (f i) (state f i)) \<le> (\<Sum>i<n. U (f i) (state f i))"
-by (metis (mono_tags) aa1 order.trans setsum_mono ta)
+by (metis (mono_tags) aa1 order.trans sum_mono ta)
 
 end
 

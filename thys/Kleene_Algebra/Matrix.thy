@@ -194,7 +194,7 @@ end
 subsection {* Matrix Multiplication *}
 
 fun matrix_times :: "('a::{comm_monoid_add,times},'m,'k) matrix \<Rightarrow> ('a,'k,'n) matrix \<Rightarrow> ('a,'m,'n) matrix" where
-  "matrix_times (Matrix A) (Matrix B) = Matrix (\<lambda>i j. setsum (\<lambda>k. A i k * B k j) (UNIV::'k atMost set))"
+  "matrix_times (Matrix A) (Matrix B) = Matrix (\<lambda>i j. sum (\<lambda>k. A i k * B k j) (UNIV::'k atMost set))"
 
 notation matrix_times (infixl "*\<^sub>M" 70)
 
@@ -206,7 +206,7 @@ begin
 end
 
 lemma times_sqmatrix_def' [simp]:
-  "SqMatrix A * SqMatrix B = SqMatrix (\<lambda>i j. setsum (\<lambda>k. A i k * B k j) (UNIV::'k atMost set))"
+  "SqMatrix A * SqMatrix B = SqMatrix (\<lambda>i j. sum (\<lambda>k. A i k * B k j) (UNIV::'k atMost set))"
   by (simp add: times_sqmatrix_def)
 
 lemma matrix_mult_0_right [simp]:
@@ -217,11 +217,11 @@ lemma matrix_mult_0_left [simp]:
   "0 *\<^sub>M (A::('a::{comm_monoid_add,mult_zero},'m,'n) matrix) = 0"
   by (cases A, simp add: zero_matrix_def)
 
-lemma setsum_delta_r_0 [simp]:
+lemma sum_delta_r_0 [simp]:
   "\<lbrakk> finite S; j \<notin> S \<rbrakk> \<Longrightarrow> (\<Sum>k\<in>S. f k * (if k = j then 1 else (0::'b::{semiring_0,monoid_mult}))) = 0"
   by (induct S rule: finite_induct, auto)
 
-lemma setsum_delta_r_1 [simp]:
+lemma sum_delta_r_1 [simp]:
   "\<lbrakk> finite S; j \<in> S \<rbrakk> \<Longrightarrow> (\<Sum>k\<in>S. f k * (if k = j then 1 else (0::'b::{semiring_0,monoid_mult}))) = f j"
   by (induct S rule: finite_induct, auto)
 
@@ -229,11 +229,11 @@ lemma matrix_mult_1_right [simp]:
   "(A::('a::{semiring_0,monoid_mult},'m::len,'n::len) matrix) *\<^sub>M 1 = A"
   by (cases A, simp add: one_matrix_def)
 
-lemma setsum_delta_l_0 [simp]:
+lemma sum_delta_l_0 [simp]:
   "\<lbrakk> finite S; i \<notin> S \<rbrakk> \<Longrightarrow> (\<Sum>k\<in>S. (if i = k then 1 else (0::'b::{semiring_0,monoid_mult})) * f k j) = 0"
   by (induct S rule: finite_induct, auto)
 
-lemma setsum_delta_l_1 [simp]:
+lemma sum_delta_l_1 [simp]:
   "\<lbrakk> finite S; i \<in> S \<rbrakk> \<Longrightarrow> (\<Sum>k\<in>S. (if i = k then 1 else (0::'b::{semiring_0,monoid_mult})) * f k j) = f i j"
   by (induct S rule: finite_induct, auto)
 
@@ -246,18 +246,18 @@ lemma matrix_mult_assoc:
  apply (cases A)
  apply (cases B)
  apply (cases C)
- apply (simp add: setsum_distrib_right setsum_distrib_left mult.assoc)
- apply (subst setsum.commute)
+ apply (simp add: sum_distrib_right sum_distrib_left mult.assoc)
+ apply (subst sum.commute)
  apply (rule refl)
 done
 
 lemma matrix_mult_distrib_left:
   "(A::('a::{comm_monoid_add,semiring},'m,'n::len) matrix) *\<^sub>M (B + C) = A *\<^sub>M B + A *\<^sub>M C"
-  by (cases A, cases B, cases C, simp add: distrib_left setsum.distrib)
+  by (cases A, cases B, cases C, simp add: distrib_left sum.distrib)
 
 lemma matrix_mult_distrib_right:
   "((A::('a::{comm_monoid_add,semiring},'m,'n::len) matrix) + B) *\<^sub>M C = A *\<^sub>M C + B *\<^sub>M C"
-  by (cases A, cases B, cases C, simp add: distrib_right setsum.distrib)
+  by (cases A, cases B, cases C, simp add: distrib_right sum.distrib)
 
 lemma sqmatrix_mult_0_right [simp]:
   "(A::('a::{comm_monoid_add,mult_zero},'m) sqmatrix) * 0 = 0"
@@ -280,18 +280,18 @@ lemma sqmatrix_mult_assoc:
  apply (cases A)
  apply (cases B)
  apply (cases C)
- apply (simp add: setsum_distrib_right setsum_distrib_left mult.assoc)
- apply (subst setsum.commute)
+ apply (simp add: sum_distrib_right sum_distrib_left mult.assoc)
+ apply (subst sum.commute)
  apply (rule refl)
 done
 
 lemma sqmatrix_mult_distrib_left:
   "(A::('a::{comm_monoid_add,semiring},'m::len) sqmatrix) * (B + C) = A * B + A * C"
-  by (cases A, cases B, cases C, simp add: distrib_left setsum.distrib)
+  by (cases A, cases B, cases C, simp add: distrib_left sum.distrib)
 
 lemma sqmatrix_mult_distrib_right:
   "((A::('a::{comm_monoid_add,semiring},'m::len) sqmatrix) + B) * C = A * C + B * C"
-  by (cases A, cases B, cases C, simp add: distrib_right setsum.distrib)
+  by (cases A, cases B, cases C, simp add: distrib_right sum.distrib)
 
 
 subsection {* Square-Matrix Model of Dioids *}

@@ -68,9 +68,9 @@ lemma linear_add: "f (x + y) = f x + f y"
 lemma linear_diff: "f (x - y) = f x - f y"
   by (metis diff_conv_add_uminus linear_add linear_neg)
 
-lemma linear_setsum:
+lemma linear_sum:
   assumes fin: "finite S"
-  shows "f (setsum g S) = setsum (f \<circ> g) S"
+  shows "f (sum g S) = sum (f \<circ> g) S"
   using fin
 proof induct
   case empty
@@ -78,20 +78,20 @@ proof induct
     by (simp add: linear_0)
 next
   case (insert x F)
-  have "f (setsum g (insert x F)) = f (g x + setsum g F)"
+  have "f (sum g (insert x F)) = f (g x + sum g F)"
     using insert.hyps by simp
-  also have "\<dots> = f (g x) + f (setsum g F)"
+  also have "\<dots> = f (g x) + f (sum g F)"
     using linear_add by simp
-  also have "\<dots> = setsum (f \<circ> g) (insert x F)"
+  also have "\<dots> = sum (f \<circ> g) (insert x F)"
     using insert.hyps by simp
   finally show ?case .
 qed
 
 
-lemma linear_setsum_mul:
+lemma linear_sum_mul:
   assumes fin: "finite S"
-  shows "f (setsum (\<lambda>i. c i *b v i) S) = setsum (\<lambda>i. c i *c f (v i)) S"
-  using linear_setsum[OF fin] linear_cmul
+  shows "f (sum (\<lambda>i. c i *b v i) S) = sum (\<lambda>i. c i *c f (v i)) S"
+  using linear_sum[OF fin] linear_cmul
   by simp
 
 
@@ -181,11 +181,11 @@ by (metis scale_minus_left scale_one subspace_mul)
 lemma subspace_diff: "subspace S \<Longrightarrow> x \<in> S \<Longrightarrow> y \<in> S \<Longrightarrow> x - y \<in> S"
   by (metis diff_conv_add_uminus subspace_add subspace_neg)
 
-lemma subspace_setsum:
+lemma subspace_sum:
   assumes sA: "subspace A"
     and fB: "finite B"
     and f: "\<forall>x\<in> B. f x \<in> A"
-  shows "setsum f B \<in> A"
+  shows "sum f B \<in> A"
   using  fB f sA
   by (induct rule: finite_induct[OF fB])
     (simp add: subspace_def sA, auto simp add: sA subspace_add)
@@ -424,8 +424,8 @@ lemma span_neg: "x \<in> span S ==> - x \<in> span S"
 lemma span_diff: "x \<in> span S ==> y \<in> span S ==> x - y \<in> span S"
   by (metis subspace_span subspace_diff)
 
-lemma span_setsum: "finite A ==> \<forall>x \<in> A. f x \<in> span S ==> setsum f A \<in> span S"
-  by (rule subspace_setsum, rule subspace_span)
+lemma span_sum: "finite A ==> \<forall>x \<in> A. f x \<in> span S ==> sum f A \<in> span S"
+  by (rule subspace_sum, rule subspace_span)
 
 lemma span_add_eq: "x \<in> span S ==> x + y \<in> span S \<longleftrightarrow> y \<in> span S"
   apply (auto simp only: span_add span_diff)
@@ -587,17 +587,17 @@ lemma span_insert_0[simp]: "span (insert 0 S) = span S"
   by (metis span_0 span_redundant)
 
 lemma span_explicit:
-  "span  P = {y. \<exists>S u. finite S \<and> S \<subseteq> P \<and> setsum (\<lambda>v. scale (u v) v) S = y}"
+  "span  P = {y. \<exists>S u. finite S \<and> S \<subseteq> P \<and> sum (\<lambda>v. scale (u v) v) S = y}"
   (is "_ = ?E" is "_ = {y. ?h y}" is "_ = {y. \<exists>S u. ?Q S u y}")
   proof -
   {
     fix x
     assume x: "x \<in> ?E"
-    then obtain S u where fS: "finite S" and SP: "S\<subseteq>P" and u: "setsum (\<lambda>v. scale (u v) v) S = x"
+    then obtain S u where fS: "finite S" and SP: "S\<subseteq>P" and u: "sum (\<lambda>v. scale (u v) v) S = x"
       by blast
     have "x \<in> span P"
       unfolding u[symmetric]
-      apply (rule span_setsum[OF fS])
+      apply (rule span_sum[OF fS])
       using span_mono[OF SP]
       apply (auto intro: span_superset span_mul)
       done
@@ -615,7 +615,7 @@ lemma span_explicit:
     assume x: "x \<in> P"
     assume hy: "y \<in> Collect ?h"
     from hy obtain S u where fS: "finite S" and SP: "S\<subseteq>P"
-      and u: "setsum (\<lambda>v. scale (u v) v) S = y" by blast
+      and u: "sum (\<lambda>v. scale (u v) v) S = y" by blast
     let ?S = "insert x S"
     let ?u = "\<lambda>y. if y = x then (if x \<in> S then u y + c else c) else u y"
     from fS SP x have th0: "finite (insert x S)" "insert x S \<subseteq> P"
@@ -626,24 +626,24 @@ lemma span_explicit:
       have S1: "S = (S - {x}) \<union> {x}"
         and Sss:"finite (S - {x})" "finite {x}" "(S - {x}) \<inter> {x} = {}"
         using xS fS by auto
-      have "setsum (\<lambda>v. scale (?u v) v) ?S =(\<Sum>v\<in>S - {x}.  scale (?u v) v) + scale (u x + c) x"
-        using xS by (simp add: setsum.remove [OF fS xS] insert_absorb)
+      have "sum (\<lambda>v. scale (?u v) v) ?S =(\<Sum>v\<in>S - {x}.  scale (?u v) v) + scale (u x + c) x"
+        using xS by (simp add: sum.remove [OF fS xS] insert_absorb)
       also have "\<dots> = (\<Sum>v\<in>S. scale (u v) v) + scale c x"
-        by (simp add: setsum.remove [OF fS xS] algebra_simps)
+        by (simp add: sum.remove [OF fS xS] algebra_simps)
       also have "\<dots> = scale c x + y"
         by (simp add: add.commute u)
-      finally have "setsum (\<lambda>v. scale (?u v) v) ?S = scale c x + y" .
+      finally have "sum (\<lambda>v. scale (?u v) v) ?S = scale c x + y" .
       then show ?thesis using th0 by blast
     next
       assume xS: "x \<notin> S"
       have th00: "(\<Sum>v\<in>S. scale (if v = x then c else u v) v) = y"
         unfolding u[symmetric]
-        apply (rule setsum.cong)
+        apply (rule sum.cong)
         using xS
         apply auto
         done
       show ?thesis using fS xS th0
-        by (simp add: th00 setsum_clauses add.commute cong del: if_weak_cong)
+        by (simp add: th00 sum_clauses add.commute cong del: if_weak_cong)
     qed
     then show "(scale c x + y) \<in> Collect ?h"
       unfolding mem_Collect_eq
@@ -658,13 +658,13 @@ qed
 
 
 lemma dependent_explicit:
-  "dependent P \<longleftrightarrow> (\<exists>S u. finite S \<and> S \<subseteq> P \<and> (\<exists>v\<in>S. u v \<noteq> 0 \<and> setsum (\<lambda>v. scale (u v) v) S = 0))"
+  "dependent P \<longleftrightarrow> (\<exists>S u. finite S \<and> S \<subseteq> P \<and> (\<exists>v\<in>S. u v \<noteq> 0 \<and> sum (\<lambda>v. scale (u v) v) S = 0))"
   (is "?lhs = ?rhs")
   proof -
   {
     assume dP: "dependent P"
     then obtain a S u where aP: "a \<in> P" and fS: "finite S"
-      and SP: "S \<subseteq> P - {a}" and ua: "setsum (\<lambda>v. scale (u v) v) S = a"
+      and SP: "S \<subseteq> P - {a}" and ua: "sum (\<lambda>v. scale (u v) v) S = a"
       unfolding dependent_def span_explicit by blast
     let ?S = "insert a S"
     let ?u = "\<lambda>y. if y = a then - 1 else u y"
@@ -672,11 +672,11 @@ lemma dependent_explicit:
     from aP SP have aS: "a \<notin> S"
       by blast
     from fS SP aP have th0: "finite ?S" "?S \<subseteq> P" "?v \<in> ?S" "?u ?v \<noteq> 0" by auto
-    have s0: "setsum (\<lambda>v. scale (?u v) v) ?S = 0"
+    have s0: "sum (\<lambda>v. scale (?u v) v) ?S = 0"
       using fS aS
-      apply (simp add: setsum_clauses field_simps)
+      apply (simp add: sum_clauses field_simps)
       apply (subst (2) ua[symmetric])
-      apply (rule setsum.cong)
+      apply (rule sum.cong)
       apply auto
       done
     with th0 have ?rhs by fast
@@ -688,18 +688,18 @@ lemma dependent_explicit:
       and SP: "S \<subseteq> P"
       and vS: "v \<in> S"
       and uv: "u v \<noteq> 0"
-      and u: "setsum (\<lambda>v. scale (u v) v) S = 0"
+      and u: "sum (\<lambda>v. scale (u v) v) S = 0"
     let ?a = v
     let ?S = "S - {v}"
     let ?u = "\<lambda>i. (- u i) / u v"
     have th0: "?a \<in> P" "finite ?S" "?S \<subseteq> P"
       using fS SP vS by auto
-    have "setsum (\<lambda>v. scale (?u v) v) ?S =
-      setsum (\<lambda>v. scale (- (inverse (u ?a))) (scale (u v) v)) S - scale (?u v) v"
-      using fS vS uv by (simp add: setsum_diff1 field_simps)
+    have "sum (\<lambda>v. scale (?u v) v) ?S =
+      sum (\<lambda>v. scale (- (inverse (u ?a))) (scale (u v) v)) S - scale (?u v) v"
+      using fS vS uv by (simp add: sum_diff1 field_simps)
     also have "\<dots> = ?a"
-      unfolding scale_setsum_right[symmetric] u using uv by simp
-    finally have "setsum (\<lambda>v. scale (?u v) v) ?S = ?a" .
+      unfolding scale_sum_right[symmetric] u using uv by simp
+    finally have "sum (\<lambda>v. scale (?u v) v) ?S = ?a" .
     with th0 have ?lhs
       unfolding dependent_def span_explicit
       apply -
@@ -716,7 +716,7 @@ qed
 
 lemma span_finite:
   assumes fS: "finite S"
-  shows "span S = {y. \<exists>u. setsum (\<lambda>v. scale (u v)  v) S = y}"
+  shows "span S = {y. \<exists>u. sum (\<lambda>v. scale (u v)  v) S = y}"
   (is "_ = ?rhs")
 proof -
   {
@@ -724,18 +724,18 @@ proof -
     assume y: "y \<in> span S"
     from y obtain S' u where fS': "finite S'"
       and SS': "S' \<subseteq> S"
-      and u: "setsum (\<lambda>v. scale (u v)v) S' = y"
+      and u: "sum (\<lambda>v. scale (u v)v) S' = y"
       unfolding span_explicit by blast
     let ?u = "\<lambda>x. if x \<in> S' then u x else 0"
-    have "setsum (\<lambda>v. scale (?u v) v) S = setsum (\<lambda>v. scale (u v) v) S'"
-      using SS' fS by (auto intro!: setsum.mono_neutral_cong_right)
-    then have "setsum (\<lambda>v. scale (?u v) v) S = y" by (metis u)
+    have "sum (\<lambda>v. scale (?u v) v) S = sum (\<lambda>v. scale (u v) v) S'"
+      using SS' fS by (auto intro!: sum.mono_neutral_cong_right)
+    then have "sum (\<lambda>v. scale (?u v) v) S = y" by (metis u)
     then have "y \<in> ?rhs" by auto
   }
   moreover
   {
     fix y u
-    assume u: "setsum (\<lambda>v. scale (u v) v) S = y"
+    assume u: "sum (\<lambda>v. scale (u v) v) S = y"
     then have "y \<in> span S" using fS unfolding span_explicit by auto
   }
   ultimately show ?thesis by blast
@@ -963,7 +963,7 @@ proof (unfold independent_explicit, clarify)
   assume S: "S \<subseteq> A" and v: "v \<in> S"
   let ?g = "\<lambda>x. if x \<in> S then u x else 0"
   have "(\<Sum>v\<in>A. scale (?g v) v) = (\<Sum>v\<in>S. scale (u v) v)"
-    using S fin_A by (auto intro!: setsum.mono_neutral_cong_right)
+    using S fin_A by (auto intro!: sum.mono_neutral_cong_right)
   also assume "(\<Sum>v\<in>S. scale (u v) v) = 0"
   finally have "?g v = 0" using v S sum by force
   thus "u v = 0"  unfolding if_P[OF v] .
@@ -982,8 +982,8 @@ lemma independent_cart_basis:
   fix f::"('a, 'b) vec \<Rightarrow> 'a" and x::"('a, 'b) vec"
   assume eq_0: "(\<Sum>x\<in>cart_basis. f x *s x) = 0" and x_in: "x \<in> cart_basis"
   obtain i where x: "x = axis i 1" using x_in unfolding cart_basis_def by auto
-  have setsum_eq_0: "(\<Sum>x\<in>(cart_basis) - {x}. f x * (x $ i)) = 0"
-    proof (rule setsum.neutral, rule ballI)
+  have sum_eq_0: "(\<Sum>x\<in>(cart_basis) - {x}. f x * (x $ i)) = 0"
+    proof (rule sum.neutral, rule ballI)
       fix xa assume xa: "xa \<in> cart_basis - {x}"
       obtain a where a: "xa = axis a 1" and a_not_i: "a \<noteq> i"
         using xa x unfolding cart_basis_def by auto
@@ -991,11 +991,11 @@ lemma independent_cart_basis:
       thus "f xa * xa $ i = 0" by simp
    qed
   have "0 = (\<Sum>x\<in>cart_basis. f x *s x) $ i" using eq_0 by simp
-  also have "... = (\<Sum>x\<in>cart_basis. (f x *s x) $ i)" unfolding setsum_component ..
+  also have "... = (\<Sum>x\<in>cart_basis. (f x *s x) $ i)" unfolding sum_component ..
   also have "... = (\<Sum>x\<in>cart_basis. f x * (x $ i))" unfolding vector_smult_component ..
   also have "... = f x * (x $ i) + (\<Sum>x\<in>(cart_basis) - {x}. f x * (x $ i))"
-    by (rule setsum.remove[OF finite_cart_basis x_in])
-  also have "... =  f x * (x $ i)" unfolding setsum_eq_0 by simp
+    by (rule sum.remove[OF finite_cart_basis x_in])
+  also have "... =  f x * (x $ i)" unfolding sum_eq_0 by simp
   also have "... = f x" unfolding x axis_def by auto
   finally show "f x = 0" ..
 qed
@@ -1011,8 +1011,8 @@ fix i::'b
 let ?w = "axis i (1::'a)"
 have the_eq_i: "(THE a. ?w = axis a 1) = i"
   by (rule the_equality, auto simp: axis_eq_axis)
-have setsum_eq_0: "(\<Sum>v\<in>(cart_basis) - {?w}. x $ (THE i. v = axis i 1) * v $ i) = 0"
-  proof (rule setsum.neutral, rule ballI)
+have sum_eq_0: "(\<Sum>v\<in>(cart_basis) - {?w}. x $ (THE i. v = axis i 1) * v $ i) = 0"
+  proof (rule sum.neutral, rule ballI)
      fix xa::"('a, 'b) vec"
      assume xa: "xa \<in> cart_basis - {?w}"
      obtain j where j: "xa = axis j 1" and i_not_j: "i \<noteq> j" using xa unfolding cart_basis_def by auto
@@ -1026,12 +1026,12 @@ have setsum_eq_0: "(\<Sum>v\<in>(cart_basis) - {?w}. x $ (THE i. v = axis i 1) *
       unfolding the_eq_j unfolding axis_def using i_not_j by simp
    qed
 have "(\<Sum>v\<in>cart_basis. x $ (THE i. v = axis i 1) *s v) $ i =
-  (\<Sum>v\<in>cart_basis. (x $ (THE i. v = axis i 1) *s v) $ i)" unfolding setsum_component ..
+  (\<Sum>v\<in>cart_basis. (x $ (THE i. v = axis i 1) *s v) $ i)" unfolding sum_component ..
 also have "... = (\<Sum>v\<in>cart_basis. x $ (THE i. v = axis i 1) * v $ i)"
   unfolding vector_smult_component ..
 also have "... = x $ (THE a. ?w = axis a 1) * ?w $ i + (\<Sum>v\<in>(cart_basis) - {?w}. x $ (THE i. v = axis i 1) * v $ i)"
- by (rule setsum.remove[OF finite_cart_basis], auto simp add: cart_basis_def)
-also have "... = x $ (THE a. ?w = axis a 1) * ?w $ i" unfolding setsum_eq_0 by simp
+ by (rule sum.remove[OF finite_cart_basis], auto simp add: cart_basis_def)
+also have "... = x $ (THE a. ?w = axis a 1) * ?w $ i" unfolding sum_eq_0 by simp
 also have "... = x $ i" unfolding the_eq_i unfolding axis_def by auto
 finally show "(\<Sum>v\<in>cart_basis. x $ (THE i. v = axis i 1) *s v) $ i = x $ i" .
 qed
@@ -1769,7 +1769,7 @@ lemma matrix_vector_mul_linear_between_finite_dimensional_vector_spaces:
     (cart_basis) (cart_basis) (\<lambda>x. A *v (x::'a::{field} ^ _))"
   by (unfold_locales)
     (auto simp add: linear_iff2 matrix_vector_mult_def vec_eq_iff
-      field_simps setsum_distrib_left setsum.distrib)
+      field_simps sum_distrib_left sum.distrib)
 
 interpretation euclidean_space:
   finite_dimensional_vector_space "scaleR :: real => 'a => 'a::{euclidean_space}" "Basis"
@@ -1782,7 +1782,7 @@ proof
     apply simp
     apply clarify
     apply (drule_tac f="inner a" in arg_cong)
-    apply (simp add: inner_Basis inner_setsum_right eq_commute)
+    apply (simp add: inner_Basis inner_sum_right eq_commute)
     done
   show "vector_space.span op *\<^sub>R (Basis::'a set) = UNIV"
     unfolding vector_space.span_finite [OF v finite_Basis]
@@ -1800,24 +1800,24 @@ lemma vector_mul_lcancel_imp: "a \<noteq> (0::'a::{field}) ==>  a *s x = a *s y 
 lemma linear_componentwise:
   fixes f:: "'a::field ^'m \<Rightarrow> 'a ^ 'n"
   assumes lf: "linear (op *s) (op *s) f"
-  shows "(f x)$j = setsum (\<lambda>i. (x$i) * (f (axis i 1)$j)) (UNIV :: 'm set)" (is "?lhs = ?rhs")
+  shows "(f x)$j = sum (\<lambda>i. (x$i) * (f (axis i 1)$j)) (UNIV :: 'm set)" (is "?lhs = ?rhs")
 proof -
   interpret lf: linear "(op *s)" "(op *s)" f
     using lf .
   let ?M = "(UNIV :: 'm set)"
   let ?N = "(UNIV :: 'n set)"
   have fM: "finite ?M" by simp
-  have "?rhs = (setsum (\<lambda>i. (x$i) *s (f (axis i 1))) ?M)$j"
-    unfolding setsum_component by simp
+  have "?rhs = (sum (\<lambda>i. (x$i) *s (f (axis i 1))) ?M)$j"
+    unfolding sum_component by simp
   then show ?thesis
-    unfolding lf.linear_setsum_mul[OF fM, symmetric]
+    unfolding lf.linear_sum_mul[OF fM, symmetric]
     unfolding basis_expansion by auto
 qed
 
 
 lemma matrix_vector_mul_linear: "linear (op *s) (op *s) (\<lambda>x. A *v (x::'a::{field} ^ _))"
   by (simp add: linear_iff2 matrix_vector_mult_def vec_eq_iff
-      field_simps setsum_distrib_left setsum.distrib)
+      field_simps sum_distrib_left sum.distrib)
 
 (*Two new interpretations*)
 interpretation vec: linear "op *s" "op *s" "(\<lambda>x. A *v (x::'a::{field} ^ _))"
@@ -1878,13 +1878,13 @@ lemma matrix_left_invertible_ker:
   lemma matrix_left_invertible_independent_columns:
   fixes A :: "'a::{field}^'n^'m"
   shows "(\<exists>(B::'a ^'m^'n). B ** A = mat 1) \<longleftrightarrow>
-      (\<forall>c. setsum (\<lambda>i. c i *s column i A) (UNIV :: 'n set) = 0 \<longrightarrow> (\<forall>i. c i = 0))"
+      (\<forall>c. sum (\<lambda>i. c i *s column i A) (UNIV :: 'n set) = 0 \<longrightarrow> (\<forall>i. c i = 0))"
     (is "?lhs \<longleftrightarrow> ?rhs")
 proof -
   let ?U = "UNIV :: 'n set"
   { assume k: "\<forall>x. A *v x = 0 \<longrightarrow> x = 0"
     { fix c i
-      assume c: "setsum (\<lambda>i. c i *s column i A) ?U = 0" and i: "i \<in> ?U"
+      assume c: "sum (\<lambda>i. c i *s column i A) ?U = 0" and i: "i \<in> ?U"
       let ?x = "\<chi> i. c i"
       have th0:"A *v ?x = 0"
         using c
@@ -1907,7 +1907,7 @@ qed
 lemma matrix_right_invertible_independent_rows:
   fixes A :: "'a::{field}^'n^'m"
   shows "(\<exists>(B::'a^'m^'n). A ** B = mat 1) \<longleftrightarrow>
-    (\<forall>c. setsum (\<lambda>i. c i *s row i A) (UNIV :: 'm set) = 0 \<longrightarrow> (\<forall>i. c i = 0))"
+    (\<forall>c. sum (\<lambda>i. c i *s row i A) (UNIV :: 'm set) = 0 \<longrightarrow> (\<forall>i. c i = 0))"
   unfolding left_invertible_transpose[symmetric]
     matrix_left_invertible_independent_columns
   by (simp add: column_transpose)
@@ -1966,7 +1966,7 @@ qed
 end
 
 (*Maybe change de name*)
-lemma setsum_constant_scaleR:
+lemma sum_constant_scaleR:
   shows "(\<Sum>x\<in>A. y) = of_nat (card A) *s y"
   apply (cases "finite A")
   apply (induct set: finite)
@@ -2101,13 +2101,13 @@ have PU_decomposition: "?PU = ?S1 \<union> ?S2"
    fix p assume p: "p permutes ?U"
    show "Fun.swap j k id \<circ> p permutes UNIV" by (metis p permutes_compose tjk_permutes)
 qed
-have "setsum ?f ?S2 = setsum ((\<lambda>p. of_int (sign p) * (\<Prod>i\<in>UNIV. A $ i $ p i))
+have "sum ?f ?S2 = sum ((\<lambda>p. of_int (sign p) * (\<Prod>i\<in>UNIV. A $ i $ p i))
   \<circ> op \<circ> (Fun.swap j k id)) {p \<in> {p. p permutes UNIV}. evenperm p}"
-    unfolding g_S1 by (rule setsum.reindex[OF inj_g])
-also have "... = setsum (\<lambda>p. of_int (sign (?t_jk \<circ> p)) * (\<Prod>i\<in>UNIV. A $ i $ p i)) ?S1"
-  unfolding o_def by (rule setsum.cong, auto simp add: tjk_eq)
-also have "... = setsum (\<lambda>p. - ?f p) ?S1"
-  proof (rule setsum.cong, auto)
+    unfolding g_S1 by (rule sum.reindex[OF inj_g])
+also have "... = sum (\<lambda>p. of_int (sign (?t_jk \<circ> p)) * (\<Prod>i\<in>UNIV. A $ i $ p i)) ?S1"
+  unfolding o_def by (rule sum.cong, auto simp add: tjk_eq)
+also have "... = sum (\<lambda>p. - ?f p) ?S1"
+  proof (rule sum.cong, auto)
      fix x assume x: "x permutes ?U"
      and even_x: "evenperm x"
      hence perm_x: "permutation x" and perm_tjk: "permutation ?t_jk"
@@ -2119,13 +2119,13 @@ also have "... = setsum (\<lambda>p. - ?f p) ?S1"
       = - (of_int (sign x) * (\<Prod>i\<in>UNIV. A $ i $ x i))"
       by auto
   qed
-also have "...= - setsum ?f ?S1" unfolding setsum_negf ..
-finally have *: "setsum ?f ?S2 = - setsum ?f ?S1" .
+also have "...= - sum ?f ?S1" unfolding sum_negf ..
+finally have *: "sum ?f ?S2 = - sum ?f ?S1" .
 have "det A = (\<Sum>p | p permutes UNIV. of_int (sign p) * (\<Prod>i\<in>UNIV. A $ i $ p i))"
   unfolding det_def ..
-also have "...= setsum ?f ?S1 + setsum ?f ?S2"
-  by (subst PU_decomposition, rule setsum.union_disjoint[OF _ _ disjoint], auto)
-also have "...= setsum ?f ?S1 - setsum ?f ?S1 " unfolding * by auto
+also have "...= sum ?f ?S1 + sum ?f ?S2"
+  by (subst PU_decomposition, rule sum.union_disjoint[OF _ _ disjoint], auto)
+also have "...= sum ?f ?S1 - sum ?f ?S1 " unfolding * by auto
 also have "...= 0" by simp
 finally show "det A = 0" by simp
 qed
@@ -2158,7 +2158,7 @@ lemma det_zero_row:
   shows "det A = 0"
   using r
   apply (simp add: row_def det_def vec_eq_iff)
-  apply (rule setsum.neutral)
+  apply (rule sum.neutral)
   apply (auto)
   done
 
@@ -2341,11 +2341,11 @@ proof -
       by blast
     let ?s = "\<lambda>p. of_int (sign p)"
     let ?f = "\<lambda>q. ?s p * (\<Prod>i\<in> ?U. A $ i $ p i) * (?s q * (\<Prod>i\<in> ?U. B $ i $ q i))"
-    have "(setsum (\<lambda>q. ?s q *
+    have "(sum (\<lambda>q. ?s q *
         (\<Prod>i\<in> ?U. (\<chi> i. A $ i $ p i *s B $ p i :: 'a^'n^'n) $ i $ q i)) ?PU) =
-      (setsum (\<lambda>q. ?s p * (\<Prod>i\<in> ?U. A $ i $ p i) * (?s q * (\<Prod>i\<in> ?U. B $ i $ q i))) ?PU)"
+      (sum (\<lambda>q. ?s p * (\<Prod>i\<in> ?U. A $ i $ p i) * (?s q * (\<Prod>i\<in> ?U. B $ i $ q i))) ?PU)"
       unfolding sum_permutations_compose_right[OF permutes_inv[OF p], of ?f]
-    proof (rule setsum.cong)
+    proof (rule sum.cong)
       fix q
       assume qU: "q \<in> ?PU"
       then have q: "q permutes ?U"
@@ -2375,14 +2375,14 @@ proof -
         by (simp add: sign_nz th00 field_simps sign_idempotent sign_compose)
     qed rule
   }
-  then have th2: "setsum (\<lambda>f. det (\<chi> i. A$i$f i *s B$f i)) ?PU = det A * det B"
-    unfolding det_def setsum_product
-    by (rule setsum.cong[OF refl])
-  have "det (A**B) = setsum (\<lambda>f.  det (\<chi> i. A $ i $ f i *s B $ f i)) ?F"
-    unfolding matrix_mul_setsum_alt det_linear_rows_setsum[OF fU]
+  then have th2: "sum (\<lambda>f. det (\<chi> i. A$i$f i *s B$f i)) ?PU = det A * det B"
+    unfolding det_def sum_product
+    by (rule sum.cong[OF refl])
+  have "det (A**B) = sum (\<lambda>f.  det (\<chi> i. A $ i $ f i *s B $ f i)) ?F"
+    unfolding matrix_mul_sum_alt det_linear_rows_sum[OF fU]
     by simp
-  also have "\<dots> = setsum (\<lambda>f. det (\<chi> i. A$i$f i *s B$f i)) ?PU"
-    using setsum.mono_neutral_cong_left[OF fF PUF zth, symmetric]
+  also have "\<dots> = sum (\<lambda>f. det (\<chi> i. A$i$f i *s B$f i)) ?PU"
+    using sum.mono_neutral_cong_left[OF fF PUF zth, symmetric]
     unfolding det_rows_mul by auto
   finally show ?thesis unfolding th2 .
 qed
@@ -2416,7 +2416,7 @@ proof -
     let ?U = "UNIV :: 'n set"
     have fU: "finite ?U"
       by simp
-    from H obtain c i where c: "setsum (\<lambda>i. c i *s row i A) ?U = 0"
+    from H obtain c i where c: "sum (\<lambda>i. c i *s row i A) ?U = 0"
       and iU: "i \<in> ?U"
       and ci: "c i \<noteq> 0"
       unfolding invertible_righ_inverse
@@ -2428,8 +2428,8 @@ proof -
       apply simp
       done
     from c ci
-    have thr0: "- row i A = setsum (\<lambda>j. (1/ c i) *s (c j *s row j A)) (?U - {i})"
-      unfolding setsum.remove[OF fU iU] setsum_cmul
+    have thr0: "- row i A = sum (\<lambda>j. (1/ c i) *s (c j *s row j A)) (?U - {i})"
+      unfolding sum.remove[OF fU iU] sum_cmul
       apply -
       apply (rule vector_mul_lcancel_imp[OF ci])
       apply (auto simp add: field_simps)
@@ -2438,7 +2438,7 @@ proof -
       done
     have thr: "- row i A \<in> vec.span {row j A| j. j \<noteq> i}"
       unfolding thr0
-      apply (rule vec.span_setsum)
+      apply (rule vec.span_sum)
       apply simp
       apply (rule ballI)
       apply (rule vec.span_mul [folded scalar_mult_eq_scaleR])+

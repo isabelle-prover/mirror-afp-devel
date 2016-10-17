@@ -124,11 +124,11 @@ abbreviation "E s \<equiv> set_pmf (N s)"
 lemma finite_C[simp]: "finite C"
   using C_smaller finite_J by (blast intro: finite_subset)
 
-lemma setsum_p_i_C[simp]: "setsum p_i C = 0"
-  by (auto intro: setsum.neutral p_i_C)
+lemma sum_p_i_C[simp]: "sum p_i C = 0"
+  by (auto intro: sum.neutral p_i_C)
 
-lemma setsum_p_i_H[simp]: "setsum p_i H = 1"
-  using C_smaller by (simp add: setsum_diff p_i_distr)
+lemma sum_p_i_H[simp]: "sum p_i H = 1"
+  using C_smaller by (simp add: sum_diff p_i_distr)
 
 lemma possible_jondo:
   obtains j where "j \<in> J" "j \<notin> C" "p_i j \<noteq> 0"
@@ -179,7 +179,7 @@ proof (rule pmf_embed_pmf)
   show "(\<integral>\<^sup>+ x. ennreal (next_prob s x) \<partial>count_space UNIV) = 1"
     using p_f J_not_empty
     by (subst nn_integral_count_space'[where A="Init`H \<union> Mix`J \<union> {End}"])
-       (auto simp: next_prob_def setsum.reindex setsum.union_disjoint p_i_distr p_j_def
+       (auto simp: next_prob_def sum.reindex sum.union_disjoint p_i_distr p_j_def
              split: state.split)
 qed
 
@@ -255,7 +255,7 @@ proof -
     apply (subst (1 2) emeasure_Collect_T)
     apply simp
     apply (subst (1 2) nn_integral_measure_pmf_finite)
-    apply (auto simp: E_Mix E_Init * setsum.reindex setsum_distrib_right[symmetric] divide_ennreal
+    apply (auto simp: E_Mix E_Init * sum.reindex sum_distrib_right[symmetric] divide_ennreal
       ennreal_times_divide[symmetric])
     done
 qed
@@ -330,13 +330,13 @@ proof -
       also have "\<dots> = ennreal ((1 - p_f) * card L * p_j * p_f)"
         using s assms
         by (subst emeasure_measure_pmf_finite)
-           (auto simp: setsum.reindex subset_eq ennreal_mult mult_ac)
+           (auto simp: sum.reindex subset_eq ennreal_mult mult_ac)
       finally show "?P s ?E = p_f * p_j * (1 - p_f) * card L"
         by simp
     next
       show "\<And>t. AE \<omega> in T  t. \<not> (?E \<sqinter> (?J \<sqinter> nxt (?J suntil ?E))) \<omega>"
         by (intro AE_I2) (auto simp: HLD_iff elim: suntil.cases)
-    qed (insert p_f j, auto simp: emeasure_measure_pmf_finite setsum.reindex p_j_def)
+    qed (insert p_f j, auto simp: emeasure_measure_pmf_finite sum.reindex p_j_def)
     then have "?P (Init j) (?J suntil ?E) = (p_f * p_j * (1 - p_f) * card L) / (1 - p_f) / p_f"
       by (subst emeasure_Init_eq_Mix) (simp_all add:  suntil.simps[of _ _ "x ## s" for x s] divide_ennreal p_f)
     then have "?P (Init j) (?J suntil ?E) = p_j * card L"
@@ -352,7 +352,7 @@ proof -
   also have "\<dots> = ennreal ((\<Sum>i\<in>I. p_i i) * card L * p_j)"
     using p_j_pos assms
     by (subst nn_integral_cmult_indicator)
-       (auto simp: emeasure_measure_pmf_finite setsum.reindex subset_eq ennreal_mult[symmetric] setsum_nonneg)
+       (auto simp: emeasure_measure_pmf_finite sum.reindex subset_eq ennreal_mult[symmetric] sum_nonneg)
   finally show ?thesis by (simp add: ac_simps)
 qed
 
@@ -373,13 +373,13 @@ lemma server_view1: "j \<in> J \<Longrightarrow> \<P>(\<omega> in \<PP>. visit H
 lemma server_view_indep:
   "L \<subseteq> J \<Longrightarrow> I \<subseteq> H \<Longrightarrow> \<P>(\<omega> in \<PP>. visit I L \<omega>) = \<P>(\<omega> in \<PP>. visit H L \<omega>) * \<P>(\<omega> in \<PP>. visit I J \<omega>)"
   unfolding measure_def
-  by (subst (1 2 3) emeasure_visit) (auto simp: p_j_def setsum_nonneg subset_eq)
+  by (subst (1 2 3) emeasure_visit) (auto simp: p_j_def sum_nonneg subset_eq)
 
 lemma server_view: "\<P>(\<omega> in \<PP>. \<exists>j\<in>H. visit {j} {j} \<omega>) = p_j"
   using finite_J
-proof (subst T.prob_setsum[where I="H" and P="\<lambda>j. visit {j} {j}"])
+proof (subst T.prob_sum[where I="H" and P="\<lambda>j. visit {j} {j}"])
   show "(\<Sum>j\<in>H. \<P>(\<omega> in \<PP>. visit {j} {j} \<omega>)) = p_j"
-    by (auto simp: measure_def emeasure_visit setsum_distrib_right[symmetric] simp del: space_T sets_T)
+    by (auto simp: measure_def emeasure_visit sum_distrib_right[symmetric] simp del: space_T sets_T)
   show "AE x in \<PP>. (\<forall>n\<in>H. visit {n} {n} x \<longrightarrow> (\<exists>j\<in>H. visit {j} {j} x)) \<and>
                 ((\<exists>j\<in>H. visit {j} {j} x) \<longrightarrow> (\<exists>!n. n \<in> H \<and> visit {n} {n} x))"
     by (auto dest: visit_unique1)
@@ -504,9 +504,9 @@ proof -
         fix s assume s: "s \<in> Mix ` H"
         from s C_smaller show "?P s ?M = ennreal ((1 - p_H) * p_f)"
           by (subst emeasure_HLD)
-             (auto simp add: emeasure_measure_pmf_finite setsum.reindex subset_eq p_j_def H_compl)
+             (auto simp add: emeasure_measure_pmf_finite sum.reindex subset_eq p_j_def H_compl)
         from s show "emeasure (N s) (Mix`H) = p_H * p_f"
-          by (auto simp: emeasure_measure_pmf_finite setsum.reindex p_H_def p_j_def)
+          by (auto simp: emeasure_measure_pmf_finite sum.reindex p_H_def p_j_def)
       qed (insert j, auto simp: HLD_iff p_H_p_f_less_1)
       finally have "?P (Init j) (ev ?M) = (1 - p_H) / (1 - p_H * p_f)"
         using p_f
@@ -518,7 +518,7 @@ proof -
   also have "\<dots> = ennreal ((1 - p_H) / (1 - p_H * p_f))"
     using p_j_pos p_H p_H_p_f_less_1
     by (subst nn_integral_cmult_indicator)
-       (auto simp: emeasure_measure_pmf_finite setsum.reindex subset_eq mult_ac
+       (auto simp: emeasure_measure_pmf_finite sum.reindex subset_eq mult_ac
              intro!: divide_nonneg_nonneg)
   finally show ?thesis
     by (simp add: measure_def mult_le_one)
@@ -585,20 +585,20 @@ proof -
     using L I C_smaller p_j_pos
     apply (subst emeasure_HLD_nxt emeasure_HLD, simp)+
     apply (subst nn_integral_indicator_finite)
-    apply (auto simp: emeasure_measure_pmf_finite setsum.reindex next_prob_def setsum.If_cases
-                      Int_absorb2 H_compl2 ennreal_mult[symmetric] setsum_nonneg
-                      setsum_distrib_left[symmetric] setsum_distrib_right[symmetric]
-                intro!: setsum.cong setsum_nonneg)
+    apply (auto simp: emeasure_measure_pmf_finite sum.reindex next_prob_def sum.If_cases
+                      Int_absorb2 H_compl2 ennreal_mult[symmetric] sum_nonneg
+                      sum_distrib_left[symmetric] sum_distrib_right[symmetric]
+                intro!: sum.cong sum_nonneg)
     apply (subst (asm) ennreal_inj)
-    apply (auto intro!: mult_nonneg_nonneg setsum_nonneg setsum.mono_neutral_left elim!: negE)
+    apply (auto intro!: mult_nonneg_nonneg sum_nonneg sum.mono_neutral_left elim!: negE)
     done
   also have "?P Start (Init`I \<cdot> ?U) = (\<Sum>i\<in>I. ?P (Init i) ?U * p_i i)"
     using I
     by (subst emeasure_HLD_nxt, simp)
-       (auto simp: nn_integral_indicator_finite setsum.reindex emeasure_measure_pmf_finite
-             intro!: setsum.cong[OF refl])
+       (auto simp: nn_integral_indicator_finite sum.reindex emeasure_measure_pmf_finite
+             intro!: sum.cong[OF refl])
   also have "\<dots> = (\<Sum>i\<in>I. ennreal (p_f * (1 - p_H) * p_j * card L / (1 - p_H * p_f)) * p_i i)"
-  proof (intro setsum.cong refl arg_cong2[where f="op *"])
+  proof (intro sum.cong refl arg_cong2[where f="op *"])
     fix i assume "i \<in> I"
     with I have i: "i \<in> H"
       by auto
@@ -613,12 +613,12 @@ proof -
       show "?P s (Mix`L \<cdot> (HLD (Mix ` C))) = ennreal (p_f * p_f * (1 - p_H) * p_j * card L)"
         apply (simp add: emeasure_HLD emeasure_HLD_nxt del: nxt.simps space_T)
         apply (subst nn_integral_measure_pmf_support[of "Mix`L"])
-        apply (auto simp add: subset_eq emeasure_measure_pmf_finite setsum.reindex H_compl p_j_def
+        apply (auto simp add: subset_eq emeasure_measure_pmf_finite sum.reindex H_compl p_j_def
           ennreal_mult[symmetric] ennreal_of_nat_eq_real_of_nat)
         done
     next
       fix s assume "s \<in> ?M" then show "emeasure (N s) ?M = ennreal (p_H * p_f)"
-        by (auto simp add: emeasure_measure_pmf_finite setsum.reindex H_eq2)
+        by (auto simp add: emeasure_measure_pmf_finite sum.reindex H_eq2)
     next
       show "AE \<omega> in T t. \<not> ((Mix ` L \<cdot> ?L) \<sqinter> (HLD (Mix ` H) \<sqinter> nxt ?U)) \<omega>" for t
         using L
@@ -634,8 +634,8 @@ proof -
   finally have *: "\<P>(\<omega> in T Start. ?V \<omega>) =
       (p_f * (1 - p_H) * p_j * (card L) / (1 - p_H * p_f)) * (\<Sum>i\<in>I. p_i i) +
       (\<Sum>i\<in>I \<inter> L. p_i i) * (1 - p_H)"
-    by (simp add: mult_ac measure_def setsum_distrib_right[symmetric] setsum_distrib_left[symmetric]
-                  setsum_divide_distrib[symmetric] IJ ennreal_mult[symmetric] setsum_nonneg
+    by (simp add: mult_ac measure_def sum_distrib_right[symmetric] sum_distrib_left[symmetric]
+                  sum_divide_distrib[symmetric] IJ ennreal_mult[symmetric] sum_nonneg
                   mult_le_one ennreal_plus[symmetric]
              del: ennreal_plus)
   show ?thesis
@@ -650,15 +650,15 @@ proof -
   let ?V = "\<lambda>j. visit {j} J aand before_C {j}" and ?H = "hit_C"
   let ?J = "H"
   have "\<P>(\<omega> in \<PP>. (\<exists>j\<in>?J. ?V j \<omega>) \<and> ?H \<omega>) = (\<Sum>j\<in>?J. \<P>(\<omega> in \<PP>. (?V j aand ?H) \<omega>))"
-  proof (rule T.prob_setsum)
+  proof (rule T.prob_sum)
     show "AE \<omega> in \<PP>. (\<forall>j\<in>?J. (?V j aand ?H) \<omega> \<longrightarrow> ((\<exists>j\<in>?J. ?V j \<omega>) \<and> ?H \<omega>)) \<and>
       (((\<exists>j\<in>?J. ?V j \<omega>) \<and> ?H \<omega>) \<longrightarrow> (\<exists>!j. j\<in>?J \<and> (?V j aand ?H) \<omega>))"
       by (auto intro!: AE_I2 dest: visit_unique1)
   qed auto
   then have "\<P>(\<omega> in \<PP>. (\<exists>j\<in>?J. ?V j \<omega>) \<bar> ?H \<omega>) = (\<Sum>j\<in>?J. \<P>(\<omega> in \<PP>. ?V j \<omega> \<bar> ?H \<omega>))"
-    by (simp add: cond_prob_def setsum_divide_distrib)
+    by (simp add: cond_prob_def sum_divide_distrib)
   also have "\<dots> = p_j * p_f + (1 - p_H * p_f)"
-    by (simp add: Pr_visit_before_C setsum_distrib_right[symmetric] setsum.distrib)
+    by (simp add: Pr_visit_before_C sum_distrib_right[symmetric] sum.distrib)
   finally show ?thesis
     by (simp add: field_simps)
 qed
@@ -702,7 +702,7 @@ proof -
                 visit I J x = (visit I J x \<and> before_C H x)"
       using AE_T_enabled by eventually_elim (auto intro: hit_C_imp_before_C)
   qed auto
-  also have "\<dots> = setsum p_i I"
+  also have "\<dots> = sum p_i I"
     using I by (subst Pr_visit_before_C[OF order_refl]) (auto simp: Int_absorb2 field_simps p_H_def p_j_def)
   finally show ?thesis .
 qed
@@ -907,13 +907,13 @@ proof -
     from i have "?inner i =
       (\<Sum>l\<in>H - {i}. ?il i l * log 2 (?il i l / (?i i * ?l l))) +
       ?il i i * log 2 (?il i i / (?i i * ?l i))"
-      by (simp add: setsum_diff)
+      by (simp add: sum_diff)
     also have "\<dots> =
       (\<Sum>l\<in>H - {i}. p_j/p_H * p_j * p_f * log 2 (p_j * p_f / (p_j * p_f + p_j/p_H * (1 - p_H * p_f)))) +
       p_j/p_H * (p_j * p_f + (1 - p_H * p_f)) * log 2 ((p_j * p_f + (1 - p_H * p_f)) / (p_j * p_f + p_j/p_H * (1 - p_H * p_f)))"
       using i p_f p_j_pos p_H
       apply (simp add: Pr_visit_before_C P_visit init_H Pr_before_C
-                  del: setsum_constant)
+                  del: sum_constant)
       apply (simp add: divide_simps distrib_left)
       apply (intro arg_cong2[where f="op*"] refl arg_cong2[where f=log])
       apply (auto simp: field_simps)
@@ -933,8 +933,8 @@ proof -
   finally have "(\<Sum>i\<in>H. ?inner i) \<le> (1 - ?f) * log 2 h" .
   also have "(\<Sum>i\<in>H. ?inner i) =
       (\<Sum>(i, l)\<in>(first_J`space S) \<times> (last_H`space S). ?il i l * log 2 (?il i l / (?i i * ?l l)))"
-    unfolding setsum.cartesian_product
-  proof (safe intro!: setsum.mono_neutral_cong_left del: DiffE DiffI)
+    unfolding sum.cartesian_product
+  proof (safe intro!: sum.mono_neutral_cong_left del: DiffE DiffI)
     show "finite ((first_J ` space S) \<times> (last_H ` space S))"
       using sf_fj sf_lnc by (auto simp add: hC_def dest!: simple_functionD(1))
   next
@@ -954,10 +954,10 @@ proof -
       by (simp add: cond_prob_def)
   qed
   also have "\<dots> = \<I>(first_J ; last_H)"
-    unfolding setsum.cartesian_product
+    unfolding sum.cartesian_product
     apply (subst hC.mutual_information_simple_distributed[OF sd_fj sd_lnc sd_fj_lnc])
     apply (simp add: hC_def)
-  proof (safe intro!: setsum.mono_neutral_right imageI)
+  proof (safe intro!: sum.mono_neutral_right imageI)
     show "finite ((first_J ` space S) \<times> (last_H ` space S))"
       using sf_fj sf_lnc by (auto simp add: hC_def dest!: simple_functionD(1))
   next

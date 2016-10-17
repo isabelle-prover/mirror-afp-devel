@@ -114,11 +114,11 @@ lemma plus_mono: "x\<^sub>1 \<ge> (x\<^sub>2 :: 'a :: ordered_ab_semigroup) \<Lo
   y\<^sub>1 \<ge> y\<^sub>2 \<Longrightarrow> x\<^sub>1 + y\<^sub>1 \<ge> x\<^sub>2 + y\<^sub>2"
   using ge_trans[OF plus_left_mono[of x\<^sub>2 x\<^sub>1] plus_right_mono[of y\<^sub>2 y\<^sub>1]] .
 
-text \<open>Since one cannot use @{thm setsum_mono} (it requires other 
+text \<open>Since one cannot use @{thm sum_mono} (it requires other 
   class constraints like @{class order}), we make our own copy of this
   fact.\<close>
 
-lemma setsum_mono_ge:
+lemma sum_mono_ge:
   assumes ge: "\<And>i. i\<in>K \<Longrightarrow> f (i::'a) \<ge> ((g i)::('b::ordered_semiring_0))"
   shows "(\<Sum>i\<in>K. f i) \<ge> (\<Sum>i\<in>K. g i)"
 proof (cases "finite K")
@@ -135,7 +135,7 @@ next
   case False then show ?thesis by (simp add: ge_refl)
 qed
 
-lemma (in one_mono_ordered_semiring_1) setsum_mono_gt:
+lemma (in one_mono_ordered_semiring_1) sum_mono_gt:
   assumes le: "\<And>i. i\<in>K \<Longrightarrow> f (i::'b) \<ge> ((g i)::'a)"
   and i: "i \<in> K"
   and gt: "f i \<succ> g i"
@@ -143,9 +143,9 @@ lemma (in one_mono_ordered_semiring_1) setsum_mono_gt:
   shows "(\<Sum>i\<in>K. f i) \<succ> (\<Sum>i\<in>K. g i)"
 proof -
   have id: "\<And> f. (\<Sum>i\<in>K. f i) = f i + (\<Sum>i\<in> K - {i}. f i)"
-    by (rule setsum.remove[OF K i])
+    by (rule sum.remove[OF K i])
   have ge: "(\<Sum>i\<in> K - {i}. f i) \<ge> (\<Sum>i\<in> K - {i}. g i)"
-    by (rule setsum_mono_ge[OF le], auto)
+    by (rule sum_mono_ge[OF le], auto)
   show ?thesis unfolding id using compat[OF plus_right_mono[OF ge] plus_gt_left_mono[OF gt]] .
 qed
 
@@ -154,7 +154,7 @@ lemma scalar_left_mono: assumes
   and "\<And> i. i < n \<Longrightarrow> u $ i \<ge> v $ i"
   and "\<And> i. i < n \<Longrightarrow> w $ i \<ge> (0 :: 'a :: ordered_semiring_0)"
   shows "u \<bullet> w \<ge> v \<bullet> w" unfolding scalar_prod_def
-  by (intro setsum_mono_ge times_left_mono, insert assms, auto)
+  by (intro sum_mono_ge times_left_mono, insert assms, auto)
 
 lemma scalar_right_mono: assumes 
   "u \<in> carrier\<^sub>v n" "v \<in> carrier\<^sub>v n" "w \<in> carrier\<^sub>v n" 
@@ -164,7 +164,7 @@ lemma scalar_right_mono: assumes
 proof -
   have dim: "dim\<^sub>v v = dim\<^sub>v w" using assms by auto
   show ?thesis unfolding scalar_prod_def dim
-    by (intro setsum_mono_ge times_right_mono, insert assms, auto)
+    by (intro sum_mono_ge times_right_mono, insert assms, auto)
 qed
 
 lemma mat_mult_left_mono: assumes C0: "C \<ge>\<^sub>m \<zero>\<^sub>m n n"
@@ -298,7 +298,7 @@ lemma mat_sum_mono:
 proof -
   from A B have id: "dim\<^sub>r B = dim\<^sub>r A" "dim\<^sub>c B = dim\<^sub>c A" by auto
   show ?thesis unfolding mat_sum_def id
-    by (rule setsum_mono_ge, insert mat_geD[OF AB] id, auto)
+    by (rule sum_mono_ge, insert mat_geD[OF AB] id, auto)
 qed
 
 context one_mono_ordered_semiring_1
@@ -313,7 +313,7 @@ proof -
   from mat_gtD[OF AB] obtain i j where AB: "A \<ge>\<^sub>m B" and 
     ij: "i < sd" "j < sd" and gt: "A $$ (i,j) \<succ> B $$ (i,j)" by auto
   show ?thesis unfolding mat_sum_def id
-    by (rule setsum_mono_gt[of _ _ _ "(i,j)"], insert ij gt mat_geD[OF AB] A B `sd \<le> n`, auto)
+    by (rule sum_mono_gt[of _ _ _ "(i,j)"], insert ij gt mat_geD[OF AB] A B `sd \<le> n`, auto)
 qed
 
 lemma mat_plus_gt_left_mono: assumes sd_n: "sd \<le> n" and gt: "mat_gt op \<succ> sd A B"  
@@ -396,7 +396,7 @@ proof -
       by (intro times_right_mono, insert j k sd_n A B C mat_geD[OF gez] mat_geD[OF BC], auto)
   } note sge = this
   have gt: "row A k \<bullet> col B j \<succ> row A k \<bullet> col C j" unfolding scalar_prod_def id
-    by (rule setsum_mono_gt[of _ _ _ i, OF sge], insert mono k i j A B C sd_n, auto)
+    by (rule sum_mono_gt[of _ _ _ i, OF sge], insert mono k i j A B C sd_n, auto)
   show ?thesis
     by (rule mat_gtI[OF ge k j], insert k j sd_n A B C gt, auto)
 qed
@@ -660,7 +660,7 @@ proof -
         hence uv: "u $ m \<succ> v $ m"
           using vec_comp_allE[OF uv] u by auto
         show ?case
-          unfolding setsum_lessThan_Suc
+          unfolding sum_lessThan_Suc
           apply (subst plus_gt_both_mono) 
           using times_gt_left_mono Suc times_gt_left_mono[OF uv] by auto
     qed
@@ -686,7 +686,7 @@ proof -
         hence vw: "v $ m \<succ> w $ m"
           using vec_comp_allE[OF vw] v by auto
         show ?case
-          unfolding setsum_lessThan_Suc
+          unfolding sum_lessThan_Suc
           apply (subst plus_gt_both_mono) 
           using times_gt_left_mono Suc times_gt_right_mono[OF vw] by auto
     qed
@@ -772,7 +772,7 @@ lemma scalar_prod_split_head: assumes
   "A \<in> carrier\<^sub>m n n" "B \<in> carrier\<^sub>m n n" "n > 0" 
   shows "row A 0 \<bullet> col B 0 = A $$ (0,0) * B $$ (0,0) + (\<Sum>i = 1..<n. A $$ (0, i) * B $$ (i, 0))"
   unfolding scalar_prod_def
-  using assms setsum_head_upt_Suc by auto
+  using assms sum_head_upt_Suc by auto
 
 
 lemma mat_arc_pos_mult:
@@ -839,7 +839,7 @@ proof -
     also have "\<dots> = ?head + ?rest"
       by (rule scalar_prod_split_head[OF B C n_pos])
     also have "?rest = 0"
-      by (rule setsum.neutral, auto)
+      by (rule sum.neutral, auto)
     finally have "?mult $$ (0,0) = B $$ (0,0) * e" using n_pos by simp
     with nc c_def have not_ge: "\<not> A $$ (0,0) \<ge> ?mult $$ (0,0)" by simp
     show "\<not> A \<ge>\<^sub>m ?mult" 

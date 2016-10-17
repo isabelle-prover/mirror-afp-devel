@@ -43,14 +43,14 @@ proof -
   have "poly p ?c = poly (\<Sum>x\<le>degree p. monom (coeff p x) x) ?c"
     unfolding poly_as_sum_of_monoms ..
   also have "\<dots> = (\<Sum>x\<le>degree p . coeff p x * cnj (c ^ x))"
-    unfolding poly_setsum poly_monom complex_cnj_power ..
+    unfolding poly_sum poly_monom complex_cnj_power ..
   also have "\<dots> = (\<Sum>x\<le>degree p . cnj (coeff p x * c ^ x))"
     unfolding complex_cnj_mult cnj_coeff ..
   also have "\<dots> = cnj (\<Sum>x\<le>degree p . coeff p x * c ^ x)"
-    unfolding cnj_setsum ..
+    unfolding cnj_sum ..
   also have "(\<Sum>x\<le>degree p . coeff p x * c ^ x) = 
     poly (\<Sum>x\<le>degree p. monom (coeff p x) x) c"
-    unfolding poly_setsum poly_monom ..
+    unfolding poly_sum poly_monom ..
   also have "\<dots> = 0" unfolding poly_as_sum_of_monoms rt ..
   also have "cnj 0 = 0" by simp
   finally show ?thesis .
@@ -96,13 +96,13 @@ proof -
     by (induct pp qq rule: plus_coeffs.induct, auto simp: cCons_def)
 qed
 
-lemma real_poly_setsum: 
+lemma real_poly_sum: 
   assumes "\<And> x. x \<in> S \<Longrightarrow> set (coeffs (f x)) \<subseteq> \<real>"
-  shows "set (coeffs (setsum f S)) \<subseteq> \<real>" 
+  shows "set (coeffs (sum f S)) \<subseteq> \<real>" 
   using assms
 proof (induct S rule: infinite_finite_induct)
   case (insert x S) 
-  hence id: "setsum f (insert x S) = f x + setsum f S" by auto
+  hence id: "sum f (insert x S) = f x + sum f S" by auto
   show ?case unfolding id
     by (rule real_poly_add[OF _ insert(3)], insert insert, auto)
 qed auto

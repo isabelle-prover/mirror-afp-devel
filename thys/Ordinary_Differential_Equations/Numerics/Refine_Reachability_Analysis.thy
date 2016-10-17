@@ -719,7 +719,7 @@ lemma inf_le_supI[simp]:
     "b \<le> c \<Longrightarrow> inf a b \<le> sup c d"
     "b \<le> d \<Longrightarrow> inf a b \<le> sup c d"
   by (auto simp: eucl_le[where 'a='d] eucl_inf[where 'a='d] eucl_sup[where 'a='d] inf_real_def sup_real_def
-    intro!: setsum_mono scaleR_right_mono)
+    intro!: sum_mono scaleR_right_mono)
 
 schematic_goal P_iter_impl:
   fixes h::real and i::nat

@@ -100,7 +100,7 @@ inductive_set
 
   text {*The technique is also encountered in the @{text
     "Finite_Set"} theory from the Isabelle library. It is used there
-    to define the @{text setsum} function, which calculates a sum
+    to define the @{text sum} function, which calculates a sum
     indexed over a finite set and is employed in
     \ref{sec:stepwise-approach}. The definition here is much more
     intricate though. 

@@ -103,7 +103,7 @@ proof (unfold upper_triangular_def matrix_matrix_mult_def, vector, auto)
   fix i j::'n
   assume ji: "j<i"
   show "(\<Sum>k\<in>UNIV. A $ i $ k * B $ k $ j) = 0" 
-  proof (rule setsum.neutral, clarify)
+  proof (rule sum.neutral, clarify)
     fix x
     show "A $ i $ x * B $ x $ j = 0"
     proof (cases "x<i")
@@ -146,8 +146,8 @@ lemma upper_triangular_mult_diagonal:
   shows "(A**B) $ i $ i = A $ i $ i * B $ i $ i"
 proof -
   have UNIV_rw: "UNIV = (insert i (UNIV-{i}))" by auto 
-  have setsum_0: "(\<Sum>k\<in>UNIV-{i}. A $ i $ k * B $ k $ i) = 0"
-  proof (rule setsum.neutral, rule)
+  have sum_0: "(\<Sum>k\<in>UNIV-{i}. A $ i $ k * B $ k $ i) = 0"
+  proof (rule sum.neutral, rule)
     fix x assume x: "x \<in> UNIV - {i}"
     show "A $ i $ x * B $ x $ i = 0" 
     proof (cases "x<i")
@@ -164,8 +164,8 @@ proof -
   also have "... = (\<Sum>k\<in>(insert i (UNIV-{i})). A $ i $ k * B $ k $ i)"
     using UNIV_rw by simp
   also have "... = (A $ i $ i * B $ i $ i) + (\<Sum>k\<in>UNIV-{i}. A $ i $ k * B $ k $ i)"  
-    by (rule setsum.insert, simp_all)
-  finally show ?thesis unfolding setsum_0 by simp
+    by (rule sum.insert, simp_all)
+  finally show ?thesis unfolding sum_0 by simp
 qed
 
 subsubsection{*More properties of mod type*}
@@ -2019,12 +2019,12 @@ proof -
         have UNIV_rw: "UNIV = insert s (UNIV-{s})" by auto
         have UNIV_s_rw: "UNIV-{s} = insert (s + from_nat p) ((UNIV-{s}) - {s + from_nat p})" 
           using p1 p2 s_less unfolding ncols_def by (auto simp: algebra_simps)
-        have setsum_rw: "(\<Sum>k\<in>UNIV-{s}. U $ s $ k * K $ k $ (s + from_nat p)) 
+        have sum_rw: "(\<Sum>k\<in>UNIV-{s}. U $ s $ k * K $ k $ (s + from_nat p)) 
           = U $ s $ (s + from_nat p) * K $ (s + from_nat p) $ (s + from_nat p) 
           + (\<Sum>k\<in>(UNIV-{s})-{s + from_nat p}. U $ s $ k * K $ k $ (s + from_nat p))"
-          using UNIV_s_rw setsum.insert by (metis (erased, lifting) Diff_iff finite singletonI)
-        have setsum_0: "(\<Sum>k\<in>(UNIV-{s})-{s + from_nat p}. U $ s $ k * K $ k $ (s + from_nat p)) = 0"
-        proof (rule setsum.neutral, rule)
+          using UNIV_s_rw sum.insert by (metis (erased, lifting) Diff_iff finite singletonI)
+        have sum_0: "(\<Sum>k\<in>(UNIV-{s})-{s + from_nat p}. U $ s $ k * K $ k $ (s + from_nat p)) = 0"
+        proof (rule sum.neutral, rule)
           fix x assume x: "x \<in> UNIV - {s} - {s + from_nat p}"
           show "U $ s $ x * K $ x $ (s + from_nat p) = 0" 
           proof (cases "x<s")
@@ -2072,10 +2072,10 @@ proof -
           using UNIV_rw by simp
         also have "... = U $ s $ s * K $ s $ (s + from_nat p) 
           + (\<Sum>k\<in>UNIV-{s}. U $ s $ k * K $ k $ (s + from_nat p))"
-          by (rule setsum.insert, simp_all)
+          by (rule sum.insert, simp_all)
         also have "... = U $ s $ s * K $ s $ (s + from_nat p) 
           + U $ s $ (s + from_nat p) * K $ (s + from_nat p) $ (s + from_nat p)"
-          unfolding setsum_rw setsum_0 by simp
+          unfolding sum_rw sum_0 by simp
         finally have H_s_sp: "H $ s $ (s + from_nat p) 
           = U $ s $ (s + from_nat p) * K $ (s + from_nat p) $ (s + from_nat p) + K $ s $ (s + from_nat p)"
           using Uii_1 by auto

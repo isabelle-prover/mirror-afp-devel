@@ -503,15 +503,15 @@ qed
 
 definition
   set_to_nat :: "nat set => nat" where
-  "set_to_nat = (\<lambda> D. setsum (\<lambda> x. 2 ^ x) D)"
+  "set_to_nat = (\<lambda> D. sum (\<lambda> x. 2 ^ x) D)"
 
-lemma two_power_sum: "setsum (\<lambda> x. (2::nat) ^ x) {i. i< Suc m} = (2 ^ Suc m) - 1"
+lemma two_power_sum: "sum (\<lambda> x. (2::nat) ^ x) {i. i< Suc m} = (2 ^ Suc m) - 1"
 proof (induct m)
-  show "setsum (\<lambda> x. (2::nat) ^ x) {i. i< Suc 0} = (2 ^ Suc 0) - 1" by auto
+  show "sum (\<lambda> x. (2::nat) ^ x) {i. i< Suc 0} = (2 ^ Suc 0) - 1" by auto
 next
   fix n
-  assume A: "setsum (\<lambda> x. (2::nat) ^ x) {i. i< Suc n} = (2 ^ Suc n) - 1"
-  show "setsum (\<lambda> x. (2::nat) ^ x) {i. i< Suc (Suc n)} = (2 ^ Suc (Suc n)) - 1"
+  assume A: "sum (\<lambda> x. (2::nat) ^ x) {i. i< Suc n} = (2 ^ Suc n) - 1"
+  show "sum (\<lambda> x. (2::nat) ^ x) {i. i< Suc (Suc n)} = (2 ^ Suc (Suc n)) - 1"
   proof -
     let ?f = "\<lambda> x. (2::nat) ^ x"
     have S1: "{i. i< Suc (Suc n)} = {i. i \<le> Suc n}" by auto
@@ -520,9 +520,9 @@ next
     have S4: "{i. i < Suc n} = (\<lambda> x. x) ` {i. i < Suc n}" by auto
     then have S5: "finite {i. i < Suc n}" by (rule nat_seg_image_imp_finite)
     have S6: "Suc n \<notin> {i. i < Suc n}" by auto
-    from S5 S6 setsum.insert have S7: "setsum ?f ({i. i< Suc n} \<union> {Suc n}) = 2 ^ Suc n + setsum ?f {i. i< Suc n}" by auto
-    from S3 have "setsum ?f {i. i< Suc (Suc n)} = setsum ?f ({i. i< Suc n} \<union> {Suc n})" by auto
-    also from S7 have "\<dots> = 2 ^ Suc n + setsum ?f {i. i< Suc n}" by auto
+    from S5 S6 sum.insert have S7: "sum ?f ({i. i< Suc n} \<union> {Suc n}) = 2 ^ Suc n + sum ?f {i. i< Suc n}" by auto
+    from S3 have "sum ?f {i. i< Suc (Suc n)} = sum ?f ({i. i< Suc n} \<union> {Suc n})" by auto
+    also from S7 have "\<dots> = 2 ^ Suc n + sum ?f {i. i< Suc n}" by auto
     also from A have "\<dots> = 2 ^ Suc n + (((2::nat) ^ Suc n)-(1::nat))" by auto
     also have "\<dots> = (2 ^ Suc (Suc n)) - 1" by auto
     finally show ?thesis by auto
@@ -535,7 +535,7 @@ proof -
   then show ?thesis by (rule nat_seg_image_imp_finite)
 qed
 
-lemma set_to_nat_at_empty: "set_to_nat {} = 0" by (unfold set_to_nat_def, rule setsum.empty)
+lemma set_to_nat_at_empty: "set_to_nat {} = 0" by (unfold set_to_nat_def, rule sum.empty)
 
 lemma set_to_nat_of_interval: "set_to_nat {i. (i::nat)<m} = 2 ^ m - 1"
 proof (induct m)
@@ -554,10 +554,10 @@ proof -
   assume b_finite: "finite B"
   assume a_le_b: "A \<subseteq> B"
   let ?f = "\<lambda> (x::nat). (2::nat) ^ x"
-  have S1: "set_to_nat A = setsum ?f A" by (simp add: set_to_nat_def)
-  have S2: "set_to_nat B = setsum ?f B" by (simp add: set_to_nat_def)
+  have S1: "set_to_nat A = sum ?f A" by (simp add: set_to_nat_def)
+  have S2: "set_to_nat B = sum ?f B" by (simp add: set_to_nat_def)
   have S3: "\<And> x. x  \<in> B - A \<Longrightarrow> 0 \<le> ?f x" by auto
-  from b_finite a_le_b S3 have "setsum ?f A \<le> setsum ?f B" by (rule setsum_mono2)
+  from b_finite a_le_b S3 have "sum ?f A \<le> sum ?f B" by (rule sum_mono2)
   with S1 S2 show ?thesis by auto
 qed
 
@@ -574,8 +574,8 @@ proof -
       from A1 have S1: "finite D" by auto
       from A1 have S2: "card D = 0" by auto
       from S1 S2 have S3: "D = {}" by auto
-      with set_to_nat_def have "set_to_nat D = setsum (\<lambda> x. 2 ^ x) D" by simp
-      with S3 setsum.empty have "set_to_nat D = 0" by auto
+      with set_to_nat_def have "set_to_nat D = sum (\<lambda> x. 2 ^ x) D" by simp
+      with S3 sum.empty have "set_to_nat D = 0" by auto
       with zero_is_empty S3 show "nat_to_set (set_to_nat D) = D" by auto
     qed
   qed
@@ -600,7 +600,7 @@ proof -
         with A_n have S3: "nat_to_set (set_to_nat D1) = D1" by auto
         def u_def: u \<equiv> "set_to_nat D"
         def u1_def: u1 \<equiv> "set_to_nat D1"
-        from S1 m_in have "setsum (\<lambda> (x::nat). (2::nat) ^ x) D = 2 ^ m + setsum (\<lambda> x. 2 ^ x) (D - {m})" by (rule setsum.remove)
+        from S1 m_in have "sum (\<lambda> (x::nat). (2::nat) ^ x) D = 2 ^ m + sum (\<lambda> x. 2 ^ x) (D - {m})" by (rule sum.remove)
         with set_to_nat_def have "set_to_nat D = 2 ^ m + set_to_nat (D - {m})" by auto
         with u_def u1_def D1_def have u_u1: "u = u1 + 2 ^ m" by auto
         from S3 u1_def have d1_u1: "nat_to_set u1 = D1" by auto
@@ -647,10 +647,10 @@ proof -
   qed
 qed
 
-lemma sum_of_pr_is_pr: "g \<in> PrimRec1 \<Longrightarrow> (\<lambda> n. setsum g {i. i<n}) \<in> PrimRec1"
+lemma sum_of_pr_is_pr: "g \<in> PrimRec1 \<Longrightarrow> (\<lambda> n. sum g {i. i<n}) \<in> PrimRec1"
 proof -
   assume g_is_pr: "g \<in> PrimRec1"
-  def f_def: f \<equiv> "\<lambda> n. setsum g {i. i<n}"
+  def f_def: f \<equiv> "\<lambda> n. sum g {i. i<n}"
   from f_def have f_at_0: "f 0 = 0" by auto
   def h_def: h \<equiv> "\<lambda> a (b::nat). (g a) + b"
   from g_is_pr have h_is_pr: "h \<in> PrimRec2" unfolding h_def by prec
@@ -658,12 +658,12 @@ proof -
   proof
     fix y show "f (Suc y) = h y (f y)"
     proof -
-      from f_def have S1: "f (Suc y) = setsum g {i. i < Suc y}" by auto
+      from f_def have S1: "f (Suc y) = sum g {i. i < Suc y}" by auto
       have S2: "{i. i < Suc y} = {i. i < y} \<union> {y}" by auto
       have S3: "finite {i. i < y}" by (rule finite_interval)
       have S4: "y \<notin> {i. i < y}" by auto
-      from S1 S2 have "f (Suc y) = setsum g ({i. (i::nat) < y} \<union> {y})" by auto
-      also from S3 S4 setsum.insert have "\<dots> = g y + setsum g {i. i<y}" by auto
+      from S1 S2 have "f (Suc y) = sum g ({i. (i::nat) < y} \<union> {y})" by auto
+      also from S3 S4 sum.insert have "\<dots> = g y + sum g {i. i<y}" by auto
       also from f_def have "\<dots> = g y + f y" by auto
       also from h_def have "\<dots> = h y (f y)" by auto
       finally show ?thesis by auto
@@ -673,10 +673,10 @@ proof -
   with f_def show ?thesis by auto
 qed
 
-lemma sum_of_pr_is_pr2: "p \<in> PrimRec2 \<Longrightarrow> (\<lambda> n m. setsum (\<lambda> x. p x m) {i. i<n}) \<in> PrimRec2"
+lemma sum_of_pr_is_pr2: "p \<in> PrimRec2 \<Longrightarrow> (\<lambda> n m. sum (\<lambda> x. p x m) {i. i<n}) \<in> PrimRec2"
 proof -
   assume p_is_pr: "p \<in> PrimRec2"
-  def f_def: f \<equiv> "\<lambda> n m. setsum (\<lambda> x. p x m) {i. i<n}"
+  def f_def: f \<equiv> "\<lambda> n m. sum (\<lambda> x. p x m) {i. i<n}"
   def g_def: g \<equiv> "\<lambda> (x::nat). (0::nat)"
   have g_is_pr: "g \<in> PrimRec1" by (unfold g_def, rule const_is_pr [where ?n=0])
   have f_at_0: "\<forall> x. f 0 x = g x"
@@ -689,13 +689,13 @@ proof -
   proof (rule allI, rule allI)
     fix x y show "f (Suc y) x = h y (f y x) x"
     proof -
-      from f_def have S1: "f (Suc y) x = setsum (\<lambda> z. p z x)  {i. i < Suc y}" by auto
+      from f_def have S1: "f (Suc y) x = sum (\<lambda> z. p z x)  {i. i < Suc y}" by auto
       have S2: "{i. i < Suc y} = {i. i < y} \<union> {y}" by auto
       have S3: "finite {i. i < y}" by (rule finite_interval)
       have S4: "y \<notin> {i. i < y}" by auto
       def g1_def: g1 \<equiv> "(\<lambda> z. p z x)"
-      from S1 S2 g1_def have "f (Suc y) x = setsum g1 ({i. (i::nat) < y} \<union> {y})" by auto
-      also from S3 S4 setsum.insert have "\<dots> = g1 y + setsum g1 {i. i<y}" by auto
+      from S1 S2 g1_def have "f (Suc y) x = sum g1 ({i. (i::nat) < y} \<union> {y})" by auto
+      also from S3 S4 sum.insert have "\<dots> = g1 y + sum g1 {i. i<y}" by auto
       also from f_def g1_def have "\<dots> = g1 y + f y x" by auto
       also from h_def g1_def  have "\<dots> = h y (f y x) x" by auto
       finally show ?thesis by auto
@@ -705,7 +705,7 @@ proof -
   with f_def show ?thesis by auto
 qed
 
-lemma setsum_is_pr: "g \<in> PrimRec1 \<Longrightarrow> (\<lambda> u. setsum g (nat_to_set u)) \<in> PrimRec1"
+lemma sum_is_pr: "g \<in> PrimRec1 \<Longrightarrow> (\<lambda> u. sum g (nat_to_set u)) \<in> PrimRec1"
 proof -
   assume g_is_pr: "g \<in> PrimRec1"
   def g1_def: g1 \<equiv> "\<lambda> x u. if (c_in x u = 1) then (g x) else 0"
@@ -719,16 +719,16 @@ proof -
   next
     show "(\<lambda>x y. 0) \<in> PrimRec2" by (rule const_is_pr_2 [where ?n=0])
   qed
-  def f_def: f \<equiv> "\<lambda> (u::nat). setsum (\<lambda> x. g1 x u) {i. (i::nat) < u}"
-  def f1_def: f1 \<equiv> "\<lambda> (u::nat) v. setsum (\<lambda> x. g1 x v) {i. (i::nat) < u}" 
-  from g1_is_pr have "(\<lambda> (u::nat) v. setsum (\<lambda> x. g1 x v) {i. (i::nat) < u}) \<in> PrimRec2" by (rule sum_of_pr_is_pr2)
+  def f_def: f \<equiv> "\<lambda> (u::nat). sum (\<lambda> x. g1 x u) {i. (i::nat) < u}"
+  def f1_def: f1 \<equiv> "\<lambda> (u::nat) v. sum (\<lambda> x. g1 x v) {i. (i::nat) < u}" 
+  from g1_is_pr have "(\<lambda> (u::nat) v. sum (\<lambda> x. g1 x v) {i. (i::nat) < u}) \<in> PrimRec2" by (rule sum_of_pr_is_pr2)
   with f1_def have f1_is_pr: "f1 \<in> PrimRec2" by auto
   from f_def f1_def have f_f1: "f = (\<lambda> u. f1 u u)" by auto
   from f1_is_pr have "(\<lambda> u. f1 u u) \<in> PrimRec1" by prec
   with f_f1 have f_is_pr: "f \<in> PrimRec1" by auto
-  have f_is_result: "f = (\<lambda> u. setsum g (nat_to_set u))"
+  have f_is_result: "f = (\<lambda> u. sum g (nat_to_set u))"
   proof
-    fix u show "f u = setsum g (nat_to_set u)"
+    fix u show "f u = sum g (nat_to_set u)"
     proof -
       def U_def: U \<equiv> "{i. i < u}"
       def A_def: A \<equiv> "{x \<in> U. c_in x u = 1}"
@@ -738,16 +738,16 @@ proof -
       from B_def U_finite have B_finite: "finite B" by auto
       from U_def A_def B_def have U_A_B: "U = A \<union> B" by auto
       from U_def A_def B_def have A_B: "A \<inter> B = {}" by auto
-      from B_def g1_def have B_z: "setsum (\<lambda> x. g1 x u) B = 0" by auto
+      from B_def g1_def have B_z: "sum (\<lambda> x. g1 x u) B = 0" by auto
       have u_in_U: "nat_to_set u \<subseteq> U" by (unfold U_def, rule nat_to_set_upper_bound2)
       from u_in_U x_in_u_eq A_def have A_u: "A = nat_to_set u" by auto
-      from A_u x_in_u_eq g1_def have A_res: "setsum (\<lambda> x. g1 x u) A = setsum g (nat_to_set u)" by auto
-      from f_def have "f u = setsum (\<lambda> x. g1 x u) {i. (i::nat) < u}" by auto
-      also from U_def have "\<dots> = setsum (\<lambda> x. g1 x u) U" by auto
-      also from U_A_B have "\<dots> = setsum (\<lambda> x. g1 x u) (A \<union> B)" by auto
-      also from A_finite B_finite A_B have "\<dots> = setsum (\<lambda> x. g1 x u) A + setsum (\<lambda> x. g1 x u) B" by (rule setsum.union_disjoint)
-      also from B_z have "\<dots> = setsum (\<lambda> x. g1 x u) A" by auto
-      also from A_res have "\<dots> = setsum g (nat_to_set u)" by auto
+      from A_u x_in_u_eq g1_def have A_res: "sum (\<lambda> x. g1 x u) A = sum g (nat_to_set u)" by auto
+      from f_def have "f u = sum (\<lambda> x. g1 x u) {i. (i::nat) < u}" by auto
+      also from U_def have "\<dots> = sum (\<lambda> x. g1 x u) U" by auto
+      also from U_A_B have "\<dots> = sum (\<lambda> x. g1 x u) (A \<union> B)" by auto
+      also from A_finite B_finite A_B have "\<dots> = sum (\<lambda> x. g1 x u) A + sum (\<lambda> x. g1 x u) B" by (rule sum.union_disjoint)
+      also from B_z have "\<dots> = sum (\<lambda> x. g1 x u) A" by auto
+      also from A_res have "\<dots> = sum g (nat_to_set u)" by auto
       finally show ?thesis by auto
     qed
   qed
@@ -762,11 +762,11 @@ theorem c_card_is_pr: "c_card \<in> PrimRec1"
 proof -
   def g_def: g \<equiv> "\<lambda> (x::nat). (1::nat)"
   have g_is_pr: "g \<in> PrimRec1" by (unfold g_def, rule const_is_pr)
-  have "c_card = (\<lambda> u. setsum g (nat_to_set u))"
+  have "c_card = (\<lambda> u. sum g (nat_to_set u))"
   proof
-    fix u show "c_card u = setsum g (nat_to_set u)" by (unfold c_card_def, unfold g_def, rule card_eq_setsum)
+    fix u show "c_card u = sum g (nat_to_set u)" by (unfold c_card_def, unfold g_def, rule card_eq_sum)
   qed
-  moreover from g_is_pr have "(\<lambda> u. setsum g (nat_to_set u)) \<in> PrimRec1" by (rule setsum_is_pr)
+  moreover from g_is_pr have "(\<lambda> u. sum g (nat_to_set u)) \<in> PrimRec1" by (rule sum_is_pr)
   ultimately show ?thesis by auto
 qed
 
@@ -803,8 +803,8 @@ proof -
   have "finite (nat_to_set u)" by (rule nat_to_set_is_finite)
   with D_def have D_finite: "finite D" by auto
   let ?f = "\<lambda> (x::nat). (2::nat)^x"
-  from set_to_nat_def have "set_to_nat (D \<union> {x}) = setsum ?f (D \<union> {x})" by auto
-  also from D_finite S1 have "\<dots> = ?f x + setsum ?f D" by simp
+  from set_to_nat_def have "set_to_nat (D \<union> {x}) = sum ?f (D \<union> {x})" by auto
+  also from D_finite S1 have "\<dots> = ?f x + sum ?f D" by simp
   also from set_to_nat_def have "\<dots> = 2 ^ x + set_to_nat D" by auto
   finally have "set_to_nat (D \<union> {x}) = set_to_nat D + 2 ^ x" by auto
   with D_def show ?thesis by auto
@@ -852,8 +852,8 @@ proof -
   have "finite (nat_to_set u)" by (rule nat_to_set_is_finite)
   with D_def have D_finite: "finite D" by auto
   let ?f = "\<lambda> (x::nat). (2::nat)^x"
-  from set_to_nat_def have "set_to_nat (D \<union> {x}) = setsum ?f (D \<union> {x})" by auto
-  also from D_finite S1 have "\<dots> = ?f x + setsum ?f D" by simp
+  from set_to_nat_def have "set_to_nat (D \<union> {x}) = sum ?f (D \<union> {x})" by auto
+  also from D_finite S1 have "\<dots> = ?f x + sum ?f D" by simp
   also from set_to_nat_def have "\<dots> = 2 ^ x + set_to_nat D" by auto
   finally have S2: "set_to_nat (D \<union> {x}) = set_to_nat D + 2 ^ x" by auto
   from A D_def have "D \<union> {x} = nat_to_set u" by auto

@@ -175,7 +175,7 @@ lemma sylvester_mat_sum_upper:
   defines "m \<equiv> degree p" and "n \<equiv> degree q"
   assumes i: "i < n"
   shows "(\<Sum>j<m+n. monom (sylvester_mat p q $$ (i,j)) (m + n - Suc j)) =
-    monom 1 (n - Suc i) * p" (is "setsum ?f _ = ?r")
+    monom 1 (n - Suc i) * p" (is "sum ?f _ = ?r")
 proof -
   have n1: "n \<ge> 1" using i by auto
   def ni1 \<equiv> "n-Suc i"
@@ -184,7 +184,7 @@ proof -
   hence l: "Suc l = m+n" using n1 by auto
   let ?g = "\<lambda>j. monom (coeff (monom 1 (n-Suc i) * p) j) j"
   let ?p = "\<lambda>j. l-j"
-  have "setsum ?f {..<m+n} = setsum ?f {..l}"
+  have "sum ?f {..<m+n} = sum ?f {..l}"
     unfolding l[symmetric] unfolding lessThan_Suc_atMost..
   also {
     fix j assume j: "j\<le>l"
@@ -202,7 +202,7 @@ proof -
   hence "(\<Sum>j\<le>l. ?f j) = (\<Sum>j\<le>l. (?g\<circ>?p) j)" using l by auto
   also have "... = (\<Sum>j\<le>l. ?g j)"
     unfolding l_def
-    using setsum.reindex[OF inj_on_diff_nat2,symmetric,unfolded image_diff_atMost].
+    using sum.reindex[OF inj_on_diff_nat2,symmetric,unfolded image_diff_atMost].
   also have "degree ?r \<le> l"
       using degree_mult_le[of "monom 1 (n-Suc i)" p]
       unfolding l_def m_def
@@ -217,7 +217,7 @@ lemma sylvester_mat_sum_lower:
   defines "m \<equiv> degree p" and "n \<equiv> degree q"
   assumes ni: "n \<le> i" and imn: "i < m+n"
   shows "(\<Sum>j<m+n. monom (sylvester_mat p q $$ (i,j)) (m + n - Suc j)) =
-    monom 1 (m + n - Suc i) * q" (is "setsum ?f _ = ?r")
+    monom 1 (m + n - Suc i) * q" (is "sum ?f _ = ?r")
 proof -
   def l \<equiv> "m+n-1"
   hence l: "Suc l = m+n" using imn by auto
@@ -225,7 +225,7 @@ proof -
   hence mni1: "m+n-i = Suc mni1" using imn by auto
   let ?g = "\<lambda>j. monom (coeff (monom 1 (m + n - Suc i) * q) j) j"
   let ?p = "\<lambda>j. l-j"
-  have "setsum ?f {..<m+n} = setsum ?f {..l}"
+  have "sum ?f {..<m+n} = sum ?f {..l}"
     unfolding l[symmetric] unfolding lessThan_Suc_atMost..
   also {
     fix j assume j: "j\<le>l"
@@ -241,7 +241,7 @@ proof -
   }
   hence "(\<Sum>j\<le>l. ?f j) = (\<Sum>j\<le>l. (?g\<circ>?p) j)" by auto
   also have "... = (\<Sum>j\<le>l. ?g j)"
-    using setsum.reindex[OF inj_on_diff_nat2,symmetric,unfolded image_diff_atMost].
+    using sum.reindex[OF inj_on_diff_nat2,symmetric,unfolded image_diff_atMost].
   also have "degree ?r \<le> l"
       using degree_mult_le[of "monom 1 (m+n-1-i)" q]
       unfolding l_def n_def[symmetric]
@@ -307,7 +307,7 @@ proof
   assume "?v = 0"
   hence "\<forall>i\<in>{..<dim\<^sub>v v}. v $ (dim\<^sub>v v - Suc i) = 0"
     unfolding poly_of_vec_def Let_def
-    by (subst setsum_monom_0_iff[symmetric],auto)
+    by (subst sum_monom_0_iff[symmetric],auto)
   hence a: "\<And>i. i < dim\<^sub>v v \<Longrightarrow> v $ (dim\<^sub>v v - Suc i) = 0" by auto
   { fix i assume "i < dim\<^sub>v v"
     hence "v $ i = 0" using a[of "dim\<^sub>v v - Suc i"] by auto
@@ -318,7 +318,7 @@ proof
 qed
 
 (* TODO: move, copied from no longer existing Cayley-Hamilton/Polynomial_extension *)
-lemma degree_setsum_smaller:
+lemma degree_sum_smaller:
   assumes "n > 0" "finite A"
   shows "(\<And> x. x \<in>A \<Longrightarrow> degree (f x) < n) \<Longrightarrow> degree (\<Sum>x\<in>A. f x) < n"
   using `finite A`
@@ -330,7 +330,7 @@ lemma degree_poly_of_vec_less:
   assumes dim: "dim\<^sub>v v > 0"
   shows "degree (poly_of_vec v) < dim\<^sub>v v"
   unfolding poly_of_vec_def Let_def
-  apply(rule degree_setsum_smaller)
+  apply(rule degree_sum_smaller)
     using dim apply force
     apply force
   unfolding lessThan_iff
@@ -341,16 +341,16 @@ lemma coeff_poly_of_vec:
   (is "?l = ?r")
 proof -
   have "?l = (\<Sum>x<dim\<^sub>v v. if x = i then v $ (dim\<^sub>v v - Suc x) else 0)" (is "_ = ?m")
-    unfolding poly_of_vec_def Let_def coeff_setsum coeff_monom ..
+    unfolding poly_of_vec_def Let_def coeff_sum coeff_monom ..
   also have "\<dots> = ?r"
   proof (cases "i < dim\<^sub>v v")
     case False
     show ?thesis
-      by (subst setsum.neutral, insert False, auto)
+      by (subst sum.neutral, insert False, auto)
   next
     case True
     show ?thesis
-      by (subst setsum.remove[of _ i], force, force simp: True, subst setsum.neutral, insert True, auto)
+      by (subst sum.remove[of _ i], force, force simp: True, subst sum.neutral, insert True, auto)
   qed
   finally show ?thesis .
 qed
@@ -374,27 +374,27 @@ proof -
         (\<Sum>i\<le>j. coeff p i * (if j - i < n then v $ (n - Suc (j - i)) else 0)))" (is "_ = (?l = ?r)")
     unfolding vec_of_poly_rev_shifted_def coeff_mult m scalar_prod_def n q_def
       coeff_poly_of_vec 
-    by (subst setsum.cong, insert id1, auto)
+    by (subst sum.cong, insert id1, auto)
   also have "..." 
   proof -
-    have "?r = (\<Sum>i\<le>j. (if j - i < n then coeff p i * v $ (n - Suc (j - i)) else 0))" (is "_ = setsum ?f _")
-      by (rule setsum.cong, auto)
-    also have "setsum ?f {..j} = setsum ?f ({i. i \<le> j \<and> j - i < n} \<union> {i. i \<le> j \<and> \<not> j - i < n})" 
-      (is "_ = setsum _ (?R1 \<union> ?R2)")
-      by (rule setsum.cong, auto)
-    also have "\<dots> = setsum ?f ?R1 + setsum ?f ?R2"
-      by (subst setsum.union_disjoint, auto)
-    also have "setsum ?f ?R2 = 0"
-      by (rule setsum.neutral, auto)
-    also have "setsum ?f ?R1 + 0 = setsum (\<lambda> i. coeff p i * v $ (i + n - Suc j)) ?R1"
-      (is "_ = setsum ?F _")
-      by (subst setsum.cong, auto simp: ac_simps)
-    also have "\<dots> = setsum ?F ((?R1 \<inter> {..m}) \<union> (?R1 - {..m}))"
-      (is "_ = setsum _ (?R \<union> ?R')")
-      by (rule setsum.cong, auto)
-    also have "\<dots> = setsum ?F ?R + setsum ?F ?R'"
-      by (subst setsum.union_disjoint, auto)
-    also have "setsum ?F ?R' = 0"
+    have "?r = (\<Sum>i\<le>j. (if j - i < n then coeff p i * v $ (n - Suc (j - i)) else 0))" (is "_ = sum ?f _")
+      by (rule sum.cong, auto)
+    also have "sum ?f {..j} = sum ?f ({i. i \<le> j \<and> j - i < n} \<union> {i. i \<le> j \<and> \<not> j - i < n})" 
+      (is "_ = sum _ (?R1 \<union> ?R2)")
+      by (rule sum.cong, auto)
+    also have "\<dots> = sum ?f ?R1 + sum ?f ?R2"
+      by (subst sum.union_disjoint, auto)
+    also have "sum ?f ?R2 = 0"
+      by (rule sum.neutral, auto)
+    also have "sum ?f ?R1 + 0 = sum (\<lambda> i. coeff p i * v $ (i + n - Suc j)) ?R1"
+      (is "_ = sum ?F _")
+      by (subst sum.cong, auto simp: ac_simps)
+    also have "\<dots> = sum ?F ((?R1 \<inter> {..m}) \<union> (?R1 - {..m}))"
+      (is "_ = sum _ (?R \<union> ?R')")
+      by (rule sum.cong, auto)
+    also have "\<dots> = sum ?F ?R + sum ?F ?R'"
+      by (subst sum.union_disjoint, auto)
+    also have "sum ?F ?R' = 0"
     proof -
       { 
         fix x
@@ -403,27 +403,27 @@ proof -
         have "?F x = 0" by simp
       }
       thus ?thesis
-        by (subst setsum.neutral, auto)
+        by (subst sum.neutral, auto)
     qed
-    finally have r: "?r = setsum ?F ?R" by simp
+    finally have r: "?r = sum ?F ?R" by simp
 
-    have "?l = setsum ?g ({i. i < n \<and> i \<le> n + m - Suc j \<and> n - Suc j \<le> i} 
+    have "?l = sum ?g ({i. i < n \<and> i \<le> n + m - Suc j \<and> n - Suc j \<le> i} 
       \<union> {i. i < n \<and> \<not> (i \<le> n + m - Suc j \<and> n - Suc j \<le> i)})" 
-      (is "_ = setsum _ (?L1 \<union> ?L2)")
-      by (rule setsum.cong, auto)
-    also have "\<dots> = setsum ?g ?L1 + setsum ?g ?L2"
-      by (subst setsum.union_disjoint, auto)
-    also have "setsum ?g ?L2 = 0"
-      by (rule setsum.neutral, auto)
-    also have "setsum ?g ?L1 + 0 = setsum (\<lambda> i. coeff p (i + Suc j - n) * v $ i) ?L1"
-      (is "_ = setsum ?G _")
-      by (subst setsum.cong, auto)
-    also have "\<dots> = setsum ?G (?L1 \<inter> {i. i + Suc j - n \<le> m} \<union> (?L1 - {i. i + Suc j - n \<le> m}))"
-      (is "_ = setsum _ (?L \<union> ?L')")
-      by (subst setsum.cong, auto)
-    also have "\<dots> = setsum ?G ?L + setsum ?G ?L'"      
-      by (subst setsum.union_disjoint, auto)
-    also have "setsum ?G ?L' = 0"
+      (is "_ = sum _ (?L1 \<union> ?L2)")
+      by (rule sum.cong, auto)
+    also have "\<dots> = sum ?g ?L1 + sum ?g ?L2"
+      by (subst sum.union_disjoint, auto)
+    also have "sum ?g ?L2 = 0"
+      by (rule sum.neutral, auto)
+    also have "sum ?g ?L1 + 0 = sum (\<lambda> i. coeff p (i + Suc j - n) * v $ i) ?L1"
+      (is "_ = sum ?G _")
+      by (subst sum.cong, auto)
+    also have "\<dots> = sum ?G (?L1 \<inter> {i. i + Suc j - n \<le> m} \<union> (?L1 - {i. i + Suc j - n \<le> m}))"
+      (is "_ = sum _ (?L \<union> ?L')")
+      by (subst sum.cong, auto)
+    also have "\<dots> = sum ?G ?L + sum ?G ?L'"      
+      by (subst sum.union_disjoint, auto)
+    also have "sum ?G ?L' = 0"
     proof -
       {
         fix x
@@ -432,9 +432,9 @@ proof -
         have "?G x = 0" by simp
       }
       thus ?thesis
-        by (subst setsum.neutral, auto)
+        by (subst sum.neutral, auto)
     qed
-    finally have l: "?l = setsum ?G ?L" by simp
+    finally have l: "?l = sum ?G ?L" by simp
 
     let ?bij = "\<lambda> i. i + n - Suc j"
     {
@@ -447,7 +447,7 @@ proof -
       have "x \<in> ?bij ` ?R" unfolding xy using y by blast
     } note tedious = this
     show ?thesis unfolding l r
-      by (rule setsum.reindex_cong[of ?bij], insert j, auto simp: inj_on_def tedious)
+      by (rule sum.reindex_cong[of ?bij], insert j, auto simp: inj_on_def tedious)
   qed
   finally show ?thesis by simp
 qed
@@ -476,12 +476,12 @@ proof (rule poly_eqI)
       have "coeff ?r i =
             (\<Sum> x < n. vec_first v n $ (n - Suc x) * coeff p (i - x)) +
             (\<Sum> x < m. vec_last v m $ (m - Suc x) * coeff q (i - x))"
-        (is "_ = setsum ?f _ + setsum ?g _")
+        (is "_ = sum ?f _ + sum ?g _")
         unfolding coeff_add coeff_mult Let_def 
         unfolding coeff_poly_of_vec dim if_distrib
         unfolding atMost_def
-        apply(subst setsum.inter_filter[symmetric],simp)
-        apply(subst setsum.inter_filter[symmetric],simp)
+        apply(subst sum.inter_filter[symmetric],simp)
+        apply(subst sum.inter_filter[symmetric],simp)
         unfolding mem_Collect_eq
         unfolding i_n i_m
         unfolding lessThan_def by simp
@@ -489,19 +489,19 @@ proof (rule poly_eqI)
         have "coeff p (i-x) = 0"
           apply(rule coeff_eq_0) using i_mn x unfolding m_def by auto
         hence "?f x = 0" by auto
-      } hence "setsum ?f {..<n} = 0" by auto
+      } hence "sum ?f {..<n} = 0" by auto
       also { fix x assume x: "x < m"
         have "coeff q (i-x) = 0"
           apply(rule coeff_eq_0) using i_mn x unfolding n_def by auto
         hence "?g x = 0" by auto
-      } hence "setsum ?g {..<m} = 0" by auto
+      } hence "sum ?g {..<m} = 0" by auto
       finally have "coeff ?r i = 0" by auto
       also from False have "0 = coeff ?l i"
-        unfolding coeff_poly_of_vec dim setsum.distrib[symmetric] by auto
+        unfolding coeff_poly_of_vec dim sum.distrib[symmetric] by auto
       finally show ?thesis by auto
     next case True
       hence "coeff ?l i = (transpose\<^sub>m (sylvester_mat p q) \<otimes>\<^sub>m\<^sub>v v) $ (n + m - Suc i)"
-        unfolding coeff_poly_of_vec dim setsum.distrib[symmetric] by auto
+        unfolding coeff_poly_of_vec dim sum.distrib[symmetric] by auto
       also have "... = coeff (p * poly_of_vec (vec_first v n) + q * poly_of_vec (vec_last v m)) i"
         apply(subst index_mat_mult_vec) using True apply simp
         apply(subst row_transpose) using True apply simp
@@ -788,12 +788,12 @@ lemma det_sylvester_mat_sub_too_big_lower:
     (is "det ?l = ?r")
 proof -
   have "det ?l = (\<Sum>i < m + Suc n. ?l $$ (i, 0) * cofactor ?l i 0)"
-    (is "_ = setsum ?f _")
+    (is "_ = sum ?f _")
     apply(subst laplace_expansion_column[OF sylvester_mat_sub_carrier,of 0])
     unfolding sylvester_mat_sub_dim by auto
   also have "{..< m + Suc n} = {..m+n}" by auto
   also have "... = insert 0 (insert n ({..m+n}-{0,n}))" (is "_ = insert _ (insert _ ?r')") by auto
-  also have "setsum ?f ... = ?f 0 + setsum ?f ?r'" (is "setsum _ ?l' = _")
+  also have "sum ?f ... = ?f 0 + sum ?f ?r'" (is "sum _ ?l' = _")
     proof(cases "n = 0")
       case True
         hence "?r' = {..m+n}-{0}" by simp
@@ -802,7 +802,7 @@ proof -
         finally have "?l' = insert 0 ?r'" by auto
         thus ?thesis by auto
       next case False
-        have "setsum ?f ?l' = ?f 0 + ?f n + setsum ?f ?r'" using False by auto
+        have "sum ?f ?l' = ?f 0 + ?f n + sum ?f ?r'" using False by auto
         also have "?f n = 0" using False n by(subst sylvester_mat_sub_index;simp)
         finally show ?thesis by auto
     qed
@@ -812,7 +812,7 @@ proof -
       apply(subst sylvester_mat_sub_index_most_0)
       using m i n coeff_eq_0[of q] by auto
     hence "?f i = 0" by auto
-  } hence "setsum ?f ({..m+n}-{0,n}) = 0" by auto
+  } hence "sum ?f ({..m+n}-{0,n}) = 0" by auto
   also have "?f 0 = ?r"
     unfolding cofactor_def
     unfolding sylvester_mat_sub_too_big_lower[OF n]
@@ -826,12 +826,12 @@ lemma det_sylvester_mat_sub_too_big_upper:
     (is "det ?l = ?r")
 proof -
   have "det ?l = (\<Sum>i < Suc m + n. ?l $$ (i, 0) * cofactor ?l i 0)"
-    (is "_ = setsum ?f _")
+    (is "_ = sum ?f _")
     apply(subst laplace_expansion_column[OF sylvester_mat_sub_carrier,of 0])
     unfolding sylvester_mat_sub_dim by auto
   also have "{..< Suc m + n} = {..m+n}" by auto
   also have "... = insert 0 (insert n ({..m+n}-{0,n}))" (is "_ = insert _ (insert _ ?r')") by auto
-  also have "setsum ?f ... = ?f n + setsum ?f ?r'" (is "setsum _ ?l' = _")
+  also have "sum ?f ... = ?f n + sum ?f ?r'" (is "sum _ ?l' = _")
     proof(cases "n = 0")
       case True
         hence "?r' = {..m+n}-{n}" by simp
@@ -840,7 +840,7 @@ proof -
         finally have "?l' = insert n ?r'" by auto
         thus ?thesis by auto
       next case False
-        have "setsum ?f ?l' = ?f 0 + ?f n + setsum ?f ?r'" using False by auto
+        have "sum ?f ?l' = ?f 0 + ?f n + sum ?f ?r'" using False by auto
         also have "?f 0 = 0"
           using coeff_eq_0[of p] False m n by(subst sylvester_mat_sub_index,auto)
         finally show ?thesis by auto
@@ -851,7 +851,7 @@ proof -
       apply(subst sylvester_mat_sub_index_most_0)
       using m i n coeff_eq_0[of q] by auto
     hence "?f i = 0" by auto
-  } hence "setsum ?f ({..m+n}-{0,n}) = 0" by auto
+  } hence "sum ?f ({..m+n}-{0,n}) = 0" by auto
   also have "?f n = ?r"
     unfolding cofactor_def
     unfolding sylvester_mat_sub_too_big_upper[OF m]
@@ -874,16 +874,16 @@ proof -
   let ?S = "sylvester_mat_sub (Suc m) n p q"
   have "?l = det ?S" unfolding resultant_sub_def by auto
   also have "... =  (\<Sum>i<Suc m + n. ?S $$ (i,0) * cofactor ?S i 0)"
-        (is "_ = setsum ?f ?I")
+        (is "_ = sum ?f ?I")
     apply(subst laplace_expansion_column[OF sylvester_mat_sub_carrier,of 0],simp)
     unfolding sylvester_mat_sub_dim..
   also have "?I = insert n (?I - {n})" by auto
-  also have "setsum ?f ... = ?f n + setsum ?f (?I-{n})" by (simp add: setsum.insert_remove)
+  also have "sum ?f ... = ?f n + sum ?f (?I-{n})" by (simp add: sum.insert_remove)
   also have "?f n = ?r"
     unfolding cofactor_sylvester_too_big_upper[OF m]
     by(subst sylvester_mat_sub_index,auto)
-  also have "setsum ?f (?I-{n}) = 0"
-    apply (rule setsum.neutral) using hint by (auto simp: sylvester_mat_sub_index)
+  also have "sum ?f (?I-{n}) = 0"
+    apply (rule sum.neutral) using hint by (auto simp: sylvester_mat_sub_index)
   finally show ?thesis by auto
 qed
 
@@ -906,16 +906,16 @@ proof -
   let ?S = "sylvester_mat_sub m (Suc n) p q"
   have "?l = det ?S" unfolding resultant_sub_def by auto
   also have "... =  (\<Sum>i<Suc m + n. ?S $$ (i,0) * cofactor ?S i 0)"
-        (is "_ = setsum ?f ?I")
+        (is "_ = sum ?f ?I")
     apply(subst laplace_expansion_column[OF sylvester_mat_sub_carrier,of 0],simp)
     unfolding sylvester_mat_sub_dim by auto
   also have "?I = insert 0 (?I - {0})" by auto
-  also have "setsum ?f ... = ?f 0 + setsum ?f (?I-{0})" by (simp add: setsum.insert_remove)
+  also have "sum ?f ... = ?f 0 + sum ?f (?I-{0})" by (simp add: sum.insert_remove)
   also have "?f 0 = ?r"
     unfolding cofactor_sylvester_too_big_lower[OF n]
     by(subst sylvester_mat_sub_index,auto)
-  also have "setsum ?f (?I-{0}) = 0"
-    apply (rule setsum.neutral) using hint by (auto simp: sylvester_mat_sub_index)
+  also have "sum ?f (?I-{0}) = 0"
+    apply (rule sum.neutral) using hint by (auto simp: sylvester_mat_sub_index)
   finally show ?thesis by auto
 qed
 
@@ -1140,16 +1140,16 @@ private lemma mk_poly2:
   assumes i: "i < dim\<^sub>r A"
       and c: "dim\<^sub>c A > 0"
   shows "mk_poly2 A $ i = (\<Sum>j'<dim\<^sub>c A. monom (A $$ (i,j')) (dim\<^sub>c A - Suc  j'))"
-    (is "?l = setsum ?f ?S")
+    (is "?l = sum ?f ?S")
 proof -
   def l \<equiv> "dim\<^sub>c A - 1"
   have dim: "dim\<^sub>c A = Suc l" unfolding l_def using i c by auto
   let ?g = "\<lambda>j. l - j"
-  have "?l = setsum (?f \<circ> ?g) ?S" unfolding l_def mk_poly2_pre[OF i] by auto
-  also have "... = setsum ?f ?S"
+  have "?l = sum (?f \<circ> ?g) ?S" unfolding l_def mk_poly2_pre[OF i] by auto
+  also have "... = sum ?f ?S"
     unfolding dim
     unfolding lessThan_Suc_atMost
-    using setsum.reindex[OF inj_on_diff_nat2,symmetric,unfolded image_diff_atMost].
+    using sum.reindex[OF inj_on_diff_nat2,symmetric,unfolded image_diff_atMost].
   finally show ?thesis.
 qed
 
@@ -1160,7 +1160,7 @@ private lemma mk_poly2_sylvester_upper:
   apply (subst mk_poly2)
     using i apply simp using i apply simp
   apply (subst sylvester_mat_sum_upper[OF i,symmetric])
-  apply (rule setsum.cong)
+  apply (rule sum.cong)
     unfolding sylvester_mat_dim lessThan_Suc_atMost apply simp
   by auto
 
@@ -1327,35 +1327,35 @@ proof (intro exI conjI)
       unfolding c_def cofactor_def by auto
   }
   hence "... = (\<Sum>i<d. mk_poly (sylvester_mat p q) $$ (i, m+n-1) * c i)"
-    (is "_ = setsum ?f _") by auto
-  also have "... = setsum ?f ({..<n} \<union> {n ..<d})" unfolding dmn apply(subst ivl_disj_un(8)) by auto
-  also have "... = setsum ?f {..<n} + setsum ?f {n..<d}" apply(subst setsum.union_disjoint) by auto
+    (is "_ = sum ?f _") by auto
+  also have "... = sum ?f ({..<n} \<union> {n ..<d})" unfolding dmn apply(subst ivl_disj_un(8)) by auto
+  also have "... = sum ?f {..<n} + sum ?f {n..<d}" apply(subst sum.union_disjoint) by auto
   also { fix i assume i: "i < n"
     have "?f i = monom 1 (n - Suc i) * c i * p"
       unfolding m_def n_def
       apply(subst mk_poly_sylvester_upper)
       using i unfolding n_def by auto
   }
-  hence "setsum ?f {..<n} = p' * p" unfolding p'_def setsum_distrib_right by auto 
+  hence "sum ?f {..<n} = p' * p" unfolding p'_def sum_distrib_right by auto 
   also { fix i assume i: "i \<in> {n..<d}"
     have "?f i = monom 1 (m + n - Suc i) * c i * q"
       unfolding m_def n_def
       apply(subst mk_poly_sylvester_lower)
       using i unfolding dmn n_def m_def by auto
   }
-  hence "setsum ?f {n..<d} = (\<Sum>i=n..<d. monom 1 (m + n - Suc i) * c i) * q"
-    (is "_ = setsum ?h _ * _") unfolding setsum_distrib_right by auto
+  hence "sum ?f {n..<d} = (\<Sum>i=n..<d. monom 1 (m + n - Suc i) * c i) * q"
+    (is "_ = sum ?h _ * _") unfolding sum_distrib_right by auto
   also have "{n..<d} = (\<lambda>i. i+n) ` {0..<m}"
     unfolding dmn
     by (metis add_0_left image_add_atLeastLessThan)
-  also have "setsum ?h ... = setsum (?h \<circ> (\<lambda>i. i+n)) {0..<m}"
-    apply(subst setsum.reindex[symmetric])
+  also have "sum ?h ... = sum (?h \<circ> (\<lambda>i. i+n)) {0..<m}"
+    apply(subst sum.reindex[symmetric])
     apply (rule inj_onI) by auto
-  also have "... = q'" unfolding q'_def apply(rule setsum.cong) by (auto simp add: add.commute)
+  also have "... = q'" unfolding q'_def apply(rule sum.cong) by (auto simp add: add.commute)
   finally show main: "[:resultant p q:] = p' * p + q' * q".
   show "degree p' < n"
     unfolding p'_def
-    apply(rule degree_setsum_smaller)
+    apply(rule degree_sum_smaller)
     using degq[folded n_def] apply force+
   proof -
     fix i assume i: "i \<in> {..<n}"
@@ -1368,7 +1368,7 @@ proof (intro exI conjI)
   qed
   show "degree q' < m"
     unfolding q'_def
-    apply (rule degree_setsum_smaller)
+    apply (rule degree_sum_smaller)
     using degp[folded m_def] apply force+
   proof -
     fix i assume i: "i \<in> {..<m}"
@@ -1656,35 +1656,35 @@ proof -
         by (rule vec_eqI, unfold sylvester_mat_sub_def, insert i j True, auto)
       let ?prod = "\<lambda> i. ?d i * ?b i"
       def prod \<equiv> ?prod
-      let ?sum = "setsum prod {0..<?mn}"
+      let ?sum = "sum prod {0..<?mn}"
       have "?r $$ (i,j) = ?sum" unfolding r row col scalar_prod_def prod_def by auto
       also have "{0 ..< ?mn} = {0 ..< i} \<union> {i} \<union> {Suc i ..< ?mn}" using i by auto
-      also have "setsum prod \<dots> = setsum prod {0 ..< i} + prod i + setsum prod {Suc i ..< ?mn}"      
-        by (subst setsum.union_disjoint, (auto)[3], subst setsum.union_disjoint, auto)
+      also have "sum prod \<dots> = sum prod {0 ..< i} + prod i + sum prod {Suc i ..< ?mn}"      
+        by (subst sum.union_disjoint, (auto)[3], subst sum.union_disjoint, auto)
       also have "prod i = ?b i" unfolding prod_def by simp
       also have "\<dots> = r_ij" using True by (simp add: r_ij_def)
-      also have "setsum prod {0 ..< i} = 0" unfolding prod_def
-        by (rule setsum.neutral, auto)
-      also have "setsum prod {Suc i ..< ?mn} = gq_ij" 
+      also have "sum prod {0 ..< i} = 0" unfolding prod_def
+        by (rule sum.neutral, auto)
+      also have "sum prod {Suc i ..< ?mn} = gq_ij" 
       proof -
         let ?Diff = "{n + i .. m + i} \<inter> {j .. j+n}"
         let ?I = "({Suc i ..< ?mn} \<inter> ?Diff)"
         let ?D = "({Suc i ..< ?mn} - ?Diff)"
         def prod' \<equiv> "\<lambda> k. coeff q (m + i - k) * coeff g (k - j)"
-        have "setsum prod {Suc i ..< ?mn} = setsum prod (?I \<union> ?D)"
-          by (rule arg_cong[of _ _ "setsum prod"], auto)
-        also have "\<dots> = setsum prod ?I + setsum prod ?D"
-          by (subst setsum.union_disjoint, auto)
-        also have "setsum prod ?D = 0"
-          by (rule setsum.neutral, insert nm, auto simp: prod_def)
-        also have "setsum prod ?I = setsum prod' ?I" 
-          unfolding prod_def prod'_def by (rule setsum.cong, auto simp: ac_simps)
+        have "sum prod {Suc i ..< ?mn} = sum prod (?I \<union> ?D)"
+          by (rule arg_cong[of _ _ "sum prod"], auto)
+        also have "\<dots> = sum prod ?I + sum prod ?D"
+          by (subst sum.union_disjoint, auto)
+        also have "sum prod ?D = 0"
+          by (rule sum.neutral, insert nm, auto simp: prod_def)
+        also have "sum prod ?I = sum prod' ?I" 
+          unfolding prod_def prod'_def by (rule sum.cong, auto simp: ac_simps)
         also have "\<dots> = gq_ij" 
         proof (cases "i \<le> j \<and> j - i \<le> m")
           case False
           hence "gq_ij = 0" unfolding gq_ij_def by auto
-          moreover have "setsum prod' ?I = 0" unfolding prod'_def
-            by (rule setsum.neutral, insert False n m nm, auto simp: prod'_def intro!: coeff_eq_0)
+          moreover have "sum prod' ?I = 0" unfolding prod'_def
+            by (rule sum.neutral, insert False n m nm, auto simp: prod'_def intro!: coeff_eq_0)
           ultimately show ?thesis by simp
         next
           case True note ij = this
@@ -1699,16 +1699,16 @@ proof -
             thus ?thesis by auto
           qed
           from True have "gq_ij = coeff (g * q) (m + i - j)" unfolding gq_ij_def by auto
-          also have "\<dots> = setsum (\<lambda> k. coeff q (m + i - j - k) * coeff g k) {0 .. m + i - j}" 
-            unfolding coeff_mult by (rule setsum.cong, auto simp add: ac_simps)
-          also have "\<dots> = setsum prod' {j .. m + i}" unfolding prod'_def
-            by (rule setsum.reindex_cong[of "\<lambda> k. k - j"], insert eq True, auto simp: inj_on_def)
-          also have "\<dots> = setsum prod' (?I \<union> ({j .. m + i} - ?I))" 
-            by (rule setsum.cong, auto)
-          also have "\<dots> = setsum prod' ?I + setsum prod' ({j .. m + i} - ?I)"
-            by (subst setsum.union_disjoint, auto)
-          also have "setsum prod' ({j .. m + i} - ?I) = 0"
-          proof (rule setsum.neutral, clarify, goal_cases)
+          also have "\<dots> = sum (\<lambda> k. coeff q (m + i - j - k) * coeff g k) {0 .. m + i - j}" 
+            unfolding coeff_mult by (rule sum.cong, auto simp add: ac_simps)
+          also have "\<dots> = sum prod' {j .. m + i}" unfolding prod'_def
+            by (rule sum.reindex_cong[of "\<lambda> k. k - j"], insert eq True, auto simp: inj_on_def)
+          also have "\<dots> = sum prod' (?I \<union> ({j .. m + i} - ?I))" 
+            by (rule sum.cong, auto)
+          also have "\<dots> = sum prod' ?I + sum prod' ({j .. m + i} - ?I)"
+            by (subst sum.union_disjoint, auto)
+          also have "sum prod' ({j .. m + i} - ?I) = 0"
+          proof (rule sum.neutral, clarify, goal_cases)
             case (1 k)
             hence k1: "k \<ge> j" "k \<le> m + i" by auto
             show ?case

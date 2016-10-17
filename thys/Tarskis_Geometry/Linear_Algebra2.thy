@@ -126,28 +126,28 @@ proof
   thus "span S \<subseteq> span (insert v S)" by (rule span_mono)
 qed
 
-lemma dot_setsum_distrib_left:
+lemma dot_sum_distrib_left:
   fixes v :: "real^'n"
   shows "v \<bullet> (\<Sum> j\<in>S. w j) = (\<Sum> j\<in>S. v \<bullet> (w j))"
 proof -
   have "v \<bullet> (\<Sum> j\<in>S. w j) = (\<Sum> i\<in>UNIV. v$i * (\<Sum> j\<in>S. (w j)$i))"
     unfolding inner_vec_def
     by simp
-  also from setsum_distrib_left [where ?A = S and ?'b = real]
+  also from sum_distrib_left [where ?A = S and ?'b = real]
   have "\<dots> = (\<Sum> i\<in>UNIV. \<Sum> j\<in>S. v$i * (w j)$i)" by simp
-  also from setsum.commute [of "\<lambda> i j. v$i * (w j)$i" S UNIV]
+  also from sum.commute [of "\<lambda> i j. v$i * (w j)$i" S UNIV]
   have "\<dots> = (\<Sum> j\<in>S. \<Sum> i\<in>UNIV. v$i * (w j)$i)" by simp
   finally show "v \<bullet> (\<Sum> j\<in>S. w j) = (\<Sum> j\<in>S. v \<bullet> (w j))"
     unfolding inner_vec_def
     by simp
 qed
 
-lemma orthogonal_setsum:
+lemma orthogonal_sum:
   fixes v :: "real^'n"
   assumes "\<forall> w\<in>S. orthogonal v w"
   shows "orthogonal v (\<Sum> w\<in>S. c w *s w)"
 proof -
-  from dot_setsum_distrib_left [of v]
+  from dot_sum_distrib_left [of v]
   have "v \<bullet> (\<Sum> w\<in>S. c w *s w) = (\<Sum> w\<in>S. v \<bullet> (c w *s w))" by auto
   with inner_scaleR_right [of v]
   have "v \<bullet> (\<Sum> w\<in>S. c w *s w) = (\<Sum> w\<in>S. c w * (v \<bullet> w))"
@@ -173,7 +173,7 @@ proof -
   from span_explicit [of S] and `v \<in> span S`
   obtain T and u where "T \<subseteq> S" and "v = (\<Sum> w\<in>T. u w *\<^sub>R w)" by auto
   from `\<forall> w\<in>S. orthogonal v w` and `T \<subseteq> S` have "\<forall> w\<in>T. orthogonal v w" by auto
-  with orthogonal_setsum [of T v u] and `v = (\<Sum> w\<in>T. u w *\<^sub>R w)`
+  with orthogonal_sum [of T v u] and `v = (\<Sum> w\<in>T. u w *\<^sub>R w)`
   have "orthogonal v v" by (auto simp add: scalar_equiv)
   with orthogonal_self_eq_0 show "v = 0" by auto
 qed
@@ -203,7 +203,7 @@ qed
 lemma dot_scaleR_mult:
   shows "(k *\<^sub>R a) \<bullet> b = k * (a \<bullet> b)" and "a \<bullet> (k *\<^sub>R b) = k * (a \<bullet> b)"
   unfolding inner_vec_def
-  by (simp_all add: algebra_simps setsum_distrib_left)
+  by (simp_all add: algebra_simps sum_distrib_left)
 
 lemma dependent_explicit_finite:
   fixes S :: "(('a::{real_vector,field})^'n) set"
@@ -217,7 +217,7 @@ proof
     by auto
   let ?u' = "\<lambda> v. if v \<in> S' then u v else 0"
   from `S' \<subseteq> S` and `\<exists> v\<in>S'. u v \<noteq> 0` have "\<exists> v\<in>S. ?u' v \<noteq> 0" by auto
-  moreover from setsum.mono_neutral_cong_right [of S S' "\<lambda> v. ?u' v *\<^sub>R v"]
+  moreover from sum.mono_neutral_cong_right [of S S' "\<lambda> v. ?u' v *\<^sub>R v"]
     and `S' \<subseteq> S` and `(\<Sum> v\<in>S'. u v *\<^sub>R v) = 0` and `finite S`
   have "(\<Sum> v\<in>S. ?u' v *\<^sub>R v) = 0" by simp
   ultimately show "(\<exists> u. (\<exists> v\<in>S. u v \<noteq> 0) \<and> (\<Sum> v\<in>S. u v *\<^sub>R v) = 0)" by auto
@@ -312,7 +312,7 @@ proof -
     have "(k *\<^sub>R (A ** B))$i$j = k * (\<Sum> l\<in>UNIV. A$i$l * B$l$j)"
       unfolding matrix_matrix_mult_def
       by simp
-    also from scaleR_right.setsum [of k "\<lambda> l. A$i$l * B$l$j" UNIV]
+    also from scaleR_right.sum [of k "\<lambda> l. A$i$l * B$l$j" UNIV]
     have "\<dots> = (\<Sum> l\<in>UNIV. k * A$i$l * B$l$j)" by (simp add: algebra_simps)
     finally show "(k *\<^sub>R (A ** B))$i$j = ((k *\<^sub>R A) ** B)$i$j"
       unfolding matrix_matrix_mult_def

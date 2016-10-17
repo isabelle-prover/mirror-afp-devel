@@ -593,9 +593,9 @@ proof -
 
   have "AE x in M. n * real_cond_exp M Invariants f x = (\<Sum>i\<in>{..<n}. real_cond_exp M Invariants f x)" by auto
   moreover have "AE x in M. (\<Sum>i\<in>{..<n}. real_cond_exp M Invariants f x) = (\<Sum>i\<in>{..<n}. real_cond_exp M Invariants (F i) x)"
-    apply (rule AE_symmetric[OF AE_equal_setsum]) unfolding F_def using Invariants_of_foTn[OF assms] by simp
+    apply (rule AE_symmetric[OF AE_equal_sum]) unfolding F_def using Invariants_of_foTn[OF assms] by simp
   moreover have "AE x in M. (\<Sum>i\<in>{..<n}. real_cond_exp M Invariants (F i) x) = real_cond_exp M Invariants (\<lambda>x. \<Sum>i\<in>{..<n}. F i x) x"
-    by (rule AE_symmetric[OF real_cond_exp_setsum [OF *]])
+    by (rule AE_symmetric[OF real_cond_exp_sum [OF *]])
   moreover have "AE x in M. real_cond_exp M Invariants (\<lambda>x. \<Sum>i\<in>{..<n}. F i x) x = real_cond_exp M Invariants (birkhoff_sum f n) x"
     apply (rule real_cond_exp_cong) unfolding F_def using birkhoff_sum_def[symmetric] by auto
   ultimately show ?thesis by auto
@@ -1332,9 +1332,9 @@ proof (rule conservative_mptI)
     also have "... = (\<Sum>n\<in>{n0..n1}. ennreal(e*c))"
       by (simp add: ac_simps)
     also have "... \<le> (\<Sum>n\<in>{n0..n1}. emeasure ?MS (D n))"
-      using `\<And>n. n \<in> {n0..n1} \<Longrightarrow> emeasure ?MS (D n) \<ge> e * c` by (meson setsum_mono)
+      using `\<And>n. n \<in> {n0..n1} \<Longrightarrow> emeasure ?MS (D n) \<ge> e * c` by (meson sum_mono)
     also have "... = emeasure ?MS (\<Union>n\<in>{n0..n1}. D n)"
-      apply (rule setsum_emeasure) using Dn_meas by (auto simp add: D)
+      apply (rule sum_emeasure) using Dn_meas by (auto simp add: D)
     also have "... \<le> emeasure ?MS (space M \<times> {-r*n1-N..r*n1+N})"
       apply (rule emeasure_mono) unfolding D_def using sets.sets_into_space[OF Dx_meas] by auto
     also have "... = emeasure M (space M) * emeasure lborel {-r*n1-N..r*n1+N}"

@@ -22,16 +22,16 @@ by (metis assms nonzero_mult_div_cancel_right le_add_diff_inverse2 less_not_refl
 
 subsubsection {* Additions to Groups-Big Theory *}
 
-lemma setsum_div:
+lemma sum_div:
   assumes "finite A"
   assumes "\<And>a. a \<in> A \<Longrightarrow> (b::'b::semiring_div) dvd f a"
   shows "(\<Sum>a\<in>A. f a) div b = (\<Sum>a\<in>A. (f a) div b)"
 using assms
 proof (induct)
-  case insert from this show ?case by auto (subst div_add; auto intro!: dvd_setsum)
+  case insert from this show ?case by auto (subst div_add; auto intro!: dvd_sum)
 qed (auto)
 
-lemma setsum_mod:
+lemma sum_mod:
   assumes "finite A"
   assumes "\<And>a. a \<in> A \<Longrightarrow> f a mod b = (0::'b::{semiring_div})"
   shows "(\<Sum>a\<in>A. f a) mod b = 0"
@@ -122,7 +122,7 @@ lemma bitset_2n1:
   "bitset (2 * n + 1) = insert 0 (Suc ` (bitset n))"
 by (subst bitset_Suc) (auto simp add: bitset_2n)
 
-lemma setsum_bitset:
+lemma sum_bitset:
   "(\<Sum>i\<in>bitset n. 2 ^ i) = n"
 proof (induct rule: binary_induct)
   case zero
@@ -130,15 +130,15 @@ proof (induct rule: binary_induct)
 next
   case (even n)
   from this show ?case
-    by (simp add: bitset_2n setsum.reindex setsum_distrib_left[symmetric])
+    by (simp add: bitset_2n sum.reindex sum_distrib_left[symmetric])
 next
   case (odd n)
   have "(\<Sum>i\<in>bitset (2 * n + 1). 2 ^ i) = (\<Sum>i\<in>insert 0 (Suc ` bitset n). 2 ^ i)"
     by (simp only: bitset_2n1)
   also have "... = 2 ^ 0 + (\<Sum>i\<in>Suc ` bitset n. 2 ^ i)"
-    by (subst setsum.insert) (auto simp add: finite_bitset)
+    by (subst sum.insert) (auto simp add: finite_bitset)
   also have "... = 2 * n + 1"
-    using odd by (simp add: setsum.reindex setsum_distrib_left[symmetric])
+    using odd by (simp add: sum.reindex sum_distrib_left[symmetric])
   finally show ?case .
 qed
 
@@ -150,22 +150,22 @@ proof -
   have split_B: "B = {i\<in>B. i < j} \<union> {i\<in>B. j \<le> i}" by auto
   have bound: "(\<Sum>i | i \<in> B \<and> i < j. (2::nat) ^ i) < 2 ^ j"
   proof (rule order.strict_trans1)
-    show "(\<Sum>i | i \<in> B \<and> i < j. (2::nat) ^ i) \<le> (\<Sum>i<j. 2 ^ i)" by (auto intro: setsum_mono2)
+    show "(\<Sum>i | i \<in> B \<and> i < j. (2::nat) ^ i) \<le> (\<Sum>i<j. 2 ^ i)" by (auto intro: sum_mono2)
     show "... < 2 ^ j" by (simp add: geometric_sum_2nat)
   qed
   from this have zero: "(\<Sum>i | i \<in> B \<and> i < j. (2::nat) ^ i) div (2 ^ j) = 0" by (elim div_less)
   from assms have mod0: "(\<Sum>i | i \<in> B \<and> j \<le> i. (2::nat) ^ i) mod 2 ^ j = 0"
-    by (auto intro!: setsum_mod simp add: le_imp_power_dvd)
+    by (auto intro!: sum_mod simp add: le_imp_power_dvd)
   from assms have "(\<Sum>i\<in>B. (2::nat) ^ i) div (2 ^ j) = ((\<Sum>i | i \<in> B \<and> i < j. 2 ^ i) + (\<Sum>i | i \<in> B \<and> j \<le> i. 2 ^ i)) div 2 ^ j"
-    by (subst setsum.union_disjoint[symmetric]) (auto simp add: split_B[symmetric])
+    by (subst sum.union_disjoint[symmetric]) (auto simp add: split_B[symmetric])
   also have "... = (\<Sum>i | i \<in> B \<and> j \<le> i. 2 ^ i) div 2 ^ j"
     by (simp add: div_add1_eq zero mod0)
   also have "... = (\<Sum>i | i \<in> B \<and> j \<le> i. 2 ^ i div 2 ^ j)"
-    using assms by (subst setsum_div) (auto simp add: setsum_div le_imp_power_dvd)
+    using assms by (subst sum_div) (auto simp add: sum_div le_imp_power_dvd)
   also have "... = (\<Sum>i | i \<in> B \<and> j \<le> i. 2 ^ (i - j))"
-    by (rule setsum.cong[OF refl]) (auto simp add: power_div_nat)
+    by (rule sum.cong[OF refl]) (auto simp add: power_div_nat)
   also have "... = (\<Sum>i\<in>B. ?f i)"
-    using assms by (subst split_B; subst setsum.union_disjoint) auto
+    using assms by (subst split_B; subst sum.union_disjoint) auto
   finally show ?thesis .
 qed
 
@@ -174,7 +174,7 @@ lemma odd_iff:
   shows "odd (\<Sum>i\<in>B. if i < x then (0::nat) else 2 ^ (i - x)) = (x \<in> B)" (is "odd (\<Sum>i\<in>_. ?s i) = _")
 proof -
   from assms have even: "even (\<Sum>i\<in>B - {x}. ?s i)"
-    by (subst dvd_setsum) auto
+    by (subst dvd_sum) auto
   show ?thesis
   proof
     assume "odd (\<Sum>i\<in>B. ?s i)"
@@ -182,12 +182,12 @@ proof -
   next
     assume "x \<in> B"
     from assms this have "(\<Sum>i\<in>B. ?s i) = 1 + (\<Sum>i\<in>B-{x}. ?s i)"
-      by (auto simp add: setsum.remove)
+      by (auto simp add: sum.remove)
     from assms this even show "odd (\<Sum>i\<in>B. ?s i)" by auto
   qed
 qed
 
-lemma bitset_setsum:
+lemma bitset_sum:
   assumes "finite B"
   shows "bitset (\<Sum>i\<in>B. 2 ^ i) = B"
 using assms unfolding bitset_def by (simp add: binarysum_div odd_iff)
@@ -308,7 +308,7 @@ lemma odd_distinct:
   assumes "\<And>i. p i \<noteq> 0 \<Longrightarrow> odd i"
   shows "odd_of_distinct (distinct_of_odd p) = p"
 using assms unfolding odd_of_distinct_def distinct_of_odd_def
-by (auto simp add: fun_eq_iff index_oddpart setsum_bitset)
+by (auto simp add: fun_eq_iff index_oddpart sum_bitset)
 
 lemma distinct_odd:
   assumes "\<And>i. p i \<noteq> 0 \<Longrightarrow> 1 \<le> i \<and> i \<le> n" "\<And>i. p i \<le> 1"
@@ -337,7 +337,7 @@ proof -
       case True
       from p0 assms(2)[of x] all_finite[OF True] show ?thesis
         unfolding odd_of_distinct_def distinct_of_odd_def
-        by (auto simp add: odd_oddpart bitset_0 bitset_setsum index_oddpart_decomposition[symmetric])
+        by (auto simp add: odd_oddpart bitset_0 bitset_sum index_oddpart_decomposition[symmetric])
     qed
   qed
 qed
@@ -354,18 +354,18 @@ proof -
     have finite: "finite {k. 2 ^ k * m \<le> n \<and> k \<in> bitset (p m)}" by (simp add: finite_bitset)
     have "(\<Sum>i | \<exists>k. i = 2 ^ k * m \<and> i \<le> n. distinct_of_odd p i * i) =
       (\<Sum>i | \<exists>k. i = 2 ^ k * m \<and> i \<le> n. if index i \<in> bitset (p (oddpart i)) then i else 0)"
-      unfolding distinct_of_odd_def by (auto intro: setsum.cong)
+      unfolding distinct_of_odd_def by (auto intro: sum.cong)
     also have "... = (\<Sum>i | \<exists>k. i = 2 ^ k * m \<and> k \<in> bitset (p m) \<and> i \<le> n. i)"
-      using odd by (intro setsum.mono_neutral_cong_right) (auto simp add: index_oddpart)
+      using odd by (intro sum.mono_neutral_cong_right) (auto simp add: index_oddpart)
     also have "... = (\<Sum>k | 2 ^ k * m \<le> n \<and> k \<in> bitset (p m). 2 ^ k * m)"
-      using odd by (auto intro!: setsum.reindex_cong[OF _ _ refl] inj_onI)
+      using odd by (auto intro!: sum.reindex_cong[OF _ _ refl] inj_onI)
     also have "... = (\<Sum>k\<in>bitset (p m). 2 ^ k * m)"
       using assms(2)[of m] finite dual_order.trans in_bitset_bound
-      by (fastforce intro!: setsum.mono_neutral_cong_right)
+      by (fastforce intro!: sum.mono_neutral_cong_right)
     also have "... = (\<Sum>k\<in>bitset (p m). 2 ^ k) * m"
-      by (subst setsum_distrib_right) auto
+      by (subst sum_distrib_right) auto
     also have "... = p m * m"
-      by (auto simp add: setsum_bitset)
+      by (auto simp add: sum_bitset)
     finally have "(\<Sum>i | \<exists>k. i = 2 ^ k * m \<and> i \<le> n. distinct_of_odd p i * i) = p m * m" .
   } note inner_eq = this
 
@@ -387,15 +387,15 @@ proof -
   have inj: "inj_on (\<lambda>m. {i. (\<exists>k. i = 2 ^ k * m) \<and> i \<le> n}) {m. m \<le> n \<and> odd m}"
     unfolding inj_on_def by auto (force simp add: index_oddpart_unique)
   have reindex: "\<And>F. (\<Sum>i | 1 \<le> i \<and> i \<le> n. F i) = (\<Sum>m | m \<le> n \<and> odd m. (\<Sum>i | \<exists>k. i = 2 ^ k * m \<and> i \<le> n. F i))"
-    unfolding set_eq by (subst setsum.Union_disjoint) (auto simp add: no_overlap intro: setsum.reindex_cong[OF inj])
+    unfolding set_eq by (subst sum.Union_disjoint) (auto simp add: no_overlap intro: sum.reindex_cong[OF inj])
   have "(\<Sum>i\<le>n. distinct_of_odd p i * i) =  (\<Sum>i | 1 \<le> i \<and> i \<le> n. distinct_of_odd p i * i)"
-    by (auto intro: setsum.mono_neutral_right)
+    by (auto intro: sum.mono_neutral_right)
   also have "... = (\<Sum>m | m \<le> n \<and> odd m. \<Sum>i | \<exists>k. i = 2 ^ k * m \<and> i \<le> n. distinct_of_odd p i * i)"
     by (simp only: reindex)
   also have "... = (\<Sum>i | i \<le> n \<and> odd i. p i * i)"
-    by (rule setsum.cong[OF refl]; subst inner_eq) auto
+    by (rule sum.cong[OF refl]; subst inner_eq) auto
   also have "... = (\<Sum>i\<le>n. p i * i)"
-    using assms(3) by (auto intro: setsum.mono_neutral_left)
+    using assms(3) by (auto intro: sum.mono_neutral_left)
   finally show ?thesis .
 qed
 
@@ -408,7 +408,7 @@ proof (rule ccontr)
   from this have gr_n: "p i * i > n" by auto
   from this assms(1) have "1 \<le> i \<and> i \<le> n" by force
   from this have "(\<Sum>j\<le>n. p j * j) = p i * i + (\<Sum>j | j \<le> n \<and> j \<noteq> i. p j * j)"
-    by (subst setsum.insert[symmetric]) (auto intro: setsum.cong simp del: setsum.insert)
+    by (subst sum.insert[symmetric]) (auto intro: sum.cong simp del: sum.insert)
   from this gr_n assms(2) show False by simp
 qed
 
@@ -454,15 +454,15 @@ proof
     from i this have "{j. p (2 ^ j * i) = 1} = index ` {x. p x = 1 \<and> oddpart x = i}"
       by (auto simp add: index_oddpart_decomposition[symmetric])
     from 3 this have "(\<Sum>j | p (2 ^ j * i) = 1. 2 ^ j) * i = (\<Sum>x | p x = 1 \<and> oddpart x = i. 2 ^ index x) * i"
-      by (auto intro: setsum.reindex_cong[where l = "index"])
+      by (auto intro: sum.reindex_cong[where l = "index"])
     also have "... = (\<Sum>x | p x = 1 \<and> oddpart x = i. 2 ^ index x * oddpart x)"
-      by (auto simp add: setsum_distrib_right)
+      by (auto simp add: sum_distrib_right)
     also have "... = (\<Sum>x | p x = 1 \<and> oddpart x = i. x)"
        by (simp only: index_oddpart_decomposition[symmetric])
     also have "... \<le> (\<Sum>x | p x = 1. x)"
-      using set_eq by (intro setsum_mono2) auto
+      using set_eq by (intro sum_mono2) auto
     also have "... = (\<Sum>x\<le>n. p x * x)"
-      using distinct by (subst set_eq) (force intro!: setsum.mono_neutral_cong_left)
+      using distinct by (subst set_eq) (force intro!: sum.mono_neutral_cong_left)
     also have "... = n" using sum .
     finally have "(\<Sum>j | p (2 ^ j * i) = 1. 2 ^ j) * i \<le> n" .
   }

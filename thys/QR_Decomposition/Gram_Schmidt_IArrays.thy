@@ -82,9 +82,9 @@ lemma length_plus_iarray:
   "IArray.length (A+B)=max (IArray.length A) (IArray.length B)"
   unfolding plus_iarray_def Let_def by auto
 
-lemma length_setsum_iarray:
+lemma length_sum_iarray:
   assumes "finite S" and "S\<noteq>{}"
-  shows "IArray.length (setsum f S) = Max {IArray.length (f x)| x. x \<in> S}"
+  shows "IArray.length (sum f S) = Max {IArray.length (f x)| x. x \<in> S}"
   using assms
 proof (induct S,simp)
   case (insert x F)
@@ -93,13 +93,13 @@ proof (cases "F={}")
   case True show ?thesis unfolding True by auto
 next
   case False
-  have rw: "IArray.length (setsum f F) = Max {IArray.length (f x) |x. x \<in> F}"
+  have rw: "IArray.length (sum f F) = Max {IArray.length (f x) |x. x \<in> F}"
     by (rule insert.hyps, simp add: False)
   have set_rw: "(insert (IArray.length (f x)) {IArray.length (f x) |x. x \<in> F}) = {IArray.length (f a) |a. a \<in> insert x F}"
     by auto
-  have "IArray.length (setsum f (insert x F)) = IArray.length (f x + setsum f F)"
-    by (metis insert.hyps(1) insert.hyps(2) setsum_clauses(2))
-  also have "... = max (IArray.length (f x)) (IArray.length (setsum f F))" 
+  have "IArray.length (sum f (insert x F)) = IArray.length (f x + sum f F)"
+    by (metis insert.hyps(1) insert.hyps(2) sum_clauses(2))
+  also have "... = max (IArray.length (f x)) (IArray.length (sum f F))" 
     unfolding length_plus_iarray ..
   also have "... = max (IArray.length (f x)) (Max {IArray.length (f a) |a. a \<in> F})" unfolding rw by simp
   also have "... =  Max (insert (IArray.length (f x)) {IArray.length (f a) |a. a \<in> F})" 
@@ -113,12 +113,12 @@ next
 qed
 
 
-lemma setsum_component_iarray:
+lemma sum_component_iarray:
   assumes a: "\<forall>x\<in>S. i<IArray.length (f x)"
   and f: "finite S"
-  and S: "S\<noteq>{}" --"If S is empty, then the setsum will return the empty 
+  and S: "S\<noteq>{}" --"If S is empty, then the sum will return the empty 
   iarray and it makes no sense to access the component i"
-  shows "setsum f S !! i = (\<Sum>x\<in>S. f x !! i)"
+  shows "sum f S !! i = (\<Sum>x\<in>S. f x !! i)"
   using f a S
 proof (induct S, simp)
   case (insert x F)
@@ -126,26 +126,26 @@ proof (induct S, simp)
   show ?case
   proof (cases "F={}")
     case True
-    have "setsum f (insert x F) !! i = f x !! i" unfolding True by auto
+    have "sum f (insert x F) !! i = f x !! i" unfolding True by auto
     also have "... = (\<Sum>x\<in>insert x F. f x !! i)" unfolding True by auto
     finally show ?thesis .
   next
     case False
-    have hyp: "(setsum f F !! i)=(\<Sum>x\<in>F. f x !! i)" 
+    have hyp: "(sum f F !! i)=(\<Sum>x\<in>F. f x !! i)" 
     proof  (rule insert.hyps)
       show "\<forall>x\<in>F. i < IArray.length (f x)" by (metis insert.prems(1) insertCI)
       show "F \<noteq> {}" using False .
     qed
-    have "setsum f (insert x F) !! i = (f x + setsum f F) !! i" 
-      by (metis insert.hyps(1) insert.hyps(2) setsum_clauses(2))
-    also have "... = (f x) !! i + (setsum f F !! i)" 
+    have "sum f (insert x F) !! i = (f x + sum f F) !! i" 
+      by (metis insert.hyps(1) insert.hyps(2) sum_clauses(2))
+    also have "... = (f x) !! i + (sum f F !! i)" 
     proof (rule plus_iarray_component)
       obtain a where a: "a\<in>F" using False by auto
       have finite_C: "finite {IArray.length (f x) |x. x \<in> F}" using finite_F by auto
       have not_empty_C: "{IArray.length (f x) |x. x \<in> F} \<noteq>{}" using False by simp    
       show "i < IArray.length (f x)" by (metis insert.prems(1) insertI1)
-      show "i < IArray.length (setsum f F)" 
-        unfolding length_setsum_iarray[OF finite_F False]
+      show "i < IArray.length (sum f F)" 
+        unfolding length_sum_iarray[OF finite_F False]
         unfolding Max_gr_iff[OF finite_C not_empty_C]
       proof (rule bexI[of _ "IArray.length (f a)"])
         show "i < IArray.length (f a)" using insert.prems(1) a by auto
@@ -154,8 +154,8 @@ proof (induct S, simp)
     qed
     also have "...= (f x) !! i + (\<Sum>x\<in>F. f x !! i)" unfolding hyp ..
     also have "...= (\<Sum>x\<in>insert x F. f x !! i)"
-      by (metis (mono_tags) insert.hyps(1) insert.hyps(2) setsum_clauses(2))
-    finally show "setsum f (insert x F) !! i = (\<Sum>x\<in>insert x F. f x !! i)" .
+      by (metis (mono_tags) insert.hyps(1) insert.hyps(2) sum_clauses(2))
+    finally show "sum f (insert x F) !! i = (\<Sum>x\<in>insert x F. f x !! i)" .
   qed
 qed
 
@@ -185,7 +185,7 @@ qed
 subsection{*Inner mult over real iarrays*}
 
 definition inner_iarray :: "real iarray => real iarray => real"  (infixl "\<bullet>i" 70)
-  where "inner_iarray A B = setsum (\<lambda>n. A !! n * B !! n) {0..<IArray.length A}"
+  where "inner_iarray A B = sum (\<lambda>n. A !! n * B !! n) {0..<IArray.length A}"
 
 lemma vec_to_iarray_inner:
   "a \<bullet> b = vec_to_iarray a \<bullet>i vec_to_iarray b" 
@@ -200,7 +200,7 @@ proof (unfold inner_iarray_def inner_vec_def, auto, unfold IArray.sub_def[symmet
     = (\<Sum>n\<in>range (to_nat::'a=>nat). vec_to_iarray a !! n * vec_to_iarray b !! n)"
     unfolding set_rw ..
   also have "... = (\<Sum>x\<in>(UNIV::'a set). vec_to_iarray a !! to_nat x * vec_to_iarray b !! to_nat x)"
-    unfolding setsum.reindex[OF inj] o_def ..
+    unfolding sum.reindex[OF inj] o_def ..
   also have "...= (\<Sum>x\<in>UNIV. a $ x * b $ x)" unfolding vec_to_iarray_nth' ..
   finally show "(\<Sum>i\<in>UNIV. a $ i * b $ i) 
     = (\<Sum>n = 0..<IArray.length (vec_to_iarray a). vec_to_iarray a !! n * vec_to_iarray b !! n)" ..
@@ -215,7 +215,7 @@ subsection{*Gram Schmidt over IArrays*}
 
 definition "Gram_Schmidt_column_k_iarrays A k
   = tabulate2 (nrows_iarray A) (ncols_iarray A) (\<lambda>a b. (if b = k
-  then (column_iarray b A - setsum (\<lambda>x. (((column_iarray b A) \<bullet>i x) / (x \<bullet>i x)) *\<^sub>R x) 
+  then (column_iarray b A - sum (\<lambda>x. (((column_iarray b A) \<bullet>i x) / (x \<bullet>i x)) *\<^sub>R x) 
   (set (List.map (\<lambda>n. column_iarray n A) [0..<b])))
   else (column_iarray b A)) !! a)"
 
@@ -312,7 +312,7 @@ next
       have "(\<Sum>x\<in>(\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}. (column_iarray k (matrix_to_iarray A) \<bullet>i x/ (x \<bullet>i x)) *\<^sub>R x) !! i = 
         (\<Sum>x\<in>(\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}. 
         (( column_iarray k (matrix_to_iarray A) \<bullet>i x/ (x \<bullet>i x)) *\<^sub>R x) !! i)" 
-      proof (rule setsum_component_iarray)
+      proof (rule sum_component_iarray)
         show "\<forall>x\<in>(\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}. i < IArray.length ((column_iarray k (matrix_to_iarray A) \<bullet>i x/ (x \<bullet>i x)) *\<^sub>R x)"
         proof (unfold column_iarray_def, auto)
           fix x :: nat
@@ -326,7 +326,7 @@ next
       qed
       also have "... = (\<Sum>x\<in>(\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}. 
         (column_iarray k (matrix_to_iarray A) \<bullet>i x / (x \<bullet>i x)) *\<^sub>R x !! i)"
-      proof (rule setsum.cong)
+      proof (rule sum.cong)
         fix x assume "x \<in> (\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}"
         from this obtain n where x: "x = column_iarray n (matrix_to_iarray A)" and n: "n<k" by auto
         have n_ncols: "n<ncols A" by (metis k n order.strict_trans)
@@ -349,7 +349,7 @@ next
         unfolding set_rw2[symmetric] ..
       also have "...= 
         (\<Sum>x\<in>{column i A |i. i < from_nat k}. (column (from_nat k) A \<bullet> x / (x \<bullet> x)) *\<^sub>R vec_to_iarray x !! i)" 
-        unfolding setsum.reindex[OF inj] o_def 
+        unfolding sum.reindex[OF inj] o_def 
         unfolding vec_to_iarray_column[of "from_nat k::'cols",symmetric,unfolded to_nat_from_nat_id[OF k[unfolded ncols_def]]]
         unfolding vec_to_iarray_inner[symmetric] .. 
       also have "... 
@@ -375,7 +375,7 @@ next
           unfolding column_iarray_def
           by (auto, metis i_nrows_iarray IArray.length_def nrows_iarray_def)
         show "i < IArray.length (\<Sum>x\<in>(\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}. (column_iarray k (matrix_to_iarray A) \<bullet>i x / (x \<bullet>i x)) *\<^sub>R x)"
-          unfolding length_setsum_iarray[OF finite not_empty]
+          unfolding length_sum_iarray[OF finite not_empty]
           unfolding Max_gr_iff[OF finite_C not_empty_C]
         proof (rule bexI[of _ "?c"])
           show "i < ?c"           

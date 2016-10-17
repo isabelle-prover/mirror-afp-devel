@@ -107,10 +107,10 @@ proof (unfold inj_on_def, rule+, rule ccontr)
   have "x = y + (\<Sum>v\<in>B. scale (g v) v)" using sum by auto
   also have "... = scale (h y) y  + (\<Sum>v\<in>B. scale (g v) v)" unfolding h_def by simp
   also have "... = scale (h y) y + (\<Sum>v\<in>B. scale (h v) v)"
-    apply (unfold add_left_cancel, rule setsum.cong) 
+    apply (unfold add_left_cancel, rule sum.cong) 
     using y h_def empty_iff disj_set by auto   
   also have "... = (\<Sum>v\<in>(insert y B). scale (h v) v)"
-    by (rule setsum.insert[symmetric], rule fin_B)
+    by (rule sum.insert[symmetric], rule fin_B)
        (metis (lifting) IntI disj_set empty_iff y)
   finally have x_in_span_yB: "x \<in> span (insert y B)"
     unfolding span_finite[OF fin_yB] by auto
@@ -222,16 +222,16 @@ proof -
             is the basis of the kernel; thus, the image of the elements of 
             $B$ will be equal to zero:"
           have zero_fB: "(\<Sum>x\<in>f ` B. scaleC (g x) x) = 0"
-            using B_in_ker by (auto intro!: setsum.neutral)
+            using B_in_ker by (auto intro!: sum.neutral)
           have zero_inter: "(\<Sum>x\<in>(f ` B \<inter> f ` W). scaleC (g x) x) = 0"
-            using B_in_ker by (auto intro!: setsum.neutral)
+            using B_in_ker by (auto intro!: sum.neutral)
           have "f v = (\<Sum>x\<in>f ` C. scaleC (g x) x)" using fv .
           also have "... = (\<Sum>x\<in>(f ` B \<union> f ` W).  scaleC (g x) x)" 
             using eq_fC W_def by simp
           also have "... = 
               (\<Sum>x\<in>f ` B. scaleC (g x) x) + (\<Sum>x\<in>f ` W. scaleC (g x) x) 
                 - (\<Sum>x\<in>(f ` B \<inter> f ` W). scaleC (g x) x)" 
-            using setsum_Un [OF finite_fB finite_fW] by simp
+            using sum_Un [OF finite_fB finite_fW] by simp
           also have "... = (\<Sum>x\<in>f ` W. scaleC (g x) x)" 
             unfolding zero_fB zero_inter by simp
             -- "We have proved that the image set of $W$ is a generating set 
@@ -247,13 +247,13 @@ proof -
         fix g :: "'c => 'a" and w :: 'c
         assume sum: "(\<Sum>x\<in>f ` W. scaleC (g x) x) = 0" and w: "w \<in> f ` W"
         have "0 = (\<Sum>x\<in>f ` W. scaleC (g x) x)" using sum by simp
-        also have "... = setsum ((\<lambda>x. scaleC (g x) x) \<circ> f) W"
-          by (rule setsum.reindex, rule B.inj_on_extended[OF l, of C B])
+        also have "... = sum ((\<lambda>x. scaleC (g x) x) \<circ> f) W"
+          by (rule sum.reindex, rule B.inj_on_extended[OF l, of C B])
            (unfold W_def, rule finite_C, rule independent_C, rule C_eq, simp, 
               rule ker_in_span)
         also have "... = (\<Sum>x\<in>W. scaleC ((g \<circ> f) x) (f x))" unfolding o_def ..
         also have "... = f (\<Sum>x\<in>W. scaleB ((g \<circ> f) x) x)"
-           using l.linear_setsum_mul [symmetric, OF finite_W] .
+           using l.linear_sum_mul [symmetric, OF finite_W] .
         finally have f_sum_zero:"f (\<Sum>x\<in>W. scaleB ((g \<circ> f) x) x) = 0" by (rule sym)
         hence "(\<Sum>x\<in>W. scaleB ((g \<circ> f) x) x) \<in> ker_f" unfolding ker_f_def by simp
         hence "\<exists>h. (\<Sum>v\<in>B. scaleB (h v) v) = (\<Sum>x\<in>W. scaleB ((g \<circ> f) x) x)"
@@ -265,13 +265,13 @@ proof -
         have "0 = (\<Sum>v\<in>B. scaleB (h v) v) + - (\<Sum>x\<in>W. scaleB ((g \<circ> f) x) x)" 
           using sum_h by simp
           also have "... =  (\<Sum>v\<in>B. scaleB (h v) v) + (\<Sum>x\<in>W. - (scaleB ((g \<circ> f) x) x))" 
-          unfolding setsum_negf ..
+          unfolding sum_negf ..
         also have "... = (\<Sum>v\<in>B. scaleB (t v) v) + (\<Sum>x\<in>W. -(scaleB((g \<circ> f) x) x))" 
           unfolding add_right_cancel unfolding t_def by simp
         also have "... =  (\<Sum>v\<in>B. scaleB (t v) v) + (\<Sum>x\<in>W. scaleB (t x) x)"
-          by (unfold add_left_cancel t_def W_def, rule setsum.cong) simp+
+          by (unfold add_left_cancel t_def W_def, rule sum.cong) simp+
         also have "... = (\<Sum>v\<in>B \<union> W. scaleB (t v) v)"
-          by (rule setsum.union_inter_neutral [symmetric], rule finite_B, rule finite_W) 
+          by (rule sum.union_inter_neutral [symmetric], rule finite_B, rule finite_W) 
              (simp add: W_def)
         finally have "(\<Sum>v\<in>B \<union> W. scaleB (t v) v) = 0" by simp
         hence coef_zero: "\<forall>x\<in>B \<union> W. t x = 0"

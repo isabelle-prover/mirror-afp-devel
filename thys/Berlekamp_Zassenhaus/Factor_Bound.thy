@@ -779,11 +779,11 @@ proof -
   finally show ?thesis.
 qed
 
-lemma setsum_conv:
+lemma sum_conv:
 shows "(\<Sum>i = 0..v. g i) = (\<Sum>i\<leftarrow>[0..<Suc v]. g i)"
 proof -
   have h:"\<And> v. {0..v} = set [0..< Suc v]" by(induct;auto)
-  show ?thesis using setsum.set_conv_list[of g "[0..< Suc v]",folded h,unfolded remdups_upt].
+  show ?thesis using sum.set_conv_list[of g "[0..< Suc v]",folded h,unfolded remdups_upt].
 qed
 
 lemma mignotte_helper_complex:
@@ -795,7 +795,7 @@ proof -
     using add_induct_gen_le[of id,simplified] add_mono[OF mignotte_helper_coeff order_refl]
     by fast
   also have "\<dots> = (\<Sum>i = 0..degree h. (degree h choose i)) * measure_poly h"
-    unfolding sum_list_mult_const degree_eq_length_coeffs setsum_conv
+    unfolding sum_list_mult_const degree_eq_length_coeffs sum_conv
     by simp
   also have "\<dots> = ?r" by (simp add: choose_row_sum)
   finally show ?thesis.

@@ -28,25 +28,25 @@ lemma degree_mult_eq2:
   shows "degree (p * q) = degree p + degree q" (is "_ = ?r")
 proof(intro antisym[OF degree_mult_le] le_degree, unfold coeff_mult)
   let ?f = "\<lambda>i. coeff p i * coeff q (?r - i)"
-  have "(\<Sum>i\<le>?r. ?f i) = setsum ?f {..degree p} + setsum ?f {Suc (degree p)..?r}"
-    by (rule setsum_up_index_split)
-  also have "setsum ?f {Suc (degree p)..?r} = 0"
+  have "(\<Sum>i\<le>?r. ?f i) = sum ?f {..degree p} + sum ?f {Suc (degree p)..?r}"
+    by (rule sum_up_index_split)
+  also have "sum ?f {Suc (degree p)..?r} = 0"
     proof-
       { fix x assume "x > degree p"
         then have "coeff p x = 0" by (rule coeff_eq_0)
         then have "?f x = 0" by auto
       }
-      then show ?thesis by (intro setsum.neutral, auto)
+      then show ?thesis by (intro sum.neutral, auto)
     qed
-  also have "setsum ?f {..degree p} = setsum ?f {..<degree p} + ?f (degree p)"
-    by(fold lessThan_Suc_atMost, unfold setsum_lessThan_Suc, auto)
-  also have "setsum ?f {..<degree p} = 0"
+  also have "sum ?f {..degree p} = sum ?f {..<degree p} + ?f (degree p)"
+    by(fold lessThan_Suc_atMost, unfold sum_lessThan_Suc, auto)
+  also have "sum ?f {..<degree p} = 0"
     proof-
       {fix x assume "x < degree p"
         then have "coeff q (?r - x) = 0" by (intro coeff_eq_0, auto)
         then have "?f x = 0" by auto
       }
-      then show ?thesis by (intro setsum.neutral, auto)
+      then show ?thesis by (intro sum.neutral, auto)
     qed
   finally show "(\<Sum>i\<le>?r. ?f i) \<noteq> 0" using assms by (auto simp: lead_coeff_def)
 qed

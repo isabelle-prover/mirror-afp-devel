@@ -39,7 +39,7 @@ definition eval_poly :: "('a \<Rightarrow> 'b :: comm_semiring_1) \<Rightarrow> 
 lemma eval_poly_code[code]: "eval_poly h p x = fold_coeffs (\<lambda> a b. h a + x * b) p 0" 
   by (induct p, auto simp: eval_poly_def)
 
-lemma eval_poly_as_setsum:
+lemma eval_poly_as_sum:
   fixes h :: "'a :: zero \<Rightarrow> 'b :: comm_semiring_1"
   assumes "h 0 = 0"
   shows "eval_poly h p x = (\<Sum>i\<le>degree p. x^i * h (coeff p i))"
@@ -51,9 +51,9 @@ proof (induct p)
       case True show ?thesis by (simp add: True map_poly_simps assms)
       next case False show ?thesis
         unfolding degree_pCons_eq[OF False]
-        unfolding setsum_atMost_Suc_shift
+        unfolding sum_atMost_Suc_shift
         unfolding map_poly_pCons[OF pCons(1)]
-        by (simp add: pCons(2) setsum_distrib_left mult.assoc)
+        by (simp add: pCons(2) sum_distrib_left mult.assoc)
   qed
 qed
 
@@ -71,34 +71,34 @@ lemma map_poly_eval_poly: assumes h0: "h 0 = 0"
 proof (rule poly_eqI)
   fix i :: nat
   have 2: "(\<Sum>x\<le>i. \<Sum>xa\<le>degree p. (if xa = x then 1 else 0) * coeff [:h (coeff p xa):] (i - x)) 
-    = h (coeff p i)" (is "setsum ?f ?s = ?r")
+    = h (coeff p i)" (is "sum ?f ?s = ?r")
   proof -
-    have "setsum ?f ?s = ?f i + setsum ?f ({..i} - {i})"
-      by (rule setsum.remove[of _ i], auto)
-    also have "setsum ?f ({..i} - {i}) = 0"
-      by (rule setsum.neutral, intro ballI, rule setsum.neutral, auto simp: coeff_const)
+    have "sum ?f ?s = ?f i + sum ?f ({..i} - {i})"
+      by (rule sum.remove[of _ i], auto)
+    also have "sum ?f ({..i} - {i}) = 0"
+      by (rule sum.neutral, intro ballI, rule sum.neutral, auto simp: coeff_const)
     also have "?f i = (\<Sum>xa\<le>degree p. (if xa = i then 1 else 0) * h (coeff p xa))" (is "_ = ?m")
       unfolding coeff_const by simp
     also have "\<dots> = ?r"
     proof (cases "i \<le> degree p")
       case True
       show ?thesis
-        by (subst setsum.remove[of _ i], insert True, auto)
+        by (subst sum.remove[of _ i], insert True, auto)
     next
       case False
       hence [simp]: "coeff p i = 0" using le_degree by blast
       show ?thesis
-        by (subst setsum.neutral, auto simp: h0)
+        by (subst sum.neutral, auto simp: h0)
     qed
     finally show ?thesis by simp
   qed
   have h'0: "[: h 0 :] = 0" using h0 by auto
   show "coeff ?mp i = coeff ?ep i"
     unfolding coeff_map_poly[of h, OF h0]
-    unfolding eval_poly_as_setsum[of "\<lambda>a. [: h a :]", OF h'0]
-    unfolding coeff_setsum
+    unfolding eval_poly_as_sum[of "\<lambda>a. [: h a :]", OF h'0]
+    unfolding coeff_sum
     unfolding x_as_monom x_pow_n coeff_mult
-    unfolding setsum.commute[of _ _ "{..degree p}"]
+    unfolding sum.commute[of _ _ "{..degree p}"]
     unfolding coeff_monom using 2 by auto
 qed  
 
@@ -140,10 +140,10 @@ proof -
   def m \<equiv> "n - degree p"
   have n: "n = degree p + m" unfolding m_def using assms by auto
   have "?r = (\<Sum> i \<le> degree p + m. ?f i)" unfolding n ..
-  also have "\<dots> = ?l + setsum ?f {Suc (degree p) .. degree p + m}"
-    by (subst setsum.union_disjoint[symmetric], auto intro: setsum.cong)
-  also have "setsum ?f {Suc (degree p) .. degree p + m} = 0"
-    by (rule setsum.neutral, auto simp: coeff_eq_0)
+  also have "\<dots> = ?l + sum ?f {Suc (degree p) .. degree p + m}"
+    by (subst sum.union_disjoint[symmetric], auto intro: sum.cong)
+  also have "sum ?f {Suc (degree p) .. degree p + m} = 0"
+    by (rule sum.neutral, auto simp: coeff_eq_0)
   finally show ?thesis by simp
 qed
 
@@ -186,11 +186,11 @@ lemma poly_map_poly[simp]: "poly (map_poly hom p) (hom x) = hom (poly p x)"
 lemma eval_poly_add[simp]: "eval_poly hom (p + q) x = eval_poly hom p x + eval_poly hom q x"
   unfolding eval_poly_def by simp
 
-lemma eval_poly_setsum: "eval_poly hom (\<Sum>k\<in>A. p k) x = (\<Sum>k\<in>A. eval_poly hom (p k) x)"
+lemma eval_poly_sum: "eval_poly hom (\<Sum>k\<in>A. p k) x = (\<Sum>k\<in>A. eval_poly hom (p k) x)"
 proof (induct A rule: infinite_finite_induct)
   case (insert a A)
   show ?case
-    unfolding setsum.insert[OF insert(1-2)] insert(3)[symmetric] by simp
+    unfolding sum.insert[OF insert(1-2)] insert(3)[symmetric] by simp
 qed (auto simp: eval_poly_def)
 
 lemma eval_poly_poly: "eval_poly hom p (hom x) = hom (poly p x)"

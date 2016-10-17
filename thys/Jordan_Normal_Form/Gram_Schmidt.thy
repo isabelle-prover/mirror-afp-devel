@@ -69,9 +69,9 @@ lemma vec_conjugate_dist_sprod:
   assumes v[simp]: "v : carrier\<^sub>v n" and w[simp]: "w : carrier\<^sub>v n"
   shows "conjugate (v \<bullet> w) = conjugate\<^sub>v v \<bullet> conjugate\<^sub>v w"
   unfolding scalar_prod_def
-  apply (subst setsum_conjugate[OF finite_atLeastLessThan])
+  apply (subst sum_conjugate[OF finite_atLeastLessThan])
   unfolding vec_conjugate_index
-proof (rule setsum.cong[OF refl])
+proof (rule sum.cong[OF refl])
   fix i assume "i : {0..<dim\<^sub>v w}"
   hence [simp]:"i < dim\<^sub>v v" "i < dim\<^sub>v w"
     unfolding vec_elemsD[OF v] vec_elemsD[OF w]
@@ -91,7 +91,7 @@ lemma vec_conjugate_conjugate_sprod[simp]:
 lemma vec_conjugate_sprod_comm:
   assumes "v : carrier\<^sub>v n" and "w : carrier\<^sub>v n"
   shows "v \<bullet>c w = (conjugate\<^sub>v w \<bullet> v)"
-  unfolding scalar_prod_def using assms by(subst setsum_ivl_cong, auto)
+  unfolding scalar_prod_def using assms by(subst sum_ivl_cong, auto)
 
 lemma vec_conjugate_square_zero:
   fixes v :: "'a :: conjugatable_ordered_field vec"
@@ -399,25 +399,25 @@ proof -
     thus "?f u' : {0}" by auto
   qed
   hence "restrict ?f ?U = restrict (\<lambda>u. 0) ?U" by force
-  hence "setsum ?f ?U = setsum (\<lambda>u. 0) ?U"
+  hence "sum ?f ?U = sum (\<lambda>u. 0) ?U"
     using R.finsum_restrict[OF fU'] by auto
-  hence fU'0: "setsum ?f ?U = 0" by auto
+  hence fU'0: "sum ?f ?U = 0" by auto
   have uU': "u \<notin> ?U" by auto
   have "set us = insert u ?U"
     using insert_Diff_single uU by auto
-  hence "setsum ?f (set us) = ?f u + setsum ?f ?U"
+  hence "sum ?f (set us) = ?f u + sum ?f ?U"
     using R.finsum_insert[OF _ uU'] by auto
   also have "... = ?f u" using fU'0 by auto
   also have "... = - (w \<bullet>c u) / (u \<bullet>c u) * (u \<bullet>c u)"
     using conv[OF u] by auto
-  finally have main: "setsum ?f (set us) = - (w \<bullet>c u)"
+  finally have main: "sum ?f (set us) = - (w \<bullet>c u)"
     unfolding u_def
     by (simp add: i orth corthogonalD)
   show ?thesis
     unfolding u_def[symmetric]
     unfolding adjuster_finsum[OF U corthogonal_distinct[OF orth]]
     unfolding scalar_prod_left_distrib[OF carrier w cu]
-    unfolding finsum_scalar_prod_setsum[OF g cu]
+    unfolding finsum_scalar_prod_sum[OF g cu]
     unfolding main
     unfolding scalar_prod_comm[OF cu w]
     using left_minus by auto

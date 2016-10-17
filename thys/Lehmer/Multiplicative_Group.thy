@@ -862,7 +862,7 @@ proof -
         \<Longrightarrow> (\<lambda>i. card {a \<in> carrier (mult_of R). group.ord (mult_of R) a = i}) i \<le> (\<lambda>i. phi' i) i" by fast
   hence le:"(\<Sum>i | i dvd order (mult_of R). ?N i)
             \<le> (\<Sum>i | i dvd order (mult_of R). phi' i)"
-            using setsum_mono[of "{d .  d dvd order (mult_of R)}"
+            using sum_mono[of "{d .  d dvd order (mult_of R)}"
                   "\<lambda>i. card {a \<in> carrier (mult_of R). group.ord (mult_of R) a = i}"] by presburger
   have "order (mult_of R) = (\<Sum>d | d dvd order (mult_of R). phi' d)" using *
     by (simp add: sum_phi'_factors)
@@ -878,7 +878,7 @@ proof -
     ultimately have "?N i < phi' i" using phi'_nonzero by presburger
     hence "(\<Sum>i | i dvd order (mult_of R). ?N i)
          < (\<Sum>i | i dvd order (mult_of R). phi' i)"
-      using setsum_strict_mono_ex1[OF fin, of "?N" "\<lambda> i . phi' i"]
+      using sum_strict_mono_ex1[OF fin, of "?N" "\<lambda> i . phi' i"]
             i1 all_le by auto
     thus False using eq by force
   qed

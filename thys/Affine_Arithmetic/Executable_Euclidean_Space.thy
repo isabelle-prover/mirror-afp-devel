@@ -72,7 +72,7 @@ proof
       elim!: in_set_zipE)
 qed
   (auto simp: eucl_down_prod_def eucl_truncate_down_prod_def eucl_truncate_up_prod_def
-    setsum_Basis_prod_eq inner_add_left inner_setsum_left inner_Basis eucl_down_def
+    sum_Basis_prod_eq inner_add_left inner_sum_left inner_Basis eucl_down_def
     eucl_truncate_down_def eucl_truncate_up_def
     intro!: euclidean_eqI[where 'a="'a*'b"])
 
@@ -89,7 +89,7 @@ proof -
   have "dist x (eucl_down e x) = sqrt (\<Sum>i\<in>Basis. (dist (x \<bullet> i) (eucl_down e x \<bullet> i))\<^sup>2)"
     unfolding euclidean_dist_l2[where 'a='a] setL2_def ..
   also have "\<dots> \<le> sqrt (\<Sum>i\<in>(Basis::'a set). ((2 powr of_int (- e))\<^sup>2))"
-    by (intro real_sqrt_le_mono setsum_mono power_mono)
+    by (intro real_sqrt_le_mono sum_mono power_mono)
       (auto simp: dist_real_def eucl_down_def abs_round_down_le)
   finally show ?thesis
     by (simp add: real_sqrt_mult)

@@ -35,7 +35,7 @@ While the following is the one we will present in this development:
 Now the sum is done up to the length of the shortest vector and it is completed with zeros up to
 the length of the largest vector. This allows us to prove that iarray is an instance of
 @{text "comm_monoid_add"}, which is quite useful for the QR algorithm (we will be able to do
-setsums involving immutable arrays).
+sums involving immutable arrays).
 
 These are just alternative definitions of the main operations over immutable arrays. They have the 
 advantage of being an instance of @{text "comm_monoid_add"}; nevertheless, the performance is slower

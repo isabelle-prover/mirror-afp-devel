@@ -256,11 +256,11 @@ proof (unfold_locales)
     then have "finite (range u)" using finite_nat_iff_bounded by auto
     then have "\<exists>i j. (i<j) \<and> (u i = u j)" by (metis finite_imageD infinite_UNIV_nat injI less_linear)
     then obtain i k where "k>0" "u i = u (i+k)" using less_imp_add_positive by blast
-    moreover have "s 0 (i+k) = s 0 i + s i k" unfolding s_def by (simp add: setsum_add_nat_ivl)
+    moreover have "s 0 (i+k) = s 0 i + s i k" unfolding s_def by (simp add: sum_add_nat_ivl)
     ultimately have "(s i k) mod n = 0" using u_def nat_mod_cong by metis
     then obtain r where "s i k = n * r" by auto
     moreover have "s i k > 0" unfolding s_def
-      using `k > 0` t_pos setsum_strict_mono[of "{i..<i+k}", of "\<lambda>x. 0", of "\<lambda>x. t x"] by simp
+      using `k > 0` t_pos sum_strict_mono[of "{i..<i+k}", of "\<lambda>x. 0", of "\<lambda>x. t x"] by simp
     ultimately have "r > 0" by simp
     moreover have "emeasure M ((T^^(n * r))-`A \<inter> A) > 0" using * `s i k = n * r` by metis
     ultimately show ?thesis by (metis funpow_mult)
@@ -662,7 +662,7 @@ next
         then have "emeasure M ((T^^n)--`A) = emeasure M R + emeasure M (\<Union>i \<in> {..<N}. B i)"
           using B_meas R_meas plus_emeasure[of R, of M, of "\<Union>i \<in> {..<N}. B i"] dec_n by auto
         moreover have "emeasure M (\<Union>i \<in> {..<N}. B i) = (\<Sum>i \<in> {..<N}. emeasure M (B i))"
-          using B_meas disj_B setsum_emeasure[where ?I = "{..<N}" and ?F = "B"] by force
+          using B_meas disj_B sum_emeasure[where ?I = "{..<N}" and ?F = "B"] by force
         ultimately have "emeasure M ((T^^n)--`A) = emeasure M R + (\<Sum>i \<in> {..<N}. emeasure M (B i))"
           by simp
         moreover have "emeasure M ((T^^n)--`A) = emeasure M A"
@@ -725,7 +725,7 @@ next
     have "(\<lambda>n. emeasure M (K k n)) \<longlonglongrightarrow> 0" using Suc.IH K_def by simp
     then have "\<And>i. (\<lambda>n. emeasure M (K k (n-i-1))) \<longlonglongrightarrow> 0" using seq_offset_neg by auto
     then have "(\<lambda>n. (\<Sum>i\<in>{..<N}. emeasure M (K k (n-i-1)))) \<longlonglongrightarrow> 0"
-      using tendsto_setsum [of "{..<N}" _ "\<lambda>_. 0"] by fastforce
+      using tendsto_sum [of "{..<N}" _ "\<lambda>_. 0"] by fastforce
     then have "eventually (\<lambda>n. (\<Sum>i\<in>{..<N}. emeasure M (K k (n-i-1))) < e2) sequentially"
       using `e2 > 0` by (simp add: order_tendsto_iff)
     then obtain N2 where N2bound: "\<And>n. n > N2 \<Longrightarrow> (\<Sum>i\<in>{..<N}. emeasure M (K k (n-i-1))) < e2"
@@ -868,7 +868,7 @@ proof -
     have "\<And>i. L i \<subseteq> (T^^i)--`B" using L_def by auto
     then have a: "\<And>i. (\<lambda>n. emeasure M (Bad (L i) n)) \<longlonglongrightarrow> 0" unfolding Bad_def
       using local_time_unbounded2[OF L_meas, OF L_fin] by blast
-    have "(\<lambda>n. (\<Sum>i<N. emeasure M (Bad (L i) n))) \<longlonglongrightarrow> 0" using tendsto_setsum[OF a] by auto
+    have "(\<lambda>n. (\<Sum>i<N. emeasure M (Bad (L i) n))) \<longlonglongrightarrow> 0" using tendsto_sum[OF a] by auto
     then have "eventually (\<lambda>n. (\<Sum>i<N. emeasure M (Bad (L i) n)) < e2) sequentially"
       using `ennreal e2 > 0` order_tendsto_iff by metis
     then obtain N2 where *: "\<And>n. n > N2 \<Longrightarrow> (\<Sum>i<N. emeasure M (Bad (L i) n)) < e2"
@@ -1167,13 +1167,13 @@ proof
         ultimately have "n-m = (\<Sum>i<N0. return_time_function A (((induced_map A)^^(i+1)) y))"
           by simp
         then have "n-m = (\<Sum>i \<in> {1..<N0+1}. return_time_function A (((induced_map A)^^i) y))"
-          using setsum_shift_bounds_nat_ivl[of "\<lambda>i. return_time_function A (((induced_map A)^^i) y)", of 0, of 1, of N0, symmetric]
+          using sum_shift_bounds_nat_ivl[of "\<lambda>i. return_time_function A (((induced_map A)^^i) y)", of 0, of 1, of N0, symmetric]
                 atLeast0LessThan by auto
         moreover have "m = (\<Sum>i\<in>{0..<1}. return_time_function A (((induced_map A)^^i) y))" using m_def by simp
         ultimately have "n = (\<Sum>i\<in>{0..<1}. return_time_function A (((induced_map A)^^i) y))
           + (\<Sum>i \<in> {1..<N0+1}. return_time_function A (((induced_map A)^^i) y))" using `n \<ge> m` by simp
         then have "n = (\<Sum>i\<in>{0..<N0+1}. return_time_function A (((induced_map A)^^i) y))"
-          using le_add2 setsum_add_nat_ivl by blast
+          using le_add2 sum_add_nat_ivl by blast
         moreover have "N0 + 1 \<le> n" using `N0 \<le> n-m` `n - m < n` by linarith
         ultimately show ?thesis by (metis atLeast0LessThan)
       qed
@@ -1220,7 +1220,7 @@ proof
       then have "((induced_map A)^^N) x \<in> B" using * by simp
       then have "x \<in> ((induced_map A)^^N)-` B \<inter> B" using * by simp
       moreover have "N > 0" using ** `n > 0`
-        by (metis leD lessThan_iff less_nat_zero_code neq0_conv setsum.neutral_const setsum_mono)
+        by (metis leD lessThan_iff less_nat_zero_code neq0_conv sum.neutral_const sum_mono)
       ultimately show "x \<in> (\<Union>N\<in>{1..}. ((induced_map A)^^N)-` B \<inter> B)" by auto
     qed
     have B_meas: "B \<in> sets M" and B_pos: "emeasure M B > 0" using assm by auto
@@ -1805,7 +1805,7 @@ proof -
   then have "(\<integral>\<^sup>+y. induced_function A f y \<partial>M) = (\<integral>\<^sup>+y \<in> (\<Union>n. D n). induced_function A f y \<partial>M)" by simp
   also have "... = (\<Sum>n. (\<integral>\<^sup>+y \<in> D n. induced_function A f y \<partial>M))"
     apply (rule nn_integral_disjoint_family)
-    unfolding induced_function_def by (auto simp add: pos0 setsum_nonneg `disjoint_family D`)
+    unfolding induced_function_def by (auto simp add: pos0 sum_nonneg `disjoint_family D`)
   finally have a: "(\<integral>\<^sup>+y. induced_function A f y \<partial>M) = (\<Sum>n. (\<integral>\<^sup>+y \<in> D n. induced_function A f y \<partial>M))"
     by simp
 
@@ -1817,7 +1817,7 @@ proof -
     have "\<And>y. induced_function A f y * indicator (D n) y = (\<Sum>i\<in>{..<n+1}. f((T^^i)y) * indicator (D n) y)"
       by (auto simp add: induced_function_def D_def indicator_def)
     then have *: "(\<integral>\<^sup>+y \<in> D n. induced_function A f y \<partial>M) = (\<Sum>i\<in>{..<n+1}. (\<integral>\<^sup>+y \<in> D n. f((T^^i)y) \<partial>M))"
-      using pos nn_integral_setsum[of "{..<n+1}", of "\<lambda>i y. f((T^^i)y) * indicator (D n) y"] by simp
+      using pos nn_integral_sum[of "{..<n+1}", of "\<lambda>i y. f((T^^i)y) * indicator (D n) y"] by simp
     have "{..< n+1} = {..n}" by auto
     then have "(\<Sum>i\<in>{..<n+1}. (\<integral>\<^sup>+y \<in> D n. f((T^^i)y) \<partial>M)) = (\<Sum>i\<in>{..n}. (\<integral>\<^sup>+y \<in> D n. f((T^^i)y) \<partial>M))"
       by simp
@@ -2024,7 +2024,7 @@ proof -
   proof -
     fix x
     have "incseq (\<lambda>n. (\<Sum> i \<in>{..<return_time_function A x}. F n ((T^^i)x)))"
-      using incseq_setsumI2[of "{..<return_time_function A x}", of "\<lambda>i n. F n ((T^^i)x)"] inc_Fx by simp
+      using incseq_sumI2[of "{..<return_time_function A x}", of "\<lambda>i n. F n ((T^^i)x)"] inc_Fx by simp
     then show "incseq (\<lambda>n. induced_function A (F n) x)" by (simp add: induced_function_def)
   qed
   then have "incseq (\<lambda>n. induced_function A (F n))" by (auto simp add: incseq_def le_fun_def)
@@ -2038,7 +2038,7 @@ proof -
     then have "\<And>i. (T^^i)x \<in> space M" using T_spaceM_stable by simp
     then have "(SUP n. (\<Sum> i \<in>{..<return_time_function A x}. F n ((T^^i)x)))
               = (\<Sum> i \<in> {..<return_time_function A x}. f ((T^^i)x))"
-      using ennreal_SUP_setsum[OF inc_Fx, where ?I="{..<return_time_function A x}"] SUP_Fx by simp
+      using ennreal_SUP_sum[OF inc_Fx, where ?I="{..<return_time_function A x}"] SUP_Fx by simp
     then show "(SUP n. induced_function A (F n) x) = induced_function A f x"
       by (auto simp add: induced_function_def)
   qed
@@ -2076,7 +2076,7 @@ lemma induced_function_integral_aux:
 proof -
   show "integrable M (induced_function A f)"
   proof (rule integrableI_nonneg)
-    show "AE x in M. induced_function A f x \<ge> 0" unfolding induced_function_def by (simp add: f_pos setsum_nonneg)
+    show "AE x in M. induced_function A f x \<ge> 0" unfolding induced_function_def by (simp add: f_pos sum_nonneg)
     have "(\<integral>\<^sup>+x. ennreal (induced_function A f x) \<partial>M) = (\<integral>\<^sup>+ x. induced_function A (\<lambda>x. ennreal(f x)) x \<partial>M)"
       unfolding induced_function_def by (auto simp: f_pos)
     also have "... = (\<integral>\<^sup>+ x \<in> (\<Union>n. (T^^n)--`A). f x \<partial>M)"
@@ -2103,7 +2103,7 @@ proof -
   also have "... = enn2real (\<integral>\<^sup>+x. ennreal (induced_function A f x) \<partial>M)" using * by simp
   also have "... = (\<integral> x. induced_function A f x \<partial>M)"
     apply (rule integral_eq_nn_integral[symmetric])
-    unfolding induced_function_def by (auto simp add: f_pos setsum_nonneg)
+    unfolding induced_function_def by (auto simp add: f_pos sum_nonneg)
   finally show "(\<integral> x. induced_function A f x \<partial>M) = (\<integral> x \<in> (\<Union>n. (T^^n)--`A). f x \<partial>M)"
     by simp
 qed
@@ -2125,7 +2125,7 @@ proof -
     using induced_function_integral_aux(1) h_def by auto
   have D1: "f = (\<lambda>x. g x - h x)" unfolding g_def h_def by auto
   have D2: "induced_function A f = (\<lambda>x. induced_function A g x - induced_function A h x)"
-    unfolding induced_function_def using D1 by (simp add: setsum_subtractf)
+    unfolding induced_function_def using D1 by (simp add: sum_subtractf)
   then show "integrable M (induced_function A f)" using g_int2 h_int2 by auto
 
   have "(\<integral>x. induced_function A f x \<partial>M) = (\<integral>x. induced_function A g x - induced_function A h x \<partial>M)"

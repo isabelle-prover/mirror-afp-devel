@@ -110,7 +110,7 @@ next
           by blast
 
         show "1 \<le> ?Y es"
-          proof (rule setsum_lower_or_eq)
+          proof (rule sum_lower_or_eq)
             --{* The only relevant step here is to provide the specific instance of $(v, e)$ such
                  that $X_{(v, e)}$ takes a value greater or equal than $1$. This is trivial, as we
                  already obtained that one above (i.e. @{term H\<^sub>0'}). The remainder of the proof is
@@ -139,18 +139,18 @@ next
     --{* Applying Markov's inequality leaves us with estimating the expectation of $Y$, which is
          the sum of the individual $X$. *}
     also have "\<dots> \<le> ES.expectation ?Y / 1"
-      by (rule prob_space.markov_inequality) (auto simp: ES.prob_space_P setsum_nonneg)
+      by (rule prob_space.markov_inequality) (auto simp: ES.prob_space_P sum_nonneg)
     also have "\<dots> = ES.expectation ?Y"
       by simp
     also have "\<dots> = (\<Sum>H\<^sub>0' \<in> ?I. ES.expectation (?X H\<^sub>0'))"
-      by (rule Bochner_Integration.integral_setsum(1)) simp
+      by (rule Bochner_Integration.integral_sum(1)) simp
 
     --{* Each expectation is bound by $p(n)^{|E(H_0)|}$. For the proof, we ignore the fact that the
          corresponding graph has to be isomorphic to @{term H\<^sub>0}, which only increases the
          probability and thus the expectation. This only leaves us to compute the probability that
          all edges are present, which is given by @{thm [source] edge_space.cylinder_prob}. *}
     also have "\<dots> \<le> (\<Sum>H\<^sub>0' \<in> ?I. p n ^ ?e)"
-      proof (rule setsum_mono)
+      proof (rule sum_mono)
         fix H\<^sub>0'
         assume H\<^sub>0': "H\<^sub>0' \<in> ?I"
         have "ES.expectation (?X H\<^sub>0') = ES.prob {es \<in> space ES.P. subgraph H\<^sub>0' (?graph_of es) \<and> H\<^sub>0 \<simeq> H\<^sub>0'}"
@@ -176,7 +176,7 @@ next
 
     --{* Since we have a sum of constant summands, we can rewrite it as a product. *}
     also have "\<dots> = card ?I * p n ^ ?e"
-      by (rule setsum_constant)
+      by (rule sum_constant)
 
     --{* We have to count the number of possible pairs $(v, e)$. From the definition of the index
          set, note that we first choose $|V(H_0)|$ elements out of a set of @{term n} vertices and
@@ -187,7 +187,7 @@ next
           by (rule card_dep_pair_set[where A = "{1..n}" and n = "?v" and f = all_edges])
              (auto simp: finite_subset all_edges_finite)
         also have "\<dots> = (\<Sum>v | v \<subseteq> {1..n} \<and> card v = ?v. (?v choose 2) choose ?e)"
-          proof (rule setsum.cong)
+          proof (rule sum.cong)
             fix v
             assume "v \<in> {v. v \<subseteq> {1..n} \<and> card v = ?v}"
             hence "v \<subseteq> {1..n}" "card v = ?v"
@@ -478,14 +478,14 @@ next
 
     --{* Augmenting the index set as described above. *}
     also have "\<dots> \<le> (\<Sum>S \<in> ?I. \<Sum>T | T \<in> ?I \<and> S \<inter> T \<noteq> {}. prob (?A S \<inter> ?A T))"
-      by (rule setsum_mono[OF setsum_mono3]) (auto simp: indep measure_nonneg)
+      by (rule sum_mono[OF sum_mono3]) (auto simp: indep measure_nonneg)
 
     --{* So far, we are adding the intersection probabilities over pairs of sets which have a
          nonempty intersection. Since we know that these intersections have at least one element
          (as they are nonempty) and at most $|V(H)|$ elements (by definition of $I$). In this step,
          we will partition this sum by cardinality of the intersections. *}
     also have "\<dots> = (\<Sum>S \<in> ?I. \<Sum>T \<in> (\<Union>k \<in> {1..?v}. {T \<in> ?I. card (S \<inter> T) = k}). prob (?A S \<inter> ?A T))"
-      proof (rule setsum.cong, rule refl, rule setsum.cong)
+      proof (rule sum.cong, rule refl, rule sum.cong)
         fix S
         assume "S \<in> ?I"
         note I(2,3)[OF this]
@@ -495,14 +495,14 @@ next
           by blast
       qed simp
     also have "\<dots> = (\<Sum>S \<in> ?I. \<Sum>k = 1..?v. \<Sum>T | T \<in> ?I \<and> card (S \<inter> T) = k. prob (?A S \<inter> ?A T))"
-      by (rule setsum.cong, rule refl, rule setsum.UNION_disjoint) auto
+      by (rule sum.cong, rule refl, rule sum.UNION_disjoint) auto
     also have "\<dots> = (\<Sum>k = 1..?v. \<Sum>S \<in> ?I. \<Sum>T | T \<in> ?I \<and> card (S \<inter> T) = k. prob (?A S \<inter> ?A T))"
-      by (rule setsum.commute)
+      by (rule sum.commute)
 
     --{* In this step, we compute an upper bound for the intersection probability and argue that
          it only depends on the cardinality of the intersection. *}
     also have "\<dots> \<le> (\<Sum>k = 1..?v. \<Sum>S \<in> ?I. \<Sum>T | T \<in> ?I \<and> card (S \<inter> T) = k. p n powr (2 * ?e - max_density H * k))"
-      proof (rule setsum_mono)+
+      proof (rule sum_mono)+
         fix k
         assume k: "k \<in> {1..?v}"
         fix S T
@@ -576,14 +576,14 @@ next
 
     --{* Further rewriting the index sets. *}
     also have "\<dots> = (\<Sum>k = 1..?v. \<Sum>(S, T) \<in> (SIGMA S : ?I. {T \<in> ?I. card (S \<inter> T) = k}). p n powr (2 * ?e - max_density H * k))"
-      by (rule setsum.cong, rule refl, rule setsum.Sigma) auto
+      by (rule sum.cong, rule refl, rule sum.Sigma) auto
     also have "\<dots> = (\<Sum>k = 1..?v. card (SIGMA S : ?I. {T \<in> ?I. card (S \<inter> T) = k}) * p n powr (2 * ?e - max_density H * k))"
-      by (rule setsum.cong) auto
+      by (rule sum.cong) auto
 
     --{* Here, we compute the cardinality of the index sets and use the same upper bounds for
          the binomial coefficients as for the 0-statement. *}
     also have "\<dots> \<le> (\<Sum>k = 1..?v. ?v ^ k * (real n ^ (2 * ?v - k) * p n powr (2 * ?e - max_density H * k)))"
-      proof (rule setsum_mono)
+      proof (rule sum_mono)
         fix k
         assume k: "k \<in> {1..?v}"
         let ?p = "p n powr (2 * ?e - max_density H * k)"
@@ -737,11 +737,11 @@ next
           by (rule subst[OF den'])
       }
       hence "(\<lambda>n. \<Sum>k = 1..?v. ?num n k / ?den n) \<longlonglongrightarrow> (\<Sum>k = 1..?v. 0)"
-        by (rule tendsto_setsum)
+        by (rule tendsto_sum)
       hence "(\<lambda>n. \<Sum>k = 1..?v. ?num n k / ?den n) \<longlonglongrightarrow> 0"
         by simp
       moreover have "(\<lambda>n. \<Sum>k = 1..?v. ?num n k / ?den n) = (\<lambda>n. (\<Sum>k = 1..?v. ?num n k) / ?den n)"
-        by (simp add: setsum_left_div_distrib)
+        by (simp add: sum_left_div_distrib)
       ultimately show "(\<lambda>n. \<Sum>k = 1..?v. ?num n k) \<lless> ?den"
         by metis
 

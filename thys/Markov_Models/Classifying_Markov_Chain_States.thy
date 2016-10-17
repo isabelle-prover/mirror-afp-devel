@@ -61,7 +61,7 @@ lemma monoid_closure_int_mult:
   "s \<in> monoid_closure S \<Longrightarrow> i * s \<in> monoid_closure S"
   by (cases i rule: int_cases') (auto intro: monoid_closure_uminus monoid_closure_nat_mult)
 
-lemma monoid_closure_setsum:
+lemma monoid_closure_sum:
   assumes X: "finite X" "X \<noteq> {}" "X \<subseteq> S"
   shows "(\<Sum>x\<in>X. a x * int x) \<in> monoid_closure S"
   using X
@@ -500,7 +500,7 @@ lemma convergence_U:
   by (rule summable_norm_cancel)
      (auto simp add: abs_mult u_nonneg power_abs dest!: convergence_norm_U)
 
-lemma p_eq_setsum_p_u: "p x y (Suc n) = (\<Sum>i\<le>n. p y y (n - i) * u x y i)"
+lemma p_eq_sum_p_u: "p x y (Suc n) = (\<Sum>i\<le>n. p y y (n - i) * u x y i)"
 proof -
   have "\<And>\<omega>. \<omega> !! n = y \<Longrightarrow> (\<exists>i. i \<le> n \<and> ev_at (HLD {y}) i \<omega>)"
   proof (induction n)
@@ -511,9 +511,9 @@ proof -
       by (auto intro!: exI[of _ "if HLD {y} \<omega> then 0 else Suc i"])
   qed (simp add: HLD_iff)
   then have "p x y (Suc n) = (\<Sum>i\<le>n. \<P>(\<omega> in T x. ev_at (HLD {y}) i \<omega> \<and> \<omega> !! n = y))"
-    unfolding p_def by (intro T.prob_setsum) (auto intro: ev_at_unique)
+    unfolding p_def by (intro T.prob_sum) (auto intro: ev_at_unique)
   also have "\<dots> = (\<Sum>i\<le>n. p y y (n - i) * u x y i)"
-  proof (intro setsum.cong refl)
+  proof (intro sum.cong refl)
     fix i assume i: "i \<in> {.. n}"
     then have "\<And>\<omega>. (Suc i \<le> n \<longrightarrow> \<omega> !! (n - Suc i) = y) \<longleftrightarrow> ((y ## \<omega>) !! (n - i) = y)"
       by (auto simp: Stream_snth diff_Suc split: nat.split)
@@ -531,10 +531,10 @@ proof -
   finally show ?thesis .
 qed
 
-lemma p_eq_setsum_p_f: "p x y n = (\<Sum>i\<le>n. p y y (n - i) * f x y i)"
+lemma p_eq_sum_p_f: "p x y n = (\<Sum>i\<le>n. p y y (n - i) * f x y i)"
   by (cases n)
-     (simp_all del: setsum_atMost_Suc
-               add: f_0 p_0 p_eq_setsum_p_u Iic_Suc_eq_insert_0 zero_notin_Suc_image setsum.reindex
+     (simp_all del: sum_atMost_Suc
+               add: f_0 p_0 p_eq_sum_p_u Iic_Suc_eq_insert_0 zero_notin_Suc_image sum.reindex
                     f_Suc f_Suc_eq)
 
 lemma gf_G_eq_gf_F:
@@ -542,9 +542,9 @@ lemma gf_G_eq_gf_F:
   shows "gf_G x y z = gf_F x y z * gf_G y y z"
 proof -
   have "gf_G x y z = (\<Sum>n. \<Sum>i\<le>n. p y y (n - i) * f x y i * z^n)"
-    by (simp add: gf_G_def p_eq_setsum_p_f[of x y] setsum_distrib_right)
+    by (simp add: gf_G_def p_eq_sum_p_f[of x y] sum_distrib_right)
   also have "\<dots> = (\<Sum>n. \<Sum>i\<le>n. (f x y i * z^i) * (p y y (n - i) * z^(n - i)))"
-    by (intro arg_cong[where f=suminf] setsum.cong ext atLeast0AtMost[symmetric])
+    by (intro arg_cong[where f=suminf] sum.cong ext atLeast0AtMost[symmetric])
        (simp_all add: power_add[symmetric])
   also have "\<dots> = (\<Sum>n. f x y n * z^n) * (\<Sum>n. p y y n * z^n)"
     using convergence_norm_F[OF convergence_G_less_1[OF z]] convergence_norm_G[OF convergence_G_less_1[OF z]]
@@ -561,9 +561,9 @@ lemma gf_G_eq_gf_U:
 proof -
   { fix n
     have "p x x (Suc n) *\<^sub>R z^Suc n = (\<Sum>i\<le>n. (p x x (n - i) * u x x i) *\<^sub>R z^Suc n)"
-      unfolding scaleR_setsum_left[symmetric] by (simp add: p_eq_setsum_p_u)
+      unfolding scaleR_sum_left[symmetric] by (simp add: p_eq_sum_p_u)
     also have "\<dots> = (\<Sum>i\<le>n. (u x x i *\<^sub>R z^Suc i) * (p x x (n - i) *\<^sub>R z^(n - i)))"
-      by (intro setsum.cong refl) (simp add: field_simps power_diff cong: disj_cong)
+      by (intro sum.cong refl) (simp add: field_simps power_diff cong: disj_cong)
     finally have "p x x (Suc n) *\<^sub>R z^(Suc n) = (\<Sum>i\<le>n. (u x x i *\<^sub>R z^Suc i) * (p x x (n - i) *\<^sub>R z^(n - i)))"
       unfolding atLeast0AtMost . }
   note gfs_Suc_eq = this
@@ -1000,7 +1000,7 @@ proof -
   also have "\<dots> \<le> (\<Sum>y\<in>C. H x y)"
     unfolding H_def using `finite C` by (rule T.finite_measure_subadditive_finite) auto
   also have "\<dots> = (\<Sum>y\<in>C. U x y * H y y)"
-    by (auto intro!: setsum.cong H_eq)
+    by (auto intro!: sum.cong H_eq)
   finally have "\<exists>y\<in>C. recurrent y"
     by (rule_tac ccontr) (simp add: H_eq(2))
   then guess y ..
@@ -1217,7 +1217,7 @@ proof -
       using z
       apply (subst (2) suminf_split_initial_segment[where k="n + m"])
       apply (intro convergence_G conv)
-      apply (simp add: setsum_nonneg)
+      apply (simp add: sum_nonneg)
       done
     finally have "(p x y n * p y x m * z^(n + m)) * gf_G y y z \<le> gf_G x x z"
       using sums_unique[OF sums] by simp
@@ -1342,7 +1342,7 @@ proof -
         using `recurrent y` by (rule inverse_gf_U'_tendsto)
     qed
     also have "(\<Sum>y\<in>A n. F x y * enn2real (1 / U' y y)) = (\<Sum>y\<in>A n. enn2real (1 / U' y y))"
-    proof (intro setsum.cong refl)
+    proof (intro sum.cong refl)
       fix y assume "y \<in> A n"
       with `A n \<subseteq> C` have "y \<in> C" by auto
       with `x \<in> C` have "(x, y) \<in> communicating"
@@ -1364,7 +1364,7 @@ proof -
         by (simp add: convergence_G_less_1)
       have "(\<Sum>y\<in>A n. gf_F x y z / (1 - gf_U y y z)) = (\<Sum>y\<in>A n. gf_G x y z)"
         using `norm z < 1`
-        apply (intro setsum.cong refl)
+        apply (intro sum.cong refl)
         apply (subst gf_G_eq_gf_F)
         apply assumption
         apply (subst gf_G_eq_gf_U(1)[OF conv])
@@ -1373,12 +1373,12 @@ proof -
       also have "\<dots> = (\<Sum>y\<in>A n. \<Sum>n. p x y n * z^n)"
         by (simp add: gf_G_def)
       also have "\<dots>  = (\<Sum>i. \<Sum>y\<in>A n. p x y i *\<^sub>R z^i)"
-        by (subst suminf_setsum[OF convergence_G[OF conv]]) simp
+        by (subst suminf_sum[OF convergence_G[OF conv]]) simp
       also have "\<dots>  \<le> (\<Sum>i. z^i)"
-      proof (intro suminf_le summable_setsum convergence_G conv summable_geometric allI)
+      proof (intro suminf_le summable_sum convergence_G conv summable_geometric allI)
         fix l
         have "(\<Sum>y\<in>A n. p x y l *\<^sub>R z ^ l) = (\<Sum>y\<in>A n. p x y l) * z ^ l"
-          by (simp add: setsum_distrib_right)
+          by (simp add: sum_distrib_right)
         also have "\<dots> \<le> z ^ l"
         proof (intro mult_left_le_one_le)
           have "(\<Sum>y\<in>A n. p x y l) = \<P>(\<omega> in T x. (x ## \<omega>) !! l \<in> A n)"
@@ -1387,7 +1387,7 @@ proof -
                (auto simp: disjoint_family_on_def intro!: arg_cong2[where f=measure])
           then show "(\<Sum>y\<in>A n. p x y l) \<le> 1"
             by simp
-        qed (insert z, auto simp: setsum_nonneg)
+        qed (insert z, auto simp: sum_nonneg)
         finally show "(\<Sum>y\<in>A n. p x y l *\<^sub>R z ^ l) \<le> z ^ l" .
       qed fact
       also have "\<dots> = 1 / (1 - z)"
@@ -1396,22 +1396,22 @@ proof -
       then have "(\<Sum>y\<in>A n. gf_F x y z / (1 - gf_U y y z)) * (1 - z) \<le> 1"
         using z by (simp add: field_simps)
       then have "(\<Sum>y\<in>A n. gf_F x y z / (1 - gf_U y y z) * (1 - z)) \<le> 1"
-        by (simp add: setsum_distrib_right)
+        by (simp add: sum_distrib_right)
       then show "(\<Sum>y\<in>A n. gf_F x y z * ((1 - z) / (1 - gf_U y y z))) \<le> 1"
         by simp
     qed
 
     from A_n have "emeasure (stat C) (A n) = (\<Sum>y\<in>A n. emeasure (stat C) {y})"
-      by (intro emeasure_eq_setsum_singleton) simp_all
+      by (intro emeasure_eq_sum_singleton) simp_all
     also have "\<dots> = (\<Sum>y\<in>A n. inverse (U' y y))"
       unfolding stat_def U'_def using A(1)[of n]
-      apply (intro setsum.cong refl)
+      apply (intro sum.cong refl)
       apply (subst emeasure_point_measure_finite2)
       apply (auto simp: divide_ennreal_def)
       done
     also have "\<dots> = ennreal (\<Sum>y\<in>A n. enn2real (1 / U' y y))"
-      apply (subst setsum_ennreal[symmetric], simp)
-    proof (intro setsum.cong refl)
+      apply (subst sum_ennreal[symmetric], simp)
+    proof (intro sum.cong refl)
       fix y assume "y \<in> A n"
       with `A n \<subseteq> C` pos have "pos_recurrent y"
         by auto
@@ -2269,7 +2269,7 @@ proof -
       by (subst KN.T.finite_measure_finite_Union[symmetric])
          (auto simp: disjoint_family_on_def intro!: arg_cong2[where f=measure] dest: ev_at_unique)
     also have "\<dots> = (\<Sum>i<n. \<P>(\<omega> in KN.T (y, None). fst (\<omega> !! n) = x \<and> ev_at (HLD D) i \<omega>))"
-    proof (intro setsum.cong refl)
+    proof (intro sum.cong refl)
       fix i assume i: "i \<in> {..< n}"
       show "\<P>(\<omega> in KN.T (y, None). snd (\<omega> !! n) = Some x \<and> ev_at (HLD D) i \<omega>) =
         \<P>(\<omega> in KN.T (y, None). fst (\<omega> !! n) = x \<and> ev_at (HLD D) i \<omega>)"

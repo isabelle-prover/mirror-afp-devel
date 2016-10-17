@@ -80,9 +80,9 @@ proof -
           have "coeff p (Suc i) = coeff ([: -?ri y, 1 :] * q) (Suc i)" unfolding p_def by simp
           also have "\<dots> = (\<Sum>j\<le>Suc i. ?f j)" unfolding coeff_mult by simp
           also have "\<dots> = ?f 0 + ?f 1 + (\<Sum>j\<in>{..Suc i} - {0} - {Suc 0}. ?f j)"
-            by (subst setsum.remove[of _ 0], force+, subst setsum.remove[of _ 1], force+)
+            by (subst sum.remove[of _ 0], force+, subst sum.remove[of _ 1], force+)
           also have "(\<Sum>j\<in>{..Suc i} - {0} - {Suc 0}. ?f j) = 0"
-          proof (rule setsum.neutral, auto, goal_cases)
+          proof (rule sum.neutral, auto, goal_cases)
             case (1 x)
             thus ?case by (cases x, auto, cases "x - 1", auto)
           qed

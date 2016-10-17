@@ -22,10 +22,10 @@ begin
     using conjugate_cancel_iff[of _ 0, unfolded conjugate_zero].
 end
 
-lemma setsum_conjugate:
+lemma sum_conjugate:
   fixes f :: "'b \<Rightarrow> 'a :: conjugatable_field"
   assumes finX: "finite X"
-  shows "conjugate (setsum f X) = setsum (\<lambda>x. conjugate (f x)) X"
+  shows "conjugate (sum f X) = sum (\<lambda>x. conjugate (f x)) X"
   using finX by (induct set:finite, auto simp: conjugate_dist_add)
 
 class conjugatable_ordered_field = conjugatable_field + ordered_comm_monoid_add +

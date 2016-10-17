@@ -1704,8 +1704,8 @@ next
     have [measurable]: "u n \<in> borel_measurable M" for n using Lp_measurable[OF H(1)].
 
     define w where "w = (\<lambda>N x. (\<Sum>n\<in>{..<N}. \<bar>u n x\<bar>))"
-    have w2: "w = (\<lambda>N. setsum (\<lambda>n x. \<bar>u n x\<bar>) {..<N})" unfolding w_def apply (rule ext)+
-      by (metis (mono_tags, lifting) setsum.cong fun_setsum_apply)
+    have w2: "w = (\<lambda>N. sum (\<lambda>n x. \<bar>u n x\<bar>) {..<N})" unfolding w_def apply (rule ext)+
+      by (metis (mono_tags, lifting) sum.cong fun_sum_apply)
     have "incseq (\<lambda>N. w N x)" for x unfolding w2 by (rule incseq_SucI, auto)
     then have wN_inc: "AE x in M. incseq (\<lambda>N. w N x)" by simp
 
@@ -1720,13 +1720,13 @@ next
       have *: "(defect (\<LL> p2 M))^(Suc n) \<ge> 0" "(defect (\<LL> p2 M))^(Suc n) > 0" for n
         using defect_ge_1[of "\<LL> p2 M"] by auto
       have "Norm (\<LL> p2 M) (w N) \<le> (\<Sum>n<N. (defect (\<LL> p2 M))^(Suc n) * Norm (\<LL> p2 M) (\<lambda>x. \<bar>u n x\<bar>))"
-        unfolding w2 lessThan_Suc_atMost[symmetric] by (rule Norm_setsum, simp add: abs_u_space)
+        unfolding w2 lessThan_Suc_atMost[symmetric] by (rule Norm_sum, simp add: abs_u_space)
       also have "... \<le> (\<Sum>n<N. (defect (\<LL> p2 M))^(Suc n) * ((1 / 2) ^ n * (1/(defect (\<LL> p2 M))^(Suc n))))"
-        apply (rule setsum_mono, rule mult_left_mono) using abs_u_Norm * by auto
+        apply (rule sum_mono, rule mult_left_mono) using abs_u_Norm * by auto
       also have "... = (\<Sum>n<N. (1 / 2) ^ n)"
         using *(2) defect_ge_1[of "\<LL> p2 M"] by (auto simp add: algebra_simps)
       also have "... \<le> (\<Sum>n. (1 / 2) ^ n)"
-        unfolding lessThan_Suc_atMost[symmetric] by (rule setsum_le_suminf, rule summable_geometric[of "1/2"], auto)
+        unfolding lessThan_Suc_atMost[symmetric] by (rule sum_le_suminf, rule summable_geometric[of "1/2"], auto)
       also have "... = 2" using suminf_geometric[of "1/2"] by auto
       finally show ?thesis by simp
     qed
@@ -1741,35 +1741,35 @@ next
 
     define v where "v = (\<lambda>x. (\<Sum>n. u n x))"
     have v_meas: "v \<in> borel_measurable M" unfolding v_def by auto
-    have u_meas: "\<And>n. (setsum u {0..<n}) \<in> borel_measurable M" by auto
+    have u_meas: "\<And>n. (sum u {0..<n}) \<in> borel_measurable M" by auto
     {
       fix x assume "convergent (\<lambda>N. w N x)"
       then have S: "summable (\<lambda>n. \<bar>u n x\<bar>)" unfolding w_def using summable_iff_convergent by auto
       then have "m x = (\<Sum>n. \<bar>u n x\<bar>)" unfolding m_def w_def by (metis suminf_eq_lim)
 
       have "summable (\<lambda>n. u n x)" using S by (rule summable_rabs_cancel)
-      then have *: "(\<lambda>n. (setsum u {..<n}) x) \<longlonglongrightarrow> v x"
-        unfolding v_def fun_setsum_apply by (metis convergent_LIMSEQ_iff suminf_eq_lim summable_iff_convergent)
-      have "\<bar>(setsum u {..<n}) x\<bar> \<le> m x" for n
+      then have *: "(\<lambda>n. (sum u {..<n}) x) \<longlonglongrightarrow> v x"
+        unfolding v_def fun_sum_apply by (metis convergent_LIMSEQ_iff suminf_eq_lim summable_iff_convergent)
+      have "\<bar>(sum u {..<n}) x\<bar> \<le> m x" for n
       proof -
-        have "\<bar>(setsum u {..<n}) x\<bar> \<le> (\<Sum>i\<in>{..<n}. \<bar>u i x\<bar>)"
-          unfolding fun_setsum_apply by auto
+        have "\<bar>(sum u {..<n}) x\<bar> \<le> (\<Sum>i\<in>{..<n}. \<bar>u i x\<bar>)"
+          unfolding fun_sum_apply by auto
         also have "... \<le> (\<Sum>i. \<bar>u i x\<bar>)"
-          apply (rule setsum_le_suminf) using S by auto
+          apply (rule sum_le_suminf) using S by auto
         finally show ?thesis using `m x = (\<Sum>n. \<bar>u n x\<bar>)` by simp
       qed
-      then have "(\<forall>n. \<bar>(setsum u {0..<n}) x\<bar> \<le> m x) \<and> (\<lambda>n. (setsum u {0..<n}) x) \<longlonglongrightarrow> v x"
+      then have "(\<forall>n. \<bar>(sum u {0..<n}) x\<bar> \<le> m x) \<and> (\<lambda>n. (sum u {0..<n}) x) \<longlonglongrightarrow> v x"
         unfolding atLeast0LessThan using * by auto
     }
-    then have m_bound: "\<And>n. AE x in M. \<bar>(setsum u {0..<n}) x\<bar> \<le> m x"
-          and u_conv: "AE x in M. (\<lambda>n. (setsum u {0..<n}) x) \<longlonglongrightarrow> v x"
+    then have m_bound: "\<And>n. AE x in M. \<bar>(sum u {0..<n}) x\<bar> \<le> m x"
+          and u_conv: "AE x in M. (\<lambda>n. (sum u {0..<n}) x) \<longlonglongrightarrow> v x"
       using `AE x in M. convergent (\<lambda>N. w N x)` by auto
 
-    have "tendsto_in\<^sub>N (\<LL> p2 M) (\<lambda>n. setsum u {0..<n}) v"
+    have "tendsto_in\<^sub>N (\<LL> p2 M) (\<lambda>n. sum u {0..<n}) v"
       by (rule Lp_domination_limit[OF v_meas u_meas m_space u_conv m_bound])
     moreover have "v \<in> space\<^sub>N (\<LL> p2 M)"
       by (rule Lp_domination_limit[OF v_meas u_meas m_space u_conv m_bound])
-    ultimately show "\<exists>v \<in> space\<^sub>N (\<LL> p2 M). tendsto_in\<^sub>N (\<LL> p2 M) (\<lambda>n. setsum u {0..<n}) v"
+    ultimately show "\<exists>v \<in> space\<^sub>N (\<LL> p2 M). tendsto_in\<^sub>N (\<LL> p2 M) (\<lambda>n. sum u {0..<n}) v"
       by auto
   qed
 next
@@ -1821,8 +1821,8 @@ next
       apply (rule tendsto_sandwich[of "\<lambda>_. 0" _ _ "\<lambda>n. (1/2)^n * 2"]) using l **(2) by auto
     have "v = - (w 0 - v)" unfolding w_def by auto
     then have "v \<in> space\<^sub>N (\<LL> \<infinity> M)" using **(1)[of 0] spaceN_add spaceN_diff by fastforce
-    then show "\<exists>v \<in> space\<^sub>N (\<LL> p M). tendsto_in\<^sub>N (\<LL> p M) (\<lambda>n. setsum u {0..<n}) v"
-      using `tendsto_in\<^sub>N (\<LL> \<infinity> M) w v` unfolding `p = \<infinity>` w_def fun_setsum_apply[symmetric] by auto
+    then show "\<exists>v \<in> space\<^sub>N (\<LL> p M). tendsto_in\<^sub>N (\<LL> p M) (\<lambda>n. sum u {0..<n}) v"
+      using `tendsto_in\<^sub>N (\<LL> \<infinity> M) w v` unfolding `p = \<infinity>` w_def fun_sum_apply[symmetric] by auto
   qed (simp)
 qed
 

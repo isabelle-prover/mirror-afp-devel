@@ -499,9 +499,9 @@ proof -
     apply(metis same_orbit_is_equiv quotient_disj)
     using finM same_orbit_rel_def apply(auto dest:finite_equiv_class)
   done
-  also from orbit_part orbit_disj fin_parts have "... = (\<Sum>N\<in>big_orbits. card N) + (\<Sum>N\<in>{N'\<in>orbits. card N' = 1}. card N)" by (metis (lifting) setsum.union_disjoint)
+  also from orbit_part orbit_disj fin_parts have "... = (\<Sum>N\<in>big_orbits. card N) + (\<Sum>N\<in>{N'\<in>orbits. card N' = 1}. card N)" by (metis (lifting) sum.union_disjoint)
   also from assms orbit_div fin_parts have "... = (\<Sum>N\<in>big_orbits. (card N div p) * p) + card (\<Union>{N'\<in>orbits. card N' = 1})" by (auto simp: card_singleton_set)
-  also have "... = (\<Sum>N\<in>big_orbits. card N div p) * p + card fixed_points" using singleton_orbits by (auto simp:setsum_distrib_right)
+  also have "... = (\<Sum>N\<in>big_orbits. card N div p) * p + card fixed_points" using singleton_orbits by (auto simp:sum_distrib_right)
   finally have "card M = (\<Sum>N\<in>big_orbits. card N div p) * p + card fixed_points".
   hence "card M mod p = ((\<Sum>N\<in>big_orbits. card N div p) * p + card fixed_points) mod p" by simp
   also have "... = (card fixed_points) mod p" by (metis mod_mult_self3)

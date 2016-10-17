@@ -77,7 +77,7 @@ context bidirected_digraph begin
     { assume A:"finite ?S"
       have "card ?S = card (\<Union>{{a,arev a} | a. a \<in> ?S})" (is "_ = card (\<Union> ?T)")
         by (rule arg_cong[where f=card]) (auto intro!: exI[where x="{x, arev x}" for x])
-      also have "\<dots>= setsum card ?T"
+      also have "\<dots>= sum card ?T"
       proof (rule card_Union_disjoint)
         have "?T \<subseteq> Pow ?S" by auto
         moreover have "finite (Pow ?S)"  unfolding finite_Pow_iff by (rule A)
@@ -88,8 +88,8 @@ context bidirected_digraph begin
         show "\<forall>A\<in>{{a, arev a} |a. a \<in> ?S}. \<forall>B\<in>{{a, arev a} |a. a \<in> ?S}. A \<noteq> B \<longrightarrow> A \<inter> B = {}"
            by safe (simp_all add: arev_eq_iff)
       qed
-      also have "\<dots> = setsum (\<lambda>a. 2) ?T"
-        by (intro setsum.cong) (auto simp: card_insert_if dest: arev_neq)
+      also have "\<dots> = sum (\<lambda>a. 2) ?T"
+        by (intro sum.cong) (auto simp: card_insert_if dest: arev_neq)
       also have "\<dots> = 2 * card ?T" by simp
       finally have ?thesis by simp
     }

@@ -217,7 +217,7 @@ definition hma_scalar_prod :: "'a :: semiring_1 ^ 'n \<Rightarrow> 'a ^ 'n \<Rig
 lemma hma_scalar_prod: fixes v :: "'a :: semiring_1 ^ 'n "
   shows "scalar_prod (from_hma\<^sub>v v) (from_hma\<^sub>v w) = hma_scalar_prod v w"
   unfolding hma_scalar_prod_def scalar_prod_def from_hma\<^sub>v_def vec_dim_vec
-  by (simp add: setsum.reindex[OF inj_to_nat, unfolded range_to_nat])
+  by (simp add: sum.reindex[OF inj_to_nat, unfolded range_to_nat])
 
 lemma [simp]:
   "from_hma\<^sub>m (y :: 'a ^ 'nc  ^ 'nr) \<in> carrier\<^sub>m (CARD('nr)) (CARD('nc))"
@@ -372,11 +372,11 @@ proof -
       qed
     qed
     have mult_cong: "\<And> a b c d. a = b \<Longrightarrow> c = d \<Longrightarrow> a * c = b * d" by simp
-    have "setsum (\<lambda> p. 
+    have "sum (\<lambda> p. 
       signof p * (\<Prod>i\<in>?zn. a $h ?fn i $h ?fn (p i))) ?p1
-      = setsum (\<lambda> p. of_int (sign p) * (\<Prod>i\<in>UNIV. a $h i $h p i)) ?p2"
-      unfolding id setsum.reindex[OF inj_g]
-    proof (rule setsum.cong[OF refl], unfold mem_Collect_eq o_def, rule mult_cong)
+      = sum (\<lambda> p. of_int (sign p) * (\<Prod>i\<in>UNIV. a $h i $h p i)) ?p2"
+      unfolding id sum.reindex[OF inj_g]
+    proof (rule sum.cong[OF refl], unfold mem_Collect_eq o_def, rule mult_cong)
       fix p
       assume p: "p permutes ?zn"
       let ?q = "\<lambda> i. ?fn (p (?tn i))"

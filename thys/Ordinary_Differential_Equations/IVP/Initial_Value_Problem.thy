@@ -101,22 +101,22 @@ lemma dist_component_le:
   using assms
   by (auto simp: euclidean_dist_l2[of x y] intro: member_le_setL2)
 
-lemma setsum_inner_Basis_one: "i \<in> Basis \<Longrightarrow> (\<Sum>x\<in>Basis. x \<bullet> i) = 1"
-  by (subst setsum.mono_neutral_right[where S="{i}"])
+lemma sum_inner_Basis_one: "i \<in> Basis \<Longrightarrow> (\<Sum>x\<in>Basis. x \<bullet> i) = 1"
+  by (subst sum.mono_neutral_right[where S="{i}"])
     (auto simp: inner_not_same_Basis)
 
 lemma cball_in_cbox:
   fixes y::"'a::euclidean_space"
   shows "cball y r \<subseteq> cbox (y - r *\<^sub>R One) (y + r *\<^sub>R One)"
-  unfolding scaleR_setsum_right interval_cbox cbox_def
+  unfolding scaleR_sum_right interval_cbox cbox_def
 proof safe
   fix x i::'a assume "i \<in> Basis" "x \<in> cball y r"
   with dist_component_le[OF \<open>i \<in> Basis\<close>, of y x]
   have "dist (y \<bullet> i) (x \<bullet> i) \<le> r" by (simp add: mem_cball)
-  thus "(y - setsum (op *\<^sub>R r) Basis) \<bullet> i \<le> x \<bullet> i"
-    "x \<bullet> i \<le> (y + setsum (op *\<^sub>R r) Basis) \<bullet> i"
-    by (auto simp add: inner_diff_left inner_add_left inner_setsum_left
-      setsum_distrib_left[symmetric] setsum_inner_Basis_one \<open>i\<in>Basis\<close> dist_real_def)
+  thus "(y - sum (op *\<^sub>R r) Basis) \<bullet> i \<le> x \<bullet> i"
+    "x \<bullet> i \<le> (y + sum (op *\<^sub>R r) Basis) \<bullet> i"
+    by (auto simp add: inner_diff_left inner_add_left inner_sum_left
+      sum_distrib_left[symmetric] sum_inner_Basis_one \<open>i\<in>Basis\<close> dist_real_def)
 qed
 
 lemma centered_cbox_in_cball:

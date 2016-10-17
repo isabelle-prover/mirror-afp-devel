@@ -38,7 +38,7 @@ lemma integral_nonneg:
 end
 
 
-declare setsum.cong[fundef_cong]
+declare sum.cong[fundef_cong]
 
 lemma strict_mono_imp_ex1_real:
   fixes f :: "real \<Rightarrow> real"
@@ -115,7 +115,7 @@ sublocale akra_bazzi_params k as bs
 lemma akra_bazzi_p_strict_mono:
   assumes "x < y"
   shows "(\<Sum>i<k. as!i * bs!i powr y) < (\<Sum>i<k. as!i * bs!i powr x)"
-proof (intro setsum_strict_mono_ex1 ballI)
+proof (intro sum_strict_mono_ex1 ballI)
   from ex_a_pos obtain a where "a \<in> set as" "a > 0" by blast
   then obtain i where "i < k" "as!i > 0" by (force simp: in_set_conv_nth length_as)
   with b_bounds `x < y` have "as!i * bs!i powr y < as!i * bs!i powr x"
@@ -149,9 +149,9 @@ proof (rule strict_mono_imp_ex1_real)
   proof
     fix p :: real
     from a_ge_0 b_bounds have "(\<Sum>i\<in>{..<k}-{i}. as ! i * bs ! i powr p) \<ge> 0"
-      by (intro setsum_nonneg mult_nonneg_nonneg) simp_all
+      by (intro sum_nonneg mult_nonneg_nonneg) simp_all
     also have "as!i * bs!i powr p + ... = (\<Sum>i\<in>insert i {..<k}. as ! i * bs ! i powr p)"
-      by (simp add: setsum.insert_remove)
+      by (simp add: sum.insert_remove)
     also from i have "insert i {..<k} = {..<k}" by blast
     finally show "as!i*bs!i powr p \<le> (\<Sum>i\<in>{..<k}. as ! i * bs ! i powr p)" by simp
   qed
@@ -159,7 +159,7 @@ proof (rule strict_mono_imp_ex1_real)
     by (rule filterlim_at_top_mono[OF _ always_eventually])
 next
   from b_bounds show "((\<lambda>x. \<Sum>i<k. as ! i * bs ! i powr x) \<longlongrightarrow> (\<Sum>i<k. 0)) at_top"
-    by (intro tendsto_setsum tendsto_mult_right_zero powr_at_top_neg) simp_all
+    by (intro tendsto_sum tendsto_mult_right_zero powr_at_top_neg) simp_all
 next
   fix x
   from b_bounds have A: "\<And>i. i < k \<Longrightarrow> bs ! i > 0" by simp
@@ -198,13 +198,13 @@ lemma p_boundsI': "(\<Sum>i<k. as!i * bs!i powr x) < 1 \<and> (\<Sum>i<k. as!i *
 lemma p_nonneg: "sum_list as \<ge> 1 \<Longrightarrow> p \<ge> 0"
 proof (rule p_geI)
   assume "sum_list as \<ge> 1"
-  also have "... = (\<Sum>i<k. as!i)" by (simp add: sum_list_setsum_nth length_as atLeast0LessThan)
+  also have "... = (\<Sum>i<k. as!i)" by (simp add: sum_list_sum_nth length_as atLeast0LessThan)
   also {
     fix i assume "i < k"
     with b_bounds have "bs!i > 0" by simp
     hence "as!i * bs!i powr 0 = as!i" by simp
   }
-  hence "(\<Sum>i<k. as!i) = (\<Sum>i<k. as!i * bs!i powr 0)" by (intro setsum.cong) simp_all
+  hence "(\<Sum>i<k. as!i) = (\<Sum>i<k. as!i * bs!i powr 0)" by (intro sum.cong) simp_all
   finally show "1 \<le> (\<Sum>i<k. as ! i * bs ! i powr 0)" .
 qed
 
@@ -535,7 +535,7 @@ next
     with i have "as!i * f (bs!i*x + (hs!i) x) \<ge> 0"
         by (intro mult_nonneg_nonneg[OF a_ge_0]) simp_all
   }
-  hence "(\<Sum>i<k. as!i * f (bs!i*x + (hs!i) x)) \<ge> 0" by (intro setsum_nonneg) blast
+  hence "(\<Sum>i<k. as!i * f (bs!i*x + (hs!i) x)) \<ge> 0" by (intro sum_nonneg) blast
   ultimately show "f x \<ge> 0" using rec.hyps by (subst f_rec) simp_all
 qed
 
@@ -967,9 +967,9 @@ proof-
       by (simp add: field_simps f_approx_def powr_minus)
     also have "c5 * x powr p * (1 + ?l) * (1 + ?int - c4*g x/x powr p) =
                  (\<Sum>i<k. (?a i * ?b i powr p) * (c5 * x powr p * (1 + ?l) * (1 + ?int - c4*g x/x powr p)))"
-      by (subst setsum_distrib_right[symmetric]) (simp add: p_props)
+      by (subst sum_distrib_right[symmetric]) (simp add: p_props)
     also have "... \<le> (\<Sum>i<k. ?a i * f (?b i*x + ?h i x))"
-    proof (intro setsum_mono, clarify)
+    proof (intro sum_mono, clarify)
       fix i assume i: "i < k"
       let ?f = "c5 * ?a i * (?b i * x) powr p"
       from rec.hyps i have "x\<^sub>0 < bs ! i * x + (hs ! i) x" by (intro x0_hb_bound7) simp_all
@@ -1190,7 +1190,7 @@ proof-
     have "f x = (\<Sum>i<k. ?a i * f (?b i*x + ?h i x)) + g x" (is "_ = ?sum + _")
       using f_rec[of x] rec.hyps x0_le_x1 by simp
     also have "?sum \<le> (\<Sum>i<k. (?a i*?b i powr p) * (c6*x powr p*(1 - ?l)*(1 + ?int - c3*g x/x powr p)))" (is "_ \<le> ?sum'")
-    proof (rule setsum_mono, clarify)
+    proof (rule sum_mono, clarify)
       fix i assume i: "i < k"
       from rec.hyps i have "x\<^sub>0 < bs ! i * x + (hs ! i) x" by (intro x0_hb_bound7) simp_all
       hence "1 + ?int1 i \<ge> 1" by (intro f_approx_aux x0_hb_bound7) simp_all
@@ -1228,7 +1228,7 @@ proof-
 
     hence "?sum + g x \<le> ?sum' + g x" by simp
     also have "... = c6 * x powr p * (1 - ?l) * (1 + ?int - c3*g x/x powr p) + g x"
-      by (simp add: setsum_distrib_right[symmetric] p_props)
+      by (simp add: sum_distrib_right[symmetric] p_props)
     also have "... = c6 * (1 - ?l) * f_approx x - (c6*c3*(1 - ?l) - 1) * g x"
       unfolding f_approx_def using x_pos by (simp add: field_simps)
     also {

@@ -27,7 +27,7 @@ interpretation class_semiring: semiring "class_ring TYPE('a :: semiring_1)"
     and [class_ring_simps]: "one (class_ring TYPE('a)) = 1"
     and [class_ring_simps]: "zero (class_ring TYPE('a)) = 0"
     and [class_ring_simps]: "pow (class_ring TYPE('a)) = op ^"
-    and [class_ring_simps]: "finsum (class_ring TYPE('a)) = setsum"
+    and [class_ring_simps]: "finsum (class_ring TYPE('a)) = sum"
 proof -
   let ?r = "class_ring TYPE('a :: semiring_1)"
   show "semiring ?r"
@@ -41,10 +41,10 @@ proof -
   thus "op (^)\<^bsub>?r\<^esub> = op ^" by (intro ext)
   {
     fix f and A :: "'b set"
-    have "finsum ?r f A = setsum f A"
+    have "finsum ?r f A = sum f A"
       by (induct A rule: infinite_finite_induct, auto)
   }
-  thus "finsum ?r = setsum" by (intro ext)
+  thus "finsum ?r = sum" by (intro ext)
 qed auto 
 
 interpretation class_ring: ring "class_ring TYPE('a :: ring_1)"
@@ -56,7 +56,7 @@ interpretation class_ring: ring "class_ring TYPE('a :: ring_1)"
     and [class_ring_simps]: "a_inv (class_ring TYPE('a)) = uminus"
     and [class_ring_simps]: "a_minus (class_ring TYPE('a)) = minus"
     and "pow (class_ring TYPE('a)) = op ^"
-    and "finsum (class_ring TYPE('a)) = setsum"
+    and "finsum (class_ring TYPE('a)) = sum"
 proof -
   let ?r = "class_ring TYPE('a)"
   interpret semiring ?r ..
@@ -90,7 +90,7 @@ interpretation class_cring: cring "class_ring TYPE('a :: comm_ring_1)"
     and "a_inv (class_ring TYPE('a)) = uminus"
     and "a_minus (class_ring TYPE('a)) = minus"
     and "pow (class_ring TYPE('a)) = op ^"
-    and "finsum (class_ring TYPE('a)) = setsum"
+    and "finsum (class_ring TYPE('a)) = sum"
     and [class_ring_simps]: "finprod (class_ring TYPE('a)) = setprod"
 proof -
   let ?r = "class_ring TYPE('a)"
@@ -130,7 +130,7 @@ interpretation class_field: field "class_ring TYPE('a :: field)"
     and "a_inv (class_ring TYPE('a)) = uminus"
     and "a_minus (class_ring TYPE('a)) = minus"
     and "pow (class_ring TYPE('a)) = op ^"
-    and "finsum (class_ring TYPE('a)) = setsum"
+    and "finsum (class_ring TYPE('a)) = sum"
     and "finprod (class_ring TYPE('a)) = setprod"
     and [class_ring_simps]: "m_inv (class_ring TYPE('a)) x = 
       (if x = 0 then div0 else inverse x)" 
@@ -204,7 +204,7 @@ sublocale
     and "a_inv F = uminus"
     and "a_minus F = minus"
     and "pow F = op ^"
-    and "finsum F = setsum"
+    and "finsum F = sum"
     and "finprod F = setprod"
     and "m_inv F x = 
       (if x = 0 then div0 else inverse x)"
@@ -250,7 +250,7 @@ begin
     and "a_inv F = uminus"
     and "a_minus F = minus"
     and "pow F = op ^"
-    and "finsum F = setsum"
+    and "finsum F = sum"
     and "finprod F = setprod"
     and "m_inv F x = (if x = 0 then div0 else inverse x)"
   using vec_vs
@@ -261,10 +261,10 @@ lemma finsum_vec[simp]: "finsum_vec TYPE('a) n = finsum V"
   unfolding finsum_vec_def vec_monoid_def
   unfolding finsum_def by simp
 
-lemma finsum_scalar_prod_setsum:
+lemma finsum_scalar_prod_sum:
   assumes f: "f : U \<rightarrow> carrier\<^sub>v n"
       and w: "w: carrier\<^sub>v n"
-  shows "finsum V f U \<bullet> w = setsum (\<lambda>u. f u \<bullet> w) U"
+  shows "finsum V f U \<bullet> w = sum (\<lambda>u. f u \<bullet> w) U"
   using w f
 proof (induct U rule: infinite_finite_induct)
   case (insert u U)
@@ -309,7 +309,7 @@ lemma finsum_index:
   assumes i: "i < n"
     and f: "f \<in> X \<rightarrow> carrier\<^sub>v n"
     and X: "X \<subseteq> carrier\<^sub>v n"
-  shows "finsum V f X $ i = setsum (\<lambda>x. f x $ i) X"
+  shows "finsum V f X $ i = sum (\<lambda>x. f x $ i) X"
   using X f
 proof (induct X rule: infinite_finite_induct)
   case empty
@@ -326,7 +326,7 @@ proof (induct X rule: infinite_finite_induct)
     have ix: "i < dim\<^sub>v x" using x i by auto
     show ?case
       unfolding finsum_insert[OF Xf xX f fx]
-      unfolding setsum.insert[OF Xf xX]
+      unfolding sum.insert[OF Xf xX]
       unfolding vec_index_add(1)[OF i2]
       using insert lincomb_def
       by auto
@@ -335,7 +335,7 @@ qed (insert i, auto)
 lemma lincomb_index:
   assumes i: "i < n"
     and X: "X \<subseteq> carrier\<^sub>v n"
-  shows "lincomb a X $ i = setsum (\<lambda>x. a x * x $ i) X"
+  shows "lincomb a X $ i = sum (\<lambda>x. a x * x $ i) X"
 proof -
   let ?f = "\<lambda>x. a x \<odot>\<^sub>v x"
   have f: "?f : X \<rightarrow> carrier\<^sub>v n" using X by auto
@@ -367,7 +367,7 @@ proof -
         show ?case
           unfolding vec_units_first.simps
           unfolding append_insert
-          unfolding setsum.insert[OF finite_set mem]
+          unfolding sum.insert[OF finite_set mem]
           unfolding vec_unit_index(1)[OF mn jn]
           unfolding Suc(1)[OF mj jn] using mj' by simp
     qed simp
@@ -382,7 +382,7 @@ proof -
         show ?case
           unfolding vec_units_first.simps
           unfolding append_insert
-          unfolding setsum.insert[OF finite_set mem]
+          unfolding sum.insert[OF finite_set mem]
           unfolding vec_unit_index(1)[OF mn i]
           using zero Suc by (cases "i = m",auto)
     qed auto
@@ -440,14 +440,14 @@ proof (intro conjI)
     have "lincomb b (set (vec_units n)) $ i = (\<Sum>x\<in> (A \<union> (set (vec_units n) - A)). b x * x $ i)" 
       unfolding id .
     also have "\<dots> = (\<Sum>x\<in> A. b x * x $ i) + (\<Sum>x\<in> set (vec_units n) - A. b x * x $ i)"
-      by (rule setsum.union_disjoint, insert fin, auto)
+      by (rule sum.union_disjoint, insert fin, auto)
     also have "(\<Sum>x\<in> A. b x * x $ i) = (\<Sum>x\<in> A. a x * x $ i)"
-      by (rule setsum.cong, auto simp: b_def)
+      by (rule sum.cong, auto simp: b_def)
     also have "\<dots> = lincomb a A $ i" 
       by (subst lincomb_index[OF i], insert A vec_units_carrier, auto)
     also have "\<dots> = 0" unfolding lc using i by simp
     also have "(\<Sum>x\<in> set (vec_units n) - A. b x * x $ i) = 0"
-      by (rule setsum.neutral, auto simp: b_def)
+      by (rule sum.neutral, auto simp: b_def)
     finally have "lincomb b (set (vec_units n)) $ i = 0" by simp
     from lincomb_units[OF i, of b, unfolded this]
     have "b v = 0" unfolding vu by simp
