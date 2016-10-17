@@ -10,27 +10,15 @@ subsection \<open>Square-Free Polynomials over Finite Fields and Integers\<close
 theory Square_Free_Int_To_Square_Free_GFp
 imports   
   "../Polynomial_Factorization/Square_Free_Factorization"
+  "../Polynomial_Factorization/Rational_Factorization"
   Finite_Field
-  "../Algebraic_Numbers/Resultant"
+  Resultant
 begin
-
-locale idom_hom = ring_hom hom 
-  for hom :: "'a :: idom \<Rightarrow> 'b :: idom"
-begin
-lemma map_poly_pderiv: "pderiv (map_poly hom p) = map_poly hom (pderiv p)"
-proof (induct p rule: pderiv.induct)
-  case (1 a p)
-  show ?case 
-    unfolding pderiv.simps
-      map_poly_pCons_hom using 1 by (cases "p = 0", auto)
-qed
-end
 
 lemma square_free_int_rat: assumes sf: "square_free f"
   shows "square_free (map_poly rat_of_int f)"
 proof -
   let ?r = "map_poly rat_of_int" 
-  interpret idom_hom rat_of_int ..
   from sf[unfolded square_free_def] have f0: "f \<noteq> 0" "\<And> q. degree q \<noteq> 0 \<Longrightarrow> \<not> q * q dvd f" by auto
   show ?thesis
   proof (rule square_freeI)
@@ -59,7 +47,7 @@ proof -
   qed
 qed
 
-lemma coprime_idom_iff: 
+lemma coprime_factorial_ring_iff: 
   "coprime (p :: 'a :: factorial_ring_gcd) q = (\<forall>r. 
   r dvd p \<longrightarrow> r dvd q \<longrightarrow> r dvd 1)"
   by (metis gcd_dvd1 gcd_dvd2 is_unit_gcd semiring_gcd_class.gcd_greatest_iff)  
@@ -84,7 +72,7 @@ next
   let ?p' = "pderiv pp" 
   {
     assume "resultant pp ?p' = 0" 
-    from resultant_zero_imp_common_factor[OF deg' this, unfolded coprime_idom_iff]
+    from resultant_zero_imp_common_factor[OF deg' this, unfolded coprime_factorial_ring_iff]
     obtain r where r: "r dvd pp" "r dvd ?p'" "\<not> r dvd 1" by auto
     from r(1) obtain k where "pp = r * k" unfolding dvd_def by auto
     from pos_zmult_eq_1_iff_lemma[OF arg_cong[OF this, 
@@ -95,10 +83,9 @@ next
         is_unit_iff_degree mult_eq_0_iff r(1) 
         ri.degree_map_poly unit_imp_dvd)
     let ?r = "map_poly rat_of_int"
-    interpret idom_hom rat_of_int ..
     from r(1) have dvd: "?r r dvd ?r pp" unfolding dvd_def by auto
     from r(2) have "?r r dvd ?r ?p'" unfolding dvd_def by auto
-    also have "?r ?p' = pderiv (?r pp)" unfolding map_poly_pderiv ..
+    also have "?r ?p' = pderiv (?r pp)" unfolding ri.map_poly_pderiv ..
     finally have dvd': "?r r dvd pderiv (?r pp)" by auto
     from dr have dr': "degree (?r r) \<noteq> 0" by simp
     from square_free_coprime_pderiv[OF square_free_int_rat[OF sf']]
@@ -172,77 +159,6 @@ proof (intro conjI, rule notI)
   from of_int_0[OF _ this[symmetric, unfolded 0]] non0
   show False using large by auto
 qed
-
-lemma mod_const_0[simp]: "c \<noteq> 0 \<Longrightarrow> f mod [:c:] = 0" 
-proof -
-  assume c: "c \<noteq> 0" 
-  obtain q r where "pdivmod f [:c:] = (q,r)" by force
-  hence pd: "pdivmod_rel f [:c:] q r"
-    by (simp add: Ring_Hom_Poly.pdivmod_pdivmodrel)
-  from this[unfolded pdivmod_rel_def] c have "r = 0" by auto
-  thus ?thesis using mod_poly_eq[OF pd] by simp
-qed
-
-lemma resultant_non_zero_imp_coprime: assumes nz: "resultant (f :: 'a :: {field,euclidean_ring_gcd} poly) g \<noteq> 0" 
-  and nz': "f \<noteq> 0 \<or> g \<noteq> 0" 
-  shows "coprime f g" 
-proof (cases "degree f = 0 \<or> degree g = 0")
-  case False
-  define r where "r = [:resultant f g:]" 
-  from nz have r: "r \<noteq> 0" unfolding r_def by auto
-  from False have "degree f > 0" "degree g > 0" by auto
-  from resultant_as_nonzero_poly_weak[OF this nz]
-  obtain p q where "degree p < degree g" "degree q < degree f" 
-    and id: "r = p * f + q * g"
-    and "p \<noteq> 0" "q \<noteq> 0" unfolding r_def by auto
-  define h where "h = gcd f g" 
-  have "h dvd f" "h dvd g" unfolding h_def by auto
-  then obtain j k where f: "f = h * j" and g: "g = h * k" unfolding dvd_def by auto
-  from id[unfolded f g] have id: "h * (p * j + q * k) = r" by (auto simp: field_simps)
-  from arg_cong[OF id, of degree] have "degree (h * (p * j + q * k)) = 0" 
-    unfolding r_def by auto
-  also have "degree (h * (p * j + q * k)) = degree h + degree (p * j + q * k)" 
-    by (subst degree_mult_eq, insert id r, auto)
-  finally have h: "degree h = 0" "h \<noteq> 0" using r id by auto
-  thus ?thesis unfolding h_def using is_unit_gcd is_unit_iff_degree by blast
-next
-  case True
-  {
-    fix f g :: "'a poly" 
-    assume g: "degree g = 0" and res: "resultant f g \<noteq> 0" and nz: "f \<noteq> 0 \<or> g \<noteq> 0" 
-    from degree0_coeffs[OF g] obtain c where g: "g = [:c:]" by auto
-    from res[unfolded this resultant_const] have cf: "c ^ degree f \<noteq> 0" by auto
-    {
-      assume c: "c \<noteq> 0" 
-      have "gcd f g = gcd g 0" unfolding g gcd_poly_def gcd_eucl_eq_gcd_factorial[symmetric] gcd_eucl.simps[of f] using c by simp
-      also have "\<dots> = normalize [:c:]" unfolding g by simp
-      also have "\<dots> = 1" using c by (metis Polynomial_Division.normalize_smult normalize_1 smult_1)
-      finally have "coprime f g" .
-    }
-    moreover
-    {
-      assume c: "c = 0"
-      with g have g: "g = 0" by auto
-      from c cf have "degree f = 0" by auto
-      from degree0_coeffs[OF this] obtain d where f: "f = [:d:]" by auto
-      from nz[unfolded g f] have d: "d \<noteq> 0" by auto
-      have "gcd f g = normalize [:d:]" unfolding g f by simp
-      also have "\<dots> = 1" using d by (metis Polynomial_Division.normalize_smult normalize_1 smult_1)
-      finally have "coprime f g" .
-    }
-    ultimately have "coprime f g" by auto
-  } note main = this
-  from True
-  show ?thesis
-  proof
-    assume f: "degree f = 0" 
-    from nz[unfolded resultant_swap[of f g]] have "resultant g f \<noteq> 0" by (auto split: if_splits)
-    from main[OF f this] nz' show ?thesis by (auto simp: gcd.commute)
-  next
-    assume "degree g = 0" 
-    from main[OF this nz nz'] show ?thesis .
-  qed
-qed  
    
 
 lemma square_free_int_imp_square_free_mod_ring: assumes sf: "square_free f" 

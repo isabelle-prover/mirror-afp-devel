@@ -91,7 +91,10 @@ begin
   sublocale semiring_hom..
 end
 
-locale field_hom = ring_hom hom
+locale idom_hom = ring_hom hom 
+  for hom :: "'a :: idom \<Rightarrow> 'b :: idom"
+
+locale field_hom = idom_hom hom
   for hom :: "'a :: field \<Rightarrow> 'b :: field"
 begin
 

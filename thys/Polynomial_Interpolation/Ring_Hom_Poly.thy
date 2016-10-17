@@ -230,8 +230,11 @@ lemma map_poly_minus: "map_poly hom (p - q) = map_poly hom p - map_poly hom q"
   unfolding diff_conv_add_uminus
   unfolding map_poly_hom_add by simp
 
-  lemma ring_hom_map_poly: "ring_hom (map_poly hom)"
-    using semiring_hom_map_poly by (unfold_locales, auto)
+lemma ring_hom_map_poly: "ring_hom (map_poly hom)"
+  using semiring_hom_map_poly by (unfold_locales, auto)
+
+lemma map_poly_power: "map_poly hom (p ^ n) = (map_poly hom p) ^ n"
+  by (induct n, auto)
 end
 
 locale map_poly_ring_hom = ring_hom
@@ -312,20 +315,22 @@ end
 lemma pdivmod_pdivmodrel: "pdivmod_rel p q r s \<longleftrightarrow> pdivmod p q = (r,s)" 
   by (metis pdivmod_def pdivmod_rel pdivmod_rel_unique prod.sel)
 
-locale inj_field_hom' = inj_field_hom hom
-  for hom :: "'a :: {field,euclidean_ring_gcd} \<Rightarrow> 'b :: {field,euclidean_ring_gcd}"
-
-context inj_field_hom
+context idom_hom
 begin
-
 lemma map_poly_pderiv: "pderiv (map_poly hom p) = map_poly hom (pderiv p)"
 proof (induct p rule: pderiv.induct)
   case (1 a p)
   show ?case 
     unfolding pderiv.simps
-      map_poly_pCons_hom
-      map_poly_0_iff using 1 by (cases "p = 0", auto)
+      map_poly_pCons_hom using 1 by (cases "p = 0", auto)
 qed
+end
+
+locale inj_field_hom' = inj_field_hom hom
+  for hom :: "'a :: {field,euclidean_ring_gcd} \<Rightarrow> 'b :: {field,euclidean_ring_gcd}"
+
+context inj_field_hom
+begin
 
 lemma map_poly_pdivmod: 
   "map_prod (map_poly hom) (map_poly hom) (pdivmod p q) = pdivmod (map_poly hom p) (map_poly hom q)"
@@ -367,10 +372,7 @@ proof (induct p q rule: gcd_eucl.induct)
        (simp_all add: gcd_non_0 coeff_map_poly normalize_poly_altdef 
           map_poly_mod map_poly_div lead_coeff_def map_poly_compose)
 qed
-  
-lemma map_poly_power: "map_poly hom (p ^ n) = (map_poly hom p) ^ n"
-  by (induct n, auto)
-end
+  end
 
 
 definition div_poly :: "'a :: semiring_div \<Rightarrow> 'a poly \<Rightarrow> 'a poly" where
@@ -386,7 +388,7 @@ lemma coeff_div_poly: "coeff (div_poly a f) n = coeff f n div a"
   by (rule coeff_map_poly, auto)
 
 
-interpretation ri: inj_ring_hom rat_of_int
+interpretation ri: inj_ring_hom rat_of_int + ri: idom_hom rat_of_int
   by (unfold_locales, auto)
 
 end

@@ -3,11 +3,14 @@
                  Akihisa Yamada
     License:     BSD
 *)
+section \<open>Finite Rings and Fields\<close>
+
+text \<open>We start by establishing some preliminary results about finite rings and finite fields\<close>
+
 subsection \<open>Binary Exponentiation\<close>
 
 text \<open>This theory defines the standard algorithm for binary exponentiation, or 
-  exponentiation by squaring.
-\<close> 
+  exponentiation by squaring.\<close> 
 theory Binary_Exponentiation
 imports 
   Main

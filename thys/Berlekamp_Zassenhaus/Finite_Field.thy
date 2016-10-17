@@ -4,19 +4,15 @@
                   René Thiemann
                   Akihisa Yamada
 *)
-section \<open>Finite Rings and Fields\<close>
-
-text \<open>We start by establishing some preliminary results about finite rings and finite fields\<close>
+subsection {* Finite Rings *}
 
 theory Finite_Field
 imports 
   "~~/src/HOL/Number_Theory/Primes"
   "~~/src/HOL/Number_Theory/Residues"
   "../Containers/Set_Impl"
-  "../Algebraic_Numbers/Binary_Exponentiation"
+  Binary_Exponentiation
 begin
-
-subsection {* Finite Rings *}
 
 typedef ('a::finite) mod_ring = "{0..<int CARD('a)}" by auto
 

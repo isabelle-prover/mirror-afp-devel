@@ -24,6 +24,9 @@ session Berlekamp_Zassenhaus (AFP) = Pre_BZ +
     Hensel_Lifting
       Berlekamp_Hensel
 
+    (* Resultants *)
+    Resultant
+
     (* Zassenhaus Reconstruction *)
       Square_Free_Int_To_Square_Free_GFp
       Suitable_Prime
@@ -46,7 +49,8 @@ session Pre_BZ (AFP) = "Polynomial_Factorization" +
   options [document=false]
   theories
     "../Jordan_Normal_Form/Matrix_Kernel"
-    "../Algebraic_Numbers/Resultant"
     "../Efficient-Mergesort/Efficient_Sort"
     "~~/src/HOL/Number_Theory/Residues"
     "../Perron_Frobenius/Types_To_Sets/Types_To_Sets"
+    "../Jordan_Normal_Form/Determinant_Impl"
+

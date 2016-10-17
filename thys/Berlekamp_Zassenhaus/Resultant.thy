@@ -3,7 +3,7 @@
                  Akihisa Yamada
     License:     BSD
 *)
-section \<open>Resultant\<close>
+subsection \<open>Resultant\<close>
 
 text \<open>This theory defines the Sylvester matrix and the resultant and contains 
   facts about these notions which are required for addition and multiplication
@@ -18,12 +18,11 @@ imports
   "../Jordan_Normal_Form/Determinant_Impl"
   "../Polynomial_Factorization/Rational_Factorization"
   Bivariate_Polynomials
-  Algebraic_Numbers_Prelim
   Binary_Exponentiation
 begin
 
 
-subsection\<open>Sylvester Matrix\<close>
+subsubsection\<open>Sylvester Matrix\<close>
 
 definition sylvester_mat_sub :: "nat \<Rightarrow> nat \<Rightarrow> 'a poly \<Rightarrow> 'a poly \<Rightarrow> 'a :: zero mat" where
   "sylvester_mat_sub m n p q \<equiv>
@@ -527,7 +526,7 @@ proof (rule poly_eqI)
   qed
 qed
 
-subsection \<open>Resultant\<close>
+subsubsection \<open>Resultant\<close>
 
 definition resultant :: "'a poly \<Rightarrow> 'a poly \<Rightarrow> 'a :: comm_ring_1" where
   "resultant p q = det (sylvester_mat p q)"
@@ -1592,6 +1591,78 @@ proof -
   }
   ultimately show ?thesis by auto
 qed
+
+lemma mod_const_0[simp]: "c \<noteq> 0 \<Longrightarrow> f mod [:c:] = 0" 
+proof -
+  assume c: "c \<noteq> 0" 
+  obtain q r where "pdivmod f [:c:] = (q,r)" by force
+  hence pd: "pdivmod_rel f [:c:] q r"
+    by (simp add: Ring_Hom_Poly.pdivmod_pdivmodrel)
+  from this[unfolded pdivmod_rel_def] c have "r = 0" by auto
+  thus ?thesis using mod_poly_eq[OF pd] by simp
+qed
+
+lemma resultant_non_zero_imp_coprime: assumes nz: "resultant (f :: 'a :: {field,euclidean_ring_gcd} poly) g \<noteq> 0" 
+  and nz': "f \<noteq> 0 \<or> g \<noteq> 0" 
+  shows "coprime f g" 
+proof (cases "degree f = 0 \<or> degree g = 0")
+  case False
+  define r where "r = [:resultant f g:]" 
+  from nz have r: "r \<noteq> 0" unfolding r_def by auto
+  from False have "degree f > 0" "degree g > 0" by auto
+  from resultant_as_nonzero_poly_weak[OF this nz]
+  obtain p q where "degree p < degree g" "degree q < degree f" 
+    and id: "r = p * f + q * g"
+    and "p \<noteq> 0" "q \<noteq> 0" unfolding r_def by auto
+  define h where "h = gcd f g" 
+  have "h dvd f" "h dvd g" unfolding h_def by auto
+  then obtain j k where f: "f = h * j" and g: "g = h * k" unfolding dvd_def by auto
+  from id[unfolded f g] have id: "h * (p * j + q * k) = r" by (auto simp: field_simps)
+  from arg_cong[OF id, of degree] have "degree (h * (p * j + q * k)) = 0" 
+    unfolding r_def by auto
+  also have "degree (h * (p * j + q * k)) = degree h + degree (p * j + q * k)" 
+    by (subst degree_mult_eq, insert id r, auto)
+  finally have h: "degree h = 0" "h \<noteq> 0" using r id by auto
+  thus ?thesis unfolding h_def using is_unit_gcd is_unit_iff_degree by blast
+next
+  case True
+  {
+    fix f g :: "'a poly" 
+    assume g: "degree g = 0" and res: "resultant f g \<noteq> 0" and nz: "f \<noteq> 0 \<or> g \<noteq> 0" 
+    from degree0_coeffs[OF g] obtain c where g: "g = [:c:]" by auto
+    from res[unfolded this resultant_const] have cf: "c ^ degree f \<noteq> 0" by auto
+    {
+      assume c: "c \<noteq> 0" 
+      have "gcd f g = gcd g 0" unfolding g gcd_poly_def gcd_eucl_eq_gcd_factorial[symmetric] gcd_eucl.simps[of f] using c
+        by simp
+      also have "\<dots> = normalize [:c:]" unfolding g by simp
+      also have "\<dots> = 1" using c by (metis Polynomial_Division.normalize_smult normalize_1 smult_1)
+      finally have "coprime f g" .
+    }
+    moreover
+    {
+      assume c: "c = 0"
+      with g have g: "g = 0" by auto
+      from c cf have "degree f = 0" by auto
+      from degree0_coeffs[OF this] obtain d where f: "f = [:d:]" by auto
+      from nz[unfolded g f] have d: "d \<noteq> 0" by auto
+      have "gcd f g = normalize [:d:]" unfolding g f by simp
+      also have "\<dots> = 1" using d by (metis Polynomial_Division.normalize_smult normalize_1 smult_1)
+      finally have "coprime f g" .
+    }
+    ultimately have "coprime f g" by auto
+  } note main = this
+  from True
+  show ?thesis
+  proof
+    assume f: "degree f = 0" 
+    from nz[unfolded resultant_swap[of f g]] have "resultant g f \<noteq> 0" by (auto split: if_splits)
+    from main[OF f this] nz' show ?thesis by (auto simp: gcd.commute)
+  next
+    assume "degree g = 0" 
+    from main[OF this nz nz'] show ?thesis .
+  qed
+qed  
 
 subsubsection \<open>Computation of Resultants\<close>
 

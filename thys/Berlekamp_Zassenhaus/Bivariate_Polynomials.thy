@@ -3,14 +3,23 @@
                  Akihisa Yamada
     License:     BSD
 *)
-section \<open>Bivariate Polynomials\<close>
+section \<open>Resultants\<close>
+
+text \<open>We need some results on resultants to show that 
+  a suitable prime for Berlekamp's algorithm always exists
+  if the input is square free. Most of this theory has
+  been developed for algebraic numbers, though. We moved this
+  theory here, so that algebraic numbers can already use the
+  factorization algorithm of this entry.\<close>
+
+subsection \<open>Bivariate Polynomials\<close>
 
 theory Bivariate_Polynomials
 imports 
   "../Polynomial_Interpolation/Ring_Hom_Poly"
 begin
 
-subsection \<open>Evaluation of Bivariate Polynomials\<close>
+subsubsection \<open>Evaluation of Bivariate Polynomials\<close>
 
 definition poly2 :: "'a::comm_semiring_1 poly poly \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"
   where "poly2 p x y = poly (poly p [: y :]) x"
@@ -178,7 +187,7 @@ locale ring_hom_poly_lift2 begin
     using map_poly_inj by (unfold_locales, unfold poly_lift2_def, auto)
 end
 
-subsection \<open>Swapping the Order of Variables\<close>
+subsubsection \<open>Swapping the Order of Variables\<close>
 
 definition 
   "poly_y_x p \<equiv> \<Sum>i\<le>degree p. \<Sum>j\<le>degree (coeff p i). monom (monom (coeff (coeff p i) j) i) j"

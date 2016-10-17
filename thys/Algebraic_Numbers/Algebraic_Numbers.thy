@@ -14,7 +14,7 @@ text \<open>This theory contains the remaining field operations for algebraic nu
 theory Algebraic_Numbers
 imports 
   Algebraic_Numbers_Prelim
-  Resultant
+  "../Berlekamp_Zassenhaus/Resultant"
   "../Polynomial_Interpolation/Ring_Hom_Poly"
   "../Polynomial_Factorization/Polynomial_Divisibility"
 begin

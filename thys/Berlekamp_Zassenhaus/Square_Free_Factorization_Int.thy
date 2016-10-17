@@ -83,7 +83,6 @@ lemma yun_erel_pow: "yun_erel F f \<Longrightarrow> yun_erel (F^n) (f^n)"
 lemma yun_wrel_pderiv: assumes "yun_wrel F c f"
   shows "yun_wrel (pderiv F) c (pderiv f)" 
 proof -
-  interpret ri: idom_hom rat_of_int ..
   show ?thesis unfolding yun_wrel_def ri.map_poly_pderiv[of F, unfolded yun_wrelD[OF assms], symmetric] 
     by (rule pderiv_smult) 
 qed
