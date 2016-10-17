@@ -274,7 +274,7 @@ proof -
     proof (rule exI[of _ "fs + replicate_mset (Suc (g a)) a"], intro conjI)
       show "set_mset ?fs \<subseteq> insert a gs" using *(1) by auto
       show "prod_mset ?fs = (\<Prod>a\<in>insert a gs. a ^ Suc (g a))" 
-        by (subst setprod.insert[OF insert(1-2)], auto simp: *(2))
+        by (subst prod.insert[OF insert(1-2)], auto simp: *(2))
     qed
   qed simp
   then obtain fs where "set_mset fs \<subseteq> gs" "prod_mset fs = (\<Prod>a\<in>gs. a ^ Suc (g a))" by auto

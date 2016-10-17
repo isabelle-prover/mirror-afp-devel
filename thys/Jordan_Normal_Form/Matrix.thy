@@ -1148,9 +1148,9 @@ lemma mat_pow_closed[simp]: "A \<in> carrier\<^sub>m n n \<Longrightarrow> A ^\<
 definition mat_diag :: "'a mat \<Rightarrow> 'a list" where
   "mat_diag A = map (\<lambda> i. A $$ (i,i)) [0 ..< dim\<^sub>r A]"
 
-lemma prod_list_diag_setprod: "prod_list (mat_diag A) = (\<Prod> i = 0 ..< dim\<^sub>r A. A $$ (i,i))"
+lemma prod_list_diag_prod: "prod_list (mat_diag A) = (\<Prod> i = 0 ..< dim\<^sub>r A. A $$ (i,i))"
   unfolding mat_diag_def 
-  by (subst setprod.distinct_set_conv_list[symmetric], auto)
+  by (subst prod.distinct_set_conv_list[symmetric], auto)
 
 lemma mat_diag_transpose[simp]: "dim\<^sub>r A = dim\<^sub>c A \<Longrightarrow>
   mat_diag (transpose\<^sub>m A) = mat_diag A" unfolding mat_diag_def by auto

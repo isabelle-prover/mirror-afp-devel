@@ -66,7 +66,7 @@ proof -
     also have "\<dots> = smult d (?rp (smult e (\<Prod>(a, i)\<in>set gs. a ^ Suc i)))" using sff'(1) by simp
     also have "\<dots> = smult c (?rp (\<Prod>(a, i)\<in>set gs. a ^ Suc i))" unfolding c by simp
     also have "?rp (\<Prod>(a, i)\<in>set gs. a ^ Suc i) = (\<Prod>(a, i)\<in>set fs. a ^ Suc i)"
-      unfolding setprod.distinct_set_conv_list[OF sff'(5)] setprod.distinct_set_conv_list[OF dist]
+      unfolding prod.distinct_set_conv_list[OF sff'(5)] prod.distinct_set_conv_list[OF dist]
       unfolding fs ri.map_poly_preserves_prod_list      
       by (rule arg_cong[where f = prod_list], insert exp, auto)
     finally show "f = smult c (\<Prod>(a, i)\<in>set fs. a ^ Suc i)" by auto

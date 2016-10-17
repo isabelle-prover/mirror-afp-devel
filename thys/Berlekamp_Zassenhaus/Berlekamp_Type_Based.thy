@@ -230,10 +230,10 @@ next
   have x_prod_list_A': "x = prod_list A'"
   proof -
     have "x = \<Prod>A" using xA by simp
-    also have "... = setprod id A" by simp
-    also have "... = setprod id (set A')" unfolding s by simp
+    also have "... = prod id A" by simp
+    also have "... = prod id (set A')" unfolding s by simp
     also have "... = prod_list (map id A')"
-      by (rule setprod.distinct_set_conv_list, simp add: card_distinct length_A' s)
+      by (rule prod.distinct_set_conv_list, simp add: card_distinct length_A' s)
     also have "... =  prod_list A'" by auto
     finally show ?thesis .
   qed
@@ -255,14 +255,14 @@ next
   proof (rule Cons.hyps[OF _ _ sf_P])
     have set_P: "set P \<noteq> {}" using False by auto
     have "prod_list P = prod_list (map id P)" by simp
-    also have "... = setprod id (set P)"
-      using setprod.distinct_set_conv_list[OF distinct_P, of id] by simp
+    also have "... = prod id (set P)"
+      using prod.distinct_set_conv_list[OF distinct_P, of id] by simp
     also have "... = \<Prod>(set P)" by simp
     finally have "prod_list P = \<Prod>(set P)" .
     hence "degree (prod_list P) = degree (\<Prod>(set P))" by simp
-    also have "... = degree (setprod id (set P))" by simp
+    also have "... = degree (prod id (set P))" by simp
     also have "... = (\<Sum>i\<in>(set P). degree (id i))"
-    proof (rule degree_setprod_eq_sum_degree)
+    proof (rule degree_prod_eq_sum_degree)
       show "\<forall>i\<in>set P. id i \<noteq> 0" using Cons.prems(2) by force
     qed
     also have "... > 0"
@@ -327,12 +327,12 @@ assumes dA: "distinct A"
 shows "prod_list A dvd prod_list B"
 proof -
   have "prod_list A = prod_list (map id A)" by auto
-  also have "... = setprod id (set A)"
-    by (rule setprod.distinct_set_conv_list[symmetric, OF dA])
-  also have "... dvd setprod id (set B)"
-    by (rule setprod_dvd_setprod_subset[OF _ s], auto)
+  also have "... = prod id (set A)"
+    by (rule prod.distinct_set_conv_list[symmetric, OF dA])
+  also have "... dvd prod id (set B)"
+    by (rule prod_dvd_prod_subset[OF _ s], auto)
   also have "... = prod_list (map id B)"
-    by (rule setprod.distinct_set_conv_list[OF dB])
+    by (rule prod.distinct_set_conv_list[OF dB])
   also have "... = prod_list B" by simp
   finally show ?thesis .
 qed
@@ -496,10 +496,10 @@ fixes p::"'b::ab_group_add poly"
 shows "degree q < degree p \<Longrightarrow> degree (p - q) = degree p"
 using degree_add_eq_left[of "-q" p] degree_minus by auto
 
-lemma coprime_setprod:
+lemma coprime_prod:
   fixes A::"'a mod_ring set" and g::"'a mod_ring \<Rightarrow> 'a mod_ring poly"
   assumes "\<forall>x\<in>A. coprime (g a) (g x)"
-  shows "coprime (g a) (setprod (\<lambda>x. g x) A)"
+  shows "coprime (g a) (prod (\<lambda>x. g x) A)"
 proof -
   have f: "finite A" by simp
   show ?thesis
@@ -513,10 +513,10 @@ proof -
 qed
 
 
-lemma coprime_setprod2:
+lemma coprime_prod2:
   fixes A::"'b::semiring_gcd set"
   assumes "\<forall>x\<in>A. coprime (a) (x)" and f: "finite A"
-  shows "coprime (a) (setprod (\<lambda>x. x) A)"
+  shows "coprime (a) (prod (\<lambda>x. x) A)"
   using f using assms
 proof (induct A)
   case (insert x A)
@@ -527,7 +527,7 @@ qed auto
 
 
 
-lemma divides_setprod:
+lemma divides_prod:
   fixes g::"'a mod_ring \<Rightarrow> 'a mod_ring poly"
   assumes "\<forall>c1 c2. c1 \<in> A \<and> c2 \<in> A \<and> c1 \<noteq> c2 \<longrightarrow> coprime (g c1) (g c2)"
   assumes "\<forall>c\<in> A. g c dvd f"
@@ -542,9 +542,9 @@ proof -
     also have "... dvd f"
     proof (rule divides_mult)
       show "g x dvd f" using insert.prems by auto
-      show "setprod g A dvd f" using insert.hyps(3) insert.prems by auto
-      show "coprime (g x) (setprod g A)"
-      proof (rule coprime_setprod, rule)
+      show "prod g A dvd f" using insert.hyps(3) insert.prems by auto
+      show "coprime (g x) (prod g A)"
+      proof (rule coprime_prod, rule)
         fix c assume "c \<in> A"
         thus "coprime (g x) (g c)" using insert.hyps(2) insert.prems(1) by blast
       qed
@@ -559,12 +559,12 @@ qed
 *)
 
 lemma poly_monom_identity_mod_p:
-  "monom (1::'a mod_ring) (CARD('a)) - monom 1 1 = setprod (\<lambda>x. [:0,1:] - [:x:]) (UNIV::'a mod_ring set)"
+  "monom (1::'a mod_ring) (CARD('a)) - monom 1 1 = prod (\<lambda>x. [:0,1:] - [:x:]) (UNIV::'a mod_ring set)"
   (is "?lhs = ?rhs")
 proof -
   let ?f="(\<lambda>x::'a mod_ring. [:0,1:] - [:x:])"
   have "?rhs dvd ?lhs"
-  proof (rule divides_setprod)
+  proof (rule divides_prod)
     {
     fix a::"'a mod_ring"
     have "poly ?lhs a = 0"
@@ -591,14 +591,14 @@ proof -
   qed
   have degree_rhs_card: "degree ?rhs = CARD('a)"
   proof -
-    have "degree (setprod ?f UNIV) = sum (degree \<circ> ?f) UNIV
-      \<and> coeff (setprod ?f UNIV) (sum (degree \<circ> ?f) UNIV) = 1"
-      by (rule degree_setprod_sum_monic, auto)
+    have "degree (prod ?f UNIV) = sum (degree \<circ> ?f) UNIV
+      \<and> coeff (prod ?f UNIV) (sum (degree \<circ> ?f) UNIV) = 1"
+      by (rule degree_prod_sum_monic, auto)
     moreover have "sum (degree \<circ> ?f) UNIV = CARD('a)" by auto
     ultimately show ?thesis by presburger
   qed
   have monic_lhs: "monic ?lhs" using degree_lhs_card by auto
-  have monic_rhs: "monic ?rhs" by (rule monic_setprod, simp)
+  have monic_rhs: "monic ?rhs" by (rule monic_prod, simp)
   have degree_eq: "degree ?rhs = degree ?lhs" unfolding degree_lhs_card degree_rhs_card ..
   have g_not_0: "g \<noteq> 0" using g monic_lhs by auto
   have degree_g0: "degree g = 0"
@@ -620,14 +620,14 @@ qed
 
 
 lemma poly_identity_mod_p:
-  "v^(CARD('a)) - v = setprod (\<lambda>x. v - [:x:]) (UNIV::'a mod_ring set)"
+  "v^(CARD('a)) - v = prod (\<lambda>x. v - [:x:]) (UNIV::'a mod_ring set)"
  proof -
   interpret r: ring_hom "\<lambda>q. q \<circ>\<^sub>p v"
     using pcompose_add pcompose_mult pcompose_1 pcompose_uminus by (unfold_locales, auto)
   have id: "monom 1 1 \<circ>\<^sub>p v = v" "[:0, 1:] \<circ>\<^sub>p v = v" unfolding pcompose_def by auto
   have id2: "monom 1 (CARD('a)) \<circ>\<^sub>p v = v ^ (CARD('a))" by (metis id(1) r.hom_power x_pow_n)
   show ?thesis using arg_cong[OF poly_monom_identity_mod_p, of "\<lambda> f. f \<circ>\<^sub>p v"]
-    unfolding r.hom_minus r.hom_setprod id pcompose_const id2 .
+    unfolding r.hom_minus r.hom_prod id pcompose_const id2 .
 qed
 
 
@@ -639,7 +639,7 @@ lemma coprime_gcd:
   using assms coprime_divisors by blast
 
 
-lemma divides_setprod_gcd:
+lemma divides_prod_gcd:
   fixes h::"'a mod_ring poly"
   assumes "\<forall>c1 c2. c1 \<in> A \<and> c2 \<in> A \<and> c1 \<noteq> c2\<longrightarrow> coprime (h-[:c1:]) (h-[:c2:])"
   shows "(\<Prod>c\<in>A. gcd f (h - [:c:])) dvd f"
@@ -655,7 +655,7 @@ proof -
       show "gcd f (h - [:x:]) dvd f" by simp
       show "(\<Prod>c\<in>A. gcd f (h - [:c:])) dvd f" using insert.hyps(3) insert.prems by auto
       show "coprime (gcd f (h - [:x:])) (\<Prod>c\<in>A. gcd f (h - [:c:]))"
-        proof (rule coprime_setprod, rule)
+        proof (rule coprime_prod, rule)
           fix c assume "c \<in> A"
           thus "coprime (gcd f (h - [:x:])) (gcd f (h - [:c:]))"
             by (metis coprime_gcd coprime_h_c_poly insert.hyps(2))
@@ -665,7 +665,7 @@ proof -
    qed auto
 qed
 
-lemma monic_setprod_gcd:
+lemma monic_prod_gcd:
 assumes f: "finite A" and f0: "(f :: 'b :: {field,factorial_ring_gcd} poly) \<noteq> 0"
 shows "monic (\<Prod>c\<in>A. gcd f (h - [:c:]))"
 using f
@@ -692,7 +692,7 @@ and "\<not> is_unit a"
 shows "\<not> a dvd c"
 using assms coprime_divisors coprime_id_is_unit by fastforce
 
-lemma divides_setprod2:
+lemma divides_prod2:
   fixes A::"'b::semiring_gcd set"
   assumes f: "finite A"
   and "\<forall>a\<in>A. a dvd c"
@@ -706,7 +706,7 @@ proof (induct A)
   proof (rule divides_mult)
     show "x dvd c" by (simp add: insert.prems)
     show "\<Prod>A dvd c" by (simp add: insert.prems insert.hyps)
-    show "coprime x (\<Prod>A)" using coprime_setprod2 f insert.hyps insert.prems by auto
+    show "coprime x (\<Prod>A)" using coprime_prod2 f insert.hyps insert.prems by auto
   qed
   finally show ?case .
 qed auto
@@ -767,7 +767,7 @@ qed
 theorem Berlekamp_gcd_step:
 fixes f::"'a mod_ring poly" and h::"'a mod_ring poly"
 assumes hq_mod_f: "[h^(CARD('a)) = h] (mod f)" and monic_f: "monic f" and sf_f: "square_free f"
-shows "f = setprod (\<lambda>c. gcd f (h - [:c:])) (UNIV::'a mod_ring set)"  (is "?lhs = ?rhs")
+shows "f = prod (\<lambda>c. gcd f (h - [:c:])) (UNIV::'a mod_ring set)"  (is "?lhs = ?rhs")
 proof (cases "f=0")
   case True
   thus ?thesis using coeff_0 monic_f zero_neq_one by auto
@@ -776,8 +776,8 @@ proof (cases "f=0")
   show ?thesis
   proof (rule poly_dvd_antisym)
     show "?rhs dvd f"
-      by (rule divides_setprod_gcd, simp add: coprime_h_c_poly)
-    have "monic ?rhs" by (rule monic_setprod_gcd[OF _ f_not_0], simp)
+      by (rule divides_prod_gcd, simp add: coprime_h_c_poly)
+    have "monic ?rhs" by (rule monic_prod_gcd[OF _ f_not_0], simp)
     thus "coeff f (degree f) = coeff ?rhs (degree ?rhs)"
       using monic_f by auto
     next
@@ -790,29 +790,29 @@ proof (cases "f=0")
         using monic_square_free_irreducible_factorization[OF monic_f sf_f] by blast
       have f_dvd_hqh: "f dvd (h^?p - h)" using hq_mod_f unfolding cong_poly_def
         using mod_eq_dvd_iff_poly by blast
-      also have hq_h_rw: "... = setprod (\<lambda>c. h - [:c:]) (UNIV::'a mod_ring set)"
+      also have hq_h_rw: "... = prod (\<lambda>c. h - [:c:]) (UNIV::'a mod_ring set)"
         by (rule poly_identity_mod_p)
-      finally have f_dvd_hc: "f dvd setprod (\<lambda>c. h - [:c:]) (UNIV::'a mod_ring set)" by simp
+      finally have f_dvd_hc: "f dvd prod (\<lambda>c. h - [:c:]) (UNIV::'a mod_ring set)" by simp
       have "f = \<Prod>P" using f_desc_square_free by simp
       also have "... dvd ?rhs"
-      proof (rule divides_setprod2[OF finite_P])
+      proof (rule divides_prod2[OF finite_P])
         show "\<forall>a1 a2. a1 \<in> P \<and> a2 \<in> P \<and> a1 \<noteq> a2 \<longrightarrow> coprime a1 a2"
           using coprime_polynomial_factorization[OF P finite_P] by simp
         show "\<forall>a\<in>P. a dvd (\<Prod>c\<in>UNIV. gcd f (h - [:c:]))"
         proof
           fix fi assume fi_P: "fi \<in> P"
           show "fi dvd ?rhs"
-          proof (rule dvd_setprod, auto)
+          proof (rule dvd_prod, auto)
             show "fi dvd f" using f_desc_square_free fi_P
-             using dvd_setprod_eqI finite_P by blast
+             using dvd_prod_eqI finite_P by blast
             hence "fi dvd (h^?p - h)" using dvd_trans f_dvd_hqh by auto
-            also have "... = setprod (\<lambda>c. h - [:c:]) (UNIV::'a mod_ring set)"
+            also have "... = prod (\<lambda>c. h - [:c:]) (UNIV::'a mod_ring set)"
               unfolding hq_h_rw by simp
-            finally have fi_dvd_setprod_hc: "fi dvd setprod (\<lambda>c. h - [:c:]) (UNIV::'a mod_ring set)" .
+            finally have fi_dvd_prod_hc: "fi dvd prod (\<lambda>c. h - [:c:]) (UNIV::'a mod_ring set)" .
             have irr_fi: "irreducible (fi)" using fi_P P by blast
             have fi_not_unit: "\<not> is_unit fi" using irr_fi by (simp add: irreducibleD(1) poly_dvd_1)
             have fi_dvd_hc: "\<exists>c\<in>UNIV::'a mod_ring set. fi dvd (h-[:c:])"
-              by (rule irreducible_dvd_setprod[OF irr_fi fi_dvd_setprod_hc])
+              by (rule irreducible_dvd_prod[OF irr_fi fi_dvd_prod_hc])
             thus "\<exists>c. fi dvd h - [:c:]" by simp
           qed
         qed
@@ -1038,12 +1038,12 @@ next
   show ?case
   proof (rule ccontr, unfold not_not)
     assume "n dvd fact (Suc k)"
-    also have "... = Suc k * \<Prod>{1..k}" unfolding fact_Suc unfolding fact_setprod by simp
+    also have "... = Suc k * \<Prod>{1..k}" unfolding fact_Suc unfolding fact_prod by simp
     finally have "n dvd Suc k * \<Prod>{1..k}" .
     hence "n dvd Suc k \<or> n dvd \<Prod>{1..k}" using prime_dvd_mult_eq_nat[OF prime_n] by blast
     moreover have  "\<not> n dvd Suc k" by (simp add: Suc.prems(1) nat_dvd_not_less)
     moreover hence "\<not> n dvd \<Prod>{1..k}" using Suc.hyps Suc.prems
-      using Suc_lessD fact_setprod[of k] by (metis of_nat_id)
+      using Suc_lessD fact_prod[of k] by (metis of_nat_id)
     ultimately show False by simp
   qed
 qed
@@ -1502,17 +1502,17 @@ proof -
   let ?p = "CARD('a)"
        have f_dvd_hqh: "f dvd (h^?p - h)" using h unfolding cong_poly_def
         using mod_eq_dvd_iff_poly by blast
-      also have hq_h_rw: "... = setprod (\<lambda>c. h - [:c:]) (UNIV::'a mod_ring set)"
+      also have hq_h_rw: "... = prod (\<lambda>c. h - [:c:]) (UNIV::'a mod_ring set)"
         by (rule poly_identity_mod_p)
-      finally have f_dvd_hc: "f dvd setprod (\<lambda>c. h - [:c:]) (UNIV::'a mod_ring set)" by simp
+      finally have f_dvd_hc: "f dvd prod (\<lambda>c. h - [:c:]) (UNIV::'a mod_ring set)" by simp
           have "fi dvd f" using f_desc_square_free fi_P
-            using dvd_setprod_eqI finite_P by blast
+            using dvd_prod_eqI finite_P by blast
           hence "fi dvd (h^?p - h)" using dvd_trans f_dvd_hqh by auto
-          also have "... = setprod (\<lambda>c. h - [:c:]) (UNIV::'a mod_ring set)" unfolding hq_h_rw by simp
-          finally have fi_dvd_setprod_hc: "fi dvd setprod (\<lambda>c. h - [:c:]) (UNIV::'a mod_ring set)" .
+          also have "... = prod (\<lambda>c. h - [:c:]) (UNIV::'a mod_ring set)" unfolding hq_h_rw by simp
+          finally have fi_dvd_prod_hc: "fi dvd prod (\<lambda>c. h - [:c:]) (UNIV::'a mod_ring set)" .
           have irr_fi: "irreducible (fi)" using fi_P P by blast
           have fi_not_unit: "\<not> is_unit fi" using irr_fi by (simp add: irreducibleD(1) poly_dvd_1)
-          show ?thesis using irreducible_dvd_setprod[OF irr_fi fi_dvd_setprod_hc] by auto
+          show ?thesis using irreducible_dvd_prod[OF irr_fi fi_dvd_prod_hc] by auto
 qed
 
 
@@ -1564,7 +1564,7 @@ next
     show "[a = b] (mod p)" using insert.prems by auto
     show "[a = b] (mod \<Prod>P)" using insert.prems insert.hyps by auto
     show "coprime p (\<Prod>P)"
-    proof (rule coprime_setprod2[OF _ insert.hyps(1)], rule ballI)
+    proof (rule coprime_prod2[OF _ insert.hyps(1)], rule ballI)
       fix x assume x: "x \<in> P"
       thus "coprime p x"
         using insert.prems
@@ -1677,16 +1677,16 @@ proof -
   have "u dvd (v^CARD('a) - v)"
     using v unfolding W cong_poly_def
     by (simp add: mod_eq_dvd_iff_poly)
-  moreover have "fi dvd u" using u_U U_irr_monic finite_U dvd_setprod_eqI fi_U by blast
+  moreover have "fi dvd u" using u_U U_irr_monic finite_U dvd_prod_eqI fi_U by blast
   ultimately have "fi dvd (v^CARD('a) - v)" using dvd_trans by fast
-  hence fi_dvd_setprod_vc: "fi dvd setprod (\<lambda>c. v - [:c:]) (UNIV::'a mod_ring set)"
+  hence fi_dvd_prod_vc: "fi dvd prod (\<lambda>c. v - [:c:]) (UNIV::'a mod_ring set)"
     by (simp add: poly_identity_mod_p)
   have irr_fi: "irreducible (fi)" using fi_U U_irr_monic by blast
   have fi_not_unit: "\<not> is_unit fi"
     using irr_fi
     by (simp add: irreducibleD(1) poly_dvd_1)
   have fi_dvd_vc: "\<exists>c. fi dvd v - [:c:]"
-    using irreducible_dvd_setprod[OF irr_fi fi_dvd_setprod_vc] by auto
+    using irreducible_dvd_prod[OF irr_fi fi_dvd_prod_vc] by auto
   from this obtain a where "fi dvd v - [:a:]" by blast
   hence "v mod fi = [:a:] mod fi" using mod_eq_dvd_iff_poly by blast
   also have "... = [:a:]" by (simp add: deg_fi mod_poly_less)
@@ -2202,8 +2202,8 @@ proof -
   obtain m and n::nat where P_m: "P = m ` {i. i < n}" and inj_on_m: "inj_on m {i. i < n}"
     using finite_imp_nat_seg_image_inj_on[OF finite_P] by blast
   hence "n = card P" by (simp add: card_image)
-  have degree_setprod: "degree (setprod m {i. i < n}) = degree u"
-    by (metis P_m f_desc_square_free inj_on_m setprod.reindex_cong)
+  have degree_prod: "degree (prod m {i. i < n}) = degree u"
+    by (metis P_m f_desc_square_free inj_on_m prod.reindex_cong)
   have not_zero: "\<forall>i\<in>{i. i < n}. m i \<noteq> 0"
     using P_m f_desc_square_free f_not_0 by auto
   obtain i where mi: "m i = p_i" and i: "i < n" using P_m pi by blast
@@ -2223,7 +2223,7 @@ proof -
         by (metis image_eqI inj_onD inj_on_m)
     qed
     show "\<forall>i\<in>{i. i < n}. m i \<noteq> 0" by (rule not_zero)
-    show "0 < degree (setprod m {i. i < n})" unfolding degree_setprod using deg_u0 by blast
+    show "0 < degree (prod m {i. i < n})" unfolding degree_prod using deg_u0 by blast
   qed
   from this obtain v where v: "\<forall>a\<in>{i. i < n}. [v = ?u a] (mod m a)"
   and degree_v: "degree v < (\<Sum>i\<in>{i. i < n}. degree (m i))" by blast
@@ -2268,7 +2268,7 @@ proof -
     proof (rule exI[of _ s_i], rule conjI)
       have pi_dvd_v_si: "p_i dvd v - [:s_i:]" using v_pi_si_mod mod_eq_dvd_iff_poly by blast
       have pj_dvd_v_sj: "p_j dvd v - [:s_j:]" using v_pj_sj_mod mod_eq_dvd_iff_poly by blast
-      have w_eq: "w = setprod (\<lambda>c. gcd w (v - [:c:])) (UNIV::'a mod_ring set)"
+      have w_eq: "w = prod (\<lambda>c. gcd w (v - [:c:])) (UNIV::'a mod_ring set)"
       proof (rule Berlekamp_gcd_step)
         show "[v ^ CARD('a) = v] (mod w)" using vp_v_mod cong_dvd_modulus_poly w_dvd_f by blast
         show "square_free w" by (rule square_free_factor[OF w_dvd_f sf_f])
@@ -2291,9 +2291,9 @@ proof -
     qed
     show "degree v < degree u"
     proof -
-      have "(\<Sum>i | i < n. degree (m i)) = degree (setprod m {i. i < n})"
-        by (rule degree_setprod_eq_sum_degree[symmetric, OF not_zero])
-      thus ?thesis using degree_v unfolding degree_setprod by auto
+      have "(\<Sum>i | i < n. degree (m i)) = degree (prod m {i. i < n})"
+        by (rule degree_prod_eq_sum_degree[symmetric, OF not_zero])
+      thus ?thesis using degree_v unfolding degree_prod by auto
     qed
   qed
 qed
@@ -2387,7 +2387,7 @@ proof -
   proof (rule exI[of _ s_i], rule conjI)
     have pi_dvd_v_si: "p_i dvd v - [:s_i:]" by (metis mod_eq_dvd_iff_poly mod_mod_trivial v_pi_si)
       have pj_dvd_v_sj: "p_j dvd v - [:s_j:]" by (metis mod_eq_dvd_iff_poly mod_mod_trivial v_pj_sj)
-      have w_eq: "w = setprod (\<lambda>c. gcd w (v - [:c:])) (UNIV::'a mod_ring set)"
+      have w_eq: "w = prod (\<lambda>c. gcd w (v - [:c:])) (UNIV::'a mod_ring set)"
       proof (rule Berlekamp_gcd_step)
         show "[v ^ CARD('a) = v] (mod w)" using v cong_dvd_modulus_poly w_dvd_f by blast
         show "square_free w" by (rule square_free_factor[OF w_dvd_f sf_f])
@@ -2426,12 +2426,12 @@ proof -
   obtain m and n::nat where P_m: "P = m ` {i. i < n}" and inj_on_m: "inj_on m {i. i < n}"
     using finite_imp_nat_seg_image_inj_on[OF finite_P] by blast
   hence n: "n = card P" by (simp add: card_image)
-  have degree_setprod: "degree (setprod m {i. i < n}) = degree u"
-    by (metis P_m u_desc_square_free inj_on_m setprod.reindex_cong)
+  have degree_prod: "degree (prod m {i. i < n}) = degree u"
+    by (metis P_m u_desc_square_free inj_on_m prod.reindex_cong)
   have not_zero: "\<forall>i\<in>{i. i < n}. m i \<noteq> 0"
     using P_m u_desc_square_free u_not_0 by auto
   have deg_sum_eq: "(\<Sum>i\<in>{i. i < n}. degree (m i)) = degree u"
-    by (metis degree_setprod degree_setprod_eq_sum_degree not_zero)
+    by (metis degree_prod degree_prod_eq_sum_degree not_zero)
   have coprime_mi_mj:"\<forall>i\<in>{i. i < n}. \<forall>j\<in>{i. i < n}. i \<noteq> j \<longrightarrow> coprime (m i) (m j)"
   proof (rule+)
     fix i j assume i: "i \<in> {i. i < n}"
@@ -2476,12 +2476,12 @@ proof -
      moreover have "\<forall>i\<in>{i. i < n}. [0 = (\<lambda>i. 0) i] (mod m i)"
       by (auto simp add: cong_poly_def)
      moreover have "degree 0 < (\<Sum>i\<in>{i. i < n}. degree (m i))"
-      using degree_setprod deg_sum_eq deg_u0 by force
+      using degree_prod deg_sum_eq deg_u0 by force
      moreover have "\<exists>!x. degree x < (\<Sum>i\<in>{i. i < n}. degree (m i))
         \<and> (\<forall>i\<in>{i. i < n}. [x = (\<lambda>i. 0) i] (mod m i))"
      proof (rule chinese_remainder_unique_poly[OF not_zero coprime_mi_mj])
-      show "0 < degree (setprod m {i. i < n})"
-        using deg_u0 degree_setprod by linarith
+      show "0 < degree (prod m {i. i < n})"
+        using deg_u0 degree_prod by linarith
      qed
      ultimately show "x = 0" by blast
   qed
@@ -2494,8 +2494,8 @@ proof -
     fix x::"'a mod_ring vec" assume x: "x \<in> carrier\<^sub>v (card P)"
     have " \<exists>!v. degree v < (\<Sum>i\<in>{i. i < n}. degree (m i)) \<and> (\<forall>i\<in>{i. i < n}. [v = (\<lambda>i. [:x $ i:]) i] (mod m i))"
     proof (rule chinese_remainder_unique_poly[OF not_zero coprime_mi_mj])
-      show "0 < degree (setprod m {i. i < n})"
-        using deg_u0 degree_setprod by linarith
+      show "0 < degree (prod m {i. i < n})"
+        using deg_u0 degree_prod by linarith
     qed
     from this obtain v where deg_v: "degree v < (\<Sum>i\<in>{i. i < n}. degree (m i))"
       and v_x_cong: "(\<forall>i \<in> {i. i < n}. [v = (\<lambda>i. [:x $ i:]) i] (mod m i))" by auto
@@ -2520,7 +2520,7 @@ proof -
         fix p1 p2 assume "p1 \<in> P" and "p2 \<in> P" and "p1 \<noteq> p2" thus "coprime p1 p2"
           by (rule coprime_polynomial_factorization[OF P finite_P])
       qed
-      show "degree v < degree u" using deg_v deg_sum_eq degree_setprod by presburger
+      show "degree v < degree u" using deg_v deg_sum_eq degree_prod by presburger
       show "x = vec n (\<lambda>i. coeff (v mod m i) 0)"
       proof (unfold vec_eq_iff, rule conjI)
          show "dim\<^sub>v x = dim\<^sub>v (vec n (\<lambda>i. coeff (v mod m i) 0))" using x n by simp
@@ -2696,7 +2696,7 @@ next
   proof (rule monic_factorization_uniqueness[OF _ _ _ fin_P P])
     show "finite (set Q)" by auto
     show "\<Prod>(set Q) = \<Prod>P" using Q_us'
-      by (metis distinct_Q f_P f_us' list.map_ident setprod.distinct_set_conv_list)
+      by (metis distinct_Q f_P f_us' list.map_ident prod.distinct_set_conv_list)
     show "set Q \<subseteq> {q. irreducible q \<and> monic q}" using Q by auto
   qed
   hence "length Q = card P" using distinct_Q distinct_card by fastforce
@@ -2745,7 +2745,7 @@ lemma not_irreducible_factor_yields_prime_factors:
 proof -
   from finite_distinct_list[OF fin] obtain ps where Pps: "P = set ps" and dist: "distinct ps" by auto
   have fP: "f = prod_list ps" unfolding fP Pps using dist
-    by (simp add: setprod.distinct_set_conv_list)
+    by (simp add: prod.distinct_set_conv_list)
   note P = P[unfolded Pps]
   have "set ps \<subseteq> P" unfolding Pps by auto
   from uf[unfolded fP] P dist this
@@ -2860,7 +2860,7 @@ proof -
         have "u = (\<Prod>c\<in>UNIV. gcd u (v - [:c:]))"
           using Berlekamp_gcd_step[OF vu mon_u sf_u] .
         also have "\<dots> = (\<Prod>i \<in> {0..< int CARD('a)}. ?g i)"
-          by (rule sym, rule setprod.reindex_cong[OF inj_to_int_mod_ring range_to_int_mod_ring[symmetric]],
+          by (rule sym, rule prod.reindex_cong[OF inj_to_int_mod_ring range_to_int_mod_ring[symmetric]],
           simp add: of_int_of_int_mod_ring)
         finally have u_prod: "u = (\<Prod>i \<in> {0..< int CARD('a)}. ?g i)" .
         let ?S = "{0..<int CARD('a)} - {i. ?g i = 1}"
@@ -2898,9 +2898,9 @@ proof -
 
         have "u = (\<Prod>i \<in> {0..< int CARD('a)}. ?g i)" by fact
         also have "\<dots> = (\<Prod>i \<in> ?S. ?g i)"
-          by (rule sym, rule setprod.setdiff_irrelevant, auto)
+          by (rule sym, rule prod.setdiff_irrelevant, auto)
         also have "\<dots> = \<Prod> (set (udivs u))" unfolding udivs_def set_filter set_map
-          by (rule sym, rule setprod.reindex_cong[of ?g, OF inj _ refl], auto simp: int_set[symmetric])
+          by (rule sym, rule prod.reindex_cong[of ?g, OF inj _ refl], auto simp: int_set[symmetric])
         finally have u_udivs: "u = \<Prod>(set (udivs u))" .
         {
           fix w
@@ -2940,7 +2940,7 @@ proof -
                 by (meson coprime_not_unit_not_dvd poly_dvd_1)
               obtain w' where w': "?g j' = w'" by auto
               from u_udivs sf_u have "square_free (\<Prod>(set (udivs u)))" by simp
-              from square_free_setprodD[OF this finite_set mem mem'] cop neq
+              from square_free_prodD[OF this finite_set mem mem'] cop neq
               show False by simp
             qed
           }
@@ -2955,7 +2955,7 @@ proof -
           have "?S = set ?is" unfolding int_set[symmetric] by auto
           thus "inj_on ?g (set ?is)" using inj by auto
         qed (auto simp: inj_on_def)
-        from u_udivs setprod.distinct_set_conv_list[OF dist, of id]
+        from u_udivs prod.distinct_set_conv_list[OF dist, of id]
         have "prod_list (udivs u) = u" by auto
         note udivs this dist
       } note udivs = this

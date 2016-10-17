@@ -106,8 +106,8 @@ lemma emeasure_PiM_exponential_Ioi_finite:
   shows "emeasure (\<Pi>\<^sub>M i\<in>I. exponential (R i)) (prod_emb I (\<lambda>i. exponential (R i)) J (\<Pi>\<^sub>E j\<in>J. {x<..})) = exp (- x * (\<Sum>i\<in>J. R i))"
 proof (subst emeasure_PiM_emb)
   from assms show "(\<Prod>i\<in>J. emeasure (exponential (R i)) {x<..}) = ennreal (exp (- x * sum R J))"
-    by (subst setprod.cong[OF refl emeasure_exponential_Ioi])
-       (auto simp add: setprod_ennreal exp_sum sum_negf[symmetric] sum_distrib_left)
+    by (subst prod.cong[OF refl emeasure_exponential_Ioi])
+       (auto simp add: prod_ennreal exp_sum sum_negf[symmetric] sum_distrib_left)
 qed (insert assms, auto intro!: prob_space_exponential)
 
 lemma emeasure_PiM_exponential_Ioi_sequence:

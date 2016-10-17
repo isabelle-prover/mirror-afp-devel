@@ -474,8 +474,8 @@ proof -
       let ?prod = "\<lambda> fs. (\<Prod>(a, i)\<in>set fs. a ^ Suc i)" 
       let ?pr = "\<lambda> fs. (\<Prod>(a, i)\<leftarrow>fs. a ^ Suc i)"
       define pr where "pr = ?prod fs" 
-      from \<open>distinct fs\<close> have pfs: "?prod fs = ?pr fs" by (rule setprod.distinct_set_conv_list)
-      from \<open>distinct Fs\<close> have pFs: "?prod Fs = ?pr Fs" by (rule setprod.distinct_set_conv_list)
+      from \<open>distinct fs\<close> have pfs: "?prod fs = ?pr fs" by (rule prod.distinct_set_conv_list)
+      from \<open>distinct Fs\<close> have pFs: "?prod Fs = ?pr Fs" by (rule prod.distinct_set_conv_list)
       from out_rel have "yun_erel (?prod fs) (?prod Fs)" unfolding pfs pFs
       proof (induct fs Fs rule: list_all2_induct)
         case (Cons ai fs Ai Fs)

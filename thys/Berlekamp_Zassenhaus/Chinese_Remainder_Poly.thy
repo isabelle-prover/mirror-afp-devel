@@ -127,7 +127,7 @@ proof (rule finite_set_choice, rule fin, rule ballI)
   fix i
   assume "i : A"
   with cop have "coprime (\<Prod>j \<in> A - {i}. m j) (m i)"
-    by (intro setprod_coprime, auto)
+    by (intro prod_coprime, auto)
   then have "EX x. [(\<Prod>j \<in> A - {i}. m j) * x = 1] (mod m i)"
     by (elim cong_solve_coprime_poly)
   then obtain x where "[(\<Prod>j \<in> A - {i}. m j) * x = 1] (mod m i)"
@@ -136,7 +136,7 @@ proof (rule finite_set_choice, rule fin, rule ballI)
     (mod (\<Prod>j \<in> A - {i}. m j))"
     by (subst mult.commute, rule cong_mult_self_poly)
   ultimately show "\<exists>a. [a = 1] (mod m i) \<and> [a = 0]
-      (mod setprod m (A - {i}))"
+      (mod prod m (A - {i}))"
     by blast
 qed
 
@@ -218,7 +218,7 @@ lemma coprime_cong_prod_poly [rule_format]: "finite A \<Longrightarrow>
          [x = y] (mod (\<Prod>i\<in>A. m i))"
   apply (induct set: finite)
   apply auto
-  apply (metis (full_types) coprime_cong_mult_poly gcd.commute setprod_coprime)
+  apply (metis (full_types) coprime_cong_mult_poly gcd.commute prod_coprime)
   done
 
 lemma cong_less_modulus_unique_poly:
@@ -234,22 +234,22 @@ lemma chinese_remainder_unique_poly:
     and cop: "\<forall>i\<in>A. (\<forall>j\<in>A. i \<noteq> j \<longrightarrow> coprime (m i) (m j))"
     (*The following assumption should not be necessary, but I need it since in Isabelle 
       degree 0 is 0 instead of -\<infinity>*)
-    and not_constant: "0 < degree (setprod m A)" 
+    and not_constant: "0 < degree (prod m A)" 
   shows "EX! x. degree x < (\<Sum>i\<in>A. degree (m i)) \<and> (\<forall>i\<in>A. [x = u i] (mod m i))"
 proof -
   from not_constant have fin: "finite A"
-    by (metis degree_1 gr_implies_not0 setprod.infinite)
+    by (metis degree_1 gr_implies_not0 prod.infinite)
   from chinese_remainder_poly [OF fin cop]
   obtain y where one: "(ALL i:A. [y = u i] (mod m i))"
     by blast
   let ?x = "y mod (\<Prod>i\<in>A. m i)"
-  have degree_setprod_sum: "degree (setprod m A) = (\<Sum>i\<in>A. degree (m i))" 
-    by (rule degree_setprod_eq_sum_degree[OF nz])
+  have degree_prod_sum: "degree (prod m A) = (\<Sum>i\<in>A. degree (m i))" 
+    by (rule degree_prod_eq_sum_degree[OF nz])
   from fin nz have prodnz: "(\<Prod>i\<in>A. (m i)) \<noteq> 0"
      by auto
   (*This would hold without the premise not_constant if degree 0 = -\<infinity>*)
   have less: "degree ?x < (\<Sum>i\<in>A. degree (m i))" 
-    unfolding degree_setprod_sum[symmetric]
+    unfolding degree_prod_sum[symmetric]
     using degree_mod_less[OF prodnz, of y]
     using not_constant
     by auto    
@@ -271,9 +271,9 @@ proof -
     fix z::"'b poly"
     assume zless: "degree z < (\<Sum>i\<in>A. degree (m i))"
     assume zcong: "(ALL i:A. [z = u i] (mod m i))"   
-    have deg1: "degree z < degree (setprod m A)"
-      using degree_setprod_sum zless by simp
-    have deg2: "degree ?x < degree (setprod m A)"
+    have deg1: "degree z < degree (prod m A)"
+      using degree_prod_sum zless by simp
+    have deg2: "degree ?x < degree (prod m A)"
       by (metis deg1 degree_0 degree_mod_less gr0I gr_implies_not0)
     have "ALL i:A. [?x = z] (mod m i)"
       apply clarify

@@ -55,9 +55,9 @@ lemma irreducible_dvd_pow: fixes p :: "'a poly"
   shows "p dvd q ^ n \<Longrightarrow> p dvd q"
   using irreducible_prime_elem[OF irr] by (rule prime_elem_dvd_power)
 
-lemma irreducible_dvd_setprod: fixes p :: "'a poly"
+lemma irreducible_dvd_prod: fixes p :: "'a poly"
   assumes irr: "irreducible p"
-  and dvd: "p dvd setprod f as"
+  and dvd: "p dvd prod f as"
   shows "\<exists> a \<in> as. p dvd f a"
 proof -
   from irr[unfolded irreducible_def] have deg: "degree p \<noteq> 0" by auto
@@ -66,7 +66,7 @@ proof -
   from dvd show ?thesis
   proof (induct as rule: infinite_finite_induct)
     case (insert a as)
-    hence "setprod f (insert a as) = f a * setprod f as" by auto
+    hence "prod f (insert a as) = f a * prod f as" by auto
     from irreducible_dvd_mult[OF irr insert(4)[unfolded this]]
     show ?case using insert(3) by auto
   qed (insert p1, auto)

@@ -32,7 +32,7 @@ proof (induction rule: finite_induct)
   also from fin have "\<dots> = (\<Sum>x\<in>Pow A. 1 / \<Prod>x) + (\<Sum>x\<in>Pow A. 1 / (a * \<Prod>x))"
     by (subst IH) (auto simp add: algebra_simps sum_divide_distrib)
   also from fin a have "(\<Sum>x\<in>Pow A. 1 / (a * \<Prod>x)) = (\<Sum>x\<in>Pow A. 1 / \<Prod>(insert a x))"
-    by (intro sum.cong refl, subst setprod.insert) (auto dest: finite_subset)
+    by (intro sum.cong refl, subst prod.insert) (auto dest: finite_subset)
   also from a have "\<dots> = (\<Sum>x\<in>insert a ` Pow A. 1 / \<Prod>x)"
     by (subst sum.reindex) (auto simp: inj_on_def)
   also from fin a have "(\<Sum>x\<in>Pow A. 1 / \<Prod>x) + \<dots> = (\<Sum>x\<in>Pow A \<union> insert a ` Pow A. 1 / \<Prod>x)"
@@ -133,14 +133,14 @@ proof -
     by (subst sum_product, subst sum.cartesian_product) (simp add: case_prod_beta)
   also have "\<dots> \<le> (\<Sum>A\<in>Pow (P n). 1 / real (\<Prod>A)) * (5/3)"
     by (intro mult_left_mono prime_harmonic_aux2 sum_nonneg)
-       (auto simp: P_def intro!: setprod_nonneg)
+       (auto simp: P_def intro!: prod_nonneg)
   also have "(\<Sum>A\<in>Pow (P n). 1 / real (\<Prod>A)) = (\<Sum>A\<in>(op` real) ` Pow (P n). 1 / \<Prod>A)"
-    by (subst sum.reindex) (auto simp: inj_on_def inj_image_eq_iff setprod.reindex)
+    by (subst sum.reindex) (auto simp: inj_on_def inj_image_eq_iff prod.reindex)
   also have "(op` real) ` Pow (P n) = Pow (real ` P n)" by (intro image_Pow_surj refl)
   also have "(\<Sum>A\<in>Pow (real ` P n). 1 / \<Prod>A) = (\<Prod>x\<in>real ` P n. 1 + 1 / x)"
     by (intro prime_harmonic_aux1 [symmetric] finite_imageI) simp_all
-  also have "\<dots> = (\<Prod>i\<in>P n. 1 + 1 / real i)" by (subst setprod.reindex) (auto simp: inj_on_def)
-  also have "\<dots> \<le> (\<Prod>i\<in>P n. exp (1 / real i))" by (intro setprod_mono) auto
+  also have "\<dots> = (\<Prod>i\<in>P n. 1 + 1 / real i)" by (subst prod.reindex) (auto simp: inj_on_def)
+  also have "\<dots> \<le> (\<Prod>i\<in>P n. exp (1 / real i))" by (intro prod_mono) auto
   also have "\<dots> = exp (\<Sum>i\<in>P n. 1 / real i)" by (simp add: exp_sum)
   finally have "ln (harm n) \<le> ln (\<dots> * (5/3))" using n
     by (subst ln_le_cancel_iff) simp_all

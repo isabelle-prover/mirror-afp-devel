@@ -59,7 +59,7 @@ proof -
         using irreducible_square_free[of a] unfolding irreducible_def by auto
     }
     have eq: "f = smult c (\<Prod>(a, i)\<leftarrow>fs. a ^ Suc i)" unfolding 
-      setprod.distinct_set_conv_list[OF sff'(5)]
+      prod.distinct_set_conv_list[OF sff'(5)]
       sff'(1) c
     proof (rule arg_cong[where f = "smult a"], unfold fs, insert sff'(2), induct psi)
       case (Cons pi psi)
@@ -175,7 +175,7 @@ proof -
       thus "fs ! k \<noteq> fs ! K" unfolding f by auto
     qed
     show "f = smult c (\<Prod>(a, i)\<in>set fs. a ^ Suc i)" unfolding eq
-      setprod.distinct_set_conv_list[OF dist] by simp
+      prod.distinct_set_conv_list[OF dist] by simp
     fix fi i Fi I
     assume mem: "(fi, i) \<in> set fs" "(Fi,I) \<in> set fs" and diff: "(fi, i) \<noteq> (Fi, I)" 
     then obtain k K where k: "k < length fs" "K < length fs" 

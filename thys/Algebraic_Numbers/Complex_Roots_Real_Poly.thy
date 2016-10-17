@@ -138,13 +138,13 @@ proof (induct n)
 qed simp
 
 
-lemma real_poly_setprod: fixes f :: "'a \<Rightarrow> 'b :: {idom,real_algebra_1} poly"
+lemma real_poly_prod: fixes f :: "'a \<Rightarrow> 'b :: {idom,real_algebra_1} poly"
   assumes "\<And> x. x \<in> S \<Longrightarrow> set (coeffs (f x)) \<subseteq> \<real>"
-  shows "set (coeffs (setprod f S)) \<subseteq> \<real>" 
+  shows "set (coeffs (prod f S)) \<subseteq> \<real>" 
   using assms
 proof (induct S rule: infinite_finite_induct)
   case (insert x S) 
-  hence id: "setprod f (insert x S) = f x * setprod f S" by auto
+  hence id: "prod f (insert x S) = f x * prod f S" by auto
   show ?case unfolding id
     by (rule real_poly_mult[OF _ insert(3)], insert insert, auto)
 qed auto

@@ -206,7 +206,7 @@ lemma prod_list_power: fixes xs :: "'a :: comm_monoid_mult list"
 
 lemma set_upt_Suc: "{0 ..< Suc i} = insert i {0 ..< i}" by auto
 
-lemma setprod_pow[simp]: "(\<Prod>i = 0..<n. p) = (p :: 'a :: comm_monoid_mult) ^ n"
+lemma prod_pow[simp]: "(\<Prod>i = 0..<n. p) = (p :: 'a :: comm_monoid_mult) ^ n"
   by (induct n, auto simp: set_upt_Suc)
 
 
@@ -441,15 +441,15 @@ proof -
   show ?thesis unfolding xs dvd_def by (intro exI[of _ "prod_list (ys @ zs)"], simp add: ac_simps)
 qed
 
-lemma dvd_setprod: 
+lemma dvd_prod: 
 fixes A::"'b set" 
 assumes "\<exists>b\<in>A. a dvd f b" "finite A"
-shows "a dvd setprod f A" 
+shows "a dvd prod f A" 
 using assms(2,1)
 proof (induct A)
   case (insert x A)
   thus ?case 
-    using comm_monoid_mult_class.dvd_mult dvd_mult2 insert_iff setprod.insert by auto
+    using comm_monoid_mult_class.dvd_mult dvd_mult2 insert_iff prod.insert by auto
 qed auto
 
 context

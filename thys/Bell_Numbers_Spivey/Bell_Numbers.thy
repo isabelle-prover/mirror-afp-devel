@@ -532,7 +532,7 @@ proof -
                 by (subst card_Diff_subset) auto
               from this show ?thesis
                 using \<open>finite B\<close> P
-                by (subst card_PiE) (simp add: setprod_constant)+
+                by (subst card_PiE) (simp add: prod_constant)+
             qed
             ultimately have "card ?expr = j ^ (n - k)"
               by (simp add: card_bind_constant)

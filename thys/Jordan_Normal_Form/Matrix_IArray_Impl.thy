@@ -210,7 +210,7 @@ proof -
   qed
 qed  
 
-declare setprod.set_conv_list[code del, code_unfold]
+declare prod.set_conv_list[code del, code_unfold]
 
 derive (eq) ceq mat vec
 derive (no) ccompare mat vec

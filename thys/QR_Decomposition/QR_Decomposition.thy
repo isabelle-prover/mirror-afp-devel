@@ -667,7 +667,7 @@ lemma upper_triangular_invertible:
   and d: "\<forall>i. A $ i $ i \<noteq> 0" 
   shows "invertible A"
 proof -
-  have det_R: "det A = (setprod (\<lambda>i. A$i$i) (UNIV::'n set))"
+  have det_R: "det A = (prod (\<lambda>i. A$i$i) (UNIV::'n set))"
     using det_upperdiagonal u unfolding upper_triangular_def by blast
   also have "... \<noteq> 0" using d by auto
   finally show ?thesis by (metis invertible_det_nz)
@@ -739,11 +739,11 @@ text{*QR for computing determinants*}
 lemma det_QR_decomposition:
   fixes A::"real^'n::{mod_type}^'n::{mod_type}"
   assumes r: "rank A = ncols A"
-  shows "\<bar>det A\<bar> = \<bar>(setprod (\<lambda>i. snd(QR_decomposition A)$i$i) (UNIV::'n set))\<bar>"
+  shows "\<bar>det A\<bar> = \<bar>(prod (\<lambda>i. snd(QR_decomposition A)$i$i) (UNIV::'n set))\<bar>"
 proof -
   let ?Q="fst(QR_decomposition A)"
   let ?R="snd(QR_decomposition A)"
-  have det_R: "det ?R = (setprod (\<lambda>i. snd(QR_decomposition A)$i$i) (UNIV::'n set))"
+  have det_R: "det ?R = (prod (\<lambda>i. snd(QR_decomposition A)$i$i) (UNIV::'n set))"
     apply (rule det_upperdiagonal)
     using upper_triangular_snd_QR_decomposition[OF r]
     unfolding upper_triangular_def by simp
@@ -752,7 +752,7 @@ proof -
   also have "... = 1 * \<bar>det ?R\<bar>" using det_orthogonal_matrix[OF orthogonal_matrix_fst_QR_decomposition'[OF r]]
     by auto
   also have "... = \<bar>det ?R\<bar>" by simp
-  also have "... = \<bar>(setprod (\<lambda>i. snd(QR_decomposition A)$i$i) (UNIV::'n set))\<bar>" unfolding det_R ..
+  also have "... = \<bar>(prod (\<lambda>i. snd(QR_decomposition A)$i$i) (UNIV::'n set))\<bar>" unfolding det_R ..
   finally show ?thesis .  
 qed
 

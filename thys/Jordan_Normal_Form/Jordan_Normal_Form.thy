@@ -30,7 +30,7 @@ lemma jordan_block_carrier[simp]: "jordan_block n k \<in> carrier\<^sub>m n n"
   unfolding mat_carrier_def by auto
 
 lemma jordan_block_char_poly: "char_poly (jordan_block n a) = [: -a, 1:]^n"
-  unfolding char_poly_defs by (subst det_upper_triangular[of _ n], auto simp: prod_list_diag_setprod)
+  unfolding char_poly_defs by (subst det_upper_triangular[of _ n], auto simp: prod_list_diag_prod)
 
 lemma jordan_block_pow_carrier[simp]:
   "jordan_block n a ^\<^sub>m r \<in> carrier\<^sub>m n n" by auto

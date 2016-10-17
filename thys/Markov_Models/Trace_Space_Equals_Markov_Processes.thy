@@ -187,8 +187,8 @@ proof (rule stream_space_eq_sstart)
     also have "\<dots> = emeasure (K.T t) (sstart S xs) * pmf (K s) t"
       by (simp add: emeasure_pmf_single max_def)
     finally show ?case
-      by (simp add: lessThan_Suc_eq_insert_0 Zero_notin_Suc setprod.reindex Cons
-        setprod_nonneg ennreal_mult[symmetric])
+      by (simp add: lessThan_Suc_eq_insert_0 Zero_notin_Suc prod.reindex Cons
+        prod_nonneg ennreal_mult[symmetric])
   qed
   also have "pmf I s * ennreal (\<Prod>i<length xs. pmf (K ((s#xs)!i)) (xs!i)) =
     \<P>(x in M. \<forall>i\<le>length xs. X i x = (s # xs) ! i)"
@@ -204,7 +204,7 @@ proof (rule stream_space_eq_sstart)
     let ?l = "length xs" and ?lt = "length (xs @ [t])" and ?xs' = "s # xs @ [t]"
     have "ennreal (pmf I s) * (\<Prod>i<?lt. pmf (K ((?xs') ! i)) ((xs @ [t]) ! i)) =
       (ennreal (pmf I s) * (\<Prod>i<?l. pmf (K ((s # xs) ! i)) (xs ! i))) * pmf (K ((s # xs) ! ?l)) t"
-      by (simp add: lessThan_Suc mult_ac nth_append append_Cons[symmetric] setprod_nonneg ennreal_mult[symmetric]
+      by (simp add: lessThan_Suc mult_ac nth_append append_Cons[symmetric] prod_nonneg ennreal_mult[symmetric]
                del: append_Cons)
     also have "\<dots> = \<P>(x in M. \<forall>i\<le>?l. X i x = (s # xs) ! i) * pmf (K ((s # xs) ! ?l)) t"
       using snoc by (simp add: ennreal_mult[symmetric])

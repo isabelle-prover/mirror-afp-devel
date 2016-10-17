@@ -296,10 +296,10 @@ lemma det_echelon_form_of_euclidean_iarrays[code]:
 proof -
   let ?f="(\<lambda>i. snd (echelon_form_of_det_iarrays (matrix_to_iarray A) euclid_ext2) !! i !! i)"
   have "prod_list (map ?f [0..<nrows_iarray (matrix_to_iarray A)]) 
-    = setprod ?f (set [0..<nrows_iarray (matrix_to_iarray A)])" 
-    by (metis (mono_tags, lifting) distinct_upt setprod.distinct_set_conv_list)  
-  also have "... = setprod (\<lambda>i. snd (echelon_form_of_det A euclid_ext2) $ i $ i) (UNIV:: 'n set)"
-  proof (rule setprod.reindex_cong[of "to_nat::('n=>nat)"])
+    = prod ?f (set [0..<nrows_iarray (matrix_to_iarray A)])" 
+    by (metis (mono_tags, lifting) distinct_upt prod.distinct_set_conv_list)  
+  also have "... = prod (\<lambda>i. snd (echelon_form_of_det A euclid_ext2) $ i $ i) (UNIV:: 'n set)"
+  proof (rule prod.reindex_cong[of "to_nat::('n=>nat)"])
     show "inj (to_nat::('n=>nat))" by (metis strict_mono_imp_inj_on strict_mono_to_nat)
     show "set [0..<nrows_iarray (matrix_to_iarray A)] = range (to_nat::'n=>nat)"
       unfolding nrows_eq_card_rows using bij_to_nat[where ?'a='n]
@@ -315,7 +315,7 @@ proof -
     (matrix_to_iarray A) euclid_ext2) !! i !! i) [0..<nrows_iarray (matrix_to_iarray A)]) =
     (\<Prod>i\<in>UNIV. snd (echelon_form_of_det A euclid_ext2) $ i $ i)" .  
   have "det A = 1 div (fst (echelon_form_of_det A euclid_ext2)) 
-    * setprod (\<lambda>i. snd (echelon_form_of_det A euclid_ext2) $ i $ i) (UNIV:: 'n set)"
+    * prod (\<lambda>i. snd (echelon_form_of_det A euclid_ext2) $ i $ i) (UNIV:: 'n set)"
     unfolding det_echelon_form_of_euclidean ..
   also have "... = (let A' = echelon_form_of_det_iarrays (matrix_to_iarray A) euclid_ext2
     in 1 div (fst A') 

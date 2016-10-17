@@ -540,30 +540,30 @@ proof -
 
   have p_0 [simp]: "p 0 = 1" by (simp add: p_def)
   have p_Suc: "p (Suc n) = p n * (4 * real (Suc n)^2) / (4 * real (Suc n)^2 - 1)"
-    for n unfolding p_def by (subst setprod_nat_ivl_Suc') simp_all
+    for n unfolding p_def by (subst prod_nat_ivl_Suc') simp_all
   have p: "p = (\<lambda>n. 16 ^ n * fact n ^ 4 / (fact (2 * n))\<^sup>2 / (2 * real n + 1))"
   proof
     fix n :: nat
     have "p n = (\<Prod>k=1..n. (2*real k)^2 / (2*real k - 1) / (2 * real k + 1))"
-      unfolding p_def by (intro setprod.cong refl) (simp add: field_simps power2_eq_square)
+      unfolding p_def by (intro prod.cong refl) (simp add: field_simps power2_eq_square)
     also have "\<dots> = (\<Prod>k=1..n. (2*real k)^2 / (2*real k - 1)) / (\<Prod>k=1..n. (2 * real (Suc k) - 1))"
-      by (simp add: setprod_dividef setprod.distrib add_ac)
+      by (simp add: prod_dividef prod.distrib add_ac)
     also have "(\<Prod>k=1..n. (2 * real (Suc k) - 1)) = (\<Prod>k=Suc 1..Suc n. (2 * real k - 1))"
-      by (subst setprod.atLeast_Suc_atMost_Suc_shift) simp_all
+      by (subst prod.atLeast_Suc_atMost_Suc_shift) simp_all
     also have "\<dots> = (\<Prod>k=1..n. (2 * real k - 1)) * (2 * real n + 1)"
-      by (induction n) (simp_all add: setprod_nat_ivl_Suc')
+      by (induction n) (simp_all add: prod_nat_ivl_Suc')
     also have "(\<Prod>k = 1..n. (2 * real k)\<^sup>2 / (2 * real k - 1)) / \<dots> =
                  (\<Prod>k = 1..n. (2 * real k)^2 / (2 * real k - 1)^2) / (2 * real n + 1)"
-      unfolding power2_eq_square by (simp add: setprod.distrib setprod_dividef)
+      unfolding power2_eq_square by (simp add: prod.distrib prod_dividef)
     also have "(\<Prod>k = 1..n. (2 * real k)^2 / (2 * real k - 1)^2) =
                  (\<Prod>k = 1..n. (2 * real k)^4 / ((2*real k)*(2 * real k - 1))^2)"
-      by (intro setprod.cong refl) 
+      by (intro prod.cong refl) 
          (simp add: divide_simps, (simp add: field_simps power2_eq_square eval_nat_numeral))
     also have "\<dots> = 16^n * fact n^4 / (\<Prod>k=1..n. (2*real k) * (2*real k - 1))^2"
-      by (simp add: setprod.distrib setprod_dividef fact_setprod
-            setprod_power_distrib [symmetric] setprod_constant)
+      by (simp add: prod.distrib prod_dividef fact_prod
+            prod_power_distrib [symmetric] prod_constant)
     also have "(\<Prod>k=1..n. (2*real k) * (2*real k - 1)) = fact (2*n)"
-      by (induction n) (simp_all add: algebra_simps setprod_nat_ivl_Suc')
+      by (induction n) (simp_all add: algebra_simps prod_nat_ivl_Suc')
     finally show "p n = 16 ^ n * fact n ^ 4 / (fact (2 * n))\<^sup>2 / (2 * real n + 1)" .
   qed
 

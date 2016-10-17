@@ -431,8 +431,8 @@ proof -
       thus "signof p = of_int (sign ?q)" unfolding signof_def sign_def by auto
       show "(\<Prod>i = 0..<CARD('n). a $h ?fn i $h ?fn (p i)) =
            (\<Prod>i\<in>UNIV. a $h i $h ?q i)" unfolding 
-           range_to_nat[symmetric] setprod.reindex[OF inj_to_nat]
-        by (rule setprod.cong[OF refl], unfold o_def, simp)
+           range_to_nat[symmetric] prod.reindex[OF inj_to_nat]
+        by (rule prod.cong[OF refl], unfold o_def, simp)
     qed   
   }
   thus ?thesis unfolding HMA_M_def 

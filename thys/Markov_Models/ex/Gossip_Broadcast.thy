@@ -31,7 +31,7 @@ next
     sum ((\<lambda>x. \<Prod>i\<in>insert i I. f (x i) i) \<circ> ((\<lambda>(x, f). f(i := x)))) (S i \<times> Pi\<^sub>E I S)"
     unfolding * using insert by (intro sum.reindex) (auto intro!: inj_on_upd_PiE)
   also have "\<dots> = (\<Sum>(a, x)\<in>(S i \<times> Pi\<^sub>E I S). f a i * (\<Prod>i\<in>I. f (x i) i))"
-    using insert by (force intro!: sum.cong setprod.cong arg_cong2[where f="op *"])
+    using insert by (force intro!: sum.cong prod.cong arg_cong2[where f="op *"])
   also have "\<dots> = (\<Sum>a\<in>S i. f a i * (\<Sum>x\<in>Pi\<^sub>E I S. \<Prod>i\<in>I. f (x i) i))"
     by (simp add: sum.cartesian_product sum_distrib_left)
   finally show ?case
@@ -88,10 +88,10 @@ lift_definition proto_trans :: "sys_state \<Rightarrow> sys_state pmf" is
 proof
   let ?f = "\<lambda>s s'. if s' \<in> states then (\<Prod>x\<in>{..< size}\<times>{..< size}. node_trans s x (s x) (s' x)) else 0"
   fix s show "\<forall>t. 0 \<le> ?f s t"
-    using p by (auto intro!: setprod_nonneg simp: node_trans_def split: state.split)
+    using p by (auto intro!: prod_nonneg simp: node_trans_def split: state.split)
   show "(\<integral>\<^sup>+t. ?f s t \<partial>count_space UNIV) = 1"
     apply (subst nn_integral_count_space'[of states])
-    apply (simp_all add: setprod_nonneg)
+    apply (simp_all add: prod_nonneg)
   proof -
     show "(\<Sum>x\<in>states. \<Prod>xa\<in>{..<size} \<times> {..<size}. node_trans s xa (s xa) (x xa)) = 1"
       unfolding states_def by (subst sum_folded_product) simp_all

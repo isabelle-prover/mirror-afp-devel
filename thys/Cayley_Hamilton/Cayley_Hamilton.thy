@@ -84,7 +84,7 @@ lemma (in monoid_mult) power_ac: "a * (a^n * x) = a^n * (a * x)"
 
 text{* This theory contains auxiliary lemmas on polynomials. *}
 
-lemma degree_setprod_le: "degree (\<Prod>i\<in>S. f i) \<le> (\<Sum>i\<in>S. degree (f i))"
+lemma degree_prod_le: "degree (\<Prod>i\<in>S. f i) \<le> (\<Sum>i\<in>S. degree (f i))"
   by (induction S rule: infinite_finite_induct)
      (simp_all, metis (lifting) degree_mult_le dual_order.trans nat_add_left_cancel_le)
 
@@ -92,9 +92,9 @@ lemma coeff_mult_sum:
   "degree p \<le> m \<Longrightarrow> degree q \<le> n \<Longrightarrow> coeff (p * q) (m + n) = coeff p m * coeff q n"
   using degree_mult_le[of p q] by (auto simp add: le_less coeff_eq_0 coeff_mult_degree_sum)
 
-lemma coeff_mult_setprod_sum:
+lemma coeff_mult_prod_sum:
   "coeff (\<Prod>i\<in>S. f i) (\<Sum>i\<in>S. degree (f i)) = (\<Prod>i\<in>S. coeff (f i) (degree (f i)))"
-  by (induct rule: infinite_finite_induct)(simp_all add: coeff_mult_sum degree_setprod_le)
+  by (induct rule: infinite_finite_induct)(simp_all add: coeff_mult_sum degree_prod_le)
 
 lemma degree_sum_less:
   "0 < n \<Longrightarrow> (\<And>x. x \<in> A \<Longrightarrow> degree (f x) < n) \<Longrightarrow> degree (\<Sum>x\<in>A. f x) < n" 
@@ -193,13 +193,13 @@ proof -
     by transfer' simp
 
   have degree_f_id: "degree (?f (\<lambda>i. i)) = CARD('n)"
-    using coeff_mult_setprod_sum[of "\<lambda>i. to_fun ?B i i" UNIV]
-    by (intro antisym degree_setprod_le[THEN order_trans] le_degree)
+    using coeff_mult_prod_sum[of "\<lambda>i. to_fun ?B i i" UNIV]
+    by (intro antisym degree_prod_le[THEN order_trans] le_degree)
        (simp_all add: dB cB)
 
   have degree_less: "\<And>p. p \<noteq> id \<Longrightarrow> degree (?f p) < degree (?f (\<lambda>i. i))"
     unfolding degree_f_id
-    by (rule le_less_trans[OF degree_setprod_le])
+    by (rule le_less_trans[OF degree_prod_le])
        (auto simp add: dB sum.If_cases set_eq_iff intro!: psubset_card_mono)
 
   have degree_charpoly: "degree (charpoly A) = degree (?f (\<lambda>i. i))"
@@ -211,7 +211,7 @@ proof -
   have "coeff (\<Sum>p | p permutes UNIV. ?g p) (degree (?g id)) = 1"
   proof (subst coeff_sum_unique)
     show "coeff (?g id) (degree (?g id)) = 1"
-      using coeff_mult_setprod_sum[of "\<lambda>i. to_fun ?B i i" UNIV]
+      using coeff_mult_prod_sum[of "\<lambda>i. to_fun ?B i i" UNIV]
       by (simp add: dB cB sign_id degree_f_id)
   qed (auto simp: degree_less sign_permut permutes_id)
 
@@ -227,14 +227,14 @@ lemma max_perm_degree_eqI:
     max_perm_degree A = x"
   by (auto intro!: Max_eqI  simp: max_perm_degree_def)
 
-lemma degree_setprod_le_max_perm_degree:
+lemma degree_prod_le_max_perm_degree:
   "j permutes (UNIV::'a::finite set) \<Longrightarrow> degree (\<Prod>i\<in>UNIV. to_fun A i (j i)) \<le> max_perm_degree A"
-  unfolding max_perm_degree_def by (rule order_trans[OF degree_setprod_le]) auto
+  unfolding max_perm_degree_def by (rule order_trans[OF degree_prod_le]) auto
 
 lemma degree_le_max_perm_degree: "degree (det A) \<le> max_perm_degree A"
   unfolding det_eq
   by (rule order_trans[OF degree_sum_le_Max])
-     (auto intro!: degree_setprod_le_max_perm_degree Max_le_iff[THEN iffD2] permutes_id simp: sign_permut)
+     (auto intro!: degree_prod_le_max_perm_degree Max_le_iff[THEN iffD2] permutes_id simp: sign_permut)
 
 lemma max_degree_adjugate:
   fixes A :: "_^^'n"
@@ -272,8 +272,8 @@ proof -
       have "CARD('n) - 1 = (\<Sum>i\<in>UNIV. ?D x x i i)"
         by (simp add: M if_distrib[where f="degree"] sum.If_cases Collect_neg_eq Compl_eq_Diff_UNIV)
       also have "\<dots> = degree (?P x x id)"
-        by (auto intro!: antisym degree_setprod_le le_degree simp add: coeff_mult_setprod_sum)
-           (simp add: M if_distrib[where f="\<lambda>x. coeff x b" for b] setprod.If_cases)
+        by (auto intro!: antisym degree_prod_le le_degree simp add: coeff_mult_prod_sum)
+           (simp add: M if_distrib[where f="\<lambda>x. coeff x b" for b] prod.If_cases)
       finally show *: "degree (?P x x (\<lambda>x. x)) = CARD('n) - 1"
         by simp
 
@@ -283,7 +283,7 @@ proof -
       then have "card {i,j} \<le> CARD('n)"
         by (intro card_mono) auto
       have "degree (?P x x p) \<le> card (UNIV - {i, j})"
-        using degree_setprod_le
+        using degree_prod_le
         by (rule order_trans)
            (auto simp: M if_distrib[where f="degree"] sum.If_cases Collect_neg_eq Compl_eq_Diff_UNIV p intro!: card_mono)
       also have "\<dots> < CARD('n) - 1"

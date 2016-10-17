@@ -778,19 +778,19 @@ proof -
     also have "... = -1" 
     proof -
       def f == "(\<lambda>i. interchange_rows (bezout_matrix A a b j bezout) a b $ i $ i)"
-      have setprod_rw: "setprod f (insert a (UNIV - {a} - {b})) 
-        =  f a * setprod f (UNIV - {a} - {b})"
-        by (rule setprod.insert, simp_all)
-      have setprod1: "setprod f (UNIV - {a} - {b}) = 1"
-        by (rule setprod.neutral) 
+      have prod_rw: "prod f (insert a (UNIV - {a} - {b})) 
+        =  f a * prod f (UNIV - {a} - {b})"
+        by (rule prod.insert, simp_all)
+      have prod1: "prod f (UNIV - {a} - {b}) = 1"
+        by (rule prod.neutral) 
             (simp add: f_def interchange_rows_def bezout_matrix_def Let_def)
-      have "setprod f UNIV = setprod f (insert b (insert a (UNIV - {a} - {b})))" 
+      have "prod f UNIV = prod f (insert b (insert a (UNIV - {a} - {b})))" 
         using UNIV_rw by simp
-      also have "... = f b * setprod f (insert a (UNIV - {a} - {b}))"
-      proof (rule setprod.insert, simp)
+      also have "... = f b * prod f (insert a (UNIV - {a} - {b}))"
+      proof (rule prod.insert, simp)
         show "b \<notin> insert a (UNIV - {a} - {b})" using a_not_b by auto
       qed
-      also have "... = f b * f a" unfolding setprod_rw setprod1 by auto
+      also have "... = f b * f a" unfolding prod_rw prod1 by auto
       also have "... = q * u" 
         using a_not_b 
         using bz [symmetric]
@@ -817,7 +817,7 @@ proof -
     case False
     def mult_b_dp \<equiv> "mult_row ?B b (d * p)"
     def sum_ab \<equiv> "row_add mult_b_dp b a ?b"
-    have "det (sum_ab) = setprod (\<lambda>i. sum_ab $ i $ i) UNIV"
+    have "det (sum_ab) = prod (\<lambda>i. sum_ab $ i $ i) UNIV"
     proof (rule det_upperdiagonal)
       fix i j::'rows 
       assume j_less_i: "j < i"
@@ -833,20 +833,20 @@ proof -
     also have "... = d * p"
     proof -
       def f \<equiv> "(\<lambda>i. sum_ab $ i $ i)"
-      have setprod_rw: "setprod f (insert a (UNIV - {a} - {b})) 
-        =  f a * setprod f (UNIV - {a} - {b})"
-        by (rule setprod.insert, simp_all)
-      have setprod1: "setprod f (UNIV - {a} - {b}) = 1"
-        by (rule setprod.neutral) (simp add: f_def sum_ab_def row_add_def 
+      have prod_rw: "prod f (insert a (UNIV - {a} - {b})) 
+        =  f a * prod f (UNIV - {a} - {b})"
+        by (rule prod.insert, simp_all)
+      have prod1: "prod f (UNIV - {a} - {b}) = 1"
+        by (rule prod.neutral) (simp add: f_def sum_ab_def row_add_def 
           mult_b_dp_def mult_row_def bezout_matrix_def Let_def)
       have ap_bq_d: "A $ a $ j * p + A $ b $ j * q = d" by (metis mult.commute pa_bq_d)
-      have "setprod f UNIV = setprod f (insert b (insert a (UNIV - {a} - {b})))"
+      have "prod f UNIV = prod f (insert b (insert a (UNIV - {a} - {b})))"
         using UNIV_rw by simp
-      also have "... = f b * setprod f (insert a (UNIV - {a} - {b}))"
-      proof (rule setprod.insert, simp)
+      also have "... = f b * prod f (insert a (UNIV - {a} - {b}))"
+      proof (rule prod.insert, simp)
         show "b \<notin> insert a (UNIV - {a} - {b})" using a_not_b by auto
       qed
-      also have "... = f b * f a" unfolding setprod_rw setprod1 by auto
+      also have "... = f b * f a" unfolding prod_rw prod1 by auto
       also have "... = (d * p * v + ?b * q) * p" 
         unfolding f_def sum_ab_def row_add_def mult_b_dp_def mult_row_def bezout_matrix_def
         unfolding bz [symmetric]

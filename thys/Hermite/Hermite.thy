@@ -65,16 +65,16 @@ qed
 
 subsubsection{*Units*}
 
-lemma unit_setprod:
+lemma unit_prod:
   assumes "finite S"
-  shows "is_unit (setprod (\<lambda>i. U $ i $ i) S) = (\<forall>i\<in>S. is_unit (U $ i $ i))"
+  shows "is_unit (prod (\<lambda>i. U $ i $ i) S) = (\<forall>i\<in>S. is_unit (U $ i $ i))"
   using assms 
 proof (induct)
   case empty
   thus ?case by auto
 next
   case (insert a S)
-  have "setprod (\<lambda>i. U $ i $ i) (insert a S) = U $ a $ a * setprod (\<lambda>i. U $ i $ i) S"
+  have "prod (\<lambda>i. U $ i $ i) (insert a S) = U $ a $ a * prod (\<lambda>i. U $ i $ i) S"
     by (simp add: insert.hyps(2))
   thus ?case using is_unit_mult_iff insert.hyps by auto
 qed
@@ -87,10 +87,10 @@ lemma is_unit_diagonal:
   and det_U: "is_unit (det U)"
   shows "\<forall>i. is_unit (U $ i $ i)"
 proof -
-  have "is_unit (setprod (\<lambda>i. U $ i $ i) UNIV)" 
+  have "is_unit (prod (\<lambda>i. U $ i $ i) UNIV)" 
     using det_U  det_upperdiagonal[of U] U 
     unfolding upper_triangular_def by auto
-  hence "\<forall>i\<in>UNIV. is_unit (U $ i $ i)" using unit_setprod[of UNIV U] by simp
+  hence "\<forall>i\<in>UNIV. is_unit (U $ i $ i)" using unit_prod[of UNIV U] by simp
   thus ?thesis by simp
 qed
 
@@ -125,7 +125,7 @@ proof (auto simp add: cofactor_def upper_triangular_def adjugate_def transpose_d
   fix i j::'n assume ji: "j < i" with A show "det (minorM A j i) = 0"
     unfolding minorM_eq det_sq_matrix_eq[symmetric] from_vec_to_vec det_minor_row
     by (subst Square_Matrix.det_upperdiagonal)
-       (auto simp: upd_row.rep_eq from_vec.rep_eq row_def axis_def upper_triangular_def intro!: setprod_zero)
+       (auto simp: upd_row.rep_eq from_vec.rep_eq row_def axis_def upper_triangular_def intro!: prod_zero)
 qed
 
 

@@ -53,7 +53,7 @@ next
     proof (intro sum.cong refl)
       fix p'' assume "p'' \<in> ?leafs p'"
       have "?prod d p' p = ?prod d p'' p"
-      proof (intro setprod.cong refl)
+      proof (intro prod.cong refl)
         fix d' assume "d' \<in> {0..<d}"
         hence d_lt_p: "d' < length p'" and d'_not_d: "d' \<notin> {d}" using `d < length p'` by auto
         hence "p' ! d' = p'' ! d'" using `p'' \<in> ?leafs p'` grid_invariant[OF d_lt_p d'_not_d] unfolding lgrid_def by auto
@@ -66,9 +66,9 @@ next
       also have "\<dots> = ?prod (Suc d) p'' p"
       proof -
         have "insert d {0..<d} = {0..<Suc d}" by auto
-        moreover from setprod.insert
-        have "setprod (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) (insert d {0..<d}) =
-          (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) d * setprod (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) {0..<d}"
+        moreover from prod.insert
+        have "prod (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) (insert d {0..<d}) =
+          (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) d * prod (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) {0..<d}"
           by auto
         ultimately show ?thesis by auto
       qed
@@ -112,7 +112,7 @@ next
       fix p'' assume "p'' \<in> ?subgrid d p'"
 
       have "?prod d p'' p' = ?prod d p'' p"
-      proof (rule setprod.cong, rule refl)
+      proof (rule prod.cong, rule refl)
         fix d' assume "d' \<in> {0..<d}"
         hence "d' < dm" and "d' \<notin> {d}" using `Suc d \<le> dm` by auto
         from grid_base_out[OF this p_spg' p'_grid]
@@ -128,12 +128,12 @@ next
       moreover have "?prod d p'' p * l2_\<phi> (p'' ! d) (p ! d) = ?prod (Suc d) p'' p"
       proof -
         have "insert d {0..<d} = {0..<Suc d}" by auto
-        moreover from setprod.insert
-        have "(\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) d * setprod (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) {0..<d} =
-          setprod (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) (insert d {0..<d})"
+        moreover from prod.insert
+        have "(\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) d * prod (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) {0..<d} =
+          prod (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) (insert d {0..<d})"
           by auto
-        hence "(setprod (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) {0..<d}) * (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) d =
-          setprod (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) (insert d {0..<d})"
+        hence "(prod (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) {0..<d}) * (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) d =
+          prod (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) (insert d {0..<d})"
           by auto
         ultimately show ?thesis by auto
       qed
@@ -336,7 +336,7 @@ next
       qed
       hence "l2_\<phi> (p ! d) (x ! d) = 0" using base_out[OF `d < dm`] p_spg' x_spg by auto
       hence "\<exists> d \<in> {0..<Suc d}. l2_\<phi> (p ! d) (x ! d) = 0" by auto
-      from setprod_zero[OF _ this]
+      from prod_zero[OF _ this]
       show "?F x = 0" by (auto simp: l2_commutative)
     qed
   qed
@@ -372,8 +372,8 @@ corollary
   apply (simp add: sparsegrid_length)
   apply (rule has_bochner_integral_integrable)
   using p
-  apply (simp add: sparsegrid_length \<Phi>_def setprod.distrib[symmetric])
-proof (rule product_sigma_finite.product_integrable_setprod)
+  apply (simp add: sparsegrid_length \<Phi>_def prod.distrib[symmetric])
+proof (rule product_sigma_finite.product_integrable_prod)
   show "product_sigma_finite (\<lambda>d. lborel)" ..
 qed (auto intro: integrable_\<phi>2)
 

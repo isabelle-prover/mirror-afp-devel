@@ -377,23 +377,23 @@ proof -
     by (subst S)
 qed
 
-lemma setprod_cancel_nat:
+lemma prod_cancel_nat:
   --"Contributed by Manuel Eberl"
   fixes f::"'a \<Rightarrow> nat"
   assumes "B \<subseteq> A" and "finite A" and "\<forall>x\<in>B. f x \<noteq> 0"
-  shows "setprod f A / setprod f B = setprod f (A - B)" (is "?A / ?B = ?C")
+  shows "prod f A / prod f B = prod f (A - B)" (is "?A / ?B = ?C")
 proof-
-  from setprod.subset_diff[OF assms(1,2)] have "?A = ?C * ?B" by auto
+  from prod.subset_diff[OF assms(1,2)] have "?A = ?C * ?B" by auto
   moreover have "?B \<noteq> 0" using assms by (simp add: finite_subset)
   ultimately show ?thesis by simp
 qed
 
-lemma setprod_id_cancel_nat:
+lemma prod_id_cancel_nat:
   --"Contributed by Manuel Eberl"
   fixes A::"nat set"
   assumes "B \<subseteq> A" and "finite A" and "0 \<notin> B"
   shows "\<Prod>A / \<Prod>B = \<Prod>(A-B)"
-  using assms(1-2) by (rule setprod_cancel_nat) (metis assms(3))
+  using assms(1-2) by (rule prod_cancel_nat) (metis assms(3))
 
 lemma (in prob_space) integrable_squareD:
   --"Contributed by Johannes Hölzl"

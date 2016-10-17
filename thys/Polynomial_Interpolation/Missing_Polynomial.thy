@@ -154,7 +154,7 @@ lemma poly_as_sum:
   shows "poly p x = (\<Sum>i\<le>degree p. x ^ i * coeff p i)"
   unfolding poly_altdef by (simp add: ac_simps)
 
-lemma poly_setprod_0: "finite ps \<Longrightarrow> poly (setprod f ps) x = (0 :: 'a :: field) \<longleftrightarrow> (\<exists> p \<in> ps. poly (f p) x = 0)"
+lemma poly_prod_0: "finite ps \<Longrightarrow> poly (prod f ps) x = (0 :: 'a :: field) \<longleftrightarrow> (\<exists> p \<in> ps. poly (f p) x = 0)"
   by (induct ps rule: finite_induct, auto)
 
 lemma coeff_monom_mult:
@@ -315,29 +315,29 @@ proof -
   finally show ?thesis .
 qed
 
-lemma degree_setprod_sum_monic: assumes
+lemma degree_prod_sum_monic: assumes
   S: "finite S"
   and nzd: "0 \<notin> (degree o f) ` S"
   and monic: "(\<And> a . a \<in> S \<Longrightarrow> monic (f a))"
-  shows "degree (setprod f S) = (sum (degree o f) S) \<and> coeff (setprod f S) (sum (degree o f) S) = 1"
+  shows "degree (prod f S) = (sum (degree o f) S) \<and> coeff (prod f S) (sum (degree o f) S) = 1"
 proof -
   from S nzd monic 
-  have "degree (setprod f S) = sum (degree \<circ> f) S 
-  \<and> (S \<noteq> {} \<longrightarrow> degree (setprod f S) \<noteq> 0 \<and> setprod f S \<noteq> 0) \<and> coeff (setprod f S) (sum (degree o f) S) = 1"
+  have "degree (prod f S) = sum (degree \<circ> f) S 
+  \<and> (S \<noteq> {} \<longrightarrow> degree (prod f S) \<noteq> 0 \<and> prod f S \<noteq> 0) \<and> coeff (prod f S) (sum (degree o f) S) = 1"
   proof (induct S rule: finite_induct)
     case (insert a S)
-    have IH1: "degree (setprod f S) = sum (degree o f) S"
+    have IH1: "degree (prod f S) = sum (degree o f) S"
       using insert by auto
-    have IH2: "coeff (setprod f S) (degree (setprod f S)) = 1"
+    have IH2: "coeff (prod f S) (degree (prod f S)) = 1"
       using insert by auto
-    have id: "degree (setprod f (insert a S)) = sum (degree \<circ> f) (insert a S)
-      \<and> coeff (setprod f (insert a S)) (sum (degree o f) (insert a S)) = 1"
+    have id: "degree (prod f (insert a S)) = sum (degree \<circ> f) (insert a S)
+      \<and> coeff (prod f (insert a S)) (sum (degree o f) (insert a S)) = 1"
     proof (cases "S = {}")
       case False
-      with insert have nz: "setprod f S \<noteq> 0" by auto
+      with insert have nz: "prod f S \<noteq> 0" by auto
       from insert have monic: "coeff (f a) (degree (f a)) = 1" by auto
       have id: "(degree \<circ> f) a = degree (f a)" by simp
-      show ?thesis unfolding setprod.insert[OF insert(1-2)] sum.insert[OF insert(1-2)] id
+      show ?thesis unfolding prod.insert[OF insert(1-2)] sum.insert[OF insert(1-2)] id
         unfolding degree_monic_mult[OF monic nz] 
         unfolding IH1[symmetric]
         unfolding lcoeff_monic_mult[OF monic] IH2 by simp
@@ -347,20 +347,20 @@ proof -
   thus ?thesis by auto
 qed 
 
-lemma degree_setprod_monic: 
+lemma degree_prod_monic: 
   assumes "\<And> i. i < n \<Longrightarrow> degree (f i :: 'a :: comm_semiring_1 poly) = 1"
     and "\<And> i. i < n \<Longrightarrow> coeff (f i) 1 = 1"
-  shows "degree (setprod f {0 ..< n}) = n \<and> coeff (setprod f {0 ..< n}) n = 1"
+  shows "degree (prod f {0 ..< n}) = n \<and> coeff (prod f {0 ..< n}) n = 1"
 proof -
-  from degree_setprod_sum_monic[of "{0 ..< n}" f] show ?thesis using assms by force
+  from degree_prod_sum_monic[of "{0 ..< n}" f] show ?thesis using assms by force
 qed
 
-lemma degree_setprod_sum_lt_n: assumes "\<And> i. i < n \<Longrightarrow> degree (f i :: 'a :: comm_semiring_1 poly) \<le> 1"
+lemma degree_prod_sum_lt_n: assumes "\<And> i. i < n \<Longrightarrow> degree (f i :: 'a :: comm_semiring_1 poly) \<le> 1"
   and i: "i < n" and fi: "degree (f i) = 0"
-  shows "degree (setprod f {0 ..< n}) < n"
+  shows "degree (prod f {0 ..< n}) < n"
 proof -
-  have "degree (setprod f {0 ..< n}) \<le> sum (degree o f) {0 ..< n}"
-    by (rule degree_setprod_sum_le, auto)
+  have "degree (prod f {0 ..< n}) \<le> sum (degree o f) {0 ..< n}"
+    by (rule degree_prod_sum_le, auto)
   also have "sum (degree o f) {0 ..< n} = (degree o f) i + sum (degree o f) ({0 ..< n} - {i})"
     by (rule sum.remove, insert i, auto)
   also have "(degree o f) i = 0" using fi by simp
@@ -399,14 +399,14 @@ proof -
   show ?thesis by simp
 qed
 
-lemma monic_setprod:
+lemma monic_prod:
   fixes f :: "'a \<Rightarrow> 'b :: idom poly"
   assumes "\<And> a. a \<in> as \<Longrightarrow> monic (f a)"
-  shows "monic (setprod f as)" using assms
+  shows "monic (prod f as)" using assms
 proof (induct as rule: infinite_finite_induct)
   case (insert a as)
-  hence id: "setprod f (insert a as) = f a * setprod f as" 
-    and *: "monic (f a)" "monic (setprod f as)" by auto
+  hence id: "prod f (insert a as) = f a * prod f as" 
+    and *: "monic (f a)" "monic (prod f as)" by auto
   show ?case unfolding id by (rule monic_mult[OF *])
 qed auto
 
@@ -676,7 +676,7 @@ qed
 
 lemma monic_irreducible_factorization: fixes p :: "'a :: field poly" 
   shows "monic p \<Longrightarrow> 
-  \<exists> as f. finite as \<and> p = setprod (\<lambda> a. a ^ Suc (f a)) as \<and> as \<subseteq> {q. irreducible q \<and> monic q}"
+  \<exists> as f. finite as \<and> p = prod (\<lambda> a. a ^ Suc (f a)) as \<and> as \<subseteq> {q. irreducible q \<and> monic q}"
 proof (induct "degree p" arbitrary: p rule: less_induct)
   case (less p)
   show ?case
@@ -709,9 +709,9 @@ proof (induct "degree p" arbitrary: p rule: less_induct)
       let ?f = "\<lambda> a. if a = ?q then 0 else f a"
       have "p = ?q * (\<Prod> a \<in>as. a ^ Suc (f a))" unfolding p as by simp
       also have "(\<Prod> a \<in>as. a ^ Suc (f a)) = (\<Prod> a \<in>as. a ^ Suc (?f a))"
-        by (rule setprod.cong, insert False, auto)
+        by (rule prod.cong, insert False, auto)
       also have "?q * \<dots> = (\<Prod> a \<in> ?as. a ^ Suc (?f a))"
-        by (subst setprod.insert, insert as False, auto)
+        by (subst prod.insert, insert as False, auto)
       finally have p: "p = (\<Prod> a \<in> ?as. a ^ Suc (?f a))" .
       from as(1) have fin: "finite ?as" by auto
       from as mon irred have Q: "?as \<subseteq> ?Q" by auto
@@ -722,13 +722,13 @@ proof (induct "degree p" arbitrary: p rule: less_induct)
       let ?f = "\<lambda> a. if a = ?q then Suc (f a) else f a"
       have "p = ?q * (\<Prod> a \<in>as. a ^ Suc (f a))" unfolding p as by simp
       also have "(\<Prod> a \<in>as. a ^ Suc (f a)) = ?q ^ Suc (f ?q) * (\<Prod> a \<in>(as - {?q}). a ^ Suc (f a))"
-        by (subst setprod.remove[OF _ True], insert as, auto)
+        by (subst prod.remove[OF _ True], insert as, auto)
       also have "(\<Prod> a \<in>(as - {?q}). a ^ Suc (f a)) = (\<Prod> a \<in>(as - {?q}). a ^ Suc (?f a))"
-        by (rule setprod.cong, auto)
+        by (rule prod.cong, auto)
       also have "?q * (?q ^ Suc (f ?q) * \<dots> ) = ?q ^ Suc (?f ?q) * \<dots>"
         by (simp add: ac_simps)
       also have "\<dots> = (\<Prod> a \<in> as. a ^ Suc (?f a))"
-        by (subst setprod.remove[OF _ True], insert as, auto)
+        by (subst prod.remove[OF _ True], insert as, auto)
       finally have "p = (\<Prod> a \<in> as. a ^ Suc (?f a))" .
       with as show ?thesis 
         by (intro exI[of _ as] exI[of _ ?f], auto)
@@ -1049,7 +1049,7 @@ lemma lead_coeff_code[code]: "lead_coeff f = (let xs = coeffs f in case xs of []
 lemma nth_coeffs_coeff: "i < length (coeffs f) \<Longrightarrow> coeffs f ! i = coeff f i"
   by (metis nth_default_coeffs_eq nth_default_def)
 
-lemma degree_setprod_eq_sum_degree:
+lemma degree_prod_eq_sum_degree:
 fixes A :: "'a set"
 and f :: "'a \<Rightarrow> 'b::field poly"
 assumes f0: "\<forall>i\<in>A. f i \<noteq> 0"
@@ -1064,7 +1064,7 @@ proof (induct A rule: infinite_finite_induct)
   also have "... = degree (f x * (\<Prod>i\<in>A. (f i)))"
   proof (rule degree_mult_eq[symmetric])
     show "f x \<noteq> 0" using insert.prems by auto
-    show "setprod f A \<noteq> 0" by (simp add: insert.hyps(1) insert.prems)
+    show "prod f A \<noteq> 0" by (simp add: insert.hyps(1) insert.prems)
   qed
   also have "... = degree (\<Prod>i\<in>insert x A. (f i))"
     by (simp add: insert.hyps)

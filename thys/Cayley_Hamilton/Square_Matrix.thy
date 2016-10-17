@@ -338,14 +338,14 @@ lemma permutes_UNIV_permutation: "permutation p \<longleftrightarrow> p permutes
   by (auto simp: permutation_permutes permutes_def)
 
 lemma det_0[simp]: "det 0 = 0"
-  by transfer (simp add: setprod_zero)
+  by transfer (simp add: prod_zero)
 
 lemma det_transpose: "det (transpose A) = det A"
   apply transfer
   apply (subst sum_permutations_inverse)
   apply (rule sum.cong[OF refl])
   apply (simp add: sign_inverse permutes_UNIV_permutation)
-  apply (subst setprod.reindex_bij_betw[symmetric])
+  apply (subst prod.reindex_bij_betw[symmetric])
   apply (rule permutes_imp_bij)
   apply assumption
   apply (simp add: permutes_inverses)
@@ -362,7 +362,7 @@ proof transfer
     then obtain i where i: "i \<noteq> p i"
       unfolding id_def by metis
     with neq[OF i] have "(\<Prod>i\<in>UNIV. A i (p i)) = 0"
-      by (intro setprod_zero) auto }
+      by (intro prod_zero) auto }
   then have "(\<Sum>p | p permutes UNIV. ?pp p) = (\<Sum>p\<in>{id}. ?pp p)"
     by (intro sum.mono_neutral_cong_right) (auto intro: permutes_id)
   then show "(\<Sum>p | p permutes UNIV. ?pp p) = (\<Prod>i\<in>UNIV. A i i)"
@@ -383,7 +383,7 @@ proof transfer
     with permutes_natset_le[OF p(1)] obtain i where i: "p i > i"
       by (metis not_le)
     with ld[OF i] have "(\<Prod>i\<in>UNIV. A i (p i)) = 0"
-      by (intro setprod_zero) auto }
+      by (intro prod_zero) auto }
   then have "(\<Sum>p | p permutes UNIV. ?pp p) = (\<Sum>p\<in>{id}. ?pp p)"
     by (intro sum.mono_neutral_cong_right) (auto intro: permutes_id)
   then show "(\<Sum>p | p permutes UNIV. ?pp p) = (\<Prod>i\<in>UNIV. A i i)"
@@ -530,10 +530,10 @@ lemma det_perm_rows:
   using det_perm_cols[OF p, of "transpose A"] by (simp add: det_transpose perm_cols_transpose)
 
 lemma det_row_add: "det (upd_row M i (a + b)) = det (upd_row M i a) + det (upd_row M i b)"
-  by transfer (simp add: setprod.If_cases sum.distrib[symmetric] field_simps)
+  by transfer (simp add: prod.If_cases sum.distrib[symmetric] field_simps)
 
 lemma det_row_mul: "det (upd_row M i (c *s a)) = c * det (upd_row M i a)"
-  by transfer (simp add: setprod.If_cases sum_distrib_left field_simps)
+  by transfer (simp add: prod.If_cases sum_distrib_left field_simps)
 
 lemma det_row_uminus: "det (upd_row M i (- a)) = - det (upd_row M i a)"
   by (simp add: vector_sneg_minus1 det_row_mul)
@@ -616,7 +616,7 @@ lemma det_rows_sum:
   using det_cols_sum[of "transpose M" T a S] by (simp add: upd_cols_transpose det_transpose)
 
 lemma det_rows_mult: "det (upd_rows M T (\<lambda>i. c i *s a i)) = (\<Prod>i\<in>T. c i) * det (upd_rows M T a)"
-  by transfer (simp add: setprod.If_cases sum_distrib_left field_simps setprod.distrib)
+  by transfer (simp add: prod.If_cases sum_distrib_left field_simps prod.distrib)
 
 lemma det_cols_mult: "det (upd_cols M T (\<lambda>i. c i *s a i)) = (\<Prod>i\<in>T. c i) * det (upd_cols M T a)"
   using det_rows_mult[of "transpose M" T c a] by (simp add: det_transpose upd_rows_transpose)

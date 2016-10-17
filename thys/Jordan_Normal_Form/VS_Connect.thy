@@ -91,7 +91,7 @@ interpretation class_cring: cring "class_ring TYPE('a :: comm_ring_1)"
     and "a_minus (class_ring TYPE('a)) = minus"
     and "pow (class_ring TYPE('a)) = op ^"
     and "finsum (class_ring TYPE('a)) = sum"
-    and [class_ring_simps]: "finprod (class_ring TYPE('a)) = setprod"
+    and [class_ring_simps]: "finprod (class_ring TYPE('a)) = prod"
 proof -
   let ?r = "class_ring TYPE('a)"
   interpret ring ?r ..
@@ -100,10 +100,10 @@ proof -
   then interpret cring ?r . 
   {
     fix f and A :: "'b set"
-    have "finprod ?r f A = setprod f A"
+    have "finprod ?r f A = prod f A"
       by (induct A rule: infinite_finite_induct, auto)
   }
-  thus "finprod ?r = setprod" by (intro ext)
+  thus "finprod ?r = prod" by (intro ext)
 qed (auto simp: class_ring_simps)
 
 definition div0 :: "'a :: {one,plus,times,zero}" where
@@ -131,7 +131,7 @@ interpretation class_field: field "class_ring TYPE('a :: field)"
     and "a_minus (class_ring TYPE('a)) = minus"
     and "pow (class_ring TYPE('a)) = op ^"
     and "finsum (class_ring TYPE('a)) = sum"
-    and "finprod (class_ring TYPE('a)) = setprod"
+    and "finprod (class_ring TYPE('a)) = prod"
     and [class_ring_simps]: "m_inv (class_ring TYPE('a)) x = 
       (if x = 0 then div0 else inverse x)" 
     (* problem that m_inv ?r 0 = inverse 0 is not guaranteed  *)
@@ -205,7 +205,7 @@ sublocale
     and "a_minus F = minus"
     and "pow F = op ^"
     and "finsum F = sum"
-    and "finprod F = setprod"
+    and "finprod F = prod"
     and "m_inv F x = 
       (if x = 0 then div0 else inverse x)"
   by (rule matrix_vs, auto simp: matrix_vs_simps class_field_def)
@@ -251,7 +251,7 @@ begin
     and "a_minus F = minus"
     and "pow F = op ^"
     and "finsum F = sum"
-    and "finprod F = setprod"
+    and "finprod F = prod"
     and "m_inv F x = (if x = 0 then div0 else inverse x)"
   using vec_vs
   unfolding class_field_def

@@ -7,7 +7,7 @@
                                   April 6, 2007 (revised)
 
  chapter 3.  Group Theory. Focused on Jordan Hoelder theorem (continued) 
-   section 5.    setproducts
+   section 5.    products
    section 6.    preliminary lemmas for Zassenhaus
    section 7.    homomorphism
    section 8.    gkernel, kernel of a group homomorphism

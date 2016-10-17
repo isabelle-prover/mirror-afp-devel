@@ -2360,17 +2360,17 @@ proof -
       have ths: "?s q = ?s p * ?s (q \<circ> inv p)"
         using pp pq permutation_inverse[OF pp] sign_inverse[OF pp]
         by (simp add:  th00 ac_simps sign_idempotent sign_compose)
-      have th001: "setprod (\<lambda>i. B$i$ q (inv p i)) ?U = setprod ((\<lambda>i. B$i$ q (inv p i)) \<circ> p) ?U"
-        by (rule setprod_permute[OF p])
-      have thp: "setprod (\<lambda>i. (\<chi> i. A$i$p i *s B$p i :: 'a^'n^'n) $i $ q i) ?U =
-        setprod (\<lambda>i. A$i$p i) ?U * setprod (\<lambda>i. B$i$ q (inv p i)) ?U"
-          unfolding th001 setprod.distrib[symmetric] o_def permutes_inverses[OF p]
-          apply (rule setprod.cong[OF refl])
+      have th001: "prod (\<lambda>i. B$i$ q (inv p i)) ?U = prod ((\<lambda>i. B$i$ q (inv p i)) \<circ> p) ?U"
+        by (rule prod_permute[OF p])
+      have thp: "prod (\<lambda>i. (\<chi> i. A$i$p i *s B$p i :: 'a^'n^'n) $i $ q i) ?U =
+        prod (\<lambda>i. A$i$p i) ?U * prod (\<lambda>i. B$i$ q (inv p i)) ?U"
+          unfolding th001 prod.distrib[symmetric] o_def permutes_inverses[OF p]
+          apply (rule prod.cong[OF refl])
           using permutes_in_image[OF q]
           apply vector
           done
-      show "?s q * setprod (\<lambda>i. (((\<chi> i. A$i$p i *s B$p i) :: 'a^'n^'n)$i$q i)) ?U =
-        ?s p * (setprod (\<lambda>i. A$i$p i) ?U) * (?s (q \<circ> inv p) * setprod (\<lambda>i. B$i$(q \<circ> inv p) i) ?U)"
+      show "?s q * prod (\<lambda>i. (((\<chi> i. A$i$p i *s B$p i) :: 'a^'n^'n)$i$q i)) ?U =
+        ?s p * (prod (\<lambda>i. A$i$p i) ?U) * (?s (q \<circ> inv p) * prod (\<lambda>i. B$i$(q \<circ> inv p) i) ?U)"
         using ths thp pp pq permutation_inverse[OF pp] sign_inverse[OF pp]
         by (simp add: sign_nz th00 field_simps sign_idempotent sign_compose)
     qed rule
