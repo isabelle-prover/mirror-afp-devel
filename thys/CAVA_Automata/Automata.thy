@@ -8,6 +8,8 @@ begin
     based on directed graphs
     *}
 
+hide_const (open) prod
+  
 subsection "Generalized Buchi Graphs"
 text {*
   A generalized Buchi graph is a graph where each node belongs to a set of
