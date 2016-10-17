@@ -18,7 +18,7 @@ by(auto simp add: ap_list_def List.bind_def)
 text \<open>We call the implementation type \<open>pfp\<close> because it is the basis for the Haskell library
   Probability by Martin Erwig and Steve Kollmansberger (Probabilistic Functional Programming).\<close>
 
-typedef 'a pfp = "{xs :: ('a \<times> real) list. (\<forall>(_, p) \<in> set xs. p \<ge> 0) \<and> sum_list (map snd xs) = 1}"
+typedef 'a pfp = "{xs :: ('a \<times> real) list. (\<forall>(_, p) \<in> set xs. p > 0) \<and> sum_list (map snd xs) = 1}"
 proof
   show "[(x, 1)] \<in> ?pfp" for x by simp
 qed
@@ -31,11 +31,11 @@ lift_definition ap_pfp :: "('a \<Rightarrow> 'b) pfp \<Rightarrow> 'a pfp \<Righ
 is "\<lambda>fs xs. [\<lambda>(f, p) (x, q). (f x, p * q)] \<diamondop> fs \<diamondop> xs"
 proof safe
   fix xs :: "(('a \<Rightarrow> 'b) \<times> real) list" and ys :: "('a \<times> real) list"
-  assume xs: "\<forall>(x, y) \<in> set xs. 0 \<le> y" "sum_list (map snd xs) = 1"
-    and ys: "\<forall>(x, y) \<in> set ys. 0 \<le> y" "sum_list (map snd ys) = 1"
+  assume xs: "\<forall>(x, y) \<in> set xs. 0 < y" "sum_list (map snd xs) = 1"
+    and ys: "\<forall>(x, y) \<in> set ys. 0 < y" "sum_list (map snd ys) = 1"
   let ?ap = "[\<lambda>(f, p) (x, q). (f x, p * q)] \<diamondop> xs \<diamondop> ys"
-  show "0 \<le> b" if "(a, b) \<in> set ?ap" for a b using that xs ys
-    by(auto intro!: mult_nonneg_nonneg)
+  show "0 < b" if "(a, b) \<in> set ?ap" for a b using that xs ys
+    by(auto intro!: mult_pos_pos)
   show "sum_list (map snd ?ap) = 1" using xs ys
     by(simp add: ap_list_def List.bind_def map_concat o_def split_beta sum_list_concat_map sum_list_const_mult)
 qed
