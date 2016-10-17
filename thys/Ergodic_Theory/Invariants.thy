@@ -435,7 +435,7 @@ proof -
   }
   then have "(\<Union>d\<in>D. T--`(C d) - C d) \<in> null_sets M" using `countable D` by (simp add: null_sets_UN')
   then have "(space M - B) \<union> (\<Union>d\<in>D. T--`(C d) - C d) \<in> null_sets M" using `space M - B \<in> null_sets M` by auto
-  then have "AE x in M. x \<notin> (space M - B) \<union> (\<Union>d\<in>D. T--`(C d) - C d)" using null_setsD_AE by blast
+  then have "AE x in M. x \<notin> (space M - B) \<union> (\<Union>d\<in>D. T--`(C d) - C d)" using AE_not_in by blast
   moreover
   {
     fix x assume x: "x \<in> space M" "x \<notin> (space M - B) \<union> (\<Union>d\<in>D. T--`(C d) - C d)"
@@ -495,7 +495,7 @@ proof -
   }
   then have "(\<Union>d\<in>D. T--`(C d) - C d) \<in> null_sets M" using `countable D` by (simp add: null_sets_UN')
   then have "(space M - B) \<union> (\<Union>d\<in>D. T--`(C d) - C d) \<in> null_sets M" using `space M - B \<in> null_sets M` by auto
-  then have "AE x in M. x \<notin> (space M - B) \<union> (\<Union>d\<in>D. T--`(C d) - C d)" using null_setsD_AE by blast
+  then have "AE x in M. x \<notin> (space M - B) \<union> (\<Union>d\<in>D. T--`(C d) - C d)" using AE_not_in by blast
   moreover
   {
     fix x assume x: "x \<in> space M" "x \<notin> (space M - B) \<union> (\<Union>d\<in>D. T--`(C d) - C d)"
@@ -807,7 +807,7 @@ proof -
     finally have "0 \<le> - \<epsilon> * measure M A" by simp
     then have "measure M A = 0" using `\<epsilon> > 0` by (simp add: measure_le_0_iff mult_le_0_iff)
     then have "A \<in> null_sets M" by (simp add: emeasure_eq_measure null_setsI)
-    then have "AE x in M. x \<in> space M - A" by (metis (no_types, lifting) AE_cong Diff_iff null_setsD_AE)
+    then have "AE x in M. x \<in> space M - A" by (metis (no_types, lifting) AE_cong Diff_iff AE_not_in)
     moreover
     {
       fix x assume "x \<in> space M - A"
