@@ -923,7 +923,7 @@ proof -
     then obtain r where "subseq r" "AE x in M. (\<lambda>n. real_cond_exp M Invariants (I (r n) K e) x) \<longlonglongrightarrow> 0"
       by auto
     moreover have "AE x in M. \<forall>N \<in> {1<..}. limsup (\<lambda>n. u n x / n) \<le> F K e x + abs(F K e x) * ereal(real_cond_exp M Invariants (I N K e) x)"
-      apply (rule AE_count_union) using main[OF _ `K>0` `e>0`] by auto
+      apply (rule AE_ball_countable') using main[OF _ `K>0` `e>0`] by auto
     moreover
     {
       fix x assume H: "(\<lambda>n. real_cond_exp M Invariants (I (r n) K e) x) \<longlonglongrightarrow> 0"
@@ -946,7 +946,7 @@ proof -
     then show ?thesis by (rule AE_upper_bound_inf_ereal, auto)
   qed
   then have "AE x in M. \<forall>K\<in>{(0::nat)<..}. limsup (\<lambda>n. u n x / n) \<le> real_of_ereal(max (l x) (-ereal K))"
-    by (rule AE_count_union, auto)
+    by (rule AE_ball_countable', auto)
   moreover have "(\<lambda>n. u n x / n) \<longlonglongrightarrow> l x"
     if H: "\<forall>K\<in>{(0::nat)<..}. limsup (\<lambda>n. u n x / n) \<le> real_of_ereal(max (l x) (-ereal K))" for x
   proof -
@@ -1375,7 +1375,7 @@ proof -
     have "eventually (\<lambda>n. (\<integral>\<^sup>+x. abs(u n x) / n \<partial>M) \<le> (\<integral>\<^sup>+x. abs(subcocycle_lim u x) \<partial>M)) sequentially"
       by fastforce
     then show "limsup (\<lambda>n. \<integral>\<^sup>+ x. abs(u n x) / n \<partial>M) \<le> \<integral>\<^sup>+ x. abs(subcocycle_lim u x) \<partial>M"
-      using Limsup_eventually_bounded by fastforce
+      using Limsup_bounded by fastforce
   qed
   moreover have "norm((- u n x /n) - (-subcocycle_lim u x)) = abs(u n x / n - subcocycle_lim u x)"
     for n x by auto

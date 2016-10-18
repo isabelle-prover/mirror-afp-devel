@@ -673,7 +673,7 @@ proof
   have "open k" if "k \<in> K" for k
     using that unfolding open_fun_def K_def B_def apply (auto)
     apply (rule product_topology_basis)
-    unfolding topspace_euclidean by (auto, metis imageE open_UNIV A(2) open_openin)
+    unfolding topspace_euclidean by (auto, metis imageE open_UNIV A(2))
 
   have Inc: "\<exists>k\<in>K. k \<subseteq> U" if "open U \<and> x \<in> U" for U
   proof -

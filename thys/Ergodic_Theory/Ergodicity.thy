@@ -261,7 +261,7 @@ lemma (in ergodic_conservative_mpt) local_time_unbounded:
 proof (rule local_time_unbounded3)
   have "A - (\<Union>i. (T ^^ i) --` B) \<in> sets M" by auto
   moreover have "A - (\<Union>i. (T ^^ i) --` B) \<subseteq> space M - (\<Union>i. (T ^^ i) --` B)" using sets.sets_into_space[OF assms(1)] by blast
-  ultimately show "A - (\<Union>i. (T ^^ i) --` B) \<in> null_sets M" by (metis null_sets_inc preimages_conull(1)[OF assms(2) assms(4)])
+  ultimately show "A - (\<Union>i. (T ^^ i) --` B) \<in> null_sets M" by (metis null_sets_subset preimages_conull(1)[OF assms(2) assms(4)])
   show "emeasure M A < \<infinity>" using assms(3) by simp
 qed (simp_all add: assms)
 

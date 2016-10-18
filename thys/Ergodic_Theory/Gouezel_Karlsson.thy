@@ -7,11 +7,6 @@ imports Banach_Density Kingman
 
 begin
 
-lemma one_less_ennreal[simp]: "1 < ennreal x \<longleftrightarrow> 1 < x"
-  including ennreal.lifting
-  by transfer (auto simp: max.absorb2 less_max_iff_disj)
-
-
 section {*Gouezel-Karlsson*}
 
 text {*This section is devoted to the proof of the main ergodic result of

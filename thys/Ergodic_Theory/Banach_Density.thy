@@ -35,7 +35,7 @@ proof -
   }
   then have "eventually (\<lambda>n. card(A \<inter> {..<n}) / n \<le> ereal 1) sequentially"
     by (simp add: eventually_at_top_dense)
-  then have a: "limsup (\<lambda>n. card(A \<inter> {..<n})/n) \<le> 1" by (simp add: Limsup_const Limsup_eventually_bounded)
+  then have a: "limsup (\<lambda>n. card(A \<inter> {..<n})/n) \<le> 1" by (simp add: Limsup_const Limsup_bounded)
 
   have "card(A \<inter> {..<n}) / n \<ge> ereal 0" for n by auto
   then have "liminf (\<lambda>n. card(A \<inter> {..<n})/n) \<ge> 0" by (simp add: le_Liminf_iff less_le_trans)
@@ -77,7 +77,7 @@ proof -
   ultimately have "eventually (\<lambda>n. card(A \<inter> {..<n})/n \<le> ereal l) sequentially"
     by (simp add: eventually_mono)
   then have "limsup (\<lambda>n. card(A \<inter> {..<n})/n) \<le> ereal l"
-    by (simp add: Limsup_eventually_bounded)
+    by (simp add: Limsup_bounded)
   then have "ereal(upper_Banach_density A) \<le> ereal l"
     using upper_Banach_density_in_01(1) by auto
   then show ?thesis by auto
@@ -275,7 +275,7 @@ proof -
   }
   then have "eventually (\<lambda>n. card(A \<inter> {..<n}) / n \<le> ereal 1) sequentially"
     by (simp add: eventually_at_top_dense)
-  then have "limsup (\<lambda>n. card(A \<inter> {..<n})/n) \<le> 1" by (simp add: Limsup_const Limsup_eventually_bounded)
+  then have "limsup (\<lambda>n. card(A \<inter> {..<n})/n) \<le> 1" by (simp add: Limsup_const Limsup_bounded)
   then have a: "liminf (\<lambda>n. card(A \<inter> {..<n})/n) \<le> 1"
     by (meson Liminf_le_Limsup less_le_trans not_le sequentially_bot)
 
@@ -354,7 +354,7 @@ proof -
   ultimately have "eventually (\<lambda>n. card(A \<inter> {..<n})/n \<ge> ereal l) sequentially"
     by (simp add: eventually_mono)
   then have "liminf (\<lambda>n. card(A \<inter> {..<n})/n) \<ge> ereal l"
-    by (simp add: Liminf_eventually_bounded)
+    by (simp add: Liminf_bounded)
   then have "ereal(lower_Banach_density A) \<ge> ereal l"
     using lower_Banach_density_in_01(1) by auto
   then show ?thesis by auto

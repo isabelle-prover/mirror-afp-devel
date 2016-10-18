@@ -38,7 +38,7 @@ next
     then obtain w where "w < z" "emeasure M {x \<in> space M. f x > w} = 0" by auto
     then have a: "{x \<in> space M. f x > w} \<in> null_sets M" by auto
     have b: "{x \<in> space M. f x > z} \<subseteq> {x \<in> space M. f x > w}" using `w < z` by auto
-    show ?thesis using null_sets_inc[OF a _ b] by simp
+    show ?thesis using null_sets_subset[OF a _ b] by simp
   qed
   obtain u::"nat \<Rightarrow> ereal" where u: "\<And>n. u n > esssup M f" "u \<longlonglongrightarrow> esssup M f"
     using approx_from_above_dense_linorder[OF `esssup M f < \<infinity>`] by auto
@@ -438,7 +438,7 @@ proof -
       apply (unfold M2_def, subst integral_density, simp, simp, simp add: divide_simps)
       by (rule Bochner_Integration.integral_cong, unfold h_def, auto simp add: divide_simps algebra_simps powr_add[symmetric] abs_mult)
     also have "... \<le> abs (\<integral>x. \<bar>h x\<bar> \<partial>M2)"
-      using integral_norm_bound[OF `integrable M2 (\<lambda>x. \<bar>h x\<bar>)`] by auto
+      by auto
     also have "... \<le> (\<integral>x. abs(\<bar>h x\<bar>) powr p \<partial>M2) powr (1/p)"
       apply (rule bound_L1_Lp(3)[of p "\<lambda>x. \<bar>h x\<bar>"])
       by (auto simp add: `integrable M2 (\<lambda>x. \<bar>h x\<bar> powr p)`)

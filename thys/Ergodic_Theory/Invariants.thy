@@ -162,7 +162,7 @@ next
   have "C \<Delta> A \<subseteq> (\<Union>n. (T^^n)--`A \<Delta> A)" unfolding C_def by auto
   moreover have "(\<Union>n. (T^^n)--`A \<Delta> A) \<in> null_sets M"
     using * null_sets_UN assms `T --\` A \<Delta> A \<in> null_sets M` by auto
-  ultimately have CA: "C \<Delta> A \<in> null_sets M" by (meson `C \<in> sets M` assms sets.Diff sets.Un null_sets_inc)
+  ultimately have CA: "C \<Delta> A \<in> null_sets M" by (meson `C \<in> sets M` assms sets.Diff sets.Un null_sets_subset)
   then have "T--`(C \<Delta> A) \<in> null_sets M" by (rule T_quasi_preserves_null2(1))
   then have "T--`C \<Delta> T--`A \<in> null_sets M" by simp
   then have "T--`C \<Delta> A \<in> null_sets M"
@@ -186,7 +186,7 @@ next
   have "B \<Delta> C \<subseteq> (\<Union>n. (T^^n)--`C \<Delta> C)" unfolding B_def by auto
   moreover have "(\<Union>n. (T^^n)--`C \<Delta> C) \<in> null_sets M"
     using * null_sets_UN assms TCC by auto
-  ultimately have "B \<Delta> C \<in> null_sets M" by (meson `B \<in> sets M` `C \<in> sets M` assms sets.Diff sets.Un null_sets_inc)
+  ultimately have "B \<Delta> C \<in> null_sets M" by (meson `B \<in> sets M` `C \<in> sets M` assms sets.Diff sets.Un null_sets_subset)
   then have "B \<Delta> A \<in> null_sets M"
     by (rule null_sym_diff_transitive, auto simp add: CA)
   then have a: "A \<Delta> B \<in> null_sets M" by (simp add: Un_commute)
@@ -908,7 +908,7 @@ proof -
   have [measurable]: "F k \<in> sets M" for k unfolding F_def by auto
   have **: "E k - F k \<in> null_sets M" for k unfolding F_def using Poincare_recurrence_thm by auto
   have "space M - (\<Union>k. F k) \<in> null_sets M"
-    apply (rule null_sets_inc[of "(\<Union>k. E k - F k)"]) unfolding *[symmetric] using ** by auto
+    apply (rule null_sets_subset[of "(\<Union>k. E k - F k)"]) unfolding *[symmetric] using ** by auto
   with AE_not_in[OF this] have "AE x in M. x \<in> (\<Union>k. F k)" by auto
   moreover have "AE x in M. (\<lambda>n. birkhoff_sum (\<lambda>x. f(T x) - f x) n x / n)
       \<longlonglongrightarrow> real_cond_exp M Invariants (\<lambda>x. f(T x) - f x) x"

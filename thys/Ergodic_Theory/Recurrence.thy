@@ -1280,7 +1280,7 @@ proof
 
     have "(T^^n)--`B \<in> null_sets M" for n using B0 T_quasi_preserves_null(2)[OF B_meas] by simp
     then have "(\<Union>n. (T^^n)--`B) \<in> null_sets M" using null_sets_UN by auto
-    then have "(induced_map A)-`B \<in> null_sets M" using null_sets_inc[OF _ b inc] by auto
+    then have "(induced_map A)-`B \<in> null_sets M" using null_sets_subset[OF _ b inc] by auto
     then show "(induced_map A)-`B \<in> K0" unfolding K0_def K_def by (simp add: a b)
   qed
 
@@ -1319,7 +1319,7 @@ proof
       qed (auto simp add: `induced_map A -\` B \<in> K0`)
       have **: "((induced_map A)^^(n+1))-` B \<in> sets M" using * K0_def K_def by auto
       have "((induced_map A)^^(n+1))-` B \<inter> B \<in> null_sets M"
-        apply (rule null_sets_inc[of "((induced_map A)^^(n+1))-`B"])
+        apply (rule null_sets_subset[of "((induced_map A)^^(n+1))-`B"])
         using * unfolding K0_def apply simp
         using ** by auto
     }
@@ -1386,7 +1386,7 @@ proof -
   ultimately have "DW 0 = (return_time_function A)-` {0} \<inter> W" by simp
   then have "DW 0 = W - recurrent_subset A" using return_time0 by blast
   then have "DW 0 \<subseteq> A - recurrent_subset A" using incl by blast
-  then have "DW 0 \<in> null_sets M" by (metis A_meas DW_meas null_sets_inc Poincare_recurrence_thm(1))
+  then have "DW 0 \<in> null_sets M" by (metis A_meas DW_meas null_sets_subset Poincare_recurrence_thm(1))
   then have "emeasure M (DW 0) = 0" by auto
   have "(induced_map A)--`W = (\<Union>n. DW n)" using DW_def by blast
   then have "emeasure M ((induced_map A)--`W) = emeasure M (\<Union>n. DW n)" by simp
