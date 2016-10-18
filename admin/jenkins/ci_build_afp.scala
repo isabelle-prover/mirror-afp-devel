@@ -6,7 +6,7 @@ object profile extends isabelle.CI_Profile
   import scala.sys.process._
   import org.apache.commons.configuration2._
 
-
+  override def clean = false
   val is_testboard = Isabelle_System.getenv("ISABELLE_CI_TESTBOARD") == "true"
 
   val afp = Path.explode("$ISABELLE_HOME/afp")
