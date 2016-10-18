@@ -1257,7 +1257,7 @@ lemma complete_N_of_norm:
 proof (rule complete\<^sub>N_I)
   fix u::"nat \<Rightarrow> 'a" assume "cauchy_in\<^sub>N N_of_norm u"
   then have "Cauchy u" unfolding Cauchy_def cauchy_in\<^sub>N_def N_of_norm(2) by (simp add: dist_norm)
-  then obtain x where "u \<longlonglongrightarrow> x" using convergent_eq_cauchy by blast
+  then obtain x where "u \<longlonglongrightarrow> x" using convergent_eq_Cauchy by blast
   then have "tendsto_in\<^sub>N N_of_norm u x" unfolding tendsto_in\<^sub>N_def N_of_norm(2)
     using Lim_null tendsto_norm_zero_iff by fastforce
   moreover have "x \<in> space\<^sub>N N_of_norm" by auto
@@ -1282,7 +1282,7 @@ proof (rule complete\<^sub>N_I)
   have "Cauchy (\<lambda>n. Abs_bcontfun (u n))"
     using H(1) unfolding Cauchy_def cauchy_in\<^sub>N_def dist_norm * ** by simp
   then obtain v where v: "(\<lambda>n. Abs_bcontfun (u n)) \<longlonglongrightarrow> v"
-    using convergent_eq_cauchy by blast
+    using convergent_eq_Cauchy by blast
   have v_space: "Rep_bcontfun v \<in> space\<^sub>N bcontfun\<^sub>N" unfolding bcontfun\<^sub>N_space by (simp add: Rep_bcontfun)
   have ***: "Norm bcontfun\<^sub>N (u n - v) = norm(Abs_bcontfun (u n) - v)" for n
   proof -
