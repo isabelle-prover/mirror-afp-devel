@@ -3,7 +3,7 @@
 *)
 
 theory SG_Library_Complement
-  imports "~ ~/src/HOL/Probability/Probability"
+  imports "~~/src/HOL/Probability/Probability"
 begin
 
 section {*SG Libary complements*}

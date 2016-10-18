@@ -3,7 +3,7 @@
 *)
 
 theory Measure_Preserving_Transformations
-imports SG_Library_Complement Product_Topology
+imports SG_Library_Complement
 begin
 
 section{*Measure preserving or quasi-preserving maps*}
