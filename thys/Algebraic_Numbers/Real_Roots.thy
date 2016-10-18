@@ -37,7 +37,7 @@ definition roots_of_rai_intern_monic_irr :: "rat poly \<Rightarrow> rai_intern l
     then [of_rat_rai_fun (- coeff p 0) ] else 
     let ri = count_roots_interval_rat p;
         cr = root_info.l_r ri
-      in map (rai_normalize No_Guarantee) (roots_of_rai_main p ri cr [root_bounds p] []))"
+      in map rai_normalize (roots_of_rai_main p ri cr [root_bounds p] []))"
 
 lemma root_bounds: assumes "root_bounds p = (l,r)" and mon: "monic p"
   shows "rpoly p x = 0 \<Longrightarrow> real_of_rat l \<le> x \<and> x \<le> of_rat r" "l \<le> r"
@@ -129,8 +129,7 @@ proof -
   let ?rr = "set (roots_of_rai_intern_monic_irr p)"
   note d = roots_of_rai_intern_monic_irr_def
   from poly_type_cond_square_free_D[OF mrf] have mon: "monic p" and sf: "square_free p" by auto
-  let ?mode = No_Guarantee
-  let ?norm = "rai_normalize ?mode"
+  let ?norm = "rai_normalize"
   have "?one \<and> ?two"
   proof (cases "degree p = 1")
     case True
@@ -306,7 +305,7 @@ proof -
       assume *: "\<forall>x\<in>res. rai_cond x" "rai \<in> res"
       from *(1)[rule_format, OF *(2)]
       have "rai_cond rai" .
-      from rai_normalize[OF this, of ?mode] *(2) have "rai_real rai \<in> rai_real ` (\<lambda>x. ?norm x) ` res"       
+      from rai_normalize[OF this] *(2) have "rai_real rai \<in> rai_real ` (\<lambda>x. ?norm x) ` res"       
         using image_iff by fastforce
     } note normalize = this
     show ?thesis unfolding rr unfolding rts id e using cond 
@@ -318,32 +317,30 @@ qed
 
 definition roots_of_rai_intern :: "rat poly \<Rightarrow> rai_intern list" where
   "roots_of_rai_intern p = concat (map roots_of_rai_intern_monic_irr 
-     (factors_of_rat_poly Uncertified_Factorization p))"
+     (factors_of_rat_poly p))"
 
 lemma roots_of_rai_intern: 
   shows "p \<noteq> 0 \<Longrightarrow> rai_real ` set (roots_of_rai_intern p) = {x. rpoly p x = 0}" 
     "Ball (set (roots_of_rai_intern p)) rai_cond"
 proof -
   let ?rr = "roots_of_rai_intern p"
-  let ?mode1 = Uncertified_Factorization
   note d = roots_of_rai_intern_def
-  have "?mode1 \<in> {Check_Irreducible, Check_Root_Free} \<Longrightarrow> square_free p" by auto
-  note frp1 = factors_of_rat_poly[OF _ this]
+  note frp1 = factors_of_rat_poly
   {
     fix q r
     assume "q \<in> set ?rr"
     then obtain r s where 
-      s: "s \<in> set (factors_of_rat_poly ?mode1 p)" and
+      s: "s \<in> set (factors_of_rat_poly p)" and
       q: "q \<in> set (roots_of_rai_intern_monic_irr s)"
       unfolding d by auto
-    from frp1(1)[OF refl _ s] have "poly_type_cond Arbitrary_Poly s" by auto
+    from frp1(1)[OF refl s] have "poly_type_cond Monic_Irreducible s" by (auto simp: poly_type_cond_def)
     from roots_of_rai_intern_monic_irr[OF this] q
     have "rai_cond q" by auto
   }
   thus "Ball (set ?rr) rai_cond" by auto
   assume p: "p \<noteq> 0" 
   have "rai_real ` set ?rr = (\<Union> ((\<lambda> p. rai_real ` set (roots_of_rai_intern_monic_irr p)) ` 
-    (set (factors_of_rat_poly ?mode1 p))))"
+    (set (factors_of_rat_poly p))))"
     (is "_ = ?rrr")
     unfolding d set_concat set_map by auto
   also have "\<dots> = {x. rpoly p x = 0}"
@@ -352,20 +349,22 @@ proof -
       fix x
       assume "x \<in> ?rrr"
       then obtain q s where 
-        s: "s \<in> set (factors_of_rat_poly ?mode1 p)" and
+        s: "s \<in> set (factors_of_rat_poly p)" and
         q: "q \<in> set (roots_of_rai_intern_monic_irr s)" and
         x: "x = rai_real q" by auto
-      from frp1(1)[OF refl _ s] have s0: "s \<noteq> 0" and pt: "poly_type_cond Arbitrary_Poly s" by auto
+      from frp1(1)[OF refl s] have s0: "s \<noteq> 0" and pt: "poly_type_cond Monic_Irreducible s" 
+        by (auto simp: poly_type_cond_def)
       from roots_of_rai_intern_monic_irr[OF pt] q have rt: "rpoly s x = 0" unfolding x by auto
-      from frp1(2)[OF refl _ p, of _ x] rt s have rt: "rpoly p x = 0" by auto
+      from frp1(2)[OF refl p, of x] rt s have rt: "rpoly p x = 0" by auto
     }
     moreover
     {
       fix x :: real
       assume rt: "rpoly p x = 0"
-      from rt frp1(2)[OF refl _ p, of _ x] obtain s where s: "s \<in> set (factors_of_rat_poly ?mode1 p)" 
+      from rt frp1(2)[OF refl p, of x] obtain s where s: "s \<in> set (factors_of_rat_poly p)" 
         and rt: "rpoly s x = 0" by auto
-      from frp1(1)[OF refl _ s] have s0: "s \<noteq> 0" and ty: "poly_type_cond Arbitrary_Poly s" by auto
+      from frp1(1)[OF refl s] have s0: "s \<noteq> 0" and ty: "poly_type_cond Monic_Irreducible s" 
+        by (auto simp: poly_type_cond_def)
       from roots_of_rai_intern_monic_irr(1)[OF ty] rt obtain q where 
         q: "q \<in> set (roots_of_rai_intern_monic_irr s)" and
         x: "x = rai_real q" by auto
@@ -466,96 +465,13 @@ private lemma [code]: "roots_of_rai p = roots_of_rai_impl p"
   by (transfer, simp)
 end
 
-text \<open>Determine real roots of a rational polynomial, 
-   intended for polynomials of degree 3 or higher,
-   for lower degree polynomials use @{const roots1} or @{const rroots2}.
-   Internally, Yun-factorization and factorization of rational polynomials will be applied.\<close>
-definition real_roots_of_rat_poly3 :: "rat poly \<Rightarrow> real list" where
-  "real_roots_of_rat_poly3 p = map real_of (roots_of_real_alg p)"
-
-definition real_roots_of_rat_poly_all :: "rat poly \<Rightarrow> real list" where
-  "real_roots_of_rat_poly_all p = (let n = degree p in 
-    if n \<ge> 3 then real_roots_of_rat_poly3 p
-    else if n = 1 then [roots1 (map_poly of_rat p)] else if n = 2 then rroots2 (map_poly of_rat p)
-    else [])"
-
-
-lemma real_roots_of_rat_poly3: 
-  "p \<noteq> 0 \<Longrightarrow> set (real_roots_of_rat_poly3 p) = {x. rpoly p x = 0}" 
-  unfolding real_roots_of_rat_poly3_def using roots_of_real_alg by auto
-
-lemma real_roots_of_rat_poly_all: assumes p: "p \<noteq> 0"
-  shows "set (real_roots_of_rat_poly_all p) = {x. rpoly p x = 0}" (is "?l = ?r")
-proof -
-  note d = real_roots_of_rat_poly_all_def Let_def
-  show ?thesis
-  proof (cases "degree p \<ge> 3")
-    case True
-    with real_roots_of_rat_poly3[OF p] show ?thesis unfolding d by auto
-  next
-    case False
-    let ?p = "map_poly real_of_rat p"
-    have r: "?r = {x. poly ?p x = 0}" unfolding poly_real_of_rat_poly ..
-    have deg: "degree ?p = degree p" 
-      by (simp add: degree_map_poly)
-    show ?thesis
-    proof (cases "degree p = 1")
-      case True
-      hence l: "?l = {roots1 ?p}" unfolding d by auto
-      from True have "degree ?p = 1" unfolding deg by auto
-      from roots1[OF this] show ?thesis unfolding r l by simp
-    next
-      case False
-      show ?thesis 
-      proof (cases "degree p = 2")
-        case True
-        hence l: "?l = set (rroots2 ?p)" unfolding d by auto
-        from True have "degree ?p = 2" unfolding deg by auto
-        from rroots2[OF this] show ?thesis unfolding r l by simp
-      next
-        case False
-        with `degree p \<noteq> 1` `degree p \<noteq> 2` `\<not> (degree p \<ge> 3)` have True: "degree p = 0" by auto
-        hence l: "?l = {}" unfolding d by auto
-        from True have "degree ?p = 0" unfolding deg by auto
-        from roots0[OF _ this] p show ?thesis unfolding r l by simp
-      qed
-    qed
-  qed
-qed
-
-text \<open>It now comes the preferred function to compute real roots of a rational polynomial.\<close>
 definition real_roots_of_rat_poly :: "rat poly \<Rightarrow> real list" where
-  "real_roots_of_rat_poly p = (
-    let ps = (if degree p \<ge> 3 then factors_of_rat_poly Uncertified_Factorization p else [p])
-    in concat (map real_roots_of_rat_poly_all ps))"
+  "real_roots_of_rat_poly p = map real_of (roots_of_real_alg p)"
 
-lemma real_roots_of_rat_poly: assumes p: "p \<noteq> 0"
-  shows "set (real_roots_of_rat_poly p) = {x. rpoly p x = 0}" (is "?l = ?r")
-proof (cases "degree p \<ge> 3")
-  case False
-  hence "real_roots_of_rat_poly p = real_roots_of_rat_poly_all p"
-    unfolding real_roots_of_rat_poly_def Let_def by auto
-  with real_roots_of_rat_poly_all[OF p] show ?thesis by auto
-next
-  case True
-  let ?mode = Uncertified_Factorization
-  have "?mode \<in> {Check_Irreducible, Check_Root_Free} \<Longrightarrow> square_free p" by auto
-  note factors_of_rat_poly = factors_of_rat_poly[of ?mode, OF _ this]
-  {
-    fix q
-    assume "q \<in> set (factors_of_rat_poly ?mode p)"
-    from factors_of_rat_poly(1)[OF refl _ this] have "q \<noteq> 0" by auto
-    from real_roots_of_rat_poly_all[OF this]
-    have "set (real_roots_of_rat_poly_all q) = {x. rpoly q x = 0}" by auto
-  } note all = this
-  from True have 
-    "?l = (\<Union> ((\<lambda> p. set (real_roots_of_rat_poly_all p)) ` set (factors_of_rat_poly ?mode p)))"
-    unfolding real_roots_of_rat_poly_def Let_def by auto    
-  also have "\<dots> = (\<Union> ((\<lambda> p. {x. rpoly p x = 0}) ` set (factors_of_rat_poly ?mode p)))"
-    using all by blast
-  finally have l: "?l = (\<Union> ((\<lambda> p. {x. rpoly p x = 0}) ` set (factors_of_rat_poly ?mode p)))" .
-  show ?thesis using l factors_of_rat_poly(2)[OF refl _ p] by auto
-qed
+
+lemma real_roots_of_rat_poly: 
+  "p \<noteq> 0 \<Longrightarrow> set (real_roots_of_rat_poly p) = {x. rpoly p x = 0}" 
+  unfolding real_roots_of_rat_poly_def using roots_of_real_alg by auto
 
 text \<open>The upcoming functions no longer demand a rational polynomial as input.\<close>
 

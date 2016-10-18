@@ -12,7 +12,6 @@ theory Algebraic_Number_Tests
 imports
   "../Jordan_Normal_Form/Char_Poly"
   "../Show/Show_Complex"
-  "../Polynomial_Factorization/Select_Berlekamp_Hensel_Factorization"
   "~~/src/HOL/Library/Code_Char"
   "~~/src/HOL/Library/Code_Target_Nat"
   "~~/src/HOL/Library/Code_Target_Int"
@@ -93,12 +92,5 @@ definition "testmat = mat_of_rows_list 3 [
 definition "spectral_radius_test = show (Max (set [ norm ev. ev \<leftarrow> eigenvalues testmat]))"
 value [code] "char_poly testmat"
 value [code] spectral_radius_test
-
-text \<open>Since the precise show function requires validation of the factorization
-  provided by the oracle, it is usually much slower than the approximative one
-  in  theory \textit{Show-Real-Approx}
-  which displays the result up to a certain number of digits. 
-  This indicates that as future work, 
-  a fully verified efficient factorization algorithm would be valuable.\<close>
 
 end

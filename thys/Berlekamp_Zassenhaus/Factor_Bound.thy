@@ -62,19 +62,15 @@ lemma map_poly_preserves_prod_list[simp]:
 lemma map_poly_preserves_sum_list[simp]:
   "map_poly hom (sum_list x) = sum_list (map (map_poly hom) x)"
   by(induct x,auto simp:one_poly_def)
-
-declare coeff_map_poly_hom[simp del]
-declare coeffs_map_poly[simp add]
 end
 
 context inj_semiring_hom
 begin
 declare map_poly_0_iff[simp add]
-declare hom_sum_list[simp del,symmetric,simp add]
-lemma map_poly_preservers[simp]:
+lemma map_poly_preservers:
   "hom (lead_coeff p) = lead_coeff (map_poly hom p)"
   "hom (coeff p n) = coeff (map_poly hom p) n"
-unfolding poly_eq_iff lead_coeff_def by(simp_all add:coeff_map_poly_hom)
+  unfolding poly_eq_iff lead_coeff_def by simp_all
 end
 
 
@@ -158,7 +154,6 @@ lemma height_le_norm2 : (* Remark 11, eqn 85.1 *)
   "height g \<le> l2norm g"
 unfolding l2norm_list_def using height_le_norm2_list by auto
 
-declare o_def[simp add]
 lemma norm2_le_norm1 : (* Remark 11, eqn 85.2 *)
   "l2norm g \<le> sum_list (map abs (coeffs g))"
 proof - {fix lst
@@ -168,9 +163,9 @@ proof - {fix lst
       from triangle_ineq[OF sum_of_squares_pos[of "map real_of_int xs"],simplified,of "x"] 
       have "\<lfloor>sqrt (real_of_int x * real_of_int x + (\<Sum>x\<leftarrow>xs. real_of_int x * real_of_int x))\<rfloor> \<le>
             \<bar>x\<bar> + \<lfloor>sqrt (real_of_int (\<Sum>a\<leftarrow>xs. a * a))\<rfloor>"
-        by simp
+        by (simp add: o_def)
       also have "\<dots> \<le> \<bar>x\<bar> + sum_list (map abs xs)" using Cons by simp
-      finally show ?case by simp
+      finally show ?case by (simp add: o_def)
   qed
   }
   thus ?thesis by auto
@@ -213,7 +208,7 @@ proof -
       hence "\<And> a b c d v e::int. a\<le>b \<Longrightarrow> c\<le>v *d*d \<Longrightarrow> d\<le>e \<Longrightarrow> 0\<le>d \<Longrightarrow> 0\<le>v \<Longrightarrow> a+c \<le> 1*b+v *e*e"
         by fastforce
       from this[OF sq_mono[OF all_elems_ge[OF a_in_set]] Cons helper]
-      show ?case unfolding * by (simp add: sign_simps)
+      show ?case unfolding * by (simp add: o_def sign_simps)
   qed
   have "\<And> b c. b \<ge> 0 \<Longrightarrow> c \<ge> 0 \<Longrightarrow> sqrt (b * c * c) = sqrt (b) * c" by (simp add: real_sqrt_mult)
   hence "\<And> a b c. a \<ge> 0 \<Longrightarrow> b \<ge> 0 \<Longrightarrow> c \<ge> 0 \<Longrightarrow> 
@@ -266,7 +261,8 @@ definition complex_roots_int where
 lemma complex_roots_int:
   "smult (lead_coeff p) (\<Prod>a\<leftarrow>complex_roots_int p. [:- a, 1:]) = map_poly of_int p"
   "length (complex_roots_int p) = degree p"
-  using complex_roots[of "map_poly of_int p"] unfolding complex_roots_int_def by simp_all
+  using complex_roots[of "map_poly of_int p"] unfolding complex_roots_int_def 
+  by (simp_all add: i1.map_poly_preservers)
 
 text {* The measure for polynomials, after K. Mahler *}
 
@@ -426,7 +422,7 @@ lemma reconstruct_of_int_roots[simp]:
   shows "(\<Prod>a\<leftarrow> (complex_roots_int (smult v (\<Prod>a\<leftarrow>(map of_int as). [:- a, 1:]))). [:- a, 1:])
          = (\<Prod>a\<leftarrow>(map of_int as). [:- a, 1:])"
   unfolding complex_roots_int_def using reconstruct_of_complex_roots[of "of_int v"] assms
-  by simp
+  by (simp add: o_def)
 
 lemma complex_roots_complex_of_reconstructed:
   assumes nonzero:"x \<noteq> 0" shows
@@ -585,8 +581,6 @@ qed
 
 lemma complex_split : "Complex a b = c \<longleftrightarrow> (a = Re c \<and> b = Im c)"
   using complex_surj by auto
-
-lemma diff_diff_distr [simp]: "c - (a - b) = (c - a) + (b::complex)" by auto
 
 lemma norm_times_const:"(\<Sum>y\<leftarrow>lst. (cmod (a * y))\<^sup>2) = (cmod a)\<^sup>2 * (\<Sum>y\<leftarrow>lst. (cmod y)\<^sup>2)"
 by(induct lst,auto simp:ring_distribs)
@@ -790,13 +784,13 @@ lemma mignotte_helper_complex:
   shows "(\<Sum>v\<leftarrow>coeffs h. cmod v) \<le> 2 ^ degree h * measure_poly h" (is "?l \<le> ?r")
 proof -
   have "?l = (\<Sum>i\<leftarrow>[0..< Suc (degree h)]. cmod (coeff h i))"
-    unfolding coeffs_def by auto
+    unfolding coeffs_def by (auto simp: o_def)
   also have "\<dots> \<le> (\<Sum>i\<leftarrow>[0..< Suc (degree h)]. (degree h choose i) * measure_poly h)"
     using add_induct_gen_le[of id,simplified] add_mono[OF mignotte_helper_coeff order_refl]
     by fast
   also have "\<dots> = (\<Sum>i = 0..degree h. (degree h choose i)) * measure_poly h"
     unfolding sum_list_mult_const degree_eq_length_coeffs setsum_conv
-    by simp
+    by (simp add: o_def)
   also have "\<dots> = ?r" by (simp add: choose_row_sum)
   finally show ?thesis.
 qed
@@ -804,13 +798,14 @@ qed
 lemma mignotte_helper:
   shows "sum_list (map abs (coeffs h)) \<le> 2 ^ degree h * measure_poly_int h"
 unfolding measure_poly_int_def
-using mignotte_helper_complex[of "map_poly complex_of_int h"] by simp
+  using mignotte_helper_complex[of "map_poly complex_of_int h"] 
+  by (simp add: o_def coeffs_map_poly)
 
 lemma cmod_through_lead_coeff[simp]:
   "cmod (lead_coeff (map_poly complex_of_int h)) = abs (lead_coeff h)"
 proof(induct h) case (pCons a h)
-  then consider "a \<noteq> 0 \<and> h = 0" | "h \<noteq> 0" by auto
-  thus ?case by(cases;auto)
+  from pCons consider "a \<noteq> 0 \<and> h = 0" | "h \<noteq> 0" by auto
+  thus ?case by (cases, auto simp: i1.map_poly_preservers[symmetric])  
 qed auto
 
 lemma measure_poly_ge_1:
@@ -853,7 +848,7 @@ lemma factor_bound: assumes "f \<noteq> 0" "g dvd f" "degree g \<le> n"
   also have "\<dots> \<le> 2 ^ n * ceiling (l2norm_complex  (map_poly complex_of_int f))"
      by simp
   also have "\<dots> = factor_bound f n"
-    unfolding factor_bound_def by (auto simp: power2_eq_square)
+    unfolding factor_bound_def by (auto simp: power2_eq_square coeffs_map_poly o_def)
   finally show ?thesis unfolding of_int_le_iff by blast
 qed
 

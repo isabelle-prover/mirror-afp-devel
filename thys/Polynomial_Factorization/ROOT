@@ -18,13 +18,6 @@ session Polynomial_Factorization (AFP) = Pre_Polynomial_Factorization +
   theories
     "Square_Free_Factorization"
   theories
-    "Berlekamp_Hensel_Factorization"
-  theories
-    "Factorization_Oracle"
-    "Select_Berlekamp_Hensel_Factorization"
-    "Select_Mathematica_Factorization"
-    "Select_Hybrid_Factorization"
-  theories
     "Rational_Factorization"
   document_files
     "root.bib"
@@ -34,8 +27,6 @@ session Pre_Polynomial_Factorization (AFP) = "JNF-AFP-Lib" +
   description {* Theories from other AFP-entries and Extended Theories for Matrices *}
   options [timeout = 600, document = false]
   theories
-    "../Jordan_Normal_Form/Gauss_Jordan_IArray_Impl"
-    "../Jordan_Normal_Form/Missing_Fraction_Field"
     "../Partial_Function_MR/Partial_Function_MR"
     "../Polynomial_Interpolation/Polynomial_Interpolation"
     "../Sqrt_Babylonian/Sqrt_Babylonian"

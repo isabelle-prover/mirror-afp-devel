@@ -74,17 +74,13 @@ upon results in HOL-algebra. Later on this result became available in Isabelle i
 direct, type-based way, so we deleted our proof.
 
 When performing actual computations with algebraic numbers, it is important to reduce
-the degree of the representing polynomials. To this end, we use existing
-formalized factorization algorithms. At the moment, there is a fast oracle for factorization
-available (which does not guarantee optimality of the factorization), and a less efficient
-but provably complete factorization algorithm. To this end, currently all but one algorithms are
-based on the efficient oracle for factorization. Only, the default show-function for real 
-algebraic numbers requires the unique minimal polynomial representing the algebraic number --
+the degree of the representing polynomials. To this end, we use the existing
+Berlekamp-Zassenhaus factorization algorithm. This is crucial for the default show-function for real 
+algebraic numbers which requires the unique minimal polynomial representing the algebraic number --
 but an alternative which displays only an approximative value is also available.
 
 In order to support tests on whether a given algebraic number is a rational number, 
-it would of course also suffice to first compute the minimal polynomial, and then test 
-whether the degree is one. Instead, here we just perform the rational root test.
+we also make use of the fact that we compute the minimal polynomial.
 
 The formalization of Sturm's method \cite{Sturm-AFP} was crucial to separate the different
 roots of a fixed polynomial. 
@@ -117,14 +113,8 @@ and then combine each pair of complex conjugate roots.
 
 \medskip
 
-As future work it would be beneficial to have a soundness proof for the rational factorization 
-oracle, since then some of the operations on real algebraic numbers can be executed more 
-efficiently. For instance, we know that internally always a unique representation of 
-real algebraic numbers is used, which would admit fast equality checks. But currently 
-we cannot use this knowledge and have to decide equality via Sturm's method.
-
-Moreover, we did not include the result that the set of complex algebraic numbers is algebraically
-closed, i.e., we are limited to determine the complex roots of a polynomial over $\rats$, and
+As future it would be interesting to include the result that the set of complex algebraic numbers is algebraically
+closed, i.e., at the momemnt we are limited to determine the complex roots of a polynomial over $\rats$, and
 cannot determine the real or complex roots of an polynomial having arbitrary algebraic coefficients.
 
 Finally, an analog to Sturm's method for the complex numbers would be welcome, in order to

@@ -86,7 +86,7 @@ proof -
       with * have psij: "psi ! j = (d,i)" unfolding fact split by auto
       from sff'(2)[OF psi[unfolded psij]] have d: "square_free d" "degree d \<noteq> 0" by auto
       from * psij fact
-      have bz: "berlekamp_zassenhaus_factorization d = map fst (fact (psi ! j))" by auto
+      have bz: "berlekamp_zassenhaus_factorization d = map fst (fact (psi ! j))" by (auto simp: o_def)
       from berlekamp_zassenhaus_factorization[OF bz d] 
       have dhs: "d = prod_list (map fst (fact (psi ! j)))" and 
         irr: "(\<forall>fi\<in>set (map fst (fact (psi ! j))). irreducible fi)" by auto

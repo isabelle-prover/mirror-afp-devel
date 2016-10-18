@@ -25,7 +25,7 @@ session Pre_Algebraic_Numbers (AFP) = "Polynomial_Factorization" +
   description {* Theories from other AFP-entries and Extended Theories for Matrices *}
   options [timeout = 1200, document = false]
   theories
-    "../Berlekamp_Zassenhaus/Resultant"
+    "../Berlekamp_Zassenhaus/Factorize_Rat_Poly"
     "../Deriving/Comparator_Generator/Compare_Rat"
     "../Deriving/Comparator_Generator/Compare_Real"
     "../Jordan_Normal_Form/Determinant_Impl"

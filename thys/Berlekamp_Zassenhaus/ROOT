@@ -49,6 +49,7 @@ session Pre_BZ (AFP) = "Polynomial_Factorization" +
   options [document=false]
   theories
     "../Jordan_Normal_Form/Matrix_Kernel"
+    "../Jordan_Normal_Form/Gauss_Jordan_IArray_Impl"
     "../Efficient-Mergesort/Efficient_Sort"
     "~~/src/HOL/Number_Theory/Residues"
     "../Perron_Frobenius/Types_To_Sets/Types_To_Sets"

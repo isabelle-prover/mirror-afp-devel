@@ -26,6 +26,7 @@ theory Algebraic_Numbers_Prelim
 imports
   "~~/src/HOL/Library/Fundamental_Theorem_Algebra"
   "../Polynomial_Factorization/Rational_Factorization"
+  "../Berlekamp_Zassenhaus/Factorize_Rat_Poly"
 begin
 
 subsection \<open>Polynomial Evaluation of Rational Polynomials in Fields.\<close>
@@ -92,7 +93,7 @@ next
   case (2 p)
   thus ?case
     by (intro exI[of _ "map_poly of_rat p"]) 
-       (auto simp: rpoly.poly_map_poly_eval_poly)
+       (auto simp: rpoly.poly_map_poly_eval_poly) 
 qed  
 
 definition alg_poly :: "'a :: field_char_0 \<Rightarrow> rat poly \<Rightarrow> bool" where
@@ -126,44 +127,102 @@ lemma rpoly_smult_0_iff: assumes c: "c \<noteq> 0"
   unfolding rpoly.poly_map_poly_eval_poly[symmetric] rpoly.map_poly_smult
   using c by simp
 
-definition factors_of_rat_poly :: "factorization_mode \<Rightarrow> rat poly \<Rightarrow> rat poly list" where
-  "factors_of_rat_poly mode p = map fst (snd (factorize_sf_rat_poly mode p))"
+definition monic_poly :: "'a :: field poly \<Rightarrow> 'a poly" where 
+  "monic_poly p = (let a = coeff p (degree p) in if a = 1 then p else smult (inverse a) p)" 
 
+lemma monic_poly: "rpoly (monic_poly p) x = 0 \<longleftrightarrow> rpoly p x = 0" "p \<noteq> 0 \<Longrightarrow> monic (monic_poly p)" 
+  "irreducible (monic_poly p) = irreducible p"
+  "(monic_poly p = 0) = (p = 0)"
+  "square_free (monic_poly p) = square_free p"
+  "degree (monic_poly p) = degree p"
+  "\<exists> c. c \<noteq> 0 \<and> monic_poly p = smult c p" 
+proof (cases "p = 0")
+  case True
+  show "rpoly (monic_poly p) x = 0 \<longleftrightarrow> rpoly p x = 0" unfolding True monic_poly_def by simp
+next
+  assume "p \<noteq> 0"
+  thus "(rpoly (monic_poly p) x = 0) = (rpoly p x = 0)" "monic (monic_poly p)"
+    unfolding monic_poly_def Let_def by (auto simp: eval_poly_def)
+next
+  show "\<exists> c. c \<noteq> 0 \<and> monic_poly p = smult c p"
+  proof (cases "p = 0 \<or> monic p")
+    case True
+    thus ?thesis by (intro exI[of _ 1], auto simp: monic_poly_def)
+  next
+    case False
+    thus ?thesis by (intro exI[of _ "inverse (coeff p (degree p))"], auto simp: monic_poly_def)
+  qed
+  then obtain c where c: "c \<noteq> 0" and id: "monic_poly p = smult c p" by auto
+  show "irreducible (monic_poly p) = irreducible p" unfolding id
+    by (rule irreducible_smult[OF c])
+  show "(monic_poly p = 0) = (p = 0)" unfolding id using c by simp
+  show "(square_free (monic_poly p)) = square_free p" unfolding id using c by simp
+  show "degree (monic_poly p) = degree p" unfolding id using c by simp
+qed
+
+definition factors_of_rat_poly :: "rat poly \<Rightarrow> rat poly list" where
+  "factors_of_rat_poly p = map (monic_poly o fst) (snd (factorize_rat_poly p))"
+
+(* TODO: move *)
+lemma factorize_int_poly_0[simp]: "factorize_int_poly 0 = (0,[])" 
+  unfolding factorize_int_poly_def yun_factorization_int_def by auto
+
+lemma factorize_rat_poly_0[simp]: "factorize_rat_poly 0 = (0,[])" 
+  unfolding factorize_rat_poly_def rat_to_normalized_int_poly_def by simp
+  
 lemma factors_of_rat_poly:  
   defines "rp \<equiv> rpoly :: rat poly \<Rightarrow> 'a :: {field_char_0,euclidean_ring_gcd} \<Rightarrow> 'a"
-  assumes "factors_of_rat_poly mode p = qs"
-  and mode: "mode \<in> {Check_Irreducible, Check_Root_Free} \<Longrightarrow> square_free p"
-  shows "\<And> q. q \<in> set qs \<Longrightarrow> monic q \<and> square_free q \<and> degree q \<noteq> 0 \<and> degree q \<le> degree p \<and> 
-    (mode \<in> {Full_Factorization, Check_Irreducible} \<longrightarrow> irreducible q) \<and> 
-    (mode = Check_Root_Free \<longrightarrow> root_free q) "
+  assumes "factors_of_rat_poly p = qs"
+  shows "\<And> q. q \<in> set qs \<Longrightarrow> monic q \<and> irreducible q \<and> degree q \<le> degree p"
   "p \<noteq> 0 \<Longrightarrow> rp p x = 0 \<longleftrightarrow> (\<exists> q \<in> set qs. rp q x = 0)"
   "p \<noteq> 0 \<Longrightarrow> rp p x = 0 \<Longrightarrow> \<exists>! q \<in> set qs. rp q x = 0"
   "distinct qs"
 proof -
-  obtain c qis where factt: "factorize_sf_rat_poly mode p = (c,qis)" by force
-  from assms[unfolded factors_of_rat_poly_def factt] have qs: "qs = map fst qis" by auto
-  note fact = factorize_sf_rat_poly[OF factt mode]
+  obtain c qis where factt: "factorize_rat_poly p = (c,qis)" by force
+  from assms[unfolded factors_of_rat_poly_def factt] have qs: "qs = map (monic_poly \<circ> fst) (snd (c, qis))" 
+    by auto
+  note fact = factorize_rat_poly[OF factt]
   have sqf: "square_free_factorization p (c, qis)" by (rule fact(1))
   note sff = square_free_factorizationD[OF sqf]
   note sff' = square_free_factorizationD'[OF sqf]
   {
     fix q
     assume q: "q \<in> set qs"
-    then obtain i where qi: "(q,i) \<in> set qis" unfolding qs by auto
-    from split_list[OF this] obtain qis1 qis2 where qis: "qis = qis1 @ (q,i) # qis2" by auto
-    have dvd: "q dvd p" unfolding sff'(1) qis dvd_def 
-      by (intro exI[of _ "smult c (q ^ i * (\<Prod>(a, i)\<leftarrow>qis1 @  qis2. a ^ Suc i))"], auto)
+    then obtain r i where qi: "(r,i) \<in> set qis" and qr: "q = monic_poly r" unfolding qs by auto
+    from split_list[OF qi] obtain qis1 qis2 where qis: "qis = qis1 @ (r,i) # qis2" by auto
+    have dvd: "r dvd p" unfolding sff'(1) qis dvd_def 
+      by (intro exI[of _ "smult c (r ^ i * (\<Prod>(a, i)\<leftarrow>qis1 @  qis2. a ^ Suc i))"], auto)
+    from fact(2)[OF qi] have r0: "r \<noteq> 0" unfolding irreducible_def by auto
     from qi factt have p: "p \<noteq> 0" by (cases p, auto)
-    with dvd have deg: "degree q \<le> degree p" by (metis dvd_imp_degree_le)
-    from sff(2)[OF qi] have "square_free q" "degree q \<noteq> 0" by auto
-    with fact(2)[OF _ qi] deg
-    show "monic q \<and> square_free q \<and> degree q \<noteq> 0 \<and> degree q \<le> degree p \<and> 
-      (mode \<in> {Full_Factorization, Check_Irreducible} \<longrightarrow> irreducible q) \<and> 
-      (mode = Check_Root_Free \<longrightarrow> root_free q)" by auto
+    with dvd have deg: "degree r \<le> degree p" by (metis dvd_imp_degree_le)
+    with fact(2)[OF qi] monic_poly(2)[OF r0]
+    show "monic q \<and> irreducible q \<and> degree q \<le> degree p" unfolding qr monic_poly by auto
   } note * = this
-  from sff'(2) have "square_free (prod_list qs)" unfolding qs by auto  
-  thus "distinct qs" 
-    by (rule square_free_prod_list_distinct, insert *, auto)
+  show "distinct qs" unfolding distinct_conv_nth 
+  proof (intro allI impI)
+    fix i j
+    assume "i < length qs" "j < length qs" and diff: "i \<noteq> j" 
+    hence ij: "i < length qis" "j < length qis" 
+      and id: "qs ! i = monic_poly (fst (qis ! i))" "qs ! j = monic_poly (fst (qis ! j))" unfolding qs by auto    
+    obtain qi I where qi: "qis ! i = (qi, I)" by force
+    obtain qj J where qj: "qis ! j = (qj, J)" by force    
+    from sff(5)[unfolded distinct_conv_nth, rule_format, OF ij diff] qi qj 
+    have diff: "(qi, I) \<noteq> (qj, J)" by auto
+    from ij qi qj have "(qi, I) \<in> set qis" "(qj, J) \<in> set qis" unfolding set_conv_nth by force+
+    from sff(3)[OF this diff] sff(2)[OF this(1)] have cop: "coprime qi qj" "degree qi \<noteq> 0" by auto
+    from monic_poly(7)[of qi] id qi obtain c where c: "c \<noteq> 0" and i: "qs ! i = smult c qi" by auto
+    from monic_poly(7)[of qj] id qj obtain d where d: "d \<noteq> 0" and j: "qs ! j = smult d qj" by auto
+    from cop(2) c i have deg: "degree (qs ! i) \<noteq> 0" by auto
+    have cop: "coprime (qs ! i) (qs ! j)" unfolding i j using c d cop
+      by (simp add: gcd_smult_left gcd_smult_right)        
+    show "qs ! i \<noteq> qs ! j"
+    proof
+      assume id: "qs ! i = qs ! j" 
+      have "degree (gcd (qs ! i) (qs ! j)) = degree (qs ! i)"  unfolding id by simp
+      also have "\<dots> \<noteq> 0" using deg by simp
+      finally show False using arg_cong[OF cop, of degree] by simp
+    qed
+  qed
   assume p: "p \<noteq> 0"
   from fact(1) p have c: "c \<noteq> 0" using sff(1) by auto
   let ?r = "of_rat :: rat \<Rightarrow> 'a"
@@ -177,42 +236,44 @@ proof -
     unfolding qs rp rp.hom_prod_list poly_prod_list_zero_iff set_map by fastforce
   also have "\<dots> = (\<exists> (q,i) \<in>set qis. poly (?rp q) x = 0)"
     unfolding rp.hom_power poly_power_zero_iff by auto
-  also have "\<dots> = (\<exists> q \<in> set qs. rp q x = 0)" unfolding rp qs by force
+  also have "\<dots> = (\<exists> q \<in> fst ` set qis. poly (?rp q) x = 0)" by force
+  also have "\<dots> = (\<exists> q \<in> set qs. rp q x = 0)" unfolding rp qs snd_conv o_def bex_simps set_map
+    by (rule bex_cong[OF refl], insert monic_poly(1)[of _ x], simp add: eval_poly_def)
   finally show iff: "rp p x = 0 \<longleftrightarrow> (\<exists> q \<in> set qs. rp q x = 0)" by auto
   assume "rp p x = 0"
   with iff obtain q where q: "q \<in> set qs" and rtq: "rp q x = 0" by auto
-  then obtain i where qi: "(q,i) \<in> set qis" unfolding qs by auto
+  then obtain i q' where qi: "(q',i) \<in> set qis" and qq': "q = monic_poly q'" unfolding qs by auto  
   show "\<exists>! q \<in> set qs. rp q x = 0"
   proof (intro ex1I, intro conjI, rule q, rule rtq, clarify)
     fix r
     assume "r \<in> set qs" and rtr: "rp r x = 0"
-    then obtain j where rj: "(r,j) \<in> set qis" unfolding qs by auto
-    from rtr rtq have "[:-x,1:] dvd ?rp q" "[:-x,1:] dvd ?rp r" unfolding rp
+    then obtain j r' where rj: "(r',j) \<in> set qis" and rr': "r = monic_poly r'" unfolding qs by auto
+    from rtr rtq monic_poly(1)[of _ x] have rtr: "rp r' x = 0" and rtq: "rp q' x = 0" 
+      unfolding rp rr' qq' by (auto simp: eval_poly_def)
+    from rtr rtq have "[:-x,1:] dvd ?rp q'" "[:-x,1:] dvd ?rp r'" unfolding rp
       by (auto simp: poly_eq_0_iff_dvd)
-    hence "[:-x,1:] dvd gcd (?rp q) (?rp r)" by simp
-    hence "gcd (?rp q) (?rp r) = 0 \<or> degree (gcd (?rp q) (?rp r)) \<noteq> 0"
+    hence "[:-x,1:] dvd gcd (?rp q') (?rp r')" by simp
+    hence "gcd (?rp q') (?rp r') = 0 \<or> degree (gcd (?rp q') (?rp r')) \<noteq> 0"
       by (metis degree_0_id is_unit_gcd is_unit_iff_degree pCons_eq_0_iff pCons_eq_iff zero_neq_one)
-    hence "gcd q r = 0 \<or> degree (gcd q r) \<noteq> 0"
+    hence "gcd q' r' = 0 \<or> degree (gcd q' r') \<noteq> 0"
       by (metis rpoly.degree_map_poly rpoly.map_poly_0_iff rpoly'.map_poly_gcd)
-    hence "\<not> coprime q r" by auto
-    with sff(3)[OF qi rj]
-    show "r = q" by auto
+    hence "\<not> coprime q' r'" by auto
+    with sff(3)[OF qi rj] have "q' = r'" by auto
+    thus "r = q" unfolding rr' qq' by simp
   qed
 qed
 
 lemma alg_poly_factors_rat_poly: 
   fixes x :: "'a :: {field_char_0,euclidean_ring_gcd}"
   assumes p: "alg_poly x p"
-  and mode: "mode \<in> {Check_Irreducible, Check_Root_Free} \<Longrightarrow> square_free p"
-  shows "\<exists> q \<in> set (factors_of_rat_poly mode p). alg_poly x q \<and> monic q 
-  \<and> (mode = Full_Factorization \<or> mode = Check_Irreducible \<longrightarrow> irreducible q) \<and> 
-    (mode = Check_Root_Free \<longrightarrow> root_free q) \<and> degree q \<le> degree p"
+shows "\<exists> q \<in> set (factors_of_rat_poly p). alg_poly x q \<and> monic q \<and> irreducible q
+  \<and> degree q \<le> degree p"
 proof -
   from alg_polyD[OF p] have p: "p \<noteq> 0" and rt: "rpoly p x = 0" by auto
-  note fact = factors_of_rat_poly[OF refl mode, of mode]
-  from fact(2)[OF _ p, of x] rt obtain q where q: "q \<in> set (factors_of_rat_poly mode p)" and 
+  note fact = factors_of_rat_poly[OF refl]
+  from fact(2)[OF p, of x] rt obtain q where q: "q \<in> set (factors_of_rat_poly p)" and 
     rt: "rpoly q x = 0" by auto
-  from fact(1)[OF _ q] rt show ?thesis
+  from fact(1)[OF q] rt show ?thesis
     by (intro bexI[OF _ q], auto)
 qed
 
@@ -264,7 +325,7 @@ proof -
       hence "[:-x,1:] dvd gcd (?rp p) (?rp q)" by (rule gcd_greatest)
       also have "\<dots> = map_poly of_rat (gcd p q)"
         by (rule rpoly'.map_poly_gcd [symmetric])
-      also have "\<dots> = 1" by (simp add: gcd)
+      also have "\<dots> = 1" by (simp add: gcd one_poly_def)
       finally show False by (simp add: dvd_iff_poly_eq_0)
     qed
   qed

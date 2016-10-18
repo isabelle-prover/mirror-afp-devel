@@ -65,7 +65,7 @@ lemma root_poly_Re_via_int_polys_code[code]:
   unfolding root_poly_Re_def Let_def poly_add_via_int_polys_unfold ..
 
 definition root_poly_Im :: "rat poly \<Rightarrow> rat poly list" where
-  "root_poly_Im p = (let fs = factors_of_rat_poly Uncertified_Factorization 
+  "root_poly_Im p = (let fs = factors_of_rat_poly 
     (poly_add (normalize_rat_poly p) (normalize_rat_poly (poly_uminus p)))
     in remdups ((if (\<exists> f \<in> set fs. coeff f 0 = 0) then [[:0,1:]] else [])) @ 
       [ poly_mult (normalize_rat_poly poly_1_2i) (normalize_rat_poly f) . 
@@ -132,10 +132,9 @@ proof -
   have "rpoly ?Rep (Re x) = 0" unfolding poly_real_of_rat_poly .
   with Rep show "alg_poly (Re x) ?Rep" by auto 
   let ?q = "poly_add ?np (?n (poly_uminus p))"
-  let ?mode = Uncertified_Factorization
   from alg_poly_add_complex[OF ap, of "- cnj x" "?n (poly_uminus p)"] alg_poly_uminus[OF apc] 
   have apq: "alg_poly (x - cnj x) ?q" by auto
-  from alg_poly_factors_rat_poly[OF this] obtain pi where pi: "pi \<in> set (factors_of_rat_poly ?mode ?q)"
+  from alg_poly_factors_rat_poly[OF this] obtain pi where pi: "pi \<in> set (factors_of_rat_poly ?q)"
     and appi: "alg_poly (x - cnj x) pi" by auto
   hence appi': "alg_poly (x - cnj x) (?n pi)" by simp
   have id: "1 / (2 * \<i>) * (x - cnj x) = of_real (Im x)"
@@ -169,7 +168,7 @@ text \<open>Determine complex roots of a polynomial,
    for lower degree polynomials use @{const roots1} or @{const croots2}\<close>
 definition complex_roots_of_rat_poly3 :: "rat poly \<Rightarrow> complex list" where
   "complex_roots_of_rat_poly3 p \<equiv> let n = degree p; rr = count_roots_rat p; 
-    rrts' = real_roots_of_rat_poly3 p; (* all real roots *)
+    rrts' = real_roots_of_rat_poly p; (* all real roots *)
     rrts = (if length rrts' = rr then rrts' else remdups rrts'); (* distinct real roots *)
     crts = map (\<lambda> r. Complex r 0) rrts
     in 
@@ -202,12 +201,12 @@ proof -
   from p have q0: "q \<noteq> 0" unfolding q_def by auto
   hence q: "?q \<noteq> 0" by auto
   interpret cr: inj_ring_hom complex_of_real by (unfold_locales, auto)
-  def rr' \<equiv> "real_roots_of_rat_poly3 p"
+  def rr' \<equiv> "real_roots_of_rat_poly p"
   def rr \<equiv> "if length rr' = count_roots_rat p then rr' else remdups rr'"
   def rrts \<equiv> "map (\<lambda>r. Complex r 0) rr"
   note d = complex_roots_of_rat_poly3_def[of p, unfolded Let_def, folded rr'_def, folded rr_def rrts_def]
   have rr': "set rr' = {x. rpoly p x = 0}" unfolding rr'_def
-    using real_roots_of_rat_poly3[OF p] .
+    using real_roots_of_rat_poly[OF p] .
   have rr: "set rr = {x. rpoly p x = 0}" unfolding rr_def using rr' by auto
   have rrts: "set rrts = {x. poly ?q x = 0 \<and> x \<in> \<real>}" unfolding rrts_def set_map rr q_def
     by (auto simp: eval_poly_def) 
@@ -302,7 +301,7 @@ proof -
         "degree p - count_roots_rat p = 2 \<longleftrightarrow> True" by auto
       have l: "?l = of_real ` {x. poly q x = 0} \<union> set (croots2 ?c2)"
         unfolding d rts_def id if_False if_True set_append rrts 
-        using real_roots_of_rat_poly3[OF p] pq 
+        using real_roots_of_rat_poly[OF p] pq 
         by (auto simp: q_def Reals_def)
       from dist
       have len_rr: "length rr = card {x. poly q x = 0}" unfolding rr[unfolded pq, symmetric] 
@@ -411,7 +410,7 @@ qed
 text \<open>It now comes the preferred function to compute complex roots of a rational polynomial.\<close>
 definition complex_roots_of_rat_poly :: "rat poly \<Rightarrow> complex list" where
   "complex_roots_of_rat_poly p = (
-    let ps = (if degree p \<ge> 3 then factors_of_rat_poly Uncertified_Factorization p else [p])
+    let ps = (if degree p \<ge> 3 then factors_of_rat_poly p else [p])
     in concat (map complex_roots_of_rat_poly_all ps))"
 
 lemma complex_roots_of_rat_poly: assumes p: "p \<noteq> 0"
@@ -423,23 +422,20 @@ proof (cases "degree p \<ge> 3")
   with complex_roots_of_rat_poly_all[OF p] show ?thesis by auto
 next
   case True
-  let ?mode = Uncertified_Factorization
-  have "?mode \<in> {Check_Irreducible, Check_Root_Free} \<Longrightarrow> square_free p" by auto
-  note factors_of_rat_poly = factors_of_rat_poly[of ?mode, OF _ this]
   {
     fix q
-    assume "q \<in> set (factors_of_rat_poly ?mode p)"
-    from factors_of_rat_poly(1)[OF refl _ this] have "q \<noteq> 0" by auto
+    assume "q \<in> set (factors_of_rat_poly p)"
+    from factors_of_rat_poly(1)[OF refl this] have "q \<noteq> 0" by auto
     from complex_roots_of_rat_poly_all[OF this]
     have "set (complex_roots_of_rat_poly_all q) = {x. rpoly q x = 0}" by auto
   } note all = this
   from True have 
-    "?l = (\<Union> ((\<lambda> p. set (complex_roots_of_rat_poly_all p)) ` set (factors_of_rat_poly ?mode p)))"
+    "?l = (\<Union> ((\<lambda> p. set (complex_roots_of_rat_poly_all p)) ` set (factors_of_rat_poly p)))"
     unfolding complex_roots_of_rat_poly_def Let_def by auto    
-  also have "\<dots> = (\<Union> ((\<lambda> p. {x. rpoly p x = 0}) ` set (factors_of_rat_poly ?mode p)))"
+  also have "\<dots> = (\<Union> ((\<lambda> p. {x. rpoly p x = 0}) ` set (factors_of_rat_poly p)))"
     using all by blast
-  finally have l: "?l = (\<Union> ((\<lambda> p. {x. rpoly p x = 0}) ` set (factors_of_rat_poly ?mode p)))" .
-  show ?thesis using l factors_of_rat_poly(2)[OF refl _ p] by auto
+  finally have l: "?l = (\<Union> ((\<lambda> p. {x. rpoly p x = 0}) ` set (factors_of_rat_poly p)))" .
+  show ?thesis using l factors_of_rat_poly(2)[OF refl p] by auto
 qed
 
 definition roots_of_complex_main :: "complex poly \<Rightarrow> complex list" where 
