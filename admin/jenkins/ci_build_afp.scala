@@ -82,7 +82,7 @@ object profile extends isabelle.CI_Profile
           config.getString("notify")
         else
           ""
-      raw.split(' ').toList.filterNot(_.isEmpty)
+      raw.split(',').toList.map(_.trim).filterNot(_.isEmpty)
     }
 
     def entry_of_session(info: Sessions.Info): Option[String] =
