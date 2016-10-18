@@ -50,12 +50,18 @@
 
     <p>The submission must build with the current Isabelle release version.
        Submissions for older Isabelle versions are not accepted.</p>
-    
-    <p>In exceptional circumstances,
-    submissions for the Isabelle development version may be acceptable, but publication of the entry on
-    the front page will be deferred until the next Isabelle release.
-    If you feel this is necessary for your submission, please email <a
-href="&#109;&#97;&#105;&#108;&#116;&#111;:&#97;&#102;&#112;-&#115;&#117;&#98;&#109;&#105;&#116;&#64;&#105;&#110;&#46;&#116;&#117;&#109;&#46;&#100;&#101;">&#97;&#102;&#112;-&#115;&#117;&#98;&#109;&#105;&#116;&#64;&#105;&#110;&#46;&#116;&#117;&#109;&#46;&#100;&#101;</a>.</p>
+
+    <p>Submissions for the Isabelle development version are also acceptable,
+    but publication of the entry on the front page will be deferred until the
+    next Isabelle release. In the meantime the entry will only be visible on
+    the <a href="https://devel.isa-afp.org">development pages</a>.
+    In this case,
+    submit your article as described above. Because your article is tested
+    against the release version, this will fail (otherwise your article does
+    not need the development version!) and you cannot perform the final step
+    in the submission process. When that happens, simply copy the url of the
+    submission page at that point into an email to <a href="&#109;&#97;&#105;&#108;&#116;&#111;:&#97;&#102;&#112;-&#115;&#117;&#98;&#109;&#105;&#116;&#64;&#105;&#110;&#46;&#116;&#117;&#109;&#46;&#100;&#101;">&#97;&#102;&#112;-&#115;&#117;&#98;&#109;&#105;&#116;&#64;&#105;&#110;&#46;&#116;&#117;&#109;&#46;&#100;&#101;</a>.
+    </p>
 
     <p>The submission must follow the following Isabelle style rules.
         For additional guidelines on Isabelle proofs, also see the this <a href="http://proofcraft.org/blog/isabelle-style.html">guide</a> (feel free to follow all of these; only the below are mandatory).</p>

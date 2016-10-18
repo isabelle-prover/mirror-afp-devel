@@ -249,18 +249,18 @@ text \<open>We provide useful alternative characterizations for summation over
 lemma sum_outgoing_pointwise: "(\<Sum>e\<in>outgoing u. g e) = (\<Sum>v\<in>E``{u}. g (u,v))"  
 proof -
   have "(\<Sum>e\<in>outgoing u. g e) = (\<Sum>e\<in>(\<lambda>v. (u,v))`(E``{u}). g e)"  
-    by (rule setsum.cong) (auto simp: outgoing_def)
+    by (rule sum.cong) (auto simp: outgoing_def)
   also have "\<dots> = (\<Sum>v\<in>E``{u}. g (u,v))"  
-    by (subst setsum.reindex) auto
+    by (subst sum.reindex) auto
   finally show ?thesis .
 qed  
 
 lemma sum_incoming_pointwise: "(\<Sum>e\<in>incoming u. g e) = (\<Sum>v\<in>E\<inverse>``{u}. g (v,u))"  
 proof -
   have "(\<Sum>e\<in>incoming u. g e) = (\<Sum>e\<in>(\<lambda>v. (v,u))`(E\<inverse>``{u}). g e)"  
-    by (rule setsum.cong) (auto simp: incoming_def)
+    by (rule sum.cong) (auto simp: incoming_def)
   also have "\<dots> = (\<Sum>v\<in>E\<inverse>``{u}. g (v,u))"  
-    by (subst setsum.reindex) auto
+    by (subst sum.reindex) auto
   finally show ?thesis .
 qed  
 
@@ -270,14 +270,14 @@ lemma (in Finite_Graph) sum_incoming_extend:
   assumes "\<And>v. \<lbrakk> v\<in>V; (v,u)\<notin>E \<rbrakk> \<Longrightarrow> g (v,u) = 0"
   shows "(\<Sum>e\<in>incoming u. g e) = (\<Sum>v\<in>V. g (v,u))"
   apply (subst sum_incoming_pointwise)
-  apply (rule setsum.mono_neutral_left)
+  apply (rule sum.mono_neutral_left)
   using assms pred_ss_V by auto
 
 lemma (in Finite_Graph) sum_outgoing_extend:  
   assumes "\<And>v. \<lbrakk> v\<in>V; (u,v)\<notin>E \<rbrakk> \<Longrightarrow> g (u,v) = 0"
   shows "(\<Sum>e\<in>outgoing u. g e) = (\<Sum>v\<in>V. g (u,v))"
   apply (subst sum_outgoing_pointwise)
-  apply (rule setsum.mono_neutral_left)
+  apply (rule sum.mono_neutral_left)
   using assms succ_ss_V by auto
 
 text \<open>When summation is done over something that satisfies the capacity 

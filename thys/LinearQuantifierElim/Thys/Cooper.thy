@@ -221,7 +221,7 @@ proof
   assume ?LHS
   then obtain x where P: "P x" ..
   have "x mod d = x - (x div d)*d"
-    by(simp add:zmod_zdiv_equality ac_simps eq_diff_eq)
+    by(simp add:mult_div_mod_eq [symmetric] ac_simps eq_diff_eq)
   hence Pmod: "P x = P(x mod d)" using modd by simp
   have "P(x mod d)" using dpos P Pmod by simp
   moreover have "x mod d \<in> {0..d - 1}" using dpos by auto

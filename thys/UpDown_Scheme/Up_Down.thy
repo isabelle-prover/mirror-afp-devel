@@ -40,7 +40,7 @@ next
     (\<Sum> p' \<in> ?subgrid d p. (up dm lm d \<alpha>) p' * (?prod d p' p))"
     using Suc by auto
   also have "\<dots> = (\<Sum> p' \<in> ?subgrid d p. (\<Sum> p'' \<in> ?leafs p'. \<alpha> p'' * ?prod (Suc d) p'' p))"
-  proof (intro setsum.cong refl)
+  proof (intro sum.cong refl)
     fix p' assume "p' \<in> ?subgrid d p"
     hence "d < length p'" unfolding lgrid_def using base_length[OF p_spg'] `Suc d \<le> dm` by auto
 
@@ -48,12 +48,12 @@ next
       (\<Sum> p'' \<in> ?leafs p'. \<alpha> p'' * l2_\<phi> (p'' ! d) (p' ! d)) * ?prod d p' p"
       using `p' \<in> ?subgrid d p` up `Suc d \<le> dm` p'_in_spg by auto
     also have "\<dots> = (\<Sum> p'' \<in> ?leafs p'. \<alpha> p'' * l2_\<phi> (p'' ! d) (p' ! d) * ?prod d p' p)"
-      using setsum_distrib_right by auto
+      using sum_distrib_right by auto
     also have "\<dots> = (\<Sum> p'' \<in> ?leafs p'. \<alpha> p'' * ?prod (Suc d) p'' p)"
-    proof (intro setsum.cong refl)
+    proof (intro sum.cong refl)
       fix p'' assume "p'' \<in> ?leafs p'"
       have "?prod d p' p = ?prod d p'' p"
-      proof (intro setprod.cong refl)
+      proof (intro prod.cong refl)
         fix d' assume "d' \<in> {0..<d}"
         hence d_lt_p: "d' < length p'" and d'_not_d: "d' \<notin> {d}" using `d < length p'` by auto
         hence "p' ! d' = p'' ! d'" using `p'' \<in> ?leafs p'` grid_invariant[OF d_lt_p d'_not_d] unfolding lgrid_def by auto
@@ -66,9 +66,9 @@ next
       also have "\<dots> = ?prod (Suc d) p'' p"
       proof -
         have "insert d {0..<d} = {0..<Suc d}" by auto
-        moreover from setprod.insert
-        have "setprod (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) (insert d {0..<d}) =
-          (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) d * setprod (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) {0..<d}"
+        moreover from prod.insert
+        have "prod (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) (insert d {0..<d}) =
+          (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) d * prod (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) {0..<d}"
           by auto
         ultimately show ?thesis by auto
       qed
@@ -77,12 +77,12 @@ next
     finally show "(up dm lm d \<alpha>) p' * (?prod d p' p) = (\<Sum> p'' \<in> ?leafs p'. \<alpha> p'' * ?prod (Suc d) p'' p)" by auto
   qed
   also have "\<dots> = (\<Sum> (p', p'') \<in> Sigma (?subgrid d p) (\<lambda>p'. (?leafs p')). (\<alpha> p'') * (?prod (Suc d) p'' p))"
-    by (rule setsum.Sigma, auto simp add: lgrid_finite)
+    by (rule sum.Sigma, auto simp add: lgrid_finite)
   also have "\<dots> = (\<Sum> p''' \<in> (\<Union> p' \<in> ?subgrid d p. (\<Union> p'' \<in> ?leafs p'. { (p', p'') })).
-    (((\<lambda> p''. \<alpha> p'' * ?prod (Suc d) p'' p) o snd) p''') )" unfolding Sigma_def by (rule setsum.cong[OF refl], auto)
+    (((\<lambda> p''. \<alpha> p'' * ?prod (Suc d) p'' p) o snd) p''') )" unfolding Sigma_def by (rule sum.cong[OF refl], auto)
   also have "\<dots> = (\<Sum> p'' \<in> snd ` (\<Union> p' \<in> ?subgrid d p. (\<Union> p'' \<in> ?leafs p'. { (p', p'') })).
     \<alpha> p'' * (?prod (Suc d) p'' p))" unfolding lgrid_def
-    by (rule setsum.reindex[symmetric],
+    by (rule sum.reindex[symmetric],
         rule subset_inj_on[OF grid_grid_inj_on[OF ivl_disj_int(15)[where l=0 and m="d" and u="d"], where b="?b"]])
        auto
   also have "\<dots> = (\<Sum> p'' \<in> (\<Union> p' \<in> ?subgrid d p. (\<Union> p'' \<in> ?leafs p'. snd ` { (p', p'') })).
@@ -93,7 +93,7 @@ next
   have "down dm lm d (updown' dm lm d \<alpha>) p = (\<Sum> p' \<in> ?parents. (updown' dm lm d \<alpha> p') * l2_\<phi> (p ! d) (p' ! d))"
     using `Suc d \<le> dm` and down and `p \<in> sparsegrid dm lm` by auto
   also have "\<dots> = (\<Sum> p' \<in> ?parents. \<Sum> p'' \<in> ?subgrid d p'. \<alpha> p'' * ?prod (Suc d) p'' p)"
-  proof (rule setsum.cong[OF refl])
+  proof (rule sum.cong[OF refl])
     fix p' let ?b' = "base {d} p"
     assume "p' \<in> ?parents"
     hence p_lgrid: "p' \<in> lgrid ?b' {d} (level p + 1)" using parents_subset_lgrid by auto
@@ -106,13 +106,13 @@ next
     have "(updown' dm lm d \<alpha> p') * l2_\<phi> (p ! d) (p' !  d) = (\<Sum> p'' \<in> ?subgrid d p'. \<alpha> p'' * ?prod d p'' p') * l2_\<phi> (p ! d) (p' ! d)"
       using `p' \<in> sparsegrid dm lm` Suc by auto
     also have "\<dots> = (\<Sum> p'' \<in> ?subgrid d p'. \<alpha> p'' * ?prod d p'' p' * l2_\<phi> (p ! d) (p' ! d))"
-      using setsum_distrib_right by auto
+      using sum_distrib_right by auto
     also have "\<dots> = (\<Sum> p'' \<in> ?subgrid d p'. \<alpha> p'' * ?prod (Suc d) p'' p)"
-    proof (rule setsum.cong[OF refl])
+    proof (rule sum.cong[OF refl])
       fix p'' assume "p'' \<in> ?subgrid d p'"
 
       have "?prod d p'' p' = ?prod d p'' p"
-      proof (rule setprod.cong, rule refl)
+      proof (rule prod.cong, rule refl)
         fix d' assume "d' \<in> {0..<d}"
         hence "d' < dm" and "d' \<notin> {d}" using `Suc d \<le> dm` by auto
         from grid_base_out[OF this p_spg' p'_grid]
@@ -128,12 +128,12 @@ next
       moreover have "?prod d p'' p * l2_\<phi> (p'' ! d) (p ! d) = ?prod (Suc d) p'' p"
       proof -
         have "insert d {0..<d} = {0..<Suc d}" by auto
-        moreover from setprod.insert
-        have "(\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) d * setprod (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) {0..<d} =
-          setprod (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) (insert d {0..<d})"
+        moreover from prod.insert
+        have "(\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) d * prod (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) {0..<d} =
+          prod (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) (insert d {0..<d})"
           by auto
-        hence "(setprod (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) {0..<d}) * (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) d =
-          setprod (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) (insert d {0..<d})"
+        hence "(prod (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) {0..<d}) * (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) d =
+          prod (\<lambda> d'. l2_\<phi> (p'' ! d') (p ! d')) (insert d {0..<d})"
           by auto
         ultimately show ?thesis by auto
       qed
@@ -142,11 +142,11 @@ next
     finally show "(updown' dm lm d \<alpha> p') * l2_\<phi> (p ! d) (p' ! d) = (\<Sum> p'' \<in> ?subgrid d p'. \<alpha> p'' * ?prod (Suc d) p'' p)" by auto
   qed
   also have "\<dots> = (\<Sum> (p', p'') \<in> (Sigma ?parents (?subgrid d)). \<alpha> p'' * ?prod (Suc d) p'' p)"
-    by (rule setsum.Sigma, auto simp add: parents_finite lgrid_finite)
+    by (rule sum.Sigma, auto simp add: parents_finite lgrid_finite)
   also have "\<dots> = (\<Sum> p''' \<in> (\<Union> p' \<in> ?parents. (\<Union> p'' \<in> ?subgrid d p'. { (p', p'') })).
-    ( ((\<lambda> p''. \<alpha> p'' * ?prod (Suc d) p'' p) o snd) p''') )" unfolding Sigma_def by (rule setsum.cong[OF refl], auto)
+    ( ((\<lambda> p''. \<alpha> p'' * ?prod (Suc d) p'' p) o snd) p''') )" unfolding Sigma_def by (rule sum.cong[OF refl], auto)
   also have "\<dots> = (\<Sum> p'' \<in> snd ` (\<Union> p' \<in> ?parents. (\<Union> p'' \<in> ?subgrid d p'. { (p', p'') })). \<alpha> p'' * (?prod (Suc d) p'' p))"
-  proof (rule setsum.reindex[symmetric], rule inj_onI)
+  proof (rule sum.reindex[symmetric], rule inj_onI)
     fix x y
     assume "x \<in> (\<Union>p'\<in>parents d (base {d} p) p. \<Union>p''\<in>lgrid (base {0..<d} p') {0..<d} lm. {(p', p'')})"
     hence x_snd: "snd x \<in> grid (base {0..<d} (fst x)) {0..<d}" and "fst x \<in> grid (base {d} p) {d}" and "p \<in> grid (fst x) {d}"
@@ -192,7 +192,7 @@ next
     (\<Sum> p'' \<in> (\<Union> p' \<in> ?parents. ?subgrid d p'). \<alpha> p'' * ?prod (Suc d) p'' p)"
     unfolding sum_vector_def updown'.simps down_part and up_part ..
   also have "\<dots> = (\<Sum> p'' \<in> (\<Union> p' \<in> ?subgrid d p. ?leafs p') \<union> (\<Union> p' \<in> ?parents. ?subgrid d p'). \<alpha> p'' * ?prod (Suc d) p'' p)"
-  proof (rule setsum.union_disjoint[symmetric], simp add: lgrid_finite, simp add: lgrid_finite parents_finite,
+  proof (rule sum.union_disjoint[symmetric], simp add: lgrid_finite, simp add: lgrid_finite parents_finite,
          rule iffD2[OF disjoint_iff_not_equal], rule ballI, rule ballI)
     fix x y
     assume "x \<in> (\<Union> p' \<in> ?subgrid d p. ?leafs p')"
@@ -211,7 +211,7 @@ next
     show "x \<noteq> y" by auto
   qed
   also have "\<dots> = (\<Sum> p' \<in> ?subgrid (Suc d) p. \<alpha> p' * ?prod (Suc d) p' p)" (is "(\<Sum> x \<in> ?in. ?F x) = (\<Sum> x \<in> ?out. ?F x)")
-  proof (rule setsum.mono_neutral_left, simp add: lgrid_finite)
+  proof (rule sum.mono_neutral_left, simp add: lgrid_finite)
     show "?in \<subseteq> ?out" (is "?children \<union> ?siblings \<subseteq> _")
     proof (rule subsetI)
       fix x assume "x \<in> ?in"
@@ -336,7 +336,7 @@ next
       qed
       hence "l2_\<phi> (p ! d) (x ! d) = 0" using base_out[OF `d < dm`] p_spg' x_spg by auto
       hence "\<exists> d \<in> {0..<Suc d}. l2_\<phi> (p ! d) (x ! d) = 0" by auto
-      from setprod_zero[OF _ this]
+      from prod_zero[OF _ this]
       show "?F x = 0" by (auto simp: l2_commutative)
     qed
   qed
@@ -365,15 +365,15 @@ corollary
   assumes p: "p \<in> sparsegrid dm lm"
   defines "f\<^sub>\<alpha> \<equiv> \<lambda>x. (\<Sum>p\<in>sparsegrid dm lm. \<alpha> p * \<Phi> p x)"
   shows "updown dm lm \<alpha> p = (\<integral>x. f\<^sub>\<alpha> x * \<Phi> p x \<partial>(\<Pi>\<^sub>M d\<in>{..<dm}. lborel))"
-  unfolding updown[OF p] l2_def f\<^sub>\<alpha>_def setsum_distrib_right
-  apply (intro has_bochner_integral_integral_eq[symmetric] has_bochner_integral_setsum)
+  unfolding updown[OF p] l2_def f\<^sub>\<alpha>_def sum_distrib_right
+  apply (intro has_bochner_integral_integral_eq[symmetric] has_bochner_integral_sum)
   apply (subst mult.assoc)
   apply (intro has_bochner_integral_mult_right)
   apply (simp add: sparsegrid_length)
   apply (rule has_bochner_integral_integrable)
   using p
-  apply (simp add: sparsegrid_length \<Phi>_def setprod.distrib[symmetric])
-proof (rule product_sigma_finite.product_integrable_setprod)
+  apply (simp add: sparsegrid_length \<Phi>_def prod.distrib[symmetric])
+proof (rule product_sigma_finite.product_integrable_prod)
   show "product_sigma_finite (\<lambda>d. lborel)" ..
 qed (auto intro: integrable_\<phi>2)
 

@@ -4,7 +4,6 @@ session "Ergodic_Theory" (AFP) = "HOL-Probability" +
   options [timeout = 600]
   theories
     SG_Library_Complement
-    Product_Topology
     Conditional_Expectation
     Fekete
     Banach_Density

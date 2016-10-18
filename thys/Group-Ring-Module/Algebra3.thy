@@ -7,7 +7,7 @@
                                   April 6, 2007 (revised)
 
  chapter 3.  Group Theory. Focused on Jordan Hoelder theorem (continued) 
-   section 5.    setproducts
+   section 5.    products
    section 6.    preliminary lemmas for Zassenhaus
    section 7.    homomorphism
    section 8.    gkernel, kernel of a group homomorphism
@@ -4137,7 +4137,7 @@ lemma  rfn_tool12:"\<lbrakk>0 < (s::nat); (i::nat) mod s = s - 1 \<rbrakk> \<Lon
 proof -
  assume p1:"0 < s" and p2:"i mod s = s - 1"
  have q1:"i div s * s + i mod s = i"
-   apply (insert mod_div_equality [of "i" "s"]) 
+   apply (insert div_mult_mod_eq [of "i" "s"]) 
    apply simp done
  have q2:"Suc (i div s * s + i mod s) = i div s * s + Suc (i mod s)"
   apply (insert add_Suc_right [THEN sym, of "i div s * s" "i mod s"])
@@ -4153,7 +4153,7 @@ qed
 
 lemma  rfn_tool12_1:"\<lbrakk>0 < (s::nat); (l::nat) mod s < s - 1 \<rbrakk> \<Longrightarrow>
                      Suc (l mod s) = (Suc l) mod s "
-apply (insert mod_div_equality [of "l" "s"])
+apply (insert div_mult_mod_eq [of "l" "s"])
 apply (insert add_Suc_right [THEN sym, of "l div s * s" "l mod s"])
 apply (insert mod_mult_self1  [of "Suc (l mod s)" "l div s" "s"])
 apply (frule Suc_mono [of "l mod s" "s - 1"]) apply simp
@@ -4161,7 +4161,7 @@ done
 
 lemma  rfn_tool12_2:"\<lbrakk>0 < (s::nat); (i::nat) mod s = s - Suc 0\<rbrakk> \<Longrightarrow>
                                                (Suc i) mod s = 0" 
-apply (insert mod_div_equality [THEN sym, of "i" "s"])
+apply (insert div_mult_mod_eq [THEN sym, of "i" "s"])
 apply (insert add_Suc_right [THEN sym, of "i div s * s" "i mod s"])
 apply simp
 done
@@ -4186,7 +4186,7 @@ apply (frule Suc_leI [of "r - Suc 0" "l div s"])
 apply simp
 apply (frule less_imp_le [of "l" "s * r"])
 apply (frule div_le_mono [of "l" "s * r" "s"]) apply simp
-apply (insert mod_div_equality [THEN sym, of "l" "s"])
+apply (insert div_mult_mod_eq [THEN sym, of "l" "s"])
 apply (frule sym) apply (thin_tac "r = l div s")
 apply simp apply (simp add:mult.commute [of "r" "s"])
 done
@@ -4205,7 +4205,7 @@ done
 lemma div_Tr3_2:"\<lbrakk>(0::nat) < r; 0 < s; l mod s < s - 1\<rbrakk> \<Longrightarrow> 
                                        l div s = Suc l div s"
 apply (frule Suc_mono [of "l mod s" "s - 1"]) apply simp
-apply (cut_tac mod_div_equality [of "l" "s"])
+apply (cut_tac div_mult_mod_eq [of "l" "s"])
 apply (cut_tac add_Suc_right [THEN sym, of "l div s * s" "l mod s"])
 apply (cut_tac zero_less_Suc[of "l mod s"],
        frule less_trans[of "0" "Suc (l mod s)" "s"], assumption+)
@@ -4217,7 +4217,7 @@ done
 
 lemma mod_div_injTr:"\<lbrakk>(0::nat) < r; x mod r = y mod r; x div r = y div r\<rbrakk>
                       \<Longrightarrow> x = y"
-apply (cut_tac mod_div_equality[of "x" "r"])
+apply (cut_tac div_mult_mod_eq[of "x" "r"])
 apply simp
 done
 
@@ -4518,7 +4518,7 @@ done
 
 lemma divTr5:"\<lbrakk>0 < r; 0 < s; l < (r * s)\<rbrakk>  \<Longrightarrow>
                  l div s * s \<le> l \<and> l  \<le> (Suc (l div s)) * s"
-apply (insert mod_div_equality [THEN sym, of "l" "s"])
+apply (insert div_mult_mod_eq [THEN sym, of "l" "s"])
 apply (rule conjI)
 apply (insert le_add1 [of "l div s * s" "l mod s"])
 apply simp
@@ -4679,7 +4679,7 @@ done
 
 lemma Suci_mod_s_2:"\<lbrakk>0 < r; 0 < s; i \<le> r * s - Suc 0; i mod s < s - Suc 0\<rbrakk>
         \<Longrightarrow> (Suc i) mod s = Suc (i mod s)"
-apply (insert mod_div_equality [of "i" "s", THEN sym])
+apply (insert div_mult_mod_eq [of "i" "s", THEN sym])
 apply (subgoal_tac "Suc i = i div s * s + Suc (i mod s)")
 apply (subgoal_tac "Suc i mod s  = (i div s * s + Suc (i mod s)) mod s")
  apply (subgoal_tac "Suc (i mod s) < s")
@@ -4931,7 +4931,7 @@ done
 
 lemma Suc_i_mod_s_0_1:"\<lbrakk>0 < r; 0 < s; i \<le> r * s - Suc 0; i mod s = s - Suc 0\<rbrakk>
         \<Longrightarrow> Suc i mod s = 0"
-apply (insert mod_div_equality [of "i" "s", THEN sym])
+apply (insert div_mult_mod_eq [of "i" "s", THEN sym])
 apply simp
  apply (thin_tac "i mod s = s - Suc 0")
 apply (subgoal_tac "Suc i mod s = Suc (i div s * s + s - Suc 0) mod s")

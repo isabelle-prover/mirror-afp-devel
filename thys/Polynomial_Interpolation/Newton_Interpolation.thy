@@ -80,9 +80,9 @@ proof -
           have "coeff p (Suc i) = coeff ([: -?ri y, 1 :] * q) (Suc i)" unfolding p_def by simp
           also have "\<dots> = (\<Sum>j\<le>Suc i. ?f j)" unfolding coeff_mult by simp
           also have "\<dots> = ?f 0 + ?f 1 + (\<Sum>j\<in>{..Suc i} - {0} - {Suc 0}. ?f j)"
-            by (subst setsum.remove[of _ 0], force+, subst setsum.remove[of _ 1], force+)
+            by (subst sum.remove[of _ 0], force+, subst sum.remove[of _ 1], force+)
           also have "(\<Sum>j\<in>{..Suc i} - {0} - {Suc 0}. ?f j) = 0"
-          proof (rule setsum.neutral, auto, goal_cases)
+          proof (rule sum.neutral, auto, goal_cases)
             case (1 x)
             thus ?case by (cases x, auto, cases "x - 1", auto)
           qed
@@ -601,9 +601,9 @@ proof -
   def c \<equiv> "int_of_rat (rat_of_int a / rat_of_int b)"
   have "rat_of_int a / rat_of_int b = rat_of_int c" unfolding c_def using assms(1) by simp
   hence "rat_of_int a = rat_of_int b * rat_of_int c" using assms(2)
-    by (metis divide_cancel_right nonzero_mult_divide_cancel_left of_int_eq_0_iff)
+    by (metis divide_cancel_right nonzero_mult_div_cancel_left of_int_eq_0_iff)
   hence a: "a = b * c" by (simp add: ri.hom_inj)
-  from div_mod_equality[of a b 0] show "a mod b = 0" unfolding a by simp
+  show "a mod b = 0" unfolding a by simp
 qed
 
 lemma divided_differences_impl_int_None:

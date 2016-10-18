@@ -232,14 +232,14 @@ lemma poly_det_cong: assumes A: "A \<in> carrier\<^sub>m n n"
   shows "poly (det B) k = det A" 
 proof -
   show ?thesis
-  unfolding det_def'[OF A] det_def'[OF B] poly_setsum poly_mult poly_setprod
-  proof (rule setsum.cong[OF refl])
+  unfolding det_def'[OF A] det_def'[OF B] poly_sum poly_mult poly_prod
+  proof (rule sum.cong[OF refl])
     fix x
     assume x: "x \<in> {p. p permutes {0..<n}}"
     let ?l = "\<Prod>ka = 0..<n. poly (B $$ (ka, x ka)) k"
     let ?r = "\<Prod>i = 0..<n. A $$ (i, x i)"
     have id: "?l = ?r"
-      by (rule setprod.cong[OF refl poly], insert x, auto)
+      by (rule prod.cong[OF refl poly], insert x, auto)
     show "poly (signof x) k * ?l = signof x * ?r" unfolding id signof_def by auto
   qed
 qed
@@ -292,14 +292,14 @@ proof -
     have "i < nr \<Longrightarrow> j < nc \<Longrightarrow> 
       [:(row A i \<bullet> col B j):] * p = row (map\<^sub>m (\<lambda> a. [: a :] * p) A) i \<bullet> col (map\<^sub>m (\<lambda>a. [:a:]) B) j"
       unfolding scalar_prod_def
-      by (auto simp: dim ac_simps smult_setsum) 
+      by (auto simp: dim ac_simps smult_sum) 
   } note left = this 
   {
     fix i j
     have "i < nr \<Longrightarrow> j < nc \<Longrightarrow> 
       [:(row A i \<bullet> col B j):] * p = row (map\<^sub>m (\<lambda> a. [: a :]) A) i \<bullet> col (map\<^sub>m (\<lambda>a. [:a:] * p) B) j"
       unfolding scalar_prod_def
-      by (auto simp: dim ac_simps smult_setsum) 
+      by (auto simp: dim ac_simps smult_sum) 
   } note right = this 
   show ?id
     by (rule mat_eqI, insert id, auto simp: dim)
@@ -360,8 +360,8 @@ proof -
     by (rule map_poly_mult[symmetric, OF P Q])
   also have "det \<dots> = prod_list (mat_diag ?I)"
     by (rule det_upper_triangular[of _ n], auto)
-  also have "\<dots> = 1" unfolding prod_list_diag_setprod
-    by (rule setprod.neutral, auto simp: one_poly_def)
+  also have "\<dots> = 1" unfolding prod_list_diag_prod
+    by (rule prod.neutral, auto simp: one_poly_def)
   finally show ?thesis by simp
 qed
 
@@ -375,10 +375,10 @@ proof -
   from A have dA: "dim\<^sub>r A = n" by simp
   show ?thesis
     unfolding char_poly_defs det_def'[OF A']
-  proof (rule degree_lcoeff_setsum[of _ id], auto simp: finite_permutations signof_id permutes_id dA)
+  proof (rule degree_lcoeff_sum[of _ id], auto simp: finite_permutations signof_id permutes_id dA)
     have both: "degree (\<Prod>i = 0..<n. ([:0, 1:] \<odot>\<^sub>m \<one>\<^sub>m n \<oplus>\<^sub>m map\<^sub>m (\<lambda>a. [:- a:]) A) $$ (i, i)) = n \<and>
       coeff (\<Prod>i = 0..<n. ([:0, 1:] \<odot>\<^sub>m \<one>\<^sub>m n \<oplus>\<^sub>m map\<^sub>m (\<lambda>a. [:- a:]) A) $$ (i, i)) n = 1"
-      by (rule degree_setprod_monic, insert A, auto)
+      by (rule degree_prod_monic, insert A, auto)
     from both show "degree (\<Prod>i = 0..<n. ([:0, 1:] \<odot>\<^sub>m \<one>\<^sub>m n \<oplus>\<^sub>m map\<^sub>m (\<lambda>a. [:- a:]) A) $$ (i, i)) = n" ..
     from both show "coeff (\<Prod>i = 0..<n. ([:0, 1:] \<odot>\<^sub>m \<one>\<^sub>m n \<oplus>\<^sub>m map\<^sub>m (\<lambda>a. [:- a:]) A) $$ (i, i)) n = 1" ..
   next
@@ -388,7 +388,7 @@ proof -
     then obtain i where i: "i < n" and pi: "p i \<noteq> i"
       by (metis atLeastLessThan_iff order_refl permutes_natset_le)
     show "degree (\<Prod>i = 0..<n. ([:0, 1:] \<odot>\<^sub>m \<one>\<^sub>m n \<oplus>\<^sub>m map\<^sub>m (\<lambda>a. [:- a:]) A) $$ (i, p i)) < n"
-      by (rule degree_setprod_setsum_lt_n[OF _ i], insert p i pi A, auto)
+      by (rule degree_prod_sum_lt_n[OF _ i], insert p i pi A, auto)
   qed
 qed
 

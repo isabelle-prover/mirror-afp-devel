@@ -112,7 +112,7 @@ proof -
   have "{x. poly p x = 0} = {x. poly (\<Prod>(a, i)\<in>set pis. a ^ Suc i) x = 0}"
     unfolding p using c by auto
   also have "\<dots> = \<Union> ((\<lambda> p. {x. poly p x = 0}) ` fst ` set pis)" (is "_ = ?r")
-    by (subst poly_setprod_0, force+)
+    by (subst poly_prod_0, force+)
   finally have r: "{x. poly p x = 0} = ?r" .
   {
     fix p i

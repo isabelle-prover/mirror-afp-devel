@@ -93,7 +93,7 @@ lemma mat_res_pointwise:
   shows "(x\<^sup>\<dagger> \<otimes> (x \<otimes> y)\<^sup>c) i j \<le> (y\<^sup>c) i j"
 proof -
   have "\<Sum>{(x\<^sup>\<dagger>) i k \<and> ((x \<otimes> y)\<^sup>c) k j |k. k \<in> UNIV} \<le> (y\<^sup>c) i j \<longleftrightarrow> (\<forall>k. ((x\<^sup>\<dagger>) i k \<and> ((x \<otimes> y)\<^sup>c) k j) \<le> (y\<^sup>c) i j)"
-    by (subst setsum_sup) auto
+    by (subst sum_sup) auto
   also have "\<dots> \<longleftrightarrow> (\<forall>k. ((x\<^sup>\<dagger>) i k \<and> - (x \<otimes> y) k j) \<le> (y\<^sup>c) i j)"
     by (simp only: mat_complement_def)
   also have "\<dots> \<longleftrightarrow> (\<forall>k. (x\<^sup>\<dagger>) i k \<le> ((y\<^sup>c) i j \<or> (x \<otimes> y) k j))"
@@ -109,7 +109,7 @@ proof -
   also have "\<dots> \<longleftrightarrow> (\<forall>k. \<Sum>{x k i \<and> y i j} \<le> \<Sum>{x k l \<and> y l j |l. l \<in> UNIV})"
     by simp
   also have "\<dots> \<longleftrightarrow> True"
-    by (intro iffI TrueI allI setsum_intro[rule_format]) auto
+    by (intro iffI TrueI allI sum_intro[rule_format]) auto
   moreover have "(x\<^sup>\<dagger> \<otimes> (x \<otimes> y)\<^sup>c) i j = \<Sum>{(x\<^sup>\<dagger>) i k \<and> ((x \<otimes> y)\<^sup>c) k j |k. k \<in> UNIV}"
     by (subst mat_mult_def) (simp add: times_bool_def)
   ultimately show ?thesis

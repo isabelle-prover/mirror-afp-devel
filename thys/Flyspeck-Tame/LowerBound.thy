@@ -28,8 +28,8 @@ lemma trans6: "(a::nat) = b1 + (b2 + b3) + b4 \<Longrightarrow> b3 = 0 \<Longrig
             a = b1 + b2 + b4" by (simp add: ac_simps)
 (*>*)
 
-(* FIXME in Tame: admissibility should be expressed via setsum!
-   \<rightarrow> convert a lot of listsum to setsum
+(* FIXME in Tame: admissibility should be expressed via sum!
+   \<rightarrow> convert a lot of listsum to sum
 *)
 
 theorem total_weight_lowerbound:

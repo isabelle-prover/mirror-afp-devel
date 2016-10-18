@@ -42,10 +42,10 @@ qed
 lemma hom_power[hom_ring_simps,simp]: "hom (x ^ n) = hom x ^ n"
   by (induct n, auto)
 
-lemma hom_setsum[hom_ring_simps,simp]: "hom (setsum f A) = setsum (\<lambda> x. hom (f x)) A"
+lemma hom_sum[hom_ring_simps,simp]: "hom (sum f A) = sum (\<lambda> x. hom (f x)) A"
   by (induct A rule: infinite_finite_induct, auto)
 
-lemma hom_setprod[hom_ring_simps,simp]: "hom (setprod f A) = setprod (\<lambda>x. hom (f x)) A"
+lemma hom_prod[hom_ring_simps,simp]: "hom (prod f A) = prod (\<lambda>x. hom (f x)) A"
   by (induct A rule: infinite_finite_induct, auto)
 
 lemma hom_prod_list[hom_ring_simps,simp]: "hom (prod_list xs) = prod_list (map hom xs)"

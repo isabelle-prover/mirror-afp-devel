@@ -9,7 +9,7 @@ sig
 
   val master_theorem_function_tac : bool -> Proof.context -> int -> tactic
   val akra_bazzi_term_tac : Proof.context -> int -> tactic
-  val akra_bazzi_setsum_tac : Proof.context -> int -> tactic
+  val akra_bazzi_sum_tac : Proof.context -> int -> tactic
 
   val akra_bazzi_relation_tac : Proof.context -> int -> tactic
   val akra_bazzi_measure_tac : Proof.context -> int -> tactic
@@ -206,17 +206,17 @@ in
   | SOME thm => thm
 end
 
-fun akra_bazzi_setsum_conv ctxt ct =
+fun akra_bazzi_sum_conv ctxt ct =
   case Thm.term_of ct of 
-    (Const (@{const_name setsum}, _) $ _ $ 
+    (Const (@{const_name sum}, _) $ _ $ 
       (Const (@{const_name Set_Interval.ord_class.lessThan}, _) $ _)) => 
         Conv.arg_conv (Conv.arg_conv (nat_numeral_conv ctxt)) ct
-    | _ => raise CTERM ("akra_bazzi_setsum_conv", [ct])
+    | _ => raise CTERM ("akra_bazzi_sum_conv", [ct])
 
-fun akra_bazzi_setsum_tac ctxt i =
+fun akra_bazzi_sum_tac ctxt i =
 let 
-  fun conv ctxt = Conv.try_conv (akra_bazzi_setsum_conv ctxt)
-  val thms = @{thms eval_akra_bazzi_setsum eval_akra_bazzi_setsum' 
+  fun conv ctxt = Conv.try_conv (akra_bazzi_sum_conv ctxt)
+  val thms = @{thms eval_akra_bazzi_sum eval_akra_bazzi_sum' 
                     mult_1_left mult_1_right add_0_left add_0_right}
 in
   CHANGED (CONVERSION (Conv.top_conv conv ctxt) i THEN 
@@ -432,7 +432,7 @@ fun master_theorem_function_tac simp ctxt =
     THEN_ALL_NEW ((fn i => TRY (akra_bazzi_terms_tac ctxt i))
       THEN_ALL_NEW (fn i =>
         unfold_simps ctxt i
-        THEN TRY (akra_bazzi_setsum_tac ctxt i)
+        THEN TRY (akra_bazzi_sum_tac ctxt i)
         THEN unfold_simps ctxt i
         THEN (if simp then TRY (eval_numeral_tac ctxt i) else all_tac)
       )
@@ -483,7 +483,7 @@ fun master_theorem_tac' caseno simp f eq funvar x0 x1 p' ctxt =
     THEN_ALL_NEW intros_tac ctxt @{thms ball_set_intros akra_bazzi_p_rel_intros}
   THEN_ALL_NEW (DETERM o (
         unfold_simps ctxt
-        THEN' TRY o akra_bazzi_setsum_tac ctxt
+        THEN' TRY o akra_bazzi_sum_tac ctxt
         THEN' unfold_simps ctxt
         THEN' postprocess_tac ctxt
         THEN' (if simp then TRY o eval_numeral_tac ctxt else K all_tac)

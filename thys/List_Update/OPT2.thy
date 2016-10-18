@@ -699,7 +699,7 @@ proof -
     from a b show ?thesis by auto
   qed
   with OPT2_C[where u="[]", OF assms(1) _ _ qs] show ?thesis apply auto
-      by (metis div_mod_equality' of_nat_mult of_nat_numeral) 
+      by (metis minus_mod_eq_div_mult [symmetric] of_nat_mult of_nat_numeral) 
 qed  
   
 lemma OPT2_C2: assumes "x \<noteq> y" "qs \<in> lang (seq[Atom x, Atom y, Atom x, Star(Times (Atom y) (Atom x)), Atom x])"
@@ -719,7 +719,7 @@ proof -
     from a b show ?thesis by auto
   qed
   with OPT2_C[where u="[x]", OF assms(1) qsv _ vv] qsv show ?thesis apply(auto)
-      by (metis div_mod_equality' of_nat_mult of_nat_numeral)     
+      by (metis minus_mod_eq_div_mult [symmetric] of_nat_mult of_nat_numeral)     
 qed 
 
 

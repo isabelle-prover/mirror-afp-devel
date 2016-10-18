@@ -226,8 +226,8 @@ subsection \<open>Total Deviation\<close>
 lift_definition tdev_slist::"(nat, 'a::ordered_euclidean_space) slist \<Rightarrow> 'a" is
   "sum_list o map (abs o snd)" .
 
-lemma tdev_slist_setsum: "tdev_slist xs = setsum (abs \<circ> snd) (set_slist xs)"
-  by transfer (auto simp: distinct_map sum_list_distinct_conv_setsum_set[symmetric] o_def)
+lemma tdev_slist_sum: "tdev_slist xs = sum (abs \<circ> snd) (set_slist xs)"
+  by transfer (auto simp: distinct_map sum_list_distinct_conv_sum_set[symmetric] o_def)
 
 lemma pdevs_apply_set_slist: "x \<in> set_slist xs \<Longrightarrow> snd x = pdevs_apply (Pdevs xs) (fst x)"
   by transfer (auto simp: Pdevs_raw_def)
@@ -235,7 +235,7 @@ lemma pdevs_apply_set_slist: "x \<in> set_slist xs \<Longrightarrow> snd x = pde
 lemma
   tdev_list_eq_zeroI:
   shows "(\<And>i. pdevs_apply (Pdevs xs) i = 0) \<Longrightarrow> tdev_slist xs = 0"
-  unfolding tdev_slist_setsum
+  unfolding tdev_slist_sum
   by (auto simp: pdevs_apply_set_slist)
 
 lemma inj_on_fst_set_slist: "inj_on fst (set_slist xs)"
@@ -252,18 +252,18 @@ proof -
   also have "\<dots> =
     (\<Sum>i <degree (Pdevs xs).
       if pdevs_apply (Pdevs xs) i = 0 then 0 else \<bar>pdevs_apply (Pdevs xs) i\<bar>)"
-    by (auto intro!: setsum.cong)
+    by (auto intro!: sum.cong)
   also have "\<dots> =
     (\<Sum>i\<in>{0..<degree (Pdevs xs)} \<inter> {x. pdevs_apply (Pdevs xs) x \<noteq> 0}.
       \<bar>pdevs_apply (Pdevs xs) i\<bar>)"
-    by (auto simp: setsum.If_cases Collect_neg_eq atLeast0LessThan)
+    by (auto simp: sum.If_cases Collect_neg_eq atLeast0LessThan)
   also have "\<dots> = (\<Sum>x\<in>fst ` set_slist xs. \<bar>pdevs_apply (Pdevs xs) x\<bar>)"
-    by (rule setsum.mono_neutral_cong_left)
+    by (rule sum.mono_neutral_cong_left)
       (force simp: pdevs_apply_Pdevs_eq_0 intro!: imageI degree_gt)+
   also have "\<dots> = (\<Sum>x\<in>set_slist xs. \<bar>pdevs_apply (Pdevs xs) (fst x)\<bar>)"
-    by (rule setsum.reindex_cong[of fst]) (auto simp: inj_on_fst_set_slist)
+    by (rule sum.reindex_cong[of fst]) (auto simp: inj_on_fst_set_slist)
   also have "\<dots> = tdev_slist xs"
-    by (simp add: tdev_slist_setsum pdevs_apply_set_slist)
+    by (simp add: tdev_slist_sum pdevs_apply_set_slist)
   finally show ?thesis .
 qed
 

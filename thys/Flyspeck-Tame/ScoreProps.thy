@@ -544,7 +544,7 @@ lemma separating_insert2:
   F a \<inter> F v = {}"
   by (auto simp add: separating_def)
 
-lemma setsum_disj_Union: 
+lemma sum_disj_Union: 
  "finite V \<Longrightarrow> 
   (\<And>f. finite (F f)) \<Longrightarrow> 
   separating V F \<Longrightarrow> 
@@ -565,7 +565,7 @@ next
    by (simp add: separating_insert2)
   with fin have "(F a) \<inter> (\<Union>v\<in>V. F v) = {}" by auto 
 
-  ultimately show ?case by (simp add: setsum.union_disjoint)
+  ultimately show ?case by (simp add: sum.union_disjoint)
 qed
 
 lemma separated_separating:
@@ -618,10 +618,10 @@ proof -
   moreover from pl have "{x. x \<in> \<F> g \<and> (\<exists>v \<in> set V. x \<in> set (facesAt g v) \<and> P x)} =
       (\<Union>v\<in>set V. set (facesAt g v) Int Collect P)" using V_subset
     by (blast intro:minGraphProps inv_mgp)
-  moreover from v have "(\<Sum>v\<in>set V. ListSum (filter P (facesAt g v)) w) = (\<Sum>v\<in>set V. setsum w (set(facesAt g v) Int Collect P))"
-    by (auto simp add: ListSum_conv_setsum Int_def)
+  moreover from v have "(\<Sum>v\<in>set V. ListSum (filter P (facesAt g v)) w) = (\<Sum>v\<in>set V. sum w (set(facesAt g v) Int Collect P))"
+    by (auto simp add: ListSum_conv_sum Int_def)
   ultimately show ?thesis
-    by (simp add: ListSum_conv_setsum setsum_disj_Union)
+    by (simp add: ListSum_conv_sum sum_disj_Union)
 qed
 
 lemma separated_disj_Union2:

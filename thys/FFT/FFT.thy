@@ -42,30 +42,30 @@ lemma Sum4:
 text {* A number of specialised lemmas for the summation operator,
   where the index set is the natural numbers *}
 
-lemma setsum_add_nat_ivl_singleton:
+lemma sum_add_nat_ivl_singleton:
   assumes less: "m < (n::nat)"
-  shows "f m + setsum f {m<..<n} = setsum f {m..<n}"
+  shows "f m + sum f {m<..<n} = sum f {m..<n}"
 proof -
-  have "f m + setsum f {m<..<n} = setsum f ({m} \<union> {m<..<n})"
-    by (simp add: setsum.union_disjoint ivl_disj_int)
-  also from less have "... = setsum f {m..<n}"
+  have "f m + sum f {m<..<n} = sum f ({m} \<union> {m<..<n})"
+    by (simp add: sum.union_disjoint ivl_disj_int)
+  also from less have "... = sum f {m..<n}"
     by (simp only: ivl_disj_un)
   finally show ?thesis .
 qed
 
-lemma setsum_add_split_nat_ivl_singleton:
+lemma sum_add_split_nat_ivl_singleton:
   assumes less: "m < (n::nat)"
     and g: "!!i. [| m < i; i < n |] ==> g i = f i"
-  shows "f m + setsum g {m<..<n} = setsum f {m..<n}"
+  shows "f m + sum g {m<..<n} = sum f {m..<n}"
   using less g
-  by(simp add: setsum_add_nat_ivl_singleton cong: setsum.strong_cong)
+  by(simp add: sum_add_nat_ivl_singleton cong: sum.strong_cong)
 
-lemma setsum_add_split_nat_ivl:
+lemma sum_add_split_nat_ivl:
   assumes le: "m <= (k::nat)" "k <= n"
     and g: "!!i. [| m <= i; i < k |] ==> g i = f i"
     and h: "!!i. [| k <= i; i < n |] ==> h i = f i"
-  shows "setsum g {m..<k} + setsum h {k..<n} = setsum f {m..<n}"
-  using le g h by (simp add: setsum_add_nat_ivl cong: setsum.strong_cong)
+  shows "sum g {m..<k} + sum h {k..<n} = sum f {m..<n}"
+  using le g h by (simp add: sum_add_nat_ivl cong: sum.strong_cong)
 
 lemma ivl_splice_Un:
   "{0..<2*n::nat} = (op * 2 ` {0..<n}) \<union> ((%i. Suc (2*i)) ` {0..<n})"
@@ -86,15 +86,15 @@ lemma Suc_double_inj_on:
   "inj_on (%i. Suc (2*i)) A"
   by (rule inj_onI) simp
 
-lemma setsum_splice:
+lemma sum_splice:
   "(\<Sum>i::nat = 0..<2*n. f i) = (\<Sum>i = 0..<n. f (2*i)) + (\<Sum>i = 0..<n. f (2*i+1))"
 proof -
   have "(\<Sum>i::nat = 0..<2*n. f i) =
-    setsum f (op * 2 ` {0..<n}) + setsum f ((%i. 2*i+1) ` {0..<n})"
-    by (simp add: ivl_splice_Un ivl_splice_Int setsum.union_disjoint)
+    sum f (op * 2 ` {0..<n}) + sum f ((%i. 2*i+1) ` {0..<n})"
+    by (simp add: ivl_splice_Un ivl_splice_Int sum.union_disjoint)
   also have "... = (\<Sum>i = 0..<n. f (2*i)) + (\<Sum>i = 0..<n. f (2*i+1))"
-    by (simp add: setsum.reindex [OF double_inj_on]
-      setsum.reindex [OF Suc_double_inj_on])
+    by (simp add: sum.reindex [OF double_inj_on]
+      sum.reindex [OF Suc_double_inj_on])
   finally show ?thesis .
 qed
 
@@ -267,7 +267,7 @@ proof (unfold DFT_def)
     (\<Sum>j = 0..<m. root (2 * m) ^ (i * (2 * j)) * a (2 * j)) +
     (\<Sum>j = 0..<m. root (2 * m) ^ (i * (2 * j + 1)) * a (2 * j + 1))"
     (is "?s = _")
-    by (simp add: setsum_splice)
+    by (simp add: sum_splice)
   also have "... = (\<Sum>j = 0..<m. root m ^ (i * j) * a (2 * j)) +
     root (2 * m) ^ i *
     (\<Sum>j = 0..<m. root m ^ (i * j) * a (2 * j + 1))"
@@ -275,7 +275,7 @@ proof (unfold DFT_def)
     txt {* First pair of sums *}
     apply (simp add: root_cancel1)
     txt {* Second pair of sums *}
-    apply (simp add: setsum_distrib_left)
+    apply (simp add: sum_distrib_left)
     apply (simp add: power_add)
     apply (simp add: root_cancel1)
     apply (simp add: ac_simps)
@@ -293,7 +293,7 @@ proof (unfold DFT_def)
     (\<Sum>j = 0..<m. root (2 * m) ^ (i * (2 * j)) * a (2 * j)) +
     (\<Sum>j = 0..<m. root (2 * m) ^ (i * (2 * j + 1)) * a (2 * j + 1))"
     (is "?s = _")
-    by (simp add: setsum_splice)
+    by (simp add: sum_splice)
   also have "... =
     (\<Sum>j = 0..<m. root m ^ ((i - m) * j) * a (2 * j)) -
     root (2 * m) ^ (i - m) *
@@ -304,7 +304,7 @@ proof (unfold DFT_def)
     apply (simp add: root_unity ibound root_nonzero power_diff power_mult)
     txt {* Second pair of sums *}
     apply (simp add: mbound root_cancel2)
-    apply (simp add: setsum_distrib_left)
+    apply (simp add: sum_distrib_left)
     apply (simp add: power_add)
     apply (simp add: root_cancel1)
     apply (simp add: power_mult)
@@ -322,7 +322,7 @@ proof (unfold IDFT_def)
     (\<Sum>j = 0..<m. a (2 * j) / root (2 * m) ^ (i * (2 * j))) +
     (\<Sum>j = 0..<m. a (2 * j + 1) / root (2 * m) ^ (i * (2 * j + 1)))"
     (is "?s = _")
-    by (simp add: setsum_splice)
+    by (simp add: sum_splice)
   also have "... = (\<Sum>j = 0..<m. a (2 * j) / root m ^ (i * j)) +
     (1 / root (2 * m)) ^ i *
     (\<Sum>j = 0..<m. a (2 * j + 1) / root m ^ (i * j))"
@@ -330,7 +330,7 @@ proof (unfold IDFT_def)
     txt {* First pair of sums *}
     apply (simp add: root_cancel1)
     txt {* Second pair of sums *}
-    apply (simp add: setsum_distrib_left)
+    apply (simp add: sum_distrib_left)
     apply (simp add: power_add)
     apply (simp add: power_divide root_nonzero)
     apply (simp add: root_cancel1)
@@ -349,7 +349,7 @@ proof (unfold IDFT_def)
     (\<Sum>j = 0..<m. a (2 * j) / root (2 * m) ^ (i * (2 * j))) +
     (\<Sum>j = 0..<m. a (2 * j + 1) / root (2 * m) ^ (i * (2 * j + 1)))"
     (is "?s = _")
-    by (simp add: setsum_splice)
+    by (simp add: sum_splice)
   also have "... =
     (\<Sum>j = 0..<m. a (2 * j) / root m ^ ((i - m) * j)) -
     (1 / root (2 * m)) ^ (i - m) *
@@ -361,7 +361,7 @@ proof (unfold IDFT_def)
     txt {* Second pair of sums *}
     apply (simp add: power_divide root_nonzero)
     apply (simp add: mbound root_cancel2)
-    apply (simp add: setsum_divide_distrib)
+    apply (simp add: sum_divide_distrib)
     apply (simp add: power_add)
     apply (simp add: root_cancel1)
     apply (simp add: power_mult)
@@ -406,27 +406,27 @@ theorem DFT_inverse:
   shows  "IDFT n (DFT n a) i = of_nat n * a i"
   using [[linarith_split_limit = 0]]
   apply (unfold DFT_def IDFT_def)
-  apply (simp add: setsum_divide_distrib)
-  apply (subst setsum.commute)
+  apply (simp add: sum_divide_distrib)
+  apply (subst sum.commute)
   apply (simp only: times_divide_eq_left [THEN sym])
   apply (simp only: power_divides_special [OF root_nonzero])
   apply (simp add: power_diff_rev_if root_nonzero)
-  apply (simp add: setsum_divide_distrib [THEN sym]
-    setsum_distrib_right [THEN sym])
+  apply (simp add: sum_divide_distrib [THEN sym]
+    sum_distrib_right [THEN sym])
   proof -
     from i_less have i_diff: "!!k. i - k < n" by arith
     have diff_i: "!!k. k < n ==> k - i < n" by arith
 
-    let ?sum = "%i j n. setsum (op ^ (if i <= j then root n ^ (j - i)
+    let ?sum = "%i j n. sum (op ^ (if i <= j then root n ^ (j - i)
                   else (1 / root n) ^ (i - j))) {0..<n} * a j"
-    let ?sum1 = "%i j n. setsum (op ^ (root n ^ (j - i))) {0..<n} * a j"
-    let ?sum2 = "%i j n. setsum (op ^ ((1 / root n) ^ (i - j))) {0..<n} * a j"
+    let ?sum1 = "%i j n. sum (op ^ (root n ^ (j - i))) {0..<n} * a j"
+    let ?sum2 = "%i j n. sum (op ^ ((1 / root n) ^ (i - j))) {0..<n} * a j"
 
     from i_less have "(\<Sum>j = 0..<n. ?sum i j n) =
       (\<Sum>j = 0..<i. ?sum2 i j n) + (\<Sum>j = i..<n. ?sum1 i j n)"
       (is "?s = _")
       by (simp add: root_summation_inv nat_dvd_not_less
-        setsum_add_split_nat_ivl [where f = "%j. ?sum i j n"])
+        sum_add_split_nat_ivl [where f = "%j. ?sum i j n"])
     also from i_less i_diff
     have "... = (\<Sum>j = i..<n. ?sum1 i j n)"
       by (simp add: root_summation_inv nat_dvd_not_less)
@@ -435,7 +435,7 @@ theorem DFT_inverse:
       by (simp only: ivl_disj_un)
     also have "... =
       (?sum1 i i n + (\<Sum>j\<in>{i<..<n}. ?sum1 i j n))"
-      by (simp add: setsum.union_disjoint ivl_disj_int)
+      by (simp add: sum.union_disjoint ivl_disj_int)
     also from i_less diff_i have "... = ?sum1 i i n"
       by (simp add: root_summation nat_dvd_not_less)
     also from i_less have "... = of_nat n * a i" (is "_ = ?t")

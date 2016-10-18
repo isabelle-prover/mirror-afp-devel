@@ -147,7 +147,7 @@ using assms Bell_altdef card_equiv_rel_eq_card_partitions by force
 
 corollary card_equiv_rel_eq_sum_Stirling:
   assumes "finite A"
-  shows "card {R. equiv A R} = setsum (Stirling (card A)) {..card A}"
+  shows "card {R. equiv A R} = sum (Stirling (card A)) {..card A}"
 using assms card_equiv_rel_eq_Bell Bell_Stirling_eq by simp
 
 theorem card_equiv_k_classes_eq_card_partitions_k_parts:

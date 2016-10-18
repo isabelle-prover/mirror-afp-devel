@@ -80,21 +80,6 @@ lemma reduce_root_nonzero [simp]:
   by auto
 
 
-subsection \<open>Signs\<close>
-
-(* TODO Move all? *)
-
-lemma sgn_0_0: 
-  fixes x :: "'a :: {ab_group_add, sgn_if, zero_neq_one}"
-  shows "sgn x = 0 \<longleftrightarrow> x = 0"
-  by (auto simp add: sgn_if)
-
-lemma sgn_uminus: 
-  fixes x :: "'a :: {linordered_ab_group_add, sgn_if, zero_neq_one}"
-  shows "sgn (-x) = - sgn x"
-  by (auto simp: sgn_if)
-
-
 subsection \<open>List of partial sums\<close>
 
 text \<open>
@@ -143,11 +128,11 @@ proof (induction xs arbitrary: n rule: psums.induct[case_names Nil sng rec])
     also from rec.prems Suc have "\<dots> = (\<Sum>i\<le>m. ((x+y) # xs) ! i)" 
       by (intro rec.IH) simp_all
     also have "\<dots> = x + y + (\<Sum>i=1..m. (y#xs) ! i)"
-      by (auto simp: atLeast0AtMost [symmetric] setsum_head_Suc[of 0])
+      by (auto simp: atLeast0AtMost [symmetric] sum_head_Suc[of 0])
     also have "(\<Sum>i=1..m. (y#xs) ! i) = (\<Sum>i=Suc 1..Suc m. (x#y#xs) ! i)"
-      by (subst setsum_shift_bounds_cl_Suc_ivl) simp
+      by (subst sum_shift_bounds_cl_Suc_ivl) simp
     also from Suc have "x + y + \<dots> = (\<Sum>i\<le>n. (x#y#xs) ! i)"
-      by (auto simp: atLeast0AtMost [symmetric] setsum_head_Suc add_ac)
+      by (auto simp: atLeast0AtMost [symmetric] sum_head_Suc add_ac)
     finally show ?thesis .
   qed simp
 qed simp_all
@@ -181,7 +166,7 @@ lemma sign_changes_Cons_ge: "sign_changes (x # xs) \<ge> sign_changes xs"
   unfolding sign_changes_def by (simp add: remdups_adj_Cons split: list.split)
 
 lemma sign_changes_Cons_Cons_different: 
-  fixes x y :: "'a :: {linordered_idom, abs_if}"
+  fixes x y :: "'a :: linordered_idom"
   assumes "x * y < 0"
   shows "sign_changes (x # y # xs) = 1 + sign_changes (y # xs)"
 proof -
@@ -191,16 +176,16 @@ proof -
 qed
 
 lemma sign_changes_Cons_Cons_same: 
-  fixes x y :: "'a :: {linordered_idom, abs_if}"
+  fixes x y :: "'a :: linordered_idom"
   shows "x * y > 0 \<Longrightarrow> sign_changes (x # y # xs) = sign_changes (y # xs)"
   by (subst (asm) zero_less_mult_iff) (fastforce simp: sign_changes_def)
 
 lemma sign_changes_0_Cons [simp]: 
-  "sign_changes (0 # xs :: 'a :: sgn_if list) = sign_changes xs"
+  "sign_changes (0 # xs :: 'a :: idom_abs_sgn list) = sign_changes xs"
   by (simp add: sign_changes_def)
 
 lemma sign_changes_two: 
-  fixes x y :: "'a :: {sgn_if,linordered_ab_group_add,zero_neq_one}"
+  fixes x y :: "'a :: linordered_idom"
   shows "sign_changes [x,y] = 
            (if x > 0 \<and> y < 0 \<or> x < 0 \<and> y > 0 then 1 else 0)"
   by (auto simp: sgn_if sign_changes_def mult_less_0_iff)
@@ -219,24 +204,24 @@ proof (induction "length xs" arbitrary: xs rule: less_induct)
 qed 
 
 lemma sign_changes_filter: 
-  fixes xs :: "'a :: {sgn_if, zero_neq_one, ab_group_add} list"
+  fixes xs :: "'a :: linordered_idom list"
   shows "sign_changes (filter (\<lambda>x. x \<noteq> 0) xs) = sign_changes xs"
   by (simp add: sign_changes_def filter_map o_def sgn_0_0)
 
 lemma sign_changes_Cons_Cons_0: 
-  fixes xs :: "'a :: {sgn_if, zero_neq_one, ab_group_add} list"
+  fixes xs :: "'a :: linordered_idom list"
   shows "sign_changes (x # 0 # xs) = sign_changes (x # xs)"
   by (subst (1 2) sign_changes_filter [symmetric]) simp_all
 
 lemma sign_changes_uminus: 
-  fixes xs :: "'a :: {linordered_ab_group_add, sgn_if, zero_neq_one} list"
+  fixes xs :: "'a :: linordered_idom list"
   shows   "sign_changes (map uminus xs) = sign_changes xs"
 proof -
   have "sign_changes (map uminus xs) = 
           length (remdups_adj [x\<leftarrow>map sgn (map uminus xs) . x \<noteq> 0]) - 1" 
    unfolding sign_changes_def ..
   also have "map sgn (map uminus xs) = map uminus (map sgn xs)" 
-    by (auto simp: sgn_uminus)
+    by (auto simp: sgn_minus)
   also have "remdups_adj (filter (\<lambda>x. x \<noteq> 0) \<dots>) = 
                  map uminus (remdups_adj (filter (\<lambda>x. x \<noteq> 0) (map sgn xs)))"
     by (subst filter_map, subst remdups_adj_map_injective) 
@@ -249,7 +234,7 @@ lemma sign_changes_replicate: "sign_changes (replicate n x) = 0"
   by (simp add: sign_changes_def remdups_adj_replicate filter_replicate)
 
 lemma sign_changes_decompose:
-  assumes "x \<noteq> (0 :: 'a :: {sgn_if, linordered_ab_group_add, zero_neq_one})"
+  assumes "x \<noteq> (0 :: 'a :: linordered_idom)"
   shows   "sign_changes (xs @ x # ys) = 
              sign_changes (xs @ [x]) + sign_changes (x # ys)"
 proof -
@@ -316,7 +301,7 @@ text \<open>
   the list is non-negative, similarly to what Arthan does in his proof.
 \<close>
 private lemma arthan_wlog [consumes 3, case_names nonneg lift]:
-  fixes xs :: "'a :: {linordered_ab_group_add,sgn_if,zero_neq_one} list"
+  fixes xs :: "'a :: linordered_idom list"
   assumes "xs \<noteq> []" "last xs \<noteq> 0" "x + y + sum_list xs = 0"
   assumes "\<And>x y xs. xs \<noteq> [] \<Longrightarrow> last xs \<noteq> 0 \<Longrightarrow> 
                x + y + sum_list xs = 0 \<Longrightarrow> x \<ge> 0 \<Longrightarrow> P x y xs"
@@ -550,14 +535,14 @@ proof -
 
   have "count_roots_with P q = (\<Sum>x\<in>roots_with P q. order x q)" by (simp add: count_roots_with_def)
   also from a q_nz have "\<dots> = order a q + (\<Sum>x\<in>roots_with P q - {a}. order x q)"
-    by (subst setsum.remove) simp_all
+    by (subst sum.remove) simp_all
   also have "order a q = order a [:a, -1:] + order a p" unfolding q_def
     by (subst order_mult[OF no_zero_divisors]) (simp_all add: assms)
   also have "order a [:a, -1:] = 1"
     by (subst order_smult [of "-1", symmetric])
        (insert order_power_n_n[of a 1], simp_all add: order_1)
   also have "(\<Sum>x\<in>roots_with P q - {a}. order x q) = (\<Sum>x\<in>roots_with P q - {a}. order x p)"
-  proof (intro setsum.cong refl)
+  proof (intro sum.cong refl)
     fix x assume x: "x \<in> roots_with P q - {a}"
     from assms have "order x q = order x [:a, -1:] + order x p" unfolding q_def
       by (subst order_mult[OF no_zero_divisors]) (simp_all add: assms)
@@ -566,9 +551,9 @@ proof -
   qed
   also from a q_nz have "1 + order a p + (\<Sum>x\<in>roots_with P q - {a}. order x p) = 
                            1 + (\<Sum>x\<in>roots_with P q. order x p)"
-    by (subst add.assoc, subst setsum.remove[symmetric]) simp_all
+    by (subst add.assoc, subst sum.remove[symmetric]) simp_all
   also from q_nz have "(\<Sum>x\<in>roots_with P q. order x p) = (\<Sum>x\<in>roots_with P p. order x p)"
-  proof (intro setsum.mono_neutral_right)
+  proof (intro sum.mono_neutral_right)
     show "roots_with P p \<subseteq> roots_with P q" 
       by (auto simp: roots_with_def q_def simp del: mult_pCons_left)
     show "\<forall>x\<in>roots_with P q - roots_with P p. order x p = 0"
@@ -589,7 +574,7 @@ text \<open>
   Note that constructing a polynomial from a list removes all trailing zeros.
 \<close>
 lemma sign_changes_coeff_sign_changes:
-  assumes "Poly xs = (p :: 'a :: {ab_group_add,sgn_if,zero_neq_one} poly)"
+  assumes "Poly xs = (p :: 'a :: linordered_idom poly)"
   shows   "sign_changes xs = coeff_sign_changes p"
 proof -
   have "coeffs p = coeffs (Poly xs)" by (subst assms) (rule refl)
@@ -612,7 +597,7 @@ proof (intro sign_changes_cong, induction p)
   case (pCons c p)
   have "map sgn (coeffs (reduce_root a (pCons c p))) = 
              cCons (sgn c) (map sgn (coeffs (reduce_root a p)))"
-    using assms by (auto simp add: cCons_def sgn_0_0 sgn_times reduce_root_pCons coeffs_smult)
+    using assms by (auto simp add: cCons_def sgn_0_0 sgn_mult reduce_root_pCons coeffs_smult)
   also note pCons.IH
   also have "cCons (sgn c) (map sgn (coeffs p)) = map sgn (coeffs (pCons c p))"
     using assms by (auto simp add: cCons_def sgn_0_0)
@@ -627,7 +612,7 @@ text \<open>
 lemma coeff_sign_changes_smult: 
   assumes "a > (0 :: 'a :: linordered_idom)"
   shows   "coeff_sign_changes (smult a p) = coeff_sign_changes p"
-  using assms by (auto intro!: sign_changes_cong simp: sgn_times coeffs_smult)
+  using assms by (auto intro!: sign_changes_cong simp: sgn_mult coeffs_smult)
 
 
 context
@@ -731,10 +716,12 @@ lemma Poly_times_one_minus_x_eq_psums:
   shows   "ys = psums xs"
 proof (rule nth_equalityI; safe?)
   fix i assume i: "i < length ys"
-  hence "ys ! i = coeff (Poly ys) i" by (simp add: coeff_Poly_eq nth_default_def)
+  hence "ys ! i = coeff (Poly ys) i"
+    by (simp add: nth_default_def)
   also from coeff_poly_times_one_minus_x[of "Poly ys" i] assms
     have "\<dots> = (\<Sum>j\<le>i. coeff (Poly xs) j)" by simp
-  also from i have "\<dots> = psums xs ! i" by (auto simp: coeff_Poly_eq nth_default_def psums_nth)
+    also from i have "\<dots> = psums xs ! i"
+      by (auto simp: nth_default_def psums_nth)
   finally show "ys ! i = psums xs ! i" .
 qed simp_all
 

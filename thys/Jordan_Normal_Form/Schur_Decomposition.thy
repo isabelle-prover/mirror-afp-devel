@@ -297,7 +297,7 @@ proof -
           have "a x = w $ j - w $ k / v $ k * v $ j" unfolding a_def using `j \<noteq> k` by auto
         } note a = this          
         have "(\<Sum>x\<in>set ?b. (a x \<odot>\<^sub>v x) $ i) = (a v \<odot>\<^sub>v v) $ i + (\<Sum>x\<in>(set ?b) - {v}. (a x \<odot>\<^sub>v x) $ i)"
-          by (rule setsum.remove[OF finite_set], auto simp: b)
+          by (rule sum.remove[OF finite_set], auto simp: b)
         also have "a v = w $ k / v $ k" unfolding a_def lookup_def by auto
         also have "(\<dots> \<odot>\<^sub>v v) $ i = w $ k / v $ k * v $ i" using i v by auto
         finally have "(\<Sum>x\<in>set ?b. (a x \<odot>\<^sub>v x) $ i) = w $ k / v $ k * v $ i + (\<Sum>x\<in>(set ?b) - {v}. (a x \<odot>\<^sub>v x) $ i)" .
@@ -306,7 +306,7 @@ proof -
           case True
           hence "w $ k / v $ k * v $ i = w $ k" using vk by auto
           moreover have "(\<Sum>x\<in>(set ?b) - {v}. (a x \<odot>\<^sub>v x) $ i) = 0" unfolding True
-          proof (rule setsum.neutral, intro ballI)
+          proof (rule sum.neutral, intro ballI)
             fix x
             assume "x \<in> set ?b - {v}"
             then obtain j where x: "x = unit\<^sub>v n j" "j \<noteq> k" "j < n" using k unfolding b by auto
@@ -327,9 +327,9 @@ proof -
           with diff have mem: "unit\<^sub>v n i \<in> set ?b - {v}" by auto
           have "w $ k / v $ k * v $ i + (\<Sum>x\<in>(set ?b) - {v}. (a x \<odot>\<^sub>v x) $ i)
             = w $ i + (\<Sum>x\<in>(set ?b) - {v,?ui}. (a x \<odot>\<^sub>v x) $ i)"
-            by (subst setsum.remove[OF _ mem], auto simp: ai intro!: setsum.cong)
+            by (subst sum.remove[OF _ mem], auto simp: ai intro!: sum.cong)
           also have "(\<Sum>x\<in>(set ?b) - {v,?ui}. (a x \<odot>\<^sub>v x) $ i) = 0"
-            by (rule setsum.neutral, unfold b_all, insert i k, auto)
+            by (rule sum.neutral, unfold b_all, insert i k, auto)
           finally show ?thesis by simp
         qed
         finally show "w $ i = (\<Sum>x\<in>set ?b. (a x \<odot>\<^sub>v x) $ i)" by simp

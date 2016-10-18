@@ -52,7 +52,7 @@ lemma [simp,intro!]: "bdd_sane emptymi"
   unfolding emptymi_def bdd_sane_def bdd.simps 
 by(simp add: mi_pre.map_invar_impl_def)
 
-lemma prod_split3: "P (case prod of (x, xa, xaa) \<Rightarrow> f x xa xaa) = (\<forall>x1 x2 x3. prod = (x1, x2, x3) \<longrightarrow> P (f x1 x2 x3))"
+lemma prod_split3: "P (case p of (x, xa, xaa) \<Rightarrow> f x xa xaa) = (\<forall>x1 x2 x3. p = (x1, x2, x3) \<longrightarrow> P (f x1 x2 x3))"
 by(simp split: prod.splits)
 
 lemma IfI: "(c \<Longrightarrow> P x) \<Longrightarrow> (\<not>c \<Longrightarrow> P y) \<Longrightarrow> P (if c then x else y)" by simp

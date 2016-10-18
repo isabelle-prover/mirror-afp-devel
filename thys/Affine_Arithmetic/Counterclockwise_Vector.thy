@@ -118,21 +118,21 @@ lemma scale_add3'[simp]: "ccw 0 a (b + x *\<^sub>R a) \<longleftrightarrow> ccw 
     scale_add3[of a x "-b"]
   by (simp_all add: ac_simps)
 
-lemma setsum:
+lemma sum:
   assumes fin: "finite X"
   assumes ne: "X\<noteq>{}"
   assumes ncoll: "(\<And>x. x \<in> X \<Longrightarrow> ccw 0 a (f x))"
-  shows "ccw 0 a (setsum f X)"
+  shows "ccw 0 a (sum f X)"
 proof -
   from ne obtain x where "x \<in> X" "insert x X = X" by auto
-  have "ccw 0 a (setsum f (insert x X))"
+  have "ccw 0 a (sum f (insert x X))"
     using fin ncoll
   proof (induction X)
     case empty thus ?case using \<open>x \<in> X\<close> ncoll
       by auto
   next
     case (insert y F)
-    hence "ccw 0 a (setsum f (insert y (insert x F)))"
+    hence "ccw 0 a (sum f (insert y (insert x F)))"
       by (cases "y = x") (auto intro!: add3)
     thus ?case
       by (simp add: insert_commute)
@@ -140,12 +140,12 @@ proof -
   thus ?thesis using \<open>insert x X = X\<close> by simp
 qed
 
-lemma setsum2:
+lemma sum2:
   assumes fin: "finite X"
   assumes ne: "X\<noteq>{}"
   assumes ncoll: "(\<And>x. x \<in> X \<Longrightarrow> ccw 0 (f x) a)"
-  shows "ccw 0 (setsum f X) a"
-  using setsum[OF assms(1,2), of "-a" f] ncoll
+  shows "ccw 0 (sum f X) a"
+  using sum[OF assms(1,2), of "-a" f] ncoll
   by simp
 
 lemma translate_minus[simp]:

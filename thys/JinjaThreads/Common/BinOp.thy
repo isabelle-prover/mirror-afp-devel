@@ -128,7 +128,7 @@ proof -
   have F8: "\<forall>(w::'a word) (v::int) u::int. word_of_int u + word_of_int v * w = word_of_int (u + v * sint w)"
     by (metis word_sint.Rep_inverse wi_hom_syms(1) wi_hom_syms(3))
   have "\<exists>u. u = - sint b \<and> word_of_int (sint a mod u + - (- u * (sint a div u))) = a"
-    using F5 by (metis minus_minus word_sint.Rep_inverse' mult_minus_left add.commute zmod_zdiv_equality)
+    using F5 by (metis minus_minus word_sint.Rep_inverse' mult_minus_left add.commute mult_div_mod_eq [symmetric])
   hence "word_of_int (sint a mod - sint b + - (sint b * (sint a div - sint b))) = a" by (metis equation_minus_iff)
   hence "word_of_int (sint a mod - sint b) + word_of_int (- (sint a div - sint b)) * b = a"
     using F8 by(metis mult.commute mult_minus_left)
@@ -141,7 +141,7 @@ proof -
     proof(cases "sint b < 0")
       case True
       with a show ?thesis
-        by simp (metis F7 F8 eq minus_equation_iff minus_mult_minus mod_div_equality3)
+        by simp (metis F7 F8 eq minus_equation_iff minus_mult_minus mod_div_mult_eq)
     next
       case False
       from eq have "word_of_int (- (- sint a div sint b)) * b + word_of_int (- (- sint a mod sint b)) = a"
@@ -156,7 +156,7 @@ proof -
       with a eq show ?thesis by simp
     next
       case False with a show ?thesis
-        by simp (metis wi_hom_add wi_hom_mult add.commute mult.commute word_sint.Rep_inverse add.commute zmod_zdiv_equality)
+        by simp (metis wi_hom_add wi_hom_mult add.commute mult.commute word_sint.Rep_inverse add.commute mult_div_mod_eq [symmetric])
     qed
   qed
 qed

@@ -73,19 +73,19 @@ next
   then have "a ^ Suc n = a * (\<Sum>k = 0..n. of_nat (Stirling n k) * ffact k a)"
     by simp
   also have "\<dots> = (\<Sum>k = 0..n. of_nat (Stirling n k) * (a * ffact k a))"
-    by (simp add: setsum_distrib_left algebra_simps)
+    by (simp add: sum_distrib_left algebra_simps)
   also have "\<dots> = (\<Sum>k = 0..n. of_nat (Stirling n k) * ffact (Suc k) a) +
     (\<Sum>k = 0..n. of_nat (Stirling n k) * (of_nat k * ffact k a))"
-    by (simp add: setsum.distrib algebra_simps mult_ffact)
+    by (simp add: sum.distrib algebra_simps mult_ffact)
   also have "\<dots> = (\<Sum>k = 0.. Suc n. of_nat (Stirling n k) * ffact (Suc k) a) +
     (\<Sum>k = 0..Suc n. of_nat ((Suc k) * (Stirling n (Suc k))) * (ffact (Suc k) a))"
   proof -
     have "(\<Sum>k = 0..n. of_nat (Stirling n k) * (of_nat k * ffact k a)) =
       (\<Sum>k = 0..n+2. of_nat (Stirling n k) * (of_nat k * ffact k a))" by simp
     also have "\<dots> = (\<Sum>k = Suc 0 .. Suc (Suc n). of_nat (Stirling n k) * (of_nat k * ffact k a)) "
-      by (simp only: setsum_head_Suc [of 0 "n + 2"]) simp
+      by (simp only: sum_head_Suc [of 0 "n + 2"]) simp
     also have "\<dots> = (\<Sum>k = 0 .. Suc n. of_nat (Stirling n (Suc k)) * (of_nat (Suc k) * ffact (Suc k) a))"
-      by (simp only: image_Suc_atLeastAtMost setsum_shift_bounds_cl_Suc_ivl)
+      by (simp only: image_Suc_atLeastAtMost sum_shift_bounds_cl_Suc_ivl)
     also have "\<dots> = (\<Sum>k = 0 .. Suc n. of_nat ((Suc k) * Stirling n (Suc k)) * ffact (Suc k) a)"
       by (simp only: of_nat_mult algebra_simps)
     finally have "(\<Sum>k = 0..n. of_nat (Stirling n k) * (of_nat k * ffact k a)) =
@@ -94,11 +94,11 @@ next
     then show ?thesis by simp
   qed
   also have "\<dots> = (\<Sum>k = 0..n. of_nat (Stirling (Suc n) (Suc k)) * ffact (Suc k) a)"
-    by (simp add: algebra_simps setsum.distrib)
+    by (simp add: algebra_simps sum.distrib)
   also have "\<dots> = (\<Sum>k = Suc 0..Suc n. of_nat (Stirling (Suc n) k) * ffact k a)"
-    by (simp only: image_Suc_atLeastAtMost setsum_shift_bounds_cl_Suc_ivl)
+    by (simp only: image_Suc_atLeastAtMost sum_shift_bounds_cl_Suc_ivl)
   also have "\<dots> = (\<Sum>k = 0..Suc n. of_nat (Stirling (Suc n) k) * ffact k a)"
-    by (simp only: setsum_head_Suc [of "0" "Suc n"]) simp
+    by (simp only: sum_head_Suc [of "0" "Suc n"]) simp
   finally show ?case by simp
 qed
 
@@ -112,7 +112,7 @@ next
     by (simp add: ffact_Suc del: ffact.simps)
   also have "\<dots> = (\<Sum>k = 0..n. (- 1) ^ (n - k) * of_nat (stirling n k) * a ^ (Suc k)) +
     (\<Sum>k = 0..n. (- 1) * (- 1) ^ (n - k) * of_nat (n * (stirling n k)) * a ^ k)"
-    by (simp only: diff_conv_add_uminus distrib_right) (simp add: setsum_distrib_left field_simps)
+    by (simp only: diff_conv_add_uminus distrib_right) (simp add: sum_distrib_left field_simps)
   also have "\<dots> = (\<Sum>k = 0..n. (- 1) ^ (Suc n - Suc k) * of_nat (stirling n k) * a ^ Suc k) +
   (\<Sum>k = 0..n. (- 1) ^ (Suc n - Suc k) * of_nat (n * stirling n (Suc k)) * a ^ Suc k)"
   proof -
@@ -120,19 +120,19 @@ next
       (\<Sum>k = 0..n. (- 1) ^ (Suc n - k) * of_nat (n * stirling n k) * a ^ k)"
       by (simp add: Suc_diff_le)
     also have "\<dots> = (\<Sum>k = Suc 0..Suc n. (- 1) ^ (Suc n - k) * of_nat (n * stirling n k) * a ^ k)"
-      by (simp add: setsum_head_Suc) (cases n; simp)
+      by (simp add: sum_head_Suc) (cases n; simp)
     also have "\<dots> = (\<Sum>k = 0..n. (- 1) ^ (Suc n - Suc k) * of_nat (n * stirling n (Suc k)) * a ^ Suc k)"
-      by (simp only: setsum_shift_bounds_cl_Suc_ivl)
+      by (simp only: sum_shift_bounds_cl_Suc_ivl)
     finally show ?thesis by simp
   qed
   also have "\<dots> = (\<Sum>k = 0..n. (- 1) ^ (Suc n - Suc k) * of_nat (n * stirling n (Suc k) + stirling n k) * a ^ Suc k)"
-    by (simp add: setsum.distrib algebra_simps)
+    by (simp add: sum.distrib algebra_simps)
   also have "\<dots> = (\<Sum>k = 0..n. (- 1) ^ (Suc n - Suc k) * of_nat (stirling (Suc n) (Suc k)) * a ^ Suc k)"
     by (simp only: stirling.simps)
   also have "\<dots> = (\<Sum>k = Suc 0..Suc n. (- 1) ^ (Suc n - k) * of_nat (stirling (Suc n) k) * a ^ k)"
-    by (simp only: setsum_shift_bounds_cl_Suc_ivl)
+    by (simp only: sum_shift_bounds_cl_Suc_ivl)
   also have "\<dots> = (\<Sum>k = 0..Suc n. (- 1) ^ (Suc n - k) * of_nat (stirling (Suc n) k) * a ^ k)"
-    by (simp add: setsum_head_Suc)
+    by (simp add: sum_head_Suc)
   finally show ?case .
 qed
 

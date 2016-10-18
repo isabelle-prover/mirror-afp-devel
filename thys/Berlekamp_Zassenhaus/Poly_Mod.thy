@@ -32,7 +32,7 @@ lemma M_minus[simp]: "M (M x - y) = M (x - y)" "M (x - M y) = M (x - y)" unfoldi
 lemma M_times[simp]: "M (M x * y) = M (x * y)" "M (x * M y) = M (x * y)" unfolding M_def
   by (auto simp: zmod_simps)
 
-lemma M_setsum: "M (setsum (\<lambda> x. M (f x)) A) = M (setsum f A)"
+lemma M_sum: "M (sum (\<lambda> x. M (f x)) A) = M (sum f A)"
 proof (induct A rule: infinite_finite_induct) 
   case (insert x A)
   from insert(1-2) have "M (\<Sum>x\<in>insert x A. M (f x)) = M (f x + M ((\<Sum>x\<in>A. M (f x))))" by simp
@@ -75,7 +75,7 @@ proof -
     proof 
       fix n
       show "M (\<Sum>i\<le>n. M (coeff f i) * coeff g (n - i)) = M (\<Sum>i\<le>n. coeff f i * coeff g (n - i))"
-        by (subst M_setsum[symmetric], rule sym, subst M_setsum[symmetric], unfold M_times, simp)
+        by (subst M_sum[symmetric], rule sym, subst M_sum[symmetric], unfold M_times, simp)
     qed
   }
   from this[of f g] this[of g f] show "Mp (Mp f * g) = Mp (f * g)" "Mp (f * Mp g) = Mp (f * g)"
@@ -150,9 +150,7 @@ lemma Mp_lift_modulus: assumes "f =m g"
 
 lemma Mp_ident_product: "n > 0 \<Longrightarrow> Mp f = f \<Longrightarrow> poly_mod.Mp (m * n) f = f"
   unfolding poly_eq_iff poly_mod.Mp_coeff poly_mod.M_def 
-  using Divides.pos_mod_sign div_mod_equality2 mult_less_cancel_left pos_imp_zdiv_nonneg_iff
-        zmod_zmult2_eq add.left_neutral le_less mod_0 mod_div_trivial mult_zero_right
-  by metis
+  by (auto simp add: zmod_zmult2_eq) (metis mod_div_trivial mod_0)
 
 lemma Mp_shrink_modulus: assumes "poly_mod.equivalent (m * k) f g" "k \<noteq> 0" 
   shows "f =m g" 
@@ -211,7 +209,7 @@ lemma irreducible_dvd_prod_mset: fixes p :: "'a :: {field,factorial_ring_gcd} po
 proof -
   from irr[unfolded irreducible_def] have deg: "degree p \<noteq> 0" by auto
   hence p1: "\<not> p dvd 1" unfolding dvd_def
-    by (metis degree_1 div_mult_self1_is_id div_poly_less linorder_neqE_nat mult_not_zero not_less0 zero_neq_one)
+    by (metis degree_1 nonzero_mult_div_cancel_left div_poly_less linorder_neqE_nat mult_not_zero not_less0 zero_neq_one)
   from dvd show ?thesis
   proof (induct as)
     case (add a as)
@@ -276,7 +274,7 @@ proof -
     proof (rule exI[of _ "fs + replicate_mset (Suc (g a)) a"], intro conjI)
       show "set_mset ?fs \<subseteq> insert a gs" using *(1) by auto
       show "prod_mset ?fs = (\<Prod>a\<in>insert a gs. a ^ Suc (g a))" 
-        by (subst setprod.insert[OF insert(1-2)], auto simp: *(2))
+        by (subst prod.insert[OF insert(1-2)], auto simp: *(2))
     qed
   qed simp
   then obtain fs where "set_mset fs \<subseteq> gs" "prod_mset fs = (\<Prod>a\<in>gs. a ^ Suc (g a))" by auto

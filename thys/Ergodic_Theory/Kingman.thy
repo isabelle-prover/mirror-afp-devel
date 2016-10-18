@@ -194,13 +194,13 @@ proof -
     have "birkhoff_sum (u 1) tr ((T^^(a*N+r))x) = (\<Sum>i<tr. u 1 ((T^^(a*N+r+i))x))"
       unfolding birkhoff_sum_def by (simp add: add.commute funpow_add)
     also have "... = (\<Sum>i\<in>{a*N+r..<a*N+r+tr}. u 1 ((T^^i) x))"
-      by (rule setsum.reindex_bij_betw, rule bij_betw_byWitness[where ?f'= "\<lambda>i. i - (a * N + r)"], auto)
+      by (rule sum.reindex_bij_betw, rule bij_betw_byWitness[where ?f'= "\<lambda>i. i - (a * N + r)"], auto)
     also have "... \<le> (\<Sum>i\<in>{a*N+r..<a*N+r+tr}. abs(u 1 ((T^^i) x)))"
-      by (simp add: setsum_mono)
+      by (simp add: sum_mono)
     also have "... \<le> (\<Sum>i\<in>{n-2*N..<n}. abs(u 1 ((T^^i) x)))"
-      apply (rule setsum_mono2) using as s `r<N` tr_def by auto
+      apply (rule sum_mono2) using as s `r<N` tr_def by auto
     also have "... = E2" unfolding E2_def
-      apply (rule setsum.reindex_bij_betw[symmetric], rule bij_betw_byWitness[where ?f'= "\<lambda>i. i - (n-2*N)"])
+      apply (rule sum.reindex_bij_betw[symmetric], rule bij_betw_byWitness[where ?f'= "\<lambda>i. i - (n-2*N)"])
       using `n > 2*N` by auto
     finally have A: "birkhoff_sum (u 1) tr ((T^^(a*N+r))x) \<le> E2" by simp
 
@@ -224,9 +224,9 @@ proof -
       have "u r x \<le> (\<Sum>i<r. u 1 ((T^^i)x))"
         using subcocycle_bounded_by_birkhoff1[OF assms(1)] False unfolding birkhoff_sum_def by auto
       also have "... \<le> (\<Sum>i<r. abs(u 1 ((T^^i)x)))"
-        by (simp add: setsum_mono)
+        by (simp add: sum_mono)
       also have "... \<le> (\<Sum>i<N. abs(u 1 ((T^^i)x)))"
-        apply (rule setsum_mono2) using `r<N` by auto
+        apply (rule sum_mono2) using `r<N` by auto
       finally show ?thesis using I by auto
     qed
     then have "u n x \<le> E1 + (\<Sum>i<a. u N ((T^^(i*N+r))x)) + E2"
@@ -239,34 +239,34 @@ proof -
     have "u N ((T^^j) x) \<le> (\<Sum>i<N. u 1 ((T^^i) ((T^^j)x)))"
       using subcocycle_bounded_by_birkhoff1[OF assms(1) `N>0`] unfolding birkhoff_sum_def by auto
     also have "... = (\<Sum>i<N. u 1 ((T^^(i+j))x))" by (simp add: funpow_add)
-    also have "... \<le> (\<Sum>i<N. abs(u 1 ((T^^(i+j))x)))" by (rule setsum_mono, auto)
+    also have "... \<le> (\<Sum>i<N. abs(u 1 ((T^^(i+j))x)))" by (rule sum_mono, auto)
     also have "... = (\<Sum>k\<in>{j..<N+j}. abs(u 1 ((T^^k)x)))"
-      by (rule setsum.reindex_bij_betw, rule bij_betw_byWitness[where ?f'= "\<lambda>k. k-j"], auto)
+      by (rule sum.reindex_bij_betw, rule bij_betw_byWitness[where ?f'= "\<lambda>k. k-j"], auto)
     also have "... \<le> (\<Sum>i\<in>{n-2*N..<n}. abs(u 1 ((T^^i) x)))"
-      apply (rule setsum_mono2) using `j\<in>{n-2*N..<a*N}` `a*N \<le> n - N` by auto
+      apply (rule sum_mono2) using `j\<in>{n-2*N..<a*N}` `a*N \<le> n - N` by auto
     also have "... = E2" unfolding E2_def
-      apply (rule setsum.reindex_bij_betw[symmetric], rule bij_betw_byWitness[where ?f'= "\<lambda>i. i - (n-2*N)"])
+      apply (rule sum.reindex_bij_betw[symmetric], rule bij_betw_byWitness[where ?f'= "\<lambda>i. i - (n-2*N)"])
       using `n > 2*N` by auto
     finally show ?thesis by auto
   qed
   have "(\<Sum>j<a*N. u N ((T^^j) x)) - (\<Sum>j<n-2*N. u N ((T^^j) x)) = (\<Sum>j\<in>{n-2*N..<a*N}. u N ((T^^j) x))"
-    using setsum_add_nat_ivl[OF _ `a*N \<ge> n - 2*N`, of 0 "\<lambda>j. u N ((T^^j) x)", symmetric] atLeast0LessThan by simp
-  also have "... \<le> (\<Sum>j\<in>{n-2*N..<a*N}. E2)" by (rule setsum_mono[OF I])
+    using sum_add_nat_ivl[OF _ `a*N \<ge> n - 2*N`, of 0 "\<lambda>j. u N ((T^^j) x)", symmetric] atLeast0LessThan by simp
+  also have "... \<le> (\<Sum>j\<in>{n-2*N..<a*N}. E2)" by (rule sum_mono[OF I])
   also have "... = (a*N - (n-2*N)) * E2" by simp
   also have "... \<le> N * E2" using `(a*N - (n-2*N)) \<le> N` `E2 \<ge> 0` by (simp add: mult_right_mono)
   finally have J: "(\<Sum>j<a*N. u N ((T^^j) x)) \<le> (\<Sum>j<n-2*N. u N ((T^^j) x)) + N * E2" by auto
 
   have "N * u n x = (\<Sum>r<N. u n x)" by auto
   also have "... \<le> (\<Sum>r<N. E1 + E2 + (\<Sum>i<a. u N ((T^^(i*N+r))x)))"
-    apply (rule setsum_mono) using * by fastforce
+    apply (rule sum_mono) using * by fastforce
   also have "... = (\<Sum>r<N. E1 + E2) + (\<Sum>r<N. (\<Sum>i<a. u N ((T^^(i*N+r))x)))"
-    by (rule setsum.distrib)
+    by (rule sum.distrib)
   also have "... = N* (E1 + E2) + (\<Sum>j<a*N. u N ((T^^j) x))"
-    using setsum_arith_progression by auto
+    using sum_arith_progression by auto
   also have "... \<le> N *(E1+E2) + (\<Sum>j<n-2*N. u N ((T^^j) x)) + N*E2"
     using J by auto
   also have "... = N * (E1+E2) + N * (\<Sum>j<n-2*N. u N ((T^^j) x) / N) + N * E2"
-    using `N>0` by (simp add: setsum_distrib_left)
+    using `N>0` by (simp add: sum_distrib_left)
   also have "... = N*(E1 + E2 + (\<Sum>j<n-2*N. u N ((T^^j) x) / N) + E2)"
     by (simp add: distrib_left)
   finally have "u n x \<le> E1 + 2*E2 + birkhoff_sum (\<lambda>x. u N x / N) (n-2*N) x"
@@ -738,7 +738,7 @@ proof -
       have "t x = Min ?A" using True by (simp add: t_def)
       moreover have "Min ?A \<in> ?A" apply (rule Min_in, simp) using True B_def by blast
       ultimately have "u (t x) x \<le> (t x) * ?F x" by auto
-      moreover have "0 \<le> birkhoff_sum ?I (t x) x * abs(?F x)" unfolding birkhoff_sum_def I_def by (simp add: setsum_nonneg)
+      moreover have "0 \<le> birkhoff_sum ?I (t x) x * abs(?F x)" unfolding birkhoff_sum_def I_def by (simp add: sum_nonneg)
       ultimately show ?thesis by auto
     next
       case False
@@ -790,7 +790,7 @@ proof -
       let ?A = "{i. S i x > n}"
       let ?iA = "Inf ?A"
       have "n < (\<Sum>i<n + 1. 1)" by auto
-      also have "... \<le> S (n+1) x" unfolding S_def apply (rule setsum_mono) using t1 by auto
+      also have "... \<le> S (n+1) x" unfolding S_def apply (rule sum_mono) using t1 by auto
       finally have "?A \<noteq> {}" by blast
       then have "?iA \<in> ?A" by (meson Inf_nat_def1)
       moreover have "0 \<notin> ?A" unfolding S_def by auto
@@ -810,7 +810,7 @@ proof -
 
       have "birkhoff_sum ?I (S j x) x \<le> birkhoff_sum ?I n x"
         unfolding birkhoff_sum_def I_def using `S j x \<le> n`
-        by (metis finite_Collect_less_nat indicator_pos_le lessThan_def lessThan_subset_iff setsum_mono2)
+        by (metis finite_Collect_less_nat indicator_pos_le lessThan_def lessThan_subset_iff sum_mono2)
 
       have "u n x \<le> u (S j x) x"
       proof (cases "k=0")
@@ -821,7 +821,7 @@ proof -
         then have "k > 0" by simp
         have "u k ((T^^(S j x)) x) \<le> birkhoff_sum (u 1) k ((T ^^ S j x) x)"
           using subcocycle_bounded_by_birkhoff1[OF assms(1) `k>0`, of "(T^^(S j x)) x"] by simp
-        also have "... \<le> 0" unfolding birkhoff_sum_def using setsum_mono assms(2) by (simp add: setsum_nonpos)
+        also have "... \<le> 0" unfolding birkhoff_sum_def using sum_mono assms(2) by (simp add: sum_nonpos)
         also have "u n x \<le> u (S j x) x + u k ((T^^(S j x)) x)"
           apply (subst `n = S j x + k`) using assms(1) subcocycle_def by auto
         ultimately show ?thesis by auto
@@ -923,7 +923,7 @@ proof -
     then obtain r where "subseq r" "AE x in M. (\<lambda>n. real_cond_exp M Invariants (I (r n) K e) x) \<longlonglongrightarrow> 0"
       by auto
     moreover have "AE x in M. \<forall>N \<in> {1<..}. limsup (\<lambda>n. u n x / n) \<le> F K e x + abs(F K e x) * ereal(real_cond_exp M Invariants (I N K e) x)"
-      apply (rule AE_count_union) using main[OF _ `K>0` `e>0`] by auto
+      apply (rule AE_ball_countable') using main[OF _ `K>0` `e>0`] by auto
     moreover
     {
       fix x assume H: "(\<lambda>n. real_cond_exp M Invariants (I (r n) K e) x) \<longlonglongrightarrow> 0"
@@ -946,7 +946,7 @@ proof -
     then show ?thesis by (rule AE_upper_bound_inf_ereal, auto)
   qed
   then have "AE x in M. \<forall>K\<in>{(0::nat)<..}. limsup (\<lambda>n. u n x / n) \<le> real_of_ereal(max (l x) (-ereal K))"
-    by (rule AE_count_union, auto)
+    by (rule AE_ball_countable', auto)
   moreover have "(\<lambda>n. u n x / n) \<longlonglongrightarrow> l x"
     if H: "\<forall>K\<in>{(0::nat)<..}. limsup (\<lambda>n. u n x / n) \<le> real_of_ereal(max (l x) (-ereal K))" for x
   proof -
@@ -997,7 +997,7 @@ proof -
     {
       fix n
       have "u n x = v n x + birkhoff_sum (u 1) n x"
-        unfolding v_def birkhoff_sum_def apply auto by (simp add: setsum_negf)
+        unfolding v_def birkhoff_sum_def apply auto by (simp add: sum_negf)
       then have "u n x / n = v n x / n + birkhoff_sum (u 1) n x / n" by (simp add: add_divide_distrib)
       then have "ereal(u n x / n) = ereal(v n x / n) + ereal(birkhoff_sum (u 1) n x / n)"
         by auto
@@ -1215,7 +1215,7 @@ proof -
                   + 2 * (\<Sum>i<2*N. \<bar>u 1 ((T ^^ (n - (2 * N - i))) x)\<bar>)) / n"
         using subcocycle_bounded_by_birkhoffN[OF assms(1) `n>2*N` `N>0`, of x] `n>2*N` by (simp add: divide_right_mono)
       also have "... = ?f n"
-        apply (subst add_divide_distrib)+ by (auto simp add: setsum_divide_distrib[symmetric])
+        apply (subst add_divide_distrib)+ by (auto simp add: sum_divide_distrib[symmetric])
       finally have "u n x / n \<le> ?f n" by simp
       then have "u n x / n \<le> ereal(?f n)" by simp
     }
@@ -1223,7 +1223,7 @@ proof -
     have *: "(\<lambda>n. (1/n)*\<bar>u 1 ((T ^^ i) x)\<bar>) \<longlonglongrightarrow> 0 * \<bar>u 1 ((T ^^ i) x)\<bar>" for i
         by (rule tendsto_mult, auto simp add: lim_1_over_n)
     have "(\<lambda>n. (\<Sum>i<N. (1/n)*\<bar>u 1 ((T ^^ i) x)\<bar>)) \<longlonglongrightarrow> (\<Sum>i<N. 0)"
-      apply (rule tendsto_setsum) using * by auto
+      apply (rule tendsto_sum) using * by auto
     then have S1: "(\<lambda>n. (\<Sum>i<N. (1/n)*\<bar>u 1 ((T ^^ i) x)\<bar>)) \<longlonglongrightarrow> 0" by simp
 
     have S2: "(\<lambda>n. birkhoff_sum (\<lambda>x. u N x / real N) (n - 2 * N) x / n) \<longlonglongrightarrow> real_cond_exp M Invariants (\<lambda>x. u N x / N) x"
@@ -1234,7 +1234,7 @@ proof -
       using tendsto_shift_1_over_n'[OF A, of "2*N-i"] by simp
     have "(\<lambda>n. 2 * (\<Sum>i<2*N. \<bar>u 1 ((T ^^ (n - (2 * N - i))) x)\<bar>/n)) \<longlonglongrightarrow> 2 * (\<Sum>i<2*N. 0)"
       apply (rule tendsto_mult, simp)
-      apply (rule tendsto_setsum) using B by blast
+      apply (rule tendsto_sum) using B by blast
     then have S3: "(\<lambda>n. 2 * (\<Sum>i<2*N. \<bar>u 1 ((T ^^ (n - (2 * N - i))) x)\<bar>/n)) \<longlonglongrightarrow> 0" by simp
 
     have "(\<lambda>n. ?f n) \<longlonglongrightarrow> real_cond_exp M Invariants (\<lambda>x. u N x / N) x + 0 + 0"
@@ -1267,7 +1267,7 @@ proof -
     case True
     have "u n x \<le> (\<Sum>i<n. u 1 ((T ^^ i) x))"
       using subcocycle_bounded_by_birkhoff1[OF assms(1) `n>0`] unfolding birkhoff_sum_def by simp
-    also have "... \<le> 0" using setsum_mono[OF assms(3)] by auto
+    also have "... \<le> 0" using sum_mono[OF assms(3)] by auto
     finally have "u n x \<le> 0" by simp
     then have "-u n x \<ge> 0" by simp
     with divide_nonneg_nonneg[OF this] show "- u n x / n \<ge> 0" using `n>0` by auto
@@ -1375,7 +1375,7 @@ proof -
     have "eventually (\<lambda>n. (\<integral>\<^sup>+x. abs(u n x) / n \<partial>M) \<le> (\<integral>\<^sup>+x. abs(subcocycle_lim u x) \<partial>M)) sequentially"
       by fastforce
     then show "limsup (\<lambda>n. \<integral>\<^sup>+ x. abs(u n x) / n \<partial>M) \<le> \<integral>\<^sup>+ x. abs(subcocycle_lim u x) \<partial>M"
-      using Limsup_eventually_bounded by fastforce
+      using Limsup_bounded by fastforce
   qed
   moreover have "norm((- u n x /n) - (-subcocycle_lim u x)) = abs(u n x / n - subcocycle_lim u x)"
     for n x by auto
@@ -1400,7 +1400,7 @@ proof -
     using assms unfolding subcocycle_def by auto
   have "subcocycle w" unfolding w_def by (rule subcocycle_birkhoff[OF int_u])
   have uvw: "u n x = v n x + w n x" for n x
-    unfolding v_def w_def birkhoff_sum_def by (auto simp add: setsum_negf)
+    unfolding v_def w_def birkhoff_sum_def by (auto simp add: sum_negf)
   then have "subcocycle_avg_ereal (\<lambda>n x. u n x) = subcocycle_avg_ereal v + subcocycle_avg_ereal w"
     using subcocycle_avg_ereal_add[OF `subcocycle v` `subcocycle w`] by auto
   then have "subcocycle_avg_ereal u = subcocycle_avg_ereal v + subcocycle_avg_ereal w"

@@ -162,7 +162,7 @@ next
   have "C \<Delta> A \<subseteq> (\<Union>n. (T^^n)--`A \<Delta> A)" unfolding C_def by auto
   moreover have "(\<Union>n. (T^^n)--`A \<Delta> A) \<in> null_sets M"
     using * null_sets_UN assms `T --\` A \<Delta> A \<in> null_sets M` by auto
-  ultimately have CA: "C \<Delta> A \<in> null_sets M" by (meson `C \<in> sets M` assms sets.Diff sets.Un null_sets_inc)
+  ultimately have CA: "C \<Delta> A \<in> null_sets M" by (meson `C \<in> sets M` assms sets.Diff sets.Un null_sets_subset)
   then have "T--`(C \<Delta> A) \<in> null_sets M" by (rule T_quasi_preserves_null2(1))
   then have "T--`C \<Delta> T--`A \<in> null_sets M" by simp
   then have "T--`C \<Delta> A \<in> null_sets M"
@@ -186,7 +186,7 @@ next
   have "B \<Delta> C \<subseteq> (\<Union>n. (T^^n)--`C \<Delta> C)" unfolding B_def by auto
   moreover have "(\<Union>n. (T^^n)--`C \<Delta> C) \<in> null_sets M"
     using * null_sets_UN assms TCC by auto
-  ultimately have "B \<Delta> C \<in> null_sets M" by (meson `B \<in> sets M` `C \<in> sets M` assms sets.Diff sets.Un null_sets_inc)
+  ultimately have "B \<Delta> C \<in> null_sets M" by (meson `B \<in> sets M` `C \<in> sets M` assms sets.Diff sets.Un null_sets_subset)
   then have "B \<Delta> A \<in> null_sets M"
     by (rule null_sym_diff_transitive, auto simp add: CA)
   then have a: "A \<Delta> B \<in> null_sets M" by (simp add: Un_commute)
@@ -435,7 +435,7 @@ proof -
   }
   then have "(\<Union>d\<in>D. T--`(C d) - C d) \<in> null_sets M" using `countable D` by (simp add: null_sets_UN')
   then have "(space M - B) \<union> (\<Union>d\<in>D. T--`(C d) - C d) \<in> null_sets M" using `space M - B \<in> null_sets M` by auto
-  then have "AE x in M. x \<notin> (space M - B) \<union> (\<Union>d\<in>D. T--`(C d) - C d)" using null_setsD_AE by blast
+  then have "AE x in M. x \<notin> (space M - B) \<union> (\<Union>d\<in>D. T--`(C d) - C d)" using AE_not_in by blast
   moreover
   {
     fix x assume x: "x \<in> space M" "x \<notin> (space M - B) \<union> (\<Union>d\<in>D. T--`(C d) - C d)"
@@ -495,7 +495,7 @@ proof -
   }
   then have "(\<Union>d\<in>D. T--`(C d) - C d) \<in> null_sets M" using `countable D` by (simp add: null_sets_UN')
   then have "(space M - B) \<union> (\<Union>d\<in>D. T--`(C d) - C d) \<in> null_sets M" using `space M - B \<in> null_sets M` by auto
-  then have "AE x in M. x \<notin> (space M - B) \<union> (\<Union>d\<in>D. T--`(C d) - C d)" using null_setsD_AE by blast
+  then have "AE x in M. x \<notin> (space M - B) \<union> (\<Union>d\<in>D. T--`(C d) - C d)" using AE_not_in by blast
   moreover
   {
     fix x assume x: "x \<in> space M" "x \<notin> (space M - B) \<union> (\<Union>d\<in>D. T--`(C d) - C d)"
@@ -593,9 +593,9 @@ proof -
 
   have "AE x in M. n * real_cond_exp M Invariants f x = (\<Sum>i\<in>{..<n}. real_cond_exp M Invariants f x)" by auto
   moreover have "AE x in M. (\<Sum>i\<in>{..<n}. real_cond_exp M Invariants f x) = (\<Sum>i\<in>{..<n}. real_cond_exp M Invariants (F i) x)"
-    apply (rule AE_symmetric[OF AE_equal_setsum]) unfolding F_def using Invariants_of_foTn[OF assms] by simp
+    apply (rule AE_symmetric[OF AE_equal_sum]) unfolding F_def using Invariants_of_foTn[OF assms] by simp
   moreover have "AE x in M. (\<Sum>i\<in>{..<n}. real_cond_exp M Invariants (F i) x) = real_cond_exp M Invariants (\<lambda>x. \<Sum>i\<in>{..<n}. F i x) x"
-    by (rule AE_symmetric[OF real_cond_exp_setsum [OF *]])
+    by (rule AE_symmetric[OF real_cond_exp_sum [OF *]])
   moreover have "AE x in M. real_cond_exp M Invariants (\<lambda>x. \<Sum>i\<in>{..<n}. F i x) x = real_cond_exp M Invariants (birkhoff_sum f n) x"
     apply (rule real_cond_exp_cong) unfolding F_def using birkhoff_sum_def[symmetric] by auto
   ultimately show ?thesis by auto
@@ -807,7 +807,7 @@ proof -
     finally have "0 \<le> - \<epsilon> * measure M A" by simp
     then have "measure M A = 0" using `\<epsilon> > 0` by (simp add: measure_le_0_iff mult_le_0_iff)
     then have "A \<in> null_sets M" by (simp add: emeasure_eq_measure null_setsI)
-    then have "AE x in M. x \<in> space M - A" by (metis (no_types, lifting) AE_cong Diff_iff null_setsD_AE)
+    then have "AE x in M. x \<in> space M - A" by (metis (no_types, lifting) AE_cong Diff_iff AE_not_in)
     moreover
     {
       fix x assume "x \<in> space M - A"
@@ -908,7 +908,7 @@ proof -
   have [measurable]: "F k \<in> sets M" for k unfolding F_def by auto
   have **: "E k - F k \<in> null_sets M" for k unfolding F_def using Poincare_recurrence_thm by auto
   have "space M - (\<Union>k. F k) \<in> null_sets M"
-    apply (rule null_sets_inc[of "(\<Union>k. E k - F k)"]) unfolding *[symmetric] using ** by auto
+    apply (rule null_sets_subset[of "(\<Union>k. E k - F k)"]) unfolding *[symmetric] using ** by auto
   with AE_not_in[OF this] have "AE x in M. x \<in> (\<Union>k. F k)" by auto
   moreover have "AE x in M. (\<lambda>n. birkhoff_sum (\<lambda>x. f(T x) - f x) n x / n)
       \<longlonglongrightarrow> real_cond_exp M Invariants (\<lambda>x. f(T x) - f x) x"
@@ -1332,9 +1332,9 @@ proof (rule conservative_mptI)
     also have "... = (\<Sum>n\<in>{n0..n1}. ennreal(e*c))"
       by (simp add: ac_simps)
     also have "... \<le> (\<Sum>n\<in>{n0..n1}. emeasure ?MS (D n))"
-      using `\<And>n. n \<in> {n0..n1} \<Longrightarrow> emeasure ?MS (D n) \<ge> e * c` by (meson setsum_mono)
+      using `\<And>n. n \<in> {n0..n1} \<Longrightarrow> emeasure ?MS (D n) \<ge> e * c` by (meson sum_mono)
     also have "... = emeasure ?MS (\<Union>n\<in>{n0..n1}. D n)"
-      apply (rule setsum_emeasure) using Dn_meas by (auto simp add: D)
+      apply (rule sum_emeasure) using Dn_meas by (auto simp add: D)
     also have "... \<le> emeasure ?MS (space M \<times> {-r*n1-N..r*n1+N})"
       apply (rule emeasure_mono) unfolding D_def using sets.sets_into_space[OF Dx_meas] by auto
     also have "... = emeasure M (space M) * emeasure lborel {-r*n1-N..r*n1+N}"

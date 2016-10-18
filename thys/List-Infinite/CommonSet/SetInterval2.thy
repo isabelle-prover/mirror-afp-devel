@@ -1238,7 +1238,7 @@ done
 
 subsubsection {* Auxiliary results for @{term card} *}
 
-lemma setsum_singleton: "(\<Sum>x\<in>{a}. f x) = f a"
+lemma sum_singleton: "(\<Sum>x\<in>{a}. f x) = f a"
 by simp
 
 lemma card_singleton: "card {a} = Suc 0"

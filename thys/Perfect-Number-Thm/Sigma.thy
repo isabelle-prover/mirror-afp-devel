@@ -56,7 +56,7 @@ lemma sigma_third_divisor:
   shows "1+a+n <= sigma(n)"
 proof -
   from assms have "finite {1,a,n} & finite (divisors n) & {1,a,n} <= divisors n" by auto
-  hence "\<Sum> {1,a,n} <= \<Sum> (divisors n)" by (simp only: setsum_mono2)
+  hence "\<Sum> {1,a,n} <= \<Sum> (divisors n)" by (simp only: sum_mono2)
   hence "\<Sum> {1,a,n} <= sigma n" by (simp add: sigma_divisors)
   with assms show "?thesis" by auto
 qed
@@ -80,7 +80,7 @@ proof
     hence "(\<exists>a. a\<noteq>n & a\<noteq>1 & 1<n & a\<noteq>0 & a : divisors n)" by metis
     hence "\<exists>a . a\<noteq>n & a\<noteq>1 & 1\<noteq>n & a\<noteq>0 & finite {1,a,n} & finite (divisors n) & {1,a,n} <= divisors n" by auto
     hence "\<exists>a. a\<noteq>n & a\<noteq>1 & 1\<noteq>n & a\<noteq>0 & \<Sum> {1,a,n} <= sigma n"
-      by (metis setsum_mono2_nat sigma_divisors)
+      by (metis sum_mono2_nat sigma_divisors)
     hence "\<exists>a. a\<noteq>0 & (1+a+n) <= sigma n" by auto
     hence "1+n<sigma n" by auto (*TODO: this step can be deleted, should i?*)
     with ass show "False" by auto
@@ -126,13 +126,13 @@ lemma rewrite_sum_of_powers:
 assumes p: "(p::nat)>1"
 shows "(\<Sum> {p^m | m . m<=(n::nat)}) = (\<Sum> i = 0 .. n . p^i)" (is "?l = ?r")
 proof -
-  have "?l = setsum (%x. x) {(op ^ p) m |m . m<= n}" by auto
-  also have "... = setsum (%x. x) ((op ^ p)`{m . m<= n})"
+  have "?l = sum (%x. x) {(op ^ p) m |m . m<= n}" by auto
+  also have "... = sum (%x. x) ((op ^ p)`{m . m<= n})"
     by (simp add: setcompr_eq_image)
   moreover with p have "inj_on (op ^p) {m . m<=n}"
     by (simp add: inj_on_def)
-  ultimately have "?l = setsum (op ^ p) {m . m<=n}"
-    by (simp add: setsum.reindex)
+  ultimately have "?l = sum (op ^ p) {m . m<=n}"
+    by (simp add: sum.reindex)
   moreover have "{m::nat . m<=n} = {0..n}" by auto
   ultimately show "?l = (\<Sum> i = 0 .. n . p^i)" by auto
 qed
@@ -163,8 +163,8 @@ proof -
     by (rule coprime_exp, rule coprime_divisors[OF that dvd_refl])
        (insert assms, simp add: gcd.commute)
   then show ?thesis
-    by (auto simp: imp_ex setsum_mult_setsum_if_inj [OF mult_inj_if_coprime_nat]
-             intro!: arg_cong [where f = "setsum (\<lambda>x. x)"])
+    by (auto simp: imp_ex sum_mult_sum_if_inj [OF mult_inj_if_coprime_nat]
+             intro!: arg_cong [where f = "sum (\<lambda>x. x)"])
 qed
 
 declare [[simproc add: finite_Collect]]

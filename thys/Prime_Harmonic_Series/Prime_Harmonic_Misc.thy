@@ -14,22 +14,22 @@ begin
 lemma sum_list_nonneg: "\<forall>x\<in>set xs. x \<ge> 0 \<Longrightarrow> sum_list xs \<ge> (0 :: 'a :: ordered_ab_group_add)"
   by (induction xs) auto
 
-lemma setsum_telescope':
+lemma sum_telescope':
   assumes "m \<le> n"
   shows   "(\<Sum>k = Suc m..n. f k - f (Suc k)) = f (Suc m) - (f (Suc n) :: 'a :: ab_group_add)"
   by (rule dec_induct[OF assms]) (simp_all add: algebra_simps)
 
-lemma dvd_setprodI:
+lemma dvd_prodI:
   assumes "finite A" "x \<in> A"
-  shows   "f x dvd setprod f A"
+  shows   "f x dvd prod f A"
 proof -
-  from assms have "setprod f A = f x * setprod f (A - {x})" 
-    by (intro setprod.remove) simp_all
+  from assms have "prod f A = f x * prod f (A - {x})" 
+    by (intro prod.remove) simp_all
   thus ?thesis by simp
 qed
 
-lemma dvd_setprodD: "finite A \<Longrightarrow> setprod f A dvd x \<Longrightarrow> a \<in> A \<Longrightarrow> f a dvd x"
-  by (erule dvd_trans[OF dvd_setprodI])
+lemma dvd_prodD: "finite A \<Longrightarrow> prod f A dvd x \<Longrightarrow> a \<in> A \<Longrightarrow> f a dvd x"
+  by (erule dvd_trans[OF dvd_prodI])
 
 lemma multiplicity_power_nat: 
   "prime p \<Longrightarrow> n > 0 \<Longrightarrow> multiplicity p (n ^ k :: nat) = k * multiplicity p n"
@@ -40,7 +40,7 @@ lemma multiplicity_prod_prime_powers_nat':
      multiplicity p (\<Prod>S :: nat) = (if p \<in> S then 1 else 0)"
   using multiplicity_prod_prime_powers[of S p "\<lambda>_. 1"] by simp
 
-lemma setprod_prime_subset:
+lemma prod_prime_subset:
   assumes "finite A" "finite B"
   assumes "\<And>x. x \<in> A \<Longrightarrow> prime (x::nat)"
   assumes "\<And>x. x \<in> B \<Longrightarrow> prime x"
@@ -60,10 +60,10 @@ proof
     by (subst (asm) multiplicity_prod_prime_powers_nat') (simp_all split: if_split_asm)
 qed
 
-lemma setprod_prime_eq:
+lemma prod_prime_eq:
   assumes "finite A" "finite B" "\<And>x. x \<in> A \<Longrightarrow> prime (x::nat)" "\<And>x. x \<in> B \<Longrightarrow> prime x" "\<Prod>A = \<Prod>B"
   shows   "A = B"
-  using assms by (intro equalityI setprod_prime_subset) simp_all
+  using assms by (intro equalityI prod_prime_subset) simp_all
 
 lemma ln_ln_nonneg:
   assumes x: "x \<ge> (3 :: real)"

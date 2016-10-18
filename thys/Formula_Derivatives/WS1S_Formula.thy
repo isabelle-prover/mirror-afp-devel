@@ -111,27 +111,27 @@ fun find0 where
 
 abbreviation "decr0 ord k \<equiv> map_atomic (case_order (dec k) id ord) (case_order id (dec k) ord)"
 
-lemma setsum_pow2_image_Suc:
-  "finite X \<Longrightarrow> setsum (op ^ (2 :: nat)) (Suc ` X) = 2 * setsum (op ^ 2) X"
-  by (induct X rule: finite_induct) (auto intro: trans[OF setsum.insert])
+lemma sum_pow2_image_Suc:
+  "finite X \<Longrightarrow> sum (op ^ (2 :: nat)) (Suc ` X) = 2 * sum (op ^ 2) X"
+  by (induct X rule: finite_induct) (auto intro: trans[OF sum.insert])
 
-lemma setsum_pow2_insert0:
-  "\<lbrakk>finite X; 0 \<notin> X\<rbrakk> \<Longrightarrow> setsum (op ^ (2 :: nat)) (insert 0 X) = Suc (setsum (op ^ 2) X)"
-  by (induct X rule: finite_induct) (auto intro: trans[OF setsum.insert])
+lemma sum_pow2_insert0:
+  "\<lbrakk>finite X; 0 \<notin> X\<rbrakk> \<Longrightarrow> sum (op ^ (2 :: nat)) (insert 0 X) = Suc (sum (op ^ 2) X)"
+  by (induct X rule: finite_induct) (auto intro: trans[OF sum.insert])
 
-lemma setsum_pow2_upto: "setsum (op ^ (2 :: nat)) {0 ..< x} = 2 ^ x - 1"
+lemma sum_pow2_upto: "sum (op ^ (2 :: nat)) {0 ..< x} = 2 ^ x - 1"
   by (induct x) (auto simp: algebra_simps)
 
-lemma setsum_pow2_inj:
+lemma sum_pow2_inj:
   "\<lbrakk>finite X; finite Y; (\<Sum>x\<in>X. 2 ^ x :: nat) = (\<Sum>x\<in>Y. 2 ^ x)\<rbrakk> \<Longrightarrow> X = Y"
   (is "_ \<Longrightarrow> _ \<Longrightarrow> ?f X = ?f Y \<Longrightarrow> _")
 proof (induct X arbitrary: Y rule: finite_linorder_max_induct)
   case (insert x X)
-  from insert(2) have "?f X \<le> ?f {0 ..< x}" by (intro setsum_mono2) auto
+  from insert(2) have "?f X \<le> ?f {0 ..< x}" by (intro sum_mono2) auto
   also have "\<dots> < 2 ^ x" by (induct x) simp_all
   finally have "?f X < 2 ^ x" .
   moreover from insert(1,2) have *: "?f X + 2 ^ x = ?f Y"
-    using trans[OF sym[OF insert(5)] setsum.insert] by auto
+    using trans[OF sym[OF insert(5)] sum.insert] by auto
   ultimately have "?f Y < 2 ^ Suc x" by simp
 
   have "\<forall>y \<in> Y. y \<le> x"
@@ -139,19 +139,19 @@ proof (induct X arbitrary: Y rule: finite_linorder_max_induct)
     assume "\<not> (\<forall>y\<in>Y. y \<le> x)"
     then obtain y where "y \<in> Y" "Suc x \<le> y" by auto
     from this(2) have "2 ^ Suc x \<le> (2 ^ y :: nat)" by (intro power_increasing) auto
-    also from \<open>y \<in> Y\<close> insert(4) have "\<dots> \<le> ?f Y" by (metis order.refl setsum.remove trans_le_add1)
+    also from \<open>y \<in> Y\<close> insert(4) have "\<dots> \<le> ?f Y" by (metis order.refl sum.remove trans_le_add1)
     finally show False using \<open>?f Y < 2 ^ Suc x\<close> by simp
   qed
 
   { assume "x \<notin> Y"
-    with \<open>\<forall>y \<in> Y. y \<le> x\<close> have "?f Y \<le> ?f {0 ..< x}" by (intro setsum_mono2) (auto simp: le_less)
+    with \<open>\<forall>y \<in> Y. y \<le> x\<close> have "?f Y \<le> ?f {0 ..< x}" by (intro sum_mono2) (auto simp: le_less)
     also have "\<dots> < 2 ^ x" by (induct x) simp_all
     finally have "?f Y < 2 ^ x" .
     with * have False by auto
   }
   then have "x \<in> Y" by blast
 
-  from insert(4) have "?f (Y - {x}) + 2 ^ x = ?f (insert x (Y - {x}))"by (subst setsum.insert) auto
+  from insert(4) have "?f (Y - {x}) + 2 ^ x = ?f (insert x (Y - {x}))"by (subst sum.insert) auto
   also have "\<dots> = ?f X + 2 ^ x" unfolding * using \<open>x \<in> Y\<close> by (simp add: insert_absorb)
   finally have "?f X = ?f (Y - {x})" by simp
   with insert(3,4) have "X = Y - {x}" by simp
@@ -525,7 +525,7 @@ next
    proof (induct a)
      case 18
      then show ?case
-       apply (auto simp: setsum_pow2_image_Suc setsum_pow2_insert0 image_iff split: prod.splits)
+       apply (auto simp: sum_pow2_image_Suc sum_pow2_insert0 image_iff split: prod.splits)
        apply presburger+
        done
    qed (auto split: prod.splits bool.splits)
@@ -538,7 +538,7 @@ next
    proof (induct a)
      case 18
      then show ?case
-       apply (auto simp: setsum_pow2_image_Suc setsum_pow2_insert0 image_iff split: prod.splits)
+       apply (auto simp: sum_pow2_image_Suc sum_pow2_insert0 image_iff split: prod.splits)
        apply presburger+
        done
    qed (auto split: prod.splits bool.splits)
@@ -606,18 +606,18 @@ next
      case Eq_Diff then show ?case
        by (auto 0 1 simp add: fset_eq_iff split: prod.splits) (metis assigns_less_Length less_not_refl)+
    next
-     let ?f = "setsum (op ^ (2 :: nat))"
+     let ?f = "sum (op ^ (2 :: nat))"
      note fmember.rep_eq[symmetric, simp]
      case (Eq_Presb l M n)
      moreover
      let ?M = "fset (M\<^bsup>\<AA>\<^esup>SO)" and ?L = "Length \<AA>"
      have "?f (insert ?L ?M) = 2 ^ ?L + ?f ?M"
-       by (subst setsum.insert) auto
+       by (subst sum.insert) auto
      moreover have "n > 0 \<Longrightarrow> 2 ^ Max {i. 2 ^ i \<le> n} \<le> n"
        using Max_in[of "{i. 2 ^ i \<le> n}", simplified, OF exI[of _ 0]] by auto
      moreover
-     { have "?f ?M \<le> ?f {0 ..< ?L}" by (rule setsum_mono2) auto
-       also have "\<dots> = 2 ^ ?L - 1" by (rule setsum_pow2_upto)
+     { have "?f ?M \<le> ?f {0 ..< ?L}" by (rule sum_mono2) auto
+       also have "\<dots> = 2 ^ ?L - 1" by (rule sum_pow2_upto)
        also have "\<dots> < 2 ^ ?L" by simp
        finally have "?f ?M < 2 ^ ?L" .
      }

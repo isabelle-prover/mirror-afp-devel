@@ -30,13 +30,13 @@ proof (induction rule: finite_induct)
   assume IH: "(\<Prod>x\<in>A. 1 + 1 / x) = (\<Sum>x\<in>Pow A. 1 / \<Prod>x)"
   from a and fin have "(\<Prod>x\<in>insert a A. 1 + 1 / x) = (1 + 1 / a) * (\<Prod>x\<in>A. 1 + 1 / x)" by simp
   also from fin have "\<dots> = (\<Sum>x\<in>Pow A. 1 / \<Prod>x) + (\<Sum>x\<in>Pow A. 1 / (a * \<Prod>x))"
-    by (subst IH) (auto simp add: algebra_simps setsum_divide_distrib)
+    by (subst IH) (auto simp add: algebra_simps sum_divide_distrib)
   also from fin a have "(\<Sum>x\<in>Pow A. 1 / (a * \<Prod>x)) = (\<Sum>x\<in>Pow A. 1 / \<Prod>(insert a x))"
-    by (intro setsum.cong refl, subst setprod.insert) (auto dest: finite_subset)
+    by (intro sum.cong refl, subst prod.insert) (auto dest: finite_subset)
   also from a have "\<dots> = (\<Sum>x\<in>insert a ` Pow A. 1 / \<Prod>x)"
-    by (subst setsum.reindex) (auto simp: inj_on_def)
+    by (subst sum.reindex) (auto simp: inj_on_def)
   also from fin a have "(\<Sum>x\<in>Pow A. 1 / \<Prod>x) + \<dots> = (\<Sum>x\<in>Pow A \<union> insert a ` Pow A. 1 / \<Prod>x)"
-    by (intro setsum.union_disjoint [symmetric]) (simp, simp, blast)
+    by (intro sum.union_disjoint [symmetric]) (simp, simp, blast)
   also have "Pow A \<union> insert a ` Pow A = Pow (insert a A)" by (simp only: Pow_insert)
   finally show " (\<Prod>x\<in>insert a A. 1 + 1 / x) = (\<Sum>x\<in>Pow (insert a A). 1 / \<Prod>x)" .
 qed simp
@@ -53,16 +53,16 @@ proof -
   def n \<equiv> "max 2 (Max A)"
   have n: "n \<ge> Max A" "n \<ge> 2" by (auto simp: n_def)
   with assms have "A \<subseteq> {0..n}" by (auto intro: order.trans[OF Max_ge])
-  hence "(\<Sum>k\<in>A. 1 / (real k ^ 2)) \<le> (\<Sum>k=0..n. 1 / (real k ^ 2))" by (intro setsum_mono2) auto
-  also from n have "\<dots> = 1 + (\<Sum>k=Suc 1..n. 1 / (real k ^ 2))" by (simp add: setsum_head_Suc)
+  hence "(\<Sum>k\<in>A. 1 / (real k ^ 2)) \<le> (\<Sum>k=0..n. 1 / (real k ^ 2))" by (intro sum_mono2) auto
+  also from n have "\<dots> = 1 + (\<Sum>k=Suc 1..n. 1 / (real k ^ 2))" by (simp add: sum_head_Suc)
   also have "(\<Sum>k=Suc 1..n. 1 / (real k ^ 2)) \<le>
           (\<Sum>k=Suc 1..n. 1 / (real k ^ 2 - 1/4))" unfolding power2_eq_square
-    by (intro setsum_mono divide_left_mono mult_pos_pos)
+    by (intro sum_mono divide_left_mono mult_pos_pos)
        (linarith, simp_all add: field_simps less_1_mult)
   also have "\<dots> = (\<Sum>k=Suc 1..n. 1 / (real k - 1/2) - 1 / (real (Suc k) - 1/2))"
-    by (intro setsum.cong refl) (simp_all add: field_simps power2_eq_square)
+    by (intro sum.cong refl) (simp_all add: field_simps power2_eq_square)
   also from n have "\<dots> = 2 / 3 - 1 / (1 / 2 + real n)"
-    by (subst setsum_telescope') simp_all
+    by (subst sum_telescope') simp_all
   also have "1 + \<dots> \<le> 5/3" by simp
   finally show ?thesis by - simp
 qed
@@ -126,28 +126,28 @@ proof -
       approximation\<close>
   have "harm n = (\<Sum>n=1..n. 1 / real n)" by (simp add: harm_def field_simps)
   also from surj have "\<dots> \<le> (\<Sum>n\<in>f ` (Pow (P n)\<times>{1..n}). 1 / real n)"
-    by (intro setsum_mono2 finite_imageI finite_cartesian_product) simp_all
+    by (intro sum_mono2 finite_imageI finite_cartesian_product) simp_all
   also from inj have "\<dots> = (\<Sum>x\<in>Pow (P n)\<times>{1..n}. 1 / real (f x))"
-    by (subst setsum.reindex) simp_all
+    by (subst sum.reindex) simp_all
   also have "\<dots> = (\<Sum>A\<in>Pow (P n). 1 / real (\<Prod>A)) * (\<Sum>k=1..n. 1 / (real k)^2)" unfolding f_def
-    by (subst setsum_product, subst setsum.cartesian_product) (simp add: case_prod_beta)
+    by (subst sum_product, subst sum.cartesian_product) (simp add: case_prod_beta)
   also have "\<dots> \<le> (\<Sum>A\<in>Pow (P n). 1 / real (\<Prod>A)) * (5/3)"
-    by (intro mult_left_mono prime_harmonic_aux2 setsum_nonneg)
-       (auto simp: P_def intro!: setprod_nonneg)
+    by (intro mult_left_mono prime_harmonic_aux2 sum_nonneg)
+       (auto simp: P_def intro!: prod_nonneg)
   also have "(\<Sum>A\<in>Pow (P n). 1 / real (\<Prod>A)) = (\<Sum>A\<in>(op` real) ` Pow (P n). 1 / \<Prod>A)"
-    by (subst setsum.reindex) (auto simp: inj_on_def inj_image_eq_iff setprod.reindex)
+    by (subst sum.reindex) (auto simp: inj_on_def inj_image_eq_iff prod.reindex)
   also have "(op` real) ` Pow (P n) = Pow (real ` P n)" by (intro image_Pow_surj refl)
   also have "(\<Sum>A\<in>Pow (real ` P n). 1 / \<Prod>A) = (\<Prod>x\<in>real ` P n. 1 + 1 / x)"
     by (intro prime_harmonic_aux1 [symmetric] finite_imageI) simp_all
-  also have "\<dots> = (\<Prod>i\<in>P n. 1 + 1 / real i)" by (subst setprod.reindex) (auto simp: inj_on_def)
-  also have "\<dots> \<le> (\<Prod>i\<in>P n. exp (1 / real i))" by (intro setprod_mono) auto
-  also have "\<dots> = exp (\<Sum>i\<in>P n. 1 / real i)" by (simp add: exp_setsum)
+  also have "\<dots> = (\<Prod>i\<in>P n. 1 + 1 / real i)" by (subst prod.reindex) (auto simp: inj_on_def)
+  also have "\<dots> \<le> (\<Prod>i\<in>P n. exp (1 / real i))" by (intro prod_mono) auto
+  also have "\<dots> = exp (\<Sum>i\<in>P n. 1 / real i)" by (simp add: exp_sum)
   finally have "ln (harm n) \<le> ln (\<dots> * (5/3))" using n
     by (subst ln_le_cancel_iff) simp_all
   hence "ln (harm n) - ln (5/3) \<le> (\<Sum>i\<in>P n. 1 / real i)"
     by (subst (asm) ln_mult) (simp_all add: algebra_simps)
   thus ?thesis unfolding P_def
-    by (subst (asm) setsum.distinct_set_conv_list) simp_all
+    by (subst (asm) sum.distinct_set_conv_list) simp_all
 qed
 
 text \<open>

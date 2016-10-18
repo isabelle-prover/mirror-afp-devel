@@ -274,22 +274,22 @@ lemma ef_echelon_form_of_det:
 lemma det_echelon_form:
   fixes A::"'a::{bezout_domain}^'n::{mod_type}^'n::{mod_type}"
   assumes ef: "echelon_form A"
-  shows "det A = setprod (\<lambda>i. A $ i $ i) (UNIV:: 'n set)"
+  shows "det A = prod (\<lambda>i. A $ i $ i) (UNIV:: 'n set)"
   using det_upperdiagonal echelon_form_imp_upper_triagular[OF ef] 
   unfolding upper_triangular_def by blast
 
-corollary det_echelon_form_of_det_setprod:
+corollary det_echelon_form_of_det_prod:
   fixes A::"'a::{bezout_domain_div}^'n::{mod_type}^'n::{mod_type}"
   assumes ib: "is_bezout_ext bezout"
   shows "det A = 1 div (fst (echelon_form_of_det A bezout)) 
-  * setprod (\<lambda>i. snd (echelon_form_of_det A bezout) $ i $ i) (UNIV:: 'n set)"
+  * prod (\<lambda>i. snd (echelon_form_of_det A bezout) $ i $ i) (UNIV:: 'n set)"
   using det_echelon_form_of_det'[OF ib]
   unfolding det_echelon_form[OF ef_echelon_form_of_det[OF ib]] by auto
 
 corollary det_echelon_form_of_euclidean[code]:
   fixes A::"'a::{euclidean_ring}^'n::{mod_type}^'n::{mod_type}"
   shows "det A = 1 div (fst (echelon_form_of_det A euclid_ext2)) 
-  * setprod (\<lambda>i. snd (echelon_form_of_det A euclid_ext2) $ i $ i) (UNIV:: 'n set)"
-  by (rule det_echelon_form_of_det_setprod[OF is_bezout_ext_euclid_ext2])
+  * prod (\<lambda>i. snd (echelon_form_of_det A euclid_ext2) $ i $ i) (UNIV:: 'n set)"
+  by (rule det_echelon_form_of_det_prod[OF is_bezout_ext_euclid_ext2])
 
 end

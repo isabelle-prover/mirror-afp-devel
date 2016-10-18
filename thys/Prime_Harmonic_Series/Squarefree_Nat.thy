@@ -35,13 +35,13 @@ proof (cases "n = 0")
   case False
   def A \<equiv> "squarefree_part n" and s \<equiv> "square_part n"
   have "(\<Prod>A) = (\<Prod>p\<in>A. p ^ (multiplicity p n mod 2))"
-    by (intro setprod.cong) (auto simp: A_def squarefree_part_def elim!: oddE)
+    by (intro prod.cong) (auto simp: A_def squarefree_part_def elim!: oddE)
   also have "\<dots> = (\<Prod>p\<in>prime_factors n. p ^ (multiplicity p n mod 2))"
-    by (intro setprod.mono_neutral_left) (auto simp: A_def  squarefree_part_def)
+    by (intro prod.mono_neutral_left) (auto simp: A_def  squarefree_part_def)
   also from False have "\<dots> * s^2 = n"
-    by (simp add: s_def square_part_def setprod.distrib [symmetric] power_add [symmetric] 
+    by (simp add: s_def square_part_def prod.distrib [symmetric] power_add [symmetric] 
                   power_mult [symmetric] prime_factorization_nat [symmetric] algebra_simps
-                  setprod_power_distrib)
+                  prod_power_distrib)
   finally show "\<Prod>A * s^2 = n" .
 qed simp
 
@@ -58,7 +58,7 @@ lemma squarefree_part_dvd [simp]: "\<Prod>(squarefree_part n) dvd n"
   by (subst (2) squarefree_decompose [of n, symmetric]) simp
 
 lemma squarefree_part_dvd' [simp]: "p \<in> squarefree_part n \<Longrightarrow> p dvd n"
-  by (rule dvd_setprodD[OF _ squarefree_part_dvd]) simp_all
+  by (rule dvd_prodD[OF _ squarefree_part_dvd]) simp_all
 
 lemma square_part_dvd [simp]: "square_part n ^ 2 dvd n"
   by (subst (2) squarefree_decompose [of n, symmetric]) simp
@@ -125,7 +125,7 @@ proof -
   note subset = this prime
 
   have "\<Prod>A1 > 0" "\<Prod>A2 > 0" using subset(1)  prime_gt_0_nat 
-    by (auto intro!: setprod_pos dest: prime)
+    by (auto intro!: prod_pos dest: prime)
   from n have "s1 > 0" unfolding s1_def by simp
   from assms have "s2 \<noteq> 0" by (intro notI) simp
   hence "s2 > 0" by simp
@@ -151,7 +151,7 @@ proof -
   have "\<Prod>A2 = \<Prod>(squarefree_part n)"
     by (rule multiplicity_eq_nat) (insert pos eq'(2), auto simp: A1_def)
   with fin subset show "A2 = squarefree_part n" unfolding A1_def
-    by (intro setprod_prime_eq) auto
+    by (intro prod_prime_eq) auto
 qed
 
 lemma squarefree_decomposition_unique2':
@@ -163,7 +163,7 @@ lemma squarefree_decomposition_unique2':
   shows "A1 = A2" "s1 = s2"
 proof -
   from pos have n: "n > 0" using prime_gt_0_nat 
-    by (auto simp: n_def intro!: setprod_pos dest: subset)
+    by (auto simp: n_def intro!: prod_pos dest: subset)
   have "A1 = squarefree_part n" "s1 = square_part n" 
     by ((rule squarefree_decomposition_unique2[of n A1 s1], insert assms n, simp_all)[])+
   moreover have "A2 = squarefree_part n" "s2 = square_part n" 

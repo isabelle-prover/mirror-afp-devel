@@ -60,7 +60,7 @@ lemma ix_gt: "p \<in> sparsegrid dm lm \<Longrightarrow> d < dm \<Longrightarrow
 
 lemma \<Phi>_eq_0: assumes x: "\<exists>d<length p. x d < 0 \<or> 1 < x d" and p: "p \<in> sparsegrid dm lm" shows "\<Phi> p x = 0"
   unfolding \<Phi>_def
-proof (rule setprod_zero)
+proof (rule prod_zero)
   from x guess d ..
   with p[THEN ix_lt, of d] p[THEN ix_gt, of d] p
   show "\<exists>a\<in>{..<length p}. \<phi> (p ! a) (x a) = 0"
@@ -124,8 +124,8 @@ qed
 
 lemma l2_eq: "length a = length b \<Longrightarrow> l2 a b = (\<Prod>d<length a. l2_\<phi> (a!d) (b!d))"
   unfolding l2_def l2_\<phi>_def \<Phi>_def 
-  apply (simp add: setprod.distrib[symmetric])
-proof (rule product_sigma_finite.product_integral_setprod)
+  apply (simp add: prod.distrib[symmetric])
+proof (rule product_sigma_finite.product_integral_prod)
   show "product_sigma_finite (\<lambda>d. lborel)" ..
 qed (auto intro: integrable_\<phi>2)
 

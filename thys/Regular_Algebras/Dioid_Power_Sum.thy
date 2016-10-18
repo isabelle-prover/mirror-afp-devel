@@ -37,7 +37,7 @@ lemma power_inductr_var: "y \<cdot> x \<le> y \<Longrightarrow> y \<cdot> x\<^bs
   by (induct n, metis eq_refl mult_oner power.simps(1), metis mult.assoc mult_isor order_refl order_trans power.simps(2) power_commutes)
 
 definition powsum :: "'a \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a"  ("_\<^bsub>_\<^esub>\<^bsup>_\<^esup>" [101,50,50] 100) where
-  "powsum x m n = setsum (op ^ x) {m..n + m}"
+  "powsum x m n = sum (op ^ x) {m..n + m}"
 
 lemmas powsum_simps = powsum_def atLeastAtMostSuc_conv numerals
 
@@ -46,9 +46,9 @@ lemma powsum1 [simp]: "x\<^bsub>n\<^esub>\<^bsup>0\<^esup> = x\<^bsup>n\<^esup>"
   
 lemma powsum2: "x\<^bsub>n\<^esub>\<^bsup>Suc m\<^esup> = x\<^bsub>n\<^esub>\<^bsup>m \<^esup>+ x\<^bsup>n+Suc m\<^esup>"
 proof-
-  have "x\<^bsub>n\<^esub>\<^bsup>Suc m\<^esup> = setsum (op ^ x) {n..(Suc m)+n}"
+  have "x\<^bsub>n\<^esub>\<^bsup>Suc m\<^esup> = sum (op ^ x) {n..(Suc m)+n}"
     using powsum_def by blast
-  also have "... = setsum (op ^ x) {n..m+n} +  x\<^bsup>n+Suc m\<^esup>"
+  also have "... = sum (op ^ x) {n..m+n} +  x\<^bsup>n+Suc m\<^esup>"
     by (simp add: ab_semigroup_add_class.add.commute atLeastAtMostSuc_conv local.join.sup_commute)
   finally show ?thesis
     by (simp add: powsum_def)

@@ -29,7 +29,7 @@ imports
 begin
 
 lemma mod_div_equality_int: "(n :: int) div x * x = n - n mod x"
-  using mod_div_equality[of n x] by arith
+  using div_mult_mod_eq[of n x] by arith
 
 lemma log_pow_cancel[simp]: "a > 0 \<Longrightarrow> a \<noteq> 1 \<Longrightarrow> log a (a ^ b) = b" 
   by (metis monoid_mult_class.mult.right_neutral log_eq_one log_nat_power)
@@ -65,7 +65,7 @@ proof -
   let ?n = "?of_int n"
   def m \<equiv> "\<lfloor>r\<rfloor> mod n"
   let ?m = "?of_int m"
-  from mod_div_equality[of "floor r" n] have dm: "rhs * n + m = \<lfloor>r\<rfloor>" unfolding rhs_def m_def by simp
+  from div_mult_mod_eq[of "floor r" n] have dm: "rhs * n + m = \<lfloor>r\<rfloor>" unfolding rhs_def m_def by simp
   have mn: "m < n" and m0: "m \<ge> 0" using n m_def by auto
   def e \<equiv> "r - ?of_int \<lfloor>r\<rfloor>"
   have e0: "e \<ge> 0" unfolding e_def 
@@ -120,13 +120,13 @@ lemma divide_less_floor1: "n / y < of_int (floor (n / y)) + 1"
 context linordered_idom
 begin
 lemma sgn_int_pow[simp]: "sgn ((x :: 'a) ^ p) = sgn x ^ p"
-  by (induct p, auto simp: sgn_times)
+  by (induct p, auto simp: sgn_mult)
 
 lemma sgn_int_pow_if[simp]: assumes x: "(x :: 'a) \<noteq> 0"
   shows "sgn x ^ p = (if even p then 1 else sgn x)"
 proof (induct p, auto)
   show "sgn x * sgn x = 1" using x 
-  by (metis linorder_neqE_linordered_idom mult_eq_0_iff not_square_less_zero sgn_pos sgn_times)
+  by (metis linorder_neqE_linordered_idom mult_eq_0_iff not_square_less_zero sgn_pos sgn_mult)
 qed
 
 lemma compare_pow_le_iff: "p > 0 \<Longrightarrow> (x :: 'a) \<ge> 0 \<Longrightarrow> y \<ge> 0 \<Longrightarrow> (x ^ p \<le> y ^ p) = (x \<le> y)"

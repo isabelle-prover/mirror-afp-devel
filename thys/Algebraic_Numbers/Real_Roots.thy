@@ -79,18 +79,18 @@ proof (rule ccontr)
   also have "?r m \<ge> 1" using m by auto
   ultimately have x1: "abs x > 1" by arith
   have "rpoly p x = (\<Sum>i\<le>n. x ^ i * ?r (coeff p i))" 
-    by (subst eval_poly_as_setsum, auto simp: n_def)
+    by (subst eval_poly_as_sum, auto simp: n_def)
   also have "{.. n} = insert n {..< n}" by auto
   also have "(\<Sum>i\<in>insert n {..<n}. x ^ i * ?r (coeff p i)) 
     = x^n * ?r (coeff p n) + (\<Sum>i<n. x ^ i * ?r (coeff p i))"
-    by (subst setsum.insert_remove, auto)
+    by (subst sum.insert_remove, auto)
   finally have "rpoly p x = x^n + (\<Sum>i<n. x ^ i * ?r (coeff p i))" using mon unfolding n_def by auto
   from arg_cong[OF this, of abs, unfolded rt]
   have "abs x^n = abs (\<Sum>i<n. x ^ i * ?r (coeff p i))" by (auto simp: power_abs[symmetric])
   also have "\<dots> \<le> (\<Sum>i<n. abs x ^ i * abs (?r (coeff p i)))"
-    by (rule order.trans[OF setsum_abs], auto simp: abs_mult power_abs)
+    by (rule order.trans[OF sum_abs], auto simp: abs_mult power_abs)
   also have "\<dots> \<le> (\<Sum>i<n. abs x ^ i * ?r m')"
-  proof (rule setsum_mono)
+  proof (rule sum_mono)
     fix i
     have mem: "coeff p i \<in> insert 0 (set (coeffs p))" using range_coeff[of p] by auto
     hence "?r (abs (coeff p i)) \<le> ?r m'"
@@ -110,7 +110,7 @@ proof (rule ccontr)
       by (intro mult_mono, auto)
   qed
   also have "\<dots> \<le> (\<Sum>i<n. abs x ^ (n - 1) * ?r m')"
-    by (rule setsum_mono, rule mult_mono, insert x1 m', auto)
+    by (rule sum_mono, rule mult_mono, insert x1 m', auto)
   also have "\<dots> = (abs x ^ (n - 1) * ?r m') * (\<Sum>i<n. 1)"
     by auto
   also have "(\<Sum>i<n. (1 :: real)) = real_of_nat n" by simp
@@ -538,7 +538,7 @@ proof -
   have "{x. poly p x = 0} = {x. poly (\<Prod>(a, i)\<in>set pis. a ^ Suc i) x = 0}"
     unfolding p using c by auto
   also have "\<dots> = \<Union> ((\<lambda> p. {x. poly p x = 0}) ` fst ` set pis)" (is "_ = ?r")
-    by (subst poly_setprod_0, force+)
+    by (subst poly_prod_0, force+)
   finally have r: "{x. poly p x = 0} = ?r" .
   {
     fix p i

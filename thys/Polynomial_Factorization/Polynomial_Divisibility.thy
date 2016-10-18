@@ -55,18 +55,18 @@ lemma irreducible_dvd_pow: fixes p :: "'a poly"
   shows "p dvd q ^ n \<Longrightarrow> p dvd q"
   using irreducible_prime_elem[OF irr] by (rule prime_elem_dvd_power)
 
-lemma irreducible_dvd_setprod: fixes p :: "'a poly"
+lemma irreducible_dvd_prod: fixes p :: "'a poly"
   assumes irr: "irreducible p"
-  and dvd: "p dvd setprod f as"
+  and dvd: "p dvd prod f as"
   shows "\<exists> a \<in> as. p dvd f a"
 proof -
   from irr[unfolded irreducible_def] have deg: "degree p \<noteq> 0" by auto
   hence p1: "\<not> p dvd 1" unfolding dvd_def
-    by (metis degree_1 div_mult_self1_is_id div_poly_less linorder_neqE_nat mult_not_zero not_less0 zero_neq_one)
+    by (metis degree_1 nonzero_mult_div_cancel_left div_poly_less linorder_neqE_nat mult_not_zero not_less0 zero_neq_one)
   from dvd show ?thesis
   proof (induct as rule: infinite_finite_induct)
     case (insert a as)
-    hence "setprod f (insert a as) = f a * setprod f as" by auto
+    hence "prod f (insert a as) = f a * prod f as" by auto
     from irreducible_dvd_mult[OF irr insert(4)[unfolded this]]
     show ?case using insert(3) by auto
   qed (insert p1, auto)
@@ -79,7 +79,7 @@ lemma irreducible_dvd_prod_list: fixes p :: "'a poly"
 proof -
   from irr[unfolded irreducible_def] have deg: "degree p \<noteq> 0" by auto
   hence p1: "\<not> p dvd 1" unfolding dvd_def
-    by (metis degree_1 div_mult_self1_is_id div_poly_less linorder_neqE_nat mult_not_zero not_less0 zero_neq_one)
+    by (metis degree_1 nonzero_mult_div_cancel_left div_poly_less linorder_neqE_nat mult_not_zero not_less0 zero_neq_one)
   from dvd show ?thesis
   proof (induct as)
     case (Cons a as)

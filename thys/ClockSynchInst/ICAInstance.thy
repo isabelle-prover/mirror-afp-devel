@@ -124,7 +124,7 @@ lemma sum_abs_triangle_ineq:
 "finite S \<Longrightarrow>
   \<bar>\<Sum>l\<in>S. (f::'a \<Rightarrow> 'b::linordered_idom) l\<bar> <= (\<Sum>l\<in>S. \<bar>f l\<bar>)"
   (is "... \<Longrightarrow> ?P S")
-  by (rule setsum_abs)
+  by (rule sum_abs)
 
 lemma sum_le:
   "\<lbrakk>finite S ; \<forall> r\<in>S. f r <= b \<rbrakk>
@@ -136,10 +136,10 @@ proof(induct S rule: finite_induct)
 next
   fix F x 
   assume  finit: "finite F" and xnotinF: "x \<notin> F" and
-          HI1: "\<forall>r\<in>F. f r \<le> b \<Longrightarrow> setsum f F \<le> real (card F) * b"
+          HI1: "\<forall>r\<in>F. f r \<le> b \<Longrightarrow> sum f F \<le> real (card F) * b"
           and HI2: "\<forall>r\<in>insert x F. f r \<le> b"
   from HI1 HI2 and finit and xnotinF
-  have "setsum f (insert x F) <= b + real (card F) * b"
+  have "sum f (insert x F) <= b + real (card F) * b"
     by auto
   also 
   have "... = real (Suc (card  F)) * b"
@@ -166,7 +166,7 @@ proof-
   from hC have "C \<union> ({..<np}-C) = {..<np}" by auto
   ultimately
   show ?thesis
-    using setsum.union_disjoint[where A=C and B="{..<np} - C"]
+    using sum.union_disjoint[where A=C and B="{..<np} - C"]
     by auto
 qed
  
@@ -456,7 +456,7 @@ proof-
                     (\<Sum>l\<in>{..<np}. fiX g q l)\<bar> = 
     \<bar>(\<Sum>l\<in>{..<np}. fiX f p l -fiX g q l)\<bar>"
     (is "\<bar>?dif\<bar> = \<bar>?dif'\<bar>" )
-    by (simp add: setsum_subtractf)
+    by (simp add: sum_subtractf)
   also
   from abs_sum_np_ineq hC
   have " ... <=

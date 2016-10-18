@@ -28,8 +28,8 @@ lemma ListSum_compl2:
 lemmas ListSum_compl = ListSum_compl1 ListSum_compl2
 
 
-lemma ListSum_conv_setsum:
- "distinct xs \<Longrightarrow> ListSum xs f =  setsum f (set xs)"
+lemma ListSum_conv_sum:
+ "distinct xs \<Longrightarrow> ListSum xs f =  sum f (set xs)"
 by(induct xs) simp_all
 
 
@@ -57,7 +57,7 @@ lemma ListSum_disj_union:
   set C = set A \<union> set B  \<Longrightarrow> 
   set A \<inter> set B = {} \<Longrightarrow>
   (\<Sum>\<^bsub>a \<in> C\<^esub> (f a)) = (\<Sum>\<^bsub>a \<in> A\<^esub> f a) + (\<Sum>\<^bsub>a \<in> B\<^esub> (f a::nat))"
-by (simp add: ListSum_conv_setsum setsum.union_disjoint)
+by (simp add: ListSum_conv_sum sum.union_disjoint)
 
 
 lemma listsum_const[simp]: 

@@ -204,7 +204,7 @@ by (simp add: list_slice2_def nth_append list_slice_length list_slice_nth_length
 lemma list_slice2_nth_length_eq2: "
   \<lbrakk> length xs mod k > 0; m = length xs div k \<rbrakk> \<Longrightarrow> 
   length (list_slice2 xs k ! m) = length xs mod k"
-by (simp add: list_slice2_def list_slice_length nth_append mod_div_equality')
+by (simp add: list_slice2_def list_slice_length nth_append minus_div_mult_eq_mod [symmetric])
 
 lemma list_slice2_nth_nth_eq1: "
   \<lbrakk> m < length xs div k; n < k \<rbrakk> \<Longrightarrow> 
@@ -214,7 +214,7 @@ by (simp add: list_slice2_list_slice_nth list_slice_nth_nth)
 lemma list_slice2_nth_nth_eq2: "
   \<lbrakk> m = length xs div k; n < length xs mod k \<rbrakk> \<Longrightarrow> 
   (list_slice2 xs k) ! m ! n = xs ! (m * k + n)"
-by (simp add: mult.commute[of _ k] mult_div_cancel list_slice2_last)
+by (simp add: mult.commute[of _ k] minus_mod_eq_mult_div [symmetric] list_slice2_last)
 
 lemma list_slice2_nth_nth_rev: "
   n < length xs \<Longrightarrow> (list_slice2 xs k) ! (n div k) ! (n mod k) = xs ! n"

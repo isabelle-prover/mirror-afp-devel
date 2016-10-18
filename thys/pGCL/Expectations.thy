@@ -378,14 +378,14 @@ proof(rule bounded_byI)
   thus "P s * Q s \<le> 1" by(simp)
 qed
 
-lemma setsum_sound:
+lemma sum_sound:
   assumes sP: "\<forall>x\<in>S. sound (P x)"
   shows "sound (\<lambda>s. \<Sum>x\<in>S. P x s)"
 proof(rule soundI2)
   from sP show "bounded_by (\<Sum>x\<in>S. bound_of (P x)) (\<lambda>s. \<Sum>x\<in>S. P x s)"
-    by(auto intro!:setsum_mono)
+    by(auto intro!:sum_mono)
   from sP show "nneg (\<lambda>s. \<Sum>x\<in>S. P x s)"
-    by(auto intro!:setsum_nonneg)
+    by(auto intro!:sum_nonneg)
 qed
 
 subsection {* Unitary expectations *}
@@ -812,6 +812,6 @@ lemmas unitary_intros =
 
 lemmas sound_intros =
   mult_sound div_sound const_sound sound_o sound_sum
-  tminus_sound sc_sound exp_conj_sound setsum_sound
+  tminus_sound sc_sound exp_conj_sound sum_sound
 
 end

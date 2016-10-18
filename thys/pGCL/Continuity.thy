@@ -479,13 +479,13 @@ proof(intro ext, simp add:SetPC_def PC_def)
     by(simp)
   also from fsupp
   have "... = p x * a x ab P s + (\<Sum>x\<in>supp p - {x}. p x * a x ab P s)"
-    by(blast intro:setsum.insert)
+    by(blast intro:sum.insert)
   also from n1
   have "... = p x * a x ab P s + (1 - p x) * ((\<Sum>x\<in>supp p - {x}. p x * a x ab P s) / (1 - p x))"
     by(simp add:field_simps)
   also have "... = p x * a x ab P s +
                    (1 - p x) * ((\<Sum>y\<in>supp p - {x}. (p y / (1 - p x)) * a y ab P s))"
-    by(simp add:setsum_divide_distrib)
+    by(simp add:sum_divide_distrib)
   also have "... = p x * a x ab P s +
                    (1 - p x) * ((\<Sum>y\<in>supp p - {x}. dist_remove p x y * a y ab P s))"
     by(simp add:dist_remove_def)
@@ -593,12 +593,12 @@ lemma cts_wp_SetPC_const:
   assumes ca: "\<And>x. x \<in> (supp p) \<Longrightarrow> bd_cts (wp (a x))"
       and ha: "\<And>x. x \<in> (supp p) \<Longrightarrow> healthy (wp (a x))"
       and up: "unitary p"
-      and sump: "setsum p (supp p) \<le> 1"
+      and sump: "sum p (supp p) \<le> 1"
       and fsupp: "finite (supp p)"
   shows "bd_cts (wp (SetPC a (\<lambda>_. p)))"
 proof(cases "supp p = {}", simp add:supp_empty SetPC_def wp_def cts_bot)
   assume nesupp: "supp p \<noteq> {}"
-  from fsupp have "unitary p \<longrightarrow> setsum p (supp p) \<le> 1 \<longrightarrow> 
+  from fsupp have "unitary p \<longrightarrow> sum p (supp p) \<le> 1 \<longrightarrow> 
                    (\<forall>x\<in>supp p. bd_cts (wp (a x))) \<longrightarrow>
                    (\<forall>x\<in>supp p. healthy (wp (a x))) \<longrightarrow>
                    bd_cts (wp (SetPC a (\<lambda>_. p)))"
@@ -610,10 +610,10 @@ proof(cases "supp p = {}", simp add:supp_empty SetPC_def wp_def cts_bot)
     hence xin: "x \<in> supp p" by(auto)
     assume up: "unitary p" and ca: "\<forall>x\<in>supp p. bd_cts (wp (a x))"
        and ha: "\<forall>x\<in>supp p. healthy (wp (a x))"
-       and sump: "setsum p (supp p) \<le> 1"
+       and sump: "sum p (supp p) \<le> 1"
        and xni: "x \<notin> F"
     assume IH: "\<And>p. F = supp p \<Longrightarrow>
-                     unitary p \<longrightarrow> setsum p (supp p) \<le> 1 \<longrightarrow>
+                     unitary p \<longrightarrow> sum p (supp p) \<le> 1 \<longrightarrow>
                      (\<forall>x\<in>supp p. bd_cts (wp (a x))) \<longrightarrow>
                      (\<forall>x\<in>supp p. healthy (wp (a x))) \<longrightarrow>
                      bd_cts (wp (SetPC a (\<lambda>_. p)))"
@@ -623,25 +623,25 @@ proof(cases "supp p = {}", simp add:supp_empty SetPC_def wp_def cts_bot)
     from xin have nzp: "p x \<noteq> 0" by(simp add:supp_def)
 
     have xy_le_sum:
-      "\<And>y. y \<in> supp p \<Longrightarrow> y \<noteq> x \<Longrightarrow> p x + p y \<le> setsum p (supp p)"
+      "\<And>y. y \<in> supp p \<Longrightarrow> y \<noteq> x \<Longrightarrow> p x + p y \<le> sum p (supp p)"
     proof -
       fix y assume yin: "y \<in> supp p" and yne: "y \<noteq> x"
-      from up have "0 \<le> setsum p (supp p - {x,y})"
-        by(auto intro:setsum_nonneg)
-      hence "p x + p y \<le> p x + p y + setsum p (supp p - {x,y})"
+      from up have "0 \<le> sum p (supp p - {x,y})"
+        by(auto intro:sum_nonneg)
+      hence "p x + p y \<le> p x + p y + sum p (supp p - {x,y})"
         by(auto)
     also {
       from yin yne fsupp
-      have "p y + setsum p (supp p - {x,y}) = setsum p (supp p - {x})"
-        by(subst setsum.insert[symmetric], (blast intro!:setsum.cong)+)
+      have "p y + sum p (supp p - {x,y}) = sum p (supp p - {x})"
+        by(subst sum.insert[symmetric], (blast intro!:sum.cong)+)
       moreover
       from xin fsupp
-      have "p x + setsum p (supp p - {x}) = setsum p (supp p)"
-        by(subst setsum.insert[symmetric], (blast intro!:setsum.cong)+)
+      have "p x + sum p (supp p - {x}) = sum p (supp p)"
+        by(subst sum.insert[symmetric], (blast intro!:sum.cong)+)
       ultimately
-      have "p x + p y + setsum p (supp p - {x, y}) = setsum p (supp p)" by(simp)
+      have "p x + p y + sum p (supp p - {x, y}) = sum p (supp p)" by(simp)
     }
-    finally show "p x + p y \<le> setsum p (supp p)" .
+    finally show "p x + p y \<le> sum p (supp p)" .
     qed
 
     have n1p: "\<And>y. y \<in> supp p \<Longrightarrow> y \<noteq> x \<Longrightarrow> p x \<noteq> 1"
@@ -652,7 +652,7 @@ proof(cases "supp p = {}", simp add:supp_empty SetPC_def wp_def cts_bot)
       with yin have "0 < p y" by(auto simp:supp_def)
       hence "0 + p x < p y + p x" by(rule add_strict_right_mono)
       with px1 have "1 < p x + p y" by(simp)
-      also from yin yne have "p x + p y \<le> setsum p (supp p)"
+      also from yin yne have "p x + p y \<le> sum p (supp p)"
         by(rule xy_le_sum)
       finally show False using sump by(simp)
     qed
@@ -703,7 +703,7 @@ proof(cases "supp p = {}", simp add:supp_empty SetPC_def wp_def cts_bot)
         proof(cases "y=x", simp_all add:dist_remove_def,
               cases "y\<in>supp p", simp_all add:nsupp_zero)
           assume yne: "y \<noteq> x" and yin: "y \<in> supp p"
-          hence "p x + p y \<le> setsum p (supp p)"
+          hence "p x + p y \<le> sum p (supp p)"
             by(auto intro:xy_le_sum)
           also note sump
           finally have "p y \<le> 1 - p x" by(auto)
@@ -716,28 +716,28 @@ proof(cases "supp p = {}", simp add:supp_empty SetPC_def wp_def cts_bot)
       from xin have pxn0: "p x \<noteq> 0" by(auto simp:supp_def)
       from yin yne have pxn1: "p x \<noteq> 1" by(rule n1p)
 
-      from pxn0 pxn1 have "setsum (dist_remove p x) (supp (dist_remove p x)) =
-                           setsum (dist_remove p x) (supp p - {x})"
+      from pxn0 pxn1 have "sum (dist_remove p x) (supp (dist_remove p x)) =
+                           sum (dist_remove p x) (supp p - {x})"
         by(simp add:supp_dist_remove)
       also have "... = (\<Sum>y\<in>supp p - {x}. p y / (1 - p x))"
         by(simp add:dist_remove_def)
       also have "... = (\<Sum>y\<in>supp p - {x}. p y) / (1 - p x)"
-        by(simp add:setsum_divide_distrib)
+        by(simp add:sum_divide_distrib)
       also {
         from xin have "insert x (supp p) = supp p" by(auto)
-        with fsupp have "p x + (\<Sum>y\<in>supp p - {x}. p y) = setsum p (supp p)"
-          by(simp add:setsum.insert[symmetric])
+        with fsupp have "p x + (\<Sum>y\<in>supp p - {x}. p y) = sum p (supp p)"
+          by(simp add:sum.insert[symmetric])
         also note sump
-        finally have "setsum p (supp p - {x}) \<le> 1 - p x" by(auto)
+        finally have "sum p (supp p - {x}) \<le> 1 - p x" by(auto)
         moreover {
           from up have "p x \<le> 1" by(auto)
           with pxn1 have "p x < 1" by(auto)
           hence "0 < 1 - p x" by(auto)
         }
-        ultimately have "setsum p (supp p - {x}) / (1 - p x) \<le> 1"
+        ultimately have "sum p (supp p - {x}) / (1 - p x) \<le> 1"
           by(auto)
       }
-      finally have sdp: "setsum (dist_remove p x) (supp (dist_remove p x)) \<le> 1" .
+      finally have sdp: "sum (dist_remove p x) (supp (dist_remove p x)) \<le> 1" .
 
       from Fsupp udp sdp hra cra IH
       have cts_dr: "bd_cts (wp (SetPC a (\<lambda>_. dist_remove p x)))"
@@ -759,7 +759,7 @@ lemma cts_wp_SetPC:
   assumes ca: "\<And>x s. x \<in> (supp (p s)) \<Longrightarrow> bd_cts (wp (a x))"
       and ha: "\<And>x s. x \<in> (supp (p s)) \<Longrightarrow> healthy (wp (a x))"
       and up: "\<And>s. unitary (p s)"
-      and sump: "\<And>s. setsum (p s) (supp (p s)) \<le> 1"
+      and sump: "\<And>s. sum (p s) (supp (p s)) \<le> 1"
       and fsupp: "\<And>s. finite (supp (p s))"
   shows "bd_cts (wp (SetPC a p))"
 proof -

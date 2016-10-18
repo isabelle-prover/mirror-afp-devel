@@ -22,7 +22,7 @@ lemma scalar_mult_mat:
 lemma matrix_mul_mat:
   fixes A :: "'a::comm_semiring_1 ^ 'm ^ 'n"
   shows "A ** mat x = x *k A"
-  by (simp add: matrix_matrix_mult_def mat_def if_distrib setsum.If_cases matrix_scalar_mult_def vec_eq_iff ac_simps)
+  by (simp add: matrix_matrix_mult_def mat_def if_distrib sum.If_cases matrix_scalar_mult_def vec_eq_iff ac_simps)
 
 lemma mult_adjugate_det: "A ** adjugate A = mat (det A)"
   using mult_adjugate_det[of "from_vec A"]

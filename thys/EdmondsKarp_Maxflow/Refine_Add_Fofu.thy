@@ -121,15 +121,15 @@ begin
   end
 
 
-definition setsum_impl :: "('a \<Rightarrow> 'b::comm_monoid_add nres) \<Rightarrow> 'a set \<Rightarrow> 'b nres" where
-  "setsum_impl g S \<equiv> foreach S (\<lambda>x a. do { b \<leftarrow> g x; return (a+b)}) 0"
+definition sum_impl :: "('a \<Rightarrow> 'b::comm_monoid_add nres) \<Rightarrow> 'a set \<Rightarrow> 'b nres" where
+  "sum_impl g S \<equiv> foreach S (\<lambda>x a. do { b \<leftarrow> g x; return (a+b)}) 0"
 
-lemma setsum_imp_correct: 
+lemma sum_imp_correct: 
   assumes [simp]: "finite S"
   assumes [THEN order_trans, refine_vcg]: "\<And>x. x\<in>S \<Longrightarrow> gi x \<le> (spec r. r=g x)"
-  shows "setsum_impl gi S \<le> (spec r. r=setsum g S)"
-  unfolding setsum_impl_def
-  apply (refine_vcg FOREACH_rule[where I="\<lambda>it a. a = setsum g (S - it)"])
+  shows "sum_impl gi S \<le> (spec r. r=sum g S)"
+  unfolding sum_impl_def
+  apply (refine_vcg FOREACH_rule[where I="\<lambda>it a. a = sum g (S - it)"])
   apply (auto simp: it_step_insert_iff algebra_simps)
   done
 

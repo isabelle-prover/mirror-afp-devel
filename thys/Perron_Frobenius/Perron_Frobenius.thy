@@ -37,7 +37,7 @@ definition norm1 :: "'a :: real_normed_field ^ 'n \<Rightarrow> real" where
   "norm1 v = (\<Sum>i\<in>UNIV. norm (v $ i))"
 
 lemma norm1_ge_0: "norm1 v \<ge> 0" unfolding norm1_def
-  by (rule setsum_nonneg, auto)
+  by (rule sum_nonneg, auto)
 
 lemma norm1_0[simp]: "norm1 0 = 0" unfolding norm1_def by auto
 
@@ -46,21 +46,21 @@ lemma norm1_nonzero: assumes "v \<noteq> 0"
 proof -
   from `v \<noteq> 0` obtain i where vi: "v $ i \<noteq> 0" unfolding vec_eq_iff
     using Finite_Cartesian_Product.vec_eq_iff zero_index by force
-  have "setsum (\<lambda> i. norm (v $ i)) (UNIV - {i}) \<ge> 0"
-    by (rule setsum_nonneg, auto)
+  have "sum (\<lambda> i. norm (v $ i)) (UNIV - {i}) \<ge> 0"
+    by (rule sum_nonneg, auto)
   moreover have "norm (v $ i) > 0" using vi by auto
   ultimately
-  have "0 < norm (v $ i) + setsum (\<lambda> i. norm (v $ i)) (UNIV - {i})" by arith
+  have "0 < norm (v $ i) + sum (\<lambda> i. norm (v $ i)) (UNIV - {i})" by arith
   also have "\<dots> = norm1 v" unfolding norm1_def
-    by (simp add: setsum.remove)
+    by (simp add: sum.remove)
   finally show "norm1 v > 0" .
 qed
 
 lemma norm1_0_iff[simp]: "(norm1 v = 0) = (v = 0)"
   using norm1_0 norm1_nonzero by (cases "v = 0", force+)
 
-lemma norm1_scaleR[simp]: "norm1 (r *\<^sub>R v) = abs r * norm1 v" unfolding norm1_def setsum_distrib_left
-  by (rule setsum.cong, auto)
+lemma norm1_scaleR[simp]: "norm1 (r *\<^sub>R v) = abs r * norm1 v" unfolding norm1_def sum_distrib_left
+  by (rule sum.cong, auto)
 
 lemma abs_norm1[simp]: "abs (norm1 v) = norm1 v" using norm1_ge_0[of v] by arith
 
@@ -74,7 +74,7 @@ proof -
   thus "norm1 ?v = 1" by simp
   from norm1 nz have nz: "?v \<noteq> 0" by auto
   have "A *v ?v = (1 / norm1 v) *\<^sub>R (A *v v)"
-    by (auto simp: vec_eq_iff matrix_vector_mult_def real_vector.scale_setsum_right)
+    by (auto simp: vec_eq_iff matrix_vector_mult_def real_vector.scale_sum_right)
   also have "A *v v = ev *s v" unfolding id ..
   also have "(1 / norm1 v) *\<^sub>R (ev *s v) = ev *s ?v"
     by (auto simp: vec_eq_iff)
@@ -85,7 +85,7 @@ qed
 lemma norm1_cont[simp]: "isCont norm1 v" unfolding norm1_def[abs_def] by auto
 
 lemma norm1_ge_norm: "norm1 v \<ge> norm v" unfolding norm1_def norm_vec_def
-  by (rule setL2_le_setsum, auto)
+  by (rule setL2_le_sum, auto)
 
 text \<open>The following continuity lemmas have been proven with hints from Fabian Immler.\<close>
 
@@ -101,8 +101,8 @@ lemma tendsto_matrix_matrix_mult[tendsto_intros]:
 
 lemma matrix_vect_scaleR: "(A :: 'a :: real_normed_algebra_1 ^ 'n ^ 'k) *v (a *\<^sub>R v) = a *\<^sub>R (A *v v)"
   unfolding vec_eq_iff
-  by (auto simp: matrix_vector_mult_def scaleR_vec_def scaleR_setsum_right
-  intro!: setsum.cong)
+  by (auto simp: matrix_vector_mult_def scaleR_vec_def scaleR_sum_right
+  intro!: sum.cong)
 
 lemma (in inj_semiring_hom) map_vector_0: "(map_vector hom v = 0) = (v = 0)"
   unfolding vec_eq_iff map_vector_def by auto
@@ -189,7 +189,7 @@ lemma B_norm: "B $ i $ j = norm (A $ i $ j)"
 
 lemma mult_B_mono: assumes "\<And> i. v $ i \<ge> w $ i"
   shows "(B *v v) $ i \<ge> (B *v w) $ i" unfolding matrix_vector_mult_def vec_lambda_beta
-  by (rule setsum_mono, rule mult_left_mono[OF assms], unfold B_norm, auto)
+  by (rule sum_mono, rule mult_left_mono[OF assms], unfold B_norm, auto)
 
 
 private lemma non_emptyS: "S \<noteq> {}"
@@ -205,7 +205,7 @@ proof -
     also have "max_ev *s max_v = A *v max_v" using max_v_ev(1)[unfolded eigen_vector_def] by auto
     also have "norm ((A *v max_v) $ i) \<le> (B *v ?v) $ i"
       unfolding matrix_vector_mult_def vec_lambda_beta
-      by (rule setsum_norm_le, auto simp: norm_mult B_norm)
+      by (rule sum_norm_le, auto simp: norm_mult B_norm)
     finally have "sr * (?v $ i) \<le> (B *v ?v) $ i" .
   } note le = this
   have "?v \<in> S" unfolding S_def using nv le by auto
@@ -219,8 +219,8 @@ proof (rule convexI)
   let ?lin = "a *\<^sub>R v + b *\<^sub>R w"
   from * have 1: "norm1 v = 1" "norm1 w = 1" unfolding S_def by auto
   have "norm1 ?lin = a * norm1 v + b * norm1 w"
-    unfolding norm1_def setsum_distrib_left setsum.distrib[symmetric]
-  proof (rule setsum.cong)
+    unfolding norm1_def sum_distrib_left sum.distrib[symmetric]
+  proof (rule sum.cong)
     fix i :: 'n
     from * have "v $ i \<ge> 0" "w $ i \<ge> 0" unfolding S_def by auto
     thus "norm (?lin $ i) = a * norm (v $ i) + b * norm (w $ i)"
@@ -288,7 +288,7 @@ proof -
     {
       fix i
       have 1: "f v $ i \<ge> 0" unfolding fv c_def[symmetric] using c ge
-        by (auto simp: matrix_vector_mult_def setsum_distrib_left B_norm intro!: setsum_nonneg)
+        by (auto simp: matrix_vector_mult_def sum_distrib_left B_norm intro!: sum_nonneg)
       have id1: "\<And> i. (B *v f v) $ i = c * ((B *v (B *v v)) $ i)"
         unfolding f_def c_def matrix_vect_scaleR by simp
       have id3: "\<And> i. sr * f v $ i = c * ((B *v (sr *\<^sub>R v)) $ i)"

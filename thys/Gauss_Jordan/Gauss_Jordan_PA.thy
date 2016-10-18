@@ -91,7 +91,7 @@ thus "(\<Sum>k\<in>UNIV. mult_row (\<chi> ia ja. \<Sum>k\<in>UNIV. interchange_r
                      mult_row (\<chi> ia ja. \<Sum>k\<in>UNIV. interchange_rows (mat 1) i (LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n) $ ia $ k * A $ k $ ja) i
                      (1 / (\<Sum>k\<in>UNIV. mat 1 $ (LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n) $ k * A $ k $ j)) $ i $ ia"
 unfolding matrix_matrix_mult_def
-unfolding vec_lambda_beta unfolding interchange_rows_i using setsum.cong
+unfolding vec_lambda_beta unfolding interchange_rows_i using sum.cong
 by (metis (lifting, no_types) vec_lambda_beta)
 qed
 next

@@ -45,19 +45,19 @@ next
             using coeff_mult[of p k "degree q - n"] k coeff_smult[of c q "degree q -n"] by auto
           also have "...=(\<Sum>i\<le>degree p+degree k - n. T i)"
             using deg_eq unfolding T_def by auto 
-          also have "...=(\<Sum>i\<in>{0..<degree p}. T i) + setsum T {(degree p)}+ 
-                  setsum T {degree p + 1..degree p + degree k - n}" 
+          also have "...=(\<Sum>i\<in>{0..<degree p}. T i) + sum T {(degree p)}+ 
+                  sum T {degree p + 1..degree p + degree k - n}" 
             proof -
               def C\<equiv>"{{0..<degree p}, {degree p},{degree p+1..degree p+degree k-n}}"
               have "\<forall>A\<in>C. finite A" unfolding C_def by auto
               moreover have "\<forall>A\<in>C. \<forall>B\<in>C. A \<noteq> B \<longrightarrow> A \<inter> B = {}"
                 unfolding C_def by auto
-              ultimately have "setsum T (\<Union>C) = setsum (setsum T) C" 
-                using setsum.Union_disjoint by auto
+              ultimately have "sum T (\<Union>C) = sum (sum T) C" 
+                using sum.Union_disjoint by auto
               moreover have "\<Union>C={..degree p + degree k - n}" 
                 using `n \<le> degree k` unfolding C_def by auto
-              moreover have  "setsum (setsum T) C= setsum T {0..<degree p} + setsum T {(degree p)} + 
-                  setsum T {degree p + 1..degree p + degree k - n}"
+              moreover have  "sum (sum T) C= sum T {0..<degree p} + sum T {(degree p)} + 
+                  sum T {degree p + 1..degree p + degree k - n}"
                 proof -
                   have "{0..<degree p}\<noteq>{degree p}" 
                     by (metis atLeast0LessThan insertI1 lessThan_iff less_imp_not_eq)  
@@ -74,18 +74,18 @@ next
             proof -
               have "\<forall>x\<in>{degree p + 1..degree p + degree k - n}. T x=0" 
                 using coeff_eq_0[of p] unfolding T_def by simp
-              hence "setsum T {degree p + 1..degree p + degree k - n}=0" by auto
+              hence "sum T {degree p + 1..degree p + degree k - n}=0" by auto
               moreover have "T (degree p)=coeff k (degree k - n)"
                 using monic unfolding T_def lead_coeff_def by auto
               ultimately show ?thesis by auto
             qed
-          finally have c_coeff: "c * coeff q (degree q - n) = setsum T {0..<degree p} 
+          finally have c_coeff: "c * coeff q (degree q - n) = sum T {0..<degree p} 
               + coeff k (degree k - n)" .
           show ?case
           proof (cases "n = 0")
             assume "n \<noteq> 0"
-            have "c dvd setsum T {0..<degree p}" 
-            proof (rule dvd_setsum)
+            have "c dvd sum T {0..<degree p}" 
+            proof (rule dvd_sum)
               fix i assume i:"i \<in> {0..<degree p}"
               hence "(n+i-degree p)\<le>degree k" using `n \<le> degree k` by auto
               moreover have "n + i - degree p <n" using i `n\<noteq>0` by auto 
@@ -96,7 +96,7 @@ next
                   le_diff_conv add.commute ordered_cancel_comm_monoid_diff_class.diff_diff_right)
               thus "c dvd T i" unfolding T_def by auto
             qed
-            moreover have "c dvd setsum T {0..<degree p} + coeff k (degree k - n)"
+            moreover have "c dvd sum T {0..<degree p} + coeff k (degree k - n)"
               by (subst c_coeff [symmetric]) simp
             ultimately show ?case by (subst (asm) dvd_add_right_iff)
           next

@@ -40,17 +40,17 @@ proof (cases n)
   hence m: "Suc m = n" by simp
   have "(\<Sum>r<n. T (of_nat r + x)) = 
           (\<Sum>r<Suc m. 1 / (2 * real r + 2 * x)) + (\<Sum>r<n. 1 / (2 * real (Suc r) + 2 * x))"
-    unfolding m by (simp add: T_def setsum.distrib algebra_simps)
+    unfolding m by (simp add: T_def sum.distrib algebra_simps)
   also have "(\<Sum>r<Suc m. 1 / (2 * real r + 2 * x)) = 
                1/(2*x) + (\<Sum>r<m. 1 / (2 * real (Suc r) + 2 * x))" (is "_ = ?a + ?S")
-    by (subst setsum_lessThan_Suc_shift) simp
+    by (subst sum_lessThan_Suc_shift) simp
   also have "(\<Sum>r<n. 1 / (2 * real (Suc r) + 2 * x)) = 
                ?S + 1 / (2*(real m + x + 1))" (is "_ = _ + ?b") by (simp add: Suc)
   also have "?a + ?S + (?S + ?b) = 2*?S + ?a + ?b" by (simp add: add_ac)
   also have "2 * ?S = (\<Sum>r=0..<m. 1 / (real (Suc r) + x))" 
-    unfolding setsum_distrib_left by (intro setsum.cong) (auto simp add: divide_simps)
+    unfolding sum_distrib_left by (intro sum.cong) (auto simp add: divide_simps)
   also have "(\<Sum>r=0..<m. 1 / (real (Suc r) + x)) = (\<Sum>r=Suc 0..<Suc m. 1 / (real r + x))"
-    by (subst setsum.atLeast_Suc_lessThan_Suc_shift) simp_all
+    by (subst sum.atLeast_Suc_lessThan_Suc_shift) simp_all
   also have "\<dots> = (\<Sum>r=1..<n. 1 / (real r + x))" unfolding m by simp
   also have "\<dots> + ?a + ?b = S' n x" by (simp add: S'_def Suc)
   finally show ?thesis ..
@@ -181,7 +181,7 @@ proof -
       using x by (simp add: S'_def c_def field_simps)
     also have "1/x + (\<Sum>r=1..<n. inverse (real r + x)) = (\<Sum>r<n. inverse (real r + x))"
       unfolding lessThan_atLeast0 using n 
-      by (subst (2) setsum_head_upt_Suc) (simp_all add: field_simps)
+      by (subst (2) sum_head_upt_Suc) (simp_all add: field_simps)
     finally show "1 / (2 * (x + real n)) = c n - (ln (real n) - S' n x - 1/(2*x))" by simp
   qed
   moreover have "(\<lambda>n. 1 / (2 * (x + real n))) \<longlonglongrightarrow> 0"
@@ -210,9 +210,9 @@ next
   also have "\<dots> = (\<Sum>r<n. ln (real r + x + 1) - ln (real r + x) + D (real r + x))"
     by (simp add: D_def)
   also have "\<dots> = (\<Sum>r<n. ln (real (Suc r) + x) - ln (real r + x)) + p n x"
-    using False by (simp add: setsum.distrib add_ac p_def)
+    using False by (simp add: sum.distrib add_ac p_def)
   also have "(\<Sum>r<n. ln (real (Suc r) + x) - ln (real r + x)) = ln (real n + x) - ln x"
-    by (subst setsum_lessThan_telescope) simp_all
+    by (subst sum_lessThan_telescope) simp_all
   finally show ?thesis .
 qed
 
@@ -288,7 +288,7 @@ text \<open>
 \<close>
 private lemma p_ge_0: "x > 0 \<Longrightarrow> p n x \<ge> 0"
   using stirling_trapezium[of "real n + x" for n]
-  by (auto simp add: p_def intro!: setsum_nonneg)
+  by (auto simp add: p_def intro!: sum_nonneg)
 
 private lemma P_ge_0: "x > 0 \<Longrightarrow> P x \<ge> 0"
   by (rule tendsto_lowerbound[OF p_LIMSEQ]) 
@@ -302,9 +302,9 @@ proof -
     by (simp add: p_def)
   also have "\<dots> \<le> (\<Sum>r<n. 1/(12*(real r + x)^2) - 1/(12 * (real (Suc r) + x)^2))"
     using stirling_trapezium[of "real r + x" for r] assms 
-    by (intro setsum_mono) (simp add: add_ac)
+    by (intro sum_mono) (simp add: add_ac)
   also have "\<dots> = 1 / (12 * x\<^sup>2) - 1 / (12 * (real n + x)\<^sup>2)"
-    by (subst setsum_lessThan_telescope') simp
+    by (subst sum_lessThan_telescope') simp
   also have "\<dots> \<le> 1 / (12 * x^2)" by simp
   finally show ?thesis .
 qed
@@ -540,30 +540,30 @@ proof -
 
   have p_0 [simp]: "p 0 = 1" by (simp add: p_def)
   have p_Suc: "p (Suc n) = p n * (4 * real (Suc n)^2) / (4 * real (Suc n)^2 - 1)"
-    for n unfolding p_def by (subst setprod_nat_ivl_Suc') simp_all
+    for n unfolding p_def by (subst prod_nat_ivl_Suc') simp_all
   have p: "p = (\<lambda>n. 16 ^ n * fact n ^ 4 / (fact (2 * n))\<^sup>2 / (2 * real n + 1))"
   proof
     fix n :: nat
     have "p n = (\<Prod>k=1..n. (2*real k)^2 / (2*real k - 1) / (2 * real k + 1))"
-      unfolding p_def by (intro setprod.cong refl) (simp add: field_simps power2_eq_square)
+      unfolding p_def by (intro prod.cong refl) (simp add: field_simps power2_eq_square)
     also have "\<dots> = (\<Prod>k=1..n. (2*real k)^2 / (2*real k - 1)) / (\<Prod>k=1..n. (2 * real (Suc k) - 1))"
-      by (simp add: setprod_dividef setprod.distrib add_ac)
+      by (simp add: prod_dividef prod.distrib add_ac)
     also have "(\<Prod>k=1..n. (2 * real (Suc k) - 1)) = (\<Prod>k=Suc 1..Suc n. (2 * real k - 1))"
-      by (subst setprod.atLeast_Suc_atMost_Suc_shift) simp_all
+      by (subst prod.atLeast_Suc_atMost_Suc_shift) simp_all
     also have "\<dots> = (\<Prod>k=1..n. (2 * real k - 1)) * (2 * real n + 1)"
-      by (induction n) (simp_all add: setprod_nat_ivl_Suc')
+      by (induction n) (simp_all add: prod_nat_ivl_Suc')
     also have "(\<Prod>k = 1..n. (2 * real k)\<^sup>2 / (2 * real k - 1)) / \<dots> =
                  (\<Prod>k = 1..n. (2 * real k)^2 / (2 * real k - 1)^2) / (2 * real n + 1)"
-      unfolding power2_eq_square by (simp add: setprod.distrib setprod_dividef)
+      unfolding power2_eq_square by (simp add: prod.distrib prod_dividef)
     also have "(\<Prod>k = 1..n. (2 * real k)^2 / (2 * real k - 1)^2) =
                  (\<Prod>k = 1..n. (2 * real k)^4 / ((2*real k)*(2 * real k - 1))^2)"
-      by (intro setprod.cong refl) 
+      by (intro prod.cong refl) 
          (simp add: divide_simps, (simp add: field_simps power2_eq_square eval_nat_numeral))
     also have "\<dots> = 16^n * fact n^4 / (\<Prod>k=1..n. (2*real k) * (2*real k - 1))^2"
-      by (simp add: setprod.distrib setprod_dividef fact_setprod
-            setprod_power_distrib [symmetric] setprod_constant)
+      by (simp add: prod.distrib prod_dividef fact_prod
+            prod_power_distrib [symmetric] prod_constant)
     also have "(\<Prod>k=1..n. (2*real k) * (2*real k - 1)) = fact (2*n)"
-      by (induction n) (simp_all add: algebra_simps setprod_nat_ivl_Suc')
+      by (induction n) (simp_all add: algebra_simps prod_nat_ivl_Suc')
     finally show "p n = 16 ^ n * fact n ^ 4 / (fact (2 * n))\<^sup>2 / (2 * real n + 1)" .
   qed
 

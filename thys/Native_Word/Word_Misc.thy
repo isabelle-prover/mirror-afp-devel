@@ -137,7 +137,7 @@ proof -
   have F8: "\<forall>(w::'a word) (v::int) u::int. word_of_int u + word_of_int v * w = word_of_int (u + v * sint w)"
     by (metis word_sint.Rep_inverse wi_hom_syms(1) wi_hom_syms(3))
   have "\<exists>u. u = - sint b \<and> word_of_int (sint a mod u + - (- u * (sint a div u))) = a"
-    using F5 by (metis minus_minus word_sint.Rep_inverse' mult_minus_left add.commute zmod_zdiv_equality)
+    using F5 by (metis minus_minus word_sint.Rep_inverse' mult_minus_left add.commute mult_div_mod_eq [symmetric])
   hence "word_of_int (sint a mod - sint b + - (sint b * (sint a div - sint b))) = a" by (metis equation_minus_iff)
   hence "word_of_int (sint a mod - sint b) + word_of_int (- (sint a div - sint b)) * b = a"
     using F8 by(metis mult.commute mult_minus_left)
@@ -150,7 +150,7 @@ proof -
     proof(cases "sint b < 0")
       case True
       with a show ?thesis
-        by simp (metis F7 F8 eq minus_equation_iff minus_mult_minus mod_div_equality3)
+        by simp (metis F7 F8 eq minus_equation_iff minus_mult_minus mod_div_mult_eq)
     next
       case False
       from eq have "word_of_int (- (- sint a div sint b)) * b + word_of_int (- (- sint a mod sint b)) = a"
@@ -165,7 +165,7 @@ proof -
       with a eq show ?thesis by simp
     next
       case False with a show ?thesis
-        by simp (metis wi_hom_add wi_hom_mult add.commute mult.commute word_sint.Rep_inverse add.commute zmod_zdiv_equality)
+        by simp (metis wi_hom_add wi_hom_mult add.commute mult.commute word_sint.Rep_inverse add.commute mult_div_mod_eq [symmetric])
     qed
   qed
 qed
@@ -200,27 +200,27 @@ lemma div_half_nat:
 proof -
   let ?q = "2 * (x div 2 div y)"
   have q: "?q = x div y - x div y mod 2"
-    by(metis div_mult2_eq mult.commute mult_div_cancel)
+    by(metis div_mult2_eq mult.commute minus_mod_eq_mult_div [symmetric])
   let ?r = "x - ?q * y"
   have r: "?r = x mod y + x div y mod 2 * y"
-    by(simp add: q diff_mult_distrib div_mod_equality')(metis diff_diff_cancel mod_less_eq_dividend mod_mult2_eq add.commute mult.commute)
+    by(simp add: q diff_mult_distrib minus_mod_eq_div_mult [symmetric])(metis diff_diff_cancel mod_less_eq_dividend mod_mult2_eq add.commute mult.commute)
 
   show ?thesis
   proof(cases "y \<le> x - ?q * y")
     case True
     hence "x div y mod 2 \<noteq> 0" unfolding r
-      by(metis Divides.mod_div_equality' True assms diff_is_0_eq div_le_mono mod_by_0 mod_div_trivial mod_self mod_simps(1) mult_div_cancel q)
+      by(metis minus_div_mult_eq_mod [symmetric] True assms diff_is_0_eq div_le_mono mod_by_0 mod_div_trivial mod_self mod_simps(1) minus_mod_eq_mult_div [symmetric] q)
     hence "x div y = ?q + 1" unfolding q
       by(metis le_add_diff_inverse mod_2_not_eq_zero_eq_one_nat mod_less_eq_dividend add.commute)
     moreover hence "x mod y = ?r - y"
-      by simp(metis Divides.mod_div_equality' diff_commute diff_diff_left mult_Suc)
+      by simp(metis minus_div_mult_eq_mod [symmetric] diff_commute diff_diff_left mult_Suc)
     ultimately show ?thesis using True by(simp add: Let_def)
   next
     case False
     hence "x div y mod 2 = 0" unfolding r
       by(simp add: not_le)(metis Nat.add_0_right assms div_less div_mult_self2 mod_div_trivial mult.commute)
     hence "x div y = ?q" unfolding q by simp
-    moreover hence "x mod y = ?r" by (metis mod_div_equality')
+    moreover hence "x mod y = ?r" by (metis minus_div_mult_eq_mod [symmetric])
     ultimately show ?thesis using False by(simp add: Let_def)
   qed
 qed
@@ -242,10 +242,10 @@ by (metis of_nat_inverse of_nat_numeral uno_simps(2) word_of_nat zdiv_int of_nat
   from assms have "m \<noteq> 0" using m by -(rule notI, simp)
 
   from n have "2 * (n div 2 div m) < 2 ^ len_of TYPE('a)"
-    by(metis mult.commute div_mult2_eq mult_div_cancel less_imp_diff_less of_nat_inverse unat_lt2p uno_simps(2))
+    by(metis mult.commute div_mult2_eq minus_mod_eq_mult_div [symmetric] less_imp_diff_less of_nat_inverse unat_lt2p uno_simps(2))
   moreover
   have "2 * (n div 2 div m) * m < 2 ^ len_of TYPE('a)" using n unfolding div_mult2_eq[symmetric]
-    by(subst (2) mult.commute)(simp add: div_mod_equality' diff_mult_distrib mult_div_cancel div_mult2_eq)
+    by(subst (2) mult.commute)(simp add: minus_mod_eq_div_mult [symmetric] diff_mult_distrib minus_mod_eq_mult_div [symmetric] div_mult2_eq)
   moreover have "2 * (n div 2 div m) * m \<le> n"
     by(metis div_mult2_eq div_mult_le mult.assoc mult.commute)
   ultimately

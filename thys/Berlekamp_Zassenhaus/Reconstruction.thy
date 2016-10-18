@@ -593,7 +593,7 @@ proof -
         from True have dvd: "vb dvd ?luu" by simp
         from dvd_smult_int[OF lu0 this] have ppu: "pp_vb dvd u" unfolding defs by simp
         hence u: "u = pp_vb * u'" unfolding u'_def
-          by (metis dvdE mult_eq_0_iff nonzero_mult_divide_cancel_left)
+          by (metis dvdE mult_eq_0_iff nonzero_mult_div_cancel_left)
         hence uu': "u' dvd u" unfolding dvd_def by auto
         have f: "f = u' * prod_list ?res'" using f u by auto
         let ?fact = "smult lu (prod_mset (mset ws))" 

@@ -40,7 +40,7 @@ lemma three_step_phase_Suc:
 lemma three_step2_phase_Suc:
   "three_step r = 2 \<Longrightarrow> (3 * (Suc (three_phase r)) - 1) = r"
   apply(simp add: three_step_def three_phase_def)
-  by (metis add_2_eq_Suc' mod_div_equality2)
+  by (metis add_2_eq_Suc' mult_div_mod_eq)
 
 lemma three_stepE:
   "\<lbrakk> three_step r = 0 \<Longrightarrow> P; three_step r = 1 \<Longrightarrow> P; three_step r = 2 \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"

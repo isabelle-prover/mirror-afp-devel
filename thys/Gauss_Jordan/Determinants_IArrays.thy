@@ -222,10 +222,10 @@ proof -
 let ?f="(\<lambda>i. snd (Gauss_Jordan_det_P_iarrays (matrix_to_iarray A)) !! i !! i)"
 have *: "fst (Gauss_Jordan_det_P A) = fst (Gauss_Jordan_det_P_iarrays (matrix_to_iarray A))" 
   unfolding matrix_to_iarray_fst_Gauss_Jordan_det_P ..
-  have "prod_list (map ?f [0..<nrows_iarray (matrix_to_iarray A)]) = setprod ?f (set [0..<nrows_iarray (matrix_to_iarray A)])"
-    by (metis (no_types, lifting) distinct_upt setprod.distinct_set_conv_list)
+  have "prod_list (map ?f [0..<nrows_iarray (matrix_to_iarray A)]) = prod ?f (set [0..<nrows_iarray (matrix_to_iarray A)])"
+    by (metis (no_types, lifting) distinct_upt prod.distinct_set_conv_list)
 also have "... = (\<Prod>i\<in>UNIV. snd (Gauss_Jordan_det_P A) $ i $ i)"
-  proof (rule setprod.reindex_cong[of "to_nat::('n=>nat)"])
+  proof (rule prod.reindex_cong[of "to_nat::('n=>nat)"])
     show "inj (to_nat::('n=>nat))" by (metis strict_mono_imp_inj_on strict_mono_to_nat)
     show "set [0..<nrows_iarray (matrix_to_iarray A)] = range (to_nat::'n=>nat)"
     unfolding nrows_eq_card_rows using bij_to_nat[where ?'a='n]

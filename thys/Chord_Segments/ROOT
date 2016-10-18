@@ -1,0 +1,11 @@
+chapter AFP
+
+session Chord_Segments (AFP) = "HOL-Analysis" +
+  options [timeout=100]
+  theories [document = false]
+    "../Triangle/Triangle"
+  theories
+    Chord_Segments
+  document_files
+    "root.bib"
+    "root.tex"

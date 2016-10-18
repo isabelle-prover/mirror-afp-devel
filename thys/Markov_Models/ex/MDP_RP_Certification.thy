@@ -89,7 +89,7 @@ lemma lookup_nonneg:
   apply force
   done
 
-lemma sparse_mult_eq_setsum_lookup:
+lemma sparse_mult_eq_sum_lookup:
   fixes xs :: "(nat \<times> 'a::comm_semiring_1) list"
   assumes "list_all (\<lambda>(n, x). n < M) xs" "distinct (map fst xs)"
   shows "sparse_mult xs y = (\<Sum>i<M. lookup 0 xs i * y !! i)"
@@ -97,19 +97,19 @@ proof -
   from `distinct (map fst xs)` have "distinct xs" "inj_on fst (set xs)"
     by (simp_all add: distinct_map)
   then have "sparse_mult xs y = (\<Sum>x\<in>set xs. snd x * y !! fst x)"
-    by (auto intro!: setsum.cong simp add: sparse_mult_def sum_list_distinct_conv_setsum_set)
+    by (auto intro!: sum.cong simp add: sparse_mult_def sum_list_distinct_conv_sum_set)
   also have "\<dots> = (\<Sum>x\<in>set xs. lookup 0 xs (fst x) * y !! fst x)"
-    by (intro setsum.cong refl arg_cong2[where f="op *"]) (simp add: lookup_in_set assms)
+    by (intro sum.cong refl arg_cong2[where f="op *"]) (simp add: lookup_in_set assms)
   also have "\<dots> = (\<Sum>x\<in>fst ` set xs. lookup 0 xs x * y !! x)"
-    using `inj_on fst (set xs)` by (simp add: setsum.reindex)
+    using `inj_on fst (set xs)` by (simp add: sum.reindex)
   also have "\<dots> = (\<Sum>x<M. lookup 0 xs x * y !! x)"
     using assms(1)
-    by (intro setsum.mono_neutral_cong_left)
+    by (intro sum.mono_neutral_cong_left)
        (auto simp: list_all_iff lookup_eq_map_of map_of_eq_None_iff[THEN iffD2])
   finally show ?thesis .
 qed
 
-lemma sum_list_eq_setsum_lookup:
+lemma sum_list_eq_sum_lookup:
   fixes xs :: "(nat \<times> 'a::comm_semiring_1) list"
   assumes "list_all (\<lambda>(n, x). n < M) xs" "distinct (map fst xs)"
   shows "sum_list (map snd xs) = (\<Sum>i<M. lookup 0 xs i)"
@@ -117,14 +117,14 @@ proof -
   from `distinct (map fst xs)` have "distinct xs" "inj_on fst (set xs)"
     by (simp_all add: distinct_map)
   then have "sum_list (map snd xs) = (\<Sum>x\<in>set xs. snd x)"
-    by (auto intro!: setsum.cong simp add: sparse_mult_def sum_list_distinct_conv_setsum_set)
+    by (auto intro!: sum.cong simp add: sparse_mult_def sum_list_distinct_conv_sum_set)
   also have "\<dots> = (\<Sum>x\<in>set xs. lookup 0 xs (fst x))"
-    by (intro setsum.cong refl arg_cong2[where f="op *"]) (simp add: lookup_in_set assms)
+    by (intro sum.cong refl arg_cong2[where f="op *"]) (simp add: lookup_in_set assms)
   also have "\<dots> = (\<Sum>x\<in>fst ` set xs. lookup 0 xs x)"
-    using `inj_on fst (set xs)` by (simp add: setsum.reindex)
+    using `inj_on fst (set xs)` by (simp add: sum.reindex)
   also have "\<dots> = (\<Sum>x<M. lookup 0 xs x)"
     using assms(1)
-    by (intro setsum.mono_neutral_cong_left)
+    by (intro sum.mono_neutral_cong_left)
        (auto simp: list_all_iff lookup_eq_map_of map_of_eq_None_iff[THEN iffD2])
   finally show ?thesis .
 qed
@@ -185,7 +185,7 @@ lemma valid_mdp_rpD:
 lemma valid_mdp_rp_sparse_mult:
   assumes "valid_mdp_rp mdp" "i < state_count mdp" "ds \<in> set (distrs mdp !! i)"
   shows "sparse_mult ds y = (\<Sum>i<state_count mdp. lookup 0 ds i * y !! i)"
-  using valid_mdp_rpD(2,5)[OF assms] by (intro sparse_mult_eq_setsum_lookup) (auto simp: list_all_iff)
+  using valid_mdp_rpD(2,5)[OF assms] by (intro sparse_mult_eq_sum_lookup) (auto simp: list_all_iff)
 
 lemma valid_sub_certD:
   assumes "valid_mdp_rp mdp" "valid_sub_cert mdp c ord check" "i < state_count mdp"
@@ -233,8 +233,8 @@ proof (auto split: if_split_asm simp del: IArray.sub_def)
   show "(\<integral>\<^sup>+ x. ennreal (real_of_rat (lookup 0 D x)) \<partial>count_space UNIV) = 1"
     using valid_mdp_rpD(2,3,4,5)[OF rp n D]
     apply (subst nn_integral_count_space'[of "{..< state_count mdp}"])
-    apply (auto intro: nn lookup_not_in_set simp: of_rat_setsum[symmetric] lookup_nonneg)
-    apply (subst sum_list_eq_setsum_lookup[symmetric])
+    apply (auto intro: nn lookup_not_in_set simp: of_rat_sum[symmetric] lookup_nonneg)
+    apply (subst sum_list_eq_sum_lookup[symmetric])
     apply (auto simp: list_all_iff lookup_eq_map_of split: option.split)
     done
 next
@@ -282,7 +282,7 @@ proof -
     with valid_sub_certD(4)[OF `valid_mdp_rp mdp` pos, of s "distrs mdp !! s ! j"] `s \<in> S1`
          valid_mdp_rp_sparse_mult[OF `valid_mdp_rp mdp`, of s "distrs mdp !! s ! j" "solution (pos_cert c)"]
     show "(\<Sum>t\<in>S. pmf D t * ?x t) \<le> ?x s"
-      by (simp add: of_rat_mult[symmetric] of_rat_setsum[symmetric] of_rat_less_eq j)
+      by (simp add: of_rat_mult[symmetric] of_rat_sum[symmetric] of_rat_less_eq j)
   next
     fix s a assume "s \<in> S2" then show "?x s = 1"
       using valid_sub_certD[OF `valid_mdp_rp mdp` pos] by simp
@@ -340,7 +340,7 @@ proof -
     with valid_sub_certD(4)[OF `valid_mdp_rp mdp` neg, of s "distrs mdp !! s ! j"] `s \<in> S1`
          valid_mdp_rp_sparse_mult[OF `valid_mdp_rp mdp`, of s "distrs mdp !! s ! j" "solution (neg_cert c)"]
     show "?x s \<le> (\<Sum>t\<in>S. pmf D t * ?x t)"
-      by (simp add: of_rat_mult[symmetric] of_rat_setsum[symmetric] of_rat_less_eq j)
+      by (simp add: of_rat_mult[symmetric] of_rat_sum[symmetric] of_rat_less_eq j)
   next
     fix s a assume "s \<in> S2" then show "?x s = 1"
       using valid_sub_certD[OF `valid_mdp_rp mdp` neg] by simp

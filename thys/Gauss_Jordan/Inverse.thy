@@ -176,29 +176,29 @@ proof (cases "to_nat j < k")
                     proof (unfold matrix_left_invertible_independent_columns, simp, 
                         rule exI[of _ "\<lambda>i. (if i < j then column j (Gauss_Jordan A) $ i else if i=j then -1 else 0)"], rule conjI)
                       show "(\<Sum>i\<in>UNIV. (if i < j then column j (Gauss_Jordan A) $ i else if i=j then -1 else 0) *s column i (Gauss_Jordan A)) = 0"                        
-                        proof (unfold vec_eq_iff setsum_component, auto)
+                        proof (unfold vec_eq_iff sum_component, auto)
                           --"We write the column j in a linear combination of the previous ones, which is a contradiction (the matrix wouldn't be invertible)"
                             let ?f="\<lambda>i. (if i < j then column j (Gauss_Jordan A) $ i else if i=j then -1 else 0)"
                             fix i
                             let ?g="(\<lambda>x. ?f x * column x (Gauss_Jordan A) $ i)"
-                            show "setsum ?g UNIV = 0"
+                            show "sum ?g UNIV = 0"
                               proof (cases "i<j")
                               case True note i_less_j = True
-                              have setsum_rw: "setsum ?g (UNIV - {i}) = ?g j + setsum ?g ((UNIV - {i}) - {j})"
-                                proof (rule setsum.remove)
+                              have sum_rw: "sum ?g (UNIV - {i}) = ?g j + sum ?g ((UNIV - {i}) - {j})"
+                                proof (rule sum.remove)
                                    show "finite (UNIV - {i})" using finite_code by simp
                                    show "j \<in> UNIV - {i}" using True by blast
                                 qed                                
-                              have setsum_g0: "setsum ?g (UNIV - {i} - {j}) = 0"
-                                proof (rule setsum.neutral, auto)
+                              have sum_g0: "sum ?g (UNIV - {i} - {j}) = 0"
+                                proof (rule sum.neutral, auto)
                                 fix a
                                 assume a_not_j: "a \<noteq> j" and a_not_i: "a \<noteq> i" and a_less_j: "a < j" and column_a_not_zero: "column a (Gauss_Jordan A) $ i \<noteq> 0"
                                 have "Gauss_Jordan A $ i $ a = 0" using id_k unfolding id_upt_k_def using a_less_j j_eq_k using i_less_j a_not_i to_nat_mono by blast
                                 thus "column j (Gauss_Jordan A) $ a = 0" using column_a_not_zero unfolding column_def by simp --"Contradiction"
                                 qed
-                              have "setsum ?g UNIV = ?g i + setsum ?g (UNIV - {i})" by (rule setsum.remove, simp_all)
-                              also have "... = ?g i + ?g j + setsum ?g (UNIV - {i} - {j})" unfolding setsum_rw by auto
-                              also have "... = ?g i + ?g j" unfolding setsum_g0 by simp
+                              have "sum ?g UNIV = ?g i + sum ?g (UNIV - {i})" by (rule sum.remove, simp_all)
+                              also have "... = ?g i + ?g j + sum ?g (UNIV - {i} - {j})" unfolding sum_rw by auto
+                              also have "... = ?g i + ?g j" unfolding sum_g0 by simp
                               also have "... = 0" using True unfolding column_def 
                                 by (simp, metis id_k id_upt_k_def j_eq_k to_nat_mono)
                               finally show ?thesis .
@@ -207,7 +207,7 @@ proof (cases "to_nat j < k")
                               have zero_i_suc_k: "is_zero_row_upt_k i (Suc k) (Gauss_Jordan A)"
                                     by (metis False zero_j_suc_k linorder_cases rref_suc_k rref_upt_condition1)
                               show ?thesis
-                                proof (rule setsum.neutral, auto)              
+                                proof (rule sum.neutral, auto)              
                                   show "column j (Gauss_Jordan A) $ i = 0"
                                     using zero_i_suc_k unfolding column_def is_zero_row_upt_k_def
                                     by (metis j_eq_k lessI vec_lambda_beta)

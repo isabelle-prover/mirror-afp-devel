@@ -278,7 +278,7 @@ proof -
       by (auto split:  option.splits prod.splits if_splits)
   with div_mod_int_poly_then_pdivmod[of p q r 0]
   have "?p div ?q = ?r \<and> ?p mod ?q = 0" using pdivmod_def by (simp add: pdivmod_def)
-  with mod_div_equality[of ?p ?q]
+  with div_mult_mod_eq[of ?p ?q]
   have "?p = ?r * ?q" by auto
   also have "\<dots> = rp (r * q)" by simp
   finally have "?p = rp (r * q)".

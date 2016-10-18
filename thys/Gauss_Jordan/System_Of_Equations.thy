@@ -99,7 +99,7 @@ fix a
 let ?f="\<lambda>j. Gauss_Jordan A $ a $ j *
       (if \<exists>i. Gauss_Jordan A $ i $ j = 1 \<and> j = (LEAST n. Gauss_Jordan A $ i $ n \<noteq> 0) 
         then (P_Gauss_Jordan A *v b) $ (THE i. Gauss_Jordan A $ i $ j = 1) else 0)"
-show "setsum ?f UNIV = (P_Gauss_Jordan A *v b) $ a"
+show "sum ?f UNIV = (P_Gauss_Jordan A *v b) $ a"
 proof (cases "A=0")
 case True
 hence rank_A_eq_0:"rank A = 0" using rank_0 by simp
@@ -119,13 +119,13 @@ have UNIV_rw: "UNIV = not_zero_positions_row_a \<union> zero_positions_row_a"
   unfolding zero_positions_row_a_def not_zero_positions_row_a_def by auto
 have disj: "not_zero_positions_row_a \<inter> zero_positions_row_a = {}" 
   unfolding zero_positions_row_a_def not_zero_positions_row_a_def by fastforce
-have setsum_zero: "(setsum ?f zero_positions_row_a) = 0" 
-  by (unfold zero_positions_row_a_def, rule setsum.neutral, fastforce)
-have "setsum ?f (UNIV::'cols set)=setsum ?f (not_zero_positions_row_a \<union> zero_positions_row_a)" 
+have sum_zero: "(sum ?f zero_positions_row_a) = 0" 
+  by (unfold zero_positions_row_a_def, rule sum.neutral, fastforce)
+have "sum ?f (UNIV::'cols set)=sum ?f (not_zero_positions_row_a \<union> zero_positions_row_a)" 
   unfolding UNIV_rw ..
-also have "... = setsum ?f (not_zero_positions_row_a) + (setsum ?f zero_positions_row_a)" 
-  by (rule setsum.union_disjoint[OF _ _ disj], simp+)
-also have "... = setsum ?f (not_zero_positions_row_a)" unfolding setsum_zero by simp
+also have "... = sum ?f (not_zero_positions_row_a) + (sum ?f zero_positions_row_a)" 
+  by (rule sum.union_disjoint[OF _ _ disj], simp+)
+also have "... = sum ?f (not_zero_positions_row_a)" unfolding sum_zero by simp
 also have "... = (P_Gauss_Jordan A *v b) $ a"
   proof (cases "not_zero_positions_row_a = {}")
     case True note zero_row_a=True    
@@ -158,11 +158,11 @@ also have "... = (P_Gauss_Jordan A *v b) $ a"
     have not_zero_positions_row_a_rw: "not_zero_positions_row_a = {LEAST j. (Gauss_Jordan A) $ a $ j \<noteq> 0} \<union> (not_zero_positions_row_a - {LEAST j. (Gauss_Jordan A) $ a $ j \<noteq> 0})"
     unfolding not_zero_positions_row_a_def
     by (metis (mono_tags) Collect_cong False LeastI_ex bot_set_def empty_iff insert_Diff_single insert_absorb insert_is_Un mem_Collect_eq not_zero_positions_row_a_def)  
-    have setsum_zero': "setsum ?f (not_zero_positions_row_a - {LEAST j. (Gauss_Jordan A) $ a $ j \<noteq> 0}) = 0"
-      by (rule setsum.neutral, auto, metis is_zero_row_def' rref_Gauss_Jordan rref_condition4_explicit zero_neq_one)    
-    have "setsum ?f (not_zero_positions_row_a) = setsum ?f {LEAST j. (Gauss_Jordan A) $ a $ j \<noteq> 0} + setsum ?f (not_zero_positions_row_a - {LEAST j. (Gauss_Jordan A) $ a $ j \<noteq> 0})"
-    by (subst not_zero_positions_row_a_rw, rule setsum.union_disjoint[OF _ _ _], simp+)
-    also have "... = ?f (LEAST j. (Gauss_Jordan A) $ a $ j \<noteq> 0)" using setsum_zero' by force
+    have sum_zero': "sum ?f (not_zero_positions_row_a - {LEAST j. (Gauss_Jordan A) $ a $ j \<noteq> 0}) = 0"
+      by (rule sum.neutral, auto, metis is_zero_row_def' rref_Gauss_Jordan rref_condition4_explicit zero_neq_one)    
+    have "sum ?f (not_zero_positions_row_a) = sum ?f {LEAST j. (Gauss_Jordan A) $ a $ j \<noteq> 0} + sum ?f (not_zero_positions_row_a - {LEAST j. (Gauss_Jordan A) $ a $ j \<noteq> 0})"
+    by (subst not_zero_positions_row_a_rw, rule sum.union_disjoint[OF _ _ _], simp+)
+    also have "... = ?f (LEAST j. (Gauss_Jordan A) $ a $ j \<noteq> 0)" using sum_zero' by force
     also have "... = (P_Gauss_Jordan A *v b) $ a"
       proof (cases "\<exists>i. (Gauss_Jordan A) $ i $ (LEAST j. (Gauss_Jordan A) $ a $ j \<noteq> 0) = 1 \<and> (LEAST j. (Gauss_Jordan A) $ a $ j \<noteq> 0) = (LEAST n. (Gauss_Jordan A) $ i $ n \<noteq> 0)")
       case True
@@ -184,7 +184,7 @@ also have "... = (P_Gauss_Jordan A *v b) $ a"
       qed
      finally show ?thesis .
 qed
-finally show "setsum ?f UNIV = (P_Gauss_Jordan A *v b) $ a" .
+finally show "sum ?f UNIV = (P_Gauss_Jordan A *v b) $ a" .
 qed
 qed
 thus ?thesis apply (subst is_solution_solve_system)
@@ -247,7 +247,7 @@ thus "j<i" by (metis (full_types) not_le to_nat_mono')
 qed
 have is_zero_i: "is_zero_row i (Gauss_Jordan A)" by (metis (full_types) j_def j_less_i not_greater_Greatest')
 have "(Gauss_Jordan A *v x) $ i = 0" 
-  proof (unfold matrix_vector_mult_def, auto, rule setsum.neutral,clarify)
+  proof (unfold matrix_vector_mult_def, auto, rule sum.neutral,clarify)
     fix a::'cols
     show "Gauss_Jordan A $ i $ a * x $ a = 0" using is_zero_i unfolding is_zero_row_def' by simp
     qed

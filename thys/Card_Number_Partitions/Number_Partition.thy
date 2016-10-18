@@ -56,7 +56,7 @@ qed
 
 lemma partitions_parts_bounded:
   assumes "p partitions n"
-  shows "setsum p {..n} \<le> n"
+  shows "sum p {..n} \<le> n"
 proof -
   {
     fix i
@@ -64,8 +64,8 @@ proof -
     from assms have "p i \<le> p i * i"
       by (auto elim!: partitionsE)
   }
-  from this have "setsum p {..n} \<le> (\<Sum>i\<le>n. p i * i)"
-    by (auto intro: setsum_mono)
+  from this have "sum p {..n} \<le> (\<Sum>i\<le>n. p i * i)"
+    by (auto intro: sum_mono)
   also from assms have n: "(\<Sum>i\<le>n. p i * i) = n"
     by (auto elim!: partitionsE)
   finally show ?thesis .
@@ -93,10 +93,10 @@ proof (clarify)
     from assms have n: "(\<Sum>i\<le>n. p i * i) = n" and "k \<le> n"
       by (auto elim: partitionsE)
     have "(\<Sum>i\<le>n. p i * i) = p k * k + (\<Sum>i\<in>{..n}-{k}. p i * i)"
-      using \<open>k \<le> n\<close> setsum_atMost_remove_nat by blast
+      using \<open>k \<le> n\<close> sum_atMost_remove_nat by blast
     also have "... = p i * i + p k * k + (\<Sum>i\<in>{..n}-{i, k}. p i * i)"
       using `i \<le> n` `i \<noteq> k`
-      by (auto simp add: setsum.remove[where x="i"]) (metis Diff_insert)
+      by (auto simp add: sum.remove[where x="i"]) (metis Diff_insert)
     finally have eq: "(\<Sum>i\<le>n. p i * i) = p i * i + p k * k + (\<Sum>i\<in>{..n} - {i, k}. p i * i)" .
     show "p i = 0"
     proof (rule ccontr)
@@ -142,7 +142,7 @@ next
       from this have "p k * k \<ge> 2 * k" by simp
       with `2 * k > n` have "p k * k > n" by linarith
       from \<open>k \<le> n\<close> this have "(\<Sum>i\<le>n. p i * i) > n"
-        by (simp add: setsum_atMost_remove_nat[of k])
+        by (simp add: sum_atMost_remove_nat[of k])
       from this n show "False" by auto
     qed
     from neq this show ?thesis
@@ -162,13 +162,13 @@ proof (rule partitionsI)
 next
   from partitions gr0 have "k \<le> n" by (auto elim: partitionsE)
   have "(\<Sum>i\<le>n - k. (p(k := p k - 1)) i * i) = (\<Sum>i\<le>n. (p(k := p k - 1)) i * i)"
-    using partitions_remove1_bounds partitions gr0 by (auto intro!: setsum.mono_neutral_left)
+    using partitions_remove1_bounds partitions gr0 by (auto intro!: sum.mono_neutral_left)
   also have "... = (p k - 1) * k + (\<Sum>i\<in>{..n} - {k}. (p(k := p k - 1)) i * i)"
-    using \<open>k \<le> n\<close> by (simp add: setsum_atMost_remove_nat[where k="k"])
+    using \<open>k \<le> n\<close> by (simp add: sum_atMost_remove_nat[where k="k"])
   also have "... = p k * k + (\<Sum>i\<in>{..n} - {k}. p i * i) - k"
     using gr0 by (simp add: diff_mult_distrib)
   also have "... = (\<Sum>i\<le>n. p i * i) - k"
-    using \<open>k \<le> n\<close> by (simp add: setsum_atMost_remove_nat[of k])
+    using \<open>k \<le> n\<close> by (simp add: sum_atMost_remove_nat[of k])
   also from partitions have "... = n - k"
     by (auto elim: partitionsE)
   finally show "(\<Sum>i\<le>n - k. (p(k := p k - 1)) i * i) = n - k" .
@@ -185,11 +185,11 @@ proof (rule partitionsI)
     by (auto elim!: partitionsE)
 next
   have "(\<Sum>i\<le>n + k. (p(k := p k + 1)) i * i) = p k * k + (\<Sum>i\<in>{..n + k} - {k}. p i * i) + k"
-    by (simp add: setsum_atMost_remove_nat[of k])
+    by (simp add: sum_atMost_remove_nat[of k])
   also have "... = p k * k + (\<Sum>i\<in>{..n} - {k}. p i * i) + k"
-    using p by (auto intro!: setsum.mono_neutral_right elim!: partitionsE)
+    using p by (auto intro!: sum.mono_neutral_right elim!: partitionsE)
   also have "... = (\<Sum>i\<le>n. p i * i) + k"
-    using p by (cases "k \<le> n") (auto simp add: setsum_atMost_remove_nat[of k] elim: partitionsE)
+    using p by (cases "k \<le> n") (auto simp add: sum_atMost_remove_nat[of k] elim: partitionsE)
   also have "... = n + k"
     using p by (auto elim: partitionsE)
   finally show "(\<Sum>i\<le>n + k. (p(k := p k + 1)) i * i) = n + k" .
@@ -202,30 +202,30 @@ lemma count_remove1:
 proof -
   have "k \<le> n" using assms by (auto elim: partitionsE)
   have "(\<Sum>i\<le>n - k. (p(k := p k - 1)) i) = (\<Sum>i\<le>n. (p(k := p k - 1)) i)"
-    using partitions_remove1_bounds assms by (auto intro!: setsum.mono_neutral_left)
+    using partitions_remove1_bounds assms by (auto intro!: sum.mono_neutral_left)
   also have "(\<Sum>i\<le>n. (p(k := p k - 1)) i) = p k + (\<Sum>i\<in>{..n} - {k}. p i) - 1"
-    using `0 < p k` `k \<le> n` by (simp add: setsum_atMost_remove_nat[of k])
+    using `0 < p k` `k \<le> n` by (simp add: sum_atMost_remove_nat[of k])
   also have "... = (\<Sum>i\<in>{..n}. p i) - 1"
-    using \<open>k \<le> n\<close> by (simp add: setsum_atMost_remove_nat[of k])
+    using \<open>k \<le> n\<close> by (simp add: sum_atMost_remove_nat[of k])
   finally show ?thesis .
 qed
 
 lemma count_insert1:
   assumes "p partitions n"
-  shows "setsum (p(k := p k + 1)) {..n + k} = (\<Sum>i\<le>n. p i) + 1"
+  shows "sum (p(k := p k + 1)) {..n + k} = (\<Sum>i\<le>n. p i) + 1"
 proof -
   have "(\<Sum>i\<le>n + k. (p(k := p k + 1)) i) = p k + (\<Sum>i\<in>{..n + k} - {k}. p i) + 1"
-    by (simp add: setsum_atMost_remove_nat[of k])
+    by (simp add: sum_atMost_remove_nat[of k])
   also have "... = p k + (\<Sum>i\<in>{..n} - {k}. p i) + 1"
-    using assms by (auto intro!: setsum.mono_neutral_right elim!: partitionsE)
+    using assms by (auto intro!: sum.mono_neutral_right elim!: partitionsE)
   also have "... = (\<Sum>i\<le>n. p i) + 1"
-    using assms by (cases "k \<le> n") (auto simp add: setsum_atMost_remove_nat[of k] elim: partitionsE)
+    using assms by (cases "k \<le> n") (auto simp add: sum_atMost_remove_nat[of k] elim: partitionsE)
   finally show ?thesis .
 qed
 
 lemma partitions_decrease1:
   assumes p: "p partitions m"
-  assumes setsum: "setsum p {..m} = k"
+  assumes sum: "sum p {..m} = k"
   assumes "p 1 = 0"
   shows "(\<lambda>i. p (i + 1)) partitions m - k"
 proof -
@@ -240,26 +240,26 @@ proof -
       assume i_greater: "\<not> i \<le> m - k"
       from p have s: "(\<Sum>i\<le>m. p i * i) = m"
         by (auto elim!: partitionsE)
-      from p setsum have "k \<le> m"
+      from p sum have "k \<le> m"
         using partitions_parts_bounded by fastforce
       from neq p have "i + 1 \<le> m" by (auto elim!: partitionsE)
       from i_greater have "i > m - k" by simp
       have ineq1: "i + 1 > (m - k) + 1"
         using i_greater by simp
       have ineq21: "(\<Sum>j\<le>m. (p(i + 1 := p (i + 1) - 1)) j * j) \<ge> (\<Sum>j\<le>m. (p(i + 1 := p (i + 1) - 1)) j)"
-        using \<open>p 0 = 0\<close> not_less by (fastforce intro!: setsum_mono)
+        using \<open>p 0 = 0\<close> not_less by (fastforce intro!: sum_mono)
       have ineq22a: "(\<Sum>j\<le>m. (p(i + 1 := p (i + 1) - 1)) j) = (\<Sum>j\<le>m. p j) - 1"
-        using `i + 1 \<le> m` neq by (simp add: setsum.remove[where x="i + 1"])
+        using `i + 1 \<le> m` neq by (simp add: sum.remove[where x="i + 1"])
       have ineq22: "(\<Sum>j\<le>m. (p(i + 1 := p (i + 1) - 1)) j) \<ge> k - 1"
-        using setsum neq ineq22a by auto
+        using sum neq ineq22a by auto
       have ineq2: "(\<Sum>j\<le>m. (p(i + 1 := p (i + 1) - 1)) j * j) \<ge> k - 1"
         using ineq21 ineq22 by auto
       have "(\<Sum>i\<le>m. p i * i) = p (i + 1) * (i + 1) + (\<Sum>i\<in>{..m} - {i + 1}. p i * i)"
         using `i + 1 \<le> m` neq
-        by (subst setsum.remove[where x="i + 1"]) auto
+        by (subst sum.remove[where x="i + 1"]) auto
       also have "... = (i + 1) + (\<Sum>j\<le>m. (p(i + 1 := p (i + 1) - 1)) j * j)"
         using `i + 1 \<le> m` neq
-        by (subst setsum.remove[where x="i + 1" and g="\<lambda>j. (p(i + 1 := p (i + 1) - 1)) j * j"])
+        by (subst sum.remove[where x="i + 1" and g="\<lambda>j. (p(i + 1 := p (i + 1) - 1)) j * j"])
           (auto simp add: mult_eq_if)
       finally have "(\<Sum>i\<le>m. p i * i) = i + 1 + (\<Sum>j\<le>m. (p(i + 1 := p (i + 1) - 1)) j * j)" .
       moreover have "... > m" using ineq1 ineq2 `k \<le> m` `p (i + 1) \<noteq> 0` by linarith
@@ -277,9 +277,9 @@ proof -
     have geq: "\<forall>i. p i * i \<ge> p i"
       using \<open>p 0 = 0\<close> not_less by fastforce
     have "(\<Sum>i\<le>m - k. p (i + 1) * i) = (\<Sum>i\<le>m. p (i + 1) * i)"
-      using bounds by (auto intro: setsum.mono_neutral_left)
+      using bounds by (auto intro: sum.mono_neutral_left)
     also have "... = (\<Sum>i\<in>Suc ` {..m}. p i * (i - 1))"
-      by (auto simp add: setsum.reindex)
+      by (auto simp add: sum.reindex)
     also have "... = (\<Sum>i\<le>Suc m. p i * (i - 1))"
       using \<open>p 0 = 0\<close> by (simp add: Iic_Suc_eq_insert_0 zero_notin_Suc_image)
     also have "... = (\<Sum>i\<le>m. p i * (i - 1))"
@@ -287,15 +287,15 @@ proof -
     also have "... = (\<Sum>i\<le>m. p i * i - p i)"
       by (simp add: diff_mult_distrib2)
     also have "... = (\<Sum>i\<le>m. p i * i) - (\<Sum>i\<le>m. p i)"
-      using geq by (simp only: setsum_subtractf_nat)
-    also have "... = m - k" using setsum p by (auto elim!: partitionsE)
+      using geq by (simp only: sum_subtractf_nat)
+    also have "... = m - k" using sum p by (auto elim!: partitionsE)
     finally show "(\<Sum>i\<le>m - k. p (i + 1) * i) = m - k" .
   qed
 qed
 
 lemma partitions_increase1:
   assumes partitions: "p partitions m - k"
-  assumes k: "setsum p {..m - k} = k"
+  assumes k: "sum p {..m - k} = k"
   shows "(\<lambda>i. p (i - 1)) partitions m"
 proof (rule partitionsI)
   fix i
@@ -310,10 +310,10 @@ next
   have "(\<Sum>i\<le>m. p (i - 1) * i) = (\<Sum>i\<le>Suc m. p (i - 1) * i)"
     using partitions k by (cases k) (auto elim!: partitionsE)
   also have "(\<Sum>i\<le>Suc m. p (i - 1) * i) = (\<Sum>i\<le>m. p i * (i + 1))"
-    by (subst setsum_atMost_Suc_shift) simp
+    by (subst sum_atMost_Suc_shift) simp
   also have "... = (\<Sum>i\<le>m - k. p i * (i + 1))"
-    using eq_0 by (auto intro: setsum.mono_neutral_right)
-  also have "... = (\<Sum>i\<le>m - k. p i * i) + (\<Sum>i\<le>m - k. p i)" by (simp add: setsum.distrib)
+    using eq_0 by (auto intro: sum.mono_neutral_right)
+  also have "... = (\<Sum>i\<le>m - k. p i * i) + (\<Sum>i\<le>m - k. p i)" by (simp add: sum.distrib)
   also have "... = m - k + k" using s k by simp
   also have "... = m" using `k \<le> m` by simp
   finally show "(\<Sum>i\<le>m. p (i - 1) * i) = m" .
@@ -321,34 +321,34 @@ qed
 
 lemma count_decrease1:
   assumes p: "p partitions m"
-  assumes setsum: "setsum p {..m} = k"
+  assumes sum: "sum p {..m} = k"
   assumes "p 1 = 0"
-  shows "setsum (\<lambda>i. p (i + 1)) {..m - k} = k"
+  shows "sum (\<lambda>i. p (i + 1)) {..m - k} = k"
 proof -
   from p have "p 0 = 0" by (auto elim!: partitionsE)
-  have "setsum (\<lambda>i. p (i + 1)) {..m - k} = setsum (\<lambda>i. p (i + 1)) {..m}"
+  have "sum (\<lambda>i. p (i + 1)) {..m - k} = sum (\<lambda>i. p (i + 1)) {..m}"
     using partitions_decrease1[OF assms]
-    by (auto intro: setsum.mono_neutral_left elim!: partitionsE)
-  also have "\<dots> = setsum (\<lambda>i. p (i + 1)) {0..m}" by (simp add: atLeast0AtMost)
-  also have "\<dots> = setsum (\<lambda>i. p i) {Suc 0.. Suc m}"
-    by (simp only: One_nat_def add_Suc_right add_0_right setsum_shift_bounds_cl_Suc_ivl)
-  also have "\<dots> = setsum (\<lambda>i. p i) {.. Suc m}"
-    using \<open>p 0 = 0\<close> by (simp add: atLeast0AtMost setsum_shift_lb_Suc0_0)
-  also have "\<dots> = setsum (\<lambda>i. p i) {.. m}"
+    by (auto intro: sum.mono_neutral_left elim!: partitionsE)
+  also have "\<dots> = sum (\<lambda>i. p (i + 1)) {0..m}" by (simp add: atLeast0AtMost)
+  also have "\<dots> = sum (\<lambda>i. p i) {Suc 0.. Suc m}"
+    by (simp only: One_nat_def add_Suc_right add_0_right sum_shift_bounds_cl_Suc_ivl)
+  also have "\<dots> = sum (\<lambda>i. p i) {.. Suc m}"
+    using \<open>p 0 = 0\<close> by (simp add: atLeast0AtMost sum_shift_lb_Suc0_0)
+  also have "\<dots> = sum (\<lambda>i. p i) {.. m}"
     using p by (auto elim!: partitionsE)
   also have "\<dots> = k"
-    using setsum by simp
+    using sum by simp
   finally show ?thesis .
 qed
 
 lemma count_increase1:
   assumes partitions: "p partitions m - k"
-  assumes k: "setsum p {..m - k} = k"
+  assumes k: "sum p {..m - k} = k"
   shows "(\<Sum>i\<le>m. p (i - 1)) = k"
 proof -
   have "p 0 = 0" using partitions by (auto elim!: partitionsE)
   have "(\<Sum>i\<le>m. p (i - 1)) = (\<Sum>i\<in>{1..m}. p (i - 1))"
-    using \<open>p 0 = 0\<close> by (auto intro: setsum.mono_neutral_cong_right)
+    using \<open>p 0 = 0\<close> by (auto intro: sum.mono_neutral_cong_right)
   also have "(\<Sum>i\<in>{1..m}. p (i - 1)) = (\<Sum>i\<le>m - 1. p i)"
   proof (cases m)
     case 0
@@ -361,7 +361,7 @@ proof -
         by (auto intro!: image_eqI[where x="x - 1"])
     }
     from this Suc show ?thesis
-      by (intro setsum.reindex_cong[of Suc]) auto
+      by (intro sum.reindex_cong[of Suc]) auto
   qed
   also have "(\<Sum>i\<le>m - 1. p i) = (\<Sum>i\<le>m. p i)"
   proof -
@@ -372,10 +372,10 @@ proof -
         using \<open>p 0 = 0\<close> partitions_increase1 by (cases k) (auto elim!: partitionsE)
     }
     from this show ?thesis
-      by (auto intro: setsum.mono_neutral_cong_left)
+      by (auto intro: sum.mono_neutral_cong_left)
   qed
   also have "... = (\<Sum>i\<le>m - k. p i)"
-    using partitions by (auto intro: setsum.mono_neutral_right elim!: partitionsE)
+    using partitions by (auto intro: sum.mono_neutral_right elim!: partitionsE)
   also have "... = k" using k by auto
   finally show ?thesis .
 qed

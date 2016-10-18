@@ -6,7 +6,7 @@ object profile extends isabelle.CI_Profile
   import scala.sys.process._
   import org.apache.commons.configuration2._
 
-
+  override def clean = false
   val is_testboard = Isabelle_System.getenv("ISABELLE_CI_TESTBOARD") == "true"
 
   val afp = Path.explode("$ISABELLE_HOME/afp")
@@ -82,7 +82,7 @@ object profile extends isabelle.CI_Profile
           config.getString("notify")
         else
           ""
-      raw.split(' ').toList.filterNot(_.isEmpty)
+      raw.split(',').toList.map(_.trim).filterNot(_.isEmpty)
     }
 
     def entry_of_session(info: Sessions.Info): Option[String] =

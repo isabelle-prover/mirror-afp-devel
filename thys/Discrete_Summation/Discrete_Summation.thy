@@ -8,15 +8,15 @@ begin
 
 subsection {* Auxiliary *}
 
-lemma add_setsum_orient:
-  "setsum f {k..<j} + setsum f {l..<k} = setsum f {l..<k} + setsum f {k..<j}"
+lemma add_sum_orient:
+  "sum f {k..<j} + sum f {l..<k} = sum f {l..<k} + sum f {k..<j}"
   by (fact add.commute)
 
-lemma add_setsum_int:
+lemma add_sum_int:
   fixes j k l :: int
   shows "j < k \<Longrightarrow> k < l \<Longrightarrow>
-    setsum f {j..<k} + setsum f {k..<l} = setsum f {j..<l}"
-  by (simp_all add: setsum.union_inter [symmetric] ivl_disj_un)
+    sum f {j..<k} + sum f {k..<l} = sum f {j..<l}"
+  by (simp_all add: sum.union_inter [symmetric] ivl_disj_un)
 
 
 subsection {* The shift operator *}
@@ -71,8 +71,8 @@ subsection {* The formal sum operator *}
 
 definition \<Sigma> :: "('b::ring_1 \<Rightarrow> 'a::ab_group_add) \<Rightarrow> int \<Rightarrow> int \<Rightarrow> 'a"
 where
-  "\<Sigma> f j l = (if j < l then setsum (f \<circ> of_int) {j..<l}
-    else if j > l then - setsum (f \<circ> of_int) {l..<j}
+  "\<Sigma> f j l = (if j < l then sum (f \<circ> of_int) {j..<l}
+    else if j > l then - sum (f \<circ> of_int) {l..<j}
     else 0)"
 
 lemma \<Sigma>_same [simp]:
@@ -80,7 +80,7 @@ lemma \<Sigma>_same [simp]:
   by (simp add: \<Sigma>_def)
 
 lemma \<Sigma>_positive:
-  "j < l \<Longrightarrow> \<Sigma> f j l = setsum (f \<circ> of_int) {j..<l}"
+  "j < l \<Longrightarrow> \<Sigma> f j l = sum (f \<circ> of_int) {j..<l}"
   by (simp add: \<Sigma>_def)
 
 lemma \<Sigma>_negative:
@@ -97,18 +97,18 @@ lemma \<Sigma>_const:
 
 lemma \<Sigma>_add:
   "\<Sigma> (\<lambda>k. f k + g k) j l = \<Sigma> f j l + \<Sigma> g j l"
-  by (simp add: \<Sigma>_def setsum.distrib)
+  by (simp add: \<Sigma>_def sum.distrib)
 
 lemma \<Sigma>_factor:
   "\<Sigma> (\<lambda>k. c * f k) j l = (c::'a::ring) * \<Sigma> (\<lambda>k. f k) j l"
-  by (simp add: \<Sigma>_def setsum_distrib_left)
+  by (simp add: \<Sigma>_def sum_distrib_left)
 
 lemma \<Sigma>_concat:
   "\<Sigma> f j k + \<Sigma> f k l = \<Sigma> f j l"
-  by (simp add: \<Sigma>_def algebra_simps add_setsum_int)
-    (simp_all add: add_setsum_orient [of "\<lambda>k. f (of_int k)" k j l]
-      add_setsum_orient [of "\<lambda>k. f (of_int k)" j l k]
-      add_setsum_orient [of "\<lambda>k. f (of_int k)" j k l] add_setsum_int)
+  by (simp add: \<Sigma>_def algebra_simps add_sum_int)
+    (simp_all add: add_sum_orient [of "\<lambda>k. f (of_int k)" k j l]
+      add_sum_orient [of "\<lambda>k. f (of_int k)" j l k]
+      add_sum_orient [of "\<lambda>k. f (of_int k)" j k l] add_sum_int)
 
 lemma \<Sigma>_incr_upper:
   "\<Sigma> f j (l + 1) = \<Sigma> f j l + f (of_int l)"

@@ -38,7 +38,7 @@ proof -
       by (simp add: field_simps q)
     from arg_cong[OF this[unfolded rf], of "\<lambda> f. f div q"] q0 
     have "q * k = smult (inverse c) (?r ?s)" 
-      by (metis nonzero_mult_divide_cancel_left)
+      by (metis nonzero_mult_div_cancel_left)
     from arg_cong[OF this, of "smult c"] have "?r ?s = q * smult c k" using c0
       by (auto simp: field_simps)
     from rat_to_int_factor_explicit[OF this norm] obtain t where "?s = q' * t" by blast

@@ -501,7 +501,7 @@ proof -
   have "{x. poly p x = 0} = {x. poly (\<Prod>(a, i)\<in>set pis. a ^ Suc i) x = 0}"
     unfolding p using c by auto
   also have "\<dots> = \<Union> ((\<lambda> p. {x. poly p x = 0}) ` fst ` set pis)" (is "_ = ?r")
-    by (subst poly_setprod_0, force+)
+    by (subst poly_prod_0, force+)
   finally have r: "{x. poly p x = 0} = ?r" .
   {
     fix p i
@@ -542,7 +542,7 @@ proof -
     (map (\<lambda>(p, i). map (\<lambda>r. (r, i)) (remdups (roots_of_complex_main p))) pis). [:- x, 1:] ^ Suc i"
   from yun(1) have p: "p = smult c (\<Prod>(a, i)\<in>set pis. a ^ Suc i)" .
   also have "(\<Prod>(a, i)\<in>set pis. a ^ Suc i) = (\<Prod>(a, i)\<leftarrow>pis. a ^ Suc i)"
-    by (rule setprod.distinct_set_conv_list[OF yun(5)])
+    by (rule prod.distinct_set_conv_list[OF yun(5)])
   also have "\<dots> = ?exp pis" using pis yun(2,6)
   proof (induct pis)
     case (Cons pi pis)
@@ -567,7 +567,7 @@ proof -
       from fundamental_theorem_algebra_factorized[of p, unfolded `monic p`]
       obtain as where as: "p = (\<Prod>a\<leftarrow>as. [:- a, 1:])" by auto
       also have "\<dots> = (\<Prod>a\<in>set as. [:- a, 1:])"
-      proof (rule sym, rule setprod.distinct_set_conv_list, rule ccontr)
+      proof (rule sym, rule prod.distinct_set_conv_list, rule ccontr)
         assume "\<not> distinct as" 
         from not_distinct_decomp[OF this] obtain as1 as2 as3 a where
           a: "as = as1 @ [a] @ as2 @ [a] @ as3" by blast
@@ -586,7 +586,7 @@ proof -
       also have "\<dots> = set ?rts" unfolding set_remdups
         by (rule roots_of_complex_main[symmetric], insert p deg, auto)
       also have "(\<Prod>a\<in>set ?rts. [:- a, 1:]) = (\<Prod>a\<leftarrow>?rts. [:- a, 1:])"
-        by (rule setprod.distinct_set_conv_list, auto)
+        by (rule prod.distinct_set_conv_list, auto)
       finally show ?thesis by simp
     qed
     finally have id2: "?exp (pi # pis) = p ^ Suc i * ?exp pis" by simp

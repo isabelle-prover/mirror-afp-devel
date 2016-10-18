@@ -75,11 +75,11 @@ proof (induct lm arbitrary: p p_l p_r \<alpha>)
         by (cases dir) (auto simp add: algebra_simps) }
     hence inv_dir_sum: "?sum p (inv dir) (pc (inv dir)) + (?sum p (inv dir) p) / 2
       = ?sum p (inv dir) (p_d dir)"
-      by (auto simp add: setsum.distrib[symmetric] setsum_divide_distrib)
+      by (auto simp add: sum.distrib[symmetric] sum_divide_distrib)
 
     have "?sum p dir p / 2 = ?sum p dir (p_d dir)"
       using l2_down2[OF _ _ `p = child (p_d dir) dir d`]
-      by (force intro!: setsum.cong simp add: setsum_divide_distrib)
+      by (force intro!: sum.cong simp add: sum_divide_distrib)
     moreover
     have "?C p (p_d dir) = (\<alpha> p) / 2 ^ (lv p d) / 4"
       using l2_child[OF `d < length (p_d dir)`, of p dir "{d}"] p_d_child[of dir]
@@ -157,7 +157,7 @@ proof (induct l arbitrary: b p \<alpha>)
 
     have "level b < lm" using `Suc l + level b = lm` by auto
     hence "{ b } \<subseteq> lgrid b {d} lm" unfolding lgrid_def by auto
-    from setsum_diff[OF lgrid_finite this]
+    from sum_diff[OF lgrid_finite this]
     have "(\<Sum> p' \<in> (lgrid b {d} lm) - {b}. ?C p') = ?s b - ?C b" by simp
     also have "\<dots> = ?s ?l + ?s ?r"
       using lgrid_sum and `level b < lm` and `d < length b` by auto
@@ -253,7 +253,7 @@ proof -
       show ?thesis
         using lgrid_eq[OF `p \<in> grid b {d}`]
         unfolding up' if_P[OF True] if_P[OF `p \<in> lgrid b {d} lm`]
-        by (intro setsum.mono_neutral_cong_left lgrid_finite) auto
+        by (intro sum.mono_neutral_cong_left lgrid_finite) auto
     next
       case False
       moreover have "p \<notin> lgrid b {d} lm"
@@ -269,7 +269,7 @@ proof -
          (\<Sum>p'\<in>lgrid (base {d} p) {d} lm. ?S (\<alpha> p') p p')" by auto
   from lgrid_eq[OF baseE(2)[OF sparsegrid_subset[OF `p \<in> sparsegrid dm lm`]]]
   show ?thesis
-    unfolding up_def lift_eq by (intro setsum.mono_neutral_cong_right lgrid_finite) auto
+    unfolding up_def lift_eq by (intro sum.mono_neutral_cong_right lgrid_finite) auto
 qed
 
 end

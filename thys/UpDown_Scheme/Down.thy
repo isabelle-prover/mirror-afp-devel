@@ -134,7 +134,7 @@ proof -
       unfolding lgrid_def parents_def by auto
     hence "(\<Sum>p'\<in>lgrid (base {d} p) {d} lm. ?S (\<alpha> p') p p') =
       (\<Sum>p'\<in>parents d (base {d} p) p. \<alpha> p' * l2_\<phi> (p ! d) (p' ! d))"
-      using lgrid_finite by (intro setsum.mono_neutral_cong_right) auto
+      using lgrid_finite by (intro sum.mono_neutral_cong_right) auto
   } note sum_eq = this
 
   { fix l p b \<alpha>

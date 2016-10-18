@@ -1522,10 +1522,12 @@ proof (cases x)
     hence mpy: "rpoly ?mp y = 0" and bnd: "inverse (of_rat r) \<le> y" "y \<le> inverse (of_rat l)"
       unfolding root_cond_def by (auto simp: of_rat_inverse)
     from sgn_real_mono[OF bnd(1)] sgn_real_mono[OF bnd(2)] 
-    have "sgn (of_rat r) \<le> sgn y" "sgn y \<le> sgn (of_rat l)" by auto
-    with * have y0: "y \<noteq> 0" "inverse y \<noteq> 0" 
+    have "sgn (of_rat r) \<le> sgn y" "sgn y \<le> sgn (of_rat l)"
+      by (simp_all add: algebra_simps)
+    with \<open>sgn l = sgn r\<close> \<open>sgn r \<noteq> 0\<close> have y0: "y \<noteq> 0" "inverse y \<noteq> 0" 
       and sgn: "sgn (inverse (of_rat r)) = sgn y" "sgn y = sgn (inverse (of_rat l))" 
-      unfolding inverse_sgn real_of_rat_sgn by auto
+      unfolding sgn_inverse inverse_sgn
+      by (auto simp add: real_of_rat_sgn intro: order_antisym)
     from mpy have id: "rpoly p (inverse y) = 0" using y0(1) rpoly_inverse[OF y0(2), of p] 
       unfolding inverse_inverse_eq by (auto simp: monic_poly)
     from inverse_le_sgn[OF sgn(1) bnd(1)] inverse_le_sgn[OF sgn(2) bnd(2)]
@@ -3818,12 +3820,12 @@ next
 qed
 
 instance real_alg :: linordered_field
-  apply (intro_classes)
-  apply (unfold abs_real_alg_def less_real_alg_def zero_real_alg[symmetric], rule refl)
-  apply (unfold less_eq_real_alg_def plus_real_alg[symmetric], force)
+  apply standard
+     apply (unfold less_eq_real_alg_def plus_real_alg[symmetric], force)
+    apply (unfold abs_real_alg_def less_real_alg_def zero_real_alg[symmetric], rule refl)
+   apply (unfold less_real_alg_def times_real_alg[symmetric], force)
   apply (rule sgn_real_alg_sound)
-  apply (unfold less_real_alg_def times_real_alg[symmetric], force)
-done
+  done
 
 instantiation real_alg :: floor_ceiling
 begin

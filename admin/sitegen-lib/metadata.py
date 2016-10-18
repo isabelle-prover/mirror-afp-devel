@@ -34,15 +34,21 @@ def parse_license(license, **kwargs):
 		raise ValueError(u"Unknown license {0}".formate(license))
 	return licenses[license]
 
+def parse_email(email, entry, key):
+	stripped = email.strip()
+	if ' ' in stripped:
+		warn(u"In entry {0}: possibly malformed email in field {1}: '{2}'".format(entry, key, email))
+	return stripped
+
 # key : (split, processor, default)
 #   'key' denotes the key of the key-value pair in the metadata file
 #     if it ends with a '*', e. g. 'extra*' and you have two keys 'extra-foo'
 #     and 'extra-bar' in your metadata file, you will get:
 #       attributes['extra'] == { 'foo': <data>, 'bar': <data> }
-#   'split' if False, the value will be treated as a  simple string, otherwise
+#   'split' if False, the value will be treated as a simple string, otherwise
 #     it will be split at ','
 #   'processor' if defined, the callable will be invoked with each string (or
-#     substring if split is not None) and the result is used
+#     substring if split is 'True') and the result is used
 #   'default' is optional and specifies a default value, which will be treated
 #     as if it has been read from the file, i. e. is subject to splitting and
 #     processing
@@ -55,5 +61,5 @@ attribute_schema = {
 	'abstract': (False, None, None),
 	'license': (False, parse_license, "BSD"),
 	'extra*': (False, parse_extra, None),
-	'notify': (False, None, None)
+	'notify': (True, parse_email, "")
 }

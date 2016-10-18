@@ -358,7 +358,7 @@ proof -
   have "(a > 0) = (b > 0)" by (simp add: zero_less_mult_iff)
   with a b abs have "a = b" by auto
   with arg_cong[OF fg, of "\<lambda> x. x div [:b:]"] b show ?thesis
-    by (metis nonzero_mult_divide_cancel_left pCons_eq_0_iff)
+    by (metis nonzero_mult_div_cancel_left pCons_eq_0_iff)
 qed
 
 
@@ -473,8 +473,8 @@ proof -
       let ?prod = "\<lambda> fs. (\<Prod>(a, i)\<in>set fs. a ^ Suc i)" 
       let ?pr = "\<lambda> fs. (\<Prod>(a, i)\<leftarrow>fs. a ^ Suc i)"
       define pr where "pr = ?prod fs" 
-      from \<open>distinct fs\<close> have pfs: "?prod fs = ?pr fs" by (rule setprod.distinct_set_conv_list)
-      from \<open>distinct Fs\<close> have pFs: "?prod Fs = ?pr Fs" by (rule setprod.distinct_set_conv_list)
+      from \<open>distinct fs\<close> have pfs: "?prod fs = ?pr fs" by (rule prod.distinct_set_conv_list)
+      from \<open>distinct Fs\<close> have pFs: "?prod Fs = ?pr Fs" by (rule prod.distinct_set_conv_list)
       from out_rel have "yun_erel (?prod fs) (?prod Fs)" unfolding pfs pFs
       proof (induct fs Fs rule: list_all2_induct)
         case (Cons ai fs Ai Fs)

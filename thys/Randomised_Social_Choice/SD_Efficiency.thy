@@ -59,10 +59,10 @@ proof -
   proof (subst nn_integral_count_space')
     have "(\<Sum>x\<in>supp. ennreal (pmf p x + \<epsilon> * (pmf q' x - pmf p' x))) = 
             ennreal ((\<Sum>x\<in>supp. pmf p x) + \<epsilon> * ((\<Sum>x\<in>supp. pmf q' x) - (\<Sum>x\<in>supp. pmf p' x)))"
-     by (subst setsum_ennreal[OF nonneg], rule ennreal_cong)
-        (auto simp: setsum_subtractf ring_distribs setsum.distrib setsum_distrib_left)
+     by (subst sum_ennreal[OF nonneg], rule ennreal_cong)
+        (auto simp: sum_subtractf ring_distribs sum.distrib sum_distrib_left)
     also from finite_supp support have "\<dots> = 1"
-      by (subst (1 2 3) setsum_pmf_eq_1) (auto simp: supp_def)
+      by (subst (1 2 3) sum_pmf_eq_1) (auto simp: supp_def)
     finally show "(\<Sum>x\<in>supp. ennreal (pmf p x + \<epsilon> * (pmf q' x - pmf p' x))) = 1" .
   qed (insert nonneg finite_supp, simp_all)
   with nonneg have pmf_q: "pmf q x = pmf p x + \<epsilon> * (pmf q' x - pmf p' x)" for x
@@ -76,8 +76,8 @@ proof -
     "measure_pmf.expectation q u = measure_pmf.expectation p u + 
          \<epsilon> * (measure_pmf.expectation q' u - measure_pmf.expectation p' u)" for u
     by (subst (1 2 3 4) integral_measure_pmf[OF finite_supp])
-       (auto simp: pmf_q supp_def setsum.distrib setsum_distrib_left 
-                   setsum_distrib_right setsum_subtractf algebra_simps)
+       (auto simp: pmf_q supp_def sum.distrib sum_distrib_left 
+                   sum_distrib_right sum_subtractf algebra_simps)
   
   have "q \<succeq>[SD(R i)] p" if i: "i \<in> agents" for i
   proof -
@@ -169,10 +169,10 @@ proof -
   proof (subst nn_integral_count_space')
     have "(\<Sum>x\<in>supp. ennreal (pmf p x + \<epsilon> * (pmf q x - pmf p x))) = 
             ennreal ((\<Sum>x\<in>supp. pmf p x) + \<epsilon> * ((\<Sum>x\<in>supp. pmf q x) - (\<Sum>x\<in>supp. pmf p x)))"
-     by (subst setsum_ennreal[OF nonneg], rule ennreal_cong)
-        (auto simp: setsum_subtractf ring_distribs setsum.distrib setsum_distrib_left)
+     by (subst sum_ennreal[OF nonneg], rule ennreal_cong)
+        (auto simp: sum_subtractf ring_distribs sum.distrib sum_distrib_left)
     also from finite_supp  have "\<dots> = 1"
-      by (subst (1 2 3) setsum_pmf_eq_1) (auto simp: supp_def assms)
+      by (subst (1 2 3) sum_pmf_eq_1) (auto simp: supp_def assms)
     finally show "(\<Sum>x\<in>supp. ennreal (pmf p x + \<epsilon> * (pmf q x - pmf p x))) = 1" .
   qed (insert nonneg finite_supp, simp_all)
   with nonneg have pmf_r: "pmf r x = pmf p x + \<epsilon> * (pmf q x - pmf p x)" for x
@@ -201,8 +201,8 @@ proof -
         "measure_pmf.expectation r u = measure_pmf.expectation p u + 
              \<epsilon> * (measure_pmf.expectation q u - measure_pmf.expectation p u)"
         by (subst (1 2 3 4) integral_measure_pmf[OF finite_supp])
-           (auto simp: supp_def assms pmf_r setsum.distrib setsum_distrib_left
-            setsum_distrib_right setsum_subtractf algebra_simps)
+           (auto simp: supp_def assms pmf_r sum.distrib sum_distrib_left
+            sum_distrib_right sum_subtractf algebra_simps)
       from assms i have "q \<succeq>[SD(R i)] p" by (simp add: SD.Pareto_strict_iff)
       with assms u have "measure_pmf.expectation q u \<ge> measure_pmf.expectation p u"
         by (simp add: SD_iff_expected_utilities_le r_wf)

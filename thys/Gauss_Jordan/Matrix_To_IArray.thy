@@ -165,13 +165,13 @@ definition transpose_iarray :: "'a iarray iarray => 'a iarray iarray"
   where "transpose_iarray A =  tabulate2 (ncols_iarray A) (nrows_iarray A) (\<lambda>a b. A!!b!!a)"
 
 definition matrix_matrix_mult_iarray :: "'a::{times, comm_monoid_add} iarray iarray => 'a iarray iarray => 'a iarray iarray"  (infixl "**i" 70)
-  where "A **i B = tabulate2 (nrows_iarray A) (ncols_iarray B) (\<lambda>i j. setsum (\<lambda>k. ((A!!i)!!k) * ((B!!k)!!j)) {0..<ncols_iarray A})"
+  where "A **i B = tabulate2 (nrows_iarray A) (ncols_iarray B) (\<lambda>i j. sum (\<lambda>k. ((A!!i)!!k) * ((B!!k)!!j)) {0..<ncols_iarray A})"
 
 definition matrix_vector_mult_iarray :: "'a::{semiring_1} iarray iarray => 'a iarray => 'a iarray" (infixl "*iv" 70)
-  where "A *iv x = IArray.of_fun (\<lambda>i. setsum (\<lambda>j. ((A!!i)!!j) * (x!!j)) {0..<IArray.length x}) (nrows_iarray A)"
+  where "A *iv x = IArray.of_fun (\<lambda>i. sum (\<lambda>j. ((A!!i)!!j) * (x!!j)) {0..<IArray.length x}) (nrows_iarray A)"
 
 definition vector_matrix_mult_iarray :: "'a::{semiring_1} iarray => 'a iarray iarray => 'a iarray" (infixl "v*i" 70)
-  where "x v*i A = IArray.of_fun (\<lambda>j. setsum (\<lambda>i. ((A!!i)!!j) * (x!!i)) {0..<IArray.length x}) (ncols_iarray A)"
+  where "x v*i A = IArray.of_fun (\<lambda>j. sum (\<lambda>i. ((A!!i)!!j) * (x!!i)) {0..<IArray.length x}) (ncols_iarray A)"
 
 definition mat_iarray :: "'a::{zero} => nat => 'a iarray iarray"
   where "mat_iarray k n = tabulate2 n n (\<lambda> i j. if i = j then k else 0)"
@@ -317,7 +317,7 @@ lemma matrix_to_iarray_matrix_matrix_mult[code_unfold]:
   shows "matrix_to_iarray (A ** B) = (matrix_to_iarray A) **i (matrix_to_iarray B)"
   unfolding matrix_to_iarray_def matrix_matrix_mult_iarray_def matrix_matrix_mult_def 
   unfolding o_def tabulate2_def nrows_iarray_def ncols_iarray_def vec_to_iarray_def
-  using setsum.reindex[of "from_nat::nat=>'m"] using bij_from_nat unfolding bij_betw_def by fastforce
+  using sum.reindex[of "from_nat::nat=>'m"] using bij_from_nat unfolding bij_betw_def by fastforce
 
 
 lemma vec_to_iarray_matrix_matrix_mult[code_unfold]:
@@ -325,7 +325,7 @@ lemma vec_to_iarray_matrix_matrix_mult[code_unfold]:
   shows "vec_to_iarray (A *v x) = (matrix_to_iarray A) *iv (vec_to_iarray x)"
   unfolding matrix_vector_mult_iarray_def matrix_vector_mult_def 
   unfolding o_def tabulate2_def nrows_iarray_def ncols_iarray_def matrix_to_iarray_def vec_to_iarray_def
-  using setsum.reindex[of "from_nat::nat=>'m"] using bij_from_nat unfolding bij_betw_def by fastforce
+  using sum.reindex[of "from_nat::nat=>'m"] using bij_from_nat unfolding bij_betw_def by fastforce
 
 
 lemma vec_to_iarray_vector_matrix_mult[code_unfold]:
@@ -337,7 +337,7 @@ proof (auto)
   fix xa
   have "(UNIV::'n set) = from_nat `{0..<CARD('n)}"  using bij_from_nat[where ?'a='n] unfolding bij_betw_def by fast
   show "(\<Sum>i\<in>UNIV. A $ i $ from_nat xa * x $ i) = (\<Sum>i = 0..<CARD('n). A $ from_nat i $ from_nat xa * x $ from_nat i)"
-  using setsum.reindex[of "from_nat::nat=>'n"]  using bij_from_nat[where ?'a='n] unfolding bij_betw_def by force
+  using sum.reindex[of "from_nat::nat=>'n"]  using bij_from_nat[where ?'a='n] unfolding bij_betw_def by force
 qed
 
 

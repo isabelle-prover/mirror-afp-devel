@@ -903,43 +903,43 @@ shows "shift cl n1 I1 \<inter> shift cl n2 I2 = {}"
 apply(rule part_brn_disj1)
 using assms by auto
 
-lemma setsum_wt_Par_sub_shift[simp]:
+lemma sum_wt_Par_sub_shift[simp]:
 assumes cl: "properL cl" and n: "n < length cl" and
 I: "I \<subseteq> {..< brn (cl ! n)}"
 shows
-"setsum (wt (Par cl) s) (shift cl n I) =
- 1 / (length cl) * setsum (wt (cl ! n) s) I"
-using assms setsum_wt_Par_sub unfolding shift_def by simp
+"sum (wt (Par cl) s) (shift cl n I) =
+ 1 / (length cl) * sum (wt (cl ! n) s) I"
+using assms sum_wt_Par_sub unfolding shift_def by simp
 
-lemma setsum_wt_ParT_sub_WtFT_pickFT_0_shift[simp]:
+lemma sum_wt_ParT_sub_WtFT_pickFT_0_shift[simp]:
 assumes cl: "properL cl" and nf: "WtFT cl = 1"
 and I: "I \<subseteq> {..< brn (cl ! (pickFT cl))}" "0 \<in> I"
 shows
-"setsum (wt (ParT cl) s) (shift cl (pickFT cl) I) = 1"
-using assms setsum_wt_ParT_sub_WtFT_pickFT_0
+"sum (wt (ParT cl) s) (shift cl (pickFT cl) I) = 1"
+using assms sum_wt_ParT_sub_WtFT_pickFT_0
 unfolding shift_def by simp
 
-lemma setsum_wt_ParT_sub_WtFT_notPickFT_0_shift[simp]:
+lemma sum_wt_ParT_sub_WtFT_notPickFT_0_shift[simp]:
 assumes cl: "properL cl" and nf: "WtFT cl = 1" and n: "n < length cl"
 and I: "I \<subseteq> {..< brn (cl ! n)}" and nI: "n = pickFT cl \<longrightarrow> 0 \<notin> I"
-shows "setsum (wt (ParT cl) s) (shift cl n I) = 0"
-using assms setsum_wt_ParT_sub_WtFT_notPickFT_0 unfolding shift_def by simp
+shows "sum (wt (ParT cl) s) (shift cl n I) = 0"
+using assms sum_wt_ParT_sub_WtFT_notPickFT_0 unfolding shift_def by simp
 
-lemma setsum_wt_ParT_sub_notWtFT_finished_shift[simp]:
+lemma sum_wt_ParT_sub_notWtFT_finished_shift[simp]:
 assumes cl: "properL cl" and nf: "WtFT cl \<noteq> 1" and n: "n < length cl" and cln: "finished (cl!n)"
 and I: "I \<subseteq> {..< brn (cl ! n)}"
-shows "setsum (wt (ParT cl) s) (shift cl n I) = 0"
-using assms setsum_wt_ParT_sub_notWtFT_finished
+shows "sum (wt (ParT cl) s) (shift cl n I) = 0"
+using assms sum_wt_ParT_sub_notWtFT_finished
 unfolding shift_def by simp
 
-lemma setsum_wt_ParT_sub_notWtFT_notFinished_shift[simp]:
+lemma sum_wt_ParT_sub_notWtFT_notFinished_shift[simp]:
 assumes cl: "properL cl" and nf: "WtFT cl \<noteq> 1"
 and n: "n < length cl" and cln: "\<not> finished (cl!n)"
 and I: "I \<subseteq> {..< brn (cl ! n)}"
 shows
-"setsum (wt (ParT cl) s) (shift cl n I) =
- (1 / (length cl)) / (1 - WtFT cl) * setsum (wt (cl ! n) s) I"
-using assms setsum_wt_ParT_sub_notWtFT_notFinished
+"sum (wt (ParT cl) s) (shift cl n I) =
+ (1 / (length cl)) / (1 - WtFT cl) * sum (wt (cl ! n) s) I"
+using assms sum_wt_ParT_sub_notWtFT_notFinished
 unfolding shift_def by simp
 
 (*  *)
@@ -1148,12 +1148,12 @@ and P: "\<And> n. n < length cl \<Longrightarrow> part {..< brn (cl!n)} (P n) \<
 and FP: "\<And> n. n < length dl \<Longrightarrow> part {..< brn (dl!n)} (F n ` (P n))"
 and sw:
 "\<And>n I. \<lbrakk>n < length cl; I \<in> P n\<rbrakk> \<Longrightarrow>
-     setsum (wt (cl ! n) s) I =
-     setsum (wt (dl ! n) t) (F n I)"
+     sum (wt (cl ! n) s) I =
+     sum (wt (dl ! n) t) (F n I)"
 and st: "s \<approx> t"
 shows
-"setsum (wt (Par cl) s) II =
- setsum (wt (Par dl) t) (UNlift cl dl P F II)" (is "?L = ?R")
+"sum (wt (Par cl) s) II =
+ sum (wt (Par dl) t) (UNlift cl dl P F II)" (is "?L = ?R")
 proof-
   let ?N = "length cl"
   let ?p = "%n. 1 / ?N" let ?q = "%n. 1 / (length dl)"
@@ -1168,9 +1168,9 @@ proof-
     and II: "II = shift cl n I" using l by auto
     have I_sub: "I \<subseteq> {..< brn (cl!n)}" using n I P unfolding part_def by blast
     hence FnI_sub: "F n I \<subseteq> {..< brn (dl!n)}" using n I FP unfolding part_def by blast
-    have "?L = (?p n) * setsum (wt (cl ! n) (?ss n)) I"
+    have "?L = (?p n) * sum (wt (cl ! n) (?ss n)) I"
     unfolding II using n cldl I_sub by simp
-    also have "... = (?q n) * setsum (wt (dl ! n) (?tt n)) (F n I)"
+    also have "... = (?q n) * sum (wt (dl ! n) (?tt n)) (F n I)"
     using n pq apply simp using I sw[of n I] unfolding l by auto
     also have "... = ?R"
     unfolding II using l cldl n FnI_sub P I by simp
@@ -1265,7 +1265,7 @@ unfolding Sretr_def matchC_C_def proof safe
   using m N unfolding m_defsAll part_def by auto
   have F: "\<And>n. n < ?N \<Longrightarrow> inj_on (F n) (P n)" using m unfolding m_defsAll by auto
   have sw: "\<And>n I. \<lbrakk>n < length cl; I \<in> P n\<rbrakk> \<Longrightarrow>
-     setsum (wt (cl ! n) (?ss n)) I = setsum (wt (dl ! n) (?tt n)) (F n I)"
+     sum (wt (cl ! n) (?ss n)) I = sum (wt (dl ! n) (?tt n)) (F n I)"
   using m unfolding mC_C_def mC_C_wt_def by auto
   have eff_cont: "\<And>n I i j. \<lbrakk>n < length cl; I \<in> P n; i \<in> I; j \<in> F n I\<rbrakk> \<Longrightarrow>
      eff (cl!n) (?ss n) i \<approx> eff (dl!n) (?tt n) j \<and>
@@ -1292,7 +1292,7 @@ unfolding Sretr_def matchC_C_def proof safe
     show "mC_C_wt c d s t Q G"
     unfolding mC_C_wt_def defi proof clarify
       fix I assume "I \<in> UNpart cl P"
-      thus "setsum (wt c s) I = setsum (wt d t) (UNlift cl dl P F I)"
+      thus "sum (wt c s) I = sum (wt d t) (UNlift cl dl P F I)"
       unfolding c d apply(intro ss_wt_Par_UNlift)
       using N cldl P FP sw st by auto
     qed
@@ -1808,7 +1808,7 @@ using assms brn_gt_0_L unfolding BrnFT_def by auto
 
 lemma WtFT_ParT_BrnFT[simp]:
 assumes "length cl = length dl" "properL cl" and "WtFT cl = 1"
-shows "setsum (wt (ParT cl) s) (BrnFT cl dl) = 1"
+shows "sum (wt (ParT cl) s) (BrnFT cl dl) = 1"
 proof-
   have "brnL cl (pickFT cl) \<in> BrnFT cl dl" and
   "BrnFT cl dl \<subseteq> {..<brnL cl (length cl)}"
@@ -2151,18 +2151,18 @@ and P: "\<And> n. n < length cl \<Longrightarrow> part {..< brn (cl!n)} (P n) \<
 and FP: "\<And> n. n < length dl \<Longrightarrow> part {..< brn (dl!n)} (F n ` (P n))"
 and sw:
 "\<And>n I. \<lbrakk>n < length cl; I \<in> P n\<rbrakk> \<Longrightarrow>
-     setsum (wt (cl ! n) s) I =
-     setsum (wt (dl ! n) t) (F n I)"
+     sum (wt (cl ! n) s) I =
+     sum (wt (dl ! n) t) (F n I)"
 and st: "s \<approx> t"
-and le1: "setsum (wt (ParT cl) s) (BrnFT cl dl) < 1"
-"setsum (wt (ParT dl) t) (BrnFT dl cl) < 1"
+and le1: "sum (wt (ParT cl) s) (BrnFT cl dl) < 1"
+"sum (wt (ParT dl) t) (BrnFT dl cl) < 1"
 shows
-"setsum (wt (ParT cl) s) II /
- (1 - setsum (wt (ParT cl) s) (BrnFT cl dl)) =
- setsum (wt (ParT dl) t) (UNlift01 cl dl P F II) /
- (1 - setsum (wt (ParT dl) t) (BrnFT dl cl))"
-(is "setsum ?vP II / (1 - setsum ?vP ?II_0) =
-     setsum ?wP ?JJ / (1 - setsum ?wP ?JJ_0)")
+"sum (wt (ParT cl) s) II /
+ (1 - sum (wt (ParT cl) s) (BrnFT cl dl)) =
+ sum (wt (ParT dl) t) (UNlift01 cl dl P F II) /
+ (1 - sum (wt (ParT dl) t) (BrnFT dl cl))"
+(is "sum ?vP II / (1 - sum ?vP ?II_0) =
+     sum ?wP ?JJ / (1 - sum ?wP ?JJ_0)")
 proof-
   let ?N = "length cl"
   let ?vS = "%n. 1 / ?N" let ?wS = "%n. 1 / (length dl)"
@@ -2179,17 +2179,17 @@ proof-
   "\<And> n. n \<in> theFT dl - theFT cl \<Longrightarrow> n < length cl \<and> \<not> finished (cl ! n)"
   "\<And> n. n \<in> theFT cl - theFT dl \<Longrightarrow> n < length dl \<and> \<not> finished (dl ! n)"
   unfolding theFT_def using l by auto
-  have setsum_v[simp]:
-  "\<And> n. n < length cl \<Longrightarrow> setsum (?v n) {..< brn (cl ! n)} = 1"
+  have sum_v[simp]:
+  "\<And> n. n < length cl \<Longrightarrow> sum (?v n) {..< brn (cl ! n)} = 1"
   using cldl by auto
-  have setsum_w[simp]:
-  "\<And> n. n < length dl \<Longrightarrow> setsum (?w n) {..< brn (dl ! n)} = 1"
+  have sum_w[simp]:
+  "\<And> n. n < length dl \<Longrightarrow> sum (?w n) {..< brn (dl ! n)} = 1"
   using cldl by auto
   have theFTOne: "theFTOne cl dl = theFT dl - theFT cl \<union> theFT cl"
   "theFTOne dl cl = theFT cl - theFT dl \<union> theFT dl"
   unfolding theFTOne_def by blast+
-  have setsum_vS_wS: "setsum ?vS (theFTOne cl dl) = setsum ?wS (theFTOne dl cl)"
-  unfolding theFTOne_sym[of cl dl] apply (rule setsum.cong)
+  have sum_vS_wS: "sum ?vS (theFTOne cl dl) = sum ?wS (theFTOne dl cl)"
+  unfolding theFTOne_sym[of cl dl] apply (rule sum.cong)
   using vSwS l unfolding theFTOne_def theFT_def theNFT_def by auto
   (*  *)
   have II: "II \<in> UNpart1 cl dl P" using II l P UNpart1_UNpart01 by blast
@@ -2205,103 +2205,103 @@ proof-
     have JJ: "?JJ = shift dl n (F n I)"
     unfolding II using l P n I by simp
     (*  *)
-    have "setsum ?vP ?II_0 =
-    setsum (%n. setsum ?vP {brnL cl n..<+brn (cl ! n)}) (theFTOne cl dl)"
-    unfolding BrnFT_def apply(rule setsum.UNION_disjoint)
+    have "sum ?vP ?II_0 =
+    sum (%n. sum ?vP {brnL cl n..<+brn (cl ! n)}) (theFTOne cl dl)"
+    unfolding BrnFT_def apply(rule sum.UNION_disjoint)
     using brnL_Int l by auto
     also have "... =
-    setsum
-      (%n. setsum ?vP {brnL cl n..<+brn (cl ! n)})
+    sum
+      (%n. sum ?vP {brnL cl n..<+brn (cl ! n)})
       ((theFT dl - theFT cl) \<union> theFT cl)" unfolding theFTOne_def
     by (metis Un_Diff_cancel2 Un_commute)
     also have "... =
-    setsum
-      (%n. setsum ?vP {brnL cl n..<+brn (cl ! n)})
+    sum
+      (%n. sum ?vP {brnL cl n..<+brn (cl ! n)})
       (theFT dl - theFT cl) +
-    setsum
-      (%n. setsum ?vP {brnL cl n..<+brn (cl ! n)})
+    sum
+      (%n. sum ?vP {brnL cl n..<+brn (cl ! n)})
       (theFT cl)" (is "... = ?L + ?R")
-    apply(rule setsum.union_disjoint) by auto
-    also have "?R = 0" apply(rule setsum.neutral) using cldl nf by auto
-    finally have "setsum ?vP ?II_0 = ?L" by simp
+    apply(rule sum.union_disjoint) by auto
+    also have "?R = 0" apply(rule sum.neutral) using cldl nf by auto
+    finally have "sum ?vP ?II_0 = ?L" by simp
     also have "?L =
-    setsum
-      (%n. ?vS n / (1 - ?vSF) * setsum (?v n) {..< brn (cl ! n)})
+    sum
+      (%n. ?vS n / (1 - ?vSF) * sum (?v n) {..< brn (cl ! n)})
       (theFT dl - theFT cl)"
-    apply(intro setsum.cong) using cldl nf
-    using theFT_theNFT setsum_wt_ParT_notWtFT_notFinished[of cl] by metis+
+    apply(intro sum.cong) using cldl nf
+    using theFT_theNFT sum_wt_ParT_notWtFT_notFinished[of cl] by metis+
     also have "... =
-    setsum
-      (%n. ?vS n * setsum (?v n) {..< brn (cl ! n)})
+    sum
+      (%n. ?vS n * sum (?v n) {..< brn (cl ! n)})
       (theFT dl - theFT cl) / (1 - ?vSF)" (is "... = ?L / (1 - ?vSF)")
-    unfolding times_divide_eq_left setsum_divide_distrib by simp
-    also have "?L = setsum ?vS (theFT dl - theFT cl)"
-    apply(intro setsum.cong) by auto
+    unfolding times_divide_eq_left sum_divide_distrib by simp
+    also have "?L = sum ?vS (theFT dl - theFT cl)"
+    apply(intro sum.cong) by auto
     finally have
-    "setsum ?vP ?II_0 = (setsum ?vS (theFT dl - theFT cl)) / (1 - ?vSF)"
+    "sum ?vP ?II_0 = (sum ?vS (theFT dl - theFT cl)) / (1 - ?vSF)"
     (is "... = ?L / ?R") by simp
-    also have "?L = setsum ?vS (theFTOne cl dl) - ?vSF"
+    also have "?L = sum ?vS (theFTOne cl dl) - ?vSF"
     unfolding eq_diff_eq WtFT_def theFTOne
-    apply(rule setsum.union_disjoint[THEN sym]) by auto
-    finally have vPII0: "setsum ?vP ?II_0 =
-    (setsum ?vS (theFTOne cl dl) - ?vSF) / (1 - ?vSF)" by simp
+    apply(rule sum.union_disjoint[THEN sym]) by auto
+    finally have vPII0: "sum ?vP ?II_0 =
+    (sum ?vS (theFTOne cl dl) - ?vSF) / (1 - ?vSF)" by simp
     (*  *)
     (*  *)
-    have "setsum ?wP ?JJ_0 =
-    setsum (%n. setsum ?wP {brnL dl n..<+brn (dl ! n)}) (theFTOne dl cl)"
-    unfolding BrnFT_def apply(rule setsum.UNION_disjoint)
+    have "sum ?wP ?JJ_0 =
+    sum (%n. sum ?wP {brnL dl n..<+brn (dl ! n)}) (theFTOne dl cl)"
+    unfolding BrnFT_def apply(rule sum.UNION_disjoint)
     unfolding theFTOne_def theFT_def apply (force, force, clarify)
     apply(rule brnL_Int) using l by auto
     also have "... =
-    setsum
-      (%n. setsum ?wP {brnL dl n..<+ brn (dl ! n)})
+    sum
+      (%n. sum ?wP {brnL dl n..<+ brn (dl ! n)})
       ((theFT cl - theFT dl) \<union> theFT dl)" unfolding theFTOne_def
     by (metis Un_Diff_cancel2 Un_commute)
     also have "... =
-    setsum
-      (%n. setsum ?wP {brnL dl n..<+brn (dl ! n)})
+    sum
+      (%n. sum ?wP {brnL dl n..<+brn (dl ! n)})
       (theFT cl - theFT dl) +
-    setsum
-      (%n. setsum ?wP {brnL dl n..<+brn (dl ! n)})
+    sum
+      (%n. sum ?wP {brnL dl n..<+brn (dl ! n)})
       (theFT dl)" (is "... = ?L + ?R")
-    apply(rule setsum.union_disjoint) by auto
-    also have "?R = 0" apply(rule setsum.neutral) using cldl nf by auto
-    finally have "setsum ?wP ?JJ_0 = ?L" by simp
+    apply(rule sum.union_disjoint) by auto
+    also have "?R = 0" apply(rule sum.neutral) using cldl nf by auto
+    finally have "sum ?wP ?JJ_0 = ?L" by simp
     also have "?L =
-    setsum
-      (%n. ?wS n / (1 - ?wSF) * setsum (?w n) {..< brn (dl ! n)})
+    sum
+      (%n. ?wS n / (1 - ?wSF) * sum (?w n) {..< brn (dl ! n)})
       (theFT cl - theFT dl)"
-    apply(intro setsum.cong) using cldl nf
-    using theFT_theNFT setsum_wt_ParT_notWtFT_notFinished[of dl] by metis+
+    apply(intro sum.cong) using cldl nf
+    using theFT_theNFT sum_wt_ParT_notWtFT_notFinished[of dl] by metis+
     also have "... =
-    setsum
-      (%n. ?wS n * setsum (?w n) {..< brn (dl ! n)})
+    sum
+      (%n. ?wS n * sum (?w n) {..< brn (dl ! n)})
       (theFT cl - theFT dl) / (1 - ?wSF)" (is "... = ?L / (1 - ?wSF)")
-    unfolding times_divide_eq_left setsum_divide_distrib by simp
-    also have "?L = setsum ?wS (theFT cl - theFT dl)"
-    apply(intro setsum.cong) by auto
+    unfolding times_divide_eq_left sum_divide_distrib by simp
+    also have "?L = sum ?wS (theFT cl - theFT dl)"
+    apply(intro sum.cong) by auto
     finally have
-    "setsum ?wP ?JJ_0 = (setsum ?wS (theFT cl - theFT dl)) / (1 - ?wSF)"
+    "sum ?wP ?JJ_0 = (sum ?wS (theFT cl - theFT dl)) / (1 - ?wSF)"
     (is "... = ?L / ?R") by simp
-    also have "?L = setsum ?wS (theFTOne dl cl) - ?wSF"
+    also have "?L = sum ?wS (theFTOne dl cl) - ?wSF"
     unfolding eq_diff_eq WtFT_def theFTOne
-    apply(rule setsum.union_disjoint[THEN sym]) by auto
-    finally have wPJJ0: "setsum ?wP ?JJ_0 =
-    (setsum ?wS (theFTOne dl cl) - ?wSF) / (1 - ?wSF)" by simp
+    apply(rule sum.union_disjoint[THEN sym]) by auto
+    finally have wPJJ0: "sum ?wP ?JJ_0 =
+    (sum ?wS (theFTOne dl cl) - ?wSF) / (1 - ?wSF)" by simp
     (*  *)
-    have "setsum ?vP II / (1 - setsum ?vP ?II_0) =
-    (?vS n) / (1 - ?vSF) * (setsum (?v n) I) / (1 - setsum ?vP ?II_0)"
+    have "sum ?vP II / (1 - sum ?vP ?II_0) =
+    (?vS n) / (1 - ?vSF) * (sum (?v n) I) / (1 - sum ?vP ?II_0)"
     unfolding II using n nf cldl I_sub by simp
     also have "... =
-    (?vS n) * (setsum (?v n) I) / (1 - setsum ?vS (theFTOne cl dl))"
+    (?vS n) * (sum (?v n) I) / (1 - sum ?vS (theFTOne cl dl))"
       using nf(1) vPII0 by (rule triv_div_mult) (insert le1, auto)
     also have "... =
-    (?wS n) * (setsum (?w n) (F n I)) / (1 - setsum ?wS (theFTOne dl cl))"
-    using n vSwS[of n] sw[of n I] I unfolding setsum_vS_wS by simp
+    (?wS n) * (sum (?w n) (F n I)) / (1 - sum ?wS (theFTOne dl cl))"
+    using n vSwS[of n] sw[of n I] I unfolding sum_vS_wS by simp
     also have "... =
-    (?wS n) / (1 - ?wSF) * (setsum (?w n) (F n I)) / (1 - setsum ?wP ?JJ_0)"
+    (?wS n) / (1 - ?wSF) * (sum (?w n) (F n I)) / (1 - sum ?wP ?JJ_0)"
       using nf(2) wPJJ0 by (rule triv_div_mult[THEN sym]) (insert le1, auto)
-    also have "... = setsum ?wP ?JJ / (1 - setsum ?wP ?JJ_0)"
+    also have "... = sum ?wP ?JJ / (1 - sum ?wP ?JJ_0)"
     unfolding JJ using n nf cldl FnI_sub by simp
     finally show ?thesis .
   qed
@@ -2509,7 +2509,7 @@ unfolding ZOretr_def matchC_LC_def proof safe
   using m N unfolding m_defsAll part_def by auto
   have F: "\<And>n. n < ?N \<Longrightarrow> inj_on (F n) (P n)" using m unfolding m_defsAll by auto
   have sw: "\<And>n I. \<lbrakk>n < length cl; I \<in> P n\<rbrakk> \<Longrightarrow>
-     setsum (wt (cl ! n) (?ss n)) I = setsum (wt (dl ! n) (?tt n)) (F n I)"
+     sum (wt (cl ! n) (?ss n)) I = sum (wt (dl ! n) (?tt n)) (F n I)"
   using m unfolding mC_C_def mC_C_wt_def by auto
   have eff_cont: "\<And>n I i j. \<lbrakk>n < length cl; I \<in> P n; i \<in> I; j \<in> F n I\<rbrakk> \<Longrightarrow>
      eff (cl!n) (?ss n) i \<approx> eff (dl!n) (?tt n) j \<and> cont (cl!n) (?ss n) i \<approx>s cont (dl!n) (?tt n) j"
@@ -2538,10 +2538,10 @@ unfolding ZOretr_def matchC_LC_def proof safe
     show "mC_ZOC_wt c d s t II0 Q G"
     unfolding mC_ZOC_wt_def proof (intro impI ballI, elim conjE)
       fix II assume II: "II \<in> Q - {II0}" and
-      le1: "setsum (wt c s) II0 < 1" "setsum (wt d t) (G II0) < 1"
+      le1: "sum (wt c s) II0 < 1" "sum (wt d t) (G II0) < 1"
       thus
-      "setsum (wt c s) II / (1 - setsum (wt c s) II0) =
-       setsum (wt d t) (G II) / (1 - setsum (wt d t) (G II0))"
+      "sum (wt c s) II / (1 - sum (wt c s) II0) =
+       sum (wt d t) (G II) / (1 - sum (wt d t) (G II0))"
       unfolding c d defi UNlift01_BrnFT apply(intro ss_wt_ParT_UNlift01)
       using N cldl II P FP sw st by auto
     qed

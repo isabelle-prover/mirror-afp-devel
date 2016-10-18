@@ -175,19 +175,19 @@ power series. *}
 
 lemma fps_annil [simp]:
   "0 * (f::('a::type,'b::{comm_monoid_add,mult_zero}) fps) = 0"
-by (rule fps_ext) (simp add: times_fps_def setsum.neutral)
+by (rule fps_ext) (simp add: times_fps_def sum.neutral)
 
 lemma fps_annir [simp]:
   "(f::('a::type,'b::{comm_monoid_add,mult_zero}) fps) * 0 = 0"
-by (simp add: fps_ext times_fps_def setsum.neutral)
+by (simp add: fps_ext times_fps_def sum.neutral)
 
 lemma fps_distl:
   "(f::('a::type,'b::{join_semilattice_zero,semiring}) fps) * (g + h) = (f * g) + (f * h)"
-by (simp add: fps_ext fps_mult_image distrib_left setsum_fun_sum)
+by (simp add: fps_ext fps_mult_image distrib_left sum_fun_sum)
 
 lemma fps_distr:
   "((f::('a::type,'b::{join_semilattice_zero,semiring}) fps) + g) * h = (f * h) + (g * h)"
-by (simp add: fps_ext fps_mult_image distrib_right setsum_fun_sum)
+by (simp add: fps_ext fps_mult_image distrib_right sum_fun_sum)
 
 text {* The multiplicative unit laws are surprisingly tedious. For the
 proof of the left unit law we use the recursive definition, which we
@@ -220,7 +220,7 @@ proof (rule fps_ext)
   {
     fix z :: 'b
     have "(f * 1) $ n \<le> z \<longleftrightarrow> (\<forall>p \<in> splitset n. f $ (fst p) * 1 $ (snd p) \<le> z)"
-      by (simp add: fps_mult_image setsum_fun_image_sup)
+      by (simp add: fps_mult_image sum_fun_image_sup)
     also have "... \<longleftrightarrow> (\<forall>a b. n = a @ b \<longrightarrow> f $ a * 1 $ b \<le> z)"
       unfolding splitset_def by simp
     also have "... \<longleftrightarrow> (f $ n * 1 $ [] \<le> z)"
@@ -246,10 +246,10 @@ proof -
   {
     fix z :: 'b
     have "?lhs \<le> z \<longleftrightarrow> (\<forall>p q r. x = p @ q @ r \<longrightarrow> F p q r \<le> z)"
-      by (simp only: fset_to_im setsum_fun_image_sup splitset_finite)
+      by (simp only: fset_to_im sum_fun_image_sup splitset_finite)
          (auto simp add: splitset_def)
     hence "?lhs \<le> z \<longleftrightarrow> ?rhs \<le> z"
-      by (simp only: fset_to_im setsum_fun_image_sup splitset_finite)
+      by (simp only: fset_to_im sum_fun_image_sup splitset_finite)
          (auto simp add: splitset_def)
   }
   thus ?thesis
@@ -260,11 +260,11 @@ lemma fps_mult_assoc: "(f::('a::type,'b::dioid_one_zero) fps) * (g * h) = (f * g
 proof (rule fps_ext)
   fix n :: "'a list"
   have "(f * (g * h)) $ n = \<Sum>{\<Sum>{f $ (fst p) * g $ (fst q) * h $ (snd q) | q. q \<in> splitset (snd p)} | p. p \<in> splitset n}"
-    by (simp add: fps_mult_image setsum_sum_distl_fun mult.assoc)
+    by (simp add: fps_mult_image sum_sum_distl_fun mult.assoc)
   also have "... = \<Sum>{\<Sum>{f $ (fst q) * g $ (snd q) * h $ (snd p) | q. q \<in> splitset (fst p)} | p. p \<in> splitset n}"
     by (fact splitset_rearrange)
   finally show "(f * (g * h)) $ n = ((f * g) * h) $ n"
-    by (simp add: fps_mult_image setsum_sum_distr_fun mult.assoc)
+    by (simp add: fps_mult_image sum_sum_distr_fun mult.assoc)
 qed
 
 
@@ -339,13 +339,13 @@ interesting in the context of our algebraic hierarchy, shows that
 formal power series into a Kleene algebra form a Kleene algebra. We
 have only formalised the latter approach. *}
 
-lemma Setsum_splitlist_nonempty:
+lemma Sum_splitlist_nonempty:
   "\<Sum>{f ys zs |ys zs. xs = ys @ zs} = ((f [] xs)::'a::join_semilattice_zero) + \<Sum>{f ys zs |ys zs. xs = ys @ zs \<and> ys \<noteq> []}"
 proof -
   have "{f ys zs |ys zs. xs = ys @ zs} = {f ys zs |ys zs. xs = ys @ zs \<and> ys = []} \<union> {f ys zs |ys zs. xs = ys @ zs \<and> ys \<noteq> []}"
     by blast
   thus ?thesis using [[simproc add: finite_Collect]]
-    by (simp add: setsum.insert)
+    by (simp add: sum.insert)
 qed
 
 lemma (in left_kleene_algebra) add_star_eq:
@@ -384,7 +384,7 @@ begin
       apply (rule fps_ext)
       apply (case_tac n)
        apply (auto simp add: times_fps_def)
-      apply (simp add: add_star_eq mult.assoc[THEN sym] Setsum_splitlist_nonempty)
+      apply (simp add: add_star_eq mult.assoc[THEN sym] Sum_splitlist_nonempty)
       apply (simp add: add_star_eq join.sup_commute)
     done
     thus "1 + f \<cdot> f\<^sup>\<star> \<le> f\<^sup>\<star>"
@@ -397,7 +397,7 @@ begin
           apply (simp add: expand_fps_less_eq)
           apply (drule_tac x="u @ v" in spec)
           apply (simp add: times_fps_def)
-          apply (auto elim!: setsum_less_eqE)
+          apply (auto elim!: sum_less_eqE)
         done
         hence 2: "\<And>v. (f $ []) \<^sup>\<star> \<cdot> g $ v \<le> g $ v"
           apply (subgoal_tac "f $ [] \<cdot> g $ v \<le> g $ v")
@@ -406,15 +406,15 @@ begin
         done
         show "f\<^sup>\<star> \<cdot> g \<le> g"
           using [[simproc add: finite_Collect]]
-          apply (auto intro!: setsum_less_eqI simp add: expand_fps_less_eq times_fps_def)
+          apply (auto intro!: sum_less_eqI simp add: expand_fps_less_eq times_fps_def)
           apply (induct_tac "y" rule: length_induct)
           apply (case_tac "xs")
            apply (simp add: "2")
-          using "2" apply (auto simp add: mult.assoc setsum_distr)
+          using "2" apply (auto simp add: mult.assoc sum_distr)
           apply (rule_tac y="(f $ [])\<^sup>\<star> \<cdot> g $ (a # list @ z)" in order_trans)
            prefer 2
            apply (rule "2")
-          apply (auto intro!: mult_isol[rule_format] setsum_less_eqI)
+          apply (auto intro!: mult_isol[rule_format] sum_less_eqI)
           apply (drule_tac x="za" in spec)
           apply (drule mp)
            apply (metis append_eq_Cons_conv length_append less_not_refl2 add.commute not_less_eq trans_less_add1)
@@ -434,7 +434,7 @@ begin
           apply (simp add: expand_fps_less_eq)
           apply (drule_tac x="u @ v" in spec)
           apply (simp add: times_fps_def)
-          apply (auto elim!: setsum_less_eqE)
+          apply (auto elim!: sum_less_eqE)
         done
         hence 2: "\<And>u. g $ u \<cdot> (f $ [])\<^sup>\<star> \<le> g $ u"
           apply (subgoal_tac "g $ u \<cdot> f $ [] \<le> g $ u")
@@ -443,14 +443,14 @@ begin
         done
         show "g \<cdot> f\<^sup>\<star> \<le> g"
           using [[simproc add: finite_Collect]]
-          apply (auto intro!: setsum_less_eqI simp add: expand_fps_less_eq times_fps_def)
+          apply (auto intro!: sum_less_eqI simp add: expand_fps_less_eq times_fps_def)
           apply (rule_tac P="\<lambda>y. g $ y \<cdot> f\<^sup>\<star> $ z \<le> g $ (y @ z)" and x="y" in allE)
            prefer 2
            apply assumption
           apply (induct_tac "z" rule: length_induct)
           apply (case_tac "xs")
            apply (simp add: "2")
-          apply (auto intro!: setsum_less_eqI simp add: setsum_distl)
+          apply (auto intro!: sum_less_eqI simp add: sum_distl)
           apply (rule_tac y="g $ x \<cdot> f $ yb \<cdot> f\<^sup>\<star> $ z" in order_trans)
            apply (simp add: "2" mult.assoc[THEN sym] mult_isor)
           apply (rule_tac y="g $ (x @ yb) \<cdot> f\<^sup>\<star> $ z" in order_trans)

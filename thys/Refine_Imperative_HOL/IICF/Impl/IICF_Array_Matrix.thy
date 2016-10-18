@@ -220,7 +220,7 @@ begin
       apply sepref_to_hoare
       unfolding is_amtx_def     
       apply sep_auto
-      by (metis Divides.div_mult2_eq ab_semigroup_mult_class.mult.commute div_eq_0_iff mod_by_0 mod_div_equality mod_less_divisor mod_mult_self2_is_0 not_less0)
+      by (metis Divides.div_mult2_eq ab_semigroup_mult_class.mult.commute div_eq_0_iff mod_by_0 div_mult_mod_eq mod_less_divisor mod_mult_self2_is_0 not_less0)
   
     sepref_decl_impl amtx_lin_get: op_amtx_lin_get_aref by auto 
     

@@ -93,7 +93,7 @@ lemmas akra_bazzi_p_rel_intros =
 
 lemma eval_length: "length [] = 0" "length (x # xs) = Suc (length xs)" by simp_all
 
-lemma eval_akra_bazzi_setsum:
+lemma eval_akra_bazzi_sum:
   "(\<Sum>i<0. as!i * bs!i powr x) = 0"
   "(\<Sum>i<Suc 0. (a#as)!i * (b#bs)!i powr x) = a * b powr x"
   "(\<Sum>i<Suc k. (a#as)!i * (b#bs)!i powr x) = a * b powr x + (\<Sum>i<k. as!i * bs!i powr x)"
@@ -103,7 +103,7 @@ lemma eval_akra_bazzi_setsum:
   apply simp_all
   done
 
-lemma eval_akra_bazzi_setsum':
+lemma eval_akra_bazzi_sum':
   "(\<Sum>i<0. as!i * f ((ts!i) x)) = 0"
   "(\<Sum>i<Suc 0. (a#as)!i * f (((t#ts)!i) x)) = a * f (t x)"
   "(\<Sum>i<Suc k. (a#as)!i * f (((t#ts)!i) x)) = a * f (t x) + (\<Sum>i<k. as!i * f ((ts!i) x))"
@@ -369,8 +369,8 @@ fun generalize_master_thm ctxt thm =
     val b = @{term "Transcendental.powr :: real => real => real"} $ 
               (@{term "nth bs"} $ Bound 0) $ p'
     val f = Abs ("i", HOLogic.natT, @{term "op * :: real => real => real"} $ a $ b)
-    val setsum = @{term "setsum :: (nat => real) => nat set => real"} $ f $ @{term "{..<k}"}
-    val prop = HOLogic.mk_Trueprop (HOLogic.mk_eq (setsum, @{term "1::real"}))
+    val sum = @{term "sum :: (nat => real) => nat set => real"} $ f $ @{term "{..<k}"}
+    val prop = HOLogic.mk_Trueprop (HOLogic.mk_eq (sum, @{term "1::real"}))
     val cprop = Thm.cterm_of ctxt' prop
   in
     thm

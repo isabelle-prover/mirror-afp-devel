@@ -332,16 +332,16 @@ lemma sortingSameSet:
   shows "set (sorted_list_of_set X) = X" 
   using assms by simp
 
-(* We assume for the next lemma that f has value in numbers, and setsum f A is
+(* We assume for the next lemma that f has value in numbers, and sum f A is
    sum f(x) for x in A. *)
 lemma lm032: 
   assumes "finite A" 
-  shows "setsum f A = setsum f (A \<inter> B) + setsum f (A - B)" 
-  using assms by (metis DiffD2 Int_iff Un_Diff_Int Un_commute finite_Un setsum.union_inter_neutral)
+  shows "sum f A = sum f (A \<inter> B) + sum f (A - B)" 
+  using assms by (metis DiffD2 Int_iff Un_Diff_Int Un_commute finite_Un sum.union_inter_neutral)
 
-corollary setsumOutside: 
+corollary sumOutside: 
   assumes "finite g" 
-  shows "setsum f g = setsum f (g outside X) + (setsum f (g||X))" 
+  shows "sum f g = sum f (g outside X) + (sum f (g||X))" 
   unfolding Outside_def restrict_def using assms add.commute inf_commute lm032 by (metis)
 
 lemma lm033: 
@@ -500,11 +500,11 @@ lemma lm062:
   "inj_on fst P = inj_on snd (P^-1)" 
   using lm060 flip_conv by (metis converse_converse inj_on_imageI lm059)
 
-lemma setsumPairsInverse: 
+lemma sumPairsInverse: 
   assumes "runiq (P^-1)" 
-  shows "setsum (f \<circ> snd) P = setsum f (Range P)" 
+  shows "sum (f \<circ> snd) P = sum f (Range P)" 
   using assms lm062 converse_converse rightUniqueInjectiveOnFirst rightUniqueInjectiveOnFirst
-        setsum.reindex snd_eq_Range 
+        sum.reindex snd_eq_Range 
   by metis
 
 lemma notEmptyFinestpart: 
@@ -514,8 +514,8 @@ lemma notEmptyFinestpart:
 
 lemma lm063: 
   assumes "inj_on g X" 
-  shows "setsum f (g`X) = setsum (f \<circ> g) X" 
-  using assms by (metis setsum.reindex)
+  shows "sum f (g`X) = sum (f \<circ> g) X" 
+  using assms by (metis sum.reindex)
 
 lemma functionOnFirstEqualsSecond: 
   assumes "runiq R" "z \<in> R" 
@@ -524,14 +524,14 @@ lemma functionOnFirstEqualsSecond:
 
 lemma lm064: 
   assumes "runiq R" 
-  shows "setsum (toFunction R) (Domain R) = setsum snd R" 
-  using assms toFunction_def setsum.reindex_cong functionOnFirstEqualsSecond
+  shows "sum (toFunction R) (Domain R) = sum snd R" 
+  using assms toFunction_def sum.reindex_cong functionOnFirstEqualsSecond
         rightUniqueInjectiveOnFirst 
   by (metis (no_types) fst_eq_Domain)
 
 corollary lm065: 
   assumes "runiq (f||X)" 
-  shows "setsum (toFunction (f||X)) (X \<inter> Domain f) = setsum snd (f||X)" 
+  shows "sum (toFunction (f||X)) (X \<inter> Domain f) = sum snd (f||X)" 
   using assms lm064 by (metis Int_commute restrictedDomain)
 
 lemma lm066: 
@@ -559,17 +559,17 @@ lemma lm069:
 
 lemma lm070: 
   assumes "runiq (f||X)" 
-  shows "setsum (toFunction (f||X)) (X \<inter> Domain f) = setsum (toFunction f) (X \<inter> Domain f)" 
-  using assms setsum.cong lm069 toFunction_def by metis
+  shows "sum (toFunction (f||X)) (X \<inter> Domain f) = sum (toFunction f) (X \<inter> Domain f)" 
+  using assms sum.cong lm069 toFunction_def by metis
 
-corollary setsumRestrictedToDomainInvariant: 
+corollary sumRestrictedToDomainInvariant: 
   assumes "runiq (f||X)" 
-  shows "setsum (toFunction f) (X \<inter> Domain f) = setsum snd (f||X)" 
+  shows "sum (toFunction f) (X \<inter> Domain f) = sum snd (f||X)" 
   using assms lm065 lm070 by fastforce
 
-corollary setsumRestrictedOnFunction: 
+corollary sumRestrictedOnFunction: 
   assumes "runiq (f||X)" 
-  shows "setsum (toFunction (f||X)) (X \<inter> Domain f) = setsum snd (f||X)" 
+  shows "sum (toFunction (f||X)) (X \<inter> Domain f) = sum snd (f||X)" 
   using assms lm064 restrictedDomain Int_commute by metis
 
 lemma cardFinestpart: 
@@ -631,23 +631,23 @@ lemma finiteDomainImpliesFinite:
 
 (* A relation for the sum of all y\<in>Y of f(x,y) for a fixed x. *)
 lemma sumCurry: 
-  "setsum ((curry f) x) Y = setsum f ({x} \<times> Y)"
+  "sum ((curry f) x) Y = sum f ({x} \<times> Y)"
 proof -
   let ?f="% y. (x, y)" let ?g="(curry f) x" let ?h=f
   have "inj_on ?f Y" by (metis(no_types) Pair_inject inj_onI) 
   moreover have "{x} \<times> Y = ?f ` Y" by fast
   moreover have "\<forall> y. y \<in> Y \<longrightarrow> ?g y = ?h (?f y)" by simp
-  ultimately show ?thesis using setsum.reindex_cong by metis
+  ultimately show ?thesis using sum.reindex_cong by metis
 qed
 
 lemma lm077: 
-  "setsum (%y. f (x,y)) Y = setsum f ({x}\<times>Y)" 
-  using sumCurry Sigma_cong curry_def setsum.cong by fastforce
+  "sum (%y. f (x,y)) Y = sum f ({x}\<times>Y)" 
+  using sumCurry Sigma_cong curry_def sum.cong by fastforce
 
 corollary lm078: 
   assumes "finite X" 
-  shows "setsum f X = setsum f (X-Y) + (setsum f (X \<inter> Y))" 
-  using assms Diff_iff IntD2 Un_Diff_Int finite_Un inf_commute setsum.union_inter_neutral 
+  shows "sum f X = sum f (X-Y) + (sum f (X \<inter> Y))" 
+  using assms Diff_iff IntD2 Un_Diff_Int finite_Un inf_commute sum.union_inter_neutral 
   by metis
 
 lemma lm079: 
@@ -822,77 +822,77 @@ lemma lm102:
   using assms toFunction_def lm101 by metis
 
 corollary lm103: 
-  "setsum (X <| Y) (X\<union>Y) = setsum (chi X) (X\<union>Y)"
-  using lm102 setsum.cong by metis
+  "sum (X <| Y) (X\<union>Y) = sum (chi X) (X\<union>Y)"
+  using lm102 sum.cong by metis
 
 corollary lm104: 
   assumes "\<forall>x\<in>X. f x = g x" 
-  shows "setsum f X = setsum g X" 
-  using assms by (metis (poly_guards_query) setsum.cong)
+  shows "sum f X = sum g X" 
+  using assms by (metis (poly_guards_query) sum.cong)
 
 corollary lm105: 
   assumes "\<forall>x\<in>X. f x = g x" "Y\<subseteq>X" 
-  shows "setsum f Y = setsum g Y" 
+  shows "sum f Y = sum g Y" 
   using assms lm104 by (metis contra_subsetD)
 
 corollary lm106: 
   assumes "Z \<subseteq> X \<union> Y" 
-  shows "setsum (X <| Y) Z = setsum (chi X) Z"  
+  shows "sum (X <| Y) Z = sum (chi X) Z"  
 proof - 
   have "!x:Z.(X<|Y) x=(chi X) x" using assms lm102 in_mono by metis 
   thus ?thesis using lm104 by blast 
 qed
 
 corollary lm107: 
-  "setsum (chi X) (Z - X) = 0" 
+  "sum (chi X) (Z - X) = 0" 
   by simp
 
 corollary lm108: 
   assumes "Z \<subseteq> X \<union> Y" 
-  shows "setsum (X <| Y) (Z - X) = 0" 
+  shows "sum (X <| Y) (Z - X) = 0" 
   using assms lm107 lm106 Diff_iff in_mono subsetI by metis
 
 corollary lm109: 
   assumes "finite Z" 
-  shows "setsum (X <| Y) Z    =    setsum (X <| Y) (Z - X)   +  (setsum (X <| Y) (Z \<inter> X))" 
+  shows "sum (X <| Y) Z    =    sum (X <| Y) (Z - X)   +  (sum (X <| Y) (Z \<inter> X))" 
   using lm078 assms by blast
 
 corollary lm110: 
   assumes "Z \<subseteq> X \<union> Y" "finite Z" 
-  shows "setsum (X <| Y) Z = setsum (X <| Y) (Z \<inter> X)" 
+  shows "sum (X <| Y) Z = sum (X <| Y) (Z \<inter> X)" 
   using assms lm078 lm108 comm_monoid_add_class.add_0 by metis
 
 corollary lm111: 
   assumes "finite Z" 
-  shows "setsum (chi X) Z = card (X \<inter> Z)" 
-  using assms setsum_indicator_eq_card by (metis Int_commute)
+  shows "sum (chi X) Z = card (X \<inter> Z)" 
+  using assms sum_indicator_eq_card by (metis Int_commute)
 
 corollary lm112: 
   assumes "Z \<subseteq> X \<union> Y" "finite Z" 
-  shows "setsum (X <| Y) Z = card (Z \<inter> X)"
-  using assms lm111 by (metis lm106 setsum_indicator_eq_card)
+  shows "sum (X <| Y) Z = card (Z \<inter> X)"
+  using assms lm111 by (metis lm106 sum_indicator_eq_card)
 
 corollary subsetCardinality: 
   assumes "Z \<subseteq> X \<union> Y" "finite Z" 
-  shows "(setsum (X <| Y) X) - (setsum (X <| Y) Z) = card X - card (Z \<inter> X)" 
-  using assms lm112 by (metis Int_absorb2 Un_upper1 card_infinite equalityE setsum.infinite)
+  shows "(sum (X <| Y) X) - (sum (X <| Y) Z) = card X - card (Z \<inter> X)" 
+  using assms lm112 by (metis Int_absorb2 Un_upper1 card_infinite equalityE sum.infinite)
 
-corollary differenceSetsumVsCardinality: 
+corollary differenceSumVsCardinality: 
   assumes "Z \<subseteq> X \<union> Y" "finite Z" 
-  shows "int (setsum (X <| Y) X) - int (setsum (X <| Y) Z) =  int (card X) - int (card (Z \<inter> X))" 
-  using assms lm112 by (metis Int_absorb2 Un_upper1 card_infinite equalityE setsum.infinite)
+  shows "int (sum (X <| Y) X) - int (sum (X <| Y) Z) =  int (card X) - int (card (Z \<inter> X))" 
+  using assms lm112 by (metis Int_absorb2 Un_upper1 card_infinite equalityE sum.infinite)
 
 (* type conversion in Isabelle *)
 lemma lm113: 
   "int (n::nat) = real n" 
   by simp
 
-(* same as differenceSetsumVsCardinality but for type real *)
-corollary differenceSetsumVsCardinalityReal: 
+(* same as differenceSumVsCardinality but for type real *)
+corollary differenceSumVsCardinalityReal: 
   assumes "Z\<subseteq>X\<union>Y" "finite Z" 
-  shows "real (setsum (X <| Y) X) - real (setsum (X <| Y) Z) = 
+  shows "real (sum (X <| Y) X) - real (sum (X <| Y) Z) = 
          real (card X) - real (card (Z \<inter> X))" 
-  using assms lm112 by (metis Int_absorb2 Un_upper1 card_infinite equalityE setsum.infinite)
+  using assms lm112 by (metis Int_absorb2 Un_upper1 card_infinite equalityE sum.infinite)
 
 
 subsection {* Lists *}
@@ -1042,7 +1042,7 @@ notation
   toFunctionWithFallback (infix "Else" 75)
 
 abbreviation 
-  "setsum' R X == setsum (R Else 0) X"
+  "sum' R X == sum (R Else 0) X"
 
 lemma lm129: 
   assumes "runiq f" "x \<in> Domain f" 
@@ -1051,17 +1051,17 @@ lemma lm129:
 
 lemma lm130: 
   assumes "runiq f" 
-  shows "setsum (f Else 0) (X\<inter>(Domain f))  =  setsum (toFunction f) (X\<inter>(Domain f))" 
-  using assms setsum.cong lm129 by fastforce
+  shows "sum (f Else 0) (X\<inter>(Domain f))  =  sum (toFunction f) (X\<inter>(Domain f))" 
+  using assms sum.cong lm129 by fastforce
 
 lemma lm131: 
   assumes "Y \<subseteq> f-`{0}" 
-  shows "setsum f Y  =  0" 
-  using assms by (metis set_rev_mp setsum.neutral vimage_singleton_eq)
+  shows "sum f Y  =  0" 
+  using assms by (metis set_rev_mp sum.neutral vimage_singleton_eq)
 
 lemma lm132: 
   assumes "Y \<subseteq> f-`{0}" "finite X" 
-  shows "setsum f X = setsum f (X-Y)"
+  shows "sum f X = sum f (X-Y)"
   using Int_lower2 add.comm_neutral assms(1) assms(2) lm078 lm131 order_trans
   by (metis (no_types))
 
@@ -1072,7 +1072,7 @@ lemma lm133:
 
 corollary lm134: 
   assumes "finite X" 
-  shows "setsum (f Else 0) X    =   setsum (f Else 0) (X\<inter>Domain f)" 
+  shows "sum (f Else 0) X    =   sum (f Else 0) (X\<inter>Domain f)" 
 proof - 
   have "X\<inter>Domain f=X-(-Domain f)" by simp 
   thus ?thesis using assms lm133 lm132 by fastforce
@@ -1080,7 +1080,7 @@ qed
 
 corollary lm135: 
   assumes "finite X" 
-  shows "setsum (f Else 0) (X\<inter>Domain f)   =   setsum (f Else 0) X"
+  shows "sum (f Else 0) (X\<inter>Domain f)   =   sum (f Else 0) X"
   (is "?L=?R") 
 proof - 
   have "?R=?L" using assms by (rule lm134) 
@@ -1089,25 +1089,25 @@ qed
 
 corollary lm136: 
   assumes "finite X" "runiq f" 
-  shows "setsum (f Else 0) X = setsum (toFunction f) (X\<inter>Domain f)" 
+  shows "sum (f Else 0) X = sum (toFunction f) (X\<inter>Domain f)" 
   (is "?L=?R") 
 proof -
-  have "?R = setsum (f Else 0) (X\<inter>Domain f) " using assms(2) lm130 by fastforce
+  have "?R = sum (f Else 0) (X\<inter>Domain f) " using assms(2) lm130 by fastforce
   moreover have "... = ?L" using assms(1) by (rule lm135) 
   ultimately show ?thesis by presburger
 qed
 
 lemma lm137: 
-  "setsum (f Else 0) X = setsum' f X" 
+  "sum (f Else 0) X = sum' f X" 
   by fast
 
 corollary lm138: 
   assumes "finite X" "runiq f" 
-  shows "setsum (toFunction f) (X\<inter>Domain f)   =   setsum' f X"
+  shows "sum (toFunction f) (X\<inter>Domain f)   =   sum' f X"
   using assms lm137 lm136 by fastforce
 
 lemma lm139: 
-  "argmax (setsum' b) = (argmax \<circ> setsum') b" 
+  "argmax (sum' b) = (argmax \<circ> sum') b" 
   by simp
 
 lemma domainConstant: 

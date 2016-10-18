@@ -381,11 +381,11 @@ lemma subfrmlsn_size:
   by (induction \<phi>) auto 
 
 abbreviation
-  "size_set S \<equiv> setsum (\<lambda>x. 2 * size x + 1) S"
+  "size_set S \<equiv> sum (\<lambda>x. 2 * size x + 1) S"
 
 lemma size_set_diff:
   "finite S \<Longrightarrow> S' \<subseteq> S \<Longrightarrow> size_set (S - S') = size_set S - size_set S'"
-  using setsum_diff_nat finite_subset by metis
+  using sum_diff_nat finite_subset by metis
 
 subsubsection \<open>Expansion\<close>
 

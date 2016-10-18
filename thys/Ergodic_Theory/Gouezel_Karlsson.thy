@@ -7,11 +7,6 @@ imports Banach_Density Kingman
 
 begin
 
-lemma one_less_ennreal[simp]: "1 < ennreal x \<longleftrightarrow> 1 < x"
-  including ennreal.lifting
-  by transfer (auto simp: max.absorb2 less_max_iff_disj)
-
-
 section {*Gouezel-Karlsson*}
 
 text {*This section is devoted to the proof of the main ergodic result of
@@ -164,7 +159,7 @@ proof -
         have "birkhoff_sum f ((n-l) + l) x = birkhoff_sum f (n-l) x + birkhoff_sum f l ((T^^(n-l))x)"
           by (rule birkhoff_sum_cocycle)
         moreover have "birkhoff_sum f l ((T^^(n-l))x) \<ge> 0"
-          unfolding f_def birkhoff_sum_def using setsum_nonneg by auto
+          unfolding f_def birkhoff_sum_def using sum_nonneg by auto
         ultimately have **: "birkhoff_sum f (n-l) x \<le> birkhoff_sum f n x" using l(1) by auto
 
         have "u n x \<le> u (n-l) x - c * l" using l by simp
@@ -429,7 +424,7 @@ proof -
       assume "n=0"
       then have "V x \<inter> {1..n * s + t} = {}" unfolding V_def using `t<s` `k>2* s` by auto
       then have *: "card(V x \<inter> {1..n * s+t}) = 0" by simp
-      have **: "0 \<le> (\<Sum>i<t. F ((T ^^ i) x))" by (rule setsum_nonneg, simp add: F_pos)
+      have **: "0 \<le> (\<Sum>i<t. F ((T ^^ i) x))" by (rule sum_nonneg, simp add: F_pos)
       have "u (n * s + t) x = u t x" using `n=0` by auto
       also have "... \<le> Max {u i x|i. i< s}" by (rule Max_ge, auto simp add: `t<s`)
       also have "... \<le> Z t n x"
@@ -444,13 +439,13 @@ proof -
       then have *: "card(V x \<inter> {1..n * s+t}) = card(V x \<inter> {1..(n-1) * s+t})" using A by auto
 
       have **: "birkhoff_sum F ((n-1) * s + t) x \<le> birkhoff_sum F (n * s + t) x"
-        unfolding birkhoff_sum_def apply (rule setsum_mono2)
+        unfolding birkhoff_sum_def apply (rule sum_mono2)
         using `n* s+t = (n-1)* s+t + s` F_pos by auto
 
       have "(\<Sum>i<n-1. abs(u s ((T^^(i* s+t))x))) + u s ((T^^((n-1)* s+t)) x)
         \<le> (\<Sum>i<n-1. abs(u s ((T^^(i* s+t))x))) + abs(u s ((T^^((n-1)* s+t)) x))" by auto
       also have "... \<le> (\<Sum>i<n. abs(u s ((T^^(i* s+t))x)))"
-        using `n\<ge>1` lessThan_Suc_atMost setsum_lessThan_Suc[where ?n = "n-1" and ?f = "\<lambda>i. abs(u s ((T^^(i* s+t))x))" , symmetric] by auto
+        using `n\<ge>1` lessThan_Suc_atMost sum_lessThan_Suc[where ?n = "n-1" and ?f = "\<lambda>i. abs(u s ((T^^(i* s+t))x))" , symmetric] by auto
       finally have ***: "(\<Sum>i<n-1. abs(u s ((T^^(i* s+t))x))) + u s ((T^^((n-1)* s+t)) x) \<le> (\<Sum>i<n. abs(u s ((T^^(i* s+t))x)))"
         by simp
 
@@ -475,10 +470,13 @@ proof -
       then have "m-l \<ge> s" using l by auto
       define p where "p = (m-l-t) div s"
       have p1: "m-l \<ge> p* s + t"
-        unfolding p_def using `m-l \<ge> s` `s>t` div_mod_equality' by auto
+        unfolding p_def
+        using `m-l \<ge> s` `s>t`
+        minus_mod_eq_div_mult [symmetric, of "m - l - t" s]
+        by simp
       have p2: "m-l < p* s + t + s"
         unfolding p_def using `m-l \<ge> s` `s>t`
-        mod_div_equality[of "m-l-t" s] mod_less_divisor[OF `s>0`, of "m-l-t"] by linarith
+        div_mult_mod_eq[of "m-l-t" s] mod_less_divisor[OF `s>0`, of "m-l-t"] by linarith
       then have "l \<ge> m - p* s - t -s" by auto
       then have "l \<ge> (n-1)* s + t -p* s - t- s" using m by auto
       then have "l + 2* s\<ge> (n* s+t) - (p* s+t)" by (simp add: diff_mult_distrib)
@@ -496,7 +494,7 @@ proof -
       proof (cases "m = n * s + t")
         case True
         have "(\<Sum>i \<in> {(n-1)* s+t..<n* s+t}. abs(u 1 ((T^^i) x))) \<ge> 0"
-          by (rule setsum_nonneg, auto)
+          by (rule sum_nonneg, auto)
         then show ?thesis using True by auto
       next
         case False
@@ -506,13 +504,13 @@ proof -
         also have "... = (\<Sum>i<n* s+t-m. u 1 ((T^^(i+m)) x))"
           by (simp add: funpow_add)
         also have "... = (\<Sum>j \<in> {m..<n* s+t}. u 1 ((T^^j) x))"
-          by (rule setsum.reindex_bij_betw, rule bij_betw_byWitness[where ?f'= "\<lambda>i. i - m"], auto)
+          by (rule sum.reindex_bij_betw, rule bij_betw_byWitness[where ?f'= "\<lambda>i. i - m"], auto)
         also have "... \<le> (\<Sum>j \<in> {m..<n* s+t}. abs(u 1 ((T^^j) x)))"
-          by (rule setsum_mono, auto)
+          by (rule sum_mono, auto)
         also have "... \<le> (\<Sum>j \<in> {(n-1)* s+t..<m}. abs(u 1 ((T^^j) x))) + (\<Sum>j \<in> {m..<n* s+t}. abs(u 1 ((T^^j) x)))"
           by auto
         also have "... = (\<Sum>j \<in> {(n-1)* s+t..<n* s+t}. abs(u 1 ((T^^j) x)))"
-          apply (rule setsum_add_nat_ivl) using m2 by auto
+          apply (rule sum_add_nat_ivl) using m2 by auto
         finally have *: "birkhoff_sum (u 1) (n* s+t-m) ((T^^m) x) \<le> (\<Sum>j \<in> {(n-1)* s+t..<n* s+t}. abs(u 1 ((T^^j) x)))"
           by auto
 
@@ -527,7 +525,7 @@ proof -
       proof (cases "m-l = p* s+t")
         case True
         have "(\<Sum>i \<in> {p* s+t..<(p+1)* s+t}. abs(u 1 ((T^^i) x))) \<ge> 0"
-          by (rule setsum_nonneg, auto)
+          by (rule sum_nonneg, auto)
         then show ?thesis using True by auto
       next
         case False
@@ -539,13 +537,13 @@ proof -
         also have "... = (\<Sum>i<m-l - (p* s+t). u 1 ((T^^(i+p* s+t)) x))"
           by (simp add: funpow_add)
         also have "... = (\<Sum>j \<in> {p* s+t..<m-l}. u 1 ((T^^j) x))"
-          by (rule setsum.reindex_bij_betw, rule bij_betw_byWitness[where ?f'= "\<lambda>i. i - (p* s+t)"], auto)
+          by (rule sum.reindex_bij_betw, rule bij_betw_byWitness[where ?f'= "\<lambda>i. i - (p* s+t)"], auto)
         also have "... \<le> (\<Sum>j \<in> {p* s+t..<m-l}. abs(u 1 ((T^^j) x)))"
-          by (rule setsum_mono, auto)
+          by (rule sum_mono, auto)
         also have "... \<le> (\<Sum>j \<in> {p* s+t..<m-l}. abs(u 1 ((T^^j) x))) + (\<Sum>j \<in> {m-l..<(p+1)* s+t}. abs(u 1 ((T^^j) x)))"
           by auto
         also have "... = (\<Sum>j \<in> {p* s+t..<(p+1)* s+t}. abs(u 1 ((T^^j) x)))"
-          apply (rule setsum_add_nat_ivl) using p1 p2 by auto
+          apply (rule sum_add_nat_ivl) using p1 p2 by auto
         finally have *: "birkhoff_sum (u 1) (m-l - (p* s+t)) ((T^^(p* s+t)) x)
           \<le> (\<Sum>j \<in> {p* s+t..<(p+1)* s+t}. abs(u 1 ((T^^j) x)))"
           by auto
@@ -558,18 +556,18 @@ proof -
       qed
 
       have "(\<Sum>i \<in> {p* s+t..<(p+1)* s+t}. abs(u 1 ((T^^i) x))) \<le> (\<Sum>i \<in> {p* s+t..<(p+1)* s+t}. K + F ((T^^i) x))"
-        apply (rule setsum_mono) using u1_bound by auto
+        apply (rule sum_mono) using u1_bound by auto
       moreover have "(\<Sum>i \<in> {(n-1)* s+t..<n* s+t}. abs(u 1 ((T^^i) x))) \<le> (\<Sum>i \<in> {(n-1)* s+t..<n* s+t}. K + F ((T^^i) x))"
-        apply (rule setsum_mono) using u1_bound by auto
+        apply (rule sum_mono) using u1_bound by auto
       ultimately have "(\<Sum>i \<in> {p* s+t..<(p+1)* s+t}. abs(u 1 ((T^^i) x))) + (\<Sum>i \<in> {(n-1)* s+t..<n* s+t}. abs(u 1 ((T^^i) x)))
         \<le> (\<Sum>i \<in> {p* s+t..<(p+1)* s+t}. K + F ((T^^i) x)) + (\<Sum>i \<in> {(n-1)* s+t..<n* s+t}. K + F ((T^^i) x))"
         by auto
       also have "... = 2* K* s + (\<Sum>i \<in> {p* s+t..<(p+1)* s+t}. F ((T^^i) x)) + (\<Sum>i \<in>{(n-1)* s+t..<n* s+t}. F ((T^^i) x))"
-        by (auto simp add: mult_eq_if setsum.distrib)
+        by (auto simp add: mult_eq_if sum.distrib)
       also have "... \<le> 2* K * s + (\<Sum>i \<in> {p* s+t..<(n-1)* s+t}. F ((T^^i) x)) + (\<Sum>i \<in>{(n-1)* s+t..<n* s+t}. F ((T^^i) x))"
-        apply (auto, rule setsum_mono2) using `(p+1)* s+t\<le>(n-1)* s+t` F_pos by auto
+        apply (auto, rule sum_mono2) using `(p+1)* s+t\<le>(n-1)* s+t` F_pos by auto
       also have "... = 2* K * s + (\<Sum>i \<in> {p* s+t..<n* s+t}. F ((T^^i) x))"
-        apply (auto, rule setsum_add_nat_ivl) using `p\<le>n-1` by auto
+        apply (auto, rule sum_add_nat_ivl) using `p\<le>n-1` by auto
       finally have A0: "(\<Sum>i \<in> {p* s+t..<(p+1)* s+t}. abs(u 1 ((T^^i) x))) + (\<Sum>i \<in> {(n-1)* s+t..<n* s+t}. abs(u 1 ((T^^i) x)))
         \<le> 2* K * s + (\<Sum>i \<in> {p* s+t..<n* s+t}. F ((T^^i) x))"
         by simp
@@ -602,10 +600,10 @@ proof -
         by simp
 
       have A3: "(\<Sum>i<p. abs(u s ((T ^^ (i * s + t)) x))) \<le> (\<Sum>i<n. abs(u s ((T ^^ (i * s + t)) x)))"
-        apply (rule setsum_mono2) using `p\<le>n-1` by auto
+        apply (rule sum_mono2) using `p\<le>n-1` by auto
 
       have A4: "birkhoff_sum F (p * s + t) x + (\<Sum>i \<in> {p* s+t..<n* s+t}. F ((T^^i) x)) = birkhoff_sum F (n * s + t) x"
-        unfolding birkhoff_sum_def apply (subst atLeast0LessThan[symmetric])+ apply (rule setsum_add_nat_ivl)
+        unfolding birkhoff_sum_def apply (subst atLeast0LessThan[symmetric])+ apply (rule sum_add_nat_ivl)
         using `p\<le>n-1` by auto
 
       have "u (n* s+t) x \<le> u m x + (\<Sum>i \<in> {(n-1)* s+t..<n* s+t}. abs(u 1 ((T^^i) x)))"
@@ -648,7 +646,7 @@ proof -
       if "t<s" for t
     proof -
       have *: "birkhoff_sum F (N * s+t) x \<le> birkhoff_sum F (n+ 2* s) x"
-        unfolding birkhoff_sum_def apply (rule setsum_mono2) using F_pos `N * s \<le> n + s` `t<s` by auto
+        unfolding birkhoff_sum_def apply (rule sum_mono2) using F_pos `N * s \<le> n + s` `t<s` by auto
 
       have "card(V x \<inter> {1..n}) \<le> card(V x \<inter> {1..N* s+t})"
         apply (rule card_mono) using `n \<le> N * s` by auto
@@ -662,31 +660,31 @@ proof -
     qed
 
     have "(\<Sum>t<s. abs(u(N* s+t) x)) = (\<Sum>i\<in>{N* s..<N* s+s}. abs (u i x))"
-      by (rule setsum.reindex_bij_betw, rule bij_betw_byWitness[where ?f'= "\<lambda>i. i - N* s"], auto)
+      by (rule sum.reindex_bij_betw, rule bij_betw_byWitness[where ?f'= "\<lambda>i. i - N* s"], auto)
     also have "... \<le> (\<Sum>i\<in>{n..<n + 2* s}. abs (u i x))"
-      apply (rule setsum_mono2) using `n \<le> N * s` `N * s \<le> n + s` by auto
+      apply (rule sum_mono2) using `n \<le> N * s` `N * s \<le> n + s` by auto
     also have "... = (\<Sum>i<2* s. abs (u (n+i) x))"
-      by (rule setsum.reindex_bij_betw[symmetric], rule bij_betw_byWitness[where ?f'= "\<lambda>i. i - n"], auto)
+      by (rule sum.reindex_bij_betw[symmetric], rule bij_betw_byWitness[where ?f'= "\<lambda>i. i - n"], auto)
     finally have **: "(\<Sum>t<s. abs(u(N* s+t) x)) \<le> (\<Sum>i<2* s. abs (u (n+i) x))"
       by simp
 
     have "(\<Sum>t<s. (\<Sum>i<N. abs(u s ((T^^(i* s+t))x)))) = (\<Sum>i<N* s. abs(u s ((T^^i) x)))"
-      by (rule setsum_arith_progression)
+      by (rule sum_arith_progression)
     also have "... \<le> (\<Sum>i<n + 2* s. abs(u s ((T^^i) x)))"
-      apply (rule setsum_mono2) using `N * s \<le> n + s` by auto
+      apply (rule sum_mono2) using `N * s \<le> n + s` by auto
     finally have ***: "(\<Sum>t<s. (\<Sum>i<N. abs(u s ((T^^(i* s+t))x)))) \<le> s * birkhoff_sum (\<lambda>x. abs(u s x/ s)) (n+2* s) x"
-      unfolding birkhoff_sum_def using `s>0` by (auto simp add: setsum_divide_distrib[symmetric])
+      unfolding birkhoff_sum_def using `s>0` by (auto simp add: sum_divide_distrib[symmetric])
 
     have ****: "s * (\<Sum>i<n + 2* s. abs(u s ((T^^i) x)) /s) = (\<Sum>i<n + 2* s. abs(u s ((T^^i) x)))"
-      by (auto simp add: setsum_divide_distrib[symmetric])
+      by (auto simp add: sum_divide_distrib[symmetric])
 
     have "s * (d/2) * card(V x \<inter> {1..n}) = (\<Sum>t<s. (d/2) * card(V x \<inter> {1..n}))"
       by auto
     also have "... \<le> (\<Sum>t<s. abs(u(N* s+t) x) + (Max {u i x|i. i< s} + birkhoff_sum F (n + 2* s) x)
             + (\<Sum>i<N. abs(u s ((T^^(i* s+t))x))))"
-      apply (rule setsum_mono) using eq_t by auto
+      apply (rule sum_mono) using eq_t by auto
     also have "... = (\<Sum>t<s. abs(u(N* s+t) x)) + (\<Sum>t<s. Max {u i x|i. i< s} + birkhoff_sum F (n + 2* s) x) + (\<Sum>t<s. (\<Sum>i<N. abs(u s ((T^^(i* s+t))x))))"
-      by (auto simp add: setsum.distrib)
+      by (auto simp add: sum.distrib)
     also have "... \<le> (\<Sum>i<2* s. abs (u (n+i) x)) + s * (Max {u i x|i. i< s} + birkhoff_sum F (n + 2* s) x) + s * birkhoff_sum (\<lambda>x. abs(u s x/ s)) (n+2* s) x"
       using ** *** by auto
     also have "... = s * ((1/s) * (\<Sum>i<2* s. abs (u (n+i) x)) + Max {u i x|i. i< s} + birkhoff_sum F (n + 2* s) x + birkhoff_sum (\<lambda>x. abs(u s x/ s)) (n+2* s) x)"
@@ -715,7 +713,7 @@ proof -
       using `x\<in>G` unfolding G_def apply simp
       apply (rule tendsto_mult)
       apply simp
-      apply (rule tendsto_setsum)
+      apply (rule tendsto_sum)
       using A apply auto
       done
     then have "Bound \<longlonglongrightarrow> real_cond_exp M Invariants (\<lambda>x. abs(u s x/s)) x + real_cond_exp M Invariants F x"
@@ -730,7 +728,7 @@ proof -
         + birkhoff_sum F (n + 2* s) x + (1/s) * (\<Sum>i<2* s. abs(u (n+i) x)))/n"
         using Main2[of x n] using divide_right_mono of_nat_0_le_iff by blast
       also have "... = Bound n"
-        unfolding Bound_def by (auto simp add: add_divide_distrib setsum_divide_distrib[symmetric])
+        unfolding Bound_def by (auto simp add: add_divide_distrib sum_divide_distrib[symmetric])
       finally show ?thesis by simp
     qed
 
@@ -1038,20 +1036,20 @@ proof -
   have card_bad_times: "card (bad_times x \<inter> {..<B}) \<le> d2 * B" if "x \<in> Og" for x B
   proof -
     have "(\<Sum>N\<in>{..<B}. (1/(2::real))^N) \<le> (\<Sum>N. (1/2)^N)"
-      by (rule setsum_le_suminf, auto simp add: summable_geometric)
+      by (rule sum_le_suminf, auto simp add: summable_geometric)
     also have "... = 2" using suminf_geometric[of "1/(2::real)"] by auto
     finally have *: "(\<Sum>N\<in>{..<B}. (1/(2::real))^N) \<le> 2" by simp
 
     have "(\<Sum> N \<in> {2..<B}. eps N * B) \<le> (\<Sum> N \<in> {2..<B+2}. eps N * B)"
-      by (rule setsum_mono2, auto)
+      by (rule sum_mono2, auto)
     also have "... = (\<Sum>N\<in>{2..<B+2}. d2 * (1/2)^N * B)"
       unfolding eps_def by auto
     also have "... = (\<Sum>N\<in>{..<B}. d2 * (1/2)^(N+2) * B)"
-      by (rule setsum.reindex_bij_betw[symmetric],rule bij_betw_byWitness[where ?f' = "\<lambda>i. i-2"], auto)
+      by (rule sum.reindex_bij_betw[symmetric],rule bij_betw_byWitness[where ?f' = "\<lambda>i. i-2"], auto)
     also have "... = (\<Sum>N\<in>{..<B}. (d2 * (1/4) * B) * (1/2)^N)"
       by (auto, metis (lifting) mult.commute mult.left_commute)
     also have "... = (d2 * (1/4) * B) * (\<Sum>N\<in>{..<B}. (1/2)^N)"
-      by (rule setsum_distrib_left[symmetric])
+      by (rule sum_distrib_left[symmetric])
     also have "... \<le> (d2 * (1/4) * B) * 2"
       apply (rule mult_left_mono) using * `d2 > 0` apply auto
       by (metis \<open>0 < d2\<close> mult_eq_0_iff mult_le_0_iff not_le of_nat_eq_0_iff of_nat_le_0_iff)
@@ -1077,7 +1075,7 @@ proof -
       then have "card ({n \<in> {Nf 1..}. \<exists>l\<in>{1..n}. u n x - u (n-l) x \<le> - (c0 * l)} \<inter> {..<B}) = 0"
         by auto
       also have "... \<le> (d2/2) * B"
-        by (metis \<open>0 < d2 / 2\<close> divide_le_eq divide_zero_left linordered_field_class.sign_simps(24) of_nat_0 of_nat_0_le_iff)
+        by (metis \<open>0 < d2 / 2\<close> divide_le_eq div_0 linordered_field_class.sign_simps(24) of_nat_0 of_nat_0_le_iff)
       finally show ?thesis by simp
     qed
 
@@ -1144,7 +1142,7 @@ proof -
     also have "... \<le> (d2/2 * B) + (\<Sum> N\<in>{2..<B}. real(card ({n \<in> {Nf N..}. \<exists>l \<in> {Nf N..n}. u n x - u (n-l) x \<le> - (eps N * l)} \<inter> {..<B})))"
       using B1 by simp
     also have "... \<le> (d2/2 * B) + (\<Sum> N \<in> {2..<B}. eps N * B)"
-      apply (simp, rule setsum_mono) using BN by auto
+      apply (simp, rule sum_mono) using BN by auto
     also have "... \<le> (d2/2 * B) + (d2/2*B)"
       using I by auto
     finally show ?thesis by simp
@@ -1360,25 +1358,25 @@ proof -
     also have "... = (\<integral>\<^sup>+x. ennreal(card {n\<in>{..<N}. x \<in> Og n}) \<partial>M)"
       by (rule nn_set_integral_space)
     also have "... = (\<integral>\<^sup>+x. ennreal (\<Sum>n\<in>{..<N}. ((indicator (Og n) x)::nat)) \<partial>M)"
-      apply (rule nn_integral_cong) using setsum_indicator_eq_card2[of "{..<N}" Og] by auto
+      apply (rule nn_integral_cong) using sum_indicator_eq_card2[of "{..<N}" Og] by auto
     also have "... = (\<integral>\<^sup>+x. (\<Sum>n\<in>{..<N}. indicator (Og n) x) \<partial>M)"
-      apply (rule nn_integral_cong, auto, simp only: setsum_ennreal[symmetric])
+      apply (rule nn_integral_cong, auto, simp only: sum_ennreal[symmetric])
       by (metis ennreal_0 ennreal_eq_1 indicator_eq_1_iff indicator_simps(2) real_of_nat_indicator)
     also have "... = (\<Sum>n \<in>{..<N}. (\<integral>\<^sup>+x. (indicator (Og n) x) \<partial>M))"
-      by (rule nn_integral_setsum, simp)
+      by (rule nn_integral_sum, simp)
     also have "... = (\<Sum>n \<in>{..<N}. emeasure M (Og n))"
       by simp
     also have "... \<le> (\<Sum>n \<in>{..<N}. emeasure M (Pg n))"
-      apply (rule setsum_mono) using `\<And>n. emeasure M (Og n) \<le> emeasure M (Pg n)` by simp
+      apply (rule sum_mono) using `\<And>n. emeasure M (Og n) \<le> emeasure M (Pg n)` by simp
     also have "... = (\<Sum>n \<in>{..<N}. (\<integral>\<^sup>+x. (indicator (Pg n) x) \<partial>M))"
       by simp
     also have "... = (\<integral>\<^sup>+x. (\<Sum>n\<in>{..<N}. indicator (Pg n) x) \<partial>M)"
-      by (rule nn_integral_setsum[symmetric], simp)
+      by (rule nn_integral_sum[symmetric], simp)
     also have "... = (\<integral>\<^sup>+x. ennreal (\<Sum>n\<in>{..<N}. ((indicator (Pg n) x)::nat)) \<partial>M)"
-      apply (rule nn_integral_cong, auto, simp only: setsum_ennreal[symmetric])
+      apply (rule nn_integral_cong, auto, simp only: sum_ennreal[symmetric])
       by (metis ennreal_0 ennreal_eq_1 indicator_eq_1_iff indicator_simps(2) real_of_nat_indicator)
     also have "... = (\<integral>\<^sup>+x. ennreal(card {n\<in>{..<N}. x \<in> Pg n}) \<partial>M)"
-      apply (rule nn_integral_cong) using setsum_indicator_eq_card2[of "{..<N}" Pg] by auto
+      apply (rule nn_integral_cong) using sum_indicator_eq_card2[of "{..<N}" Pg] by auto
     also have "... = (\<integral>\<^sup>+x \<in> space M. ennreal(card {n\<in>{..<N}. x \<in> Pg n}) \<partial>M)"
       by (rule nn_set_integral_space[symmetric])
     also have "... = (\<integral>\<^sup>+x \<in> Bad N \<union> (space M - Bad N). ennreal(card {n\<in>{..<N}. x \<in> Pg n}) \<partial>M)"

@@ -1174,14 +1174,14 @@ proof -
           unfolding start_def map by auto
       } note piv = this
       have "row A i \<bullet> ?v = (\<Sum> j = 0..<nc. ?e j)" unfolding row_def scalar_prod_def dimv ..
-      also have "\<dots> = setsum ?e ({0..<nc} \<inter> ?P) + setsum ?e ({0..<nc} - ?P)"
-        by (subst setsum.union_disjoint[symmetric], auto simp: id)
-      also have "setsum ?e ({0..<nc} - ?P) = ?e qj + setsum ?e ({0 ..<nc} - ?P - {qj})"
-        by (rule setsum.remove, insert qj qj', auto)
+      also have "\<dots> = sum ?e ({0..<nc} \<inter> ?P) + sum ?e ({0..<nc} - ?P)"
+        by (subst sum.union_disjoint[symmetric], auto simp: id)
+      also have "sum ?e ({0..<nc} - ?P) = ?e qj + sum ?e ({0 ..<nc} - ?P - {qj})"
+        by (rule sum.remove, insert qj qj', auto)
       also have "?e qj = row A i $ qj" unfolding vqj by simp
       also have "row A i $ qj = A $$ (i, qj)" using i A qj by auto
-      also have "setsum ?e ({0 ..<nc} - ?P - {qj}) = 0"
-      proof (rule setsum.neutral, intro ballI)
+      also have "sum ?e ({0 ..<nc} - ?P - {qj}) = 0"
+      proof (rule sum.neutral, intro ballI)
         fix j
         assume "j \<in> {0 ..<nc} - ?P - {qj}"
         hence j: "j < nc" "j \<notin> ?P" "j \<noteq> qj" "j \<notin> ?r" unfolding r by auto
@@ -1191,25 +1191,25 @@ proof -
         finally show "row A i $ j * ?v $ j = 0" by simp
       qed
       also have "A $$ (i, qj) + 0 = A $$ (i, qj)" by simp
-      also have "setsum ?e ({0..<nc} \<inter> ?P) = setsum ?e' ({0..<nc} \<inter> ?P)"
-        by (rule setsum.cong, insert piv, auto)
+      also have "sum ?e ({0..<nc} \<inter> ?P) = sum ?e' ({0..<nc} \<inter> ?P)"
+        by (rule sum.cong, insert piv, auto)
       also have "{0..<nc} \<inter> ?P = {0..<nc} \<inter> ?I \<inter> ?P \<union> ({0..<nc} - ?I) \<inter> ?P" by auto
-      also have "setsum ?e' ({0..<nc} \<inter> ?I \<inter> ?P \<union> ({0..<nc} - ?I) \<inter> ?P)
-        = setsum ?e' ({0..<nc} \<inter> ?I \<inter> ?P) + setsum ?e' (({0..<nc} - ?I) \<inter> ?P)"
-        by (rule setsum.union_disjoint, auto)
-      also have "setsum ?e' (({0..<nc} - ?I) \<inter> ?P) = 0"
-        by (rule setsum.neutral, auto)
-      also have "setsum ?e' ({0..<nc} \<inter> ?I \<inter> ?P) = 
-        setsum (\<lambda> _. - A $$ (i, qj)) ({0..<nc} \<inter> ?I \<inter> ?P)"
-        by (rule setsum.cong, auto)
+      also have "sum ?e' ({0..<nc} \<inter> ?I \<inter> ?P \<union> ({0..<nc} - ?I) \<inter> ?P)
+        = sum ?e' ({0..<nc} \<inter> ?I \<inter> ?P) + sum ?e' (({0..<nc} - ?I) \<inter> ?P)"
+        by (rule sum.union_disjoint, auto)
+      also have "sum ?e' (({0..<nc} - ?I) \<inter> ?P) = 0"
+        by (rule sum.neutral, auto)
+      also have "sum ?e' ({0..<nc} \<inter> ?I \<inter> ?P) = 
+        sum (\<lambda> _. - A $$ (i, qj)) ({0..<nc} \<inter> ?I \<inter> ?P)"
+        by (rule sum.cong, auto)
       also have "\<dots> + 0 = \<dots>" by simp
-      also have "setsum (\<lambda> _. - A $$ (i, qj)) ({0..<nc} \<inter> ?I \<inter> ?P) + A $$ (i, qj) = 0" 
+      also have "sum (\<lambda> _. - A $$ (i, qj)) ({0..<nc} \<inter> ?I \<inter> ?P) + A $$ (i, qj) = 0" 
       proof (cases "i \<in> ?l")
         case False
         with pp(1) i have "p i = nc" by force
         from pivot'(2)[OF i, unfolded this, OF qj(1)] have z: "A $$ (i, qj) = 0" .
         show ?thesis 
-          by (subst setsum.neutral, auto simp: z)
+          by (subst sum.neutral, auto simp: z)
       next
         case True
         then obtain j where mem: "(i,j) \<in> set pp" and id: "(j,i) \<in> set ?spp" by auto
