@@ -17,15 +17,15 @@ begin
 
 fun info_radt :: "real_alg_dt \<Rightarrow> rat poly \<times> nat" where
   "info_radt (Rational r) = info_rai (of_rat_rai r)"
-| "info_radt (Irrational rai) = info_rai (normalize_rai rai)"
+| "info_radt (Irrational rai) = info_rai rai"
 
 lemma info_radt:
   assumes x: "radt_cond x"
   shows  "\<exists> rai. real_of_radt x = real_of_rai rai \<and> 
-    info_radt x = info_rai (normalize_rai rai)"
+    info_radt x = info_rai rai"
 proof (cases x)
   case (Rational r)
-  thus ?thesis by (intro exI[of _ "of_rat_rai r"], auto simp: of_rat_rai normalize_rai_of_rat_rai)
+  thus ?thesis by (intro exI[of _ "of_rat_rai r"], auto simp: of_rat_rai)
 next
   case (Irrational rai)
   thus ?thesis using x by auto
@@ -37,9 +37,9 @@ lemma info_radt_fun: assumes x: "radt_cond x" and y: "radt_cond y"
   shows "info_radt x = info_radt y"
 proof -
   from info_radt[OF x] obtain rai1 where x: "real_of_radt x = real_of_rai rai1" and
-    ix: "info_radt x = (info_rai (normalize_rai rai1))" by auto
+    ix: "info_radt x = (info_rai rai1)" by auto
   from info_radt[OF y] obtain rai2 where y: "real_of_radt y = real_of_rai rai2" and
-    iy: "info_radt y = info_rai (normalize_rai rai2)" by auto   
+    iy: "info_radt y = info_rai rai2" by auto   
   from info_rai_fun[OF eq[unfolded x y]] ix iy eq x y
   show ?thesis by auto
 qed

@@ -22,7 +22,7 @@ partial_function (tailrec) roots_of_rai_main ::
   [code]: "roots_of_rai_main p ri cr lrs rais = (case lrs of Nil \<Rightarrow> rais
   | (l,r) # lrs \<Rightarrow> let c = cr l r in 
     if c = 0 then roots_of_rai_main p ri cr lrs rais
-    else if c = 1 then roots_of_rai_main p ri cr lrs (mk_rai_intern Arbitrary_Poly ri p l r # rais)
+    else if c = 1 then roots_of_rai_main p ri cr lrs (mk_rai_intern Monic_Irreducible ri p l r # rais)
     else let m = (l + r) / 2 in roots_of_rai_main p ri cr ((m,r) # (l,m) # lrs) rais)"
 
 definition root_bounds :: "rat poly \<Rightarrow> rat \<times> rat" where 
@@ -122,13 +122,13 @@ proof (rule ccontr)
   finally show False by simp
 qed
 
-lemma roots_of_rai_intern_monic_irr: assumes mrf: "poly_type_cond ty p"
+lemma roots_of_rai_intern_monic_irr: assumes mrf: "poly_cond p"
   shows "rai_real ` set (roots_of_rai_intern_monic_irr p) = {x. rpoly p x = 0}" (is "?one")
     "Ball (set (roots_of_rai_intern_monic_irr p)) rai_cond" (is "?two")
 proof -
   let ?rr = "set (roots_of_rai_intern_monic_irr p)"
   note d = roots_of_rai_intern_monic_irr_def
-  from poly_type_cond_square_free_D[OF mrf] have mon: "monic p" and sf: "square_free p" by auto
+  from poly_cond_D[OF mrf] have mon: "monic p" and sf: "square_free p" by auto
   let ?norm = "rai_normalize"
   have "?one \<and> ?two"
   proof (cases "degree p = 1")
@@ -208,7 +208,7 @@ proof -
         def c \<equiv> "cr l r"
         from simp Cons lr' have simp: "?main lrss rais = 
           (if c = 0 then ?main lrs rais else if c = 1 then 
-             ?main lrs (mk_rai_intern Arbitrary_Poly ri p l r # rais)
+             ?main lrs (mk_rai_intern Monic_Irreducible ri p l r # rais)
                else let m = (l + r) / 2 in ?main ((m, r) # (l, m) # lrs) rais)"
           unfolding c_def simp Cons lr' by auto
         note lrs = lrs[unfolded Cons lr']        
@@ -229,16 +229,15 @@ proof -
             by (rule IH[OF easy_rel rais lrs], auto)
         next
           case False
-          have un: "poly_type_cond Arbitrary_Poly p" using mon sf by simp
           show ?thesis
           proof (cases "c = 1")
             case True
-            let ?rai = "mk_rai_intern Arbitrary_Poly ri p l r"            
+            let ?rai = "mk_rai_intern Monic_Irreducible ri p l r"            
             from True simp have simp: "?main lrss rais = ?main lrs (?rai # rais)" by auto
             from card_1_Collect_ex1[OF c[symmetric, unfolded True]] 
             have rc1: "\<exists>!x. root_cond (p, l, r) x" .
             hence ur: "unique_root (p,l,r)" unfolding unique_root_def .
-            from mk_rai_intern[OF ur un ri]
+            from mk_rai_intern[OF ur mrf ri]
             have rai: "rai_cond ?rai" "rai_real ?rai = the_unique_root (p, l, r)" by auto
             with rais have rais: "\<And> x. x \<in> set (?rai # rais) \<Longrightarrow> rai_cond x" by auto
             have rt3: "?rt3 = {rai_real ?rai}" 
@@ -333,7 +332,7 @@ proof -
       s: "s \<in> set (factors_of_rat_poly p)" and
       q: "q \<in> set (roots_of_rai_intern_monic_irr s)"
       unfolding d by auto
-    from frp1(1)[OF refl s] have "poly_type_cond Monic_Irreducible s" by (auto simp: poly_type_cond_def)
+    from frp1(1)[OF refl s] have "poly_cond s" by (auto simp: poly_cond_def)
     from roots_of_rai_intern_monic_irr[OF this] q
     have "rai_cond q" by auto
   }
@@ -352,8 +351,8 @@ proof -
         s: "s \<in> set (factors_of_rat_poly p)" and
         q: "q \<in> set (roots_of_rai_intern_monic_irr s)" and
         x: "x = rai_real q" by auto
-      from frp1(1)[OF refl s] have s0: "s \<noteq> 0" and pt: "poly_type_cond Monic_Irreducible s" 
-        by (auto simp: poly_type_cond_def)
+      from frp1(1)[OF refl s] have s0: "s \<noteq> 0" and pt: "poly_cond s" 
+        by (auto simp: poly_cond_def)
       from roots_of_rai_intern_monic_irr[OF pt] q have rt: "rpoly s x = 0" unfolding x by auto
       from frp1(2)[OF refl p, of x] rt s have rt: "rpoly p x = 0" by auto
     }
@@ -363,8 +362,8 @@ proof -
       assume rt: "rpoly p x = 0"
       from rt frp1(2)[OF refl p, of x] obtain s where s: "s \<in> set (factors_of_rat_poly p)" 
         and rt: "rpoly s x = 0" by auto
-      from frp1(1)[OF refl s] have s0: "s \<noteq> 0" and ty: "poly_type_cond Monic_Irreducible s" 
-        by (auto simp: poly_type_cond_def)
+      from frp1(1)[OF refl s] have s0: "s \<noteq> 0" and ty: "poly_cond s" 
+        by (auto simp: poly_cond_def)
       from roots_of_rai_intern_monic_irr(1)[OF ty] rt obtain q where 
         q: "q \<in> set (roots_of_rai_intern_monic_irr s)" and
         x: "x = rai_real q" by auto

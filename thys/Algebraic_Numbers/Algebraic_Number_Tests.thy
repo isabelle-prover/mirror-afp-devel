@@ -26,14 +26,6 @@ declare real_code_dels[code, code del]
 declare real_code_unfold_dels[code_unfold del]
 declare real_alg_code_eqns[code]
 
-lemma Gcd_eucl_code_abort [code]: 
-  "Gcd_eucl A = Code.abort (STR ''Gcd not supported'') (\<lambda>_. Gcd_eucl A)"
-  by simp
-
-lemma Lcm_eucl_code_abort [code]: 
-  "Lcm_eucl A = Code.abort (STR ''Gcd not supported'') (\<lambda>_. Lcm_eucl A)"
-  by simp
-
 abbreviation (input) "show_lines x \<equiv> shows_lines x Nil"
 
 fun show_factorization :: "'a :: {semiring_1,show} \<times> (('a poly \<times> nat)list) \<Rightarrow> string" where
