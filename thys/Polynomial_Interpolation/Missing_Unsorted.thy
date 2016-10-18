@@ -204,7 +204,8 @@ lemma prod_list_power: fixes xs :: "'a :: comm_monoid_mult list"
   shows "prod_list xs ^ n = (\<Prod>x\<leftarrow>xs. x ^ n)"
   by (induct xs, auto simp: power_mult_distrib)
 
-lemma set_upt_Suc: "{0 ..< Suc i} = insert i {0 ..< i}" by auto
+lemma set_upt_Suc: "{0 ..< Suc i} = insert i {0 ..< i}"
+  by (fact atLeast0_lessThan_Suc)
 
 lemma prod_pow[simp]: "(\<Prod>i = 0..<n. p) = (p :: 'a :: comm_monoid_mult) ^ n"
   by (induct n, auto simp: set_upt_Suc)
@@ -359,9 +360,6 @@ proof -
   show ?thesis unfolding x y using zz by blast
 qed
 
-lemma prod_list_zero_iff: "(prod_list (xs :: 'a :: idom list) = 0) = (0 \<in> set xs)"
-  by (induct xs, auto)
-
 fun max_list_non_empty :: "('a :: linorder) list \<Rightarrow> 'a" where
   "max_list_non_empty [x] = x"
 | "max_list_non_empty (x # xs) = max x (max_list_non_empty xs)"
@@ -385,16 +383,14 @@ lemma sgn_real_mono: "x \<le> y \<Longrightarrow> sgn x \<le> sgn (y :: real)"
   by (auto split: if_splits)
 
 lemma sgn_minus_rat: "sgn (- (x :: rat)) = - sgn x"
-  by (simp add: sgn_rat_def)
+  by (fact Rings.sgn_minus)
 
 lemma real_of_rat_sgn: "sgn (of_rat x) = real_of_rat (sgn x)"
   unfolding sgn_real_def sgn_rat_def by auto
 
-lemma inverse_sgn[simp]: "sgn (inverse a) = (sgn a :: real)"
-  by (simp add: sgn_real_def)
-
-lemma inverse_sgn_rat[simp]: "sgn (inverse a) = (sgn a :: rat)"
-  by (simp add: sgn_rat_def)
+lemma (in linordered_field) inverse_sgn [simp]:
+  "inverse (sgn a) = sgn a"
+  by (cases a 0 rule: linorder_cases) simp_all
 
 lemma inverse_le_iff_sgn: assumes sgn: "sgn x = sgn y"
   shows "(inverse (x :: real) \<le> inverse y) = (y \<le> x)"
