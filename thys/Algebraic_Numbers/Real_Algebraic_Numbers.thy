@@ -760,132 +760,6 @@ lemma normalize_rai[simp]: "real_of_rai (normalize_rai x) = real_of_rai x"
 (* ********************* *)
 subsubsection \<open>Comparisons\<close>
 
-(* TODO: improve *)
-fun eq_fun_rai :: "rai_intern \<Rightarrow> rai_intern \<Rightarrow> bool" where
-  "eq_fun_rai (Some (_,_,p1,l1,r1)) (Some (_,_,p2,l2,r2)) = (l1 \<le> r2 \<and> l2 \<le> r1 \<and>
-    (let f = gcd_rat_poly p1 p2;
-         l = max l1 l2;
-         r = min r1 r2
-       in root_info.l_r (count_roots_interval_rat f) l r \<noteq> 0))"
-| "eq_fun_rai None None = True"
-| "eq_fun_rai _ _ = False"
-
-lemma eq_fun_rai: assumes "rai_cond rai1" "rai_cond rai2"
-  shows "(rai_real rai1 = rai_real rai2) = (eq_fun_rai rai1 rai2)" (is "?l = ?r")
-proof (cases rai1)
-  case (Some t1)
-  then obtain un1 ri1 p1 l1 r1 where rai1: "rai1 = Some (un1,ri1,p1,l1,r1)" by (cases t1, auto)
-  note ri1 = rai_condD[OF assms(1)[unfolded rai1]]
-  show ?thesis
-  proof (cases rai2)
-    case None
-    with ri1(3) show ?thesis by (simp add: rai1)
-  next
-    case (Some t2)
-    then obtain un2 ri2 p2 l2 r2 where rai2: "rai2 = Some (un2,ri2,p2,l2,r2)" by (cases t2, auto)
-    def f \<equiv> "gcd_rat_poly p1 p2"
-    def l \<equiv> "max l1 l2"
-    def r \<equiv> "min r1 r2"
-    note ri2 = rai_condD[OF assms(2)[unfolded rai2]]
-    from ri1(5) ri2(5) have f: "f \<noteq> 0" unfolding f_def by auto
-    have r: "?r = (l1 \<le> r2 \<and> l2 \<le> r1 \<and> root_info.l_r (count_roots_interval_rat f) l r \<noteq> 0)"
-      unfolding f_def l_def r_def rai1 rai2 by simp
-    let ?x1 = "the_unique_root (p1,l1,r1)" let ?x2 = "the_unique_root (p2,l2,r2)"
-    have l: "?l = (?x1 = ?x2)" unfolding rai1 rai2 by (simp add: rai_real_def)
-    let ?R = real_of_rat
-    note un1 = the_unique_root[OF ri1(7)]
-    note un2 = the_unique_root[OF ri2(7)]
-    from poly_cond_D[OF ri1(10)] have sf1: "square_free p1" and mon: "monic p1" by auto
-    have "f dvd p1" unfolding f_def by auto
-    from square_free_factor[OF this sf1] have sf: "square_free f" .
-    show "?l = ?r"
-    proof (cases "l1 \<le> r2 \<and> l2 \<le> r1")
-      case False
-      hence r: "?r = False" unfolding r by auto
-      from False have choice: "?R l1 > ?R r2 \<or> ?R l2 > ?R r1" unfolding of_rat_less by auto
-      from un1 have 1: "?R l1 \<le> ?x1" "?x1 \<le> ?R r1" by blast+
-      from un2 have 2: "?R l2 \<le> ?x2" "?x2 \<le> ?R r2" by blast+
-      from 1 2 choice have "?x1 \<noteq> ?x2" by auto
-      hence l: "?l = False" unfolding l by simp
-      show ?thesis unfolding l r by auto
-    next
-      case True
-      from order_trans[OF un1(1-2)] order_trans[OF un2(1-2)] have "l1 \<le> r1" "l2 \<le> r2" 
-        unfolding of_rat_less_eq by auto
-      with True have "l \<le> r" using ri1(7) unfolding l_def r_def by auto
-      from root_info_condD(1)[OF count_roots_interval_rat[OF sf] this] True
-      have r: "?r = (card {x. root_cond (f, l, r) x} \<noteq> 0)" unfolding r by auto
-      also have "\<dots> = ({x. root_cond (f, l, r) x} \<noteq> {})"
-        by (subst card_0_eq, unfold root_cond_def[abs_def] split, 
-          rule finite_subset[OF _ finite_rpoly_roots[OF f]], auto)
-      also have "\<dots> = (\<exists> x. ?R l \<le> x \<and> x \<le> ?R r \<and> rpoly f x = 0)" unfolding root_cond_def by auto
-      finally have r: "?r = (\<exists> x. ?R l \<le> x \<and> x \<le> ?R r \<and> rpoly f x = 0)" .
-      show ?thesis
-      proof (cases "?x1 = ?x2")
-        case True
-        have ?r unfolding r
-        proof (intro exI[of _ ?x2] conjI)
-          show "?R l \<le> ?x2" "?x2 \<le> ?R r" using  un2(1-2) un1(1-2)[unfolded True]
-            unfolding l_def r_def by auto
-          let ?Rp = "real_of_rat_poly"
-          {
-            fix p
-            assume "rpoly p ?x2 = 0"
-            hence "poly (?Rp p) ?x2 = 0" by (simp add: eval_poly_def)
-            hence "[: -?x2, 1 :] dvd ?Rp p" by (simp add: poly_eq_0_iff_dvd)
-          }
-          from this[OF un1(3)[unfolded True]] this[OF un2(3)]
-          have "[: -?x2, 1 :] dvd gcd (?Rp p1) (?Rp p2)" by auto
-          also have "gcd (?Rp p1) (?Rp p2) = ?Rp f" unfolding f_def by (simp add: rpoly'.map_poly_gcd)
-          finally have "poly (?Rp f) ?x2 = 0" by (simp add: poly_eq_0_iff_dvd)
-          thus "rpoly f ?x2 = 0" by (simp add: eval_poly_def)
-        qed
-        with True show ?thesis unfolding l by simp
-      next
-        case False
-        hence l: "?l = False" unfolding l by simp
-        have "\<not> ?r"
-        proof 
-          assume ?r
-          from this[unfolded r] obtain x where 
-            lx: "?R l \<le> x" and xr: "x \<le> ?R r" and x: "rpoly f x = 0" by auto
-          have max: "?R (max l1 l2) = max (?R l1) (?R l2)" by (simp add: max_def of_rat_less_eq)
-          have min: "?R (min r1 r2) = min (?R r1) (?R r2)" by (simp add: min_def of_rat_less_eq)
-          from lx xr have x1: "?R l1 \<le> x" "x \<le> ?R r1" and x2: "?R l2 \<le> x" "x \<le> ?R r2" 
-            unfolding l_def r_def max min by auto
-          have "f dvd p1" unfolding f_def by auto
-          from this[unfolded dvd_def] obtain g1 where p1: "p1 = f * g1" by auto
-          have "f dvd p2" unfolding f_def by auto
-          from this[unfolded dvd_def] obtain g2 where p2: "p2 = f * g2" by auto
-          have p1: "rpoly p1 x = 0" unfolding p1 using x by (simp add: eval_poly_def)
-          have p2: "rpoly p2 x = 0" unfolding p2 using x by (simp add: eval_poly_def)
-          from p1 x1 have x1: "root_cond (p1,l1,r1) x" by (simp add: root_cond_def)
-          from p2 x2 have x2: "root_cond (p2,l2,r2) x" by (simp add: root_cond_def)
-          from un1(5)[OF x1] un2(5)[OF x2] have "?x1 = ?x2" by simp
-          with False show False ..
-        qed
-        thus ?thesis unfolding l by simp
-      qed
-    qed
-  qed
-next
-  case None note rai1 = this
-  show ?thesis
-  proof (cases rai2)
-    case (Some t2)
-    then obtain un2 ri2 p2 l2 r2 where rai2: "rai2 = Some (un2,ri2,p2,l2,r2)" by (cases t2, auto)
-    note ri2 = rai_condD[OF assms(2)[unfolded rai2]]
-    from rai1 rai2 ri2(3) show ?thesis by simp
-  qed (simp add: rai1)
-qed
-
-declare eq_fun_rai.simps[simp del]
-      
-lift_definition eq_rai :: "real_alg_intern \<Rightarrow> real_alg_intern \<Rightarrow> bool" is eq_fun_rai .
-
-lemma eq_rai: "(real_of_rai x = real_of_rai y) = (eq_rai x y)"
-  by (transfer, insert eq_fun_rai, auto)
-
 definition info_fun_rai :: "rai_intern \<Rightarrow> rat poly \<times> nat" where
   "info_fun_rai rai \<equiv> case rai of None \<Rightarrow> (poly_rat 0,1) 
     | Some (un,ri,p,l,r) \<Rightarrow> (p,root_info.inf_r ri r)"
@@ -1107,6 +981,121 @@ lemma info_rai_fun: "real_of_rai x = real_of_rai y
 
 lemma info_rai_inj: "info_rai x = info_rai y \<Longrightarrow> real_of_rai x = real_of_rai y"
   by (transfer, rule rai_info_fun(1), auto)
+
+fun eq_fun_rai :: "rai_intern \<Rightarrow> rai_intern \<Rightarrow> bool" where
+  "eq_fun_rai (Some (_,ri,p1,l1,r1)) (Some (_,_,p2,l2,r2)) = (l1 \<le> r2 \<and> l2 \<le> r1 \<and> p1 = p2 \<and>
+    (let l = max l1 l2;
+         r = min r1 r2
+       in root_info.l_r ri l r \<noteq> 0))"
+| "eq_fun_rai None None = True"
+| "eq_fun_rai _ _ = False"
+
+lemma eq_fun_rai: assumes rc: "rai_cond rai1" "rai_cond rai2"
+  shows "(rai_real rai1 = rai_real rai2) = (eq_fun_rai rai1 rai2)" (is "?l = ?r")
+proof (cases rai1)
+  case (Some t1)
+  then obtain un1 ri1 p1 l1 r1 where rai1: "rai1 = Some (un1,ri1,p1,l1,r1)" by (cases t1, auto)
+  note ri1 = rai_condD[OF assms(1)[unfolded rai1]]
+  show ?thesis
+  proof (cases rai2)
+    case None
+    with ri1(3) show ?thesis by (simp add: rai1)
+  next
+    case (Some t2)
+    then obtain un2 ri2 p2 l2 r2 where rai2: "rai2 = Some (un2,ri2,p2,l2,r2)" by (cases t2, auto)
+    def l \<equiv> "max l1 l2"
+    def r \<equiv> "min r1 r2"
+    note ri2 = rai_condD[OF assms(2)[unfolded rai2]]
+    have r: "?r = (l1 \<le> r2 \<and> l2 \<le> r1 \<and> p1 = p2 \<and> root_info.l_r ri1 l r \<noteq> 0)"
+      unfolding l_def r_def rai1 rai2 by simp
+    let ?x1 = "the_unique_root (p1,l1,r1)" let ?x2 = "the_unique_root (p2,l2,r2)"
+    have l: "?l = (?x1 = ?x2)" unfolding rai1 rai2 by (simp add: rai_real_def)
+    let ?R = real_of_rat
+    note un1 = the_unique_root[OF ri1(7)]
+    note un2 = the_unique_root[OF ri2(7)]
+    from poly_cond_D[OF ri1(10)] have mon: "monic p1" by auto
+    show "?l = ?r"
+    proof (cases "l1 \<le> r2 \<and> l2 \<le> r1 \<and> p1 = p2")
+      case False
+      hence r: "?r = False" unfolding r by auto
+      from False have choice: "?R l1 > ?R r2 \<or> ?R l2 > ?R r1 \<or> p1 \<noteq> p2" unfolding of_rat_less by auto
+      from un1 have 1: "?R l1 \<le> ?x1" "?x1 \<le> ?R r1" by blast+
+      from un2 have 2: "?R l2 \<le> ?x2" "?x2 \<le> ?R r2" by blast+
+      from 1 2 choice have "?x1 \<noteq> ?x2 \<or> p1 \<noteq> p2" by auto
+      hence l: "?l = False" 
+      proof
+        assume "?x1 \<noteq> ?x2" 
+        thus ?thesis unfolding l by simp
+      next
+        assume "p1 \<noteq> p2" 
+        hence "info_fun_rai rai1 \<noteq> info_fun_rai rai2" 
+          unfolding rai1 rai2 by (simp add: info_fun_rai_def)
+        with rai_info_fun[OF rc] have "rai_real rai1 \<noteq> rai_real rai2" by auto
+        thus ?thesis by auto
+      qed
+      show ?thesis unfolding l r by auto
+    next
+      case True
+      with order_trans[OF un1(1-2)] order_trans[OF un2(1-2)] have "l1 \<le> r1" "l2 \<le> r2" and p12: "p1 = p2" 
+        unfolding of_rat_less_eq by auto
+      with True have "l \<le> r" using ri1(7) unfolding l_def r_def by auto
+      from root_info_condD(1)[OF ri1(9) this] True
+      have r: "?r = (card {x. root_cond (p1, l, r) x} \<noteq> 0)" unfolding r by auto
+      also have "\<dots> = ({x. root_cond (p1, l, r) x} \<noteq> {})"
+        by (subst card_0_eq, unfold root_cond_def[abs_def] split, 
+          rule finite_subset[OF _ finite_rpoly_roots[OF ri1(5)]], auto)
+      also have "\<dots> = (\<exists> x. ?R l \<le> x \<and> x \<le> ?R r \<and> rpoly p1 x = 0)" unfolding root_cond_def by auto
+      finally have r: "?r = (\<exists> x. ?R l \<le> x \<and> x \<le> ?R r \<and> rpoly p1 x = 0)" .
+      show ?thesis
+      proof (cases "?x1 = ?x2")
+        case True
+        have ?r unfolding r
+        proof (intro exI[of _ ?x2] conjI)
+          show "?R l \<le> ?x2" "?x2 \<le> ?R r" using  un2(1-2) un1(1-2)[unfolded True]
+            unfolding l_def r_def by auto
+          show "rpoly p1 (the_unique_root (p2, l2, r2)) = 0" 
+            unfolding p12 by (rule un2(3))
+        qed
+        thus ?thesis using True l by blast
+      next
+        case False
+        hence l: "?l = False" unfolding l by simp
+        have "\<not> ?r"
+        proof 
+          assume ?r
+          from this[unfolded r] obtain x where 
+            lx: "?R l \<le> x" and xr: "x \<le> ?R r" and p1: "rpoly p1 x = 0" by auto
+          with p12 have p2: "rpoly p2 x = 0" by auto
+          have max: "?R (max l1 l2) = max (?R l1) (?R l2)" by (simp add: max_def of_rat_less_eq)
+          have min: "?R (min r1 r2) = min (?R r1) (?R r2)" by (simp add: min_def of_rat_less_eq)
+          from lx xr have x1: "?R l1 \<le> x" "x \<le> ?R r1" and x2: "?R l2 \<le> x" "x \<le> ?R r2" 
+            unfolding l_def r_def max min by auto
+          from p1 x1 have x1: "root_cond (p1,l1,r1) x" by (simp add: root_cond_def)
+          from p2 x2 have x2: "root_cond (p2,l2,r2) x" by (simp add: root_cond_def)
+          from un1(5)[OF x1] un2(5)[OF x2] have "?x1 = ?x2" by simp
+          with False show False ..
+        qed
+        thus ?thesis unfolding l by simp
+      qed
+    qed
+  qed
+next
+  case None note rai1 = this
+  show ?thesis
+  proof (cases rai2)
+    case (Some t2)
+    then obtain un2 ri2 p2 l2 r2 where rai2: "rai2 = Some (un2,ri2,p2,l2,r2)" by (cases t2, auto)
+    note ri2 = rai_condD[OF assms(2)[unfolded rai2]]
+    from rai1 rai2 ri2(3) show ?thesis by simp
+  qed (simp add: rai1)
+qed
+
+declare eq_fun_rai.simps[simp del]
+      
+lift_definition eq_rai :: "real_alg_intern \<Rightarrow> real_alg_intern \<Rightarrow> bool" is eq_fun_rai .
+
+lemma eq_rai: "(real_of_rai x = real_of_rai y) = (eq_rai x y)"
+  by (transfer, insert eq_fun_rai, auto)
 
 context
 begin
