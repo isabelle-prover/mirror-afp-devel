@@ -1,0 +1,12 @@
+chapter AFP
+
+session "SPARCv8" (AFP) = "HOL-Word" +
+  options [timeout = 900]
+
+  theories [document = false]
+  	"~~/src/Tools/Adhoc_Overloading"
+  	"lib/WordDecl"
+  theories
+  	"SparcModel_MMU/Sparc_Properties"
+  document_files
+    "root.tex"
