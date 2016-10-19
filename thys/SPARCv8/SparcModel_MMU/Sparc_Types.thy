@@ -8,7 +8,7 @@
  * Author: Zhe Hou, David Sanan. 
  *)
 
-header {* SPARC V8 architecture CPU model*}
+section {* SPARC V8 architecture CPU model*}
 theory Sparc_Types    
 imports Main "../lib/WordDecl" 
 begin

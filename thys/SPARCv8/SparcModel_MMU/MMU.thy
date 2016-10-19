@@ -4,7 +4,7 @@
 *)
 
 
-header {* Memory Management Unit (MMU) *}
+section {* Memory Management Unit (MMU) *}
 
 theory MMU
 imports Main RegistersOps Sparc_Types

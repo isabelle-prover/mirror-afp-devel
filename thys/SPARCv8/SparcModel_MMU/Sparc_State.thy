@@ -8,7 +8,7 @@
  * Author: Zhe Hou, David Sanan.
  *)
 
-header {* SPARC V8 state model*}
+section {* SPARC V8 state model*}
 theory Sparc_State
 imports Main Sparc_Types  "../lib/wp/DetMonadLemmas" "MMU"
 begin                                                                    

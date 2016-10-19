@@ -8,7 +8,7 @@
  * Author: Zhe Hou, David Sanan.
  *)
 
-header {* SPARC instruction model *}
+section {* SPARC instruction model *}
 theory Sparc_Instruction
 imports Main Sparc_Types Sparc_State "~~/src/HOL/Eisbach/Eisbach_Tools"
 begin

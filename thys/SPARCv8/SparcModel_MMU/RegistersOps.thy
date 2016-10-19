@@ -1,4 +1,4 @@
-header{* Register Operations*}
+section{* Register Operations*}
 theory RegistersOps
 imports Main "../lib/WordDecl" 
 begin

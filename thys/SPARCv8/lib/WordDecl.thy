@@ -2,7 +2,7 @@
     Author:    David Sanán, Trinity College Dublin, 2012
 *)
 
-header "Word Declarations"
+section "Word Declarations"
 
 theory WordDecl
 imports Main "~~/src/HOL/Word/Word"
