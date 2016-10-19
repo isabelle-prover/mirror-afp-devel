@@ -4857,3 +4857,33 @@ abstract =
 	International Joint Conference on Artificial Intelligence (IJCAI’85),
 	pages 528–531, 1985.
 
+
+[Source_Coding_Theorem]
+title = Source Coding Theorem
+author = Quentin Hibon <qh225@cl.cam.ac.uk>, Lawrence Paulson <lp15@cam.ac.uk>
+notify = qh225@cl.cam.ac.uk
+date = 2016-10-19
+topic = Mathematics/Probability Theory
+abstract =
+  This document contains a proof of the necessary condition on the code
+  rate of a source code, namely that this code rate is bounded by the
+  entropy of the source. This represents one half of Shannon's source
+  coding theorem, which is itself an equivalence.
+
+[SPARCv8]
+title = A formal model for the SPARCv8 ISA and a proof of non-interference for the LEON3 processor
+author = Zhe Hou <mailto:zhe.hou@ntu.edu.sg>, David Sanan <mailto:sanan@ntu.edu.sg>, Alwen Tiu <mailto:ATiu@ntu.edu.sg>, Yang Liu <mailto:yangliu@ntu.edu.sg>
+notify = zhe.hou@ntu.edu.sg, sanan@ntu.edu.sg
+date = 2016-10-19
+topic = Computer Science/Security, Computer Science/Hardware
+abstract = 
+  We formalise the SPARCv8 instruction set architecture (ISA) which is
+  used in processors such as LEON3. Our formalisation can be specialised
+  to any SPARCv8 CPU, here we use LEON3 as a running example. Our model
+  covers the operational semantics for all the instructions in the
+  integer unit of the SPARCv8 architecture and it supports Isabelle code
+  export, which effectively turns the Isabelle model into a SPARCv8 CPU
+  simulator. We prove the language-based non-interference property for
+  the LEON3 processor.  Our model is based on deterministic monad, which
+  is a modified version of the non-deterministic monad from NICTA/l4v.
+
