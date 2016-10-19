@@ -544,9 +544,8 @@ definition rai_normalize_bounds_flat :: "rat \<Rightarrow> rai_intern_flat \<Rig
         (l'',r'') = tighten_poly_bounds_for_x (root_info.l_r ri) fr l' r'
     in (un,ri,p,l'',r'')))"
 
-definition rai_normalize :: "rai_intern \<Rightarrow> rai_intern" where 
-  "rai_normalize = map_option (rai_normalize_bounds_flat real_alg_precision o 
-    rai_normalize_poly_flat)"
+definition rai_normalize_bounds :: "rai_intern \<Rightarrow> rai_intern" where 
+  "rai_normalize_bounds = map_option (rai_normalize_bounds_flat real_alg_precision)"
 
 context
   fixes p q and l r :: rat
@@ -732,30 +731,28 @@ proof -
   qed
 qed
 
-lemma rai_normalize: assumes x: "rai_cond x"
-  shows "rai_cond (rai_normalize x) \<and> (rai_real (rai_normalize x) = rai_real x)" 
+lemma rai_normalize_bounds: assumes x: "rai_cond x"
+  shows "rai_cond (rai_normalize_bounds x) \<and> (rai_real (rai_normalize_bounds x) = rai_real x)" 
 proof (cases x)
   case None
-  thus ?thesis unfolding rai_normalize_def by auto
+  thus ?thesis unfolding rai_normalize_bounds_def by auto
 next
   case (Some xx)
-  let ?res = "rai_normalize_poly_flat xx"
-  obtain un ri p l r where res: "?res = (un,ri,p,l,r)" by (cases ?res, auto)
+  obtain un ri p l r where xx: "xx = (un,ri,p,l,r)" (is "_ = ?res") by (cases xx, auto)
   let ?x = "Some ?res"
-  have norm: "rai_normalize (Some xx) = Some (rai_normalize_bounds_flat real_alg_precision (un, ri, p, l, r))" 
-    unfolding rai_normalize_def o_def by (simp add: res)
-  from rai_normalize_poly_flat_rai_cond[OF x[unfolded Some] res, unfolded res] 
-  have x: "rai_cond ?x" "rai_real ?x = rai_real x" 
-    unfolding Some res by auto
+  have norm: "rai_normalize_bounds (Some xx) = Some (rai_normalize_bounds_flat real_alg_precision ?res)" 
+    unfolding rai_normalize_bounds_def by (simp add: xx)
+  from x have x: "rai_cond ?x" "rai_real ?x = rai_real x" 
+    unfolding Some xx by auto
   from rai_normalize_bounds_flat[OF real_alg_precision x(1)] x(2-)
-  show ?thesis unfolding Some rai_normalize_def by auto
+  show ?thesis unfolding Some rai_normalize_bounds_def xx by auto
 qed
 
-lift_definition normalize_rai :: "real_alg_intern \<Rightarrow> real_alg_intern" is rai_normalize
-  using rai_normalize by auto
+lift_definition normalize_bounds_rai :: "real_alg_intern \<Rightarrow> real_alg_intern" is rai_normalize_bounds
+  using rai_normalize_bounds by auto
 
-lemma normalize_rai[simp]: "real_of_rai (normalize_rai x) = real_of_rai x"
-  by (transfer, insert rai_normalize, simp)
+lemma normalize_bounds_rai[simp]: "real_of_rai (normalize_bounds_rai x) = real_of_rai x"
+  by (transfer, insert rai_normalize_bounds, simp)
 
 (* ********************* *)
 subsubsection \<open>Comparisons\<close>
@@ -1432,7 +1429,7 @@ lift_definition uminus_rai :: "real_alg_intern \<Rightarrow> real_alg_intern" is
   by (insert uminus_rai_main, auto)
   
 lemma uminus_rai: "real_of_rai (uminus_rai x) = uminus (real_of_rai x)"
-  by (transfer, insert uminus_rai_main rai_normalize, auto)
+  by (transfer, insert uminus_rai_main, auto)
 
 (* ********************* *)
 subsubsection\<open>Inverse\<close>
@@ -1496,10 +1493,10 @@ proof (cases x)
 qed (simp add: y inverse_rai_fun_def)
 
 lift_definition inverse_rai :: "real_alg_intern \<Rightarrow> real_alg_intern" is inverse_rai_fun
-  by (insert inverse_rai_main rai_normalize, auto)
+  by (insert inverse_rai_main, auto)
   
 lemma inverse_rai: "real_of_rai (inverse_rai x) = inverse (real_of_rai x)"
-  by (transfer, insert inverse_rai_main rai_normalize, auto)
+  by (transfer, insert inverse_rai_main, auto)
 
 (* ********************* *)
 subsubsection\<open>Floor\<close>
@@ -2036,7 +2033,7 @@ proof -
     show ?thesis
     proof (cases "sgn_rai_rat x \<ge> 0")
       case True
-      from rt[OF x True] True n y rai_normalize show ?thesis by auto
+      from rt[OF x True] True n y show ?thesis by auto
     next
       case False
       let ?um = "uminus_rai_fun"
@@ -3133,13 +3130,13 @@ lift_definition mult_rai :: "real_alg_intern \<Rightarrow> real_alg_intern \<Rig
   by (insert mult_rai_main, auto)
   
 lemma mult_rai: "real_of_rai (mult_rai x y) = real_of_rai x * real_of_rai y"
-  by (transfer, insert mult_rai_main rai_normalize, auto)
+  by (transfer, insert mult_rai_main, auto)
 
 lift_definition mult_rat_rai :: "rat \<Rightarrow> real_alg_intern \<Rightarrow> real_alg_intern" is mult_rat_rai_fun
   by (insert mult_rat_rai_main, auto)
   
 lemma mult_rat_rai: "real_of_rai (mult_rat_rai x y) = of_rat x * real_of_rai y"
-  by (transfer, insert mult_rat_rai_main rai_normalize, auto)
+  by (transfer, insert mult_rat_rai_main, auto)
 end
 
 (* **************************************************************** *)
@@ -3166,7 +3163,7 @@ fun real_of_radt :: "real_alg_dt \<Rightarrow> real" where
 | "real_of_radt (Irrational rai) = real_of_rai rai"
 
 definition real_alg_dt :: "real_alg_intern \<Rightarrow> real_alg_dt" where 
-  "real_alg_dt rai \<equiv> let rai' = normalize_rai rai; 
+  "real_alg_dt rai \<equiv> let rai' = normalize_bounds_rai rai; 
      (p,n) = info_rai rai'
      in (if degree p = 1 then Rational (- coeff p 0)
        else Irrational rai')"
@@ -3176,7 +3173,7 @@ lemma rai_of_radt: "real_of_rai (rai_of_radt x) = real_of_radt x"
 
 lemma real_alg_dt: "radt_cond (real_alg_dt rai)" "real_of_radt (real_alg_dt rai) = real_of_rai rai"
 proof -
-  def rai' \<equiv> "normalize_rai rai"
+  def rai' \<equiv> "normalize_bounds_rai rai"
   obtain p n where ri: "info_rai rai' = (p,n)" by force
   have rai': "real_of_rai rai = real_of_rai rai'" unfolding rai'_def by simp
   have id: "real_alg_dt rai = (if degree p = 1 then Rational (- coeff p 0)
@@ -3402,11 +3399,11 @@ fun sgn_radt :: "real_alg_dt \<Rightarrow> rat" where
 lemma sgn_radt: "radt_cond x \<Longrightarrow> real_of_rat (sgn_radt x) = sgn (real_of_radt x)" 
   using sgn_rai by (cases x, auto simp: real_of_rat_sgn)
 
-lemma normalize_rai_of_rat_rai: "normalize_rai (of_rat_rai r) = of_rat_rai r"
+lemma normalize_bounds_rai_of_rat_rai: "normalize_bounds_rai (of_rat_rai r) = of_rat_rai r"
 proof (transfer)
   fix r
-  show "rai_normalize (of_rat_rai_fun r) = of_rat_rai_fun r"
-    by (auto simp add: rai_normalize_def of_rat_rai_fun_def rai_normalize_poly_flat_def 
+  show "rai_normalize_bounds (of_rat_rai_fun r) = of_rat_rai_fun r"
+    by (auto simp add: rai_normalize_bounds_def of_rat_rai_fun_def rai_normalize_poly_flat_def 
     rai_normalize_bounds_flat_def real_alg_precision_def tighten_poly_bounds_epsilon.simps Let_def
     poly_rat_def tighten_poly_bounds_for_x.simps)
 qed

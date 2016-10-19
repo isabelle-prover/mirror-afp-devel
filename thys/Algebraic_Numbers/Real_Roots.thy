@@ -37,7 +37,7 @@ definition roots_of_rai_intern_monic_irr :: "rat poly \<Rightarrow> rai_intern l
     then [of_rat_rai_fun (- coeff p 0) ] else 
     let ri = count_roots_interval_rat p;
         cr = root_info.l_r ri
-      in map rai_normalize (roots_of_rai_main p ri cr [root_bounds p] []))"
+      in map rai_normalize_bounds (roots_of_rai_main p ri cr [root_bounds p] []))"
 
 lemma root_bounds: assumes "root_bounds p = (l,r)" and mon: "monic p"
   shows "rpoly p x = 0 \<Longrightarrow> real_of_rat l \<le> x \<and> x \<le> of_rat r" "l \<le> r"
@@ -129,7 +129,7 @@ proof -
   let ?rr = "set (roots_of_rai_intern_monic_irr p)"
   note d = roots_of_rai_intern_monic_irr_def
   from poly_cond_D[OF mrf] have mon: "monic p" and sf: "square_free p" by auto
-  let ?norm = "rai_normalize"
+  let ?norm = "rai_normalize_bounds"
   have "?one \<and> ?two"
   proof (cases "degree p = 1")
     case True
@@ -304,12 +304,12 @@ proof -
       assume *: "\<forall>x\<in>res. rai_cond x" "rai \<in> res"
       from *(1)[rule_format, OF *(2)]
       have "rai_cond rai" .
-      from rai_normalize[OF this] *(2) have "rai_real rai \<in> rai_real ` (\<lambda>x. ?norm x) ` res"       
+      from rai_normalize_bounds[OF this] *(2) have "rai_real rai \<in> rai_real ` (\<lambda>x. ?norm x) ` res"       
         using image_iff by fastforce
     } note normalize = this
     show ?thesis unfolding rr unfolding rts id e using cond 
       unfolding res_def[symmetric] image_empty e idd[symmetric] o_def using normalize
-      by (auto dest: rai_normalize)
+      by (auto dest: rai_normalize_bounds)
   qed
   thus ?one ?two by blast+
 qed
