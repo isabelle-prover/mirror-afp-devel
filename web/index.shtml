@@ -61,6 +61,16 @@ is available <a href="citing.shtml">[here]</a>.
 </td></tr>
 
 <tr><td class="entry">
+2016-10-19:
+<a href="entries/SPARCv8.shtml">A formal model for the SPARCv8 ISA and a proof of non-interference for the LEON3 processor</a>
+<br>Author:
+Zhe Hou,
+David Sanan,
+Alwen Tiu and 
+Yang Liu
+</td></tr>
+
+<tr><td class="entry">
 2016-10-11:
 <a href="entries/Chord_Segments.shtml">Intersecting Chords Theorem</a>
 <br>Author:
