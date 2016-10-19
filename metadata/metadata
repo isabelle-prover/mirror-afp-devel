@@ -4625,3 +4625,15 @@ abstract =
   Hayes. A Common-sense Theory of Time. In Proceedings of the 9th
   International Joint Conference on Artificial Intelligence (IJCAI’85),
   pages 528–531, 1985.
+
+[Source_Coding_Theorem]
+title = Source Coding Theorem
+author = Quentin Hibon <qh225@cl.cam.ac.uk>, Lawrence Paulson <lp15@cam.ac.uk>
+notify = qh225@cl.cam.ac.uk
+date = 2016-10-19
+topic = Mathematics/Probability Theory
+abstract =
+  This document contains a proof of the necessary condition on the code
+  rate of a source code, namely that this code rate is bounded by the
+  entropy of the source. This represents one half of Shannon's source
+  coding theorem, which is itself an equivalence.
