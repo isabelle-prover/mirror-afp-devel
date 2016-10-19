@@ -22,7 +22,7 @@ partial_function (tailrec) roots_of_rai_main ::
   [code]: "roots_of_rai_main p ri cr lrs rais = (case lrs of Nil \<Rightarrow> rais
   | (l,r) # lrs \<Rightarrow> let c = cr l r in 
     if c = 0 then roots_of_rai_main p ri cr lrs rais
-    else if c = 1 then roots_of_rai_main p ri cr lrs (mk_rai_intern Monic_Irreducible ri p l r # rais)
+    else if c = 1 then roots_of_rai_main p ri cr lrs (mk_rai_intern ri p l r # rais)
     else let m = (l + r) / 2 in roots_of_rai_main p ri cr ((m,r) # (l,m) # lrs) rais)"
 
 definition root_bounds :: "rat poly \<Rightarrow> rat \<times> rat" where 
@@ -208,7 +208,7 @@ proof -
         def c \<equiv> "cr l r"
         from simp Cons lr' have simp: "?main lrss rais = 
           (if c = 0 then ?main lrs rais else if c = 1 then 
-             ?main lrs (mk_rai_intern Monic_Irreducible ri p l r # rais)
+             ?main lrs (mk_rai_intern ri p l r # rais)
                else let m = (l + r) / 2 in ?main ((m, r) # (l, m) # lrs) rais)"
           unfolding c_def simp Cons lr' by auto
         note lrs = lrs[unfolded Cons lr']        
@@ -232,7 +232,7 @@ proof -
           show ?thesis
           proof (cases "c = 1")
             case True
-            let ?rai = "mk_rai_intern Monic_Irreducible ri p l r"            
+            let ?rai = "mk_rai_intern ri p l r"            
             from True simp have simp: "?main lrss rais = ?main lrs (?rai # rais)" by auto
             from card_1_Collect_ex1[OF c[symmetric, unfolded True]] 
             have rc1: "\<exists>!x. root_cond (p, l, r) x" .
