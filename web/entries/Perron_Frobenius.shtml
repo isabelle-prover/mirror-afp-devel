@@ -90,6 +90,10 @@ larger than one, then A<sup>n</sup> is polynomially bounded in n. </p>
 
 
 
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="Berlekamp_Zassenhaus.shtml">Berlekamp_Zassenhaus</a></td></tr>
+
+
 
   </tbody>
 </table>

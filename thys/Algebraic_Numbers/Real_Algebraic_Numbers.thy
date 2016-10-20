@@ -36,10 +36,10 @@ subsection \<open>Real Algebraic Numbers -- Innermost Layer\<close>
 
 text \<open>We represent a real algebraic number as follows: 
   None: 0;
-  Some (un,ri,p,l,r): the unique root of p in the interval [l,r], where l and r have the 
+  Some (ri,p,l,r): the unique root of p in the interval [l,r], where l and r have the 
     same sign and are non-zero; ri is the root-information to compute the nr of roots of p in
-    certain intervals; and un encodes whether the polynomial is normalized, i.e., the unique
-    irreducible and monic polynomial which represents the algebraic number.
+    certain intervals; we always assume that p is normalized, i.e.,
+    p is the unique irreducible and monic polynomial which represents the algebraic number.
     
 
   This representation clearly admits duplicate representations for the same number, e.g.
@@ -69,70 +69,36 @@ qed
 
 lemmas unique_root_defs = unique_root_def the_unique_root_def
 
-datatype poly_type = Monic_Irreducible | Monic_Root_Free | Arbitrary_Poly
-
-derive linorder poly_type
-
-lemma Monic_Irreducible_least[simp]: "(ty \<le> Monic_Irreducible) = (ty = Monic_Irreducible)" "Monic_Irreducible \<le> ty"
-  by (cases ty, auto, code_simp+, cases ty, auto)
-
-lemma Arbitrary_Poly_Greatest[simp]: "ty \<le> Arbitrary_Poly" "Arbitrary_Poly \<le> ty \<longleftrightarrow> ty = Arbitrary_Poly"
-  by (cases ty, auto, code_simp+, cases ty, auto)
-
-lemma Monic_Root_Free_compare[simp]: "ty \<le> Monic_Root_Free \<longleftrightarrow> ty = Monic_Irreducible \<or> ty = Monic_Root_Free"
-  by (cases ty, auto)
-
-type_synonym rai_intern_flat = "poly_type \<times> root_info \<times> rat poly \<times> rat \<times> rat"
+type_synonym rai_intern_flat = "root_info \<times> rat poly \<times> rat \<times> rat"
 type_synonym rai_intern = "rai_intern_flat option"
 
 
-definition poly_type_cond :: "poly_type \<Rightarrow> rat poly \<Rightarrow> bool" where
-  "poly_type_cond ty p = (case ty of 
-    Monic_Irreducible \<Rightarrow> monic p \<and> irreducible p | 
-    Monic_Root_Free \<Rightarrow> monic p \<and> root_free p \<and> square_free p |
-    Arbitrary_Poly \<Rightarrow> monic p \<and> square_free p)"
+definition poly_cond :: "rat poly \<Rightarrow> bool" where
+  "poly_cond p = (monic p \<and> irreducible p)"
 
-lemma poly_type_cond_arbitrary[simp]: "poly_type_cond Arbitrary_Poly p = (square_free p \<and> monic p)" 
-  unfolding poly_type_cond_def by auto
+lemma poly_cond_D: "poly_cond p \<Longrightarrow> irreducible p \<and> monic p \<and> root_free p \<and> square_free p"
+  unfolding poly_cond_def using irreducible_root_free irreducible_square_free by auto
 
-lemma poly_type_cond_square_free_D: "poly_type_cond ty p \<Longrightarrow> square_free p" "poly_type_cond ty p \<Longrightarrow> monic p"
-  unfolding poly_type_cond_def using irreducible_square_free
-  by (cases ty, auto)+
-
-lemma poly_type_cond_MI_D: "poly_type_cond ty p \<Longrightarrow> ty \<le> Monic_Irreducible \<Longrightarrow> irreducible p \<and> monic p \<and> root_free p \<and> square_free p"
-  unfolding poly_type_cond_def using irreducible_root_free irreducible_square_free by auto
-
-lemma poly_type_cond_RF_D: "poly_type_cond ty p \<Longrightarrow> ty \<le> Monic_Root_Free \<Longrightarrow> monic p \<and> root_free p \<and> square_free p"
-  unfolding poly_type_cond_def using irreducible_root_free irreducible_square_free by auto
-
-lemma poly_type_cond_MI_I: "monic p \<Longrightarrow> irreducible p \<Longrightarrow> poly_type_cond ty p"
-  using irreducible_root_free irreducible_square_free by (cases ty, auto simp: poly_type_cond_def)
-
-lemma poly_type_cond_RF_I: "monic p \<Longrightarrow> root_free p \<Longrightarrow> square_free p \<Longrightarrow> Monic_Root_Free \<le> ty \<Longrightarrow> poly_type_cond ty p"
-  by (cases ty, auto simp: poly_type_cond_def)
-
-lemma poly_type_cond_AP_I: "square_free p \<Longrightarrow> monic p \<Longrightarrow> Arbitrary_Poly \<le> ty \<Longrightarrow> poly_type_cond ty p" by auto
-
-lemma poly_type_cond_mono: "ty \<le> ty' \<Longrightarrow> poly_type_cond ty p \<Longrightarrow> poly_type_cond ty' p"
-  by (cases ty; cases ty'; auto simp: poly_type_cond_def irreducible_root_free irreducible_square_free)
+lemma poly_cond_I: "monic p \<Longrightarrow> irreducible p \<Longrightarrow> poly_cond p"
+  by (auto simp: poly_cond_def)
 
 definition rai_cond :: "rai_intern \<Rightarrow> bool" where
-  "rai_cond plr = (case plr of Some (un,ri,p,l,r) \<Rightarrow> 
+  "rai_cond plr = (case plr of Some (ri,p,l,r) \<Rightarrow> 
     unique_root (p,l,r) \<and> p \<noteq> 0 \<and> sgn l = sgn r \<and> sgn r \<noteq> 0 \<and> root_info_cond ri p 
-    \<and> (poly_type_cond un p) | None \<Rightarrow> True)"
+    \<and> poly_cond p | None \<Rightarrow> True)"
 
 lemma rai_cond_None[simp]: "rai_cond None = True" unfolding rai_cond_def by auto
 
 definition rai_real :: "rai_intern \<Rightarrow> real" where
-  "rai_real oplr = (case oplr of Some (u,cr,plr) \<Rightarrow> the_unique_root plr | None \<Rightarrow> 0)"
+  "rai_real oplr = (case oplr of Some (cr,plr) \<Rightarrow> the_unique_root plr | None \<Rightarrow> 0)"
 
 lemma rai_real_None[simp]: "rai_real None = 0" unfolding rai_real_def by auto
 
 lemma rai_cond_realI: assumes "root_cond (p,l,r) x" "p \<noteq> 0" "sgn l = sgn r" "sgn r \<noteq> 0"
   and "\<And> y. root_cond (p,l,r) y \<Longrightarrow> x = y"
   and "root_info_cond ri p"
-  and "poly_type_cond un p"
-  shows "rai_cond (Some (un,ri,p,l,r)) \<and> rai_real (Some (un,ri,p,l,r)) = x"
+  and "poly_cond p"
+  shows "rai_cond (Some (ri,p,l,r)) \<and> rai_real (Some (ri,p,l,r)) = x"
   unfolding rai_cond_def rai_real_def option.simps unique_root_defs split
   by (intro conjI ex1I[of _ x], insert assms, blast+)
 
@@ -143,23 +109,23 @@ setup_lifting type_definition_real_alg_intern
 
 lift_definition real_of_rai :: "real_alg_intern \<Rightarrow> real" is rai_real .
 
-lemma rai_condD: assumes "rai_cond (Some (un,ri,p,l,r))"
-  shows "root_cond (p,l,r) (rai_real (Some (un,ri,p,l,r)))"
-    "sgn l = sgn r" "rai_real (Some (un,ri,p,l,r)) \<noteq> 0" "sgn r \<noteq> 0" "p \<noteq> 0" 
-    "sgn (rai_real (Some (un,ri,p,l,r))) = of_rat (sgn r)"
+lemma rai_condD: assumes "rai_cond (Some (ri,p,l,r))"
+  shows "root_cond (p,l,r) (rai_real (Some (ri,p,l,r)))"
+    "sgn l = sgn r" "rai_real (Some (ri,p,l,r)) \<noteq> 0" "sgn r \<noteq> 0" "p \<noteq> 0" 
+    "sgn (rai_real (Some (ri,p,l,r))) = of_rat (sgn r)"
     "unique_root (p,l,r)"
-    "\<And> y. root_cond (p,l,r) y \<Longrightarrow> rai_real (Some (un,ri,p,l,r)) = y"
+    "\<And> y. root_cond (p,l,r) y \<Longrightarrow> rai_real (Some (ri,p,l,r)) = y"
     "root_info_cond ri p"
-    "poly_type_cond un p"
+    "poly_cond p"
 proof -
   let ?p = "\<lambda> x. rpoly p x = 0 \<and> real_of_rat l \<le> x \<and> x \<le> real_of_rat r"
-  let ?x = "rai_real (Some (un,ri,p,l,r))"
+  let ?x = "rai_real (Some (ri,p,l,r))"
   let ?l = "of_rat l :: real"
   let ?r = "of_rat r :: real"
   from assms[unfolded rai_cond_def split] have ur: "unique_root (p,l,r)"
     and sgn: "sgn l = sgn r" "sgn r \<noteq> 0" and p: "p \<noteq> 0" and cr: "root_info_cond ri p" 
-    and "poly_type_cond un p" by auto
-  show "poly_type_cond un p" by fact    
+    and "poly_cond p" by auto
+  show "poly_cond p" by fact    
   show "unique_root (p,l,r)" "root_info_cond ri p" by fact+
   note ur = the_unique_root[OF ur]
   from ur(1-4) have x: "rpoly p ?x = 0" and bnd: "?l \<le> ?x" "?x \<le> ?r"
@@ -211,12 +177,12 @@ proof -
 qed
 
 definition of_rat_rai_fun :: "rat \<Rightarrow> rai_intern" where
-  "of_rat_rai_fun \<equiv> \<lambda> x. if x = 0 then None else Some (Monic_Irreducible,poly_rat_root_info x, poly_rat x,x,x)"
+  "of_rat_rai_fun \<equiv> \<lambda> x. if x = 0 then None else Some (poly_rat_root_info x, poly_rat x,x,x)"
 
 lemma of_rat_rai_main: assumes y: "y = of_rat_rai_fun x"
   shows "rai_cond y \<and> (rai_real y = of_rat x)"
   unfolding y of_rat_rai_fun_def
-  by (auto simp: rai_real_def rai_cond_def sgn_rat_def unique_root_defs root_cond_def intro: poly_type_cond_MI_I)
+  by (auto simp: rai_real_def rai_cond_def sgn_rat_def unique_root_defs root_cond_def intro: poly_cond_I)
 
 lift_definition of_rat_rai :: "rat \<Rightarrow> real_alg_intern" is of_rat_rai_fun
   by (insert of_rat_rai_main, auto)
@@ -228,7 +194,7 @@ lemma of_rat_rai: "real_of_rai (of_rat_rai x) = of_rat x"
 subsubsection \<open>Sign\<close>
 
 lift_definition sgn_rai :: "real_alg_intern \<Rightarrow> rat" is
-  "\<lambda> x. case x of None \<Rightarrow> 0 | Some (un,ri,p,l,r) \<Rightarrow> sgn r"  .
+  "\<lambda> x. case x of None \<Rightarrow> 0 | Some (ri,p,l,r) \<Rightarrow> sgn r"  .
 
 lemma sgn_rai: "real_of_rat (sgn_rai x) = sgn (real_of_rai x)"
   by (transfer, case_tac "x", insert of_rat_rai_main rai_condD, auto)
@@ -255,8 +221,8 @@ proof (transfer, goal_cases)
       show ?thesis using rai_condD 1 x y by (cases x, auto)
     next
       case (Some y) note y = this
-      obtain un1 ri1 p1 l1 r1 where xt: "x = (un1,ri1,p1,l1,r1)" by (cases x, auto)
-      obtain un2 ri2 p2 l2 r2 where yt: "y = (un2,ri2,p2,l2,r2)" by (cases y, auto)
+      obtain ri1 p1 l1 r1 where xt: "x = (ri1,p1,l1,r1)" by (cases x, auto)
+      obtain ri2 p2 l2 r2 where yt: "y = (ri2,p2,l2,r2)" by (cases y, auto)
       from 1 have "rai_cond (Some x)" unfolding x by auto
       from rai_condD(6)[OF this[unfolded xt]] xt
       have s1: "real_of_rat (sgn r1) = sgn (rai_real (Some x))" by simp
@@ -295,15 +261,6 @@ proof -
   qed
 qed
 
-lemma finite_rpoly_roots: assumes "p \<noteq> 0"
-  shows "finite {x. rpoly p x = (0 :: real)}"
-proof -
-  let ?p = "real_of_rat_poly p"
-  from assms have "?p \<noteq> 0" using real_of_rat_poly_0 by auto
-  hence "finite {x. poly ?p x = 0}" by (rule poly_roots_finite)
-  thus "finite {x. rpoly p x = (0 :: real)}" unfolding poly_real_of_rat_poly .
-qed
-
 lemma eval_poly_id[simp]: "eval_poly id = poly" (is "?l = ?r")
   by (intro ext, unfold eval_poly_def, auto)
 
@@ -325,16 +282,16 @@ proof -
   show "the_unique_root (p,l',r') = the_unique_root (p,l,r)" by simp
 qed
 
-lemma rai_cond_sub_interval: assumes rc: "rai_cond (Some (un,ri,p,l,r))"
+lemma rai_cond_sub_interval: assumes rc: "rai_cond (Some (ri,p,l,r))"
   and sub: "root_cond (p,l',r') (the_unique_root (p,l,r))"
   and between: "l \<le> l'" "r' \<le> r"
-  shows "rai_cond (Some (un,ri,p,l',r'))" "rai_real (Some (un,ri,p,l',r')) = rai_real (Some (un,ri,p,l,r))"  
+  shows "rai_cond (Some (ri,p,l',r'))" "rai_real (Some (ri,p,l',r')) = rai_real (Some (ri,p,l,r))"  
 proof -
   let ?r = real_of_rat
   note rcD = rai_condD[OF rc]
   from unique_root_sub_interval[OF rcD(7) sub between]
   have ur: "unique_root (p, l', r')" and id: "the_unique_root (p, l', r') = the_unique_root (p, l, r)" .
-  show "rai_real (Some (un,ri,p,l',r')) = rai_real (Some (un,ri,p,l,r))"
+  show "rai_real (Some (ri,p,l',r')) = rai_real (Some (ri,p,l,r))"
     using id by (simp add: rai_real_def)
   from rcD(1)[unfolded root_cond_def split] have "?r l \<le> ?r r" by auto
   hence lr: "l \<le> r" by (auto simp: of_rat_less_eq)
@@ -353,7 +310,7 @@ proof -
     with lr lr' between have "l > 0" "l' > 0" "r' > 0" "r > 0" by auto
     thus ?thesis unfolding sgn_rat_def by auto
   qed
-  thus "rai_cond (Some (un,ri,p,l',r'))"
+  thus "rai_cond (Some (ri,p,l',r'))"
     unfolding rai_cond_def
     by (simp add: ur rcD(5,9,10))
 qed
@@ -561,20 +518,14 @@ proof -
 qed
 end
 
-fun factorization_guarantee :: "factorization_mode \<Rightarrow> poly_type" where
-  "factorization_guarantee Uncertified_Factorization = Arbitrary_Poly"
-| "factorization_guarantee Full_Factorization = Monic_Irreducible"
-| "factorization_guarantee Check_Irreducible = Monic_Irreducible"
-| "factorization_guarantee Check_Root_Free = Monic_Root_Free"
+fun rai_normalize_poly_main :: "rat \<Rightarrow> rat \<Rightarrow> rat poly list \<Rightarrow> rai_intern_flat" where 
+  "rai_normalize_poly_main l r (p # ps) = (let ri = count_roots_interval_rat p in
+    if root_info.l_r ri l r = 0 then rai_normalize_poly_main l r ps 
+    else (ri,p,l,r))"
 
-fun rai_normalize_poly_main :: "factorization_mode \<Rightarrow> rat \<Rightarrow> rat \<Rightarrow> rat poly list \<Rightarrow> rai_intern_flat" where 
-  "rai_normalize_poly_main mode l r (p # ps) = (let ri = count_roots_interval_rat p in
-    if root_info.l_r ri l r = 0 then rai_normalize_poly_main mode l r ps 
-    else (factorization_guarantee mode,ri,p,l,r))"
-
-definition rai_normalize_poly_flat :: "factorization_mode \<Rightarrow> rai_intern_flat \<Rightarrow> rai_intern_flat" where
-  "rai_normalize_poly_flat mode rai \<equiv> case rai of (un,ri,p,l,r) \<Rightarrow>
-    if un = Monic_Irreducible then (un,ri,p,l,r) else rai_normalize_poly_main mode l r (factors_of_rat_poly mode p)"
+definition rai_normalize_poly_flat :: "rai_intern_flat \<Rightarrow> rai_intern_flat" where
+  "rai_normalize_poly_flat rai \<equiv> case rai of (ri,p,l,r) \<Rightarrow>
+    rai_normalize_poly_main l r (factors_of_rat_poly p)"
 
 definition real_alg_precision :: rat where
   "real_alg_precision \<equiv> inverse 8"
@@ -583,33 +534,16 @@ lemma real_alg_precision: "real_alg_precision > 0"
   by code_simp
 
 definition rai_normalize_bounds_flat :: "rat \<Rightarrow> rai_intern_flat \<Rightarrow> rai_intern_flat" where
-  "rai_normalize_bounds_flat eps rai = (case rai of (un,ri,p,l,r) \<Rightarrow>
+  "rai_normalize_bounds_flat eps rai = (case rai of (ri,p,l,r) \<Rightarrow>
     let (l',r') = tighten_poly_bounds_epsilon (root_info.l_r ri) eps l r;
         fr = rat_of_int (floor r')
-      in (if fr \<ge> l' \<and> poly p fr = 0 then (un,ri,p,fr,fr)
+      in (if fr \<ge> l' \<and> poly p fr = 0 then (ri,p,fr,fr)
         else let
         (l'',r'') = tighten_poly_bounds_for_x (root_info.l_r ri) fr l' r'
-    in (un,ri,p,l'',r'')))"
+    in (ri,p,l'',r'')))"
 
-datatype normalization_mode = No_Guarantee | Root_Free | Irreducible
-
-fun normalization_to_factorization_mode :: "normalization_mode \<Rightarrow> factorization_mode" where
-  "normalization_to_factorization_mode No_Guarantee = Uncertified_Factorization"
-| "normalization_to_factorization_mode Root_Free = Check_Root_Free"
-| "normalization_to_factorization_mode Irreducible = Check_Irreducible"
-
-fun normalization_guarantee :: "normalization_mode \<Rightarrow> poly_type" where
-  "normalization_guarantee No_Guarantee = Arbitrary_Poly"
-| "normalization_guarantee Root_Free = Monic_Root_Free"
-| "normalization_guarantee Irreducible = Monic_Irreducible"
-
-
-definition rai_normalize :: "normalization_mode \<Rightarrow> rai_intern \<Rightarrow> rai_intern" where 
-  "rai_normalize mode = map_option (rai_normalize_bounds_flat real_alg_precision o 
-    rai_normalize_poly_flat (normalization_to_factorization_mode mode))"
-
-definition rai_normalized :: "normalization_mode \<Rightarrow> rai_intern \<Rightarrow> bool" where
-  "rai_normalized mode rai \<equiv> case rai of None \<Rightarrow> True | Some (un,ri,p,l,r) \<Rightarrow> un \<le> normalization_guarantee mode \<and> monic p"
+definition rai_normalize_bounds :: "rai_intern \<Rightarrow> rai_intern" where 
+  "rai_normalize_bounds = map_option (rai_normalize_bounds_flat real_alg_precision)"
 
 context
   fixes p q and l r :: rat
@@ -628,46 +562,39 @@ lemma unique_root_cong:
 end
 
 lemma rai_normalize_poly_flat: 
-  assumes res: "rai_normalize_poly_flat mode (un,ri,p,l,r) = (un',ri',p',l',r')"
+  assumes res: "rai_normalize_poly_flat (ri,p,l,r) = (ri',p',l',r')"
     and ur: "unique_root (p,l,r)" and p0: "p \<noteq> 0" and ri: "root_info_cond ri p"
-    and un: "un = Monic_Irreducible \<or> mode \<in> {Check_Irreducible, Check_Root_Free} \<Longrightarrow> poly_type_cond un p"
   shows "unique_root (p',l,r)" "p' \<noteq> 0" "l' = l" "r' = r" 
-    "un' \<le> factorization_guarantee mode" "poly_type_cond un' p'"
+    "poly_cond p'"
     "the_unique_root (p',l,r) = the_unique_root (p,l,r)" "root_info_cond ri' p'" "monic p'"
 proof -
   note res = res[unfolded rai_normalize_poly_flat_def split]
-  let ?y = "(un',ri',p',l',r')"
+  let ?y = "(ri',p',l',r')"
   have "unique_root (p',l,r) \<and> p' \<noteq> 0 \<and> l' = l \<and> r' = r 
-    \<and> un' \<le> factorization_guarantee mode \<and> poly_type_cond un' p'
+    \<and> poly_cond p'
     \<and> the_unique_root (p',l,r) = the_unique_root (p,l,r) \<and> root_info_cond ri' p' \<and> monic p'"
-  proof (cases "un = Monic_Irreducible")
-    case True
-    with assms res show ?thesis by (auto simp: poly_type_cond_def)
-  next
-    case False
-    obtain fs where fs: "factors_of_rat_poly mode p = fs" by auto
-    from False res fs have res: "rai_normalize_poly_main mode l r fs = ?y" by auto
-    from un have "mode \<in> {Check_Irreducible, Check_Root_Free} \<Longrightarrow> square_free p" 
-      by (auto simp: poly_type_cond_square_free_D)
-    note fact = factors_of_rat_poly[OF fs this]
-    note fact = fact(1) fact(2-3)[OF _ p0]
+  proof -
+    obtain fs where fs: "factors_of_rat_poly p = fs" by auto
+    from res fs have res: "rai_normalize_poly_main l r fs = ?y" by auto
+    note fact = factors_of_rat_poly[OF fs]
+    note fact = fact(1) fact(2-3)[OF p0]
     interpret rp: inj_ring_hom real_of_rat_poly by (rule rpoly.inj_ring_hom_map_poly)
     from ur have ur': "unique_root (p, l, r)" .
     let ?r = "real_of_rat r"
     let ?l = "real_of_rat l"
     def x \<equiv> "the_unique_root (p,l,r)"
     let ?prop = "\<lambda> ri q. root_info_cond ri q \<and> monic q 
-      \<and> poly_type_cond (factorization_guarantee mode) q 
+      \<and> poly_cond q 
       \<and> x = the_unique_root (q,l,r) \<and> unique_root (q,l,r)
-      \<and> rai_normalize_poly_main mode l r fs = 
-        (factorization_guarantee mode,ri,q,l,r)"
+      \<and> rai_normalize_poly_main l r fs = 
+        (ri,q,l,r)"
     note unique = the_unique_root[OF ur', folded x_def] 
     from unique(3) have "rpoly p x = 0" .
-    from fact(3)[OF _ this] have ex1: "\<exists>!q. q \<in> set fs \<and> rpoly q x = 0" . 
+    from fact(3)[OF this] have ex1: "\<exists>!q. q \<in> set fs \<and> rpoly q x = 0" . 
     hence ex: "\<exists>q. q \<in> set fs \<and> rpoly q x = 0" by auto
     from fact(1-2) have "\<And> q. q \<in> set fs \<Longrightarrow>
-      (mode = Full_Factorization \<or> mode = Check_Irreducible \<longrightarrow> irreducible q) \<and>
-      (mode = Check_Root_Free \<longrightarrow> root_free q) \<and> monic q \<and> square_free q" 
+      irreducible q \<and>
+      monic q" 
       "\<And> q (x :: real). q \<in> set fs \<Longrightarrow> rpoly q x = 0 \<Longrightarrow> rpoly p x = 0"
       by auto
     with ex have "\<exists> ri q. ?prop ri q" 
@@ -675,9 +602,10 @@ proof -
       case (Cons f fs)
       def ri \<equiv> "count_roots_interval_rat f" 
       def cr \<equiv> "root_info.l_r ri"
-      from Cons(3)[of f] have ptc: "poly_type_cond (factorization_guarantee mode) f" 
-        and mon: "monic f" and p0: "f \<noteq> 0" and sf: "square_free f"
-        by (cases mode, auto simp: poly_type_cond_def)
+      from Cons(3)[of f] have ptc: "poly_cond f" 
+        and mon: "monic f" and p0: "f \<noteq> 0" 
+        by (auto simp: poly_cond_def)
+      from poly_cond_D(1)[OF ptc] have sf: "square_free f" by auto
       from unique(4)[unfolded root_cond_def] have "?l \<le> ?r" by auto
       hence lr: "l \<le> r" by (simp add: of_rat_less_eq)
       note cri = count_roots_interval_rat[OF sf, folded ri_def]
@@ -688,16 +616,16 @@ proof -
       show ?case
       proof (cases "cr l r = 0")
         case True
-        hence id: "rai_normalize_poly_main mode l r (f # fs)
-          = rai_normalize_poly_main mode l r fs"
+        hence id: "rai_normalize_poly_main l r (f # fs)
+          = rai_normalize_poly_main l r fs"
           by (simp add: cr_def ri_def)
         from True[unfolded cr_lr] fin have empty: "\<not> root_cond (f,l,r) x" by auto
         from Cons(2) empty unique(1-4) have "\<exists>q. q \<in> set fs \<and> rpoly q x = 0" by (auto simp: root_cond_def)
         from Cons(1)[OF this Cons(3)] Cons(4) show ?thesis unfolding id by auto
       next
         case False
-        hence id: "rai_normalize_poly_main mode l r (f # fs)
-          = (factorization_guarantee mode,ri,f,l,r)"
+        hence id: "rai_normalize_poly_main l r (f # fs)
+          = (ri,f,l,r)"
           by (simp add: cr_def ri_def)
         from False have "cr l r > 0" by auto
         from this[unfolded cr_lr card_gt_0_iff] obtain y where rc: "root_cond (f,l,r) y" by auto
@@ -725,41 +653,40 @@ proof -
     with res show ?thesis unfolding x_def by auto
   qed
   thus "unique_root (p',l,r)" "p' \<noteq> 0" "l' = l" "r' = r" 
-    "un' \<le> factorization_guarantee mode" "poly_type_cond un' p'"
+    "poly_cond p'"
     "the_unique_root (p',l,r) = the_unique_root (p,l,r)" "root_info_cond ri' p'" "monic p'" by blast+
 qed
 
 
-lemma rai_normalize_poly_flat_rai_cond: fixes mode :: factorization_mode 
+lemma rai_normalize_poly_flat_rai_cond:   
   assumes rc: "rai_cond (Some x)" 
-  defines res: "y \<equiv> rai_normalize_poly_flat mode x"
-  assumes y: "y = (un',ri',p',l',r')"
+  defines res: "y \<equiv> rai_normalize_poly_flat x"
+  assumes y: "y = (ri',p',l',r')"
   shows "rai_cond (Some y)" "rai_real (Some y) = rai_real (Some x)" 
-   "un' \<le> factorization_guarantee mode" "monic p'"
+    "monic p'"
 proof -
-  obtain un ri p l r where x: "x = (un,ri,p,l,r)" by (cases x) auto
-  with res x y have res: "rai_normalize_poly_flat mode (un,ri,p,l,r) = (un',ri',p',l',r')" by auto
+  obtain ri p l r where x: "x = (ri,p,l,r)" by (cases x) auto
+  with res x y have res: "rai_normalize_poly_flat (ri,p,l,r) = (ri',p',l',r')" by auto
   note rcD = rai_condD[OF rc[unfolded x]]
   from rcD(5) have p0: "p \<noteq> 0" .
-  from rcD(2,4) rai_normalize_poly_flat[OF res rcD(7,5,9,10)]
+  from rcD(2,4,10) rai_normalize_poly_flat[OF res rcD(7,5,9)]
   show "rai_cond (Some y)" "rai_real (Some y) = rai_real (Some x)" 
-   "un' \<le> factorization_guarantee mode" "monic p'" unfolding y x 
-   by (auto simp: rai_normalized_def rai_real_def rai_cond_def)
+   "monic p'" unfolding y x 
+   by (auto simp: rai_real_def rai_cond_def)
 qed
 
 lemma rai_normalize_bounds_flat: assumes eps: "eps > 0" and rc: "rai_cond (Some x)"
   defines y: "y \<equiv> rai_normalize_bounds_flat eps x"
-  shows "rai_cond (Some y) \<and> (rai_real (Some y) = rai_real (Some x)) \<and> rai_normalized mode (Some y)
-  = rai_normalized mode (Some x)"
+  shows "rai_cond (Some y) \<and> (rai_real (Some y) = rai_real (Some x))"
 proof -
-  obtain un ri p l r where x: "x = (un,ri,p,l,r)" by (cases x) auto
+  obtain ri p l r where x: "x = (ri,p,l,r)" by (cases x) auto
   note rc = rc[unfolded x]
   def cr \<equiv> "root_info.l_r ri"
   obtain l' r' where tb: "tighten_poly_bounds_epsilon cr eps l r = (l',r')" by force
   let ?fr = "rat_of_int (floor r')"
   obtain l'' r'' where tbx: "tighten_poly_bounds_for_x cr ?fr l' r' = (l'',r'')" by force
   from y[unfolded rai_normalize_bounds_flat_def x] tb tbx
-  have y: "y = (if l' \<le> ?fr \<and> poly p ?fr = 0 then (un, ri, p, ?fr, ?fr) else (un, ri, p, l'', r''))" 
+  have y: "y = (if l' \<le> ?fr \<and> poly p ?fr = 0 then ( ri, p, ?fr, ?fr) else ( ri, p, l'', r''))" 
     by (auto simp: Let_def cr_def)
   note rcD = rai_condD[OF rc]
   from tighten_poly_bounds_epsilon[OF rcD(7) refl rcD(9) _ tb eps]
@@ -772,17 +699,17 @@ proof -
   show ?thesis
   proof (cases "l' \<le> ?fr \<and> poly p ?fr = 0")
     case False    
-    hence y: "y = (un,ri,p,l'',r'')" unfolding y by auto
+    hence y: "y = (ri,p,l'',r'')" unfolding y by auto
     from False have "l' \<le> ?fr \<Longrightarrow> ?fr \<le> r' \<Longrightarrow> poly p ?fr \<noteq> 0" by auto
     from tighten_poly_bounds_for_x[OF rcD(7) this refl rcD(9) _ tbx]
     have bnd: "l' \<le> l''" "r'' \<le> r'" and rc': "root_cond (p, l'', r'') (the_unique_root (p, l', r'))" 
       by (auto simp: cr_def)
     note sub' = rai_cond_sub_interval[OF rc rc' bnd]
     from sub sub'
-    show ?thesis unfolding y x by (auto simp: rai_normalized_def)
+    show ?thesis unfolding y x by auto
   next
     case True
-    hence y: "y = (un,ri,p,?fr,?fr)" unfolding y by auto
+    hence y: "y = (ri,p,?fr,?fr)" unfolding y by auto
     let ?r = real_of_rat
     from True have bnd: "l' \<le> ?fr" "?fr \<le> r'" by linarith+
     from True have "rpoly p (?r ?fr) = 0" unfolding rpoly.eval_poly_poly by simp
@@ -793,169 +720,52 @@ proof -
       unfolding root_cond_def split rfr by auto
     note sub' = rai_cond_sub_interval[OF rc this bnd]
     from sub sub'
-    show ?thesis unfolding y x by (auto simp: rai_normalized_def)
+    show ?thesis unfolding y x by auto
   qed
 qed
 
-lemma rai_normalize: assumes x: "rai_cond x"
-  shows "rai_cond (rai_normalize mode x) \<and> (rai_real (rai_normalize mode x) = rai_real x) 
-    \<and> rai_normalized mode (rai_normalize mode x)" 
+lemma rai_normalize_bounds: assumes x: "rai_cond x"
+  shows "rai_cond (rai_normalize_bounds x) \<and> (rai_real (rai_normalize_bounds x) = rai_real x)" 
 proof (cases x)
   case None
-  thus ?thesis unfolding rai_normalized_def rai_normalize_def by auto
+  thus ?thesis unfolding rai_normalize_bounds_def by auto
 next
   case (Some xx)
-  let ?res = "rai_normalize_poly_flat (normalization_to_factorization_mode mode) xx"
-  obtain un ri p l r where res: "?res = (un,ri,p,l,r)" by (cases ?res, auto)
+  obtain ri p l r where xx: "xx = (ri,p,l,r)" (is "_ = ?res") by (cases xx, auto)
   let ?x = "Some ?res"
-  have norm: "rai_normalize mode (Some xx) = Some (rai_normalize_bounds_flat real_alg_precision (un, ri, p, l, r))" 
-    unfolding rai_normalize_def o_def by (simp add: res)
-  from rai_normalize_poly_flat_rai_cond[OF x[unfolded Some] res, unfolded res] 
-  have x: "rai_cond ?x" "rai_real ?x = rai_real x" "rai_normalized mode ?x"
-    unfolding Some res by (auto simp: rai_normalized_def, cases mode, auto)
-  from rai_normalize_bounds_flat[OF real_alg_precision x(1), of mode] x(2-)
-  show ?thesis unfolding Some rai_normalize_def by auto
+  have norm: "rai_normalize_bounds (Some xx) = Some (rai_normalize_bounds_flat real_alg_precision ?res)" 
+    unfolding rai_normalize_bounds_def by (simp add: xx)
+  from x have x: "rai_cond ?x" "rai_real ?x = rai_real x" 
+    unfolding Some xx by auto
+  from rai_normalize_bounds_flat[OF real_alg_precision x(1)] x(2-)
+  show ?thesis unfolding Some rai_normalize_bounds_def xx by auto
 qed
 
-lift_definition normalize_rai :: "normalization_mode \<Rightarrow> real_alg_intern \<Rightarrow> real_alg_intern" is rai_normalize
-  using rai_normalize by auto
+lift_definition normalize_bounds_rai :: "real_alg_intern \<Rightarrow> real_alg_intern" is rai_normalize_bounds
+  using rai_normalize_bounds by auto
 
-lemma normalize_rai[simp]: "real_of_rai (normalize_rai mode x) = real_of_rai x"
-  by (transfer, insert rai_normalize, simp)
+lemma normalize_bounds_rai[simp]: "real_of_rai (normalize_bounds_rai x) = real_of_rai x"
+  by (transfer, insert rai_normalize_bounds, simp)
 
 (* ********************* *)
 subsubsection \<open>Comparisons\<close>
 
-fun eq_fun_rai :: "rai_intern \<Rightarrow> rai_intern \<Rightarrow> bool" where
-  "eq_fun_rai (Some (_,_,p1,l1,r1)) (Some (_,_,p2,l2,r2)) = (l1 \<le> r2 \<and> l2 \<le> r1 \<and>
-    (let f = gcd_rat_poly p1 p2;
-         l = max l1 l2;
-         r = min r1 r2
-       in root_info.l_r (count_roots_interval_rat f) l r \<noteq> 0))"
-| "eq_fun_rai None None = True"
-| "eq_fun_rai _ _ = False"
-
-lemma eq_fun_rai: assumes "rai_cond rai1" "rai_cond rai2"
-  shows "(rai_real rai1 = rai_real rai2) = (eq_fun_rai rai1 rai2)" (is "?l = ?r")
-proof (cases rai1)
-  case (Some t1)
-  then obtain un1 ri1 p1 l1 r1 where rai1: "rai1 = Some (un1,ri1,p1,l1,r1)" by (cases t1, auto)
-  note ri1 = rai_condD[OF assms(1)[unfolded rai1]]
-  show ?thesis
-  proof (cases rai2)
-    case None
-    with ri1(3) show ?thesis by (simp add: rai1)
-  next
-    case (Some t2)
-    then obtain un2 ri2 p2 l2 r2 where rai2: "rai2 = Some (un2,ri2,p2,l2,r2)" by (cases t2, auto)
-    def f \<equiv> "gcd_rat_poly p1 p2"
-    def l \<equiv> "max l1 l2"
-    def r \<equiv> "min r1 r2"
-    note ri2 = rai_condD[OF assms(2)[unfolded rai2]]
-    from ri1(5) ri2(5) have f: "f \<noteq> 0" unfolding f_def by auto
-    have r: "?r = (l1 \<le> r2 \<and> l2 \<le> r1 \<and> root_info.l_r (count_roots_interval_rat f) l r \<noteq> 0)"
-      unfolding f_def l_def r_def rai1 rai2 by simp
-    let ?x1 = "the_unique_root (p1,l1,r1)" let ?x2 = "the_unique_root (p2,l2,r2)"
-    have l: "?l = (?x1 = ?x2)" unfolding rai1 rai2 by (simp add: rai_real_def)
-    let ?R = real_of_rat
-    note un1 = the_unique_root[OF ri1(7)]
-    note un2 = the_unique_root[OF ri2(7)]
-    from poly_type_cond_square_free_D[OF ri1(10)] have sf1: "square_free p1" and mon: "monic p1" by auto
-    have "f dvd p1" unfolding f_def by auto
-    from square_free_factor[OF this sf1] have sf: "square_free f" .
-    show "?l = ?r"
-    proof (cases "l1 \<le> r2 \<and> l2 \<le> r1")
-      case False
-      hence r: "?r = False" unfolding r by auto
-      from False have choice: "?R l1 > ?R r2 \<or> ?R l2 > ?R r1" unfolding of_rat_less by auto
-      from un1 have 1: "?R l1 \<le> ?x1" "?x1 \<le> ?R r1" by blast+
-      from un2 have 2: "?R l2 \<le> ?x2" "?x2 \<le> ?R r2" by blast+
-      from 1 2 choice have "?x1 \<noteq> ?x2" by auto
-      hence l: "?l = False" unfolding l by simp
-      show ?thesis unfolding l r by auto
-    next
-      case True
-      from order_trans[OF un1(1-2)] order_trans[OF un2(1-2)] have "l1 \<le> r1" "l2 \<le> r2" 
-        unfolding of_rat_less_eq by auto
-      with True have "l \<le> r" using ri1(7) unfolding l_def r_def by auto
-      from root_info_condD(1)[OF count_roots_interval_rat[OF sf] this] True
-      have r: "?r = (card {x. root_cond (f, l, r) x} \<noteq> 0)" unfolding r by auto
-      also have "\<dots> = ({x. root_cond (f, l, r) x} \<noteq> {})"
-        by (subst card_0_eq, unfold root_cond_def[abs_def] split, 
-          rule finite_subset[OF _ finite_rpoly_roots[OF f]], auto)
-      also have "\<dots> = (\<exists> x. ?R l \<le> x \<and> x \<le> ?R r \<and> rpoly f x = 0)" unfolding root_cond_def by auto
-      finally have r: "?r = (\<exists> x. ?R l \<le> x \<and> x \<le> ?R r \<and> rpoly f x = 0)" .
-      show ?thesis
-      proof (cases "?x1 = ?x2")
-        case True
-        have ?r unfolding r
-        proof (intro exI[of _ ?x2] conjI)
-          show "?R l \<le> ?x2" "?x2 \<le> ?R r" using  un2(1-2) un1(1-2)[unfolded True]
-            unfolding l_def r_def by auto
-          let ?Rp = "real_of_rat_poly"
-          {
-            fix p
-            assume "rpoly p ?x2 = 0"
-            hence "poly (?Rp p) ?x2 = 0" by (simp add: eval_poly_def)
-            hence "[: -?x2, 1 :] dvd ?Rp p" by (simp add: poly_eq_0_iff_dvd)
-          }
-          from this[OF un1(3)[unfolded True]] this[OF un2(3)]
-          have "[: -?x2, 1 :] dvd gcd (?Rp p1) (?Rp p2)" by auto
-          also have "gcd (?Rp p1) (?Rp p2) = ?Rp f" unfolding f_def by (simp add: rpoly'.map_poly_gcd)
-          finally have "poly (?Rp f) ?x2 = 0" by (simp add: poly_eq_0_iff_dvd)
-          thus "rpoly f ?x2 = 0" by (simp add: eval_poly_def)
-        qed
-        with True show ?thesis unfolding l by simp
-      next
-        case False
-        hence l: "?l = False" unfolding l by simp
-        have "\<not> ?r"
-        proof 
-          assume ?r
-          from this[unfolded r] obtain x where 
-            lx: "?R l \<le> x" and xr: "x \<le> ?R r" and x: "rpoly f x = 0" by auto
-          have max: "?R (max l1 l2) = max (?R l1) (?R l2)" by (simp add: max_def of_rat_less_eq)
-          have min: "?R (min r1 r2) = min (?R r1) (?R r2)" by (simp add: min_def of_rat_less_eq)
-          from lx xr have x1: "?R l1 \<le> x" "x \<le> ?R r1" and x2: "?R l2 \<le> x" "x \<le> ?R r2" 
-            unfolding l_def r_def max min by auto
-          have "f dvd p1" unfolding f_def by auto
-          from this[unfolded dvd_def] obtain g1 where p1: "p1 = f * g1" by auto
-          have "f dvd p2" unfolding f_def by auto
-          from this[unfolded dvd_def] obtain g2 where p2: "p2 = f * g2" by auto
-          have p1: "rpoly p1 x = 0" unfolding p1 using x by (simp add: eval_poly_def)
-          have p2: "rpoly p2 x = 0" unfolding p2 using x by (simp add: eval_poly_def)
-          from p1 x1 have x1: "root_cond (p1,l1,r1) x" by (simp add: root_cond_def)
-          from p2 x2 have x2: "root_cond (p2,l2,r2) x" by (simp add: root_cond_def)
-          from un1(5)[OF x1] un2(5)[OF x2] have "?x1 = ?x2" by simp
-          with False show False ..
-        qed
-        thus ?thesis unfolding l by simp
-      qed
-    qed
-  qed
-next
-  case None note rai1 = this
-  show ?thesis
-  proof (cases rai2)
-    case (Some t2)
-    then obtain un2 ri2 p2 l2 r2 where rai2: "rai2 = Some (un2,ri2,p2,l2,r2)" by (cases t2, auto)
-    note ri2 = rai_condD[OF assms(2)[unfolded rai2]]
-    from rai1 rai2 ri2(3) show ?thesis by simp
-  qed (simp add: rai1)
-qed
-
-declare eq_fun_rai.simps[simp del]
-      
-lift_definition eq_rai :: "real_alg_intern \<Rightarrow> real_alg_intern \<Rightarrow> bool" is eq_fun_rai .
-
-lemma eq_rai: "(real_of_rai x = real_of_rai y) = (eq_rai x y)"
-  by (transfer, insert eq_fun_rai, auto)
-
 definition info_fun_rai :: "rai_intern \<Rightarrow> rat poly \<times> nat" where
   "info_fun_rai rai \<equiv> case rai of None \<Rightarrow> (poly_rat 0,1) 
-    | Some (un,ri,p,l,r) \<Rightarrow> (p,root_info.inf_r ri r)"
+    | Some (ri,p,l,r) \<Rightarrow> (p,root_info.inf_r ri r)"
+
+definition poly_of_rai :: "rai_intern \<Rightarrow> rat poly" where
+  "poly_of_rai rai \<equiv> case rai of None \<Rightarrow> poly_rat 0 
+    | Some (ri,p,l,r) \<Rightarrow> p"
 
 lift_definition info_rai :: "real_alg_intern \<Rightarrow> rat poly \<times> nat" is info_fun_rai .
+lift_definition poly_rai :: "real_alg_intern \<Rightarrow> rat poly" is poly_of_rai .
+
+lemma poly_rai_info_rai: "poly_rai rai = fst (info_rai rai)" 
+proof (transfer, goal_cases)
+  case (1 rai)
+  show ?case by (cases rai, cases "the rai", auto simp: poly_of_rai_def info_fun_rai_def)
+qed
 
 lemma root_index_unique: assumes 
     1: "root_cond (p, l1, r1) x" "unique_root (p, l1, r1)"
@@ -1052,22 +862,20 @@ qed
 lemma rai_info_fun: assumes 
     x: "rai_cond x" and y: "rai_cond y"
   shows "info_fun_rai x = info_fun_rai y \<Longrightarrow> rai_real x = rai_real y"
-  "rai_normalized Irreducible x \<Longrightarrow> rai_normalized Irreducible y 
-   \<Longrightarrow> rai_real x = rai_real y \<Longrightarrow> info_fun_rai x = info_fun_rai y"
+  "rai_real x = rai_real y \<Longrightarrow> info_fun_rai x = info_fun_rai y"
 proof -
   let ?ri = info_fun_rai
   note d = info_fun_rai_def
   note rc = rai_condD
   let ?zinfo = "(poly_rat 0, 1)"
-  let ?norm = "rai_normalized Irreducible"
   {
     fix x
     assume x: "rai_cond x"
     have "?ri x = ?zinfo \<longleftrightarrow> rai_real x = 0"
     proof (cases x)
       case (Some tuple)
-      obtain un ri p l r where tuple: "tuple = (un,ri,p,l,r)" by (cases tuple, auto)
-      let ?x = "rai_real (Some (un, ri, p, l, r))"
+      obtain ri p l r where tuple: "tuple = (ri,p,l,r)" by (cases tuple, auto)
+      let ?x = "rai_real (Some ( ri, p, l, r))"
       note id = Some[unfolded tuple]
       from rc(1-3)[OF x[unfolded id]]
       have rc: "root_cond (p, l, r) ?x"  and n0: "?x \<noteq> 0" by auto
@@ -1080,7 +888,7 @@ proof -
     qed (auto simp: d)
   } note zero = this
   have "(?ri x = ?ri y \<longrightarrow> rai_real x = rai_real y) \<and> 
-    (?norm x \<longrightarrow> ?norm y \<longrightarrow> rai_real x = rai_real y \<longrightarrow> ?ri x = ?ri y)"
+    (rai_real x = rai_real y \<longrightarrow> ?ri x = ?ri y)"
   proof (cases "rai_real x = 0")
     case True note x0 = this
     with zero[OF x] have x: "?ri x = ?zinfo" by auto
@@ -1106,12 +914,12 @@ proof -
       case False note y0 = this
       from x0 obtain t1 where xt: "x = Some t1" by (cases x, auto)
       from y0 obtain t2 where yt: "y = Some t2" by (cases y, auto)
-      obtain un1 ri1 p1 l1 r1 where t1: "t1 = (un1,ri1,p1,l1,r1)" by (cases t1, auto)
-      obtain un2 ri2 p2 l2 r2 where t2: "t2 = (un2,ri2,p2,l2,r2)" by (cases t2, auto)
+      obtain ri1 p1 l1 r1 where t1: "t1 = (ri1,p1,l1,r1)" by (cases t1, auto)
+      obtain ri2 p2 l2 r2 where t2: "t2 = (ri2,p2,l2,r2)" by (cases t2, auto)
       note x' = xt[unfolded t1]
       note y' = yt[unfolded t2]
-      let ?x = "Some (un1,ri1,p1,l1,r1)"
-      let ?y = "Some (un2,ri2,p2,l2,r2)"
+      let ?x = "Some (ri1,p1,l1,r1)"
+      let ?y = "Some (ri2,p2,l2,r2)"
       let ?n1 = "root_info.inf_r ri1"
       let ?n2 = "root_info.inf_r ri2"
       have rx: "?ri x = (p1,?n1 r1)" unfolding d x' by simp
@@ -1136,14 +944,13 @@ proof -
         show "rai_real x = rai_real y" unfolding id using p root_index_unique_inv[OF card rcx(5,1,7) rcy(1,7)[unfolded p]]
           by simp
       next
-        assume norm: "?norm x" "?norm y" and eq: "rai_real x = rai_real y"
-        from norm[unfolded xt yt t1 t2 rai_normalized_def] have un: "un1 = Monic_Irreducible" "un2 = Monic_Irreducible" by auto
-        from rtx rcx(10) un
-        have algx: "alg_poly ?rx p1 \<and> irreducible p1 \<and> monic p1" unfolding alg_poly_def by (auto simp: poly_type_cond_def)
+        assume eq: "rai_real x = rai_real y"
+        from rtx rcx(10)
+        have algx: "alg_poly ?rx p1 \<and> irreducible p1 \<and> monic p1" unfolding alg_poly_def by (auto simp: poly_cond_def)
         from rcy(1)[unfolded root_cond_def] have bndy: "of_rat l2 \<le> ?ry" "?ry \<le> of_rat r2"
           and rty: "rpoly p2 ?ry = 0" by auto
-        from rty rcy(10) un
-        have algy: "alg_poly ?ry p2 \<and> irreducible p2 \<and> monic p2" unfolding alg_poly_def by (auto simp: poly_type_cond_def)
+        from rty rcy(10)
+        have algy: "alg_poly ?ry p2 \<and> irreducible p2 \<and> monic p2" unfolding alg_poly_def by (auto simp: poly_cond_def)
         from algx have "algebraic ?rx" unfolding algebraic_altdef_rpoly by auto
         note unique = alg_poly_irreducible_unique[OF this]
         from eq have same: "?rx = ?ry" unfolding id by simp
@@ -1163,18 +970,137 @@ proof -
     thus "rai_real x = rai_real y" using main by blast
   }
   {
-    assume "rai_normalized Irreducible x" "rai_normalized Irreducible y"
+    assume 
       "rai_real x = rai_real y" 
     thus "info_fun_rai x = info_fun_rai y" using main by blast
   }
-qed      
+qed
 
 lemma info_rai_fun: "real_of_rai x = real_of_rai y
-  \<Longrightarrow> info_rai (normalize_rai Irreducible x) = info_rai (normalize_rai Irreducible y)"
-  by (transfer, insert rai_normalize rai_info_fun(2), auto)
+  \<Longrightarrow> info_rai x = info_rai y"
+  by (transfer, rule rai_info_fun(2), auto)
 
 lemma info_rai_inj: "info_rai x = info_rai y \<Longrightarrow> real_of_rai x = real_of_rai y"
   by (transfer, rule rai_info_fun(1), auto)
+
+lemma poly_rai_fun: "real_of_rai x = real_of_rai y
+  \<Longrightarrow> poly_rai x = poly_rai y"
+  using info_rai_fun[of x y] unfolding poly_rai_info_rai by auto
+
+fun eq_fun_rai :: "rai_intern \<Rightarrow> rai_intern \<Rightarrow> bool" where
+  "eq_fun_rai (Some (ri,p1,l1,r1)) (Some (_,p2,l2,r2)) = (l1 \<le> r2 \<and> l2 \<le> r1 \<and> p1 = p2 \<and>
+    (let l = max l1 l2;
+         r = min r1 r2
+       in root_info.l_r ri l r \<noteq> 0))"
+| "eq_fun_rai None None = True"
+| "eq_fun_rai _ _ = False"
+
+lemma eq_fun_rai: assumes rc: "rai_cond rai1" "rai_cond rai2"
+  shows "(rai_real rai1 = rai_real rai2) = (eq_fun_rai rai1 rai2)" (is "?l = ?r")
+proof (cases rai1)
+  case (Some t1)
+  then obtain ri1 p1 l1 r1 where rai1: "rai1 = Some (ri1,p1,l1,r1)" by (cases t1, auto)
+  note ri1 = rai_condD[OF assms(1)[unfolded rai1]]
+  show ?thesis
+  proof (cases rai2)
+    case None
+    with ri1(3) show ?thesis by (simp add: rai1)
+  next
+    case (Some t2)
+    then obtain ri2 p2 l2 r2 where rai2: "rai2 = Some (ri2,p2,l2,r2)" by (cases t2, auto)
+    def l \<equiv> "max l1 l2"
+    def r \<equiv> "min r1 r2"
+    note ri2 = rai_condD[OF assms(2)[unfolded rai2]]
+    have r: "?r = (l1 \<le> r2 \<and> l2 \<le> r1 \<and> p1 = p2 \<and> root_info.l_r ri1 l r \<noteq> 0)"
+      unfolding l_def r_def rai1 rai2 by simp
+    let ?x1 = "the_unique_root (p1,l1,r1)" let ?x2 = "the_unique_root (p2,l2,r2)"
+    have l: "?l = (?x1 = ?x2)" unfolding rai1 rai2 by (simp add: rai_real_def)
+    let ?R = real_of_rat
+    note un1 = the_unique_root[OF ri1(7)]
+    note un2 = the_unique_root[OF ri2(7)]
+    from poly_cond_D[OF ri1(10)] have mon: "monic p1" by auto
+    show "?l = ?r"
+    proof (cases "l1 \<le> r2 \<and> l2 \<le> r1 \<and> p1 = p2")
+      case False
+      hence r: "?r = False" unfolding r by auto
+      from False have choice: "?R l1 > ?R r2 \<or> ?R l2 > ?R r1 \<or> p1 \<noteq> p2" unfolding of_rat_less by auto
+      from un1 have 1: "?R l1 \<le> ?x1" "?x1 \<le> ?R r1" by blast+
+      from un2 have 2: "?R l2 \<le> ?x2" "?x2 \<le> ?R r2" by blast+
+      from 1 2 choice have "?x1 \<noteq> ?x2 \<or> p1 \<noteq> p2" by auto
+      hence l: "?l = False" 
+      proof
+        assume "?x1 \<noteq> ?x2" 
+        thus ?thesis unfolding l by simp
+      next
+        assume "p1 \<noteq> p2" 
+        hence "info_fun_rai rai1 \<noteq> info_fun_rai rai2" 
+          unfolding rai1 rai2 by (simp add: info_fun_rai_def)
+        with rai_info_fun[OF rc] have "rai_real rai1 \<noteq> rai_real rai2" by auto
+        thus ?thesis by auto
+      qed
+      show ?thesis unfolding l r by auto
+    next
+      case True
+      with order_trans[OF un1(1-2)] order_trans[OF un2(1-2)] have "l1 \<le> r1" "l2 \<le> r2" and p12: "p1 = p2" 
+        unfolding of_rat_less_eq by auto
+      with True have "l \<le> r" using ri1(7) unfolding l_def r_def by auto
+      from root_info_condD(1)[OF ri1(9) this] True
+      have r: "?r = (card {x. root_cond (p1, l, r) x} \<noteq> 0)" unfolding r by auto
+      also have "\<dots> = ({x. root_cond (p1, l, r) x} \<noteq> {})"
+        by (subst card_0_eq, unfold root_cond_def[abs_def] split, 
+          rule finite_subset[OF _ finite_rpoly_roots[OF ri1(5)]], auto)
+      also have "\<dots> = (\<exists> x. ?R l \<le> x \<and> x \<le> ?R r \<and> rpoly p1 x = 0)" unfolding root_cond_def by auto
+      finally have r: "?r = (\<exists> x. ?R l \<le> x \<and> x \<le> ?R r \<and> rpoly p1 x = 0)" .
+      show ?thesis
+      proof (cases "?x1 = ?x2")
+        case True
+        have ?r unfolding r
+        proof (intro exI[of _ ?x2] conjI)
+          show "?R l \<le> ?x2" "?x2 \<le> ?R r" using  un2(1-2) un1(1-2)[unfolded True]
+            unfolding l_def r_def by auto
+          show "rpoly p1 (the_unique_root (p2, l2, r2)) = 0" 
+            unfolding p12 by (rule un2(3))
+        qed
+        thus ?thesis using True l by blast
+      next
+        case False
+        hence l: "?l = False" unfolding l by simp
+        have "\<not> ?r"
+        proof 
+          assume ?r
+          from this[unfolded r] obtain x where 
+            lx: "?R l \<le> x" and xr: "x \<le> ?R r" and p1: "rpoly p1 x = 0" by auto
+          with p12 have p2: "rpoly p2 x = 0" by auto
+          have max: "?R (max l1 l2) = max (?R l1) (?R l2)" by (simp add: max_def of_rat_less_eq)
+          have min: "?R (min r1 r2) = min (?R r1) (?R r2)" by (simp add: min_def of_rat_less_eq)
+          from lx xr have x1: "?R l1 \<le> x" "x \<le> ?R r1" and x2: "?R l2 \<le> x" "x \<le> ?R r2" 
+            unfolding l_def r_def max min by auto
+          from p1 x1 have x1: "root_cond (p1,l1,r1) x" by (simp add: root_cond_def)
+          from p2 x2 have x2: "root_cond (p2,l2,r2) x" by (simp add: root_cond_def)
+          from un1(5)[OF x1] un2(5)[OF x2] have "?x1 = ?x2" by simp
+          with False show False ..
+        qed
+        thus ?thesis unfolding l by simp
+      qed
+    qed
+  qed
+next
+  case None note rai1 = this
+  show ?thesis
+  proof (cases rai2)
+    case (Some t2)
+    then obtain ri2 p2 l2 r2 where rai2: "rai2 = Some (ri2,p2,l2,r2)" by (cases t2, auto)
+    note ri2 = rai_condD[OF assms(2)[unfolded rai2]]
+    from rai1 rai2 ri2(3) show ?thesis by simp
+  qed (simp add: rai1)
+qed
+
+declare eq_fun_rai.simps[simp del]
+      
+lift_definition eq_rai :: "real_alg_intern \<Rightarrow> real_alg_intern \<Rightarrow> bool" is eq_fun_rai .
+
+lemma eq_rai: "(real_of_rai x = real_of_rai y) = (eq_rai x y)"
+  by (transfer, insert eq_fun_rai, auto)
 
 context
 begin
@@ -1289,10 +1215,10 @@ end
 
 private fun compare_rai_intern :: "rai_intern \<Rightarrow> rai_intern \<Rightarrow> order" where
   "compare_rai_intern (Some x) (Some y) = (if eq_fun_rai (Some x) (Some y) then Eq 
-    else (case x of (un,ri,p,l,r) \<Rightarrow> (case y of (un',ri',p',l',r')
+    else (case x of (ri,p,l,r) \<Rightarrow> (case y of (ri',p',l',r')
       \<Rightarrow> compare_rai_intern_main (root_info.l_r ri) (root_info.l_r ri') l r l' r')))"
-| "compare_rai_intern (Some (un,ri,p,l,r)) None = (if sgn r = 1 then Gt else Lt)"
-| "compare_rai_intern None (Some (un,ri,p,l,r)) = (if sgn r = 1 then Lt else Gt)"
+| "compare_rai_intern (Some (ri,p,l,r)) None = (if sgn r = 1 then Gt else Lt)"
+| "compare_rai_intern None (Some (ri,p,l,r)) = (if sgn r = 1 then Lt else Gt)"
 | "compare_rai_intern None None = Eq"
 
 private lemma compare_rai_intern: assumes rc1: "rai_cond x1" and rc2: "rai_cond x2"
@@ -1305,7 +1231,7 @@ proof (cases x1)
     with x1 show ?thesis by simp
   next
     case (Some xt2) note x2 = this
-    obtain un2 ri2 p2 l2 r2 where xt2: "xt2 = (un2,ri2,p2,l2,r2)" by (cases xt2, auto)
+    obtain ri2 p2 l2 r2 where xt2: "xt2 = (ri2,p2,l2,r2)" by (cases xt2, auto)
     note rc2 = rai_condD[OF rc2[unfolded x2 xt2]]
     from rc2(4,6) None have id: "rai_real x1 = 0" "sgn (rai_real x2) = of_rat (sgn r2)" "sgn r2 \<noteq> 0" unfolding x2 xt2 by auto
     from None x2 xt2 have l: "?l = (if sgn r2 = 1 then Lt else Gt)" by simp
@@ -1313,7 +1239,7 @@ proof (cases x1)
   qed
 next
   case (Some xt1) note x1 = this
-  obtain un1 ri1 p1 l1 r1 where xt1: "xt1 = (un1,ri1,p1,l1,r1)" by (cases xt1, auto)
+  obtain ri1 p1 l1 r1 where xt1: "xt1 = (ri1,p1,l1,r1)" by (cases xt1, auto)
   note rc1 = rai_condD[OF rc1[unfolded x1 xt1]]
   show ?thesis
   proof (cases x2)
@@ -1329,7 +1255,7 @@ next
       with x1 x2 eq_fun_rai[OF assms] show ?thesis by simp
     next
       case False
-      obtain un2 ri2 p2 l2 r2 where xt2: "xt2 = (un2,ri2,p2,l2,r2)" by (cases xt2, auto)
+      obtain ri2 p2 l2 r2 where xt2: "xt2 = (ri2,p2,l2,r2)" by (cases xt2, auto)
       let ?cri = "compare_rai_intern_main (root_info.l_r ri1) (root_info.l_r ri2) l1 r1 l2 r2"
       note rc2 = rai_condD[OF rc2[unfolded x2 xt2]]
       from False xt1 xt2 x1 x2 have "?l = ?cri" by simp 
@@ -1347,18 +1273,18 @@ lemma compare_rai: "compare_rai x1 x2 = compare (real_of_rai x1) (real_of_rai x2
   by (transfer, rule compare_rai_intern, auto)
 
 lift_definition eq_rat_rai :: "rat \<Rightarrow> real_alg_intern \<Rightarrow> bool" is
-  "\<lambda> x y. case y of None \<Rightarrow> x = 0 | Some (un,ri,p,l,r) \<Rightarrow> l \<le> x \<and> x \<le> r \<and> poly p x = 0" .
+  "\<lambda> x y. case y of None \<Rightarrow> x = 0 | Some (ri,p,l,r) \<Rightarrow> l \<le> x \<and> x \<le> r \<and> poly p x = 0" .
 
 lemma eq_rat_rai: "eq_rat_rai x y = (of_rat x = real_of_rai y)"
 proof (transfer)
   fix x y
   assume y: "y \<in> Collect rai_cond"
-  show "(case y of None \<Rightarrow> x = 0 | Some (un, ri, p, l, r) \<Rightarrow> l \<le> x \<and> x \<le> r \<and> poly p x = 0) =
+  show "(case y of None \<Rightarrow> x = 0 | Some ( ri, p, l, r) \<Rightarrow> l \<le> x \<and> x \<le> r \<and> poly p x = 0) =
            (real_of_rat x = rai_real y)" (is "?l = ?r")
   proof (cases y)
     case (Some tup)
-    then obtain un ri p l r where id: "y = Some (un, ri, p, l, r)" by (cases tup, auto)
-    from y[unfolded id] have "rai_cond (Some (un, ri, p, l, r))" by auto
+    then obtain ri p l r where id: "y = Some ( ri, p, l, r)" by (cases tup, auto)
+    from y[unfolded id] have "rai_cond (Some ( ri, p, l, r))" by auto
     note ri = rai_condD[OF this]
     note un = the_unique_root[OF ri(7)]
     have l: "?l = (l \<le> x \<and> x \<le> r \<and> poly p x = 0)" unfolding id by auto
@@ -1379,18 +1305,18 @@ proof (transfer)
   qed simp
 qed 
 
-lift_definition compare_rat_rai_main :: "rat \<Rightarrow> real_alg_intern \<Rightarrow> order" is
-  "\<lambda> x y. case y of None \<Rightarrow> compare x 0 | Some (un,ri,p,l,r) \<Rightarrow>
+lift_definition compare_rat_rai :: "rat \<Rightarrow> real_alg_intern \<Rightarrow> order" is
+  "\<lambda> x y. case y of None \<Rightarrow> compare x 0 | Some (ri,p,l,r) \<Rightarrow>
     case tighten_poly_bounds_for_x (root_info.l_r ri) x l r of (l',r') \<Rightarrow> compare x l'" .
 
-lemma compare_rat_rai_main: "of_rat x \<noteq> real_of_rai y \<Longrightarrow> compare_rat_rai_main x y = compare (of_rat x) (real_of_rai y)"
+lemma compare_rat_rai: "of_rat x \<noteq> real_of_rai y \<Longrightarrow> compare_rat_rai x y = compare (of_rat x) (real_of_rai y)"
 proof (transfer)
   fix x y
   let ?r = "real_of_rat"
   let ?x = "?r x"
   assume "y \<in> Collect rai_cond" and diff: "?x \<noteq> rai_real y"
   hence rc: "rai_cond y" by auto
-  show "(case y of None \<Rightarrow> compare x 0 | Some (un, ri, p, l, r) \<Rightarrow>
+  show "(case y of None \<Rightarrow> compare x 0 | Some ( ri, p, l, r) \<Rightarrow>
             case tighten_poly_bounds_for_x (root_info.l_r ri) x l r of
             (l', r') \<Rightarrow> compare x l') = compare (real_of_rat x) (rai_real y)" (is "?l = _")
   proof (cases y)
@@ -1398,7 +1324,7 @@ proof (transfer)
     thus ?thesis by (auto simp: compare_rat_def compare_real_def comparator_of_def)
   next
     case (Some yt) note y = this
-    obtain un ri p l r where yt: "yt = (un,ri,p,l,r)" by (cases yt, auto)
+    obtain ri p l r where yt: "yt = (ri,p,l,r)" by (cases yt, auto)
     note rc = rai_condD[OF rc[unfolded y yt]]
     obtain l' r' where tb: "tighten_poly_bounds_for_x (root_info.l_r ri) x l r = (l',r')" by force
     have l: "?l = compare x l'" unfolding y yt using tb by auto
@@ -1423,54 +1349,35 @@ proof (transfer)
   qed
 qed
 
-definition compare_rat_rai :: "rat \<Rightarrow> real_alg_intern \<Rightarrow> order" where
-  "compare_rat_rai x y = (if eq_rat_rai x y then Eq else compare_rat_rai_main x y)"
-
-lemma compare_rat_rai: "compare_rat_rai x y = compare (of_rat x) (real_of_rai y)"
-  by (cases "eq_rat_rai x y", auto simp: compare_rat_rai_def eq_rat_rai compare_rat_rai_main)
-
 end
 
 
-lemma rai_info_poly: assumes "info_rai (normalize_rai mode x) = (p,n)"
-  shows "monic p \<and> poly_type_cond (normalization_guarantee mode) p \<and> rpoly p (real_of_rai x) = 0 \<and> degree p \<ge> 1"
+lemma rai_info_poly: assumes "info_rai x = (p,n)"
+  shows "monic p \<and> poly_cond p \<and> rpoly p (real_of_rai x) = 0 \<and> degree p \<ge> 1"
   using assms
 proof (transfer)
   fix mode rai p n
-  assume "rai \<in> Collect rai_cond" and rif: "info_fun_rai (rai_normalize mode rai) = (p, n)"
+  assume "rai \<in> Collect rai_cond" and rif: "info_fun_rai rai = (p, n)"
   hence rc: "rai_cond rai" by auto
-  def rai' \<equiv> "rai_normalize mode rai"
-  from rai_normalize[OF rc, of mode] 
-  have id: "rai_real rai = rai_real rai'" and norm: "rai_normalized mode rai'" 
-    and rc: "rai_cond rai'"
-    unfolding rai'_def by auto
-  note norm = norm rif[folded rai'_def]
-  show "monic p \<and> poly_type_cond (normalization_guarantee mode) p \<and> rpoly p (rai_real rai) = 0 \<and> degree p \<ge> 1" unfolding id
-  proof (cases rai')
+  show "monic p \<and> poly_cond p \<and> rpoly p (rai_real rai) = 0 \<and> degree p \<ge> 1"
+  proof (cases rai)
     case None
-    with norm have p: "p = poly_rat 0" by (simp add: info_fun_rai_def)
-    show "monic p \<and> poly_type_cond (normalization_guarantee mode) p \<and> rpoly p (rai_real rai') = 0 \<and> degree p \<ge> 1" 
-      using norm None unfolding p by (simp, simp add: poly_rat_def poly_type_cond_def,
-      cases "normalization_guarantee mode", auto)
+    hence p: "p = poly_rat 0" using rif by (simp add: info_fun_rai_def)
+    show "monic p \<and> poly_cond p \<and> rpoly p (rai_real rai) = 0 \<and> degree p \<ge> 1" 
+      using None unfolding p 
+      by (metis Missing_Polynomial.irreducibleD(1) alg_polyD(2) alg_poly_of_rat coeff_0_degree_minus_1 
+          diff_is_0_eq irr_monic_root_free_poly_rat(1) irr_monic_root_free_poly_rat(2) 
+          le_cases le_degree le_zero_eq poly_cond_I rai_real_None rpoly.hom_zero)
   next
     case (Some tup)
-    obtain un ri q l r where "tup = (un, ri, q, l, r)" by (cases tup, auto)
-    with norm Some have tup: "tup = (un, ri, p, l, r)" by (auto simp: info_fun_rai_def rai_normalized_def) 
+    obtain ri q l r where "tup = ( ri, q, l, r)" by (cases tup, auto)
+    with Some rif have tup: "tup = ( ri, p, l, r)" by (auto simp: info_fun_rai_def) 
     from rai_condD(1,5,10)[OF rc[unfolded Some tup]]
-    have un: "poly_type_cond un p" and rt: "rpoly p (rai_real rai') = 0" and "p \<noteq> 0"
-      unfolding root_cond_def Some tup by (auto simp: poly_type_cond_def)
-    from norm[unfolded Some tup rai_normalized_def] have mon: "monic p" and 
-      "un \<le> normalization_guarantee mode" by auto
-    with un have mode: "poly_type_cond (normalization_guarantee mode) p"
-      by (metis poly_type_cond_mono)
-    {
-      assume "degree p = 0"
-      with `p \<noteq> 0` degree0_coeffs[OF this] obtain a where p: "p = [:a:]" and a: "a \<noteq> 0" by auto
-      with rt have False unfolding p eval_poly_def by auto
-    }
-    with mode rt mon
-    show "monic p \<and> poly_type_cond (normalization_guarantee mode) p \<and> rpoly p (rai_real rai') = 0 \<and> degree p \<ge> 1"
-      by (cases "degree p", auto)
+    have pc: "poly_cond p" and rt: "rpoly p (rai_real rai) = 0" and "p \<noteq> 0"
+      unfolding root_cond_def Some tup by (auto simp: poly_cond_def)
+    from poly_cond_D[OF pc] pc rt 
+    show "monic p \<and> poly_cond p \<and> rpoly p (rai_real rai) = 0 \<and> degree p \<ge> 1"
+      unfolding irreducible_def by auto
   qed
 qed
 
@@ -1478,62 +1385,28 @@ qed
 (* ********************* *)
 subsubsection\<open>Negation\<close>
 
-abbreviation "un_weaken un \<equiv> case un of Monic_Irreducible \<Rightarrow> un | _ \<Rightarrow> Arbitrary_Poly"
-
-definition monic_poly :: "'a :: field poly \<Rightarrow> 'a poly" where 
-  "monic_poly p = (let a = coeff p (degree p) in if a = 1 then p else smult (inverse a) p)" 
-
-lemma monic_poly: "rpoly (monic_poly p) x = 0 \<longleftrightarrow> rpoly p x = 0" "p \<noteq> 0 \<Longrightarrow> monic (monic_poly p)" 
-  "irreducible (monic_poly p) = irreducible p"
-  "(monic_poly p = 0) = (p = 0)"
-  "square_free (monic_poly p) = square_free p"
-proof (cases "p = 0")
-  case True
-  show "rpoly (monic_poly p) x = 0 \<longleftrightarrow> rpoly p x = 0" unfolding True monic_poly_def by simp
-next
-  assume "p \<noteq> 0"
-  thus "(rpoly (monic_poly p) x = 0) = (rpoly p x = 0)" "monic (monic_poly p)"
-    unfolding monic_poly_def Let_def by (auto simp: eval_poly_def)
-next
-  have "\<exists> c. c \<noteq> 0 \<and> monic_poly p = smult c p"
-  proof (cases "p = 0 \<or> monic p")
-    case True
-    thus ?thesis by (intro exI[of _ 1], auto simp: monic_poly_def)
-  next
-    case False
-    thus ?thesis by (intro exI[of _ "inverse (coeff p (degree p))"], auto simp: monic_poly_def)
-  qed
-  then obtain c where c: "c \<noteq> 0" and id: "monic_poly p = smult c p" by auto
-  show "irreducible (monic_poly p) = irreducible p" unfolding id
-    by (rule irreducible_smult[OF c])
-  show "(monic_poly p = 0) = (p = 0)" unfolding id using c by simp
-  show "(square_free (monic_poly p)) = square_free p" unfolding id using c by simp
-qed
-
-(* TODO: one might try to carry over un also for Monic_Root_Poly *)
 definition uminus_rai_fun :: "rai_intern \<Rightarrow> rai_intern" where
-  "uminus_rai_fun \<equiv> map_option (\<lambda> (un,ri,p,l,r) \<Rightarrow> let p' = monic_poly (poly_uminus p) in 
-     (un_weaken un, count_roots_interval_rat p', p', -r, -l))"
+  "uminus_rai_fun \<equiv> map_option (\<lambda> (ri,p,l,r) \<Rightarrow> let p' = monic_poly (poly_uminus p) in 
+      ( count_roots_interval_rat p', p', -r, -l))"
 
 lemma uminus_rai_main: assumes x: "rai_cond x"
   defines y: "y \<equiv> uminus_rai_fun x"
   shows "rai_cond y \<and> (rai_real y = - rai_real x)"
 proof (cases x)
   case (Some plr)
-  obtain un ri p l r where plr: "plr = (un,ri,p,l,r)" by (cases plr, auto)
-  from x Some plr have "rai_cond (Some (un,ri,p,l,r))" by auto
+  obtain ri p l r where plr: "plr = (ri,p,l,r)" by (cases plr, auto)
+  from x Some plr have "rai_cond (Some (ri,p,l,r))" by auto
   note * = rai_condD[OF this]
   note inv = *(8)
   note un = *(10)
   note * = *(1-6)
-  from Some plr have x: "x = Some (un,ri,p,l,r)" by simp
-  let ?x = "rai_real (Some (un,ri,p,l,r))"
+  from Some plr have x: "x = Some (ri,p,l,r)" by simp
+  let ?x = "rai_real (Some (ri,p,l,r))"
   let ?p = "poly_uminus p"
   let ?mp = "monic_poly ?p"
   let ?cr = "count_roots_interval_rat ?mp"
-  def un' \<equiv> "un_weaken un"
-  from plr Some have y: "y = Some (un',?cr, ?mp, -r , -l)" 
-    unfolding un'_def y uminus_rai_fun_def Let_def by auto
+  from plr Some have y: "y = Some (?cr, ?mp, -r , -l)" 
+    unfolding y uminus_rai_fun_def Let_def by auto
   {
     fix y
     assume "root_cond (?mp, - r, - l) y"
@@ -1551,15 +1424,10 @@ proof (cases x)
     by (auto simp: of_rat_minus sgn_minus_rat monic_poly(1))
   have xp: "alg_poly ?x p" using *(1,5) unfolding root_cond_def split alg_poly_def by auto
   have mon: "monic ?mp" by (rule monic_poly(2), insert *, auto)
-  {
-    assume mi: "un \<le> Monic_Irreducible"
-    from poly_uminus_irreducible poly_type_cond_MI_D[OF un mi] *(5) 
-    have "irreducible ?mp" by (auto simp: monic_poly)
-  } note mi = this
-  from poly_type_cond_square_free_D[OF un] have sf: "square_free p" by simp
-  hence sf: "square_free ?mp" unfolding monic_poly
-    by (rule poly_uminus_square_free)  
-  from mi sf mon have un: "poly_type_cond un' ?mp" by (cases un, auto simp: poly_type_cond_def un'_def)
+  from poly_uminus_irreducible poly_cond_D[OF un] *(5) 
+  have mi: "irreducible ?mp" by (auto simp: monic_poly)
+  from mi mon have un: "poly_cond ?mp" by (auto simp: poly_cond_def)
+  from poly_cond_D[OF un] have sf: "square_free ?mp" by auto
   show ?thesis unfolding y x
     by (rule rai_cond_realI, insert * rc count_roots_interval_rat[OF sf], 
       auto simp: of_rat_minus sgn_minus_rat, insert inj un, auto simp: monic_poly(4))
@@ -1569,35 +1437,33 @@ lift_definition uminus_rai :: "real_alg_intern \<Rightarrow> real_alg_intern" is
   by (insert uminus_rai_main, auto)
   
 lemma uminus_rai: "real_of_rai (uminus_rai x) = uminus (real_of_rai x)"
-  by (transfer, insert uminus_rai_main rai_normalize, auto)
+  by (transfer, insert uminus_rai_main, auto)
 
 (* ********************* *)
 subsubsection\<open>Inverse\<close>
 
-(* TODO: one might try to carry over un also for Monic_Root_Poly *)
-definition "inverse_rai_fun \<equiv> map_option (\<lambda> (un,_,p,l,r) \<Rightarrow> let p' = monic_poly (poly_inverse p) in
-    (un_weaken un, count_roots_interval_rat p', p', inverse r, inverse l))"
+definition "inverse_rai_fun \<equiv> map_option (\<lambda> (_,p,l,r) \<Rightarrow> let p' = monic_poly (poly_inverse p) in
+    ( count_roots_interval_rat p', p', inverse r, inverse l))"
 
 lemma inverse_rai_main: assumes x: "rai_cond x"
   defines y: "y \<equiv> inverse_rai_fun x"
   shows "rai_cond y \<and> (rai_real y = inverse (rai_real x))"
 proof (cases x)
   case (Some plr)
-  obtain un ri p l r where plr: "plr = (un,ri,p,l,r)" by (cases plr, auto)
-  from x Some plr have "rai_cond (Some (un,ri,p,l,r))" by auto
+  obtain ri p l r where plr: "plr = (ri,p,l,r)" by (cases plr, auto)
+  from x Some plr have "rai_cond (Some (ri,p,l,r))" by auto
   note * = rai_condD[OF this]
   note un = *(10)
   note inv = *(8)
   note * = *(1-6)
-  from Some plr have x: "x = Some (un,ri,p,l,r)" by simp
-  let ?x = "rai_real (Some (un,ri,p,l,r))"
+  from Some plr have x: "x = Some (ri,p,l,r)" by simp
+  let ?x = "rai_real (Some (ri,p,l,r))"
   from * have x0: "?x \<noteq> 0" by auto
   let ?p = "poly_inverse p"
   let ?mp = "monic_poly ?p"
   let ?cr = "count_roots_interval_rat ?mp"  
-  def un' \<equiv> "un_weaken un"
-  from plr Some have y: "y = Some (un', ?cr, ?mp, inverse r , inverse l)" 
-    unfolding y Let_def inverse_rai_fun_def un'_def by auto
+  from plr Some have y: "y = Some ( ?cr, ?mp, inverse r , inverse l)" 
+    unfolding y Let_def inverse_rai_fun_def by auto
   have mon: "monic ?mp" by (rule monic_poly(2), insert *, auto)
   {
     fix y
@@ -1605,10 +1471,12 @@ proof (cases x)
     hence mpy: "rpoly ?mp y = 0" and bnd: "inverse (of_rat r) \<le> y" "y \<le> inverse (of_rat l)"
       unfolding root_cond_def by (auto simp: of_rat_inverse)
     from sgn_real_mono[OF bnd(1)] sgn_real_mono[OF bnd(2)] 
-    have "sgn (of_rat r) \<le> sgn y" "sgn y \<le> sgn (of_rat l)" by auto
-    with * have y0: "y \<noteq> 0" "inverse y \<noteq> 0" 
+    have "sgn (of_rat r) \<le> sgn y" "sgn y \<le> sgn (of_rat l)"
+      by (simp_all add: algebra_simps)
+    with \<open>sgn l = sgn r\<close> \<open>sgn r \<noteq> 0\<close> have y0: "y \<noteq> 0" "inverse y \<noteq> 0" 
       and sgn: "sgn (inverse (of_rat r)) = sgn y" "sgn y = sgn (inverse (of_rat l))" 
-      unfolding inverse_sgn real_of_rat_sgn by auto
+      unfolding sgn_inverse inverse_sgn
+      by (auto simp add: real_of_rat_sgn intro: order_antisym)
     from mpy have id: "rpoly p (inverse y) = 0" using y0(1) rpoly_inverse[OF y0(2), of p] 
       unfolding inverse_inverse_eq by (auto simp: monic_poly)
     from inverse_le_sgn[OF sgn(1) bnd(1)] inverse_le_sgn[OF sgn(2) bnd(2)]
@@ -1620,15 +1488,12 @@ proof (cases x)
     using * unfolding root_cond_def y x split
     by (auto simp: of_rat_inverse real_of_rat_sgn inverse_le_iff_sgn rpoly_inverse[OF x0] monic_poly)
   have xp: "alg_poly ?x p" using *(1,5) unfolding root_cond_def split alg_poly_def by auto
-  {
-    assume mi: "un \<le> Monic_Irreducible"
-    from poly_inverse_irreducible[OF _ _ xp x0] poly_type_cond_MI_D[OF un mi] *(5) 
-    have "irreducible ?mp"  "monic ?mp" by (auto simp: monic_poly)
-  } note mi = this
-  from poly_type_cond_square_free_D[OF un] have sf: "square_free p" by simp
+  from poly_inverse_irreducible[OF _ _ xp x0] poly_cond_D[OF un] *(5) monic_poly(1-3)
+  have mi: "irreducible ?mp" and mon: "monic ?mp" by auto
+  from poly_cond_D[OF un] have sf: "square_free p" by simp
   hence sf: "square_free ?mp" unfolding monic_poly
     by (rule poly_inverse_square_free)
-  from mi sf mon have un: "poly_type_cond un' ?mp" by (cases un, auto simp: poly_type_cond_def un'_def)
+  from mi mon have un: "poly_cond ?mp" by (auto simp: poly_cond_def)
   show ?thesis unfolding y x
     by (rule rai_cond_realI, insert * rc count_roots_interval_rat[OF sf], 
       auto simp: of_rat_inverse real_of_rat_sgn inverse_le_iff_sgn rpoly_inverse[OF x0]) 
@@ -1636,17 +1501,17 @@ proof (cases x)
 qed (simp add: y inverse_rai_fun_def)
 
 lift_definition inverse_rai :: "real_alg_intern \<Rightarrow> real_alg_intern" is inverse_rai_fun
-  by (insert inverse_rai_main rai_normalize, auto)
+  by (insert inverse_rai_main, auto)
   
 lemma inverse_rai: "real_of_rai (inverse_rai x) = inverse (real_of_rai x)"
-  by (transfer, insert inverse_rai_main rai_normalize, auto)
+  by (transfer, insert inverse_rai_main, auto)
 
 (* ********************* *)
 subsubsection\<open>Floor\<close>
 
 fun floor_rai_fun :: "rai_intern \<Rightarrow> int" where
   "floor_rai_fun None = 0"
-| "floor_rai_fun (Some (un,ri,p,l,r)) = (let
+| "floor_rai_fun (Some (ri,p,l,r)) = (let
     cr = root_info.l_r ri;
     (l',r') = tighten_poly_bounds_epsilon cr (1/2) l r;
     fr = floor r';
@@ -1663,7 +1528,7 @@ proof (cases x)
   thus ?thesis by simp
 next
   case (Some xt)
-  obtain un ri p l r where xt: "xt = (un,ri,p,l,r)" by (cases xt, auto)  
+  obtain ri p l r where xt: "xt = (ri,p,l,r)" by (cases xt, auto)  
   obtain cr where cr: "cr = root_info.l_r ri" by auto
   obtain l' r' where tbe: "tighten_poly_bounds_epsilon cr (1 / 2) l r = (l',r')" by force
   let ?fr = "floor r'"
@@ -1687,8 +1552,8 @@ next
   have flr: "?fl \<le> ?fr"
     by (rule floor_mono[OF lr'])
   from rai_cond_sub_interval[OF rc rc' bnd(1,2)]
-  have rc': "rai_cond (Some (un, ri, p, l', r'))"
-    and id': "rai_real (Some (un, ri, p, l', r')) = rai_real (Some (un, ri, p, l, r))" .
+  have rc': "rai_cond (Some ( ri, p, l', r'))"
+    and id': "rai_real (Some ( ri, p, l', r')) = rai_real (Some ( ri, p, l, r))" .
   have x: "?x = the_unique_root (p,l',r')"
     unfolding Some xt using id' by (simp add: rai_real_def)
   {
@@ -1810,7 +1675,7 @@ proof -
 qed
 
 definition sgn_rai_rat :: "rai_intern \<Rightarrow> rat" where
-  "sgn_rai_rat impl = (case impl of None \<Rightarrow> 0 | Some (un,ri,p,l,r) \<Rightarrow> sgn r)"
+  "sgn_rai_rat impl = (case impl of None \<Rightarrow> 0 | Some (ri,p,l,r) \<Rightarrow> sgn r)"
 
 lemma sgn_less_eq_1_rat: fixes a b :: rat
   shows "sgn a = 1 \<Longrightarrow> a \<le> b \<Longrightarrow> sgn b = 1" 
@@ -1846,10 +1711,10 @@ partial_function (tailrec) tighten_bound_root ::
   "rat \<times> rat \<Rightarrow> rat \<times> rat \<Rightarrow> rai_intern_flat" where
   [code]: "tighten_bound_root rbnd pbnd = (case (rbnd,pbnd) of ((l',r'), (l,r))
     \<Rightarrow> 
-    if cr' l' r' = 1 then (Arbitrary_Poly,ri',p',l',r') else let
+    if cr' l' r' = 1 then (ri',p',l',r') else let
       m' = (l' + r') / 2;
       m = m' ^ n
-      in if l \<le> m \<and> m \<le> r \<and> poly p m = 0 then (Arbitrary_Poly,poly_rat_root_info m', poly_rat m',m',m')
+      in if l \<le> m \<and> m \<le> r \<and> poly p m = 0 then (poly_rat_root_info m', poly_rat m',m',m')
       else (case tighten_poly_bounds_for_x cr m l r of (L,R) \<Rightarrow> 
         if m < L then tighten_bound_root (m',r') (L,R) 
       else tighten_bound_root (l',m') (L,R)))"
@@ -1862,19 +1727,19 @@ lemma tighten_bound_root: assumes n: "n \<noteq> 0"
   and x: "x = root n u"
   and cr: "root_info_cond ri p" "cr = root_info.l_r ri"
   and cr': "root_info_cond ri' p'" "cr' = root_info.l_r ri'"
-  and res: "tighten_bound_root (l',r') (l,r) = (un,Ri,P,L,R)"
+  and res: "tighten_bound_root (l',r') (l,r) = (Ri,P,L,R)"
   and p: "p \<noteq> 0" 
   and p': "p' \<noteq> 0"
   and sgn: "sgn l = 1" "sgn l' = 1"
   shows "unique_root (P,L,R)" "root_cond (P,L,R) x" "P \<noteq> 0" "sgn L = 1" "sgn R = 1" "sgn x = 1"
-    "root_info_cond Ri P" "un = Arbitrary_Poly"
+    "root_info_cond Ri P"
 proof -
   def delta \<equiv> "rpoly_root_delta p'"
   have delta: "delta > 0" unfolding delta_def by (rule rpoly_root_delta[OF p'])
   let ?P = "\<lambda> ((l',r'), (l,r)) . unique_root (p,l,r) \<longrightarrow> root_cond (p',l',r') x \<longrightarrow>
-    u = the_unique_root (p,l,r) \<longrightarrow> tighten_bound_root (l',r') (l,r) = (un,Ri,P,L,R) \<longrightarrow> sgn l = 1 \<longrightarrow>
+    u = the_unique_root (p,l,r) \<longrightarrow> tighten_bound_root (l',r') (l,r) = (Ri,P,L,R) \<longrightarrow> sgn l = 1 \<longrightarrow>
     sgn l' = 1 \<longrightarrow> 
-    (unique_root (P,L,R) \<and> root_cond (P,L,R) x \<and> P \<noteq> 0 \<and> sgn L = 1 \<and> root_info_cond Ri P \<and> un = Arbitrary_Poly)"
+    (unique_root (P,L,R) \<and> root_cond (P,L,R) x \<and> P \<noteq> 0 \<and> sgn L = 1 \<and> root_info_cond Ri P)"
   let ?dist = "\<lambda> ((l',r'),(l,r)). real_of_rat (r' - l')"
   let ?rel' = "{(x, y). 0 \<le> y \<and> delta_gt delta x y}"
   let ?rel = "inv_image ?rel' ?dist"
@@ -1888,7 +1753,7 @@ proof -
       assume ur: "unique_root (p,l,r)"
         and rc': "root_cond (p',l',r') x"
         and u: "u = the_unique_root (p,l,r)"
-        and res: "tighten_bound_root (l', r') (l, r) = (un, Ri, P, L, R)"
+        and res: "tighten_bound_root (l', r') (l, r) = ( Ri, P, L, R)"
         and sgn: "sgn l = 1" "sgn l' = 1"
       let ?l' = "real_of_rat l'"
       let ?r' = "real_of_rat r'"
@@ -1896,10 +1761,10 @@ proof -
       from rc'' have "?l' \<le> ?r'" by auto
       hence lr': "l' \<le> r'" by (auto simp: of_rat_less_eq)
       note res = res[unfolded tighten_bound_root.simps[of "(l',r')"] split Let_def]
-      show "unique_root (P,L,R) \<and> root_cond (P,L,R) x \<and> P \<noteq> 0 \<and> sgn L = 1 \<and> root_info_cond Ri P \<and> un = Arbitrary_Poly"
+      show "unique_root (P,L,R) \<and> root_cond (P,L,R) x \<and> P \<noteq> 0 \<and> sgn L = 1 \<and> root_info_cond Ri P"
       proof (cases "cr' l' r' = 1")
         case True
-        with res have id: "P = p'" "L = l'" "R = r'" "Ri = ri'" "un = Arbitrary_Poly" by auto
+        with res have id: "P = p'" "L = l'" "R = r'" "Ri = ri'" by auto
         from True[unfolded cr'(2) root_info_condD(1)[OF cr'(1) lr']]
         have "card (Collect (root_cond (p',l',r'))) = 1" .
         from card_1_Collect_ex1[OF this]
@@ -1922,7 +1787,7 @@ proof -
         show ?thesis
         proof (cases ?cond)
           case True
-          hence id: "P = poly_rat m'" "L = m'" "R = m'" "Ri = poly_rat_root_info m'" "un = Arbitrary_Poly" using card res by auto
+          hence id: "P = poly_rat m'" "L = m'" "R = m'" "Ri = poly_rat_root_info m'" using card res by auto
           from the_unique_root(5)[OF ur True, folded u] have u: "u = (of_rat m') ^ n" unfolding of_rat_power .
           have xm: "x = of_rat m'" unfolding arg_cong[OF u, of "root n", folded x]
             by (rule real_root_pos2, insert sgnm' n, cases "m' = 0"; cases "m' < 0"; auto simp: sgn_rat_def)
@@ -1993,7 +1858,7 @@ proof -
           proof (cases "?m < LL")
             case True
             note outside = this
-            with res have res: "tighten_bound_root (m', r') (LL, RR) = (un,Ri,P,L,R)" by auto
+            with res have res: "tighten_bound_root (m', r') (LL, RR) = (Ri,P,L,R)" by auto
             have "of_rat ?m < real_of_rat LL" using outside of_rat_less by blast
             also have "\<dots> \<le> u" using the_unique_root(1)[OF ur', folded u'] by auto
             finally have "of_rat ?m < x ^ n" unfolding uxn .
@@ -2005,7 +1870,7 @@ proof -
             show ?thesis by (rule IH)
           next
             case False
-            with res have res: "tighten_bound_root (l', m') (LL, RR) = (un,Ri,P,L,R)" by auto
+            with res have res: "tighten_bound_root (l', m') (LL, RR) = (Ri,P,L,R)" by auto
             from False have "LL \<le> ?m" by auto
             with outside have outside: "RR < ?m" by auto
             have "x ^ n \<le> of_rat RR" 
@@ -2024,7 +1889,7 @@ proof -
     qed
   qed
   from this[unfolded split, rule_format, OF ur rt u res sgn]
-  show "unique_root (P,L,R)" "P \<noteq> 0" "root_info_cond Ri P" "un = Arbitrary_Poly" and rc: "root_cond (P,L,R) x" and sgn: "sgn L = 1" by auto
+  show "unique_root (P,L,R)" "P \<noteq> 0" "root_info_cond Ri P" and rc: "root_cond (P,L,R) x" and sgn: "sgn L = 1" by auto
   from rc[unfolded root_cond_def split] have Lx: "of_rat L \<le> x" and LR: "of_rat L \<le> real_of_rat R" by auto
   from LR have "L \<le> R" by (auto simp: of_rat_less_eq)
   with sgn show "sgn R = 1" by (metis sgn_less_eq_1_rat)
@@ -2034,9 +1899,9 @@ qed
 end
 
 private definition root_rai_fun_pos :: "rai_intern \<Rightarrow> rai_intern" where
-  "root_rai_fun_pos \<equiv> map_option (\<lambda> (un,ri,p,l,r) \<Rightarrow> 
+  "root_rai_fun_pos \<equiv> map_option (\<lambda> (ri,p,l,r) \<Rightarrow> 
   let p' = poly_nth_root n p; ri' = count_roots_interval_sf_rat p' in 
-  rai_normalize_poly_flat Uncertified_Factorization 
+  rai_normalize_poly_flat 
     (tighten_bound_root p' p ri' (root_info.l_r ri') (root_info.l_r ri)
       (initial_lower_bound l, initial_upper_bound r) (l,r)))"
 
@@ -2108,18 +1973,18 @@ lemma root_rai_pos: assumes x: "rai_cond x" and nneg: "sgn_rai_rat x \<ge> 0"
   shows "rai_cond y \<and> (rai_real y = root n (rai_real x))"
 proof (cases x)
   case (Some plr)
-  obtain un ri p l r where plr: "plr = (un,ri,p,l,r)" by (cases plr, auto)
+  obtain ri p l r where plr: "plr = (ri,p,l,r)" by (cases plr, auto)
   let ?l = "initial_lower_bound l"
   let ?r = "initial_upper_bound r"
-  from x Some plr have "rai_cond (Some (un,ri,p,l,r))" by auto
+  from x Some plr have "rai_cond (Some (ri,p,l,r))" by auto
   note * = rai_condD[OF this]
   note inv = *(8)
   note ur = *(7)
   note cr = *(9)
   note * = *(1-6)
   note ** = *[unfolded root_cond_def]
-  from Some plr have x: "x = Some (un,ri,p,l,r)" by simp
-  let ?x = "rai_real (Some (un,ri,p,l,r))"
+  from Some plr have x: "x = Some (ri,p,l,r)" by simp
+  let ?x = "rai_real (Some (ri,p,l,r))"
   from nneg[unfolded x sgn_rai_rat_def] have "sgn r \<ge> 0" by simp
   with * have "sgn r > 0" by linarith
   hence sgnl: "sgn l = 1" using * by auto
@@ -2139,21 +2004,19 @@ proof (cases x)
   from ** have p: "p \<noteq> 0" by auto
   hence p': "?p \<noteq> 0" using poly_nth_root_0[OF n, of p] by auto
   let ?tight = "tighten_bound_root ?p p (?c ?p) (?lr (?c ?p)) (?lr ri) (?l,?r) (l,r)"
-  let ?norm = "rai_normalize_poly_flat Uncertified_Factorization ?tight"
+  let ?norm = "rai_normalize_poly_flat  ?tight"
   from plr Some have y: "y = Some ?norm" 
     unfolding y root_rai_fun_pos_def Let_def by simp
-  obtain un1 Cr P L R where tight: "?tight = (un1,Cr,P,L,R)" by (cases ?tight, auto)
+  obtain un1 Cr P L R where tight: "?tight = (Cr,P,L,R)" by (cases ?tight, auto)
   from the_unique_root(5)[OF ur *(1)] have id2: "the_unique_root (p,l,r) = ?x" .
   have cr': "root_info_cond (?c ?p) ?p"
     by (rule count_roots_interval_sf_rat[OF p'])
   note ur = tighten_bound_root[OF n ur rc refl _ cr refl cr' refl tight p p' sgnl il(1), unfolded id2, OF refl]
-  obtain un ri p l r where norm: "?norm = (un,ri,p,l,r)" by (cases ?norm, auto)
-  from ur(8) have cond: "un1 = Monic_Irreducible \<or> Uncertified_Factorization \<in> {Check_Irreducible, Check_Root_Free} \<Longrightarrow>
-     poly_type_cond un1 P" by auto
+  obtain ri p l r where norm: "?norm = (ri,p,l,r)" by (cases ?norm, auto)
   from the_unique_root(5)[OF ur(1-2)] 
   have id: "root n (rai_real x) = the_unique_root (P, L, R)"
     unfolding x tight rai_cond_def option.simps by (simp add: rai_real_def)
-  note * = rai_normalize_poly_flat[OF norm[unfolded tight] ur(1,3,7) cond] 
+  note * = rai_normalize_poly_flat[OF norm[unfolded tight] ur(1,3,7)] 
   from * ur
   have "rai_cond y" unfolding y norm by (auto simp: rai_cond_def)
   thus ?thesis unfolding y norm unfolding id[symmetric] using *
@@ -2177,7 +2040,7 @@ proof -
     show ?thesis
     proof (cases "sgn_rai_rat x \<ge> 0")
       case True
-      from rt[OF x True] True n y rai_normalize show ?thesis by auto
+      from rt[OF x True] True n y show ?thesis by auto
     next
       case False
       let ?um = "uminus_rai_fun"
@@ -2491,17 +2354,17 @@ proof -
   thus ?thesis by auto
 qed
 
-definition mk_rai_intern :: "poly_type \<Rightarrow> root_info \<Rightarrow> rat poly \<Rightarrow> rat \<Rightarrow> rat \<Rightarrow> rai_intern" where
-  "mk_rai_intern ty ri p l r = (if l \<le> 0 \<and> 0 \<le> r \<and> coeff p 0 = 0 then None 
+definition mk_rai_intern :: "root_info \<Rightarrow> rat poly \<Rightarrow> rat \<Rightarrow> rat \<Rightarrow> rai_intern" where
+  "mk_rai_intern ri p l r = (if l \<le> 0 \<and> 0 \<le> r \<and> coeff p 0 = 0 then None 
      else case tighten_poly_bounds_for_x (root_info.l_r ri) 0 l r of
-              (l',r') \<Rightarrow> Some (ty,ri,p,l',r'))"
+              (l',r') \<Rightarrow> Some (ri,p,l',r'))"
 
-lemma mk_rai_intern: assumes ur: "unique_root (q,l,r)" and pt: "poly_type_cond ty q"
+lemma mk_rai_intern: assumes ur: "unique_root (q,l,r)" and pt: "poly_cond q"
   and ri: "root_info_cond ri q"
-  shows "rai_cond (mk_rai_intern ty ri q l r) \<and> 
-    rai_real (mk_rai_intern ty ri q l r) = the_unique_root (q,l,r)"
+  shows "rai_cond (mk_rai_intern ri q l r) \<and> 
+    rai_real (mk_rai_intern ri q l r) = the_unique_root (q,l,r)"
 proof -
-  let ?rai = "mk_rai_intern ty ri q l r"
+  let ?rai = "mk_rai_intern ri q l r"
   let ?r = real_of_rat
   interpret inj_field_hom ?r .. 
   have "coeff q 0 = 0 \<longleftrightarrow> poly q 0 = 0" by (simp add: poly_0_coeff_0)
@@ -2518,7 +2381,7 @@ proof -
   next
     case False
     obtain l' r' where tight: "tighten_poly_bounds_for_x (root_info.l_r ri) 0 l r = (l',r')" by force
-    have rai': "?rai = Some (ty, ri, q, l', r')"
+    have rai': "?rai = Some (ri, q, l', r')"
       unfolding mk_rai_intern_def using False[folded id] tight by auto
     hence rai: "rai_real ?rai = the_unique_root (q,l',r')" unfolding rai_real_def by auto    
     have "l \<le> 0 \<Longrightarrow> 0 \<le> r \<Longrightarrow> poly q 0 \<noteq> 0" using False[folded id poly_0_coeff_0] by auto   
@@ -2528,7 +2391,7 @@ proof -
     from unique_root_sub_interval[OF ur tight(1) tight(2,4)] 
     have ur': "unique_root (q, l', r')" and x: "?x = the_unique_root (q,l',r')" by auto
     from tight(2-) have sgn: "sgn l' = sgn r'" "sgn r' \<noteq> 0" by auto
-    have q0: "q \<noteq> 0" using poly_type_cond_square_free_D(2) pt by force
+    have q0: "q \<noteq> 0" using poly_cond_D pt by force
     show "rai_cond ?rai \<and> rai_real ?rai = ?x" unfolding rai'
     proof (rule rai_cond_realI[OF tight(1) q0 sgn _ ri pt])
       fix y
@@ -2540,11 +2403,11 @@ qed
 
 definition select_correct_factor_rat_poly :: "'a \<Rightarrow> rat poly \<Rightarrow> rai_intern" where
   "select_correct_factor_rat_poly init p \<equiv> 
-     let qs = factors_of_rat_poly Uncertified_Factorization p;
+     let qs = factors_of_rat_poly p;
          polys = map (\<lambda> q. (q, count_roots_interval_rat q)) qs;
          (* TODO: make choice on generic count_roots_interval_rat q or special case for linear q *)
          ((q,ri),(l,r)) = select_correct_factor init polys
-      in mk_rai_intern Arbitrary_Poly ri q l r"
+      in mk_rai_intern ri q l r"
 
 lemma select_correct_factor_rat_poly: assumes 
       conv: "converges_to (\<lambda> i. bnd_get ((bnd_update ^^ i) init)) x"
@@ -2553,7 +2416,7 @@ lemma select_correct_factor_rat_poly: assumes
   and p: "p \<noteq> 0"
   shows "rai_cond rai \<and> rai_real rai = x"
 proof -
-  obtain qs where fact: "factors_of_rat_poly Uncertified_Factorization p = qs" by auto
+  obtain qs where fact: "factors_of_rat_poly p = qs" by auto
   def polys \<equiv> "map (\<lambda> q. (q, count_roots_interval_rat q)) qs"
   obtain q ri l r where res: "select_correct_factor init polys = ((q,ri),(l,r))"
     by (cases "select_correct_factor init polys", auto)
@@ -2563,23 +2426,24 @@ proof -
   note rai = rai[unfolded select_correct_factor_rat_poly_def Let_def fact, 
     folded polys_def, unfolded res split]
   from fact' fst have dist: "distinct (map fst polys)" by auto
-  from fact'(2)[OF _ p, of x] x fst 
+  from fact'(2)[OF p, of x] x fst 
   have ex: "\<exists>q. q \<in> fst ` set polys \<and> rpoly q x = 0" by auto
   {
     fix q ri
     assume "(q,ri) \<in> set polys"
     hence ri: "ri = count_roots_interval_rat q" and q: "q \<in> set qs" unfolding polys_def by auto
-    from fact'(1)[OF _ q] have *: "monic q" "square_free q" "degree q \<noteq> 0" by auto
-    hence q0: "q \<noteq> 0" by auto
-    from count_roots_interval_rat[OF *(2)] ri have ri: "root_info_cond ri q" by simp
+    from fact'(1)[OF q] have *: "monic q" "irreducible q" by auto
+    from irreducible_square_free[OF *(2)] have sf: "square_free q" .
+    from * have q0: "q \<noteq> 0" by auto
+    from count_roots_interval_rat[OF sf] ri have ri: "root_info_cond ri q" by simp
     note ri q0 *
   } note polys = this
   have "unique_root (q, l, r) \<and> (q, ri) \<in> set polys \<and> x = the_unique_root (q, l, r)"
-    by (rule select_correct_factor[OF conv res polys(1) _ ex dist, unfolded fst, OF _ _ fact'(3)[OF _ p]],
-    insert fact'(2)[OF _ p] polys(2), auto)
+    by (rule select_correct_factor[OF conv res polys(1) _ ex dist, unfolded fst, OF _ _ fact'(3)[OF p]],
+    insert fact'(2)[OF p] polys(2), auto)
   hence ur: "unique_root (q,l,r)" and mem: "(q,ri) \<in> set polys" and x: "x = the_unique_root (q,l,r)" by auto   
   note polys = polys[OF mem]
-  from polys(3-4) have ty: "poly_type_cond Arbitrary_Poly q" by simp
+  from polys(3-4) have ty: "poly_cond q" by (simp add: poly_cond_def)
   show ?thesis unfolding x rai[symmetric]
     by (rule mk_rai_intern[OF ur ty polys(1)])
 qed
@@ -2589,16 +2453,15 @@ end
 (* addition *)
 context
 begin
-(* TODO: one might try to carry over un also for Monic_Root_Poly *)
 private fun add_rat_rai_fun :: "rat \<Rightarrow> rai_intern \<Rightarrow> rai_intern" where
-  "add_rat_rai_fun r1 (Some (un2,ri2,p2,l2,r2)) = (
+  "add_rat_rai_fun r1 (Some (ri2,p2,l2,r2)) = (
     let p = monic_poly (poly_add_rat r1 p2);
       ri = count_roots_interval_rat p;
       cr = root_info.l_r ri;
       (l,r) = (l2+r1,r2+r1)
     in if l \<le> 0 \<and> 0 \<le> r \<and> poly p 0 = 0 then None else 
       let (l,r) = tighten_poly_bounds_for_x cr 0 l r
-      in Some (un_weaken un2,ri,p,l,r))"
+      in Some (ri,p,l,r))"
 | "add_rat_rai_fun r1 None = of_rat_rai_fun r1"
 
 definition normalize_rat_poly :: "rat poly \<Rightarrow> rat poly" where
@@ -2773,7 +2636,7 @@ proof -
 qed
 
 private fun add_rai_fun :: "rai_intern \<Rightarrow> rai_intern \<Rightarrow> rai_intern" where
-  "add_rai_fun (Some (un1,ri1,p1,l1,r1)) (Some (un2,ri2,p2,l2,r2)) = (
+  "add_rai_fun (Some (ri1,p1,l1,r1)) (Some (ri2,p2,l2,r2)) = (
      select_correct_factor_rat_poly
        (tighten_poly_bounds_binary (root_info.l_r ri1) (root_info.l_r ri2))
        (\<lambda> ((l1,r1),(l2,r2)). (l1 + l2, r1 + r2))
@@ -2796,10 +2659,10 @@ next
     with x y show ?thesis unfolding z xt by simp
   next
     case (Some yt) note yt = this
-    obtain un1 ri1 p1 l1 r1 where xt: "x = Some (un1,ri1,p1,l1,r1)" unfolding xt by (cases xt, auto)
-    obtain un2 ri2 p2 l2 r2 where yt: "y = Some (un2,ri2,p2,l2,r2)" unfolding yt by (cases yt, auto)
-    let ?x = "rai_real (Some (un1, ri1, p1, l1, r1))"
-    let ?y = "rai_real (Some (un2, ri2, p2, l2, r2))"
+    obtain ri1 p1 l1 r1 where xt: "x = Some (ri1,p1,l1,r1)" unfolding xt by (cases xt, auto)
+    obtain ri2 p2 l2 r2 where yt: "y = Some (ri2,p2,l2,r2)" unfolding yt by (cases yt, auto)
+    let ?x = "rai_real (Some ( ri1, p1, l1, r1))"
+    let ?y = "rai_real (Some ( ri2, p2, l2, r2))"
     let ?p1 = "normalize_rat_poly p1"
     let ?p2 = "normalize_rat_poly p2"
     let ?p = "poly_add ?p1 ?p2"    
@@ -2839,9 +2702,9 @@ proof (cases y)
   with y show ?thesis unfolding z using of_rat_rai_main[OF refl, of r1] by simp
 next
   case (Some yt) note yt = this
-  obtain un2 ri2 p2 l2 r2 where yt: "y = Some (un2,ri2,p2,l2,r2)" unfolding yt by (cases yt, auto)
+  obtain ri2 p2 l2 r2 where yt: "y = Some (ri2,p2,l2,r2)" unfolding yt by (cases yt, auto)
   let ?x = "real_of_rat r1"
-  let ?y = "rai_real (Some (un2, ri2, p2, l2, r2))"
+  let ?y = "rai_real (Some ( ri2, p2, l2, r2))"
   let ?p = "poly_add_rat r1 p2"    
   let ?mp = "monic_poly ?p"
   let ?ri = "count_roots_interval_rat ?mp"
@@ -2852,7 +2715,7 @@ next
   from y(1)[unfolded root_cond_def split] 
   have rt: "rpoly p2 ?y = 0" and bnd: "of_rat l2 \<le> ?y" "?y \<le> of_rat r2" by auto
   from rt have rt: "rpoly ?p (?x + ?y) = 0" unfolding rpoly_add_rat by simp
-  from poly_type_cond_square_free_D[OF y(10)] have "square_free p2" by simp
+  from poly_cond_D[OF y(10)] have "square_free p2" by simp
   hence sf: "square_free ?mp" unfolding monic_poly by (rule poly_add_rat_square_free)
   have mon: "monic ?mp" by (rule monic_poly(2)[OF p])
   note ri = count_roots_interval_rat[OF sf]
@@ -2884,9 +2747,8 @@ next
     case False
     hence 0: "l \<le> 0 \<Longrightarrow> 0 \<le> r \<Longrightarrow> poly ?mp 0 \<noteq> 0" by auto
     let ?ri = "count_roots_interval_rat ?mp"
-    let ?un2 = "un_weaken un2"
     obtain l' r' where tx: "tighten_poly_bounds_for_x (?lr ?ri) 0 l r = (l',r')" by force
-    with z False have z: "z = Some (?un2, ?ri, ?mp, l', r')" by auto
+    with z False have z: "z = Some (?ri, ?mp, l', r')" by auto
     from tighten_poly_bounds_for_x[OF ur 0 xy ri refl tx] 
     have lr'': "l \<le> l'" "r' \<le> r" and lr': "l' \<le> r'" and 
       rc: "root_cond (?mp, l', r') (?x + ?y)" and zero: "\<not> (l' \<le> 0 \<and> 0 \<le> r')" 
@@ -2894,13 +2756,10 @@ next
     from unique_root_sub_interval[OF ur rc[unfolded xy] lr''] have ur: "unique_root (?mp, l', r')"
       and tur: "the_unique_root (?mp,l',r') = ?x + ?y" unfolding xy by auto
     have yp2: "alg_poly ?y p2" using y(1,5) unfolding root_cond_def split alg_poly_def by auto
-    {
-      assume mi: "un2 \<le> Monic_Irreducible"
-      from poly_add_rat_irreducible poly_type_cond_MI_D[OF y(10) mi] y(5) 
-      have "irreducible ?mp"  "monic ?mp" by (auto simp: monic_poly)
-    }
-    with sf mon have un: "poly_type_cond ?un2 ?mp" by (cases un2, auto simp: poly_type_cond_def)
-    have rc: "rai_cond (Some (?un2, ?ri, ?mp, l', r'))"
+    from poly_add_rat_irreducible poly_cond_D[OF y(10)] y(5) 
+    have "irreducible ?mp"  "monic ?mp" by (auto simp: monic_poly(1-3))
+    with sf mon have un: "poly_cond ?mp" by (auto simp: poly_cond_def)
+    have rc: "rai_cond (Some (?ri, ?mp, l', r'))"
       unfolding rai_cond_def using zero lr' un
       by (auto simp: ur mp ri)
     show ?thesis unfolding z using rc tur yt by (simp add: rai_real_def)
@@ -2925,17 +2784,16 @@ subsubsection\<open>Multiplication\<close>
 
 context
 begin
-(* TODO: one might try to carry over un also for Monic_Root_Poly *)
 private fun mult_rat_rai_fun_pos :: "rat \<Rightarrow> rai_intern_flat \<Rightarrow> rai_intern_flat" where
-  "mult_rat_rai_fun_pos r1 (un2,ri2,p2,l2,r2) = (
+  "mult_rat_rai_fun_pos r1 (ri2,p2,l2,r2) = (
     let p = monic_poly (poly_mult_rat r1 p2);
       ri = count_roots_interval_rat p;
       cr = root_info.l_r ri;
       (l,r) = (l2*r1,r2*r1)
-    in (un_weaken un2,ri,p,l,r))"
+    in (ri,p,l,r))"
 
 private fun mult_rai_fun_pos :: "rai_intern_flat \<Rightarrow> rai_intern_flat \<Rightarrow> rai_intern_flat" where
-  "mult_rai_fun_pos (un1,ri1,p1,l1,r1) (un2,ri2,p2,l2,r2) = (
+  "mult_rai_fun_pos (ri1,p1,l1,r1) (ri2,p2,l2,r2) = (
       the (select_correct_factor_rat_poly 
         (tighten_poly_bounds_binary (root_info.l_r ri1) (root_info.l_r ri2))
         (\<lambda> ((l1,r1),(l2,r2)). (l1 * l2, r1 * r2))
@@ -2949,7 +2807,7 @@ private fun mult_rat_rai_fun :: "rat \<Rightarrow> rai_intern \<Rightarrow> rai_
 | "mult_rat_rai_fun x None = None"
 
 private fun mult_rai_fun :: "rai_intern \<Rightarrow> rai_intern \<Rightarrow> rai_intern" where
-  "mult_rai_fun (Some x) (Some y) = (case (x,y) of ((un1,ri1,p1,l1,r1),(un2,ri2,p2,l2,r2))
+  "mult_rai_fun (Some x) (Some y) = (case (x,y) of ((ri1,p1,l1,r1),(ri2,p2,l2,r2))
     \<Rightarrow> if r1 > 0 \<and> r2 > 0 then Some (mult_rai_fun_pos x y) else 
        if r1 > 0 \<and> r2 < 0 then 
          uminus_rai_fun (Some (mult_rai_fun_pos x (the (uminus_rai_fun (Some y))))) else
@@ -2964,9 +2822,9 @@ lemma mult_rat_rai_fun_pos: fixes r1 :: rat assumes r1: "r1 > 0" and y: "rai_con
   defines z: "z \<equiv> mult_rat_rai_fun_pos r1 y"
   shows "rai_cond (Some z) \<and> (rai_real (Some z) = of_rat r1 * rai_real (Some y))" 
 proof -
-  obtain un2 ri2 p2 l2 r2 where yt: "y = (un2,ri2,p2,l2,r2)" by (cases y, auto)
+  obtain ri2 p2 l2 r2 where yt: "y = (ri2,p2,l2,r2)" by (cases y, auto)
   let ?x = "real_of_rat r1"
-  let ?y = "rai_real (Some (un2, ri2, p2, l2, r2))"
+  let ?y = "rai_real (Some ( ri2, p2, l2, r2))"
   let ?p = "poly_mult_rat r1 p2"    
   let ?mp = "monic_poly ?p"
   let ?ri = "count_roots_interval_rat ?mp"
@@ -2978,7 +2836,7 @@ proof -
   have rt: "rpoly p2 ?y = 0" and bnd: "of_rat l2 \<le> ?y" "?y \<le> of_rat r2" by auto
   from rt have rt: "rpoly ?mp (?x * ?y) = 0" unfolding monic_poly rpoly_mult_rat using r1
     by (simp add: field_simps)
-  from poly_type_cond_square_free_D[OF y(10)] have "square_free p2" by simp
+  from poly_cond_D[OF y(10)] have "square_free p2" by simp
   hence sf: "square_free ?mp" unfolding monic_poly by (rule poly_mult_rat_square_free[OF r10])
   have mon: "monic ?mp" by (rule monic_poly(2)[OF p])
   note ri = count_roots_interval_rat[OF sf]
@@ -3004,16 +2862,12 @@ proof -
     by (cases "l2 = 0"; cases "l2 < 0"; auto simp: mult_neg_pos mult_less_0_iff)
   from the_unique_root(5)[OF ur rc] have xy: "?x * ?y = the_unique_root (?mp,l,r)" by auto
   from y(3) r1 xy have non0: "the_unique_root (?mp,l,r) \<noteq> 0" by auto
-  let ?un2 = "un_weaken un2"
   from z[unfolded yt, simplified, unfolded Let_def lr[symmetric] split]
-  have z: "z = (?un2, ?ri, ?mp, l, r)" by simp
+  have z: "z = ( ?ri, ?mp, l, r)" by simp
   have yp2: "alg_poly ?y p2" using y(1,5) unfolding root_cond_def split alg_poly_def by auto
-  {
-    assume mi: "un2 \<le> Monic_Irreducible"
-    from poly_mult_rat_irreducible r1 poly_type_cond_MI_D[OF y(10) mi] y(5) 
-    have "irreducible ?mp"  "monic ?mp" by (auto simp: monic_poly)
-  } note un = this
-  with mon sf have un: "poly_type_cond ?un2 ?mp" by (cases un2, auto simp: poly_type_cond_def)
+  from poly_mult_rat_irreducible r1 poly_cond_D[OF y(10)] y(5) 
+  have "irreducible ?mp"  "monic ?mp" by (auto simp: monic_poly(1-3))
+  with mon sf have un: "poly_cond ?mp" by (auto simp: poly_cond_def)
   have rc: "rai_cond (Some z)" unfolding z using y(2,4) un
     by (simp add: rai_cond_def ur ri mp sgnr sgnl)
   thus ?thesis unfolding yt xy unfolding z by (simp add: rai_real_def)
@@ -3024,10 +2878,10 @@ lemma mult_rai_fun_pos: assumes x: "rai_cond (Some x)" and y: "rai_cond (Some y)
   assumes pos: "rai_real (Some x) > 0" "rai_real (Some y) > 0"
   shows "rai_cond (Some z) \<and> (rai_real (Some z) = rai_real (Some x) * rai_real (Some y))" 
 proof -
-  obtain un1 ri1 p1 l1 r1 where xt: "x = (un1,ri1,p1,l1,r1)" by (cases x, auto)
-  obtain un2 ri2 p2 l2 r2 where yt: "y = (un2,ri2,p2,l2,r2)" by (cases y, auto)
-  let ?x = "rai_real (Some (un1, ri1, p1, l1, r1))"
-  let ?y = "rai_real (Some (un2, ri2, p2, l2, r2))"
+  obtain ri1 p1 l1 r1 where xt: "x = (ri1,p1,l1,r1)" by (cases x, auto)
+  obtain ri2 p2 l2 r2 where yt: "y = (ri2,p2,l2,r2)" by (cases y, auto)
+  let ?x = "rai_real (Some ( ri1, p1, l1, r1))"
+  let ?y = "rai_real (Some ( ri2, p2, l2, r2))"
   let ?r = "real_of_rat"
   let ?p1 = "normalize_rat_poly p1"
   let ?p2 = "normalize_rat_poly p2"
@@ -3135,12 +2989,12 @@ proof -
   from main[unfolded this] show ?thesis unfolding xt yt by simp
 qed
 
-lemma rai_cond_pos: assumes "rai_cond (Some (un,ri,p,l,r))"
-  shows "rai_real (Some (un,ri,p,l,r)) > 0 \<longleftrightarrow> r > 0"
-   "rai_real (Some (un,ri,p,l,r)) < 0 \<longleftrightarrow> r < 0"
+lemma rai_cond_pos: assumes "rai_cond (Some (ri,p,l,r))"
+  shows "rai_real (Some (ri,p,l,r)) > 0 \<longleftrightarrow> r > 0"
+   "rai_real (Some (ri,p,l,r)) < 0 \<longleftrightarrow> r < 0"
 proof -
   let ?r = "real_of_rat"
-  let ?x = "rai_real (Some (un,ri,p,l,r))"
+  let ?x = "rai_real (Some (ri,p,l,r))"
   from assms[unfolded rai_cond_def]
   have ur: "unique_root (p,l,r)" and sgn: "sgn l = sgn r" "sgn r \<noteq> 0" by auto
   from the_unique_root(1-2)[OF ur] have le: "?r l \<le> ?x" "?x \<le> ?r r" unfolding rai_real_def by auto
@@ -3181,10 +3035,10 @@ next
     with x y show ?thesis unfolding z xt by simp
   next
     case (Some yt) note yt = this
-    obtain un1 ri1 p1 l1 r1 where xt: "x = Some (un1,ri1,p1,l1,r1)" unfolding xt by (cases xt, auto)
-    obtain un2 ri2 p2 l2 r2 where yt: "y = Some (un2,ri2,p2,l2,r2)" unfolding yt by (cases yt, auto)
-    let ?xt = "(un1, ri1, p1, l1, r1)"
-    let ?yt = "(un2, ri2, p2, l2, r2)"
+    obtain ri1 p1 l1 r1 where xt: "x = Some (ri1,p1,l1,r1)" unfolding xt by (cases xt, auto)
+    obtain ri2 p2 l2 r2 where yt: "y = Some (ri2,p2,l2,r2)" unfolding yt by (cases yt, auto)
+    let ?xt = "( ri1, p1, l1, r1)"
+    let ?yt = "( ri2, p2, l2, r2)"
     let ?x = "rai_real (Some ?xt)"
     let ?y = "rai_real (Some ?yt)"
     let ?mxt = "the (uminus_rai_fun (Some ?xt))"
@@ -3253,11 +3107,11 @@ proof (cases "x = 0 \<or> y = None")
 next
   case False
   then obtain yt where x: "(x = 0) = False" and yt: "y = Some yt" by (cases y, auto)
-  obtain un2 ri2 p2 l2 r2 where yt: "y = Some (un2,ri2,p2,l2,r2)" unfolding yt by (cases yt, auto)
-  let ?yt = "(un2, ri2, p2, l2, r2)"
+  obtain ri2 p2 l2 r2 where yt: "y = Some (ri2,p2,l2,r2)" unfolding yt by (cases yt, auto)
+  let ?yt = "( ri2, p2, l2, r2)"
   let ?x = "real_of_rat x"
   let ?y = "rai_real (Some ?yt)"
-  let ?myt = "mult_rat_rai_fun_pos (- x) (un2, ri2, p2, l2, r2)"
+  let ?myt = "mult_rat_rai_fun_pos (- x) ( ri2, p2, l2, r2)"
   note y = y[unfolded yt]
   note z = z[unfolded yt mult_rat_rai_fun.simps split x if_False]
   show ?thesis
@@ -3282,20 +3136,20 @@ lift_definition mult_rai :: "real_alg_intern \<Rightarrow> real_alg_intern \<Rig
   by (insert mult_rai_main, auto)
   
 lemma mult_rai: "real_of_rai (mult_rai x y) = real_of_rai x * real_of_rai y"
-  by (transfer, insert mult_rai_main rai_normalize, auto)
+  by (transfer, insert mult_rai_main, auto)
 
 lift_definition mult_rat_rai :: "rat \<Rightarrow> real_alg_intern \<Rightarrow> real_alg_intern" is mult_rat_rai_fun
   by (insert mult_rat_rai_main, auto)
   
 lemma mult_rat_rai: "real_of_rai (mult_rat_rai x y) = of_rat x * real_of_rai y"
-  by (transfer, insert mult_rat_rai_main rai_normalize, auto)
+  by (transfer, insert mult_rat_rai_main, auto)
 end
 
 (* **************************************************************** *)
 subsection \<open>Real Algebraic Numbers = Rational + Irrational Real Algebraic Numbers\<close>
 
 text \<open>In the next representation of real algebraic numbers, we distinguish between
-  rational and irrational numbers. The advandage is that whenever we only work on
+  rational and irrational numbers. The advantage is that whenever we only work on
   rational numbers, there is not much overhead involved in comparison to the 
   existing implementation of real numbers which just supports the rational numbers.\<close>
 
@@ -3305,7 +3159,7 @@ datatype real_alg_dt = Rational rat | Irrational real_alg_intern
 fun radt_cond :: "real_alg_dt \<Rightarrow> bool" where 
   "radt_cond (Irrational rai) = (degree (fst (info_rai rai)) \<ge> 2)"
 | "radt_cond (Rational r) = True"
-
+  
 fun rai_of_radt :: "real_alg_dt \<Rightarrow> real_alg_intern" where
   "rai_of_radt (Rational r) = of_rat_rai r"
 | "rai_of_radt (Irrational rai) = rai"
@@ -3315,18 +3169,24 @@ fun real_of_radt :: "real_alg_dt \<Rightarrow> real" where
 | "real_of_radt (Irrational rai) = real_of_rai rai"
 
 definition real_alg_dt :: "real_alg_intern \<Rightarrow> real_alg_dt" where 
-  "real_alg_dt rai \<equiv> let rai' = normalize_rai No_Guarantee rai; 
+  "real_alg_dt rai \<equiv> let rai' = normalize_bounds_rai rai; 
      (p,n) = info_rai rai'
      in (if degree p = 1 then Rational (- coeff p 0)
        else Irrational rai')"
 
+lemma real_alg_dt_code[code]: "real_alg_dt rai = (let rai' = normalize_bounds_rai rai; 
+     p = poly_rai rai'
+     in (if degree p = 1 then Rational (- coeff p 0)
+       else Irrational rai'))"
+  by (auto simp: poly_rai_info_rai real_alg_dt_def Let_def split: prod.splits)
+  
+  
 lemma rai_of_radt: "real_of_rai (rai_of_radt x) = real_of_radt x"
   by (cases x, auto simp: of_rat_rai)
 
 lemma real_alg_dt: "radt_cond (real_alg_dt rai)" "real_of_radt (real_alg_dt rai) = real_of_rai rai"
 proof -
-  let ?mode = No_Guarantee
-  def rai' \<equiv> "normalize_rai ?mode rai"
+  def rai' \<equiv> "normalize_bounds_rai rai"
   obtain p n where ri: "info_rai rai' = (p,n)" by force
   have rai': "real_of_rai rai = real_of_rai rai'" unfolding rai'_def by simp
   have id: "real_alg_dt rai = (if degree p = 1 then Rational (- coeff p 0)
@@ -3452,40 +3312,31 @@ qed
 
 fun to_rat_radt :: "real_alg_dt \<Rightarrow> rat option" where
   "to_rat_radt (Rational r) = Some r"
-| "to_rat_radt (Irrational rai) = (case info_rai (normalize_rai Root_Free rai)
-     of (p,n) \<Rightarrow> if degree p = 1 then Some (- coeff p 0) else None)"
+| "to_rat_radt (Irrational rai) = None"
 
-lemma to_rat_radt: "to_rat_radt x = (if real_of_radt x \<in> \<rat> then Some (THE q. real_of_radt x = of_rat q) else None)"
+lemma to_rat_radt: assumes rc: "radt_cond x" 
+  shows "to_rat_radt x = (if real_of_radt x \<in> \<rat> then Some (THE q. real_of_radt x = of_rat q) else None)"
 proof (cases x)
-  case (Irrational rai)  
+  case (Irrational rai)
   let ?x = "real_of_rai rai"
-  obtain p n where ir: "info_rai (normalize_rai Root_Free rai) = (p,n)" by force
-  from rai_info_poly[OF this] normalize_rai[of Root_Free rai]
-  have rf: "poly_type_cond (normalization_guarantee Root_Free) p"
+  obtain p n where ir: "info_rai rai = (p,n)" by force
+  from rai_info_poly[OF this] 
+  have rf: "poly_cond p"
     and rt: "rpoly p ?x = 0" by auto
-  from poly_type_cond_RF_D[OF rf] have rf: "root_free p" and mon: "monic p" by auto
-  show ?thesis
-  proof (cases "degree p = 1")
-    case False
-    with rational_root_free_degree_iff[OF rf rt]
-    show ?thesis unfolding Irrational by (auto simp: ir)
-  next
-    case True
-    let ?X = "real_of_radt x"
-    from degree1_coeffs[OF True] mon obtain a where p: "p = [:a,1:]" and a: "coeff p 0 = a" by auto
-    from rt[unfolded p] have X: "?X = of_rat (-a)" by (simp add: eval_poly_def Irrational)
-    from True ir have xa: "to_rat_radt x = Some (-a)" by (auto simp: a Irrational)
-    show ?thesis unfolding xa X by (simp, unfold of_rat_minus[symmetric] of_rat_eq_iff, simp)
-  qed
+  from rc[unfolded Irrational] ir have deg: "degree p \<noteq> 1" by auto
+  from poly_cond_D[OF rf] have rf: "root_free p" and mon: "monic p" by auto
+  show ?thesis using deg rational_root_free_degree_iff[OF rf rt] unfolding Irrational
+    by (simp add: ir)
 qed simp
 
 fun equal_radt :: "real_alg_dt \<Rightarrow> real_alg_dt \<Rightarrow> bool" where
   "equal_radt (Rational r) (Rational q) = (r = q)" 
 | "equal_radt (Irrational xx) (Irrational yy) = (eq_rai xx yy)"
-| "equal_radt (Rational r) (Irrational yy) = (eq_rat_rai r yy)"
-| "equal_radt (Irrational xx) (Rational q) = (eq_rat_rai q xx)"
+| "equal_radt (Rational r) (Irrational yy) = False"
+| "equal_radt (Irrational xx) (Rational q) = False"
 
-lemma equal_radt[simp]: "equal_radt x y = (real_of_radt x = real_of_radt y)"
+lemma equal_radt[simp]: assumes rc: "radt_cond x" "radt_cond y" 
+  shows "equal_radt x y = (real_of_radt x = real_of_radt y)"
 proof (cases x)
   case (Rational r) note xx = this
   show ?thesis
@@ -3494,16 +3345,24 @@ proof (cases x)
     show ?thesis unfolding xx yy by simp
   next
     case (Irrational yy) note yy = this
-    from eq_rat_rai[of r yy]
-    show ?thesis unfolding xx yy by simp
+    {
+      assume "real_of_rat r = real_of_rai yy" 
+      from arg_cong[OF this, of "\<lambda> x. x \<in> \<rat>"]
+        to_rat_radt[OF rc(2)] have False unfolding xx yy by auto
+    }
+    thus ?thesis unfolding xx yy by auto
   qed
 next
   case (Irrational xx) note xx = this
   show ?thesis
   proof (cases y)
     case (Rational q) note yy = this
-    from eq_rat_rai[of q xx]
-    show ?thesis unfolding xx yy by auto
+    {
+      assume "real_of_rat q = real_of_rai xx" 
+      from arg_cong[OF this, of "\<lambda> x. x \<in> \<rat>"]
+        to_rat_radt[OF rc(1)] have False unfolding xx yy by auto
+    }
+    thus ?thesis unfolding xx yy by auto
   next
     case (Irrational yy) note yy = this
     from eq_rai[of xx yy]
@@ -3517,7 +3376,8 @@ fun compare_radt :: "real_alg_dt \<Rightarrow> real_alg_dt \<Rightarrow> order" 
 | "compare_radt (Rational r) (Irrational xx) = (compare_rat_rai r xx)"
 | "compare_radt (Irrational xx) (Rational r) = (invert_order (compare_rat_rai r xx))"
 
-lemma compare_radt: "compare_radt x y = compare (real_of_radt x) (real_of_radt y)"
+lemma compare_radt: assumes rc: "radt_cond x" "radt_cond y"
+  shows "compare_radt x y = compare (real_of_radt x) (real_of_radt y)"
 proof (cases x)
   case (Rational r) note xx = this
   show ?thesis
@@ -3526,7 +3386,8 @@ proof (cases x)
     show ?thesis unfolding xx yy by (simp add: compare_rat_def compare_real_def comparator_of_def of_rat_less)
   next
     case (Irrational yy) note yy = this
-    from compare_rat_rai[of r yy]
+    have "real_of_rat r \<noteq> real_of_rai yy" using equal_radt[OF assms] unfolding xx yy by auto
+    from compare_rat_rai[OF this]
     show ?thesis unfolding xx yy by (simp add: of_rat_rai)
   qed
 next
@@ -3534,7 +3395,8 @@ next
   show ?thesis
   proof (cases y)
     case (Rational q) note yy = this
-    from compare_rat_rai[of q xx]
+    have "real_of_rat q \<noteq> real_of_rai xx" using equal_radt[OF assms] unfolding xx yy by auto
+    from compare_rat_rai[OF this]
     show ?thesis unfolding xx yy by simp
   next
     case (Irrational yy) note yy = this
@@ -3550,11 +3412,11 @@ fun sgn_radt :: "real_alg_dt \<Rightarrow> rat" where
 lemma sgn_radt: "radt_cond x \<Longrightarrow> real_of_rat (sgn_radt x) = sgn (real_of_radt x)" 
   using sgn_rai by (cases x, auto simp: real_of_rat_sgn)
 
-lemma normalize_rai_of_rat_rai: "normalize_rai mode (of_rat_rai r) = of_rat_rai r"
+lemma normalize_bounds_rai_of_rat_rai: "normalize_bounds_rai (of_rat_rai r) = of_rat_rai r"
 proof (transfer)
-  fix mode r
-  show "rai_normalize mode (of_rat_rai_fun r) = of_rat_rai_fun r"
-    by (auto simp add: rai_normalize_def of_rat_rai_fun_def rai_normalize_poly_flat_def 
+  fix r
+  show "rai_normalize_bounds (of_rat_rai_fun r) = of_rat_rai_fun r"
+    by (auto simp add: rai_normalize_bounds_def of_rat_rai_fun_def rai_normalize_poly_flat_def 
     rai_normalize_bounds_flat_def real_alg_precision_def tighten_poly_bounds_epsilon.simps Let_def
     poly_rat_def tighten_poly_bounds_for_x.simps)
 qed
@@ -3609,7 +3471,7 @@ lemma root_radtc: "real_of_radtc (root_radtc n x) = root n (real_of_radtc x)"
 lift_definition equal_radtc :: "real_alg_dtc \<Rightarrow> real_alg_dtc \<Rightarrow> bool" is equal_radt .
 
 lemma equal_radtc: "equal_radtc x y = (real_of_radtc x = real_of_radtc y)"
-  by (transfer, auto simp: equal_radt)  
+  by (transfer, auto)  
 
 lift_definition compare_radtc :: "real_alg_dtc \<Rightarrow> real_alg_dtc \<Rightarrow> order" is compare_radt .
 
@@ -3903,12 +3765,12 @@ next
 qed
 
 instance real_alg :: linordered_field
-  apply (intro_classes)
-  apply (unfold abs_real_alg_def less_real_alg_def zero_real_alg[symmetric], rule refl)
-  apply (unfold less_eq_real_alg_def plus_real_alg[symmetric], force)
+  apply standard
+     apply (unfold less_eq_real_alg_def plus_real_alg[symmetric], force)
+    apply (unfold abs_real_alg_def less_real_alg_def zero_real_alg[symmetric], rule refl)
+   apply (unfold less_real_alg_def times_real_alg[symmetric], force)
   apply (rule sgn_real_alg_sound)
-  apply (unfold less_real_alg_def times_real_alg[symmetric], force)
-done
+  done
 
 instantiation real_alg :: floor_ceiling
 begin

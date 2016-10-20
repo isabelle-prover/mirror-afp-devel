@@ -105,9 +105,9 @@ lemma emeasure_PiM_exponential_Ioi_finite:
   assumes "J \<subseteq> I" "finite J" "\<And>i. i \<in> I \<Longrightarrow> 0 < R i" "0 \<le> x"
   shows "emeasure (\<Pi>\<^sub>M i\<in>I. exponential (R i)) (prod_emb I (\<lambda>i. exponential (R i)) J (\<Pi>\<^sub>E j\<in>J. {x<..})) = exp (- x * (\<Sum>i\<in>J. R i))"
 proof (subst emeasure_PiM_emb)
-  from assms show "(\<Prod>i\<in>J. emeasure (exponential (R i)) {x<..}) = ennreal (exp (- x * setsum R J))"
-    by (subst setprod.cong[OF refl emeasure_exponential_Ioi])
-       (auto simp add: setprod_ennreal exp_setsum setsum_negf[symmetric] setsum_distrib_left)
+  from assms show "(\<Prod>i\<in>J. emeasure (exponential (R i)) {x<..}) = ennreal (exp (- x * sum R J))"
+    by (subst prod.cong[OF refl emeasure_exponential_Ioi])
+       (auto simp add: prod_ennreal exp_sum sum_negf[symmetric] sum_distrib_left)
 qed (insert assms, auto intro!: prob_space_exponential)
 
 lemma emeasure_PiM_exponential_Ioi_sequence:
@@ -125,7 +125,7 @@ proof -
   also have "\<dots> = ennreal (exp (- x * (SUP n. (\<Sum>i<n. R i))))"
     using R
     by (subst continuous_at_Sup_antimono[where f="\<lambda>r. ennreal (exp (- x * r))"])
-       (auto intro!: bdd_aboveI2[where M="\<Sum>i. R i"] setsum_le_suminf summable_mult mult_left_mono
+       (auto intro!: bdd_aboveI2[where M="\<Sum>i. R i"] sum_le_suminf summable_mult mult_left_mono
                      continuous_mult continuous_at_ennreal continuous_within_exp[THEN continuous_within_compose3] continuous_minus
              simp: less_imp_le antimono_def)
   also have "\<dots> = ennreal (exp (- x * (\<Sum>i. R i)))"

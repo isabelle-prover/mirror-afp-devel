@@ -14,16 +14,16 @@ begin
 
 declare DERIV_powr[THEN DERIV_chain2, derivative_intros]
 
-lemma setsum_pos':
+lemma sum_pos':
   assumes "finite I"
   assumes "\<exists>x\<in>I. f x > (0 :: _ :: linordered_ab_group_add)"
   assumes "\<And>x. x \<in> I \<Longrightarrow> f x \<ge> 0"
-  shows   "setsum f I > 0"
+  shows   "sum f I > 0"
 proof-
   from assms(2) guess x by (elim bexE) note x = this
   from x have "I = insert x I" by blast
-  also from assms(1) have "setsum f ... = f x + setsum f (I - {x})" by (rule setsum.insert_remove)
-  also from x assms have "... > 0" by (intro add_pos_nonneg setsum_nonneg) simp_all
+  also from assms(1) have "sum f ... = f x + sum f (I - {x})" by (rule sum.insert_remove)
+  also from x assms have "... > 0" by (intro add_pos_nonneg sum_nonneg) simp_all
   finally show ?thesis .
 qed
 

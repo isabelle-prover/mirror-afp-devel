@@ -166,7 +166,7 @@ lemma roundup_ge_emBits:" 0 < emBits \<Longrightarrow> 0 < x \<Longrightarrow> e
   apply (safe)
   apply (simp)
   apply (simp add: add.commute [of x "x*(emBits div x)" ])
-  apply (insert mod_div_equality2 [of x emBits])
+  apply (insert mult_div_mod_eq [of x emBits])
   apply (subgoal_tac "emBits mod x < x")
   apply (arith)
   apply (simp only: mod_less_divisor)
@@ -176,10 +176,7 @@ lemma roundup_ge_0: "0 < emBits \<Longrightarrow> 0 < x \<Longrightarrow> 0 \<le
   by (simp add: roundup)
 
 lemma roundup_le_7: "0 < emBits \<Longrightarrow> roundup emBits 8 * 8 - emBits \<le>  7"
-  apply (simp add: roundup)
-  apply (insert  div_mod_equality [of emBits 8 1])
-  apply arith
-  done
+  by (auto simp add: roundup) arith
 
 lemma roundup_nat_ge_8_help:
   "length (sha1 M) + sLen + 16 \<le> emBits \<Longrightarrow> 8 \<le> roundup emBits 8 * 8 - (length (sha1 M) + 8)"

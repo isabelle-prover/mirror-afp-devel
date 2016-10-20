@@ -88,9 +88,9 @@ apply(clarsimp simp add: solution_def)
 apply rule
  apply clarsimp
  apply(case_tac "i=p")
-  apply (simp add: setsum_divide_distrib[symmetric] eq_divide_eq field_simps)
+  apply (simp add: sum_divide_distrib[symmetric] eq_divide_eq field_simps)
  apply simp
-apply (simp add: setsum_divide_distrib[symmetric] eq_divide_eq field_simps)
+apply (simp add: sum_divide_distrib[symmetric] eq_divide_eq field_simps)
 done
 
 lemma solution_upd_but1: "\<lbrakk> ap = A p; \<forall>i j. i\<noteq>p \<longrightarrow> a i j = A i j; p<n \<rbrakk> \<Longrightarrow>
@@ -99,11 +99,11 @@ lemma solution_upd_but1: "\<lbrakk> ap = A p; \<forall>i j. i\<noteq>p \<longrig
 apply(clarsimp simp add: solution_def)
 apply rule
  prefer 2
- apply (simp add: field_simps setsum_subtractf setsum_distrib_left[symmetric])
+ apply (simp add: field_simps sum_subtractf sum_distrib_left[symmetric])
 apply(clarsimp)
 apply(case_tac "i=p")
  apply simp
-apply (auto simp add: field_simps setsum_subtractf setsum_distrib_left[symmetric] all_conj_distrib)
+apply (auto simp add: field_simps sum_subtractf sum_distrib_left[symmetric] all_conj_distrib)
 done
 
 subsection{* Correctness *}
@@ -116,7 +116,7 @@ proof(induct m arbitrary: A B)
   case 0
   { fix a and b c d :: "'a"
     have "(if a then b else c) * d = (if a then b*d else c*d)" by simp
-  } with 0 show ?case by(simp add: unit_def solution_def setsum.If_cases)
+  } with 0 show ?case by(simp add: unit_def solution_def sum.If_cases)
 next
   case (Suc m)
   let "?Ap' p" = "(\<lambda>j. A p j / A p m)"
@@ -157,7 +157,7 @@ proof(rule ccontr)
         by (auto simp: solution2_def usolution_def)
       with 1[OF `i<m`] 2
       have "(\<Sum>j = 0..<m. A i j * y j) = A i n"
-        by (auto intro!: setsum.cong)
+        by (auto intro!: sum.cong)
     }
     hence "solution2 A m n y" by(simp add: solution2_def)
   }
@@ -171,12 +171,12 @@ qed
 lemma lem1:
   fixes f :: "'a \<Rightarrow> 'b::field"
   shows "(\<Sum>x\<in>A. f x * (a * g x)) = a * (\<Sum>x\<in>A. f x * g x)"
-  by (simp add: setsum_distrib_left field_simps)
+  by (simp add: sum_distrib_left field_simps)
 
 lemma lem2:
   fixes f :: "'a \<Rightarrow> 'b::field"
   shows "(\<Sum>x\<in>A. f x * (g x * a)) = a * (\<Sum>x\<in>A. f x * g x)"
-  by (simp add: setsum_distrib_left field_simps)
+  by (simp add: sum_distrib_left field_simps)
 
 subsection{* Complete *}
 
@@ -206,11 +206,11 @@ next
     have "(\<Sum>j = 0..<m. (A i j - A i m * A p j / A p m) * x j) =
       ((\<Sum>j = 0..<Suc m. A i j * x j) - A i m * x m) -
       ((\<Sum>j = 0..<Suc m. A p j * x j) - A p m * x m) * A i m / A p m"
-      by (simp add: field_simps setsum_subtractf setsum_divide_distrib
-                    setsum_distrib_left)
+      by (simp add: field_simps sum_subtractf sum_divide_distrib
+                    sum_distrib_left)
     also have "\<dots> = A i n - A p n * A i m / A p m"
       using A le_m
-      by (simp add: solution2_def field_simps del: setsum_op_ivl_Suc)
+      by (simp add: solution2_def field_simps del: sum_op_ivl_Suc)
     finally have "(\<Sum>j = 0..<m. (A i j - A i m * A p j / A p m) * x j) =
       A i n - A p n * A i m / A p m" . }
   then have "solution2 ?A m n x" using p
@@ -232,7 +232,7 @@ next
           with p `i \<noteq> p` have "p < m" by simp
           with a[unfolded solution2_def, THEN spec, of p] p(2)
           have "A p m * (A m m * A p n + A p m * (\<Sum>j = 0..<m. y j * A m j)) = A p m * (A m n * A p m + A m m * (\<Sum>j = 0..<m. y j * A p j))"
-            by (simp add: Fun.swap_def field_simps setsum_subtractf lem1 lem2 setsum_divide_distrib[symmetric]
+            by (simp add: Fun.swap_def field_simps sum_subtractf lem1 lem2 sum_divide_distrib[symmetric]
                      split: if_splits)
           with `A p m \<noteq> 0` show ?thesis unfolding `i = m`
             by simp (simp add: field_simps)
@@ -242,7 +242,7 @@ next
           with a[unfolded solution2_def, THEN spec, of i] p(2)
           have "A p m * (A i m * A p n + A p m * (\<Sum>j = 0..<m. y j * A i j)) = A p m * (A i n * A p m + A i m * (\<Sum>j = 0..<m. y j * A p j))"
             by (simp add: Fun.swap_def split: if_splits)
-              (simp add: field_simps setsum_subtractf lem1 lem2 setsum_divide_distrib [symmetric])
+              (simp add: field_simps sum_subtractf lem1 lem2 sum_divide_distrib [symmetric])
           with `A p m \<noteq> 0` show ?thesis
             by simp (simp add: field_simps)
         qed

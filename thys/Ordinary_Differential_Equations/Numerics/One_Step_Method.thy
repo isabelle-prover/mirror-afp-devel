@@ -306,7 +306,7 @@ next
     subgoal
       apply (cases "max_stepsize j = 0")
       subgoal by simp
-      subgoal by (metis IH1 abs_not_less_zero abs_of_pos divide_zero_left less_eq_real_def max_stepsize_nonneg
+      subgoal by (metis IH1 abs_not_less_zero abs_of_pos div_0 less_eq_real_def max_stepsize_nonneg
             mult_zero_right real_root_zero)
       done
     done

@@ -279,18 +279,18 @@ subsection {* Functions *}
 
 subsubsection {* Miscellaneous facts *}
 
-lemma setsum_fun_apply : "finite A \<Longrightarrow> (\<Sum>a\<in>A. f a) x = (\<Sum>a\<in>A. f a x)"
+lemma sum_fun_apply : "finite A \<Longrightarrow> (\<Sum>a\<in>A. f a) x = (\<Sum>a\<in>A. f a x)"
   by (induct set: finite) auto
 
-lemma setsum_single_nonzero :
+lemma sum_single_nonzero :
   "finite A \<Longrightarrow> (\<forall>x\<in>A. \<forall>y\<in>A. f x y = (if y = x then g x else 0)) 
-        \<Longrightarrow> (\<forall>x\<in>A. setsum (f x) A = g x)"
+        \<Longrightarrow> (\<forall>x\<in>A. sum (f x) A = g x)"
 proof (induct A rule: finite_induct)
   case (insert a A)
-  show "\<forall>x\<in>insert a A. setsum (f x) (insert a A) = g x"
+  show "\<forall>x\<in>insert a A. sum (f x) (insert a A) = g x"
   proof
     fix x assume x: "x \<in> insert a A"
-    show "setsum (f x) (insert a A) = g x"
+    show "sum (f x) (insert a A) = g x"
     proof (cases "x = a")
       case True
       moreover with insert(2,4) have "\<forall>y\<in>A. f x y = 0" by simp
@@ -392,7 +392,7 @@ proof
   and S2: S2 \<equiv> "{y. y \<in> supp f \<and> -y + x \<in> supp g}"
   have "inj_on i S2" unfolding inj_on_def using i by simp
   hence "(\<Sum>y\<in>(i ` S2). c1 y) = (\<Sum>y\<in>S2. (c1 \<circ> i) y)"
-    using setsum.reindex by fast
+    using sum.reindex by fast
   moreover have S1_iS2: "S1 = i ` S2"
   proof (rule seteqI)
     fix y assume y_S1: "y \<in> S1"
@@ -424,7 +424,7 @@ lemma supp_convolution_subset_sum_supp :
   shows "supp (convolution f g) \<subseteq> supp f + supp g"
 proof-
   def SS: SS \<equiv> "\<lambda>x. {y. x-y \<in> supp f \<and> y \<in> supp g}"
-  have "convolution f g = (\<lambda>x. setsum (\<lambda>y. (f (x - y)) * g y) (SS x))"
+  have "convolution f g = (\<lambda>x. sum (\<lambda>y. (f (x - y)) * g y) (SS x))"
     using SS unfolding convolution_def by fast
   moreover have "\<And>x. x \<notin> supp f + supp g \<Longrightarrow> SS x = {}"
   proof-
@@ -440,10 +440,10 @@ proof-
     thus "\<And>x. x \<notin> supp f + supp g \<Longrightarrow> SS x = {}" by fast
   qed
   ultimately have "\<And>x. x \<notin> supp f + supp g
-                        \<Longrightarrow> convolution f g x = setsum (\<lambda>y. (f (x - y)) * g y) {}"
+                        \<Longrightarrow> convolution f g x = sum (\<lambda>y. (f (x - y)) * g y) {}"
     by simp
   hence "\<And>x. x \<notin> supp f + supp g \<Longrightarrow> convolution f g x = 0"
-    using setsum.empty by simp
+    using sum.empty by simp
   thus ?thesis unfolding supp_def by fast
 qed
 
@@ -591,7 +591,7 @@ proof
   moreover have "\<And>y. y \<in> supp g - SS \<Longrightarrow> (f (x - y)) * g y = 0" using SS unfolding supp_def by auto
   ultimately show "convolution f g x = (\<Sum>y\<in>supp g. (f (x - y)) * g y )"
     unfolding convolution_def
-    using     SS setsum.mono_neutral_left[of "supp g" SS "\<lambda>y. (f (x - y)) * g y"]
+    using     SS sum.mono_neutral_left[of "supp g" SS "\<lambda>y. (f (x - y)) * g y"]
     by        fast
 qed
 
@@ -609,7 +609,7 @@ proof
   ultimately
     have "(\<Sum>y\<in>SS. (f y) * g (-y + x)) = (\<Sum>y\<in>supp f. (f y) * g (-y + x) )"
     unfolding convolution_def
-    using     SS setsum.mono_neutral_left[of "supp f" SS "\<lambda>y. (f y) * g (-y + x)"]
+    using     SS sum.mono_neutral_left[of "supp f" SS "\<lambda>y. (f y) * g (-y + x)"]
     by        fast
   thus "convolution f g x = (\<Sum>y\<in>supp f. (f y) * g (-y + x) )"
     using SS convolution_symm[of f g] by simp
@@ -711,16 +711,16 @@ proof
       have "fg (x - z) = (\<Sum>y\<in>supp f. f y * g (-y + (x - z)) )"
         using fg f_aez convolution_symm_eq_sum_over_supp_left by fastforce
       hence "fg (x - z) * h z = (\<Sum>y\<in>supp f. f y * g (-y + (x - z)) * h z )"
-        using setsum_distrib_right by simp
+        using sum_distrib_right by simp
       thus "fg (x - z) * h z = (\<Sum>y\<in>supp f. f y * g (-y + x - z) * h z )"
         by (simp add: algebra_simps)
     qed
     ultimately 
       have  "convolution fg h x
                   = (\<Sum>z\<in>supp h. (\<Sum>y\<in>supp f. f y * g (-y + x - z) * h z) )"
-      using setsum.cong
+      using sum.cong
       by    simp
-    thus ?thesis using setsum.commute by simp
+    thus ?thesis using sum.commute by simp
   qed
   moreover have "convolution f gh x
                       = (\<Sum>y\<in>supp f. (\<Sum>z\<in>supp h. f y * g (-y + x - z) * h z) )"
@@ -737,14 +737,14 @@ proof
       have "gh (-y + x) = (\<Sum>z\<in>supp h. g (-y + x - z) * h z)"
         using gh h_aez convolution_eq_sum_over_supp_right by fastforce
       hence "f y * gh (-y + x) = (\<Sum>z\<in>supp h. f y * (g (-y + x - z) * h z))"
-        using setsum_distrib_left by simp
+        using sum_distrib_left by simp
       also have "\<dots> = (\<Sum>z\<in>supp h. f y * g (-y + x - z) * h z)"
-        using triple_cong setsum.cong by simp
+        using triple_cong sum.cong by simp
       finally
         show "f y * gh (-y + x) = (\<Sum>z\<in>supp h. f y * g (-y + x - z) * h z)"
         by   fast
     qed
-    ultimately show ?thesis using setsum.cong by simp
+    ultimately show ?thesis using sum.cong by simp
   qed
   ultimately show "convolution fg h x = convolution f gh x" by simp
 qed
@@ -767,15 +767,15 @@ proof
     using assms gh_aezfun convolution_eq_sum_over_supp_right[of gh f] by simp
   also from gh GH have "\<dots> = (\<Sum>y\<in>GH. (f (x - y)) * gh y)"
     using fin_GH supp_sum_subset_union_supp zero_ext_gh
-          setsum.mono_neutral_left[of GH "supp gh" "(\<lambda>y. (f (x - y)) * gh y)"]
+          sum.mono_neutral_left[of GH "supp gh" "(\<lambda>y. (f (x - y)) * gh y)"]
     by    fast
   also from gh
     have  "\<dots> = (\<Sum>y\<in>GH. (f (x - y)) * g y) + (\<Sum>y\<in>GH. (f (x - y)) * h y)"
-    using setsum.distrib by (simp add: algebra_simps)
+    using sum.distrib by (simp add: algebra_simps)
   finally show "convolution f gh x = (convolution f g + convolution f h) x"
     using assms GH fin_GH zero_ext_g zero_ext_h
-          setsum.mono_neutral_right[of GH "supp g" "(\<lambda>y. (f (x - y)) * g y)"]
-          setsum.mono_neutral_right[of GH "supp h" "(\<lambda>y. (f (x - y)) * h y)"]
+          sum.mono_neutral_right[of GH "supp g" "(\<lambda>y. (f (x - y)) * g y)"]
+          sum.mono_neutral_right[of GH "supp h" "(\<lambda>y. (f (x - y)) * h y)"]
           convolution_eq_sum_over_supp_right[of g f]
           convolution_eq_sum_over_supp_right[of h f]
     by    fastforce
@@ -799,15 +799,15 @@ proof
     using fg_aezfun convolution_symm_eq_sum_over_supp_left[of fg h] by simp
   also from fg FG have "\<dots> = (\<Sum>y\<in>FG. (fg y) * h (-y + x))"
     using fin_FG supp_sum_subset_union_supp zero_ext_fg
-          setsum.mono_neutral_left[of FG "supp fg" "(\<lambda>y. (fg y) * h (-y + x))"]
+          sum.mono_neutral_left[of FG "supp fg" "(\<lambda>y. (fg y) * h (-y + x))"]
     by    fast
   also from fg
     have  "\<dots> = (\<Sum>y\<in>FG. (f y) * h (-y + x)) + (\<Sum>y\<in>FG. (g y) * h (-y + x))"
-    using setsum.distrib by (simp add: algebra_simps)
+    using sum.distrib by (simp add: algebra_simps)
   finally show "convolution fg h x = (convolution f h + convolution g h) x"
     using assms FG fin_FG zero_ext_f zero_ext_g
-          setsum.mono_neutral_right[of FG "supp f" "(\<lambda>y. (f y) * h (-y + x))"]
-          setsum.mono_neutral_right[of FG "supp g" "(\<lambda>y. (g y) * h (-y + x))"]
+          sum.mono_neutral_right[of FG "supp f" "(\<lambda>y. (f y) * h (-y + x))"]
+          sum.mono_neutral_right[of FG "supp g" "(\<lambda>y. (g y) * h (-y + x))"]
           convolution_symm_eq_sum_over_supp_left[of f h]
           convolution_symm_eq_sum_over_supp_left[of g h]
     by    fastforce
@@ -1684,9 +1684,9 @@ unfolding bij_betw_def proof
   qed
 qed
 
-lemma right_translate_setsum : "g \<in> G \<Longrightarrow> (\<Sum>h\<in>G. f h) = (\<Sum>h\<in>G. f (h + g))"
+lemma right_translate_sum : "g \<in> G \<Longrightarrow> (\<Sum>h\<in>G. f h) = (\<Sum>h\<in>G. f (h + g))"
   using right_translate_bij[of g] bij_betw_def[of "\<lambda>h. h + g"]
-        setsum.reindex[of "\<lambda>h. h + g" G]
+        sum.reindex[of "\<lambda>h. h + g" G]
   by    simp
 
 end (* context Group *)
@@ -1703,7 +1703,7 @@ lemmas diff_closed = diff_closed
 lemmas add_closed  = add_closed
 lemmas neg_closed  = neg_closed
 
-lemma setsum_closed : "finite A \<Longrightarrow> f ` A \<subseteq> G \<Longrightarrow> (\<Sum>a\<in>A. f a) \<in> G"
+lemma sum_closed : "finite A \<Longrightarrow> f ` A \<subseteq> G \<Longrightarrow> (\<Sum>a\<in>A. f a) \<in> G"
 proof (induct set: finite)
   case empty show ?case using zero_closed by simp
 next
@@ -2718,7 +2718,7 @@ proof-
   proof
     fix x assume x: "x \<in> X"
     with assms(2-4) have "x = (\<Sum>i=0..< length Gs. (\<Oplus>Gs\<down>i) x)"
-      using AbGroup_inner_dirsum_el_decompI sum_list_setsum_nth[of "(\<Oplus>Gs\<leftarrow>x)"]
+      using AbGroup_inner_dirsum_el_decompI sum_list_sum_nth[of "(\<Oplus>Gs\<leftarrow>x)"]
             AbGroup_length_inner_dirsum_el_decomp
       by    fastforce
     moreover from x assms(5) have "\<forall>i<length Gs. (\<Oplus>Gs\<down>i) x = 0" by auto
@@ -2787,7 +2787,7 @@ lemmas add_closed          = add_closed
 lemmas neg_closed          = neg_closed
 lemmas diff_closed         = diff_closed
 lemmas zip_add_closed      = zip_add_closed
-lemmas setsum_closed       = AbGroup.setsum_closed[OF AbGroup]
+lemmas sum_closed       = AbGroup.sum_closed[OF AbGroup]
 lemmas sum_list_closed      = sum_list_closed
 lemmas sum_list_closed_prod = sum_list_closed_prod
 lemmas list_diff_closed    = list_diff_closed
@@ -3074,7 +3074,7 @@ lemma AbGroup : "AbGroup M"
 lemmas zero_closed     = zero_closed
 lemmas diff_closed     = diff_closed
 lemmas set_plus_closed = set_plus_closed
-lemmas setsum_closed   = AbGroup.setsum_closed[OF AbGroup]
+lemmas sum_closed   = AbGroup.sum_closed[OF AbGroup]
 
 lemma map_smult_closed :
   "r \<in> R \<Longrightarrow> set ms \<subseteq> M \<Longrightarrow> set (map (op \<cdot> r) ms) \<subseteq> M"
@@ -3108,22 +3108,22 @@ lemma smult_distrib_right_diff :
   using R_scalars.neg_closed smult_distrib_right[of r "-s"] neg_smult
   by    (simp add: algebra_simps)
 
-lemma smult_setsum_distrib :
+lemma smult_sum_distrib :
   assumes "r \<in> R"
   shows   "finite A \<Longrightarrow> f ` A \<subseteq> M \<Longrightarrow> r \<cdot> (\<Sum>a\<in>A. f a) = (\<Sum>a\<in>A. r \<cdot> f a)"
 proof (induct set: finite)
   case empty from assms show ?case using smult_zero by simp
 next
-  case (insert a A) with assms show ?case using setsum_closed[of A] by simp
+  case (insert a A) with assms show ?case using sum_closed[of A] by simp
 qed
 
-lemma setsum_smult_distrib :
+lemma sum_smult_distrib :
   assumes "m \<in> M"
   shows   "finite A \<Longrightarrow> f ` A \<subseteq> R \<Longrightarrow> (\<Sum>a\<in>A. f a) \<cdot> m = (\<Sum>a\<in>A. (f a) \<cdot> m)"
 proof (induct set: finite)
   case empty from assms show ?case using zero_smult by simp
 next
-  case (insert a A) with assms show ?case using R_scalars.setsum_closed[of A] by simp
+  case (insert a A) with assms show ?case using R_scalars.sum_closed[of A] by simp
 qed
 
 lemma smult_sum_list_distrib :
@@ -4655,8 +4655,8 @@ lemmas zero_smult                        = zero_smult
 lemmas smult_zero                        = smult_zero
 lemmas smult_lincomb                     = smult_lincomb
 lemmas smult_distrib_left_diff           = smult_distrib_left_diff
-lemmas smult_setsum_distrib              = smult_setsum_distrib
-lemmas setsum_smult_distrib              = setsum_smult_distrib
+lemmas smult_sum_distrib              = smult_sum_distrib
+lemmas sum_smult_distrib              = sum_smult_distrib
 lemmas lincomb_sum                       = lincomb_sum
 lemmas lincomb_closed                    = lincomb_closed
 lemmas lincomb_concat                    = lincomb_concat
@@ -6142,7 +6142,7 @@ lemmas diff_closed            = diff_closed
 lemmas zero_smult             = zero_smult
 lemmas smult_zero             = smult_zero
 lemmas AbGroup                = AbGroup
-lemmas setsum_closed          = AbGroup.setsum_closed[OF AbGroup]
+lemmas sum_closed          = AbGroup.sum_closed[OF AbGroup]
 lemmas FGSubmoduleI           = RSubmoduleI
 lemmas FG_proj_mult_leftdelta = ActingGroup.RG_proj_mult_leftdelta
 lemmas FG_proj_mult_right     = ActingGroup.RG_proj_mult_right
@@ -6305,8 +6305,8 @@ lemmas fsmult_zero         [simp] = VectorSpace.smult_zero  [OF fVectorSpace]
 lemmas fsmult_distrib_left [simp] = VectorSpace.smult_distrib_left
                                           [OF fVectorSpace]
 lemmas flincomb_closed       = VectorSpace.lincomb_closed       [OF fVectorSpace]
-lemmas fsmult_setsum_distrib = VectorSpace.smult_setsum_distrib [OF fVectorSpace]
-lemmas setsum_fsmult_distrib = VectorSpace.setsum_smult_distrib [OF fVectorSpace]
+lemmas fsmult_sum_distrib = VectorSpace.smult_sum_distrib [OF fVectorSpace]
+lemmas sum_fsmult_distrib = VectorSpace.sum_smult_distrib [OF fVectorSpace]
 lemmas flincomb_concat       = VectorSpace.lincomb_concat       [OF fVectorSpace]
 lemmas fSpan_closed          = VectorSpace.Span_closed          [OF fVectorSpace]
 lemmas flin_independentD_all_scalars
@@ -7698,7 +7698,7 @@ proof-
   with CP assms(3) have "\<And>g. g \<in> G \<Longrightarrow> CP g v = v"
     using Gmult_neg_left by simp
   with assms(3) good_char T show "T v = v"
-    using finiteG setsum_fun_apply[of G CP] setsum_fsmult_distrib[of v G "\<lambda>x. 1"]
+    using finiteG sum_fun_apply[of G CP] sum_fsmult_distrib[of v G "\<lambda>x. 1"]
           fsmult_assoc[of _ ordG v]
     by    simp
 qed
@@ -7723,8 +7723,8 @@ proof
     with U CP have "\<And>g. g \<in> G \<Longrightarrow> CP g v \<in> U"
       using FGModule.Gmult_closed GroupG Group.neg_closed by fastforce
     with assms(2) U T show "T v \<in> U"
-      using finiteG FGModule.setsum_closed[of G smult U G "\<lambda>g. CP g v"]
-            setsum_fun_apply[of G CP] FGModule.fsmult_closed[of G smult U]
+      using finiteG FGModule.sum_closed[of G smult U G "\<lambda>g. CP g v"]
+            sum_fun_apply[of G CP] FGModule.fsmult_closed[of G smult U]
       by    fastforce
   qed
   show "T ` V \<supseteq> U"
@@ -7748,7 +7748,7 @@ lemma FGModuleEnd_avg_proj_right :
 proof (rule VecEnd_GMap_is_FGModuleEnd)
 
   from T have T_apply: "\<And>v. v\<in>V \<Longrightarrow> T v = (1/ordG) \<sharp>\<cdot> (\<Sum>g\<in>G. CP g v)"
-    using finiteG setsum_fun_apply[of G CP] by simp
+    using finiteG sum_fun_apply[of G CP] by simp
 
   from assms(1-4) P have Pgv: "\<And>g v. g \<in> G \<Longrightarrow> v \<in> V \<Longrightarrow> P ( g *\<cdot> v ) \<in> V"
     using Gmult_closed VectorSpace_fSubspace VectorSpace.AbGroup[of fsmult W]
@@ -7764,7 +7764,7 @@ proof (rule VecEnd_GMap_is_FGModuleEnd)
   qed
 
   have sumCP_V: "\<And>v. v \<in> V \<Longrightarrow> (\<Sum>g\<in>G. CP g v) \<in> V"
-    using finiteG im_CP_V setsum_closed by force
+    using finiteG im_CP_V sum_closed by force
 
   show "VectorSpaceEnd op \<sharp>\<cdot> V T"
   proof (
@@ -7792,7 +7792,7 @@ proof (rule VecEnd_GMap_is_FGModuleEnd)
         thus "CP g (v + v') = CP g v + CP g v'" using CP by simp
       qed
       ultimately show "T (v + v') = T v + T v'"
-        using vv' sumCP_V[of v] sumCP_V[of v'] setsum.distrib[of "\<lambda>g. CP g v"]
+        using vv' sumCP_V[of v] sumCP_V[of v'] sum.distrib[of "\<lambda>g. CP g v"]
               T_apply
         by    simp
     next
@@ -7816,7 +7816,7 @@ proof (rule VecEnd_GMap_is_FGModuleEnd)
       qed
       ultimately show "T (a \<sharp>\<cdot> v) = a \<sharp>\<cdot> T v"
         using v im_CP_V sumCP_V T_apply finiteG
-              fsmult_setsum_distrib[of a G "\<lambda>g. CP g v"]
+              fsmult_sum_distrib[of a G "\<lambda>g. CP g v"]
               fsmult_assoc[of "1/ordG" a "(\<Sum>g\<in>G. CP g v)"]
         by    simp
     qed
@@ -7832,7 +7832,7 @@ proof (rule VecEnd_GMap_is_FGModuleEnd)
       using Gmult_closed by fast
     with g have "T (g *\<cdot> v) = (1/ordG) \<sharp>\<cdot> (\<Sum>h\<in>G. CP (h + - g) (g *\<cdot> v))"
       using GroupG Group.neg_closed
-            Group.right_translate_setsum[of G "- g" "\<lambda>h. CP h (g *\<cdot> v)"]
+            Group.right_translate_sum[of G "- g" "\<lambda>h. CP h (g *\<cdot> v)"]
       by    fastforce
     moreover from CP
       have  "\<And>h. h \<in> G \<Longrightarrow> CP (h + - g) (g *\<cdot> v) = g *\<cdot> CP h v"
@@ -7842,7 +7842,7 @@ proof (rule VecEnd_GMap_is_FGModuleEnd)
       by    simp
     ultimately show "T (g *\<cdot> v) = g *\<cdot> T v"
       using g v GmultD finiteG FG_fddg_closed im_CP_V sumCP_V
-            smult_setsum_distrib[of "1 \<delta>\<delta> g" G]
+            smult_sum_distrib[of "1 \<delta>\<delta> g" G]
             fsmult_Gmult_comm[of g "\<Sum>h\<in>G. (CP h v)"] T_apply
       by    simp
   qed
@@ -8687,14 +8687,14 @@ proof-
           sum_list_prod_fun_apply
     by    simp
   hence "LHS = (\<Sum>j\<in>{0..<length terms}. terms!j)"
-    using sum_list_setsum_nth[of terms] by simp
+    using sum_list_sum_nth[of terms] by simp
   moreover from terms
     have "\<forall>j\<in>{0..<length terms}. terms!j = ((css!j) \<bullet>\<currency>\<currency> (hfvss!j)) (1 \<delta>\<delta> hs!i)"
     by   simp
   ultimately show "LHS = (css!i) \<bullet>\<sharp>\<cdot> vs"
-    using terms setsum.cong scalars list_all2_lengthD[of _ css hfvss] hfvss 
+    using terms sum.cong scalars list_all2_lengthD[of _ css hfvss] hfvss 
           length_negHorbit_list[of hs induced_vector vs] i mostly_zero
-          setsum_single_nonzero[
+          sum_single_nonzero[
             of "{0..<length hs}" "\<lambda>i j. ((css!j) \<bullet>\<currency>\<currency> (hfvss!j)) (1 \<delta>\<delta> (hs!i))"
                "\<lambda>i. (css!i) \<bullet>\<sharp>\<cdot> vs"
           ]

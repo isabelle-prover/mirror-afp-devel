@@ -8,13 +8,13 @@ subsection \<open>Explicit Sum for Composition of Components\<close>
 
 definition (in plus) plusE :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr "+\<^sub>E" 65) where "plusE = plus"
 
-definition (in comm_monoid_add) setsumE where "setsumE = setsum"
+definition (in comm_monoid_add) sumE where "sumE = sum"
 
-lemmas setsumE_insert = setsum.insert[simplified plusE_def[symmetric] setsumE_def[symmetric]]
-lemma setsumE_singleton: "setsumE f {a} = f a" by (simp add: setsumE_def)
+lemmas sumE_insert = sum.insert[simplified plusE_def[symmetric] sumE_def[symmetric]]
+lemma sumE_singleton: "sumE f {a} = f a" by (simp add: sumE_def)
 
 lemmas euclidean_representationE =
-  euclidean_representation[simplified setsumE_def[symmetric], symmetric]
+  euclidean_representation[simplified sumE_def[symmetric], symmetric]
 
 subsection \<open>Conversion for Explicit Representation\<close>
 
@@ -33,8 +33,8 @@ lemmas [euclidean_Basis] =
   Basis_prod_def
   zero_prod_def
   Basis_real_def
-  setsumE_insert setsumE_singleton
-  setsum.insert setsum.empty
+  sumE_insert sumE_singleton
+  sum.insert sum.empty
   finite_insert finite.emptyI
   prod.inject
   empty_iff insert_iff

@@ -362,7 +362,7 @@ next
   from `\<exists>C. finite C \<and> card C \<le> card B \<and> real_vector.span C = real_vector.span B \<and> pairwise orthogonal C`
   obtain C where C: "finite C" "card C \<le> card B"
     "real_vector.span C = real_vector.span B" "pairwise orthogonal C" by blast
-  let ?a = "a - setsum (\<lambda>x. (x \<bullet> a / (x \<bullet> x)) *\<^sub>R x) C"
+  let ?a = "a - sum (\<lambda>x. (x \<bullet> a / (x \<bullet> x)) *\<^sub>R x) C"
   let ?C = "insert ?a C"
   from C(1) have fC: "finite ?C"
     by simp
@@ -377,7 +377,7 @@ next
       apply (simp only: scaleR_right_diff_distrib th0)
       apply (rule real_vector.span_add_eq)
       apply (rule real_vector.span_mul)
-      apply (rule real_vector.span_setsum[OF C(1)])
+      apply (rule real_vector.span_sum[OF C(1)])
       apply clarify
       apply (rule real_vector.span_mul)
       apply (rule real_vector.span_superset)
@@ -395,10 +395,10 @@ next
       using C by simp
     have "orthogonal ?a y"
       unfolding orthogonal_def
-      unfolding inner_diff inner_setsum_left right_minus_eq
-      unfolding setsum.remove [OF `finite C` `y \<in> C`]
+      unfolding inner_diff inner_sum_left right_minus_eq
+      unfolding sum.remove [OF `finite C` `y \<in> C`]
       apply (clarsimp simp add: inner_commute[of y a])
-      apply (rule setsum.neutral)
+      apply (rule sum.neutral)
       apply clarsimp
       apply (rule C(4)[unfolded pairwise_def orthogonal_def, rule_format])
       using `y \<in> C` by auto

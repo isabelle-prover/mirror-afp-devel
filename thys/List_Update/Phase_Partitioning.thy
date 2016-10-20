@@ -397,11 +397,11 @@ proof -
 
       have E0: "T_on_rand' A s \<sigma> \<le> T_on_rand' A s ?padded"
       proof -
-        have "T_on_rand' A s \<sigma> = setsum (T_on_rand'_n A s \<sigma>) {..<length \<sigma>}"
+        have "T_on_rand' A s \<sigma> = sum (T_on_rand'_n A s \<sigma>) {..<length \<sigma>}"
           by(rule T_on_rand'_as_sum)
         also have "\<dots>
-             = setsum (T_on_rand'_n A s (\<sigma> @ [last \<sigma>])) {..<length \<sigma>}"
-          proof(rule setsum.cong, goal_cases)
+             = sum (T_on_rand'_n A s (\<sigma> @ [last \<sigma>])) {..<length \<sigma>}"
+          proof(rule sum.cong, goal_cases)
             case (2 t)
             then have "t < length \<sigma>" by auto 
             then show ?case by(simp add: nth_append)

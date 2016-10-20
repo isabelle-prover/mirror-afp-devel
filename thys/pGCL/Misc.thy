@@ -14,14 +14,14 @@ begin
 
 text_raw {* \label{s:misc} *}
 
-lemma setsum_UNIV:
+lemma sum_UNIV:
   fixes S::"'a::finite set"
   assumes complete: "\<And>x. x\<notin>S \<Longrightarrow> f x = 0"
-  shows "setsum f S = setsum f UNIV"
+  shows "sum f S = sum f UNIV"
 proof -
-  from complete have "setsum f S = setsum f (UNIV - S) + setsum f S" by(simp)
-  also have "... = setsum f UNIV"
-    by(auto intro: setsum.subset_diff[symmetric])
+  from complete have "sum f S = sum f (UNIV - S) + sum f S" by(simp)
+  also have "... = sum f UNIV"
+    by(auto intro: sum.subset_diff[symmetric])
   finally show ?thesis .
 qed
 
@@ -307,16 +307,16 @@ lemma nsupp_zero:
   "x \<notin> supp f \<Longrightarrow> f x = 0"
   by(simp add:supp_def)
 
-lemma setsum_supp:
+lemma sum_supp:
   fixes f::"'a::finite \<Rightarrow> real"
-  shows "setsum f (supp f) = setsum f UNIV"
+  shows "sum f (supp f) = sum f UNIV"
 proof -
-  have "setsum f (UNIV - supp f) = 0"
+  have "sum f (UNIV - supp f) = 0"
     by(simp add:supp_def)
-  hence "setsum f (supp f) = setsum f (UNIV - supp f) + setsum f (supp f)"
+  hence "sum f (supp f) = sum f (UNIV - supp f) + sum f (supp f)"
     by(simp)
-  also have "... = setsum f UNIV"
-    by(simp add:setsum.subset_diff[symmetric])
+  also have "... = sum f UNIV"
+    by(simp add:sum.subset_diff[symmetric])
   finally show ?thesis .
 qed
 
@@ -412,9 +412,9 @@ next
   qed
 qed
 
-lemma tminus_setsum_mono:
+lemma tminus_sum_mono:
   assumes fS: "finite S"
-  shows "setsum f S \<ominus> setsum g S \<le> setsum (\<lambda>x. f x \<ominus> g x) S"
+  shows "sum f S \<ominus> sum g S \<le> sum (\<lambda>x. f x \<ominus> g x) S"
         (is "?X S")
 proof(rule finite_induct)
   from fS show "finite S" .
@@ -424,13 +424,13 @@ proof(rule finite_induct)
   fix x and F
   assume fF: "finite F" and xniF: "x \<notin> F"
      and IH: "?X F"
-  have "f x + setsum f F \<ominus> g x + setsum g F \<le>
-        (f x \<ominus> g x) + (setsum f F \<ominus> setsum g F)"
+  have "f x + sum f F \<ominus> g x + sum g F \<le>
+        (f x \<ominus> g x) + (sum f F \<ominus> sum g F)"
     by(rule tminus_add_mono)
   also from IH have "... \<le> (f x \<ominus> g x) + (\<Sum>x\<in>F. f x \<ominus> g x)"
     by(rule add_left_mono)
   finally show "?X (insert x F)"
-    by(simp add:setsum.insert[OF fF xniF])
+    by(simp add:sum.insert[OF fF xniF])
 qed
 
 lemma tminus_nneg[simp,intro]:

@@ -10,12 +10,14 @@ Abstract_Completeness
 Abstract-Hoare-Logics
 Abstract-Rewriting
 Algebraic_Numbers
+Allen_Calculus
 Applicative_Lifting
 ArrowImpossibilityGS
 AutoFocus-Stream
 Automatic_Refinement
 BDD
 Bell_Numbers_Spivey
+Berlekamp_Zassenhaus
 BinarySearchTree
 Binomial-Heaps
 Binomial-Queues
@@ -43,6 +45,7 @@ Circus
 CISC-Kernel
 Card_Equiv_Relations
 Card_Partitions
+Chord_Segments
 ClockSynchInst
 CofGroups
 Coinductive
@@ -267,6 +270,8 @@ Simple_Firewall
 Skew_Heap
 Slicing
 Sort_Encodings
+Source_Coding_Theorem
+SPARCv8
 Special_Function_Bounds
 Splay_Tree
 Sqrt_Babylonian

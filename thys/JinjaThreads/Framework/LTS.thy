@@ -21,7 +21,7 @@ lemma nth_concat_conv:
    \<Longrightarrow> \<exists>m n'. concat xss ! n = (xss ! m) ! n' \<and> n' < length (xss ! m) \<and> 
              m < length xss \<and> n = (\<Sum>i<m. length (xss ! i)) + n'"
 using lnth_lconcat_conv[of n "llist_of (map llist_of xss)"]
-  setsum_hom[where f = enat and h = "\<lambda>i. length (xss ! i)"]
+  sum_hom[where f = enat and h = "\<lambda>i. length (xss ! i)"]
 by(clarsimp simp add: lconcat_llist_of zero_enat_def[symmetric]) blast
 
 

@@ -562,7 +562,7 @@ apply (subgoal_tac "t1 div k = t \<and> t2 div k = t", elim conjE)
 apply (simp only: i_expand_i_take_Suc i_expand_i_take_mult_Suc f_Exec_append)
 apply (simp add: f_Exec_append)
 apply (rule_tac m="t2 mod k" in f_Exec_State_Idle_replicate_NoMsg_gr_output, assumption)
-apply (simp add: mod_div_equality')
+apply (simp add: minus_div_mult_eq_mod [symmetric])
 done
 
 lemma i_Exec_Comp_Stream_Acc_Output__eq_Msg_before_State_Idle_conv2: "
@@ -702,7 +702,7 @@ apply (case_tac "
    apply (simp (no_asm_simp) add: i_Exec_Stream_nth i_expand_i_take_Suc f_Exec_append)
    apply (rule_tac m="t3 mod k" in f_Exec_State_Idle_replicate_NoMsg_gr_output[of localState output_fun trans_fun])
     apply (simp add: i_Exec_Stream_nth i_expand_i_take_Suc f_Exec_append)
-   apply (simp add: mod_div_equality')
+   apply (simp add: minus_div_mult_eq_mod [symmetric])
   apply (case_tac "t1 < t3")
    apply (drule_tac t=t1 in ispec)
     apply (simp add: cut_less_mem_iff iT_add iT_iff)

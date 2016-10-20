@@ -197,7 +197,7 @@ qed
 lemma lincomb_index:
   assumes i: "i < nc"
     and Xk: "X \<subseteq> mat_kernel A"
-  shows "VKMod.lincomb a X $ i = setsum (\<lambda>x. a x * x $ i) X"
+  shows "VKMod.lincomb a X $ i = sum (\<lambda>x. a x * x $ i) X"
 proof -
   have X: "X \<subseteq> carrier\<^sub>v nc" using Xk mat_kernel_def A by auto
   show ?thesis
@@ -296,7 +296,7 @@ proof -
           assume j: "j < nc"
           have "VKMod.lincomb a ?B $ j = (\<Sum>b\<in> ?B. a b * b $ j)" by (rule lincomb_index[OF j sub])
           also have "\<dots> = (\<Sum> i\<in> ?ran. v $ i * ?bi i $ j)"
-          proof (subst setsum.reindex_cong[OF inj])
+          proof (subst sum.reindex_cong[OF inj])
             show "?B = ?bi ` ?ran"  unfolding find_base_vectors_def Let_def dim by auto
             fix i
             assume "i \<in> ?ran"
@@ -311,10 +311,10 @@ proof -
             note npb = non_pivot_base[OF j nmem]
             have "(\<Sum> i\<in> ?ran. v $ i * (?bi i) $ j) =
               v $ j * ?bi j $ j + (\<Sum> i\<in> ?ran - {j}. v $ i * ?bi i $ j)"
-              by (subst setsum.remove[OF _ True], auto)
+              by (subst sum.remove[OF _ True], auto)
             also have "?bi j $ j = 1" using npb by simp
             also have "(\<Sum> i \<in> ?ran - {j}. v $ i * ?bi i $ j) = 0"
-              using insert non_pivot_base(4)[OF _ _ j nmem] by (intro setsum.neutral, auto)
+              using insert non_pivot_base(4)[OF _ _ j nmem] by (intro sum.neutral, auto)
             finally show ?thesis by simp
           next
             case False
@@ -324,13 +324,13 @@ proof -
             have "v $ j = v $ j - row A i \<bullet> v" by auto
             also have "row A i \<bullet> v = (\<Sum> j = 0 ..< nc. A $$ (i,j) * v $ j)" unfolding scalar_prod_def using v A i by auto
             also have "\<dots> = (\<Sum> j \<in> ?ran. A $$ (i,j) * v $ j) +  (\<Sum> j \<in> ?ran'. A $$ (i,j) * v $ j)"
-              by (subst setsum.union_disjoint[symmetric], auto intro: setsum.cong)
+              by (subst sum.union_disjoint[symmetric], auto intro: sum.cong)
             also have "(\<Sum> j \<in> ?ran'. A $$ (i,j) * v $ j) =
               A $$ (i,p i) * v $ j + (\<Sum> j \<in> ?ran' - {p i}. A $$ (i,j) * v $ j)"
-              using jpp by (subst setsum.remove, auto simp: ji i pi)
+              using jpp by (subst sum.remove, auto simp: ji i pi)
             also have "A $$ (i, p i) = 1" using piv(4)[OF i] pi ji by auto
             also have "(\<Sum> j \<in> ?ran' - {p i}. A $$ (i,j) * v $ j) = 0"
-            proof (rule setsum.neutral, intro ballI)
+            proof (rule sum.neutral, intro ballI)
               fix j'
               assume "j' \<in> ?ran' - {p i}"
               then obtain i' where i': "i' < nr" and j': "j' = p i'" and pi': "p i' \<noteq> nc" and neq: "p i' \<noteq> p i"
@@ -341,10 +341,10 @@ proof -
               show "A $$ (i,j') * v $ j' = 0" unfolding j' by simp
             qed
             also have "(\<Sum> j \<in> ?ran. A $$ (i,j) * v $ j) = - (\<Sum> j \<in> ?ran. v $ j * - A $$ (i,j))" 
-              unfolding setsum_negf[symmetric] by (rule setsum.cong, auto)
+              unfolding sum_negf[symmetric] by (rule sum.cong, auto)
             finally have vj: "v $ j = (\<Sum> j \<in> ?ran. v $ j * - A $$ (i,j))" by simp
             show ?thesis unfolding vj j
-            proof (rule setsum.cong[OF refl])
+            proof (rule sum.cong[OF refl])
               fix j'
               assume j': "j' \<in> ?ran"
               from jpp j' have jj': "j \<noteq> j'" by auto
@@ -375,10 +375,10 @@ proof -
       also have "\<dots> = (\<Sum>v\<in>?B. a v * v $ j)" 
         by (subst lincomb_index[OF j(1) sub], simp)
       also have "\<dots> = a v * v $ j + (\<Sum>w\<in>?B - {v}. a w * w $ j)"
-        by (subst setsum.remove[OF _ vB], auto)
+        by (subst sum.remove[OF _ vB], auto)
       also have "a v * v $ j = a v" using non_pivot_base[OF j, folded v] by simp
       also have "(\<Sum>w\<in>?B - {v}. a w * w $ j) = 0"
-      proof (rule setsum.neutral, intro ballI)
+      proof (rule sum.neutral, intro ballI)
         fix w
         assume wB: "w \<in> ?B - {v}"
         from this[unfolded find_base_vectors_def Let_def dim]
@@ -563,18 +563,18 @@ proof -
       have "A.VKMod.lincomb a' ?gen' $ i = (\<Sum>v\<in>op \<otimes>\<^sub>m\<^sub>v B ` gen'. a' v * v $ i)"
         unfolding A.lincomb_index[OF i genn']  by simp
       also have "\<dots> = (\<Sum>v\<in>gen'. a v * ((B \<otimes>\<^sub>m\<^sub>v v) $ i))"
-        by (rule setsum.reindex_cong[OF inj refl], auto simp: a')
+        by (rule sum.reindex_cong[OF inj refl], auto simp: a')
       also have "\<dots> = (\<Sum>v\<in>gen'. (\<Sum>j = 0..< nc. a v * row B i $ j * v $ j))"
         unfolding mat_mult_vec_def dimB scalar_prod_def vec_index_vec[OF i]
-        by (rule setsum.cong, insert gen'nc, auto simp: setsum_distrib_left ac_simps)
+        by (rule sum.cong, insert gen'nc, auto simp: sum_distrib_left ac_simps)
       also have "\<dots> = (\<Sum>j = 0 ..< nc. (\<Sum>v \<in> gen'. a v * row B i $ j * v $ j))"
-        by (rule setsum.commute)
+        by (rule sum.commute)
       also have "\<dots> = (\<Sum>j = 0..<nc. row B i $ j * (\<Sum>v\<in>gen'. a v * v $ j))"
-        by (rule setsum.cong, auto simp: setsum_distrib_left ac_simps)
+        by (rule sum.cong, auto simp: sum_distrib_left ac_simps)
       also have "\<dots> = (B \<otimes>\<^sub>m\<^sub>v AB.VKMod.lincomb a gen') $ i"
         unfolding index_mat_mult_vec[OF ii]
         unfolding scalar_prod_def dim1
-        by (rule setsum.cong[OF refl], subst AB.lincomb_index[OF _ gen'], auto)
+        by (rule sum.cong[OF refl], subst AB.lincomb_index[OF _ gen'], auto)
       finally show "(B \<otimes>\<^sub>m\<^sub>v AB.VKMod.lincomb a gen') $ i = A.VKMod.lincomb a' ?gen' $ i" ..
     qed auto
     finally have "v \<in> A.VKMod.span ?gen" using sub fin

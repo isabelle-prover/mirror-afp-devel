@@ -86,7 +86,7 @@ next
           apply (simp only: scaleR_right_diff_distrib th0)
           apply (rule real_vector.span_add_eq)
           apply (rule real_vector.span_mul)
-          apply (rule real_vector.span_setsum[OF finite_C])
+          apply (rule real_vector.span_sum[OF finite_C])
           apply clarify
           apply (rule real_vector.span_mul)
           apply (rule real_vector.span_superset)
@@ -336,9 +336,9 @@ proof -
         column (from_nat (Suc k)) (Gram_Schmidt_column_k (Gram_Schmidt_upt_k A k) (Suc k))"
         unfolding Gram_Schmidt_column_k_def column_def apply auto unfolding set_rw 
         unfolding vector_scaleR_component[symmetric]
-        unfolding setsum_component[symmetric]
+        unfolding sum_component[symmetric]
         unfolding proj_onto_def proj_def[abs_def]
-        unfolding proj_onto_setsum_rw
+        unfolding proj_onto_sum_rw
         by vector 
     qed
   next
@@ -359,9 +359,9 @@ proof -
         apply auto
         unfolding set_rw
         unfolding vector_scaleR_component[symmetric]
-        unfolding setsum_component[symmetric]
+        unfolding sum_component[symmetric]
         unfolding proj_onto_def proj_def[abs_def]
-        unfolding proj_onto_setsum_rw
+        unfolding proj_onto_sum_rw
         by vector
       thus False using col_not_eq by contradiction
     qed
@@ -391,7 +391,7 @@ next
   have rw: "[0..<Suc (Suc k)] = [0..<Suc k] @ [(Suc k)]" by simp
   show ?case
     unfolding column_set_Gram_Schmidt_upt_k[OF Suc.prems[unfolded ncols_def], of A]
-    unfolding proj_onto_setsum_rw
+    unfolding proj_onto_sum_rw
     by (auto simp add: proj_def[symmetric] proj_onto_def[symmetric])
        (rule pairwise_orthogonal_proj_set, auto simp add: Suc.hyps Suc.prems Suc_lessD)
 qed
@@ -427,7 +427,7 @@ lemma column_Gram_Schmidt_column_k:
   unfolding Gram_Schmidt_column_k_def column_def
   unfolding from_nat_to_nat_id 
   unfolding proj_onto_def proj_def[abs_def]
-  unfolding proj_onto_setsum_rw
+  unfolding proj_onto_sum_rw
   by vector
 
 
@@ -530,7 +530,7 @@ next
     def C=="(cols_upt_k A k)"
     def B=="(cols_upt_k (Gram_Schmidt_column_k A j) k)"
     def a=="column (from_nat (Suc k)) A"
-    let ?a="a - setsum (\<lambda>x. (x \<bullet> a / (x \<bullet> x)) *\<^sub>R x) C"
+    let ?a="a - sum (\<lambda>x. (x \<bullet> a / (x \<bullet> x)) *\<^sub>R x) C"
     let ?C="insert ?a C"
     have col_rw: "{column i A |i. i \<le> from_nat k} = {column i A |i. i < from_nat (Suc k)}" 
     proof (auto)
@@ -549,7 +549,7 @@ next
       unfolding column_def[symmetric] col_rw minus_vec_def
       unfolding column_def vec_lambda_beta
       unfolding proj_onto_def proj_def[abs_def]
-      unfolding proj_onto_setsum_rw
+      unfolding proj_onto_sum_rw
       by auto        
     have finite_C: "finite C" unfolding C_def cols_upt_k_def by auto
     {
@@ -560,7 +560,7 @@ next
         apply (simp only: scaleR_right_diff_distrib th0)
         apply (rule real_vector.span_add_eq)
         apply (rule real_vector.span_mul)
-        apply (rule real_vector.span_setsum[OF finite_C])
+        apply (rule real_vector.span_sum[OF finite_C])
         apply clarify
         apply (rule real_vector.span_mul)
         apply (rule real_vector.span_superset)

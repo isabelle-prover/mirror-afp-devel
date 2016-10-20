@@ -53,6 +53,41 @@ is available <a href="citing.shtml">[here]</a>.
 	</tr>
 
 <tr><td class="entry">
+2016-10-19:
+<a href="entries/Source_Coding_Theorem.shtml">Source Coding Theorem</a>
+<br>Author:
+<a href="qh225@cl.cam.ac.uk">Quentin Hibon</a> and 
+<a href="lp15@cam.ac.uk">Lawrence Paulson</a>
+</td></tr>
+
+<tr><td class="entry">
+2016-10-19:
+<a href="entries/SPARCv8.shtml">A formal model for the SPARCv8 ISA and a proof of non-interference for the LEON3 processor</a>
+<br>Author:
+Zhe Hou,
+David Sanan,
+Alwen Tiu and 
+Yang Liu
+</td></tr>
+
+<tr><td class="entry">
+2016-10-14:
+<a href="entries/Berlekamp_Zassenhaus.shtml">The Factorization Algorithm of Berlekamp and Zassenhaus</a>
+<br>Author:
+<a href="http://www.unirioja.es/cu/jodivaso">Jose Divasón</a>,
+Sebastiaan Joosten,
+René Thiemann and 
+Akihisa Yamada
+</td></tr>
+
+<tr><td class="entry">
+2016-10-11:
+<a href="entries/Chord_Segments.shtml">Intersecting Chords Theorem</a>
+<br>Author:
+Lukas Bulwahn
+</td></tr>
+
+<tr><td class="entry">
 2016-10-05:
 <a href="entries/Lp.shtml">Lp spaces</a>
 <br>Author:
@@ -64,6 +99,13 @@ is available <a href="citing.shtml">[here]</a>.
 <a href="entries/Fisher_Yates.shtml">Fisher–Yates shuffle</a>
 <br>Author:
 <a href="https://in.tum.de/~eberlm">Manuel Eberl</a>
+</td></tr>
+
+<tr><td class="entry">
+2016-09-29:
+<a href="entries/Allen_Calculus.shtml">Allen's Interval Calculus</a>
+<br>Author:
+<a href="http://www.i-eos.org/fadoua">Fadoua Ghourabi</a>
 </td></tr>
 
 <tr><td class="entry">

@@ -133,7 +133,7 @@ proof(rule wp_under_wlpI, unfold wp_eval, rule le_funI)
 
   from wp_u_f uQ nP
   show "(\<Sum>a\<in>supp (P s). P s a * wp (f a) Q s) \<le> (\<Sum>a\<in>supp (P s). P s a * wlp (f a) Q s)"
-    by(auto intro!:setsum_mono mult_left_mono)
+    by(auto intro!:sum_mono mult_left_mono)
 qed
 
 lemma wp_under_wlp_SetDC:
@@ -427,7 +427,7 @@ lemma sdp_SetPC:
   assumes sdp: "\<And>s a. a \<in> supp (P s) \<Longrightarrow> sub_distrib_pconj (p a)"
       and fin: "\<And>s. finite (supp (P s))"
       and nnp: "\<And>s a. 0 \<le> P s a"
-      and sub: "\<And>s. setsum (P s) (supp (P s)) \<le> 1"
+      and sub: "\<And>s. sum (P s) (supp (P s)) \<le> 1"
   shows "sub_distrib_pconj (SetPC p P)"
 proof(rule sub_distrib_pconjI, simp add:wp_eval, rule le_funI)
   fix Q::"'s \<Rightarrow> real" and R::"'s \<Rightarrow> real" and s::'s
@@ -437,14 +437,14 @@ proof(rule sub_distrib_pconjI, simp add:wp_eval, rule le_funI)
         (\<Sum>a\<in>supp (P s). P s a * wlp (p a) Q s) + (\<Sum>a\<in>supp (P s). P s a * wp (p a) R s) \<ominus> 1"
     by(simp add:exp_conj_def pconj_def)
   also have "... = (\<Sum>a\<in>supp (P s). P s a * (wlp (p a) Q s + wp (p a) R s)) \<ominus> 1"
-    by(simp add: setsum.distrib field_simps)
+    by(simp add: sum.distrib field_simps)
   also from sub
   have "... \<le> (\<Sum>a\<in>supp (P s). P s a * (wlp (p a) Q s + wp (p a) R s)) \<ominus>
               (\<Sum>a\<in>supp (P s). P s a)"
     by(rule tminus_right_antimono)
   also from fin
   have "... \<le> (\<Sum>a\<in>supp (P s). P s a * (wlp (p a) Q s + wp (p a) R s) \<ominus> P s a)"
-    by(rule tminus_setsum_mono)
+    by(rule tminus_sum_mono)
   also from nnp
   have "... = (\<Sum>a\<in>supp (P s). P s a * (wlp (p a) Q s + wp (p a) R s \<ominus> 1))"
     by(simp add:tminus_left_distrib)
@@ -457,7 +457,7 @@ proof(rule sub_distrib_pconjI, simp add:wp_eval, rule le_funI)
     with nnp
     have "(\<Sum>a\<in>supp (P s). P s a * (wlp (p a) Q && wp (p a) R) s) \<le>
           (\<Sum>a\<in>supp (P s). P s a * (wp (p a) (Q && R)) s)"
-      by(blast intro:setsum_mono mult_left_mono)
+      by(blast intro:sum_mono mult_left_mono)
   }
   finally show "((\<lambda>s. \<Sum>a\<in>supp (P s). P s a * wlp (p a) Q s) &&
                  (\<lambda>s. \<Sum>a\<in>supp (P s). P s a * wp (p a) R s)) s \<le>
@@ -767,7 +767,7 @@ by (simp add: cts_wp_SetDC ex_in_conv healthy_intros(17) healthy_intros(18) sdp_
 
 lemma wd_SetPC:
   "\<lbrakk> \<And>x s. x \<in> (supp (p s)) \<Longrightarrow> well_def (a x); \<And>s. unitary (p s); \<And>s. finite (supp (p s));
-     \<And>s. setsum (p s) (supp (p s)) \<le> 1 \<rbrakk> \<Longrightarrow> well_def (SetPC a p)"
+     \<And>s. sum (p s) (supp (p s)) \<le> 1 \<rbrakk> \<Longrightarrow> well_def (SetPC a p)"
   by(iprover intro!:well_defI healthy_wp_SetPC nearly_healthy_wlp_SetPC
                     wp_under_wlp_SetPC sdp_SetPC sublinear_wp_SetPC cts_wp_SetPC
              dest:wd_dests unitary_sound sound_nneg[OF unitary_sound] nnegD)

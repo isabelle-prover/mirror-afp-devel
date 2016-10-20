@@ -7,75 +7,75 @@ imports
   "../Girth_Chromatic/Girth_Chromatic_Misc"
 begin
 
-lemma setsum_square:
+lemma sum_square:
   fixes a :: "'i \<Rightarrow> 'a :: {monoid_mult, semiring_0}"
   shows "(\<Sum>i \<in> I. a i)^2 = (\<Sum>i \<in> I. \<Sum>j \<in> I. a i * a j)"
-  by (simp only: setsum_product power2_eq_square)
+  by (simp only: sum_product power2_eq_square)
 
-lemma setsum_split:
+lemma sum_split:
   "finite I \<Longrightarrow>
   (\<Sum>i \<in> I. if p i then f i else g i) = (\<Sum>i | i \<in> I \<and> p i. f i) + (\<Sum>i | i \<in> I \<and> \<not>p i. g i)"
-  by (simp add: setsum.If_cases Int_def)
+  by (simp add: sum.If_cases Int_def)
 
-lemma setsum_split2:
+lemma sum_split2:
   assumes "finite I"
   shows "(\<Sum>i | i \<in> I \<and> P i. if Q i then f i else g i) = (\<Sum>i | i \<in> I \<and> P i \<and> Q i. f i) + (\<Sum>i | i \<in> I \<and> P i \<and> \<not>Q i. g i)"
-proof (subst setsum.If_cases)
+proof (subst sum.If_cases)
   show "finite {i \<in> I. P i}"
     using assms by simp
 
   have "{i \<in> I. P i} \<inter> Collect Q = {i \<in> I. P i \<and> Q i}" "{i \<in> I. P i} \<inter> - Collect Q =  {i \<in> I. P i \<and> \<not> Q i}"
     by auto
-  thus "setsum f ({i \<in> I. P i} \<inter> Collect Q) + setsum g ({i \<in> I. P i} \<inter> - Collect Q) = setsum f {i \<in> I. P i \<and> Q i} + setsum g {i \<in> I. P i \<and> \<not> Q i}"
+  thus "sum f ({i \<in> I. P i} \<inter> Collect Q) + sum g ({i \<in> I. P i} \<inter> - Collect Q) = sum f {i \<in> I. P i \<and> Q i} + sum g {i \<in> I. P i \<and> \<not> Q i}"
     by presburger
 qed
 
-lemma setsum_upper:
+lemma sum_upper:
   fixes f :: "'i \<Rightarrow> 'a :: ordered_comm_monoid_add"
   assumes "finite I" "\<And>i. i \<in> I \<Longrightarrow> 0 \<le> f i"
-  shows "(\<Sum>i | i \<in> I \<and> P i. f i) \<le> setsum f I"
+  shows "(\<Sum>i | i \<in> I \<and> P i. f i) \<le> sum f I"
 proof -
-  have "setsum f I = (\<Sum>i \<in> I. if P i then f i else f i)"
+  have "sum f I = (\<Sum>i \<in> I. if P i then f i else f i)"
     by simp
-  hence "setsum f I = (\<Sum>i | i \<in> I \<and> P i. f i) + (\<Sum>i | i \<in> I \<and> \<not>P i. f i)"
-    by (simp only: setsum_split[OF `finite I`])
+  hence "sum f I = (\<Sum>i | i \<in> I \<and> P i. f i) + (\<Sum>i | i \<in> I \<and> \<not>P i. f i)"
+    by (simp only: sum_split[OF `finite I`])
   moreover have "0 \<le> (\<Sum>i | i \<in> I \<and> \<not>P i. f i)"
-    by (rule setsum_nonneg) (simp add: assms)
+    by (rule sum_nonneg) (simp add: assms)
   ultimately show ?thesis
     by (metis (full_types) add.comm_neutral add_left_mono)
 qed
 
-lemma setsum_lower:
+lemma sum_lower:
   fixes f :: "'i \<Rightarrow> 'a :: ordered_comm_monoid_add"
   assumes "finite I" "i \<in> I" "\<And>i. i \<in> I \<Longrightarrow> 0 \<le> f i" "x < f i"
-  shows "x < setsum f I"
+  shows "x < sum f I"
 proof -
   have "x < f i" by fact
-  also have "\<dots> \<le> setsum f I"
-    using setsum_mono2[OF \<open>finite I\<close>, of "{i}" f] assms by auto
+  also have "\<dots> \<le> sum f I"
+    using sum_mono2[OF \<open>finite I\<close>, of "{i}" f] assms by auto
   finally show ?thesis .
 qed
 
-lemma setsum_lower_or_eq:
+lemma sum_lower_or_eq:
   fixes f :: "'i \<Rightarrow> 'a :: ordered_comm_monoid_add"
   assumes "finite I" "i \<in> I" "\<And>i. i \<in> I \<Longrightarrow> 0 \<le> f i" "x \<le> f i"
-  shows "x \<le> setsum f I"
+  shows "x \<le> sum f I"
 proof -
   have "x \<le> f i" by fact
-  also have "\<dots> \<le> setsum f I"
-    using setsum_mono2[OF \<open>finite I\<close>, of "{i}" f] assms by auto
+  also have "\<dots> \<le> sum f I"
+    using sum_mono2[OF \<open>finite I\<close>, of "{i}" f] assms by auto
   finally show ?thesis .
 qed
 
-lemma setsum_left_div_distrib:
+lemma sum_left_div_distrib:
   fixes f :: "'i \<Rightarrow> real"
-  shows "(\<Sum>i \<in> I. f i / x) = setsum f I / x"
+  shows "(\<Sum>i \<in> I. f i / x) = sum f I / x"
 proof -
   have "(\<Sum>i \<in> I. f i / x) = (\<Sum>i \<in> I. f i * (1 / x))"
     by simp
-  also have "\<dots> = setsum f I * (1 / x)"
-    by (rule setsum_distrib_right[symmetric])
-  also have "\<dots> = setsum f I / x"
+  also have "\<dots> = sum f I * (1 / x)"
+    by (rule sum_distrib_right[symmetric])
+  also have "\<dots> = sum f I / x"
     by simp
   finally show ?thesis
     .
@@ -362,7 +362,7 @@ proof -
         by (rule finite_subset[rotated, OF finite_Collect_subsets]) blast
     qed
   also have "\<dots> = ?C"
-    proof (rule setsum.cong)
+    proof (rule sum.cong)
       fix a
       assume "a \<in> {a. a \<subseteq> A \<and> card a = n}"
       hence "finite (f a)"
@@ -377,23 +377,23 @@ proof -
     by (subst S)
 qed
 
-lemma setprod_cancel_nat:
+lemma prod_cancel_nat:
   --"Contributed by Manuel Eberl"
   fixes f::"'a \<Rightarrow> nat"
   assumes "B \<subseteq> A" and "finite A" and "\<forall>x\<in>B. f x \<noteq> 0"
-  shows "setprod f A / setprod f B = setprod f (A - B)" (is "?A / ?B = ?C")
+  shows "prod f A / prod f B = prod f (A - B)" (is "?A / ?B = ?C")
 proof-
-  from setprod.subset_diff[OF assms(1,2)] have "?A = ?C * ?B" by auto
+  from prod.subset_diff[OF assms(1,2)] have "?A = ?C * ?B" by auto
   moreover have "?B \<noteq> 0" using assms by (simp add: finite_subset)
   ultimately show ?thesis by simp
 qed
 
-lemma setprod_id_cancel_nat:
+lemma prod_id_cancel_nat:
   --"Contributed by Manuel Eberl"
   fixes A::"nat set"
   assumes "B \<subseteq> A" and "finite A" and "0 \<notin> B"
   shows "\<Prod>A / \<Prod>B = \<Prod>(A-B)"
-  using assms(1-2) by (rule setprod_cancel_nat) (metis assms(3))
+  using assms(1-2) by (rule prod_cancel_nat) (metis assms(3))
 
 lemma (in prob_space) integrable_squareD:
   --"Contributed by Johannes Hölzl"

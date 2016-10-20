@@ -218,11 +218,11 @@ proof (induct arbitrary: Tr Fa rule: finite_induct)
         (is "(\<Sum>x\<in>?all. ?f x) = (\<Sum>x\<in>?allT. ?f x) + (\<Sum>x\<in>?allF. ?f x)")
         proof - 
           have "(\<Sum>x\<in>?all. \<Sum>j\<in>(insert e S). if x ! j then 2 else 1)
-            = (\<Sum>x\<in>(?allT \<union> ?allF). \<Sum>j\<in>(insert e S). if x ! j then 2 else 1)" apply(rule setsum.cong) by(auto)
+            = (\<Sum>x\<in>(?allT \<union> ?allF). \<Sum>j\<in>(insert e S). if x ! j then 2 else 1)" apply(rule sum.cong) by(auto)
           also have"\<dots> = ((\<Sum>x\<in>(?allT). \<Sum>j\<in>(insert e S). if x ! j then (2::real) else 1) 
                       + (\<Sum>x\<in>(?allF). \<Sum>j\<in>(insert e S). if x ! j then (2::real) else 1))
                       - (\<Sum>x\<in>(?allT \<inter> ?allF). \<Sum>j\<in>(insert e S). if x ! j then 2 else 1)" 
-                   apply (rule setsum_Un) apply(rule fbool)+ done
+                   apply (rule sum_Un) apply(rule fbool)+ done
           also have "\<dots> =  (\<Sum>x\<in>(?allT). \<Sum>j\<in>(insert e S). if x ! j then 2 else 1)
                         + (\<Sum>x\<in>(?allF). \<Sum>j\<in>(insert e S). if x ! j then 2 else 1)"
                 by(simp add: 3) 
@@ -239,7 +239,7 @@ proof (induct arbitrary: Tr Fa rule: finite_induct)
   also
   have "\<dots> =  (\<Sum>x\<in>?Tre. 2) + (\<Sum>x\<in>?Tre. (\<Sum>j\<in>S. if x ! j then 2 else 1))
           + ((\<Sum>x\<in>?Fae. 1) + (\<Sum>x\<in>?Fae. (\<Sum>j\<in>S. if x ! j then 2 else 1)))"
-          by (simp add: Groups_Big.comm_monoid_add_class.setsum.distrib)
+          by (simp add: Groups_Big.comm_monoid_add_class.sum.distrib)
   also
   have "\<dots> =  2 * 2^(l - card Tr - card Fa - 1) + (\<Sum>x\<in>?Tre. (\<Sum>j\<in>S. if x ! j then 2 else 1))
         + (1 * 2^(l - card Tr - card Fa - 1) + (\<Sum>x\<in>?Fae. (\<Sum>j\<in>S. if x ! j then 2 else 1)))" 

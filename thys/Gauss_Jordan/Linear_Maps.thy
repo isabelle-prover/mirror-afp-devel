@@ -189,17 +189,17 @@ proof -
   have ind_D: "vec.independent C"
   proof (rule vec.independent_if_scalars_zero[OF finite_C], clarify)
     fix f x
-    assume setsum: "(\<Sum>x\<in>C. f x *s x) = 0" and x: "x \<in> C"
+    assume sum: "(\<Sum>x\<in>C. f x *s x) = 0" and x: "x \<in> C"
     obtain y where Ly_eq_x: "L y = x" and y: "y \<in> B" using x unfolding C_def L_def by auto    
-    have "(\<Sum>x\<in>C. f x *s x) = setsum ((\<lambda>x. f x *s x) \<circ> L) B" unfolding C_def by (rule setsum.reindex[OF inj_on_LB])
-    also have "... = setsum (\<lambda>x. f (L x) *s L x) B" unfolding o_def .. 
-    also have "... =  setsum (\<lambda>x. ((f \<circ> L) x) *s L x) B" using o_def by auto
-    also have "... = L (setsum (\<lambda>x. ((f \<circ> L) x) *s x) B)" by (rule linear.linear_setsum_mul[OF linear_L finite_B,symmetric])
+    have "(\<Sum>x\<in>C. f x *s x) = sum ((\<lambda>x. f x *s x) \<circ> L) B" unfolding C_def by (rule sum.reindex[OF inj_on_LB])
+    also have "... = sum (\<lambda>x. f (L x) *s L x) B" unfolding o_def .. 
+    also have "... =  sum (\<lambda>x. ((f \<circ> L) x) *s L x) B" using o_def by auto
+    also have "... = L (sum (\<lambda>x. ((f \<circ> L) x) *s x) B)" by (rule linear.linear_sum_mul[OF linear_L finite_B,symmetric])
     finally have rw: " (\<Sum>x\<in>C. f x *s x) = L (\<Sum>x\<in>B. (f \<circ> L) x *s x)" .
     have "(\<Sum>x\<in>B. (f \<circ> L) x *s x) \<in> W"
-      by (rule vec.subspace_setsum[OF sub_W finite_B], metis B_in_W in_mono sub_W vec.subspace_mul) 
+      by (rule vec.subspace_sum[OF sub_W finite_B], metis B_in_W in_mono sub_W vec.subspace_mul) 
     hence "(\<Sum>x\<in>B. (f \<circ> L) x *s x)=0"
-      using setsum rw 
+      using sum rw 
       using vec.linear_injective_on_subspace_0[OF linear_L sub_W] using inj_on_LW by auto
     hence "(f \<circ> L) y = 0"
       using vec.scalars_zero_if_independent[OF finite_B ind_B, of "(f \<circ> L)"] 
@@ -209,14 +209,14 @@ proof -
   have "L` W \<subseteq> vec.span C"
   proof (unfold vec.span_finite[OF finite_C], clarify)
     fix xa assume xa_in_W: "xa \<in> W"
-    obtain g where setsum_g: "setsum (\<lambda>x. g x *s x) B = xa"
+    obtain g where sum_g: "sum (\<lambda>x. g x *s x) B = xa"
       using vec.span_finite[OF finite_B] W_in_span_B xa_in_W by blast    
     show "\<exists>u. (\<Sum>v\<in>C. u v *s v) = L xa" 
     proof (rule exI[of _ "\<lambda>x. g (THE y. y \<in> B \<and> x=L y)"])
-      have "L xa = L (setsum (\<lambda>x. g x *s x) B)" using setsum_g by simp
-      also have "... = setsum (\<lambda>x. g x *s L x) B" using linear.linear_setsum_mul[OF linear_L finite_B] .      
-      also have "... = setsum (\<lambda>x. g (THE y. y \<in> B \<and> x=L y) *s x) (L`B)"
-      proof (unfold setsum.reindex[OF inj_on_LB], unfold o_def, rule setsum.cong)
+      have "L xa = L (sum (\<lambda>x. g x *s x) B)" using sum_g by simp
+      also have "... = sum (\<lambda>x. g x *s L x) B" using linear.linear_sum_mul[OF linear_L finite_B] .      
+      also have "... = sum (\<lambda>x. g (THE y. y \<in> B \<and> x=L y) *s x) (L`B)"
+      proof (unfold sum.reindex[OF inj_on_LB], unfold o_def, rule sum.cong)
         fix x assume x_in_B: "x\<in>B"
         have x_eq_the:"x = (THE y. y \<in> B \<and> L x = L y)"
         proof (rule the_equality[symmetric])
@@ -343,35 +343,35 @@ lemma is_basis_cart_basis': "is_basis (set_of_vector cart_basis')"
   unfolding cart_basis_eq_set_of_vector_cart_basis'[symmetric]
   by (metis Miscellaneous.is_basis_def independent_cart_basis span_cart_basis)
   
-lemma basis_expansion_cart_basis':"setsum (\<lambda>i. x$i *s cart_basis' $ i) UNIV = x" 
+lemma basis_expansion_cart_basis':"sum (\<lambda>i. x$i *s cart_basis' $ i) UNIV = x" 
   unfolding cart_basis'_def using basis_expansion by auto
 
 lemma basis_expansion_unique:
-  "setsum (\<lambda>i. f i *s axis (i::'n::finite) 1) UNIV = (x::('a::comm_ring_1) ^'n) \<longleftrightarrow> (\<forall>i. f i = x$i)"
+  "sum (\<lambda>i. f i *s axis (i::'n::finite) 1) UNIV = (x::('a::comm_ring_1) ^'n) \<longleftrightarrow> (\<forall>i. f i = x$i)"
 proof (auto simp add: basis_expansion)
   fix i::"'n" 
   have univ_rw: "UNIV = (UNIV - {i}) \<union> {i}" by fastforce
-  have "(\<Sum>x\<in>UNIV. f x * axis x 1 $ i) = setsum (\<lambda>x.  f x * axis x 1 $ i) (UNIV - {i} \<union> {i})" using univ_rw by simp
-  also have "... = setsum (\<lambda>x.  f x * axis x 1 $ i) (UNIV - {i}) +  setsum (\<lambda>x.  f x * axis x 1 $ i) {i}" by (rule setsum.union_disjoint, auto)
+  have "(\<Sum>x\<in>UNIV. f x * axis x 1 $ i) = sum (\<lambda>x.  f x * axis x 1 $ i) (UNIV - {i} \<union> {i})" using univ_rw by simp
+  also have "... = sum (\<lambda>x.  f x * axis x 1 $ i) (UNIV - {i}) +  sum (\<lambda>x.  f x * axis x 1 $ i) {i}" by (rule sum.union_disjoint, auto)
   also have "... = f i" unfolding axis_def by auto
   finally show "f i = (\<Sum>x\<in>UNIV. f x * axis x 1 $ i)" ..
 qed
 
 
-lemma basis_expansion_cart_basis'_unique: "setsum (\<lambda>i. f (cart_basis' $ i) *s cart_basis' $ i) UNIV = x \<longleftrightarrow> (\<forall>i. f (cart_basis' $ i) = x$i)"
+lemma basis_expansion_cart_basis'_unique: "sum (\<lambda>i. f (cart_basis' $ i) *s cart_basis' $ i) UNIV = x \<longleftrightarrow> (\<forall>i. f (cart_basis' $ i) = x$i)"
   using basis_expansion_unique unfolding cart_basis'_def
   by (simp add: vec_eq_iff if_distrib cong del: if_weak_cong)
 
-lemma basis_expansion_cart_basis'_unique': "setsum (\<lambda>i. f i *s cart_basis' $ i) UNIV = x \<longleftrightarrow> (\<forall>i. f i = x$i)"
+lemma basis_expansion_cart_basis'_unique': "sum (\<lambda>i. f i *s cart_basis' $ i) UNIV = x \<longleftrightarrow> (\<forall>i. f i = x$i)"
   using basis_expansion_unique unfolding cart_basis'_def
   by (simp add: vec_eq_iff if_distrib cong del: if_weak_cong)
 
 text{*Properties of @{thm "is_basis_def"}.*}
 
-lemma setsum_basis_eq:
+lemma sum_basis_eq:
   fixes X::"'a::{field}^'n^'n"
   assumes is_basis:"is_basis  (set_of_vector X)"
-  shows "setsum (\<lambda>x. f x *s x) (set_of_vector X) = setsum (\<lambda>i. f (X$i) *s (X$i)) UNIV"
+  shows "sum (\<lambda>x. f x *s x) (set_of_vector X) = sum (\<lambda>i. f (X$i) *s (X$i)) UNIV"
 proof -
 have card_set_of_vector:"card(set_of_vector X) = CARD('n)" 
   using independent_is_basis[of "set_of_vector X"] using is_basis by auto
@@ -382,14 +382,14 @@ have inj: "inj (op $ X)"
     show "card (range (op $ X)) = card (UNIV::'n set)" 
       using card_set_of_vector using fact_1 unfolding set_of_vector_def by simp
   qed
-show ?thesis using setsum.reindex[OF inj, of "(\<lambda>x. f x *s x)", unfolded o_def] unfolding fact_1 .
+show ?thesis using sum.reindex[OF inj, of "(\<lambda>x. f x *s x)", unfolded o_def] unfolding fact_1 .
 qed
 
-corollary setsum_basis_eq2:
+corollary sum_basis_eq2:
   fixes X::"'a::{field}^'n^'n"
   assumes is_basis:"is_basis  (set_of_vector X)"
-  shows "setsum (\<lambda>x. f x *s x) (set_of_vector X) = setsum (\<lambda>i. (f \<circ> op $ X) i *s (X$i)) UNIV" 
-  using setsum_basis_eq[OF is_basis] by simp
+  shows "sum (\<lambda>x. f x *s x) (set_of_vector X) = sum (\<lambda>i. (f \<circ> op $ X) i *s (X$i)) UNIV" 
+  using sum_basis_eq[OF is_basis] by simp
 
 lemma inj_op_nth:
   fixes X::"'a::{field}^'n^'n"
@@ -422,7 +422,7 @@ proof -
       have card_set_of_vector:"card(set_of_vector X) = CARD('n)" using independent_is_basis[of "set_of_vector X"] using is_basis by auto
       have inj: "inj (op $ X)" using inj_op_nth[OF is_basis] .
       show " (\<Sum>i\<in>UNIV. f (X $ i) *s X $ i) = (\<Sum>i\<in>set_of_vector X. f i *s i)" 
-        using setsum.reindex[symmetric, OF inj, of "\<lambda>i. f i *s i"] unfolding fact_1 by simp
+        using sum.reindex[symmetric, OF inj, of "\<lambda>i. f i *s i"] unfolding fact_1 by simp
     qed
   qed
   finally show ?thesis by auto
@@ -430,7 +430,7 @@ qed
 
 lemma scalars_zero_if_basis:
   fixes X::"'a::{field}^'n^'n"
-  assumes is_basis: "is_basis (set_of_vector X)" and setsum: "(\<Sum>i\<in>(UNIV::'n set). f i *s X$i) = 0"
+  assumes is_basis: "is_basis (set_of_vector X)" and sum: "(\<Sum>i\<in>(UNIV::'n set). f i *s X$i) = 0"
   shows "\<forall>i\<in>(UNIV::'n set). f i = 0" 
 proof -
   have ind_X: "vec.independent (set_of_vector X)" using is_basis unfolding is_basis_def by simp
@@ -450,9 +450,9 @@ proof -
           unfolding g_def using inj_op_nth[OF is_basis]
           by (metis (lifting, mono_tags) injD the_equality) 
        }
-      thus ?thesis using setsum.reindex[OF inj, of "\<lambda>v. g v *s v"] unfolding rw o_def by auto
+      thus ?thesis using sum.reindex[OF inj, of "\<lambda>v. g v *s v"] unfolding rw o_def by auto
     qed
-    thus ?thesis unfolding setsum .
+    thus ?thesis unfolding sum .
   qed
   hence 2: "\<forall>v\<in>(set_of_vector X). g v = 0" using 1 by auto
   show ?thesis
@@ -466,17 +466,17 @@ qed
 
 lemma basis_combination_unique:
   fixes X::"'a::{field}^'n^'n"
-  assumes basis_X: "is_basis (set_of_vector X)" and setsum_eq: "(\<Sum>i\<in>UNIV. g i *s X$i) = (\<Sum>i\<in>UNIV. f i *s X$i)"
+  assumes basis_X: "is_basis (set_of_vector X)" and sum_eq: "(\<Sum>i\<in>UNIV. g i *s X$i) = (\<Sum>i\<in>UNIV. f i *s X$i)"
   shows "f=g"
 proof (rule ccontr)
   assume "f\<noteq>g"
   from this obtain x where fx_gx: "f x \<noteq> g x" by fast
-  have "0=(\<Sum>i\<in>UNIV. g i *s X$i) - (\<Sum>i\<in>UNIV. f i *s X$i)" using setsum_eq by simp
-  also have "... = (\<Sum>i\<in>UNIV. g i *s X$i - f i *s X$i)" unfolding setsum_subtractf[symmetric] ..
-  also have "... = (\<Sum>i\<in>UNIV. (g i - f i) *s X$i)"  by (rule setsum.cong, auto simp add: scaleR_diff_left) 
+  have "0=(\<Sum>i\<in>UNIV. g i *s X$i) - (\<Sum>i\<in>UNIV. f i *s X$i)" using sum_eq by simp
+  also have "... = (\<Sum>i\<in>UNIV. g i *s X$i - f i *s X$i)" unfolding sum_subtractf[symmetric] ..
+  also have "... = (\<Sum>i\<in>UNIV. (g i - f i) *s X$i)"  by (rule sum.cong, auto simp add: scaleR_diff_left) 
   also have "... = (\<Sum>i\<in>UNIV. (g - f) i *s X$i)" by simp
-  finally have setsum_eq_1: "0 = (\<Sum>i\<in>UNIV. (g - f) i *s X$i)" by simp
-  have "\<forall>i\<in>UNIV. (g - f) i = 0" by (rule scalars_zero_if_basis[OF basis_X setsum_eq_1[symmetric]])
+  finally have sum_eq_1: "0 = (\<Sum>i\<in>UNIV. (g - f) i *s X$i)" by simp
+  have "\<forall>i\<in>UNIV. (g - f) i = 0" by (rule scalars_zero_if_basis[OF basis_X sum_eq_1[symmetric]])
   hence "(g - f) x = 0" by simp
   hence "f x = g x" by simp
   thus False using fx_gx by contradiction
@@ -488,7 +488,7 @@ subsection{*Coordinates of a vector*}
 text{*Definition and properties of the coordinates of a vector (in terms of a particular ordered basis).*}
 
 definition coord :: "'a::{field}^'n^'n\<Rightarrow>'a::{field}^'n\<Rightarrow>'a::{field}^'n"
-where "coord X v = (\<chi> i. (THE f. v = setsum (\<lambda>x. f x *s X$x) UNIV) i)"
+where "coord X v = (\<chi> i. (THE f. v = sum (\<lambda>x. f x *s X$x) UNIV) i)"
 
 text{*@{term "coord X v"} are the coordinates of vector @{term "v"} with respect to the basis @{term "X"}*}
 
@@ -522,13 +522,13 @@ proof (unfold bij_def, auto)
 next
   fix x::"('a, 'n) vec"
   show "x \<in> range (coord X)"
-  proof (unfold image_def, auto, rule exI[of _ "setsum (\<lambda>i. x$i *s X$i) UNIV"], unfold coord_def)
+  proof (unfold image_def, auto, rule exI[of _ "sum (\<lambda>i. x$i *s X$i) UNIV"], unfold coord_def)
     def f\<equiv>"\<lambda>i. x$i"
     have the_f: " (THE f. (\<Sum>i\<in>UNIV. x $ i *s X $ i) = (\<Sum>x\<in>UNIV. f x *s X $ x)) = f"
     proof (rule the_equality)
       show "(\<Sum>i\<in>UNIV. x $ i *s X $ i) = (\<Sum>x\<in>UNIV. f x *s X $ x)" unfolding f_def ..
-      fix g assume setsum_eq:"(\<Sum>i\<in>UNIV. x $ i *s X $ i) = (\<Sum>x\<in>UNIV. g x *s X $ x)"
-      show "g = f" using  basis_combination_unique[OF basis_X] using setsum_eq unfolding f_def by simp
+      fix g assume sum_eq:"(\<Sum>i\<in>UNIV. x $ i *s X $ i) = (\<Sum>x\<in>UNIV. g x *s X $ x)"
+      show "g = f" using  basis_combination_unique[OF basis_X] using sum_eq unfolding f_def by simp
     qed
     show " x = vec_lambda (THE f. (\<Sum>i\<in>UNIV. x $ i *s X $ i) = (\<Sum>x\<in>UNIV. f x *s X $ x))" unfolding the_f unfolding f_def using vec_lambda_eta[of x] by simp
   qed
@@ -563,8 +563,8 @@ proof (unfold linear_def additive_def linear_axioms_def coord_def, auto)
       show "\<And>ha. y = (\<Sum>x\<in>UNIV. ha x *s X $ x) \<Longrightarrow> ha = h"  using basis_combination_unique[OF basis_X] h by simp
     qed    
     have "(\<Sum>a\<in>(UNIV::'n set). f a *s X $ a) =  (\<Sum>x\<in>UNIV. g x *s X $ x) + (\<Sum>x\<in>UNIV. h x *s X $ x)" using f g h by simp
-    also have "... = (\<Sum>x\<in>UNIV. g x *s X $ x + h x *s X $ x)" unfolding setsum.distrib[symmetric] ..
-    also have "... = (\<Sum>x\<in>UNIV. (g x + h x) *s X $ x)" by (rule setsum.cong, auto simp add: scaleR_left_distrib)
+    also have "... = (\<Sum>x\<in>UNIV. g x *s X $ x + h x *s X $ x)" unfolding sum.distrib[symmetric] ..
+    also have "... = (\<Sum>x\<in>UNIV. (g x + h x) *s X $ x)" by (rule sum.cong, auto simp add: scaleR_left_distrib)
     also have "... = (\<Sum>x\<in>UNIV. t x *s X $ x)" unfolding t_def ..
     finally have "(\<Sum>a\<in>UNIV. f a *s X $ a) = (\<Sum>x\<in>UNIV. t x *s X $ x)" .    
     hence "f=t" using basis_combination_unique[OF basis_X] by auto
@@ -588,7 +588,7 @@ next
       show "\<And>ga. x = (\<Sum>x\<in>UNIV. ga x *s X $ x) \<Longrightarrow> ga = g" using basis_combination_unique[OF basis_X] g by simp
     qed    
     have "(\<Sum>x\<in>UNIV. f x *s X $ x) = c *s (\<Sum>x\<in>UNIV. g x *s X $ x)" using f g by simp
-    also have "... = (\<Sum>x\<in>UNIV. c *s (g x *s X $ x))" by (rule vec.scale_setsum_right)
+    also have "... = (\<Sum>x\<in>UNIV. c *s (g x *s X $ x))" by (rule vec.scale_sum_right)
     also have "... =  (\<Sum>x\<in>UNIV. t x *s X $ x)" unfolding t_def by simp
     finally have " (\<Sum>x\<in>UNIV. f x *s X $ x) = (\<Sum>x\<in>UNIV. t x *s X $ x)" .
     hence "f=t" using basis_combination_unique[OF basis_X] by auto    
@@ -613,7 +613,7 @@ proof -
   proof (rule the_equality)
     show " \<forall>i. v $ i = (\<Sum>x\<in>UNIV. f x * X $ x $ i)" using f by auto
     fix fa assume "\<forall>i. v $ i = (\<Sum>x\<in>UNIV. fa x * X $ x $ i)"
-    hence "\<forall>i. v $ i = (\<Sum>x\<in>UNIV. fa x *s X $ x) $ i" unfolding setsum_component by simp
+    hence "\<forall>i. v $ i = (\<Sum>x\<in>UNIV. fa x *s X $ x) $ i" unfolding sum_component by simp
     hence fa:" v = (\<Sum>x\<in>UNIV. fa x *s X $ x)"  unfolding vec_eq_iff .
     show "fa = f" using basis_combination_unique[OF basis_X] f fa by simp
   qed
@@ -621,7 +621,7 @@ proof -
   proof (rule the_equality)
     show " \<forall>i. w $ i = (\<Sum>x\<in>UNIV. g x * X $ x $ i)" using g by auto
     fix fa assume "\<forall>i. w $ i = (\<Sum>x\<in>UNIV. fa x * X $ x $ i)"
-    hence "\<forall>i. w $ i = (\<Sum>x\<in>UNIV. fa x *s X $ x) $ i" unfolding setsum_component by simp
+    hence "\<forall>i. w $ i = (\<Sum>x\<in>UNIV. fa x *s X $ x) $ i" unfolding sum_component by simp
     hence fa:" w = (\<Sum>x\<in>UNIV. fa x *s X $ x)"  unfolding vec_eq_iff .
     show "fa = g" using basis_combination_unique[OF basis_X] g fa by simp
   qed
@@ -653,29 +653,29 @@ proof (unfold matrix_def matrix'_def coord_def, vector, auto)
   fix i j
   have basis_Rn:"is_basis (set_of_vector cart_basis_Rn)" using is_basis_cart_basis' unfolding cart_basis_Rn .  
   have basis_Rm:"is_basis (set_of_vector cart_basis_Rm)" using is_basis_cart_basis' unfolding cart_basis_Rm .
-  obtain g where setsum_g: "(\<Sum>x\<in>UNIV. g x *s (cart_basis_Rm $ x)) = f (cart_basis_Rn $ j)" using basis_UNIV[OF basis_Rm] by blast  
+  obtain g where sum_g: "(\<Sum>x\<in>UNIV. g x *s (cart_basis_Rm $ x)) = f (cart_basis_Rn $ j)" using basis_UNIV[OF basis_Rm] by blast  
   have the_g: "(THE g. \<forall>a. f (cart_basis_Rn $ j) $ a = (\<Sum>x\<in>UNIV. g x * cart_basis_Rm $ x $ a)) = g"
   proof (rule the_equality, clarify)
     fix a 
-    have "f (cart_basis_Rn $ j) $ a = (\<Sum>i\<in>UNIV. g i *s (cart_basis_Rm $ i)) $ a" using setsum_g by simp
-    also have "... = (\<Sum>x\<in>UNIV. g x * cart_basis_Rm $ x $ a)" unfolding setsum_component by simp
+    have "f (cart_basis_Rn $ j) $ a = (\<Sum>i\<in>UNIV. g i *s (cart_basis_Rm $ i)) $ a" using sum_g by simp
+    also have "... = (\<Sum>x\<in>UNIV. g x * cart_basis_Rm $ x $ a)" unfolding sum_component by simp
     finally show "f (cart_basis_Rn $ j) $ a = (\<Sum>x\<in>UNIV. g x * cart_basis_Rm $ x $ a)" .  
     fix ga assume "\<forall>a. f (cart_basis_Rn $ j) $ a = (\<Sum>x\<in>UNIV. ga x * cart_basis_Rm $ x $ a)"
-    hence setsum_ga: "f (cart_basis_Rn $ j) = (\<Sum>i\<in>UNIV. ga i *s cart_basis_Rm $ i)" by (vector, auto)
+    hence sum_ga: "f (cart_basis_Rn $ j) = (\<Sum>i\<in>UNIV. ga i *s cart_basis_Rm $ i)" by (vector, auto)
     show "ga = g" 
     proof (rule basis_combination_unique)
       show "is_basis (set_of_vector (cart_basis_Rm))" using basis_Rm .
-      show " (\<Sum>i\<in>UNIV. g i *s cart_basis_Rm $ i) = (\<Sum>i\<in>UNIV. ga i *s cart_basis_Rm $ i)" using setsum_g setsum_ga by simp
+      show " (\<Sum>i\<in>UNIV. g i *s cart_basis_Rm $ i) = (\<Sum>i\<in>UNIV. ga i *s cart_basis_Rm $ i)" using sum_g sum_ga by simp
     qed
   qed
   show " (THE fa. \<forall>i. f (cart_basis_Rn $ j) $ i = (\<Sum>x\<in>UNIV. fa x * cart_basis_Rm $ x $ i)) i = f (axis j 1) $ i"
-    unfolding the_g using setsum_g unfolding cart_basis_Rm cart_basis_Rn cart_basis'_def   using basis_expansion_unique[of g "f (axis j 1)"]
+    unfolding the_g using sum_g unfolding cart_basis_Rm cart_basis_Rn cart_basis'_def   using basis_expansion_unique[of g "f (axis j 1)"]
     unfolding scalar_mult_eq_scaleR by auto
 qed
 
 lemma matrix':
   assumes basis_X: "is_basis (set_of_vector X)" and basis_Y: "is_basis (set_of_vector Y)"
-  shows "f (X$i) = setsum (\<lambda>j. (matrix' X Y f) $ j $ i *s (Y$j)) UNIV" 
+  shows "f (X$i) = sum (\<lambda>j. (matrix' X Y f) $ j $ i *s (Y$j)) UNIV" 
 proof (unfold matrix'_def coord_def matrix_mult_vsum column_def, vector, auto)
   fix j
   obtain g where  g: "(\<Sum>x\<in>UNIV. g x *s Y $ x) = f (X $ i)" using basis_UNIV[OF basis_Y] by blast
@@ -683,32 +683,32 @@ proof (unfold matrix'_def coord_def matrix_mult_vsum column_def, vector, auto)
   proof (rule the_equality, clarify)
     fix a
     have "f (X $ i) $ a = (\<Sum>x\<in>UNIV. g x *s Y $ x) $ a" using g by simp
-    also have "... = (\<Sum>x\<in>UNIV. g x * Y $ x $ a)" unfolding setsum_component by auto
+    also have "... = (\<Sum>x\<in>UNIV. g x * Y $ x $ a)" unfolding sum_component by auto
     finally show "f (X $ i) $ a = (\<Sum>x\<in>UNIV. g x * Y $ x $ a)" .
     fix fa
     assume  "\<forall>ia. f (X $ i) $ ia = (\<Sum>x\<in>UNIV. fa x * Y $ x $ ia)" 
-    hence " \<forall>ia. f (X $ i) $ ia =  (\<Sum>x\<in>UNIV. fa x *s Y $ x) $ ia" unfolding setsum_component by simp
+    hence " \<forall>ia. f (X $ i) $ ia =  (\<Sum>x\<in>UNIV. fa x *s Y $ x) $ ia" unfolding sum_component by simp
     hence fa:"f (X $ i) = (\<Sum>x\<in>UNIV. fa x *s Y $ x)" unfolding vec_eq_iff .
     show "fa = g" by (rule basis_combination_unique[OF basis_Y], simp add: fa g)
   qed
   show " f (X $ i) $ j = (\<Sum>x\<in>UNIV. (THE fa. \<forall>j. f (X $ i) $ j = (\<Sum>x\<in>UNIV. fa x * Y $ x $ j)) x * Y $ x $ j)"
-    unfolding the_g unfolding g[symmetric] setsum_component by simp
+    unfolding the_g unfolding g[symmetric] sum_component by simp
 qed
 
 
 corollary matrix'2:
   assumes  basis_X: "is_basis (set_of_vector X)" and basis_Y: "is_basis (set_of_vector Y)"
-  and eq_f: "\<forall>i. f (X$i) = setsum (\<lambda>j. A $ j $ i *s (Y$j)) UNIV"
+  and eq_f: "\<forall>i. f (X$i) = sum (\<lambda>j. A $ j $ i *s (Y$j)) UNIV"
   shows "matrix' X Y f = A"
 proof -
-  have eq_f': "\<forall>i. f (X$i) = setsum (\<lambda>j. (matrix' X Y f) $ j $ i *s (Y$j)) UNIV" using matrix'[OF basis_X basis_Y] by auto
+  have eq_f': "\<forall>i. f (X$i) = sum (\<lambda>j. (matrix' X Y f) $ j $ i *s (Y$j)) UNIV" using matrix'[OF basis_X basis_Y] by auto
   show ?thesis
   proof (vector, auto)
     fix i j
     def a\<equiv>"\<lambda>x. (matrix' X Y f) $ x $ i"
     def b\<equiv>"\<lambda>x. A $ x $ i"    
-    have  fxi_1:"f (X$i) = setsum (\<lambda>j. a j *s (Y$j)) UNIV" using eq_f' unfolding a_def by simp
-    have  fxi_2: "f (X$i) = setsum (\<lambda>j. b j *s(Y$j)) UNIV" using eq_f unfolding b_def by simp    
+    have  fxi_1:"f (X$i) = sum (\<lambda>j. a j *s (Y$j)) UNIV" using eq_f' unfolding a_def by simp
+    have  fxi_2: "f (X$i) = sum (\<lambda>j. b j *s(Y$j)) UNIV" using eq_f unfolding b_def by simp    
     have "a=b" using basis_combination_unique[OF basis_Y] fxi_1 fxi_2  by auto    
     thus "(matrix' X Y f) $ j $ i = A $ j $ i" unfolding a_def b_def by metis
   qed
@@ -727,7 +727,7 @@ proof (unfold matrix_mult_vsum matrix'_def column_def coord_def, vector, auto)
   have the_g: "(THE fa. \<forall>a. f v $ a = (\<Sum>x\<in>UNIV. fa x * Y $ x $ a)) = g"
   proof (rule the_equality)
     have "\<forall>a. f v $ a = (\<Sum>x\<in>UNIV. g x  *s Y $ x) $ a" using g by simp
-    thus " \<forall>a. f v $ a = (\<Sum>x\<in>UNIV. g x * Y $ x $ a)" unfolding setsum_component by simp
+    thus " \<forall>a. f v $ a = (\<Sum>x\<in>UNIV. g x * Y $ x $ a)" unfolding sum_component by simp
     fix fa assume " \<forall>a. f v $ a = (\<Sum>x\<in>UNIV. fa x * Y $ x $ a)" 
     hence  fa: "f v = (\<Sum>x\<in>UNIV. fa x *s Y $ x)" by (vector, auto)
     show "fa=g" by (rule basis_combination_unique[OF basis_Y], simp add: fa g)
@@ -735,7 +735,7 @@ proof (unfold matrix_mult_vsum matrix'_def column_def coord_def, vector, auto)
   have the_s: "(THE f. \<forall>i. v $ i = (\<Sum>x\<in>UNIV. f x * X $ x $ i))=s"
   proof (rule the_equality)
     have " \<forall>i. v $ i = (\<Sum>x\<in>UNIV. s x *s X $ x) $ i" using s by simp
-    thus " \<forall>i. v $ i = (\<Sum>x\<in>UNIV. s x * X $ x $ i)"unfolding setsum_component by simp
+    thus " \<forall>i. v $ i = (\<Sum>x\<in>UNIV. s x * X $ x $ i)"unfolding sum_component by simp
     fix fa assume "\<forall>i. v $ i = (\<Sum>x\<in>UNIV. fa x * X $ x $ i)"
     hence fa: "v=(\<Sum>x\<in>UNIV. fa x *s X $ x)" by (vector, auto)
     show "fa=s"by (rule basis_combination_unique[OF basis_X], simp add: fa s)
@@ -743,13 +743,13 @@ proof (unfold matrix_mult_vsum matrix'_def column_def coord_def, vector, auto)
   def t\<equiv>"\<lambda>x. (\<Sum>i\<in>UNIV. (s i * (THE fa. f (X $ i) = (\<Sum>x\<in>UNIV. fa x *s Y $ x)) x))"
   have "(\<Sum>x\<in>UNIV. g x *s Y $ x) = f v" using g by simp
   also have "... = f (\<Sum>x\<in>UNIV. s x *s X $ x)" using s by simp
-  also have "... = (\<Sum>x\<in>UNIV. s x *s f (X $ x))" by (rule linear.linear_setsum_mul[OF linear_f], simp)
-  also have "... = (\<Sum>i\<in>UNIV. s i *s setsum (\<lambda>j. (matrix' X Y f)$j$i *s (Y$j)) UNIV)" using matrix'[OF basis_X basis_Y] by auto
-  also have "... =  (\<Sum>i\<in>UNIV. \<Sum>x\<in>UNIV. s i *s (matrix' X Y f $ x $ i *s Y $ x))" unfolding vec.scale_setsum_right ..
+  also have "... = (\<Sum>x\<in>UNIV. s x *s f (X $ x))" by (rule linear.linear_sum_mul[OF linear_f], simp)
+  also have "... = (\<Sum>i\<in>UNIV. s i *s sum (\<lambda>j. (matrix' X Y f)$j$i *s (Y$j)) UNIV)" using matrix'[OF basis_X basis_Y] by auto
+  also have "... =  (\<Sum>i\<in>UNIV. \<Sum>x\<in>UNIV. s i *s (matrix' X Y f $ x $ i *s Y $ x))" unfolding vec.scale_sum_right ..
   also have "... = (\<Sum>i\<in>UNIV. \<Sum>x\<in>UNIV. (s i * (THE fa. f (X $ i) = (\<Sum>x\<in>UNIV. fa x *s Y $ x)) x) *s Y $ x)" unfolding matrix'_def unfolding coord_def by auto
   also have "... = (\<Sum>x\<in>UNIV. (\<Sum>i\<in>UNIV. (s i * (THE fa. f (X $ i) = (\<Sum>x\<in>UNIV. fa x *s Y $ x)) x) *s Y $ x))"
-    by (rule setsum.commute)
-  also have "... =  (\<Sum>x\<in>UNIV. (\<Sum>i\<in>UNIV. (s i * (THE fa. f (X $ i) = (\<Sum>x\<in>UNIV. fa x *s Y $ x)) x)) *s Y $ x)" unfolding vec.scale_setsum_left ..
+    by (rule sum.commute)
+  also have "... =  (\<Sum>x\<in>UNIV. (\<Sum>i\<in>UNIV. (s i * (THE fa. f (X $ i) = (\<Sum>x\<in>UNIV. fa x *s Y $ x)) x)) *s Y $ x)" unfolding vec.scale_sum_left ..
   also have "... =  (\<Sum>x\<in>UNIV. t x *s Y $ x)" unfolding t_def ..
   finally have "(\<Sum>x\<in>UNIV. g x *s Y $ x) = (\<Sum>x\<in>UNIV. t x *s Y $ x)" .  
   hence "g=t" using basis_combination_unique[OF basis_Y] by simp
@@ -757,8 +757,8 @@ proof (unfold matrix_mult_vsum matrix'_def column_def coord_def, vector, auto)
     (\<Sum>x\<in>UNIV. (THE f. \<forall>i. v $ i = (\<Sum>x\<in>UNIV. f x * X $ x $ i)) x * (THE fa. \<forall>i. f (X $ x) $ i = (\<Sum>x\<in>UNIV. fa x * Y $ x $ i)) i)"
   proof (unfold  the_g the_s t_def, auto)
     have " (\<Sum>x\<in>UNIV. s x * (THE fa. \<forall>i. f (X $ x) $ i = (\<Sum>x\<in>UNIV. fa x * Y $ x $ i)) i) = 
-      (\<Sum>x\<in>UNIV. s x * (THE fa. \<forall>i. f (X $ x) $ i = (\<Sum>x\<in>UNIV. fa x  *s Y $ x) $ i) i)" unfolding setsum_component by simp
-    also have "... = (\<Sum>x\<in>UNIV. s x * (THE fa. f (X $ x) = (\<Sum>x\<in>UNIV. fa x  *s Y $ x)) i)" by (rule setsum.cong, auto simp add: vec_eq_iff) 
+      (\<Sum>x\<in>UNIV. s x * (THE fa. \<forall>i. f (X $ x) $ i = (\<Sum>x\<in>UNIV. fa x  *s Y $ x) $ i) i)" unfolding sum_component by simp
+    also have "... = (\<Sum>x\<in>UNIV. s x * (THE fa. f (X $ x) = (\<Sum>x\<in>UNIV. fa x  *s Y $ x)) i)" by (rule sum.cong, auto simp add: vec_eq_iff) 
     finally show " (\<Sum>ia\<in>UNIV. s ia * (THE fa. f (X $ ia) = (\<Sum>x\<in>UNIV. fa x *s Y $ x)) i) = (\<Sum>x\<in>UNIV. s x * (THE fa. \<forall>i. f (X $ x) $ i = (\<Sum>x\<in>UNIV. fa x * Y $ x $ i)) i)"
       by auto
   qed
@@ -789,7 +789,7 @@ lemma exists_linear_eq_matrix':
   assumes basis_X: "is_basis (set_of_vector X)" and basis_Y: "is_basis (set_of_vector Y)"
   shows "\<exists>f. matrix' X Y f = A \<and> linear (op *s) (op *s) f" 
 proof -
-  def f == "\<lambda>v. setsum (\<lambda>j. A $ j $ (THE k. v = X $ k) *s Y $ j) UNIV"
+  def f == "\<lambda>v. sum (\<lambda>j. A $ j $ (THE k. v = X $ k) *s Y $ j) UNIV"
   obtain g where linear_g: "linear (op *s) (op *s) g" and f_eq_g: "(\<forall>x \<in> (set_of_vector X). g x = f x)" 
     using vec.linear_independent_extend using basis_X unfolding is_basis_def by blast  
   show ?thesis
@@ -847,7 +847,7 @@ proof (unfold matrix_mult_vsum matrix_change_of_basis_def column_def coord_def, 
   proof (rule the_equality)
     show "\<forall>i. v $ i = (\<Sum>x\<in>UNIV. f x * Y $ x $ i)" using f by auto
     fix fa assume "\<forall>i. v $ i = (\<Sum>x\<in>UNIV. fa x * Y $ x $ i)"
-    hence "\<forall>i. v $ i = (\<Sum>x\<in>UNIV. fa x *s Y $ x) $ i" unfolding setsum_component by simp
+    hence "\<forall>i. v $ i = (\<Sum>x\<in>UNIV. fa x *s Y $ x) $ i" unfolding sum_component by simp
     hence fa: " v = (\<Sum>x\<in>UNIV. fa x *s Y $ x)" unfolding vec_eq_iff .
     show "fa = f"
       using basis_combination_unique[OF basis_Y] fa f by simp
@@ -856,14 +856,14 @@ proof (unfold matrix_mult_vsum matrix_change_of_basis_def column_def coord_def, 
   proof (rule the_equality)
     show "\<forall>i. v $ i = (\<Sum>x\<in>UNIV. g x * X $ x $ i)" using g by auto
     fix fa assume "\<forall>i. v $ i = (\<Sum>x\<in>UNIV. fa x * X $ x $ i)"
-    hence "\<forall>i. v $ i = (\<Sum>x\<in>UNIV. fa x *s X $ x) $ i" unfolding setsum_component by simp
+    hence "\<forall>i. v $ i = (\<Sum>x\<in>UNIV. fa x *s X $ x) $ i" unfolding sum_component by simp
     hence fa: " v = (\<Sum>x\<in>UNIV. fa x *s X $ x)" unfolding vec_eq_iff .
     show "fa = g"
       using basis_combination_unique[OF basis_X] fa g by simp
   qed  
   have "(\<Sum>x\<in>UNIV. f x *s Y $ x) = (\<Sum>x\<in>UNIV. g x *s X $ x)" unfolding f g ..
-  also have "... = (\<Sum>x\<in>UNIV. g x *s (setsum  (\<lambda>i. (t x i) *s Y $ i) UNIV))" unfolding t_def
-  proof (rule setsum.cong)
+  also have "... = (\<Sum>x\<in>UNIV. g x *s (sum  (\<lambda>i. (t x i) *s Y $ i) UNIV))" unfolding t_def
+  proof (rule sum.cong)
     fix x
     obtain h where h: "(\<Sum>a\<in>UNIV. h a *s Y $ a) = X$x" using basis_UNIV[OF basis_Y] by blast
     have the_h: "(THE f. X $ x = (\<Sum>a\<in>UNIV. f a *s Y $ a))=h" 
@@ -874,9 +874,9 @@ proof (unfold matrix_mult_vsum matrix_change_of_basis_def column_def coord_def, 
     qed
     show " g x *s X $ x = g x *s (\<Sum>i\<in>UNIV. (THE f. X $ x = (\<Sum>a\<in>UNIV. f a *s Y $ a)) i *s Y $ i)" unfolding the_h h ..
   qed rule
-  also have "... = (\<Sum>x\<in>UNIV. (setsum  (\<lambda>i. g x *s ((t x i) *s Y $ i)) UNIV))" unfolding vec.scale_setsum_right ..
-  also have "... = (\<Sum>i\<in>UNIV. \<Sum>x\<in>UNIV. g x *s (t x i *s Y $ i))" by (rule setsum.commute)
-  also have "... =  (\<Sum>i\<in>UNIV. (\<Sum>x\<in>UNIV. g x * t x i) *s Y $ i)" unfolding vec.scale_setsum_left by auto
+  also have "... = (\<Sum>x\<in>UNIV. (sum  (\<lambda>i. g x *s ((t x i) *s Y $ i)) UNIV))" unfolding vec.scale_sum_right ..
+  also have "... = (\<Sum>i\<in>UNIV. \<Sum>x\<in>UNIV. g x *s (t x i *s Y $ i))" by (rule sum.commute)
+  also have "... =  (\<Sum>i\<in>UNIV. (\<Sum>x\<in>UNIV. g x * t x i) *s Y $ i)" unfolding vec.scale_sum_left by auto
   finally have "(\<Sum>x\<in>UNIV. f x *s Y $ x) = (\<Sum>i\<in>UNIV. (\<Sum>x\<in>UNIV. g x * t x i) *s Y $ i) " .  
   hence "f=w" using basis_combination_unique[OF basis_Y] unfolding w_def by auto  
   thus "(\<Sum>x\<in>UNIV. (THE f. \<forall>i. v $ i = (\<Sum>x\<in>UNIV. f x * X $ x $ i)) x * (THE f. \<forall>i. X $ x $ i = (\<Sum>x\<in>UNIV. f x * Y $ x $ i)) i) =
@@ -894,15 +894,15 @@ proof (unfold matrix_change_of_basis_def coord_def mat_def, vector, auto)
   def f\<equiv>"\<lambda>i. if i=j then 1::'a else 0"
   have UNIV_rw: "UNIV = insert j (UNIV-{j})" by auto
   have "(\<Sum>x\<in>UNIV. f x *s X $ x) = (\<Sum>x\<in>(insert j (UNIV-{j})). f x *s X $ x)" using UNIV_rw by simp
-  also have "... = (\<lambda>x. f x *s X $ x) j + (\<Sum>x\<in>(UNIV-{j}). f x *s X $ x)" by (rule setsum.insert, simp+)
+  also have "... = (\<lambda>x. f x *s X $ x) j + (\<Sum>x\<in>(UNIV-{j}). f x *s X $ x)" by (rule sum.insert, simp+)
   also have "... = X$j + (\<Sum>x\<in>(UNIV-{j}). f x *s X $ x)" unfolding f_def by simp
-  also have "... = X$j + 0" unfolding add_left_cancel f_def by (rule setsum.neutral, simp)
+  also have "... = X$j + 0" unfolding add_left_cancel f_def by (rule sum.neutral, simp)
   finally have f: "(\<Sum>x\<in>UNIV. f x *s X $ x) = X$j" by simp
   have the_f: "(THE f. \<forall>i. X $ j $ i = (\<Sum>x\<in>UNIV. f x * X $ x $ i)) = f"
   proof (rule the_equality)
-    show "\<forall>i. X $ j $ i = (\<Sum>x\<in>UNIV. f x * X $ x $ i)"  using f unfolding vec_eq_iff unfolding setsum_component by simp
+    show "\<forall>i. X $ j $ i = (\<Sum>x\<in>UNIV. f x * X $ x $ i)"  using f unfolding vec_eq_iff unfolding sum_component by simp
     fix fa assume "\<forall>i. X $ j $ i = (\<Sum>x\<in>UNIV. fa x * X $ x $ i)"
-    hence "\<forall>i. X $ j $ i = (\<Sum>x\<in>UNIV. fa x *s X $ x) $ i" unfolding setsum_component by simp
+    hence "\<forall>i. X $ j $ i = (\<Sum>x\<in>UNIV. fa x *s X $ x) $ i" unfolding sum_component by simp
     hence fa: "X $ j =  (\<Sum>x\<in>UNIV. fa x *s X $ x)" unfolding vec_eq_iff .
     show "fa = f" using basis_combination_unique[OF basis_X] fa f by simp
   qed

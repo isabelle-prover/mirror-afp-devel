@@ -51,7 +51,7 @@ lemma a_cnj_a_0: "(a*cnj a = 0) = (a = 0)"
   
 end
 
-lemma cnj_setsum: "cnj (\<Sum>xa\<in>A. ((f xa))) = (\<Sum>xa\<in>A. cnj (f xa))"
+lemma cnj_sum: "cnj (\<Sum>xa\<in>A. ((f xa))) = (\<Sum>xa\<in>A. cnj (f xa))"
     by (cases "finite A", induct set: finite, auto simp add: cnj_add)
 
 instantiation real :: cnj
@@ -102,8 +102,8 @@ proof -
 qed
 
 
-lemma real_setsum:
-  "real_of (setsum (\<lambda>i. f i) A) = setsum (\<lambda>i. real_of (f i)) A"
+lemma real_sum:
+  "real_of (sum (\<lambda>i. f i) A) = sum (\<lambda>i. real_of (f i)) A"
 proof (cases "finite A")
   case False thus ?thesis by auto
 next
@@ -176,7 +176,7 @@ lemma inner_minus_left [simp]: "inner (- x) y = - inner x y"
 lemma inner_diff_left: "inner (x - y) z = inner x z - inner y z"
   using inner_add_left [of x "- y" z] by simp
 
-lemma inner_setsum_left: "inner (\<Sum>x\<in>A. f x) y = (\<Sum>x\<in>A. inner (f x) y)"
+lemma inner_sum_left: "inner (\<Sum>x\<in>A. f x) y = (\<Sum>x\<in>A. inner (f x) y)"
   by (cases "finite A", induct set: finite, simp_all add: inner_add_left)
 
 text {* Transfer distributivity rules to right argument. *}
@@ -212,12 +212,12 @@ lemma inner_diff_right: "inner x (y - z) = inner x y - inner x z"
   by (metis add_uminus_conv_diff local.inner_add_right local.inner_minus_right) 
 
 
-lemma inner_setsum_right: "inner x (\<Sum>y\<in>A. f y) = (\<Sum>y\<in>A. inner x (f y))"
+lemma inner_sum_right: "inner x (\<Sum>y\<in>A. f y) = (\<Sum>y\<in>A. inner x (f y))"
 proof -
   have "inner x (\<Sum>y\<in>A. f y) = cnj (inner (\<Sum>y\<in>A. f y) x)" using inner_commute by blast
-  also have "... = cnj (\<Sum>xa\<in>A. inner (f xa) x)" unfolding inner_setsum_left [of f A x] ..
-  also have "... = (\<Sum>xa\<in>A. cnj (inner (f xa) x))" unfolding cnj_setsum ..
-  also have "... = (\<Sum>xa\<in>A. inner x (f xa))" by (rule setsum.cong, simp, metis inner_commute)
+  also have "... = cnj (\<Sum>xa\<in>A. inner (f xa) x)" unfolding inner_sum_left [of f A x] ..
+  also have "... = (\<Sum>xa\<in>A. cnj (inner (f xa) x))" unfolding cnj_sum ..
+  also have "... = (\<Sum>xa\<in>A. inner x (f xa))" by (rule sum.cong, simp, metis inner_commute)
   finally show ?thesis .
 qed
   
@@ -362,11 +362,11 @@ lemma pairwise_orthogonal_insert:
 
 end
 
-lemma setsum_0_all:
+lemma sum_0_all:
   assumes a: "\<forall>a\<in>A. f a \<ge> (0 :: real)" 
-  and s0: "setsum f A = 0" and f: "finite A"
+  and s0: "sum f A = 0" and f: "finite A"
   shows "\<forall>a\<in>A. f a = 0" 
-  using a f s0 setsum_nonneg_eq_0_iff by blast
+  using a f s0 sum_nonneg_eq_0_iff by blast
 
 
 subsection{*Vecs as inner product spaces*}
@@ -374,26 +374,26 @@ subsection{*Vecs as inner product spaces*}
 locale vec_real_inner = F?: inner_product_space "(op * :: 'a\<Rightarrow>'a\<Rightarrow>'a)" inner_field 
  for inner_field :: "'a\<Rightarrow>'a\<Rightarrow>'a::{field,cnj,real_of_extended}" 
  + fixes inner :: "'a^'n \<Rightarrow> 'a^'n \<Rightarrow>'a" 
- assumes inner_vec_def: "inner x y = setsum (\<lambda>i. inner_field (x$i) (y$i)) UNIV"
+ assumes inner_vec_def: "inner x y = sum (\<lambda>i. inner_field (x$i) (y$i)) UNIV"
 begin
 
 lemma inner_ge_zero [simp]: "0 \<le> real_of (inner x x)"
-  by (auto simp add: inner_vec_def real_setsum setsum_nonneg)
+  by (auto simp add: inner_vec_def real_sum sum_nonneg)
 
 lemma real_scalar_mult2: "real_of (inner x x) *\<^sub>R A = inner x x * A"
 by (auto simp add: inner_vec_def) 
-  (metis (mono_tags, lifting) Cartesian_Euclidean_Space.setsum_cong_aux 
-  real_scalar_mult2 real_setsum scaleR_left.setsum scale_setsum_left)
+  (metis (mono_tags, lifting) Cartesian_Euclidean_Space.sum_cong_aux 
+  real_scalar_mult2 real_sum scaleR_left.sum scale_sum_left)
 
 lemma i1: "inner x y = cnj (inner y x)"
-by (auto simp add: inner_vec_def cnj_setsum cnj_mult mult.commute)
+by (auto simp add: inner_vec_def cnj_sum cnj_mult mult.commute)
    (meson local.inner_commute)
 
 lemma i2: "inner (x + y) z = inner x z + inner y z"
-using local.inner_left_distrib setsum.distrib inner_vec_def by force
+using local.inner_left_distrib sum.distrib inner_vec_def by force
 
 lemma i3: "inner (r *s x) y = r * inner x y"
-by (auto simp add: inner_vec_def scale_setsum_right)
+by (auto simp add: inner_vec_def scale_sum_right)
 
 lemma i4: assumes "inner x x = 0"
 shows "x = 0"
@@ -402,10 +402,10 @@ proof (unfold vec_eq_iff, clarify, simp)
   have "0 = real_of (\<Sum>i\<in>UNIV. inner_field (x $ i) (x $ i))"
     using assms by (simp add: inner_vec_def) 
   also have "... = (\<Sum>i\<in>UNIV. real_of (inner_field (x $ i) (x $ i)))" 
-    using real_setsum by auto
+    using real_sum by auto
   finally have "0 = (\<Sum>i\<in>UNIV. real_of (inner_field (x $ i) (x $ i)))" .  
   hence "real_of (inner_field (x $ a) (x $ a)) = 0"
-    using setsum_0_all F.inner_ge_zero 
+    using sum_0_all F.inner_ge_zero 
     by (metis (no_types, lifting) finite iso_tuple_UNIV_I)
   thus "x $ a = 0" 
   by (metis (mono_tags, lifting) F.inner_eq_zero_iff F.real_scalar_mult2 real_0 scale_right_imp_eq)
@@ -440,12 +440,12 @@ begin
 
 lemma dot_lmul_matrix: "inner_rows (x v* A) y = inner_cols x ((\<chi> i j. cnj (A $ i $ j)) *v y)"
  apply (simp add: COLS.inner_vec_def ROWS.inner_vec_def matrix_vector_mult_def 
-       vector_matrix_mult_def setsum_distrib_right cnj_setsum ac_simps)
- proof (unfold setsum_distrib_left, subst setsum.commute, rule setsum.cong, simp)
+       vector_matrix_mult_def sum_distrib_right cnj_sum ac_simps)
+ proof (unfold sum_distrib_left, subst sum.commute, rule sum.cong, simp)
   fix xa::'cols
   show "(\<Sum>i\<in>UNIV. cnj (y $ i) * (x $ xa * A $ xa $ i)) 
     = (\<Sum>n\<in>UNIV. x $ xa * cnj (y $ n * cnj (A $ xa $ n)))"
-  proof (rule setsum.cong, simp)
+  proof (rule sum.cong, simp)
     fix xb:: 'rows
     show "cnj_class.cnj (y $ xb) * (x $ xa * A $ xa $ xb) 
       = x $ xa * cnj_class.cnj (y $ xb * cnj_class.cnj (A $ xa $ xb))"
@@ -496,7 +496,7 @@ definition "proj v u = scale (inner v u / inner u u) u"
 
 text{*Projection of a onto S*}
 
-definition "proj_onto a S = (setsum (\<lambda>x. proj a x) S)"
+definition "proj_onto a S = (sum (\<lambda>x. proj a x) S)"
 
 lemma vector_sub_project_orthogonal_proj:
   shows "inner b (x - proj x b) = 0"
@@ -513,11 +513,11 @@ proof -
   show "orthogonal (a - proj_onto a C) y"
     unfolding orthogonal_def unfolding proj_onto_def unfolding proj_def[abs_def]
     unfolding inner_diff
-    unfolding inner_setsum_left 
+    unfolding inner_sum_left 
     unfolding right_minus_eq
-    unfolding setsum.remove[OF C yC]
+    unfolding sum.remove[OF C yC]
     apply (clarsimp simp add: inner_commute[of y a])
-    apply (rule setsum.neutral)
+    apply (rule sum.neutral)
     apply clarsimp
     apply (rule p[unfolded pairwise_def orthogonal_def, rule_format])
     using yC by auto
@@ -591,12 +591,12 @@ end
 text{*We can get the explicit results for complex and real matrices*}
 
 interpretation real_matrix: matrix "\<lambda>x y::real^'cols::{finite,wellorder}. 
-  setsum (\<lambda>i. (x$i) * (y$i)) UNIV" "\<lambda>x y. setsum (\<lambda>i. (x$i) * (y$i)) UNIV"
+  sum (\<lambda>i. (x$i) * (y$i)) UNIV" "\<lambda>x y. sum (\<lambda>i. (x$i) * (y$i)) UNIV"
   apply (unfold_locales, auto simp add: cnj_real_def real_of_real_def distrib_right)
   using not_real_square_gt_zero by blast
 
 interpretation complex_matrix: matrix "\<lambda>x y::complex^'cols::{finite,wellorder}. 
-  setsum (\<lambda>i. (x$i) * cnj (y$i)) UNIV" "\<lambda>x y. setsum (\<lambda>i. (x$i) * cnj (y$i)) UNIV"
+  sum (\<lambda>i. (x$i) * cnj (y$i)) UNIV" "\<lambda>x y. sum (\<lambda>i. (x$i) * cnj (y$i)) UNIV"
   by (unfold_locales, auto simp add: distrib_right)
 
 lemma null_space_orthogonal_complement_row_space_complex:

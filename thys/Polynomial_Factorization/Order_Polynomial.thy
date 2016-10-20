@@ -71,7 +71,7 @@ qed
 
 
 lemma order_sum_degree: assumes "p \<noteq> 0"
-  shows "setsum (\<lambda> a. order a p) { a. poly p a = 0 } \<le> degree p"
+  shows "sum (\<lambda> a. order a p) { a. poly p a = 0 } \<le> degree p"
 proof -
   def n \<equiv> "degree p"
   have "degree p \<le> n" unfolding n_def by auto
@@ -110,7 +110,7 @@ proof -
       finally have "order a q = 0" by auto
       with order_root[of q a] `q \<noteq> 0` have qa: "poly q a \<noteq> 0" by auto
       have "(\<Sum>a\<in>{a. poly q a = 0} - {a}. order a p) = (\<Sum>a\<in>{a. poly q a = 0} - {a}. order a q)"
-      proof (rule setsum.cong[OF refl])
+      proof (rule sum.cong[OF refl])
         fix b
         assume "b \<in> {a. poly q a = 0} - {a}"
         hence "b \<noteq> a" by auto
@@ -123,7 +123,7 @@ proof -
         insert deg[unfolded degree_linear_power] Suc(2), auto)
       finally have "(\<Sum>a\<in>{a. poly q a = 0} - {a}. order a p) \<le> degree q" .      
       thus ?thesis unfolding roots deg using fin
-        by (subst setsum.insert, simp_all only: degree_linear_power, auto simp: orda)
+        by (subst sum.insert, simp_all only: degree_linear_power, auto simp: orda)
     qed auto
   qed
 qed 
@@ -145,7 +145,7 @@ proof (cases "p = 0")
     have ord: "order a p = order a [: -a, 1 :] + order a q"
       using p False order_mult[of "[: -a, 1 :]" q] by auto
     have q: "p div [: -a, 1 :] = q" using False p 
-      by (metis mult_zero_left nonzero_mult_divide_cancel_left)
+      by (metis mult_zero_left nonzero_mult_div_cancel_left)
     show ?thesis unfolding ord q using False True by auto
   next
     case False

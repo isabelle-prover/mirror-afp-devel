@@ -272,16 +272,16 @@ proof (cases "p = 0 \<or> q = 0")
       also have "{..r+s} = {..< r} \<union> {r .. r+s}" by auto
       also have "(\<Sum>i\<in>{..<r} \<union> {r..r + s}. ?f i)
         = (\<Sum>i\<in>{..<r}. ?f i) + (\<Sum> i \<in> {r..r + s}. ?f i)" 
-        by (rule setsum.union_disjoint, auto)
+        by (rule sum.union_disjoint, auto)
       also have "(\<Sum>i\<in>{..<r}. ?f i) = (\<Sum>i\<in>{..<r}. ?n * (?f i div ?n))"
-        by (rule setsum.cong[OF refl], insert r', auto)
-      also have "\<dots> = ?n * a" unfolding setsum_distrib_left[symmetric] a_def ..
+        by (rule sum.cong[OF refl], insert r', auto)
+      also have "\<dots> = ?n * a" unfolding sum_distrib_left[symmetric] a_def ..
       also have "(\<Sum> i \<in> {r..r + s}. ?f i) = ?f r + (\<Sum> i \<in> {Suc r..r + s}. ?f i)"
-        by (subst setsum.remove[of _ r], auto intro: setsum.cong)
+        by (subst sum.remove[of _ r], auto intro: sum.cong)
       also have "(\<Sum> i \<in> {Suc r..r + s}. ?f i) = (\<Sum> i \<in> {Suc r..r + s}. ?n * (?f i div ?n))"
-        by (rule setsum.cong[OF refl], insert s', auto)
+        by (rule sum.cong[OF refl], insert s', auto)
       also have "(\<Sum> i \<in> {Suc r..r + s}. ?n * (?f i div ?n)) = ?n * b"
-        unfolding setsum_distrib_left[symmetric] b_def ..
+        unfolding sum_distrib_left[symmetric] b_def ..
       finally have cpq: "coeff (p * q) (r + s) = ?n * (a + b) + ?r * ?s"
         by (simp add: field_simps)
       {
@@ -311,6 +311,16 @@ proof (cases "p = 0 \<or> q = 0")
   also have "abs (?c p * ?c q) = ?c p * ?c q" using content_ge_0_int by auto
   finally show ?thesis by simp
 qed auto
+
+lemma content_dvd_1: assumes "content f = (1 :: int)" "g dvd f" 
+  shows "content g = 1" 
+proof -
+  from assms obtain h where f: "f = g * h" unfolding dvd_def by auto
+  from arg_cong[OF this, of content, unfolded assms gauss_lemma]
+  have "content g \<in> {-1,1}" using pos_zmult_eq_1_iff_lemma by fastforce
+  with content_ge_0_int[of g] show "content g = 1" by auto
+qed
+
 
 lemma dvd_smult_int: fixes c :: int assumes c: "c \<noteq> 0"
   and dvd: "q dvd (smult c p)"

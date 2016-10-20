@@ -129,9 +129,9 @@ lemma assumes "(j::nat) div a = i div a"
       shows "j = i" 
 proof-
  have "a*(j div a) + (j mod a) = j" 
-    using mod_div_equality2 by simp
+    using mult_div_mod_eq by simp
  moreover have "a*(i div a) + (i mod a) = i"
-    using mod_div_equality2 by auto
+    using mult_div_mod_eq by auto
  ultimately show ?thesis using assms by metis
 qed  
 
@@ -171,7 +171,7 @@ lemma inverse2:"rat_poly_times B A = 1"
 
 lemma B_non_zero:"B \<noteq> 0"
  using A_non_zero mult_inv_non_zero inverse1 
-       divide_fract divide_zero_left fract_collapse(2) 
+       divide_fract div_0 fract_collapse(2) 
        monoid_mult_class.mult.left_neutral 
        mult_fract_cancel non_zero var_def2 zero_neq_one
  by (metis (hide_lams, mono_tags))

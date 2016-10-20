@@ -97,7 +97,7 @@ lemma nu_witness_properties:
 unfolding nu_witness_def
 using properties_lambda_gt_0
 apply (simp_all add: less_diff_conv divide_simps)
-apply (metis div_mod_equality' dvd_def mod_add_self2 mult.commute)
+apply (metis minus_mod_eq_div_mult [symmetric] dvd_def mod_add_self2 mult.commute)
 done
 
 text\<open>

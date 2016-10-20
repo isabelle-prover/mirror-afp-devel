@@ -305,8 +305,8 @@ proof -
     have a: "L ` V = ?A \<union> ?B" using assms by auto
     have "finite V" using assms 
       by (simp add: matching_def finite_graph_def)
-    have b: "setsum ?g (?A \<union> ?B) = setsum ?g ?A + setsum ?g ?B"
-      using assms `finite V` by (auto intro: setsum.union_disjoint)    
+    have b: "sum ?g (?A \<union> ?B) = sum ?g ?A + sum ?g ?B"
+      using assms `finite V` by (auto intro: sum.union_disjoint)    
     have 1: "?Mi = ?M01+ ?Mgr1" using assms a b 
       by (simp add: matching_def finite_graph_def)
     moreover
@@ -343,7 +343,7 @@ proof -
         qed
       moreover
       have 3: "?Mgr1 \<le> (\<Sum>i|i\<in>L`V \<and> 1 < i. N V L i div 2)" using assms 
-        by (intro setsum_mono card_Mi_le_floor_div_2_NVLi, simp)
+        by (intro sum_mono card_Mi_le_floor_div_2_NVLi, simp)
     ultimately
     show ?thesis using 1 2 3 assms by (simp add: weight_def)
   qed

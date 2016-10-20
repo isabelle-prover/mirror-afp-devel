@@ -38,15 +38,15 @@ end
 lemma (in ordered_comm_monoid_add) positive_sum:
   assumes X : "finite X"
       and "f : X \<rightarrow> { y :: 'a. y \<ge> 0 }"
-  shows "setsum f X \<ge> 0 \<and> (setsum f X = 0 \<longrightarrow> f ` X \<subseteq> {0})"
+  shows "sum f X \<ge> 0 \<and> (sum f X = 0 \<longrightarrow> f ` X \<subseteq> {0})"
   using assms
 proof (induct set:finite)
   case (insert x X)
-    hence x0: "f x \<ge> 0" and sum0: "setsum f X \<ge> 0" by auto
-    hence "setsum f (insert x X) \<ge> 0" using insert by auto
+    hence x0: "f x \<ge> 0" and sum0: "sum f X \<ge> 0" by auto
+    hence "sum f (insert x X) \<ge> 0" using insert by auto
     moreover
-    { assume "setsum f (insert x X) = 0"
-      hence "f x = 0" "setsum f X = 0"
+    { assume "sum f (insert x X) = 0"
+      hence "f x = 0" "sum f X = 0"
         using sum0 x0 insert add_nonneg_eq_0_iff by auto
     }
     ultimately show ?case using insert by blast

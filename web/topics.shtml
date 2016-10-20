@@ -180,6 +180,12 @@
 <a href="entries/Parity_Game.shtml">Parity_Game</a> &nbsp;
 </div>
 
+<h3>Hardware</h3>
+
+<div class="list">
+<a href="entries/SPARCv8.shtml">SPARCv8</a> &nbsp;
+</div>
+
 <h3>Networks</h3>
 
 <div class="list">
@@ -296,6 +302,7 @@
 <a href="entries/Noninterference_Inductive_Unwinding.shtml">Noninterference_Inductive_Unwinding</a> &nbsp;
 <a href="entries/Noninterference_Sequential_Composition.shtml">Noninterference_Sequential_Composition</a> &nbsp;
 <a href="entries/Noninterference_Concurrent_Composition.shtml">Noninterference_Concurrent_Composition</a> &nbsp;
+<a href="entries/SPARCv8.shtml">SPARCv8</a> &nbsp;
 </div>
 
 <h2>Logic</h2>
@@ -327,6 +334,7 @@
 <a href="entries/Incredible_Proof_Machine.shtml">Incredible_Proof_Machine</a> &nbsp;
 <a href="entries/Resolution_FOL.shtml">Resolution_FOL</a> &nbsp;
 <a href="entries/Surprise_Paradox.shtml">Surprise_Paradox</a> &nbsp;
+<a href="entries/Allen_Calculus.shtml">Allen_Calculus</a> &nbsp;
 </div>
 
 <h3>Rewriting</h3>
@@ -380,6 +388,8 @@
 <a href="entries/Perron_Frobenius.shtml">Perron_Frobenius</a> &nbsp;
 <a href="entries/Groebner_Bases.shtml">Groebner_Bases</a> &nbsp;
 <a href="entries/Multivariate_Polynomials.shtml">Multivariate_Polynomials</a> &nbsp;
+<a href="entries/Berlekamp_Zassenhaus.shtml">Berlekamp_Zassenhaus</a> &nbsp;
+<a href="entries/Allen_Calculus.shtml">Allen_Calculus</a> &nbsp;
 </div>
 
 <h3>Analysis</h3>
@@ -412,6 +422,7 @@
 <a href="entries/Density_Compiler.shtml">Density_Compiler</a> &nbsp;
 <a href="entries/Random_Graph_Subgraph_Threshold.shtml">Random_Graph_Subgraph_Threshold</a> &nbsp;
 <a href="entries/Ergodic_Theory.shtml">Ergodic_Theory</a> &nbsp;
+<a href="entries/Source_Coding_Theorem.shtml">Source_Coding_Theorem</a> &nbsp;
 </div>
 
 <h3>Number Theory</h3>
@@ -440,6 +451,7 @@
 
 <div class="list">
 <a href="entries/Buildings.shtml">Buildings</a> &nbsp;
+<a href="entries/Chord_Segments.shtml">Chord_Segments</a> &nbsp;
 <a href="entries/Triangle.shtml">Triangle</a> &nbsp;
 <a href="entries/Impossible_Geometry.shtml">Impossible_Geometry</a> &nbsp;
 <a href="entries/Tarskis_Geometry.shtml">Tarskis_Geometry</a> &nbsp;

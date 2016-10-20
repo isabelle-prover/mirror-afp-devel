@@ -55,8 +55,8 @@ proof (induction Ps arbitrary: Pc z rule: list.induct)
           by (rule ccw') (simp add: )
         have 2: "0 < e \<Longrightarrow> ccw' 0 (P + sum_list (take e Ps)) (Ps ! e)"
           using \<open>e < length Ps\<close>
-          by (auto intro!: ccw'.add1 0 ccw'.setsum2 sorted' ccw'.sorted_nth_less
-            simp: sum_list_setsum_nth)
+          by (auto intro!: ccw'.add1 0 ccw'.sum2 sorted' ccw'.sorted_nth_less
+            simp: sum_list_sum_nth)
         have "ccw Pc (Pc + P + sum_list (take e Ps)) (Pc + P + sum_list (take (Suc e) Ps))"
           by (cases "e = 0")
             (auto simp add: ccw_translate_origin take_Suc_eq add.assoc[symmetric] 0 2
@@ -67,8 +67,8 @@ proof (induction Ps arbitrary: Pc z rule: list.induct)
         have "0 < e \<Longrightarrow> ccw 0 (Ps ! e) (- sum_list (take e Ps))"
           using \<open>e < length Ps\<close>
           by (auto simp add: take_Suc_eq add.assoc[symmetric]
-              sum_list_setsum_nth
-            intro!: ccw'_imp_ccw ccw'.setsum2 sorted' ccw'.sorted_nth_less)
+              sum_list_sum_nth
+            intro!: ccw'_imp_ccw ccw'.sum2 sorted' ccw'.sorted_nth_less)
         hence "ccw (Pc + P + sum_list (take e Ps)) (Pc + P + sum_list (take (Suc e) Ps)) (Pc + P)"
           by (cases "e = 0") (simp_all add: ccw_translate_origin take_Suc_eq)
         ultimately have "?th x"
@@ -86,7 +86,7 @@ proof (induction Ps arbitrary: Pc z rule: list.induct)
           case (Suc f)
           have "ccw 0 P (P + sum_list (take (Suc f) Ps))"
             using z
-            by (force simp add: sum_list_setsum_nth intro!: ccw'.setsum intro: ccw' ccw'_imp_ccw)
+            by (force simp add: sum_list_sum_nth intro!: ccw'.sum intro: ccw' ccw'_imp_ccw)
           thus ?thesis
             by (simp add: e Suc)
         qed (simp add: e)
@@ -96,7 +96,7 @@ proof (induction Ps arbitrary: Pc z rule: list.induct)
       moreover
       from z have "ccw 0 P (P + sum_list (take d Ps))"
         by (cases d, force)
-          (force simp add: sum_list_setsum_nth intro!: ccw'_imp_ccw ccw'.setsum intro: ccw')+
+          (force simp add: sum_list_sum_nth intro!: ccw'_imp_ccw ccw'.sum intro: ccw')+
       hence "ccw Pc (Pc + P) (snd z)"
         by (simp add: d ccw_translate_origin)
       moreover
@@ -208,7 +208,7 @@ lemma
   obtains e' where "e' \<in> UNIV \<rightarrow> I" "pdevs_val e x = pdevs_val e' (nlex_pdevs x)"
   using assms
   by (atomize_elim, intro exI[where x="\<lambda>n. if lex 0 (pdevs_apply x n) then - e n else e n"])
-    (force simp: pdevs_val_pdevs_domain intro!: setsum.cong)
+    (force simp: pdevs_val_pdevs_domain intro!: sum.cong)
 
 lemma
   pdevs_val_nlex_pdevs2:
@@ -216,7 +216,7 @@ lemma
   obtains e' where "e' \<in> UNIV \<rightarrow> I" "pdevs_val e (nlex_pdevs x) = pdevs_val e' x"
   using assms
   by (atomize_elim, intro exI[where x="\<lambda>n. (if lex 0 (pdevs_apply x n) then - e n else e n)"])
-    (force simp: pdevs_val_pdevs_domain intro!: setsum.cong)
+    (force simp: pdevs_val_pdevs_domain intro!: sum.cong)
 
 lemma
   pdevs_val_selsort_ccw:
@@ -274,12 +274,12 @@ proof -
   from abs_pdevs_val_le_tdev[OF assms(1), of "snd Y"]
   have "snd \<bar>pdevs_val e (snd Y)\<bar> \<le> (\<Sum>i<degree_aform Y. \<bar>snd (pdevs_apply (snd X) i)\<bar>)"
     unfolding lowest_vertex_def
-    by (auto simp: aform_val_def tdev_def less_eq_prod_def snd_setsum snd_abs assms)
+    by (auto simp: aform_val_def tdev_def less_eq_prod_def snd_sum snd_abs assms)
   also have "\<dots> = (\<Sum>i<degree_aform X. snd (pdevs_apply (snd X) i))"
     by (simp add: assms)
   also have "\<dots> \<le> snd (sum_list (map snd (list_of_pdevs (snd X))))"
-    by (simp add: sum_list_list_of_pdevs dense_list_of_pdevs_def sum_list_distinct_conv_setsum_set
-      snd_setsum atLeast0LessThan)
+    by (simp add: sum_list_list_of_pdevs dense_list_of_pdevs_def sum_list_distinct_conv_sum_set
+      snd_sum atLeast0LessThan)
   finally show ?thesis
     by (auto simp: aform_val_def lowest_vertex_def minus_le_iff snd_abs abs_real_def assms
       split: if_split_asm)
@@ -357,12 +357,12 @@ next
   let ?coll = "pdevs_of_list xs"
   have "pdevs_val f (pdevs_of_list xs) =
       (\<Sum>i<degree (pdevs_of_list xs). f i *\<^sub>R xs ! i)"
-    unfolding pdevs_val_setsum
+    unfolding pdevs_val_sum
     by (simp add: pdevs_apply_pdevs_of_list less_degree_pdevs_of_list_imp_less_length)
   also have "\<dots> = (\<Sum>i<degree ?coll. (f i * r i) *\<^sub>R (sum_list xs))"
     by (simp add: r less_degree_pdevs_of_list_imp_less_length)
   also have "\<dots> = (\<Sum>i<degree ?coll. f i * r i) *\<^sub>R (sum_list xs)"
-    by (simp add: algebra_simps scaleR_setsum_left)
+    by (simp add: algebra_simps scaleR_sum_left)
   finally have eq: "pdevs_val f ?coll = (\<Sum>i<degree ?coll. f i * r i) *\<^sub>R (sum_list xs)"
     (is "_ = ?e *\<^sub>R _")
     .
@@ -404,8 +404,8 @@ proof -
   ultimately
   show ?thesis
     using assms witness bnds
-    by (auto simp: pdevs_val_setsum tdev_def abs_scaleR
-      intro!: le_less_trans[OF setsum_abs] setsum_strict_mono_ex1 scaleR_left_le_one_le)
+    by (auto simp: pdevs_val_sum tdev_def abs_scaleR
+      intro!: le_less_trans[OF sum_abs] sum_strict_mono_ex1 scaleR_left_le_one_le)
 qed
 
 lemma pdevs_val_coll_strict:
@@ -465,12 +465,12 @@ next
   let ?coll = "pdevs_of_list xs"
   have "pdevs_val f (pdevs_of_list xs) =
       (\<Sum>i<degree (pdevs_of_list xs). f i *\<^sub>R xs ! i)"
-    unfolding pdevs_val_setsum
+    unfolding pdevs_val_sum
     by (simp add: less_degree_pdevs_of_list_imp_less_length pdevs_apply_pdevs_of_list)
   also have "\<dots> = (\<Sum>i<degree ?coll. (f i * r i) *\<^sub>R (sum_list xs))"
     by (simp add: r less_degree_pdevs_of_list_imp_less_length)
   also have "\<dots> = (\<Sum>i<degree ?coll. f i * r i) *\<^sub>R (sum_list xs)"
-    by (simp add: algebra_simps scaleR_setsum_left)
+    by (simp add: algebra_simps scaleR_sum_left)
   finally have eq: "pdevs_val f ?coll = (\<Sum>i<degree ?coll. f i * r i) *\<^sub>R (sum_list xs)"
     (is "_ = ?e *\<^sub>R _")
     .
@@ -630,7 +630,7 @@ next
   next
     assume "x = y + sum_list (filter (coll 0 y) ys)"
     also have "lex \<dots> 0"
-      by (force intro: nlex_sum nlex_setsum simp: sum_list_setsum_nth
+      by (force intro: nlex_add nlex_sum simp: sum_list_sum_nth
         dest: nth_mem intro: 2(3))
     finally show ?case .
   qed
@@ -1088,8 +1088,8 @@ proof -
       pdevs_val (\<lambda>i. if i \<le> d then 2 else 0) (pdevs_of_list (ccw.selsort 0 (inl (snd X))))"
     (is "_ = pdevs_val ?e _")
     by (subst sum_list_take_pdevs_val_eq)
-      (auto simp: pdevs_val_setsum if_distrib pdevs_apply_pdevs_of_list
-        degree_pdevs_of_list_scaleR intro!: setsum.cong )
+      (auto simp: pdevs_val_sum if_distrib pdevs_apply_pdevs_of_list
+        degree_pdevs_of_list_scaleR intro!: sum.cong )
   also
   obtain e'' where "\<dots> = pdevs_val e'' (pdevs_of_list (inl (snd X)))" "e'' \<in> UNIV \<rightarrow> {0..2}"
     by (auto intro: pdevs_val_selsort_ccw2[of "inl (snd X)" ?e "{0 .. 2}"])
@@ -1202,7 +1202,7 @@ proof -
   also
   have "distinct ?ssl" "?f' \<in> UNIV \<rightarrow> {0<..<1}" using \<open>f \<in> _\<close>
     by (auto simp: distinct_map_scaleRI Pi_iff algebra_simps real_0_less_add_iff)
-  from pdevs_of_list_setsum[OF this]
+  from pdevs_of_list_sum[OF this]
   obtain g where "g \<in> UNIV \<rightarrow> {0<..<1}"
     "pdevs_val ?f' (pdevs_of_list ?ssl) = (\<Sum>P\<in>set ?ssl. g P *\<^sub>R P)"
     by blast
@@ -1422,7 +1422,7 @@ proof safe
     using assms
     by (auto dest!: nth_mem intro!: half_segments_of_aform_strict)
   also have "aform_val (-e) X = 2 *\<^sub>R fst X - aform_val e X"
-    by (auto simp: aform_val_def pdevs_val_setsum algebra_simps scaleR_2 setsum_negf)
+    by (auto simp: aform_val_def pdevs_val_sum algebra_simps scaleR_2 sum_negf)
   finally have le:
     "ccw' (fst (half_segments_of_aform X ! n)) (snd (half_segments_of_aform X ! n))
       (2 *\<^sub>R fst X - aform_val e X)"
@@ -1522,7 +1522,7 @@ lemma segments_of_aform_strict:
     half_segments_of_aform_strict_all)
 
 lemma mirror_point_aform_val[simp]: "mirror_point (fst X) (aform_val e X) = aform_val (- e) X"
-  by (auto simp: mirror_point_def aform_val_def pdevs_val_setsum algebra_simps scaleR_2 setsum_negf)
+  by (auto simp: mirror_point_def aform_val_def pdevs_val_sum algebra_simps scaleR_2 sum_negf)
 
 lemma
   in_set_segments_of_aform_aform_valE:
@@ -1915,7 +1915,7 @@ proof safe
     unfolding f_def
     by (rule LIMSEQ_minus_fract_mult)
   hence "(\<lambda>n. aform_val (f n) X) \<longlonglongrightarrow> aform_val e X"
-    by (auto simp: aform_val_def pdevs_val_setsum intro!: tendsto_intros)
+    by (auto simp: aform_val_def pdevs_val_sum intro!: tendsto_intros)
   ultimately have "aform_val e X \<in> ?cl"
     by (rule closed_sequentially)
   thus "det3 (fst ?seg) (snd ?seg) (aform_val e X) \<ge> 0"
@@ -2563,9 +2563,9 @@ lemma
   sum_list_zip_map:
   assumes "distinct xs"
   shows "(\<Sum>(x, y)\<leftarrow>zip xs (map g xs). f x y) = (\<Sum>x\<in>set xs. f x (g x))"
-  by (force simp add: sum_list_distinct_conv_setsum_set assms distinct_zipI1 split_beta'
+  by (force simp add: sum_list_distinct_conv_sum_set assms distinct_zipI1 split_beta'
     in_set_zip in_set_conv_nth inj_on_convol_ident
-    intro!: setsum.reindex_cong[where l="\<lambda>x. (x, g x)"])
+    intro!: sum.reindex_cong[where l="\<lambda>x. (x, g x)"])
 
 lemma
   inter_aform_plane_ortho_overappr:

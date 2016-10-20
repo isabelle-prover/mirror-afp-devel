@@ -14,7 +14,7 @@ text \<open>This theory contains the remaining field operations for algebraic nu
 theory Algebraic_Numbers
 imports 
   Algebraic_Numbers_Prelim
-  Resultant
+  "../Berlekamp_Zassenhaus/Resultant"
   "../Polynomial_Interpolation/Ring_Hom_Poly"
   "../Polynomial_Factorization/Polynomial_Divisibility"
 begin
@@ -474,10 +474,10 @@ lemma poly_x_div_y_code[code]:
   "poly_x_div_y p = (sum_list (map (\<lambda> i. monom (monom (coeff p i) i) (degree p - i)) [0 ..< Suc (degree p)]))"
   (is "_ = ?r")
 proof -
-  have "poly_x_div_y p = setsum (\<lambda> i. monom (monom (coeff p i) i) (degree p - i)) (set [0 ..< Suc (degree p)])"
+  have "poly_x_div_y p = sum (\<lambda> i. monom (monom (coeff p i) i) (degree p - i)) (set [0 ..< Suc (degree p)])"
     unfolding poly_x_div_y_def
-    by (rule setsum.cong, auto)
-  also have "\<dots> = ?r" unfolding setsum.set_conv_list
+    by (rule sum.cong, auto)
+  also have "\<dots> = ?r" unfolding sum.set_conv_list
     by (subst distinct_remdups_id, auto)
   finally show ?thesis .
 qed
@@ -496,13 +496,13 @@ proof -
   have "?r = y ^ degree p * poly ((\<Sum>x\<le>degree p. monom (coeff p x) x)) (x / y)" 
     by simp
   also have "\<dots> = (\<Sum>k\<le>degree p. y ^ degree p * (coeff p k * (x / y) ^ k))" 
-    unfolding poly_setsum by (simp add: setsum_distrib_left poly_monom)
+    unfolding poly_sum by (simp add: sum_distrib_left poly_monom)
   also have "\<dots> = (\<Sum>k\<le>degree p. coeff p k * x ^ k * y ^ (degree p - k))" (is "_ = ?m")
-    by (rule setsum.cong, insert y, auto simp: power_diff power_divide)
+    by (rule sum.cong, insert y, auto simp: power_diff power_divide)
   finally have rm: "?r = ?m" .
    
   have "?l = (\<Sum>k\<le>degree p. poly (poly (monom (monom (coeff p k) k) (degree p - k)) [:y:]) x)"
-    unfolding poly2_def poly_x_div_y_def poly_setsum ..
+    unfolding poly2_def poly_x_div_y_def poly_sum ..
   also have "\<dots> = ?m" unfolding poly_monom poly_mult poly_power by simp
   finally have lm: "?l = ?m" .
 
@@ -519,8 +519,8 @@ proof (cases "degree p = 0")
 next
   case False
   have "coeff (poly_x_div_y p) 0 \<noteq> 0"
-    unfolding poly_x_div_y_def coeff_setsum coeff_monom
-    by (subst setsum.remove[of _ "degree p"], force, force, subst setsum.neutral, insert False, auto)
+    unfolding poly_x_div_y_def coeff_sum coeff_monom
+    by (subst sum.remove[of _ "degree p"], force, force, subst sum.neutral, insert False, auto)
   thus ?thesis using False by auto
 qed
 
@@ -528,12 +528,12 @@ lemma poly_x_div_y_degree_eq[simp]: assumes p0: "poly p 0 \<noteq> 0"
   shows "degree (poly_x_div_y p) = degree p"
 proof - 
   have "coeff (poly_x_div_y p) (degree p) \<noteq> 0"
-    unfolding poly_x_div_y_def coeff_setsum coeff_monom
-    by (subst setsum.remove[of _ 0], force, force, 
-      subst setsum.neutral, insert p0, auto simp: poly_0_coeff_0)
+    unfolding poly_x_div_y_def coeff_sum coeff_monom
+    by (subst sum.remove[of _ 0], force, force, 
+      subst sum.neutral, insert p0, auto simp: poly_0_coeff_0)
   hence ge: "degree (poly_x_div_y p) \<ge> degree p" by (rule le_degree)
   have le: "degree (poly_x_div_y p) \<le> degree p" unfolding poly_x_div_y_def
-    by (rule degree_setsum_le, force, rule order.trans, rule degree_monom_le, auto)
+    by (rule degree_sum_le, force, rule order.trans, rule degree_monom_le, auto)
   from le ge show ?thesis by auto
 qed
 
@@ -597,7 +597,7 @@ proof -
   interpret mmh: map_poly_ring_hom "map_poly hom" by unfold_locales
   show ?thesis
     unfolding poly_x_div_y_def 
-    unfolding mmh.rh.hom_setsum degree_map_poly
+    unfolding mmh.rh.hom_sum degree_map_poly
     unfolding coeff_map_poly_hom monom_hom mh.rh.monom_hom by simp
 qed
 
@@ -642,7 +642,7 @@ proof -
       from dvd_imp_mult_div_cancel_left[OF coeff_0_0_implies_x_dvd[OF this]]
       have "?p = ?hx * hq" unfolding hq_def by auto
       with id' have "?hx * (?h q) = ?hx * hq" by auto
-      from arg_cong[OF this, of "\<lambda> x. x div ?hx", unfolded nonzero_mult_divide_cancel_left[OF hx]]
+      from arg_cong[OF this, of "\<lambda> x. x div ?hx", unfolded nonzero_mult_div_cancel_left[OF hx]]
       have id: "?h q = hq".
       have "?thesis = (eliminate_zero_divisors (?p div ?hx)
         = ?h (eliminate_zero_divisors (p div ?x)))"

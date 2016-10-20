@@ -69,13 +69,13 @@ proof -
   proof(unfold faceSquanderLowerBound_def)
     have "(\<Sum>\<^bsub>f\<in>finals g\<^esub> \<d> |vertices f| ) + \<d> |vertices f| =
           (\<Sum>f\<in>set(finals g). \<d> |vertices f| ) + \<d> |vertices f|"
-      using dist by(simp add:finals_def ListSum_conv_setsum)
+      using dist by(simp add:finals_def ListSum_conv_sum)
     also have "\<dots> = (\<Sum>f\<in>set(finals g) \<union> {f}. \<d> |vertices f| )"
       using f by simp
     also have "\<dots> \<le> (\<Sum>f\<in>set(finals g'). \<d> |vertices f| )"
-      using f subset by(fastforce intro!: setsum_mono3)
+      using f subset by(fastforce intro!: sum_mono3)
     also have "\<dots> = (\<Sum>\<^bsub>f\<in>finals g'\<^esub> \<d> |vertices f| )"
-      using dist' by(simp add:finals_def ListSum_conv_setsum)
+      using dist' by(simp add:finals_def ListSum_conv_sum)
     finally show "(\<Sum>\<^bsub>f\<in>finals g\<^esub> \<d> |vertices f| ) + \<d> |vertices f|
           \<le> (\<Sum>\<^bsub>f\<in>finals g'\<^esub> \<d> |vertices f| )" .
   qed
@@ -296,15 +296,15 @@ proof(induct ps rule: length_induct)
       Max {snd p + (\<Sum>p\<in>P. snd p) | P. ?S ?ps P}"
       by (auto simp add:add_Max_commute fin_aux sep_ne intro!: arg_cong [where f=Max])
     also have "{snd p + (\<Sum>p\<in>P. snd p) |P. ?S ?ps P} =
-      {setsum snd (insert p P) |P. ?S ?ps P}"
+      {sum snd (insert p P) |P. ?S ?ps P}"
       using dist Cons
       apply (auto simp:delAround_def)
       apply(rule_tac x=P in exI)
-      apply(fastforce intro!: setsum.insert[THEN trans,symmetric] elim: finite_subset)
+      apply(fastforce intro!: sum.insert[THEN trans,symmetric] elim: finite_subset)
       apply(rule_tac x=P in exI)
-      apply(fastforce intro!: setsum.insert[THEN trans] elim: finite_subset)
+      apply(fastforce intro!: sum.insert[THEN trans] elim: finite_subset)
       done
-    also have "\<dots> = {setsum snd P |P.
+    also have "\<dots> = {sum snd P |P.
             P \<subseteq> insert p (set ?ps) \<and> p \<in> P \<and> separated g (fst ` P)}"
       apply(auto simp add:sep_conv[OF mgp] sub1 sub2 delAround_def cong: conj_cong)
       apply(rule_tac x = "insert p P" in exI)
@@ -316,7 +316,7 @@ proof(induct ps rule: length_induct)
       apply (simp add:insert_absorb)
       apply blast
       done
-    also have "\<dots> = {setsum snd P |P.
+    also have "\<dots> = {sum snd P |P.
             P \<subseteq> insert p (set ps) \<and> p \<in> P \<and> separated g (fst ` P)}"
       using Cons dist
       apply(auto simp add:sep_conv[OF mgp] sub2 sub3 delAround_def cong: conj_cong)
@@ -324,11 +324,11 @@ proof(induct ps rule: length_induct)
       apply simp
       apply auto
       done
-    also have "max (Max(?M ps)) (Max \<dots>) = Max(?M ps \<union> {setsum snd P |P.
+    also have "max (Max(?M ps)) (Max \<dots>) = Max(?M ps \<union> {sum snd P |P.
             P \<subseteq> insert p (set ps) \<and> p \<in> P \<and> separated g (fst ` P)})"
       (is "_ = Max ?U")
     proof -
-      have "{setsum snd P |P.
+      have "{sum snd P |P.
             P \<subseteq> insert p (set ps) \<and> p \<in> P \<and> separated g (fst ` P)} \<noteq> {}"
         apply simp
         apply(rule_tac x="{p}" in exI)

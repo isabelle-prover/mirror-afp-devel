@@ -85,10 +85,10 @@ proof -
   {
     fix v
     have "f' y x v = (\<Sum>i\<in>Basis. (v \<bullet> i) *\<^sub>R f' y x i)"
-      by (subst euclidean_representation[symmetric]) (simp add: setsum scaleR)
+      by (subst euclidean_representation[symmetric]) (simp add: sum scaleR)
     also have "norm \<dots> \<le> norm v * ?bnd"
-      by (auto intro!: order.trans[OF norm_setsum] setsum_mono mult_right_mono
-        simp: setsum_distrib_left Basis_le_norm)
+      by (auto intro!: order.trans[OF norm_sum] sum_mono mult_right_mono
+        simp: sum_distrib_left Basis_le_norm)
     finally have "norm (f' y x v) \<le> norm v * ?bnd" .
   }
   then show ?thesis by unfold_locales auto
@@ -120,8 +120,8 @@ lemma blinfun_componentwise:
   fixes f::"'a::real_normed_vector \<Rightarrow> 'b::euclidean_space \<Rightarrow>\<^sub>L 'c::real_normed_vector"
   shows "f = (\<lambda>x. \<Sum>i\<in>Basis. blinfun_scaleR (blinfun_inner_left i) (f x i))"
   by (auto intro!: blinfun_eqI
-    simp: blinfun.setsum_left euclidean_representation blinfun.scaleR_right[symmetric]
-      blinfun.setsum_right[symmetric])
+    simp: blinfun.sum_left euclidean_representation blinfun.scaleR_right[symmetric]
+      blinfun.sum_right[symmetric])
 
 lemma
   blinfun_has_derivative_componentwiseI:
@@ -145,7 +145,7 @@ proof -
     by (rule bounded_linear_via_derivative) (rule assms)
   have 3: "(\<Sum>i\<in>Basis. blinfun_scaleR (blinfun_inner_left i) (f' y x i)) i = f' y x i" for x i
     by (auto simp: if_distrib cond_application_beta blinfun.bilinear_simps
-      f'.scaleR[symmetric] f'.setsum[symmetric] euclidean_representation
+      f'.scaleR[symmetric] f'.sum[symmetric] euclidean_representation
       intro!: blinfun_euclidean_eqI)
   have 4: "blinfun_apply (Blinfun (f' y x)) = f' y x" for x
     apply (subst bounded_linear_Blinfun_apply)
@@ -891,16 +891,16 @@ lemma sqrt_le_rsquare:
   shows "x\<^sup>2 \<le> y"
   using assms real_sqrt_le_iff[of "x\<^sup>2"] by simp
 
-lemma setsum_ge_element:
+lemma sum_ge_element:
   fixes f::"'a \<Rightarrow> ('b::ordered_comm_monoid_add)"
   assumes "finite s"
   assumes "i \<in> s"
   assumes "\<And>i. i \<in> s \<Longrightarrow> f i \<ge> 0"
   assumes "el = f i"
-  shows "el \<le> setsum f s"
+  shows "el \<le> sum f s"
 proof -
-  have "el = setsum f {i}" by (simp add: assms)
-  also have "... \<le> setsum f s" using assms by (intro setsum_mono2) auto
+  have "el = sum f {i}" by (simp add: assms)
+  also have "... \<le> sum f s" using assms by (intro sum_mono2) auto
   finally show ?thesis .
 qed
 
@@ -909,7 +909,7 @@ lemma norm_nth_le:
   assumes "i \<in> Basis"
   shows "norm (x \<bullet> i) \<le> norm x"
   unfolding norm_conv_dist euclidean_dist_l2[of x] setL2_def
-  by (auto intro!: real_le_rsqrt setsum_ge_element assms)
+  by (auto intro!: real_le_rsqrt sum_ge_element assms)
 
 lemma norm_Pair_le:
   shows "norm (x, y) \<le> norm x + norm y"
@@ -928,12 +928,12 @@ lemma norm_Pair_ge2:
 
 subsection \<open>Operator Norm\<close>
 
-lemma onorm_setsum_le:
+lemma onorm_sum_le:
   assumes "finite S"
   assumes "\<And>s. s \<in> S \<Longrightarrow> bounded_linear (f s)"
-  shows "onorm (\<lambda>x. setsum (\<lambda>s. f s x) S) \<le> setsum (\<lambda>s. onorm (f s)) S"
+  shows "onorm (\<lambda>x. sum (\<lambda>s. f s x) S) \<le> sum (\<lambda>s. onorm (f s)) S"
   using assms
-  by (induction) (auto simp: onorm_zero intro!: onorm_triangle_le bounded_linear_setsum)
+  by (induction) (auto simp: onorm_zero intro!: onorm_triangle_le bounded_linear_sum)
 
 lemma onorm_componentwise:
   assumes "bounded_linear f"
@@ -950,10 +950,10 @@ proof -
     finally have "onorm (\<lambda>x. (x \<bullet> i) *\<^sub>R f i) \<le> norm (f i)" using \<open>i \<in> Basis\<close>
       by simp
   } hence "onorm (\<lambda>x. \<Sum>i\<in>Basis. (x \<bullet> i) *\<^sub>R f i) \<le> (\<Sum>i\<in>Basis. norm (f i))"
-    by (auto intro!: order_trans[OF onorm_setsum_le] bounded_linear_scaleR_const
-      setsum_mono)
+    by (auto intro!: order_trans[OF onorm_sum_le] bounded_linear_scaleR_const
+      sum_mono)
   also have "(\<lambda>x. \<Sum>i\<in>Basis. (x \<bullet> i) *\<^sub>R f i) = (\<lambda>x. f (\<Sum>i\<in>Basis. (x \<bullet> i) *\<^sub>R i))"
-    by (simp add: linear_setsum bounded_linear.linear assms linear_simps)
+    by (simp add: linear_sum bounded_linear.linear assms linear_simps)
   also have "\<dots> = f"
     by (simp add: euclidean_representation)
   finally show ?thesis .
@@ -1590,13 +1590,13 @@ lemma differentiable_compose_within:
   unfolding o_def[symmetric]
   by (rule differentiable_chain_within)
 
-lemma differentiable_setsum[intro, simp]:
+lemma differentiable_sum[intro, simp]:
   assumes "finite s" "\<forall>a\<in>s. (f a) differentiable net"
-  shows "(\<lambda>x. setsum (\<lambda>a. f a x) s) differentiable net"
+  shows "(\<lambda>x. sum (\<lambda>a. f a x) s) differentiable net"
 proof -
   from bchoice[OF assms(2)[unfolded differentiable_def]]
   show ?thesis
-    by (auto intro!: has_derivative_setsum simp: differentiable_def)
+    by (auto intro!: has_derivative_sum simp: differentiable_def)
 qed
 
 
@@ -1786,8 +1786,8 @@ lemma taylor_up_within_vector:
   and DERIV: "\<And>m t. m < n \<Longrightarrow> (diff m has_vderiv_on diff (Suc m)) {a .. b}"
   and INTERV: "a \<le> c" "c < b"
   shows "\<exists>t. (\<forall>i\<in>Basis::'a set. c < t i & t i < b) \<and>
-    f b = setsum (%m. (b - c)^m *\<^sub>R (diff m c /\<^sub>R (fact m))) {..<n} +
-      setsum (\<lambda>x. (((b - c) ^ n *\<^sub>R diff n (t x) /\<^sub>R (fact n)) \<bullet> x) *\<^sub>R x) Basis"
+    f b = sum (%m. (b - c)^m *\<^sub>R (diff m c /\<^sub>R (fact m))) {..<n} +
+      sum (\<lambda>x. (((b - c) ^ n *\<^sub>R diff n (t x) /\<^sub>R (fact n)) \<bullet> x) *\<^sub>R x) Basis"
 proof -
   obtain t where t: "\<forall>i\<in>Basis::'a set. t i > c \<and> t i < b \<and>
     f b \<bullet> i =
@@ -1809,7 +1809,7 @@ proof -
       (\<Sum>i\<in>Basis. ((\<Sum>m<n. (b - c) ^ m *\<^sub>R (diff m c /\<^sub>R (fact m))) \<bullet> i) *\<^sub>R i) +
       (\<Sum>x\<in>Basis. (((b - c) ^ n *\<^sub>R diff n (t x) /\<^sub>R (fact n)) \<bullet> x) *\<^sub>R x)"
     using t
-    by (simp add: setsum.distrib inner_setsum_left inverse_eq_divide algebra_simps)
+    by (simp add: sum.distrib inner_sum_left inverse_eq_divide algebra_simps)
   finally show ?thesis using t by (auto simp: euclidean_representation)
 qed
 
@@ -2882,8 +2882,8 @@ qed
 
 subsection \<open>Set(sum)\<close>
 
-lemma setsum_eq_nonzero: "finite A \<Longrightarrow> (\<Sum>a\<in>A. f a) = (\<Sum>a\<in>{a\<in>A. f a \<noteq> 0}. f a)"
-  by (subst setsum.mono_neutral_cong_right) auto
+lemma sum_eq_nonzero: "finite A \<Longrightarrow> (\<Sum>a\<in>A. f a) = (\<Sum>a\<in>{a\<in>A. f a \<noteq> 0}. f a)"
+  by (subst sum.mono_neutral_cong_right) auto
 
 lemma singleton_subsetI:"i \<in> B \<Longrightarrow> {i} \<subseteq> B"
   by auto

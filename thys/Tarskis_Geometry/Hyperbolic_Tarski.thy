@@ -25,7 +25,7 @@ lemma M_symmatrix: "symmatrix M"
 
 lemma M_self_inverse: "M ** M = mat 1"
   unfolding M_def and matrix_matrix_mult_def and mat_def and vector_def
-  by (simp add: setsum_3 vec_eq_iff forall_3)
+  by (simp add: sum_3 vec_eq_iff forall_3)
 
 lemma M_invertible: "invertible M"
   unfolding invertible_def
@@ -132,7 +132,7 @@ proof -
       dot_scaleR_mult
       power2_eq_square
       algebra_simps)
-  also have "\<dots> = sgn (j\<^sup>2) * sgn (v \<bullet> (M *v v))" by (rule sgn_times)
+  also have "\<dots> = sgn (j\<^sup>2) * sgn (v \<bullet> (M *v v))" by (rule sgn_mult)
   also from `j\<^sup>2 > 0` have "\<dots> = sgn (v \<bullet> (M *v v))" by simp
   finally show "conic_sgn (proj2_abs v) = sgn (v \<bullet> (M *v v))" .
 qed
@@ -179,7 +179,7 @@ proof -
       and matrix_vector_mult_def
       and inner_vec_def
       and vector_def
-    by (simp add: vec_eq_iff setsum_3 power2_eq_square)
+    by (simp add: vec_eq_iff sum_3 power2_eq_square)
 qed
 
 lemma K2_imp_M_neg:
@@ -193,7 +193,7 @@ lemma M_neg_imp_z_squared_big:
   shows "(v$3)\<^sup>2 > (v$1)\<^sup>2 + (v$2)\<^sup>2"
   using `v \<bullet> (M *v v) < 0`
   unfolding matrix_vector_mult_def and M_def and vector_def
-  by (simp add: inner_vec_def setsum_3 power2_eq_square)
+  by (simp add: inner_vec_def sum_3 power2_eq_square)
 
 lemma M_neg_imp_z_non_zero:
   assumes "v \<bullet> (M *v v) < 0"
@@ -216,7 +216,7 @@ qed
 
 lemma M_reverse: "a \<bullet> (M *v b) = b \<bullet> (M *v a)"
   unfolding matrix_vector_mult_def and M_def and vector_def
-  by (simp add: inner_vec_def setsum_3)
+  by (simp add: inner_vec_def sum_3)
 
 lemma S_abs:
   assumes "v \<noteq> 0"
@@ -281,7 +281,7 @@ proof -
   with `(proj2_rep p)$3 = 0`
   show "proj2_incident p z_zero"
     unfolding proj2_incident_def and inner_vec_def and vector_def
-    by (simp add: setsum_3)
+    by (simp add: sum_3)
 qed
 
 lemma z_zero_conic_sgn_1:
@@ -298,14 +298,14 @@ proof -
     by (simp add: proj2_incident_right_abs)
   hence "?v$3 = 0"
     unfolding inner_vec_def and vector_def
-    by (simp add: setsum_3)
+    by (simp add: sum_3)
   hence "?v \<bullet> (M *v ?v) = (?v$1)\<^sup>2 + (?v$2)\<^sup>2"
     unfolding inner_vec_def
       and power2_eq_square
       and matrix_vector_mult_def
       and M_def
       and vector_def
-      and setsum_3
+      and sum_3
     by simp
 
   have "?v \<noteq> 0" by (rule proj2_rep_non_zero)
@@ -419,7 +419,7 @@ proof -
   have "(norm v)\<^sup>2 = (v$1)\<^sup>2 + (v$2)\<^sup>2"
     unfolding norm_vec_def
       and setL2_def
-    by (simp add: setsum_2)
+    by (simp add: sum_2)
   thus "(vector2_append1 v) \<bullet> (M *v vector2_append1 v) = (norm v)\<^sup>2 - 1"
     unfolding vector2_append1_def
       and inner_vec_def
@@ -427,7 +427,7 @@ proof -
       and vector_def
       and M_def
       and power2_norm_eq_inner
-    by (simp add: setsum_3 power2_eq_square)
+    by (simp add: sum_3 power2_eq_square)
 qed
 
 subsection {* Some specific points and lines of the projective plane *}
@@ -499,7 +499,7 @@ lemma compass_in_S:
     and inner_vec_def
     and matrix_vector_mult_def
     and vector_def
-  by (simp_all add: setsum_3)
+  by (simp_all add: sum_3)
 
 lemma east_west_tangents:
   shows "polar east = proj2_line_abs (vector [-1,0,1])"
@@ -508,7 +508,7 @@ proof -
   have "M *v vector [1,0,1] = (-1) *\<^sub>R vector [-1,0,1]"
     and "M *v vector [-1,0,1] = (-1) *\<^sub>R vector [1,0,1]"
     unfolding M_def and matrix_vector_mult_def and vector_def
-    by (simp_all add: vec_eq_iff setsum_3)
+    by (simp_all add: vec_eq_iff sum_3)
   with compass_non_zero and polar_abs
   have "polar east = proj2_line_abs ((-1) *\<^sub>R vector [-1,0,1])"
     and "polar west = proj2_line_abs ((-1) *\<^sub>R vector [1,0,1])"
@@ -532,7 +532,7 @@ lemma east_west_tangents_incident_far_north:
   and "proj2_incident far_north (polar west)"
   using compass_non_zero and proj2_incident_abs
   unfolding far_north_def and east_west_tangents and inner_vec_def
-  by (simp_all add: setsum_3 vector_3)
+  by (simp_all add: sum_3 vector_3)
 
 lemma east_west_tangents_far_north:
   "proj2_intersection (polar east) (polar west) = far_north"
@@ -562,7 +562,7 @@ lemma east_west_on_equator:
   shows "proj2_incident east equator" and "proj2_incident west equator"
   unfolding east_def and west_def and equator_def
   using compass_non_zero
-  by (simp_all add: proj2_incident_abs inner_vec_def vector_def setsum_3)
+  by (simp_all add: proj2_incident_abs inner_vec_def vector_def sum_3)
 
 lemma north_far_north_distinct: "north \<noteq> far_north"
 proof
@@ -581,14 +581,14 @@ lemma north_south_far_north_on_meridian:
   and "proj2_incident far_north meridian"
   unfolding compass_defs and far_north_def and meridian_def
   using compass_non_zero
-  by (simp_all add: proj2_incident_abs inner_vec_def vector_def setsum_3)
+  by (simp_all add: proj2_incident_abs inner_vec_def vector_def sum_3)
 
 lemma K2_centre_on_equator_meridian:
   shows "proj2_incident K2_centre equator"
   and "proj2_incident K2_centre meridian"
   unfolding K2_centre_def and equator_def and meridian_def
   using K2_centre_non_zero and compass_non_zero
-  by (simp_all add: proj2_incident_abs inner_vec_def vector_def setsum_3)
+  by (simp_all add: proj2_incident_abs inner_vec_def vector_def sum_3)
 
 lemma on_equator_meridian_is_K2_centre:
   assumes "proj2_incident a equator" and "proj2_incident a meridian"
@@ -615,7 +615,7 @@ lemma compass_reflect_self_inverse:
   shows "rep_equator_reflect ** rep_equator_reflect = mat 1"
   and "rep_meridian_reflect ** rep_meridian_reflect = mat 1"
   unfolding compass_reflect_defs matrix_matrix_mult_def mat_def
-  by (simp_all add: vec_eq_iff forall_3 setsum_3 vector_3)
+  by (simp_all add: vec_eq_iff forall_3 sum_3 vector_3)
 
 lemma compass_reflect_invertible:
   shows "invertible rep_equator_reflect" and "invertible rep_meridian_reflect"
@@ -647,7 +647,7 @@ proof -
     and "(vector [0,0,1] :: real^3) v* rep_equator_reflect = vector [0,0,1]"
     unfolding rep_meridian_reflect_def and rep_equator_reflect_def
       and vector_matrix_mult_def
-    by (simp_all add: vec_eq_iff forall_3 vector_3 setsum_3)
+    by (simp_all add: vec_eq_iff forall_3 vector_3 sum_3)
   with compass_reflect_invertible and compass_non_zero and K2_centre_non_zero
   show "apply_cltn2 east meridian_reflect = west"
     and "apply_cltn2 west meridian_reflect = east"
@@ -674,7 +674,7 @@ proof -
   from compass_non_zero and `proj2_incident a equator`
   have "?ra \<bullet> vector [0,1,0] = 0"
     by (unfold equator_def) (simp add: proj2_incident_right_abs)
-  hence "?ra$2 = 0" by (unfold inner_vec_def vector_def) (simp add: setsum_3)
+  hence "?ra$2 = 0" by (unfold inner_vec_def vector_def) (simp add: sum_3)
   hence "?ca1$2 = 0" by (unfold cart2_append1_def) simp
   moreover
   from `z_non_zero a` have "?ca1$3 = 1" by (rule cart2_append1_z)
@@ -696,7 +696,7 @@ proof -
   from compass_non_zero and `proj2_incident a meridian`
   have "?ra \<bullet> vector [1,0,0] = 0"
     by (unfold meridian_def) (simp add: proj2_incident_right_abs)
-  hence "?ra$1 = 0" by (unfold inner_vec_def vector_def) (simp add: setsum_3)
+  hence "?ra$1 = 0" by (unfold inner_vec_def vector_def) (simp add: sum_3)
   hence "?ca1$1 = 0" by (unfold cart2_append1_def) simp
   moreover
   from `z_non_zero a` have "?ca1$3 = 1" by (rule cart2_append1_z)
@@ -837,7 +837,7 @@ proof -
   have "?v \<bullet> (M *v ?v) < 0" by (simp add: K2_abs)
   hence "x\<^sup>2 < 1"
     unfolding M_def matrix_vector_mult_def inner_vec_def
-    by (simp add: setsum_3 vector_3 power2_eq_square)
+    by (simp add: sum_3 vector_3 power2_eq_square)
   with real_sqrt_abs [of x] and real_sqrt_less_iff [of "x\<^sup>2" 1]
   have "\<bar>x\<bar> < 1" by simp
   with `a = proj2_abs ?v`
@@ -859,7 +859,7 @@ proof -
   have "?v \<bullet> (M *v ?v) < 0" by (simp add: K2_abs)
   hence "y\<^sup>2 < 1"
     unfolding M_def matrix_vector_mult_def inner_vec_def
-    by (simp add: setsum_3 vector_3 power2_eq_square)
+    by (simp add: sum_3 vector_3 power2_eq_square)
   with real_sqrt_abs [of y] and real_sqrt_less_iff [of "y\<^sup>2" 1]
   have "\<bar>y\<bar> < 1" by simp
   with `a = proj2_abs ?v`
@@ -920,14 +920,14 @@ lemma equator_reflect_K2_isometry:
   unfolding compass_reflect_defs
   by (rule J_M_J_transpose_K2_isometry [of 1])
      (simp_all add: M_def matrix_matrix_mult_def transpose_def
-       vec_eq_iff forall_3 setsum_3 vector_3)
+       vec_eq_iff forall_3 sum_3 vector_3)
 
 lemma meridian_reflect_K2_isometry:
   shows "is_K2_isometry meridian_reflect"
   unfolding compass_reflect_defs
   by (rule J_M_J_transpose_K2_isometry [of 1])
      (simp_all add: M_def matrix_matrix_mult_def transpose_def
-       vec_eq_iff forall_3 setsum_3 vector_3)
+       vec_eq_iff forall_3 sum_3 vector_3)
 
 lemma cltn2_compose_is_K2_isometry:
   assumes "is_K2_isometry H" and "is_K2_isometry J"
@@ -1088,7 +1088,7 @@ proof -
   hence "?t$3 = 0" by simp
   hence "?t \<bullet> (M *v ?t) = (?t$1)\<^sup>2 + (?t$2)\<^sup>2"
     unfolding matrix_vector_mult_def and M_def and vector_def
-    by (simp add: inner_vec_def setsum_3 power2_eq_square)
+    by (simp add: inner_vec_def sum_3 power2_eq_square)
 
   from `p$3 \<noteq> 0` have "p \<noteq> 0" by auto
   with `q \<noteq> 0` and `?pp \<noteq> ?pq` and dependent_proj2_abs [of p q ?i 1]
@@ -1941,7 +1941,7 @@ proof -
      by simp
    hence "?N$1$1 + ?N$1$3 + ?N$3$1 + ?N$3$3 = 0"
      unfolding inner_vec_def and matrix_vector_mult_def
-     by (simp add: setsum_3 vector_3)
+     by (simp add: sum_3 vector_3)
    with `?N$3$1 = ?N$1$3` have "?N$1$1 + 2 * (?N$1$3) + ?N$3$3 = 0" by simp
 
    from compass_non_zero and `apply_cltn2 west J = q` and `q \<in> S`
@@ -1951,7 +1951,7 @@ proof -
      by simp
    hence "?N$1$1 - ?N$1$3 - ?N$3$1 + ?N$3$3 = 0"
      unfolding inner_vec_def and matrix_vector_mult_def
-     by (simp add: setsum_3 vector_3)
+     by (simp add: sum_3 vector_3)
    with `?N$3$1 = ?N$1$3` have "?N$1$1 - 2 * (?N$1$3) + ?N$3$3 = 0" by simp
    with `?N$1$1 + 2 * (?N$1$3) + ?N$3$3 = 0`
    have "?N$1$1 + 2 * (?N$1$3) + ?N$3$3 = ?N$1$1 - 2 * (?N$1$3) + ?N$3$3"
@@ -1966,7 +1966,7 @@ proof -
      by simp
    hence "?N$2$2 + ?N$2$3 + ?N$3$2 + ?N$3$3 = 0"
      unfolding inner_vec_def and matrix_vector_mult_def
-     by (simp add: setsum_3 vector_3)
+     by (simp add: sum_3 vector_3)
    with `?N$3$2 = ?N$2$3` have "?N$2$2 + 2 * (?N$2$3) + ?N$3$3 = 0" by simp
 
    have "proj2_incident ?s (polar p)" and "proj2_incident ?s (polar q)"
@@ -2013,7 +2013,7 @@ proof -
      by (simp_all add: dot_lmul_matrix matrix_vector_mul_assoc [symmetric])
    hence "?N$2$1 + ?N$2$3 = 0" and "-(?N$2$1) + ?N$2$3 = 0"
      unfolding inner_vec_def and matrix_vector_mult_def
-     by (simp_all add: setsum_3 vector_3)
+     by (simp_all add: sum_3 vector_3)
    hence "?N$2$1 + ?N$2$3 = -(?N$2$1) + ?N$2$3" by simp
    hence "?N$2$1 = 0" by simp
    with `?N$2$1 + ?N$2$3 = 0` have "?N$2$3 = 0" by simp
@@ -4333,7 +4333,7 @@ proof -
     and "?b \<bullet> (M *v ?b) = y\<^sup>2 - 1" (is "?bMb = y\<^sup>2 - 1")
     unfolding vector_def and M_def and inner_vec_def
       and matrix_vector_mult_def
-    by (simp_all add: setsum_3 power2_eq_square)
+    by (simp_all add: sum_3 power2_eq_square)
   with `\<bar>x\<bar> < 1` and `\<bar>y\<bar> < 1`
   have "?aMa < 0" and "?bMb < 0" by (simp_all add: abs_square_less_1)
   hence "?pa \<in> hyp2" and "?pb \<in> hyp2"
@@ -4347,7 +4347,7 @@ proof -
   finally have "cosh_dist ?pa ?pb = 1 / sqrt ((1 - x\<^sup>2) * (1 - y\<^sup>2))"
     unfolding vector_def and M_def and inner_vec_def
       and matrix_vector_mult_def
-    by (simp add: setsum_3 algebra_simps)
+    by (simp add: sum_3 algebra_simps)
 
   let ?o = "vector [0,0,1]"
   let ?oMa = "?o \<bullet> (M *v ?a)"
@@ -4363,7 +4363,7 @@ proof -
     and "cosh_dist ?po ?pb = 1 / sqrt (1 - y\<^sup>2)"
     unfolding vector_def and M_def and inner_vec_def
       and matrix_vector_mult_def
-    by (simp_all add: setsum_3 power2_eq_square)
+    by (simp_all add: sum_3 power2_eq_square)
   with `cosh_dist ?pa ?pb = 1 / sqrt ((1 - x\<^sup>2) * (1 - y\<^sup>2))`
   show "cosh_dist ?pa ?pb = cosh_dist ?po ?pa * cosh_dist ?po ?pb"
     by (simp add: real_sqrt_mult)
@@ -4803,7 +4803,7 @@ proof -
     by simp
   hence "sqrt ?pqab = ?ab + sqrt (?ab\<^sup>2 - 1)
     \<or> sqrt ?pqab = ?ab - sqrt (?ab\<^sup>2 - 1)"
-    by (simp only: nonzero_mult_divide_cancel_left [of 2])
+    by (simp only: nonzero_mult_div_cancel_left [of 2])
 
   from `are_endpoints_in_S p q a b`
   have "a \<in> hyp2" and "b \<in> hyp2" by (unfold are_endpoints_in_S_def) simp_all
@@ -5578,7 +5578,7 @@ lemma hyp2_rep_abs_examples:
 proof -
   have "norm ?ca < 1" and "norm ?cb < 1" and "norm ?cc < 1" and "norm ?cd < 1"
     and "norm ?ct < 1"
-    by (unfold norm_vec_def setL2_def) (simp_all add: setsum_2 power2_eq_square)
+    by (unfold norm_vec_def setL2_def) (simp_all add: sum_2 power2_eq_square)
   thus "hyp2_rep ?a = ?ca" and "hyp2_rep ?b = ?cb" and "hyp2_rep ?c = ?cc"
     and "hyp2_rep ?d = ?cd" and "hyp2_rep ?t = ?ct"
     by (simp_all add: hyp2_rep_abs)

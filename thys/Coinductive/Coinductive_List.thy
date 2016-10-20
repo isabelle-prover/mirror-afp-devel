@@ -4436,7 +4436,7 @@ next
   moreover from `lfinite xss` have "finite {i. enat i < llength xss}"
     by(rule lfinite_finite_index)
   ultimately show ?case using lfinite_LConsI
-    by(simp add: setsum.reindex)
+    by(simp add: sum.reindex)
 qed
 
 lemma lconcat_lfilter_neq_LNil:
@@ -4482,11 +4482,11 @@ next
     also have "lappend xs \<dots> = ltake (llength xs + (\<Sum>i<n. llength (lnth xss' i))) (lappend xs (lconcat xss'))"
       by(cases "llength xs")(simp_all add: ltake_plus_conv_lappend ltake_lappend1 ltake_all ldropn_lappend2 lappend_inf lfinite_conv_llength_enat ldrop_enat)
     also have "(\<Sum>i<n. llength (lnth xss' i)) = (\<Sum>i=1..<Suc n. llength (lnth xss i))"
-      by (rule setsum.reindex_cong [symmetric, of Suc])
+      by (rule sum.reindex_cong [symmetric, of Suc])
         (auto simp add: LCons image_iff less_Suc_eq_0_disj)
     also have "llength xs + \<dots> = (\<Sum>i<Suc n. llength (lnth xss i))"
       unfolding atLeast0LessThan[symmetric] LCons
-      by(subst (2) setsum_head_upt_Suc) simp_all
+      by(subst (2) sum_head_upt_Suc) simp_all
     finally show ?thesis using LCons by simp
   qed
 qed
@@ -4516,7 +4516,7 @@ proof(induct n arbitrary: xss)
   moreover have "enat (length xss') < llength xss" unfolding xss 
     by simp
   moreover have "(\<Sum>i < length xss'. llength (lnth xss i)) = (\<Sum>i < length xss'. 0)"
-  proof(rule setsum.cong)
+  proof(rule sum.cong)
     show "{..< length xss'} = {..< length xss'}" by simp
   next
     fix i
@@ -4587,16 +4587,16 @@ next
     { have "(\<Sum>i < m + length xss'. llength (lnth xss i)) =
             (\<Sum>i < length xss'. llength (lnth xss i)) + 
             (\<Sum>i = length xss'..<m + length xss'. llength (lnth xss i))"
-        by(subst (1 2) atLeast0LessThan[symmetric])(subst setsum_add_nat_ivl, simp_all)
+        by(subst (1 2) atLeast0LessThan[symmetric])(subst sum_add_nat_ivl, simp_all)
       also from lnth_prefix have "(\<Sum>i < length xss'. llength (lnth xss i)) = 0" by simp
       also have "{length xss'..<m + length xss'} = {0+length xss'..<m+length xss'}" by auto
       also have "(\<Sum>i = 0 + length xss'..<m + length xss'. llength (lnth xss i)) =
                 (\<Sum>i = 0..<m. llength (lnth xss (i + length xss')))"
-        by(rule setsum_shift_bounds_nat_ivl)
+        by(rule sum_shift_bounds_nat_ivl)
       also have "\<dots> = (\<Sum>i = 0..<m. llength (lnth (LCons (LCons x xs') xss'') i))"
         unfolding xss by(subst lnth_lappend2) simp+
       also have "\<dots> = eSuc (llength xs') + (\<Sum>i = Suc 0..<m. llength (lnth (LCons (LCons x xs') xss'') i))"
-        by(subst setsum_head_upt_Suc) simp_all
+        by(subst sum_head_upt_Suc) simp_all
       also {
         fix i
         assume "i \<in> {Suc 0..<m}"
@@ -4607,7 +4607,7 @@ next
              (\<Sum>i = Suc 0..<m. llength (lnth (LCons xs' xss'') i))" by(simp)
       also have "eSuc (llength xs') + \<dots> = 1 + (llength (lnth (LCons xs' xss'') 0) + \<dots>)"
         by(simp add: eSuc_plus_1 ac_simps)
-      also note setsum_head_upt_Suc[symmetric, OF `0 < m`]
+      also note sum_head_upt_Suc[symmetric, OF `0 < m`]
       finally have "enat (Suc n) = (\<Sum>i<m + length xss'. llength (lnth xss i)) + enat n'"
         unfolding eSuc_enat[symmetric] n_eq by(simp add: eSuc_plus_1 ac_simps atLeast0LessThan) }
     ultimately show ?thesis by blast

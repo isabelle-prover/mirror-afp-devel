@@ -102,5 +102,90 @@ proof (induct xs)
   finally show ?case by simp
 qed simp
 
+lemma nth_concat_split: assumes "i < length (concat xs)" 
+  shows "\<exists> j k. j < length xs \<and> k < length (xs ! j) \<and> concat xs ! i = xs ! j ! k"
+  using assms
+proof (induct xs arbitrary: i)
+  case (Cons x xs i)
+  define I where "I = i - length x" 
+  show ?case 
+  proof (cases "i < length x")
+    case True note l = this
+    hence i: "concat (Cons x xs) ! i = x ! i" by (auto simp: nth_append)
+    show ?thesis unfolding i
+      by (rule exI[of _ 0], rule exI[of _ i], insert Cons l, auto)
+  next
+    case False note l = this
+    from l Cons(2) have i: "i = length x + I" "I < length (concat xs)" unfolding I_def by auto
+    hence iI: "concat (Cons x xs) ! i = concat xs ! I" by (auto simp: nth_append)
+    from Cons(1)[OF i(2)] obtain j k where
+      IH: "j < length xs \<and> k < length (xs ! j) \<and> concat xs ! I = xs ! j ! k" by auto
+    show ?thesis unfolding iI
+      by (rule exI[of _ "Suc j"], rule exI[of _ k], insert IH, auto)
+  qed
+qed simp
+
+lemma nth_concat_diff: assumes "i1 < length (concat xs)" "i2 < length (concat xs)" "i1 \<noteq> i2"
+  shows "\<exists> j1 k1 j2 k2. (j1,k1) \<noteq> (j2,k2) \<and> j1 < length xs \<and> j2 < length xs
+    \<and> k1 < length (xs ! j1) \<and> k2 < length (xs ! j2) 
+    \<and> concat xs ! i1 = xs ! j1 ! k1 \<and> concat xs ! i2 = xs ! j2 ! k2"
+  using assms
+proof (induct xs arbitrary: i1 i2)
+  case (Cons x xs)
+  define I1 where "I1 = i1 - length x" 
+  define I2 where "I2 = i2 - length x" 
+  show ?case 
+  proof (cases "i1 < length x")
+    case True note l1 = this
+    hence i1: "concat (Cons x xs) ! i1 = x ! i1" by (auto simp: nth_append)
+    show ?thesis
+    proof (cases "i2 < length x")
+      case True note l2 = this
+      hence i2: "concat (Cons x xs) ! i2 = x ! i2" by (auto simp: nth_append)
+      show ?thesis unfolding i1 i2 
+        by (rule exI[of _ 0], rule exI[of _ i1], rule exI[of _ 0], rule exI[of _ i2], 
+         insert Cons(4) l1 l2, auto)
+    next
+      case False note l2 = this
+      from l2 Cons(3) have i22: "i2 = length x + I2" "I2 < length (concat xs)" unfolding I2_def by auto
+      hence i2: "concat (Cons x xs) ! i2 = concat xs ! I2" by (auto simp: nth_append)
+      from nth_concat_split[OF i22(2)] obtain j2 k2 where
+        *: "j2 < length xs \<and> k2 < length (xs ! j2) \<and> concat xs ! I2 = xs ! j2 ! k2" by auto
+      show ?thesis unfolding i1 i2
+        by (rule exI[of _ 0], rule exI[of _ i1], rule exI[of _ "Suc j2"], rule exI[of _ k2],
+         insert * l1, auto)
+    qed
+  next
+    case False note l1 = this
+    from l1 Cons(2) have i11: "i1 = length x + I1" "I1 < length (concat xs)" unfolding I1_def by auto
+    hence i1: "concat (Cons x xs) ! i1 = concat xs ! I1" by (auto simp: nth_append)
+    show ?thesis
+    proof (cases "i2 < length x")
+      case False note l2 = this
+      from l2 Cons(3) have i22: "i2 = length x + I2" "I2 < length (concat xs)" unfolding I2_def by auto
+      hence i2: "concat (Cons x xs) ! i2 = concat xs ! I2" by (auto simp: nth_append)
+      from Cons(4) i11 i22 have diff: "I1 \<noteq> I2" by auto
+      from Cons(1)[OF i11(2) i22(2) diff] obtain j1 k1 j2 k2
+        where IH: "(j1,k1) \<noteq> (j2,k2) \<and> j1 < length xs \<and> j2 < length xs
+        \<and> k1 < length (xs ! j1) \<and> k2 < length (xs ! j2) 
+        \<and> concat xs ! I1 = xs ! j1 ! k1 \<and> concat xs ! I2 = xs ! j2 ! k2" by auto
+      show ?thesis unfolding i1 i2 
+        by (rule exI[of _ "Suc j1"], rule exI[of _ k1], rule exI[of _ "Suc j2"], rule exI[of _ k2],
+        insert IH, auto)
+    next
+      case True note l2 = this
+      hence i2: "concat (Cons x xs) ! i2 = x ! i2" by (auto simp: nth_append)
+      from nth_concat_split[OF i11(2)] obtain j1 k1 where
+        *: "j1 < length xs \<and> k1 < length (xs ! j1) \<and> concat xs ! I1 = xs ! j1 ! k1" by auto
+      show ?thesis unfolding i1 i2
+        by (rule exI[of _ "Suc j1"], rule exI[of _ k1], rule exI[of _ 0], rule exI[of _ i2],
+         insert * l2, auto)
+    qed
+  qed      
+qed auto
+
+lemma list_all2_map_map: "(\<And> x. x \<in> set xs \<Longrightarrow> R (f x) (g x)) \<Longrightarrow> list_all2 R (map f xs) (map g xs)"
+  by (induct xs, auto)
+
 
 end

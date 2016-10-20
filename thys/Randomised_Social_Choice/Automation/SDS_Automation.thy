@@ -412,7 +412,7 @@ proof
   finally have "(\<exists>A\<in>ps. (\<Sum>x\<leftarrow>A. pmf (map_pmf \<sigma> (sds R2)) x) < (\<Sum>x\<leftarrow>A. pmf (sds R1) x)) \<or>
                 (\<forall>A\<in>ps. (\<Sum>x\<leftarrow>A. pmf (map_pmf \<sigma> (sds R2)) x) = (\<Sum>x\<leftarrow>A. pmf (sds R1) x))"
     using distinct_ps
-    by (simp add: A eq setsum.distinct_set_conv_list del: measure_map_pmf)
+    by (simp add: A eq sum.distinct_set_conv_list del: measure_map_pmf)
   also from perm' have "pmf (map_pmf \<sigma> (sds R2)) = (\<lambda>x. pmf (sds R2) (inv \<sigma> x))"
     using pmf_map_inj'[of \<sigma> _ "inv \<sigma> x" for x]
     by (simp add: fun_eq_iff permutes_inj permutes_inverses)

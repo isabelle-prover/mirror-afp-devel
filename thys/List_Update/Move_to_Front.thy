@@ -294,7 +294,7 @@ proof-
   have 1: "(\<Sum>i<n. t i) = (\<Sum>i<n. ?a i) - p(n)"
     by(induction n) (simp_all add: p0)
   thus ?thesis
-    by (metis (erased, lifting) add.commute diff_add_cancel le_add_same_cancel2 order.trans ppos setsum_mono ub)
+    by (metis (erased, lifting) add.commute diff_add_cancel le_add_same_cancel2 order.trans ppos sum_mono ub)
 qed
 
 lemma potential2:
@@ -306,7 +306,7 @@ proof-
   let ?a = "\<lambda>n. t n + p(n+1) - p n"
   have "(\<Sum>i<n. t i) = (\<Sum>i<n. ?a i) - p(n)" by(induction n) (simp_all add: p0)
   also have      "\<dots> \<le> (\<Sum>i<n. ?a i)" using ppos by auto
-  also have      "\<dots> \<le> (\<Sum>i<n. u i)" apply(rule setsum_mono) apply(rule ub) by auto
+  also have      "\<dots> \<le> (\<Sum>i<n. u i)" apply(rule sum_mono) apply(rule ub) by auto
   finally show ?thesis .
 qed
 
@@ -572,13 +572,13 @@ corollary Sleator_Tarjan': "T_mtf n \<le> 2*T_A n - n"
 proof -
   have "T_mtf n \<le> (\<Sum>i<n. 2*c_A i + p_A i - f_A i) - n" by (fact Sleator_Tarjan)
   also have "(\<Sum>i<n. 2*c_A i + p_A i - f_A i) \<le> (\<Sum>i<n. 2*(c_A i + p_A i))"
-    by(intro setsum_mono) (simp add: p_A_def f_A_def)
-  also have "\<dots> \<le> 2* T_A n" by (simp add: setsum_distrib_left T_A_def t_A_def)
+    by(intro sum_mono) (simp add: p_A_def f_A_def)
+  also have "\<dots> \<le> 2* T_A n" by (simp add: sum_distrib_left T_A_def t_A_def)
   finally show "T_mtf n \<le> 2* T_A n - n" by auto
 qed
 
 lemma T_A_nneg: "0 \<le> T_A n"
-by(auto simp add: setsum_nonneg T_A_def t_A_def c_A_def p_A_def)
+by(auto simp add: sum_nonneg T_A_def t_A_def c_A_def p_A_def)
 
 lemma T_mtf_ub: "\<forall>i<n. rs!i \<in> set s0 \<Longrightarrow> T_mtf n \<le> n * size s0"
 proof(induction n)
@@ -597,8 +597,8 @@ proof cases
   proof -
     have "T_mtf n \<le> (\<Sum>i<n. 2*c_A i + p_A i - f_A i) - n" by(rule Sleator_Tarjan)
     also have "(\<Sum>i<n. 2*c_A i + p_A i - f_A i) \<le> (\<Sum>i<n. 2*(c_A i + p_A i))"
-      by(intro setsum_mono) (simp add: p_A_def f_A_def)
-    also have "\<dots> \<le> 2 * T_A n" by (simp add: setsum_distrib_left T_A_def t_A_def)
+      by(intro sum_mono) (simp add: p_A_def f_A_def)
+    also have "\<dots> \<le> 2 * T_A n" by (simp add: sum_distrib_left T_A_def t_A_def)
     finally show ?thesis by simp
   qed
   hence "real_of_int(T_mtf n) \<le> 2 * of_int(T_A n) - n" by simp
@@ -632,7 +632,7 @@ next
   proof cases
     assume "n < length rs"
     thus ?case using 2
-    by(simp add: Cons_nth_drop_Suc[symmetric,where i=n] len_as setsum_head_upt_Suc
+    by(simp add: Cons_nth_drop_Suc[symmetric,where i=n] len_as sum_head_upt_Suc
       t_A_t mtf_A_def sw_A_def)
   next
     assume "\<not> n < length rs" thus ?case by (simp add: len_as)
@@ -663,7 +663,7 @@ next
   proof cases
     assume "n < length rs"
     thus ?case using 2
-      by(simp add: Cons_nth_drop_Suc[symmetric,where i=n] len_as setsum_head_upt_Suc
+      by(simp add: Cons_nth_drop_Suc[symmetric,where i=n] len_as sum_head_upt_Suc
         t_mtf_MTF[where s=s0] mtf_A_def sw_A_def mtf_MTF)
   next
     assume "\<not> n < length rs" thus ?case by (simp add: len_as)
@@ -887,19 +887,19 @@ by (simp add: sorted_equals_nth_mono)
 lemma sorted_weighted_gauss_Ico_div2:
 fixes f :: "nat \<Rightarrow> nat"
 assumes "\<And>i j. i \<le> j \<Longrightarrow> j<n \<Longrightarrow> f(i) \<ge> f(j)"
-shows "(\<Sum>i=0..<n. (i+1) * f(i)) \<le> (n+1) * setsum f {0..<n} div 2"
+shows "(\<Sum>i=0..<n. (i+1) * f(i)) \<le> (n+1) * sum f {0..<n} div 2"
 proof cases
   assume "n = 0" thus ?thesis by simp
 next
   assume "n \<noteq> 0"
-  have "n * (\<Sum>i=0..<n. (i+1) * f i) \<le> (\<Sum>i=0..<n. i+1) * setsum f {0..<n}"
+  have "n * (\<Sum>i=0..<n. (i+1) * f i) \<le> (\<Sum>i=0..<n. i+1) * sum f {0..<n}"
     using assms by(intro Chebyshev_sum_upper_nat[of n "%i. i+1" f]) auto
-  hence "2 * (n * (\<Sum>i=0..<n. (i+1) * f i)) \<le> 2*(\<Sum>i=0..<n. i+1) * setsum f {0..<n}"
+  hence "2 * (n * (\<Sum>i=0..<n. (i+1) * f i)) \<le> 2*(\<Sum>i=0..<n. i+1) * sum f {0..<n}"
     by simp
   also have "2*(\<Sum>i=0..<n. i+1) = n*(n+1)"
     using arith_series_general[where 'a=nat,of 1 1 n] `n \<noteq> 0`
     by(simp add:atLeast0LessThan)
-  finally have "2 * (\<Sum>i = 0..<n. (i + 1) * f i) \<le> (n+1) * setsum f {0..<n}"
+  finally have "2 * (\<Sum>i = 0..<n. (i + 1) * f i) \<le> (n+1) * sum f {0..<n}"
     using `n \<noteq> 0` by(simp del: One_nat_def)
   thus ?thesis by linarith
 qed
@@ -922,7 +922,7 @@ proof-
     by(simp) (metis count_le_length length_cruel)
   have "?l = t ?s (last ?s) (0, sort_sws ?k ?s) + (\<Sum>x\<in>set ?s'. ?c x * (index ?sort x + 1))"
     using assms
-    apply(simp add:  adv_def T_noop sum_list_map_eq_setsum_count2[OF set_cruel] Step_def
+    apply(simp add:  adv_def T_noop sum_list_map_eq_sum_count2[OF set_cruel] Step_def
       split: prod.split)
     apply(subst (3) step_def)
     apply(simp)
@@ -930,7 +930,7 @@ proof-
   also have "(\<Sum>x\<in>set ?s'. ?c x * (index ?sort x + 1)) = (\<Sum>x\<in>{0..<l}. ?c x * (index ?sort x + 1))"
     by (simp add: 1)
   also have "\<dots> = (\<Sum>x\<in>{0..<l}. ?c (?sort ! x) * (index ?sort (?sort ! x) + 1))"
-    by(rule setsum.reindex_bij_betw[where ?h = "nth ?sort", symmetric])
+    by(rule sum.reindex_bij_betw[where ?h = "nth ?sort", symmetric])
       (simp add: bij_betw_imageI inj_on_nth nth_image)
   also have "\<dots> = (\<Sum>x\<in>{0..<l}. ?c (?sort ! x) * (x+1))"
     by(simp add: index_nth_id)
@@ -942,12 +942,12 @@ proof-
     apply(auto simp add: index_nth_id dest!: 3)
     using assms [[linarith_split_limit = 20]] by simp
   also have "(\<Sum>x\<in>{0..<l}. ?c (?sort ! x)) = (\<Sum>x\<in>{0..<l}. ?c (?sort ! (index ?sort x)))"
-    by(rule setsum.reindex_bij_betw[where ?h = "index ?sort", symmetric])
+    by(rule sum.reindex_bij_betw[where ?h = "index ?sort", symmetric])
       (simp add: bij_betw_imageI inj_on_index2 index_image)
   also have "\<dots> = (\<Sum>x\<in>{0..<l}. ?c x)" by(simp)
   also have "\<dots> = length ?cr"
     using set_cruel[of ?s' A _ n] assms 1
-    by(auto simp add: setsum_count_set Step_def split: prod.split)
+    by(auto simp add: sum_count_set Step_def split: prod.split)
   also have "\<dots> = n" by simp
   also have "t ?s (last ?s) (0, sort_sws ?k ?s) \<le> (length ?s)^2 + length ?s + 1"
     by(rule t_sort_sws)

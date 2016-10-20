@@ -205,7 +205,7 @@ next
   case (rec x)
   from rec.hyps have "g x \<ge> 0" by (intro g_nonneg) simp
   moreover have "(\<Sum>i<k. as!i*f ((ts!i) x)) \<ge> 0" using rec.hyps length_ts length_as
-    by (intro setsum_nonneg ballI mult_nonneg_nonneg[OF a_ge_0 rec.IH]) simp_all
+    by (intro sum_nonneg ballI mult_nonneg_nonneg[OF a_ge_0 rec.IH]) simp_all
   ultimately show "f x \<ge> 0" using rec.hyps by (simp add: f_rec)
 qed  
 
@@ -401,7 +401,7 @@ termination by (relation "Wellfounded.measure (\<lambda>x. x)")
 
 lemma f2'_nonneg: "x \<ge> gx0 \<Longrightarrow> f2' x \<ge> 0"
 by (induction x rule: f2'.induct)
-   (auto intro!: add_nonneg_nonneg setsum_nonneg gx0 gx1  mult_nonneg_nonneg[OF a_ge_0])
+   (auto intro!: add_nonneg_nonneg sum_nonneg gx0 gx1  mult_nonneg_nonneg[OF a_ge_0])
                
 lemma f2'_le_f: "x \<ge> x\<^sub>0 \<Longrightarrow> gc2 * f2' x \<le> f x"
 proof (induction rule: f2'.induct)
@@ -415,7 +415,7 @@ next
   hence "\<And>i. i < k \<Longrightarrow> as!i * (gc2 * f2' ((ts!i) x)) \<le> as!i * f ((ts!i) x)"
     using prems(1) by (intro mult_left_mono a_ge_0 prems(2)) auto
   hence "gc2 * (\<Sum>i<k. as!i*f2' ((ts!i) x)) \<le> (\<Sum>i<k. as!i*f ((ts!i) x))"
-    by (subst setsum_distrib_left, intro setsum_mono) (simp_all add: algebra_simps)
+    by (subst sum_distrib_left, intro sum_mono) (simp_all add: algebra_simps)
   ultimately show ?case using prems(1) gx0_ge_x1 gx0_le_gx1
     by (simp_all add: algebra_simps f_rec)
 qed
@@ -430,7 +430,7 @@ proof (subst eventually_at_top_linorder, intro exI allI impI)
   next
     case prems: (2 x)
     have "(\<Sum>i<k. as!i*f2' ((ts!i) x)) > 0"
-    proof (rule setsum_pos')
+    proof (rule sum_pos')
       from ex_pos_a' guess i by (elim exE conjE) note i = this
       with prems(1) gx0 gx1 have "as!i * f2' ((ts!i) x) > 0"
         by (intro mult_pos_pos prems(2)) simp_all
@@ -534,10 +534,10 @@ proof-
       case (2 x)
       note x = this(1) and IH = this(2)
       from x have "abr.f' (real x) = g' (real x) + (\<Sum>i<k. as!i*abr.f' (bs!i*real x + (hs!i) x))"
-        by (auto simp: gt_x1'D hs'_real g_real_def intro!: setsum.cong)
+        by (auto simp: gt_x1'D hs'_real g_real_def intro!: sum.cong)
       also have "(\<Sum>i<k. as!i*abr.f' (bs!i*real x + (hs!i) x)) = 
                  (\<Sum>i<k. as!i*f2' ((ts!i) x))"
-      proof (rule setsum.cong, simp, clarify)
+      proof (rule sum.cong, simp, clarify)
         fix i assume i: "i < k"
         from i x x0'_le_x1' x0'_ge_x1 have *: "bs!i * real x + (hs!i) x = real ((ts!i) x)"
           by (intro decomp) simp_all
@@ -678,7 +678,7 @@ next
   hence "\<And>i. i < k \<Longrightarrow> as!i * (gc1 * f' ((ts!i) x)) \<ge> as!i * f ((ts!i) x)"
     using prems(1) by (intro mult_left_mono a_ge_0 prems(2)) auto
   hence "gc1 * (\<Sum>i<k. as!i*f' ((ts!i) x)) \<ge> (\<Sum>i<k. as!i*f ((ts!i) x))"
-    by (subst setsum_distrib_left, intro setsum_mono) (simp_all add: algebra_simps)
+    by (subst sum_distrib_left, intro sum_mono) (simp_all add: algebra_simps)
   ultimately show ?case using prems(1) gx3_ge_x1
     by (simp_all add: algebra_simps f_rec)
 qed
@@ -767,9 +767,9 @@ from b_bounds bs_nonempty have "bm > 0" "bm < 1" unfolding bm_def by auto
       case (2 x)
       note x = this(1) and IH = this(2)
       from x have "abr.f' (real x) = g' (real x) + (\<Sum>i<k. as!i*abr.f' (bs!i*real x + (hs!i) x))"
-        by (auto simp: gt_x1'D hs'_real intro!: setsum.cong)
+        by (auto simp: gt_x1'D hs'_real intro!: sum.cong)
       also have "(\<Sum>i<k. as!i*abr.f' (bs!i*real x + (hs!i) x)) = (\<Sum>i<k. as!i*f' ((ts!i) x))"
-      proof (rule setsum.cong, simp, clarify)
+      proof (rule sum.cong, simp, clarify)
         fix i assume i: "i < k"
         from i x x0'_le_x1' x0'_ge_x1 have *: "bs!i * real x + (hs!i) x = real ((ts!i) x)"
           by (intro decomp) simp_all

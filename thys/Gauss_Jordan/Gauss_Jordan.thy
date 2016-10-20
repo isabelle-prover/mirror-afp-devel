@@ -1643,10 +1643,10 @@ proof
   from this obtain f where f: "(\<Sum>v\<in>(R - {a}). f v *s v) = a" using a_in_span by fast
   have "1 = a $ least_n"  using rref_condition2[OF rref_A] row_i_A_not_zero unfolding least_n_def a_eq_Ai by presburger
   also have"... = (\<Sum>v\<in>(R - {a}). f v *s v) $ least_n" using f by auto
-  also have "... = (\<Sum>v\<in>(R - {a}). (f v *s v) $ least_n)" unfolding setsum_component ..
+  also have "... = (\<Sum>v\<in>(R - {a}). (f v *s v) $ least_n)" unfolding sum_component ..
   also have "... = (\<Sum>v\<in>(R - {a}). (f v) * (v $ least_n))" unfolding vector_smult_component ..
   also have "... = (\<Sum>v\<in>(R - {a}). 0)"
-  proof (rule setsum.cong)
+  proof (rule sum.cong)
     fix x assume x: "x \<in> R - {a}"
     from this obtain j where x_eq_row_j_A: "x=row j A" unfolding R_def by auto
     hence i_not_j: "i \<noteq> j" using a_eq_row_i_A x by auto
@@ -1654,7 +1654,7 @@ proof
       unfolding x_eq_row_j_A least_n_def row_def vec_nth_inverse by blast
     show "f x * x $ least_n = 0" unfolding x_least_is_zero by auto
   qed rule
-  also have "... = 0" unfolding setsum.neutral_const ..
+  also have "... = 0" unfolding sum.neutral_const ..
   finally show False by simp
 qed
 
@@ -2053,8 +2053,8 @@ proof (unfold col_rank_def, rule vec.dim_unique[of "{column (LEAST n. A $ i $ n 
     proof (rule vec.independent_if_scalars_zero, auto)
       fix f i
       let ?x = "column (LEAST n. A $ i $ n \<noteq> 0) A"
-      have setsum0: "(\<Sum>x\<in>{column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0} - {?x}. f x * (x $ i)) = 0"
-        proof (rule setsum.neutral, rule ballI)
+      have sum0: "(\<Sum>x\<in>{column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0} - {?x}. f x * (x $ i)) = 0"
+        proof (rule sum.neutral, rule ballI)
         fix x assume x: "x \<in> {column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0} - {?x}"
         obtain j where x_eq: "x=column (LEAST n. A $ j $ n \<noteq> 0) A" and row_j_not_0: "row j A \<noteq> 0" 
           and j_not_i: "j\<noteq>i" using x by auto
@@ -2068,11 +2068,11 @@ proof (unfold col_rank_def, rule vec.dim_unique[of "{column (LEAST n. A $ i $ n 
       have "0 = (\<Sum>x\<in>{column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0}. f x *s x) $ i" 
         using eq_0 by auto
       also have "... = (\<Sum>x\<in>{column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0}. f x * (x $ i))"
-        unfolding setsum_component vector_smult_component ..
+        unfolding sum_component vector_smult_component ..
      also have "... = f ?x * (?x $ i) 
       + (\<Sum>x\<in>{column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0} - {?x}. f x * (x $ i))"
-      by (rule setsum.remove, auto, rule exI[of _ i], simp add: i)
-     also have "... = f ?x * (?x $ i)" unfolding setsum0 by simp
+      by (rule sum.remove, auto, rule exI[of _ i], simp add: i)
+     also have "... = f ?x * (?x $ i)" unfolding sum0 by simp
      also have "... = f (column (LEAST n. A $ i $ n \<noteq> 0) A)" unfolding xi_1 by simp
      finally show "f (column (LEAST n. A $ i $ n \<noteq> 0) A) = 0" by simp
      qed
@@ -2100,7 +2100,7 @@ proof (unfold col_rank_def, rule vec.dim_unique[of "{column (LEAST n. A $ i $ n 
       qed
     show ?thesis 
       unfolding xi_0
-      proof (unfold setsum_component vector_smult_component, rule setsum.neutral, rule ballI)
+      proof (unfold sum_component vector_smult_component, rule sum.neutral, rule ballI)
       fix xa assume xa: "xa \<in> {column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0}"
       have "xa $ i = 0" using False xa by auto
       thus "x $ (THE i. xa $ i \<noteq> 0) * xa $ i = 0" by simp
@@ -2117,8 +2117,8 @@ proof (unfold col_rank_def, rule vec.dim_unique[of "{column (LEAST n. A $ i $ n 
       fix a assume va: "v $ a \<noteq> 0" show "a=i" by (rule column_leading_coefficient_component_eq[OF rref_A v va vi])
       qed     
     have vi_1: "v $ i = 1"  by (rule column_leading_coefficient_component_1[OF rref_A v vi])
-    have setsum0: "(\<Sum>v\<in>{column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0} - {v}. x $ (THE a. v $ a \<noteq> 0) * (v $ i)) = 0"
-      proof (rule setsum.neutral, rule ballI)
+    have sum0: "(\<Sum>v\<in>{column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0} - {v}. x $ (THE a. v $ a \<noteq> 0) * (v $ i)) = 0"
+      proof (rule sum.neutral, rule ballI)
         fix xa assume xa: "xa \<in> {column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0} - {v}"
         obtain y where y: "xa = column (LEAST n. A $ y $ n \<noteq> 0) A" and row_b: "row y A \<noteq> 0" using xa by blast
         have xa_in_V: "xa \<in> {column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0}" using xa by simp
@@ -2133,11 +2133,11 @@ proof (unfold col_rank_def, rule vec.dim_unique[of "{column (LEAST n. A $ i $ n 
       qed
     have "(\<Sum>v\<in>{column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0}. x $ (THE a. v $ a \<noteq> 0) *s v) $ i =
     (\<Sum>v\<in>{column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0}. x $ (THE a. v $ a \<noteq> 0) * (v $ i))"
-      unfolding setsum_component vector_smult_component ..
+      unfolding sum_component vector_smult_component ..
     also have "... = x $ (THE a. v $ a \<noteq> 0) * (v $ i) 
     + (\<Sum>v\<in>{column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0} - {v}. x $ (THE a. v $ a \<noteq> 0) * (v $ i))"
-      by (simp add: setsum.remove[OF _ v])
-    also have "... = x $ (THE a. v $ a \<noteq> 0) * (v $ i)" unfolding setsum0 by simp
+      by (simp add: sum.remove[OF _ v])
+    also have "... = x $ (THE a. v $ a \<noteq> 0) * (v $ i)" unfolding sum0 by simp
     also have "... = x $ (THE a. v $ a \<noteq> 0)" unfolding vi_1 by simp
     also have "... = x $ i" unfolding the_vi .. 
     finally show "(\<Sum>v\<in>{column (LEAST n. A $ i $ n \<noteq> 0) A |i. row i A \<noteq> 0}. x $ (THE a. v $ a \<noteq> 0) *s v) $ i = x $ i" .

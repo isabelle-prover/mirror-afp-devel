@@ -505,7 +505,7 @@ next
     apply (case_tac "\<lbrace>b\<rbrace> * sqrt \<lbrace>r\<rbrace> = \<lbrace>a\<rbrace>")
     apply simp
     apply (case_tac "\<lbrace>a\<rbrace> = 0")
-    apply (metis add_0_right divide_zero mult_zero_right)
+    apply (metis add_0_right div_by_0 mult_zero_right)
     apply (rule_tac x = "Multiplication (Const 1) (Inverse (Multiplication (Const 2) a))"in exI)
     apply (rule_tac x = "Const 0" in exI, simp)
     apply (rule_tac x = "Multiplication a (Inverse (Addition (Multiplication a a) (Negation (Multiplication (Multiplication b b) r))))" in exI)
@@ -947,7 +947,7 @@ next
     done
   have "(-b - sqrt (b^2 - 4*a*c)) / (2*a) \<in> radical_sqrt"
     using a b False l22
-    by (metis divide_zero mult_2 radical_sqrt.intros(2) radical_sqrt.intros(4) radical_sqrt_rule_division radical_sqrt_rule_subtraction)
+    by (metis div_by_0 mult_2 radical_sqrt.intros(2) radical_sqrt.intros(4) radical_sqrt_rule_division radical_sqrt_rule_subtraction)
   thus ?thesis
     by (metis l12 l23)
 qed

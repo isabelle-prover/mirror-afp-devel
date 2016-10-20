@@ -19,7 +19,7 @@ lemma det3_def':
 lemma det3_eq_det: "det3 (xa, ya) (xb, yb) (xc, yc) =
   det (vector [vector [xa, ya, 1], vector [xb, yb, 1], vector [xc, yc, 1]]::real^3^3)"
   unfolding Determinants.det_def UNIV_3
-  by (auto simp: setsum_over_permutations_insert
+  by (auto simp: sum_over_permutations_insert
     vector_3 sign_swap_id permutation_swap_id sign_compose)
 
 declare det3.simps[simp del]
@@ -512,7 +512,7 @@ proof -
   have "xs = map (op ! xs) [0..<length xs]" by (simp add: map_nth)
   also have "\<dots> = map (\<lambda>i. r i *\<^sub>R z) [0..<length xs]" by (simp add: r)
   also have "sum_list \<dots> = (\<Sum>i\<leftarrow>[0..<length xs]. r i) *\<^sub>R z"
-    by (simp add: sum_list_setsum_nth scaleR_setsum_left)
+    by (simp add: sum_list_sum_nth scaleR_sum_left)
   finally show ?thesis ..
 qed
 

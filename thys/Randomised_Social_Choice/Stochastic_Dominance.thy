@@ -348,9 +348,9 @@ proof safe
   proof -
     from p have "measure_pmf.expectation p u =
                    (\<Sum>i<length xs. u (f i) * measure_pmf.prob p (xs ! i))"
-      by (simp add: f_def expected_utility_weak_ranking xs_def sum_list_setsum_nth atLeast0LessThan)
+      by (simp add: f_def expected_utility_weak_ranking xs_def sum_list_sum_nth atLeast0LessThan)
     also have "\<dots> = (\<Sum>i<length xs. u (f i) * (?pref p (f i) - ?pref' p (f i)))"
-    proof (intro setsum.cong HOL.refl)
+    proof (intro sum.cong HOL.refl)
       fix i assume i: "i \<in> {..<length xs}"
       have "?pref p (f i) - ?pref' p (f i) =
               measure_pmf.prob p ({y. f i \<preceq>[le] y} - {y. f i \<prec>[le] y})"
@@ -374,16 +374,16 @@ proof safe
     qed
     also have "\<dots> = (\<Sum>i<length xs. u (f i) * ?pref p (f i)) -
                       (\<Sum>i<length xs. u (f i) * ?pref' p (f i))"
-      by (simp add: setsum_subtractf ring_distribs)
+      by (simp add: sum_subtractf ring_distribs)
     also have "(\<Sum>i<length xs. u (f i) * ?pref p (f i)) =
                  (\<Sum>i<n. u (f i) * ?pref p (f i)) + u (f n) * ?pref p (f n)" (is "_ = ?sum")
       by (simp add: n)
     also have "(\<Sum>i<length xs. u (f i) * ?pref' p (f i)) =
                  (\<Sum>i<n. u (f (Suc i)) * ?pref' p (f (Suc i))) + u (f 0) * ?pref' p (f 0)"
-      unfolding n setsum_lessThan_Suc_shift by simp
+      unfolding n sum_lessThan_Suc_shift by simp
     also have "(\<Sum>i<n. u (f (Suc i)) * ?pref' p (f (Suc i))) =
                  (\<Sum>i<n. u (f (Suc i)) * ?pref p (f i))"
-    proof (intro setsum.cong HOL.refl)
+    proof (intro sum.cong HOL.refl)
       fix i assume i: "i \<in> {..<n}"
       have "f (Suc i) \<prec>[le] y \<longleftrightarrow> f i \<preceq>[le] y" for y
       proof (cases "y \<in> carrier")
@@ -401,7 +401,7 @@ proof safe
     also have "?sum - (\<dots> + u (f 0) * ?pref' p (f 0)) =
       (\<Sum>i<n. (u (f i) - u (f (Suc i))) * ?pref p (f i)) -
        u (f 0) * ?pref' p (f 0) + u (f n) * ?pref p (f n)"
-         by (simp add: ring_distribs setsum_subtractf)
+         by (simp add: ring_distribs sum_subtractf)
     also have "{y. f 0 \<prec>[le] y} = {}"
       using hd_weak_ranking[of "f 0"] xs_nonempty f not_outside
       by (auto simp: hd_conv_nth xs_def strongly_preferred_def)
@@ -416,7 +416,7 @@ proof safe
 
   from assms[THEN this] show "measure_pmf.expectation p u \<le> measure_pmf.expectation q u"
     unfolding SD_preorder n_def using f'
-    by (auto intro!: setsum_mono mult_left_mono SD' simp: utility_le_iff f_le)
+    by (auto intro!: sum_mono mult_left_mono SD' simp: utility_le_iff f_le)
 
 next
   assume "\<forall>u. is_vnm_utility u \<longrightarrow> measure_pmf.expectation p u \<le> measure_pmf.expectation q u"
@@ -449,7 +449,7 @@ next
 
       have "(\<Sum>y|le x y. pmf p y) \<le>
               (\<Sum>y|le x y. pmf p y) + \<epsilon> * (\<Sum>y\<in>carrier. ?idx y * pmf p y)"
-        using \<epsilon> by (auto intro!: mult_nonneg_nonneg setsum_nonneg pmf_nonneg)
+        using \<epsilon> by (auto intro!: mult_nonneg_nonneg sum_nonneg pmf_nonneg)
       also from expected_utility_le is_utility have
         "measure_pmf.expectation p u \<le> measure_pmf.expectation q u" .
       with assms
@@ -459,9 +459,9 @@ next
       hence "(\<Sum>y|le x y. pmf p y) + \<epsilon> * (\<Sum>y\<in>carrier. ?idx y * pmf p y) \<le>
                (\<Sum>y|le x y. pmf q y) + \<epsilon> * (\<Sum>y\<in>carrier. ?idx y * pmf q y)"
         using x preferred_subset_carrier unfolding u_def
-        by (simp add: setsum.distrib finite_carrier algebra_simps Int_absorb1 setsum_distrib_left)
+        by (simp add: sum.distrib finite_carrier algebra_simps Int_absorb1 sum_distrib_left)
       also have "(\<Sum>y\<in>carrier. ?idx y * pmf q y) \<le> (\<Sum>y\<in>carrier. length xs * pmf q y)"
-        by (intro setsum_mono mult_right_mono) (simp_all add: pmf_nonneg)
+        by (intro sum_mono mult_right_mono) (simp_all add: pmf_nonneg)
       also have "\<dots> = measure_pmf.expectation q (\<lambda>_. length xs)"
         using assms by (subst integral_measure_pmf[OF finite_carrier])
                        (auto simp: lotteries_on_def set_pmf_eq ac_simps)
@@ -511,7 +511,7 @@ proof
     interpret u'': vnm_utility carrier le u'' unfolding u''_def by fact
     have exp_u'': "?E p u'' = ?E p u - \<epsilon> * ?E p u'" if "p \<in> lotteries_on carrier" for p using that
       by (subst (1 2 3) integral_measure_pmf[of carrier])
-         (auto simp: lotteries_on_def u''_def algebra_simps setsum_subtractf setsum_distrib_left)
+         (auto simp: lotteries_on_def u''_def algebra_simps sum_subtractf sum_distrib_left)
     from assms \<epsilon> have "?E p u'' > ?E q u''"
       by (simp_all add: exp_u'' algebra_simps u_eq u')
     with pq[OF u''.vnm_utility_axioms] show False by simp

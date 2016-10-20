@@ -910,10 +910,10 @@ lemma convex_on_ereal_subset: "convex_on t f ==> s <= t ==> convex_on s f"
 lemma convex_on_ereal_univ: "convex_on UNIV f \<longleftrightarrow> (ALL S. convex_on S f)"
   using convex_on_ereal_subset by auto
 
-lemma ereal_pos_setsum_distrib_left:
+lemma ereal_pos_sum_distrib_left:
   fixes f :: "'a => ereal"
   assumes "r>=0" "r ~= \<infinity>"
-  shows "r * setsum f A = setsum (%n. r * f n) A"
+  shows "r * sum f A = sum (%n. r * f n) A"
 proof (cases "finite A")
   case True
   thus ?thesis
@@ -1030,14 +1030,14 @@ by (metis assms convex_on_ereal_alt)
 lemma ereal_add_right_mono: "(a::ereal) <= b ==> a + c <= b + c"
 by (metis ereal_add_mono order_refl)
 
-lemma convex_on_ereal_setsum_aux:
+lemma convex_on_ereal_sum_aux:
   assumes "1-a>0"
   shows "(1 - ereal a) * (ereal (c / (1 - a)) * b) = (ereal c) * b"
   by (metis mult.assoc mult.commute eq_divide_eq ereal_minus(1) assms
             one_ereal_def less_le times_ereal.simps(1))
 
 
-lemma convex_on_ereal_setsum:
+lemma convex_on_ereal_sum:
   fixes a :: "'a => real"
   fixes y :: "'a => 'b::real_vector"
   fixes f :: "'b => ereal"
@@ -1063,14 +1063,14 @@ next
     hence "(SUM j : s. a j) = 0"
       using insert by auto
     hence "ALL j. (j : s --> a j = 0)"
-      using insert by (simp add: setsum_nonneg_eq_0_iff)
+      using insert by (simp add: sum_nonneg_eq_0_iff)
     hence ?case using insert.hyps(1-3) `a i = 1`
       by (simp add: zero_ereal_def[symmetric] one_ereal_def[symmetric]) }
   moreover
   { assume asm: "a i ~= 1"
     from insert have yai: "y i : C" "a i >= 0" by auto
     have fis: "finite (insert i s)" using insert by auto
-    hence ai1: "a i <= 1" using setsum_nonneg_leq_bound[of "insert i s" a] insert by simp
+    hence ai1: "a i <= 1" using sum_nonneg_leq_bound[of "insert i s" a] insert by simp
     hence "a i < 1" using asm by auto
     hence i0: "1 - a i > 0" by auto
     hence i1: "1 - ereal (a i) > 0" using ereal_minus(1)[of 1 "a i"]
@@ -1082,21 +1082,21 @@ next
       using i0 insert
       by (metis insert_iff divide_nonneg_pos)
     have "(SUM j : insert i s. a j) = 1" using insert by auto
-    hence "(SUM j : s. a j) = 1 - a i" using setsum.insert insert by fastforce
+    hence "(SUM j : s. a j) = 1 - a i" using sum.insert insert by fastforce
     hence "(SUM j : s. a j) / (1 - a i) = 1" using i0 by auto
-    hence a1: "(SUM j : s. ?a j) = 1" unfolding setsum_divide_distrib by simp
+    hence a1: "(SUM j : s. ?a j) = 1" unfolding sum_divide_distrib by simp
     have asum: "(SUM j : s. ?a j *\<^sub>R y j) : C"
-      using insert convex_setsum[OF `finite s`
+      using insert convex_sum[OF `finite s`
         `convex C` a1 a_nonneg] by auto
     have asum_le: "f (SUM j : s. ?a j *\<^sub>R y j) <= (SUM j : s. ereal (?a j) * f (y j))"
       using a_nonneg a1 insert by blast
     have "f (SUM j : insert i s. a j *\<^sub>R y j) = f ((SUM j : s. a j *\<^sub>R y j) + a i *\<^sub>R y i)"
-      using setsum.insert[of s i "% j. a j *\<^sub>R y j", OF `finite s` `i ~: s`]
+      using sum.insert[of s i "% j. a j *\<^sub>R y j", OF `finite s` `i ~: s`]
       by (auto simp only:add.commute)
     also have "... = f (((1 - a i) * inverse (1 - a i)) *\<^sub>R (SUM j : s. a j *\<^sub>R y j) + a i *\<^sub>R y i)"
       using i0 by auto
     also have "... = f ((1 - a i) *\<^sub>R (SUM j : s. (a j * inverse (1 - a i)) *\<^sub>R y j) + a i *\<^sub>R y i)"
-      using scaleR_right.setsum[of "inverse (1 - a i)" "% j. a j *\<^sub>R y j" s, symmetric] by (auto simp:algebra_simps)
+      using scaleR_right.sum[of "inverse (1 - a i)" "% j. a j *\<^sub>R y j" s, symmetric] by (auto simp:algebra_simps)
     also have "... = f ((1 - a i) *\<^sub>R (SUM j : s. ?a j *\<^sub>R y j) + a i *\<^sub>R y i)"
       by (auto simp: divide_inverse)
     also have "... <= (1 - ereal (a i)) * f ((SUM j : s. ?a j *\<^sub>R y j)) + (ereal (a i)) * f (y i)"
@@ -1106,8 +1106,8 @@ next
       using ereal_add_right_mono[OF ereal_mult_left_mono[of _ _ "1 - ereal (a i)",
         OF asum_le less_imp_le[OF i1]], of "(ereal (a i)) * f (y i)"] by simp
     also have "... = (SUM j : s. (1 - ereal (a i)) * (ereal (?a j) * f (y j))) + (ereal (a i)) * f (y i)"
-      unfolding ereal_pos_setsum_distrib_left[of "1 - ereal (a i)" "% j. (ereal (?a j)) * f (y j)", OF less_imp_le[OF i1] i2] by auto
-    also have "... = (SUM j : s. (ereal (a j)) * f (y j)) + (ereal (a i)) * f (y i)" using i0 convex_on_ereal_setsum_aux by auto
+      unfolding ereal_pos_sum_distrib_left[of "1 - ereal (a i)" "% j. (ereal (?a j)) * f (y j)", OF less_imp_le[OF i1] i2] by auto
+    also have "... = (SUM j : s. (ereal (a j)) * f (y j)) + (ereal (a i)) * f (y i)" using i0 convex_on_ereal_sum_aux by auto
     also have "... = (ereal (a i)) * f (y i) + (SUM j : s. (ereal (a j)) * f (y j))" by (simp add: add.commute)
     also have "... = (SUM j : insert i s. (ereal (a j)) * f (y j))" using insert by auto
     finally have "f (SUM j : insert i s. a j *\<^sub>R y j) <= (SUM j : insert i s. (ereal (a j)) * f (y j))" by simp }
@@ -1115,7 +1115,7 @@ next
 qed
 
 
-lemma setsum_2: "setsum u {1::nat..2} = (u 1)+(u 2)"
+lemma sum_2: "sum u {1::nat..2} = (u 1)+(u 2)"
 proof-
   have "{1::nat..2} = {1::nat,2}" by auto
   thus ?thesis by auto
@@ -1124,19 +1124,19 @@ qed
 
 lemma convex_on_ereal_iff:
   assumes "convex s"
-  shows "convex_on s f \<longleftrightarrow> (ALL k u x. (ALL i:{1..k::nat}. 0 <= u i & x i : s) & setsum u {1..k} = 1 -->
-   f (setsum (%i. u i *\<^sub>R x i) {1..k} ) <= setsum (%i. (ereal (u i)) * f(x i)) {1..k} )"
+  shows "convex_on s f \<longleftrightarrow> (ALL k u x. (ALL i:{1..k::nat}. 0 <= u i & x i : s) & sum u {1..k} = 1 -->
+   f (sum (%i. u i *\<^sub>R x i) {1..k} ) <= sum (%i. (ereal (u i)) * f(x i)) {1..k} )"
   (is "?rhs \<longleftrightarrow> ?lhs")
 proof-
 { assume "?rhs"
   { fix k u x
-    have zero: "~(setsum u {1..0::nat} = (1::real))" by auto
+    have zero: "~(sum u {1..0::nat} = (1::real))" by auto
     assume "(ALL i:{1..k::nat}. (0::real) <= u i & x i : s)"
-    moreover assume "setsum u {1..k} = 1"
+    moreover assume "sum u {1..k} = 1"
     moreover hence "k ~= 0" using zero by metis
-    ultimately have "f (setsum (%i. u i *\<^sub>R x i) {1..k} )
-      <= setsum (%i. (ereal (u i)) * f(x i)) {1..k}"
-      using convex_on_ereal_setsum[of "{1..k}" s f u x] using assms `?rhs` by auto
+    ultimately have "f (sum (%i. u i *\<^sub>R x i) {1..k} )
+      <= sum (%i. (ereal (u i)) * f(x i)) {1..k}"
+      using convex_on_ereal_sum[of "{1..k}" s f u x] using assms `?rhs` by auto
   } hence "?lhs" by auto
 }
 moreover
@@ -1147,11 +1147,11 @@ moreover
     def xy == "(%i::nat. if i=1 then x else y)"
     def uv == "(%i::nat. if i=1 then u else v)"
     have "ALL i:{1..2::nat}. (0 <= uv i) & (xy i : s)" unfolding xy_def uv_def using xys uv1 by auto
-    moreover have "setsum uv {1..2} = 1" using setsum_2[of uv] unfolding uv_def using uv1 by auto
+    moreover have "sum uv {1..2} = 1" using sum_2[of uv] unfolding uv_def using uv1 by auto
     moreover have "(SUM i = 1..2. uv i *\<^sub>R xy i) = u *\<^sub>R x + v *\<^sub>R y"
-        using setsum_2[of "(%i. uv i *\<^sub>R xy i)"] unfolding xy_def uv_def using xys uv1 by auto
+        using sum_2[of "(%i. uv i *\<^sub>R xy i)"] unfolding xy_def uv_def using xys uv1 by auto
     moreover have "(SUM i = 1..2. ereal (uv i) * f (xy i)) = ereal u * f x + ereal v * f y"
-        using setsum_2[of "(%i. ereal (uv i) * f (xy i))"] unfolding xy_def uv_def using xys uv1 by auto
+        using sum_2[of "(%i. ereal (uv i) * f (xy i))"] unfolding xy_def uv_def using xys uv1 by auto
     ultimately have "f (u *\<^sub>R x + v *\<^sub>R y) <= ereal u * f x + ereal v * f y"
       using `?lhs`[rule_format, of "2" uv xy] by auto
   } hence "?rhs" unfolding convex_on_def by auto

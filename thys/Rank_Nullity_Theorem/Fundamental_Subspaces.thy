@@ -94,25 +94,25 @@ lemma col_space_eq:
   proof (unfold matrix_mult_vsum, rule exI[of _ "?x"], auto)
       have inj: "inj_on ?g (columns A)" unfolding inj_on_def unfolding columns_def by auto
       have union_univ: "\<Union>(?g`(columns A)) = UNIV" unfolding columns_def by auto               
-      have "setsum (\<lambda>i.(if i = (LEAST a. column i A = column a A) then u (column i A) else 0) *s column i A) UNIV 
-        = setsum (\<lambda>i. (if i = (LEAST a. column i A = column a A) then u (column i A) else 0) *s column i A) (\<Union>(?g`(columns A)))"
+      have "sum (\<lambda>i.(if i = (LEAST a. column i A = column a A) then u (column i A) else 0) *s column i A) UNIV 
+        = sum (\<lambda>i. (if i = (LEAST a. column i A = column a A) then u (column i A) else 0) *s column i A) (\<Union>(?g`(columns A)))"
         unfolding union_univ ..
-    also have "... = setsum (setsum (\<lambda>i.(if i = (LEAST a. column i A = column a A) then u (column i A) else 0) *s column i A)) (?g`(columns A))" 
-        by (rule setsum.Union_disjoint[unfolded o_def], auto)
-      also have "... = setsum ((setsum (\<lambda>i.(if i = (LEAST a. column i A = column a A) then u (column i A) else 0) *s column i A)) \<circ> ?g) 
-        (columns A)" by (rule setsum.reindex, simp add: inj)
-      also have "... = setsum (\<lambda>y. u y *s y) (columns A)"
-       proof (rule setsum.cong, auto)
+    also have "... = sum (sum (\<lambda>i.(if i = (LEAST a. column i A = column a A) then u (column i A) else 0) *s column i A)) (?g`(columns A))" 
+        by (rule sum.Union_disjoint[unfolded o_def], auto)
+      also have "... = sum ((sum (\<lambda>i.(if i = (LEAST a. column i A = column a A) then u (column i A) else 0) *s column i A)) \<circ> ?g) 
+        (columns A)" by (rule sum.reindex, simp add: inj)
+      also have "... = sum (\<lambda>y. u y *s y) (columns A)"
+       proof (rule sum.cong, auto)
         fix x
         assume x_in_cols: "x \<in> columns A"
         obtain b where b: "x=column b A" using x_in_cols unfolding columns_def by blast
         let ?f="(\<lambda>i. (if i = (LEAST a. column i A = column a A) then u (column i A) else 0) *s column i A)" 
-        have setsum_rw: "setsum ?f ({i. x = column i A} - {LEAST a. x = column a A}) = 0"
-          by (rule setsum.neutral, auto)
-        have "setsum ?f {i. x = column i A} = ?f (LEAST a. x = column a A) + setsum ?f ({i. x = column i A} - {LEAST a. x = column a A})" 
-          apply (rule setsum.remove, auto, rule LeastI_ex) 
+        have sum_rw: "sum ?f ({i. x = column i A} - {LEAST a. x = column a A}) = 0"
+          by (rule sum.neutral, auto)
+        have "sum ?f {i. x = column i A} = ?f (LEAST a. x = column a A) + sum ?f ({i. x = column i A} - {LEAST a. x = column a A})" 
+          apply (rule sum.remove, auto, rule LeastI_ex) 
           using x_in_cols unfolding columns_def by auto
-        also have "... = ?f (LEAST a. x = column a A)" unfolding setsum_rw by simp
+        also have "... = ?f (LEAST a. x = column a A)" unfolding sum_rw by simp
         also have "... = u x *s x"
         proof (auto, rule LeastI2)
           show "x = column b A" using b .

@@ -21,7 +21,7 @@ lemma cube_in_cball:
   unfolding mem_cball euclidean_dist_l2[of x y] setL2_def
 proof -
   have "(\<Sum>i\<in>Basis. (dist (x \<bullet> i) (y \<bullet> i))\<^sup>2) \<le> (\<Sum>(i::'a)\<in>Basis. (r / sqrt(DIM('a)))\<^sup>2)"
-  proof (intro setsum_mono)
+  proof (intro sum_mono)
     fix i :: 'a
     assume "i \<in> Basis"
     thus "(dist (x \<bullet> i) (y \<bullet> i))\<^sup>2 \<le> (r / sqrt(DIM('a)))\<^sup>2"
@@ -33,7 +33,7 @@ proof -
     using assms by (simp add: power_divide)
   ultimately
   show "sqrt (\<Sum>i\<in>Basis. (dist (x \<bullet> i) (y \<bullet> i))\<^sup>2) \<le> r"
-    using assms by (auto intro!: real_le_lsqrt setsum_nonneg)
+    using assms by (auto intro!: real_le_lsqrt sum_nonneg)
 qed
 
 lemma cbox_in_cball':

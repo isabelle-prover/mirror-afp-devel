@@ -14,7 +14,7 @@ context akra_bazzi_params_nonzero
 begin
 
 lemma sum_alt: "(\<Sum>i<k. as!i * bs!i powr p') = (\<Sum>i<k. as!i * exp (p' * ln (bs!i)))"
-proof (intro setsum.cong)
+proof (intro sum.cong)
   fix i assume "i \<in> {..<k}"
   with b_bounds have "bs!i > 0" by simp
   thus "as!i * bs!i powr p' = as!i * exp (p' * ln (bs!i))" by (simp add: powr_def)
@@ -33,7 +33,7 @@ end
 lemmas akra_bazzi_p_rel_intros_exp = 
   akra_bazzi_params_nonzero.akra_bazzi_p_rel_intros_aux[rotated, OF _ akra_bazzi_params_nonzeroI]
 
-lemma eval_akra_bazzi_setsum:
+lemma eval_akra_bazzi_sum:
   "(\<Sum>i<0. as!i * exp (x * ln (bs!i))) = 0"
   "(\<Sum>i<Suc 0. (a#as)!i * exp (x * ln ((b#bs)!i))) = a * exp (x * ln b)"
   "(\<Sum>i<Suc k. (a#as)!i * exp (x * ln ((b#bs)!i))) = a * exp (x * ln b) + 
@@ -58,7 +58,7 @@ struct
 
 fun akra_bazzi_approximate_tac prec ctxt =
   let 
-    val simps = @{thms eval_length eval_akra_bazzi_setsum add_0_left add_0_right 
+    val simps = @{thms eval_length eval_akra_bazzi_sum add_0_left add_0_right 
                        mult_1_left mult_1_right}
   in
     SELECT_GOAL (

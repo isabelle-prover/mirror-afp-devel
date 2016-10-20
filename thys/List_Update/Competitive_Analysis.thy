@@ -111,14 +111,14 @@ by(rule T_on_rand'_append)
 
 abbreviation "T_on_rand'_n A s0 xs n == T_on_rand' A (config'_rand A s0 (take n xs)) [xs!n]"
 
-lemma T_on_rand'_as_sum: "T_on_rand' A s0 rs = setsum (T_on_rand'_n A s0 rs) {..<length rs} "
+lemma T_on_rand'_as_sum: "T_on_rand' A s0 rs = sum (T_on_rand'_n A s0 rs) {..<length rs} "
 apply(induct rs rule: rev_induct)
   by(simp_all add: T_on_rand'_append nth_append)
 
 
 abbreviation "T_on_rand_n A s0 xs n == T_on_rand' A (config_rand A s0 (take n xs)) [xs!n]" 
 
-lemma T_on_rand_as_sum: "T_on_rand A s0 rs = setsum (T_on_rand_n A s0 rs) {..<length rs} "
+lemma T_on_rand_as_sum: "T_on_rand A s0 rs = sum (T_on_rand_n A s0 rs) {..<length rs} "
 apply(induct rs rule: rev_induct)
   by(simp_all add: T_on_rand'_append  nth_append)
 

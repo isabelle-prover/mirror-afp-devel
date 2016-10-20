@@ -1,11 +1,7 @@
 chapter AFP
 
-session SumSquares (AFP) = HOL +
+session SumSquares (AFP) = "HOL-Number_Theory" +
   options [timeout = 600]
-  theories [document = false]
-    "../Fermat3_4/IntNatAux"
-    "~~/src/HOL/Old_Number_Theory/Euler"
-    "~~/src/HOL/Old_Number_Theory/Quadratic_Reciprocity"
   theories
     TwoSquares
     FourSquares

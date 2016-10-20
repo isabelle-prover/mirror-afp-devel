@@ -59,22 +59,22 @@ proof -
     by (auto simp: algebra_simps divide_simps)
 qed
 
-lemma setsum_by_parts_ivt:
+lemma sum_by_parts_ivt:
   assumes "finite X"
   assumes "convex G"
   assumes "\<And>i. i \<in> X \<Longrightarrow> g i \<in> G"
   assumes "\<And>i. i \<in> X \<Longrightarrow> 0 \<le> c i"
-  obtains y where "y \<in> G" "(\<Sum>x\<in>X. c x *\<^sub>R g x) = setsum c X *\<^sub>R y" | "G = {}"
-proof (atomize_elim, cases "setsum c X = 0", goal_cases)
+  obtains y where "y \<in> G" "(\<Sum>x\<in>X. c x *\<^sub>R g x) = sum c X *\<^sub>R y" | "G = {}"
+proof (atomize_elim, cases "sum c X = 0", goal_cases)
   case pos: 2
-  let ?y = "(\<Sum>x\<in>X. (c x / setsum c X) *\<^sub>R g x)"
+  let ?y = "(\<Sum>x\<in>X. (c x / sum c X) *\<^sub>R g x)"
   have "?y \<in> G" using pos
-    by (intro convex_setsum)
-      (auto simp: setsum_divide_distrib[symmetric]
-        intro!: divide_nonneg_nonneg assms setsum_nonneg)
+    by (intro convex_sum)
+      (auto simp: sum_divide_distrib[symmetric]
+        intro!: divide_nonneg_nonneg assms sum_nonneg)
   thus ?case
-    by (auto intro!: exI[where x = ?y] simp: scaleR_right.setsum pos)
-qed (insert assms, auto simp: setsum_nonneg_eq_0_iff)
+    by (auto intro!: exI[where x = ?y] simp: scaleR_right.sum pos)
+qed (insert assms, auto simp: sum_nonneg_eq_0_iff)
 
 lemma
   integral_by_parts_near_bounded_convex_set:
@@ -126,7 +126,7 @@ proof (rule dense_eq0_I, cases)
     by (simp add: dist_norm)
   also
   let ?h = "(\<lambda>x k y. (content k * f x) *\<^sub>R y)"
-  let ?s' = "\<lambda>y. setsum (\<lambda>(x, k). ?h x k y) p"
+  let ?s' = "\<lambda>y. sum (\<lambda>(x, k). ?h x k y) p"
   let ?g = "\<lambda>(x, k). g x"
   let ?c = "\<lambda>(x, k). content k * f x"
   have Pi: "\<And>x. x \<in> p \<Longrightarrow> ?g x \<in> G" "\<And>x. x \<in> p \<Longrightarrow> ?c x \<ge> 0"
@@ -134,11 +134,11 @@ proof (rule dense_eq0_I, cases)
     using tag_in_interval[OF p(1)]
     by (auto simp: intro!: mult_nonneg_nonneg)
   obtain y where y: "y \<in> G" "?s = ?s' y"
-    by (rule setsum_by_parts_ivt[OF \<open>finite p\<close> \<open>convex G\<close> Pi])
-      (auto simp: split_beta' scaleR_setsum_left \<open>G \<noteq> {}\<close>)
+    by (rule sum_by_parts_ivt[OF \<open>finite p\<close> \<open>convex G\<close> Pi])
+      (auto simp: split_beta' scaleR_sum_left \<open>G \<noteq> {}\<close>)
   note this(2)
   also have "(\<Sum>(x, k)\<in>p. (content k * f x) *\<^sub>R y) = ?f *\<^sub>R y"
-    by (auto simp: scaleR_left.setsum intro!: setsum.cong)
+    by (auto simp: scaleR_left.sum intro!: sum.cong)
   finally have "dist P ((\<Sum>(x, k)\<in>p. content k *\<^sub>R f x) *\<^sub>R y) \<le> e"
     by (simp add: dist_commute)
   moreover have "dist (I *\<^sub>R y) ((\<Sum>(x, k)\<in>p. content k *\<^sub>R f x) *\<^sub>R y) \<le> norm y * e"
@@ -386,7 +386,7 @@ text\<open>\label{sec:rk}\<close>
 subsection \<open>Definitions\<close>
 text\<open>\label{sec:rk-definition}\<close>
 
-declare setsum.cong[fundef_cong]
+declare sum.cong[fundef_cong]
 fun rk_eval :: "(nat\<Rightarrow>nat\<Rightarrow>real) \<Rightarrow> (nat\<Rightarrow>real) \<Rightarrow> (real \<Rightarrow> 'a::real_vector \<Rightarrow> 'a) \<Rightarrow> real \<Rightarrow> real \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a" where
   "rk_eval A c f t h x j =
   f (t + h * c j) (x + h *\<^sub>R (\<Sum>l=1 ..< j. A j l *\<^sub>R rk_eval A c f t h x l))"
@@ -687,7 +687,7 @@ next
     (cbox t (t + h))"
     using ht \<open>h\<noteq>0\<close>
     by (auto simp: field_simps of_nat_Suc Pi_iff numeral_2_eq_2 numeral_3_eq_3
-      numeral_6_eq_6 power2_eq_square diff_def scaleR_setsum_right)
+      numeral_6_eq_6 power2_eq_square diff_def scaleR_sum_right)
   from has_integral_affinity[OF this \<open>h \<noteq> 0\<close>, of t, simplified]
   have "((\<lambda>x. ((h - h * x)\<^sup>2 / 2) *\<^sub>R diff 3 (h * x + t)) has_integral
      (1 / \<bar>h\<bar>) *\<^sub>R (x (t + h) - x t - h *\<^sub>R f (t, x t) - (h\<^sup>2 / 2) *\<^sub>R f' (t, x t) $ (1, f (t, x t))))

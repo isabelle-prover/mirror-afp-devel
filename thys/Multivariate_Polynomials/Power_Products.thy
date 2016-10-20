@@ -1106,11 +1106,11 @@ subsubsection \<open>General Degree-Orders\<close>
 
 definition deg::"'a pp \<Rightarrow> nat" where "deg s \<equiv> \<Sum>x\<in>(UNIV::'a set). exp s x"
 
-lemma setsum_nat_cong:
+lemma sum_nat_cong:
   fixes f g::"'a \<Rightarrow> nat" and A::"'a set"
   assumes "\<And>x. x \<in> A \<Longrightarrow> f x = g x"
   shows "(\<Sum>x\<in>A. f x) = (\<Sum>x\<in>A. g x)" (is "?L = ?R")
-using assms unfolding setsum_def
+using assms unfolding sum_def
 by (meson add.comm_monoid_axioms comm_monoid_set.cong comm_monoid_set_def)
 
 lemma deg_one:
@@ -1118,15 +1118,15 @@ lemma deg_one:
 proof -
   have fin: "finite (UNIV::'a set)" by simp
   have "\<forall>x\<in>UNIV. exp 1 x = 0" by (intro ballI, transfer, simp)
-  from this setsum_eq_0_iff[OF fin] show ?thesis unfolding deg_def by simp
+  from this sum_eq_0_iff[OF fin] show ?thesis unfolding deg_def by simp
 qed
 
 lemma deg_times:
   shows "deg (s * t) = deg s + deg t"
 proof -
   have "deg (s * t) = (\<Sum>x\<in>UNIV. exp s x + exp t x)" unfolding deg_def
-    by (rule setsum_nat_cong, transfer, simp)
-  also have "\<dots> = deg s + deg t" using setsum.distrib[of "exp s" "exp t" "UNIV::'a set"]
+    by (rule sum_nat_cong, transfer, simp)
+  also have "\<dots> = deg s + deg t" using sum.distrib[of "exp s" "exp t" "UNIV::'a set"]
     unfolding deg_def .
   finally show ?thesis .
 qed

@@ -351,7 +351,7 @@ proof -
   ultimately
   have "(2^Exponent a / 2^bias float_format) * (1 + Fraction a/2^fracwidth float_format) \<le>
       valof float_format (topfloat float_format)"
-    by (metis vt ineq divide_zero_left pos_divide_less_eq mult_mono' less_eq_real_def)
+    by (metis vt ineq div_0 pos_divide_less_eq mult_mono' less_eq_real_def)
   then
   have "1 * (2^Exponent a / 2^bias float_format) * (1 + Fraction a / 2^fracwidth float_format) \<le>
       valof float_format (topfloat float_format)"

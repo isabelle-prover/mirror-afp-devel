@@ -972,10 +972,10 @@ apply (intro conjI impI)
    apply (drule add_le_imp_le_diff2)
    apply (drule div_le_mono[of _ _ m], simp)
    apply (drule mult_le_mono2[of _ _ m])
-   apply (simp add: mult_div_cancel)
+   apply (simp add: minus_mod_eq_mult_div [symmetric])
   apply (simp add: le_diff_conv2[OF mod_le_dividend] del: diff_diff_left)
  apply (subst iMODb_iMOD_iIN_conv)
- apply (simp add: Int_assoc mult_div_cancel)
+ apply (simp add: Int_assoc minus_mod_eq_mult_div [symmetric])
  apply (subst iIN_inter, simp+)
  apply (rule set_eqI)
  apply (fastforce simp add: iT_iff mod_diff_mult_self2 diff_diff_left[symmetric] simp del: diff_diff_left)
@@ -1326,7 +1326,7 @@ apply (rule iffI)
 apply (rule_tac x="n mod k + k * x" in exI)
 apply simp
 apply (subst add.commute, subst le_diff_conv[symmetric])
-apply (subst mult_div_cancel[symmetric])
+apply (subst minus_mod_eq_mult_div)
 apply simp
 done
 
@@ -1343,7 +1343,7 @@ apply (clarify, rename_tac x)
 apply (simp add: add.assoc[symmetric] div_add1_eq[symmetric])
 apply (frule mult_le_mono1[of "n div k" _ k])
 apply (frule mult_le_mono1[of _ "(n + d) div k" k])
-apply (simp add: mult.commute[of _ k] mult_div_cancel)
+apply (simp add: mult.commute[of _ k] minus_mod_eq_mult_div [symmetric])
 apply (simp add: le_diff_conv le_diff_conv2[OF mod_le_dividend])
 apply (drule order_le_less[of _ "(n + d) div k", THEN iffD1], erule disjE)
  apply (rule_tac x="k * x + n mod k" in exI)
@@ -1352,7 +1352,7 @@ apply (drule order_le_less[of _ "(n + d) div k", THEN iffD1], erule disjE)
  apply (simp add: linorder_not_le)
  apply (drule_tac m=x in less_imp_le_pred)
  apply (drule_tac i=x and k=k in mult_le_mono2)
- apply (simp add: diff_mult_distrib2 mult_div_cancel)
+ apply (simp add: diff_mult_distrib2 minus_mod_eq_mult_div [symmetric])
  apply (subst add.commute[of "n mod k"])
  apply (subst le_diff_conv2[symmetric])
   apply (simp add: trans_le_add1)
@@ -2189,9 +2189,9 @@ lemma iT_Div_0_card_if: "
   card (I \<oslash> 0) = (if I ={} then 0 else Suc 0)"
 by (fastforce simp: iT_Div_empty iT_Div_0 iTILL_0)
 
-lemma Int_empty_setsum:"
+lemma Int_empty_sum:"
   (\<Sum>k\<le>(n::nat). if {} \<inter> (I k) = {} then 0 else Suc 0) = 0"
-apply (rule setsum_eq_0_iff[THEN iffD2])
+apply (rule sum_eq_0_iff[THEN iffD2])
  apply (rule finite_atMost)
 apply simp
 done

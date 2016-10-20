@@ -80,7 +80,7 @@ qed
 
 lemma rotate2_dot [simp]: "(rotate2 u) \<bullet> (rotate2 v) = u \<bullet> v"
   unfolding inner_vec_def
-  by (simp add: setsum_2)
+  by (simp add: sum_2)
 
 lemma rotate2_scaleR [simp]: "rotate2 (k *\<^sub>R x) = k *\<^sub>R (rotate2 x)"
 proof -
@@ -114,7 +114,7 @@ lemma dot2_rearrange_1:
 proof -
   from `u \<bullet> x = 0` have "u$1 * x$1 = -(u$2) * (x$2)"
     unfolding inner_vec_def
-    by (simp add: setsum_2)
+    by (simp add: sum_2)
   hence "u$1 * x$1 / x$1 = -u$2 / x$1 * x$2" by simp
   with `x$1 \<noteq> 0` have "u$1 = ?u'$1" by simp
   from `x$1 \<noteq> 0` have "u$2 = ?u'$2" by simp
@@ -162,7 +162,7 @@ proof -
   have "(u \<bullet> x) - (v \<bullet> x) = (\<Sum>i\<in>UNIV. u$i * x$i) - (\<Sum>i\<in>UNIV. v$i * x$i)"
     unfolding inner_vec_def
     by simp
-  also from setsum_subtractf [of "\<lambda> i. u$i * x$i" "\<lambda> i. v$i * x$i"] have
+  also from sum_subtractf [of "\<lambda> i. u$i * x$i" "\<lambda> i. v$i * x$i"] have
     "\<dots> = (\<Sum>i\<in>UNIV. u$i * x$i - v$i * x$i)" by simp
   also from left_diff_distrib [where 'a = real] have
     "\<dots> = (\<Sum>i\<in>UNIV. (u$i - v$i) * x$i)" by simp
@@ -266,7 +266,7 @@ lemma scalar_vector_matrix_assoc:
   shows "(k *\<^sub>R x) v* A = k *\<^sub>R (x v* A)"
 proof -
   { fix i
-    from setsum_distrib_left [of k "\<lambda>j. x$j * A$j$i" UNIV]
+    from sum_distrib_left [of k "\<lambda>j. x$j * A$j$i" UNIV]
     have "(\<Sum>j\<in>UNIV. k * (x$j * A$j$i)) = k * (\<Sum>j\<in>UNIV. x$j * A$j$i)" .. }
   thus "(k *\<^sub>R x) v* A = k *\<^sub>R (x v* A)"
     unfolding vector_matrix_mult_def
@@ -289,7 +289,7 @@ lemma vector_matrix_left_distrib:
   fixes x y :: "real^('n::finite)" and A :: "real^('m::finite)^'n"
   shows "(x + y) v* A = x v* A + y v* A"
   unfolding vector_matrix_mult_def
-  by (simp add: algebra_simps setsum.distrib vec_eq_iff)
+  by (simp add: algebra_simps sum.distrib vec_eq_iff)
 
 lemma times_zero_vector [simp]: "A *v 0 = 0"
   unfolding matrix_vector_mult_def

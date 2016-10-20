@@ -532,7 +532,7 @@ proof -
                 by (subst card_Diff_subset) auto
               from this show ?thesis
                 using \<open>finite B\<close> P
-                by (subst card_PiE) (simp add: setprod_constant)+
+                by (subst card_PiE) (simp add: prod_constant)+
             qed
             ultimately have "card ?expr = j ^ (n - k)"
               by (simp add: card_bind_constant)
@@ -578,7 +578,7 @@ proof -
     moreover have "disjoint_under ?comp ?S"
       by (injectivity_solver rule: local.injectivity(5))
     ultimately have "card ?expr = (\<Sum>j\<le>m. j ^ (n - k) * Stirling m j * (n choose k) * Bell k)" (is "_ = ?formula")
-      using \<open>card C = m\<close> by (subst card_bind) (auto intro: setsum.cong)
+      using \<open>card C = m\<close> by (subst card_bind) (auto intro: sum.cong)
     moreover have "finite ?expr"
       using inner \<open>finite ?S\<close> by (auto intro: finite_bind)
     ultimately have "finite ?expr \<and> card ?expr = ?formula" by blast
@@ -588,7 +588,7 @@ proof -
     by (injectivity_solver rule: local.injectivity(6))
   ultimately have step3: "card (construct_partition_on B C) = (\<Sum>k\<le>n. \<Sum>j\<le>m. j ^ (n - k) * Stirling m j * (n choose k) * Bell k)"
     unfolding construct_partition_on_def
-    using \<open>card B = n\<close> by (subst card_bind) (auto intro: setsum.cong)
+    using \<open>card B = n\<close> by (subst card_bind) (auto intro: sum.cong)
   from step1 step2 step3 show ?thesis by auto
 qed
 

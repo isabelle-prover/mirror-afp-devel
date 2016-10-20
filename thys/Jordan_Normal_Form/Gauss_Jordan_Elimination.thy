@@ -215,64 +215,117 @@ qed
 
 subsection \<open>Gauss-Jordan Elimination\<close>
 
+fun eliminate_entries_rec where
+  "eliminate_entries_rec B i [] = B"
+| "eliminate_entries_rec B i ((ai'j,i') # is) = ( 
+  eliminate_entries_rec (mat_addrow_gen (op + :: 'b :: ring_1 \<Rightarrow> 'b \<Rightarrow> 'b) op * ai'j i' i B) i is)"
+
 context
-  fixes add :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"
+  fixes minus :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"
   and times :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"
-  and uminus :: "'a \<Rightarrow> 'a"
-  and zero :: "'a"
 begin
-fun eliminate_entries_gen where
-  "eliminate_entries_gen A B i j [] = B"
-| "eliminate_entries_gen A B i j (i' # is) = (let ai'j = A $$ (i',j) in if ai'j = zero 
-    then eliminate_entries_gen A B i j is
-    else eliminate_entries_gen A (mat_addrow_gen add times (uminus ai'j) i' i B) i j is)"
 
-lemma dimc_eliminate_entries[simp]: "dim\<^sub>c (eliminate_entries_gen A B i j as) = dim\<^sub>c B"
-  by (induct as arbitrary: A B, auto simp: Let_def)
+definition eliminate_entries_gen :: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a mat" where
+  "eliminate_entries_gen v A I J = mat (dim\<^sub>r A) (dim\<^sub>c A) (\<lambda> (i, j).
+     if i \<noteq> I then minus (A $$ (i,j)) (times (v i) (A $$ (I,j))) else A $$ (i,j))" 
 
-lemma dimr_eliminate_entries[simp]: "dim\<^sub>r (eliminate_entries_gen A B i j as) = dim\<^sub>r B"
-  by (induct as arbitrary: A B, auto simp: Let_def)
+lemma dim_eliminate_entries_gen[simp]: "dim\<^sub>r (eliminate_entries_gen v B i as) = dim\<^sub>r B"
+  "dim\<^sub>c (eliminate_entries_gen v B i as) = dim\<^sub>c B"
+  unfolding eliminate_entries_gen_def by auto
+  
+lemma dimc_eliminate_entries_rec[simp]: "dim\<^sub>c (eliminate_entries_rec B i as) = dim\<^sub>c B"
+  by (induct as arbitrary: B, auto simp: Let_def)
 
-lemma carrier_eliminate_entries: "B \<in> carrier\<^sub>m nr nc \<Longrightarrow> eliminate_entries_gen A B i j as \<in> carrier\<^sub>m nr nc"
-  unfolding mat_carrier_def by simp
+lemma dimr_eliminate_entries_rec[simp]: "dim\<^sub>r (eliminate_entries_rec B i as) = dim\<^sub>r B"
+  by (induct as arbitrary: B, auto simp: Let_def)
+
+lemma carrier_eliminate_entries: "A \<in> carrier\<^sub>m nr nc \<Longrightarrow> eliminate_entries_gen v A i bs \<in> carrier\<^sub>m nr nc"
+  "B \<in> carrier\<^sub>m nr nc \<Longrightarrow> eliminate_entries_rec B i as \<in> carrier\<^sub>m nr nc"
+  unfolding mat_carrier_def by auto
 end
 
-abbreviation "eliminate_entries \<equiv> eliminate_entries_gen (op +) (op *) uminus (0 :: 'a :: ring_1)"
+abbreviation "eliminate_entries \<equiv> eliminate_entries_gen (op -) (op * :: 'a :: ring_1 \<Rightarrow> 'a \<Rightarrow> 'a)"
 
-lemma Unit_prod_eliminate_entries: "i < nr \<Longrightarrow> (\<And> i'. i' \<in> set is \<Longrightarrow> i' < nr \<and> i' \<noteq> i)
-  \<Longrightarrow> \<exists> P \<in> Units (ring\<^sub>m TYPE('a :: comm_ring_1) nr b) . \<forall> B nc. B \<in> carrier\<^sub>m nr nc \<longrightarrow> eliminate_entries A B i j is = P \<otimes>\<^sub>m B" 
+lemma eliminate_entries_convert: 
+  assumes jA: "J < dim\<^sub>c A" and *: "I < dim\<^sub>r A" "dim\<^sub>r B = dim\<^sub>r A" 
+  shows "eliminate_entries (\<lambda> i. A $$ (i,J)) B I J = 
+    eliminate_entries_rec B I (map (\<lambda> i. (- A $$ (i, J), i)) (filter (\<lambda> i. i \<noteq> I) [0 ..< dim\<^sub>r A]))"
+proof -
+  let ?ais = "\<lambda> is. map (\<lambda> i. (- A $$ (i, J), i)) (filter (\<lambda> i. i \<noteq> I) is)" 
+  def one_go \<equiv> "\<lambda> B is. mat (dim\<^sub>r B) (dim\<^sub>c B) (\<lambda> (i, j).
+    if i \<noteq> I \<and> i \<in> set is then B $$ (i,j) - (A $$ (i,J))  * B $$ (I,j) else B $$ (i,j))"
+  {
+    fix "is" :: "nat list" 
+    assume "distinct is"     
+    from * this have "eliminate_entries_rec B I (?ais is) = one_go B is" 
+    proof (induct "is" arbitrary: B)
+      case Nil
+      show ?case unfolding one_go_def
+        by (rule mat_eqI, auto)
+    next
+      case (Cons i "is")
+      note I = Cons(2) note dim = Cons(3)      
+      note II = Cons(2)[folded dim]
+      let ?B = "addrow (- A $$ (i, J)) i I B" 
+      from Cons(4) I dim have "I < dim\<^sub>r A" "dim\<^sub>r ?B = dim\<^sub>r A" and dist: "distinct is" by auto
+      note IH = Cons(1)[OF this]
+      from Cons(4) have i: "i \<notin> set is" by auto
+      show ?case 
+      proof (cases "i = I")
+        case False
+        hence id: "?ais (i # is) = (- A $$ (i, J), i) # ?ais is" by simp
+        show ?thesis unfolding id eliminate_entries_rec.simps IH
+          unfolding one_go_def mat_index_addrow
+        proof (rule mat_eqI, goal_cases)
+          case (1 ii jj)
+          hence ii: "ii < dim\<^sub>r B" and jj: "jj < dim\<^sub>c B" and iiA: "ii < dim\<^sub>r A" using dim by auto
+          show ?case unfolding mat_index_mat[OF ii jj] split
+            mat_index_addrow(1)[OF ii jj] mat_index_addrow(1)[OF II jj]
+            using i False by auto 
+        qed auto
+      next
+        case True
+        hence id: "?ais (i # is) = ?ais is" by simp        
+        show ?thesis unfolding id Cons(1)[OF I dim dist]
+          unfolding one_go_def True by auto
+      qed
+    qed
+  } note main = this
+  show ?thesis
+    by (subst main, force, unfold one_go_def eliminate_entries_gen_def, rule mat_eqI, 
+    insert *, auto)
+qed
+
+lemma Unit_prod_eliminate_entries: "i < nr \<Longrightarrow> (\<And> a i'. (a, i') \<in> set is \<Longrightarrow> i' < nr \<and> i' \<noteq> i)
+  \<Longrightarrow> \<exists> P \<in> Units (ring\<^sub>m TYPE('a :: comm_ring_1) nr b) . \<forall> B nc. B \<in> carrier\<^sub>m nr nc \<longrightarrow> eliminate_entries_rec B i is = P \<otimes>\<^sub>m B" 
 proof (induct "is")
   case Nil
   thus ?case by (intro bexI[of _ "\<one>\<^sub>m nr"], auto simp: Units_def mat_ring_def)
 next
-  case (Cons i' "is")
+  case (Cons ai' "is")
+  obtain a i' where ai': "ai' = (a,i')" by force
   let ?U = "Units (ring\<^sub>m TYPE('a) nr b)"
   interpret m: ring "ring\<^sub>m TYPE('a) nr b" by (rule mat_ring)
-  let ?a = "A $$ (i',j)"
+  from Cons(1)[OF Cons(2-3)] 
+  obtain P where P: "P \<in> ?U" and id: "\<And> B nc . B \<in> carrier\<^sub>m nr nc \<Longrightarrow> 
+    eliminate_entries_rec B i is = P \<otimes>\<^sub>m B" by force
+  let ?Add = "addrow_mat nr a i' i"
+  have Add: "?Add \<in> ?U"
+    by (rule addrow_mat_Unit, insert Cons ai', auto)
+  from m.Units_m_closed[OF P Add] have PI: "P \<otimes>\<^sub>m ?Add \<in> ?U" unfolding mat_ring_def by simp
+  from m.Units_closed[OF P] have P: "P \<in> carrier\<^sub>m nr nr" unfolding mat_ring_def by simp
   show ?case
-  proof (cases "?a = 0")
-    case False
-    from Cons(1)[OF Cons(2-3)] 
-    obtain P where P: "P \<in> ?U" and id: "\<And> B nc . B \<in> carrier\<^sub>m nr nc \<Longrightarrow> 
-      eliminate_entries A B i j is = P \<otimes>\<^sub>m B" by force
-    let ?Add = "addrow_mat nr (- ?a) i' i"
-    have Add: "?Add \<in> ?U"
-      by (rule addrow_mat_Unit, insert Cons, auto)
-    from m.Units_m_closed[OF P Add] have PI: "P \<otimes>\<^sub>m ?Add \<in> ?U" unfolding mat_ring_def by simp
-    from m.Units_closed[OF P] have P: "P \<in> carrier\<^sub>m nr nr" unfolding mat_ring_def by simp
-    show ?thesis
-    proof (rule bexI[OF _ PI], intro allI impI)
-      fix B :: "'a mat" and nc
-      assume BB: "B \<in> carrier\<^sub>m nr nc"
-      let ?B = "addrow (- ?a) i' i B"
-      from BB have B: "?B \<in> carrier\<^sub>m nr nc" by simp
-      from id[OF B] have id: "eliminate_entries A ?B i j is = P \<otimes>\<^sub>m ?B" .
-      from False have id2: "eliminate_entries A B i j (i' # is) = eliminate_entries A ?B i j is" by simp
-      show "eliminate_entries A B i j (i' # is) = P \<otimes>\<^sub>m ?Add \<otimes>\<^sub>m B"
-        unfolding id2 id unfolding addrow_mat[OF BB Cons(2)]
-        by (rule mat_mult_assoc[symmetric, OF P _ BB], auto)
-    qed
-  qed (insert Cons, auto)
+  proof (rule bexI[OF _ PI], intro allI impI)
+    fix B :: "'a mat" and nc
+    assume BB: "B \<in> carrier\<^sub>m nr nc"
+    let ?B = "addrow a i' i B"
+    from BB have B: "?B \<in> carrier\<^sub>m nr nc" by simp
+    from id[OF B] have id: "eliminate_entries_rec ?B i is = P \<otimes>\<^sub>m ?B" .
+    have id2: "eliminate_entries_rec B i (ai' # is) = eliminate_entries_rec ?B i is" unfolding ai' by simp
+    show "eliminate_entries_rec B i (ai' # is) = P \<otimes>\<^sub>m ?Add \<otimes>\<^sub>m B"
+      unfolding id2 id unfolding addrow_mat[OF BB Cons(2)]
+      by (rule mat_mult_assoc[symmetric, OF P _ BB], auto)
+  qed
 qed
 
 function gauss_jordan_main :: "'a :: field mat \<Rightarrow> 'a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a mat \<times> 'a mat" where
@@ -281,9 +334,10 @@ function gauss_jordan_main :: "'a :: field mat \<Rightarrow> 'a mat \<Rightarrow
       (case [ i' . i' <- [Suc i ..< nr],  A $$ (i',j) \<noteq> 0] 
         of [] \<Rightarrow> gauss_jordan_main A B i (Suc j)
          | (i' # _) \<Rightarrow> gauss_jordan_main (swaprows i i' A) (swaprows i i' B) i j)
-      else if aij = 1 then let is = filter (\<lambda> i'. i' \<noteq> i) [0 ..< nr] in
+      else if aij = 1 then let 
+        v = (\<lambda> i. A $$ (i,j)) in
         gauss_jordan_main 
-        (eliminate_entries A A i j is) (eliminate_entries A B i j is) (Suc i) (Suc j)
+        (eliminate_entries v A i j) (eliminate_entries v B i j) (Suc i) (Suc j)
       else let iaij = inverse aij in gauss_jordan_main (multrow i iaij A) (multrow i iaij B) i j
     else (A,B))"
   by pat_completeness auto
@@ -304,6 +358,8 @@ proof -
     show "((swaprows i i' A, swaprows i i' B, i, j), A, B, i, j) \<in> ?R" by auto
   qed auto
 qed
+
+declare gauss_jordan_main.simps[simp del]
 
 definition "gauss_jordan A B \<equiv> gauss_jordan_main A B 0 0"
 
@@ -363,16 +419,31 @@ proof -
                 rule mat_mult_assoc[symmetric, OF P _ B], simp)
           next
             case True note O = this
-            let ?E = "\<lambda> B. eliminate_entries A B i j (filter (\<lambda> i'. i' \<noteq> i) [0 ..< nr])"
+            let ?is = "filter (\<lambda> i'. i' \<noteq> i) [0 ..< nr]" 
+            let ?ais = "map (\<lambda> i'. (-A $$ (i',j), i')) ?is" 
+            let ?E = "\<lambda> B. eliminate_entries (\<lambda> i. A $$ (i,j)) B i j"
+            let ?EE = "\<lambda> B. eliminate_entries_rec B i ?ais"
             let ?A = "?E A"
             let ?B = "?E B"
+            let ?AA = "?EE A"
+            let ?BB = "?EE B"
             from O nZ valid res have "gauss_jordan_main ?A ?B (Suc i) (Suc j) = (A',B')"
               unfolding simp dim by simp
-            note IH = IH(1)[OF O refl carrier_eliminate_entries[OF A] carrier_eliminate_entries[OF B] this]
+            note IH = IH(1)[OF O refl carrier_eliminate_entries(1)[OF A] carrier_eliminate_entries(1)[OF B] this]
             from IH obtain P where P: "P \<in> ?U" and id: "A' = P \<otimes>\<^sub>m ?A" "B' = P \<otimes>\<^sub>m ?B" by blast
-            have "\<exists>P\<in>?U. \<forall> B nc. B \<in> carrier\<^sub>m nr nc \<longrightarrow> ?E B = P \<otimes>\<^sub>m B"
+            have *: "j < dim\<^sub>c A" "i < dim\<^sub>r A" by (auto simp add: dim valid)
+            have "\<exists>P\<in>?U. \<forall> B nc. B \<in> carrier\<^sub>m nr nc \<longrightarrow> ?EE B = P \<otimes>\<^sub>m B"
               by (rule Unit_prod_eliminate_entries, insert valid, auto)
-            then obtain Q where Q: "Q \<in> ?U" and QQ: "\<And> B nc. B \<in> carrier\<^sub>m nr nc \<Longrightarrow> ?E B = Q \<otimes>\<^sub>m B" by auto
+            then obtain Q where Q: "Q \<in> ?U" and QQ: "\<And> B nc. B \<in> carrier\<^sub>m nr nc \<Longrightarrow> ?EE B = Q \<otimes>\<^sub>m B" by auto
+            {
+              fix B :: "'a mat" and nc
+              assume B: "B \<in> carrier\<^sub>m nr nc" 
+              with dim have "dim\<^sub>r B = dim\<^sub>r A" by auto
+              from eliminate_entries_convert[OF * this]
+              have "?E B = ?EE B" using dim by simp
+              also have "\<dots> = Q \<otimes>\<^sub>m B" using QQ[OF B] by simp
+              finally have "?E B = Q \<otimes>\<^sub>m B" .
+            } note QQ = this              
             have id3: "?A = Q \<otimes>\<^sub>m A" by (rule QQ[OF A])
             have id4: "?B = Q \<otimes>\<^sub>m B" by (rule QQ[OF B])
             from m.Units_closed[OF P] have Pc: "P \<in> carrier\<^sub>m nr nr" unfolding mat_ring_def by simp
@@ -537,130 +608,24 @@ proof -
   qed
 qed
 
-lemma pivot_fun_addrow: assumes p: "pivot_fun A f jj"
-  and d: "dim\<^sub>r A = nr" "dim\<^sub>c A = nc"
-  and fl: "f l = jj"
-  and nr: "k < nr" "l < nr"
-  and jj: "jj \<le> nc"
-  shows "pivot_fun (addrow a k l A) f jj"
-proof -
-  note pivot = pivot_funD[OF d(1) p]
-  let ?A = "addrow a k l A"
-  have "dim\<^sub>r ?A = nr" using d by simp
-  thus ?thesis
-  proof (rule pivot_funI)
-    fix i
-    assume i: "i < nr"
-    note p = pivot[OF i]
-    show "f i \<le> jj" by fact
-    show "Suc i < nr \<Longrightarrow> f i < f (Suc i) \<or> f (Suc i) = jj" by fact
-    {
-      fix i'
-      assume *: "f i < jj" "i' < nr" "i' \<noteq> i" 
-      from *(1) fl have diff: "l \<noteq> i" by auto
-      from p(5)[OF *] p(5)[OF *(1) nr(2) diff(1)] 
-      show "?A $$ (i', f i) = 0"  
-        by (subst mat_index_addrow(1), insert * d jj, auto)
-    }
-    {
-      assume *: "f i < jj"
-      from p(4)[OF this] have A: "A $$ (i, f i) = 1" by auto
-      from p(5)[OF * nr(2)] * fl have AA: "A $$ (l, f i) = 0" by auto
-      show "?A $$ (i, f i) = 1"
-        by (subst mat_index_addrow(1), insert * d i A AA jj fl, auto)
-    }
-    {
-      fix j
-      assume j: "j < f i"
-      with p(1) fl have le: "j < f l" by auto
-      from p(2)[OF j] pivot(2)[OF nr(2) le]
-      show "?A $$ (i, j) = 0" 
-        by (subst mat_index_addrow(1), insert j d i p jj, auto) 
-    }
-  qed
-qed
-
-lemma pivot_fun_eliminate_rows: assumes p: "pivot_fun A f jj"
+lemma pivot_fun_eliminate_entries: assumes p: "pivot_fun A f jj"
   and d: "dim\<^sub>r A = nr" "dim\<^sub>c A = nc"
   and fl: "f l = jj"
   and nr: "l < nr"
   and jj: "jj \<le> nc"
-  shows "set ks \<subseteq> {0 ..< nr} \<Longrightarrow> pivot_fun (eliminate_entries B A l j ks) f jj"
-  using p d
-proof (induct ks arbitrary: A)
-  case (Cons k ks A)
-  hence k: "k < nr" and rec: "set ks \<subseteq> {0 ..< nr}" by auto
-  note IH = Cons(1)[OF rec]
-  note pivot = Cons(3)
-  note dim = Cons(4-5)
-  let ?b = "B $$ (k, j)"
-  let ?A = "addrow (- ?b) k l A"
-  show ?case
-  proof (cases "?b = 0")
-    case True
-    with IH[OF pivot dim]
-    show ?thesis by simp
-  next
-    case False
-    hence id: "eliminate_entries B A l j (k # ks) = eliminate_entries B ?A l j ks" by simp
-    show ?thesis unfolding id
-      by (rule IH[OF pivot_fun_addrow[OF pivot dim fl k nr jj]], insert dim, auto)
-  qed
-qed simp
-
-lemma eliminate_rows_index: assumes d: "dim\<^sub>r A = nr" "dim\<^sub>c A = nc"
-  and lj: "l < nr" "j < nc" and A: "B $$ (l,j) = (1 :: 'a :: ring_1)"
-  and i: "i < nr"
-  shows "set ks \<subseteq> {0 ..< nr} \<Longrightarrow> distinct ks \<Longrightarrow> l \<notin> set ks \<Longrightarrow> 
-    (\<And> k. k \<in> set ks \<Longrightarrow> B $$ (k,j) = A $$ (k,j)) \<Longrightarrow> B $$ (l,j) = A $$ (l,j) \<Longrightarrow>
-    eliminate_entries B A l j ks $$ (i,j) = (if i \<in> set ks then 0 else A $$ (i,j))"
-  using d 
-proof (induct ks arbitrary: A)
-  case (Cons k ks A)
-  hence k: "k < nr" and rec: "set ks \<subseteq> {0 ..< nr}" by auto
-  note IH = Cons(1)[OF rec]
-  from Cons(3) have dist: "distinct ks" and kks: "k \<notin> set ks" by auto
-  from Cons(4) have l: "l \<noteq> k" "l \<notin> set ks" by auto
-  note eq = Cons(5)
-  note eq2 = Cons(6)
-  note dim = Cons(7-8)
-  let ?b = "B $$ (k, j)"
-  let ?A = "addrow (- ?b) k l A"
-  show ?case
-  proof (cases "?b = 0")
-    case True
-    with IH[OF dist l(2) eq eq2 dim] eq[of k]
-    show ?thesis by simp
-  next
-    case False
-    hence id: "eliminate_entries B A l j (k # ks) = eliminate_entries B ?A l j ks" by simp
-    from dim have dimA: "dim\<^sub>r ?A = nr" "dim\<^sub>c ?A = nc" by auto
-    show ?thesis unfolding id
-    proof (subst IH[OF dist l(2) _ _ dimA])
-      show "B $$ (l, j) = ?A $$ (l, j)" unfolding eq2 using dim lj l by auto
-      fix k'
-      assume kk': "k' \<in> set ks"
-      with kks have k': "k' \<noteq> k" "k' \<in> set (k # ks)" by auto
-      show "B $$ (k', j) = ?A $$ (k', j)"
-        unfolding eq[OF k'(2)] using k'(1) dim lj rec kk' by auto
-    next
-      show "(if i \<in> set ks then 0 else ?A $$ (i, j)) =
-        (if i \<in> set (k # ks) then 0 else A $$ (i, j))"
-      proof (cases "i \<in> set (k # ks)")
-        case False
-        thus ?thesis using False k dim i lj by auto
-      next
-        case True
-        show ?thesis
-        proof (cases "i = k")
-          case True
-          thus ?thesis using kks k dim i lj A by (simp add: eq2 eq)
-        qed (insert True, auto)
-      qed
-    qed
-  qed
-qed simp
-
+shows "pivot_fun (eliminate_entries vs A l j) f jj" 
+proof -
+  note pD = pivot_funD[OF d(1) p]
+  {
+    fix i j
+    assume *: "i < nr" "j < f i"
+    from pD(1)[OF this(1)] this(2) jj have j: "j < nc" by auto
+    from pD nr fl * j have "A $$ (l, j) = 0" by (meson less_le_trans)
+    note j this
+  } note hint = this
+  show ?thesis by (rule pivot_funI, insert fl nr jj pD, auto simp: eliminate_entries_gen_def d hint)
+qed
+    
 definition row_echelon_form :: "'a :: {zero,one} mat \<Rightarrow> bool" where
   "row_echelon_form A \<equiv> \<exists> f. pivot_fun A f (dim\<^sub>c A)"
 
@@ -743,19 +708,18 @@ proof -
           show ?thesis unfolding id using IH .
         next
           case True note O = this
-          let ?E = "\<lambda> B. eliminate_entries A B i j (filter (\<lambda> i'. i' \<noteq> i) [0 ..< nr])"
+          let ?E = "\<lambda> B. eliminate_entries (\<lambda> i. A $$ (i,j)) B i j" 
           let ?A = "?E A"
           let ?B = "?E B"
           def E \<equiv> ?A
           let ?f = "\<lambda> i'. if i' = i then j else if i' > i then Suc j else f i'"
-          have pivot: "pivot_fun E f j" unfolding E_def
-            by (rule pivot_fun_eliminate_rows[OF pivot dim f(2)], insert valid, auto)
+          have pivot: "pivot_fun E f j" unfolding E_def          
+            by (rule pivot_fun_eliminate_entries[OF pivot dim f(2)], insert valid, auto)
           {
             fix i'
             assume i': "i' < nr"
             have "E $$ (i', j) = (if i' = i then 1 else 0)"
-              unfolding E_def
-              by (subst eliminate_rows_index[OF dim _ _ O i'], insert valid O i', auto)
+              unfolding E_def eliminate_entries_gen_def using dim O i' valid by auto
           } note Ej = this
           have E: "E \<in> carrier\<^sub>m nr nc" unfolding E_def by (rule carrier_eliminate_entries[OF A])
           hence dimE: "dim\<^sub>r E = nr" "dim\<^sub>c E = nc" by auto
@@ -1210,14 +1174,14 @@ proof -
           unfolding start_def map by auto
       } note piv = this
       have "row A i \<bullet> ?v = (\<Sum> j = 0..<nc. ?e j)" unfolding row_def scalar_prod_def dimv ..
-      also have "\<dots> = setsum ?e ({0..<nc} \<inter> ?P) + setsum ?e ({0..<nc} - ?P)"
-        by (subst setsum.union_disjoint[symmetric], auto simp: id)
-      also have "setsum ?e ({0..<nc} - ?P) = ?e qj + setsum ?e ({0 ..<nc} - ?P - {qj})"
-        by (rule setsum.remove, insert qj qj', auto)
+      also have "\<dots> = sum ?e ({0..<nc} \<inter> ?P) + sum ?e ({0..<nc} - ?P)"
+        by (subst sum.union_disjoint[symmetric], auto simp: id)
+      also have "sum ?e ({0..<nc} - ?P) = ?e qj + sum ?e ({0 ..<nc} - ?P - {qj})"
+        by (rule sum.remove, insert qj qj', auto)
       also have "?e qj = row A i $ qj" unfolding vqj by simp
       also have "row A i $ qj = A $$ (i, qj)" using i A qj by auto
-      also have "setsum ?e ({0 ..<nc} - ?P - {qj}) = 0"
-      proof (rule setsum.neutral, intro ballI)
+      also have "sum ?e ({0 ..<nc} - ?P - {qj}) = 0"
+      proof (rule sum.neutral, intro ballI)
         fix j
         assume "j \<in> {0 ..<nc} - ?P - {qj}"
         hence j: "j < nc" "j \<notin> ?P" "j \<noteq> qj" "j \<notin> ?r" unfolding r by auto
@@ -1227,25 +1191,25 @@ proof -
         finally show "row A i $ j * ?v $ j = 0" by simp
       qed
       also have "A $$ (i, qj) + 0 = A $$ (i, qj)" by simp
-      also have "setsum ?e ({0..<nc} \<inter> ?P) = setsum ?e' ({0..<nc} \<inter> ?P)"
-        by (rule setsum.cong, insert piv, auto)
+      also have "sum ?e ({0..<nc} \<inter> ?P) = sum ?e' ({0..<nc} \<inter> ?P)"
+        by (rule sum.cong, insert piv, auto)
       also have "{0..<nc} \<inter> ?P = {0..<nc} \<inter> ?I \<inter> ?P \<union> ({0..<nc} - ?I) \<inter> ?P" by auto
-      also have "setsum ?e' ({0..<nc} \<inter> ?I \<inter> ?P \<union> ({0..<nc} - ?I) \<inter> ?P)
-        = setsum ?e' ({0..<nc} \<inter> ?I \<inter> ?P) + setsum ?e' (({0..<nc} - ?I) \<inter> ?P)"
-        by (rule setsum.union_disjoint, auto)
-      also have "setsum ?e' (({0..<nc} - ?I) \<inter> ?P) = 0"
-        by (rule setsum.neutral, auto)
-      also have "setsum ?e' ({0..<nc} \<inter> ?I \<inter> ?P) = 
-        setsum (\<lambda> _. - A $$ (i, qj)) ({0..<nc} \<inter> ?I \<inter> ?P)"
-        by (rule setsum.cong, auto)
+      also have "sum ?e' ({0..<nc} \<inter> ?I \<inter> ?P \<union> ({0..<nc} - ?I) \<inter> ?P)
+        = sum ?e' ({0..<nc} \<inter> ?I \<inter> ?P) + sum ?e' (({0..<nc} - ?I) \<inter> ?P)"
+        by (rule sum.union_disjoint, auto)
+      also have "sum ?e' (({0..<nc} - ?I) \<inter> ?P) = 0"
+        by (rule sum.neutral, auto)
+      also have "sum ?e' ({0..<nc} \<inter> ?I \<inter> ?P) = 
+        sum (\<lambda> _. - A $$ (i, qj)) ({0..<nc} \<inter> ?I \<inter> ?P)"
+        by (rule sum.cong, auto)
       also have "\<dots> + 0 = \<dots>" by simp
-      also have "setsum (\<lambda> _. - A $$ (i, qj)) ({0..<nc} \<inter> ?I \<inter> ?P) + A $$ (i, qj) = 0" 
+      also have "sum (\<lambda> _. - A $$ (i, qj)) ({0..<nc} \<inter> ?I \<inter> ?P) + A $$ (i, qj) = 0" 
       proof (cases "i \<in> ?l")
         case False
         with pp(1) i have "p i = nc" by force
         from pivot'(2)[OF i, unfolded this, OF qj(1)] have z: "A $$ (i, qj) = 0" .
         show ?thesis 
-          by (subst setsum.neutral, auto simp: z)
+          by (subst sum.neutral, auto simp: z)
       next
         case True
         then obtain j where mem: "(i,j) \<in> set pp" and id: "(j,i) \<in> set ?spp" by auto

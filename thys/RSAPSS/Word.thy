@@ -451,11 +451,11 @@ proof (induct n rule: less_induct)
       apply (cases "n mod 2 = 0")
       proof (simp_all)
         assume "n mod 2 = 0"
-        with mod_div_equality [of n 2]
+        with div_mult_mod_eq [of n 2]
         show "n div 2 * 2 = n" by simp
       next
         assume "n mod 2 = Suc 0"
-        with mod_div_equality [of n 2]
+        with div_mult_mod_eq [of n 2]
         show "Suc (n div 2 * 2) = n" by arith
       qed
   qed

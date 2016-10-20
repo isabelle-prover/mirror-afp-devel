@@ -315,7 +315,7 @@ by (metis assms rref_imp_upper_triagular_upt upper_triangular_upt_imp_upper_tria
 
 lemma det_Gauss_Jordan[code_unfold]:
 fixes A::"'a::{field}^'n::{mod_type}^'n::{mod_type}"
-shows "det (Gauss_Jordan A) = setprod (\<lambda>i. (Gauss_Jordan A)$i$i) (UNIV:: 'n set)"
+shows "det (Gauss_Jordan A) = prod (\<lambda>i. (Gauss_Jordan A)$i$i) (UNIV:: 'n set)"
 using det_upperdiagonal rref_imp_upper_triagular[OF rref_Gauss_Jordan[of A]] unfolding upper_triangular_def by blast
 
 
@@ -474,7 +474,7 @@ snd_Gauss_Jordan_upt_k_PA ..
 
 lemma det_snd_Gauss_Jordan_det_P[code_unfold]:
 fixes A::"'a::{field}^'n::{mod_type}^'n::{mod_type}"
-shows "det (snd (Gauss_Jordan_det_P A)) = setprod (\<lambda>i. (snd (Gauss_Jordan_det_P A))$i$i) (UNIV:: 'n set)"
+shows "det (snd (Gauss_Jordan_det_P A)) = prod (\<lambda>i. (snd (Gauss_Jordan_det_P A))$i$i) (UNIV:: 'n set)"
 unfolding snd_Gauss_Jordan_det_P_is_Gauss_Jordan det_Gauss_Jordan ..
 
 
@@ -493,7 +493,7 @@ by (metis (mono_tags) det_I det_mul invertible_fst_Gauss_Jordan_PA matrix_inv_ri
 
 lemma det_code_equation[code_unfold]:
 fixes A::"'a::{field}^'n::{mod_type}^'n::{mod_type}"
-shows "det A = (let A' = Gauss_Jordan_det_P A in setprod (\<lambda>i. (snd (A'))$i$i) (UNIV::'n set)/(fst (A')))"
+shows "det A = (let A' = Gauss_Jordan_det_P A in prod (\<lambda>i. (snd (A'))$i$i) (UNIV::'n set)/(fst (A')))"
 unfolding Let_def using det_Gauss_Jordan_det_P[of A]
 unfolding det_snd_Gauss_Jordan_det_P
 by (simp add: fst_Gauss_Jordan_det_P_not_0 nonzero_eq_divide_eq ac_simps)

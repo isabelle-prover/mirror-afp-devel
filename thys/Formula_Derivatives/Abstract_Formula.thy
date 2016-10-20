@@ -20,7 +20,7 @@ lemma funpow_cycle_mult: "(f ^^ k) x = x \<Longrightarrow> (f ^^ (m * k)) x = x"
   by (induct m) (auto simp: funpow_add)
 
 lemma funpow_cycle: "(f ^^ k) x = x \<Longrightarrow> (f ^^ l) x = (f ^^ (l mod k)) x"
-  by (subst mod_div_equality[symmetric, of l k])
+  by (subst div_mult_mod_eq[symmetric, of l k])
     (simp only: add.commute funpow_add funpow_cycle_mult o_apply)
 
 lemma funpow_cycle_offset:

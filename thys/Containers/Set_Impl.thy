@@ -314,7 +314,7 @@ declare [[code drop:
   Set.bind
   the_elem
   Pow
-  setsum
+  sum
   Gcd
   Lcm
   Product_Type.product
@@ -1380,13 +1380,13 @@ by(auto simp add: DList_set_def DList_Set.Collect_member DList_Set.fold_def RBT_
 lemma fold_singleton: "Finite_Set.fold f x {y} = f y x"
 by(fastforce simp add: Finite_Set.fold_def intro: fold_graph.intros elim: fold_graph.cases)
 
-lift_definition setsum_cfc :: "('a \<Rightarrow> 'b :: comm_monoid_add) \<Rightarrow> ('a, 'b) comp_fun_commute"
+lift_definition sum_cfc :: "('a \<Rightarrow> 'b :: comm_monoid_add) \<Rightarrow> ('a, 'b) comp_fun_commute"
 is "\<lambda>f :: 'a \<Rightarrow> 'b. plus \<circ> f"
 by(unfold_locales)(simp add: fun_eq_iff add.left_commute)
 
-lemma setsum_code [code]:
-  "setsum f A = (if finite A then set_fold_cfc (setsum_cfc f) 0 A else 0)"
-  by transfer(simp add: setsum.eq_fold)
+lemma sum_code [code]:
+  "sum f A = (if finite A then set_fold_cfc (sum_cfc f) 0 A else 0)"
+  by transfer(simp add: sum.eq_fold)
 
 lemma product_code [code]:
   fixes dxs :: "'a :: ceq set_dlist"

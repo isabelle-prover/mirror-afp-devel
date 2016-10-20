@@ -192,20 +192,20 @@ proof(rule sublinearI, simp add:wp_eval)
   have "a * (\<Sum>a'\<in>supp (P s). P s a' * wp (p a') Q s) +
         b * (\<Sum>a'\<in>supp (P s). P s a' * wp (p a') R s) \<ominus> c =
         (\<Sum>a'\<in>supp (P s). P s a' * (a * wp (p a') Q s + b * wp (p a') R s)) \<ominus> c"
-    by(simp add:field_simps setsum_distrib_left setsum.distrib)
+    by(simp add:field_simps sum_distrib_left sum.distrib)
   also have "... \<le>
              (\<Sum>a'\<in>supp (P s). P s a' * (a * wp (p a') Q s + b * wp (p a') R s)) \<ominus>
              (\<Sum>a'\<in>supp (P s). P s a' * c)"
   proof(rule tminus_right_antimono)
     have "(\<Sum>a'\<in>supp (P s). P s a' * c) \<le> (\<Sum>a'\<in>supp (P s). P s a') * c"
-      by(simp add:setsum_distrib_right)
+      by(simp add:sum_distrib_right)
     also from sum and nnc have "... \<le> 1 * c"
       by(rule mult_right_mono)
     finally show "(\<Sum>a'\<in>supp (P s). P s a' * c) \<le> c" by(simp)
   qed
   also from fin
   have "... \<le> (\<Sum>a'\<in>supp (P s). P s a' * (a * wp (p a') Q s + b * wp (p a') R s) \<ominus> P s a' * c)"
-    by(blast intro:tminus_setsum_mono)
+    by(blast intro:tminus_sum_mono)
   also have "... = (\<Sum>a'\<in>supp (P s). P s a' * (a * wp (p a') Q s + b * wp (p a') R s \<ominus> c))"
     by(simp add:nnP tminus_left_distrib)
   also {
@@ -216,7 +216,7 @@ proof(rule sublinearI, simp add:wp_eval)
     with nnP
     have "(\<Sum>a'\<in>supp (P s). P s a' * (a * wp (p a') Q s + b * wp (p a') R s \<ominus> c)) \<le>
           (\<Sum>a'\<in>supp (P s). P s a' * wp (p a') (\<lambda>s. a * Q s + b * R s \<ominus> c) s)"
-      by(blast intro:setsum_mono mult_left_mono)
+      by(blast intro:sum_mono mult_left_mono)
   }
   finally
   show "a * (\<Sum>a'\<in>supp (P s). P s a' * wp (p a') Q s) +

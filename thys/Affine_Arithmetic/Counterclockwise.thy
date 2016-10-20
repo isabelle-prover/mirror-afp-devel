@@ -32,10 +32,10 @@ proof -
   finally show ?thesis by simp
 qed
 
-lemma setsum_nonpos_eq_0_iff:
+lemma sum_nonpos_eq_0_iff:
   fixes f :: "'a \<Rightarrow> 'b::ordered_ab_group_add"
-  shows "\<lbrakk>finite A; \<forall>x\<in>A. f x \<le> 0\<rbrakk> \<Longrightarrow> setsum f A = 0 \<longleftrightarrow> (\<forall>x\<in>A. f x = 0)"
-  by (induct set: finite) (simp_all add: add_nonpos_eq_0_iff setsum_nonpos)
+  shows "\<lbrakk>finite A; \<forall>x\<in>A. f x \<le> 0\<rbrakk> \<Longrightarrow> sum f A = 0 \<longleftrightarrow> (\<forall>x\<in>A. f x = 0)"
+  by (induct set: finite) (simp_all add: add_nonpos_eq_0_iff sum_nonpos)
 
 lemma fold_if_in_set:
   "fold (\<lambda>x m. if P x m then x else m) xs x \<in> set (x#xs)"
@@ -154,8 +154,8 @@ lemma (in comm_monoid_add) sum_list_distinct_selsort:
   assumes "distinct xs"
   shows "sum_list (linorder_list0.selsort LE xs) = sum_list xs"
   using assms
-  apply (simp add: distinct_sum_list_conv_Setsum linorder_list0.distinct_selsort)
-  apply (rule setsum.cong)
+  apply (simp add: distinct_sum_list_conv_Sum linorder_list0.distinct_selsort)
+  apply (rule sum.cong)
   subgoal by (simp add: linorder_list0.set_selsort)
   subgoal by simp
   done

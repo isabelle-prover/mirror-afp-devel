@@ -3487,7 +3487,7 @@ lemma zmult_div_aux1:
   assumes b: "b \<noteq> 0"
   shows "(a - a mod b) div b = (a::int) div b"
 proof -
-  from zmult_div_cancel [of b a]
+  from minus_mod_eq_mult_div [symmetric, of b a]
   have "(b * (a div b)) div b = (a - a mod b) div b"
     by simp
   with b show ?thesis by simp
@@ -3496,7 +3496,7 @@ qed
 lemma zmult_div_aux2:
   assumes b: "b \<noteq> 0"
   shows "((a::int) - a mod b) mod b = 0"
-  using b zmult_div_cancel [of b a, symmetric]
+  using b minus_mod_eq_mult_div [symmetric, of b a, symmetric]
   by simp
 
 lemma div_abs_eq:

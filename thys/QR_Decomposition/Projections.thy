@@ -15,13 +15,13 @@ subsection{*Definitions of vector projection and projection of a vector onto a s
 
 definition "proj v u = (v \<bullet> u / (u \<bullet> u)) *\<^sub>R u"
 
-definition "proj_onto a S = (setsum (\<lambda>x. proj a x) S)"
+definition "proj_onto a S = (sum (\<lambda>x. proj a x) S)"
 
 subsection{*Properties*}
 
-lemma proj_onto_setsum_rw: 
-  "setsum (\<lambda>x. (x \<bullet> v / (x \<bullet> x)) *\<^sub>R x) A = setsum (\<lambda>x. (v \<bullet> x / (x \<bullet> x)) *\<^sub>R x) A"
-  by (rule setsum.cong, auto simp add: inner_commute)
+lemma proj_onto_sum_rw: 
+  "sum (\<lambda>x. (x \<bullet> v / (x \<bullet> x)) *\<^sub>R x) A = sum (\<lambda>x. (v \<bullet> x / (x \<bullet> x)) *\<^sub>R x) A"
+  by (rule sum.cong, auto simp add: inner_commute)
 
 lemma vector_sub_project_orthogonal_proj:
   fixes b x :: "'a::euclidean_space"
@@ -41,11 +41,11 @@ proof -
   show "orthogonal (a - proj_onto a C) y"
     unfolding orthogonal_def unfolding proj_onto_def unfolding proj_def[abs_def]
     unfolding inner_diff
-    unfolding inner_setsum_left 
+    unfolding inner_sum_left 
     unfolding right_minus_eq
-    unfolding setsum.remove[OF C yC]
+    unfolding sum.remove[OF C yC]
     apply (clarsimp simp add: inner_commute[of y a])
-    apply (rule setsum.neutral)
+    apply (rule sum.neutral)
     apply clarsimp
     apply (rule p[unfolded pairwise_def orthogonal_def, rule_format])
     using yC by auto
@@ -119,9 +119,9 @@ next
   obtain f where f: "(\<Sum>a\<in>B. f a *\<^sub>R a) = x" using real_vector.span_finite[OF finite_B]
     using x unfolding span_B_eq by blast
   have "v \<bullet> x = v \<bullet> (\<Sum>a\<in>B. f a *\<^sub>R a)" unfolding f ..
-  also have "... = (\<Sum>a\<in>B. v \<bullet> (f a *\<^sub>R a))" unfolding inner_setsum_right ..
+  also have "... = (\<Sum>a\<in>B. v \<bullet> (f a *\<^sub>R a))" unfolding inner_sum_right ..
   also have "... = (\<Sum>a\<in>B. f a * (v \<bullet> a))" unfolding inner_scaleR_right ..
-  also have "... = 0" using setsum.neutral o by (simp add: orthogonal_def inner_commute)
+  also have "... = 0" using sum.neutral o by (simp add: orthogonal_def inner_commute)
   finally show "orthogonal v x" unfolding orthogonal_def .
 qed
 
@@ -166,7 +166,7 @@ proof (unfold set_plus_def, auto)
   let ?p="proj_onto v X"
   have "v=?p +(v-?p)" by simp
   moreover have "?p \<in> S" unfolding proj_onto_def proj_def[abs_def]
-    by (rule real_vector.subspace_setsum[OF s finite_X], metis X s subsetD real_vector.subspace_mul)
+    by (rule real_vector.subspace_sum[OF s finite_X], metis X s subsetD real_vector.subspace_mul)
   moreover have "(v-?p) \<in> orthogonal_complement S"
     by (rule v_minus_p_orthogonal_complement[OF s ind_X X span_X o])
   ultimately show "\<exists>a\<in>S. \<exists>b\<in>orthogonal_complement S. v = a + b" by force

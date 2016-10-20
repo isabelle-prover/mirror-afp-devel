@@ -38,7 +38,7 @@ proof-
   thus "q*q dvd (q * pderiv p - p * pderiv q)" by simp
   note 0 = pderiv_mult[of q "p div q"]
   have 1: "q * (p div q) = p" 
-    by (metis assms(1) assms(2) dvd_def nonzero_mult_divide_cancel_left)
+    by (metis assms(1) assms(2) dvd_def nonzero_mult_div_cancel_left)
   have f1: "pderiv (p div q) * (q * q) div (q * q) = pderiv (p div q)"
     by simp
   have f2: "pderiv p = q * pderiv (p div q) + p div q * pderiv q"
@@ -402,7 +402,7 @@ lemma poly_inf_mult[simp]:
         "poly_neg_inf (p*q) = poly_neg_inf p * poly_neg_inf q"
 unfolding poly_inf_def poly_neg_inf_def
 by ((cases "p = 0 \<or> q = 0",auto simp: sgn_zero_iff
-         degree_mult_eq[of p q] coeff_mult_degree_sum sgn_mult)[])+
+         degree_mult_eq[of p q] coeff_mult_degree_sum Real_Vector_Spaces.sgn_mult)[])+
 
 
 lemma poly_neq_0_at_infinity:
@@ -443,7 +443,7 @@ proof (subst filterlim_cong, rule refl, rule refl)
         by (simp add: eventually_at_infinity, rule exI[of _ 1], auto)
     fix x :: real assume [simp]: "x \<noteq> 0"
     show "poly p x / x ^ n = (\<Sum>i\<le>n. coeff p i / x ^ (n - i))"
-        by (simp add: n_def setsum_divide_distrib power_diff poly_altdef)
+        by (simp add: n_def sum_divide_distrib power_diff poly_altdef)
   qed
 
   let ?a = "\<lambda>i. if i = n then coeff p n else 0"
@@ -471,8 +471,8 @@ proof (subst filterlim_cong, rule refl, rule refl)
     qed
   qed
   hence "((\<lambda>x. \<Sum>i\<le>n. coeff p i / x^(n-i)) \<longlongrightarrow> (\<Sum>i\<le>n. ?a i)) at_infinity"
-      by (force intro: tendsto_setsum)
-  also have "(\<Sum>i\<le>n. ?a i) = coeff p n" by (subst setsum.delta, simp_all)
+      by (force intro: tendsto_sum)
+  also have "(\<Sum>i\<le>n. ?a i) = coeff p n" by (subst sum.delta, simp_all)
   finally show "((\<lambda>x. \<Sum>i\<le>n. coeff p i / x^(n-i)) \<longlongrightarrow> coeff p n) at_infinity" .
 qed
 
@@ -496,7 +496,7 @@ proof-
   also have "eventually (\<lambda>x. f x * g x = poly p x) at_top"
       unfolding f_def g_def
       by (subst eventually_at_top_linorder, rule exI[of _ 1],
-          simp add: poly_altdef field_simps setsum_distrib_left power_diff)
+          simp add: poly_altdef field_simps sum_distrib_left power_diff)
   note filterlim_cong[OF refl refl this]
   finally show ?thesis .
 qed
@@ -567,7 +567,7 @@ proof-
   also have "eventually (\<lambda>x. f x * g x = poly p x) at_bot"
       unfolding f_def g_def
       by (subst eventually_at_bot_linorder, rule exI[of _ "-1"],
-          simp add: poly_altdef field_simps setsum_distrib_left power_diff)
+          simp add: poly_altdef field_simps sum_distrib_left power_diff)
   note filterlim_cong[OF refl refl this]
   finally show ?thesis .
 qed

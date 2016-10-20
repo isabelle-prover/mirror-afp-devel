@@ -77,17 +77,17 @@ lemma lex_scale1_zero:
     "lex 0 (v *\<^sub>R u) = (if v > 0 then lex 0 u else if v < 0 then lex u 0 else True)"
   by (auto simp: lex_def prod_eq_iff less_eq_prod_def sign_simps)
 
-lemma nlex_sum:
+lemma nlex_add:
   assumes "lex a 0" "lex b 0"
   shows "lex (a + b) 0"
   using assms by (auto simp: lex_def)
 
-lemma nlex_setsum:
+lemma nlex_sum:
   assumes "finite X"
   assumes "\<And>x. x \<in> X \<Longrightarrow> lex (f x) 0"
-  shows "lex (setsum f X) 0"
+  shows "lex (sum f X) 0"
   using assms
-  by induction (auto intro!: nlex_sum)
+  by induction (auto intro!: nlex_add)
 
 lemma abs_add_nlex:
   assumes "coll 0 a b"
@@ -115,7 +115,7 @@ proof (rule antisym[OF abs_triangle_ineq])
 qed
 
 lemma lex_sum_list: "(\<And>x. x \<in> set xs \<Longrightarrow> lex x 0) \<Longrightarrow> lex (sum_list xs) 0"
-  by (induct xs) (auto simp: nlex_sum)
+  by (induct xs) (auto simp: nlex_add)
 
 lemma
   abs_sum_list_coll:
@@ -142,7 +142,7 @@ lemma lex_diff1: "lex (a - b) c = lex a (c + b)"
 lemma sum_list_eq_0_iff_nonpos:
   fixes xs::"'a::ordered_ab_group_add list"
   shows "list_all (\<lambda>x. x \<le> 0) xs \<Longrightarrow> sum_list xs = 0 \<longleftrightarrow> (\<forall>n\<in>set xs. n = 0)"
-  by (auto simp: list_all_iff sum_list_setsum_nth setsum_nonpos_eq_0_iff)
+  by (auto simp: list_all_iff sum_list_sum_nth sum_nonpos_eq_0_iff)
     (auto simp add: in_set_conv_nth)
 
 lemma sum_list_nlex_eq_zeroI:

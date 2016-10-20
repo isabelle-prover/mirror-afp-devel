@@ -192,10 +192,10 @@ assumes "finite I" and "part I P"
 shows "finite P"
 using assms finite_UnionD unfolding part_def by auto
 
-lemma part_setsum:
+lemma part_sum:
   assumes P: "part {..<n::nat} P"
   shows "(\<Sum>i<n. f i) = (\<Sum>p\<in>P. \<Sum>i\<in>p. f i)"
-proof (subst setsum.Union_disjoint [symmetric, simplified])
+proof (subst sum.Union_disjoint [symmetric, simplified])
   show "\<forall>p\<in>P. finite p"
   proof
     fix p assume "p \<in> P"
@@ -204,7 +204,7 @@ proof (subst setsum.Union_disjoint [symmetric, simplified])
   qed
   show "\<forall>A\<in>P. \<forall>B\<in>P. A \<noteq> B \<longrightarrow> A \<inter> B = {}"
     using P by (auto simp: part_def)
-  show "setsum f {..<n} = setsum f (\<Union>P)"
+  show "sum f {..<n} = sum f (\<Union>P)"
     using P by (auto simp: part_def atLeast0LessThan)
 qed
 
@@ -937,7 +937,7 @@ definition mC_C_part where
  part {..< brn c} P \<and> part {..< brn d} (F ` P)"
 
 definition mC_C_wt where
-"mC_C_wt c d s t P F \<equiv> \<forall> I \<in> P. setsum (wt c s) I = setsum (wt d t) (F I)"
+"mC_C_wt c d s t P F \<equiv> \<forall> I \<in> P. sum (wt c s) I = sum (wt d t) (F I)"
 
 definition mC_C_eff_cont where
 "mC_C_eff_cont theta c d s t P F \<equiv>
@@ -960,11 +960,11 @@ definition mC_ZOC_part where
 
 definition mC_ZOC_wt where
 "mC_ZOC_wt c d s t I0 P F \<equiv>
- setsum (wt c s) I0 < 1 \<and> setsum (wt d t) (F I0) < 1 \<longrightarrow>
+ sum (wt c s) I0 < 1 \<and> sum (wt d t) (F I0) < 1 \<longrightarrow>
  (\<forall> I \<in> P - {I0}.
-    setsum (wt c s) I / (1 - setsum (wt c s) I0) =
-    setsum (wt d t) (F I) / (1 - setsum (wt d t) (F I0)))"
-(* Note: In case either setsum is 1, the above condition
+    sum (wt c s) I / (1 - sum (wt c s) I0) =
+    sum (wt d t) (F I) / (1 - sum (wt d t) (F I0)))"
+(* Note: In case either sum is 1, the above condition
    holds vacously. *)
 
 definition mC_ZOC_eff_cont0 where
@@ -1273,16 +1273,16 @@ next
       hence "F I \<noteq> F J" using * diff unfolding mC_C_def inj_on_def by auto
       thus "F I \<inter> F J = {}" using * IJ unfolding mC_C_def mC_C_part_def part_def by auto
     qed
-    have "setsum (wt c s) II = setsum (setsum (wt c s)) S"
-    unfolding II using S SS setsum.UNION_disjoint[of S id "wt c s"] by simp
-    also have "... = setsum (% I. setsum (wt d t) (F I)) S"
-    apply(rule setsum.cong)
+    have "sum (wt c s) II = sum (sum (wt c s)) S"
+    unfolding II using S SS sum.UNION_disjoint[of S id "wt c s"] by simp
+    also have "... = sum (% I. sum (wt d t) (F I)) S"
+    apply(rule sum.cong)
     using S apply force
     unfolding S_def using * unfolding mC_C_def mC_C_part_def mC_C_wt_def by auto
-    also have "... = setsum (wt d t) (UN I : S . F I)"
-    unfolding lift_def using S setsum.UNION_disjoint[of S F "wt d t"] S SS SSS by simp
+    also have "... = sum (wt d t) (UN I : S . F I)"
+    unfolding lift_def using S sum.UNION_disjoint[of S F "wt d t"] S SS SSS by simp
     also have "(UN I : S . F I) = lift P F II" unfolding lift_def S_def by auto
-    finally show "setsum (wt c s) II = setsum (wt d t) (lift P F II)" .
+    finally show "sum (wt c s) II = sum (wt d t) (lift P F II)" .
   qed
 next
   show "mC_C_eff_cont theta c d s t Q (lift P F)"
@@ -1469,14 +1469,14 @@ next
   have 0: "inj_on F P" "I0 \<in> P" using * unfolding mC_ZOC_def mC_ZOC_part_def by blast+
   show "mC_ZOC_wt d c t s (F I0) (F ` P) (inv_into P F)"
   unfolding mC_ZOC_wt_def proof(intro conjI ballI impI)
-    fix J assume "J \<in> F ` P - {F I0}" and le_1: "setsum (wt d t) (F I0) < 1 \<and> setsum (wt c s) (inv_into P F (F I0)) < 1"
+    fix J assume "J \<in> F ` P - {F I0}" and le_1: "sum (wt d t) (F I0) < 1 \<and> sum (wt c s) (inv_into P F (F I0)) < 1"
     then obtain I where I: "I \<in> P - {I0}" and J: "J = F I"
       by (metis image_iff member_remove remove_def)
     have 2: "inv_into P F J = I" unfolding J using 0 I by simp
     have 3: "inv_into P F (F I0) = I0" using 0 by simp
     show
-    "setsum (wt d t) J / (1 - setsum (wt d t) (F I0)) =
-     setsum (wt c s) (inv_into P F J) / (1 - setsum (wt c s) (inv_into P F (F I0)))"
+    "sum (wt d t) J / (1 - sum (wt d t) (F I0)) =
+     sum (wt c s) (inv_into P F J) / (1 - sum (wt c s) (inv_into P F (F I0)))"
     unfolding 2 3 unfolding J
     using * I le_1 unfolding mC_ZOC_def mC_ZOC_wt_def by (metis 3 J)
   qed

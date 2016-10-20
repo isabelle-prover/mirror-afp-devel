@@ -2296,7 +2296,7 @@ proof -
   have "unat a div 2 ^ n * 2 ^ n \<noteq> unat a"
   proof -
     have "unat a = unat a div 2 ^ n * 2 ^ n + unat a mod 2 ^ n"
-      by (simp add: mod_div_equality)
+      by (simp add: div_mult_mod_eq)
     also have "\<dots> \<noteq> unat a div 2 ^ n * 2 ^ n" using sz anz
       by (simp add: unat_arith_simps)
     finally show ?thesis ..
@@ -3183,11 +3183,11 @@ lemma sgn_div_eq_sgn_mult:
 
 lemma sgn_sdiv_eq_sgn_mult:
     "a sdiv b \<noteq> 0 \<Longrightarrow> sgn ((a :: int) sdiv b) = sgn (a * b)"
-  apply (clarsimp simp: sdiv_int_def sgn_times)
+  apply (clarsimp simp: sdiv_int_def sgn_mult)
   apply (subst sgn_div_eq_sgn_mult)
    apply simp
-  apply (clarsimp simp: sgn_times)
-  apply (metis abs_mult div_0 div_mult_self2_is_id sgn_0_0 sgn_1_pos sgn_times zero_less_abs_iff)
+  apply (clarsimp simp: sgn_mult)
+  apply (metis abs_mult div_0 nonzero_mult_div_cancel_right sgn_0_0 sgn_1_pos sgn_mult zero_less_abs_iff)
   done
 
 lemma int_sdiv_same_is_1 [simp]:
@@ -3203,10 +3203,10 @@ lemma int_sdiv_same_is_1 [simp]:
     apply (case_tac "b = 0")
      apply (clarsimp simp: sign_simps)
     apply (rule classical)
-    apply (clarsimp simp: sign_simps sgn_times not_less)
+    apply (clarsimp simp: sign_simps sgn_mult not_less)
     apply (metis le_less neg_0_less_iff_less not_less_iff_gr_or_eq pos_imp_zdiv_neg_iff)
    apply (rule classical)
-   apply (clarsimp simp: sign_simps sgn_times not_less sgn_if split: if_splits)
+   apply (clarsimp simp: sign_simps sgn_mult not_less sgn_if split: if_splits)
    apply (metis antisym less_le neg_imp_zdiv_nonneg_iff)
   apply (clarsimp simp: sdiv_int_def sgn_if)
   done
@@ -3223,11 +3223,11 @@ lemma int_sdiv_negated_is_minus1 [simp]:
     apply (clarsimp simp: sign_simps not_less)
    apply (rule classical)
    apply (case_tac "b = 0")
-    apply (clarsimp simp: sign_simps not_less sgn_times)
+    apply (clarsimp simp: sign_simps not_less sgn_mult)
    apply (case_tac "a > 0")
-    apply (clarsimp simp: sign_simps not_less sgn_times)
+    apply (clarsimp simp: sign_simps not_less sgn_mult)
     apply (metis less_le neg_less_0_iff_less not_less_iff_gr_or_eq pos_imp_zdiv_neg_iff)
-   apply (clarsimp simp: sign_simps not_less sgn_times)
+   apply (clarsimp simp: sign_simps not_less sgn_mult)
    apply (metis Divides.transfer_nat_int_function_closures(1) eq_iff minus_zero neg_le_iff_le)
   apply (clarsimp simp: sgn_if)
   done
@@ -3347,7 +3347,7 @@ lemmas word_sdiv_numerals = word_sdiv_numerals_lhs[where b="numeral y" for y]
 lemma smod_int_alt_def:
      "(a::int) smod b = sgn (a) * (abs a mod abs b)"
   apply (clarsimp simp: smod_int_def sdiv_int_def)
-  apply (clarsimp simp: zmod_zdiv_equality' abs_sgn sgn_times sgn_if sign_simps)
+  apply (clarsimp simp: minus_div_mult_eq_mod [symmetric] abs_sgn sgn_mult sgn_if sign_simps)
   done
 
 lemma smod_int_range:

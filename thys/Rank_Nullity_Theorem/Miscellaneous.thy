@@ -74,7 +74,7 @@ lemma vector_matrix_left_distrib:
   (*fixes x y :: "real^('n::finite)" and A :: "real^('m::finite)^'n"*)
   shows "(x + y) v* A = x v* A + y v* A"
   unfolding vector_matrix_mult_def
-  by (simp add: algebra_simps setsum.distrib vec_eq_iff)
+  by (simp add: algebra_simps sum.distrib vec_eq_iff)
 
 lemma matrix_vector_right_distrib:
   (*fixes v w :: "real^('n::finite)" and M :: "real^'n^('m::finite)"*)
@@ -91,7 +91,7 @@ lemma scalar_vector_matrix_assoc:
   fixes k :: "'a::{field}" and x :: "'a::{field}^'n" and A :: "'a^'m^'n"
   shows "(k *s x) v* A = k *s (x v* A)"
   unfolding vector_matrix_mult_def unfolding vec_eq_iff 
-  by (auto simp add: setsum_distrib_left, rule setsum.cong, simp_all) 
+  by (auto simp add: sum_distrib_left, rule sum.cong, simp_all) 
  
 
 lemma vector_scalar_matrix_ac:
@@ -99,7 +99,7 @@ lemma vector_scalar_matrix_ac:
   shows "x v* (k *k A) = k *s (x v* A)"
   using scalar_vector_matrix_assoc 
   unfolding vector_matrix_mult_def matrix_scalar_mult_def vec_eq_iff 
-  by (auto simp add: setsum_distrib_left)
+  by (auto simp add: sum_distrib_left)
 
 lemma transpose_scalar: "transpose (k *k A) = k *k transpose A"
   unfolding transpose_def 
@@ -260,7 +260,7 @@ fixes A::"'a::{comm_ring_1}^'n^'m"
 shows "(P $ i) v* A = (P ** A) $ i"
 unfolding vec_eq_iff
 unfolding vector_matrix_mult_def unfolding matrix_matrix_mult_def
-by (auto intro!: setsum.cong)
+by (auto intro!: sum.cong)
 
 corollary row_matrix_matrix_mult':
 fixes A::"'a::{comm_ring_1}^'n^'m"
@@ -278,25 +278,25 @@ unfolding inner_vec_def matrix_matrix_mult_def row_def column_def by auto
 
 lemma matrix_vmult_column_sum:
   fixes A::"'a::{field}^'n^'m"
-  shows "\<exists>f. A *v x = setsum (\<lambda>y. f y *s y) (columns A)"
-proof (rule exI[of _ "\<lambda>y. setsum (\<lambda>i. x $ i) {i. y = column i A}"])
-  let ?f="\<lambda>y. setsum (\<lambda>i. x $ i) {i. y = column i A}"  
+  shows "\<exists>f. A *v x = sum (\<lambda>y. f y *s y) (columns A)"
+proof (rule exI[of _ "\<lambda>y. sum (\<lambda>i. x $ i) {i. y = column i A}"])
+  let ?f="\<lambda>y. sum (\<lambda>i. x $ i) {i. y = column i A}"  
   let ?g="(\<lambda>y. {i. y=column i (A)})"
   have inj: "inj_on ?g (columns (A))" unfolding inj_on_def unfolding columns_def by auto
   have union_univ: "\<Union> (?g`(columns (A))) = UNIV" unfolding columns_def by auto
   have "A *v x = (\<Sum>i\<in>UNIV. x $ i *s column i A)" unfolding matrix_mult_vsum ..
-  also have "... = setsum (\<lambda>i.  x $ i *s column i A) (\<Union>(?g`(columns A)))" unfolding union_univ ..
-  also have "... = setsum (setsum ((\<lambda>i.  x $ i *s column i A)))  (?g`(columns A))"
-    by (rule setsum.Union_disjoint[unfolded o_def], auto) 
-  also have "... = setsum ((setsum ((\<lambda>i.  x $ i *s column i A))) \<circ> ?g)  (columns A)" 
-    by (rule setsum.reindex, simp add: inj)
-  also have "... =  setsum (\<lambda>y. ?f y *s y) (columns A)"
-  proof (rule setsum.cong, unfold o_def)
+  also have "... = sum (\<lambda>i.  x $ i *s column i A) (\<Union>(?g`(columns A)))" unfolding union_univ ..
+  also have "... = sum (sum ((\<lambda>i.  x $ i *s column i A)))  (?g`(columns A))"
+    by (rule sum.Union_disjoint[unfolded o_def], auto) 
+  also have "... = sum ((sum ((\<lambda>i.  x $ i *s column i A))) \<circ> ?g)  (columns A)" 
+    by (rule sum.reindex, simp add: inj)
+  also have "... =  sum (\<lambda>y. ?f y *s y) (columns A)"
+  proof (rule sum.cong, unfold o_def)
     fix xa
-    have "setsum (\<lambda>i. x $ i *s column i A) {i. xa = column i A} 
-      = setsum (\<lambda>i. x $ i *s xa) {i. xa = column i A}" by simp
-    also have "... = setsum (\<lambda>i. x $ i) {i. xa = column i A} *s xa" 
-      using vec.scale_setsum_left[of "(\<lambda>i. x $ i)" "{i. xa = column i A}" xa] ..
+    have "sum (\<lambda>i. x $ i *s column i A) {i. xa = column i A} 
+      = sum (\<lambda>i. x $ i *s xa) {i. xa = column i A}" by simp
+    also have "... = sum (\<lambda>i. x $ i) {i. xa = column i A} *s xa" 
+      using vec.scale_sum_left[of "(\<lambda>i. x $ i)" "{i. xa = column i A}" xa] ..
     finally show "(\<Sum>i | xa = column i A. x $ i *s column i A) = (\<Sum>i | xa = column i A. x $ i) *s xa" . 
   qed rule
   finally show "A *v x = (\<Sum>y\<in>columns A. (\<Sum>i | y = column i A. x $ i) *s y)" .

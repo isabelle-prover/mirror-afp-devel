@@ -270,7 +270,7 @@ proof -
   also have "?pf = (insert p (?pf - {p}))" using p by auto
   also have "(\<Prod>p\<in>insert p (?pf - {p}). p ^ multiplicity p j) = 
     p ^ multiplicity p j * rem" unfolding rem_def
-    by (subst setprod.insert, auto)
+    by (subst prod.insert, auto)
   also have "\<dots> = p * (p ^ (multiplicity p j - 1) * rem)" using mult 
     by (cases "multiplicity p j", auto)
   finally have pj: "p dvd j" unfolding dvd_def by blast

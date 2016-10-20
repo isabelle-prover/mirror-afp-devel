@@ -73,11 +73,11 @@ proof -
            ennreal ((\<Sum>i\<in>agents. pmf (pmf_of_set (favorites R i)) x) / real (card agents))"
     (is "_ = ennreal (?p / _)") unfolding random_dictatorship_def[OF assms]
     by (simp_all add: ennreal_pmf_bind nn_integral_pmf_of_set max_def 
-          divide_ennreal [symmetric] ennreal_of_nat_eq_real_of_nat setsum_nonneg)
+          divide_ennreal [symmetric] ennreal_of_nat_eq_real_of_nat sum_nonneg)
   also have "?p = (\<Sum>i\<in>agents. indicator (favorites R i) x / real (card (favorites R i)))"
-    by (intro setsum.cong) (simp_all add: favorites_nonempty)
+    by (intro sum.cong) (simp_all add: favorites_nonempty)
   finally show ?thesis 
-    by (subst (asm) ennreal_inj) (auto intro!: setsum_nonneg divide_nonneg_nonneg)
+    by (subst (asm) ennreal_inj) (auto intro!: sum_nonneg divide_nonneg_nonneg)
 qed
 
 

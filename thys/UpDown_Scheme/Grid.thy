@@ -129,7 +129,7 @@ proof -
   have *: "length p = length b" using grid_length assms by auto
   { fix i assume "i \<in> {0 ..< length p}"
     hence "lv b i \<le> lv p i" using `p \<in> grid b ds` and grid_single_level * by auto
-  } thus ?thesis unfolding level_def * by (auto intro!: setsum_mono)
+  } thus ?thesis unfolding level_def * by (auto intro!: sum_mono)
 qed
 lemma grid_empty_ds[simp]: "grid b {} = { b }"
 proof -
@@ -853,7 +853,7 @@ proof -
     unfolding lgrid_def using grid_disjunct and `d < length b` by auto
   from lgrid_finite lgrid_finite and this
   have child_eq: "?sum ((?grid ?l) \<union> (?grid ?r)) = ?sum (?grid ?l) + ?sum (?grid ?r)"
-    by (rule setsum.union_disjoint)
+    by (rule sum.union_disjoint)
 
   have "?grid b = {b} \<union> (?grid ?l) \<union> (?grid ?r)" unfolding lgrid_def grid_partition[where p=b] using assms by auto
   hence "?sum (?grid b) = F b + ?sum ((?grid ?l) \<union> (?grid ?r))" using b_distinct and lgrid_finite by auto

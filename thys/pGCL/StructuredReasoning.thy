@@ -168,7 +168,7 @@ proof(rule le_funI)
   ultimately have "\<And>x. x \<in> supp (p s) \<Longrightarrow> p s x * P x s \<le> p s x * f x ab Q s"
     by(blast intro:mult_left_mono)
   thus "(\<Sum>x \<in> supp (p s). p s x * P x s) \<le> (\<Sum>x \<in> supp (p s). p s x * f x ab Q s)"
-    by(rule setsum_mono)
+    by(rule sum_mono)
 qed
 
 lemma wp_SetPC_split:

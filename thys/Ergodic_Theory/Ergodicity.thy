@@ -249,7 +249,7 @@ lemma (in ergodic_pmpt) Invariants_cond_exp_is_integral:
   fixes f::"_ \<Rightarrow> real"
   assumes "integrable M f"
   shows "AE x in M. real_cond_exp M Invariants f x = (\<integral>x. f x \<partial>M)"
-by (metis divide_1 prob_space Invariants_cond_exp_is_integral_fmpt[OF assms])
+by (metis div_by_1 prob_space Invariants_cond_exp_is_integral_fmpt[OF assms])
 
 
 subsection {*Kac formula*}
@@ -261,7 +261,7 @@ lemma (in ergodic_conservative_mpt) local_time_unbounded:
 proof (rule local_time_unbounded3)
   have "A - (\<Union>i. (T ^^ i) --` B) \<in> sets M" by auto
   moreover have "A - (\<Union>i. (T ^^ i) --` B) \<subseteq> space M - (\<Union>i. (T ^^ i) --` B)" using sets.sets_into_space[OF assms(1)] by blast
-  ultimately show "A - (\<Union>i. (T ^^ i) --` B) \<in> null_sets M" by (metis null_sets_inc preimages_conull(1)[OF assms(2) assms(4)])
+  ultimately show "A - (\<Union>i. (T ^^ i) --` B) \<in> null_sets M" by (metis null_sets_subset preimages_conull(1)[OF assms(2) assms(4)])
   show "emeasure M A < \<infinity>" using assms(3) by simp
 qed (simp_all add: assms)
 

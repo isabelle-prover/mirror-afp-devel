@@ -404,7 +404,7 @@ proof
   qed
 qed auto
 
-lemma permutes_setprod:
+lemma permutes_prod:
   assumes p: "p permutes S"
   shows "(\<Prod>s\<in>S. f (p s) s) = (\<Prod>s\<in>S. f s (Hilbert_Choice.inv p s))"
     (is "?l = ?r")
@@ -414,18 +414,18 @@ proof -
   let ?ips = "\<lambda>s. (s, Hilbert_Choice.inv p s)"
   have inj1: "inj_on ?ps S" by (rule inj_onI;auto)
   have inj2: "inj_on ?ips S" by (rule inj_onI;auto)
-  have "?l = setprod ?f (?ps ` S)"
-    using setprod.reindex[OF inj1, of ?f] by simp
+  have "?l = prod ?f (?ps ` S)"
+    using prod.reindex[OF inj1, of ?f] by simp
   also have "?ps ` S = {(p s, s) |s. s \<in> S}" by auto
   also have "... = {(s, Hilbert_Choice.inv p s) | s. s \<in> S}"
     unfolding permutes_pair_eq[OF p] by simp
   also have "... = ?ips ` S" by auto
-  also have "setprod ?f ... = ?r"
-    using setprod.reindex[OF inj2, of ?f] by simp
+  also have "prod ?f ... = ?r"
+    using prod.reindex[OF inj2, of ?f] by simp
   finally show ?thesis.
 qed
 
-lemma permutes_setsum:
+lemma permutes_sum:
   assumes p: "p permutes S"
   shows "(\<Sum>s\<in>S. f (p s) s) = (\<Sum>s\<in>S. f s (Hilbert_Choice.inv p s))"
     (is "?l = ?r")
@@ -435,14 +435,14 @@ proof -
   let ?ips = "\<lambda>s. (s, Hilbert_Choice.inv p s)"
   have inj1: "inj_on ?ps S" by (rule inj_onI;auto)
   have inj2: "inj_on ?ips S" by (rule inj_onI;auto)
-  have "?l = setsum ?f (?ps ` S)"
-    using setsum.reindex[OF inj1, of ?f] by simp
+  have "?l = sum ?f (?ps ` S)"
+    using sum.reindex[OF inj1, of ?f] by simp
   also have "?ps ` S = {(p s, s) |s. s \<in> S}" by auto
   also have "... = {(s, Hilbert_Choice.inv p s) | s. s \<in> S}"
     unfolding permutes_pair_eq[OF p] by simp
   also have "... = ?ips ` S" by auto
-  also have "setsum ?f ... = ?r"
-    using setsum.reindex[OF inj2, of ?f] by simp
+  also have "sum ?f ... = ?r"
+    using sum.reindex[OF inj2, of ?f] by simp
   finally show ?thesis.
 qed
 

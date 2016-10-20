@@ -86,12 +86,12 @@ proof -
 
   have "level (child p dir d) =
     (\<Sum> d' = 0..<length p. if d' \<in> {d} then lv p d + 1 else lv p d')"
-    by (auto intro!: setsum.cong simp add: child_lv_other child_lv level_def)
+    by (auto intro!: sum.cong simp add: child_lv_other child_lv level_def)
   moreover have "level p + 1 =
     (\<Sum> d' = 0..<length p. if d' \<in> {d} then lv p d else lv p d') + 1"
-    by (auto intro!: setsum.cong simp add: child_lv_other child_lv level_def)
+    by (auto intro!: sum.cong simp add: child_lv_other child_lv level_def)
   ultimately show ?thesis
-    unfolding setsum.If_cases[OF finite_atLeastLessThan] inter
+    unfolding sum.If_cases[OF finite_atLeastLessThan] inter
     using assms by auto
 qed
 

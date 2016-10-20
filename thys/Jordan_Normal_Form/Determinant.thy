@@ -41,11 +41,11 @@ lemma det_def': "A \<in> carrier\<^sub>m n n \<Longrightarrow>
 
 lemma det_smult[simp]: "det (a \<odot>\<^sub>m A) = a ^ dim\<^sub>c A * det A"
 proof -
-  have [simp]: "(\<Prod>i = 0..<dim\<^sub>c A. a) = a ^ dim\<^sub>c A" by(subst setprod_constant;simp)
+  have [simp]: "(\<Prod>i = 0..<dim\<^sub>c A. a) = a ^ dim\<^sub>c A" by(subst prod_constant;simp)
   show ?thesis
   unfolding det_def
   unfolding mat_index_scalar_mult
-  by (auto intro: setsum.cong simp: setsum_distrib_left setprod.distrib)
+  by (auto intro: sum.cong simp: sum_distrib_left prod.distrib)
 qed
 
 lemma det_transpose: assumes A: "A \<in> carrier\<^sub>m n n"
@@ -68,25 +68,25 @@ proof -
     let ?f = "\<lambda>i. transpose\<^sub>m A $$ (i, ?inv p i)"
     note pU_U = permutes_image[OF pU]
     note [simp] = permutes_less[OF pU]
-    have "setprod ?f ?U = setprod ?f (p ` ?U)"
+    have "prod ?f ?U = prod ?f (p ` ?U)"
       using pU_U by simp
-    also have "\<dots> = setprod (?f \<circ> p) ?U"
-      by (rule setprod.reindex[OF pi])
-    also have "\<dots> = setprod (\<lambda>i. A $$ (i, p i)) ?U"
-      by (rule setprod.cong, insert A, auto)
-    finally have "signof (?inv p) * setprod ?f ?U =
-      signof p * setprod (\<lambda>i. A $$ (i, p i)) ?U"
+    also have "\<dots> = prod (?f \<circ> p) ?U"
+      by (rule prod.reindex[OF pi])
+    also have "\<dots> = prod (\<lambda>i. A $$ (i, p i)) ?U"
+      by (rule prod.cong, insert A, auto)
+    finally have "signof (?inv p) * prod ?f ?U =
+      signof p * prod (\<lambda>i. A $$ (i, p i)) ?U"
       unfolding sth by simp
   }
   then show ?thesis
     unfolding det_def using A
-    by (simp, subst setsum_permutations_inverse, intro setsum.cong, auto)
+    by (simp, subst sum_permutations_inverse, intro sum.cong, auto)
 qed
 
 lemma det_col:
   assumes A: "A \<in> carrier\<^sub>m n n"
   shows "det A = (\<Sum> p | p permutes {0 ..< n}. signof p * (\<Prod>j<n. A $$ (p j, j)))"
-    (is "_ = (setsum (\<lambda>p. _ * ?prod p) ?P)")
+    (is "_ = (sum (\<lambda>p. _ * ?prod p) ?P)")
 proof -
   let ?i = "Hilbert_Choice.inv"
   let ?N = "{0 ..< n}"
@@ -97,21 +97,21 @@ proof -
   let ?f'' = "\<lambda>p. signof p * ?prod'' p"
   let ?P' = "{ ?i p | p. p permutes ?N }"
   have [simp]: "{0..<n} = {..<n}" by auto
-  have "setsum ?f ?P = setsum ?f' ?P"
-  proof (rule setsum.cong[OF refl],unfold mem_Collect_eq)
+  have "sum ?f ?P = sum ?f' ?P"
+  proof (rule sum.cong[OF refl],unfold mem_Collect_eq)
       fix p assume p: "p permutes ?N"
       have [simp]: "?prod p = ?prod' p"
-        using permutes_setprod[OF p, of "\<lambda>x y. A $$ (x,y)"] by auto
+        using permutes_prod[OF p, of "\<lambda>x y. A $$ (x,y)"] by auto
       have [simp]: "signof p = signof (?i p)"
         apply(rule signof_inv[symmetric]) using p by auto
       show "?f p = ?f' p" by auto
   qed
-  also have "... = setsum ?f' ?P'"
-    by (rule setsum.cong[OF image_inverse_permutations[symmetric]],auto)
-  also have "... = setsum ?f'' ?P"
-    unfolding setsum.reindex[OF inv_inj_on_permutes,unfolded image_Collect]
+  also have "... = sum ?f' ?P'"
+    by (rule sum.cong[OF image_inverse_permutations[symmetric]],auto)
+  also have "... = sum ?f'' ?P"
+    unfolding sum.reindex[OF inv_inj_on_permutes,unfolded image_Collect]
     unfolding o_def
-    apply (rule setsum.cong[OF refl])
+    apply (rule sum.cong[OF refl])
     using inv_inv_eq[OF permutes_bij] by force
   finally show ?thesis unfolding det_def'[OF A] by auto
 qed
@@ -149,7 +149,7 @@ proof -
     from upper_triangularD[OF ut i] `i < n` m
     have ex:"\<exists>i \<in> ?U. A $$ (i,p i) = 0" by auto
     have "(\<Prod> i = 0 ..< n. A $$ (i, p i)) = 0" 
-      by (rule setprod_zero[OF fU ex])
+      by (rule prod_zero[OF fU ex])
     hence "?pp p = 0" by simp
   }
   then have p0: "\<And> p. p \<in> ?PU - {id} \<Longrightarrow> ?pp p = 0"
@@ -157,10 +157,10 @@ proof -
   from m have dim: "dim\<^sub>r A = n" by simp
   have "det A = (\<Sum> p \<in> ?PU. ?pp p)" unfolding det_def by auto
   also have "\<dots> = ?pp id + (\<Sum> p \<in> ?PU - {id}. ?pp p)"
-    by (rule setsum.remove, insert id0 fPU m, auto simp: p0)
+    by (rule sum.remove, insert id0 fPU m, auto simp: p0)
   also have "(\<Sum> p \<in> ?PU - {id}. ?pp p) = 0"
-    by (rule setsum.neutral, insert fPU, auto simp: p0)
-  finally show ?thesis using m by (auto simp: signof_id prod_list_diag_setprod)
+    by (rule sum.neutral, insert fPU, auto simp: p0)
+  finally show ?thesis using m by (auto simp: signof_id prod_list_diag_prod)
 qed
 
 lemma det_one[simp]: "det (\<one>\<^sub>m n) = 1"
@@ -209,19 +209,19 @@ proof -
     = (\<Sum> q \<in> {q . q permutes ?U}. signof (q \<circ> p) * (\<Prod> i \<in> ?U. A $$ (p i, (q \<circ> p) i)))" .
   have 2: "signof p * det A = 
     (\<Sum> q\<in>{q. q permutes ?U}. signof p * signof q * (\<Prod>i\<in> ?U. A $$ (i, q i)))"
-    unfolding det_def'[OF A] setsum_distrib_left by (simp add: ac_simps)
+    unfolding det_def'[OF A] sum_distrib_left by (simp add: ac_simps)
   show ?thesis unfolding 1 2
-  proof (rule setsum.cong, insert p A, auto)
+  proof (rule sum.cong, insert p A, auto)
     fix q
     assume q: "q permutes ?U"
     let ?inv = "Hilbert_Choice.inv"
     from permutes_inv[OF p] have ip: "?inv p permutes ?U" .
-    have "setprod (\<lambda>i. A $$ (p i, (q \<circ> p) i)) ?U = 
-      setprod (\<lambda>i. A $$ ((p \<circ> ?inv p) i, (q \<circ> (p \<circ> ?inv p)) i)) ?U" unfolding o_def
-      by (rule trans[OF setprod.permute[OF ip] setprod.cong], insert A p q, auto)
-    also have "\<dots> = setprod (\<lambda>i. A$$(i,q i)) ?U"
+    have "prod (\<lambda>i. A $$ (p i, (q \<circ> p) i)) ?U = 
+      prod (\<lambda>i. A $$ ((p \<circ> ?inv p) i, (q \<circ> (p \<circ> ?inv p)) i)) ?U" unfolding o_def
+      by (rule trans[OF prod.permute[OF ip] prod.cong], insert A p q, auto)
+    also have "\<dots> = prod (\<lambda>i. A$$(i,q i)) ?U"
       by (simp only: o_def permutes_inverses[OF p])
-    finally have thp: "setprod (\<lambda>i. A $$ (p i, (q \<circ> p) i)) ?U = setprod (\<lambda>i. A$$(i,q i)) ?U" .      
+    finally have thp: "prod (\<lambda>i. A $$ (p i, (q \<circ> p) i)) ?U = prod (\<lambda>i. A$$(i,q i)) ?U" .      
     show "signof (q \<circ> p) * (\<Prod>i\<in>{0..<n}. A $$ (p i, q (p i))) =
          signof p * signof q * (\<Prod>i\<in>{0..<n}. A $$ (i, q i))"
       unfolding thp[symmetric] signof_compose[OF q p]
@@ -231,12 +231,12 @@ qed
 
 lemma det_multrow_mat: assumes k: "k < n"
   shows "det (multrow_mat n k a) = a"
-proof (rule trans[OF det_lower_triangular[of n]], unfold prod_list_diag_setprod)
+proof (rule trans[OF det_lower_triangular[of n]], unfold prod_list_diag_prod)
   let ?f = "\<lambda> i. multrow_mat n k a $$ (i, i)"
   have "(\<Prod>i\<in>{0..<n}. ?f i) = ?f k * (\<Prod>i\<in>{0..<n} - {k}. ?f i)"
-    by (rule setprod.remove, insert k, auto)
+    by (rule prod.remove, insert k, auto)
   also have "(\<Prod>i\<in>{0..<n} - {k}. ?f i) = 1" 
-    by (rule setprod.neutral, auto)
+    by (rule prod.neutral, auto)
   finally show "(\<Prod>i\<in>{0..<dim\<^sub>r (multrow_mat n k a)}. ?f i) = a" using k by simp
 qed (insert k, auto)
 
@@ -270,8 +270,8 @@ proof -
     show ?thesis
       by (rule det_lower_triangular[of n], insert False, auto)
   qed
-  also have "\<dots> = 1" unfolding prod_list_diag_setprod
-    by (rule setprod.neutral, insert l, auto)
+  also have "\<dots> = 1" unfolding prod_list_diag_prod
+    by (rule prod.neutral, insert l, auto)
   finally show ?thesis .
 qed
 
@@ -300,7 +300,7 @@ proof-
     fix q
     assume q: "q permutes ?n"
     have "(\<Prod>k\<in>?n. A $$ (?p (q k), k)) = (\<Prod>k\<in>?n. A $$ (q k, k))"
-    proof (rule setprod.cong)
+    proof (rule prod.cong)
       fix k
       assume k: "k \<in> ?n"
       from r have row: "row A i $ k = row A j $ k" by simp
@@ -314,7 +314,7 @@ proof-
   have "det A = (\<Sum>p\<in> ?one \<union> ?none. ?f p)"
     using A unfolding mat_det_left_def[OF A] split by simp
   also have "\<dots> = (\<Sum>p\<in> ?one. ?f p) + (\<Sum>p\<in> ?none. ?f p)"
-    by (rule setsum.union_disjoint, insert A, auto simp: finite_permutations)
+    by (rule sum.union_disjoint, insert A, auto simp: finite_permutations)
   also have "?none = ?pone" 
   proof -
     {
@@ -342,15 +342,15 @@ proof-
     show ?thesis by blast
   qed  
   also have "(\<Sum>p\<in> ?pone. ?f p) = (\<Sum>p\<in> ?one. ?f (?p o p))"
-  proof (rule trans[OF setsum.reindex])
+  proof (rule trans[OF sum.reindex])
     show "inj_on (op \<circ> ?p) ?one" 
       using fun.inj_map[OF injp] unfolding inj_on_def by auto
   qed simp
   also have "(\<Sum>p\<in> ?one. ?f p) + (\<Sum>p\<in> ?one. ?f (?p o p))
     = (\<Sum>p\<in> ?one. ?f p + ?f (?p o p))"
-    by (rule setsum.distrib[symmetric])
+    by (rule sum.distrib[symmetric])
   also have "\<dots> = 0"
-    by (rule setsum.neutral, insert A, auto simp: 
+    by (rule sum.neutral, insert A, auto simp: 
       sp sign_compose[OF pp[OF p] pp] ij signof_def finite_permutations *)
   finally show ?thesis .
 qed
@@ -363,7 +363,7 @@ proof -
     fix p
     assume p: "p permutes {0 ..< n}"
     have "(\<Prod>i\<in>{0..<n}. mat\<^sub>r n n (\<lambda>i. if i = k then \<zero>\<^sub>v n else c i) $$ (i, p i)) = 0" 
-      by (rule setprod_zero[OF _ bexI[of _ k]], 
+      by (rule prod_zero[OF _ bexI[of _ k]], 
       insert k p c[unfolded vec_carrier_def], auto)
   }
   thus ?thesis unfolding det_def by simp
@@ -386,9 +386,9 @@ proof -
     signof p * (\<Prod>i\<in>?n. ?m a c p i)) + (\<Sum>p\<in>{p. p permutes ?n}. signof p * (\<Prod>i\<in>?n. ?m b c p i))"
     unfolding det_def by simp
   also have "\<dots> = (\<Sum>p\<in>{p. p permutes ?n}. signof p * (\<Prod>i\<in>?n. ?m a c p i) +  signof p * (\<Prod>i\<in>?n. ?m b c p i))"
-    by (rule setsum.distrib[symmetric])
+    by (rule sum.distrib[symmetric])
   also have "\<dots> = (\<Sum>p\<in>{p. p permutes ?n}. signof p * (\<Prod>i\<in>?n. ?m ?ab c p i))"
-  proof (rule setsum.cong, force)
+  proof (rule sum.cong, force)
     fix p
     assume "p \<in> {p. p permutes ?n}"
     hence p: "p permutes ?n" by simp
@@ -398,7 +398,7 @@ proof -
     proof (rule arg_cong[of _ _ "\<lambda> a. signof p * a"])
       from k have f: "finite ?n" and k': "k \<in> ?n" by auto
       let ?nk = "?n - {k}"
-      note split = setprod.remove[OF f k']
+      note split = prod.remove[OF f k']
       have id1: "(\<Prod>i\<in>?n. ?m a c p i) = ?m a c p k * (\<Prod>i\<in>?nk. ?m a c p i)"
         by (rule split)
       have id2: "(\<Prod>i\<in>?n. ?m b c p i) = ?m b c p k * (\<Prod>i\<in>?nk. ?m b c p i)"
@@ -406,7 +406,7 @@ proof -
       have id3: "(\<Prod>i\<in>?n. ?m ?ab c p i) = ?m ?ab c p k * (\<Prod>i\<in>?nk. ?m ?ab c p i)"
         by (rule split)
       have id: "\<And> a. (\<Prod>i\<in>?nk. ?m a c p i) = (\<Prod>i\<in>?nk. ?c p i)"
-        by (rule setprod.cong, insert abc k p, auto intro!: intros)
+        by (rule prod.cong, insert abc k p, auto intro!: intros)
       have ab: "?ab k \<in> carrier\<^sub>v n" using abc by (auto intro: intros)
       {
         fix f
@@ -431,7 +431,7 @@ lemma det_linear_row_finsum:
   assumes fS: "finite S" and c: "c \<in> {0..<n} \<rightarrow> carrier\<^sub>v n" and k: "k < n"
   and a: "a k \<in> S \<rightarrow> carrier\<^sub>v n"
   shows "det (mat\<^sub>r n n (\<lambda> i. if i = k then finsum_vec TYPE('a :: comm_ring_1) n (a i) S else c i)) =
-    setsum (\<lambda>j. det (mat\<^sub>r n n (\<lambda> i. if i = k then a  i j else c i))) S"
+    sum (\<lambda>j. det (mat\<^sub>r n n (\<lambda> i. if i = k then a  i j else c i))) S"
 proof -
   let ?sum = "finsum_vec TYPE('a) n"
   show ?thesis using a
@@ -455,7 +455,7 @@ proof -
         show "det (mat\<^sub>r n n (\<lambda>i. if i = k then a i x else c i)) +
           det (mat\<^sub>r n n (\<lambda>i. if i = k then ?sum (a i) F else c i)) =
         (\<Sum>j\<in>insert x F. det (mat\<^sub>r n n (\<lambda>i. if i = k then a i j else c i)))"
-        unfolding 2(3)[OF ak] setsum.insert[OF 2(1-2)] by simp
+        unfolding 2(3)[OF ak] sum.insert[OF 2(1-2)] by simp
       qed (insert c k ak akx 2(1), 
         auto intro!: finsum_vec_closed)
     qed (insert akx ak, force+)
@@ -469,7 +469,7 @@ lemma det_linear_rows_finsum_lemma:
     and T: "T \<subseteq> {0 ..< n}"
     and a: "a \<in> T \<rightarrow> S \<rightarrow> carrier\<^sub>v n"
   shows "det (mat\<^sub>r n n (\<lambda> i. if i \<in> T then finsum_vec TYPE('a :: comm_ring_1) n (a i) S else c i)) =
-    setsum (\<lambda>f. det(mat\<^sub>r n n (\<lambda> i. if i \<in> T then a i (f i) else c i)))
+    sum (\<lambda>f. det(mat\<^sub>r n n (\<lambda> i. if i \<in> T then a i (f i) else c i)))
       {f. (\<forall>i \<in> T. f i \<in> S) \<and> (\<forall>i. i \<notin> T \<longrightarrow> f i = i)}"
 proof -
   let ?sum = "finsum_vec TYPE('a) n"
@@ -508,29 +508,29 @@ proof -
       apply (simp cong del: if_weak_cong cong add: if_cong)
       apply (insert azS c fS insert(5), (force intro!: finsum_vec_closed)+)
       done
-    also have "\<dots> = (setsum (\<lambda> (j, f). det (mat\<^sub>r n n (\<lambda> i. if i \<in> T then a i (f i)
+    also have "\<dots> = (sum (\<lambda> (j, f). det (mat\<^sub>r n n (\<lambda> i. if i \<in> T then a i (f i)
       else if i = z then a i j
       else c i))) (S \<times> ?F T))"
-      unfolding setsum.cartesian_product[symmetric]
-      by (rule setsum.cong[OF refl], subst insert.hyps(3), 
+      unfolding sum.cartesian_product[symmetric]
+      by (rule sum.cong[OF refl], subst insert.hyps(3), 
         insert azS c fin z insert(5-6), auto)
     finally have tha:
       "det (mat\<^sub>r n n (\<lambda> i. if i \<in> insert z T then ?sum (a i) S else c i)) =
-       (setsum (\<lambda> (j, f). det (mat\<^sub>r n n (\<lambda> i. if i \<in> T then a i (f i)
+       (sum (\<lambda> (j, f). det (mat\<^sub>r n n (\<lambda> i. if i \<in> T then a i (f i)
           else if i = z then a i j
           else c i))) (S \<times> ?F T))" .                
     show ?case unfolding tha
-      by (rule setsum.reindex_bij_witness[where i="?k" and j="?h"], insert `z \<notin> T`
+      by (rule sum.reindex_bij_witness[where i="?k" and j="?h"], insert `z \<notin> T`
       azS c fS insert(5-6) z fin, 
       auto intro!: arg_cong[of _ _ det])
   qed
 qed
 
-lemma det_linear_rows_setsum:
+lemma det_linear_rows_sum:
   assumes fS: "finite S"
   and a: "a \<in> {0..<n} \<rightarrow> S \<rightarrow> carrier\<^sub>v n"
   shows "det (mat\<^sub>r n n (\<lambda> i. finsum_vec TYPE('a :: comm_ring_1) n (a i) S)) =
-    setsum (\<lambda>f. det (mat\<^sub>r n n (\<lambda> i. a i (f i)))) 
+    sum (\<lambda>f. det (mat\<^sub>r n n (\<lambda> i. a i (f i)))) 
     {f. (\<forall>i\<in>{0..<n}. f i \<in> S) \<and> (\<forall>i. i \<notin> {0..<n} \<longrightarrow> f i = i)}"
 proof -
   let ?T = "{0..<n}"
@@ -545,20 +545,20 @@ qed
 lemma det_rows_mul:
   assumes a: "a \<in> {0..<n} \<rightarrow> carrier\<^sub>v n"
   shows "det(mat\<^sub>r n n (\<lambda> i. c i \<odot>\<^sub>v a i)) =
-    setprod c {0..<n} * det(mat\<^sub>r n n (\<lambda> i. a i))"
+    prod c {0..<n} * det(mat\<^sub>r n n (\<lambda> i. a i))"
 proof -
   have A: "mat\<^sub>r n n (\<lambda> i. c i \<odot>\<^sub>v a i) \<in> carrier\<^sub>m n n" 
   and A': "mat\<^sub>r n n (\<lambda> i. a i) \<in> carrier\<^sub>m n n" using a unfolding mat_carrier_def by auto
   show ?thesis unfolding det_def'[OF A] det_def'[OF A']
-  proof (rule trans[OF setsum.cong setsum_distrib_left[symmetric]])
+  proof (rule trans[OF sum.cong sum_distrib_left[symmetric]])
     fix p
     assume p: "p \<in> {p. p permutes {0..<n}}"
     have id: "(\<Prod>ia\<in>{0..<n}. mat\<^sub>r n n (\<lambda>i. c i \<odot>\<^sub>v a i) $$ (ia, p ia))
-      = setprod c {0..<n} * (\<Prod>ia\<in>{0..<n}. mat\<^sub>r n n a $$ (ia, p ia))"
-      unfolding setprod.distrib[symmetric]
-      by (rule setprod.cong, insert p a, force+)
+      = prod c {0..<n} * (\<Prod>ia\<in>{0..<n}. mat\<^sub>r n n a $$ (ia, p ia))"
+      unfolding prod.distrib[symmetric]
+      by (rule prod.cong, insert p a, force+)
     show "signof p * (\<Prod>ia\<in>{0..<n}. mat\<^sub>r n n (\<lambda>i. c i \<odot>\<^sub>v a i) $$ (ia, p ia)) =
-           setprod c {0..<n} * (signof p * (\<Prod>ia\<in>{0..<n}. mat\<^sub>r n n a $$ (ia, p ia)))"
+           prod c {0..<n} * (signof p * (\<Prod>ia\<in>{0..<n}. mat\<^sub>r n n a $$ (ia, p ia)))"
       unfolding id by auto
   qed simp
 qed
@@ -567,7 +567,7 @@ qed
 lemma mat_mul_finsum_alt:
   assumes A: "A \<in> carrier\<^sub>m nr n" and B: "B \<in> carrier\<^sub>m n nc"
   shows "A \<otimes>\<^sub>m B = mat\<^sub>r nr nc (\<lambda> i. finsum_vec TYPE('a :: semiring_0) nc (\<lambda>k. A $$ (i,k) \<odot>\<^sub>v row B k) {0 ..< n})"
-  by (rule mat_eqI, insert A B, auto, subst finsum_vec_index, auto simp: scalar_prod_def intro: setsum.cong)
+  by (rule mat_eqI, insert A B, auto, subst finsum_vec_index, auto simp: scalar_prod_def intro: sum.cong)
 
 
 lemma det_mult:
@@ -622,11 +622,11 @@ proof -
       by blast
     let ?s = "\<lambda>p. (signof p) :: 'a"
     let ?f = "\<lambda>q. ?s p * (\<Prod> i\<in> ?U. A $$ (i,p i)) * (?s q * (\<Prod>i\<in> ?U. B $$ (i, q i)))"
-    have "(setsum (\<lambda>q. ?s q *
+    have "(sum (\<lambda>q. ?s q *
         (\<Prod>i\<in> ?U. mat\<^sub>r n n (\<lambda> i. A $$ (i, p i) \<odot>\<^sub>v row B (p i)) $$ (i, q i))) ?PU) =
-      (setsum (\<lambda>q. ?s p * (\<Prod> i\<in> ?U. A $$ (i,p i)) * (?s q * (\<Prod> i\<in> ?U. B $$ (i, q i)))) ?PU)"
+      (sum (\<lambda>q. ?s p * (\<Prod> i\<in> ?U. A $$ (i,p i)) * (?s q * (\<Prod> i\<in> ?U. B $$ (i, q i)))) ?PU)"
       unfolding sum_permutations_compose_right[OF permutes_inv[OF p], of ?f]
-    proof (rule setsum.cong[OF refl])
+    proof (rule sum.cong[OF refl])
       fix q
       assume "q \<in> {q. q permutes ?U}"
       hence q: "q permutes ?U" by simp
@@ -634,12 +634,12 @@ proof -
         unfolding permutation_permutes by auto
       note sign = signof_compose[OF q permutes_inv[OF p], unfolded signof_inv[OF fU p]]
       let ?inv = "Hilbert_Choice.inv"
-      have th001: "setprod (\<lambda>i. B$$ (i, q (?inv p i))) ?U = setprod ((\<lambda>i. B$$ (i, q (?inv p i))) \<circ> p) ?U"
-        by (rule setprod.permute[OF p])
-      have thp: "setprod (\<lambda>i. mat\<^sub>r n n (\<lambda> i. A$$(i,p i) \<odot>\<^sub>v row B (p i)) $$ (i, q i)) ?U =
-        setprod (\<lambda>i. A$$(i,p i)) ?U * setprod (\<lambda>i. B$$ (i, q (?inv p i))) ?U"
+      have th001: "prod (\<lambda>i. B$$ (i, q (?inv p i))) ?U = prod ((\<lambda>i. B$$ (i, q (?inv p i))) \<circ> p) ?U"
+        by (rule prod.permute[OF p])
+      have thp: "prod (\<lambda>i. mat\<^sub>r n n (\<lambda> i. A$$(i,p i) \<odot>\<^sub>v row B (p i)) $$ (i, q i)) ?U =
+        prod (\<lambda>i. A$$(i,p i)) ?U * prod (\<lambda>i. B$$ (i, q (?inv p i))) ?U"
         unfolding th001 o_def permutes_inverses[OF p]
-        by (subst setprod.distrib[symmetric], insert A p q B, auto intro: setprod.cong)
+        by (subst prod.distrib[symmetric], insert A p q B, auto intro: prod.cong)
       def AA \<equiv> "\<Prod>i\<in>?U. A $$ (i, p i)"
       def BB \<equiv> "\<Prod>ia\<in>{0..<n}. B $$ (ia, q (?inv p ia))"
       have "?s q * (\<Prod>ia\<in>{0..<n}. mat\<^sub>r n n (\<lambda>i. A $$ (i, p i) \<odot>\<^sub>v row B (p i)) $$ (ia, q ia)) =
@@ -652,22 +652,22 @@ proof -
          (?s (q \<circ> ?inv p) * (\<Prod>i = 0..<n. B $$ (i, (q \<circ> ?inv p) i)))" by simp
     qed 
   } note * = this
-  have th2: "setsum (\<lambda>f. det (mat\<^sub>r n n (\<lambda> i. A$$(i,f i) \<odot>\<^sub>v row B (f i)))) ?PU = det A * det B"
+  have th2: "sum (\<lambda>f. det (mat\<^sub>r n n (\<lambda> i. A$$(i,f i) \<odot>\<^sub>v row B (f i)))) ?PU = det A * det B"
     unfolding det_def'[OF A] det_def'[OF B] det_def'[OF mat_row_carrierI]
-    unfolding setsum_product mat_dim_row_mat
-    by (rule setsum.cong, insert A, force, subst *, insert A B, auto)
+    unfolding sum_product mat_dim_row_mat
+    by (rule sum.cong, insert A, force, subst *, insert A B, auto)
   let ?f = "\<lambda> f. det (mat\<^sub>r n n (\<lambda> i. A $$ (i, f i) \<odot>\<^sub>v row B (f i)))"
-  have "det (A \<otimes>\<^sub>m B) = setsum ?f ?F"
+  have "det (A \<otimes>\<^sub>m B) = sum ?f ?F"
     unfolding mat_mul_finsum_alt[OF A B]
-    by (rule det_linear_rows_setsum[OF fU], insert A B, auto)
-  also have "\<dots> = setsum ?f ((?F - ?PU) \<union> (?F \<inter> ?PU))"
-    by (rule arg_cong[where f = "setsum ?f"], auto)
-  also have "\<dots> = setsum ?f (?F - ?PU) + setsum ?f (?F \<inter> ?PU)"
-    by (rule setsum.union_disjoint, insert A B finite_bounded_functions[OF fU fU], auto)
-  also have "setsum ?f (?F - ?PU) = 0"
-    by (rule setsum.neutral, insert zth, auto)
+    by (rule det_linear_rows_sum[OF fU], insert A B, auto)
+  also have "\<dots> = sum ?f ((?F - ?PU) \<union> (?F \<inter> ?PU))"
+    by (rule arg_cong[where f = "sum ?f"], auto)
+  also have "\<dots> = sum ?f (?F - ?PU) + sum ?f (?F \<inter> ?PU)"
+    by (rule sum.union_disjoint, insert A B finite_bounded_functions[OF fU fU], auto)
+  also have "sum ?f (?F - ?PU) = 0"
+    by (rule sum.neutral, insert zth, auto)
   also have "?F \<inter> ?PU = ?PU" unfolding permutes_def by fastforce
-  also have "setsum ?f ?PU = det A * det B"
+  also have "sum ?f ?PU = det A * det B"
     unfolding th2 ..
   finally show ?thesis by simp
 qed
@@ -983,7 +983,7 @@ proof -
     fix p
     assume "?Psn p"
     have "?prod p = signof p * (A $$ (p n, n) * (\<Prod> i \<in> {0..< n}. A $$ (p i, i)))"
-      by (subst setprod.remove[of _ n], auto)
+      by (subst prod.remove[of _ n], auto)
     also have "\<dots> = A $$ (p n, n) * signof p * (\<Prod> i \<in> {0..< n}. A $$ (p i, i))" by simp
     finally have "?prod p = ?prod' p" .
   } note prod_id = this
@@ -999,25 +999,25 @@ proof -
       unfolding prod'_def by simp 
   } note zero = this
   have cong: "\<And> a b c. b = c \<Longrightarrow> a * b = a * c" by auto
-  have "det ?A = setsum ?prod ?perm"
+  have "det ?A = sum ?prod ?perm"
     unfolding A_def[symmetric] using mat_det_left_def[OF A] A by simp
-  also have "\<dots> = setsum prod' ?perm" unfolding prod'_def
-    by (rule setsum.cong[OF refl], insert prod_id, auto)
+  also have "\<dots> = sum prod' ?perm" unfolding prod'_def
+    by (rule sum.cong[OF refl], insert prod_id, auto)
   also have "{0 ..< Suc n} = insert n {0 ..< n}" by auto
-  also have "setsum prod' {p. p permutes \<dots>} = 
+  also have "sum prod' {p. p permutes \<dots>} = 
     (\<Sum>i\<in>insert n {0..<n}. \<Sum>q\<in>?permn. prod' (Fun.swap n i id \<circ> q))"
-    by (subst setsum_over_permutations_insert, auto)
+    by (subst sum_over_permutations_insert, auto)
   also have "\<dots> = (\<Sum>q\<in>?permn. prod' q) +
     (\<Sum>i\<in>{0..<n}. \<Sum>q\<in>?permn. prod' (Fun.swap n i id \<circ> q))"
-    by (subst setsum.insert, auto)
+    by (subst sum.insert, auto)
   also have "(\<Sum>i\<in>{0..<n}. \<Sum>q\<in>?permn. prod' (Fun.swap n i id \<circ> q)) = 0"
-    by (rule setsum.neutral, intro ballI, rule setsum.neutral, intro ballI, rule zero, auto)
+    by (rule sum.neutral, intro ballI, rule sum.neutral, intro ballI, rule zero, auto)
   also have "(\<Sum>q\<in> ?permn. prod' q) = A $$ (n,n) * (\<Sum>q\<in> ?permn. ?prod'' q)"
     unfolding prod'_def
-    by (subst setsum_distrib_left, rule setsum.cong[OF refl], auto simp: permutes_def ac_simps)
+    by (subst sum_distrib_left, rule sum.cong[OF refl], auto simp: permutes_def ac_simps)
   also have "A $$ (n,n) = A4 $$ (0,0)" unfolding A_def using A1 A2 A3 A4 by auto
   also have "(\<Sum>q\<in> ?permn. ?prod'' q) = (\<Sum>q\<in> ?permn. ?prod''' q)" 
-    by (rule setsum.cong[OF refl], rule cong, rule setprod.cong,
+    by (rule sum.cong[OF refl], rule cong, rule prod.cong,
     insert A1 A2 A3 A4, auto simp: permutes_def A_def)
   also have "\<dots> = det A1"
     unfolding mat_det_left_def[OF A1] dim by auto
@@ -1839,7 +1839,7 @@ proof -
    and jl: "j < Suc l" using A j unfolding l_def by auto
   let ?N = "{0 ..< Suc l}"
   def f \<equiv> "\<lambda>p i. A $$ (i, p i)"
-  def g \<equiv> "\<lambda>p. setprod (f p) ?N"
+  def g \<equiv> "\<lambda>p. prod (f p) ?N"
   def h \<equiv> "\<lambda>p. signof p * g p"
   def Q \<equiv> "{ q . q permutes {0..<l} }"
   have jN: "j \<in> ?N" using jl by auto
@@ -1849,21 +1849,21 @@ proof -
   have fin: "\<forall>i\<in>?N. finite {p. p permutes ?N \<and> p i = j}"
     using finite_permutations[of ?N] by auto
 
-  have "det A = setsum h { p. p permutes ?N }"
+  have "det A = sum h { p. p permutes ?N }"
     using det_def'[OF A] unfolding h_def g_def f_def using atLeast0LessThan by auto
-  also have "... = setsum h (\<Union>i\<in>?N. {p. p permutes ?N \<and> p i = j})"
+  also have "... = sum h (\<Union>i\<in>?N. {p. p permutes ?N \<and> p i = j})"
     unfolding permutation_split_ran[OF jN]..
-  also have "... = (\<Sum>i\<in>?N. setsum h { p | p. p permutes ?N \<and> p i = j})"
-    using setsum.UNION_disjoint[OF _ fin disj] by auto
+  also have "... = (\<Sum>i\<in>?N. sum h { p | p. p permutes ?N \<and> p i = j})"
+    using sum.UNION_disjoint[OF _ fin disj] by auto
   also {
     fix i assume "i \<in> ?N"
     hence i: "i < Suc l" by auto
-    have "setsum h { p | p. p permutes ?N \<and> p i = j} = setsum h (permutation_insert i j ` Q)"
+    have "sum h { p | p. p permutes ?N \<and> p i = j} = sum h (permutation_insert i j ` Q)"
       using permutation_fix[OF i jl] unfolding Q_def by auto
-    also have "... = setsum (h \<circ> permutation_insert i j) Q"
-      unfolding Q_def using setsum.reindex[OF permutation_insert_inj_on[OF i jl]].
+    also have "... = sum (h \<circ> permutation_insert i j) Q"
+      unfolding Q_def using sum.reindex[OF permutation_insert_inj_on[OF i jl]].
     also have "... = (\<Sum> q \<in> Q.
-      signof (permutation_insert i j q) * setprod (f (permutation_insert i j q)) ?N)"
+      signof (permutation_insert i j q) * prod (f (permutation_insert i j q)) ?N)"
       unfolding h_def g_def Q_def by simp
     also {
       fix q assume "q \<in> Q"
@@ -1872,23 +1872,23 @@ proof -
       have fin: "finite (?N - {i})" by auto
       have notin: "i \<notin> ?N - {i}" by auto
       have close: "insert i (?N - {i}) = ?N" using notin i by auto
-      have "setprod (f ?p) ?N = f ?p i * setprod (f ?p) (?N-{i})"
-        unfolding setprod.insert[OF fin notin, unfolded close] by auto
-      also have "... = A $$ (i, j) * setprod (f ?p) (?N-{i})"
+      have "prod (f ?p) ?N = f ?p i * prod (f ?p) (?N-{i})"
+        unfolding prod.insert[OF fin notin, unfolded close] by auto
+      also have "... = A $$ (i, j) * prod (f ?p) (?N-{i})"
         unfolding f_def Q_def using permutation_insert_inserted by simp
-      also have "setprod (f ?p) (?N-{i}) = setprod (\<lambda>i'. A $$ (i', permutation_insert i j q i')) (?N-{i})"
+      also have "prod (f ?p) (?N-{i}) = prod (\<lambda>i'. A $$ (i', permutation_insert i j q i')) (?N-{i})"
         unfolding f_def..
-      also have "... = setprod (\<lambda>ij. A $$ ij) ((\<lambda>i'. (i', permutation_insert i j q i')) ` (?N-{i}))"
-        (is "_ = setprod _ ?part")
-        unfolding setprod.reindex[OF inj_on_convol_ident] o_def..
+      also have "... = prod (\<lambda>ij. A $$ ij) ((\<lambda>i'. (i', permutation_insert i j q i')) ` (?N-{i}))"
+        (is "_ = prod _ ?part")
+        unfolding prod.reindex[OF inj_on_convol_ident] o_def..
       also have "?part = {(i', permutation_insert i j q i') | i'. i' \<in> ?N-{i} }"
         unfolding image_def by metis
       also have "... = {(insert_index i i'', insert_index j (q i'')) | i''. i'' < l}"
         unfolding foo[OF i jl q]..
       also have "... = ((\<lambda>i''. (insert_index i i'', insert_index j (q i''))) ` {0..<l})"
         unfolding image_def by auto
-      also have "setprod (\<lambda>ij. A $$ ij)... = setprod ((\<lambda>ij. A $$ ij) \<circ> (\<lambda>i''. (insert_index i i'', insert_index j (q i'')))) {0..<l}"
-        proof(subst setprod.reindex[symmetric])
+      also have "prod (\<lambda>ij. A $$ ij)... = prod ((\<lambda>ij. A $$ ij) \<circ> (\<lambda>i''. (insert_index i i'', insert_index j (q i'')))) {0..<l}"
+        proof(subst prod.reindex[symmetric])
           have 1: "inj (\<lambda>i''. (i'', insert_index j (q i'')))" using inj_on_convol_ident.
           have 2: "inj (\<lambda>(i'',j). (insert_index i i'', j))"
             apply (intro injI) using injD[OF insert_index_inj_on[of _ UNIV]] by auto
@@ -1897,33 +1897,33 @@ proof -
           thus "inj_on (\<lambda>i''. (insert_index i i'', insert_index j (q i''))) {0..<l}"
             using subset_inj_on by auto
         qed auto
-      also have "... = setprod (\<lambda>i''. A $$ (insert_index i i'', insert_index j (q i''))) {0..<l}"
+      also have "... = prod (\<lambda>i''. A $$ (insert_index i i'', insert_index j (q i''))) {0..<l}"
         by auto
-      also have "... = setprod (\<lambda>i''. mat_delete A i j $$ (i'', q i'')) {0..<l}"
-      proof (rule setprod.cong[OF refl], unfold atLeastLessThan_iff, elim conjE)
+      also have "... = prod (\<lambda>i''. mat_delete A i j $$ (i'', q i'')) {0..<l}"
+      proof (rule prod.cong[OF refl], unfold atLeastLessThan_iff, elim conjE)
         fix x assume x: "x < l"
         show "A $$ (insert_index i x, insert_index j (q x)) = mat_delete A i j $$ (x, q x)"
           apply(rule mat_delete_index[OF A i jl]) using q x by auto
       qed
-      finally have "setprod (f ?p) ?N =
+      finally have "prod (f ?p) ?N =
         A $$ (i, j) * (\<Prod>i'' = 0..< l. mat_delete A i j $$ (i'', q i''))"
         by auto
-      hence "signof ?p * setprod (f ?p) ?N  = (-1::'a)^(i+j) * signof q * ..."
+      hence "signof ?p * prod (f ?p) ?N  = (-1::'a)^(i+j) * signof q * ..."
         unfolding signof_permutation_insert[OF q i jl] by auto
     }
     hence "... = (\<Sum> q \<in> Q. (-1)^(i+j) * signof q *
       A $$ (i, j) * (\<Prod>i'' = 0 ..< l. mat_delete A i j $$ (i'', q i'')))"
-      by(intro setsum.cong[OF refl],auto)
+      by(intro sum.cong[OF refl],auto)
     also have "... = ( \<Sum> q \<in> Q. A $$ (i, j) * (-1)^(i+j) *
        ( signof q * (\<Prod>i'' = 0..< l. mat_delete A i j $$ (i'', q i'')) ) )"
-      by (intro setsum.cong[OF refl],auto)
+      by (intro sum.cong[OF refl],auto)
     also have "... = A $$ (i, j) * (-1)^(i+j) *
       ( \<Sum> q \<in> Q. signof q * (\<Prod>i''= 0 ..< l. mat_delete A i j $$ (i'', q i'')) )"
-      unfolding setsum_distrib_left by auto
+      unfolding sum_distrib_left by auto
     also have "... = (A $$ (i, j) * (-1)^(i+j) * det (mat_delete A i j))"
       unfolding det_def'[OF mat_delete_carrier[OF A]]
       unfolding Q_def by auto
-    finally have "setsum h {p | p. p permutes ?N \<and> p i = j} = A $$ (i, j) * cofactor A i j"
+    finally have "sum h {p | p. p permutes ?N \<and> p i = j} = A $$ (i, j) * cofactor A i j"
       unfolding cofactor_def by auto
   }
   hence "... = (\<Sum>i\<in>?N. A $$ (i,j) * cofactor A i j)" by auto

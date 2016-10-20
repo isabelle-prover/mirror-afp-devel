@@ -84,7 +84,7 @@ private lemma f_pos:
   shows   "eventually (\<lambda>x. f x > 0) at_top"
   using g_pos[OF assms(1,2)] eventually_ge_at_top[of x\<^sub>1]
   by (eventually_elim) (subst f_rec, insert step_ge_x0,
-         auto intro!: add_pos_nonneg setsum_nonneg mult_nonneg_nonneg[OF a_ge_0] f_nonneg)
+         auto intro!: add_pos_nonneg sum_nonneg mult_nonneg_nonneg[OF a_ge_0] f_nonneg)
 
 lemma bs_lower_bound: "\<exists>C>0. \<forall>b\<in>set bs. C < b"
 proof (intro exI conjI ballI)

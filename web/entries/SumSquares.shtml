@@ -67,10 +67,6 @@ This document presents the mechanised proofs of the following results:<ul><li>an
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
-    <tr><td class="datahead">Depends on:</td>
-        <td class="data"><a href="Fermat3_4.shtml">Fermat3_4</a></td></tr>
-
-
 
 
   </tbody>

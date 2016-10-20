@@ -15,7 +15,7 @@ val code_simp_tac =
 
 fun akra_bazzi_approximate_tac prec ctxt =
   let 
-    val simps = @{thms eval_length eval_akra_bazzi_setsum add_0_left add_0_right 
+    val simps = @{thms eval_length eval_akra_bazzi_sum add_0_left add_0_right 
                        mult_1_left mult_1_right}
   in
     SELECT_GOAL (

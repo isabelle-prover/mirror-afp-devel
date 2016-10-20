@@ -495,10 +495,10 @@ lemma inj_on_image_mem_iff:
   "\<lbrakk> inj_on f A; B \<subseteq> A; a \<in> A \<rbrakk> \<Longrightarrow> f a \<in> f ` B \<longleftrightarrow> a \<in> B"
 by(metis inv_into_f_eq inv_into_image_cancel rev_image_eqI)
 
-lemma setsum_hom:
+lemma sum_hom:
   assumes hom_add [simp]: "\<And>a b. f (a + b) = f a + f b"
   and hom_0 [simp]: "f 0 = 0"
-  shows "setsum (f \<circ> h) A = f (setsum h A)"
+  shows "sum (f \<circ> h) A = f (sum h A)"
 proof(cases "finite A")
   case False thus ?thesis by simp
 next
@@ -506,9 +506,9 @@ next
     by(induct) simp_all
 qed
 
-lemma setsum_upto_add_nat:
-  "a \<le> b \<Longrightarrow> setsum f {..<(a :: nat)} + setsum f {a..<b} = setsum f {..<b}"
-by (metis atLeast0LessThan le0 setsum_add_nat_ivl)
+lemma sum_upto_add_nat:
+  "a \<le> b \<Longrightarrow> sum f {..<(a :: nat)} + sum f {a..<b} = sum f {..<b}"
+by (metis atLeast0LessThan le0 sum_add_nat_ivl)
 
 lemma nat_fun_sum_eq_conv:
   fixes f :: "'a \<Rightarrow> nat"

@@ -17,7 +17,7 @@ lemma integral_pmf_of_multiset:
   "A \<noteq> {#} \<Longrightarrow> (\<integral>x. (f x :: real) \<partial>measure_pmf (pmf_of_multiset A)) = 
      (\<Sum>x\<in>set_mset A. of_nat (count A x) * f x) / of_nat (size A)"
   by (subst integral_measure_pmf[where A = "set_mset A"])
-     (simp_all add: setsum_divide_distrib mult_ac)
+     (simp_all add: sum_divide_distrib mult_ac)
 
 lemma pmf_bind_pmf_of_multiset:
   "A \<noteq> {#} \<Longrightarrow> pmf (pmf_of_multiset A \<bind> f) y = 
@@ -113,10 +113,10 @@ proof (rule pmf_eqI)
       (\<Sum>x\<in>set_mset A. if x = hd xs then real (count A (hd xs)) / 
          real (card (permutations_of_multiset (A - {#hd xs#}))) else 0)"
       using range_Cons hd_tl
-      by (intro setsum.cong refl, subst pmf_map_inj_inv[where f' = tl]) auto
+      by (intro sum.cong refl, subst pmf_map_inj_inv[where f' = tl]) auto
     also have "\<dots> = real (count A (hd xs)) / 
                       real (card (permutations_of_multiset (A - {#hd xs#})))"
-      using hd_tl by (simp add: setsum.delta)
+      using hd_tl by (simp add: sum.delta)
     also from hd_tl have "\<dots> = real (size A) / real (card (permutations_of_multiset A))"
       by (simp add: divide_simps real_card_permutations_of_multiset_remove[of "hd xs"])
     also have " \<dots> / real (size A) = pmf (pmf_of_set (permutations_of_multiset A)) xs" 

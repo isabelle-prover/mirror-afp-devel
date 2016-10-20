@@ -74,7 +74,7 @@ proof -
   also have "... = (\<Sum>i\<in>set[0..(degree P)]. coeff P (nat i) *k matpow A (nat i))"
     unfolding transfer_nat_int_sum_prod unfolding set_rw ..
   also have "... = sum_list (map (\<lambda>i. (coeff P (nat i)) *k (matpow A (nat i)))  [0..(degree P)])"  
-    unfolding setsum_set_upto_conv_sum_list_int ..
+    unfolding sum_set_upto_conv_sum_list_int ..
   finally show ?thesis .
 qed
 

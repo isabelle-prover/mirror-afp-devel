@@ -48,7 +48,7 @@ proof -
       also have "\<dots> = (\<Sum>e\<in>before q s. if e < q in s then 1 else 0)
           + (\<Sum>e\<in>({q} \<union> after q s). if e < q in s then 1 else 0)
           - (\<Sum>e\<in>(before q s \<inter> ({q} \<union> after q s)). if e < q in s then 1 else 0)"
-          apply(rule setsum_Un_nat) by(simp_all)
+          apply(rule sum_Un_nat) by(simp_all)
       also have "\<dots> = (\<Sum>e\<in>before q s. if e < q in s then 1 else 0)
           + (\<Sum>e\<in>({q} \<union> after q s). if e < q in s then 1 else 0)" using bia_empty by auto
       also have "\<dots> = (\<Sum>e\<in>before q s. if e < q in s then 1 else 0)
@@ -193,7 +193,7 @@ proof -
     unfolding e by simp
   also have "\<dots> = (\<Sum>i\<in>{i. i<length qs}. (if i \<in> {i. (qs!i \<in> {y,x})} then ALG'_det A qs init i y + ALG'_det A qs init i x
                                                     else 0))"
-    apply(rule setsum.inter_restrict) by auto
+    apply(rule sum.inter_restrict) by auto
   also have "\<dots> = (\<Sum>i\<in>{..<length qs}. (if i \<in> {i. (qs!i \<in> {y,x})} then ALG'_det A qs init i y + ALG'_det A qs init i x
                                                     else 0))"
       unfolding f by auto
@@ -222,7 +222,7 @@ proof -
     also have "\<dots> = (\<Sum>i\<in>{..<(Suc (length rs))}. (if i\<in>{i. (rs @ [r]) ! i \<in> {y, x}} then
        ALG' A (rs @ [r]) init i y +
        ALG' A (rs @ [r]) init i x else 0) )"
-       apply(rule setsum.inter_restrict) by simp
+       apply(rule sum.inter_restrict) by simp
     also have "\<dots> = (\<Sum>i\<in>{..<length rs}. (if i\<in>{i. (rs @ [r]) ! i \<in> {y, x}} then
        ALG' A (rs @ [r]) init i y +
        ALG' A (rs @ [r]) init i x else 0) ) + (if length rs\<in>{i. (rs @ [r]) ! i \<in> {y, x}} then
@@ -231,9 +231,9 @@ proof -
     also have "\<dots> = ALGxy A rs init x y + (if r \<in> {y, x} then
        ALG' A (rs @ [r]) init (length rs) y +
        ALG' A (rs @ [r]) init(length rs) x else 0)" 
-            apply(simp add: ALGxy_def setsum.inter_restrict nth_append)
+            apply(simp add: ALGxy_def sum.inter_restrict nth_append)
             unfolding ALG'_def
-              apply(rule setsum.cong)
+              apply(rule sum.cong)
                 apply(simp)  by(auto simp: nth_append)
     finally show ?thesis .
 qed
@@ -247,16 +247,16 @@ proof -
       = (\<Sum>i\<in> {i. i < length qs} \<inter> {i. qs ! i \<in> {y, x}}.
        ALG' A qs init i y + ALG' A qs init i x)"
         unfolding ALGxy_def
-        apply(rule setsum.cong)
+        apply(rule sum.cong)
           apply(simp) apply(blast) 
           by simp 
   also have "\<dots> = (\<Sum>i\<in>{i. i < length qs}.  if i \<in> {i. qs ! i \<in> {y, x}}
                                     then ALG' A qs init i y + ALG' A qs init i x 
                                     else 0)"
-              by(rule setsum.inter_restrict) simp
+              by(rule sum.inter_restrict) simp
   also have "\<dots> = (\<Sum>i<(length qs). (if qs ! i \<in> {y, x}
           then ALG' A qs init i y + ALG' A qs init i x
-          else 0 ))" apply(rule setsum.cong) by(auto)
+          else 0 ))" apply(rule sum.cong) by(auto)
   finally show ?thesis .
 qed
   
@@ -280,7 +280,7 @@ proof -
   (\<Sum>i<length qs.  E (bind_pmf (config'' A qs init i)
                           (\<lambda>s. bind_pmf (snd A s (qs ! i))
                             (\<lambda>(a, nis). return_pmf (real (\<Sum>x\<in>set init. ALG x qs i s))))))"
-    apply(rule setsum.cong)
+    apply(rule sum.cong)
       apply(simp)
       apply(simp add: bind_return_pmf bind_assoc_pmf)
       apply(rule arg_cong[where f=E]) 
@@ -314,29 +314,29 @@ proof -
                            (config'' A qs init i)))" 
                    apply(simp only: map_pmf_def split_def) by simp 
    also have E1: "\<dots> = (\<Sum>i<length qs. (\<Sum>x\<in>set init. ALG' A qs init i x))"
-        apply(rule setsum.cong)
+        apply(rule sum.cong)
           apply(simp) 
             apply(simp add: split_def ALG'_def)
-             apply(rule E_linear_setsum_allg)
+             apply(rule E_linear_sum_allg)
               by(rule assms(4)) 
    also have E2: "\<dots> = (\<Sum>x\<in>set init.
           (\<Sum>i<length qs. ALG' A qs init i x))"
-          by(rule setsum.commute) (* die summen tauschen *)
+          by(rule sum.commute) (* die summen tauschen *)
    also have E3: "\<dots> = (\<Sum>x\<in>set init.
           (\<Sum>y\<in>set init.
             (\<Sum>i\<in>{i. i<length qs \<and> qs!i=y}. ALG' A qs init i x)))"
-            proof (rule setsum.cong, goal_cases)
+            proof (rule sum.cong, goal_cases)
               case (2 x)
               have "(\<Sum>i<length qs. ALG' A qs init i x)
-                = setsum (%i. ALG' A qs init i x) {i. i<length qs}"
+                = sum (%i. ALG' A qs init i x) {i. i<length qs}"
                   by (metis lessThan_def)
-              also have "\<dots> = setsum (%i. ALG' A qs init i x) 
+              also have "\<dots> = sum (%i. ALG' A qs init i x) 
                         (UNION {y. y\<in> set init} (\<lambda>y. {i. i<length qs \<and> qs ! i = y}))"
-                         apply(rule setsum.cong)
+                         apply(rule sum.cong)
                           apply(auto)
                          using inlist by auto
-              also have "\<dots> = setsum (%t. setsum (%i. ALG' A qs init i x) {i. i<length qs \<and> qs ! i = t}) {y. y\<in> set init}"
-                apply(rule setsum.UNION_disjoint)
+              also have "\<dots> = sum (%t. sum (%i. ALG' A qs init i x) {i. i<length qs \<and> qs ! i = t}) {y. y\<in> set init}"
+                apply(rule sum.UNION_disjoint)
                   apply(simp_all) by force
               also have "\<dots> = (\<Sum>y\<in>set init. \<Sum>i | i < length qs \<and> qs ! i = y.
                        ALG' A qs init i x)" by auto                  
@@ -345,7 +345,7 @@ proof -
               
    also have "\<dots> = (\<Sum>(x,y)\<in> (set init \<times> set init).
             (\<Sum>i\<in>{i. i<length qs \<and> qs!i=y}. ALG' A qs init i x))"
-       by (rule setsum.cartesian_product)
+       by (rule sum.cartesian_product)
    also have "\<dots> = (\<Sum>(x,y)\<in> {(x,y). x\<in>set init \<and> y\<in> set init}.
             (\<Sum>i\<in>{i. i<length qs \<and> qs!i=y}. ALG' A qs init i x))"
             by simp
@@ -359,13 +359,13 @@ proof -
         have "(\<Sum>(x,y)\<in> ?L. ?f x y) = (\<Sum>(x,y)\<in> ?R \<union> ?M. ?f x y)"
           by(simp only: A)
         also have "\<dots> = (\<Sum>(x,y)\<in> ?R. ?f x y) + (\<Sum>(x,y)\<in> ?M. ?f x y)"
-            apply(rule setsum.union_disjoint)
+            apply(rule sum.union_disjoint)
               apply(rule finite_subset[where B="set init \<times> set init"])
                 apply(auto)
               apply(rule finite_subset[where B="set init \<times> set init"])
                 by(auto)
         also have "(\<Sum>(x,y)\<in> ?M. ?f x y) = 0"
-          apply(rule setsum.neutral)
+          apply(rule sum.neutral)
             by (auto simp add: ALG'_refl) 
         finally show ?thesis by simp
       qed
@@ -385,10 +385,10 @@ proof -
                   have "(\<Sum>(x,y)\<in> ?R'. ?f x y) = (\<Sum>(x,y)\<in> (%(x,y). (y, x)) ` ?R. ?f x y)"
                       by(simp only: C)
                   also have "(\<Sum>z\<in> (%(x,y). (y, x)) ` ?R. (%(x,y). ?f x y) z) = (\<Sum>z\<in>?R. ((%(x,y). ?f x y) \<circ> (%(x,y). (y, x))) z)"
-                    apply(rule setsum.reindex)
+                    apply(rule sum.reindex)
                       by(fact swap_inj_on)
                   also have "\<dots> = (\<Sum>z\<in>?R. (%(x,y). ?f y x) z)"
-                    apply(rule setsum.cong)
+                    apply(rule sum.cong)
                       by(auto)
                   finally show ?thesis .                  
               qed
@@ -396,7 +396,7 @@ proof -
                 have "(\<Sum>(x,y)\<in> ?L. ?f x y) = (\<Sum>(x,y)\<in> ?R \<union> ?R'. ?f x y)"
                   by(simp only: A) 
                 also have "\<dots> = (\<Sum>(x,y)\<in> ?R. ?f x y) + (\<Sum>(x,y)\<in> ?R'. ?f x y)"
-                  apply(rule setsum.union_disjoint) 
+                  apply(rule sum.union_disjoint) 
                     apply(rule finite_subset[where B="set init \<times> set init"])
                       apply(auto)
                     apply(rule finite_subset[where B="set init \<times> set init"])
@@ -404,13 +404,13 @@ proof -
                 also have "\<dots> = (\<Sum>(x,y)\<in> ?R. ?f x y) + (\<Sum>(x,y)\<in> ?R. ?f y x)"
                     by(simp only: D)                  
                 also have "\<dots> = (\<Sum>(x,y)\<in> ?R. ?f x y + ?f y x)"
-                  by(simp add: split_def setsum.distrib[symmetric])
+                  by(simp add: split_def sum.distrib[symmetric])
               finally show ?thesis .
             qed
                 
    also have E5: "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}.
             (\<Sum>i\<in>{i. i<length qs \<and> (qs!i=y \<or> qs!i=x)}. ALG' A qs init i y + ALG' A qs init i x))"
-    apply(rule setsum.cong)
+    apply(rule sum.cong)
       apply(simp)
       proof goal_cases
         case (1 x)
@@ -428,7 +428,7 @@ proof -
                ALG' A qs init i a) - (\<Sum>i\<in>{i. i < length qs \<and> qs ! i = b} \<inter>
           {i. i < length qs \<and> qs ! i = a}. ALG' A qs init i b +
                ALG' A qs init i a) "
-               apply(rule setsum_Un)
+               apply(rule sum_Un)
                 by(auto)
         also have "\<dots> = (\<Sum>i\<in>{i. i < length qs \<and> qs ! i = b}. ALG' A qs init i b +
                ALG' A qs init i a) + (\<Sum>i\<in>
@@ -706,7 +706,7 @@ proof -
   have " T\<^sub>p_on_rand A init qs = (\<Sum>(x,y)\<in>{(x, y). x \<in> set init \<and> y \<in> set init \<and> x < y}. ALGxy A qs init x y)"
     by(simp only: umformung[OF 1 2 3 4])
   also have "\<dots> = (\<Sum>(x,y)\<in>{(x, y). x \<in> set init \<and> y \<in> set init \<and> x < y}. T\<^sub>p_on_rand A (Lxy init {x,y}) (Lxy qs {x,y}))"
-    apply(rule setsum.cong)
+    apply(rule sum.cong)
       apply(simp)
       using 0[unfolded pairwise_def] 2 3 by auto
   finally show ?thesis .
@@ -825,7 +825,7 @@ proof (induct sws)
         by(simp add: split_def)
     also have "\<dots> = (\<Sum>z\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}
                           \<inter>{(x,y). ?expr3 x y} . 1)"
-        apply(rule setsum.inter_restrict[symmetric])
+        apply(rule sum.inter_restrict[symmetric])
               apply(rule finite_subset[where B="set init \<times> set init"])
                 by(auto)
     also have "\<dots> = card ({(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}
@@ -846,7 +846,7 @@ proof (induct sws)
     by(simp only: yeah)
   also have "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. ?expr x y + ALG_P ss x y init)"
     (is "?A + ?B = ?C") 
-    by (simp add: setsum.distrib split_def)  
+    by (simp add: sum.distrib split_def)  
   also have "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. ALG_P (s#ss) x y init)"
     by auto
   finally show ?case . 
@@ -988,7 +988,7 @@ proof -
           then ALG'_det Strat A init i y +
               ALG'_det Strat A init i x
               else 0)"
-            apply(rule setsum.cong)
+            apply(rule sum.cong)
               apply(simp)
               using l ALG'_det_append[where qs=A] e by(simp)
      finally show ?thesis unfolding ALGxy_det_def by simp
@@ -997,7 +997,7 @@ qed
 lemma ALG_P_split: "length qs < length Strat \<Longrightarrow> ALG_Pxy Strat (qs@[q]) init x y = ALG_Pxy Strat qs init x y
             +  ALG_P' Strat (qs@[q]) init (length qs) x y "
 unfolding ALG_Pxy_def apply(auto)
-  apply(rule setsum.cong)
+  apply(rule sum.cong)
     apply(simp)
     using ALG_P'_rest2[symmetric, of _ qs Strat "[]" "[q]"] by(simp)
     
@@ -1590,7 +1590,7 @@ proof(induct n)
               else 0)
               + ALG'_det Strat qs init n y + ALG'_det Strat qs init n x"
               apply(simp)
-              apply(rule setsum.cong)
+              apply(rule sum.cong)
                apply(simp)
               apply(simp)
               using ALG'_det_append[where qs="take n qs"] Suc.prems(2) ns by auto
@@ -1696,7 +1696,7 @@ proof(induct n)
                   + ALG_P' Strat (take n qs @ [qs ! n]) init n x y" (is "?A + ?B = ?A' + ?B")
             proof -
               have "?A = ?A'"
-                apply(rule setsum.cong)
+                apply(rule sum.cong)
                   apply(simp)
                  proof goal_cases
                    case 1
@@ -1854,7 +1854,7 @@ proof -
   also have "\<dots>
        = (\<Sum>z\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}.
                 (\<Sum>i\<in>{..<length qs}. ALG_P (snd (Strat!i)) (fst z) (snd z) (steps' init qs Strat i)) )" 
-          by(rule setsum.commute)
+          by(rule sum.commute)
   also have "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}.
                 (\<Sum>i\<in>{..<length qs}. ALG_P (snd (Strat!i)) x y (steps' init qs Strat i)) )"
           by(auto simp: split_def)
@@ -1874,24 +1874,24 @@ proof -
                 (\<Sum>e\<in>set init. ALG e qs i (?config i, ())))
         = (\<Sum>e\<in>set init. 
             (\<Sum>i\<in>{..<length qs}. ALG e qs i (?config i, ())))" 
-            by(rule setsum.commute)
+            by(rule sum.commute)
   also have "\<dots> = (\<Sum>e\<in>set init.
           (\<Sum>y\<in>set init.
             (\<Sum>i\<in>{i. i<length qs \<and> qs!i=y}. ALG e qs i (?config i,()))))"
-            proof (rule setsum.cong, goal_cases)
+            proof (rule sum.cong, goal_cases)
               case (2 x)
               have "(\<Sum>i<length qs. ALG x qs i (?config i, ()))
-                = setsum (%i. ALG x qs i (?config i, ())) {i. i<length qs}" 
+                = sum (%i. ALG x qs i (?config i, ())) {i. i<length qs}" 
                 by (simp add: lessThan_def) 
-              also have "\<dots> = setsum (%i. ALG x qs i (?config i, ())) 
+              also have "\<dots> = sum (%i. ALG x qs i (?config i, ())) 
                         (UNION {y. y\<in> set init} (\<lambda>y. {i. i<length qs \<and> qs ! i = y}))"
-                         apply(rule setsum.cong)
+                         apply(rule sum.cong)
                          proof goal_cases
                           case 1                          
                           show ?case apply(auto) using inlist by auto
                          qed simp
-              also have "\<dots> = setsum (%t. setsum (%i. ALG x qs i (?config i, ())) {i. i<length qs \<and> qs ! i = t}) {y. y\<in> set init}"
-                apply(rule setsum.UNION_disjoint)
+              also have "\<dots> = sum (%t. sum (%i. ALG x qs i (?config i, ())) {i. i<length qs \<and> qs ! i = t}) {y. y\<in> set init}"
+                apply(rule sum.UNION_disjoint)
                   apply(simp_all) by force
               also have "\<dots> = (\<Sum>y\<in>set init. \<Sum>i | i < length qs \<and> qs ! i = y.
                        ALG x qs i (?config i, ()))" by auto                  
@@ -1899,7 +1899,7 @@ proof -
             qed (simp)
    also have "\<dots> = (\<Sum>(x,y)\<in> (set init \<times> set init).
             (\<Sum>i\<in>{i. i<length qs \<and> qs!i=y}. ALG x qs i (?config i, ())))"
-       by (rule setsum.cartesian_product)
+       by (rule sum.cartesian_product)
    also have "\<dots> = (\<Sum>(x,y)\<in> {(x,y). x\<in>set init \<and> y\<in> set init}.
             (\<Sum>i\<in>{i. i<length qs \<and> qs!i=y}. ALG x qs i (?config i, ())))"
             by simp
@@ -1913,13 +1913,13 @@ proof -
         have "(\<Sum>(x,y)\<in> ?L. ?f x y) = (\<Sum>(x,y)\<in> ?R \<union> ?M. ?f x y)"
           by(simp only: A)
         also have "\<dots> = (\<Sum>(x,y)\<in> ?R. ?f x y) + (\<Sum>(x,y)\<in> ?M. ?f x y)"
-            apply(rule setsum.union_disjoint)
+            apply(rule sum.union_disjoint)
               apply(rule finite_subset[where B="set init \<times> set init"])
                 apply(auto)
               apply(rule finite_subset[where B="set init \<times> set init"])
                 by(auto)
         also have "(\<Sum>(x,y)\<in> ?M. ?f x y) = 0"
-          apply(rule setsum.neutral)
+          apply(rule sum.neutral)
             by (auto simp add: split_def before_in_def) 
         finally show ?case by simp
       qed
@@ -1939,10 +1939,10 @@ proof -
                   have "(\<Sum>(x,y)\<in> ?R'. ?f x y) = (\<Sum>(x,y)\<in> (%(x,y). (y, x)) ` ?R. ?f x y)"
                       by(simp only: C)
                   also have "(\<Sum>z\<in> (%(x,y). (y, x)) ` ?R. (%(x,y). ?f x y) z) = (\<Sum>z\<in>?R. ((%(x,y). ?f x y) \<circ> (%(x,y). (y, x))) z)"
-                    apply(rule setsum.reindex)
+                    apply(rule sum.reindex)
                       by(fact swap_inj_on)
                   also have "\<dots> = (\<Sum>z\<in>?R. (%(x,y). ?f y x) z)"
-                    apply(rule setsum.cong)
+                    apply(rule sum.cong)
                       by(auto)
                   finally show ?thesis .                  
               qed
@@ -1950,7 +1950,7 @@ proof -
                 have "(\<Sum>(x,y)\<in> ?L. ?f x y) = (\<Sum>(x,y)\<in> ?R \<union> ?R'. ?f x y)"
                   by(simp only: A) 
                 also have "\<dots> = (\<Sum>(x,y)\<in> ?R. ?f x y) + (\<Sum>(x,y)\<in> ?R'. ?f x y)"
-                  apply(rule setsum.union_disjoint) 
+                  apply(rule sum.union_disjoint) 
                     apply(rule finite_subset[where B="set init \<times> set init"])
                       apply(auto)
                     apply(rule finite_subset[where B="set init \<times> set init"])
@@ -1958,13 +1958,13 @@ proof -
                 also have "\<dots> = (\<Sum>(x,y)\<in> ?R. ?f x y) + (\<Sum>(x,y)\<in> ?R. ?f y x)"
                     by(simp only: D)                  
                 also have "\<dots> = (\<Sum>(x,y)\<in> ?R. ?f x y + ?f y x)"
-                  by(simp add: split_def setsum.distrib[symmetric])
+                  by(simp add: split_def sum.distrib[symmetric])
               finally show ?thesis .
             qed
                 
    also have E5: "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}.
             (\<Sum>i\<in>{i. i<length qs \<and> (qs!i=y \<or> qs!i=x)}. ALG y qs i (?config i, ()) + ALG x qs i (?config i, ())))"
-    apply(rule setsum.cong)
+    apply(rule sum.cong)
       apply(simp)
       proof goal_cases
         case (1 x)
@@ -1979,7 +1979,7 @@ proof -
         let ?A="{i. i < length qs \<and> qs ! i = a}"
         have "(\<Sum>i\<in>?B \<union> ?A. ?f i)
                = (\<Sum>i\<in>?B. ?f i) + (\<Sum>i\<in>?A. ?f i) - (\<Sum>i\<in>?B \<inter> ?A. ?f i) "
-          apply(rule setsum_Un_nat) by auto  
+          apply(rule sum_Un_nat) by auto  
         also have "\<dots> = (\<Sum>i\<in>?B. ALG b qs i (?config i, ()) + ALG a qs i (?config i, ()))
                     + (\<Sum>i\<in>?A. ALG b qs i (?config i, ()) + ALG a qs i (?config i, ()))"
           using disj by auto
@@ -1992,7 +1992,7 @@ proof -
      qed    
      also have E6: "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}.
                   ALGxy_det Strat qs init x y)"
-           apply(rule setsum.cong)
+           apply(rule sum.cong)
            unfolding ALGxy_det_alternativ unfolding ALG'_det_def by auto
      finally have blockingpart: "(\<Sum>i<length qs. 
                          \<Sum>e\<in>set init.
@@ -2005,7 +2005,7 @@ proof -
   also have "\<dots> = (\<Sum>i\<in>{..<length qs}. 
                 (\<Sum>e\<in>set (steps' init qs Strat i). ALG e qs i (swaps (snd (Strat!i)) (steps' init qs Strat i),()))
 + (\<Sum>(x,y)\<in>{(x,(y::('a::linorder))). x \<in> set (steps' init qs Strat i) \<and> y\<in>set (steps' init qs Strat i) \<and> x<y}. ALG_P (snd (Strat!i)) x y (steps' init qs Strat i)) )"
-    apply(rule setsum.cong)
+    apply(rule sum.cong)
       apply(simp)
      apply (rule t\<^sub>p_sumofALGALGP) 
          apply(rule steps'_distinct2)
@@ -2019,7 +2019,7 @@ proof -
   also have "\<dots> = (\<Sum>i\<in>{..<length qs}. 
                 (\<Sum>e\<in>set init. ALG e qs i (swaps (snd (Strat!i)) (steps' init qs Strat i),()))
 + (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. ALG_P (snd (Strat!i)) x y (steps' init qs Strat i)) )"
-                apply(rule setsum.cong)
+                apply(rule sum.cong)
                   apply(simp) 
                   proof goal_cases
                     case (1 x)
@@ -2032,7 +2032,7 @@ proof -
                 (\<Sum>e\<in>set init. ALG e qs i (swaps (snd (Strat!i)) (steps' init qs Strat i), ())))
                + (\<Sum>i\<in>{..<length qs}. 
                (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. ALG_P (snd (Strat!i)) x y (steps' init qs Strat i)) )"
-    by (simp add: setsum.distrib split_def) 
+    by (simp add: sum.distrib split_def) 
   also have "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. 
                          ALGxy_det Strat qs init x y)
                + (\<Sum>i\<in>{..<length qs}. 
@@ -2046,7 +2046,7 @@ proof -
   also have "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. 
                          ALGxy_det Strat qs init x y
                +   ALG_Pxy Strat qs init x y)"
-    by (simp add: setsum.distrib split_def) 
+    by (simp add: sum.distrib split_def) 
   finally show ?thesis by auto
 qed
 
@@ -2197,7 +2197,7 @@ proof -
   have "(\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}.
        T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x, y})) \<le> (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}.
           ALGxy_det Strat qs init x y + ALG_Pxy Strat qs init x y)"
-     apply (rule setsum_mono)
+     apply (rule sum_mono)
      apply(auto)
      proof goal_cases
        case (1 a b)
@@ -2317,7 +2317,7 @@ proof (standard, goal_cases)
         using 4[of init qs] drin d by(simp add: split_def)
        (* 1.4 *) 
   also have "\<dots> \<le> (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. c * (T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x,y})) + b)"
-        apply(rule setsum_mono)
+        apply(rule sum_mono)
         using on3 drin by(simp add: split_def) 
   also have "\<dots> = c * (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x,y})) + b*(((length init)*(length init-1)) / 2)"
   proof - 
@@ -2340,7 +2340,7 @@ proof (standard, goal_cases)
     proof -
        have "(\<Sum>(x,y)\<in>?S. c * (?T x y) + b) =
               c * (\<Sum>(x,y)\<in>?S. (?T x y)) + (\<Sum>(x,y)\<in>?S. b)"
-              by(simp add: split_def setsum.distrib setsum_distrib_left)
+              by(simp add: split_def sum.distrib sum_distrib_left)
        also have "\<dots> = c * (\<Sum>(x,y)\<in>?S. (?T x y)) + b*?T2"
           using e by(simp add: split_def)
        finally show ?thesis by(simp add: split_def)

@@ -23,7 +23,7 @@ lemma double_sum_equiv:
   shows
   "(\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. f k * g j)) =
    (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. f j * g k))"
-  by (rule setsum.commute)
+  by (rule sum.commute)
 
 (*>*)
 
@@ -99,7 +99,7 @@ lemma norm_pos:
 proof -
   have "\<forall>j. v\<^bsub>j\<^esub>^2 \<ge> 0" unfolding ith_def by auto
   hence "\<forall>j\<in>{1..(vlen v)}. v\<^bsub>j\<^esub>^2 \<ge> 0" by simp
-  with setsum_nonneg have "(\<Sum>j\<in>{1..(vlen v)}. v\<^bsub>j\<^esub>^2) \<ge> 0" .
+  with sum_nonneg have "(\<Sum>j\<in>{1..(vlen v)}. v\<^bsub>j\<^esub>^2) \<ge> 0" .
   with real_sqrt_ge_zero have "sqrt (\<Sum>j\<in>{1..(vlen v)}. v\<^bsub>j\<^esub>^2) \<ge> 0" .
   thus ?thesis unfolding norm_def .
 qed
@@ -125,7 +125,7 @@ proof -
   also have
     "\<dots> =
     (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. f k * g j + f j * g k))"
-    by (auto simp add: setsum.distrib)
+    by (auto simp add: sum.distrib)
   finally have
     "2 * (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. f k * g j)) =
     (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. f k * g j + f j * g k))" .
@@ -136,7 +136,7 @@ proof -
   also have
     "\<dots> =
      (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (f k * g j + f j * g k)*(1/2)))"
-    by (simp add: setsum_distrib_left mult.commute)
+    by (simp add: sum_distrib_left mult.commute)
   finally show ?thesis by (auto simp add: inverse_eq_divide)
 qed
 
@@ -159,12 +159,12 @@ proof -
       {
         txt {* Some preliminary simplification rules. *}
         have "\<forall>j\<in>{1..n}. x\<^bsub>j\<^esub>^2 \<ge> 0" by simp
-        hence "(\<Sum>j\<in>{1..n}. x\<^bsub>j\<^esub>^2) \<ge> 0" by (rule setsum_nonneg)
+        hence "(\<Sum>j\<in>{1..n}. x\<^bsub>j\<^esub>^2) \<ge> 0" by (rule sum_nonneg)
         hence xp: "(sqrt (\<Sum>j\<in>{1..n}. x\<^bsub>j\<^esub>^2))^2 = (\<Sum>j\<in>{1..n}. x\<^bsub>j\<^esub>^2)"
           by (rule real_sqrt_pow2)
 
         have "\<forall>j\<in>{1..n}. y\<^bsub>j\<^esub>^2 \<ge> 0" by simp
-        hence "(\<Sum>j\<in>{1..n}. y\<^bsub>j\<^esub>^2) \<ge> 0" by (rule setsum_nonneg)
+        hence "(\<Sum>j\<in>{1..n}. y\<^bsub>j\<^esub>^2) \<ge> 0" by (rule sum_nonneg)
         hence yp: "(sqrt (\<Sum>j\<in>{1..n}. y\<^bsub>j\<^esub>^2))^2 = (\<Sum>j\<in>{1..n}. y\<^bsub>j\<^esub>^2)"
           by (rule real_sqrt_pow2)
 
@@ -179,7 +179,7 @@ proof -
         also from xp yp have
           "\<dots> = (\<Sum>j\<in>{1..n}. x\<^bsub>j\<^esub>^2)*(\<Sum>j\<in>{1..n}. y\<^bsub>j\<^esub>^2)"
           by simp
-        also from setsum_product have
+        also from sum_product have
           "\<dots> = (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (x\<^bsub>k\<^esub>^2)*(y\<^bsub>j\<^esub>^2)))" .
         finally have
           "(\<parallel>x\<parallel>*\<parallel>y\<parallel>)^2 = (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (x\<^bsub>k\<^esub>^2)*(y\<^bsub>j\<^esub>^2)))" .
@@ -196,7 +196,7 @@ proof -
         also from real_sq have
           "\<dots> = (\<Sum>j\<in>{1..n}. x\<^bsub>j\<^esub>*y\<^bsub>j\<^esub>)*(\<Sum>j\<in>{1..n}. x\<^bsub>j\<^esub>*y\<^bsub>j\<^esub>)"
           by simp
-        also from setsum_product have
+        also from sum_product have
           "\<dots> = (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (x\<^bsub>k\<^esub>*y\<^bsub>k\<^esub>)*(x\<^bsub>j\<^esub>*y\<^bsub>j\<^esub>)))" .
         finally have
           "\<bar>x\<cdot>y\<bar>^2 = (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (x\<^bsub>k\<^esub>*y\<^bsub>k\<^esub>)*(x\<^bsub>j\<^esub>*y\<^bsub>j\<^esub>)))" .
@@ -216,7 +216,7 @@ proof -
       also have
         "\<dots> =
          (\<Sum>k\<in>{1..n}.  (\<Sum>j\<in>{1..n}. ((x\<^bsub>k\<^esub>^2*y\<^bsub>j\<^esub>^2) + (x\<^bsub>j\<^esub>^2*y\<^bsub>k\<^esub>^2))/2 - (x\<^bsub>k\<^esub>*y\<^bsub>k\<^esub>)*(x\<^bsub>j\<^esub>*y\<^bsub>j\<^esub>)))"
-        by (auto simp add: setsum_subtractf)
+        by (auto simp add: sum_subtractf)
       also have
         "\<dots> =
          (\<Sum>k\<in>{1..n}.  (\<Sum>j\<in>{1..n}. (inverse 2)*2*
@@ -241,7 +241,7 @@ proof -
         "\<dots> =
          (inverse 2)*(\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}.
          (((x\<^bsub>k\<^esub>^2*y\<^bsub>j\<^esub>^2) + (x\<^bsub>j\<^esub>^2*y\<^bsub>k\<^esub>^2)) - 2*(x\<^bsub>k\<^esub>*y\<^bsub>k\<^esub>)*(x\<^bsub>j\<^esub>*y\<^bsub>j\<^esub>))))"
-        by (simp only: setsum_distrib_left)
+        by (simp only: sum_distrib_left)
       also have
         "\<dots> =
          (inverse 2)*(\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (x\<^bsub>k\<^esub>*y\<^bsub>j\<^esub> - x\<^bsub>j\<^esub>*y\<^bsub>k\<^esub>)^2))"
@@ -251,11 +251,11 @@ proof -
         {
           fix k::nat
           have "\<forall>j\<in>{1..n}. (x\<^bsub>k\<^esub>*y\<^bsub>j\<^esub> - x\<^bsub>j\<^esub>*y\<^bsub>k\<^esub>)^2 \<ge> 0" by simp
-          hence "(\<Sum>j\<in>{1..n}. (x\<^bsub>k\<^esub>*y\<^bsub>j\<^esub> - x\<^bsub>j\<^esub>*y\<^bsub>k\<^esub>)^2) \<ge> 0" by (rule setsum_nonneg)
+          hence "(\<Sum>j\<in>{1..n}. (x\<^bsub>k\<^esub>*y\<^bsub>j\<^esub> - x\<^bsub>j\<^esub>*y\<^bsub>k\<^esub>)^2) \<ge> 0" by (rule sum_nonneg)
         }
         hence "\<forall>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (x\<^bsub>k\<^esub>*y\<^bsub>j\<^esub> - x\<^bsub>j\<^esub>*y\<^bsub>k\<^esub>)^2) \<ge> 0" by simp
         hence "(\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (x\<^bsub>k\<^esub>*y\<^bsub>j\<^esub> - x\<^bsub>j\<^esub>*y\<^bsub>k\<^esub>)^2)) \<ge> 0"
-          by (rule setsum_nonneg)
+          by (rule sum_nonneg)
         thus ?thesis by simp
       qed
       finally show "(\<parallel>x\<parallel>*\<parallel>y\<parallel>)^2 - \<bar>x\<cdot>y\<bar>^2 \<ge> 0" .

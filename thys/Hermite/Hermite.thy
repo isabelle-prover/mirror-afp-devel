@@ -17,7 +17,7 @@ subsection{*Some previous properties*}
 
 subsubsection{*Rings*}
 
-subclass (in bezout_ring_div) ring_div
+subclass (in bezout_ring_div) euclidean_ring
 proof
 qed
 
@@ -65,16 +65,16 @@ qed
 
 subsubsection{*Units*}
 
-lemma unit_setprod:
+lemma unit_prod:
   assumes "finite S"
-  shows "is_unit (setprod (\<lambda>i. U $ i $ i) S) = (\<forall>i\<in>S. is_unit (U $ i $ i))"
+  shows "is_unit (prod (\<lambda>i. U $ i $ i) S) = (\<forall>i\<in>S. is_unit (U $ i $ i))"
   using assms 
 proof (induct)
   case empty
   thus ?case by auto
 next
   case (insert a S)
-  have "setprod (\<lambda>i. U $ i $ i) (insert a S) = U $ a $ a * setprod (\<lambda>i. U $ i $ i) S"
+  have "prod (\<lambda>i. U $ i $ i) (insert a S) = U $ a $ a * prod (\<lambda>i. U $ i $ i) S"
     by (simp add: insert.hyps(2))
   thus ?case using is_unit_mult_iff insert.hyps by auto
 qed
@@ -87,10 +87,10 @@ lemma is_unit_diagonal:
   and det_U: "is_unit (det U)"
   shows "\<forall>i. is_unit (U $ i $ i)"
 proof -
-  have "is_unit (setprod (\<lambda>i. U $ i $ i) UNIV)" 
+  have "is_unit (prod (\<lambda>i. U $ i $ i) UNIV)" 
     using det_U  det_upperdiagonal[of U] U 
     unfolding upper_triangular_def by auto
-  hence "\<forall>i\<in>UNIV. is_unit (U $ i $ i)" using unit_setprod[of UNIV U] by simp
+  hence "\<forall>i\<in>UNIV. is_unit (U $ i $ i)" using unit_prod[of UNIV U] by simp
   thus ?thesis by simp
 qed
 
@@ -103,7 +103,7 @@ proof (unfold upper_triangular_def matrix_matrix_mult_def, vector, auto)
   fix i j::'n
   assume ji: "j<i"
   show "(\<Sum>k\<in>UNIV. A $ i $ k * B $ k $ j) = 0" 
-  proof (rule setsum.neutral, clarify)
+  proof (rule sum.neutral, clarify)
     fix x
     show "A $ i $ x * B $ x $ j = 0"
     proof (cases "x<i")
@@ -125,12 +125,12 @@ proof (auto simp add: cofactor_def upper_triangular_def adjugate_def transpose_d
   fix i j::'n assume ji: "j < i" with A show "det (minorM A j i) = 0"
     unfolding minorM_eq det_sq_matrix_eq[symmetric] from_vec_to_vec det_minor_row
     by (subst Square_Matrix.det_upperdiagonal)
-       (auto simp: upd_row.rep_eq from_vec.rep_eq row_def axis_def upper_triangular_def intro!: setprod_zero)
+       (auto simp: upd_row.rep_eq from_vec.rep_eq row_def axis_def upper_triangular_def intro!: prod_zero)
 qed
 
 
 lemma upper_triangular_inverse:
-  fixes A::"(('a::{semiring_div,comm_ring_1},'n::{wellorder, finite}) vec, 'n) vec"
+  fixes A::"(('a::{euclidean_semiring,comm_ring_1},'n::{wellorder, finite}) vec, 'n) vec"
   assumes A: "upper_triangular A"
   and inv_A: "invertible A"
   shows "upper_triangular (matrix_inv A)"
@@ -146,8 +146,8 @@ lemma upper_triangular_mult_diagonal:
   shows "(A**B) $ i $ i = A $ i $ i * B $ i $ i"
 proof -
   have UNIV_rw: "UNIV = (insert i (UNIV-{i}))" by auto 
-  have setsum_0: "(\<Sum>k\<in>UNIV-{i}. A $ i $ k * B $ k $ i) = 0"
-  proof (rule setsum.neutral, rule)
+  have sum_0: "(\<Sum>k\<in>UNIV-{i}. A $ i $ k * B $ k $ i) = 0"
+  proof (rule sum.neutral, rule)
     fix x assume x: "x \<in> UNIV - {i}"
     show "A $ i $ x * B $ x $ i = 0" 
     proof (cases "x<i")
@@ -164,8 +164,8 @@ proof -
   also have "... = (\<Sum>k\<in>(insert i (UNIV-{i})). A $ i $ k * B $ k $ i)"
     using UNIV_rw by simp
   also have "... = (A $ i $ i * B $ i $ i) + (\<Sum>k\<in>UNIV-{i}. A $ i $ k * B $ k $ i)"  
-    by (rule setsum.insert, simp_all)
-  finally show ?thesis unfolding setsum_0 by simp
+    by (rule sum.insert, simp_all)
+  finally show ?thesis unfolding sum_0 by simp
 qed
 
 subsubsection{*More properties of mod type*}
@@ -189,11 +189,9 @@ lemma dvd_minus_eq_mod:
 
 lemma eq_mod_dvd_minus:
   fixes c::"'a::ring_div"
-  assumes "c \<noteq> 0"and "a mod c = b mod c" 
+  assumes "c \<noteq> 0" and "a mod c = b mod c" 
   shows "c dvd a - b"
-  using assms
-  by (metis (no_types, hide_lams) add.commute diff_0 diff_add_cancel 
-      diff_minus_eq_add dvd_eq_mod_eq_0 mod_0 mod_add_right_eq)
+  using assms by (simp add: dvd_eq_mod_eq_0 mod_diff_eq)
 
 lemma dvd_cong_not_eq_mod:
   fixes c::"'a::ring_div"
@@ -217,7 +215,7 @@ lemma exists_k_mod:
   fixes c::"'a::ring_div"
   shows "\<exists>k. a mod c = a + k * c"
   by (metis add.commute diff_add_cancel diff_minus_eq_add
-      mod_div_equality2 mult.commute mult_minus_left)
+      mult_div_mod_eq mult.commute mult_minus_left)
 
 subsection{*Units, associated and congruent relations*}
 
@@ -351,7 +349,7 @@ lemma ass_function_0':
   assumes r: "ass_function ass"
   shows "(ass x div x = 0) = (x=0)"
   using assms unfolding ass_function_def pairwise_def
-  by (metis ass_function_0 associatedD2 div_self divide_zero dvd_normalize_div
+  by (metis ass_function_0 associatedD2 div_self div_by_0 dvd_normalize_div
             normalize_0 normalize_1 one_neq_zero r)
 
 
@@ -380,9 +378,9 @@ lemma ass_function_euclidean: "ass_function ass_function_euclidean"
   unfolding ass_function_def image_def ass_function_euclidean_def pairwise_def by auto
 
 lemma res_function_euclidean: 
-  "res_function (res_function_euclidean)"
+  "res_function (res_function_euclidean :: 'a :: {euclidean_ring, ring_div} \<Rightarrow> _)"
   by (auto simp add: pairwise_def res_function_def cong_eq image_def res_function_euclidean_def dvd_minus_eq_mod)
-     (auto simp add: dvd_cong_not_eq_mod eq_mod_dvd_minus diff_mod_cong_0 cong_diff_mod exists_k_mod)
+    (auto simp add: dvd_cong_not_eq_mod eq_mod_dvd_minus diff_mod_cong_0 cong_diff_mod exists_k_mod)
 
 subsubsection{*Concrete case of the integer ring*}
 
@@ -1064,7 +1062,7 @@ lemma echelon_form_Hermite_of_upt_row_i:
   using echelon_form_fold_Hermite_of_row_i assms by auto
 
 lemma echelon_form_Hermite_of:
-  fixes A::"'a::{bezout_ring_div,normalization_semidom}^'cols::{mod_type}^'rows::{mod_type}"
+  fixes A::"'a::{bezout_ring_div,normalization_semidom,ring_div}^'cols::{mod_type}^'rows::{mod_type}"
   assumes a: "ass_function ass"
   and r: "res_function res"
   and b: "is_bezout_ext bezout"
@@ -1515,7 +1513,7 @@ qed
 
 
 lemma Hermite_of_upt_row_preserves_zero_rows:
-  fixes A::"'a::{bezout_ring_div,normalization_semidom}^'cols::{mod_type}^'rows::{mod_type}"
+  fixes A::"'a::{bezout_ring_div,normalization_semidom,ring_div}^'cols::{mod_type}^'rows::{mod_type}"
   assumes i: "is_zero_row i A"
   and e: "echelon_form A" and a: "ass_function ass" and r: "res_function res" and k: "k \<le> nrows A"
   shows "is_zero_row i (Hermite_of_upt_row_i A k ass res)"
@@ -1576,7 +1574,7 @@ next
 qed
 
 lemma Hermite_of_preserves_zero_rows:
-  fixes A::"'a::{bezout_ring_div,normalization_semidom}^'cols::{mod_type}^'rows::{mod_type}"
+  fixes A::"'a::{bezout_ring_div,normalization_semidom,ring_div}^'cols::{mod_type}^'rows::{mod_type}"
   assumes i: "is_zero_row i (echelon_form_of A bezout)"
   and a: "ass_function ass"
   and r: "res_function res"
@@ -1587,7 +1585,7 @@ lemma Hermite_of_preserves_zero_rows:
 (auto simp add: nrows_def)
 
 lemma Hermite_of_Least:
-  fixes A::"'a::{bezout_ring_div,normalization_semidom}^'cols::{mod_type}^'rows::{mod_type}"
+  fixes A::"'a::{bezout_ring_div,normalization_semidom,ring_div}^'cols::{mod_type}^'rows::{mod_type}"
   assumes i: "\<not> is_zero_row i (Hermite_of A ass res bezout)"
   and a: "ass_function ass"
   and r: "res_function res"
@@ -1603,7 +1601,7 @@ proof -
 qed
 
 lemma in_associates_Hermite_of:
-  fixes A::"'a::{bezout_ring_div,normalization_semidom}^'cols::{mod_type}^'rows::{mod_type}"
+  fixes A::"'a::{bezout_ring_div,normalization_semidom,ring_div}^'cols::{mod_type}^'rows::{mod_type}"
   assumes a: "ass_function ass"
   and r: "res_function res"
   and b: "is_bezout_ext bezout"
@@ -1640,7 +1638,7 @@ proof -
     have "\<forall>b ba. \<exists>bb. ba + bb * b = res b ba"
       using r unfolding res_function_def by metis
     thus ?thesis using rw unfolding image_def Hii row_add_def by auto
-      (metis (lifting) add_diff_cancel_left' div_mult_self1_is_id mult.commute mult_eq_0_iff)
+      (metis (lifting) add_diff_cancel_left' nonzero_mult_div_cancel_left mult.commute mult_eq_0_iff)
   qed
 qed
 
@@ -1737,7 +1735,7 @@ qed
 
 
 lemma in_residues_Hermite_of:
-  fixes A::"'a::{bezout_ring_div,normalization_semidom}^'cols::{mod_type}^'rows::{mod_type}"
+  fixes A::"'a::{bezout_ring_div,normalization_semidom,ring_div}^'cols::{mod_type}^'rows::{mod_type}"
   assumes a: "ass_function ass"
   and r: "res_function res"
   and b: "is_bezout_ext bezout"
@@ -1877,7 +1875,7 @@ next
 qed
 
 lemma invertible_Hermite_of:
-  fixes A::"'a::{bezout_ring_div,normalization_semidom}^'cols::{mod_type}^'rows::{mod_type}"
+  fixes A::"'a::{bezout_ring_div,normalization_semidom,ring_div}^'cols::{mod_type}^'rows::{mod_type}"
   assumes a: "ass_function ass" 
   and b: "is_bezout_ext bezout"
   shows "\<exists>P. invertible P \<and> Hermite_of A ass res bezout = P ** A"
@@ -1909,6 +1907,7 @@ lemma Hermite:
 subsection{*Proving the uniqueness of the Hermite Normal Form*}
 
 lemma diagonal_least_nonzero:
+  fixes H :: "(('a :: {bezout_ring_div, ring_div}, 'b :: mod_type) vec, 'b) vec"
   assumes H: "Hermite associates residues H"
   and inv_H: "invertible H" and up_H: "upper_triangular H"
   shows "(LEAST n. H $ i $ n \<noteq> 0) = i"
@@ -1923,6 +1922,7 @@ proof (rule Least_equality)
 qed
 
 lemma diagonal_in_associates:
+  fixes H :: "(('a :: {bezout_ring_div, ring_div}, 'b :: mod_type) vec, 'b) vec"
   assumes H: "Hermite associates residues H"
   and inv_H: "invertible H" and up_H: "upper_triangular H"
   shows "H $ i $ i \<in> associates"
@@ -1935,6 +1935,7 @@ proof -
 qed
 
 lemma above_diagonal_in_residues:
+  fixes H :: "(('a :: {bezout_ring_div, ring_div}, 'b :: mod_type) vec, 'b) vec"
   assumes H: "Hermite associates residues H"
   and inv_H: "invertible H" and up_H: "upper_triangular H"
   and j_i: "j<i"
@@ -1951,7 +1952,7 @@ text{*The uniqueness of the Hermite Normal Form is proven following the proof pr
   Integral Matrices (1972) by Morris Newman.*}
 
 lemma Hermite_unique:
-  fixes K::"'a::{bezout_ring_div,normalization_semidom}^'n::mod_type^'n::mod_type"
+  fixes K::"'a::{bezout_ring_div,normalization_semidom,ring_div}^'n::mod_type^'n::mod_type"
   assumes A_PH: "A = P ** H" 
   and A_QK: "A = Q ** K"
   and inv_A: "invertible A"
@@ -2018,12 +2019,12 @@ proof -
         have UNIV_rw: "UNIV = insert s (UNIV-{s})" by auto
         have UNIV_s_rw: "UNIV-{s} = insert (s + from_nat p) ((UNIV-{s}) - {s + from_nat p})" 
           using p1 p2 s_less unfolding ncols_def by (auto simp: algebra_simps)
-        have setsum_rw: "(\<Sum>k\<in>UNIV-{s}. U $ s $ k * K $ k $ (s + from_nat p)) 
+        have sum_rw: "(\<Sum>k\<in>UNIV-{s}. U $ s $ k * K $ k $ (s + from_nat p)) 
           = U $ s $ (s + from_nat p) * K $ (s + from_nat p) $ (s + from_nat p) 
           + (\<Sum>k\<in>(UNIV-{s})-{s + from_nat p}. U $ s $ k * K $ k $ (s + from_nat p))"
-          using UNIV_s_rw setsum.insert by (metis (erased, lifting) Diff_iff finite singletonI)
-        have setsum_0: "(\<Sum>k\<in>(UNIV-{s})-{s + from_nat p}. U $ s $ k * K $ k $ (s + from_nat p)) = 0"
-        proof (rule setsum.neutral, rule)
+          using UNIV_s_rw sum.insert by (metis (erased, lifting) Diff_iff finite singletonI)
+        have sum_0: "(\<Sum>k\<in>(UNIV-{s})-{s + from_nat p}. U $ s $ k * K $ k $ (s + from_nat p)) = 0"
+        proof (rule sum.neutral, rule)
           fix x assume x: "x \<in> UNIV - {s} - {s + from_nat p}"
           show "U $ s $ x * K $ x $ (s + from_nat p) = 0" 
           proof (cases "x<s")
@@ -2071,10 +2072,10 @@ proof -
           using UNIV_rw by simp
         also have "... = U $ s $ s * K $ s $ (s + from_nat p) 
           + (\<Sum>k\<in>UNIV-{s}. U $ s $ k * K $ k $ (s + from_nat p))"
-          by (rule setsum.insert, simp_all)
+          by (rule sum.insert, simp_all)
         also have "... = U $ s $ s * K $ s $ (s + from_nat p) 
           + U $ s $ (s + from_nat p) * K $ (s + from_nat p) $ (s + from_nat p)"
-          unfolding setsum_rw setsum_0 by simp
+          unfolding sum_rw sum_0 by simp
         finally have H_s_sp: "H $ s $ (s + from_nat p) 
           = U $ s $ (s + from_nat p) * K $ (s + from_nat p) $ (s + from_nat p) + K $ s $ (s + from_nat p)"
           using Uii_1 by auto

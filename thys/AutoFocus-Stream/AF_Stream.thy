@@ -1426,7 +1426,7 @@ lemma i_last_message_hold_i_drop_mod: "
 by (clarsimp simp: mult.commute[of k], rule i_last_message_hold_i_drop_mult)
 
 lemma i_last_message_hold_idem: "f \<longmapsto>\<^sub>i k \<longmapsto>\<^sub>i k = f \<longmapsto>\<^sub>i k"
-by (simp add: ilist_eq_iff i_last_message_hold_nth mult_div_cancel[symmetric] i_last_message_hold_i_drop_mod[symmetric] i_last_message_hold_i_take[symmetric] last_message_f_last_message_hold)
+by (simp add: ilist_eq_iff i_last_message_hold_nth minus_mod_eq_mult_div i_last_message_hold_i_drop_mod[symmetric] i_last_message_hold_i_take[symmetric] last_message_f_last_message_hold)
 
 lemma i_shrink_nth_eq_i_last_message_hold_nth: "
   0 < k \<Longrightarrow> (f \<div>\<^sub>i k) n = (f \<longmapsto>\<^sub>i k) (n * k + k - Suc 0)"

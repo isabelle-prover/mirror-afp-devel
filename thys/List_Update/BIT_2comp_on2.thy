@@ -44,13 +44,13 @@ proof -
     by(simp add: pmf_bind mult_ac)
   also have "\<dots> = (\<Sum>a\<in>(\<Union>x. set_pmf (f x)). (a * pmf (f True) a * p)
                                     + (a * pmf (f False) a * (1 - p)))"
-    apply(rule setsum.cong) apply(simp) by algebra
+    apply(rule sum.cong) apply(simp) by algebra
   also have "\<dots> = (\<Sum>a\<in>(\<Union>x. set_pmf (f x)). (a * pmf (f True) a * p))
                   + (\<Sum>a\<in>(\<Union>x. set_pmf (f x)). (a * pmf (f False) a * (1 - p)))"
-    by (simp add: setsum.distrib)
+    by (simp add: sum.distrib)
   also have "\<dots> = (\<Sum>a\<in>(\<Union>x. set_pmf (f x)). (a * pmf (f True) a)) * p
                   + (\<Sum>a\<in>(\<Union>x. set_pmf (f x)). (a * pmf (f False) a )) * (1 - p)"
-    by (simp add: setsum_distrib_right)    
+    by (simp add: sum_distrib_right)    
   also have "\<dots> = ?R" unfolding T F by simp
   finally show ?thesis .
 qed 
@@ -865,7 +865,7 @@ also
 also
   have "\<dots> = 1.75 * (length v div 2)"
   proof -
-    from mod_div_equality have "length v = length v div 2 * 2 + length v mod 2" by auto
+    from div_mult_mod_eq have "length v = length v div 2 * 2 + length v mod 2" by auto
     with lenv have "length v = length v div 2 * 2 + 1" by auto 
     then have "(length v - 1) / 2 = length v div 2" by simp
     then show ?thesis by simp

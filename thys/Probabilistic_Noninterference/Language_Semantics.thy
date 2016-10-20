@@ -294,10 +294,10 @@ proof-
   thus ?thesis unfolding n_j_def locate1_def locate2_def by (metis fst_conv n_j_def snd_conv)
 qed
 
-text{* setsum: *}
+text{* sum: *}
 
-lemma setsum_2[simp]:
-"setsum f {..< 2} = f 0 + f (Suc 0)"
+lemma sum_2[simp]:
+"sum f {..< 2} = f 0 + f (Suc 0)"
 proof-
   have "{..< 2} = {0, Suc 0}" by auto
   thus ?thesis by force
@@ -322,111 +322,111 @@ proof safe
   thus "x \<in> op + b ` {..<a}" using xb by auto
 qed auto
 
-lemma setsum_minus[simp]:
+lemma sum_minus[simp]:
 fixes a :: nat
-shows "setsum f {a ..< a + b} = setsum (%x. f (a + x)) {..< b}"
-using setsum.reindex[of "op + a" "{..< b}" f] by auto
+shows "sum f {a ..< a + b} = sum (%x. f (a + x)) {..< b}"
+using sum.reindex[of "op + a" "{..< b}" f] by auto
 
-lemma setsum_Un_introL:
+lemma sum_Un_introL:
 assumes "A1 = B1 Un C1" and "x = x1 + x2"
 "finite A1" and
 "B1 Int C1 = {}" and
-"setsum f1 B1 = x1" and "setsum f1 C1 = x2"
-shows "setsum f1 A1 = x"
-by (metis assms finite_Un setsum.union_disjoint)
+"sum f1 B1 = x1" and "sum f1 C1 = x2"
+shows "sum f1 A1 = x"
+by (metis assms finite_Un sum.union_disjoint)
 
-lemma setsum_Un_intro:
+lemma sum_Un_intro:
 assumes "A1 = B1 Un C1" and "A2 = B2 Un C2" and
 "finite A1" and "finite A2" and
 "B1 Int C1 = {}" and "B2 Int C2 = {}" and
-"setsum f1 B1 = setsum f2 B2" and "setsum f1 C1 = setsum f2 C2"
-shows "setsum f1 A1 = setsum f2 A2"
-by (metis assms finite_Un setsum.union_disjoint)
+"sum f1 B1 = sum f2 B2" and "sum f1 C1 = sum f2 C2"
+shows "sum f1 A1 = sum f2 A2"
+by (metis assms finite_Un sum.union_disjoint)
 
-lemma setsum_UN_introL:
-assumes A1: "A1 = (UN n : N. B1 n)" and a2: "a2 = setsum b2 N" and
+lemma sum_UN_introL:
+assumes A1: "A1 = (UN n : N. B1 n)" and a2: "a2 = sum b2 N" and
 fin: "finite N" "\<And> n. n \<in> N \<Longrightarrow> finite (B1 n)" and
 int: "\<And> m n. {m, n} \<subseteq> N \<and> m \<noteq> n \<Longrightarrow> B1 m \<inter> B1 n = {}" and
-ss: "\<And> n. n \<in> N \<Longrightarrow> setsum f1 (B1 n) = b2 n"
-shows "setsum f1 A1 = a2" (is "?L = a2")
+ss: "\<And> n. n \<in> N \<Longrightarrow> sum f1 (B1 n) = b2 n"
+shows "sum f1 A1 = a2" (is "?L = a2")
 proof-
-  have "?L = setsum (%n. setsum f1 (B1 n)) N"
-  unfolding A1 using setsum.UNION_disjoint[of N B1 f1] fin int by simp
-  also have "... = setsum b2 N" using ss fin by auto
+  have "?L = sum (%n. sum f1 (B1 n)) N"
+  unfolding A1 using sum.UNION_disjoint[of N B1 f1] fin int by simp
+  also have "... = sum b2 N" using ss fin by auto
   also have "... = a2" using a2 by simp
   finally show ?thesis .
 qed
 
-lemma setsum_UN_intro:
+lemma sum_UN_intro:
 assumes A1: "A1 = (UN n : N. B1 n)" and A2: "A2 = (UN n : N. B2 n)" and
 fin: "finite N" "\<And> n. n \<in> N \<Longrightarrow> finite (B1 n) \<and> finite (B2 n)" and
 int: "\<And> m n. {m, n} \<subseteq> N \<and> m \<noteq> n \<Longrightarrow> B1 m \<inter> B1 n = {}" "\<And> m n. {m, n} \<subseteq> N \<Longrightarrow> B2 m \<inter> B2 n = {}" and
-ss: "\<And> n. n \<in> N \<Longrightarrow> setsum f1 (B1 n) = setsum f2 (B2 n)"
-shows "setsum f1 A1 = setsum f2 A2" (is "?L = ?R")
+ss: "\<And> n. n \<in> N \<Longrightarrow> sum f1 (B1 n) = sum f2 (B2 n)"
+shows "sum f1 A1 = sum f2 A2" (is "?L = ?R")
 proof-
-  have "?L = setsum (%n. setsum f1 (B1 n)) N"
-  unfolding A1 using setsum.UNION_disjoint[of N B1 f1] fin int by simp
-  also have "... = setsum (%n. setsum f2 (B2 n)) N" using ss fin setsum.mono_neutral_left by auto
+  have "?L = sum (%n. sum f1 (B1 n)) N"
+  unfolding A1 using sum.UNION_disjoint[of N B1 f1] fin int by simp
+  also have "... = sum (%n. sum f2 (B2 n)) N" using ss fin sum.mono_neutral_left by auto
   also have "... = ?R"
-  unfolding A2 using setsum.UNION_disjoint[of N B2 f2] fin int by simp
+  unfolding A2 using sum.UNION_disjoint[of N B2 f2] fin int by simp
   finally show ?thesis .
 qed
 
-lemma setsum_Minus_intro:
+lemma sum_Minus_intro:
 fixes f1 :: "'a1 \<Rightarrow> real" and f2 :: "'a2 \<Rightarrow> real"
 assumes "B1 = A1 - {a1}" and "B2 = A2 - {a2}" and
 "a1 : A1" and "a2 : A2" and "finite A1" and "finite A2"
-"setsum f1 A1 = setsum f2 A2" and "f1 a1 = f2 a2"
-shows "setsum f1 B1 = setsum f2 B2"
+"sum f1 A1 = sum f2 A2" and "f1 a1 = f2 a2"
+shows "sum f1 B1 = sum f2 B2"
 proof-
   have 1: "A1 = B1 Un {a1}" and 2: "A2 = B2 Un {a2}"
     using assms by blast+
   from assms have "a1 \<notin> B1" by simp
-  with 1 `finite A1` have "setsum f1 A1 = setsum f1 B1 + f1 a1"
+  with 1 `finite A1` have "sum f1 A1 = sum f1 B1 + f1 a1"
     by simp
-  hence 3: "setsum f1 B1 = setsum f1 A1 - f1 a1" by simp
+  hence 3: "sum f1 B1 = sum f1 A1 - f1 a1" by simp
   from assms have "a2 \<notin> B2" by simp
-  with 2 `finite A2 `have "setsum f2 A2 = setsum f2 B2 + f2 a2"
+  with 2 `finite A2 `have "sum f2 A2 = sum f2 B2 + f2 a2"
     by simp
-  hence "setsum f2 B2 = setsum f2 A2 - f2 a2" by simp
+  hence "sum f2 B2 = sum f2 A2 - f2 a2" by simp
   thus ?thesis using 3 assms by simp
 qed
 
-lemma setsum_singl_intro:
+lemma sum_singl_intro:
 assumes "b = f a"
 and "finite A" and "a \<in> A"
 and "\<And> a'. \<lbrakk>a' \<in> A; a' \<noteq> a\<rbrakk> \<Longrightarrow> f a' = 0"
-shows "setsum f A = b"
+shows "sum f A = b"
 proof-
   def B \<equiv> "A - {a}"
   have "A = B Un {a}" unfolding B_def using assms by blast
   moreover have "B Int {a} = {}" unfolding B_def by blast
-  ultimately have "setsum f A = setsum f B + setsum f {a}"
-  using assms setsum.union_disjoint by blast
+  ultimately have "sum f A = sum f B + sum f {a}"
+  using assms sum.union_disjoint by blast
   moreover have "\<forall> b \<in> B. f b = 0" using assms unfolding B_def by auto
   ultimately show ?thesis using assms by auto
 qed
 
-lemma setsum_all0_intro:
+lemma sum_all0_intro:
 assumes "b = 0"
 and "\<And> a. a \<in> A \<Longrightarrow> f a = 0"
-shows "setsum f A = b"
+shows "sum f A = b"
 apply(cases "finite A")
-by(metis assms setsum.neutral setsum.infinite)+
+by(metis assms sum.neutral sum.infinite)+
 
-lemma setsum_1:
-assumes I: "finite I" and ss: "setsum f I = 1" and i: "i \<in> I - I1" and I1: "I1 \<subseteq> I"
+lemma sum_1:
+assumes I: "finite I" and ss: "sum f I = 1" and i: "i \<in> I - I1" and I1: "I1 \<subseteq> I"
 and f: "\<And>i. i \<in> I \<Longrightarrow> (0::real) \<le> f i"
-shows "f i \<le> 1 - setsum f I1"
+shows "f i \<le> 1 - sum f I1"
 proof-
-  have "setsum f I = setsum f ({i} Un (I - {i}))" using i
+  have "sum f I = sum f ({i} Un (I - {i}))" using i
   by (metis DiffE insert_Diff_single insert_absorb insert_is_Un)
-  also have "... = setsum f {i} + setsum f (I - {i})"
-  apply(rule setsum.union_disjoint) using I by auto
-  finally have "1 = f i + setsum f (I - {i})" unfolding ss[THEN sym] by simp
-  moreover have "setsum f (I - {i}) \<ge> setsum f I1"
-  apply(rule setsum_mono2) using assms by auto
-  ultimately have "1 \<ge> f i + setsum f I1" by auto
+  also have "... = sum f {i} + sum f (I - {i})"
+  apply(rule sum.union_disjoint) using I by auto
+  finally have "1 = f i + sum f (I - {i})" unfolding ss[THEN sym] by simp
+  moreover have "sum f (I - {i}) \<ge> sum f I1"
+  apply(rule sum_mono2) using assms by auto
+  ultimately have "1 \<ge> f i + sum f I1" by auto
   thus ?thesis by auto
 qed
 
@@ -558,8 +558,8 @@ lemma [simp]: "(n::nat) < N \<Longrightarrow> 1 / N \<le> 1" by auto
 
 lemma [simp]: "(n::nat) < N \<Longrightarrow> 0 \<le> 1 - 1 / N" by (simp add: divide_simps)
 
-lemma setsum_equal: "0 < (N::nat) \<Longrightarrow> setsum (\<lambda> n. 1/N) {..< N} = 1"
-unfolding setsum_constant by auto
+lemma sum_equal: "0 < (N::nat) \<Longrightarrow> sum (\<lambda> n. 1/N) {..< N} = 1"
+unfolding sum_constant by auto
 
 fun proper where
   "proper Done \<longleftrightarrow> True"
@@ -663,10 +663,10 @@ shows "n1 \<noteq> n2" and "n2 \<noteq> n1"
 using assms theFT_Int_theNFT by blast+
 
 (* The cumulated weight of the finished threads: *)
-definition "WtFT cl \<equiv> setsum (\<lambda> (n::nat). 1/(length cl)) (theFT cl)"
+definition "WtFT cl \<equiv> sum (\<lambda> (n::nat). 1/(length cl)) (theFT cl)"
 
 (* The cumulated weight of the non-finished threads: *)
-definition "WtNFT cl \<equiv> setsum (\<lambda> (n::nat). 1/(length cl)) (theNFT cl)"
+definition "WtNFT cl \<equiv> sum (\<lambda> (n::nat). 1/(length cl)) (theNFT cl)"
 
 lemma WtFT_WtNFT[simp]:
 assumes "0 < length cl"
@@ -674,10 +674,10 @@ shows "WtFT cl + WtNFT cl = 1" (is "?A = 1")
 proof-
   let ?w = "\<lambda> n. 1 / length cl" let ?L = "theFT cl" let ?Lnot = "theNFT cl"
   have 1: "{..< length cl} = ?L Un ?Lnot" by auto
-  have "?A = setsum ?w ?L + setsum ?w ?Lnot" unfolding WtFT_def WtNFT_def by simp
-  also have "... = setsum ?w {..< length cl}" unfolding 1
-  apply(rule setsum.union_disjoint[THEN sym]) by auto
-  also have "... = 1" unfolding setsum_equal[OF assms] by auto
+  have "?A = sum ?w ?L + sum ?w ?Lnot" unfolding WtFT_def WtNFT_def by simp
+  also have "... = sum ?w {..< length cl}" unfolding 1
+  apply(rule sum.union_disjoint[THEN sym]) by auto
+  also have "... = 1" unfolding sum_equal[OF assms] by auto
   finally show ?thesis .
 qed
 
@@ -693,15 +693,15 @@ proof-
 qed
 
 lemma WtFT_ge_0[simp]: "WtFT cl \<ge> 0"
-unfolding WtFT_def by (rule setsum_nonneg) simp
+unfolding WtFT_def by (rule sum_nonneg) simp
 
 lemma WtFT_le_1[simp]: "WtFT cl \<le> 1" (is "?L \<le> 1")
 proof-
   let ?N = "length cl"
-  have "?L \<le> setsum (\<lambda> n::nat. 1/?N) {..< ?N}"
-  unfolding WtFT_def apply(rule setsum_mono2) by auto
+  have "?L \<le> sum (\<lambda> n::nat. 1/?N) {..< ?N}"
+  unfolding WtFT_def apply(rule sum_mono2) by auto
   also have "... \<le> 1"
-  by (metis divide_zero le_cases neq0_conv not_one_le_zero of_nat_0 setsum_not_0 setsum_equal)
+  by (metis div_by_0 le_cases neq0_conv not_one_le_zero of_nat_0 sum_not_0 sum_equal)
   finally show ?thesis .
 qed
 
@@ -725,7 +725,7 @@ assumes "n < length cl" and "\<not> finished (cl ! n)"
 shows "1 / length cl \<le> 1 - WtFT cl"
 proof-
   have "0 < length cl" using assms by auto
-  thus ?thesis unfolding WtFT_def apply(intro setsum_1[of "{..< length cl}"])
+  thus ?thesis unfolding WtFT_def apply(intro sum_1[of "{..< length cl}"])
   using assms by auto
 qed
 
@@ -1292,61 +1292,61 @@ next
   thus ?thesis using brnL_Int_lt assms by fastforce
 qed
 
-lemma setsum_wt_Par_sub[simp]:
+lemma sum_wt_Par_sub[simp]:
 assumes cl: "properL cl" and n: "n < length cl" and I: "I \<subseteq> {..< brn (cl ! n)}"
-shows "setsum (wt (Par cl) s) (op + (brnL cl n) ` I) =
-       1 /(length cl) * setsum (wt (cl ! n) s) I" (is "?L = ?wSch * ?R")
+shows "sum (wt (Par cl) s) (op + (brnL cl n) ` I) =
+       1 /(length cl) * sum (wt (cl ! n) s) I" (is "?L = ?wSch * ?R")
 proof-
-  have "?L = setsum (%i. ?wSch * wt (cl ! n) s i) I"
-  apply(rule setsum.reindex_cong[of "op + (brnL cl n)"]) using assms by auto
+  have "?L = sum (%i. ?wSch * wt (cl ! n) s i) I"
+  apply(rule sum.reindex_cong[of "op + (brnL cl n)"]) using assms by auto
   also have "... = ?wSch * ?R"
-  unfolding setsum_distrib_left by simp
+  unfolding sum_distrib_left by simp
   finally show ?thesis .
 qed
 
-lemma setsum_wt_Par[simp]:
+lemma sum_wt_Par[simp]:
 assumes cl: "properL cl" and n: "n < length cl"
-shows "setsum (wt (Par cl) s) {brnL cl n ..<+ brn (cl!n)} =
-       1 /(length cl) * setsum (wt (cl ! n) s) {..< brn (cl ! n)}" (is "?L = ?W * ?R")
-using assms by (simp add: setsum_distrib_left)
+shows "sum (wt (Par cl) s) {brnL cl n ..<+ brn (cl!n)} =
+       1 /(length cl) * sum (wt (cl ! n) s) {..< brn (cl ! n)}" (is "?L = ?W * ?R")
+using assms by (simp add: sum_distrib_left)
 
-lemma setsum_wt_ParT_sub_WtFT_pickFT_0[simp]:
+lemma sum_wt_ParT_sub_WtFT_pickFT_0[simp]:
 assumes cl: "properL cl" and nf: "WtFT cl = 1"
 and I: "I \<subseteq> {..< brn (cl ! (pickFT cl))}" "0 \<in> I"
-shows "setsum (wt (ParT cl) s) (op + (brnL cl (pickFT cl)) ` I) = 1" (is "?L = 1")
+shows "sum (wt (ParT cl) s) (op + (brnL cl (pickFT cl)) ` I) = 1" (is "?L = 1")
 proof-
   let ?n = "pickFT cl"
   let ?w = "%i. if i = 0 then (1::real) else 0"
   have n: "?n < length cl" using nf by simp
   have 0: "I = {0} Un (I - {0})" using I by auto
   have finI: "finite I" using I by (metis finite_nat_iff_bounded)
-  have "?L = setsum ?w I"
-  proof (rule setsum.reindex_cong [of "plus (brnL cl ?n)"])
+  have "?L = sum ?w I"
+  proof (rule sum.reindex_cong [of "plus (brnL cl ?n)"])
     fix i assume i: "i \<in> I"
     have "i < brn (cl ! ?n)" using i I by auto
     note i = this i
     show "wt (ParT cl) s (brnL cl ?n + i) = ?w i"
     using nf n i cl by (cases "i = 0") auto
   qed (insert assms, auto)
-  also have "... = setsum ?w ({0} Un (I - {0}))" using 0 by auto
-  also have "... = setsum ?w {0::real} + setsum ?w (I - {0})"
-  using setsum.union_disjoint[of "{0}" "I - {0}" ?w] finI by auto
+  also have "... = sum ?w ({0} Un (I - {0}))" using 0 by auto
+  also have "... = sum ?w {0::real} + sum ?w (I - {0})"
+  using sum.union_disjoint[of "{0}" "I - {0}" ?w] finI by auto
   also have "... = 1" by simp
   finally show ?thesis .
 qed
 
-lemma setsum_wt_ParT_sub_WtFT_pickFT_0_2[simp]:
+lemma sum_wt_ParT_sub_WtFT_pickFT_0_2[simp]:
 assumes cl: "properL cl" and nf: "WtFT cl = 1"
 and II: "II \<subseteq> {..< brnL cl (length cl)}" "brnL cl (pickFT cl) \<in> II"
-shows "setsum (wt (ParT cl) s) II = 1" (is "?L = 1")
+shows "sum (wt (ParT cl) s) II = 1" (is "?L = 1")
 proof-
   let ?n = "pickFT cl"
   let ?w = "%ii. if ii = brnL cl (pickFT cl) then (1::real) else 0"
   have n: "?n < length cl" using nf by simp
   have 0: "II = {brnL cl ?n} Un (II - {brnL cl ?n})" using II by auto
   have finI: "finite II" using II by (metis finite_nat_iff_bounded)
-  have "?L = setsum ?w II"
-  proof(rule setsum.cong)
+  have "?L = sum ?w II"
+  proof(rule sum.cong)
     fix ii assume ii: "ii \<in> II"
     hence ii: "ii < brnL cl (length cl)" using II by auto
     from cl ii show "wt (ParT cl) s ii = ?w ii"
@@ -1365,20 +1365,20 @@ proof-
       qed
     qed
   qed simp
-  also have "... = setsum ?w ({brnL cl ?n} Un (II - {brnL cl ?n}))" using 0 by simp
-  also have "... = setsum ?w {brnL cl ?n} + setsum ?w (II - {brnL cl ?n})"
-  apply(rule setsum.union_disjoint) using finI by auto
+  also have "... = sum ?w ({brnL cl ?n} Un (II - {brnL cl ?n}))" using 0 by simp
+  also have "... = sum ?w {brnL cl ?n} + sum ?w (II - {brnL cl ?n})"
+  apply(rule sum.union_disjoint) using finI by auto
   also have "... = 1" by simp
   finally show ?thesis .
 qed
 
-lemma setsum_wt_ParT_sub_WtFT_notPickFT_0[simp]:
+lemma sum_wt_ParT_sub_WtFT_notPickFT_0[simp]:
 assumes cl: "properL cl" and nf: "WtFT cl = 1" and n: "n < length cl"
 and I: "I \<subseteq> {..< brn (cl ! n)}" and nI: "n = pickFT cl \<longrightarrow> 0 \<notin> I"
-shows "setsum (wt (ParT cl) s) (op + (brnL cl n) ` I) = 0" (is "?L = 0")
+shows "sum (wt (ParT cl) s) (op + (brnL cl n) ` I) = 0" (is "?L = 0")
 proof-
-  have "?L = setsum (%i. 0) I"
-  proof (rule setsum.reindex_cong [of "plus (brnL cl n)"])
+  have "?L = sum (%i. 0) I"
+  proof (rule sum.reindex_cong [of "plus (brnL cl n)"])
     fix i assume i: "i \<in> I"
     hence "n = pickFT cl \<longrightarrow> i \<noteq> 0" using nI by metis
     moreover have "i < brn (cl ! n)" using i I by auto
@@ -1389,94 +1389,94 @@ proof-
   finally show ?thesis .
 qed
 
-lemma setsum_wt_ParT_sub_notWtFT_finished[simp]:
+lemma sum_wt_ParT_sub_notWtFT_finished[simp]:
 assumes cl: "properL cl" and nf: "WtFT cl \<noteq> 1"
 and n: "n < length cl" and cln: "finished (cl!n)" and I: "I \<subseteq> {..< brn (cl ! n)}"
-shows "setsum (wt (ParT cl) s) (op + (brnL cl n) ` I) = 0" (is "?L = 0")
+shows "sum (wt (ParT cl) s) (op + (brnL cl n) ` I) = 0" (is "?L = 0")
 proof-
-  have "?L = setsum (%i. 0) I"
-  apply(rule setsum.reindex_cong[of "op + (brnL cl n)"]) using assms by auto
+  have "?L = sum (%i. 0) I"
+  apply(rule sum.reindex_cong[of "op + (brnL cl n)"]) using assms by auto
   also have "... = 0" by simp
   finally show ?thesis .
 qed
 
-lemma setsum_wt_ParT_sub_notWtFT_notFinished[simp]:
+lemma sum_wt_ParT_sub_notWtFT_notFinished[simp]:
 assumes cl: "properL cl" and nf: "WtFT cl \<noteq> 1" and n: "n < length cl"
 and cln: "\<not> finished (cl!n)" and I: "I \<subseteq> {..< brn (cl ! n)}"
 shows
-"setsum (wt (ParT cl) s) (op + (brnL cl n) ` I) =
- (1 / (length cl)) / (1 - WtFT cl) * setsum (wt (cl ! n) s) I"
+"sum (wt (ParT cl) s) (op + (brnL cl n) ` I) =
+ (1 / (length cl)) / (1 - WtFT cl) * sum (wt (cl ! n) s) I"
 (is "?L = ?w / (1 - ?wF) * ?R")
 proof-
-  have "?L = setsum (%i. ?w / (1 - ?wF) * wt (cl ! n) s i) I"
-  apply(rule setsum.reindex_cong[of "op + (brnL cl n)"])
+  have "?L = sum (%i. ?w / (1 - ?wF) * wt (cl ! n) s i) I"
+  apply(rule sum.reindex_cong[of "op + (brnL cl n)"])
   using assms by auto
   also have "... = ?w / (1 - ?wF) * ?R"
-  unfolding setsum_distrib_left by simp
+  unfolding sum_distrib_left by simp
   finally show ?thesis .
 qed
 
-lemma setsum_wt_ParT_WtFT_pickFT_0[simp]:
+lemma sum_wt_ParT_WtFT_pickFT_0[simp]:
 assumes cl: "properL cl" and nf: "WtFT cl = 1"
-shows "setsum (wt (ParT cl) s) {brnL cl (pickFT cl) ..<+ brn (cl ! (pickFT cl))} = 1"
+shows "sum (wt (ParT cl) s) {brnL cl (pickFT cl) ..<+ brn (cl ! (pickFT cl))} = 1"
 proof-
   let ?n = "pickFT cl"
   have 1: "{brnL cl ?n ..<+ brn (cl ! ?n)} =
   op + (brnL cl ?n) ` {..< brn (cl ! ?n)}" by simp
   show ?thesis unfolding 1
-  apply(rule setsum_wt_ParT_sub_WtFT_pickFT_0)
+  apply(rule sum_wt_ParT_sub_WtFT_pickFT_0)
   using assms apply simp_all
   by (metis brn_gt_0_L nth_mem pickFT_length)
 qed
 
-lemma setsum_wt_ParT_WtFT_notPickFT_0[simp]:
+lemma sum_wt_ParT_WtFT_notPickFT_0[simp]:
 assumes cl: "properL cl" and nf: "WtFT cl = 1" and n: "n < length cl" "n \<noteq> pickFT cl"
-shows "setsum (wt (ParT cl) s) {brnL cl n ..<+ brn (cl!n)} = 0"
+shows "sum (wt (ParT cl) s) {brnL cl n ..<+ brn (cl!n)} = 0"
 proof-
   have 1: "{brnL cl n ..<+ brn (cl!n)} = op + (brnL cl n) ` {..< brn (cl!n)}" by simp
-  show ?thesis unfolding 1 apply(rule setsum_wt_ParT_sub_WtFT_notPickFT_0) using assms by auto
+  show ?thesis unfolding 1 apply(rule sum_wt_ParT_sub_WtFT_notPickFT_0) using assms by auto
 qed
 
-lemma setsum_wt_ParT_notWtFT_finished[simp]:
+lemma sum_wt_ParT_notWtFT_finished[simp]:
 assumes cl: "properL cl" and "WtFT cl \<noteq> 1"
 and n: "n < length cl" and cln: "finished (cl!n)"
-shows "setsum (wt (ParT cl) s) {brnL cl n ..<+ brn (cl!n)} = 0"
+shows "sum (wt (ParT cl) s) {brnL cl n ..<+ brn (cl!n)} = 0"
 proof-
   have 1: "{brnL cl n ..<+ brn (cl!n)} = op + (brnL cl n) ` {..< brn (cl!n)}" by simp
   show ?thesis unfolding 1
-  apply(rule setsum_wt_ParT_sub_notWtFT_finished) using assms by auto
+  apply(rule sum_wt_ParT_sub_notWtFT_finished) using assms by auto
 qed
 
-lemma setsum_wt_ParT_notWtFT_notFinished[simp]:
+lemma sum_wt_ParT_notWtFT_notFinished[simp]:
 assumes cl: "properL cl" and nf: "WtFT cl \<noteq> 1"
 and n: "n < length cl" and cln: "\<not> finished (cl!n)"
 shows
-"setsum (wt (ParT cl) s) {brnL cl n ..<+ brn (cl!n)} =
+"sum (wt (ParT cl) s) {brnL cl n ..<+ brn (cl!n)} =
  (1 / (length cl)) / (1 - WtFT cl) *
- setsum (wt (cl ! n) s) {..< brn (cl ! n)}"
+ sum (wt (cl ! n) s) {..< brn (cl ! n)}"
 proof-
   have 1: "{brnL cl n ..<+ brn (cl!n)} = op + (brnL cl n) ` {..< brn (cl!n)}" by simp
-  show ?thesis unfolding 1 apply(rule setsum_wt_ParT_sub_notWtFT_notFinished) using assms by auto
+  show ?thesis unfolding 1 apply(rule sum_wt_ParT_sub_notWtFT_notFinished) using assms by auto
 qed
 
-lemma setsum_wt[simp]:
+lemma sum_wt[simp]:
 assumes "proper c"
-shows "setsum (wt c s) {..< brn c} = 1"
+shows "sum (wt c s) {..< brn c} = 1"
 using assms proof (induct c arbitrary: s rule: proper_induct)
   case (Par cl)
-  let ?w = "\<lambda> n. 1 / (length cl) * setsum (wt (cl ! n) s) {..< brn (cl ! n)}"
+  let ?w = "\<lambda> n. 1 / (length cl) * sum (wt (cl ! n) s) {..< brn (cl ! n)}"
   show ?case
-  proof (rule setsum_UN_introL [of _ "%n. {brnL cl n ..<+ brn (cl!n)}" "{..< length cl}" _ ?w])
-    have "1 = setsum (\<lambda> n. 1 / (length cl)) {..< length cl}"
+  proof (rule sum_UN_introL [of _ "%n. {brnL cl n ..<+ brn (cl!n)}" "{..< length cl}" _ ?w])
+    have "1 = sum (\<lambda> n. 1 / (length cl)) {..< length cl}"
     using Par by simp
-    also have "... = setsum ?w {..< length cl}" using Par by simp
-    finally show "1 = setsum ?w {..< length cl}" .
+    also have "... = sum ?w {..< length cl}" using Par by simp
+    finally show "1 = sum ?w {..< length cl}" .
   next
     fix m n assume "{m, n} \<subseteq> {..<length cl} \<and> m \<noteq> n"
     thus
     "{brnL cl m ..<+ brn (cl!m)} \<inter> {brnL cl n ..<+ brn (cl!n)} = {}"
     using brnL_Int by auto
-  qed(insert Par brnL_UN setsum_wt_Par, auto)
+  qed(insert Par brnL_UN sum_wt_Par, auto)
 next
   case (ParT cl)
   let ?v = "1/(length cl)" let ?wtF = "WtFT cl" let ?wtNF = "WtNFT cl"
@@ -1488,7 +1488,7 @@ next
       (if finished (cl!n)
          then 0
          else ?v / (1 - ?wtF) *
-              setsum (wt (cl ! n) s) {..< brn (cl ! n)})"
+              sum (wt (cl ! n) s) {..< brn (cl ! n)})"
   def w \<equiv> ?w
   have w: "\<And> n. ?wtF \<noteq> 1 \<and> n < length cl \<and> \<not> finished (cl!n)
   \<Longrightarrow> w n = ?v / (1 - ?wtF)"
@@ -1500,47 +1500,47 @@ next
   next
     case False note nf = False
     show ?thesis
-    proof (rule setsum_UN_introL [of _ "%n. {brnL cl n ..<+ brn (cl!n)}" "{..< length cl}" _ w])
-      show "1 = setsum w {..< length cl}"
+    proof (rule sum_UN_introL [of _ "%n. {brnL cl n ..<+ brn (cl!n)}" "{..< length cl}" _ w])
+      show "1 = sum w {..< length cl}"
       proof(cases "?wtF = 1")
         case True note sch = True
         let ?n = "pickFT cl"
         let ?L = "{?n}" let ?Lnot = "{..<length cl} - {?n}"
         have "?n < length cl" using ParT True by auto
         hence "{..< length cl} = ?L Un ?Lnot" by auto
-        hence "setsum w {..< length cl} = setsum w (?L Un ?Lnot)" by simp
-        also have "... = setsum w ?L + setsum w ?Lnot"
-        apply(rule setsum.union_disjoint) by auto
+        hence "sum w {..< length cl} = sum w (?L Un ?Lnot)" by simp
+        also have "... = sum w ?L + sum w ?Lnot"
+        apply(rule sum.union_disjoint) by auto
         also have "... = 1" unfolding w_def using sch by simp
         finally show ?thesis by simp
       next
         case False note sch = False
         let ?L = "theFT cl" let ?Lnot = "theNFT cl"
         have 1: "{..< length cl} = ?L Un ?Lnot" by auto
-        have "setsum w {..< length cl} = setsum w ?L + setsum w ?Lnot"
-        unfolding 1 apply(rule setsum.union_disjoint) by auto
-        also have "... = setsum w ?Lnot" unfolding w_def using sch by simp
-        also have "... = setsum (%n. ?v / (1 - ?wtF)) ?Lnot"
-        apply(rule setsum.cong) using w sch by auto
-        also have "... = setsum (%n. ?v) ?Lnot / (1 - ?wtF)"
-        unfolding setsum_divide_distrib by simp
+        have "sum w {..< length cl} = sum w ?L + sum w ?Lnot"
+        unfolding 1 apply(rule sum.union_disjoint) by auto
+        also have "... = sum w ?Lnot" unfolding w_def using sch by simp
+        also have "... = sum (%n. ?v / (1 - ?wtF)) ?Lnot"
+        apply(rule sum.cong) using w sch by auto
+        also have "... = sum (%n. ?v) ?Lnot / (1 - ?wtF)"
+        unfolding sum_divide_distrib by simp
         also have "... = ?wtNF / (1 - ?wtF)" unfolding WtNFT_def by simp
         also have "... = 1" using nf ParT by simp
         finally show ?thesis by simp
       qed
     next
       fix n assume n: "n \<in> {..<length cl}"
-      show "setsum (wt (ParT cl) s) {brnL cl n..<+brn (cl ! n)} = w n"
+      show "sum (wt (ParT cl) s) {brnL cl n..<+brn (cl ! n)} = w n"
       proof-
         have "(\<Sum>i<brn (cl ! n). ?v * wt (cl ! n) s i / (1 - ?wtF)) =
         ?v * (\<Sum>i<brn (cl ! n). wt (cl ! n) s i) / (1 - ?wtF)"
-        unfolding setsum_distrib_left setsum_divide_distrib by simp
+        unfolding sum_distrib_left sum_divide_distrib by simp
         also have "... = ?v / (1 - ?wtF)" using ParT n by simp
         finally have "(\<Sum>i<brn (cl ! n). ?v * wt (cl ! n) s i / (1 - ?wtF)) =
         ?v / (1 - ?wtF)" .
         thus ?thesis unfolding w_def using n nf ParT by simp
       qed
-    qed(insert ParT brnL_UN brnL_Int setsum_wt_Par, auto)
+    qed(insert ParT brnL_UN brnL_Int sum_wt_Par, auto)
   qed
 qed auto
 
@@ -1567,25 +1567,25 @@ next
   thus ?case apply (cases rule: brnL_cases) using ParT by auto
 qed auto
 
-lemma setsum_subset_le_1[simp]:
+lemma sum_subset_le_1[simp]:
 assumes *: "proper c" and **: "I \<subseteq> {..< brn c}"
-shows "setsum (wt c s) I \<le> 1"
+shows "sum (wt c s) I \<le> 1"
 proof-
   def J \<equiv> "{..< brn c}"
   have "I \<subseteq> J" and "finite J" using ** unfolding J_def by auto
   moreover have "\<forall> j \<in> J. wt c s j \<ge> 0" unfolding J_def using * by simp
-  ultimately have "setsum (wt c s) I \<le> setsum (wt c s) J"
-  using setsum_mono2[of J I "wt c s"] by auto
+  ultimately have "sum (wt c s) I \<le> sum (wt c s) J"
+  using sum_mono2[of J I "wt c s"] by auto
   also have "... = 1" using * unfolding J_def by simp
-  finally show "setsum (wt c s) I \<le> 1" unfolding J_def by simp
+  finally show "sum (wt c s) I \<le> 1" unfolding J_def by simp
 qed
 
-lemma setsum_le_1[simp]:
+lemma sum_le_1[simp]:
 assumes *: "proper c" and **: "i < brn c"
-shows "setsum (wt c s) {..i} \<le> 1"
+shows "sum (wt c s) {..i} \<le> 1"
 proof-
   have "{..i} \<subseteq> {..< brn c}" using ** by auto
-  thus ?thesis using assms setsum_subset_le_1[of c "{..i}" s] by blast
+  thus ?thesis using assms sum_subset_le_1[of c "{..i}" s] by blast
 qed
 
 

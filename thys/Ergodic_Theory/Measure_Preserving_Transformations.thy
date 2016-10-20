@@ -3,7 +3,7 @@
 *)
 
 theory Measure_Preserving_Transformations
-imports SG_Library_Complement Product_Topology
+imports SG_Library_Complement
 begin
 
 section{*Measure preserving or quasi-preserving maps*}
@@ -757,11 +757,11 @@ lemma birkhoff_sum_cocycle:
 proof -
   have "(\<Sum>i<m. f ((T ^^ i) ((T ^^ n) x))) = (\<Sum>i<m. f ((T ^^ (i+n)) x))" by (simp add: funpow_add)
   also have "... = (\<Sum>j\<in>{n..< m+n}. f ((T ^^j) x))"
-    using atLeast0LessThan setsum_shift_bounds_nat_ivl[where ?f="\<lambda>j. f((T^^j)x)" and ?k=n and ?m=0 and ?n=m, symmetric]
+    using atLeast0LessThan sum_shift_bounds_nat_ivl[where ?f="\<lambda>j. f((T^^j)x)" and ?k=n and ?m=0 and ?n=m, symmetric]
           add.commute add.left_neutral by auto
   finally have *: "birkhoff_sum f m ((T^^n)x) = (\<Sum>j\<in>{n..< m+n}. f ((T ^^j) x))" unfolding birkhoff_sum_def by auto
   have "birkhoff_sum f (n+m) x = (\<Sum>i<n. f((T^^i)x)) + (\<Sum>i\<in>{n..<m+n}. f((T^^i)x))"
-    unfolding birkhoff_sum_def by (metis add.commute add.right_neutral atLeast0LessThan le_add2 setsum_add_nat_ivl)
+    unfolding birkhoff_sum_def by (metis add.commute add.right_neutral atLeast0LessThan le_add2 sum_add_nat_ivl)
   also have "... = birkhoff_sum f n x + (\<Sum>i\<in>{n..<m+n}. f((T^^i)x))" unfolding birkhoff_sum_def by simp
   finally show ?thesis using * by simp
 qed
@@ -770,26 +770,26 @@ lemma birkhoff_sum_mono:
   fixes f g::"_ \<Rightarrow> real"
   assumes "\<And>x. f x \<le> g x"
   shows "birkhoff_sum f n x \<le> birkhoff_sum g n x"
-unfolding birkhoff_sum_def by (simp add: assms setsum_mono)
+unfolding birkhoff_sum_def by (simp add: assms sum_mono)
 
 lemma birkhoff_sum_abs:
   fixes f::"_ \<Rightarrow> 'b::real_normed_vector"
   shows "norm(birkhoff_sum f n x) \<le> birkhoff_sum (\<lambda>x. norm(f x)) n x"
-unfolding birkhoff_sum_def using norm_setsum by auto
+unfolding birkhoff_sum_def using norm_sum by auto
 
 lemma birkhoff_sum_add:
   "birkhoff_sum (\<lambda>x. f x + g x) n x = birkhoff_sum f n x + birkhoff_sum g n x"
-unfolding birkhoff_sum_def by (simp add: setsum.distrib)
+unfolding birkhoff_sum_def by (simp add: sum.distrib)
 
 lemma birkhoff_sum_diff:
   fixes f g::"_ \<Rightarrow> real"
   shows "birkhoff_sum (\<lambda>x. f x - g x) n x = birkhoff_sum f n x - birkhoff_sum g n x"
-unfolding birkhoff_sum_def by (simp add: setsum_subtractf)
+unfolding birkhoff_sum_def by (simp add: sum_subtractf)
 
 lemma birkhoff_sum_cmult:
   fixes f::"_ \<Rightarrow> real"
   shows "birkhoff_sum (\<lambda>x. c * f x) n x = c * birkhoff_sum f n x"
-unfolding birkhoff_sum_def by (simp add: setsum_distrib_left)
+unfolding birkhoff_sum_def by (simp add: sum_distrib_left)
 
 lemma skew_product_real_iterates:
   fixes f::"'a \<Rightarrow> real"
@@ -817,9 +817,9 @@ proof -
   have "(\<integral>x. birkhoff_sum f n x \<partial>M) = (\<integral>x. (\<Sum>k\<in>{..<n}. f((T^^k) x)) \<partial>M)"
     unfolding birkhoff_sum_def by blast
   also have "... = (\<Sum>k\<in>{..<n}. (\<integral>x. f((T^^k) x) \<partial>M))"
-    by (rule Bochner_Integration.integral_setsum, simp add: a)
+    by (rule Bochner_Integration.integral_sum, simp add: a)
   also have "... = (\<Sum>k\<in>{..<n}. (\<integral>x. f x \<partial>M))" using b by simp
-  also have "... = n *\<^sub>R (\<integral>x. f x \<partial>M)" by (simp add: setsum_constant_scaleR)
+  also have "... = n *\<^sub>R (\<integral>x. f x \<partial>M)" by (simp add: sum_constant_scaleR)
   finally show "(\<integral>x. birkhoff_sum f n x \<partial>M) = n *\<^sub>R (\<integral>x. f x \<partial>M)" by simp
 qed
 
@@ -836,7 +836,7 @@ proof -
   have "(\<integral>\<^sup>+x. birkhoff_sum f n x \<partial>M) = (\<integral>\<^sup>+x. (\<Sum>k\<in>{..<n}. f((T^^k) x)) \<partial>M)"
     unfolding birkhoff_sum_def by blast
   also have "... = (\<Sum>k\<in>{..<n}. (\<integral>\<^sup>+x. f((T^^k) x) \<partial>M))"
-    by (rule nn_integral_setsum, auto simp add: posk)
+    by (rule nn_integral_sum, auto simp add: posk)
   also have "... = (\<Sum>k\<in>{..<n}. (\<integral>\<^sup>+x. f x \<partial>M))" using b by simp
   also have "... = n * (\<integral>\<^sup>+x. f x \<partial>M)" by simp
   finally show "(\<integral>\<^sup>+x. birkhoff_sum f n x \<partial>M) = n * (\<integral>\<^sup>+x. f x \<partial>M)" by simp

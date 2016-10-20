@@ -50,16 +50,16 @@ qed auto
 lemma coeff_monom_Suc: "coeff (monom a (Suc d) * p) (Suc i) = coeff (monom a d * p) i"
   by (simp add: monom_Suc)
 
-lemma coeff_setsum_monom:
+lemma coeff_sum_monom:
   assumes n: "n \<le> d"
   shows "coeff (\<Sum>i\<le>d. monom (f i) i) n = f n" (is "?l = _")
 proof -
-  have "?l = (\<Sum>i\<le>d. coeff (monom (f i) i) n)" (is "_ = setsum ?cmf _")
-    using coeff_setsum.
+  have "?l = (\<Sum>i\<le>d. coeff (monom (f i) i) n)" (is "_ = sum ?cmf _")
+    using coeff_sum.
   also have "{..d} = insert n ({..d}-{n})" using n by auto
-    hence "setsum ?cmf {..d} = setsum ?cmf ..." by auto
-  also have "... = setsum ?cmf ({..d}-{n}) + ?cmf n" by (subst setsum.insert,auto)
-  also have "setsum ?cmf ({..d}-{n}) = 0" by (subst setsum.neutral, auto)
+    hence "sum ?cmf {..d} = sum ?cmf ..." by auto
+  also have "... = sum ?cmf ({..d}-{n}) + ?cmf n" by (subst sum.insert,auto)
+  also have "sum ?cmf ({..d}-{n}) = 0" by (subst sum.neutral, auto)
   finally show ?thesis by simp
 qed
 
@@ -74,10 +74,10 @@ proof (induct as)
   qed simp
 qed simp
 
-lemma degree_lcoeff_setsum: assumes deg: "degree (f q) = n"
+lemma degree_lcoeff_sum: assumes deg: "degree (f q) = n"
   and fin: "finite S" and q: "q \<in> S" and degle: "\<And> p . p \<in> S - {q} \<Longrightarrow> degree (f p) < n"
   and cong: "coeff (f q) n = c"
-  shows "degree (setsum f S) = n \<and> coeff (setsum f S) n = c"
+  shows "degree (sum f S) = n \<and> coeff (sum f S) n = c"
 proof (cases "S = {q}")
   case True
   thus ?thesis using deg cong by simp
@@ -85,26 +85,26 @@ next
   case False
   with q obtain p where "p \<in> S - {q}" by auto
   from degle[OF this] have n: "n > 0" by auto
-  have "degree (setsum f S) = degree (f q + setsum f (S - {q}))"
-    unfolding setsum.remove[OF fin q] ..
+  have "degree (sum f S) = degree (f q + sum f (S - {q}))"
+    unfolding sum.remove[OF fin q] ..
   also have "\<dots> = degree (f q)"
   proof (rule degree_add_eq_left)
-    have "degree (setsum f (S - {q})) \<le> n - 1"
-    proof (rule degree_setsum_le)
+    have "degree (sum f (S - {q})) \<le> n - 1"
+    proof (rule degree_sum_le)
       fix p
       show "p \<in> S - {q} \<Longrightarrow> degree (f p) \<le> n - 1"
         using degle[of p] by auto
     qed (insert fin, auto)
     also have "\<dots> < n" using n by simp
-    finally show "degree (setsum f (S - {q})) < degree (f q)" unfolding deg .
+    finally show "degree (sum f (S - {q})) < degree (f q)" unfolding deg .
   qed
   finally show ?thesis unfolding deg[symmetric] cong[symmetric]
   proof (rule conjI)
     have id: "(\<Sum>x\<in>S - {q}. coeff (f x) (degree (f q))) = 0"
-      by (rule setsum.neutral, rule ballI, rule coeff_eq_0[OF degle[folded deg]])
-    show "coeff (setsum f S) (degree (f q)) = coeff (f q) (degree (f q))"
-      unfolding coeff_setsum
-      by (subst setsum.remove[OF _ q], unfold id, insert fin, auto)
+      by (rule sum.neutral, rule ballI, rule coeff_eq_0[OF degle[folded deg]])
+    show "coeff (sum f S) (degree (f q)) = coeff (f q) (degree (f q))"
+      unfolding coeff_sum
+      by (subst sum.remove[OF _ q], unfold id, insert fin, auto)
   qed
 qed
 
@@ -123,7 +123,7 @@ proof (induct ps)
     by (rule order.trans[OF degree_mult_le], insert Cons, auto)
 qed simp
 
-lemma smult_setsum: "smult (\<Sum>i \<in> S. f i) p = (\<Sum>i \<in> S. smult (f i) p)"
+lemma smult_sum: "smult (\<Sum>i \<in> S. f i) p = (\<Sum>i \<in> S. smult (f i) p)"
   by (induct S rule: infinite_finite_induct, auto simp: smult_add_left)
 
 
@@ -149,12 +149,12 @@ lemma (in comm_monoid_mult) prod_list_map_remove1:
   "x \<in> set xs \<Longrightarrow> prod_list (map f xs) = f x * prod_list (map f (remove1 x xs))"
   by (induct xs) (auto simp add: ac_simps)
 
-lemma poly_as_setsum:
+lemma poly_as_sum:
   fixes p :: "'a::comm_semiring_1 poly"
   shows "poly p x = (\<Sum>i\<le>degree p. x ^ i * coeff p i)"
   unfolding poly_altdef by (simp add: ac_simps)
 
-lemma poly_setprod_0: "finite ps \<Longrightarrow> poly (setprod f ps) x = (0 :: 'a :: field) \<longleftrightarrow> (\<exists> p \<in> ps. poly (f p) x = 0)"
+lemma poly_prod_0: "finite ps \<Longrightarrow> poly (prod f ps) x = (0 :: 'a :: field) \<longleftrightarrow> (\<exists> p \<in> ps. poly (f p) x = 0)"
   by (induct ps rule: finite_induct, auto)
 
 lemma coeff_monom_mult:
@@ -167,9 +167,9 @@ proof (cases "d \<le> i")
     have "\<And>j. j \<in> {0..i} - {d} \<Longrightarrow> ?f j = 0" by auto
     hence "0 = (\<Sum>j \<in> {0..i} - {d}. ?f j)" by auto
     also have "... + ?f d = (\<Sum>j \<in> insert d ({0..i} - {d}). ?f j)"
-      by(subst setsum.insert, auto)
+      by(subst sum.insert, auto)
     also have "... = (\<Sum>j \<in> {0..i}. ?f j)" by (subst insert_Diff, insert True, auto)
-    also have "... = (\<Sum>j\<le>i. ?f j)" by (rule setsum.cong, auto)
+    also have "... = (\<Sum>j\<le>i. ?f j)" by (rule sum.cong, auto)
     also have "... = ?l" unfolding coeff_mult ..
     finally show ?thesis using True by auto
 qed
@@ -278,11 +278,11 @@ proof -
   have "coeff (p * q) (degree p + degree q) = 
     (\<Sum>i\<le>degree p + degree q. ?pqi i)"
     unfolding coeff_mult by simp
-  also have "\<dots> = ?pqi (degree p) + (setsum ?pqi ({.. degree p + degree q} - {degree p}))"
-    by (subst setsum.remove[of _ "degree p"], auto)
+  also have "\<dots> = ?pqi (degree p) + (sum ?pqi ({.. degree p + degree q} - {degree p}))"
+    by (subst sum.remove[of _ "degree p"], auto)
   also have "?pqi (degree p) = coeff q (degree q)" unfolding monic by simp
-  also have "(setsum ?pqi ({.. degree p + degree q} - {degree p})) = 0"
-  proof (rule setsum.neutral, intro ballI)
+  also have "(sum ?pqi ({.. degree p + degree q} - {degree p})) = 0"
+  proof (rule sum.neutral, intro ballI)
     fix d
     assume d: "d \<in> {.. degree p + degree q} - {degree p}"
     show "?pqi d = 0"
@@ -315,57 +315,57 @@ proof -
   finally show ?thesis .
 qed
 
-lemma degree_setprod_setsum_monic: assumes
+lemma degree_prod_sum_monic: assumes
   S: "finite S"
   and nzd: "0 \<notin> (degree o f) ` S"
   and monic: "(\<And> a . a \<in> S \<Longrightarrow> monic (f a))"
-  shows "degree (setprod f S) = (setsum (degree o f) S) \<and> coeff (setprod f S) (setsum (degree o f) S) = 1"
+  shows "degree (prod f S) = (sum (degree o f) S) \<and> coeff (prod f S) (sum (degree o f) S) = 1"
 proof -
   from S nzd monic 
-  have "degree (setprod f S) = setsum (degree \<circ> f) S 
-  \<and> (S \<noteq> {} \<longrightarrow> degree (setprod f S) \<noteq> 0 \<and> setprod f S \<noteq> 0) \<and> coeff (setprod f S) (setsum (degree o f) S) = 1"
+  have "degree (prod f S) = sum (degree \<circ> f) S 
+  \<and> (S \<noteq> {} \<longrightarrow> degree (prod f S) \<noteq> 0 \<and> prod f S \<noteq> 0) \<and> coeff (prod f S) (sum (degree o f) S) = 1"
   proof (induct S rule: finite_induct)
     case (insert a S)
-    have IH1: "degree (setprod f S) = setsum (degree o f) S"
+    have IH1: "degree (prod f S) = sum (degree o f) S"
       using insert by auto
-    have IH2: "coeff (setprod f S) (degree (setprod f S)) = 1"
+    have IH2: "coeff (prod f S) (degree (prod f S)) = 1"
       using insert by auto
-    have id: "degree (setprod f (insert a S)) = setsum (degree \<circ> f) (insert a S)
-      \<and> coeff (setprod f (insert a S)) (setsum (degree o f) (insert a S)) = 1"
+    have id: "degree (prod f (insert a S)) = sum (degree \<circ> f) (insert a S)
+      \<and> coeff (prod f (insert a S)) (sum (degree o f) (insert a S)) = 1"
     proof (cases "S = {}")
       case False
-      with insert have nz: "setprod f S \<noteq> 0" by auto
+      with insert have nz: "prod f S \<noteq> 0" by auto
       from insert have monic: "coeff (f a) (degree (f a)) = 1" by auto
       have id: "(degree \<circ> f) a = degree (f a)" by simp
-      show ?thesis unfolding setprod.insert[OF insert(1-2)] setsum.insert[OF insert(1-2)] id
+      show ?thesis unfolding prod.insert[OF insert(1-2)] sum.insert[OF insert(1-2)] id
         unfolding degree_monic_mult[OF monic nz] 
         unfolding IH1[symmetric]
         unfolding lcoeff_monic_mult[OF monic] IH2 by simp
     qed (insert insert, auto)
-    show ?case using id unfolding setsum.insert[OF insert(1-2)] using insert by auto
+    show ?case using id unfolding sum.insert[OF insert(1-2)] using insert by auto
   qed simp
   thus ?thesis by auto
 qed 
 
-lemma degree_setprod_monic: 
+lemma degree_prod_monic: 
   assumes "\<And> i. i < n \<Longrightarrow> degree (f i :: 'a :: comm_semiring_1 poly) = 1"
     and "\<And> i. i < n \<Longrightarrow> coeff (f i) 1 = 1"
-  shows "degree (setprod f {0 ..< n}) = n \<and> coeff (setprod f {0 ..< n}) n = 1"
+  shows "degree (prod f {0 ..< n}) = n \<and> coeff (prod f {0 ..< n}) n = 1"
 proof -
-  from degree_setprod_setsum_monic[of "{0 ..< n}" f] show ?thesis using assms by force
+  from degree_prod_sum_monic[of "{0 ..< n}" f] show ?thesis using assms by force
 qed
 
-lemma degree_setprod_setsum_lt_n: assumes "\<And> i. i < n \<Longrightarrow> degree (f i :: 'a :: comm_semiring_1 poly) \<le> 1"
+lemma degree_prod_sum_lt_n: assumes "\<And> i. i < n \<Longrightarrow> degree (f i :: 'a :: comm_semiring_1 poly) \<le> 1"
   and i: "i < n" and fi: "degree (f i) = 0"
-  shows "degree (setprod f {0 ..< n}) < n"
+  shows "degree (prod f {0 ..< n}) < n"
 proof -
-  have "degree (setprod f {0 ..< n}) \<le> setsum (degree o f) {0 ..< n}"
-    by (rule degree_setprod_setsum_le, auto)
-  also have "setsum (degree o f) {0 ..< n} = (degree o f) i + setsum (degree o f) ({0 ..< n} - {i})"
-    by (rule setsum.remove, insert i, auto)
+  have "degree (prod f {0 ..< n}) \<le> sum (degree o f) {0 ..< n}"
+    by (rule degree_prod_sum_le, auto)
+  also have "sum (degree o f) {0 ..< n} = (degree o f) i + sum (degree o f) ({0 ..< n} - {i})"
+    by (rule sum.remove, insert i, auto)
   also have "(degree o f) i = 0" using fi by simp
-  also have "setsum (degree o f) ({0 ..< n} - {i}) \<le> setsum (\<lambda> _. 1) ({0 ..< n} - {i})"
-    by (rule setsum_mono, insert assms, auto)
+  also have "sum (degree o f) ({0 ..< n} - {i}) \<le> sum (\<lambda> _. 1) ({0 ..< n} - {i})"
+    by (rule sum_mono, insert assms, auto)
   also have "\<dots> = n - 1" using i by simp
   also have "\<dots> < n" using i by simp
   finally show ?thesis by simp
@@ -399,14 +399,14 @@ proof -
   show ?thesis by simp
 qed
 
-lemma monic_setprod:
+lemma monic_prod:
   fixes f :: "'a \<Rightarrow> 'b :: idom poly"
   assumes "\<And> a. a \<in> as \<Longrightarrow> monic (f a)"
-  shows "monic (setprod f as)" using assms
+  shows "monic (prod f as)" using assms
 proof (induct as rule: infinite_finite_induct)
   case (insert a as)
-  hence id: "setprod f (insert a as) = f a * setprod f as" 
-    and *: "monic (f a)" "monic (setprod f as)" by auto
+  hence id: "prod f (insert a as) = f a * prod f as" 
+    and *: "monic (f a)" "monic (prod f as)" by auto
   show ?case unfolding id by (rule monic_mult[OF *])
 qed auto
 
@@ -676,7 +676,7 @@ qed
 
 lemma monic_irreducible_factorization: fixes p :: "'a :: field poly" 
   shows "monic p \<Longrightarrow> 
-  \<exists> as f. finite as \<and> p = setprod (\<lambda> a. a ^ Suc (f a)) as \<and> as \<subseteq> {q. irreducible q \<and> monic q}"
+  \<exists> as f. finite as \<and> p = prod (\<lambda> a. a ^ Suc (f a)) as \<and> as \<subseteq> {q. irreducible q \<and> monic q}"
 proof (induct "degree p" arbitrary: p rule: less_induct)
   case (less p)
   show ?case
@@ -709,9 +709,9 @@ proof (induct "degree p" arbitrary: p rule: less_induct)
       let ?f = "\<lambda> a. if a = ?q then 0 else f a"
       have "p = ?q * (\<Prod> a \<in>as. a ^ Suc (f a))" unfolding p as by simp
       also have "(\<Prod> a \<in>as. a ^ Suc (f a)) = (\<Prod> a \<in>as. a ^ Suc (?f a))"
-        by (rule setprod.cong, insert False, auto)
+        by (rule prod.cong, insert False, auto)
       also have "?q * \<dots> = (\<Prod> a \<in> ?as. a ^ Suc (?f a))"
-        by (subst setprod.insert, insert as False, auto)
+        by (subst prod.insert, insert as False, auto)
       finally have p: "p = (\<Prod> a \<in> ?as. a ^ Suc (?f a))" .
       from as(1) have fin: "finite ?as" by auto
       from as mon irred have Q: "?as \<subseteq> ?Q" by auto
@@ -722,13 +722,13 @@ proof (induct "degree p" arbitrary: p rule: less_induct)
       let ?f = "\<lambda> a. if a = ?q then Suc (f a) else f a"
       have "p = ?q * (\<Prod> a \<in>as. a ^ Suc (f a))" unfolding p as by simp
       also have "(\<Prod> a \<in>as. a ^ Suc (f a)) = ?q ^ Suc (f ?q) * (\<Prod> a \<in>(as - {?q}). a ^ Suc (f a))"
-        by (subst setprod.remove[OF _ True], insert as, auto)
+        by (subst prod.remove[OF _ True], insert as, auto)
       also have "(\<Prod> a \<in>(as - {?q}). a ^ Suc (f a)) = (\<Prod> a \<in>(as - {?q}). a ^ Suc (?f a))"
-        by (rule setprod.cong, auto)
+        by (rule prod.cong, auto)
       also have "?q * (?q ^ Suc (f ?q) * \<dots> ) = ?q ^ Suc (?f ?q) * \<dots>"
         by (simp add: ac_simps)
       also have "\<dots> = (\<Prod> a \<in> as. a ^ Suc (?f a))"
-        by (subst setprod.remove[OF _ True], insert as, auto)
+        by (subst prod.remove[OF _ True], insert as, auto)
       finally have "p = (\<Prod> a \<in> as. a ^ Suc (?f a))" .
       with as show ?thesis 
         by (intro exI[of _ as] exI[of _ ?f], auto)
@@ -879,8 +879,8 @@ lemma monom_pCons_0_monom:
 
 lemma pCons_0_add: "pCons 0 (p + q) = pCons 0 p + pCons 0 q" by auto
 
-lemma setsum_pCons_0_commute:
-  "setsum (\<lambda>i. pCons 0 (f i)) S = pCons 0 (setsum f S)"
+lemma sum_pCons_0_commute:
+  "sum (\<lambda>i. pCons 0 (f i)) S = pCons 0 (sum f S)"
   by(induct S rule: infinite_finite_induct;simp)
 
 lemma pCons_0_as_mult:
@@ -917,19 +917,19 @@ lemma poly_power_zero_iff: fixes x :: "'a :: idom"
   by (cases n, auto)
 
 
-lemma setsum_monom_0_iff: assumes fin: "finite S"
+lemma sum_monom_0_iff: assumes fin: "finite S"
   and g: "\<And> i j. g i = g j \<Longrightarrow> i = j"
-  shows "setsum (\<lambda> i. monom (f i) (g i)) S = 0 \<longleftrightarrow> (\<forall> i \<in> S. f i = 0)" (is "?l = ?r")
+  shows "sum (\<lambda> i. monom (f i) (g i)) S = 0 \<longleftrightarrow> (\<forall> i \<in> S. f i = 0)" (is "?l = ?r")
 proof -
   {
     assume "\<not> ?r"
     then obtain i where i: "i \<in> S" and fi: "f i \<noteq> 0" by auto
     let ?g = "\<lambda> i. monom (f i) (g i)"
-    have "coeff (setsum ?g S) (g i) = f i + setsum (\<lambda> j. coeff (?g j) (g i)) (S - {i})"
-      by (unfold setsum.remove[OF fin i], simp add: coeff_setsum)
-    also have "setsum (\<lambda> j. coeff (?g j) (g i)) (S - {i}) = 0"
-      by (rule setsum.neutral, insert g, auto)
-    finally have "coeff (setsum ?g S) (g i) \<noteq> 0" using fi by auto
+    have "coeff (sum ?g S) (g i) = f i + sum (\<lambda> j. coeff (?g j) (g i)) (S - {i})"
+      by (unfold sum.remove[OF fin i], simp add: coeff_sum)
+    also have "sum (\<lambda> j. coeff (?g j) (g i)) (S - {i}) = 0"
+      by (rule sum.neutral, insert g, auto)
+    finally have "coeff (sum ?g S) (g i) \<noteq> 0" using fi by auto
     hence "\<not> ?l" by auto
   }
   thus ?thesis by auto
@@ -1043,5 +1043,32 @@ lemma coeff_f_0_code[code_unfold]: "coeff f 0 = (case coeffs f of [] \<Rightarro
 lemma poly_compare_0_code[code_unfold]: "(f = 0) = (case coeffs f of [] \<Rightarrow> True | _ \<Rightarrow> False)" 
   using coeffs_eq_Nil list.disc_eq_case(1) by blast
 
+lemma lead_coeff_code[code]: "lead_coeff f = (let xs = coeffs f in case xs of [] \<Rightarrow> 0 | _ \<Rightarrow> last xs)"
+  by (metis (no_types, lifting) coeffs_0_eq_Nil last_coeffs_eq_coeff_degree lead_coeff_0 lead_coeff_def length_Suc_conv length_coeffs_degree list.simps(4) list.simps(5)) 
+
+lemma nth_coeffs_coeff: "i < length (coeffs f) \<Longrightarrow> coeffs f ! i = coeff f i"
+  by (metis nth_default_coeffs_eq nth_default_def)
+
+lemma degree_prod_eq_sum_degree:
+fixes A :: "'a set"
+and f :: "'a \<Rightarrow> 'b::field poly"
+assumes f0: "\<forall>i\<in>A. f i \<noteq> 0"
+shows "degree (\<Prod>i\<in>A. (f i)) = (\<Sum>i\<in>A. degree (f i))"
+using f0
+proof (induct A rule: infinite_finite_induct)
+  case (insert x A)
+  have "(\<Sum>i\<in>insert x A. degree (f i)) = degree (f x) + (\<Sum>i\<in>A. degree (f i))"
+    by (simp add: insert.hyps(1) insert.hyps(2))
+  also have "... = degree (f x) + degree (\<Prod>i\<in>A. (f i))"
+    by (simp add: insert.hyps insert.prems)
+  also have "... = degree (f x * (\<Prod>i\<in>A. (f i)))"
+  proof (rule degree_mult_eq[symmetric])
+    show "f x \<noteq> 0" using insert.prems by auto
+    show "prod f A \<noteq> 0" by (simp add: insert.hyps(1) insert.prems)
+  qed
+  also have "... = degree (\<Prod>i\<in>insert x A. (f i))"
+    by (simp add: insert.hyps)
+  finally show ?case ..
+qed auto
 
 end

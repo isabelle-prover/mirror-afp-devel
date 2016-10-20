@@ -7,30 +7,21 @@ section \<open>Rational Factorization\<close>
 
 text \<open>We combine the rational root test, the factorization oracle, the
   formulas for explicit roots, and the Kronecker's factorization algorithm to provide a
-  factorization algorithm for polynomial over rational numbers. Moreover, also the roots
-  of a rational polynomial can be determined.
-
-  The factorization provides four modes: one where an uncertified factorization is performed,
-  one which tests on irreducibility, one which ensures that all roots are separate factors,
-  and one which combines the previous modes. All factorizations at least provide a square-free
-  factorization with monic factors.
+  basic factorization algorithm for polynomial over rational numbers. Moreover, also the roots
+  of a rational polynomial can be determined.\<close>
   
-  Note that in order to use this theory, one also has to load an factorization oracle, e.g., 
-  the one in theory Berlekamp-Hensel-Factorization.\<close>
-
 theory Rational_Factorization
 imports
   Explicit_Roots
   Kronecker_Factorization
   Square_Free_Factorization
-  Factorization_Oracle
   Rational_Root_Test
   Polynomial_Division
   "../Show/Show_Poly"
 begin
 
 function roots_of_rat_poly_main :: "rat poly \<Rightarrow> rat list" where 
-  [code del]: "roots_of_rat_poly_main p = (let n = degree p in if n = 0 then [] else if n = 1 then [roots1 p]
+  "roots_of_rat_poly_main p = (let n = degree p in if n = 0 then [] else if n = 1 then [roots1 p]
   else if n = 2 then rat_roots2 p else 
   case rational_root_test p of None \<Rightarrow> [] | Some x \<Rightarrow> x # roots_of_rat_poly_main (p div [:-x,1:]))"
   by pat_completeness auto
@@ -121,7 +112,7 @@ proof -
   have "{x. poly p x = 0} = {x. poly (\<Prod>(a, i)\<in>set pis. a ^ Suc i) x = 0}"
     unfolding p using c by auto
   also have "\<dots> = \<Union> ((\<lambda> p. {x. poly p x = 0}) ` fst ` set pis)" (is "_ = ?r")
-    by (subst poly_setprod_0, force+)
+    by (subst poly_prod_0, force+)
   finally have r: "{x. poly p x = 0} = ?r" .
   {
     fix p i
@@ -157,7 +148,6 @@ partial_function (tailrec) factorize_root_free_main :: "rat poly \<Rightarrow> r
     if poly p x = 0 then factorize_root_free_main (p div [:-x,1:]) (x # xs) ([:-x,1:] # fs)
     else factorize_root_free_main p xs fs)"
 
-(* TODO: one might group identical roots *)
 definition factorize_root_free :: "rat poly \<Rightarrow> rat \<times> rat poly list" where
   "factorize_root_free p = (if degree p = 0 then (coeff p 0,[]) else
      factorize_root_free_main p (roots_of_rat_poly p) [])"
@@ -449,252 +439,14 @@ next
   qed
 qed
 
-definition exp_const_poly :: "'a :: field \<times> 'a poly list \<Rightarrow> nat \<Rightarrow> 'a :: field \<times> ('a poly \<times> nat) list" where
-  "exp_const_poly cps n \<equiv> case cps of (c,ps) \<Rightarrow> (c ^ Suc n, map (\<lambda> p. (p,n)) ps)"
+definition "factorize_rat_poly_basic p = factorize_rat_poly_main 1 [] [p]" 
 
-lemma exp_const_poly: assumes "exp_const_poly (c,ps) n = (d,qns)"
-  shows "(smult c (prod_list ps)) ^ Suc n = smult d (prod_list (map (\<lambda> (q,i). q ^ Suc i) qns))"
-  "map fst qns = ps" "snd ` set qns \<subseteq> {n}"
-proof -
-  from assms[unfolded exp_const_poly_def split] have d: "d = c ^ Suc n"
-    and qns: "qns = map (\<lambda>p. (p, n)) ps" by auto
-  show "map fst qns = ps" unfolding qns by (rule nth_equalityI, auto)
-  show "snd ` set qns \<subseteq> {n}" unfolding qns by auto
-  show "(smult c (prod_list ps)) ^ Suc n = smult d (prod_list (map (\<lambda> (q,i). q ^ Suc i) qns))"
-    unfolding smult_power d qns map_map o_def split prod_list_power by simp
-qed
+lemma factorize_rat_poly_basic: assumes res: "factorize_rat_poly_basic p = (c,qs)" 
+  shows "p = smult c (prod_list qs)" 
+  "\<And> q. q \<in> set qs \<Longrightarrow> irreducible q"
+  using factorize_rat_poly_main[OF res[unfolded factorize_rat_poly_basic_def]] by auto
 
-datatype factorization_mode = Uncertified_Factorization | Full_Factorization | Check_Irreducible
-  | Check_Root_Free
-
-text \<open>@{const Uncertified_Factorization}: just apply oracle @{const factorization_oracle_rat_poly}, 
-     result will be a factorization, but not guaranteed into irreducible factors.
-
-  @{const Full_Factorization}: first apply oracle, and then factor in a certified (and slow) way into
-     irreducible factors with @{const factorize_rat_poly_main}.
-
-  @{const Check_Irreducible}: don't apply oracle and just check irreducibility via 
-     @{const factorize_rat_poly_main}. Useful if
-     one already knows that input is factor that was obtained from oracle.
-
-  @{const Check_Root_Free}: don't apply oracle and just check that there all factors are linear or root free 
-     @{const factorize_root_free}. Useful if
-     one already knows that input is factor that was obtained from oracle.
-  \<close>
-
-context
-  fixes mode :: factorization_mode
-begin
-
-definition initial_factorization_rat :: "rat poly \<Rightarrow> rat \<times> (rat poly \<times> nat) list" where
-  "initial_factorization_rat p = (
-    if mode = Check_Irreducible \<or> mode = Check_Root_Free then 
-      (if degree p = 0 then (coeff p 0,[]) else (1,[(p,0)]))
-    else factorization_oracle_rat_poly p)"
-
-lemma initial_factorization_rat_0[simp]: "initial_factorization_rat 0 = (0,[])"
-  unfolding initial_factorization_rat_def
-  by (cases mode, auto)
-
-lemma initial_factorization_rat: assumes res: "initial_factorization_rat p = (c,qis)"
-  and mode: "mode \<in> {Check_Irreducible, Check_Root_Free} \<Longrightarrow> square_free p"
-  shows "square_free_factorization p (c,qis)"
-proof -
-  obtain d pis where fo: "factorization_oracle_rat_poly p = (d,pis)" by force
-  note res = res[unfolded initial_factorization_rat_def fo split]
-  note fo = factorization_oracle_rat_poly[OF fo]  
-  show ?thesis
-  proof (cases "mode = Check_Irreducible \<or> mode = Check_Root_Free")
-    case True
-    with res mode show ?thesis by (cases "degree p = 0", 
-      auto simp: constant_square_free_factorization square_free_square_free_factorization)
-  next
-    case False note mode = this
-    with fo res have "c = d" "qis = pis" by auto
-    with fo show ?thesis by auto
-  qed
-qed
-
-definition factorize_rat_poly_start :: "rat poly \<Rightarrow> rat \<times> (rat poly \<times> nat) list" where
-  "factorize_rat_poly_start p \<equiv> let
-    (c,pi) = initial_factorization_rat p
-    in if mode = Uncertified_Factorization then (c,pi) 
-    else let fact = (if mode = Full_Factorization \<or> mode = Check_Irreducible then 
-      (\<lambda> p. factorize_rat_poly_main 1 [] [p]) else factorize_root_free);
-      powers = map (\<lambda> (p,i). exp_const_poly (fact p) i) pi;
-      const = c * prod_list (map fst powers);
-      polys = concat (map snd powers)
-      in (const, polys)"
-
-lemma factorize_rat_poly_start_0[simp]: "factorize_rat_poly_start 0 = (0,[])"
-  unfolding factorize_rat_poly_start_def by simp
-
-lemma factorize_rat_poly_start: assumes result: "factorize_rat_poly_start p = (c,qis)"
-  and mode: "mode \<in> {Check_Irreducible, Check_Root_Free} \<Longrightarrow> square_free p"
-  shows "square_free_factorization p (c,qis)"
-    and "(q,i) \<in> set qis \<Longrightarrow> 
-    (mode \<in> {Full_Factorization, Check_Irreducible} \<longrightarrow> irreducible q) \<and>
-    (mode = Check_Root_Free \<longrightarrow> root_free q \<and> monic q)"
-proof -
-  obtain c1 pi where init: "initial_factorization_rat p = (c1,pi)" by force
-  note res = assms[unfolded factorize_rat_poly_start_def Let_def init split]
-  from initial_factorization_rat[OF init mode] have init: "square_free_factorization p (c1,pi)" .
-  have main: "square_free_factorization p (c,qis) \<and> 
-    ((q,i) \<in> set qis \<longrightarrow> (mode \<in> {Full_Factorization, Check_Irreducible} \<longrightarrow> irreducible q) \<and>
-      (mode = Check_Root_Free \<longrightarrow> root_free q \<and> monic q))"
-  proof (cases "mode = Uncertified_Factorization")
-    case True
-    with init res show ?thesis by auto 
-  next
-    case False note UF = this
-    def fact \<equiv> "(if mode = Full_Factorization \<or> mode = Check_Irreducible then 
-      (\<lambda> p. factorize_rat_poly_main 1 [] [p]) else factorize_root_free)"
-    obtain powers where powers: "powers = map (\<lambda>(p, i). exp_const_poly (fact p) i) pi" by auto
-    from res[folded powers fact_def] False have c: "c = c1 * prod_list (map fst powers)" 
-      and qis: "qis = concat (map snd powers)" by auto  
-    show ?thesis 
-    proof (intro conjI impI)
-      note fact1 = factorize_rat_poly_main[of 1 Nil]
-      note fact2 = factorize_root_free
-      show "square_free_factorization p (c, qis)"
-      proof (rule square_free_factorization_further_factorization[OF init _ _ powers c qis, of fact],
-        goal_cases)
-        case (1 b i d fs)
-        show ?case
-        proof (cases "mode \<in> {Full_Factorization, Check_Irreducible}")
-          case True
-          with 1(2)[unfolded fact_def] have fact: "factorize_rat_poly_main 1 [] [b] = (d,fs)" by auto
-          from fact1[OF this] show ?thesis unfolding irreducible_def[abs_def] by auto
-        next
-          case False
-          with 1(2)[unfolded fact_def] have fact: "factorize_root_free b = (d,fs)" by auto
-          from fact2[OF this] show ?thesis by auto
-        qed
-      qed (auto simp: exp_const_poly_def) 
-      assume "(q,i) \<in> set qis"
-      with qis obtain j pw where jpw: "(j,pw) \<in> set powers" and qi: "(q,i) \<in> set pw" by auto
-      from jpw[unfolded powers] obtain p y where py: "(p,y) \<in> set pi" 
-        and jpw: "exp_const_poly (fact p) y = (j,pw)" by auto
-      obtain d fs where fac: "fact p = (d,fs)" by force
-      from exp_const_poly(2)[OF jpw[unfolded fac]] qi have q: "q \<in> set fs" by force
-      {
-        assume "mode \<in> {Full_Factorization, Check_Irreducible}"
-        with fac[unfolded fact_def] have "factorize_rat_poly_main 1 [] [p] = (d,fs)" by auto        
-        from fact1[OF this] q show "irreducible q" by auto
-      }
-      {
-        assume "mode = Check_Root_Free"
-        with fac[unfolded fact_def] have "factorize_root_free p = (d,fs)" by auto
-        from fact2[OF this] q show "root_free q" "monic q" by auto
-      }
-    qed
-  qed
-  from main 
-  show "square_free_factorization p (c,qis)"
-    "(q,i) \<in> set qis \<Longrightarrow> 
-    (mode \<in> {Full_Factorization, Check_Irreducible} \<longrightarrow> irreducible q) \<and>
-    (mode = Check_Root_Free \<longrightarrow> root_free q \<and> monic q)" by blast+
-qed
-
-fun normalize_factorization :: "'a :: field \<times> ('a poly \<times> nat) list \<Rightarrow> 'a \<times> ('a poly \<times> nat) list" where
-  "normalize_factorization (c,pis) = (let fact = (\<lambda> p. let lc = coeff p (degree p) in 
-      if lc = 1 then (1,[p]) else (lc, [smult (inverse lc) p]));
-      powers = map (\<lambda> (p,i). exp_const_poly (fact p) i) pis;
-      const = c * prod_list (map fst powers);
-      polys = concat (map snd powers)
-      in (const, polys))"  
-
-definition factorize_sf_rat_poly :: "rat poly \<Rightarrow> rat \<times> (rat poly \<times> nat) list" where
-  "factorize_sf_rat_poly p = (let 
-      main = factorize_rat_poly_start p 
-    in if mode = Check_Root_Free then main else normalize_factorization main)"
-              
-lemma factorize_sf_rat_poly_0[simp]: "factorize_sf_rat_poly 0 = (0,[])" 
-  unfolding factorize_sf_rat_poly_def by (simp add: Let_def)
-                                               
-lemma factorize_sf_rat_poly: assumes fp: "factorize_sf_rat_poly p = (c,qis)"
-  and mode: "mode \<in> {Check_Irreducible, Check_Root_Free} \<Longrightarrow> square_free p"
-  shows "square_free_factorization p (c,qis)"
-  and "(q,i) \<in> set qis \<Longrightarrow> 
-    (mode \<in> {Full_Factorization, Check_Irreducible} \<longrightarrow> irreducible q) \<and>
-    (mode = Check_Root_Free \<longrightarrow> root_free q) \<and>
-    monic q"
-proof -
-  obtain d pis where fps: "factorize_rat_poly_start p = (d,pis)" by force
-  note fp = fp[unfolded factorize_sf_rat_poly_def fps Let_def, unfolded normalize_factorization.simps]
-  note fact = factorize_rat_poly_start[OF fps mode]
-  have main: "square_free_factorization p (c,qis) \<and> 
-    ((q,i) \<in> set qis \<longrightarrow> (mode \<in> {Full_Factorization, Check_Irreducible} \<longrightarrow> irreducible q) \<and>
-    (mode = Check_Root_Free \<longrightarrow> root_free q) \<and> monic q)"
-  proof (cases "mode = Check_Root_Free")
-    case True
-    with fact fp show ?thesis by auto
-  next
-    case False note UF = this
-    def fact \<equiv> "(\<lambda> p :: rat poly. let lc = coeff p (degree p) in 
-      if lc = 1 then (1,[p]) else (lc, [smult (inverse lc) p]))"
-    obtain powers where powers: "powers = map (\<lambda>(p, i). exp_const_poly (fact p) i) pis" by auto
-    from fp[folded fact_def, unfolded Let_def, folded powers] False 
-    have c: "c = d * prod_list (map fst powers)" 
-      and qis: "qis = concat (map snd powers)" by auto
-    show ?thesis
-    proof (intro conjI impI)
-      show "square_free_factorization p (c, qis)"
-      proof (rule square_free_factorization_further_factorization[OF fact(1) _ _ powers c qis, of fact],
-        goal_cases)
-        case (2 b i d fs)
-        from square_free_factorizationD(2)[OF fact(1) 2(1)] have b: "degree b \<noteq> 0" by auto
-        hence "coeff b (degree b) \<noteq> 0" by auto
-        with 2(2) b
-        show ?case unfolding fact_def Let_def by (auto split: if_splits)
-      qed (auto simp: exp_const_poly_def)
-      assume "(q,i) \<in> set qis"
-      with qis obtain j pw where jpw: "(j,pw) \<in> set powers" and qi: "(q,i) \<in> set pw" by auto
-      from jpw[unfolded powers] obtain p y where py: "(p,y) \<in> set pis" 
-        and jpw: "exp_const_poly (fact p) y = (j,pw)" by auto
-      obtain d fs where fac: "fact p = (d,fs)" by force
-      from square_free_factorizationD(2)[OF fact(1) py] have p: "degree p \<noteq> 0" "p \<noteq> 0" by auto
-      from exp_const_poly(2)[OF jpw[unfolded fac]] qi have q: "q \<in> set fs" by force
-      def a \<equiv> "inverse (coeff p (degree p))"
-      have a: "a \<noteq> 0" and q: "q = smult a p" using fac[unfolded fact_def Let_def] q p
-        by (auto split: if_splits simp: a_def)
-      thus "monic q" unfolding a_def by auto
-      {
-        assume "mode \<in> {Full_Factorization, Check_Irreducible}"
-        with fact(2)[OF _ py] have "irreducible p" by auto
-        with a show "irreducible q" unfolding q by simp
-      }
-    qed (insert False, auto)
-  qed
-  thus "square_free_factorization p (c,qis)"
-    "(q,i) \<in> set qis \<Longrightarrow> 
-    (mode \<in> {Full_Factorization, Check_Irreducible} \<longrightarrow> irreducible q) \<and>
-    (mode = Check_Root_Free \<longrightarrow> root_free q) \<and>
-    monic q" by blast+
-qed
-    
-end
-
-definition factorize_rat_poly :: "rat poly \<Rightarrow> rat \<times> (rat poly \<times> nat) list" where
-  "factorize_rat_poly p = (case factorize_sf_rat_poly Full_Factorization p
-    of (c, fis) \<Rightarrow> (c, map (\<lambda> (f,i). (f, Suc i)) fis))"
-              
-lemma factorize_rat_poly_0[simp]: "factorize_rat_poly 0 = (0,[])" 
-  unfolding factorize_rat_poly_def by (simp add: Let_def)
-                                               
-lemma factorize_rat_poly: assumes fp: "factorize_rat_poly p = (c,qis)"
-  shows "p = smult c (\<Prod> (q,i) \<leftarrow> qis. q ^ i)" 
-    and "\<And> q i. (q,i) \<in> set qis \<Longrightarrow> irreducible q \<and> i \<noteq> 0"
-proof -
-  obtain d fis where fact: "factorize_sf_rat_poly Full_Factorization p = (d,fis)" by force
-  from factorize_sf_rat_poly[OF this] have sf: "square_free_factorization p (d, fis)"
-    and fis: "\<And> f i. (f,i) \<in> set fis \<Longrightarrow> irreducible f" by auto
-  from fp[unfolded factorize_rat_poly_def fact split] have c: "c = d" and qis: 
-    "qis = map (\<lambda>(f, i). (f, Suc i)) fis" by auto
-  with fis show "\<And> q i. (q,i) \<in> set qis \<Longrightarrow> irreducible q \<and> i \<noteq> 0" by auto
-  show "p = smult c (\<Prod> (q,i) \<leftarrow> qis. q ^ i)"
-    unfolding square_free_factorizationD'(1)[OF sf] c qis
-    by (rule arg_cong[of _ _ "smult d"], induct fis, auto)
-qed
+text \<open>We removed the factorize-rat-poly function from this theory, since the one in 
+  Berlekamp-Zassenhaus is easier to use and implements are more efficient algorithm.\<close>
 
 end

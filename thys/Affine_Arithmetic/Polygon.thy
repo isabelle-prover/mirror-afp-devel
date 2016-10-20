@@ -352,7 +352,7 @@ next
       ccw'_sortedP_implies_nonaligned[OF Cons(3), of Q R]
       ccw'_sortedP_implies_nonaligned[OF Cons(3), of P R]
       Cons(2,3)
-    by (auto simp add: Pi_iff add.assoc simp del: scaleR_Pair intro!: ccw'.setsum
+    by (auto simp add: Pi_iff add.assoc simp del: scaleR_Pair intro!: ccw'.sum
         elim!: linorder_list0.sortedP_Cons)
   ultimately
   have "list_all

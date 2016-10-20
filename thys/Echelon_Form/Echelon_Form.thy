@@ -506,9 +506,9 @@ proof (unfold matrix_matrix_mult_def bezout_matrix_def Let_def, simp)
               else if a = b \<and> k = b then v
               else if a = k then 1 else 0) * A $ k $ j)"
   have UNIV_rw: "UNIV = insert b (insert a (UNIV - {a} - {b}))" by auto
-  have setsum_rw: "setsum f (insert a (UNIV - {a} - {b})) = f a + setsum f (UNIV - {a} - {b})"
-    by (rule setsum.insert, auto)
-  have setsum0: "setsum f (UNIV - {a} - {b}) = 0" by (rule setsum.neutral, simp add: f_def)
+  have sum_rw: "sum f (insert a (UNIV - {a} - {b})) = f a + sum f (UNIV - {a} - {b})"
+    by (rule sum.insert, auto)
+  have sum0: "sum f (UNIV - {a} - {b}) = 0" by (rule sum.neutral, simp add: f_def)
   have "(\<Sum>k\<in>UNIV.
        (case bezout (A $ a $ j) (A $ b $ j) of
         (p, q, u, v, d) \<Rightarrow>
@@ -520,11 +520,11 @@ proof (unfold matrix_matrix_mult_def bezout_matrix_def Let_def, simp)
           else if a = a \<and> k = b then q
                else if a = b \<and> k = a then u else if a = b \<and> k = b then v else if a = k then 1 else 0) *
        A $ k $ j)" unfolding bz [symmetric] by auto
-  also have "... = setsum f UNIV" unfolding f_def ..
-  also have "setsum f UNIV = setsum f (insert b (insert a (UNIV - {a} - {b})))" using UNIV_rw by simp
-  also have "... = f b + setsum f (insert a (UNIV - {a} - {b}))"
-    by (rule setsum.insert, auto, metis a_not_b)
-  also have "... = f b + f a" unfolding setsum_rw setsum0 by simp
+  also have "... = sum f UNIV" unfolding f_def ..
+  also have "sum f UNIV = sum f (insert b (insert a (UNIV - {a} - {b})))" using UNIV_rw by simp
+  also have "... = f b + sum f (insert a (UNIV - {a} - {b}))"
+    by (rule sum.insert, auto, metis a_not_b)
+  also have "... = f b + f a" unfolding sum_rw sum0 by simp
   also have "... = d"
     unfolding f_def using a_not_b bz [symmetric] by (auto, metis add.commute mult.commute pa_bq_d)
   also have "... = snd (snd (snd (snd (bezout (A $ a $ j) (A $ b $ j)))))"
@@ -606,20 +606,20 @@ proof (unfold matrix_matrix_mult_def bezout_matrix_def Let_def, auto)
                            else if b = b \<and> k = b then v else if b = k then 1 else 0) *
                 A $ k $ j"
   have UNIV_rw: "UNIV = insert b (insert a (UNIV - {a} - {b}))" by auto
-  have setsum_rw: "setsum f (insert a (UNIV - {a} - {b})) = f a + setsum f (UNIV - {a} - {b})"
-    by (rule setsum.insert, auto)
-  have setsum0: "setsum f (UNIV - {a} - {b}) = 0" by (rule setsum.neutral, simp add: f_def)
+  have sum_rw: "sum f (insert a (UNIV - {a} - {b})) = f a + sum f (UNIV - {a} - {b})"
+    by (rule sum.insert, auto)
+  have sum0: "sum f (UNIV - {a} - {b}) = 0" by (rule sum.neutral, simp add: f_def)
   have "(\<Sum>k\<in>UNIV.
        (case bezout (A $ a $ j) (A $ b $ j) of
         (p, q, u, v, d) \<Rightarrow>
           if b = a \<and> k = a then p
           else if b = a \<and> k = b then q
                else if b = b \<and> k = a then u else if b = b \<and> k = b then v else if b = k then 1 else 0) *
-       A $ k $ j) = setsum f UNIV" unfolding f_def bz [symmetric] by simp
-  also have "setsum f UNIV = setsum f (insert b (insert a (UNIV - {a} - {b})))" using UNIV_rw by simp
-  also have "... = f b + setsum f (insert a (UNIV - {a} - {b}))"
-    by (rule setsum.insert, auto, metis a_not_b)
-  also have "... = f b + f a" unfolding setsum_rw setsum0 by simp
+       A $ k $ j) = sum f UNIV" unfolding f_def bz [symmetric] by simp
+  also have "sum f UNIV = sum f (insert b (insert a (UNIV - {a} - {b})))" using UNIV_rw by simp
+  also have "... = f b + sum f (insert a (UNIV - {a} - {b}))"
+    by (rule sum.insert, auto, metis a_not_b)
+  also have "... = f b + f a" unfolding sum_rw sum0 by simp
   also have "... = v * ?b + u * ?a" unfolding f_def using a_not_b by auto
   also have "... = u * ?a + v * ?b" by auto
   also have "... = 0"
@@ -676,8 +676,8 @@ proof (auto)
           if a = i \<and> ka = i then p
           else if a = i \<and> ka = j then q
                else if a = j \<and> ka = i then u else if a = j \<and> ka = j then v else if a = ka then 1 else 0) *
-       A $ ka $ b) = setsum f UNIV" unfolding f_def bz [symmetric] by simp
-    also have "setsum f UNIV = 0" by (rule setsum.neutral, auto simp add: Aib Ajb f_def True i_not_j)
+       A $ ka $ b) = sum f UNIV" unfolding f_def bz [symmetric] by simp
+    also have "sum f UNIV = 0" by (rule sum.neutral, auto simp add: Aib Ajb f_def True i_not_j)
     also have "... = A $ a $ b" unfolding True using Aib by simp
     finally show ?thesis .
   next
@@ -691,8 +691,8 @@ proof (auto)
           if a = i \<and> ka = i then p
           else if a = i \<and> ka = j then q
                else if a = j \<and> ka = i then u else if a = j \<and> ka = j then v else if a = ka then 1 else 0) *
-       A $ ka $ b) = setsum f UNIV" unfolding f_def bz [symmetric] by simp
-    also have "setsum f UNIV = 0" by (rule setsum.neutral, auto simp add: Aib Ajb f_def True i_not_j)
+       A $ ka $ b) = sum f UNIV" unfolding f_def bz [symmetric] by simp
+    also have "sum f UNIV = 0" by (rule sum.neutral, auto simp add: Aib Ajb f_def True i_not_j)
       also have "... = A $ a $ b" unfolding True using Ajb by simp
       finally show ?thesis .
     next
@@ -700,26 +700,26 @@ proof (auto)
       have UNIV_rw: "UNIV = insert j (insert i (UNIV - {i} - {j}))" by auto
       have UNIV_rw2: "UNIV - {i} - {j} = insert a (UNIV - {i} - {j}-{a})"
         using False a_not_i by auto
-      have setsum0: "setsum f (UNIV - {i} - {j} - {a}) = 0"
-        by (rule setsum.neutral, simp add: f_def)
+      have sum0: "sum f (UNIV - {i} - {j} - {a}) = 0"
+        by (rule sum.neutral, simp add: f_def)
       have "(\<Sum>ka\<in>UNIV.
        (case bezout (A $ i $ k) (A $ j $ k) of
         (p, q, u, v, d) \<Rightarrow>
           if a = i \<and> ka = i then p
           else if a = i \<and> ka = j then q
                else if a = j \<and> ka = i then u else if a = j \<and> ka = j then v else if a = ka then 1 else 0) *
-       A $ ka $ b) = setsum f UNIV" unfolding f_def bz [symmetric] by simp
-      also have "setsum f UNIV = setsum f (insert j (insert i (UNIV - {i} - {j})))"
+       A $ ka $ b) = sum f UNIV" unfolding f_def bz [symmetric] by simp
+      also have "sum f UNIV = sum f (insert j (insert i (UNIV - {i} - {j})))"
         using UNIV_rw by simp
-      also have "... = f j + setsum f (insert i (UNIV - {i} - {j}))"
-        by (rule setsum.insert, auto, metis i_not_j)
-      also have "... = setsum f (insert i (UNIV - {i} - {j}))"
+      also have "... = f j + sum f (insert i (UNIV - {i} - {j}))"
+        by (rule sum.insert, auto, metis i_not_j)
+      also have "... = sum f (insert i (UNIV - {i} - {j}))"
         unfolding f_def using False a_not_i by auto
-      also have "... = f i + setsum f (UNIV - {i} - {j})"  by (rule setsum.insert, auto)
-      also have "... = setsum f (UNIV - {i} - {j})" unfolding f_def using False a_not_i by auto
-      also have "... = setsum f (insert a (UNIV - {i} - {j} - {a}))" using UNIV_rw2 by simp
-      also have "... = f a + setsum f (UNIV - {i} - {j} - {a})" by (rule setsum.insert, auto)
-      also have "... = f a" unfolding setsum0 by simp
+      also have "... = f i + sum f (UNIV - {i} - {j})"  by (rule sum.insert, auto)
+      also have "... = sum f (UNIV - {i} - {j})" unfolding f_def using False a_not_i by auto
+      also have "... = sum f (insert a (UNIV - {i} - {j} - {a}))" using UNIV_rw2 by simp
+      also have "... = f a + sum f (UNIV - {i} - {j} - {a})" by (rule sum.insert, auto)
+      also have "... = f a" unfolding sum0 by simp
       also have "... = A $ a $ b" unfolding f_def using False a_not_i by auto
       finally show ?thesis .
     qed
@@ -778,19 +778,19 @@ proof -
     also have "... = -1" 
     proof -
       def f == "(\<lambda>i. interchange_rows (bezout_matrix A a b j bezout) a b $ i $ i)"
-      have setprod_rw: "setprod f (insert a (UNIV - {a} - {b})) 
-        =  f a * setprod f (UNIV - {a} - {b})"
-        by (rule setprod.insert, simp_all)
-      have setprod1: "setprod f (UNIV - {a} - {b}) = 1"
-        by (rule setprod.neutral) 
+      have prod_rw: "prod f (insert a (UNIV - {a} - {b})) 
+        =  f a * prod f (UNIV - {a} - {b})"
+        by (rule prod.insert, simp_all)
+      have prod1: "prod f (UNIV - {a} - {b}) = 1"
+        by (rule prod.neutral) 
             (simp add: f_def interchange_rows_def bezout_matrix_def Let_def)
-      have "setprod f UNIV = setprod f (insert b (insert a (UNIV - {a} - {b})))" 
+      have "prod f UNIV = prod f (insert b (insert a (UNIV - {a} - {b})))" 
         using UNIV_rw by simp
-      also have "... = f b * setprod f (insert a (UNIV - {a} - {b}))"
-      proof (rule setprod.insert, simp)
+      also have "... = f b * prod f (insert a (UNIV - {a} - {b}))"
+      proof (rule prod.insert, simp)
         show "b \<notin> insert a (UNIV - {a} - {b})" using a_not_b by auto
       qed
-      also have "... = f b * f a" unfolding setprod_rw setprod1 by auto
+      also have "... = f b * f a" unfolding prod_rw prod1 by auto
       also have "... = q * u" 
         using a_not_b 
         using bz [symmetric]
@@ -817,7 +817,7 @@ proof -
     case False
     def mult_b_dp \<equiv> "mult_row ?B b (d * p)"
     def sum_ab \<equiv> "row_add mult_b_dp b a ?b"
-    have "det (sum_ab) = setprod (\<lambda>i. sum_ab $ i $ i) UNIV"
+    have "det (sum_ab) = prod (\<lambda>i. sum_ab $ i $ i) UNIV"
     proof (rule det_upperdiagonal)
       fix i j::'rows 
       assume j_less_i: "j < i"
@@ -833,20 +833,20 @@ proof -
     also have "... = d * p"
     proof -
       def f \<equiv> "(\<lambda>i. sum_ab $ i $ i)"
-      have setprod_rw: "setprod f (insert a (UNIV - {a} - {b})) 
-        =  f a * setprod f (UNIV - {a} - {b})"
-        by (rule setprod.insert, simp_all)
-      have setprod1: "setprod f (UNIV - {a} - {b}) = 1"
-        by (rule setprod.neutral) (simp add: f_def sum_ab_def row_add_def 
+      have prod_rw: "prod f (insert a (UNIV - {a} - {b})) 
+        =  f a * prod f (UNIV - {a} - {b})"
+        by (rule prod.insert, simp_all)
+      have prod1: "prod f (UNIV - {a} - {b}) = 1"
+        by (rule prod.neutral) (simp add: f_def sum_ab_def row_add_def 
           mult_b_dp_def mult_row_def bezout_matrix_def Let_def)
       have ap_bq_d: "A $ a $ j * p + A $ b $ j * q = d" by (metis mult.commute pa_bq_d)
-      have "setprod f UNIV = setprod f (insert b (insert a (UNIV - {a} - {b})))"
+      have "prod f UNIV = prod f (insert b (insert a (UNIV - {a} - {b})))"
         using UNIV_rw by simp
-      also have "... = f b * setprod f (insert a (UNIV - {a} - {b}))"
-      proof (rule setprod.insert, simp)
+      also have "... = f b * prod f (insert a (UNIV - {a} - {b}))"
+      proof (rule prod.insert, simp)
         show "b \<notin> insert a (UNIV - {a} - {b})" using a_not_b by auto
       qed
-      also have "... = f b * f a" unfolding setprod_rw setprod1 by auto
+      also have "... = f b * f a" unfolding prod_rw prod1 by auto
       also have "... = (d * p * v + ?b * q) * p" 
         unfolding f_def sum_ab_def row_add_def mult_b_dp_def mult_row_def bezout_matrix_def
         unfolding bz [symmetric]
@@ -1030,12 +1030,12 @@ lemma bezout_matrix_preserves_rest:
 proof (auto simp add: a_not_n i_not_n a_not_i)
   have UNIV_rw: "UNIV = insert a (UNIV - {a})" by auto
   let ?f="(\<lambda>k. (if a = k then 1 else 0) * A $ k $ b)"
-  have setsum0: "setsum ?f (UNIV - {a}) = 0" by (rule setsum.neutral, auto)
-  have "setsum ?f UNIV = setsum ?f (insert a (UNIV - {a}))" using UNIV_rw by simp
-  also have "... = ?f a + setsum ?f (UNIV - {a})" by (rule setsum.insert, simp_all)
-  also have "... = ?f a" using setsum0 by auto
+  have sum0: "sum ?f (UNIV - {a}) = 0" by (rule sum.neutral, auto)
+  have "sum ?f UNIV = sum ?f (insert a (UNIV - {a}))" using UNIV_rw by simp
+  also have "... = ?f a + sum ?f (UNIV - {a})" by (rule sum.insert, simp_all)
+  also have "... = ?f a" using sum0 by auto
   also have "... = A $ a $ b" by simp
-  finally show "setsum ?f UNIV = A $ a $ b" .
+  finally show "sum ?f UNIV = A $ a $ b" .
 qed
 
 text{*Code equations to execute the bezout matrix*}

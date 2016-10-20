@@ -14,6 +14,7 @@ files.
     date = <YYYY>-<MM>-<HH>
     topic = <topic>/<subtopic>/..., <topic2>/...
     abstract = <text>
+    notify = <email1>, <email2>, ...
 
     Optional:
     contributors = <contributor1> [<<url1>>], <contributor2> ...
@@ -28,6 +29,7 @@ files.
     topic = Computer Science/Automata, Logic
     abstract = This abstract has
       multiple lines ...
+    notify = stefan.berghofer@example.org
 
     The section name (<short-name> in this terminology) must correspond to
     the folder name in 'thys' directory. This short name is used as entry
@@ -63,17 +65,9 @@ files.
      extra-0 = Warning: Untested...
      extra-1 = History: [2010-01-01] new year
 
-    There is another special treatment at the moment: Some entries have a
-    custom format, e. g. InformationFlowSlicing, which contains multiple
-    proofs, or Valuation which doesn't contain a proof document. For these
-    entries, no entry file should be generated, but they should be listed on
-    index and topics page. These entries have another pair 'ignore = entry' in
-    the metadata file which simply means 'don't generate template 'entry.tpl'
-    for this entry'.
-
     For entries with a license other than BSD, you can add a line
 
-	license = LGPL
+      license = LGPL
 
     Allowed values are BSD and LGPL.
 

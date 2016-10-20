@@ -61,7 +61,7 @@ text \<open>
 
 (*<*)
 context
-  notes [fundef_cong] = setsum.cong
+  notes [fundef_cong] = sum.cong
 begin
 (*>*)
 

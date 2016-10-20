@@ -68,7 +68,7 @@ by(rule T_on'_append)
 
 abbreviation "T_on_n A s0 xs n == T_on' A (config A s0 (take n xs)) [xs!n]" 
 
-lemma T_on__as_sum: "T_on'' A s0 rs = setsum (T_on_n A s0 rs) {..<length rs} "
+lemma T_on__as_sum: "T_on'' A s0 rs = sum (T_on_n A s0 rs) {..<length rs} "
 apply(induct rs rule: rev_induct)
   by(simp_all add: T_on'_append  nth_append)
 
@@ -100,7 +100,7 @@ apply(induct qs arbitrary: s0 x)
 lemma T_on_on'': "T_on A s0 qs = T_on'' A s0 qs"
 using T_on_on'[where x="fst A s0", of s0 qs A] by(auto)
 
-lemma T_on_as_sum: "T_on A s0 rs = setsum (T_on_n A s0 rs) {..<length rs} "
+lemma T_on_as_sum: "T_on A s0 rs = sum (T_on_n A s0 rs) {..<length rs} "
 using T_on__as_sum T_on_on'' by metis
 
 

@@ -14,7 +14,7 @@ begin
 abbreviation "config'' A qs init n == config_rand A init (take n qs)"
 
 
-lemma setsum_my: fixes f g::"'b \<Rightarrow> 'a::ab_group_add"
+lemma sum_my: fixes f g::"'b \<Rightarrow> 'a::ab_group_add"
     assumes "finite A" "finite B"
   shows "(\<Sum>x\<in>A. f x) - (\<Sum>x\<in>B. g x)
     = (\<Sum>x\<in>(A \<inter> B). f x - g x) + (\<Sum>x\<in>A-B. f x) - (\<Sum>x\<in>B-A. g x)"
@@ -28,18 +28,18 @@ proof -
   then have "(\<Sum>x\<in>A. f x) - (\<Sum>x\<in>B. g x) = (\<Sum>x\<in>(A-B) \<union> (A\<inter>B). f x) - (\<Sum>x\<in>(B-A) \<union> (B\<inter>A). g x)" by auto
   also have "\<dots> = ( (\<Sum>x\<in>(A-B). f x) + (\<Sum>x\<in>(A\<inter>B). f x) - (\<Sum>x\<in>(A-B)\<inter>(A\<inter>B). f x) )
         -( (\<Sum>x\<in>(B-A). g x) + (\<Sum>x\<in>(B\<inter>A). g x) - (\<Sum>x\<in>(B-A)\<inter>(B\<inter>A). g x))" 
-          using setsum_Un[where ?f="f",OF finites(1) finites(2)]
-                setsum_Un[where ?f="g",OF finites(3) finites(4)] by(simp)
+          using sum_Un[where ?f="f",OF finites(1) finites(2)]
+                sum_Un[where ?f="g",OF finites(3) finites(4)] by(simp)
   also have "\<dots> = ( (\<Sum>x\<in>(A-B). f x) + (\<Sum>x\<in>(A\<inter>B). f x) )
         - (\<Sum>x\<in>(B-A). g x) - (\<Sum>x\<in>(B\<inter>A). g x) " using inters by auto
   also have "\<dots> =  (\<Sum>x\<in>(A-B). f x) - (\<Sum>x\<in>(A\<inter>B). g x) + (\<Sum>x\<in>(A\<inter>B). f x) 
         - (\<Sum>x\<in>(B-A). g x)  " using commute by auto
   also have "\<dots> = (\<Sum>x\<in>(A\<inter>B). f x - g x) +(\<Sum>x\<in>(A-B). f x) 
-        - (\<Sum>x\<in>(B-A). g x)" using setsum_subtractf[of f g "(A\<inter>B)"] by auto
+        - (\<Sum>x\<in>(B-A). g x)" using sum_subtractf[of f g "(A\<inter>B)"] by auto
   finally show ?thesis .
 qed
 
-lemma setsum_my2: "(\<forall>x\<in>A. f x = g x) \<Longrightarrow> (\<Sum>x\<in>A. f x) = (\<Sum>x\<in>A. g x)" by auto
+lemma sum_my2: "(\<forall>x\<in>A. f x = g x) \<Longrightarrow> (\<Sum>x\<in>A. f x) = (\<Sum>x\<in>A. g x)" by auto
 
 
 subsection "Definition of BIT" 
@@ -351,7 +351,7 @@ definition T_A :: "nat \<Rightarrow> int" where
 "T_A n = (\<Sum>i<n. t_A i)"
  
 lemma T_A_A'_leq: "n \<le> length paid_A' \<Longrightarrow> T_A n \<le> T_A' n"
-unfolding T_A'_def T_A_def apply(rule setsum_mono)
+unfolding T_A'_def T_A_def apply(rule sum_mono)
 by (simp add: t_A_A'_leq)
 
 lemma T_A_A'_leq': "n \<le> length qs \<Longrightarrow> T_A n \<le> T_A' n"
@@ -445,7 +445,7 @@ lemma phi_empty2: "length init = 0 \<Longrightarrow> phi n (c,(b,i)) = 0"
 apply(simp only: phi.simps Inv_empty3) by auto
 
 lemma phi_nonzero: "phi n (c,(b,i)) \<ge> 0"
-by (simp add: setsum_nonneg split_def)
+by (simp add: sum_nonneg split_def)
 
 (* definition of the potential function! *)
 definition Phi :: "nat \<Rightarrow> real" ("\<Phi>") where
@@ -896,7 +896,7 @@ text "The Transformation"
                         = (\<Sum>y\<in>insert ?neurein (Inv ys (s'_A n m)). (\<lambda>i. if b ! (index init (snd i)) then 2 else 1) y)" by(auto simp: split_def)
                     also have "\<dots> = (\<lambda>i. if b ! (index init (snd i)) then 2 else 1) ?neurein
                             + (\<Sum>y\<in>(Inv ys (s'_A n m)) - {?neurein}. (\<lambda>i. if b ! (index init (snd i)) then 2 else 1) y)"
-                            apply(rule setsum.insert_remove) by(auto)
+                            apply(rule sum.insert_remove) by(auto)
                     also have "\<dots> = (if b ! (index init (snd ?neurein)) then 2 else 1) 
                             + (\<Sum>y\<in>(Inv ys (s'_A n m)). (\<lambda>i. if b ! (index init (snd i)) then 2::real else 1) y)" using False by auto
                     also have "\<dots> \<le> (if b ! (index init (snd ?neurein)) then 2 else 1) 
@@ -916,7 +916,7 @@ text "The Transformation"
                     have "(\<Sum>(xa, y)\<in>?X-{?x}. ?g y) \<le> (%(xa,y). ?g y) ?x + (\<Sum>(xa, y)\<in>?X-{?x}. ?g y)"
                        by simp
                     also have "\<dots> = (\<Sum>(xa, y)\<in>?X. ?g y)"
-                      apply(rule setsum.remove[symmetric])
+                      apply(rule sum.remove[symmetric])
                         apply simp apply(fact) done
                     finally show ?thesis .
                   qed simp 
@@ -1042,7 +1042,7 @@ text "The Transformation"
       def [simp]: B == "(\<Sum>(x,y)\<in>(Inv ys xs')-(Inv ys' xs''). (if b!(index init y) then 2::real else 1))"
         have teilen: "\<Delta> = C + A - B"  (* C A B *)
               unfolding \<Delta>_def A_def B_def C_def
-                     using setsum_my[OF fA fB]  by (auto simp: split_def)
+                     using sum_my[OF fA fB]  by (auto simp: split_def)
         then have "\<Delta> = A - B + C" by auto  
         then have teilen2: "\<Phi>\<^sub>2 x - \<Phi>\<^sub>1 x  = A - B + C" unfolding \<Delta>_def using dis gis by auto
  
@@ -1139,25 +1139,25 @@ text "The Transformation"
               (\<Sum>(x,y)\<in>(Inv ys' xs'') \<inter> (Inv ys' xs'). 
                       (if b'!(index init y) then 2::real else 1) - (if b!(index init y) then 2 else 1))" by auto
           also have E2: "\<dots> = (\<Sum>(x,y)\<in>?easy. 
-                      (if (q) = y then (-1::real) else 0))" using setsum_my2[OF grreeeaa] by (auto simp: split_def)
+                      (if (q) = y then (-1::real) else 0))" using sum_my2[OF grreeeaa] by (auto simp: split_def)
           also have E3: "\<dots> = (\<Sum>(x,y)\<in>?split1 \<union> ?split2. 
                       (if (q) = y then (-1::real) else 0))" by(simp only: ttt)
           also have "\<dots> = (\<Sum>(x,y)\<in>?split1. (if (q) = y then (-1::real) else 0))
                     + (\<Sum>(x,y)\<in>?split2. (if (q) = y then (-1::real) else 0))
                     - (\<Sum>(x,y)\<in>?split1 \<inter> ?split2. (if (q) = y then (-1::real) else 0))"
-                    by(rule setsum_Un[OF fs1 fs2]) 
+                    by(rule sum_Un[OF fs1 fs2]) 
           also have "\<dots> = (\<Sum>(x,y)\<in>?split1. (if (q) = y then (-1::real) else 0))
                     + (\<Sum>(x,y)\<in>?split2. (if (q) = y then (-1::real) else 0))"
                     apply(simp only: interem) by auto
           also have E4: "\<dots> = (\<Sum>(x,y)\<in>?split1. (-1::real) )
                     + (\<Sum>(x,y)\<in>?split2. 0)"
-                 using setsum_my2[OF split1easy]setsum_my2[OF split2easy] by(simp only: split_def)
+                 using sum_my2[OF split1easy]sum_my2[OF split2easy] by(simp only: split_def)
           also have "\<dots> = (\<Sum>(x,y)\<in>?split1. (-1::real) )" by auto
           also have E5: "\<dots> = - card ?split1 " by auto
           also have E6: "\<dots> = - I " using cardsp1isI by auto
           finally have abschC: "C = -I".
 
-          have abschB: "B \<ge> (0::real)" unfolding B_def apply(rule setsum_nonneg) by auto  
+          have abschB: "B \<ge> (0::real)" unfolding B_def apply(rule sum_nonneg) by auto  
  
           from abschB abschC show "C - B \<le> -I" by simp
 
@@ -1226,18 +1226,18 @@ text "The Transformation"
           finally have split1empty: "?split1 = {}" .
 
           have "C  = (\<Sum>(x,y)\<in>?easy. 
-                      (if (q) = y then (1::real) else 0))" unfolding C_def by(simp only: split_def setsum_my2[OF grreeeaa2])
+                      (if (q) = y then (1::real) else 0))" unfolding C_def by(simp only: split_def sum_my2[OF grreeeaa2])
           also have "\<dots> = (\<Sum>(x,y)\<in>?split1 \<union> ?split2. 
                       (if (q) = y then (1::real) else 0))" by(simp only: ttt)
           also have "\<dots> = (\<Sum>(x,y)\<in>?split1. (if (q) = y then (1::real) else 0))
                     + (\<Sum>(x,y)\<in>?split2. (if (q) = y then (1::real) else 0))
                     - (\<Sum>(x,y)\<in>?split1 \<inter> ?split2. (if (q) = y then (1::real) else 0))"
-                    by(rule setsum_Un[OF fs1 fs2]) 
+                    by(rule sum_Un[OF fs1 fs2]) 
           also have "\<dots> = (\<Sum>(x,y)\<in>?split1. (if (q) = y then (1::real) else 0))
                     + (\<Sum>(x,y)\<in>?split2. (if (q) = y then (1::real) else 0))"
                     apply(simp only: interem) by auto 
           also have "\<dots> = (\<Sum>(x,y)\<in>?split1. (1::real) )
-                    + (\<Sum>(x,y)\<in>?split2. 0)" using setsum_my2[OF split1easy] setsum_my2[OF split2easy] by (simp only: split_def) 
+                    + (\<Sum>(x,y)\<in>?split2. 0)" using sum_my2[OF split1easy] sum_my2[OF split2easy] by (simp only: split_def) 
           also have "\<dots> = (\<Sum>(x,y)\<in>?split1. (1::real) )" by auto
           also have "\<dots> = card ?split1" by auto
           also have "\<dots> = (0::real)" apply(simp only: split1empty) by auto
@@ -1265,20 +1265,20 @@ text "The Transformation"
           finally have splI: "?split1 = inI" .
 
           have abschaway: "(\<Sum>(x,y)\<in>?split2. (if b!(index init y) then 2::real else 1)) \<ge> 0"
-              apply(rule setsum_nonneg) by auto
+              apply(rule sum_nonneg) by auto
           
          have "B  =  (\<Sum>(x,y)\<in>?split1 \<union> ?split2. 
                       (if b!(index init y) then 2::real else 1) )" unfolding B_def by(simp only: ttt2)
           also have "\<dots> = (\<Sum>(x,y)\<in>?split1. (if b!(index init y) then 2::real else 1))
                     + (\<Sum>(x,y)\<in>?split2. (if b!(index init y) then 2::real else 1))
                     - (\<Sum>(x,y)\<in>?split1 \<inter> ?split2. (if b!(index init y) then 2::real else 1))"
-                    by(rule setsum_Un[OF fs1 fs2]) 
+                    by(rule sum_Un[OF fs1 fs2]) 
           also have "\<dots> = (\<Sum>(x,y)\<in>?split1. (if b!(index init y) then 2::real else 1))
                     + (\<Sum>(x,y)\<in>?split2. (if b!(index init y) then 2::real else 1))"
                     apply(simp only: interem) by auto 
           also have "\<dots> = (\<Sum>(x,y)\<in>?split1. 1)
                     + (\<Sum>(x,y)\<in>?split2. (if b!(index init y) then 2::real else 1))"
-                 using setsum_my2[OF split1easy2] by (simp only: split_def)
+                 using sum_my2[OF split1easy2] by (simp only: split_def)
           also have "\<dots> = card ?split1
                     + (\<Sum>(x,y)\<in>?split2. (if b!(index init y) then 2::real else 1))" by auto
           also have "\<dots> = I
@@ -1442,13 +1442,13 @@ text "The Transformation"
 
           have E0: "A = (\<Sum>(x,y)\<in>(Inv ys' xs'')-(Inv ys xs'). (if b'!(index init y) then 2::real else 1))" by auto
           also have E1: "\<dots> \<le> (\<Sum>(x,y)\<in>{(a,b). a=q \<and> b\<noteq>q \<and> index xs' b < k'}. (if b'!(index init y) then 2::real else 1))"
-              unfolding A_def apply(rule setsum_mono2[OF finia subsa]) by auto
+              unfolding A_def apply(rule sum_mono2[OF finia subsa]) by auto
           also have "\<dots> = (\<Sum>(x,y)\<in>{(\<alpha>,\<beta>). \<alpha>=q \<and> \<beta>\<noteq>q \<and> index xs' \<beta> < k'
                           \<and>   (index init \<beta>) < length b }. (if b'!(index init y) then 2::real else 1))"
                           using asdasd  by auto
           also have "\<dots> = (\<Sum>(x,y)\<in>{(\<alpha>,\<beta>). \<alpha>=q \<and> \<beta>\<noteq>q \<and> index xs' \<beta> < k' 
                           \<and>  (index init \<beta>) < length b }. (if b!(index init y) then 2::real else 1))"
-          proof (rule setsum.cong, goal_cases)
+          proof (rule sum.cong, goal_cases)
              case (2 z)
              then obtain \<alpha> \<beta> where zab: "z=(\<alpha>, \<beta>)" and "\<alpha> = q" and diff: "\<beta> \<noteq> q" and "index xs' \<beta> < k'" and i: "index init \<beta> < length b" by auto
              from diff ij have "index init \<beta> \<noteq> index init q" by auto
@@ -1458,7 +1458,7 @@ text "The Transformation"
           also have E1a: "\<dots> = (\<Sum>(x,y)\<in>{(a,b). a=q \<and> b\<noteq>q \<and> index xs' b < k'}. (if b!(index init y) then 2::real else 1))"
                           using asdasd  by auto
           also have "\<dots> \<le> (\<Sum>(x,y)\<in>{(a,b). a=q \<and> index xs' b < k'}. (if b!(index init y) then 2::real else 1))"
-              apply(rule setsum_mono2[OF finia2 subsa2]) by auto
+              apply(rule sum_mono2[OF finia2 subsa2]) by auto
           also have E2: "\<dots> = (\<Sum>(x,y)\<in>{(q,b)|b. index xs' b < k'}. (if b!(index init y) then 2::real else 1))" 
               by (simp only: lulae[symmetric])
           finally have aa: "A \<le> (\<Sum>(x,y)\<in>{(q,b)|b. index xs' b < k'}. (if b!(index init y) then 2::real else 1))" .
@@ -1517,14 +1517,14 @@ text "The Transformation"
                     = (\<Sum>(x,y)\<in> (\<lambda>b. (q,b)) ` {b. index xs' b < k'}. (if b!(index init y) then 2::real else 1))" using aa4 by simp
                   also have "\<dots> = (\<Sum>z\<in> (\<lambda>b. (q,b)) ` {b. index xs' b < k'}. (if b!(index init (snd z)) then 2::real else 1))" by (simp add: split_def)
                   also have "\<dots> = (\<Sum>z\<in>{b. index xs' b < k'}. (if b!(index init (snd ((\<lambda>b. (q,b)) z))) then 2::real else 1))"
-                      apply(simp only: setsum.reindex[OF aadad]) by auto  
+                      apply(simp only: sum.reindex[OF aadad]) by auto  
                   also have "\<dots> = (\<Sum>y\<in>{y. index xs' y < k'}. (if b!(index init y) then 2::real else 1))" by auto
                   finally show ?thesis .
                 qed
           also have "\<dots> = (\<Sum>y\<in>{xs'!i | i. i < k'}. (if b!(index init y) then 2::real else 1))" using sameset by auto
           also have "\<dots> = (\<Sum>y\<in>(\<lambda>i. xs'!i) ` {i. i < k'}. (if b!(index init y) then 2::real else 1))" using aa3 by simp
           also have "\<dots> = (\<Sum>y\<in>{i::nat. i < k'}. (if b!(index init (xs'!y)) then 2::real else 1))" 
-                using setsum.reindex[OF aaa23] by simp
+                using sum.reindex[OF aaa23] by simp
           also have E3: "\<dots> = (\<Sum>j::nat<k'. (if b!(index init (xs'!j)) then 2::real else 1))" 
                   using unbelievable by auto
           finally have bb: "(\<Sum>(x,y)\<in>{(q,b)|b. index xs' b < k'}. (if b!(index init y) then 2::real else 1))
@@ -1639,7 +1639,7 @@ by (metis "3" mtf2_q_after a before_in_def bq dp_xs'_init index_less_size_conv m
 
           have E0: "A = (\<Sum>(x,y)\<in>(Inv ys' xs'')-(Inv ys xs'). (if b'!(index init y) then 2::real else 1))" by auto
           also have E1: "\<dots> \<le> (\<Sum>(z,y)\<in>?UB. if flip (index init q) (b) ! (index init y) then 2::real else 1)" 
-              unfolding b'_def apply(rule setsum_mono2[OF _ a]) 
+              unfolding b'_def apply(rule sum_mono2[OF _ a]) 
                 by(simp_all add: split_def)
           also have "\<dots> = (\<Sum>(z,y)\<in>{x\<in>?UB. snd x=q}. if flip (index init q) (b) ! (index init y) then 2::real else 1)" by(simp only: q)
           also have "\<dots> = (\<Sum>z\<in>{x\<in>?UB. snd x=q}. if flip (index init q) (b) ! (index init (snd z)) then 2::real else 1)" by(simp add: split_def)
@@ -1729,12 +1729,12 @@ text "Approximation of the Term for Free exchanges"
           have b: "?S = ((%j. xs'!j) ` {j. j<k'})" by auto
 
           have "(\<Sum>j<k'. (\<lambda>t. (if x!(index init t) then 2::real else 1)) (xs'!j))
-            = setsum ((\<lambda>t. (if x!(index init t) then 2::real else 1)) o (%j. xs'!j)) {..<k'}"
+            = sum ((\<lambda>t. (if x!(index init t) then 2::real else 1)) o (%j. xs'!j)) {..<k'}"
               by(auto)
-          also have "\<dots> = setsum ((\<lambda>t. (if x!(index init t) then 2::real else 1)) o (%j. xs'!j)) {j. j<k'}"
+          also have "\<dots> = sum ((\<lambda>t. (if x!(index init t) then 2::real else 1)) o (%j. xs'!j)) {j. j<k'}"
               by (simp only: a)
-          also have "\<dots> = setsum (\<lambda>t. (if x!(index init t) then 2::real else 1)) ((%j. xs'!j) ` {j. j<k'})"
-              apply(rule setsum.reindex[symmetric])
+          also have "\<dots> = sum (\<lambda>t. (if x!(index init t) then 2::real else 1)) ((%j. xs'!j) ` {j. j<k'})"
+              apply(rule sum.reindex[symmetric])
               apply(rule inj_on_nth)
                 using k'inbound by(simp_all)
           finally have "(\<Sum>j<k'. (\<lambda>t. (if x!(index init t) then 2::real else 1)) (xs'!j))                   
@@ -1775,8 +1775,8 @@ text "Approximation of the Term for Free exchanges"
 
         from k'inbound have k'inbound2: "Suc k' \<le> length init" using Suc_le_eq by auto
 
-        (* rewrite from setsum over indices of the list 
-            to setsum over elements (thus indices of the bit vector) *)
+        (* rewrite from sum over indices of the list 
+            to sum over elements (thus indices of the bit vector) *)
         have "(\<Sum>x\<in>{l::bool list. length l = ?l \<and> ~l!(index init q)}. (\<Sum>j<k'. (if x!(index init (xs'!j)) then 2::real else 1)))
                      
                 = (\<Sum>x\<in>{l. length l = ?l \<and> ~l!(index init q)}. (\<Sum>j\<in>?S. (\<lambda>t. (if x!(index init t) then 2 else 1)) j))"
@@ -1792,7 +1792,7 @@ text "Approximation of the Term for Free exchanges"
           { fix x
           have "(\<Sum>j\<in>?S. (\<lambda>t. (if x!(index init t) then 2 else 1)) j)
               = (\<Sum>j\<in>(index init) ` ?S. (\<lambda>t. (if x!t then 2 else 1)) j)"
-                apply(simp only: setsum.reindex[OF index_inj_on_S, where g="(%j. if x ! j then 2 else 1)"])
+                apply(simp only: sum.reindex[OF index_inj_on_S, where g="(%j. if x ! j then 2 else 1)"])
                 by(simp) 
           } note a=this
           show ?thesis by(simp only: a)
@@ -1841,11 +1841,11 @@ text "Approximation of the Term for Free exchanges"
             =     (\<Sum>x\<in>{l::bool list. length l = ?l \<and> l!(index init q)}. f x)
                               + (\<Sum>x\<in>{l::bool list. length l = ?l \<and> ~l!(index init q)}. f x)
                               - (\<Sum>x\<in>{l::bool list. length l = ?l \<and> l!(index init q)} \<inter> {l::bool list. length l = ?l \<and> ~l!(index init q)}. f x)"
-        using setsum_Un[OF fa fb, of "f"] by simp
+        using sum_Un[OF fa fb, of "f"] by simp
         also have "\<dots> = (\<Sum>x\<in>{l::bool list. length l = ?l \<and> l!(index init q)}. f x)
                               + (\<Sum>x\<in>{l::bool list. length l = ?l \<and> ~l!(index init q)}. f x)" by(simp add: interempty)
-        finally have "setsum f {l. length l = length init} =
-  setsum f {l. length l = length init \<and> l ! (index init q)} + setsum f {l. length l = length init \<and> \<not> l ! (index init q)}" .
+        finally have "sum f {l. length l = length init} =
+  sum f {l. length l = length init \<and> l ! (index init q)} + sum f {l. length l = length init \<and> \<not> l ! (index init q)}" .
       } note darfstsplitten=this
 
 
@@ -1877,7 +1877,7 @@ text "Approximation of the Term for Free exchanges"
       using list_pmf by auto
       also
       have "\<dots> = (\<Sum>x\<in>{l::bool list. length l = ?l}. (?insf x)) * ((1/2)^?l)"
-      by(simp only: setsum_distrib_right[where r="(1/2)^?l"])
+      by(simp only: sum_distrib_right[where r="(1/2)^?l"])
       also
       have E5: "\<dots> = ((1/2)^?l) *(\<Sum>x\<in>{l::bool list. length l = ?l}. (?insf x))"
       by(auto)
@@ -1950,7 +1950,7 @@ text "Transformation of the Term for Paid Exchanges"
     
       have "E(map_pmf (\<lambda>x. (\<Sum>i<(length (paid_A!n)). (if (fst (snd x))!(gebub n i) then 2::real else 1))) D) = 
           (\<Sum>i<(length (paid_A!n)). E(map_pmf ((\<lambda>xx. (if (fst (snd xx))!(gebub n i) then 2::real else 1))) D))"
-          apply(subst E_linear_setsum2)
+          apply(subst E_linear_sum2)
             using finite_config_BIT[OF dist_init] by(simp_all)
       also have "\<dots> =  (\<Sum>i<(length (paid_A!n)). E(map_pmf (\<lambda>y. if y then 2::real else 1) (bernoulli_pmf (5 / 10))))" using umform gebub_def gebub_inBound[OF 31] by simp
       also have "\<dots> =  3/2 * (length (paid_A!n))" by(simp add: E_bernoulli)
@@ -2004,13 +2004,13 @@ lemma T_BIT_absch_le: assumes nqs: "n \<le> length qs"
 unfolding T_BIT_def T_A_def
 proof - 
   from potential2[of "Phi", OF phi0 phi_pos myub] nqs have
-      "setsum t_BIT {..<n} \<le> (\<Sum>i<n. 7 / 4 *   (t_A i) - 3 / 4)" by auto
-  also have "\<dots> = (\<Sum>i<n. 7 / 4 * real_of_int (t_A i)) - (\<Sum>i<n. (3/4))" by (rule setsum_subtractf)
+      "sum t_BIT {..<n} \<le> (\<Sum>i<n. 7 / 4 *   (t_A i) - 3 / 4)" by auto
+  also have "\<dots> = (\<Sum>i<n. 7 / 4 * real_of_int (t_A i)) - (\<Sum>i<n. (3/4))" by (rule sum_subtractf)
   also have "\<dots> = (\<Sum>i<n. 7 / 4 * real_of_int (t_A i)) - (3/4)*(\<Sum>i<n. 1)" by simp
   also have "\<dots> = (\<Sum>i<n. (7 / 4) * real_of_int (t_A i)) - (3/4)*n" by simp
-  also have "\<dots> =  (7 / 4) * (\<Sum>i<n. real_of_int (t_A i))  - (3/4)*n" by (simp add: setsum_distrib_left)
+  also have "\<dots> =  (7 / 4) * (\<Sum>i<n. real_of_int (t_A i))  - (3/4)*n" by (simp add: sum_distrib_left)
   also have "\<dots> = (7 / 4) * real_of_int (\<Sum>i<n.(t_A i))  - (3/4)*n" by auto
-  finally show "setsum t_BIT {..<n} \<le> 7 / 4 * real_of_int (setsum t_A {..<n})  - (3/4)*n" by auto
+  finally show "sum t_BIT {..<n} \<le> 7 / 4 * real_of_int (sum t_A {..<n})  - (3/4)*n" by auto
 qed 
 
 
@@ -2020,7 +2020,7 @@ lemma T_BIT_absch: assumes nqs: "n \<le> length qs"
 using nqs T_BIT_absch_le[of n] T_A_A'_leq[of n] by auto
 
 lemma T_A_nneg: "0 \<le> T_A n"
-by(auto simp add: setsum_nonneg T_A_def t_A_def c_A_def p_A_def)
+by(auto simp add: sum_nonneg T_A_def t_A_def c_A_def p_A_def)
 
  
 
@@ -2069,7 +2069,7 @@ next
   proof cases
     assume "n < length qs"
     thus ?case using 2
-    by(simp add: Cons_nth_drop_Suc[symmetric,where i=n] len_acts setsum_head_upt_Suc
+    by(simp add: Cons_nth_drop_Suc[symmetric,where i=n] len_acts sum_head_upt_Suc
       t_A'_t free_A_def paid_A'_def)
   next
     assume "\<not> n < length qs" thus ?case by (simp add: len_acts)

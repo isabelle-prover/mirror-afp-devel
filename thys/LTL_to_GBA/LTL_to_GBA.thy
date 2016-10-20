@@ -865,7 +865,7 @@ abbreviation
 definition
   "expand_inv \<phi> n_ns \<equiv> (case n_ns of (n, ns) \<Rightarrow> expand_inv_node \<phi> n \<and> expand_inv_result \<phi> ns)"
 
-lemma new1_less_setsum: 
+lemma new1_less_sum: 
   "size_set (new1 \<phi>) < size_set {\<phi>}"
 proof (cases \<phi>)
   case (And_ltln \<nu> \<mu>)
@@ -873,7 +873,7 @@ proof (cases \<phi>)
       by (cases "\<nu> = \<mu>"; simp)
 qed (simp_all)
 
-lemma new2_less_setsum: 
+lemma new2_less_sum: 
   "size_set (new2 \<phi>) < size_set {\<phi>}"
 proof (cases \<phi>)
   case (Release_ltln \<nu> \<mu>)
@@ -922,7 +922,7 @@ proof
       apply (cases "old_next_pair ` ns \<subset> old_next_pair ` ns'") 
       apply simp_all
       apply auto [1]
-      apply (metis (no_types, lifting) add_Suc diff_Suc_less psubsetI setsum.remove setsum_diff1_nat zero_less_Suc)
+      apply (metis (no_types, lifting) add_Suc diff_Suc_less psubsetI sum.remove sum_diff1_nat zero_less_Suc)
       done
   next
     case n'def: 2
@@ -931,35 +931,35 @@ proof
     then have "size_set (new n - {\<psi>}) = size_set (new n) - size_set {\<psi>}"
       using size_set_diff by fastforce
     moreover
-    from fin_new setsum_Un_nat[OF new1_finite _, of "new n - {\<psi>}" size \<psi>]
+    from fin_new sum_Un_nat[OF new1_finite _, of "new n - {\<psi>}" size \<psi>]
     have "size_set (new n') \<le> size_set (new1 \<psi>) + size_set (new n - {\<psi>})"
-      unfolding n'def by (simp add: new1_finite setsum_Un_nat) 
+      unfolding n'def by (simp add: new1_finite sum_Un_nat) 
     moreover 
     have sum_leq: "size_set (new n) \<ge> size_set {\<psi>}"
-      using \<psi>innew setsum_mono2[OF fin_new, of "{\<psi>}"]
+      using \<psi>innew sum_mono2[OF fin_new, of "{\<psi>}"]
       by blast
     ultimately 
     have "size_set (new n') < size_set (new n)"
-      using new1_less_setsum[of \<psi>] by auto
+      using new1_less_sum[of \<psi>] by auto
     with assms show ?thesis 
       unfolding expand_ord_def finite_psupset_def by auto
   next
     case n'def: 3
     have \<psi>innew: "\<psi> \<in> new n" and fin_new: "finite (new n)"
       using assms unfolding expand_inv_def by auto
-    from \<psi>innew setsum_diff1_nat[of size "new n" \<psi>]
+    from \<psi>innew sum_diff1_nat[of size "new n" \<psi>]
     have "size_set (new n - {\<psi>}) = size_set (new n) - size_set {\<psi>}"
       using size_set_diff[of "new n" "{\<psi>}"] by fastforce
     moreover
-    from fin_new setsum_Un_nat[OF new2_finite _, of "new n - {\<psi>}" size \<psi>]
+    from fin_new sum_Un_nat[OF new2_finite _, of "new n - {\<psi>}" size \<psi>]
     have "size_set (new n') \<le> size_set (new2 \<psi>) + size_set (new n - {\<psi>})"
-      unfolding n'def by (simp add: new2_finite setsum_Un_nat) 
+      unfolding n'def by (simp add: new2_finite sum_Un_nat) 
     moreover 
     have sum_leq:"size_set (new n) \<ge>  size_set {\<psi>}"
-      using \<psi>innew setsum_mono2[OF fin_new, of "{\<psi>}"] by blast
+      using \<psi>innew sum_mono2[OF fin_new, of "{\<psi>}"] by blast
     ultimately 
     have "size_set (new n') < size_set (new n)"
-      using new2_less_setsum[of \<psi>] sum_leq by auto
+      using new2_less_sum[of \<psi>] sum_leq by auto
     with assms show ?thesis
       unfolding expand_ord_def finite_psupset_def by auto
   qed

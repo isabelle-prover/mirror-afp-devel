@@ -642,7 +642,7 @@ proof -
            apply clarsimp
            apply (rule less_le_trans)
             defer
-            apply (rule_tac A="{a}" in setsum_mono2)
+            apply (rule_tac A="{a}" in sum_mono2)
               by simp_all
         from valid_node Throw
         show ?thesis

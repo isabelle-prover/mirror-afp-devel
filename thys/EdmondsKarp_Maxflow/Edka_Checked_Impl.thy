@@ -128,7 +128,7 @@ begin
 
   definition "compute_flow_val am cf \<equiv> do {
       let succs = get_am am s;
-      setsum_impl 
+      sum_impl 
       (\<lambda>v. do {
         let csv = get_cap (s,v);
         cfsv \<leftarrow> cf_get cf (s,v);
@@ -141,7 +141,7 @@ begin
     shows "compute_flow_val am cf \<le> (spec v. v = f.val)"
     unfolding val_by_adj_map[OF assms]
     unfolding compute_flow_val_def cf_get_def get_cap_def get_am_def
-    apply (refine_vcg setsum_imp_correct)
+    apply (refine_vcg sum_imp_correct)
     apply (vc_solve simp: s_node)
     unfolding am_s_is_incoming[symmetric, OF assms] 
     by (auto simp: V_def)
@@ -170,7 +170,7 @@ begin
       by (simp add: RELATES_def)
     show ?thesis
       apply (rule order_trans[OF _ compute_flow_val_correct[OF assms]])
-      unfolding compute_flow_val2_def compute_flow_val_def setsum_impl_def
+      unfolding compute_flow_val2_def compute_flow_val_def sum_impl_def
       apply (rule refine_IdD)
       apply (refine_rcg LFO_refine bind_refine')
       apply refine_dref_type

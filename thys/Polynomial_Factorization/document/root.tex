@@ -34,13 +34,7 @@ Based on existing libraries for polynomial interpolation and matrices,
 we formalized several factorization algorithms for polynomials, including
 Kronecker's algorithm for integer polynomials,
 Yun's square-free factorization algorithm for field polynomials, and
-Berlekamp's algorithm for polynomials over finite fields.
-By combining the last one with Hensel's lifting,
-we derive an efficient factorization algorithm for the integer polynomials,
-which is then lifted for rational polynomials by mechanizing Gauss' lemma.
-Finally, we assembled a combined factorization algorithm for rational polynomials,
-which combines all the mentioned algorithms and additionally uses the explicit formula for roots 
-of quadratic polynomials and a rational root test.
+a factorization algorithm which delivers root-free polynomials. 
 
 As side products, we developed division algorithms for polynomials over integral domains,
 as well as primality-testing and prime-factorization algorithms for integers.
@@ -78,43 +72,18 @@ and if $n\ \mod\ 30 = 11$, the next test candidates in the range $[n,n+30)$
 are only the 8 numbers $n,n+2,n+6,n+8,n+12,n+18,n+20,n+26$.
 
 However, in theory and praxis it turned out that Kronecker's algorithm is too inefficient. 
-Therefore, we implemented the much faster Berlekamp factorization algorithm which works over finite fields \cite{Berlekamp}, and
-then lifts the factorization to $\ints$ via the Hensel lifting \cite{Hensel}. However, the Berlekamp-Hensel
-factorization is only available as oracle; it is checked at runtime that the resulting
-factorization is valid (the input polynomial is the same as the product of factors), 
-but no results on the optimality are provided (all factors are irreducible). 
-Therefore, if irreducibility of the resulting factors has to be formally ensured, 
-Kronecker's algorithm is applied to validate irreducibility of the generated factors.
+Therefore, in a separate AFP-entry we formalized the Berlekamp-Zassenhaus 
+factorization.\footnote{The Berlekamp-Zassenhaus AFP-entry was originally not present 
+and at that time,
+this AFP-entry contained an implementation of Berlekamp-Zassenhaus as a
+non-certified function.}
 
-Although only being an oracle, we tried to include several certified parts in the implementation
-of the Berlekamp-Hensel algorithm.
-\begin{itemize}
-\item In Berlekamp's algorithm, a basis for a set of vectors over some finite field has to be determined.
-  To this end, we generalized the certified Gauss-Jordan algorithm from \cite{JNF-AFP} so that 
-  it takes the field operations like addition, multiplication, and inverse as parameter. 
-  As a consequence, we can just invoke the certified algorithm 
-  parametrized for finite fields. Intuitively, then nothing can go wrong; however, this is not
-  formally stated, since the soundness of Gauss-Jordan was proven for type-based operations, whereas
-  the soundness of the finite-field operations can only be proven set-based, since the cardinality of the
-  carrier has to be dynamically determined at runtime.
-\item For operations on polynomials, we took a similar but not identical approach. Instead of 
-  generalizing the algorithms on polynomials to take the basic field operations as parameters, we just
-  copied the generated code for polynomials and manually replaced all basic operations by parameters.
-  So, the algorithms indeed should be sound, although nothing has been proven about it.
-  
-  As a side effect, we inspected all the generated code equations for polynomials and optimized some of them,
-  cf.\ \texttt{Improved-Code-Equations} in \texttt{../Polynomial-Interpolation}.
-\end{itemize}
 
-The combined factorization algorithm first factorizes the polynomial
-via Yun and Berlekamp-Hensel. For each constructed factor, the algorithm 
-certifies irreducibility as follows: For polynomials of degree 2, the 
+There also is a combined factorization algorithm: For polynomials of degree 2, the 
 closed form for the roots of quadratic polynomials is applied. For polynomials of degree 3, 
 the rational root test determines whether the polynomial is irreducible or not, and finally
 for degree 4 and higher, Kronecker's factorization algorithm is applied.
 
-As future work it would be beneficial to perform a full formalization of 
-the Berlekamp-Hensel factorization algorithm as it is by far more efficient than Kronecker's algorithm.
 \input{session}
 
 
