@@ -388,10 +388,6 @@ lemma sgn_minus_rat: "sgn (- (x :: rat)) = - sgn x"
 lemma real_of_rat_sgn: "sgn (of_rat x) = real_of_rat (sgn x)"
   unfolding sgn_real_def sgn_rat_def by auto
 
-lemma (in linordered_field) inverse_sgn [simp]:
-  "inverse (sgn a) = sgn a"
-  by (cases a 0 rule: linorder_cases) simp_all
-
 lemma inverse_le_iff_sgn: assumes sgn: "sgn x = sgn y"
   shows "(inverse (x :: real) \<le> inverse y) = (y \<le> x)"
 proof (cases "x = 0")
