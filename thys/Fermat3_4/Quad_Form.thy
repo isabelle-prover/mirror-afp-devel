@@ -5,9 +5,9 @@
 
 section {* The quadratic form $x^2 + Ny^2$ *}
 
-theory QuadForm
+theory Quad_Form
 imports
-  "~~/src/HOL/Number_Theory/QuadraticReciprocity"
+  "~~/src/HOL/Number_Theory/Number_Theory"
 begin
 
 context

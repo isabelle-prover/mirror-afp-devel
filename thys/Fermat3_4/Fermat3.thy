@@ -5,7 +5,7 @@
 section {* Fermat's last theorem, case $n=3$ *}
 
 theory Fermat3
-imports QuadForm
+imports Quad_Form
 begin
 
 context
