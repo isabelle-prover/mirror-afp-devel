@@ -6,7 +6,7 @@
 section \<open>Mojmir Automata (Without Final States)\<close>
 
 theory Semi_Mojmir
-  imports Main "Aux/Preliminaries2" DTS
+  imports Main "Auxiliary/Preliminaries2" DTS
 begin
 
 subsection \<open>Definitions\<close>

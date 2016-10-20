@@ -6,7 +6,7 @@
 section \<open>Logical Characterization Theorems\<close>
 
 theory Logical_Characterization
-  imports Main af "Aux/Preliminaries2"
+  imports Main af "Auxiliary/Preliminaries2"
 begin
 
 subsection \<open>Eventually True G-Subformulae\<close>
