@@ -581,7 +581,7 @@ next
     then have "{x \<in> (T^^n)--`A. local_time A n x < p} = (T^^n)--`A \<inter> (\<Union>i<p. (local_time A n)-`{i} \<inter> space M)"
       using vimage_restr_def by auto
     also have "... \<in> sets M" by measurable
-    finally show "K p n \<in> sets M" unfolding K_def by simp
+    finally show "K p n \<in> sets M" unfolding K_def .
   qed
 
   show ?case
@@ -796,7 +796,7 @@ proof -
     have "{x \<in> (T^^n)--`A. local_time A n x < k + i} = (T^^n)--`A \<inter> ((local_time A n)-`{..<k+i} \<inter> space M)"
       using vimage_restr_def A_meas by blast
     also have "... \<in> sets M" by measurable
-    finally have "{x \<in> (T^^n)--`A. local_time A n x < k + i} \<in> sets M" by simp
+    finally have "{x \<in> (T^^n)--`A. local_time A n x < k + i} \<in> sets M" .
     then have "emeasure M {x \<in> (T^^n)--`A. local_time B n x < k} \<le> emeasure M {x \<in> (T^^n)--`A. local_time A n x < k + i}"
       by (rule emeasure_mono[OF i])
   }

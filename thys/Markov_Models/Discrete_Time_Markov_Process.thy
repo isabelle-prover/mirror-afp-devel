@@ -5,7 +5,7 @@ section {* Discrete-time Markov Processes *}
 text \<open>In this file we construct discrete-time Markov processes, e.g. with arbitrary state spaces.\<close>
 
 theory Discrete_Time_Markov_Process
-  imports Markov_Models_Auxiliary Stopping_Time
+  imports Markov_Models_Auxiliary
 begin
 
 lemma distr_cong_strong:
@@ -420,7 +420,7 @@ lemma sets_stream_filteration_le_stream_space: "sets (stream_filtration M n) \<s
   unfolding sets_stream_space_eq stream_filtration_def
   by (intro SUP_subset_mono le_measureD2) (auto simp: space_Sup_eq_UN enat_0 elim!: allE[of _ 0])
 
-interpretation stream_filtration: countable_cover_filtration "space (stream_space M)" "stream_filtration M" "UNIV"
+interpretation stream_filtration: filtration "space (stream_space M)" "stream_filtration M"
 proof
   show "space (stream_filtration M i) = space (stream_space M)" for i
     by (simp add: space_stream_filtration)
@@ -429,7 +429,7 @@ proof
     show "stream_filtration M i \<le> stream_filtration M j"
       using \<open>i \<le> j\<close> unfolding stream_filtration_def by (intro SUP_subset_mono) auto
   qed (simp add: space_stream_filtration)
-qed auto
+qed
 
 lemma measurable_stopping_time_stream:
   "stopping_time (stream_filtration M) T \<Longrightarrow> T \<in> stream_space M \<rightarrow>\<^sub>M count_space UNIV"
