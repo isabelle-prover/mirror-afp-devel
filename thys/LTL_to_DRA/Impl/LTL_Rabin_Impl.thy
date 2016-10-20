@@ -6,7 +6,7 @@
 section \<open>Executable Translation from LTL to Rabin Automata\<close>
 
 theory LTL_Rabin_Impl
-  imports Main "../Aux/Map2" "../LTL_Rabin" "../LTL_Rabin_Unfold_Opt" af_Impl Mojmir_Rabin_Impl
+  imports Main "../Auxiliary/Map2" "../LTL_Rabin" "../LTL_Rabin_Unfold_Opt" af_Impl Mojmir_Rabin_Impl
 begin
 
 subsection \<open>Template\<close>
