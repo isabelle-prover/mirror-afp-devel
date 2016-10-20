@@ -1,7 +1,7 @@
 (* Authors: Lammich, Wimmer *)
 section \<open>Generic Worklist Algorithm with Subsumption\<close>
 theory Worklist_Subsumption
-  imports "../IRF/Refine_Monadic/Refine_Monadic"
+  imports "../Sepref"
 begin
 
 subsection \<open>Utilities\<close>
@@ -122,6 +122,7 @@ context Search_Space_Defs begin
             (\<lambda> (passed, wait, brk). do
               { 
                 (a, wait) \<leftarrow> take_from_mset wait;
+                ASSERT (reachable a);
                 if (\<exists> a' \<in> passed. a \<preceq> a') then RETURN (passed, wait, brk) else
                 do
                   {
@@ -258,7 +259,9 @@ context Search_Space begin
       apply (auto simp: worklist_inv_def worklist_inv_frontier_def start_subsumed_def; fail)
       (* Precondition for take-from-set *)
       apply (simp; fail)
-      (* State is subsumed by passed*)  
+      (* State is subsumed by passed*)
+        (* Assertion *)
+        apply (auto simp: worklist_inv_def; fail)
         (*Invariant*)
         apply (auto simp: worklist_inv_def aux2 aux5 
               dest: in_diffD
@@ -294,12 +297,12 @@ locale Worklist1_Defs = Search_Space_Defs +
   fixes succs :: "'a \<Rightarrow> 'a list"
 
 locale Worklist1 = Worklist1_Defs + Search_Space +
-  assumes succs_correct: "set (succs a) = Collect (E a)"
+  assumes succs_correct: "reachable a \<Longrightarrow> set (succs a) = Collect (E a)"
 begin
 
   definition "add_succ1 wait a \<equiv> nfoldli (succs a) (\<lambda>(_,brk). \<not>brk) (\<lambda>a (wait,brk). if F a then RETURN (wait,True) else RETURN (wait + {#a#},False)) (wait, False)"
 
-  lemma add_succ1_ref[refine]: "\<lbrakk>(wait,wait')\<in>Id; (a,a')\<in>Id\<rbrakk> \<Longrightarrow> add_succ1 wait a \<le> \<Down>(Id \<times>\<^sub>r bool_rel) (add_succ_spec wait' a')"
+  lemma add_succ1_ref[refine]: "\<lbrakk>(wait,wait')\<in>Id; (a,a')\<in>b_rel Id reachable\<rbrakk> \<Longrightarrow> add_succ1 wait a \<le> \<Down>(Id \<times>\<^sub>r bool_rel) (add_succ_spec wait' a')"
     apply simp
     unfolding add_succ_spec_def add_succ1_def
     apply (refine_vcg nfoldli_rule[where I = "\<lambda>l1 _ (wait',brk). if brk then \<exists>a'. E a a' \<and> F a' else set_mset wait' = set_mset wait \<union> set l1 \<and> set l1 \<inter> Collect F = {}"])
@@ -340,6 +343,7 @@ begin
     unfolding worklist_algo1_def worklist_algo_def
     apply (refine_rcg)
     apply refine_dref_type
+    unfolding worklist_inv_def
     apply auto
     done
 

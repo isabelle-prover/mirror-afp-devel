@@ -11,13 +11,17 @@ begin
 
   locale Worklist2 = Worklist2_Defs + Worklist1 +
     (* TODO: This is the easy variant: Operations cannot depend on additional heap. *)
-    assumes [sepref_fr_rules]: "(uncurry0 a\<^sub>0i, uncurry0 (RETURN a\<^sub>0)) \<in> unit_assn\<^sup>k \<rightarrow>\<^sub>a A"
-    assumes [sepref_fr_rules]: "(Fi,RETURN o F) \<in> A\<^sup>k \<rightarrow>\<^sub>a bool_assn"
-    assumes [sepref_fr_rules]: "(uncurry Lei,uncurry (RETURN oo op \<preceq>)) \<in> A\<^sup>k *\<^sub>a A\<^sup>k \<rightarrow>\<^sub>a bool_assn"
-    assumes [sepref_fr_rules]: "(succsi,RETURN o succs) \<in> A\<^sup>k \<rightarrow>\<^sub>a list_assn A"
+    assumes [sepref_fr_rules]: "(uncurry0 a\<^sub>0i, uncurry0 (RETURN (PR_CONST a\<^sub>0))) \<in> unit_assn\<^sup>k \<rightarrow>\<^sub>a A"
+    assumes [sepref_fr_rules]: "(Fi,RETURN o PR_CONST F) \<in> A\<^sup>k \<rightarrow>\<^sub>a bool_assn"
+    assumes [sepref_fr_rules]: "(uncurry Lei,uncurry (RETURN oo PR_CONST op \<preceq>)) \<in> A\<^sup>k *\<^sub>a A\<^sup>k \<rightarrow>\<^sub>a bool_assn"
+    assumes [sepref_fr_rules]: "(succsi,RETURN o PR_CONST succs) \<in> A\<^sup>k \<rightarrow>\<^sub>a list_assn A"
   begin
-    sepref_register a\<^sub>0 F "op \<preceq>" succs
+    sepref_register "PR_CONST a\<^sub>0" "PR_CONST F" "PR_CONST op \<preceq>" "PR_CONST succs"
 
+    lemma [def_pat_rules]:
+      "a\<^sub>0 \<equiv> UNPROTECT a\<^sub>0" "F \<equiv> UNPROTECT F" "op \<preceq> \<equiv> UNPROTECT op \<preceq>" "succs \<equiv> UNPROTECT succs"
+      by simp_all
+    
     lemma take_from_mset_as_mop_mset_pick: "take_from_mset = mop_mset_pick"
       apply (intro ext)
       unfolding take_from_mset_def[abs_def] 
