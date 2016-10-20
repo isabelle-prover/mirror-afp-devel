@@ -50,8 +50,8 @@ definition stateful_policy_to_network_graph :: "'v stateful_policy \<Rightarrow>
   "stateful_policy_to_network_graph \<T> = \<lparr> nodes = hosts \<T>, edges = all_flows \<T> \<rparr>"
 
 
-text{* @{typ "'v stateful_policy"} syntactically valid *}
-locale valid_stateful_policy = 
+text{* @{typ "'v stateful_policy"} syntactically well-formed *}
+locale wf_stateful_policy = 
   fixes \<T> :: "'v stateful_policy"
   assumes E_wf: "fst ` (flows_fix \<T>) \<subseteq> (hosts \<T>)"
                    "snd ` (flows_fix \<T>) \<subseteq> (hosts \<T>)"
@@ -128,10 +128,10 @@ text{*Minimizing stateful flows such that only newly added backflows remain*}
   lemma backflows_filternew_flows_state: "backflows (filternew_flows_state \<T>) = (backflows (flows_state \<T>)) - (flows_fix \<T>)"
     by(simp add: filternew_flows_state_alt backflows_minus_backflows)
 
-  lemma stateful_policy_to_network_graph_filternew: "\<lbrakk> valid_stateful_policy \<T> \<rbrakk> \<Longrightarrow> 
+  lemma stateful_policy_to_network_graph_filternew: "\<lbrakk> wf_stateful_policy \<T> \<rbrakk> \<Longrightarrow> 
     stateful_policy_to_network_graph \<T> = 
     stateful_policy_to_network_graph \<lparr>hosts = hosts \<T>, flows_fix = flows_fix \<T>, flows_state = filternew_flows_state \<T> \<rparr>"
-    apply(drule valid_stateful_policy.E_state_fix)
+    apply(drule wf_stateful_policy.E_state_fix)
     apply(simp add: stateful_policy_to_network_graph_def all_flows_def)
     apply(rule Set.equalityI)
      apply(simp add: filternew_flows_state_def backflows_def)
@@ -150,20 +150,20 @@ text{*Minimizing stateful flows such that only newly added backflows remain*}
 
 text{* Given a high-level policy, we can construct a pretty large syntactically valid low level policy. However, the stateful policy will
        almost certainly violate security requirements! *}
-  lemma "wf_graph G \<Longrightarrow> valid_stateful_policy \<lparr> hosts = nodes G, flows_fix = nodes G \<times> nodes G, flows_state = nodes G \<times> nodes G \<rparr>"
-    by(simp add: valid_stateful_policy_def wf_graph_def)
+  lemma "wf_graph G \<Longrightarrow> wf_stateful_policy \<lparr> hosts = nodes G, flows_fix = nodes G \<times> nodes G, flows_state = nodes G \<times> nodes G \<rparr>"
+    by(simp add: wf_stateful_policy_def wf_graph_def)
 
 
-text{* @{term valid_stateful_policy} implies @{term wf_graph} *}
-  lemma valid_stateful_policy_is_wf_graph: "valid_stateful_policy \<T> \<Longrightarrow> wf_graph \<lparr>nodes = hosts \<T>, edges = all_flows \<T>\<rparr>"
-    apply(frule valid_stateful_policy.E_state_backflows_wf)
-    apply(frule valid_stateful_policy.E_state_backflows_wf(2))
-    apply(frule valid_stateful_policy.E_state_valid)
-    apply(frule valid_stateful_policy.E_state_valid(2))
-    apply(frule valid_stateful_policy.E_wf)
-    apply(frule valid_stateful_policy.E_wf(2))
-    apply(simp add: all_flows_def wf_graph_def valid_stateful_policy_def 
-          valid_stateful_policy.finite_fix valid_stateful_policy.finite_state valid_stateful_policy.finite_backflows_state)
+text{* @{const wf_stateful_policy} implies @{term wf_graph} *}
+  lemma wf_stateful_policy_is_wf_graph: "wf_stateful_policy \<T> \<Longrightarrow> wf_graph \<lparr>nodes = hosts \<T>, edges = all_flows \<T>\<rparr>"
+    apply(frule wf_stateful_policy.E_state_backflows_wf)
+    apply(frule wf_stateful_policy.E_state_backflows_wf(2))
+    apply(frule wf_stateful_policy.E_state_valid)
+    apply(frule wf_stateful_policy.E_state_valid(2))
+    apply(frule wf_stateful_policy.E_wf)
+    apply(frule wf_stateful_policy.E_wf(2))
+    apply(simp add: all_flows_def wf_graph_def wf_stateful_policy_def 
+          wf_stateful_policy.finite_fix wf_stateful_policy.finite_state wf_stateful_policy.finite_backflows_state)
     apply(rule conjI)
      apply (metis image_Un sup.bounded_iff)+
     done
@@ -191,8 +191,8 @@ locale stateful_policy_compliance =
     high_level_policy_valid: "all_security_requirements_fulfilled M G"
     and
     -- "the stateful policy must be syntactically valid"
-    stateful_policy_valid:
-    "valid_stateful_policy \<T>"
+    stateful_policy_wf:
+    "wf_stateful_policy \<T>"
     and
     -- "the stateful policy must talk about the same nodes as the high-level policy"
     hosts_nodes:
@@ -219,15 +219,15 @@ locale stateful_policy_compliance =
       assume a1: "E \<subseteq> backflows (filternew_flows_state \<T>)"
       from validReqs have valid_ReqsACS: "valid_reqs (get_ACS M)" by(simp add: get_ACS_def valid_reqs_def)
 
-      from compliant_stateful_ACS stateful_policy_to_network_graph_filternew[OF stateful_policy_valid] have compliant_stateful_ACS_only_state_violations_filternew: 
+      from compliant_stateful_ACS stateful_policy_to_network_graph_filternew[OF stateful_policy_wf] have compliant_stateful_ACS_only_state_violations_filternew: 
       "\<forall>F \<in> get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<lparr>hosts = hosts \<T>, flows_fix = flows_fix \<T>, flows_state = filternew_flows_state \<T> \<rparr>). F \<subseteq> backflows (filternew_flows_state \<T>)" by simp
     
-      from valid_stateful_policy_is_wf_graph[OF stateful_policy_valid] have wfGfilternew: 
+      from wf_stateful_policy_is_wf_graph[OF stateful_policy_wf] have wfGfilternew: 
         "wf_graph \<lparr>nodes = hosts \<T>, edges = flows_fix \<T> \<union> filternew_flows_state \<T> \<union> backflows (filternew_flows_state \<T>)\<rparr>"
         apply(simp add: all_flows_def filternew_flows_state_alt backflows_minus_backflows)
         by(auto simp add: wf_graph_def)
     
-      from valid_stateful_policy.E_state_fix[OF stateful_policy_valid] filternew_subseteq_flows_state have flows_fix_un_filternew_simp: "flows_fix \<T> \<union> filternew_flows_state \<T> = flows_fix \<T>" by blast
+      from wf_stateful_policy.E_state_fix[OF stateful_policy_wf] filternew_subseteq_flows_state have flows_fix_un_filternew_simp: "flows_fix \<T> \<union> filternew_flows_state \<T> = flows_fix \<T>" by blast
     
       from compliant_stateful_ACS_only_state_violations_filternew have 
         "\<And>m. m \<in> set (get_ACS M) \<Longrightarrow> 
@@ -248,7 +248,7 @@ locale stateful_policy_compliance =
         \<forall>F\<in>c_offending_flows m \<lparr>nodes = hosts \<T>, edges = flows_fix \<T> \<union> backflows (filternew_flows_state \<T>) - E\<rparr>. F \<subseteq> backflows (filternew_flows_state \<T>) - E"  
         by simp
     
-      from  backflows_finite rev_finite_subset[OF valid_stateful_policy.finite_state[OF stateful_policy_valid] filternew_subseteq_flows_state] have
+      from  backflows_finite rev_finite_subset[OF wf_stateful_policy.finite_state[OF stateful_policy_wf] filternew_subseteq_flows_state] have
         "finite (backflows (filternew_flows_state \<T>))" by blast
       from a1 this have "finite E" by (metis rev_finite_subset)
     
@@ -283,7 +283,7 @@ locale stateful_policy_compliance =
     theorem compliant_stateful_ACS_no_side_effects:
       "\<forall> E \<subseteq> backflows (flows_state \<T>). \<forall> F \<in> get_offending_flows(get_ACS M) \<lparr> nodes = hosts \<T>, edges = flows_fix \<T> \<union> E \<rparr>. F \<subseteq> E"
     proof -
-      from compliant_stateful_ACS stateful_policy_to_network_graph_filternew[OF stateful_policy_valid] have a1: 
+      from compliant_stateful_ACS stateful_policy_to_network_graph_filternew[OF stateful_policy_wf] have a1: 
       "\<forall>F \<in> get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<lparr>hosts = hosts \<T>, flows_fix = flows_fix \<T>, flows_state = filternew_flows_state \<T> \<rparr>). F \<subseteq> backflows (filternew_flows_state \<T>)" by simp
     
       have backflows_split: "backflows (filternew_flows_state \<T>) \<union> (backflows (flows_state \<T>) - backflows (filternew_flows_state \<T>)) = backflows (flows_state \<T>)"
@@ -331,12 +331,12 @@ locale stateful_policy_compliance =
 
 
     corollary compliant_stateful_ACS_no_side_effects': "\<forall> E \<subseteq> backflows (flows_state \<T>). \<forall> F \<in> get_offending_flows(get_ACS M) \<lparr> nodes = hosts \<T>, edges = flows_fix \<T> \<union> flows_state \<T> \<union> E \<rparr>. F \<subseteq> E"
-      using compliant_stateful_ACS_no_side_effects valid_stateful_policy.E_state_fix[OF stateful_policy_valid] by (metis Un_absorb2)
+      using compliant_stateful_ACS_no_side_effects wf_stateful_policy.E_state_fix[OF stateful_policy_wf] by (metis Un_absorb2)
 
 
     text{* The high level graph generated from the low level policy is a valid graph*}
     lemma valid_stateful_policy: "wf_graph \<lparr>nodes = hosts \<T>, edges = all_flows \<T>\<rparr>"
-      by(rule valid_stateful_policy_is_wf_graph,fact stateful_policy_valid)
+      by(rule wf_stateful_policy_is_wf_graph,fact stateful_policy_wf)
 
     text{* The security requirements are definitely fulfilled if we consider only the fixed flows and the
            normal direction of the stateful flows (i.e. no backflows).
@@ -360,7 +360,7 @@ locale stateful_policy_compliance =
         from all_security_requirements_fulfilled_mono[OF valid_ReqsIFS _ valid_stateful_policy compliant_stateful_IFS[unfolded stateful_policy_to_network_graph_def]] have
           goalIFS: "all_security_requirements_fulfilled (get_IFS M) \<lparr> nodes = hosts \<T>, edges = flows_fix \<T> \<union> flows_state \<T>  \<rparr>" by(simp add: all_flows_def)
 
-        from valid_stateful_policy.E_state_fix[OF stateful_policy_valid] have "flows_fix \<T> \<union> flows_state \<T> =  flows_fix \<T>" by blast
+        from wf_stateful_policy.E_state_fix[OF stateful_policy_wf] have "flows_fix \<T> \<union> flows_state \<T> =  flows_fix \<T>" by blast
         from this compliant_stateful_ACS_static_valid have goalACS:
           "all_security_requirements_fulfilled (get_ACS M) \<lparr> nodes = hosts \<T>, edges = flows_fix \<T> \<union> flows_state \<T>  \<rparr>" by simp
           
@@ -372,7 +372,7 @@ locale stateful_policy_compliance =
 
     text{* The flows with state are a subset of the flows allowed by the policy *}
     theorem flows_state_edges: "flows_state \<T> \<subseteq> edges G"
-      using valid_stateful_policy.E_state_fix[OF stateful_policy_valid] flows_edges by simp
+      using wf_stateful_policy.E_state_fix[OF stateful_policy_wf] flows_edges by simp
 
 
     text{* All offending flows are subsets of the reveres stateful flows *}

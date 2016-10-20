@@ -11,12 +11,29 @@ fun sinvar :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> domainNameTrust) \<
   "sinvar G nP = (\<forall> (s, r) \<in> set (edgesL G). (nP r) \<sqsubseteq>\<^sub>t\<^sub>r\<^sub>u\<^sub>s\<^sub>t (nP s))"
 
 
+definition DomainHierarchyNG_sanity_check_config :: "domainNameTrust list \<Rightarrow> domainTree \<Rightarrow> bool" where
+  "DomainHierarchyNG_sanity_check_config host_attributes tree = (\<forall> c \<in> set host_attributes.
+    case c of Unassigned \<Rightarrow> True
+            | DN (level, trust) \<Rightarrow> valid_hierarchy_pos tree level
+   )"
+
 fun verify_globals :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> domainNameTrust) \<Rightarrow> domainTree \<Rightarrow> bool" where
   "verify_globals G nP tree = (\<forall> v \<in> set (nodesL G). 
     case (nP v) of Unassigned \<Rightarrow> True | DN (level, trust) \<Rightarrow> valid_hierarchy_pos tree level
    )"
 
-
+(*TODO: to get rid of verify_globals
+  this stronger DomainHierarchyNG_sanity_check_config sanity checker checks the config
+  for all graphs!*)
+lemma "DomainHierarchyNG_sanity_check_config c tree \<Longrightarrow>
+    {x. \<exists>v. nP v = x} = set c \<Longrightarrow>
+    verify_globals G nP tree"
+  apply(simp add: DomainHierarchyNG_sanity_check_config_def split: if_split_asm)
+  apply(clarify)
+  apply(case_tac "nP v")
+   apply(simp_all)
+  apply(clarify)
+  by force
 
 
 definition DomainHierarchyNG_offending_list:: "'v list_graph \<Rightarrow> ('v \<Rightarrow> domainNameTrust) \<Rightarrow> ('v \<times> 'v) list list" where
@@ -40,8 +57,7 @@ done*)
 lemma[code_unfold]: "DomainHierarchyNG.node_props P = NetModel_node_props P"
 by(simp add: NetModel_node_props_def)
 
-definition "DomainHierarchyNG_eval G P = (wf_list_graph G \<and> 
-  verify_globals G (SecurityInvariant.node_props SINVAR_DomainHierarchyNG.default_node_properties P) (model_global_properties P) \<and> 
+definition "DomainHierarchyNG_eval G P = (wf_list_graph G \<and>
   sinvar G (SecurityInvariant.node_props SINVAR_DomainHierarchyNG.default_node_properties P))"
 
 
@@ -49,41 +65,39 @@ interpretation DomainHierarchyNG_impl:TopoS_List_Impl
   where default_node_properties=SINVAR_DomainHierarchyNG.default_node_properties
   and sinvar_spec=SINVAR_DomainHierarchyNG.sinvar
   and sinvar_impl=sinvar
-  and verify_globals_spec=SINVAR_DomainHierarchyNG.verify_globals
-  and verify_globals_impl=verify_globals
   and receiver_violation=SINVAR_DomainHierarchyNG.receiver_violation
   and offending_flows_impl=DomainHierarchyNG_offending_list
   and node_props_impl=NetModel_node_props
   and eval_impl=DomainHierarchyNG_eval
  apply(unfold TopoS_List_Impl_def)
  apply(rule conjI)
-  apply(simp add: TopoS_DomainHierarchyNG list_graph_to_graph_def)
+  apply(simp add: TopoS_DomainHierarchyNG list_graph_to_graph_def; fail)
  apply(rule conjI)
-  apply(simp add: list_graph_to_graph_def DomainHierarchyNG_offending_set DomainHierarchyNG_offending_set_def DomainHierarchyNG_offending_list_def)
+  apply(simp add: list_graph_to_graph_def DomainHierarchyNG_offending_set
+        DomainHierarchyNG_offending_set_def DomainHierarchyNG_offending_list_def; fail)
  apply(rule conjI)
   apply(simp only: NetModel_node_props_def)
   apply(metis DomainHierarchyNG.node_props.simps DomainHierarchyNG.node_props_eq_node_props_formaldef)
  apply(simp only: DomainHierarchyNG_eval_def)
  apply(intro allI)
  apply(rule TopoS_eval_impl_proofrule[OF TopoS_DomainHierarchyNG])
- apply(simp_all add: list_graph_to_graph_def)
+ apply(simp add: list_graph_to_graph_def)
 done
 
 
 subsubsection {* DomainHierarchyNG packing *}
-  definition SINVAR_LIB_DomainHierarchyNG :: "('v::vertex, domainNameTrust, domainTree) TopoS_packed" where
+  definition SINVAR_LIB_DomainHierarchyNG :: "('v::vertex, domainNameTrust) TopoS_packed" where
     "SINVAR_LIB_DomainHierarchyNG \<equiv> 
     \<lparr> nm_name = ''DomainHierarchyNG'', 
       nm_receiver_violation = SINVAR_DomainHierarchyNG.receiver_violation,
       nm_default = SINVAR_DomainHierarchyNG.default_node_properties, 
       nm_sinvar = sinvar,
-      nm_verify_globals = verify_globals,
       nm_offending_flows = DomainHierarchyNG_offending_list, 
       nm_node_props = NetModel_node_props,
       nm_eval = DomainHierarchyNG_eval
       \<rparr>"
   interpretation SINVAR_LIB_DomainHierarchyNG_interpretation: TopoS_modelLibrary SINVAR_LIB_DomainHierarchyNG 
-      SINVAR_DomainHierarchyNG.sinvar SINVAR_DomainHierarchyNG.verify_globals
+      SINVAR_DomainHierarchyNG.sinvar
     apply(unfold TopoS_modelLibrary_def SINVAR_LIB_DomainHierarchyNG_def)
     apply(rule conjI)
      apply(simp)
@@ -131,6 +145,6 @@ value "DomainHierarchyNG_offending_list example_TUM_net_invalid example_TUM_conf
 
 hide_const (open) NetModel_node_props
 
-hide_const (open) sinvar verify_globals 
+hide_const (open) sinvar 
 
 end

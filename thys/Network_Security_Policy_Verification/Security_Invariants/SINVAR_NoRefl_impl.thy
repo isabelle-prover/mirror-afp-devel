@@ -10,9 +10,6 @@ subsubsection {* SecurityInvariant NoRefl List Implementation *}
 fun sinvar :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> node_config) \<Rightarrow> bool" where
   "sinvar G nP = (\<forall> (s,r) \<in> set (edgesL G). s = r \<longrightarrow> nP s = Refl)"
 
-fun verify_globals :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> node_config) \<Rightarrow> unit \<Rightarrow> bool" where
-  "verify_globals _ _ _ = True"
-
 
 definition NoRefl_offending_list:: "'v list_graph \<Rightarrow> ('v \<Rightarrow> node_config) \<Rightarrow> ('v \<times> 'v) list list" where
   "NoRefl_offending_list G nP = (if sinvar G nP then
@@ -27,8 +24,7 @@ lemma[code_unfold]: "SecurityInvariant.node_props SINVAR_NoRefl.default_node_pro
 apply(simp add: NetModel_node_props_def)
 done
 
-definition "NoRefl_eval G P = (wf_list_graph G \<and> 
-  verify_globals G (SecurityInvariant.node_props SINVAR_NoRefl.default_node_properties P) (model_global_properties P) \<and> 
+definition "NoRefl_eval G P = (wf_list_graph G \<and>
   sinvar G (SecurityInvariant.node_props SINVAR_NoRefl.default_node_properties P))"
 
 
@@ -36,8 +32,6 @@ interpretation NoRefl_impl:TopoS_List_Impl
   where default_node_properties=SINVAR_NoRefl.default_node_properties
   and sinvar_spec=SINVAR_NoRefl.sinvar
   and sinvar_impl=sinvar
-  and verify_globals_spec=SINVAR_NoRefl.verify_globals
-  and verify_globals_impl=verify_globals
   and receiver_violation=SINVAR_NoRefl.receiver_violation
   and offending_flows_impl=NoRefl_offending_list
   and node_props_impl=NetModel_node_props
@@ -52,24 +46,23 @@ interpretation NoRefl_impl:TopoS_List_Impl
   apply(metis NoRefl.node_props.simps NoRefl.node_props_eq_node_props_formaldef)
  apply(simp only: NoRefl_eval_def)
  apply(simp add: TopoS_eval_impl_proofrule[OF TopoS_NoRefl])
- apply(simp_all add: list_graph_to_graph_def)
+ apply(simp add: list_graph_to_graph_def)
 done
 
 
 subsubsection {* SecurityGateway packing *}
-  definition SINVAR_LIB_NoRefl :: "('v::vertex, node_config, unit) TopoS_packed" where
+  definition SINVAR_LIB_NoRefl :: "('v::vertex, node_config) TopoS_packed" where
     "SINVAR_LIB_NoRefl \<equiv> 
     \<lparr> nm_name = ''NoRefl'', 
       nm_receiver_violation = SINVAR_NoRefl.receiver_violation,
       nm_default = SINVAR_NoRefl.default_node_properties, 
       nm_sinvar = sinvar,
-      nm_verify_globals = verify_globals,
       nm_offending_flows = NoRefl_offending_list, 
       nm_node_props = NetModel_node_props,
       nm_eval = NoRefl_eval
       \<rparr>"
   interpretation SINVAR_LIB_NoRefl_interpretation: TopoS_modelLibrary SINVAR_LIB_NoRefl
-      SINVAR_NoRefl.sinvar SINVAR_NoRefl.verify_globals
+      SINVAR_NoRefl.sinvar
     apply(unfold TopoS_modelLibrary_def SINVAR_LIB_NoRefl_def)
     apply(rule conjI)
      apply(simp)
@@ -91,6 +84,6 @@ text {* Examples*}
 
 
 hide_const (open) NetModel_node_props
-hide_const (open) sinvar verify_globals
+hide_const (open) sinvar
 
 end

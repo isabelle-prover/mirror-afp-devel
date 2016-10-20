@@ -212,7 +212,8 @@ begin
   theorem is_offending_flows_min_set_minimalize_offending_overapprox:
       assumes mono: "sinvar_mono"
       and vG: "wf_graph G" and iO: "is_offending_flows (set ff) G nP" and sF: "set ff \<subseteq> edges G" and dF: "distinct ff"
-      shows "is_offending_flows_min_set (set (minimalize_offending_overapprox ff [] G nP)) G nP" (is "is_offending_flows_min_set ?minset G nP")
+      shows "is_offending_flows_min_set (set (minimalize_offending_overapprox ff [] G nP)) G nP"
+              (is "is_offending_flows_min_set ?minset G nP")
   proof -
     from iO have "sinvar (delete_edges G (set ff)) nP" by (metis is_offending_flows_def)
 
@@ -503,8 +504,27 @@ context SecurityInvariant_preliminaries
       done*)
 
     
- end
+end
 
+
+text{*A version which acts on configured security invariants.
+      I.e. there is no type @{typ 'a} for the host attributes in it.*}
+fun minimalize_offending_overapprox :: "('v graph \<Rightarrow> bool) \<Rightarrow> ('v \<times> 'v) list \<Rightarrow> ('v \<times> 'v) list \<Rightarrow> 
+'v graph \<Rightarrow>('v \<times> 'v) list" where
+"minimalize_offending_overapprox _ [] keep _ = keep" |
+"minimalize_offending_overapprox m (f#fs) keep G = (if m (delete_edges_list G (fs@keep)) then
+    minimalize_offending_overapprox m fs keep G
+  else
+    minimalize_offending_overapprox m fs (f#keep) G
+  )"
+
+lemma minimalize_offending_overapprox_boundnP:
+shows "minimalize_offending_overapprox (\<lambda>G. m G nP) fs keeps G =
+         SecurityInvariant_withOffendingFlows.minimalize_offending_overapprox m fs keeps G nP"
+  apply(induction fs arbitrary: keeps)
+   apply(simp add: SecurityInvariant_withOffendingFlows.minimalize_offending_overapprox.simps; fail)
+  apply(simp add: SecurityInvariant_withOffendingFlows.minimalize_offending_overapprox.simps)
+  done
 
 context SecurityInvariant_withOffendingFlows
 begin

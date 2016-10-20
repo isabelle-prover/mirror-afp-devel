@@ -55,9 +55,6 @@ definition default_node_properties :: "security_clearance"
 fun sinvar :: "'v graph \<Rightarrow> ('v \<Rightarrow> security_clearance) \<Rightarrow> bool" where
   "sinvar G nP = (\<forall> (e1,e2) \<in> edges G. (nP e1) \<le> (nP e2))"
 
-fun verify_globals :: "'v graph \<Rightarrow> ('v \<Rightarrow> security_clearance) \<Rightarrow> 'b \<Rightarrow> bool" where
-  "verify_globals _ _ _ = True"
-
 definition receiver_violation :: "bool" where "receiver_violation \<equiv> False"
 
 
@@ -69,7 +66,6 @@ lemma sinvar_mono: "SecurityInvariant_withOffendingFlows.sinvar_mono sinvar"
 
 interpretation SecurityInvariant_preliminaries
 where sinvar = sinvar
-and verify_globals = verify_globals
   apply unfold_locales
     apply(frule_tac finite_distinct_list[OF wf_graph.finiteE])
     apply(erule_tac exE)
@@ -111,16 +107,15 @@ subsection {*ENF*}
     apply(auto)
   done
    
-
-  interpretation BLPstrict: SecurityInvariant_ACS sinvar verify_globals default_node_properties
-  where "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar = BLP_offending_set"
-    unfolding receiver_violation_def
+  interpretation BLPstrict: SecurityInvariant_ACS sinvar default_node_properties
+  (*TODO: why is there a where and no "rewrites" in the afp?*)
+  rewrites "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar = BLP_offending_set"
     unfolding default_node_properties_def
     apply(unfold_locales)
       apply(rule ballI)
       apply(rule SecurityInvariant_withOffendingFlows.ENF_fsts_refl_instance[OF BLP_ENF_refl])
          apply(simp_all add: BLP_ENF BLP_ENF_refl)[3]
-      apply(simp add: secret_default_candidate)
+      apply(simp add: secret_default_candidate; fail)
      apply(erule default_uniqueness_by_counterexample_ACS)
      apply(rule_tac x="\<lparr> nodes=set [vertex_1,vertex_2], edges = set [(vertex_1,vertex_2)] \<rparr>" in exI, simp)
      apply(simp add: BLP_offending_set graph_ops wf_graph_def)
@@ -140,6 +135,6 @@ subsection {*ENF*}
    
 hide_fact (open) sinvar_mono   
 
-hide_const (open) sinvar verify_globals receiver_violation default_node_properties
+hide_const (open) sinvar receiver_violation default_node_properties
 
 end

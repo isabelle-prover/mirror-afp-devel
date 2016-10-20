@@ -13,9 +13,6 @@ text {* Less-equal other nodes depend on the output of a node than its dependabi
 fun sinvar :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> dependability_level) \<Rightarrow> bool" where
   "sinvar G nP = (\<forall> (e1,e2) \<in> set (edgesL G). (num_reachable G e1) \<le> (nP e1))"
 
-fun verify_globals :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> dependability_level) \<Rightarrow> unit \<Rightarrow> bool" where
-  "verify_globals _ _ _ = True"
-
 
 value "sinvar 
     \<lparr> nodesL = [1::nat,2,3,4], edgesL = [(1,2), (2,3), (3,4), (8,9),(9,8)] \<rparr>
@@ -29,16 +26,16 @@ value "sinvar
 
 
 text{* Generate a valid configuration to start from: *}
-   fun fix_nP :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> dependability_level) \<Rightarrow> ('v \<Rightarrow> dependability_level)" where
-      "fix_nP G nP = (\<lambda>v. let nr = num_reachable G v in (if nr \<le> (nP v) then (nP v) else nr))"
+   fun dependability_fix_nP :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> dependability_level) \<Rightarrow> ('v \<Rightarrow> dependability_level)" where
+      "dependability_fix_nP G nP = (\<lambda>v. let nr = num_reachable G v in (if nr \<le> (nP v) then (nP v) else nr))"
 
-   theorem fix_nP_impl_correct: "wf_list_graph G \<Longrightarrow> fix_nP G nP  = SINVAR_Dependability.fix_nP (list_graph_to_graph G) nP"
+   theorem dependability_fix_nP_impl_correct: "wf_list_graph G \<Longrightarrow> dependability_fix_nP G nP  = SINVAR_Dependability.dependability_fix_nP (list_graph_to_graph G) nP"
    by(simp add: num_reachable_correct fun_eq_iff)
 
-   value "let G = \<lparr> nodesL = [1::nat,2,3,4], edgesL = [(1,1), (2,1), (3,1), (4,1), (1,2), (1,3)] \<rparr> in (let nP = fix_nP G (\<lambda>e. 0) in map (\<lambda>v. nP v) (nodesL G))"
+   value "let G = \<lparr> nodesL = [1::nat,2,3,4], edgesL = [(1,1), (2,1), (3,1), (4,1), (1,2), (1,3)] \<rparr> in (let nP = dependability_fix_nP G (\<lambda>e. 0) in map (\<lambda>v. nP v) (nodesL G))"
 
 
-   value "let G = \<lparr> nodesL = [1::nat,2,3,4], edgesL = [(1,1)] \<rparr> in (let nP = fix_nP G (\<lambda>e. 0) in map (\<lambda>v. nP v) (nodesL G))"
+   value "let G = \<lparr> nodesL = [1::nat,2,3,4], edgesL = [(1,1)] \<rparr> in (let nP = dependability_fix_nP G (\<lambda>e. 0) in map (\<lambda>v. nP v) (nodesL G))"
 
 
 
@@ -52,8 +49,7 @@ lemma[code_unfold]: "SecurityInvariant.node_props SINVAR_Dependability.default_n
 apply(simp add: NetModel_node_props_def)
 done
 
-definition "Dependability_eval G P = (wf_list_graph G \<and> 
-  verify_globals G (SecurityInvariant.node_props SINVAR_Dependability.default_node_properties P) (model_global_properties P) \<and> 
+definition "Dependability_eval G P = (wf_list_graph G \<and>
   sinvar G (SecurityInvariant.node_props SINVAR_Dependability.default_node_properties P))"
 
 
@@ -74,8 +70,6 @@ interpretation Dependability_impl:TopoS_List_Impl
   where default_node_properties=SINVAR_Dependability.default_node_properties
   and sinvar_spec=SINVAR_Dependability.sinvar
   and sinvar_impl=sinvar
-  and verify_globals_spec=SINVAR_Dependability.verify_globals
-  and verify_globals_impl=verify_globals
   and receiver_violation=SINVAR_Dependability.receiver_violation
   and offending_flows_impl=Dependability_offending_list
   and node_props_impl=NetModel_node_props
@@ -83,11 +77,9 @@ interpretation Dependability_impl:TopoS_List_Impl
  apply(unfold TopoS_List_Impl_def)
  apply(rule conjI)
   apply(rule conjI)
-   apply(simp add: TopoS_Dependability)
-  apply(rule conjI)
-   apply(intro allI impI)
-   apply(fact sinvar_correct)
-  apply(simp)
+   apply(simp add: TopoS_Dependability; fail)
+  apply(intro allI impI)
+  apply(fact sinvar_correct)
  apply(rule conjI)
   apply(unfold Dependability_offending_list_def)
   apply(intro allI impI)
@@ -101,24 +93,22 @@ interpretation Dependability_impl:TopoS_List_Impl
  apply(simp only: Dependability_eval_def)
  apply(intro allI impI)
  apply(rule TopoS_eval_impl_proofrule[OF TopoS_Dependability])
-  apply(simp only: sinvar_correct)
- apply(simp)
+ apply(simp only: sinvar_correct)
 done
 
 subsubsection {* Dependability packing *}
-  definition SINVAR_LIB_Dependability :: "('v::vertex, SINVAR_Dependability.dependability_level, unit) TopoS_packed" where
+  definition SINVAR_LIB_Dependability :: "('v::vertex, SINVAR_Dependability.dependability_level) TopoS_packed" where
     "SINVAR_LIB_Dependability \<equiv> 
     \<lparr> nm_name = ''Dependability'', 
       nm_receiver_violation = SINVAR_Dependability.receiver_violation,
       nm_default = SINVAR_Dependability.default_node_properties, 
       nm_sinvar = sinvar,
-      nm_verify_globals = verify_globals,
       nm_offending_flows = Dependability_offending_list, 
       nm_node_props = NetModel_node_props,
       nm_eval = Dependability_eval
       \<rparr>"
   interpretation SINVAR_LIB_Dependability_interpretation: TopoS_modelLibrary SINVAR_LIB_Dependability
-      SINVAR_Dependability.sinvar SINVAR_Dependability.verify_globals
+      SINVAR_Dependability.sinvar
     apply(unfold TopoS_modelLibrary_def SINVAR_LIB_Dependability_def)
     apply(rule conjI)
      apply(simp)
@@ -136,11 +126,11 @@ text {*Example: *}
       in sinvar G  ((\<lambda> n. 2))"
   
   value "let G = \<lparr> nodesL = [1::nat,2,3,4,8,9,10], edgesL = [(1,2), (2,3), (3,4), (8,9),(9,8)] \<rparr>
-      in Dependability_eval G  \<lparr>node_properties=[1\<mapsto>3, 2\<mapsto>2, 3\<mapsto>1, 4\<mapsto>0, 8\<mapsto>2, 9\<mapsto>2, 10\<mapsto>0], model_global_properties=() \<rparr>"
+      in Dependability_eval G  \<lparr>node_properties=[1\<mapsto>3, 2\<mapsto>2, 3\<mapsto>1, 4\<mapsto>0, 8\<mapsto>2, 9\<mapsto>2, 10\<mapsto>0] \<rparr>"
   
   value "Dependability_offending_list \<lparr> nodesL = [1::nat,2,3,4,8,9,10], edgesL = [(1,2), (2,3), (3,4), (8,9),(9,8)] \<rparr> (\<lambda> n. 2)"
 
 hide_fact (open) sinvar_correct
-hide_const (open) sinvar verify_globals NetModel_node_props
+hide_const (open) sinvar NetModel_node_props
 
 end

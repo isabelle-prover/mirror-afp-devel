@@ -1,5 +1,5 @@
 theory SINVAR_ACLnotCommunicateWith
-imports "../TopoS_Helper"
+imports "../TopoS_Helper" SINVAR_ACLcommunicateWith
 begin
 
 subsection {* SecurityInvariant ACLnotCommunicateWith*}
@@ -14,11 +14,12 @@ definition default_node_properties :: "'v set"
 fun sinvar :: "'v graph \<Rightarrow> ('v \<Rightarrow> 'v set) \<Rightarrow> bool" where
   "sinvar G nP = (\<forall> v \<in> nodes G. \<forall> a \<in> (succ_tran G v). a \<notin> (nP v))"
 
-fun verify_globals :: "'v graph \<Rightarrow> ('v \<Rightarrow> 'v set) \<Rightarrow> 'b \<Rightarrow> bool" where
-  "verify_globals _ _ _ = True"
-
 definition receiver_violation :: "bool" where 
   "receiver_violation \<equiv> False"
+
+text{*It is the inverse of @{const SINVAR_ACLcommunicateWith.sinvar}*}
+lemma "\<forall>v. UNIV - nP' v = set (nP v) \<Longrightarrow> SINVAR_ACLcommunicateWith.sinvar G nP \<longleftrightarrow> sinvar G nP'"
+  by auto
 
 
 lemma sinvar_mono: "SecurityInvariant_withOffendingFlows.sinvar_mono sinvar"
@@ -43,7 +44,6 @@ lemma succ_tran_empty: "(succ_tran \<lparr>nodes = nodes G, edges = {}\<rparr> v
 
 interpretation SecurityInvariant_preliminaries
 where sinvar = sinvar
-and verify_globals = verify_globals
   apply unfold_locales
     apply(frule_tac finite_distinct_list[OF wf_graph.finiteE])
     apply(erule_tac exE)
@@ -63,7 +63,6 @@ by (metis Domain.DomainI Domain_empty Domain_insert distinct_vertices12 singleto
 interpretation ACLnotCommunicateWith: SecurityInvariant_ACS
 where default_node_properties = SINVAR_ACLnotCommunicateWith.default_node_properties
 and sinvar = SINVAR_ACLnotCommunicateWith.sinvar
-and verify_globals = verify_globals
   unfolding SINVAR_ACLnotCommunicateWith.default_node_properties_def
   apply unfold_locales
  
@@ -116,6 +115,6 @@ and verify_globals = verify_globals
   lemma TopoS_ACLnotCommunicateWith: "SecurityInvariant sinvar default_node_properties receiver_violation"
   unfolding receiver_violation_def by unfold_locales  
 
-hide_const (open) sinvar verify_globals receiver_violation default_node_properties
+hide_const (open) sinvar receiver_violation default_node_properties
 
 end

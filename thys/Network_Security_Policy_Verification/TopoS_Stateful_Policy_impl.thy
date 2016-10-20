@@ -248,7 +248,7 @@ subsection{*Algorithms*}
     done
 
 
-(*TODO: show valid_stateful_policy and distinctness and wf_list_graph, ...*)
+(*TODO: show wf_stateful_policy and distinctness and wf_list_graph, ...*)
 
 
    definition generate_valid_stateful_policy_IFSACS :: "'v list_graph \<Rightarrow> 'v SecurityInvariant list \<Rightarrow> 'v stateful_list_policy" where

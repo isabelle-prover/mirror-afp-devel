@@ -33,25 +33,36 @@ definition DomainHierarchy_m::"(string SecurityInvariant)" where
             ''Wifi'' \<mapsto> DN (''aircraft''--''entertain''--''POD''--Leaf, 1),
             ''P1'' \<mapsto> DN (''aircraft''--''entertain''--''POD''--Leaf, 0),
             ''P2'' \<mapsto> DN (''aircraft''--''entertain''--''POD''--Leaf, 0)
-                            ], 
-                          (*At the moment, there is no check whether the assigned node_properties comply with the tree in model_global_properties*)
-          model_global_properties = (
+          ]
+          \<rparr> ''Device Hierarchy''"
+  text{*sanity check that the host attributes correspond to the desired hierarchy*}
+  lemma "DomainHierarchyNG_sanity_check_config
+    (map snd [
+            (''CC'', DN (''aircraft''--''crew''--Leaf, 1)),
+            (''C1'', DN (''aircraft''--''crew''--Leaf, 0)),
+            (''C2'', DN (''aircraft''--''crew''--Leaf, 0)),
+            (''IFEsrv'', DN (''aircraft''--''entertain''--Leaf, 0)),
+            (''IFE1'', DN (''aircraft''--''entertain''--Leaf, 0)),
+            (''IFE2'', DN (''aircraft''--''entertain''--Leaf, 0)),
+            (''SAT'', DN (''aircraft''--''entertain''--''INET''--Leaf, 0)),
+            (''Wifi'', DN (''aircraft''--''entertain''--''POD''--Leaf, 1)),
+            (''P1'', DN (''aircraft''--''entertain''--''POD''--Leaf, 0)),
+            (''P2'', DN (''aircraft''--''entertain''--''POD''--Leaf, 0))
+                            ])
+            (
             Department ''aircraft'' [
               Department ''entertain'' [
                 Department ''POD'' [], Department ''INET'' []
               ],
               Department ''crew'' []
-            ]) 
-          \<rparr>"
-
+            ])" by eval
 
 definition SecurityGateway_m::"(string SecurityInvariant)" where
   "SecurityGateway_m \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_SecurityGatewayExtended \<lparr> 
           node_properties = [''IFEsrv'' \<mapsto> SINVAR_SecGwExt.SecurityGatewayIN,
                              ''IFE1'' \<mapsto> SINVAR_SecGwExt.DomainMember,
-                             ''IFE2'' \<mapsto> SINVAR_SecGwExt.DomainMember], 
-          model_global_properties = () 
-          \<rparr>"
+                             ''IFE2'' \<mapsto> SINVAR_SecGwExt.DomainMember]
+          \<rparr> ''IFEsrc mediates access of its thin clients''"
 
 
 (*
@@ -67,9 +78,8 @@ definition BLP_m::"(string SecurityInvariant)" where
                              ''C2'' \<mapsto> \<lparr> privacy_level = 2, trusted = False \<rparr>,
                              ''IFE1'' \<mapsto> \<lparr> privacy_level = 1, trusted = False \<rparr>,
                              ''IFE2'' \<mapsto> \<lparr> privacy_level = 1, trusted = False \<rparr>,
-                             ''IFEsrv'' \<mapsto> \<lparr> privacy_level = 0, trusted = True \<rparr>], 
-          model_global_properties = () 
-          \<rparr>"
+                             ''IFEsrv'' \<mapsto> \<lparr> privacy_level = 0, trusted = True \<rparr>]
+          \<rparr> ''Confidential data''"
 
 definition "security_invariants = [ DomainHierarchy_m, SecurityGateway_m, BLP_m]"
 

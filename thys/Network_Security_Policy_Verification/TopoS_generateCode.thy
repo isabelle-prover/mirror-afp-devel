@@ -32,12 +32,11 @@ export_code
       nm_eval
       nm_node_props
       nm_offending_flows
-      nm_verify_globals
       nm_sinvar
       nm_default
       nm_receiver_violation nm_name
   --"TopoS Params"
-      model_global_properties node_properties
+      node_properties
   --"Finite Graph functions"
       FiniteListGraph.wf_list_graph
       FiniteListGraph.add_node 

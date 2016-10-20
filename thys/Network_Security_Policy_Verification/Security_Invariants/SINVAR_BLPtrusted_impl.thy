@@ -9,9 +9,6 @@ code_identifier code_module SINVAR_BLPtrusted_impl => (Scala) SINVAR_BLPtrusted
 fun sinvar :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> SINVAR_BLPtrusted.node_config) \<Rightarrow> bool" where
   "sinvar G nP = (\<forall> (e1,e2) \<in> set (edgesL G). (if trusted (nP e2) then True else privacy_level (nP e1) \<le> privacy_level (nP e2) ))"
 
-fun verify_globals :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> SINVAR_BLPtrusted.node_config) \<Rightarrow> unit \<Rightarrow> bool" where
-  "verify_globals _ _ _ = True"
-
 
 definition BLP_offending_list:: "'v list_graph \<Rightarrow> ('v \<Rightarrow> SINVAR_BLPtrusted.node_config) \<Rightarrow> ('v \<times> 'v) list list" where
   "BLP_offending_list G nP = (if sinvar G nP then
@@ -26,8 +23,7 @@ lemma[code_unfold]: "SecurityInvariant.node_props SINVAR_BLPtrusted.default_node
 apply(simp add: NetModel_node_props_def)
 done
 
-definition "BLP_eval G P = (wf_list_graph G \<and> 
-  verify_globals G (SecurityInvariant.node_props SINVAR_BLPtrusted.default_node_properties P) (model_global_properties P) \<and> 
+definition "BLP_eval G P = (wf_list_graph G \<and>
   sinvar G (SecurityInvariant.node_props SINVAR_BLPtrusted.default_node_properties P))"
 
 
@@ -35,15 +31,13 @@ interpretation BLPtrusted_impl:TopoS_List_Impl
   where default_node_properties=SINVAR_BLPtrusted.default_node_properties
   and sinvar_spec=SINVAR_BLPtrusted.sinvar
   and sinvar_impl=sinvar
-  and verify_globals_spec=SINVAR_BLPtrusted.verify_globals
-  and verify_globals_impl=verify_globals
   and receiver_violation=SINVAR_BLPtrusted.receiver_violation
   and offending_flows_impl=BLP_offending_list
   and node_props_impl=NetModel_node_props
   and eval_impl=BLP_eval
  apply(unfold TopoS_List_Impl_def)
  apply(rule conjI)
-  apply(simp add: TopoS_BLPtrusted list_graph_to_graph_def)
+  apply(simp add: TopoS_BLPtrusted list_graph_to_graph_def; fail)
  apply(rule conjI)
   apply(simp add: list_graph_to_graph_def BLP_offending_set BLP_offending_set_def BLP_offending_list_def)
  apply(rule conjI)
@@ -58,19 +52,18 @@ done
 
 
 subsubsection {* BLPtrusted packing *}
-  definition SINVAR_LIB_BLPtrusted :: "('v::vertex, SINVAR_BLPtrusted.node_config, unit) TopoS_packed" where
+  definition SINVAR_LIB_BLPtrusted :: "('v::vertex, SINVAR_BLPtrusted.node_config) TopoS_packed" where
     "SINVAR_LIB_BLPtrusted \<equiv> 
     \<lparr> nm_name = ''BLPtrusted'', 
       nm_receiver_violation = SINVAR_BLPtrusted.receiver_violation,
       nm_default = SINVAR_BLPtrusted.default_node_properties, 
       nm_sinvar = sinvar,
-      nm_verify_globals = verify_globals,
       nm_offending_flows = BLP_offending_list, 
       nm_node_props = NetModel_node_props,
       nm_eval = BLP_eval
       \<rparr>"
   interpretation SINVAR_LIB_BLPtrusted_interpretation: TopoS_modelLibrary SINVAR_LIB_BLPtrusted 
-      SINVAR_BLPtrusted.sinvar SINVAR_BLPtrusted.verify_globals
+      SINVAR_BLPtrusted.sinvar
     apply(unfold TopoS_modelLibrary_def SINVAR_LIB_BLPtrusted_def)
     apply(rule conjI)
      apply(simp)
@@ -86,6 +79,6 @@ export_code SINVAR_LIB_BLPtrusted in Scala
 
 hide_const (open) NetModel_node_props BLP_offending_list BLP_eval
 
-hide_const (open) sinvar verify_globals
+hide_const (open) sinvar
 
 end

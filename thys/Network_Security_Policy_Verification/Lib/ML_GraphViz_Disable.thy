@@ -3,7 +3,7 @@ imports ML_GraphViz
 begin
 
 ML{*
-Graphviz.open_viewer := false
+Graphviz.open_viewer := DoNothing
 *}
 
 end

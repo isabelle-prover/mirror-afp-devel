@@ -10,9 +10,12 @@ ML_val{*
 
 
 ML {*
+(*should we open a pdf viewer to display the generated graph?*)
+datatype open_viewer = DoNothing | OpenImmediately | AskTimeouted of real
+
 signature GRAPHVIZ =
 sig
-  val open_viewer: bool Unsynchronized.ref
+  val open_viewer: open_viewer Unsynchronized.ref
 
   (*function to modify the printing of a node name*)
   val default_tune_node_format: term -> string -> string
@@ -36,8 +39,8 @@ end
 structure Graphviz: GRAPHVIZ =
 struct
 
-(*if set to false, graphviz will not be run and not pdf will be opened. Include ML_GraphViz_Disable.thy to run in batch mode.*)
-val open_viewer = Unsynchronized.ref true
+(*if set to `DoNothing`, graphviz will not be run and not pdf will be opened. Include ML_GraphViz_Disable.thy to run in batch mode.*)
+val open_viewer = Unsynchronized.ref OpenImmediately
 
 val default_tune_node_format: term -> string -> string = (fn _ => I)
 
@@ -62,38 +65,41 @@ val sanitize_string =
   String.map (fn c => if is_valid_char c then c else #"_")
 
 
-fun term_to_string (ctxt: Proof.context) (t: term) : string = 
-  (*n |> Syntax.pretty_term ctxt |> Pretty.string_of |> ATP_Util.unyxml*)
+fun term_to_string ctxt t =
   let
     val ctxt' = Config.put show_markup false ctxt;
   in Print_Mode.setmp [] (Syntax.string_of_term ctxt') t
   end;
 
 
-fun term_to_string_safe ctxt (n: term) : string = 
+fun term_to_string_safe ctxt t = 
   let
-    val str = term_to_string ctxt n
+    val str = term_to_string ctxt t
   in
-    if sanitize_string str <> str then (warning ("String  "^str^" contains invalid characters!"); sanitize_string str)
-     else str end;
+    if sanitize_string str <> str
+    then (warning ("String  "^str^" contains invalid characters!"); sanitize_string str)
+    else str end;
 
 local
   val sanitize_string_html =
     String.map (fn c => if (is_valid_char c orelse c = #" " orelse (c <= #"/" andalso c >= #"(")
                             orelse c = #"|" orelse c = #"=" orelse c = #"?" orelse c = #"!" orelse c = #"_"
-                            orelse c = #"[" orelse c = #"}") then c else #"_")
+                            orelse c = #"[" orelse c = #"]") then c else #"_")
 in
   fun term_to_string_html ctxt (n: term) : string = 
     let
       val str = term_to_string ctxt n
     in
-      if sanitize_string_html str <> str then (warning ("String  "^str^" contains invalid characters!"); sanitize_string_html str)
-       else str end
+      if sanitize_string_html str <> str
+      then (warning ("String  "^str^" contains invalid characters!"); sanitize_string_html str)
+      else str end
 end;
 
 fun node_to_string ctxt (tune_node_format: term -> string -> string) (n: term) : string = 
   n |> term_to_string ctxt |> tune_node_format n
-  handle Subscript => error ("Subscript Exception in node_to_string for string "^( Pretty.string_of (Syntax.pretty_term ctxt n)));
+  handle Subscript =>
+    error ("Subscript Exception in node_to_string for string " ^
+           (Pretty.string_of (Syntax.pretty_term ctxt n)));
 
 local
 
@@ -141,19 +147,29 @@ local
   fun apply_dot_header header edges =
     "digraph graphname {\n#header\n" ^ header ^"\n#edges\n\n"^ implode edges ^ "}"
 in
-  fun visualize_graph_pretty ctxt tune_node_format Es (header:string) =
+  fun visualize_graph_pretty ctxt tune_node_format Es (header: string) =
     let 
-      val evaluated_edges = map (fn (str, t) => (str, evaluate_term ctxt t)) Es
-      val edge_to_string = HOLogic.dest_list #> map HOLogic.dest_prod #> format_dot_edges ctxt tune_node_format #> implode
-      val formatted_edges = map (fn (str, t) => str ^ "\n" ^ edge_to_string t) evaluated_edges
-    in
-      if !open_viewer then (* only run the shell commands if not disabled by open_viewer *)
-        (
-          apply_dot_header header formatted_edges
+      val evaluated_edges = map (fn (str, t) => (str, evaluate_term ctxt t)) Es;
+      val edge_to_string = HOLogic.dest_list #> map HOLogic.dest_prod #> format_dot_edges ctxt tune_node_format #> implode;
+      val formatted_edges = map (fn (str, t) => str ^ "\n" ^ edge_to_string t) evaluated_edges;
+      val execute_command = fn _ => apply_dot_header header formatted_edges
           |> write_to_tmpfile
-          |> paint_graph Graphviz_Platform_Config.executable_pdf_viewer Graphviz_Platform_Config.executable_dot
-        )
-      else writeln "visualization disabled (Graphviz.open_viewer)"
+          |> paint_graph Graphviz_Platform_Config.executable_pdf_viewer Graphviz_Platform_Config.executable_dot;
+    in
+      case !open_viewer of
+          DoNothing => writeln "visualization disabled (Graphviz.open_viewer)"
+        | OpenImmediately => execute_command ()
+        | AskTimeouted wait_seconds => let val (text, promise) = Active.dialog_text ();
+            val _ = writeln ("Run Grpahviz and display pdf? " ^ text "yes" ^ "/" ^ text "no" ^ " (execution paused)")
+            in
+              Timeout.apply (seconds wait_seconds) (fn _ => 
+                let val m = (Future.join promise) in
+                (if m = "yes" then execute_command () else (writeln "no"))
+                end
+              ) ()
+             end handle Timeout.TIMEOUT _ =>
+                  (writeln ("Timeouted. You did not klick yes/no. Killed to continue. " ^
+                            "If you want to see the pdf, just re-run this and klick yes."))
     end
   end
 

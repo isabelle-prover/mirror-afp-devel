@@ -1,7 +1,10 @@
 theory FiniteListGraph_Impl
 imports 
   FiniteListGraph
-  "../../Collections/ICF/impl/RBTSetImpl" (*red black trees*)
+  (*"../../Collections/ICF/impl/RBTSetImpl" (*red black trees*)*)
+    "~~/src/HOL/Library/RBT_Impl"
+    "~~/src/HOL/Library/RBT"
+  "~~/src/HOL/Library/Product_Lexorder"
   (*maybe import the following only at the end*)
   "Efficient_Distinct"
   "~~/src/HOL/Library/Code_Char"
@@ -20,17 +23,28 @@ text {* A graph's well-formed-ness can be tested with an executable function. *}
     "wf_list_graph_impl V E \<longleftrightarrow> fst` set E \<subseteq> set V \<and> snd` set E \<subseteq> set V"
   by (induction E) auto
 
-  (*making the \<in> more efficient*)
-  fun wf_list_graph_impl_rs::"('v::linorder) rs \<Rightarrow> ('v \<times> 'v) list \<Rightarrow> bool" where
-    "wf_list_graph_impl_rs V [] = True" |
-    "wf_list_graph_impl_rs V ((v1,v2)#Es) = (rs.memb v1 V \<and> rs.memb v2 V \<and> wf_list_graph_impl_rs V Es)"
 
-  lemma[code]: "wf_list_graph_impl V E = wf_list_graph_impl_rs (rs.from_list V) E"
+definition rbt_fromlist :: "'a list \<Rightarrow> ('a::linorder, unit) RBT.rbt" where 
+  "rbt_fromlist ls \<equiv> RBT.bulkload (map (\<lambda>l. (l, ())) ls)"
+definition "rbt_contains a rbt \<equiv> RBT.lookup rbt a \<noteq> None"
+
+lemma rbt_contains: "rbt_contains a (rbt_fromlist V) \<longleftrightarrow> a \<in> set V"
+  apply(simp add: rbt_contains_def rbt_fromlist_def)
+  apply(induction V)
+   by(simp)+
+
+  (*making the \<in> more efficient*)
+  fun wf_list_graph_impl_rs::"('v::linorder,unit) RBT.rbt \<Rightarrow> ('v \<times> 'v) list \<Rightarrow> bool" where
+    "wf_list_graph_impl_rs V [] = True" |
+    "wf_list_graph_impl_rs V ((v1,v2)#Es) = (rbt_contains v1 V \<and> rbt_contains v2 V \<and> wf_list_graph_impl_rs V Es)"
+
+    
+ lemma[code]: "wf_list_graph_impl V E = wf_list_graph_impl_rs (rbt_fromlist V) E"
    apply(induction E)
-    apply(simp add: rs.correct)
+    apply(simp; fail)
    apply(rename_tac e Es)
    apply(case_tac e)
-   by(simp add: rs.correct)
+   by(simp add: rbt_contains)
 
   lemma[code]: "FiniteListGraph.wf_list_graph_axioms G = wf_list_graph_impl (nodesL G) (edgesL G)"
     by(simp add: FiniteListGraph.wf_list_graph_axioms_def wf_list_graph_impl_axioms_locale_props)

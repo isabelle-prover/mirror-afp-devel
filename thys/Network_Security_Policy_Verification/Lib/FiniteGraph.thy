@@ -129,8 +129,8 @@ text {* Extended graph operations *}
   text{*@{const card} returns @{term 0} for infinite sets.
         Here, for a well-formed graph, if @{const num_reachable} is zero, there are actually no nodes reachable.*}
   lemma num_reachable_zero: "\<lbrakk>wf_graph G; num_reachable G v = 0\<rbrakk> \<Longrightarrow> succ_tran G v = {}"
-  apply(unfold num_reachable_def)
-  apply(case_tac "finite (succ_tran G v)")
+  unfolding num_reachable_def
+  apply(subgoal_tac "finite (succ_tran G v)")
    apply(simp)
   apply(blast intro: succ_tran_finite)
   done

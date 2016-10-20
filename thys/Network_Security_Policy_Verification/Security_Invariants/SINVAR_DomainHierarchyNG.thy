@@ -473,6 +473,7 @@ fun sinvar :: "'v graph \<Rightarrow> ('v \<Rightarrow> domainNameTrust) \<Right
 
 
 
+(*TODO: old legacy function!*)
 text{* a domain name must be in the supplied tree *}
 fun verify_globals :: "'v graph \<Rightarrow> ('v \<Rightarrow> domainNameTrust) \<Rightarrow> domainTree \<Rightarrow> bool" where
   "verify_globals G nP tree = (\<forall> v \<in> nodes G. 
@@ -500,7 +501,6 @@ lemma sinvar_mono: "SecurityInvariant_withOffendingFlows.sinvar_mono sinvar"
 
 interpretation SecurityInvariant_preliminaries
 where sinvar = sinvar
-and verify_globals = verify_globals
   apply unfold_locales
     apply(frule_tac finite_distinct_list[OF wf_graph.finiteE])
     apply(erule_tac exE)
@@ -585,7 +585,6 @@ subsubsection {*ENF*}
 interpretation DomainHierarchyNG: SecurityInvariant_ACS
 where default_node_properties = default_node_properties
 and sinvar = sinvar
-and verify_globals = verify_globals
 rewrites "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar = DomainHierarchyNG_offending_set"
   apply unfold_locales
     apply(rule ballI)
@@ -605,6 +604,6 @@ lemma TopoS_DomainHierarchyNG: "SecurityInvariant sinvar default_node_properties
 
 
 
-hide_const (open) sinvar verify_globals receiver_violation
+hide_const (open) sinvar receiver_violation
 
 end

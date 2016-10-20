@@ -15,20 +15,18 @@ subsection {* Network Graph and Security Requirements *}
 
 
   text{*We add two security requirements*}
-  definition NMParams_secgw_1 :: "(nat, secgw_member, unit) TopoS_Params" where
+  definition NMParams_secgw_1 :: "(nat, secgw_member) TopoS_Params" where
   "NMParams_secgw_1 \<equiv> \<lparr> node_properties = [1 \<mapsto> DomainMember, 
                                      2 \<mapsto> DomainMember, 
                                      3 \<mapsto> DomainMember,
-                                     8 \<mapsto> SecurityGateway],
-                                model_global_properties = () \<rparr>"
+                                     8 \<mapsto> SecurityGateway] \<rparr>"
 
 
-  definition NMParams_blptrusted_1 :: "(nat, SINVAR_BLPtrusted.node_config, unit) TopoS_Params" where
+  definition NMParams_blptrusted_1 :: "(nat, SINVAR_BLPtrusted.node_config) TopoS_Params" where
   "NMParams_blptrusted_1 \<equiv> \<lparr> node_properties = [1 \<mapsto> \<lparr> privacy_level = 1, trusted = False \<rparr>, 
                                      2 \<mapsto> \<lparr> privacy_level = 1, trusted = False \<rparr>, 
                                      3 \<mapsto> \<lparr> privacy_level = 1, trusted = False \<rparr>,
-                                     8 \<mapsto> \<lparr> privacy_level = 0, trusted = True \<rparr>],
-                                model_global_properties = () \<rparr>"
+                                     8 \<mapsto> \<lparr> privacy_level = 0, trusted = True \<rparr>] \<rparr>"
 
   text{*Both security requirements fulfilled?*}
   value "SecurityGateway_eval example_net_secgw NMParams_secgw_1"
@@ -42,12 +40,14 @@ text{*Add violations!*}
   text{*Security Requirement still fulfilled?*}
   value "SecurityGateway_eval example_net_secgw_invalid NMParams_secgw_1"
   text{*Whom to blame?*}
-  value "SecurityGatewayExtended_offending_list example_net_secgw_invalid (SINVAR_SecGwExt_impl.NetModel_node_props NMParams_secgw_1)"
+  value "SecurityGatewayExtended_offending_list example_net_secgw_invalid
+          (SINVAR_SecGwExt_impl.NetModel_node_props NMParams_secgw_1)"
 
   text{*Security Requirement still fulfilled?*}
   value "SINVAR_BLPtrusted_impl.BLP_eval example_net_secgw_invalid NMParams_blptrusted_1"
   text{*Whom to blame?*}
-  value "SINVAR_BLPtrusted_impl.BLP_offending_list example_net_secgw_invalid (SINVAR_BLPtrusted_impl.NetModel_node_props  NMParams_blptrusted_1)"
+  value "SINVAR_BLPtrusted_impl.BLP_offending_list example_net_secgw_invalid
+      (SINVAR_BLPtrusted_impl.NetModel_node_props NMParams_blptrusted_1)"
 
 
 end

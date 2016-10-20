@@ -15,15 +15,14 @@ definition policy :: "string list_graph" where
 
 text{*Sanity check*}
 lemma "wf_list_graph policy" by eval
-(*proof by eval means we have executable code to show the lemma.*)
+(*proof by eval means we have executable code to show the lemma. No need to show anything by hand*)
 
 
 text{*Defining the security invariants*}
 definition LogSink_m::"(string SecurityInvariant)" where
   "LogSink_m \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_Sink \<lparr> 
-          node_properties = [''Log'' \<mapsto> Sink], 
-          model_global_properties = () 
-          \<rparr>"
+          node_properties = [''Log'' \<mapsto> Sink]
+          \<rparr> ''No information must leave the logging server''"
 
 text{*
 0 - unclassified
@@ -35,9 +34,8 @@ definition BLP_m::"(string SecurityInvariant)" where
           node_properties = [''DB'' \<mapsto> \<lparr> privacy_level = 1, trusted = False \<rparr>,
                              ''Log'' \<mapsto> \<lparr> privacy_level = 1, trusted = False \<rparr>,
                              ''WebApp'' \<mapsto> \<lparr> privacy_level = 0, trusted = True \<rparr> 
-                             ], 
-          model_global_properties = () 
-          \<rparr>"
+                             ]
+          \<rparr> ''The database and the logging server have confidential information''"
 
 definition Subnet_m::"(string SecurityInvariant)" where
     "Subnet_m \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_SubnetsInGW \<lparr> 
@@ -45,18 +43,16 @@ definition Subnet_m::"(string SecurityInvariant)" where
                              ''Log'' \<mapsto> Member,
                              ''WebApp'' \<mapsto> Member,
                              ''WebFrnt'' \<mapsto> InboundGateway (*DMZ*)
-                             ], 
-          model_global_properties = () 
-          \<rparr>"
+                             ]
+          \<rparr> ''internal/DMZ structure''"
 
 
 definition DBACL_m::"(string SecurityInvariant)" where
     "DBACL_m \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_CommunicationPartners \<lparr> 
           node_properties = [''DB'' \<mapsto> Master [''WebApp''],
                              ''WebApp'' \<mapsto> Care
-                             ], 
-          model_global_properties = () 
-          \<rparr>"
+                             ]
+          \<rparr> ''ACL of db''"
 
 text{*The list of security invariants*}
 definition "security_invariants = [Subnet_m, BLP_m, LogSink_m, DBACL_m]"
@@ -160,12 +156,12 @@ writeln ("echo 1 > /proc/sys/net/ipv4/ip_forward"^"\n"^
          "iptables -P FORWARD DROP");
 
 iterate_edges_ML @{context}  @{term "flows_fixL stateful_policy"}
-  (fn (v1,v2) => writeln ("iptables -A FORWARD -i $"^v1^"_iface -s $"^v1^"_ipv4 -o "^v2^"_iface -d $"^v2^"_ipv4 -j ACCEPT"^" # "^v1^" -> "^v2) )
+  (fn (v1,v2) => writeln ("iptables -A FORWARD -i $"^v1^"_iface -s $"^v1^"_ipv4 -o $"^v2^"_iface -d $"^v2^"_ipv4 -j ACCEPT"^" # "^v1^" -> "^v2) )
   (fn _ => () )
   (fn _ => () );
 
 iterate_edges_ML @{context} @{term "flows_stateL stateful_policy"}
-  (fn (v1,v2) => writeln ("iptables -I FORWARD -m state --state ESTABLISHED -i $"^v2^"_iface -s $"^v2^"_ipv4 -o $"^v1^"_iface -d $"^v1^"_ipv4 # "^v2^" -> "^v1^" (answer)") )
+  (fn (v1,v2) => writeln ("iptables -I FORWARD -m state --state ESTABLISHED -i $"^v2^"_iface -s $"^v2^"_ipv4 -o $"^v1^"_iface -d $"^v1^"_ipv4 -j ACCEPT # "^v2^" -> "^v1^" (answer)") )
   (fn _ => () )
   (fn _ => () )
 *}
@@ -245,6 +241,22 @@ iterate_edges_ML @{context} @{term "stateless_flows"}
   (fn _ => () )
   (fn _ => () )
 *}
+
+
+text{*Finally, all the functions demonstrated here can be exported to several programming languages
+     to obtain a stand-alone tool.*}
+export_code
+  security_invariants
+  policy
+  all_security_requirements_fulfilled
+  implc_get_offending_flows
+  max_policy
+  my_policy
+  generate_valid_stateful_policy_IFSACS
+  stateful_policy
+  stateful_flows
+  stateless_flows
+in Scala
 
 
 end

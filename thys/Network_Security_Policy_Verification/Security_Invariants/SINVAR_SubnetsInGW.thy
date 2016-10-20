@@ -19,9 +19,6 @@ fun allowed_subnet_flow :: "subnets \<Rightarrow> subnets \<Rightarrow> bool" wh
 fun sinvar :: "'v graph \<Rightarrow> ('v \<Rightarrow> subnets)  \<Rightarrow> bool" where
   "sinvar G nP = (\<forall> (e1,e2) \<in> edges G. allowed_subnet_flow (nP e1) (nP e2))"
 
-fun verify_globals :: "'v graph \<Rightarrow> ('v \<Rightarrow> subnets) \<Rightarrow> 'b \<Rightarrow> bool" where
-  "verify_globals _ _ _ = True"
-
 definition receiver_violation :: "bool" where "receiver_violation = False"
 
 
@@ -33,7 +30,6 @@ subsubsection {*Preliminaries*}
   
   interpretation SecurityInvariant_preliminaries
   where sinvar = sinvar
-  and verify_globals = verify_globals
     apply unfold_locales
       apply(frule_tac finite_distinct_list[OF wf_graph.finiteE])
       apply(erule_tac exE)
@@ -86,7 +82,6 @@ subsubsection{*ENF*}
 interpretation SubnetsInGW: SecurityInvariant_ACS
 where default_node_properties = SINVAR_SubnetsInGW.default_node_properties
 and sinvar = SINVAR_SubnetsInGW.sinvar
-and verify_globals = verify_globals
 rewrites "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar = SubnetsInGW_offending_set"
   unfolding SINVAR_SubnetsInGW.default_node_properties_def
   apply unfold_locales
@@ -122,6 +117,6 @@ rewrites "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar = Subn
 
  
 hide_fact (open) sinvar_mono   
-hide_const (open) sinvar verify_globals receiver_violation default_node_properties
+hide_const (open) sinvar receiver_violation default_node_properties
 
 end

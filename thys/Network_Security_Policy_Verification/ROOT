@@ -1,6 +1,6 @@
 chapter AFP
 
-session Network_Security_Policy_Verification (AFP) = Collections +
+session "Network_Security_Policy_Verification" (AFP) = HOL +
   options [timeout = 600]
   theories [document = false]
     "Lib/ML_GraphViz_Disable"
@@ -9,6 +9,9 @@ session Network_Security_Policy_Verification (AFP) = Collections +
     "Lib/Efficient_Distinct"
     "~~/src/HOL/Lattice/CompleteLattice"
   theories
+    "Security_Invariants/SINVAR_Subnets2"
+    "Security_Invariants/SINVAR_BLPstrict"
+    "Security_Invariants/Analysis_Tainting"
     Network_Security_Policy_Verification
     TopoS_generateCode
   theories [document = false]
@@ -21,6 +24,12 @@ session Network_Security_Policy_Verification (AFP) = Collections +
     "Examples/I8_SSH_Landscape"
     "Examples/Impl_List_Playground"
     "Examples/Impl_List_Playground_ChairNetwork_statefulpolicy_example"
+    "Examples/Tainting/CryptoDB"
+    "Examples/Tainting/IDEM"
+    "Examples/Tainting/MeasrDroid"
+  theories
+    "SINVAR_Examples"
+    "Examples/Imaginary_Factory_Network"
   document_files
     "root.bib"
     "root.tex"

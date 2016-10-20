@@ -10,9 +10,6 @@ code_identifier code_module SINVAR_BLPbasic_impl => (Scala) SINVAR_BLPbasic
 fun sinvar :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> privacy_level) \<Rightarrow> bool" where
   "sinvar G nP = (\<forall> (e1,e2) \<in> set (edgesL G). (nP e1) \<le> (nP e2))"
 
-fun verify_globals :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> privacy_level) \<Rightarrow> unit \<Rightarrow> bool" where
-  "verify_globals _ _ _ = True"
-
 definition BLP_offending_list:: "'v list_graph \<Rightarrow> ('v \<Rightarrow> privacy_level) \<Rightarrow> ('v \<times> 'v) list list" where
   "BLP_offending_list G nP = (if sinvar G nP then
     []
@@ -27,7 +24,6 @@ apply(simp add: NetModel_node_props_def)
 done
 
 definition "BLP_eval G P = (wf_list_graph G \<and> 
-  verify_globals G (SecurityInvariant.node_props SINVAR_BLPbasic.default_node_properties P) (model_global_properties P) \<and> 
   sinvar G (SecurityInvariant.node_props SINVAR_BLPbasic.default_node_properties P))"
 
 
@@ -35,8 +31,6 @@ interpretation BLPbasic_impl:TopoS_List_Impl
   where default_node_properties=SINVAR_BLPbasic.default_node_properties
   and sinvar_spec=SINVAR_BLPbasic.sinvar
   and sinvar_impl=sinvar
-  and verify_globals_spec=SINVAR_BLPbasic.verify_globals
-  and verify_globals_impl=verify_globals
   and receiver_violation=SINVAR_BLPbasic.receiver_violation
   and offending_flows_impl=BLP_offending_list
   and node_props_impl=NetModel_node_props
@@ -44,10 +38,10 @@ interpretation BLPbasic_impl:TopoS_List_Impl
   apply(unfold TopoS_List_Impl_def)
   apply(rule conjI)
    apply(simp add: TopoS_BLPBasic)
-   apply(simp add: list_graph_to_graph_def)
+   apply(simp add: list_graph_to_graph_def; fail)
   apply(rule conjI)
    apply(simp add: list_graph_to_graph_def)
-   apply(simp add: list_graph_to_graph_def BLP_offending_set BLP_offending_set_def BLP_offending_list_def)
+   apply(simp add: list_graph_to_graph_def BLP_offending_set BLP_offending_set_def BLP_offending_list_def; fail)
   apply(rule conjI)
    apply(simp only: NetModel_node_props_def)
    apply(metis BLPbasic.node_props.simps BLPbasic.node_props_eq_node_props_formaldef)
@@ -59,19 +53,18 @@ interpretation BLPbasic_impl:TopoS_List_Impl
 
 
 subsubsection {* BLPbasic packing *}
-  definition SINVAR_LIB_BLPbasic :: "('v::vertex, privacy_level, unit) TopoS_packed" where
+  definition SINVAR_LIB_BLPbasic :: "('v::vertex, privacy_level) TopoS_packed" where
     "SINVAR_LIB_BLPbasic \<equiv> 
     \<lparr> nm_name = ''BLPbasic'', 
       nm_receiver_violation = SINVAR_BLPbasic.receiver_violation,
       nm_default = SINVAR_BLPbasic.default_node_properties, 
       nm_sinvar = sinvar,
-      nm_verify_globals = verify_globals,
       nm_offending_flows = BLP_offending_list, 
       nm_node_props = NetModel_node_props,
       nm_eval = BLP_eval
       \<rparr>"
   interpretation SINVAR_LIB_BLPbasic_interpretation: TopoS_modelLibrary SINVAR_LIB_BLPbasic 
-      SINVAR_BLPbasic.sinvar SINVAR_BLPbasic.verify_globals
+      SINVAR_BLPbasic.sinvar
     apply(unfold TopoS_modelLibrary_def SINVAR_LIB_BLPbasic_def)
     apply(rule conjI)
      apply(simp)
@@ -118,12 +111,11 @@ subsubsection{* Example *}
 
 text {* Complete example:*}
   
-  definition sensorProps_NMParams_try3 :: "(string, nat, unit) TopoS_Params" where
+  definition sensorProps_NMParams_try3 :: "(string, nat) TopoS_Params" where
   "sensorProps_NMParams_try3 \<equiv> \<lparr> node_properties = [''PresenceSensor'' \<mapsto> 2, 
                                                     ''Webcam'' \<mapsto> 3, 
                                                     ''SensorSink'' \<mapsto> 3,
-                                                    ''Statistics'' \<mapsto> 3],
-                                model_global_properties = () \<rparr>"
+                                                    ''Statistics'' \<mapsto> 3] \<rparr>"
   value "BLP_eval fabNet sensorProps_NMParams_try3"
 
 
@@ -131,6 +123,6 @@ export_code SINVAR_LIB_BLPbasic in Scala
 
 hide_const (open) NetModel_node_props BLP_offending_list BLP_eval
 
-hide_const (open) sinvar verify_globals
+hide_const (open) sinvar
 
 end

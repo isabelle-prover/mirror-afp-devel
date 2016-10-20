@@ -42,9 +42,8 @@ definition BLP_security_clearances :: "nat \<rightharpoonup> SINVAR_BLPtrusted.n
 
 definition BLP_m::"(nat SecurityInvariant)" where
     "BLP_m \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_BLPtrusted \<lparr> 
-          node_properties = BLP_security_clearances, 
-          model_global_properties = () 
-          \<rparr>"
+          node_properties = BLP_security_clearances
+          \<rparr> ''Two has confidential information''"
 
 
   text{*Interlude: @{const BLP_m} is a valid implementation of a SecurityInvariant*}
@@ -54,8 +53,7 @@ definition BLP_m::"(nat SecurityInvariant)" where
         SINVAR_BLPtrusted.default_node_properties,
         SINVAR_BLPtrusted.receiver_violation,
         SecurityInvariant.node_props SINVAR_BLPtrusted.default_node_properties \<lparr> 
-          node_properties = BLP_security_clearances, 
-          model_global_properties = () 
+          node_properties = BLP_security_clearances
         \<rparr>)"
   text{*Fist, we need to show that the formal definition obeys all requirements, @{const new_configured_SecurityInvariant} verifies this. To double check, we manually give the configuration.*}
   lemma BLP_m_spec: assumes "nP = (\<lambda> v. (case BLP_security_clearances v of Some c \<Rightarrow> c | None \<Rightarrow> SINVAR_BLPtrusted.default_node_properties))"
@@ -65,11 +63,10 @@ definition BLP_m::"(nat SecurityInvariant)" where
               c_isIFS = SINVAR_BLPtrusted.receiver_violation
             \<rparr>" (is "BLP_m_spec = Some ?Spec")
   proof - 
-    have NetModelLib: "TopoS_modelLibrary SINVAR_LIB_BLPtrusted SINVAR_BLPtrusted.sinvar SINVAR_BLPtrusted.verify_globals"
+    have NetModelLib: "TopoS_modelLibrary SINVAR_LIB_BLPtrusted SINVAR_BLPtrusted.sinvar"
     by(unfold_locales)
     from assms have nP: "nP = nm_node_props SINVAR_LIB_BLPtrusted \<lparr> 
-              node_properties = BLP_security_clearances, 
-              model_global_properties = () 
+              node_properties = BLP_security_clearances
             \<rparr>" by(simp add: fun_eq_iff SINVAR_LIB_BLPtrusted_def SINVAR_BLPtrusted_impl.NetModel_node_props_def)
   
     have "BLP_m_spec = new_configured_SecurityInvariant (SINVAR_BLPtrusted.sinvar, SINVAR_BLPtrusted.default_node_properties, SINVAR_BLPtrusted.receiver_violation, nP)"

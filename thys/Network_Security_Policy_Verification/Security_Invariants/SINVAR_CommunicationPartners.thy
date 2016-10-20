@@ -38,9 +38,6 @@ fun allowed_flow :: "'v node_config \<Rightarrow> 'v \<Rightarrow> 'v node_confi
 fun sinvar :: "'v graph \<Rightarrow> ('v \<Rightarrow> 'v node_config) \<Rightarrow> bool" where
   "sinvar G nP = (\<forall> (s,r) \<in> edges G. s \<noteq> r \<longrightarrow> allowed_flow (nP s) s (nP r) r)"
 
-fun verify_globals :: "'v graph \<Rightarrow> ('v \<Rightarrow> 'v node_config) \<Rightarrow> 'b \<Rightarrow> bool" where
-  "verify_globals _ _ _ = True"
-
 definition receiver_violation :: "bool" where "receiver_violation = False"
 
 
@@ -53,7 +50,6 @@ subsubsection {*Preliminaries*}
   
   interpretation SecurityInvariant_preliminaries
   where sinvar = sinvar
-  and verify_globals = verify_globals
     apply unfold_locales
       apply(frule_tac finite_distinct_list[OF wf_graph.finiteE])
       apply(erule_tac exE)
@@ -109,7 +105,6 @@ subsubsection {*ENRnr*}
 interpretation CommunicationPartners: SecurityInvariant_ACS
 where default_node_properties = default_node_properties
 and sinvar = sinvar
-and verify_globals = verify_globals
 rewrites "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar = CommunicationPartners_offending_set"
   unfolding receiver_violation_def
   unfolding default_node_properties_def
@@ -151,7 +146,7 @@ lemma "sinvar \<lparr>nodes = {''db1'', ''db2'', ''h1'', ''h2'', ''foo'', ''bar'
         (''db1'' := Master [''h1'', ''h2'']))(''db2'' := Master [''db1'']))" by eval
 
 hide_fact (open) sinvar_mono   
-hide_const (open) sinvar verify_globals receiver_violation default_node_properties
+hide_const (open) sinvar receiver_violation default_node_properties
 
 
 end

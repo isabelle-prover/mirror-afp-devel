@@ -63,9 +63,6 @@ lemma sinvar_list_eq_set: "sinvar = sinvar_set"
   apply fastforce
   done
 
-fun verify_globals :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> node_config) \<Rightarrow> unit \<Rightarrow> bool" where
-  "verify_globals _ _ _ = True"
-
 
 
 value "sinvar 
@@ -98,8 +95,7 @@ lemma[code_unfold]: "SecurityInvariant.node_props SINVAR_NonInterference.default
 apply(simp add: NetModel_node_props_def)
 done
 
-definition "NonInterference_eval G P = (wf_list_graph G \<and> 
-  verify_globals G (SecurityInvariant.node_props SINVAR_NonInterference.default_node_properties P) (model_global_properties P) \<and> 
+definition "NonInterference_eval G P = (wf_list_graph G \<and>
   sinvar G (SecurityInvariant.node_props SINVAR_NonInterference.default_node_properties P))"
 
 
@@ -115,8 +111,6 @@ interpretation NonInterference_impl:TopoS_List_Impl
   where default_node_properties=SINVAR_NonInterference.default_node_properties
   and sinvar_spec=SINVAR_NonInterference.sinvar
   and sinvar_impl=sinvar
-  and verify_globals_spec=SINVAR_NonInterference.verify_globals
-  and verify_globals_impl=verify_globals
   and receiver_violation=SINVAR_NonInterference.receiver_violation
   and offending_flows_impl=NonInterference_offending_list
   and node_props_impl=NetModel_node_props
@@ -124,11 +118,9 @@ interpretation NonInterference_impl:TopoS_List_Impl
  apply(unfold TopoS_List_Impl_def)
  apply(rule conjI)
   apply(rule conjI)
-   apply(simp add: TopoS_NonInterference)
-  apply(rule conjI)
-   apply(intro allI impI)
-   apply(fact sinvar_correct)
-  apply(simp)
+   apply(simp add: TopoS_NonInterference; fail)
+  apply(intro allI impI)
+  apply(fact sinvar_correct)
  apply(rule conjI)
   apply(unfold NonInterference_offending_list_def)
   apply(intro allI impI)
@@ -142,24 +134,22 @@ interpretation NonInterference_impl:TopoS_List_Impl
  apply(simp only: NonInterference_eval_def)
  apply(intro allI impI)
  apply(rule TopoS_eval_impl_proofrule[OF TopoS_NonInterference])
-  apply(simp only: sinvar_correct)
- apply(simp)
+ apply(simp only: sinvar_correct)
 done
 
 subsubsection {* NonInterference packing *}
-  definition SINVAR_LIB_NonInterference :: "('v::vertex, node_config, unit) TopoS_packed" where
+  definition SINVAR_LIB_NonInterference :: "('v::vertex, node_config) TopoS_packed" where
     "SINVAR_LIB_NonInterference \<equiv> 
     \<lparr> nm_name = ''NonInterference'', 
       nm_receiver_violation = SINVAR_NonInterference.receiver_violation,
       nm_default = SINVAR_NonInterference.default_node_properties, 
       nm_sinvar = sinvar,
-      nm_verify_globals = verify_globals,
       nm_offending_flows = NonInterference_offending_list, 
       nm_node_props = NetModel_node_props,
       nm_eval = NonInterference_eval
       \<rparr>"
   interpretation SINVAR_LIB_NonInterference_interpretation: TopoS_modelLibrary SINVAR_LIB_NonInterference
-      SINVAR_NonInterference.sinvar SINVAR_NonInterference.verify_globals
+      SINVAR_NonInterference.sinvar
     apply(unfold TopoS_modelLibrary_def SINVAR_LIB_NonInterference_def)
     apply(rule conjI)
      apply(simp)
@@ -170,16 +160,18 @@ subsubsection {* NonInterference packing *}
 
 
 text {*Example: *}
-
-  definition "example_graph  = \<lparr> nodesL = [1::nat,2,3,4,5, 8,9,10], edgesL = [(1,2), (2,3), (3,4), (5,4), (8,9),(9,8)] \<rparr>"
-  definition"example_conf = ((\<lambda>e. SINVAR_NonInterference.default_node_properties)(1:= Interfering, 2:= Unrelated, 3:= Unrelated, 4:= Unrelated, 8:= Unrelated, 9:= Unrelated))"
+context begin
+  private definition "example_graph = \<lparr> nodesL = [1::nat,2,3,4,5, 8,9,10], edgesL = [(1,2), (2,3), (3,4), (5,4), (8,9), (9,8)] \<rparr>"
+  private definition"example_conf = ((\<lambda>e. SINVAR_NonInterference.default_node_properties)
+      (1:= Interfering, 2:= Unrelated, 3:= Unrelated, 4:= Unrelated, 8:= Unrelated, 9:= Unrelated))"
   
-  value "sinvar example_graph example_conf"
-  value "NonInterference_offending_list example_graph example_conf"
-
+  private lemma "\<not> sinvar example_graph example_conf" by eval
+  private lemma "NonInterference_offending_list example_graph example_conf =
+                     [[(1, 2)], [(2, 3)], [(3, 4)], [(5, 4)]]" by eval
+end
 
 
 hide_const (open) NetModel_node_props
-hide_const (open) sinvar verify_globals
+hide_const (open) sinvar
 
 end

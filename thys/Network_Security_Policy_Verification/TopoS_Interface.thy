@@ -14,12 +14,11 @@ section {* Security Invariants *}
     The graph corresponds to the network's access control structure.
   *}
 
+  (*TODO: make datatype!*)
   -- {*@{typ "'v"} is the type of the nodes in the graph (hosts in the network). 
-     @{typ "'a"} is the type of the host attributes.
-     @{typ "'b"} is the type of some additional global attributes (not very important) *}
-  record ('v::vertex, 'a, 'b) TopoS_Params =
+     @{typ "'a"} is the type of the host attributes.*}
+  record ('v::vertex, 'a) TopoS_Params =
     node_properties :: "'v::vertex \<Rightarrow> 'a option"
-    model_global_properties :: "'b"
 
 text{*
 A Security Invariant is defined as locale.
@@ -29,12 +28,8 @@ This clearly depicts which assumptions are necessary to use certain features of 
 In addition, it makes instance proofs of Security Invariants easier, since the lemmas obtained by an (easy, few assumptions) instance proof 
 can be used for the complicated (more assumptions) instance proofs.
 
-A security Invariant consists of two functions. A function @{text "sinvar"} and a function @{text "verify_globals"}.
-@{text "sinvar"} is the most important function. 
+A security Invariant consists of one function: @{text "sinvar"}.
 Essentially, it is a predicate over the policy (depicted as graph @{text "G"} and a host attribute mapping (@{text "nP"})).
-
-The second function @{text "verify_globals"} is less important. It can for example be used to check so properties if the global attributes.
-It is barely used.
 *}
 
 text {* A Security Invariant where the offending flows (flows that invalidate the policy) can be defined and calculated.
@@ -42,7 +37,6 @@ No assumptions are necessary for this step.
 *}  
   locale SecurityInvariant_withOffendingFlows = 
     fixes sinvar::"('v::vertex) graph \<Rightarrow> ('v::vertex \<Rightarrow> 'a) \<Rightarrow> bool" --{* policy @{text "\<Rightarrow>"} host attribute mapping @{text "\<Rightarrow>"} bool*}
-    fixes verify_globals::"('v::vertex) graph \<Rightarrow> ('v::vertex \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> bool" (*Network Graph (V,E) => V to node_properties => model_global_properties => bool*)
    begin
     -- "Offending Flows definitions:"
     definition is_offending_flows::"('v \<times> 'v) set \<Rightarrow> 'v graph \<Rightarrow> ('v \<Rightarrow> 'a) \<Rightarrow> bool" where
@@ -138,9 +132,8 @@ It requires the following:
 Later, we will show that is suffices to show that the invariant is monotonic. The other two properties can be derived.
 *}
 
-  locale SecurityInvariant_preliminaries = SecurityInvariant_withOffendingFlows sinvar verify_globals
+  locale SecurityInvariant_preliminaries = SecurityInvariant_withOffendingFlows sinvar
     for sinvar
-    and verify_globals
     +
     assumes 
       defined_offending:
@@ -187,9 +180,8 @@ The details can be looked up in \cite{diekmann2014forte}.
           @{term "F \<subseteq> edges G"}, then @{term "fst ` F"}
           is the set of senders and @{term "snd ` f"} the set of receivers.*}
 
-  locale SecurityInvariant = SecurityInvariant_preliminaries sinvar verify_globals
+  locale SecurityInvariant = SecurityInvariant_preliminaries sinvar
     for sinvar::"('v::vertex) graph \<Rightarrow> ('v::vertex \<Rightarrow> 'a) \<Rightarrow> bool"
-    and verify_globals::"('v::vertex) graph \<Rightarrow> ('v::vertex \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> bool"
     +
     fixes default_node_properties :: "'a" ("\<bottom>") 
     and receiver_violation :: "bool"
@@ -215,20 +207,12 @@ The details can be looked up in \cite{diekmann2014forte}.
          sinvar (delete_edges G F) nP \<and>
          (\<not> receiver_violation \<longrightarrow> i \<in> fst ` F \<and> sinvar G (nP(i := otherbot))) \<and>
          (receiver_violation \<longrightarrow> i \<in> snd ` F \<and> sinvar G (nP(i := otherbot))) "
-      (*and
-      --{*verify_globals does not depend on graph topology, i.e. semantics is in sinvar*}
-      verify_globals_sound:
-      "verify_globals G nP gP \<Longrightarrow> 
-        (\<forall> v. verify_globals (add_node v G) nP gP) \<and> 
-        (\<forall> v \<in> nodes G. verify_globals (delete_node v G) nP gP) \<and> 
-        (\<forall> v\<^sub>1 v\<^sub>2. verify_globals (add_edge v\<^sub>1 v\<^sub>2 G) nP gP) \<and> 
-        (\<forall> (v\<^sub>1, v\<^sub>2) \<in> edges G. verify_globals (delete_edge v\<^sub>1 v\<^sub>2 G) nP gP)"*)
    begin
     -- "Removes option type, replaces with default host attribute"
-    fun node_props :: "('v, 'a, 'b) TopoS_Params \<Rightarrow> ('v \<Rightarrow> 'a)" where
+    fun node_props :: "('v, 'a) TopoS_Params \<Rightarrow> ('v \<Rightarrow> 'a)" where
     "node_props P = (\<lambda> i. (case (node_properties P) i of Some property \<Rightarrow> property | None \<Rightarrow> \<bottom>))"
 
-    definition node_props_formaldef :: "('v, 'a, 'b) TopoS_Params \<Rightarrow> ('v \<Rightarrow> 'a)" where
+    definition node_props_formaldef :: "('v, 'a) TopoS_Params \<Rightarrow> ('v \<Rightarrow> 'a)" where
     "node_props_formaldef P \<equiv>
     (\<lambda> i. (if i \<in> dom (node_properties P) then the (node_properties P i) else \<bottom>))"
 
@@ -239,13 +223,11 @@ The details can be looked up in \cite{diekmann2014forte}.
       Checking whether a security invariant holds.
       \begin{enumerate}
         \item check that the policy @{term G} is syntactically valid
-        \item check that some optional properties hold, specified by @{term verify_globals}
         \item check the security invariant @{term sinvar}
       \end{enumerate}
     *}
-    definition eval::"'v graph \<Rightarrow> ('v, 'a, 'b)TopoS_Params \<Rightarrow> bool" where
-    "eval G P \<equiv> wf_graph G \<and> verify_globals G (node_props P) (model_global_properties P) \<and> 
-          sinvar G (node_props P)"
+    definition eval::"'v graph \<Rightarrow> ('v, 'a) TopoS_Params \<Rightarrow> bool" where
+    "eval G P \<equiv> wf_graph G \<and> sinvar G (node_props P)"
 
 
     lemma unique_common_math_notation:
@@ -283,9 +265,8 @@ We refine our @{term SecurityInvariant} locale.
 *}
 
 subsection {*Information Flow Security Strategy (IFS)*}
-  locale SecurityInvariant_IFS = SecurityInvariant_preliminaries sinvar verify_globals
+  locale SecurityInvariant_IFS = SecurityInvariant_preliminaries sinvar
       for sinvar::"('v::vertex) graph \<Rightarrow> ('v::vertex \<Rightarrow> 'a) \<Rightarrow> bool"
-      and verify_globals::"('v::vertex) graph \<Rightarrow> ('v::vertex \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> bool"
       +
       fixes default_node_properties :: "'a" ("\<bottom>") 
       assumes  default_secure_IFS:
@@ -341,9 +322,8 @@ lemma default_uniqueness_by_counterexample_IFS:
 
 
 subsection {*Access Control Strategy (ACS)*}
-  locale SecurityInvariant_ACS = SecurityInvariant_preliminaries sinvar verify_globals
+  locale SecurityInvariant_ACS = SecurityInvariant_preliminaries sinvar
       for sinvar::"('v::vertex) graph \<Rightarrow> ('v::vertex \<Rightarrow> 'a) \<Rightarrow> bool"
-      and verify_globals::"('v::vertex) graph \<Rightarrow> ('v::vertex \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> bool"
       +
       fixes default_node_properties :: "'a" ("\<bottom>") 
       assumes  default_secure_ACS:

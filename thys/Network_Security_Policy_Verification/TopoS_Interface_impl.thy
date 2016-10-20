@@ -18,20 +18,15 @@ section{*Executable Implementation with Lists*}
     fixes default_node_properties :: "'a" ("\<bottom>") 
     and sinvar_spec::"('v::vertex) graph \<Rightarrow> ('v::vertex \<Rightarrow> 'a) \<Rightarrow> bool"
     and sinvar_impl::"('v::vertex) list_graph \<Rightarrow> ('v::vertex \<Rightarrow> 'a) \<Rightarrow> bool"
-    and verify_globals_spec::"('v::vertex) graph \<Rightarrow> ('v::vertex \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> bool"
-    and verify_globals_impl::"('v::vertex) list_graph \<Rightarrow> ('v::vertex \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> bool"
     and receiver_violation :: "bool"
     and offending_flows_impl::"('v::vertex) list_graph \<Rightarrow> ('v \<Rightarrow> 'a) \<Rightarrow> ('v \<times> 'v) list list"
-    and node_props_impl::"('v::vertex, 'a, 'b) TopoS_Params \<Rightarrow> ('v \<Rightarrow> 'a)"
-    and eval_impl::"('v::vertex) list_graph \<Rightarrow> ('v, 'a, 'b)TopoS_Params \<Rightarrow> bool"
+    and node_props_impl::"('v::vertex, 'a) TopoS_Params \<Rightarrow> ('v \<Rightarrow> 'a)"
+    and eval_impl::"('v::vertex) list_graph \<Rightarrow> ('v, 'a) TopoS_Params \<Rightarrow> bool"
     assumes
       spec: "SecurityInvariant sinvar_spec default_node_properties receiver_violation" --"specification is valid"
     and
       sinvar_spec_impl: "wf_list_graph G \<Longrightarrow> 
         (sinvar_spec (list_graph_to_graph G) nP) = (sinvar_impl G nP)"
-    and
-      verify_globals_spec_impl: "wf_list_graph G \<Longrightarrow> 
-        (verify_globals_spec (list_graph_to_graph G) nP gP) = (verify_globals_impl G nP gP)"
     and
       offending_flows_spec_impl: "wf_list_graph G \<Longrightarrow> 
       (SecurityInvariant_withOffendingFlows.set_offending_flows sinvar_spec (list_graph_to_graph G) nP) = 
@@ -42,29 +37,27 @@ section{*Executable Implementation with Lists*}
     and
       eval_spec_impl:
      "(distinct (nodesL G) \<and> distinct (edgesL G) \<and> 
-     SecurityInvariant.eval sinvar_spec verify_globals_spec default_node_properties (list_graph_to_graph G) P ) = 
+     SecurityInvariant.eval sinvar_spec default_node_properties (list_graph_to_graph G) P ) = 
      (eval_impl G P)"
 
   subsection {* Security Invariants Packed*}
 
   text {* We pack all necessary functions and properties of a security invariant in a struct-like data structure.*}
-  record ('v::vertex, 'a, 'b) TopoS_packed =
+  record ('v::vertex, 'a) TopoS_packed =
     nm_name :: "string"
     nm_receiver_violation :: "bool"
     nm_default :: "'a"
     nm_sinvar::"('v::vertex) list_graph \<Rightarrow> ('v \<Rightarrow> 'a) \<Rightarrow> bool"
-    nm_verify_globals::"('v::vertex) list_graph \<Rightarrow> ('v \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> bool"
     nm_offending_flows::"('v::vertex) list_graph \<Rightarrow> ('v \<Rightarrow> 'a) \<Rightarrow> ('v \<times> 'v) list list"
-    nm_node_props::"('v::vertex, 'a, 'b) TopoS_Params \<Rightarrow> ('v \<Rightarrow> 'a)" 
-    nm_eval::"('v::vertex) list_graph \<Rightarrow> ('v, 'a, 'b)TopoS_Params \<Rightarrow> bool"
+    nm_node_props::"('v::vertex, 'a) TopoS_Params \<Rightarrow> ('v \<Rightarrow> 'a)" 
+    nm_eval::"('v::vertex) list_graph \<Rightarrow> ('v, 'a)TopoS_Params \<Rightarrow> bool"
     
 
 
    text{*The packed list implementation must comply with the formal definition. *}
    locale TopoS_modelLibrary =
-    fixes m :: "('v::vertex, 'a, 'b) TopoS_packed" -- "concrete model implementation"
+    fixes m :: "('v::vertex, 'a) TopoS_packed" -- "concrete model implementation"
     and sinvar_spec::"('v::vertex) graph \<Rightarrow> ('v::vertex \<Rightarrow> 'a) \<Rightarrow> bool" --"specification"
-    and verify_globals_spec::"('v::vertex) graph \<Rightarrow> ('v::vertex \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> bool" --"specification"
     assumes
        name_not_empty: "length (nm_name m) > 0"
      and
@@ -72,8 +65,6 @@ section{*Executable Implementation with Lists*}
         (nm_default m)
         sinvar_spec
         (nm_sinvar m)
-        verify_globals_spec
-        (nm_verify_globals m)
         (nm_receiver_violation m)
         (nm_offending_flows m)
         (nm_node_props m)
@@ -87,18 +78,15 @@ section{*Executable Implementation with Lists*}
   lemma TopoS_eval_impl_proofrule: 
     assumes inst: "SecurityInvariant sinvar_spec default_node_properties receiver_violation"
     assumes ev: "\<And>nP. wf_list_graph G \<Longrightarrow> sinvar_spec (list_graph_to_graph G) nP = sinvar_impl G nP"
-    assumes ver: "\<And> nP gP. wf_list_graph G \<Longrightarrow> verify_globals_spec (list_graph_to_graph G) nP gP = verify_globals_impl G nP gP"
     shows "
-      (distinct (nodesL G) \<and> distinct (edgesL G) \<and> SecurityInvariant.eval sinvar_spec verify_globals_spec default_node_properties (list_graph_to_graph G) P) =
-      (wf_list_graph G \<and> verify_globals_impl G (SecurityInvariant.node_props default_node_properties P) (model_global_properties P) \<and>
-       sinvar_impl G (SecurityInvariant.node_props default_node_properties P))"
+      (distinct (nodesL G) \<and> distinct (edgesL G) \<and> 
+       SecurityInvariant.eval sinvar_spec default_node_properties (list_graph_to_graph G) P) =
+      (wf_list_graph G \<and> sinvar_impl G (SecurityInvariant.node_props default_node_properties P))"
   proof (cases "wf_list_graph G")
     case True
-    hence "(verify_globals_spec (list_graph_to_graph G) (SecurityInvariant.node_props default_node_properties P) (model_global_properties P) \<and>
-       sinvar_spec (list_graph_to_graph G) (SecurityInvariant.node_props default_node_properties P)) =
-      (verify_globals_impl G (SecurityInvariant.node_props default_node_properties P) (model_global_properties P) \<and>
-       sinvar_impl G (SecurityInvariant.node_props default_node_properties P))"
-      using ev ver by blast
+    hence "sinvar_spec (list_graph_to_graph G) (SecurityInvariant.node_props default_node_properties P) =
+       sinvar_impl G (SecurityInvariant.node_props default_node_properties P)"
+      using ev by blast
 
     with inst show ?thesis
       unfolding wf_list_graph_def 
@@ -177,6 +165,101 @@ subsection {*Helper lemmata*}
     (\<forall>n \<in> (nodes (list_graph_to_graph G)). P (list_graph_to_graph G) n) = (\<forall> n \<in>set (nodesL G). Pl G n)"
   unfolding list_graph_to_graph_def
   by simp
+
+
+
+
+
+
+  fun minimalize_offending_overapprox :: "('v list_graph \<Rightarrow> bool) \<Rightarrow> 
+    ('v \<times> 'v) list \<Rightarrow> ('v \<times> 'v) list \<Rightarrow> 'v list_graph \<Rightarrow> ('v \<times> 'v) list" where
+  "minimalize_offending_overapprox _ [] keep _ = keep" |
+  "minimalize_offending_overapprox m (f#fs) keep G = (if m (delete_edges G (fs@keep)) then
+      minimalize_offending_overapprox m fs keep G
+    else
+      minimalize_offending_overapprox m fs (f#keep) G
+    )"
+
+  thm minimalize_offending_overapprox_boundnP (*is usage of this one better?*)
+  lemma minimalize_offending_overapprox_spec_impl:
+    assumes valid: "wf_list_graph (G::'v::vertex list_graph)"
+        and spec_impl: "\<And>G nP::('v \<Rightarrow> 'a). wf_list_graph G \<Longrightarrow> sinvar_spec (list_graph_to_graph G) nP = sinvar_impl G nP"
+    shows "minimalize_offending_overapprox (\<lambda>G. sinvar_impl G nP) fs keeps G =
+       TopoS_withOffendingFlows.minimalize_offending_overapprox (\<lambda>G. sinvar_spec G nP) fs keeps (list_graph_to_graph G)"
+    apply(subst minimalize_offending_overapprox_boundnP)
+    using valid spec_impl apply(induction fs arbitrary: keeps)
+     apply(simp add: SecurityInvariant_withOffendingFlows.minimalize_offending_overapprox.simps; fail)
+    apply(simp add: SecurityInvariant_withOffendingFlows.minimalize_offending_overapprox.simps)
+    apply (metis FiniteListGraph.delete_edges_wf delete_edges_list_set list_graph_correct(5))
+    done
+
+  text{*With @{const minimalize_offending_overapprox}, we can get one offending flow*}
+  lemma minimalize_offending_overapprox_gives_some_offending_flow:
+    assumes wf: "wf_list_graph G"
+        and NetModelLib: "TopoS_modelLibrary m sinvar_spec"
+        and violation: "\<not> (nm_sinvar m) G nP"
+    shows "set (minimalize_offending_overapprox (\<lambda>G. (nm_sinvar m) G nP) (edgesL G) [] G) \<in>
+            SecurityInvariant_withOffendingFlows.set_offending_flows sinvar_spec (list_graph_to_graph G) nP"
+    proof -
+      from wf have wfG: "wf_graph (list_graph_to_graph G)"
+        by (simp add: wf_list_graph_def wf_list_graph_iff_wf_graph)
+      from wf have dist_edges: "distinct (edgesL G)" by (simp add: wf_list_graph_def)
+
+      let ?spec_algo="TopoS_withOffendingFlows.minimalize_offending_overapprox
+                          (\<lambda>G. sinvar_spec G nP) (edgesL G) [] (list_graph_to_graph G)"
+
+      note spec=TopoS_List_Impl.spec[OF TopoS_modelLibrary.impl_spec[OF NetModelLib]]
+
+      from spec have spec_prelim: "SecurityInvariant_preliminaries sinvar_spec"
+        by(simp add: SecurityInvariant_def)
+      from spec_prelim SecurityInvariant_preliminaries.sinvar_monoI have mono:
+        "SecurityInvariant_withOffendingFlows.sinvar_mono sinvar_spec" by blast
+        
+      from spec_prelim have empty_edges: "sinvar_spec \<lparr>nodes = set (nodesL G), edges = {}\<rparr> nP"
+      using SecurityInvariant_preliminaries.defined_offending 
+        SecurityInvariant_withOffendingFlows.sinvar_mono_imp_sinvar_mono 
+        SecurityInvariant_withOffendingFlows.valid_empty_edges_iff_exists_offending_flows  
+        mono empty_subsetI graph.simps(1) 
+        list_graph_to_graph_def local.wf wf_list_graph_def wf_list_graph_iff_wf_graph
+        by (metis)
+
+      (*TODO: tune*)
+      have spec_impl: "wf_list_graph G \<Longrightarrow> sinvar_spec (list_graph_to_graph G) nP = (nm_sinvar m) G nP" for G nP
+        using NetModelLib TopoS_List_Impl.sinvar_spec_impl TopoS_modelLibrary.impl_spec by fastforce
+      
+      from minimalize_offending_overapprox_spec_impl[OF wf] spec_impl have alog_spec:
+        "minimalize_offending_overapprox (\<lambda>G. (nm_sinvar m) G nP) fs keeps G =
+         TopoS_withOffendingFlows.minimalize_offending_overapprox (\<lambda>G. sinvar_spec G nP) fs keeps (list_graph_to_graph G)"
+         for fs keeps by blast
+
+      (*TODO: tune*)
+      from spec_impl violation have
+        "SecurityInvariant_withOffendingFlows.is_offending_flows sinvar_spec (set (edgesL G)) (list_graph_to_graph G) nP"
+        apply(simp add: SecurityInvariant_withOffendingFlows.is_offending_flows_def)
+        apply(intro conjI)
+         apply (simp add: local.wf; fail)
+        apply(simp add: FiniteGraph.delete_edges_simp2 list_graph_to_graph_def)
+        apply(simp add: empty_edges)
+        done
+      hence goal: "SecurityInvariant_withOffendingFlows.is_offending_flows_min_set sinvar_spec
+        (set ?spec_algo) (list_graph_to_graph G) nP"
+      apply(subst minimalize_offending_overapprox_boundnP) (*we do this subst pretty often. is this the right abstraction here?*)
+      apply(rule SecurityInvariant_withOffendingFlows.is_offending_flows_min_set_minimalize_offending_overapprox[OF
+              mono wfG _ _ dist_edges])
+       apply(simp add: list_graph_to_graph_def)+
+      done
+
+      from SecurityInvariant_withOffendingFlows.minimalize_offending_overapprox_subseteq_input[of
+        "sinvar_spec" "(edgesL G)" "[]"] have subset_edges:
+        "set ?spec_algo \<subseteq> edges (list_graph_to_graph G)" 
+        apply(subst minimalize_offending_overapprox_boundnP)
+        by(simp add: list_graph_to_graph_def)
+
+      from goal show ?thesis
+        by(simp add: SecurityInvariant_withOffendingFlows.set_offending_flows_def alog_spec subset_edges)
+    qed
+
+
 
 
 

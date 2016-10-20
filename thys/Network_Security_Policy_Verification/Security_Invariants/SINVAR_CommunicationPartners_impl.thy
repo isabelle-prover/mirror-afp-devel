@@ -11,9 +11,6 @@ subsubsection {* SecurityInvariant CommunicationPartners List Implementation *}
 fun sinvar :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> 'v node_config) \<Rightarrow> bool" where
   "sinvar G nP = (\<forall> (s,r) \<in> set (edgesL G). s \<noteq> r \<longrightarrow> SINVAR_CommunicationPartners.allowed_flow (nP s) s (nP r) r)"
 
-fun verify_globals :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> 'v node_config) \<Rightarrow> unit \<Rightarrow> bool" where
-  "verify_globals _ _ _ = True"
-
 
 
 definition CommunicationPartners_offending_list:: "'v list_graph \<Rightarrow> ('v \<Rightarrow> 'v node_config) \<Rightarrow> ('v \<times> 'v) list list" where
@@ -24,14 +21,13 @@ definition CommunicationPartners_offending_list:: "'v list_graph \<Rightarrow> (
 
 
 thm SINVAR_CommunicationPartners.CommunicationPartners.node_props.simps
-definition "NetModel_node_props (P::('v::vertex, 'v node_config, 'b) TopoS_Params) = 
+definition "NetModel_node_props (P::('v::vertex, 'v node_config) TopoS_Params) = 
   (\<lambda> i. (case (node_properties P) i of Some property \<Rightarrow> property | None \<Rightarrow> SINVAR_CommunicationPartners.default_node_properties))"
 lemma[code_unfold]: "SecurityInvariant.node_props SINVAR_CommunicationPartners.default_node_properties P = NetModel_node_props P"
 apply(simp add: NetModel_node_props_def)
 done
 
 definition "CommunicationPartners_eval G P = (wf_list_graph G \<and> 
-  verify_globals G (SecurityInvariant.node_props SINVAR_CommunicationPartners.default_node_properties P) (model_global_properties P) \<and> 
   sinvar G (SecurityInvariant.node_props SINVAR_CommunicationPartners.default_node_properties P))"
 
 
@@ -39,15 +35,13 @@ interpretation CommunicationPartners_impl:TopoS_List_Impl
   where default_node_properties=SINVAR_CommunicationPartners.default_node_properties
   and sinvar_spec=SINVAR_CommunicationPartners.sinvar
   and sinvar_impl=sinvar
-  and verify_globals_spec=SINVAR_CommunicationPartners.verify_globals
-  and verify_globals_impl=verify_globals
   and receiver_violation=SINVAR_CommunicationPartners.receiver_violation
   and offending_flows_impl=CommunicationPartners_offending_list
   and node_props_impl=NetModel_node_props
   and eval_impl=CommunicationPartners_eval
  apply(unfold TopoS_List_Impl_def)
  apply(rule conjI)
-  apply(simp add: TopoS_SubnetsInGW list_graph_to_graph_def)
+  apply(simp add: TopoS_SubnetsInGW list_graph_to_graph_def; fail)
  apply(rule conjI)
   apply(simp add: list_graph_to_graph_def CommunicationPartners_offending_set CommunicationPartners_offending_set_def CommunicationPartners_offending_list_def)
  apply(rule conjI)
@@ -60,19 +54,18 @@ done
 
 
 subsubsection {* CommunicationPartners packing *}
-  definition SINVAR_LIB_CommunicationPartners :: "('v::vertex, 'v SINVAR_CommunicationPartners.node_config, unit) TopoS_packed" where
+  definition SINVAR_LIB_CommunicationPartners :: "('v::vertex, 'v SINVAR_CommunicationPartners.node_config) TopoS_packed" where
     "SINVAR_LIB_CommunicationPartners \<equiv> 
     \<lparr> nm_name = ''CommunicationPartners'', 
       nm_receiver_violation = SINVAR_CommunicationPartners.receiver_violation,
       nm_default = SINVAR_CommunicationPartners.default_node_properties, 
       nm_sinvar = sinvar,
-      nm_verify_globals = verify_globals,
       nm_offending_flows = CommunicationPartners_offending_list, 
       nm_node_props = NetModel_node_props,
       nm_eval = CommunicationPartners_eval
       \<rparr>"
   interpretation SINVAR_LIB_CommunicationPartners_interpretation: TopoS_modelLibrary SINVAR_LIB_CommunicationPartners
-      SINVAR_CommunicationPartners.sinvar SINVAR_CommunicationPartners.verify_globals
+      SINVAR_CommunicationPartners.sinvar
     apply(unfold TopoS_modelLibrary_def SINVAR_LIB_CommunicationPartners_def)
     apply(rule conjI)
      apply(simp)
@@ -86,6 +79,6 @@ text {* Examples*}
 
 
 hide_const (open) NetModel_node_props
-hide_const (open) sinvar verify_globals
+hide_const (open) sinvar
 
 end

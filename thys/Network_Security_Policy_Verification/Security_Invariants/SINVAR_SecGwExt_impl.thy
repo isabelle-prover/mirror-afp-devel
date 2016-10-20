@@ -9,10 +9,6 @@ subsubsection {* SecurityInvariant SecurityGatewayExtended List Implementation *
 fun sinvar :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> SINVAR_SecGwExt.secgw_member) \<Rightarrow> bool" where
   "sinvar G nP = (\<forall> (e1,e2) \<in> set (edgesL G). e1 \<noteq> e2 \<longrightarrow> SINVAR_SecGwExt.allowed_secgw_flow (nP e1) (nP e2))"
 
-fun verify_globals :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> SINVAR_SecGwExt.secgw_member) \<Rightarrow> unit \<Rightarrow> bool" where
-  "verify_globals _ _ _ = True"
-
-
 definition SecurityGatewayExtended_offending_list:: "'v list_graph \<Rightarrow> ('v \<Rightarrow> secgw_member) \<Rightarrow> ('v \<times> 'v) list list" where
   "SecurityGatewayExtended_offending_list G nP = (if sinvar G nP then
     []
@@ -26,8 +22,7 @@ lemma[code_unfold]: "SecurityInvariant.node_props SINVAR_SecGwExt.default_node_p
 apply(simp add: NetModel_node_props_def)
 done
 
-definition "SecurityGateway_eval G P = (wf_list_graph G \<and> 
-  verify_globals G (SecurityInvariant.node_props SINVAR_SecGwExt.default_node_properties P) (model_global_properties P) \<and> 
+definition "SecurityGateway_eval G P = (wf_list_graph G \<and>
   sinvar G (SecurityInvariant.node_props SINVAR_SecGwExt.default_node_properties P))"
 
 
@@ -35,8 +30,6 @@ interpretation SecurityGateway_impl:TopoS_List_Impl
   where default_node_properties=SINVAR_SecGwExt.default_node_properties
   and sinvar_spec=SINVAR_SecGwExt.sinvar
   and sinvar_impl=sinvar
-  and verify_globals_spec=SINVAR_SecGwExt.verify_globals
-  and verify_globals_impl=verify_globals
   and receiver_violation=SINVAR_SecGwExt.receiver_violation
   and offending_flows_impl=SecurityGatewayExtended_offending_list
   and node_props_impl=NetModel_node_props
@@ -56,19 +49,18 @@ done
 
 
 subsubsection {* SecurityGateway packing *}
-  definition SINVAR_LIB_SecurityGatewayExtended :: "('v::vertex, secgw_member, unit) TopoS_packed" where
+  definition SINVAR_LIB_SecurityGatewayExtended :: "('v::vertex, secgw_member) TopoS_packed" where
     "SINVAR_LIB_SecurityGatewayExtended \<equiv> 
     \<lparr> nm_name = ''SecurityGatewayExtended'', 
       nm_receiver_violation = SINVAR_SecGwExt.receiver_violation,
       nm_default = SINVAR_SecGwExt.default_node_properties, 
       nm_sinvar = sinvar,
-      nm_verify_globals = verify_globals,
       nm_offending_flows = SecurityGatewayExtended_offending_list, 
       nm_node_props = NetModel_node_props,
       nm_eval = SecurityGateway_eval
       \<rparr>"
   interpretation SINVAR_LIB_SecurityGatewayExtended_interpretation: TopoS_modelLibrary SINVAR_LIB_SecurityGatewayExtended 
-      SINVAR_SecGwExt.sinvar SINVAR_SecGwExt.verify_globals
+      SINVAR_SecGwExt.sinvar
     apply(unfold TopoS_modelLibrary_def SINVAR_LIB_SecurityGatewayExtended_def)
     apply(rule conjI)
      apply(simp)
@@ -104,6 +96,6 @@ text {* Examples*}
 
 
 hide_const (open) NetModel_node_props
-hide_const (open) sinvar verify_globals
+hide_const (open) sinvar
 
 end

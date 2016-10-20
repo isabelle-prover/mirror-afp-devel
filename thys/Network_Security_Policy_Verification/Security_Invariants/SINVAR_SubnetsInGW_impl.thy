@@ -9,9 +9,6 @@ subsubsection {* SecurityInvariant SubnetsInGw List Implementation *}
 fun sinvar :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> subnets) \<Rightarrow> bool" where
   "sinvar G nP = (\<forall> (e1,e2) \<in> set (edgesL G). SINVAR_SubnetsInGW.allowed_subnet_flow (nP e1) (nP e2))"
 
-fun verify_globals :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> subnets) \<Rightarrow> unit \<Rightarrow> bool" where
-  "verify_globals _ _ _ = True"
-
 
 definition SubnetsInGW_offending_list:: "'v list_graph \<Rightarrow> ('v \<Rightarrow> subnets) \<Rightarrow> ('v \<times> 'v) list list" where
   "SubnetsInGW_offending_list G nP = (if sinvar G nP then
@@ -26,8 +23,7 @@ lemma[code_unfold]: "SecurityInvariant.node_props SINVAR_SubnetsInGW.default_nod
 apply(simp add: NetModel_node_props_def)
 done
 
-definition "SubnetsInGW_eval G P = (wf_list_graph G \<and> 
-  verify_globals G (SecurityInvariant.node_props SINVAR_SubnetsInGW.default_node_properties P) (model_global_properties P) \<and> 
+definition "SubnetsInGW_eval G P = (wf_list_graph G \<and>
   sinvar G (SecurityInvariant.node_props SINVAR_SubnetsInGW.default_node_properties P))"
 
 
@@ -35,8 +31,6 @@ interpretation SubnetsInGW_impl:TopoS_List_Impl
   where default_node_properties=SINVAR_SubnetsInGW.default_node_properties
   and sinvar_spec=SINVAR_SubnetsInGW.sinvar
   and sinvar_impl=sinvar
-  and verify_globals_spec=SINVAR_SubnetsInGW.verify_globals
-  and verify_globals_impl=verify_globals
   and receiver_violation=SINVAR_SubnetsInGW.receiver_violation
   and offending_flows_impl=SubnetsInGW_offending_list
   and node_props_impl=NetModel_node_props
@@ -57,19 +51,18 @@ done
 
 
 subsubsection {* SubnetsInGW packing *}
-  definition SINVAR_LIB_SubnetsInGW :: "('v::vertex, subnets, unit) TopoS_packed" where
+  definition SINVAR_LIB_SubnetsInGW :: "('v::vertex, subnets) TopoS_packed" where
     "SINVAR_LIB_SubnetsInGW \<equiv> 
     \<lparr> nm_name = ''SubnetsInGW'', 
       nm_receiver_violation = SINVAR_SubnetsInGW.receiver_violation,
       nm_default = SINVAR_SubnetsInGW.default_node_properties, 
       nm_sinvar = sinvar,
-      nm_verify_globals = verify_globals,
       nm_offending_flows = SubnetsInGW_offending_list, 
       nm_node_props = NetModel_node_props,
       nm_eval = SubnetsInGW_eval
       \<rparr>"
   interpretation SINVAR_LIB_SubnetsInGW_interpretation: TopoS_modelLibrary SINVAR_LIB_SubnetsInGW
-      SINVAR_SubnetsInGW.sinvar SINVAR_SubnetsInGW.verify_globals
+      SINVAR_SubnetsInGW.sinvar
     apply(unfold TopoS_modelLibrary_def SINVAR_LIB_SubnetsInGW_def)
     apply(rule conjI)
      apply(simp)
@@ -104,6 +97,6 @@ value "SubnetsInGW_offending_list example_net_sub_invalid example_conf_sub"
 
 
 hide_const (open) NetModel_node_props
-hide_const (open) sinvar verify_globals
+hide_const (open) sinvar
 
 end

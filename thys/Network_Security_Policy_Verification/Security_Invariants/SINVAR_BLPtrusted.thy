@@ -16,8 +16,17 @@ definition default_node_properties :: "node_config"
 fun sinvar :: "'v graph \<Rightarrow> ('v \<Rightarrow> node_config) \<Rightarrow>  bool" where
   "sinvar G nP = (\<forall> (e1,e2) \<in> edges G. (if trusted (nP e2) then True else privacy_level (nP e1) \<le> privacy_level (nP e2) ))"
 
-fun verify_globals :: "'v graph \<Rightarrow> ('v \<Rightarrow> node_config) \<Rightarrow> 'b \<Rightarrow> bool" where
-  "verify_globals _ _ _ = True"
+
+text{*A simplified version of the Bell LaPadula model was presented in @{file "SINVAR_BLPbasic.thy"}. 
+In this theory, we extend this template with a notion of trust by adding a Boolean flag @{const trusted} to the host attributes. 
+This is a refinement to represent real-world scenarios more accurately and analogously happened to the 
+original Bell LaPadula model (see publication ``Looking Back at the Bell-La Padula Model''
+A trusted host can receive information of any security clearance and may declassify it, 
+i.e. distribute the information with its own security clearance. 
+For example, a @{term "trusted (sc::node_config) = True"} host is allowed to receive any information 
+and with the @{term "0::privacy_level"} clearance, it is allowed to reveal it to anyone. 
+*}
+
 
 definition receiver_violation :: "bool" where "receiver_violation \<equiv> True"
 
@@ -31,7 +40,6 @@ lemma sinvar_mono: "SecurityInvariant_withOffendingFlows.sinvar_mono sinvar"
 
 interpretation SecurityInvariant_preliminaries
 where sinvar = sinvar
-and verify_globals = verify_globals
   apply unfold_locales
     apply(frule_tac finite_distinct_list[OF wf_graph.finiteE])
     apply(erule_tac exE)
@@ -109,7 +117,6 @@ subsubsection {*ENF*}
 interpretation BLPtrusted: SecurityInvariant_IFS 
   where default_node_properties = default_node_properties
   and sinvar = sinvar
-  and verify_globals = verify_globals
   rewrites "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar = BLP_offending_set"
     apply unfold_locales
       apply(rule ballI)
@@ -132,6 +139,6 @@ hide_const (open) sinvar_mono
 hide_const (open) BLP_P
 hide_fact BLP_def_unique zero_default_candidate  privacylevel_refl BLP_ENF BLP_ENF_refl
 
-hide_const (open) sinvar verify_globals receiver_violation default_node_properties
+hide_const (open) sinvar receiver_violation default_node_properties
 
 end

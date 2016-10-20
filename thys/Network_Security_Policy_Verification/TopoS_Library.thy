@@ -10,6 +10,8 @@ imports String
   "Security_Invariants/SINVAR_SubnetsInGW_impl"
   "Security_Invariants/SINVAR_CommunicationPartners_impl"
   "Security_Invariants/SINVAR_NoRefl_impl"
+  "Security_Invariants/SINVAR_Tainting_impl"
+  "Security_Invariants/SINVAR_TaintingTrusted_impl"
   (*invariants you probably don't want to use because of exponential runtime*)
   "Security_Invariants/SINVAR_Dependability_impl"
   "Security_Invariants/SINVAR_NonInterference_impl"
@@ -27,7 +29,6 @@ section{*Summarizing the Security Invariant Library*}
 (*none of those should be defined or a hide_const is missing at the end of a SINVAR_*.thy file*)
 term sinvar
 term receiver_violation
-term verify_globals
 term eval
 
 (*TODO check all before export*)
