@@ -385,9 +385,7 @@ structure Sepref_Frame : SEPREF_FRAME = struct
   
       fun thm_tac dbg = CONCL_COND' is_merge THEN_ELSE' (merge_thm_tac dbg, frame_thm_tac dbg)
     in
-      thm_tac false
-      ORELSE' (* Simplify, then try again. *)
-      (full_simp_tac ss THEN' thm_tac dbg)
+      full_simp_tac ss THEN' thm_tac dbg
     end
   end  
 
