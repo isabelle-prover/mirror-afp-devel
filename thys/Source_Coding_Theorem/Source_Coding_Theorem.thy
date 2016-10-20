@@ -75,9 +75,10 @@ lemma fi_pos: "i\<in> L \<Longrightarrow> 0 \<le> fi i"
 lemma (in prob_space) simp_exp_composed:
   assumes X: "simple_distributed M X Px"
 shows "expectation (\<lambda>a. f (X a)) = (\<Sum>x \<in> X`space M. f x * Px x)"
-(* Proof by Johannes Hölzl *)
-    using distributed_integral[OF simple_distributed[OF X], of f]
-    by (simp add: lebesgue_integral_count_space_finite[OF simple_distributed_finite[OF X]] ac_simps)
+  using distributed_integral[OF simple_distributed[OF X], of f]
+    simple_distributed_nonneg[OF X]
+    lebesgue_integral_count_space_finite[OF simple_distributed_finite[OF X], of "\<lambda>x. f x * Px x"]
+  by (simp add:  ac_simps)
 
 lemma cr_rw:
   "code_rate enc X = (\<Sum>i \<in> X ` space M. fi i * cw_len i)"
@@ -604,5 +605,7 @@ proof -
       by (simp add: b_gt_1)
     ultimately show ?thesis by simp
 qed
+
 end
+
 end
