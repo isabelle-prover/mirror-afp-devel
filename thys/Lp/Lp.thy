@@ -430,7 +430,7 @@ proof -
     have *: "esssup M (\<lambda>x. \<bar>h x\<bar>) \<ge> 0" for h::"'a \<Rightarrow> real"
     proof -
       have "esssup M (\<lambda>x. 0) \<le> esssup M (\<lambda>x. \<bar>h x\<bar>)" by (rule esssup_mono, auto)
-      then show ?thesis using esssup_const[OF False, of 0] by simp
+      then show ?thesis using esssup_const[OF False, of "0::ereal"] by simp
     qed
     have "esssup M (\<lambda>x. ereal \<bar>(f + g) x\<bar>) \<le> esssup M (\<lambda>x. ereal \<bar>f x\<bar> + ereal \<bar>g x\<bar>)"
       by (rule esssup_mono, auto simp add: plus_fun_def)
@@ -479,7 +479,7 @@ proof (auto simp del: infinity_ennreal_def)
   next
     case False
     then have "esssup M (\<lambda>x. \<bar>f x\<bar>) \<ge> 0"
-      using esssup_mono[of "\<lambda>x. 0" M "(\<lambda>x. \<bar>f x\<bar>)"] esssup_const[OF False] by auto
+      using esssup_mono[of "\<lambda>x. 0" M "(\<lambda>x. \<bar>f x\<bar>)"] esssup_const[OF False, of "0::ereal"] by auto
     then have "esssup M (\<lambda>x. \<bar>f x\<bar>) = ereal C" unfolding C_def using * ereal_real by auto
     then show ?thesis using esssup_AE[of "(\<lambda>x. ereal \<bar>f x\<bar>)" M] by simp
   qed
