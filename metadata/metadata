@@ -4654,3 +4654,17 @@ abstract =
   simulator. We prove the language-based non-interference property for
   the LEON3 processor.  Our model is based on deterministic monad, which
   is a modified version of the non-deterministic monad from NICTA/l4v.
+
+[LOFT]
+title = LOFT — Verified Migration of Linux Firewalls to SDN
+author = Julius Michaelis <http://liftm.de/>, Cornelius Diekmann <http://net.in.tum.de/~diekmann>
+notify = isabelleopenflow@liftm.de
+date = 2016-10-21
+topic = Computer Science/Networks
+abstract = 
+  We present LOFT — Linux firewall OpenFlow Translator, a system that
+  transforms the main routing table and FORWARD chain of iptables of a
+  Linux-based firewall into a set of static OpenFlow rules. Our
+  implementation is verified against a model of a simplified Linux-based
+  router and we can directly show how much of the original functionality
+  is preserved.

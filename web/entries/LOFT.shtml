@@ -24,43 +24,49 @@
 <div align="center">
 <p>&nbsp;</p>
 
-<h1><font class="first">R</font>outing
+<h1><font class="first">L</font>OFT
+—
+<font class="first">V</font>erified
+<font class="first">M</font>igration
+of
+<font class="first">L</font>inux
+<font class="first">F</font>irewalls
+to
+<font class="first">S</font>DN
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Routing</td></tr>
+        <td class="data" width="80%">LOFT — Verified Migration of Linux Firewalls to SDN</td></tr>
 
     <tr><td class="datahead">Author:</td>
         <td class="data"><a href="http://liftm.de/">Julius Michaelis</a> and <a href="http://net.in.tum.de/~diekmann">Cornelius Diekmann</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2016-08-31</td></tr>
+        <td class="data">2016-10-21</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
 
-This entry contains definitions for routing with routing
-tables/longest prefix matching.  A routing table entry is modelled as
-a record of a prefix match, a metric, an output port, and an optional
-next hop. A routing table is a list of entries, sorted by prefix
-length and metric. Additionally, a parser and serializer for the
-output of the ip-route command, a function to create a relation from
-output port to corresponding destination IP space, and a model of a
-Linux-style router are included.
+We present LOFT — Linux firewall OpenFlow Translator, a system that
+transforms the main routing table and FORWARD chain of iptables of a
+Linux-based firewall into a set of static OpenFlow rules. Our
+implementation is verified against a model of a simplified Linux-based
+router and we can directly show how much of the original functionality
+is preserved.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{Routing-AFP,
+			<pre>@article{LOFT-AFP,
   author  = {Julius Michaelis and Cornelius Diekmann},
-  title   = {Routing},
+  title   = {LOFT — Verified Migration of Linux Firewalls to SDN},
   journal = {Archive of Formal Proofs},
-  month   = aug,
+  month   = oct,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Routing.shtml},
+  note    = {\url{http://isa-afp.org/entries/LOFT.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -71,12 +77,8 @@ Linux-style router are included.
 
 
     <tr><td class="datahead">Depends on:</td>
-        <td class="data"><a href="IP_Addresses.shtml">IP_Addresses</a>, <a href="Simple_Firewall.shtml">Simple_Firewall</a></td></tr>
+        <td class="data"><a href="Automatic_Refinement.shtml">Automatic_Refinement</a>, <a href="IP_Addresses.shtml">IP_Addresses</a>, <a href="Iptables_Semantics.shtml">Iptables_Semantics</a>, <a href="Routing.shtml">Routing</a>, <a href="Simple_Firewall.shtml">Simple_Firewall</a></td></tr>
 
-
-
-    <tr><td class="datahead">Used by:</td>
-        <td class="data"><a href="Iptables_Semantics.shtml">Iptables_Semantics</a>, <a href="LOFT.shtml">LOFT</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->
@@ -89,7 +91,7 @@ Linux-style router are included.
 
 <p></p>
 
-<!--#set var="name" value="Routing" -->
+<!--#set var="name" value="LOFT" -->
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
