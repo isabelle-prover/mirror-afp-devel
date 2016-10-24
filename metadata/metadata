@@ -4668,3 +4668,17 @@ abstract =
   implementation is verified against a model of a simplified Linux-based
   router and we can directly show how much of the original functionality
   is preserved.
+
+[Stable_Matching]
+title = Stable Matching
+author = Peter Gammie <http://peteg.org/>
+notify = peteg42@gmail.com
+date = 2016-10-24
+topic = Mathematics/Economics
+abstract = 
+  We mechanize proofs of several results from the matching with
+  contracts literature, which generalize those of the classical
+  two-sided matching scenarios that go by the name of stable marriage.
+  Our focus is on game theoretic issues. Along the way we develop
+  executable algorithms for computing optimal stable matches.
+
