@@ -67,8 +67,8 @@ lemma algebraic_altdef_rpoly:
 unfolding algebraic_altdef
 proof (safe, goal_cases)
   case (1 p)
-  def the_rat \<equiv> "\<lambda>x::'a. THE r. x = of_rat r"
-  def p' \<equiv> "map_poly the_rat p"
+  define the_rat where "the_rat = (\<lambda>x::'a. THE r. x = of_rat r)"
+  define p' where "p' = map_poly the_rat p"
   have of_rat_the_rat: "of_rat (the_rat x) = x" if "x \<in> \<rat>" for x
     unfolding the_rat_def by (rule sym, rule theI') (insert that, auto simp: Rats_def)
   have the_rat_0_iff: "the_rat x = 0 \<longleftrightarrow> x = 0" if "x \<in> \<rat>"

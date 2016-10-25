@@ -196,14 +196,14 @@ definition complex_roots_of_rat_poly_all :: "rat poly \<Rightarrow> complex list
 lemma complex_roots_of_rat_poly3: assumes p: "p \<noteq> 0" 
   shows "set (complex_roots_of_rat_poly3 p) = {x. rpoly p x = 0}" (is "?l = ?r")
 proof -
-  def q \<equiv> "real_of_rat_poly p"
+  define q where "q = real_of_rat_poly p"
   let ?q = "map_poly complex_of_real q"
   from p have q0: "q \<noteq> 0" unfolding q_def by auto
   hence q: "?q \<noteq> 0" by auto
   interpret cr: inj_ring_hom complex_of_real by (unfold_locales, auto)
-  def rr' \<equiv> "real_roots_of_rat_poly p"
-  def rr \<equiv> "if length rr' = count_roots_rat p then rr' else remdups rr'"
-  def rrts \<equiv> "map (\<lambda>r. Complex r 0) rr"
+  define rr' where "rr' = real_roots_of_rat_poly p"
+  define rr where "rr = (if length rr' = count_roots_rat p then rr' else remdups rr')"
+  define rrts where "rrts = map (\<lambda>r. Complex r 0) rr"
   note d = complex_roots_of_rat_poly3_def[of p, unfolded Let_def, folded rr'_def, folded rr_def rrts_def]
   have rr': "set rr' = {x. rpoly p x = 0}" unfolding rr'_def
     using real_roots_of_rat_poly[OF p] .
@@ -232,7 +232,7 @@ proof -
     show ?thesis
     proof (cases "degree p - count_roots_rat p = 2")
       case False
-      def cpx \<equiv> "[c\<leftarrow>concat (map (\<lambda>rx. map (Complex rx)
+      define cpx where "cpx = [c\<leftarrow>concat (map (\<lambda>rx. map (Complex rx)
           (remdups (filter (op < 0) (concat (map real_roots_of_rat_poly (root_poly_Im p))))))
               (real_roots_of_rat_poly (root_poly_Re p))). rpoly p c = 0]"
       have cpx: "set cpx \<subseteq> ?r" unfolding cpx_def by auto
@@ -286,13 +286,12 @@ proof -
       ultimately show ?thesis by blast
     next
       case True
-      let ?rr = "real_roots_of_rat_poly3 p"
       let ?cr = "map_poly of_real :: real poly \<Rightarrow> complex poly"
-      def pp \<equiv> "complex_of_rat_poly p"
+      define pp where "pp = complex_of_rat_poly p"
       have id: "pp = map_poly of_real q" unfolding q_def pp_def
         by (subst map_poly_compose, auto simp: o_def)
       let ?rts = "map (\<lambda> x. [:-x,1:]) rr"
-      def rts \<equiv> "prod_list ?rts"
+      define rts where "rts = prod_list ?rts"
       let ?c2 = "?cr (q div rts)"
       have pq: "\<And> x. rpoly p x = 0 \<longleftrightarrow> poly q x = 0" unfolding q_def by (simp add: eval_poly_def)      
       from True have 2: "degree q - card {x. poly q x = 0} = 2" unfolding pq[symmetric] 
@@ -571,7 +570,7 @@ proof -
         assume "\<not> distinct as" 
         from not_distinct_decomp[OF this] obtain as1 as2 as3 a where
           a: "as = as1 @ [a] @ as2 @ [a] @ as3" by blast
-        def q \<equiv> "\<Prod>a\<leftarrow>as1 @ as2 @ as3. [:- a, 1:]"
+        define q where "q = (\<Prod>a\<leftarrow>as1 @ as2 @ as3. [:- a, 1:])"
         have "p = (\<Prod>a\<leftarrow>as. [:- a, 1:])" by fact
         also have "\<dots> = (\<Prod>a\<leftarrow>([a] @ [a]). [:- a, 1:]) * q"
           unfolding q_def a map_append prod_list.append by (simp only: ac_simps)

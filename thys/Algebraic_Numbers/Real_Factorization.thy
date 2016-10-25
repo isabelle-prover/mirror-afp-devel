@@ -198,11 +198,11 @@ proof -
         qed
       next
         case False
-        def xi \<equiv> "[:Re x * Re x + Im x * Im x, - (2 * Re x), 1:]"
+        define xi where "xi = [:Re x * Re x + Im x * Im x, - (2 * Re x), 1:]"
         obtain xx where xx: "xx = cnj x" by auto
         have xi: "xi = ?rp ([:-x,1:] * [:-xx,1:])" unfolding xx xi_def by auto
         have cpxi: "?cp xi = [:-x,1:] * [:-xx,1:]" unfolding xi_def        
-          by (auto simp: xx, cases x, auto simp: field_simps, cases x, auto simp: of_real_numeral)
+          by (auto simp: xx, cases x, auto simp: field_simps, cases x, auto)
         obtain yis where yis: "yis = delete_cnj xx (Suc i) xis" by auto
         from False have fact: "?fact ((x,i) # xis) = ((xi,Suc i) # ?fact yis)"
           unfolding xi_def xx yis by simp

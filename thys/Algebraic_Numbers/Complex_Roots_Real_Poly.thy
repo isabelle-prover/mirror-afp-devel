@@ -90,7 +90,8 @@ lemma real_poly_add:
   assumes "set (coeffs p) \<subseteq> \<real>" "set (coeffs q) \<subseteq> \<real>"
   shows "set (coeffs (p + q)) \<subseteq> \<real>" 
 proof -
-  def pp \<equiv> "coeffs p" def qq \<equiv> "coeffs q"
+  define pp where "pp = coeffs p" 
+  define qq where "qq = coeffs q"
   show ?thesis using assms
   unfolding coeffs_plus_eq_plus_coeffs pp_def[symmetric] qq_def[symmetric]
     by (induct pp qq rule: plus_coeffs.induct, auto simp: cCons_def)
@@ -181,7 +182,7 @@ next
     case False
     obtain ss rr where r: "pdivmod q p = (ss, rr)" by force
     from pCons(2)[OF q r] have IH: "set (coeffs ss) \<subseteq> \<real>" "set (coeffs rr) \<subseteq> \<real>" by auto
-    def c \<equiv> "coeff (pCons a rr) (degree p) / coeff p (degree p)"
+    define c where "c = coeff (pCons a rr) (degree p) / coeff p (degree p)"
     {
       have "coeff (pCons a rr) (degree p) \<in> \<real>"
         by (rule real_poly_real_coeff, insert IH(2) a, intro real_poly_pCons)
@@ -225,7 +226,7 @@ lemma complex_conjugate_order: assumes real: "set (coeffs p) \<subseteq> \<real>
   "p \<noteq> 0"
   shows "order (cnj c) p = order c p"
 proof -
-  def n \<equiv> "degree p"
+  define n where "n = degree p"
   have "degree p \<le> n" unfolding n_def by auto
   thus ?thesis using assms
   proof (induct n arbitrary: p)
@@ -420,7 +421,7 @@ proof -
     then obtain rs where qs: "prod_list qs = ?cp (prod_list rs)"
       and rs: "\<And> q. q\<in>set rs \<Longrightarrow> degree q \<le> 2" by force+
     from Cons(2)[of q] have q: "set (coeffs q) \<subseteq> \<real>" and dq: "degree q \<le> 2" by auto
-    def r \<equiv> "?rp q"
+    define r where "r = ?rp q"
     have q: "q = ?cp r" unfolding r_def
       by (subst map_poly_compose, force+, rule sym, rule map_poly_eqI, insert q, auto)
     have dr: "degree r \<le> 2" using dq unfolding q by (simp add: degree_map_poly)

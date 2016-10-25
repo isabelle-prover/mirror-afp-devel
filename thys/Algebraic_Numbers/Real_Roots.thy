@@ -44,11 +44,11 @@ lemma root_bounds: assumes "root_bounds p = (l,r)" and mon: "monic p"
 proof (rule ccontr)
   let ?r = real_of_rat
   let ?p = "map_poly ?r p"
-  def n \<equiv> "degree p"
-  def list \<equiv> "map abs (coeffs p)"
-  def m' \<equiv> "max_list_non_empty list"
-  def m \<equiv> "rat_of_nat n * max_list_non_empty list"
-  def M \<equiv> "rat_of_int (ceiling m)"
+  define n where "n = degree p"
+  define list where "list = map abs (coeffs p)"
+  define m' where "m' = max_list_non_empty list"
+  define m where "m = rat_of_nat n * max_list_non_empty list"
+  define M where "M = rat_of_int (ceiling m)"
   have mm': "m = of_nat n * m'" unfolding m'_def m_def of_nat_mult by auto
   from assms(1)[unfolded root_bounds_def Let_def]
   have lr: "l = - M" "r = M" unfolding M_def m_def n_def list_def by auto
@@ -133,7 +133,7 @@ proof -
   have "?one \<and> ?two"
   proof (cases "degree p = 1")
     case True
-    def c \<equiv> "coeff p 0"
+    define c where "c = coeff p 0"
     from True have rr: "?rr = {of_rat_rai_fun (-c)}" unfolding d c_def by auto
     from degree1_coeffs[OF True] mon have p: "p = [:c,1:]" unfolding c_def by auto
     show ?thesis unfolding rr unfolding p using of_rat_rai_main[of _ "-c", OF refl]
@@ -142,10 +142,10 @@ proof -
     case False
     let ?r = real_of_rat
     let ?rp = "map_poly ?r"
-    def ri \<equiv> "count_roots_interval_rat p"
-    def cr \<equiv> "root_info.l_r ri"
-    def bnds \<equiv> "[root_bounds p]"
-    def empty \<equiv> "Nil :: rai_intern list"
+    define ri where "ri = count_roots_interval_rat p"
+    define cr where "cr = root_info.l_r ri"
+    define bnds where "bnds = [root_bounds p]"
+    define empty where "empty = (Nil :: rai_intern list)"
     have empty: "Ball (set empty) rai_cond" unfolding empty_def by auto
     from mon have p: "p \<noteq> 0" by auto
     from count_roots_interval_rat[OF sf] have ri: "root_info_cond ri p" unfolding ri_def .    
@@ -159,11 +159,11 @@ proof -
     hence rts: "{x. rpoly p x = 0} 
       = rai_real ` ?norm ` set empty \<union> {x. \<exists> l r. root_cond (p,l,r) x \<and> (l,r) \<in> set bnds}" 
       unfolding empty_def bnds_def by (force simp: root_cond_def)
-    def delta \<equiv> "rpoly_root_delta p"
+    define delta where "delta = rpoly_root_delta p"
     note delta = rpoly_root_delta[OF p, folded delta_def]
-    def rel' \<equiv> "({(x, y). 0 \<le> y \<and> delta_gt delta x y})^-1"
-    def mm \<equiv> "\<lambda>bnds. mset (map (\<lambda> (l,r). ?r r - ?r l) bnds)"
-    def rel \<equiv> "inv_image (mult1 rel') mm"
+    define rel' where "rel' = ({(x, y). 0 \<le> y \<and> delta_gt delta x y})^-1"
+    define mm where "mm = (\<lambda>bnds. mset (map (\<lambda> (l,r). ?r r - ?r l) bnds))"
+    define rel where "rel = inv_image (mult1 rel') mm"
     have wf: "wf rel" unfolding rel_def rel'_def
       by (rule wf_inv_image[OF wf_mult1[OF SN_imp_wf[OF delta_gt_SN[OF delta(1)]]]])
     let ?main = "roots_of_rai_main p ri cr"    
@@ -205,7 +205,7 @@ proof -
           hence "(lr' @ lrs, lrss) \<in> rel" unfolding rel_def by auto
         } note rel = this
         from rel[of Nil] have easy_rel: "(lrs,lrss) \<in> rel" by auto
-        def c \<equiv> "cr l r"
+        define c where "c = cr l r"
         from simp Cons lr' have simp: "?main lrss rais = 
           (if c = 0 then ?main lrs rais else if c = 1 then 
              ?main lrs (mk_rai_intern ri p l r # rais)
@@ -295,7 +295,7 @@ proof -
       qed
     qed
     hence idd: "?one'" and cond: ?two' by blast+
-    def res \<equiv> "set (roots_of_rai_main p ri cr bnds empty)"
+    define res where "res = set (roots_of_rai_main p ri cr bnds empty)"
     have e: "set empty = {}" unfolding empty_def by auto
     from idd[folded res_def] e have idd: "rai_real ` res = {} \<union> {x. \<exists>l r. root_cond (p, l, r) x \<and> (l, r) \<in> set bnds}"
       by auto

@@ -196,7 +196,7 @@ lemma real_of_rat_remdups_adj: "remdups_adj (map real_of_rat xs) = map real_of_r
 lemma sign_changes_rat: "sign_changes (map real_of_rat_poly ps) (real_of_rat x)
   = sign_changes_rat ps x" (is "?l = ?r")
 proof - 
-  def xs \<equiv> "list_neq (map (\<lambda>p. sgn (poly p x)) ps) 0"
+  define xs where "xs = list_neq (map (\<lambda>p. sgn (poly p x)) ps) 0"
   have "?l = length (remdups_adj (list_neq (map real_of_rat (map (\<lambda>xa.  (sgn (poly xa x))) ps)) 0)) - 1"
     unfolding sign_changes_def
     unfolding map_map o_def real_of_rat_sgn poly_real_of_rat_poly rpoly.eval_poly_poly ..

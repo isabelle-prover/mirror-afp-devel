@@ -250,7 +250,7 @@ proof -
   with q' have r0: "r \<noteq> 0" and q'0: "q' \<noteq> 0" using degq by auto
 
   let ?q' = "poly_y_x q'"
-  def r' \<equiv> "\<Sum>i\<le>degree r. monom (coeff (coeff r i) 0) i"
+  define r' where "r' = \<Sum>i\<le>degree r. monom (coeff (coeff r i) 0) i"
   have q'0: "?q' \<noteq> 0" using q'0 by auto
   let ?r = "poly_y_x r"
   have r'0: "?r \<noteq> 0" using r0 by auto
@@ -425,7 +425,7 @@ proof (induct p rule: eliminate_zero_divisors.induct)
     case True
     note IH = 1[OF this]
     let ?xx = "[:0 :: rat, 1:]"
-    def q \<equiv> "p div ?xx"
+    define q where "q = p div ?xx"
     have mult: "\<And> p q. rpoly (p * q) x = rpoly p x * rpoly q x"
       by (metis poly_mult rpoly.map_poly_mult rpoly.poly_map_poly_eval_poly)
     from True have "coeff p 0 = 0" by auto
@@ -451,7 +451,7 @@ proof (induct p rule: eliminate_zero_divisors.induct)
     case True
     note IH = 1(1)[OF this]
     let ?xx = "[:0 :: 'a, 1:]"
-    def q \<equiv> "p div ?xx"
+    define q where "q = p div ?xx"
     from True have "coeff p 0 = 0" by auto
     from dvd_imp_mult_div_cancel_left[OF coeff_0_0_implies_x_dvd[OF this]]
     have id: "p = ?xx * q" unfolding q_def by auto 
@@ -631,8 +631,8 @@ proof -
       note IH = 1(1)[OF this]
       let ?x = "[:0, 1 :: 'a:]"
       let ?hx = "[:0, 1 :: 'b:]"
-      def q \<equiv> "p div ?x"
-      def hq \<equiv> "?p div ?hx"
+      define q where "q = p div ?x"
+      define hq where "hq = ?p div ?hx"
       from True have "coeff p 0 = 0" by auto
       from dvd_imp_mult_div_cancel_left[OF coeff_0_0_implies_x_dvd[OF this]]
       have id: "p = ?x * q" unfolding q_def by auto 
