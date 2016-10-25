@@ -4682,3 +4682,19 @@ abstract =
   Our focus is on game theoretic issues. Along the way we develop
   executable algorithms for computing optimal stable matches.
 
+[Modal_Logics_for_NTS]
+title = Modal Logics for Nominal Transition Systems
+author = Tjark Weber <tjark.weber@it.uu.se>, Lars-Henrik Eriksson <lhe@it.uu.se>, Joachim Parrow <joachim.parrow@it.uu.se>, Johannes Borgström <johannes.borgstrom@it.uu.se>, Ramunas Gutkovas <ramunas.gutkovas@it.uu.se>
+notify = tjark.weber@it.uu.se
+date = 2016-10-25
+topic = Computer Science/Concurrency/Process Calculi, Logic
+abstract = 
+  We formalize a uniform semantic substrate for a wide variety of
+  process calculi where states and action labels can be from arbitrary
+  nominal sets. A Hennessy-Milner logic for these systems is defined,
+  and proved adequate for bisimulation equivalence. A main novelty is
+  the construction of an infinitary nominal data type to model formulas
+  with (finitely supported) infinite conjunctions and actions that may
+  contain binding names. The logic is generalized to treat different
+  bisimulation variants such as early, late and open in a systematic
+  way.

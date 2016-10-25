@@ -24,49 +24,49 @@
 <div align="center">
 <p>&nbsp;</p>
 
-<h1><font class="first">N</font>ominal
-2
+<h1><font class="first">M</font>odal
+<font class="first">L</font>ogics
+for
+<font class="first">N</font>ominal
+<font class="first">T</font>ransition
+<font class="first">S</font>ystems
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Nominal 2</td></tr>
+        <td class="data" width="80%">Modal Logics for Nominal Transition Systems</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://www.inf.kcl.ac.uk/staff/urbanc/">Christian Urban</a>, <a href="http://www.in.tum.de/~berghofe">Stefan Berghofer</a> and Cezary Kaliszyk</td></tr>
+        <td class="data"><a href="tjark.weber@it.uu.se">Tjark Weber</a>, <a href="lhe@it.uu.se">Lars-Henrik Eriksson</a>, <a href="joachim.parrow@it.uu.se">Joachim Parrow</a>, <a href="johannes.borgstrom@it.uu.se">Johannes Borgström</a> and <a href="ramunas.gutkovas@it.uu.se">Ramunas Gutkovas</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2013-02-21</td></tr>
+        <td class="data">2016-10-25</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
 
-<p>Dealing with binders, renaming of bound variables, capture-avoiding
-substitution, etc., is very often a major problem in formal
-proofs, especially in proofs by structural and rule
-induction. Nominal Isabelle is designed to make such proofs easy to
-formalise: it provides an infrastructure for declaring nominal
-datatypes (that is alpha-equivalence classes) and for defining
-functions over them by structural recursion. It also provides
-induction principles that have Barendregt’s variable convention
-already built in.
-</p><p>
-This entry can be used as a more advanced replacement for
-HOL/Nominal in the Isabelle distribution.
-</p>
+We formalize a uniform semantic substrate for a wide variety of
+process calculi where states and action labels can be from arbitrary
+nominal sets. A Hennessy-Milner logic for these systems is defined,
+and proved adequate for bisimulation equivalence. A main novelty is
+the construction of an infinitary nominal data type to model formulas
+with (finitely supported) infinite conjunctions and actions that may
+contain binding names. The logic is generalized to treat different
+bisimulation variants such as early, late and open in a systematic
+way.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{Nominal2-AFP,
-  author  = {Christian Urban and Stefan Berghofer and Cezary Kaliszyk},
-  title   = {Nominal 2},
+			<pre>@article{Modal_Logics_for_NTS-AFP,
+  author  = {Tjark Weber and Lars-Henrik Eriksson and Joachim Parrow and Johannes Borgström and Ramunas Gutkovas},
+  title   = {Modal Logics for Nominal Transition Systems},
   journal = {Archive of Formal Proofs},
-  month   = feb,
-  year    = 2013,
-  note    = {\url{http://isa-afp.org/entries/Nominal2.shtml},
+  month   = oct,
+  year    = 2016,
+  note    = {\url{http://isa-afp.org/entries/Modal_Logics_for_NTS.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -76,9 +76,9 @@ HOL/Nominal in the Isabelle distribution.
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
+    <tr><td class="datahead">Depends on:</td>
+        <td class="data"><a href="Nominal2.shtml">Nominal2</a></td></tr>
 
-    <tr><td class="datahead">Used by:</td>
-        <td class="data"><a href="Incompleteness.shtml">Incompleteness</a>, <a href="Launchbury.shtml">Launchbury</a>, <a href="Modal_Logics_for_NTS.shtml">Modal_Logics_for_NTS</a>, <a href="Rewriting_Z.shtml">Rewriting_Z</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->
@@ -91,7 +91,7 @@ HOL/Nominal in the Isabelle distribution.
 
 <p></p>
 
-<!--#set var="name" value="Nominal2" -->
+<!--#set var="name" value="Modal_Logics_for_NTS" -->
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
