@@ -283,7 +283,7 @@ proof -
     have fv: "f v = (1 / norm1 (B *v v)) *\<^sub>R (B *v v)" unfolding f_def by auto
     from normB have Bv0: "B *v v \<noteq> 0" unfolding norm1_0_iff[symmetric] by linarith
     have norm: "norm1 (f v) = 1" unfolding fv using normB Bv0 by simp
-    def c \<equiv> "(1 / norm1 (B *v v))"
+    define c where "c = (1 / norm1 (B *v v))"
     have c: "c > 0" unfolding c_def using normB by auto
     {
       fix i
@@ -313,7 +313,7 @@ qualified lemma perron_frobenius_positive_ev:
 proof -
   from brouwer[OF compactS convexS non_emptyS cont_f image_f]
     obtain v where v: "v \<in> S" and fv: "f v = v" by auto
-  def ev \<equiv> "norm1 (B *v v)"
+  define ev where "ev = norm1 (B *v v)"
   from normB_S[OF v] have "ev \<noteq> 0" unfolding ev_def by auto
   with norm1_ge_0[of "B *v v", folded ev_def] have norm: "ev > 0" by auto
   from arg_cong[OF fv[unfolded f_def], of "\<lambda> (w :: real ^ 'n). ev *\<^sub>R w"] norm

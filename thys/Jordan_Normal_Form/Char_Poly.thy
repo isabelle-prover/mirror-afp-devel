@@ -37,7 +37,7 @@ proof -
     show ?case using v dim by simp
   next
     case (Suc i)
-    def P \<equiv> "A ^\<^sub>m i"
+    define P where "P = A ^\<^sub>m i"
     have P: "P \<in> carrier\<^sub>m n n" using A unfolding P_def by simp
     have "A ^\<^sub>m Suc i = P \<otimes>\<^sub>m A" unfolding P_def by simp
     also have "\<dots> \<otimes>\<^sub>m\<^sub>v v = P \<otimes>\<^sub>m\<^sub>v (A \<otimes>\<^sub>m\<^sub>v v)" using P A v by simp
@@ -101,13 +101,13 @@ lemma find_eigenvector: assumes A: "A \<in> carrier\<^sub>m n n"
   and ev: "eigenvalue A e"
   shows "eigenvector A (find_eigenvector A e) e"
 proof -
-  def B \<equiv> "char_matrix A e"
+  define B where "B = char_matrix A e"
   from ev[unfolded eigenvalue_char_matrix[OF A]]  obtain v where
     v: "v \<in> carrier\<^sub>v n" "v \<noteq> \<zero>\<^sub>v n" and Bv: "B \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v n" unfolding B_def by auto
   have B: "B \<in> carrier\<^sub>m n n" using A unfolding B_def by simp
   let ?z = "\<zero>\<^sub>m (dim\<^sub>r A) 0"
   obtain C D where gauss: "gauss_jordan B ?z = (C,D)" by force
-  def w \<equiv> "find_base_vector C"
+  define w where "w = find_base_vector C"
   have res: "find_eigenvector A e = w" unfolding w_def find_eigenvector_def Let_def gauss B_def[symmetric]
     by simp
   have "?z \<in> carrier\<^sub>m n 0" using A by auto
@@ -375,7 +375,7 @@ proof -
   from A have dA: "dim\<^sub>r A = n" by simp
   show ?thesis
     unfolding char_poly_defs det_def'[OF A']
-  proof (rule degree_lcoeff_sum[of _ id], auto simp: finite_permutations signof_id permutes_id dA)
+  proof (rule degree_lcoeff_sum[of _ id], auto simp: finite_permutations permutes_id dA)
     have both: "degree (\<Prod>i = 0..<n. ([:0, 1:] \<odot>\<^sub>m \<one>\<^sub>m n \<oplus>\<^sub>m map\<^sub>m (\<lambda>a. [:- a:]) A) $$ (i, i)) = n \<and>
       coeff (\<Prod>i = 0..<n. ([:0, 1:] \<odot>\<^sub>m \<one>\<^sub>m n \<oplus>\<^sub>m map\<^sub>m (\<lambda>a. [:- a:]) A) $$ (i, i)) n = 1"
       by (rule degree_prod_monic, insert A, auto)

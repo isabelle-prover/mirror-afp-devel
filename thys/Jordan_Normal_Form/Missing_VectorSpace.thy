@@ -92,11 +92,11 @@ proof
       and aA0: "lincomb a A = zero V"
       and uA: "u:A"
       and au0: "a u \<noteq> zero K" by auto
-    def a'\<equiv> "\<lambda>v. (if v : A then a v else zero K)"
+    define a' where "a' = (\<lambda>v. (if v : A then a v else zero K))"
     have a'U: "a' : U \<rightarrow> carrier K" unfolding a'_def using aA by auto
     have uU: "u : U" using uA AU by auto
     have a'u0: "a' u \<noteq> zero K" unfolding a'_def using au0 uA by auto
-    def B \<equiv> "U - A"
+    define B where "B = U - A"
     have B: "B \<subseteq> carrier V" unfolding B_def using U by auto
     have UAB: "U = A \<union> B" unfolding B_def using AU by auto
     have finB: "finite B" using finU B_def by auto
@@ -256,9 +256,9 @@ proof -
     show "x : span (insert v E)"
       unfolding finite_span[OF finEv Ev]
     proof (rule,intro exI conjI)
-      def a \<equiv> "\<lambda>e. xa u \<otimes>\<^bsub>K\<^esub> ua e"
-      def a' \<equiv> "\<lambda>e. a e \<oplus>\<^bsub>K\<^esub> xa e"
-      def a'' \<equiv> "\<lambda>e. if e = v then xa u \<otimes>\<^bsub>K\<^esub> ua v else a' e"
+      define a where "a = (\<lambda>e. xa u \<otimes>\<^bsub>K\<^esub> ua e)"
+      define a' where "a' = (\<lambda>e. a e \<oplus>\<^bsub>K\<^esub> xa e)"
+      define a'' where "a'' = (\<lambda>e. if e = v then xa u \<otimes>\<^bsub>K\<^esub> ua v else a' e)"
       have aE: "a : E \<rightarrow> carrier K" unfolding a_def using xau uaE u by blast
       hence a'E: "a' : E \<rightarrow> carrier K" unfolding a'_def using xaE by blast
       thus a'': "a'' : insert v E \<rightarrow> carrier K" unfolding a''_def by auto
@@ -341,8 +341,8 @@ proof (intro conjI)
       where va[simp]: "va : E \<rightarrow> carrier K"
         and vva: "v = lincomb va E"
       using finite_span[OF finE E] by auto
-    def va' \<equiv> "\<lambda>e. ua v \<otimes>\<^bsub>K\<^esub> va e"
-    def va'' \<equiv> "\<lambda>e. va' e \<oplus>\<^bsub>K\<^esub> ua e"
+    define va' where "va' = (\<lambda>e. ua v \<otimes>\<^bsub>K\<^esub> va e)"
+    define va'' where "va'' = (\<lambda>e. va' e \<oplus>\<^bsub>K\<^esub> ua e)"
     have va'[simp]: "va' : E \<rightarrow> carrier K"
       unfolding va'_def using uav va by blast
     hence va''[simp]: "va'' : E \<rightarrow> carrier K"

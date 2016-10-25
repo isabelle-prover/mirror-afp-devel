@@ -49,7 +49,7 @@ lemma primitive_prs: assumes "h = primitive_prs f g"
   using assms(1-3)
 proof (induct f g arbitrary: h rule: primitive_prs.induct)
   case (1 f g h)
-  def r \<equiv> "pseudo_mod f g"
+  define r where "r = pseudo_mod f g"
   let ?h = "normalize_content r"
   from 1(2) have h: "h = (if g = 0 then f else primitive_prs g ?h)"
     unfolding primitive_prs.simps[of f] r_def Let_def by auto
@@ -102,8 +102,8 @@ proof -
   let ?cf = "content f"
   let ?cg = "content g"
   let ?cp = "content p"
-  def a \<equiv> "gcd ?cf ?cg"
-  def k \<equiv> "primitive_prs ?f ?g"
+  define a where "a = gcd ?cf ?cg"
+  define k where "k = primitive_prs ?f ?g"
   have h: "h = smult a k" unfolding assms k_def gcd_int_poly_def Let_def a_def 
     normalize_content_def by auto
   have a: "a dvd ?cf" "a dvd ?cg" unfolding a_def by auto
@@ -161,10 +161,10 @@ proof (intro ext)
   obtain b' g' where gbg': "rat_to_int_poly g = (b',g')" by force
   from rat_to_int_poly[OF this] obtain b where 
     g: "g = smult b (?ri g')" and b: "b \<noteq> 0" by auto
-  def h \<equiv> "gcd_int_poly f' g'"
+  define h where "h = gcd_int_poly f' g'"
   note gcd = gcd_int_poly[OF refl, of f' g', folded h_def]
   let ?h = "?ri h"
-  def lc \<equiv> "inverse (coeff ?h (degree ?h))"
+  define lc where "lc = inverse (coeff ?h (degree ?h))"
   let ?gcd = "smult lc ?h"
   have id: "gcd_rat_poly f g = ?gcd"
     unfolding lc_def h_def gcd_rat_poly_def Let_def faf' gbg' snd_conv by auto

@@ -20,7 +20,7 @@ begin
 lemma mat_similar_wit_char_matrix: assumes wit: "mat_similar_wit A B P Q"
   shows "mat_similar_wit (char_matrix A ev) (char_matrix B ev) P Q"
 proof -
-  def n \<equiv> "dim\<^sub>r A"
+  define n where "n = dim\<^sub>r A"
   let ?C = "carrier\<^sub>m n n"
   from mat_similar_witD[OF refl wit, folded n_def] have
     A: "A \<in> ?C" and B: "B \<in> ?C" and P: "P \<in> ?C" and Q: "Q \<in> ?C"
@@ -138,7 +138,7 @@ lemma dim_gen_eigenspace_similar: assumes sim: "mat_similar A B"
   shows "dim_gen_eigenspace A = dim_gen_eigenspace B"
 proof (intro ext)
   fix ev k
-  def n \<equiv> "dim\<^sub>r A"
+  define n where "n = dim\<^sub>r A"
   from sim[unfolded mat_similar_def] obtain P Q where
     wit: "mat_similar_wit A B P Q" by auto
   let ?C = "carrier\<^sub>m n n"
@@ -189,7 +189,7 @@ proof -
   let ?k = "Suc k1" let ?k2 = "Suc ?k"
   let ?dim = "dim_gen_eigenspace A ev"
   let ?sizes = "map fst [(n, e)\<leftarrow>n_as . e = ev]"
-  def sizes \<equiv> ?sizes
+  define sizes where "sizes = ?sizes"
   let ?two = "length (filter (op = (k, ev)) n_as)"
   have "compute_nr_of_jordan_blocks A ev k = 
     ?dim ?k + ?dim ?k - ?dim k1 - ?dim ?k2" unfolding compute_nr_of_jordan_blocks_def k by simp
@@ -236,9 +236,9 @@ lemma compute_set_of_jordan_blocks: assumes jnf: "jordan_nf A n_as"
 proof -
   note cjb = compute_nr_of_jordan_blocks[OF jnf]
   note d = compute_set_of_jordan_blocks_def Let_def
-  def kk \<equiv> "Polynomial.order ev (char_poly A)"
-  def as \<equiv> "map (dim_gen_eigenspace A ev) [0 ..< Suc (Suc kk)]"
-  def cards \<equiv> "map (\<lambda> k. (k, 2 * as ! k - as ! (k - 1) - as ! Suc k)) [1 ..< Suc kk]"
+  define kk where "kk = Polynomial.order ev (char_poly A)"
+  define as where "as = map (dim_gen_eigenspace A ev) [0 ..< Suc (Suc kk)]"
+  define cards where "cards = map (\<lambda> k. (k, 2 * as ! k - as ! (k - 1) - as ! Suc k)) [1 ..< Suc kk]"
   have C: "?C = set (map (\<lambda> (k,c). (k,ev)) (filter (\<lambda> (k,c). c \<noteq> 0) cards))"
     unfolding d as_def kk_def cards_def by (rule refl)
   {

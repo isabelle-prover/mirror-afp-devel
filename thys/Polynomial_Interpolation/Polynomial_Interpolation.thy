@@ -71,7 +71,7 @@ lemma uniqueness_of_interpolation: fixes p :: "'a :: idom poly"
    id: "\<And> x. x \<in> S \<Longrightarrow> poly p x = poly q x"
   shows "p = q"
 proof -
-  def f \<equiv> "p - q"
+  define f where "f = p - q"
   let ?R = "{x. poly f x = 0}"
   have sub: "S \<subseteq> ?R" unfolding f_def using id by auto
   show ?thesis
@@ -133,7 +133,7 @@ lemma interpolation_poly_int_Some: assumes dist': "distinct (map fst xs_ys)"
   shows "\<And> x y. (x,y) \<in> set xs_ys \<Longrightarrow> poly p x = y" "degree p \<le> length xs_ys - 1"
 proof -
   let ?r = "rat_of_int"
-  def rxs_ys \<equiv> "map (\<lambda>(x, y). (?r x, ?r y)) xs_ys"
+  define rxs_ys where "rxs_ys = map (\<lambda>(x, y). (?r x, ?r y)) xs_ys"
   have dist: "distinct (map fst rxs_ys)" using dist' unfolding distinct_map rxs_ys_def inj_on_def by force
   obtain rp where rp: "rp = interpolation_poly alg rxs_ys" by blast
   from p[unfolded interpolation_poly_int_def[OF dist'] Let_def, folded rxs_ys_def rp]
@@ -162,7 +162,7 @@ lemma interpolation_poly_int_None: assumes dist: "distinct (map fst xs_ys)"
 proof -
   let ?r = "rat_of_int"
   let ?rp = "map_poly ?r"
-  def rxs_ys \<equiv> "map (\<lambda>(x, y). (?r x, ?r y)) xs_ys"
+  define rxs_ys where "rxs_ys = map (\<lambda>(x, y). (?r x, ?r y)) xs_ys"
   have dist': "distinct (map fst rxs_ys)" using dist unfolding distinct_map rxs_ys_def inj_on_def by force
   obtain rp where rp: "rp = interpolation_poly alg rxs_ys" by blast
   note degrp = degree_interpolation_poly[of alg rxs_ys, folded rp]
@@ -196,10 +196,10 @@ lemma impossible_p_0_is_0_and_p_2_is_1: "\<not> (\<exists> p. poly p 0 = 0 \<and
 proof
   assume "\<exists> p. poly p 0 = 0 \<and> poly p 2 = (1 :: int)"
   then obtain p where p: "poly p 0 = 0" "poly p 2 = (1 :: int)" by auto
-  def xs_ys \<equiv> "map (\<lambda> i. (int i, poly p (int i))) [ 3 ..< 3 + degree p]"
+  define xs_ys where "xs_ys = map (\<lambda> i. (int i, poly p (int i))) [ 3 ..< 3 + degree p]"
   let ?l = "\<lambda> xs. (0,0) # (2 :: int,1 :: int) # xs" 
   let ?xs_ys = "?l xs_ys"
-  def list \<equiv> "map fst ?xs_ys"
+  define list where "list = map fst ?xs_ys"
   have dist: "distinct (map fst ?xs_ys)" unfolding xs_ys_def by (auto simp: o_def distinct_map inj_on_def)
   have p: "\<And> x y. (x,y) \<in> set ?xs_ys \<Longrightarrow> poly p x = y" unfolding xs_ys_def using p by auto
   have deg: "degree p < length ?xs_ys" unfolding xs_ys_def by simp

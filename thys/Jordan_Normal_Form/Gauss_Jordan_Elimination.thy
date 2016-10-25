@@ -252,8 +252,8 @@ lemma eliminate_entries_convert:
     eliminate_entries_rec B I (map (\<lambda> i. (- A $$ (i, J), i)) (filter (\<lambda> i. i \<noteq> I) [0 ..< dim\<^sub>r A]))"
 proof -
   let ?ais = "\<lambda> is. map (\<lambda> i. (- A $$ (i, J), i)) (filter (\<lambda> i. i \<noteq> I) is)" 
-  def one_go \<equiv> "\<lambda> B is. mat (dim\<^sub>r B) (dim\<^sub>c B) (\<lambda> (i, j).
-    if i \<noteq> I \<and> i \<in> set is then B $$ (i,j) - (A $$ (i,J))  * B $$ (I,j) else B $$ (i,j))"
+  define one_go where "one_go = (\<lambda> B is. mat (dim\<^sub>r B) (dim\<^sub>c B) (\<lambda> (i, j).
+    if i \<noteq> I \<and> i \<in> set is then B $$ (i,j) - (A $$ (i,J))  * B $$ (I,j) else B $$ (i,j)))"
   {
     fix "is" :: "nat list" 
     assume "distinct is"     
@@ -711,7 +711,7 @@ proof -
           let ?E = "\<lambda> B. eliminate_entries (\<lambda> i. A $$ (i,j)) B i j" 
           let ?A = "?E A"
           let ?B = "?E B"
-          def E \<equiv> ?A
+          define E where "E = ?A"
           let ?f = "\<lambda> i'. if i' = i then j else if i' > i then Suc j else f i'"
           have pivot: "pivot_fun E f j" unfolding E_def          
             by (rule pivot_fun_eliminate_entries[OF pivot dim f(2)], insert valid, auto)
@@ -1122,7 +1122,7 @@ proof -
   let ?p = "\<lambda> i. i < nr \<and> p i = nc \<or> i = nr"
   let ?spp = "map prod.swap pp"
   let ?map = "map_of ?spp"
-  def I \<equiv> "\<lambda> i. case map_of (map prod.swap pp) i of Some j \<Rightarrow> - A $$ (j,qj) | None \<Rightarrow> 0"
+  define I where "I = (\<lambda> i. case map_of (map prod.swap pp) i of Some j \<Rightarrow> - A $$ (j,qj) | None \<Rightarrow> 0)"
   have d: "non_pivot_base A pp qj = vec nc (\<lambda> i. if i = qj then 1 else I i)"
     unfolding non_pivot_base_def Let_def dim I_def ..
   from pp have dist: "distinct (map fst ?spp)" 
@@ -1162,7 +1162,7 @@ proof -
         have map: "?map j = Some ii" by auto
         from mem j qj have jqj: "j \<noteq> qj" by force
         note p = pivot'(4-5)[OF ii pii]
-        def start \<equiv> "?e j"
+        define start where "start = ?e j"
         have "start = A $$ (i,j) * ?v $ j" using j i A by (auto simp: start_def)
         also have "A $$ (i,j) = A $$ (i, p ii)" unfolding jpi ..
         also have "\<dots> = (if i = ii then 1 else 0)" using p(1) p(2)[OF i] by auto
@@ -1240,7 +1240,7 @@ lemma find_base_vector: assumes "snd ` set (pivot_positions A) \<noteq> {0 ..< n
     "find_base_vector A \<noteq> \<zero>\<^sub>v nc"
     "A \<otimes>\<^sub>m\<^sub>v find_base_vector A = \<zero>\<^sub>v nr"
 proof -
-  def cands \<equiv> "filter (\<lambda> j. j \<notin> snd ` set (pivot_positions A)) [0 ..< nc]"
+  define cands where "cands = filter (\<lambda> j. j \<notin> snd ` set (pivot_positions A)) [0 ..< nc]"
   from A have dim: "dim\<^sub>r A = nr" "dim\<^sub>c A = nc" by auto
   from ref[unfolded row_echelon_form_def] obtain p 
   where pivot: "pivot_fun A p nc" using dim by auto

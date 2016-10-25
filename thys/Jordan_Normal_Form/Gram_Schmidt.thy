@@ -369,7 +369,7 @@ lemma adjust_zero:
     and i: "i < length us"
   shows "(adjuster n w us \<oplus>\<^sub>v w) \<bullet>c us!i = 0"
 proof -
-  def u == "us!i"
+  define u where "u = us!i"
   have u[simp]: "u : carrier\<^sub>v n" using i U u_def by auto
   hence cu[simp]: "conjugate\<^sub>v u : carrier\<^sub>v n" by auto
   have uU: "u : set us" using i u_def by auto
@@ -463,14 +463,14 @@ proof
       proof (cases "j = 0")
         case True show ?thesis unfolding True i0 using aw0 by auto
         next case False
-          def j' == "j-1"
+          define j' where "j' = j-1"
           hence jfold: "j = j'+1" using False by auto
           hence j': "j' < length us" using j by auto
           show ?thesis unfolding i0 jfold
             using adjust_zero[OF U orth w j'] by auto
       qed
     next case False
-      def i' == "i-1"
+      define i' where "i' = i-1"
       hence ifold: "i = i'+1" using False by auto
       hence i': "i' < length us" using i by auto
       have [simp]: "us ! i' : carrier\<^sub>v n" using U i' by auto
@@ -487,7 +487,7 @@ proof
           using adjust_zero[OF U orth w i']
           by (subst scalar_prod_comm[of _ n], auto)
         next case False
-          def j' == "j-1"
+          define j' where "j' = j-1"
           hence jfold: "j = j'+1" using False by auto
           hence j': "j' < length us" using j by auto
           show ?thesis

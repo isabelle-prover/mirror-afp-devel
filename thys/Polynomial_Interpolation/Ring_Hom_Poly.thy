@@ -137,7 +137,7 @@ lemma degree_extension: assumes "degree p \<le> n"
       = (\<Sum>i\<le>n. x ^ i * hom (coeff p i))" (is "?l = ?r")
 proof -
   let ?f = "\<lambda> i. x ^ i * hom (coeff p i)"
-  def m \<equiv> "n - degree p"
+  define m where "m = n - degree p"
   have n: "n = degree p + m" unfolding m_def using assms by auto
   have "?r = (\<Sum> i \<le> degree p + m. ?f i)" unfolding n ..
   also have "\<dots> = ?l + sum ?f {Suc (degree p) .. degree p + m}"

@@ -132,7 +132,7 @@ proof (induct xs arbitrary: l k rule: neville_aitken_merge.induct)
   case (1 xi xj p_ij xsi xsj p_sisj rest l k)
   let ?n = neville_aitken_main
   let ?f = "\<lambda> j i. (x i, x (i + j), ?n i (i + j))"
-  def f \<equiv> ?f
+  define f where "f = ?f"
   let ?map = "\<lambda> j. map (?f j)"
   note res = 1(2)
   from arg_cong[OF res, of length] obtain kk where k: "k = Suc kk" by (cases k, auto)

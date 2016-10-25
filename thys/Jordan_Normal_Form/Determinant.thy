@@ -160,7 +160,7 @@ proof -
     by (rule sum.remove, insert id0 fPU m, auto simp: p0)
   also have "(\<Sum> p \<in> ?PU - {id}. ?pp p) = 0"
     by (rule sum.neutral, insert fPU, auto simp: p0)
-  finally show ?thesis using m by (auto simp: signof_id prod_list_diag_prod)
+  finally show ?thesis using m by (auto simp: prod_list_diag_prod)
 qed
 
 lemma det_one[simp]: "det (\<one>\<^sub>m n) = 1"
@@ -640,8 +640,8 @@ proof -
         prod (\<lambda>i. A$$(i,p i)) ?U * prod (\<lambda>i. B$$ (i, q (?inv p i))) ?U"
         unfolding th001 o_def permutes_inverses[OF p]
         by (subst prod.distrib[symmetric], insert A p q B, auto intro: prod.cong)
-      def AA \<equiv> "\<Prod>i\<in>?U. A $$ (i, p i)"
-      def BB \<equiv> "\<Prod>ia\<in>{0..<n}. B $$ (ia, q (?inv p ia))"
+      define AA where "AA = (\<Prod>i\<in>?U. A $$ (i, p i))"
+      define BB where "BB = (\<Prod>ia\<in>{0..<n}. B $$ (ia, q (?inv p ia)))"
       have "?s q * (\<Prod>ia\<in>{0..<n}. mat\<^sub>r n n (\<lambda>i. A $$ (i, p i) \<odot>\<^sub>v row B (p i)) $$ (ia, q ia)) =
          ?s p * (\<Prod>i\<in>{0..<n}. A $$ (i, p i)) * (?s (q \<circ> ?inv p) * (\<Prod>ia\<in>{0..<n}. B $$ (ia, q (?inv p ia))))"
         unfolding sign thp
@@ -784,7 +784,7 @@ proof -
     from det_zero_imp_zero_row[OF A True, of "()"]
     obtain P where PU: "P \<in> ?U" and row: "row (P \<otimes>\<^sub>m A) ?n = \<zero>\<^sub>v n" and n: "0 < n" "?n < n"
       and re: "row_echelon_form (P \<otimes>\<^sub>m A)" by auto
-    def PA \<equiv> "P \<otimes>\<^sub>m A"
+    define PA where "PA = P \<otimes>\<^sub>m A"
     note row = row[folded PA_def]
     note re = re[folded PA_def]
     from PU obtain Q where P: "P \<in> carrier\<^sub>m n n" and Q: "Q \<in> carrier\<^sub>m n n"
@@ -845,7 +845,7 @@ proof -
     have "\<forall> i. \<exists> a b. v $ i = Fraction_Field.Fract a b \<and> b \<noteq> 0" using Fract_cases[of "v $ i" for i] by metis
     from choice[OF this] obtain a where "\<forall> i. \<exists> b. v $ i = Fraction_Field.Fract (a i) b \<and> b \<noteq> 0" by metis
     from choice[OF this] obtain b where vi: "\<And> i. v $ i = Fraction_Field.Fract (a i) (b i)" and bi: "\<And> i. b i \<noteq> 0" by auto
-    def m \<equiv> "prod_list (map b [0..<n])"
+    define m where "m = prod_list (map b [0..<n])"
     let ?m = "?h m"
     have m0: "m \<noteq> 0" unfolding m_def hom_0_iff prod_list_zero_iff using bi by auto
     from v0[unfolded vec_eq_iff] v obtain i where i: "i < n" "v $ i \<noteq> 0" by auto
@@ -863,7 +863,7 @@ proof -
     }
     hence "\<forall> i. \<exists> c. i < n \<longrightarrow> ?m * v $ i = ?h c" by auto
     from choice[OF this] obtain c where c: "\<And> i. i < n \<Longrightarrow> ?m * v $ i = ?h (c i)" by auto
-    def w \<equiv> "vec n c"
+    define w where "w = vec n c"
     have w: "w \<in> carrier\<^sub>v n" unfolding w_def by simp
     have mvw: "?m \<odot>\<^sub>v v = map_vec ?h w" unfolding w_def using c v
       by (intro vec_eqI, auto)
@@ -966,7 +966,7 @@ lemma det_four_block_mat_upper_right_zero_col: assumes A1: "A1 \<in> carrier\<^s
 proof -
   let ?A = "four_block_mat A1 A2 A3 A4"
   from A20 have A2: "A2 \<in> carrier\<^sub>m n 1" by auto  
-  def A \<equiv> ?A
+  define A where "A = ?A"
   from four_block_mat_carrier[OF A1 A4] A1
   have A: "A \<in> carrier\<^sub>m (Suc n) (Suc n)" and dim: "dim\<^sub>r A1 = n" unfolding A_def by auto
   let ?Pn = "\<lambda> p. p permutes {0 ..< n}"
@@ -987,7 +987,7 @@ proof -
     also have "\<dots> = A $$ (p n, n) * signof p * (\<Prod> i \<in> {0..< n}. A $$ (p i, i))" by simp
     finally have "?prod p = ?prod' p" .
   } note prod_id = this
-  def prod' \<equiv> ?prod'
+  define prod' where "prod' = ?prod'"
   {
     fix i q
     assume i: "i \<in> {0..< n}" "q permutes {0 ..< n}"
@@ -1834,14 +1834,14 @@ lemma laplace_expansion_column:
       and j: "j < n"
   shows "det A = (\<Sum>i<n. A $$ (i,j) * cofactor A i j)"
 proof -
-  def l \<equiv> "n-1"
+  define l where "l = n-1"
   have A: "A \<in> carrier\<^sub>m (Suc l) (Suc l)"
    and jl: "j < Suc l" using A j unfolding l_def by auto
   let ?N = "{0 ..< Suc l}"
-  def f \<equiv> "\<lambda>p i. A $$ (i, p i)"
-  def g \<equiv> "\<lambda>p. prod (f p) ?N"
-  def h \<equiv> "\<lambda>p. signof p * g p"
-  def Q \<equiv> "{ q . q permutes {0..<l} }"
+  define f where "f = (\<lambda>p i. A $$ (i, p i))"
+  define g where "g = (\<lambda>p. prod (f p) ?N)"
+  define h where "h = (\<lambda>p. signof p * g p)"
+  define Q where "Q = { q . q permutes {0..<l} }"
   have jN: "j \<in> ?N" using jl by auto
   have disj: "\<forall>i \<in> ?N. \<forall>i' \<in> ?N. i \<noteq> i' \<longrightarrow>
     {p. p permutes ?N \<and> p i = j} \<inter> {p. p permutes ?N \<and> p i' = j} = {}"

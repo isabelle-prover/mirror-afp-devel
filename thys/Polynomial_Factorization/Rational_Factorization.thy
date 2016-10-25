@@ -166,9 +166,9 @@ proof -
   next
     case False
     hence p0: "p \<noteq> 0" by auto
-    def fs \<equiv> "[] :: rat poly list" 
-    def xs \<equiv> "roots_of_rat_poly p"
-    def q \<equiv> p
+    define fs where "fs = ([] :: rat poly list)" 
+    define xs where "xs = roots_of_rat_poly p"
+    define q where "q = p"
     obtain n  where n: "n = degree q + length xs" by auto 
     have prod: "p = q * prod_list fs" unfolding q_def fs_def by auto
     have sub: "{x. poly q x = 0} \<subseteq> set xs" using roots_of_rat_poly[OF p0] unfolding q_def xs_def by auto
@@ -189,7 +189,7 @@ proof -
         hence no_rt: "\<And> x. poly q x \<noteq> 0" by auto
         hence q: "q \<noteq> 0" by auto
         let ?r = "smult (inverse c) q"
-        def r \<equiv> ?r
+        define r where "r = ?r"
         from 0(4-5) have c: "c = coeff q (degree q)" and qs: "qs = (if r = 1 then fs else r # fs)" by (auto simp: r_def)
         from q c qs 0(1) have c0: "c \<noteq> 0" and p: "p = smult c (prod_list (r # fs))" by (auto simp: r_def)
         from p have p: "p = smult c (prod_list qs)" unfolding qs by auto 
@@ -429,7 +429,7 @@ next
       from IH(1)[OF None res] irr irp show ?thesis by (auto simp: ac_simps)
     next
       case (Some q)
-      def pq \<equiv> "p div q" 
+      define pq where "pq = p div q" 
       from Some res have res: "?f c irr (q # pq # ps) = (d,qs)" unfolding pq_def by auto
       from rational_proper_factor(2)[OF Some] have "q dvd p" by auto
       hence p: "p = q * pq" unfolding pq_def by auto

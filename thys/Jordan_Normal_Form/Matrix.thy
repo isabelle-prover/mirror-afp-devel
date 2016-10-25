@@ -1577,8 +1577,8 @@ next
     have sq2: "Ball (set (List.map (\<lambda>A. A ^\<^sub>m n) As)) square_mat"
       and sq3: "Ball (set (List.map (\<lambda>A. A ^\<^sub>m n \<otimes>\<^sub>m A) As)) square_mat"
       using sq by auto
-    def n1 \<equiv> "dim\<^sub>r A"
-    def n2 \<equiv> "sum_list (map dim\<^sub>r As)"
+    define n1 where "n1 = dim\<^sub>r A"
+    define n2 where "n2 = sum_list (map dim\<^sub>r As)"
     from A have A: "A \<in> carrier\<^sub>m n1 n1" unfolding n1_def mat_carrier_def by simp
     have [simp]: "dim\<^sub>c (?An As) = n2" "dim\<^sub>r (?An As) = n2"
       unfolding n2_def
@@ -2072,7 +2072,7 @@ qed
 lemma mat_similar_wit_pow: assumes wit: "mat_similar_wit A B P Q"
   shows "mat_similar_wit (A ^\<^sub>m k) (B ^\<^sub>m k) P Q"
 proof -
-  def n \<equiv> "dim\<^sub>r A"
+  define n where "n = dim\<^sub>r A"
   let ?C = "carrier\<^sub>m n n"
   from mat_similar_witD[OF refl wit, folded n_def] have
     A: "A \<in> ?C" and B: "B \<in> ?C" and P: "P \<in> ?C" and Q: "Q \<in> ?C"
@@ -2087,7 +2087,7 @@ proof -
     thus ?case using carr by (simp add: PQ)
   next
     case (Suc k)
-    def Bk \<equiv> "B ^\<^sub>m k"
+    define Bk where "Bk = B ^\<^sub>m k"
     have Bk: "Bk \<in> carrier\<^sub>m n n" unfolding Bk_def using carr by simp
     have "(P \<otimes>\<^sub>m B \<otimes>\<^sub>m Q) ^\<^sub>m Suc k = (P \<otimes>\<^sub>m Bk \<otimes>\<^sub>m Q) \<otimes>\<^sub>m (P \<otimes>\<^sub>m B \<otimes>\<^sub>m Q)" by (simp add: Suc Bk_def)
     also have "\<dots> = P \<otimes>\<^sub>m (Bk \<otimes>\<^sub>m (Q \<otimes>\<^sub>m P) \<otimes>\<^sub>m B) \<otimes>\<^sub>m Q"
@@ -2132,7 +2132,7 @@ proof -
   proof (rule mat_eqI, unfold id)
     fix i j
     assume *: "i < nr" "j < nc"
-    def I \<equiv> "{0 ..< n}"
+    define I where "I = {0 ..< n}"
     have id: "{0 ..< dim\<^sub>v (col ?B j)} = I" "{0 ..< dim\<^sub>v (col B j)} = I" 
       unfolding I_def using * B by auto
     have finite: "finite I" unfolding I_def by auto
@@ -2164,7 +2164,7 @@ proof -
   proof (rule vec_eqI, unfold id)
     fix i 
     assume *: "i < nr" 
-    def I \<equiv> "{0 ..< n}"
+    define I where "I = {0 ..< n}"
     have id: "{0 ..< dim\<^sub>v v} = I" "{0 ..< dim\<^sub>v (vec\<^sub>h v)} = I" 
       unfolding I_def using * v  by auto
     have finite: "finite I" unfolding I_def by auto

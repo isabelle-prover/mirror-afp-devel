@@ -39,11 +39,11 @@ lemma exp_tends_to_zero: assumes c: "c > 0"
   shows "\<exists> x. b ^ x \<le> c" 
 proof (rule ccontr)
   assume not: "\<not> ?thesis"
-  def bb \<equiv> "inverse b"
-  def cc \<equiv> "inverse c"
+  define bb where "bb = inverse b"
+  define cc where "cc = inverse c"
   from b have bb: "bb > 1" unfolding bb_def by (rule one_less_inverse)  
   from c have cc: "cc > 0" unfolding cc_def by simp
-  def bbb \<equiv> "bb - 1"
+  define bbb where "bbb = bb - 1"
   have id: "bb = 1 + bbb" and bbb: "bbb > 0" and bm1: "bbb \<ge> -1" unfolding bbb_def using bb by auto
   have "\<exists> n. cc / bbb < of_nat n" by (rule reals_Archimedean2)
   then obtain n where lt: "cc / bbb < of_nat n" by auto
@@ -73,9 +73,9 @@ proof -
     also have "\<dots> \<le> 1 - b" by (rule x0)
     finally have "b ^ x \<le> 1 - b" .
   } note x0 = this
-  def bs \<equiv> "insert 1 { b ^ Suc x * of_nat (Suc x) | x . x \<le> x0}"
+  define bs where "bs = insert 1 { b ^ Suc x * of_nat (Suc x) | x . x \<le> x0}"
   have bs: "finite bs" unfolding bs_def by auto
-  def p \<equiv> "Max bs"
+  define p where "p = Max bs"
   have bs: "\<And> b. b \<in> bs \<Longrightarrow> b \<le> p" unfolding p_def using bs by simp
   hence p1: "p \<ge> 1" unfolding bs_def by auto
   show ?thesis
@@ -119,7 +119,7 @@ proof -
   next
     case (Suc deg)
     then obtain q where IH: "\<And> x. b ^ x * (of_nat x) ^ deg \<le> q" by auto
-    def p \<equiv> "max 0 q"
+    define p where "p = max 0 q"
     from IH have IH: "\<And> x. b ^ x * (of_nat x) ^ deg \<le> p" unfolding p_def using le_max_iff_disj by blast
     have p: "p \<ge> 0" unfolding p_def by simp
     show ?case
@@ -128,9 +128,9 @@ proof -
       thus ?thesis using linear_exp_bound by simp
     next
       case False note deg = this
-      def p' \<equiv> "p*p * 2 ^ Suc deg * inverse b"
+      define p' where "p' = p*p * 2 ^ Suc deg * inverse b"
       let ?f = "\<lambda> x. b ^ x * (of_nat x) ^ Suc deg"
-      def f \<equiv> ?f
+      define f where "f = ?f"
       {
         fix x
         let ?x = "of_nat x :: 'a"
@@ -140,11 +140,11 @@ proof -
           hence x1: "?x \<ge> 1" by (cases x, auto)
           from x1 have x: "?x ^ (deg - 1) \<ge> 1" by simp
           from x1 have xx: "?x ^ Suc deg \<ge> 1" by (rule one_le_power)
-          def c \<equiv> "b ^ x * b ^ x * (2 ^ Suc deg)"
+          define c where "c = b ^ x * b ^ x * (2 ^ Suc deg)"
           have c: "c > 0" unfolding c_def using b by auto
           have "f (2 * x) = ?f (2 * x)" unfolding f_def by simp
           also have "b ^ (2 * x) = (b ^ x) * (b ^ x)" by (simp add: power2_eq_square power_even_eq)
-          also have "of_nat (2 * x) = 2 * ?x" by (simp add: of_nat_mult)
+          also have "of_nat (2 * x) = 2 * ?x" by simp
           also have "(2 * ?x) ^ Suc deg = 2 ^ Suc deg * ?x ^ Suc deg" by simp
           finally have "f (2 * x) = c * ?x ^ Suc deg" unfolding c_def by (simp add: ac_simps)
           also have "\<dots> \<le> c * ?x ^ Suc deg * ?x ^ (deg - 1)"
@@ -169,7 +169,7 @@ proof -
         show "?f y \<le> p'"
         proof (cases "even y")
           case True
-          def x \<equiv> "y div 2"
+          define x where "x = y div 2"
           have "y = 2 * x" unfolding x_def using True by simp
           from even[of x, folded this] have "?f y \<le> 2 ^ Suc deg * (p * p)" .
           also have "\<dots> \<le> \<dots> * inverse b"
@@ -178,7 +178,7 @@ proof -
           finally show "?f y \<le> p'" .
         next
           case False
-          def x \<equiv> "y div 2"
+          define x where "x = y div 2"
           have "y = 2 * x + 1" unfolding x_def using False by simp
           hence "?f y = ?f (2 * x + 1)" by simp
           also have "\<dots> \<le> b ^ (2 * x + 1) * of_nat (2 * x + 2) ^ Suc deg"
@@ -332,9 +332,9 @@ lemma quotient_of_int_div: assumes q: "quotient_of (of_int x / of_int y) = (a, b
   shows "\<exists> z. z \<noteq> 0 \<and> x = a * z \<and> y = b * z"
 proof -
   let ?r = "rat_of_int"
-  def z \<equiv> "gcd x y"
-  def x' \<equiv> "x div z"
-  def y' \<equiv> "y div z"
+  define z where "z = gcd x y"
+  define x' where "x' = x div z"
+  define y' where "y' = y div z"
   have id: "x = z * x'" "y = z * y'" unfolding x'_def y'_def z_def by auto
   from y have y': "y' \<noteq> 0" unfolding id by auto
   have z: "z \<noteq> 0" unfolding z_def using y by auto
@@ -387,10 +387,6 @@ lemma sgn_minus_rat: "sgn (- (x :: rat)) = - sgn x"
 
 lemma real_of_rat_sgn: "sgn (of_rat x) = real_of_rat (sgn x)"
   unfolding sgn_real_def sgn_rat_def by auto
-
-lemma (in linordered_field) inverse_sgn [simp]:
-  "inverse (sgn a) = sgn a"
-  by (cases a 0 rule: linorder_cases) simp_all
 
 lemma inverse_le_iff_sgn: assumes sgn: "sgn x = sgn y"
   shows "(inverse (x :: real) \<le> inverse y) = (y \<le> x)"

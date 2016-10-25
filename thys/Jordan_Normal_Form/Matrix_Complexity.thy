@@ -128,7 +128,7 @@ lemma delta_complexity:
   shows "mono_matrix_carrier (delta_gt d) def (delta_bound d) delta_mono"
 proof -
   from d0 have d00: "0 \<le> d" by simp
-  def N \<equiv> "ceiling (1 / d)"
+  define N where "N = ceiling (1 / d)"
   let ?N = "of_int N :: 'a"
   from d0 have "1 / d > 0" by (auto simp: field_simps)
   with ceiling_correct[of "1 / d"] have Nd: "1 / d \<le> ?N" and N: "N > 0" unfolding N_def by auto
@@ -165,7 +165,7 @@ proof -
     interpret mono_matrix_carrier "op >" 1 nat int_mono by (rule int_complexity)
     have "?nat (x + of_nat n) = nat (ceiling (x * ?N + of_nat n * ?N))" 
       by (simp add: field_simps)
-    also have id: "of_nat n * ?N = of_int (of_nat (n * nat N))" using N by (simp add: field_simps of_nat_mult)
+    also have id: "of_nat n * ?N = of_int (of_nat (n * nat N))" using N by (simp add: field_simps)
     also have "ceiling (x * ?N + of_int (of_nat (n * nat N))) = ceiling (x * ?N) + of_nat (n * nat N)" unfolding ceiling_add_of_int ..
     also have "nat (ceiling (x * ?N) + of_nat (n * nat N)) = ?nat x + nat (int (n * nat N))"
     proof (rule bound_plus_of_nat)
@@ -234,7 +234,7 @@ proof
   assume ass: "\<forall>x y. (x, y) \<in> set xys \<longrightarrow> y < x"
   let ?cs = "map (\<lambda> (x,y). x - y) xys"
   let ?ds = "def # ?cs"
-  def d \<equiv> "Min (set ?ds)"
+  define d where "d = Min (set ?ds)"
   have d: "d \<le> def" and dcs: "\<And> x. x \<in> set ?cs \<Longrightarrow> d \<le> x" unfolding d_def by auto
   have "d \<in> set ?ds" unfolding d_def by (rule Min_in, auto)
   hence "d = def \<or> d \<in> set ?cs" by auto

@@ -41,7 +41,7 @@ lemma perron_frobenius_spectral_radius_complex: fixes A :: "complex mat"
 proof (cases "n = 0")
   case False
   hence n: "n > 0" "n \<noteq> 0" by auto
-  def sr \<equiv> "spectral_radius A"
+  define sr where "sr = spectral_radius A"
   note sr = spectral_radius_mem_max[OF A n(1), folded sr_def]
   show ?thesis
   proof (rule spectral_radius_poly_bound[OF A], unfold sr_def[symmetric])
@@ -50,11 +50,11 @@ proof (cases "n = 0")
     from perron_frobenius[untransferred, cancel_card_constraint, OF A real_nonneg n(2)]
       obtain v where v: "v \<in> carrier\<^sub>v n" and ev: "eigenvector A v (?cr sr)" and 
       rnn: "real_nonneg_vec v" unfolding sr_def by auto
-    def B \<equiv> "map\<^sub>m Re A"
+    define B where "B = map\<^sub>m Re A"
     let ?A = "map\<^sub>m ?cr B"
     have AB: "A = ?A" unfolding B_def 
       by (rule mat_eqI, insert real_nonneg[unfolded real_nonneg_mat_def mat_elements_def], auto)
-    def w \<equiv> "map\<^sub>v Re v"
+    define w where "w = map\<^sub>v Re v"
     let ?v = "map\<^sub>v ?cr w"
     have vw: "v = ?v" unfolding w_def
       by (rule vec_eqI, insert rnn[unfolded real_nonneg_vec_def vec_elements_def], auto)

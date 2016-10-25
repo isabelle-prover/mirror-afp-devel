@@ -41,7 +41,7 @@ proof -
   let ?mri = "map ?ri"
   show ?thesis
   proof
-    def ics \<equiv> "map ?ir cs"
+    define ics where "ics = map ?ir cs"
     assume "set cs \<subseteq> \<int>"
     hence ics: "cs = ?mri ics" unfolding ics_def map_map o_def
       by (simp add: map_idI subset_code(1))      
@@ -61,8 +61,8 @@ proof -
         then obtain d ds and y ys where cs: "cs = d # ds" and xs: "xs = y # ys" 
           by (cases cs, auto, cases xs, auto)
         let ?q = "horner_composition cs (?mri ys)"
-        def q \<equiv> ?q
-        def p \<equiv> "q * [:- ?ri y, 1:] + [:c:]"
+        define q where "q = ?q"
+        define p where "p = q * [:- ?ri y, 1:] + [:c:]"
         have id: "horner_composition (c # cs) (?mri xs) = p" 
           unfolding cs xs q_def p_def by simp
         have coeff: "coeff p i \<in> \<int>" for i
@@ -122,7 +122,7 @@ proof -
         hence "set (coeffs q) \<subseteq> \<int>" by (auto simp: coeffs_def)
         
         from Cons(1)[OF this[unfolded q_def]] Cons(3) xs have IH: "set cs \<subseteq> \<int>" by auto
-        def r \<equiv> "coeff q 0 * (- ?ri y)"
+        define r where "r = coeff q 0 * (- ?ri y)"
         have r: "r \<in> \<int>" using coeff_q[of 0] unfolding r_def by auto
         have "coeff p 0 \<in> \<int>" by fact
         also have "coeff p 0 = r + c" unfolding p_def r_def by simp
@@ -220,7 +220,7 @@ proof -
       next
         case False
         hence b: "b j n = b (Suc j) n * X j + [: c j:]" unfolding b.simps[of j n] by simp
-        def nn \<equiv> "Suc n"
+        define nn where "nn = Suc n"
         from 1(2) have id: "[j..< nn] = j # [Suc j ..< nn]" unfolding nn_def by (simp add: upt_rec)
         from False have "Suc j \<le> n" by auto
         note IH = 1(1)[OF False this]
@@ -294,14 +294,14 @@ private lemma divided_differences_main: assumes "k \<le> n" "i < k"
   sum_list (map (\<lambda> j. xij_f (Suc i) (Suc i + j) * pprod k (Suc i) (Suc i + j)) [0..<Suc k - Suc i])"
 proof -
   let ?exp = "\<lambda> i j. xij_f i (i + j) * pprod k i (i + j)"
-  def ei \<equiv> "?exp i"
-  def esi \<equiv> "?exp (Suc i)"  
+  define ei where "ei = ?exp i"
+  define esi where "esi = ?exp (Suc i)"  
   let ?ki = "k - i"
   let ?sumi = "\<lambda> xs. sum_list (map ei xs)"
   let ?sumsi = "\<lambda> xs. sum_list (map esi xs)"
   let ?mid = "\<lambda> j. xij_f i (k - j) * pprod k (Suc i) (k - j) * xd (k - j) i"
   let ?sum = "\<lambda> j. ?sumi [0 ..< ?ki - j] + ?sumsi [?ki - j ..< ?ki] + ?mid j"
-  def fin \<equiv> "?ki - 1"
+  define fin where "fin = ?ki - 1"
   have fin: "fin < ?ki" unfolding fin_def using assms by auto
   have id: "[ 0 ..< Suc k - i] = [0 ..< ?ki] @ [?ki]" and 
     id2: "[i..<k] = i # [Suc i ..< k]" and
@@ -460,8 +460,8 @@ next
     case 1
     have xs: "xs = map x [0 ..< n]" using xs unfolding x_def[abs_def] 
       by (intro nth_equalityI, auto)
-    def nn \<equiv> "0 :: nat"
-    def m \<equiv> "Suc k - nn"
+    define nn where "nn = (0 :: nat)"
+    define m where "m = Suc k - nn"
     have prems: "m = Suc k - nn" "nn < Suc (Suc k)" unfolding m_def nn_def by auto
     have "?case = (divided_differences_impl (map ((\<lambda>j. xij_f j k)) [nn..< Suc k]) (f (Suc k)) (x (Suc k)) (map x [nn ..< n]) =
       map ((\<lambda>j. xij_f j (Suc k))) [nn..<Suc (Suc k)])"
@@ -515,7 +515,7 @@ qed
 lemma newton_poly_impl: assumes "n = Suc nn"
   shows "newton_poly_impl = newton_poly nn"
 proof -
-  def i \<equiv> "0 :: nat"
+  define i where "i = (0 :: nat)"
   have xs: "map x [0..<n] = xs" using xs
     by (intro nth_equalityI, auto simp: x_def)
   have "i \<le> nn" unfolding i_def by simp
@@ -598,7 +598,7 @@ qed simp
 lemma div_Ints_mod_0: assumes "rat_of_int a / rat_of_int b \<in> \<int>" "b \<noteq> 0"
   shows "a mod b = 0"
 proof -
-  def c \<equiv> "int_of_rat (rat_of_int a / rat_of_int b)"
+  define c where "c = int_of_rat (rat_of_int a / rat_of_int b)"
   have "rat_of_int a / rat_of_int b = rat_of_int c" unfolding c_def using assms(1) by simp
   hence "rat_of_int a = rat_of_int b * rat_of_int c" using assms(2)
     by (metis divide_cancel_right nonzero_mult_div_cancel_left of_int_eq_0_iff)
@@ -615,7 +615,7 @@ proof (induct gs g x ys rule: divided_differences_impl_int.induct)
   case (1 xi_j1 x_j1s fj xj xi xis)
   note none = 1(3)
   from 1(2,4) have len: "length x_j1s \<le> length xis" and xj: "xj \<notin> set (take (length x_j1s) xis)" and xji: "xj \<noteq> xi" by auto
-  def d \<equiv> "divided_differences_impl (map rat_of_int x_j1s) (rat_of_int fj) (rat_of_int xj) (map rat_of_int xis)"
+  define d where "d = divided_differences_impl (map rat_of_int x_j1s) (rat_of_int fj) (rat_of_int xj) (map rat_of_int xis)"
   note IH = 1(1)[OF len _ xj]
   show ?case
   proof (cases "divided_differences_impl_int x_j1s fj xj xis")
@@ -638,8 +638,8 @@ proof (induct gs g x ys rule: divided_differences_impl_int.induct)
     have id: "divided_differences_impl (map rat_of_int x_j1s) (rat_of_int fj) (rat_of_int xj) (map rat_of_int xis) =
       map rat_of_int res" and res: "res \<noteq> []" by auto
     have hd: "hd (map rat_of_int res) = of_int (hd res)" using res by (cases res, auto)
-    def a \<equiv> "(hd res - xi_j1)"
-    def b \<equiv> "xj - xi"
+    define a where "a = (hd res - xi_j1)"
+    define b where "b = xj - xi"
     from none[simplified, unfolded Some divmod_int_def] 
     have mod: "a mod b \<noteq> 0"
       by (auto split: if_splits simp: a_def b_def)
@@ -801,8 +801,8 @@ proof -
     unfolding newton_poly_impl_def
     unfolding Let_def set_rev rev_map horner_coeffs_ints[OF len]
   proof (rule if_cong[OF refl _ refl], rule arg_cong[of _ _ Some])
-    def cs \<equiv> "rev ?nc"
-    def ics \<equiv> "map ?ir cs"
+    define cs where "cs = rev ?nc"
+    define ics where "ics = map ?ir cs"
     assume "set ?nc \<subseteq> \<int>"
     hence "set cs \<subseteq> \<int>" unfolding cs_def by auto
     hence ics: "cs = ?mri ics" unfolding ics_def map_map o_def

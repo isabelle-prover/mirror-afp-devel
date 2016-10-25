@@ -54,7 +54,7 @@ proof -
   {
     fix z :: int
     assume z: "z \<ge> 0"
-    def n \<equiv> "nat z"
+    define n where "n = nat z"
     have z: "z = int n" unfolding n_def using z by auto
     have "of_int z = Complex (of_int z) 0"
       unfolding z of_int_of_nat_eq by (rule of_nat_complex)

@@ -177,9 +177,9 @@ lemma sylvester_mat_sum_upper:
     monom 1 (n - Suc i) * p" (is "sum ?f _ = ?r")
 proof -
   have n1: "n \<ge> 1" using i by auto
-  def ni1 \<equiv> "n-Suc i"
+  define ni1 where "ni1 = n-Suc i"
   hence ni1: "n-i = Suc ni1" using i by auto
-  def l \<equiv> "m+n-1"
+  define l where "l = m+n-1"
   hence l: "Suc l = m+n" using n1 by auto
   let ?g = "\<lambda>j. monom (coeff (monom 1 (n-Suc i) * p) j) j"
   let ?p = "\<lambda>j. l-j"
@@ -218,9 +218,9 @@ lemma sylvester_mat_sum_lower:
   shows "(\<Sum>j<m+n. monom (sylvester_mat p q $$ (i,j)) (m + n - Suc j)) =
     monom 1 (m + n - Suc i) * q" (is "sum ?f _ = ?r")
 proof -
-  def l \<equiv> "m+n-1"
+  define l where "l = m+n-1"
   hence l: "Suc l = m+n" using imn by auto
-  def mni1 \<equiv> "m + n - Suc i"
+  define mni1 where "mni1 = m + n - Suc i"
   hence mni1: "m+n-i = Suc mni1" using imn by auto
   let ?g = "\<lambda>j. monom (coeff (monom 1 (m + n - Suc i) * q) j) j"
   let ?p = "\<lambda>j. l-j"
@@ -439,7 +439,7 @@ proof -
     {
       fix x
       assume x: "j < m + n" "Suc (x + j) - n \<le> m" "x < n" "n - Suc j \<le> x" 
-      def y \<equiv> "x + Suc j - n"
+      define y where "y = x + Suc j - n"
       from x have "x + Suc j \<ge> n" by auto
       with x have xy: "x = ?bij y" unfolding y_def by auto
       from x have y: "y \<in> ?R" unfolding y_def by auto
@@ -559,7 +559,7 @@ lemma resultant_0[simp]:
 lemma resultant_swap: "resultant f g = 
   (if even (degree f) \<or> even (degree g) then resultant g f else - resultant g f)"
 proof -
-  def sw \<equiv> "\<lambda> (A :: 'a mat) xs. fold (\<lambda> (i,j). swaprows i j) xs A"
+  define sw where "sw = (\<lambda> (A :: 'a mat) xs. fold (\<lambda> (i,j). swaprows i j) xs A)"
   {
     fix xs and A
     have "dim\<^sub>r (sw A xs) = dim\<^sub>r A" "dim\<^sub>c (sw A xs) = dim\<^sub>c A"
@@ -579,7 +579,7 @@ proof -
       show ?case unfolding xy by (simp, insert Cons(2-), (subst Cons(1), auto)+)
     qed simp
   } note sw = this
-  def swb \<equiv> "\<lambda> A i n. sw A (map (\<lambda> j. (j,Suc j)) [i ..< i + n])"
+  define swb where "swb = (\<lambda> A i n. sw A (map (\<lambda> j. (j,Suc j)) [i ..< i + n]))"
   {
     fix k n and A :: "'a mat"
     assume k_n: "k + n < dim\<^sub>r A"
@@ -597,7 +597,7 @@ proof -
         by (rule mat_eqI, insert Suc(2), auto)
     qed
   } note swb = this
-  def swbl \<equiv> "\<lambda> A k n. fold (\<lambda> i A. swb A i n) (rev [0 ..< k]) A"
+  define swbl where "swbl = (\<lambda> A k n. fold (\<lambda> i A. swb A i n) (rev [0 ..< k]) A)"
   {
     fix k n and A :: "'a mat"
     assume k_n: "k + n \<le> dim\<^sub>r A"
@@ -650,13 +650,13 @@ proof -
   let ?dg = "degree g"
   let ?d = "?df + ?dg"
   from `c \<noteq> 0` have deg: "degree (smult c f) = ?df" by simp
-  def list \<equiv> "[0..< ?dg]"
+  define list where "list = [0..< ?dg]"
   let ?S = "sylvester_mat f g"
   let ?cS = "sylvester_mat (smult c f) g"
   let ?fS' = "\<lambda> xs. fold (\<lambda> i A. mat_multrow i c A) xs ?S"
   let ?fS = "?fS' [0..< ?dg]"
-  def dg \<equiv> ?dg  
-  def S \<equiv> ?S
+  define dg where "dg = ?dg"
+  define S where "S = ?S"
   have dim: "dim\<^sub>r ?S = ?d" "dim\<^sub>c ?S = ?d"  "dim\<^sub>r ?cS = ?d" "dim\<^sub>c ?cS = ?d" using deg by auto
   {
     fix list
@@ -1060,7 +1060,7 @@ private lemma det_mk_poly:
 proof (cases "dim\<^sub>r A = dim\<^sub>c A")
   interpret ring_hom_coeff_lift.
   case True
-    def n == "dim\<^sub>c A"
+    define n where "n = dim\<^sub>c A"
     have "map\<^sub>m coeff_lift A \<in> carrier\<^sub>m (dim\<^sub>r A) (dim\<^sub>c A)" by simp
     hence sq: "map\<^sub>m coeff_lift A \<in> carrier\<^sub>m (dim\<^sub>c A) (dim\<^sub>c A)" unfolding True.
     show ?thesis
@@ -1141,7 +1141,7 @@ private lemma mk_poly2:
   shows "mk_poly2 A $ i = (\<Sum>j'<dim\<^sub>c A. monom (A $$ (i,j')) (dim\<^sub>c A - Suc  j'))"
     (is "?l = sum ?f ?S")
 proof -
-  def l \<equiv> "dim\<^sub>c A - 1"
+  define l where "l = dim\<^sub>c A - 1"
   have dim: "dim\<^sub>c A = Suc l" unfolding l_def using i c by auto
   let ?g = "\<lambda>j. l - j"
   have "?l = sum (?f \<circ> ?g) ?S" unfolding l_def mk_poly2_pre[OF i] by auto
@@ -1227,7 +1227,7 @@ private lemma col_mk_poly_mk_poly2:
   assumes dim: "dim\<^sub>c A > 0"
   shows "col (mk_poly A) (dim\<^sub>c A - 1) = mk_poly2 A"
 proof -
-  def l \<equiv> "dim\<^sub>c A - 1"
+  define l where "l = dim\<^sub>c A - 1"
   have dim: "dim\<^sub>c A = Suc l" unfolding l_def using dim by auto
   show ?thesis
     unfolding mk_poly_def mk_poly2_def dim
@@ -1294,12 +1294,12 @@ lemma resultant_as_poly:
          [: resultant p q :] = p' * p + q' * q"
 proof (intro exI conjI)
   interpret ring_hom_coeff_lift.
-  def m \<equiv> "degree p"
-  def n \<equiv> "degree q"
-  def d \<equiv> "dim\<^sub>r (mk_poly (sylvester_mat p q))"
-  def c \<equiv> "\<lambda>i. coeff_lift (cofactor (sylvester_mat p q) i (m+n-1))"
-  def p' \<equiv> "\<Sum>i<n. monom 1 (n - Suc i) * c i"
-  def q' \<equiv> "\<Sum>i<m. monom 1 (m - Suc i) * c (n+i)"
+  define m where "m = degree p"
+  define n where "n = degree q"
+  define d where "d = dim\<^sub>r (mk_poly (sylvester_mat p q))"
+  define c where "c = (\<lambda>i. coeff_lift (cofactor (sylvester_mat p q) i (m+n-1)))"
+  define p' where "p' = (\<Sum>i<n. monom 1 (n - Suc i) * c i)"
+  define q' where "q' = (\<Sum>i<m. monom 1 (m - Suc i) * c (n+i))"
 
   have degc: "\<And>i. degree (c i) = 0" unfolding c_def by auto
 
@@ -1494,7 +1494,7 @@ proof (cases "resultant p q = 0")
       using resultant_as_nonzero_poly_weak degp degq
       unfolding m_def n_def by auto
   next case True
-    def S \<equiv> "transpose\<^sub>m (sylvester_mat p q)"
+    define S where "S = transpose\<^sub>m (sylvester_mat p q)"
     have S: "S \<in> carrier\<^sub>m (m+n) (m+n)" unfolding S_def m_def n_def by auto
     have "det S = 0" using True
       unfolding resultant_def S_def apply (subst det_transpose) by auto
@@ -1713,8 +1713,8 @@ proof -
     next
       case True note i_n = this
       let ?dq = "degree q"
-      def r_ij \<equiv> "(if i \<le> j \<and> j - i \<le> m then coeff r (m + i - j) else 0)"
-      def gq_ij \<equiv> "(if i \<le> j \<and> j - i \<le> m then coeff (g * q) (m + i - j) else 0)"
+      define r_ij where "r_ij = (if i \<le> j \<and> j - i \<le> m then coeff r (m + i - j) else 0)"
+      define gq_ij where "gq_ij = (if i \<le> j \<and> j - i \<le> m then coeff (g * q) (m + i - j) else 0)"
       have A: "?A $$ (i,j) = r_ij + gq_ij"
         by (subst sylvester_mat_sub_index[OF i j], insert True, auto simp: r_ij_def gq_ij_def)
       let ?d = "\<lambda> j. if i = j then 1 else if n + i \<le> j \<and> j - n - i \<le> m - n
@@ -1726,7 +1726,7 @@ proof -
       have col: "col ?B j = vec ?mn ?b"
         by (rule vec_eqI, unfold sylvester_mat_sub_def, insert i j True, auto)
       let ?prod = "\<lambda> i. ?d i * ?b i"
-      def prod \<equiv> ?prod
+      define prod where "prod = ?prod"
       let ?sum = "sum prod {0..<?mn}"
       have "?r $$ (i,j) = ?sum" unfolding r row col scalar_prod_def prod_def by auto
       also have "{0 ..< ?mn} = {0 ..< i} \<union> {i} \<union> {Suc i ..< ?mn}" using i by auto
@@ -1741,7 +1741,7 @@ proof -
         let ?Diff = "{n + i .. m + i} \<inter> {j .. j+n}"
         let ?I = "({Suc i ..< ?mn} \<inter> ?Diff)"
         let ?D = "({Suc i ..< ?mn} - ?Diff)"
-        def prod' \<equiv> "\<lambda> k. coeff q (m + i - k) * coeff g (k - j)"
+        define prod' where "prod' = (\<lambda> k. coeff q (m + i - k) * coeff g (k - j))"
         have "sum prod {Suc i ..< ?mn} = sum prod (?I \<union> ?D)"
           by (rule arg_cong[of _ _ "sum prod"], auto)
         also have "\<dots> = sum prod ?I + sum prod ?D"
@@ -1791,7 +1791,7 @@ proof -
               hence k2: "k \<le> j + degree g" "k < i + n" "k < j + n" "j \<le> m + i" "i \<le> j" "n > 0"
                 using 1 True i_n n ij i_n j k1 by auto
               note * = k1 k2 i_n
-              def kk \<equiv> "k - j"
+              define kk where "kk = k - j"
               from * i_n nm
               have id: "m + i - k = m + i - j - kk" "k - j = kk"
                 and k12: "kk \<le> m + i - j" "kk \<le> degree g" "kk < i - j + n" "kk < n" "j \<le> m + i" "i \<le> j"
@@ -1829,7 +1829,7 @@ lemma resultant_mod: assumes f: "f = g * q + (r :: 'a :: idom poly)"
   and ex: "ex = degree g * (degree f - degree r)"
   shows "resultant f g = (-1)^ex * coeff g (degree g)^(degree f - degree r) * resultant r g" 
 proof -
-  def diff \<equiv> "degree f - degree r"
+  define diff where "diff = degree f - degree r"
   have df: "degree f = degree r + diff" using deg unfolding diff_def by auto
   show ?thesis unfolding resultant_def sylvester_mat_def resultant_sub_def[symmetric] f
   proof (subst resultant_sub_mod[OF le_refl le_refl]; unfold f[symmetric])

@@ -126,8 +126,8 @@ lemma mute_makes_0 :
  "k \<noteq> l"
  shows "A' $$ (k,l) = 0"
 proof -
-  def a \<equiv> "A $$ (l, l)"
-  def b \<equiv> "A $$ (k, l)"
+  define a where "a = A $$ (l, l)"
+  define b where "b = A $$ (k, l)"
   let ?mf = "mf (A $$ (l, l)) (A $$ (k, l))"
   obtain q' p' g where id: "?mf = (q',p',g)" by (cases ?mf, auto)
   note mf = mute_fun[unfolded mute_fun_def, rule_format, OF id]
@@ -632,7 +632,7 @@ proof -
       obtain r'' A'' where rA'': "sub1 q k l (r, A) = (r'', A'')" by force
       then have IH: "r'' \<noteq> 0" using Suc by auto
       obtain q' l' g where mf_id: "mf q (A'' $$ (Suc (l + k), l)) = (q',l',g)" by (rule prod_cases3)      
-      def fact \<equiv> "if A'' $$ (Suc (l+k),l) = 0 then 1 else q'"
+      define fact where "fact = (if A'' $$ (Suc (l+k),l) = 0 then 1 else q')"
       note mf = mf[unfolded mute_fun_def, rule_format, OF mf_id]
       have All: "q \<noteq> 0"
         using sub1_preserves_diagnal[OF rA'' lc] All Suc by auto

@@ -43,10 +43,10 @@ proof -
   let ?d0 = "df ?a0"
   let ?dn = "dp ?an"
   let ?ip = "?rp ip"
-  def tests \<equiv> "[rat_of_int b0 / rat_of_int bn . b0 <- ?d0, bn <- ?dn, coprime b0 bn ]"
+  define tests where "tests = [rat_of_int b0 / rat_of_int bn . b0 <- ?d0, bn <- ?dn, coprime b0 bn ]"
   let ?f = "(\<lambda> x. (x,poly p x))"
   let ?test = "(\<lambda> (_, res). res = 0)"
-  def mo \<equiv> "find_map_filter ?f ?test tests"
+  define mo where "mo = find_map_filter ?f ?test tests"
   note d = rational_root_test_main_def[of df dp p, unfolded Let_def rp snd_conv mo_def[symmetric] tests_def[symmetric]]
   {
     assume "rational_root_test_main df dp p = Some x"

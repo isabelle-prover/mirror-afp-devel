@@ -65,7 +65,7 @@ next
       fix f
       have "vec n f \<bullet> col (jordan_block n a) j = (f j * a + (if j = 0 then 0 else f (j - 1)))"
       proof -
-        def p \<equiv> "\<lambda> i. vec n f $ i * col (jordan_block n a) j $ i"
+        define p where "p = (\<lambda> i. vec n f $ i * col (jordan_block n a) j $ i)"
         have "vec n f \<bullet> col (jordan_block n a) j = (\<Sum>i = 0 ..< n. p i)"
           unfolding scalar_prod_def p_def by simp
         also have "\<dots> = p j + sum p ({0 ..< n} - {j})" using j
@@ -383,10 +383,10 @@ proof (cases "a = 0")
 next
   case False
   hence na: "norm a > 0" by auto
-  def c \<equiv> "inverse (norm a ^ n)"
-  def deg \<equiv> "n - 1"
+  define c where "c = inverse (norm a ^ n)"
+  define deg where "deg = n - 1"
   have c: "c > 0" unfolding c_def using na by auto
-  def b \<equiv> "norm a"
+  define b where "b = norm a"
   from a na have "0 < b" "b < 1" unfolding b_def by auto
   from poly_exp_max_constant_bound[OF this, of c deg]
   obtain p where "\<And> k. c * b ^ k * max 1 (of_nat k ^ deg) \<le> p" by auto
@@ -440,10 +440,10 @@ lemma jordan_matrix_poly_bound2:
 proof -
   from jordan_matrix_carrier[of n_as] obtain d where
     jm: "jordan_matrix n_as \<in> carrier\<^sub>m d d" by blast
-  def f \<equiv> "\<lambda>n (a::'a) i j k. norm ((jordan_block n a ^\<^sub>m k) $$ (i,j))"
+  define f where "f = (\<lambda>n (a::'a) i j k. norm ((jordan_block n a ^\<^sub>m k) $$ (i,j)))"
   let ?g = "\<lambda>k c1. c1 + of_nat k ^ (N-1)"
   let ?P = "\<lambda>n (a::'a) i j k c1. f n a i j k \<le> ?g k c1"
-  def Q \<equiv> "\<lambda>n (a::'a) k c1. \<forall>i j. i<n \<longrightarrow> j<n \<longrightarrow> ?P n a i j k c1"
+  define Q where "Q = (\<lambda>n (a::'a) k c1. \<forall>i j. i<n \<longrightarrow> j<n \<longrightarrow> ?P n a i j k c1)"
   have "\<And> c c' k n a i j. c \<le> c' \<Longrightarrow> ?P n a i j k c \<Longrightarrow> ?P n a i j k c'" by auto  
   hence Q_mono: "\<And>n a c c'. c \<le> c' \<Longrightarrow> \<forall>k. Q n a k c \<Longrightarrow> \<forall>k. Q n a k c'"
     unfolding Q_def by arith
@@ -452,7 +452,7 @@ proof -
       apply (rule exE[OF jordan_block_constant_bound2])
       unfolding f_def using Jordan_Normal_Form.jordan_block_constant_bound2
       by metis
-    def c1 \<equiv> "max 1 c"
+    define c1 where "c1 = max 1 c"
     then have "c1 \<ge> 1" "c1 \<ge> c" by auto
     have "\<exists>c1. \<forall>k i j. i < n \<longrightarrow> j < n \<longrightarrow> ?P n a i j k c1"
     proof rule+
@@ -492,7 +492,7 @@ proof -
     unfolding Q_def by auto
   from choice[OF this] obtain c'
     where c': "\<And> na k. na \<in> set n_as \<Longrightarrow> Q (fst na) (snd na) k (c' na)" by blast
-  def c \<equiv> "max 0 (Max (set (map c' n_as)))"
+  define c where "c = max 0 (Max (set (map c' n_as)))"
   { fix n a assume na: "(n,a) \<in> set n_as"
     then have Q: "\<forall> k. Q n a k (c' (n,a))" using c'[OF na] by auto
     from na have "c' (n,a) \<in> set (map c' n_as)" by auto
@@ -557,8 +557,8 @@ proof
   let ?n = "of_nat n"
   fix i j
   assume i: "i < dim\<^sub>r ?A" and j: "j < dim\<^sub>c ?A"
-  def v1 \<equiv> "\<lambda> k. row A1 i $ k"
-  def v2 \<equiv> "\<lambda> k. col A2 j $ k"
+  define v1 where "v1 = (\<lambda> k. row A1 i $ k)"
+  define v2 where "v2 = (\<lambda> k. col A2 j $ k)"
   from assms(1-2) have dim: "dim\<^sub>r A1 = nr" "dim\<^sub>c A2 = nc" "dim\<^sub>c A1 = n" "dim\<^sub>r A2 = n" by auto
   {
     fix k

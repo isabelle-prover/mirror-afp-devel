@@ -32,7 +32,7 @@ lemma roots2: fixes p :: "'a :: field_char_0 poly"
   assumes p2: "p = [: c, b, a :]" and a: "a \<noteq> 0"
   shows "{x. poly p x = 0} = { - ( b / (2 * a)) + e | e. e^2 = ( b / (2 * a))^2 - c/a}" (is "?l = ?r")
 proof -
-  def b2a \<equiv> "b / (2 * a)"
+  define b2a where "b2a = b / (2 * a)"
   {
     fix x
     have "(x \<in> ?l) = (x * x * a + x * b + c = 0)" unfolding p2 by (simp add: field_simps)
@@ -66,9 +66,9 @@ proof -
   have 2: "2 = Suc (Suc 0)" by simp
   have coeff: "coeff p 2 = a" "coeff p 1 = b" "coeff p 0 = c" unfolding p by (auto simp: 2)
   let ?b2a = "b / (2 * a)"
-  def b2a \<equiv> ?b2a
+  define b2a where "b2a = ?b2a"
   let ?bac = "b2a^2 - c/a"
-  def bac \<equiv> ?bac
+  define bac where "bac = ?bac"
   have roots: "set (croots2 p) = {- b2a + csqrt bac, - b2a - csqrt bac}"
     unfolding croots2_def Let_def coeff b2a_def[symmetric] bac_def[symmetric]
     by (auto split: if_splits)
@@ -98,9 +98,9 @@ proof -
   have 2: "2 = Suc (Suc 0)" by simp
   have coeff: "coeff p 2 = a" "coeff p 1 = b" "coeff p 0 = c" unfolding p by (auto simp: 2)
   let ?b2a = "b / (2 * a)"
-  def b2a \<equiv> ?b2a
+  define b2a where "b2a = ?b2a"
   let ?bac = "b2a^2 - c/a"
-  def bac \<equiv> ?bac
+  define bac where "bac = ?bac"
   have roots: "set (rroots2 p) = (if bac < 0 then {} else {- b2a + sqrt bac, - b2a - sqrt bac})"
     unfolding rroots2_def Let_def coeff b2a_def[symmetric] bac_def[symmetric]
     by (auto split: if_splits)
@@ -117,9 +117,9 @@ proof -
   have 2: "2 = Suc (Suc 0)" by simp
   have coeff: "coeff p 2 = a" "coeff p 1 = b" "coeff p 0 = c" unfolding p by (auto simp: 2)
   let ?b2a = "b / (2 * a)"
-  def b2a \<equiv> ?b2a
+  define b2a where "b2a = ?b2a"
   let ?bac = "b2a^2 - c/a"
-  def bac \<equiv> ?bac
+  define bac where "bac = ?bac"
   have roots: "(rat_roots2 p) = (map (\<lambda> e. -b2a + e) (sqrt_rat bac))"
     unfolding rat_roots2_def Let_def coeff b2a_def[symmetric] bac_def[symmetric] by auto
   show ?thesis unfolding roots main b2a_def[symmetric] bac_def[symmetric]

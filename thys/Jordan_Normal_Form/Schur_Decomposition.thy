@@ -57,7 +57,7 @@ lemma corthogonal_inv:
   shows "(mat_of_rows n (map vec_inv vs)) inverts\<^sub>m mat_of_cols n vs"
     (is "?W inverts\<^sub>m ?V")
 proof -
-  def l == "length vs"
+  define l where "l = length vs"
   have rW[simp]: "dim\<^sub>r ?W = l" using l_def by auto
   have cV[simp]:"dim\<^sub>c ?V = l" using l_def by auto
   have dim: "\<And>i. i < length vs \<Longrightarrow> vs!i \<in> carrier\<^sub>v n" using V by auto
@@ -219,7 +219,7 @@ proof -
   show "hd ?b = v" unfolding b by auto
   show len: "length (basis_completion v) = n" unfolding b using k
     by auto
-  def I \<equiv> "\<lambda> i. if i < k then i else Suc i"
+  define I where "I = (\<lambda> i. if i < k then i else Suc i)"
   have I: "\<And> i. I i \<noteq> k" "\<And> i. Suc i < n \<Longrightarrow> I i < n" unfolding I_def by auto
   {
     fix i
@@ -273,9 +273,9 @@ proof -
   {
     fix w :: "'a vec"
     assume w: "w \<in> carrier\<^sub>v n"
-    def lookup \<equiv> "(v,k) # [(unit\<^sub>v n i, i). i <- [0..<n], i \<noteq> k]"
-    def a \<equiv> "\<lambda> vi. case map_of lookup vi of Some i \<Rightarrow> if i = k then w $ k / v $ k else
-       w $ i - w $ k / v $ k * v $ i" 
+    define lookup where "lookup = (v,k) # [(unit\<^sub>v n i, i). i <- [0..<n], i \<noteq> k]"
+    define a where "a = (\<lambda> vi. case map_of lookup vi of Some i \<Rightarrow> if i = k then w $ k / v $ k else
+       w $ i - w $ k / v $ k * v $ i)" 
     have "map fst lookup = ?b" unfolding b_all lookup_def 
       by (auto simp: map_concat o_def if_distrib, unfold list.simps fst_def prod.simps, simp)
     with dist have dist: "distinct (map fst lookup)" by simp
@@ -467,12 +467,12 @@ next
   have deg: "degree ?cp = Suc (degree (\<Prod>e\<leftarrow> es. [:- e, 1:]))" unfolding cp
     by (subst degree_mult_eq, insert mon, auto)
   with degree_monic_char_poly[OF A] have n: "n \<noteq> 0" by auto
-  def v \<equiv> "find_eigenvector A e"
-  def b \<equiv> "basis_completion v"
-  def ws \<equiv> "gram_schmidt n b"
-  def W \<equiv> "mat_of_cols n ws"
-  def W' \<equiv> "corthogonal_inv W"
-  def A' \<equiv> "W' \<otimes>\<^sub>m A \<otimes>\<^sub>m W"
+  define v where "v = find_eigenvector A e"
+  define b where "b = basis_completion v"
+  define ws where "ws = gram_schmidt n b"
+  define W where "W = mat_of_cols n ws"
+  define W' where "W' = corthogonal_inv W"
+  define A' where "A' = W' \<otimes>\<^sub>m A \<otimes>\<^sub>m W"
   obtain A1 A2 A0 A3 where splitA': "split_block A' 1 1 = (A1,A2,A0,A3)"
     by (cases "split_block A' 1 1", auto)
   obtain B P' Q' where schur: "schur_decomposition A3 es = (B,P',Q')" 

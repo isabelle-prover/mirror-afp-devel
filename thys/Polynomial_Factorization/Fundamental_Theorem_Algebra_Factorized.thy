@@ -19,7 +19,7 @@ begin
 lemma fundamental_theorem_algebra_factorized: fixes p :: "complex poly"
   shows "\<exists> as. smult (coeff p (degree p)) (\<Prod> a \<leftarrow> as. [:- a, 1:]) = p \<and> length as = degree p"
 proof -
-  def n \<equiv> "degree p"
+  define n where "n = degree p"
   have "degree p = n" unfolding n_def by simp
   thus ?thesis
   proof (induct n arbitrary: p)

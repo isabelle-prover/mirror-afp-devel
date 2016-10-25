@@ -278,7 +278,7 @@ proof -
         let ?ran = "set [j\<leftarrow>[0..<nc] . j \<notin> snd ` ?pp]"
         let ?ran' = "set [j\<leftarrow>[0..<nc] . j \<in> snd ` ?pp]"
         have dimv: "dim\<^sub>v v = nc" using v by auto
-        def I \<equiv> "\<lambda> b. SOME i. i \<in> ?ran \<and> ?bi i = b"
+        define I where "I = (\<lambda> b. SOME i. i \<in> ?ran \<and> ?bi i = b)"
         {
           fix j
           assume j: "j \<in> ?ran"
@@ -286,7 +286,7 @@ proof -
           from someI_ex[OF this] have I: "I (?bi j) \<in> ?ran" and id: "?bi (I (?bi j)) = ?bi j" unfolding I_def by blast+
           from inj_onD[OF inj id I j] have "I (?bi j) = j" .
         } note I = this        
-        def a \<equiv> "\<lambda> b. v $ (I b)"
+        define a where "a = (\<lambda> b. v $ (I b))"
         have a: "a \<in> ?B \<rightarrow> carrier F" by (auto simp: class_field_def)
         from VKMod.lincomb_closed[OF sub a] have diml: "dim\<^sub>v (VKMod.lincomb a ?B) = nc"
           unfolding mat_kernel_def using dim lincomb_same by auto
@@ -407,7 +407,8 @@ lemma (in kernel) kernel_dim [simp]: "kernel_dim A = dim" unfolding kernel_dim_d
 lemma kernel_dim_code[code]: 
   "kernel_dim A = dim\<^sub>c A - length (pivot_positions (gauss_jordan_single A))"
 proof -
-  def nr \<equiv> "dim\<^sub>r A" def nc \<equiv> "dim\<^sub>c A"
+  define nr where "nr = dim\<^sub>r A" 
+  define nc where "nc = dim\<^sub>c A"
   let ?B = "gauss_jordan_single A"
   have A: "A \<in> carrier\<^sub>m nr nc" unfolding nr_def nc_def by auto
   from gauss_jordan_single[OF A refl]
@@ -446,7 +447,7 @@ lemma kernel_upper_triangular: assumes A: "A \<in> carrier\<^sub>m n n"
   and ut: "upper_triangular A" and 0: "0 \<notin> set (mat_diag A)"
   shows "kernel.dim n A = 0" "kernel.basis n A {}"
 proof -
-  def ma \<equiv> "mat_diag A"
+  define ma where "ma = mat_diag A"
   from det_upper_triangular[OF ut A] have "det A = prod_list (mat_diag A)" .
   also have "\<dots> \<noteq> 0" using 0 unfolding ma_def[symmetric]
     by (induct ma, auto)
@@ -540,7 +541,7 @@ proof -
     hence dim1b: "dim\<^sub>v (B \<otimes>\<^sub>m\<^sub>v (AB.VKMod.lincomb a gen')) = nc" using B by auto
     from genn sub have genn': "?gen' \<subseteq> mat_kernel A" by auto
     from gen sub have gen'nc: "gen' \<subseteq> carrier\<^sub>v nc" unfolding mat_kernel[OF AB] by auto
-    def a' \<equiv> "\<lambda> b. a (C \<otimes>\<^sub>m\<^sub>v b)"
+    define a' where "a' = (\<lambda> b. a (C \<otimes>\<^sub>m\<^sub>v b))"
     from A.VKMod.lincomb_closed[OF genn']
     have lin2: "A.VKMod.lincomb a' ?gen' \<in> carrier\<^sub>v nc"
       unfolding mat_kernel[OF A] by (auto simp: class_field_def)
@@ -806,8 +807,8 @@ proof -
         using finite_subset_image[OF finA' A'U] by auto
       hence A: "A \<subseteq> carrier\<^sub>v n" using U by auto
       have A': "A' \<subseteq> carrier\<^sub>v (n+m)" using A'U pU by auto
-      def a == "a' o pad"
-      def a'' == "(a' o pad) o unpad"
+      define a where "a = a' o pad"
+      define a'' where "a'' = (a' o pad) o unpad"
       have a: "a : A \<rightarrow> UNIV" by auto
       have restr: "restrict a' A' = restrict a'' A'"
       proof(rule restrict_ext)

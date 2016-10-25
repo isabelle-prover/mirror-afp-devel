@@ -73,12 +73,12 @@ qed
 lemma order_sum_degree: assumes "p \<noteq> 0"
   shows "sum (\<lambda> a. order a p) { a. poly p a = 0 } \<le> degree p"
 proof -
-  def n \<equiv> "degree p"
+  define n where "n = degree p"
   have "degree p \<le> n" unfolding n_def by auto
   thus ?thesis using `p \<noteq> 0`
   proof (induct n arbitrary: p)
     case (0 p)
-    def a \<equiv> "coeff p 0"
+    define a where "a = coeff p 0"
     from 0 have "degree p = 0" by auto
     hence p: "p = [: a :]" unfolding a_def
       by (metis degree_0_id)

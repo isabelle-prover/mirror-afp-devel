@@ -362,7 +362,7 @@ proof
   hence A: "\<And> i. A i \<in> carrier\<^sub>m n n" 
     and ge: "\<And> i. A (Suc i) \<ge>\<^sub>m \<zero>\<^sub>m n n" 
     and gt: "\<And> i. mat_gt op \<succ> sd (A i) (A (Suc i))" by auto  
-  def s \<equiv> "\<lambda> i. mat_sum (A i)"
+  define s where "s = (\<lambda> i. mat_sum (A i))"
   {
     fix i
     from mat_sum_mono_gt[OF sd_n A A gt[of i]]
@@ -813,7 +813,7 @@ lemma mat_not_all_ge:
   and apB: "mat_arc_pos B"
   shows "\<exists>C. C \<in> carrier\<^sub>m n n \<and> mat_ge C (\<zero>\<^sub>m n n) \<and> mat_arc_pos C \<and> \<not> mat_ge A (B \<otimes>\<^sub>m C)"
 proof -
-  def c \<equiv> "A $$ (0,0)"
+  define c where "c = A $$ (0,0)"
   from apB have "arc_pos (B $$ (0,0))" unfolding mat_arc_posI_def .
   from not_all_ge[OF this, of c] obtain e where e0: "e \<ge> 0" and ae: "arc_pos e"
     and nc: "\<not> c \<ge> B $$ (0,0) * e" by auto

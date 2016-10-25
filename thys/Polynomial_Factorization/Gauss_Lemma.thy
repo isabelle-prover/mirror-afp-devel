@@ -56,7 +56,7 @@ lemma common_denom: assumes cd: "common_denom xs = (dd,ys)"
   "\<And>x. x \<in> set xs \<Longrightarrow> rat_of_int (case quotient_of x of (n, x) \<Rightarrow> n * dd div x) / rat_of_int dd = x"
 proof -
   let ?nds = "map quotient_of xs"
-  def nds \<equiv> ?nds
+  define nds where "nds = ?nds"
   let ?denom = "list_lcm (map snd nds)"
   let ?ints = "map (\<lambda> (n,d). n * dd div d) nds"
   from cd[unfolded common_denom_def Let_def]
@@ -89,7 +89,7 @@ lemma rat_to_int_poly: assumes "rat_to_int_poly p = (d,q)"
   shows "p = smult (inverse (of_int d)) (map_poly of_int q)" "d > 0"
 proof -
   let ?f = "\<lambda> x. case quotient_of x of (pa, x) \<Rightarrow> pa * d div x"
-  def f \<equiv> ?f
+  define f where "f = ?f"
   from assms[unfolded rat_to_int_poly_def Let_def] 
     obtain xs where cd: "common_denom (coeffs p) = (d,xs)"
     and q: "q = map_poly f p" unfolding f_def by (cases "common_denom (coeffs p)", auto)
@@ -121,8 +121,8 @@ lemma content_0[simp]: "content 0 = 0" unfolding content_def list_gcd_def by sim
 lemma content_0_iff[simp]: "content p = (0 :: 'a :: {semiring_gcd,idom}) \<longleftrightarrow> p = 0"
 proof (cases "p = 0")
   case False
-  def a \<equiv> "last (coeffs p)"
-  def xs \<equiv> "coeffs p"
+  define a where "a = last (coeffs p)"
+  define xs where "xs = coeffs p"
   from last_coeffs_not_0[OF False] not_0_coeffs_not_Nil[OF False]
   have mem: "a \<in> set (coeffs p)" and a: "a \<noteq> 0" unfolding a_def by auto
   from mem have "content p \<noteq> 0" unfolding content_def xs_def[symmetric]
@@ -234,7 +234,7 @@ proof (cases "p = 0 \<or> q = 0")
     {
       assume "?c (p * q) \<noteq> 1"
       with cpq have cpq: "?c (p * q) > 1" by auto
-      def cpq \<equiv> "nat (?c (p * q))"
+      define cpq where "cpq = nat (?c (p * q))"
       let ?cpq = "int cpq"
       from cpq have id: "?c (p * q) = ?cpq" and cpq: "cpq > 1" unfolding cpq_def by auto
       from prime_factor_nat[of cpq] cpq obtain n where pn: "prime n" and n: "n dvd cpq" by auto
@@ -266,8 +266,8 @@ proof (cases "p = 0 \<or> q = 0")
         s: "\<not> ?n dvd (coeff q s)" and s': "\<And> i. i < s \<Longrightarrow> ?n dvd (coeff q i)" by auto
       let ?s = "coeff q s"
       let ?f = "\<lambda> i. coeff p i * coeff q (r + s - i)"
-      def a \<equiv> "(\<Sum>i\<in>{..<r}. (?f i div ?n))"
-      def b \<equiv> "\<Sum> i \<in> {Suc r..r + s}. (?f i div ?n)"
+      define a where "a = (\<Sum>i\<in>{..<r}. (?f i div ?n))"
+      define b where "b = (\<Sum> i \<in> {Suc r..r + s}. (?f i div ?n))"
       have "coeff (p * q) (r + s) = (\<Sum>i\<le>r + s. ?f i)" unfolding coeff_mult ..
       also have "{..r+s} = {..< r} \<union> {r .. r+s}" by auto
       also have "(\<Sum>i\<in>{..<r} \<union> {r..r + s}. ?f i)
@@ -301,7 +301,7 @@ proof (cases "p = 0 \<or> q = 0")
     }
     hence "?c (p * q) = 1" by blast
   } note main = this
-  def n \<equiv> "\<lambda> p. normalize_content (p :: int poly)"
+  define n where "n = (\<lambda> p. normalize_content (p :: int poly))"
   let ?s = "\<lambda> p. smult (content p) (n p)"
   have "?c (p * q) = ?c (?s p * ?s q)" unfolding smult_normalize_content n_def by simp
   also have "?s p * ?s q = smult (?c p * ?c q) (n p * n q)" by (simp add: mult.commute)
@@ -431,7 +431,7 @@ proof -
     have cop: "coprime n d" by (rule quotient_of_coprime[OF irs'])
     (* now there comes tedious reasoning that `coprime n d` `\<not> d dvd c` ` nc / d \<in> \<int>` yields a 
        contradiction *)
-    def prod \<equiv> "?r (n * c) / ?r d"
+    define prod where "prod = ?r (n * c) / ?r d"
     obtain n' d' where quot: "quotient_of prod = (n',d')" by force
     have qr: "\<And> x. quotient_of (?r x) = (x, 1)"
       using Rat.of_int_def quotient_of_int by auto
@@ -473,7 +473,7 @@ proof -
     hence p: "p \<noteq> 0" by auto
     let ?r = "rat_of_int"
     let ?rp = "map_poly ?r"
-    def q \<equiv> "normalize_content p"
+    define q where "q = normalize_content p"
     from smult_normalize_content[of p, folded q_def] content_0_iff[of p] p
       obtain a where a: "a \<noteq> 0" and pq: "p = smult a q" and acp: "content p = a" by metis
     from a pq p have ra: "?r a \<noteq> 0" and q0: "q \<noteq> 0" by auto

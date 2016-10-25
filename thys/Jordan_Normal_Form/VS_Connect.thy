@@ -434,7 +434,7 @@ proof (intro conjI)
       and lc: "lincomb a A = \<zero>\<^sub>v n" and v: "v \<in> A" and av: "a v \<noteq> 0"      
       by auto
     from v A obtain i where i: "i < n" and vu: "v = unit\<^sub>v n i" unfolding vec_units_def by auto
-    def b \<equiv> "\<lambda> x. if x \<in> A then a x else 0"
+    define b where "b = (\<lambda> x. if x \<in> A then a x else 0)"
     have id: "A \<union> (set (vec_units n) - A) = set (vec_units n)" using A by auto
     from lincomb_index[OF i vec_units_carrier]
     have "lincomb b (set (vec_units n)) $ i = (\<Sum>x\<in> (A \<union> (set (vec_units n) - A)). b x * x $ i)" 

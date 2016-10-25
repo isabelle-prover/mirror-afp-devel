@@ -250,7 +250,7 @@ proof -
   with q' have r0: "r \<noteq> 0" and q'0: "q' \<noteq> 0" using degq by auto
 
   let ?q' = "poly_y_x q'"
-  define r' where "r' = \<Sum>i\<le>degree r. monom (coeff (coeff r i) 0) i"
+  define r' where "r' = (\<Sum>i\<le>degree r. monom (coeff (coeff r i) 0) i)"
   have q'0: "?q' \<noteq> 0" using q'0 by auto
   let ?r = "poly_y_x r"
   have r'0: "?r \<noteq> 0" using r0 by auto

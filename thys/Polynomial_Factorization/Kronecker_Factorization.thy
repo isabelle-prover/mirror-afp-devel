@@ -74,7 +74,7 @@ begin
 lemma rat_to_int_poly_of_int: assumes rp: "rat_to_int_poly (map_poly of_int p) = (c,q)"
   shows "c = 1" "q = p"
 proof -
-  def xs \<equiv> "map (snd \<circ> quotient_of) (coeffs (map_poly rat_of_int p))"
+  define xs where "xs = map (snd \<circ> quotient_of) (coeffs (map_poly rat_of_int p))"
   have xs: "set xs \<subseteq> {1}" unfolding xs_def
     by (auto simp: ri.coeffs_map_poly)
   from assms[unfolded rat_to_int_poly_def Let_def]
@@ -178,11 +178,11 @@ proof -
   from res have dp: "degree p \<ge> 2" and "(degree p \<le> 1) = False" by (auto split: if_splits)
   note res = res[unfolded this if_False]
   note bnd = bnd[OF dp]
-  def P \<equiv> "normalize_content p"
+  define P where "P = normalize_content p"
   have degP: "degree P = degree p" unfolding P_def by simp
-  def js \<equiv> "kronecker_samples bnd"
-  def filt \<equiv> "(case_option False (\<lambda>g. dvd_int_poly_non_0 g P \<and> 1 \<le> degree g))"
-  def tests \<equiv> "concat_lists (map (\<lambda>(v, j). map (Pair j) (if j = 0 then dp v else df v)) (map (\<lambda>j. (poly P j, j)) js))"
+  define js where "js = kronecker_samples bnd"
+  define filt where "filt = (case_option False (\<lambda>g. dvd_int_poly_non_0 g P \<and> 1 \<le> degree g))"
+  define tests where "tests = concat_lists (map (\<lambda>(v, j). map (Pair j) (if j = 0 then dp v else df v)) (map (\<lambda>j. (poly P j, j)) js))"
   note res = res[folded P_def, folded js_def filt_def, folded tests_def]
   let ?zero = "map (\<lambda>j. (poly P j, j)) js"
   from res have res: "(case map_of ?zero 0 of
@@ -266,11 +266,11 @@ proof -
   let ?rp = "map_poly ?r"
   from dp have "(degree p \<le> 1) = False" by auto
   note res = none[unfolded kronecker_factorization_main_def Let_def this if_False]
-  def P \<equiv> "normalize_content p"
+  define P where "P = normalize_content p"
   have degP: "degree P = degree p" unfolding P_def by simp
-  def js \<equiv> "kronecker_samples bnd"
-  def filt \<equiv> "(case_option False (\<lambda>g. dvd_int_poly_non_0 g P \<and> 1 \<le> degree g))"
-  def tests \<equiv> "concat_lists (map (\<lambda>(v, j). map (Pair j) (if j = 0 then dp v else df v)) (map (\<lambda>j. (poly P j, j)) js))"
+  define js where "js = kronecker_samples bnd"
+  define filt where "filt = (case_option False (\<lambda>g. dvd_int_poly_non_0 g P \<and> 1 \<le> degree g))"
+  define tests where "tests = concat_lists (map (\<lambda>(v, j). map (Pair j) (if j = 0 then dp v else df v)) (map (\<lambda>j. (poly P j, j)) js))"
   note res = res[folded P_def, folded js_def filt_def, folded tests_def]
   let ?zero = "map (\<lambda>j. (poly P j, j)) js"
   from res have res: "(case map_of ?zero 0 of
@@ -281,8 +281,8 @@ proof -
   {
     fix qq
     assume qq: "1 \<le> degree qq" "degree qq \<le> bnd" and dvd: "qq dvd p"
-    def q' \<equiv> "normalize_content qq"
-    def q \<equiv> "if poly q' 0 > 0 then q' else -q'"
+    define q' where "q' = normalize_content qq"
+    define q where "q = (if poly q' 0 > 0 then q' else -q')"
     from qq have q': "1 \<le> degree q'" "degree q' \<le> bnd" unfolding q'_def by auto
     hence q: "1 \<le> degree q" "degree q \<le> bnd" unfolding q_def by auto
     from dvd have "qq dvd (smult (content p) P)" 
@@ -303,7 +303,7 @@ proof -
       from divisors_funD[OF df zero dvd] divisors_pos_funD[OF dpf zero dvd this] 
       have "poly q j \<in> set (df (poly P j))" "j = 0 \<Longrightarrow> poly q j \<in> set (dp (poly P j))" .
     } note mem1 = this
-    def t \<equiv> "map (\<lambda> j. (j, poly q j)) js"
+    define t where "t = map (\<lambda> j. (j, poly q j)) js"
     have t: "t \<in> set tests" unfolding tests_def concat_lists_listset listset length_map map_map o_def
     proof (rule, intro conjI allI impI)
       show "length t = length js" unfolding t_def by simp

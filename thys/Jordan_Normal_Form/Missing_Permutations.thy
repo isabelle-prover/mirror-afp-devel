@@ -300,9 +300,9 @@ proof -
   note one_dir = ab ba ab_ba ba_ab
   note other_dir = ba ab ba_ab ab_ba
   let ?g = "(\<lambda> p b. if b \<in> B then a_to_b (p (b_to_a b)) else b)"
-  def PA \<equiv> ?A
-  def f \<equiv> ?f
-  def g \<equiv> ?g
+  define PA where "PA = ?A"
+  define f where "f = ?f"
+  define g where "g = ?g"
   {
     fix p
     assume "p \<in> PA"

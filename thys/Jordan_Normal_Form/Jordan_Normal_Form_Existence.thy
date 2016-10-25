@@ -1795,7 +1795,7 @@ private lemma step_3_c_inner_result: assumes inv:
 proof -
   let ?Alk = "A $$ (l,k)"
   let ?Aik = "A $$ (i_end,k)"
-  def quot \<equiv> "?Aik / ?Alk"
+  define quot where "quot = ?Aik / ?Alk"
   let ?idiff = "i_end - i_begin"
   let ?m = "\<lambda> iter diff i j. if (i,j) = (i_end,k) then if diff = (Suc ?idiff) then ?Aik else 0
     else if i \<ge> i_begin + diff \<and> i \<le> i_end \<and> k < j then A $$ (i, j) - quot * A $$ (l + i - i_end, j)
@@ -1842,7 +1842,7 @@ proof -
         note index = ib lb k i j ll il large ii this
         let ?Aij = "A $$ (i,j)"
         have D: "?D $$ (i,j) = ?mm iter diff i j" using diff i j by (auto split: if_splits)
-        def B \<equiv> ?B
+        define B where "B = ?B"
         have BB: "\<And> i j. i < n \<Longrightarrow> j < n \<Longrightarrow> B $$ (i,j) = ?m iter (Suc diff) i j" unfolding B_def by auto
         have B: "B $$ (i,j) = ?m iter (Suc diff) i j" by (rule BB[OF i j])
         have C: "?C $$ (i, j) =  
@@ -2271,7 +2271,7 @@ next
   note blocks = Cons(9-11)
   note x = Cons(12-13)
   from identify_blocks[OF lbl] kn have lk: "l < k" and ln: "l < n" and "lb \<le> l" by auto
-  def B \<equiv> "step_3_c_inner_loop (A $$ (i_end,k) / x) l i_end (Suc i_end - i_begin) A"
+  define B where "B = step_3_c_inner_loop (A $$ (i_end,k) / x) l i_end (Suc i_end - i_begin) A"
   show ?case 
   proof (cases "i_end = l")
     case True
@@ -2729,7 +2729,7 @@ proof -
       hence dim: "dim\<^sub>r A = n" "dim\<^sub>c A = n" by auto
       let ?dim = "sum_list (map dim\<^sub>c cs)"
       let ?C = "diag_block_mat cs"
-      def C \<equiv> ?C
+      define C where "C = ?C"
       from less(6) have cs: "\<And> C. C \<in> set cs \<Longrightarrow> inv_all' uppert C \<and> ev_block (dim\<^sub>c C) C \<and> dim\<^sub>r C = dim\<^sub>c C" by auto
       hence dimcs[simp]: "sum_list (map dim\<^sub>r cs) = ?dim" by (induct cs, auto)
       from diag_block_mat_dim[of cs, unfolded dimcs] obtain nc where C: "?C \<in> carrier\<^sub>m nc nc" unfolding mat_carrier_def by auto
@@ -2758,7 +2758,7 @@ proof -
           let ?si = "Suc i"
           from lookup_other_ev_Some[OF Some] have i: "i < ?n1" and neq: "A $$ (i,i) \<noteq> A $$ (?n1, ?n1)" 
             and between: "\<And>j. i < j \<Longrightarrow> j < ?n1 \<Longrightarrow> A $$ (j,j) = A $$ (?n1, ?n1)" by auto
-          def m \<equiv> "n - ?si"
+          define m where "m = n - ?si"
           from i False have si: "?si < n" by auto
           from False i have nsi: "n = ?si + m" unfolding m_def by auto
           obtain UL UR LL LR where split: "split_block A ?si ?si = (UL, UR, LL, LR)" by (rule prod_cases4)
@@ -2877,8 +2877,8 @@ proof -
         let ?ev = "A $$ (b,b)"
         from ib have id: "jnf_vector_main sk A = jnf_vector_main b A @ [(Suc k - b, ?ev)]" unfolding Suc by simp
         let ?c = "Suc k - b"
-        def B \<equiv> "?B b"
-        def C \<equiv> "jordan_block ?c ?ev"
+        define B where "B = ?B b"
+        define C where "C = jordan_block ?c ?ev"
         have C: "C \<in> carrier\<^sub>m ?c ?c" unfolding C_def by auto
         let ?FB = "\<lambda> Bb Cc. four_block_mat Bb (\<zero>\<^sub>m (dim\<^sub>r Bb) (dim\<^sub>c Cc)) (\<zero>\<^sub>m (dim\<^sub>r Cc) (dim\<^sub>c Bb)) Cc"
         from identify_block_le'[OF ib] have bk: "b \<le> k" .
@@ -2991,12 +2991,12 @@ proof -
   from A1 have d1: "dim\<^sub>r (step_1 A) = n" unfolding mat_carrier_def by simp
   have B: "?B \<in> carrier\<^sub>m n n" using A unfolding mat_carrier_def by auto
   from B have d2: "dim\<^sub>r ?B = n" unfolding mat_carrier_def by simp
-  def Cs \<equiv> "partition_ev_blocks ?B []"
+  define Cs where "Cs = partition_ev_blocks ?B []"
   from step_1_2_inv[OF A upper_t refl]
   have inv: "inv_all n uppert ?B" "inv_all n diff_ev ?B" "ev_blocks n ?B" by auto
   from partition_jb[OF B inv, of Cs] have BC: "?B = diag_block_mat Cs"
     and Cs: "\<And> C. C \<in> set Cs \<Longrightarrow> inv_all' uppert C \<and> ev_block (dim\<^sub>c C) C \<and> dim\<^sub>r C = dim\<^sub>c C" unfolding Cs_def by auto
-  def D \<equiv> "map step_3 Cs"
+  define D where "D = map step_3 Cs"
   let ?D = "diag_block_mat D"
   let ?CD = "map (\<lambda> C. (C, (jnf_vector o step_3) C)) Cs"
   {
@@ -3004,7 +3004,7 @@ proof -
     assume mem: "(C,D) \<in> set ?CD"
     hence DC: "D = jnf_vector (step_3 C)" and C: "C \<in> set Cs" by auto
     let ?D = "step_3 C"
-    def n \<equiv> "dim\<^sub>c C"
+    define n where "n = dim\<^sub>c C"
     from Cs[OF C] have C: "inv_all n uppert C" "ev_block n C" "C \<in> carrier\<^sub>m n n" 
       unfolding inv_all'_def inv_all_def n_def mat_carrier_def by auto
     from step_3_similar[OF C(3)] have sim: "mat_similar C ?D" by (rule mat_similar_sym)

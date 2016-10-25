@@ -106,7 +106,7 @@ proof (intro conjI allI)
     assume "\<not> ?thesis"
     then obtain n where ord: "order x f = Suc (Suc n)" 
       by (cases "order x f"; cases "order x f - 1"; auto)
-    def p \<equiv> "[:-x,1:]"
+    define p where "p = [:-x,1:]"
     from order_divides[of x "Suc (Suc 0)" f, unfolded ord]
     have "p * p dvd f" "degree p \<noteq> 0" unfolding p_def by auto
     hence "\<not> square_free f" using f(1) unfolding square_free_def by auto
@@ -160,7 +160,7 @@ lemma square_free_coprime_pderiv_main: fixes f :: "'a :: {field,factorial_ring_g
 proof -
   from assms have f: "f \<noteq> 0" unfolding square_free_def by auto
   let ?g = "gcd f (pderiv f)"
-  def G \<equiv> ?g
+  define G where "G = ?g"
   from poly_gcd_monic[of f "pderiv f"] f have mon: "monic ?g"
     unfolding lead_coeff_def by auto
   have deg: "degree G \<noteq> 0" 
@@ -390,8 +390,8 @@ proof -
       hence ap': "p = smult (1/c) a" by auto
       let ?prod = "\<lambda> a i. (\<Prod>(b, j)\<in>bs - {(a, i)}. b) * smult (of_nat (f i)) (pderiv a)"
       let ?prod' = "\<lambda> aa ii a i. (\<Prod>(b, j)\<in>bs - {(a, i),(aa,ii)}. b) * smult (of_nat (f i)) (pderiv a)"
-      def factor \<equiv> "sum (\<lambda> (b,j). ?prod' a i b j ) (bs - {(a,i)})"
-      def fac \<equiv> "q * factor"
+      define factor where "factor = sum (\<lambda> (b,j). ?prod' a i b j ) (bs - {(a,i)})"
+      define fac where "fac = q * factor"
       from fin finite_subset[OF bs] have fin: "finite bs" by auto
       have "?onederiv = ?prod a i + sum (\<lambda> (b,j). ?prod b j) (bs - {(a,i)})"
         by (subst sum.remove[OF fin ai], auto)
@@ -726,7 +726,7 @@ lemma yun_factorization_induct: assumes base: "\<And> bn cn. bn = 1 \<Longrighta
   and id: "bn = p div gcd p (pderiv p)" "cn = pderiv p div gcd p (pderiv p)"
   shows "P bn cn"
 proof -
-  def n \<equiv> "0 :: nat"
+  define n where "n = (0 :: nat)"
   let ?m = "\<lambda> n. bound - n"
   have "P (B n) (C n)"
   proof (induct n rule: wf_induct[OF wf_measure[of ?m]])
@@ -849,7 +849,7 @@ proof -
   obtain as f where fin: "finite as" and p: "p = (\<Prod>a\<in>as. a ^ Suc (f a))" 
     and as: "as \<subseteq> {q. irreducible q \<and> monic q}"
     by auto
-  def cs \<equiv> "{(a, f a) | a. a \<in> as}"
+  define cs where "cs = {(a, f a) | a. a \<in> as}"
   show ?thesis
   proof (rule exI, standard)  
     show "finite cs" unfolding cs_def using fin by auto
@@ -969,7 +969,7 @@ proof -
   with p have c: "c \<noteq> 0" by auto
   have ord: "order x p = order x ?prod" unfolding pf 
     using order_smult[OF c] by auto
-  def q \<equiv> "[: -x, 1 :]"
+  define q where "q = [: -x, 1 :]"
   have q0: "q \<noteq> 0" unfolding q_def by auto
   have iq: "irreducible q" by (rule linear_irreducible, auto simp: q_def)
   from rt have qa: "q dvd a" unfolding q_def poly_eq_0_iff_dvd .
@@ -1026,7 +1026,7 @@ proof (rule ccontr)
   from sff have pf: "p = smult c ?prod" by blast
   with p have c: "c \<noteq> 0" by auto
   with 0 have 0: "poly ?prod x = 0" unfolding pf by auto
-  def q \<equiv> "[: -x, 1 :]"
+  define q where "q = [: -x, 1 :]"
   from 0 have dvd: "q dvd ?prod" unfolding poly_eq_0_iff_dvd by (simp add: q_def)  
   have q0: "q \<noteq> 0" unfolding q_def by auto
   have iq: "irreducible q" by (rule linear_irreducible, auto simp: q_def)

@@ -203,7 +203,7 @@ lemma div_rat_poly_step_sur:
    shows "\<exists>c'. pair = (case c' of (a, b) \<Rightarrow> (rp a, rp b))"
 proof -
   obtain b1 b2 where pair: "pair = (b1, b2)" by (cases pair) simp
-  def p12 \<equiv> "coeff (pCons (rat_of_int x) b2) (degree (rp q)) / coeff (rp q) (degree (rp q))"
+  define p12 where "p12 = coeff (pCons (rat_of_int x) b2) (degree (rp q)) / coeff (rp q) (degree (rp q))"
   obtain a1 a2 where "a = (a1, a2)" by (cases a) simp
   with assms pair have "(rp a1, rp a2) = div_rat_poly_step (rp q) (rat_of_int x) (b1, b2)"
     by simp    

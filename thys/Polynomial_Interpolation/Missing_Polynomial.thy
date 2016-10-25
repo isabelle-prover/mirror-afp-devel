@@ -667,7 +667,7 @@ lemma irreducible_monic_factor: fixes p :: "'a :: field poly"
 proof -
   from irreducible_factor[OF assms]
   obtain q r where q: "irreducible q" and p: "p = q * r" by auto
-  def c \<equiv> "coeff q (degree q)"
+  define c where "c = coeff q (degree q)"
   from q have c: "c \<noteq> 0" unfolding c_def irreducible_def by auto
   show ?thesis
     by (rule exI[of _ "smult (1/c) q"], rule exI[of _ "smult c r"], unfold p,
@@ -689,7 +689,7 @@ proof (induct "degree p" arbitrary: p rule: less_induct)
     from irreducible_factor[OF this] obtain q r where p: "p = q * r"
       and q: "irreducible q" and deg: "degree r < degree p" by auto
     hence q0: "q \<noteq> 0" unfolding irreducible_def by auto
-    def c \<equiv> "coeff q (degree q)"
+    define c where "c = coeff q (degree q)"
     let ?q = "smult (1/c) q"
     let ?r = "smult c r"
     from q0 have c: "c \<noteq> 0" "1 / c \<noteq> 0" unfolding c_def by auto

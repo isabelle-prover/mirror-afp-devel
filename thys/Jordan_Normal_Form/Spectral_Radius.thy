@@ -22,7 +22,7 @@ lemma spectrum_root_char_poly: assumes A: "(A :: 'a :: field mat) \<in> carrier\
 lemma card_finite_spectrum: assumes A: "(A :: 'a :: field mat) \<in> carrier\<^sub>m n n"
   shows "finite (spectrum A)" "card (spectrum A) \<le> n"
 proof -
-  def CP \<equiv> "char_poly A"
+  define CP where "CP = char_poly A"
   from spectrum_root_char_poly[OF A] have id: "spectrum A = { k. poly CP k = 0}"
     unfolding CP_def by auto
   from degree_monic_char_poly[OF A] have d: "degree CP = n" and c: "coeff CP n = 1"
@@ -38,7 +38,7 @@ lemma spectrum_non_empty: assumes A: "(A :: complex mat) \<in> carrier\<^sub>m n
   and n: "n > 0"
   shows "spectrum A \<noteq> {}"
 proof - 
-  def CP \<equiv> "char_poly A"
+  define CP where "CP = char_poly A"
   from spectrum_root_char_poly[OF A] have id: "spectrum A = { k. poly CP k = 0}"
     unfolding CP_def by auto
   from degree_monic_char_poly[OF A] have d: "degree CP > 0" using n
@@ -55,7 +55,7 @@ lemma spectral_radius_mem_max: assumes A: "A \<in> carrier\<^sub>m n n"
   shows "spectral_radius A \<in> norm ` spectrum A" (is ?one)
   "a \<in> norm ` spectrum A \<Longrightarrow> a \<le> spectral_radius A"
 proof -
-  def SA \<equiv> "norm ` spectrum A"
+  define SA where "SA = norm ` spectrum A"
   from card_finite_spectrum[OF A]
   have fin: "finite SA" unfolding SA_def by auto
   from spectrum_non_empty[OF A n] have ne: "SA \<noteq> {}" unfolding SA_def by auto
