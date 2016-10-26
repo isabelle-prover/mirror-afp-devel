@@ -4,7 +4,7 @@ author = Peter Lammich <http://www21.in.tum.de/~lammich/>, René Neumann <mailto
 notify = lammich@in.tum.de
 date = 2016-07-05
 topic = Computer Science/Algorithms
-abstract = 
+abstract =
 	<p>
 	This entry presents a framework for the modular verification of
 	DFS-based algorithms, which is described in our [CPP-2015] paper. It
@@ -28,7 +28,7 @@ author = Jeremy Sylvestre <http://ualberta.ca/~jsylvest/>
 notify = jeremy.sylvestre@ualberta.ca
 date = 2016-07-01
 topic = Mathematics/Algebra, Mathematics/Geometry
-abstract = 
+abstract =
 	We provide a basic formal framework for the theory of chamber
 	complexes and Coxeter systems, and for buildings as thick chamber
 	complexes endowed with a system of apartments. Along the way, we
@@ -46,7 +46,7 @@ author = Victor B. F. Gomes <mailto:victor.gomes@cl.cam.ac.uk>, Georg Struth <ma
 notify = victor.gomes@cl.cam.ac.uk, g.struth@sheffield.ac.uk
 date = 2016-06-18
 topic = Mathematics/Algebra
-abstract = 
+abstract =
 	Variants of Kleene algebra support program construction and
 	verification by algebraic reasoning. This entry provides a
 	verification component for Hoare logic based on Kleene algebra with
@@ -66,7 +66,7 @@ author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
 notify = lukas.bulwahn@gmail.com
 date = 2016-05-24
 topic = Mathematics/Combinatorics
-abstract = 
+abstract =
 	This entry provides formulae for counting the number of equivalence
 	relations and partial equivalence relations over a finite carrier set
 	with given cardinality.  To count the number of equivalence relations,
@@ -87,7 +87,7 @@ author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
 notify = lukas.bulwahn@gmail.com
 date = 2016-10-11
 topic = Mathematics/Geometry
-abstract = 
+abstract =
 	This entry provides a geometric proof of the intersecting chords
 	theorem. The theorem states that when two chords intersect each other
 	inside a circle, the products of their segments are equal.  After a
@@ -104,7 +104,7 @@ author = Eugene W. Stark <mailto:stark@cs.stonybrook.edu>
 notify = stark@cs.stonybrook.edu
 date = 2016-06-26
 topic = Mathematics/Category Theory
-abstract = 
+abstract =
 	This article attempts to develop a usable framework for doing category
 	theory in Isabelle/HOL.  Our point of view, which to some extent
 	differs from that of the previous AFP articles on the subject, is to
@@ -145,7 +145,7 @@ author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
 notify = lukas.bulwahn@gmail.com
 date = 2016-06-26
 topic = Mathematics/Combinatorics
-abstract = 
+abstract =
 	<p>This entry provides three lemmas to count the number of multisets
 	of a given size and finite carrier set. The first lemma provides a
 	cardinality formula assuming that the multiset's elements are chosen
@@ -168,7 +168,7 @@ author = Fahad Ausaf <http://kcl.academia.edu/FahadAusaf>, Roy Dyckhoff <https:/
 notify = christian.urban@kcl.ac.uk
 date = 2016-05-24
 topic = Computer Science/Automata and Formal Languages
-abstract = 
+abstract =
 	Brzozowski introduced the notion of derivatives for regular
 	expressions. They can be used for a very simple regular expression
 	matching algorithm. Sulzmann and Lu cleverly extended this algorithm
@@ -186,7 +186,7 @@ title = A Formal Proof of the Max-Flow Min-Cut Theorem for Countable Networks
 author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
 date = 2016-05-09
 topic = Mathematics/Graph Theory
-abstract = 
+abstract =
 	This article formalises a proof of the maximum-flow minimal-cut
 	theorem for networks with countably many edges.  A network is a
 	directed graph with non-negative real-valued edge labels and two
@@ -210,16 +210,16 @@ title = Liouville numbers
 author = Manuel Eberl <http://in.tum.de/~eberlm>
 date = 2015-12-28
 topic = Mathematics/Analysis
-abstract = 
+abstract =
 	Liouville numbers are a class of transcendental numbers that can be approximated
 	particularly well with rational numbers. Historically, they were the first
 	numbers whose transcendence was proven.
-	
+
 	In this entry, we define the concept of Liouville numbers as well as the
 	standard construction to obtain Liouville numbers (including Liouville's
 	constant) and we prove their most important properties: irrationality and
 	transcendence.
-	
+
 	The proof is very elementary and requires only standard arithmetic, the Mean
 	Value Theorem for polynomials, and the boundedness of polynomials on compact
 	intervals.
@@ -230,13 +230,13 @@ title = Basic Geometric Properties of Triangles
 author = Manuel Eberl <http://in.tum.de/~eberlm>
 date = 2015-12-28
 topic = Mathematics/Geometry
-abstract = 
+abstract =
 	This entry contains a definition of angles between vectors and between three
 	points. Building on this, we prove basic geometric properties of triangles, such
 	as the Isosceles Triangle Theorem, the Law of Sines and the Law of Cosines, that
 	the sum of the angles of a triangle is π, and the congruence theorems for
 	triangles.
-	
+
 	The definitions and proofs were developed following those by John Harrison in
 	HOL Light. However, due to Isabelle's type class system, all definitions and
 	theorems in the Isabelle formalisation hold for all real inner product spaces.
@@ -247,11 +247,11 @@ title = The Divergence of the Prime Harmonic Series
 author = Manuel Eberl <http://in.tum.de/~eberlm>
 date = 2015-12-28
 topic = Mathematics/Number Theory
-abstract = 
+abstract =
 	In this work, we prove the lower bound ln (H_n) - ln(5/3) for the
 	partial sum of the Prime Harmonic series and, based on this, the divergence of
 	the Prime Harmonic Series ∑ [p prime] · 1/p.
-	
+
 	The proof relies on the unique squarefree decomposition of natural numbers. This
 	is similar to Euler's original proof (which was highly informal and morally
 	questionable). Its advantage over proofs by contradiction, like the famous one
@@ -264,10 +264,10 @@ title = Descartes' Rule of Signs
 author = Manuel Eberl <http://in.tum.de/~eberlm>
 date = 2015-12-28
 topic = Mathematics/Analysis
-abstract = 
+abstract =
 	Descartes' Rule of Signs relates the number of positive real roots of a
 	polynomial with the number of sign changes in its coefficient sequence.
-	
+
 	Our proof follows the simple inductive proof given by Rob Arthan, which was also
 	used by John Harrison in his HOL Light formalisation. We proved most of the
 	lemmas for arbitrary linearly-ordered integrity domains (e.g. integers,
@@ -280,7 +280,7 @@ title = Cardinality of Set Partitions
 author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
 date = 2015-12-12
 topic = Mathematics/Combinatorics
-abstract = 
+abstract =
 	The theory's main theorem states that the cardinality of set partitions of
 	size k on a carrier set of size n is expressed by Stirling numbers of the
 	second kind. In Isabelle, Stirling numbers of the second kind are defined
@@ -297,7 +297,7 @@ title = Cardinality of Number Partitions
 author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
 date = 2016-01-14
 topic = Mathematics/Combinatorics
-abstract = 
+abstract =
 	This entry provides a basic library for number partitions, defines the
 	two-argument partition function through its recurrence relation and relates
 	this partition function to the cardinality of number partitions. The main
@@ -314,7 +314,7 @@ title = Binary Multirelations
 author = Hitoshi Furusawa <http://www.sci.kagoshima-u.ac.jp/~furusawa/>, Georg Struth <http://staffwww.dcs.shef.ac.uk/people/G.Struth/>
 date = 2015-06-11
 topic = Mathematics/Algebra
-abstract = 
+abstract =
 	Binary multirelations associate elements of a set with its subsets; hence
 	they are binary relations from a set to its power set. Applications include
 	alternating automata, models and logics for games, program semantics with
@@ -322,14 +322,14 @@ abstract =
 	logics. This proof document supports an arXiv article that formalises the
 	basic algebra of multirelations and proposes axiom systems for them,
 	ranging from weak bi-monoids to weak bi-quantales.
-notify = 
+notify =
 
 [Noninterference_Generic_Unwinding]
 title = The Generic Unwinding Theorem for CSP Noninterference Security
 author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
 date = 2015-06-11
 topic = Computer Science/Security
-abstract = 
+abstract =
 	<p>
 	The classical definition of noninterference security for a deterministic state
 	machine with outputs requires to consider the outputs produced by machine
@@ -362,14 +362,14 @@ abstract =
 	there exists a secure process such that no domain-relation map satisfying the
 	condition exists.
 	</p>
-notify = 
+notify =
 
 [Noninterference_Ipurge_Unwinding]
 title = The Ipurge Unwinding Theorem for CSP Noninterference Security
 author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
 date = 2015-06-11
 topic = Computer Science/Security
-abstract = 
+abstract =
 	<p>
 	The definition of noninterference security for Communicating Sequential
 	Processes requires to consider any possible future, i.e. any indefinitely long
@@ -401,14 +401,14 @@ abstract =
 	variants of the Ipurge Unwinding Theorem are proven for deterministic processes
 	and trace set processes.
 	</p>
-notify = 
+notify =
 
 [List_Interleaving]
 title = Reasoning about Lists via List Interleaving
 author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
 date = 2015-06-11
 topic = Computer Science/Data Structures
-abstract = 
+abstract =
 	<p>
 	Among the various mathematical tools introduced in his outstanding work on
 	Communicating Sequential Processes, Hoare has defined "interleaves" as the
@@ -427,14 +427,14 @@ abstract =
 	"Interleaves", is shown to fulfil further rules applying to the addition or
 	removal of a suffix to the input lists.
 	</p>
-notify = 
+notify =
 
 [Residuated_Lattices]
 title = Residuated Lattices
 author = Victor B. F. Gomes <mailto:vborgesferreiragomes1@sheffield.ac.uk>, Georg Struth <mailto:g.struth@sheffield.ac.uk>
 date = 2015-04-15
 topic = Mathematics/Algebra
-abstract = 
+abstract =
 	The theory of residuated lattices, first proposed by Ward and Dilworth, is
 	formalised in Isabelle/HOL. This includes concepts of residuated functions;
 	their adjoints and conjugates. It also contains necessary and sufficient
@@ -449,7 +449,7 @@ title = Relaxing Safely: Verified On-the-Fly Garbage Collection for x86-TSO
 author = Peter Gammie <http://peteg.org/>, Tony Hosking <https://www.cs.purdue.edu/homes/hosking/>, Kai Engelhardt <http://www.cse.unsw.edu.au/~kaie/>
 date = 2015-04-13
 topic = Computer Science/Algorithms/Concurrent
-abstract = 
+abstract =
 	<p>
 	We use ConcurrentIMP to model Schism, a state-of-the-art real-time
 	garbage collection scheme for weak memory, and show that it is safe
@@ -464,7 +464,7 @@ title = Analysis of List Update Algorithms
 author = Maximilian P.L. Haslbeck <http://in.tum.de/~haslbema/>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
 date = 2016-02-17
 topic = Computer Science/Algorithms/Online
-abstract = 
+abstract =
 	<p>
 	These theories formalize the quantitative analysis of a number of classical algorithms for the list update problem: 2-competitiveness of move-to-front, the lower bound of 2 for the competitiveness of deterministic list update algorithms and 1.6-competitiveness of the randomized COMB algorithm, the best randomized list update algorithm known to date.
 	The material is based on the first two chapters of <i>Online Computation
@@ -482,7 +482,7 @@ title = Concurrent IMP
 author = Peter Gammie <http://peteg.org/>
 date = 2015-04-13
 topic = Computer Science/Programming Languages/Logics
-abstract = 
+abstract =
 	ConcurrentIMP extends the small imperative language IMP with control
 	non-determinism and constructs for synchronous message passing.
 notify = peteg42@gmail.com
@@ -500,7 +500,7 @@ title = The Unified Policy Framework (UPF)
 author = Achim D. Brucker <mailto:adbrucker@0x5f.org>, Lukas Brügger <mailto:lukas.a.bruegger@gmail.com>, Burkhart Wolff <mailto:wolff@lri.fr>
 date = 2014-11-28
 topic = Computer Science/Security
-abstract = 
+abstract =
 	We present the Unified Policy Framework (UPF), a generic framework
 	for modelling security (access-control) policies. UPF emphasizes
 	the view that a policy is a policy decision function that grants or
@@ -519,7 +519,7 @@ title = Loop freedom of the (untimed) AODV routing protocol
 author = Timothy Bourke <http://www.tbrk.org/>, Peter Höfner <http://www.hoefner-online.de/>
 date = 2014-10-23
 topic = Computer Science/Concurrency/Process Calculi
-abstract = 
+abstract =
 	<p>
 	The Ad hoc On-demand Distance Vector (AODV) routing protocol allows
 	the nodes in a Mobile Ad hoc Network (MANET) or a Wireless Mesh
@@ -545,13 +545,13 @@ author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <mai
 date = 2014-07-29
 topic = Computer Science/Functional Programming
 license = LGPL
-abstract = 
+abstract =
 	We implemented a type class for "to-string" functions, similar to
 	Haskell's Show class. Moreover, we provide instantiations for Isabelle/HOL's
 	standard types like bool, prod, sum, nats, ints, and rats. It is further
 	possible, to automatically derive show functions for arbitrary user defined
 	datatypes similar to Haskell's "deriving Show".
-extra-history = 
+extra-history =
 	Change history:
 	[2015-03-11]: Adapted development to new-style (BNF-based) datatypes.<br>
 	[2015-04-10]: Moved development for old-style datatypes into subdirectory
@@ -571,7 +571,7 @@ title = Formal Specification of a Generic Separation Kernel
 author = Freek Verbeek <mailto:Freek.Verbeek@ou.nl>, Sergey Tverdyshev <mailto:stv@sysgo.com>, Oto Havle <mailto:oha@sysgo.com>, Holger Blasum <mailto:holger.blasum@sysgo.com>, Bruno Langenstein <mailto:langenstein@dfki.de>, Werner Stephan <mailto:stephan@dfki.de>, Yakoub Nemouchi <mailto:nemouchi@lri.fr>, Abderrahmane Feliachi <mailto:Abderrahmane.FELIACHI@lri.fr>, Burkhart Wolff <mailto:wolff@lri.fr>, Julien Schmaltz <mailto:Julien.Schmaltz@ou.nl>
 date = 2014-07-18
 topic = Computer Science/Security
-abstract = 
+abstract =
 	<p>Intransitive noninterference has been a widely studied topic in the last
 	few decades. Several well-established methodologies apply interactive
 	theorem proving to formulate a noninterference theorem over abstract
@@ -586,14 +586,14 @@ abstract =
 	<p>
 	This document corresponds to the deliverable D31.1 of the EURO-MILS
 	Project <a href="http://www.euromils.eu">http://www.euromils.eu</a>.</p>
-notify = 
+notify =
 
 [pGCL]
 title = pGCL for Isabelle
 author = David Cock <mailto:david.cock@nicta.com.au>
 date = 2014-07-13
 topic = Computer Science/Programming Languages/Language Definitions
-abstract = 
+abstract =
 	<p>pGCL is both a programming language and a specification language that
 	incorporates both probabilistic and nondeterministic choice, in a unified
 	manner. Program verification is by refinement or annotation (or both), using
@@ -602,14 +602,14 @@ abstract =
 	<p> This package provides both a shallow embedding of the language
 	primitives, and an annotation and refinement framework. The generated
 	document includes a brief tutorial.</p>
-notify = 
+notify =
 
 [Noninterference_CSP]
 title = Noninterference Security in Communicating Sequential Processes
 author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
 date = 2014-05-23
 topic = Computer Science/Security
-abstract = 
+abstract =
 	<p>
 	An extension of classical noninterference security for deterministic
 	state machines, as introduced by Goguen and Meseguer and elegantly
@@ -645,28 +645,28 @@ abstract = This formulation of the Roy-Floyd-Warshall algorithm for the
 	mathematical model with adjacency functions for immediate predecessors and
 	successors. This can be implemented efficiently in functional programming
 	languages and is particularly adequate for sparse relations.
-notify = 
+notify =
 
 [GPU_Kernel_PL]
 title = Syntax and semantics of a GPU kernel programming language
 author = John Wickerson <http://www.doc.ic.ac.uk/~jpw48>
 date = 2014-04-03
 topic = Computer Science/Programming Languages/Language Definitions
-abstract = 
+abstract =
 	This document accompanies the article "The Design and
 	Implementation of a Verification Technique for GPU Kernels"
 	by Adam Betts, Nathan Chong, Alastair F. Donaldson, Jeroen
 	Ketema, Shaz Qadeer, Paul Thomson and John Wickerson. It
 	formalises all of the definitions provided in Sections 3
 	and 4 of the article.
-notify = 
+notify =
 
 [AWN]
 title = Mechanization of the Algebra for Wireless Networks (AWN)
 author = Timothy Bourke <http://www.tbrk.org>
 date = 2014-03-08
 topic = Computer Science/Concurrency/Process Calculi
-abstract = 
+abstract =
 	<p>
 	AWN is a process algebra developed for modelling and analysing
 	protocols for Mobile Ad hoc Networks (MANETs) and Wireless Mesh
@@ -693,7 +693,7 @@ title = Verification of Selection and Heap Sort Using Locales
 author = Danijela Petrovic <http://www.matf.bg.ac.rs/~danijela>
 date = 2014-02-11
 topic = Computer Science/Algorithms
-abstract = 
+abstract =
 	Stepwise program refinement techniques can be used to simplify
 	program verification. Programs are better understood since their
 	main properties are clearly stated, and verification of rather
@@ -711,7 +711,7 @@ abstract =
 	analysis of two well known algorithms (Selection Sort and Heap Sort)
 	using proof assistant Isabelle/HOL and program refinement
 	techniques.
-notify = 
+notify =
 
 [Real_Impl]
 title = Implementing field extensions of the form Q[sqrt(b)]
@@ -719,7 +719,7 @@ author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 date = 2014-02-06
 license = LGPL
 topic = Mathematics/Analysis
-abstract = 
+abstract =
 	We apply data refinement to implement the real numbers, where we support all
 	numbers in the field extension Q[sqrt(b)], i.e., all numbers of the form p +
 	q * sqrt(b) for rational numbers p and q and some fixed natural number b. To
@@ -729,7 +729,7 @@ abstract =
 	<p>
 	Our results have been used to certify termination proofs which involve
 	polynomial interpretations over the reals.
-extra-history = 
+extra-history =
 	Change history:
 	[2014-07-11]: Moved NthRoot_Impl to Sqrt-Babylonian.
 notify = rene.thiemann@uibk.ac.at
@@ -740,7 +740,7 @@ author = Christine Rizkallah <https://www.mpi-inf.mpg.de/~crizkall/>
 date = 2013-05-22
 topic = Mathematics/Graph Theory
 abstract = This theory is split into two sections. In the first section, we give a formal proof that a well-known axiomatic characterization of the single-source shortest path problem is correct. Namely, we prove that in a directed graph with a non-negative cost function on the edges the single-source shortest path function is the only function that satisfies a set of four axioms. In the second section, we give a formal proof of the correctness of an axiomatic characterization of the single-source shortest path problem for directed graphs with general cost functions. The axioms here are more involved because we have to account for potential negative cycles in the graph. The axioms are summarized in three Isabelle locales.
-notify = 
+notify =
 
 [Launchbury]
 title = The Correctness of Launchbury's Natural Semantics for Lazy Evaluation
@@ -748,18 +748,18 @@ author = Joachim Breitner <http://pp.ipd.kit.edu/~breitner>
 date = 2013-01-31
 topic = Computer Science/Programming Languages/Lambda Calculi
 abstract = In his seminal paper "Natural Semantics for Lazy Evaluation", John Launchbury proves his semantics correct with respect to a denotational semantics, and outlines an adequacy proof. We have formalized both semantics and machine-checked the correctness proof, clarifying some details. Furthermore, we provide a new and more direct adequacy proof that does not require intermediate operational semantics.
-extra-history = 
+extra-history =
 	Change history:
 	[2014-05-24]: Added the proof of adequacy, as well as simplified and improved the existing proofs. Adjusted abstract accordingly.
 	[2015-03-16]: Booleans and if-then-else added to syntax and semantics, making this entry suitable to be used by the entry "Call_Arity".
-notify = 
+notify =
 
 [Call_Arity]
 title = The Safety of Call Arity
 author = Joachim Breitner <http://pp.ipd.kit.edu/~breitner>
 date = 2015-02-20
 topic = Computer Science/Programming Languages/Transformations
-abstract = 
+abstract =
 	We formalize the Call Arity analysis, as implemented in GHC, and prove
 	both functional correctness and, more interestingly, safety (i.e. the
 	transformation does not increase allocation).
@@ -776,12 +776,12 @@ abstract =
 	We use Christian Urban's Nominal2 package to define our terms and make
 	use of Brian Huffman's HOLCF package for the domain-theoretical
 	aspects of the development.
-extra-history = 
+extra-history =
 	Change history:
 	[2015-03-16]: This entry now builds on top of the Launchbury entry,
 	and the equivalency proof of the natural and the small-step semantics
 	was added.
-notify = 
+notify =
 
 [CCS]
 title = CCS in nominal logic
@@ -791,7 +791,7 @@ topic = Computer Science/Concurrency/Process Calculi
 abstract = We formalise a large portion of CCS as described in Milner's book 'Communication and Concurrency' using the nominal datatype package in Isabelle. Our results include many of the standard theorems of bisimulation equivalence and congruence, for both weak and strong versions. One main goal of this formalisation is to keep the machine-checked proofs as close to their pen-and-paper counterpart as possible.
 	<p>
 	This entry is described in detail in <a href="http://www.itu.dk/people/jebe/files/thesis.pdf">Bengtson's thesis</a>.
-notify = 
+notify =
 
 [Pi_Calculus]
 title = The pi-calculus in nominal logic
@@ -803,7 +803,7 @@ abstract = We formalise the pi-calculus using the nominal datatype package, base
 	A significant gain in our formulation is that agents are identified up to alpha-equivalence, thereby greatly reducing the arguments about bound names. This is a normal strategy for manual proofs about the pi-calculus, but that kind of hand waving has previously been difficult to incorporate smoothly in an interactive theorem prover. We show how the nominal logic formalism and its support in Isabelle accomplishes this and thus significantly reduces the tedium of conducting completely formal proofs. This improves on previous work using weak higher order abstract syntax since we do not need extra assumptions to filter out exotic terms and can keep all arguments within a familiar first-order logic.
 	<p>
 	This entry is described in detail in <a href="http://www.itu.dk/people/jebe/files/thesis.pdf">Bengtson's thesis</a>.
-notify = 
+notify =
 
 [Psi_Calculi]
 title = Psi-calculi in Isabelle
@@ -817,7 +817,7 @@ abstract = Psi-calculi are extensions of the pi-calculus, accommodating arbitrar
 	The main effort in the formalisation is to keep the machine checked proofs as close to their pen-and-paper counterparts as possible. This includes treating all binding sequences as atomic elements, and creating custom induction and inversion rules that to remove the bulk of manual alpha-conversions.
 	<p>
 	This entry is described in detail in <a href="http://www.itu.dk/people/jebe/files/thesis.pdf">Bengtson's thesis</a>.
-notify = 
+notify =
 
 [Encodability_Process_Calculi]
 title = Analysing and Comparing Encodability Criteria for Process Calculi
@@ -852,10 +852,10 @@ topic = Computer Science/Concurrency/Process Calculi, Computer Science/System De
 abstract = The Circus specification language combines elements for complex data and behavior specifications, using an integration of Z and CSP with a refinement calculus. Its semantics is based on Hoare and He's Unifying Theories of Programming (UTP). Isabelle/Circus is a formalization of the UTP and the Circus language in Isabelle/HOL. It contains proof rules and tactic support that allows for proofs of refinement for Circus processes (involving both data and behavioral aspects).
 	<p>
 	The Isabelle/Circus environment supports a syntax for the semantic definitions which is close to textbook presentations of Circus. This article contains an extended version of corresponding VSTTE Paper together with the complete formal development of its underlying commented theories.
-extra-history = 
+extra-history =
 	Change history:
 	[2014-06-05]: More polishing, shorter proofs, added Circus syntax, added Makarius Wenzel as contributor.
-notify = 
+notify =
 
 [Dijkstra_Shortest_Path]
 title = Dijkstra's Shortest Path Algorithm
@@ -887,7 +887,7 @@ abstract = We provide a framework for program and data refinement in Isabelle/HO
 	<p>
 	This submission comes with a collection of examples and a user-guide,
 	illustrating the usage of the framework.
-extra-history = 
+extra-history =
 	Change history:
 	[2012-04-23] Introduced ordered FOREACH loops<br>
 	[2012-06] New features:
@@ -914,7 +914,7 @@ author = Peter Lammich <http://www21.in.tum.de/~lammich/>
 notify = lammich@in.tum.de
 date = 2016-08-08
 topic = Computer Science/Programming Languages/Transformations,Computer Science/Data Structures
-abstract = 
+abstract =
 	We present the Imperative Refinement Framework (IRF), a tool that
 	supports a stepwise refinement based approach to imperative programs.
 	This entry is based on the material we presented in [ITP-2015,
@@ -963,7 +963,7 @@ author = Peter Lammich <mailto:lammich@in.tum.de>, S. Reza Sefidgar<>
 notify = lammich@in.tum.de
 date = 2016-08-12
 topic = Computer Science/Algorithms
-abstract = 
+abstract =
 	We present a formalization of the Ford-Fulkerson method for computing
 	the maximum flow in a network. Our formal proof closely follows a
 	standard textbook proof, and is accessible even without being an
@@ -996,7 +996,7 @@ author = Viorel Preoteasa <http://users.abo.fi/vpreotea/>
 topic = Mathematics/Algebra
 date = 2011-09-22
 abstract = This formalization introduces and collects some algebraic structures based on lattices and complete lattices for use in other developments. The structures introduced are modular, and lattice ordered groups. In addition to the results proved for the new lattices, this formalization also introduces theorems about latices and complete lattices in general.
-extra-history = 
+extra-history =
 	Change history:
 	[2012-01-05]: Removed the theory about distributive complete lattices which is in the standard library now.
 	Added a theory about well founded and transitive relations and a result about fixpoints in complete lattices and well founded relations.
@@ -1018,7 +1018,7 @@ author = Cornelius Diekmann <http://net.in.tum.de/~diekmann>, Julius Michaelis <
 notify = diekmann@net.in.tum.de
 date = 2016-06-28
 topic = Computer Science/Networks
-abstract = 
+abstract =
 	This entry contains a definition of IP addresses and a library to work
 	with them.  Generic IP addresses are modeled as machine words of
 	arbitrary length. Derived from this generic definition, IPv4 addresses
@@ -1038,7 +1038,7 @@ author = Cornelius Diekmann <https://net.in.tum.de/~diekmann>, Julius Michaelis 
 notify = diekmann@net.in.tum.de, max.haslbeck@gmx.de
 date = 2016-08-24
 topic = Computer Science/Networks
-abstract = 
+abstract =
 	We present a simple model of a firewall. The firewall can accept or
 	drop a packet and can match on interfaces, IP addresses, protocol, and
 	ports. It was designed to feature nice mathematical properties: The
@@ -1061,7 +1061,7 @@ author = Cornelius Diekmann <https://net.in.tum.de/~diekmann>, Lars Hupel <https
 notify = diekmann@net.in.tum.de, hupel@in.tum.de
 date = 2016-09-09
 topic = Computer Science/Networks
-abstract = 
+abstract =
 	We present a big step semantics of the filtering behavior of the
 	Linux/netfilter iptables firewall. We provide algorithms to simplify
 	complex iptables rulests to a simple firewall model (c.f. AFP entry <a
@@ -1084,7 +1084,7 @@ author = Julius Michaelis <http://liftm.de/>, Cornelius Diekmann <http://net.in.
 notify = afp@liftm.de
 date = 2016-08-31
 topic = Computer Science/Networks
-abstract = 
+abstract =
 	This entry contains definitions for routing with routing
 	tables/longest prefix matching.  A routing table entry is modelled as
 	a record of a prefix match, a metric, an output port, and an optional
@@ -1100,7 +1100,7 @@ author = Peter Gammie <http://peteg.org/>
 topic = Computer Science/Automata and Formal Languages
 date = 2011-05-17
 abstract = Knowledge-based programs (KBPs) are a formalism for directly relating agents' knowledge and behaviour. Here we present a general scheme for compiling KBPs to executable automata with a proof of correctness in Isabelle/HOL. We develop the algorithm top-down, using Isabelle's locale mechanism to structure these proofs, and show that two classic examples can be synthesised using Isabelle's code generator.
-extra-history = 
+extra-history =
 	Change history:
 	[2012-03-06]: Add some more views and revive the code generation.
 notify = kleing@cse.unsw.edu.au
@@ -1110,7 +1110,7 @@ title = The independence of Tarski's Euclidean axiom
 author = T. J. M. Makarios <mailto:tjm1983@gmail.com>
 topic = Mathematics/Geometry
 date = 2012-10-30
-abstract = 
+abstract =
 	Tarski's axioms of plane geometry are formalized and, using the standard
 	real Cartesian model, shown to be consistent. A substantial theory of
 	the projective plane is developed. Building on this theory, the
@@ -1155,7 +1155,7 @@ author = Fabian Immler <mailto:immler@in.tum.de>
 topic = Computer Science/Programming Languages/Static Analysis
 date = 2011-01-10
 abstract = This work presents a verification of an implementation in SPARK/ADA of the cryptographic hash-function RIPEMD-160. A functional specification of RIPEMD-160 is given in Isabelle/HOL. Proofs for the verification conditions generated by the static-analysis toolset of SPARK certify the functional correctness of the implementation.
-extra-history = 
+extra-history =
 	Change history:
 	[2015-11-09]: Entry is now obsolete, moved to Isabelle distribution.
 notify = immler@in.tum.de
@@ -1166,7 +1166,7 @@ author = Alexander Krauss <http://www.in.tum.de/~krauss>, Tobias Nipkow <http://
 topic = Computer Science/Automata and Formal Languages
 date = 2010-05-12
 abstract = This is a library of constructions on regular expressions and languages. It provides the operations of concatenation, Kleene star and derivative on languages. Regular expressions and their meaning are defined. An executable equivalence checker for regular expressions is verified; it does not need automata but works directly on regular expressions. <i>By mapping regular expressions to binary relations, an automatic and complete proof method for (in)equalities of binary relations over union, concatenation and (reflexive) transitive closure is obtained.</i> <P> Extended regular expressions with complement and intersection are also defined and an equivalence checker is provided.
-extra-history = 
+extra-history =
 	Change history:
 	[2011-08-26]: Christian Urban added a theory about derivatives and partial derivatives of regular expressions<br>
 	[2012-05-10]: Tobias Nipkow added extended regular expressions<br>
@@ -1178,7 +1178,7 @@ title = Unified Decision Procedures for Regular Expression Equivalence
 author = Tobias Nipkow <http://www.in.tum.de/~nipkow>, Dmitriy Traytel <mailto:traytel@in.tum.de>
 topic = Computer Science/Automata and Formal Languages
 date = 2014-01-30
-abstract = 
+abstract =
 	We formalize a unified framework for verified decision procedures for regular
 	expression equivalence. Five recently published formalizations of such
 	decision procedures (three based on derivatives, two on marked regular
@@ -1197,7 +1197,7 @@ title = Decision Procedures for MSO on Words Based on Derivatives of Regular Exp
 author = Dmitriy Traytel <mailto:traytel@in.tum.de>, Tobias Nipkow <http://www.in.tum.de/~nipkow>
 topic = Computer Science/Automata and Formal Languages, Logic
 date = 2014-06-12
-abstract = 
+abstract =
 	Monadic second-order logic on finite words (MSO) is a decidable yet
 	expressive logic into which many decision problems can be encoded. Since MSO
 	formulas correspond to regular languages, equivalence of MSO formulas can be
@@ -1222,7 +1222,7 @@ title = Derivatives of Logical Formulas
 author = Dmitriy Traytel <http://www21.in.tum.de/~traytel/>
 topic = Computer Science/Automata and Formal Languages, Logic
 date = 2015-05-28
-abstract = 
+abstract =
 	We formalize new decision procedures for WS1S, M2L(Str), and Presburger
 	Arithmetics. Formulas of these logics denote regular languages. Unlike
 	traditional decision procedures, we do <em>not</em> translate formulas into automata
@@ -1253,7 +1253,7 @@ title = A formalisation of the Cocke-Younger-Kasami algorithm
 author = Maksym Bortin <mailto:Maksym.Bortin@nicta.com.au>
 date = 2016-04-27
 topic = Computer Science/Algorithms, Computer Science/Automata and Formal Languages
-abstract = 
+abstract =
 	The theory provides a formalisation of the Cocke-Younger-Kasami
 	algorithm (CYK for short), an approach to solving the word problem
 	for context-free languages.  CYK decides if a word is in the
@@ -1266,12 +1266,12 @@ title = Boolean Expression Checkers
 author = Tobias Nipkow <http://www.in.tum.de/~nipkow>
 date = 2014-06-08
 topic = Computer Science/Algorithms, Logic
-abstract = 
+abstract =
 	This entry provides executable checkers for the following properties of
 	boolean expressions: satisfiability, tautology and equivalence. Internally,
 	the checkers operate on binary decision trees and are reasonably efficient
 	(for purely functional algorithms).
-extra-history = 
+extra-history =
 	Change history: [2015-09-23]: Salomon Sickert added an interface that does not require the usage of the Boolean formula datatype. Furthermore the general Mapping type is used instead of an associative list.
 notify = nipkow@in.tum.de
 
@@ -1316,7 +1316,7 @@ author = Stephan Merz <http://www.loria.fr/~merz/>
 topic = Computer Science/Automata and Formal Languages
 date = 2012-05-07
 abstract = <p>Two omega-sequences are stuttering equivalent if they differ only by finite repetitions of elements. Stuttering equivalence is a fundamental concept in the theory of concurrent and distributed systems. Notably, Lamport argues that refinement notions for such systems should be insensitive to finite stuttering. Peled and Wilke showed that all PLTL (propositional linear-time temporal logic) properties that are insensitive to stuttering equivalence can be expressed without the next-time operator. Stuttering equivalence is also important for certain verification techniques such as partial-order reduction for model checking.</p> <p>We formalize stuttering equivalence in Isabelle/HOL. Our development relies on the notion of stuttering sampling functions that may skip blocks of identical sequence elements. We also encode PLTL and prove the theorem due to Peled and Wilke.</p>
-extra-history = 
+extra-history =
 	Change history:
 	[2013-01-31]: Added encoding of PLTL and proved Peled and Wilke's theorem. Adjusted abstract accordingly.
 notify = Stephan.Merz@loria.fr
@@ -1382,7 +1382,7 @@ title = Verification of the UpDown Scheme
 author = Johannes Hölzl <mailto:hoelzl@in.tum.de>
 date = 2015-01-28
 topic = Computer Science/Algorithms
-abstract = 
+abstract =
 	The UpDown scheme is a recursive scheme used to compute the stiffness matrix
 	on a special form of sparse grids. Usually, when discretizing a Euclidean
 	space of dimension d we need O(n^d) points, for n points along each dimension.
@@ -1403,7 +1403,7 @@ author = Viorel Preoteasa <http://users.abo.fi/vpreotea/>, Ralph-Johan Back <htt
 date = 2010-05-28
 topic = Computer Science/Algorithms
 abstract = The verification of the Deutsch-Schorr-Waite graph marking algorithm is used as a benchmark in many formalizations of pointer programs. The main purpose of this mechanization is to show how data refinement of invariant based programs can be used in verifying practical algorithms. The verification starts with an abstract algorithm working on a graph given by a relation <i>next</i> on nodes. Gradually the abstract program is refined into Deutsch-Schorr-Waite graph marking algorithm where only one bit per graph node of additional memory is used for marking.
-extra-history = 
+extra-history =
 	Change history:
 	[2012-01-05]: Updated for the new definition of data refinement and the new syntax for demonic and angelic update statements
 notify = viorel.preoteasa@abo.fi
@@ -1414,7 +1414,7 @@ topic = Computer Science/Algorithms
 date = 2011-11-09
 author = Christian Sternagel <mailto:c.sternagel@gmail.com>
 abstract = We provide a formalization of the mergesort algorithm as used in GHC's Data.List module, proving correctness and stability. Furthermore, experimental data suggests that generated (Haskell-)code for this algorithm is much faster than for previous algorithms available in the Isabelle distribution.
-extra-history = 
+extra-history =
 	Change history:
 	[2012-10-24]: Added reference to journal article
 notify = c.sternagel@gmail.com
@@ -1425,7 +1425,7 @@ author = Filip Maric <http://poincare.matf.bg.ac.rs/~filip/>
 date = 2008-07-23
 topic = Computer Science/Algorithms
 abstract = This document contains formal correctness proofs of modern SAT solvers. Following (Krstic et al, 2007) and (Nieuwenhuis et al., 2006), solvers are described using state-transition systems. Several different SAT solver descriptions are given and their partial correctness and termination is proved. These include: <ul> <li> a solver based on classical DPLL procedure (using only a backtrack-search with unit propagation),</li> <li> a very general solver with backjumping and learning (similar to the description given in (Nieuwenhuis et al., 2006)), and</li> <li> a solver with a specific conflict analysis algorithm (similar to the description given in (Krstic et al., 2007)).</li> </ul> Within the SAT solver correctness proofs, a large number of lemmas about propositional logic and CNF formulae are proved. This theory is self-contained and could be used for further exploring of properties of CNF based SAT algorithms.
-notify = 
+notify =
 
 [Transitive-Closure]
 title = Executable Transitive Closures of Finite Relations
@@ -1434,7 +1434,7 @@ date = 2011-03-14
 author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 license = LGPL
 abstract = We provide a generic work-list algorithm to compute the transitive closure of finite relations where only successors of newly detected states are generated. This algorithm is then instantiated for lists over arbitrary carriers and red black trees (which are faster but require a linear order on the carrier), respectively.  Our formalization was performed as part of the IsaFoR/CeTA project where reflexive transitive closures of large tree automata have to be computed.
-extra-history = 
+extra-history =
 	Change history:
 	[2014-09-04] added example simprocs in Finite_Transitive_Closure_Simprocs
 notify = c.sternagel@gmail.com, rene.thiemann@uibk.ac.at
@@ -1445,7 +1445,7 @@ topic = Computer Science/Algorithms
 date = 2012-02-29
 author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 license = LGPL
-abstract = 
+abstract =
 	We provide a generic work-list algorithm to compute the
 	(reflexive-)transitive closure of relations where only successors of newly
 	detected states are generated.
@@ -1454,7 +1454,7 @@ abstract =
 	Moreover, a subsumption relation can be used instead of pure equality.
 	An executable variant of the algorithm is available where the generic operations
 	are instantiated with list operations.
-	
+
 	This formalization was performed as part of the IsaFoR/CeTA project,
 	and it has been used to certify size-change
 	termination proofs where large transitive closures have to be computed.
@@ -1497,7 +1497,7 @@ title = Verifying Fault-Tolerant Distributed Algorithms in the Heard-Of Model
 date = 2012-07-27
 author = Henri Debrat <mailto:henri.debrat@loria.fr>, Stephan Merz <http://www.loria.fr/~merz/>
 topic = Computer Science/Algorithms/Distributed
-abstract = 
+abstract =
 	Distributed computing is inherently based on replication, promising
 	increased tolerance to failures of individual computing nodes or
 	communication channels. Realizing this promise, however, involves
@@ -1530,7 +1530,7 @@ title = Consensus Refined
 date = 2015-03-18
 author = Ognjen Maric <mailto:omaric@inf.ethz.ch>, Christoph Sprenger <mailto:sprenger@inf.ethz.ch>
 topic = Computer Science/Algorithms/Distributed
-abstract = 
+abstract =
 	Algorithms for solving the consensus problem are fundamental to
 	distributed computing. Despite their brevity, their
 	ability to operate in concurrent, asynchronous and failure-prone
@@ -1554,7 +1554,7 @@ title = Abortable Linearizable Modules
 author = Rachid Guerraoui <mailto:rachid.guerraoui@epfl.ch>, Viktor Kuncak <http://lara.epfl.ch/~kuncak/>, Giuliano Losa <mailto:giuliano.losa@epfl.ch>
 date = 2012-03-01
 topic = Computer Science/Algorithms/Distributed
-abstract = 
+abstract =
 	We define the Abortable Linearizable Module automaton (ALM for short)
 	and prove its key composition property using the IOA theory of
 	HOLCF. The ALM is at the heart of the Speculative Linearizability
@@ -1573,7 +1573,7 @@ title = Amortized Complexity Verified
 author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
 date = 2014-07-07
 topic = Computer Science/Data Structures
-abstract = 
+abstract =
 	A framework for the analysis of the amortized complexity of functional
 	data structures is formalized in Isabelle/HOL and applied to a number of
 	standard examples and to the folowing non-trivial ones: skew heaps,
@@ -1584,7 +1584,7 @@ abstract =
 	published in the proceedings of the conference on Interactive
 	Theorem Proving ITP 2015. An extended version of this publication
 	is available <a href="http://www.in.tum.de/~nipkow/pubs/jfp16.html">here</a>.
-extra-history = 
+extra-history =
 	Change history:
 	[2015-03-17]: Added pairing heaps by Hauke Brinkop.<br>
 	[2016-07-12]: Moved splay heaps from here to Splay_Tree<br>
@@ -1596,7 +1596,7 @@ title = Parameterized Dynamic Tables
 author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
 date = 2015-06-07
 topic = Computer Science/Data Structures
-abstract = 
+abstract =
 	This article formalizes the amortized analysis of dynamic tables
 	parameterized with their minimal and maximal load factors and the
 	expansion and contraction factors.
@@ -1611,7 +1611,7 @@ author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>, Cornelia Pusch <>
 date = 2004-03-19
 topic = Computer Science/Data Structures
 abstract = Two formalizations of AVL trees with room for extensions. The first formalization is monolithic and shorter, the second one in two stages, longer and a bit simpler. The final implementation is the same. If you are interested in developing this further, please contact <tt>gerwin.klein@nicta.com.au</tt>.
-extra-history = 
+extra-history =
 	Change history:
 	[2011-04-11]: Ondrej Kuncar added delete function
 notify = kleing@cse.unsw.edu.au
@@ -1638,14 +1638,14 @@ author = Tobias Nipkow <http://in.tum.de/~nipkow/>
 notify = nipkow@in.tum.de
 date = 2014-08-12
 topic = Computer Science/Data Structures
-abstract = 
+abstract =
 	Splay trees are self-adjusting binary search trees which were invented by Sleator and Tarjan [JACM 1985].
 	This entry provides executable and verified functional splay trees
 	as well as the related splay heaps (due to Okasaki).
 	<p>
 	The amortized complexity of splay trees and heaps is analyzed in the AFP entry
 	<a href="http://isa-afp.org/entries/Amortized_Complexity.shtml">Amortized Complexity</a>.
-extra-history = 
+extra-history =
 	Change history:
 	[2016-07-12]: Moved splay heaps here from Amortized_Complexity
 
@@ -1654,7 +1654,7 @@ title = Skew Heap
 author = Tobias Nipkow <http://in.tum.de/~nipkow/>
 date = 2014-08-13
 topic = Computer Science/Data Structures
-abstract = 
+abstract =
 	Skew heaps are an amazingly simple and lightweight implementation of
 	priority queues. They were invented by Sleator and Tarjan [SIAM 1986]
 	and have logarithmic amortized complexity. This entry provides executable
@@ -1669,7 +1669,7 @@ title = Pairing Heap
 author = Hauke Brinkop <mailto:hauke.brinkop@googlemail.com>, Tobias Nipkow <http://in.tum.de/~nipkow/>
 date = 2016-07-14
 topic = Computer Science/Data Structures
-abstract = 
+abstract =
 	This library defines three different versions of pairing heaps: a
 	functional version of the original design based on binary
 	trees [Fredman et al. 1986], the version by Okasaki [1998] and
@@ -1685,7 +1685,7 @@ title = Priority Queues Based on Braun Trees
 author = Tobias Nipkow <http://in.tum.de/~nipkow/>
 date = 2014-09-04
 topic = Computer Science/Data Structures
-abstract = 
+abstract =
 	This theory implements priority queues via Braun trees. Insertion
 	and deletion take logarithmic time and preserve the balanced nature
 	of Braun trees.
@@ -1704,7 +1704,7 @@ title = Binomial Heaps and Skew Binomial Heaps
 author = Rene Meis <mailto:rene.meis@uni-muenster.de>, Finn Nielsen <mailto:finn.nielsen@uni-muenster.de>, Peter Lammich <http://www21.in.tum.de/~lammich/>
 date = 2010-10-28
 topic = Computer Science/Data Structures
-abstract = 
+abstract =
 	We implement and prove correct binomial heaps and skew binomial heaps.
 	Both are data-structures for priority queues.
 	While binomial heaps have logarithmic <em>findMin</em>, <em>deleteMin</em>,
@@ -1722,7 +1722,7 @@ title = Finger Trees
 author = Benedikt Nordhoff <mailto:b_nord01@uni-muenster.de>, Stefan Körner <mailto:s_koer03@uni-muenster.de>, Peter Lammich <http://www21.in.tum.de/~lammich/>
 date = 2010-10-28
 topic = Computer Science/Data Structures
-abstract = 
+abstract =
 	We implement and prove correct 2-3 finger trees.
 	Finger trees are a general purpose data structure, that can be used to
 	efficiently implement other data structures, such as priority queues.
@@ -1740,11 +1740,11 @@ title = Trie
 author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>, Tobias Nipkow <http://www.in.tum.de/~nipkow>
 date = 2015-03-30
 topic = Computer Science/Data Structures
-abstract = 
+abstract =
 	This article formalizes the ``trie'' data structure invented by
 	Fredkin [CACM 1960]. It also provides a specialization where the entries
 	in the trie are lists.
-extra-0 = 
+extra-0 =
 	Origin: This article was extracted from existing articles by the authors.
 notify = nipkow@in.tum.de
 
@@ -1754,7 +1754,7 @@ author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
 date = 2009-05-06
 topic = Computer Science/Data Structures
 abstract = <b>FinFun is now part of the Isabelle distribution. The entry is kept for archival; maintained but not developed further. Use the Isabelle distribution version instead.</b><p>FinFuns are total functions that are constant except for a finite set of points, i.e. a generalisation of finite maps. They are formalised as a new type in Isabelle/HOL such that the code generator can handle equality tests and quantification on FinFuns. On the code output level, FinFuns are explicitly represented by constant functions and pointwise updates, similarly to associative lists. Inside the logic, they behave like ordinary functions with extensionality. Via the update/constant pattern, a recursion combinator and an induction rule for FinFuns allow for defining and reasoning about operators on FinFun that are also executable.</p>
-extra-history = 
+extra-history =
 	Change history:
 	[2010-08-13]:
 	new concept domain of a FinFun as a FinFun
@@ -1774,7 +1774,7 @@ contributors = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>, T
 date = 2009-11-25
 topic = Computer Science/Data Structures
 abstract = This development provides an efficient, extensible, machine checked collections framework. The library adopts the concepts of interface, implementation and generic algorithm from object-oriented programming and implements them in Isabelle/HOL. The framework features the use of data refinement techniques to refine an abstract specification (using high-level concepts like sets) to a more concrete implementation (using collection datastructures, like red-black-trees). The code-generator of Isabelle/HOL can be used to generate efficient code.
-extra-history = 
+extra-history =
 	Change history:
 	[2010-10-08]: New Interfaces: OrderedSet, OrderedMap, List.
 	Fifo now implements list-interface: Function names changed: put/get --> enqueue/dequeue.
@@ -1800,7 +1800,7 @@ author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
 contributors = René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 date = 2013-04-15
 topic = Computer Science/Data Structures
-abstract = 
+abstract =
 	This development provides a framework for container types like sets and maps such that generated code implements these containers with different (efficient) data structures.
 	Thanks to type classes and refinement during code generation, this light-weight approach can seamlessly replace Isabelle's default setup for code generation.
 	Heuristics automatically pick one of the available data structures depending on the type of elements to be stored, but users can also choose on their own.
@@ -1808,7 +1808,7 @@ abstract =
 	<p>
 	To support arbitrary nesting of sets, we define a linear order on sets based on a linear order of the elements and provide efficient implementations.
 	It even allows to compare complements with non-complements.
-extra-history = 
+extra-history =
 	Change history:
 	[2013-07-11]: add pretty printing for sets (revision 7f3f52c5f5fa)<br>
 	[2013-09-20]:
@@ -1830,7 +1830,7 @@ title = Generating linear orders for datatypes
 author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 date = 2012-08-07
 topic = Computer Science/Data Structures
-abstract = 
+abstract =
 	We provide a framework for registering automatic methods to derive
 	class instances of datatypes, as it is possible using Haskell's ``deriving Ord, Show, ...'' feature.
 	<p>
@@ -1851,18 +1851,18 @@ title = Deriving class instances for datatypes
 author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 date = 2015-03-11
 topic = Computer Science/Data Structures
-abstract = 
+abstract =
 	We provide a framework for registering automatic methods
 	to derive class instances of datatypes,
 	as it is possible using Haskell's ``deriving Ord, Show, ...'' feature.
-	
+
 	We further implemented such automatic methods to derive comparators, linear orders, parametrizable equality functions,
 	and hash-functions which are required in the
 	Isabelle Collection Framework and the Container Framework.
 	Moreover, for the tactic of Blanchette to show that a datatype is countable, we implemented a
 	wrapper so that this tactic becomes accessible in our framework. All of the generators are based on
 	the infrastructure that is provided by the BNF-based datatype package.
-	
+
 	Our formalization was performed as part of the <a href="http://cl-informatik.uibk.ac.at/software/ceta">IsaFoR/CeTA</a> project.
 	With our new tactics we could remove
 	several tedious proofs for (conditional) linear orders, and conditional equality operators
@@ -1891,7 +1891,7 @@ topic = Computer Science/Data Structures
 date = 2010-06-17
 author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>
 license = LGPL
-abstract = 
+abstract =
 	We provide the operations of matrix addition, multiplication,
 	transposition, and matrix comparisons as executable functions over
 	ordered semirings. Moreover, it is proven that strongly normalizing
@@ -1904,7 +1904,7 @@ abstract =
 	which contains several termination techniques. The provided theories have
 	been essential to formalize matrix-interpretations and arctic
 	interpretations.
-extra-history = 
+extra-history =
 	Change history:
 	[2010-09-17]: Moved theory on arbitrary (ordered) semirings to Abstract Rewriting.
 notify = rene.thiemann@uibk.ac.at, christian.sternagel@uibk.ac.at
@@ -1914,7 +1914,7 @@ title = Tensor Product of Matrices
 topic = Computer Science/Data Structures, Mathematics/Algebra
 date = 2016-01-18
 author = T.V.H. Prathamesh <mailto:prathamesh@imsc.res.in>
-abstract = 
+abstract =
 	In this work, the Kronecker tensor product of matrices and the proofs of
 	some of its properties are formalized. Properties which have been formalized
 	include associativity of the tensor product and the mixed-product
@@ -1944,7 +1944,7 @@ author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 topic = Computer Science/Functional Programming
 date = 2014-10-13
 license = LGPL
-abstract = 
+abstract =
 	We implemented a command that can be used to easily generate
 	elements of a restricted type <tt>{x :: 'a. P x}</tt>,
 	provided the definition is of the form
@@ -1968,7 +1968,7 @@ author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
 contributors = Johannes Hölzl <mailto:hoelzl@in.tum.de>
 date = 2010-02-12
 abstract = This article collects formalisations of general-purpose coinductive data types and sets. Currently, it contains coinductive natural numbers, coinductive lists, i.e. lazy lists or streams, infinite streams, coinductive terminated lists, coinductive resumptions, a library of operations on coinductive lists, and a version of König's lemma as an application for coinductive lists.<br>The initial theory was contributed by Paulson and Wenzel. Extensions and other coinductive formalisations of general interest are welcome.
-extra-history = 
+extra-history =
 	Change history:
 	[2010-06-10]:
 	coinductive lists: setup for quotient package
@@ -2019,7 +2019,7 @@ title = Type Constructor Classes and Monad Transformers
 author = Brian Huffman <mailto:huffman@in.tum.de>
 date = 2012-06-26
 topic = Computer Science/Functional Programming
-abstract = 
+abstract =
 	These theories contain a formalization of first class type constructors
 	and axiomatic constructor classes for HOLCF. This work is described
 	in detail in the ICFP 2012 paper <i>Formal Verification of Monad
@@ -2064,7 +2064,7 @@ author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
 date = 2007-12-03
 topic = Computer Science/Programming Languages/Language Definitions
 abstract = We extend the Jinja source code semantics by Klein and Nipkow with Java-style arrays and threads. Concurrency is captured in a generic framework semantics for adding concurrency through interleaving to a sequential semantics, which features dynamic thread creation, inter-thread communication via shared memory, lock synchronisation and joins. Also, threads can suspend themselves and be notified by others. We instantiate the framework with the adapted versions of both Jinja source and byte code and show type safety for the multithreaded case. Equally, the compiler from source to byte code is extended, for which we prove weak bisimilarity between the source code small step semantics and the defensive Jinja virtual machine. On top of this, we formalise the JMM and show the DRF guarantee and consistency. For description of the different parts, see Lochbihler's papers at FOOL 2008, ESOP 2010, ITP 2011, and ESOP 2012.
-extra-history = 
+extra-history =
 	Change history:
 	[2008-04-23]:
 	added bytecode formalisation with arrays and threads, added thread joins
@@ -2150,7 +2150,7 @@ title = A Meta-Model for the Isabelle API
 author = Frédéric Tuong <mailto:tuong@users.gforge.inria.fr>, Burkhart Wolff <http://www.lri.fr/~wolff/>
 date = 2015-09-16
 topic = Computer Science/Programming Languages/Language Definitions
-abstract = 
+abstract =
 	We represent a theory <i>of</i> (a fragment of) Isabelle/HOL <i>in</i>
 	Isabelle/HOL. The purpose of this exercise is to write packages for
 	domain-specific specifications such as class models, B-machines, ...,
@@ -2249,7 +2249,7 @@ author = Peter Lammich <http://www21.in.tum.de/~lammich/>, Rene Meis <mailto:ren
 date = 2012-11-14
 topic = Computer Science/Programming Languages/Logics
 license = BSD
-abstract = 
+abstract =
 	We provide a framework for separation-logic based correctness proofs of
 	Imperative HOL programs. Our framework comes with a set of proof methods to
 	automate canonical tasks such as verification condition generation and
@@ -2317,7 +2317,7 @@ author = Toby Murray <http://people.eng.unimelb.edu.au/tobym/>, Robert Sison<>, 
 notify = toby.murray@unimelb.edu.au
 date = 2016-06-25
 topic = Computer Science/Security, Computer Science/Programming Languages/Type Systems
-abstract = 
+abstract =
 	The paper "Compositional Verification and Refinement of Concurrent
 	Value-Dependent Noninterference" by Murray et. al. (CSF 2016) presents
 	a dependent security type system for compositionally verifying a
@@ -2327,7 +2327,7 @@ abstract =
 	demonstrates its application on some small examples. It was derived
 	from the SIFUM_Type_Systems AFP entry, by Sylvia Grewe, Heiko Mantel
 	and Daniel Schoepe, and whose structure it inherits.
-extra-history = 
+extra-history =
 	Change history:
 	[2016-08-19]:
 	Removed unused "stop" parameter and "stop_no_eval" assumption from the sifum_security locale.
@@ -2342,14 +2342,14 @@ author = Toby Murray <http://people.eng.unimelb.edu.au/tobym/>, Robert Sison<>, 
 notify = toby.murray@unimelb.edu.au
 date = 2016-06-28
 topic = Computer Science/Security
-abstract = 
+abstract =
 	The paper "Compositional Verification and Refinement of Concurrent
 	Value-Dependent Noninterference" by Murray et. al. (CSF 2016) presents
 	a compositional theory of refinement for a value-dependent
 	noninterference property, defined in (Murray, PLAS 2015), for
 	concurrent programs. This development formalises that refinement
 	theory, and demonstrates its application on some small examples.
-extra-history = 
+extra-history =
 	Change history:
 	[2016-08-19]:
 	Removed unused "stop" parameters from the sifum_refinement locale.
@@ -2441,7 +2441,7 @@ author = Walter Guttmann <http://www.cosc.canterbury.ac.nz/walter.guttmann/>
 notify = walter.guttmann@canterbury.ac.nz
 date = 2016-09-06
 topic = Mathematics/Algebra
-abstract = 
+abstract =
 	A range of algebras between lattices and Boolean algebras generalise
 	the notion of a complement. We develop a hierarchy of these
 	pseudo-complemented algebras that includes Stone algebras.
@@ -2456,7 +2456,7 @@ title = Kleene Algebra
 author = Alasdair Armstrong <http://staffwww.dcs.shef.ac.uk/people/A.Armstrong/>, Georg Struth <http://staffwww.dcs.shef.ac.uk/people/G.Struth/>, Tjark Weber <http://user.it.uu.se/~tjawe125/>
 date = 2013-01-15
 topic = Computer Science/Programming Languages/Logics, Computer Science/Automata and Formal Languages, Mathematics/Algebra
-abstract = 
+abstract =
 	These files contain a formalisation of variants of Kleene algebras and
 	their most important models as axiomatic type classes in Isabelle/HOL.
 	Kleene algebras are foundational structures in computing with
@@ -2486,7 +2486,7 @@ title = Kleene Algebra with Tests and Demonic Refinement Algebras
 author = Alasdair Armstrong <http://www.dcs.shef.ac.uk/~alasdair>, Victor B. F. Gomes <http://www.dcs.shef.ac.uk/~victor>, Georg Struth <http://www.dcs.shef.ac.uk/~georg>
 date = 2014-01-23
 topic = Computer Science/Programming Languages/Logics, Computer Science/Automata and Formal Languages, Mathematics/Algebra
-abstract = 
+abstract =
 	We formalise Kleene algebra with tests (KAT) and demonic refinement
 	algebra (DRA) in Isabelle/HOL. KAT is relevant for program verification
 	and correctness proofs in the partial correctness setting. While DRA
@@ -2503,7 +2503,7 @@ title = Kleene Algebras with Domain
 author = Victor B. F. Gomes <http://www.dcs.shef.ac.uk/~victor>, Walter Guttmann <http://www.cosc.canterbury.ac.nz/walter.guttmann/>, Peter Höfner <http://www.hoefner-online.de/>, Georg Struth <http://www.dcs.shef.ac.uk/~georg>, Tjark Weber <http://user.it.uu.se/~tjawe125/>
 date = 2016-04-12
 topic = Computer Science/Programming Languages/Logics, Computer Science/Automata and Formal Languages, Mathematics/Algebra
-abstract = 
+abstract =
 	Kleene algebras with domain are Kleene algebras endowed with an
 	operation that maps each element of the algebra to its domain of
 	definition (or its complement) in abstract fashion. They form a simple
@@ -2522,7 +2522,7 @@ title = Regular Algebras
 author = Simon Foster <http://www-users.cs.york.ac.uk/~simonf>, Georg Struth <http://www.dcs.shef.ac.uk/~georg>
 date = 2014-05-21
 topic = Computer Science/Automata and Formal Languages, Mathematics/Algebra
-abstract = 
+abstract =
 	Regular algebras axiomatise the equational theory of regular expressions as induced by
 	regular language identity. We use Isabelle/HOL for a detailed systematic study of regular
 	algebras given by Boffa, Conway, Kozen and Salomaa. We investigate the relationships between
@@ -2539,7 +2539,7 @@ author = Lennart Beringer <http://www.tcs.informatik.uni-muenchen.de/~beringer>,
 date = 2008-12-12
 topic = Computer Science/Programming Languages/Logics
 abstract = This document contains the Isabelle/HOL sources underlying the paper <i>A bytecode logic for JML and types</i> by Beringer and Hofmann, updated to Isabelle 2008. We present a program logic for a subset of sequential Java bytecode that is suitable for representing both, features found in high-level specification language JML as well as interpretations of high-level type systems. To this end, we introduce a fine-grained collection of assertions, including strong invariants, local annotations and VDM-reminiscent partial-correctness specifications. Thanks to a goal-oriented structure and interpretation of judgements, verification may proceed without recourse to an additional control flow analysis. The suitability for interpreting intensional type systems is illustrated by the proof-carrying-code style encoding of a type system for a first-order functional language which guarantees a constant upper bound on the number of objects allocated throughout an execution, be the execution terminating or non-terminating. Like the published paper, the formal development is restricted to a comparatively small subset of the JVML, lacking (among other features) exceptions, arrays, virtual methods, and static fields. This shortcoming has been overcome meanwhile, as our paper has formed the basis of the Mobius base logic, a program logic for the full sequential fragment of the JVML. Indeed, the present formalisation formed the basis of a subsequent formalisation of the Mobius base logic in the proof assistant Coq, which includes a proof of soundness with respect to the Bicolano operational semantics by Pichardie.
-notify = 
+notify =
 
 [DataRefinementIBP]
 title = Semantics and Data Refinement of Invariant Based Programs
@@ -2547,7 +2547,7 @@ author = Viorel Preoteasa <http://users.abo.fi/vpreotea/>, Ralph-Johan Back <htt
 date = 2010-05-28
 topic = Computer Science/Programming Languages/Logics
 abstract = The invariant based programming is a technique of constructing correct programs by first identifying the basic situations (pre- and post-conditions and invariants) that can occur during the execution of the program, and then defining the transitions and proving that they preserve the invariants. Data refinement is a technique of building correct programs working on concrete datatypes as refinements of more abstract programs. In the theories presented here we formalize the predicate transformer semantics for invariant based programs and their data refinement.
-extra-history = 
+extra-history =
 	Change history:
 	[2012-01-05]: Moved some general complete lattice properties to the AFP entry Lattice Properties.
 	Changed the definition of the data refinement relation to be more general and updated all corresponding theorems.
@@ -2559,7 +2559,7 @@ title = Formalization of Refinement Calculus for Reactive Systems
 author = Viorel Preoteasa <mailto:viorel.preoteasa@aalto.fi>
 date = 2014-10-08
 topic = Computer Science/Programming Languages/Logics
-abstract = 
+abstract =
 	We present a formalization of refinement calculus for reactive systems.
 	Refinement calculus is based on monotonic predicate transformers
 	(monotonic functions from sets of post-states to sets of pre-states),
@@ -2640,7 +2640,7 @@ title = Shivers' Control Flow Analysis
 topic = Computer Science/Programming Languages/Static Analysis
 author = Joachim Breitner <mailto:mail@joachim-breitner.de>
 date = 2010-11-16
-abstract = 
+abstract =
 	In his dissertation, Olin Shivers introduces a concept of control flow graphs
 	for functional languages, provides an algorithm to statically derive a safe
 	approximation of the control flow graph and proves this algorithm correct. In
@@ -2702,7 +2702,7 @@ title = Information Flow Noninterference via Slicing
 author = Daniel Wasserrab <http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php>
 date = 2010-03-23
 topic = Computer Science/Security
-abstract = 
+abstract =
 	<p>
 	In this contribution, we show how correctness proofs for <a
 	href="Slicing.shtml">intra-</a> and <a
@@ -2719,7 +2719,7 @@ abstract =
 	<a href="InformationFlowSlicing_Inter.shtml">InformationFlowSlicing_Inter</a>
 	for the inter-procedural part.
 	</p>
-extra-history = 
+extra-history =
 	Change history:
 	[2016-06-10]: The original entry <a
 	href="InformationFlowSlicing.shtml">InformationFlowSlicing</a> contained both
@@ -2733,7 +2733,7 @@ title = Inter-Procedural Information Flow Noninterference via Slicing
 author = Daniel Wasserrab <http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php>
 date = 2010-03-23
 topic = Computer Science/Security
-abstract = 
+abstract =
 	<p>
 	In this contribution, we show how correctness proofs for <a
 	href="Slicing.shtml">intra-</a> and <a
@@ -2750,7 +2750,7 @@ abstract =
 	<a href="InformationFlowSlicing.shtml">InformationFlowSlicing</a>
 	for the intra-procedural part.
 	</p>
-extra-history = 
+extra-history =
 	Change history:
 	[2016-06-10]: The original entry <a
 	href="InformationFlowSlicing.shtml">InformationFlowSlicing</a> contained both
@@ -2797,7 +2797,7 @@ author = Andrei Popescu <>
 date = 2009-09-01
 topic = Logic
 abstract = We develop a basic theory of ordinals and cardinals in Isabelle/HOL, up to the point where some cardinality facts relevant for the ``working mathematician" become available. Unlike in set theory, here we do not have at hand canonical notions of ordinal and cardinal. Therefore, here an ordinal is merely a well-order relation and a cardinal is an ordinal minim w.r.t. order embedding on its field.
-extra-history = 
+extra-history =
 	Change history:
 	[2012-09-25]: This entry has been discontinued because it is now part of the Isabelle distribution.
 notify = uuomul@yahoo.com, nipkow@in.tum.de
@@ -2856,7 +2856,7 @@ title = Sound and Complete Sort Encodings for First-Order Logic
 author = Jasmin Christian Blanchette <http://www21.in.tum.de/~blanchet>, Andrei Popescu <http://www21.in.tum.de/~popescua>
 date = 2013-06-27
 topic = Logic
-abstract = 
+abstract =
 	This is a formalization of the soundness and completeness properties
 	for various efficient encodings of sorts in unsorted first-order logic
 	used by Isabelle's Sledgehammer tool.
@@ -2886,7 +2886,7 @@ topic = Logic/Rewriting
 date = 2010-06-14
 author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>
 license = LGPL
-abstract = 
+abstract =
 	We present an Isabelle formalization of abstract rewriting (see, e.g.,
 	the book by Baader and Nipkow). First, we define standard relations like
 	<i>joinability</i>, <i>meetability</i>, <i>conversion</i>, etc. Then, we
@@ -2897,7 +2897,7 @@ abstract =
 	mainly about strong normalization of term rewrite systems). Hence lemmas
 	involving strong normalization constitute by far the biggest part of this
 	theory. One of those is Newman's lemma.
-extra-history = 
+extra-history =
 	Change history:
 	[2010-09-17]: Added theories defining several (ordered)
 	semirings related to strong normalization and giving some standard
@@ -2910,17 +2910,17 @@ title = Free Groups
 author = Joachim Breitner <mailto:mail@joachim-breitner.de>
 date = 2010-06-24
 topic = Mathematics/Algebra
-abstract = 
+abstract =
 	Free Groups are, in a sense, the most generic kind of group. They
 	are defined over a set of generators with no additional relations in between
 	them. They play an important role in the definition of group presentations
 	and in other fields. This theory provides the definition of Free Group as
 	the set of fully canceled words in the generators. The universal property is
 	proven, as well as some isomorphisms results about Free Groups.
-extra-history = 
+extra-history =
 	Change history:
 	[2011-12-11]: Added the Ping Pong Lemma.
-notify = 
+notify =
 
 [CofGroups]
 title = An Example of a Cofinitary Group in Isabelle/HOL
@@ -2960,7 +2960,7 @@ author = Jose Divasón <http://www.unirioja.es/cu/jodivaso>, Jesús Aransay <htt
 topic = Mathematics/Algebra
 date = 2013-01-16
 abstract = In this contribution, we present some formalizations based on the HOL-Multivariate-Analysis session of Isabelle. Firstly, a generalization of several theorems of such library are presented. Secondly, some definitions and proofs involving Linear Algebra and the four fundamental subspaces of a matrix are shown. Finally, we present a proof of the result known in Linear Algebra as the ``Rank-Nullity Theorem'', which states that, given any linear map f from a finite dimensional vector space V to a vector space W, then the dimension of V is equal to the dimension of the kernel of f (which is a subspace of V) and the dimension of the range of f (which is a subspace of W). The proof presented here is based on the one given by Sheldon Axler in his book <i>Linear Algebra Done Right</i>. As a corollary of the previous theorem, and taking advantage of the relationship between linear maps and matrices, we prove that, for every matrix A (which has associated a linear map between finite dimensional vector spaces), the sum of its null space and its column space (which is equal to the range of the linear map) is equal to the number of columns of A.
-extra-history = 
+extra-history =
 	Change history:
 	[2014-07-14]: Added some generalizations that allow us to formalize the Rank-Nullity Theorem over finite dimensional vector spaces, instead of over the more particular euclidean spaces. Updated abstract.
 notify = jose.divasonm@unirioja.es, jesus-maria.aransay@unirioja.es
@@ -2970,12 +2970,12 @@ title = Affine Arithmetic
 author = Fabian Immler <http://home.in.tum.de/~immler/>
 date = 2014-02-07
 topic = Mathematics/Analysis
-abstract = 
+abstract =
 	We give a formalization of affine forms as abstract representations of zonotopes.
 	We provide affine operations as well as overapproximations of some non-affine operations like multiplication and division.
 	Expressions involving those operations can automatically be turned into (executable) functions approximating the original
 	expression in affine arithmetic.
-extra-history = 
+extra-history =
 	Change history:
 	[2015-01-31]: added algorithm for zonotope/hyperplane intersection
 notify = immler@in.tum.de
@@ -3002,7 +3002,7 @@ title = Ordinary Differential Equations
 author = Fabian Immler <http://home.in.tum.de/~immler>, Johannes Hölzl <http://home.in.tum.de/~hoelzl>
 topic = Mathematics/Analysis
 date = 2012-04-26
-abstract = 
+abstract =
 	<p>Session HOL-ODE formalizes ordinary differential equations (ODEs) and initial value
 	problems. This work comprises proofs for local and global existence of unique solutions
 	(Picard-Lindelöf theorem). Moreover, it contains a formalization of the (continuous or even
@@ -3020,7 +3020,7 @@ abstract =
 	attractor).</li>
 	</ul>
 	</p>
-extra-history = 
+extra-history =
 	Change history:
 	[2014-02-13]: added an implementation of the Euler method based on affine arithmetic<br>
 	[2016-04-14]: added flow and variational equation<br>
@@ -3033,7 +3033,7 @@ author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, René Thi
 date = 2010-08-10
 topic = Mathematics/Analysis
 license = LGPL
-abstract = 
+abstract =
 	We define multivariate polynomials over arbitrary (ordered) semirings in
 	combination with (executable) operations like addition, multiplication,
 	and substitution. We also define (weak) monotonicity of polynomials and
@@ -3045,7 +3045,7 @@ abstract =
 	href="http://cl-informatik.uibk.ac.at/software/ceta">IsaFoR/CeTA-system</a>
 	which contains several termination techniques. The provided theories have
 	been essential to  formalize polynomial interpretations.
-extra-history = 
+extra-history =
 	Change history:
 	[2010-09-17]: Moved theories on arbitrary (ordered) semirings to Abstract Rewriting.
 notify = rene.thiemann@uibk.ac.at, christian.sternagel@uibk.ac.at
@@ -3056,12 +3056,12 @@ author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 date = 2013-01-03
 topic = Mathematics/Analysis
 license = LGPL
-abstract = 
+abstract =
 	We implement the Babylonian method to compute n-th roots of numbers.
 	We provide precise algorithms for naturals, integers and rationals, and
 	offer an approximation algorithm for square roots over linear ordered fields. Moreover, there
 	are precise algorithms to compute the floor and the ceiling of n-th roots.
-extra-history = 
+extra-history =
 	Change history:
 	[2013-10-16]: Added algorithms to compute floor and ceiling of sqrt of integers.
 	[2014-07-11]: Moved NthRoot_Impl from Real-Impl to this entry.
@@ -3113,7 +3113,7 @@ author = Johannes Hölzl <http://www.in.tum.de/~hoelzl>,
 	Dmitriy Traytel <http://www21.in.tum.de/~traytel/>
 date = 2015-05-27
 topic = Computer Science/Automata and Formal Languages
-abstract = 
+abstract =
 	Numerous models of probabilistic systems are studied in the literature.
 	Coalgebra has been used to classify them into system types and compare their
 	expressiveness.  We formalize the resulting hierarchy of probabilistic system
@@ -3129,7 +3129,7 @@ title = A Verified Compiler for Probability Density Functions
 author = Manuel Eberl <http://www.in.tum.de/~eberlm>, Johannes Hölzl <http://www.in.tum.de/~hoelzl>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
 date = 2014-10-09
 topic = Mathematics/Probability Theory, Computer Science/Programming Languages/Compiling
-abstract = 
+abstract =
 	<a href="http://dx.doi.org/10.1007/978-3-642-36742-7_35">Bhat et al. [TACAS 2013]</a> developed an inductive compiler that computes
 	density functions for probability spaces described by programs in a
 	probabilistic functional language. In this work, we implement such a
@@ -3153,7 +3153,7 @@ title = The CAVA Automata Library
 author = Peter Lammich <http://www21.in.tum.de/~lammich>
 date = 2014-05-28
 topic = Computer Science/Automata and Formal Languages
-abstract = 
+abstract =
 	We report on the graph and automata library that is used in the fully
 	verified LTL model checker CAVA.
 	As most components of CAVA use some type of graphs or automata, a common
@@ -3185,7 +3185,7 @@ title = Linear Temporal Logic
 author = Salomon Sickert <https://www7.in.tum.de/~sickert>
 date = 2016-03-01
 topic = Logic, Computer Science/Automata and Formal Languages
-abstract = 
+abstract =
 	This theory provides a formalisation of linear temporal logic (LTL)
 	and unifies previous formalisations within the AFP. This entry
 	establishes syntax and semantics for this logic and decouples it from
@@ -3199,7 +3199,7 @@ title = Converting Linear-Time Temporal Logic to Generalized Büchi Automata
 author = Alexander Schimpf <mailto:schimpfa@informatik.uni-freiburg.de>, Peter Lammich <http://www21.in.tum.de/~lammich>
 date = 2014-05-28
 topic = Computer Science/Automata and Formal Languages
-abstract = 
+abstract =
 	We formalize linear-time temporal logic (LTL) and the algorithm by Gerth
 	et al. to convert LTL formulas to generalized Büchi automata.
 	We also formalize some syntactic rewrite rules that can be applied to
@@ -3218,7 +3218,7 @@ title = Verified Efficient Implementation of Gabow's Strongly Connected Componen
 author = Peter Lammich <http://www21.in.tum.de/~lammich>
 date = 2014-05-28
 topic = Computer Science/Algorithms, Mathematics/Graph Theory
-abstract = 
+abstract =
 	We present an Isabelle/HOL formalization of Gabow's algorithm for
 	finding the strongly connected components of a directed graph.
 	Using data refinement techniques, we extract efficient code that
@@ -3234,7 +3234,7 @@ title = Promela Formalization
 author = René Neumann <mailto:rene.neumann@in.tum.de>
 date = 2014-05-28
 topic = Computer Science/System Description Languages
-abstract = 
+abstract =
 	We present an executable formalization of the language Promela, the
 	description language for models of the model checker SPIN. This
 	formalization is part of the work for a completely verified model
@@ -3257,7 +3257,7 @@ author = Javier Esparza <https://www7.in.tum.de/~esparza/>,
 	Jan-Georg Smaus <http://www.irit.fr/~Jan-Georg.Smaus>
 date = 2014-05-28
 topic = Computer Science/Automata and Formal Languages
-abstract = 
+abstract =
 	We present an LTL model checker whose code has been completely verified
 	using the Isabelle theorem prover. The checker consists of over 4000
 	lines of ML code. The code is produced using the Isabelle Refinement
@@ -3340,7 +3340,7 @@ title = VCG - Combinatorial Vickrey-Clarke-Groves Auctions
 author = Marco B. Caminati <http://caminati.co.nr>, Manfred Kerber <http://www.cs.bham.ac.uk/~mmk>, Christoph Lange<mailto:math.semantic.web@gmail.com>, Colin Rowat<mailto:c.rowat@bham.ac.uk>
 date = 2015-04-30
 topic = Mathematics/Economics
-abstract = 
+abstract =
 	A VCG auction (named after their inventors Vickrey, Clarke, and
 	Groves) is a generalization of the single-good, second price Vickrey
 	auction to the case of a combinatorial auction (multiple goods, from
@@ -3367,7 +3367,7 @@ title = Knot Theory
 author = T.V.H. Prathamesh <mailto:prathamesh@imsc.res.in>
 date = 2016-01-20
 topic = Mathematics/Topology
-abstract = 
+abstract =
 	This work contains a formalization of some topics in knot theory.
 	The concepts that were formalized include definitions of tangles, links,
 	framed links and link/tangle equivalence. The formalization is based on a
@@ -3392,7 +3392,7 @@ title = Planarity Certificates
 author = Lars Noschinski <http://www21.in.tum.de/~noschinl/>
 date = 2015-11-11
 topic = Mathematics/Graph Theory
-abstract = 
+abstract =
 	This development provides a formalization of planarity based on
 	combinatorial maps and proves that Kuratowski's theorem implies
 	combinatorial planarity.
@@ -3414,7 +3414,7 @@ abstract = A <em>matching</em> in a graph <i>G</i> is a subset <i>M</i> of the
 	<i>G</i> is either incident to a node labeled 1 or connects two nodes
 	labeled with the same number <i>i &ge; 2</i>.
 	This article proves Edmonds theorem:
-	
+
 	Let <i>M</i> be a matching in a graph <i>G</i> and let <i>OSC</i> be an
 	odd-set cover of <i>G</i>.
 	For any <i>i &ge; 0</i>, let <var>n(i)</var> be the number of nodes
@@ -3444,7 +3444,7 @@ title = Flyspeck I: Tame Graphs
 author = Gertrud Bauer <>, Tobias Nipkow <http://www.in.tum.de/~nipkow>
 date = 2006-05-22
 topic = Mathematics/Graph Theory
-abstract = 
+abstract =
 	These theories present the verified enumeration of <i>tame</i> plane graphs
 	as defined by Thomas C. Hales in his proof of the Kepler Conjecture in his
 	book <i>Dense Sphere Packings. A Blueprint for Formal Proofs.</i> [CUP 2012].
@@ -3452,7 +3452,7 @@ abstract =
 	those in the <a href="https://code.google.com/p/flyspeck/">Flyspeck project</a>.
 	The <a href="http://www.in.tum.de/~nipkow/pubs/Flyspeck/">IJCAR 2006 paper by Nipkow, Bauer and Schultz</a> refers to the original version of Hales' proof,
 	the <a href="http://www.in.tum.de/~nipkow/pubs/itp11/">ITP 2011 paper by Nipkow</a> refers to the Blueprint version of the proof.
-extra-history = 
+extra-history =
 	Change history:
 	[2010-11-02]: modified theories to reflect the modified definition of tameness in Hales' revised proof.<br>
 	[2014-07-03]: modified constants in def of tameness and Archive according to the final state of the Flyspeck proof.
@@ -3477,7 +3477,7 @@ abstract = Based on Isabelle/HOL's type class for preorders,
 	<li>If the set A is wqo then the set of finite trees over A is wqo.</li>
 	</ul>
 	The research was funded by the Austrian Science Fund (FWF): J3202.
-extra-history = 
+extra-history =
 	Change history:
 	[2012-06-11]: Added Kruskal's Tree Theorem.<br>
 	[2012-12-19]: New variant of Kruskal's tree theorem for terms (as opposed to
@@ -3494,7 +3494,7 @@ author = Dongchen Jiang <mailto:dongchenjiang@googlemail.com>, Tobias Nipkow <ht
 date = 2010-12-17
 topic = Mathematics/Combinatorics
 abstract = Two proofs of Hall's Marriage Theorem: one due to Halmos and Vaughan, one due to Rado.
-extra-history = 
+extra-history =
 	Change history:
 	[2011-09-09]: Added Rado's proof
 notify = nipkow@in.tum.de
@@ -3520,7 +3520,7 @@ title = Derangements Formula
 author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
 date = 2015-06-27
 topic = Mathematics/Combinatorics
-abstract = 
+abstract =
 	The Derangements Formula describes the number of fixpoint-free permutations
 	as a closed formula. This theorem is the 88th theorem in a list of the
 	``<a href="http://www.cs.ru.nl/~freek/100/">Top 100 Mathematical Theorems</a>''.
@@ -3531,7 +3531,7 @@ title = Euler's Partition Theorem
 author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
 date = 2015-11-19
 topic = Mathematics/Combinatorics
-abstract = 
+abstract =
 	Euler's Partition Theorem states that the number of partitions with only
 	distinct parts is equal to the number of partitions with only odd parts.
 	The combinatorial proof follows John Harrison's HOL Light formalization.
@@ -3552,7 +3552,7 @@ title = Open Induction
 author = Mizuhito Ogawa <>, Christian Sternagel <http://www.jaist.ac.jp/~c-sterna/>
 date = 2012-11-02
 topic = Mathematics/Combinatorics
-abstract = 
+abstract =
 	A proof of the open induction schema based on J.-C. Raoult, Proving open properties by induction, <i>Information Processing Letters</i> 29, 1988, pp.19-23.
 	<p>This research was supported by the Austrian Science Fund (FWF): J3202.</p>
 notify = c.sternagel@gmail.com
@@ -3564,7 +3564,7 @@ date = 2005-04-21
 topic = Mathematics/Category Theory
 license = LGPL
 abstract = This development proves Yoneda's lemma and aims to be readable by humans. It only defines what is needed for the lemma: categories, functors and natural transformations. Limits, adjunctions and other important concepts are not included.
-extra-history = 
+extra-history =
 	Change history:
 	[2010-04-23]: The definition of the constant <tt>equinumerous</tt> was slightly too weak in the original submission and has been fixed in revision <a href="https://bitbucket.org/isa-afp/afp-devel/commits/8c2b5b3c995f">8c2b5b3c995f</a>.
 notify = lcp@cl.cam.ac.uk
@@ -3607,7 +3607,7 @@ author = John Wickerson <http://www.pes.tu-berlin.de/menue/ueber_uns/team/john_w
 date = 2013-01-19
 topic = Computer Science/Programming Languages/Logics
 abstract = This document concerns the theory of ribbon proofs: a diagrammatic proof system, based on separation logic, for verifying program correctness. We include the syntax, proof rules, and soundness results for two alternative formalisations of ribbon proofs. <p> Compared to traditional proof outlines, ribbon proofs emphasise the structure of a proof, so are intelligible and pedagogical. Because they contain less redundancy than proof outlines, and allow each proof step to be checked locally, they may be more scalable. Where proof outlines are cumbersome to modify, ribbon proofs can be visually manoeuvred to yield proofs of variant programs.
-notify = 
+notify =
 
 [Koenigsberg_Friendship]
 title = The Königsberg Bridge Problem and the Friendship Theorem
@@ -3615,7 +3615,7 @@ author = Wenda Li <mailto:wl302@cam.ac.uk>
 date = 2013-07-19
 topic = Mathematics/Graph Theory
 abstract = This development provides a formalization of undirected graphs and simple graphs, which are based on Benedikt Nordhoff and Peter Lammich's simple formalization of labelled directed graphs in the archive. Then, with our formalization of graphs, we show both necessary and sufficient conditions for Eulerian trails and circuits as well as the fact that the Königsberg Bridge Problem does not have a solution. In addition, we show the Friendship Theorem in simple graphs.
-notify = 
+notify =
 
 [Tree_Decomposition]
 title = Tree Decomposition
@@ -3623,7 +3623,7 @@ author = Christoph Dittmann <http://logic.las.tu-berlin.de/Members/Dittmann/>
 notify = christoph.dittmann@tu-berlin.de
 date = 2016-05-31
 topic = Mathematics/Graph Theory
-abstract = 
+abstract =
 	We formalize tree decompositions and tree width in Isabelle/HOL,
 	proving that trees have treewidth 1.  We also show that every edge of
 	a tree decomposition is a separation of the underlying graph. As an
@@ -3645,7 +3645,7 @@ contributors = Peter Lammich <http://www21.in.tum.de/~lammich/>
 date = 2013-09-17
 topic = Computer Science/Data Structures
 abstract = This entry makes machine words and machine arithmetic available for code generation from Isabelle/HOL.  It provides a common abstraction that hides the differences between the different target languages.  The code generator maps these operations to the APIs of the target languages.  Apart from that, we extend the available bit operations on types int and integer, and map them to the operations in the target languages.
-extra-history = 
+extra-history =
 	Change history:
 	[2013-11-06]:
 	added conversion function between native words and characters
@@ -3663,7 +3663,7 @@ title = XML
 author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 date = 2014-10-03
 topic = Computer Science/Functional Programming, Computer Science/Data Structures
-abstract = 
+abstract =
 	This entry provides an XML library for Isabelle/HOL. This includes parsing
 	and pretty printing of XML trees as well as combinators for transforming XML
 	trees into arbitrary user-defined data. The main contribution of this entry is
@@ -3687,7 +3687,7 @@ abstract = The theory of hereditarily finite sets is formalised, following
 	The definition of addition for the HF sets follows Kirby.
 	This development forms the foundation for the Isabelle proof of Gödel's incompleteness theorems,
 	which has been <a href="Incompleteness.shtml">formalised separately</a>.
-extra-history = 
+extra-history =
 	Change history:
 	[2015-02-23]: Added the theory "Finitary" defining the class of types that can be embedded in hf, including int, char, option, list, etc.
 notify = lp15@cam.ac.uk
@@ -3749,7 +3749,7 @@ title = A General Method for the Proof of Theorems on Tail-recursive Functions
 author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
 date = 2013-12-01
 topic = Computer Science/Functional Programming
-abstract = 
+abstract =
 	<p>
 	Tail-recursive function definitions are sometimes more straightforward than
 	alternatives, but proving theorems on them may be roundabout because of the
@@ -3795,7 +3795,7 @@ abstract = The Unified Modeling Language (UML) is one of the few
 	is intended to provide the basis for a machine-checked text
 	"Annex A" of the OCL standard targeting at tool
 	implementors.
-extra-history = 
+extra-history =
 	Change history:
 	[2015-10-13]:
 	<a href="https://bitbucket.org/isa-afp/afp-devel/commits/ea3b38fc54d68535bcfafd40357b6ff8f1092057">afp-devel@ea3b38fc54d6</a> and
@@ -3852,7 +3852,7 @@ author = Stephan Adelsberger <http://nm.wu.ac.at/nm/sadelsbe>,
 	Florian Pollak <mailto:florian.pollak@gmail.com>
 date = 2014-09-15
 topic = Mathematics/Algebra
-abstract = 
+abstract =
 	This document contains a proof of the Cayley-Hamilton theorem
 	based on the development of matrices in HOL/Multivariate Analysis.
 notify = stvienna@gmail.com
@@ -3899,7 +3899,7 @@ title = Network Security Policy Verification
 author = Cornelius Diekmann <http://www.net.in.tum.de/de/mitarbeiter/diekmann/>
 date = 2014-07-04
 topic = Computer Science/Security
-abstract = 
+abstract =
 	We present a unified theory for verifying network security policies.
 	A security policy is represented as directed graph.
 	To check high-level security goals, security invariants over the policy are
@@ -3934,7 +3934,7 @@ abstract =
 	volume 150 of Electronic Proceedings in Theoretical Computer Science,
 	pages 20-34, Singapore, May 2014. Open Publishing Association.</li>
 	</ul>
-extra-history = 
+extra-history =
 	Change history:
 	[2015-04-14]:
 	Added Distributed WebApp example and improved graphviz visualization
@@ -4004,7 +4004,7 @@ title = The Cartan Fixed Point Theorems
 author = Lawrence C. Paulson <http://www.cl.cam.ac.uk/~lp15/>
 date = 2016-03-08
 topic = Mathematics/Analysis
-abstract = 
+abstract =
 	The Cartan fixed point theorems concern the group of holomorphic
 	automorphisms on a connected open set of C<sup>n</sup>. Ciolli et al.
 	have formalised the one-dimensional case of these theorems in HOL
@@ -4012,7 +4012,7 @@ abstract =
 	it addresses the authors' remark that "it would be important to write
 	a formal proof in a language that can be read by both humans and
 	machines".
-notify = 
+notify = lp15@cam.ac.uk
 
 [Gauss_Jordan]
 title = Gauss-Jordan Algorithm and Its Applications
@@ -4036,7 +4036,7 @@ author = Jose Divasón <http://www.unirioja.es/cu/jodivaso>, Jesús Aransay <htt
 topic = Computer Science/Algorithms, Mathematics/Algebra
 date = 2015-02-12
 abstract = QR decomposition is an algorithm to decompose a real matrix A into the product of two other matrices Q and R, where Q is orthogonal and R is invertible and upper triangular. The algorithm is useful for the least squares problem; i.e., the computation of the best approximation of an unsolvable system of linear equations. As a side-product, the Gram-Schmidt process has also been formalized. A refinement using immutable arrays is presented as well. The development relies, among others, on the AFP entry "Implementing field extensions of the form Q[sqrt(b)]" by René Thiemann, which allows execution of the algorithm using symbolic computations. Verified code can be generated and executed using floats as well.
-extra-history = 
+extra-history =
 	Change history:
 	[2015-06-18]: The second part of the Fundamental Theorem of Linear Algebra has been generalized to more general inner product spaces.
 notify = jose.divasonm@unirioja.es, jesus-maria.aransay@unirioja.es
@@ -4070,7 +4070,7 @@ title = Generating Cases from Labeled Subgoals
 author = Lars Noschinski <http://www21.in.tum.de/~noschinl/>
 date = 2015-07-21
 topic = Tools, Computer Science/Programming Languages/Misc
-abstract = 
+abstract =
 	Isabelle/Isar provides named cases to structure proofs. This article
 	contains an implementation of a proof method <tt>casify</tt>, which can
 	be used to easily extend proof tools with support for named cases. Such
@@ -4105,7 +4105,7 @@ title = The Inductive Unwinding Theorem for CSP Noninterference Security
 topic = Computer Science/Security
 author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
 date = 2015-08-18
-abstract = 
+abstract =
 	<p>
 	The necessary and sufficient condition for CSP noninterference security stated by the Ipurge Unwinding Theorem is expressed in terms of a pair of event lists varying over the set of process traces. This does not render it suitable for the subsequent application of rule induction in the case of a process defined inductively, since rule induction may rather be applied to a single variable ranging over an inductively defined set.
 	</p><p>
@@ -4118,7 +4118,7 @@ title = Matrices, Jordan Normal Forms, and Spectral Radius Theory
 topic = Mathematics/Algebra
 author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>, Akihisa Yamada <mailto:akihisa.yamada@uibk.ac.at>
 date = 2015-08-21
-abstract = 
+abstract =
 	<p>
 	Matrix interpretations are useful as measure functions in termination proving. In order to use these interpretations also for complexity analysis, the growth rate of matrix powers has to examined. Here, we formalized a central result of spectral radius theory, namely that the growth rate is polynomially bounded if and only if the spectral radius of a matrix is at most one.
 	</p><p>
@@ -4128,7 +4128,7 @@ abstract =
 	</p><p>
 	All the results have been applied to improve CeTA, our certifier to validate termination and complexity proof certificates.
 	</p>
-extra-history = 
+extra-history =
 	Change history: [2016-01-07]: Added Schur-decomposition, Gram-Schmidt orthogonalization, uniqueness of Jordan normal forms
 notify = rene.thiemann@uibk.ac.at, akihisa.yamada@uibk.ac.at
 
@@ -4138,7 +4138,7 @@ topic = Computer Science/Automata and Formal Languages
 author = Salomon Sickert <mailto:sickert@in.tum.de>
 date = 2015-09-04
 abstract = Recently, Javier Esparza and Jan Kretinsky proposed a new method directly translating linear temporal logic (LTL) formulas to deterministic (generalized) Rabin automata. Compared to the existing approaches of constructing a non-deterministic Buechi-automaton in the first step and then applying a determinization procedure (e.g. some variant of Safra's construction) in a second step, this new approach preservers a relation between the formula and the states of the resulting automaton. While the old approach produced a monolithic structure, the new method is compositional. Furthermore, in some cases the resulting automata are much smaller than the automata generated by existing approaches. In order to ensure the correctness of the construction, this entry contains a complete formalisation and verification of the translation. Furthermore from this basis executable code is generated.
-extra-history = 
+extra-history =
 	Change history:
 	[2015-09-23]: Enable code export for the eager unfolding optimisation and reduce running time of the generated tool. Moreover, add support for the mlton SML compiler.<br>
 	[2016-03-24]: Make use of the LTL entry and include the simplifier.
@@ -4149,7 +4149,7 @@ title = Timed Automata
 author = Simon Wimmer <http://in.tum.de/~wimmers>
 date = 2016-03-08
 topic = Computer Science/Automata and Formal Languages
-abstract = 
+abstract =
 	Timed automata are a widely used formalism for modeling real-time
 	systems, which is employed  in a class of successful model checkers
 	such as UPPAAL [LPY97], HyTech [HHWt97] or Kronos [Yov97].  This work
@@ -4178,7 +4178,7 @@ title = Positional Determinacy of Parity Games
 author = Christoph Dittmann <http://logic.las.tu-berlin.de/Members/Dittmann/>
 date = 2015-11-02
 topic = Computer Science/Games
-abstract = 
+abstract =
 	We present a formalization of parity games (a two-player game on
 	directed graphs) and a proof of their positional determinacy in
 	Isabelle/HOL.  This proof works for both finite and infinite games.
@@ -4197,7 +4197,7 @@ title = Latin Square
 author = Alexander Bentkamp <mailto:bentkamp@gmail.com>
 date = 2015-12-02
 topic = Mathematics/Combinatorics
-abstract = 
+abstract =
 	A Latin Square is a n x n table filled with integers from 1 to n where each number appears exactly once in each row and each column. A Latin Rectangle is a partially filled n x n table with r filled rows and n-r empty rows, such that each number appears at most once in each row and each column. The main result of this theory is that any Latin Rectangle can be completed to a Latin Square.
 notify = bentkamp@gmail.com
 
@@ -4214,7 +4214,7 @@ abstract = Applicative functors augment computations with effects by lifting fun
 	</p><p>
 	We declare several types from the Isabelle library as applicative functors and illustrate the use of the methods with two examples: the lifting of the arithmetic type class hierarchy to streams and the verification of a relabelling function on binary trees. We also formalise and verify the normalisation algorithm used by the first proof method.
 	</p>
-extra-history = 
+extra-history =
 	Change history:
 	[2016-03-03]: added formalisation of lifting with combinators<br>
 	[2016-06-10]:
@@ -4244,7 +4244,7 @@ abstract = Based on existing libraries for matrices, factorization of rational p
 	</p><p>
 	To this end, we mechanized several results on resultants, which also required us to prove that polynomials over a unique factorization domain form again a unique factorization domain.
 	</p>
-extra-history = 
+extra-history =
 	Change history:
 	[2016-01-29]: Split off Polynomial Interpolation and Polynomial Factorization
 notify = rene.thiemann@uibk.ac.at, akihisa.yamada@uibk.ac.at
@@ -4254,7 +4254,7 @@ title = Polynomial Interpolation
 topic = Mathematics/Algebra
 author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>, Akihisa Yamada <mailto:akihisa.yamada@uibk.ac.at>
 date = 2016-01-29
-abstract = 
+abstract =
 	We formalized three algorithms for polynomial interpolation over arbitrary
 	fields: Lagrange's explicit expression, the recursive algorithm of Neville
 	and Aitken, and the Newton interpolation in combination with an efficient
@@ -4276,7 +4276,7 @@ title = Polynomial Factorization
 topic = Mathematics/Algebra
 author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>, Akihisa Yamada <mailto:akihisa.yamada@uibk.ac.at>
 date = 2016-01-29
-abstract = 
+abstract =
 	Based on existing libraries for polynomial interpolation and matrices,
 	we formalized several factorization algorithms for polynomials, including
 	Kronecker's algorithm for integer polynomials,
@@ -4299,7 +4299,7 @@ author = Jose Divasón <http://www.unirioja.es/cu/jodivaso>, Ondřej Kunčar <ht
 notify = rene.thiemann@uibk.ac.at
 date = 2016-05-20
 topic = Mathematics/Algebra
-abstract = 
+abstract =
 	<p>The spectral radius of a matrix A is the maximum norm of all
 	eigenvalues of A. In previous work we already formalized that for a
 	complex matrix A, the values in A<sup>n</sup> grow polynomially in n
@@ -4324,7 +4324,7 @@ title = Verified Construction of Static Single Assignment Form
 author = Sebastian Ullrich <mailto:sebasti@nullri.ch>, Denis Lohner <http://pp.ipd.kit.edu/person.php?id=88>
 date = 2016-02-05
 topic = Computer Science/Algorithms, Computer Science/Programming Languages/Transformations
-abstract = 
+abstract =
 	We define a functional variant of the static single assignment (SSA)
 	form construction algorithm described by <a
 	href="http://dx.doi.org/10.1007/978-3-642-37051-9_6">Braun et al.</a>,
@@ -4349,7 +4349,7 @@ author = Nicolas Peltier <http://membres-lig.imag.fr/peltier/>
 notify = Nicolas.Peltier@imag.fr
 date = 2016-03-11
 topic = Logic
-abstract = 
+abstract =
 	We provide formal proofs in Isabelle-HOL (using mostly structured Isar
 	proofs) of the soundness and completeness of the Resolution rule in
 	propositional logic.  The completeness proofs take into account the
@@ -4384,7 +4384,7 @@ author = Nicolas Peltier <http://membres-lig.imag.fr/peltier/>
 notify = Nicolas.Peltier@imag.fr
 date = 2016-09-06
 topic = Logic
-abstract = 
+abstract =
 	We provide a formalization of a variant of the superposition
 	calculus, together with formal proofs of soundness and refutational
 	completeness (w.r.t. the usual redundancy criteria based on clause
@@ -4407,7 +4407,7 @@ title = Nominal 2
 author = Christian Urban <http://www.inf.kcl.ac.uk/staff/urbanc/>, Stefan Berghofer <http://www.in.tum.de/~berghofe>, Cezary Kaliszyk <>
 date = 2013-02-21
 topic = Tools
-abstract = 
+abstract =
 	<p>Dealing with binders, renaming of bound variables, capture-avoiding
 	substitution, etc., is very often a major problem in formal
 	proofs, especially in proofs by structural and rule
@@ -4428,7 +4428,7 @@ title = Conservation of CSP Noninterference Security under Sequential Compositio
 author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
 date = 2016-04-26
 topic = Computer Science/Security
-abstract = 
+abstract =
 	<p>In his outstanding work on Communicating Sequential Processes, Hoare
 	has defined two fundamental binary operations allowing to compose the
 	input processes into another, typically more complex, process:
@@ -4453,7 +4453,7 @@ author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
 notify = pasquale.noce.lavoro@gmail.com
 date = 2016-06-13
 topic = Computer Science/Security
-abstract = 
+abstract =
 	<p>In his outstanding work on Communicating Sequential Processes,
 	Hoare has defined two fundamental binary operations allowing to
 	compose the input processes into another, typically more complex,
@@ -4477,7 +4477,7 @@ title = Algorithms for Reduced Ordered Binary Decision Diagrams
 author = Julius Michaelis <http://liftm.de/>, Maximilian Haslbeck <https://home.in.tum.de/~haslbecm/>, Peter Lammich <https://www21.in.tum.de/~lammich/>, Lars Hupel <https://www21.in.tum.de/~hupel/>
 date = 2016-04-27
 topic = Computer Science/Algorithms, Computer Science/Data Structures
-abstract = 
+abstract =
 	We present a verified and executable implementation of ROBDDs in
 	Isabelle/HOL. Our implementation relates pointer-based computation in
 	the Heap monad to operations on an abstract definition of boolean
@@ -4492,7 +4492,7 @@ title = No Faster-Than-Light Observers
 author = Mike Stannett <mailto:m.stannett@sheffield.ac.uk>, István Németi <http://www.renyi.hu/~nemeti/>
 date = 2016-04-28
 topic = Mathematics/Physics
-abstract = 
+abstract =
 	We provide a formal proof within First Order Relativity Theory that no
 	observer can travel faster than the speed of light. Originally
 	reported in Stannett & Németi (2014) "Using Isabelle/HOL to verify
@@ -4505,7 +4505,7 @@ title = Gröbner Bases Theory
 author = Fabian Immler <http://www.in.tum.de/~immler/>, Alexander Maletzky <http://www.risc.jku.at/home/amaletzk>
 date = 2016-05-02
 topic = Mathematics/Algebra, Computer Science/Algorithms
-abstract = 
+abstract =
 	This formalization is concerned with the theory of Gröbner bases in
 	(commutative) multivariate polynomial rings over fields, originally
 	developed by Buchberger in his 1965 PhD thesis. Apart from the
@@ -4522,7 +4522,7 @@ title = Spivey's Generalized Recurrence for Bell Numbers
 author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
 date = 2016-05-04
 topic = Mathematics/Combinatorics
-abstract = 
+abstract =
 	This entry defines the Bell numbers as the cardinality of set partitions for
 	a carrier set of given size, and derives Spivey's generalized recurrence
 	relation for Bell numbers following his elegant and intuitive combinatorial
@@ -4543,7 +4543,7 @@ title = Randomised Social Choice Theory
 author = Manuel Eberl <mailto:eberlm@in.tum.de>
 date = 2016-05-05
 topic = Mathematics/Economics
-abstract = 
+abstract =
 	This work contains a formalisation of basic Randomised Social Choice,
 	including Stochastic Dominance and Social Decision Schemes (SDSs)
 	along with some of their most important properties (Anonymity,
@@ -4567,7 +4567,7 @@ title = The Incompatibility of SD-Efficiency and SD-Strategy-Proofness
 author = Manuel Eberl <mailto:eberlm@in.tum.de>
 date = 2016-05-04
 topic = Mathematics/Economics
-abstract = 
+abstract =
 	This formalisation contains the proof that there is no anonymous and
 	neutral Social Decision Scheme for at least four voters and
 	alternatives that fulfils both SD-Efficiency and SD-Strategy-
@@ -4588,7 +4588,7 @@ title = A Constructive Proof for FLP
 author = Benjamin Bisping <mailto:benjamin.bisping@campus.tu-berlin.de>,  Paul-David Brodmann <mailto:p.brodmann@tu-berlin.de>,  Tim Jungnickel <mailto:tim.jungnickel@tu-berlin.de>,  Christina Rickmann <mailto:c.rickmann@tu-berlin.de>,  Henning Seidler <mailto:henning.seidler@mailbox.tu-berlin.de>,  Anke Stüber <mailto:anke.stueber@campus.tu-berlin.de>, Arno Wilhelm-Weidner <mailto:arno.wilhelm-weidner@tu-berlin.de>,  Kirstin Peters <mailto:kirstin.peters@tu-berlin.de>,  Uwe Nestmann <https://www.mtv.tu-berlin.de/nestmann/>
 date = 2016-05-18
 topic = Computer Science/Concurrency
-abstract = 
+abstract =
 	The impossibility of distributed consensus with one faulty process is
 	a result with important consequences for real world distributed
 	systems e.g., commits in replicated databases. Since proofs are not
@@ -4610,7 +4610,7 @@ title = The meta theory of the Incredible Proof Machine
 author = Joachim Breitner <http://pp.ipd.kit.edu/~breitner/>, Denis Lohner <http://pp.ipd.kit.edu/person.php?id=88>
 date = 2016-05-20
 topic = Logic
-abstract = 
+abstract =
 	The <a href="http://incredible.pm">Incredible Proof Machine</a> is an
 	interactive visual theorem prover which represents proofs as port
 	graphs. We model this proof representation in Isabelle, and prove that
@@ -4623,7 +4623,7 @@ author = Joel Beeren<>, Matthew Fernandez<>, Xin Gao<>, Gerwin Klein <http://www
 notify = kleing@unsw.edu.au
 date = 2016-06-09
 topic = Computer Science/Data Structures
-abstract = 
+abstract =
 	This entry contains an extension to the Isabelle library for
 	fixed-width machine words. In particular, the entry adds quickcheck setup
 	for words, printing as hexadecimals, additional operations, reasoning
@@ -4638,7 +4638,7 @@ author = Manuel Eberl <http://in.tum.de/~eberlm>
 notify = eberlm@in.tum.de
 date = 2016-06-21
 topic = Mathematics/Combinatorics
-abstract = 
+abstract =
 	<p>In this work, we define the Catalan numbers <em>C<sub>n</sub></em>
 	and prove several equivalent definitions (including some closed-form
 	formulae). We also show one of their applications (counting the number
@@ -4659,7 +4659,7 @@ author = Manuel Eberl <https://in.tum.de/~eberlm>
 notify = eberlm@in.tum.de
 date = 2016-09-30
 topic = Computer Science/Algorithms
-abstract = 
+abstract =
 	<p>This work defines and proves the correctness of the Fisher–Yates
 	algorithm for shuffling – i.e. producing a random permutation – of a
 	list. The algorithm proceeds by traversing the list and in
@@ -4672,7 +4672,7 @@ author = Bertram Felgenhauer<>, Julian Nagele<>, Vincent van Oostrom<>, Christia
 notify = bertram.felgenhauer@uibk.ac.at, julian.nagele@uibk.ac.at, c.sternagel@gmail.com
 date = 2016-06-30
 topic = Logic/Rewriting
-abstract = 
+abstract =
 	We formalize the Z property introduced by Dehornoy and van Oostrom.
 	First we show that for any abstract rewrite system, Z implies
 	confluence. Then we give two examples of proofs using Z: confluence of
@@ -4685,7 +4685,7 @@ author = Anders Schlichtkrull <https://people.compute.dtu.dk/andschl>
 notify = andschl@dtu.dk
 date = 2016-06-30
 topic = Logic
-abstract = 
+abstract =
 	This theory is a formalization of the resolution calculus for
 	first-order logic. It is proven sound and complete. The soundness
 	proof uses the substitution lemma, which shows a correspondence
@@ -4724,7 +4724,7 @@ author = Alexander Maletzky <http://www.risc.jku.at/home/amaletzk>, Fabian Immle
 notify = alexander.maletzky@risc.jku.at, immler@in.tum.de
 date = 2016-07-06
 topic = Mathematics/Algebra, Computer Science/Algorithms
-abstract = 
+abstract =
 	This formalization is concerned with multivariate polynomials over
 	various coefficient structures (semirings, rings, fields). The
 	polynomials are represented both abstractly, as coefficient functions
@@ -4742,7 +4742,7 @@ author = Joachim Breitner <http://pp.ipd.kit.edu/~breitner/>
 notify = breitner@kit.edu
 date = 2016-07-17
 topic = Logic
-abstract = 
+abstract =
 	In 1964, Fitch showed that the paradox of the surprise hanging can be
 	resolved by showing that the judge’s verdict is inconsistent. His
 	formalization builds on Gödel’s coding of provability.  In this
@@ -4755,7 +4755,7 @@ author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
 notify = lukas.bulwahn@gmail.com
 date = 2016-08-07
 topic = Mathematics/Geometry
-abstract = 
+abstract =
 	This entry provides an analytic proof to Ptolemy's Theorem using
 	polar form transformation and trigonometric identities.
 	In this formalization, we use ideas from John Harrison's HOL Light
@@ -4768,7 +4768,7 @@ author = Romain Aissat<>, Frederic Voisin<>, Burkhart Wolff <mailto: wolff@lri.f
 notify = wolff@lri.fr
 date = 2016-08-18
 topic = Computer Science/Programming Languages/Static Analysis
-abstract = 
+abstract =
 	TRACER is a tool for verifying safety properties of sequential C
 	programs. TRACER attempts at building a finite symbolic execution
 	graph which over-approximates the set of all concrete reachable states
@@ -4790,7 +4790,7 @@ author = Manuel Eberl <https://in.tum.de/~eberlm>
 notify = eberlm@in.tum.de
 date = 2016-09-01
 topic = Mathematics/Analysis
-abstract = 
+abstract =
 	This work contains a proof of Stirling's formula both for the
 	factorial n! &sim; &radic;<span style="text-decoration:
 	overline">2&pi;n</span> (n/e)<sup>n</sup> on natural numbers and the
@@ -4806,7 +4806,7 @@ author = Sebastien Gouezel <http://www.math.sciences.univ-nantes.fr/~gouezel/>
 notify = sebastien.gouezel@univ-rennes1.fr
 date = 2016-10-05
 topic = Mathematics/Analysis
-abstract = 
+abstract =
 	Lp is the space of functions whose p-th power is integrable. It is one of the most fundamental Banach spaces that is used in analysis and probability. We develop a framework for function spaces, and then implement the Lp spaces in this framework using the existing integration theory in Isabelle/HOL. Our development contains most fundamental properties of Lp spaces, notably the Hölder and Minkowski inequalities, completeness of Lp, duality, stability under almost sure convergence, multiplication of functions in Lp and Lq, stability under conditional expectation.
 
 [Berlekamp_Zassenhaus]
@@ -4815,7 +4815,7 @@ author = Jose Divasón <http://www.unirioja.es/cu/jodivaso>, Sebastiaan Joosten 
 notify = rene.thiemann@uibk.ac.at
 date = 2016-10-14
 topic = Mathematics/Algebra
-abstract = 
+abstract =
 	<p>We formalize the Berlekamp-Zassenhaus algorithm for factoring
 	square-free integer polynomials in Isabelle/HOL. We further adapt an
 	existing formalization of Yun’s square-free factorization algorithm to
@@ -4839,7 +4839,7 @@ author = Fadoua Ghourabi <http://www.i-eos.org/fadoua>
 notify = fadouaghourabi@gmail.com
 date = 2016-09-29
 topic = Logic, Mathematics/Algebra
-abstract = 
+abstract =
 	Allen’s interval calculus is a qualitative temporal representation of
 	time events. Allen introduced 13 binary relations that describe all
 	the possible arrangements between two events, i.e. intervals with
@@ -4876,7 +4876,7 @@ author = Zhe Hou <mailto:zhe.hou@ntu.edu.sg>, David Sanan <mailto:sanan@ntu.edu.
 notify = zhe.hou@ntu.edu.sg, sanan@ntu.edu.sg
 date = 2016-10-19
 topic = Computer Science/Security, Computer Science/Hardware
-abstract = 
+abstract =
   We formalise the SPARCv8 instruction set architecture (ISA) which is
   used in processors such as LEON3. Our formalisation can be specialised
   to any SPARCv8 CPU, here we use LEON3 as a running example. Our model
