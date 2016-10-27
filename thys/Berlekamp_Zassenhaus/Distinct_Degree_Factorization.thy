@@ -18,13 +18,13 @@ function dist_degree_factorize_main ::
   "'a mod_ring poly \<Rightarrow> 'a mod_ring poly \<Rightarrow> nat \<Rightarrow> (nat \<times> 'a mod_ring poly) list 
   \<Rightarrow> (nat \<times> 'a mod_ring poly) list" where
   "dist_degree_factorize_main v w d res = (if v = 1 then res else if d + d > degree v 
-    then (d, v) # res else let
-      w' = w^p mod v;
-      d' = Suc d;
+    then (degree v, v) # res else let
+      w = w^p mod v;
+      d = Suc d;
       gd = gcd (w - monom 1 1) v
-      in if gd = 1 then dist_degree_factorize_main v w' d' res else 
+      in if gd = 1 then dist_degree_factorize_main v w d res else 
       let v' = v div gd in 
-      dist_degree_factorize_main v' (w' mod v') d' ((d',gd) # res))" 
+      dist_degree_factorize_main v' (w mod v') d ((d,gd) # res))" 
   by pat_completeness auto
 
 
@@ -40,21 +40,21 @@ qed auto
 declare dist_degree_factorize_main.simps[simp del]
 
 (* Exercise 16 in Knuth, page 457 *)
-(*lemma degree_divisor: assumes "irreducible (f :: 'a mod_ring poly)" "degree f = d" 
+lemma degree_divisor: assumes "irreducible (f :: 'a mod_ring poly)" "degree f = d" 
   shows "f dvd ((monom 1 1)^(CARD('a)^d) - monom 1 1)" 
-    "\<And> c. 1 \<le> c \<Longrightarrow> c < d \<Longrightarrow> \<not> f dvd ((monom 1 1)^(CARD('a)^c) - monom 1 1)" sorry *)
+    "\<And> c. 1 \<le> c \<Longrightarrow> c < d \<Longrightarrow> \<not> f dvd ((monom 1 1)^(CARD('a)^c) - monom 1 1)" sorry
   
 lemma dist_degree_factorize_main: assumes 
   p: "p = CARD('a)" and
   dist: "dist_degree_factorize_main v w d res = facts" and
   w: "w = (monom 1 1)^(p^d) mod v" and
-  u: "square_free u" and  
+  sf: "square_free u" and  
   mon: "monic u" and
   prod: "u = v * prod_list (map snd res)" and
   deg: "\<And> f. irreducible f \<Longrightarrow> f dvd v \<Longrightarrow> degree f > d" and
-  res: "\<And> f. f \<in> snd ` set res \<Longrightarrow> degree f \<noteq> 0 \<and> monic f" 
-shows "u = prod_list (map snd facts) \<and> (\<forall> f \<in> snd ` set facts. degree f \<noteq> 0 \<and> monic f)" 
-  using dist w prod res
+  res: "\<And> i f. (i,f) \<in> set res \<Longrightarrow> degree f \<noteq> 0 \<and> monic f \<and> (\<forall> g. irreducible g \<longrightarrow> g dvd f \<longrightarrow> degree g = i)" 
+shows "u = prod_list (map snd facts) \<and> (\<forall> i f. (i,f) \<in> set facts \<longrightarrow> degree f \<noteq> 0 \<and> monic f \<and> (\<forall> g. irreducible g \<longrightarrow> g dvd f \<longrightarrow> degree g = i))" 
+  using dist w prod res deg
 proof (induct v w d res rule: dist_degree_factorize_main.induct)
   case (1 v w d res)
   note IH = 1(1-2)
@@ -62,7 +62,9 @@ proof (induct v w d res rule: dist_degree_factorize_main.induct)
   note w = 1(4)
   note u = 1(5)
   note res = 1(6)
+  note fact = 1(7)
   note [simp] = dist_degree_factorize_main.simps[of _ _ d] 
+  let ?x = "monom 1 1 :: 'a mod_ring poly" 
   show ?case
   proof (cases "v = 1") 
     case True
@@ -76,39 +78,152 @@ proof (induct v w d res rule: dist_degree_factorize_main.induct)
     show ?thesis
     proof (cases "degree v < d + d")
       case True
-      with v result u res show ?thesis using mon_v deg_v by force
+      with result False have facts: "facts = (degree v, v) # res" by simp
+      show ?thesis 
+      proof (intro allI conjI impI)
+        fix i f g
+        assume *: "(i,f) \<in> set facts" "irreducible g" "g dvd f"          
+        show "degree g = i"
+        proof (cases "(i,f) \<in> set res")
+          case True
+          from res[OF this] * show ?thesis by auto
+        next
+          case False
+          with * facts have id: "i = degree v" "f = v" by auto
+          note * = *(2-3)[unfolded id]
+          from fact[OF *] have dg: "d < degree g" by auto
+          from divides_degree[OF *(2)] mon_v have deg_gv: "degree g \<le> degree v" by auto
+          from *(2) obtain h where vgh: "v = g * h" unfolding dvd_def by auto
+          from arg_cong[OF this, of degree] mon_v have dvgh: "degree v = degree g + degree h" 
+            by (metis deg_v degree_mult_eq degree_mult_eq_0) 
+          with dg deg_gv dg True have deg_h: "degree h < d" by auto
+          {
+            assume "degree h = 0" 
+            with dvgh have "degree g = degree v" by simp
+          }
+          moreover
+          {
+            assume deg_h0: "degree h \<noteq> 0" 
+            hence "\<exists> k. irreducible k \<and> k dvd h" 
+              using dvd_triv_left irreducible_factor by blast
+            then obtain k where irr: "irreducible k" and "k dvd h" by auto
+            from dvd_trans[OF this(2), of v] vgh have "k dvd v" by auto
+            from fact[OF irr this] have dk: "d < degree k" .
+            from divides_degree[OF \<open>k dvd h\<close>] deg_h0 have "degree k \<le> degree h" by auto
+            with deg_h have "degree k < d" by auto
+            with dk have False by auto
+          }
+          ultimately have "degree g = degree v" by auto
+          thus ?thesis unfolding id by auto
+        qed
+      qed (insert v mon_v deg_v u facts res, force+)        
     next
       case False
       note IH = IH[OF this refl refl refl]
       let ?w = "w ^ p mod v"
-      let ?g = "gcd (w - monom 1 1) v" 
+      let ?g = "gcd (?w - ?x) v" 
       let ?v = "v div ?g" 
       let ?d = "Suc d" 
+      define ww where "ww = ?w - ?x" 
       from result[simplified] v False
       have result: "(if ?g = 1 then dist_degree_factorize_main v ?w ?d res
                   else dist_degree_factorize_main ?v (?w mod ?v) ?d ((?d, ?g) # res)) = facts" 
         by (auto simp: Let_def)
       from mon_v have mon_g: "monic ?g" by (metis deg_v degree_0 poly_gcd_monic)
-      have ww: "?w = monom 1 1 ^ p ^ ?d mod v" unfolding w
+      have ww: "?w = ?x ^ p ^ ?d mod v" unfolding w
         by (metis Groups.mult_ac(2) power.simps(2) power_mod power_mult)
       have gv: "?g dvd v" by auto
       hence gv': "v div ?g dvd v"
         by (metis dvd_def dvd_div_mult_self)
+      {
+        fix f
+        assume irr: "irreducible f" and fv: "f dvd v" and "degree f = ?d" 
+        from degree_divisor[OF this(1,3), folded p]
+        have "f dvd ?x ^ p ^ ?d - ?x" by auto
+        hence "f dvd (?x ^ p ^ ?d - ?x) mod v" using fv by (rule dvd_mod)
+        also have "(?x ^ p ^ ?d - ?x) mod v = ?x ^ p ^ ?d mod v - ?x mod v" by (rule poly_mod_diff_left)
+        also have "?x ^ p ^ ?d mod v = ?w mod v" unfolding ww by auto
+        also have "\<dots> - ?x mod v = (w ^ p mod v - ?x) mod v" by (metis poly_mod_diff_left)
+        finally have "f dvd (w^p mod v - ?x)" using fv by (rule dvd_mod_imp_dvd)
+        with fv have "f dvd ?g" by auto
+      } note deg_d_dvd_g = this
       show ?thesis
       proof (cases "?g = 1")
         case True
-        with result have "dist_degree_factorize_main v ?w ?d res = facts" by auto
-        from IH(1)[OF True this ww u res] show ?thesis .
+        with result have dist: "dist_degree_factorize_main v ?w ?d res = facts" by auto
+        show ?thesis 
+        proof (rule IH(1)[OF True dist ww u res])
+          fix f
+          assume irr: "irreducible f" and fv: "f dvd v" 
+          from fact[OF this] have "d < degree f" .
+          moreover have "degree f \<noteq> ?d"
+          proof
+            assume "degree f = ?d" 
+            from divides_degree[OF deg_d_dvd_g[OF irr fv this]] mon_v
+            have "degree f \<le> degree ?g" by auto
+            with irr have "degree ?g \<noteq> 0" unfolding irreducible_def by auto
+            with True show False by auto
+          qed
+          ultimately show "?d < degree f" by auto
+        qed
       next
         case False
-        with result have result: "dist_degree_factorize_main ?v (?w mod ?v) ?d ((?d, ?g) # res) = facts" 
+        with result 
+        have result: "dist_degree_factorize_main ?v (?w mod ?v) ?d ((?d, ?g) # res) = facts" 
           by auto 
         from False mon_g have deg_g: "degree ?g \<noteq> 0" by (simp add: monic_degree_0)
-        have ww: "?w mod ?v = monom 1 1 ^ p ^ ?d mod ?v" unfolding ww
-          by (rule mod_mod_cancel[OF gv']) 
+        have www: "?w mod ?v = monom 1 1 ^ p ^ ?d mod ?v" using gv'
+          by (simp add: mod_mod_cancel ww)
+        from square_free_factor[OF _ sf, of v] u have sfv: "square_free v" by auto
         have u: "u = ?v * prod_list (map snd ((?d, ?g) # res))" 
           unfolding u by simp
-        from IH(2)[OF False refl result ww u] res mon_g deg_g show ?thesis by force
+        show ?thesis
+        proof (rule IH(2)[OF False refl result www u], goal_cases)
+          case (1 i f)
+          show ?case
+          proof (cases "(i,f) \<in> set res")
+            case True
+            from res[OF this] show ?thesis by auto
+          next
+            case False
+            with 1 have id: "i = ?d" "f = ?g" by auto
+            show ?thesis unfolding id 
+            proof (intro conjI impI allI)
+              fix g
+              assume *: "irreducible g" "g dvd ?g"
+              hence gv: "g dvd v" using dvd_trans[of g ?g v] by simp
+              from fact[OF *(1) this] have dg: "d < degree g" .
+              {
+                assume "degree g > ?d"
+                from degree_divisor(2)[OF *(1) refl _ this]
+                have ndvd: "\<not> g dvd ?x ^ p ^ ?d - ?x" unfolding p by auto 
+                from *(2) have "g dvd ?w - ?x" by simp
+                from this[unfolded ww]
+                have "g dvd ?x ^ p ^ ?d mod v - ?x" .
+                with gv have "g dvd (?x ^ p ^ ?d mod v - ?x) mod v" by (metis dvd_mod)
+                also have "(?x ^ p ^ ?d mod v - ?x) mod v = (?x ^ p ^ ?d - ?x) mod v"
+                  by (metis mod_diff_left_eq)
+                finally have "g dvd ?x ^ p ^ ?d - ?x" using gv by (rule dvd_mod_imp_dvd)
+                with ndvd have False by auto
+              }
+              with dg show "degree g = ?d" by presburger
+            qed (insert mon_g deg_g, auto)
+          qed
+        next
+          case (2 f)
+          note irr = 2(1)
+          from dvd_trans[OF 2(2) gv'] have fv: "f dvd v" .
+          from fact[OF irr fv] have df: "d < degree f" "degree f \<noteq> 0" by auto
+          {
+            assume "degree f = ?d" 
+            from deg_d_dvd_g[OF irr fv this] have fg: "f dvd ?g" .
+            from gv have id: "v = (v div ?g) * ?g" by simp
+            from sfv id have "square_free (v div ?g * ?g)" by simp
+            from square_free_multD(1)[OF this 2(2) fg] have "degree f = 0" .
+            with df have False by auto
+          }
+          with df show "?d < degree f" by presburger
+        qed
       qed
     qed
   qed
@@ -116,20 +231,24 @@ qed
 
 definition distinct_degree_factorization 
   :: "'a mod_ring poly \<Rightarrow> (nat \<times> 'a mod_ring poly) list" where
-  "distinct_degree_factorization f = dist_degree_factorize_main f (monom 1 1) 0 []"
+  "distinct_degree_factorization f = 
+     (if degree f = 1 then [(1,f)] else dist_degree_factorize_main f (monom 1 1) 0 [])"
   
 lemma distinct_degree_factorization: assumes 
   p: "p = CARD('a)" and
   dist: "distinct_degree_factorization f = facts" and
   u: "square_free f" and  
   mon: "monic f" 
-shows "f = prod_list (map snd facts) \<and> (\<forall> f \<in> snd ` set facts. degree f \<noteq> 0 \<and> monic f)" 
+shows "f = prod_list (map snd facts) \<and> 
+  (\<forall> i f. (i,f) \<in> set facts \<longrightarrow> 
+    degree f \<noteq> 0 \<and> monic f \<and> (\<forall> g. irreducible g \<longrightarrow> g dvd f \<longrightarrow> degree g = i))" 
 proof -
   note dist = dist[unfolded distinct_degree_factorization_def]
   show ?thesis
   proof (cases "degree f \<le> 1")
     case False
-    hence "degree f > 1" by auto
+    hence "degree f > 1" and dist: "dist_degree_factorize_main f (monom 1 1) 0 [] = facts" 
+      using dist by auto
     hence *: "monom 1 (Suc 0) = monom 1 (Suc 0) mod f"
       by (simp add: degree_monom_eq mod_poly_less)
     show ?thesis
@@ -146,12 +265,13 @@ proof -
       thus ?thesis using f by auto
     next
       assume deg: "degree f = 1" 
-      from degree1_coeffs[OF this] obtain a b where f: "f = [:b,a:]" by auto
-      with mon deg have f: "f = [:b,1:]" by simp
-      have [simp]: "normalize [:b,1:] = [:b,1:]" using f mon normalize_monic by blast
-      from f dist have facts: "facts = [(1,f)]" 
-        by (auto simp: one_poly_def Let_def dist_degree_factorize_main.simps)
-      show ?thesis unfolding facts using deg mon by auto
+      hence facts: "facts = [(1,f)]" using dist by auto
+      show ?thesis unfolding facts
+      proof (intro conjI allI impI; clarsimp)
+        fix g
+        assume "irreducible g" "g dvd f" 
+        thus "degree g = Suc 0" using deg divides_degree[of g f] by (auto simp: irreducible_def)
+      qed (insert mon deg, auto)
     qed
   qed
 qed
