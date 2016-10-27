@@ -329,16 +329,7 @@ qed
 
 subsection \<open>Multisets\<close>
 
-declare filter_eq_replicate_mset [simp]
-
-lemma
-  union_singleton_subseteq_singleton_mset[simp]:
-    "M + {#x#} \<subseteq># {#y#} \<longleftrightarrow> M = {#} \<and> x = y"
-    "{#x#} + M \<subseteq># {#y#} \<longleftrightarrow> M = {#} \<and> x = y" and
-  union_singleton_eq_singleton_mset[simp]:
-    "M + {#x#} = {#y#} \<longleftrightarrow> M = {#} \<and> x = y"
-    "{#x#} + M = {#y#} \<longleftrightarrow> M = {#} \<and> x = y"
-  by (cases M; auto dest: size_mset_mono arg_cong[of _ _ size])+
+declare filter_eq_replicate_mset [simp] image_mset_subseteq_mono [intro]
 
 lemma nonempty_subseteq_mset_eq_singleton: "M \<noteq> {#} \<Longrightarrow> M \<subseteq># {#x#} \<Longrightarrow> M = {#x#}"
   by (cases M) (auto dest: subset_mset.diff_add)
@@ -351,17 +342,6 @@ lemma count_gt_imp_in_mset[intro]: "count M x > n \<Longrightarrow> x \<in># M"
 
 lemma size_lt_imp_ex_count_lt: "size M < size N \<Longrightarrow> \<exists>x \<in># N. count M x < count N x"
   by (metis count_eq_zero_iff leD not_le_imp_less not_less_zero size_mset_mono subseteq_mset_def)
-
-lemma mset_lt_iff[iff]: "{#x#} < {#y#} \<longleftrightarrow> x < y"
-  unfolding less_multiset\<^sub>H\<^sub>O by simp
-
-lemma mset_le_iff[iff]: "{#x#} \<le> {#y#} \<longleftrightarrow> x \<le> y" for x y :: "'a::order"
-  unfolding less_eq_multiset\<^sub>H\<^sub>O by force
-
-lemma
-  filter_mset_True[simp]: "{#y \<in># M. True#} = M" and
-  filter_mset_False[simp]: "{#y \<in># M. False#} = {#}"
-by (induct M) auto
 
 lemma filter_filter_mset[simp]: "{#x \<in># {#x \<in># M. Q x#}. P x#} = {#x \<in># M. P x \<and> Q x#}"
   by (induct M) auto
@@ -379,12 +359,6 @@ qed
 
 lemma size_filter_ne_elem: "x \<in># M \<Longrightarrow> size {#y \<in># M. y \<noteq> x#} < size M"
   by (simp add: size_filter_unsat_elem[of x M "\<lambda>y. y \<noteq> x"])
-
-lemma image_mset_subseteq[intro]: "M \<subseteq># N \<Longrightarrow> image_mset f M \<subseteq># image_mset f N"
-  by (metis image_mset_union subset_mset.le_iff_add)
-
-lemma image_replicate_mset[simp]: "image_mset f (replicate_mset n x) = replicate_mset n (f x)"
-  by (induct n) auto
 
 lemma size_eq_ex_count_lt:
   assumes

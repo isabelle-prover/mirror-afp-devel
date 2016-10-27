@@ -3166,7 +3166,7 @@ lemma berlekamp_factorization:
 proof -
   from berlekamp_factorization_explicit[OF sf_f us]
   have fact: "factorization Irr_Mon f (c, mset us)"
-    unfolding factorization_def split Irr_Mon_def by auto
+    unfolding factorization_def split Irr_Mon_def by (auto simp: prod_mset_prod_list)
   from sf_f[unfolded square_free_def] have "f \<noteq> 0" by auto
   from exactly_one_factorization[OF this] fact
   show ?thesis unfolding unique_factorization_def by auto

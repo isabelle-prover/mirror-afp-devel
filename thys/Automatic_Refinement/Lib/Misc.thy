@@ -733,8 +733,8 @@ subsubsection {* Pointwise ordering *}
     mset_le_add_mset_decr_left2
 
   lemma mset_le_subtract: "A\<le>#B \<Longrightarrow> A-C \<le># B-(C::'a multiset)"
-    apply (unfold subseteq_mset_def)
-    apply auto
+    apply (unfold subseteq_mset_def count_diff)
+    apply clarify
     apply (subgoal_tac "count A a \<le> count B a")
     apply arith
     apply simp
@@ -794,11 +794,6 @@ subsubsection {* Pointwise ordering *}
 
   (* TODO: Check which of these lemmas are already introduced by order-classes ! *)
 
-  lemma mset_le_single_conv1[simp]: "(add_mset a M \<le># {#b#}) = (M={#} \<and> a=b)"
-  proof (auto)
-    assume A: "add_mset a M \<le># {#b#}" thus "a=b" by (auto dest: mset_le_add_mset_decr_left2)
-    with A show "M={#}" by simp
-  qed
 
   lemma mset_le_single_cases[consumes 1, case_names empty singleton]: "\<lbrakk>M\<le>#{#a#}; M={#} \<Longrightarrow> P; M={#a#} \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
     by (induct M) auto
@@ -820,10 +815,7 @@ subsubsection {* Image under function *}
 notation image_mset (infixr "`#" 90)
 
 lemma mset_map_split_orig: "!!M1 M2. \<lbrakk>f `# P = M1+M2; !!P1 P2. \<lbrakk>P=P1+P2; f `# P1 = M1; f `# P2 = M2\<rbrakk> \<Longrightarrow> Q \<rbrakk> \<Longrightarrow> Q"
-  apply (induct P)
-  apply fastforce
-  apply (force elim!: mset_un_single_un_cases simp add: union_ac) (* TODO: This proof need's quite long. Try to write a faster one. *)
-  done
+  by (induct P) (force elim!: mset_un_single_un_cases)+
 
 lemma mset_map_id: "\<lbrakk>!!x. f (g x) = x\<rbrakk> \<Longrightarrow> f `# g `# X = X"
   by (induct X) auto

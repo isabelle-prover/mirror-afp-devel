@@ -866,7 +866,7 @@ next
   show ?case
   proof (rule exI[of _ ?Za], rule exI[of _ ?Xa], intro conjI)
     show "Y - Ya + {#z#} \<subseteq># Zs"
-      using mset_subset_eq_mono_add subset_eq_diff_conv y_sub_ys ys_eq zs_eq by blast
+      using mset_subset_eq_mono_add subset_eq_diff_conv y_sub_ys ys_eq zs_eq by fastforce
   next
     show "mset xs = Zs - (Y - Ya + {#z#}) + (X + Ya + (Y - Ya) - Y)"
       unfolding xs_eq ys_eq zs_eq by (auto simp: multiset_eq_iff)
@@ -922,7 +922,7 @@ proof -
       thus "\<exists>fy. fy \<in># ?fY \<and> gt fy fx"
         unfolding fx by auto
     qed
-  qed (auto simp: y_nemp y_sub_ys)
+  qed (auto simp: y_nemp y_sub_ys image_mset_subseteq_mono)
 qed
 
 lemma msetext_dersh_trans:

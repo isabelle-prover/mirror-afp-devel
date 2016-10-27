@@ -412,15 +412,6 @@ lemma mset_le_subtract_add_mset_left: "add_mset x B \<le># (X::'a multiset) \<Lo
 
   lemma mset_union_subset_s: "{#a#}+B \<le># C \<Longrightarrow> a \<in># C \<and> B \<le># C"
     by (drule mset_union_subset) simp
-
-  lemma mset_le_single_conv1[simp]: "(add_mset a M \<le># {#b#}) = (M={#} \<and> a=b)"
-  proof (auto) 
-    assume A: "add_mset a M \<le># {#b#}" thus "a=b" by (auto dest: mset_le_decr_left)
-    with A show "M={#}" by simp
-  qed
-  
-  lemma mset_le_single_conv2[simp]: "({#a#}+M \<le># {#b#}) = (M={#} \<and> a=b)"
-    by (simp add: union_ac)
   
   lemma mset_le_single_cases[consumes 1, case_names empty singleton]: "\<lbrakk>M\<le>#{#a#}; M={#} \<Longrightarrow> P; M={#a#} \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
     by (induct M) auto

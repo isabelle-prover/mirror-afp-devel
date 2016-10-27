@@ -14,10 +14,6 @@ imports
   "~~/src/HOL/Library/Multiset"
 begin
 
-
-lemma prod_mset_multiset_of[simp]: "prod_mset (mset xs) = prod_list xs"
-  by (induct xs, auto simp: ac_simps) 
-
 lemma multiset_subset_insert: "{ps. ps \<subseteq># add_mset x xs} =
     {ps. ps \<subseteq># xs} \<union> add_mset x ` {ps. ps \<subseteq># xs}" (is "?l = ?r")
 proof -
@@ -33,18 +29,13 @@ proof -
     next
       case False
       hence id: "(ps \<subseteq># xs + {#x#}) = (ps \<subseteq># xs)"
-        by (simp add: inter_add_left1 subset_mset.inf.absorb_iff2)
+        by (simp add: subset_mset.inf.absorb_iff2 inter_add_left1)
       show ?thesis unfolding id using False by auto
     qed
     finally have "(ps \<in> ?l) = (ps \<in> ?r)" .
   }
   thus ?thesis by auto
 qed
-
-lemma prod_mset_zero: 
-  "prod_mset (xs :: 'a :: {comm_monoid_mult,zero_neq_one,semiring_no_zero_divisors} multiset) = 0 
-    \<longleftrightarrow> (0 \<in> set_mset xs)"
-  by (induct xs, auto)
 
 lemma multiset_of_sublists: "mset ` set (sublists xs) = { ps. ps \<subseteq># mset xs}"
 proof (induct xs)
@@ -59,7 +50,7 @@ proof (induct xs)
 qed simp
 
 lemma remove1_mset: "w \<in> set vs \<Longrightarrow> mset (remove1 w vs) + {#w#} = mset vs"
-  by (induct vs, auto simp: ac_simps) 
+  by (induct vs) auto
 
 lemma fold_remove1_mset: "mset ws \<subseteq># mset vs \<Longrightarrow> mset (fold remove1 ws vs) + mset ws = mset vs" 
 proof (induct ws arbitrary: vs)

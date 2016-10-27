@@ -324,7 +324,7 @@ lemma reconstruct_poly_monic_defines_mset:
 proof -
   let ?as = "mset (map (\<lambda> a. [:- a, 1:]) as)"
   let ?bs = "mset (map (\<lambda> a. [:- a, 1:]) bs)"
-  have eq_smult:"prod_mset ?as = prod_mset ?bs" using assms by (metis prod_mset_multiset_of)
+  have eq_smult:"prod_mset ?as = prod_mset ?bs" using assms by (metis prod_mset_prod_list)
   have irr:"\<And> as. set_mset (mset (map (\<lambda> a. [:- a, 1:]) as)) \<subseteq> {q. irreducible q \<and> monic q}"
     by auto
   from monic_factorization_unique_mset[OF eq_smult irr irr]
@@ -369,7 +369,7 @@ qed
 lemma mset_mult_add:
   assumes "mset (a::'a::field list) = mset b + mset c"
   shows "prod_list a = prod_list b * prod_list c"
-  unfolding prod_mset_multiset_of[symmetric]
+  unfolding prod_mset_prod_list[symmetric]
   using prod_mset_Un[of "mset b" "mset c",unfolded assms[symmetric]].
 
 lemma prod_list_append:
@@ -451,7 +451,7 @@ lemma measure_of_reconstructed[simp]:
   "measure_monic (reconstruct_poly x as) = (\<Prod>a\<leftarrow>as. (max 1 (cmod a)))" (is "?l = ?r")
 unfolding measure_monic_def reconstruct_poly_def
 using complex_roots_complex_of_reconstructed[OF assms]
-by (metis (no_types, lifting) mset_map prod_mset_multiset_of)
+by (metis (no_types, lifting) mset_map prod_mset_prod_list)
 
 lemma max_via_filter: (* can be generalised to a different function than 'cmod' *)
   "(\<Prod>a\<leftarrow>filter (\<lambda> v. cmod v > 1) lst. cmod a) = (\<Prod>a\<leftarrow>lst. max 1 (cmod a))"

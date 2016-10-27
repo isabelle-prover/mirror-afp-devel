@@ -1056,21 +1056,6 @@ val abs_if_int =
     zero_abs_if = zero_int, ord_abs_if = ord_int}
   : int abs_if;
 
-type 'a sgn_if =
-  {minus_sgn_if : 'a minus, one_sgn_if : 'a one, sgn_sgn_if : 'a sgn,
-    uminus_sgn_if : 'a uminus, zero_sgn_if : 'a zero, ord_sgn_if : 'a ord};
-val minus_sgn_if = #minus_sgn_if : 'a sgn_if -> 'a minus;
-val one_sgn_if = #one_sgn_if : 'a sgn_if -> 'a one;
-val sgn_sgn_if = #sgn_sgn_if : 'a sgn_if -> 'a sgn;
-val uminus_sgn_if = #uminus_sgn_if : 'a sgn_if -> 'a uminus;
-val zero_sgn_if = #zero_sgn_if : 'a sgn_if -> 'a zero;
-val ord_sgn_if = #ord_sgn_if : 'a sgn_if -> 'a ord;
-
-val sgn_if_int =
-  {minus_sgn_if = minus_int, one_sgn_if = one_int, sgn_sgn_if = sgn_int,
-    uminus_sgn_if = uminus_int, zero_sgn_if = zero_int, ord_sgn_if = ord_int}
-  : int sgn_if;
-
 type 'a semiring_char_0 = {semiring_1_semiring_char_0 : 'a semiring_1};
 val semiring_1_semiring_char_0 = #semiring_1_semiring_char_0 :
   'a semiring_char_0 -> 'a semiring_1;
@@ -1104,6 +1089,18 @@ type 'a linorder = {order_linorder : 'a order};
 val order_linorder = #order_linorder : 'a linorder -> 'a order;
 
 val linorder_int = {order_linorder = order_int} : int linorder;
+
+type 'a idom_abs_sgn =
+  {abs_idom_abs_sgn : 'a abs, sgn_idom_abs_sgn : 'a sgn,
+    idom_idom_abs_sgn : 'a idom};
+val abs_idom_abs_sgn = #abs_idom_abs_sgn : 'a idom_abs_sgn -> 'a abs;
+val sgn_idom_abs_sgn = #sgn_idom_abs_sgn : 'a idom_abs_sgn -> 'a sgn;
+val idom_idom_abs_sgn = #idom_idom_abs_sgn : 'a idom_abs_sgn -> 'a idom;
+
+val idom_abs_sgn_int =
+  {abs_idom_abs_sgn = abs_int, sgn_idom_abs_sgn = sgn_int,
+    idom_idom_abs_sgn = idom_int}
+  : int idom_abs_sgn;
 
 type 'a ordered_ab_semigroup_add =
   {ab_semigroup_add_ordered_ab_semigroup_add : 'a ab_semigroup_add,
@@ -1422,19 +1419,19 @@ val ordered_ab_group_add_linordered_ab_group_add =
   'a linordered_ab_group_add -> 'a ordered_ab_group_add;
 
 type 'a linordered_ring =
-  {abs_if_linordered_ring : 'a abs_if,
-    linordered_ab_group_add_linordered_ring : 'a linordered_ab_group_add,
+  {linordered_ab_group_add_linordered_ring : 'a linordered_ab_group_add,
     ordered_ab_group_add_abs_linordered_ring : 'a ordered_ab_group_add_abs,
+    abs_if_linordered_ring : 'a abs_if,
     linordered_semiring_linordered_ring : 'a linordered_semiring,
     ordered_ring_linordered_ring : 'a ordered_ring};
-val abs_if_linordered_ring = #abs_if_linordered_ring :
-  'a linordered_ring -> 'a abs_if;
 val linordered_ab_group_add_linordered_ring =
   #linordered_ab_group_add_linordered_ring :
   'a linordered_ring -> 'a linordered_ab_group_add;
 val ordered_ab_group_add_abs_linordered_ring =
   #ordered_ab_group_add_abs_linordered_ring :
   'a linordered_ring -> 'a ordered_ab_group_add_abs;
+val abs_if_linordered_ring = #abs_if_linordered_ring :
+  'a linordered_ring -> 'a abs_if;
 val linordered_semiring_linordered_ring = #linordered_semiring_linordered_ring :
   'a linordered_ring -> 'a linordered_semiring;
 val ordered_ring_linordered_ring = #ordered_ring_linordered_ring :
@@ -1553,21 +1550,18 @@ val ordered_ring_ordered_ring_abs = #ordered_ring_ordered_ring_abs :
   'a ordered_ring_abs -> 'a ordered_ring;
 
 type 'a linordered_idom =
-  {sgn_if_linordered_idom : 'a sgn_if,
-    ring_char_0_linordered_idom : 'a ring_char_0,
-    idom_linordered_idom : 'a idom,
+  {ring_char_0_linordered_idom : 'a ring_char_0,
+    idom_abs_sgn_linordered_idom : 'a idom_abs_sgn,
     linordered_ring_strict_linordered_idom : 'a linordered_ring_strict,
     linordered_semidom_linordered_idom : 'a linordered_semidom,
     linordered_semiring_1_strict_linordered_idom :
       'a linordered_semiring_1_strict,
     ordered_comm_ring_linordered_idom : 'a ordered_comm_ring,
     ordered_ring_abs_linordered_idom : 'a ordered_ring_abs};
-val sgn_if_linordered_idom = #sgn_if_linordered_idom :
-  'a linordered_idom -> 'a sgn_if;
 val ring_char_0_linordered_idom = #ring_char_0_linordered_idom :
   'a linordered_idom -> 'a ring_char_0;
-val idom_linordered_idom = #idom_linordered_idom :
-  'a linordered_idom -> 'a idom;
+val idom_abs_sgn_linordered_idom = #idom_abs_sgn_linordered_idom :
+  'a linordered_idom -> 'a idom_abs_sgn;
 val linordered_ring_strict_linordered_idom =
   #linordered_ring_strict_linordered_idom :
   'a linordered_idom -> 'a linordered_ring_strict;
@@ -1630,9 +1624,9 @@ val linordered_ab_group_add_int =
   : int linordered_ab_group_add;
 
 val linordered_ring_int =
-  {abs_if_linordered_ring = abs_if_int,
-    linordered_ab_group_add_linordered_ring = linordered_ab_group_add_int,
+  {linordered_ab_group_add_linordered_ring = linordered_ab_group_add_int,
     ordered_ab_group_add_abs_linordered_ring = ordered_ab_group_add_abs_int,
+    abs_if_linordered_ring = abs_if_int,
     linordered_semiring_linordered_ring = linordered_semiring_int,
     ordered_ring_linordered_ring = ordered_ring_int}
   : int linordered_ring;
@@ -1695,9 +1689,8 @@ val ordered_ring_abs_int =
   : int ordered_ring_abs;
 
 val linordered_idom_int =
-  {sgn_if_linordered_idom = sgn_if_int,
-    ring_char_0_linordered_idom = ring_char_0_int,
-    idom_linordered_idom = idom_int,
+  {ring_char_0_linordered_idom = ring_char_0_int,
+    idom_abs_sgn_linordered_idom = idom_abs_sgn_int,
     linordered_ring_strict_linordered_idom = linordered_ring_strict_int,
     linordered_semidom_linordered_idom = linordered_semidom_int,
     linordered_semiring_1_strict_linordered_idom =

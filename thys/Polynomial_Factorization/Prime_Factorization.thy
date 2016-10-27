@@ -657,7 +657,7 @@ proof -
       let ?l = "\<Prod>i\<in>#prime_factorization n. i"
       let ?r = "\<Prod>i\<in>#mset (prime_factorization_nat n). i"
       show "prod_mset (mset (prime_factorization_nat n)) = normalize n"
-        by (simp add: pf(2))
+        by (simp add: pf(2) prod_mset_prod_list)
     qed
   qed
 qed
@@ -688,7 +688,7 @@ proof -
   have "?dn = prod_list ` set (sublists (prime_factorization_nat n))" unfolding divisors_nat_def
     using n by auto
   also have "\<dots> = prod_mset ` mset ` set (sublists (prime_factorization_nat n))"
-    by force
+    by (force simp: prod_mset_prod_list)
   also have "mset ` set (sublists (prime_factorization_nat n))
     = { ps. ps \<subseteq># mset (prime_factorization_nat n)}" 
     unfolding multiset_of_sublists by simp
