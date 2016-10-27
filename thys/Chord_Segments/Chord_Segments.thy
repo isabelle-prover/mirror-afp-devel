@@ -34,10 +34,6 @@ using assms by (simp add: arccos_minus)
 
 subsubsection \<open>Additions to Convex Euclidean Space\<close>
 
-lemma between_commute:
-  "between (A, B) X \<longleftrightarrow> between (B, A) X"
-by (simp add: between_mem_segment closed_segment_commute)
-
 lemma between_same:
   assumes "between (a, a) x"
   shows "x = a"
@@ -314,7 +310,7 @@ proof -
       using \<open>between (S, T) X\<close> M_def
       by (simp add: dist_geq_iff_midpoint_in_between midpoint_sym between_commute)
     from this have "between (T, M) X"
-      using \<open>between (S, T) X\<close> \<open>between (S, T) M\<close> between_swap between_commute by blast
+      using \<open>between (S, T) X\<close> \<open>between (S, T) M\<close> between_swap between_commute by metis
     from \<open>between (S, X) M\<close> have "dist S X = dist S M + dist M X"
       using between by auto
     moreover from \<open>between (T, M) X\<close> have "dist T X = dist T M - dist M X"

@@ -526,8 +526,8 @@ proof -
   moreover have "1 \<le> norm c"
     using 11 by simp
   ultimately have "norm c = 1"  by (rule antisym)
-  then show ?thesis
-    by (auto simp: complex_norm_eq_1_exp c elim!: ex_forward)
+  with complex_norm_eq_1_exp c show ?thesis
+    by metis
 qed
 
 end
