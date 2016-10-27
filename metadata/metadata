@@ -4684,7 +4684,7 @@ abstract =
 
 [Modal_Logics_for_NTS]
 title = Modal Logics for Nominal Transition Systems
-author = Tjark Weber <tjark.weber@it.uu.se>, Lars-Henrik Eriksson <lhe@it.uu.se>, Joachim Parrow <joachim.parrow@it.uu.se>, Johannes Borgström <johannes.borgstrom@it.uu.se>, Ramunas Gutkovas <ramunas.gutkovas@it.uu.se>
+author = Tjark Weber <mailto:tjark.weber@it.uu.se>, Lars-Henrik Eriksson <mailto:lhe@it.uu.se>, Joachim Parrow <mailto:joachim.parrow@it.uu.se>, Johannes Borgström <mailto:johannes.borgstrom@it.uu.se>, Ramunas Gutkovas <mailto:ramunas.gutkovas@it.uu.se>
 notify = tjark.weber@it.uu.se
 date = 2016-10-25
 topic = Computer Science/Concurrency/Process Calculi, Logic
