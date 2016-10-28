@@ -21,6 +21,18 @@ begin
 
 subsection \<open>Auxiliary lemmas\<close>
 
+context
+  fixes g :: "'b \<Rightarrow> 'a :: comm_monoid_mult"
+begin
+lemma prod_list_map_filter: "prod_list (map g (filter f xs)) * prod_list (map g (filter (\<lambda> x. \<not> f x) xs)) 
+  = prod_list (map g xs)"
+  by (induct xs, auto simp: ac_simps)
+
+lemma prod_list_map_partition: assumes "partition f xs = (ys, zs)"
+  shows "prod_list (map g xs) = prod_list (map g ys) * prod_list (map g zs)"
+  using assms by (subst prod_list_map_filter[symmetric, of _ f], auto simp: o_def)
+end
+
 lemma coprime_id_is_unit:
 fixes a::"'b::semiring_gcd"
 shows "coprime a a = (is_unit a)"
@@ -849,22 +861,20 @@ lemma berlekamp_basis_code[code]: "berlekamp_basis u =
   (map (poly_of_list o list_of_vec) (find_base_vectors (berlekamp_resulting_mat u)))"
   unfolding berlekamp_basis_def poly_of_list_def ..
 
-primrec berlekamp_factorization_main :: "'a mod_ring poly list \<Rightarrow> 'a mod_ring poly list \<Rightarrow> nat \<Rightarrow> 'a mod_ring poly list" where
-  "berlekamp_factorization_main divs (v # vs) n = (if v = 1 then berlekamp_factorization_main divs vs n else
+primrec berlekamp_factorization_main :: "nat \<Rightarrow> 'a mod_ring poly list \<Rightarrow> 'a mod_ring poly list \<Rightarrow> nat \<Rightarrow> 'a mod_ring poly list" where
+  "berlekamp_factorization_main i divs (v # vs) n = (if v = 1 then berlekamp_factorization_main i divs vs n else
     if length divs = n then divs else
     let facts = [ w . u \<leftarrow> divs, s \<leftarrow> [0 ..< CARD('a)], w \<leftarrow> [gcd u (v - [:of_int s:])], w \<noteq> 1];
-      (lin,nonlin) = partition (\<lambda> q. degree q = 1) facts
-      in lin @ berlekamp_factorization_main nonlin vs (n - length lin))"
-| "berlekamp_factorization_main divs [] n = divs"
-
-definition berlekamp_factorization :: "'a mod_ring poly \<Rightarrow> 'a mod_ring \<times> 'a mod_ring poly list" where
-  "berlekamp_factorization f = (if degree f = 0 then (lead_coeff f,[]) else let
-     a = lead_coeff f;
-     u = smult (inverse a) f;
-     vs = berlekamp_basis u;
+      (lin,nonlin) = partition (\<lambda> q. degree q = i) facts
+      in lin @ berlekamp_factorization_main i nonlin vs (n - length lin))"
+  | "berlekamp_factorization_main i divs [] n = divs"
+  
+definition berlekamp_monic_factorization :: "nat \<Rightarrow> 'a mod_ring poly \<Rightarrow> 'a mod_ring poly list" where
+  "berlekamp_monic_factorization d f = (let
+     vs = berlekamp_basis f;
      n = length vs;
-     fs = berlekamp_factorization_main [u] vs n
-    in (a,fs))"
+     fs = berlekamp_factorization_main d [f] vs n
+    in fs)"
 
 subsection \<open>Properties\<close>
 
@@ -2813,13 +2823,14 @@ lemma berlekamp_factorization_main:
     and vsf: "vs = berlekamp_basis f"
     and n_bb: "n = length (berlekamp_basis f)"
     and n: "n = length us1 + n2"
-    and us: "us = us1 @ berlekamp_factorization_main divs vs2 n2"
+    and us: "us = us1 @ berlekamp_factorization_main d divs vs2 n2"
     and us1: "\<And> u. u \<in> set us1 \<Longrightarrow> monic u \<and> irreducible u"
     and divs: "\<And> d. d \<in> set divs \<Longrightarrow> monic d \<and> degree d \<noteq> 0"
     and vs1: "\<And> u v i. v \<in> set vs1 \<Longrightarrow> u \<in> set us1 \<union> set divs
       \<Longrightarrow> i < CARD('a) \<Longrightarrow> gcd u (v - [:of_nat i:]) \<in> {1,u}"
     and f: "f = prod_list (us1 @ divs)"
     and deg_f: "degree f \<noteq> 0"
+    and d: "\<And> g. g dvd f \<Longrightarrow> degree g = d \<Longrightarrow> irreducible g" 
   shows "f = prod_list us \<and> (\<forall> u \<in> set us. monic u \<and> irreducible u)"
 proof -
   have mon_f: "monic f" unfolding f
@@ -2961,7 +2972,7 @@ proof -
       } note udivs = this
       have facts: "facts = concat (map udivs divs)"
         unfolding facts_def by auto
-      obtain lin nonlin where part: "partition (\<lambda> q. degree q = 1) facts = (lin,nonlin)" by force
+      obtain lin nonlin where part: "partition (\<lambda> q. degree q = d) facts = (lin,nonlin)" by force
       from Cons(6) have "f = prod_list us1 * prod_list divs" by auto
       also have "prod_list divs = prod_list facts" unfolding facts using udivs(4)
         by (induct divs, auto)
@@ -2976,17 +2987,17 @@ proof -
       } note facts = this
       have not1: "(v = 1) = False" using False by auto
       have "us = us1 @ (if length divs = n2 then divs
-          else let (lin, nonlin) = partition (\<lambda>q. degree q = 1) facts
-               in lin @ berlekamp_factorization_main nonlin vs2 (n2 - length lin))"
+          else let (lin, nonlin) = partition (\<lambda>q. degree q = d) facts
+               in lin @ berlekamp_factorization_main d nonlin vs2 (n2 - length lin))"
         unfolding Cons(4) facts_def udivs_def' berlekamp_factorization_main.simps Let_def not1 if_False
         by (rule arg_cong[where f = "\<lambda> x. us1 @ x"], rule if_cong, simp_all) (* takes time *)
       hence res: "us = us1 @ (if length divs = n2 then divs else
-               lin @ berlekamp_factorization_main nonlin vs2 (n2 - length lin))"
+               lin @ berlekamp_factorization_main d nonlin vs2 (n2 - length lin))"
         unfolding part by auto
       show ?thesis
       proof (cases "length divs = n2")
         case False
-        with res have us: "us = (us1 @ lin) @ berlekamp_factorization_main nonlin vs2 (n2 - length lin)"
+        with res have us: "us = (us1 @ lin) @ berlekamp_factorization_main d nonlin vs2 (n2 - length lin)"
           by auto
         from Cons(2) have vs: "vs = (vs1 @ [v]) @ vs2" by auto
         have f: "f = prod_list ((us1 @ lin) @ nonlin)"
@@ -3013,8 +3024,11 @@ proof -
           {
             assume *: "\<not> (monic u \<and> irreducible u)"
             with Cons(7) u have "u \<in> set lin" by auto
-            with part have uf: "u \<in> set facts" and deg: "degree u = 1" by auto
-            from facts[OF uf] linear_irreducible[OF deg] * have False by auto
+            with part have uf: "u \<in> set facts" and deg: "degree u = d" by auto
+            from facts[OF uf] obtain u' where "u' \<in> set divs" and uu': "u dvd u'" by auto
+            from this(1) have "u' dvd f" unfolding Cons(6) using prod_list_dvd[of u'] by auto
+            with uu' have "u dvd f" by (rule dvd_trans)
+            from facts[OF uf] d[OF this deg] * have False by auto
           }
           thus "monic u \<and> irreducible u" by auto
         next
@@ -3072,7 +3086,7 @@ proof -
       qed
     next
       case True (* v = 1 *)
-      with Cons(4) have us: "us = us1 @ berlekamp_factorization_main divs vs2 n2" by simp
+      with Cons(4) have us: "us = us1 @ berlekamp_factorization_main d divs vs2 n2" by simp
       from Cons(2) True have vs: "vs = (vs1 @ [1]) @ vs2" by auto
       show ?thesis
       proof (rule Cons(1)[OF vs Cons(3) us Cons(5-7)], goal_cases)
@@ -3125,51 +3139,25 @@ proof -
   qed
 qed
 
-lemma berlekamp_factorization_explicit:
+lemma berlekamp_monic_factorization: 
   fixes f::"'a mod_ring poly"
   assumes sf_f: "square_free f"
-    and us: "berlekamp_factorization f = (c,us)"
-  shows "f = smult c (prod_list us) \<and> (\<forall> u \<in> set us. monic u \<and> irreducible u)"
-proof (cases "degree f = 0")
-  case False note deg = this
-  define g where "g = smult (inverse c) f"
-  from us[unfolded berlekamp_factorization_def Let_def] deg
-  have c: "c = lead_coeff f"
-    and us: "us = [] @ berlekamp_factorization_main [g] (berlekamp_basis g) (length (berlekamp_basis g))"
-    by (auto simp: g_def)
-  have id: "berlekamp_basis g = [] @ berlekamp_basis g"
-    "length (berlekamp_basis g) = length [] + length (berlekamp_basis g)"
-    "g = prod_list ([] @ [g])"
-    by auto
-  from deg have c0: "c \<noteq> 0" unfolding c lead_coeff_def by auto
-  with deg have deg: "degree g \<noteq> 0" unfolding g_def by auto
-  have mon_g: "monic g" unfolding g_def
-    by (metis c c0 field_class.field_inverse lead_coeff_def lead_coeff_smult)
-  from sf_f have sf_g: "square_free g" unfolding g_def by (simp add: c0)
-  from c0 have f: "f = smult c g" unfolding g_def by auto
-  have main: "g = prod_list us \<and> (\<forall> u \<in> set us. monic u \<and> irreducible u)"
-    by (rule berlekamp_factorization_main[OF sf_g id(1) refl refl id(2) us _ _ _ id(3)],
-    insert mon_g deg, auto)
-  thus ?thesis unfolding f using sf_g by auto
-next
-  case True
-  with us[unfolded berlekamp_factorization_def] have "c = lead_coeff f" and us: "us = []" by auto
-  with degree0_coeffs[OF True] have f: "f = [:c:]" by auto
-  show ?thesis unfolding us f by (auto simp: one_poly_def normalize_poly_def)
-qed
-
-lemma berlekamp_factorization:
-  fixes f::"'a mod_ring poly"
-  assumes sf_f: "square_free f"
-    and us: "berlekamp_factorization f = (c,us)"
-  shows "unique_factorization Irr_Mon f (c, mset us)"
+    and us: "berlekamp_monic_factorization d f = us"
+    and d: "\<And> g. g dvd f \<Longrightarrow> degree g = d \<Longrightarrow> irreducible g" 
+    and deg: "degree f \<noteq> 0" 
+    and mon: "monic f" 
+  shows "f = prod_list us \<and> (\<forall> u \<in> set us. monic u \<and> irreducible u)"
 proof -
-  from berlekamp_factorization_explicit[OF sf_f us]
-  have fact: "factorization Irr_Mon f (c, mset us)"
-    unfolding factorization_def split Irr_Mon_def by auto
-  from sf_f[unfolded square_free_def] have "f \<noteq> 0" by auto
-  from exactly_one_factorization[OF this] fact
-  show ?thesis unfolding unique_factorization_def by auto
+  from us[unfolded berlekamp_monic_factorization_def Let_def] deg
+  have us: "us = [] @ berlekamp_factorization_main d [f] (berlekamp_basis f) (length (berlekamp_basis f))"
+    by (auto)
+  have id: "berlekamp_basis f = [] @ berlekamp_basis f"
+    "length (berlekamp_basis f) = length [] + length (berlekamp_basis f)"
+    "f = prod_list ([] @ [f])"
+    by auto
+  show "f = prod_list us \<and> (\<forall> u \<in> set us. monic u \<and> irreducible u)"
+    by (rule berlekamp_factorization_main[OF sf_f id(1) refl refl id(2) us _ _ _ id(3)],
+    insert mon deg d, auto)
 qed
 end
 end

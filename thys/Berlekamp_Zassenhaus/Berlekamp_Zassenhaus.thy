@@ -66,8 +66,8 @@ definition berlekamp_zassenhaus_factorization :: "int poly \<Rightarrow> int pol
   "berlekamp_zassenhaus_factorization f = (let 
      (* find suitable prime *)
      p = suitable_prime_bz f;
-     (* compute berlekamp factorization *)
-     (_, fs) = berlekamp_factorization_int p f; 
+     (* compute finite field factorization *)
+     (_, fs) = finite_field_factorization_int p f; 
      (* determine maximal degree that we can build by multiplying at most half of the factors *)
      max_deg = degree_bound fs;
      (* determine a number large enough to represent all coefficients of every 
@@ -88,7 +88,7 @@ theorem berlekamp_zassenhaus_factorization:
 proof -
   let ?lc = "lead_coeff f" 
   define p where "p \<equiv> suitable_prime_bz f" 
-  obtain c gs where berl: "berlekamp_factorization_int p f = (c,gs)" by force
+  obtain c gs where berl: "finite_field_factorization_int p f = (c,gs)" by force
   let ?degs = "map degree gs" 
   note res = res[unfolded berlekamp_zassenhaus_factorization_def Let_def, folded p_def,
     unfolded berl split, folded]

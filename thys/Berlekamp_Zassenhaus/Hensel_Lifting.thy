@@ -14,7 +14,7 @@ text \<open>We define and prove properties of Hensel-lifting. Here, we show the 
   the quadratic approach from Zassenhaus. 
   Via the linear version, we also show a uniqueness result, however only in the 
   binary case, i.e., where $f = g \cdot h$. Uniqueness of the general case will later be shown 
-  in theory Berlekamp-Hensel by incorporating Berlekamp's algorithm.\<close>
+  in theory Berlekamp-Hensel by incorporating the factorization algorithm for finite fields algorithm.\<close>
 
 theory Hensel_Lifting
 imports 
