@@ -83,6 +83,7 @@
 <a href="entries/Transitive-Closure.shtml">Transitive-Closure</a> &nbsp;
 <a href="entries/Transitive-Closure-II.shtml">Transitive-Closure-II</a> &nbsp;
 <a href="entries/MuchAdoAboutTwo.shtml">MuchAdoAboutTwo</a> &nbsp;
+<a href="entries/Polynomials.shtml">Polynomials</a> &nbsp;
 <a href="entries/Gabow_SCC.shtml">Gabow_SCC</a> &nbsp;
 <a href="entries/Gauss_Jordan.shtml">Gauss_Jordan</a> &nbsp;
 <a href="entries/Echelon_Form.shtml">Echelon_Form</a> &nbsp;
@@ -93,7 +94,6 @@
 <a href="entries/ROBDD.shtml">ROBDD</a> &nbsp;
 <a href="entries/Groebner_Bases.shtml">Groebner_Bases</a> &nbsp;
 <a href="entries/Fisher_Yates.shtml">Fisher_Yates</a> &nbsp;
-<a href="entries/Multivariate_Polynomials.shtml">Multivariate_Polynomials</a> &nbsp;
 
 <strong>Distributed:</strong>&nbsp;<a href="entries/DiskPaxos.shtml">DiskPaxos</a> &nbsp;
 <a href="entries/GenClock.shtml">GenClock</a> &nbsp;
@@ -372,6 +372,7 @@
 <a href="entries/Robbins-Conjecture.shtml">Robbins-Conjecture</a> &nbsp;
 <a href="entries/Valuation.shtml">Valuation</a> &nbsp;
 <a href="entries/Rank_Nullity_Theorem.shtml">Rank_Nullity_Theorem</a> &nbsp;
+<a href="entries/Polynomials.shtml">Polynomials</a> &nbsp;
 <a href="entries/Relation_Algebra.shtml">Relation_Algebra</a> &nbsp;
 <a href="entries/Secondary_Sylow.shtml">Secondary_Sylow</a> &nbsp;
 <a href="entries/Jordan_Hoelder.shtml">Jordan_Hoelder</a> &nbsp;
@@ -387,7 +388,6 @@
 <a href="entries/Polynomial_Factorization.shtml">Polynomial_Factorization</a> &nbsp;
 <a href="entries/Perron_Frobenius.shtml">Perron_Frobenius</a> &nbsp;
 <a href="entries/Groebner_Bases.shtml">Groebner_Bases</a> &nbsp;
-<a href="entries/Multivariate_Polynomials.shtml">Multivariate_Polynomials</a> &nbsp;
 <a href="entries/Berlekamp_Zassenhaus.shtml">Berlekamp_Zassenhaus</a> &nbsp;
 <a href="entries/Allen_Calculus.shtml">Allen_Calculus</a> &nbsp;
 </div>

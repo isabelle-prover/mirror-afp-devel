@@ -10,7 +10,7 @@ text \<open>In this theory, power-products of type @{typ "'a pp"} and multivaria
   @{typ "('a, 'b) mpoly"} are represented as association lists. Code equations are proved in order
   to actually perform computations (addition, multiplication, etc.).\<close>
 
-text \<open>In principle, one could also build upon @{cite Sternagel2010}, although there the representations of
+text \<open>In principle, one could also build upon theory \<open>Polynomials\<close>, although there the representations of
   power-products and polynomials additionally have to satisfy certain invariants, which we do not
   require here.\<close>
 

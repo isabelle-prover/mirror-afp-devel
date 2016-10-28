@@ -3029,9 +3029,9 @@ notify = immler@in.tum.de, hoelzl@in.tum.de
 
 [Polynomials]
 title = Executable Multivariate Polynomials
-author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>
+author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>, Alexander Maletzky <http://www.risc.jku.at/home/amaletzk>, Fabian Immler <http://www.in.tum.de/~immler/>
 date = 2010-08-10
-topic = Mathematics/Analysis
+topic = Mathematics/Analysis, Mathematics/Algebra, Computer Science/Algorithms
 license = LGPL
 abstract =
 	We define multivariate polynomials over arbitrary (ordered) semirings in
@@ -3045,10 +3045,16 @@ abstract =
 	href="http://cl-informatik.uibk.ac.at/software/ceta">IsaFoR/CeTA-system</a>
 	which contains several termination techniques. The provided theories have
 	been essential to  formalize polynomial interpretations.
+	<p>
+	This formalization also contains an abstract representation as coefficient functions with finite
+  support and a type of power-products. If this type is ordered by a linear (term) ordering, various
+  additional notions, such as leading power-product, leading coefficient etc., are introduced as
+  well.
 extra-history =
 	Change history:
 	[2010-09-17]: Moved theories on arbitrary (ordered) semirings to Abstract Rewriting.
-notify = rene.thiemann@uibk.ac.at, christian.sternagel@uibk.ac.at
+	[2016-10-28]: Added abstract representation of polynomials and authors Maletzky/Immler.
+notify = rene.thiemann@uibk.ac.at, christian.sternagel@uibk.ac.at, alexander.maletzky@risc.jku.at, immler@in.tum.de
 
 [Sqrt_Babylonian]
 title = Computing N-th Roots using the Babylonian Method
@@ -4717,24 +4723,6 @@ abstract =
 	Blanchette, M. Fleury, A. Schlichtkrull, and D. Traytel. <a
 	href="https://bitbucket.org/jasmin_blanchette/isafol">IsaFoL: Isabelle
 	Formalization of Logic</a>. <a href="https://bitbucket.org/jasmin_blanchette/isafol">https://bitbucket.org/jasmin_blanchette/isafol</a>.
-
-[Multivariate_Polynomials]
-title = Multivariate Polynomials
-author = Alexander Maletzky <http://www.risc.jku.at/home/amaletzk>, Fabian Immler <http://www.in.tum.de/~immler/>
-notify = alexander.maletzky@risc.jku.at, immler@in.tum.de
-date = 2016-07-06
-topic = Mathematics/Algebra, Computer Science/Algorithms
-abstract =
-	This formalization is concerned with multivariate polynomials over
-	various coefficient structures (semirings, rings, fields). The
-	polynomials are represented both abstractly, as coefficient functions
-	with finite support, and concretely as association lists (thus
-	allowing to perform actual computations).  All ring-theoretic
-	operations on polynomials, such as addition and multiplication, are
-	defined and shown to satisfy the usual properties. Moreover, for
-	polynomials whose corresponding type of power-products is ordered by a
-	linear (term) ordering, various additional notions, such as leading
-	power-product, leading coefficient etc., are introduced as well.
 
 [Surprise_Paradox]
 title = Surprise Paradox
