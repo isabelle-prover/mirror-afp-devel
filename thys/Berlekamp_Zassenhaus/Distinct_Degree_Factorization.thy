@@ -39,12 +39,13 @@ proof -
   ultimately show "irreducible g = (degree g = i)" by auto
 qed
   
+definition "exercise_16_finished = False" 
 (* Exercise 16 in Knuth, pages 457 and 682 *)
-axiomatization where degree_divisor_1: 
-  "\<And> f d. irreducible (f :: 'a :: prime_card mod_ring poly) 
-  \<Longrightarrow> degree f = d
-  \<Longrightarrow> f dvd (monom 1 1)^(CARD('a)^d) - monom 1 1" 
-  and degree_divisor_2: "\<And> f d c. irreducible (f :: 'a :: prime_card mod_ring poly) \<Longrightarrow> degree f = d \<Longrightarrow> 1 \<le> c \<Longrightarrow> c < d \<Longrightarrow> \<not> f dvd (monom 1 1)^(CARD('a)^c) - monom 1 1"
+lemma degree_divisor: assumes exercise_16_finished 
+  and "irreducible (f :: 'a :: prime_card mod_ring poly)" "degree f = d" 
+  shows "f dvd (monom 1 1)^(CARD('a)^d) - monom 1 1" 
+  and "1 \<le> c \<Longrightarrow> c < d \<Longrightarrow> \<not> f dvd (monom 1 1)^(CARD('a)^c) - monom 1 1"
+    using assms unfolding exercise_16_finished_def by auto
 
 context 
   assumes "SORT_CONSTRAINT('a :: prime_card)" 
@@ -76,6 +77,7 @@ qed auto
 declare dist_degree_factorize_main.simps[simp del]
   
 lemma dist_degree_factorize_main: assumes 
+  ex16: exercise_16_finished and 
   dist: "dist_degree_factorize_main v w d res = facts" and
   w: "w = (monom 1 1)^(CARD('a)^d) mod v" and
   sf: "square_free u" and  
@@ -168,7 +170,7 @@ proof (induct v w d res rule: dist_degree_factorize_main.induct)
       {
         fix f
         assume irr: "irreducible f" and fv: "f dvd v" and "degree f = ?d" 
-        from degree_divisor_1[OF this(1,3)]
+        from degree_divisor(1)[OF ex16 this(1,3)]
         have "f dvd ?x ^ ?p ^ ?d - ?x" by auto
         hence "f dvd (?x ^ ?p ^ ?d - ?x) mod v" using fv by (rule dvd_mod)
         also have "(?x ^ ?p ^ ?d - ?x) mod v = ?x ^ ?p ^ ?d mod v - ?x mod v" by (rule poly_mod_diff_left)
@@ -225,7 +227,7 @@ proof (induct v w d res rule: dist_degree_factorize_main.induct)
               from fact[OF *(1) this] have dg: "d < degree g" .
               {
                 assume "degree g > ?d"
-                from degree_divisor_2[OF *(1) refl _ this]
+                from degree_divisor(2)[OF ex16 *(1) refl _ this]
                 have ndvd: "\<not> g dvd ?x ^ ?p ^ ?d - ?x" by auto 
                 from *(2) have "g dvd ?w - ?x" by simp
                 from this[unfolded ww]
@@ -265,6 +267,7 @@ definition distinct_degree_factorization
      (if degree f = 1 then [(1,f)] else dist_degree_factorize_main f (monom 1 1) 0 [])"
   
 lemma distinct_degree_factorization: assumes 
+  ex16: exercise_16_finished and
   dist: "distinct_degree_factorization f = facts" and
   u: "square_free f" and  
   mon: "monic f" 
@@ -279,7 +282,7 @@ proof -
     hence *: "monom 1 (Suc 0) = monom 1 (Suc 0) mod f"
       by (simp add: degree_monom_eq mod_poly_less)
     show ?thesis
-      by (rule dist_degree_factorize_main[OF dist _ u mon], insert *, auto simp: irreducible_def)
+      by (rule dist_degree_factorize_main[OF ex16 dist _ u mon], insert *, auto simp: irreducible_def)
   next
     case True
     hence "degree f = 0 \<or> degree f = 1" by auto

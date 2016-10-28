@@ -20,10 +20,10 @@ assumes "SORT_CONSTRAINT('a::prime_card)"
 begin
 
 definition finite_field_factorization :: "'a mod_ring poly \<Rightarrow> 'a mod_ring \<times> 'a mod_ring poly list" where
-  "finite_field_factorization f = (if f = 0 then (0,[]) else let
+  "finite_field_factorization f = (if degree f = 0 then (lead_coeff f,[]) else let
      a = lead_coeff f;
      u = smult (inverse a) f;
-     gs = distinct_degree_factorization u;
+     gs = (if exercise_16_finished then distinct_degree_factorization u else [(1,u)]);
      (irr,hs) = partition (\<lambda> (i,f). degree f = i) gs
     in (a,map snd irr @ concat (map (\<lambda> (i,g). berlekamp_monic_factorization i g) hs)))"
 
@@ -32,10 +32,10 @@ lemma finite_field_factorization_explicit:
   assumes sf_f: "square_free f"
     and us: "finite_field_factorization f = (c,us)"
   shows "f = smult c (prod_list us) \<and> (\<forall> u \<in> set us. monic u \<and> irreducible u)"
-proof (cases "f = 0")
+proof (cases "degree f = 0")
   case False note f = this
-  define g where "g = smult (inverse c) f"
-  obtain gs where dist: "distinct_degree_factorization g = gs" by auto
+  define g where "g = smult (inverse c) f"    
+  obtain gs where dist: "(if exercise_16_finished then distinct_degree_factorization g else [(1,g)]) = gs" by auto
   note us = us[unfolded finite_field_factorization_def Let_def]
   from us f have c: "c = lead_coeff f" by auto
   obtain irr hs where part: "partition (\<lambda> (i, f). degree f = i) gs = (irr,hs)" by force
@@ -43,13 +43,33 @@ proof (cases "f = 0")
   from us[folded c, folded g_def, unfolded dist part split] f
   have us: "us = map snd irr @ concat (map (\<lambda>(x, y). berlekamp_monic_factorization x y) hs)" by auto
   from f c have c0: "c \<noteq> 0" by auto
+  from False c0 have deg_g: "degree g \<noteq> 0" unfolding g_def by auto
   have mon_g: "monic g" unfolding g_def
     by (metis c c0 field_class.field_inverse lead_coeff_def lead_coeff_smult)
   from sf_f have sf_g: "square_free g" unfolding g_def by (simp add: c0)
   from c0 have f: "f = smult c g" unfolding g_def by auto
-  from distinct_degree_factorization[OF dist sf_g mon_g]
-  have g_gs: "g = prod_list (map snd gs)" 
-    and same: "\<And> i f. (i, f) \<in> set gs \<Longrightarrow> factors_of_same_degree i f" by auto
+  have "g = prod_list (map snd gs) \<and> (\<forall> (i,f) \<in> set gs. degree f \<noteq> 0 \<and> monic f \<and> (\<forall> h. h dvd f \<longrightarrow> degree h = i \<longrightarrow> irreducible h))" 
+  proof (cases exercise_16_finished)
+    case True
+    with dist have "distinct_degree_factorization g = gs" by auto
+    note dist = distinct_degree_factorization[OF True this sf_g mon_g]
+    from dist have g: "g = prod_list (map snd gs)" by auto
+    show ?thesis
+    proof (intro conjI[OF g] ballI, clarify)
+      fix i f
+      assume "(i,f) \<in> set gs" 
+      with dist have "factors_of_same_degree i f" by auto
+      from factors_of_same_degreeD[OF this] 
+      show "degree f \<noteq> 0 \<and> monic f \<and> (\<forall>h. h dvd f \<longrightarrow> degree h = i \<longrightarrow> irreducible h)" by auto
+    qed
+  next
+    case False
+    with dist have gs: "gs = [(1,g)]" by auto
+    show ?thesis unfolding gs using deg_g mon_g linear_irreducible by auto
+  qed
+  hence g_gs: "g = prod_list (map snd gs)" 
+    and mon_gs: "\<And> i f. (i, f) \<in> set gs \<Longrightarrow> monic f \<and> degree f \<noteq> 0" 
+    and irrI: "\<And> i f h . (i, f) \<in> set gs \<Longrightarrow> h dvd f \<Longrightarrow> degree h = i \<Longrightarrow> irreducible h" by auto
   have g: "g = prod_list (map snd irr) * prod_list (map snd hs)" unfolding g_gs
     using prod_list_map_partition[OF part] .
   {
@@ -57,7 +77,7 @@ proof (cases "f = 0")
     assume "f \<in> snd ` set irr" 
     from this[unfolded irr] obtain i where *:  "(i,f) \<in> set gs" "degree f = i" by auto
     have "f dvd f" by auto
-    from factors_of_same_degreeD[OF same[OF *(1)]] this *(2) have "monic f" "irreducible f" by auto
+    from irrI[OF *(1) this *(2)] mon_gs[OF *(1)] have "monic f" "irreducible f" by auto
   } note irr = this
   let ?berl = "\<lambda> hs. concat (map (\<lambda>(x, y). berlekamp_monic_factorization x y) hs)"
   have "set hs \<subseteq> set gs" using part by auto
@@ -71,7 +91,7 @@ proof (cases "f = 0")
     note IH = Cons(1)[OF sub]
     from mem have "h \<in> set (map snd gs)" by force
     from square_free_factor[OF prod_list_dvd[OF this], folded g_gs, OF sf_g] have sf: "square_free h" .
-    from factors_of_same_degreeD[OF same[OF mem]] have *: "degree h \<noteq> 0" "monic h" 
+    from mon_gs[OF mem] irrI[OF mem] have *: "degree h \<noteq> 0" "monic h" 
       "\<And> g. g dvd h \<Longrightarrow> degree g = i \<Longrightarrow> irreducible g" by auto
     from berlekamp_monic_factorization[OF sf refl *(3) *(1-2), of i]
     have berl: "prod_list (berlekamp_monic_factorization i h) = h" 
@@ -87,8 +107,9 @@ proof (cases "f = 0")
   thus ?thesis unfolding f using sf_g by auto
 next
   case True
-  with us[unfolded finite_field_factorization_def] have c: "c = 0" and us: "us = []" by auto
-  show ?thesis unfolding us True c by auto
+  with us[unfolded finite_field_factorization_def] have "c = lead_coeff f" and us: "us = []" by auto
+  with degree0_coeffs[OF True] have f: "f = [:c:]" by auto
+  show ?thesis unfolding us f by (auto simp: one_poly_def normalize_poly_def)
 qed
 
 lemma finite_field_factorization:

@@ -112,10 +112,10 @@ definition distinct_degree_factorization_i
      dist_degree_factorize_main_i (degree_i f) f [0,1] 0 [])"
 
 definition finite_field_factorization_i :: "int list \<Rightarrow> int \<times> int list list" where
-  "finite_field_factorization_i f = (if f = [] then (0,[]) else let
+  "finite_field_factorization_i f = (if degree_i f = 0 then (lead_coeff_i ff_ops f,[]) else let
      a = lead_coeff_i ff_ops f;
      u = smult_i ff_ops (inverse_p p a) f;
-     gs = distinct_degree_factorization_i u;
+     gs = (if exercise_16_finished then distinct_degree_factorization_i u else [(1,u)]);
      (irr,hs) = partition (\<lambda> (i,f). degree_i f = i) gs
      in (a,map snd irr @ concat (map (\<lambda> (i,g). berlekamp_monic_factorization_i i g) hs)))"
 end
