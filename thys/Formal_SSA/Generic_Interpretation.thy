@@ -201,7 +201,7 @@ apply unfold_locales
                       apply (transfer, clarsimp simp: CFG_SSA_Transformed_code_def CFG_SSA_Transformed_def CFG_SSA_wf_def CFG_SSA_def  CFG_wf_def CFG_def CFG_axioms_def)
                      apply (transfer, clarsimp simp: CFG_SSA_Transformed_code_def CFG_SSA_Transformed_def CFG_SSA_wf_def CFG_SSA_def  CFG_wf_def CFG_def CFG_axioms_def)
                     apply simp
-                   apply (transfer, simp add: CFG_SSA_Transformed_code_def CFG_SSA_Transformed_def CFG_SSA_wf_def CFG_wf_def CFG_def CFG_axioms_def CFG_SSA_def CFG_SSA_axioms_def)
+                   subgoal by transfer (simp add: CFG_SSA_Transformed_code_def CFG_SSA_Transformed_def CFG_SSA_wf_def CFG_wf_def CFG_def CFG_axioms_def CFG_SSA_def CFG_SSA_axioms_def)
                   apply (transfer; force simp: CFG_SSA_Transformed_code_def CFG_SSA_Transformed_def CFG_SSA_wf_def CFG_SSA_def CFG_SSA_axioms_def)
                  apply (transfer; simp add: CFG_SSA_Transformed_code_def CFG_SSA_Transformed_def CFG_SSA_wf_def CFG_SSA_def CFG_SSA_axioms_def graph_path_base.predecessors_def graph_path_base.inEdges_def)
                 apply (transfer; clarsimp simp: CFG_SSA_Transformed_code_def CFG_SSA_Transformed_def CFG_SSA_wf_def CFG_SSA_def CFG_SSA_axioms_def)
