@@ -4,6 +4,7 @@
                   René Thiemann
                   Akihisa Yamada
 *)
+section \<open>Distinct Degree Factorization\<close>
 theory Distinct_Degree_Factorization
 imports 
   Finite_Field

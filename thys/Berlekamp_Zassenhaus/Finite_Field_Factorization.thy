@@ -4,8 +4,9 @@
                   René Thiemann
                   Akihisa Yamada
 *)
-subsection \<open>A combined factorization algorithm for finite field polynomials.\<close>
+section \<open>A Combined Factorization Algorithm for Polynomials over GF(p)\<close>
 
+subsection\<open>Type Based Version\<close>
 text \<open>We combine Berlekamp's algorithm with the distinct degree factorization
   to obtain an efficient factorization algorithm for square-free polynomials in GF(p).\<close>
 
