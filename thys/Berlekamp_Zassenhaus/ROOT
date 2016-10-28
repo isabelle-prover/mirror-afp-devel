@@ -17,7 +17,8 @@ session Berlekamp_Zassenhaus (AFP) = Pre_BZ +
     (* Berlekamp's Factorization Algorithm *)
       Chinese_Remainder_Poly
     Berlekamp_Type_Based
-    Berlekamp_Record_Based
+    Distinct_Degree_Factorization
+    Finite_Field_Factorization_Record_Based
 
     (* Hensel Lifting *)
     Hensel_Lifting_Type_Based

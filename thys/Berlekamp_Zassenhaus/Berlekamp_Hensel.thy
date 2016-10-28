@@ -6,7 +6,7 @@
 *)
 subsection \<open>Result is Unique\<close>
 
-text \<open>We combine Berlekamp's factorization algorithm with Hensel-lifting to
+text \<open>We combine the finite field factorization algorithm with Hensel-lifting to
   obtain factorizations mod $p^n$. Moreover, we prove results on unique-factorizations
   in mod $p^n$ which admit to extend the uniqueness result for binary Hensel-lifting
   to the general case. As a consequence, our factorization algorithm will produce
@@ -14,15 +14,15 @@ text \<open>We combine Berlekamp's factorization algorithm with Hensel-lifting t
 
 theory Berlekamp_Hensel
 imports 
-  Berlekamp_Record_Based
+  Finite_Field_Factorization_Record_Based
   Hensel_Lifting
 begin
 
 definition berlekamp_hensel :: "int \<Rightarrow> nat \<Rightarrow> int poly \<Rightarrow> int poly list" where
-  "berlekamp_hensel p n f = (case berlekamp_factorization_int p f of
+  "berlekamp_hensel p n f = (case finite_field_factorization_int p f of
     (_,fs) \<Rightarrow> hensel_lifting p n f fs)"           
 
-text \<open>Berlekamp factorization in combination with Hensel-lifting delivers 
+text \<open>Finite field factorization in combination with Hensel-lifting delivers 
   factorization modulo $p^k$ where factors are irreducible modulo $p$.
   Assumptions: input polynomial is square-free modulo $p$.\<close>
 
@@ -32,7 +32,7 @@ lemma berlekamp_hensel_main: assumes
   and res: "berlekamp_hensel p n f = gs" 
   and cop: "coprime (lead_coeff f) p" 
   and sf: "poly_mod.square_free_m p f" 
-  and berl: "berlekamp_factorization_int p f = (c,fs)" 
+  and berl: "finite_field_factorization_int p f = (c,fs)" 
 shows "poly_mod.factorization_m (p ^ n) f (lead_coeff f, mset gs)" (* factorization mod p^n *)
     "map degree fs = map degree gs" 
     "\<And> g. g \<in> set gs \<Longrightarrow> monic g \<and> poly_mod.Mp (p^n) g = g \<and>  (* monic and normalized *)
@@ -41,7 +41,7 @@ shows "poly_mod.factorization_m (p ^ n) f (lead_coeff f, mset gs)" (* factorizat
 proof -
   from res[unfolded berlekamp_hensel_def berl split] 
   have hen: "hensel_lifting p n f fs = gs" .
-  note bh = berlekamp_factorization_int[OF prime sf berl]
+  note bh = finite_field_factorization_int[OF prime sf berl]
   from bh have "poly_mod.factorization_m p f (c, mset fs)" "c \<in> {0..<p}" "(\<forall>fi\<in>set fs. set (coeffs fi) \<subseteq> {0..<p})" 
     by (auto simp: poly_mod.unique_factorization_m_alt_def)
   note hen = hensel_lifting[OF prime n hen cop sf, OF this]
@@ -62,7 +62,7 @@ theorem berlekamp_hensel: assumes
     "\<And> g. g \<in> set gs \<Longrightarrow> poly_mod.Mp (p^n) g = g \<and> poly_mod.irreducible_m p g"   
    (* normalized and irreducible even mod p *)
 proof -
-  obtain c fs where "berlekamp_factorization_int p f = (c,fs)" by force
+  obtain c fs where "finite_field_factorization_int p f = (c,fs)" by force
   from berlekamp_hensel_main[OF prime n res cop sf this]
   show "poly_mod.factorization_m (p^n) f (lead_coeff f, mset gs)" 
     "\<And> g. g \<in> set gs \<Longrightarrow> poly_mod.Mp (p^n) g = g \<and> poly_mod.irreducible_m p g" by auto
@@ -73,7 +73,7 @@ lemma berlekamp_and_hensel_separated: assumes
   and cop: "coprime (lead_coeff f) p" 
   and sf: "poly_mod.square_free_m p f" 
   and res: "hensel_lifting p n f fs = gs"  
-  and berl: "berlekamp_factorization_int p f = (c,fs)" 
+  and berl: "finite_field_factorization_int p f = (c,fs)" 
   and n: "n \<noteq> 0" 
 shows "berlekamp_hensel p n f = gs" 
   "map degree fs = map degree gs" 
@@ -535,8 +535,8 @@ proof -
     by (simp add: Mp_Mp_pow_is_Mp n p1)
   from Mp_square_free_m[of ?in, unfolded Mp_in] sf have sf: "square_free_m ?in"
     unfolding Mp_square_free_m by simp
-  obtain a b where "berlekamp_factorization_int p ?in = (a,b)" by force
-  from berlekamp_factorization_int[OF prime sf this]
+  obtain a b where "finite_field_factorization_int p ?in = (a,b)" by force
+  from finite_field_factorization_int[OF prime sf this]
   have ufact: "unique_factorization_m ?in (a, mset b)" by auto
   from unique_factorization_m_imp_factorization[OF this]
   have fact: "factorization_m ?in (a, mset b)" .
