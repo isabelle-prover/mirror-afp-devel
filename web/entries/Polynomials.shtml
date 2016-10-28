@@ -35,7 +35,7 @@
         <td class="data" width="80%">Executable Multivariate Polynomials</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://cl-informatik.uibk.ac.at/~griff">Christian Sternagel</a> and <a href="http://cl-informatik.uibk.ac.at/~thiemann">René Thiemann</a></td></tr>
+        <td class="data"><a href="http://cl-informatik.uibk.ac.at/~griff">Christian Sternagel</a>, <a href="http://cl-informatik.uibk.ac.at/~thiemann">René Thiemann</a>, <a href="http://www.risc.jku.at/home/amaletzk">Alexander Maletzky</a> and <a href="http://www.in.tum.de/~immler/">Fabian Immler</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2010-08-10</td></tr>
@@ -55,18 +55,24 @@ over polynomials. Our formalization was performed as part of the <a
 href="http://cl-informatik.uibk.ac.at/software/ceta">IsaFoR/CeTA-system</a>
 which contains several termination techniques. The provided theories have
 been essential to  formalize polynomial interpretations.
+<p>
+This formalization also contains an abstract representation as coefficient functions with finite
+support and a type of power-products. If this type is ordered by a linear (term) ordering, various
+additional notions, such as leading power-product, leading coefficient etc., are introduced as
+well.
         </td></tr>
 
     <tr><td class="datahead" valign="top">Change history:</td>
         <td class="abstract">
 
 [2010-09-17]: Moved theories on arbitrary (ordered) semirings to Abstract Rewriting.
+[2016-10-28]: Added abstract representation of polynomials and authors Maletzky/Immler.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{Polynomials-AFP,
-  author  = {Christian Sternagel and René Thiemann},
+  author  = {Christian Sternagel and René Thiemann and Alexander Maletzky and Fabian Immler},
   title   = {Executable Multivariate Polynomials},
   journal = {Archive of Formal Proofs},
   month   = aug,
@@ -84,6 +90,10 @@ been essential to  formalize polynomial interpretations.
     <tr><td class="datahead">Depends on:</td>
         <td class="data"><a href="Abstract-Rewriting.shtml">Abstract-Rewriting</a>, <a href="Matrix.shtml">Matrix</a></td></tr>
 
+
+
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="Groebner_Bases.shtml">Groebner_Bases</a></td></tr>
 
 
 

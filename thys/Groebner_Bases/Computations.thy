@@ -3,7 +3,7 @@
 section \<open>Computing Gr\"obner Bases\<close>
 
 theory Computations
-imports Groebner_Bases "../Multivariate_Polynomials/Poly_Lists" "~~/src/HOL/Library/AList"
+imports Groebner_Bases "../Polynomials/Poly_Lists" "~~/src/HOL/Library/AList"
 begin
 
 text \<open>We now compute concrete Gr\"obner bases w.r.t. both the purely lexicographic and the

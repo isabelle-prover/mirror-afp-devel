@@ -3,7 +3,7 @@
 section \<open>Gr\"obner Bases\<close>
 
 theory Groebner_Bases
-imports "../Multivariate_Polynomials/Abstract_Poly" Confluence
+imports "../Polynomials/Abstract_Poly" Confluence
 begin
 
 text \<open>This theory provides the main results about Gr\"obner bases of multivariate polynomials.

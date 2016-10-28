@@ -1,6 +1,6 @@
 chapter AFP
 
-session Groebner_Bases (AFP) = Multivariate_Polynomials +
+session Groebner_Bases (AFP) = Polynomials +
   options [timeout = 600]
   theories [document = false]
     "../Abstract-Rewriting/Abstract_Rewriting"
