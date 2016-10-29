@@ -72,7 +72,7 @@ definition root_poly_Im :: "rat poly \<Rightarrow> rat poly list" where
     f \<leftarrow> fs])"
     
 lemma poly_1_2i_code_unfold[code_unfold]: "snd (rat_to_int_poly poly_1_2i) = [:1,0,4:]"
-  by code_simp
+  by eval
 
 context inj_field_hom_0'
 begin
