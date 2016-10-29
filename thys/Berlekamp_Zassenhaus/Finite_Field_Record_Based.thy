@@ -14,7 +14,27 @@ theory Finite_Field_Record_Based
 imports
   Finite_Field
   Arithmetic_Record_Based
+  Code_Target_Numeral
 begin
+
+(* mod on standard case which can immediately be mapped to 
+   target languages without considering special cases *)
+definition mod_nonneg_pos :: "integer \<Rightarrow> integer \<Rightarrow> integer" where
+  "x \<ge> 0 \<Longrightarrow> y > 0 \<Longrightarrow> mod_nonneg_pos x y = (x mod y)" 
+  
+code_printing
+  constant mod_nonneg_pos \<rightharpoonup>
+        (SML) "IntInf.mod/ ( _,/ _ )"
+    and (Haskell) "Prelude.mod/ ( _ )/ ( _ )"
+    and (Eval) "IntInf.mod/ ( _,/ _ )" 
+    and (OCaml) "Big'_int.mod'_big'_int/ ( _ )/ ( _ )"
+    and (Scala) "!((k: BigInt) => (l: BigInt) =>/ (k '% l))"
+
+definition mod_nonneg_pos_int :: "int \<Rightarrow> int \<Rightarrow> int" where
+  "mod_nonneg_pos_int x y = int_of_integer (mod_nonneg_pos (integer_of_int x) (integer_of_int y))" 
+
+lemma mod_nonneg_pos_int[simp]: "x \<ge> 0 \<Longrightarrow> y > 0 \<Longrightarrow> mod_nonneg_pos_int x y = (x mod y)" 
+  unfolding mod_nonneg_pos_int_def using mod_nonneg_pos_def by simp
 
 context
   fixes p :: int
@@ -29,7 +49,7 @@ definition uminus_p :: "int \<Rightarrow> int" where
   "uminus_p x = (if x = 0 then 0 else p - x)"
 
 definition mult_p :: "int \<Rightarrow> int \<Rightarrow> int" where
-  "mult_p x y = (x * y mod p)"
+  "mult_p x y = (mod_nonneg_pos_int (x * y) p)"
 
 fun power_p :: "int \<Rightarrow> nat \<Rightarrow> int" where
   "power_p x n = (if n = 0 then 1 else
