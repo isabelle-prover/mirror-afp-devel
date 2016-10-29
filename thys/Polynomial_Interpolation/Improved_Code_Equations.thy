@@ -104,18 +104,6 @@ lemma divmod_nat_code'[code]: "Divides.divmod_nat m n = (
   unfolding divmod_nat_code Let_def divmod_integer_code'' 
   by (simp split: if_splits add: int_of_nat_gt_zero)
 
-subsection \<open>@{const pdivmod}.\<close>
-
-text \<open>We improve @{thm pdivmod_fold_coeffs} by only doing one division.\<close>
-
-lemma pdivmod_fold_coeffs_code[code]: "pdivmod p q = (if q = 0 then (0, p)
-    else let n = degree q; x = inverse (coeff q n) 
-    in fold_coeffs (\<lambda>a (s, r).
-      let ar = pCons a r; b = coeff ar n * x
-      in (pCons b s, ar - smult b q)
-   ) p (0, 0))"
-   unfolding pdivmod_fold_coeffs by (simp add: Let_def divide_inverse)
-
 subsection \<open>@{const binomial}\<close>
 
 lemma binomial_code[code]:
