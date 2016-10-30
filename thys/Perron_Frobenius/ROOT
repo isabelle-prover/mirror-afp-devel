@@ -17,6 +17,7 @@ session "Pre_Perron_Frobenius" (AFP) = "Jordan_Normal_Form" +
     "~~/src/HOL/Analysis/Brouwer_Fixpoint"
     "~~/src/HOL/Analysis/Cartesian_Euclidean_Space"
     "~~/src/HOL/Eisbach/Eisbach"
+    "~~/src/HOL/Library/Types_To_Sets"
     "../Echelon_Form/Code_Cayley_Hamilton"
     "../Jordan_Normal_Form/Spectral_Radius"
     "../Polynomial_Factorization/Square_Free_Factorization"

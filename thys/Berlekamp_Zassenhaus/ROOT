@@ -53,6 +53,6 @@ session Pre_BZ (AFP) = "Polynomial_Factorization" +
     "../Jordan_Normal_Form/Gauss_Jordan_IArray_Impl"
     "../Efficient-Mergesort/Efficient_Sort"
     "~~/src/HOL/Number_Theory/Residues"
-    "../Perron_Frobenius/Types_To_Sets/Types_To_Sets"
+    "~~/src/HOL/Library/Types_To_Sets"
     "../Jordan_Normal_Form/Determinant_Impl"
 

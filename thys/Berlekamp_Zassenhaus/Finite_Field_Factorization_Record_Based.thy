@@ -10,7 +10,7 @@ imports
   Finite_Field_Factorization 
   Matrix_Record_Based
   Poly_Mod_Finite_Field_Record_Based
-  "../Perron_Frobenius/Types_To_Sets/Types_To_Sets"
+  "~~/src/HOL/Library/Types_To_Sets"
   "../Jordan_Normal_Form/Matrix_IArray_Impl"
   "../Jordan_Normal_Form/Gauss_Jordan_IArray_Impl"  
   "../Polynomial_Interpolation/Improved_Code_Equations"
@@ -546,7 +546,7 @@ proof -
     from prime_type_prime_card[OF p this]
     have "class.prime_card TYPE('b)" "p = int CARD('b)" by auto
     from prime_field.finite_field_i_sound[unfolded prime_field_def mod_ring_locale_def,
-      internalize_sort "?'a :: prime_card", OF this, folded f_ops, OF refl berl_i sq fs]
+      internalize_sort "'a :: prime_card", OF this, folded f_ops, OF refl berl_i sq fs]
     have ?thesis .
   }
   from this[cancel_type_definition, OF ne]

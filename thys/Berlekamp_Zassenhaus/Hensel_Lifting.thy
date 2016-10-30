@@ -21,7 +21,7 @@ imports
   "~~/src/HOL/Number_Theory/Euclidean_Algorithm"
   Poly_Mod_Finite_Field_Record_Based
   "../Sqrt_Babylonian/NthRoot_Impl" (* for log_ceil *)
-  "../Perron_Frobenius/Types_To_Sets/Types_To_Sets"
+  "~~/src/HOL/Library/Types_To_Sets"
   "../Polynomial_Factorization/Square_Free_Factorization"
 begin
 
@@ -153,7 +153,7 @@ proof -
     from prime_type_prime_card[OF p this]
     have "class.prime_card TYPE('b)" "m = int CARD('b)" by auto
     from poly_mod_type.uniqueness_poly_equality_mod_int[unfolded prime_field_def poly_mod_type_def, 
-      internalize_sort "?'a :: prime_card", OF this deg f0 cop eq]
+      internalize_sort "'a :: prime_card", OF this deg f0 cop eq]
     have "a =m a' \<and> b =m b'" by auto
   }
   from this[cancel_type_definition, OF ne]
@@ -592,7 +592,7 @@ proof -
     from prime_type_prime_card[OF p this]
     have "class.prime_card TYPE('b)" "m = int CARD('b)" by auto
     from prime_field.euclid_ext_poly_no_gcd_i_sound[unfolded prime_field_def mod_ring_locale_def,
-      internalize_sort "?'a :: prime_card", OF this refl f refl g cop eucl ab]
+      internalize_sort "'a :: prime_card", OF this refl f refl g cop eucl ab]
     have ?thesis.
   }
   from this[cancel_type_definition, OF ne]

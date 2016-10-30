@@ -20,7 +20,7 @@ imports
   Poly_Mod
   Square_Free_Int_To_Square_Free_GFp
   Poly_Mod_Finite_Field_Record_Based
-  "../Perron_Frobenius/Types_To_Sets/Types_To_Sets"
+  "~~/src/HOL/Library/Types_To_Sets"
 begin
 
 lemma square_free_coprime_pderiv_GFp: fixes f :: "'a :: prime_card mod_ring poly"
@@ -103,7 +103,7 @@ proof -
     from prime_type_prime_card[OF p this]
     have "class.prime_card TYPE('b)" and p: "p = int CARD('b)" by auto
     from prime_field.square_free_m_via_square_free_i_main[unfolded prime_field_def mod_ring_locale_def,
-      internalize_sort "?'a :: prime_card", OF this refl, of f]
+      internalize_sort "'a :: prime_card", OF this refl, of f]
     have "square_free_i (finite_field_ops p) (coeffs (poly_mod.Mp p f)) 
       \<Longrightarrow> poly_mod.square_free_m p f" 
       "nat p > poly_mod.degree_m p f \<Longrightarrow> nat p > square_free_bound f \<Longrightarrow> square_free f \<Longrightarrow> 
