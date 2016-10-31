@@ -122,6 +122,9 @@ lemma args_Nil_iff_is_Hd: "args s = [] \<longleftrightarrow> is_Hd s"
 abbreviation num_args :: "('s, 'v) tm \<Rightarrow> nat" where
   "num_args s \<equiv> length (args s)"
 
+lemma size_ge_num_args: "size s \<ge> num_args s"
+  by (induct s) auto
+
 lemma Hd_head_id: "num_args s = 0 \<Longrightarrow> Hd (head s) = s"
   by (metis args.cases args.simps(2) length_0_conv snoc_eq_iff_butlast tm.collapse(1) tm.disc(1))
 
@@ -325,6 +328,7 @@ lemma wary_fun[intro]: "wary t \<Longrightarrow> wary (fun t)"
 lemma wary_arg[intro]: "wary t \<Longrightarrow> wary (arg t)"
   by (cases t) (auto elim: wary.cases)
 
+
 lemma wary_args: "s \<in> set (args t) \<Longrightarrow> wary t \<Longrightarrow> wary s"
   by (induct t arbitrary: s, simp)
    (metis Un_iff args.simps(2) wary.cases insert_iff length_pos_if_in_set
@@ -338,6 +342,48 @@ lemma wary_inf_ary: "(\<And>\<zeta>. arity_hd \<zeta> = \<infinity>) \<Longright
 
 lemma wary_less_eq_args: "wary s \<Longrightarrow> num_args s \<le> arity_hd (head s)"
   by (induct rule: wary.induct) (auto simp: zero_enat_def[symmetric] Suc_ile_eq)
+
+lemma wary_apps:
+  "wary s \<Longrightarrow> (\<And>sa. sa \<in> set ss \<Longrightarrow> wary sa) \<Longrightarrow> length ss \<le> arity s \<Longrightarrow> wary (apps s ss)"
+proof (induct ss arbitrary: s)
+  case (Cons sa ss)
+  note ih = this(1) and wary_s = this(2) and wary_ss = this(3) and nargs_s_sa_ss = this(4)
+  show ?case
+    unfolding apps.simps
+  proof (rule ih)
+    have "wary sa"
+      using wary_ss by simp
+    moreover have " enat (num_args s) < arity_hd (head s)"
+      by (metis (mono_tags) One_nat_def add.comm_neutral arity_def diff_add_zero enat_ord_simps(1)
+        idiff_enat_enat less_one list.size(4) nargs_s_sa_ss not_add_less2
+        order.not_eq_order_implies_strict wary_less_eq_args wary_s)
+    ultimately show "wary (App s sa)"
+      by (rule wary_App[OF wary_s])
+  next
+    show "\<And>sa. sa \<in> set ss \<Longrightarrow> wary sa"
+      using wary_ss by simp
+  next
+    show "length ss \<le> arity (App s sa)"
+    proof (cases "arity s")
+      case enat
+      thus ?thesis
+        using nargs_s_sa_ss by (simp add: one_enat_def)
+    qed simp
+  qed
+qed simp
+
+lemma wary_cases_apps[consumes 1, case_names apps]:
+  assumes
+    wary_t: "wary t" and
+    apps: "\<And>\<zeta> ss. t = apps (Hd \<zeta>) ss \<Longrightarrow> (\<And>sa. sa \<in> set ss \<Longrightarrow> wary sa) \<Longrightarrow> length ss \<le> arity_hd \<zeta> \<Longrightarrow> P"
+  shows P
+  using apps
+proof (atomize_elim, cases t rule: tm_exhaust_apps)
+  case t: (apps \<zeta> ss)
+  show "\<exists>\<zeta> ss. t = apps (Hd \<zeta>) ss \<and> (\<forall>sa. sa \<in> set ss \<longrightarrow> wary sa) \<and> enat (length ss) \<le> arity_hd \<zeta>"
+    by (rule exI[of _ \<zeta>], rule exI[of _ ss])
+      (auto simp: t wary_args[OF _ wary_t] wary_less_eq_args[OF wary_t, unfolded t, simplified])
+qed
 
 lemma arity_hd_head: "wary s \<Longrightarrow> arity_hd (head s) = arity s + num_args s"
   by (simp add: arity_def enat_sub_add_same wary_less_eq_args)

@@ -291,6 +291,16 @@ proof (induct xs)
     using ih[OF xs_i_ge_a] by simp
 qed auto
 
+lemma zip_append_0_upt:
+  "zip (xs @ ys) [0..<length xs + length ys] =
+   zip xs [0..<length xs] @ zip ys [length xs..<length xs + length ys]"
+proof (induct ys arbitrary: xs)
+  case (Cons y ys)
+  note ih = this
+  show ?case
+    using ih[of "xs @ [y]"] by (simp, cases ys, simp, simp add: upt_rec)
+qed auto
+
 
 subsection \<open>Extended Natural Numbers\<close>
 
@@ -312,6 +322,9 @@ lemma enat_sub_add_same[intro]: "n \<le> m \<Longrightarrow> m = m - n + n" for 
 lemma enat_the_enat_iden[simp]: "n \<noteq> \<infinity> \<Longrightarrow> enat (the_enat n) = n"
   by auto
 
+lemma the_enat_minus_nat: "m \<noteq> \<infinity> \<Longrightarrow> the_enat (m - enat n) = the_enat m - n"
+  by auto
+
 lemma enat_le_imp_minus_le:
   fixes k m n :: enat
   assumes le: "k \<le> m"
@@ -328,6 +341,40 @@ qed
 
 
 subsection \<open>Multisets\<close>
+
+lemma add_mset_lt_left_lt: "a < b \<Longrightarrow> add_mset a A < add_mset b A"
+  unfolding less_multiset\<^sub>H\<^sub>O by auto
+
+lemma add_mset_le_left_le:
+  fixes a :: "'a :: linorder"
+  shows "a \<le> b \<Longrightarrow> add_mset a A \<le> add_mset b A"
+  unfolding less_multiset\<^sub>H\<^sub>O by auto
+
+lemma add_mset_lt_right_lt: "A < B \<Longrightarrow> add_mset a A < add_mset a B"
+  unfolding less_multiset\<^sub>H\<^sub>O by auto
+
+lemma add_mset_le_right_le:
+  shows "A \<le> B \<Longrightarrow> add_mset a A \<le> add_mset a B"
+  unfolding less_multiset\<^sub>H\<^sub>O by auto
+
+lemma add_mset_lt_lt_lt:
+  assumes a_lt_b: "a < b" and A_le_B: "A < B"
+  shows "add_mset a A < add_mset b B"
+  by (rule less_trans[OF add_mset_lt_left_lt[OF a_lt_b] add_mset_lt_right_lt[OF A_le_B]])
+
+lemma add_mset_lt_lt_le: "a < b \<Longrightarrow> A \<le> B \<Longrightarrow> add_mset a A < add_mset b B"
+  using add_mset_lt_lt_lt le_neq_trans by fastforce
+
+lemma add_mset_lt_le_lt:
+  fixes a :: "'a :: linorder"
+  shows "a \<le> b \<Longrightarrow> A < B \<Longrightarrow> add_mset a A < add_mset b B"
+  using add_mset_lt_lt_lt by (metis add_mset_lt_right_lt le_less)
+
+lemma add_mset_le_le_le:
+  fixes a :: "'a :: linorder"
+  assumes a_le_b: "a \<le> b" and A_le_B: "A \<le> B"
+  shows "add_mset a A \<le> add_mset b B"
+  by (rule order.trans[OF add_mset_le_left_le[OF a_le_b] add_mset_le_right_le[OF A_le_B]])
 
 declare filter_eq_replicate_mset [simp] image_mset_subseteq_mono [intro]
 

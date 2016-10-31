@@ -1658,10 +1658,10 @@ proof -
           by (simp add: y_ne_x)
         hence yyx_gt_x: "gt (yy x) x" and yyx_cnt: "count ?Y (yy x) > count ?X (yy x)"
           using yy by blast+
-  
+
         have yyx_ne_y: "yy x \<noteq> y"
           using y_ngt_x yyx_gt_x by auto
-  
+
         have "gt (yy x) xa"
           unfolding xa_eq_y using trans yyx_gt_x x_gt_y by blast
         moreover have "count ?Ya (yy x) > count ?Xa (yy x)"
@@ -1705,10 +1705,10 @@ proof -
             by (simp add: y_ne_x)
           hence yyx_gt_x: "gt (yy x) x" and yyx_cnt: "count ?Y (yy x) > count ?X (yy x)"
             using yy by blast+
-     
+
           have yyx_ne_y: "yy x \<noteq> y"
             using y_ngt_x yyx_gt_x by auto
-     
+
           have "gt (yy x) xa"
             using trans x_gt_y xa_cnt yy yyx_gt_x yyxa_eq_y by blast
           moreover have "count ?Ya (yy x) > count ?Xa (yy x)"
