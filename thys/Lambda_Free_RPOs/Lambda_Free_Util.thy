@@ -339,6 +339,12 @@ proof -
     by (metis diff_le_self enat_ord_code(1) enat_ord_simps(3) idiff_enat_enat idiff_infinity_right)
 qed
 
+lemma add_diff_assoc2_enat: "m \<ge> n \<Longrightarrow> (m :: enat) - n + p = m + p - n"
+  by (cases m; cases n; cases p; auto)
+
+lemma enat_mult_minus_distrib: "enat x * (y - z) = enat x * y - enat x * z"
+  by (cases y; cases z; auto simp: enat_0 right_diff_distrib')
+
 
 subsection \<open>Multisets\<close>
 
