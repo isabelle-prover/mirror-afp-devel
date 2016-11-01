@@ -12,7 +12,7 @@ text \<open>This theory provides the main results about Gr\"obner bases of multi
 
 subsection \<open>Reducibility\<close>
 
-context ordered_powerprod
+context od_powerprod
 begin
 
 definition red_single::"('a, 'b::field) mpoly \<Rightarrow> ('a, 'b) mpoly \<Rightarrow> ('a, 'b) mpoly \<Rightarrow> 'a \<Rightarrow> bool" where
@@ -1029,7 +1029,7 @@ proof -
     unfolding is_Groebner_basis_def by simp
 qed
 
-end (* ordered_powerprod *)
+end (* od_powerprod *)
 
 subsection \<open>Algorithms\<close>
 
@@ -1176,7 +1176,7 @@ qed
 
 subsubsection \<open>Function @{term rd}\<close>
 
-context ordered_powerprod
+context od_powerprod
 begin
 
 function rd_mult::"('a, 'b::field) mpoly \<Rightarrow> ('a, 'b) mpoly \<Rightarrow> ('b * 'a)" where
@@ -2348,6 +2348,6 @@ next
   thus "p \<in> pideal (set bs)" using gb_pideal[of bs] by simp
 qed
 
-end (* ordered_powerprod *)
+end (* od_powerprod *)
 
 end (* theory *)

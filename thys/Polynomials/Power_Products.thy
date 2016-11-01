@@ -14,19 +14,12 @@ subsection \<open>Class of Abstract Power-Products\<close>
 
 subsubsection \<open>Class of Unordered Power-Products\<close>
 
-class powerprod = comm_monoid_mult +
+class comm_powerprod = comm_monoid_mult +
   fixes div::"'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "divide" 70)
-  fixes lcm::"'a \<Rightarrow> 'a \<Rightarrow> 'a"
   fixes dummy_dvd::"'a \<Rightarrow> 'a \<Rightarrow> bool"
   assumes dummy_dvd_iff: "dummy_dvd s t \<longleftrightarrow> s dvd t"
   assumes cancel: "s * u = t * u \<Longrightarrow> s = t"
-  assumes times_eq_one: "s * t = 1 \<Longrightarrow> s = 1"
   assumes times_divide: "(s * t) divide t = s"
-  assumes ndvd_divide: "\<not> s dvd t \<Longrightarrow> t divide s = 1"
-  assumes dvd_lcm: "s dvd (lcm s t)"
-  assumes lcm_comm: "lcm s t = lcm t s"
-  assumes lcm_min: "s dvd u \<Longrightarrow> t dvd u \<Longrightarrow> (lcm s t) dvd u"
-  assumes dickson: "\<And>seq::nat \<Rightarrow> 'a. (\<exists>i j::nat. i < j \<and> seq i dvd seq j)"
 begin
 
 lemma cancel_left:
@@ -40,23 +33,6 @@ by (blast dest: cancel_left)
 lemma mult_right_cancel [simp]:
   "s * u = t * u \<longleftrightarrow> s = t"
 by (blast dest: cancel)
-
-lemma times_eq_one_2:
-  assumes "s * t = 1"
-  shows "t = 1"
-using assms
-by (simp only: mult_commute[of s t] times_eq_one)
-
-lemma dvd_one:
-  shows "s dvd 1 \<longleftrightarrow> (s = 1)"
-proof
-  assume "s dvd 1"
-  from this obtain k where "1 = s * k" unfolding dvd_def ..
-  from this times_eq_one[of s k] show "s = 1" by simp
-next
-  assume "s = 1"
-  thus "s dvd 1" by simp
-qed
 
 lemma dvd_canc:
   shows "s * u dvd t * u \<longleftrightarrow> s dvd t"
@@ -94,48 +70,6 @@ using times_divide[of 1 t] by simp
 lemma divide_one:
   shows "t divide 1 = t"
 using times_divide[of t 1] by simp
-
-lemma divide_divide:
-  shows "(s divide t) divide u = s divide (t * u)"
-proof (cases "t dvd s")
-  assume "t dvd s"
-  from this obtain k where k: "s = t * k" unfolding dvd_def ..
-  hence eq1: "(s divide t) = k" by (simp add: mult_commute times_divide)
-  show ?thesis
-  proof (cases "u dvd k")
-    assume "u dvd k"
-    from this obtain l where l: "k = u * l" unfolding dvd_def ..
-    from eq1 this have eq2: "(s divide t) divide u = l" by (simp add: mult_commute times_divide)
-    from k l have "s = l * (t * u)" by (simp add: ac_simps)
-    hence eq3: "s divide (t * u) = l" by (simp add: times_divide)
-    from eq2 eq3 show ?thesis by simp
-  next
-    assume "\<not> u dvd k"
-    from ndvd_divide[OF this] eq1 have eq4: "(s divide t) divide u = 1" by simp
-    have "\<not> (t * u) dvd s" by (simp add: k dvd_canc_2, fact)
-    from ndvd_divide[OF this] eq4 show ?thesis by simp
-  qed
-next
-  assume "\<not> t dvd s"
-  from ndvd_divide[OF this] have eq5: "s divide t = 1" .
-  show ?thesis
-  proof (cases "u dvd 1")
-    assume "u dvd 1"
-    from this dvd_one[of u] have "u = 1" by simp
-    thus ?thesis by (simp add: divide_one)
-  next
-    assume "\<not> u dvd 1"
-    from ndvd_divide[OF this] eq5 have eq6: "(s divide t) divide u = 1" by simp
-    have "\<not> (t * u) dvd s"
-    proof
-      assume "(t * u) dvd s"
-      from this obtain k where "s = t * (u * k)" unfolding dvd_def by (auto simp add: ac_simps)
-      have "t dvd s" unfolding dvd_def by (rule exI[of _ "u * k"], fact)
-      from this \<open>\<not> t dvd s\<close> show False by simp
-    qed
-    from eq6 ndvd_divide[OF this] show ?thesis by simp
-  qed
-qed
 
 lemma dvd_divide:
   assumes "s dvd t"
@@ -193,13 +127,28 @@ proof -
   finally show ?thesis by simp
 qed
 
+lemma divide_divide:
+  assumes "t dvd s" "u dvd (s divide t)"
+  shows "(s divide t) divide u = s divide (t * u)"
+proof -
+  from assms(1) obtain k where k: "s = t * k" unfolding dvd_def ..
+  hence eq1: "(s divide t) = k" by (simp add: mult_commute times_divide)
+  with assms(2) have "u dvd k" by simp
+  from this obtain l where l: "k = u * l" unfolding dvd_def ..
+  from eq1 this have eq2: "(s divide t) divide u = l" by (simp add: mult_commute times_divide)
+  from k l have "s = l * (t * u)" by (simp add: ac_simps)
+  hence eq3: "s divide (t * u) = l" by (simp add: times_divide)
+  from eq2 eq3 show ?thesis by simp
+qed
+
 lemma divide_times_divide:
   assumes "s dvd t" and "u dvd v"
   shows "(t divide s) * (v divide u) = (t * v) divide (s * u)"
 using
   divide_times[OF \<open>s dvd t\<close>, of "v divide u"]
   divide_times[OF \<open>u dvd v\<close>, of t]
-  divide_divide[of "t * v" u s]
+  divide_divide[OF dvd_mult[OF \<open>u dvd v\<close>, of t], of s]
+  dvd_mult2[OF \<open>s dvd t\<close>, of "v divide u"]
 by (simp add: ac_simps)
 
 lemma divide_times_divide_cancel:
@@ -216,11 +165,60 @@ proof -
   finally show ?thesis by (simp add: divide_same)
 qed
 
+end
+
+text \<open>Instances of class "lcm_powerprod" are types of commutative power-products admitting
+  @{emph \<open>unique\<close>} least common multiples.
+  Note that if the exponents of indeterminates are arbitrary integers (as for instance in Laurent
+  polynomials), then no such unique lcms exist.\<close>
+class lcm_powerprod = comm_powerprod +
+  fixes lcm::"'a \<Rightarrow> 'a \<Rightarrow> 'a"
+  assumes dvd_lcm: "s dvd (lcm s t)"
+  assumes lcm_min: "s dvd u \<Longrightarrow> t dvd u \<Longrightarrow> (lcm s t) dvd u"
+  assumes lcm_comm: "lcm s t = lcm t s"
+  assumes times_eq_one: "s * t = 1 \<Longrightarrow> s = 1"
+begin
+
 lemma dvd_lcm_2:
   shows "t dvd (lcm s t)"
 by (simp add: lcm_comm[of s t], rule dvd_lcm)
 
+lemma times_eq_one_2:
+  assumes "s * t = 1"
+  shows "t = 1"
+using assms
+by (simp only: mult_commute[of s t] times_eq_one)
+
+lemma dvd_one:
+  shows "s dvd 1 \<longleftrightarrow> (s = 1)"
+proof
+  assume "s dvd 1"
+  from this obtain k where "1 = s * k" unfolding dvd_def ..
+  from this times_eq_one[of s k] show "s = 1" by simp
+next
+  assume "s = 1"
+  thus "s dvd 1" by simp
+qed
+
+lemma dvd_antisym:
+  assumes "s dvd t" "t dvd s"
+  shows "s = t"
+proof -
+  from \<open>s dvd t\<close> obtain u where u_def: "t = s * u" unfolding dvd_def ..
+  from \<open>t dvd s\<close> obtain v where v_def: "s = t * v" unfolding dvd_def ..
+  from u_def v_def have "s = (s * u) * v" by (simp add: ac_simps)
+  hence "s * 1 = s * (u * v)" by (simp add: ac_simps)
+  hence "u * v = 1" using cancel_left[of s 1 "u * v"] by simp
+  hence "u = 1" using times_eq_one[of u v] by simp
+  thus ?thesis using u_def by simp
+qed
+
 end
+
+text \<open>Instances of class "dickson_powerprod" are types of commutative power-products satisfying the
+  Dickson property.\<close>
+class dickson_powerprod = lcm_powerprod +
+  assumes dickson: "\<And>seq::nat \<Rightarrow> 'a. (\<exists>i j::nat. i < j \<and> seq i dvd seq j)"
 
 subsubsection \<open>Class of Ordered Power-Products\<close>
 
@@ -234,7 +232,7 @@ proof -
 qed
 
 locale ordered_powerprod = 
-  fixes ord::"'a \<Rightarrow> 'a::powerprod \<Rightarrow> bool" (infixl "\<preceq>" 50)
+  fixes ord::"'a \<Rightarrow> 'a::comm_powerprod \<Rightarrow> bool" (infixl "\<preceq>" 50)
   assumes ord_refl: "s \<preceq> s"
   assumes ord_antisym: "s \<preceq> t \<Longrightarrow> t \<preceq> s \<Longrightarrow> s = t"
   assumes ord_trans: "s \<preceq> t \<Longrightarrow> t \<preceq> u \<Longrightarrow> s \<preceq> u"
@@ -286,6 +284,29 @@ proof -
   thus ?thesis using times_monotone[OF one_min[of k], of s] by (simp add: ac_simps)
 qed
 
+end
+
+text \<open>Instances of "od_powerprod" must satisfy the Dickson property.\<close>
+locale od_powerprod =
+  fixes ord::"'a \<Rightarrow> 'a::dickson_powerprod \<Rightarrow> bool" (infixl "\<preceq>" 50)
+  assumes ord_r: "s \<preceq> s"
+  assumes ord_a: "s \<preceq> t \<Longrightarrow> t \<preceq> s \<Longrightarrow> s = t"
+  assumes ord_t: "s \<preceq> t \<Longrightarrow> t \<preceq> u \<Longrightarrow> s \<preceq> u"
+  assumes ord_l: "s \<preceq> t \<or> t \<preceq> s"
+  assumes one_m: "1 \<preceq> t"
+  assumes times_m: "s \<preceq> t \<Longrightarrow> s * u \<preceq> t * u"
+begin
+
+sublocale ordered_powerprod
+  apply standard
+  subgoal by (rule ord_r)
+  subgoal by (rule ord_a)
+  subgoal by (rule ord_t)
+  subgoal by (rule ord_l)
+  subgoal by (rule one_m)
+  subgoal by (rule times_m)
+  done
+
 lemma wf_ord_strict:
   shows "wfP (op \<prec>)"
 proof (rule wfP_chain)
@@ -331,11 +352,14 @@ end
 
 subsection \<open>Type @{term pp}\<close>
 
-text \<open>Power-products are represented as (possibly infinite) functions from a type of indeterminates
-  to nat.\<close>
+text \<open>Power-products are represented as functions from a type of indeterminates to nat. The functions
+  must be non-zero only for finitely many arguments.\<close>
 
-typedef 'a pp = "UNIV::('a \<Rightarrow> nat) set"
-  morphisms exp Abs_pp by auto
+typedef 'a pp = "{f :: 'a \<Rightarrow> nat. finite {t. f t \<noteq> 0}}"
+  morphisms exp Abs_pp
+proof
+  show "(\<lambda>x. 0) \<in> {f. finite {t. f t \<noteq> 0}}" by simp
+qed
 
 setup_lifting type_definition_pp
 
@@ -347,11 +371,21 @@ proof transfer
   thus "s = t" ..
 qed
 
+lift_definition indets::"'a pp \<Rightarrow> 'a set" is "\<lambda>s. {x. s x \<noteq> 0}" .
+
+lemma indets_finite:
+  "finite (indets s)"
+by (transfer, simp)
+
+lemma in_indets_iff:
+  "x \<in> (indets s) = (exp s x \<noteq> 0)"
+by (transfer, simp)
+
 subsubsection \<open>@{typ "'a pp"} belongs to class @{class one}\<close>
 
 instantiation pp :: (type) one
 begin
-lift_definition one_pp::"'a pp" is "(\<lambda>t::'a. 0::nat)" .
+lift_definition one_pp::"'a pp" is "(\<lambda>t::'a. 0::nat)" by simp
 
 instance ..
 end
@@ -367,10 +401,40 @@ end
 
 subsubsection \<open>@{typ "'a pp"} belongs to class @{class comm_monoid_mult}\<close>
 
+lemma finite_neq_0:
+  assumes fin_A: "finite {x. f x \<noteq> 0}" and fin_B: "finite {x. g x \<noteq> 0}" and "\<And>x. h x 0 0 = 0"
+  shows "finite {x. h x (f x) (g x) \<noteq> 0}"
+proof -
+  from fin_A fin_B have  "finite ({x. f x \<noteq> 0} \<union> {x. g x \<noteq> 0})" by (intro finite_UnI)
+  hence finite_union: "finite {x. (f x \<noteq> 0) \<or> (g x \<noteq> 0)}" by (simp only: Collect_disj_eq)
+  have "{x. h x (f x) (g x) \<noteq> 0} \<subseteq> {x. (f x \<noteq> 0) \<or> (g x \<noteq> 0)}"
+  proof (intro Collect_mono, rule)
+    fix x::'a
+    assume h_not_zero: "h x (f x) (g x) \<noteq> 0"
+    have "f x = 0 \<Longrightarrow> g x \<noteq> 0"
+    proof
+      assume "f x = 0" "g x = 0"
+      thus False using h_not_zero \<open>h x 0 0 = 0\<close>  by simp
+    qed
+    thus "f x \<noteq> 0 \<or> g x \<noteq> 0" by auto
+  qed
+  from finite_subset[OF this] finite_union show "finite {x. h x (f x) (g x) \<noteq> 0}" .
+qed
+
+lemma finite_neq_0':
+  assumes "finite {x. f x \<noteq> 0}" and "finite {x. g x \<noteq> 0}" and "h 0 0 = 0"
+  shows "finite {x. h (f x) (g x) \<noteq> 0}"
+using assms by (rule finite_neq_0)
+
 instantiation pp :: (type) comm_monoid_mult
 begin
 
-lift_definition times_pp::"'a pp \<Rightarrow> 'a pp \<Rightarrow> 'a pp" is "\<lambda>s t. \<lambda>x. s x + t x" .
+lift_definition times_pp::"'a pp \<Rightarrow> 'a pp \<Rightarrow> 'a pp" is "\<lambda>s t. \<lambda>x. s x + t x"
+proof -
+  fix fun1 fun2::"'a \<Rightarrow> nat"
+  assume "finite {t. fun1 t \<noteq> 0}" and "finite {t. fun2 t \<noteq> 0}"
+  from finite_neq_0'[OF this, of "op +"] show "finite {t. fun1 t + fun2 t \<noteq> 0}" by simp
+qed
 
 lemma times_pp_one_neutral:
   shows "1 * s = (s::'a pp)"
@@ -383,6 +447,10 @@ by transfer auto
 lemma times_pp_comm:
   shows "s * t = t * (s::'a pp)"
 by transfer auto
+
+lemma indets_times:
+  "indets (s * t) = (indets s) \<union> (indets t)"
+by (transfer, auto)
 
 instance
 apply standard
@@ -410,21 +478,145 @@ next
   thus "\<exists>k. t = s * k"
   proof transfer
     fix s t::"'a \<Rightarrow> nat"
+    assume "finite {x. t x \<noteq> 0}" and "finite {x. s x \<noteq> 0}"
+    from finite_neq_0'[OF this, of "op -"] have fin: "finite {x. t x - s x \<noteq> 0}" by simp
     assume a: "\<forall>x. s x \<le> t x"
-    show "\<exists>k. t = (\<lambda>x. s x + k x)"
-    proof (rule exI[of _ "\<lambda>x. t x - s x"], rule)
+    show "\<exists>k\<in>{f. finite {t. f t \<noteq> 0}}. t = (\<lambda>x. s x + k x)"
+    proof (rule bexI[of _ "\<lambda>x. t x - s x"], rule)
       fix x
       from a have "s x \<le> t x" ..
       thus "t x = s x + (t x - s x)" by simp
+    next
+      from fin show "(\<lambda>k. t k - s k) \<in> {f. finite {x. f x \<noteq> 0}}" by blast
     qed
   qed
 qed
+
+subsubsection \<open>@{typ "'a pp"} belongs to class @{class comm_powerprod}\<close>
+
+instantiation pp :: (type) comm_powerprod
+begin
+
+lift_definition div_pp::"'a pp \<Rightarrow> 'a pp \<Rightarrow> 'a pp" is
+  "\<lambda>s t. (if (\<forall>x. t x \<le> s x) then (\<lambda>x. s x - t x) else (\<lambda>_. 0))"
+proof -
+  fix s t::"'a \<Rightarrow> nat"
+  assume "finite {x. s x \<noteq> 0}" and "finite {x. t x \<noteq> 0}"
+  from finite_neq_0'[OF this, of "\<lambda>a b. (if \<forall>y. t y \<le> s y then a - b else 0)"]
+    have "finite {x. (if \<forall>y. t y \<le> s y then s x - t x else 0) \<noteq> 0}" (is "finite ?A") by simp
+  have "?A = {x. (if \<forall>y. t y \<le> s y then \<lambda>y. s y - t y else (\<lambda>_. 0)) x \<noteq> 0}" (is "_ = ?B")
+    by (rule Collect_cong, auto simp add: if_splits)
+  with \<open>finite ?A\<close> show "finite ?B" by simp
+qed
+
+lift_definition dummy_dvd_pp::"'a pp \<Rightarrow> 'a pp \<Rightarrow> bool" is
+  "\<lambda>s t. (\<forall>x. s x \<le> t x)" .
+
+lemma dummy_dvd_pp_dvd:
+  shows "dummy_dvd s t \<longleftrightarrow> s dvd (t::'a pp)"
+unfolding dvd_pp by (transfer, simp)
+
+lemma cancel_pp:
+  assumes "s * u = t * (u::'a pp)"
+  shows "s = t"
+proof -
+  from assms
+  show ?thesis
+  proof transfer
+    fix s t u::"'a \<Rightarrow> nat"
+    assume eq: "(\<lambda>x. (s x) + (u x)) = (\<lambda>x. (t x) + (u x))"
+    show "s = t"
+    proof
+      fix x::'a
+      from eq have "(s x) + (u x) = (t x) + (u x)" by meson
+      thus "s x = t x" by simp
+    qed
+  qed
+qed
+
+lemma exp_div_pp:
+  shows "exp (s divide t) x = (if t dvd s then (exp s x - exp t x) else 0)"
+unfolding dvd_pp by (transfer, simp)
+
+lemma divide1_pp:
+  shows "(s * t) divide t = (s::'a pp)"
+proof transfer
+  fix s t::"'a \<Rightarrow> nat"
+  show "(if \<forall>x. t x \<le> s x + t x then \<lambda>x. s x + t x - t x else (\<lambda>_. 0)) = s" by (rule, simp)
+qed
+
+instance
+apply standard
+subgoal by (rule dummy_dvd_pp_dvd)
+subgoal by (erule cancel_pp)
+subgoal by (rule divide1_pp)
+done
+
+end
+
+subsubsection \<open>@{typ "'a pp"} belongs to class @{class lcm_powerprod}\<close>
+
+instantiation pp :: (type) lcm_powerprod
+begin
+
+lift_definition lcm_pp::"'a pp \<Rightarrow> 'a pp \<Rightarrow> 'a pp" is "\<lambda>s t. \<lambda>x. max (s x) (t x)"
+proof -
+  fix fun1 fun2::"'a \<Rightarrow> nat"
+  assume "finite {t. fun1 t \<noteq> 0}" and "finite {t. fun2 t \<noteq> 0}"
+  from finite_neq_0'[OF this, of max] show "finite {t. max (fun1 t) (fun2 t) \<noteq> 0}" by simp
+qed
+
+lemma dvd_lcm_pp:
+  shows "s dvd (lcm s (t::'a pp))"
+  unfolding dvd_pp
+by (rule, transfer, simp)
+
+lemma lcm_comm_pp:
+  shows "lcm s t = lcm t (s::'a pp)"
+by (transfer, rule, simp)
+
+lemma lcm_min_pp:
+  assumes "s dvd u" and "t dvd (u::'a pp)"
+  shows "(lcm s t) dvd u"
+using assms unfolding dvd_pp by (transfer, simp)
+
+lemma times_eq_one_pp:
+  assumes "s * t = (1::'a pp)"
+  shows "s = 1"
+using assms
+proof transfer
+  fix s t::"'a \<Rightarrow> nat"
+  assume a: "(\<lambda>x. s x + t x) = (\<lambda>_. 0)"
+  show "s = (\<lambda>_. 0)"
+  proof
+    fix x
+    from a have "s x + t x = 0" by metis
+    thus "s x = 0" by simp
+  qed
+qed
+
+instance
+apply standard
+subgoal by (rule dvd_lcm_pp)
+subgoal by (rule lcm_min_pp)
+subgoal by (rule lcm_comm_pp)
+subgoal by (rule times_eq_one_pp)
+done
+
+end
 
 subsection \<open>Power-products in a given set of indeterminates.\<close>
 
 lift_definition in_indets::"'a set \<Rightarrow> 'a pp \<Rightarrow> bool" is "\<lambda>V s. \<forall>x. x \<notin> V \<longrightarrow> s x = 0" .
 
-lift_definition truncate::"'a set \<Rightarrow> 'a pp \<Rightarrow> 'a pp" is "\<lambda>V s. \<lambda>x. (if x \<in> V then s x else 0)" .
+lift_definition truncate::"'a set \<Rightarrow> 'a pp \<Rightarrow> 'a pp" is "\<lambda>V s. \<lambda>x. (if x \<in> V then s x else 0)"
+proof -
+  fix V::"'a set" and s::"'a \<Rightarrow> nat"
+  assume fin: "finite {x. s x \<noteq> 0}"
+  have "finite {_. 0 \<noteq> 0}" by simp
+  from finite_neq_0[OF fin this, of "\<lambda>x t f. (if x \<in> V then t else f)"]
+    show "finite {x. (if x \<in> V then s x else 0) \<noteq> 0}" by simp
+qed
 
 lemma univ_indets:
   shows "in_indets (UNIV::'a set) s"
@@ -673,94 +865,13 @@ proof -
   show ?thesis using Dickson_pp[OF fin indets] .
 qed
 
-subsubsection \<open>@{typ "'a pp"} belongs to class @{class powerprod}\<close>
+subsubsection \<open>@{typ "'a pp"} belongs to class @{class dickson_powerprod}\<close>
 
-instantiation pp :: (finite) powerprod
+instantiation pp :: (finite) dickson_powerprod
 begin
-
-lift_definition lcm_pp::"'a pp \<Rightarrow> 'a pp \<Rightarrow> 'a pp" is
-  "\<lambda>s t. \<lambda>x. max (s x) (t x)" .
-lift_definition div_pp::"'a pp \<Rightarrow> 'a pp \<Rightarrow> 'a pp" is
-  "\<lambda>s t. (if (\<forall>x. t x \<le> s x) then (\<lambda>x. s x - t x) else (\<lambda>_. 0))" .
-lift_definition dummy_dvd_pp::"'a pp \<Rightarrow> 'a pp \<Rightarrow> bool" is
-  "\<lambda>s t. (\<forall>x. s x \<le> t x)" .
-
-lemma dummy_dvd_pp_dvd:
-  shows "dummy_dvd s t \<longleftrightarrow> s dvd (t::'a pp)"
-unfolding dvd_pp by (transfer, simp)
-
-lemma cancel_pp:
-  assumes "s * u = t * (u::'a pp)"
-  shows "s = t"
-proof -
-  from assms
-  show ?thesis
-  proof transfer
-    fix s t u::"'a \<Rightarrow> nat"
-    assume eq: "(\<lambda>x. (s x) + (u x)) = (\<lambda>x. (t x) + (u x))"
-    show "s = t"
-    proof
-      fix x::'a
-      from eq have "(s x) + (u x) = (t x) + (u x)" by meson
-      thus "s x = t x" by simp
-    qed
-  qed
-qed
-
-lemma times_eq_one_pp:
-  assumes "s * t = (1::'a pp)"
-  shows "s = 1"
-using assms
-proof transfer
-  fix s t::"'a \<Rightarrow> nat"
-  assume a: "(\<lambda>x. s x + t x) = (\<lambda>_. 0)"
-  show "s = (\<lambda>_. 0)"
-  proof
-    fix x
-    from a have "s x + t x = 0" by metis
-    thus "s x = 0" by simp
-  qed
-qed
-
-lemma exp_div_pp:
-  shows "exp (s divide t) x = (if t dvd s then (exp s x - exp t x) else 0)"
-unfolding dvd_pp by (transfer, simp)
-
-lemma divide1_pp:
-  shows "(s * t) divide t = (s::'a pp)"
-proof transfer
-  fix s t::"'a \<Rightarrow> nat"
-  show "(if \<forall>x. t x \<le> s x + t x then \<lambda>x. s x + t x - t x else (\<lambda>_. 0)) = s" by (rule, simp)
-qed
-
-lemma divide2_pp:
-  assumes "\<not> s dvd (t::'a pp)"
-  shows "t divide s = 1"
-by (intro pp_eq_intro, simp add: exp_div_pp assms, transfer, rule)
-
-lemma dvd_lcm_pp:
-  shows "s dvd (lcm s (t::'a pp))"
-unfolding dvd_pp by (rule, transfer, simp)
-
-lemma lcm_comm_pp:
-  shows "lcm s t = lcm t (s::'a pp)"
-by (transfer, rule, simp)
-
-lemma lcm_min_pp:
-  assumes "s dvd u" and "t dvd (u::'a pp)"
-  shows "(lcm s t) dvd u"
-using assms unfolding dvd_pp by (transfer, simp)
 
 instance
 apply standard
-subgoal by (rule dummy_dvd_pp_dvd)
-subgoal by (erule cancel_pp)
-subgoal by (erule times_eq_one_pp)
-subgoal by (rule divide1_pp)
-subgoal by (erule divide2_pp)
-subgoal by (rule dvd_lcm_pp)
-subgoal by (rule lcm_comm_pp)
-subgoal by (erule lcm_min_pp, simp)
 subgoal by (rule Dickson_pp_finite)
 done
 
@@ -771,99 +882,38 @@ subsection \<open>Term orders\<close>
 text \<open>Term orders are certain linear orders on power-products, satisfying additional requirements.
   Further information on term orders can be found, e.\,g., in @{cite Robbiano1985}.\<close>
 
-context linorder
-begin
+subsubsection \<open>Lexicographic Term Order\<close>
 
-lemma ex_max:
-  assumes "finite (A::'a set)" and "A \<noteq> {}"
-  shows "\<exists>y\<in>A. (\<forall>z\<in>A. z \<le> y)"
-using assms
-proof (induct rule: finite_induct)
-  assume "{} \<noteq> {}"
-  thus "\<exists>y\<in>{}. \<forall>z\<in>{}. z \<le> y" by simp
-next
-  fix a::'a and A::"'a set"
-  assume "a \<notin> A" and IH: "A \<noteq> {} \<Longrightarrow> \<exists>y\<in>A. (\<forall>z\<in>A. z \<le> y)"
-  show "\<exists>y\<in>insert a A. (\<forall>z\<in>insert a A. z \<le> y)"
-  proof (cases "A = {}")
-    case True
-    show ?thesis
-    proof (rule bexI[of _ a], intro ballI)
-      fix z
-      assume "z \<in> insert a A"
-      from this True have "z = a" by simp
-      thus "z \<le> a" by simp
-    qed (simp)
-  next
-    case False
-    from IH[OF False] obtain y where "y \<in> A" and y_min: "\<forall>z\<in>A. z \<le> y" by auto
-    from linear[of a y] show ?thesis
-    proof
-      assume "a \<le> y"
-      show ?thesis
-      proof (rule bexI[of _ y], intro ballI)
-        fix z
-        assume "z \<in> insert a A"
-        hence "z = a \<or> z \<in> A" by simp
-        thus "z \<le> y"
-        proof
-          assume "z = a"
-          from this \<open>a \<le> y\<close> show "z \<le> y" by simp
-        next
-          assume "z \<in> A"
-          from y_min[rule_format, OF this] show "z \<le> y" .
-        qed
-      next
-        from \<open>y \<in> A\<close> show "y \<in> insert a A" by simp
-      qed
-    next
-      assume "y \<le> a"
-      show ?thesis
-      proof (rule bexI[of _ a], intro ballI)
-        fix z
-        assume "z \<in> insert a A"
-        hence "z = a \<or> z \<in> A" by simp
-        thus "z \<le> a"
-        proof
-          assume "z = a"
-          from this show "z \<le> a" by simp
-        next
-          assume "z \<in> A"
-          from y_min[rule_format, OF this] \<open>y \<le> a\<close> show "z \<le> a" by simp
-        qed
-      qed (simp)
-    qed
-  qed
-qed
-
-end (* linorder *)
-
-class finite_linorder = finite + linorder
+context wellorder
 begin
 
 lemma neq_alt:
   assumes "s \<noteq> (t::'a pp)"
-  obtains x where "exp s x \<noteq> exp t x" and "\<And>y. exp s y \<noteq> exp t y \<Longrightarrow> y \<le> x"
+  obtains x where "exp s x \<noteq> exp t x" and "\<And>y. exp s y \<noteq> exp t y \<Longrightarrow> x \<le> y"
 proof -
-  assume a: "\<And>x. exp s x \<noteq> exp t x \<Longrightarrow> (\<And>y. exp s y \<noteq> exp t y \<Longrightarrow> y \<le> x) \<Longrightarrow> thesis"
-  from assms pp_eq_intro[of s t] obtain x0 where exp_x0: "exp s x0 \<noteq> exp t x0" by auto
-  let ?A = "{x::'a. exp s x \<noteq> exp t x}"
-  have fin: "finite ?A" by simp
-  from exp_x0 have "x0 \<in> ?A" by simp
-  hence "?A \<noteq> {}" by auto
-  from ex_max[OF fin this] obtain x where x_in: "x \<in> ?A" and x_max: "\<forall>z\<in>?A. z \<le> x" by auto
-  from x_in have exp_x: "exp s x \<noteq> exp t x" by simp
-  from x_max have x_max': "\<And>y. exp s y \<noteq> exp t y \<Longrightarrow> y \<le> x" by simp
-  from a[OF exp_x x_max'] show ?thesis .
+  from assms pp_eq_intro[of s t] have "\<exists>x. exp s x \<noteq> exp t x" by auto
+  with exists_least_iff[of "\<lambda>x. exp s x \<noteq> exp t x"]
+    obtain x where x1: "exp s x \<noteq> exp t x" and x2: "\<And>y. y < x \<Longrightarrow> exp s y = exp t y" by auto
+  show ?thesis
+  proof
+    from x1 show "exp s x \<noteq> exp t x" .
+  next
+    fix y
+    assume "exp s y \<noteq> exp t y"
+    with x2[of y] have "\<not> y < x" by auto
+    thus "x \<le> y" by simp
+  qed
 qed
 
-subsubsection \<open>Lexicographic Term Order\<close>
-
 definition lex::"'a pp \<Rightarrow> 'a pp \<Rightarrow> bool" where
-  "lex s t \<equiv> (\<forall>x. exp s x \<le> exp t x \<or> (\<exists>y. y > x \<and> exp s y \<noteq> exp t y))"
+  "lex s t \<equiv> (\<forall>x. exp s x \<le> exp t x \<or> (\<exists>y<x. exp s y \<noteq> exp t y))"
+  
+text \<open>Attention! @{term lex} reverses the order of the indeterminates: if @{term x} is smaller than
+  @{term y} w.r.t. the order on @{typ 'a}, then the @{emph \<open>power-product\<close>} @{term x} is
+  @{emph \<open>greater\<close>} than the @{emph \<open>power-product\<close>} @{term y}.\<close>
 
 lemma lex_alt:
-  shows "lex s t = (s = t \<or> (\<exists>x. exp s x < exp t x \<and> (\<forall>y>x. exp s y = exp t y)))" (is "?L = ?R")
+  shows "lex s t = (s = t \<or> (\<exists>x. exp s x < exp t x \<and> (\<forall>y<x. exp s y = exp t y)))" (is "?L = ?R")
 proof
   assume ?L
   show ?R
@@ -873,26 +923,26 @@ proof
   next
     assume "s \<noteq> t"
     from neq_alt[OF this] obtain x0
-      where x0_neq: "exp s x0 \<noteq> exp t x0" and x0_max: "\<And>z. exp s z \<noteq> exp t z \<Longrightarrow> z \<le> x0" by auto
+      where x0_neq: "exp s x0 \<noteq> exp t x0" and x0_min: "\<And>z. exp s z \<noteq> exp t z \<Longrightarrow> x0 \<le> z" by auto
     show ?R
     proof (intro disjI2, rule exI[of _ x0], intro conjI)
-      from \<open>?L\<close> have "exp s x0 \<le> exp t x0 \<or> (\<exists>y. y > x0 \<and> exp s y \<noteq> exp t y)" unfolding lex_def ..
+      from \<open>?L\<close> have "exp s x0 \<le> exp t x0 \<or> (\<exists>y. y < x0 \<and> exp s y \<noteq> exp t y)" unfolding lex_def ..
       thus "exp s x0 < exp t x0"
       proof
         assume "exp s x0 \<le> exp t x0"
         from this x0_neq show ?thesis by simp
       next
-        assume "\<exists>y. y > x0 \<and> exp s y \<noteq> exp t y"
-        then obtain y where "y > x0" and y_neq: "exp s y \<noteq> exp t y" by auto
-        from \<open>y > x0\<close> x0_max[OF y_neq] show ?thesis by simp
+        assume "\<exists>y. y < x0 \<and> exp s y \<noteq> exp t y"
+        then obtain y where "y < x0" and y_neq: "exp s y \<noteq> exp t y" by auto
+        from \<open>y < x0\<close> x0_min[OF y_neq] show ?thesis by simp
       qed
     next
-      show "\<forall>y>x0. exp s y = exp t y"
+      show "\<forall>y<x0. exp s y = exp t y"
       proof (rule, rule)
         fix y
-        assume "x0 < y"
-        hence "\<not> y \<le> x0" by simp
-        from this x0_max[of y] show "exp s y = exp t y" by auto
+        assume "y < x0"
+        hence "\<not> x0 \<le> y" by simp
+        from this x0_min[of y] show "exp s y = exp t y" by auto
       qed
     qed
   qed
@@ -903,12 +953,12 @@ next
     assume "s = t"
     thus ?thesis unfolding lex_def by simp
   next
-    assume "\<exists>x. exp s x < exp t x \<and> (\<forall>y>x. exp s y = exp t y)"
-    then obtain y where y_exp: "exp s y < exp t y" and y_max: "\<forall>z>y. exp s z = exp t z" by auto
+    assume "\<exists>x. exp s x < exp t x \<and> (\<forall>y<x. exp s y = exp t y)"
+    then obtain y where y_exp: "exp s y < exp t y" and y_min: "\<forall>z<y. exp s z = exp t z" by auto
     show ?thesis unfolding lex_def
     proof
       fix x
-      show "exp s x \<le> exp t x \<or> (\<exists>y>x. exp s y \<noteq> exp t y)"
+      show "exp s x \<le> exp t x \<or> (\<exists>y<x. exp s y \<noteq> exp t y)"
       proof (cases "exp s x \<le> exp t x")
         assume "exp s x \<le> exp t x"
         thus ?thesis by simp
@@ -916,20 +966,20 @@ next
         assume s_exp: "\<not> exp s x \<le> exp t x"
         show ?thesis
         proof (intro disjI2, rule exI[of _ y], intro conjI)
-          have "\<not> y \<le> x"
+          have "\<not> x \<le> y"
           proof
-            assume "y \<le> x"
-            hence "y < x \<or> y = x" by auto
+            assume "x \<le> y"
+            hence "x < y \<or> y = x" by auto
             thus False
             proof
-              assume "y < x"
-              from s_exp y_max[rule_format, OF this] show ?thesis by simp
+              assume "x < y"
+              from s_exp y_min[rule_format, OF this] show ?thesis by simp
             next
               assume "y = x"
               from this s_exp y_exp show ?thesis by simp
             qed
           qed
-          thus "x < y" by simp
+          thus "y < x" by simp
         next
           from y_exp show "exp s y \<noteq> exp t y" by simp
         qed
@@ -947,36 +997,36 @@ lemma lex_antisym:
   shows "s = t"
 proof (rule pp_eq_intro)
   fix x
-  from \<open>lex s t\<close> have "s = t \<or> (\<exists>x. exp s x < exp t x \<and> (\<forall>y>x. exp s y = exp t y))"
+  from \<open>lex s t\<close> have "s = t \<or> (\<exists>x. exp s x < exp t x \<and> (\<forall>y<x. exp s y = exp t y))"
     unfolding lex_alt .
   thus "exp s x = exp t x"
   proof
     assume "s = t"
     thus ?thesis by simp
   next
-    assume "\<exists>x. exp s x < exp t x \<and> (\<forall>y>x. exp s y = exp t y)"
-    then obtain x0 where exp_x0: "exp s x0 < exp t x0" and x0_max: "\<forall>y>x0. exp s y = exp t y" by auto
-    from \<open>lex t s\<close> have "t = s \<or> (\<exists>x. exp t x < exp s x \<and> (\<forall>y>x. exp t y = exp s y))"
+    assume "\<exists>x. exp s x < exp t x \<and> (\<forall>y<x. exp s y = exp t y)"
+    then obtain x0 where exp_x0: "exp s x0 < exp t x0" and x0_min: "\<forall>y<x0. exp s y = exp t y" by auto
+    from \<open>lex t s\<close> have "t = s \<or> (\<exists>x. exp t x < exp s x \<and> (\<forall>y<x. exp t y = exp s y))"
       unfolding lex_alt .
     thus ?thesis
     proof
       assume "t = s"
       thus ?thesis by simp
     next
-      assume "\<exists>x. exp t x < exp s x \<and> (\<forall>y>x. exp t y = exp s y)"
-      then obtain x1 where exp_x1: "exp t x1 < exp s x1" and x1_max: "\<forall>y>x1. exp t y = exp s y"
+      assume "\<exists>x. exp t x < exp s x \<and> (\<forall>y<x. exp t y = exp s y)"
+      then obtain x1 where exp_x1: "exp t x1 < exp s x1" and x1_min: "\<forall>y<x1. exp t y = exp s y"
         by auto
       have "x0 < x1 \<or> x1 < x0 \<or> x1 = x0" using local.antisym_conv3 by auto
       show ?thesis
       proof (rule linorder_cases[of x0 x1])
-        assume "x0 < x1"
-        from x0_max[rule_format, OF this] exp_x1 show ?thesis by simp
+        assume "x1 < x0"
+        from x0_min[rule_format, OF this] exp_x1 show ?thesis by simp
       next
         assume "x0 = x1"
         from this exp_x0 exp_x1 show ?thesis by simp
       next
-        assume "x1 < x0"
-        from x1_max[rule_format, OF this] exp_x0 show ?thesis by simp
+        assume "x0 < x1"
+        from x1_min[rule_format, OF this] exp_x0 show ?thesis by simp
       qed
     qed
   qed
@@ -986,56 +1036,56 @@ lemma lex_trans:
   assumes "lex s t" and "lex t u"
   shows "lex s u"
 proof -
-  from \<open>lex s t\<close> have "s = t \<or> (\<exists>x. exp s x < exp t x \<and> (\<forall>y>x. exp s y = exp t y))"
+  from \<open>lex s t\<close> have "s = t \<or> (\<exists>x. exp s x < exp t x \<and> (\<forall>y<x. exp s y = exp t y))"
     unfolding lex_alt .
   thus ?thesis
   proof
     assume "s = t"
     from this \<open>lex t u\<close> show ?thesis by simp
   next
-    assume "\<exists>x. exp s x < exp t x \<and> (\<forall>y>x. exp s y = exp t y)"
-    then obtain x0 where exp_x0: "exp s x0 < exp t x0" and x0_max: "\<forall>y>x0. exp s y = exp t y"
+    assume "\<exists>x. exp s x < exp t x \<and> (\<forall>y<x. exp s y = exp t y)"
+    then obtain x0 where exp_x0: "exp s x0 < exp t x0" and x0_min: "\<forall>y<x0. exp s y = exp t y"
       by auto
-    from \<open>lex t u\<close> have "t = u \<or> (\<exists>x. exp t x < exp u x \<and> (\<forall>y>x. exp t y = exp u y))"
+    from \<open>lex t u\<close> have "t = u \<or> (\<exists>x. exp t x < exp u x \<and> (\<forall>y<x. exp t y = exp u y))"
       unfolding lex_alt .
     thus ?thesis
     proof
       assume "t = u"
       from this \<open>lex s t\<close> show ?thesis by simp
     next
-      assume "\<exists>x. exp t x < exp u x \<and> (\<forall>y>x. exp t y = exp u y)"
-      then obtain x1 where exp_x1: "exp t x1 < exp u x1" and x1_max: "\<forall>y>x1. exp t y = exp u y"
+      assume "\<exists>x. exp t x < exp u x \<and> (\<forall>y<x. exp t y = exp u y)"
+      then obtain x1 where exp_x1: "exp t x1 < exp u x1" and x1_min: "\<forall>y<x1. exp t y = exp u y"
         by auto
       show ?thesis unfolding lex_alt
       proof (intro disjI2)
-        show "\<exists>x. exp s x < exp u x \<and> (\<forall>y>x. exp s y = exp u y)"
+        show "\<exists>x. exp s x < exp u x \<and> (\<forall>y<x. exp s y = exp u y)"
         proof (rule linorder_cases[of x0 x1])
-          assume "x0 < x1"
+          assume "x1 < x0"
           show ?thesis
           proof (rule exI[of _ x1], intro conjI)
-            from x0_max[rule_format, OF \<open>x0 < x1\<close>] exp_x1 show "exp s x1 < exp u x1" by simp
+            from x0_min[rule_format, OF \<open>x1 < x0\<close>] exp_x1 show "exp s x1 < exp u x1" by simp
           next
-            show "\<forall>y>x1. exp s y = exp u y"
+            show "\<forall>y<x1. exp s y = exp u y"
             proof (intro allI, intro impI)
               fix y
-              assume "x1 < y"
-              from this \<open>x0 < x1\<close> have "x0 < y" by simp
-              from x0_max[rule_format, OF this] x1_max[rule_format, OF \<open>x1 < y\<close>]
+              assume "y < x1"
+              from this \<open>x1 < x0\<close> have "y < x0" by simp
+              from x0_min[rule_format, OF this] x1_min[rule_format, OF \<open>y < x1\<close>]
                 show "exp s y = exp u y" by simp
             qed
           qed
         next
-          assume "x1 < x0"
+          assume "x0 < x1"
           show ?thesis
           proof (rule exI[of _ x0], intro conjI)
-            from x1_max[rule_format, OF \<open>x1 < x0\<close>] exp_x0 show "exp s x0 < exp u x0" by simp
+            from x1_min[rule_format, OF \<open>x0 < x1\<close>] exp_x0 show "exp s x0 < exp u x0" by simp
           next
-            show "\<forall>y>x0. exp s y = exp u y"
+            show "\<forall>y<x0. exp s y = exp u y"
             proof (intro allI, intro impI)
               fix y
-              assume "x0 < y"
-              from this \<open>x1 < x0\<close> have "x1 < y" by simp
-              from x0_max[rule_format, OF \<open>x0 < y\<close>] x1_max[rule_format, OF this]
+              assume "y < x0"
+              from this \<open>x0 < x1\<close> have "y < x1" by simp
+              from x0_min[rule_format, OF \<open>y < x0\<close>] x1_min[rule_format, OF this]
                 show "exp s y = exp u y" by simp
             qed
           qed
@@ -1045,12 +1095,12 @@ proof -
           proof (rule exI[of _ x1], intro conjI)
             from \<open>x0 = x1\<close> exp_x0 exp_x1 show "exp s x1 < exp u x1" by simp
           next
-            show "\<forall>y>x1. exp s y = exp u y"
+            show "\<forall>y<x1. exp s y = exp u y"
             proof (intro allI, intro impI)
               fix y
-              assume "x1 < y"
-              hence "x0 < y" using \<open>x0 = x1\<close> by simp
-              from x0_max[rule_format, OF this] x1_max[rule_format, OF \<open>x1 < y\<close>]
+              assume "y < x1"
+              hence "y < x0" using \<open>x0 = x1\<close> by simp
+              from x0_min[rule_format, OF this] x1_min[rule_format, OF \<open>y < x1\<close>]
                 show "exp s y = exp u y" by simp
             qed
           qed
@@ -1064,12 +1114,12 @@ lemma lex_lin:
   shows "lex s t \<or> lex t s"
 proof (intro disjCI)
   assume "\<not> lex t s"
-  hence a: "\<forall>x. \<not> (exp t x < exp s x) \<or> (\<exists>y>x. exp t y \<noteq> exp s y)" unfolding lex_alt by auto
+  hence a: "\<forall>x. \<not> (exp t x < exp s x) \<or> (\<exists>y<x. exp t y \<noteq> exp s y)" unfolding lex_alt by auto
   show "lex s t" unfolding lex_def
   proof
     fix x
-    from a have "\<not> (exp t x < exp s x) \<or> (\<exists>y>x. exp t y \<noteq> exp s y)" ..
-    thus "exp s x \<le> exp t x \<or> (\<exists>y>x. exp s y \<noteq> exp t y)" by auto
+    from a have "\<not> (exp t x < exp s x) \<or> (\<exists>y<x. exp t y \<noteq> exp s y)" ..
+    thus "exp s x \<le> exp t x \<or> (\<exists>y<x. exp s y \<noteq> exp t y)" by auto
   qed
 qed
 
@@ -1084,8 +1134,8 @@ lemma lex_times_monotone:
 unfolding lex_def
 proof
   fix x
-  from assms have "exp s x \<le> exp t x \<or> (\<exists>y>x. exp s y \<noteq> exp t y)" unfolding lex_def ..
-  thus "exp (s * u) x \<le> exp (t * u) x \<or> (\<exists>y>x. exp (s * u) y \<noteq> exp (t * u) y)"
+  from assms have "exp s x \<le> exp t x \<or> (\<exists>y<x. exp s y \<noteq> exp t y)" unfolding lex_def ..
+  thus "exp (s * u) x \<le> exp (t * u) x \<or> (\<exists>y<x. exp (s * u) y \<noteq> exp (t * u) y)"
   proof
     assume a1: "exp s x \<le> exp t x"
     show ?thesis
@@ -1093,8 +1143,8 @@ proof
       from a1 show "exp (s * u) x \<le> exp (t * u) x" by (transfer, simp)
     qed
   next
-    assume "\<exists>y>x. exp s y \<noteq> exp t y"
-    then obtain y where "x < y" and a2: "exp s y \<noteq> exp t y" by auto
+    assume "\<exists>y<x. exp s y \<noteq> exp t y"
+    then obtain y where "y < x" and a2: "exp s y \<noteq> exp t y" by auto
     show ?thesis
     proof (intro disjI2, rule exI[of _ y], intro conjI, fact)
       from a2 show "exp (s * u) y \<noteq> exp (t * u) y" by (transfer, simp)
@@ -1102,9 +1152,77 @@ proof
   qed
 qed
 
+end (* wellorder *)
+
 subsubsection \<open>General Degree-Orders\<close>
 
-definition deg::"'a pp \<Rightarrow> nat" where "deg s \<equiv> \<Sum>x\<in>(UNIV::'a set). exp s x"
+context linorder
+begin
+
+lemma ex_min:
+  assumes "finite (A::'a set)" and "A \<noteq> {}"
+  shows "\<exists>y\<in>A. (\<forall>z\<in>A. y \<le> z)"
+using assms
+proof (induct rule: finite_induct)
+  assume "{} \<noteq> {}"
+  thus "\<exists>y\<in>{}. \<forall>z\<in>{}. y \<le> z" by simp
+next
+  fix a::'a and A::"'a set"
+  assume "a \<notin> A" and IH: "A \<noteq> {} \<Longrightarrow> \<exists>y\<in>A. (\<forall>z\<in>A. y \<le> z)"
+  show "\<exists>y\<in>insert a A. (\<forall>z\<in>insert a A. y \<le> z)"
+  proof (cases "A = {}")
+    case True
+    show ?thesis
+    proof (rule bexI[of _ a], intro ballI)
+      fix z
+      assume "z \<in> insert a A"
+      from this True have "z = a" by simp
+      thus "a \<le> z" by simp
+    qed (simp)
+  next
+    case False
+    from IH[OF False] obtain y where "y \<in> A" and y_min: "\<forall>z\<in>A. y \<le> z" by auto
+    from linear[of a y] show ?thesis
+    proof
+      assume "y \<le> a"
+      show ?thesis
+      proof (rule bexI[of _ y], intro ballI)
+        fix z
+        assume "z \<in> insert a A"
+        hence "z = a \<or> z \<in> A" by simp
+        thus "y \<le> z"
+        proof
+          assume "z = a"
+          from this \<open>y \<le> a\<close> show "y \<le> z" by simp
+        next
+          assume "z \<in> A"
+          from y_min[rule_format, OF this] show "y \<le> z" .
+        qed
+      next
+        from \<open>y \<in> A\<close> show "y \<in> insert a A" by simp
+      qed
+    next
+      assume "a \<le> y"
+      show ?thesis
+      proof (rule bexI[of _ a], intro ballI)
+        fix z
+        assume "z \<in> insert a A"
+        hence "z = a \<or> z \<in> A" by simp
+        thus "a \<le> z"
+        proof
+          assume "z = a"
+          from this show "a \<le> z" by simp
+        next
+          assume "z \<in> A"
+          from y_min[rule_format, OF this] \<open>a \<le> y\<close> show "a \<le> z" by simp
+        qed
+      qed (simp)
+    qed
+  qed
+qed
+
+
+definition deg::"'a pp \<Rightarrow> nat" where "deg s \<equiv> \<Sum>x\<in>(indets s). exp s x"
 
 lemma sum_nat_cong:
   fixes f g::"'a \<Rightarrow> nat" and A::"'a set"
@@ -1116,18 +1234,43 @@ by (meson add.comm_monoid_axioms comm_monoid_set.cong comm_monoid_set_def)
 lemma deg_one:
   shows "deg 1 = 0"
 proof -
-  have fin: "finite (UNIV::'a set)" by simp
-  have "\<forall>x\<in>UNIV. exp 1 x = 0" by (intro ballI, transfer, simp)
-  from this sum_eq_0_iff[OF fin] show ?thesis unfolding deg_def by simp
+  have "\<forall>x\<in>(indets 1). exp 1 x = 0" by (intro ballI, transfer, simp)
+  thus ?thesis unfolding deg_def by (simp only: sum_eq_0_iff[OF indets_finite[of 1], of "exp 1"])
 qed
+
+lemma deg_eq_0_iff:
+  shows "deg s = 0 \<longleftrightarrow> s = 1"
+proof
+  assume "deg s = 0"
+  show "s = 1"
+  proof (rule pp_eq_intro, simp add: one_pp.rep_eq)
+    from \<open>deg s = 0\<close> have "\<forall>x\<in>(indets s). exp s x = 0"
+      unfolding deg_def by (simp only: sum_eq_0_iff[OF indets_finite[of s]])
+    with in_indets_iff[of _ s] show "\<And>x. exp s x = 0" by blast
+  qed
+next
+  assume "s = 1"
+  with deg_one show "deg s = 0" by simp
+qed
+
+lemma deg_superset:
+  fixes A::"'a set"
+  assumes "indets s \<subseteq> A" and "finite A"
+  shows "deg s = (\<Sum>x\<in>A. exp s x)"
+using assms(1) unfolding deg_def
+by (simp add: assms(2) in_indets_iff sum.mono_neutral_cong_left)
 
 lemma deg_times:
   shows "deg (s * t) = deg s + deg t"
 proof -
-  have "deg (s * t) = (\<Sum>x\<in>UNIV. exp s x + exp t x)" unfolding deg_def
+  from indets_times[of s t] have "indets s \<subseteq> (indets (s * t))" by simp
+  from deg_superset[OF this indets_finite] have s: "deg s = (\<Sum>x\<in>(indets (s * t)). exp s x)" .
+  from indets_times[of s t] have "indets t \<subseteq> (indets (s * t))" by simp
+  from deg_superset[OF this indets_finite] have t: "deg t = (\<Sum>x\<in>(indets (s * t)). exp t x)" .
+  have "deg (s * t) = (\<Sum>x\<in>(indets (s * t)). exp s x + exp t x)" unfolding deg_def
     by (rule sum_nat_cong, transfer, simp)
-  also have "\<dots> = deg s + deg t" using sum.distrib[of "exp s" "exp t" "UNIV::'a set"]
-    unfolding deg_def .
+  also have "\<dots> = deg s + deg t" using sum.distrib[of "exp s" "exp t" "indets (s * t)"]
+    using s t by simp
   finally show ?thesis .
 qed
 
@@ -1219,9 +1362,23 @@ proof (intro disjCI)
 qed
 
 lemma dord_one_min:
-  assumes "ord 1 s"
+  assumes ord_refl: "\<And>t. ord t t"
   shows "dord ord 1 s"
-using assms unfolding dord_def Let_def deg_one by auto
+  unfolding dord_def Let_def deg_one
+proof (rule disjCI)
+  assume "\<not> (0 = deg s \<and> ord 1 s)"
+  hence dis: "deg s \<noteq> 0 \<or> \<not> ord 1 s" by simp
+  show "0 < deg s"
+  proof (cases "deg s = 0")
+    case True
+    hence "s = 1" using deg_eq_0_iff by simp
+    hence "ord 1 s" using ord_refl by simp
+    with True dis show ?thesis by simp
+  next
+    case False
+    thus ?thesis by simp
+  qed
+qed
 
 lemma dord_times_monotone:
   assumes "dord ord s t" and ord_monotone: "ord s t \<Longrightarrow> ord (s * u) (t * u)"
@@ -1241,7 +1398,12 @@ proof -
   qed
 qed
 
+end (* linorder *)
+
 subsubsection \<open>Degree-Lexicographic Term Order\<close>
+
+context wellorder
+begin
 
 definition dlex::"'a pp \<Rightarrow> 'a pp \<Rightarrow> bool" where "dlex \<equiv> dord lex"
 
@@ -1265,23 +1427,49 @@ unfolding dlex_def by (rule dord_lin, rule lex_lin)
 
 lemma dlex_one_min:
   shows "dlex 1 s"
-unfolding dlex_def by (rule dord_one_min, rule lex_one_min)
+unfolding dlex_def by (rule dord_one_min, rule lex_refl)
 
 lemma dlex_times_monotone:
   assumes "dlex s t"
   shows "dlex (s * u) (t * u)"
 using assms unfolding dlex_def by (rule dord_times_monotone[of lex s t, OF _ lex_times_monotone], simp)
 
-end (* finite_linorder *)
+end (* wellorder *)
 
-subsubsection \<open>@{typ "'a pp"} belongs to class @{class linorder}\<close>
+text\<open>Every finite linear ordering is also a well-ordering. This fact is particularly useful when
+  working with fixed finite sets of indeterminates.\<close>
+class finite_linorder = finite + linorder
+begin
+
+subclass wellorder
+proof
+  fix P::"'a \<Rightarrow> bool" and a
+  assume hyp: "\<And>x. (\<And>y. (y < x) \<Longrightarrow> P y) \<Longrightarrow> P x"
+  show "P a"
+  proof (rule ccontr)
+    assume "\<not> P a"
+    have "finite {x. \<not> P x}" (is "finite ?A") by simp
+    from \<open>\<not> P a\<close> have "a \<in> ?A" by simp
+    hence "?A \<noteq> {}" by auto
+    from ex_min[OF \<open>finite ?A\<close> this] obtain b where "b \<in> ?A" and b_min: "\<forall>y\<in>?A. b \<le> y" by auto
+    from \<open>b \<in> ?A\<close> have "\<not> P b" by simp
+    with hyp[of b] obtain y where "y < b" and "\<not> P y" by auto
+    from \<open>\<not> P y\<close> have "y \<in> ?A" by simp
+    with b_min have "b \<le> y" by simp
+    with \<open>y < b\<close> show False by simp
+  qed
+qed
+
+end
+
+subsection \<open>@{typ "'a pp"} belongs to class @{class linorder}\<close>
 
 text \<open>We now prove that @{typ "'a pp"} is linearly ordered, with @{term "op \<le>"} instantiated by
   @{term lex}. This is relevant for general multiplication of polynomials.
   Note further that there is nothing special about the use of @{term lex} here; @{emph \<open>any\<close>} linear
   order on @{typ "'a pp"} would be fine (it does not even have to be a term order).\<close>
 
-instantiation pp :: (finite_linorder) linorder
+instantiation pp :: (wellorder) linorder
 begin
 
 definition "less_eq_pp \<equiv> lex"

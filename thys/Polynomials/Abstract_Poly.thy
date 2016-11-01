@@ -142,20 +142,7 @@ lift_definition plus_mpoly::"('a, 'b) mpoly \<Rightarrow> ('a, 'b) mpoly \<Right
 proof -
   fix fun1 fun2::"'a \<Rightarrow> 'b"
   assume "finite {t. fun1 t \<noteq> 0}" and "finite {t. fun2 t \<noteq> 0}"
-  hence "finite ({t. fun1 t \<noteq> 0} \<union> {t. fun2 t \<noteq> 0})" by (intro finite_UnI)
-  hence finite_union: "finite {t. (fun1 t \<noteq> 0) \<or> (fun2 t \<noteq> 0)}" by (simp only: Collect_disj_eq)
-  have "{t. fun1 t + fun2 t \<noteq> 0} \<subseteq> {t. (fun1 t \<noteq> 0) \<or> (fun2 t \<noteq> 0)}"
-  proof (intro Collect_mono, rule)
-    fix t::'a
-    assume sum_not_zero: "((fun1 t) + (fun2 t)) \<noteq> 0"
-    have "fun1 t = 0 \<longrightarrow> fun2 t \<noteq> 0"
-    proof
-      assume "fun1 t = 0"
-      thus "fun2 t \<noteq> 0" using sum_not_zero by simp
-    qed
-    thus "fun1 t \<noteq> 0 \<or> fun2 t \<noteq> 0" by auto
-  qed
-  from finite_subset[OF this] finite_union show "finite {t. fun1 t + fun2 t \<noteq> 0}" .
+  from finite_neq_0'[OF this, of "op +"] show "finite {t. fun1 t + fun2 t \<noteq> 0}" by simp
 qed
 
 lemma plus_mpoly_assoc:
@@ -236,7 +223,7 @@ using coeff_plus[of p "-q" t] coeff_uminus[of q t] unfolding minus_mpoly_def by 
 
 subsubsection \<open>Multiplication by Monomials\<close>
 
-context powerprod
+context comm_powerprod
 begin
 
 text \<open>We distinguish between multiplication from the left and from the right.\<close>
@@ -316,7 +303,7 @@ proof transfer
           (\<lambda>x. if s * t dvd x then c * d * p (x divide (s * t)) else 0)"
   proof
     fix x
-    from divide_divide[of x s t] times_dvd[of t s x] show
+    from divide_divide[of s x t] times_dvd[of t s x] show
       "(if s dvd x then c * (if t dvd x divide s then d * p ((x divide s) divide t) else 0) else 0) =
          (if s * t dvd x then c * d * p (x divide (s * t)) else 0)" by (auto simp add: ac_simps)
   qed
@@ -331,7 +318,7 @@ proof transfer
           (\<lambda>x. if s * t dvd x then p (x divide (s * t)) * (c * d) else 0)"
   proof
     fix x
-    from divide_divide[of x t s] times_dvd[of s t x] show
+    from divide_divide[of t x s] times_dvd[of s t x] show
       "(if t dvd x then (if s dvd x divide t then p (x divide t divide s) * c else 0) * d else 0) =
           (if s * t dvd x then p (x divide (s * t)) * (c * d) else 0)" by (auto simp add: ac_simps)
   qed
@@ -725,9 +712,9 @@ text \<open>@{term "some_term p"} shall only return @{emph \<open>some\<close>} 
   non-zero coefficient (not necessarily the biggest one w.r.t. a certain ordering). However, if we
   use something like @{term "SOME t. t \<in> supp p"} instead, multiplication cannot be made executable.\<close>
 
-definition some_term::"('a::{powerprod, linorder}, 'b::zero) mpoly \<Rightarrow> 'a"
+definition some_term::"('a::{comm_powerprod, linorder}, 'b::zero) mpoly \<Rightarrow> 'a"
   where "some_term p \<equiv> (if p = 0 then 1 else Max (supp p))"
-definition rest_mpoly::"('a::{powerprod, linorder}, 'b::zero) mpoly \<Rightarrow> ('a, 'b) mpoly"
+definition rest_mpoly::"('a::{comm_powerprod, linorder}, 'b::zero) mpoly \<Rightarrow> ('a, 'b) mpoly"
   where "rest_mpoly p \<equiv> except p (some_term p)"
 
 lemma some_term_nonzero:
@@ -858,7 +845,7 @@ lemma coeff_some_term_monom:
 by (simp add: some_term_monom[OF assms] coeff_monom[of c t])
 
 lemma rest_monom:
-  shows "rest_mpoly (monom c t) = (0::('a::{powerprod, linorder}, 'b::zero) mpoly)"
+  shows "rest_mpoly (monom c t) = (0::('a::{comm_powerprod, linorder}, 'b::zero) mpoly)"
 proof (cases "c = 0")
   case True
   from monom_0I[OF this, of t] rest_zero show ?thesis by simp
@@ -881,7 +868,7 @@ next
 qed
 
 lemma some_monomial_rest:
-  fixes p::"('a::{powerprod, linorder}, 'b::comm_monoid_add) mpoly"
+  fixes p::"('a::{comm_powerprod, linorder}, 'b::comm_monoid_add) mpoly"
   assumes "p \<noteq> 0"
   shows "p = monom (coeff p (some_term p)) (some_term p) + rest_mpoly p"
 proof (rule mpoly_ext)
@@ -904,7 +891,7 @@ proof (rule mpoly_ext)
     by (simp add: coeff_plus)
 qed
 
-instantiation mpoly :: ("{powerprod, linorder}", semiring_0) semiring_0
+instantiation mpoly :: ("{comm_powerprod, linorder}", semiring_0) semiring_0
 begin
 
 function times_mpoly::"('a, 'b) mpoly \<Rightarrow> ('a, 'b) mpoly \<Rightarrow> ('a, 'b) mpoly" where
@@ -1129,7 +1116,7 @@ qed
 
 end (* instantiation *)
 
-instantiation mpoly :: ("{powerprod, linorder}", ring) ring
+instantiation mpoly :: ("{comm_powerprod, linorder}", ring) ring
 begin
 
 instance ..
@@ -1149,7 +1136,7 @@ qed
 
 end (* instantiation *)
 
-instantiation mpoly :: ("{powerprod, linorder}", ring_1) ring_1
+instantiation mpoly :: ("{comm_powerprod, linorder}", ring_1) ring_1
 begin
 
 instance proof
@@ -1166,7 +1153,7 @@ qed
 
 end (* instantiation *)
 
-instantiation mpoly :: ("{powerprod, linorder}", comm_semiring_0) comm_semiring_0
+instantiation mpoly :: ("{comm_powerprod, linorder}", comm_semiring_0) comm_semiring_0
 begin
 
 lemma times_mpoly_comm:
@@ -1203,14 +1190,14 @@ qed
 
 end (* instantiation *)
 
-instantiation mpoly :: ("{powerprod, linorder}", comm_ring) comm_ring
+instantiation mpoly :: ("{comm_powerprod, linorder}", comm_ring) comm_ring
 begin
 
 instance ..
 
 end (* instantiation *)
 
-instantiation mpoly :: ("{powerprod, linorder}", comm_ring_1) comm_ring_1
+instantiation mpoly :: ("{comm_powerprod, linorder}", comm_ring_1) comm_ring_1
 begin
 
 instance proof
@@ -2058,6 +2045,11 @@ next
   qed
 qed
 
+end (* ordered_powerprod *)
+
+context od_powerprod
+begin
+
 (*The following two lemmas prove that \<prec>p is well-founded.
 Although the first proof uses induction on power-products whereas the second one does not,
 the two proofs share a lot of common structure. Maybe this can be exploited to make things
@@ -2242,6 +2234,6 @@ proof (induct rule: wfP_induct[OF ord_p_wf])
   qed
 qed
 
-end (* ordered_powerprod *)
+end (* od_powerprod *)
 
 end (* theory *)

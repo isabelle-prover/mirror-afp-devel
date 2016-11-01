@@ -12,7 +12,7 @@ text \<open>We now compute concrete Gr\"obner bases w.r.t. both the purely lexic
 
 subsection \<open>Lexicographic Order\<close>
 
-global_interpretation opp_lex: ordered_powerprod lex
+global_interpretation opp_lex: od_powerprod lex
   defines lex_strict = opp_lex.ord_strict
   and lp_lex = opp_lex.lp
   and max_lex = opp_lex.ordered_powerprod_lin.max
@@ -153,7 +153,7 @@ by eval
 
 subsection \<open>Degree-Lexicographic Order\<close>
 
-global_interpretation opp_dlex: ordered_powerprod dlex
+global_interpretation opp_dlex: od_powerprod dlex
   defines dlex_strict = opp_dlex.ord_strict
   and lp_dlex = opp_dlex.lp
   and max_dlex = opp_dlex.ordered_powerprod_lin.max
