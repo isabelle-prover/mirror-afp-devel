@@ -328,7 +328,6 @@ lemma wary_fun[intro]: "wary t \<Longrightarrow> wary (fun t)"
 lemma wary_arg[intro]: "wary t \<Longrightarrow> wary (arg t)"
   by (cases t) (auto elim: wary.cases)
 
-
 lemma wary_args: "s \<in> set (args t) \<Longrightarrow> wary t \<Longrightarrow> wary s"
   by (induct t arbitrary: s, simp)
    (metis Un_iff args.simps(2) wary.cases insert_iff length_pos_if_in_set
