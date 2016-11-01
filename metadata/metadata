@@ -3052,7 +3052,7 @@ abstract =
   well.
 extra-history =
 	Change history:
-	[2010-09-17]: Moved theories on arbitrary (ordered) semirings to Abstract Rewriting.
+	[2010-09-17]: Moved theories on arbitrary (ordered) semirings to Abstract Rewriting.<br>
 	[2016-10-28]: Added abstract representation of polynomials and authors Maletzky/Immler.
 notify = rene.thiemann@uibk.ac.at, christian.sternagel@uibk.ac.at, alexander.maletzky@risc.jku.at, immler@in.tum.de
 
