@@ -340,7 +340,7 @@ lemma wary_sub: "sub s t \<Longrightarrow> wary t \<Longrightarrow> wary s"
 lemma wary_inf_ary: "(\<And>\<zeta>. arity_hd \<zeta> = \<infinity>) \<Longrightarrow> wary s"
   by induct auto
 
-lemma wary_less_eq_args: "wary s \<Longrightarrow> num_args s \<le> arity_hd (head s)"
+lemma wary_num_args_le_arity_head: "wary s \<Longrightarrow> num_args s \<le> arity_hd (head s)"
   by (induct rule: wary.induct) (auto simp: zero_enat_def[symmetric] Suc_ile_eq)
 
 lemma wary_apps:
@@ -356,7 +356,7 @@ proof (induct ss arbitrary: s)
     moreover have " enat (num_args s) < arity_hd (head s)"
       by (metis (mono_tags) One_nat_def add.comm_neutral arity_def diff_add_zero enat_ord_simps(1)
         idiff_enat_enat less_one list.size(4) nargs_s_sa_ss not_add_less2
-        order.not_eq_order_implies_strict wary_less_eq_args wary_s)
+        order.not_eq_order_implies_strict wary_num_args_le_arity_head wary_s)
     ultimately show "wary (App s sa)"
       by (rule wary_App[OF wary_s])
   next
@@ -382,11 +382,11 @@ proof (atomize_elim, cases t rule: tm_exhaust_apps)
   case t: (apps \<zeta> ss)
   show "\<exists>\<zeta> ss. t = apps (Hd \<zeta>) ss \<and> (\<forall>sa. sa \<in> set ss \<longrightarrow> wary sa) \<and> enat (length ss) \<le> arity_hd \<zeta>"
     by (rule exI[of _ \<zeta>], rule exI[of _ ss])
-      (auto simp: t wary_args[OF _ wary_t] wary_less_eq_args[OF wary_t, unfolded t, simplified])
+      (auto simp: t wary_args[OF _ wary_t] wary_num_args_le_arity_head[OF wary_t, unfolded t, simplified])
 qed
 
 lemma arity_hd_head: "wary s \<Longrightarrow> arity_hd (head s) = arity s + num_args s"
-  by (simp add: arity_def enat_sub_add_same wary_less_eq_args)
+  by (simp add: arity_def enat_sub_add_same wary_num_args_le_arity_head)
 
 lemma arity_head_ge: "arity_hd (head s) \<ge> arity s"
   by (induct s) (auto intro: enat_le_imp_minus_le)
@@ -467,7 +467,7 @@ proof (induct s rule: tm.induct)
     have ary_hd_s: "arity_hd (head s) = arity_var x"
       using hd_s arity_hd.simps(1) by presburger
     hence "num_args s \<le> arity (\<rho> x)"
-      by (metis (no_types) wary_less_eq_args ary_\<rho>x dual_order.trans wary_s)
+      by (metis (no_types) wary_num_args_le_arity_head ary_\<rho>x dual_order.trans wary_s)
     hence "num_args s + num_args (\<rho> x) \<le> arity_hd (head (\<rho> x))"
       by (metis (no_types) arity_hd_head[OF wary_\<rho>x] add_right_mono plus_enat_simps(1))
     thus ?thesis
