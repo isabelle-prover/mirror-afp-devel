@@ -167,7 +167,7 @@ qed
 
 end
 
-text \<open>Instances of class "lcm_powerprod" are types of commutative power-products admitting
+text \<open>Instances of class \<open>lcm_powerprod\<close> are types of commutative power-products admitting
   @{emph \<open>unique\<close>} least common multiples.
   Note that if the exponents of indeterminates are arbitrary integers (as for instance in Laurent
   polynomials), then no such unique lcms exist.\<close>
@@ -215,7 +215,7 @@ qed
 
 end
 
-text \<open>Instances of class "dickson_powerprod" are types of commutative power-products satisfying the
+text \<open>Instances of class \<open>dickson_powerprod\<close> are types of commutative power-products satisfying the
   Dickson property.\<close>
 class dickson_powerprod = lcm_powerprod +
   assumes dickson: "\<And>seq::nat \<Rightarrow> 'a. (\<exists>i j::nat. i < j \<and> seq i dvd seq j)"
@@ -261,7 +261,7 @@ qed
 
 end
 
-text \<open>Instances of "od_powerprod" must satisfy the Dickson property.\<close>
+text \<open>Instances of \<open>od_powerprod\<close> must satisfy the Dickson property.\<close>
 locale od_powerprod =
   ordered_powerprod ord ord_strict
   for ord::"'a \<Rightarrow> 'a::dickson_powerprod \<Rightarrow> bool" (infixl "\<preceq>" 50)
