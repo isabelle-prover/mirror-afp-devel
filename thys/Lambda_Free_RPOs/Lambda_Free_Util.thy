@@ -275,8 +275,9 @@ lemma rev_in_lists[simp]: "rev xs \<in> lists A \<longleftrightarrow> xs \<in> l
   by auto
 
 lemma sum_list_ge_length_times:
+  fixes a :: "'a :: {ordered_ab_semigroup_add,semiring_1}"
   assumes "\<forall>i < length xs. xs ! i \<ge> a"
-  shows "sum_list xs \<ge> length xs * a"
+  shows "sum_list xs \<ge> of_nat (length xs) * a"
   using assms
 proof (induct xs)
   case (Cons x xs)
@@ -288,7 +289,7 @@ proof (induct xs)
   have "x \<ge> a"
     using xxs_i_ge_a by auto
   thus ?case
-    using ih[OF xs_i_ge_a] by simp
+    using ih[OF xs_i_ge_a] by (simp add: ring_distribs ordered_ab_semigroup_add_class.add_mono)
 qed auto
 
 lemma zip_append_0_upt:
