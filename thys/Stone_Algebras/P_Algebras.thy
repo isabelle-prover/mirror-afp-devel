@@ -37,7 +37,7 @@ In this section we add a pseudocomplement operation to lattices and to distribut
 subsubsection {* Pseudocomplemented Lattices *}
 
 text {*
-The pseudocomplement of an element @{text y} is the least element whose meet with @{text y} is the least element of the lattice.
+The pseudocomplement of an element @{text y} is the greatest element whose meet with @{text y} is the least element of the lattice.
 *}
 
 class p_algebra = bounded_lattice + uminus +
