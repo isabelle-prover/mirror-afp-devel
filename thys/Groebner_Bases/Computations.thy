@@ -12,9 +12,10 @@ text \<open>We now compute concrete Gr\"obner bases w.r.t. both the purely lexic
 
 subsection \<open>Lexicographic Order\<close>
 
-global_interpretation opp_lex: od_powerprod lex
-  defines lex_strict = opp_lex.ord_strict
-  and lp_lex = opp_lex.lp
+definition "lex_strict s t \<longleftrightarrow> lex s t \<and> \<not> lex t s"
+
+global_interpretation opp_lex: od_powerprod lex lex_strict
+  defines lp_lex = opp_lex.lp
   and max_lex = opp_lex.ordered_powerprod_lin.max
   and list_max_lex = opp_lex.list_max
   and higher_lex = opp_lex.higher
@@ -31,14 +32,15 @@ global_interpretation opp_lex: od_powerprod lex
   and trdsp_lex = opp_lex.trdsp
   and gbaux_lex = opp_lex.gbaux
   and gb_lex = opp_lex.gb
-apply standard
-subgoal by (rule lex_refl)
-subgoal by (erule lex_antisym, simp)
-subgoal by (erule lex_trans, simp)
-subgoal by (rule lex_lin)
-subgoal by (rule lex_one_min)
-subgoal by (erule lex_times_monotone)
-done
+  apply standard
+  subgoal by (simp add: lex_strict_def)
+  subgoal by (rule lex_refl)
+  subgoal by (erule lex_trans, simp)
+  subgoal by (erule lex_antisym, simp)
+  subgoal by (rule lex_lin)
+  subgoal by (rule lex_one_min)
+  subgoal by (erule lex_times_monotone)
+  done
 
 subsubsection \<open>Computations\<close>
 
@@ -153,9 +155,10 @@ by eval
 
 subsection \<open>Degree-Lexicographic Order\<close>
 
-global_interpretation opp_dlex: od_powerprod dlex
-  defines dlex_strict = opp_dlex.ord_strict
-  and lp_dlex = opp_dlex.lp
+definition "dlex_strict s t \<longleftrightarrow> dlex s t \<and> \<not> dlex t s"
+
+global_interpretation opp_dlex: od_powerprod dlex dlex_strict
+  defines lp_dlex = opp_dlex.lp
   and max_dlex = opp_dlex.ordered_powerprod_lin.max
   and list_max_dlex = opp_dlex.list_max
   and higher_dlex = opp_dlex.higher
@@ -172,14 +175,15 @@ global_interpretation opp_dlex: od_powerprod dlex
   and trdsp_dlex = opp_dlex.trdsp
   and gbaux_dlex = opp_dlex.gbaux
   and gb_dlex = opp_dlex.gb
-apply standard
-subgoal by (rule dlex_refl)
-subgoal by (erule dlex_antisym, simp)
-subgoal by (erule dlex_trans, simp)
-subgoal by (rule dlex_lin)
-subgoal by (rule dlex_one_min)
-subgoal by (erule dlex_times_monotone)
-done
+  apply standard
+  subgoal by (simp add: dlex_strict_def)
+  subgoal by (rule dlex_refl)
+  subgoal by (erule dlex_trans, simp)
+  subgoal by (erule dlex_antisym, simp)
+  subgoal by (rule dlex_lin)
+  subgoal by (rule dlex_one_min)
+  subgoal by (erule dlex_times_monotone)
+  done
 
 subsubsection \<open>Computations\<close>
 

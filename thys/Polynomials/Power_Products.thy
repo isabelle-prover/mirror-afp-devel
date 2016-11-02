@@ -231,38 +231,13 @@ proof -
   thus "wfP r" unfolding wfP_def .
 qed
 
-locale ordered_powerprod = 
-  fixes ord::"'a \<Rightarrow> 'a::comm_powerprod \<Rightarrow> bool" (infixl "\<preceq>" 50)
-  assumes ord_refl: "s \<preceq> s"
-  assumes ord_antisym: "s \<preceq> t \<Longrightarrow> t \<preceq> s \<Longrightarrow> s = t"
-  assumes ord_trans: "s \<preceq> t \<Longrightarrow> t \<preceq> u \<Longrightarrow> s \<preceq> u"
-  assumes ord_lin: "s \<preceq> t \<or> t \<preceq> s"
+locale ordered_powerprod =
+  ordered_powerprod_lin: linorder ord ord_strict
+  for ord::"'a \<Rightarrow> 'a::comm_powerprod \<Rightarrow> bool" (infixl "\<preceq>" 50)
+  and ord_strict::"'a \<Rightarrow> 'a::comm_powerprod \<Rightarrow> bool" (infixl "\<prec>" 50) +
   assumes one_min: "1 \<preceq> t"
   assumes times_monotone: "s \<preceq> t \<Longrightarrow> s * u \<preceq> t * u"
 begin
-
-definition ord_strict::"'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl "\<prec>" 50) where
-  "ord_strict s t \<equiv> (s \<preceq> t \<and> \<not> t \<preceq> s)"
-
-sublocale ordered_powerprod_lin: linorder "op \<preceq>" "op \<prec>"
-proof
-  fix s t
-  show "(s \<prec> t) = (s \<preceq> t \<and> \<not> t \<preceq> s)" unfolding ord_strict_def ..
-next
-  fix s
-  from ord_refl[of s] show "s \<preceq> s" .
-next
-  fix s t u
-  assume "s \<preceq> t" and "t \<preceq> u"
-  from ord_trans[OF this] show "s \<preceq> u" .
-next
-  fix s t
-  assume "s \<preceq> t" and "t \<preceq> s"
-  from ord_antisym[OF this] show "s = t" .
-next
-  fix s t
-  from ord_lin[of s t] show "s \<preceq> t \<or> t \<preceq> s" .
-qed
 
 lemma ord_canc:
   assumes "s * u \<preceq> t * u"
@@ -288,24 +263,10 @@ end
 
 text \<open>Instances of "od_powerprod" must satisfy the Dickson property.\<close>
 locale od_powerprod =
-  fixes ord::"'a \<Rightarrow> 'a::dickson_powerprod \<Rightarrow> bool" (infixl "\<preceq>" 50)
-  assumes ord_r: "s \<preceq> s"
-  assumes ord_a: "s \<preceq> t \<Longrightarrow> t \<preceq> s \<Longrightarrow> s = t"
-  assumes ord_t: "s \<preceq> t \<Longrightarrow> t \<preceq> u \<Longrightarrow> s \<preceq> u"
-  assumes ord_l: "s \<preceq> t \<or> t \<preceq> s"
-  assumes one_m: "1 \<preceq> t"
-  assumes times_m: "s \<preceq> t \<Longrightarrow> s * u \<preceq> t * u"
+  ordered_powerprod ord ord_strict
+  for ord::"'a \<Rightarrow> 'a::dickson_powerprod \<Rightarrow> bool" (infixl "\<preceq>" 50)
+  and ord_strict (infixl "\<prec>" 50)
 begin
-
-sublocale ordered_powerprod
-  apply standard
-  subgoal by (rule ord_r)
-  subgoal by (rule ord_a)
-  subgoal by (rule ord_t)
-  subgoal by (rule ord_l)
-  subgoal by (rule one_m)
-  subgoal by (rule times_m)
-  done
 
 lemma wf_ord_strict:
   shows "wfP (op \<prec>)"
