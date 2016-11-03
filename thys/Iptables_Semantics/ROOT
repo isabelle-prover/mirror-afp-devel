@@ -20,7 +20,6 @@ session Iptables_Semantics (AFP) = Routing +
     Semantics_Goto
     Call_Return_Unfolding
     "Common/Negation_Type_DNF"
-    "Semantics_Ternary/Packet_Set"
     "Semantics_Ternary/Semantics_Ternary"
     Matching_Embeddings
     Semantics_Embeddings
