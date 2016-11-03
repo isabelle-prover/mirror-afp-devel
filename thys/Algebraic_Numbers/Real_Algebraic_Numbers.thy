@@ -1634,55 +1634,7 @@ lemma floor_rai: "floor (real_of_rai x) = floor_rai x"
   by (transfer, insert floor_rai_fun, auto)
 
 (* ********************* *)
-subsubsection\<open>Root\<close>
-
-
-definition rpoly_root_delta :: "rat poly \<Rightarrow> real" where
-  "rpoly_root_delta p = Min (insert 1 { abs (x - y) | x y. rpoly p x = 0 \<and> rpoly p y = 0 \<and> x \<noteq> y}) / 4"
-
-lemma rpoly_root_delta: assumes "p \<noteq> 0"
-  shows "rpoly_root_delta p > 0"
-    "2 \<le> card (Collect (root_cond (p, l, r))) \<Longrightarrow> rpoly_root_delta p \<le> real_of_rat (r - l) / 4"
-proof -
-  let ?z = "0 :: real"
-  let ?R = "{x. rpoly p x = ?z}"
-  let ?set = "{ abs (x - y) | x y. rpoly p x = ?z  \<and> rpoly p y = 0 \<and> x \<noteq> y}"
-  define S where "S = insert 1 ?set"
-  from finite_rpoly_roots[OF assms] have finR: "finite ?R" and fin: "finite (?R \<times> ?R)" by auto
-  have "finite ?set"
-    by (rule finite_subset[OF _ finite_imageI[OF fin, of "\<lambda> (x,y). abs (x - y)"]], force)
-  hence fin: "finite S" and ne: "S \<noteq> {}" and pos: "\<And> x. x \<in> S \<Longrightarrow> x > 0" unfolding S_def by auto
-  have delta: "rpoly_root_delta p = Min S / 4" unfolding rpoly_root_delta_def S_def ..
-  have pos: "Min S > 0" using fin ne pos by auto
-  show "rpoly_root_delta p > 0" unfolding delta using pos by auto
-  let ?S = "Collect (root_cond (p, l, r))"
-  assume "2 \<le> card ?S"
-  hence 2: "Suc (Suc 0) \<le> card ?S" by simp
-  have finS: "finite ?S"
-    by (rule finite_subset[OF _ finR], auto simp: root_cond_def)
-  from 2[unfolded card_le_Suc_iff[OF finS]] obtain x T where 
-    ST: "?S = insert x T" and xT: "x \<notin> T" and 1: "Suc 0 \<le> card T" and finT: "finite T" by auto
-  from 1[unfolded card_le_Suc_iff[OF finT]] obtain y where yT: "y \<in> T" by auto
-  from ST xT yT have x: "x \<in> ?S" and y: "y \<in> ?S" and xy: "x \<noteq> y" by auto
-  hence "abs (x - y) \<in> S" unfolding S_def root_cond_def[abs_def] by auto
-  with fin have "Min S \<le> abs (x - y)" by auto
-  with pos have le: "Min S / 2 \<le> abs (x - y) / 2" by auto
-  from x y have "abs (x - y) \<le> of_rat r - of_rat l" unfolding root_cond_def[abs_def] by auto
-  also have "\<dots> = of_rat (r - l)" by (auto simp: of_rat_diff)
-  finally have "abs (x - y) / 2 \<le> of_rat (r - l) / 2" by auto
-  with le show "rpoly_root_delta p \<le> real_of_rat (r - l) / 4" unfolding delta by auto
-qed
-
-definition sgn_rai_rat :: "rai_intern \<Rightarrow> rat" where
-  "sgn_rai_rat impl = (case impl of None \<Rightarrow> 0 | Some (ri,p,l,r) \<Rightarrow> sgn r)"
-
-lemma sgn_less_eq_1_rat: fixes a b :: rat
-  shows "sgn a = 1 \<Longrightarrow> a \<le> b \<Longrightarrow> sgn b = 1" 
-  by (metis (no_types, hide_lams) not_less one_neq_neg_one one_neq_zero order_trans sgn_rat_def)
-
-lemma sgn_less_eq_1_real: fixes a b :: real
-  shows "sgn a = 1 \<Longrightarrow> a \<le> b \<Longrightarrow> sgn b = 1" 
-  by (metis (no_types, hide_lams) not_less one_neq_neg_one one_neq_zero order_trans sgn_real_def)
+subsubsection\<open>Generic Factorization and Bisection Framework\<close>
 
 lemma card_1_Collect_ex1: assumes "card (Collect P) = 1"
   shows "\<exists>! x. P x"
@@ -1691,383 +1643,6 @@ proof -
   thus ?thesis
     by (intro ex1I[of _ x], auto)
 qed
-
-context
-  fixes n :: nat
-begin
-private definition initial_lower_bound :: "rat \<Rightarrow> rat" where 
-  "initial_lower_bound l = (if l \<le> 1 then l else of_int (root_rat_floor n l))"
-
-private definition initial_upper_bound :: "rat \<Rightarrow> rat" where
-  "initial_upper_bound r = (of_int (root_rat_ceiling n r))"
-
-context
-  fixes p' p :: "rat poly"
-  and ri' :: "root_info"
-  and cr' cr :: "rat \<Rightarrow> rat \<Rightarrow> nat"
-begin  
-partial_function (tailrec) tighten_bound_root :: 
-  "rat \<times> rat \<Rightarrow> rat \<times> rat \<Rightarrow> rai_intern_flat" where
-  [code]: "tighten_bound_root rbnd pbnd = (case (rbnd,pbnd) of ((l',r'), (l,r))
-    \<Rightarrow> 
-    if cr' l' r' = 1 then (ri',p',l',r') else let
-      m' = (l' + r') / 2;
-      m = m' ^ n
-      in if l \<le> m \<and> m \<le> r \<and> poly p m = 0 then (poly_rat_root_info m', poly_rat m',m',m')
-      else (case tighten_poly_bounds_for_x cr m l r of (L,R) \<Rightarrow> 
-        if m < L then tighten_bound_root (m',r') (L,R) 
-      else tighten_bound_root (l',m') (L,R)))"
-
-
-lemma tighten_bound_root: assumes n: "n \<noteq> 0"
-  and ur: "unique_root (p,l,r)"
-  and rt: "root_cond (p',l',r') x"
-  and u: "u = the_unique_root (p,l,r)"
-  and x: "x = root n u"
-  and cr: "root_info_cond ri p" "cr = root_info.l_r ri"
-  and cr': "root_info_cond ri' p'" "cr' = root_info.l_r ri'"
-  and res: "tighten_bound_root (l',r') (l,r) = (Ri,P,L,R)"
-  and p: "p \<noteq> 0" 
-  and p': "p' \<noteq> 0"
-  and sgn: "sgn l = 1" "sgn l' = 1"
-  shows "unique_root (P,L,R)" "root_cond (P,L,R) x" "P \<noteq> 0" "sgn L = 1" "sgn R = 1" "sgn x = 1"
-    "root_info_cond Ri P"
-proof -
-  define delta where "delta = rpoly_root_delta p'"
-  have delta: "delta > 0" unfolding delta_def by (rule rpoly_root_delta[OF p'])
-  let ?P = "\<lambda> ((l',r'), (l,r)) . unique_root (p,l,r) \<longrightarrow> root_cond (p',l',r') x \<longrightarrow>
-    u = the_unique_root (p,l,r) \<longrightarrow> tighten_bound_root (l',r') (l,r) = (Ri,P,L,R) \<longrightarrow> sgn l = 1 \<longrightarrow>
-    sgn l' = 1 \<longrightarrow> 
-    (unique_root (P,L,R) \<and> root_cond (P,L,R) x \<and> P \<noteq> 0 \<and> sgn L = 1 \<and> root_info_cond Ri P)"
-  let ?dist = "\<lambda> ((l',r'),(l,r)). real_of_rat (r' - l')"
-  let ?rel' = "{(x, y). 0 \<le> y \<and> delta_gt delta x y}"
-  let ?rel = "inv_image ?rel' ?dist"
-  have SN: "SN ?rel" by (rule SN_inv_image[OF delta_gt_SN[OF delta]])
-  have "?P ((l',r'),(l,r))"
-  proof (induct rule: SN_induct[OF SN])
-    case (1 input)
-    obtain l' r' l r where input: "input = ((l',r'),(l,r))" by (cases input, auto)
-    show ?case unfolding input split
-    proof (intro impI)
-      assume ur: "unique_root (p,l,r)"
-        and rc': "root_cond (p',l',r') x"
-        and u: "u = the_unique_root (p,l,r)"
-        and res: "tighten_bound_root (l', r') (l, r) = ( Ri, P, L, R)"
-        and sgn: "sgn l = 1" "sgn l' = 1"
-      let ?l' = "real_of_rat l'"
-      let ?r' = "real_of_rat r'"
-      note rc'' = rc'[unfolded root_cond_def split] 
-      from rc'' have "?l' \<le> ?r'" by auto
-      hence lr': "l' \<le> r'" by (auto simp: of_rat_less_eq)
-      note res = res[unfolded tighten_bound_root.simps[of "(l',r')"] split Let_def]
-      show "unique_root (P,L,R) \<and> root_cond (P,L,R) x \<and> P \<noteq> 0 \<and> sgn L = 1 \<and> root_info_cond Ri P"
-      proof (cases "cr' l' r' = 1")
-        case True
-        with res have id: "P = p'" "L = l'" "R = r'" "Ri = ri'" by auto
-        from True[unfolded cr'(2) root_info_condD(1)[OF cr'(1) lr']]
-        have "card (Collect (root_cond (p',l',r'))) = 1" .
-        from card_1_Collect_ex1[OF this]
-        have "unique_root (p',l',r')" unfolding unique_root_def .
-        with rc' p' sgn cr' show ?thesis unfolding id by auto
-      next
-        case False note card = this
-        hence "(cr' l' r' = 1) = False" by auto
-        note res = res[unfolded this if_False]
-        define m' where "m' = (l' + r') / 2"
-        let ?m = "m' ^ n"
-        let ?m' = "real_of_rat m'"
-        have lm': "l' \<le> m'" and mr': "m' \<le> r'" using lr' m'_def by auto
-        from sgn_less_eq_1_rat[OF sgn(2) lm'] have sgnm': "sgn m' = 1" .
-        note res = res[folded m'_def]
-        let ?cond = "root_cond (p,l,r) (of_rat ?m)"
-        have cond: "(l \<le> ?m \<and> ?m \<le> r \<and> poly p ?m = 0) = ?cond"
-          unfolding root_cond_def split of_rat_less_eq rpoly.eval_poly_poly by auto
-        note res = res[unfolded cond]
-        show ?thesis
-        proof (cases ?cond)
-          case True
-          hence id: "P = poly_rat m'" "L = m'" "R = m'" "Ri = poly_rat_root_info m'" using card res by auto
-          from the_unique_root(5)[OF ur True, folded u] have u: "u = (of_rat m') ^ n" unfolding of_rat_power .
-          have xm: "x = of_rat m'" unfolding arg_cong[OF u, of "root n", folded x]
-            by (rule real_root_pos2, insert sgnm' n, cases "m' = 0"; cases "m' < 0"; auto simp: sgn_rat_def)
-          have rc: "root_cond (poly_rat m', m', m') x" unfolding root_cond_def split xm by simp
-          show ?thesis unfolding id using rc by (auto simp: sgnm' unique_root_def root_cond_def)
-        next
-          case False note m_no_root = this
-          hence "?cond = False" by auto
-          note res = res[unfolded this if_False]
-          let ?tight = "tighten_poly_bounds_for_x cr ?m l r"
-          obtain LL RR where tight: "?tight = (LL,RR)" by force
-          from m_no_root[folded cond] have "l \<le> ?m \<Longrightarrow> ?m \<le> r \<Longrightarrow> poly p ?m \<noteq> 0" by auto
-          from tighten_poly_bounds_for_x[OF ur this u cr tight]
-          have bnd: "l \<le> LL" "RR \<le> r" and rc': "root_cond (p,LL,RR) u" 
-            and outside: "\<not> (LL \<le> ?m \<and> ?m \<le> RR)" by auto
-          from sgn_less_eq_1_rat[OF sgn(1) bnd(1)] have sgnLL: "sgn LL = 1" .
-          from unique_root_sub_interval[OF ur rc'[unfolded u] bnd, folded u]
-          have ur': "unique_root (p, LL, RR)" and u': "u = the_unique_root (p, LL, RR)" by auto
-          note IH = 1[unfolded input]
-          note res = res[unfolded tight split]
-          let ?d = "r' - l'"
-          let ?d' = "real_of_rat ?d"
-          let ?diff = "(r' - l') / 2" 
-          let ?diff' = "real_of_rat ?diff"
-          let ?in = "((l',r'),(l,r))"
-          let ?recl = "((l',m'),(LL,RR))"
-          let ?recr = "((m',r'),(LL,RR))"
-          from lr' have size: "r' - m' = ?diff" "m' - l' = ?diff" 
-            and bnd0: "?diff' \<ge> 0" unfolding m'_def
-            by (auto simp: field_simps of_rat_less_eq)
-          from lr' have d': "?d' \<ge> 0" unfolding zero_le_of_rat_iff by simp
-          have "?d' - ?diff' = ?d' / 2" by (auto simp: field_simps of_rat_divide)
-          also have "\<dots> \<ge> delta" 
-          proof -
-            let ?S = "Collect (root_cond (p',l',r'))"
-            have fin: "finite ?S"
-              by (rule finite_subset[OF _ finite_rpoly_roots[OF p']], auto simp: root_cond_def)
-            from rc'' have "root_cond (p',l',r') x" unfolding root_cond_def by auto
-            hence "x \<in> ?S" by auto
-            with fin have "card ?S \<noteq> 0" by auto
-            with card[unfolded cr'(2) root_info_condD(1)[OF cr'(1) lr']]
-            have "card ?S \<ge> 2" by auto
-            from rpoly_root_delta(2)[OF p' this]
-            have "delta \<le> ?d' / 4" unfolding delta_def .
-            also have "\<dots> \<le> ?d' / 2" using d' by simp
-            finally show "delta \<le> ?d' / 2" .
-          qed
-          finally have rel: "(?d',?diff') \<in> ?rel'" using bnd0 unfolding delta_gt_def by auto
-          have *: "(?d',?diff') = (?dist ?in, ?dist ?recl)"
-               "(?d',?diff') = (?dist ?in, ?dist ?recr)"
-            unfolding split size by auto
-          from rel have "(?dist ?in, ?dist ?recl) \<in> ?rel'" "(?dist ?in, ?dist ?recr) \<in> ?rel'" 
-            unfolding *[symmetric] by blast+
-          hence rel: "(?in,?recl) \<in> ?rel" "(?in,?recr) \<in> ?rel" by auto
-          have l0: "l > 0" using sgn(1) unfolding sgn_rat_def by (cases "l = 0"; cases "l < 0", auto)
-          hence ll0: "real_of_rat l > 0" by auto
-          have l'0: "l' > 0" using sgn(2) unfolding sgn_real_def by (cases "l' = 0"; cases "l' < 0", auto)
-          hence ll'0: "real_of_rat l' > 0" by auto
-          hence x0: "x > 0" using rc'' by linarith
-          have u0: "u > 0" using the_unique_root(1)[OF ur, folded u] ll0 by linarith
-          have uxn: "u = x^n" unfolding x 
-            by (rule sym, rule real_root_pow_pos, insert n u0, auto)
-          have rxn: "root n (x ^ n) = x"
-            by (rule real_root_pos2, insert n x0, auto)
-          have rm: "root n (of_rat ?m) = of_rat m'" unfolding of_rat_power
-            by (rule real_root_pos2, insert n lm' ll'0, auto)
-          show ?thesis 
-          proof (cases "?m < LL")
-            case True
-            note outside = this
-            with res have res: "tighten_bound_root (m', r') (LL, RR) = (Ri,P,L,R)" by auto
-            have "of_rat ?m < real_of_rat LL" using outside of_rat_less by blast
-            also have "\<dots> \<le> u" using the_unique_root(1)[OF ur', folded u'] by auto
-            finally have "of_rat ?m < x ^ n" unfolding uxn .
-            hence "root n (of_rat ?m) < root n (x ^ n)" 
-              by (subst real_root_less_iff, insert n, auto)
-            hence "?m' < x" unfolding rxn rm .
-            with rc'' have rc: "root_cond (p', m', r') x" unfolding root_cond_def by auto
-            note IH = IH[OF rel(2), unfolded split, rule_format, OF ur' rc u' res sgnLL sgnm']
-            show ?thesis by (rule IH)
-          next
-            case False
-            with res have res: "tighten_bound_root (l', m') (LL, RR) = (Ri,P,L,R)" by auto
-            from False have "LL \<le> ?m" by auto
-            with outside have outside: "RR < ?m" by auto
-            have "x ^ n \<le> of_rat RR" 
-              unfolding uxn[symmetric] using the_unique_root(2)[OF ur', folded u'] .
-            also have "\<dots> < of_rat ?m" using outside of_rat_less by blast
-            finally have "x ^ n < of_rat ?m" .
-            hence "root n (x ^ n) < root n (of_rat ?m)" 
-              by (subst real_root_less_iff, insert n, auto)
-            hence "x < ?m'" unfolding rxn rm .
-            with rc'' have rc: "root_cond (p', l', m') x" unfolding root_cond_def by auto
-            note IH = IH[OF rel(1), unfolded split, rule_format, OF ur' rc u' res sgnLL sgn(2)]
-            show ?thesis by (rule IH)
-          qed
-        qed
-      qed
-    qed
-  qed
-  from this[unfolded split, rule_format, OF ur rt u res sgn]
-  show "unique_root (P,L,R)" "P \<noteq> 0" "root_info_cond Ri P" and rc: "root_cond (P,L,R) x" and sgn: "sgn L = 1" by auto
-  from rc[unfolded root_cond_def split] have Lx: "of_rat L \<le> x" and LR: "of_rat L \<le> real_of_rat R" by auto
-  from LR have "L \<le> R" by (auto simp: of_rat_less_eq)
-  with sgn show "sgn R = 1" by (metis sgn_less_eq_1_rat)
-  show "sgn x = 1" by (rule sgn_less_eq_1_real[OF _ Lx], insert sgn, simp add: real_of_rat_sgn)
-qed
-
-end
-
-private definition root_rai_fun_pos :: "rai_intern \<Rightarrow> rai_intern" where
-  "root_rai_fun_pos \<equiv> map_option (\<lambda> (ri,p,l,r) \<Rightarrow> 
-  let p' = poly_nth_root n p; ri' = count_roots_interval_sf_rat p' in 
-  rai_normalize_poly_flat 
-    (tighten_bound_root p' p ri' (root_info.l_r ri') (root_info.l_r ri)
-      (initial_lower_bound l, initial_upper_bound r) (l,r)))"
-
-private definition "root_rai_fun impl \<equiv> if n = 0 then of_rat_rai_fun 0 else if sgn_rai_rat impl \<ge> 0 
-    then root_rai_fun_pos impl
-    else uminus_rai_fun (root_rai_fun_pos (uminus_rai_fun impl))"
-
-context
-  assumes n: "n \<noteq> 0"
-begin  
-
-lemma initial_upper_bound: assumes x: "x > 0" and xr: "x \<le> of_rat r"
-  shows "sgn (initial_upper_bound r) = 1" "root n x \<le> of_rat (initial_upper_bound r)"
-proof -
-  have n: "n > 0" using n by auto
-  note d = initial_upper_bound_def
-  let ?r = "initial_upper_bound r"
-  from x xr have r0: "r > 0" by (meson not_less of_rat_le_0_iff order_trans)
-  hence "of_rat r > (0 :: real)" by auto
-  hence "root n (of_rat r) > 0" using n by simp
-  hence "1 \<le> ceiling (root n (of_rat r))" by auto
-  hence "(1 :: rat) \<le> of_int (ceiling (root n (of_rat r)))" by linarith
-  also have "\<dots> = ?r" unfolding d by simp
-  finally show "sgn ?r = 1" unfolding sgn_rat_def by auto
-  have "root n x \<le> root n (of_rat r)"
-    unfolding real_root_le_iff[OF n] by (rule xr)
-  also have "\<dots> \<le> of_rat ?r" unfolding d by simp
-  finally show "root n x \<le> of_rat ?r" .
-qed
-
-lemma initial_lower_bound: assumes l: "l > 0" and lx: "of_rat l \<le> x"
-  shows "sgn (initial_lower_bound l) = 1" "of_rat (initial_lower_bound l) \<le> root n x"
-proof -
-  have n: "n > 0" using n by auto
-  note d = initial_lower_bound_def
-  let ?l = "initial_lower_bound l"
-  from l lx have x0: "x > 0" by (meson not_less of_rat_le_0_iff order_trans)
-  have "sgn ?l = 1 \<and> of_rat ?l \<le> root n x"
-  proof (cases "l \<le> 1")
-    case True
-    hence ll: "?l = l" and l0: "of_rat l \<ge> (0 :: real)" and l1: "of_rat l \<le> (1 :: real)" 
-      using l unfolding True d by auto
-    have sgn: "sgn ?l = 1" using l unfolding ll by auto
-    have "of_rat ?l = of_rat l" unfolding ll by simp
-    also have "of_rat l \<le> root n (of_rat l)" using real_root_increasing[OF _ _ l0 l1, of 1 n] n
-      by (cases "n = 1", auto)
-    also have "\<dots> \<le> root n x" using lx unfolding real_root_le_iff[OF n] .
-    finally show ?thesis using sgn by auto
-  next
-    case False
-    hence l: "(1 :: real) \<le> of_rat l" and ll: "?l = of_int (floor (root n (of_rat l)))" 
-      unfolding d by auto
-    hence "root n 1 \<le> root n (of_rat l)"
-      unfolding real_root_le_iff[OF n] by auto
-    hence "1 \<le> root n (of_rat l)" using n by auto
-    from floor_mono[OF this] have "1 \<le> ?l"
-      using one_le_floor unfolding ll by fastforce
-    hence sgn: "sgn ?l = 1" by simp
-    have "of_rat ?l \<le> root n (of_rat l)" unfolding ll by simp
-    also have "\<dots> \<le> root n x" using lx unfolding real_root_le_iff[OF n] .
-    finally have "of_rat ?l \<le> root n x" .
-    with sgn show ?thesis by auto
-  qed
-  thus "sgn ?l = 1" "of_rat ?l \<le> root n x" by auto
-qed
-
-lemma root_rai_pos: assumes x: "rai_cond x" and nneg: "sgn_rai_rat x \<ge> 0" 
-  defines y: "y \<equiv> root_rai_fun_pos x"
-  shows "rai_cond y \<and> (rai_real y = root n (rai_real x))"
-proof (cases x)
-  case (Some plr)
-  obtain ri p l r where plr: "plr = (ri,p,l,r)" by (cases plr, auto)
-  let ?l = "initial_lower_bound l"
-  let ?r = "initial_upper_bound r"
-  from x Some plr have "rai_cond (Some (ri,p,l,r))" by auto
-  note * = rai_condD[OF this]
-  note inv = *(8)
-  note ur = *(7)
-  note cr = *(9)
-  note * = *(1-6)
-  note ** = *[unfolded root_cond_def]
-  from Some plr have x: "x = Some (ri,p,l,r)" by simp
-  let ?x = "rai_real (Some (ri,p,l,r))"
-  from nneg[unfolded x sgn_rai_rat_def] have "sgn r \<ge> 0" by simp
-  with * have "sgn r > 0" by linarith
-  hence sgnl: "sgn l = 1" using * by auto
-  from sgnl have l0: "l > 0" unfolding sgn_rat_def by (cases "l = 0"; cases "l < 0"; auto)
-  hence ll0: "real_of_rat l > 0" by auto
-  from ** have lx: "of_rat l \<le> ?x" by auto
-  with ll0 have x0: "?x > 0" by linarith  
-  note il = initial_lower_bound[OF l0 lx]
-  from ** have "?x \<le> of_rat r" by auto
-  note iu = initial_upper_bound[OF x0 this]
-  let ?p = "poly_nth_root n p"
-  let ?c = "count_roots_interval_sf_rat"
-  let ?lr = "root_info.l_r"
-  from x0 have id: "root n ?x ^ n = ?x" using n real_root_pow_pos by blast
-  have rc: "root_cond (?p, ?l, ?r) (root n ?x)"
-    unfolding root_cond_def using il iu ** by (auto simp: id rpoly_nth_root)
-  from ** have p: "p \<noteq> 0" by auto
-  hence p': "?p \<noteq> 0" using poly_nth_root_0[OF n, of p] by auto
-  let ?tight = "tighten_bound_root ?p p (?c ?p) (?lr (?c ?p)) (?lr ri) (?l,?r) (l,r)"
-  let ?norm = "rai_normalize_poly_flat  ?tight"
-  from plr Some have y: "y = Some ?norm" 
-    unfolding y root_rai_fun_pos_def Let_def by simp
-  obtain Cr P L R where tight: "?tight = (Cr,P,L,R)" by (cases ?tight, auto)
-  from the_unique_root(5)[OF ur *(1)] have id2: "the_unique_root (p,l,r) = ?x" .
-  have cr': "root_info_cond (?c ?p) ?p"
-    by (rule count_roots_interval_sf_rat[OF p'])
-  note ur = tighten_bound_root[OF n ur rc refl _ cr refl cr' refl tight p p' sgnl il(1), unfolded id2, OF refl]
-  obtain ri p l r where norm: "?norm = (ri,p,l,r)" by (cases ?norm, auto)
-  from the_unique_root(5)[OF ur(1-2)] 
-  have id: "root n (rai_real x) = the_unique_root (P, L, R)"
-    unfolding x tight rai_cond_def option.simps by (simp add: rai_real_def)
-  note * = rai_normalize_poly_flat[OF norm[unfolded tight] ur(1,3,7)] 
-  from * ur
-  have "rai_cond y" unfolding y norm by (auto simp: rai_cond_def)
-  thus ?thesis unfolding y norm unfolding id[symmetric] using *
-    by (metis id norm rai_condD(8) the_equality unique_root_def unique_root_defs(2) y)
-qed (simp add: y root_rai_fun_pos_def)
-
-end
-
-lemma root_rai_main: assumes x: "rai_cond x"
-  defines y: "y \<equiv> root_rai_fun x"
-  shows "rai_cond y \<and> (rai_real y = root n (rai_real x))"
-proof -
-  note y = y[unfolded root_rai_fun_def]
-  show ?thesis
-  proof (cases "n = 0")
-    case True
-    thus ?thesis unfolding y using of_rat_rai_main[of _ 0] by auto
-  next
-    case False note n = this
-    note rt = root_rai_pos[OF n]
-    show ?thesis
-    proof (cases "sgn_rai_rat x \<ge> 0")
-      case True
-      from rt[OF x True] True n y show ?thesis by auto
-    next
-      case False
-      let ?um = "uminus_rai_fun"
-      let ?rt = "root_rai_fun_pos"
-      note um = uminus_rai_main
-      from n False y have y: "y = ?um (?rt (?um x))" by simp
-      from um[OF x] have umx: "rai_cond (?um x)" and umx2: "rai_real (?um x) = - rai_real x" by auto
-      have "sgn_rai_rat (?um x) = - sgn_rai_rat x" using x[unfolded rai_cond_def] 
-        unfolding uminus_rai_fun_def sgn_rai_rat_def Let_def
-        by (cases x, auto simp: sgn_minus_rat)
-      with False have "0 \<le> sgn_rai_rat (?um x)" by simp
-      from rt[OF umx this] umx2 have rumx: "rai_cond (?rt (?um x))" 
-        and rumx2: "rai_real (?rt (?um x)) = root n (- rai_real x)"
-        by auto
-      from um[OF rumx] rumx2 y real_root_minus show ?thesis by auto
-    qed
-  qed
-qed
-
-lift_definition root_rai :: "real_alg_intern \<Rightarrow> real_alg_intern" is root_rai_fun
-  by (insert root_rai_main, auto)
-  
-lemma root_rai: "real_of_rai (root_rai x) = root n (real_of_rai x)"
-  by (transfer, insert root_rai_main, auto)
-end
-
-(* ********************* *)
-subsubsection\<open>Addition\<close>
 
 fun sub_interval :: "rat \<times> rat \<Rightarrow> rat \<times> rat \<Rightarrow> bool" where
   "sub_interval (l,r) (l',r') = (l' \<le> l \<and> r \<le> r')"
@@ -2448,8 +2023,9 @@ proof -
 qed
 end
 
+(* ********************* *)
+subsubsection\<open>Addition\<close>
 
-(* addition *)
 context
 begin
 private fun add_rat_rai_fun :: "rat \<Rightarrow> rai_intern \<Rightarrow> rai_intern" where
@@ -3143,6 +2719,431 @@ lift_definition mult_rat_rai :: "rat \<Rightarrow> real_alg_intern \<Rightarrow>
   
 lemma mult_rat_rai: "real_of_rai (mult_rat_rai x y) = of_rat x * real_of_rai y"
   by (transfer, insert mult_rat_rai_main, auto)
+end
+
+(* ********************* *)
+subsubsection\<open>Root\<close>
+
+
+definition rpoly_root_delta :: "rat poly \<Rightarrow> real" where
+  "rpoly_root_delta p = Min (insert 1 { abs (x - y) | x y. rpoly p x = 0 \<and> rpoly p y = 0 \<and> x \<noteq> y}) / 4"
+
+lemma rpoly_root_delta: assumes "p \<noteq> 0"
+  shows "rpoly_root_delta p > 0"
+    "2 \<le> card (Collect (root_cond (p, l, r))) \<Longrightarrow> rpoly_root_delta p \<le> real_of_rat (r - l) / 4"
+proof -
+  let ?z = "0 :: real"
+  let ?R = "{x. rpoly p x = ?z}"
+  let ?set = "{ abs (x - y) | x y. rpoly p x = ?z  \<and> rpoly p y = 0 \<and> x \<noteq> y}"
+  define S where "S = insert 1 ?set"
+  from finite_rpoly_roots[OF assms] have finR: "finite ?R" and fin: "finite (?R \<times> ?R)" by auto
+  have "finite ?set"
+    by (rule finite_subset[OF _ finite_imageI[OF fin, of "\<lambda> (x,y). abs (x - y)"]], force)
+  hence fin: "finite S" and ne: "S \<noteq> {}" and pos: "\<And> x. x \<in> S \<Longrightarrow> x > 0" unfolding S_def by auto
+  have delta: "rpoly_root_delta p = Min S / 4" unfolding rpoly_root_delta_def S_def ..
+  have pos: "Min S > 0" using fin ne pos by auto
+  show "rpoly_root_delta p > 0" unfolding delta using pos by auto
+  let ?S = "Collect (root_cond (p, l, r))"
+  assume "2 \<le> card ?S"
+  hence 2: "Suc (Suc 0) \<le> card ?S" by simp
+  have finS: "finite ?S"
+    by (rule finite_subset[OF _ finR], auto simp: root_cond_def)
+  from 2[unfolded card_le_Suc_iff[OF finS]] obtain x T where 
+    ST: "?S = insert x T" and xT: "x \<notin> T" and 1: "Suc 0 \<le> card T" and finT: "finite T" by auto
+  from 1[unfolded card_le_Suc_iff[OF finT]] obtain y where yT: "y \<in> T" by auto
+  from ST xT yT have x: "x \<in> ?S" and y: "y \<in> ?S" and xy: "x \<noteq> y" by auto
+  hence "abs (x - y) \<in> S" unfolding S_def root_cond_def[abs_def] by auto
+  with fin have "Min S \<le> abs (x - y)" by auto
+  with pos have le: "Min S / 2 \<le> abs (x - y) / 2" by auto
+  from x y have "abs (x - y) \<le> of_rat r - of_rat l" unfolding root_cond_def[abs_def] by auto
+  also have "\<dots> = of_rat (r - l)" by (auto simp: of_rat_diff)
+  finally have "abs (x - y) / 2 \<le> of_rat (r - l) / 2" by auto
+  with le show "rpoly_root_delta p \<le> real_of_rat (r - l) / 4" unfolding delta by auto
+qed
+
+definition sgn_rai_rat :: "rai_intern \<Rightarrow> rat" where
+  "sgn_rai_rat impl = (case impl of None \<Rightarrow> 0 | Some (ri,p,l,r) \<Rightarrow> sgn r)"
+
+lemma sgn_less_eq_1_rat: fixes a b :: rat
+  shows "sgn a = 1 \<Longrightarrow> a \<le> b \<Longrightarrow> sgn b = 1" 
+  by (metis (no_types, hide_lams) not_less one_neq_neg_one one_neq_zero order_trans sgn_rat_def)
+
+lemma sgn_less_eq_1_real: fixes a b :: real
+  shows "sgn a = 1 \<Longrightarrow> a \<le> b \<Longrightarrow> sgn b = 1" 
+  by (metis (no_types, hide_lams) not_less one_neq_neg_one one_neq_zero order_trans sgn_real_def)
+
+context
+  fixes n :: nat
+begin
+private definition initial_lower_bound :: "rat \<Rightarrow> rat" where 
+  "initial_lower_bound l = (if l \<le> 1 then l else of_int (root_rat_floor n l))"
+
+private definition initial_upper_bound :: "rat \<Rightarrow> rat" where
+  "initial_upper_bound r = (of_int (root_rat_ceiling n r))"
+
+context
+  fixes p' p :: "rat poly"
+  and ri' :: "root_info"
+  and cr' cr :: "rat \<Rightarrow> rat \<Rightarrow> nat"
+begin  
+partial_function (tailrec) tighten_bound_root :: 
+  "rat \<times> rat \<Rightarrow> rat \<times> rat \<Rightarrow> rai_intern_flat" where
+  [code]: "tighten_bound_root rbnd pbnd = (case (rbnd,pbnd) of ((l',r'), (l,r))
+    \<Rightarrow> 
+    if cr' l' r' = 1 then (ri',p',l',r') else let
+      m' = (l' + r') / 2;
+      m = m' ^ n
+      in if l \<le> m \<and> m \<le> r \<and> poly p m = 0 then (poly_rat_root_info m', poly_rat m',m',m')
+      else (case tighten_poly_bounds_for_x cr m l r of (L,R) \<Rightarrow> 
+        if m < L then tighten_bound_root (m',r') (L,R) 
+      else tighten_bound_root (l',m') (L,R)))"
+
+
+lemma tighten_bound_root: assumes n: "n \<noteq> 0"
+  and ur: "unique_root (p,l,r)"
+  and rt: "root_cond (p',l',r') x"
+  and u: "u = the_unique_root (p,l,r)"
+  and x: "x = root n u"
+  and cr: "root_info_cond ri p" "cr = root_info.l_r ri"
+  and cr': "root_info_cond ri' p'" "cr' = root_info.l_r ri'"
+  and res: "tighten_bound_root (l',r') (l,r) = (Ri,P,L,R)"
+  and p: "p \<noteq> 0" 
+  and p': "p' \<noteq> 0"
+  and sgn: "sgn l = 1" "sgn l' = 1"
+  shows "unique_root (P,L,R)" "root_cond (P,L,R) x" "P \<noteq> 0" "sgn L = 1" "sgn R = 1" "sgn x = 1"
+    "root_info_cond Ri P"
+proof -
+  define delta where "delta = rpoly_root_delta p'"
+  have delta: "delta > 0" unfolding delta_def by (rule rpoly_root_delta[OF p'])
+  let ?P = "\<lambda> ((l',r'), (l,r)) . unique_root (p,l,r) \<longrightarrow> root_cond (p',l',r') x \<longrightarrow>
+    u = the_unique_root (p,l,r) \<longrightarrow> tighten_bound_root (l',r') (l,r) = (Ri,P,L,R) \<longrightarrow> sgn l = 1 \<longrightarrow>
+    sgn l' = 1 \<longrightarrow> 
+    (unique_root (P,L,R) \<and> root_cond (P,L,R) x \<and> P \<noteq> 0 \<and> sgn L = 1 \<and> root_info_cond Ri P)"
+  let ?dist = "\<lambda> ((l',r'),(l,r)). real_of_rat (r' - l')"
+  let ?rel' = "{(x, y). 0 \<le> y \<and> delta_gt delta x y}"
+  let ?rel = "inv_image ?rel' ?dist"
+  have SN: "SN ?rel" by (rule SN_inv_image[OF delta_gt_SN[OF delta]])
+  have "?P ((l',r'),(l,r))"
+  proof (induct rule: SN_induct[OF SN])
+    case (1 input)
+    obtain l' r' l r where input: "input = ((l',r'),(l,r))" by (cases input, auto)
+    show ?case unfolding input split
+    proof (intro impI)
+      assume ur: "unique_root (p,l,r)"
+        and rc': "root_cond (p',l',r') x"
+        and u: "u = the_unique_root (p,l,r)"
+        and res: "tighten_bound_root (l', r') (l, r) = ( Ri, P, L, R)"
+        and sgn: "sgn l = 1" "sgn l' = 1"
+      let ?l' = "real_of_rat l'"
+      let ?r' = "real_of_rat r'"
+      note rc'' = rc'[unfolded root_cond_def split] 
+      from rc'' have "?l' \<le> ?r'" by auto
+      hence lr': "l' \<le> r'" by (auto simp: of_rat_less_eq)
+      note res = res[unfolded tighten_bound_root.simps[of "(l',r')"] split Let_def]
+      show "unique_root (P,L,R) \<and> root_cond (P,L,R) x \<and> P \<noteq> 0 \<and> sgn L = 1 \<and> root_info_cond Ri P"
+      proof (cases "cr' l' r' = 1")
+        case True
+        with res have id: "P = p'" "L = l'" "R = r'" "Ri = ri'" by auto
+        from True[unfolded cr'(2) root_info_condD(1)[OF cr'(1) lr']]
+        have "card (Collect (root_cond (p',l',r'))) = 1" .
+        from card_1_Collect_ex1[OF this]
+        have "unique_root (p',l',r')" unfolding unique_root_def .
+        with rc' p' sgn cr' show ?thesis unfolding id by auto
+      next
+        case False note card = this
+        hence "(cr' l' r' = 1) = False" by auto
+        note res = res[unfolded this if_False]
+        define m' where "m' = (l' + r') / 2"
+        let ?m = "m' ^ n"
+        let ?m' = "real_of_rat m'"
+        have lm': "l' \<le> m'" and mr': "m' \<le> r'" using lr' m'_def by auto
+        from sgn_less_eq_1_rat[OF sgn(2) lm'] have sgnm': "sgn m' = 1" .
+        note res = res[folded m'_def]
+        let ?cond = "root_cond (p,l,r) (of_rat ?m)"
+        have cond: "(l \<le> ?m \<and> ?m \<le> r \<and> poly p ?m = 0) = ?cond"
+          unfolding root_cond_def split of_rat_less_eq rpoly.eval_poly_poly by auto
+        note res = res[unfolded cond]
+        show ?thesis
+        proof (cases ?cond)
+          case True
+          hence id: "P = poly_rat m'" "L = m'" "R = m'" "Ri = poly_rat_root_info m'" using card res by auto
+          from the_unique_root(5)[OF ur True, folded u] have u: "u = (of_rat m') ^ n" unfolding of_rat_power .
+          have xm: "x = of_rat m'" unfolding arg_cong[OF u, of "root n", folded x]
+            by (rule real_root_pos2, insert sgnm' n, cases "m' = 0"; cases "m' < 0"; auto simp: sgn_rat_def)
+          have rc: "root_cond (poly_rat m', m', m') x" unfolding root_cond_def split xm by simp
+          show ?thesis unfolding id using rc by (auto simp: sgnm' unique_root_def root_cond_def)
+        next
+          case False note m_no_root = this
+          hence "?cond = False" by auto
+          note res = res[unfolded this if_False]
+          let ?tight = "tighten_poly_bounds_for_x cr ?m l r"
+          obtain LL RR where tight: "?tight = (LL,RR)" by force
+          from m_no_root[folded cond] have "l \<le> ?m \<Longrightarrow> ?m \<le> r \<Longrightarrow> poly p ?m \<noteq> 0" by auto
+          from tighten_poly_bounds_for_x[OF ur this u cr tight]
+          have bnd: "l \<le> LL" "RR \<le> r" and rc': "root_cond (p,LL,RR) u" 
+            and outside: "\<not> (LL \<le> ?m \<and> ?m \<le> RR)" by auto
+          from sgn_less_eq_1_rat[OF sgn(1) bnd(1)] have sgnLL: "sgn LL = 1" .
+          from unique_root_sub_interval[OF ur rc'[unfolded u] bnd, folded u]
+          have ur': "unique_root (p, LL, RR)" and u': "u = the_unique_root (p, LL, RR)" by auto
+          note IH = 1[unfolded input]
+          note res = res[unfolded tight split]
+          let ?d = "r' - l'"
+          let ?d' = "real_of_rat ?d"
+          let ?diff = "(r' - l') / 2" 
+          let ?diff' = "real_of_rat ?diff"
+          let ?in = "((l',r'),(l,r))"
+          let ?recl = "((l',m'),(LL,RR))"
+          let ?recr = "((m',r'),(LL,RR))"
+          from lr' have size: "r' - m' = ?diff" "m' - l' = ?diff" 
+            and bnd0: "?diff' \<ge> 0" unfolding m'_def
+            by (auto simp: field_simps of_rat_less_eq)
+          from lr' have d': "?d' \<ge> 0" unfolding zero_le_of_rat_iff by simp
+          have "?d' - ?diff' = ?d' / 2" by (auto simp: field_simps of_rat_divide)
+          also have "\<dots> \<ge> delta" 
+          proof -
+            let ?S = "Collect (root_cond (p',l',r'))"
+            have fin: "finite ?S"
+              by (rule finite_subset[OF _ finite_rpoly_roots[OF p']], auto simp: root_cond_def)
+            from rc'' have "root_cond (p',l',r') x" unfolding root_cond_def by auto
+            hence "x \<in> ?S" by auto
+            with fin have "card ?S \<noteq> 0" by auto
+            with card[unfolded cr'(2) root_info_condD(1)[OF cr'(1) lr']]
+            have "card ?S \<ge> 2" by auto
+            from rpoly_root_delta(2)[OF p' this]
+            have "delta \<le> ?d' / 4" unfolding delta_def .
+            also have "\<dots> \<le> ?d' / 2" using d' by simp
+            finally show "delta \<le> ?d' / 2" .
+          qed
+          finally have rel: "(?d',?diff') \<in> ?rel'" using bnd0 unfolding delta_gt_def by auto
+          have *: "(?d',?diff') = (?dist ?in, ?dist ?recl)"
+               "(?d',?diff') = (?dist ?in, ?dist ?recr)"
+            unfolding split size by auto
+          from rel have "(?dist ?in, ?dist ?recl) \<in> ?rel'" "(?dist ?in, ?dist ?recr) \<in> ?rel'" 
+            unfolding *[symmetric] by blast+
+          hence rel: "(?in,?recl) \<in> ?rel" "(?in,?recr) \<in> ?rel" by auto
+          have l0: "l > 0" using sgn(1) unfolding sgn_rat_def by (cases "l = 0"; cases "l < 0", auto)
+          hence ll0: "real_of_rat l > 0" by auto
+          have l'0: "l' > 0" using sgn(2) unfolding sgn_real_def by (cases "l' = 0"; cases "l' < 0", auto)
+          hence ll'0: "real_of_rat l' > 0" by auto
+          hence x0: "x > 0" using rc'' by linarith
+          have u0: "u > 0" using the_unique_root(1)[OF ur, folded u] ll0 by linarith
+          have uxn: "u = x^n" unfolding x 
+            by (rule sym, rule real_root_pow_pos, insert n u0, auto)
+          have rxn: "root n (x ^ n) = x"
+            by (rule real_root_pos2, insert n x0, auto)
+          have rm: "root n (of_rat ?m) = of_rat m'" unfolding of_rat_power
+            by (rule real_root_pos2, insert n lm' ll'0, auto)
+          show ?thesis 
+          proof (cases "?m < LL")
+            case True
+            note outside = this
+            with res have res: "tighten_bound_root (m', r') (LL, RR) = (Ri,P,L,R)" by auto
+            have "of_rat ?m < real_of_rat LL" using outside of_rat_less by blast
+            also have "\<dots> \<le> u" using the_unique_root(1)[OF ur', folded u'] by auto
+            finally have "of_rat ?m < x ^ n" unfolding uxn .
+            hence "root n (of_rat ?m) < root n (x ^ n)" 
+              by (subst real_root_less_iff, insert n, auto)
+            hence "?m' < x" unfolding rxn rm .
+            with rc'' have rc: "root_cond (p', m', r') x" unfolding root_cond_def by auto
+            note IH = IH[OF rel(2), unfolded split, rule_format, OF ur' rc u' res sgnLL sgnm']
+            show ?thesis by (rule IH)
+          next
+            case False
+            with res have res: "tighten_bound_root (l', m') (LL, RR) = (Ri,P,L,R)" by auto
+            from False have "LL \<le> ?m" by auto
+            with outside have outside: "RR < ?m" by auto
+            have "x ^ n \<le> of_rat RR" 
+              unfolding uxn[symmetric] using the_unique_root(2)[OF ur', folded u'] .
+            also have "\<dots> < of_rat ?m" using outside of_rat_less by blast
+            finally have "x ^ n < of_rat ?m" .
+            hence "root n (x ^ n) < root n (of_rat ?m)" 
+              by (subst real_root_less_iff, insert n, auto)
+            hence "x < ?m'" unfolding rxn rm .
+            with rc'' have rc: "root_cond (p', l', m') x" unfolding root_cond_def by auto
+            note IH = IH[OF rel(1), unfolded split, rule_format, OF ur' rc u' res sgnLL sgn(2)]
+            show ?thesis by (rule IH)
+          qed
+        qed
+      qed
+    qed
+  qed
+  from this[unfolded split, rule_format, OF ur rt u res sgn]
+  show "unique_root (P,L,R)" "P \<noteq> 0" "root_info_cond Ri P" and rc: "root_cond (P,L,R) x" and sgn: "sgn L = 1" by auto
+  from rc[unfolded root_cond_def split] have Lx: "of_rat L \<le> x" and LR: "of_rat L \<le> real_of_rat R" by auto
+  from LR have "L \<le> R" by (auto simp: of_rat_less_eq)
+  with sgn show "sgn R = 1" by (metis sgn_less_eq_1_rat)
+  show "sgn x = 1" by (rule sgn_less_eq_1_real[OF _ Lx], insert sgn, simp add: real_of_rat_sgn)
+qed
+
+end
+
+private definition root_rai_fun_pos :: "rai_intern \<Rightarrow> rai_intern" where
+  "root_rai_fun_pos \<equiv> map_option (\<lambda> (ri,p,l,r) \<Rightarrow> 
+  let p' = poly_nth_root n p; ri' = count_roots_interval_sf_rat p' in 
+  rai_normalize_poly_flat 
+    (tighten_bound_root p' p ri' (root_info.l_r ri') (root_info.l_r ri)
+      (initial_lower_bound l, initial_upper_bound r) (l,r)))"
+
+private definition "root_rai_fun impl \<equiv> if n = 0 then of_rat_rai_fun 0 else if sgn_rai_rat impl \<ge> 0 
+    then root_rai_fun_pos impl
+    else uminus_rai_fun (root_rai_fun_pos (uminus_rai_fun impl))"
+
+context
+  assumes n: "n \<noteq> 0"
+begin  
+
+lemma initial_upper_bound: assumes x: "x > 0" and xr: "x \<le> of_rat r"
+  shows "sgn (initial_upper_bound r) = 1" "root n x \<le> of_rat (initial_upper_bound r)"
+proof -
+  have n: "n > 0" using n by auto
+  note d = initial_upper_bound_def
+  let ?r = "initial_upper_bound r"
+  from x xr have r0: "r > 0" by (meson not_less of_rat_le_0_iff order_trans)
+  hence "of_rat r > (0 :: real)" by auto
+  hence "root n (of_rat r) > 0" using n by simp
+  hence "1 \<le> ceiling (root n (of_rat r))" by auto
+  hence "(1 :: rat) \<le> of_int (ceiling (root n (of_rat r)))" by linarith
+  also have "\<dots> = ?r" unfolding d by simp
+  finally show "sgn ?r = 1" unfolding sgn_rat_def by auto
+  have "root n x \<le> root n (of_rat r)"
+    unfolding real_root_le_iff[OF n] by (rule xr)
+  also have "\<dots> \<le> of_rat ?r" unfolding d by simp
+  finally show "root n x \<le> of_rat ?r" .
+qed
+
+lemma initial_lower_bound: assumes l: "l > 0" and lx: "of_rat l \<le> x"
+  shows "sgn (initial_lower_bound l) = 1" "of_rat (initial_lower_bound l) \<le> root n x"
+proof -
+  have n: "n > 0" using n by auto
+  note d = initial_lower_bound_def
+  let ?l = "initial_lower_bound l"
+  from l lx have x0: "x > 0" by (meson not_less of_rat_le_0_iff order_trans)
+  have "sgn ?l = 1 \<and> of_rat ?l \<le> root n x"
+  proof (cases "l \<le> 1")
+    case True
+    hence ll: "?l = l" and l0: "of_rat l \<ge> (0 :: real)" and l1: "of_rat l \<le> (1 :: real)" 
+      using l unfolding True d by auto
+    have sgn: "sgn ?l = 1" using l unfolding ll by auto
+    have "of_rat ?l = of_rat l" unfolding ll by simp
+    also have "of_rat l \<le> root n (of_rat l)" using real_root_increasing[OF _ _ l0 l1, of 1 n] n
+      by (cases "n = 1", auto)
+    also have "\<dots> \<le> root n x" using lx unfolding real_root_le_iff[OF n] .
+    finally show ?thesis using sgn by auto
+  next
+    case False
+    hence l: "(1 :: real) \<le> of_rat l" and ll: "?l = of_int (floor (root n (of_rat l)))" 
+      unfolding d by auto
+    hence "root n 1 \<le> root n (of_rat l)"
+      unfolding real_root_le_iff[OF n] by auto
+    hence "1 \<le> root n (of_rat l)" using n by auto
+    from floor_mono[OF this] have "1 \<le> ?l"
+      using one_le_floor unfolding ll by fastforce
+    hence sgn: "sgn ?l = 1" by simp
+    have "of_rat ?l \<le> root n (of_rat l)" unfolding ll by simp
+    also have "\<dots> \<le> root n x" using lx unfolding real_root_le_iff[OF n] .
+    finally have "of_rat ?l \<le> root n x" .
+    with sgn show ?thesis by auto
+  qed
+  thus "sgn ?l = 1" "of_rat ?l \<le> root n x" by auto
+qed
+
+lemma root_rai_pos: assumes x: "rai_cond x" and nneg: "sgn_rai_rat x \<ge> 0" 
+  defines y: "y \<equiv> root_rai_fun_pos x"
+  shows "rai_cond y \<and> (rai_real y = root n (rai_real x))"
+proof (cases x)
+  case (Some plr)
+  obtain ri p l r where plr: "plr = (ri,p,l,r)" by (cases plr, auto)
+  let ?l = "initial_lower_bound l"
+  let ?r = "initial_upper_bound r"
+  from x Some plr have "rai_cond (Some (ri,p,l,r))" by auto
+  note * = rai_condD[OF this]
+  note inv = *(8)
+  note ur = *(7)
+  note cr = *(9)
+  note * = *(1-6)
+  note ** = *[unfolded root_cond_def]
+  from Some plr have x: "x = Some (ri,p,l,r)" by simp
+  let ?x = "rai_real (Some (ri,p,l,r))"
+  from nneg[unfolded x sgn_rai_rat_def] have "sgn r \<ge> 0" by simp
+  with * have "sgn r > 0" by linarith
+  hence sgnl: "sgn l = 1" using * by auto
+  from sgnl have l0: "l > 0" unfolding sgn_rat_def by (cases "l = 0"; cases "l < 0"; auto)
+  hence ll0: "real_of_rat l > 0" by auto
+  from ** have lx: "of_rat l \<le> ?x" by auto
+  with ll0 have x0: "?x > 0" by linarith  
+  note il = initial_lower_bound[OF l0 lx]
+  from ** have "?x \<le> of_rat r" by auto
+  note iu = initial_upper_bound[OF x0 this]
+  let ?p = "poly_nth_root n p"
+  let ?c = "count_roots_interval_sf_rat"
+  let ?lr = "root_info.l_r"
+  from x0 have id: "root n ?x ^ n = ?x" using n real_root_pow_pos by blast
+  have rc: "root_cond (?p, ?l, ?r) (root n ?x)"
+    unfolding root_cond_def using il iu ** by (auto simp: id rpoly_nth_root)
+  from ** have p: "p \<noteq> 0" by auto
+  hence p': "?p \<noteq> 0" using poly_nth_root_0[OF n, of p] by auto
+  let ?tight = "tighten_bound_root ?p p (?c ?p) (?lr (?c ?p)) (?lr ri) (?l,?r) (l,r)"
+  let ?norm = "rai_normalize_poly_flat  ?tight"
+  from plr Some have y: "y = Some ?norm" 
+    unfolding y root_rai_fun_pos_def Let_def by simp
+  obtain Cr P L R where tight: "?tight = (Cr,P,L,R)" by (cases ?tight, auto)
+  from the_unique_root(5)[OF ur *(1)] have id2: "the_unique_root (p,l,r) = ?x" .
+  have cr': "root_info_cond (?c ?p) ?p"
+    by (rule count_roots_interval_sf_rat[OF p'])
+  note ur = tighten_bound_root[OF n ur rc refl _ cr refl cr' refl tight p p' sgnl il(1), unfolded id2, OF refl]
+  obtain ri p l r where norm: "?norm = (ri,p,l,r)" by (cases ?norm, auto)
+  from the_unique_root(5)[OF ur(1-2)] 
+  have id: "root n (rai_real x) = the_unique_root (P, L, R)"
+    unfolding x tight rai_cond_def option.simps by (simp add: rai_real_def)
+  note * = rai_normalize_poly_flat[OF norm[unfolded tight] ur(1,3,7)] 
+  from * ur
+  have "rai_cond y" unfolding y norm by (auto simp: rai_cond_def)
+  thus ?thesis unfolding y norm unfolding id[symmetric] using *
+    by (metis id norm rai_condD(8) the_equality unique_root_def unique_root_defs(2) y)
+qed (simp add: y root_rai_fun_pos_def)
+
+end
+
+lemma root_rai_main: assumes x: "rai_cond x"
+  defines y: "y \<equiv> root_rai_fun x"
+  shows "rai_cond y \<and> (rai_real y = root n (rai_real x))"
+proof -
+  note y = y[unfolded root_rai_fun_def]
+  show ?thesis
+  proof (cases "n = 0")
+    case True
+    thus ?thesis unfolding y using of_rat_rai_main[of _ 0] by auto
+  next
+    case False note n = this
+    note rt = root_rai_pos[OF n]
+    show ?thesis
+    proof (cases "sgn_rai_rat x \<ge> 0")
+      case True
+      from rt[OF x True] True n y show ?thesis by auto
+    next
+      case False
+      let ?um = "uminus_rai_fun"
+      let ?rt = "root_rai_fun_pos"
+      note um = uminus_rai_main
+      from n False y have y: "y = ?um (?rt (?um x))" by simp
+      from um[OF x] have umx: "rai_cond (?um x)" and umx2: "rai_real (?um x) = - rai_real x" by auto
+      have "sgn_rai_rat (?um x) = - sgn_rai_rat x" using x[unfolded rai_cond_def] 
+        unfolding uminus_rai_fun_def sgn_rai_rat_def Let_def
+        by (cases x, auto simp: sgn_minus_rat)
+      with False have "0 \<le> sgn_rai_rat (?um x)" by simp
+      from rt[OF umx this] umx2 have rumx: "rai_cond (?rt (?um x))" 
+        and rumx2: "rai_real (?rt (?um x)) = root n (- rai_real x)"
+        by auto
+      from um[OF rumx] rumx2 y real_root_minus show ?thesis by auto
+    qed
+  qed
+qed
+
+lift_definition root_rai :: "real_alg_intern \<Rightarrow> real_alg_intern" is root_rai_fun
+  by (insert root_rai_main, auto)
+  
+lemma root_rai: "real_of_rai (root_rai x) = root n (real_of_rai x)"
+  by (transfer, insert root_rai_main, auto)
 end
 
 (* **************************************************************** *)
