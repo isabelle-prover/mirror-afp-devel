@@ -328,7 +328,7 @@ proof -
   {
     fix q r
     assume "q \<in> set ?rr"
-    then obtain r s where 
+    then obtain s where 
       s: "s \<in> set (factors_of_rat_poly p)" and
       q: "q \<in> set (roots_of_rai_intern_monic_irr s)"
       unfolding d by auto

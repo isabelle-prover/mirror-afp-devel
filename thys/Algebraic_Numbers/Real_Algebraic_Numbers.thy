@@ -522,10 +522,6 @@ fun rai_normalize_poly_main :: "rat \<Rightarrow> rat \<Rightarrow> rat poly lis
     if root_info.l_r ri l r = 0 then rai_normalize_poly_main l r ps 
     else (ri,p,l,r))"
 
-definition rai_normalize_poly_flat :: "rai_intern_flat \<Rightarrow> rai_intern_flat" where
-  "rai_normalize_poly_flat rai \<equiv> case rai of (ri,p,l,r) \<Rightarrow>
-    rai_normalize_poly_main l r (factors_of_rat_poly p)"
-
 definition real_alg_precision :: rat where
   "real_alg_precision \<equiv> inverse 8"
 
@@ -559,120 +555,6 @@ lemma unique_root_cong:
   "unique_root (p,l,r) = unique_root (q,l,r)"
   unfolding unique_root_def root_cond_cong ..
 end
-
-lemma rai_normalize_poly_flat: 
-  assumes res: "rai_normalize_poly_flat (ri,p,l,r) = (ri',p',l',r')"
-    and ur: "unique_root (p,l,r)" and p0: "p \<noteq> 0" and ri: "root_info_cond ri p"
-  shows "unique_root (p',l,r)" "p' \<noteq> 0" "l' = l" "r' = r" 
-    "poly_cond p'"
-    "the_unique_root (p',l,r) = the_unique_root (p,l,r)" "root_info_cond ri' p'" "monic p'"
-proof -
-  note res = res[unfolded rai_normalize_poly_flat_def split]
-  let ?y = "(ri',p',l',r')"
-  have "unique_root (p',l,r) \<and> p' \<noteq> 0 \<and> l' = l \<and> r' = r 
-    \<and> poly_cond p'
-    \<and> the_unique_root (p',l,r) = the_unique_root (p,l,r) \<and> root_info_cond ri' p' \<and> monic p'"
-  proof -
-    obtain fs where fs: "factors_of_rat_poly p = fs" by auto
-    from res fs have res: "rai_normalize_poly_main l r fs = ?y" by auto
-    note fact = factors_of_rat_poly[OF fs]
-    note fact = fact(1) fact(2-3)[OF p0]
-    interpret rp: inj_ring_hom real_of_rat_poly by (rule rpoly.inj_ring_hom_map_poly)
-    from ur have ur': "unique_root (p, l, r)" .
-    let ?r = "real_of_rat r"
-    let ?l = "real_of_rat l"
-    define x where "x = the_unique_root (p,l,r)"
-    let ?prop = "\<lambda> ri q. root_info_cond ri q \<and> monic q 
-      \<and> poly_cond q 
-      \<and> x = the_unique_root (q,l,r) \<and> unique_root (q,l,r)
-      \<and> rai_normalize_poly_main l r fs = 
-        (ri,q,l,r)"
-    note unique = the_unique_root[OF ur', folded x_def] 
-    from unique(3) have "rpoly p x = 0" .
-    from fact(3)[OF this] have ex1: "\<exists>!q. q \<in> set fs \<and> rpoly q x = 0" . 
-    hence ex: "\<exists>q. q \<in> set fs \<and> rpoly q x = 0" by auto
-    from fact(1-2) have "\<And> q. q \<in> set fs \<Longrightarrow>
-      irreducible q \<and>
-      monic q" 
-      "\<And> q (x :: real). q \<in> set fs \<Longrightarrow> rpoly q x = 0 \<Longrightarrow> rpoly p x = 0"
-      by auto
-    with ex have "\<exists> ri q. ?prop ri q" 
-    proof (induct fs)
-      case (Cons f fs)
-      define ri where "ri = count_roots_interval_rat f" 
-      define cr where "cr = root_info.l_r ri"
-      from Cons(3)[of f] have ptc: "poly_cond f" 
-        and mon: "monic f" and p0: "f \<noteq> 0" 
-        by (auto simp: poly_cond_def)
-      from poly_cond_D(1)[OF ptc] have sf: "square_free f" by auto
-      from unique(4)[unfolded root_cond_def] have "?l \<le> ?r" by auto
-      hence lr: "l \<le> r" by (simp add: of_rat_less_eq)
-      note cri = count_roots_interval_rat[OF sf, folded ri_def]
-      note ri = root_info_condD[OF cri, folded cr_def]
-      note cr_lr = ri(1)[OF lr]
-      from finite_rpoly_roots[OF p0] have fin: "finite (Collect (root_cond (f, l, r)))" 
-        unfolding root_cond_def[abs_def] by auto
-      show ?case
-      proof (cases "cr l r = 0")
-        case True
-        hence id: "rai_normalize_poly_main l r (f # fs)
-          = rai_normalize_poly_main l r fs"
-          by (simp add: cr_def ri_def)
-        from True[unfolded cr_lr] fin have empty: "\<not> root_cond (f,l,r) x" by auto
-        from Cons(2) empty unique(1-4) have "\<exists>q. q \<in> set fs \<and> rpoly q x = 0" by (auto simp: root_cond_def)
-        from Cons(1)[OF this Cons(3)] Cons(4) show ?thesis unfolding id by auto
-      next
-        case False
-        hence id: "rai_normalize_poly_main l r (f # fs)
-          = (ri,f,l,r)"
-          by (simp add: cr_def ri_def)
-        from False have "cr l r > 0" by auto
-        from this[unfolded cr_lr card_gt_0_iff] obtain y where rc: "root_cond (f,l,r) y" by auto
-        {
-          fix y
-          assume y: "root_cond (f,l,r) y"
-          hence rt: "rpoly f y = 0" unfolding root_cond_def by auto
-          from Cons(4)[OF _ this] y have "root_cond (p,l,r) y" unfolding root_cond_def by auto
-          from unique(5)[OF this] have "y = x" by simp
-        } note un = this        
-        from un[OF rc] rc have rc: "root_cond (f, l, r) x" by simp
-        have ur: "unique_root (f, l, r)" unfolding unique_root_def
-        proof
-          fix z
-          assume "root_cond (f,l,r) z"
-          from un[OF rc] un[OF this] show "z = x" by simp
-        qed (rule rc)
-        from the_unique_root(5)[OF this rc]
-        show ?thesis
-          by (intro exI[of _ ri] exI[of _ f], unfold id, intro conjI,
-          auto simp: cri mon ptc ur)
-      qed
-    qed simp
-    then obtain ri q where main: "?prop ri q" by blast
-    with res show ?thesis unfolding x_def by auto
-  qed
-  thus "unique_root (p',l,r)" "p' \<noteq> 0" "l' = l" "r' = r" 
-    "poly_cond p'"
-    "the_unique_root (p',l,r) = the_unique_root (p,l,r)" "root_info_cond ri' p'" "monic p'" by blast+
-qed
-
-
-lemma rai_normalize_poly_flat_rai_cond:   
-  assumes rc: "rai_cond (Some x)" 
-  defines res: "y \<equiv> rai_normalize_poly_flat x"
-  assumes y: "y = (ri',p',l',r')"
-  shows "rai_cond (Some y)" "rai_real (Some y) = rai_real (Some x)" 
-    "monic p'"
-proof -
-  obtain ri p l r where x: "x = (ri,p,l,r)" by (cases x) auto
-  with res x y have res: "rai_normalize_poly_flat (ri,p,l,r) = (ri',p',l',r')" by auto
-  note rcD = rai_condD[OF rc[unfolded x]]
-  from rcD(5) have p0: "p \<noteq> 0" .
-  from rcD(2,4,10) rai_normalize_poly_flat[OF res rcD(7,5,9)]
-  show "rai_cond (Some y)" "rai_real (Some y) = rai_real (Some x)" 
-   "monic p'" unfolding y x 
-   by (auto simp: rai_real_def rai_cond_def)
-qed
 
 lemma rai_normalize_bounds_flat: assumes eps: "eps > 0" and rc: "rai_cond (Some x)"
   defines y: "y \<equiv> rai_normalize_bounds_flat eps x"
@@ -3385,7 +3267,7 @@ lemma normalize_bounds_rai_of_rat_rai: "normalize_bounds_rai (of_rat_rai r) = of
 proof (transfer)
   fix r
   show "rai_normalize_bounds (of_rat_rai_fun r) = of_rat_rai_fun r"
-    by (auto simp add: rai_normalize_bounds_def of_rat_rai_fun_def rai_normalize_poly_flat_def 
+    by (auto simp add: rai_normalize_bounds_def of_rat_rai_fun_def 
     rai_normalize_bounds_flat_def real_alg_precision_def tighten_poly_bounds_epsilon.simps Let_def
     poly_rat_def tighten_poly_bounds_for_x.simps)
 qed
