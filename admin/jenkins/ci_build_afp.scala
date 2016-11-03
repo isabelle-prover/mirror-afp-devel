@@ -1,6 +1,5 @@
 object profile extends isabelle.CI_Profile
 {
-
   import isabelle._
   import java.io.{FileReader, PrintWriter}
   import scala.sys.process._
@@ -74,6 +73,7 @@ object profile extends isabelle.CI_Profile
 
   class Metadata(ini: INIConfiguration)
   {
+
     def maintainers(entry: String): List[String] =
     {
       val config = ini.getSection(entry)
@@ -82,7 +82,7 @@ object profile extends isabelle.CI_Profile
           config.getString("notify")
         else
           ""
-      raw.split(',').toList.map(_.trim).filterNot(_.isEmpty)
+      List(raw.split(','): _*).map(_.trim).filterNot(_.isEmpty)
     }
 
     def entry_of_session(info: Sessions.Info): Option[String] =
@@ -164,7 +164,6 @@ object profile extends isabelle.CI_Profile
 
   val status_file = Path.explode("$ISABELLE_HOME/status.json").file
   def can_send_mails = System.getProperties().containsKey("mail.smtp.host")
-
 
   def threads = 2
   def jobs = 8
