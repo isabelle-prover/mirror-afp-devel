@@ -11,9 +11,7 @@ section \<open>Automatic definition of Preference Profiles\<close>
 theory Preference_Profile_Cmd
 imports
   Complex_Main
-  "../Social_Decision_Schemes"
-  "../Preference_Profiles"
-  QSOpt_Exact
+  "../Elections"
 keywords
   "preference_profile" :: thy_goal
 begin
@@ -120,6 +118,40 @@ next
   finally show ?thesis ..
 qed
 
+function weak_ranking_prefs_from_table where
+  "i \<noteq> j \<Longrightarrow> weak_ranking_prefs_from_table ((i,x)#xs) j = weak_ranking_prefs_from_table xs j"
+| "i = j \<Longrightarrow> weak_ranking_prefs_from_table ((i,x)#xs) j = x"
+| "weak_ranking_prefs_from_table [] j = []"
+  by (metis list.exhaust old.prod.exhaust) auto
+termination by lexicographic_order
+
+lemma eval_weak_ranking_prefs_from_table:
+  assumes "prefs_from_table_wf agents alts xs"
+  shows   "weak_ranking_prefs_from_table xs i = weak_ranking (prefs_from_table xs i)"
+proof (cases "i \<in> agents")
+  assume i: "i \<in> agents"
+  with assms have "weak_ranking (prefs_from_table xs i) = the (map_of xs i)"
+    by (auto simp: prefs_from_table_def prefs_from_table_wf_def weak_ranking_of_weak_ranking
+             split: option.splits)
+  also from assms i have "i \<in> set (map fst xs)"
+    by (auto simp: prefs_from_table_wf_def)
+  hence "the (map_of xs i) = weak_ranking_prefs_from_table xs i"
+    by (induction xs i rule: weak_ranking_prefs_from_table.induct) simp_all
+  finally show ?thesis ..
+next
+  assume i: "i \<notin> agents"
+  with assms have i': "i \<notin> set (map fst xs)"
+    by (simp add: prefs_from_table_wf_def)
+  hence "map_of xs i = None" 
+    by (simp add: map_of_eq_None_iff)
+  hence "prefs_from_table xs i = (\<lambda>_ _. False)"
+    by (intro ext) (auto simp: prefs_from_table_def)
+  hence "weak_ranking (prefs_from_table xs i) = []" by simp
+  also from i' have "\<dots> = weak_ranking_prefs_from_table xs i"
+    by (induction xs i rule: weak_ranking_prefs_from_table.induct) simp_all
+  finally show ?thesis ..
+qed
+
 lemma eval_prefs_from_table_aux:
   assumes "R \<equiv> prefs_from_table xs" "prefs_from_table_wf agents alts xs"
   shows   "R i a b \<longleftrightarrow> prefs_from_table xs i a b"
@@ -131,49 +163,20 @@ lemma eval_prefs_from_table_aux:
           "election agents alts \<Longrightarrow> i \<in> set (map fst xs) \<Longrightarrow>
              favorites R i = favorites_prefs_from_table xs i"
           "election agents alts \<Longrightarrow> i \<in> set (map fst xs) \<Longrightarrow>
+             weak_ranking (R i) = weak_ranking_prefs_from_table xs i"
+          "election agents alts \<Longrightarrow> i \<in> set (map fst xs) \<Longrightarrow>
              favorite R i = the_elem (favorites_prefs_from_table xs i)"
           "election agents alts \<Longrightarrow> 
              has_unique_favorites R \<longleftrightarrow> list_all (\<lambda>z. is_singleton (hd (snd z))) xs"
   using assms prefs_from_table_wfD[OF assms(2)]
   by (simp_all add: strongly_preferred_def favorite_def anonymise_prefs_from_table
         election.preferred_alts_prefs_from_table election.eval_favorites_prefs_from_table
-        election.has_unique_favorites_prefs_from_table)
+        election.has_unique_favorites_prefs_from_table eval_weak_ranking_prefs_from_table)
 
 lemma pref_profile_from_tableI':
   assumes "R1 \<equiv> prefs_from_table xss" "prefs_from_table_wf agents alts xss"
   shows   "pref_profile_wf agents alts R1"
   using assms by (simp add: pref_profile_from_tableI)
-
-
-subsection \<open>Automorphisms\<close>
-
-lemma an_sds_automorphism_aux:
-  assumes wf: "prefs_from_table_wf agents alts yss" "R \<equiv> prefs_from_table yss"
-  assumes an: "an_sds agents alts sds"
-  assumes eq: "mset (map ((map (op ` (permutation_of_list xs))) \<circ> snd) yss) = mset (map snd yss)"
-  assumes perm: "set (map fst xs) \<subseteq> alts" "set (map snd xs) = set (map fst xs)" 
-                "distinct (map fst xs)" 
-      and x: "x \<in> alts" "y = permutation_of_list xs x"
-  shows   "pmf (sds R) x = pmf (sds R) y"
-proof -
-  note perm = list_permutesI[OF perm]
-  let ?\<sigma> = "permutation_of_list xs"
-  note perm' = permutation_of_list_permutes [OF perm]
-  from wf have wf': "pref_profile_wf agents alts R" by (simp add: pref_profile_from_tableI)
-  then interpret R: pref_profile_wf agents alts R .
-  from perm' interpret R': pref_profile_wf agents alts "permute_profile ?\<sigma> R"
-    by (simp add: R.wf_permute_alts)
-  from an interpret an_sds agents alts sds .
-
-  from eq wf have eq': "image_mset (map (op ` ?\<sigma>)) (anonymous_profile R) = anonymous_profile R"
-    by (simp add: anonymise_prefs_from_table mset_map multiset.map_comp)
-  from perm' x have "pmf (sds R) x = pmf (map_pmf ?\<sigma> (sds R)) (?\<sigma> x)"
-    by (simp add: pmf_map_inj' permutes_inj)
-  also from eq' x wf' perm' have "map_pmf ?\<sigma> (sds R) = sds R"
-    by (intro sds_automorphism) 
-       (simp_all add: R.anonymous_profile_permute pref_profile_from_tableI)
-  finally show ?thesis using x by simp
-qed
 
 
 ML \<open>
@@ -182,10 +185,6 @@ signature PREFERENCE_PROFILES_CMD =
 sig
 
 type info
-
-val pref_profileT : typ -> typ -> typ
-val lotteryT : typ -> typ
-val sdsT : typ -> typ -> typ
 
 val preference_profile : 
   (term * term) * ((binding * (term * term list list) list) list) -> Proof.context -> Proof.state
@@ -238,10 +237,6 @@ fun add_info term info lthy =
   
 fun add_infos infos lthy =
   Data.map (fold Item_Net.update infos) lthy
- 
-fun pref_profileT agentT altT = agentT --> altT --> altT --> HOLogic.boolT
-fun lotteryT altT = Type (@{type_name pmf}, [altT])
-fun sdsT agentT altT = pref_profileT agentT altT --> lotteryT altT
 
 fun preference_profile_aux agents alts (binding, args) lthy = 
   let

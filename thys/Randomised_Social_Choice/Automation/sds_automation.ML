@@ -70,6 +70,7 @@ fun eval_inverse_permutation_of_list_conv wf_thm ctxt ct =
 
 local
 open Preference_Profiles
+open Randomised_Social_Choice
 open Preference_Profiles_Cmd
 
 fun mk_permutation_term sigma = 

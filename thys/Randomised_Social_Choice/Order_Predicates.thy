@@ -965,6 +965,14 @@ qed
 
 end
 
+lemma weak_ranking_False [simp]: "weak_ranking (\<lambda>_ _. False) = []"
+proof -
+  interpret finite_total_preorder_on "{}" "\<lambda>_ _. False"
+    by unfold_locales simp_all
+  have "[] = weak_ranking (\<lambda>_ _. False)" by (rule weak_ranking_unique) simp_all
+  thus ?thesis ..
+qed
+
 lemmas of_weak_ranking_weak_ranking = 
   finite_total_preorder_on.weak_ranking_total_preorder(2)
 

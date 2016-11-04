@@ -10,7 +10,10 @@
 section \<open>Automatic Fact Gathering for Social Decision Schemes\<close>
 
 theory SDS_Automation
-imports Preference_Profile_Cmd
+  imports 
+    Preference_Profile_Cmd
+    QSOpt_Exact
+    "../Social_Decision_Schemes"
 keywords 
   "derive_orbit_equations"
   "derive_support_conditions" 
@@ -421,7 +424,7 @@ proof
   finally show ?th .
 qed fact+
 
-
+ML_file "randomised_social_choice.ML"
 ML_file "sds_automation.ML"
 
 end
