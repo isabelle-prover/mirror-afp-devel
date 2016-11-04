@@ -251,9 +251,9 @@ lemma count_roots_interval_rat_code[code]:
 
 
 lemma count_roots_rat_code[code]:
-  "count_roots_rat p = (if real_of_rat_poly p = 0 then 0 else let ps = sturm_squarefree_rat p
+  "count_roots_rat p = (if p = 0 then 0 else let ps = sturm_rat p
     in sign_changes_neg_inf_rat ps - sign_changes_inf_rat ps)"
-  unfolding count_roots_rat_def Let_def sturm_squarefree_rat count_roots_def
+  unfolding count_roots_rat_def Let_def sturm_rat count_roots_code
     rpoly.eval_poly_poly rpoly.hom_0_iff sign_changes_neg_inf_rat sign_changes_inf_rat
     by simp
 
