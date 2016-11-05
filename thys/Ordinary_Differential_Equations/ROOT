@@ -33,6 +33,6 @@ session "HOL-ODE-Numerics" (AFP) = "HOL-ODE-Refinement" +
   theories
     "ODE_Numerics"
 
-session "HOL-ODE-Examples" (AFP) = "HOL-ODE-Numerics" +
+session "HOL-ODE-Examples" (AFP slow) = "HOL-ODE-Numerics" +
   options [timeout = 8000, document = false]
   theories "ODE_Examples"
