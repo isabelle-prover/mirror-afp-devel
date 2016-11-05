@@ -1093,7 +1093,7 @@ end
 subsection\<open>Factoring All Meta Commands Together\<close>
 
 setup\<open>ML_Antiquotation.inline @{binding mk_string} (Scan.succeed
-"(fn ctxt => fn x => ML_Pretty.string_of_polyml (ML_system_pretty (x, Config.get ctxt ML_Print_Depth.print_depth)))")
+"(fn ctxt => fn x => ML_Pretty.string_of_polyml (ML_system_pretty (x, FixedInt.fromInt (Config.get ctxt (ML_Print_Depth.print_depth)))))")
 \<close>
 
 ML\<open>
