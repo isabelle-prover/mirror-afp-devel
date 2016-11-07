@@ -311,8 +311,7 @@ definition arity :: "('s, 'v) tm \<Rightarrow> enat" where
 lemma arity_simps[simp]:
   "arity (Hd \<zeta>) = arity_hd \<zeta>"
   "arity (App s t) = arity s - 1"
-  by (auto simp: arity_def minus_plus_eq_minus_minus_enat[symmetric] add.commute eSuc_enat
-    plus_1_eSuc(1))
+  by (auto simp: arity_def enat_diff_diff_eq add.commute eSuc_enat plus_1_eSuc(1))
 
 inductive wary :: "('s, 'v) tm \<Rightarrow> bool" where
   wary_Hd[intro]: "wary (Hd \<zeta>)"

@@ -314,7 +314,7 @@ lemma the_enat_1[simp]: "the_enat 1 = 1"
 lemma enat_le_minus_1_imp_lt: "m \<le> n - 1 \<Longrightarrow> n \<noteq> \<infinity> \<Longrightarrow> n \<noteq> 0 \<Longrightarrow> m < n" for m n :: enat
   by (cases m; cases n; simp add: zero_enat_def one_enat_def)
 
-lemma minus_plus_eq_minus_minus_enat: "k - (m + n) = k - m - n" for k m n :: enat
+lemma enat_diff_diff_eq: "k - m - n = k - (m + n)" for k m n :: enat
   by (cases k; cases m; cases n) auto
 
 lemma enat_sub_add_same[intro]: "n \<le> m \<Longrightarrow> m = m - n + n" for m n :: enat
