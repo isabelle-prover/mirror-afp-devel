@@ -13,6 +13,24 @@ imports
   "../Polynomial_Factorization/Missing_Multiset"
 begin
 
+lemma binomial_mono_left: "n \<le> N \<Longrightarrow> n choose k \<le> N choose k" 
+proof (induct n arbitrary: k N)
+  case (0 k N)
+  thus ?case by (cases k, auto)
+next
+  case (Suc n k N) note IH = this
+  show ?case
+  proof (cases k)
+    case 0
+    thus ?thesis by auto
+  next
+    case (Suc kk)
+    from IH obtain NN where N: "N = Suc NN" and le: "n \<le> NN" by (cases N, auto)     
+    show ?thesis unfolding N Suc using IH(1)[OF le] 
+      by (simp add: add_le_mono)
+  qed
+qed
+
 context comm_monoid_list begin
   lemma induct_gen_abs:
     assumes "\<And> a r. a\<in>set lst \<Longrightarrow> P (f (h a) r) (f (g a) r)"
@@ -801,6 +819,12 @@ unfolding measure_poly_int_def
   using mignotte_helper_complex[of "map_poly complex_of_int h"] 
   by (simp add: o_def coeffs_map_poly)
 
+lemma mignotte_coeff_helper:
+  "abs (coeff h i) \<le> (degree h choose i) * measure_poly_int h"
+  unfolding measure_poly_int_def
+  using mignotte_helper_coeff[of "map_poly complex_of_int h" i] by auto
+
+
 lemma cmod_through_lead_coeff[simp]:
   "cmod (lead_coeff (map_poly complex_of_int h)) = abs (lead_coeff h)"
 proof(induct h) case (pCons a h)
@@ -823,8 +847,8 @@ qed
 lemma twopow:"\<And> a b. a \<le> b \<Longrightarrow> (2::'a::{linordered_semidom})^a \<le> 2^b" by simp
 
 definition factor_bound :: "int poly \<Rightarrow> nat \<Rightarrow> int" where
-  "factor_bound f g = 2 ^ g * sqrt_int_ceiling (sum_list (map (\<lambda> a. a * a) (coeffs f)))" 
-
+  "factor_bound f g = (g choose g div 2) * sqrt_int_ceiling (sum_list (map (\<lambda> a. a * a) (coeffs f)))" 
+  
 lemma factor_bound: assumes "f \<noteq> 0" "g dvd f" "degree g \<le> n"
   shows "\<bar>coeff g k\<bar> \<le> factor_bound f n"  proof-
   obtain h where gh:"g * h = f" using assms by (metis dvdE)
@@ -832,20 +856,22 @@ lemma factor_bound: assumes "f \<noteq> 0" "g dvd f" "degree g \<le> n"
   have g1:"(1::real) \<le> measure_poly_int h" using measure_poly_ge_1 gh assms(1) by auto
   have g0:"\<And> h. 0 \<le> measure_poly_int h" unfolding measure_poly_int_def measure_poly_via_monic
     by (simp add: measure_monic_ge_0)
-  have "\<bar>coeff g k\<bar> \<le> height g" using all_elems_ge coeff_in_coeffs by force
-  also have "\<dots> \<le>  2 ^ degree g * measure_poly_int g"
-    using order_trans[OF _ mignotte_helper] height_le_norm1 by presburger
-  also have "\<dots> \<le> 2 ^ degree g * measure_poly_int g * measure_poly_int h"
+  have "\<bar>coeff g k\<bar> \<le> (degree g choose k) * measure_poly_int g" using mignotte_coeff_helper[of g k] .
+  also have "\<dots> \<le> (degree g choose k) * measure_poly_int g * measure_poly_int h"
     using mult_mono[OF order_refl g1] by (simp add: g0)
-  also have "\<dots> \<le> 2 ^ degree g * measure_poly_int f"
+  also have "\<dots> \<le> (degree g choose k) * measure_poly_int f"
     using measure_eq_prod[of "map_poly complex_of_int g" "map_poly complex_of_int h"]
     unfolding measure_poly_int_def gh[symmetric] by simp
-  also have "\<dots> \<le> 2 ^ n * measure_poly_int f"
-    using mult_mono[OF twopow[OF assms(3)] order_refl _ g0] by auto
-  also have "\<dots> \<le> 2 ^ n * (l2norm_complex (map_poly complex_of_int f))"
+  also have "\<dots> \<le> (n choose n div 2) * measure_poly_int f"
+  proof (rule mult_mono[OF _ order_refl _ g0])
+    have "degree g choose k \<le> n choose k" using assms(3) by (rule binomial_mono_left)
+    also have "\<dots> \<le> n choose n div 2" using binomial_maximum[of n k] by simp
+    finally show "real (degree g choose k) \<le> real (n choose n div 2)" by simp
+  qed simp
+  also have "\<dots> \<le> (n choose n div 2) * (l2norm_complex (map_poly complex_of_int f))"
     using Landau_inequality[of "(map_poly complex_of_int f)"] unfolding measure_poly_int_def
      by simp
-  also have "\<dots> \<le> 2 ^ n * ceiling (l2norm_complex  (map_poly complex_of_int f))"
+  also have "\<dots> \<le> (n choose n div 2) * ceiling (l2norm_complex  (map_poly complex_of_int f))"
      by simp
   also have "\<dots> = factor_bound f n"
     unfolding factor_bound_def by (auto simp: power2_eq_square coeffs_map_poly o_def)
@@ -877,16 +903,6 @@ proof -
     using Landau_inequality[of "(map_poly complex_of_int (g*h))"] unfolding measure_poly_int_def
      by simp
   finally show ?thesis by linarith
-qed
-
-definition factor_bound_no_degree :: "int poly \<Rightarrow> int" where
-  "factor_bound_no_degree f = 2 ^ degree f * sqrt_int_ceiling (sum_list (map (\<lambda> a. a * a) (coeffs f)))" 
-
-lemma factor_bound_no_degree: assumes "f \<noteq> 0" "g dvd f"
-  shows "\<bar>coeff g k\<bar> \<le> factor_bound_no_degree f" proof-
-  have p1:"\<bar>coeff g k\<bar> \<le> factor_bound f (degree g)" using factor_bound assms by auto
-  show ?thesis using mult_mono[OF twopow[OF dvd_imp_degree_le[OF assms(2) assms(1)]] p1]
-    unfolding factor_bound_def factor_bound_no_degree_def by auto
 qed
 end
 end
