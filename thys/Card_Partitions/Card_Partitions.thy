@@ -335,4 +335,113 @@ next
   qed
 qed
 
+theorem card_partition_on_at_most_size:
+  assumes "finite A"
+  shows "card {P. partition_on A P \<and> card P \<le> k} = (\<Sum>j\<le>k. Stirling (card A) j)"
+proof -
+  have "card {P. partition_on A P \<and> card P \<le> k} = card (\<Union>j\<le>k. {P. partition_on A P \<and> card P = j})"
+    by (rule arg_cong[where f="card"]) auto
+  also have "\<dots> = (\<Sum>j\<le>k. card {P. partition_on A P \<and> card P = j})"
+    by (subst card_UN_disjoint) (auto simp add: \<open>finite A\<close> finitely_many_partition_on)
+  also have "(\<Sum>j\<le>k. card {P. partition_on A P \<and> card P = j}) = (\<Sum>j\<le>k. Stirling (card A) j)"
+    using `finite A` by (simp add: card_partition_on)
+  finally show ?thesis .
+qed
+
+theorem partition_on_size1:
+  assumes "finite A"
+  shows "{P. partition_on A P \<and> (\<forall>X\<in>P. card X = 1)} = {(\<lambda>a. {a}) ` A}"
+proof
+  show "{P. partition_on A P \<and> (\<forall>X\<in>P. card X = 1)} \<subseteq> {(\<lambda>a. {a}) ` A}"
+  proof
+    fix P
+    assume P: "P \<in> {P. partition_on A P \<and> (\<forall>X\<in>P. card X = 1)}"
+    have "P = (\<lambda>a. {a}) ` A"
+    proof
+      show "P \<subseteq> (\<lambda>a. {a}) ` A"
+      proof
+        fix X
+        assume "X \<in> P"
+        from P this obtain x where "X = {x}"
+           by (auto simp add: card_Suc_eq)
+        from this \<open>X \<in> P\<close> have "x \<in> A"
+          using P unfolding partition_on_def by blast
+        from this \<open>X = {x}\<close> show "X \<in>(\<lambda>a. {a}) ` A" by auto
+      qed
+    next
+      show "(\<lambda>a. {a}) ` A \<subseteq> P"
+      proof
+        fix X
+        assume "X \<in> (\<lambda>a. {a}) ` A"
+        from this obtain x where X: "X = {x}" "x \<in> A" by auto
+        have "\<Union>P = A"
+          using P unfolding partition_on_def by blast
+        from this \<open>x \<in> A\<close> obtain X' where "x \<in> X'" and "X' \<in> P"
+          using UnionE by blast
+        from \<open>X' \<in> P\<close> have "card X' = 1"
+          using P unfolding partition_on_def by auto
+        from this \<open>x \<in> X'\<close> have "X' = {x}"
+          using card_1_singletonE by blast
+        from this X(1) \<open>X' \<in> P\<close> show "X \<in> P" by auto
+      qed
+    qed
+    from this show "P \<in> {(\<lambda>a. {a}) ` A}" by auto
+  qed
+next
+  show "{(\<lambda>a. {a}) ` A} \<subseteq> {P. partition_on A P \<and> (\<forall>X\<in>P. card X = 1)}"
+  proof
+    fix P
+    assume "P \<in> {(\<lambda>a. {a}) ` A}"
+    from this have P: "P = (\<lambda>a. {a}) ` A" by auto
+    from this have "partition_on A P" by (auto intro: partition_onI)
+    from P this show "P \<in> {P. partition_on A P \<and> (\<forall>X\<in>P. card X = 1)}" by auto
+  qed
+qed
+
+theorem card_partition_on_size1:
+  assumes "finite A"
+  shows "card {P. partition_on A P \<and> (\<forall>X\<in>P. card X = 1)} = 1"
+using assms partition_on_size1 by fastforce
+
+lemma card_partition_on_size1_eq_1:
+  assumes "finite A"
+  assumes "card A \<le> k"
+  shows "card {P. partition_on A P \<and> card P \<le> k \<and> (\<forall>X\<in>P. card X = 1)} = 1"
+proof -
+  {
+    fix P
+    assume "partition_on A P" "\<forall>X\<in>P. card X = 1"
+    from this have "P \<in> {P. partition_on A P \<and> (\<forall>X\<in>P. card X = 1)}" by simp
+    from this have "P \<in> {(\<lambda>a. {a}) ` A}"
+      using partition_on_size1 \<open>finite A\<close> by auto
+    from this have "P = (\<lambda>a. {a}) ` A" by auto
+    moreover from this have "card P = card A"
+      by (auto intro: card_image)
+  }
+  from this have "{P. partition_on A P \<and> card P \<le> k \<and> (\<forall>X\<in>P. card X = 1)} = {P. partition_on A P \<and> (\<forall>X\<in>P. card X = 1)}"
+    using \<open>card A \<le> k\<close> by auto
+  from this show ?thesis
+    using \<open>finite A\<close> by (simp only: card_partition_on_size1)
+qed
+
+lemma card_partition_on_size1_eq_0:
+  assumes "finite A"
+  assumes "k < card A"
+  shows "card {P. partition_on A P \<and> card P \<le> k \<and> (\<forall>X\<in>P. card X = 1)} = 0"
+proof -
+  {
+    fix P
+    assume "partition_on A P" "\<forall>X\<in>P. card X = 1"
+    from this have "P \<in> {P. partition_on A P \<and> (\<forall>X\<in>P. card X = 1)}" by simp
+    from this have "P \<in> {(\<lambda>a. {a}) ` A}"
+      using partition_on_size1 \<open>finite A\<close> by auto
+    from this have "P = (\<lambda>a. {a}) ` A" by auto
+    from this have "card P = card A"
+      by (auto intro: card_image)
+  }
+  from this assms(2) have "{P. partition_on A P \<and> card P \<le> k \<and> (\<forall>X\<in>P. card X = 1)} = {}"
+    using Collect_empty_eq leD by fastforce
+  from this show ?thesis by (simp only: card_empty)
+qed
+
 end
