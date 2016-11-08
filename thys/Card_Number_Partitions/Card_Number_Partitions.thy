@@ -183,4 +183,24 @@ proof -
   finally show ?thesis .
 qed
 
+lemma card_partitions_atmost_k_parts:
+  "card {p. p partitions n \<and> sum p {..n} \<le> k} = Partition (n + k) k"
+proof -
+  have "card {p. p partitions n \<and> sum p {..n} \<le> k} =
+    card (\<Union>((\<lambda>k'. {p. p partitions n \<and> sum p {..n} = k'}) ` {..k}))"
+  proof -
+    have "{p. p partitions n \<and> sum p {..n} \<le> k} =
+      (\<Union>k'\<le>k. {p. p partitions n \<and> sum p {..n} = k'})" by auto
+    from this show ?thesis by simp
+  qed
+  also have "card (\<Union>((\<lambda>k'. {p. p partitions n \<and> sum p {..n} = k'}) ` {..k})) =
+    sum (\<lambda>k'. card {p. p partitions n \<and> sum p {..n} = k'}) {..k}"
+    using finite_partitions_k_parts by (subst card_Union_image) auto
+  also have "\<dots> = sum (\<lambda>k'. Partition n k') {..k}"
+    using card_partitions_k_parts by simp
+  also have "\<dots> = Partition (n + k) k"
+    using Partition_sum_Partition_diff by simp
+  finally show ?thesis .
+qed
+
 end

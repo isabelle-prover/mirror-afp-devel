@@ -80,6 +80,10 @@ proof -
     by (simp add: finite_subset)
 qed
 
+lemma finite_partitions_k_parts:
+  "finite {p. p partitions n \<and> sum p {..n} = k}"
+by (simp add: finite_partitions)
+
 lemma partitions_remaining_Max_part:
   assumes "p partitions n"
   assumes "0 < p k"
