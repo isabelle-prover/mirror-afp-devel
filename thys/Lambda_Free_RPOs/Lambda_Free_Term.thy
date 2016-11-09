@@ -9,8 +9,8 @@ theory Lambda_Free_Term
 imports Lambda_Free_Util
 abbrevs
   ">s" = ">\<^sub>s"
-  ">h" = ">\<^sub>h"
-  "\<le>\<ge>h" = "\<le>\<ge>\<^sub>h"
+  ">h" = ">\<^sub>h\<^sub>d"
+  "\<le>\<ge>h" = "\<le>\<ge>\<^sub>h\<^sub>d"
 begin
 
 text \<open>
@@ -542,22 +542,22 @@ qed
 
 lemmas wary_grounding_\<rho> = strict_wary_grounding_\<rho>[THEN strict_imp_wary_subst]
 
-definition gt_hd :: "('s, 'v) hd \<Rightarrow> ('s, 'v) hd \<Rightarrow> bool" (infix ">\<^sub>h" 50) where
-  "\<xi> >\<^sub>h \<zeta> \<longleftrightarrow> (\<forall>g \<in> ground_heads \<xi>. \<forall>f \<in> ground_heads \<zeta>. g >\<^sub>s f)"
+definition gt_hd :: "('s, 'v) hd \<Rightarrow> ('s, 'v) hd \<Rightarrow> bool" (infix ">\<^sub>h\<^sub>d" 50) where
+  "\<xi> >\<^sub>h\<^sub>d \<zeta> \<longleftrightarrow> (\<forall>g \<in> ground_heads \<xi>. \<forall>f \<in> ground_heads \<zeta>. g >\<^sub>s f)"
 
-definition comp_hd :: "('s, 'v) hd \<Rightarrow> ('s, 'v) hd \<Rightarrow> bool" (infix "\<le>\<ge>\<^sub>h" 50) where
-  "\<xi> \<le>\<ge>\<^sub>h \<zeta> \<longleftrightarrow> \<xi> = \<zeta> \<or> \<xi> >\<^sub>h \<zeta> \<or> \<zeta> >\<^sub>h \<xi>"
+definition comp_hd :: "('s, 'v) hd \<Rightarrow> ('s, 'v) hd \<Rightarrow> bool" (infix "\<le>\<ge>\<^sub>h\<^sub>d" 50) where
+  "\<xi> \<le>\<ge>\<^sub>h\<^sub>d \<zeta> \<longleftrightarrow> \<xi> = \<zeta> \<or> \<xi> >\<^sub>h\<^sub>d \<zeta> \<or> \<zeta> >\<^sub>h\<^sub>d \<xi>"
 
-lemma gt_hd_irrefl: "\<not> \<zeta> >\<^sub>h \<zeta>"
+lemma gt_hd_irrefl: "\<not> \<zeta> >\<^sub>h\<^sub>d \<zeta>"
   unfolding gt_hd_def using gt_sym_irrefl by (meson ex_in_conv ground_heads_nonempty)
 
-lemma gt_hd_trans: "\<chi> >\<^sub>h \<xi> \<Longrightarrow> \<xi> >\<^sub>h \<zeta> \<Longrightarrow> \<chi> >\<^sub>h \<zeta>"
+lemma gt_hd_trans: "\<chi> >\<^sub>h\<^sub>d \<xi> \<Longrightarrow> \<xi> >\<^sub>h\<^sub>d \<zeta> \<Longrightarrow> \<chi> >\<^sub>h\<^sub>d \<zeta>"
   unfolding gt_hd_def using gt_sym_trans by (meson ex_in_conv ground_heads_nonempty)
 
-lemma gt_sym_imp_hd: "g >\<^sub>s f \<Longrightarrow> Sym g >\<^sub>h Sym f"
+lemma gt_sym_imp_hd: "g >\<^sub>s f \<Longrightarrow> Sym g >\<^sub>h\<^sub>d Sym f"
   unfolding gt_hd_def by simp
 
-lemma not_comp_hd_imp_Var: "\<not> \<xi> \<le>\<ge>\<^sub>h \<zeta> \<Longrightarrow> is_Var \<zeta> \<or> is_Var \<xi>"
+lemma not_comp_hd_imp_Var: "\<not> \<xi> \<le>\<ge>\<^sub>h\<^sub>d \<zeta> \<Longrightarrow> is_Var \<zeta> \<or> is_Var \<xi>"
   using gt_sym_total by (cases \<zeta>; cases \<xi>; auto simp: comp_hd_def gt_hd_def)
 
 end

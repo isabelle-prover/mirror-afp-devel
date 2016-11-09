@@ -74,7 +74,7 @@ lemma chksubs_mono[mono]: "gt \<le> gt' \<Longrightarrow> chksubs gt \<le> chksu
 
 inductive gt :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix ">\<^sub>t" 50) where
   gt_sub: "is_App t \<Longrightarrow> (fun t >\<^sub>t s \<or> fun t = s) \<or> (arg t >\<^sub>t s \<or> arg t = s) \<Longrightarrow> t >\<^sub>t s"
-| gt_diff: "head t >\<^sub>h head s \<Longrightarrow> chkvar t s \<Longrightarrow> chksubs (op >\<^sub>t) t s \<Longrightarrow> t >\<^sub>t s"
+| gt_diff: "head t >\<^sub>h\<^sub>d head s \<Longrightarrow> chkvar t s \<Longrightarrow> chksubs (op >\<^sub>t) t s \<Longrightarrow> t >\<^sub>t s"
 | gt_same: "head t = head s \<Longrightarrow> chksubs (op >\<^sub>t) t s \<Longrightarrow>
     (\<forall>f \<in> ground_heads (head t). extf f (op >\<^sub>t) (args t) (args s)) \<Longrightarrow> t >\<^sub>t s"
 
@@ -85,7 +85,7 @@ inductive gt_sub :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" w
   gt_subI: "is_App t \<Longrightarrow> fun t \<ge>\<^sub>t s \<or> arg t \<ge>\<^sub>t s \<Longrightarrow> gt_sub t s"
 
 inductive gt_diff :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" where
-  gt_diffI: "head t >\<^sub>h head s \<Longrightarrow> chkvar t s \<Longrightarrow> chksubs (op >\<^sub>t) t s \<Longrightarrow> gt_diff t s"
+  gt_diffI: "head t >\<^sub>h\<^sub>d head s \<Longrightarrow> chkvar t s \<Longrightarrow> chksubs (op >\<^sub>t) t s \<Longrightarrow> gt_diff t s"
 
 inductive gt_same :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" where
   gt_sameI: "head t = head s \<Longrightarrow> chksubs (op >\<^sub>t) t s \<Longrightarrow>
@@ -198,13 +198,13 @@ proof (simp only: atomize_imp,
       using u_gt_t
     proof cases
       case gt_diff_u_t: gt_diff
-      have "head u >\<^sub>h head s"
+      have "head u >\<^sub>h\<^sub>d head s"
         using gt_diff_u_t(1) gt_diff_t_s(1) by (auto intro: gt_hd_trans)
       thus ?thesis
         by (rule gt_diff[OF _ chkvar chk_u_s_if[OF gt_diff_t_s(3)]])
     next
       case gt_same_u_t: gt_same
-      have "head u >\<^sub>h head s"
+      have "head u >\<^sub>h\<^sub>d head s"
         using gt_diff_t_s(1) gt_same_u_t(1) by auto
       thus ?thesis
         by (rule gt_diff[OF _ chkvar chk_u_s_if[OF gt_diff_t_s(3)]])
@@ -215,7 +215,7 @@ proof (simp only: atomize_imp,
       using u_gt_t
     proof cases
       case gt_diff_u_t: gt_diff
-      have "head u >\<^sub>h head s"
+      have "head u >\<^sub>h\<^sub>d head s"
         using gt_diff_u_t(1) gt_same_t_s(1) by simp
       thus ?thesis
         by (rule gt_diff[OF _ chkvar chk_u_s_if[OF gt_same_t_s(2)]])
@@ -386,7 +386,7 @@ proof -
     assume "gt_diff s' s"
     hence
       s'_gt_s: "s' >\<^sub>t s" and
-      hd_s'_gt_s: "head s' >\<^sub>h head s" and
+      hd_s'_gt_s: "head s' >\<^sub>h\<^sub>d head s" and
       chkvar_s'_s: "chkvar s' s" and
       chk_s'_s: "chksubs (op >\<^sub>t) s' s"
       using gt_diff.cases by (auto simp: gt_iff_sub_diff_same)
@@ -475,7 +475,7 @@ proof (simp only: atomize_imp,
       using gt_sub ih[of t1 s] ih[of t2 s] gt_sub_t_s(2) t by auto
   next
     case gt_diff_t_s: gt_diff
-    have "head (subst \<rho> t) >\<^sub>h head (subst \<rho> s)"
+    have "head (subst \<rho> t) >\<^sub>h\<^sub>d head (subst \<rho> s)"
       by (meson wary_subst_ground_heads gt_diff_t_s(1) gt_hd_def subsetCE wary_\<rho>)
     moreover have "chkvar (subst \<rho> t) (subst \<rho> s)"
       unfolding chkvar_def using vars_subst_subseteq[OF gt_imp_vars[OF t_gt_s]] vars_head_subseteq

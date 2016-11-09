@@ -39,7 +39,7 @@ lemma chkargs_mono[mono]: "gt \<le> gt' \<Longrightarrow> chkargs gt \<le> chkar
 
 inductive gt :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix ">\<^sub>t" 50) where
   gt_arg: "ti \<in> set (args t) \<Longrightarrow> ti >\<^sub>t s \<or> ti = s \<Longrightarrow> t >\<^sub>t s"
-| gt_diff: "head t >\<^sub>h head s \<Longrightarrow> chkvar t s \<Longrightarrow> chkargs (op >\<^sub>t) t s \<Longrightarrow> t >\<^sub>t s"
+| gt_diff: "head t >\<^sub>h\<^sub>d head s \<Longrightarrow> chkvar t s \<Longrightarrow> chkargs (op >\<^sub>t) t s \<Longrightarrow> t >\<^sub>t s"
 | gt_same: "head t = head s \<Longrightarrow> chkargs (op >\<^sub>t) t s \<Longrightarrow>
     (\<forall>f \<in> ground_heads (head t). extf f (op >\<^sub>t) (args t) (args s)) \<Longrightarrow> t >\<^sub>t s"
 
@@ -136,13 +136,13 @@ proof (simp only: atomize_imp,
       using u_gt_t
     proof cases
       case gt_diff_u_t: gt_diff
-      have "head u >\<^sub>h head s"
+      have "head u >\<^sub>h\<^sub>d head s"
         using gt_diff_u_t(1) gt_diff_t_s(1) by (auto intro: gt_hd_trans)
       thus ?thesis
         by (rule gt_diff[OF _ chkvar chk_u_s_if[OF gt_diff_t_s(3)]])
     next
       case gt_same_u_t: gt_same
-      have "head u >\<^sub>h head s"
+      have "head u >\<^sub>h\<^sub>d head s"
         using gt_diff_t_s(1) gt_same_u_t(1) by auto
       thus ?thesis
         by (rule gt_diff[OF _ chkvar chk_u_s_if[OF gt_diff_t_s(3)]])
@@ -153,7 +153,7 @@ proof (simp only: atomize_imp,
       using u_gt_t
     proof cases
       case gt_diff_u_t: gt_diff
-      have "head u >\<^sub>h head s"
+      have "head u >\<^sub>h\<^sub>d head s"
         using gt_diff_u_t(1) gt_same_t_s(1) by simp
       thus ?thesis
         by (rule gt_diff[OF _ chkvar chk_u_s_if[OF gt_same_t_s(2)]])
@@ -372,7 +372,7 @@ proof (rule measure_induct_rule[of "\<lambda>(t, s). size t + size s"
         using ti_geo_s by blast
     next
       case gto_diff
-      hence hd_t_gt_s: "head t >\<^sub>h head s" and chkvar: "chkvar t s" and
+      hence hd_t_gt_s: "head t >\<^sub>h\<^sub>d head s" and chkvar: "chkvar t s" and
         chkargs: "chkargs (op >\<^sub>t\<^sub>o) t s"
         by blast+
 
