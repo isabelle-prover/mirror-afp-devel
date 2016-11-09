@@ -476,7 +476,7 @@ proof (simp only: atomize_imp,
   next
     case gt_diff_t_s: gt_diff
     have "head (subst \<rho> t) >\<^sub>h head (subst \<rho> s)"
-      by (meson ground_heads_subst gt_diff_t_s(1) gt_hd_def subsetCE wary_\<rho>)
+      by (meson wary_subst_ground_heads gt_diff_t_s(1) gt_hd_def subsetCE wary_\<rho>)
     moreover have "chkvar (subst \<rho> t) (subst \<rho> s)"
       unfolding chkvar_def using vars_subst_subseteq[OF gt_imp_vars[OF t_gt_s]] vars_head_subseteq
       by force
@@ -495,7 +495,7 @@ proof (simp only: atomize_imp,
       let ?S = "set (args t) \<union> set (args s)"
 
       have extf_args_s_t: "extf f (op >\<^sub>t) (args t) (args s)"
-        using gt_same_t_s(3) f_in_grounds wary_\<rho> ground_heads_subst by blast
+        using gt_same_t_s(3) f_in_grounds wary_\<rho> wary_subst_ground_heads by blast
       have "extf f (op >\<^sub>t) (map (subst \<rho>) (args t)) (map (subst \<rho>) (args s))"
       proof (rule extf_map[of ?S, OF _ _ _ _ _ _ extf_args_s_t])
         have sz_a: "\<forall>ta \<in> ?S. \<forall>sa \<in> ?S. {#size ta, size sa#} < {#size t, size s#}"

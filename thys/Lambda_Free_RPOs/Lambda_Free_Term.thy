@@ -447,7 +447,14 @@ definition wary_subst :: "('v \<Rightarrow> ('s, 'v) tm) \<Rightarrow> bool" whe
   "wary_subst \<rho> \<longleftrightarrow>
    (\<forall>x. wary (\<rho> x) \<and> arity (\<rho> x) \<ge> arity_var x \<and> ground_heads (head (\<rho> x)) \<subseteq> ground_heads_var x)"
 
-lemma wary_subst:
+definition strict_wary_subst :: "('v \<Rightarrow> ('s, 'v) tm) \<Rightarrow> bool" where
+  "strict_wary_subst \<rho> \<longleftrightarrow>
+   (\<forall>x. wary (\<rho> x) \<and> arity (\<rho> x) = arity_var x \<and> ground_heads (head (\<rho> x)) \<subseteq> ground_heads_var x)"
+
+lemma strict_imp_wary_subst: "strict_wary_subst \<rho> \<Longrightarrow> wary_subst \<rho>"
+  unfolding strict_wary_subst_def wary_subst_def by simp
+
+lemma wary_subst_wary:
   assumes wary_\<rho>: "wary_subst \<rho>" and wary_s: "wary s"
   shows "wary (subst \<rho> s)"
   using wary_s
@@ -486,7 +493,9 @@ proof (induct s rule: tm.induct)
     by simp (rule wary_App[OF wary_\<rho>s wary_\<rho>t nargs_\<rho>s])
 qed (auto simp: wary_\<rho>[unfolded wary_subst_def] split: hd.split)
 
-lemma ground_heads_subst:
+lemmas strict_wary_subst_wary = wary_subst_wary[OF strict_imp_wary_subst]
+
+lemma wary_subst_ground_heads:
   assumes wary_\<rho>: "wary_subst \<rho>"
   shows "ground_heads (head (subst \<rho> s)) \<subseteq> ground_heads (head s)"
 proof (induct s rule: tm_induct_apps)
@@ -498,6 +507,8 @@ proof (induct s rule: tm_induct_apps)
       using wary_\<rho> wary_subst_def x by auto
   qed auto
 qed
+
+lemmas strict_wary_subst_ground_heads = wary_subst_ground_heads[OF strict_imp_wary_subst]
 
 definition grounding_\<rho> :: "'v \<Rightarrow> ('s, 'v) tm" where
   "grounding_\<rho> x = Hd (Sym (SOME f. f \<in> ground_heads_var x))"
