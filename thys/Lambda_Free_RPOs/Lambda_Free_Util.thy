@@ -326,6 +326,12 @@ lemma enat_the_enat_iden[simp]: "n \<noteq> \<infinity> \<Longrightarrow> enat (
 lemma the_enat_minus_nat: "m \<noteq> \<infinity> \<Longrightarrow> the_enat (m - enat n) = the_enat m - n"
   by auto
 
+lemma enat_the_enat_le: "enat (the_enat x) \<le> x"
+  by (cases x; simp)
+
+lemma enat_the_enat_minus_le: "enat (the_enat (x - y)) \<le> x"
+  by (cases x; cases y; simp)
+
 lemma enat_le_imp_minus_le:
   fixes k m n :: enat
   assumes le: "k \<le> m"

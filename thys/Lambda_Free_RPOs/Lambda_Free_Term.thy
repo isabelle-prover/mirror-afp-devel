@@ -449,10 +449,10 @@ definition wary_subst :: "('v \<Rightarrow> ('s, 'v) tm) \<Rightarrow> bool" whe
 
 definition strict_wary_subst :: "('v \<Rightarrow> ('s, 'v) tm) \<Rightarrow> bool" where
   "strict_wary_subst \<rho> \<longleftrightarrow>
-   (\<forall>x. wary (\<rho> x) \<and> arity (\<rho> x) = arity_var x \<and> ground_heads (head (\<rho> x)) \<subseteq> ground_heads_var x)"
+   (\<forall>x. wary (\<rho> x) \<and> arity (\<rho> x) \<in> {arity_var x, \<infinity>} \<and> ground_heads (head (\<rho> x)) \<subseteq> ground_heads_var x)"
 
 lemma strict_imp_wary_subst: "strict_wary_subst \<rho> \<Longrightarrow> wary_subst \<rho>"
-  unfolding strict_wary_subst_def wary_subst_def by simp
+  unfolding strict_wary_subst_def wary_subst_def using eq_iff by force
 
 lemma wary_subst_wary:
   assumes wary_\<rho>: "wary_subst \<rho>" and wary_s: "wary s"
@@ -511,14 +511,36 @@ qed
 lemmas strict_wary_subst_ground_heads = wary_subst_ground_heads[OF strict_imp_wary_subst]
 
 definition grounding_\<rho> :: "'v \<Rightarrow> ('s, 'v) tm" where
-  "grounding_\<rho> x = Hd (Sym (SOME f. f \<in> ground_heads_var x))"
+  "grounding_\<rho> x = (let s = Hd (Sym (SOME f. f \<in> ground_heads_var x)) in
+     apps s (replicate (the_enat (arity s - arity_var x)) s))"
 
 lemma ground_grounding_\<rho>: "ground (subst grounding_\<rho> s)"
-  by (induct s) (auto simp: grounding_\<rho>_def elim: hd.set_cases(2) split: hd.split)
+  by (induct s) (auto simp: Let_def grounding_\<rho>_def elim: hd.set_cases(2) split: hd.split)
 
-lemma wary_grounding_\<rho>: "wary_subst grounding_\<rho>"
-  unfolding grounding_\<rho>_def[abs_def] wary_subst_def
-  using some_ground_head_arity by (auto simp: ground_heads_var_nonempty some_in_eq)
+lemma strict_wary_grounding_\<rho>: "strict_wary_subst grounding_\<rho>"
+  unfolding strict_wary_subst_def
+proof (intro allI conjI)
+  fix x
+
+  define f where "f = (SOME f. f \<in> ground_heads_var x)"
+  define s :: "('s, 'v) tm" where "s = Hd (Sym f)"
+
+  have wary_s: "wary s"
+    unfolding s_def by (rule wary_Hd)
+  have ary_s_ge_x: "arity s \<ge> arity_var x"
+    unfolding s_def f_def using some_ground_head_arity by simp
+  have gr\<rho>_x: "grounding_\<rho> x = apps s (replicate (the_enat (arity s - arity_var x)) s)"
+    unfolding grounding_\<rho>_def Let_def f_def[symmetric] s_def[symmetric] by (rule refl)
+
+  show "wary (grounding_\<rho> x)"
+    unfolding gr\<rho>_x by (auto intro!: wary_s wary_apps[OF wary_s] enat_the_enat_minus_le)
+  show "arity (grounding_\<rho> x) \<in> {arity_var x, \<infinity>}"
+    unfolding gr\<rho>_x using ary_s_ge_x by (cases "arity s"; cases "arity_var x"; simp)
+  show "ground_heads (head (grounding_\<rho> x)) \<subseteq> ground_heads_var x"
+    unfolding gr\<rho>_x s_def f_def by (simp add: some_in_eq ground_heads_var_nonempty)
+qed
+
+lemmas wary_grounding_\<rho> = strict_wary_grounding_\<rho>[THEN strict_imp_wary_subst]
 
 definition gt_hd :: "('s, 'v) hd \<Rightarrow> ('s, 'v) hd \<Rightarrow> bool" (infix ">\<^sub>h" 50) where
   "\<xi> >\<^sub>h \<zeta> \<longleftrightarrow> (\<forall>g \<in> ground_heads \<xi>. \<forall>f \<in> ground_heads \<zeta>. g >\<^sub>s f)"
