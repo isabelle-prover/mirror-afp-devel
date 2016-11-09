@@ -313,6 +313,13 @@ lemma arity_simps[simp]:
   "arity (App s t) = arity s - 1"
   by (auto simp: arity_def enat_diff_diff_eq add.commute eSuc_enat plus_1_eSuc(1))
 
+lemma arity_apps[simp]: "arity (apps s ts) = arity s - length ts"
+proof (induct ts arbitrary: s)
+  case (Cons t ts)
+  thus ?case
+    by (case_tac "arity s"; simp add: one_enat_def)
+qed simp
+
 inductive wary :: "('s, 'v) tm \<Rightarrow> bool" where
   wary_Hd[intro]: "wary (Hd \<zeta>)"
 | wary_App[intro]: "wary s \<Longrightarrow> wary t \<Longrightarrow> num_args s < arity_hd (head s) \<Longrightarrow> wary (App s t)"
