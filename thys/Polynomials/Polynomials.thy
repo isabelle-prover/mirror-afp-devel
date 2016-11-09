@@ -46,6 +46,12 @@ where "eval_tpoly \<alpha> (PVar x) = \<alpha> x"
    |  "eval_tpoly \<alpha> (PMult []) = 1"
    |  "eval_tpoly \<alpha> (PMult (p # ps)) = eval_tpoly \<alpha> p * eval_tpoly \<alpha> (PMult ps)"
 
+lemma eval_tpoly_PSum: "eval_tpoly A (PSum ps) = sum_list (map (eval_tpoly A) ps)"
+  by (induct ps) auto
+
+lemma eval_tpoly_PMult: "eval_tpoly A (PMult ps) = prod_list (map (eval_tpoly A) ps)"
+  by (induct ps) auto
+
 subsection {* Polynomials represented in normal form as lists of monomials *}
 text {*
   The internal representation of polynomials is a sum of products of monomials with coefficients
