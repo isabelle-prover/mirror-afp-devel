@@ -45,10 +45,10 @@ end
 text \<open>We now have to implement @{const finite_field_factorization}.\<close>  
 context
   fixes p :: int
-  and ff_ops :: "int arith_ops_record"  (* finite-fields *)
+  and ff_ops :: "'i arith_ops_record"  (* finite-fields *)
 begin
 
-fun power_poly_f_mod_i :: "(int list \<Rightarrow> int list) \<Rightarrow> int list \<Rightarrow> nat \<Rightarrow> int list" where
+fun power_poly_f_mod_i :: "('i list \<Rightarrow> 'i list) \<Rightarrow> 'i list \<Rightarrow> nat \<Rightarrow> 'i list" where
   "power_poly_f_mod_i modulus a n = (if n = 0 then modulus (one_poly_i ff_ops)
     else let (d,r) = Divides.divmod_nat n 2; 
        rec = power_poly_f_mod_i modulus (modulus (times_poly_i ff_ops a a)) d in 
@@ -56,7 +56,7 @@ fun power_poly_f_mod_i :: "(int list \<Rightarrow> int list) \<Rightarrow> int l
 
 declare power_poly_f_mod_i.simps[simp del]
 
-fun power_polys_i :: "int list \<Rightarrow> int list \<Rightarrow> int list \<Rightarrow> nat \<Rightarrow> int list list" where
+fun power_polys_i :: "'i list \<Rightarrow> 'i list \<Rightarrow> 'i list \<Rightarrow> nat \<Rightarrow> 'i list list" where
   "power_polys_i mul_p u curr_p (Suc i) = curr_p # 
       power_polys_i mul_p u (mod_field_poly_i ff_ops (times_poly_i ff_ops curr_p mul_p) u) i"
 | "power_polys_i mul_p u curr_p 0 = []"
@@ -64,57 +64,63 @@ fun power_polys_i :: "int list \<Rightarrow> int list \<Rightarrow> int list \<R
 lemma length_power_polys_i[simp]: "length (power_polys_i x y z n) = n" 
   by (induct n arbitrary: x y z, auto)
 
-definition berlekamp_mat_i :: "int list \<Rightarrow> int mat" where
-  "berlekamp_mat_i u = (let n = degree_i u;
-    mul_p = power_poly_f_mod_i (\<lambda> v. mod_field_poly_i ff_ops v u) [0,1] (nat p);
-    xks = power_polys_i mul_p u [1] n
-   in mat_of_rows_list n (map (\<lambda> cs. cs @ replicate (n - length cs) 0) xks))"
+definition berlekamp_mat_i :: "'i list \<Rightarrow> 'i mat" where
+  "berlekamp_mat_i u = (let n = degree_i u; 
+    ze = arith_ops_record.zero ff_ops; on = arith_ops_record.one ff_ops;
+    mul_p = power_poly_f_mod_i (\<lambda> v. mod_field_poly_i ff_ops v u) 
+      [ze, on] (nat p);
+    xks = power_polys_i mul_p u [on] n
+   in mat_of_rows_list n (map (\<lambda> cs. cs @ replicate (n - length cs) ze) xks))"
 
-definition berlekamp_resulting_mat_i :: "int list \<Rightarrow> int mat" where
+definition berlekamp_resulting_mat_i :: "'i list \<Rightarrow> 'i mat" where
 "berlekamp_resulting_mat_i u = (let Q = berlekamp_mat_i u;
     n = dim\<^sub>r Q;
-    QI = mat n n (\<lambda> (i,j). if i = j then minus_p p (Q $$ (i,j)) 1 else Q $$ (i,j))
+    QI = mat n n (\<lambda> (i,j). if i = j then arith_ops_record.minus ff_ops (Q $$ (i,j)) (arith_ops_record.one ff_ops) else Q $$ (i,j))
     in (gauss_jordan_single_i ff_ops (mat_transpose QI)))"
 
-definition berlekamp_basis_i :: "int list \<Rightarrow> int list list" where
+definition berlekamp_basis_i :: "'i list \<Rightarrow> 'i list list" where
   "berlekamp_basis_i u = (map (poly_of_list_i ff_ops o list_of_vec) 
     (find_base_vectors_i ff_ops (berlekamp_resulting_mat_i u)))"
 
-primrec berlekamp_factorization_main_i :: "nat \<Rightarrow> int list list \<Rightarrow> int list list \<Rightarrow> nat \<Rightarrow> int list list" where
-  "berlekamp_factorization_main_i d divs (v # vs) n = (
-    if v = [1] then berlekamp_factorization_main_i d divs vs n else
+primrec berlekamp_factorization_main_i :: "'i \<Rightarrow> 'i \<Rightarrow> nat \<Rightarrow> 'i list list \<Rightarrow> 'i list list \<Rightarrow> nat \<Rightarrow> 'i list list" where
+  "berlekamp_factorization_main_i ze on d divs (v # vs) n = (
+    if v = [on] then berlekamp_factorization_main_i ze on d divs vs n else
     if length divs = n then divs else
-    let facts = [ w . u \<leftarrow> divs, s \<leftarrow> [0 ..< nat p], w \<leftarrow> [gcd_poly_i ff_ops u (minus_poly_i ff_ops v (if s = 0 then [] else [int s]))], w \<noteq> [1]];
+    let of_int = arith_ops_record.of_int ff_ops;
+        facts = [ w . u \<leftarrow> divs, s \<leftarrow> [0 ..< nat p], 
+         w \<leftarrow> [gcd_poly_i ff_ops u (minus_poly_i ff_ops v (if s = 0 then [] else [of_int (int s)]))], 
+         w \<noteq> [on]];
       (lin,nonlin) = partition (\<lambda> q. degree_i q = d) facts 
-      in lin @ berlekamp_factorization_main_i d nonlin vs (n - length lin))"
-| "berlekamp_factorization_main_i d divs [] n = divs"
+      in lin @ berlekamp_factorization_main_i ze on d nonlin vs (n - length lin))"
+| "berlekamp_factorization_main_i ze on d divs [] n = divs"
 
-definition berlekamp_monic_factorization_i :: "nat \<Rightarrow> int list \<Rightarrow> int list list" where
+definition berlekamp_monic_factorization_i :: "nat \<Rightarrow> 'i list \<Rightarrow> 'i list list" where
   "berlekamp_monic_factorization_i d f = (let
      vs = berlekamp_basis_i f
-    in berlekamp_factorization_main_i d [f] vs (length vs))"         
+    in berlekamp_factorization_main_i (arith_ops_record.zero ff_ops) (arith_ops_record.one ff_ops) d [f] vs (length vs))"         
 
 partial_function (tailrec) dist_degree_factorize_main_i :: 
-  "nat \<Rightarrow> int list \<Rightarrow> int list \<Rightarrow> nat \<Rightarrow> (nat \<times> int list) list 
-  \<Rightarrow> (nat \<times> int list) list" where
-  [code]: "dist_degree_factorize_main_i dv v w d res = (if v = [1] then res else if d + d > dv 
+  "'i \<Rightarrow> 'i \<Rightarrow> nat \<Rightarrow> 'i list \<Rightarrow> 'i list \<Rightarrow> nat \<Rightarrow> (nat \<times> 'i list) list 
+  \<Rightarrow> (nat \<times> 'i list) list" where
+  [code]: "dist_degree_factorize_main_i ze on dv v w d res = (if v = [on] then res else if d + d > dv 
     then (dv, v) # res else let
       w = power_poly_f_mod_i (\<lambda> f. mod_field_poly_i ff_ops f v) w (nat p);
       d = Suc d;
-      gd = gcd_poly_i ff_ops (minus_poly_i ff_ops w [0,1]) v
-      in if gd = [1] then dist_degree_factorize_main_i dv v w d res else 
+      gd = gcd_poly_i ff_ops (minus_poly_i ff_ops w [ze,on]) v
+      in if gd = [on] then dist_degree_factorize_main_i ze on dv v w d res else 
       let v' = div_field_poly_i ff_ops v gd
-      in dist_degree_factorize_main_i (degree_i v') v' (mod_field_poly_i ff_ops w v') d ((d,gd) # res))" 
+      in dist_degree_factorize_main_i ze on (degree_i v') v' (mod_field_poly_i ff_ops w v') d ((d,gd) # res))" 
 
 definition distinct_degree_factorization_i
-  :: "int list \<Rightarrow> (nat \<times> int list) list" where
-  "distinct_degree_factorization_i f = (if degree_i f = 1 then [(1,f)] else 
-     dist_degree_factorize_main_i (degree_i f) f [0,1] 0 [])"
+  :: "'i list \<Rightarrow> (nat \<times> 'i list) list" where
+  "distinct_degree_factorization_i f = (let ze = arith_ops_record.zero ff_ops;
+     on = arith_ops_record.one ff_ops in if degree_i f = 1 then [(1,f)] else 
+     dist_degree_factorize_main_i ze on (degree_i f) f [ze,on] 0 [])"
 
-definition finite_field_factorization_i :: "int list \<Rightarrow> int \<times> int list list" where
+definition finite_field_factorization_i :: "'i list \<Rightarrow> 'i \<times> 'i list list" where
   "finite_field_factorization_i f = (if degree_i f = 0 then (lead_coeff_i ff_ops f,[]) else let
      a = lead_coeff_i ff_ops f;
-     u = smult_i ff_ops (inverse_p p a) f;
+     u = smult_i ff_ops (arith_ops_record.inverse ff_ops a) f;
      gs = (if exercise_16_finished then distinct_degree_factorization_i u else [(1,u)]);
      (irr,hs) = partition (\<lambda> (i,f). degree_i f = i) gs
      in (a,map snd irr @ concat (map (\<lambda> (i,g). berlekamp_monic_factorization_i i g) hs)))"
@@ -180,32 +186,34 @@ lemma berlekamp_mat_i[transfer_rule]: "(ff.poly_rel ===> mat_rel mod_ring_rel)
   (berlekamp_mat_i p ff_ops) berlekamp_mat"
 proof (intro rel_funI)
   fix f f' 
+  let ?ze = "arith_ops_record.zero ff_ops" 
+  let ?on = "arith_ops_record.one ff_ops"
   assume f[transfer_rule]: "ff.poly_rel f f'"
   have deg: "degree_i f = degree f'" by transfer_prover
   {
     fix i j
     assume i: "i < degree f'" and j: "j < degree f'" 
-    define cs where "cs = (\<lambda>cs :: int list. cs @ replicate (degree f' - length cs) 0)"
+    define cs where "cs = (\<lambda>cs :: int list. cs @ replicate (degree f' - length cs) ?ze)"
     define cs' where "cs' = (\<lambda>cs :: 'a mod_ring poly. coeffs cs @ replicate (degree f' - length (coeffs cs)) 0)"
     define poly where "poly = power_polys_i ff_ops
-         (power_poly_f_mod_i ff_ops (\<lambda>v. mod_field_poly_i ff_ops v f) [0, 1] (nat p)) f [1]
+         (power_poly_f_mod_i ff_ops (\<lambda>v. mod_field_poly_i ff_ops v f) [?ze, ?on] (nat p)) f [?on]
          (degree f')"
     define poly' where "poly' = (power_polys (power_poly_f_mod f' [:0, 1:] (nat p)) f' 1 (degree f'))"
-    have *: "ff.poly_rel (power_poly_f_mod_i ff_ops (\<lambda>v. mod_field_poly_i ff_ops v f) [0, 1] (nat p))
+    have *: "ff.poly_rel (power_poly_f_mod_i ff_ops (\<lambda>v. mod_field_poly_i ff_ops v f) [?ze, ?on] (nat p))
       (power_poly_f_mod f' [:0, 1:] (nat p))" 
-      by (rule power_poly_f_mod_i, transfer_prover, simp add: ff.poly_rel_def mod_ring_0 mod_ring_1)
+      by (rule power_poly_f_mod_i, transfer_prover, simp add: ff.poly_rel_def mod_ring_0 mod_ring_1 ff.one ff.zero)
     have [transfer_rule]: "ff.poly_rel (poly ! i) (poly' ! i)" 
       unfolding poly_def poly'_def 
-      by (rule power_polys_i[OF i f *], simp add: ff.poly_rel_def mod_ring_1)
+      by (rule power_polys_i[OF i f *], simp add: ff.poly_rel_def mod_ring_1 ff.one)
     have *: "list_all2 mod_ring_rel (cs (poly ! i)) (cs' (poly' ! i))"
       unfolding cs_def cs'_def by transfer_prover
     from list_all2_nthD[OF *[unfolded ff.poly_rel_def], of j] j
     have "mod_ring_rel (cs (poly ! i) ! j) (cs' (poly' ! i) ! j)" unfolding cs_def by auto
     hence "mod_ring_rel
             (mat_of_rows_list (degree f')
-              (map (\<lambda>cs. cs @ replicate (degree f' - length cs) 0)
+              (map (\<lambda>cs. cs @ replicate (degree f' - length cs) ?ze)
                 (power_polys_i ff_ops
-                  (power_poly_f_mod_i ff_ops (\<lambda>v. mod_field_poly_i ff_ops v f) [0, 1] (nat p)) f [1]
+                  (power_poly_f_mod_i ff_ops (\<lambda>v. mod_field_poly_i ff_ops v f) [?ze, ?on] (nat p)) f [?on]
                   (degree f'))) $$
              (i, j))
             (mat_of_rows_list (degree f')
@@ -233,7 +241,7 @@ proof (intro rel_funI)
   show "mat_rel mod_ring_rel (berlekamp_resulting_mat_i p ff_ops f) (berlekamp_resulting_mat f')"
     unfolding berlekamp_resulting_mat_def Let_def berlekamp_resulting_mat_i_def
     by (rule field_ops.gauss_jordan_i[OF finite_field_ops, unfolded rel_fun_def, rule_format],
-    insert bmi, auto simp: mat_rel_def mod_ring_1 intro!: mod_ring_minus[unfolded rel_fun_def, rule_format])
+    insert bmi, auto simp: mat_rel_def mod_ring_1 ff.one intro!: ff.minus[unfolded rel_fun_def, rule_format])
 qed
 
 lemma berlekamp_basis_i[transfer_rule]: "(ff.poly_rel ===> list_all2 ff.poly_rel) 
@@ -243,19 +251,24 @@ lemma berlekamp_basis_i[transfer_rule]: "(ff.poly_rel ===> list_all2 ff.poly_rel
 
 lemma berlekamp_factorization_main_i[transfer_rule]: 
   "(op = ===> list_all2 ff.poly_rel ===> list_all2 ff.poly_rel ===> op = ===> list_all2 ff.poly_rel) 
-     (berlekamp_factorization_main_i p ff_ops) berlekamp_factorization_main" 
+     (berlekamp_factorization_main_i p ff_ops (arith_ops_record.zero ff_ops) 
+       (arith_ops_record.one ff_ops)) 
+     berlekamp_factorization_main" 
 proof (intro rel_funI, clarify, goal_cases)
   case (1 _ d xs xs' ys ys' _ n)
+  let ?ze = "arith_ops_record.zero ff_ops" 
+  let ?on = "arith_ops_record.one ff_ops"
+  let ?of_int = "arith_ops_record.of_int ff_ops"
   from 1(2) 1(1) show ?case
   proof (induct ys ys' arbitrary: xs xs' n rule: list_all2_induct)   
     case (Cons y ys y' ys' xs xs' n)
     note trans[transfer_rule] = Cons(1,2,4)
     define facts where "facts = concat (map (\<lambda>u. concat
                         (map (\<lambda>s. if gcd_poly_i ff_ops u
-                                      (minus_poly_i ff_ops y (if s = 0 then [] else [int s])) \<noteq>
-                                     [1]
+                                      (minus_poly_i ff_ops y (if s = 0 then [] else [?of_int (int s)])) \<noteq>
+                                     [?on]
                                   then [gcd_poly_i ff_ops u
-                                         (minus_poly_i ff_ops y (if s = 0 then [] else [int s]))]
+                                         (minus_poly_i ff_ops y (if s = 0 then [] else [?of_int (int s)]))]
                                   else [])
                           [0..<nat p])) xs)"
     define facts' where "facts' = concat
@@ -264,33 +277,34 @@ proof (intro rel_funI, clarify, goal_cases)
                                   then [gcd u (y' - [:of_int (int x):])] else [])
                           [0..<nat p]))
                xs')" 
-    have id: "\<And> x. of_int (int x) = of_nat x" "[1] = one_poly_i ff_ops" 
-      by (auto simp: one_poly_i_def finite_field_ops_def)
+    have id: "\<And> x. of_int (int x) = of_nat x" "[?on] = one_poly_i ff_ops" 
+      by (auto simp: one_poly_i_def finite_field_ops_def) 
     have facts[transfer_rule]: "list_all2 ff.poly_rel facts facts'"
       unfolding facts_def facts'_def
     apply (rule concat_transfer[unfolded rel_fun_def, rule_format])
     apply (rule list.map_transfer[unfolded rel_fun_def, rule_format, OF _ trans(3)])
     apply (rule concat_transfer[unfolded rel_fun_def, rule_format])
-    apply (rule list_all2_map_map)      
+    apply (rule list_all2_map_map)
     proof (unfold id)
       fix f f' x
       assume [transfer_rule]: "ff.poly_rel f f'" and x: "x \<in> set [0..<nat p]"
-      from x have [transfer_rule]: "ff.poly_rel (if x = 0 then [] else [int x]) [:of_nat x:]"
-        unfolding ff.poly_rel_def by (simp add: cCons_def p mod_ring_rel_unsafe)
+      from x have [transfer_rule]: "ff.poly_rel (if x = 0 then [] else [?of_int (int x)]) [:of_nat x:]"
+        unfolding ff.poly_rel_def by (simp add: cCons_def p mod_ring_rel_unsafe finite_field_ops_def)
       show "list_all2 ff.poly_rel
-          (if gcd_poly_i ff_ops f (minus_poly_i ff_ops y (if x = 0 then [] else [int x])) \<noteq> one_poly_i ff_ops
-           then [gcd_poly_i ff_ops f (minus_poly_i ff_ops y (if x = 0 then [] else [int x]))]
+          (if gcd_poly_i ff_ops f (minus_poly_i ff_ops y (if x = 0 then [] else [?of_int (int x)])) \<noteq> one_poly_i ff_ops
+           then [gcd_poly_i ff_ops f (minus_poly_i ff_ops y (if x = 0 then [] else [?of_int (int x)]))]
            else [])
           (if gcd f' (y' - [:of_nat x:]) \<noteq> 1 then [gcd f' (y' - [:of_nat x:])] else [])"
         by transfer_prover
     qed
-    have id1: "berlekamp_factorization_main_i p ff_ops d xs (y # ys) n = (
-      if y = [1] then berlekamp_factorization_main_i p ff_ops d xs ys n else
+    have id1: "berlekamp_factorization_main_i p ff_ops ?ze ?on d xs (y # ys) n = (
+      if y = [?on] then berlekamp_factorization_main_i p ff_ops ?ze ?on d xs ys n else
       if length xs = n then xs else
       (let fac = facts;
           (lin, nonlin) = partition (\<lambda>q. degree_i q = d) fac
-             in lin @ berlekamp_factorization_main_i p ff_ops d nonlin ys (n - length lin)))" 
-      by (simp add: o_def facts_def)
+             in lin @ berlekamp_factorization_main_i p ff_ops ?ze ?on d nonlin ys (n - length lin)))" 
+      unfolding berlekamp_factorization_main_i.simps
+      by (simp add: o_def facts_def Let_def)
     have id2: "berlekamp_factorization_main d xs' (y' # ys') n = (
       if y' = 1 then berlekamp_factorization_main d xs' ys' n
       else if length xs' = n then xs' else
@@ -299,7 +313,7 @@ proof (intro rel_funI, clarify, goal_cases)
               in lin @ berlekamp_factorization_main d nonlin ys' (n - length lin)))"
       by (simp add: o_def facts'_def nat_p)
     have len: "length xs = length xs'" by transfer_prover
-    have id3: "(y = [1]) = (y' = 1)" 
+    have id3: "(y = [?on]) = (y' = 1)" 
       by (transfer_prover_start, transfer_step+, simp add: one_poly_i_def finite_field_ops_def)
     show ?case
     proof (cases "y' = 1")
@@ -321,7 +335,7 @@ proof (intro rel_funI, clarify, goal_cases)
         hence id: "(length xs' = n) = False" by simp
         have id': "length [q\<leftarrow>facts . degree_i q = d] = length [q\<leftarrow>facts'. degree q = d]" 
           by transfer_prover   
-        have [transfer_rule]: "list_all2 ff.poly_rel (berlekamp_factorization_main_i p ff_ops d [x\<leftarrow>facts . degree_i x \<noteq> d] ys
+        have [transfer_rule]: "list_all2 ff.poly_rel (berlekamp_factorization_main_i p ff_ops ?ze ?on d [x\<leftarrow>facts . degree_i x \<noteq> d] ys
          (n - length [q\<leftarrow>facts . degree_i q = d])) 
          (berlekamp_factorization_main d [x\<leftarrow>facts' . degree x \<noteq> d] ys'
          (n - length [q\<leftarrow>facts' . degree q = d]))"
@@ -343,18 +357,21 @@ lemma berlekamp_monic_factorization_i[transfer_rule]:
 lemma dist_degree_factorize_main_i: 
   "ff.poly_rel F f \<Longrightarrow> ff.poly_rel G g \<Longrightarrow> list_all2 (rel_prod op = ff.poly_rel) Res res 
    \<Longrightarrow> list_all2 (rel_prod op = ff.poly_rel) 
-      (dist_degree_factorize_main_i p ff_ops (degree_i F) F G d Res)
+      (dist_degree_factorize_main_i p ff_ops 
+         (arith_ops_record.zero ff_ops) (arith_ops_record.one ff_ops) (degree_i F) F G d Res)
       (dist_degree_factorize_main f g d res)" 
 proof (induct f g d res arbitrary: F G Res rule: dist_degree_factorize_main.induct)
   case (1 v w d res V W Res)
+  let ?ze = "arith_ops_record.zero ff_ops" 
+  let ?on = "arith_ops_record.one ff_ops"
   note simp = dist_degree_factorize_main.simps[of v w d] 
-    dist_degree_factorize_main_i.simps[of p ff_ops "degree_i V" V W d]
+    dist_degree_factorize_main_i.simps[of p ff_ops ?ze ?on "degree_i V" V W d]
   have v[transfer_rule]: "ff.poly_rel V v" by (rule 1)
   have w[transfer_rule]: "ff.poly_rel W w" by (rule 1)
   have res[transfer_rule]: "list_all2 (rel_prod op = ff.poly_rel) Res res" by (rule 1)
   have [transfer_rule]: "ff.poly_rel [1] 1" unfolding one_poly_def ff.poly_rel_def mod_ring_rel_def 
     by auto
-  have id1: "(V = [1]) = (v = 1)" by transfer_prover
+  have id1: "(V = [?on]) = (v = 1)" unfolding finite_field_ops_def by simp transfer_prover
   have id2: "degree_i V = degree v" by transfer_prover
   note simp = simp[unfolded id1 id2]
   note IH = 1(1,2)
@@ -376,20 +393,20 @@ proof (induct f g d res arbitrary: F G Res rule: dist_degree_factorize_main.indu
       hence "(degree v < d + d) = False" by auto
       note simp = simp[unfolded this if_False]
       let ?P = "power_poly_f_mod_i ff_ops (\<lambda>f. mod_field_poly_i ff_ops f V) W (nat p)" 
-      let ?G = "gcd_poly_i ff_ops (minus_poly_i ff_ops ?P [0, 1]) V" 
+      let ?G = "gcd_poly_i ff_ops (minus_poly_i ff_ops ?P [?ze, ?on]) V" 
       let ?g = "gcd (w ^ CARD('a) mod v - monom 1 1) v" 
       define G where "G = ?G" 
       define g where "g = ?g"
       note simp = simp[unfolded Let_def, folded G_def g_def]
       note IH = IH[OF False refl refl refl]
-      have [transfer_rule]: "ff.poly_rel [0,1] (monom 1 1)" unfolding ff.poly_rel_def mod_ring_rel_def 
-        by (auto simp: coeffs_monom)
+      have [transfer_rule]: "ff.poly_rel [?ze,?on] (monom 1 1)" unfolding ff.poly_rel_def mod_ring_rel_def 
+        by (auto simp: coeffs_monom finite_field_ops_def)
       have id: "w ^ CARD('a) mod v = power_poly_f_mod v w (nat p)"
         unfolding power_poly_f_mod_def by (simp add: p)
       have P[transfer_rule]: "ff.poly_rel ?P (w ^ CARD('a) mod v)" unfolding id
         by (rule power_poly_f_mod_i[OF _ w], transfer_prover)
       have g[transfer_rule]: "ff.poly_rel G g" unfolding G_def g_def by transfer_prover
-      have id3: "(G = [1]) = (g = 1)" by transfer_prover
+      have id3: "(G = [?on]) = (g = 1)" unfolding finite_field_ops_def by simp transfer_prover
       note simp = simp[unfolded id3]
       show ?thesis
       proof (cases "g = 1")
@@ -421,6 +438,8 @@ proof
   assume f[transfer_rule]: "ff.poly_rel F f" 
   have id: "(degree_i F = 1) = (degree f = 1)" by transfer_prover
   note d = distinct_degree_factorization_i_def distinct_degree_factorization_def
+  let ?ze = "arith_ops_record.zero ff_ops" 
+  let ?on = "arith_ops_record.one ff_ops"
   show "list_all2 (rel_prod op = ff.poly_rel) (distinct_degree_factorization_i p ff_ops F)
             (distinct_degree_factorization f)" 
   proof (cases "degree f = 1")
@@ -429,11 +448,11 @@ proof
   next
     case False
     from False id have "?thesis = (list_all2 (rel_prod op = ff.poly_rel) 
-      (dist_degree_factorize_main_i p ff_ops (degree_i F) F [0, 1] 0 [])
-      (dist_degree_factorize_main f (monom 1 1) 0 []))" unfolding d by simp    
+      (dist_degree_factorize_main_i p ff_ops ?ze ?on (degree_i F) F [?ze, ?on] 0 [])
+      (dist_degree_factorize_main f (monom 1 1) 0 []))" unfolding d Let_def by simp    
     also have \<dots>
       by (rule dist_degree_factorize_main_i[OF f], auto simp: ff.poly_rel_def mod_ring_rel_def 
-        coeffs_monom)
+        coeffs_monom finite_field_ops_def)
     finally show ?thesis .
   qed
 qed

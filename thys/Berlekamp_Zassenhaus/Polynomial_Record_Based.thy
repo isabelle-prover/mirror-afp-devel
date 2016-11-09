@@ -150,6 +150,7 @@ definition poly_ops :: "'i list arith_ops_record" where
       mod_field_poly_i
       normalize_poly_i
       unit_factor_poly_i
+      (\<lambda> i. if i = 0 then [] else [arith_ops_record.of_int ops i])
       is_poly"
 
 
