@@ -844,11 +844,9 @@ proof -
     by auto
 qed
 
-lemma twopow:"\<And> a b. a \<le> b \<Longrightarrow> (2::'a::{linordered_semidom})^a \<le> 2^b" by simp
-
 definition factor_bound :: "int poly \<Rightarrow> nat \<Rightarrow> int" where
-  "factor_bound f g = (g choose g div 2) * sqrt_int_ceiling (sum_list (map (\<lambda> a. a * a) (coeffs f)))" 
-  
+  "factor_bound f d = sqrt_int_ceiling ((d choose d div 2)^2 * sum_list (map (\<lambda> a. a * a) (coeffs f)))" 
+
 lemma factor_bound: assumes "f \<noteq> 0" "g dvd f" "degree g \<le> n"
   shows "\<bar>coeff g k\<bar> \<le> factor_bound f n"  proof-
   obtain h where gh:"g * h = f" using assms by (metis dvdE)
@@ -868,11 +866,12 @@ lemma factor_bound: assumes "f \<noteq> 0" "g dvd f" "degree g \<le> n"
     also have "\<dots> \<le> n choose n div 2" using binomial_maximum[of n k] by simp
     finally show "real (degree g choose k) \<le> real (n choose n div 2)" by simp
   qed simp
-  also have "\<dots> \<le> (n choose n div 2) * (l2norm_complex (map_poly complex_of_int f))"
+  also have "\<dots> \<le> (n choose n div 2) * (sqrt (norm2 (map_poly complex_of_int f)))"
     using Landau_inequality[of "(map_poly complex_of_int f)"] unfolding measure_poly_int_def
-     by simp
-  also have "\<dots> \<le> (n choose n div 2) * ceiling (l2norm_complex  (map_poly complex_of_int f))"
-     by simp
+    by simp
+  also have "\<dots> = sqrt ((n choose n div 2)^2 * norm2 (map_poly complex_of_int f))"
+    unfolding real_sqrt_mult by simp
+  also have "\<dots> \<le> ceiling \<dots>" by simp
   also have "\<dots> = factor_bound f n"
     unfolding factor_bound_def by (auto simp: power2_eq_square coeffs_map_poly o_def)
   finally show ?thesis unfolding of_int_le_iff by blast
