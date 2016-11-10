@@ -6,14 +6,16 @@
 *)
 subsection \<open>Finite Fields\<close>
 
-text \<open>We provide an implementation for $GF(p)$ -- the field with $p$ elements for some
-  prime $p$ -- by integers. Correctness of the implementation is proven by
+text \<open>We provide two implementations for $GF(p)$ -- the field with $p$ elements for some
+  prime $p$ -- one by integers and one by bit-vectors. 
+  Correctness of the implementations is proven by
   transfer rules to the type-based version of $GF(p)$.\<close>
 
 theory Finite_Field_Record_Based
 imports
   Finite_Field
   Arithmetic_Record_Based
+  "../Native_Word/Uint32" 
   Code_Target_Numeral
 begin
 
@@ -84,6 +86,77 @@ definition finite_field_ops :: "int arith_ops_record" where
       (\<lambda> x . x)
       (\<lambda> x. 0 \<le> x \<and> x < p)"
 
+end
+
+context
+  fixes p :: uint32
+begin
+definition plus_p32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" where
+  "plus_p32 x y \<equiv> let z = x + y in if z \<ge> p then z - p else z"
+
+definition minus_p32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" where
+  "minus_p32 x y \<equiv> if y \<le> x then x - y else (x + p) - y"
+
+definition uminus_p32 :: "uint32 \<Rightarrow> uint32" where
+  "uminus_p32 x = (if x = 0 then 0 else p - x)"
+
+definition mult_p32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" where
+  "mult_p32 x y = (x * y mod p)"
+
+lemma int_of_uint32_shift: "int_of_uint32 (n >> k) = (int_of_uint32 n) div (2 ^ k)" 
+  by (transfer, rule shiftr_div_2n) 
+
+lemma int_of_uint32_0_iff: "int_of_uint32 n = 0 \<longleftrightarrow> n = 0" 
+  by (transfer, rule uint_0_iff)
+  
+lemma int_of_uint32_ge_0: "int_of_uint32 n \<ge> 0" 
+  by (transfer, auto)
+
+function power_p32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" where
+  "power_p32 x n = (if n = 0 then 1 else
+    let r = bitAND 1 n; d = n >> 1;
+       rec = power_p32 (mult_p32 x x) d in
+    if r = 0 then rec else mult_p32 rec x)"
+  by pat_completeness auto
+
+termination 
+proof -
+  {
+    fix n :: uint32
+    assume "n \<noteq> 0" 
+    with int_of_uint32_ge_0[of n] int_of_uint32_0_iff[of n] have "int_of_uint32 n > 0" by auto
+    hence "0 < int_of_uint32 n" "int_of_uint32 n div 2 < int_of_uint32 n" by auto
+  } note * = this
+  show ?thesis
+    by (relation "measure (\<lambda> (x,n). nat (int_of_uint32 n))", auto simp: int_of_uint32_shift *) 
+qed
+
+text \<open>In experiments with Berlekamp-factorization (where the prime $p$ is usually small),
+  it turned out that taking the below implementation of inverse via exponentiation
+  is faster than the one based on the extended Euclidean algorithm.\<close>
+
+definition inverse_p32 :: "uint32 \<Rightarrow> uint32" where
+  "inverse_p32 x = (if x = 0 then 0 else power_p32 x (p - 2))"
+
+definition divide_p32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32"  where
+  "divide_p32 x y = mult_p32 x (inverse_p32 y)"
+
+definition finite_field_ops32 :: "uint32 arith_ops_record" where
+  "finite_field_ops32 \<equiv> Arith_Ops_Record
+      0
+      1
+      plus_p32
+      mult_p32
+      minus_p32
+      uminus_p32
+      divide_p32
+      inverse_p32
+      (\<lambda> x y . if y = 0 then x else 0)
+      (\<lambda> x . if x = 0 then 0 else 1)
+      (\<lambda> x . x)
+      uint32_of_int
+      int_of_uint32
+      (\<lambda> x. 0 \<le> x \<and> x < p)"
 end
 
 (* ******************************************************************************** *)
