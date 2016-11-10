@@ -535,13 +535,13 @@ end
 
 definition finite_field_factorization_main :: "int \<Rightarrow> 'i arith_ops_record \<Rightarrow> int poly \<Rightarrow> int \<times> int poly list" where
   "finite_field_factorization_main p f_ops f \<equiv> 
-    let (c',fs') = finite_field_factorization_i p f_ops (of_int_poly_i f_ops f)
+    let (c',fs') = finite_field_factorization_i p f_ops (of_int_poly_i f_ops (poly_mod.Mp p f))
       in (arith_ops_record.to_int f_ops c', map (to_int_poly_i f_ops) fs')"
   
 context prime_field_gen
 begin
 lemma finite_field_factorization_main: 
-  assumes res: "finite_field_factorization_main p ff_ops (poly_mod.Mp p f) = (c,fs)"
+  assumes res: "finite_field_factorization_main p ff_ops f = (c,fs)"
   and sq: "square_free_m f" 
   shows "unique_factorization_m f (c, mset fs)
     \<and> c \<in> {0 ..< p} 
@@ -558,7 +558,7 @@ end
 lemma finite_field_factorization_main_int: 
   assumes p: "prime p" 
   and f_ops: "f_ops = finite_field_ops p" 
-  and res: "finite_field_factorization_main p f_ops (poly_mod.Mp p f) = (c,fs)"
+  and res: "finite_field_factorization_main p f_ops f = (c,fs)"
   and sq: "poly_mod.square_free_m p f"
   shows "poly_mod.unique_factorization_m p f (c, mset fs)
     \<and> c \<in> {0 ..< p} 
@@ -579,8 +579,7 @@ proof -
 qed
 
 definition finite_field_factorization_int :: "int \<Rightarrow> int poly \<Rightarrow> int \<times> int poly list" where
-  "finite_field_factorization_int p f = 
-     finite_field_factorization_main p (finite_field_ops p) (poly_mod.Mp p f)"
+  "finite_field_factorization_int p = finite_field_factorization_main p (finite_field_ops p)"
  
 lemma finite_field_factorization_int: assumes p: "prime p" 
   and sq: "poly_mod.square_free_m p f" 
