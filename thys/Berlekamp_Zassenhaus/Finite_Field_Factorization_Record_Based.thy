@@ -533,13 +533,33 @@ proof -
 qed
 end
 
-lemma finite_field_factorization_i: 
+definition finite_field_factorization_main :: "int \<Rightarrow> 'i arith_ops_record \<Rightarrow> int poly \<Rightarrow> int \<times> int poly list" where
+  "finite_field_factorization_main p f_ops f \<equiv> 
+    let (c',fs') = finite_field_factorization_i p f_ops (of_int_poly_i f_ops f)
+      in (arith_ops_record.to_int f_ops c', map (to_int_poly_i f_ops) fs')"
+  
+context prime_field_gen
+begin
+lemma finite_field_factorization_main: 
+  assumes res: "finite_field_factorization_main p ff_ops (poly_mod.Mp p f) = (c,fs)"
+  and sq: "square_free_m f" 
+  shows "unique_factorization_m f (c, mset fs)
+    \<and> c \<in> {0 ..< p} 
+    \<and> (\<forall> fi \<in> set fs. set (coeffs fi) \<subseteq> {0 ..< p})"
+proof -
+  obtain c' fs' where 
+    res': "finite_field_factorization_i p ff_ops (of_int_poly_i ff_ops (Mp f)) = (c', fs')"  by force
+  show ?thesis  
+    by (rule finite_field_i_sound[OF refl res' sq], 
+      insert res[unfolded finite_field_factorization_main_def res'], auto)
+qed
+end
+
+lemma finite_field_factorization_main_int: 
   assumes p: "prime p" 
   and f_ops: "f_ops = finite_field_ops p" 
-  and berl_i: "finite_field_factorization_i p f_ops (of_int_poly_i f_ops (poly_mod.Mp p f)) = (c',fs')"
+  and res: "finite_field_factorization_main p f_ops (poly_mod.Mp p f) = (c,fs)"
   and sq: "poly_mod.square_free_m p f"
-  and c: "c = arith_ops_record.to_int f_ops c'" 
-  and fs: "fs = map (to_int_poly_i f_ops) fs'"
   shows "poly_mod.unique_factorization_m p f (c, mset fs)
     \<and> c \<in> {0 ..< p} 
     \<and> (\<forall> fi \<in> set fs. set (coeffs fi) \<subseteq> {0 ..< p})" 
@@ -549,42 +569,18 @@ proof -
     assume "\<exists>(Rep :: 'b \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< p :: int}"
     from prime_type_prime_card[OF p this]
     have "class.prime_card TYPE('b)" "p = int CARD('b)" by auto
-    from prime_field_gen.finite_field_i_sound[OF prime_field.prime_field_finite_field_ops, 
+    from prime_field_gen.finite_field_factorization_main[OF prime_field.prime_field_finite_field_ops, 
       unfolded prime_field_def mod_ring_locale_def, internalize_sort "'a :: prime_card", 
-      OF this, folded f_ops, OF refl berl_i sq fs c]
+      OF this, folded f_ops, OF res sq]
     have ?thesis .
   }
   from this[cancel_type_definition, OF ne]
   show ?thesis .
 qed
 
-definition finite_field_factorization_int_main :: "int \<Rightarrow> int poly \<Rightarrow> int \<times> int poly list" where
-  "finite_field_factorization_int_main p f' \<equiv> 
-    let f_ops = finite_field_ops p; 
-      (c',fs') = finite_field_factorization_i p f_ops (of_int_poly_i f_ops f')
-      in (arith_ops_record.to_int f_ops c', map (to_int_poly_i f_ops) fs')"
-
 definition finite_field_factorization_int :: "int \<Rightarrow> int poly \<Rightarrow> int \<times> int poly list" where
   "finite_field_factorization_int p f = 
-     finite_field_factorization_int_main p (poly_mod.Mp p f)"
-
-lemma finite_field_factorization_int_main: assumes p: "prime p" 
-  and sq: "poly_mod.square_free_m p f" 
-  and result: "finite_field_factorization_int_main p (poly_mod.Mp p f) = (c,fs)"
-  shows "poly_mod.unique_factorization_m p f (c, mset fs)
-    \<and> c \<in> {0 ..< p} 
-    \<and> (\<forall> fi \<in> set fs. set (coeffs fi) \<subseteq> {0 ..< p})" 
-proof -
-  let ?ops = "finite_field_ops p" 
-  let ?f' = "of_int_poly_i ?ops (poly_mod.Mp p f)" 
-  obtain d fs' where 
-    res: "finite_field_factorization_i p ?ops ?f' = (d,fs')" 
-    by force
-  from result[unfolded finite_field_factorization_int_main_def Let_def res split]
-  have id: "c = arith_ops_record.to_int ?ops d" "fs = map (to_int_poly_i ?ops) fs'" by auto
-  show ?thesis
-    by (rule finite_field_factorization_i[OF p refl res sq id])
-qed
+     finite_field_factorization_main p (finite_field_ops p) (poly_mod.Mp p f)"
  
 lemma finite_field_factorization_int: assumes p: "prime p" 
   and sq: "poly_mod.square_free_m p f" 
@@ -592,7 +588,7 @@ lemma finite_field_factorization_int: assumes p: "prime p"
   shows "poly_mod.unique_factorization_m p f (c, mset fs)
     \<and> c \<in> {0 ..< p} 
     \<and> (\<forall> fi \<in> set fs. set (coeffs fi) \<subseteq> {0 ..< p})" 
-  by (rule finite_field_factorization_int_main[OF p sq 
-    result[unfolded finite_field_factorization_int_def]])
+  by (rule finite_field_factorization_main_int[OF p refl
+    result[unfolded finite_field_factorization_int_def] sq])
     
 end

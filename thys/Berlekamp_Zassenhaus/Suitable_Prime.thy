@@ -48,11 +48,14 @@ lemma square_free_iff_coprime_GFp: assumes "degree f < CARD('a)"
   shows "square_free (f :: 'a :: prime_card mod_ring poly) = (coprime f (pderiv f))"
   using coprime_pderiv_imp_square_free[of f] square_free_coprime_pderiv_GFp[OF assms] by auto
 
-lemma (in prime_field_gen) square_free_m_via_square_free_i_main: 
+definition square_free_impl :: "int \<Rightarrow> 'i arith_ops_record \<Rightarrow> int poly \<Rightarrow> bool" where
+  "square_free_impl p ff_ops f = square_free_i ff_ops (of_int_poly_i ff_ops (poly_mod.Mp p f))" 
+
+lemma (in prime_field_gen) square_free_impl: 
   assumes g: "(g :: 'a mod_ring poly) = of_int_poly (Mp f)" 
-  shows "square_free_i ff_ops (of_int_poly_i ff_ops (Mp f)) \<Longrightarrow> square_free_m f" 
+  shows "square_free_impl p ff_ops f \<Longrightarrow> square_free_m f" 
   "CARD('a) > degree_m f \<Longrightarrow> CARD('a) > square_free_bound f \<Longrightarrow> square_free f 
-   \<Longrightarrow> square_free_i ff_ops (of_int_poly_i ff_ops (Mp f))" 
+   \<Longrightarrow> square_free_impl p ff_ops f" unfolding square_free_impl_def
 proof -
   let ?f' = "of_int_poly_i ff_ops (Mp f)" 
   define f'' where "f'' \<equiv> of_int_poly (Mp f) :: 'a mod_ring poly"
@@ -88,12 +91,14 @@ proof -
   show "square_free_i ff_ops ?f'" .
 qed
 
-lemma square_free_m_via_square_free_i: assumes 
+definition square_free_impl_int :: "int \<Rightarrow> int poly \<Rightarrow> bool" where
+  "square_free_impl_int p = square_free_impl p (finite_field_ops p)" 
+
+lemma square_free_impl_int: assumes 
   p: "prime p" 
-  shows "square_free_i (finite_field_ops p) (of_int_poly_i (finite_field_ops p) (poly_mod.Mp p f)) 
-    \<Longrightarrow> poly_mod.square_free_m p f"
+  shows "square_free_impl_int p f \<Longrightarrow> poly_mod.square_free_m p f"
     "nat p > poly_mod.degree_m p f \<Longrightarrow> nat p > square_free_bound f \<Longrightarrow> square_free f 
-    \<Longrightarrow> square_free_i (finite_field_ops p) (of_int_poly_i (finite_field_ops p) (poly_mod.Mp p f))" 
+    \<Longrightarrow> square_free_impl_int p f" 
 proof -
   let ?ops = "finite_field_ops p" 
   have ne: "{0..<p} \<noteq> {}" using prime_ge_2_int[OF p] by auto
@@ -101,18 +106,17 @@ proof -
     assume "\<exists>(Rep :: 'b \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< p :: int}"
     from prime_type_prime_card[OF p this]
     have "class.prime_card TYPE('b)" and p: "p = int CARD('b)" by auto
-    from prime_field_gen.square_free_m_via_square_free_i_main[OF 
+    from prime_field_gen.square_free_impl[OF 
         prime_field.prime_field_finite_field_ops, unfolded prime_field_def mod_ring_locale_def,
       internalize_sort "'a :: prime_card", OF this refl, of f]
-    have "square_free_i (finite_field_ops p) (of_int_poly_i ?ops (poly_mod.Mp p f)) 
-      \<Longrightarrow> poly_mod.square_free_m p f" 
+    have "square_free_impl p ?ops f \<Longrightarrow> poly_mod.square_free_m p f" 
       "nat p > poly_mod.degree_m p f \<Longrightarrow> nat p > square_free_bound f \<Longrightarrow> square_free f \<Longrightarrow> 
-      square_free_i ?ops (of_int_poly_i ?ops (poly_mod.Mp p f))" unfolding p by auto
+      square_free_impl p ?ops f" unfolding p by auto
   }
   from this[cancel_type_definition, OF ne]
-  show "square_free_i ?ops (of_int_poly_i ?ops (poly_mod.Mp p f)) \<Longrightarrow> poly_mod.square_free_m p f" 
+  show "square_free_impl_int p f \<Longrightarrow> poly_mod.square_free_m p f" 
     "nat p > poly_mod.degree_m p f \<Longrightarrow> nat p > square_free_bound f \<Longrightarrow> square_free f 
-    \<Longrightarrow> square_free_i ?ops (of_int_poly_i ?ops (poly_mod.Mp p f))" by auto
+    \<Longrightarrow> square_free_impl_int p f" by (auto simp: square_free_impl_int_def)
 qed
 
 lemma coprime_lead_coeff_large_prime: assumes prime: "prime (p :: int)" 
@@ -144,8 +148,7 @@ proof -
 qed
 
 lemma prime_for_berlekamp_zassenhaus_exists: assumes sf: "square_free f" 
-  shows "\<exists> p. prime p \<and> (coprime (lead_coeff f) p \<and> (let ops = finite_field_ops p in 
-    square_free_i ops (of_int_poly_i ops (poly_mod.Mp p f))))"
+  shows "\<exists> p. prime p \<and> (coprime (lead_coeff f) p \<and> square_free_impl_int p f)"
 proof (rule ccontr)
   from assms have f0: "f \<noteq> 0" unfolding square_free_def by auto
   define n where "n = max (max (abs (lead_coeff f)) (degree f)) (square_free_bound f)" 
@@ -159,9 +162,9 @@ proof (rule ccontr)
       unfolding n_def by auto
     from coprime_lead_coeff_large_prime[OF prime large(1) f0]
     have cop: "coprime (lead_coeff f) p" by auto
-    with prime contr have nsf: "\<not> square_free_i ?ops (of_int_poly_i ?ops (Mp f))" by auto
+    with prime contr have nsf: "\<not> square_free_impl_int p f" by auto
     from large(2) have "nat p > degree_m f" using degree_m_le[of f] by auto
-    from square_free_m_via_square_free_i(2)[OF prime this large(3) sf] nsf have False by auto
+    from square_free_impl_int(2)[OF prime this large(3) sf] nsf have False by auto
   }
   hence no_large_prime: "\<And> p. prime p \<Longrightarrow> p > n \<Longrightarrow> False" by auto
   from bigger_prime[of "nat n"] obtain p where *: "prime p" "p > nat n" by auto
@@ -262,7 +265,7 @@ qed
 
 definition suitable_prime_bz :: "int poly \<Rightarrow> int" where
   "suitable_prime_bz f \<equiv> let lc = lead_coeff f in int (find_prime (\<lambda> n. let p = int n in 
-       coprime lc p \<and> (let ops = finite_field_ops p in square_free_i ops (of_int_poly_i ops (poly_mod.Mp p f)))))"
+       coprime lc p \<and> square_free_impl_int p f))"
   
 lemma suitable_prime_bz: assumes sf: "square_free f" and p: "p = suitable_prime_bz f" 
   shows "prime p" "coprime (lead_coeff f) p" 
@@ -270,18 +273,16 @@ lemma suitable_prime_bz: assumes sf: "square_free f" and p: "p = suitable_prime_
 proof -
   let ?lc = "lead_coeff f" 
   from prime_for_berlekamp_zassenhaus_exists[OF sf, unfolded Let_def]
-  obtain P where *: "prime P \<and>
-      coprime ?lc P \<and> square_free_i (finite_field_ops P) (of_int_poly_i (finite_field_ops P) (poly_mod.Mp P f))" 
+  obtain P where *: "prime P \<and> coprime ?lc P \<and> square_free_impl_int P f" 
     by auto
   hence "prime (nat P)" using prime_int_nat_transfer by blast
-  with * have "\<exists> p. prime p \<and> coprime ?lc (int p) 
-    \<and> square_free_i (finite_field_ops (int p)) (of_int_poly_i (finite_field_ops p) (poly_mod.Mp (int p) f))"
+  with * have "\<exists> p. prime p \<and> coprime ?lc (int p) \<and> square_free_impl_int p f"
     by (intro exI[of _ "nat P"], auto)
   from find_prime[OF this]
   have prime: "prime p" and cop: "coprime ?lc p" 
-    and sf: "square_free_i (finite_field_ops p) (of_int_poly_i (finite_field_ops p) (poly_mod.Mp p f))" 
+    and sf: "square_free_impl_int p f" 
     unfolding p suitable_prime_bz_def Let_def by auto
-  with square_free_m_via_square_free_i(1)[OF prime sf]
+  with square_free_impl_int(1)[OF prime sf]
   show "prime p" "coprime ?lc p" "poly_mod.square_free_m p f" by auto  
 qed
 end

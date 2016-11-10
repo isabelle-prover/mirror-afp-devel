@@ -528,11 +528,13 @@ definition euclid_ext_poly_no_gcd_i :: "'i arith_ops_record \<Rightarrow> 'i lis
   "euclid_ext_poly_no_gcd_i ff_ops f g = (case euclid_ext_poly_i ff_ops f g of 
       (a,b,_) \<Rightarrow> (a, b))" 
 
-definition euclid_ext_poly_mod :: "int \<Rightarrow> int poly \<Rightarrow> int poly \<Rightarrow> int poly \<times> int poly" where
-  "euclid_ext_poly_mod p f g = (let ff_ops = finite_field_ops p
-    in case euclid_ext_poly_no_gcd_i ff_ops (of_int_poly_i ff_ops f) (of_int_poly_i ff_ops g) of 
+definition euclid_ext_poly_mod_main :: "int \<Rightarrow> 'a arith_ops_record \<Rightarrow> int poly \<Rightarrow> int poly \<Rightarrow> int poly \<times> int poly" where
+  "euclid_ext_poly_mod_main p ff_ops f g = (case euclid_ext_poly_no_gcd_i ff_ops (of_int_poly_i ff_ops f) (of_int_poly_i ff_ops g) of 
       (a,b) \<Rightarrow> (to_int_poly_i ff_ops a, to_int_poly_i ff_ops b))" 
 
+definition euclid_ext_poly_mod :: "int \<Rightarrow> int poly \<Rightarrow> int poly \<Rightarrow> int poly \<times> int poly" where
+  "euclid_ext_poly_mod p = euclid_ext_poly_mod_main p (finite_field_ops p)" 
+  
 context prime_field_gen
 begin
 lemma euclid_ext_poly_no_gcd_i[transfer_rule]: 
@@ -569,6 +571,18 @@ proof -
   from euclid_ext_poly_no_gcd_mod_int[OF f'' g'' cop eucl a b]
   show ?thesis .
 qed
+
+lemma euclid_ext_poly_mod_main: assumes cop: "coprime_m f g" 
+  and f: "Mp f = f" and g: "Mp g = g" 
+  and res: "euclid_ext_poly_mod_main m ff_ops f g = (a,b)" 
+shows "f * a + g * b =m 1" 
+proof -
+  obtain a' b' where res': "euclid_ext_poly_no_gcd_i ff_ops (of_int_poly_i ff_ops f) 
+    (of_int_poly_i ff_ops g) = (a', b')" by force
+  show ?thesis
+    by (rule euclid_ext_poly_no_gcd_i_sound[OF refl f refl g cop res'], insert
+    res[unfolded euclid_ext_poly_mod_main_def res'], auto)
+qed
 end
 
 context poly_mod
@@ -582,18 +596,14 @@ lemma euclid_ext_poly_mod: assumes cop: "coprime_m f g"
 proof -
   let ?ops = "finite_field_ops m" 
   have ne: "{0..<m} \<noteq> {}" using prime_ge_2_int[OF p] by auto
-  obtain a' b' where eucl: "euclid_ext_poly_no_gcd_i (finite_field_ops m) 
-    (of_int_poly_i ?ops f) (of_int_poly_i ?ops g) = (a',b')" 
-    by force
-  from res[unfolded euclid_ext_poly_mod_def Let_def eucl split]
-  have ab: "a = to_int_poly_i ?ops a'" "b = to_int_poly_i ?ops b'" by auto
+  note res = res[unfolded euclid_ext_poly_mod_def]
   {
     assume "\<exists>(Rep :: 'b \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< m :: int}"
     from prime_type_prime_card[OF p this]
     have "class.prime_card TYPE('b)" "m = int CARD('b)" by auto
-    from prime_field_gen.euclid_ext_poly_no_gcd_i_sound[OF prime_field.prime_field_finite_field_ops,
+    from prime_field_gen.euclid_ext_poly_mod_main[OF prime_field.prime_field_finite_field_ops,
       unfolded prime_field_def mod_ring_locale_def,
-      internalize_sort "'a :: prime_card", OF this refl f refl g cop eucl ab]
+      internalize_sort "'a :: prime_card", OF this cop f g res]
     have ?thesis.
   }
   from this[cancel_type_definition, OF ne]
