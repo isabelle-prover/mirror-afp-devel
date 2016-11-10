@@ -24,50 +24,39 @@
 <div align="center">
 <p>&nbsp;</p>
 
-<h1><font class="first">P</font>olynomial
-<font class="first">I</font>nterpolation
+<h1><font class="first">E</font>xpressiveness
+of
+<font class="first">D</font>eep
+<font class="first">L</font>earning
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Polynomial Interpolation</td></tr>
+        <td class="data" width="80%">Expressiveness of Deep Learning</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">René Thiemann (rene /dot/ thiemann /at/ uibk /dot/ ac /dot/ at) and Akihisa Yamada (akihisa /dot/ yamada /at/ uibk /dot/ ac /dot/ at)</td></tr>
+        <td class="data">Alexander Bentkamp (bentkamp /at/ gmail /dot/ com)</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2016-01-29</td></tr>
+        <td class="data">2016-11-10</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
 
-We formalized three algorithms for polynomial interpolation over arbitrary
-fields: Lagrange's explicit expression, the recursive algorithm of Neville
-and Aitken, and the Newton interpolation in combination with an efficient
-implementation of divided differences.  Variants of these algorithms for
-integer polynomials are also available, where sometimes the interpolation
-can fail; e.g., there is no linear integer polynomial <i>p</i> such that
-<i>p(0) = 0</i> and <i>p(2) = 1</i>. Moreover, for the Newton interpolation
-for integer polynomials, we proved that all intermediate results that are
-computed during the algorithm must be integers.  This admits an early
-failure detection in the implementation.  Finally, we proved the uniqueness
-of polynomial interpolation.
-<p>
-The development also contains improved code equations to speed up the
-division of integers in target languages.
+Deep learning has had a profound impact on computer science in recent years, with applications to search engines, image recognition and language processing, bioinformatics, and more. Recently, Cohen et al. provided theoretical evidence for the superiority of deep learning over shallow learning. This formalization of their work simplifies and generalizes the original proof, while working around the limitations of the Isabelle type system. To support the formalization, I developed reusable libraries of formalized mathematics, including results about the matrix rank, the Lebesgue measure, and multivariate polynomials, as well as a library for tensor analysis.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{Polynomial_Interpolation-AFP,
-  author  = {René Thiemann and Akihisa Yamada},
-  title   = {Polynomial Interpolation},
+			<pre>@article{Deep_Learning-AFP,
+  author  = {Alexander Bentkamp},
+  title   = {Expressiveness of Deep Learning},
   journal = {Archive of Formal Proofs},
-  month   = jan,
+  month   = nov,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Polynomial_Interpolation.shtml},
+  note    = {\url{http://isa-afp.org/entries/Deep_Learning.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -78,12 +67,8 @@ division of integers in target languages.
 
 
     <tr><td class="datahead">Depends on:</td>
-        <td class="data"><a href="Sqrt_Babylonian.shtml">Sqrt_Babylonian</a></td></tr>
+        <td class="data"><a href="Jordan_Normal_Form.shtml">Jordan_Normal_Form</a>, <a href="Polynomial_Interpolation.shtml">Polynomial_Interpolation</a>, <a href="VectorSpace.shtml">VectorSpace</a></td></tr>
 
-
-
-    <tr><td class="datahead">Used by:</td>
-        <td class="data"><a href="Algebraic_Numbers.shtml">Algebraic_Numbers</a>, <a href="Deep_Learning.shtml">Deep_Learning</a>, <a href="Jordan_Normal_Form.shtml">Jordan_Normal_Form</a>, <a href="Polynomial_Factorization.shtml">Polynomial_Factorization</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->
@@ -96,7 +81,7 @@ division of integers in target languages.
 
 <p></p>
 
-<!--#set var="name" value="Polynomial_Interpolation" -->
+<!--#set var="name" value="Deep_Learning" -->
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
