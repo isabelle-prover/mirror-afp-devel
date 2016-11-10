@@ -81,6 +81,7 @@ definition finite_field_ops :: "int arith_ops_record" where
       (\<lambda> x . if x = 0 then 0 else 1)
       (\<lambda> x . x)
       (\<lambda> x . x)
+      (\<lambda> x . x)
       (\<lambda> x. 0 \<le> x \<and> x < p)"
 
 end

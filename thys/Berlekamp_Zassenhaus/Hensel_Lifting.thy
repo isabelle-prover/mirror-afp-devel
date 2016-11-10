@@ -524,49 +524,47 @@ proof -
 qed
 end
   
-definition euclid_ext_poly_no_gcd_i :: "int arith_ops_record \<Rightarrow> int list \<Rightarrow> int list \<Rightarrow> int list \<times> int list" where
+definition euclid_ext_poly_no_gcd_i :: "'i arith_ops_record \<Rightarrow> 'i list \<Rightarrow> 'i list \<Rightarrow> 'i list \<times> 'i list" where
   "euclid_ext_poly_no_gcd_i ff_ops f g = (case euclid_ext_poly_i ff_ops f g of 
       (a,b,_) \<Rightarrow> (a, b))" 
 
 definition euclid_ext_poly_mod :: "int \<Rightarrow> int poly \<Rightarrow> int poly \<Rightarrow> int poly \<times> int poly" where
   "euclid_ext_poly_mod p f g = (let ff_ops = finite_field_ops p
-    in case euclid_ext_poly_no_gcd_i ff_ops (coeffs f) (coeffs g) of 
-      (a,b) \<Rightarrow> (poly_of_list a, poly_of_list b))" 
+    in case euclid_ext_poly_no_gcd_i ff_ops (of_int_poly_i ff_ops f) (of_int_poly_i ff_ops g) of 
+      (a,b) \<Rightarrow> (to_int_poly_i ff_ops a, to_int_poly_i ff_ops b))" 
 
-context prime_field
+context prime_field_gen
 begin
 lemma euclid_ext_poly_no_gcd_i[transfer_rule]: 
-  "(ff.poly_rel ===> ff.poly_rel ===> rel_prod ff.poly_rel ff.poly_rel)
+  "(poly_rel ===> poly_rel ===> rel_prod poly_rel poly_rel)
      (euclid_ext_poly_no_gcd_i ff_ops) euclid_ext_poly_no_gcd"
   unfolding euclid_ext_poly_no_gcd_i_def[abs_def] euclid_ext_poly_no_gcd_def[abs_def]
   by transfer_prover
 
 
-lemma euclid_ext_poly_no_gcd_i_sound: assumes f: "f' = coeffs f" "Mp f = f"
-  and g: "g' = coeffs g" "Mp g = g"  
+lemma euclid_ext_poly_no_gcd_i_sound: assumes f: "f' = of_int_poly_i ff_ops f" "Mp f = f"
+  and g: "g' = of_int_poly_i ff_ops g" "Mp g = g"  
   and cop: "coprime_m f g" 
   and res: "euclid_ext_poly_no_gcd_i ff_ops f' g' = (a',b')" 
-  and a: "a = poly_of_list a'"
-  and b: "b = poly_of_list b'"
+  and a: "a = to_int_poly_i ff_ops a'"
+  and b: "b = to_int_poly_i ff_ops b'"
   shows "f * a + g * b =m 1" 
 proof -
-  from f have f': "f' = coeffs (Mp f)" by simp
+  from f have f': "f' = of_int_poly_i ff_ops (Mp f)" by simp
   define f'' where "f'' \<equiv> of_int_poly (Mp f) :: 'a mod_ring poly"
   have f'': "f'' = of_int_poly f" unfolding f''_def f by simp
-  have rel_f[transfer_rule]: "ff.poly_rel f' f''" 
+  have rel_f[transfer_rule]: "poly_rel f' f''" 
     by (rule poly_rel_coeffs_Mp_of_int_poly[OF f'], simp add: f'' f)
-  from g have g': "g' = coeffs (Mp g)" by simp
+  from g have g': "g' = of_int_poly_i ff_ops (Mp g)" by simp
   define g'' where "g'' \<equiv> of_int_poly (Mp g) :: 'a mod_ring poly"
   have g'': "g'' = of_int_poly g" unfolding g''_def g by simp
-  have rel_g[transfer_rule]: "ff.poly_rel g' g''"     
+  have rel_g[transfer_rule]: "poly_rel g' g''"     
     by (rule poly_rel_coeffs_Mp_of_int_poly[OF g'], simp add: g'' g)
-  interpret pff: idom_ops "poly_ops ff_ops" ff.poly_rel 
-    by (rule ff.idom_ops_poly)
   obtain a'' b'' where eucl: "euclid_ext_poly_no_gcd f'' g'' = (a'',b'')" by force
   from euclid_ext_poly_no_gcd_i[unfolded rel_fun_def rel_prod_conv, rule_format, OF rel_f rel_g,
     unfolded res split eucl]
-  have rel[transfer_rule]: "ff.poly_rel a' a''" "ff.poly_rel b' b''" by auto
-  with poly_of_list_to_int_poly have a: "a = to_int_poly a''" 
+  have rel[transfer_rule]: "poly_rel a' a''" "poly_rel b' b''" by auto
+  with to_int_poly_i have a: "a = to_int_poly a''" 
     and b: "b = to_int_poly b''" unfolding a b by auto
   from euclid_ext_poly_no_gcd_mod_int[OF f'' g'' cop eucl a b]
   show ?thesis .
@@ -582,16 +580,19 @@ lemma euclid_ext_poly_mod: assumes cop: "coprime_m f g"
   and res: "euclid_ext_poly_mod m f g = (a,b)" 
   shows "f * a + g * b =m 1" 
 proof -
+  let ?ops = "finite_field_ops m" 
   have ne: "{0..<m} \<noteq> {}" using prime_ge_2_int[OF p] by auto
-  obtain a' b' where eucl: "euclid_ext_poly_no_gcd_i (finite_field_ops m) (coeffs f) (coeffs g) = (a',b')" 
+  obtain a' b' where eucl: "euclid_ext_poly_no_gcd_i (finite_field_ops m) 
+    (of_int_poly_i ?ops f) (of_int_poly_i ?ops g) = (a',b')" 
     by force
   from res[unfolded euclid_ext_poly_mod_def Let_def eucl split]
-  have ab: "a = poly_of_list a'" "b = poly_of_list b'" by auto
+  have ab: "a = to_int_poly_i ?ops a'" "b = to_int_poly_i ?ops b'" by auto
   {
     assume "\<exists>(Rep :: 'b \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< m :: int}"
     from prime_type_prime_card[OF p this]
     have "class.prime_card TYPE('b)" "m = int CARD('b)" by auto
-    from prime_field.euclid_ext_poly_no_gcd_i_sound[unfolded prime_field_def mod_ring_locale_def,
+    from prime_field_gen.euclid_ext_poly_no_gcd_i_sound[OF prime_field.prime_field_finite_field_ops,
+      unfolded prime_field_def mod_ring_locale_def,
       internalize_sort "'a :: prime_card", OF this refl f refl g cop eucl ab]
     have ?thesis.
   }
