@@ -8,6 +8,34 @@ theory Discrete_Time_Markov_Process
   imports Markov_Models_Auxiliary
 begin
 
+lemma measure_eqI_PiM_sequence:
+  fixes M :: "nat \<Rightarrow> 'a measure"
+  assumes *[simp]: "sets P = PiM UNIV M" "sets Q = PiM UNIV M"
+  assumes eq: "\<And>A n. (\<And>i. A i \<in> sets (M i)) \<Longrightarrow>
+    P (prod_emb UNIV M {..n} (Pi\<^sub>E {..n} A)) = Q (prod_emb UNIV M {..n} (Pi\<^sub>E {..n} A))"
+  assumes A: "finite_measure P"
+  shows "P = Q"
+proof (rule measure_eqI_PiM_infinite[OF * _ A])
+  fix J :: "nat set" and F'
+  assume J: "finite J" "\<And>i. i \<in> J \<Longrightarrow> F' i \<in> sets (M i)"
+
+  define n where "n = (if J = {} then 0 else Max J)"
+  define F where "F i = (if i \<in> J then F' i else space (M i))" for i
+  then have F[simp, measurable]: "F i \<in> sets (M i)" for i
+    using J by auto
+  have emb_eq: "prod_emb UNIV M J (Pi\<^sub>E J F') = prod_emb UNIV M {..n} (Pi\<^sub>E {..n} F)"
+  proof cases
+    assume "J = {}" then show ?thesis
+      by (auto simp add: n_def F_def[abs_def] prod_emb_def PiE_def)
+  next
+    assume "J \<noteq> {}" then show ?thesis
+      by (auto simp: prod_emb_def PiE_iff F_def n_def less_Suc_eq_le \<open>finite J\<close> split: if_split_asm)
+  qed
+
+  show "emeasure P (prod_emb UNIV M J (Pi\<^sub>E J F')) = emeasure Q (prod_emb UNIV M J (Pi\<^sub>E J F'))"
+    unfolding emb_eq by (rule eq) fact
+qed
+
 lemma distr_cong_strong:
   "M = K \<Longrightarrow> sets N = sets L \<Longrightarrow> (\<And>x. x \<in> space M =simp=> f x = g x) \<Longrightarrow> distr M N f = distr K L g"
   unfolding simp_implies_def by (rule distr_cong)
@@ -364,6 +392,19 @@ lemma AE_lim_stream:
   shows "(AE \<omega> in lim_stream x. P \<omega>) \<longleftrightarrow> (AE y in K x. AE \<omega> in lim_stream y. P (y ## \<omega>))"
   unfolding lim_stream_eq[OF x]
   by (simp_all add: space_K space_lim_stream space_stream_space AE_return AE_bind[OF measurable_prob_algebraD P] cong: AE_cong_strong)
+
+lemma emeasure_lim_stream:
+  assumes x[measurable, simp]: "x \<in> space M" and A[measurable, simp]: "A \<in> sets (stream_space M)"
+  shows "lim_stream x A = (\<integral>\<^sup>+y. emeasure (lim_stream y) ((op ## y) -` A \<inter> space (stream_space M)) \<partial>K x)"
+  apply (subst lim_stream_eq, simp)
+  apply (subst emeasure_bind[OF _ _ A], simp add: prob_space.not_empty prob_space_K)
+   apply (rule measurable_prob_algebraD)
+   apply measurable
+  apply (intro nn_integral_cong)
+  apply (subst bind_return_distr')
+    apply (auto intro!: prob_space.not_empty prob_space_lim_stream simp: space_K emeasure_distr)
+  apply (simp add: space_lim_stream space_stream_space)
+  done
 
 lemma lim_stream_eq_coinduct[case_names in_space step]:
   fixes R :: "'a \<Rightarrow> 'a stream measure \<Rightarrow> bool"

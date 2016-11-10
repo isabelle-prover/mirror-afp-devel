@@ -6,6 +6,259 @@ theory Continuous_Time_Markov_Chain
   imports Discrete_Time_Markov_Process Discrete_Time_Markov_Chain
 begin
 
+lemma nn_integral_stretch:
+  "f \<in> borel \<rightarrow>\<^sub>M borel \<Longrightarrow> c \<noteq> 0 \<Longrightarrow> (\<integral>\<^sup>+x. f (c * x) \<partial>lborel) = (1 / \<bar>c\<bar>::real) * (\<integral>\<^sup>+x. f x \<partial>lborel)"
+  using nn_integral_real_affine[of f c 0] by (simp add: mult.assoc[symmetric] ennreal_mult[symmetric])
+
+lemma prod_sum_distrib:
+  fixes f g :: "'a \<Rightarrow> 'b \<Rightarrow> 'c::comm_semiring_1"
+  assumes "finite I" shows "(\<And>i. i \<in> I \<Longrightarrow> finite (J i)) \<Longrightarrow> (\<Prod>i\<in>I. \<Sum>j\<in>J i. f i j) = (\<Sum>m\<in>PiE I J. \<Prod>i\<in>I. f i (m i))"
+  using \<open>finite I\<close>
+proof induction
+  case (insert i I) then show ?case
+    by (auto simp: PiE_insert_eq finite_PiE sum.reindex inj_combinator sum.commute[of _ "PiE I J"]
+                   sum_cartesian_product' sum_distrib_left sum_distrib_right
+             intro!: sum.cong prod.cong arg_cong[where f="op * x" for x])
+qed simp
+
+lemma prod_add_distrib:
+  fixes f g :: "'a \<Rightarrow> 'b::comm_semiring_1"
+  assumes "finite I" shows "(\<Prod>i\<in>I. f i + g i) = (\<Sum>J\<in>Pow I. (\<Prod>i\<in>J. f i) * (\<Prod>i\<in>I - J. g i))"
+proof -
+  have "(\<Prod>i\<in>I. f i + g i) = (\<Prod>i\<in>I. \<Sum>b\<in>{True, False}. if b then f i else g i)"
+    by simp
+  also have "\<dots> = (\<Sum>m\<in>I \<rightarrow>\<^sub>E {True, False}. \<Prod>i\<in>I. if m i then f i else g i)"
+    using \<open>finite I\<close> by (rule prod_sum_distrib) simp
+  also have "\<dots> = (\<Sum>J\<in>Pow I. (\<Prod>i\<in>J. f i) * (\<Prod>i\<in>I - J. g i))"
+    by (rule sum.reindex_bij_witness[where i="\<lambda>J. \<lambda>i\<in>I. i\<in>J" and j="\<lambda>m. {i\<in>I. m i}"])
+       (auto simp: fun_eq_iff prod.If_cases \<open>finite I\<close> intro!: arg_cong2[where f="op *"] prod.cong)
+  finally show ?thesis .
+qed
+
+subclass (in linordered_nonzero_semiring) ordered_semiring_0
+  proof qed
+
+lemma (in linordered_nonzero_semiring) prod_nonneg: "(\<forall>a\<in>A. 0 \<le> f a) \<Longrightarrow> 0 \<le> prod f A"
+  by (induct A rule: infinite_finite_induct) simp_all
+
+lemma (in linordered_nonzero_semiring) prod_mono:
+  "\<forall>i\<in>A. 0 \<le> f i \<and> f i \<le> g i \<Longrightarrow> prod f A \<le> prod g A"
+  by (induct A rule: infinite_finite_induct) (auto intro!: prod_nonneg mult_mono)
+
+lemma (in linordered_nonzero_semiring) prod_mono2:
+  assumes "finite J" "I \<subseteq> J" "\<And>i. i \<in> I \<Longrightarrow> 0 \<le> g i \<and> g i \<le> f i" "(\<And>i. i \<in> J - I \<Longrightarrow> 1 \<le> f i)"
+  shows "prod g I \<le> prod f J"
+proof -
+  have "prod g I = (\<Prod>i\<in>J. if i \<in> I then g i else 1)"
+    using \<open>finite J\<close> \<open>I \<subseteq> J\<close> by (simp add: prod.If_cases Int_absorb1)
+  also have "\<dots> \<le> prod f J"
+    using assms by (intro prod_mono) auto
+  finally show ?thesis .
+qed
+
+lemma (in linordered_nonzero_semiring) prod_mono3:
+  assumes "finite J" "I \<subseteq> J" "\<And>i. i \<in> J \<Longrightarrow> 0 \<le> g i" "\<And>i. i \<in> I \<Longrightarrow> g i \<le> f i" "(\<And>i. i \<in> J - I \<Longrightarrow> g i \<le> 1)"
+  shows "prod g J \<le> prod f I"
+proof -
+  have "prod g J \<le> (\<Prod>i\<in>J. if i \<in> I then f i else 1)"
+    using assms by (intro prod_mono) auto
+  also have "\<dots> = prod f I"
+    using \<open>finite J\<close> \<open>I \<subseteq> J\<close> by (simp add: prod.If_cases Int_absorb1)
+  finally show ?thesis .
+qed
+
+lemma (in linordered_nonzero_semiring) one_le_prod: "(\<And>i. i \<in> I \<Longrightarrow> 1 \<le> f i) \<Longrightarrow> 1 \<le> prod f I"
+proof (induction I rule: infinite_finite_induct)
+  case (insert i I) then show ?case
+    using mult_mono[of 1 "f i" 1 "prod f I"]
+    by (auto intro: order_trans[OF zero_le_one])
+qed auto
+
+lemma sum_plus_one_le_prod_plus_one:
+  fixes p :: "'a \<Rightarrow> 'b::linordered_nonzero_semiring"
+  assumes "\<And>i. i \<in> I \<Longrightarrow> 0 \<le> p i"
+  shows "(\<Sum>i\<in>I. p i) + 1 \<le> (\<Prod>i\<in>I. p i + 1)"
+proof cases
+  assume [simp]: "finite I"
+  with assms have [simp]: "J \<subseteq> I \<Longrightarrow> 0 \<le> prod p J" for J
+    by (intro prod_nonneg) auto
+  have "1 + (\<Sum>i\<in>I. p i) = (\<Sum>J\<in>insert {} ((\<lambda>x. {x})`I). (\<Prod>i\<in>J. p i) * (\<Prod>i\<in>I - J. 1))"
+    by (subst sum.insert) (auto simp: sum.reindex)
+  also have "\<dots> \<le> (\<Sum>J\<in>Pow I. (\<Prod>i\<in>J. p i) * (\<Prod>i\<in>I - J. 1))"
+    using assms by (intro sum_mono2) auto
+  finally show ?thesis
+    by (subst prod_add_distrib) (auto simp: add.commute)
+qed simp
+
+lemma summable_iff_convergent_prod:
+  fixes p :: "nat \<Rightarrow> real" assumes p: "\<And>i. 0 \<le> p i"
+  shows "summable p \<longleftrightarrow> convergent (\<lambda>n. \<Prod>i<n. p i + 1)"
+  unfolding summable_iff_convergent
+proof
+  assume "convergent (\<lambda>n. \<Prod>i<n. p i + 1)"
+  then obtain x where x: "(\<lambda>n. \<Prod>i<n. p i + 1) \<longlonglongrightarrow> x"
+    by (auto simp: convergent_def)
+  then have "1 \<le> x"
+    by (rule tendsto_lowerbound) (auto intro!: always_eventually one_le_prod p)
+
+  have "convergent (\<lambda>n. 1 + (\<Sum>i<n. p i))"
+  proof (intro Bseq_mono_convergent BseqI allI)
+    show "0 < x" using \<open>1 \<le> x\<close> by auto
+  next
+    fix n
+    have "norm ((\<Sum>i<n. p i) + 1) \<le> (\<Prod>i<n. p i + 1)"
+      using p by (simp add: sum_nonneg sum_plus_one_le_prod_plus_one p)
+    also have "\<dots> \<le> x"
+      using assms
+      by (intro tendsto_lowerbound[OF x])
+          (auto simp: eventually_sequentially intro!: exI[of _ n] prod_mono2)
+    finally show "norm (1 + sum p {..<n}) \<le> x"
+      by (simp add: add.commute)
+  qed (insert p, auto intro!: sum_mono2)
+  then show "convergent (\<lambda>n. \<Sum>i<n. p i)"
+    unfolding convergent_add_const_iff .
+next
+  assume "convergent (\<lambda>n. \<Sum>i<n. p i)"
+  then obtain x where x: "(\<lambda>n. exp (\<Sum>i<n. p i)) \<longlonglongrightarrow> exp x"
+    by (force simp: convergent_def intro!: tendsto_exp)
+  show "convergent (\<lambda>n. \<Prod>i<n. p i + 1)"
+  proof (intro Bseq_mono_convergent BseqI allI)
+    show "0 < exp x" by simp
+  next
+    fix n
+    have "norm (\<Prod>i<n. p i + 1) \<le> exp (\<Sum>i<n. p i)"
+      using p exp_ge_add_one_self[of "p _"] by (auto simp add: prod_nonneg exp_sum add.commute intro!: prod_mono)
+    also have "\<dots> \<le> exp x"
+      using p
+      by (intro tendsto_lowerbound[OF x]) (auto simp: eventually_sequentially intro!: sum_mono2 )
+    finally show "norm (\<Prod>i<n. p i + 1) \<le> exp x" .
+  qed (insert p, auto intro!: prod_mono2)
+qed
+
+primrec eexp :: "ereal \<Rightarrow> ennreal"
+  where
+    "eexp MInfty = 0"
+  | "eexp (ereal r) = ennreal (exp r)"
+  | "eexp PInfty = top"
+
+lemma
+  shows eexp_minus_infty[simp]: "eexp (-\<infinity>) = 0"
+    and eexp_infty[simp]: "eexp \<infinity> = top"
+  using eexp.simps by simp_all
+
+lemma eexp_0[simp]: "eexp 0 = 1"
+  by (simp add: zero_ereal_def)
+
+lemma eexp_inj[simp]: "eexp x = eexp y \<longleftrightarrow> x = y"
+  by (cases x; cases y; simp)
+
+lemma eexp_mono[simp]: "eexp x \<le> eexp y \<longleftrightarrow> x \<le> y"
+  by (cases x; cases y; simp add: top_unique)
+
+lemma eexp_strict_mono[simp]: "eexp x < eexp y \<longleftrightarrow> x < y"
+  by (simp add: less_le)
+
+lemma exp_eq_0_iff[simp]: "eexp x = 0 \<longleftrightarrow> x = -\<infinity>"
+  using eexp_inj[of x "-\<infinity>"] unfolding eexp_minus_infty .
+
+lemma eexp_surj: "range eexp = UNIV"
+proof -
+  have part: "UNIV = {0} \<union> {0 <..< top} \<union> {top::ennreal}"
+    by (auto simp: less_top)
+  show ?thesis
+    unfolding part
+    by (force simp: image_iff less_top less_top_ennreal intro!: eexp.simps[symmetric] eexp.simps dest: exp_total)
+qed
+
+lemma continuous_on_eexp': "continuous_on UNIV eexp"
+  by (rule continuous_onI_mono) (auto simp: eexp_surj)
+
+lemma continuous_on_eexp[continuous_intros]: "continuous_on A f \<Longrightarrow> continuous_on A (\<lambda>x. eexp (f x))"
+  by (rule continuous_on_compose2[OF continuous_on_eexp']) auto
+
+lemma tendsto_eexp[tendsto_intros]: "(f \<longlongrightarrow> x) F \<Longrightarrow> ((\<lambda>x. eexp (f x)) \<longlongrightarrow> eexp x) F"
+  by (rule continuous_on_tendsto_compose[OF continuous_on_eexp']) auto
+
+lemma measurable_eexp[measurable]: "eexp \<in> borel \<rightarrow>\<^sub>M borel"
+  using continuous_on_eexp' by (rule borel_measurable_continuous_on1)
+
+lemma eexp_add: "\<not> ((x = \<infinity> \<and> y = -\<infinity>) \<or> (x = -\<infinity> \<and> y = \<infinity>)) \<Longrightarrow> eexp (x + y) = eexp x * eexp y"
+  by (cases x; cases y; simp add: exp_add ennreal_mult ennreal_top_mult ennreal_mult_top)
+
+lemma sum_Pinfty:
+  fixes f :: "'a \<Rightarrow> ereal"
+  shows "sum f I = \<infinity> \<longleftrightarrow> (finite I \<and> (\<exists>i\<in>I. f i = \<infinity>))"
+  by (induction I rule: infinite_finite_induct) auto
+
+lemma sum_Minfty:
+  fixes f :: "'a \<Rightarrow> ereal"
+  shows "sum f I = -\<infinity> \<longleftrightarrow> (finite I \<and> \<not> (\<exists>i\<in>I. f i = \<infinity>) \<and> (\<exists>i\<in>I. f i = -\<infinity>))"
+  by (induction I rule: infinite_finite_induct)
+     (auto simp: sum_Pinfty)
+
+lemma eexp_sum: "\<not> (\<exists>i\<in>I. \<exists>j\<in>I. f i = -\<infinity> \<and> f j = \<infinity>) \<Longrightarrow> eexp (\<Sum>i\<in>I. f i) = (\<Prod>i\<in>I. eexp (f i))"
+proof (induction I rule: infinite_finite_induct)
+  case (insert i I)
+  have "eexp (sum f (insert i I)) = eexp (f i) * eexp (sum f I)"
+    using insert.prems insert.hyps by (auto simp: sum_Pinfty sum_Minfty intro!: eexp_add)
+  then show ?case
+    using insert by auto
+qed simp_all
+
+lemma eexp_suminf:
+  assumes wf_f: "\<not> {-\<infinity>, \<infinity>} \<subseteq> range f" and f: "summable f"
+  shows "(\<lambda>n. \<Prod>i<n. eexp (f i)) \<longlonglongrightarrow> eexp (\<Sum>i. f i)"
+proof -
+  have "(\<lambda>n. eexp (\<Sum>i<n. f i)) \<longlonglongrightarrow> eexp (\<Sum>i. f i)"
+    by (intro tendsto_eexp summable_LIMSEQ f)
+  also have "(\<lambda>n. eexp (\<Sum>i<n. f i)) = (\<lambda>n. \<Prod>i<n. eexp (f i))"
+    using wf_f by (auto simp: fun_eq_iff image_iff eq_commute intro!: eexp_sum)
+  finally show ?thesis .
+qed
+
+lemma continuous_onI_antimono:
+  fixes f :: "'a::linorder_topology \<Rightarrow> 'b::{dense_order,linorder_topology}"
+  assumes "open (f`A)"
+    and mono: "\<And>x y. x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> x \<le> y \<Longrightarrow> f y \<le> f x"
+  shows "continuous_on A f"
+proof (rule continuous_on_generate_topology[OF open_generated_order], safe)
+  have monoD: "\<And>x y. x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> f y < f x \<Longrightarrow> x < y"
+    by (auto simp: not_le[symmetric] mono)
+  have "\<exists>x. x \<in> A \<and> f x < b \<and> x < a" if a: "a \<in> A" and fa: "f a < b" for a b
+  proof -
+    obtain y where "f a < y" "{f a ..< y} \<subseteq> f`A"
+      using open_right[OF \<open>open (f`A)\<close>, of "f a" b] a fa
+      by auto
+    obtain z where z: "f a < z" "z < min b y"
+      using dense[of "f a" "min b y"] \<open>f a < y\<close> \<open>f a < b\<close> by auto
+    then obtain c where "z = f c" "c \<in> A"
+      using \<open>{f a ..< y} \<subseteq> f`A\<close>[THEN subsetD, of z] by (auto simp: less_imp_le)
+    with a z show ?thesis
+      by (auto intro!: exI[of _ c] simp: monoD)
+  qed
+  then show "\<exists>C. open C \<and> C \<inter> A = f -` {..<b} \<inter> A" for b
+    by (intro exI[of _ "(\<Union>x\<in>{x\<in>A. f x < b}. {x <..})"])
+       (auto intro: le_less_trans[OF mono] less_imp_le)
+
+  have "\<exists>x. x \<in> A \<and> b < f x \<and> x > a" if a: "a \<in> A" and fa: "b < f a" for a b
+  proof -
+    note a fa
+    moreover
+    obtain y where "y < f a" "{y <.. f a} \<subseteq> f`A"
+      using open_left[OF \<open>open (f`A)\<close>, of "f a" b]  a fa
+      by auto
+    then obtain z where z: "max b y < z" "z < f a"
+      using dense[of "max b y" "f a"] \<open>y < f a\<close> \<open>b < f a\<close> by auto
+    then obtain c where "z = f c" "c \<in> A"
+      using \<open>{y <.. f a} \<subseteq> f`A\<close>[THEN subsetD, of z] by (auto simp: less_imp_le)
+    with a z show ?thesis
+      by (auto intro!: exI[of _ c] simp: monoD)
+  qed
+  then show "\<exists>C. open C \<and> C \<inter> A = f -` {b <..} \<inter> A" for b
+    by (intro exI[of _ "(\<Union>x\<in>{x\<in>A. b < f x}. {..< x})"])
+       (auto intro: less_le_trans[OF _ mono] less_imp_le)
+qed
+
 partial_function (tailrec) trace_at :: "'a \<Rightarrow> (real \<times> 'a) stream \<Rightarrow> real \<Rightarrow> 'a"
 where
   "trace_at s \<omega> j = (case \<omega> of (t', s')##\<omega> \<Rightarrow> if t' \<le> j then trace_at s' \<omega> j else s)"
@@ -83,6 +336,33 @@ qed
 lemma emeasure_exponential_Ioi:
   "0 < l \<Longrightarrow> 0 \<le> x \<Longrightarrow> emeasure (exponential l) {x <..} = exp (- x * l)"
   using emeasure_exponential_Ioi_cutoff[of l x] by simp
+
+lemma exponential_eq_stretch:
+  assumes "0 < l"
+  shows "exponential l = distr (exponential 1) borel (\<lambda>x. (1/l) * x)"
+proof (intro measure_eqI)
+  fix A assume "A \<in> sets (exponential l)"
+  then have [measurable]: "A \<in> sets borel"
+    by (simp add: sets_exponential)
+  then have [measurable]: "(\<lambda>x. x / l) -` A \<in> sets borel"
+    by (rule measurable_sets_borel[rotated]) simp
+  have "emeasure (exponential l) A =
+    (\<integral>\<^sup>+x. ennreal l * (indicator ((op * (1/l) -` A) \<inter> {0 ..}) (l * x) * ennreal (exp (- (l * x)))) \<partial>lborel)"
+    using \<open>0 < l\<close>
+    by (auto simp: ac_simps emeasure_distr exponential_def emeasure_density exponential_density_def
+                   ennreal_mult zero_le_mult_iff
+             intro!: nn_integral_cong split: split_indicator)
+  also have "\<dots> = (\<integral>\<^sup>+x. indicator ((op * (1/l) -` A) \<inter> {0 ..}) x * ennreal (exp (- x)) \<partial>lborel)"
+    using \<open>0<l\<close>
+    apply (subst nn_integral_stretch)
+      apply (auto simp: nn_integral_cmult)
+    apply (simp add: ennreal_mult[symmetric] mult.assoc[symmetric])
+    done
+  also have "\<dots> = emeasure (distr (exponential 1) borel (\<lambda>x. (1/l) * x)) A"
+    by (auto simp add: emeasure_distr exponential_def emeasure_density exponential_density_def
+        intro!: nn_integral_cong split: split_indicator)
+  finally show "emeasure (exponential l) A = emeasure (distr (exponential 1) borel (\<lambda>x. (1/l) * x)) A" .
+qed (simp add: sets_exponential)
 
 lemma uniform_measure_exponential:
   assumes "0 < l" "0 \<le> t"
@@ -173,6 +453,170 @@ next
   finally show ?thesis .
 qed
 
+lemma minus_add_eq_ereal: "\<not> ((a = \<infinity> \<and> b = -\<infinity>) \<or> (a = -\<infinity> \<and> b = \<infinity>)) \<Longrightarrow> - (a + b::ereal) = -a - b"
+  by (cases a; cases b; simp)
+
+lemma setsum_negf_ereal: "\<not> {-\<infinity>, \<infinity>} \<subseteq> f`I \<Longrightarrow> (\<Sum>i\<in>I. - f i) = - (\<Sum>i\<in>I. f i::ereal)"
+  by (induction I rule: infinite_finite_induct)
+     (auto simp: minus_add_eq_ereal sum_Minfty sum_Pinfty,
+      (subst minus_add_eq_ereal; auto simp: sum_Pinfty sum_Minfty image_iff minus_ereal_def)+)
+
+lemma convergent_minus_iff_ereal: "convergent (\<lambda>x. - f x::ereal) \<longleftrightarrow> convergent f"
+  unfolding convergent_def  by (metis ereal_uminus_uminus ereal_Lim_uminus)
+
+lemma summable_minus_ereal: "\<not> {-\<infinity>, \<infinity>} \<subseteq> range f \<Longrightarrow> summable (\<lambda>n. f n) \<Longrightarrow> summable (\<lambda>n. - f n::ereal)"
+  unfolding summable_iff_convergent
+  by (subst setsum_negf_ereal) (auto simp: convergent_minus_iff_ereal)
+
+lemma (in product_prob_space) product_nn_integral_component:
+  assumes "f \<in> borel_measurable (M i)""i \<in> I"
+  shows "integral\<^sup>N (Pi\<^sub>M I M) (\<lambda>x. f (x i)) = integral\<^sup>N (M i) f"
+proof -
+  from assms show ?thesis
+    apply (subst PiM_component[symmetric, OF \<open>i \<in> I\<close>])
+    apply (subst nn_integral_distr[OF measurable_component_singleton])
+    apply simp_all
+    done
+qed
+
+lemma ennreal_inverse_le[simp]: "inverse x \<le> inverse y \<longleftrightarrow> y \<le> (x::ennreal)"
+  by (cases "0 < x"; cases x; cases "0 < y"; cases y; auto simp: top_unique inverse_ennreal)
+
+lemma inverse_inverse_ennreal[simp]: "inverse (inverse x::ennreal) = x"
+  by (cases "0 < x"; cases x; auto simp: inverse_ennreal)
+
+lemma range_inverse_ennreal: "range inverse = (UNIV::ennreal set)"
+proof -
+  have "\<exists>x. y = inverse x" for y :: ennreal
+    by (intro exI[of _ "inverse y"]) simp
+  then show ?thesis
+    unfolding surj_def by auto
+qed
+
+lemma continuous_on_inverse_ennreal': "continuous_on (UNIV :: ennreal set) inverse"
+  by (rule continuous_onI_antimono) (auto simp: range_inverse_ennreal)
+
+lemma sums_minus_ereal: "\<not> {- \<infinity>, \<infinity>} \<subseteq> f ` UNIV \<Longrightarrow> (\<lambda>n. - f n::ereal) sums x \<Longrightarrow> f sums - x"
+  unfolding sums_def
+  apply (subst ereal_Lim_uminus)
+  apply (subst (asm) setsum_negf_ereal)
+  apply auto
+  done
+
+lemma suminf_minus_ereal: "\<not> {- \<infinity>, \<infinity>} \<subseteq> f ` UNIV \<Longrightarrow> summable f \<Longrightarrow> (\<Sum>n. - f n :: ereal) = - suminf f"
+  apply (rule sums_unique[symmetric])
+  apply (rule sums_minus_ereal)
+  apply (auto simp: ereal_uminus_eq_reorder)
+  done
+
+lemma AE_PiM_exponential_suminf_infty:
+  fixes R :: "nat \<Rightarrow> real"
+  assumes R: "\<And>n. 0 < R n" and finite: "(\<Sum>n. ennreal (1 / R n)) = top"
+  shows "AE \<omega> in \<Pi>\<^sub>M n\<in>UNIV. exponential (R n). (\<Sum>n. ereal (\<omega> n)) = \<infinity>"
+proof -
+  let ?P = "\<Pi>\<^sub>M n\<in>UNIV. exponential (R n)"
+  interpret prob_space "exponential (R n)" for n
+    by (intro prob_space_exponential R)
+  interpret product_prob_space "\<lambda>n. exponential (R n)" UNIV
+    proof qed
+
+  have AE_pos: "AE \<omega> in ?P. \<forall>i. 0 < \<omega> i"
+    unfolding AE_all_countable by (intro AE_PiM_component allI prob_space_exponential R AE_exponential) simp
+
+  have indep: "indep_vars (\<lambda>i. borel) (\<lambda>i x. x i) UNIV"
+    using PiM_component
+    apply (subst P.indep_vars_iff_distr_eq_PiM)
+     apply (auto simp: restrict_UNIV distr_id2)
+    apply (subst distr_id2)
+     apply (intro sets_PiM_cong)
+      apply (auto simp: sets_exponential cong: distr_cong)
+    done
+
+  have [simp]: "0 \<le> x + x * R i \<longleftrightarrow> 0 \<le> x" for x i
+    using zero_le_mult_iff[of x "1 + R i"] R[of i] by (simp add: field_simps)
+
+  have "(\<integral>\<^sup>+\<omega>. eexp (\<Sum>n. - ereal (\<omega> n)) \<partial>?P) = (\<integral>\<^sup>+\<omega>. (INF n. \<Prod>i<n. eexp (- ereal (\<omega> i))) \<partial>?P)"
+  proof (intro nn_integral_cong_AE, use AE_pos in eventually_elim)
+    fix \<omega> :: "nat \<Rightarrow> real" assume \<omega>: "\<forall>i. 0 < \<omega> i"
+    show "eexp (\<Sum>n. - ereal (\<omega> n)) = (\<Sqinter>n. \<Prod>i<n. eexp (- ereal (\<omega> i)))"
+    proof (rule LIMSEQ_unique[OF _ LIMSEQ_INF])
+      show "(\<lambda>i. \<Prod>i<i. eexp (- ereal (\<omega> i))) \<longlonglongrightarrow> eexp (\<Sum>n. - ereal (\<omega> n))"
+        using \<omega> by (intro eexp_suminf summable_minus_ereal summable_ereal_pos) (auto intro: less_imp_le)
+      show "decseq (\<lambda>n. \<Prod>i<n. eexp (- ereal (\<omega> i)))"
+        using \<omega> by (auto simp: decseq_def intro!: prod_mono3 intro: less_imp_le)
+    qed
+  qed
+  also have "\<dots> = (INF n. (\<integral>\<^sup>+\<omega>. (\<Prod>i<n. eexp (- ereal (\<omega> i))) \<partial>?P))"
+  proof (intro nn_integral_monotone_convergence_INF_AE')
+    show "AE \<omega> in ?P. (\<Prod>i<Suc n. eexp (- ereal (\<omega> i))) \<le> (\<Prod>i<n. eexp (- ereal (\<omega> i)))" for n
+      using AE_pos by eventually_elim (auto intro!: prod_mono3 intro: less_imp_le)
+  qed (auto simp: less_top[symmetric])
+  also have "\<dots> = (INF n. (\<Prod>i<n. (\<integral>\<^sup>+\<omega>. eexp (- ereal (\<omega> i)) \<partial>?P)))"
+  proof (intro INF_cong refl indep_vars_nn_integral)
+    show "indep_vars (\<lambda>_. borel) (\<lambda>i \<omega>. eexp (- ereal (\<omega> i))) {..<n}" for n
+    proof (rule indep_vars_compose2[of _ _ _ "\<lambda>i x. eexp(- ereal x)"])
+      show "indep_vars (\<lambda>i. borel) (\<lambda>i x. x i) {..<n}"
+        by (rule indep_vars_subset[OF indep]) auto
+    qed auto
+  qed auto
+  also have "\<dots> = (INF n. (\<Prod>i<n. R i * (\<integral>\<^sup>+x. indicator {0 ..} ((1 + R i) * x) * ennreal (exp (- ((1 + R i) * x))) \<partial>lborel)))"
+    by (subst product_nn_integral_component)
+       (auto simp: field_simps exponential_def nn_integral_density ennreal_mult'[symmetric] ennreal_mult''[symmetric]
+                   exponential_density_def exp_diff exp_minus nn_integral_cmult[symmetric]
+             intro!: INF_cong prod.cong nn_integral_cong split: split_indicator)
+  also have "\<dots> = (INF n. (\<Prod>i<n. ennreal (R i / (1 + R i))))"
+  proof (intro INF_cong prod.cong refl)
+    show "R i * (\<integral>\<^sup>+ x. indicator {0..} ((1 + R i) * x) * ennreal (exp (- ((1 + R i) * x))) \<partial>lborel) =
+      ennreal (R i / (1 + R i))" for i
+      using nn_intergal_power_times_exp_Ici[of 0] `0 < R i`
+      by (subst nn_integral_stretch[where c="1 + R i"])
+         (auto simp: mult.assoc[symmetric] ennreal_mult''[symmetric] less_imp_le mult.commute)
+  qed
+  also have "\<dots> = (INF n. ennreal (\<Prod>i<n. R i / (1 + R i)))"
+    using R by (intro INF_cong refl prod_ennreal divide_nonneg_nonneg) (auto simp: less_imp_le)
+  also have "\<dots> = (INF n. ennreal (inverse (\<Prod>i<n. (1 + R i) / R i)))"
+    by (subst prod_inversef[symmetric]) simp_all
+  also have "\<dots> = (INF n. inverse (ennreal (\<Prod>i<n. (1 + R i) / R i)))"
+    using R by (subst inverse_ennreal) (auto intro!: prod_pos divide_pos_pos simp: add_pos_pos)
+  also have "\<dots> = inverse (SUP n. ennreal (\<Prod>i<n. (1 + R i) / R i))"
+    by (subst continuous_at_Sup_antimono[where f=inverse])
+       (auto simp: antimono_def intro!: continuous_on_imp_continuous_within[OF continuous_on_inverse_ennreal'])
+  also have "(SUP n. ennreal (\<Prod>i<n. (1 + R i) / R i)) = top"
+  proof (cases "SUP n. ennreal (\<Prod>i<n. (1 + R i) / R i)")
+    case (real r)
+    have "(\<lambda>n. ennreal (\<Prod>i<n. (1 + R i) / R i)) \<longlonglongrightarrow> r"
+      using R unfolding real(2)[symmetric]
+      by (intro LIMSEQ_SUP monoI ennreal_leI prod_mono2) (auto intro!: divide_nonneg_nonneg add_nonneg_nonneg intro: less_imp_le)
+    then have "(\<lambda>n. (\<Prod>i<n. (1 + R i) / R i)) \<longlonglongrightarrow> r"
+      by (rule tendsto_ennrealD)
+         (use R real in \<open>auto intro!: always_eventually prod_nonneg divide_nonneg_nonneg add_nonneg_nonneg intro: less_imp_le\<close>)
+    moreover have "(1 + R i) / R i = 1 / R i + 1" for i
+      using \<open>0 < R i\<close> by (auto simp: field_simps)
+    ultimately have "convergent (\<lambda>n. \<Prod>i<n. 1 / R i + 1)"
+      by (auto simp: convergent_def)
+    then have "summable (\<lambda>i. 1 / R i)"
+      using R by (subst summable_iff_convergent_prod) (auto intro: less_imp_le)
+    moreover have "0 \<le> 1 / R i" for i
+      using R by (auto simp: less_imp_le)
+    ultimately show ?thesis
+      using finite ennreal_suminf_neq_top[of "\<lambda>i. 1 / R i"] by blast
+  qed
+  finally have "(\<integral>\<^sup>+\<omega>. eexp (\<Sum>n. - ereal (\<omega> n)) \<partial>?P) = 0"
+    by simp
+  then have "AE \<omega> in ?P. eexp (\<Sum>n. - ereal (\<omega> n)) = 0"
+    by (subst (asm) nn_integral_0_iff_AE) auto
+  then show ?thesis
+    using AE_pos
+  proof eventually_elim
+    show "(\<forall>i. 0 < \<omega> i) \<Longrightarrow> eexp (\<Sum>n. - ereal (\<omega> n)) = 0 \<Longrightarrow> (\<Sum>n. ereal (\<omega> n)) = \<infinity>" for \<omega>
+      apply (auto simp del: uminus_ereal.simps simp add: uminus_ereal.simps[symmetric]
+                  intro!: summable_iff_suminf_neq_top intro: less_imp_le)
+      apply (subst (asm) suminf_minus_ereal)
+      apply (auto intro!: summable_ereal_pos intro: less_imp_le)
+      done
+  qed
+qed
+
 section \<open>Transition Rates\<close>
 
 locale transition_rates =
@@ -221,6 +665,9 @@ lemma nonneg_escape_rate[simp]: "0 \<le> escape_rate x"
 
 lemma prob_space_exponential_escape_rate: "prob_space (exponential (escape_rate x))"
   using escape_rate_pos by (rule prob_space_exponential)
+
+lemma measurable_escape_rate[measurable]: "escape_rate \<in> count_space UNIV \<rightarrow>\<^sub>M borel"
+  by auto
 
 lemma measurable_exponential_escape_rate[measurable]: "(\<lambda>x. exponential (escape_rate x)) \<in> count_space UNIV \<rightarrow>\<^sub>M prob_algebra borel"
   by (auto simp: space_prob_algebra sets_exponential prob_space_exponential_escape_rate)
@@ -740,8 +1187,148 @@ qed simp
 lemma lim_0: "K.lim_stream (t, s) = distr (K.lim_stream (0, s)) T (smap (\<lambda>(t', s). (t' + t, s)))"
   using lim_shift[of 0 t s] by simp
 
+subsection \<open>Explosion time\<close>
+
 definition explosion :: "(real \<times> 'a) stream \<Rightarrow> ereal"
-where "explosion = lfp (\<lambda>F. \<lambda>((t, s)##\<omega>) \<Rightarrow> F \<omega> \<squnion> t)"
+  where "explosion \<omega> = (SUP i. ereal (fst (\<omega> !! i)))"
+
+lemma ball_less_Suc_eq: "(\<forall>i<Suc n. P i) \<longleftrightarrow> (P 0 \<and> (\<forall>i<n. P (Suc i)))"
+  using less_Suc_eq_0_disj by auto
+
+lemma lim_stream_timediff_eq_exponential_1:
+  "distr (K.lim_stream ts) (PiM UNIV (\<lambda>_. borel))
+    (\<lambda>\<omega> i. escape_rate (snd ((ts##\<omega>) !! i)) * (fst (\<omega> !! i) - fst ((ts##\<omega>) !! i))) =
+    PiM UNIV (\<lambda>_. exponential 1)"
+  (is "?D = ?P")
+proof (rule measure_eqI_PiM_sequence)
+  show "sets ?D = sets (PiM UNIV (\<lambda>_. borel))" "sets ?P = sets (PiM UNIV (\<lambda>_. borel))"
+    by (auto intro!: sets_PiM_cong simp: sets_exponential)
+  have [measurable]: "ts \<in> space S"
+    by auto
+  { interpret prob_space ?D
+      by (intro prob_space.prob_space_distr K.prob_space_lim_stream measurable_abs_UNIV) auto
+    show "finite_measure ?D"
+      by unfold_locales }
+
+  interpret E: prob_space "exponential 1"
+    by (rule prob_space_exponential) simp
+  interpret P: product_prob_space "\<lambda>_. exponential 1" UNIV
+    by unfold_locales
+
+  let "distr _ _ (?f ts)" = ?D
+
+  fix A :: "nat \<Rightarrow> real set" and n :: nat assume A[measurable]: "\<And>i. A i \<in> sets borel"
+  define n' where "n' = Suc n"
+  have "emeasure ?D (prod_emb UNIV (\<lambda>_. borel) {..n} (Pi\<^sub>E {..n} A)) =
+    emeasure (K.lim_stream ts) {\<omega>\<in>space (stream_space S). \<forall>i<n'. ?f ts \<omega> i \<in> A i}"
+    apply (subst emeasure_distr)
+      apply (auto intro!: measurable_abs_UNIV arg_cong[where f="emeasure _"])
+      apply (auto simp: prod_emb_def K.space_lim_stream space_pair_measure n'_def)
+    done
+  also have "\<dots> = (\<Prod>i<n'. emeasure (exponential 1) (A i))"
+    using A
+  proof (induction n' arbitrary: A ts)
+    case 0 then show ?case
+      using prob_space.emeasure_space_1[OF prob_space_K_lim]
+      by (simp add: K.space_lim_stream space_pair_measure)
+  next
+    case (Suc n A ts)
+    from Suc.prems[measurable]
+    have [measurable]: "ts \<in> space S"
+      by auto
+
+    have "emeasure (K.lim_stream ts) {\<omega> \<in> space (stream_space S). \<forall>i<Suc n. ?f ts \<omega> i \<in> A i} =
+      (\<integral>\<^sup>+ts'. indicator (A 0) (escape_rate (snd ts) * (fst ts' - fst ts)) *
+        emeasure (K.lim_stream ts') {\<omega> \<in> space (stream_space S). \<forall>i<n. ?f ts' \<omega> i \<in> A (Suc i)} \<partial>K ts)"
+      apply (subst K.emeasure_lim_stream)
+      apply simp
+       apply measurable
+      apply (auto intro!: nn_integral_cong arg_cong2[where f=emeasure] split: split_indicator
+        simp: ball_less_Suc_eq)
+      done
+    also have "\<dots> = (\<integral>\<^sup>+ts'. indicator (A 0) (escape_rate (snd ts) * (fst ts' - fst ts)) \<partial>K ts) *
+      (\<Prod>i<n. emeasure (exponential 1) (A (Suc i)))"
+      by (subst Suc.IH) (simp_all add: nn_integral_multc)
+    also have "(\<integral>\<^sup>+ts'. indicator (A 0) (escape_rate (snd ts) * (fst ts' - fst ts)) \<partial>K ts) =
+      (\<integral>\<^sup>+t. indicator (A 0) (escape_rate (snd ts) * t) \<partial>exponential (escape_rate (snd ts)))"
+      by (simp add: K_def exp_esc.nn_integral_snd[symmetric] nn_integral_distr split: prod.split)
+    also have "\<dots> = emeasure (exponential 1) (A 0)"
+      using escape_rate_pos[of "snd ts"]
+      by (subst exponential_eq_stretch) (simp_all add: nn_integral_distr)
+    also have "emeasure (exponential 1) (A 0) * (\<Prod>i<n. emeasure (exponential 1) (A (Suc i))) =
+      (\<Prod>i<Suc n. emeasure (exponential 1) (A i))"
+      by (rule prod_lessThan_Suc_shift[symmetric])
+    finally show ?case .
+  qed
+  also have "\<dots> = emeasure ?P (prod_emb UNIV (\<lambda>_. borel) {..<n'} (Pi\<^sub>E {..<n'} A))"
+    using P.emeasure_PiM_emb[of "{..<n'}" A] by (simp add: prod_emb_def space_exponential)
+  finally show "emeasure ?D (prod_emb UNIV (\<lambda>_. borel) {..n} (Pi\<^sub>E {..n} A)) =
+    emeasure ?P (prod_emb UNIV (\<lambda>_. borel) {..n} (Pi\<^sub>E {..n} A))"
+    by (simp add: n'_def lessThan_Suc_atMost)
+qed
+
+lemma AE_explosion_infty:
+  assumes bdd: "bdd_above (range escape_rate)"
+  shows "AE \<omega> in K.lim_stream x. explosion \<omega> = \<infinity>"
+proof -
+  have "escape_rate undefined \<le> (SUP x. escape_rate x)"
+    using bdd by (intro cSUP_upper) auto
+  then have SUP_escape_pos: "0 < (SUP x. escape_rate x)"
+    using escape_rate_pos[of undefined] by simp
+  then have SUP_escape_nonneg: "0 \<le> (SUP x. escape_rate x)"
+    by (rule less_imp_le)
+
+  have [measurable]: "x \<in> space S" by auto
+  have "(\<Sum>i. 1::ennreal) = top"
+    by (rule sums_unique[symmetric]) (auto simp: sums_def of_nat_tendsto_top_ennreal)
+  then have "AE \<omega> in (PiM UNIV (\<lambda>_. exponential 1)). (\<Sum>i. ereal (\<omega> i)) = \<infinity>"
+    by (intro AE_PiM_exponential_suminf_infty) auto
+  then have "AE \<omega> in K.lim_stream x.
+    (\<Sum>i. ereal (escape_rate (snd ((x##\<omega>) !! i)) * (fst (\<omega> !! i) - fst ((x##\<omega>) !! i)))) = \<infinity>"
+    apply (subst (asm) lim_stream_timediff_eq_exponential_1[symmetric, of x])
+    apply (subst (asm) AE_distr_iff)
+    apply (auto intro!: measurable_abs_UNIV)
+    done
+  then show ?thesis
+    using AE_lim_stream
+  proof eventually_elim
+    case (elim \<omega>)
+    then have le: "fst ((x##\<omega>) !! n) \<le> fst ((x ## \<omega>) !! m)" if "n \<le> m" for n m
+      by (intro lift_Suc_mono_le[OF _ \<open>n \<le> m\<close>, of "\<lambda>i. fst ((x ## \<omega>) !! i)"]) (auto intro: less_imp_le)
+    have [simp]: "fst x \<le> fst ((x##\<omega>) !! i)" "fst ((x##\<omega>) !! i) \<le> fst (\<omega> !! i)" for i
+      using le[of "i" "Suc i"] le[of 0 i] by auto
+
+    have "(\<Sum>i. ereal (escape_rate (snd ((x ## \<omega>) !! i)) * (fst (\<omega> !! i) - fst ((x ## \<omega>) !! i)))) =
+      (SUP n. \<Sum>i<n. ereal (escape_rate (snd ((x ## \<omega>) !! i)) * (fst (\<omega> !! i) - fst ((x ## \<omega>) !! i))))"
+      by (intro suminf_ereal_eq_SUP) (auto intro!: mult_nonneg_nonneg)
+    also have "\<dots> \<le> (SUP n. (SUP x. escape_rate x) * (ereal (fst ((x ## \<omega>) !! n)) - ereal (fst x)))"
+    proof (intro SUP_least SUP_upper2)
+      fix n
+      have "(\<Sum>i<n. ereal (escape_rate (snd ((x ## \<omega>) !! i)) * (fst (\<omega> !! i) - fst ((x ## \<omega>) !! i)))) \<le>
+        (\<Sum>i<n. ereal ((SUP i. escape_rate i) * (fst (\<omega> !! i) - fst ((x ## \<omega>) !! i))))"
+        using elim bdd by (intro sum_mono) (auto intro!: cSUP_upper)
+      also have "\<dots> = (SUP i. escape_rate i) * (\<Sum>i<n. fst ((x ## \<omega>) !! Suc i) - fst ((x ## \<omega>) !! i))"
+        using elim bdd by (subst sum_ereal) (auto simp: sum_distrib_left)
+      also have "\<dots> = (SUP i. escape_rate i) * (fst ((x ## \<omega>) !! n) - fst x)"
+        by (subst sum_lessThan_telescope) simp
+      finally show "(\<Sum>i<n. ereal (escape_rate (snd ((x ## \<omega>) !! i)) * (fst (\<omega> !! i) - fst ((x ## \<omega>) !! i))))
+         \<le> (SUP x. escape_rate x) * (ereal (fst ((x ## \<omega>) !! n)) - ereal (fst x))"
+        by simp
+    qed simp
+    also have "\<dots> = (SUP x. escape_rate x) * ((SUP n. ereal (fst ((x ## \<omega>) !! n))) - ereal (fst x))"
+      using elim SUP_escape_nonneg by (subst SUP_ereal_mult_left) (auto simp: SUP_ereal_minus_left[symmetric])
+    also have "(SUP n. ereal (fst ((x ## \<omega>) !! n))) = explosion \<omega>"
+      unfolding explosion_def
+      apply (intro SUP_eq)
+      subgoal for i by (intro bexI[of _ i]) auto
+      subgoal for i by (intro bexI[of _ "Suc i"]) auto
+      done
+    finally show "explosion \<omega> = \<infinity>"
+      using elim SUP_escape_pos by (cases "explosion \<omega>") (auto split: if_splits)
+  qed
+qed
+
+subsection \<open>Transition probability $p_t$\<close>
 
 context
 begin
