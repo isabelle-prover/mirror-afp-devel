@@ -45,7 +45,7 @@ definition plus_p :: "int \<Rightarrow> int \<Rightarrow> int" where
   "plus_p x y \<equiv> let z = x + y in if z \<ge> p then z - p else z"
 
 definition minus_p :: "int \<Rightarrow> int \<Rightarrow> int" where
-  "minus_p x y \<equiv> let z = x - y in if z < 0 then z + p else z"
+  "minus_p x y \<equiv> if y \<le> x then x - y else x + p - y"
 
 definition uminus_p :: "int \<Rightarrow> int" where
   "uminus_p x = (if x = 0 then 0 else p - x)"
@@ -109,8 +109,24 @@ lemma int_of_uint32_shift: "int_of_uint32 (n >> k) = (int_of_uint32 n) div (2 ^ 
 lemma int_of_uint32_0_iff: "int_of_uint32 n = 0 \<longleftrightarrow> n = 0" 
   by (transfer, rule uint_0_iff)
   
+lemma int_of_uint32_0: "int_of_uint32 0 = 0" unfolding int_of_uint32_0_iff by simp
+
 lemma int_of_uint32_ge_0: "int_of_uint32 n \<ge> 0" 
   by (transfer, auto)
+
+lemma two_32: "2 ^ LENGTH(32) = (4294967296 :: int)" by simp
+
+lemma int_of_uint32_plus: "int_of_uint32 (x + y) = (int_of_uint32 x + int_of_uint32 y) mod 4294967296" 
+  by (transfer, unfold uint_word_ariths two_32, rule refl)  
+
+lemma int_of_uint32_minus: "int_of_uint32 (x - y) = (int_of_uint32 x - int_of_uint32 y) mod 4294967296" 
+  by (transfer, unfold uint_word_ariths two_32, rule refl)  
+
+lemma int_of_uint32_mult: "int_of_uint32 (x * y) = (int_of_uint32 x * int_of_uint32 y) mod 4294967296" 
+  by (transfer, unfold uint_word_ariths two_32, rule refl)  
+
+lemma int_of_uint32_mod: "int_of_uint32 (x mod y) = (int_of_uint32 x mod int_of_uint32 y)" 
+  by (transfer, unfold uint_mod two_32, rule refl)  
 
 function power_p32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" where
   "power_p32 x n = (if n = 0 then 1 else
@@ -414,17 +430,6 @@ lemma finite_field_ops: "field_ops (finite_field_ops p) mod_ring_rel"
   mod_ring_1
   Domainp_mod_ring_rel)
 
-(* ********************************************************** *)
-
-lemma assumes rel: "mod_ring_rel x1 x2" "mod_ring_rel y1 y2"
-  and x1: "x1 \<noteq> 0"
-  shows "mult_p p (inverse_p p x1) y1 = divide_p p y1 x1"
-proof -
-  note [transfer_rule] = rel
-  from x1 have "x2 \<noteq> 0" by transfer
-  hence "inverse x2 * y2 = y2 / x2" by (simp add: field_simps)
-  from this[untransferred] show ?thesis unfolding p .
-qed
 end
 
 text \<open>Once we have proven the soundness of the implementation, we do not care any longer
@@ -432,4 +437,168 @@ text \<open>Once we have proven the soundness of the implementation, we do not c
   will hide the internal definition in further applications of transfer.\<close>
 lifting_forget mod_ring.lifting
 
+context prime_field
+begin
+
+context fixes pp :: "uint32" 
+  assumes ppp: "p = int_of_uint32 pp" 
+  and small: "p \<le> 65535" 
+begin
+
+lemmas uint_simps = 
+  int_of_uint32_0
+  int_of_uint32_plus 
+  int_of_uint32_minus
+  int_of_uint32_mult
+  
+
+definition urel :: "uint32 \<Rightarrow> int \<Rightarrow> bool" where "urel x y = (y = int_of_uint32 x \<and> y < p)" 
+
+definition mod_ring_rel32 :: "uint32 \<Rightarrow> 'a mod_ring \<Rightarrow> bool" where
+  "mod_ring_rel32 x y = (\<exists> z. urel x z \<and> mod_ring_rel z y)" 
+
+lemma mod_ring_rel32_constant: "mod_ring_rel g h
+  \<Longrightarrow> urel f g
+  \<Longrightarrow> mod_ring_rel32 f h" 
+  unfolding mod_ring_rel32_def rel_fun_def by blast
+
+lemma mod_ring_rel32_unary: "(mod_ring_rel ===> mod_ring_rel) g h
+  \<Longrightarrow> (\<And> x x'. urel x x' \<Longrightarrow> urel (f x) (g x'))
+  \<Longrightarrow> (mod_ring_rel32 ===> mod_ring_rel32) f h" 
+  unfolding mod_ring_rel32_def rel_fun_def by blast
+  
+lemma mod_ring_rel32_binary: "(mod_ring_rel ===> mod_ring_rel ===> mod_ring_rel) g h
+  \<Longrightarrow> (\<And> x x' y y'. urel x x' \<Longrightarrow> urel y y' \<Longrightarrow> urel (f x y) (g x' y'))
+  \<Longrightarrow> (mod_ring_rel32 ===> mod_ring_rel32 ===> mod_ring_rel32) f h" 
+  unfolding mod_ring_rel32_def rel_fun_def by blast
+
+lemma urel_0: "urel 0 0" unfolding urel_def using p2 by (simp, transfer, simp)
+
+lemma urel_1: "urel 1 1" unfolding urel_def using p2 by (simp, transfer, simp)
+
+lemma le_int_of_uint32: "(x \<le> y) = (int_of_uint32 x \<le> int_of_uint32 y)" 
+  by (transfer, simp add: word_le_def)
+
+lemma urel_plus: assumes "urel x y" "urel x' y'"
+  shows "urel (plus_p32 pp x x') (plus_p p y y')"
+proof -    
+  let ?x = "int_of_uint32 x" 
+  let ?x' = "int_of_uint32 x'" 
+  let ?p = "int_of_uint32 pp" 
+  from assms int_of_uint32_ge_0 have id: "y = ?x" "y' = ?x'" 
+    and rel: "0 \<le> ?x" "?x < p" 
+      "0 \<le> ?x'" "?x' \<le> p" unfolding urel_def by auto
+  have le: "(pp \<le> x + x') = (?p \<le> ?x + ?x')" unfolding le_int_of_uint32
+    using rel small by (auto simp: uint_simps)
+  show ?thesis
+  proof (cases "?p \<le> ?x + ?x'")
+    case True
+    hence True: "(?p \<le> ?x + ?x') = True" by simp
+    show ?thesis unfolding id 
+      using small rel unfolding plus_p32_def plus_p_def Let_def urel_def 
+      unfolding ppp le True if_True
+      using True by (auto simp: uint_simps)
+  next
+    case False
+    hence False: "(?p \<le> ?x + ?x') = False" by simp
+    show ?thesis unfolding id 
+      using small rel unfolding plus_p32_def plus_p_def Let_def urel_def 
+      unfolding ppp le False if_False
+      using False by (auto simp: uint_simps)
+  qed
+qed
+  
+lemma urel_minus: assumes "urel x y" "urel x' y'"
+  shows "urel (minus_p32 pp x x') (minus_p p y y')"
+proof -    
+  let ?x = "int_of_uint32 x" 
+  let ?x' = "int_of_uint32 x'" 
+  from assms int_of_uint32_ge_0 have id: "y = ?x" "y' = ?x'" 
+    and rel: "0 \<le> ?x" "?x < p" 
+      "0 \<le> ?x'" "?x' \<le> p" unfolding urel_def by auto
+  have le: "(x' \<le> x) = (?x' \<le> ?x)" unfolding le_int_of_uint32
+    using rel small by (auto simp: uint_simps)
+  show ?thesis
+  proof (cases "?x' \<le> ?x")
+    case True
+    hence True: "(?x' \<le> ?x) = True" by simp
+    show ?thesis unfolding id 
+      using small rel unfolding minus_p32_def minus_p_def Let_def urel_def 
+      unfolding ppp le True if_True
+      using True by (auto simp: uint_simps)
+  next
+    case False
+    hence False: "(?x' \<le> ?x) = False" by simp
+    show ?thesis unfolding id 
+      using small rel unfolding minus_p32_def minus_p_def Let_def urel_def 
+      unfolding ppp le False if_False
+      using False by (auto simp: uint_simps)
+  qed
+qed
+
+lemma urel_uminus: assumes "urel x y"
+  shows "urel (uminus_p32 pp x) (uminus_p p y)"
+proof -    
+  let ?x = "int_of_uint32 x"  
+  from assms int_of_uint32_ge_0 have id: "y = ?x" 
+    and rel: "0 \<le> ?x" "?x < p" 
+      unfolding urel_def by auto
+  have le: "(x = 0) = (?x = 0)" unfolding int_of_uint32_0_iff
+    using rel small by (auto simp: uint_simps)
+  show ?thesis
+  proof (cases "?x = 0")
+    case True
+    hence True: "(?x = 0) = True" by simp
+    show ?thesis unfolding id 
+      using small rel unfolding uminus_p32_def uminus_p_def Let_def urel_def 
+      unfolding ppp le True if_True
+      using True by (auto simp: uint_simps)
+  next
+    case False
+    hence False: "(?x = 0) = False" by simp
+    show ?thesis unfolding id 
+      using small rel unfolding uminus_p32_def uminus_p_def Let_def urel_def 
+      unfolding ppp le False if_False
+      using False by (auto simp: uint_simps)
+  qed
+qed
+
+lemma urel_mult: assumes "urel x y" "urel x' y'"
+  shows "urel (mult_p32 pp x x') (mult_p p y y')"
+proof -    
+  let ?x = "int_of_uint32 x" 
+  let ?x' = "int_of_uint32 x'" 
+  from assms int_of_uint32_ge_0 have id: "y = ?x" "y' = ?x'" 
+    and rel: "0 \<le> ?x" "?x < p" 
+      "0 \<le> ?x'" "?x' < p" unfolding urel_def by auto
+  from rel have "?x * ?x' < p * p" by (metis mult_strict_mono') 
+  also have "\<dots> \<le> 65536 * 65536"
+    by (rule mult_mono, insert p2 small, auto)
+  finally have le: "?x * ?x' < 4294967296" by simp
+  show ?thesis unfolding id
+      using small rel unfolding mult_p32_def mult_p_def Let_def urel_def 
+      unfolding ppp 
+    by (auto simp: uint_simps, unfold int_of_uint32_mod int_of_uint32_mult, 
+        subst mod_pos_pos_trivial[of _ 4294967296], insert le, auto)
+qed
+
+lemma mod_ring_0_32: "mod_ring_rel32 0 0"
+  by (rule mod_ring_rel32_constant[OF mod_ring_0 urel_0])
+
+lemma mod_ring_1_32: "mod_ring_rel32 1 1"
+  by (rule mod_ring_rel32_constant[OF mod_ring_1 urel_1])
+
+lemma mod_ring_uminus32: "(mod_ring_rel32 ===> mod_ring_rel32) (uminus_p32 pp) uminus"
+  by (rule mod_ring_rel32_unary[OF mod_ring_uminus urel_uminus])
+
+lemma mod_ring_plus32: "(mod_ring_rel32 ===> mod_ring_rel32 ===> mod_ring_rel32) (plus_p32 pp) (op +)"
+  by (rule mod_ring_rel32_binary[OF mod_ring_plus urel_plus])
+
+lemma mod_ring_minus32: "(mod_ring_rel32 ===> mod_ring_rel32 ===> mod_ring_rel32) (minus_p32 pp) (op -)"
+  by (rule mod_ring_rel32_binary[OF mod_ring_minus urel_minus])
+
+lemma mod_ring_mult32: "(mod_ring_rel32 ===> mod_ring_rel32 ===> mod_ring_rel32) (mult_p32 pp) (op *)"
+  by (rule mod_ring_rel32_binary[OF mod_ring_mult urel_mult])
+end
+end
 end
