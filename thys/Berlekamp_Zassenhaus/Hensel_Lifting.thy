@@ -533,7 +533,10 @@ definition euclid_ext_poly_mod_main :: "int \<Rightarrow> 'a arith_ops_record \<
       (a,b) \<Rightarrow> (to_int_poly_i ff_ops a, to_int_poly_i ff_ops b))" 
 
 definition euclid_ext_poly_mod :: "int \<Rightarrow> int poly \<Rightarrow> int poly \<Rightarrow> int poly \<times> int poly" where
-  "euclid_ext_poly_mod p = euclid_ext_poly_mod_main p (finite_field_ops p)" 
+  "euclid_ext_poly_mod p = ((* not enabled since code-export does not work 
+    if p \<le> 65535 
+    then euclid_ext_poly_mod_main p (finite_field_ops32 (uint32_of_int p))
+    else *) euclid_ext_poly_mod_main p (finite_field_ops p))" 
   
 context prime_field_gen
 begin
@@ -588,15 +591,13 @@ end
 context poly_mod
 begin
 
-lemma euclid_ext_poly_mod: assumes cop: "coprime_m f g" 
+lemma euclid_ext_poly_mod_int: assumes cop: "coprime_m f g" 
   and f: "Mp f = f" and g: "Mp g = g" 
   and p: "prime m" 
-  and res: "euclid_ext_poly_mod m f g = (a,b)" 
+  and res: "euclid_ext_poly_mod_main m (finite_field_ops m) f g = (a,b)" 
   shows "f * a + g * b =m 1" 
 proof -
-  let ?ops = "finite_field_ops m" 
   have ne: "{0..<m} \<noteq> {}" using prime_ge_2_int[OF p] by auto
-  note res = res[unfolded euclid_ext_poly_mod_def]
   {
     assume "\<exists>(Rep :: 'b \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< m :: int}"
     from prime_type_prime_card[OF p this]
@@ -609,6 +610,35 @@ proof -
   from this[cancel_type_definition, OF ne]
   show ?thesis .
 qed
+
+lemma euclid_ext_poly_mod_uint32: assumes cop: "coprime_m f g" 
+  and f: "Mp f = f" and g: "Mp g = g" 
+  and p: "prime m" and small: "m \<le> 65535" 
+  and res: "euclid_ext_poly_mod_main m (finite_field_ops32 (uint32_of_int m)) f g = (a,b)" 
+  shows "f * a + g * b =m 1" 
+proof -
+  have ne: "{0..<m} \<noteq> {}" using prime_ge_2_int[OF p] by auto
+  {
+    assume "\<exists>(Rep :: 'b \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< m :: int}"
+    from prime_type_prime_card[OF p this]
+    have "class.prime_card TYPE('b)" "m = int CARD('b)" by auto
+    from prime_field_gen.euclid_ext_poly_mod_main[OF prime_field.prime_field_finite_field_ops32,
+      unfolded prime_field_def mod_ring_locale_def, 
+      internalize_sort "'a :: prime_card", OF this small cop f g res]
+    have ?thesis .
+  }
+  from this[cancel_type_definition, OF ne]
+  show ?thesis .
+qed
+
+lemma euclid_ext_poly_mod: assumes cop: "coprime_m f g" 
+  and f: "Mp f = f" and g: "Mp g = g" 
+  and p: "prime m" 
+  and res: "euclid_ext_poly_mod m f g = (a,b)" 
+shows "f * a + g * b =m 1" 
+  using euclid_ext_poly_mod_int[OF cop f g p, of a b]
+    euclid_ext_poly_mod_uint32[OF cop f g p, of a b]
+    res[unfolded euclid_ext_poly_mod_def] by (auto split: if_splits)
 end
 
 
