@@ -177,6 +177,9 @@ definition finite_field_ops32 :: "uint32 arith_ops_record" where
       (\<lambda> x. 0 \<le> x \<and> x < p)"
 end 
 
+lemma shiftr_uint32_code [code_unfold]: "shiftr x 1 = (uint32_shiftr x 1)"
+  unfolding shiftr_uint32_code using integer_of_nat_1 by auto
+
 (* ******************************************************************************** *)
 subsubsection \<open>Transfer Relation\<close>
 locale mod_ring_locale =
