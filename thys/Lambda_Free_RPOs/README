@@ -4,8 +4,7 @@ the paper draft
     A Lambda-Free Higher-Order Recursive Path Order
     by Jasmin Christian Blanchette, Uwe Waldmann, and Daniel Wand
 
-The ".thy" files are Isabelle theory files. They can be processed using
-Isabelle as follows:
+The ".thy" files are Isabelle theory files. They can be processed as follows:
 
     isabelle jedit Lambda_Free_RPOs.thy
 
