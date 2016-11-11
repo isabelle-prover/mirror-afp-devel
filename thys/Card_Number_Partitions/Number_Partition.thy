@@ -34,6 +34,20 @@ by (auto split: if_split_asm) (auto simp add: fun_eq_iff)
 
 subsection {* Bounds and Finiteness of Number Partitions *}
 
+lemma partitions_imp_finite_elements:
+  assumes "p partitions n"
+  shows "finite {i. 0 < p i}"
+proof -
+  from assms have "{i. 0 < p i} \<subseteq> {..n}" by (auto elim: partitionsE)
+  from this show ?thesis
+    using rev_finite_subset by blast
+qed
+
+lemma partitions_imp_multiset:
+  assumes "p partitions n"
+  shows "p \<in> multiset"
+using assms partitions_imp_finite_elements multiset_def by auto
+
 lemma partitions_bounds:
   assumes "p partitions n"
   shows "p i \<le> n"
@@ -382,6 +396,128 @@ proof -
     using partitions by (auto intro: sum.mono_neutral_right elim!: partitionsE)
   also have "... = k" using k by auto
   finally show ?thesis .
+qed
+
+subsection \<open>Number Partitions as Multisets on Natural Numbers\<close>
+
+definition number_partition :: "nat \<Rightarrow> nat multiset \<Rightarrow> bool"
+where
+  "number_partition n N = (sum_mset N = n \<and> 0 \<notin># N)"
+
+subsubsection \<open>Relationship to Definition on Functions\<close>
+
+lemma count_partitions_iff:
+  "count N partitions n \<longleftrightarrow> number_partition n N"
+proof
+  assume "count N partitions n"
+  from this have "(\<forall>i. count N i \<noteq> 0 \<longrightarrow> 1 \<le> i \<and> i \<le> n)" "(\<Sum>i\<le>n. count N i * i) = n"
+    unfolding Number_Partition.partitions_def by auto
+  moreover from this have "set_mset N \<subseteq> {..n}" by auto
+  moreover have "finite {..n}" by auto
+  ultimately have "sum_mset N = n"
+    using sum_mset_sum_count sum_mset_eq_sum_on_supersets by presburger
+  moreover have "0 \<notin># N"
+    using \<open>\<forall>i. count N i \<noteq> 0 \<longrightarrow> 1 \<le> i \<and> i \<le> n\<close> by auto
+  ultimately show "number_partition n N"
+    unfolding number_partition_def by auto
+next
+  assume "number_partition n N"
+  from this have "sum_mset N = n" and "0 \<notin># N"
+    unfolding number_partition_def by auto
+  {
+    fix i
+    assume "count N i \<noteq> 0"
+    have "1 \<le> i \<and> i \<le> n"
+    proof
+      from \<open>0 \<notin># N\<close> \<open>count N i \<noteq> 0\<close> show "1 \<le> i"
+        using Suc_le_eq by auto
+      from \<open>sum_mset N = n\<close> \<open>count N i \<noteq> 0\<close> show "i \<le> n"
+        using multi_member_split by fastforce
+    qed
+  }
+  moreover from \<open>sum_mset N = n\<close> have "(\<Sum>i\<le>n. count N i * i) = n"
+    by (metis atMost_iff calculation finite_atMost not_in_iff subsetI sum_mset_eq_sum_on_supersets sum_mset_sum_count)
+  ultimately show "count N partitions n"
+    by (rule partitionsI) auto
+qed
+
+lemma partitions_iff_Abs_multiset:
+  "p partitions n \<longleftrightarrow> finite {x. 0 < p x} \<and> number_partition n (Abs_multiset p)"
+proof
+  assume "p partitions n"
+  from this have bounds: "(\<forall>i. p i \<noteq> 0 \<longrightarrow> 1 \<le> i \<and> i \<le> n)"
+    and sum: "(\<Sum>i\<le>n. p i * i) = n"
+  unfolding partitions_def by auto
+  from \<open>p partitions n\<close> have "p \<in> multiset" by (rule partitions_imp_multiset)
+  from \<open>p partitions n\<close> have "finite {x. 0 < p x}"
+    by (rule partitions_imp_finite_elements)
+  moreover from \<open>p \<in> multiset\<close> bounds have "\<not> 0 \<in># Abs_multiset p"
+    using count_eq_zero_iff by force
+  moreover from \<open>p \<in> multiset\<close> this sum have "sum_mset (Abs_multiset p) = n"
+  proof -
+    have "(\<Sum>i\<in>{x. 0 < p x}. p i * i) = (\<Sum>i\<le>n. p i * i)"
+      using bounds by (auto intro: sum.mono_neutral_cong_left)
+    from \<open>p \<in> multiset\<close> this sum show "sum_mset (Abs_multiset p) = n"
+      by (simp add: sum_mset_sum_count set_mset_Abs_multiset)
+  qed
+  ultimately show "finite {x. 0 < p x} \<and> number_partition n (Abs_multiset p)"
+    unfolding number_partition_def by auto
+next
+  assume "finite {x. 0 < p x} \<and> number_partition n (Abs_multiset p)"
+  from this have "finite {x. 0 < p x}" "0 \<notin># Abs_multiset p" "sum_mset (Abs_multiset p) = n"
+    unfolding number_partition_def by auto
+  from \<open>finite {x. 0 < p x}\<close> have "p \<in> multiset" by (simp add: multiset_def)
+  from \<open>p \<in> multiset\<close> have "(\<Sum>i\<in>{x. 0 < p x}. p i * i) = n"
+    using \<open> sum_mset (Abs_multiset p) = n\<close>
+    by (simp add: sum_mset_sum_count set_mset_Abs_multiset)
+  have bounds: "\<And>i. p i \<noteq> 0 \<Longrightarrow> 1 \<le> i \<and> i \<le> n"
+  proof
+    fix i
+    assume "p i \<noteq> 0"
+    from \<open>\<not> 0 \<in># Abs_multiset p\<close> \<open>p \<in> multiset\<close> have "p 0 = 0"
+      using count_inI by force
+    from this \<open>p i \<noteq> 0\<close> show "1 \<le> i"
+      by (metis One_nat_def leI less_Suc0)
+    show "i \<le> n"
+    proof (rule ccontr)
+      assume "\<not> i \<le> n"
+      from this have "i > n"
+        using le_less_linear by blast
+      from this \<open>p i \<noteq> 0\<close> have "p i * i > n"
+        by (auto simp add: less_le_trans)
+      from \<open>p i \<noteq> 0\<close> have "(\<Sum>i\<in>{x. 0 < p x}. p i * i) = p i * i + (\<Sum>i\<in>{x. 0 < p x} - {i}. p i * i)"
+        using \<open>finite {x. 0 < p x}\<close>
+        by (subst sum.insert_remove[symmetric]) (auto simp add: insert_absorb)
+      also from \<open>p i * i > n\<close> have "\<dots> > n" by auto
+      finally show False using \<open>(\<Sum>i\<in>{x. 0 < p x}. p i * i) = n\<close> by blast
+    qed
+  qed
+  moreover have "(\<Sum>i\<le>n. p i * i) = n"
+  proof -
+    have "(\<Sum>i\<le>n. p i * i) = (\<Sum>i\<in>{x. 0 < p x}. p i * i)"
+      using bounds by (auto intro: sum.mono_neutral_cong_right)
+    from this show ?thesis
+      using \<open>(\<Sum>i\<in>{x. 0 < p x}. p i * i) = n\<close> by simp
+  qed
+  ultimately show "p partitions n" by (auto intro: partitionsI)
+qed
+
+
+lemma size_nat_multiset_eq:
+  fixes N :: "nat multiset"
+  assumes "number_partition n N"
+  shows "size N = sum (count N) {..n}"
+proof -
+  have "set_mset N \<subseteq> {..sum_mset N}"
+    by (auto dest: multi_member_split)
+  have "size N = sum (count N) (set_mset N)"
+    by (rule size_multiset_overloaded_eq)
+  also have "\<dots> = sum (count N) {..sum_mset N}"
+    using \<open>set_mset N \<subseteq> {..sum_mset N}\<close>
+    by (auto intro: sum.mono_neutral_cong_left count_inI)
+  finally show ?thesis
+    using \<open>number_partition n N\<close>
+    unfolding number_partition_def by auto
 qed
 
 end

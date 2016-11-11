@@ -203,4 +203,107 @@ proof -
   finally show ?thesis .
 qed
 
+subsection {* Cardinality of Number Partitions as Multisets of Natural Numbers *}
+
+lemma bij_betw_multiset_number_partition_with_size:
+  "bij_betw count {N. number_partition n N \<and> size N = k} {p. p partitions n \<and> sum p {..n} = k}"
+proof (rule bij_betw_byWitness[where f'="Abs_multiset"])
+  show "\<forall>N\<in>{N. number_partition n N \<and> size N = k}. Abs_multiset (count N) = N"
+    using count_inverse by blast
+  show "\<forall>p\<in>{p. p partitions n \<and> sum p {..n} = k}. count (Abs_multiset p) = p"
+    by (auto simp add: multiset_def partitions_imp_finite_elements)
+  show "count ` {N. number_partition n N \<and> size N = k} \<subseteq> {p. p partitions n \<and> sum p {..n} = k}"
+    by (auto simp add: count_partitions_iff size_nat_multiset_eq) 
+  show "Abs_multiset ` {p. p partitions n \<and> sum p {..n} = k} \<subseteq> {N. number_partition n N \<and> size N = k}"
+    using partitions_iff_Abs_multiset size_nat_multiset_eq partitions_imp_multiset by fastforce
+qed
+
+lemma bij_betw_multiset_number_partition_with_atmost_size:
+  "bij_betw count {N. number_partition n N \<and> size N \<le> k} {p. p partitions n \<and> sum p {..n} \<le> k}"
+proof (rule bij_betw_byWitness[where f'="Abs_multiset"])
+  show "\<forall>N\<in>{N. number_partition n N \<and> size N \<le> k}. Abs_multiset (count N) = N"
+    using count_inverse by blast
+  show "\<forall>p\<in>{p. p partitions n \<and> sum p {..n} \<le> k}. count (Abs_multiset p) = p"
+    by (auto simp add: multiset_def partitions_imp_finite_elements)
+  show "count ` {N. number_partition n N \<and> size N \<le> k} \<subseteq> {p. p partitions n \<and> sum p {..n} \<le> k}"
+    by (auto simp add: count_partitions_iff size_nat_multiset_eq)
+  show "Abs_multiset ` {p. p partitions n \<and> sum p {..n} \<le> k} \<subseteq> {N. number_partition n N\<and> size N \<le> k}"
+    using partitions_iff_Abs_multiset size_nat_multiset_eq partitions_imp_multiset by fastforce
+qed
+
+theorem card_number_partitions_with_atmost_k_parts:
+  shows "card {N. number_partition n N \<and> size N \<le> x} = Partition (n + x) x"
+proof -
+  have "bij_betw count {N. number_partition n N \<and> size N \<le> x} {p. p partitions n \<and> sum p {..n} \<le> x}"
+    by (rule bij_betw_multiset_number_partition_with_atmost_size)
+  from this have "card {N. number_partition n N \<and> size N \<le> x} = card {p. p partitions n \<and> sum p {..n} \<le> x}"
+    by (rule bij_betw_same_card)
+  also have "card {p. p partitions n \<and> sum p {..n} \<le> x} = Partition (n + x) x"
+    by (rule card_partitions_atmost_k_parts)
+  finally show ?thesis .
+qed
+
+theorem card_partitions_with_k_parts:
+  "card {N. number_partition n N \<and> size N = k} = Partition n k"
+proof -
+  have "bij_betw count {N. number_partition n N \<and> size N = k} {p. p partitions n \<and> sum p {..n} = k}"
+    by (rule bij_betw_multiset_number_partition_with_size)
+  from this have "card {N. number_partition n N \<and> size N = k} = card {p. p partitions n \<and> sum p {..n} = k}"
+    by (rule bij_betw_same_card)
+  also have "\<dots> = Partition n k" by (rule card_partitions_k_parts)
+  finally show ?thesis .
+qed
+
+subsection {* Cardinality of Number Partitions with only 1-parts *}
+
+lemma number_partition1_eq_replicate_mset:
+  "{N. (\<forall>n. n\<in># N \<longrightarrow> n = 1) \<and> number_partition n N} = {replicate_mset n 1}"
+proof
+  show "{N. (\<forall>n. n \<in># N \<longrightarrow> n = 1) \<and> number_partition n N} \<subseteq> {replicate_mset n 1}"
+  proof
+    fix N
+    assume N: "N \<in> {N. (\<forall>n. n \<in># N \<longrightarrow> n = 1) \<and> number_partition n N}"
+    have "N = replicate_mset n 1"
+    proof (rule multiset_eqI)
+      fix i
+      have "count N 1 = sum_mset N"
+      proof cases
+        assume "N = {#}"
+        from this show ?thesis by auto
+      next
+        assume "N \<noteq> {#}"
+        from this N have "1 \<in># N" by blast
+        from this N show ?thesis
+          by (auto simp add: sum_mset_sum_count sum.remove[where x="1"] simp del: One_nat_def)
+      qed
+      from N this show "count N i = count (replicate_mset n 1) i"
+        unfolding number_partition_def by (auto intro: count_inI)
+    qed
+    from this show "N \<in> {replicate_mset n 1}" by simp
+  qed
+next
+  show "{replicate_mset n 1} \<subseteq> {N. (\<forall>n. n \<in># N \<longrightarrow> n = 1) \<and> number_partition n N}"
+    unfolding number_partition_def by auto
+qed
+
+lemma card_number_partitions_with_only_parts_1_eq_1:
+  assumes "n \<le> x"
+  shows "card {N. (\<forall>n. n\<in># N \<longrightarrow> n = 1) \<and> number_partition n N \<and> size N \<le> x} = 1" (is "card ?N = _")
+proof -
+  have "\<forall>N \<in> {N. (\<forall>n. n \<in># N \<longrightarrow> n = 1) \<and> number_partition n N}. size N = n"
+    unfolding number_partition1_eq_replicate_mset by simp
+  from this number_partition1_eq_replicate_mset \<open>n \<le> x\<close> have "?N = {replicate_mset n 1}" by auto
+  from this show ?thesis by simp
+qed
+
+lemma card_number_partitions_with_only_parts_1_eq_0:
+  assumes "x < n"
+  shows "card {N. (\<forall>n. n\<in># N \<longrightarrow> n = 1) \<and> number_partition n N \<and> size N \<le> x} = 0" (is "card ?N = _")
+proof -
+  have "\<forall>N \<in> {N. (\<forall>n. n \<in># N \<longrightarrow> n = 1) \<and> number_partition n N}. size N = n"
+    unfolding number_partition1_eq_replicate_mset by simp
+  from this number_partition1_eq_replicate_mset\<open>x < n\<close> have "?N = {}" by auto
+  from this show ?thesis by (simp only: card_empty)
+qed
+
 end
