@@ -85,6 +85,33 @@ proof -
     by (unfold_locales, rule p, 
       auto simp: finite_field_ops_def p mod_ring_rel_def of_int_of_int_mod_ring)
 qed
+
+lemma prime_field_finite_field_ops32: assumes small: "p \<le> 65535" 
+  shows "prime_field_gen (finite_field_ops32 (uint32_of_int p)) mod_ring_rel32 p" 
+proof -
+  let ?pp = "uint32_of_int p" 
+  have ppp: "p = int_of_uint32 ?pp"
+    by (subst int_of_uint32_inv, insert small p2, auto)
+  note * = ppp small 
+  interpret field_ops "finite_field_ops32 ?pp" mod_ring_rel32 
+    by (rule finite_field_ops32, insert *)
+  interpret int: prime_field_gen "finite_field_ops p" mod_ring_rel
+    by (rule prime_field_finite_field_ops)
+  show ?thesis
+  proof (unfold_locales, rule p, auto simp: finite_field_ops32_def )
+    fix x
+    assume x: "0 \<le> x" "x < p" 
+    from int.of_int[OF this] have "mod_ring_rel x (of_int x)" by (simp add: finite_field_ops_def)
+    thus "mod_ring_rel32 (uint32_of_int x) (of_int x)" unfolding mod_ring_rel32_def[OF *]
+      by (intro exI[of _ x], auto simp: urel_def[OF *], subst int_of_uint32_inv, insert * x, auto)
+  next
+    fix y z
+    assume "mod_ring_rel32 y z" 
+    from this[unfolded mod_ring_rel32_def[OF *]] obtain x where yx: "urel y x" and xz: "mod_ring_rel x z" by auto
+    from int.to_int[OF xz] have zx: "to_int_mod_ring z = x" by (simp add: finite_field_ops_def)
+    show "int_of_uint32 y = to_int_mod_ring z" unfolding zx using yx unfolding urel_def[OF *] by simp
+  qed
+qed
 end
 
 end
