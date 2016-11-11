@@ -16,7 +16,7 @@ imports
   Finite_Field
   Arithmetic_Record_Based
   "../Native_Word/Uint32" 
-  Code_Target_Numeral
+  "~~/src/HOL/Library/Code_Target_Numeral"
 begin
 
 (* mod on standard case which can immediately be mapped to 
@@ -442,6 +442,8 @@ text \<open>Once we have proven the soundness of the implementation, we do not c
   will hide the internal definition in further applications of transfer.\<close>
 lifting_forget mod_ring.lifting
 
+text \<open>For soundness of the 32-bit implementation, we mainly prove that this implementation
+  implements the int-based implementation of GF(p).\<close>
 context prime_field
 begin
 
