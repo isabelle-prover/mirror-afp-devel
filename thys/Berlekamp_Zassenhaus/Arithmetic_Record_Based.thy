@@ -27,6 +27,8 @@ datatype 'a arith_ops_record = Arith_Ops_Record
   ("modulo" : "'a \<Rightarrow> 'a \<Rightarrow> 'a")
   (normalize : "'a \<Rightarrow> 'a")
   (unit_factor : "'a \<Rightarrow> 'a")
+  (of_int : "int \<Rightarrow> 'a")
+  (to_int : "'a \<Rightarrow> int")
   (DP : "'a \<Rightarrow> bool")
 
 hide_const (open) 
@@ -41,6 +43,8 @@ hide_const (open)
   modulo
   normalize
   unit_factor
+  of_int
+  to_int
   DP
 
 fun listprod_i :: "'i arith_ops_record \<Rightarrow> 'i list \<Rightarrow> 'i" where
