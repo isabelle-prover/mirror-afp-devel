@@ -533,10 +533,10 @@ definition euclid_ext_poly_mod_main :: "int \<Rightarrow> 'a arith_ops_record \<
       (a,b) \<Rightarrow> (to_int_poly_i ff_ops a, to_int_poly_i ff_ops b))" 
 
 definition euclid_ext_poly_mod :: "int \<Rightarrow> int poly \<Rightarrow> int poly \<Rightarrow> int poly \<times> int poly" where
-  "euclid_ext_poly_mod p = ((* not enabled since code-export does not work 
+  "euclid_ext_poly_mod p = ( 
     if p \<le> 65535 
     then euclid_ext_poly_mod_main p (finite_field_ops32 (uint32_of_int p))
-    else *) euclid_ext_poly_mod_main p (finite_field_ops p))" 
+    else euclid_ext_poly_mod_main p (finite_field_ops p))" 
   
 context prime_field_gen
 begin

@@ -143,10 +143,10 @@ proof -
 qed
 
 definition square_free_impl :: "int \<Rightarrow> int poly \<Rightarrow> bool" where
-  "square_free_impl p = ((* not enabled since code-export does not work 
+  "square_free_impl p = ( 
     if p \<le> 65535 
     then square_free_impl_main p (finite_field_ops32 (uint32_of_int p))
-    else *) square_free_impl_main p (finite_field_ops p))" 
+    else square_free_impl_main p (finite_field_ops p))" 
 
 lemma square_free_impl: assumes 
   p: "prime p"

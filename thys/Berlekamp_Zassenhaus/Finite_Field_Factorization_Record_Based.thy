@@ -616,10 +616,10 @@ proof -
 qed
 
 definition finite_field_factorization_int :: "int \<Rightarrow> int poly \<Rightarrow> int \<times> int poly list" where
-  "finite_field_factorization_int p = ( (* not enabled since code-export does not work 
+  "finite_field_factorization_int p = (  
     if p \<le> 65535 
     then finite_field_factorization_main p (finite_field_ops32 (uint32_of_int p))
-    else *) finite_field_factorization_main p (finite_field_ops p))"
+    else finite_field_factorization_main p (finite_field_ops p))"
  
 lemma finite_field_factorization_int: assumes p: "prime p" 
   and sq: "poly_mod.square_free_m p f" 

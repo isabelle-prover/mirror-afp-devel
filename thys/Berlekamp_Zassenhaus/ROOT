@@ -55,4 +55,5 @@ session Pre_BZ (AFP) = "Polynomial_Factorization" +
     "~~/src/HOL/Number_Theory/Residues"
     "~~/src/HOL/Library/Types_To_Sets"
     "../Jordan_Normal_Form/Determinant_Impl"
-
+    "../Native_Word/Uint32"
+    "../Native_Word/Code_Target_Bits_Int"
