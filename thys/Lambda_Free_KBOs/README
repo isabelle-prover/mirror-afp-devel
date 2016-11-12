@@ -1,0 +1,18 @@
+This archive contains the Isabelle formalization of the results presented in
+the paper
+
+    Lambda-Free Higher-Order Knuth-Bendix Orders
+    by Heiko Becker, Jasmin Christian Blanchette, Uwe Waldmann, and Daniel Wand
+
+The ".thy" files are Isabelle theory files. They can be processed as follows:
+
+    isabelle jedit Lambda_Free_KBOs.thy
+
+The main files are
+
+    Lambda_Free_KBO_Std.thy
+    Lambda_Free_TKBO_Coefs.thy
+
+A PDF version of the proof is available as
+
+    document.pdf

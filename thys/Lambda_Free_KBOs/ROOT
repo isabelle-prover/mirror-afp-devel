@@ -1,0 +1,13 @@
+chapter AFP
+
+session Lambda_Free_KBOs (AFP) = HOL +
+  options [timeout = 600]
+  theories [document = false]
+    "../Lambda_Free_RPOs/Extension_Orders"
+    "../Lambda_Free_RPOs/Lambda_Free_Term"
+    "../Nested_Multisets_Ordinals/Syntactic_Ordinal"
+    "../Polynomials/Polynomials"
+  theories
+    Lambda_Free_KBOs
+  document_files
+    "root.tex"

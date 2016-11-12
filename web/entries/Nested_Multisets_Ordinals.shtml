@@ -71,6 +71,10 @@ This Isabelle/HOL formalization introduces a nested multiset datatype and define
 
 
 
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="Lambda_Free_KBOs.shtml">Lambda_Free_KBOs</a></td></tr>
+
+
 
   </tbody>
 </table>

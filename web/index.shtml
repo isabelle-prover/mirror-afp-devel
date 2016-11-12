@@ -127,6 +127,16 @@ Lukas Bulwahn
 </td></tr>
 
 <tr><td class="entry">
+2016-09-23:
+<a href="entries/Lambda_Free_KBOs.shtml">Formalization of Knuth–Bendix Orders for Lambda-Free Higher-Order Terms</a>
+<br>Author:
+<a href="hbecker@mpi-sws.org">Heiko Becker</a>,
+<a href="jasmin.blanchette@gmail.com">Jasmin Christian Blanchette</a>,
+<a href="waldmann@mpi-inf.mpg.de">Uwe Waldmann</a> and 
+<a href="dwand@mpi-inf.mpg.de">Daniel Wand</a>
+</td></tr>
+
+<tr><td class="entry">
 2016-09-09:
 <a href="entries/Iptables_Semantics.shtml">Iptables Semantics</a>
 <br>Author:

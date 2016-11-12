@@ -26,8 +26,7 @@
 
 <h1><font class="first">F</font>ormalization
 of
-<font class="first">R</font>ecursive
-<font class="first">P</font>ath
+<font class="first">K</font>nuth–Bendix
 <font class="first">O</font>rders
 for
 <font class="first">L</font>ambda-Free
@@ -38,10 +37,10 @@ for
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Formalization of Recursive Path Orders for Lambda-Free Higher-Order Terms</td></tr>
+        <td class="data" width="80%">Formalization of Knuth–Bendix Orders for Lambda-Free Higher-Order Terms</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="jasmin.blanchette@gmail.com">Jasmin Christian Blanchette</a>, <a href="waldmann@mpi-inf.mpg.de">Uwe Waldmann</a> and <a href="dwand@mpi-inf.mpg.de">Daniel Wand</a></td></tr>
+        <td class="data"><a href="hbecker@mpi-sws.org">Heiko Becker</a>, <a href="jasmin.blanchette@gmail.com">Jasmin Christian Blanchette</a>, <a href="waldmann@mpi-inf.mpg.de">Uwe Waldmann</a> and <a href="dwand@mpi-inf.mpg.de">Daniel Wand</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2016-09-23</td></tr>
@@ -49,18 +48,18 @@ for
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-This Isabelle/HOL formalization defines recursive path orders (RPOs) for higher-order terms without lambda-abstraction and proves many useful properties about them. The main order fully coincides with the standard RPO on first-order terms also in the presence of currying, distinguishing it from previous work. An optimized variant is formalized as well. It appears promising as the basis of a higher-order superposition calculus.
+This Isabelle/HOL formalization defines Knuth–Bendix orders for higher-order terms without lambda-abstraction and proves many useful properties about them. The main order fully coincides with the standard transfinite KBO with subterm coefficients on first-order terms. It appears promising as the basis of a higher-order superposition calculus.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{Lambda_Free_RPOs-AFP,
-  author  = {Jasmin Christian Blanchette and Uwe Waldmann and Daniel Wand},
-  title   = {Formalization of Recursive Path Orders for Lambda-Free Higher-Order Terms},
+			<pre>@article{Lambda_Free_KBOs-AFP,
+  author  = {Heiko Becker and Jasmin Christian Blanchette and Uwe Waldmann and Daniel Wand},
+  title   = {Formalization of Knuth–Bendix Orders for Lambda-Free Higher-Order Terms},
   journal = {Archive of Formal Proofs},
   month   = sep,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Lambda_Free_RPOs.shtml},
+  note    = {\url{http://isa-afp.org/entries/Lambda_Free_KBOs.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -70,9 +69,9 @@ This Isabelle/HOL formalization defines recursive path orders (RPOs) for higher-
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
+    <tr><td class="datahead">Depends on:</td>
+        <td class="data"><a href="Lambda_Free_RPOs.shtml">Lambda_Free_RPOs</a>, <a href="Nested_Multisets_Ordinals.shtml">Nested_Multisets_Ordinals</a>, <a href="Polynomials.shtml">Polynomials</a></td></tr>
 
-    <tr><td class="datahead">Used by:</td>
-        <td class="data"><a href="Lambda_Free_KBOs.shtml">Lambda_Free_KBOs</a></td></tr>
 
 
 
@@ -81,7 +80,7 @@ This Isabelle/HOL formalization defines recursive path orders (RPOs) for higher-
 
 <p></p>
 
-<!--#set var="name" value="Lambda_Free_RPOs" -->
+<!--#set var="name" value="Lambda_Free_KBOs" -->
 
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
