@@ -845,7 +845,7 @@ proof -
 qed
 
 definition factor_bound :: "int poly \<Rightarrow> nat \<Rightarrow> int" where
-  "factor_bound f d = sqrt_int_ceiling ((d choose d div 2)^2 * sum_list (map (\<lambda> a. a * a) (coeffs f)))" 
+  "factor_bound f d = sqrt_int_floor ((d choose d div 2)^2 * sum_list (map (\<lambda> a. a * a) (coeffs f)))" 
 
 lemma factor_bound: assumes "f \<noteq> 0" "g dvd f" "degree g \<le> n"
   shows "\<bar>coeff g k\<bar> \<le> factor_bound f n"  proof-
@@ -858,7 +858,7 @@ lemma factor_bound: assumes "f \<noteq> 0" "g dvd f" "degree g \<le> n"
   also have "\<dots> \<le> (degree g choose k) * measure_poly_int g * measure_poly_int h"
     using mult_mono[OF order_refl g1] by (simp add: g0)
   also have "\<dots> \<le> (degree g choose k) * measure_poly_int f"
-    using measure_eq_prod[of "map_poly complex_of_int g" "map_poly complex_of_int h"]
+    using measure_eq_prod[of "of_int_poly g" "of_int_poly h"]
     unfolding measure_poly_int_def gh[symmetric] by simp
   also have "\<dots> \<le> (n choose n div 2) * measure_poly_int f"
   proof (rule mult_mono[OF _ order_refl _ g0])
@@ -866,15 +866,14 @@ lemma factor_bound: assumes "f \<noteq> 0" "g dvd f" "degree g \<le> n"
     also have "\<dots> \<le> n choose n div 2" using binomial_maximum[of n k] by simp
     finally show "real (degree g choose k) \<le> real (n choose n div 2)" by simp
   qed simp
-  also have "\<dots> \<le> (n choose n div 2) * (sqrt (norm2 (map_poly complex_of_int f)))"
-    using Landau_inequality[of "(map_poly complex_of_int f)"] unfolding measure_poly_int_def
+  also have "\<dots> \<le> (n choose n div 2) * (sqrt (norm2 (of_int_poly f)))"
+    using Landau_inequality[of "of_int_poly f"] unfolding measure_poly_int_def
     by simp
-  also have "\<dots> = sqrt ((n choose n div 2)^2 * norm2 (map_poly complex_of_int f))"
+  also have "\<dots> = sqrt ((n choose n div 2)^2 * norm2 (of_int_poly f))"
     unfolding real_sqrt_mult by simp
-  also have "\<dots> \<le> ceiling \<dots>" by simp
-  also have "\<dots> = factor_bound f n"
-    unfolding factor_bound_def by (auto simp: power2_eq_square coeffs_map_poly o_def)
-  finally show ?thesis unfolding of_int_le_iff by blast
+  finally have "\<bar>coeff g k\<bar> \<le> sqrt (real ((n choose n div 2)\<^sup>2) * norm2 (of_int_poly f))" .
+  from floor_mono[OF this] show ?thesis unfolding factor_bound_def
+    by (auto simp: power2_eq_square coeffs_map_poly o_def) linarith
 qed
 
 lemma mignotte: (* note: no longer needed, but it is the lemma in its common symmetric form *)
