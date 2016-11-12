@@ -2883,7 +2883,7 @@ notify = jasmin.blanchette@gmail.com
 [Lambda_Free_KBOs]
 title = Formalization of Knuth–Bendix Orders for Lambda-Free Higher-Order Terms
 author = Heiko Becker <hbecker@mpi-sws.org>, Jasmin Christian Blanchette <jasmin.blanchette@gmail.com>, Uwe Waldmann <waldmann@mpi-inf.mpg.de>, Daniel Wand <dwand@mpi-inf.mpg.de>
-date = 2016-09-23
+date = 2016-11-12
 topic = Logic/Rewriting
 abstract = This Isabelle/HOL formalization defines Knuth–Bendix orders for higher-order terms without lambda-abstraction and proves many useful properties about them. The main order fully coincides with the standard transfinite KBO with subterm coefficients on first-order terms. It appears promising as the basis of a higher-order superposition calculus.
 notify = jasmin.blanchette@gmail.com
