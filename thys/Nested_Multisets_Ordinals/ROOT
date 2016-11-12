@@ -1,0 +1,12 @@
+chapter AFP
+
+session Nested_Multisets_Ordinals (AFP) = HOL +
+  options [timeout=600]
+  theories [document = false]
+    "~~/src/HOL/Library/Multiset_Order"
+    "~~/src/HOL/Library/Extended_Nat"
+    "~~/src/HOL/Library/Product_Order"
+  theories
+    Syntactic_Ordinal
+  document_files
+    "root.tex"

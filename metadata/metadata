@@ -2880,6 +2880,14 @@ topic = Logic/Rewriting
 abstract = This Isabelle/HOL formalization defines recursive path orders (RPOs) for higher-order terms without lambda-abstraction and proves many useful properties about them. The main order fully coincides with the standard RPO on first-order terms also in the presence of currying, distinguishing it from previous work. An optimized variant is formalized as well. It appears promising as the basis of a higher-order superposition calculus.
 notify = jasmin.blanchette@gmail.com
 
+[Nested_Multisets_Ordinals]
+title = Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals
+author = Jasmin Christian Blanchette <jasmin.blanchette@gmail.com>, Mathias Fleury <fleury@mpi-inf.mpg.de>, Dmitriy Traytel <traytel@inf.ethz.ch>
+date = 2016-11-12
+topic = Logic/Rewriting
+abstract = This Isabelle/HOL formalization introduces a nested multiset datatype and defines Dershowitz and Manna's nested multiset order. The order is proved well founded and linear. By removing one constructor, we transform the nested multisets into hereditary multisets. These are isomorphic to the syntactic ordinals—the ordinals can be recursively expressed in Cantor normal form. Addition, subtraction, multiplication, and linear orders are provided on this type.
+notify = jasmin.blanchette@gmail.com
+
 [Abstract-Rewriting]
 title = Abstract Rewriting
 topic = Logic/Rewriting
