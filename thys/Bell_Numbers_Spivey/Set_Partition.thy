@@ -61,6 +61,19 @@ lemma partition_on_eq_implies_eq_carrier:
   shows "A = B"
 using assms by (fastforce elim: partition_onE)
 
+text \<open>An alternative formulation of @{thm partition_on_insert}\<close>
+lemma partition_on_insert':
+  assumes "partition_on (A - X) P"
+  assumes "X \<subseteq> A" "X \<noteq> {}"
+  shows "partition_on A (insert X P)"
+proof -
+  have "disjnt (A - X) X" by (simp add: disjnt_iff)
+  from assms(1) this assms(3) have "partition_on ((A - X) \<union> X) (insert X P)"
+    by (rule partition_on_insert)
+  from this \<open>X \<subseteq> A\<close> show ?thesis
+    by (metis Diff_partition sup_commute)
+qed
+
 subsection {* The Unique Part Containing an Element in a Set Partition *}
 
 lemma partition_on_partition_on_unique:
@@ -91,6 +104,17 @@ proof -
     by (metis (no_types, lifting) theI)
 qed
 
+lemma partition_on_in_the_unique_part:
+  assumes "partition_on A P"
+  assumes "x \<in> A"
+  shows "x \<in> (THE X. x \<in> X \<and> X \<in> P)"
+proof -
+  from assms have "\<exists>!X. x \<in> X \<and> X \<in> P"
+    by (simp add: partition_on_partition_on_unique)
+  from this show ?thesis
+    by (metis (mono_tags, lifting) theI')
+qed
+
 lemma partition_on_the_part_eq:
   assumes "partition_on A P"
   assumes "x \<in> X" "X \<in> P"
@@ -102,6 +126,26 @@ proof -
     using \<open>partition_on A P\<close> by (simp add: partition_on_partition_on_unique)
   from \<open>x \<in> X\<close> \<open>X \<in> P\<close> this show "(THE X. x \<in> X \<and> X \<in> P) = X"
     by (auto intro!: the1_equality)
+qed
+
+lemma partition_on_all_in_part_eq_part:
+  assumes "partition_on A P"
+  assumes "X' \<in> P"
+  shows "{x \<in> A. (THE X. x \<in> X \<and> X \<in> P) = X'} = X'"
+proof
+  show "{x \<in> A. (THE X. x \<in> X \<and> X \<in> P) = X'} \<subseteq> X'"
+    using assms(1) partition_on_in_the_unique_part by force
+next
+  show "X' \<subseteq> {x \<in> A. (THE X. x \<in> X \<and> X \<in> P) = X'}"
+  proof
+    fix x
+    assume "x \<in> X'"
+    from \<open>x \<in> X'\<close> \<open>X' \<in> P\<close> have "x \<in> A"
+      using \<open>partition_on A P\<close> by (auto elim: partition_onE)
+    moreover from \<open>x \<in> X'\<close> \<open>X' \<in> P\<close> have "(THE X. x \<in> X \<and> X \<in> P) = X'"
+      using \<open>partition_on A P\<close> partition_on_the_part_eq by fastforce
+    ultimately show "x \<in> {x \<in> A. (THE X. x \<in> X \<and> X \<in> P) = X'}" by auto
+  qed
 qed
 
 subsection {* Cardinality of Parts in a Set Partition *}

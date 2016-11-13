@@ -7,17 +7,6 @@ imports
   "../Bell_Numbers_Spivey/Set_Partition"
 begin
 
-lemma partition_on_mem_the_unique_part:
-  assumes "partition_on A P"
-  assumes "x \<in> A"
-  shows "x \<in> (THE X. x \<in> X \<and> X \<in> P)"
-proof -
-  from \<open>x \<in> A\<close> have "\<exists>!X. x \<in> X \<and> X \<in> P"
-    using \<open>partition_on A P\<close> by (simp add: partition_on_partition_on_unique)
-  from this show "x \<in> (THE X. x \<in> X \<and> X \<in> P)"
-    by (metis (no_types, lifting) theI)
-qed
-
 lemma the_unique_part_alternative_def:
   assumes "partition_on A P"
   assumes "x \<in> A"
@@ -28,7 +17,7 @@ proof
     fix y
     assume "y \<in> (THE X. x \<in> X \<and> X \<in> P)"
     moreover from \<open>x \<in> A\<close> have "x \<in> (THE X. x \<in> X \<and> X \<in> P)"
-      using \<open>partition_on A P\<close> partition_on_mem_the_unique_part by force
+      using \<open>partition_on A P\<close> partition_on_in_the_unique_part by force
     moreover from \<open>x \<in> A\<close> have "(THE X. x \<in> X \<and> X \<in> P) \<in> P"
       using \<open>partition_on A P\<close> partition_on_the_part_mem by force
     ultimately show "y \<in> {y. \<exists>X\<in>P. x \<in> X \<and> y \<in> X}" by auto
