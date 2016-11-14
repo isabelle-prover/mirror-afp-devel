@@ -1,4 +1,4 @@
-(*  Title:       A Standard Knuth-Bendix Order for Lambda-Free Higher-Order Terms
+(*  Title:       The Graceful Standard Knuth-Bendix Order for Lambda-Free Higher-Order Terms
     Author:      Heiko Becker <heikobecker92@gmail.com>, 2016
     Author:      Jasmin Blanchette <jasmin.blanchette at inria.fr>, 2016
     Author:      Uwe Waldmann <waldmann at mpi-inf.mpg.de>, 2016
@@ -6,7 +6,7 @@
     Maintainer:  Jasmin Blanchette <jasmin.blanchette at inria.fr>
 *)
 
-section \<open>A Standard Knuth-Bendix Order for Lambda-Free Higher-Order Terms\<close>
+section \<open>The Graceful Standard Knuth--Bendix Order for Lambda-Free Higher-Order Terms\<close>
 
 theory Lambda_Free_KBO_Std
 imports Lambda_Free_KBO_Util
@@ -14,6 +14,11 @@ abbrevs
   ">t" = ">\<^sub>t"
   "\<ge>t" = "\<ge>\<^sub>t"
 begin
+
+text \<open>
+This theory defines the standard version of the graceful Knuth--Bendix order for @{text \<lambda>}-free
+higher-order terms. Standard means that one symbol is allowed to have a weight of 0.
+\<close>
 
 
 subsection \<open>Setup\<close>

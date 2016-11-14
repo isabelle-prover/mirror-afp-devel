@@ -9,7 +9,7 @@
 section \<open>Knuth--Bendix Orders for Lambda-Free Higher-Order Terms\<close>
 
 theory Lambda_Free_KBOs
-imports Lambda_Free_KBO_Basic Lambda_Free_TKBO_Coefs
+imports Lambda_Free_KBO_App Lambda_Free_KBO_Basic Lambda_Free_TKBO_Coefs
 begin
 
 end

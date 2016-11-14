@@ -1,4 +1,4 @@
-(*  Title:       A Transfinite Knuth-Bendix Order with Subterm Coefficients for Lambda-Free Higher-Order Terms
+(*  Title:       The Graceful Transfinite Knuth-Bendix Order with Subterm Coefficients for Lambda-Free Higher-Order Terms
     Author:      Heiko Becker <heikobecker92@gmail.com>, 2016
     Author:      Jasmin Blanchette <jasmin.blanchette at inria.fr>, 2016
     Author:      Uwe Waldmann <waldmann at mpi-inf.mpg.de>, 2016
@@ -6,7 +6,7 @@
     Maintainer:  Jasmin Blanchette <jasmin.blanchette at inria.fr>
 *)
 
-section \<open>A Transfinite Knuth-Bendix Order with Subterm Coefficients for
+section \<open>The Graceful Transfinite Knuth-Bendix Order with Subterm Coefficients for
   Lambda-Free Higher-Order Terms\<close>
 
 theory Lambda_Free_TKBO_Coefs
@@ -18,6 +18,15 @@ abbrevs
   "\<ge>t" = "\<ge>\<^sub>t"
   "!h" = "\<^sub>h"
 begin
+
+text \<open>
+This theory defines the graceful transfinite Knuth--Bendix order (KBO) with
+subterm coefficients for @{text \<lambda>}-free higher-order terms. The proof was
+developed by copying that of the standard KBO and generalizing it along two
+axes: subterm coefficients and ordinals. The ordinals are largely orthogonal
+to the development, but the subterm coefficients complicate the definitions and
+proofs substantially.
+\<close>
 
 
 subsection \<open>Setup\<close>
