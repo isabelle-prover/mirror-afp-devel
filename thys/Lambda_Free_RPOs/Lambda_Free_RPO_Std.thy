@@ -1,13 +1,13 @@
-(*  Title:       The New Recursive Path Order for Lambda-Free Higher-Order Terms
+(*  Title:       The Graceful Recursive Path Order for Lambda-Free Higher-Order Terms
     Author:      Jasmin Blanchette <jasmin.blanchette at inria.fr>, 2016
     Author:      Uwe Waldmann <waldmann at mpi-inf.mpg.de>, 2016
     Author:      Daniel Wand <dwand at mpi-inf.mpg.de>, 2016
     Maintainer:  Jasmin Blanchette <jasmin.blanchette at inria.fr>
 *)
 
-section \<open>The New Recursive Path Order for Lambda-Free Higher-Order Terms\<close>
+section \<open>The Graceful Recursive Path Order for Lambda-Free Higher-Order Terms\<close>
 
-theory Lambda_Free_RPO_New
+theory Lambda_Free_RPO_Std
 imports Lambda_Free_Term Extension_Orders
 abbrevs
   ">t" = ">\<^sub>t"
@@ -15,7 +15,7 @@ abbrevs
 begin
 
 text \<open>
-This theory defines the new recursive path order (RPO) for @{text \<lambda>}-free
+This theory defines the graceful recursive path order (RPO) for @{text \<lambda>}-free
 higher-order terms.
 \<close>
 

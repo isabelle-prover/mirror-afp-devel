@@ -1,17 +1,17 @@
-(*  Title:       An Optimized Recursive Path Order for Lambda-Free Higher-Order Terms
+(*  Title:       The Optimized Graceful Recursive Path Order for Lambda-Free Higher-Order Terms
     Author:      Jasmin Blanchette <jasmin.blanchette at inria.fr>, 2016
     Maintainer:  Jasmin Blanchette <jasmin.blanchette at inria.fr>
 *)
 
-section \<open>An Optimized Recursive Path Order for Lambda-Free Higher-Order Terms\<close>
+section \<open>The Optimized Graceful Recursive Path Order for Lambda-Free Higher-Order Terms\<close>
 
 theory Lambda_Free_RPO_Optim
-imports Lambda_Free_RPO_New
+imports Lambda_Free_RPO_Std
 begin
 
 text \<open>
-This theory defines the optimized variant of the new recursive path order (RPO)
-for @{text \<lambda>}-free higher-order terms.
+This theory defines the optimized variant of the graceful recursive path order
+(RPO) for @{text \<lambda>}-free higher-order terms.
 \<close>
 
 
