@@ -42,7 +42,7 @@ locale kbo_std_basis = ground_heads "op >\<^sub>s" arity_sym arity_var
       arity_sym :: "'s \<Rightarrow> enat" and
       arity_var :: "'v \<Rightarrow> enat" +
   fixes
-    wt_sym :: "'s \<Rightarrow> ('n::{ord,semiring_1})" and
+    wt_sym :: "'s \<Rightarrow> 'n::{ord,semiring_1}" and
     \<epsilon> :: nat and
     \<delta> :: nat and
     extf :: "'s \<Rightarrow> (('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool) \<Rightarrow> ('s, 'v) tm list \<Rightarrow> ('s, 'v) tm list \<Rightarrow>

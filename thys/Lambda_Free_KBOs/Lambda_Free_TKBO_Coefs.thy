@@ -23,7 +23,7 @@ text \<open>
 This theory defines the graceful transfinite Knuth--Bendix order (KBO) with
 subterm coefficients for @{text \<lambda>}-free higher-order terms. The proof was
 developed by copying that of the standard KBO and generalizing it along two
-axes: subterm coefficients and ordinals. The ordinals are largely orthogonal
+axes:\ subterm coefficients and ordinals. The ordinals are largely orthogonal
 to the development, but the subterm coefficients complicate the definitions and
 proofs substantially.
 \<close>
