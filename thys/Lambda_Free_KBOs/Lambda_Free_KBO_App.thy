@@ -23,7 +23,7 @@ locale rpo_app = gt_sym "op >\<^sub>s"
     for gt_sym :: "'s \<Rightarrow> 's \<Rightarrow> bool" (infix ">\<^sub>s" 50) +
   fixes
     wt_sym :: "'s \<Rightarrow> nat" and
-    \<epsilon> :: nat ("\<epsilon>") and
+    \<epsilon> :: nat and
     ext :: "(('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool) \<Rightarrow> ('s, 'v) tm list \<Rightarrow> ('s, 'v) tm list \<Rightarrow> bool"
   assumes
     \<epsilon>_gt_0: "\<epsilon> > 0" and
