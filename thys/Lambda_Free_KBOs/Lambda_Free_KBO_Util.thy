@@ -71,7 +71,6 @@ lemmas extf_map = ext.map[OF extf_ext]
 lemmas extf_irrefl = ext_irrefl.irrefl[OF extf_ext_irrefl]
 lemmas extf_trans_from_irrefl =
   ext_irrefl_before_trans.trans_from_irrefl[OF extf_ext_irrefl_before_trans]
-lemmas extf_ext_compat_list = ext_compat_list_strong.compat_list
 lemmas extf_compat_cons = ext_compat_cons.compat_cons[OF extf_ext_compat_cons]
 lemmas extf_compat_append_left = ext_compat_cons.compat_append_left[OF extf_ext_compat_cons]
 lemmas extf_compat_append_right = ext_compat_snoc.compat_append_right[OF extf_ext_compat_snoc]
