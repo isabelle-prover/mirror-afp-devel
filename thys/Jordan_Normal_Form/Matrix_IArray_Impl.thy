@@ -11,9 +11,7 @@ text \<open>In this theory we implement matrices as arrays of arrays.
   matrix addition, multiplication, etc.~should all have their 
   standard complexity. 
 
-  There is potential for optimizations though, since for some operations
-  the current implementation is clearly non-optimal. For instance, 
-  the code to construct matrices from lists could be improved.
+  There might be room for optimizations. 
 
   To implement the infinite carrier set, we use A.\ Lochbihler's container framework
   \cite{Containers-AFP}.\<close>
@@ -77,17 +75,17 @@ lift_definition mat_dim_col_impl :: "'a mat_impl \<Rightarrow> nat" is "fst o sn
 code_datatype vec_impl
 code_datatype mat_impl
 
-lemma [code]: "vec n f = vec_impl (vec_of_fun n f)"
+lemma vec_code[code]: "vec n f = vec_impl (vec_of_fun n f)"
   by (transfer, auto simp: mk_vec_def)
 
-lemma [code]: "mat nr nc f = mat_impl (mat_of_fun nr nc f)"
+lemma mat_code[code]: "mat nr nc f = mat_impl (mat_of_fun nr nc f)"
   by (transfer, auto simp: mk_mat_def, intro ext, clarsimp, 
   auto intro: undef_mat_cong)
 
-lemma [code]: "vec_of_list v = vec_impl (vec_of_list_impl v)"
+lemma vec_of_list[code]: "vec_of_list v = vec_impl (vec_of_list_impl v)"
   by (transfer, auto simp: mk_vec_def)
 
-lemma [code]: "list_of_vec (vec_impl v) = list_of_vec_impl v"
+lemma list_of_vec_code[code]: "list_of_vec (vec_impl v) = list_of_vec_impl v"
   by (transfer, auto simp: mk_vec_def, case_tac b, auto intro: nth_equalityI)
 
 lemma empty_nth: "\<not> i < length x \<Longrightarrow> x ! i = [] ! (i - length x)"
@@ -96,10 +94,10 @@ lemma empty_nth: "\<not> i < length x \<Longrightarrow> x ! i = [] ! (i - length
 lemma undef_vec: "\<not> i < length x \<Longrightarrow> undef_vec (i - length x) = x ! i"
   unfolding undef_vec_def by (rule empty_nth[symmetric])
   
-lemma [code]: "(vec_impl v) $ i = vec_index_impl v i"
+lemma vec_index_code[code]: "(vec_impl v) $ i = vec_index_impl v i"
   by (transfer, auto simp: mk_vec_def, case_tac b, auto simp: undef_vec)
 
-lemma [code]: "(mat_impl m) $$ ij = (mat_index_impl m ij :: 'a)"
+lemma mat_index_code[code]: "(mat_impl m) $$ ij = (mat_index_impl m ij :: 'a)"
 proof (transfer, unfold o_def, clarify)
   fix m :: "'a iarray iarray" and i j nc
   assume all: "IArray.all (\<lambda>r. IArray.length r = nc) m"
@@ -134,17 +132,34 @@ proof (transfer, unfold o_def, clarify)
   qed
 qed
 
-lemma [code]: "mat_of_rows_list nc vs = mat_of_rows nc (map (\<lambda> v. vec nc (nth v)) vs)"
-  unfolding mat_of_rows_list_def mat_of_rows_def
-  by (intro mat_eqI, auto)  
+lift_definition (code_dt) mat_of_rows_list_impl :: "nat \<Rightarrow> 'a list list \<Rightarrow> 'a mat_impl option" is
+  "\<lambda> n rows. if list_all (\<lambda> r. length r = n) rows then Some (length rows, n, IArray (map IArray rows)) 
+  else None" 
+  by (auto split: if_splits simp: list_all_iff)
 
-lemma [code]: "dim\<^sub>v (vec_impl v) = vec_dim_impl v"
+lemma mat_of_rows_list_impl: "mat_of_rows_list_impl n rs = Some A \<Longrightarrow> mat_impl A = mat_of_rows_list n rs" 
+  unfolding mat_of_rows_list_def
+  by (transfer, auto split: if_splits simp: list_all_iff intro!: mk_mat_cong)
+  
+lemma mat_of_rows_list_code[code]: "mat_of_rows_list nc vs = 
+  (case mat_of_rows_list_impl nc vs of Some A \<Rightarrow> mat_impl A 
+  | None \<Rightarrow> mat_of_rows nc (map (\<lambda> v. vec nc (nth v)) vs))"
+proof (cases "mat_of_rows_list_impl nc vs")
+  case (Some A)
+  from mat_of_rows_list_impl[OF this] show ?thesis unfolding Some by simp
+next
+  case None
+  show ?thesis unfolding None unfolding mat_of_rows_list_def mat_of_rows_def
+    by (intro mat_eqI, auto)  
+qed
+
+lemma dimv_code[code]: "dim\<^sub>v (vec_impl v) = vec_dim_impl v"
   by (transfer, auto)
 
-lemma [code]: "dim\<^sub>r (mat_impl m) = mat_dim_row_impl m"
+lemma dimr_code[code]: "dim\<^sub>r (mat_impl m) = mat_dim_row_impl m"
   by (transfer, auto)
 
-lemma [code]: "dim\<^sub>c (mat_impl m) = mat_dim_col_impl m"
+lemma dimc_code[code]: "dim\<^sub>c (mat_impl m) = mat_dim_col_impl m"
   by (transfer, auto)
 
 instantiation vec :: (type)equal
@@ -217,8 +232,8 @@ derive (no) ccompare mat vec
 derive (dlist) set_impl mat vec
 derive (no) cenum mat vec
 
-lemma [code]: "mat_carrier nr nc = Collect_set (\<lambda> A. dim\<^sub>r A = nr \<and> dim\<^sub>c A = nc)" by auto
-lemma [code]: "vec_carrier n = Collect_set (\<lambda> v. dim\<^sub>v v = n)" 
+lemma mat_carrier_code[code]: "mat_carrier nr nc = Collect_set (\<lambda> A. dim\<^sub>r A = nr \<and> dim\<^sub>c A = nc)" by auto
+lemma vec_carrier_code[code]: "vec_carrier n = Collect_set (\<lambda> v. dim\<^sub>v v = n)" 
   unfolding vec_carrier_def by auto
 
 end
