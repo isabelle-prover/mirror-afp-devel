@@ -185,7 +185,7 @@ next
       unfolding inf_chain_def gt_tl_def by force
 
     show False
-      using tl_bad tl_good by satx
+      using tl_bad tl_good by sat
   qed
 qed
 
@@ -247,7 +247,7 @@ proof (intro notI, induct n rule: less_induct)
     hence "\<not> wfP (\<lambda>xs ys. ?gtssl ys xs)"
       using wfP_iff_no_inf_chain by blast
     thus False
-      using wf_same_length[of n] by satx
+      using wf_same_length[of n] by sat
   qed
 qed
 
@@ -517,7 +517,7 @@ lemma lexext_rev_trans_strong:
     "\<forall>z \<in> set zs. \<forall>y \<in> set ys. \<forall>x \<in> set xs. gt z y \<longrightarrow> gt y x \<longrightarrow> gt z x" and
     "lexext_rev gt zs ys" and "lexext_rev gt ys xs"
   shows "lexext_rev gt zs xs"
-  using assms(1) lexext_trans_strong[OF _ assms(2,3), unfolded set_rev] by satx
+  using assms(1) lexext_trans_strong[OF _ assms(2,3), unfolded set_rev] by sat
 
 lemma lexext_rev_compat_cons_if_same_length:
   assumes "length ys = length xs" and "lexext_rev gt ys xs"
@@ -682,6 +682,12 @@ interpretation len_lexext: ext_total len_lexext
 interpretation len_lexext: ext_wf len_lexext
   by standard (fact len_lexext_wf)
 
+interpretation len_lexext: ext_hd_or_tl len_lexext
+  by standard (rule len_lexext_hd_or_tl)
+
+interpretation len_lexext: ext_wf_bounded len_lexext
+  by standard
+
 
 subsection \<open>Reverse (Right-to-Left) Length-Lexicographic Extension\<close>
 
@@ -761,6 +767,12 @@ interpretation len_lexext_rev: ext_total len_lexext_rev
 
 interpretation len_lexext_rev: ext_wf len_lexext_rev
   by standard (fact len_lexext_rev_wf)
+
+interpretation len_lexext_rev: ext_hd_or_tl len_lexext_rev
+  by standard (rule len_lexext_rev_hd_or_tl)
+
+interpretation len_lexext_rev: ext_wf_bounded len_lexext_rev
+  by standard
 
 
 subsection \<open>Dershowitz--Manna Multiset Extension\<close>
@@ -987,7 +999,7 @@ proof clarify
     qed (auto simp: y_nemp)
 
   show False
-    using acyc cyc by satx
+    using acyc cyc by sat
 qed
 
 lemma msetext_dersh_snoc: "msetext_dersh gt (xs @ [x]) xs"
@@ -1561,14 +1573,13 @@ lemma msetext_huet_singleton: "y \<noteq> x \<Longrightarrow> msetext_huet gt [y
 lemma msetext_huet_wf: "wfP (\<lambda>x y. gt y x) \<Longrightarrow> wfP (\<lambda>xs ys. msetext_huet gt ys xs)"
   by (erule wfP_subset[OF msetext_dersh_wf]) (auto intro: msetext_huet_imp_dersh)
 
-lemma msetext_huet_rev_hd_or_tl:
+lemma msetext_huet_hd_or_tl:
   assumes
     trans: "\<forall>z y x. gt z y \<longrightarrow> gt y x \<longrightarrow> gt z x" and
     total: "\<forall>y x. gt y x \<or> gt x y \<or> y = x" and
     len_eq: "length ys = length xs" and
     yys_gt_xxs: "msetext_huet gt (y # ys) (x # xs)"
   shows "gt y x \<or> msetext_huet gt ys xs"
-
 proof -
   let ?Y = "mset (y # ys)"
   let ?X = "mset (x # xs)"
@@ -1751,6 +1762,12 @@ interpretation msetext_huet: ext_singleton msetext_huet
 interpretation msetext_huet: ext_wf msetext_huet
   by standard (fact msetext_huet_wf)
 
+interpretation msetext_huet: ext_hd_or_tl msetext_huet
+  by standard (rule msetext_huet_hd_or_tl)
+
+interpretation msetext_huet: ext_wf_bounded msetext_huet
+  by standard
+
 
 subsection \<open>Componentwise Extension\<close>
 
@@ -1758,6 +1775,86 @@ definition cwiseext :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> '
   "cwiseext gt ys xs \<longleftrightarrow> length ys = length xs
      \<and> (\<forall>i < length ys. gt (ys ! i) (xs ! i) \<or> ys ! i = xs ! i)
      \<and> (\<exists>i < length ys. gt (ys ! i) (xs ! i))"
+
+lemma cwiseext_imp_len_lexext:
+  assumes cw: "cwiseext gt ys xs"
+  shows "len_lexext gt ys xs"
+proof -
+  have len_eq: "length ys = length xs"
+    using cw[unfolded cwiseext_def] by sat
+  moreover have "lexext gt ys xs"
+  proof -
+    obtain j where
+      j_len: "j < length ys" and
+      j_gt: "gt (ys ! j) (xs ! j)"
+      using cw[unfolded cwiseext_def] by blast
+    then obtain j0 where
+      j0_len: "j0 < length ys" and
+      j0_gt: "gt (ys ! j0) (xs ! j0)" and
+      j0_min: "\<And>i. i < j0 \<Longrightarrow> \<not> gt (ys ! i) (xs ! i)"
+      using wf_eq_minimal[THEN iffD1, OF wf_less, rule_format, of _ "{i. gt (ys ! i) (xs ! i)}",
+        simplified, OF j_gt]
+      by (metis less_trans nat_neq_iff)
+
+    have j0_eq: "\<And>i. i < j0 \<Longrightarrow> ys ! i = xs ! i"
+      using cw[unfolded cwiseext_def] by (metis j0_len j0_min less_trans)
+
+    have "lexext gt (drop j0 ys) (drop j0 xs)"
+      using lexext_Cons[of gt _ _ "drop (Suc j0) ys" "drop (Suc j0) xs", OF j0_gt]
+      by (metis Cons_nth_drop_Suc j0_len len_eq)
+    thus ?thesis
+      using cw len_eq j0_len j0_min
+    proof (induct j0 arbitrary: ys xs)
+      case (Suc k)
+      note ih0 = this(1) and gts_dropSk = this(2) and cw = this(3) and len_eq = this(4) and
+        Sk_len = this(5) and Sk_min = this(6)
+
+      have Sk_eq: "\<And>i. i < Suc k \<Longrightarrow> ys ! i = xs ! i"
+        using cw[unfolded cwiseext_def] by (metis Sk_len Sk_min less_trans)
+
+      have k_len: "k < length ys"
+        using Sk_len by simp
+      have k_min: "\<And>i. i < k \<Longrightarrow> \<not> gt (ys ! i) (xs ! i)"
+        using Sk_min by simp
+
+      have k_eq: "\<And>i. i < k \<Longrightarrow> ys ! i = xs ! i"
+        using Sk_eq by simp
+
+      note ih = ih0[OF _ cw len_eq k_len k_min]
+
+      show ?case
+      proof (cases "k < length ys")
+        case k_lt_ys: True
+        note k_lt_xs = k_lt_ys[unfolded len_eq]
+
+        obtain x where x: "x = xs ! k"
+          by simp
+        hence y: "x = ys ! k"
+          using Sk_eq[of k] by simp
+
+        have dropk_xs: "drop k xs = x # drop (Suc k) xs"
+          using k_lt_xs x by (simp add: Cons_nth_drop_Suc)
+        have dropk_ys: "drop k ys = x # drop (Suc k) ys"
+          using k_lt_ys y by (simp add: Cons_nth_drop_Suc)
+
+        show ?thesis
+          by (rule ih, unfold dropk_xs dropk_ys, rule lexext_Cons_eq[OF gts_dropSk])
+      next
+        case False
+        hence "drop k xs = []" and "drop k ys = []"
+          using len_eq by simp_all
+        hence "lexext gt [] []"
+          using gts_dropSk by simp
+        hence "lexext gt (drop k ys) (drop k xs)"
+          by simp
+        thus ?thesis
+          by (rule ih)
+      qed
+    qed simp
+  qed
+  ultimately show ?thesis
+    unfolding lenext_def by sat
+qed
 
 lemma cwiseext_mono_strong:
   "(\<forall>y \<in> set ys. \<forall>x \<in> set xs. gt y x \<longrightarrow> gt' y x) \<Longrightarrow> cwiseext gt ys xs \<Longrightarrow> cwiseext gt' ys xs"
@@ -1826,6 +1923,9 @@ qed auto
 lemma cwiseext_singleton: "cwiseext gt [y] [x] \<longleftrightarrow> gt y x"
   unfolding cwiseext_def by auto
 
+lemma cwiseext_wf: "wfP (\<lambda>x y. gt y x) \<Longrightarrow> wfP (\<lambda>xs ys. cwiseext gt ys xs)"
+  by (auto intro: cwiseext_imp_len_lexext wfP_subset[OF len_lexext_wf])
+
 lemma cwiseext_hd_or_tl: "cwiseext gt (y # ys) (x # xs) \<Longrightarrow> gt y x \<or> cwiseext gt ys xs"
   unfolding cwiseext_def
 proof (elim conjE, intro disj_imp[THEN iffD2, rule_format] conjI)
@@ -1892,7 +1992,7 @@ proof -
         hence False
           using y_eq_x gt_irrefl yys_gtcw_xxs unfolding cwiseext_def by presburger
         thus ?thesis
-          by satx
+          by sat
       next
         case False
         thus ?thesis
@@ -1917,7 +2017,7 @@ proof -
       qed
     }
     ultimately show ?case
-      by satx
+      by sat
   qed
 qed
 
@@ -1942,6 +2042,9 @@ interpretation cwiseext: ext_compat_list cwiseext
 
 interpretation cwiseext: ext_singleton cwiseext
   by standard (rule cwiseext_singleton)
+
+interpretation cwiseext: ext_wf cwiseext
+  by standard (rule cwiseext_wf)
 
 interpretation cwiseext: ext_hd_or_tl cwiseext
   by standard (rule cwiseext_hd_or_tl)
