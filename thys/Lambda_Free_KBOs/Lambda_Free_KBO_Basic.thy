@@ -9,6 +9,12 @@ theory Lambda_Free_KBO_Basic
 imports Lambda_Free_KBO_Std
 begin
 
+text \<open>
+This theory defines the basic version of the graceful Knuth--Bendix order (KBO) for
+@{text \<lambda>}-free higher-order terms. Basic means that all symbols must have a
+positive weight. The results are lifted from the standard KBO.
+\<close>
+
 locale kbo_basic = kbo_basic_basis _ _ _ ground_heads_var
   for ground_heads_var :: "'v \<Rightarrow> 's set"
 begin
