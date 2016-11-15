@@ -775,6 +775,97 @@ proof(induct lst arbitrary:i)
   finally show ?case by auto
 qed
 
+lemma sum_le_1_prod: assumes d: "1 \<le> d" and c: "1 \<le> c"
+  shows "c + d \<le> 1 + c * (d :: real)"
+proof -
+  from d c have "(c - 1) * (d - 1) \<ge> 0" by auto
+  thus ?thesis by (auto simp: field_simps)
+qed
+
+lemma mignotte_helper_coeff_int': "cmod (coeff_int (\<Prod>a\<leftarrow>lst. [:- a, 1:]) i)
+    \<le> choose_int (length lst - 1) i * (\<Prod>a\<leftarrow>lst. (max 1 (cmod a))) 
+    + ((length lst - 1) choose (nat (i - 1)))"
+proof -
+  have "cmod (coeff_int (\<Prod>a\<leftarrow>lst. [:- a, 1:]) i)
+    \<le> choose_int (length lst - 1) i * (\<Prod>a\<leftarrow>lst. (max 1 (cmod a))) 
+    + choose_int (length lst - 1) (i - 1)"
+  proof(induct lst arbitrary:i)
+    case Nil thus ?case by (auto simp:coeff_int_def choose_int_def)
+    case (Cons v xs i)
+    show ?case
+    proof (cases "xs = []")
+      case True
+      show ?thesis unfolding True 
+      proof (auto simp: coeff_int_def choose_int_def, cases "nat i", auto, cases "nat (i - 1)", auto, goal_cases)
+        case (1 n nn)
+        then obtain k where n: "n = Suc k" by (cases n, auto)
+        thus ?case by auto
+      qed
+    next
+      case False
+      hence id: "length (v # xs) - 1 = Suc (length xs - 1)" by auto
+      have id': "choose_int (length xs) i = choose_int (Suc (length xs - 1)) i" for i
+        using False by (cases xs, auto)
+      let ?r = "(\<Prod>a\<leftarrow>xs. [:- a, 1:])"
+      let ?mv = "(\<Prod>a\<leftarrow>xs. (max 1 (cmod a)))"
+      let ?c1 = "real (choose_int (length xs - 1) (i - 1 - 1))" 
+      let ?c2 = "real (choose_int (length (v # xs) - 1) i - choose_int (length xs - 1) i)" 
+      let "?m xs n" = "choose_int (length xs - 1) n * (\<Prod>a\<leftarrow>xs. (max 1 (cmod a)))"
+      have le1:"1 \<le> max 1 (cmod v)" by auto
+      have le2:"cmod v \<le> max 1 (cmod v)" by auto
+      have mv_ge_1:"1 \<le> ?mv" by (rule prod_list_ge1, auto)
+      obtain a b c d where abcd : 
+        "real (choose_int (length xs - Suc 0) i) = a" 
+        "real (choose_int (length xs - Suc 0) (i - 1)) = b" 
+        "(\<Prod>a\<leftarrow>xs. max 1 (cmod a)) = c" 
+        "cmod v = d" by auto
+      have "cmod (coeff_int ([:- v, 1:] * ?r) i) \<le> cmod (coeff_int ?r (i - 1)) + cmod (coeff_int (smult v ?r) i)"
+        using norm_triangle_ineq4 by auto
+      also have "\<dots> \<le> ?m xs (i - 1) + (choose_int (length xs - 1) (i - 1 - 1)) + cmod (coeff_int (smult v ?r) i)" 
+        using Cons[of "i-1"] by auto
+      also have "choose_int (length xs - 1) (i - 1) = choose_int (length (v # xs) - 1) i - choose_int (length xs - 1) i" 
+        unfolding id choose_int_suc by auto
+      also have "?c2 * (\<Prod>a\<leftarrow>xs. max 1 (cmod a)) + ?c1 +
+         cmod (coeff_int (smult v (\<Prod>a\<leftarrow>xs. [:- a, 1:])) i) \<le> 
+         ?c2 * (\<Prod>a\<leftarrow>xs. max 1 (cmod a)) + ?c1 + cmod v * (
+           real (choose_int (length xs - 1) i) * (\<Prod>a\<leftarrow>xs. max 1 (cmod a)) + 
+           real (choose_int (length xs - 1) (i - 1)))"
+        using mult_mono'[OF order_refl Cons, of "cmod v" i, simplified] by (auto simp: norm_mult)
+      also have "\<dots> \<le> ?m (v # xs) i + (choose_int (length xs) (i - 1))" 
+      proof (simp add: field_simps id' abcd)
+        have c1: "c \<ge> 1" unfolding abcd[symmetric] by (rule mv_ge_1)
+        have b: "b = 0 \<or> b \<ge> 1" unfolding abcd[symmetric] by auto
+        have a: "a = 0 \<or> a \<ge> 1" unfolding abcd[symmetric] by auto
+        hence a0: "a \<ge> 0" by auto
+        have acd: "a * (c * d) \<le> a * (c * max 1 d)" using a0 c1
+          by (simp add: mult_left_mono)
+        from b have "b * (c + d) \<le> b * (1  + (c * max 1 d))" 
+        proof 
+          assume "b \<ge> 1" 
+          hence "?thesis = (c + d \<le> 1 + c * max 1 d)" by simp
+          also have \<dots>
+          proof (cases "d \<ge> 1")
+            case False
+            hence id: "max 1 d = 1" by simp
+            show ?thesis using False unfolding id by simp
+          next
+            case True
+            hence id: "max 1 d = d" by simp
+            show ?thesis using True c1 unfolding id by (rule sum_le_1_prod)
+          qed
+          finally show ?thesis .
+        qed auto
+        with acd show "b * c + (b * d + a * (c * d)) \<le> b + (a * (c * max 1 d) + b * (c * max 1 d))" 
+          by (auto simp: field_simps)
+      qed
+      finally show ?thesis by simp
+    qed
+  qed
+  moreover have "choose_int (length lst - 1) (i - 1) \<le> (length lst - 1) choose (nat (i - 1))" 
+    unfolding choose_int_def by auto
+  finally show ?thesis by auto
+qed
+
 lemma mignotte_helper_coeff:
   shows "cmod (coeff h i) \<le> (degree h choose i) * measure_poly h"
 proof -
@@ -782,13 +873,28 @@ proof -
   have "cmod (coeff h i) = cmod (coeff (smult (lead_coeff h) (\<Prod>a\<leftarrow>?r. [:- a, 1:])) i)"
     unfolding complex_roots by auto
   also have "\<dots> = cmod (lead_coeff h) * cmod (coeff (\<Prod>a\<leftarrow>?r. [:- a, 1:]) i)" by(simp add:norm_mult)
-  also have "\<dots> \<le> cmod (lead_coeff h) * (degree h choose i) * measure_monic h"
-    proof(cases "h = 0") case False hence "cmod (lead_coeff h) > 0" by (simp add:lead_coeff_nonzero)
-      thus ?thesis using measure_monic_def mignotte_helper_coeff_int[of ?r i] by simp
-    qed auto
+  also have "\<dots> \<le> cmod (lead_coeff h) * ((degree h choose i) * measure_monic h)"
+    unfolding measure_monic_def
+    by (rule mult_left_mono, insert mignotte_helper_coeff_int[of ?r i], auto)
   also have "\<dots> = (degree h choose i) * measure_poly h"
     unfolding measure_poly_via_monic by simp
   finally show ?thesis.
+qed
+
+lemma mignotte_helper_coeff':
+  shows "cmod (coeff h i) \<le> (degree h - 1 choose i) * measure_poly h + (degree h - 1 choose (i - 1)) * cmod (lead_coeff h)"
+proof -
+  let ?r = "complex_roots_complex h"
+  have "cmod (coeff h i) = cmod (coeff (smult (lead_coeff h) (\<Prod>a\<leftarrow>?r. [:- a, 1:])) i)"
+    unfolding complex_roots by auto
+  also have "\<dots> = cmod (lead_coeff h) * cmod (coeff (\<Prod>a\<leftarrow>?r. [:- a, 1:]) i)" by(simp add:norm_mult)
+  also have "\<dots> \<le> cmod (lead_coeff h) * ((degree h - 1 choose i) * measure_monic h + ((degree h - 1) choose nat (int i - 1)))"    
+    unfolding measure_monic_def
+    by (rule mult_left_mono, insert mignotte_helper_coeff_int'[of ?r i], auto)
+  also have "\<dots> = (degree h - 1 choose i) * measure_poly h + cmod (lead_coeff h) * ((degree h - 1) choose nat (int i - 1))" 
+    unfolding measure_poly_via_monic by (simp add: field_simps)
+  also have "nat (int i - 1) = i - 1" by (cases i, auto)
+  finally show ?thesis by (simp add: ac_simps)
 qed
 
 lemma sum_conv:
@@ -824,13 +930,17 @@ lemma mignotte_coeff_helper:
   unfolding measure_poly_int_def
   using mignotte_helper_coeff[of "map_poly complex_of_int h" i] by auto
 
-
 lemma cmod_through_lead_coeff[simp]:
-  "cmod (lead_coeff (map_poly complex_of_int h)) = abs (lead_coeff h)"
-proof(induct h) case (pCons a h)
-  from pCons consider "a \<noteq> 0 \<and> h = 0" | "h \<noteq> 0" by auto
-  thus ?case by (cases, auto simp: i1.map_poly_preservers[symmetric])  
-qed auto
+  "cmod (lead_coeff (of_int_poly h)) = abs (lead_coeff h)"
+  by (auto simp: i1.map_poly_preservers(1)[symmetric])
+
+lemma mignotte_coeff_helper':
+  "abs (coeff h i) \<le> 
+   (degree h - 1 choose i) * measure_poly_int h +
+   (degree h - 1 choose (i - 1)) * abs (lead_coeff h)"
+  unfolding measure_poly_int_def
+  using mignotte_helper_coeff'[of "of_int_poly h" i] 
+  by auto
 
 lemma measure_poly_ge_1:
   assumes "h\<noteq>0"
@@ -844,11 +954,15 @@ proof -
     by auto
 qed
 
-definition factor_bound :: "int poly \<Rightarrow> nat \<Rightarrow> int" where
-  "factor_bound f d = sqrt_int_floor ((d choose d div 2)^2 * sum_list (map (\<lambda> a. a * a) (coeffs f)))" 
+definition factor_bound_old :: "int poly \<Rightarrow> nat \<Rightarrow> int" where
+  "factor_bound_old f d = sqrt_int_floor ((d choose d div 2)^2 * sum_list (map (\<lambda> a. a * a) (coeffs f)))" 
 
-lemma factor_bound: assumes "f \<noteq> 0" "g dvd f" "degree g \<le> n"
-  shows "\<bar>coeff g k\<bar> \<le> factor_bound f n"  proof-
+definition factor_bound :: "int poly \<Rightarrow> nat \<Rightarrow> int" where
+  "factor_bound f d = (let d' = d - 1; d2 = d' div 2; binom = (d' choose d2) in
+    sqrt_int_floor (binom^2 * sum_list (map (\<lambda> a. a * a) (coeffs f))) + binom * abs (lead_coeff f))"
+  
+lemma factor_bound_old: assumes "f \<noteq> 0" "g dvd f" "degree g \<le> n"
+  shows "\<bar>coeff g k\<bar> \<le> factor_bound_old f n"  proof-
   obtain h where gh:"g * h = f" using assms by (metis dvdE)
   have nz:"g\<noteq>0" "h\<noteq>0" using gh assms(1) by auto
   have g1:"(1::real) \<le> measure_poly_int h" using measure_poly_ge_1 gh assms(1) by auto
@@ -872,8 +986,64 @@ lemma factor_bound: assumes "f \<noteq> 0" "g dvd f" "degree g \<le> n"
   also have "\<dots> = sqrt ((n choose n div 2)^2 * norm2 (of_int_poly f))"
     unfolding real_sqrt_mult by simp
   finally have "\<bar>coeff g k\<bar> \<le> sqrt (real ((n choose n div 2)\<^sup>2) * norm2 (of_int_poly f))" .
-  from floor_mono[OF this] show ?thesis unfolding factor_bound_def
+  from floor_mono[OF this] show ?thesis unfolding factor_bound_old_def
     by (auto simp: power2_eq_square coeffs_map_poly o_def) linarith
+qed
+
+lemma factor_bound: assumes "f \<noteq> 0" "g dvd f" "degree g \<le> n"
+  shows "\<bar>coeff g k\<bar> \<le> factor_bound f n"  proof-
+  obtain h where gh:"g * h = f" using assms by (metis dvdE)
+  have nz:"g\<noteq>0" "h\<noteq>0" using gh assms(1) by auto
+  have g1:"(1::real) \<le> measure_poly_int h" using measure_poly_ge_1 gh assms(1) by auto
+  have g0:"\<And> h. 0 \<le> measure_poly_int h" unfolding measure_poly_int_def measure_poly_via_monic
+    by (simp add: measure_monic_ge_0)
+  let ?n = "(n - 1) choose ((n - 1) div 2)" 
+  have to_n: "(degree g - 1 choose k) \<le> real ?n" for k
+  proof -
+    have "degree g -1 choose k \<le> n -1 choose k"
+      by (rule binomial_mono_left, insert assms, auto)
+    also have "\<dots> \<le> ?n" using binomial_maximum[of "n - 1"  k] by simp
+    finally show "real (degree g - 1 choose k) \<le> real ?n" by simp
+  qed
+  have "\<bar>coeff g k\<bar> \<le> (degree g - 1 choose k) * measure_poly_int g
+    + real (degree g - 1 choose (k - 1)) * \<bar>lead_coeff g\<bar>" using mignotte_coeff_helper'[of g k] by simp
+  also have "\<dots> \<le> ?n * measure_poly_int f + real ?n * \<bar>lead_coeff f\<bar>"
+  proof (rule add_mono[OF mult_mono[OF to_n] mult_mono[OF to_n]])
+    have "measure_poly_int g  \<le> measure_poly_int g * measure_poly_int h" using g1 g0[of g]
+      using measure_poly_ge_1 nz(1) by force
+    thus "measure_poly_int g \<le> measure_poly_int f" 
+      using measure_eq_prod[of "of_int_poly g" "of_int_poly h"]
+      unfolding measure_poly_int_def gh[symmetric] by auto
+    have *: "lead_coeff f = lead_coeff g * lead_coeff h" 
+      unfolding arg_cong[OF gh, of lead_coeff, symmetric] by (rule lead_coeff_mult)
+    have "\<bar>lead_coeff h\<bar> \<noteq> 0" using nz(2) by auto
+    hence lh: "\<bar>lead_coeff h\<bar> \<ge> 1" by linarith
+    have "\<bar>lead_coeff f\<bar> = \<bar>lead_coeff g\<bar> * \<bar>lead_coeff h\<bar>" unfolding * by (rule abs_mult)
+    also have "\<dots> \<ge> \<bar>lead_coeff g\<bar> * 1" 
+      by (rule mult_mono, insert lh, auto)
+    finally have "\<bar>lead_coeff g\<bar> \<le> \<bar>lead_coeff f\<bar>" by simp
+    thus "real_of_int \<bar>lead_coeff g\<bar> \<le> real_of_int \<bar>lead_coeff f\<bar>" by simp
+  qed (auto simp: g0)
+  also have "\<dots> \<le> sqrt (?n^2 * norm2 (of_int_poly f)) + real ?n * \<bar>lead_coeff f\<bar>"
+  proof (rule add_right_mono)
+    have "?n * measure_poly_int f \<le> ?n * (sqrt (norm2 (of_int_poly f)))" 
+    using Landau_inequality[of "of_int_poly f"] unfolding measure_poly_int_def
+    by simp
+    also have "\<dots> = sqrt (?n^2 * norm2 (of_int_poly f))"
+      unfolding real_sqrt_mult by simp
+    finally show "?n * measure_poly_int f \<le> sqrt (?n^2 * norm2 (of_int_poly f))" .
+  qed
+  finally have "\<bar>coeff g k\<bar> \<le> sqrt (?n^2 * norm2 (of_int_poly f)) + real ?n * \<bar>lead_coeff f\<bar>" . 
+  from floor_mono[OF this] 
+  have "floor (real_of_int \<bar>coeff g k\<bar>) \<le> floor (sqrt (?n^2 * norm2 (of_int_poly f)) + real_of_int (int ?n * \<bar>lead_coeff f\<bar>))" 
+    by simp
+  also have "floor (real_of_int \<bar>coeff g k\<bar>) = \<bar>coeff g k\<bar>" by linarith
+  also have "floor (sqrt (?n^2 * norm2 (of_int_poly f)) + real_of_int (int ?n * \<bar>lead_coeff f\<bar>))
+    = floor (sqrt (?n^2 * norm2 (of_int_poly f))) + int ?n * \<bar>lead_coeff f\<bar>" 
+    unfolding floor_add_int by simp
+  finally  
+  show ?thesis unfolding factor_bound_def Let_def
+    by (auto simp: power2_eq_square coeffs_map_poly o_def Let_def) 
 qed
 
 lemma mignotte: (* note: no longer needed, but it is the lemma in its common symmetric form *)
