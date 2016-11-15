@@ -656,16 +656,12 @@ proof (induct "size s" arbitrary: s rule: less_induct)
     show False
       using s_gt_s
     proof (cases rule: gt.cases)
-      case gt_diff
-      thus False
-        using gt_hd_irrefl by simp
-    next
       case gt_same
       then obtain f where f: "extf f (op >\<^sub>t) (args s) (args s)"
         by fastforce
       thus False
-        using wary_s ih  by (metis wary_args extf_irrefl size_in_args)
-    qed (auto simp: comp_hd_def gt_tpoly_irrefl)
+        using wary_s ih by (metis wary_args extf_irrefl size_in_args)
+    qed (auto simp: comp_hd_def gt_tpoly_irrefl gt_hd_irrefl)
   qed
 qed
 
