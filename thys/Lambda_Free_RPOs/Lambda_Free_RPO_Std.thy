@@ -288,7 +288,7 @@ proof (standard, induct s rule: measure_induct_rule[of size])
         using ih[of "arg s"] is_app size_arg_lt by blast
     }
     ultimately show False
-      by satx
+      by sat
   next
     case gt_diff
     thus False
@@ -719,10 +719,10 @@ proof -
         hence "bad (op >\<^sub>t\<^sub>g) uij"
           unfolding bad_def by fastforce
         thus False
-          using u_good[OF uij_in] by satx
+          using u_good[OF uij_in] by sat
       qed
       thus "gt_diff (?ff i) (?ff (Suc i)) \<or> gt_same (?ff i) (?ff (Suc i))"
-        using gt unfolding gt_iff_sub_diff_same by satx
+        using gt unfolding gt_iff_sub_diff_same by sat
     qed
 
     have "wf {(s, t). ground s \<and> ground t \<and> sym (head t) >\<^sub>s sym (head s)}"
@@ -803,7 +803,7 @@ proof -
         using u_good bad_f inf_chain_bad inf_chain_subset[OF _ gtu_le_gtg] by blast
 
       show False
-        using bad_f0 good_f0 by satx
+        using bad_f0 good_f0 by sat
     qed
     hence wf_ext: "wfP (\<lambda>xs ys. extf f ?gtu ys xs)"
       by (rule ext_wf.wf[OF extf_wf, rule_format])

@@ -131,9 +131,6 @@ lemma wt_App_\<delta>: "wt (App s t) = wt t \<Longrightarrow> wt s = \<delta>"
 lemma wt_App_ge_fun: "wt (App s t) \<ge> wt s"
   by (metis diff_le_mono2 wt_ge_\<delta> le_diff_conv wt.simps(2))
 
-lemma wt_App_ge_arg: "wt (App s t) \<ge> wt t"
-  by (cases s) auto
-
 lemma wt_hd_le: "wt (Hd (head s)) \<le> wt s"
   by (induct s, simp) (metis head_App leD le_less_trans not_le_imp_less wt_App_ge_fun)
 
@@ -274,7 +271,7 @@ proof
     using extf_trans_from_irrefl[of "{s}", OF _ _ _ _ _ _ nil_gt_s s_gt_nil] gt_irrefl[OF wary_s]
     by fastforce
   ultimately show False
-    by satx
+    by sat
 qed
 
 lemma wt_\<delta>_arity_give_unary: "wt s = \<delta> \<Longrightarrow> num_args s < arity_hd (head s) \<Longrightarrow> arity_hd (head s) = 1"
@@ -477,7 +474,7 @@ proof (simp only: atomize_imp,
           using ih[of "arg u" t s] gt_unary_u_t(5) t_gt_s size_arg_lt wary_arg_u wary_s wary_t
           by force
         hence arg_u_ge_s: "arg u \<ge>\<^sub>t s"
-          by satx
+          by sat
 
         {
           assume "size (arg u) < size t"
@@ -587,7 +584,7 @@ proof (simp only: atomize_imp,
               by (rule gt_unary[OF wt_u_s hd_u_ncmp_s gt_unary_u_t(3,4) arg_u_ge_s])
           }
           ultimately have ?thesis
-            unfolding comp_hd_def by satx
+            unfolding comp_hd_def by sat
         }
         ultimately show ?thesis
           by (metis args_Nil_iff_is_Hd dual_order.strict_trans2 gt_unary_t_s(3) gt_unary_u_t(3)
@@ -598,7 +595,7 @@ proof (simp only: atomize_imp,
           using gt_diff_u_t(3) gt_hd_def gt_hd_irrefl gt_sym_antisym gt_unary_t_s(4) wt_sym_0_gt
           by blast
         thus ?thesis
-          by satx
+          by sat
       next
         case gt_same_u_t: gt_same
 
@@ -649,7 +646,7 @@ proof (simp only: atomize_imp,
             by (metis add_mset_lt_left_lt add_mset_lt_lt_lt args_Nil_iff_is_Hd list.size(3)
               nargs_u_eq_1 size_arg_lt t_app zero_neq_one)
           hence arg_u_ge_s: "arg u \<ge>\<^sub>t s"
-            by satx
+            by sat
           have ?thesis
             by (rule gt_unary[OF wt_u_s hd_u_ncomp_s nargs_u_eq_1 _ arg_u_ge_s])
               (simp add: gt_same_u_t(3) gt_unary_t_s(4))
@@ -669,7 +666,7 @@ proof (simp only: atomize_imp,
           using ih[of "arg u" t s] gt_unary_u_t(5) t_gt_s size_arg_lt wary_arg_u wary_s wary_t
           by force
         hence arg_u_ge_s: "arg u \<ge>\<^sub>t s"
-          by satx
+          by sat
 
         have hd_u_ne_s: "head u \<noteq> head s"
           using gt_diff_t_s(3) gt_unary_u_t(2) unfolding comp_hd_def by force
@@ -700,7 +697,7 @@ proof (simp only: atomize_imp,
             by (rule gt_unary[OF wt_u_s _ gt_unary_u_t(3,4) arg_u_ge_s])
         }
         ultimately show ?thesis
-          using hd_u_ne_s unfolding comp_hd_def by satx
+          using hd_u_ne_s unfolding comp_hd_def by sat
       next
         case gt_diff_u_t: gt_diff
         have "head u >\<^sub>h\<^sub>d head s"
@@ -726,7 +723,7 @@ proof (simp only: atomize_imp,
           using ih[of "arg u" t s] gt_unary_u_t(5) t_gt_s size_arg_lt wary_arg_u wary_s wary_t
           by force
         hence arg_u_ge_s: "arg u \<ge>\<^sub>t s"
-          by satx
+          by sat
 
         have hd_u_ncmp_s: "\<not> head u \<le>\<ge>\<^sub>h\<^sub>d head s"
           using gt_same_t_s(3) gt_unary_u_t(2) by simp
@@ -835,7 +832,7 @@ proof -
       by (metis wary_s't gt_unary_s'_s(3,4) wary_AppE ground_heads_arity leD one_enat_def
         wt_sym_0_unary)
     thus ?thesis
-      by satx
+      by sat
   next
     case _: gt_diff
     thus ?thesis
@@ -865,14 +862,11 @@ subsection \<open>Stability under Substitution\<close>
 definition extra_wt :: "('v \<Rightarrow> ('s, 'v) tm) \<Rightarrow> ('s, 'v) tm \<Rightarrow> nat" where
   "extra_wt \<rho> s = sum_mset {#wt (\<rho> x) - wt (Hd (Var x)). x \<in># vars_mset s#}"
 
-lemma extra_wt_Var[simp]: "extra_wt \<rho> (Hd (Var x)) = wt (\<rho> x) - wt (Hd (Var x))"
-  unfolding extra_wt_def by simp
-
-lemma extra_wt_Sym[simp]: "extra_wt \<rho> (Hd (Sym f)) = 0"
-  unfolding extra_wt_def by simp
-
-lemma extra_wt_App[simp]: "extra_wt \<rho> (App s t) = extra_wt \<rho> s + extra_wt \<rho> t"
-  by (simp add: extra_wt_def)
+lemma
+  extra_wt_Var[simp]: "extra_wt \<rho> (Hd (Var x)) = wt (\<rho> x) - wt (Hd (Var x))" and
+  extra_wt_Sym[simp]: "extra_wt \<rho> (Hd (Sym f)) = 0" and
+  extra_wt_App[simp]: "extra_wt \<rho> (App s t) = extra_wt \<rho> s + extra_wt \<rho> t"
+  unfolding extra_wt_def by simp+
 
 lemma extra_wt_subseteq:
   assumes vars_s: "vars_mset t \<supseteq># vars_mset s"
@@ -969,7 +963,7 @@ proof (simp only: atomize_imp,
         using wt_\<rho>t_eq_\<rho>s wary_s wary_t
         by (metis add_diff_cancel_right' diff_le_mono2 extra_wt_subseteq wt_subst leD wary_\<rho>)
       thus ?thesis
-        by satx
+        by sat
     next
       case gt_unary
 
@@ -982,7 +976,7 @@ proof (simp only: atomize_imp,
         hence False
           using gt_unary(3) by simp
         thus ?thesis
-          by satx
+          by sat
       next
         case t: (App t1 t2)
         hence t2: "t2 = arg t"
@@ -1161,7 +1155,7 @@ proof (induct t arbitrary: s rule: tm_induct_apps)
               by (rule gt_same[OF vars_s wt_s hd_s]) (simp add: extf[unfolded g_eq_f] \<zeta> s)
           }
           ultimately show ?thesis
-            by satx
+            by sat
         qed
       }
       ultimately show ?thesis
@@ -1193,7 +1187,7 @@ proof
     using gt_unary_t_s by cases (blast dest: ground_head not_comp_hd_imp_Var)
 
   show False
-    using gr_t gr_s ngr_t_or_s by satx
+    using gr_t gr_s ngr_t_or_s by sat
 qed
 
 theorem gt_wf: "wfP (\<lambda>s t. t >\<^sub>t\<^sub>w s)"
@@ -1257,13 +1251,10 @@ proof -
       {(s, t). ground t \<and> gt_diff t s} \<union> {(s, t). ground t \<and> gt_same t s}"
       by auto
 
-    have k1_comm: "\<And>m n. m + n + k1 = m + (n + k1)"
-      by presburger
-
     obtain k2 where bad_same: "inf_chain (\<lambda>t s. ground t \<and> gt_same t s) (\<lambda>i. ?ff (i + k2))"
       using wf_infinite_down_chain_compatible[OF wf_diff _ diff_O_same, of "\<lambda>i. ?ff (i + k1)"]
         bad_diff_same
-      unfolding inf_chain_def diff_same_as_union[symmetric] by (auto simp: k1_comm)
+      unfolding inf_chain_def diff_same_as_union[symmetric] by (auto simp: add.assoc)
     hence hd_sym: "\<And>i. is_Sym (head (?ff (i + k2)))"
       unfolding inf_chain_def by (simp add: ground_head)
 
@@ -1364,7 +1355,7 @@ proof -
       hence "\<not> bad ?gtwu (f 0)"
         using bad_f inf_chain_bad inf_chain_subset[OF _ gtwu_le_gtwg] by blast
       thus False
-        using bad_f0 by satx
+        using bad_f0 by sat
     qed
     hence wf_ext: "wfP (\<lambda>xs ys. length ys \<le> max_args \<and> length xs \<le> max_args \<and> extf f ?gtwu ys xs)"
       using extf_wf_bounded[of ?gtwu] gtwu_irrefl by blast
