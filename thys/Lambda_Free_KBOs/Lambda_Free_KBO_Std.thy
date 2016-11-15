@@ -639,7 +639,7 @@ proof (simp only: atomize_imp,
               (simp add: gt_same_u_t(3) gt_unary_t_s(4))
         }
         ultimately show ?thesis
-          using le_eq_less_or_eq by auto
+          by (auto simp: le_eq_less_or_eq)
       qed (simp add: wt_u_t)
     next
       case gt_diff_t_s: gt_diff

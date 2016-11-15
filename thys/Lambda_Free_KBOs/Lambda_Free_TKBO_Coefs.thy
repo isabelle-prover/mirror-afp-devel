@@ -898,8 +898,6 @@ proof (simp only: atomize_imp,
       case gt_unary_u_t: gt_unary
       have u_app: "is_App u"
         by (metis args_Nil_iff_is_Hd gt_unary_u_t(3) length_greater_0_conv less_numeral_extra(1))
-      hence nargs_fun_u: "num_args (fun u) < arity_hd (head (fun u))"
-        by (metis tm.collapse(2) wary_AppE wary_u)
       have nargs_fun_u_0: "num_args (fun u) = 0"
         by (metis args.simps(1) gt_unary_u_t(3) list.size(3) one_arg_imp_Hd tm.collapse(2) u_app)
 
@@ -1092,9 +1090,6 @@ proof (simp only: atomize_imp,
 
       have \<delta>_eq_\<epsilon>: "\<delta>\<^sub>h = \<epsilon>\<^sub>h"
         using gt_unary_u_t(4) wt_sym_0_imp_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h by blast
-
-      have nargs_fun_u: "num_args (fun u) < arity_hd (head (fun u))"
-        by (metis tm.collapse(2) u_app wary_AppE wary_u)
 
       {
         assume "head u >\<^sub>h\<^sub>d head s"
