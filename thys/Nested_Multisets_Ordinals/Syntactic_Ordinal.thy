@@ -39,6 +39,9 @@ instance
 
 end
 
+lemma diff_diff_add_hmset[simp]: "a - b - c = a - (b + c)" for a b c :: hmultiset
+  by (fact diff_diff_add)
+
 lemma le_minus_plus_same_hmset: "m \<le> m - n + n" for m n :: hmultiset
 proof (cases m n rule: hmultiset.exhaust[case_product hmultiset.exhaust])
   case (HMSet_HMSet m0 n0)

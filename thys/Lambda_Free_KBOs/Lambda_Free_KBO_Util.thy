@@ -84,6 +84,11 @@ lemma
   extf_ext_singleton: "ext_singleton (extf f)"
   by (rule ext_compat_list_strong.axioms[OF extf_ext_compat_list_strong])+
 
+lemma extf_ext_compat_list: "ext_compat_list (extf f)"
+  using extf_ext_compat_list_strong
+  by (simp add: ext_compat_list_axioms_def ext_compat_list_def ext_compat_list_strong.compat_list
+    ext_compat_list_strong_def ext_singleton.axioms(1))
+
 lemma extf_ext_wf_bounded: "ext_wf_bounded (extf f)"
   unfolding ext_wf_bounded_def using extf_ext_irrefl_before_trans extf_ext_hd_or_tl by simp
 
@@ -96,6 +101,7 @@ lemmas extf_trans_from_irrefl =
 lemmas extf_compat_cons = ext_compat_cons.compat_cons[OF extf_ext_compat_cons]
 lemmas extf_compat_append_left = ext_compat_cons.compat_append_left[OF extf_ext_compat_cons]
 lemmas extf_compat_append_right = ext_compat_snoc.compat_append_right[OF extf_ext_compat_snoc]
+lemmas extf_compat_list = ext_compat_list.compat_list[OF extf_ext_compat_list]
 lemmas extf_singleton = ext_singleton.singleton[OF extf_ext_singleton]
 lemmas extf_wf_bounded = ext_wf_bounded.wf_bounded[OF extf_ext_wf_bounded]
 

@@ -12,6 +12,7 @@ section \<open>The Graceful Transfinite Knuth-Bendix Order with Subterm Coeffici
 theory Lambda_Free_TKBO_Coefs
 imports Lambda_Free_KBO_Util "../Nested_Multisets_Ordinals/Syntactic_Ordinal"
 abbrevs
+  "=p" = "=\<^sub>p"
   ">p" = ">\<^sub>p"
   "\<ge>p" = "\<ge>\<^sub>p"
   ">t" = ">\<^sub>t"
@@ -424,15 +425,16 @@ proof (cases s rule: tm_exhaust_apps)
   proof (cases "arity_sym\<^sub>h (min_ground_head \<zeta>) = \<omega>")
     case ary_eq_\<omega>: True
     show ?thesis
-      unfolding ary_eq_\<omega> s App_apps wt.simps by (auto simp: diff_diff_add[symmetric] add.assoc)
+      unfolding ary_eq_\<omega> s App_apps wt.simps
+      by (auto simp: diff_diff_add_hmset[symmetric] add.assoc)
   next
     case False
     show ?thesis
       unfolding s App_apps wt.simps
       by (simp add: add.assoc,
-        auto simp: add.assoc[symmetric] add.commute[of _ \<delta>\<^sub>h] add.commute[of 1]
-          diff_diff_add[symmetric] ring_distribs(1)[of _ "1 :: hmultiset", symmetric, simplified]
-          le_minus_plus_same_hmset)
+        auto simp del: diff_diff_add_hmset simp: add.assoc[symmetric] add.commute[of _ \<delta>\<^sub>h]
+          add.commute[of 1] diff_diff_add_hmset[symmetric]
+          ring_distribs(1)[of _ "1 :: hmultiset", symmetric, simplified] le_minus_plus_same_hmset)
   qed
 qed
 
@@ -444,8 +446,8 @@ lemma wt_App_fun_\<delta>\<^sub>h:
 proof -
   have "eval_tpoly A (wt (App s t)) + \<delta>\<^sub>h = eval_tpoly A (wt t) + \<delta>\<^sub>h"
     using wt_st by simp
-  hence wt_s_t_le_t_\<delta>: "eval_tpoly A (wt s) + eval_tpoly A (coef s 0) * eval_tpoly A (wt t)
-    \<le> eval_tpoly A (wt t) + \<delta>\<^sub>h"
+  hence wt_s_t_le_t_\<delta>:
+    "eval_tpoly A (wt s) + eval_tpoly A (coef s 0) * eval_tpoly A (wt t) \<le> eval_tpoly A (wt t) + \<delta>\<^sub>h"
     using wt_App_plus_\<delta>\<^sub>h_ge by metis
   hence "eval_tpoly A (coef s 0) = 1"
     by (metis add.commute add_less_le_mono coef_gt_0 gt_0_lt_mult_gt_1_hmset leD legal
@@ -1235,7 +1237,7 @@ lemma gt_antisym: "wary s \<Longrightarrow> wary t \<Longrightarrow> t >\<^sub>t
 
 subsection \<open>Compatibility with Functions\<close>
 
-theorem gt_compat_fun:
+lemma gt_compat_fun:
   assumes
     wary_t: "wary t" and
     t'_gt_t: "t' >\<^sub>t t"
@@ -1253,6 +1255,38 @@ next
   thus "extf f op >\<^sub>t (args (App s t')) (args (App s t))"
     by simp
 qed simp
+
+theorem gt_compat_fun_strong:
+  assumes
+    wary_t: "wary t" and
+    t'_gt_t: "t' >\<^sub>t t"
+  shows "apps s (t' # us) >\<^sub>t apps s (t # us)"
+proof (induct us rule: rev_induct)
+  case Nil
+  show ?case
+    using t'_gt_t by (auto intro!: gt_compat_fun[OF wary_t])
+next
+  case (snoc u us)
+  note ih = snoc
+
+  let ?v0' = "apps s (t' # us)"
+  let ?v0 = "apps s (t # us)"
+
+  let ?v' = "apps s (t' # us @ [u])"
+  let ?v = "apps s (t # us @ [u])"
+
+  have "wt ?v' \<ge>\<^sub>p wt ?v"
+    using gt_imp_wt[OF ih]
+    by (cases s rule: tm_exhaust_apps,
+      simp del: apps_append add: App_apps apps_append[symmetric] ge_tpoly_def,
+      subst (1 2) zip_eq_butlast_last, simp+)
+  moreover have "head ?v' = head ?v"
+    by simp
+  moreover have "\<forall>f \<in> ground_heads (head ?v'). extf f op >\<^sub>t (args ?v') (args ?v)"
+    by (metis args_apps extf_compat_list gt_irrefl[OF wary_t] t'_gt_t)
+  ultimately show ?case
+    by (rule gt_same)
+qed
 
 
 subsection \<open>Compatibility with Arguments\<close>

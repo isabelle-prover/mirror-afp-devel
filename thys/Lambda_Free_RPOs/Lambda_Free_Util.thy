@@ -271,6 +271,9 @@ lemma hd_in_set: "length xs \<noteq> 0 \<Longrightarrow> hd xs \<in> set xs"
 lemma in_lists_iff_set: "xs \<in> lists A \<longleftrightarrow> set xs \<subseteq> A"
   by fast
 
+lemma butlast_append_Cons[simp]: "butlast (xs @ y # ys) = xs @ butlast (y # ys)"
+  using butlast_append[of xs "y # ys", simplified] by simp
+
 lemma rev_in_lists[simp]: "rev xs \<in> lists A \<longleftrightarrow> xs \<in> lists A"
   by auto
 
@@ -301,6 +304,11 @@ proof (induct ys arbitrary: xs)
   show ?case
     using ih[of "xs @ [y]"] by (simp, cases ys, simp, simp add: upt_rec)
 qed auto
+
+lemma zip_eq_butlast_last:
+  assumes len_gt0: "length xs > 0" and len_eq: "length xs = length ys"
+  shows "zip xs ys = zip (butlast xs) (butlast ys) @ [(last xs, last ys)]"
+  using len_eq len_gt0 by (induct rule: list_induct2) auto
 
 
 subsection \<open>Extended Natural Numbers\<close>
