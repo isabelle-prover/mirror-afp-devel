@@ -214,37 +214,24 @@ lemma gt_imp_vars: "t >\<^sub>t s \<Longrightarrow> vars t \<supseteq> vars s"
 
 subsection \<open>Irreflexivity\<close>
 
-theorem gt_irrefl:
-  assumes wary_s: "wary s"
-  shows "\<not> s >\<^sub>t s"
-proof
-  assume s_gt_s: "s >\<^sub>t s"
+theorem gt_irrefl: "wary s \<Longrightarrow> \<not> s >\<^sub>t s"
+proof (induct "size s" arbitrary: s rule: less_induct)
+  case less
+  note ih = this(1) and wary_s = this(2)
 
-  let ?S = "{(s, t). wary s \<and> wary t \<and> size s < size t}"
-  let ?W = "{u. wary u \<and> u >\<^sub>t u}"
-
-  have wf_S: "wf ?S"
-    by (rule wf_subset[OF wf_app[OF wf_less, simplified]]) auto
-  have "s \<in> ?W"
-    using s_gt_s wary_s by blast
-  then obtain t where "t \<in> ?W" and min: "\<forall>u. (u, t) \<in> ?S \<longrightarrow> u \<notin> {u. u >\<^sub>t u}"
-    using wf_eq_minimal[THEN iffD1, rule_format, of ?S s ?W] wf_S by auto
-  hence t_gt_t: "t >\<^sub>t t" and wary_t: "wary t" and t_min: "\<forall>u. wary u \<longrightarrow> size u < size t \<longrightarrow> \<not> u >\<^sub>t u"
-    by blast+
-
-  show False
-    using t_gt_t
-  proof (cases rule: gt.cases)
-    case gt_diff
-    thus False
-      using gt_hd_irrefl by simp
-  next
-    case gt_same
-    then obtain f where f: "extf f (op >\<^sub>t) (args t) (args t)"
-      by fastforce
-    thus False
-      using wary_t t_min by (metis wary_args extf_irrefl size_in_args)
-   qed (auto simp: comp_hd_def)
+  show ?case
+  proof
+    assume s_gt_s: "s >\<^sub>t s"
+    show False
+      using s_gt_s
+    proof (cases rule: gt.cases)
+      case gt_same
+      then obtain f where f: "extf f (op >\<^sub>t) (args s) (args s)"
+        by fastforce
+      thus False
+        using wary_s ih by (metis wary_args extf_irrefl size_in_args)
+    qed (auto simp: comp_hd_def gt_hd_irrefl)
+  qed
 qed
 
 
