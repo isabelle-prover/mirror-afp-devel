@@ -440,9 +440,10 @@ lemma sub''[simp]: "i < IArray.length a \<Longrightarrow> sub'' a (integer_of_na
 lift_definition eliminate_entries_i2 ::
   "'a \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> (integer \<Rightarrow> 'a) \<Rightarrow> 'a mat_impl \<Rightarrow> integer \<Rightarrow> 'a mat_impl" is
   "\<lambda> z mminus ttimes v (nr, nc, a) i'.
-   (nr,nc,let ai' = sub'' a i' in (tabulate'' (\<lambda> i. 
-     let ai = sub'' a i; vi'j = v i 
-     in if vi'j = z \<or> i = i' then ai
+   (nr,nc,let ai' = sub'' a i' in (tabulate'' (\<lambda> i. let ai = sub'' a i in
+     if i = i' then ai else 
+     let vi'j = v i 
+     in if vi'j = z then ai
         else 
              tabulate'' (\<lambda> j. mminus (sub'' ai j) (ttimes vi'j 
                (sub'' ai' j))) (integer_of_nat nc)
@@ -504,12 +505,12 @@ proof (cases "i < mat_dim_row_impl m")
       proof (cases "?c1 \<or> i = ia")
         case True
         hence id: "(if ?c1 \<or> i = ia then x else y) = x" 
-          "(if ?c1 \<or> integer_of_nat i = integer_of_nat ia then x else y) = x" for x y 
+          "(if integer_of_nat i = integer_of_nat ia then x else if ?c1 then x else y) = x" for x y 
           by auto
         show ?thesis unfolding id m o_def Let_def split snd_conv mk of_fun by (auto simp: 1)
       next
         case False
-        hence id: "(?c1 \<or> integer_of_nat i = integer_of_nat ia) = False" "(?c1 \<or> i = ia) = False" 
+        hence id: "?c1 = False " "(integer_of_nat i = integer_of_nat ia) = False" "(False \<or> i = ia) = False" 
           by (auto simp add: integer_of_nat_eq_of_nat)
         show ?thesis unfolding m o_def Let_def split snd_conv mk of_fun id if_False 
           by (auto simp: 1 sub''_def)
