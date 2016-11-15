@@ -35,7 +35,7 @@ code_printing code_module "IArray" => (Haskell) {*
   -- It is the equivalent to SML Vector.of_fun:
 
   array :: (Integer -> e) -> Integer -> IArray e;
-  array f k = Data.Array.IArray.array (0, k - 1) (map (\i -> let fi = f i in fi `seq` (i, f i)) [0..k - 1]) ;
+  array f k = Data.Array.IArray.array (0, k - 1) (map (\i -> let fi = f i in fi `seq` (i, fi)) [0..k - 1]) ;
   
   -- The following function is the equivalent to "IArray" type constructor in the SML code
   -- generation setup;
