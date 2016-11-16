@@ -915,7 +915,7 @@ proof (simp only: atomize_imp,
         "\<lambda>(t, s). wary t \<longrightarrow> wary s \<longrightarrow> t >\<^sub>t s \<longrightarrow> subst \<rho> t >\<^sub>t subst \<rho> s" "(t, s)",
       simplified prod.case],
     simp only: split_paired_all prod.case atomize_imp[symmetric])
-  fix t s :: "('s, 'v) tm"
+  fix t s
   assume
     ih: "\<And>ta sa. {#size ta, size sa#} < {#size t, size s#} \<Longrightarrow> wary ta \<Longrightarrow> wary sa \<Longrightarrow> ta >\<^sub>t sa \<Longrightarrow>
       subst \<rho> ta >\<^sub>t subst \<rho> sa" and

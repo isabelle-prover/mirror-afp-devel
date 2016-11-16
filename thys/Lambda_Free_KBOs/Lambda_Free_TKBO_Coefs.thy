@@ -1439,37 +1439,21 @@ proof (induct s rule: tm_induct_apps)
   show ?case
   proof (cases \<zeta>)
     case \<zeta>: (Var x)
-
-    have len_ss_le_ary_mgh_x: "of_nat (length ss) \<le> arity_sym\<^sub>h (min_ground_head (Var x))"
-      using wary_\<zeta>ss \<zeta>
-      by (cases rule: wary_cases_apps, cases "arity_hd \<zeta>",
-         metis ground_heads_arity leD leI le_less_trans min_ground_head_in_ground_heads
-           of_nat_le_hmset_of_enat_iff tm_inject_apps,
-         metis enat_ord_code(3) enat_ord_simps(5) ground_heads_arity hmset_of_enat.simps(1)
-           hmset_of_enat_le_iff_le min_ground_head_in_ground_heads)
-    hence \<delta>_len_ss_le: "\<delta>\<^sub>h * of_nat (length ss) \<le> \<delta>\<^sub>h * arity_sym\<^sub>h (min_ground_head (Var x))"
-      by (rule mult_le_mono2_hmset)
-
     show ?thesis
     proof (cases "\<rho> x" rule: tm_exhaust_apps)
       case \<rho>x: (apps \<xi> ts)
-
-      have \<rho>_wt_ssi_eq_wt_\<rho>_ssi: "\<And>i. i < length ss \<Longrightarrow>
-        eval_tpoly (subst_passign \<rho> A) (wt (ss ! i)) = eval_tpoly A (wt (subst \<rho> (ss ! i)))"
-        by (rule ih[symmetric, OF nth_mem wary_nth_ss])
 
       have map_ss:
         "map (eval_tpoly A \<circ> (\<lambda>(s, i). PMult [coef_hd \<xi> i, wt s]))
            (zip (map (subst \<rho>) ss) [length ts..<length ts + length ss]) =
          map (eval_tpoly (subst_passign \<rho> A) \<circ> (\<lambda>(s, i). PMult [PVar (PCoef x i), wt s]))
            (zip ss [0..<length ss])"
-        by (rule nth_map_conv, simp_all add: \<rho>_wt_ssi_eq_wt_\<rho>_ssi \<rho>x add.commute)
+        by (rule nth_map_conv, simp_all add: ih[symmetric, OF nth_mem wary_nth_ss] \<rho>x add.commute)
 
       have ary_\<rho>x_eq_x: "arity\<^sub>h (\<rho> x) = arity_var\<^sub>h x" if \<delta>_nz: "\<delta>\<^sub>h \<noteq> 0"
         using wary_\<rho>[unfolded strict_wary_subst\<^sub>h_conv, rule_format, of x] \<delta>_nz
           arity_ne_infinity_if_\<delta>_gt_0 of_nat_0
         by (simp, blast)
-
       have ary_mgh_\<zeta>_mns_ts_eq_x:
         "arity_sym\<^sub>h (min_ground_head \<xi>) - of_nat (length ts) = arity_sym\<^sub>h (min_ground_head (Var x))"
         if \<delta>_nz: "\<delta>\<^sub>h \<noteq> 0"
@@ -1499,7 +1483,7 @@ proof (simp only: atomize_imp,
         "\<lambda>(t, s). wary t \<longrightarrow> wary s \<longrightarrow> t >\<^sub>t s \<longrightarrow> subst \<rho> t >\<^sub>t subst \<rho> s" "(t, s)",
       simplified prod.case],
     simp only: split_paired_all prod.case atomize_imp[symmetric])
-  fix t s :: "('s, 'v) tm"
+  fix t s
   assume
     ih: "\<And>ta sa. {#size ta, size sa#} < {#size t, size s#} \<Longrightarrow> wary ta \<Longrightarrow> wary sa \<Longrightarrow> ta >\<^sub>t sa \<Longrightarrow>
       subst \<rho> ta >\<^sub>t subst \<rho> sa" and
