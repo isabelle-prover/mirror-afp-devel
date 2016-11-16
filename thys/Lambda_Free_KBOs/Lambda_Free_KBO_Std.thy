@@ -265,28 +265,6 @@ lemma wt_\<delta>_arity_give_unary: "wt s = \<delta> \<Longrightarrow> num_args 
   by (metis One_nat_def \<delta>_le_\<epsilon> eSuc_enat ileI1 wt_ge_\<epsilon> wt_gt_\<delta>_if_superunary leD less_linear
     not_iless0 one_enat_def zero_enat_def)
 
-lemma gt_sub_fun: "App s t >\<^sub>t s"
-proof (cases "wt (App s t) > wt s")
-  case True
-  thus ?thesis
-    using gt_wt by simp
-next
-  case False
-  hence wt_st: "wt (App s t) = wt s"
-    by (meson order.antisym not_le_imp_less wt_App_ge_fun)
-  hence \<delta>_eq_\<epsilon>: "\<delta> = \<epsilon>"
-    by (rule wt_App_eq_fun_imp_\<delta>_eq_\<epsilon>)
-
-  have vars_st: "vars_mset (App s t) \<supseteq># vars_mset s"
-    by auto
-  have hd_st: "head (App s t) = head s"
-    by auto
-  have extf: "\<forall>f \<in> ground_heads (head (App s t)). extf f (op >\<^sub>t) (args (App s t)) (args s)"
-    by (simp add: \<delta>_eq_\<epsilon> extf_snoc_if_\<delta>_eq_\<epsilon>)
-  show ?thesis
-    by (rule gt_same[OF vars_st wt_st hd_st extf])
-qed
-
 lemma wt_\<delta>_missing_args_imp_max_head:
   assumes
     wt_s: "wt s = \<delta>" and
@@ -319,6 +297,28 @@ proof
       less_irrefl nargs_lt nargs_s no_zero_divisors wt_ge_\<epsilon> wt_hd_le wt_s wt_sym_0_or_ge_\<epsilon>)
   thus False
     by (metis \<delta>_eq_\<epsilon> \<epsilon>_gt_0 enat_0_iff(2) less_irrefl)
+qed
+
+lemma gt_sub_fun: "App s t >\<^sub>t s"
+proof (cases "wt (App s t) > wt s")
+  case True
+  thus ?thesis
+    using gt_wt by simp
+next
+  case False
+  hence wt_st: "wt (App s t) = wt s"
+    by (meson order.antisym not_le_imp_less wt_App_ge_fun)
+  hence \<delta>_eq_\<epsilon>: "\<delta> = \<epsilon>"
+    by (rule wt_App_eq_fun_imp_\<delta>_eq_\<epsilon>)
+
+  have vars_st: "vars_mset (App s t) \<supseteq># vars_mset s"
+    by auto
+  have hd_st: "head (App s t) = head s"
+    by auto
+  have extf: "\<forall>f \<in> ground_heads (head (App s t)). extf f (op >\<^sub>t) (args (App s t)) (args s)"
+    by (simp add: \<delta>_eq_\<epsilon> extf_snoc_if_\<delta>_eq_\<epsilon>)
+  show ?thesis
+    by (rule gt_same[OF vars_st wt_st hd_st extf])
 qed
 
 lemma gt_sub_arg: "wary (App s t) \<Longrightarrow> App s t >\<^sub>t t"
@@ -758,6 +758,12 @@ lemma gt_antisym: "wary s \<Longrightarrow> wary t \<Longrightarrow> t >\<^sub>t
   using gt_irrefl gt_trans by blast
 
 
+subsection \<open>Subterm Property\<close>
+
+theorem gt_proper_sub: "wary t \<Longrightarrow> proper_sub s t \<Longrightarrow> t >\<^sub>t s"
+  by (induct t) (auto intro: gt_sub_fun gt_sub_arg gt_trans sub.intros wary_sub)
+
+
 subsection \<open>Compatibility with Functions\<close>
 
 theorem gt_compat_fun:
@@ -836,12 +842,6 @@ proof -
       by (rule gt_same[OF vars_s't wt_s't hd_s't])
   qed
 qed
-
-
-subsection \<open>Subterm Property\<close>
-
-theorem gt_proper_sub: "wary t \<Longrightarrow> proper_sub s t \<Longrightarrow> t >\<^sub>t s"
-  by (induct t) (auto intro: gt_sub_fun gt_sub_arg gt_trans sub.intros wary_sub)
 
 
 subsection \<open>Stability under Substitution\<close>

@@ -662,24 +662,6 @@ lemma wt_\<delta>\<^sub>h_arity\<^sub>h_give_unary:
   by (metis gr_implies_not_zero_hmset le_refl lt_1_iff_eq_0_hmset not_le of_nat_le_iff_le_hmset
     order.not_eq_order_implies_strict)
 
-lemma gt_sub_fun: "App s t >\<^sub>t s"
-proof (cases "wt (App s t) >\<^sub>p wt s")
-  case True
-  thus ?thesis
-    using gt_wt by simp
-next
-  case False
-  hence \<delta>_eq_\<epsilon>: "\<delta>\<^sub>h = \<epsilon>\<^sub>h"
-    by (rule wt_App_ngt_fun_imp_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h)
-
-  have hd_st: "head (App s t) = head s"
-    by auto
-  have extf: "\<forall>f \<in> ground_heads (head (App s t)). extf f (op >\<^sub>t) (args (App s t)) (args s)"
-    by (simp add: \<delta>_eq_\<epsilon> extf_snoc_if_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h)
-  show ?thesis
-    by (rule gt_same[OF wt_App_ge_fun hd_st extf])
-qed
-
 lemma wt_\<delta>\<^sub>h_missing_args_imp_max_head:
   assumes
     legal: "legal_passign A" and
@@ -733,6 +715,24 @@ proof
   qed
   thus False
     using \<delta>_eq_\<epsilon> \<epsilon>\<^sub>h_gt_0 by auto
+qed
+
+lemma gt_sub_fun: "App s t >\<^sub>t s"
+proof (cases "wt (App s t) >\<^sub>p wt s")
+  case True
+  thus ?thesis
+    using gt_wt by simp
+next
+  case False
+  hence \<delta>_eq_\<epsilon>: "\<delta>\<^sub>h = \<epsilon>\<^sub>h"
+    by (rule wt_App_ngt_fun_imp_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h)
+
+  have hd_st: "head (App s t) = head s"
+    by auto
+  have extf: "\<forall>f \<in> ground_heads (head (App s t)). extf f (op >\<^sub>t) (args (App s t)) (args s)"
+    by (simp add: \<delta>_eq_\<epsilon> extf_snoc_if_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h)
+  show ?thesis
+    by (rule gt_same[OF wt_App_ge_fun hd_st extf])
 qed
 
 lemma gt_sub_arg: "wary (App s t) \<Longrightarrow> App s t >\<^sub>t t"
@@ -1186,6 +1186,12 @@ lemma gt_antisym: "wary s \<Longrightarrow> wary t \<Longrightarrow> t >\<^sub>t
   using gt_irrefl gt_trans by blast
 
 
+subsection \<open>Subterm Property\<close>
+
+theorem gt_proper_sub: "wary t \<Longrightarrow> proper_sub s t \<Longrightarrow> t >\<^sub>t s"
+  by (induct t) (auto intro: gt_sub_fun gt_sub_arg gt_trans sub.intros wary_sub)
+
+
 subsection \<open>Compatibility with Functions\<close>
 
 lemma gt_compat_fun:
@@ -1354,12 +1360,6 @@ proof -
       by (rule gt_same[OF wt_s't_ge_st hd_s't])
   qed
 qed
-
-
-subsection \<open>Subterm Property\<close>
-
-theorem gt_proper_sub: "wary t \<Longrightarrow> proper_sub s t \<Longrightarrow> t >\<^sub>t s"
-  by (induct t) (auto intro: gt_sub_fun gt_sub_arg gt_trans sub.intros wary_sub)
 
 
 subsection \<open>Stability under Substitution\<close>
