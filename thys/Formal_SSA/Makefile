@@ -18,7 +18,7 @@ compcertSSA/.patched: $(COMPCERTSSA_FILE)
 
 compcertSSA/midend/SSA/BraunSSA.ml: $(wildcard *.thy) ROOT | compcertSSA/midend/SSA
 	rm -f $@
-	$(ISABELLE) build -c -d '$$AFP/Collections' -d '$$AFP/Refine_Monadic' -d '$$AFP/Automatic_Refinement' -d . compcertSSA
+	$(ISABELLE) build -c -d '$$AFP/Collections' -d '$$AFP/Refine_Monadic' -d '$$AFP/Automatic_Refinement' -d . Formal_SSA
 	ln -s ../../../BraunSSA.ml $@
 
 compcertSSA/midend/SSA/ExternSSAgen.ml: compcertSSA/.patched

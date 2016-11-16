@@ -144,7 +144,7 @@ Then at least one of Q and R does not dominate P. *}
     ultimately show False using assms asm by auto
   qed
 
-  lemma necessaryPhi_is_necessary:
+  lemma convergence_prop:
     assumes "necessaryPhi g (var g v) n" "g \<turnstile> n-ns\<rightarrow>m" "v \<in> allUses g m" "\<And>x. x \<in> set (tl ns) \<Longrightarrow> v \<notin> allDefs g x" "v \<notin> defs g n"
     shows "phis g (n,v) \<noteq> None"
   proof
@@ -258,6 +258,53 @@ Then at least one of Q and R does not dominate P. *}
     from def_in_as[OF a conv(1,3) b conv(2)] def_in_as[OF b conv(2,4) a conv(1)] conv(5,6) show False by auto
   qed
 
+  lemma convergence_prop':
+    assumes "necessaryPhi g v n" "g \<turnstile> n-ns\<rightarrow>m" "v \<in> var g ` allUses g m" "\<And>x. x \<in> set ns \<Longrightarrow> v \<notin> oldDefs g x"
+    obtains val where "var g val = v" "phis g (n,val) \<noteq> None"
+  using assms proof (induction "length ns" arbitrary: ns m rule: less_induct)
+    case less
+    from less.prems(4) obtain val where val: "var g val = v" "val \<in> allUses g m" by auto
+    show ?thesis
+    proof (cases "\<exists>m' \<in> set (tl ns). v \<in> var g ` phiDefs g m'")
+      case False
+      with less.prems(5) have "\<And>x. x \<in> set (tl ns) \<Longrightarrow> val \<notin> allDefs g x"
+        by (auto simp: allDefs_def val(1)[symmetric] oldDefs_def dest: in_set_tlD)
+      moreover from less.prems(3,5) have "val \<notin> defs g n"
+        by (auto simp: oldDefs_def val(1)[symmetric] dest: old.path2_hd_in_ns)
+      ultimately show ?thesis
+        using less.prems
+        by - (rule that[OF val(1)], rule convergence_prop, auto simp: val)
+    next
+      case True
+      with less.prems(3) obtain ns' m' where m': "g \<turnstile> n-ns'\<rightarrow>m'" "v \<in> var g ` phiDefs g m'" "prefix ns' ns"
+        by - (erule old.path2_split_first_prop[where P="\<lambda>m. v \<in> var g ` phiDefs g m"], auto dest: in_set_tlD)
+      show ?thesis
+      proof (cases "m' = n")
+        case True
+        with m'(2) show ?thesis by (auto simp: phiDefs_def intro: that)
+      next
+        case False
+        with m'(1) obtain m'' where m'': "g \<turnstile> n-butlast ns'\<rightarrow>m''" "m'' \<in> set (old.predecessors g m')"
+          by - (rule old.path2_unsnoc, auto)
+        show ?thesis
+        proof (rule less.hyps[of "butlast ns'", OF _])
+          show "length (butlast ns') < length ns"
+            using m''(1) m'(3) by (cases "length ns'", auto dest: prefix_length_le)
+
+          from m'(2) obtain val vs where vs: "phis g (m',val) = Some vs" "var g val = v"
+            by (auto simp: phiDefs_def)
+          with m'' obtain val' where "val' \<in> phiUses g m''" "val' \<in> set vs"
+            by - (rule phiUses_exI, auto simp: phiDefs_def)
+          with vs have "val' \<in> allUses g m''" "var g val' = v" by auto
+          then show "v \<in> var g ` allUses g m''" by auto
+
+          from m'(3) show "\<And>x. x \<in> set (butlast ns') \<Longrightarrow> v \<notin> oldDefs g x"
+            by - (rule less.prems(5), auto elim: in_set_butlastD)
+        qed (auto intro: less.prems(1,2) m''(1))
+      qed
+    qed
+  qed
+
   lemma nontrivialE:
     assumes "\<not>trivial g p" "phi g p \<noteq> None" and[simp]: "p \<in> allVars g"
     obtains r s where "phiArg g p r" "phiArg g p s" "distinct [p, r, s]"
@@ -357,21 +404,20 @@ Then at least one of Q and R does not dominate P. *}
 
   lemma ununnecessaryPhis_disjoint_paths:
     assumes "\<not>unnecessaryPhi g r" "\<not>unnecessaryPhi g s"
-      and rs: "phiArg g p r" "phiArg g p s" "distinct [p, r, s]"
-      and[simp]: "var g r = var g p" "var g s = var g p" "p \<in> allVars g"
-    obtains n ns m ms where "var g p \<in> oldDefs g n" "g \<turnstile> n-ns\<rightarrow>defNode g r" and "var g p \<in> oldDefs g m" "g \<turnstile> m-ms\<rightarrow>defNode g s"
+      (* and rs: "phiArg p r" "phiArg p s" "distinct [p, r, s]" *)
+      and rs: "defNode g r \<noteq> defNode g s"
+      and[simp]: "r \<in> allVars g" "s \<in> allVars g" "var g r = V" "var g s = V"
+    obtains n ns m ms where "V \<in> oldDefs g n" "g \<turnstile> n-ns\<rightarrow>defNode g r" and "V \<in> oldDefs g m" "g \<turnstile> m-ms\<rightarrow>defNode g s"
         and "set ns \<inter> set ms = {}"
   proof-
-    from rs have[simp]: "r \<in> allVars g" "s \<in> allVars g" by auto
-
     obtain n\<^sub>1 ns\<^sub>1 n\<^sub>2 ns\<^sub>2 where
-      ns\<^sub>1: "var g p \<in> oldDefs g n\<^sub>1" "g \<turnstile> n\<^sub>1-ns\<^sub>1\<rightarrow>defNode g r" "defNode g r \<notin> set (butlast ns\<^sub>1)" and
-      ns\<^sub>2: "var g p \<in> oldDefs g n\<^sub>2" "g \<turnstile> n\<^sub>2-ns\<^sub>2\<rightarrow>defNode g r" "defNode g r \<notin> set (butlast ns\<^sub>2)" and
+      ns\<^sub>1: "V \<in> oldDefs g n\<^sub>1" "g \<turnstile> n\<^sub>1-ns\<^sub>1\<rightarrow>defNode g r" "defNode g r \<notin> set (butlast ns\<^sub>1)" and
+      ns\<^sub>2: "V \<in> oldDefs g n\<^sub>2" "g \<turnstile> n\<^sub>2-ns\<^sub>2\<rightarrow>defNode g r" "defNode g r \<notin> set (butlast ns\<^sub>2)" and
       ns: "set (butlast ns\<^sub>1) \<inter> set (butlast ns\<^sub>2) = {}"
     proof-
       from assms obtain n\<^sub>1 ns\<^sub>1 n\<^sub>2 ns\<^sub>2 where
-        ns\<^sub>1: "var g p \<in> oldDefs g n\<^sub>1" "g \<turnstile> n\<^sub>1-ns\<^sub>1\<rightarrow>defNode g r" and
-        ns\<^sub>2: "var g p \<in> oldDefs g n\<^sub>2" "g \<turnstile> n\<^sub>2-ns\<^sub>2\<rightarrow>defNode g r" and
+        ns\<^sub>1: "V \<in> oldDefs g n\<^sub>1" "g \<turnstile> n\<^sub>1-ns\<^sub>1\<rightarrow>defNode g r" and
+        ns\<^sub>2: "V \<in> oldDefs g n\<^sub>2" "g \<turnstile> n\<^sub>2-ns\<^sub>2\<rightarrow>defNode g r" and
         ns: "set (butlast ns\<^sub>1) \<inter> set (butlast ns\<^sub>2) = {}"
       by - (rule ununnecessaryPhis_disjoint_paths_aux, auto)
 
@@ -393,11 +439,11 @@ Then at least one of Q and R does not dominate P. *}
       thus thesis by (rule that[OF ns\<^sub>1(1) ns\<^sub>1'(1,2) ns\<^sub>2(1) ns\<^sub>2'(1,2)])
     qed
 
-    obtain m ms where ms: "var g p \<in> oldDefs g m" "g \<turnstile> m-ms\<rightarrow>defNode g s" "defNode g r \<notin> set ms"
+    obtain m ms where ms: "V \<in> oldDefs g m" "g \<turnstile> m-ms\<rightarrow>defNode g s" "defNode g r \<notin> set ms"
     proof-
       from assms(2) obtain m\<^sub>1 ms\<^sub>1 m\<^sub>2 ms\<^sub>2 where
-        ms\<^sub>1: "var g p \<in> oldDefs g m\<^sub>1" "g \<turnstile> m\<^sub>1-ms\<^sub>1\<rightarrow>defNode g s" and
-        ms\<^sub>2: "var g p \<in> oldDefs g m\<^sub>2" "g \<turnstile> m\<^sub>2-ms\<^sub>2\<rightarrow>defNode g s" and
+        ms\<^sub>1: "V \<in> oldDefs g m\<^sub>1" "g \<turnstile> m\<^sub>1-ms\<^sub>1\<rightarrow>defNode g s" and
+        ms\<^sub>2: "V \<in> oldDefs g m\<^sub>2" "g \<turnstile> m\<^sub>2-ms\<^sub>2\<rightarrow>defNode g s" and
         ms: "set (butlast ms\<^sub>1) \<inter> set (butlast ms\<^sub>2) = {}"
         by - (rule ununnecessaryPhis_disjoint_paths_aux, auto)
       show thesis
@@ -409,8 +455,7 @@ Then at least one of Q and R does not dominate P. *}
         have "defNode g r \<notin> set ms\<^sub>2"
         proof
           assume "defNode g r \<in> set ms\<^sub>2"
-          moreover from rs have "defNode g r \<noteq> defNode g s"
-            by - (rule phiArgs_def_distinct, auto)
+          moreover note `defNode g r \<noteq> defNode g s`
           ultimately have "defNode g r \<in> set (butlast ms\<^sub>1)" "defNode g r \<in> set (butlast ms\<^sub>2)" using True ms\<^sub>1(2) ms\<^sub>2(2)
             by (auto simp:old.path2_def intro:in_set_butlastI)
           with ms show False by auto
@@ -432,8 +477,8 @@ Then at least one of Q and R does not dominate P. *}
       {
         fix n\<^sub>1 ns\<^sub>1 n\<^sub>2 ns\<^sub>2
         assume 4: "m' \<in> set ns\<^sub>1"
-        assume ns\<^sub>1: "var g p \<in> oldDefs g n\<^sub>1" "g \<turnstile> n\<^sub>1-ns\<^sub>1\<rightarrow>defNode g r" "defNode g r \<notin> set (butlast ns\<^sub>1)"
-        assume ns\<^sub>2: "var g p \<in> oldDefs g n\<^sub>2" "g \<turnstile> n\<^sub>2-ns\<^sub>2\<rightarrow>defNode g r" "defNode g r \<notin> set (butlast ns\<^sub>2)"
+        assume ns\<^sub>1: "V \<in> oldDefs g n\<^sub>1" "g \<turnstile> n\<^sub>1-ns\<^sub>1\<rightarrow>defNode g r" "defNode g r \<notin> set (butlast ns\<^sub>1)"
+        assume ns\<^sub>2: "V \<in> oldDefs g n\<^sub>2" "g \<turnstile> n\<^sub>2-ns\<^sub>2\<rightarrow>defNode g r" "defNode g r \<notin> set (butlast ns\<^sub>2)"
         assume ns: "set (butlast ns\<^sub>1) \<inter> set (butlast ns\<^sub>2) = {}"
         assume ms': "g \<turnstile> m'-ms'\<rightarrow>defNode g s" "set (tl ms') \<inter> (set ns\<^sub>1 \<union> set ns\<^sub>2) = {}"
         have "m' \<in> set (butlast ns\<^sub>1)"
@@ -521,7 +566,7 @@ Then at least one of Q and R does not dominate P. *}
       proof-
         obtain n ns m ms where ns: "var g p \<in> oldDefs g n" "g \<turnstile> n-ns\<rightarrow>?R" and ms: "var g p \<in> oldDefs g m" "g \<turnstile> m-ms\<rightarrow>?S"
           and ns_ms: "set ns \<inter> set ms = {}"
-          using asm[THEN conjunct1] asm[THEN conjunct2] rs by (rule ununnecessaryPhis_disjoint_paths, auto)
+          using asm[THEN conjunct1] asm[THEN conjunct2] by (rule ununnecessaryPhis_disjoint_paths, auto)
         moreover from ns obtain ns' where "g \<turnstile> n-ns'\<rightarrow>?R" "n \<notin> set (tl ns')" "set ns' \<subseteq> set ns"
           by (auto intro: old.simple_path2)
         moreover from ms obtain ms' where "g \<turnstile> m-ms'\<rightarrow>?S" "m \<notin> set (tl ms')" "set ms' \<subseteq> set ms"
@@ -594,7 +639,7 @@ Then at least one of Q and R does not dominate P. *}
               by - (rule old.path2_split_ex[OF ns'(1)], auto simp: old.path2_not_Nil elim: subsetD[OF set_tl])
 
             have "phis g (z, r) \<noteq> None"
-            proof (rule necessaryPhi_is_necessary[OF necessary[simplified rs[symmetric]] zs(1)])
+            proof (rule convergence_prop[OF necessary[simplified rs[symmetric]] zs(1)])
               show "r \<in> allUses g n'" using ns'(2) by auto
               show "r \<notin> defs g z"
               proof
@@ -913,6 +958,72 @@ cycle contains one entry block, which dominates all other blocks in the cycle. *
       txt {* Therefore, our assumption is wrong and G is either in minimal SSA form or there exist trivial $\phi$ functions. *}
       with ns'(1) n_dom(2) show False by auto
     qed
+  qed
+end
+
+context CFG_SSA_Transformed
+begin
+  definition "phiCount g = card ((\<lambda>(n,v). (n, var g v)) ` dom (phis g))"
+
+  lemma phiCount: "phiCount g = card (dom (phis g))"
+  proof-
+    have 1: "v = v'"
+      if asm: "phis g (n, v) \<noteq> None" "phis g (n, v') \<noteq> None" "var g v = var g v'"
+      for n v v'
+    proof (rule ccontr)
+      from asm have[simp]: "v \<in> allDefs g n" "v' \<in> allDefs g n" by (auto simp: phiDefs_def allDefs_def)
+      from asm have[simp]: "n \<in> set (\<alpha>n g)" by - (auto simp: phis_in_\<alpha>n)
+      assume "v \<noteq> v'"
+      with asm show False
+        by - (rule allDefs_var_disjoint[of n g v v', THEN notE], auto)
+    qed
+
+    show ?thesis
+    unfolding phiCount_def
+    apply (rule card_image)
+    apply (rule inj_onI)
+    by (auto intro!: 1)
+  qed
+
+  theorem phi_count_minimal:
+    assumes "cytronMinimal g" "pruned g"
+    assumes "CFG_SSA_Transformed \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses defs' uses' phis' var'"
+    shows "card (dom (phis g)) \<le> card (dom (phis' g))"
+  proof-
+    interpret other: CFG_SSA_Transformed \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses defs' uses' phis' var'
+      by (rule assms(3))
+    {
+      fix n v
+      assume asm: "phis g (n,v) \<noteq> None"
+      from asm have[simp]: "v \<in> phiDefs g n" "v \<in> allDefs g n" by (auto simp: phiDefs_def allDefs_def)
+      from asm have[simp]: "defNode g v = n" "n \<in> set (\<alpha>n g)" by - (auto simp: phis_in_\<alpha>n)
+      from asm have "liveVal g v"
+        by - (rule \<open>pruned g\<close>[unfolded pruned_def, THEN bspec, of n, rule_format]; simp)
+      then obtain ns m where ns: "g \<turnstile> n-ns\<rightarrow>m" "var g v \<in> oldUses g m" "\<And>x. x \<in> set (tl ns) \<Longrightarrow> var g v \<notin> oldDefs g x"
+        by (rule liveVal_use_path, simp)
+      have "\<exists>v'. phis' g (n,v') \<noteq> None \<and> var g v = var' g v'"
+      proof (rule other.convergence_prop'[OF _ ns(1)])
+        from asm show "necessaryPhi g (var g v) n"
+          by - (rule \<open>cytronMinimal g\<close>[unfolded cytronMinimal_def, THEN bspec, of v, simplified, rule_format],
+            auto simp: cytronMinimal_def phi_def, auto intro: allDefs_in_allVars[where n=n])
+        with ns(1,2) show "var g v \<in> var' g ` other.allUses g m"
+          by (subst(asm) other.oldUses_def, auto simp: image_def allUses_def other.oldUses_def intro!: bexI)
+        have "var g v \<notin> oldDefs g n"
+          by (rule simpleDefs_phiDefs_var_disjoint, auto)
+        then show "\<And>x. x \<in> set ns \<Longrightarrow> var g v \<notin> oldDefs g x"
+          using ns(1) by (case_tac "x = hd ns", auto dest: ns(3) not_hd_in_tl dest: old.path2_hd)
+      qed auto
+    }
+    note 1 = this
+
+    have "phiCount g \<le> other.phiCount g"
+    unfolding phiCount_def other.phiCount_def
+    apply (rule card_mono)
+     apply (rule finite_imageI)
+     apply (rule other.phis_finite)
+    by (auto simp: dom_def image_def simp del: not_None_eq intro!: 1)
+
+    thus ?thesis by (simp add: phiCount other.phiCount)
   qed
 end
 
