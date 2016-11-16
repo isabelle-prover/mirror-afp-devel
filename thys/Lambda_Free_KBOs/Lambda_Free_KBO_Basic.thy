@@ -95,14 +95,14 @@ theorem gt_irrefl: "\<not> s >\<^sub>t s"
 theorem gt_trans: "u >\<^sub>t t \<Longrightarrow> t >\<^sub>t s \<Longrightarrow> u >\<^sub>t s"
   unfolding basic_gt_iff_lt by (rule kbo_std.gt_trans[simplified])
 
+theorem gt_proper_sub: "proper_sub s t \<Longrightarrow> t >\<^sub>t s"
+  unfolding basic_gt_iff_lt by (rule kbo_std.gt_proper_sub[simplified])
+
 theorem gt_compat_fun: "t' >\<^sub>t t \<Longrightarrow> App s t' >\<^sub>t App s t"
   unfolding basic_gt_iff_lt by (rule kbo_std.gt_compat_fun[simplified])
 
 theorem gt_compat_arg: "s' >\<^sub>t s \<Longrightarrow> App s' t >\<^sub>t App s t"
   unfolding basic_gt_iff_lt by (rule kbo_std.gt_compat_arg[simplified])
-
-theorem gt_proper_sub: "proper_sub s t \<Longrightarrow> t >\<^sub>t s"
-  unfolding basic_gt_iff_lt by (rule kbo_std.gt_proper_sub[simplified])
 
 theorem gt_subst: "wary_subst \<rho> \<Longrightarrow> t >\<^sub>t s \<Longrightarrow> subst \<rho> t >\<^sub>t subst \<rho> s"
   unfolding basic_gt_iff_lt by (rule kbo_std.gt_subst[simplified])

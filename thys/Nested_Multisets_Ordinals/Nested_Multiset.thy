@@ -57,7 +57,7 @@ definition less_multiset_ext\<^sub>D\<^sub>M where
 lemma less_multiset_ext\<^sub>D\<^sub>M_imp_mult:
   assumes
     N_A: "set_mset N \<subseteq> A" and M_A: "set_mset M \<subseteq> A" and less: "less_multiset_ext\<^sub>D\<^sub>M R M N"
-    shows "(M, N) \<in> mult {(x, y). x \<in> A \<and> y \<in> A \<and> R x y}"
+  shows "(M, N) \<in> mult {(x, y). x \<in> A \<and> y \<in> A \<and> R x y}"
 proof -
   from less obtain X Y where
     "X \<noteq> {#}" and "X \<le># N" and "M = N - X + Y" and "\<forall>k. k \<in># Y \<longrightarrow> (\<exists>a. a \<in># X \<and> R k a)"
