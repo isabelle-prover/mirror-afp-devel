@@ -1105,6 +1105,24 @@ begin
     thus ?case by (cases "z \<in> set (butlast ns)", auto dest: not_in_butlast)
   qed simp
 
+  lemma EntryPath_distinct:
+    assumes "EntryPath g ns"
+    shows "distinct ns"
+  using assms
+  proof (induction)
+    case (EntryPath_snoc g ns m)
+    from this consider (non_distinct) "m \<in> set ns" | "distinct (ns @ [m])" by auto
+    thus "distinct (ns @ [m])"
+    proof (cases)
+      case non_distinct
+      have "EntryPath g (ns @ [m])" using EntryPath_snoc by (intro EntryPath.intros(2))
+      with non_distinct
+      have "False"
+       using EntryPath_butlast_less_last butlast_snoc last_snoc less_not_refl by force
+      thus ?thesis by simp
+    qed
+  qed simp
+
   lemma Entry_reachesE:
     assumes "n \<in> set (\<alpha>n g)" and[simp]: "invar g"
     obtains ns where "g \<turnstile> Entry g-ns\<rightarrow>n" "EntryPath g ns"

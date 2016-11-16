@@ -861,6 +861,77 @@ begin
   qed
 
   lemma oldDefsI: "v \<in> defs g n \<Longrightarrow> var g v \<in> oldDefs g n" by (simp add: oldDefs_def)
+ 
+  lemma simpleDefs_phiDefs_var_disjoint:
+    assumes "v \<in> phiDefs g n" "n \<in> set (\<alpha>n g)"
+    shows "var g v \<notin> oldDefs g n"
+  proof
+    from assms have[simp]: "v \<in> allVars g" by auto
+    assume "var g v \<in> oldDefs g n"
+    then obtain v'' where v'': "v'' \<in> defs g n" "var g v'' = var g v"
+      by (auto simp: oldDefs_def)
+    from this(1) assms have "v'' \<noteq> v"
+      using simpleDefs_phiDefs_disjoint[of n g] by (auto simp: phiArg_def)
+    with v'' assms show False
+      using allDefs_var_disjoint[of n g v'' v] by auto
+  qed
+
+  lemma liveVal_use_path: 
+    assumes "liveVal g v"
+    obtains ns m where "g \<turnstile> defNode g v-ns\<rightarrow>m" "var g v \<in> oldUses g m"
+      "\<And>x. x \<in> set (tl ns) \<Longrightarrow> var g v \<notin> oldDefs g x"
+  using assms proof (induction)
+    case (liveSimple m v)
+    from liveSimple.hyps have[simp]: "v \<in> allVars g"
+      by - (rule allUses_in_allVars, auto)
+    from liveSimple.hyps obtain ns where ns: "g \<turnstile> defNode g v-ns\<rightarrow>m" "defNode g v \<notin> set (tl ns)"
+      by - (rule defUse_path_ex, auto intro!: uses_in_allUses elim: old.simple_path2)
+    from this(1) show thesis
+    proof (rule liveSimple.prems)
+      show "var g v \<in> oldUses g m" using liveSimple.hyps by (auto simp: oldUses_def)
+      {
+        fix x
+        assume asm: "x \<in> set (tl ns)" "var g v \<in> oldDefs g x"
+        then obtain v' where "v' \<in> defs g x" "var g v' = var g v"
+          by (auto simp: oldDefs_def)
+        with asm liveSimple.hyps have False
+          by - (rule conventional[OF ns, of v x v', THEN notE], auto)
+      }
+      thus "\<And>x. x \<in> set (tl ns) \<Longrightarrow> var g v \<notin> oldDefs g x" by auto
+    qed
+  next
+    case (livePhi v v')
+    from livePhi.hyps have[simp]: "v \<in> allVars g" "v' \<in> allVars g" "var g v' = var g v"
+      by (auto intro: phiArg_same_var)
+    show thesis
+    proof (rule livePhi.IH)
+      fix ns m
+      assume asm: "g \<turnstile> defNode g v-ns\<rightarrow>m" "var g v \<in> oldUses g m"
+        "\<And>x. x \<in> set (tl ns) \<Longrightarrow> var g v \<notin> oldDefs g x"
+      from livePhi.hyps(2) obtain ns' m' where ns': "g \<turnstile> defNode g v'-ns'\<rightarrow>m'" "v' \<in> phiUses g m'"
+        "m' \<in> set (old.predecessors g (defNode g v))" "defNode g v' \<notin> set (tl ns')"
+        by (rule phiArg_path_ex', auto elim: old.simple_path2)
+      show thesis 
+      proof (rule livePhi.prems)
+        show "g \<turnstile> defNode g v'-(ns'@[defNode g v])@tl ns\<rightarrow>m"
+        apply (rule old.path2_app)
+         apply (rule old.path2_snoc[OF ns'(1,3)])
+        by (rule asm(1))
+        show "var g v' \<in> oldUses g m" using asm(2) by simp
+        {
+          fix x
+          assume asm: "x \<in> set (tl ns')" "var g v \<in> oldDefs g x"
+          then obtain v'' where "v'' \<in> defs g x" "var g v'' = var g v"
+            by (auto simp: oldDefs_def)
+          with asm ns'(2) have False
+            by - (rule conventional[OF ns'(1,4), of v' x v'', THEN notE], auto)
+        }
+        then show "\<And>x. x \<in> set (tl ((ns'@[defNode g v])@tl ns)) \<Longrightarrow> var g v' \<notin> oldDefs g x"
+          using simpleDefs_phiDefs_var_disjoint[of v g "defNode g v"] livePhi.hyps(2)
+          by (auto dest!: set_tl_append'[THEN subsetD] asm(3) simp: phiArg_def)
+      qed
+    qed
+  qed
 end
 
 end
