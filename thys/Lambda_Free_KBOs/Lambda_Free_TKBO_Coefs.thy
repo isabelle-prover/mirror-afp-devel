@@ -48,9 +48,6 @@ begin
 lemma ground_heads_arity_eq: "f \<in> ground_heads \<zeta> \<Longrightarrow> arity_sym f = arity_hd \<zeta>"
   by (cases \<zeta>) (auto simp: ground_heads_var_arity_eq)
 
-lemma some_ground_head_arity_eq: "arity_sym (SOME f. f \<in> ground_heads (Var x)) = arity_var x"
-  by (simp add: ground_heads_var_arity_eq ground_heads_var_nonempty some_in_eq)
-
 abbreviation \<delta>\<^sub>h :: hmultiset where
   "\<delta>\<^sub>h \<equiv> of_nat \<delta>"
 
@@ -86,7 +83,6 @@ lemmas wary_cases_apps\<^sub>h[consumes 1, case_names apps] =
 lemmas ground_heads_arity\<^sub>h = ground_heads_arity[folded hmset_of_enat_le_iff_le]
 lemmas ground_heads_arity_eq\<^sub>h = ground_heads_arity_eq[folded hmset_of_enat_inject]
 lemmas some_ground_head_arity\<^sub>h = some_ground_head_arity[folded hmset_of_enat_le_iff_le]
-lemmas some_ground_head_arity_eq\<^sub>h = some_ground_head_arity_eq[folded hmset_of_enat_inject]
 lemmas \<epsilon>\<^sub>h_gt_0 = \<epsilon>_gt_0[folded of_nat_lt_iff_lt_hmset, unfolded of_nat_0]
 lemmas \<delta>\<^sub>h_le_\<epsilon>\<^sub>h = \<delta>_le_\<epsilon>[folded of_nat_le_iff_le_hmset]
 lemmas arity_hd\<^sub>h_lt_\<omega>_if_\<delta>\<^sub>h_gt_0 = arity_hd_ne_infinity_if_\<delta>_gt_0
