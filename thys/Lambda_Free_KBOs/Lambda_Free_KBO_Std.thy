@@ -774,6 +774,7 @@ theorem gt_compat_fun:
 proof -
   have vars_st': "vars_mset (App s t') \<supseteq># vars_mset (App s t)"
     by (simp add: t'_gt_t gt_imp_vars_mset)
+
   show ?thesis
   proof (cases "wt t' > wt t")
     case True
@@ -791,10 +792,8 @@ proof -
     have head_st': "head (App s t') = head (App s t)"
       by simp
 
-    have "\<And>f. extf f (op >\<^sub>t) [t'] [t]"
-      using t'_gt_t by (metis extf_singleton[THEN iffD2] gt_irrefl[OF wary_t])
-    hence extf: "\<And>f. extf f (op >\<^sub>t) (args s @ [t']) (args s @ [t])"
-      by (rule extf_compat_append_left)
+    have extf: "\<And>f. extf f (op >\<^sub>t) (args s @ [t']) (args s @ [t])"
+      using t'_gt_t by (metis extf_compat_list gt_irrefl[OF wary_t])
 
     show ?thesis
       by (rule gt_same[OF vars_st' wt_st' head_st']) (simp add: extf)

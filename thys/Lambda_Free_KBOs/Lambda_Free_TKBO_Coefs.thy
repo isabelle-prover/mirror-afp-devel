@@ -214,8 +214,7 @@ lemma min_ground_head_in_ground_heads: "min_ground_head \<zeta> \<in> ground_hea
 
 lemma min_ground_head_min:
   "f \<in> ground_heads \<zeta> \<Longrightarrow>
-   wt_sym f + \<delta>\<^sub>h * arity_sym\<^sub>h f
-    \<ge> wt_sym (min_ground_head \<zeta>) + \<delta>\<^sub>h * arity_sym\<^sub>h (min_ground_head \<zeta>)"
+   wt_sym f + \<delta>\<^sub>h * arity_sym\<^sub>h f \<ge> wt_sym (min_ground_head \<zeta>) + \<delta>\<^sub>h * arity_sym\<^sub>h (min_ground_head \<zeta>)"
   unfolding min_ground_head_def using someI_ex[OF exists_min_ground_head] by blast
 
 lemma min_ground_head_antimono:
@@ -1205,10 +1204,8 @@ proof (rule gt_same; clarify?)
     by (cases s rule: tm_exhaust_apps, clarsimp simp: ge_tpoly_def App_apps simp del: apps_append)
 next
   fix f
-  have "extf f (op >\<^sub>t) [t'] [t]"
-    using t'_gt_t by (metis extf_singleton[THEN iffD2] gt_irrefl[OF wary_t])
-  hence "extf f (op >\<^sub>t) (args s @ [t']) (args s @ [t])"
-    by (rule extf_compat_append_left)
+  have "extf f (op >\<^sub>t) (args s @ [t']) (args s @ [t])"
+    using t'_gt_t by (metis extf_compat_list gt_irrefl[OF wary_t])
   thus "extf f op >\<^sub>t (args (App s t')) (args (App s t))"
     by simp
 qed simp
@@ -1225,9 +1222,6 @@ proof (induct us rule: rev_induct)
 next
   case (snoc u us)
   note ih = snoc
-
-  let ?v0' = "apps s (t' # us)"
-  let ?v0 = "apps s (t # us)"
 
   let ?v' = "apps s (t' # us @ [u])"
   let ?v = "apps s (t # us @ [u])"
@@ -1432,8 +1426,8 @@ qed
 
 lemma eval_tpoly_wt_subst:
   assumes
-   legal: "legal_passign A" and
-   wary_\<rho>: "strict_wary_subst \<rho>"
+    legal: "legal_passign A" and
+    wary_\<rho>: "strict_wary_subst \<rho>"
   shows "wary s \<Longrightarrow> eval_tpoly A (wt (subst \<rho> s)) = eval_tpoly (subst_passign \<rho> A) (wt s)"
 proof (induct s rule: tm_induct_apps)
   case (apps \<zeta> ss)
@@ -1464,10 +1458,11 @@ proof (induct s rule: tm_induct_apps)
         eval_tpoly (subst_passign \<rho> A) (wt (ss ! i)) = eval_tpoly A (wt (subst \<rho> (ss ! i)))"
         by (rule ih[symmetric, OF nth_mem wary_nth_ss])
 
-      have map_ss: "map (eval_tpoly A \<circ> (\<lambda>(s, i). PMult [coef_hd \<xi> i, wt s]))
-        (zip (map (subst \<rho>) ss) [length ts..<length ts + length ss]) =
-        map (eval_tpoly (subst_passign \<rho> A) \<circ> (\<lambda>(s, i). PMult [PVar (PCoef x i), wt s]))
-          (zip ss [0..<length ss])"
+      have map_ss:
+        "map (eval_tpoly A \<circ> (\<lambda>(s, i). PMult [coef_hd \<xi> i, wt s]))
+           (zip (map (subst \<rho>) ss) [length ts..<length ts + length ss]) =
+         map (eval_tpoly (subst_passign \<rho> A) \<circ> (\<lambda>(s, i). PMult [PVar (PCoef x i), wt s]))
+           (zip ss [0..<length ss])"
         by (rule nth_map_conv, simp_all add: \<rho>_wt_ssi_eq_wt_\<rho>_ssi \<rho>x add.commute)
 
       have ary_\<rho>x_eq_x: "arity\<^sub>h (\<rho> x) = arity_var\<^sub>h x" if \<delta>_nz: "\<delta>\<^sub>h \<noteq> 0"
@@ -1515,8 +1510,8 @@ proof (simp only: atomize_imp,
   proof cases
     case _: gt_wt
     hence "wt (subst \<rho> t) >\<^sub>p wt (subst \<rho> s)"
-      by (simp add: legal_subst_passign[OF _ wary_\<rho>] gt_tpoly_def
-        eval_tpoly_wt_subst[OF _ wary_\<rho>] wary_s wary_t)
+      by (simp add: legal_subst_passign[OF _ wary_\<rho>] gt_tpoly_def eval_tpoly_wt_subst[OF _ wary_\<rho>]
+        wary_s wary_t)
     thus ?thesis
       by (rule gt_wt)
   next
