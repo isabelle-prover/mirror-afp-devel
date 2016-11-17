@@ -40,13 +40,8 @@ locale tkbo_coefs = kbo_std_basis _ _ arity_sym arity_var wt_sym
       arity_var :: "'v \<Rightarrow> enat" and
       wt_sym :: "'s \<Rightarrow> hmultiset" +
   fixes coef_sym :: "'s \<Rightarrow> nat \<Rightarrow> hmultiset"
-  assumes
-    ground_heads_var_arity_eq: "f \<in> ground_heads_var x \<Longrightarrow> arity_sym f = arity_var x" and
-    coef_sym_gt_0: "coef_sym f i > 0"
+  assumes coef_sym_gt_0: "coef_sym f i > 0"
 begin
-
-lemma ground_heads_arity_eq: "f \<in> ground_heads \<zeta> \<Longrightarrow> arity_sym f = arity_hd \<zeta>"
-  by (cases \<zeta>) (auto simp: ground_heads_var_arity_eq)
 
 abbreviation \<delta>\<^sub>h :: hmultiset where
   "\<delta>\<^sub>h \<equiv> of_nat \<delta>"
@@ -81,7 +76,6 @@ lemmas wary_cases_apps\<^sub>h[consumes 1, case_names apps] =
   wary_cases_apps[folded of_nat_le_hmset_of_enat_iff]
 
 lemmas ground_heads_arity\<^sub>h = ground_heads_arity[folded hmset_of_enat_le_iff_le]
-lemmas ground_heads_arity_eq\<^sub>h = ground_heads_arity_eq[folded hmset_of_enat_inject]
 lemmas some_ground_head_arity\<^sub>h = some_ground_head_arity[folded hmset_of_enat_le_iff_le]
 lemmas \<epsilon>\<^sub>h_gt_0 = \<epsilon>_gt_0[folded of_nat_lt_iff_lt_hmset, unfolded of_nat_0]
 lemmas \<delta>\<^sub>h_le_\<epsilon>\<^sub>h = \<delta>_le_\<epsilon>[folded of_nat_le_iff_le_hmset]
@@ -97,13 +91,8 @@ lemmas arity_var\<^sub>h_lt_\<omega>_if_\<delta>\<^sub>h_gt_0 = arity_var_ne_inf
   [folded of_nat_lt_iff_lt_hmset hmset_of_enat_lt_iff_ne_infinity, unfolded of_nat_0]
 lemmas arity\<^sub>h_lt_\<omega>_if_\<delta>\<^sub>h_gt_0 = arity_ne_infinity_if_\<delta>_gt_0
   [folded of_nat_lt_iff_lt_hmset hmset_of_enat_lt_iff_ne_infinity, unfolded of_nat_0]
+lemmas wary_subst\<^sub>h_conv = wary_subst_def[folded hmset_of_enat_le_iff_le]
 lemmas extf_singleton_nil_if_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h = extf_singleton_nil_if_\<delta>_eq_\<epsilon>[folded of_nat_inject_hmset]
-
-lemma strict_wary_subst\<^sub>h_conv:
-  "strict_wary_subst \<rho> \<longleftrightarrow>
-   (\<forall>x. wary (\<rho> x) \<and> arity\<^sub>h (\<rho> x) \<in> {arity_var\<^sub>h x, \<omega>} \<and>
-      ground_heads (head (\<rho> x)) \<subseteq> ground_heads_var x)"
-  using strict_wary_subst_def by simp
 
 subsection \<open>Weights and Subterm Coefficients\<close>
 
@@ -197,8 +186,7 @@ proof -
     by (auto intro: wf_subset)
   have "\<exists>f. f \<in> ground_heads \<zeta>"
     by (meson ground_heads_nonempty subsetI subset_empty)
-  thus "\<exists>f. f \<in> ground_heads \<zeta> \<and>
-    (\<forall>g \<in> ground_heads \<zeta>. wt_sym g + \<delta>\<^sub>h * arity_sym\<^sub>h g \<ge> wt_sym f + \<delta>\<^sub>h * arity_sym\<^sub>h f)"
+  thus ?thesis
     using wf_eq_minimal[THEN iffD1, OF wf_R, rule_format, of _ "ground_heads \<zeta>"] by force
 qed
 
@@ -328,10 +316,11 @@ proof (induct s rule: tm_induct_apps)
       hence "zip ss [0..<length ss] = (hd ss, 0) # zip (tl ss) [1..<length ss]"
         by (metis One_nat_def hd_Cons_tl length_0_conv length_greater_0_conv upt_conv_Cons
           zip_Cons_Cons)
-      hence wt_args_split: "wt_args A \<zeta> ss =
-        eval_tpoly A (PMult [coef_hd \<zeta> 0, wt (hd ss)]) +
-        sum_list (map (eval_tpoly A \<circ> (\<lambda>(s, i). PMult [coef_hd \<zeta> i, wt s]))
-          (zip (tl ss) [1..<length ss]))"
+      hence wt_args_split:
+        "wt_args A \<zeta> ss =
+         eval_tpoly A (PMult [coef_hd \<zeta> 0, wt (hd ss)]) +
+         sum_list (map (eval_tpoly A \<circ> (\<lambda>(s, i). PMult [coef_hd \<zeta> i, wt s]))
+           (zip (tl ss) [1..<length ss]))"
         by (simp add: wt_args_def)
 
       have "\<epsilon>\<^sub>h \<le> eval_tpoly A (coef_hd \<zeta> 0) * eval_tpoly A (wt (hd ss))"
@@ -1354,17 +1343,27 @@ qed
 
 subsection \<open>Stability under Substitution\<close>
 
+text \<open>
+The assumption below is a crude workaround for the missing property
+@{thm ordered_cancel_comm_monoid_diff_class.diff_add} on syntactic ordinals. A
+more satisfactory solution would involve defining ordinals with negative
+coefficients.
+\<close>
+
+context
+  assumes \<delta>\<^sub>h_eq_0_hopefully_temporary: "\<delta>\<^sub>h = 0"
+begin
+
 primrec
   subst_passign :: "('v \<Rightarrow> ('s, 'v) tm) \<Rightarrow> ('v pvar \<Rightarrow> hmultiset) \<Rightarrow> 'v pvar \<Rightarrow> hmultiset"
 where
-  "subst_passign \<rho> A (PWt x) =
-   eval_tpoly A (wt (\<rho> x)) - \<delta>\<^sub>h * arity_sym\<^sub>h (min_ground_head (Var x))"
+  "subst_passign \<rho> A (PWt x) = eval_tpoly A (wt (\<rho> x)) - \<delta>\<^sub>h * arity_sym\<^sub>h (min_ground_head (Var x))"
 | "subst_passign \<rho> A (PCoef x i) = eval_tpoly A (coef (\<rho> x) i)"
 
 lemma legal_subst_passign:
   assumes
     legal: "legal_passign A" and
-    wary_\<rho>: "strict_wary_subst \<rho>"
+    wary_\<rho>: "wary_subst \<rho>"
   shows "legal_passign (subst_passign \<rho> A)"
   unfolding legal_passign_def
 proof
@@ -1376,7 +1375,7 @@ proof
       by (rule tm_exhaust_apps)
 
     have ghd_\<zeta>: "ground_heads \<zeta> \<subseteq> ground_heads_var x"
-      using wary_\<rho>[unfolded strict_wary_subst_def, rule_format, of x, unfolded \<rho>x] by simp
+      using wary_\<rho>[unfolded wary_subst_def, rule_format, of x, unfolded \<rho>x] by simp
 
     have "wt_sym (min_ground_head (Var x)) + \<delta>\<^sub>h * arity_sym\<^sub>h (min_ground_head (Var x))
       \<le> eval_tpoly A (wt0 \<zeta>) + \<delta>\<^sub>h * arity_sym\<^sub>h (min_ground_head \<zeta>)"
@@ -1423,7 +1422,7 @@ qed
 lemma eval_tpoly_wt_subst:
   assumes
     legal: "legal_passign A" and
-    wary_\<rho>: "strict_wary_subst \<rho>"
+    wary_\<rho>: "wary_subst \<rho>"
   shows "wary s \<Longrightarrow> eval_tpoly A (wt (subst \<rho> s)) = eval_tpoly (subst_passign \<rho> A) (wt s)"
 proof (induct s rule: tm_induct_apps)
   case (apps \<zeta> ss)
@@ -1446,23 +1445,10 @@ proof (induct s rule: tm_induct_apps)
            (zip ss [0..<length ss])"
         by (rule nth_map_conv, simp_all add: ih[symmetric, OF nth_mem wary_nth_ss] \<rho>x add.commute)
 
-      have ary_\<rho>x_eq_x: "arity\<^sub>h (\<rho> x) = arity_var\<^sub>h x" if \<delta>_nz: "\<delta>\<^sub>h \<noteq> 0"
-        using wary_\<rho>[unfolded strict_wary_subst\<^sub>h_conv, rule_format, of x] \<delta>_nz
-          arity_ne_infinity_if_\<delta>_gt_0 of_nat_0
-        by (simp, blast)
-      have ary_mgh_\<zeta>_mns_ts_eq_x:
-        "arity_sym\<^sub>h (min_ground_head \<xi>) - of_nat (length ts) = arity_sym\<^sub>h (min_ground_head (Var x))"
-        if \<delta>_nz: "\<delta>\<^sub>h \<noteq> 0"
-        using ary_\<rho>x_eq_x[OF \<delta>_nz, unfolded \<rho>x, simplified]
-        by (simp add: ground_heads_arity_eq\<^sub>h[OF min_ground_head_in_ground_heads])
-
       show ?thesis
-        by (simp del: apps_append add: apps_append[symmetric] \<rho>x \<zeta> map_ss
-            add.assoc[symmetric]
-            zip_append_0_upt[of ts "map (subst \<rho>) ss", simplified]
-            wt_args_def,
-          cases "\<delta>\<^sub>h = 0", simp, unfold wt_args_def[symmetric] ary_mgh_\<zeta>_mns_ts_eq_x[symmetric],
-          rule blanchette_eq)
+        by (simp del: apps_append add: apps_append[symmetric] \<rho>x \<zeta> map_ss add.assoc[symmetric]
+          zip_append_0_upt[of ts "map (subst \<rho>) ss", simplified] wt_args_def
+          \<delta>\<^sub>h_eq_0_hopefully_temporary)
     qed
   next
     case Sym
@@ -1472,7 +1458,7 @@ proof (induct s rule: tm_induct_apps)
 qed
 
 theorem gt_subst:
-  assumes wary_\<rho>: "strict_wary_subst \<rho>"
+  assumes wary_\<rho>: "wary_subst \<rho>"
   shows "wary t \<Longrightarrow> wary s \<Longrightarrow> t >\<^sub>t s \<Longrightarrow> subst \<rho> t >\<^sub>t subst \<rho> s"
 proof (simp only: atomize_imp,
     rule wellorder_measure_induct_rule[of "\<lambda>(t, s). {#size t, size s#}"
@@ -1498,7 +1484,7 @@ proof (simp only: atomize_imp,
     case gt_unary
 
     have wary_\<rho>t: "wary (subst \<rho> t)"
-      by (simp add: strict_wary_subst_wary wary_t wary_\<rho>)
+      by (simp add: wary_subst_wary wary_t wary_\<rho>)
 
     show ?thesis
     proof (cases t)
@@ -1530,7 +1516,7 @@ proof (simp only: atomize_imp,
           by (rule ih[OF _ wary_t2 wary_s t2_gt_s]) (simp add: t)
         thus ?thesis
           unfolding t by simp (metis gt_sub_arg gt_trans subst.simps(2) t wary_\<rho> wary_\<rho>t wary_s
-            strict_wary_subst_wary wary_t2)
+            wary_subst_wary wary_t2)
       qed
     qed
   next
@@ -1542,7 +1528,7 @@ proof (simp only: atomize_imp,
         eval_tpoly_wt_subst[OF _ wary_\<rho>] wary_s wary_t)
 
     have "head (subst \<rho> t) >\<^sub>h\<^sub>d head (subst \<rho> s)"
-      by (meson hd_t_gt_hd_s strict_wary_subst_ground_heads gt_hd_def set_rev_mp wary_\<rho>)
+      by (meson hd_t_gt_hd_s wary_subst_ground_heads gt_hd_def set_rev_mp wary_\<rho>)
     thus ?thesis
       by (rule gt_diff[OF wt_\<rho>t_ge_\<rho>s])
   next
@@ -1563,15 +1549,15 @@ proof (simp only: atomize_imp,
       let ?S = "set (args t) \<union> set (args s)"
 
       have extf_args_s_t: "extf f (op >\<^sub>t) (args t) (args s)"
-        using extf f_in_grs strict_wary_subst_ground_heads wary_\<rho> by blast
+        using extf f_in_grs wary_subst_ground_heads wary_\<rho> by blast
       have "extf f (op >\<^sub>t) (map (subst \<rho>) (args t)) (map (subst \<rho>) (args s))"
       proof (rule extf_map[of ?S, OF _ _ _ _ _ _ extf_args_s_t])
         show "\<forall>x \<in> ?S. \<not> subst \<rho> x >\<^sub>t subst \<rho> x"
-          using gt_irrefl wary_t wary_s wary_args wary_\<rho> strict_wary_subst_wary by fastforce
+          using gt_irrefl wary_t wary_s wary_args wary_\<rho> wary_subst_wary by fastforce
       next
         show "\<forall>z \<in> ?S. \<forall>y \<in> ?S. \<forall>x \<in> ?S. subst \<rho> z >\<^sub>t subst \<rho> y \<longrightarrow> subst \<rho> y >\<^sub>t subst \<rho> x \<longrightarrow>
           subst \<rho> z >\<^sub>t subst \<rho> x"
-          using gt_trans wary_t wary_s wary_args wary_\<rho> strict_wary_subst_wary by (metis Un_iff)
+          using gt_trans wary_t wary_s wary_args wary_\<rho> wary_subst_wary by (metis Un_iff)
       next
         have sz_a: "\<forall>ta \<in> ?S. \<forall>sa \<in> ?S. {#size ta, size sa#} < {#size t, size s#}"
           by (fastforce intro: Max_lt_imp_lt_mset dest: size_in_args)
@@ -1926,9 +1912,10 @@ proof -
   hence "wfP (\<lambda>s t. ?subst t >\<^sub>t\<^sub>w ?subst s)"
     by (simp add: ground_grounding_\<rho>)
   thus ?thesis
-    by (auto intro: wfP_subset strict_wary_subst_wary[OF strict_wary_grounding_\<rho>]
-      gt_subst[OF strict_wary_grounding_\<rho>])
+    by (auto intro: wfP_subset wary_subst_wary[OF wary_grounding_\<rho>] gt_subst[OF wary_grounding_\<rho>])
 qed
+
+end
 
 end
 

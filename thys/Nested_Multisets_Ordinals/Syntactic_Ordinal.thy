@@ -868,7 +868,16 @@ lemma hmset_pair_decompose_less_eq:
   by (metis add_cancel_right_right hmset_pair_decompose_less order.not_eq_order_implies_strict)
 
 
-subsection \<open>Sum of Coefficients\<close>
+subsection \<open>Conversions to Natural Numbers\<close>
+
+definition offset_hmset :: "hmultiset \<Rightarrow> nat" where
+  "offset_hmset M = count (mset_hmset M) 0"
+
+lemma offset_hmset_of_nat[simp]: "offset_hmset (of_nat n) = n"
+  unfolding offset_hmset_def of_nat_hmset by simp
+
+lemma offset_hmset_numeral[simp]: "offset_hmset (numeral n) = numeral n"
+  unfolding offset_hmset_def by (metis offset_hmset_def offset_hmset_of_nat of_nat_numeral)
 
 definition sum_coefs :: "hmultiset \<Rightarrow> nat" where
   "sum_coefs M = size (mset_hmset M)"
@@ -957,16 +966,6 @@ proof -
     by (simp add: distrib_left distrib_right add.assoc[symmetric] semiring_normalization_rules(23))
   finally show ?thesis
     by assumption
-qed
-
-lemma blanchette_eq:
-  "\<alpha> + \<beta> * (\<gamma> - (\<delta> + \<epsilon>)) + \<zeta> = \<alpha> + \<beta> * (\<gamma> - \<delta>) + \<zeta> - \<beta> * (\<gamma> - \<delta>) + \<beta> * (\<gamma> - \<delta> - \<epsilon>)"
-  for \<alpha> \<beta> \<gamma> \<delta> \<epsilon> \<zeta> :: hmultiset
-proof -
-  have "\<alpha> + \<beta> * (\<gamma> - \<delta>) + \<zeta> - \<beta> * (\<gamma> - \<delta>) = \<alpha> + \<zeta>"
-    by (metis add.assoc add.commute add_diff_cancel_left')
-  thus ?thesis
-    by (metis (no_types) add.assoc add.commute diff_diff_add)
 qed
 
 end
