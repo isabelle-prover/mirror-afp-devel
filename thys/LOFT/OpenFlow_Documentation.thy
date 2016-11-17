@@ -109,7 +109,7 @@ Even this strongly altered version and the original linux firewall still behave 
 theorem
 	"\<lbrakk>iface_packet_check ifl pi \<noteq> None;
 	mlf (case next_hop (routing_table_semantics rt (p_dst pi)) of None \<Rightarrow> p_dst pi | Some a \<Rightarrow> a) \<noteq> None\<rbrakk> \<Longrightarrow>
-	\<exists>x. map_option (\<lambda>p. p\<lparr>p_l2dst := x\<rparr>) (simple_linux_router_nol12 rt fw pi) = simple_linux_router rt fw mlf ifl pi"
+	\<exists>x. map_option (\<lambda>p. p\<lparr>p_l2dst := x\<rparr>) (simple_linux_router_nol12 rt fw pi) = simple_linux_router rt fw mlf ifl pi" for pi
 by(fact rtr_nomac_eq[unfolded fromMaybe_def])
 text\<open>The conditions are to be read as ``The check whether a received packet has the correct destination MAC never returns @{const False}'' and 
 ``The next hop MAC address for all packets can be looked up''.
