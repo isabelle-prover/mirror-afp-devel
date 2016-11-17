@@ -4223,6 +4223,15 @@ abstract =
 	A Latin Square is a n x n table filled with integers from 1 to n where each number appears exactly once in each row and each column. A Latin Rectangle is a partially filled n x n table with r filled rows and n-r empty rows, such that each number appears at most once in each row and each column. The main result of this theory is that any Latin Rectangle can be completed to a Latin Square.
 notify = bentkamp@gmail.com
 
+[Deep_Learning]
+title = Expressiveness of Deep Learning
+author = Alexander Bentkamp <mailto:bentkamp@gmail.com>
+date = 2016-11-10
+topic = Computer Science/Algorithms
+abstract =
+	Deep learning has had a profound impact on computer science in recent years, with applications to search engines, image recognition and language processing, bioinformatics, and more. Recently, Cohen et al. provided theoretical evidence for the superiority of deep learning over shallow learning. This formalization of their work simplifies and generalizes the original proof, while working around the limitations of the Isabelle type system. To support the formalization, I developed reusable libraries of formalized mathematics, including results about the matrix rank, the Lebesgue measure, and multivariate polynomials, as well as a library for tensor analysis.
+notify = bentkamp@gmail.com
+
 [Applicative_Lifting]
 title = Applicative Lifting
 author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html>, Joshua Schneider <>
@@ -4891,3 +4900,46 @@ abstract =
   the LEON3 processor.  Our model is based on deterministic monad, which
   is a modified version of the non-deterministic monad from NICTA/l4v.
 
+[LOFT]
+title = LOFT — Verified Migration of Linux Firewalls to SDN
+author = Julius Michaelis <http://liftm.de/>, Cornelius Diekmann <http://net.in.tum.de/~diekmann>
+notify = isabelleopenflow@liftm.de
+date = 2016-10-21
+topic = Computer Science/Networks
+abstract =
+  We present LOFT — Linux firewall OpenFlow Translator, a system that
+  transforms the main routing table and FORWARD chain of iptables of a
+  Linux-based firewall into a set of static OpenFlow rules. Our
+  implementation is verified against a model of a simplified Linux-based
+  router and we can directly show how much of the original functionality
+  is preserved.
+
+[Stable_Matching]
+title = Stable Matching
+author = Peter Gammie <http://peteg.org/>
+notify = peteg42@gmail.com
+date = 2016-10-24
+topic = Mathematics/Economics
+abstract =
+  We mechanize proofs of several results from the matching with
+  contracts literature, which generalize those of the classical
+  two-sided matching scenarios that go by the name of stable marriage.
+  Our focus is on game theoretic issues. Along the way we develop
+  executable algorithms for computing optimal stable matches.
+
+[Modal_Logics_for_NTS]
+title = Modal Logics for Nominal Transition Systems
+author = Tjark Weber <mailto:tjark.weber@it.uu.se>, Lars-Henrik Eriksson <mailto:lhe@it.uu.se>, Joachim Parrow <mailto:joachim.parrow@it.uu.se>, Johannes Borgström <mailto:johannes.borgstrom@it.uu.se>, Ramunas Gutkovas <mailto:ramunas.gutkovas@it.uu.se>
+notify = tjark.weber@it.uu.se
+date = 2016-10-25
+topic = Computer Science/Concurrency/Process Calculi, Logic
+abstract =
+  We formalize a uniform semantic substrate for a wide variety of
+  process calculi where states and action labels can be from arbitrary
+  nominal sets. A Hennessy-Milner logic for these systems is defined,
+  and proved adequate for bisimulation equivalence. A main novelty is
+  the construction of an infinitary nominal data type to model formulas
+  with (finitely supported) infinite conjunctions and actions that may
+  contain binding names. The logic is generalized to treat different
+  bisimulation variants such as early, late and open in a systematic
+  way.

@@ -43,7 +43,7 @@ for
         <td class="data"><a href="hbecker@mpi-sws.org">Heiko Becker</a>, <a href="jasmin.blanchette@gmail.com">Jasmin Christian Blanchette</a>, <a href="waldmann@mpi-inf.mpg.de">Uwe Waldmann</a> and <a href="dwand@mpi-inf.mpg.de">Daniel Wand</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2016-09-23</td></tr>
+        <td class="data">2016-11-12</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
@@ -57,7 +57,7 @@ This Isabelle/HOL formalization defines Knuth–Bendix orders for higher-order t
   author  = {Heiko Becker and Jasmin Christian Blanchette and Uwe Waldmann and Daniel Wand},
   title   = {Formalization of Knuth–Bendix Orders for Lambda-Free Higher-Order Terms},
   journal = {Archive of Formal Proofs},
-  month   = sep,
+  month   = nov,
   year    = 2016,
   note    = {\url{http://isa-afp.org/entries/Lambda_Free_KBOs.shtml},
             Formal proof development},

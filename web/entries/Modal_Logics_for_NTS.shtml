@@ -1,0 +1,127 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="../front.css">
+  <script src="../jquery.min.js"></script>
+  <script src="../script.js"></script>
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p>&nbsp;</p>
+
+<h1><font class="first">M</font>odal
+<font class="first">L</font>ogics
+for
+<font class="first">N</font>ominal
+<font class="first">T</font>ransition
+<font class="first">S</font>ystems
+</h1>
+<p></p>
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+        <td class="data" width="80%">Modal Logics for Nominal Transition Systems</td></tr>
+
+    <tr><td class="datahead">Author:</td>
+        <td class="data">Tjark Weber (tjark /dot/ weber /at/ it /dot/ uu /dot/ se), Lars-Henrik Eriksson (lhe /at/ it /dot/ uu /dot/ se), Joachim Parrow (joachim /dot/ parrow /at/ it /dot/ uu /dot/ se), Johannes Borgström (johannes /dot/ borgstrom /at/ it /dot/ uu /dot/ se) and Ramunas Gutkovas (ramunas /dot/ gutkovas /at/ it /dot/ uu /dot/ se)</td></tr>
+
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2016-10-25</td></tr>
+
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+
+
+We formalize a uniform semantic substrate for a wide variety of
+process calculi where states and action labels can be from arbitrary
+nominal sets. A Hennessy-Milner logic for these systems is defined,
+and proved adequate for bisimulation equivalence. A main novelty is
+the construction of an infinitary nominal data type to model formulas
+with (finitely supported) infinite conjunctions and actions that may
+contain binding names. The logic is generalized to treat different
+bisimulation variants such as early, late and open in a systematic
+way.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Modal_Logics_for_NTS-AFP,
+  author  = {Tjark Weber and Lars-Henrik Eriksson and Joachim Parrow and Johannes Borgström and Ramunas Gutkovas},
+  title   = {Modal Logics for Nominal Transition Systems},
+  journal = {Archive of Formal Proofs},
+  month   = oct,
+  year    = 2016,
+  note    = {\url{http://isa-afp.org/entries/Modal_Logics_for_NTS.shtml},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
+
+
+    <tr><td class="datahead">Depends on:</td>
+        <td class="data"><a href="Nominal2.shtml">Nominal2</a></td></tr>
+
+
+
+
+  </tbody>
+</table>
+
+<p></p>
+
+<!--#set var="name" value="Modal_Logics_for_NTS" -->
+
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+
+
+    <tr><td class="links">Older releases: None
+    </td></tr>
+
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+
+</body>
+</html>

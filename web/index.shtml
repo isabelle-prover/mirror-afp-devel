@@ -54,11 +54,54 @@ is available <a href="citing.shtml">[here]</a>.
 
 <tr><td class="entry">
 2016-11-12:
+<a href="entries/Lambda_Free_KBOs.shtml">Formalization of Knuth–Bendix Orders for Lambda-Free Higher-Order Terms</a>
+<br>Author:
+<a href="hbecker@mpi-sws.org">Heiko Becker</a>,
+<a href="jasmin.blanchette@gmail.com">Jasmin Christian Blanchette</a>,
+<a href="waldmann@mpi-inf.mpg.de">Uwe Waldmann</a> and 
+<a href="dwand@mpi-inf.mpg.de">Daniel Wand</a>
+</td></tr>
+
+<tr><td class="entry">
+2016-11-12:
 <a href="entries/Nested_Multisets_Ordinals.shtml">Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals</a>
 <br>Author:
 <a href="jasmin.blanchette@gmail.com">Jasmin Christian Blanchette</a>,
 <a href="fleury@mpi-inf.mpg.de">Mathias Fleury</a> and 
 <a href="traytel@inf.ethz.ch">Dmitriy Traytel</a>
+</td></tr>
+
+<tr><td class="entry">
+2016-11-10:
+<a href="entries/Deep_Learning.shtml">Expressiveness of Deep Learning</a>
+<br>Author:
+Alexander Bentkamp
+</td></tr>
+
+<tr><td class="entry">
+2016-10-25:
+<a href="entries/Modal_Logics_for_NTS.shtml">Modal Logics for Nominal Transition Systems</a>
+<br>Author:
+Tjark Weber,
+Lars-Henrik Eriksson,
+Joachim Parrow,
+Johannes Borgström and 
+Ramunas Gutkovas
+</td></tr>
+
+<tr><td class="entry">
+2016-10-24:
+<a href="entries/Stable_Matching.shtml">Stable Matching</a>
+<br>Author:
+<a href="http://peteg.org/">Peter Gammie</a>
+</td></tr>
+
+<tr><td class="entry">
+2016-10-21:
+<a href="entries/LOFT.shtml">LOFT — Verified Migration of Linux Firewalls to SDN</a>
+<br>Author:
+<a href="http://liftm.de/">Julius Michaelis</a> and 
+<a href="http://net.in.tum.de/~diekmann">Cornelius Diekmann</a>
 </td></tr>
 
 <tr><td class="entry">
@@ -121,16 +164,6 @@ Lukas Bulwahn
 2016-09-23:
 <a href="entries/Lambda_Free_RPOs.shtml">Formalization of Recursive Path Orders for Lambda-Free Higher-Order Terms</a>
 <br>Author:
-<a href="jasmin.blanchette@gmail.com">Jasmin Christian Blanchette</a>,
-<a href="waldmann@mpi-inf.mpg.de">Uwe Waldmann</a> and 
-<a href="dwand@mpi-inf.mpg.de">Daniel Wand</a>
-</td></tr>
-
-<tr><td class="entry">
-2016-09-23:
-<a href="entries/Lambda_Free_KBOs.shtml">Formalization of Knuth–Bendix Orders for Lambda-Free Higher-Order Terms</a>
-<br>Author:
-<a href="hbecker@mpi-sws.org">Heiko Becker</a>,
 <a href="jasmin.blanchette@gmail.com">Jasmin Christian Blanchette</a>,
 <a href="waldmann@mpi-inf.mpg.de">Uwe Waldmann</a> and 
 <a href="dwand@mpi-inf.mpg.de">Daniel Wand</a>

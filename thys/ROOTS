@@ -66,6 +66,7 @@ DataRefinementIBP
 Datatype_Order_Generator
 Decreasing-Diagrams
 Decreasing-Diagrams-II
+Deep_Learning
 Density_Compiler
 Dependent_SIFUM_Refinement
 Dependent_SIFUM_Type_Systems
@@ -166,6 +167,7 @@ List_Interleaving
 List_Update
 Lifting_Definition_Option
 Locally-Nameless-Sigma
+LOFT
 Lower_Semicontinuous
 Lp
 LTL
@@ -178,6 +180,7 @@ Matrix_Tensor
 Max-Card-Matching
 MFMC_Countable
 MiniML
+Modal_Logics_for_NTS
 MonoBoolTranAlgebra
 MSO_Regex_Equivalence
 MuchAdoAboutTwo
@@ -277,6 +280,7 @@ Special_Function_Bounds
 Splay_Tree
 Sqrt_Babylonian
 Statecharts
+Stable_Matching
 Stern_Brocot
 Stirling_Formula
 Stone_Algebras

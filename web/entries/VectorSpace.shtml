@@ -65,7 +65,7 @@ This formalisation of basic linear algebra is based completely on locales, build
 
 
     <tr><td class="datahead">Used by:</td>
-        <td class="data"><a href="Jordan_Normal_Form.shtml">Jordan_Normal_Form</a></td></tr>
+        <td class="data"><a href="Deep_Learning.shtml">Deep_Learning</a>, <a href="Jordan_Normal_Form.shtml">Jordan_Normal_Form</a></td></tr>
 
 
 

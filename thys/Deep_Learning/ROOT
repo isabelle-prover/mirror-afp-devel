@@ -1,0 +1,44 @@
+chapter AFP
+
+session "Deep_Learning" (AFP) = "Deep_Learning_Lib" +
+  options [timeout = 3600]
+  theories
+    DL_Fundamental_Theorem_Network_Capacity
+  document_files
+    "root.bib"
+    "root.tex"
+
+session "Deep_Learning_Lib" (AFP) = "HOL-Probability" +
+  description {* Theories that are not part of HOL-Probability but are used by this entry *}
+  options [document = false]
+  theories
+    "~~/src/HOL/Library/More_List"
+    "~~/src/HOL/Library/Polynomial"
+    "~~/src/HOL/Algebra/Congruence"
+    "~~/src/HOL/Algebra/Lattice"
+    "~~/src/HOL/Algebra/Group"
+    "~~/src/HOL/Algebra/FiniteProduct"
+    "~~/src/HOL/Algebra/Ring"
+    "../Jordan_Normal_Form/Missing_Ring"
+    "~~/src/HOL/Algebra/Module"
+    "../Polynomial_Interpolation/Ring_Hom"
+    "../Jordan_Normal_Form/Matrix"
+    "~~/src/HOL/Algebra/Coset"
+    "../VectorSpace/RingModuleFacts"
+    "../VectorSpace/FunctionLemmas"
+    "../VectorSpace/MonoidSums"
+    "../VectorSpace/LinearCombinations"
+    "../VectorSpace/SumSpaces"
+    "../VectorSpace/VectorSpace"
+    "../Jordan_Normal_Form/VS_Connect"
+    "../Jordan_Normal_Form/Missing_VectorSpace"
+    "../Jordan_Normal_Form/Missing_Permutations"
+    "~~/src/HOL/Library/Fraction_Field"
+    "../Jordan_Normal_Form/Missing_Fraction_Field"
+    "../Jordan_Normal_Form/Gauss_Jordan_Elimination"
+    "../Jordan_Normal_Form/Column_Operations"
+    "../Polynomial_Interpolation/Missing_Unsorted"
+    "../Jordan_Normal_Form/Determinant"
+    "~~/src/HOL/Library/Groups_Big_Fun"
+    "~~/src/HOL/Library/Fun_Lexorder"
+
