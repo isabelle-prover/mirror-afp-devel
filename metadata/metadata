@@ -4669,7 +4669,7 @@ title = Separata: Isabelle tactics for Separation Algebra
 author = Zhe Hou <mailto:zhe.hou@ntu.edu.sg>, David Sanan <mailto:sanan@ntu.edu.sg>, Alwen Tiu <mailto:ATiu@ntu.edu.sg>, Rajeev Gore <mailto:rajeev.gore@anu.edu.au>, Ranald Clouston <mailto:ranald.clouston@cs.au.dk>
 notify = zhe.hou@ntu.edu.sg
 date = 2016-11-16
-topic = Programming Languages/Logics, Tools
+topic = Computer Science/Programming Languages/Logics, Tools
 abstract =
   We bring the labelled sequent calculus $LS_{PASL}$ for propositional
   abstract separation logic to Isabelle. The tactics given here are

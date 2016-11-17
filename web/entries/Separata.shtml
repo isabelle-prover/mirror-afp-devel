@@ -1,0 +1,130 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="../front.css">
+  <script src="../jquery.min.js"></script>
+  <script src="../script.js"></script>
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p>&nbsp;</p>
+
+<h1><font class="first">S</font>eparata:
+<font class="first">I</font>sabelle
+tactics
+for
+<font class="first">S</font>eparation
+<font class="first">A</font>lgebra
+</h1>
+<p></p>
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+        <td class="data" width="80%">Separata: Isabelle tactics for Separation Algebra</td></tr>
+
+    <tr><td class="datahead">Author:</td>
+        <td class="data">Zhe Hou (zhe /dot/ hou /at/ ntu /dot/ edu /dot/ sg), David Sanan (sanan /at/ ntu /dot/ edu /dot/ sg), Alwen Tiu (ATiu /at/ ntu /dot/ edu /dot/ sg), Rajeev Gore (rajeev /dot/ gore /at/ anu /dot/ edu /dot/ au) and Ranald Clouston (ranald /dot/ clouston /at/ cs /dot/ au /dot/ dk)</td></tr>
+
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2016-11-16</td></tr>
+
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+
+
+We bring the labelled sequent calculus $LS_{PASL}$ for propositional
+abstract separation logic to Isabelle. The tactics given here are
+directly applied on an extension of the Separation Algebra in the AFP.
+In addition to the cancellative separation algebra, we further
+consider some useful properties in the heap model of separation logic,
+such as indivisible unit, disjointness, and cross-split. The tactics
+are essentially a proof search procedure for the calculus $LS_{PASL}$.
+We wrap the tactics in an Isabelle method called separata, and give a
+few examples of separation logic formulae which are provable by
+separata.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Separata-AFP,
+  author  = {Zhe Hou and David Sanan and Alwen Tiu and Rajeev Gore and Ranald Clouston},
+  title   = {Separata: Isabelle tactics for Separation Algebra},
+  journal = {Archive of Formal Proofs},
+  month   = nov,
+  year    = 2016,
+  note    = {\url{http://isa-afp.org/entries/Separata.shtml},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
+
+
+    <tr><td class="datahead">Depends on:</td>
+        <td class="data"><a href="Separation_Algebra.shtml">Separation_Algebra</a></td></tr>
+
+
+
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!--#set var="afp-version" value="-AFPVERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
+
+  </tbody>
+</table>
+
+<p></p>
+
+<!--#set var="name" value="Separata" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
+
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	<!-- link to README.hmtl if no document exists -->	
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+    <tr><td class="links">Older releases:
+None    </td></tr>
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+
+</body>
+</html>
