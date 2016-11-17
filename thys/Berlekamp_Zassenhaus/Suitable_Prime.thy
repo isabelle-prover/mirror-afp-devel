@@ -52,7 +52,7 @@ definition square_free_impl_main :: "int \<Rightarrow> 'i arith_ops_record \<Rig
   "square_free_impl_main p ff_ops f = square_free_i ff_ops (of_int_poly_i ff_ops (poly_mod.Mp p f))" 
 
 lemma (in prime_field_gen) square_free_impl: 
-  assumes g: "(g :: 'a mod_ring poly) = of_int_poly (Mp f)" 
+  assumes F: "(F :: 'a mod_ring poly) = of_int_poly (Mp f)" 
   shows "square_free_impl_main p ff_ops f \<Longrightarrow> square_free_m f" 
   "CARD('a) > degree_m f \<Longrightarrow> CARD('a) > square_free_bound f \<Longrightarrow> square_free f 
    \<Longrightarrow> square_free_impl_main p ff_ops f" unfolding square_free_impl_main_def
@@ -63,9 +63,9 @@ proof -
     by (rule poly_rel_coeffs_Mp_of_int_poly[OF refl], simp add: f''_def)
   have id: "square_free_i ff_ops ?f' = coprime f'' (pderiv f'')"
     unfolding square_free_i_def by transfer_prover
-  have Mprel [transfer_rule]: "MP_Rel (Mp f) g" unfolding g MP_Rel_def
+  have Mprel [transfer_rule]: "MP_Rel (Mp f) F" unfolding F MP_Rel_def
     by (simp add: Mp_f_representative)
-  have "square_free f'' = square_free g" unfolding f''_def g by simp
+  have "square_free f'' = square_free F" unfolding f''_def F by simp
   also have "\<dots> = square_free_m (Mp f)"
     by (transfer, simp)
   also have "\<dots> = square_free_m f" by simp
@@ -78,12 +78,12 @@ proof -
   assume "CARD('a) > degree_m f" and bnd: "int CARD('a) > square_free_bound f" 
     and sf: "square_free f" 
   with rel_funD[OF degree_MP_Rel Mprel]
-  have "CARD('a) > degree g" by simp
-  hence "CARD('a) > degree f''" unfolding f''_def g by simp
+  have "CARD('a) > degree F" by simp
+  hence "CARD('a) > degree f''" unfolding f''_def F by simp
   from square_free_iff_coprime_GFp[OF this]
   have "square_free_i ff_ops ?f' = square_free f''" unfolding id id2 by simp
-  also have "\<dots> = square_free g" unfolding f''_def g by simp
-  also have "g = ?f" unfolding g
+  also have "\<dots> = square_free F" unfolding f''_def F by simp
+  also have "F = ?f" unfolding F
     by (rule poly_eqI, (subst coeff_map_poly, force)+, unfold Mp_coeff, 
     auto simp: M_def, transfer, auto simp: p)
   also have "square_free ?f" using square_free_int_imp_square_free_mod_ring[where 'a = 'a, OF sf bnd] .
