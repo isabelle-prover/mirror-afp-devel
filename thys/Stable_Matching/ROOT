@@ -4,7 +4,6 @@ session "Stable_Matching" (AFP) = "HOL-Library" +
   options [timeout = 600, show_question_marks = false]
   theories [document = false]
     Dual_Lattice
-    BW_Extra (* FIXME in Isabelle/hg fba08009ff3e (after Isabelle2016). Delete this file. *)
   theories
     Sotomayor
     Basis

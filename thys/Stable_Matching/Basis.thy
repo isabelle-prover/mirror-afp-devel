@@ -153,12 +153,12 @@ qed
 lemma setsum_mono_inv:
   fixes I :: "'z set"
   fixes f :: "'z \<Rightarrow> nat"
-  assumes "setsum f I = setsum g I"
+  assumes "sum f I = sum g I"
   assumes "\<And>i. i \<in> I \<Longrightarrow> f i \<le> g i"
   assumes "i \<in> I"
   assumes "finite I"
   shows "f i = g i"
-using assms by (metis le_neq_trans less_irrefl setsum_strict_mono_ex1)
+using assms by (metis le_neq_trans less_irrefl sum_strict_mono_ex1)
 
 (* From Finite_Set, strengthen: inductive F is a subset of what we started with. *)
 lemma finite_subset_induct' [consumes 2, case_names empty insert]:

@@ -3,7 +3,6 @@ theory Contracts
 imports
   Choice_Functions
   Dual_Lattice
-  BW_Extra (* delete after Isabelle2016 *)
   "~~/src/HOL/Library/Bourbaki_Witt_Fixpoint"
   "~~/src/HOL/Library/While_Combinator"
   "~~/src/HOL/Library/Product_Order"
@@ -2017,22 +2016,22 @@ proof %invisible -
   have "?Sum_Cd_gfp = ?Sum_Ch_gfp"
     using stable_pair_on_CD_on_CH[OF gfp_F_stable_pair_on] CD_on_card[symmetric] CH_card[symmetric] by simp
   also have "\<dots> \<le> ?Sum_Ch_XH"
-    using Ch_gfp_F_XH_card by (simp add: setsum_mono)
+    using Ch_gfp_F_XH_card by (simp add: sum_mono)
   also have "\<dots> = ?Sum_Cd_XD"
     using stable_pair_on_CD_on_CH[OF \<open>stable_pair_on ds XD_XH\<close>] CD_on_card[symmetric] CH_card[symmetric] by simp
   finally have "?Sum_Cd_XD = ?Sum_Cd_gfp"
-    using Cd_XD_gfp_F_card by (simp add: eq_iff setsum_mono)
+    using Cd_XD_gfp_F_card by (simp add: eq_iff sum_mono)
   with Cd_XD_gfp_F_card show "d \<in> ds \<Longrightarrow> card (Cd d (fst XD_XH)) = card (Cd d (fst (gfp_F ds)))"
     by (fastforce elim: setsum_mono_inv)
 
   have "?Sum_Ch_XH = ?Sum_Cd_XD"
     using stable_pair_on_CD_on_CH[OF \<open>stable_pair_on ds XD_XH\<close>] CD_on_card[symmetric] CH_card[symmetric] by simp
   also have "\<dots> \<le> ?Sum_Cd_gfp"
-    using Cd_XD_gfp_F_card by (simp add: setsum_mono)
+    using Cd_XD_gfp_F_card by (simp add: sum_mono)
   also have "\<dots> = ?Sum_Ch_gfp"
     using stable_pair_on_CD_on_CH[OF gfp_F_stable_pair_on] CD_on_card[symmetric] CH_card[symmetric] by simp
   finally have "?Sum_Ch_gfp = ?Sum_Ch_XH"
-    using Ch_gfp_F_XH_card by (simp add: eq_iff setsum_mono)
+    using Ch_gfp_F_XH_card by (simp add: eq_iff sum_mono)
   with Ch_gfp_F_XH_card show "card (Ch h (snd XD_XH)) = card (Ch h (snd (gfp_F ds)))"
     by (fastforce elim: sym[OF setsum_mono_inv])
 qed

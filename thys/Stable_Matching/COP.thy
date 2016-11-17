@@ -1334,24 +1334,24 @@ proof -
   have "?Sum_Cd_COP = ?Sum_Ch_COP"
     using Theorem_1 stable_on_CD_on CD_on_card[symmetric] CH_card[symmetric] by simp
   also have "\<dots> \<le> ?Sum_Ch_X"
-    using RHT_Ch_card by (simp add: setsum_mono)
+    using RHT_Ch_card by (simp add: sum_mono)
   also have "\<dots> = ?Sum_Cd_X"
     using CD_on_card[symmetric] CH_card[symmetric]
     using \<open>stable_on ds X\<close> stable_on_CD_on stable_on_CH by auto
   finally have "?Sum_Cd_X = ?Sum_Cd_COP"
-    using RHT_Cd_card by (simp add: eq_iff setsum_mono)
+    using RHT_Cd_card by (simp add: eq_iff sum_mono)
   with RHT_Cd_card show "d \<in> ds \<Longrightarrow> card (Cd d X) = card (Cd d (CH (fp_cop_F ds)))"
     by (fastforce elim: setsum_mono_inv)
 
   have "?Sum_Ch_X = ?Sum_Cd_X"
     using \<open>stable_on ds X\<close> stable_on_CD_on stable_on_CH CD_on_card[symmetric] CH_card[symmetric] by simp
   also have "\<dots> \<le> ?Sum_Cd_COP"
-    using RHT_Cd_card by (simp add: setsum_mono)
+    using RHT_Cd_card by (simp add: sum_mono)
   also have "\<dots> = ?Sum_Ch_COP"
     using CD_on_card[symmetric] CH_card[symmetric]
     using Theorem_1 stable_on_CD_on stable_on_CH by auto
   finally have "?Sum_Ch_COP = ?Sum_Ch_X"
-    using RHT_Ch_card by (simp add: eq_iff setsum_mono)
+    using RHT_Ch_card by (simp add: eq_iff sum_mono)
   with RHT_Ch_card show "card (Ch h X) = card (Ch h (fp_cop_F ds))"
     by (fastforce elim: sym[OF setsum_mono_inv])
 qed

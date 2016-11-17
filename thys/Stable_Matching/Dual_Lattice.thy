@@ -288,13 +288,11 @@ end
 
 lemma SUP_dual_unfold:
   "SUPREMUM A f = dual (INFIMUM A (undual \<circ> f))"
-  (* by (simp add: Sup_dual_def) (* after Isabelle2016 *) *)
-  by (simp add: SUP_def Sup_dual_def)
+  by (simp add: Sup_dual_def)
 
 lemma INF_dual_unfold:
   "INFIMUM A f = dual (SUPREMUM A (undual \<circ> f))"
-  (* by (simp add: Inf_dual_def) (* after Isabelle2016 *) *)
-  by (simp add: INF_def Inf_dual_def)
+  by (simp add: Inf_dual_def)
 
 text \<open>
   Apparently, the \<open>\<Sqinter>\<close> and \<open>\<Squnion>\<close> operations are dual to each
@@ -340,7 +338,7 @@ proof(rule antisym)
     done
   show "?rhs \<le> ?lhs"
     apply (subst dual_leq[symmetric])
-    apply (simp add: lfp_lemma2[OF assms] gfp_upperbound)
+    apply (simp add: lfp_fixpoint[OF assms] gfp_upperbound)
     done
 qed
 
