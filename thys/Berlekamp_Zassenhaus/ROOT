@@ -47,7 +47,7 @@ session Berlekamp_Zassenhaus (AFP) = Pre_BZ +
     "root.tex" 
 
 session Pre_BZ (AFP) = "Polynomial_Factorization" +
-  options [document=false]
+  options [document = false, timeout = 600]
   theories
     "../Jordan_Normal_Form/Matrix_Kernel"
     "../Jordan_Normal_Form/Gauss_Jordan_IArray_Impl"
