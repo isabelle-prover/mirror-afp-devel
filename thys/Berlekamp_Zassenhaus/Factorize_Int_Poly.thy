@@ -18,7 +18,7 @@ begin
 
 definition factorize_int_poly :: "int poly \<Rightarrow> int \<times> (int poly \<times> nat) list" where
   "factorize_int_poly f = (    
-    let (a,psi) = yun_factorization_int f;
+    let (a,psi) = square_free_factorization_int f;
      pre_result = map (\<lambda> (q,i). (map (\<lambda> f. (f,i)) (berlekamp_zassenhaus_factorization q))) psi;
      factors = concat pre_result
    in (a,factors))"
@@ -27,9 +27,9 @@ lemma factorize_int_poly: assumes res: "factorize_int_poly f = (c,fs)"
 shows "square_free_factorization f (c,fs)"
   "(fi,i) \<in> set fs \<Longrightarrow> irreducible fi"
 proof -
-  obtain a psi where a_psi: "yun_factorization_int f = (a, psi)" 
+  obtain a psi where a_psi: "square_free_factorization_int f = (a, psi)" 
     by force
-  from yun_factorization_int[OF this]
+  from square_free_factorization_int[OF this]
   have sff: "square_free_factorization f (a, psi)" and dist: "distinct (map snd psi)" 
     and cnt: "\<And> fi i. (fi, i) \<in> set psi \<Longrightarrow> content fi = 1" by blast+
   note res = res[unfolded factorize_int_poly_def a_psi Let_def split]

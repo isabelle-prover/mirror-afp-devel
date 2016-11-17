@@ -148,14 +148,47 @@ definition square_free_impl :: "int \<Rightarrow> int poly \<Rightarrow> bool" w
     then square_free_impl_main p (finite_field_ops32 (uint32_of_int p))
     else square_free_impl_main p (finite_field_ops p))" 
 
+lemma square_free_mod_imp_square_free: assumes 
+  p: "prime p" and sf: "poly_mod.square_free_m p f" and cop: "coprime (lead_coeff f) p" 
+  shows "square_free f"
+proof -
+  interpret poly_mod p .
+  from sf[unfolded square_free_m_def] have f0: "Mp f \<noteq> 0" and ndvd: "\<And> g. degree_m g \<noteq> 0 \<Longrightarrow> \<not> dvdm (g * g) f" 
+    unfolding equivalent_def by auto
+  from f0 have ff0: "f \<noteq> 0" by auto
+  show "square_free f" unfolding square_free_def
+  proof (intro conjI[OF ff0] allI impI notI)
+    fix g
+    assume deg: "degree g \<noteq> 0" and dvd: "g * g dvd f" 
+    then obtain h where f: "f = g * g * h" unfolding dvd_def by auto
+    from arg_cong[OF this, of Mp] have "dvdm (g * g) f" unfolding dvdm_def equivalent_def by auto
+    with ndvd[of g] have deg0: "degree_m g = 0" by auto
+    hence g0: "M (lead_coeff g) = 0" unfolding Mp_def lead_coeff_def using deg
+      by (metis M_0 Mp_def Ring_Hom_Poly.degree_map_poly degree_m_def)
+    from p have p0: "p \<noteq> 0" by auto
+    from arg_cong[OF f, of lead_coeff] have "lead_coeff f = lead_coeff g * lead_coeff g * lead_coeff h" 
+      by (auto simp: lead_coeff_mult)
+    hence "lead_coeff g dvd lead_coeff f" by auto
+    with cop have cop: "coprime (lead_coeff g) p" by (metis coprime_divisors dvd_def mult.right_neutral)
+    from this[unfolded gcd_non_0[OF p0]] have "coprime p 0" using g0 unfolding M_def by simp
+    also have "gcd p 0 = p" using p0 by (simp add: p prime_ge_0_int)
+    finally show False using p by simp
+  qed
+qed
+
 lemma square_free_impl: assumes 
   p: "prime p"
   shows "square_free_impl p f \<Longrightarrow> poly_mod.square_free_m p f"
     "nat p > poly_mod.degree_m p f \<Longrightarrow> nat p > square_free_bound f \<Longrightarrow> square_free f 
     \<Longrightarrow> square_free_impl p f" 
-  using square_free_impl_int[OF p refl, of f] square_free_impl_uint32[OF p refl, of f]
-  unfolding square_free_impl_def by (auto split: if_splits)
-
+proof -
+  show one: "square_free_impl p f \<Longrightarrow> poly_mod.square_free_m p f" and
+    "nat p > poly_mod.degree_m p f \<Longrightarrow> nat p > square_free_bound f \<Longrightarrow> square_free f 
+    \<Longrightarrow> square_free_impl p f"
+    using square_free_impl_int[OF p refl, of f] square_free_impl_uint32[OF p refl, of f]
+    unfolding square_free_impl_def by (auto split: if_splits)
+qed
+  
 
 lemma coprime_lead_coeff_large_prime: assumes prime: "prime (p :: int)" 
   and large: "p > abs (lead_coeff f)" 
@@ -221,8 +254,8 @@ partial_function (tailrec) find_prime_main ::
   [code]: "find_prime_main f np ps = (case ps of [] \<Rightarrow> 
     let (np',ps') = next_primes np
       in find_prime_main f np' ps'
-    | (p # ps) \<Rightarrow> if f p then p else find_prime_main f np ps)"
-
+    | (p # ps) \<Rightarrow> if f p then p else find_prime_main f np ps)" 
+  
 definition find_prime :: "(nat \<Rightarrow> bool) \<Rightarrow> nat" where
   "find_prime f = find_prime_main f 0 []"
   
@@ -299,7 +332,7 @@ proof -
   } note main = this
   have "candidate_invariant 0" by (simp add: candidate_invariant_def)
   from main[OF this _ refl, of Nil] show ?thesis unfolding find_prime_def by auto
-qed
+qed 
 
 definition suitable_prime_bz :: "int poly \<Rightarrow> int" where
   "suitable_prime_bz f \<equiv> let lc = lead_coeff f in int (find_prime (\<lambda> n. let p = int n in 
@@ -323,4 +356,18 @@ proof -
   with square_free_impl(1)[OF prime sf]
   show "prime p" "coprime ?lc p" "poly_mod.square_free_m p f" by auto  
 qed
+
+definition square_free_heuristic :: "int poly \<Rightarrow> int option" where
+  "square_free_heuristic f = (let lc = lead_coeff f in 
+    find (\<lambda> p. coprime lc p \<and> square_free_impl p f) [2, 3, 5, 7, 11, 13, 17, 19, 23])" 
+
+lemma find_Some_D: "find f xs = Some y \<Longrightarrow> y \<in> set xs \<and> f y" unfolding find_Some_iff by auto
+  
+lemma square_free_heuristic: assumes "square_free_heuristic f = Some p" 
+  shows "coprime (lead_coeff f) p \<and> square_free_impl p f \<and> prime p" 
+proof -
+  from find_Some_D[OF assms[unfolded square_free_heuristic_def Let_def]]
+  show ?thesis by auto
+qed
+ 
 end

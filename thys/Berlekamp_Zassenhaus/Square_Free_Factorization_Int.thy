@@ -8,6 +8,7 @@ theory Square_Free_Factorization_Int
 imports 
   Square_Free_Int_To_Square_Free_GFp 
   Square_Free_Factorization
+  Suitable_Prime
   Code_Abort_Gcd
 begin
 
@@ -294,7 +295,7 @@ proof -
   qed
 qed
 
-lemma yun_monic_factorization_int: assumes  
+lemma yun_monic_factorization_int_yun_rel: assumes  
     res: "yun_gcd.yun_monic_factorization gcd f = res"
     and Res: "yun_gcd.yun_monic_factorization gcd F = Res" 
     and f: "yun_rel F c f" 
@@ -321,14 +322,6 @@ proof -
   thus ?thesis unfolding res Res
     by (induct R r rule: list_all2_induct, auto dest: yun_erel_1_eq)
 qed
-
-definition yun_factorization_int :: "int poly \<Rightarrow> int \<times> (int poly \<times> nat)list" where
-  "yun_factorization_int f = (if f = 0
-    then (0,[]) else (let 
-      c = content f;
-      d = (sgn (lead_coeff f) * c);
-      g = div_poly d f
-    in (d, yun_gcd.yun_monic_factorization gcd g)))"
 
 lemma yun_rel_same_right: assumes "yun_rel f c G" "yun_rel g d G" 
   shows "f = g" 
@@ -362,17 +355,134 @@ proof -
 qed
 
 
-lemma yun_factorization_int: assumes res: "yun_factorization_int f = (d, fs)"
+
+definition square_free_factorization_int_main :: "int poly \<Rightarrow> (int poly \<times> nat) list" where 
+  "square_free_factorization_int_main f = (case square_free_heuristic f of None \<Rightarrow> 
+    yun_gcd.yun_monic_factorization gcd f | Some p \<Rightarrow> [(f,0)])"
+
+lemma square_free_factorization_int_main: assumes res: "square_free_factorization_int_main f = fs"
+  and ct: "content f = 1" and lc: "lead_coeff f > 0" 
+  and deg: "degree f \<noteq> 0" 
+shows "square_free_factorization f (1,fs) \<and> (\<forall> fi i. (fi, i) \<in> set fs \<longrightarrow> content fi = 1 \<and> lead_coeff fi > 0) \<and>
+  distinct (map snd fs)" 
+proof (cases "square_free_heuristic f")
+  case None  
+  from lc have f0: "f \<noteq> 0" by auto
+  from res None have fs: "yun_gcd.yun_monic_factorization gcd f = fs" 
+    unfolding square_free_factorization_int_main_def by auto
+  let ?r = "rat_of_int" 
+  let ?rp = "map_poly ?r" 
+  define G where "G = smult (inverse (lead_coeff (?rp f))) (?rp f)" 
+  have "?rp f \<noteq> 0" using f0 by auto
+  hence mon: "monic G" unfolding G_def coeff_smult lead_coeff_def by simp    
+  obtain Fs where Fs: "yun_gcd.yun_monic_factorization gcd G = Fs" by blast
+  from lc have lg: "lead_coeff (?rp f) \<noteq> 0" by auto
+  let ?c = "lead_coeff (?rp f)" 
+  define c where "c = ?c"
+  have rp: "?rp f = smult c G" unfolding G_def c_def by (simp add: field_simps)
+  have in_rel: "yun_rel f c G" unfolding yun_rel_def yun_wrel_def
+    using rp mon lc ct by auto
+  from yun_monic_factorization_int_yun_rel[OF Fs fs in_rel]
+  have out_rel: "list_all2 (rel_prod yun_erel op =) fs Fs" by auto
+  from yun_monic_factorization[OF Fs mon]
+  have "square_free_factorization G (1, Fs)" and dist: "distinct (map snd Fs)" by auto
+  note sff = square_free_factorizationD[OF this(1)]
+  from out_rel have "map snd fs = map snd Fs" by (induct fs Fs rule: list_all2_induct, auto)
+  with dist have dist': "distinct (map snd fs)" by auto
+  have main: "square_free_factorization f (1, fs) \<and> (\<forall> fi i. (fi, i) \<in> set fs \<longrightarrow> content fi = 1 \<and> lead_coeff fi > 0)"
+    unfolding square_free_factorization_def split
+  proof (intro conjI allI impI)
+    from ct have "f \<noteq> 0" by auto
+    thus "f = 0 \<Longrightarrow> 1 = 0" "f = 0 \<Longrightarrow> fs = []" by auto
+    from dist' show "distinct fs" by (simp add: distinct_map)
+    {
+      fix a i
+      assume a: "(a,i) \<in> set fs" 
+      with out_rel obtain bj where "bj \<in> set Fs" and "rel_prod yun_erel op = (a,i) bj" 
+        unfolding list_all2_conv_all_nth set_conv_nth by fastforce
+      then obtain b where b: "(b,i) \<in> set Fs" and ab: "yun_erel a b" by (cases bj, auto simp: rel_prod.simps)
+      from sff(2)[OF b] have b': "square_free b" "degree b \<noteq> 0" by auto
+      from ab obtain c where rel: "yun_rel a c b" unfolding yun_erel_def by auto
+      note aa = yun_relD[OF this]
+      from aa have c0: "c \<noteq> 0" by auto
+      from b' aa(3) show "degree a \<noteq> 0" by simp
+      from square_free_smult[OF c0 b'(1), folded aa(2)]
+      show "square_free a" unfolding square_free_def by (force simp: dvd_def)
+      show cnt: "content a = 1" and lc: "lead_coeff a > 0" using aa by auto
+      fix A I
+      assume A: "(A,I) \<in> set fs" and diff: "(a,i) \<noteq> (A,I)" 
+      from a[unfolded set_conv_nth] obtain k where k: "fs ! k = (a,i)" "k < length fs" by auto
+      from A[unfolded set_conv_nth] obtain K where K: "fs ! K = (A,I)" "K < length fs" by auto
+      from diff k K have kK: "k \<noteq> K" by auto
+      from dist'[unfolded distinct_conv_nth length_map, rule_format, OF k(2) K(2) kK] 
+      have iI: "i \<noteq> I" using k K by simp
+      from A out_rel obtain Bj where "Bj \<in> set Fs" and "rel_prod yun_erel op = (A,I) Bj" 
+        unfolding list_all2_conv_all_nth set_conv_nth by fastforce
+      then obtain B where B: "(B,I) \<in> set Fs" and AB: "yun_erel A B" by (cases Bj, auto simp: rel_prod.simps)
+      then obtain C where Rel: "yun_rel A C B" unfolding yun_erel_def by auto
+      note AA = yun_relD[OF this]
+      from iI have "(b,i) \<noteq> (B,I)" by auto
+      from sff(3)[OF b B this] have cop: "coprime b B" .
+      from AA have C: "C \<noteq> 0" by auto
+      from yun_rel_gcd[OF rel AA(1) C refl] obtain c where "yun_rel (gcd a A) c (gcd b B)" by auto
+      note rel = yun_relD[OF this]
+      from rel(2)[unfolded cop] have "?rp (gcd a A) = [: c :]" by simp
+      from arg_cong[OF this, of degree] have "degree (gcd a A) = 0" by simp
+      from degree0_coeffs[OF this] obtain c where gcd: "gcd a A = [: c :]" by auto        
+      from rel(8) rel(5) show "coprime a A" unfolding content_def gcd list_gcd_def
+        by auto
+    }
+    let ?prod = "\<lambda> fs. (\<Prod>(a, i)\<in>set fs. a ^ Suc i)" 
+    let ?pr = "\<lambda> fs. (\<Prod>(a, i)\<leftarrow>fs. a ^ Suc i)"
+    define pr where "pr = ?prod fs" 
+    from \<open>distinct fs\<close> have pfs: "?prod fs = ?pr fs" by (rule prod.distinct_set_conv_list)
+    from \<open>distinct Fs\<close> have pFs: "?prod Fs = ?pr Fs" by (rule prod.distinct_set_conv_list)
+    from out_rel have "yun_erel (?prod fs) (?prod Fs)" unfolding pfs pFs
+    proof (induct fs Fs rule: list_all2_induct)
+      case (Cons ai fs Ai Fs)
+      obtain a i where ai: "ai = (a,i)" by force
+      from Cons(1) ai obtain A where Ai: "Ai = (A,i)" 
+        and rel: "yun_erel a A" by (cases Ai, auto simp: rel_prod.simps)
+      show ?case unfolding ai Ai using yun_erel_mult[OF yun_erel_pow[OF rel, of "Suc i"] Cons(3)]
+        by auto
+    qed simp
+    also have "?prod Fs = G" using sff(1) by simp
+    finally obtain d where rel: "yun_rel pr d G" unfolding yun_erel_def pr_def by auto
+    with in_rel have "f = pr" by (rule yun_rel_same_right)
+    thus "f = smult 1 (?prod fs)" unfolding pr_def by simp
+  qed
+  from main dist' show ?thesis by auto
+next
+  case (Some p)
+  from res[unfolded square_free_factorization_int_main_def Some] have fs: "fs = [(f,0)]" by auto
+  from lc have f0: "f \<noteq> 0" by auto
+  from square_free_heuristic[OF Some] square_free_impl(1)[of p f] square_free_mod_imp_square_free[of p f] deg
+  show ?thesis unfolding fs
+    by (auto simp: ct lc square_free_factorization_def f0)
+qed
+
+definition square_free_factorization_int :: "int poly \<Rightarrow> int \<times> (int poly \<times> nat)list" where
+  "square_free_factorization_int f = (if degree f = 0
+    then (lead_coeff f,[]) else (let (* content factorization *)
+      c = content f;
+      d = (sgn (lead_coeff f) * c);
+      g = div_poly d f
+      (* and square_free factorization *)
+    in (d, square_free_factorization_int_main g)))"
+
+
+lemma square_free_factorization_int: assumes res: "square_free_factorization_int f = (d, fs)"
   shows "square_free_factorization f (d,fs)" 
     "(fi, i) \<in> set fs \<Longrightarrow> content fi = 1 \<and> lead_coeff fi > 0" 
     "distinct (map snd fs)" 
 proof -
-  note res = res[unfolded yun_factorization_int_def Let_def]
+  note res = res[unfolded square_free_factorization_int_def Let_def]
   have "square_free_factorization f (d,fs) 
     \<and> ((fi, i) \<in> set fs \<longrightarrow> content fi = 1 \<and> lead_coeff fi > 0)
     \<and> distinct (map snd fs)"
-  proof (cases "f = 0")
+  proof (cases "degree f = 0")
     case True
+    from degree0_coeffs[OF True] obtain c where f: "f = [: c :]" by auto
     thus ?thesis using res by (simp add: square_free_factorization_def)
   next
     case False
@@ -385,110 +495,26 @@ proof -
     also have "content [:?s:] = 1" using s by (auto simp: content_def list_gcd_def)
     finally have cg: "content g = content f" by simp
     from False res 
-    have d: "d = ?d" and fs: "fs = yun_gcd.yun_monic_factorization gcd (div_poly ?d f)" by auto
+    have d: "d = ?d" and fs: "fs = square_free_factorization_int_main (div_poly ?d f)" by auto
     let ?g = "normalize_content g" 
     define ng where "ng = normalize_content g" 
     note fs
     also have "div_poly ?d f = div_poly (content g) g" unfolding cg unfolding g_def
       by (rule poly_eqI, unfold coeff_div_poly coeff_smult, insert s, auto simp: div_minus_right)
-    finally have fs: "yun_gcd.yun_monic_factorization gcd ng = fs" 
+    finally have fs: "square_free_factorization_int_main ng = fs" 
       unfolding normalize_content_def ng_def by simp
     have "lead_coeff f \<noteq> 0" using False by auto
     hence lg: "lead_coeff g > 0" unfolding g_def lead_coeff_smult
       by (meson linorder_neqE_linordered_idom sgn_greater sgn_less zero_less_mult_iff)
     hence g0: "g \<noteq> 0" by auto
-    let ?r = "rat_of_int" 
-    let ?rp = "map_poly ?r" 
-    define G where "G = smult (inverse (lead_coeff (?rp g))) (?rp g)" 
-    have "?rp g \<noteq> 0" using g0 by auto
-    hence mon: "monic G" unfolding G_def coeff_smult lead_coeff_def by simp    
-    obtain Fs where Fs: "yun_gcd.yun_monic_factorization gcd G = Fs" by blast
     from g0 have "content g \<noteq> 0" by simp
-    hence [simp]: "inverse (?r (content g)) * ?r (content g) = 1" by simp
     from arg_cong[OF smult_normalize_content[of g], of lead_coeff, unfolded lead_coeff_smult]
       lg content_ge_0_int[of g] have lg': "lead_coeff ng > 0" unfolding ng_def 
-      by (metis \<open>Gauss_Lemma.content g \<noteq> 0\<close> dual_order.antisym dual_order.strict_implies_order zero_less_mult_iff)
-    from lg have lg: "lead_coeff (?rp g) \<noteq> 0" by auto
-    let ?c = "inverse (?r (content g)) * lead_coeff (?rp g)" 
-    define c where "c = ?c"
+      by (metis \<open>content g \<noteq> 0\<close> dual_order.antisym dual_order.strict_implies_order zero_less_mult_iff)
     from content_normalize_content_1[OF g0] have c_ng: "content ng = 1" unfolding ng_def .
-    from arg_cong[OF smult_normalize_content[of g], of "\<lambda> f. smult (inverse (?r (content g))) (?rp f)",
-        simplified]
-    have "?rp ?g = smult (inverse (?r (content g))) (?rp g)" by simp
-    also have "?rp g = smult (lead_coeff (?rp g)) G" unfolding G_def using lg
-      by (simp add: lead_coeff_def)
-    finally have rp: "?rp ng = smult c G" unfolding G_def c_def ng_def by (simp add: ac_simps)
-    have in_rel: "yun_rel ng c G" unfolding yun_rel_def yun_wrel_def
-      using rp mon lg' c_ng by auto
-    from yun_monic_factorization_int[OF Fs fs in_rel]
-    have out_rel: "list_all2 (rel_prod yun_erel op =) fs Fs" by auto
-    from yun_monic_factorization[OF Fs mon]
-    have "square_free_factorization G (1, Fs)" and dist: "distinct (map snd Fs)" by auto
-    note sff = square_free_factorizationD[OF this(1)]
-    from out_rel have "map snd fs = map snd Fs" by (induct fs Fs rule: list_all2_induct, auto)
-    with dist have dist': "distinct (map snd fs)" by auto
-    have main: "square_free_factorization ng (1, fs) \<and> (\<forall> fi i. (fi, i) \<in> set fs \<longrightarrow> content fi = 1 \<and> lead_coeff fi > 0)"
-      unfolding square_free_factorization_def split
-    proof (intro conjI allI impI)
-      from c_ng have "ng \<noteq> 0" by auto
-      thus "ng = 0 \<Longrightarrow> 1 = 0" "ng = 0 \<Longrightarrow> fs = []" by auto
-      from dist' show "distinct fs" by (simp add: distinct_map)
-      {
-        fix a i
-        assume a: "(a,i) \<in> set fs" 
-        with out_rel obtain bj where "bj \<in> set Fs" and "rel_prod yun_erel op = (a,i) bj" 
-          unfolding list_all2_conv_all_nth set_conv_nth by fastforce
-        then obtain b where b: "(b,i) \<in> set Fs" and ab: "yun_erel a b" by (cases bj, auto simp: rel_prod.simps)
-        from sff(2)[OF b] have b': "square_free b" "degree b \<noteq> 0" by auto
-        from ab obtain c where rel: "yun_rel a c b" unfolding yun_erel_def by auto
-        note aa = yun_relD[OF this]
-        from aa have c0: "c \<noteq> 0" by auto
-        from b' aa(3) show "degree a \<noteq> 0" by simp
-        from square_free_smult[OF c0 b'(1), folded aa(2)]
-        show "square_free a" unfolding square_free_def by (force simp: dvd_def)
-        show cnt: "content a = 1" and lc: "lead_coeff a > 0" using aa by auto
-        fix A I
-        assume A: "(A,I) \<in> set fs" and diff: "(a,i) \<noteq> (A,I)" 
-        from a[unfolded set_conv_nth] obtain k where k: "fs ! k = (a,i)" "k < length fs" by auto
-        from A[unfolded set_conv_nth] obtain K where K: "fs ! K = (A,I)" "K < length fs" by auto
-        from diff k K have kK: "k \<noteq> K" by auto
-        from dist'[unfolded distinct_conv_nth length_map, rule_format, OF k(2) K(2) kK] 
-        have iI: "i \<noteq> I" using k K by simp
-        from A out_rel obtain Bj where "Bj \<in> set Fs" and "rel_prod yun_erel op = (A,I) Bj" 
-          unfolding list_all2_conv_all_nth set_conv_nth by fastforce
-        then obtain B where B: "(B,I) \<in> set Fs" and AB: "yun_erel A B" by (cases Bj, auto simp: rel_prod.simps)
-        then obtain C where Rel: "yun_rel A C B" unfolding yun_erel_def by auto
-        note AA = yun_relD[OF this]
-        from iI have "(b,i) \<noteq> (B,I)" by auto
-        from sff(3)[OF b B this] have cop: "coprime b B" .
-        from AA have C: "C \<noteq> 0" by auto
-        from yun_rel_gcd[OF rel AA(1) C refl] obtain c where "yun_rel (gcd a A) c (gcd b B)" by auto
-        note rel = yun_relD[OF this]
-        from rel(2)[unfolded cop] have "?rp (gcd a A) = [: c :]" by simp
-        from arg_cong[OF this, of degree] have "degree (gcd a A) = 0" by simp
-        from degree0_coeffs[OF this] obtain c where gcd: "gcd a A = [: c :]" by auto        
-        from rel(8) rel(5) show "coprime a A" unfolding content_def gcd list_gcd_def
-          by auto
-      }
-      let ?prod = "\<lambda> fs. (\<Prod>(a, i)\<in>set fs. a ^ Suc i)" 
-      let ?pr = "\<lambda> fs. (\<Prod>(a, i)\<leftarrow>fs. a ^ Suc i)"
-      define pr where "pr = ?prod fs" 
-      from \<open>distinct fs\<close> have pfs: "?prod fs = ?pr fs" by (rule prod.distinct_set_conv_list)
-      from \<open>distinct Fs\<close> have pFs: "?prod Fs = ?pr Fs" by (rule prod.distinct_set_conv_list)
-      from out_rel have "yun_erel (?prod fs) (?prod Fs)" unfolding pfs pFs
-      proof (induct fs Fs rule: list_all2_induct)
-        case (Cons ai fs Ai Fs)
-        obtain a i where ai: "ai = (a,i)" by force
-        from Cons(1) ai obtain A where Ai: "Ai = (A,i)" 
-          and rel: "yun_erel a A" by (cases Ai, auto simp: rel_prod.simps)
-        show ?case unfolding ai Ai using yun_erel_mult[OF yun_erel_pow[OF rel, of "Suc i"] Cons(3)]
-          by auto
-      qed simp
-      also have "?prod Fs = G" using sff(1) by simp
-      finally obtain d where rel: "yun_rel pr d G" unfolding yun_erel_def pr_def by auto
-      with in_rel have "ng = pr" by (rule yun_rel_same_right)
-      thus "ng = smult 1 (?prod fs)" unfolding pr_def by simp
-    qed
+    have "degree ng = degree f" using \<open>content [:sgn (lead_coeff f):] = 1\<close> g_def ng_def by auto
+    with False have "degree ng \<noteq> 0" by auto
+    note main = square_free_factorization_int_main[OF fs c_ng lg' this] 
     show ?thesis
     proof (intro conjI impI)
       {
@@ -504,7 +530,7 @@ proof -
       from main have "square_free_factorization ng (1, fs)" by auto
       from square_free_factorization_smult[OF d0 this]
       show "square_free_factorization f (d,fs)" unfolding id by simp
-      show "distinct (map snd fs)" by fact
+      show "distinct (map snd fs)" using main by auto
     qed
   qed
   thus  "square_free_factorization f (d,fs)" 
