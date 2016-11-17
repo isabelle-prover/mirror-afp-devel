@@ -15,6 +15,7 @@ theory Word_Lemmas
   Complex_Main
   Aligned
   Word_Enum
+  "~~/src/HOL/Library/Prefix_Order"
 begin
 
 text \<open>Set up quickcheck to support words\<close>
