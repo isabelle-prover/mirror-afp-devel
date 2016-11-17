@@ -4664,6 +4664,24 @@ abstract =
   the LEON3 processor.  Our model is based on deterministic monad, which
   is a modified version of the non-deterministic monad from NICTA/l4v.
 
+[Separata]
+title = Separata: Isabelle tactics for Separation Algebra
+author = Zhe Hou <mailto:zhe.hou@ntu.edu.sg>, David Sanan <mailto:sanan@ntu.edu.sg>, Alwen Tiu <mailto:ATiu@ntu.edu.sg>, Rajeev Gore <mailto:rajeev.gore@anu.edu.au>, Ranald Clouston <mailto:ranald.clouston@cs.au.dk>
+notify = zhe.hou@ntu.edu.sg
+date = 2016-11-16
+topic = Programming Languages/Logics, Tools
+abstract =
+  We bring the labelled sequent calculus $LS_{PASL}$ for propositional
+  abstract separation logic to Isabelle. The tactics given here are
+  directly applied on an extension of the Separation Algebra in the AFP.
+  In addition to the cancellative separation algebra, we further
+  consider some useful properties in the heap model of separation logic,
+  such as indivisible unit, disjointness, and cross-split. The tactics
+  are essentially a proof search procedure for the calculus $LS_{PASL}$.
+  We wrap the tactics in an Isabelle method called separata, and give a
+  few examples of separation logic formulae which are provable by
+  separata.
+
 [LOFT]
 title = LOFT — Verified Migration of Linux Firewalls to SDN
 author = Julius Michaelis <http://liftm.de/>, Cornelius Diekmann <http://net.in.tum.de/~diekmann>
