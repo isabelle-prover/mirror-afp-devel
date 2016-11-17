@@ -7,7 +7,7 @@ imports Tensor
 begin
 
 definition subtensor::"'a tensor \<Rightarrow> nat \<Rightarrow> 'a tensor" where
-  "subtensor A i = tensor_from_vec (tl (dims A)) (fixed_length_sublist (vec A) (listprod (tl (dims A))) i)"
+  "subtensor A i = tensor_from_vec (tl (dims A)) (fixed_length_sublist (vec A) (prod_list (tl (dims A))) i)"
 
 definition subtensor_combine::"nat list \<Rightarrow> 'a tensor list \<Rightarrow> 'a tensor" where
   "subtensor_combine ds As = tensor_from_vec (length As # ds) (concat (map vec As))"
@@ -20,25 +20,25 @@ shows "length (fixed_length_sublist xs l i) = l"
 
 lemma vec_subtensor[simp]:
 assumes "dims A \<noteq> []" and "i < hd (dims A)"
-shows "vec (subtensor A i) = fixed_length_sublist (vec A) (listprod (tl (dims A))) i"
-  by (metis (no_types, lifting) Suc_leI assms(1) assms(2) hd_Cons_tl length_fixed_length_sublist length_vec listprod.Cons mult_le_mono1 subtensor_def vec_tensor)
+shows "vec (subtensor A i) = fixed_length_sublist (vec A) (prod_list (tl (dims A))) i"
+  by (metis (no_types, lifting) Suc_leI assms(1) assms(2) hd_Cons_tl length_fixed_length_sublist length_vec prod_list.Cons mult_le_mono1 subtensor_def vec_tensor)
 
 lemma dims_subtensor[simp]:
 assumes "dims A \<noteq> []" and "i < hd (dims A)"
 shows "dims (subtensor A i) = tl (dims A)"
-  using Suc_leI assms(1) assms(2) dims_tensor length_fixed_length_sublist length_vec list.collapse listprod.Cons mult_le_mono1 subtensor_def
+  using Suc_leI assms(1) assms(2) dims_tensor length_fixed_length_sublist length_vec list.collapse prod_list.Cons mult_le_mono1 subtensor_def
   by metis
 
 lemma subtensor_combine_subtensor[simp]: 
 assumes "dims A \<noteq> []"
 shows "subtensor_combine (tl (dims A)) (map (subtensor A) [0..<hd (dims A)]) = A"
 proof - 
-  have length_vec_A: "hd (dims A) * listprod (tl (dims A)) = length (Tensor.vec A)" 
-    by (metis assms length_vec list.collapse listprod.Cons)
-  let ?subtensor_vec = "fixed_length_sublist (vec A) (listprod (tl (dims A)))"
+  have length_vec_A: "hd (dims A) * prod_list (tl (dims A)) = length (Tensor.vec A)" 
+    by (metis assms length_vec list.collapse prod_list.Cons)
+  let ?subtensor_vec = "fixed_length_sublist (vec A) (prod_list (tl (dims A)))"
   {
     fix i assume "i < hd (dims A)"
-    then have "(Suc i)*(listprod (tl (dims A))) \<le> length (vec A)" 
+    then have "(Suc i)*(prod_list (tl (dims A))) \<le> length (vec A)" 
       by (metis Suc_leI length_vec_A mult_le_mono1)
     then have "(vec \<circ> (\<lambda>i. tensor_from_vec (tl (dims A)) (?subtensor_vec i))) i = ?subtensor_vec i"
       by simp
@@ -56,8 +56,8 @@ assumes "\<And>A. A\<in>set As \<Longrightarrow> dims A = ds"
 shows subtensor_combine_dims[simp]: "dims (subtensor_combine ds As) = length As # ds" (is ?D)
 and subtensor_combine_vec[simp]: "vec (subtensor_combine ds As) = concat (map vec As)" (is ?V)
 proof -
-  have "\<And>v. v\<in>set (map Tensor.vec As) \<Longrightarrow> length v = listprod ds" using assms length_vec by fastforce
-  then have "length As * listprod ds = length (concat (map Tensor.vec As))" using concat_equal_length
+  have "\<And>v. v\<in>set (map Tensor.vec As) \<Longrightarrow> length v = prod_list ds" using assms length_vec by fastforce
+  then have "length As * prod_list ds = length (concat (map Tensor.vec As))" using concat_equal_length
     by (metis length_map)
   then show ?D ?V unfolding subtensor_combine_def by simp+
 qed
@@ -66,8 +66,8 @@ lemma subtensor_subtensor_combine:
 assumes "\<And>A. A\<in>set As \<Longrightarrow> dims A = ds" and "i < length As"
 shows "subtensor (subtensor_combine ds As) i = As ! i"
 proof -
-  have "fixed_length_sublist (concat (map vec As)) (listprod ds) i = vec (As ! i)" 
-    using concat_parts[of "map vec As" "listprod ds" i] assms imageE length_map length_vec 
+  have "fixed_length_sublist (concat (map vec As)) (prod_list ds) i = vec (As ! i)" 
+    using concat_parts[of "map vec As" "prod_list ds" i] assms imageE length_map length_vec 
     nth_map set_map in_set_conv_nth by fastforce
   then show ?thesis
     unfolding subtensor_def using subtensor_combine_dims subtensor_combine_vec 

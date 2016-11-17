@@ -223,7 +223,7 @@ proof (rule tensor_lookup_eqI)
     unfolding scalar_prod_def rows_nth[OF `i<dim\<^sub>r A`] by simp
   also have "... = (\<Sum>j\<in>{0..<dim\<^sub>v Ts}. lookup (A $$ (i, j) \<cdot> Ts $ j) is)" using summand_eq by force
   also have "... = (\<Sum>A\<leftarrow>?Ts'. lookup A is)" unfolding map_map 
-    Groups_List.setsum_set_upt_conv_listsum_nat[symmetric]  atLeastLessThan_upt[symmetric] by auto
+    Groups_List.sum_set_upt_conv_sum_list_nat[symmetric]  atLeastLessThan_upt[symmetric] by auto
   also have "... = lookup (listsum ds ?Ts') is" using lookup_listsum[OF `is \<lhd> ds`] dims_Ts' by fastforce
   finally show "lookup (mat_tensorlist_mult A Ts ds $ i) is = lookup (listsum ds ?Ts') is" by metis
 qed
@@ -346,7 +346,7 @@ qed
 
 lemma insert_remove_weights:
 obtains w where "m = insert_weights (remove_weights m) w"
-using assms proof (induction m arbitrary:thesis)
+proof (induction m arbitrary:thesis)
   case (Input m thesis)
   then show ?case by simp
 next
@@ -370,7 +370,7 @@ qed
 
 lemma remove_insert_weights:
 shows "remove_weights (insert_weights m w) = m"
-using assms proof (induction m arbitrary:w)
+proof (induction m arbitrary:w)
   case Input
   then show ?case by simp
 next
@@ -423,15 +423,15 @@ proof -
   have 2:"inj_on (\<lambda>(is1, is2). is1 @ is2) ({is1. is1 \<lhd> ds1} \<times> {is2. is2 \<lhd> ds2})"
     by (simp add: inj_on_def valid_index_length)
   show ?thesis
-    unfolding Groups_Big.comm_monoid_add_class.setsum.cartesian_product[of "\<lambda>is1 is2. f (is1 @ is2)"] 
-    using Groups_Big.comm_monoid_add_class.setsum.reindex[OF 2, of f] 1 
-     "2" SigmaE prod.simps(2) setsum.reindex_cong by (simp add: split_def)
+    unfolding Groups_Big.comm_monoid_add_class.sum.cartesian_product[of "\<lambda>is1 is2. f (is1 @ is2)"] 
+    using Groups_Big.comm_monoid_add_class.sum.reindex[OF 2, of f] 1 
+     "2" SigmaE prod.simps(2) sum.reindex_cong by (simp add: split_def)
 qed
 
-lemma setprod_lessThan_split:
-fixes g :: "nat \<Rightarrow> real" shows "setprod g {..<n+m} = setprod g {..<n} * setprod (\<lambda>x. g (x+n)) {..<m}"
-using Groups_Big.comm_monoid_mult_class.setprod.union_inter_neutral[of "{..<n}" "{n..<n+m}" g, unfolded ivl_disj_un_one(2)[OF le_add1], OF finite_lessThan finite_atLeastLessThan]
-by (metis (no_types) add.commute add.left_neutral atLeast0LessThan empty_iff ivl_disj_int_one(2) setprod_shift_bounds_nat_ivl)
+lemma prod_lessThan_split:
+fixes g :: "nat \<Rightarrow> real" shows "prod g {..<n+m} = prod g {..<n} * prod (\<lambda>x. g (x+n)) {..<m}"
+using Groups_Big.comm_monoid_mult_class.prod.union_inter_neutral[of "{..<n}" "{n..<n+m}" g, unfolded ivl_disj_un_one(2)[OF le_add1], OF finite_lessThan finite_atLeastLessThan]
+by (metis (no_types) add.commute add.left_neutral atLeast0LessThan empty_iff ivl_disj_int_one(2) prod_shift_bounds_nat_ivl)
 
 lemma evaluate_net_from_tensors:
 assumes "valid_net' m"
@@ -455,9 +455,9 @@ using assms proof (induction m arbitrary:j "is" inputs)
   then have "(\<Sum>is | is \<lhd> input_sizes (Input M). (\<Prod>k<length inputs. inputs ! k $ (is ! k)) * lookup (tensors_from_net (Input M) $ j) is)
    = (\<Sum>is | is \<lhd> input_sizes (Input M). (if is=[j] then (\<Prod>k<length inputs. inputs ! k $ (is ! k)) else 0))"  by auto
   also have "(\<Sum>is | is \<lhd> input_sizes (Input M). (if is=[j] then (\<Prod>k<length inputs. inputs ! k $ (is ! k)) else 0))
-   = (\<Prod>k<length inputs. inputs ! k $ ([j] ! k))" unfolding setsum.delta[OF finite_valid_index] 
+   = (\<Prod>k<length inputs. inputs ! k $ ([j] ! k))" unfolding sum.delta[OF finite_valid_index] 
     using Input.prems(3) valid_index.Cons valid_index.Nil by auto
-  also have "... = inputs ! 0 $ j" using `length inputs = 1` by (simp add: setprod_lessThan_Suc)
+  also have "... = inputs ! 0 $ j" using `length inputs = 1` by (simp add: prod_lessThan_Suc)
   also have "... = evaluate_net (Input M) inputs $ j" unfolding evaluate_net.simps 
     by (metis \<open>length inputs = 1\<close> hd_conv_nth list.size(3) zero_neq_one)
   finally show ?case by auto
@@ -477,7 +477,7 @@ next
       using vec_index_map by auto
     show "(\<Prod>k<length inputs. inputs ! k $ (is ! k)) * lookup (tensors_from_net (Conv A m) $ j) is
       = (\<Sum>i = 0..<dim\<^sub>v (tensors_from_net m). row A j $ i * ((\<Prod>k<length inputs. inputs ! k $ (is ! k)) * lookup (tensors_from_net m $ i) is))"
-      unfolding 0 setsum_right_distrib by (simp add: semiring_normalization_rules(19))
+      unfolding 0 sum_distrib_left by (simp add: semiring_normalization_rules(19))
   qed
   have "valid_net' m" by (metis Conv.prems(1) convnet.distinct(1) convnet.distinct(5) convnet.inject(2) remove_weights.simps(2) valid_net.simps) 
   have "map dim\<^sub>v inputs = input_sizes m" by (simp add: Conv.prems(2))
@@ -487,9 +487,9 @@ next
 
   have "(\<Sum>is | is \<lhd> input_sizes (Conv A m). (\<Prod>k<length inputs. inputs ! k $ (is ! k)) * lookup (tensors_from_net (Conv A m) $ j) is)
     = (\<Sum>i = 0..<dim\<^sub>v (tensors_from_net m). (\<Sum>is | is \<lhd> input_sizes (Conv A m).  row A j $ i *  ((\<Prod>k<length inputs. inputs ! k $ (is ! k)) * lookup (tensors_from_net m $ i) is)))"
-    using Groups_Big.comm_monoid_add_class.setsum.commute 0 by auto
+    using Groups_Big.comm_monoid_add_class.sum.commute 0 by auto
   also have "... = (\<Sum>i = 0..<dim\<^sub>v (tensors_from_net m). row A j $ i * (\<Sum>is | is \<lhd> input_sizes (Conv A m). ((\<Prod>k<length inputs. inputs ! k $ (is ! k)) * lookup (tensors_from_net m $ i) is)))"
-    by (simp add: setsum_right_distrib)
+    by (simp add: sum_distrib_left)
   also have "... = (\<Sum>i = 0..<dim\<^sub>v (tensors_from_net m). row A j $ i * evaluate_net m inputs $ i)" using 1 by auto
   also have "... = row A j \<bullet> evaluate_net m inputs" 
     by (metis (full_types) \<open>map dim\<^sub>v inputs = input_sizes m\<close> \<open>output_size' m = dim\<^sub>v (tensors_from_net m)\<close>
@@ -521,13 +521,13 @@ next
       using \<open>is2 \<lhd> input_sizes m2\<close> \<open>map dim\<^sub>v inputs2 = input_sizes m2\<close> valid_index_length by fastforce
     have 1:"(\<Prod>k<length inputs1. (inputs1 @ inputs2) ! k $ ((is1 @ is2) ! k))  = (\<Prod>k<length inputs1. inputs1 ! k $ (is1 ! k))"
       using `length is1 = length inputs1` `length is2 = length inputs2`
-      nth_append by (metis (no_types, lifting) lessThan_iff setprod.cong)
+      nth_append by (metis (no_types, lifting) lessThan_iff prod.cong)
     have 2:"(\<Prod>x<length inputs2. (inputs1 @ inputs2) ! (x + length inputs1) $ ((is1 @ is2) ! (x + length inputs1))) =
       (\<Prod>k<length inputs2. inputs2 ! k $ (is2 ! k))"
       using `length is1 = length inputs1` `length is2 = length inputs2`
       by (metis (no_types, lifting) add.commute nth_append_length_plus)
     have "(\<Prod>k<length inputs. inputs ! k $ ((is1 @ is2) ! k)) = (\<Prod>k<length inputs1. inputs1 ! k $ (is1 ! k)) * (\<Prod>k<length inputs2. inputs2 ! k $ (is2 ! k))"
-      unfolding `inputs = inputs1 @ inputs2` length_append setprod_lessThan_split using 1 2 by metis
+      unfolding `inputs = inputs1 @ inputs2` length_append prod_lessThan_split using 1 2 by metis
   }
   note 1 = this
   {
@@ -549,10 +549,10 @@ next
           (\<Prod>k<length inputs1. inputs1 ! k $ (is1 ! k)) * (\<Prod>k<length inputs2. inputs2 ! k $ (is2 ! k)) * 
           lookup (tensors_from_net m1 $ j) is1 * lookup (tensors_from_net m2 $ j) is2)"
     unfolding input_sizes.simps setsum_valid_index_split using 1 2 
-    using mem_Collect_eq setsum.cong by (simp add: mult.assoc)
+    using mem_Collect_eq sum.cong by (simp add: mult.assoc)
   also have "... = (\<Sum>is1 | is1 \<lhd> input_sizes m1. (\<Prod>k<length inputs1. inputs1 ! k $ (is1 ! k)) * lookup (tensors_from_net m1 $ j) is1) *
                    (\<Sum>is2 | is2 \<lhd> input_sizes m2. (\<Prod>k<length inputs2. inputs2 ! k $ (is2 ! k)) * lookup (tensors_from_net m2 $ j) is2)" 
-    unfolding setsum_product by (rule setsum.cong, metis, rule setsum.cong, metis, simp)
+    unfolding sum_product by (rule sum.cong, metis, rule sum.cong, metis, simp)
   also have "... = evaluate_net (Pool m1 m2) inputs $ j" unfolding "evaluate_net.simps" index_component_mult[OF j_le_eval]
     using Pool.IH(1)[OF `valid_net' m1` _ `j < output_size' m1`] Pool.IH(2)[OF `valid_net' m2` _ `j < output_size' m2`]
     using \<open>map dim\<^sub>v inputs1 = input_sizes m1\<close> \<open>map dim\<^sub>v inputs2 = input_sizes m2\<close> inputs1_def inputs2_def by auto

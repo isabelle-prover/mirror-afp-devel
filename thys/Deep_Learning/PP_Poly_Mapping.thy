@@ -175,7 +175,7 @@ proof -
   have "inj_on (\<lambda>a. (a, h a)) {a. g a \<noteq> 0}"
     by (rule inj_onI) auto
   then show ?thesis unfolding Sum_any.expand_set
-    by (rule setsum.reindex_cong) auto
+    by (rule sum.reindex_cong) auto
 qed
 
 lemma Sum_any_when_dependent_prod_left:
@@ -462,17 +462,17 @@ proof -
     using assms by simp
   { fix k l
     have "{q. (f2 q when k = l + q) \<noteq> 0} \<subseteq> {q. f2 q \<noteq> 0 \<and> k = l + q}" by auto
-    with fin2 have "setsum f2 {q. f2 q \<noteq> 0 \<and> k = l + q} = (\<Sum>q. (f2 q when k = l + q))"
+    with fin2 have "sum f2 {q. f2 q \<noteq> 0 \<and> k = l + q} = (\<Sum>q. (f2 q when k = l + q))"
       by (simp add: Sum_any.expand_superset [of "{q. f2 q \<noteq> 0 \<and> k = l + q}"]) }
   note aux = this
-  have "{k. (\<Sum>l. f1 l * setsum f2 {q. f2 q \<noteq> 0 \<and> k = l + q}) \<noteq> 0}
-    \<subseteq> {k. (\<exists>l. f1 l * setsum f2 {q. f2 q \<noteq> 0 \<and> k = l + q} \<noteq> 0)}"
+  have "{k. (\<Sum>l. f1 l * sum f2 {q. f2 q \<noteq> 0 \<and> k = l + q}) \<noteq> 0}
+    \<subseteq> {k. (\<exists>l. f1 l * sum f2 {q. f2 q \<noteq> 0 \<and> k = l + q} \<noteq> 0)}"
     by (auto elim!: Sum_any.not_neutral_obtains_not_neutral)
-  also have "\<dots> \<subseteq> {k. (\<exists>l. f1 l \<noteq> 0 \<and> setsum f2 {q. f2 q \<noteq> 0 \<and> k = l + q} \<noteq> 0)}"
+  also have "\<dots> \<subseteq> {k. (\<exists>l. f1 l \<noteq> 0 \<and> sum f2 {q. f2 q \<noteq> 0 \<and> k = l + q} \<noteq> 0)}"
     by (auto dest: mult_not_zero)
   also have "\<dots> \<subseteq> {k. (\<exists>l. f1 l \<noteq> 0 \<and> (\<exists>q. f2 q \<noteq> 0 \<and> k = l + q))}"
-    by (auto elim!: setsum.not_neutral_contains_not_neutral)
-  finally have "finite {k. (\<Sum>l. f1 l * setsum f2 {q. f2 q \<noteq> 0 \<and> k = l + q}) \<noteq> 0}"
+    by (auto elim!: sum.not_neutral_contains_not_neutral)
+  finally have "finite {k. (\<Sum>l. f1 l * sum f2 {q. f2 q \<noteq> 0 \<and> k = l + q}) \<noteq> 0}"
     using * by (rule finite_subset)
   with aux have "finite {k. (\<Sum>l. f1 l * (\<Sum>q. (f2 q when k = l + q))) \<noteq> 0}"
     by simp
@@ -1044,7 +1044,7 @@ lemma setsum_keys_plus_distrib:
 proof -
   let ?A = "PP_Poly_Mapping.keys p \<union> PP_Poly_Mapping.keys q"
   have "?lhs = (\<Sum>k\<in>?A. f k (PP_Poly_Mapping.lookup p k + PP_Poly_Mapping.lookup q k))"
-    apply(rule setsum.mono_neutral_cong_left)
+    apply(rule sum.mono_neutral_cong_left)
        apply(simp_all add: PP_Poly_Mapping.keys_add_subset)
      apply(transfer fixing: f)
      apply(auto simp add: hom_0)[1]
@@ -1052,14 +1052,14 @@ proof -
     apply(auto simp add: hom_0)[1]
     done
   also have "\<dots> = (\<Sum>k\<in>?A. f k (PP_Poly_Mapping.lookup p k) + f k (PP_Poly_Mapping.lookup q k))"
-    by(rule setsum.cong)(simp_all add: hom_plus)
+    by(rule sum.cong)(simp_all add: hom_plus)
   also have "\<dots> = (\<Sum>k\<in>?A. f k (PP_Poly_Mapping.lookup p k)) + (\<Sum>k\<in>?A. f k (PP_Poly_Mapping.lookup q k))"
     (is "_ = ?p' + ?q'")
-    by(simp add: setsum.distrib)
+    by(simp add: sum.distrib)
   also have "?p' = ?p"
-    by(rule setsum.mono_neutral_right)(auto simp add: hom_0)
+    by(rule sum.mono_neutral_right)(auto simp add: hom_0)
   also have "?q' = ?q"
-    by(rule setsum.mono_neutral_right)(auto simp add: hom_0)
+    by(rule sum.mono_neutral_right)(auto simp add: hom_0)
   finally show ?thesis .
 qed
 
@@ -1377,7 +1377,7 @@ lemma range_nth [simp]:
 
 lemma degree_nth:
   "no_trailing_zeros xs \<Longrightarrow> degree (nth xs) = length xs"
-using assms unfolding degree_def proof transfer
+unfolding degree_def proof transfer
   fix xs :: "'a list"
   assume *: "no_trailing_zeros xs"
   let ?A = "{n. nth_default 0 xs n \<noteq> 0}"
@@ -1527,9 +1527,9 @@ proof transfer
   let ?keys = "{k. m k \<noteq> 0}"
   assume *: "finite ?keys" "k \<in> ?keys"
   then have "f k + g (m k) = (\<Sum>k' \<in> ?keys. f k' + g (m k') when k' = k)"
-    by (simp add: setsum.delta when_def)
+    by (simp add: sum.delta when_def)
   also have "\<dots> < (\<Sum>k' \<in> ?keys. Suc (f k' + g (m k')))" using *
-    by (intro setsum_strict_mono) (auto simp add: when_def)
+    by (intro sum_strict_mono) (auto simp add: when_def)
   also have "\<dots> \<le> g 0 + \<dots>" by simp
   finally have "f k + g (m k) < \<dots>" .
   then show "f k + g (m k) < g 0 + (\<Sum>k | m k \<noteq> 0. Suc (f k + g (m k)))"
@@ -1575,7 +1575,7 @@ lemma poly_mapping_size_cong [fundef_cong]:
   "m = m' \<Longrightarrow> g 0 = g' 0 \<Longrightarrow> (\<And>k. k \<in> keys m' \<Longrightarrow> f k = f' k)
     \<Longrightarrow> (\<And>v. v \<in> range m' \<Longrightarrow> g v = g' v)
     \<Longrightarrow> poly_mapping_size f g m = poly_mapping_size f' g' m'"
-  by (auto simp add: poly_mapping_size_def intro!: setsum.cong)
+  by (auto simp add: poly_mapping_size_def intro!: sum.cong)
 
 instantiation poly_mapping :: (type, zero) size
 begin
@@ -1611,4 +1611,3 @@ by transfer auto
 hide_const (open) lookup single update keys range map map_key degree nth the_value items foldr mapp
 
 end
-

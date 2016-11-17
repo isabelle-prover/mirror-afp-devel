@@ -348,15 +348,15 @@ proof -
     assms not_less not_le by blast
 qed
 
-lemma listprod_complementary_sublists:
+lemma prod_list_complementary_sublists:
 fixes f ::"'a \<Rightarrow> 'b::comm_monoid_mult"
-shows "listprod (map f xs) = listprod (map f (sublist xs A)) *  listprod (map f (sublist xs (-A)))"
+shows "prod_list (map f xs) = prod_list (map f (sublist xs A)) *  prod_list (map f (sublist xs (-A)))"
 proof (induction xs rule:rev_induct)
   case Nil
   then show ?case by simp
 next
   case (snoc x xs)
-  show ?case unfolding map_append "listprod.append" sublist_append sublist_singleton snoc 
+  show ?case unfolding map_append "prod_list.append" sublist_append sublist_singleton snoc 
     by (cases "(length xs)\<in>A"; simp;metis mult.assoc mult.commute)
 qed
 

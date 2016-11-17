@@ -7,7 +7,7 @@ imports Main
 begin
 
 
-typedef 'a tensor = "{t::nat list \<times> 'a list. length (snd t) = listprod (fst t)}"
+typedef 'a tensor = "{t::nat list \<times> 'a list. length (snd t) = prod_list (fst t)}"
 by (simp add: Ex_list_of_length)
 
 definition dims::"'a tensor \<Rightarrow> nat list" where
@@ -20,7 +20,7 @@ definition tensor_from_vec::"nat list \<Rightarrow> 'a list \<Rightarrow> 'a ten
   "tensor_from_vec d v = Abs_tensor (d,v)"
 
 lemma 
-assumes "length v = listprod d"
+assumes "length v = prod_list d"
 shows dims_tensor[simp]: "dims (tensor_from_vec d v) = d"
 and   vec_tensor[simp]:  "vec (tensor_from_vec d v) = v"
 by (simp add: Abs_tensor_inverse assms dims_def tensor_from_vec_def vec_def)+
@@ -28,7 +28,7 @@ by (simp add: Abs_tensor_inverse assms dims_def tensor_from_vec_def vec_def)+
 lemma tensor_from_vec_simp[simp]: "tensor_from_vec (dims A) (vec A) = A"
 by (simp add: Rep_tensor_inverse Tensor.vec_def dims_def tensor_from_vec_def)
 
-lemma length_vec: "length (vec A) = listprod (dims A)"
+lemma length_vec: "length (vec A) = prod_list (dims A)"
 by (metis (mono_tags, lifting) Rep_tensor Tensor.vec_def dims_def mem_Collect_eq)
 
 lemma tensor_eqI[intro]:
@@ -87,7 +87,7 @@ definition fixed_length_sublist::"'a list \<Rightarrow> nat \<Rightarrow> nat \<
 fun lookup_base::"nat list \<Rightarrow> 'a list \<Rightarrow> nat list \<Rightarrow> 'a" where
   lookup_base_Nil: "lookup_base [] v [] = hd v" |
   lookup_base_Cons: "lookup_base (d # ds) v (i # is) = 
-    lookup_base ds (fixed_length_sublist v (listprod ds) i) is"
+    lookup_base ds (fixed_length_sublist v (prod_list ds) i) is"
 
 definition lookup::"'a tensor \<Rightarrow> nat list \<Rightarrow> 'a" where
   "lookup A = lookup_base (dims A) (vec A)"
@@ -119,26 +119,26 @@ shows "concat (map (fixed_length_sublist v d) [0..<a]) = v"
 by (simp add: concat_parts_leq assms)
 
 lemma tensor_lookup_base:
-assumes "length v = listprod ds"
+assumes "length v = prod_list ds"
 and "\<And>is. is \<lhd> ds \<Longrightarrow> lookup_base ds v is = e is"
 shows "tensor_vec_from_lookup ds e = v"
 using assms proof (induction ds arbitrary:v e)
   case Nil
   then show ?case unfolding tensor_vec_from_lookup.simps 
-    by (metis One_nat_def Tensor.lookup_base_Nil length_0_conv length_Suc_conv list.sel(1) listprod.Nil valid_index.Nil)
+    by (metis One_nat_def Tensor.lookup_base_Nil length_0_conv length_Suc_conv list.sel(1) prod_list.Nil valid_index.Nil)
 next
   case (Cons a ds)
-  then have "a * listprod ds = length v" by auto
+  then have "a * prod_list ds = length v" by auto
   {
     fix i assume "i<a" 
-    then have "listprod ds * (i+1) \<le> length v" using `a * listprod ds = length v` using discrete mult.commute mult_le_mono1 by metis
-    have "\<And>is'. is' \<lhd> ds \<Longrightarrow> e (i # is') = lookup_base ds (fixed_length_sublist v (listprod ds) i) is'" 
+    then have "prod_list ds * (i+1) \<le> length v" using `a * prod_list ds = length v` using discrete mult.commute mult_le_mono1 by metis
+    have "\<And>is'. is' \<lhd> ds \<Longrightarrow> e (i # is') = lookup_base ds (fixed_length_sublist v (prod_list ds) i) is'" 
       using `i<a` by (metis Cons.prems(2) Tensor.lookup_base_Cons valid_index.simps)
-    then have "tensor_vec_from_lookup ds (\<lambda>is'. e (i # is')) = fixed_length_sublist v (listprod ds) i"
-      using Cons using `listprod ds * (i + 1) \<le> length v` by (simp add: Cons.IH fixed_length_sublist_def)
+    then have "tensor_vec_from_lookup ds (\<lambda>is'. e (i # is')) = fixed_length_sublist v (prod_list ds) i"
+      using Cons using `prod_list ds * (i + 1) \<le> length v` by (simp add: Cons.IH fixed_length_sublist_def)
   }
   then show ?case unfolding tensor_vec_from_lookup_Cons lookup_base_Cons 
-    using   concat_parts_eq[OF `a * listprod ds = length v`]
+    using   concat_parts_eq[OF `a * prod_list ds = length v`]
      atLeastLessThan_iff map_eq_conv set_upt Cons by (metis (no_types, lifting))
 qed
 
@@ -209,7 +209,7 @@ next
 qed
 
 lemma length_tensor_vec_from_lookup:
-"length (tensor_vec_from_lookup ds e) = listprod ds"
+"length (tensor_vec_from_lookup ds e) = prod_list ds"
 by (induction ds arbitrary:e; auto simp add: concat_equal_length_map)
 
 lemma lookup_tensor_vec:
@@ -221,7 +221,7 @@ using assms proof (induction arbitrary:e rule:valid_index.induct)
 next 
   case (Cons "is" ds i d e)
   then show ?case unfolding tensor_vec_from_lookup_Cons lookup_base_Cons 
-    by (simp add: length_tensor_vec_from_lookup concat_parts'[of d "\<lambda>i. tensor_vec_from_lookup ds (\<lambda>is. e (i # is))" "listprod ds" i] `i < d`)
+    by (simp add: length_tensor_vec_from_lookup concat_parts'[of d "\<lambda>i. tensor_vec_from_lookup ds (\<lambda>is. e (i # is))" "prod_list ds" i] `i < d`)
 qed
 
 lemma lookup_tensor_from_lookup:

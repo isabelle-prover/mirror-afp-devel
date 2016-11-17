@@ -179,7 +179,7 @@ proof (rule vec_eqI)
     image_subsetI lessThan_iff nth_mem)
   then have " (\<Sum>x\<in>set (cols A). a x * x $ i) = 
     (\<Sum>j\<in>{..<length (cols A)}. a (cols A ! j) * (cols A ! j) $ i)"
-    using bij_betw_imageE bij_betw_imp_inj_on by (metis (no_types, lifting) setsum.reindex_cong)
+    using bij_betw_imp_surj_on bij_betw_imp_inj_on by (metis (no_types, lifting) sum.reindex_cong)
   also have "... = (\<Sum>j\<in>{..<length (cols A)}. a (col A j) * (cols A ! j) $ i)"
     using assms(1) assms(2) find_first_unique[OF `distinct (cols A)`] `i < n` by auto
   also have "... = (\<Sum>j\<in>{..<length (cols A)}. (cols A ! j) $ i * a (col A j))" by (metis mult_commute_abs)
@@ -187,7 +187,7 @@ proof (rule vec_eqI)
   finally show "(A \<otimes>\<^sub>m\<^sub>v (vec nc (\<lambda>i. a (col A i)))) $ i = lincomb a (set (cols A)) $ i"
     unfolding lincomb_index[OF `i < n` `set (cols A) \<subseteq> carrier\<^sub>v n`]
     unfolding mat_mult_vec_def scalar_prod_def
-    using \<open>i < n\<close> assms(1) atLeast0LessThan lessThan_def mat_carrierD(1) vec_index_vec setsum.cong by auto
+    using \<open>i < n\<close> assms(1) atLeast0LessThan lessThan_def mat_carrierD(1) vec_index_vec sum.cong by auto
 qed
 
 lemma (in vec_space) lincomb_eq_mat_mult:

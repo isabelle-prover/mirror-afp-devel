@@ -45,9 +45,9 @@ and "dims A = dims B"
 and "dims A \<noteq> []"
 shows "subtensor (A + B) i = subtensor A i + subtensor B i"
 proof -
-   have "length (vec A) =  hd (dims A) * listprod (tl (dims A))"
-        "length (Tensor.vec B) = hd (dims A) * listprod (tl (dims A))"
-     using length_vec listprod.Cons assms by (metis (no_types) list.exhaust_sel)+
+   have "length (vec A) =  hd (dims A) * prod_list (tl (dims A))"
+        "length (Tensor.vec B) = hd (dims A) * prod_list (tl (dims A))"
+     using length_vec prod_list.Cons assms by (metis (no_types) list.exhaust_sel)+
    then show ?thesis
      using Tensor_Plus.vec_plus assms fixed_length_sublist_plus vec_subtensor tensor_eqI 
      dims_subtensor plus_dim1 by fastforce
@@ -64,7 +64,7 @@ using assms proof (induction "A+B" arbitrary:A B "is" rule: subtensor_induct)
   have 2:"[] \<lhd> dims B" using order_0 `is = []` by auto
   have 3:"[] \<lhd> dims (A + B)" using order_0 `is = []` by auto
   have "length (vec A) = 1" "length (vec B) = 1" 
-    by (metis length_vec listprod.Nil order_0.hyps order_0.prems(1) plus_dim1)+
+    by (metis length_vec prod_list.Nil order_0.hyps order_0.prems(1) plus_dim1)+
   then show ?case unfolding lookup_subtensor[OF 1] lookup_subtensor[OF 2] lookup_subtensor[OF 3] `is = []`
     fold_simps(1) vec_plus[OF order_0.prems(1)] unfolding vec_plus_def using  order_0.prems  length_map 
     list.map_sel(1) list.size(3)  map_fst_zip map_snd_zip order_0.hyps  
@@ -107,17 +107,17 @@ qed
 definition "vec0 n = replicate n 0"
 
 definition tensor0::"nat list \<Rightarrow> 'a::zero tensor" where
-"tensor0 d = tensor_from_vec d (vec0 (listprod d))"
+"tensor0 d = tensor_from_vec d (vec0 (prod_list d))"
 
 lemma dims_tensor0[simp]: "dims (tensor0 d) = d" 
-and   vec_tensor0[simp]:  "vec (tensor0 d) = vec0 (listprod d)"
+and   vec_tensor0[simp]:  "vec (tensor0 d) = vec0 (prod_list d)"
   unfolding tensor0_def vec0_def by simp_all
 
 lemma lookup_is_in_vec: "is \<lhd> (dims A) \<Longrightarrow> lookup A is \<in> set (vec A)" 
 proof (induction arbitrary:"is" rule:subtensor_induct)
   case order_0
   then show ?case unfolding lookup_def using lookup_base_Nil 
-    by (metis length_0_conv length_vec list.set_sel(1) listprod.Nil valid_index_length zero_neq_one)
+    by (metis length_0_conv length_vec list.set_sel(1) prod_list.Nil valid_index_length zero_neq_one)
 next
   case (order_step A "is")
   then obtain i is' where "is = i # is'" using valid_index_dimsE by blast

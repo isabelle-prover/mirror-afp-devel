@@ -218,11 +218,11 @@ section "MPoly extension"
   lemma vars_setsum: "finite S \<Longrightarrow> vars (\<Sum>m\<in>S. f m) \<subseteq> (\<Union>m\<in>S. vars (f m))"
   proof (induction S rule:finite_induct)
     case empty
-    then show ?case by (metis UN_empty eq_iff monom_zero setsum.empty single_zero vars_monom_single_cases)
+    then show ?case by (metis UN_empty eq_iff monom_zero sum.empty single_zero vars_monom_single_cases)
   next
     case (insert s S)
-    then have "vars (setsum f (insert s S)) = vars (f s + setsum f S)" by (metis setsum.insert)
-    also have "... \<subseteq> vars (f s) \<union> vars (setsum f S)" by (simp add: vars_add)
+    then have "vars (sum f (insert s S)) = vars (f s + sum f S)" by (metis sum.insert)
+    also have "... \<subseteq> vars (f s) \<union> vars (sum f S)" by (simp add: vars_add)
     also have "... \<subseteq> (\<Union>m\<in>insert s S. vars (f m))" using insert.IH by auto
     finally show ?case by metis
   qed
@@ -311,7 +311,7 @@ section "MPoly extension"
   lemma insertion_fun_single: "insertion_fun f (\<lambda>m. (a when (PP_Poly_Mapping.single (v::nat) (n::nat)) = m)) = a * f v ^ n" (is "?i = _")
   proof -
     have setsum_single:"\<And> a f. (\<Sum>m\<in>{a}. f m) = f a" 
-     by (metis add.right_neutral empty_Diff finite.emptyI setsum.empty setsum.insert_remove) 
+     by (metis add.right_neutral empty_Diff finite.emptyI sum.empty sum.insert_remove) 
 
     have 1:"?i = (\<Sum>m. (a when PP_Poly_Mapping.single v n = m) * (\<Prod>v. f v ^ lookup m v))" 
       unfolding insertion_fun_def by metis
@@ -431,7 +431,7 @@ proof-
 qed
 
 lemma extract_var_non_zero_coeff: "extract_var p v = (\<Sum>m\<in>{m'. coeff p m' \<noteq> 0}. monom (remove_key v m) (monom (PP_Poly_Mapping.single v (lookup m v)) (coeff p m)))"
-  using extract_var_finite_set  coeff_def finite_lookup order_refl by (metis (no_types, lifting) Collect_cong setsum.cong)
+  using extract_var_finite_set  coeff_def finite_lookup order_refl by (metis (no_types, lifting) Collect_cong sum.cong)
 
 lemma extract_var_sum: "extract_var (p+p') v = extract_var p v + extract_var p' v"
 proof -
@@ -442,7 +442,7 @@ proof -
     extract_var_finite_set[OF subsets(1) `finite S`] 
     extract_var_finite_set[OF subsets(2) `finite S`] 
     extract_var_finite_set[OF subsets(3) `finite S`] 
-    coeff_add[symmetric] monom_add setsum.distrib
+    coeff_add[symmetric] monom_add sum.distrib
     by metis
 qed
 
@@ -456,14 +456,14 @@ proof (cases "a = 0")
     unfolding coeff_monom using \<open>a \<noteq> 0\<close> by auto
   show ?thesis
     unfolding extract_var_non_zero_coeff unfolding 0 unfolding coeff_monom  
-    using setsum.insert[OF finite.emptyI, unfolded setsum.empty add.right_neutral] when_def
+    using sum.insert[OF finite.emptyI, unfolded sum.empty add.right_neutral] when_def
     by auto
 next 
   assume "a = 0"
   have 0:"{m'. coeff (monom m a) m' \<noteq> 0} = {}" 
     unfolding coeff_monom using \<open>a = 0\<close> by auto
   show ?thesis unfolding extract_var_non_zero_coeff 0 
-    using \<open>a = 0\<close> monom.abs_eq monom_zero setsum.empty single_zero by (metis (no_types, lifting))
+    using \<open>a = 0\<close> monom.abs_eq monom_zero sum.empty single_zero by (metis (no_types, lifting))
 qed
 
 

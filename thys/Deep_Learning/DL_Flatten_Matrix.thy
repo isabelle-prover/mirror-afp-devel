@@ -40,7 +40,7 @@ lemma flatten_matrix_extract_matrix:
 shows "\<And>k. k<m*n \<Longrightarrow> flatten_matrix (extract_matrix a m n) k = a k"
   unfolding extract_matrix_def flatten_matrix_def 
   by (metis (no_types, lifting) Divides.div_mult2_eq case_prod_conv div_eq_0_iff mat_dim_col_mat(1) 
-  mat_index_mat(1) mod_div_equality mod_less_divisor mult.commute mult_zero_right not_gr0 not_less0)
+  mat_index_mat(1) div_mult_mod_eq mod_less_divisor mult.commute mult_zero_right not_gr0 not_less0)
 
 lemma index_extract_matrix:
 assumes "i<m" "j<n"

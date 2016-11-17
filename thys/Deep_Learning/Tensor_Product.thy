@@ -17,11 +17,11 @@ begin
   lemma vec_tensor_prod[simp]: "vec (A \<otimes> B) = concat (map (\<lambda>a. vec_smult a (vec B)) (vec A))" (is ?V)
   and dims_tensor_prod[simp]: "dims (A \<otimes> B) = dims A @ dims B" (is ?D)
   proof -
-    have "length (concat (map (\<lambda>a. vec_smult a (vec B)) (vec A))) = listprod (dims A @ dims B)"
+    have "length (concat (map (\<lambda>a. vec_smult a (vec B)) (vec A))) = prod_list (dims A @ dims B)"
     proof -
       have "\<And>xs. xs \<in> set (map (\<lambda>a. vec_smult a (vec B)) (vec A)) \<Longrightarrow> length xs = length (vec B)"
         using length_vec_smult by force
-      then show ?thesis using concat_equal_length by (metis length_map length_vec listprod.append)
+      then show ?thesis using concat_equal_length by (metis length_map length_vec prod_list.append)
     qed
     then show ?V ?D by (simp add: tensor_prod_def)+
   qed
@@ -36,8 +36,8 @@ begin
   proof -
     let ?f = "\<lambda>a. vec_smult a (Tensor.vec B)"
     let ?xss = "map Tensor.vec As"
-    have 1:"listprod (length As # ds) = length (concat ?xss)" by (metis assms length_vec subtensor_combine_dims subtensor_combine_vec)
-    have 2:"\<And>A. A\<in>set As \<Longrightarrow> listprod (dims A @ dims B) = length (concat (map ?f (Tensor.vec A)))"
+    have 1:"prod_list (length As # ds) = length (concat ?xss)" by (metis assms length_vec subtensor_combine_dims subtensor_combine_vec)
+    have 2:"\<And>A. A\<in>set As \<Longrightarrow> prod_list (dims A @ dims B) = length (concat (map ?f (Tensor.vec A)))"
       by (metis dims_tensor_prod length_vec vec_tensor_prod)
     have 3: "length As # ds @ dims B = (length (map (\<lambda>A. tensor_from_vec (dims A @ dims B)
       (concat (map (\<lambda>a. vec_smult a (vec B)) (vec A)))) As) # ds @ dims B)" by simp

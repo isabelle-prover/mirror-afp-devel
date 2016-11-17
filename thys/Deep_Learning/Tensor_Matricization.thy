@@ -24,30 +24,30 @@ shows "digit_encode ds (digit_decode ds is) = is"
   by simp_all
 
 lemma digit_decode_encode[simp]:
-shows "digit_decode ds (digit_encode ds a) = a mod (listprod ds)"
+shows "digit_decode ds (digit_encode ds a) = a mod (prod_list ds)"
 by (induction ds arbitrary:a; simp add: Divides.mod_mult2_eq add.commute)
 
 lemma digit_decode_encode_lt[simp]:
-assumes "a < listprod ds"
+assumes "a < prod_list ds"
 shows "digit_decode ds (digit_encode ds a) = a"
 by (simp add: assms)
 
 lemma digit_decode_lt:
 assumes "is \<lhd> ds"
-shows "digit_decode ds is < listprod ds"
+shows "digit_decode ds is < prod_list ds"
 using assms proof (induction rule:valid_index.induct)
   case Nil
   then show ?case by simp
 next
   case (Cons "is" ds i d)
-  have "(i + d * digit_decode ds is) div (d * listprod ds) = 0"
+  have "(i + d * digit_decode ds is) div (d * prod_list ds) = 0"
     using Cons.IH Cons.hyps(2) Divides.div_mult2_eq by force
-  then show ?case unfolding digit_decode.simps listprod.Cons 
+  then show ?case unfolding digit_decode.simps prod_list.Cons 
     by (metis (no_types) Cons.IH Cons.hyps(2) div_eq_0_iff mult_eq_0_iff not_less0)
 qed
 
 lemma digit_encode_valid_index:
-assumes "a < listprod ds"
+assumes "a < prod_list ds"
 shows "digit_encode ds a \<lhd> ds"
 using assms proof (induction ds arbitrary:a) 
   case Nil
@@ -56,7 +56,7 @@ next
   case (Cons d ds a)
   then show ?case
     unfolding digit_encode.simps using Cons
-    by (metis Divides.div_mult2_eq div_eq_0_iff gr_implies_not0 listprod.Cons mod_div_trivial 
+    by (metis Divides.div_mult2_eq div_eq_0_iff gr_implies_not0 prod_list.Cons mod_div_trivial 
      mult_not_zero valid_index.Cons)
 qed
 
@@ -65,16 +65,16 @@ shows "length (digit_encode ds a) = length ds"
   by (induction ds arbitrary:a; simp_all) 
 
 lemma digit_encode_0:
-"listprod ds dvd a \<Longrightarrow> digit_encode ds a = replicate (length ds) 0"
+"prod_list ds dvd a \<Longrightarrow> digit_encode ds a = replicate (length ds) 0"
 proof (induction ds arbitrary:a)
   case Nil
   then show ?case by simp
 next
   case (Cons d ds a)
-  then have "listprod ds dvd (a div d)" unfolding listprod.Cons 
+  then have "prod_list ds dvd (a div d)" unfolding prod_list.Cons 
     by (metis dvd_0_right dvd_div_iff_mult dvd_mult_left mult.commute split_div)
-  then show ?case unfolding digit_encode.simps length_Cons replicate_Suc listprod.Cons using Cons 
-    using dvd_imp_mod_0 dvd_mult_left listprod.Cons by force
+  then show ?case unfolding digit_encode.simps length_Cons replicate_Suc prod_list.Cons using Cons 
+    using dvd_imp_mod_0 dvd_mult_left prod_list.Cons by force
 qed
 
 definition weave :: "nat set \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> 'a list" where
@@ -487,8 +487,8 @@ qed
 
 definition matricize :: "nat set \<Rightarrow> 'a tensor \<Rightarrow> 'a mat" where
 "matricize rmodes T = mat
-  (listprod (sublist (Tensor.dims T) rmodes))
-  (listprod (sublist (Tensor.dims T) (-rmodes)))
+  (prod_list (sublist (Tensor.dims T) rmodes))
+  (prod_list (sublist (Tensor.dims T) (-rmodes)))
   (\<lambda>(r, c). Tensor.lookup T (weave rmodes 
     (digit_encode (sublist (Tensor.dims T) rmodes) r) 
     (digit_encode (sublist (Tensor.dims T) (-rmodes)) c)
@@ -503,8 +503,8 @@ definition dematricize::"nat set \<Rightarrow> 'a mat \<Rightarrow> nat list \<R
 "
 
 lemma dims_matricize: 
-"dim\<^sub>r (matricize rmodes T) = listprod (sublist (Tensor.dims T) rmodes)"
-"dim\<^sub>c (matricize rmodes T) = listprod (sublist (Tensor.dims T) (-rmodes))"
+"dim\<^sub>r (matricize rmodes T) = prod_list (sublist (Tensor.dims T) rmodes)"
+"dim\<^sub>c (matricize rmodes T) = prod_list (sublist (Tensor.dims T) (-rmodes))"
   unfolding matricize_def using mat_dim_row_mat by simp_all
 
 lemma dims_dematricize: "Tensor.dims (dematricize rmodes A ds) = ds"
@@ -533,9 +533,9 @@ proof (rule tensor_lookup_eqI)
   then have "is \<lhd> Tensor.dims T" using 1 by auto
   let ?rds = "(sublist (Tensor.dims T) rmodes)"
   let ?cds = "(sublist (Tensor.dims T) (-rmodes))"
-  have decode_r: "digit_decode ?rds (sublist is rmodes) < listprod ?rds" 
+  have decode_r: "digit_decode ?rds (sublist is rmodes) < prod_list ?rds" 
     by (simp add: \<open>is \<lhd> Tensor.dims T\<close> valid_index_sublist digit_decode_lt)
-  have decode_c: "digit_decode ?cds (sublist is (-rmodes)) < listprod ?cds" 
+  have decode_c: "digit_decode ?cds (sublist is (-rmodes)) < prod_list ?cds" 
     by (simp add: \<open>is \<lhd> Tensor.dims T\<close> valid_index_sublist digit_decode_lt)
   have "(matricize rmodes T) $$
      (digit_decode ?rds (sublist is rmodes),
@@ -548,8 +548,8 @@ proof (rule tensor_lookup_eqI)
 qed
 
 lemma matricize_dematricize:
-assumes " dim\<^sub>r A = listprod (sublist ds rmodes)"
-and " dim\<^sub>c A = listprod (sublist ds (-rmodes))"
+assumes " dim\<^sub>r A = prod_list (sublist ds rmodes)"
+and " dim\<^sub>c A = prod_list (sublist ds (-rmodes))"
 shows "matricize rmodes (dematricize rmodes A ds) = A"
 proof (rule mat_eqI)
   show "dim\<^sub>r (matricize rmodes (dematricize rmodes A ds)) = dim\<^sub>r A" 
@@ -571,9 +571,9 @@ proof (rule mat_eqI)
       digit_decode_encode_lt[OF \<open>r < dim\<^sub>r A\<close>[unfolded assms(1)]]  
       valid_index_weave(2)[OF valid1 valid2] valid_index_weave(3)[OF valid1 valid2]
       by presburger  
-  from `r < dim\<^sub>r A` have r_le: "r < listprod (sublist (Tensor.dims (dematricize rmodes A ds)) rmodes)" 
+  from `r < dim\<^sub>r A` have r_le: "r < prod_list (sublist (Tensor.dims (dematricize rmodes A ds)) rmodes)" 
     by (metis \<open>dim\<^sub>r (matricize rmodes (dematricize rmodes A ds)) = dim\<^sub>r A\<close> matricize_def mat_dim_row_mat(1))
-  from `c < dim\<^sub>c A `have c_le: "c < listprod (sublist (Tensor.dims (dematricize rmodes A ds)) (- rmodes))"
+  from `c < dim\<^sub>c A `have c_le: "c < prod_list (sublist (Tensor.dims (dematricize rmodes A ds)) (- rmodes))"
     by (metis \<open>dim\<^sub>c (matricize rmodes (dematricize rmodes A ds)) = dim\<^sub>c A\<close> matricize_def mat_dim_col_mat(1))
   then show "(matricize rmodes (dematricize rmodes A ds)) $$ (r, c) = A $$ (r, c)"
     unfolding matricize_def using r_le c_le 0 by simp
@@ -587,9 +587,9 @@ proof (rule mat_eqI)
   show "dim\<^sub>c (matricize I A \<oplus>\<^sub>m matricize I B) = dim\<^sub>c (matricize I (A + B))" by (simp add: assms dims_matricize(2))
   fix i j assume ij_le1:"i < dim\<^sub>r (matricize I (A + B))" "j < dim\<^sub>c (matricize I (A + B))"
   then have 
-    ij_le2:"i < listprod (sublist (Tensor.dims A) I)"  "j < listprod (sublist (Tensor.dims A) (-I))" and
-    ij_le3:"i < listprod (sublist (Tensor.dims B) I)"  "j < listprod (sublist (Tensor.dims B) (-I))" and
-    ij_le4:"i < listprod (sublist (Tensor.dims (A + B)) I)"  "j < listprod (sublist (Tensor.dims (A + B)) (-I))" 
+    ij_le2:"i < prod_list (sublist (Tensor.dims A) I)"  "j < prod_list (sublist (Tensor.dims A) (-I))" and
+    ij_le3:"i < prod_list (sublist (Tensor.dims B) I)"  "j < prod_list (sublist (Tensor.dims B) (-I))" and
+    ij_le4:"i < prod_list (sublist (Tensor.dims (A + B)) I)"  "j < prod_list (sublist (Tensor.dims (A + B)) (-I))" 
     by (simp_all add: assms dims_matricize)
   then have ij_le5:"i < dim\<^sub>r (matricize I B)" "j < dim\<^sub>c (matricize I B)" 
     by (simp_all add: assms dims_matricize)

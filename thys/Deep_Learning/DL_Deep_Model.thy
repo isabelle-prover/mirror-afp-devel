@@ -161,7 +161,7 @@ assumes "valid_net' m"
 and "input_sizes m = map dim\<^sub>v input"
 and "i<nr"
 shows "evaluate_net (Conv (all1_matrix nr (output_size' m)) m) input $ i
- = Groups_List.listsum (list_of_vec (evaluate_net m input))"
+ = Groups_List.sum_list (list_of_vec (evaluate_net m input))"
   unfolding evaluate_net.simps output_size_correct[OF assms(1) assms(2)[symmetric]]
   using mult_all1_matrix[OF `i<nr`, of "evaluate_net m input", unfolded dim_vec_of_list] 
   assms(3) all1_matrix_dim(1) by metis
@@ -191,16 +191,16 @@ proof (rule tensor_lookup_eqI)
   have "Tensor.lookup (?a $ i) is = evaluate_net Convm (base_input Convm is) $ i"
     using lookup_tensors_from_net[OF `valid_net' Convm` `is \<lhd> input_sizes Convm` `i< output_size' Convm`]
     by (metis Convm_def )
-  also have "... = monoid_add_class.listsum (list_of_vec (evaluate_net m (base_input Convm is)))" 
+  also have "... = monoid_add_class.sum_list (list_of_vec (evaluate_net m (base_input Convm is)))" 
     using evaluate_net_Conv_all1 Convm_def \<open>is \<lhd> input_sizes Convm\<close> assms base_input_length \<open>i < nr\<close>
     by simp
-  also have "... = monoid_add_class.listsum (list_of_vec (map\<^sub>v (\<lambda>A.  lookup A is)(tensors_from_net m)))"
+  also have "... = monoid_add_class.sum_list (list_of_vec (map\<^sub>v (\<lambda>A.  lookup A is)(tensors_from_net m)))"
     unfolding `base_input Convm is = base_input m is`
     using lookup_tensors_from_net[OF `valid_net' m` `is \<lhd> input_sizes m`]
      base_input_length[OF \<open>is \<lhd> input_sizes m\<close>] output_size_correct[OF assms(1)]  output_size_correct_tensors[OF assms(1)] 
     vec_eqI[of "evaluate_net m (base_input m is)" "map\<^sub>v (\<lambda>A. lookup A is) (tensors_from_net m)"] vec_index_map(1) vec_index_map(2) 
     by force
-  also have "... = monoid_add_class.listsum (map (\<lambda>A.  lookup A is) (list_of_vec (tensors_from_net m)))"
+  also have "... = monoid_add_class.sum_list (map (\<lambda>A.  lookup A is) (list_of_vec (tensors_from_net m)))"
     using vec_eqI[of "vec_of_list (list_of_vec (map\<^sub>v (\<lambda>A.  lookup A is)(tensors_from_net m)))"
     "vec_of_list (map (\<lambda>A.  lookup A is) (list_of_vec (tensors_from_net m)))"]  dim_vec_of_list 
     nth_list_of_vec length_map list_vec nth_map  vec_index_map(1) vec_index_map(2) vec_list
@@ -348,14 +348,14 @@ proof -
     unfolding witness_l1 using tensors_from_net_Conv_all1[OF witness_l0'_valid assms(1)] 
     witness_l0' `output_size' (witness' r0 [M]) = r0` by simp
   then have "Tensor.lookup (tensors_from_net (witness r1 r0 [M]) $ j) is
-    = monoid_add_class.listsum (map (\<lambda>A. Tensor.lookup A is) (list_of_vec (tensors_from_net (witness' r0 [M]))))"
+    = monoid_add_class.sum_list (map (\<lambda>A. Tensor.lookup A is) (list_of_vec (tensors_from_net (witness' r0 [M]))))"
     using lookup_listsum[OF `is \<lhd> [M, M]`]  \<open>input_sizes (witness' r0 [M]) = [M, M]\<close> 
     dims_tensors_from_net by (metis set_list_of_vec)
-  also have "... = monoid_add_class.listsum (map (\<lambda>i. lookup (tensors_from_net (witness' r0 [M]) $ i) is) [0..<r0])"
+  also have "... = monoid_add_class.sum_list (map (\<lambda>i. lookup (tensors_from_net (witness' r0 [M]) $ i) is) [0..<r0])"
     using map_map[of "(\<lambda>A. Tensor.lookup A is)" "\<lambda>i. (tensors_from_net (witness' r0 [M]) $ i)" "[0..<r0]"] 
     using list_of_vec_map `dim\<^sub>v (tensors_from_net (witness' r0 [M])) = r0` by (metis (mono_tags, lifting) comp_apply map_eq_conv)
   also have "... = (\<Sum>i<r0. Tensor.lookup ((tensors_from_net (witness' r0 [M])) $ i) is)" 
-    using setsum_set_upt_conv_listsum_nat atLeast0LessThan by (metis atLeast_upt)
+    using sum_set_upt_conv_sum_list_nat atLeast0LessThan by (metis atLeast_upt)
   also have "... = (if is!0 = is!1 \<and> is!0<r0 then 1 else 0)"
   proof (cases "is!0<r0")
     case True
@@ -364,13 +364,13 @@ proof -
     have "(\<Sum>i<r0. Tensor.lookup ((tensors_from_net (witness' r0 [M])) $ i) is)
       = Tensor.lookup (tensors_from_net (witness' r0 [M]) $ (is!0)) is"
       using `dim\<^sub>v (tensors_from_net (witness' r0 [M])) = r0` 
-      using setsum.remove[OF `finite {0..<r0}` `is!0 \<in> {0..<r0}`, 
+      using sum.remove[OF `finite {0..<r0}` `is!0 \<in> {0..<r0}`, 
         of "\<lambda>i. (Tensor.lookup (tensors_from_net (witness' r0 [M])$i) is)"] 
       using all0_but1 atLeast0LessThan by force
     then show ?thesis using lookup_tensors_ht_l0' \<open>is ! 0 < r0\<close> \<open>is \<lhd> [M, M]\<close> by fastforce
   next
     case False
-    then show ?thesis using all0_but1 atLeast0LessThan setsum.neutral by force
+    then show ?thesis using all0_but1 atLeast0LessThan sum.neutral by force
   qed
   finally show ?thesis by auto
 qed
@@ -476,22 +476,22 @@ assumes "remove_weights m = deep_model_l rs"
 shows "order (tensors_from_net m $ y) = 2 * N_half"
   using dims_tensor_deep_model by (simp add: assms)
 
-lemma dims_A: 
+lemma dims_A:
 shows "Tensor.dims (A ws) = replicate (2 * N_half) (last rs)"
   unfolding A_def 
-  using dims_tensor_deep_model remove_insert_weights[OF assms[unfolded weight_space_dim_def]] by blast
+  using dims_tensor_deep_model remove_insert_weights by blast
 
 lemma order_A:
-shows "order (A ws) = 2 * N_half" using dims_A assms length_replicate by auto
+shows "order (A ws) = 2 * N_half" using dims_A length_replicate by auto
 
 lemma dims_A':
-shows "dim\<^sub>r (A' ws) = listprod (sublist (Tensor.dims (A ws)) {n. even n})" 
-and "dim\<^sub>c (A' ws) = listprod (sublist (Tensor.dims (A ws)) {n. odd n})" 
-  unfolding A'_def matricize_def assms by (simp_all add: A_def Collect_neg_eq)
+shows "dim\<^sub>r (A' ws) = prod_list (sublist (Tensor.dims (A ws)) {n. even n})" 
+and "dim\<^sub>c (A' ws) = prod_list (sublist (Tensor.dims (A ws)) {n. odd n})" 
+  unfolding A'_def matricize_def by (simp_all add: A_def Collect_neg_eq)
 
 lemma dims_A'_pow:
 shows "dim\<^sub>r (A' ws) = (last rs) ^ N_half" "dim\<^sub>c (A' ws) = (last rs) ^ N_half" 
-  unfolding dims_A'[OF assms] dims_A[OF assms] sublist_replicate set_le_in card_even card_odd listprod_replicate
+  unfolding dims_A' dims_A sublist_replicate set_le_in card_even card_odd prod_list_replicate
   by simp_all
 
 
@@ -520,8 +520,8 @@ lemma order_Aw: "order Aw = 2 * N_half"
   unfolding Aw_def' using order_A by auto
 
 lemma dims_Aw':
-"dim\<^sub>r Aw' = listprod (sublist (Tensor.dims Aw) {n. even n})" 
-"dim\<^sub>c Aw' = listprod (sublist (Tensor.dims Aw) {n. odd n})" 
+"dim\<^sub>r Aw' = prod_list (sublist (Tensor.dims Aw) {n. even n})" 
+"dim\<^sub>c Aw' = prod_list (sublist (Tensor.dims Aw) {n. odd n})" 
   unfolding Aw'_def' Aw_def' using dims_A' by auto
 
 lemma dims_Aw'_pow: "dim\<^sub>r Aw' = (last rs) ^ N_half" "dim\<^sub>c Aw' = (last rs) ^ N_half" 
@@ -762,13 +762,13 @@ definition "rows_with_1 = {i. (\<forall>i0\<in>set (digit_encode (sublist (Tenso
 
 lemma card_low_digits:
 assumes "m>0" "\<And>d. d\<in>set ds \<Longrightarrow> m \<le> d"
-shows "card {i. i<listprod ds \<and> (\<forall>i0\<in>set (digit_encode ds i). i0 < m)} = m ^ (length ds)"
+shows "card {i. i<prod_list ds \<and> (\<forall>i0\<in>set (digit_encode ds i). i0 < m)} = m ^ (length ds)"
 using assms proof (induction ds)
   case Nil
-  then show ?case using listprod.Nil by simp
+  then show ?case using prod_list.Nil by simp
 next
   case (Cons d ds)
-  def low_digits == "\<lambda>ds i. i < listprod ds \<and> (\<forall>i0\<in>set (digit_encode ds i). i0 < m)"
+  def low_digits == "\<lambda>ds i. i < prod_list ds \<and> (\<forall>i0\<in>set (digit_encode ds i). i0 < m)"
   have "card {i. low_digits ds i} = m ^ (length ds)" unfolding low_digits_def
     by (simp add: Cons.IH Cons.prems(1) Cons.prems(2))
   have "card {i. low_digits (d # ds) i} = card ({..<m} \<times> {i. low_digits ds i})"
@@ -790,29 +790,29 @@ next
       then have "i0<d" using Cons(3) by (meson list.set_intros(1) not_le order_trans)
       show "x \<in> {i. low_digits (d # ds) i}" unfolding low_digits_def
       proof (rule; rule conjI)
-        have "i1 < listprod ds" "\<forall>i0\<in>set (digit_encode ds i1). i0 < m"
+        have "i1 < prod_list ds" "\<forall>i0\<in>set (digit_encode ds i1). i0 < m"
           using `low_digits ds i1` low_digits_def by auto
-        show "x < listprod (d # ds)" unfolding listprod.Cons `x = i0 + d * i1` using `i0<d` `i1 < listprod ds` 
+        show "x < prod_list (d # ds)" unfolding prod_list.Cons `x = i0 + d * i1` using `i0<d` `i1 < prod_list ds` 
         proof -
           have "d \<noteq> 0"
             by (metis \<open>i0 < d\<close> gr_implies_not0)
-          then have "(i0 + d * i1) div (d * listprod ds) = 0"
-            by (simp add: Divides.div_mult2_eq \<open>i0 < d\<close> \<open>i1 < listprod ds\<close>)
-          then show "i0 + d * i1 < d * listprod ds"
-            by (metis (no_types) \<open>i0 < d\<close> \<open>i1 < listprod ds\<close> div_eq_0_iff gr_implies_not0 no_zero_divisors)
+          then have "(i0 + d * i1) div (d * prod_list ds) = 0"
+            by (simp add: Divides.div_mult2_eq \<open>i0 < d\<close> \<open>i1 < prod_list ds\<close>)
+          then show "i0 + d * i1 < d * prod_list ds"
+            by (metis (no_types) \<open>i0 < d\<close> \<open>i1 < prod_list ds\<close> div_eq_0_iff gr_implies_not0 no_zero_divisors)
         qed
         show "\<forall>i0\<in>set (digit_encode (d # ds) x). i0 < m"
           using \<open>\<forall>i0\<in>set (digit_encode ds i1). i0 < m\<close> \<open>i0 < d\<close> \<open>i0 < m\<close> \<open>x = i0 + d * i1\<close> by auto
       qed
     next
       fix x assume "x \<in> {i. low_digits (d # ds) i}"
-      then have "x < listprod (d # ds)" "\<forall>i0\<in>set (digit_encode (d # ds) x). i0 < m" using low_digits_def by auto
+      then have "x < prod_list (d # ds)" "\<forall>i0\<in>set (digit_encode (d # ds) x). i0 < m" using low_digits_def by auto
       have "x mod d < m" using `\<forall>i0\<in>set (digit_encode (d # ds) x). i0 < m`[unfolded digit_encode.simps] by simp
-      have "x div d < listprod ds" using `x < listprod (d # ds)`[unfolded listprod.Cons] 
+      have "x div d < prod_list ds" using `x < prod_list (d # ds)`[unfolded prod_list.Cons] 
         by (metis Divides.div_mult2_eq div_eq_0_iff gr_implies_not0 mult_0_right)
       have "\<forall>i0\<in>set (digit_encode ds (x div d)). i0 < m" by (simp add: \<open>\<forall>i0\<in>set (digit_encode (d # ds) x). i0 < m\<close>) 
       have "f ((x mod d),(x div d)) = x" by (simp add: f_def)
-      show "x \<in> f ` ({..<m} \<times> {i. low_digits ds i})" by (metis SigmaI \<open>\<forall>i0\<in>set (digit_encode ds (x div d)). i0 < m\<close> \<open>f (x mod d, x div d) = x\<close> \<open>x div d < listprod ds\<close> \<open>x mod d < m\<close> image_eqI lessThan_iff low_digits_def mem_Collect_eq)
+      show "x \<in> f ` ({..<m} \<times> {i. low_digits ds i})" by (metis SigmaI \<open>\<forall>i0\<in>set (digit_encode ds (x div d)). i0 < m\<close> \<open>f (x mod d, x div d) = x\<close> \<open>x div d < prod_list ds\<close> \<open>x mod d < m\<close> image_eqI lessThan_iff low_digits_def mem_Collect_eq)
     qed
     then have "bij_betw f ({..<m} \<times> {i. low_digits ds i}) {i. low_digits (d # ds) i}"
       by (simp add: \<open>inj_on f ({..<m} \<times> {i. low_digits ds i})\<close> bij_betw_def)
@@ -823,13 +823,13 @@ qed
 
 lemma card_rows_with_1: "card {i\<in>rows_with_1. i<dim\<^sub>r Aw'} = r ^ N_half" 
 proof -
-  have 1:"{i\<in>rows_with_1. i<dim\<^sub>r Aw'} = {i. i < listprod (sublist (Tensor.dims Aw) (Collect even)) \<and>
+  have 1:"{i\<in>rows_with_1. i<dim\<^sub>r Aw'} = {i. i < prod_list (sublist (Tensor.dims Aw) (Collect even)) \<and>
              (\<forall>i0\<in>set (digit_encode (sublist (Tensor.dims Aw) (Collect even)) i). i0 < r)}" (is "?A = ?B")
   proof (rule subset_antisym; rule subsetI)
     fix i assume "i \<in> ?A"
     then have "i < dim\<^sub>r Aw'" "\<forall>i0\<in>set (digit_encode (sublist (Tensor.dims Aw) {n. even n}) i). i0 < last (butlast rs)"
       using rows_with_1_def by auto
-    then have "i < listprod (sublist (dims Aw) (Collect even))" using dims_Aw' by linarith
+    then have "i < prod_list (sublist (dims Aw) (Collect even))" using dims_Aw' by linarith
     then have "digit_encode (sublist (dims Aw) (Collect even)) i \<lhd> sublist (dims Aw) (Collect even)"
       using digit_encode_valid_index by auto
     have "\<forall>i0\<in>set (digit_encode (sublist (Tensor.dims Aw) {n. even n}) i). i0 < r"
@@ -850,7 +850,7 @@ proof -
         \<open>k < length (digit_encode (sublist (dims Aw) (Collect even)) i)\<close> valid_index_length by fastforce
       then show "i0 < r" unfolding r_def by (simp add: \<open>i0 < last (butlast rs)\<close>)
     qed
-    then show "i \<in> ?B" using \<open>i < listprod (sublist (dims Aw) (Collect even))\<close> by blast
+    then show "i \<in> ?B" using \<open>i < prod_list (sublist (dims Aw) (Collect even))\<close> by blast
   next
     fix i assume "i\<in>?B"
     then show "i\<in>?A" by (simp add: dims_Aw' r_def rows_with_1_def)
@@ -872,7 +872,7 @@ qed
 
 lemma infinite_rows_with_1: "infinite rows_with_1"
 proof -
-  def listpr == "listprod (sublist (Tensor.dims Aw) {n. even n})"
+  def listpr == "prod_list (sublist (Tensor.dims Aw) {n. even n})"
   have "\<And>i. listpr dvd i \<Longrightarrow> i \<in> rows_with_1"
   proof -
     fix i assume dvd_i: "listpr dvd i"

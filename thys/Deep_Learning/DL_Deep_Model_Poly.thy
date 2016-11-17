@@ -53,7 +53,7 @@ shows "polyfun N (\<lambda>x. \<Sum>i\<in>I. f i x)"
   using assms 
   apply (induction I rule:finite_induct) 
   apply (simp add: polyfun_const)
-  using comm_monoid_add_class.setsum.insert polyfun_add by fastforce
+  using comm_monoid_add_class.sum.insert polyfun_add by fastforce
 
 lemma polyfun_Prod:
 assumes "finite I"
@@ -62,7 +62,7 @@ shows "polyfun N (\<lambda>x. \<Prod>i\<in>I. f i x)"
   using assms 
   apply (induction I rule:finite_induct) 
   apply (simp add: polyfun_const)
-  using comm_monoid_add_class.setsum.insert polyfun_mult by fastforce
+  using comm_monoid_add_class.sum.insert polyfun_mult by fastforce
 
 lemma polyfun_single:
 assumes "i\<in>N"

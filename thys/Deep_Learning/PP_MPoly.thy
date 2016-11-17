@@ -373,7 +373,7 @@ is "\<lambda>p v. Max (insert 0 ((\<lambda>m. PP_Poly_Mapping.lookup m v) ` PP_P
 
 
 lift_definition total_degree :: "'a::zero mpoly \<Rightarrow> nat"
-is "\<lambda>p. Max (insert 0 ((\<lambda>m. setsum (PP_Poly_Mapping.lookup m) (PP_Poly_Mapping.keys m)) ` PP_Poly_Mapping.keys p))" .
+is "\<lambda>p. Max (insert 0 ((\<lambda>m. sum (PP_Poly_Mapping.lookup m) (PP_Poly_Mapping.keys m)) ` PP_Poly_Mapping.keys p))" .
 
 lemma degree_zero [simp]:
   "degree 0 v = 0"

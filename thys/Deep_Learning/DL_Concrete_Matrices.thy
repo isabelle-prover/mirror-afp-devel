@@ -53,24 +53,24 @@ shows "row (all1_matrix nr nc) i = all1_vec nc"
   by (simp add: all1_matrix_def all1_vec_def)
 
 lemma all1_vec_scalar_prod:
-shows "all1_vec (length xs) \<bullet> (vec_of_list xs) = listsum xs" 
+shows "all1_vec (length xs) \<bullet> (vec_of_list xs) = sum_list xs" 
 proof -
   have "all1_vec (length xs) \<bullet> (vec_of_list xs) = (\<Sum>i = 0..<dim\<^sub>v (vec_of_list xs). vec_of_list xs $ i)"
-    unfolding scalar_prod_def by (metis (no_types, lifting) all1_vec_def mult_cancel_right1 setsum_ivl_cong 
+    unfolding scalar_prod_def by (metis (no_types, lifting) all1_vec_def mult_cancel_right1 sum_ivl_cong 
     vec.abs_eq vec_dim_vec vec_index_vec vec_of_list.abs_eq)
   also have "... = (\<Sum>i = 0..<length xs. xs ! i)" using vec.abs_eq vec_dim_vec vec_of_list.abs_eq 
-    by (metis setsum_ivl_cong vec_index_vec)
-  also have "... = listsum xs" by (simp add: listsum_setsum_nth)
+    by (metis sum_ivl_cong vec_index_vec)
+  also have "... = sum_list xs" by (simp add: sum_list_sum_nth)
   finally show ?thesis by auto
 qed
 
 
 lemma mult_all1_matrix:
 assumes "i < nr"
-shows "((all1_matrix nr (dim\<^sub>v v)) \<otimes>\<^sub>m\<^sub>v v) $ i = listsum (list_of_vec v)" (is "?a $ i = listsum (list_of_vec v)")
+shows "((all1_matrix nr (dim\<^sub>v v)) \<otimes>\<^sub>m\<^sub>v v) $ i = sum_list (list_of_vec v)" (is "?a $ i = sum_list (list_of_vec v)")
 proof -
   have "?a $ i = row (all1_matrix nr (dim\<^sub>v v)) i \<bullet> v" using index_mat_mult_vec assms all1_matrix_dim by auto
-  also have "... = listsum (list_of_vec v)" unfolding row_all1_matrix[OF assms] using all1_vec_scalar_prod[of "list_of_vec v"] 
+  also have "... = sum_list (list_of_vec v)" unfolding row_all1_matrix[OF assms] using all1_vec_scalar_prod[of "list_of_vec v"] 
     by (metis vec.abs_eq vec_dim_vec vec_list vec_of_list.abs_eq)
   finally show ?thesis by auto
 qed
