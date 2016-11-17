@@ -10,6 +10,7 @@ imports
   Square_Free_Factorization
   Suitable_Prime
   Code_Abort_Gcd
+  Gcd_Finite_Field_Impl
 begin
 
 definition yun_wrel :: "int poly \<Rightarrow> rat \<Rightarrow> rat poly \<Rightarrow> bool" where
