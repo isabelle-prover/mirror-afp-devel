@@ -184,7 +184,7 @@ begin
     moreover have "?bisim P R"
       using PQ QR by blast
     ultimately show "P \<sim>\<cdot> R"
-      unfolding bisimilar_def by metis
+      unfolding bisimilar_def by meson
   qed
 
   lemma bisimilar_equivp: "equivp bisimilar"

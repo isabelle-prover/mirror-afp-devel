@@ -303,7 +303,7 @@ proof -
 qed
 
 lemma alpha_Tree_eqvt': "t1 =\<^sub>\<alpha> t2 \<longleftrightarrow> p \<bullet> t1 =\<^sub>\<alpha> p \<bullet> t2"
-using assms proof (induction t1 t2 rule: alpha_Tree_induct')
+proof (induction t1 t2 rule: alpha_Tree_induct')
   case (alpha_tConj tset1 tset2) show ?case
   proof
     assume *: "tConj tset1 =\<^sub>\<alpha> tConj tset2"

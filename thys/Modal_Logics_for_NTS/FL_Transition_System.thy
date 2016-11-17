@@ -230,7 +230,7 @@ begin
     moreover have "?FL_bisim F P R"
       using PQ QR by blast
     ultimately show "P \<sim>\<cdot>[F] R"
-      unfolding FL_bisimilar_def by metis
+      unfolding FL_bisimilar_def by meson
   qed
 
   lemma bisimilar_equivp: "equivp (FL_bisimilar F)"

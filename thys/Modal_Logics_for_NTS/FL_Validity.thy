@@ -152,7 +152,7 @@ begin
   text \<open>@{const valid_Tree} is equivariant.\<close>
 
   lemma valid_Tree_eqvt': "valid_Tree P t \<longleftrightarrow> valid_Tree (p \<bullet> P) (p \<bullet> t)"
-  using assms proof (induction P t rule: valid_Tree.induct)
+  proof (induction P t rule: valid_Tree.induct)
     case (1 P tset) show ?case
       proof
         assume *: "valid_Tree P (tConj tset)"
