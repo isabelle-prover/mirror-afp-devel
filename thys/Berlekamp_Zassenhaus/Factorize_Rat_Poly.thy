@@ -17,6 +17,9 @@ definition factorize_rat_poly :: "rat poly \<Rightarrow> rat \<times> (rat poly 
   "factorize_rat_poly f = (case rat_to_normalized_int_poly f of
      (c,g) \<Rightarrow> case factorize_int_poly g of (d,fs) \<Rightarrow> (c * rat_of_int d, 
      map (\<lambda> (fi,i). (map_poly rat_of_int fi, i)) fs))" 
+  
+lemma factorize_rat_poly_0[simp]: "factorize_rat_poly 0 = (0,[])" 
+  unfolding factorize_rat_poly_def rat_to_normalized_int_poly_def by simp
 
 lemma factorize_rat_poly: assumes res: "factorize_rat_poly f = (c,fs)"
 shows "square_free_factorization f (c,fs)"

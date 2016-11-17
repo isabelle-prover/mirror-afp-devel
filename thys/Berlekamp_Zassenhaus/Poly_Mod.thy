@@ -65,7 +65,7 @@ definition square_free_m :: "int poly \<Rightarrow> bool" where
 
 definition coprime_m :: "int poly \<Rightarrow> int poly \<Rightarrow> bool" where 
   "coprime_m f g = (\<forall> h. (h dvdm f \<and> h dvdm g) = (h dvdm 1))"
-value "-(1::int)div 2"
+
 lemma mult_Mp[simp]: "Mp (Mp f * g) = Mp (f * g)" "Mp (f * Mp g) = Mp (f * g)" 
 proof -
   {

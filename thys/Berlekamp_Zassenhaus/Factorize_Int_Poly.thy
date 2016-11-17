@@ -22,6 +22,9 @@ definition factorize_int_poly :: "int poly \<Rightarrow> int \<times> (int poly 
      pre_result = map (\<lambda> (q,i). (map (\<lambda> f. (f,i)) (berlekamp_zassenhaus_factorization q))) psi;
      factors = concat pre_result
    in (a,factors))"
+  
+lemma factorize_int_poly_0[simp]: "factorize_int_poly 0 = (0,[])" 
+  unfolding factorize_int_poly_def square_free_factorization_int_def Let_def by auto
     
 lemma factorize_int_poly: assumes res: "factorize_int_poly f = (c,fs)"
 shows "square_free_factorization f (c,fs)"

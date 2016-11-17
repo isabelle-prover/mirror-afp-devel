@@ -162,13 +162,6 @@ qed
 
 definition factors_of_rat_poly :: "rat poly \<Rightarrow> rat poly list" where
   "factors_of_rat_poly p = map (monic_poly o fst) (snd (factorize_rat_poly p))"
-
-(* TODO: move *)
-lemma factorize_int_poly_0[simp]: "factorize_int_poly 0 = (0,[])" 
-  unfolding factorize_int_poly_def yun_factorization_int_def by auto
-
-lemma factorize_rat_poly_0[simp]: "factorize_rat_poly 0 = (0,[])" 
-  unfolding factorize_rat_poly_def rat_to_normalized_int_poly_def by simp
   
 lemma factors_of_rat_poly:  
   defines "rp \<equiv> rpoly :: rat poly \<Rightarrow> 'a :: {field_char_0,euclidean_ring_gcd} \<Rightarrow> 'a"
