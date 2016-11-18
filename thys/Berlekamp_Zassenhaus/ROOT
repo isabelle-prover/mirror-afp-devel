@@ -32,6 +32,7 @@ session Berlekamp_Zassenhaus (AFP) = Pre_BZ +
       Square_Free_Int_To_Square_Free_GFp
       Suitable_Prime
       Degree_Bound
+      Mahler_Measure
       Factor_Bound
       Sublist_Iteration
     Reconstruction
