@@ -194,7 +194,7 @@ text \<open>For Mignotte's factor bound, we currently do not support queries for
 
 definition mignotte_bound :: "int poly \<Rightarrow> nat \<Rightarrow> int" where
   "mignotte_bound f d = (let d' = d - 1; d2 = d' div 2; binom = (d' choose d2) in
-     mahler_approximation binom f + binom * abs (lead_coeff f))" 
+     mahler_approximation 2 4 binom f + binom * abs (lead_coeff f))" 
 
 lemma mignotte_bound: fixes mm :: "nat \<Rightarrow> int poly \<Rightarrow> int" 
     assumes "f \<noteq> 0" "g dvd f" "degree g \<le> n"
@@ -229,7 +229,7 @@ proof-
   finally have "\<bar>coeff g k\<bar> \<le> ?n * mahler_measure f + real_of_int (?n * \<bar>lead_coeff f\<bar>)" by simp
   from floor_mono[OF this, folded floor_add_int]
   have "\<bar>coeff g k\<bar> \<le> floor (?n * mahler_measure f) + ?n * \<bar>lead_coeff f\<bar>" by linarith
-  thus ?thesis unfolding mignotte_bound_def Let_def using mahler_approximation[of ?n f] by auto
+  thus ?thesis unfolding mignotte_bound_def Let_def using mahler_approximation[of ?n f 2 4] by auto
 qed
 
 

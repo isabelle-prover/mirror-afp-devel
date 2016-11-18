@@ -711,16 +711,19 @@ proof -
   qed simp
 qed
 
+context 
+  fixes low up :: nat
+begin
 function mahler_approximation_main :: "nat \<Rightarrow> int \<Rightarrow> int poly \<Rightarrow> int \<Rightarrow> nat \<Rightarrow> int" where
   "mahler_approximation_main d c g mm k = (let mmm = mahler_landau_graeffe_approximation k d g;
      new_mm = (if k = 0 then mmm else min mm mmm)
-     in (if k \<ge> 7 \<or> new_mm = mm \<and> k \<ge> 2 then new_mm else 
-     (* abort when there is no change or after 7 iterations, 
-       but at least use 2 iterations of Graeffe transformation *)
+     in (if k \<ge> up \<or> new_mm = mm \<and> k > low then new_mm else 
+     (* abort when there is no change or after up iterations, 
+       but at least use low iteration of Graeffe transformation *)
       mahler_approximation_main d c (graeffe_one_step c g) new_mm (Suc k)))" 
   by pat_completeness auto
 
-termination by (relation "measure (\<lambda> (d,c,f,mm,k). 100 - k)", auto)
+termination by (relation "measure (\<lambda> (d,c,f,mm,k). Suc up - k)", auto)
 declare mahler_approximation_main.simps[simp del]
 
 lemma mahler_approximation_main: assumes "k \<noteq> 0 \<Longrightarrow> \<lfloor>real d * mahler_measure f\<rfloor> \<le> mm"
@@ -738,7 +741,7 @@ proof (induct d c g mm k rule: mahler_approximation_main.induct)
   note mahl = mahler_approximation_main.simps[of d c g mm k]
   define mmm where "mmm = mahler_landau_graeffe_approximation k d g" 
   define new_mm where "new_mm = (if k = 0 then mmm else min mm mmm)" 
-  let ?cond = "7 \<le> k \<or> new_mm = mm \<and> 2 \<le> k" 
+  let ?cond = "up \<le> k \<or> new_mm = mm \<and> low < k" 
   have id: "mahler_approximation_main d c g mm k = (if ?cond then new_mm
         else mahler_approximation_main d c (graeffe_one_step c g) new_mm (Suc k))" 
     unfolding mahl mmm_def[symmetric] Let_def new_mm_def[symmetric] by simp
@@ -768,4 +771,5 @@ definition mahler_approximation :: "nat \<Rightarrow> int poly \<Rightarrow> int
 lemma mahler_approximation: "\<lfloor>real d * mahler_measure f\<rfloor> \<le> mahler_approximation d f"
   unfolding mahler_approximation_def
   by (rule mahler_approximation_main, auto)
+end
 end
