@@ -671,22 +671,18 @@ proof -
      graeffe_poly_impl[OF eq[symmetric], symmetric] by (simp add: graeffe_poly_impl_hom)
 qed
 
-definition mahler_landau_graeffe_approximation :: "nat \<Rightarrow> nat \<Rightarrow> int poly \<Rightarrow> int" where
-  "mahler_landau_graeffe_approximation k d f = (let kk = 2^(Suc k);
-     dd = d^kk;
+definition mahler_landau_graeffe_approximation :: "nat \<Rightarrow> int poly \<Rightarrow> int" where
+  "mahler_landau_graeffe_approximation k f = (let kk = 2^(Suc k);
      no = sum_list (map (\<lambda> a. a * a) (coeffs f))
-    in root_int_floor kk (dd * no))" 
+    in root_int_ceiling kk (no))" 
   
 lemma mahler_landau_graeffe_approximation: 
   assumes g: "g = graeffe_poly_impl f k" 
-  shows "\<lfloor>real d * mahler_measure f\<rfloor> \<le> mahler_landau_graeffe_approximation k d g"
+  shows "\<lceil>mahler_measure f\<rceil> \<le> mahler_landau_graeffe_approximation k g"
 proof -
-  have id1: "real_of_int (int (d ^ 2 ^ Suc k)) = (real d) ^ 2 ^ Suc k" by simp
-  have id2: "root (2 ^ Suc k) (real d ^ 2 ^ Suc k) = real d" 
-    by (simp add: real_root_power_cancel)
   show ?thesis
-    unfolding mahler_landau_graeffe_approximation_def Let_def root_int_floor of_int_mult 
-  proof (rule floor_mono, unfold real_root_mult id1 id2, rule mult_left_mono)
+    unfolding mahler_landau_graeffe_approximation_def Let_def root_int_ceiling of_int_mult 
+  proof (rule ceiling_mono)
     have "mahler_measure f = root (2^k) (mahler_measure f ^ (2^k))" 
       by (simp add: real_root_power_cancel mahler_measure_ge_0) 
     also have "\<dots> = root (2^k) (mahler_measure g)" 
@@ -708,55 +704,54 @@ proof -
       finally show "(mahler_measure g)\<^sup>2 \<le> real_of_int (\<Sum>a\<leftarrow>coeffs g. a * a)" .
     qed
     finally show "mahler_measure f \<le> root (2 ^ Suc k) (real_of_int (\<Sum>a\<leftarrow>coeffs g. a * a))" .
-  qed simp
+  qed 
 qed
 
 context 
-  fixes low up :: nat
+  fixes bnd :: nat
 begin
-function mahler_approximation_main :: "nat \<Rightarrow> int \<Rightarrow> int poly \<Rightarrow> int \<Rightarrow> nat \<Rightarrow> int" where
-  "mahler_approximation_main d c g mm k = (let mmm = mahler_landau_graeffe_approximation k d g;
+function mahler_approximation_main :: "int \<Rightarrow> int poly \<Rightarrow> int \<Rightarrow> nat \<Rightarrow> int" where
+  "mahler_approximation_main c g mm k = (let mmm = mahler_landau_graeffe_approximation k g;
      new_mm = (if k = 0 then mmm else min mm mmm)
-     in (if k \<ge> up \<or> new_mm = mm \<and> k > low then new_mm else 
-     (* abort when there is no change or after up iterations, 
-       but at least use low iteration of Graeffe transformation *)
-      mahler_approximation_main d c (graeffe_one_step c g) new_mm (Suc k)))" 
+     in (if k \<ge> bnd then new_mm else 
+     (* abort after \<open>bnd\<close> iterations of Graeffe transformation *)
+      mahler_approximation_main c (graeffe_one_step c g) new_mm (Suc k)))" 
   by pat_completeness auto
 
-termination by (relation "measure (\<lambda> (d,c,f,mm,k). Suc up - k)", auto)
+termination by (relation "measure (\<lambda> (c,f,mm,k). Suc bnd - k)", auto)
 declare mahler_approximation_main.simps[simp del]
 
-lemma mahler_approximation_main: assumes "k \<noteq> 0 \<Longrightarrow> \<lfloor>real d * mahler_measure f\<rfloor> \<le> mm"
+lemma mahler_approximation_main: assumes "k \<noteq> 0 \<Longrightarrow> \<lceil>mahler_measure f\<rceil> \<le> mm"
     and "c = (-1)^(degree f)" 
     and "g = graeffe_poly_impl_main c f k" 
-  shows "\<lfloor>real d * mahler_measure f\<rfloor> \<le> mahler_approximation_main d c g mm k" 
+  shows "\<lceil>mahler_measure f\<rceil> \<le> mahler_approximation_main c g mm k" 
   using assms
-proof (induct d c g mm k rule: mahler_approximation_main.induct)
-  case (1 d c g mm k)
-  let ?df = "\<lfloor>real d * mahler_measure f\<rfloor>" 
+proof (induct c g mm k rule: mahler_approximation_main.induct)
+  case (1 c g mm k)
+  let ?mf = "\<lceil>mahler_measure f\<rceil>" 
   note g = 1(4)
   note c = 1(3)
   note mm = 1(2)
   note IH = 1(1)
-  note mahl = mahler_approximation_main.simps[of d c g mm k]
-  define mmm where "mmm = mahler_landau_graeffe_approximation k d g" 
+  note mahl = mahler_approximation_main.simps[of c g mm k]
+  define mmm where "mmm = mahler_landau_graeffe_approximation k g" 
   define new_mm where "new_mm = (if k = 0 then mmm else min mm mmm)" 
-  let ?cond = "up \<le> k \<or> new_mm = mm \<and> low < k" 
-  have id: "mahler_approximation_main d c g mm k = (if ?cond then new_mm
-        else mahler_approximation_main d c (graeffe_one_step c g) new_mm (Suc k))" 
+  let ?cond = "bnd \<le> k" 
+  have id: "mahler_approximation_main c g mm k = (if ?cond then new_mm
+        else mahler_approximation_main c (graeffe_one_step c g) new_mm (Suc k))" 
     unfolding mahl mmm_def[symmetric] Let_def new_mm_def[symmetric] by simp
   have gg: "g = (graeffe_poly_impl f k)" unfolding g graeffe_poly_impl_def c ..
-  from mahler_landau_graeffe_approximation[OF gg, of d, folded mmm_def]
-  have mmm: "?df \<le> mmm" .
-  with mm have new_mm: "?df \<le> new_mm" unfolding new_mm_def by auto
+  from mahler_landau_graeffe_approximation[OF gg, folded mmm_def]
+  have mmm: "?mf \<le> mmm" .
+  with mm have new_mm: "?mf \<le> new_mm" unfolding new_mm_def by auto
   show ?case
   proof (cases ?cond)
     case True
     show ?thesis unfolding id using True new_mm by auto
   next
     case False
-    hence id: "mahler_approximation_main d c g mm k = 
-      mahler_approximation_main d c (graeffe_one_step c g) new_mm (Suc k)" 
+    hence id: "mahler_approximation_main c g mm k = 
+      mahler_approximation_main c (graeffe_one_step c g) new_mm (Suc k)" 
       unfolding id by auto
     have id': "graeffe_one_step c g = graeffe_poly_impl_main c f (Suc k)" 
       unfolding g by simp
@@ -765,10 +760,10 @@ proof (induct d c g mm k rule: mahler_approximation_main.induct)
   qed
 qed 
 
-definition mahler_approximation :: "nat \<Rightarrow> int poly \<Rightarrow> int" where
-  "mahler_approximation d f = mahler_approximation_main d ((-1)^(degree f)) f (-1) 0" 
+definition mahler_approximation :: "int poly \<Rightarrow> int" where
+  "mahler_approximation f = mahler_approximation_main ((-1)^(degree f)) f (-1) 0" 
 
-lemma mahler_approximation: "\<lfloor>real d * mahler_measure f\<rfloor> \<le> mahler_approximation d f"
+lemma mahler_approximation: "\<lceil>mahler_measure f\<rceil> \<le> mahler_approximation f"
   unfolding mahler_approximation_def
   by (rule mahler_approximation_main, auto)
 end
