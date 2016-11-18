@@ -49,6 +49,7 @@ end
 text {*
 We use the following definition of monotonicity for operations defined in classes.
 The standard @{text mono} places a sort constraint on the target type.
+We also give basic properties of Galois connections and lift orders to functions.
 *}
 
 context ord
@@ -56,6 +57,12 @@ begin
 
 definition isotone :: "('a \<Rightarrow> 'a) \<Rightarrow> bool"
   where "isotone f \<equiv> \<forall>x y . x \<le> y \<longrightarrow> f x \<le> f y"
+
+definition galois :: "('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> bool"
+  where "galois l u \<equiv> \<forall>x y . l x \<le> y \<longleftrightarrow> x \<le> u y"
+
+definition lifted_less_eq :: "('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> bool" ("(_ \<le>\<le> _)" [51, 51] 50)
+  where "f \<le>\<le> g \<equiv> \<forall>x . f x \<le> g x"
 
 end
 
@@ -65,6 +72,28 @@ begin
 lemma order_lesseq_imp:
   "(\<forall>z . x \<le> z \<longrightarrow> y \<le> z) \<longleftrightarrow> y \<le> x"
   using order_trans by blast
+
+lemma galois_char:
+  "galois l u \<longleftrightarrow> (\<forall>x . x \<le> u (l x)) \<and> (\<forall>x . l (u x) \<le> x) \<and> isotone l \<and> isotone u"
+  apply (rule iffI)
+  apply (metis (full_types) galois_def isotone_def order_refl order_trans)
+  using galois_def isotone_def order_trans by blast
+
+lemma galois_closure:
+  "galois l u \<Longrightarrow> l x = l (u (l x)) \<and> u x = u (l (u x))"
+  by (simp add: galois_char isotone_def antisym)
+
+lemma lifted_reflexive:
+  "f = g \<Longrightarrow> f \<le>\<le> g"
+  by (simp add: lifted_less_eq_def)
+
+lemma lifted_transitive:
+  "f \<le>\<le> g \<Longrightarrow> g \<le>\<le> h \<Longrightarrow> f \<le>\<le> h"
+  using lifted_less_eq_def order_trans by blast
+
+lemma lifted_antisymmetric:
+  "f \<le>\<le> g \<Longrightarrow> g \<le>\<le> f \<Longrightarrow> f = g"
+  by (metis (full_types) antisym ext lifted_less_eq_def)
 
 end
 
@@ -98,6 +127,22 @@ lemma sup_same_context:
 lemma sup_relative_same_increasing:
   "x \<le> y \<Longrightarrow> x \<squnion> z = x \<squnion> w \<Longrightarrow> y \<squnion> z = y \<squnion> w"
   using sup.assoc sup_right_divisibility by auto
+
+end
+
+text {*
+Every bounded semilattice is a commutative monoid.
+Finite sums defined in commutative monoids are available via the following sublocale.
+*}
+
+context bounded_semilattice_sup_bot
+begin
+
+sublocale sup_monoid: comm_monoid_add where plus = sup and zero = bot
+  apply unfold_locales
+  apply (simp add: sup_assoc)
+  apply (simp add: sup_commute)
+  by simp
 
 end
 
