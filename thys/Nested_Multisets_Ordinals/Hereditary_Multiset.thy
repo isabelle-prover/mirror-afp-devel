@@ -14,9 +14,9 @@ begin
 subsection \<open>Type Definition\<close>
 
 datatype hmultiset =
-  HMSet (mset_hmset: "hmultiset multiset")
+  HMSet (hmsetmset: "hmultiset multiset")
 
-lemma mset_hmset_inject[simp]: "mset_hmset A = mset_hmset B \<longleftrightarrow> A = B"
+lemma hmsetmset_inject[simp]: "hmsetmset A = hmsetmset B \<longleftrightarrow> A = B"
   by (blast intro: hmultiset.expand)
 
 primrec Rep_hmultiset :: "hmultiset \<Rightarrow> unit nmultiset" where
@@ -95,10 +95,10 @@ next
     by (rule exI[of _ X], rule exI[of _ Y]) (insert *; auto simp: multiset.pred_set)
 qed
 
-lemma less_hmset_iff: "M < N \<longleftrightarrow> mset_hmset M < mset_hmset N"
+lemma less_hmset_iff: "M < N \<longleftrightarrow> hmsetmset M < hmsetmset N"
   by (cases M, cases N, simp add: less_multiset_ext\<^sub>D\<^sub>M_less less_HMSet_iff_less_multiset_ext\<^sub>D\<^sub>M)
 
-lemma le_hmset_iff: "M \<le> N \<longleftrightarrow> mset_hmset M \<le> mset_hmset N"
+lemma le_hmset_iff: "M \<le> N \<longleftrightarrow> hmsetmset M \<le> hmsetmset N"
   unfolding le_less less_hmset_iff by (metis hmultiset.collapse)
 
 lemma wf_less_hmultiset: "wf {(X :: hmultiset, Y :: hmultiset). X < Y}"
