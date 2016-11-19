@@ -95,11 +95,11 @@ next
     by (rule exI[of _ X], rule exI[of _ Y]) (insert *; auto simp: multiset.pred_set)
 qed
 
-lemma less_hmset_iff: "M < N \<longleftrightarrow> hmsetmset M < hmsetmset N"
+lemma hmsetmset_less[simp]: "hmsetmset M < hmsetmset N \<longleftrightarrow> M < N"
   by (cases M, cases N, simp add: less_multiset_ext\<^sub>D\<^sub>M_less less_HMSet_iff_less_multiset_ext\<^sub>D\<^sub>M)
 
-lemma le_hmset_iff: "M \<le> N \<longleftrightarrow> hmsetmset M \<le> hmsetmset N"
-  unfolding le_less less_hmset_iff by (metis hmultiset.collapse)
+lemma hmsetmset_le[simp]: "hmsetmset M \<le> hmsetmset N \<longleftrightarrow> M \<le> N"
+  unfolding le_less hmsetmset_less by (metis hmultiset.collapse)
 
 lemma wf_less_hmultiset: "wf {(X :: hmultiset, Y :: hmultiset). X < Y}"
   unfolding wf_eq_minimal by transfer (insert wf_less_nmultiset[unfolded wf_eq_minimal], fast)
@@ -111,7 +111,7 @@ lemma HMSet_less_iff[simp]: "HMSet M < HMSet N \<longleftrightarrow> M < N"
   by (simp add: less_HMSet_iff_less_multiset_ext\<^sub>D\<^sub>M less_multiset_ext\<^sub>D\<^sub>M_less)
 
 lemma HMSet_less_eq_iff[simp]: "HMSet M \<le> HMSet N \<longleftrightarrow> M \<le> N"
-  by (simp add: le_hmset_iff)
+  by (simp add: hmsetmset_le[symmetric])
 
 inductive_set heriditary_multiset_sub where
   "X \<in># M \<Longrightarrow> (X, HMSet M) \<in> heriditary_multiset_sub"

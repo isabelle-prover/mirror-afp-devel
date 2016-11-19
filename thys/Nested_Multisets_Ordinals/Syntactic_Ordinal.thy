@@ -68,8 +68,7 @@ proof (cases m n rule: hmultiset.exhaust[case_product hmultiset.exhaust])
       by (rule subset_imp_less_multiset)
   }
   ultimately show ?thesis
-    by (simp (no_asm) add: m n order_le_less less_hmset_iff plus_hmultiset_def minus_hmultiset_def)
-      blast
+    by (simp (no_asm) add: m n order_le_less plus_hmultiset_def minus_hmultiset_def) blast
 qed
 
 instance hmultiset :: comm_monoid_diff
@@ -153,7 +152,8 @@ instance hmultiset :: no_top
 proof (standard, goal_cases gt_ex)
   case (gt_ex a)
   have "a < a + 1"
-    by (simp add: one_hmultiset_def plus_hmultiset_def less_hmset_iff less_multiset_ext\<^sub>D\<^sub>M_def)
+    by (simp add: one_hmultiset_def plus_hmultiset_def hmsetmset_less[symmetric]
+      less_multiset_ext\<^sub>D\<^sub>M_def)
   thus ?case
     by (rule exI)
 qed
@@ -162,14 +162,15 @@ instance hmultiset :: ordered_cancel_comm_monoid_add
 proof (standard, goal_cases add_left_mono)
   case (add_left_mono a b c)
   thus ?case
-    by (simp add: plus_hmultiset_def order_le_less less_hmset_iff less_multiset_ext\<^sub>D\<^sub>M_less)
+    by (simp del: hmsetmset_less add: plus_hmultiset_def order_le_less hmsetmset_less[symmetric]
+      less_multiset_ext\<^sub>D\<^sub>M_less)
 qed
 
 instance hmultiset :: ordered_ab_semigroup_add_imp_le
 proof (standard, goal_cases add_le_imp_le_left)
   case (add_le_imp_le_left c a b)
   thus ?case
-    by (simp add: plus_hmultiset_def order_le_less less_hmset_iff less_multiset_ext\<^sub>D\<^sub>M_less)
+    by (simp add: plus_hmultiset_def order_le_less less_multiset_ext\<^sub>D\<^sub>M_less)
 qed
 
 instantiation hmultiset :: distrib_lattice
@@ -245,7 +246,7 @@ instance hmultiset :: linordered_semiring_strict
   by standard (subst (1 2) mult.commute, rule times_hmultiset_monoL)
 
 lemma zero_le_hmset[simp]: "0 \<le> M" for M :: hmultiset
-  by (simp add: order_le_less less_hmset_iff) (metis le_multiset_empty_left hmsetmset_empty_iff)
+  by (simp add: order_le_less) (metis hmsetmset_less le_multiset_empty_left hmsetmset_empty_iff)
 
 lemma mult_le_mono1_hmset: "i \<le> j \<Longrightarrow> i * k \<le> j * k" for i j k :: hmultiset
   by (simp add: mult_right_mono)
@@ -265,8 +266,7 @@ lemma le_zero_eq_hmset[simp]: "M \<le> 0 \<longleftrightarrow> M = 0" for M :: h
 proof (cases M)
   case (HMSet x)
   thus ?thesis
-    by (cases x)
-      (auto simp: zero_hmultiset_def order_le_less less_hmset_iff less_multiset_ext\<^sub>D\<^sub>M_less)
+    by (cases x) (auto simp: zero_hmultiset_def order_le_less less_multiset_ext\<^sub>D\<^sub>M_less)
 qed
 
 lemma not_less_zero_hmset[simp]: "\<not> M < 0" for M :: hmultiset
@@ -308,7 +308,7 @@ proof (cases m n rule: hmultiset.exhaust[case_product hmultiset.exhaust])
   note m = this(1) and n = this(2)
 
   show ?thesis
-  proof (simp add: m n one_hmultiset_def plus_hmultiset_def less_hmset_iff order.order_iff_strict
+  proof (simp add: m n one_hmultiset_def plus_hmultiset_def order.order_iff_strict
       less_multiset_ext\<^sub>D\<^sub>M_less, intro iffI)
     assume m0_lt_n0: "m0 < n0"
     note
@@ -394,8 +394,7 @@ instance hmultiset :: semiring_no_zero_divisors
   by standard (use mult_pos_pos not_gr_zero_hmset in blast)
 
 lemma lt_1_iff_eq_0_hmset: "M < 1 \<longleftrightarrow> M = 0" for M :: hmultiset
-proof (induct M,
-    simp add: one_hmultiset_def zero_hmultiset_def less_hmset_iff less_multiset_ext\<^sub>D\<^sub>M_less)
+proof (induct M, simp add: one_hmultiset_def zero_hmultiset_def less_multiset_ext\<^sub>D\<^sub>M_less)
   fix xa
   obtain hha :: "hmultiset multiset \<Rightarrow> hmultiset multiset \<Rightarrow> hmultiset" where
     f1: "(\<forall>m ma. count ma (hha m ma) < count m (hha m ma) \<and>
@@ -493,8 +492,7 @@ lemma plus_of_nat_minus_of_nat_hmset:
   using assms by (metis add.left_commute add_diff_cancel_left' le_add_diff_inverse of_nat_add)
 
 lemma of_nat_lt_\<omega>[simp]: "of_nat n < \<omega>"
-  by (auto simp add: of_nat_hmset zero_less_iff_neq_zero_hmset \<omega>_def less_hmset_iff
-        less_multiset_ext\<^sub>D\<^sub>M_less)
+  by (auto simp add: of_nat_hmset zero_less_iff_neq_zero_hmset \<omega>_def less_multiset_ext\<^sub>D\<^sub>M_less)
     (metis One_nat_def count_replicate_mset count_single gr_implies_not0 lessI less_multiset\<^sub>H\<^sub>O
        not_gr_zero_hmset zero_neq_one)
 
@@ -502,10 +500,10 @@ lemma of_nat_ne_\<omega>[simp]: "of_nat n \<noteq> \<omega>"
   by (metis of_nat_lt_\<omega> mset_le_asym mset_lt_single_iff)
 
 lemma of_nat_lt_iff_lt_hmset[simp]: "(of_nat M :: hmultiset) < of_nat N \<longleftrightarrow> M < N"
-  unfolding of_nat_hmset less_hmset_iff less_multiset_ext\<^sub>D\<^sub>M_less by simp
+  unfolding of_nat_hmset less_multiset_ext\<^sub>D\<^sub>M_less by simp
 
 lemma of_nat_le_iff_le_hmset[simp]: "(of_nat M :: hmultiset) \<le> of_nat N \<longleftrightarrow> M \<le> N"
-  unfolding of_nat_hmset order_le_less less_hmset_iff less_multiset_ext\<^sub>D\<^sub>M_less by simp
+  unfolding of_nat_hmset order_le_less less_multiset_ext\<^sub>D\<^sub>M_less by simp
 
 
 subsection \<open>Embedding of Extended Natural Numbers\<close>
@@ -566,12 +564,13 @@ proof -
   show ?thesis
     using m_le_n
     unfolding head_\<omega>_def
-    by (cases m, cases n, auto simp: head_\<omega>_def le_hmset_iff zero_hmultiset_def,
-      meson le_hmset_iff le_in_le_max[OF _ Max_in[OF finite_set_mset]] set_mset_eq_empty_iff)
+    by (cases m, cases n,
+      auto simp del: hmsetmset_le simp: head_\<omega>_def hmsetmset_le[symmetric] zero_hmultiset_def,
+      meson hmsetmset_le le_in_le_max[OF _ Max_in[OF finite_set_mset]] set_mset_eq_empty_iff)
 qed
 
 lemma head_\<omega>_lt_imp_lt: "head_\<omega> m < head_\<omega> n \<Longrightarrow> m < n"
-  unfolding head_\<omega>_def less_hmset_iff
+  unfolding head_\<omega>_def hmsetmset_less[symmetric]
   by (rule all_lt_Max_imp_lt_multiset, auto simp: zero_hmultiset_def split: if_splits)
 
 lemma head_\<omega>_plus[simp]: "head_\<omega> (m + n) = sup (head_\<omega> m) (head_\<omega> n)"
@@ -582,13 +581,12 @@ proof (cases m n rule: hmultiset.exhaust[case_product hmultiset.exhaust])
     case True
     thus ?thesis
       unfolding m_n head_\<omega>_def sup_hmultiset_def zero_hmultiset_def plus_hmultiset_def
-      by (simp add: Max.union max_def dual_order.strict_implies_order less_hmset_iff)
+      by (simp add: Max.union max_def dual_order.strict_implies_order)
   next
     case False
     thus ?thesis
       unfolding m_n head_\<omega>_def sup_hmultiset_def zero_hmultiset_def plus_hmultiset_def
-      by (simp add: less_hmset_iff)
-        (metis False Max.union finite_set_mset leI max_def set_mset_eq_empty_iff sup.commute)
+      by simp (metis False Max.union finite_set_mset leI max_def set_mset_eq_empty_iff sup.commute)
   qed
 qed
 
@@ -639,7 +637,7 @@ qed auto
 subsection \<open>More Inequalities and Some Equalities\<close>
 
 lemma zero_lt_1[simp]: "0 < (1 :: hmultiset)"
-  unfolding zero_hmultiset_def one_hmultiset_def less_hmset_iff less_multiset_ext\<^sub>D\<^sub>M_less by simp
+  unfolding zero_hmultiset_def one_hmultiset_def less_multiset_ext\<^sub>D\<^sub>M_less by simp
 
 lemma zero_lt_\<omega>[simp]: "0 < \<omega>"
   by (metis of_nat_lt_\<omega> of_nat_0)
@@ -707,7 +705,8 @@ proof -
   obtain M0 where M: "M = HMSet M0"
     using hmultiset.exhaust by blast
   have M0_lt_single_1: "M0 < {#1#}"
-    by (rule M_lt_\<omega>[unfolded \<omega>_def M less_hmset_iff less_multiset_ext\<^sub>D\<^sub>M_less hmultiset.sel])
+    by (rule M_lt_\<omega>[unfolded \<omega>_def M hmsetmset_less[symmetric] less_multiset_ext\<^sub>D\<^sub>M_less
+      hmultiset.sel])
 
   have "N = 0" if "N \<in># M0" for N
   proof -
@@ -892,7 +891,7 @@ lemma sum_coefs_distrib_plus[simp]: "sum_coefs (M + N) = sum_coefs M + sum_coefs
   unfolding plus_hmultiset_def sum_coefs_def by simp
 
 lemma sum_coefs_gt_0: "sum_coefs M > 0 \<longleftrightarrow> M > 0"
-  by (auto simp: sum_coefs_def zero_hmultiset_def less_hmset_iff less_multiset_ext\<^sub>D\<^sub>M_less
+  by (auto simp: sum_coefs_def zero_hmultiset_def hmsetmset_less[symmetric] less_multiset_ext\<^sub>D\<^sub>M_less
     nonempty_has_size[symmetric])
 
 
