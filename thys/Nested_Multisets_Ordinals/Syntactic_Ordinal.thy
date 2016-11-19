@@ -12,7 +12,7 @@ imports Hereditary_Multiset "~~/src/HOL/Library/Product_Order" "~~/src/HOL/Libra
 begin
 
 
-subsection \<open>Natural (Hessenberg) Sum and Difference\<close>
+subsection \<open>Natural (Hessenberg) Sum and Truncated Difference\<close>
 
 instantiation hmultiset :: cancel_comm_monoid_add
 begin
@@ -890,7 +890,7 @@ lemma sum_coefs_gt_0: "sum_coefs M > 0 \<longleftrightarrow> M > 0"
     nonempty_has_size[symmetric])
 
 
-subsection \<open>Two Examples\<close>
+subsection \<open>An Example\<close>
 
 text \<open>
 The following proof is based on an informal proof by Uwe Waldmann, inspired by
