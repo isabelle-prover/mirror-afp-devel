@@ -39,6 +39,12 @@ instance
 
 end
 
+lemma mset_hmset_plus[simp]: "mset_hmset (M + N) = mset_hmset M + mset_hmset N"
+  by (simp add: plus_hmultiset_def)
+
+lemma mset_hmset_diff[simp]: "mset_hmset (M - N) = mset_hmset M - mset_hmset N"
+  by (simp add: minus_hmultiset_def)
+
 lemma diff_diff_add_hmset[simp]: "a - b - c = a - (b + c)" for a b c :: hmultiset
   by (fact diff_diff_add)
 
@@ -86,7 +92,7 @@ lemma zero_times_hmultiset:
   shows "0 * M = 0"
   unfolding zero_hmultiset_def times_hmultiset_def by simp
 
-lemma mset_hmset_times[simp]:
+lemma mset_hmset_times:
   "mset_hmset (m * n) = image_mset (case_prod (op +)) (mset_hmset m \<times>mset mset_hmset n)"
   unfolding times_hmultiset_def by simp
 
