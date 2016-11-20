@@ -25,7 +25,7 @@ section {* Executable algorithms for $p$-th roots *}
 
 theory NthRoot_Impl
 imports
-  Sqrt_Babylonian_Auxiliary
+  Log_Impl
   "../Cauchy/CauchysMeanTheorem"
 begin
 
@@ -40,115 +40,13 @@ subsection {* Logarithm *}
 
 text {* For computing the $p$-th root of a number $n$, we must choose a starting value
   in the iteration. Here, we use @{term "2 ^ (nat \<lceil>of_int \<lceil>log 2 n\<rceil> / p\<rceil>)"}.
-  Of course, this requires an algorithm to compute logarithms.
-  Here, we just multiply with the base, until we exceed the argument. *}
+  *}
 
 text {* We use a partial efficient algorithm, which does not terminate on
   corner-cases, like $b = 0$ or $p = 1$, and invoke it properly afterwards.
   Then there is a second algorithm which terminates on these corner-cases by additional
   guards and on which we can perform induction.
 *}
-partial_function (tailrec) log_ceil_impl :: "nat \<Rightarrow> int \<Rightarrow> int \<Rightarrow> nat \<Rightarrow> nat" where
-  [code]: "log_ceil_impl b x prd sm = (if prd \<ge> x then sm else log_ceil_impl b x (prd * b) (sm + 1))"
-
-definition log_ceil :: "nat \<Rightarrow> int \<Rightarrow> nat" where
-  "log_ceil b x \<equiv> if b > 1 \<and> x \<ge> 0 then log_ceil_impl b x 1 0 else 0"
-
-context
-  fixes b :: nat
-  assumes b: "b > 1"
-begin
-function log_ceil_main :: "int \<Rightarrow> int \<Rightarrow> nat \<Rightarrow> nat" where
-  "log_ceil_main x prd sm = (if prd > 0 then (if prd \<ge> x then sm else log_ceil_main x (prd * b) (sm + 1)) else 0)"
-  by pat_completeness auto
-
-termination by (relation "measure (\<lambda> (x,prod,sum). nat (x + 1 - prod))") (insert b, auto)
-
-lemma log_ceil_impl: "prd > 0 \<Longrightarrow> log_ceil_impl b x prd sm = log_ceil_main x prd sm"
-proof (induct x prd sm rule: log_ceil_main.induct)
-  case (1 x p s)
-  hence id: "(0 < p) = True" using b by auto
-  have pos: "Suc 0 < b \<Longrightarrow> 0 < p \<Longrightarrow> 0 < p * int b"
-    by (metis Suc_lessD mult_pos_pos of_nat_0_less_iff)
-  show ?case unfolding log_ceil_impl.simps[of b x p s] log_ceil_main.simps[of x p s] id if_True
-    by (rule if_cong[OF refl refl 1(1)], insert 1(2) b pos, auto)
-qed
-end
-
-lemma log_ceil[simp]: assumes b: "b > 0" and x: "x > 0"
-  shows "log_ceil b x = \<lceil>log b x\<rceil>"
-proof (cases "b = 1")
-  case True
-  hence "log_ceil b x = (0 :: int)" unfolding log_ceil_def by auto
-  also have "\<dots> = \<lceil>log b x\<rceil>" unfolding True by (simp add: log_def)
-  finally show ?thesis by auto
-next
-  case False
-  with b have b: "b > 1" unfolding b by auto
-  def p \<equiv> "1 :: int"
-  def s \<equiv> "0 :: nat"
-  have "int b ^ s = p" unfolding p_def s_def using x by force
-  have inv: "s = 0 \<or> int b ^ (s - 1) < x" unfolding s_def by auto
-  hence "int (log_ceil b x) = log_ceil_impl b x 1 0" using x b unfolding log_ceil_def by auto
-  also have "\<dots> = log_ceil_main b x p s" using log_ceil_impl[OF b, of 1 x 0] by (simp add: p_def s_def)
-  also have "\<dots> = \<lceil>log b x\<rceil>" using `int b ^ s = p` inv x
-  proof (induct x p s rule: log_ceil_main.induct[OF b])
-    case (1 x p s)
-    from 1(4) have x: "x \<ge> 0" by auto
-    from 1(2) b have p: "p > 0" by auto
-    hence id: "log_ceil_main b x p s = (if x \<le> p then s else log_ceil_main b x (p * int b) (s + 1))"
-      unfolding log_ceil_main.simps[OF b, of x p s] by auto
-    show ?case
-    proof (cases "x \<le> p")
-      case True
-      have b0: "b > (0 :: real)" and b1: "b \<noteq> (1 :: real)" "b > (1 :: real)" using b by auto
-      from True[folded 1(2)] have low: "x \<le> int b ^ s" by auto
-      from 1(3) have up: "s = 0 \<or> s \<noteq> 0 \<and> int b ^ (s - 1) < x" by auto
-      from True have id: "int (log_ceil_main b x p s) = s" unfolding id by simp
-      from low have "of_int x \<le> real b ^ s"
-        by (metis of_int_le_iff of_int_of_nat_eq of_int_power)
-      hence "log b x \<le> log b (real b ^ s)"
-        using log_le_cancel_iff[of b x "real b ^ s"] b x 1(4)
-        by (metis less_eq_real_def not_le of_int_0_less_iff of_nat_1 of_nat_0_le_iff of_nat_less_iff zero_le_power)
-      also have "\<dots> = s" using b by simp
-      also have "\<dots> = real_of_int (int s)"
-        by (metis of_int_of_nat_eq)
-      finally have low: "log b x \<le> of_int (int s)" .
-      show ?thesis unfolding id
-      proof (rule sym, rule ceiling_unique[OF _ low])
-        from up show "real_of_int (int s) - 1 < log b x"
-        proof
-          assume "s = 0"
-          have "log b x \<ge> 0" using b 1(4) by simp
-          with `s = 0` show ?thesis by auto
-        next
-          def ss \<equiv> "s - 1"
-          assume *: "s \<noteq> 0 \<and> int b ^ (s - 1) < x"
-          hence "real_of_int (int s) - 1 = of_int (int (ss + 1)) - 1" unfolding ss_def by auto
-          also have "\<dots> = ss"
-            by (metis add_diff_cancel of_int_of_nat_eq of_nat_1 of_nat_add)
-          finally have id: "real_of_int (int s) - 1 = ss" .
-          have "0 < real_of_int (int b ^ ss)" "0 < real_of_int x" using b 1(4)  by auto
-          note log_mono = log_less_cancel_iff[OF b1(2) this]thm log_mono
-          from * have up: "int b ^ ss < x" unfolding ss_def by auto
-          hence "real_of_int (int b ^ ss) < real_of_int x" using of_int_less_iff by blast
-          from this[folded log_mono] have "log b (of_int (int b ^ ss)) < log b x" by simp
-          also have "of_int (int b ^ ss) = real b ^ ss" by simp
-          also have "log b (real b ^ ss) = ss" using b by simp
-          finally show ?thesis unfolding id .
-        qed
-      qed
-    next
-      case False
-      hence "x > p" by auto
-      with id have id: "log_ceil_main b x p s = log_ceil_main b x (p * int b) (s + 1)" by auto
-      from 1(2) have prod: "(int b) ^ (s + 1) = p * int b" by auto
-      show ?thesis unfolding id
-        by (rule 1(1)[OF p False prod _ 1(4)], insert False 1(2), auto)
-    qed
-  qed
-  finally show ?thesis .
-qed
 
 subsection {* Computing the $p$-th root of an integer number *}
 
@@ -159,7 +57,7 @@ text {* Using the logarithm, we can define an executable version of the
   as soon as we fall below the p-th root. *}
 
 definition start_value :: "int \<Rightarrow> nat \<Rightarrow> int" where
-  "start_value n p = 2 ^ (nat \<lceil>of_int (log_ceil 2 n) / rat_of_nat p\<rceil>)"
+  "start_value n p = 2 ^ (nat \<lceil>of_nat (log_ceiling 2 n) / rat_of_nat p\<rceil>)"
 
 lemma start_value_main: assumes x: "x \<ge> 0" and p: "p > 0"
   shows "x \<le> (start_value x p)^p \<and> start_value x p \<ge> 0"
@@ -195,7 +93,7 @@ next
   have "root p x \<le> 2 powr pow" by auto
   also have "\<dots> = 2 ^ pow" by (rule powr_realpow, auto)
   also have "\<dots> = of_int ((2 :: int) ^ pow)" by simp
-  also have "pow = (nat \<lceil>of_int (log_ceil 2 x) / rat_of_nat p\<rceil>)"
+  also have "pow = (nat \<lceil>of_int (log_ceiling 2 x) / rat_of_nat p\<rceil>)"
     unfolding pow_def l2x_def using x by simp
   also have "real_of_int ((2 :: int) ^ \<dots> ) = start_value x p" unfolding start_value_def  by simp
   finally have less: "root p x \<le> start_value x p" .
