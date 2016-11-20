@@ -130,6 +130,20 @@ qed
 
 end
 
+lemma empty_times_left_hmset[simp]: "HMSet {#} * M = 0"
+  by (simp add: times_hmultiset_def)
+
+lemma empty_times_right_hmset[simp]: "M * HMSet {#} = 0"
+  by (metis mult_zero_right zero_hmultiset_def)
+
+lemma singleton_times_left_hmset[simp]:
+  "HMSet {#M#} * N = HMSet (image_mset ((op +) M) (hmsetmset N))"
+  by (simp add: times_hmultiset_def Times_mset_single_left)
+
+lemma singleton_times_right_hmset[simp]:
+  "N * HMSet {#M#} = HMSet (image_mset ((op +) M) (hmsetmset N))"
+  by (metis mult.commute singleton_times_left_hmset)
+
 
 subsection \<open>Inequalities\<close>
 
