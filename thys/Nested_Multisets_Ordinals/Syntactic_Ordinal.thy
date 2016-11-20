@@ -39,10 +39,10 @@ instance
 
 end
 
-lemma hmsetmset_plus[simp]: "hmsetmset (M + N) = hmsetmset M + hmsetmset N"
+lemma hmsetmset_plus: "hmsetmset (M + N) = hmsetmset M + hmsetmset N"
   by (simp add: plus_hmultiset_def)
 
-lemma hmsetmset_diff[simp]: "hmsetmset (M - N) = hmsetmset M - hmsetmset N"
+lemma hmsetmset_diff: "hmsetmset (M - N) = hmsetmset M - hmsetmset N"
   by (simp add: minus_hmultiset_def)
 
 lemma diff_diff_add_hmset[simp]: "a - b - c = a - (b + c)" for a b c :: hmultiset
@@ -74,6 +74,12 @@ qed
 instance hmultiset :: comm_monoid_diff
   by standard (auto simp: zero_hmultiset_def minus_hmultiset_def)
 
+lemma HMSet_plus: "HMSet (A + B) = HMSet A + HMSet B"
+  by (simp add: plus_hmultiset_def)
+
+lemma HMSet_minus: "HMSet (A - B) = HMSet A - HMSet B"
+  by (simp add: minus_hmultiset_def)
+
 
 subsection \<open>Natural (Hessenberg) Product\<close>
 
@@ -86,9 +92,7 @@ definition one_hmultiset :: hmultiset where
 definition times_hmultiset :: "hmultiset \<Rightarrow> hmultiset \<Rightarrow> hmultiset"  where
   "A * B = HMSet (image_mset (case_prod (op +)) (hmsetmset A \<times>mset hmsetmset B))"
 
-lemma zero_times_hmultiset:
-  fixes M :: hmultiset
-  shows "0 * M = 0"
+lemma zero_times_hmultiset: "0 * M = 0" for M :: hmultiset
   unfolding zero_hmultiset_def times_hmultiset_def by simp
 
 lemma hmsetmset_times:
