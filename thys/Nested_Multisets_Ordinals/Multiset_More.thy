@@ -36,6 +36,16 @@ declare
 
   sum_mset_sum_list[simp]
 
+lemma add_mset_in_multiset':
+  assumes M: "M \<in> multiset"
+  shows "(\<lambda>b. if b = a then Suc (M a) else M b) \<in> multiset"
+proof -
+  have if_eq: "(\<lambda>b. if b = a then Suc (M a) else M b) = (\<lambda>b. if b = a then Suc (M b) else M b)"
+    by force
+  show ?thesis
+    by (auto simp: if_eq intro!: add_mset_in_multiset[OF M, of a])
+qed
+
 
 subsection \<open>Lemma about the Multiset Order\<close>
 
@@ -191,7 +201,7 @@ lemma size_Diff2_less: "x\<in># \<Sigma> \<Longrightarrow> y\<in># \<Sigma> \<Lo
 lemma size_Diff1_le: "size (\<Sigma> - {#x#}) \<le> size \<Sigma>"
   by (cases "x \<in># \<Sigma>") (simp_all add: size_Diff1_less less_imp_le)
 
-lemma size_psubset: "(\<Sigma>:: _ multiset) \<subseteq># \<Sigma>' \<Longrightarrow> size \<Sigma> < size \<Sigma>' \<Longrightarrow> \<Sigma> \<subset># \<Sigma>'"
+lemma size_psubset: "\<Sigma> \<subseteq># \<Sigma>' \<Longrightarrow> size \<Sigma> < size \<Sigma>' \<Longrightarrow> \<Sigma> \<subset># \<Sigma>'"
   using less_irrefl subset_mset_def by blast
 
 
@@ -296,8 +306,7 @@ proof -
     by (metis (no_types) count_diff diff_zero mem_Collect_eq set_mset_def)
 qed
 
-lemma size_mset_removeAll_mset_le_iff:
-  "size (removeAll_mset x M) < size M \<longleftrightarrow> x \<in># M"
+lemma size_mset_removeAll_mset_le_iff: "size (removeAll_mset x M) < size M \<longleftrightarrow> x \<in># M"
   apply (rule iffI)
     apply (force intro: count_inI)
   apply (rule mset_subset_size)
@@ -307,8 +316,7 @@ lemma size_mset_removeAll_mset_le_iff:
 lemma size_remove1_mset_If: \<open>size (remove1_mset x M) = size M - (if x \<in># M then 1 else 0)\<close>
   by (auto simp: size_Diff_subset_Int mset_inter_single)
 
-lemma size_mset_remove1_mset_le_iff:
-  "size (remove1_mset x M) < size M \<longleftrightarrow> x \<in># M"
+lemma size_mset_remove1_mset_le_iff: "size (remove1_mset x M) < size M \<longleftrightarrow> x \<in># M"
   apply (rule iffI)
     using less_irrefl apply fastforce
   apply (rule mset_subset_size)

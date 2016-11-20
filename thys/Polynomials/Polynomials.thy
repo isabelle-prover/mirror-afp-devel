@@ -38,7 +38,7 @@ datatype (vars_tpoly: 'v, nums_tpoly: 'a)tpoly = PVar 'v | PNum 'a | PSum "('v,'
 
 type_synonym ('v,'a)assign = "'v \<Rightarrow> 'a"
 
-fun eval_tpoly :: "('v,'a :: semiring_1)assign \<Rightarrow> ('v,'a)tpoly \<Rightarrow> 'a"
+fun eval_tpoly :: "('v,'a::{zero,one,plus,times})assign \<Rightarrow> ('v,'a)tpoly \<Rightarrow> 'a"
 where "eval_tpoly \<alpha> (PVar x) = \<alpha> x"
    |  "eval_tpoly \<alpha> (PNum a) = a"
    |  "eval_tpoly \<alpha> (PSum []) = 0"

@@ -14,9 +14,9 @@ begin
 subsection \<open>Type Definition\<close>
 
 datatype hmultiset =
-  HMSet (mset_hmset: "hmultiset multiset")
+  HMSet (hmsetmset: "hmultiset multiset")
 
-lemma mset_hmset_inject[simp]: "mset_hmset A = mset_hmset B \<longleftrightarrow> A = B"
+lemma hmsetmset_inject[simp]: "hmsetmset A = hmsetmset B \<longleftrightarrow> A = B"
   by (blast intro: hmultiset.expand)
 
 primrec Rep_hmultiset :: "hmultiset \<Rightarrow> unit nmultiset" where
@@ -95,17 +95,23 @@ next
     by (rule exI[of _ X], rule exI[of _ Y]) (insert *; auto simp: multiset.pred_set)
 qed
 
-lemma less_hmset_iff: "M < N \<longleftrightarrow> mset_hmset M < mset_hmset N"
+lemma hmsetmset_less[simp]: "hmsetmset M < hmsetmset N \<longleftrightarrow> M < N"
   by (cases M, cases N, simp add: less_multiset_ext\<^sub>D\<^sub>M_less less_HMSet_iff_less_multiset_ext\<^sub>D\<^sub>M)
 
-lemma le_hmset_iff: "M \<le> N \<longleftrightarrow> mset_hmset M \<le> mset_hmset N"
-  unfolding le_less less_hmset_iff by (metis hmultiset.collapse)
+lemma hmsetmset_le[simp]: "hmsetmset M \<le> hmsetmset N \<longleftrightarrow> M \<le> N"
+  unfolding le_less hmsetmset_less by (metis hmultiset.collapse)
 
 lemma wf_less_hmultiset: "wf {(X :: hmultiset, Y :: hmultiset). X < Y}"
   unfolding wf_eq_minimal by transfer (insert wf_less_nmultiset[unfolded wf_eq_minimal], fast)
 
 instance hmultiset :: wellorder
   using wf_less_hmultiset unfolding wf_def mem_Collect_eq prod.case by intro_classes metis
+
+lemma HMSet_less_iff[simp]: "HMSet M < HMSet N \<longleftrightarrow> M < N"
+  by (simp add: less_HMSet_iff_less_multiset_ext\<^sub>D\<^sub>M less_multiset_ext\<^sub>D\<^sub>M_less)
+
+lemma HMSet_less_eq_iff[simp]: "HMSet M \<le> HMSet N \<longleftrightarrow> M \<le> N"
+  by (simp add: hmsetmset_le[symmetric])
 
 inductive_set heriditary_multiset_sub where
   "X \<in># M \<Longrightarrow> (X, HMSet M) \<in> heriditary_multiset_sub"
