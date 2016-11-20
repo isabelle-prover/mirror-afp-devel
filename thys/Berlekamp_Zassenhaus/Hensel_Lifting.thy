@@ -1280,7 +1280,7 @@ end
 definition hensel_lifting_monic :: "int \<Rightarrow> nat \<Rightarrow> int poly \<Rightarrow> int poly list \<Rightarrow> int poly list" where
   "hensel_lifting_monic p n u vs = (let 
      pn = p^n; 
-     lg_n = log_ceil 2 n;
+     lg_n = log_ceiling 2 n;
      two_lg_n_is_n = (2^lg_n = n);
      C = poly_mod.Mp pn u     
      in hensel_lifting_main p pn lg_n two_lg_n_is_n C vs)" 
@@ -1289,7 +1289,7 @@ locale poly_mod_prime_hensel = poly_mod p for p :: int +
   fixes pn n lg_n two_lg_n_is_n
   assumes prime: "prime p"
   and pn: "pn = p^n" 
-  and lg_n: "lg_n = log_ceil 2 n" 
+  and lg_n: "lg_n = log_ceiling 2 n" 
   and lg_n_test: "two_lg_n_is_n = (2^lg_n = n)"
   and n: "n \<noteq> 0" 
 begin 
@@ -1324,7 +1324,7 @@ proof -
   next
     case False
     with hen lg_n_test lg_n pn have D': "D' = poly_mod.Mp (p ^ n) D1" and H': "H' = poly_mod.Mp (p ^ n) H1" by auto
-    note * = log_ceil[of 2 n, folded lg_n]
+    note * = log_ceiling[of 2 n, folded lg_n]
     from * n have "lg_n = nat \<lceil>log 2 (real n)\<rceil>" by auto
     hence "(2 :: real) ^lg_n = 2^(nat \<lceil>log 2 (real n)\<rceil>)" by simp
     also have "\<dots> = 2 powr \<lceil>log 2 (real n)\<rceil>" 
@@ -1468,7 +1468,7 @@ lemma hensel_lifting_monic:
     "\<And> F G. (F,G) \<in> set (zip Fs Gs) \<Longrightarrow> poly_mod.equivalent p F G"
 proof -
   let ?Mp = "poly_mod.Mp (p ^ n)" 
-  interpret poly_mod_prime_hensel p "p^n" n "log_ceil 2 n" "2^(log_ceil 2 n) = n"
+  interpret poly_mod_prime_hensel p "p^n" n "log_ceiling 2 n" "2^(log_ceiling 2 n) = n"
     by (unfold_locales, insert n prime, auto)
   from hensel_result[unfolded hensel_lifting_monic_def Let_def]
   have hen: "hensel_main (?Mp C) Fs = Gs" by simp

@@ -194,13 +194,13 @@ text \<open>For Mignotte's factor bound, we currently do not support queries for
 
 definition mignotte_bound :: "int poly \<Rightarrow> nat \<Rightarrow> int" where
   "mignotte_bound f d = (let d' = d - 1; d2 = d' div 2; binom = (d' choose d2) in
-     binom * (mahler_approximation 2 f + abs (lead_coeff f)))" 
+     binom * (mahler_approximation 3 f + abs (lead_coeff f)))" 
 
 lemma mignotte_bound: fixes mm :: "nat \<Rightarrow> int poly \<Rightarrow> int" 
     assumes "f \<noteq> 0" "g dvd f" "degree g \<le> n"
   shows "\<bar>coeff g k\<bar> \<le> mignotte_bound f n"  
 proof-
-  let ?approx = "mahler_approximation 2 f" 
+  let ?approx = "mahler_approximation 3 f" 
   obtain h where gh:"g * h = f" using assms by (metis dvdE)
   have nz:"g\<noteq>0" "h\<noteq>0" using gh assms(1) by auto
   have g1:"(1::real) \<le> mahler_measure h" using mahler_measure_poly_ge_1 gh assms(1) by auto
