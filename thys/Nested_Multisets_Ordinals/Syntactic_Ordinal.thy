@@ -35,7 +35,7 @@ definition minus_hmultiset :: "hmultiset \<Rightarrow> hmultiset \<Rightarrow> h
   "A - B = HMSet (hmsetmset A - hmsetmset B)"
 
 instance
-  by standard (auto simp: zero_hmultiset_def plus_hmultiset_def minus_hmultiset_def)
+  by intro_classes (auto simp: zero_hmultiset_def plus_hmultiset_def minus_hmultiset_def)
 
 end
 
@@ -72,7 +72,7 @@ proof (cases m n rule: hmultiset.exhaust[case_product hmultiset.exhaust])
 qed
 
 instance hmultiset :: comm_monoid_diff
-  by standard (auto simp: zero_hmultiset_def minus_hmultiset_def)
+  by intro_classes (auto simp: zero_hmultiset_def minus_hmultiset_def)
 
 lemma HMSet_plus: "HMSet (A + B) = HMSet A + HMSet B"
   by (simp add: plus_hmultiset_def)
@@ -100,7 +100,7 @@ lemma hmsetmset_times:
   unfolding times_hmultiset_def by simp
 
 instance
-proof (standard, goal_cases assoc comm one distrib_plus zeroL zeroR zero_one)
+proof (intro_classes, goal_cases assoc comm one distrib_plus zeroL zeroR zero_one)
   case (assoc a b c)
   thus ?case
     by (auto simp: times_hmultiset_def Times_mset_image_mset1 Times_mset_image_mset2
@@ -175,7 +175,7 @@ definition bot_hmultiset :: hmultiset where
   "bot_hmultiset = 0"
 
 instance
-proof (standard, unfold bot_hmultiset_def zero_hmultiset_def, transfer, goal_cases bot_least)
+proof (intro_classes, unfold bot_hmultiset_def zero_hmultiset_def, transfer, goal_cases bot_least)
   case (bot_least x)
   thus ?case
     by (induct x rule: no_elem.induct) (auto simp: less_eq_nmultiset_def less_multiset_ext\<^sub>D\<^sub>M_less)
@@ -184,7 +184,7 @@ qed
 end
 
 instance hmultiset :: no_top
-proof (standard, goal_cases gt_ex)
+proof (intro_classes, goal_cases gt_ex)
   case (gt_ex a)
   have "a < a + 1"
     by (simp add: one_hmultiset_def plus_hmultiset_def hmsetmset_less[symmetric]
@@ -194,7 +194,7 @@ proof (standard, goal_cases gt_ex)
 qed
 
 instance hmultiset :: ordered_cancel_comm_monoid_add
-proof (standard, goal_cases add_left_mono)
+proof (intro_classes, goal_cases add_left_mono)
   case (add_left_mono a b c)
   thus ?case
     by (simp del: hmsetmset_less add: plus_hmultiset_def order_le_less hmsetmset_less[symmetric]
@@ -202,7 +202,7 @@ proof (standard, goal_cases add_left_mono)
 qed
 
 instance hmultiset :: ordered_ab_semigroup_add_imp_le
-proof (standard, goal_cases add_le_imp_le_left)
+proof (intro_classes, goal_cases add_le_imp_le_left)
   case (add_le_imp_le_left c a b)
   thus ?case
     by (simp add: plus_hmultiset_def order_le_less less_multiset_ext\<^sub>D\<^sub>M_less)
@@ -264,7 +264,7 @@ lemma times_hmultiset_monoL:
       elim!: plus_nmultiset_mono)
 
 instance hmultiset :: linordered_semiring_strict
-  by standard (subst (1 2) mult.commute, rule times_hmultiset_monoL)
+  by intro_classes (subst (1 2) mult.commute, rule times_hmultiset_monoL)
 
 lemma zero_le_hmset[simp]: "0 \<le> M" for M :: hmultiset
   by (simp add: order_le_less) (metis hmsetmset_less le_multiset_empty_left hmsetmset_empty_iff)
@@ -397,38 +397,25 @@ lemma less_add_1_iff_le_hmset: "m < n + 1 \<longleftrightarrow> m \<le> n" for m
   by (rule less_iff_add1_le_hmset[of m "n + 1", simplified])
 
 instance hmultiset :: ordered_cancel_comm_semiring
-  by standard (simp add: mult_le_mono2_hmset)
+  by intro_classes (simp add: mult_le_mono2_hmset)
 
 instance hmultiset :: linordered_semiring_1_strict
-  by standard
+  by intro_classes
 
 instance hmultiset :: bounded_lattice_bot
-  by standard
+  by intro_classes
 
 instance hmultiset :: zero_less_one
-  by standard (simp add: zero_less_iff_neq_zero_hmset)
+  by intro_classes (simp add: zero_less_iff_neq_zero_hmset)
 
 instance hmultiset :: linordered_nonzero_semiring
-  by standard
+  by intro_classes
 
 instance hmultiset :: semiring_no_zero_divisors
-  by standard (use mult_pos_pos not_gr_zero_hmset in blast)
+  by intro_classes (use mult_pos_pos not_gr_zero_hmset in blast)
 
 lemma lt_1_iff_eq_0_hmset: "M < 1 \<longleftrightarrow> M = 0" for M :: hmultiset
-proof (induct M, simp add: one_hmultiset_def zero_hmultiset_def less_multiset_ext\<^sub>D\<^sub>M_less)
-  fix xa
-  obtain hha :: "hmultiset multiset \<Rightarrow> hmultiset multiset \<Rightarrow> hmultiset" where
-    f1: "(\<forall>m ma. count ma (hha m ma) < count m (hha m ma) \<and>
-         (\<forall>h. \<not> hha m ma < h \<or> \<not> count m h < count ma h) \<or> m \<le> ma)"
-    by (metis (no_types) less_eq_multiset\<^sub>H\<^sub>O)
-  then have f2: "\<And>m ma. m \<le> ma \<or> 0 \<noteq> count m (hha m ma)"
-    by (metis (no_types) gr_implies_not0)
-  then have "\<And>m. hha m {#} = 0 \<or> {#0#} \<le> m \<or> m \<le> {#}"
-    using f1 by (metis count_empty count_single gr_zeroI_hmset)
-  thus "xa < {#HMSet {#}#} \<longleftrightarrow> xa = {#}"
-    using f2 by (metis One_nat_def count_empty count_single gr_implies_not0 less_Suc0
-      less_eq_multiset\<^sub>H\<^sub>O less_multiset\<^sub>H\<^sub>O not_le zero_hmultiset_def)
-qed
+  by (simp add: less_iff_add1_le_hmset)
 
 lemma zero_less_mult_iff_hmset[simp]: "0 < m * n \<longleftrightarrow> 0 < m \<and> 0 < n" for m n :: hmultiset
   using mult_eq_0_iff not_gr_zero_hmset by blast
@@ -467,8 +454,8 @@ lemma le_cube_hmset: "m \<le> m * (m * m)" for m :: hmultiset
   using mult_le_cancel_left1_hmset by force
 
 lemma diff_le_self_hmset: "m - n \<le> m" for m n :: hmultiset
-  by (metis add.left_neutral cancel_ab_semigroup_add_class.diff_right_commute
-    cancel_comm_monoid_add_class.diff_cancel diff_add_zero le_minus_plus_same_hmset)
+  by (metis add.commute add.right_neutral diff_add_zero diff_diff_add_hmset
+    le_minus_plus_same_hmset)
 
 lemma
   less_imp_minus_plus_hmset: "m < n \<Longrightarrow> k < k - m + n" and
@@ -482,7 +469,7 @@ lemma gt_0_lt_mult_gt_1_hmset:
   using assms by (metis mult.right_neutral mult_less_cancel1_hmset)
 
 instance hmultiset :: linordered_comm_semiring_strict
-  by standard simp
+  by intro_classes simp
 
 
 subsection \<open>Omega\<close>

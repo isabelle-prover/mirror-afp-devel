@@ -243,7 +243,7 @@ definition less_eq_nmultiset :: "'a nmultiset \<Rightarrow> 'a nmultiset \<Right
   "less_eq_nmultiset X Y = (X < Y \<or> X = Y)"
 
 instance
-proof (standard, goal_cases less_def refl trans)
+proof (intro_classes, goal_cases less_def refl trans)
   case (less_def x y)
   then show ?case
     unfolding less_eq_nmultiset_def by (metis irrefl_less_nmultiset antisym_less_nmultiset)
@@ -266,7 +266,7 @@ instantiation nmultiset :: (order) order
 begin
 
 instance
-proof (standard, goal_cases antisym)
+proof (intro_classes, goal_cases antisym)
   case (antisym x y)
   then show ?case
     unfolding less_eq_nmultiset_def by (metis trans_less_nmultiset irrefl_less_nmultiset)
@@ -289,7 +289,7 @@ proof (induct X Y rule: less_nmultiset_induct)
 qed auto
 
 instance
-proof (standard, goal_cases total)
+proof (intro_classes, goal_cases total)
   case (total x y)
   then show ?case
     unfolding less_eq_nmultiset_def by (metis total_less_nmultiset)

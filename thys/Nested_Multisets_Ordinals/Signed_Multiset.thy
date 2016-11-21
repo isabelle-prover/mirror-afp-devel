@@ -41,7 +41,7 @@ lift_definition plus_zmultiset :: "'a zmultiset \<Rightarrow> 'a zmultiset \<Rig
   by (auto simp: equiv_zmset_def union_commute union_lcomm)
 
 instance
-  by (standard; transfer) (auto simp: equiv_zmset_def)
+  by (intro_classes; transfer) (auto simp: equiv_zmset_def)
 
 end
 
@@ -52,7 +52,7 @@ lift_definition uminus_zmultiset :: "'a zmultiset \<Rightarrow> 'a zmultiset" is
   by (auto simp: equiv_zmset_def add.commute)
 
 instance
-  by (standard; transfer) (auto simp: equiv_zmset_def)
+  by (intro_classes; transfer) (auto simp: equiv_zmset_def)
 
 end
 
@@ -223,7 +223,7 @@ lemma union_zmset_add_zmset_right[simp]: "A + add_zmset a B = add_zmset a (A + B
   by (auto simp: zmultiset_eq_iff)
 
 lemma add_zmset_add_single: \<open>add_zmset a A = A + {#a#}\<^sub>z\<close>
-  by (subst union_zmset_add_zmset_right, subst add.comm_neutral) standard
+  by (subst union_zmset_add_zmset_right, subst add.comm_neutral) (rule refl)
 
 
 subsubsection \<open>Difference\<close>
@@ -422,12 +422,12 @@ notation (ASCII)
   supset_zmset (infix ">#\<^sub>z" 50)
 
 interpretation subset_zmset: ordered_ab_semigroup_add_imp_le "op +" "op -" "op \<subseteq>#\<^sub>z" "op \<subset>#\<^sub>z"
-  by standard (auto simp add: subset_zmset_def subseteq_zmset_def zmultiset_eq_iff
+  by unfold_locales (auto simp add: subset_zmset_def subseteq_zmset_def zmultiset_eq_iff
     intro: order_trans antisym)
 
 interpretation subset_zmset:
   ordered_ab_semigroup_monoid_add_imp_le "op +" 0 "op -" "op \<le>#\<^sub>z" "op <#\<^sub>z"
-  by standard
+  by unfold_locales
 
 lemma zmset_subset_eqI: "(\<And>a. zcount A a \<le> zcount B a) \<Longrightarrow> A \<subseteq>#\<^sub>z B"
   by (simp add: subseteq_zmset_def)
@@ -645,7 +645,7 @@ definition less_eq_zmultiset :: "'a zmultiset \<Rightarrow> 'a zmultiset \<Right
   "less_eq_zmultiset M' M \<longleftrightarrow> M' < M \<or> M' = M"
 
 instance
-proof ((standard; unfold less_eq_zmultiset_def; transfer),
+proof ((intro_classes; unfold less_eq_zmultiset_def; transfer),
     auto simp: equiv_zmset_def union_commute)
   fix A1 B1 D C B2 A2 :: "'a multiset"
   assume ab: "A1 + A2 \<noteq> B1 + B2"
@@ -707,10 +707,10 @@ qed
 end
 
 instance zmultiset :: (preorder) ordered_cancel_comm_monoid_add
-  by (standard, unfold less_eq_zmultiset_def, transfer, auto simp: equiv_zmset_def)
+  by (intro_classes, unfold less_eq_zmultiset_def, transfer, auto simp: equiv_zmset_def)
 
 instance zmultiset :: (preorder) ordered_ab_group_add
-  by (standard; transfer; auto simp: equiv_zmset_def)
+  by (intro_classes; transfer; auto simp: equiv_zmset_def)
 
 instantiation zmultiset :: (linorder) distrib_lattice
 begin
@@ -737,13 +737,13 @@ lemma zmset_of_mset_le: "zmset_of_mset M \<le> zmset_of_mset N \<longleftrightar
   by (simp_all add: less_eq_zmultiset_def zmset_of_mset_def; transfer; auto simp: equiv_zmset_def)
 
 instance zmultiset :: (preorder) ordered_ab_semigroup_add
-  by (standard, unfold less_eq_zmultiset_def, transfer, auto simp: equiv_zmset_def)
+  by (intro_classes, unfold less_eq_zmultiset_def, transfer, auto simp: equiv_zmset_def)
 
 instance zmultiset :: (preorder) ordered_ab_semigroup_add_imp_le
-  by (standard; unfold less_eq_zmultiset_def; transfer; auto simp: equiv_zmset_def)
+  by (intro_classes; unfold less_eq_zmultiset_def; transfer; auto simp: equiv_zmset_def)
 
 instance zmultiset :: (linorder) linordered_cancel_ab_semigroup_add
-  by (standard, unfold less_eq_zmultiset_def, transfer, auto simp: equiv_zmset_def add.commute)
+  by (intro_classes, unfold less_eq_zmultiset_def, transfer, auto simp: equiv_zmset_def add.commute)
 
 lemma less_mset_zmsetE:
   assumes "M < N"

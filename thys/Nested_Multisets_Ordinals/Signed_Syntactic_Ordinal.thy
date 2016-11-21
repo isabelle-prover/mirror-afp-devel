@@ -12,44 +12,23 @@ imports Signed_Hereditary_Multiset Syntactic_Ordinal
 begin
 
 
-subsection \<open>Embedding and Projections of Syntactic Ordinals\<close>
-
-abbreviation zhmset_of_hmset :: "hmultiset \<Rightarrow> yhmultiset" where
-  "zhmset_of_hmset M \<equiv> ZHMSet (zmset_of_mset (hmsetmset M))"
-
-lemma zhmset_of_hmset_inject[simp]: "zhmset_of_hmset M = zhmset_of_hmset N \<longleftrightarrow> M = N"
-  by simp
-
-lemma zhmset_of_hmset_less: "zhmset_of_hmset M < zhmset_of_hmset N \<longleftrightarrow> M < N"
-  by (simp add: zmset_of_mset_less)
-
-lemma zhmset_of_hmset_le: "zhmset_of_hmset M \<le> zhmset_of_hmset N \<longleftrightarrow> M \<le> N"
-  by (simp add: zmset_of_mset_le)
-
-abbreviation hmset_pos :: "yhmultiset \<Rightarrow> hmultiset" where
-  "hmset_pos M \<equiv> HMSet (mset_pos (zhmsetmset M))"
-
-abbreviation hmset_neg :: "yhmultiset \<Rightarrow> hmultiset" where
-  "hmset_neg M \<equiv> HMSet (mset_neg (zhmsetmset M))"
-
-
 subsection \<open>Natural (Hessenberg) Sum and Difference\<close>
 
-instantiation yhmultiset :: cancel_comm_monoid_add
+instantiation zhmultiset :: cancel_comm_monoid_add
 begin
 
-lift_definition zero_yhmultiset :: yhmultiset is "{#}\<^sub>z" .
+lift_definition zero_zhmultiset :: zhmultiset is "{#}\<^sub>z" .
 
-lift_definition plus_yhmultiset :: "yhmultiset \<Rightarrow> yhmultiset \<Rightarrow> yhmultiset" is
+lift_definition plus_zhmultiset :: "zhmultiset \<Rightarrow> zhmultiset \<Rightarrow> zhmultiset" is
   "\<lambda>A B. A + B" .
 
-lift_definition minus_yhmultiset :: "yhmultiset \<Rightarrow> yhmultiset \<Rightarrow> yhmultiset" is
+lift_definition minus_zhmultiset :: "zhmultiset \<Rightarrow> zhmultiset \<Rightarrow> zhmultiset" is
   "\<lambda>A B. A - B" .
 
-lemmas ZHMSet_plus = plus_yhmultiset.abs_eq[symmetric]
-lemmas ZHMSet_diff = minus_yhmultiset.abs_eq[symmetric]
-lemmas zhmsetmset_plus = plus_yhmultiset.rep_eq
-lemmas zhmsetmset_diff = minus_yhmultiset.rep_eq
+lemmas ZHMSet_plus = plus_zhmultiset.abs_eq[symmetric]
+lemmas ZHMSet_diff = minus_zhmultiset.abs_eq[symmetric]
+lemmas zhmsetmset_plus = plus_zhmultiset.rep_eq
+lemmas zhmsetmset_diff = minus_zhmultiset.rep_eq
 
 lemma zhmset_of_hmset_plus: "zhmset_of_hmset (A + B) = zhmset_of_hmset A + zhmset_of_hmset B"
   by (simp add: hmsetmset_plus ZHMSet_plus zmset_of_mset_plus)
@@ -58,7 +37,7 @@ lemma hmsetmset_0[simp]: "hmsetmset 0 = {#}"
   by (rule hmultiset.inject[THEN iffD1]) (simp add: zero_hmultiset_def)
 
 instance
-  by (standard; transfer) (auto intro: linordered_field_class.sign_simps(1) add.commute)
+  by (intro_classes; transfer) (auto intro: linordered_field_class.sign_simps(1) add.commute)
 
 end
 
@@ -85,40 +64,51 @@ lemma hmset_pos_neg_dual:
   by (simp add: HMSet_plus[symmetric] HMSet_diff[symmetric]) (rule mset_pos_neg_dual)
 
 lemma zhmset_of_hmset_sum_list: "zhmset_of_hmset (sum_list Ms) = sum_list (map zhmset_of_hmset Ms)"
-  by (induct Ms) (auto simp: zero_yhmultiset_def zhmset_of_hmset_plus)
+  by (induct Ms) (auto simp: zero_zhmultiset_def zhmset_of_hmset_plus)
 
+lemma less_hmset_zhmsetE:
+  assumes m_lt_n: "M < N"
+  obtains A B C where "M = zhmset_of_hmset A + C" and "N = zhmset_of_hmset B + C" and "A < B"
+  by (rule less_mset_zmsetE[OF m_lt_n[folded zhmsetmset_less]])
+    (metis hmsetmset_less hmultiset.sel ZHMSet_plus zhmsetmset_inverse)
 
-instantiation yhmultiset :: ab_group_add
+lemma less_eq_hmset_zhmsetE:
+  assumes m_le_n: "M \<le> N"
+  obtains A B C where "M = zhmset_of_hmset A + C" and "N = zhmset_of_hmset B + C" and "A \<le> B"
+  by (rule less_eq_mset_zmsetE[OF m_le_n[folded zhmsetmset_le]])
+    (metis hmsetmset_le hmultiset.sel ZHMSet_plus zhmsetmset_inverse)
+
+instantiation zhmultiset :: ab_group_add
 begin
 
-lift_definition uminus_yhmultiset :: "yhmultiset \<Rightarrow> yhmultiset" is "\<lambda>A. - A" .
+lift_definition uminus_zhmultiset :: "zhmultiset \<Rightarrow> zhmultiset" is "\<lambda>A. - A" .
 
-lemmas ZHMSet_uminus = uminus_yhmultiset.abs_eq[symmetric]
-lemmas zhmsetmset_uminus = uminus_yhmultiset.rep_eq
+lemmas ZHMSet_uminus = uminus_zhmultiset.abs_eq[symmetric]
+lemmas zhmsetmset_uminus = uminus_zhmultiset.rep_eq
 
 instance
-  by (standard; transfer; simp)
+  by (intro_classes; transfer; simp)
 
 end
 
 
 subsection \<open>Natural (Hessenberg) Product\<close>
 
-instantiation yhmultiset :: one
+instantiation zhmultiset :: one
 begin
 
-lift_definition one_yhmultiset :: yhmultiset is "{#0#}\<^sub>z" .
+lift_definition one_zhmultiset :: zhmultiset is "{#0#}\<^sub>z" .
 
 instance
-  by standard
+  by intro_classes
 
 end
 
 lemma zhmset_of_hmset_0: "zhmset_of_hmset 0 = 0"
-  by (simp add: zero_yhmultiset_def)
+  by (simp add: zero_zhmultiset_def)
 
 lemma zhmset_of_hmset_1: "zhmset_of_hmset 1 = 1"
-  by (simp add: one_hmultiset_def one_yhmultiset_def)
+  by (simp add: one_hmultiset_def one_zhmultiset_def)
 
 lemma mult_assoc_zhmset_aux:
   "An * (Bn * Cn + Bp * Cp - (Bn * Cp + Cn * Bp)) +
@@ -167,20 +157,20 @@ lemma mult_assoc_zhmset_aux:
 
   by (simp add: algebra_simps)
 
-instantiation yhmultiset :: comm_ring_1
+instantiation zhmultiset :: comm_ring_1
 begin
 
-lift_definition times_yhmultiset :: "yhmultiset \<Rightarrow> yhmultiset \<Rightarrow> yhmultiset" is
+lift_definition times_zhmultiset :: "zhmultiset \<Rightarrow> zhmultiset \<Rightarrow> zhmultiset" is
   "\<lambda>M N.
        zmset_of_mset (hmsetmset (HMSet (mset_pos M) * HMSet (mset_pos N)))
      - zmset_of_mset (hmsetmset (HMSet (mset_pos M) * HMSet (mset_neg N)))
      + zmset_of_mset (hmsetmset (HMSet (mset_neg M) * HMSet (mset_neg N)))
      - zmset_of_mset (hmsetmset (HMSet (mset_neg M) * HMSet (mset_pos N)))" .
 
-lemmas zhmsetmset_times = times_yhmultiset.rep_eq
+lemmas zhmsetmset_times = times_zhmultiset.rep_eq
 
 instance
-proof (standard, goal_cases mult_assoc mult_comm mult_1 distrib zero_neq_one)
+proof (intro_classes, goal_cases mult_assoc mult_comm mult_1 distrib zero_neq_one)
   case (mult_assoc a b c)
   show ?case
     apply transfer
@@ -199,7 +189,7 @@ next
   case (distrib a b c)
 
   show ?case
-    apply (unfold times_yhmultiset_def)
+    apply (unfold times_zhmultiset_def)
     apply (simp add: ZHMSet_plus[symmetric])
     apply (simp add: algebra_simps)
     apply (simp add: zmset_of_mset_plus[symmetric] hmsetmset_plus[symmetric])
@@ -221,7 +211,7 @@ next
 next
   case zero_neq_one
   show ?case
-    unfolding zero_yhmultiset_def one_yhmultiset_def by simp
+    unfolding zero_zhmultiset_def one_zhmultiset_def by simp
 qed
 
 end
@@ -231,12 +221,12 @@ lemma zhmset_of_hmset_times: "zhmset_of_hmset (A * B) = zhmset_of_hmset A * zhms
 
 lemma zhmset_of_hmset_prod_list:
   "zhmset_of_hmset (prod_list Ms) = prod_list (map zhmset_of_hmset Ms)"
-  by (induct Ms) (auto simp: one_hmultiset_def one_yhmultiset_def zhmset_of_hmset_times)
+  by (induct Ms) (auto simp: one_hmultiset_def one_zhmultiset_def zhmset_of_hmset_times)
 
 
 subsection \<open>Omega\<close>
 
-definition \<omega>\<^sub>z :: yhmultiset where
+definition \<omega>\<^sub>z :: zhmultiset where
   "\<omega>\<^sub>z = ZHMSet {#1#}\<^sub>z"
 
 lemma \<omega>\<^sub>z_as_\<omega>: "\<omega>\<^sub>z = zhmset_of_hmset \<omega>"
@@ -246,17 +236,17 @@ lemma \<omega>\<^sub>z_as_\<omega>: "\<omega>\<^sub>z = zhmset_of_hmset \<omega>
 subsection \<open>Embedding of Natural Numbers\<close>
 
 lemma of_nat_zhmset: "of_nat n = zhmset_of_hmset (of_nat n)"
-  by (induct n) (auto simp: zero_yhmultiset_def zhmset_of_hmset_plus zhmset_of_hmset_1)
+  by (induct n) (auto simp: zero_zhmultiset_def zhmset_of_hmset_plus zhmset_of_hmset_1)
 
-lemma of_nat_inject_zhmset[simp]: "(of_nat m :: yhmultiset) = of_nat n \<longleftrightarrow> m = n"
+lemma of_nat_inject_zhmset[simp]: "(of_nat m :: zhmultiset) = of_nat n \<longleftrightarrow> m = n"
   unfolding of_nat_zhmset by simp
 
 lemma plus_of_nat_plus_of_nat_zhmset:
-  "k + of_nat m + of_nat n = k + of_nat (m + n)" for k :: yhmultiset
+  "k + of_nat m + of_nat n = k + of_nat (m + n)" for k :: zhmultiset
   by (simp add: add.assoc)
 
 lemma plus_of_nat_minus_of_nat_zhmset:
-  fixes k :: yhmultiset
+  fixes k :: zhmultiset
   assumes "n \<le> m"
   shows "k + of_nat m - of_nat n = k + of_nat (m - n)"
   using assms by (metis add.left_commute add_diff_cancel_left' le_add_diff_inverse of_nat_add)
@@ -267,16 +257,16 @@ lemma of_nat_lt_\<omega>\<^sub>z[simp]: "of_nat n < \<omega>\<^sub>z"
 lemma of_nat_ne_\<omega>\<^sub>z[simp]: "of_nat n \<noteq> \<omega>\<^sub>z"
   by (metis of_nat_lt_\<omega>\<^sub>z mset_le_asym mset_lt_single_iff)
 
-lemma of_nat_lt_iff_lt_zhmset[simp]: "(of_nat M :: yhmultiset) < of_nat N \<longleftrightarrow> M < N"
+lemma of_nat_lt_iff_lt_zhmset[simp]: "(of_nat M :: zhmultiset) < of_nat N \<longleftrightarrow> M < N"
   by (simp add: of_nat_zhmset zmset_of_mset_less)
 
-lemma of_nat_le_iff_le_zhmset[simp]: "(of_nat M :: yhmultiset) \<le> of_nat N \<longleftrightarrow> M \<le> N"
+lemma of_nat_le_iff_le_zhmset[simp]: "(of_nat M :: zhmultiset) \<le> of_nat N \<longleftrightarrow> M \<le> N"
   by (simp add: of_nat_zhmset zmset_of_mset_le)
 
 
 subsection \<open>Embedding of Extended Natural Numbers\<close>
 
-primrec zhmset_of_enat :: "enat \<Rightarrow> yhmultiset" where
+primrec zhmset_of_enat :: "enat \<Rightarrow> zhmultiset" where
   "zhmset_of_enat (enat n) = of_nat n"
 | "zhmset_of_enat \<infinity> = \<omega>\<^sub>z"
 
@@ -301,22 +291,22 @@ lemma zhmset_of_enat_eq_\<omega>\<^sub>z_iff[simp]: "zhmset_of_enat n = \<omega>
 
 subsection \<open>Infimum and Supremum\<close>
 
-instantiation yhmultiset :: inf
+instantiation zhmultiset :: inf
 begin
 
-definition inf_yhmultiset :: "yhmultiset \<Rightarrow> yhmultiset \<Rightarrow> yhmultiset" where
-  "inf_yhmultiset A B = (if A < B then A else B)"
+definition inf_zhmultiset :: "zhmultiset \<Rightarrow> zhmultiset \<Rightarrow> zhmultiset" where
+  "inf_zhmultiset A B = (if A < B then A else B)"
 
 instance
   by intro_classes
 
 end
 
-instantiation yhmultiset :: sup
+instantiation zhmultiset :: sup
 begin
 
-definition sup_yhmultiset :: "yhmultiset \<Rightarrow> yhmultiset \<Rightarrow> yhmultiset" where
-  "sup_yhmultiset A B = (if B > A then B else A)"
+definition sup_zhmultiset :: "zhmultiset \<Rightarrow> zhmultiset \<Rightarrow> zhmultiset" where
+  "sup_zhmultiset A B = (if B > A then B else A)"
 
 instance
   by intro_classes
@@ -324,41 +314,41 @@ instance
 end
 
 
-subsection \<open>Inequalities\<close>
+subsection \<open>Inequalities and Some (Dis)equalities\<close>
 
-instance yhmultiset :: ordered_cancel_comm_monoid_add
-  by (standard; transfer) (auto simp: add_left_mono)
+instance zhmultiset :: ordered_cancel_comm_monoid_add
+  by (intro_classes; transfer) (auto simp: add_left_mono)
 
-instance yhmultiset :: ordered_ab_group_add
-  by (standard; transfer; simp)
+instance zhmultiset :: ordered_ab_group_add
+  by (intro_classes; transfer; simp)
 
-instantiation yhmultiset :: distrib_lattice
+instantiation zhmultiset :: distrib_lattice
 begin
 
 instance
-  by intro_classes (auto simp: inf_yhmultiset_def sup_yhmultiset_def)
+  by intro_classes (auto simp: inf_zhmultiset_def sup_zhmultiset_def)
 
 end
 
-instantiation yhmultiset :: zero_less_one
+instantiation zhmultiset :: zero_less_one
 begin
 
 instance
-  by (standard, transfer, transfer, auto)
+  by (intro_classes, transfer, transfer, auto)
 
 end
 
-instantiation yhmultiset :: linordered_idom
+instantiation zhmultiset :: linordered_idom
 begin
 
-definition sgn_yhmultiset :: "yhmultiset \<Rightarrow> yhmultiset" where
-  "sgn_yhmultiset M = (if M = 0 then 0 else if M > 0 then 1 else -1)"
+definition sgn_zhmultiset :: "zhmultiset \<Rightarrow> zhmultiset" where
+  "sgn_zhmultiset M = (if M = 0 then 0 else if M > 0 then 1 else -1)"
 
-definition abs_yhmultiset :: "yhmultiset \<Rightarrow> yhmultiset" where
-  "abs_yhmultiset M = (if M < 0 then - M else M)"
+definition abs_zhmultiset :: "zhmultiset \<Rightarrow> zhmultiset" where
+  "abs_zhmultiset M = (if M < 0 then - M else M)"
 
 lemma gt_0_times_gt_0_imp:
-  fixes a b :: yhmultiset
+  fixes a b :: zhmultiset
   assumes a_gt0: "a > 0" and b_gt0: "b > 0"
   shows "a * b > 0"
 proof -
@@ -374,8 +364,8 @@ proof -
 qed
 
 instance
-proof standard
-  fix a b c :: yhmultiset
+proof intro_classes
+  fix a b c :: zhmultiset
 
   assume
     a_lt_b: "a < b" and
@@ -387,20 +377,66 @@ proof standard
     by (simp add: right_diff_distrib')
   thus "c * a < c * b"
     by simp
-qed (auto simp: sgn_yhmultiset_def abs_yhmultiset_def)
+qed (auto simp: sgn_zhmultiset_def abs_zhmultiset_def)
 
 end
 
 lemma le_zhmset_of_hmset_pos: "M \<le> zhmset_of_hmset (hmset_pos M)"
-  by (metis add_diff_cancel_left diff_le_eq hmultiset.sel less_eq_multiset_plus_left
-    less_eq_yhmultiset.abs_eq mset_pos_as_neg zhmsetmset_inverse zmset_of_mset_le
-    zmset_of_mset_plus)
+  by (metis add_diff_cancel_left diff_le_eq hmultiset.sel less_eq_multiset_plus_left ZHMSet_le
+    mset_pos_as_neg zhmsetmset_inverse zmset_of_mset_le zmset_of_mset_plus)
 
 lemma minus_zhmset_of_hmset_pos_le: "- zhmset_of_hmset (hmset_neg M) \<le> M"
   by (metis le_zhmset_of_hmset_pos minus_le_iff mset_pos_uminus zhmsetmset_uminus)
 
+lemma zero_le_zhmset_of_hmset_0: "0 \<le> zhmset_of_hmset M"
+  by (metis hmsetmset_0 zero_le_hmset zero_zhmultiset_def zhmset_of_hmset_le zmset_of_mset_empty)
 
-subsection \<open>More Inequalities and Some Equalities\<close>
+lemma
+  fixes n :: zhmultiset
+  assumes "0 \<le> m"
+  shows
+    le_add1_hmset: "n \<le> n + m" and
+    le_add2_hmset: "n \<le> m + n"
+  using assms by simp+
+
+lemma less_iff_add1_le_zhmset: "m < n \<longleftrightarrow> m + 1 \<le> n" for m n :: zhmultiset
+proof
+  assume m_lt_n: "m < n"
+  show "m + 1 \<le> n"
+  proof -
+    obtain hh :: hmultiset and zz :: zhmultiset and hha :: hmultiset where
+      f1: "m = zhmset_of_hmset hh + zz \<and> n = zhmset_of_hmset hha + zz \<and> hh < hha"
+      using less_hmset_zhmsetE[OF m_lt_n] by metis
+    hence "zhmset_of_hmset (hh + 1) \<le> zhmset_of_hmset hha"
+      by (metis (no_types) less_iff_add1_le_hmset zhmset_of_hmset_le)
+    thus ?thesis
+      using f1 by (simp add: zhmset_of_hmset_1 zhmset_of_hmset_plus)
+  qed
+qed simp
+
+lemma zero_less_iff_1_le_zhmset: "0 < n \<longleftrightarrow> 1 \<le> n" for n :: zhmultiset
+  by (rule less_iff_add1_le_zhmset[of 0, simplified])
+
+lemma less_add_1_iff_le_hmset: "m < n + 1 \<longleftrightarrow> m \<le> n" for m n :: zhmultiset
+  by (rule less_iff_add1_le_zhmset[of m "n + 1", simplified])
+
+instance hmultiset :: ordered_cancel_comm_semiring
+  by intro_classes (simp add: mult_le_mono2_hmset)
+
+instance hmultiset :: linordered_semiring_1_strict
+  by intro_classes
+
+instance hmultiset :: bounded_lattice_bot
+  by intro_classes
+
+instance hmultiset :: zero_less_one
+  by intro_classes (simp add: zero_less_iff_neq_zero_hmset)
+
+instance hmultiset :: linordered_nonzero_semiring
+  by intro_classes
+
+instance hmultiset :: semiring_no_zero_divisors
+  by intro_classes (use mult_pos_pos not_gr_zero_hmset in blast)
 
 lemma zero_lt_\<omega>\<^sub>z[simp]: "0 < \<omega>\<^sub>z"
   by (metis of_nat_lt_\<omega>\<^sub>z of_nat_0)

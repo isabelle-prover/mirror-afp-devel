@@ -27,7 +27,7 @@ primrec (nonexhaustive) Abs_hmultiset :: "unit nmultiset \<Rightarrow> hmultiset
 
 lemma type_definition_hmultiset:
   "type_definition Rep_hmultiset Abs_hmultiset {X. no_elem X}"
-proof (standard, unfold mem_Collect_eq)
+proof (unfold_locales, unfold mem_Collect_eq)
   fix X
   show "no_elem (Rep_hmultiset X)"
     by (induct X) (auto intro!: no_elem.intros)
@@ -36,7 +36,7 @@ proof (standard, unfold mem_Collect_eq)
 next
   fix Y :: "unit nmultiset"
   assume "no_elem Y"
-  then show "Rep_hmultiset (Abs_hmultiset Y) = Y"
+  thus "Rep_hmultiset (Abs_hmultiset Y) = Y"
     by (induct Y rule: no_elem.induct) auto
 qed
 
@@ -60,7 +60,7 @@ lift_definition less_hmultiset :: "hmultiset \<Rightarrow> hmultiset \<Rightarro
 lift_definition less_eq_hmultiset :: "hmultiset \<Rightarrow> hmultiset \<Rightarrow> bool" is "op \<le>" .
 
 instance
-  by (standard; transfer) auto
+  by (intro_classes; transfer) auto
 
 end
 
