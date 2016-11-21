@@ -1,10 +1,10 @@
-(*  Title:       Hereditarily Finite Multisets
+(*  Title:       Hereditar(il)y (Finite) Multisets
     Author:      Jasmin Blanchette <jasmin.blanchette at inria.fr>, 2016
     Author:      Dmitriy Traytel <traytel at inf.ethz.ch>, 2016
     Maintainer:  Jasmin Blanchette <jasmin.blanchette at inria.fr>
 *)
 
-section \<open>Hereditarily Finite Multisets\<close>
+section \<open>Hereditar(il)y Finite Multisets\<close>
 
 theory Hereditary_Multiset
 imports Multiset_More Nested_Multiset

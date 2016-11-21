@@ -1,11 +1,11 @@
-(*  Title:       Syntactic Ordinals in Cantor Normal Form Represented by Hereditarily Finite Multisets
+(*  Title:       Syntactic Ordinals in Cantor Normal Form
     Author:      Jasmin Blanchette <jasmin.blanchette at inria.fr>, 2016
     Author:      Mathias Fleury <mfleury at mpi-inf.mpg.de>, 2016
     Author:      Dmitriy Traytel <traytel at inf.ethz.ch>, 2016
     Maintainer:  Jasmin Blanchette <jasmin.blanchette at inria.fr>
 *)
 
-section \<open>Syntactic Ordinals in Cantor Normal Form Represented by Hereditarily Finite Multisets\<close>
+section \<open>Syntactic Ordinals in Cantor Normal Form\<close>
 
 theory Syntactic_Ordinal
 imports Hereditary_Multiset "~~/src/HOL/Library/Product_Order" "~~/src/HOL/Library/Extended_Nat"
