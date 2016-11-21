@@ -513,7 +513,7 @@ lemma plus_of_nat_minus_of_nat_hmset:
   using assms by (metis add.left_commute add_diff_cancel_left' le_add_diff_inverse of_nat_add)
 
 lemma of_nat_lt_\<omega>[simp]: "of_nat n < \<omega>"
-  by (auto simp add: of_nat_hmset zero_less_iff_neq_zero_hmset \<omega>_def less_multiset_ext\<^sub>D\<^sub>M_less)
+  by (auto simp: of_nat_hmset zero_less_iff_neq_zero_hmset \<omega>_def less_multiset_ext\<^sub>D\<^sub>M_less)
     (metis One_nat_def count_replicate_mset count_single gr_implies_not0 lessI less_multiset\<^sub>H\<^sub>O
        not_gr_zero_hmset zero_neq_one)
 
@@ -656,9 +656,6 @@ qed auto
 
 subsection \<open>More Inequalities and Some Equalities\<close>
 
-lemma zero_lt_1[simp]: "0 < (1 :: hmultiset)"
-  unfolding zero_hmultiset_def one_hmultiset_def less_multiset_ext\<^sub>D\<^sub>M_less by simp
-
 lemma zero_lt_\<omega>[simp]: "0 < \<omega>"
   by (metis of_nat_lt_\<omega> of_nat_0)
 
@@ -713,7 +710,7 @@ lemma
   using zero_ne_\<omega> one_ne_\<omega> of_nat_ne_\<omega> numeral_ne_\<omega> by metis+
 
 lemma
-  hmset_of_enat_inject[simp]: "(hmset_of_enat m :: hmultiset) = hmset_of_enat n \<longleftrightarrow> m = n" and
+  hmset_of_enat_inject[simp]: "hmset_of_enat m = hmset_of_enat n \<longleftrightarrow> m = n" and
   hmset_of_enat_lt_iff_lt[simp]: "hmset_of_enat m < hmset_of_enat n \<longleftrightarrow> m < n" and
   hmset_of_enat_le_iff_le[simp]: "hmset_of_enat m \<le> hmset_of_enat n \<longleftrightarrow> m \<le> n"
   by (cases m; cases n; simp)+
@@ -722,26 +719,24 @@ lemma lt_\<omega>_imp_ex_of_nat:
   assumes M_lt_\<omega>: "M < \<omega>"
   shows "\<exists>n. M = of_nat n"
 proof -
-  obtain M0 where M: "M = HMSet M0"
-    using hmultiset.exhaust by blast
-  have M0_lt_single_1: "M0 < {#1#}"
-    by (rule M_lt_\<omega>[unfolded \<omega>_def M hmsetmset_less[symmetric] less_multiset_ext\<^sub>D\<^sub>M_less
+  have M_lt_single_1: "hmsetmset M < {#1#}"
+    by (rule M_lt_\<omega>[unfolded \<omega>_def hmsetmset_less[symmetric] less_multiset_ext\<^sub>D\<^sub>M_less
       hmultiset.sel])
 
-  have "N = 0" if "N \<in># M0" for N
+  have "N = 0" if "N \<in># hmsetmset M" for N
   proof -
-    have "0 < count M0 N"
+    have "0 < count (hmsetmset M) N"
       using that by auto
     hence "N < 1"
-      by (metis (no_types) M0_lt_single_1 count_single gr_implies_not0 less_eq_multiset\<^sub>H\<^sub>O less_one
+      by (metis (no_types) M_lt_single_1 count_single gr_implies_not0 less_eq_multiset\<^sub>H\<^sub>O less_one
         neq_iff not_le)
     thus ?thesis
       by (simp add: lt_1_iff_eq_0_hmset)
   qed
-  then obtain n where M0: "M0 = replicate_mset n 0"
-    using ex_replicate_mset_if_all_elems_eq by metis
+  then obtain n where hmmM: "M = HMSet (replicate_mset n 0)"
+    using ex_replicate_mset_if_all_elems_eq by (metis hmultiset.collapse)
   show ?thesis
-    unfolding M M0 of_nat_hmset by blast
+    unfolding hmmM of_nat_hmset by blast
 qed
 
 lemma le_\<omega>_imp_ex_hmset_of_enat:
@@ -793,11 +788,11 @@ lemma minus_diff_sym_hmset: "m - (m - n) = n - (n - m)" for m n :: hmultiset
 
 lemma diff_plus_sym_hmset: "(c - b) + b = (b - c) + c" for b c :: hmultiset
 proof -
-  have f1: "\<And>h ha. (h::hmultiset) - (ha + h) = 0"
+  have f1: "\<And>h ha :: hmultiset. h - (ha + h) = 0"
     by (simp add: add.commute)
-  have f2: "\<And>h ha hb. (h::hmultiset) + ha - (h - hb) = hb + ha - (hb - h)"
+  have f2: "\<And>h ha hb :: hmultiset. h + ha - (h - hb) = hb + ha - (hb - h)"
     by (metis (no_types) add_diff_cancel_right minus_diff_sym_hmset)
-  have "\<And>h ha hb. (h::hmultiset) + (ha + hb) - hb = h + ha"
+  have "\<And>h ha hb :: hmultiset. h + (ha + hb) - hb = h + ha"
     by (metis (no_types) add.assoc add_diff_cancel_right')
   then show ?thesis
     using f2 f1 by (metis (no_types) add.commute add.right_neutral diff_diff_add_hmset)
@@ -919,7 +914,7 @@ proof -
 
   have hd_lt: "head_\<omega> (m1 * n2 + m2 * n1) < head_\<omega> (m1 * n1 + m2 * n2)"
   proof simp
-    have "\<And>h ha. (0::hmultiset) < h \<or> \<not> ha < h"
+    have "\<And>h ha :: hmultiset. 0 < h \<or> \<not> ha < h"
       by force
     hence "\<not> head_\<omega> m2 * head_\<omega> n2 \<le> sup (head_\<omega> m1 * head_\<omega> n2) (head_\<omega> m2 * head_\<omega> n1)"
       using hd_m hd_n sup_hmultiset_def by auto
