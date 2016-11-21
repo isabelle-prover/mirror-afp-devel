@@ -124,4 +124,121 @@ proof (rule wfUNIVI)
     by (induct M; rule ih[rule_format]) (auto simp: hmultiset_sub.simps)
 qed
 
+
+subsection \<open>Disjoint Union and Truncated Difference\<close>
+
+instantiation hmultiset :: cancel_comm_monoid_add
+begin
+
+definition zero_hmultiset :: hmultiset where
+  "0 = HMSet {#}"
+
+lemma hmsetmset_empty_iff[simp]: "hmsetmset n = {#} \<longleftrightarrow> n = 0"
+  unfolding zero_hmultiset_def by (cases n) simp
+
+lemma
+  HMSet_eq_0_iff[simp]: "HMSet m = 0 \<longleftrightarrow> m = {#}" and
+  zero_eq_HMSet[simp]: "0 = HMSet m \<longleftrightarrow> m = {#}"
+  by (cases m) (auto simp: zero_hmultiset_def)
+
+definition plus_hmultiset :: "hmultiset \<Rightarrow> hmultiset \<Rightarrow> hmultiset" where
+  "A + B = HMSet (hmsetmset A + hmsetmset B)"
+
+definition minus_hmultiset :: "hmultiset \<Rightarrow> hmultiset \<Rightarrow> hmultiset" where
+  "A - B = HMSet (hmsetmset A - hmsetmset B)"
+
+instance
+  by intro_classes (auto simp: zero_hmultiset_def plus_hmultiset_def minus_hmultiset_def)
+
+end
+
+lemma HMSet_plus: "HMSet (A + B) = HMSet A + HMSet B"
+  by (simp add: plus_hmultiset_def)
+
+lemma HMSet_diff: "HMSet (A - B) = HMSet A - HMSet B"
+  by (simp add: minus_hmultiset_def)
+
+lemma hmsetmset_plus: "hmsetmset (M + N) = hmsetmset M + hmsetmset N"
+  by (simp add: plus_hmultiset_def)
+
+lemma hmsetmset_diff: "hmsetmset (M - N) = hmsetmset M - hmsetmset N"
+  by (simp add: minus_hmultiset_def)
+
+lemma diff_diff_add_hmset[simp]: "a - b - c = a - (b + c)" for a b c :: hmultiset
+  by (fact diff_diff_add)
+
+instance hmultiset :: comm_monoid_diff
+  by intro_classes (auto simp: zero_hmultiset_def minus_hmultiset_def)
+
+instantiation hmultiset :: order_bot
+begin
+
+definition bot_hmultiset :: hmultiset where
+  "bot_hmultiset = 0"
+
+instance
+proof (intro_classes, unfold bot_hmultiset_def zero_hmultiset_def, transfer, goal_cases bot_least)
+  case (bot_least x)
+  thus ?case
+    by (induct x rule: no_elem.induct) (auto simp: less_eq_nmultiset_def less_multiset_ext\<^sub>D\<^sub>M_less)
+qed
+
+end
+
+instance hmultiset :: no_top
+proof (intro_classes, goal_cases gt_ex)
+  case (gt_ex a)
+  have "a < a + HMSet {#HMSet {#}#}"
+    by (simp add: plus_hmultiset_def hmsetmset_less[symmetric] less_multiset_ext\<^sub>D\<^sub>M_def)
+  thus ?case
+    by (rule exI)
+qed
+
+instance hmultiset :: ordered_cancel_comm_monoid_add
+  by intro_classes (simp del: hmsetmset_less add: plus_hmultiset_def order_le_less
+    hmsetmset_less[symmetric] less_multiset_ext\<^sub>D\<^sub>M_less)
+
+instance hmultiset :: ordered_ab_semigroup_add_imp_le
+  by intro_classes (simp add: plus_hmultiset_def order_le_less less_multiset_ext\<^sub>D\<^sub>M_less)
+
+lemma le_minus_plus_same_hmset: "m \<le> m - n + n" for m n :: hmultiset
+proof (cases m n rule: hmultiset.exhaust[case_product hmultiset.exhaust])
+  case (HMSet_HMSet m0 n0)
+  note m = this(1) and n = this(2)
+
+  {
+    assume "n0 \<subseteq># m0"
+    hence "m0 = m0 - n0 + n0"
+      by simp
+  }
+  moreover
+  {
+    assume "\<not> n0 \<subseteq># m0"
+    hence "m0 \<subset># m0 - n0 + n0"
+      by (metis mset_subset_eq_add_right subset_eq_diff_conv subset_mset.dual_order.refl
+        subset_mset_def)
+    hence "m0 < m0 - n0 + n0"
+      by (rule subset_imp_less_multiset)
+  }
+  ultimately show ?thesis
+    by (simp (no_asm) add: m n order_le_less plus_hmultiset_def minus_hmultiset_def) blast
+qed
+
+
+subsection \<open>Infimum and Supremum\<close>
+
+instantiation hmultiset :: distrib_lattice
+begin
+
+definition inf_hmultiset :: "hmultiset \<Rightarrow> hmultiset \<Rightarrow> hmultiset" where
+  "inf_hmultiset A B = (if A < B then A else B)"
+
+definition sup_hmultiset :: "hmultiset \<Rightarrow> hmultiset \<Rightarrow> hmultiset" where
+  "sup_hmultiset A B = (if B > A then B else A)"
+
+instance
+  by intro_classes (auto simp: inf_hmultiset_def sup_hmultiset_def)
+
+end
+
 end
