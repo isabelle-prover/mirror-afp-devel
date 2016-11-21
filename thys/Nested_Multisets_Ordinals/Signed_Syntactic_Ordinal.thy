@@ -110,53 +110,6 @@ lemma zhmset_of_hmset_0: "zhmset_of_hmset 0 = 0"
 lemma zhmset_of_hmset_1: "zhmset_of_hmset 1 = 1"
   by (simp add: one_hmultiset_def one_zhmultiset_def)
 
-lemma mult_assoc_zhmset_aux:
-  "An * (Bn * Cn + Bp * Cp - (Bn * Cp + Cn * Bp)) +
-    (Cn * (An * Bp + Bn * Ap - (An * Bn + Ap * Bp)) +
-     (Ap * (Bn * Cp + Cn * Bp - (Bn * Cn + Bp * Cp)) +
-      Cp * (An * Bn + Ap * Bp - (An * Bp + Bn * Ap)))) =
-    An * (Bn * Cp + Cn * Bp - (Bn * Cn + Bp * Cp)) +
-    (Cn * (An * Bn + Ap * Bp - (An * Bp + Bn * Ap)) +
-     (Ap * (Bn * Cn + Bp * Cp - (Bn * Cp + Cn * Bp)) +
-      Cp * (An * Bp + Bn * Ap - (An * Bn + Ap * Bp))))"
-  for Ap An Bp Bn Cp Cn Dp Dn :: hmultiset
-  apply (simp add: algebra_simps)
-  apply (unfold add.assoc[symmetric])
-
-  apply (rule add_right_cancel[THEN iffD1, of _ "Cp * (An * Bp + Ap * Bn)"])
-  apply (unfold add.assoc)
-  apply (subst times_diff_plus_sym_hmset)
-  apply (unfold add.assoc[symmetric])
-  apply (subst (12) add.commute)
-  apply (subst (11) add.commute)
-  apply (unfold add.assoc[symmetric])
-
-  apply (rule add_right_cancel[THEN iffD1, of _ "Cn * (An * Bn + Ap * Bp)"])
-  apply (unfold add.assoc)
-  apply (subst times_diff_plus_sym_hmset)
-  apply (unfold add.assoc[symmetric])
-  apply (subst (14) add.commute)
-  apply (subst (13) add.commute)
-  apply (unfold add.assoc[symmetric])
-
-  apply (rule add_right_cancel[THEN iffD1, of _ "Ap * (Bn * Cn + Bp * Cp)"])
-  apply (unfold add.assoc)
-  apply (subst times_diff_plus_sym_hmset)
-  apply (unfold add.assoc[symmetric])
-  apply (subst (16) add.commute)
-  apply (subst (15) add.commute)
-  apply (unfold add.assoc[symmetric])
-
-  apply (rule add_right_cancel[THEN iffD1, of _ "An * (Bn * Cp + Bp * Cn)"])
-  apply (unfold add.assoc)
-  apply (subst times_diff_plus_sym_hmset)
-  apply (unfold add.assoc[symmetric])
-  apply (subst (18) add.commute)
-  apply (subst (17) add.commute)
-  apply (unfold add.assoc[symmetric])
-
-  by (simp add: algebra_simps)
-
 instantiation zhmultiset :: comm_ring_1
 begin
 
@@ -173,10 +126,9 @@ instance
 proof (intro_classes, goal_cases mult_assoc mult_comm mult_1 distrib zero_neq_one)
   case (mult_assoc a b c)
   show ?case
-    apply transfer
-    apply (auto simp: algebra_simps)
-    apply (simp add: zmset_of_mset_plus[symmetric] hmsetmset_plus[symmetric] HMSet_diff)
-    by (rule mult_assoc_zhmset_aux)
+    by (transfer,
+      simp add: algebra_simps zmset_of_mset_plus[symmetric] hmsetmset_plus[symmetric] HMSet_diff,
+      rule triple_cross_mult_hmset)
 next
   case (mult_comm a b)
   show ?case
@@ -189,25 +141,14 @@ next
   case (distrib a b c)
 
   show ?case
-    apply (unfold times_zhmultiset_def)
-    apply (simp add: ZHMSet_plus[symmetric])
-    apply (simp add: algebra_simps)
-    apply (simp add: zmset_of_mset_plus[symmetric] hmsetmset_plus[symmetric])
-    apply (simp add: add.assoc[symmetric])
-
-    apply (unfold hmset_pos_plus hmset_neg_plus)
-    apply (simp add: algebra_simps)
-
-    apply (simp add: mult.commute[of _ "hmset_pos c"] mult.commute[of _ "hmset_neg c"])
-    apply (simp add:
+    by (simp add: times_zhmultiset_def ZHMSet_plus[symmetric] zmset_of_mset_plus[symmetric]
+        hmsetmset_plus[symmetric] algebra_simps,
+      simp add: add.assoc[symmetric] hmset_pos_plus hmset_neg_plus,
+      simp add: algebra_simps,
+      simp add: mult.commute[of _ "hmset_pos c"] mult.commute[of _ "hmset_neg c"]
         add.commute[of "hmset_neg c * M" "hmset_pos c * N" for M N]
-        add.left_commute[of "hmset_neg c * M" "hmset_pos c * N" for M N])
-    apply (unfold ring_distribs(1)[symmetric])
-    apply (simp add: add.assoc[symmetric])
-    apply (unfold ring_distribs(1)[symmetric])
-    apply (unfold hmset_pos_neg_dual)
-    apply (rule refl)
-    done
+        add.left_commute[of "hmset_neg c * M" "hmset_pos c * N" for M N],
+      simp add: add.assoc[symmetric] ring_distribs(1)[symmetric] hmset_pos_neg_dual)
 next
   case zero_neq_one
   show ?case
@@ -354,13 +295,10 @@ lemma gt_0_times_gt_0_imp:
 proof -
   show ?thesis
     using a_gt0 b_gt0
-    apply (subst (asm) (2 4) zhmset_pos_neg_partition)
-    apply simp
-    apply transfer
-    apply (simp add: algebra_simps zmset_of_mset_plus[symmetric] hmsetmset_plus[symmetric]
-      zmset_of_mset_less)
-    apply (fold HMSet_less)
-    by (rule mono_cross_mult_less_hmset)
+    by (subst (asm) (2 4) zhmset_pos_neg_partition, simp, transfer,
+        simp del: HMSet_less add: algebra_simps zmset_of_mset_plus[symmetric]
+        hmsetmset_plus[symmetric] zmset_of_mset_less HMSet_less[symmetric])
+      (rule mono_cross_mult_less_hmset)
 qed
 
 instance
@@ -521,22 +459,22 @@ lemma
     \<gamma>_lt_\<delta>: "\<gamma> < \<delta>"
   shows "\<alpha>2 + \<beta>2 * \<delta> < \<alpha>1 + \<beta>1 * \<delta>"
 proof -
-  let ?S = zhmset_of_hmset
+  let ?Z = zhmset_of_hmset
 
   note \<alpha>\<beta>2\<gamma>_lt_\<alpha>\<beta>1\<gamma>' = \<alpha>\<beta>2\<gamma>_lt_\<alpha>\<beta>1\<gamma>[THEN zhmset_of_hmset_less[THEN iffD2],
     simplified zhmset_of_hmset_plus zhmset_of_hmset_times]
   note \<beta>2_le_\<beta>1' = \<beta>2_le_\<beta>1[THEN zhmset_of_hmset_le[THEN iffD2]]
   note \<gamma>_lt_\<delta>' = \<gamma>_lt_\<delta>[THEN zhmset_of_hmset_less[THEN iffD2]]
 
-  have "?S \<alpha>2 + ?S \<beta>2 * ?S \<delta> = ?S \<alpha>2 + ?S \<beta>2 * ?S \<gamma> + ?S \<beta>2 * (?S \<delta> - ?S \<gamma>)"
+  have "?Z \<alpha>2 + ?Z \<beta>2 * ?Z \<delta> = ?Z \<alpha>2 + ?Z \<beta>2 * ?Z \<gamma> + ?Z \<beta>2 * (?Z \<delta> - ?Z \<gamma>)"
     by (simp add: algebra_simps)
-  also have "\<dots> < ?S \<alpha>1 + ?S \<beta>1 * ?S \<gamma> + ?S \<beta>2 * (?S \<delta> - ?S \<gamma>)"
+  also have "\<dots> < ?Z \<alpha>1 + ?Z \<beta>1 * ?Z \<gamma> + ?Z \<beta>2 * (?Z \<delta> - ?Z \<gamma>)"
     using \<alpha>\<beta>2\<gamma>_lt_\<alpha>\<beta>1\<gamma>' by simp
-  also have "\<dots> \<le> ?S \<alpha>1 + ?S \<beta>1 * ?S \<gamma> + ?S \<beta>1 * (?S \<delta> - ?S \<gamma>)"
+  also have "\<dots> \<le> ?Z \<alpha>1 + ?Z \<beta>1 * ?Z \<gamma> + ?Z \<beta>1 * (?Z \<delta> - ?Z \<gamma>)"
     using \<beta>2_le_\<beta>1' \<gamma>_lt_\<delta>' by simp
-  also have "\<dots> = ?S \<alpha>1 + ?S \<beta>1 * ?S \<delta>"
+  also have "\<dots> = ?Z \<alpha>1 + ?Z \<beta>1 * ?Z \<delta>"
     by (simp add: algebra_simps)
-  finally have "?S \<alpha>2 + ?S \<beta>2 * ?S \<delta> < ?S \<alpha>1 + ?S \<beta>1 * ?S \<delta>"
+  finally have "?Z \<alpha>2 + ?Z \<beta>2 * ?Z \<delta> < ?Z \<alpha>1 + ?Z \<beta>1 * ?Z \<delta>"
     by assumption
   thus ?thesis
     by (simp add: zmset_of_mset_less zhmset_of_hmset_times[symmetric]

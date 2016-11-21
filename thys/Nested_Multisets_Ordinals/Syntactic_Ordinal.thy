@@ -913,6 +913,53 @@ proof -
     unfolding A Aa B Ba ring_distribs by (simp add: algebra_simps head_\<omega>_lt_imp_lt[OF hd_lt])
 qed
 
+lemma triple_cross_mult_hmset:
+  "An * (Bn * Cn + Bp * Cp - (Bn * Cp + Cn * Bp))
+   + (Cn * (An * Bp + Bn * Ap - (An * Bn + Ap * Bp))
+      + (Ap * (Bn * Cp + Cn * Bp - (Bn * Cn + Bp * Cp))
+         + Cp * (An * Bn + Ap * Bp - (An * Bp + Bn * Ap)))) =
+   An * (Bn * Cp + Cn * Bp - (Bn * Cn + Bp * Cp))
+   + (Cn * (An * Bn + Ap * Bp - (An * Bp + Bn * Ap))
+      + (Ap * (Bn * Cn + Bp * Cp - (Bn * Cp + Cn * Bp))
+         + Cp * (An * Bp + Bn * Ap - (An * Bn + Ap * Bp))))"
+  for Ap An Bp Bn Cp Cn Dp Dn :: hmultiset
+  apply (simp add: algebra_simps)
+  apply (unfold add.assoc[symmetric])
+
+  apply (rule add_right_cancel[THEN iffD1, of _ "Cp * (An * Bp + Ap * Bn)"])
+  apply (unfold add.assoc)
+  apply (subst times_diff_plus_sym_hmset)
+  apply (unfold add.assoc[symmetric])
+  apply (subst (12) add.commute)
+  apply (subst (11) add.commute)
+  apply (unfold add.assoc[symmetric])
+
+  apply (rule add_right_cancel[THEN iffD1, of _ "Cn * (An * Bn + Ap * Bp)"])
+  apply (unfold add.assoc)
+  apply (subst times_diff_plus_sym_hmset)
+  apply (unfold add.assoc[symmetric])
+  apply (subst (14) add.commute)
+  apply (subst (13) add.commute)
+  apply (unfold add.assoc[symmetric])
+
+  apply (rule add_right_cancel[THEN iffD1, of _ "Ap * (Bn * Cn + Bp * Cp)"])
+  apply (unfold add.assoc)
+  apply (subst times_diff_plus_sym_hmset)
+  apply (unfold add.assoc[symmetric])
+  apply (subst (16) add.commute)
+  apply (subst (15) add.commute)
+  apply (unfold add.assoc[symmetric])
+
+  apply (rule add_right_cancel[THEN iffD1, of _ "An * (Bn * Cp + Bp * Cn)"])
+  apply (unfold add.assoc)
+  apply (subst times_diff_plus_sym_hmset)
+  apply (unfold add.assoc[symmetric])
+  apply (subst (18) add.commute)
+  apply (subst (17) add.commute)
+  apply (unfold add.assoc[symmetric])
+
+  by (simp add: algebra_simps)
+
 
 subsection \<open>Conversions to Natural Numbers\<close>
 
