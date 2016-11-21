@@ -1,5 +1,5 @@
 (* Author: Andreas Lochbihler, ETH Zurich
-   Author: Florian Haftmann, TU Muenchen 
+   Author: Florian Haftmann, TU Muenchen
 *)
 
 section \<open>An abstract type for multivariate polynomials\<close>
@@ -105,14 +105,14 @@ lift_definition times_mpoly :: "'a mpoly \<Rightarrow> 'a mpoly \<Rightarrow> 'a
 
 instance
   by intro_classes (transfer, simp add: algebra_simps)+
-  
+
 end
 
 instance mpoly :: (comm_semiring_0) comm_semiring_0
   by intro_classes (transfer, simp add: algebra_simps)+
 
 instance mpoly :: (semiring_0_cancel) semiring_0_cancel
-  .. 
+  ..
 
 instance mpoly :: (comm_semiring_0_cancel) comm_semiring_0_cancel
   ..
@@ -141,8 +141,8 @@ instance mpoly :: (ring_1) ring_1
 instance mpoly :: (comm_ring_1) comm_ring_1
   ..
 
-  
-subsection \<open>Monomials\<close>  
+
+subsection \<open>Monomials\<close>
 
 text \<open>
   Terminology is not unique here, so we use the notions as follows:
@@ -202,7 +202,7 @@ by transfer (simp add: PP_Poly_Mapping.mult_single)
 
 instance mpoly :: (semiring_char_0) semiring_char_0
   by intro_classes (auto simp add: of_nat_monom inj_of_nat intro: inj_comp)
-  
+
 instance mpoly :: (ring_char_0) ring_char_0
   ..
 
@@ -214,7 +214,7 @@ lemma monom_of_int [simp]:
   apply simp
   done
 
-  
+
 subsection \<open>Integral domains\<close>
 
 instance mpoly :: (ring_no_zero_divisors) ring_no_zero_divisors
@@ -264,10 +264,10 @@ proof -
       apply (simp add: insertion_aux_def insertion_fun_def power_Sum_any [symmetric])
       apply (simp add: zero_power_eq mult_when aux)
       done
-  } 
+  }
   then show ?thesis by (simp add: coeff_def insertion_def)
 qed
-    
+
 lemma insertion_zero [simp]:
   "insertion f 0 = 0"
   by transfer (simp add: insertion_aux_def insertion_fun_def)
@@ -394,7 +394,7 @@ lemma total_degree_one [simp]:
   "total_degree 1 = 0"
   by transfer simp
 
-  
+
 subsection \<open>Monomials\<close>
 
 lemma mapping_of_monom [simp]:
@@ -402,7 +402,7 @@ lemma mapping_of_monom [simp]:
   by(fact monom.rep_eq)
 
 text \<open>Naive construction of monomials\<close>
-  
+
 definition M :: "nat list \<Rightarrow> 'a::zero \<Rightarrow> 'a mpoly"
 where
   "M ms = monom (PP_Poly_Mapping.nth ms)"
@@ -416,12 +416,12 @@ subsection \<open>Pseudo-division of polynomials\<close>
 lemma smult_conv_mult: "smult s p = monom 0 s * p"
 by transfer (simp add: mult_map_scale_conv_mult)
 
-lemma smult_monom [simp]: 
+lemma smult_monom [simp]:
   fixes c :: "_ :: mult_zero"
   shows "smult c (monom x c') = monom x (c * c')"
 by transfer simp
 
-lemma smult_0 [simp]: 
+lemma smult_0 [simp]:
   fixes p :: "_ :: mult_zero mpoly"
   shows "smult 0 p = 0"
 by transfer(simp add: map_eq_zero_iff)
@@ -446,7 +446,7 @@ text \<open>
   be aware of the issues, in case these are only concerned with executability.
 \<close>
 
-definition pseudo_divmod_rel 
+definition pseudo_divmod_rel
   :: "'a::ring_div => 'a mpoly => 'a mpoly => 'a mpoly => 'a mpoly => bool"
 where
   "pseudo_divmod_rel a x y q r \<longleftrightarrow>
@@ -454,12 +454,12 @@ where
 (* the notion of degree resigns a main variable in multivariate polynomials;
    also, there are infinitely many tuples (a,q,r) such that a x = q y + r *)
 
-definition pdiv :: "'a::ring_div mpoly \<Rightarrow> 'a mpoly \<Rightarrow> ('a \<times> 'a mpoly)" (infixl "pdiv" 70) 
-where 
+definition pdiv :: "'a::ring_div mpoly \<Rightarrow> 'a mpoly \<Rightarrow> ('a \<times> 'a mpoly)" (infixl "pdiv" 70)
+where
   "x pdiv y = (THE (a, q). \<exists>r. pseudo_divmod_rel a x y q r)"
 
 definition pmod :: "'a::ring_div mpoly \<Rightarrow> 'a mpoly \<Rightarrow> 'a mpoly" (infixl "pmod" 70)
-where 
+where
   "x pmod y = (THE r. \<exists>a q. pseudo_divmod_rel a x y q r)"
 
 definition pdivmod :: "'a::ring_div mpoly \<Rightarrow> 'a mpoly \<Rightarrow> ('a \<times> 'a mpoly) \<times> 'a mpoly"
@@ -468,7 +468,7 @@ where
 
 (* "_code" seems inappropriate, since "THE" in definitions pdiv and pmod is not unique,
    see comment to definition pseudo_divmod_rel; so this cannot be executable ... *)
-lemma pdiv_code: 
+lemma pdiv_code:
   "p pdiv q = fst (pdivmod p q)"
   by (simp add: pdivmod_def)
 
@@ -477,19 +477,19 @@ lemma pmod_code:
   by (simp add: pdivmod_def)
 
 (*TODO ERROR: Ambiguous input produces n parse trees ???...*)
-definition div :: "'a::{ring_div,field} mpoly \<Rightarrow> 'a mpoly \<Rightarrow> 'a mpoly" (infixl "div" 70) 
-where 
+definition div :: "'a::{ring_div,field} mpoly \<Rightarrow> 'a mpoly \<Rightarrow> 'a mpoly" (infixl "div" 70)
+where
   "x div y = (THE q'. \<exists>a q r. (pseudo_divmod_rel a x y q r) \<and> (q' = smult (inverse a) q))"
 
 definition mod :: "'a::{ring_div,field} mpoly \<Rightarrow> 'a mpoly \<Rightarrow> 'a mpoly" (infixl "mod" 70)
-where 
+where
   "x mod y = (THE r'. \<exists>a q r. (pseudo_divmod_rel a x y q r) \<and> (r' = smult (inverse a) r))"
 
 definition divmod :: "'a::{ring_div,field} mpoly \<Rightarrow> 'a mpoly \<Rightarrow> 'a mpoly \<times> 'a mpoly"
 where
   "divmod p q = (p div q, p mod q)"
 
-lemma div_poly_code: 
+lemma div_poly_code:
   "p div q = fst (divmod p q)"
   by (simp add: divmod_def)
 
@@ -505,7 +505,7 @@ is "PP_Poly_Mapping.range :: ((nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^su
 lemma finite_coeffs [simp]: "finite (coeffs p)"
 by transfer simp
 
-text \<open>[1]p.82 
+text \<open>[1]p.82
   A "primitive'" polynomial has coefficients with GCD equal to 1.
   A polynomial is factored into "content" and "primitive part"
   for many different purposes.\<close>
@@ -515,13 +515,13 @@ where
   "primitive p \<longleftrightarrow> Gcd (coeffs p) = 1"
 
 definition content_primitive :: "'a::{ring_div,GCD.Gcd} mpoly \<Rightarrow> 'a \<times> 'a mpoly"
-where 
+where
   "content_primitive p = (
     let d = Gcd (coeffs p)
     in (d, sdiv d p))"
 
 value "let p = M [1,2,3] (4::int) + M [2,0,4] 6 + M [2,0,5] 8
-  in content_primitive p" 
+  in content_primitive p"
 
 
 end
