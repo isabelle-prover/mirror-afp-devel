@@ -390,7 +390,7 @@ next
       + \<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<zeta>) - of_nat (length ss)) + wt_args A \<zeta> ss"
       using wt_args_ge_length_times_\<epsilon>\<^sub>h[OF legal] by simp
     finally show ?case
-     unfolding wt_args_def  by (simp add: add_ac(1))
+      unfolding wt_args_def by (simp add: add_ac(1))
   qed
 qed
 
