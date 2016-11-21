@@ -2874,7 +2874,7 @@ notify = uuomul@yahoo.com
 
 [Lambda_Free_RPOs]
 title = Formalization of Recursive Path Orders for Lambda-Free Higher-Order Terms
-author = Jasmin Christian Blanchette <jasmin.blanchette@gmail.com>, Uwe Waldmann <waldmann@mpi-inf.mpg.de>, Daniel Wand <dwand@mpi-inf.mpg.de>
+author = Jasmin Christian Blanchette <mailto:jasmin.blanchette@gmail.com>, Uwe Waldmann <mailto:waldmann@mpi-inf.mpg.de>, Daniel Wand <mailto:dwand@mpi-inf.mpg.de>
 date = 2016-09-23
 topic = Logic/Rewriting
 abstract = This Isabelle/HOL formalization defines recursive path orders (RPOs) for higher-order terms without lambda-abstraction and proves many useful properties about them. The main order fully coincides with the standard RPO on first-order terms also in the presence of currying, distinguishing it from previous work. An optimized variant is formalized as well. It appears promising as the basis of a higher-order superposition calculus.
@@ -2882,7 +2882,7 @@ notify = jasmin.blanchette@gmail.com
 
 [Lambda_Free_KBOs]
 title = Formalization of Knuth–Bendix Orders for Lambda-Free Higher-Order Terms
-author = Heiko Becker <hbecker@mpi-sws.org>, Jasmin Christian Blanchette <jasmin.blanchette@gmail.com>, Uwe Waldmann <waldmann@mpi-inf.mpg.de>, Daniel Wand <dwand@mpi-inf.mpg.de>
+author = Heiko Becker <mailto:hbecker@mpi-sws.org>, Jasmin Christian Blanchette <mailto:jasmin.blanchette@gmail.com>, Uwe Waldmann <mailto:waldmann@mpi-inf.mpg.de>, Daniel Wand <mailto:dwand@mpi-inf.mpg.de>
 date = 2016-11-12
 topic = Logic/Rewriting
 abstract = This Isabelle/HOL formalization defines Knuth–Bendix orders for higher-order terms without lambda-abstraction and proves many useful properties about them. The main order fully coincides with the standard transfinite KBO with subterm coefficients on first-order terms. It appears promising as the basis of a higher-order superposition calculus.
@@ -2890,7 +2890,7 @@ notify = jasmin.blanchette@gmail.com
 
 [Nested_Multisets_Ordinals]
 title = Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals
-author = Jasmin Christian Blanchette <jasmin.blanchette@gmail.com>, Mathias Fleury <fleury@mpi-inf.mpg.de>, Dmitriy Traytel <traytel@inf.ethz.ch>
+author = Jasmin Christian Blanchette <mailto:jasmin.blanchette@gmail.com>, Mathias Fleury <mailto:fleury@mpi-inf.mpg.de>, Dmitriy Traytel <mailto:traytel@inf.ethz.ch>
 date = 2016-11-12
 topic = Logic/Rewriting
 abstract = This Isabelle/HOL formalization introduces a nested multiset datatype and defines Dershowitz and Manna's nested multiset order. The order is proved well founded and linear. By removing one constructor, we transform the nested multisets into hereditary multisets. These are isomorphic to the syntactic ordinals—the ordinals can be recursively expressed in Cantor normal form. Addition, subtraction, multiplication, and linear orders are provided on this type.
@@ -4873,7 +4873,7 @@ abstract =
 
 [Source_Coding_Theorem]
 title = Source Coding Theorem
-author = Quentin Hibon <qh225@cl.cam.ac.uk>, Lawrence Paulson <lp15@cam.ac.uk>
+author = Quentin Hibon <mailto:qh225@cl.cam.ac.uk>, Lawrence Paulson <mailto:lp15@cam.ac.uk>
 notify = qh225@cl.cam.ac.uk
 date = 2016-10-19
 topic = Mathematics/Probability Theory
