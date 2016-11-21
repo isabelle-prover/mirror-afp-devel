@@ -47,7 +47,21 @@ proof -
 qed
 
 
-subsection \<open>Lemma about the Multiset Order\<close>
+subsection \<open>Lemmas about the Multiset Order\<close>
+
+instantiation multiset :: (linorder) distrib_lattice
+begin
+
+definition inf_multiset :: "'a multiset \<Rightarrow> 'a multiset \<Rightarrow> 'a multiset" where
+  "inf_multiset A B = (if A < B then A else B)"
+
+definition sup_multiset :: "'a multiset \<Rightarrow> 'a multiset \<Rightarrow> 'a multiset" where
+  "sup_multiset A B = (if B > A then B else A)"
+
+instance
+  by intro_classes (auto simp: inf_multiset_def sup_multiset_def)
+
+end
 
 lemma all_lt_Max_imp_lt_multiset: "N \<noteq> {#} \<Longrightarrow> (\<forall>a \<in># M. a < Max (set_mset N)) \<Longrightarrow> M < N"
   by (meson Max_in[OF finite_set_mset] ex_gt_imp_less_multiset set_mset_eq_empty_iff)

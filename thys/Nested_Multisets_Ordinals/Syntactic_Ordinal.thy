@@ -77,7 +77,7 @@ instance hmultiset :: comm_monoid_diff
 lemma HMSet_plus: "HMSet (A + B) = HMSet A + HMSet B"
   by (simp add: plus_hmultiset_def)
 
-lemma HMSet_minus: "HMSet (A - B) = HMSet A - HMSet B"
+lemma HMSet_diff: "HMSet (A - B) = HMSet A - HMSet B"
   by (simp add: minus_hmultiset_def)
 
 
@@ -149,6 +149,23 @@ lemma singleton_times_right_hmset[simp]:
   by (metis mult.commute singleton_times_left_hmset)
 
 
+subsection \<open>Infimum and Supremum\<close>
+
+instantiation hmultiset :: distrib_lattice
+begin
+
+definition inf_hmultiset :: "hmultiset \<Rightarrow> hmultiset \<Rightarrow> hmultiset" where
+  "inf_hmultiset A B = (if A < B then A else B)"
+
+definition sup_hmultiset :: "hmultiset \<Rightarrow> hmultiset \<Rightarrow> hmultiset" where
+  "sup_hmultiset A B = (if B > A then B else A)"
+
+instance
+  by intro_classes (auto simp: inf_hmultiset_def sup_hmultiset_def)
+
+end
+
+
 subsection \<open>Inequalities\<close>
 
 instantiation hmultiset :: order_bot
@@ -190,20 +207,6 @@ proof (standard, goal_cases add_le_imp_le_left)
   thus ?case
     by (simp add: plus_hmultiset_def order_le_less less_multiset_ext\<^sub>D\<^sub>M_less)
 qed
-
-instantiation hmultiset :: distrib_lattice
-begin
-
-definition inf_hmultiset :: "hmultiset \<Rightarrow> hmultiset \<Rightarrow> hmultiset" where
-  "inf_hmultiset A B = (if A < B then A else B)"
-
-definition sup_hmultiset :: "hmultiset \<Rightarrow> hmultiset \<Rightarrow> hmultiset" where
-  "sup_hmultiset A B = (if B > A then B else A)"
-
-instance
-  by intro_classes (auto simp: inf_hmultiset_def sup_hmultiset_def)
-
-end
 
 definition plus_nmultiset :: "unit nmultiset \<Rightarrow> unit nmultiset \<Rightarrow> unit nmultiset"  where
   "plus_nmultiset X Y = Rep_hmultiset (Abs_hmultiset X + Abs_hmultiset Y)"
@@ -387,7 +390,7 @@ proof (cases m n rule: hmultiset.exhaust[case_product hmultiset.exhaust])
   qed
 qed
 
-lemma zero_less_iff_1_le_hmset: "(0 < n) = (1 \<le> n)" for n :: hmultiset
+lemma zero_less_iff_1_le_hmset: "0 < n \<longleftrightarrow> 1 \<le> n" for n :: hmultiset
   by (rule less_iff_add1_le_hmset[of 0, simplified])
 
 lemma less_add_1_iff_le_hmset: "m < n + 1 \<longleftrightarrow> m \<le> n" for m n :: hmultiset
@@ -580,8 +583,7 @@ proof -
     by (metis (no_types) Max_ge finite_set_mset le_less less_eq_multiset\<^sub>H\<^sub>O linorder_not_less
       mem_Collect_eq neq0_conv order_trans set_mset_def)
   show ?thesis
-    using m_le_n
-    unfolding head_\<omega>_def
+    using m_le_n unfolding head_\<omega>_def
     by (cases m, cases n,
       auto simp del: hmsetmset_le simp: head_\<omega>_def hmsetmset_le[symmetric] zero_hmultiset_def,
       meson hmsetmset_le le_in_le_max[OF _ Max_in[OF finite_set_mset]] set_mset_eq_empty_iff)
@@ -789,6 +791,21 @@ lemma hmset_of_enat_lt_iff_ne_infinity: "hmset_of_enat x < \<omega> \<longleftri
 lemma minus_diff_sym_hmset: "m - (m - n) = n - (n - m)" for m n :: hmultiset
   unfolding minus_hmultiset_def by simp (metis multiset_inter_def subset_mset.inf_aci(1))
 
+lemma diff_plus_sym_hmset: "(c - b) + b = (b - c) + c" for b c :: hmultiset
+proof -
+  have f1: "\<And>h ha. (h::hmultiset) - (ha + h) = 0"
+    by (simp add: add.commute)
+  have f2: "\<And>h ha hb. (h::hmultiset) + ha - (h - hb) = hb + ha - (hb - h)"
+    by (metis (no_types) add_diff_cancel_right minus_diff_sym_hmset)
+  have "\<And>h ha hb. (h::hmultiset) + (ha + hb) - hb = h + ha"
+    by (metis (no_types) add.assoc add_diff_cancel_right')
+  then show ?thesis
+    using f2 f1 by (metis (no_types) add.commute add.right_neutral diff_diff_add_hmset)
+qed
+
+lemma times_diff_plus_sym_hmset: "a * (c - b) + a * b = a * (b - c) + a * c" for a b c :: hmultiset
+  by (metis distrib_left diff_plus_sym_hmset)
+
 lemma times_of_nat_minus_left:
   "(of_nat m - of_nat n) * l = of_nat m * l - of_nat n * l" for l :: hmultiset
   by (induct n m rule: diff_induct) (auto simp: ring_distribs)
@@ -889,6 +906,30 @@ lemma hmset_pair_decompose_less_eq:
   shows "\<exists>k n1 n2. m1 = k + n1 \<and> m2 = k + n2 \<and> (head_\<omega> n1 < head_\<omega> n2 \<or> n1 = 0 \<and> n2 = 0)"
   using assms
   by (metis add_cancel_right_right hmset_pair_decompose_less order.not_eq_order_implies_strict)
+
+lemma mono_cross_mult_less_hmset:
+  fixes Aa A Ba B :: hmultiset
+  assumes A_lt: "A < Aa" and B_lt: "B < Ba"
+  shows "A * Ba + B * Aa < A * B + Aa * Ba"
+proof -
+  obtain j m1 m2 where A: "A = j + m1" and Aa: "Aa = j + m2" and hd_m: "head_\<omega> m1 < head_\<omega> m2"
+    by (metis hmset_pair_decompose_less[OF A_lt])
+  obtain k n1 n2 where B: "B = k + n1" and Ba: "Ba = k + n2" and hd_n: "head_\<omega> n1 < head_\<omega> n2"
+    by (metis hmset_pair_decompose_less[OF B_lt])
+
+  have hd_lt: "head_\<omega> (m1 * n2 + m2 * n1) < head_\<omega> (m1 * n1 + m2 * n2)"
+  proof simp
+    have "\<And>h ha. (0::hmultiset) < h \<or> \<not> ha < h"
+      by force
+    hence "\<not> head_\<omega> m2 * head_\<omega> n2 \<le> sup (head_\<omega> m1 * head_\<omega> n2) (head_\<omega> m2 * head_\<omega> n1)"
+      using hd_m hd_n sup_hmultiset_def by auto
+    thus "sup (head_\<omega> m1 * head_\<omega> n2) (head_\<omega> m2 * head_\<omega> n1)
+      < sup (head_\<omega> m1 * head_\<omega> n1) (head_\<omega> m2 * head_\<omega> n2)"
+      by (meson leI sup.bounded_iff)
+  qed
+  show ?thesis
+    unfolding A Aa B Ba ring_distribs by (simp add: algebra_simps head_\<omega>_lt_imp_lt[OF hd_lt])
+qed
 
 
 subsection \<open>Conversions to Natural Numbers\<close>

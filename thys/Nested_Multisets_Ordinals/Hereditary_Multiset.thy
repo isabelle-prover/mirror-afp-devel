@@ -107,21 +107,21 @@ lemma wf_less_hmultiset: "wf {(X :: hmultiset, Y :: hmultiset). X < Y}"
 instance hmultiset :: wellorder
   using wf_less_hmultiset unfolding wf_def mem_Collect_eq prod.case by intro_classes metis
 
-lemma HMSet_less_iff[simp]: "HMSet M < HMSet N \<longleftrightarrow> M < N"
+lemma HMSet_less[simp]: "HMSet M < HMSet N \<longleftrightarrow> M < N"
   by (simp add: less_HMSet_iff_less_multiset_ext\<^sub>D\<^sub>M less_multiset_ext\<^sub>D\<^sub>M_less)
 
-lemma HMSet_less_eq_iff[simp]: "HMSet M \<le> HMSet N \<longleftrightarrow> M \<le> N"
+lemma HMSet_le[simp]: "HMSet M \<le> HMSet N \<longleftrightarrow> M \<le> N"
   by (simp add: hmsetmset_le[symmetric])
 
-inductive_set heriditary_multiset_sub where
-  "X \<in># M \<Longrightarrow> (X, HMSet M) \<in> heriditary_multiset_sub"
+inductive_set hmultiset_sub where
+  "X \<in># M \<Longrightarrow> (X, HMSet M) \<in> hmultiset_sub"
 
-lemma wf_heriditary_sub[simp]: "wf heriditary_multiset_sub"
+lemma wf_hmultiset_sub[simp]: "wf hmultiset_sub"
 proof (rule wfUNIVI)
-  fix P :: "hmultiset \<Rightarrow> bool" and M :: "hmultiset"
-  assume IH: "\<forall>M. (\<forall>N. (N, M) \<in> heriditary_multiset_sub \<longrightarrow> P N) \<longrightarrow> P M"
+  fix P and M :: hmultiset
+  assume ih: "\<forall>M. (\<forall>N. (N, M) \<in> hmultiset_sub \<longrightarrow> P N) \<longrightarrow> P M"
   show "P M"
-    by (induct M; rule IH[rule_format]) (auto simp: heriditary_multiset_sub.simps)
+    by (induct M; rule ih[rule_format]) (auto simp: hmultiset_sub.simps)
 qed
 
 end
