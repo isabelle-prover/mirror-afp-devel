@@ -1,5 +1,5 @@
 (* Author: Andreas Lochbihler, ETH Zurich
-   Author: Florian Haftmann, TU Muenchen 
+   Author: Florian Haftmann, TU Muenchen
 *)
 
 section \<open>Polynomial mapping: combination of almost everywhere zero functions with an algebraic view\<close>
@@ -231,7 +231,7 @@ typedef (overloaded) ('a, 'b) poly_mapping ("(_ \<Rightarrow>\<^sub>0 /_)" [1, 0
   morphisms lookup Abs_poly_mapping
 proof -
   have "(\<lambda>_::'a. (0 :: 'b)) \<in> ?poly_mapping" by simp
-  then show ?thesis by (blast intro!: exI) 
+  then show ?thesis by (blast intro!: exI)
 qed
 
 lemma lookup_Abs_poly_mapping:
@@ -259,14 +259,14 @@ text \<open>
   is a variant of the usual function space syntax.  Conversion between both types
   happens through the morphisms
   \begin{quote}
-    @{term_type lookup} 
+    @{term_type lookup}
   \end{quote}
   \begin{quote}
     @{term_type Abs_poly_mapping}
   \end{quote}
   satisfying
   \begin{quote}
-    @{thm lookup_inverse} 
+    @{thm lookup_inverse}
   \end{quote}
   \begin{quote}
     @{thm lookup_Abs_poly_mapping}
@@ -293,7 +293,7 @@ text \<open>
   \end{enumerate}
   Note that despite the names \qt{mapping} and \qt{lookup} suggest something
   implementation-near, it is best to keep @{typ "'a \<Rightarrow>\<^sub>0 'b"} as an abstract
-  \emph{algebraic} type 
+  \emph{algebraic} type
   providing operations like \qt{addition}, \qt{multiplication} without any notion
   of key-order, data structures etc.  This implementations-specific notions are
   easily introduced later for particular implementations but do not provide any
@@ -339,7 +339,7 @@ lemma lookup_zero [simp]:
 instantiation poly_mapping :: (type, monoid_add) monoid_add
 begin
 
-lift_definition plus_poly_mapping :: 
+lift_definition plus_poly_mapping ::
     "('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> 'a \<Rightarrow>\<^sub>0 'b"
   is "\<lambda>f1 f2 k. f1 k + f2 k"
 proof -
@@ -349,7 +349,7 @@ proof -
   then have "finite ({k. f1 k \<noteq> 0} \<union> {k. f2 k \<noteq> 0})" by auto
   moreover have "{x. f1 x + f2 x \<noteq> 0} \<subseteq> {k. f1 k \<noteq> 0} \<union> {k. f2 k \<noteq> 0}"
     by auto
-  ultimately show "finite {x. f1 x + f2 x \<noteq> 0}" 
+  ultimately show "finite {x. f1 x + f2 x \<noteq> 0}"
     by (blast intro: finite_subset)
 qed
 
@@ -690,8 +690,8 @@ instance poly_mapping :: (monoid_add, ring_1) ring_1
 instance poly_mapping :: (comm_monoid_add, comm_ring_1) comm_ring_1
   ..
 
-  
-subsection \<open>Single-point mappings\<close>  
+
+subsection \<open>Single-point mappings\<close>
 
 lift_definition single :: "'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow>\<^sub>0 'b::zero"
   is "\<lambda>k v k'. (v when k = k')"
@@ -785,7 +785,7 @@ proof transfer
     finally show "prod_fun (\<lambda>k'. a when k = k') (\<lambda>k'. b when l = k') k' =
       (\<lambda>k'. a * b when k + l = k') k'" .
   qed
-qed    
+qed
 
 instance poly_mapping :: (monoid_add, semiring_char_0) semiring_char_0
   by intro_classes (auto intro: inj_comp inj_of_nat simp add: of_nat_single)
@@ -867,7 +867,7 @@ proof
     also have "\<dots> = (\<Sum>ab. (case ab of (a, b) \<Rightarrow> f a * g b) when
       (Max F, Max G) = ab)"
       unfolding split_def when_def by auto
-    also have "\<dots> \<noteq> 0" 
+    also have "\<dots> \<noteq> 0"
       by simp
     finally have "prod_fun f g q \<noteq> 0"
       by (simp add: prod_fun_unfold_prod)
@@ -947,6 +947,9 @@ instance poly_mapping :: (linorder, "{ordered_comm_monoid_add, ordered_ab_semigr
   ..
 
 instance poly_mapping :: (linorder, "{ordered_comm_monoid_add, ordered_ab_semigroup_add_imp_le, cancel_comm_monoid_add, linorder}") ordered_comm_monoid_add
+  ..
+
+instance poly_mapping :: (linorder, "{ordered_comm_monoid_add, ordered_ab_semigroup_add_imp_le, cancel_comm_monoid_add, linorder}") ordered_cancel_comm_monoid_add
   ..
 
 instance poly_mapping :: (linorder, linordered_ab_group_add) linordered_ab_group_add
@@ -1067,7 +1070,7 @@ subsection \<open>Degree\<close>
 
 definition degree :: "(nat \<Rightarrow>\<^sub>0 'a::zero) \<Rightarrow> nat"
 where
-  "degree f = Max (insert 0 (Suc ` keys f))" 
+  "degree f = Max (insert 0 (Suc ` keys f))"
 
 lemma degree_zero [simp]:
   "degree 0 = 0"
@@ -1294,7 +1297,7 @@ proof(transfer fixing: s)
     by(simp add: fun_eq_iff)
 qed
 
-lemma map_single [simp]: 
+lemma map_single [simp]:
   "(c = 0 \<Longrightarrow> f 0 = 0) \<Longrightarrow> map f (single x c) = single x (f c)"
 by transfer(auto simp add: fun_eq_iff when_def)
 
@@ -1535,7 +1538,7 @@ proof transfer
   then show "f k + g (m k) < g 0 + (\<Sum>k | m k \<noteq> 0. Suc (f k + g (m k)))"
     by simp
 qed
-    
+
 lemma lookup_le_poly_mapping_size:
   "g (lookup m k) \<le> poly_mapping_size m"
 proof (cases "k \<in> keys m")
