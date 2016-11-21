@@ -4,7 +4,7 @@
     Maintainer:  Jasmin Blanchette <jasmin.blanchette at inria.fr>
 *)
 
-section \<open>Hereditar(il)y Finite Multisets\<close>
+section \<open>Hereditar(il)y (Finite) Multisets\<close>
 
 theory Hereditary_Multiset
 imports Multiset_More Nested_Multiset
