@@ -16,7 +16,7 @@ def parse_name_url(name, entry, key):
 		if url.startswith("mailto:"):
 			url = url.replace("@", " /at/ ").replace(".", " /dot/ ")
 		elif "@" in url:
-			notice(u"In entry {0}: Found mail address without 'mailto:': {1}".format(entry, url))
+			warn(u"In entry {0}: Found mail address without 'mailto:': {1}".format(entry, url))
 			url = "mailto:" + url
 			url = url.replace("@", " /at/ ").replace(".", " /dot/ ")
 		return name[:url_start].strip(), url
