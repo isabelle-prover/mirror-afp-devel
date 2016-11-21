@@ -56,19 +56,19 @@ is available <a href="citing.shtml">[here]</a>.
 2016-11-12:
 <a href="entries/Lambda_Free_KBOs.shtml">Formalization of Knuth–Bendix Orders for Lambda-Free Higher-Order Terms</a>
 <br>Author:
-<a href="hbecker@mpi-sws.org">Heiko Becker</a>,
-<a href="jasmin.blanchette@gmail.com">Jasmin Christian Blanchette</a>,
-<a href="waldmann@mpi-inf.mpg.de">Uwe Waldmann</a> and 
-<a href="dwand@mpi-inf.mpg.de">Daniel Wand</a>
+Heiko Becker,
+Jasmin Christian Blanchette,
+Uwe Waldmann and 
+Daniel Wand
 </td></tr>
 
 <tr><td class="entry">
 2016-11-12:
 <a href="entries/Nested_Multisets_Ordinals.shtml">Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals</a>
 <br>Author:
-<a href="jasmin.blanchette@gmail.com">Jasmin Christian Blanchette</a>,
-<a href="fleury@mpi-inf.mpg.de">Mathias Fleury</a> and 
-<a href="traytel@inf.ethz.ch">Dmitriy Traytel</a>
+Jasmin Christian Blanchette,
+Mathias Fleury and 
+Dmitriy Traytel
 </td></tr>
 
 <tr><td class="entry">
@@ -108,8 +108,8 @@ Ramunas Gutkovas
 2016-10-19:
 <a href="entries/Source_Coding_Theorem.shtml">Source Coding Theorem</a>
 <br>Author:
-<a href="qh225@cl.cam.ac.uk">Quentin Hibon</a> and 
-<a href="lp15@cam.ac.uk">Lawrence Paulson</a>
+Quentin Hibon and 
+Lawrence Paulson
 </td></tr>
 
 <tr><td class="entry">
@@ -164,9 +164,9 @@ Lukas Bulwahn
 2016-09-23:
 <a href="entries/Lambda_Free_RPOs.shtml">Formalization of Recursive Path Orders for Lambda-Free Higher-Order Terms</a>
 <br>Author:
-<a href="jasmin.blanchette@gmail.com">Jasmin Christian Blanchette</a>,
-<a href="waldmann@mpi-inf.mpg.de">Uwe Waldmann</a> and 
-<a href="dwand@mpi-inf.mpg.de">Daniel Wand</a>
+Jasmin Christian Blanchette,
+Uwe Waldmann and 
+Daniel Wand
 </td></tr>
 
 <tr><td class="entry">

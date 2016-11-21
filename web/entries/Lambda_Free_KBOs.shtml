@@ -40,7 +40,7 @@ for
         <td class="data" width="80%">Formalization of Knuth–Bendix Orders for Lambda-Free Higher-Order Terms</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="hbecker@mpi-sws.org">Heiko Becker</a>, <a href="jasmin.blanchette@gmail.com">Jasmin Christian Blanchette</a>, <a href="waldmann@mpi-inf.mpg.de">Uwe Waldmann</a> and <a href="dwand@mpi-inf.mpg.de">Daniel Wand</a></td></tr>
+        <td class="data">Heiko Becker (hbecker /at/ mpi-sws /dot/ org), Jasmin Christian Blanchette (jasmin /dot/ blanchette /at/ gmail /dot/ com), Uwe Waldmann (waldmann /at/ mpi-inf /dot/ mpg /dot/ de) and Daniel Wand (dwand /at/ mpi-inf /dot/ mpg /dot/ de)</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2016-11-12</td></tr>
