@@ -7,7 +7,7 @@
 section \<open>Signed Hereditar(il)y (Finite) Multisets\<close>
 
 theory Signed_Hereditary_Multiset
-imports Signed_Multiset "$AFP/Nested_Multisets_Ordinals/Hereditary_Multiset"
+imports Signed_Multiset Hereditary_Multiset
 begin
 
 

@@ -6,7 +6,7 @@
 section \<open>Signed (Finite) Multisets\<close>
 
 theory Signed_Multiset
-imports "$AFP/Nested_Multisets_Ordinals/Multiset_More"
+imports Multiset_More
 abbrevs
   "!z" = "\<^sub>z"
 begin
