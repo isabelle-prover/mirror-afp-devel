@@ -8,7 +8,7 @@
 section \<open>Signed Syntactic Ordinals in Cantor Normal Form\<close>
 
 theory Signed_Syntactic_Ordinal
-imports Signed_Hereditary_Multiset "$AFP/Nested_Multisets_Ordinals/Syntactic_Ordinal"
+imports Signed_Hereditary_Multiset Syntactic_Ordinal
 begin
 
 
