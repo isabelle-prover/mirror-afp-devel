@@ -48,17 +48,17 @@ lemmas zhmsetmset_le[simp] = less_eq_zhmultiset.rep_eq[symmetric]
 
 subsection \<open>Embedding and Projections of Syntactic Ordinals\<close>
 
-abbreviation zhmset_of_hmset :: "hmultiset \<Rightarrow> zhmultiset" where
-  "zhmset_of_hmset M \<equiv> ZHMSet (zmset_of_mset (hmsetmset M))"
+abbreviation zhmset_of :: "hmultiset \<Rightarrow> zhmultiset" where
+  "zhmset_of M \<equiv> ZHMSet (zmset_of (hmsetmset M))"
 
-lemma zhmset_of_hmset_inject[simp]: "zhmset_of_hmset M = zhmset_of_hmset N \<longleftrightarrow> M = N"
+lemma zhmset_of_inject[simp]: "zhmset_of M = zhmset_of N \<longleftrightarrow> M = N"
   by simp
 
-lemma zhmset_of_hmset_less: "zhmset_of_hmset M < zhmset_of_hmset N \<longleftrightarrow> M < N"
-  by (simp add: zmset_of_mset_less)
+lemma zhmset_of_less: "zhmset_of M < zhmset_of N \<longleftrightarrow> M < N"
+  by (simp add: zmset_of_less)
 
-lemma zhmset_of_hmset_le: "zhmset_of_hmset M \<le> zhmset_of_hmset N \<longleftrightarrow> M \<le> N"
-  by (simp add: zmset_of_mset_le)
+lemma zhmset_of_le: "zhmset_of M \<le> zhmset_of N \<longleftrightarrow> M \<le> N"
+  by (simp add: zmset_of_le)
 
 abbreviation hmset_pos :: "zhmultiset \<Rightarrow> hmultiset" where
   "hmset_pos M \<equiv> HMSet (mset_pos (zhmsetmset M))"
@@ -85,8 +85,8 @@ lemmas ZHMSet_diff = minus_zhmultiset.abs_eq[symmetric]
 lemmas zhmsetmset_plus = plus_zhmultiset.rep_eq
 lemmas zhmsetmset_diff = minus_zhmultiset.rep_eq
 
-lemma zhmset_of_hmset_plus: "zhmset_of_hmset (A + B) = zhmset_of_hmset A + zhmset_of_hmset B"
-  by (simp add: hmsetmset_plus ZHMSet_plus zmset_of_mset_plus)
+lemma zhmset_of_plus: "zhmset_of (A + B) = zhmset_of A + zhmset_of B"
+  by (simp add: hmsetmset_plus ZHMSet_plus zmset_of_plus)
 
 lemma hmsetmset_0[simp]: "hmsetmset 0 = {#}"
   by (rule hmultiset.inject[THEN iffD1]) (simp add: zero_hmultiset_def)
@@ -96,6 +96,9 @@ instance
 
 end
 
+lemma zhmset_of_0: "zhmset_of 0 = 0"
+  by (simp add: zero_zhmultiset_def)
+
 lemma hmset_pos_plus:
   "hmset_pos (A + B) = (hmset_pos A - hmset_neg B) + (hmset_pos B - hmset_neg A)"
   by (simp add: HMSet_diff HMSet_plus zhmsetmset_plus)
@@ -104,13 +107,13 @@ lemma hmset_neg_plus:
   "hmset_neg (A + B) = (hmset_neg A - hmset_pos B) + (hmset_neg B - hmset_pos A)"
   by (simp add: HMSet_diff HMSet_plus zhmsetmset_plus)
 
-lemma zhmset_pos_neg_partition: "M = zhmset_of_hmset (hmset_pos M) - zhmset_of_hmset (hmset_neg M)"
+lemma zhmset_pos_neg_partition: "M = zhmset_of (hmset_pos M) - zhmset_of (hmset_neg M)"
   by (cases M, simp add: ZHMSet_diff[symmetric], rule mset_pos_neg_partition)
 
-lemma zhmset_pos_as_neg: "zhmset_of_hmset (hmset_pos M) = zhmset_of_hmset (hmset_neg M) + M"
+lemma zhmset_pos_as_neg: "zhmset_of (hmset_pos M) = zhmset_of (hmset_neg M) + M"
   using mset_pos_as_neg zhmsetmset_plus zhmsetmset_inject by fastforce
 
-lemma zhmset_neg_as_pos: "zhmset_of_hmset (hmset_neg M) = zhmset_of_hmset (hmset_pos M) - M"
+lemma zhmset_neg_as_pos: "zhmset_of (hmset_neg M) = zhmset_of (hmset_pos M) - M"
   using zhmsetmset_diff mset_neg_as_pos zhmsetmset_inject by fastforce
 
 lemma hmset_pos_neg_dual:
@@ -118,18 +121,18 @@ lemma hmset_pos_neg_dual:
    hmset_neg a + hmset_neg b + (hmset_pos a - hmset_neg b) + (hmset_pos b - hmset_neg a)"
   by (simp add: HMSet_plus[symmetric] HMSet_diff[symmetric]) (rule mset_pos_neg_dual)
 
-lemma zhmset_of_hmset_sum_list: "zhmset_of_hmset (sum_list Ms) = sum_list (map zhmset_of_hmset Ms)"
-  by (induct Ms) (auto simp: zero_zhmultiset_def zhmset_of_hmset_plus)
+lemma zhmset_of_sum_list: "zhmset_of (sum_list Ms) = sum_list (map zhmset_of Ms)"
+  by (induct Ms) (auto simp: zero_zhmultiset_def zhmset_of_plus)
 
 lemma less_hmset_zhmsetE:
   assumes m_lt_n: "M < N"
-  obtains A B C where "M = zhmset_of_hmset A + C" and "N = zhmset_of_hmset B + C" and "A < B"
+  obtains A B C where "M = zhmset_of A + C" and "N = zhmset_of B + C" and "A < B"
   by (rule less_mset_zmsetE[OF m_lt_n[folded zhmsetmset_less]])
     (metis hmsetmset_less hmultiset.sel ZHMSet_plus zhmsetmset_inverse)
 
 lemma less_eq_hmset_zhmsetE:
   assumes m_le_n: "M \<le> N"
-  obtains A B C where "M = zhmset_of_hmset A + C" and "N = zhmset_of_hmset B + C" and "A \<le> B"
+  obtains A B C where "M = zhmset_of A + C" and "N = zhmset_of B + C" and "A \<le> B"
   by (rule less_eq_mset_zmsetE[OF m_le_n[folded zhmsetmset_le]])
     (metis hmsetmset_le hmultiset.sel ZHMSet_plus zhmsetmset_inverse)
 

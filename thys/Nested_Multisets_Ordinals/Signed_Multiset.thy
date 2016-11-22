@@ -296,21 +296,21 @@ lemma multi_member_split: "\<exists>A. M = add_zmset x A"
 
 subsection \<open>Conversions from and to Multisets\<close>
 
-lift_definition zmset_of_mset :: "'a multiset \<Rightarrow> 'a zmultiset" is "\<lambda>f. (Abs_multiset f, {#})" .
+lift_definition zmset_of :: "'a multiset \<Rightarrow> 'a zmultiset" is "\<lambda>f. (Abs_multiset f, {#})" .
 
-lemma zmset_of_mset_inject[simp]: "zmset_of_mset M = zmset_of_mset N \<longleftrightarrow> M = N"
-  by (simp add: zmset_of_mset_def, transfer, auto simp: equiv_zmset_def)
+lemma zmset_of_inject[simp]: "zmset_of M = zmset_of N \<longleftrightarrow> M = N"
+  by (simp add: zmset_of_def, transfer, auto simp: equiv_zmset_def)
 
-lemma zmset_of_mset_empty[simp]: "zmset_of_mset {#} = {#}\<^sub>z"
-  by (simp add: zmset_of_mset_def zero_zmultiset_def)
+lemma zmset_of_empty[simp]: "zmset_of {#} = {#}\<^sub>z"
+  by (simp add: zmset_of_def zero_zmultiset_def)
 
-lemma zmset_of_mset_add_mset[simp]: "zmset_of_mset (add_mset x M) = add_zmset x (zmset_of_mset M)"
+lemma zmset_of_add_mset[simp]: "zmset_of (add_mset x M) = add_zmset x (zmset_of M)"
   by transfer (auto simp: equiv_zmset_def add_mset_def cong: if_cong)
 
-lemma zcount_of_mset[simp]: "zcount (zmset_of_mset M) x = int (count M x)"
+lemma zcount_of_mset[simp]: "zcount (zmset_of M) x = int (count M x)"
   by (induct M) auto
 
-lemma zmset_of_mset_plus: "zmset_of_mset (M + N) = zmset_of_mset M + zmset_of_mset N"
+lemma zmset_of_plus: "zmset_of (M + N) = zmset_of M + zmset_of N"
   by (transfer, auto simp: equiv_zmset_def eq_onp_same_args plus_multiset.abs_eq)+
 
 lift_definition mset_pos :: "'a zmultiset \<Rightarrow> 'a multiset" is "\<lambda>(Mp, Mn). count (Mp - Mn)"
@@ -322,12 +322,12 @@ lift_definition mset_neg :: "'a zmultiset \<Rightarrow> 'a multiset" is "\<lambd
     (metis add.commute add_diff_cancel_right)
 
 lemma
-  zmset_of_mset_inverse[simp]: "mset_pos (zmset_of_mset M) = M" and
-  minus_zmset_of_mset_inverse[simp]: "mset_neg (- zmset_of_mset M) = M"
+  zmset_of_inverse[simp]: "mset_pos (zmset_of M) = M" and
+  minus_zmset_of_inverse[simp]: "mset_neg (- zmset_of M) = M"
   by (transfer, simp)+
 
-lemma neg_zmset_pos[simp]: "mset_neg (zmset_of_mset M) = {#}"
-  by (rule zmset_of_mset_inject[THEN iffD1], simp, transfer, auto simp: equiv_zmset_def)+
+lemma neg_zmset_pos[simp]: "mset_neg (zmset_of M) = {#}"
+  by (rule zmset_of_inject[THEN iffD1], simp, transfer, auto simp: equiv_zmset_def)+
 
 lemma
   count_mset_pos[simp]: "count (mset_pos M) x = nat (zcount M x)" and
@@ -345,9 +345,9 @@ lemma
   by (rule multiset_eqI, simp)+
 
 lemma
-  mset_pos_neg_partition: "M = zmset_of_mset (mset_pos M) - zmset_of_mset (mset_neg M)" and
-  mset_pos_as_neg: "zmset_of_mset (mset_pos M) = zmset_of_mset (mset_neg M) + M" and
-  mset_neg_as_pos: "zmset_of_mset (mset_neg M) = zmset_of_mset (mset_pos M) - M"
+  mset_pos_neg_partition: "M = zmset_of (mset_pos M) - zmset_of (mset_neg M)" and
+  mset_pos_as_neg: "zmset_of (mset_pos M) = zmset_of (mset_neg M) + M" and
+  mset_neg_as_pos: "zmset_of (mset_neg M) = zmset_of (mset_pos M) - M"
   by (rule zmultiset_eqI, simp)+
 
 lemma mset_pos_uminus[simp]: "mset_pos (- A) = mset_neg A"
@@ -377,19 +377,19 @@ lemma mset_pos_neg_dual:
    mset_neg a + mset_neg b + (mset_pos a - mset_neg b) + (mset_pos b - mset_neg a)"
   using [[linarith_split_limit = 20]] by (rule multiset_eqI) simp
 
-lemma decompose_zmset_of_mset2:
+lemma decompose_zmset_of2:
   obtains A B C where
-    "M = zmset_of_mset A + C" and
-    "N = zmset_of_mset B + C"
+    "M = zmset_of A + C" and
+    "N = zmset_of B + C"
 proof
-  let ?A = "zmset_of_mset (mset_pos M + mset_neg N)"
-  let ?B = "zmset_of_mset (mset_pos N + mset_neg M)"
-  let ?C = "- (zmset_of_mset (mset_neg M) + zmset_of_mset (mset_neg N))"
+  let ?A = "zmset_of (mset_pos M + mset_neg N)"
+  let ?B = "zmset_of (mset_pos N + mset_neg M)"
+  let ?C = "- (zmset_of (mset_neg M) + zmset_of (mset_neg N))"
 
   show "M = ?A + ?C"
-    by (simp add: zmset_of_mset_plus mset_pos_neg_partition)
+    by (simp add: zmset_of_plus mset_pos_neg_partition)
   show "N = ?B + ?C"
-    by (simp add: zmset_of_mset_plus diff_add_zmset mset_pos_neg_partition)
+    by (simp add: zmset_of_plus diff_add_zmset mset_pos_neg_partition)
 qed
 
 
@@ -464,30 +464,29 @@ lemma zmset_subset_add_zmset[simp]: "add_zmset x N \<subset>#\<^sub>z add_zmset 
   unfolding add_zmset_add_single[of _ N] add_zmset_add_single[of _ M]
   by (fact subset_zmset.add_less_cancel_right)
 
-lemma zmset_of_mset_subseteq_iff[simp]: "zmset_of_mset M \<subseteq>#\<^sub>z zmset_of_mset N \<longleftrightarrow> M \<subseteq># N"
+lemma zmset_of_subseteq_iff[simp]: "zmset_of M \<subseteq>#\<^sub>z zmset_of N \<longleftrightarrow> M \<subseteq># N"
   by (simp add: subseteq_zmset_def subseteq_mset_def)
 
-lemma zmset_of_mset_subset_iff[simp]: "zmset_of_mset M \<subset>#\<^sub>z zmset_of_mset N \<longleftrightarrow> M \<subset># N"
+lemma zmset_of_subset_iff[simp]: "zmset_of M \<subset>#\<^sub>z zmset_of N \<longleftrightarrow> M \<subset># N"
   by (simp add: subset_zmset_def subset_mset_def)
 
 lemma
-  mset_pos_supset: "A \<subseteq>#\<^sub>z zmset_of_mset (mset_pos A)" and
-  mset_neg_supset: "- A \<subseteq>#\<^sub>z zmset_of_mset (mset_neg A)"
+  mset_pos_supset: "A \<subseteq>#\<^sub>z zmset_of (mset_pos A)" and
+  mset_neg_supset: "- A \<subseteq>#\<^sub>z zmset_of (mset_neg A)"
   by (auto intro: zmset_subset_eqI)
 
 lemma subset_mset_zmsetE:
   assumes "M \<subset>#\<^sub>z N"
   obtains A B C where
-    "M = zmset_of_mset A + C" and "N = zmset_of_mset B + C" and "A \<subset># B"
-  by (metis assms decompose_zmset_of_mset2 subset_zmset.add_less_cancel_right
-    zmset_of_mset_subset_iff)
+    "M = zmset_of A + C" and "N = zmset_of B + C" and "A \<subset># B"
+  by (metis assms decompose_zmset_of2 subset_zmset.add_less_cancel_right zmset_of_subset_iff)
 
 lemma subseteq_mset_zmsetE:
   assumes "M \<subseteq>#\<^sub>z N"
   obtains A B C where
-    "M = zmset_of_mset A + C" and "N = zmset_of_mset B + C" and "A \<subseteq># B"
+    "M = zmset_of A + C" and "N = zmset_of B + C" and "A \<subseteq># B"
   by (metis assms add.commute add.right_neutral subset_mset.order_refl subset_mset_def
-    subset_mset_zmsetE subset_zmset_def zmset_of_mset_empty)
+    subset_mset_zmsetE subset_zmset_def zmset_of_empty)
 
 
 subsubsection \<open>Subset is an Order\<close>
@@ -608,8 +607,8 @@ subsection \<open>Image\<close>
 
 definition image_zmset :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a zmultiset \<Rightarrow> 'b zmultiset" where
   "image_zmset f M =
-   zmset_of_mset (fold_mset (add_mset \<circ> f) {#} (mset_pos M)) -
-   zmset_of_mset (fold_mset (add_mset \<circ> f) {#} (mset_neg M))"
+   zmset_of (fold_mset (add_mset \<circ> f) {#} (mset_pos M)) -
+   zmset_of (fold_mset (add_mset \<circ> f) {#} (mset_neg M))"
 
 
 subsection \<open>Multiset Order\<close>
@@ -730,11 +729,11 @@ instance
 
 end
 
-lemma zmset_of_mset_less: "zmset_of_mset M < zmset_of_mset N \<longleftrightarrow> M < N"
-  by (clarsimp simp: zmset_of_mset_def, transfer, simp)+
+lemma zmset_of_less: "zmset_of M < zmset_of N \<longleftrightarrow> M < N"
+  by (clarsimp simp: zmset_of_def, transfer, simp)+
 
-lemma zmset_of_mset_le: "zmset_of_mset M \<le> zmset_of_mset N \<longleftrightarrow> M \<le> N"
-  by (simp_all add: less_eq_zmultiset_def zmset_of_mset_def; transfer; auto simp: equiv_zmset_def)
+lemma zmset_of_le: "zmset_of M \<le> zmset_of N \<longleftrightarrow> M \<le> N"
+  by (simp_all add: less_eq_zmultiset_def zmset_of_def; transfer; auto simp: equiv_zmset_def)
 
 instance zmultiset :: (preorder) ordered_ab_semigroup_add
   by (intro_classes, unfold less_eq_zmultiset_def, transfer, auto simp: equiv_zmset_def)
@@ -748,19 +747,19 @@ instance zmultiset :: (linorder) linordered_cancel_ab_semigroup_add
 lemma less_mset_zmsetE:
   assumes "M < N"
   obtains A B C where
-    "M = zmset_of_mset A + C" and "N = zmset_of_mset B + C" and "A < B"
-  by (metis add_less_imp_less_right assms decompose_zmset_of_mset2 zmset_of_mset_less)
+    "M = zmset_of A + C" and "N = zmset_of B + C" and "A < B"
+  by (metis add_less_imp_less_right assms decompose_zmset_of2 zmset_of_less)
 
 lemma less_eq_mset_zmsetE:
   assumes "M \<le> N"
   obtains A B C where
-    "M = zmset_of_mset A + C" and "N = zmset_of_mset B + C" and "A \<le> B"
+    "M = zmset_of A + C" and "N = zmset_of B + C" and "A \<le> B"
   by (metis add.commute add.right_neutral assms le_neq_trans less_imp_le less_mset_zmsetE order_refl
-    zmset_of_mset_empty)
+    zmset_of_empty)
 
 lemma subset_eq_imp_le_zmset: "M \<subseteq>#\<^sub>z N \<Longrightarrow> M \<le> N"
   by (metis (no_types) add_mono_thms_linordered_semiring(3) subset_eq_imp_le_multiset
-    subseteq_mset_zmsetE zmset_of_mset_le)
+    subseteq_mset_zmsetE zmset_of_le)
 
 lemma subset_imp_less_zmset: "M \<subset>#\<^sub>z N \<Longrightarrow> M < N"
   by (metis le_neq_trans subset_eq_imp_le_zmset subset_zmset_def)
