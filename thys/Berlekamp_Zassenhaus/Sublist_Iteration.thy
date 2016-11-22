@@ -9,7 +9,7 @@ theory Sublist_Iteration
 imports 
   "../Polynomial_Factorization/Missing_Multiset"
   "../Polynomial_Factorization/Missing_List"
-  IArray
+  "~~/src/HOL/Library/IArray"
 begin
 
 paragraph \<open>Misc lemmas\<close>
