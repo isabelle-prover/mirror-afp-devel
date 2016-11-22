@@ -533,32 +533,6 @@ proof -
   thus "coeff ev i = coeff f (2 * i)" "coeff od i = coeff f (2 * i + 1)" by auto
 qed
 
-lemma coeff_pcompose_monom: fixes f :: "'a :: comm_ring_1 poly" 
-  assumes n: "j < n" 
-  shows "coeff (f \<circ>\<^sub>p monom 1 n) (n * i + j) = (if j = 0 then coeff f i else 0)"     
-proof (induct f arbitrary: i)
-  case (pCons a f i)
-  note d = pcompose_pCons coeff_add coeff_monom_mult coeff_pCons
-  show ?case 
-  proof (cases i)
-    case 0
-    show ?thesis unfolding d 0 using n by (cases j, auto)
-  next
-    case (Suc ii)
-    have id: "n * Suc ii + j - n = n * ii + j" using n by (simp add: diff_mult_distrib2)
-    have id1: "(n \<le> n * Suc ii + j) = True" by auto
-    have id2: "(case n * Suc ii + j of 0 \<Rightarrow> a | Suc x \<Rightarrow> coeff 0 x) = 0" using n
-      by (cases "n * Suc ii + j", auto)
-    show ?thesis unfolding d Suc id id1 id2 pCons(2) if_True by auto
-  qed
-qed auto
-
-
-lemma coeff_pcompose_x_pow_n: fixes f :: "'a :: comm_ring_1 poly" 
-  assumes n: "n \<noteq> 0" 
-  shows "coeff (f \<circ>\<^sub>p monom 1 n) (n * i) = coeff f i"     
-  using coeff_pcompose_monom[of 0 n f i] n by auto
-
 lemma poly_square_subst: "poly_square_subst (f \<circ>\<^sub>p (monom 1 2)) = f" 
   by (rule poly_eqI, unfold poly_square_subst_coeff, subst coeff_pcompose_x_pow_n, auto)
 
@@ -673,7 +647,7 @@ end
 definition graeffe_one_step :: "'a \<Rightarrow> 'a :: idom poly \<Rightarrow> 'a poly" where 
   "graeffe_one_step c f = smult c (poly_square_subst (f * f \<circ>\<^sub>p [:0,-1:]))" 
   
-lemma graeffe_one_step_code: fixes c :: "'a :: idom" 
+lemma graeffe_one_step_code[code]: fixes c :: "'a :: idom" 
   shows "graeffe_one_step c f = (case poly_even_odd f of (g,h)
   \<Rightarrow> smult c (g * g - monom 1 1 * h * h))" 
 proof -
@@ -739,11 +713,6 @@ lemma (in inj_ring_hom) map_poly_poly_square_subst:
   "map_poly hom (poly_square_subst f) = poly_square_subst (map_poly hom f)" 
   unfolding poly_square_subst_def coeffs_map_poly drop_half_map poly_of_list_def
   by (rule poly_eqI, auto simp: nth_default_map_eq)
-
-(* TODO: move *)
-lemma (in semiring_hom) map_poly_pcompose: 
-  "map_poly hom (f \<circ>\<^sub>p g) = map_poly hom f \<circ>\<^sub>p map_poly hom g" 
-  by (induct f arbitrary: g, auto)
 
 locale inj_idom_hom = idom_hom + inj_ring_hom
 begin
@@ -872,4 +841,5 @@ lemma mahler_approximation: "\<lceil>mahler_measure f\<rceil> \<le> mahler_appro
   unfolding mahler_approximation_def
   by (rule mahler_approximation_main, auto)
 end
+
 end

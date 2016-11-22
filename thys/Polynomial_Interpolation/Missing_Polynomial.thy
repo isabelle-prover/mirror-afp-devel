@@ -1071,4 +1071,67 @@ proof (induct A rule: infinite_finite_induct)
   finally show ?case ..
 qed auto
 
+definition monom_mult :: "nat \<Rightarrow> 'a :: comm_semiring_1 poly \<Rightarrow> 'a poly" where
+  "monom_mult n f = monom 1 n * f" 
+  
+lemma monom_mult_unfold: "monom 1 n * f = monom_mult n f"
+  "f * monom 1 n = monom_mult n f" 
+  by (auto simp: monom_mult_def ac_simps)
+
+declare monom_mult_unfold[code_unfold]
+
+lemma monom_mult_code[code abstract]: "coeffs (monom_mult n f) = (let xs = coeffs f in
+  if xs = [] then xs else replicate n 0 @ xs)" 
+proof (cases "f = 0")
+  case False
+  hence cf: "(coeffs f = []) = False" by auto
+  from False have last: "last (coeffs f) \<noteq> 0" by (rule last_coeffs_not_0)
+  show ?thesis unfolding monom_mult_def Let_def cf if_False
+  proof (rule coeffs_eqI)
+    show "last (replicate n 0 @ coeffs f) \<noteq> 0" using cf last by auto
+    fix i
+    show "coeff (monom 1 n * f) i = nth_default 0 (replicate n 0 @ coeffs f) i" 
+    proof (cases "n \<le> i")
+      case True
+      hence "coeff (monom 1 n * f) i = coeff f (i - n)" unfolding coeff_monom_mult by auto
+      also have "\<dots> = nth_default 0 (replicate n 0 @ coeffs f) i" 
+        unfolding nth_default_append[of _ _ _ i] nth_default_coeffs_eq using True by simp
+      finally show ?thesis .
+    next
+      case False
+      hence "coeff (monom 1 n * f) i = 0" unfolding coeff_monom_mult by auto
+      also have "\<dots> = nth_default 0 (replicate n 0 @ coeffs f) i" using False
+        unfolding nth_default_append[of _ _ _ i] by auto
+      finally show ?thesis .
+    qed
+  qed
+qed (auto simp: monom_mult_def)    
+
+lemma coeff_pcompose_monom: fixes f :: "'a :: comm_ring_1 poly" 
+  assumes n: "j < n" 
+  shows "coeff (f \<circ>\<^sub>p monom 1 n) (n * i + j) = (if j = 0 then coeff f i else 0)"     
+proof (induct f arbitrary: i)
+  case (pCons a f i)
+  note d = pcompose_pCons coeff_add coeff_monom_mult coeff_pCons
+  show ?case 
+  proof (cases i)
+    case 0
+    show ?thesis unfolding d 0 using n by (cases j, auto)
+  next
+    case (Suc ii)
+    have id: "n * Suc ii + j - n = n * ii + j" using n by (simp add: diff_mult_distrib2)
+    have id1: "(n \<le> n * Suc ii + j) = True" by auto
+    have id2: "(case n * Suc ii + j of 0 \<Rightarrow> a | Suc x \<Rightarrow> coeff 0 x) = 0" using n
+      by (cases "n * Suc ii + j", auto)
+    show ?thesis unfolding d Suc id id1 id2 pCons(2) if_True by auto
+  qed
+qed auto
+
+
+lemma coeff_pcompose_x_pow_n: fixes f :: "'a :: comm_ring_1 poly" 
+  assumes n: "n \<noteq> 0" 
+  shows "coeff (f \<circ>\<^sub>p monom 1 n) (n * i) = coeff f i"     
+  using coeff_pcompose_monom[of 0 n f i] n by auto
+
+
 end
