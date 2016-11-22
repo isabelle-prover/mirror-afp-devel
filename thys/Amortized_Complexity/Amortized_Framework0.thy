@@ -76,16 +76,16 @@ done
 interpretation incr: Amortized
 where init = "[]" and nxt = "%_. incr" and inv = "\<lambda>_. True"
 and t = "\<lambda>_. t\<^sub>i\<^sub>n\<^sub>c\<^sub>r" and \<Phi> = \<Phi>\<^sub>i\<^sub>n\<^sub>c\<^sub>r and U = "\<lambda>_ _. 2"
-proof
-  case goal1 show ?case by simp
+proof (standard, goal_cases)
+  case 1 show ?case by simp
 next
-  case goal2 show ?case by simp
+  case 2 show ?case by simp
 next
-  case goal3 show ?case by(simp add: p_incr_def)
+  case 3 show ?case by(simp add: p_incr_def)
 next
-  case goal4 show ?case by(simp add: p_incr_def)
+  case 4 show ?case by(simp add: p_incr_def)
 next
-  case goal5 show ?case by(simp add: a_incr)
+  case 5 show ?case by(simp add: a_incr)
 qed
 
 thm incr.ub
@@ -101,16 +101,16 @@ where init = "(0::nat,0::nat)"
 and nxt = "\<lambda>_ (n,l). (n+1, if n<l then l else if l=0 then 1 else 2*l)"
 and inv = "\<lambda>(n,l). if l=0 then n=0 else n \<le> l \<and> l < 2*n"
 and t = "\<lambda>_. t\<^sub>i\<^sub>n\<^sub>s" and \<Phi> = "\<lambda>(n,l). 2*n - l" and U = "\<lambda>_ _. 3"
-proof
-  case goal1 show ?case by auto
+proof (standard, goal_cases)
+  case 1 show ?case by auto
 next
-  case goal2 thus ?case by(cases s) auto
+  case (2 s) thus ?case by(cases s) auto
 next
-  case goal3 thus ?case by(cases s)(simp split: if_splits)
+  case (3 s) thus ?case by(cases s)(simp split: if_splits)
 next
-  case goal4 show ?case by(simp)
+  case 4 show ?case by(simp)
 next
-  case goal5 thus ?case by(cases s) auto
+  case (5 s) thus ?case by(cases s) auto
 qed
 
 locale table_insert =
@@ -144,26 +144,26 @@ interpretation ins: Amortized
 where init = "(0,0)" and nxt = "%_. ins"
 and inv = "\<lambda>(n,l). if l=0 then n=0 else n \<le> l \<and> (b/a)*l \<le> n"
 and t = "\<lambda>_. t\<^sub>i\<^sub>n\<^sub>s" and \<Phi> = pins and U = "\<lambda>_ _. a + 1"
-proof
-  case goal1 show ?case by auto
+proof (standard, goal_cases)
+  case 1 show ?case by auto
 next
-  case goal2
+  case (2 s)
   show ?case
   proof (cases s)
     case [simp]: (Pair n l)
     show ?thesis
     proof cases
-      assume "l=0" thus ?thesis using goal2 ac
-        by (simp add: of_nat_Suc b_def field_simps)
+      assume "l=0" thus ?thesis using 2 ac
+        by (simp add: b_def field_simps)
     next
       assume "l\<noteq>0"
       show ?thesis
       proof cases
         assume "n<l"
-        thus ?thesis using goal2 by(simp add: of_nat_Suc algebra_simps)
+        thus ?thesis using 2 by(simp add: algebra_simps)
       next
         assume "\<not> n<l"
-        hence [simp]: "n=l" using goal2 `l\<noteq>0` by simp
+        hence [simp]: "n=l" using 2 `l\<noteq>0` by simp
         have 1: "(b/a) * ceiling(c * l) \<le> real l + 1"
         proof-
           have "(b/a) * ceiling(c * l) = ceiling(c * l)/(a*(c - 1))"
@@ -187,29 +187,29 @@ next
     qed
   qed
 next
-  case goal3 thus ?case by(cases s)(simp add: field_simps split: if_splits)
+  case (3 s) thus ?case by(cases s)(simp add: field_simps split: if_splits)
 next
-  case goal4 show ?case by(simp)
+  case 4 show ?case by(simp)
 next
-  case goal5
+  case (5 s)
   show ?case
   proof (cases s)
     case [simp]: (Pair n l)
     show ?thesis
     proof cases
-      assume "l=0" thus ?thesis using goal5 by (simp)
+      assume "l=0" thus ?thesis using 5 by (simp)
     next
       assume [arith]: "l\<noteq>0"
       show ?thesis
       proof cases
         assume "n<l"
-        thus ?thesis using goal5 ac by(simp add: of_nat_Suc algebra_simps b_def)
+        thus ?thesis using 5 ac by(simp add: algebra_simps b_def)
       next
         assume "\<not> n<l"
-        hence [simp]: "n=l" using goal5 by simp
+        hence [simp]: "n=l" using 5 by simp
         have "t\<^sub>i\<^sub>n\<^sub>s s + pins (ins s) - pins s = l + a + 1 + (- b*ceiling(c*l)) + b*l"
           using `l\<noteq>0`
-          by(simp add: of_nat_Suc algebra_simps less_trans[of "-1::real" 0])
+          by(simp add: algebra_simps less_trans[of "-1::real" 0])
         also have "- b * ceiling(c*l) \<le> - b * (c*l)" by (simp add: ceiling_correct)
         also have "l + a + 1 + - b*(c*l) + b*l = a + 1 + l*(1 - b*(c - 1))"
           by (simp add: algebra_simps)
@@ -241,16 +241,16 @@ fun t\<^sub>s\<^sub>t\<^sub>k:: "'a op\<^sub>s\<^sub>t\<^sub>k \<Rightarrow> 'a 
 interpretation stack: Amortized
 where init = "[]" and nxt = nxt\<^sub>s\<^sub>t\<^sub>k and inv = "\<lambda>_. True"
 and t = t\<^sub>s\<^sub>t\<^sub>k and \<Phi> = "length" and U = "\<lambda>f _. case f of Push _ \<Rightarrow> 2 | Pop _ \<Rightarrow> 0"
-proof
-  case goal1 show ?case by auto
+proof (standard, goal_cases)
+  case 1 show ?case by auto
 next
-  case goal2 thus ?case by(cases s) auto
+  case (2 s) thus ?case by(cases s) auto
 next
-  case goal3 thus ?case by simp
+  case 3 thus ?case by simp
 next
-  case goal4 show ?case by(simp)
+  case 4 show ?case by(simp)
 next
-  case goal5 thus ?case by (cases f) auto
+  case (5 _ f) thus ?case by (cases f) auto
 qed
 
 
@@ -274,16 +274,16 @@ fun t\<^sub>q :: "'a op\<^sub>q \<Rightarrow> 'a queue \<Rightarrow> real" where
 interpretation queue: Amortized
 where init = "([],[])" and nxt = nxt\<^sub>q and inv = "\<lambda>_. True"
 and t = t\<^sub>q and \<Phi> = "\<lambda>(xs,ys). length xs" and U = "\<lambda>f _. case f of Enq _ \<Rightarrow> 2 | Deq \<Rightarrow> 0"
-proof
-  case goal1 show ?case by auto
+proof (standard, goal_cases)
+  case 1 show ?case by auto
 next
-  case goal2 thus ?case by(cases s) auto
+  case (2 s) thus ?case by(cases s) auto
 next
-  case goal3 thus ?case by(cases s) auto
+  case (3 s) thus ?case by(cases s) auto
 next
-  case goal4 show ?case by(simp)
+  case 4 show ?case by(simp)
 next
-  case goal5 thus ?case
+  case (5 s f) thus ?case
     apply(cases s)
     apply(cases f)
     by auto
@@ -307,19 +307,19 @@ where init = "([],[])" and nxt = nxt_q2
 and inv = "\<lambda>(xs,ys). size xs \<le> size ys"
 and t = t_q2 and \<Phi> = "\<lambda>(xs,ys). 2 * size xs"
 and U = "\<lambda>f _. case f of Enq _ \<Rightarrow> 3 | Deq \<Rightarrow> 0"
-proof
-  case goal1 show ?case by auto
+proof (standard, goal_cases)
+  case 1 show ?case by auto
 next
-  case goal2 thus ?case by(cases s) (cases f, auto)
+  case (2 s f) thus ?case by(cases s) (cases f, auto)
 next
-  case goal3 thus ?case by(cases s) auto
+  case (3 s) thus ?case by(cases s) auto
 next
-  case goal4 show ?case by(simp)
+  case 4 show ?case by(simp)
 next
-  case goal5 thus ?case
+  case (5 s f) thus ?case
     apply(cases s)
     apply(cases f)
-    by (auto simp:  of_nat_Suc split: prod.splits)
+    by (auto simp: split: prod.splits)
 qed
 
 
@@ -340,17 +340,17 @@ where init = "(0,0)" and nxt = nxt\<^sub>t\<^sub>b
 and inv = "\<lambda>(n,l). if l=0 then n=0 else n \<le> l \<and> l \<le> 4*n"
 and t = t\<^sub>t\<^sub>b and \<Phi> = "(\<lambda>(n,l). if 2*n < l then l/2 - n else 2*n - l)"
 and U = "\<lambda>f _. case f of Ins \<Rightarrow> 3 | Del \<Rightarrow> 2"
-proof
-  case goal1 show ?case by auto
+proof (standard, goal_cases)
+  case 1 show ?case by auto
 next
-  case goal2 thus ?case by(cases s, cases f) (auto split: if_splits)
+  case (2 s f) thus ?case by(cases s, cases f) (auto split: if_splits)
 next
-  case goal3 thus ?case by(cases s)(simp split: if_splits)
+  case (3 s) thus ?case by(cases s)(simp split: if_splits)
 next
-  case goal4 show ?case by(simp)
+  case 4 show ?case by(simp)
 next
-  case goal5 thus ?case apply(cases s) apply(cases f)
-    by (auto simp: field_simps of_nat_Suc)
+  case (5 s f) thus ?case apply(cases s) apply(cases f)
+    by (auto simp: field_simps)
 qed
 
 end
