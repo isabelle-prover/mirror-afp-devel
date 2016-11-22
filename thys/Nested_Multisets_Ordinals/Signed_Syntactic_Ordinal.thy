@@ -193,7 +193,7 @@ lemma le_zhmset_of_pos: "M \<le> zhmset_of (hmset_pos M)"
 lemma minus_zhmset_of_pos_le: "- zhmset_of (hmset_neg M) \<le> M"
   by (metis le_zhmset_of_pos minus_le_iff mset_pos_uminus zhmsetmset_uminus)
 
-lemma zero_le_zhmset_of[simp]: "0 \<le> zhmset_of M"
+lemma zhmset_of_nonneg[simp]: "zhmset_of M \<ge> 0"
   by (metis hmsetmset_0 zero_le_hmset zero_zhmultiset_def zhmset_of_le zmset_of_empty)
 
 lemma
