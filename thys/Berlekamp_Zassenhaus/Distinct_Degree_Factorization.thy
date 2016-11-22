@@ -8,7 +8,7 @@ section \<open>Distinct Degree Factorization\<close>
 theory Distinct_Degree_Factorization
 imports 
   Finite_Field
-  Square_Free_Factorization
+  "../Polynomial_Factorization/Square_Free_Factorization" 
 begin
 
 definition factors_of_same_degree :: "nat \<Rightarrow> 'a :: field poly \<Rightarrow> bool" where

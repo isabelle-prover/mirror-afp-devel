@@ -214,6 +214,10 @@ proof -
     apply(subst(6) poly_as_sum_of_monoms'[OF le_refl, symmetric])
     using monom_hom by auto
 qed
+
+lemma map_poly_pcompose: 
+  "map_poly hom (f \<circ>\<^sub>p g) = map_poly hom f \<circ>\<^sub>p map_poly hom g" 
+  by (induct f arbitrary: g, auto)
 end
 
 locale map_poly_semiring_hom = semiring_hom

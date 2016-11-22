@@ -205,24 +205,24 @@ fun U :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a tree list \<Rightar
 interpretation Amortized
 where arity = arity and exec = exec and cost = cost and inv = is_root 
 and \<Phi> = \<Phi> and U = U
-proof
-  case goal1 thus ?case using is_root_insert is_root_del_min is_root_meld
+proof (standard, goal_cases)
+  case (1 _ f) thus ?case using is_root_insert is_root_del_min is_root_meld
     by (cases f) (auto simp: numeral_eq_Suc)
 next
-  case goal2 show ?case by (induct s) simp_all
+  case (2 s) show ?case by (induct s) simp_all
 next
-  case goal3 thus ?case by(cases f) auto
+  case (3 f) thus ?case by(cases f) auto
 next
-  case goal4 show ?case 
+  case (4 ss f) show ?case 
   proof (cases f)
-    case Empty with goal4 show ?thesis by(auto)
+    case Empty with 4 show ?thesis by(auto)
   next
     case (Insert x)
-    then obtain h where "ss = [h]" "is_root h" using goal4 by auto
-    thus ?thesis using Insert \<Delta>\<Phi>_insert goal4 by auto
+    then obtain h where "ss = [h]" "is_root h" using 4 by auto
+    thus ?thesis using Insert \<Delta>\<Phi>_insert 4 by auto
   next
     case [simp]: (Del_min)
-    then obtain h where [simp]: "ss = [h]" using goal4 by auto
+    then obtain h where [simp]: "ss = [h]" using 4 by auto
     show ?thesis
     proof (cases h)
       case [simp]: (Node lx x rx)
@@ -233,16 +233,16 @@ next
       proof (cases lx)
         case [simp]: (Node ly y ry) 
         have "\<Phi> (del_min h) - \<Phi> h \<le> 3*log 2 (size lx) - len lx + 2"
-          using  \<Delta>\<Phi>_del_min[of "lx" "x"] goal4 by simp
+          using  \<Delta>\<Phi>_del_min[of "lx" "x"] 4 by simp
         also have "\<dots> \<le> 3*log 2 (size h + 1) - len lx + 2" by fastforce
         finally show ?thesis by blast
-      qed (insert goal4, simp)
+      qed (insert 4, simp)
       ultimately show ?thesis by auto
     qed simp
   next
     case [simp]: Meld
     then obtain h1 h2 where [simp]: "ss = [h1,h2]" and 1: "is_root h1" "is_root h2"
-      using goal4 by (auto simp: numeral_eq_Suc)
+      using 4 by (auto simp: numeral_eq_Suc)
     show ?thesis
     proof (cases h1)
       case Leaf thus ?thesis by (cases h2) auto
