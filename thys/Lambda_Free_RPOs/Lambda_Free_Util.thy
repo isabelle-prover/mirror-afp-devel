@@ -295,6 +295,12 @@ proof (induct xs)
     using ih[OF xs_i_ge_a] by (simp add: ring_distribs ordered_ab_semigroup_add_class.add_mono)
 qed auto
 
+lemma prod_list_nonneg:
+  fixes xs :: "('a :: {ordered_semiring_0,linordered_nonzero_semiring}) list"
+  assumes "\<And>x. x \<in> set xs \<Longrightarrow> x \<ge> 0"
+  shows "prod_list xs \<ge> 0"
+  using assms by (induct xs) auto
+
 lemma zip_append_0_upt:
   "zip (xs @ ys) [0..<length xs + length ys] =
    zip xs [0..<length xs] @ zip ys [length xs..<length xs + length ys]"
