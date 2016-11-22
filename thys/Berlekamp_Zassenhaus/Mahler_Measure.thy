@@ -492,8 +492,16 @@ fun drop_half :: "'a list \<Rightarrow> 'a list" where
   "drop_half (x # y # ys) = x # drop_half ys" 
 | "drop_half xs = xs" 
 
+fun alternate :: "'a list \<Rightarrow> 'a list \<times> 'a list" where
+  "alternate (x # y # ys) = (case alternate ys of (evn, od) \<Rightarrow> (x # evn, y # od))" 
+| "alternate xs = (xs,[])" 
+  
 definition poly_square_subst :: "'a :: comm_ring_1 poly \<Rightarrow> 'a poly" where
   "poly_square_subst f = poly_of_list (drop_half (coeffs f))" 
+  
+definition poly_even_odd :: "'a :: comm_ring_1 poly \<Rightarrow> 'a poly \<times> 'a poly" where
+  "poly_even_odd f = (case alternate (coeffs f) of (evn,od) \<Rightarrow> (poly_of_list evn, poly_of_list od))" 
+
   
 lemma poly_square_subst_coeff: "coeff (poly_square_subst f) i = coeff f (2 * i)" 
 proof -
@@ -507,18 +515,85 @@ proof -
   qed auto
 qed
 
+lemma poly_even_odd_coeff: assumes "poly_even_odd f = (ev,od)"
+  shows "coeff ev i = coeff f (2 * i)" "coeff od i = coeff f (2 * i + 1)" 
+proof -
+  have id: "\<And> i. coeff f i = coeff (Poly (coeffs f)) i" by simp
+  obtain xs where xs: "coeffs f = xs" by auto
+  from assms[unfolded poly_even_odd_def] 
+  have ev_od: "ev = Poly (fst (alternate xs))" "od = Poly (snd (alternate xs))" 
+    by (auto simp: xs split: prod.splits)
+  have "coeff ev i = coeff f (2 * i) \<and> coeff od i = coeff f (2 * i + 1)" 
+    unfolding poly_of_list_def coeff_Poly_eq id xs ev_od
+  proof (induct xs arbitrary: i rule: alternate.induct)
+    case (1 x y ys i) thus ?case by (cases "alternate ys"; cases i, auto)
+  next
+    case ("2_2" x i) thus ?case by (cases i, auto)
+  qed auto
+  thus "coeff ev i = coeff f (2 * i)" "coeff od i = coeff f (2 * i + 1)" by auto
+qed
+
+lemma coeff_pcompose_monom: fixes f :: "'a :: comm_ring_1 poly" 
+  assumes n: "j < n" 
+  shows "coeff (f \<circ>\<^sub>p monom 1 n) (n * i + j) = (if j = 0 then coeff f i else 0)"     
+proof (induct f arbitrary: i)
+  case (pCons a f i)
+  note d = pcompose_pCons coeff_add coeff_monom_mult coeff_pCons
+  show ?case 
+  proof (cases i)
+    case 0
+    show ?thesis unfolding d 0 using n by (cases j, auto)
+  next
+    case (Suc ii)
+    have id: "n * Suc ii + j - n = n * ii + j" using n by (simp add: diff_mult_distrib2)
+    have id1: "(n \<le> n * Suc ii + j) = True" by auto
+    have id2: "(case n * Suc ii + j of 0 \<Rightarrow> a | Suc x \<Rightarrow> coeff 0 x) = 0" using n
+      by (cases "n * Suc ii + j", auto)
+    show ?thesis unfolding d Suc id id1 id2 pCons(2) if_True by auto
+  qed
+qed auto
+
+
 lemma coeff_pcompose_x_pow_n: fixes f :: "'a :: comm_ring_1 poly" 
   assumes n: "n \<noteq> 0" 
   shows "coeff (f \<circ>\<^sub>p monom 1 n) (n * i) = coeff f i"     
-proof (induct f arbitrary: i)
-  case (pCons a f i)
-  have id: "n * i - n = n * (i - 1)" by (simp add: diff_mult_distrib2)
-  show ?case unfolding pcompose_pCons coeff_add coeff_monom_mult id pCons(2) coeff_pCons
-    by (cases i, insert n, force, cases n, auto)
-qed auto
-    
+  using coeff_pcompose_monom[of 0 n f i] n by auto
+
 lemma poly_square_subst: "poly_square_subst (f \<circ>\<^sub>p (monom 1 2)) = f" 
   by (rule poly_eqI, unfold poly_square_subst_coeff, subst coeff_pcompose_x_pow_n, auto)
+
+lemma poly_even_odd: assumes "poly_even_odd f = (g,h)" 
+  shows "f = g \<circ>\<^sub>p monom 1 2 + monom 1 1 * (h \<circ>\<^sub>p monom 1 2)" 
+proof -
+  note id = poly_even_odd_coeff[OF assms]
+  show ?thesis
+  proof (rule poly_eqI, unfold coeff_add coeff_monom_mult)
+    fix n :: nat
+    obtain m i where mi: "m = n div 2" "i = n mod 2" by auto
+    have nmi: "n = 2 * m + i" "i < 2" "0 < (2 :: nat)" "1 < (2 :: nat)" unfolding mi by auto
+    have "(2 :: nat) \<noteq> 0" by auto
+    show "coeff f n = coeff (g \<circ>\<^sub>p monom 1 2) n + (if 1 \<le> n then 1 * coeff (h \<circ>\<^sub>p monom 1 2) (n - 1) else 0)" 
+    proof (cases "i = 1")
+      case True
+      hence id1: "2 * m + i - 1 = 2 * m + 0" by auto
+      show ?thesis unfolding nmi id id1 coeff_pcompose_monom[OF nmi(2)] coeff_pcompose_monom[OF nmi(3)]
+        unfolding True by auto
+    next
+      case False
+      with nmi have i0: "i = 0" by auto
+      show ?thesis 
+      proof (cases m)
+        case (Suc k)
+        hence id1: "2 * m + i - 1 = 2 * k + 1" using i0 by auto
+        show ?thesis unfolding nmi id coeff_pcompose_monom[OF nmi(2)] 
+          coeff_pcompose_monom[OF nmi(4)] id1 unfolding Suc i0 by auto
+      next
+        case 0
+        show ?thesis unfolding nmi id coeff_pcompose_monom[OF nmi(2)] unfolding i0 0 by auto
+      qed
+    qed
+  qed
+qed
 
 context
   fixes f :: "'a :: idom poly" 
@@ -527,7 +602,7 @@ begin
 lemma graeffe_0: "f = smult c (\<Prod>a\<leftarrow>as. [:- a, 1:]) \<Longrightarrow> graeffe_poly c as 0 = f" 
   unfolding graeffe_poly_def by auto
 
-lemma graeffe_simple_recursion: assumes "graeffe_poly c as m = f"
+lemma graeffe_recursion: assumes "graeffe_poly c as m = f"
   shows "graeffe_poly c as (Suc m) = smult ((-1)^(degree f)) (poly_square_subst (f * f \<circ>\<^sub>p [:0,-1:]))"  
 proof -
   let ?g = "graeffe_poly c as m" 
@@ -593,14 +668,44 @@ proof -
   qed
   finally show ?thesis .
 qed
-
-lemma graeffe_recursion: assumes "graeffe_poly c as m = f \<circ>\<^sub>p (monom 1 2) + g \<circ>\<^sub>p (monom 1 2) * monom 1 1"
-  shows "graeffe_poly c as (Suc m) = f * f - g * g * monom 1 1" 
-  oops 
 end
 
 definition graeffe_one_step :: "'a \<Rightarrow> 'a :: idom poly \<Rightarrow> 'a poly" where 
   "graeffe_one_step c f = smult c (poly_square_subst (f * f \<circ>\<^sub>p [:0,-1:]))" 
+  
+lemma graeffe_one_step_code: fixes c :: "'a :: idom" 
+  shows "graeffe_one_step c f = (case poly_even_odd f of (g,h)
+  \<Rightarrow> smult c (g * g - monom 1 1 * h * h))" 
+proof -
+  obtain g h where eo: "poly_even_odd f = (g,h)" by force
+  from poly_even_odd[OF eo] have fgh: "f = g \<circ>\<^sub>p monom 1 2 + monom 1 1 * h \<circ>\<^sub>p monom 1 2 " by auto 
+  have m2: "monom (1 :: 'a) 2 = [:0,0,1:]" "monom (1 :: 'a) 1 = [:0,1:]" 
+    unfolding coeffs_eq_iff coeffs_monom by auto
+  show ?thesis unfolding eo split graeffe_one_step_def
+  proof (rule arg_cong[of _ _ "smult c"])
+    let ?g = "g \<circ>\<^sub>p monom 1 2" 
+    let ?h = "h \<circ>\<^sub>p monom 1 2" 
+    let ?x = "monom (1 :: 'a) 1"
+    have 2: "2 = Suc (Suc 0)" by simp
+    have "f * f \<circ>\<^sub>p [:0, - 1:] = (g \<circ>\<^sub>p monom 1 2 + monom 1 1 * h \<circ>\<^sub>p monom 1 2) * 
+      (g \<circ>\<^sub>p monom 1 2 + monom 1 1 * h \<circ>\<^sub>p monom 1 2) \<circ>\<^sub>p [:0, - 1:]" unfolding fgh by simp
+    also have "(g \<circ>\<^sub>p monom 1 2 + monom 1 1 * h \<circ>\<^sub>p monom 1 2) \<circ>\<^sub>p [:0, - 1:]
+      = g \<circ>\<^sub>p (monom 1 2 \<circ>\<^sub>p [:0, - 1:]) + monom 1 1 \<circ>\<^sub>p [:0, - 1:] * h \<circ>\<^sub>p (monom 1 2 \<circ>\<^sub>p [:0, - 1:])" 
+      unfolding pcompose_add pcompose_mult pcompose_assoc by simp
+    also have "monom (1 :: 'a) 2 \<circ>\<^sub>p [:0, - 1:] = monom 1 2" unfolding m2 by auto
+    also have "?x \<circ>\<^sub>p [:0, - 1:] = [:0, -1:]" unfolding m2 by auto
+    also have "[:0, - 1:] * h \<circ>\<^sub>p monom 1 2 = (-?x) * ?h" unfolding m2 by simp
+    also have "(?g + ?x * ?h) * (?g + (- ?x) * ?h) = (?g * ?g - (?x * ?x) * ?h * ?h)"       
+      by (auto simp: field_simps)
+    also have "?x * ?x = ?x \<circ>\<^sub>p monom 1 2" unfolding mult_monom by (insert m2, simp add: 2)
+    also have "(?g * ?g - \<dots> * ?h * ?h) = (g * g - ?x * h * h) \<circ>\<^sub>p monom 1 2" 
+      unfolding pcompose_diff pcompose_mult by auto
+    finally have "poly_square_subst (f * f \<circ>\<^sub>p [:0, - 1:]) 
+      = poly_square_subst ((g * g - ?x * h * h) \<circ>\<^sub>p monom 1 2)" by simp
+    also have "\<dots> = g * g - ?x * h * h" unfolding poly_square_subst by simp
+    finally show "poly_square_subst (f * f \<circ>\<^sub>p [:0, - 1:]) = g * g - ?x * h * h" .
+  qed
+qed
 
 fun graeffe_poly_impl_main :: "'a \<Rightarrow> 'a :: idom poly \<Rightarrow> nat \<Rightarrow> 'a poly" where
   "graeffe_poly_impl_main c f 0 = f" 
@@ -616,7 +721,7 @@ next
   have [simp]: "degree (graeffe_poly c as m) = degree f" unfolding graeffe_poly_def degree_smult_eq assms
     degree_linear_factors by auto    
   from arg_cong[OF Suc, of degree]  
-  show ?case unfolding graeffe_simple_recursion[OF Suc[symmetric]]
+  show ?case unfolding graeffe_recursion[OF Suc[symmetric]]
     by (simp add: graeffe_one_step_def)
 qed
 
