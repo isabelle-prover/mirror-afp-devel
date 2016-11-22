@@ -219,6 +219,12 @@ proof
   qed
 qed simp
 
+lemma gt_0_lt_mult_gt_1_zhmset:
+  fixes m n :: zhmultiset
+  assumes "m > 0" and "n > 1"
+  shows "m < m * n"
+  using assms by simp
+
 lemma zero_less_iff_1_le_zhmset: "0 < n \<longleftrightarrow> 1 \<le> n" for n :: zhmultiset
   by (rule less_iff_add1_le_zhmset[of 0, simplified])
 
