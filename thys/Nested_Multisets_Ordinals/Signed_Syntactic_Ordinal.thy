@@ -115,12 +115,6 @@ lemma of_nat_lt_\<omega>\<^sub>z[simp]: "of_nat n < \<omega>\<^sub>z"
 lemma of_nat_ne_\<omega>\<^sub>z[simp]: "of_nat n \<noteq> \<omega>\<^sub>z"
   by (metis of_nat_lt_\<omega>\<^sub>z mset_le_asym mset_lt_single_iff)
 
-lemma of_nat_lt_iff_lt_zhmset[simp]: "(of_nat M :: zhmultiset) < of_nat N \<longleftrightarrow> M < N"
-  by (simp add: of_nat_zhmset zmset_of_less)
-
-lemma of_nat_le_iff_le_zhmset[simp]: "(of_nat M :: zhmultiset) \<le> of_nat N \<longleftrightarrow> M \<le> N"
-  by (simp add: of_nat_zhmset zmset_of_le)
-
 
 subsection \<open>Embedding of Extended Natural Numbers\<close>
 

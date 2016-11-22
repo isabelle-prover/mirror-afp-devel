@@ -381,10 +381,10 @@ lemma of_nat_lt_\<omega>[simp]: "of_nat n < \<omega>"
 lemma of_nat_ne_\<omega>[simp]: "of_nat n \<noteq> \<omega>"
   by (metis of_nat_lt_\<omega> mset_le_asym mset_lt_single_iff)
 
-lemma of_nat_lt_iff_lt_hmset[simp]: "(of_nat M :: hmultiset) < of_nat N \<longleftrightarrow> M < N"
+lemma of_nat_less_hmset[simp]: "(of_nat M :: hmultiset) < of_nat N \<longleftrightarrow> M < N"
   unfolding of_nat_hmset less_multiset_ext\<^sub>D\<^sub>M_less by simp
 
-lemma of_nat_le_iff_le_hmset[simp]: "(of_nat M :: hmultiset) \<le> of_nat N \<longleftrightarrow> M \<le> N"
+lemma of_nat_le_hmset[simp]: "(of_nat M :: hmultiset) \<le> of_nat N \<longleftrightarrow> M \<le> N"
   unfolding of_nat_hmset order_le_less less_multiset_ext\<^sub>D\<^sub>M_less by simp
 
 
@@ -572,8 +572,8 @@ lemma
 
 lemma
   hmset_of_enat_inject[simp]: "hmset_of_enat m = hmset_of_enat n \<longleftrightarrow> m = n" and
-  hmset_of_enat_lt_iff_lt[simp]: "hmset_of_enat m < hmset_of_enat n \<longleftrightarrow> m < n" and
-  hmset_of_enat_le_iff_le[simp]: "hmset_of_enat m \<le> hmset_of_enat n \<longleftrightarrow> m \<le> n"
+  hmset_of_enat_less[simp]: "hmset_of_enat m < hmset_of_enat n \<longleftrightarrow> m < n" and
+  hmset_of_enat_le[simp]: "hmset_of_enat m \<le> hmset_of_enat n \<longleftrightarrow> m \<le> n"
   by (cases m; cases n; simp)+
 
 lemma lt_\<omega>_imp_ex_of_nat:
@@ -636,10 +636,10 @@ lemma hmset_of_enat_minus_enat[simp]: "hmset_of_enat (m - enat n) = hmset_of_ena
   by (cases m) (auto simp: of_nat_minus_hmset)
 
 lemma of_nat_lt_hmset_of_enat_iff: "of_nat m < hmset_of_enat n \<longleftrightarrow> enat m < n"
-  by (metis hmset_of_enat.simps(1) hmset_of_enat_lt_iff_lt)
+  by (metis hmset_of_enat.simps(1) hmset_of_enat_less)
 
 lemma of_nat_le_hmset_of_enat_iff: "of_nat m \<le> hmset_of_enat n \<longleftrightarrow> enat m \<le> n"
-  by (metis hmset_of_enat.simps(1) hmset_of_enat_le_iff_le)
+  by (metis hmset_of_enat.simps(1) hmset_of_enat_le)
 
 lemma hmset_of_enat_lt_iff_ne_infinity: "hmset_of_enat x < \<omega> \<longleftrightarrow> x \<noteq> \<infinity>"
   by (cases x; simp)

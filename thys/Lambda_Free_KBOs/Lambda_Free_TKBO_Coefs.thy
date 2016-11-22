@@ -75,23 +75,23 @@ lemmas wary_apps\<^sub>h = wary_apps[folded of_nat_le_hmset_of_enat_iff]
 lemmas wary_cases_apps\<^sub>h[consumes 1, case_names apps] =
   wary_cases_apps[folded of_nat_le_hmset_of_enat_iff]
 
-lemmas ground_heads_arity\<^sub>h = ground_heads_arity[folded hmset_of_enat_le_iff_le]
-lemmas some_ground_head_arity\<^sub>h = some_ground_head_arity[folded hmset_of_enat_le_iff_le]
-lemmas \<epsilon>\<^sub>h_gt_0 = \<epsilon>_gt_0[folded of_nat_lt_iff_lt_hmset, unfolded of_nat_0]
-lemmas \<delta>\<^sub>h_le_\<epsilon>\<^sub>h = \<delta>_le_\<epsilon>[folded of_nat_le_iff_le_hmset]
+lemmas ground_heads_arity\<^sub>h = ground_heads_arity[folded hmset_of_enat_le]
+lemmas some_ground_head_arity\<^sub>h = some_ground_head_arity[folded hmset_of_enat_le]
+lemmas \<epsilon>\<^sub>h_gt_0 = \<epsilon>_gt_0[folded of_nat_less_hmset, unfolded of_nat_0]
+lemmas \<delta>\<^sub>h_le_\<epsilon>\<^sub>h = \<delta>_le_\<epsilon>[folded of_nat_le_hmset]
 lemmas arity_hd\<^sub>h_lt_\<omega>_if_\<delta>\<^sub>h_gt_0 = arity_hd_ne_infinity_if_\<delta>_gt_0
-  [folded of_nat_lt_iff_lt_hmset, unfolded of_nat_0, folded hmset_of_enat_lt_iff_ne_infinity]
+  [folded of_nat_less_hmset, unfolded of_nat_0, folded hmset_of_enat_lt_iff_ne_infinity]
 lemmas wt_sym_0_imp_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h = wt_sym_0_imp_\<delta>_eq_\<epsilon>[folded of_nat_inject_hmset, unfolded of_nat_0]
 lemmas wt_sym_0_unary\<^sub>h = wt_sym_0_unary[folded hmset_of_enat_inject, unfolded hmset_of_enat_1]
 lemmas extf_ext_snoc_if_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h = extf_ext_snoc_if_\<delta>_eq_\<epsilon>[folded of_nat_inject_hmset]
 lemmas extf_snoc_if_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h = ext_snoc.snoc[OF extf_ext_snoc_if_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h]
 lemmas arity_sym\<^sub>h_lt_\<omega>_if_\<delta>\<^sub>h_gt_0 = arity_sym_ne_infinity_if_\<delta>_gt_0
-  [folded of_nat_lt_iff_lt_hmset hmset_of_enat_lt_iff_ne_infinity, unfolded of_nat_0]
+  [folded of_nat_less_hmset hmset_of_enat_lt_iff_ne_infinity, unfolded of_nat_0]
 lemmas arity_var\<^sub>h_lt_\<omega>_if_\<delta>\<^sub>h_gt_0 = arity_var_ne_infinity_if_\<delta>_gt_0
-  [folded of_nat_lt_iff_lt_hmset hmset_of_enat_lt_iff_ne_infinity, unfolded of_nat_0]
+  [folded of_nat_less_hmset hmset_of_enat_lt_iff_ne_infinity, unfolded of_nat_0]
 lemmas arity\<^sub>h_lt_\<omega>_if_\<delta>\<^sub>h_gt_0 = arity_ne_infinity_if_\<delta>_gt_0
-  [folded of_nat_lt_iff_lt_hmset hmset_of_enat_lt_iff_ne_infinity, unfolded of_nat_0]
-lemmas wary_subst\<^sub>h_conv = wary_subst_def[folded hmset_of_enat_le_iff_le]
+  [folded of_nat_less_hmset hmset_of_enat_lt_iff_ne_infinity, unfolded of_nat_0]
+lemmas wary_subst\<^sub>h_conv = wary_subst_def[folded hmset_of_enat_le]
 lemmas extf_singleton_nil_if_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h = extf_singleton_nil_if_\<delta>_eq_\<epsilon>[folded of_nat_inject_hmset]
 
 subsection \<open>Weights and Subterm Coefficients\<close>
@@ -289,7 +289,7 @@ qed auto
 
 lemma \<delta>\<^sub>h_times_arity_sym\<^sub>h_lt_\<omega>: "\<delta>\<^sub>h * arity_sym\<^sub>h f < \<omega>"
   using arity_sym\<^sub>h_lt_\<omega>_if_\<delta>\<^sub>h_gt_0
-  by (cases \<delta>, simp, metis of_nat_0 of_nat_lt_\<omega> of_nat_lt_iff_lt_hmset lt_\<omega>_lt_\<omega>_imp_times_lt_\<omega>
+  by (cases \<delta>, simp, metis of_nat_0 of_nat_lt_\<omega> of_nat_less_hmset lt_\<omega>_lt_\<omega>_imp_times_lt_\<omega>
     zero_less_Suc)
 
 lemma wt_ge_\<epsilon>\<^sub>h:
@@ -643,7 +643,7 @@ lemma wt_\<delta>\<^sub>h_arity\<^sub>h_give_unary:
     nargs_s_lt: "of_nat (num_args s) < arity_hd\<^sub>h (head s)"
   shows "arity_hd\<^sub>h (head s) = 1"
   using wt_s_eq_\<delta> nargs_s_lt wt_gt_\<delta>\<^sub>h_if_superunary[OF legal]
-  by (metis gr_implies_not_zero_hmset le_refl lt_1_iff_eq_0_hmset not_le of_nat_le_iff_le_hmset
+  by (metis gr_implies_not_zero_hmset le_refl lt_1_iff_eq_0_hmset not_le of_nat_le_hmset
     order.not_eq_order_implies_strict)
 
 lemma wt_\<delta>\<^sub>h_missing_args_imp_max_head:
@@ -661,7 +661,7 @@ proof
   have "arity_hd\<^sub>h (head s) = 1"
     by (rule wt_\<delta>\<^sub>h_arity\<^sub>h_give_unary[OF legal wt_s nargs_lt])
   hence nargs_s: "num_args s = 0"
-    by (metis less_one nargs_lt of_nat_1 of_nat_lt_iff_lt_hmset)
+    by (metis less_one nargs_lt of_nat_1 of_nat_less_hmset)
 
   {
     fix f
@@ -743,7 +743,7 @@ proof (induct t arbitrary: s rule: measure_induct_rule[of size])
     have ary_hd_s: "arity_hd\<^sub>h (head s) = 1"
       using wt_\<delta>\<^sub>h_arity\<^sub>h_give_unary[OF legal] nargs_lt wt_s by simp
     hence nargs_s: "num_args s = 0"
-      by (metis less_one nargs_lt of_nat_1 of_nat_lt_iff_lt_hmset)
+      by (metis less_one nargs_lt of_nat_1 of_nat_less_hmset)
     hence nargs_ts: "num_args (App s t) = 1"
       by simp
 
@@ -787,7 +787,7 @@ proof (induct t arbitrary: s rule: measure_induct_rule[of size])
 
       have nargs_t_le: "num_args t \<le> 1"
         using ary_hd_s[folded hd_t_eq_s] wary_num_args_le_arity_head\<^sub>h[OF wary_t]
-          of_nat_le_iff_le_hmset by fastforce
+          of_nat_le_hmset by fastforce
 
       have extf: "extf f op >\<^sub>t [t] (args t)" for f
       proof (cases "args t")
@@ -798,7 +798,7 @@ proof (induct t arbitrary: s rule: measure_induct_rule[of size])
         case args_t: (Cons ta ts)
         hence ts: "ts = []"
           using ary_hd_s[folded hd_t_eq_s] wary_num_args_le_arity_head\<^sub>h[OF wary_t]
-          of_nat_le_iff_le_hmset
+          of_nat_le_hmset
           using nargs_t_le by simp
         have ta: "ta = arg t"
           by (metis apps.simps(1) apps.simps(2) args_t tm.sel(6) tm_collapse_apps ts)
