@@ -7,15 +7,13 @@ subsection \<open>Transfer rules to convert theorems from JNF to HMA and vice-ve
 theory HMA_Connect
 imports 
   "../Jordan_Normal_Form/Spectral_Radius" 
-  "../Echelon_Form/Code_Cayley_Hamilton" (* defines matpow *)
+  "~~/src/HOL/Analysis/Determinants"
   Bij_Nat
   Cancel_Card_Constraint
   "~~/src/HOL/Eisbach/Eisbach" 
 begin
 
 text \<open>Prefer certain constants and lemmas without prefix.\<close>
-
-hide_const Cayley_Hamilton.C
 
 hide_const (open) Matrix.mat
 hide_const (open) Matrix.row
@@ -449,6 +447,10 @@ lemma HMA_mat_minus[transfer_rule]: "(HMA_M ===> HMA_M ===> HMA_M)
   (\<lambda> A B. A \<oplus>\<^sub>m map\<^sub>m uminus B) (op - :: 'a :: group_add ^'nc^'nr \<Rightarrow> 'a^'nc^'nr \<Rightarrow> 'a^'nc^'nr)"
   unfolding rel_fun_def HMA_M_def from_hma\<^sub>m_def by auto
 
+definition mat2matofpoly where "mat2matofpoly A = (\<chi> i j. [: A $ i $ j :])"
+
+definition charpoly where charpoly_def: "charpoly A = det (mat (monom 1 (Suc 0)) - mat2matofpoly A)"
+
 lemma HMA_mat2matofpoly[transfer_rule]: "(HMA_M ===> HMA_M) (\<lambda>x. map\<^sub>m (\<lambda>a. [:a:]) x) mat2matofpoly"
   unfolding rel_fun_def HMA_M_def from_hma\<^sub>m_def mat2matofpoly_def by auto
 
@@ -469,27 +471,6 @@ proof -
   thus ?thesis by blast
 qed
  
-
-lemma matpow_commute: "matpow A n ** A = A ** matpow A n"
-  by (induct n, auto simp: matrix_mul_lid matrix_mul_rid, subst matrix_mul_assoc[symmetric], auto) 
-
-lemma HMA_mat_pow[transfer_rule]:
-  "((HMA_M ::'a::{semiring_1} mat \<Rightarrow> 'a^'n^'n \<Rightarrow> bool) ===> op = ===> HMA_M) mat_pow matpow"
-proof -
-  {
-    fix A :: "'a mat" and A' :: "'a^'n^'n" and n :: nat
-    assume [transfer_rule]: "HMA_M A A'"
-    hence [simp]: "dim\<^sub>r A = CARD('n)" unfolding HMA_M_def by simp
-    have "HMA_M (mat_pow A n) (matpow A' n)"
-    proof (induct n)
-      case (Suc n)
-      note [transfer_rule] = this
-      show ?case by (simp add: matpow_commute[symmetric], transfer_prover)
-    qed (simp, transfer_prover)
-  }
-  thus ?thesis by blast
-qed
-
 
 lemma HMA_eigen_vector [transfer_rule]: "(HMA_M ===> HMA_V ===> op =) eigenvector eigen_vector"
 proof -
@@ -605,6 +586,9 @@ text \<open>Now it becomes easy to transfer results which are not yet proven in 
 lemma matrix_add_vect_distrib: "(A + B) *v v = A *v v + B *v v"
   by (transfer_hma rule: mat_mult_vec_left_distrib)
 
+lemma matrix_vector_right_distrib: "M *v (v + w) = M *v v + M *v w"
+  by (transfer_hma rule: mat_mult_vec_right_distrib)
+
 lemma eigen_value_root_charpoly: 
   "eigen_value A k \<longleftrightarrow> poly (charpoly (A :: 'a :: field ^ 'n ^ 'n)) k = 0"
   by (transfer_hma rule: eigenvalue_root_char_poly)
@@ -616,5 +600,7 @@ lemma finite_spectrum: fixes A :: "'a :: field ^ 'n ^ 'n"
 lemma non_empty_spectrum: fixes A :: "complex ^ 'n ^ 'n"
   shows "Collect (eigen_value A) \<noteq> {}"
   by (transfer_hma rule: spectrum_non_empty[unfolded spectrum_def])
+
+
 
 end

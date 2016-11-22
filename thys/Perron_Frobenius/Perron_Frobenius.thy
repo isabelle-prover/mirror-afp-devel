@@ -237,6 +237,7 @@ proof (rule convexI)
     from a b have "a * (sr * v $ i) + b * (sr * w $ i) \<le> a * (B *v v) $ i + b * (B *v w) $ i" by auto
   } note le = this
   have switch[simp]: "\<And> x y. x * a * y = a * x * y"  "\<And> x y. x * b * y = b * x * y" by auto
+  have [simp]: "x \<in> {v,w} \<Longrightarrow> a * (r * x $h i) = r * (a * x $h i)" for a r i x by auto
   show "a *\<^sub>R v + b *\<^sub>R w \<in> S" using * norm1 le unfolding S_def
     by (auto simp: matrix_vect_scaleR matrix_vector_right_distrib ring_distribs)
 qed
