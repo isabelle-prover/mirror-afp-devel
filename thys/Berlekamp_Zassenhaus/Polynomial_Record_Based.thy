@@ -14,7 +14,7 @@ subsubsection \<open>Definitions\<close>
 theory Polynomial_Record_Based
 imports 
   Arithmetic_Record_Based
-  "../Polynomial_Interpolation/Missing_Polynomial"
+  Karatsuba_Multiplication
 begin
 
 context
@@ -63,6 +63,8 @@ definition one_poly_i :: "'i list" where
 definition smult_i :: "'i \<Rightarrow> 'i list \<Rightarrow> 'i list" where
   "smult_i a pp = (if a = zero then [] else map (times a) pp)"
 
+text \<open>TODO: For multiplication, one could also implement Karatsuba's algorithm at this point, 
+  cf. @{thm karatsuba_mult_poly}.\<close>
 definition times_poly_i :: "'i list \<Rightarrow> 'i list \<Rightarrow> 'i list" where
   "times_poly_i pp qq \<equiv> foldr (\<lambda> a pa. plus_poly_i (smult_i a qq) (cCons_i zero pa)) pp zero_poly_i"
 
