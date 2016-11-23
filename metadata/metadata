@@ -4943,3 +4943,25 @@ abstract =
   contain binding names. The logic is generalized to treat different
   bisimulation variants such as early, late and open in a systematic
   way.
+
+[Abs_Int_ITP2012]
+title = Abstract Interpretation of Annotated Commands
+author = Tobias Nipkow <http://www.in.tum.de/~nipkow>
+notify = nipkow@in.tum.de
+date = 2016-11-23
+topic = Computer Science/Programming Languages/Static Analysis
+abstract =
+  This is the Isabelle formalization of the material decribed in the
+  eponymous <a href="http://dx.doi.org/10.1007/978-3-642-32347-8_9">ITP 2012 paper</a>.
+  It develops a generic abstract interpreter for a
+  while-language, including widening and narrowing. The collecting
+  semantics and the abstract interpreter operate on annotated commands:
+  the program is represented as a syntax tree with the semantic
+  information directly embedded, without auxiliary labels. The aim of
+  the formalization is simplicity, not efficiency or
+  precision. This is motivated by the inclusion of the material in a
+  theorem prover based course on semantics. A similar (but more
+  polished) development is covered in the book
+  <a href="http://dx.doi.org/10.1007/978-3-319-10542-0">Concrete Semantics</a>.
+
+
