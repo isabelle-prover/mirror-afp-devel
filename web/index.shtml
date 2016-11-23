@@ -53,6 +53,13 @@ is available <a href="citing.shtml">[here]</a>.
 	</tr>
 
 <tr><td class="entry">
+2016-11-23:
+<a href="entries/Abs_Int_ITP2012.shtml">Abstract Interpretation of Annotated Commands</a>
+<br>Author:
+<a href="http://www.in.tum.de/~nipkow">Tobias Nipkow</a>
+</td></tr>
+
+<tr><td class="entry">
 2016-11-12:
 <a href="entries/Lambda_Free_KBOs.shtml">Formalization of Knuth–Bendix Orders for Lambda-Free Higher-Order Terms</a>
 <br>Author:
