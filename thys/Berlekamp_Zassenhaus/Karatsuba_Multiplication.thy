@@ -42,7 +42,8 @@ text \<open>The following constant determines at which size we will switch to th
 definition karatsuba_lower_bound where [termination_simp]: "karatsuba_lower_bound = (7 :: nat)" 
 
 fun karatsuba_main :: "'a :: comm_ring_1 list \<Rightarrow> nat \<Rightarrow> 'a list \<Rightarrow> nat \<Rightarrow> 'a poly" where
-  "karatsuba_main f n g m = (if n \<le> karatsuba_lower_bound \<or> m \<le> karatsuba_lower_bound then let ff = poly_of_list f in foldr (\<lambda>a p. smult a ff + pCons 0 p) g 0
+  "karatsuba_main f n g m = (if n \<le> karatsuba_lower_bound \<or> m \<le> karatsuba_lower_bound then 
+    let ff = poly_of_list f in foldr (\<lambda>a p. smult a ff + pCons 0 p) g 0
    else let n2 = n div 2 in 
    if m > n2 then (case split_at n2 f of 
    (f0,f1) \<Rightarrow> case split_at n2 g of
@@ -123,9 +124,12 @@ qed
 
 definition karatsuba_mult_poly :: "'a :: comm_ring_1 poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly" where
   "karatsuba_mult_poly f g = (let ff = coeffs f; gg = coeffs g; n = length ff; m = length gg
-    in (if n \<le> karatsuba_lower_bound \<or> m \<le> karatsuba_lower_bound then if n \<le> m then foldr (\<lambda>a p. smult a g + pCons 0 p) ff 0 else 
-      foldr (\<lambda>a p. smult a f + pCons 0 p) gg 0 else
-      if n \<le> m then karatsuba_main gg m ff n else karatsuba_main ff n gg m))" 
+    in (if n \<le> karatsuba_lower_bound \<or> m \<le> karatsuba_lower_bound then if n \<le> m 
+    then foldr (\<lambda>a p. smult a g + pCons 0 p) ff 0 
+    else foldr (\<lambda>a p. smult a f + pCons 0 p) gg 0 
+    else if n \<le> m 
+    then karatsuba_main gg m ff n 
+    else karatsuba_main ff n gg m))" 
   
 lemma karatsuba_mult_poly: "karatsuba_mult_poly f g = f * g" 
 proof -

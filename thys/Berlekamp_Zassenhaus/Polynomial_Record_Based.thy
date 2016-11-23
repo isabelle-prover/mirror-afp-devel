@@ -63,10 +63,41 @@ definition one_poly_i :: "'i list" where
 definition smult_i :: "'i \<Rightarrow> 'i list \<Rightarrow> 'i list" where
   "smult_i a pp = (if a = zero then [] else map (times a) pp)"
 
-text \<open>TODO: For multiplication, one could also implement Karatsuba's algorithm at this point, 
-  cf. @{thm karatsuba_mult_poly}.\<close>
+definition poly_of_list_i :: "'i list \<Rightarrow> 'i list" where
+  "poly_of_list_i = strip_while (op = zero)"
+
+fun coeffs_minus_i :: "'i list \<Rightarrow> 'i list \<Rightarrow> 'i list" where
+  "coeffs_minus_i (x # xs) (y # ys) = (minus x y # coeffs_minus_i xs ys)" 
+| "coeffs_minus_i xs [] = xs" 
+| "coeffs_minus_i [] ys = map uminus ys" 
+  
+definition monom_mult_i :: "nat \<Rightarrow> 'i list \<Rightarrow> 'i list" where
+  "monom_mult_i n xs = (if xs = [] then xs else replicate n zero @ xs)" 
+
+fun karatsuba_main_i :: "'i list \<Rightarrow> nat \<Rightarrow> 'i list \<Rightarrow> nat \<Rightarrow> 'i list" where
+  "karatsuba_main_i f n g m = (if n \<le> karatsuba_lower_bound \<or> m \<le> karatsuba_lower_bound then 
+   let ff = poly_of_list_i f in foldr (\<lambda>a p. plus_poly_i (smult_i a ff) (cCons_i zero p)) g zero_poly_i
+   else let n2 = n div 2 in 
+   if m > n2 then (case split_at n2 f of 
+   (f0,f1) \<Rightarrow> case split_at n2 g of
+   (g0,g1) \<Rightarrow> let 
+      p1 = karatsuba_main_i f1 (n - n2) g1 (m - n2);
+      p2 = karatsuba_main_i (coeffs_minus_i f1 f0) n2 (coeffs_minus_i g1 g0) n2;
+      p3 = karatsuba_main_i f0 n2 g0 n2 
+      in plus_poly_i (monom_mult_i (n2 + n2) p1) 
+        (plus_poly_i (monom_mult_i n2 (plus_poly_i (minus_poly_i p1 p2) p3)) p3))
+    else case split_at n2 f of
+    (f0,f1) \<Rightarrow> let 
+       p1 = karatsuba_main_i f1 (n - n2) g m; 
+       p2 = karatsuba_main_i f0 n2 g m
+     in plus_poly_i (monom_mult_i n2 p1) p2)" 
+  
 definition times_poly_i :: "'i list \<Rightarrow> 'i list \<Rightarrow> 'i list" where
-  "times_poly_i pp qq \<equiv> foldr (\<lambda> a pa. plus_poly_i (smult_i a qq) (cCons_i zero pa)) pp zero_poly_i"
+  "times_poly_i f g \<equiv> (let n = length f; m = length g
+    in (if n \<le> karatsuba_lower_bound \<or> m \<le> karatsuba_lower_bound then if n \<le> m then 
+      foldr (\<lambda>a p. plus_poly_i (smult_i a g) (cCons_i zero p)) f zero_poly_i else 
+      foldr (\<lambda>a p. plus_poly_i (smult_i a f) (cCons_i zero p)) g zero_poly_i else
+      if n \<le> m then karatsuba_main_i g m f n else karatsuba_main_i f n g m))"
 
 definition coeff_i :: "'i list \<Rightarrow> nat \<Rightarrow> 'i" where
   "coeff_i = nth_default zero"
@@ -84,9 +115,6 @@ fun minus_poly_rev_list_i :: "'i list \<Rightarrow> 'i list \<Rightarrow> 'i lis
   "minus_poly_rev_list_i (x # xs) (y # ys) = (minus x y) # (minus_poly_rev_list_i xs ys)"
 | "minus_poly_rev_list_i xs [] = xs"
 | "minus_poly_rev_list_i [] (y # ys) = []"
-
-definition poly_of_list_i :: "'i list \<Rightarrow> 'i list" where
-  "poly_of_list_i = strip_while (op = zero)"
 
 fun divmod_poly_one_main_i :: "'i list \<Rightarrow> 'i list \<Rightarrow> 'i list 
   \<Rightarrow> nat \<Rightarrow> 'i list \<times> 'i list" where
@@ -329,16 +357,154 @@ qed
 lemma poly_rel_coeffs[transfer_rule]: "(poly_rel ===> list_all2 R) (\<lambda> x. x) coeffs"
   unfolding rel_fun_def poly_rel_def by auto
 
+(* poly_of_list *)  
+lemma poly_rel_poly_of_list[transfer_rule]: "(list_all2 R ===> poly_rel) (poly_of_list_i ops) poly_of_list"
+  unfolding rel_fun_def poly_of_list_i_def poly_rel_def poly_of_list_impl
+proof (intro allI impI, goal_cases)
+  case (1 x y)
+  note [transfer_rule] = this
+  show ?case by transfer_prover
+qed
+
+lemma poly_rel_monom_mult[transfer_rule]: 
+  "(op = ===> poly_rel ===> poly_rel) (monom_mult_i ops) monom_mult" 
+  unfolding rel_fun_def monom_mult_i_def poly_rel_def monom_mult_code Let_def
+proof (auto, goal_cases)
+  case (1 x xs y)
+  show ?case by (induct x, auto simp: 1(3) zero)
+qed
+
+declare karatsuba_main_i.simps[simp del]
+
+lemma list_rel_coeffs_minus_i: assumes "list_all2 R x1 x2" "list_all2 R y1 y2" 
+  shows "list_all2 R (coeffs_minus_i ops x1 y1) (coeffs_minus x2 y2)" 
+proof -
+  note simps = coeffs_minus_i.simps coeffs_minus.simps
+  show ?thesis using assms
+  proof (induct x1 y1 arbitrary: x2 y2 rule: coeffs_minus_i.induct)
+    case (1 x xs y ys)
+    from 1(2-) obtain Y Ys where y2: "y2 = Y # Ys" unfolding list_all2_conv_all_nth by (cases y2, auto)
+    with 1(2-) have y: "R y Y" "list_all2 R ys Ys" by auto
+    from 1(2-) obtain X Xs where x2: "x2 = X # Xs" unfolding list_all2_conv_all_nth by (cases x2, auto)
+    with 1(2-) have x: "R x X" "list_all2 R xs Xs" by auto
+    from 1(1)[OF x(2) y(2)] x(1) y(1)
+    show ?case unfolding x2 y2 simps using minus[unfolded rel_fun_def] by auto
+  next
+    case (3 y ys)
+    from 3 have x2: "x2 = []" by auto
+    from 3 obtain Y Ys where y2: "y2 = Y # Ys" unfolding list_all2_conv_all_nth by (cases y2, auto)
+    obtain y1 where y1: "y # ys = y1" by auto
+    show ?case unfolding y2 simps x2 unfolding y2[symmetric] list_all2_map2 list_all2_map1
+      using 3(2) unfolding y1 using uminus[unfolded rel_fun_def]
+      unfolding list_all2_conv_all_nth by auto
+  qed auto
+qed  
+
 (* multiplication *)
+lemma poly_rel_karatsuba_main: "list_all2 R x1 x2 \<Longrightarrow> list_all2 R y1 y2 \<Longrightarrow>
+  poly_rel (karatsuba_main_i ops x1 n y1 m) (karatsuba_main x2 n y2 m)"
+proof (induct n arbitrary: x1 y1 x2 y2 m rule: less_induct)
+  case (less n f g F G m)
+  note simp[simp] = karatsuba_main.simps[of F n G m] karatsuba_main_i.simps[of ops f n g m] 
+  note IH = less(1)
+  note rel[transfer_rule] = less(2-3)
+  show ?case (is "poly_rel ?lhs ?rhs")
+  proof (cases "(n \<le> karatsuba_lower_bound \<or> m \<le> karatsuba_lower_bound) = False")
+    case False
+    from False 
+    have lhs: "?lhs = foldr (\<lambda>a p. plus_poly_i ops (smult_i ops a (poly_of_list_i ops f))
+         (cCons_i ops zero p)) g []" by simp
+    from False have rhs: "?rhs = foldr (\<lambda>a p. smult a (poly_of_list F) + pCons 0 p) G 0" by simp
+    show ?thesis unfolding lhs rhs by transfer_prover
+  next
+    case True note * = this
+    let ?n2 = "n div 2" 
+    have "?n2 < n" "n - ?n2 < n" using True unfolding karatsuba_lower_bound_def by auto
+    note IH = IH[OF this(1)] IH[OF this(2)]
+    obtain f1 f0 where f: "split_at ?n2 f = (f0,f1)" by force
+    obtain g1 g0 where g: "split_at ?n2 g = (g0,g1)" by force
+    obtain F1 F0 where F: "split_at ?n2 F = (F0,F1)" by force
+    obtain G1 G0 where G: "split_at ?n2 G = (G0,G1)" by force
+    from rel f F have relf[transfer_rule]: "list_all2 R f0 F0" "list_all2 R f1 F1" 
+      unfolding split_at_def by auto
+    from rel g G have relg[transfer_rule]: "list_all2 R g0 G0" "list_all2 R g1 G1" 
+      unfolding split_at_def by auto
+    show ?thesis
+    proof (cases "?n2 < m")
+      case True
+      obtain p1 P1 where p1: "p1 = karatsuba_main_i ops f1 (n - n div 2) g1 (m - n div 2)" 
+          "P1 = karatsuba_main F1 (n - n div 2) G1 (m - n div 2)" by auto
+      obtain p2 P2 where p2: "p2 = karatsuba_main_i ops (coeffs_minus_i ops f1 f0) (n div 2)
+                          (coeffs_minus_i ops g1 g0) (n div 2)" 
+          "P2 = karatsuba_main (coeffs_minus F1 F0) (n div 2)
+                          (coeffs_minus G1 G0) (n div 2)" by auto 
+      obtain p3 P3 where p3: "p3 = karatsuba_main_i ops f0 (n div 2) g0 (n div 2)"
+          "P3 = karatsuba_main F0 (n div 2) G0 (n div 2)" by auto
+      from * True have lhs: "?lhs = plus_poly_i ops (monom_mult_i ops (n div 2 + n div 2) p1)
+                (plus_poly_i ops
+                  (monom_mult_i ops (n div 2)
+                    (plus_poly_i ops (minus_poly_i ops p1 p2) p3)) p3)" 
+        unfolding simp Let_def f g split p1 p2 p3 by auto
+      have [transfer_rule]: "poly_rel p1 P1" using IH(2)[OF relf(2) relg(2)] unfolding p1 .
+      have [transfer_rule]: "poly_rel p3 P3" using IH(1)[OF relf(1) relg(1)] unfolding p3 .
+      have [transfer_rule]: "poly_rel p2 P2" unfolding p2 
+        by (rule IH(1)[OF list_rel_coeffs_minus_i list_rel_coeffs_minus_i], insert relf relg)
+      from True * have rhs: "?rhs = monom_mult (n div 2 + n div 2) P1 +
+               (monom_mult (n div 2) (P1 - P2 + P3) + P3)" 
+        unfolding simp Let_def F G split p1 p2 p3 by auto
+      show ?thesis unfolding lhs rhs by transfer_prover 
+    next
+      case False
+      obtain p1 P1 where p1: "p1 = karatsuba_main_i ops f1 (n - n div 2) g m" 
+          "P1 = karatsuba_main F1 (n - n div 2) G m" by auto 
+      obtain p2 P2 where p2: "p2 = karatsuba_main_i ops f0 (n div 2) g m" 
+          "P2 = karatsuba_main F0 (n div 2) G m" by auto
+      from * False have lhs: "?lhs = plus_poly_i ops (monom_mult_i ops (n div 2) p1) p2" 
+        unfolding simp Let_def f split p1 p2 by auto
+      from * False have rhs: "?rhs = monom_mult (n div 2) P1 + P2" 
+        unfolding simp Let_def F split p1 p2 by auto
+      have [transfer_rule]: "poly_rel p1 P1" using IH(2)[OF relf(2) rel(2)] unfolding p1 .
+      have [transfer_rule]: "poly_rel p2 P2" using IH(1)[OF relf(1) rel(2)] unfolding p2 .
+      show ?thesis unfolding lhs rhs by transfer_prover 
+    qed
+  qed
+qed
+  
+
 lemma poly_rel_times[transfer_rule]: "(poly_rel ===> poly_rel ===> poly_rel) (times_poly_i ops) (op *)"  
 proof (intro rel_funI)
   fix x1 y1 x2 y2
-  assume "poly_rel x1 x2" and [transfer_rule]: "poly_rel y1 y2"
-  hence [transfer_rule]: "list_all2 R x1 (coeffs x2)" 
+  assume x12[transfer_rule]: "poly_rel x1 x2" and y12 [transfer_rule]: "poly_rel y1 y2"
+  hence X12[transfer_rule]: "list_all2 R x1 (coeffs x2)" and Y12[transfer_rule]: "list_all2 R y1 (coeffs y2)" 
     unfolding poly_rel_def by auto
-  show "poly_rel (times_poly_i ops x1 y1) (x2 * y2)"
-    unfolding poly_rel_def coeffs_eq_iff times_poly_def times_poly_i_def fold_coeffs_def
-    by transfer_prover
+  hence len: "length (coeffs x2) = length x1" "length (coeffs y2) = length y1" 
+    unfolding list_all2_conv_all_nth by auto
+  let ?cond1 = "length x1 \<le> karatsuba_lower_bound \<or> length y1 \<le> karatsuba_lower_bound" 
+  let ?cond2 = "length x1 \<le> length y1" 
+  note d = karatsuba_mult_poly[symmetric] karatsuba_mult_poly_def Let_def
+      times_poly_i_def len if_True if_False
+  consider (TT) "?cond1 = True" "?cond2 = True" | (TF) "?cond1 = True" "?cond2 = False" 
+      | (FT) "?cond1 = False" "?cond2 = True" | (FF) "?cond1 = False" "?cond2 = False" by auto
+  thus "poly_rel (times_poly_i ops x1 y1) (x2 * y2)"
+  proof (cases)
+    case TT
+    show ?thesis unfolding d TT 
+      unfolding poly_rel_def coeffs_eq_iff times_poly_def times_poly_i_def fold_coeffs_def
+      by transfer_prover
+  next
+    case TF
+    show ?thesis unfolding d TF
+      unfolding poly_rel_def coeffs_eq_iff times_poly_def times_poly_i_def fold_coeffs_def
+      by transfer_prover
+  next
+    case FT
+    show ?thesis unfolding d FT
+      by (rule poly_rel_karatsuba_main[OF Y12 X12])
+  next
+    case FF
+    show ?thesis unfolding d FF
+      by (rule poly_rel_karatsuba_main[OF X12 Y12])
+  qed
 qed
 
 (* coeff *)  
@@ -366,15 +532,6 @@ qed
 
 lemma poly_rel_lead_coeff[transfer_rule]: "(poly_rel ===> R) (lead_coeff_i ops) lead_coeff"
   unfolding lead_coeff_i_def'[abs_def] lead_coeff_def[abs_def] by transfer_prover
-
-(* poly_of_list *)  
-lemma poly_rel_poly_of_list[transfer_rule]: "(list_all2 R ===> poly_rel) (poly_of_list_i ops) poly_of_list"
-  unfolding rel_fun_def poly_of_list_i_def poly_rel_def poly_of_list_impl
-proof (intro allI impI, goal_cases)
-  case (1 x y)
-  note [transfer_rule] = this
-  show ?case by transfer_prover
-qed
 
 (* minus_poly_rev_list *)
 lemma poly_rel_minus_poly_rev_list[transfer_rule]: 
