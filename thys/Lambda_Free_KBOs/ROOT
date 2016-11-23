@@ -5,7 +5,7 @@ session Lambda_Free_KBOs (AFP) = HOL +
   theories [document = false]
     "../Lambda_Free_RPOs/Extension_Orders"
     "../Lambda_Free_RPOs/Lambda_Free_Term"
-    "../Nested_Multisets_Ordinals/Syntactic_Ordinal"
+    "../Nested_Multisets_Ordinals/Signed_Syntactic_Ordinal"
     "../Polynomials/Polynomials"
   theories
     Lambda_Free_KBOs
