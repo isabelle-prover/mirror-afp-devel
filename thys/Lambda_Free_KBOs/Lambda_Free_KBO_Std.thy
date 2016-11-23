@@ -167,7 +167,7 @@ lemma wt_ge_num_args_if_\<delta>_eq_0:
   assumes \<delta>_eq_0: "\<delta> = 0"
   shows "wt s \<ge> num_args s"
   by (induct s, simp_all,
-    metis (no_types, lifting) \<delta>_eq_0 \<epsilon>_gt_0 wt_\<delta>_imp_\<delta>_eq_\<epsilon> add_le_same_cancel1 le_0_eq le_trans
+    metis (no_types) \<delta>_eq_0 \<epsilon>_gt_0 wt_\<delta>_imp_\<delta>_eq_\<epsilon> add_le_same_cancel1 le_0_eq le_trans
       minus_nat.diff_0 not_gr_zero not_less_eq_eq)
 
 lemma wt_ge_num_args: "wary s \<Longrightarrow> wt s \<ge> num_args s"
@@ -299,28 +299,6 @@ proof
     by (metis \<delta>_eq_\<epsilon> \<epsilon>_gt_0 enat_0_iff(2) less_irrefl)
 qed
 
-lemma gt_sub_fun: "App s t >\<^sub>t s"
-proof (cases "wt (App s t) > wt s")
-  case True
-  thus ?thesis
-    using gt_wt by simp
-next
-  case False
-  hence wt_st: "wt (App s t) = wt s"
-    by (meson order.antisym not_le_imp_less wt_App_ge_fun)
-  hence \<delta>_eq_\<epsilon>: "\<delta> = \<epsilon>"
-    by (rule wt_App_eq_fun_imp_\<delta>_eq_\<epsilon>)
-
-  have vars_st: "vars_mset (App s t) \<supseteq># vars_mset s"
-    by auto
-  have hd_st: "head (App s t) = head s"
-    by auto
-  have extf: "\<forall>f \<in> ground_heads (head (App s t)). extf f (op >\<^sub>t) (args (App s t)) (args s)"
-    by (simp add: \<delta>_eq_\<epsilon> extf_snoc_if_\<delta>_eq_\<epsilon>)
-  show ?thesis
-    by (rule gt_same[OF vars_st wt_st hd_st extf])
-qed
-
 lemma gt_sub_arg: "wary (App s t) \<Longrightarrow> App s t >\<^sub>t t"
 proof (induct t arbitrary: s rule: measure_induct_rule[of size])
   case (less t)
@@ -400,9 +378,6 @@ proof (induct t arbitrary: s rule: measure_induct_rule[of size])
   thus ?case
     using gt_wt by fastforce
 qed
-
-lemma gt_fun: "wary s \<Longrightarrow> is_App s \<Longrightarrow> s >\<^sub>t fun s"
-  by (cases s) (auto intro: gt_sub_fun)
 
 lemma gt_arg: "wary s \<Longrightarrow> is_App s \<Longrightarrow> s >\<^sub>t arg s"
   by (cases s) (auto intro: gt_sub_arg)
@@ -759,6 +734,28 @@ lemma gt_antisym: "wary s \<Longrightarrow> wary t \<Longrightarrow> t >\<^sub>t
 
 
 subsection \<open>Subterm Property\<close>
+
+lemma gt_sub_fun: "App s t >\<^sub>t s"
+proof (cases "wt (App s t) > wt s")
+  case True
+  thus ?thesis
+    using gt_wt by simp
+next
+  case False
+  hence wt_st: "wt (App s t) = wt s"
+    by (meson order.antisym not_le_imp_less wt_App_ge_fun)
+  hence \<delta>_eq_\<epsilon>: "\<delta> = \<epsilon>"
+    by (rule wt_App_eq_fun_imp_\<delta>_eq_\<epsilon>)
+
+  have vars_st: "vars_mset (App s t) \<supseteq># vars_mset s"
+    by auto
+  have hd_st: "head (App s t) = head s"
+    by auto
+  have extf: "\<forall>f \<in> ground_heads (head (App s t)). extf f (op >\<^sub>t) (args (App s t)) (args s)"
+    by (simp add: \<delta>_eq_\<epsilon> extf_snoc_if_\<delta>_eq_\<epsilon>)
+  show ?thesis
+    by (rule gt_same[OF vars_st wt_st hd_st extf])
+qed
 
 theorem gt_proper_sub: "wary t \<Longrightarrow> proper_sub s t \<Longrightarrow> t >\<^sub>t s"
   by (induct t) (auto intro: gt_sub_fun gt_sub_arg gt_trans sub.intros wary_sub)
