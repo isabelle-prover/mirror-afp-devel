@@ -10,7 +10,7 @@ section \<open>The Graceful Transfinite Knuth-Bendix Order with Subterm Coeffici
   Lambda-Free Higher-Order Terms\<close>
 
 theory Lambda_Free_TKBO_Coefs
-imports Lambda_Free_KBO_Util "../Nested_Multisets_Ordinals/Syntactic_Ordinal"
+imports Lambda_Free_KBO_Util "../Nested_Multisets_Ordinals/Signed_Syntactic_Ordinal"
 abbrevs
   "=p" = "=\<^sub>p"
   ">p" = ">\<^sub>p"
@@ -94,7 +94,29 @@ lemmas arity\<^sub>h_lt_\<omega>_if_\<delta>\<^sub>h_gt_0 = arity_ne_infinity_if
 lemmas wary_subst\<^sub>h_conv = wary_subst_def[folded hmset_of_enat_le]
 lemmas extf_singleton_nil_if_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h = extf_singleton_nil_if_\<delta>_eq_\<epsilon>[folded of_nat_inject_hmset]
 
+lemma arity_sym\<^sub>h_if_\<delta>\<^sub>h_gt_0_E:
+  assumes \<delta>_gt_0: "\<delta>\<^sub>h > 0"
+  obtains n where "arity_sym\<^sub>h f = of_nat n"
+  using arity_sym\<^sub>h_lt_\<omega>_if_\<delta>\<^sub>h_gt_0 assms lt_\<omega>_imp_ex_of_nat by blast
+
+lemma arity_var\<^sub>h_if_\<delta>\<^sub>h_gt_0_E:
+  assumes \<delta>_gt_0: "\<delta>\<^sub>h > 0"
+  obtains n where "arity_var\<^sub>h f = of_nat n"
+  using arity_var\<^sub>h_lt_\<omega>_if_\<delta>\<^sub>h_gt_0 assms lt_\<omega>_imp_ex_of_nat by blast
+
+
 subsection \<open>Weights and Subterm Coefficients\<close>
+
+abbreviation zhmset_of_tpoly :: "('a, hmultiset) tpoly \<Rightarrow> ('a, zhmultiset) tpoly" where
+  "zhmset_of_tpoly \<equiv> map_tpoly (\<lambda>x. x) zhmset_of"
+
+abbreviation eval_ztpoly :: "('a \<Rightarrow> zhmultiset) \<Rightarrow> ('a, hmultiset) tpoly \<Rightarrow> zhmultiset" where
+  "eval_ztpoly A p \<equiv> eval_tpoly A (zhmset_of_tpoly p)"
+
+lemma eval_tpoly_eq_eval_ztpoly[simp]:
+  "zhmset_of (eval_tpoly A p) = eval_ztpoly (\<lambda>v. zhmset_of (A v)) p"
+  by (induct p, simp_all add: zhmset_of_sum_list zhmset_of_prod_list o_def,
+    simp_all cong: sum_list_cong prod_list_cong)
 
 definition min_ground_head :: "('s, 'v) hd \<Rightarrow> 's" where
   "min_ground_head \<zeta> =
@@ -109,26 +131,43 @@ primrec min_passign :: "'v pvar \<Rightarrow> hmultiset" where
   "min_passign (PWt x) = wt_sym (min_ground_head (Var x))"
 | "min_passign (PCoef _ _) = 1"
 
+abbreviation min_zpassign :: "'v pvar \<Rightarrow> zhmultiset" where
+  "min_zpassign v \<equiv> zhmset_of (min_passign v)"
+
+lemma min_zpassign_simps[simp]:
+  "min_zpassign (PWt x) = zhmset_of (wt_sym (min_ground_head (Var x)))"
+  "min_zpassign (PCoef x i) = 1"
+  by (simp_all add: zhmset_of_1)
+
 definition legal_passign :: "('v pvar \<Rightarrow> hmultiset) \<Rightarrow> bool" where
   "legal_passign A \<longleftrightarrow> (\<forall>x. A x \<ge> min_passign x)"
+
+definition legal_zpassign :: "('v pvar \<Rightarrow> zhmultiset) \<Rightarrow> bool" where
+  "legal_zpassign A \<longleftrightarrow> (\<forall>x. A x \<ge> min_zpassign x)"
 
 lemma legal_min_passign: "legal_passign min_passign"
   unfolding legal_passign_def by simp
 
+lemma legal_min_zpassign: "legal_zpassign min_zpassign"
+  unfolding legal_zpassign_def by simp
+
+lemma assign_ge_0[intro]: "legal_zpassign A \<Longrightarrow> A x \<ge> 0"
+  unfolding legal_zpassign_def by (auto intro: dual_order.trans)
+
 definition
   eq_tpoly :: "('v pvar, hmultiset) tpoly \<Rightarrow> ('v pvar, hmultiset) tpoly \<Rightarrow> bool" (infix "=\<^sub>p" 50)
 where
-  "q =\<^sub>p p \<longleftrightarrow> (\<forall>A. legal_passign A \<longrightarrow> eval_tpoly A q = eval_tpoly A p)"
+  "q =\<^sub>p p \<longleftrightarrow> (\<forall>A. legal_zpassign A \<longrightarrow> eval_ztpoly A q = eval_ztpoly A p)"
 
 definition
   ge_tpoly :: "('v pvar, hmultiset) tpoly \<Rightarrow> ('v pvar, hmultiset) tpoly \<Rightarrow> bool" (infix "\<ge>\<^sub>p" 50)
 where
-  "q \<ge>\<^sub>p p \<longleftrightarrow> (\<forall>A. legal_passign A \<longrightarrow> eval_tpoly A q \<ge> eval_tpoly A p)"
+  "q \<ge>\<^sub>p p \<longleftrightarrow> (\<forall>A. legal_zpassign A \<longrightarrow> eval_ztpoly A q \<ge> eval_ztpoly A p)"
 
 definition
   gt_tpoly :: "('v pvar, hmultiset) tpoly \<Rightarrow> ('v pvar, hmultiset) tpoly \<Rightarrow> bool" (infix ">\<^sub>p" 50)
 where
-  "q >\<^sub>p p \<longleftrightarrow> (\<forall>A. legal_passign A \<longrightarrow> eval_tpoly A q > eval_tpoly A p)"
+  "q >\<^sub>p p \<longleftrightarrow> (\<forall>A. legal_zpassign A \<longrightarrow> eval_ztpoly A q > eval_ztpoly A p)"
 
 lemma gt_tpoly_imp_ge[intro]: "q >\<^sub>p p \<Longrightarrow> q \<ge>\<^sub>p p"
   unfolding ge_tpoly_def gt_tpoly_def by (simp add: le_less)
@@ -140,7 +179,7 @@ lemma ge_tpoly_refl[simp]: "p \<ge>\<^sub>p p"
   unfolding ge_tpoly_def by simp
 
 lemma gt_tpoly_irrefl: "\<not> p >\<^sub>p p"
-  unfolding gt_tpoly_def legal_passign_def by blast
+  unfolding gt_tpoly_def legal_zpassign_def by fast
 
 lemma
   eq_eq_tpoly_trans: "r =\<^sub>p q \<Longrightarrow> q =\<^sub>p p \<Longrightarrow> r =\<^sub>p p" and
@@ -159,10 +198,21 @@ primrec coef_hd :: "('s, 'v) hd \<Rightarrow> nat \<Rightarrow> ('v pvar, hmulti
   "coef_hd (Var x) i = PVar (PCoef x i)"
 | "coef_hd (Sym f) i = PNum (coef_sym f i)"
 
-lemma coef_hd_gt_0: "legal_passign A \<Longrightarrow> eval_tpoly A (coef_hd \<zeta> i) > 0"
-  unfolding legal_passign_def
-  by (cases \<zeta>, simp_all add: coef_sym_gt_0,
-    metis zero_less_one less_le_trans min_passign.simps(2))
+lemma coef_hd_gt_0:
+  assumes legal: "legal_zpassign A"
+  shows "eval_ztpoly A (coef_hd \<zeta> i) > 0"
+  unfolding legal_zpassign_def
+proof (cases \<zeta>)
+  case (Var x1)
+  thus ?thesis
+    using legal[unfolded legal_zpassign_def, rule_format, of "PCoef x i" for x]
+    by (auto simp: coef_sym_gt_0 zhmset_of_1 intro: dual_order.strict_trans1 zero_less_one)
+next
+  case (Sym x2)
+  thus ?thesis
+    using legal[unfolded legal_zpassign_def, rule_format, of "PWt x" for x]
+    by simp (metis coef_sym_gt_0 zhmset_of_0 zhmset_of_less)
+qed
 
 primrec coef :: "('s, 'v) tm \<Rightarrow> nat \<Rightarrow> ('v pvar, hmultiset) tpoly" where
   "coef (Hd \<zeta>) i = coef_hd \<zeta> i"
@@ -171,7 +221,7 @@ primrec coef :: "('s, 'v) tm \<Rightarrow> nat \<Rightarrow> ('v pvar, hmultiset
 lemma coef_apps[simp]: "coef (apps s ss) i = coef s (i + length ss)"
   by (induct ss arbitrary: s i) auto
 
-lemma coef_gt_0: "legal_passign A \<Longrightarrow> eval_tpoly A (coef s i) > 0"
+lemma coef_gt_0: "legal_zpassign A \<Longrightarrow> eval_ztpoly A (coef s i) > 0"
    by (induct s arbitrary: i) (auto intro: coef_hd_gt_0)
 
 lemma exists_min_ground_head:
@@ -212,8 +262,11 @@ primrec wt0 :: "('s, 'v) hd \<Rightarrow> ('v pvar, hmultiset) tpoly" where
 | "wt0 (Sym f) = PNum (wt_sym f)"
 
 lemma wt0_ge_min_ground_head:
-  "legal_passign A \<Longrightarrow> eval_tpoly A (wt0 \<zeta>) \<ge> wt_sym (min_ground_head \<zeta>)"
-  by (cases \<zeta>, simp_all, metis legal_passign_def min_passign.simps(1))
+  "legal_zpassign A \<Longrightarrow> eval_ztpoly A (wt0 \<zeta>) \<ge> zhmset_of (wt_sym (min_ground_head \<zeta>))"
+  by (cases \<zeta>, simp_all, metis legal_zpassign_def min_zpassign_simps(1))
+
+lemma eval_ztpoly_nonneg: "legal_zpassign A \<Longrightarrow> eval_ztpoly A p \<ge> 0"
+  by (induct p) (auto cong: sum_list_cong prod_list_cong intro!: sum_list_nonneg prod_list_nonneg)
 
 lemma in_zip_imp_size_lt_apps: "(s, y) \<in> set (zip ss ys) \<Longrightarrow> size s < size (apps (Hd \<zeta>) ss)"
   by (auto dest!: set_zip_leftD simp: size_in_args)
@@ -226,34 +279,34 @@ function wt :: "('s, 'v) tm \<Rightarrow> ('v pvar, hmultiset) tpoly" where
 termination
   by (lexicographic_order simp: in_zip_imp_size_lt_apps)
 
-definition wt_args :: "('v pvar \<Rightarrow> hmultiset) \<Rightarrow> ('s, 'v) hd \<Rightarrow> ('s, 'v) tm list \<Rightarrow> hmultiset" where
+definition wt_args :: "('v pvar \<Rightarrow> zhmultiset) \<Rightarrow> ('s, 'v) hd \<Rightarrow> ('s, 'v) tm list \<Rightarrow> zhmultiset" where
   "wt_args A \<zeta> ss =
-   sum_list (map (eval_tpoly A \<circ> (\<lambda>(s, i). PMult [coef_hd \<zeta> i, wt s])) (zip ss [0..<length ss]))"
+   sum_list (map (eval_ztpoly A \<circ> (\<lambda>(s, i). PMult [coef_hd \<zeta> i, wt s])) (zip ss [0..<length ss]))"
 
 lemma wt_Hd[simp]: "wt (Hd \<zeta>) = PSum [wt0 \<zeta>, PNum (\<delta>\<^sub>h * arity_sym\<^sub>h (min_ground_head \<zeta>))]"
   by (rule wt.simps[of _ "[]", simplified])
 
 lemma coef_hd_cong:
   "(\<forall>x \<in> vars_hd \<zeta>. \<forall>i. A (PCoef x i) = B (PCoef x i)) \<Longrightarrow>
-   eval_tpoly A (coef_hd \<zeta> i) = eval_tpoly B (coef_hd \<zeta> i)"
+   eval_ztpoly A (coef_hd \<zeta> i) = eval_ztpoly B (coef_hd \<zeta> i)"
   by (cases \<zeta>) auto
 
 lemma wt0_cong:
   assumes pwt_eq: "\<forall>x \<in> vars_hd \<zeta>. A (PWt x) = B (PWt x)"
-  shows "eval_tpoly A (wt0 \<zeta>) = eval_tpoly B (wt0 \<zeta>)"
+  shows "eval_ztpoly A (wt0 \<zeta>) = eval_ztpoly B (wt0 \<zeta>)"
   using pwt_eq by (cases \<zeta>) auto
 
 lemma wt_cong:
   assumes
     "\<forall>x \<in> vars s. A (PWt x) = B (PWt x)" and
     "\<forall>x \<in> vars s. \<forall>i. A (PCoef x i) = B (PCoef x i)"
-  shows "eval_tpoly A (wt s) = eval_tpoly B (wt s)"
+  shows "eval_ztpoly A (wt s) = eval_ztpoly B (wt s)"
   using assms
 proof (induct s rule: tm_induct_apps)
   case (apps \<zeta> ss)
   note ih = this(1) and pwt_eq = this(2) and pcoef_eq = this(3)
 
-  have ih': "eval_tpoly A (wt s) = eval_tpoly B (wt s)" if s_in: "s \<in> set ss" for s
+  have ih': "eval_ztpoly A (wt s) = eval_ztpoly B (wt s)" if s_in: "s \<in> set ss" for s
   proof (rule ih[OF s_in])
     show "\<forall>x \<in> vars s. A (PWt x) = B (PWt x)"
       using pwt_eq s_in by force
@@ -261,10 +314,10 @@ proof (induct s rule: tm_induct_apps)
       using pcoef_eq s_in by force
   qed
 
-  have wt0_eq: "eval_tpoly A (wt0 \<zeta>) = eval_tpoly B (wt0 \<zeta>)"
+  have wt0_eq: "eval_ztpoly A (wt0 \<zeta>) = eval_ztpoly B (wt0 \<zeta>)"
     by (rule wt0_cong) (simp add: pwt_eq)
 
-  have coef_\<zeta>_eq: "eval_tpoly A (coef_hd \<zeta> i) = eval_tpoly B (coef_hd \<zeta> i)" for i
+  have coef_\<zeta>_eq: "eval_ztpoly A (coef_hd \<zeta> i) = eval_ztpoly B (coef_hd \<zeta> i)" for i
     by (rule coef_hd_cong) (simp add: pcoef_eq)
 
   show ?case
@@ -272,20 +325,24 @@ proof (induct s rule: tm_induct_apps)
     by (auto simp add: wt0_eq dest!: set_zip_leftD intro!: arg_cong[of _ _ sum_list] map_cong)
 qed
 
-lemma ground_eval_tpoly_wt_eq: "ground s \<Longrightarrow> eval_tpoly A (wt s) = eval_tpoly B (wt s)"
+lemma ground_eval_ztpoly_wt_eq: "ground s \<Longrightarrow> eval_ztpoly A (wt s) = eval_ztpoly B (wt s)"
   by (rule wt_cong) auto
 
 lemma exists_wt_sym:
-  assumes legal: "legal_passign A"
-  shows "\<exists>f \<in> ground_heads \<zeta>. eval_tpoly A (wt (Hd \<zeta>)) \<ge> wt_sym f + \<delta>\<^sub>h * arity_sym\<^sub>h f"
+  assumes legal: "legal_zpassign A"
+  shows "\<exists>f \<in> ground_heads \<zeta>. eval_ztpoly A (wt (Hd \<zeta>)) \<ge> zhmset_of (wt_sym f + \<delta>\<^sub>h * arity_sym\<^sub>h f)"
   unfolding eq_tpoly_def
 proof (cases \<zeta>)
   case Var
   thus ?thesis
-    using legal[unfolded legal_passign_def]
-    by simp (metis add_le_cancel_right ground_heads.simps(1)
-      min_ground_head_in_ground_heads min_passign.simps(1))
-qed auto
+    using legal[unfolded legal_zpassign_def]
+    by simp (metis add_le_cancel_right ground_heads.simps(1) min_ground_head_in_ground_heads
+      min_zpassign_simps(1) zhmset_of_plus)
+next
+  case Sym
+  thus ?thesis
+    by (simp add: zhmset_of_plus)
+qed
 
 lemma \<delta>\<^sub>h_times_arity_sym\<^sub>h_lt_\<omega>: "\<delta>\<^sub>h * arity_sym\<^sub>h f < \<omega>"
   using arity_sym\<^sub>h_lt_\<omega>_if_\<delta>\<^sub>h_gt_0
@@ -293,8 +350,8 @@ lemma \<delta>\<^sub>h_times_arity_sym\<^sub>h_lt_\<omega>: "\<delta>\<^sub>h * 
     zero_less_Suc)
 
 lemma wt_ge_\<epsilon>\<^sub>h:
-  assumes legal: "legal_passign A"
-  shows "eval_tpoly A (wt s) \<ge> \<epsilon>\<^sub>h"
+  assumes legal: "legal_zpassign A"
+  shows "eval_ztpoly A (wt s) \<ge> zhmset_of \<epsilon>\<^sub>h"
 proof (induct s rule: tm_induct_apps)
   case (apps \<zeta> ss)
   note ih = this(1)
@@ -306,11 +363,13 @@ proof (induct s rule: tm_induct_apps)
     hence \<delta>_eq_\<epsilon>: "\<delta>\<^sub>h = \<epsilon>\<^sub>h"
       using wt_sym_0_imp_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h by blast
 
-    have ?case
+    have ?case (is "_ \<le> ?rhs")
     proof (cases "length ss = 0")
       case True
       thus ?thesis
-        by (auto simp: \<delta>_eq_\<epsilon>[symmetric] wt_sym_0_unary\<^sub>h[OF wt_f])
+        using wt0_ge_min_ground_head[OF legal]
+        by (clarsimp simp: \<delta>_eq_\<epsilon>[symmetric] wt_sym_0_unary\<^sub>h[OF wt_f])
+          (metis hmsetmset_0 wt_f zero_zhmultiset.abs_eq zmset_of_empty)
     next
       case len_ss_nz: False
       hence "zip ss [0..<length ss] = (hd ss, 0) # zip (tl ss) [1..<length ss]"
@@ -318,56 +377,66 @@ proof (induct s rule: tm_induct_apps)
           zip_Cons_Cons)
       hence wt_args_split:
         "wt_args A \<zeta> ss =
-         eval_tpoly A (PMult [coef_hd \<zeta> 0, wt (hd ss)]) +
-         sum_list (map (eval_tpoly A \<circ> (\<lambda>(s, i). PMult [coef_hd \<zeta> i, wt s]))
+         eval_ztpoly A (PMult [coef_hd \<zeta> 0, wt (hd ss)]) +
+         sum_list (map (eval_ztpoly A \<circ> (\<lambda>(s, i). PMult [coef_hd \<zeta> i, wt s]))
            (zip (tl ss) [1..<length ss]))"
         by (simp add: wt_args_def)
 
-      have "\<epsilon>\<^sub>h \<le> eval_tpoly A (coef_hd \<zeta> 0) * eval_tpoly A (wt (hd ss))"
+      have "zhmset_of \<epsilon>\<^sub>h \<le> eval_ztpoly A (coef_hd \<zeta> 0) * eval_ztpoly A (wt (hd ss))"
         using ih[of "hd ss", OF hd_in_set[OF len_ss_nz]]
-        by (metis add_cancel_right_left coef_hd_gt_0 legal less_iff_add1_le_hmset mult.comm_neutral
-          mult.commute mult_mono' zero_le_hmset)
-      thus ?thesis
-        by (auto simp: wt_args_split[unfolded wt_args_def]
-          intro: trans_le_add1_hmset trans_le_add2_hmset)
+        by (metis coef_hd_gt_0 legal mult.comm_neutral mult.commute mult_mono' of_nat_0_le_iff
+          of_nat_zhmset zero_le_one zero_less_iff_1_le_zhmset)
+      also have "\<dots> \<le> ?rhs"
+        by (auto simp: comp_def wt_args_split[unfolded wt_args_def comp_def]
+          intro!: add_nonneg_nonneg mult_nonneg_nonneg sum_list_nonneg eval_ztpoly_nonneg[OF legal])
+      finally show ?thesis
+        by assumption
     qed
   }
   moreover
   {
     assume wt_f_ge_\<epsilon>: "wt_sym ?f \<ge> \<epsilon>\<^sub>h"
-    have ?case
-      using wt0_ge_min_ground_head[OF legal, of \<zeta>]
-      by simp (meson wt_f_ge_\<epsilon> order.trans le_add_same_cancel1 zero_le_hmset)
+
+    have "zhmset_of \<epsilon>\<^sub>h \<le> eval_tpoly A (map_tpoly (\<lambda>x. x) zhmset_of (wt0 \<zeta>))"
+      using wt0_ge_min_ground_head[OF legal, of \<zeta>] wt_f_ge_\<epsilon>
+      by (meson leD leI less_le_trans zhmset_of_le)
+    also have "\<dots> \<le> eval_tpoly A (map_tpoly (\<lambda>x. x) zhmset_of (wt (apps (Hd \<zeta>) ss)))"
+      by (auto intro!: add_nonneg_nonneg mult_nonneg_nonneg sum_list_nonneg
+        eval_ztpoly_nonneg[OF legal])
+    finally have ?case
+      by assumption
   }
   ultimately show ?case
     using wt_sym_0_or_ge_\<epsilon> by meson
 qed
 
 lemma wt_args_ge_length_times_\<epsilon>\<^sub>h:
-  assumes legal: "legal_passign A"
-  shows "wt_args A \<zeta> ss \<ge> of_nat (length ss) * \<epsilon>\<^sub>h"
+  assumes legal: "legal_zpassign A"
+  shows "wt_args A \<zeta> ss \<ge> of_nat (length ss) * zhmset_of \<epsilon>\<^sub>h"
   unfolding wt_args_def
   by (rule sum_list_ge_length_times[unfolded wt_args_def,
-      of "map (eval_tpoly A \<circ> (\<lambda>(s, i). PMult [coef_hd \<zeta> i, wt s])) (zip ss [0..<length ss])",
+      of "map (eval_ztpoly A \<circ> (\<lambda>(s, i). PMult [coef_hd \<zeta> i, wt s])) (zip ss [0..<length ss])",
       simplified],
-    auto intro!: mult_le_mono_hmset[of 1, simplified] simp: legal
-      zero_less_iff_1_le_hmset[symmetric] coef_hd_gt_0 wt_ge_\<epsilon>\<^sub>h)
+    auto intro!: mult_le_mono_hmset[of 1, simplified] nonneg_le_mult_right_mono_zhmset coef_hd_gt_0
+      simp: legal zero_less_iff_1_le_hmset[symmetric] coef_hd_gt_0 wt_ge_\<epsilon>\<^sub>h)
 
-lemma wt_ge_\<delta>\<^sub>h: "legal_passign A \<Longrightarrow> eval_tpoly A (wt s) \<ge> \<delta>\<^sub>h"
-  by (meson \<delta>\<^sub>h_le_\<epsilon>\<^sub>h order.trans of_nat_le_iff wt_ge_\<epsilon>\<^sub>h)
+lemma wt_ge_\<delta>\<^sub>h: "legal_zpassign A \<Longrightarrow> eval_ztpoly A (wt s) \<ge> zhmset_of \<delta>\<^sub>h"
+  using \<delta>\<^sub>h_le_\<epsilon>\<^sub>h[folded zhmset_of_le] order.trans wt_ge_\<epsilon>\<^sub>h zhmset_of_le
+  by (metis (no_types, lifting))
 
-lemma wt_gt_0: "legal_passign A \<Longrightarrow> eval_tpoly A (wt s) > 0"
-  by (metis \<epsilon>\<^sub>h_gt_0 order.trans not_le wt_ge_\<epsilon>\<^sub>h)
+lemma wt_gt_0: "legal_zpassign A \<Longrightarrow> eval_ztpoly A (wt s) > 0"
+  using \<epsilon>\<^sub>h_gt_0[folded zhmset_of_less, unfolded zhmset_of_0] wt_ge_\<epsilon>\<^sub>h by (blast intro: less_le_trans)
 
 lemma wt_gt_\<delta>\<^sub>h_if_superunary:
   assumes
-    legal: "legal_passign A" and
+    legal: "legal_zpassign A" and
     superunary: "arity_hd\<^sub>h (head s) > 1"
-  shows "eval_tpoly A (wt s) > \<delta>\<^sub>h"
+  shows "eval_ztpoly A (wt s) > zhmset_of \<delta>\<^sub>h"
 proof (cases "\<delta>\<^sub>h = \<epsilon>\<^sub>h")
-  case False
-  thus ?thesis
-    by (metis legal \<delta>\<^sub>h_le_\<epsilon>\<^sub>h antisym order.not_eq_order_implies_strict wt_ge_\<delta>\<^sub>h wt_ge_\<epsilon>\<^sub>h)
+  case \<delta>_ne_\<epsilon>: False
+  show ?thesis
+    using order.not_eq_order_implies_strict[OF \<delta>_ne_\<epsilon> \<delta>\<^sub>h_le_\<epsilon>\<^sub>h, folded zhmset_of_less]
+      wt_ge_\<epsilon>\<^sub>h[OF legal] by (blast intro: less_le_trans)
 next
   case \<delta>_eq_\<epsilon>: True
   show ?thesis
@@ -378,25 +447,28 @@ next
       using apps(2) by simp
     hence min_gr_ary: "arity_sym\<^sub>h (min_ground_head \<zeta>) > 1"
       using ground_heads_arity\<^sub>h less_le_trans min_ground_head_in_ground_heads by blast
-    have "\<delta>\<^sub>h < eval_tpoly A (wt0 \<zeta>)
-      + \<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<zeta>) - of_nat (length ss)) + of_nat (length ss) * \<epsilon>\<^sub>h"
-      unfolding \<delta>_eq_\<epsilon> add.assoc
-      by (auto simp: mult.commute[of _ \<epsilon>\<^sub>h] ring_distribs(1)[symmetric]
-        intro!: trans_less_add2_hmset
-          gt_0_lt_mult_gt_1_hmset[OF \<epsilon>\<^sub>h_gt_0 less_le_trans[OF superunary]]
-          order.trans[OF ground_heads_arity\<^sub>h[OF min_ground_head_in_ground_heads]
-            le_minus_plus_same_hmset])
-    also have "\<dots> \<le> eval_tpoly A (wt0 \<zeta>)
-      + \<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<zeta>) - of_nat (length ss)) + wt_args A \<zeta> ss"
-      using wt_args_ge_length_times_\<epsilon>\<^sub>h[OF legal] by simp
+
+    have "zhmset_of \<delta>\<^sub>h < eval_ztpoly A (wt0 \<zeta>) + zhmset_of (\<delta>\<^sub>h * arity_sym\<^sub>h (min_ground_head \<zeta>))"
+      unfolding \<delta>_eq_\<epsilon>
+      by (rule add_strict_increasing2[OF eval_ztpoly_nonneg[OF legal]], unfold zhmset_of_less,
+        rule gt_0_lt_mult_gt_1_hmset[OF \<epsilon>\<^sub>h_gt_0 min_gr_ary])
+    also have "\<dots> \<le> eval_ztpoly A (wt0 \<zeta>)
+      + zhmset_of (\<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<zeta>) - of_nat (length ss)))
+        + zhmset_of (of_nat (length ss) * \<epsilon>\<^sub>h)"
+      by (auto simp: \<epsilon>\<^sub>h_gt_0 \<delta>_eq_\<epsilon> zmset_of_le zhmset_of_plus[symmetric] algebra_simps
+            simp del: ring_distribs simp add: ring_distribs[symmetric])
+        (metis add.commute le_minus_plus_same_hmset)
+    also have "\<dots> \<le> eval_ztpoly A (wt0 \<zeta>)
+      + zhmset_of (\<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<zeta>) - of_nat (length ss))) + wt_args A \<zeta> ss"
+      using wt_args_ge_length_times_\<epsilon>\<^sub>h[OF legal] by (simp add: zhmset_of_times of_nat_zhmset)
     finally show ?case
-      unfolding wt_args_def by (simp add: add_ac(1))
+      by (simp add: wt_args_def add_ac(1) comp_def)
   qed
 qed
 
 lemma wt_App_plus_\<delta>\<^sub>h_ge:
-  "eval_tpoly A (wt (App s t)) + \<delta>\<^sub>h
-   \<ge> eval_tpoly A (wt s) + eval_tpoly A (coef s 0) * eval_tpoly A (wt t)"
+  "eval_ztpoly A (wt (App s t)) + zhmset_of \<delta>\<^sub>h
+   \<ge> eval_ztpoly A (wt s) + eval_ztpoly A (coef s 0) * eval_ztpoly A (wt t)"
 proof (cases s rule: tm_exhaust_apps)
   case s: (apps \<zeta> ss)
   show ?thesis
@@ -409,46 +481,53 @@ proof (cases s rule: tm_exhaust_apps)
     case False
     show ?thesis
       unfolding s App_apps wt.simps
-      by (simp add: add.assoc,
-        auto simp del: diff_diff_add_hmset simp: add.assoc[symmetric] add.commute[of _ \<delta>\<^sub>h]
-          add.commute[of 1] diff_diff_add_hmset[symmetric]
-          ring_distribs(1)[of _ "1 :: hmultiset", symmetric, simplified] le_minus_plus_same_hmset)
+      by (simp add: algebra_simps zhmset_of_plus[symmetric] zmset_of_le,
+        simp del: diff_diff_add_hmset add: add.commute[of 1] le_minus_plus_same_hmset
+          distrib_left[of _ "1 :: hmultiset", unfolded mult.right_neutral, symmetric]
+          diff_diff_add_hmset[symmetric])
   qed
 qed
 
 lemma wt_App_fun_\<delta>\<^sub>h:
   assumes
-    legal: "legal_passign A" and
-    wt_st: "eval_tpoly A (wt (App s t)) = eval_tpoly A (wt t)"
-  shows "eval_tpoly A (wt s) = \<delta>\<^sub>h"
+    legal: "legal_zpassign A" and
+    wt_st: "eval_ztpoly A (wt (App s t)) = eval_ztpoly A (wt t)"
+  shows "eval_ztpoly A (wt s) = zhmset_of \<delta>\<^sub>h"
 proof -
-  have "eval_tpoly A (wt (App s t)) + \<delta>\<^sub>h = eval_tpoly A (wt t) + \<delta>\<^sub>h"
+  have "eval_ztpoly A (wt (App s t)) = eval_ztpoly A (wt t)"
     using wt_st by simp
-  hence wt_s_t_le_t_\<delta>:
-    "eval_tpoly A (wt s) + eval_tpoly A (coef s 0) * eval_tpoly A (wt t) \<le> eval_tpoly A (wt t) + \<delta>\<^sub>h"
-    using wt_App_plus_\<delta>\<^sub>h_ge by metis
-  hence "eval_tpoly A (coef s 0) = 1"
-    by (metis add.commute add_less_le_mono coef_gt_0 gt_0_lt_mult_gt_1_hmset leD legal
-      mult.commute order.not_eq_order_implies_strict wt_ge_\<delta>\<^sub>h wt_gt_0 zero_less_iff_1_le_hmset)
+  hence wt_s_t_le_\<delta>_t: "eval_ztpoly A (wt s) + eval_ztpoly A (coef s 0) * eval_ztpoly A (wt t)
+     \<le> zhmset_of \<delta>\<^sub>h + eval_ztpoly A (wt t)"
+    using wt_App_plus_\<delta>\<^sub>h_ge by (metis add.commute)
+  also have "\<dots> \<le> eval_ztpoly A (wt s) + eval_ztpoly A (wt t)"
+    using wt_ge_\<delta>\<^sub>h[OF legal] by simp
+  finally have "eval_ztpoly A (coef s 0) * eval_ztpoly A (wt t) \<le> eval_ztpoly A (wt t)"
+    by simp
+  hence "eval_ztpoly A (coef s 0) = 1"
+    using eval_ztpoly_nonneg[OF legal]
+    by (metis (no_types, lifting) coef_gt_0 dual_order.order_iff_strict leD legal mult_cancel_right1
+      nonneg_le_mult_right_mono_zhmset wt_gt_0)
   thus ?thesis
-    using wt_s_t_le_t_\<delta> legal by (simp add: add.commute antisym wt_ge_\<delta>\<^sub>h)
+    using wt_s_t_le_\<delta>_t by (simp add: add.commute antisym wt_ge_\<delta>\<^sub>h[OF legal])
 qed
 
 lemma wt_App_arg_\<delta>\<^sub>h:
   assumes
-    legal: "legal_passign A" and
-    wt_st: "eval_tpoly A (wt (App s t)) = eval_tpoly A (wt s)"
-  shows "eval_tpoly A (wt t) = \<delta>\<^sub>h"
+    legal: "legal_zpassign A" and
+    wt_st: "eval_ztpoly A (wt (App s t)) = eval_ztpoly A (wt s)"
+  shows "eval_ztpoly A (wt t) = zhmset_of \<delta>\<^sub>h"
 proof -
-  have "eval_tpoly A (wt (App s t)) + \<delta>\<^sub>h = eval_tpoly A (wt s) + \<delta>\<^sub>h"
+  have "eval_ztpoly A (wt (App s t)) + zhmset_of \<delta>\<^sub>h =
+    eval_ztpoly A (wt s) + zhmset_of \<delta>\<^sub>h"
     using wt_st by simp
-  hence "eval_tpoly A (coef s 0) * eval_tpoly A (wt t) \<le> \<delta>\<^sub>h" (is "?k * ?w \<le> _")
+  hence "eval_ztpoly A (coef s 0) * eval_ztpoly A (wt t) \<le> zhmset_of \<delta>\<^sub>h" (is "?k * ?w \<le> _")
     by (metis add.commute add_le_cancel_right wt_App_plus_\<delta>\<^sub>h_ge)
-  hence "?k * ?w = \<delta>\<^sub>h"
+  hence "?k * ?w = zhmset_of \<delta>\<^sub>h"
     using wt_ge_\<delta>\<^sub>h[OF legal] coef_gt_0[OF legal, unfolded zero_less_iff_1_le_hmset]
-    by (metis antisym_conv mult.comm_neutral mult.commute mult_le_mono_hmset)
-  hence "?w \<le> \<delta>\<^sub>h"
-    by (metis coef_gt_0[OF legal] mult_le_cancel_right1_hmset)
+    by (simp add: antisym nonneg_le_mult_right_mono_zhmset)
+  hence "?w \<le> zhmset_of \<delta>\<^sub>h"
+    by (metis coef_gt_0[OF legal] dual_order.order_iff_strict eval_ztpoly_nonneg[OF legal]
+      nonneg_le_mult_right_mono_zhmset)
   thus ?thesis
     by (simp add: antisym wt_ge_\<delta>\<^sub>h[OF legal])
 qed
@@ -457,27 +536,29 @@ lemma wt_App_ge_fun: "wt (App s t) \<ge>\<^sub>p wt s"
   unfolding ge_tpoly_def
 proof clarify
   fix A
-  assume legal: "legal_passign A"
+  assume legal: "legal_zpassign A"
 
-  have "\<delta>\<^sub>h \<le> eval_tpoly A (coef s 0) * eval_tpoly A (wt t)"
-    by (meson coef_gt_0[OF legal] dual_order.trans mult_le_cancel_right1_hmset wt_ge_\<delta>\<^sub>h[OF legal])
-  hence "eval_tpoly A (wt s) + \<delta>\<^sub>h \<le> eval_tpoly A (wt (App s t)) + \<delta>\<^sub>h"
-    by (meson add_less_cancel_left dual_order.trans not_le wt_App_plus_\<delta>\<^sub>h_ge)
-  thus "eval_tpoly A (wt s) \<le> eval_tpoly A (wt (App s t))"
+  have "zhmset_of \<delta>\<^sub>h \<le> eval_ztpoly A (coef s 0) * eval_ztpoly A (wt t)"
+    by (simp add: coef_gt_0 legal nonneg_le_mult_right_mono_zhmset wt_ge_\<delta>\<^sub>h)
+  hence "eval_ztpoly A (wt s) + zhmset_of \<delta>\<^sub>h \<le> eval_ztpoly A (wt (App s t)) + zhmset_of \<delta>\<^sub>h"
+    by (metis add_le_cancel_right add_less_le_mono not_le wt_App_plus_\<delta>\<^sub>h_ge)
+  thus "eval_ztpoly A (wt s) \<le> eval_ztpoly A (wt (App s t))"
     by simp
 qed
 
 lemma wt_App_ge_arg: "wt (App s t) \<ge>\<^sub>p wt t"
   unfolding ge_tpoly_def
   by (cases s rule: tm_exhaust_apps, simp, unfold App_apps wt.simps)
-    (simp add: trans_le_add2_hmset coef_hd_gt_0 mult_le_cancel_right1_hmset)
+    (auto simp: comp_def coef_hd_gt_0 eval_ztpoly_nonneg nonneg_le_mult_right_mono_zhmset
+       intro!: sum_list_nonneg eval_ztpoly_nonneg
+       add_increasing)
 
 lemma wt_\<delta>\<^sub>h_imp_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h:
   assumes
-    legal: "legal_passign A" and
-    wt_s_eq_\<delta>: "eval_tpoly A (wt s) = \<delta>\<^sub>h"
+    legal: "legal_zpassign A" and
+    wt_s_eq_\<delta>: "eval_ztpoly A (wt s) = zhmset_of \<delta>\<^sub>h"
   shows "\<delta>\<^sub>h = \<epsilon>\<^sub>h"
-  by (metis wt_s_eq_\<delta> \<delta>\<^sub>h_le_\<epsilon>\<^sub>h antisym wt_ge_\<epsilon>\<^sub>h[OF legal])
+  using \<delta>\<^sub>h_le_\<epsilon>\<^sub>h wt_ge_\<epsilon>\<^sub>h[OF legal, of s, unfolded wt_s_eq_\<delta> zhmset_of_le] by (rule antisym)
 
 lemma wt_App_ngt_fun_imp_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h: "\<not> wt (App s t) >\<^sub>p wt s \<Longrightarrow> \<delta>\<^sub>h = \<epsilon>\<^sub>h"
   using wt_App_ge_fun dual_order.order_iff_strict wt_App_arg_\<delta>\<^sub>h wt_\<delta>\<^sub>h_imp_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h
@@ -503,18 +584,21 @@ proof (induct s)
     {
       assume z_ni_t: "x \<notin> vars t"
 
-      let ?A = min_passign
-      let ?B = "\<lambda>v. if v = PWt x then eval_tpoly ?A (wt t) + ?A v + 1 else ?A v"
+      let ?A = min_zpassign
+      let ?B = "\<lambda>v. if v = PWt x then eval_ztpoly ?A (wt t) + ?A v + 1 else ?A v"
 
-      have legal_B: "legal_passign ?B"
-        unfolding legal_passign_def by (auto simp: trans_le_add1_hmset split: if_splits)
+      have legal_B: "legal_zpassign ?B"
+        unfolding legal_zpassign_def
+        by (auto simp: legal_min_zpassign intro!: add_increasing eval_ztpoly_nonneg)
 
-      have "eval_tpoly ?B (wt t) = eval_tpoly ?A (wt t)"
+      have eval_B_eq_A: "eval_ztpoly ?B (wt t) = eval_ztpoly ?A (wt t)"
         by (rule wt_cong) (auto simp: z_ni_t)
-      hence "eval_tpoly ?B (wt (Hd (Var x))) > eval_tpoly ?B (wt t)"
-        by (simp add: less_add_1_iff_le_hmset trans_less_add1_hmset)
+      have "eval_ztpoly ?B (wt (Hd (Var x))) > eval_ztpoly ?B (wt t)"
+        by (auto simp: eval_B_eq_A zero_less_iff_1_le_zhmset zhmset_of_plus[symmetric]
+          algebra_simps)
       hence False
-        using wt_ge_\<zeta> \<zeta> unfolding ge_tpoly_def by (blast dest: leD intro: legal_B legal_min_passign)
+        using wt_ge_\<zeta> \<zeta> unfolding ge_tpoly_def
+        by (blast dest: leD intro: legal_B legal_min_zpassign)
     }
     thus ?thesis
       by (auto simp: \<zeta>)
@@ -545,12 +629,26 @@ proof (cases s rule: tm_exhaust_apps)
     case (snoc sa ss)
     note ih = this
 
-    have "eval_tpoly A (coef_hd \<zeta> (length ss)) > 0" (is "?k > _")
-      by (simp add: coef_hd_gt_0[OF legal])
-    moreover have "eval_tpoly A (wt sa) > 0" (is "?w > _")
-      by (simp add: wt_gt_0[OF legal])
-    ultimately have "?k * ?w > 0"
-      by simp
+    let ?Az = "\<lambda>v. zhmset_of (A v)"
+
+    have legalz: "legal_zpassign ?Az"
+      using legal unfolding legal_passign_def legal_zpassign_def zhmset_of_le by assumption
+
+    have "eval_ztpoly ?Az (coef_hd \<zeta> (length ss)) > 0"
+      using legal coef_hd_gt_0 eval_tpoly_eq_eval_ztpoly
+      by (simp add: coef_hd_gt_0[OF legalz])
+    hence k: "eval_tpoly A (coef_hd \<zeta> (length ss)) > 0" (is "?k > _")
+      unfolding eval_tpoly_eq_eval_ztpoly[symmetric] zhmset_of_less[symmetric] zhmset_of_0
+      by assumption
+
+    have "eval_ztpoly ?Az (wt sa) > 0" (is "?w > _")
+      by (simp add: wt_gt_0[OF legalz])
+    hence w: "eval_tpoly A (wt sa) > 0" (is "?w > _")
+      unfolding eval_tpoly_eq_eval_ztpoly[symmetric] zhmset_of_less[symmetric] zhmset_of_0
+      by assumption
+
+    have "?k * ?w > 0"
+      using k w by simp
     hence "sum_coefs (?k * ?w) > 0"
       by (rule sum_coefs_gt_0[THEN iffD2])
     thus ?case
@@ -638,67 +736,69 @@ qed
 
 lemma wt_\<delta>\<^sub>h_arity\<^sub>h_give_unary:
   assumes
-    legal: "legal_passign A" and
-    wt_s_eq_\<delta>: "eval_tpoly A (wt s) = \<delta>\<^sub>h" and
+    legal: "legal_zpassign A" and
+    wt_s_eq_\<delta>: "eval_ztpoly A (wt s) = zhmset_of \<delta>\<^sub>h" and
     nargs_s_lt: "of_nat (num_args s) < arity_hd\<^sub>h (head s)"
   shows "arity_hd\<^sub>h (head s) = 1"
   using wt_s_eq_\<delta> nargs_s_lt wt_gt_\<delta>\<^sub>h_if_superunary[OF legal]
-  by (metis gr_implies_not_zero_hmset le_refl lt_1_iff_eq_0_hmset not_le of_nat_le_hmset
-    order.not_eq_order_implies_strict)
+  by (metis gr_implies_not_zero_hmset lt_1_iff_eq_0_hmset not_le order.not_eq_order_implies_strict
+    order_refl)
 
 lemma wt_\<delta>\<^sub>h_missing_args_imp_max_head:
   assumes
-    legal: "legal_passign A" and
-    wt_s: "eval_tpoly A (wt s) = \<delta>\<^sub>h" and
+    legal: "legal_zpassign A" and
+    wt_s: "eval_ztpoly A (wt s) = zhmset_of \<delta>\<^sub>h" and
     nargs_lt: "of_nat (num_args s) < arity_hd\<^sub>h (head s)"
-  shows "\<not> \<zeta> >\<^sub>h\<^sub>d head s"
+  shows "\<not> \<xi> >\<^sub>h\<^sub>d head s"
 proof
-  assume \<zeta>_gt_s: "\<zeta> >\<^sub>h\<^sub>d head s"
+  assume \<xi>_gt_s: "\<xi> >\<^sub>h\<^sub>d head s"
 
   have \<delta>_eq_\<epsilon>: "\<delta>\<^sub>h = \<epsilon>\<^sub>h"
     using wt_\<delta>\<^sub>h_imp_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h[OF legal] wt_s by blast
 
-  have "arity_hd\<^sub>h (head s) = 1"
+  have ary_hd_s: "arity_hd\<^sub>h (head s) = 1"
     by (rule wt_\<delta>\<^sub>h_arity\<^sub>h_give_unary[OF legal wt_s nargs_lt])
   hence nargs_s: "num_args s = 0"
     by (metis less_one nargs_lt of_nat_1 of_nat_less_hmset)
 
-  {
-    fix f
-    assume f_in: "f \<in> ground_heads (head s)"
+  show False
+  proof (cases s)
+    case s: (Hd \<zeta>)
 
-    obtain g where "g >\<^sub>s f"
-      using \<zeta>_gt_s[unfolded gt_hd_def] exists_wt_sym[OF legal] f_in by blast
-    hence "wt_sym f > 0"
-      using wt_sym_0_gt gt_sym_antisym by (blast intro: gr_zeroI_hmset)
-  }
-  note wt_f_nz = this
+    {
+      fix f
+      assume f_in: "f \<in> ground_heads (head s)"
 
-  have "\<delta>\<^sub>h = 0"
-  proof -
-    obtain ss :: "('v pvar \<Rightarrow> hmultiset) \<Rightarrow> ('s, 'v) hd \<Rightarrow> 's" where
-      "\<forall>x0 x1. (\<exists>v2 \<in> ground_heads x1. wt_sym v2 + \<delta>\<^sub>h * arity_sym\<^sub>h v2
-         \<le> eval_tpoly x0 (wt (Hd x1))) =
-       (ss x0 x1 \<in> ground_heads x1 \<and> wt_sym (ss x0 x1) + \<delta>\<^sub>h * arity_sym\<^sub>h (ss x0 x1)
-          \<le> eval_tpoly x0 (wt (Hd x1)))"
-      by moura
-    hence f1: "\<forall>h. ss A h \<in> ground_heads h \<and> wt_sym (ss A h) + \<delta>\<^sub>h * arity_sym\<^sub>h (ss A h)
-      \<le> eval_tpoly A (wt (Hd h))"
-      by (metis (no_types) exists_wt_sym[OF legal])
-    hence f2: "arity_hd\<^sub>h (head s) \<le> arity_sym\<^sub>h (ss A (head s))"
-      using ground_heads_arity\<^sub>h by blast
-    have f3: "eval_tpoly A (wt (Hd (head s))) \<le> \<delta>\<^sub>h"
-      by (metis (no_types) legal ge_tpoly_def wt_ge_hd wt_s)
-    have "arity_sym\<^sub>h (ss A (head s)) \<noteq> 0"
-      using f2 nargs_lt by force
+      obtain g where "g >\<^sub>s f"
+        using \<xi>_gt_s[unfolded gt_hd_def] exists_wt_sym[OF legal] f_in by blast
+      hence "wt_sym f > 0"
+        using wt_sym_0_gt gt_sym_antisym by (blast intro: gr_zeroI_hmset)
+    }
+    note wt_f_nz = this
+
+    have ary_mgh_s: "arity_sym\<^sub>h (min_ground_head \<zeta>) \<ge> 1"
+      using ary_hd_s[unfolded s, simplified] ground_heads_arity\<^sub>h min_ground_head_in_ground_heads
+      by metis
+
+    have wt0_gt0: "eval_tpoly A (map_tpoly (\<lambda>x. x) zhmset_of (wt0 \<zeta>)) > 0" (is "?wt0 > _")
+      using wt0_ge_min_ground_head[OF legal]
+      using wt_f_nz
+      by (metis (no_types) hmsetmset_0 min_ground_head_in_ground_heads mult.right_neutral
+        mult_le_less_imp_less mult_zero_right s tm.sel(1) zero_le_square zero_less_one
+        zero_zhmultiset.abs_eq zhmset_of_less zmset_of_empty)
+    have \<delta>ary: "\<delta>\<^sub>h * arity_sym\<^sub>h (min_ground_head \<zeta>) \<ge> \<delta>\<^sub>h" (is "?\<delta>ary \<ge> _")
+      by (rule mult_le_cancel_left1_hmset[OF ary_mgh_s[folded zero_less_iff_1_le_hmset]])
+    have "?wt0 + zhmset_of ?\<delta>ary > 0 + zhmset_of \<delta>\<^sub>h"
+      by (rule add_less_le_mono[OF wt0_gt0 \<delta>ary[folded zhmset_of_le]])
+    hence "?wt0 + zhmset_of ?\<delta>ary > zhmset_of \<delta>\<^sub>h"
+      by simp
     thus ?thesis
-      using f1 f3 le_Suc_ex[OF \<delta>_le_\<epsilon>] \<delta>_eq_\<epsilon>
-      by (metis add_le_less_mono divisors_zero dual_order.antisym leD leI le_add1_hmset
-        le_add_same_cancel1 of_nat_add of_nat_inject_hmset wt_f_nz wt_ge_\<epsilon>\<^sub>h[OF legal]
-        wt_sym_0_or_ge_\<epsilon>)
+      using wt_s unfolding s by simp
+  next
+    case App
+    thus ?thesis
+      using nargs_s by simp
   qed
-  thus False
-    using \<delta>_eq_\<epsilon> \<epsilon>\<^sub>h_gt_0 by auto
 qed
 
 lemma gt_sub_fun: "App s t >\<^sub>t s"
@@ -727,12 +827,12 @@ proof (induct t arbitrary: s rule: measure_induct_rule[of size])
   {
     fix A
     assume
-      legal: "legal_passign A" and
-      wt_st: "eval_tpoly A (wt (App s t)) = eval_tpoly A (wt t)"
+      legal: "legal_zpassign A" and
+      wt_st: "eval_ztpoly A (wt (App s t)) = eval_ztpoly A (wt t)"
 
     have \<delta>_eq_\<epsilon>: "\<delta>\<^sub>h = \<epsilon>\<^sub>h"
       using wt_App_fun_\<delta>\<^sub>h[OF legal] wt_\<delta>\<^sub>h_imp_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h[OF legal] wt_st by blast
-    have wt_s: "eval_tpoly A (wt s) = \<delta>\<^sub>h"
+    have wt_s: "eval_ztpoly A (wt s) = zhmset_of \<delta>\<^sub>h"
       by (rule wt_App_fun_\<delta>\<^sub>h[OF legal wt_st])
 
     have wary_t: "wary t"
@@ -753,14 +853,15 @@ proof (induct t arbitrary: s rule: measure_induct_rule[of size])
         by (simp add: Hd_head_id nargs_s)
       hence wt_0: "\<exists>f \<in> ground_heads (head s). wt_sym f = 0"
       proof -
-        obtain ss :: "('v pvar \<Rightarrow> hmultiset) \<Rightarrow> ('s, 'v) hd \<Rightarrow> 's" where
-          f2: "\<forall>x0 x1. (\<exists>v2. v2 \<in> local.ground_heads x1 \<and> wt_sym v2 + \<delta>\<^sub>h * arity_sym\<^sub>h v2
-              \<le> eval_tpoly x0 (wt (Hd x1))) =
-            (ss x0 x1 \<in> local.ground_heads x1 \<and> wt_sym (ss x0 x1) + \<delta>\<^sub>h * arity_sym\<^sub>h (ss x0 x1)
-             \<le> eval_tpoly x0 (wt (Hd x1)))"
+        obtain ss :: "('v pvar \<Rightarrow> zhmultiset) \<Rightarrow> ('s, 'v) hd \<Rightarrow> 's" where
+          f2: "\<forall>x0 x1. (\<exists>v2. v2 \<in> local.ground_heads x1
+            \<and> zhmset_of (wt_sym v2 + \<delta>\<^sub>h * arity_sym\<^sub>h v2) \<le> eval_ztpoly x0 (wt (Hd x1))) =
+            (ss x0 x1 \<in> local.ground_heads x1
+             \<and> zhmset_of (wt_sym (ss x0 x1) + \<delta>\<^sub>h * arity_sym\<^sub>h (ss x0 x1))
+               \<le> eval_ztpoly x0 (wt (Hd x1)))"
           by moura
         hence "wt_sym (ss A (head s)) + \<delta>\<^sub>h * arity_sym\<^sub>h (ss A (head s)) \<le> \<epsilon>\<^sub>h"
-          by (metis \<delta>_eq_\<epsilon> exists_wt_sym[OF legal] s_eq_hd wt_s)
+          by (metis \<delta>_eq_\<epsilon> exists_wt_sym[OF legal] s_eq_hd wt_s zhmset_of_le)
         thus ?thesis
           using f2 by (metis (no_types) \<delta>_eq_\<epsilon> \<epsilon>\<^sub>h_gt_0 ary_hd_s add_le_same_cancel1
             dual_order.trans exists_wt_sym[OF legal] ground_heads_arity\<^sub>h
@@ -1022,7 +1123,7 @@ proof (simp only: atomize_imp,
       {
         assume "args u = []"
         hence False
-          by (metis Hd_head_id \<delta>_eq_\<epsilon> append_Nil args.simps(2) exists_wt_sym[OF legal_min_passign]
+          by (metis Hd_head_id \<delta>_eq_\<epsilon> append_Nil args.simps(2) exists_wt_sym[OF legal_min_zpassign]
             gt_same_u_t(2,3) gt_unary_t_s(3) head_fun list.size(3)
             not_extf_gt_nil_singleton_if_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h one_arg_imp_Hd t_app tm.collapse(2) wary_arg_t)
       }
@@ -1186,7 +1287,9 @@ lemma gt_compat_fun:
 proof (rule gt_same; clarify?)
   show "wt (App s t') \<ge>\<^sub>p wt (App s t)"
     using gt_imp_wt[OF t'_gt_t, unfolded ge_tpoly_def]
-    by (cases s rule: tm_exhaust_apps, clarsimp simp: ge_tpoly_def App_apps simp del: apps_append)
+    by (cases s rule: tm_exhaust_apps,
+      auto simp del: apps_append simp: ge_tpoly_def App_apps eval_ztpoly_nonneg
+        intro: ordered_comm_semiring_class.comm_mult_left_mono)
 next
   fix f
   have "extf f (op >\<^sub>t) (args s @ [t']) (args s @ [t])"
@@ -1245,37 +1348,21 @@ proof -
     using wary_st[unfolded s] ground_heads_arity\<^sub>h less_le_trans min_ground_head_in_ground_heads
     by (metis (no_types) tm_collapse_apps tm_inject_apps wary_AppE\<^sub>h)
 
-  have \<delta>_etc: "\<delta>\<^sub>h + \<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<zeta>) - of_nat (length ss) - 1) =
-    \<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<zeta>) - of_nat (length ss))"
-  proof (cases "\<delta>\<^sub>h = 0")
-    case \<delta>_nz: False
+  have \<delta>_etc:
+    "\<delta>\<^sub>h + \<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<zeta>) - of_nat (length ss) - 1) =
+     \<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<zeta>) - of_nat (length ss))"
+    if wary: "wary (App (apps (Hd \<zeta>) ss) t)" for \<zeta> ss
+  proof (cases "\<delta>\<^sub>h > 0")
+    case True
     then obtain n where n: "of_nat n = arity_sym\<^sub>h (min_ground_head \<zeta>)"
-      by (metis arity_sym\<^sub>h_lt_\<omega>_if_\<delta>\<^sub>h_gt_0 lt_\<omega>_imp_ex_of_nat not_gr_zero_hmset)
+      by (metis arity_sym\<^sub>h_if_\<delta>\<^sub>h_gt_0_E)
 
     have "of_nat (length ss) < arity_sym\<^sub>h (min_ground_head \<zeta>)"
-      using wary_st unfolding s
+      using wary
       by (metis (no_types) wary_AppE\<^sub>h ground_heads_arity\<^sub>h le_less_trans
         min_ground_head_in_ground_heads not_le tm_collapse_apps tm_inject_apps)
     thus ?thesis
-      unfolding n[symmetric]
-      by (subst of_nat_1[symmetric], unfold of_nat_minus_hmset[symmetric], simp,
-        metis Suc_diff_Suc mult_Suc_right of_nat_add of_nat_mult)
-  qed simp
-
-  hence \<delta>_etc': "\<delta>\<^sub>h + \<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<zeta>') - of_nat (length ss') - 1) =
-    \<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<zeta>') - of_nat (length ss'))"
-  proof (cases "\<delta>\<^sub>h = 0")
-    case \<delta>_nz: False
-    then obtain n where n: "of_nat n = arity_sym\<^sub>h (min_ground_head \<zeta>')"
-      by (metis arity_sym\<^sub>h_lt_\<omega>_if_\<delta>\<^sub>h_gt_0 lt_\<omega>_imp_ex_of_nat not_gr_zero_hmset)
-
-    have "of_nat (length ss') < arity_sym\<^sub>h (min_ground_head \<zeta>')"
-      using wary_s't unfolding s'
-      by (metis (no_types) wary_AppE\<^sub>h ground_heads_arity\<^sub>h le_less_trans
-        min_ground_head_in_ground_heads not_le tm_collapse_apps tm_inject_apps)
-    thus ?thesis
-      unfolding n[symmetric]
-      by (subst of_nat_1[symmetric], unfold of_nat_minus_hmset[symmetric], simp,
+      by (fold n, subst of_nat_1[symmetric], fold of_nat_minus_hmset, simp,
         metis Suc_diff_Suc mult_Suc_right of_nat_add of_nat_mult)
   qed simp
 
@@ -1286,20 +1373,21 @@ proof -
     by (rule gt_imp_wt[OF s'_gt_s])
 
   have \<zeta>_tms_len_ss_tms_wt_t_le:
-    "eval_tpoly A (coef_hd \<zeta> (length ss)) * eval_tpoly A (wt t)
-     \<le> eval_tpoly A (coef_hd \<zeta>' (length ss')) * eval_tpoly A (wt t)"
-    if "legal_passign A" for A
-    using that coef_\<zeta>'_ge_\<zeta>[unfolded ge_tpoly_def] by simp
+    "eval_ztpoly A (coef_hd \<zeta> (length ss)) * eval_ztpoly A (wt t)
+     \<le> eval_ztpoly A (coef_hd \<zeta>' (length ss')) * eval_ztpoly A (wt t)"
+    if legal: "legal_zpassign A" for A
+    using legal coef_\<zeta>'_ge_\<zeta>[unfolded ge_tpoly_def]
+    by (simp add: eval_ztpoly_nonneg mult_right_mono)
 
   have wt_s't_ge_st: "wt (App s' t) \<ge>\<^sub>p wt (App s t)"
     unfolding s s'
     by (clarsimp simp del: apps_append simp add: App_apps ge_tpoly_def add_ac(1)[symmetric]
-        intro!: add_mono[OF _ \<zeta>_tms_len_ss_tms_wt_t_le],
-      rule add_le_imp_le_left[of \<delta>\<^sub>h],
+          intro!: add_mono[OF _ \<zeta>_tms_len_ss_tms_wt_t_le],
+      rule add_le_imp_le_left[of "zhmset_of \<delta>\<^sub>h"],
       unfold add_ac(1)[symmetric] add.commute[of 1] diff_diff_add[symmetric],
-      subst (1 3) ac_simps(3)[unfolded add_ac(1)[symmetric]],
-      subst (1 3) add_ac(1),
-      simp only: \<delta>_etc \<delta>_etc' add_ac(1)
+      subst (1 3) ac_simps(3)[unfolded add_ac(1)[symmetric]], subst (1 3) add_ac(1),
+      simp only: zhmset_of_plus[symmetric] \<delta>_etc[OF wary_st[unfolded s]]
+        \<delta>_etc[OF wary_s't[unfolded s']] add_ac(1)
         wt_s'_ge_s[unfolded s s', unfolded ge_tpoly_def add_ac(1)[symmetric], simplified])
   show ?thesis
     using s'_gt_s
@@ -1309,12 +1397,13 @@ proof -
     have "wt (App s' t) >\<^sub>p wt (App s t)"
       unfolding s s'
       by (clarsimp simp del: apps_append simp add: App_apps gt_tpoly_def add_ac(1)[symmetric]
-          intro!: add_less_le_mono[OF _ \<zeta>_tms_len_ss_tms_wt_t_le],
-        rule add_less_imp_less_left[of \<delta>\<^sub>h],
+            intro!: add_less_le_mono[OF _ \<zeta>_tms_len_ss_tms_wt_t_le],
+        rule add_less_imp_less_left[of "zhmset_of \<delta>\<^sub>h"],
         unfold add_ac(1)[symmetric] add.commute[of 1] diff_diff_add[symmetric],
         subst (1 3) ac_simps(3)[unfolded add_ac(1)[symmetric]],
         subst (1 3) add_ac(1),
-        simp only: \<delta>_etc \<delta>_etc' add_ac(1)
+        simp only: zhmset_of_plus[symmetric] \<delta>_etc[OF wary_st[unfolded s]]
+          \<delta>_etc[OF wary_s't[unfolded s']] add_ac(1)
           gt_wt_s'_s[unfolded s s', unfolded gt_tpoly_def add_ac(1)[symmetric], simplified])
     thus ?thesis
       by (rule gt_wt)
@@ -1341,6 +1430,296 @@ proof -
 qed
 
 
+subsection \<open>Stability under Substitution\<close>
+
+primrec
+  subst_zpassign :: "('v \<Rightarrow> ('s, 'v) tm) \<Rightarrow> ('v pvar \<Rightarrow> zhmultiset) \<Rightarrow> 'v pvar \<Rightarrow> zhmultiset"
+where
+  "subst_zpassign \<rho> A (PWt x) =
+   eval_ztpoly A (wt (\<rho> x)) - zhmset_of (\<delta>\<^sub>h * arity_sym\<^sub>h (min_ground_head (Var x)))"
+| "subst_zpassign \<rho> A (PCoef x i) = eval_ztpoly A (coef (\<rho> x) i)"
+
+lemma legal_subst_zpassign:
+  assumes
+    legal: "legal_zpassign A" and
+    wary_\<rho>: "wary_subst \<rho>"
+  shows "legal_zpassign (subst_zpassign \<rho> A)"
+  unfolding legal_zpassign_def
+proof
+  fix v
+  show "subst_zpassign \<rho> A v \<ge> min_zpassign v"
+  proof (cases v)
+    case v: (PWt x)
+    obtain \<zeta> ss where \<rho>x: "\<rho> x = apps (Hd \<zeta>) ss"
+      by (rule tm_exhaust_apps)
+
+    have ghd_\<zeta>: "ground_heads \<zeta> \<subseteq> ground_heads_var x"
+      using wary_\<rho>[unfolded wary_subst_def, rule_format, of x, unfolded \<rho>x] by simp
+
+    have "zhmset_of (wt_sym (min_ground_head (Var x))
+        + \<delta>\<^sub>h * arity_sym\<^sub>h (min_ground_head (Var x)))
+      \<le> eval_ztpoly A (wt0 \<zeta>) + zhmset_of (\<delta>\<^sub>h * arity_sym\<^sub>h (min_ground_head \<zeta>))"
+    proof -
+      have mgh_x_min:
+        "zhmset_of (wt_sym (min_ground_head (Var x)) + \<delta>\<^sub>h * arity_sym\<^sub>h (min_ground_head (Var x)))
+         \<le> zhmset_of (wt_sym (min_ground_head \<zeta>) + \<delta>\<^sub>h * arity_sym\<^sub>h (min_ground_head \<zeta>))"
+        by (simp add: zmset_of_le zhmset_of_le ghd_\<zeta> min_ground_head_antimono)
+      have wt_mgh_le_wt0: "zhmset_of (wt_sym (min_ground_head \<zeta>)) \<le> eval_ztpoly A (wt0 \<zeta>)"
+        using wt0_ge_min_ground_head[OF legal] by blast
+      show ?thesis
+        by (rule order_trans[OF mgh_x_min]) (simp add: zhmset_of_plus wt_mgh_le_wt0)
+    qed
+    also have "\<dots> \<le> eval_ztpoly A (wt0 \<zeta>)
+      + zhmset_of ((\<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<zeta>) - of_nat (length ss)))
+        + of_nat (length ss) * \<delta>\<^sub>h)"
+    proof -
+      have "zhmset_of (\<delta>\<^sub>h * arity_sym\<^sub>h (min_ground_head \<zeta>))
+        \<le> zhmset_of (\<delta>\<^sub>h * (of_nat (length ss)
+          + (arity_sym\<^sub>h (min_ground_head \<zeta>) - of_nat (length ss))))"
+        by (metis add.commute le_minus_plus_same_hmset mult_le_mono2_hmset zhmset_of_le)
+      thus ?thesis
+        by (simp add: add.commute add.left_commute distrib_left mult.commute)
+    qed
+    also have "\<dots> \<le> eval_ztpoly A (wt0 \<zeta>)
+      + zhmset_of ((\<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<zeta>) - of_nat (length ss)))
+        + of_nat (length ss) * \<epsilon>\<^sub>h)"
+      using \<delta>\<^sub>h_le_\<epsilon>\<^sub>h zhmset_of_le by auto
+    also have "\<dots> \<le> eval_ztpoly A (wt0 \<zeta>)
+      + zhmset_of (\<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<zeta>) - of_nat (length ss))) + wt_args A \<zeta> ss"
+      using wt_args_ge_length_times_\<epsilon>\<^sub>h[OF legal]
+      by (simp add: algebra_simps zhmset_of_plus zhmset_of_times of_nat_zhmset)
+    finally have wt_x_le_\<zeta>ssts:
+      "zhmset_of (wt_sym (min_ground_head (Var x)) + \<delta>\<^sub>h * arity_sym\<^sub>h (min_ground_head (Var x)))
+       \<le> eval_ztpoly A (wt0 \<zeta>)
+         + zhmset_of (\<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<zeta>) - of_nat (length ss))) + wt_args A \<zeta> ss"
+      by assumption
+
+    show ?thesis
+    using wt_x_le_\<zeta>ssts[unfolded wt_args_def]
+      by (simp add: v \<rho>x comp_def le_diff_eq add.assoc[symmetric]
+        ZHMSet_plus[symmetric] zmset_of_plus[symmetric] hmsetmset_plus[symmetric] zmset_of_le)
+  next
+    case (PCoef x i)
+    thus ?thesis
+      using coef_gt_0[OF legal, unfolded zero_less_iff_1_le_hmset]
+      by (simp add: zhmset_of_1 zero_less_iff_1_le_zhmset)
+  qed
+qed
+
+lemma eval_ztpoly_wt_subst:
+  assumes
+    legal: "legal_zpassign A" and
+    wary_\<rho>: "wary_subst \<rho>"
+  shows "wary s \<Longrightarrow> eval_ztpoly A (wt (subst \<rho> s)) = eval_ztpoly (subst_zpassign \<rho> A) (wt s)"
+proof (induct s rule: tm_induct_apps)
+  case (apps \<zeta> ss)
+  note ih = this(1) and wary_\<zeta>ss = this(2)
+
+  have wary_nth_ss: "wary (ss ! i)" if i_lt: "i < length ss" for i
+    using wary_args[OF _ wary_\<zeta>ss] i_lt by force
+
+  show ?case
+  proof (cases \<zeta>)
+    case \<zeta>: (Var x)
+    show ?thesis
+    proof (cases "\<rho> x" rule: tm_exhaust_apps)
+      case \<rho>x: (apps \<xi> ts)
+
+      have wary_\<rho>x: "wary (\<rho> x)"
+        using wary_\<rho> wary_subst_def by blast
+
+      have map_ss:
+        "sum_list (map (eval_ztpoly A \<circ> (\<lambda>(s, i). PMult [coef_hd \<xi> i, wt s]))
+           (zip (map (subst \<rho>) ss) [length ts..<length ts + length ss])) =
+         sum_list (map (eval_ztpoly (subst_zpassign \<rho> A) \<circ> (\<lambda>(s, i). PMult [PVar (PCoef x i), wt s]))
+           (zip ss [0..<length ss]))"
+        by (auto intro!: arg_cong[of _ _ sum_list] nth_map_conv
+          simp: \<rho>x add.commute zhmset_of_times ih[OF nth_mem wary_nth_ss])
+
+      have tedious_ary_arith:
+        "arity_sym\<^sub>h (min_ground_head (Var x))
+         + (arity_sym\<^sub>h (min_ground_head \<xi>) - (of_nat (length ss) + of_nat (length ts))) =
+         arity_sym\<^sub>h (min_ground_head \<xi>) - of_nat (length ts)
+         + (arity_sym\<^sub>h (min_ground_head (Var x)) - of_nat (length ss))"
+        if \<delta>_gt_0: "\<delta>\<^sub>h > 0"
+      proof -
+        obtain m where m: "of_nat m = arity_sym\<^sub>h (min_ground_head (Var x))"
+          by (metis arity_sym\<^sub>h_if_\<delta>\<^sub>h_gt_0_E[OF \<delta>_gt_0])
+        obtain n where n: "of_nat n = arity_sym\<^sub>h (min_ground_head \<xi>)"
+          by (metis arity_sym\<^sub>h_if_\<delta>\<^sub>h_gt_0_E[OF \<delta>_gt_0])
+
+        have "m \<ge> length ss"
+          unfolding of_nat_le_hmset[symmetric] m using wary_\<zeta>ss[unfolded \<zeta>]
+          by (cases rule: wary_cases_apps\<^sub>h, clarsimp,
+            metis arity_hd.simps(1) enat_ile enat_ord_simps(1) ground_heads_arity
+              hmset_of_enat_inject hmset_of_enat_of_nat le_trans m min_ground_head_in_ground_heads
+              of_nat_eq_enat of_nat_le_hmset_of_enat_iff)
+        moreover have n_ge_len_ss_ts: "n \<ge> length ss + length ts"
+        proof -
+          have "of_nat (length ss) + of_nat (length ts) \<le> arity_hd\<^sub>h \<zeta> + of_nat (length ts)"
+            using wary_\<zeta>ss wary_cases_apps\<^sub>h by fastforce
+          also have "\<dots> = arity_var\<^sub>h x + of_nat (length ts)"
+            by (simp add: \<zeta>)
+          also have "\<dots> \<le> arity\<^sub>h (\<rho> x) + of_nat (length ts)"
+            using wary_\<rho> wary_subst_def by auto
+          also have "\<dots> = arity\<^sub>h (apps (Hd \<xi>) ts) + of_nat (length ts)"
+            by (simp add: \<rho>x)
+          also have "\<dots> = arity_hd\<^sub>h \<xi>"
+            using wary_\<rho>x[unfolded \<rho>x]
+            by (cases rule: wary_cases_apps\<^sub>h, cases "arity_hd \<xi>",
+              simp add: of_nat_add[symmetric] of_nat_minus_hmset[symmetric],
+              metis \<delta>_gt_0 arity_hd_ne_infinity_if_\<delta>_gt_0 of_nat_0 of_nat_less_hmset)
+          also have "\<dots> \<le> arity_sym\<^sub>h (min_ground_head \<xi>)"
+            using ground_heads_arity\<^sub>h min_ground_head_in_ground_heads by blast
+          finally show ?thesis
+            unfolding of_nat_le_hmset[symmetric] n by simp
+        qed
+        moreover have "n \<ge> length ts"
+          using n_ge_len_ss_ts by simp
+        ultimately show ?thesis
+          by (fold m n of_nat_add of_nat_minus_hmset, unfold of_nat_inject_hmset, fastforce)
+      qed
+
+      show ?thesis
+        by (simp del: apps_append add: apps_append[symmetric] \<rho>x \<zeta>
+          zip_append_0_upt[of ts "map (subst \<rho>) ss", simplified] map_ss[unfolded comp_def] comp_def,
+          simp add: algebra_simps ring_distribs(1)[symmetric] zhmset_of_times
+            zhmset_of_plus[symmetric] zhmset_of_0[symmetric],
+          use tedious_ary_arith in fastforce)
+    qed
+  next
+    case Sym
+    thus ?thesis
+      by (auto simp: zhmset_of_plus zhmset_of_sum_list zhmset_of_times ih[OF _ wary_nth_ss]
+        intro!: arg_cong[of _ _ sum_list] nth_map_conv)
+  qed
+qed
+
+theorem gt_subst:
+  assumes wary_\<rho>: "wary_subst \<rho>"
+  shows "wary t \<Longrightarrow> wary s \<Longrightarrow> t >\<^sub>t s \<Longrightarrow> subst \<rho> t >\<^sub>t subst \<rho> s"
+proof (simp only: atomize_imp,
+    rule wellorder_measure_induct_rule[of "\<lambda>(t, s). {#size t, size s#}"
+        "\<lambda>(t, s). wary t \<longrightarrow> wary s \<longrightarrow> t >\<^sub>t s \<longrightarrow> subst \<rho> t >\<^sub>t subst \<rho> s" "(t, s)",
+      simplified prod.case],
+    simp only: split_paired_all prod.case atomize_imp[symmetric])
+  fix t s
+  assume
+    ih: "\<And>ta sa. {#size ta, size sa#} < {#size t, size s#} \<Longrightarrow> wary ta \<Longrightarrow> wary sa \<Longrightarrow> ta >\<^sub>t sa \<Longrightarrow>
+      subst \<rho> ta >\<^sub>t subst \<rho> sa" and
+    wary_t: "wary t" and wary_s: "wary s" and t_gt_s: "t >\<^sub>t s"
+
+  show "subst \<rho> t >\<^sub>t subst \<rho> s"
+    using t_gt_s
+  proof cases
+    case gt_wt_t_s: gt_wt
+
+    have "wt (subst \<rho> t) >\<^sub>p wt (subst \<rho> s)"
+      by (auto simp: gt_tpoly_def wary_s wary_t eval_ztpoly_wt_subst[OF _ wary_\<rho>]
+        intro: eval_ztpoly_wt_subst[OF _ wary_\<rho>] gt_wt_t_s[unfolded gt_tpoly_def, rule_format]
+        elim: legal_subst_zpassign[OF _ wary_\<rho>])
+    thus ?thesis
+      by (rule gt_wt)
+  next
+    assume wt_t_ge_s: "wt t \<ge>\<^sub>p wt s"
+
+    have wt_\<rho>t_ge_\<rho>s: "wt (subst \<rho> t) \<ge>\<^sub>p wt (subst \<rho> s)"
+      by (auto simp: ge_tpoly_def wary_s wary_t eval_ztpoly_wt_subst[OF _ wary_\<rho>]
+        intro: eval_ztpoly_wt_subst[OF _ wary_\<rho>] wt_t_ge_s[unfolded ge_tpoly_def, rule_format]
+        elim: legal_subst_zpassign[OF _ wary_\<rho>])
+
+    {
+      case gt_unary
+
+      have wary_\<rho>t: "wary (subst \<rho> t)"
+        by (simp add: wary_subst_wary wary_t wary_\<rho>)
+
+      show ?thesis
+      proof (cases t)
+        case Hd
+        hence False
+          using gt_unary(3) by simp
+        thus ?thesis
+          by sat
+      next
+        case t: (App t1 t2)
+        hence t2: "t2 = arg t"
+          by simp
+        hence wary_t2: "wary t2"
+          using wary_t by blast
+
+        show ?thesis
+        proof (cases "t2 = s")
+          case True
+          moreover have "subst \<rho> t >\<^sub>t subst \<rho> t2"
+            using gt_sub_arg wary_\<rho>t unfolding t by simp
+          ultimately show ?thesis
+            by simp
+        next
+          case t2_ne_s: False
+          hence t2_gt_s: "t2 >\<^sub>t s"
+            using gt_unary(5) t2 by blast
+
+          have "subst \<rho> t2 >\<^sub>t subst \<rho> s"
+            by (rule ih[OF _ wary_t2 wary_s t2_gt_s]) (simp add: t)
+          thus ?thesis
+            unfolding t by simp (metis gt_sub_arg gt_trans subst.simps(2) t wary_\<rho> wary_\<rho>t wary_s
+              wary_subst_wary wary_t2)
+        qed
+      qed
+    }
+    {
+      case _: gt_diff
+      note hd_t_gt_hd_s = this(2)
+
+      have "head (subst \<rho> t) >\<^sub>h\<^sub>d head (subst \<rho> s)"
+        by (meson hd_t_gt_hd_s wary_subst_ground_heads gt_hd_def set_rev_mp wary_\<rho>)
+      thus ?thesis
+        by (rule gt_diff[OF wt_\<rho>t_ge_\<rho>s])
+    }
+    {
+      case _: gt_same
+      note hd_s_eq_hd_t = this(2) and extf = this(3)
+
+      have hd_\<rho>t: "head (subst \<rho> t) = head (subst \<rho> s)"
+        by (simp add: hd_s_eq_hd_t)
+
+      {
+        fix f
+        assume f_in_grs: "f \<in> ground_heads (head (subst \<rho> t))"
+
+        let ?S = "set (args t) \<union> set (args s)"
+
+        have extf_args_s_t: "extf f (op >\<^sub>t) (args t) (args s)"
+          using extf f_in_grs wary_subst_ground_heads wary_\<rho> by blast
+        have "extf f (op >\<^sub>t) (map (subst \<rho>) (args t)) (map (subst \<rho>) (args s))"
+        proof (rule extf_map[of ?S, OF _ _ _ _ _ _ extf_args_s_t])
+          show "\<forall>x \<in> ?S. \<not> subst \<rho> x >\<^sub>t subst \<rho> x"
+            using gt_irrefl wary_t wary_s wary_args wary_\<rho> wary_subst_wary by fastforce
+        next
+          show "\<forall>z \<in> ?S. \<forall>y \<in> ?S. \<forall>x \<in> ?S. subst \<rho> z >\<^sub>t subst \<rho> y \<longrightarrow> subst \<rho> y >\<^sub>t subst \<rho> x \<longrightarrow>
+            subst \<rho> z >\<^sub>t subst \<rho> x"
+            using gt_trans wary_t wary_s wary_args wary_\<rho> wary_subst_wary by (metis Un_iff)
+        next
+          have sz_a: "\<forall>ta \<in> ?S. \<forall>sa \<in> ?S. {#size ta, size sa#} < {#size t, size s#}"
+            by (fastforce intro: Max_lt_imp_lt_mset dest: size_in_args)
+          show "\<forall>y \<in> ?S. \<forall>x \<in> ?S. y >\<^sub>t x \<longrightarrow> subst \<rho> y >\<^sub>t subst \<rho> x"
+            using ih sz_a size_in_args wary_t wary_s wary_args wary_\<rho> wary_subst_wary by fastforce
+        qed auto
+        hence "extf f (op >\<^sub>t) (args (subst \<rho> t)) (args (subst \<rho> s))"
+          by (auto simp: hd_s_eq_hd_t intro: extf_compat_append_left)
+      }
+      hence extf_subst: "\<forall>f \<in> ground_heads (head (subst \<rho> t)).
+        extf f (op >\<^sub>t) (args (subst \<rho> t)) (args (subst \<rho> s))"
+        by blast
+
+      show ?thesis
+        by (rule gt_same[OF wt_\<rho>t_ge_\<rho>s hd_\<rho>t extf_subst])
+    }
+  qed
+qed
+
+
 subsection \<open>Totality on Ground Terms\<close>
 
 lemma wt_gt_total_ground:
@@ -1349,8 +1728,8 @@ lemma wt_gt_total_ground:
     gr_s: "ground s"
   shows "wt t >\<^sub>p wt s \<or> wt s >\<^sub>p wt t \<or> wt t =\<^sub>p wt s"
   unfolding gt_tpoly_def eq_tpoly_def
-  by (subst (1 2 3) ground_eval_tpoly_wt_eq[OF gr_t, of _ undefined],
-    subst (1 2 3) ground_eval_tpoly_wt_eq[OF gr_s, of _ undefined], auto)
+  by (subst (1 2 3) ground_eval_ztpoly_wt_eq[OF gr_t, of _ undefined],
+    subst (1 2 3) ground_eval_ztpoly_wt_eq[OF gr_s, of _ undefined], auto)
 
 theorem gt_total_ground:
   assumes
@@ -1449,242 +1828,6 @@ proof (induct t arbitrary: s rule: tm_induct_apps)
 qed
 
 
-subsection \<open>Stability under Substitution\<close>
-
-text \<open>
-The assumption below is a crude workaround for the missing property
-@{thm ordered_cancel_comm_monoid_diff_class.diff_add} on syntactic ordinals. A
-more satisfactory solution would involve defining ordinals with negative
-coefficients.
-\<close>
-
-context
-  assumes \<delta>\<^sub>h_eq_0_hopefully_temporary: "\<delta>\<^sub>h = 0"
-begin
-
-primrec
-  subst_passign :: "('v \<Rightarrow> ('s, 'v) tm) \<Rightarrow> ('v pvar \<Rightarrow> hmultiset) \<Rightarrow> 'v pvar \<Rightarrow> hmultiset"
-where
-  "subst_passign \<rho> A (PWt x) = eval_tpoly A (wt (\<rho> x)) - \<delta>\<^sub>h * arity_sym\<^sub>h (min_ground_head (Var x))"
-| "subst_passign \<rho> A (PCoef x i) = eval_tpoly A (coef (\<rho> x) i)"
-
-lemma legal_subst_passign:
-  assumes
-    legal: "legal_passign A" and
-    wary_\<rho>: "wary_subst \<rho>"
-  shows "legal_passign (subst_passign \<rho> A)"
-  unfolding legal_passign_def
-proof
-  fix v
-  show "min_passign v \<le> subst_passign \<rho> A v"
-  proof (cases v)
-    case v: (PWt x)
-    obtain \<zeta> ss where \<rho>x: "\<rho> x = apps (Hd \<zeta>) ss"
-      by (rule tm_exhaust_apps)
-
-    have ghd_\<zeta>: "ground_heads \<zeta> \<subseteq> ground_heads_var x"
-      using wary_\<rho>[unfolded wary_subst_def, rule_format, of x, unfolded \<rho>x] by simp
-
-    have "wt_sym (min_ground_head (Var x)) + \<delta>\<^sub>h * arity_sym\<^sub>h (min_ground_head (Var x))
-      \<le> eval_tpoly A (wt0 \<zeta>) + \<delta>\<^sub>h * arity_sym\<^sub>h (min_ground_head \<zeta>)"
-    proof -
-      have "wt_sym (min_ground_head (Var x)) + \<delta>\<^sub>h * arity_sym\<^sub>h (min_ground_head (Var x))
-        \<le> wt_sym (min_ground_head \<zeta>) + \<delta>\<^sub>h * arity_sym\<^sub>h (min_ground_head \<zeta>)"
-        by (simp add: ghd_\<zeta> min_ground_head_antimono)
-      moreover have "wt_sym (min_ground_head \<zeta>) \<le> eval_tpoly A (wt0 \<zeta>)"
-        using wt0_ge_min_ground_head[OF legal] by blast
-      ultimately show ?thesis
-        by (meson add_le_cancel_right order_trans)
-    qed
-    also have "\<dots> \<le> eval_tpoly A (wt0 \<zeta>)
-      + (\<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<zeta>) - of_nat (length ss))) + of_nat (length ss) * \<delta>\<^sub>h"
-    proof -
-      have "\<delta>\<^sub>h * arity_sym\<^sub>h (min_ground_head \<zeta>)
-        \<le> \<delta>\<^sub>h * (of_nat (length ss) + (arity_sym\<^sub>h (min_ground_head \<zeta>) - of_nat (length ss)))"
-        by (metis add.commute le_minus_plus_same_hmset mult_le_mono2_hmset)
-      thus ?thesis
-        by (simp add: add.commute add.left_commute distrib_left mult.commute)
-    qed
-    also have "\<dots> \<le> eval_tpoly A (wt0 \<zeta>)
-      + (\<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<zeta>) - of_nat (length ss))) + of_nat (length ss) * \<epsilon>\<^sub>h"
-      using \<delta>\<^sub>h_le_\<epsilon>\<^sub>h by simp
-    also have "\<dots> \<le> eval_tpoly A (wt0 \<zeta>)
-      + (\<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<zeta>) - of_nat (length ss))) + wt_args A \<zeta> ss"
-      using wt_args_ge_length_times_\<epsilon>\<^sub>h[OF legal] by simp
-    finally have wt_x_le_\<zeta>ssts:
-      "wt_sym (min_ground_head (Var x)) + \<delta>\<^sub>h * arity_sym\<^sub>h (min_ground_head (Var x))
-       \<le> eval_tpoly A (wt0 \<zeta>) + \<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<zeta>) - of_nat (length ss))
-         + wt_args A \<zeta> ss"
-      by assumption
-
-    show ?thesis
-      by (simp add: v \<rho>x wt_args_def[symmetric], rule add_le_imp_le_right,
-        rule order.trans[OF wt_x_le_\<zeta>ssts], unfold add.assoc, rule le_minus_plus_same_hmset)
-  next
-    case (PCoef x i)
-    thus ?thesis
-      using coef_gt_0[OF legal, unfolded zero_less_iff_1_le_hmset] by simp
-  qed
-qed
-
-lemma eval_tpoly_wt_subst:
-  assumes
-    legal: "legal_passign A" and
-    wary_\<rho>: "wary_subst \<rho>"
-  shows "wary s \<Longrightarrow> eval_tpoly A (wt (subst \<rho> s)) = eval_tpoly (subst_passign \<rho> A) (wt s)"
-proof (induct s rule: tm_induct_apps)
-  case (apps \<zeta> ss)
-  note ih = this(1) and wary_\<zeta>ss = this(2)
-
-  have wary_nth_ss: "wary (ss ! i)" if i_lt: "i < length ss" for i
-    using wary_args[OF _ wary_\<zeta>ss] i_lt by force
-
-  show ?case
-  proof (cases \<zeta>)
-    case \<zeta>: (Var x)
-    show ?thesis
-    proof (cases "\<rho> x" rule: tm_exhaust_apps)
-      case \<rho>x: (apps \<xi> ts)
-
-      have map_ss:
-        "map (eval_tpoly A \<circ> (\<lambda>(s, i). PMult [coef_hd \<xi> i, wt s]))
-           (zip (map (subst \<rho>) ss) [length ts..<length ts + length ss]) =
-         map (eval_tpoly (subst_passign \<rho> A) \<circ> (\<lambda>(s, i). PMult [PVar (PCoef x i), wt s]))
-           (zip ss [0..<length ss])"
-        by (rule nth_map_conv, simp_all add: ih[symmetric, OF nth_mem wary_nth_ss] \<rho>x add.commute)
-
-      show ?thesis
-        by (simp del: apps_append add: apps_append[symmetric] \<rho>x \<zeta> map_ss add.assoc[symmetric]
-          zip_append_0_upt[of ts "map (subst \<rho>) ss", simplified] wt_args_def
-          \<delta>\<^sub>h_eq_0_hopefully_temporary)
-    qed
-  next
-    case Sym
-    thus ?thesis
-      using ih[OF _ wary_nth_ss] by (auto intro!: arg_cong[of _ _ sum_list] nth_map_conv)
-  qed
-qed
-
-theorem gt_subst:
-  assumes wary_\<rho>: "wary_subst \<rho>"
-  shows "wary t \<Longrightarrow> wary s \<Longrightarrow> t >\<^sub>t s \<Longrightarrow> subst \<rho> t >\<^sub>t subst \<rho> s"
-proof (simp only: atomize_imp,
-    rule wellorder_measure_induct_rule[of "\<lambda>(t, s). {#size t, size s#}"
-        "\<lambda>(t, s). wary t \<longrightarrow> wary s \<longrightarrow> t >\<^sub>t s \<longrightarrow> subst \<rho> t >\<^sub>t subst \<rho> s" "(t, s)",
-      simplified prod.case],
-    simp only: split_paired_all prod.case atomize_imp[symmetric])
-  fix t s
-  assume
-    ih: "\<And>ta sa. {#size ta, size sa#} < {#size t, size s#} \<Longrightarrow> wary ta \<Longrightarrow> wary sa \<Longrightarrow> ta >\<^sub>t sa \<Longrightarrow>
-      subst \<rho> ta >\<^sub>t subst \<rho> sa" and
-    wary_t: "wary t" and wary_s: "wary s" and t_gt_s: "t >\<^sub>t s"
-
-  show "subst \<rho> t >\<^sub>t subst \<rho> s"
-    using t_gt_s
-  proof cases
-    case _: gt_wt
-    hence "wt (subst \<rho> t) >\<^sub>p wt (subst \<rho> s)"
-      by (simp add: legal_subst_passign[OF _ wary_\<rho>] gt_tpoly_def eval_tpoly_wt_subst[OF _ wary_\<rho>]
-        wary_s wary_t)
-    thus ?thesis
-      by (rule gt_wt)
-  next
-    case gt_unary
-
-    have wary_\<rho>t: "wary (subst \<rho> t)"
-      by (simp add: wary_subst_wary wary_t wary_\<rho>)
-
-    show ?thesis
-    proof (cases t)
-      case Hd
-      hence False
-        using gt_unary(3) by simp
-      thus ?thesis
-        by sat
-    next
-      case t: (App t1 t2)
-      hence t2: "t2 = arg t"
-        by simp
-      hence wary_t2: "wary t2"
-        using wary_t by blast
-
-      show ?thesis
-      proof (cases "t2 = s")
-        case True
-        moreover have "subst \<rho> t >\<^sub>t subst \<rho> t2"
-          using gt_sub_arg wary_\<rho>t unfolding t by simp
-        ultimately show ?thesis
-          by simp
-      next
-        case t2_ne_s: False
-        hence t2_gt_s: "t2 >\<^sub>t s"
-          using gt_unary(5) t2 by blast
-
-        have "subst \<rho> t2 >\<^sub>t subst \<rho> s"
-          by (rule ih[OF _ wary_t2 wary_s t2_gt_s]) (simp add: t)
-        thus ?thesis
-          unfolding t by simp (metis gt_sub_arg gt_trans subst.simps(2) t wary_\<rho> wary_\<rho>t wary_s
-            wary_subst_wary wary_t2)
-      qed
-    qed
-  next
-    case _: gt_diff
-    note wt_t_ge_s = this(1) and hd_t_gt_hd_s = this(2)
-
-    have wt_\<rho>t_ge_\<rho>s: "wt (subst \<rho> t) \<ge>\<^sub>p wt (subst \<rho> s)"
-      using wt_t_ge_s by (simp add: legal_subst_passign[OF _ wary_\<rho>] ge_tpoly_def
-        eval_tpoly_wt_subst[OF _ wary_\<rho>] wary_s wary_t)
-
-    have "head (subst \<rho> t) >\<^sub>h\<^sub>d head (subst \<rho> s)"
-      by (meson hd_t_gt_hd_s wary_subst_ground_heads gt_hd_def set_rev_mp wary_\<rho>)
-    thus ?thesis
-      by (rule gt_diff[OF wt_\<rho>t_ge_\<rho>s])
-  next
-    case _: gt_same
-    note wt_t_ge_s = this(1) and hd_s_eq_hd_t = this(2) and extf = this(3)
-
-    have wt_\<rho>t_ge_\<rho>s: "wt (subst \<rho> t) \<ge>\<^sub>p wt (subst \<rho> s)"
-      using wt_t_ge_s by (simp add: legal_subst_passign[OF _ wary_\<rho>] ge_tpoly_def
-        eval_tpoly_wt_subst[OF _ wary_\<rho>] wary_s wary_t)
-
-    have hd_\<rho>t: "head (subst \<rho> t) = head (subst \<rho> s)"
-      by (simp add: hd_s_eq_hd_t)
-
-    {
-      fix f
-      assume f_in_grs: "f \<in> ground_heads (head (subst \<rho> t))"
-
-      let ?S = "set (args t) \<union> set (args s)"
-
-      have extf_args_s_t: "extf f (op >\<^sub>t) (args t) (args s)"
-        using extf f_in_grs wary_subst_ground_heads wary_\<rho> by blast
-      have "extf f (op >\<^sub>t) (map (subst \<rho>) (args t)) (map (subst \<rho>) (args s))"
-      proof (rule extf_map[of ?S, OF _ _ _ _ _ _ extf_args_s_t])
-        show "\<forall>x \<in> ?S. \<not> subst \<rho> x >\<^sub>t subst \<rho> x"
-          using gt_irrefl wary_t wary_s wary_args wary_\<rho> wary_subst_wary by fastforce
-      next
-        show "\<forall>z \<in> ?S. \<forall>y \<in> ?S. \<forall>x \<in> ?S. subst \<rho> z >\<^sub>t subst \<rho> y \<longrightarrow> subst \<rho> y >\<^sub>t subst \<rho> x \<longrightarrow>
-          subst \<rho> z >\<^sub>t subst \<rho> x"
-          using gt_trans wary_t wary_s wary_args wary_\<rho> wary_subst_wary by (metis Un_iff)
-      next
-        have sz_a: "\<forall>ta \<in> ?S. \<forall>sa \<in> ?S. {#size ta, size sa#} < {#size t, size s#}"
-          by (fastforce intro: Max_lt_imp_lt_mset dest: size_in_args)
-        show "\<forall>y \<in> ?S. \<forall>x \<in> ?S. y >\<^sub>t x \<longrightarrow> subst \<rho> y >\<^sub>t subst \<rho> x"
-          using ih sz_a size_in_args wary_t wary_s wary_args wary_\<rho> wary_subst_wary by fastforce
-      qed auto
-      hence "extf f (op >\<^sub>t) (args (subst \<rho> t)) (args (subst \<rho> s))"
-        by (auto simp: hd_s_eq_hd_t intro: extf_compat_append_left)
-    }
-    hence extf_subst: "\<forall>f \<in> ground_heads (head (subst \<rho> t)).
-      extf f (op >\<^sub>t) (args (subst \<rho> t)) (args (subst \<rho> s))"
-      by blast
-
-    show ?thesis
-      by (rule gt_same[OF wt_\<rho>t_ge_\<rho>s hd_\<rho>t extf_subst])
-  qed
-qed
-
-
 subsection \<open>Well-foundedness\<close>
 
 abbreviation gtw :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix ">\<^sub>t\<^sub>w" 50) where
@@ -1734,8 +1877,9 @@ proof -
       unfolding inf_chain_def using gt_iff_wt_unary_diff_same ground_gt_unary by blast
 
     have wf_wt: "wf {(s, t). ground t \<and> gt_wt t s}"
-      by (rule wf_subset[OF wf_app[of _ "eval_tpoly ?A \<circ> wt", OF wf_less_hmultiset]])
-        (auto simp: legal_min_passign gt_wt.simps gt_tpoly_def)
+      by (rule wf_subset[OF wf_app[of _ "eval_tpoly ?A \<circ> wt", OF wf_less_hmultiset]],
+        simp add: gt_wt.simps gt_tpoly_def, fold zhmset_of_less,
+        auto simp: legal_min_zpassign gt_wt.simps gt_tpoly_def)
 
     have wt_O_diff_same: "{(s, t). ground t \<and> gt_wt t s}
         O {(s, t). ground t \<and> wt t =\<^sub>p wt s \<and>  (gt_diff t s \<or> gt_same t s)}
@@ -1794,16 +1938,15 @@ proof -
     define w where "w = eval_tpoly ?A (wt (?ff k2))"
 
     have "head (?ff (i + k2)) = Sym f \<and> eval_tpoly ?A (wt (?ff (i + k2))) = w" for i
-      unfolding f_def w_def
     proof (induct i)
       case 0
       thus ?case
-        by (auto simp: hd.collapse(2)[OF hd_sym, of 0, simplified])
+        by (auto simp: f_def w_def hd.collapse(2)[OF hd_sym, of 0, simplified])
     next
       case (Suc ia)
       thus ?case
-        using bad_same unfolding inf_chain_def gt_same.simps
-        by (simp add: eq_tpoly_def legal_min_passign)
+        using bad_same unfolding inf_chain_def gt_same.simps zhmset_of_inject[symmetric]
+        by (simp add: eq_tpoly_def legal_min_zpassign)
     qed
     note hd_eq_f = this[THEN conjunct1] and wt_eq_w = this[THEN conjunct2]
 
@@ -1914,8 +2057,6 @@ proof -
   thus ?thesis
     by (auto intro: wfP_subset wary_subst_wary[OF wary_grounding_\<rho>] gt_subst[OF wary_grounding_\<rho>])
 qed
-
-end
 
 end
 

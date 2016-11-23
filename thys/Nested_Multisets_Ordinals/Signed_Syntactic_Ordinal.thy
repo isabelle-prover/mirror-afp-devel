@@ -231,6 +231,13 @@ lemma zero_less_iff_1_le_zhmset: "0 < n \<longleftrightarrow> 1 \<le> n" for n :
 lemma less_add_1_iff_le_hmset: "m < n + 1 \<longleftrightarrow> m \<le> n" for m n :: zhmultiset
   by (rule less_iff_add1_le_zhmset[of m "n + 1", simplified])
 
+lemma nonneg_le_mult_right_mono_zhmset:
+  fixes x y z :: zhmultiset
+  assumes x: "0 \<le> x" and y: "0 < y" and z: "x \<le> z"
+  shows "x \<le> y * z"
+  using x zero_less_iff_1_le_zhmset[THEN iffD1, OF y] z
+  by (meson dual_order.trans leD mult_less_cancel_right2 not_le_imp_less)
+
 instance hmultiset :: ordered_cancel_comm_semiring
   by intro_classes (simp add: mult_le_mono2_hmset)
 
