@@ -427,4 +427,7 @@ Replace existing code equations for @{const sort_key} by
 declare sort_key_merge_all_sequences[code]
 
 end
+
+hide_const lt le gt ge
+
 end
