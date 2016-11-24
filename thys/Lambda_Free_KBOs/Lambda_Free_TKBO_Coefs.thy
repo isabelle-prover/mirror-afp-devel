@@ -278,9 +278,11 @@ function wt :: "('s, 'v) tm \<Rightarrow> ('v pvar, hmultiset) tpoly" where
 termination
   by (lexicographic_order simp: in_zip_imp_size_lt_apps)
 
-definition wt_args :: "('v pvar \<Rightarrow> zhmultiset) \<Rightarrow> ('s, 'v) hd \<Rightarrow> ('s, 'v) tm list \<Rightarrow> zhmultiset" where
-  "wt_args A \<zeta> ss =
-   sum_list (map (eval_ztpoly A \<circ> (\<lambda>(s, i). PMult [coef_hd \<zeta> i, wt s])) (zip ss [0..<length ss]))"
+definition
+  wt_args :: "nat \<Rightarrow> ('v pvar \<Rightarrow> zhmultiset) \<Rightarrow> ('s, 'v) hd \<Rightarrow> ('s, 'v) tm list \<Rightarrow> zhmultiset"
+where
+  "wt_args i A \<zeta> ss = sum_list
+     (map (eval_ztpoly A \<circ> (\<lambda>(s, i). PMult [coef_hd \<zeta> i, wt s])) (zip ss [i..<i + length ss]))"
 
 lemma wt_Hd[simp]: "wt (Hd \<zeta>) = PSum [wt0 \<zeta>, PNum (\<delta>\<^sub>h * arity_sym\<^sub>h (min_ground_head \<zeta>))]"
   by (rule wt.simps[of _ "[]", simplified])
@@ -373,18 +375,15 @@ proof (induct s rule: tm_induct_apps)
         by (metis One_nat_def length_0_conv length_greater_0_conv list.exhaust_sel upt_rec
           zip_Cons_Cons)
       hence wt_args_split:
-        "wt_args A \<zeta> ss =
-         eval_ztpoly A (PMult [coef_hd \<zeta> 0, wt (hd ss)]) +
-         sum_list (map (eval_ztpoly A \<circ> (\<lambda>(s, i). PMult [coef_hd \<zeta> i, wt s]))
-           (zip (tl ss) [1..<length ss]))"
-        by (simp add: wt_args_def)
+        "wt_args 0 A \<zeta> ss = eval_ztpoly A (PMult [coef_hd \<zeta> 0, wt (hd ss)]) + wt_args 1 A \<zeta> (tl ss)"
+        by (simp add: wt_args_def) (metis (no_types) Suc_pred len_ss_nz neq0_conv upt_Suc_append)
 
       have "zhmset_of \<epsilon>\<^sub>h \<le> eval_ztpoly A (coef_hd \<zeta> 0) * eval_ztpoly A (wt (hd ss))"
         using ih[of "hd ss", OF hd_in_set[OF len_ss_nz]]
         by (metis coef_hd_gt_0 legal mult.comm_neutral mult.commute mult_mono' of_nat_0_le_iff
           of_nat_zhmset zero_le_one zero_less_iff_1_le_zhmset)
       also have "\<dots> \<le> ?rhs"
-        by (auto simp: comp_def wt_args_split[unfolded wt_args_def comp_def]
+        by (auto simp: comp_def wt_args_split[unfolded wt_args_def comp_def, simplified]
           intro!: add_nonneg_nonneg mult_nonneg_nonneg sum_list_nonneg eval_ztpoly_nonneg[OF legal])
       finally show ?thesis
         by assumption
@@ -394,10 +393,10 @@ proof (induct s rule: tm_induct_apps)
   {
     assume wt_f_ge_\<epsilon>: "wt_sym ?f \<ge> \<epsilon>\<^sub>h"
 
-    have "zhmset_of \<epsilon>\<^sub>h \<le> eval_tpoly A (map_tpoly (\<lambda>x. x) zhmset_of (wt0 \<zeta>))"
+    have "zhmset_of \<epsilon>\<^sub>h \<le> eval_tpoly A (zhmset_of_tpoly (wt0 \<zeta>))"
       using wt0_ge_min_ground_head[OF legal, of \<zeta>] wt_f_ge_\<epsilon>
       by (meson leD leI less_le_trans zhmset_of_le)
-    also have "\<dots> \<le> eval_tpoly A (map_tpoly (\<lambda>x. x) zhmset_of (wt (apps (Hd \<zeta>) ss)))"
+    also have "\<dots> \<le> eval_tpoly A (zhmset_of_tpoly (wt (apps (Hd \<zeta>) ss)))"
       by (auto intro!: add_nonneg_nonneg mult_nonneg_nonneg sum_list_nonneg
         eval_ztpoly_nonneg[OF legal])
     finally have ?case
@@ -409,10 +408,10 @@ qed
 
 lemma wt_args_ge_length_times_\<epsilon>\<^sub>h:
   assumes legal: "legal_zpassign A"
-  shows "wt_args A \<zeta> ss \<ge> of_nat (length ss) * zhmset_of \<epsilon>\<^sub>h"
+  shows "wt_args i A \<zeta> ss \<ge> of_nat (length ss) * zhmset_of \<epsilon>\<^sub>h"
   unfolding wt_args_def
   by (rule sum_list_ge_length_times[unfolded wt_args_def,
-      of "map (eval_ztpoly A \<circ> (\<lambda>(s, i). PMult [coef_hd \<zeta> i, wt s])) (zip ss [0..<length ss])",
+      of "map (eval_ztpoly A \<circ> (\<lambda>(s, i). PMult [coef_hd \<zeta> i, wt s])) (zip ss [i..<i + length ss])",
       simplified],
     auto intro!: mult_le_mono_hmset[of 1, simplified] nonneg_le_mult_right_mono_zhmset coef_hd_gt_0
       simp: legal zero_less_iff_1_le_hmset[symmetric] coef_hd_gt_0 wt_ge_\<epsilon>\<^sub>h)
@@ -455,7 +454,7 @@ next
             simp del: ring_distribs simp: ring_distribs[symmetric])
         (metis add.commute le_minus_plus_same_hmset)
     also have "\<dots> \<le> eval_ztpoly A (wt0 \<zeta>)
-      + zhmset_of (\<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<zeta>) - of_nat (length ss))) + wt_args A \<zeta> ss"
+      + zhmset_of (\<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<zeta>) - of_nat (length ss))) + wt_args 0 A \<zeta> ss"
       using wt_args_ge_length_times_\<epsilon>\<^sub>h[OF legal] by (simp add: zhmset_of_times of_nat_zhmset)
     finally show ?case
       by (simp add: wt_args_def add_ac(1) comp_def)
@@ -765,8 +764,7 @@ proof
     have ary_mgh_s: "arity_sym\<^sub>h (min_ground_head \<zeta>) \<ge> 1"
       using ary_hd_s[unfolded s, simplified] ground_heads_arity\<^sub>h min_ground_head_in_ground_heads
       by metis
-
-    have wt0_gt0: "eval_tpoly A (map_tpoly (\<lambda>x. x) zhmset_of (wt0 \<zeta>)) > 0" (is "?wt0 > _")
+    have wt0_gt0: "eval_tpoly A (zhmset_of_tpoly (wt0 \<zeta>)) > 0" (is "?wt0 > _")
       using wt0_ge_min_ground_head[OF legal] wt_f_nz
       by (metis hmsetmset_0 less_le_trans min_ground_head_in_ground_heads s tm.sel(1)
         zero_zhmultiset.abs_eq zhmset_of_less zmset_of_empty)
@@ -1464,19 +1462,20 @@ proof
         + of_nat (length ss) * \<epsilon>\<^sub>h)"
       using \<delta>\<^sub>h_le_\<epsilon>\<^sub>h zhmset_of_le by auto
     also have "\<dots> \<le> eval_ztpoly A (wt0 \<zeta>)
-      + zhmset_of (\<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<zeta>) - of_nat (length ss))) + wt_args A \<zeta> ss"
+      + zhmset_of (\<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<zeta>) - of_nat (length ss))) + wt_args 0 A \<zeta> ss"
       using wt_args_ge_length_times_\<epsilon>\<^sub>h[OF legal]
       by (simp add: algebra_simps zhmset_of_plus zhmset_of_times of_nat_zhmset)
     finally have wt_x_le_\<zeta>ssts:
       "zhmset_of (wt_sym (min_ground_head (Var x)) + \<delta>\<^sub>h * arity_sym\<^sub>h (min_ground_head (Var x)))
        \<le> eval_ztpoly A (wt0 \<zeta>)
-         + zhmset_of (\<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<zeta>) - of_nat (length ss))) + wt_args A \<zeta> ss"
+         + zhmset_of (\<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<zeta>) - of_nat (length ss)))
+         + wt_args 0 A \<zeta> ss"
       by assumption
 
     show ?thesis
-    using wt_x_le_\<zeta>ssts[unfolded wt_args_def]
-      by (simp add: v \<rho>x comp_def le_diff_eq add.assoc[symmetric]
-        ZHMSet_plus[symmetric] zmset_of_plus[symmetric] hmsetmset_plus[symmetric] zmset_of_le)
+      using wt_x_le_\<zeta>ssts[unfolded wt_args_def]
+      by (simp add: v \<rho>x comp_def le_diff_eq add.assoc[symmetric] ZHMSet_plus[symmetric]
+        zmset_of_plus[symmetric] hmsetmset_plus[symmetric] zmset_of_le)
   next
     case (PCoef x i)
     thus ?thesis
@@ -1507,13 +1506,9 @@ proof (induct s rule: tm_induct_apps)
       have wary_\<rho>x: "wary (\<rho> x)"
         using wary_\<rho> wary_subst_def by blast
 
-      have map_ss:
-        "sum_list (map (eval_ztpoly A \<circ> (\<lambda>(s, i). PMult [coef_hd \<xi> i, wt s]))
-           (zip (map (subst \<rho>) ss) [length ts..<length ts + length ss])) =
-         sum_list (map (eval_ztpoly (subst_zpassign \<rho> A) \<circ> (\<lambda>(s, i). PMult [PVar (PCoef x i), wt s]))
-           (zip ss [0..<length ss]))"
-        by (auto intro!: arg_cong[of _ _ sum_list] nth_map_conv
-          simp: \<rho>x add.commute zhmset_of_times ih[OF nth_mem wary_nth_ss])
+      have coef_subst: "\<And>i. eval_tpoly A (zhmset_of_tpoly (coef_hd \<xi> (i + length ts))) =
+        eval_tpoly (subst_zpassign \<rho> A) (zhmset_of_tpoly (coef_hd \<zeta> i))"
+        by (simp add: \<zeta> \<rho>x)
 
       have tedious_ary_arith:
         "arity_sym\<^sub>h (min_ground_head (Var x))
@@ -1559,18 +1554,50 @@ proof (induct s rule: tm_induct_apps)
           by (fold m n of_nat_add of_nat_minus_hmset, unfold of_nat_inject_hmset, fastforce)
       qed
 
-      show ?thesis
-        by (simp del: apps_append add: apps_append[symmetric] \<rho>x \<zeta>
-          zip_append_0_upt[of ts "map (subst \<rho>) ss", simplified] map_ss[unfolded comp_def] comp_def,
-          simp add: algebra_simps ring_distribs(1)[symmetric] zhmset_of_times
-            zhmset_of_plus[symmetric] zhmset_of_0[symmetric],
-          use tedious_ary_arith in fastforce)
+      have "eval_tpoly A (zhmset_of_tpoly (wt (subst \<rho> (apps (Hd \<zeta>) ss)))) =
+        eval_tpoly A (zhmset_of_tpoly (wt0 \<xi>))
+        + zhmset_of (\<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<xi>)
+          - (of_nat (length ts) + of_nat (length ss))))
+        + wt_args 0 A \<xi> (ts @ map (subst \<rho>) ss)"
+        by (simp del: apps_append add: apps_append[symmetric] \<rho>x \<zeta> wt_args_def comp_def)
+      also have "\<dots> = eval_tpoly A (zhmset_of_tpoly (wt0 \<xi>))
+        + zhmset_of (\<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<xi>)
+          - (of_nat (length ts) + of_nat (length ss))))
+        + wt_args 0 A \<xi> ts + wt_args (length ts) A \<xi> (map (subst \<rho>) ss)"
+        by (simp add: wt_args_def zip_append_0_upt[of ts "map (subst \<rho>) ss", simplified])
+      also have "\<dots> = eval_tpoly A (zhmset_of_tpoly (wt0 \<xi>))
+        + zhmset_of (\<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<xi>)
+          - (of_nat (length ts) + of_nat (length ss))))
+        + wt_args 0 A \<xi> ts + wt_args 0 (subst_zpassign \<rho> A) \<zeta> ss"
+        unfolding wt_args_def
+        by (auto intro!: arg_cong[of _ _ sum_list] nth_map_conv
+          simp: coef_subst add.commute zhmset_of_times ih[OF nth_mem wary_nth_ss])
+      also have "\<dots> = eval_tpoly (subst_zpassign \<rho> A) (zhmset_of_tpoly (wt0 \<zeta>))
+        + zhmset_of (\<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<zeta>) - of_nat (length ss)))
+        + wt_args 0 (subst_zpassign \<rho> A) \<zeta> ss"
+        by (simp add: \<zeta> \<rho>x wt_args_def comp_def algebra_simps ring_distribs(1)[symmetric]
+              zhmset_of_times zhmset_of_plus[symmetric] zhmset_of_0[symmetric])
+          (use tedious_ary_arith in fastforce)
+      also have "\<dots> = eval_tpoly (subst_zpassign \<rho> A) (zhmset_of_tpoly (wt (apps (Hd \<zeta>) ss)))"
+        by (simp add: wt_args_def comp_def)
+      finally show ?thesis
+        by assumption
     qed
   next
-    case Sym
-    thus ?thesis
-      by (auto simp: zhmset_of_plus zhmset_of_sum_list zhmset_of_times ih[OF _ wary_nth_ss]
-        intro!: arg_cong[of _ _ sum_list] nth_map_conv)
+    case \<zeta>: (Sym f)
+
+    have "eval_tpoly A (zhmset_of_tpoly (wt (subst \<rho> (apps (Hd \<zeta>) ss)))) =
+      zhmset_of (wt_sym f) + zhmset_of (\<delta>\<^sub>h * (arity_sym\<^sub>h f - of_nat (length ss)))
+      + wt_args 0 A \<zeta> (map (subst \<rho>) ss)"
+      by (simp add: \<zeta> wt_args_def comp_def)
+    also have "\<dots> = zhmset_of (wt_sym f) + zhmset_of (\<delta>\<^sub>h * (arity_sym\<^sub>h f - of_nat (length ss)))
+      + wt_args 0 (subst_zpassign \<rho> A) \<zeta> ss"
+      by (auto simp: \<zeta> wt_args_def ih[OF _ wary_nth_ss] intro!: arg_cong[of _ _ sum_list]
+        nth_map_conv)
+    also have "\<dots> = eval_tpoly (subst_zpassign \<rho> A) (zhmset_of_tpoly (wt (apps (Hd \<zeta>) ss)))"
+      by (simp add: \<zeta> wt_args_def comp_def)
+    finally show ?thesis
+      by assumption
   qed
 qed
 
