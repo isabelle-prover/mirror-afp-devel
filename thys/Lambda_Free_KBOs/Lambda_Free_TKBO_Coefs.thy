@@ -438,7 +438,7 @@ next
     using superunary
   proof (induct s rule: tm_induct_apps)
     case (apps \<zeta> ss)
-    have superunary: "arity_hd\<^sub>h \<zeta> > 1"
+    have "arity_hd\<^sub>h \<zeta> > 1"
       using apps(2) by simp
     hence min_gr_ary: "arity_sym\<^sub>h (min_ground_head \<zeta>) > 1"
       using ground_heads_arity\<^sub>h less_le_trans min_ground_head_in_ground_heads by blast

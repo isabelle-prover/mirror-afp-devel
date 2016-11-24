@@ -94,11 +94,8 @@ lemma wt_arg_le: "wt (arg s) \<le> wt s"
   by (cases s) auto
 
 lemma wt_ge_\<epsilon>: "wt s \<ge> \<epsilon>"
-proof (induct s)
-  case Hd
-  show ?case
-    by (metis eq_iff exists_wt_sym trans_le_add1 wt_sym_0_imp_wt_hd_\<epsilon> wt_sym_0_or_ge_\<epsilon>)
-qed (simp add: add_increasing)
+  by (induct s, metis eq_iff exists_wt_sym trans_le_add1 wt_sym_0_imp_wt_hd_\<epsilon> wt_sym_0_or_ge_\<epsilon>,
+    simp add: add_increasing)
 
 lemma wt_ge_\<delta>: "wt s \<ge> \<delta>"
   by (meson \<delta>_le_\<epsilon> order.trans enat_ord_simps(1) wt_ge_\<epsilon>)
