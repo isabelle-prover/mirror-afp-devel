@@ -1484,7 +1484,7 @@ proof
   qed
 qed
 
-lemma eval_ztpoly_wt_subst:
+lemma wt_subst:
   assumes
     legal: "legal_zpassign A" and
     wary_\<rho>: "wary_subst \<rho>"
@@ -1493,8 +1493,8 @@ proof (induct s rule: tm_induct_apps)
   case (apps \<zeta> ss)
   note ih = this(1) and wary_\<zeta>ss = this(2)
 
-  have wary_nth_ss: "wary (ss ! i)" if i_lt: "i < length ss" for i
-    using wary_args[OF _ wary_\<zeta>ss] i_lt by force
+  have wary_nth_ss: "\<And>i. i < length ss \<Longrightarrow> wary (ss ! i)"
+    using wary_args[OF _ wary_\<zeta>ss] by force
 
   show ?case
   proof (cases \<zeta>)
@@ -1507,8 +1507,8 @@ proof (induct s rule: tm_induct_apps)
         using wary_\<rho> wary_subst_def by blast
 
       have coef_subst: "\<And>i. eval_tpoly A (zhmset_of_tpoly (coef_hd \<xi> (i + length ts))) =
-        eval_tpoly (subst_zpassign \<rho> A) (zhmset_of_tpoly (coef_hd \<zeta> i))"
-        by (simp add: \<zeta> \<rho>x)
+        eval_tpoly (subst_zpassign \<rho> A) (zhmset_of_tpoly (coef_hd (Var x) i))"
+        by (simp add: \<rho>x)
 
       have tedious_ary_arith:
         "arity_sym\<^sub>h (min_ground_head (Var x))
@@ -1554,12 +1554,12 @@ proof (induct s rule: tm_induct_apps)
           by (fold m n of_nat_add of_nat_minus_hmset, unfold of_nat_inject_hmset, fastforce)
       qed
 
-      have "eval_tpoly A (zhmset_of_tpoly (wt (subst \<rho> (apps (Hd \<zeta>) ss)))) =
+      have "eval_tpoly A (zhmset_of_tpoly (wt (subst \<rho> (apps (Hd (Var x)) ss)))) =
         eval_tpoly A (zhmset_of_tpoly (wt0 \<xi>))
         + zhmset_of (\<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<xi>)
           - (of_nat (length ts) + of_nat (length ss))))
         + wt_args 0 A \<xi> (ts @ map (subst \<rho>) ss)"
-        by (simp del: apps_append add: apps_append[symmetric] \<rho>x \<zeta> wt_args_def comp_def)
+        by (simp del: apps_append add: apps_append[symmetric] \<rho>x wt_args_def comp_def)
       also have "\<dots> = eval_tpoly A (zhmset_of_tpoly (wt0 \<xi>))
         + zhmset_of (\<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<xi>)
           - (of_nat (length ts) + of_nat (length ss))))
@@ -1568,36 +1568,35 @@ proof (induct s rule: tm_induct_apps)
       also have "\<dots> = eval_tpoly A (zhmset_of_tpoly (wt0 \<xi>))
         + zhmset_of (\<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<xi>)
           - (of_nat (length ts) + of_nat (length ss))))
-        + wt_args 0 A \<xi> ts + wt_args 0 (subst_zpassign \<rho> A) \<zeta> ss"
-        unfolding wt_args_def
+        + wt_args 0 A \<xi> ts + wt_args 0 (subst_zpassign \<rho> A) (Var x) ss"
         by (auto intro!: arg_cong[of _ _ sum_list] nth_map_conv
-          simp: coef_subst add.commute zhmset_of_times ih[OF nth_mem wary_nth_ss])
-      also have "\<dots> = eval_tpoly (subst_zpassign \<rho> A) (zhmset_of_tpoly (wt0 \<zeta>))
-        + zhmset_of (\<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<zeta>) - of_nat (length ss)))
-        + wt_args 0 (subst_zpassign \<rho> A) \<zeta> ss"
-        by (simp add: \<zeta> \<rho>x wt_args_def comp_def algebra_simps ring_distribs(1)[symmetric]
+          simp: wt_args_def coef_subst add.commute zhmset_of_times ih[OF nth_mem wary_nth_ss])
+      also have "\<dots> = eval_tpoly (subst_zpassign \<rho> A) (zhmset_of_tpoly (wt0 (Var x)))
+        + zhmset_of (\<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head (Var x)) - of_nat (length ss)))
+        + wt_args 0 (subst_zpassign \<rho> A) (Var x) ss"
+        by (simp add: \<rho>x wt_args_def comp_def algebra_simps ring_distribs(1)[symmetric]
               zhmset_of_times zhmset_of_plus[symmetric] zhmset_of_0[symmetric])
           (use tedious_ary_arith in fastforce)
-      also have "\<dots> = eval_tpoly (subst_zpassign \<rho> A) (zhmset_of_tpoly (wt (apps (Hd \<zeta>) ss)))"
+      also have "\<dots> = eval_tpoly (subst_zpassign \<rho> A) (zhmset_of_tpoly (wt (apps (Hd (Var x)) ss)))"
         by (simp add: wt_args_def comp_def)
       finally show ?thesis
-        by assumption
+        unfolding \<zeta> by assumption
     qed
   next
     case \<zeta>: (Sym f)
 
-    have "eval_tpoly A (zhmset_of_tpoly (wt (subst \<rho> (apps (Hd \<zeta>) ss)))) =
+    have "eval_tpoly A (zhmset_of_tpoly (wt (subst \<rho> (apps (Hd (Sym f)) ss)))) =
       zhmset_of (wt_sym f) + zhmset_of (\<delta>\<^sub>h * (arity_sym\<^sub>h f - of_nat (length ss)))
-      + wt_args 0 A \<zeta> (map (subst \<rho>) ss)"
-      by (simp add: \<zeta> wt_args_def comp_def)
+      + wt_args 0 A (Sym f) (map (subst \<rho>) ss)"
+      by (simp add: wt_args_def comp_def)
     also have "\<dots> = zhmset_of (wt_sym f) + zhmset_of (\<delta>\<^sub>h * (arity_sym\<^sub>h f - of_nat (length ss)))
-      + wt_args 0 (subst_zpassign \<rho> A) \<zeta> ss"
-      by (auto simp: \<zeta> wt_args_def ih[OF _ wary_nth_ss] intro!: arg_cong[of _ _ sum_list]
+      + wt_args 0 (subst_zpassign \<rho> A) (Sym f) ss"
+      by (auto simp: wt_args_def ih[OF _ wary_nth_ss] intro!: arg_cong[of _ _ sum_list]
         nth_map_conv)
-    also have "\<dots> = eval_tpoly (subst_zpassign \<rho> A) (zhmset_of_tpoly (wt (apps (Hd \<zeta>) ss)))"
-      by (simp add: \<zeta> wt_args_def comp_def)
+    also have "\<dots> = eval_tpoly (subst_zpassign \<rho> A) (zhmset_of_tpoly (wt (apps (Hd (Sym f)) ss)))"
+      by (simp add: wt_args_def comp_def)
     finally show ?thesis
-      by assumption
+      unfolding \<zeta> by assumption
   qed
 qed
 
@@ -1621,8 +1620,8 @@ proof (simp only: atomize_imp,
     case gt_wt_t_s: gt_wt
 
     have "wt (subst \<rho> t) >\<^sub>p wt (subst \<rho> s)"
-      by (auto simp: gt_tpoly_def wary_s wary_t eval_ztpoly_wt_subst[OF _ wary_\<rho>]
-        intro: eval_ztpoly_wt_subst[OF _ wary_\<rho>] gt_wt_t_s[unfolded gt_tpoly_def, rule_format]
+      by (auto simp: gt_tpoly_def wary_s wary_t wt_subst[OF _ wary_\<rho>]
+        intro: gt_wt_t_s[unfolded gt_tpoly_def, rule_format]
         elim: legal_subst_zpassign[OF _ wary_\<rho>])
     thus ?thesis
       by (rule gt_wt)
@@ -1630,8 +1629,8 @@ proof (simp only: atomize_imp,
     assume wt_t_ge_s: "wt t \<ge>\<^sub>p wt s"
 
     have wt_\<rho>t_ge_\<rho>s: "wt (subst \<rho> t) \<ge>\<^sub>p wt (subst \<rho> s)"
-      by (auto simp: ge_tpoly_def wary_s wary_t eval_ztpoly_wt_subst[OF _ wary_\<rho>]
-        intro: eval_ztpoly_wt_subst[OF _ wary_\<rho>] wt_t_ge_s[unfolded ge_tpoly_def, rule_format]
+      by (auto simp: ge_tpoly_def wary_s wary_t wt_subst[OF _ wary_\<rho>]
+        intro: wt_t_ge_s[unfolded ge_tpoly_def, rule_format]
         elim: legal_subst_zpassign[OF _ wary_\<rho>])
 
     {
