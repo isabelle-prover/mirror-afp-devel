@@ -719,15 +719,6 @@ proof
     by sat
 qed
 
-lemma wt_\<delta>\<^sub>h_arity\<^sub>h_give_unary:
-  assumes
-    legal: "legal_zpassign A" and
-    wt_s_eq_\<delta>: "eval_ztpoly A (wt s) = zhmset_of \<delta>\<^sub>h" and
-    nargs_s_lt: "of_nat (num_args s) < arity_hd\<^sub>h (head s)"
-  shows "arity_hd\<^sub>h (head s) = 1"
-  using wt_s_eq_\<delta> nargs_s_lt wt_gt_\<delta>\<^sub>h_if_superunary[OF legal]
-  by (metis order.order_iff_strict gr_implies_not_zero_hmset linorder_not_le lt_1_iff_eq_0_hmset)
-
 lemma gt_sub_arg: "wary (App s t) \<Longrightarrow> App s t >\<^sub>t t"
 proof (induct t arbitrary: s rule: measure_induct_rule[of size])
   case (less t)
@@ -750,7 +741,8 @@ proof (induct t arbitrary: s rule: measure_induct_rule[of size])
       by (rule wary_AppE\<^sub>h[OF wary_st])
 
     have ary_hd_s: "arity_hd\<^sub>h (head s) = 1"
-      using wt_\<delta>\<^sub>h_arity\<^sub>h_give_unary[OF legal] nargs_lt wt_s by simp
+      by (metis gr_implies_not_zero_hmset legal lt_1_iff_eq_0_hmset nargs_lt neq_iff
+        wt_gt_\<delta>\<^sub>h_if_superunary wt_s)
     hence nargs_s: "num_args s = 0"
       by (metis less_one nargs_lt of_nat_1 of_nat_less_hmset)
     hence s_eq_hd: "s = Hd (head s)"
@@ -793,8 +785,8 @@ proof (induct t arbitrary: s rule: measure_induct_rule[of size])
       assume hd_t_eq_s: "head t = head s"
 
       have nargs_t_le: "num_args t \<le> 1"
-        using ary_hd_s[folded hd_t_eq_s] wary_num_args_le_arity_head\<^sub>h[OF wary_t]
-          of_nat_le_hmset by fastforce
+        using ary_hd_s[folded hd_t_eq_s] wary_num_args_le_arity_head\<^sub>h[OF wary_t] of_nat_le_hmset
+        by fastforce
 
       have extf: "extf f op >\<^sub>t [t] (args t)" for f
       proof (cases "args t")
@@ -804,9 +796,8 @@ proof (induct t arbitrary: s rule: measure_induct_rule[of size])
       next
         case args_t: (Cons ta ts)
         hence ts: "ts = []"
-          using ary_hd_s[folded hd_t_eq_s] wary_num_args_le_arity_head\<^sub>h[OF wary_t]
-          of_nat_le_hmset
-          using nargs_t_le by simp
+          using ary_hd_s[folded hd_t_eq_s] wary_num_args_le_arity_head\<^sub>h[OF wary_t] of_nat_le_hmset
+            nargs_t_le by simp
         have ta: "ta = arg t"
           by (metis apps.simps(1) apps.simps(2) args_t tm.sel(6) tm_collapse_apps ts)
         hence t: "t = App (fun t) ta"
@@ -1254,7 +1245,6 @@ theorem gt_compat_arg_weak:
     coef_s'_0_ge_s: "coef s' 0 \<ge>\<^sub>p coef s 0" and
     s'_gt_s: "s' >\<^sub>t s"
   shows "App s' t >\<^sub>t App s t"
-  using s'_gt_s
 proof -
   obtain \<zeta> ss where s: "s = apps (Hd \<zeta>) ss"
     by (metis tm_exhaust_apps)
