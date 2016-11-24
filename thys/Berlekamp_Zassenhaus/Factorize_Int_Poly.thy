@@ -17,12 +17,18 @@ imports
 begin
 
 definition factorize_int_poly :: "int poly \<Rightarrow> int \<times> (int poly \<times> nat) list" where
-  "factorize_int_poly f = (    
-    let (a,psi) = square_free_factorization_int f;
-     pre_result = map (\<lambda> (q,i). (map (\<lambda> f. (f,i)) (berlekamp_zassenhaus_factorization q))) psi;
-     factors = concat pre_result
-   in (a,factors))"
+  "factorize_int_poly f = ( 
+    let (a,gis) = square_free_factorization_int f;
+        bzf = berlekamp_zassenhaus_factorization
+     in (a, [ (h,i) . (g,i) \<leftarrow> gis, h \<leftarrow> bzf g ])
+  )"
   
+lemma factorize_int_poly_code[code]: "factorize_int_poly f = (    
+    case square_free_factorization_int f of (a,gis) \<Rightarrow> 
+   (a, concat (map (\<lambda> (g,i). (map (\<lambda> f. (f,i)) (berlekamp_zassenhaus_factorization g))) gis)))" 
+  unfolding factorize_int_poly_def by auto
+
+thm factorize_int_poly_def  
 lemma factorize_int_poly_0[simp]: "factorize_int_poly 0 = (0,[])" 
   unfolding factorize_int_poly_def square_free_factorization_int_def Let_def by auto
     
