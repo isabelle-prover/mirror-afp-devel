@@ -505,9 +505,9 @@ proof (simp only: atomize_imp,
           }
           moreover
           {
-            assume hd_u_ncmp_s: "\<not> head u \<le>\<ge>\<^sub>h\<^sub>d head s"
-            have ?thesis
-              by (rule gt_unary[OF wt_u_s hd_u_ncmp_s gt_unary_u_t(3,4) arg_u_ge_s])
+            assume "\<not> head u \<le>\<ge>\<^sub>h\<^sub>d head s"
+            hence ?thesis
+              by (rule gt_unary[OF wt_u_s _ gt_unary_u_t(3,4) arg_u_ge_s])
           }
           ultimately have ?thesis
             unfolding comp_hd_def by sat
@@ -643,10 +643,10 @@ proof (simp only: atomize_imp,
         hence arg_u_ge_s: "arg u \<ge>\<^sub>t s"
           by sat
 
-        have hd_u_ncmp_s: "\<not> head u \<le>\<ge>\<^sub>h\<^sub>d head s"
+        have "\<not> head u \<le>\<ge>\<^sub>h\<^sub>d head s"
           using gt_same_t_s(3) gt_unary_u_t(2) by simp
-        show ?thesis
-          by (rule gt_unary[OF wt_u_s hd_u_ncmp_s gt_unary_u_t(3,4) arg_u_ge_s])
+        thus ?thesis
+          by (rule gt_unary[OF wt_u_s _ gt_unary_u_t(3,4) arg_u_ge_s])
       next
         case gt_diff_u_t: gt_diff
         have "head u >\<^sub>h\<^sub>d head s"
