@@ -545,8 +545,7 @@ lemma wt_App_ge_arg: "wt (App s t) \<ge>\<^sub>p wt t"
   unfolding ge_tpoly_def
   by (cases s rule: tm_exhaust_apps, simp, unfold App_apps wt.simps)
     (auto simp: comp_def coef_hd_gt_0 eval_ztpoly_nonneg nonneg_le_mult_right_mono_zhmset
-       intro!: sum_list_nonneg eval_ztpoly_nonneg
-       add_increasing)
+       intro!: sum_list_nonneg eval_ztpoly_nonneg add_increasing)
 
 lemma wt_\<delta>\<^sub>h_imp_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h:
   assumes
@@ -729,60 +728,6 @@ lemma wt_\<delta>\<^sub>h_arity\<^sub>h_give_unary:
   using wt_s_eq_\<delta> nargs_s_lt wt_gt_\<delta>\<^sub>h_if_superunary[OF legal]
   by (metis order.order_iff_strict gr_implies_not_zero_hmset linorder_not_le lt_1_iff_eq_0_hmset)
 
-lemma wt_\<delta>\<^sub>h_missing_args_imp_max_head:
-  assumes
-    legal: "legal_zpassign A" and
-    wt_s: "eval_ztpoly A (wt s) = zhmset_of \<delta>\<^sub>h" and
-    nargs_lt: "of_nat (num_args s) < arity_hd\<^sub>h (head s)"
-  shows "\<not> \<xi> >\<^sub>h\<^sub>d head s"
-proof
-  assume \<xi>_gt_s: "\<xi> >\<^sub>h\<^sub>d head s"
-
-  have \<delta>_eq_\<epsilon>: "\<delta>\<^sub>h = \<epsilon>\<^sub>h"
-    using wt_\<delta>\<^sub>h_imp_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h[OF legal] wt_s by blast
-
-  have ary_hd_s: "arity_hd\<^sub>h (head s) = 1"
-    by (rule wt_\<delta>\<^sub>h_arity\<^sub>h_give_unary[OF legal wt_s nargs_lt])
-  hence nargs_s: "num_args s = 0"
-    by (metis less_one nargs_lt of_nat_1 of_nat_less_hmset)
-
-  show False
-  proof (cases s)
-    case s: (Hd \<zeta>)
-
-    {
-      fix f
-      assume f_in: "f \<in> ground_heads (head s)"
-
-      obtain g where "g >\<^sub>s f"
-        using \<xi>_gt_s[unfolded gt_hd_def] exists_wt_sym[OF legal] f_in by blast
-      hence "wt_sym f > 0"
-        using wt_sym_0_gt gt_sym_antisym by (blast intro: gr_zeroI_hmset)
-    }
-    note wt_f_nz = this
-
-    have ary_mgh_s: "arity_sym\<^sub>h (min_ground_head \<zeta>) \<ge> 1"
-      using ary_hd_s[unfolded s, simplified] ground_heads_arity\<^sub>h min_ground_head_in_ground_heads
-      by metis
-    have wt0_gt0: "eval_tpoly A (zhmset_of_tpoly (wt0 \<zeta>)) > 0" (is "?wt0 > _")
-      using wt0_ge_min_ground_head[OF legal] wt_f_nz
-      by (metis hmsetmset_0 less_le_trans min_ground_head_in_ground_heads s tm.sel(1)
-        zero_zhmultiset.abs_eq zhmset_of_less zmset_of_empty)
-    have \<delta>ary: "\<delta>\<^sub>h * arity_sym\<^sub>h (min_ground_head \<zeta>) \<ge> \<delta>\<^sub>h" (is "?\<delta>ary \<ge> _")
-      by (rule mult_le_cancel_left1_hmset[OF ary_mgh_s[folded zero_less_iff_1_le_hmset]])
-    have "?wt0 + zhmset_of ?\<delta>ary > 0 + zhmset_of \<delta>\<^sub>h"
-      by (rule add_less_le_mono[OF wt0_gt0 \<delta>ary[folded zhmset_of_le]])
-    hence "?wt0 + zhmset_of ?\<delta>ary > zhmset_of \<delta>\<^sub>h"
-      by simp
-    thus ?thesis
-      using wt_s unfolding s by simp
-  next
-    case App
-    thus ?thesis
-      using nargs_s by simp
-  qed
-qed
-
 lemma gt_sub_arg: "wary (App s t) \<Longrightarrow> App s t >\<^sub>t t"
 proof (induct t arbitrary: s rule: measure_induct_rule[of size])
   case (less t)
@@ -808,28 +753,26 @@ proof (induct t arbitrary: s rule: measure_induct_rule[of size])
       using wt_\<delta>\<^sub>h_arity\<^sub>h_give_unary[OF legal] nargs_lt wt_s by simp
     hence nargs_s: "num_args s = 0"
       by (metis less_one nargs_lt of_nat_1 of_nat_less_hmset)
-    hence nargs_ts: "num_args (App s t) = 1"
-      by simp
-
-    {
-      assume hd_s_ncmp_t: "\<not> head s \<le>\<ge>\<^sub>h\<^sub>d head t"
-      have s_eq_hd: "s = Hd (head s)"
-        by (simp add: Hd_head_id nargs_s)
-      hence wt_0: "\<exists>f \<in> ground_heads (head s). wt_sym f = 0"
-      proof -
-        obtain f where
-          f: "(\<exists>g. g \<in> local.ground_heads (head s)
+    hence s_eq_hd: "s = Hd (head s)"
+      by (simp add: Hd_head_id)
+    hence wt_0: "\<exists>f \<in> ground_heads (head s). wt_sym f = 0"
+    proof -
+      obtain f where
+        f: "(\<exists>g. g \<in> local.ground_heads (head s)
               \<and> zhmset_of (wt_sym g + \<delta>\<^sub>h * arity_sym\<^sub>h g) \<le> eval_ztpoly A (wt (Hd (head s)))) \<longleftrightarrow>
             f \<in> local.ground_heads (head s)
               \<and> zhmset_of (wt_sym f + \<delta>\<^sub>h * arity_sym\<^sub>h f) \<le> eval_ztpoly A (wt (Hd (head s)))"
-          by moura
-        hence "wt_sym f + \<delta>\<^sub>h * arity_sym\<^sub>h f \<le> \<epsilon>\<^sub>h"
-          by (metis \<delta>_eq_\<epsilon> exists_wt_sym[OF legal] s_eq_hd wt_s zhmset_of_le)
-        thus ?thesis
-          using f by (metis (no_types, lifting) \<delta>_eq_\<epsilon> \<epsilon>\<^sub>h_gt_0 ary_hd_s add_le_same_cancel1
-            dual_order.trans exists_wt_sym[OF legal] ground_heads_arity\<^sub>h
-            mult_le_cancel_right1_hmset wt_sym_0_or_ge_\<epsilon> not_one_le_zero)
-      qed
+        by moura
+      hence "wt_sym f + \<delta>\<^sub>h * arity_sym\<^sub>h f \<le> \<epsilon>\<^sub>h"
+        by (metis \<delta>_eq_\<epsilon> exists_wt_sym[OF legal] s_eq_hd wt_s zhmset_of_le)
+      thus ?thesis
+        using f by (metis (no_types, lifting) \<delta>_eq_\<epsilon> \<epsilon>\<^sub>h_gt_0 ary_hd_s add_le_same_cancel1
+          dual_order.trans exists_wt_sym[OF legal] ground_heads_arity\<^sub>h
+          mult_le_cancel_right1_hmset wt_sym_0_or_ge_\<epsilon> not_one_le_zero)
+    qed
+
+    {
+      assume hd_s_ncmp_t: "\<not> head s \<le>\<ge>\<^sub>h\<^sub>d head t"
       have ?case
         by (rule gt_unary[OF wt_App_ge_arg]) (auto simp: hd_s_ncmp_t nargs_s intro: wt_0)
     }
@@ -843,7 +786,7 @@ proof (induct t arbitrary: s rule: measure_induct_rule[of size])
     {
       assume "head t >\<^sub>h\<^sub>d head s"
       hence False
-        using wt_\<delta>\<^sub>h_missing_args_imp_max_head[OF legal] \<delta>_eq_\<epsilon> nargs_lt wt_s by blast
+        using wt_0 gt_hd_irrefl gt_sym_antisym wt_sym_0_gt unfolding gt_hd_def by blast
     }
     moreover
     {
@@ -881,7 +824,7 @@ proof (induct t arbitrary: s rule: measure_induct_rule[of size])
       unfolding comp_hd_def by metis
   }
   thus ?case
-    using gt_wt by (metis ge_tpoly_def gt_tpoly_def order.not_eq_order_implies_strict wt_App_ge_arg)
+    using gt_wt by (metis ge_tpoly_def gt_tpoly_def wt_App_ge_arg order.not_eq_order_implies_strict)
 qed
 
 lemma gt_arg: "wary s \<Longrightarrow> is_App s \<Longrightarrow> s >\<^sub>t arg s"
@@ -943,8 +886,8 @@ proof (simp only: atomize_imp,
       case gt_unary_u_t: gt_unary
       have u_app: "is_App u"
         by (metis args_Nil_iff_is_Hd gt_unary_u_t(3) length_greater_0_conv less_numeral_extra(1))
-      have nargs_fun_u_0: "num_args (fun u) = 0"
-        by (metis args.simps(1) gt_unary_u_t(3) list.size(3) one_arg_imp_Hd tm.collapse(2) u_app)
+      hence nargs_fun_u: "num_args (fun u) = 0"
+        by (metis args.simps(1) gt_unary_u_t(3) list.size(3) one_arg_imp_Hd tm.collapse(2))
 
       have arg_u_gt_s: "arg u >\<^sub>t s"
         using ih[of "arg u" t s] u_app gt_unary_u_t(5) t_gt_s size_arg_lt wary_arg_u wary_s wary_t
@@ -986,7 +929,7 @@ proof (simp only: atomize_imp,
             case Nil
             thus ?thesis
               by (metis \<delta>_eq_\<epsilon> args.elims args_Nil_iff_is_Hd extf_snoc_if_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h length_0_conv
-                nargs_fun_u_0 tm.sel(4) u_app)
+                nargs_fun_u tm.sel(4) u_app)
           next
             case args_s: (Cons sa ss)
             hence ss: "ss = []"
@@ -1000,7 +943,7 @@ proof (simp only: atomize_imp,
               using args_Nil_iff_is_Hd args_s by force
             have args_u: "args u = [arg u]"
               by (metis append_Nil args.simps(2) args_Nil_iff_is_Hd gt_unary_u_t(3) length_0_conv
-                nargs_fun_u_0 tm.collapse(2) zero_neq_one)
+                nargs_fun_u tm.collapse(2) zero_neq_one)
 
             have max_sz_arg_u_t_arg_t: "Max {size (arg t), size t, size (arg u)} < size u"
               using size_arg_lt sz_u_gt_t t_app u_app by fastforce
@@ -1123,18 +1066,15 @@ proof (simp only: atomize_imp,
       case gt_unary_u_t: gt_unary
       have u_app: "is_App u"
         by (metis args_Nil_iff_is_Hd gt_unary_u_t(3) length_greater_0_conv less_numeral_extra(1))
-      hence arg_u_gt_s: "arg u >\<^sub>t s"
+      hence "arg u >\<^sub>t s"
         using ih[of "arg u" t s] gt_unary_u_t(5) t_gt_s size_arg_lt wary_arg_u wary_s wary_t
         by force
       hence arg_u_ge_s: "arg u \<ge>\<^sub>t s"
         by sat
 
-      have hd_u_ne_s: "head u \<noteq> head s"
+      have "head u \<noteq> head s"
         using gt_diff_t_s(2) gt_unary_u_t(2) unfolding comp_hd_def by force
-
-      have \<delta>_eq_\<epsilon>: "\<delta>\<^sub>h = \<epsilon>\<^sub>h"
-        using gt_unary_u_t(4) wt_sym_0_imp_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h by blast
-
+      moreover
       {
         assume "head u >\<^sub>h\<^sub>d head s"
         hence ?thesis
@@ -1153,7 +1093,7 @@ proof (simp only: atomize_imp,
           by (rule gt_unary[OF wt_u_ge_s _ gt_unary_u_t(3,4) arg_u_ge_s])
       }
       ultimately show ?thesis
-        using hd_u_ne_s unfolding comp_hd_def by sat
+        unfolding comp_hd_def by sat
     next
       case gt_diff_u_t: gt_diff
       have "head u >\<^sub>h\<^sub>d head s"
@@ -1181,7 +1121,7 @@ proof (simp only: atomize_imp,
       case gt_unary_u_t: gt_unary
       have "is_App u"
         by (metis args_Nil_iff_is_Hd gt_unary_u_t(3) length_greater_0_conv less_numeral_extra(1))
-      hence arg_u_gt_s: "arg u >\<^sub>t s"
+      hence "arg u >\<^sub>t s"
         using ih[of "arg u" t s] gt_unary_u_t(5) t_gt_s size_arg_lt wary_arg_u wary_s wary_t
         by force
       hence arg_u_ge_s: "arg u \<ge>\<^sub>t s"
