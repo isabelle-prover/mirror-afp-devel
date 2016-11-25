@@ -167,7 +167,7 @@ text {*
   membership in the congruence closure of the bisimulation rather than in the bisimulation itself.
 *}
 
-inductive Plus_cong where
+inductive Plus_cong for R where
   Refl[intro]: "x = y \<Longrightarrow> Plus_cong R x y"
 | Base[intro]: "R x y \<Longrightarrow> Plus_cong R x y"
 | Sym: "Plus_cong R x y \<Longrightarrow> Plus_cong R y x"
@@ -180,8 +180,8 @@ lemma language_coinduct_upto_Plus[unfolded rel_fun_def, simplified, case_names L
   shows "L = K"
 proof (coinduct rule: language.coinduct[of "Plus_cong R"])
   fix L K assume "Plus_cong R L K"
-  then show "\<oo> L = \<oo> K \<and> rel_fun op = (Plus_cong R) (\<dd> L) (\<dd> K)" using hyp
-    by (induct rule: Plus_cong.induct) (auto simp: rel_fun_def intro: Sym)
+  then show "\<oo> L = \<oo> K \<and> rel_fun op = (Plus_cong R) (\<dd> L) (\<dd> K)"
+    by (induct rule: Plus_cong.induct) (auto simp: rel_fun_def intro: Sym dest: hyp)
 qed (intro Base R)
 
 theorem Times_PlusL[simp]: "Times (Plus r s) t = Plus (Times r t) (Times s t)"
@@ -212,8 +212,8 @@ lemma StarLR_Times_Plus_One[simp]: "StarLR (Times r (Plus One s)) s = StarLR r s
 proof (coinduction arbitrary: r s)
   case Lang
   { fix a
-    def L \<equiv> "Plus (\<dd> r a) (Plus (Times (\<dd> r a) s) (\<dd> s a))"
-    and R \<equiv> "Times (Plus (\<dd> r a) (Plus (Times (\<dd> r a) s) (\<dd> s a))) s"
+    define L and R where "L = Plus (\<dd> r a) (Plus (Times (\<dd> r a) s) (\<dd> s a))"
+    and "R = Times (Plus (\<dd> r a) (Plus (Times (\<dd> r a) s) (\<dd> s a))) s"
     have "Plus L (Plus R (\<dd> s a)) = Plus (Plus L (\<dd> s a)) R" by (metis Plus_assoc Plus_comm)
     also have "Plus L (\<dd> s a) = L" unfolding L_def by simp
     finally have "Plus L (Plus R (\<dd> s a)) = Plus L R" .
@@ -265,10 +265,6 @@ primcorec ShuffleLR :: "'a language \<Rightarrow> 'a language \<Rightarrow> ('a 
   "\<oo> (ShuffleLR r s) = (\<oo> r \<and> \<oo> s)"
 | "\<dd> (ShuffleLR r s) = (\<lambda>(a, b). if b then ShuffleLR (\<dd> r a) s else ShuffleLR r (\<dd> s a))"
 
-primcorec Shuffle_Plus :: "('a \<times> bool) language \<Rightarrow> 'a language" where
-  "\<oo> (Shuffle_Plus r) = \<oo> r"
-| "\<dd> (Shuffle_Plus r) = (\<lambda>a. Shuffle_Plus (Plus (\<dd> r (a, True)) (\<dd> r (a, False))))"
-
 lemma ShuffleLR_ZeroL[simp]: "ShuffleLR Zero r = Zero"
   by (coinduction arbitrary: r) auto
 
@@ -281,29 +277,19 @@ lemma ShuffleLR_PlusL[simp]: "ShuffleLR (Plus r s) t = Plus (ShuffleLR r t) (Shu
 lemma ShuffleLR_PlusR[simp]: "ShuffleLR r (Plus s t) = Plus (ShuffleLR r s) (ShuffleLR r t)"
   by (coinduction arbitrary: r s t) auto
 
-lemma Shuffle_Plus_Zero[simp]: "Shuffle_Plus Zero = Zero"
-  by coinduction simp
-
-lemma Shuffle_Plus_Plus[simp]: "Shuffle_Plus (Plus r s) = Plus (Shuffle_Plus r) (Shuffle_Plus s)"
-proof (coinduction arbitrary: r s)
-  case (Lang r s)
-  then show ?case unfolding Shuffle_Plus.sel Plus.sel
-    by (intro conjI[OF refl]) (metis Plus_comm Plus_rotate) 
-qed
-
-lemma Shuffle_Plus_ShuffleLR_One[simp]: "Shuffle_Plus (ShuffleLR r One) = r"
+lemma Shuffle_Plus_ShuffleLR_One[simp]: "Times_Plus (ShuffleLR r One) = r"
   by (coinduction arbitrary: r) simp
 
 lemma Shuffle_Plus_ShuffleLR_PlusL[simp]:
-  "Shuffle_Plus (ShuffleLR (Plus r s) t) = Plus (Shuffle_Plus (ShuffleLR r t)) (Shuffle_Plus (ShuffleLR s t))"
+  "Times_Plus (ShuffleLR (Plus r s) t) = Plus (Times_Plus (ShuffleLR r t)) (Times_Plus (ShuffleLR s t))"
   by (coinduction arbitrary: r s t) auto
 
 lemma Shuffle_Plus_ShuffleLR_PlusR[simp]:
-  "Shuffle_Plus (ShuffleLR r (Plus s t)) = Plus (Shuffle_Plus (ShuffleLR r s)) (Shuffle_Plus (ShuffleLR r t))"
+  "Times_Plus (ShuffleLR r (Plus s t)) = Plus (Times_Plus (ShuffleLR r s)) (Times_Plus (ShuffleLR r t))"
   by (coinduction arbitrary: r s t) auto
 
 definition Shuffle :: "'a language \<Rightarrow> 'a language \<Rightarrow> 'a language" where
-  "Shuffle r s = Shuffle_Plus (ShuffleLR r s)"
+  "Shuffle r s = Times_Plus (ShuffleLR r s)"
 
 lemma \<oo>_Shuffle[simp]:
   "\<oo> (Shuffle r s) = (\<oo> r \<and> \<oo> s)"
@@ -340,22 +326,22 @@ text {*
   We generalize coinduction up-to @{term Plus} to coinduction up-to all previously defined concepts.
 *}
 
-inductive regular_cong where
+inductive regular_cong for R where
   Refl[intro]: "x = y \<Longrightarrow> regular_cong R x y"
 | Sym[intro]: "regular_cong R x y \<Longrightarrow> regular_cong R y x"
 | Trans[intro]: "\<lbrakk>regular_cong R x y; regular_cong R y z\<rbrakk> \<Longrightarrow> regular_cong R x z"
 | Base[intro]: "R x y \<Longrightarrow> regular_cong R x y"
-| Plus[intro!]: "\<lbrakk>regular_cong R x y; regular_cong R x' y'\<rbrakk> \<Longrightarrow>
+| Plus[intro, simp]: "\<lbrakk>regular_cong R x y; regular_cong R x' y'\<rbrakk> \<Longrightarrow>
     regular_cong R (Plus x x') (Plus y y')"
-| Times[intro!]: "\<lbrakk>regular_cong R x y; regular_cong R x' y'\<rbrakk> \<Longrightarrow>
+| Times[intro, simp]: "\<lbrakk>regular_cong R x y; regular_cong R x' y'\<rbrakk> \<Longrightarrow>
     regular_cong R (Times x x') (Times y y')"
-| Star[intro!]: "\<lbrakk>regular_cong R x y\<rbrakk> \<Longrightarrow>
+| Star[intro, simp]: "\<lbrakk>regular_cong R x y\<rbrakk> \<Longrightarrow>
     regular_cong R (Star x) (Star y)"
-| Inter[intro!]: "\<lbrakk>regular_cong R x y; regular_cong R x' y'\<rbrakk> \<Longrightarrow>
+| Inter[intro, simp]: "\<lbrakk>regular_cong R x y; regular_cong R x' y'\<rbrakk> \<Longrightarrow>
     regular_cong R (Inter x x') (Inter y y')"
-| Not[intro!]: "\<lbrakk>regular_cong R x y\<rbrakk> \<Longrightarrow>
+| Not[intro, simp]: "\<lbrakk>regular_cong R x y\<rbrakk> \<Longrightarrow>
     regular_cong R (Not x) (Not y)"
-| Shuffle[intro!]: "\<lbrakk>regular_cong R x y; regular_cong R x' y'\<rbrakk> \<Longrightarrow>
+| Shuffle[intro, simp]: "\<lbrakk>regular_cong R x y; regular_cong R x' y'\<rbrakk> \<Longrightarrow>
     regular_cong R (Shuffle x x') (Shuffle y y')"
 
 lemma language_coinduct_upto_regular[unfolded rel_fun_def, simplified, case_names Lang, consumes 1]: 
@@ -364,8 +350,8 @@ lemma language_coinduct_upto_regular[unfolded rel_fun_def, simplified, case_name
   shows "L = K"
 proof (coinduct rule: language.coinduct[of "regular_cong R"])
   fix L K assume "regular_cong R L K"
-  then show "\<oo> L = \<oo> K \<and> rel_fun op = (regular_cong R) (\<dd> L) (\<dd> K)" using hyp
-    by (induct rule: regular_cong.induct) (auto simp: rel_fun_def Plus Times Shuffle)
+  then show "\<oo> L = \<oo> K \<and> rel_fun op = (regular_cong R) (\<dd> L) (\<dd> K)"
+    by (induct rule: regular_cong.induct) (auto dest: hyp simp: rel_fun_def)
 qed (intro Base R)
 
 lemma Star_unfoldR: "Star r = Plus One (Times (Star r) r)"
@@ -413,6 +399,64 @@ next
 qed (auto simp: language_defs)
 
 end
+  
+lemma \<oo>_mono[dest]: "r \<le> s \<Longrightarrow> \<oo> r \<Longrightarrow> \<oo> s"
+  unfolding less_eq_language_def by (auto dest: arg_cong[of _ _ \<oo>])
+
+lemma \<dd>_mono[dest]: "r \<le> s \<Longrightarrow> \<dd> r a \<le> \<dd> s a"
+  unfolding less_eq_language_def by (metis Plus.simps(2))
+
+text {*
+  For reasoning about @{term "op \<le>"}, we prove a coinduction principle and generalize it
+  to support up-to reasoning.
+*}
+
+theorem language_simulation_coinduction[consumes 1, case_names Lang, coinduct pred]:
+  assumes "R L K"
+      and "(\<And>L K. R L K \<Longrightarrow> \<oo> L \<le> \<oo> K \<and> (\<forall>x. R (\<dd> L x) (\<dd> K x)))"
+  shows "L \<le> K"
+  using \<open>R L K\<close> unfolding less_eq_language_def
+  by (coinduction arbitrary: L K) (auto dest!: assms(2))
+
+lemma le_PlusL[intro!, simp]: "r \<le> Plus r s"
+  by (coinduction arbitrary: r s) auto
+
+lemma le_PlusR[intro!, simp]: "s \<le> Plus r s"
+  by (coinduction arbitrary: r s) auto
+
+inductive Plus_Times_pre_cong for R where
+  pre_Less[intro, simp]: "x \<le> y \<Longrightarrow> Plus_Times_pre_cong R x y"
+| pre_Trans[intro]: "\<lbrakk>Plus_Times_pre_cong R x y; Plus_Times_pre_cong R y z\<rbrakk> \<Longrightarrow> Plus_Times_pre_cong R x z"
+| pre_Base[intro, simp]: "R x y \<Longrightarrow> Plus_Times_pre_cong R x y"
+| pre_Plus[intro!, simp]: "\<lbrakk>Plus_Times_pre_cong R x y; Plus_Times_pre_cong R x' y'\<rbrakk> \<Longrightarrow>
+    Plus_Times_pre_cong R (Plus x x') (Plus y y')"
+| pre_Times[intro!, simp]: "\<lbrakk>Plus_Times_pre_cong R x y; Plus_Times_pre_cong R x' y'\<rbrakk> \<Longrightarrow>
+    Plus_Times_pre_cong R (Times x x') (Times y y')"
+  
+theorem language_simulation_coinduction_upto_Plus_Times[consumes 1, case_names Lang, coinduct pred]:
+  assumes R: "R L K"
+      and hyp: "(\<And>L K. R L K \<Longrightarrow> \<oo> L \<le> \<oo> K \<and> (\<forall>x. Plus_Times_pre_cong R (\<dd> L x) (\<dd> K x)))"
+    shows "L \<le> K"
+proof (coinduct rule: language_simulation_coinduction[of "Plus_Times_pre_cong R"])
+  fix L K assume "Plus_Times_pre_cong R L K"
+  then show "\<oo> L \<le> \<oo> K \<and> (\<forall>x. Plus_Times_pre_cong R (\<dd> L x) (\<dd> K x))"
+    by (induct rule: Plus_Times_pre_cong.induct) (auto dest: hyp)
+qed (intro pre_Base R)
+
+lemma ge_One[simp]: "One \<le> r \<longleftrightarrow> \<oo> r"
+  unfolding less_eq_language_def by (metis One.sel(1) Plus.sel(1) Plus_OneL)
+
+lemma Plus_mono: "\<lbrakk>r1 \<le> s1; r2 \<le> s2\<rbrakk> \<Longrightarrow> Plus r1 r2 \<le> Plus s1 s2"
+  by (coinduction arbitrary: r1 r2 s1 s2) (auto elim!: \<dd>_mono)
+
+lemma Plus_upper: "\<lbrakk>r1 \<le> s; r2 \<le> s\<rbrakk> \<Longrightarrow> Plus r1 r2 \<le> s"
+  by (coinduction arbitrary: r1 r2 s) auto
+
+lemma Inter_mono: "\<lbrakk>r1 \<le> s1; r2 \<le> s2\<rbrakk> \<Longrightarrow> Inter r1 r2 \<le> Inter s1 s2"
+  by (coinduction arbitrary: r1 r2 s1 s2) (force elim!: \<dd>_mono)
+
+lemma Times_mono: "\<lbrakk>r1 \<le> s1; r2 \<le> s2\<rbrakk> \<Longrightarrow> Times r1 r2 \<le> Times s1 s2"
+  by (coinduction arbitrary: r1 r2 s1 s2) (auto 0 3 elim!: \<dd>_mono)
 
 text {*
   We prove the missing axioms of Kleene Algebras about @{term Star}, as well as monotonicity
@@ -420,106 +464,50 @@ text {*
 *}
 
 theorem le_StarL: "Plus One (Times r (Star r)) \<le> Star r"
-  by (rule order_eq_refl[OF Star_unfoldL[symmetric]])
+  by coinduction auto
 
 theorem le_StarR: "Plus One (Times (Star r) r) \<le> Star r"
   by (rule order_eq_refl[OF Star_unfoldR[symmetric]])
 
+lemma le_TimesL[intro, simp]: "\<oo> s \<Longrightarrow> r \<le> Times r s"
+  by (coinduction arbitrary: r) auto
+
+lemma le_TimesR[intro, simp]: "\<oo> r \<Longrightarrow> s \<le> Times r s"
+  by coinduction auto
+
+lemma Plus_le_iff: "Plus r s \<le> t \<longleftrightarrow> r \<le> t \<and> s \<le> t"
+  unfolding less_eq_language_def
+  by (metis Plus_assoc Plus_idem_assoc Plus_rotate)
+
+lemma Plus_Times_pre_cong_mono: 
+  "L' \<le> L \<Longrightarrow> K \<le> K' \<Longrightarrow> Plus_Times_pre_cong R L K \<Longrightarrow> Plus_Times_pre_cong R L' K'"
+  by (metis pre_Trans pre_Less)
+
 theorem ardenL: "Plus r (Times s x) \<le> x \<Longrightarrow> Times (Star s) r \<le> x"
-unfolding language_defs
-proof (coinduction arbitrary: r s x rule: language_coinduct_upto_regular)
+proof (coinduction arbitrary: r s x)
   case Lang
-  then have "\<oo> r \<Longrightarrow> \<oo> x" by (metis Plus.sel(1))
   then show ?case
-    by (subst (3 4) Lang[symmetric])
-      (auto simp: Times_PlusR[symmetric] simp del: Times_PlusR
-        intro!: exI[where 'a = "'a language"] Lang[simplified Plus_ACI])
+    by (subst Plus_Times_pre_cong_mono[OF order_refl \<dd>_mono[OF Lang]]) auto
 qed
 
 theorem ardenR: "Plus r (Times x s) \<le> x \<Longrightarrow> Times r (Star s) \<le> x"
-unfolding language_defs
-proof (coinduction arbitrary: r s x rule: language_coinduct_upto_regular)
+proof (coinduction arbitrary: r s x)
   case Lang
-  let ?R = "(\<lambda>L K. \<exists>r s. L = Plus (Times r (Star s)) K \<and> Plus r (Plus (Times K s) K) = K)"
-  have "\<And>a. \<oo> x \<Longrightarrow> Plus (\<dd> r a) (Plus (\<dd> s a) (Plus (\<dd> x a) (Times (\<dd> x a) s))) = \<dd> x a"
-    by (subst (1 2) Lang[symmetric]) auto
-  moreover
-  have "\<And>a. \<oo> x \<Longrightarrow> Plus (\<dd> s a) (\<dd> x a) = \<dd> x a"
-    by (subst (1 2) Lang[symmetric]) auto
-  then have "\<And>a. ?R (Plus (Times (\<dd> r a) (Star s)) (\<dd> x a)) (\<dd> x a)"
-    by (subst Lang[symmetric]) (auto simp del: Plus_comm)
-  moreover
-  from Lang have "\<oo> r \<Longrightarrow> \<oo> x" by (metis Plus.sel(1))
-  ultimately show ?case
-    by (auto 0 4 simp: Times_PlusL[symmetric] simp del: Times_PlusL
-      intro: exI[where 'a = "'a language"])
+  then have "Plus_Times_pre_cong (\<lambda>L K. \<exists>r s. L = Times r (Star s) \<and> Plus r (Times K s) \<le> K)
+    (\<dd> (Times r (Star s)) a) (\<dd> x a)" for a using \<dd>_mono[OF Lang, of a]
+    by (auto 0 4 simp del: Times_PlusL simp: Times_PlusL[symmetric] Plus_le_iff split: if_splits)
+  with Lang show ?case
+    by auto
 qed
 
-lemma ge_One[simp]: "One \<le> r \<longleftrightarrow> \<oo> r"
-  unfolding less_eq_language_def by (metis One.sel(1) Plus.sel(1) Plus_OneL)
+lemma le_Star[intro!, simp]: "s \<le> Star s"
+  by coinduction auto
 
-lemma Plus_mono[intro]: "\<lbrakk>r1 \<le> s1; r2 \<le> s2\<rbrakk> \<Longrightarrow> Plus r1 r2 \<le> Plus s1 s2"
-  unfolding less_eq_language_def by (metis Plus_assoc Plus_comm)
-
-lemma Plus_upper: "\<lbrakk>r1 \<le> s; r2 \<le> s\<rbrakk> \<Longrightarrow> Plus r1 r2 \<le> s"
-  by (metis Plus_mono Plus_idem)
-
-lemma le_PlusL: "r \<le> Plus r s"
-  by (metis Plus_idem_assoc less_eq_language_def)
-
-lemma le_PlusR: "s \<le> Plus r s"
-  by (metis Plus_comm Plus_idem_assoc less_eq_language_def)
-
-lemma Times_mono[intro]: "\<lbrakk>r1 \<le> s1; r2 \<le> s2\<rbrakk> \<Longrightarrow> Times r1 r2 \<le> Times s1 s2"
-proof (unfold less_eq_language_def)
-  assume s1[symmetric]: "Plus r1 s1 = s1" and s2[symmetric]: "Plus r2 s2 = s2"
-  have "Plus (Times r1 r2) (Times s1 s2) =
-    Plus (Times r1 r2) (Plus (Times r1 r2) (Plus (Times s1 r2) (Plus (Times r1 s2) (Times s1 s2))))"
-    by (subst s1, subst s2) auto
-  also have "\<dots> = Plus (Times r1 r2) (Plus (Times s1 r2) (Plus (Times r1 s2) (Times s1 s2)))"
-    by (metis Plus_idem Plus_assoc)
-  also have "\<dots> = Times s1 s2" by (subst s1, subst s2) auto
-  finally show "Plus (Times r1 r2) (Times s1 s2) = Times s1 s2" .
-qed
-
-lemma le_TimesL: "\<oo> s \<Longrightarrow> r \<le> Times r s"
-  by (metis Plus_OneL Times_OneR Times_mono le_PlusL order_refl)
-
-lemma le_TimesR: "\<oo> r \<Longrightarrow> s \<le> Times r s"
-  by (metis Plus_OneR Times_OneL Times_mono le_PlusR order_refl)
-
-lemma le_Star: "s \<le> Star s"
-  by (subst Star_unfoldL, subst Star_unfoldL) (auto intro: order_trans[OF le_PlusL le_PlusR])
-
-lemma Star_mono:
-  assumes rs: "r \<le> s"
-  shows "Star r \<le> Star s"
-proof -
-  have "Star r = Plus One (Times (Star r) r)" by (rule Star_unfoldR)
-  also have "\<dots> \<le> Plus One (Times (Star r) s)" by (blast intro: rs)
-  also have "Times (Star r) s \<le> Star s"
-  proof (rule ardenL[OF Plus_upper[OF le_Star]])
-    have "Times r (Star s) \<le> Times s (Star s)" by (blast intro: rs)
-    also have "Times s (Star s) \<le> Plus One (Times s (Star s))" by (rule le_PlusR)
-    finally show "Times r (Star s) \<le> Star s" by (subst (2) Star_unfoldL)
-  qed
-  finally show ?thesis by auto
-qed
-
-lemma Inter_mono: "\<lbrakk>r1 \<le> s1; r2 \<le> s2\<rbrakk> \<Longrightarrow> Inter r1 r2 \<le> Inter s1 s2"
-unfolding less_eq_language_def proof (coinduction arbitrary: r1 r2 s1 s2)
-  case Lang
-  then have "\<oo> (Plus r1 s1) = \<oo> s1" "\<oo> (Plus r2 s2) = \<oo> s2"
-        "\<forall>a. \<dd> (Plus r1 s1) a = \<dd> s1 a" "\<forall>a. \<dd> (Plus r2 s2) a = \<dd> s2 a" by simp_all
-  then show ?case by fastforce
-qed
+lemma Star_mono: "r \<le> s \<Longrightarrow> Star r \<le> Star s"
+  by coinduction auto
 
 lemma Not_antimono: "r \<le> s \<Longrightarrow> Not s \<le> Not r"
-unfolding less_eq_language_def proof (coinduction arbitrary: r s)
-  case Lang
-  then have "\<oo> (Plus r s) = \<oo> s" "\<forall>a. \<dd> (Plus r s) a = \<dd> s a" by simp_all
-  then show ?case by auto
-qed
+  by (coinduction arbitrary: r s) auto
 
 lemma Not_Plus[simp]: "Not (Plus r s) = Inter (Not r) (Not s)"
   by (coinduction arbitrary: r s) auto
@@ -567,54 +555,41 @@ lemma bisimulation:
   assumes "Times r s = Times s t"
   shows "Times (Star r) s = Times s (Star t)"
 proof (rule antisym[OF ardenL[OF Plus_upper[OF le_TimesL]] ardenR[OF Plus_upper[OF le_TimesR]]])
-  have "Times r (Times s (Star t)) = Times s (Times t (Star t))" (is "?L = _")
-    by (simp only: assms Times_assoc[symmetric])
-  also have "\<dots> \<le> Times s (Star t)" (is "_ \<le> ?R")
-    by (rule Times_mono[OF order_refl ord_le_eq_trans[OF le_PlusR Star_unfoldL[symmetric]]])
-  finally show "?L \<le> ?R" .
+  show "Times r (Times s (Star t)) \<le> Times s (Star t)"
+    by (rule order_trans[OF _
+        Times_mono[OF order_refl ord_le_eq_trans[OF le_PlusR Star_unfoldL[symmetric]]]])
+      (simp only: assms Times_assoc[symmetric])
 next
-  have "Times (Times (Star r) s) t = Times (Times (Star r) r) s" (is "?L = _")
-    by (simp only: assms Times_assoc)
-  also have "\<dots> \<le> Times (Star r) s" (is "_ \<le> ?R")
-    by (rule Times_mono[OF ord_le_eq_trans[OF le_PlusR Star_unfoldR[symmetric]] order_refl])
-  finally show "?L \<le> ?R" .
+  show "Times (Times (Star r) s) t \<le> Times (Star r) s"
+    by (rule order_trans[OF _
+        Times_mono[OF ord_le_eq_trans[OF le_PlusR Star_unfoldR[symmetric]] order_refl]])
+      (simp only: assms Times_assoc)
 qed simp_all
 
 lemma sliding: "Times (Star (Times r s)) r = Times r (Star (Times s r))"
 proof (rule antisym[OF ardenL[OF Plus_upper[OF le_TimesL]] ardenR[OF Plus_upper[OF le_TimesR]]])
-  have "Times (Times r s) (Times r (Star (Times s r))) =
-    Times r (Times (Times s r) (Star (Times s r)))" (is "?L = _") by simp
-  also have "\<dots> \<le> Times r (Star (Times s r))" (is "_ \<le> ?R")
-    by (rule Times_mono[OF order_refl ord_le_eq_trans[OF le_PlusR Star_unfoldL[symmetric]]])
-  finally show "?L \<le> ?R" .
+  show "Times (Times r s) (Times r (Star (Times s r))) \<le> Times r (Star (Times s r))"
+    by (rule order_trans[OF _
+        Times_mono[OF order_refl ord_le_eq_trans[OF le_PlusR Star_unfoldL[symmetric]]]]) simp
 next
-  have "Times (Times (Star (Times r s)) r) (Times s r) =
-    Times (Times (Star (Times r s)) (Times r s)) r" (is "?L = _") by simp
-  also have "\<dots> \<le> Times (Star (Times r s)) r" (is "_ \<le> ?R")
-    by (rule Times_mono[OF ord_le_eq_trans[OF le_PlusR Star_unfoldR[symmetric]] order_refl])
-  finally show "?L \<le> ?R" .
+  show "Times (Times (Star (Times r s)) r) (Times s r) \<le> Times (Star (Times r s)) r"
+    by (rule order_trans[OF _
+        Times_mono[OF ord_le_eq_trans[OF le_PlusR Star_unfoldR[symmetric]] order_refl]]) simp
 qed simp_all
 
 lemma denesting: "Star (Plus r s) = Times (Star r) (Star (Times s (Star r)))"
-proof (rule antisym[OF _ ardenR[OF Plus_upper[OF Star_mono[OF le_PlusL]]]])
-  have "Star (Plus r s) = Times (Star (Plus r s)) One" by simp
-  also have "\<dots> \<le> Times (Star r) (Star (Times s (Star r)))"
-  proof (rule ardenL[OF Plus_upper])
-    show "Times (Plus r s) (Times (Star r) (Star (Times s (Star r)))) \<le>
-      Times (Star r) (Star (Times s (Star r)))" (is "Times _ ?L \<le> ?R")
-    proof (subst Times_PlusL, rule Plus_upper)
-      show "Times s ?L \<le> ?R"
-        by (subst (5) Star_unfoldL, rule order_trans[OF order_trans[OF _ le_PlusR] le_TimesR]) auto
-    qed (subst (4) Times_Star[symmetric], auto simp del: Times_Star intro: le_Star)
-  qed simp
-  finally show "Star (Plus r s) \<le> Times (Star r) (Star (Times s (Star r)))" .
+proof (rule antisym[OF ord_eq_le_trans[OF Times_OneR[symmetric] ardenL[OF Plus_upper]]
+   ardenR[OF Plus_upper[OF Star_mono[OF le_PlusL]]]])
+  show "Times (Plus r s) (Times (Star r) (Star (Times s (Star r))))
+    \<le> Times (Star r) (Star (Times s (Star r)))" (is "Times _ ?L \<le> ?R")
+    unfolding Times_PlusL
+    by (rule Plus_upper,
+      metis Star_unfoldL Times_assoc Times_mono le_PlusR order_refl,
+      metis Star_unfoldL Times_assoc \<oo>_Star le_PlusR le_TimesR order_trans)
 next
-  have "Times (Star (Plus r s)) (Times s (Star r)) \<le> Times (Star (Plus r s)) (Star (Plus r s))"
-    by (subst (4) Star_unfoldL, rule Times_mono[OF order_refl
-      order_trans[OF Times_mono[OF le_PlusR Star_mono[OF le_PlusL]] le_PlusR]])
-  also have "\<dots> = Star (Plus r s)" by simp
-  finally show "Times (Star (Plus r s)) (Times s (Star r)) \<le> Star (Plus r s)" .
-qed
+  show "Times (Star (Plus r s)) (Times s (Star r)) \<le> Star (Plus r s)"
+    by (metis Plus_comm Star_unfoldL Times_PlusR Times_assoc ardenR bisimulation le_PlusR)
+qed simp
 
 text {*
 It is useful to lift binary operators @{term Plus} and @{term Times}
@@ -667,6 +642,7 @@ lemma \<dd>_TIMES[simp]: "\<dd> (TIMES xs) a = (let n = length (takeWhile \<oo> 
   in PLUS (map (\<lambda>zs. TIMES (\<dd> (hd zs) a # tl zs)) (take (Suc n) (tails (xs @ [One])))))"
   unfolding TIMES_def \<dd>_foldr_Times by simp
 
+
 section {* Context Free Languages *}
 
 text {*
@@ -711,6 +687,7 @@ abbreviation (in cfg) lang where
   "lang \<equiv> subst prod (prod init)"
 
 
+
 section {* Word-theoretic Semantics of Languages *}
 
 text {*
@@ -749,7 +726,7 @@ lemma to_language_bij: "bij to_language"
   by (rule o_bij[of "Collect o in_language"]) (simp_all add: fun_eq_iff)
 
 (*<*)
-hide_const (open) TimesLR Times_Plus StarLR subst
+hide_const (open) TimesLR Times_Plus StarLR ShuffleLR subst
 
 end
 (*>*)
