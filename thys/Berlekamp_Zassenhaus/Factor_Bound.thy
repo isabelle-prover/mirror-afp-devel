@@ -193,32 +193,30 @@ text \<open>For Mignotte's factor bound, we currently do not support queries for
 
 definition mignotte_bound :: "int poly \<Rightarrow> nat \<Rightarrow> int" where
   "mignotte_bound f d = (let d' = d - 1; d2 = d' div 2; binom = (d' choose d2) in
-     binom * (mahler_approximation 2 f + abs (lead_coeff f)))" 
+     (mahler_approximation 2 binom f + binom * abs (lead_coeff f)))" 
 
 lemma mignotte_bound: fixes mm :: "nat \<Rightarrow> int poly \<Rightarrow> int" 
     assumes "f \<noteq> 0" "g dvd f" "degree g \<le> n"
   shows "\<bar>coeff g k\<bar> \<le> mignotte_bound f n"  
 proof-
-  let ?approx = "mahler_approximation 2 f" 
+  let ?bnd = 2
+  let ?n = "(n - 1) choose ((n - 1) div 2)" 
+  let ?approx = "mahler_approximation ?bnd ?n f" 
   obtain h where gh:"g * h = f" using assms by (metis dvdE)
   have nz:"g\<noteq>0" "h\<noteq>0" using gh assms(1) by auto
   have g1:"(1::real) \<le> mahler_measure h" using mahler_measure_poly_ge_1 gh assms(1) by auto
   note g0 = mahler_measure_ge_0
-  let ?n = "(n - 1) choose ((n - 1) div 2)" 
   have to_n: "(degree g - 1 choose k) \<le> real ?n" for k
     using choose_approx[of "degree g - 1" "n - 1" k] assms(3) by auto
   have "\<bar>coeff g k\<bar> \<le> (degree g - 1 choose k) * mahler_measure g
     + real (degree g - 1 choose (k - 1)) * \<bar>lead_coeff g\<bar>" using mignotte_coeff_helper[of g k] by simp
-  also have "\<dots> \<le> ?n * (real_of_int ?approx) + real ?n * \<bar>lead_coeff f\<bar>"
+  also have "\<dots> \<le> ?n * mahler_measure f + real ?n * \<bar>lead_coeff f\<bar>"
   proof (rule add_mono[OF mult_mono[OF to_n] mult_mono[OF to_n]])
     have "mahler_measure g  \<le> mahler_measure g * mahler_measure h" using g1 g0[of g]
       using mahler_measure_poly_ge_1 nz(1) by force
-    also have "\<dots> = mahler_measure f" 
+    thus "mahler_measure g \<le> mahler_measure f"
       using measure_eq_prod[of "of_int_poly g" "of_int_poly h"]
       unfolding mahler_measure_def gh[symmetric] by auto
-    also have "\<dots> \<le> ?approx" using mahler_approximation[of f]
-      by (simp add: ceiling_le_iff)
-    finally show "mahler_measure g \<le> ?approx"  .
     have *: "lead_coeff f = lead_coeff g * lead_coeff h" 
       unfolding arg_cong[OF gh, of lead_coeff, symmetric] by (rule lead_coeff_mult)
     have "\<bar>lead_coeff h\<bar> \<noteq> 0" using nz(2) by auto
@@ -229,10 +227,10 @@ proof-
     finally have "\<bar>lead_coeff g\<bar> \<le> \<bar>lead_coeff f\<bar>" by simp
     thus "real_of_int \<bar>lead_coeff g\<bar> \<le> real_of_int \<bar>lead_coeff f\<bar>" by simp
   qed (auto simp: g0)
-  finally have "\<bar>coeff g k\<bar> \<le> ?n * (real_of_int ?approx) + ?n * \<bar>lead_coeff f\<bar>" by simp
-  also have "\<dots> = real_of_int (?n * ?approx + ?n * \<bar>lead_coeff f\<bar>)" by simp
-  finally have "\<bar>coeff g k\<bar> \<le> ?n * ?approx + ?n * \<bar>lead_coeff f\<bar>" by linarith
-  thus ?thesis unfolding mignotte_bound_def Let_def by (auto simp: field_simps)
+  finally have "\<bar>coeff g k\<bar> \<le> ?n * mahler_measure f + real_of_int (?n * \<bar>lead_coeff f\<bar>)" by simp
+  from floor_mono[OF this, folded floor_add_int]
+  have "\<bar>coeff g k\<bar> \<le> floor (?n * mahler_measure f) + ?n * \<bar>lead_coeff f\<bar>" by linarith
+  thus ?thesis unfolding mignotte_bound_def Let_def using mahler_approximation[of ?n f ?bnd] by auto
 qed
 
 

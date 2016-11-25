@@ -6,18 +6,18 @@ theory Efficient_Sort
 imports "~~/src/HOL/Library/Multiset"
 begin
 
-text {*
+text \<open>
 A high-level overview of this formalization as well as some experimental data is
 to be found in \cite{Sternagel2012}.
-*}
+\<close>
 
-section {* Chaining Lists by Predicates *}
+section \<open>Chaining Lists by Predicates\<close>
 
-text {*
+text \<open>
 Make sure that some binary predicate @{text P} is satisfied between
 every two consecutive elements of a list. We call such a list a
 \emph{chain} in the following.
-*}
+\<close>
 inductive
   linked :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> bool"
   for P::"'a \<Rightarrow> 'a \<Rightarrow> bool"
@@ -32,14 +32,14 @@ lemma linked_many_eq[simp, code]:
   "linked P (x#y#zs) \<longleftrightarrow> P x y \<and> linked P (y#zs)"
   by (blast intro: linked.many elim: linked.cases)
 
-text {* Take the longest prefix of a list that forms a chain. *}
+text \<open>Take the longest prefix of a list that forms a chain.\<close>
 fun take_chain :: "'a \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list" where
   "take_chain a P [] = []"
 | "take_chain a P (x#xs) = (if P a x
     then x # take_chain x P xs
     else [])"
 
-text {* Drop the longest prefix of a list that forms a chain. *}
+text \<open>Drop the longest prefix of a list that forms a chain.\<close>
 fun drop_chain :: "'a \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list" where
   "drop_chain a P [] = []"
 | "drop_chain a P (x#xs) = (if P a x
@@ -94,7 +94,7 @@ lemma take_chain_map[simp]:
   by (induct xs arbitrary: x) simp_all
 
 
-subsection {* Sorted is a Special Case of Linked *}
+subsection \<open>Sorted is a Special Case of Linked\<close>
 
 lemma (in linorder) linked_le_sorted_conv[simp]:
   "linked (op \<le>) xs = sorted xs"
@@ -140,23 +140,23 @@ lemma mset_drop_chain_take_chain[simp]:
   by (induct xs arbitrary: x) (simp_all add: ac_simps)
 
 
-section {* GHC Version of Mergesort *}
+section \<open>GHC Version of Mergesort\<close>
 
-text {*
+text \<open>
 In the following we show that the mergesort implementation
 used in GHC (see @{url "http://haskell.org/ghc/docs/7.0-latest/html/libraries/base-4.3.1.0/src/Data-List.html#sort"})
 is a correct and stable sorting algorithm. Furthermore, experimental
 data suggests that generated code for this implementation is much more
 efficient than for the implementation provided by @{theory Multiset}.
-*}
+\<close>
 context linorder
 begin
 
-text {*
+text \<open>
 Split a list into chunks of ascending and descending parts, where
 descending parts are reversed. Hence, the result is a list of
 sorted lists.
-*}
+\<close>
 fun sequences :: "('b \<Rightarrow> 'a) \<Rightarrow> 'b list \<Rightarrow> 'b list list"
   and asc :: "('b \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> ('b list \<Rightarrow> 'b list) \<Rightarrow> 'b list \<Rightarrow> 'b list list"
   and desc :: "('b \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> 'b list \<Rightarrow> 'b list \<Rightarrow> 'b list list"
@@ -420,11 +420,14 @@ lemma sort_key_merge_all_sequences:
   by (intro ext properties_for_sort_key)
      (simp_all add: sorted_merge_all[OF sorted_sequences])
 
-text {*
+text \<open>
 Replace existing code equations for @{const sort_key} by
 @{term "merge_all key \<circ> sequences key"}.
-*}
+\<close>
 declare sort_key_merge_all_sequences[code]
 
 end
+
+hide_const lt le gt ge
+
 end
