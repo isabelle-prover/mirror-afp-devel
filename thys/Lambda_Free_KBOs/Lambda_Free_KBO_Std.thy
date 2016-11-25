@@ -237,12 +237,6 @@ subsection \<open>Transitivity\<close>
 lemma gt_imp_wt_ge: "t >\<^sub>t s \<Longrightarrow> wt t \<ge> wt s"
   by (induct rule: gt.induct) auto
 
-lemma wt_App_eq_fun_imp_\<delta>_eq_\<epsilon>: "wt (App s t) = wt s \<Longrightarrow> \<delta> = \<epsilon>"
-  by (metis add_diff_cancel_left' diff_diff_cancel wt_\<delta>_imp_\<delta>_eq_\<epsilon> wt_ge_\<delta> wt.simps(2))
-
-lemma wt_App_eq_arg_imp_\<delta>_eq_\<epsilon>: "wt (App s t) = wt t \<Longrightarrow> \<delta> = \<epsilon>"
-  using wt_App_\<delta> wt_\<delta>_imp_\<delta>_eq_\<epsilon> by metis
-
 lemma not_extf_gt_nil_singleton_if_\<delta>_eq_\<epsilon>:
   assumes wary_s: "wary s" and \<delta>_eq_\<epsilon>: "\<delta> = \<epsilon>"
   shows "\<not> extf f (op >\<^sub>t) [] [s]"
@@ -265,8 +259,8 @@ proof (induct t arbitrary: s rule: measure_induct_rule[of size])
 
   {
     assume wt_st: "wt (App s t) = wt t"
-    have \<delta>_eq_\<epsilon>: "\<delta> = \<epsilon>"
-      by (rule wt_App_eq_arg_imp_\<delta>_eq_\<epsilon>[OF wt_st])
+    hence \<delta>_eq_\<epsilon>: "\<delta> = \<epsilon>"
+      using wt_App_\<delta> wt_\<delta>_imp_\<delta>_eq_\<epsilon> by metis
     have wt_s: "wt s = \<delta>"
       by (rule wt_App_\<delta>[OF wt_st])
 
@@ -309,10 +303,8 @@ proof (induct t arbitrary: s rule: measure_induct_rule[of size])
     moreover
     {
       assume hd_t_eq_s: "head t = head s"
-
-      have nargs_t_le: "num_args t \<le> 1"
-        using ary_hd_s[folded hd_t_eq_s] wary_num_args_le_arity_head[OF wary_t]
-        by (simp add: one_enat_def)
+      hence nargs_t_le: "num_args t \<le> 1"
+        using ary_hd_s wary_num_args_le_arity_head[OF wary_t] by (simp add: one_enat_def)
 
       have extf: "extf f op >\<^sub>t [t] (args t)" for f
       proof (cases "args t")
@@ -534,35 +526,26 @@ proof (simp only: atomize_imp,
         have "num_args u \<le> 1"
           by (metis enat_ord_simps(1) ground_heads_arity gt_same_u_t(3) gt_unary_t_s(4) one_enat_def
             order_trans wary_num_args_le_arity_head wary_u wt_sym_0_unary)
-        moreover
-        {
-          assume "args u = []"
-          hence False
-            by (metis Hd_head_id \<delta>_eq_\<epsilon> append_Nil args.simps(2) gt_same_u_t(3,4) gt_unary_t_s(3,4)
+        hence nargs_u: "num_args u = 1"
+          by (cases "args u",
+            metis Hd_head_id \<delta>_eq_\<epsilon> append_Nil args.simps(2) gt_same_u_t(3,4) gt_unary_t_s(3,4)
               head_fun list.size(3) not_extf_gt_nil_singleton_if_\<delta>_eq_\<epsilon> one_arg_imp_Hd
-              t_app tm.collapse(2) wary_arg_t)
-        }
-        moreover
-        {
-          assume nargs_u: "num_args u = 1"
+              tm.collapse(2)[OF t_app] wary_arg_t,
+            simp)
 
-          have "arg u >\<^sub>t arg t"
-            using gt_same_u_t(4)
-            by (metis extf_singleton[THEN iffD1] append_Nil args.simps(1) args.simps(2)
-              args_Nil_iff_is_Hd comp_hd_def gt_hd_def gt_irrefl gt_same_u_t(3) gt_unary_t_s(2,3)
-              head_fun length_0_conv nargs_u one_arg_imp_Hd t_app tm.collapse(2) u_gt_t wary_u)
-          hence "arg u >\<^sub>t s"
-            using ih[OF _ wary_arg_u wary_arg_t wary_s] gt_unary_t_s(5)
-            by (metis add_mset_lt_left_lt add_mset_lt_lt_lt args_Nil_iff_is_Hd list.size(3) nargs_u
-              size_arg_lt t_app zero_neq_one)
-          hence arg_u_ge_s: "arg u \<ge>\<^sub>t s"
-            by sat
-          have ?thesis
-            by (rule gt_unary[OF wt_u_s hd_u_ncomp_s nargs_u _ arg_u_ge_s])
-              (simp add: gt_same_u_t(3) gt_unary_t_s(4))
-        }
-        ultimately show ?thesis
-          by (auto simp: le_eq_less_or_eq)
+        have "arg u >\<^sub>t arg t"
+          by (metis extf_singleton[THEN iffD1] append_Nil args.simps args_Nil_iff_is_Hd
+            comp_hd_def gt_hd_def gt_irrefl gt_same_u_t(3,4) gt_unary_t_s(2,3) head_fun
+            length_0_conv nargs_u one_arg_imp_Hd t_app tm.collapse(2) u_gt_t wary_u)
+        hence "arg u >\<^sub>t s"
+          using ih[OF _ wary_arg_u wary_arg_t wary_s] gt_unary_t_s(5)
+          by (metis add_mset_lt_left_lt add_mset_lt_lt_lt args_Nil_iff_is_Hd list.size(3) nargs_u
+            size_arg_lt t_app zero_neq_one)
+        hence arg_u_ge_s: "arg u \<ge>\<^sub>t s"
+          by sat
+        show ?thesis
+          by (rule gt_unary[OF wt_u_s hd_u_ncomp_s nargs_u _ arg_u_ge_s])
+            (simp add: gt_same_u_t(3) gt_unary_t_s(4))
       qed (simp add: wt_u_t)
     next
       case gt_diff_t_s: gt_diff
@@ -578,19 +561,22 @@ proof (simp only: atomize_imp,
         hence arg_u_ge_s: "arg u \<ge>\<^sub>t s"
           by sat
 
-        have "head u \<noteq> head s"
-          using gt_diff_t_s(3) gt_unary_u_t(2) unfolding comp_hd_def by force
-        moreover
         {
-          assume "head u >\<^sub>h\<^sub>d head s"
-          hence ?thesis
-            by (rule gt_diff[OF vars_u_s wt_u_s])
+          assume "head u = head s"
+          hence False
+            using gt_diff_t_s(3) gt_unary_u_t(2) unfolding comp_hd_def by force
         }
         moreover
         {
           assume "head s >\<^sub>h\<^sub>d head u"
           hence False
             using gt_hd_def gt_hd_irrefl gt_sym_antisym gt_unary_u_t(4) wt_sym_0_gt by blast
+        }
+        moreover
+        {
+          assume "head u >\<^sub>h\<^sub>d head s"
+          hence ?thesis
+            by (rule gt_diff[OF vars_u_s wt_u_s])
         }
         moreover
         {
@@ -657,11 +643,11 @@ proof (simp only: atomize_imp,
               (meson ua_in ta_in sa_in Un_iff max.strict_coboundedI1 max.strict_coboundedI2
                  size_in_args)+
         qed
-        have extf_s_u: "\<forall>f \<in> ground_heads (head u). extf f (op >\<^sub>t) (args u) (args s)"
+        have "\<forall>f \<in> ground_heads (head u). extf f (op >\<^sub>t) (args u) (args s)"
           by (clarify, rule extf_trans_from_irrefl[of ?S _ "args t", OF _ _ _ _ _ gt_trans_args])
             (auto simp: gt_same_u_t(3,4) gt_same_t_s(4) wary_args wary_u wary_t wary_s gt_irrefl)
-        show ?thesis
-          by (rule gt_same[OF vars_u_s wt_u_s hd_u_s extf_s_u])
+        thus ?thesis
+          by (rule gt_same[OF vars_u_s wt_u_s hd_u_s])
       qed (simp add: wt_u_t)
     qed (simp add: wt_t_s)
   }
@@ -685,7 +671,7 @@ next
   hence wt_st: "wt (App s t) = wt s"
     by (meson order.antisym not_le_imp_less wt_App_ge_fun)
   hence \<delta>_eq_\<epsilon>: "\<delta> = \<epsilon>"
-    by (rule wt_App_eq_fun_imp_\<delta>_eq_\<epsilon>)
+    by (metis add_diff_cancel_left' diff_diff_cancel wt_\<delta>_imp_\<delta>_eq_\<epsilon> wt_ge_\<delta> wt.simps(2))
 
   have vars_st: "vars_mset (App s t) \<supseteq># vars_mset s"
     by auto
@@ -768,7 +754,7 @@ proof -
   next
     case gt_same_s'_s: gt_same
     have wt_s't: "wt (App s' t) = wt (App s t)"
-      by (simp add: gt_same_s'_s)
+      by (simp add: gt_same_s'_s(2))
     have hd_s't: "head (App s' t) = head (App s t)"
       by (simp add: gt_same_s'_s(3))
     have "\<forall>f \<in> ground_heads (head (App s' t)). extf f (op >\<^sub>t) (args (App s' t)) (args (App s t))"
@@ -921,8 +907,8 @@ proof (simp only: atomize_imp,
           have "subst \<rho> t2 >\<^sub>t subst \<rho> s"
             by (rule ih[OF _ wary_t2 wary_s t2_gt_s]) (simp add: t)
           thus ?thesis
-            unfolding t by simp (metis gt_sub_arg gt_trans subst.simps(2) t wary_\<rho> wary_\<rho>t wary_s
-              wary_subst_wary wary_t2)
+            by (metis gt_sub_arg gt_trans subst.simps(2) t wary_\<rho> wary_\<rho>t wary_s wary_subst_wary
+              wary_t2)
         qed
       qed
     next
