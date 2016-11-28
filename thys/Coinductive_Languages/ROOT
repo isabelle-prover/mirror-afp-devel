@@ -7,6 +7,6 @@ session "Coinductive_Languages" (AFP) = HOL +
   theories
     Coinductive_Language
     Coinductive_Regular_Set
-    CFG_Examples
+    Context_Free_Grammar
   document_files
     "root.tex"
