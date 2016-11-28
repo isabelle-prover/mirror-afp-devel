@@ -545,4 +545,91 @@ proof -
     unfolding rp irreducible_smult[OF a] .
 qed
 
+lemma dvd_content_dvd: assumes dvd: "content f dvd content g" "normalize_content f dvd normalize_content g"
+  shows "f dvd g" 
+proof -
+  let ?cf = "content f" let ?nf = "normalize_content f" 
+  let ?cg = "content g" let ?ng = "normalize_content g" 
+  have "f dvd g = (smult ?cf ?nf dvd smult ?cg ?ng)" 
+    unfolding smult_normalize_content by auto
+  from dvd(1) obtain ch where cg: "?cg = ?cf * ch" unfolding dvd_def by auto
+  from dvd(2) obtain nh where ng: "?ng = ?nf * nh" unfolding dvd_def by auto
+  have "f dvd g = (smult ?cf ?nf dvd smult ?cg ?ng)" 
+    unfolding smult_normalize_content[of f] smult_normalize_content[of g] by auto
+  also have "\<dots> = (smult ?cf ?nf dvd smult ?cf ?nf * smult ch nh)" unfolding cg ng
+    by (auto simp: ac_simps)
+  also have "\<dots>" by (rule dvd_triv_left)
+  finally show ?thesis .
+qed
+
+lemma div_poly_smult: "c \<noteq> 0 \<Longrightarrow> div_poly c (smult c f) = f"
+  by (intro poly_eqI, unfold coeff_div_poly coeff_smult, auto)
+
+lemma dvd_content_dvd_rev: fixes f :: "int poly" 
+  assumes dvd: "f dvd g" 
+  shows "content f dvd content g" "normalize_content f dvd normalize_content g"
+proof -
+  let ?cf = "content f" let ?nf = "normalize_content f" 
+  let ?cg = "content g" let ?ng = "normalize_content g" 
+  from dvd obtain h where g: "g = f * h" unfolding dvd_def by auto
+  from arg_cong[OF g, of content, unfolded gauss_lemma] show dvd: "?cf dvd ?cg" by auto
+  show "?nf dvd ?ng" 
+  proof (cases "g = 0")
+    case False
+    with dvd have f0: "f \<noteq> 0" by auto
+    hence cf: "?cf \<noteq> 0" by auto
+    from dvd obtain ch where cg: "?cg = ?cf * ch" unfolding dvd_def by auto
+    with False have ch: "ch \<noteq> 0" by auto
+    from g have "smult (?cf * ch) ?ng = smult ?cf ?nf * h" 
+      unfolding cg[symmetric] smult_normalize_content .
+    hence "smult ?cf (smult ch ?ng) = smult ?cf (?nf * h)" by auto 
+    from arg_cong[OF this, of "div_poly ?cf"] have "smult ch ?ng = ?nf * h"
+      unfolding div_poly_smult[OF cf] by simp
+    hence "?nf dvd smult ch ?ng" by auto
+    from dvd_smult_int[OF ch this] have "normalize_content ?nf dvd ?ng" .
+    also have "normalize_content ?nf = ?nf" unfolding normalize_content_def[of ?nf] 
+      content_normalize_content_1[OF f0] by (rule poly_eqI, auto simp: coeff_div_poly)
+    finally show ?thesis .
+  qed auto
+qed
+
+lemma content_dvd_coeff: "content f dvd coeff f i" 
+proof (cases "coeff f i = 0")
+  case False
+  hence "coeff f i \<in> set (coeffs f)" using range_coeff by auto
+  from content_dvd[OF this] show ?thesis .
+qed auto
+
+lemma normalize_content_idemp[simp]: fixes f :: "int poly" 
+  shows "normalize_content (normalize_content f) = normalize_content f" 
+proof (cases "f = 0")
+  case False
+  show ?thesis unfolding normalize_content_def[of "normalize_content f"]
+    content_normalize_content_1[OF False]
+    by (rule poly_eqI, auto simp: coeff_div_poly)
+qed auto
+
+lemma normalize_content_smult_int: fixes f :: "int poly" shows
+  "normalize_content (smult d f) = smult (sgn d) (normalize_content f)" 
+proof (cases "d = 0 \<or> f = 0")
+  case False
+  obtain cf where cf: "content f = cf" by auto
+  with False have 0: "d \<noteq> 0" "f \<noteq> 0" "cf \<noteq> 0" by auto
+  show ?thesis 
+  proof (rule poly_eqI, unfold normalize_content_def coeff_div_poly content_smult_int coeff_smult cf)
+    fix n
+    consider (pos) "d > 0" | (neg) "d < 0" using 0(1) by linarith
+    thus "d * coeff f n div (\<bar>d\<bar> * cf) = sgn d * (coeff f n div cf)"
+    proof cases
+      case neg
+      hence "?thesis = (d * coeff f n div - (d * cf) = - (coeff f n div cf))" by auto
+      also have "d * coeff f n div - (d * cf) = - (d * coeff f n div (d * cf))" 
+        by (subst dvd_div_neg, insert 0(1), auto simp: content_dvd_coeff cf[symmetric])
+      also have "d * coeff f n div (d * cf) = coeff f n div cf" using 0(1) by auto
+      finally show ?thesis by simp
+    qed auto
+  qed    
+qed auto  
+
+
 end

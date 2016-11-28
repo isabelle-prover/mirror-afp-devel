@@ -72,7 +72,7 @@ definition berlekamp_zassenhaus_factorization :: "int poly \<Rightarrow> int pol
      max_deg = degree_bound fs;
      (* determine a number large enough to represent all coefficients of every 
         factor of lc * f that has at most degree most max-deg *)
-     bnd = 2 * factor_bound (smult (lead_coeff f) f) max_deg;
+     bnd = 2 * \<bar>lead_coeff f\<bar> * factor_bound f max_deg;
      (* determine k such that p^k > bnd *)
      k = find_exponent p bnd;
      (* perform hensel lifting to lift factorization to mod (p^k) *)
@@ -97,8 +97,8 @@ proof -
     and sf: "poly_mod.square_free_m p f" 
     unfolding p_def by auto
   have p1: "p > 1" using prime unfolding prime_int_iff by simp
-  define n where "n = find_exponent p (2 * factor_bound (smult ?lc f) (degree_bound gs))" 
-  note n = find_exponent[OF p1, of "2 * factor_bound (smult ?lc f) (degree_bound gs)",
+  define n where "n = find_exponent p (2 * abs ?lc * factor_bound f (degree_bound gs))" 
+  note n = find_exponent[OF p1, of "2 * abs ?lc * factor_bound f (degree_bound gs)",
     folded n_def]
   note bh = berlekamp_and_hensel_separated[OF prime cop sf refl berl n(2)]
   note res = res[folded n_def bh(1)]

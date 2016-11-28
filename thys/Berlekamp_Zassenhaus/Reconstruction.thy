@@ -798,7 +798,7 @@ context
   and sf: "poly_mod.square_free_m p f"
   and deg: "degree f \<noteq> 0" 
   and bh: "berlekamp_hensel p n f = hs" 
-  and bnd: "2 * factor_bound (smult (lead_coeff f) f) (degree_bound hs) < p ^ n" 
+  and bnd: "2 * \<bar>lead_coeff f\<bar> * factor_bound f (degree_bound hs) < p ^ n" 
 begin
 
 private lemma n: "n \<noteq> 0" 
@@ -807,10 +807,22 @@ proof
   hence pn: "p^n = 1" by auto  
   let ?f = "smult (lead_coeff f) f" 
   let ?d = "degree_bound hs" 
-  have f: "?f \<noteq> 0" using deg by auto
-  have "1 \<le> factor_bound (smult (lead_coeff f) f) ?d" 
+  have f: "f \<noteq> 0" using deg by auto
+  hence "lead_coeff f \<noteq> 0" by auto
+  hence lf: "abs (lead_coeff f) > 0" by auto
+  obtain c d where c: "factor_bound f (degree_bound hs) = c" "abs (lead_coeff f) = d" by auto
+  {
+    assume *: "1 \<le> c" "2 * d * c < 1" "0 < d" 
+    hence "1 \<le> d" by auto
+    from mult_mono[OF this *(1)] * have "1 \<le> d * c" by auto
+    hence "2 * d * c \<ge> 2" by auto
+    with * have False by auto
+  } note tedious = this 
+  have "1 \<le> factor_bound f ?d" 
     using factor_bound[OF f, of 1 ?d 0] by auto
-  also have "\<dots> \<le> 0" using pn bnd by auto
+  also have "\<dots> = 0" using bnd unfolding pn 
+    using factor_bound_ge_0[of f "degree_bound hs", OF f] lf unfolding c
+    by (cases "c \<ge> 1"; insert tedious, auto)
   finally show False by simp
 qed
   
@@ -833,14 +845,14 @@ proof -
   from berlekamp_hensel_unique[OF prime cop sf bh n]
   have ufact: "unique_factorization_m f (?lc, mset hs)" by simp
   note bh = berlekamp_hensel[OF prime cop sf bh n]
-  from deg have f0: "f \<noteq> 0" by auto
+  from deg have f0: "f \<noteq> 0" and lf0: "?lc \<noteq> 0" by auto
   hence ff0: "?ff \<noteq> 0" unfolding lead_coeff_def by auto
   have bnd: "\<forall>g k. g dvd ?ff \<longrightarrow> degree g \<le> degree_bound hs \<longrightarrow> 2 * \<bar>coeff g k\<bar> < p ^ n"
   proof (intro allI impI, goal_cases)
     case (1 g k)
-    from factor_bound[OF ff0 1, of k]
-    have "\<bar>coeff g k\<bar> \<le> factor_bound ?ff (degree_bound hs)" .
-    hence "2 * \<bar>coeff g k\<bar> \<le> 2 * factor_bound ?ff (degree_bound hs)" by auto
+    from factor_bound_smult[OF f0 lf0 1, of k] 
+    have "\<bar>coeff g k\<bar> \<le> \<bar>?lc\<bar> * factor_bound f (degree_bound hs)" .
+    hence "2 * \<bar>coeff g k\<bar> \<le> 2 * \<bar>?lc\<bar> * factor_bound f (degree_bound hs)" by auto
     also have "\<dots> < p^n" using bnd .
     finally show ?case .
   qed
