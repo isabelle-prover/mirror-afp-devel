@@ -23,9 +23,6 @@ definition one_hmultiset :: hmultiset where
 definition times_hmultiset :: "hmultiset \<Rightarrow> hmultiset \<Rightarrow> hmultiset"  where
   "A * B = HMSet (image_mset (case_prod (op +)) (hmsetmset A \<times>mset hmsetmset B))"
 
-lemma zero_times_hmultiset: "0 * M = 0" for M :: hmultiset
-  unfolding zero_hmultiset_def times_hmultiset_def by simp
-
 lemma hmsetmset_times:
   "hmsetmset (m * n) = image_mset (case_prod (op +)) (hmsetmset m \<times>mset hmsetmset n)"
   unfolding times_hmultiset_def by simp

@@ -138,7 +138,7 @@ lemma trans_gt: "ext gt zs ys \<Longrightarrow> ext gt ys xs \<Longrightarrow> e
 lemma hd_or_tl_gt: "length ys = length xs \<Longrightarrow> ext gt (y # ys) (x # xs) \<Longrightarrow> gt y x \<or> ext gt ys xs"
   by (rule hd_or_tl) (auto intro: gt_trans simp: gt_total)
 
-lemma wf_same_length: "wfP (\<lambda>xs ys. length ys = n \<and> length xs = n \<and> ext gt ys xs)"
+lemma wf_same_length_if_total: "wfP (\<lambda>xs ys. length ys = n \<and> length xs = n \<and> ext gt ys xs)"
 proof (induct n)
   case 0
   thus ?case
@@ -247,7 +247,7 @@ proof (intro notI, induct n rule: less_induct)
     hence "\<not> wfP (\<lambda>xs ys. ?gtssl ys xs)"
       using wfP_iff_no_inf_chain by blast
     thus False
-      using wf_same_length[of n] by sat
+      using wf_same_length_if_total[of n] by sat
   qed
 qed
 
