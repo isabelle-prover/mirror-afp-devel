@@ -461,8 +461,8 @@ next
     by (auto simp: ct lc square_free_factorization_def f0)
 qed
 
-definition square_free_factorization_int :: "int poly \<Rightarrow> int \<times> (int poly \<times> nat)list" where
-  "square_free_factorization_int f = (if degree f = 0
+definition square_free_factorization_int' :: "int poly \<Rightarrow> int \<times> (int poly \<times> nat)list" where
+  "square_free_factorization_int' f = (if degree f = 0
     then (lead_coeff f,[]) else (let (* content factorization *)
       c = content f;
       d = (sgn (lead_coeff f) * c);
@@ -471,12 +471,12 @@ definition square_free_factorization_int :: "int poly \<Rightarrow> int \<times>
     in (d, square_free_factorization_int_main g)))"
 
 
-lemma square_free_factorization_int: assumes res: "square_free_factorization_int f = (d, fs)"
+lemma square_free_factorization_int': assumes res: "square_free_factorization_int' f = (d, fs)"
   shows "square_free_factorization f (d,fs)" 
     "(fi, i) \<in> set fs \<Longrightarrow> content fi = 1 \<and> lead_coeff fi > 0" 
     "distinct (map snd fs)" 
 proof -
-  note res = res[unfolded square_free_factorization_int_def Let_def]
+  note res = res[unfolded square_free_factorization_int'_def Let_def]
   have "square_free_factorization f (d,fs) 
     \<and> ((fi, i) \<in> set fs \<longrightarrow> content fi = 1 \<and> lead_coeff fi > 0)
     \<and> distinct (map snd fs)"
@@ -535,6 +535,169 @@ proof -
   qed
   thus  "square_free_factorization f (d,fs)" 
     "(fi, i) \<in> set fs \<Longrightarrow> content fi = 1 \<and> lead_coeff fi > 0" "distinct (map snd fs)" by auto
+qed
+
+definition x_split :: "'a :: semiring_0 poly \<Rightarrow> nat \<times> 'a poly" where
+  "x_split f = (let fs = coeffs f; zs = takeWhile (op = 0) fs
+     in case zs of [] \<Rightarrow> (0,f) | _ \<Rightarrow> (length zs, poly_of_list (dropWhile (op = 0) fs)))" 
+  
+lemma x_split: assumes "x_split f = (n, g)" 
+  shows "f = monom 1 n * g" "n \<noteq> 0 \<or> f \<noteq> 0 \<Longrightarrow> \<not> monom 1 1 dvd g"
+proof -
+  define zs where "zs = takeWhile (op = 0) (coeffs f)" 
+  note res = assms[unfolded zs_def[symmetric] x_split_def Let_def]
+  have "f = monom 1 n * g \<and> ((n \<noteq> 0 \<or> f \<noteq> 0) \<longrightarrow> \<not> (monom 1 1 dvd g))" (is "_ \<and> (_ \<longrightarrow> \<not> (?x dvd _))")
+  proof (cases "f = 0")
+    case True
+    with res have "n = 0" "g = 0" unfolding zs_def by auto
+    thus ?thesis using True by auto
+  next
+    case False note f = this
+    show ?thesis
+    proof (cases "zs = []")
+      case True
+      hence choice: "coeff f 0 \<noteq> 0" using f unfolding zs_def coeff_f_0_code poly_compare_0_code
+        by (cases "coeffs f", auto)
+      have dvd: "?x dvd h \<longleftrightarrow> coeff h 0 = 0" for h by (simp add: monom_1_dvd_iff')
+      from True choice res f show ?thesis unfolding dvd by auto
+    next
+      case False
+      define ys where "ys = dropWhile (op = 0) (coeffs f)" 
+      have dvd: "?x dvd h \<longleftrightarrow> coeff h 0 = 0" for h by (simp add: monom_1_dvd_iff')
+      from res False have n: "n = length zs" and g: "g = poly_of_list ys" unfolding ys_def
+        by (cases zs, auto)+
+      obtain xx where xx: "coeffs f = xx" by auto
+      have "coeffs f = zs @ ys" unfolding zs_def ys_def by auto
+      also have "zs = replicate n 0" unfolding zs_def n xx by (induct xx, auto)
+      finally have ff: "coeffs f = replicate n 0 @ ys" by auto
+      from f have "lead_coeff f \<noteq> 0" by auto
+      hence nz: "coeffs f \<noteq> []" "last (coeffs f) \<noteq> 0" unfolding lead_coeff_code Let_def by (cases "coeffs f", auto)+      
+      have ys: "ys \<noteq> []" using nz[unfolded ff] by auto            
+      with ys_def have hd: "hd ys \<noteq> 0" by (metis (full_types) hd_dropWhile)
+      hence "coeff (poly_of_list ys) 0 \<noteq> 0" unfolding poly_of_list_def coeff_Poly using ys by (cases ys, auto)
+      from ys hd have id: "(coeffs (Poly ys) = []) = False" by auto
+      from nz(2)[unfolded ff] ys have ys0: "last ys \<noteq> 0" by simp
+      show ?thesis unfolding dvd g
+      proof (intro conjI impI)
+        show "coeff (poly_of_list ys) 0 \<noteq> 0" by fact
+        show "f = monom 1 n * poly_of_list ys" unfolding monom_mult_def[symmetric] 
+          coeffs_eq_iff monom_mult_code Let_def ff poly_of_list_def id if_False
+          unfolding coeffs_Poly using ff ys0 by auto
+      qed
+    qed
+  qed
+  thus "f = monom 1 n * g" "n \<noteq> 0 \<or> f \<noteq> 0 \<Longrightarrow> \<not> monom 1 1 dvd g" by auto
+qed
+      
+
+definition square_free_factorization_int :: "int poly \<Rightarrow> int \<times> (int poly \<times> nat)list" where
+  "square_free_factorization_int f = (case x_split f of (n,g) (* extract x^n *)
+    \<Rightarrow> case square_free_factorization_int' g of (d,fs)
+    \<Rightarrow> if n = 0 then (d,fs) else (d, (monom 1 1, n - 1) # fs))" 
+
+lemma square_free_factorization_int: assumes res: "square_free_factorization_int f = (d, fs)"
+  shows "square_free_factorization f (d,fs)" 
+    "(fi, i) \<in> set fs \<Longrightarrow> content fi = 1 \<and> lead_coeff fi > 0" 
+proof -
+  obtain n g where xs: "x_split f = (n,g)" by force
+  obtain c hs where sf: "square_free_factorization_int' g = (c,hs)" by force
+  from res[unfolded square_free_factorization_int_def xs sf split] 
+  have d: "d = c" and fs: "fs = (if n = 0 then hs else (monom 1 1, n - 1) # hs)" by (cases n, auto)
+  note sff = square_free_factorization_int'(1-2)[OF sf]
+  note xs = x_split[OF xs]
+  let ?x = "monom 1 1 :: int poly" 
+  have x: "content ?x = 1 \<and> lead_coeff ?x = 1 \<and> degree ?x = 1" by code_simp
+  thus "(fi, i) \<in> set fs \<Longrightarrow> content fi = 1 \<and> lead_coeff fi > 0" using sff(2) unfolding fs
+    by (cases n, auto)
+  show "square_free_factorization f (d,fs)" 
+  proof (cases n)
+    case 0
+    with d fs sff xs show ?thesis by auto
+  next
+    case (Suc m)
+    with xs have fg: "f = monom 1 (Suc m) * g" and dvd: "\<not> ?x dvd g" by auto
+    from Suc have fs: "fs = (?x,m) # hs" unfolding fs by auto
+    have degx: "degree ?x = 1" by code_simp 
+    from irreducible_square_free[OF linear_irreducible[OF this]] have sfx: "square_free ?x" by auto
+    have fg: "f = ?x ^ n * g" unfolding fg Suc by (metis x_pow_n)
+    have eq0: "?x ^ n * g = 0 \<longleftrightarrow> g = 0" by simp
+    note sf = square_free_factorizationD[OF sff(1)]
+    {
+      fix a i
+      assume ai: "(a,i) \<in> set hs" 
+      with sf(4) have g0: "g \<noteq> 0" by auto
+      from split_list[OF ai] obtain ys zs where hs: "hs = ys @ (a,i) # zs" by auto
+      have "a dvd g" unfolding square_free_factorization_prod_list[OF sff(1)] hs
+        by (rule dvd_smult, simp add: ac_simps)
+      moreover have "\<not> ?x dvd g" using xs[unfolded Suc] by auto
+      ultimately have dvd: "\<not> ?x dvd a" using dvd_trans by blast
+      from sf(2)[OF ai] have "a \<noteq> 0" by auto
+      have "1 = gcd ?x a"
+      proof (rule gcdI)
+        fix d
+        assume d: "d dvd ?x" "d dvd a" 
+        from dvd_content_dvd_rev[OF d(1)] x have cnt: "is_unit (content d)" by auto
+        show "is_unit d"
+        proof (cases "degree d = 1")
+          case False
+          with divides_degree[OF d(1), unfolded degx] have "degree d = 0" by auto
+          from degree0_coeffs[OF this] obtain c where dc: "d = [:c:]" by auto
+          from cnt[unfolded dc] have "is_unit c" by (auto simp: content_def list_gcd_def, cases "c = 0", auto)
+          hence "d * d = 1" unfolding dc by (auto simp: one_poly_def, cases "c = -1"; cases "c = 1", auto)
+          thus "is_unit d" by (metis dvd_triv_right)
+        next
+          case True
+          from d(1) obtain e where xde: "?x = d * e" unfolding dvd_def by auto
+          from arg_cong[OF this, of degree] degx have "degree d + degree e = 1"
+            by (metis True add.right_neutral degree_0 degree_mult_eq one_neq_zero)
+          with True have "degree e = 0" by auto
+          from degree0_coeffs[OF this] xde obtain e where xde: "?x = [:e:] * d" by auto
+          from arg_cong[OF this, of content, unfolded gauss_lemma] x
+          have "content [:e:] * content d = 1" by auto
+          also have "content [:e :] = abs e" by (auto simp: content_def list_gcd_def, cases "e = 0", auto)
+          finally have "\<bar>e\<bar> * content d = 1" .
+          from pos_zmult_eq_1_iff_lemma[OF this] have "e * e = 1" by (cases "e = 1"; cases "e = -1", auto)
+          with arg_cong[OF xde, of "smult e"] have "d = ?x * [:e:]" by auto
+          hence "?x dvd d" unfolding dvd_def by blast
+          with d(2) have "?x dvd a" by (metis dvd_trans)
+          with dvd show ?thesis by auto
+        qed
+      qed auto
+      hence "coprime ?x a" by simp
+      note this dvd
+    } note hs_dvd_x = this
+    from hs_dvd_x[of ?x m]
+    have nmem: "(?x,m) \<notin> set hs" by auto
+    hence eq: "?x ^ n * g = smult c (\<Prod>(a, i)\<in>set fs. a ^ Suc i)" 
+      unfolding sf(1) unfolding fs Suc by simp
+    show ?thesis unfolding fg d unfolding square_free_factorization_def split eq0 unfolding eq
+    proof (intro conjI allI impI, rule refl)
+      fix a i 
+      assume ai: "(a,i) \<in> set fs" 
+      thus "square_free a" "degree a \<noteq> 0" using sf(2) sfx degx unfolding fs by auto
+      fix b j
+      assume bj: "(b,j) \<in> set fs" and diff: "(a,i) \<noteq> (b,j)" 
+      consider (hs_hs) "(a,i) \<in> set hs" "(b,j) \<in> set hs" 
+        | (hs_x) "(a,i) \<in> set hs" "b = ?x" 
+        | (x_hs) "(b,j) \<in> set hs" "a = ?x" 
+        using ai bj diff unfolding fs by auto
+      thus "coprime a b"
+      proof cases
+        case hs_hs
+        from sf(3)[OF this diff] show ?thesis .
+      next
+        case hs_x
+        from hs_dvd_x(1)[OF hs_x(1)] show ?thesis unfolding hs_x(2) unfolding gcd.commute[of ?x] .
+      next
+        case x_hs
+        from hs_dvd_x(1)[OF x_hs(1)] show ?thesis unfolding x_hs(2) .
+      qed
+    next
+      show "g = 0 \<Longrightarrow> c = 0" using sf(4) by auto
+      show "g = 0 \<Longrightarrow> fs = []" using sf(4) xs Suc by auto
+      show "distinct fs" using sf(5) nmem unfolding fs by auto
+    qed
+  qed
 qed
 
 end

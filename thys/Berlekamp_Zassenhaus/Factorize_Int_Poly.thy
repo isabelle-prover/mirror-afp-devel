@@ -28,9 +28,7 @@ lemma factorize_int_poly_code[code]: "factorize_int_poly f = (
    (a, concat (map (\<lambda> (g,i). (map (\<lambda> f. (f,i)) (berlekamp_zassenhaus_factorization g))) gis)))" 
   unfolding factorize_int_poly_def by auto
 
-thm factorize_int_poly_def  
-lemma factorize_int_poly_0[simp]: "factorize_int_poly 0 = (0,[])" 
-  unfolding factorize_int_poly_def square_free_factorization_int_def Let_def by auto
+lemma factorize_int_poly_0[simp]: "factorize_int_poly 0 = (0,[])" by eval
     
 lemma factorize_int_poly: assumes res: "factorize_int_poly f = (c,fs)"
 shows "square_free_factorization f (c,fs)"
@@ -39,7 +37,7 @@ proof -
   obtain a psi where a_psi: "square_free_factorization_int f = (a, psi)" 
     by force
   from square_free_factorization_int[OF this]
-  have sff: "square_free_factorization f (a, psi)" and dist: "distinct (map snd psi)" 
+  have sff: "square_free_factorization f (a, psi)"  
     and cnt: "\<And> fi i. (fi, i) \<in> set psi \<Longrightarrow> content fi = 1" by blast+
   note res = res[unfolded factorize_int_poly_def a_psi Let_def split]
   obtain fact where fact: "fact = (\<lambda> (q,i :: nat). (map (\<lambda> f. (f,i)) (berlekamp_zassenhaus_factorization q)))" by auto
