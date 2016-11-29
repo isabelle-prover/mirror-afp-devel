@@ -24,45 +24,50 @@
 <div align="center">
 <p>&nbsp;</p>
 
-<h1><font class="first">F</font>inite
-<font class="first">M</font>achine
-<font class="first">W</font>ord
-<font class="first">L</font>ibrary
+<h1><font class="first">S</font>eparata:
+<font class="first">I</font>sabelle
+tactics
+for
+<font class="first">S</font>eparation
+<font class="first">A</font>lgebra
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Finite Machine Word Library</td></tr>
+        <td class="data" width="80%">Separata: Isabelle tactics for Separation Algebra</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Joel Beeren, Matthew Fernandez, Xin Gao, <a href="http://www.cse.unsw.edu.au/~kleing/">Gerwin Klein</a>, Rafal Kolanski, Japheth Lim, Corey Lewis, Daniel Matichuk and Thomas Sewell</td></tr>
+        <td class="data">Zhe Hou (zhe /dot/ hou /at/ ntu /dot/ edu /dot/ sg), David Sanan (sanan /at/ ntu /dot/ edu /dot/ sg), Alwen Tiu (ATiu /at/ ntu /dot/ edu /dot/ sg), Rajeev Gore (rajeev /dot/ gore /at/ anu /dot/ edu /dot/ au) and Ranald Clouston (ranald /dot/ clouston /at/ cs /dot/ au /dot/ dk)</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2016-06-09</td></tr>
+        <td class="data">2016-11-16</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
 
-This entry contains an extension to the Isabelle library for
-fixed-width machine words. In particular, the entry adds quickcheck setup
-for words, printing as hexadecimals, additional operations, reasoning
-about alignment, signed words, enumerations of words, normalisation of
-word numerals, and an extensive library of properties about generic
-fixed-width words, as well as an instantiation of many of these to the
-commonly used 32 and 64-bit bases.
+We bring the labelled sequent calculus $LS_{PASL}$ for propositional
+abstract separation logic to Isabelle. The tactics given here are
+directly applied on an extension of the Separation Algebra in the AFP.
+In addition to the cancellative separation algebra, we further
+consider some useful properties in the heap model of separation logic,
+such as indivisible unit, disjointness, and cross-split. The tactics
+are essentially a proof search procedure for the calculus $LS_{PASL}$.
+We wrap the tactics in an Isabelle method called separata, and give a
+few examples of separation logic formulae which are provable by
+separata.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{Word_Lib-AFP,
-  author  = {Joel Beeren and Matthew Fernandez and Xin Gao and Gerwin Klein and Rafal Kolanski and Japheth Lim and Corey Lewis and Daniel Matichuk and Thomas Sewell},
-  title   = {Finite Machine Word Library},
+			<pre>@article{Separata-AFP,
+  author  = {Zhe Hou and David Sanan and Alwen Tiu and Rajeev Gore and Ranald Clouston},
+  title   = {Separata: Isabelle tactics for Separation Algebra},
   journal = {Archive of Formal Proofs},
-  month   = jun,
+  month   = nov,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Word_Lib.shtml},
+  note    = {\url{http://isa-afp.org/entries/Separata.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -72,9 +77,9 @@ commonly used 32 and 64-bit bases.
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
+    <tr><td class="datahead">Depends on:</td>
+        <td class="data"><a href="Separation_Algebra.shtml">Separation_Algebra</a></td></tr>
 
-    <tr><td class="datahead">Used by:</td>
-        <td class="data"><a href="Complx.shtml">Complx</a>, <a href="IP_Addresses.shtml">IP_Addresses</a>, <a href="Iptables_Semantics.shtml">Iptables_Semantics</a></td></tr>
 
 
 
@@ -83,7 +88,7 @@ commonly used 32 and 64-bit bases.
 
 <p></p>
 
-<!--#set var="name" value="Word_Lib" -->
+<!--#set var="name" value="Separata" -->
 
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->

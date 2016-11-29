@@ -1,0 +1,12 @@
+chapter AFP
+
+session "Separata" (AFP) = "HOL" +
+  options [timeout = 250]
+  theories [document = false]
+    "~~/src/HOL/Eisbach/Eisbach_Tools"
+    "~~/src/HOL/Library/Multiset"
+    "../Separation_Algebra/Separation_Algebra"
+  theories
+    "Separata"
+  document_files
+    "root.tex"

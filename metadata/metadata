@@ -4900,6 +4900,24 @@ abstract =
   the LEON3 processor.  Our model is based on deterministic monad, which
   is a modified version of the non-deterministic monad from NICTA/l4v.
 
+[Separata]
+title = Separata: Isabelle tactics for Separation Algebra
+author = Zhe Hou <mailto:zhe.hou@ntu.edu.sg>, David Sanan <mailto:sanan@ntu.edu.sg>, Alwen Tiu <mailto:ATiu@ntu.edu.sg>, Rajeev Gore <mailto:rajeev.gore@anu.edu.au>, Ranald Clouston <mailto:ranald.clouston@cs.au.dk>
+notify = zhe.hou@ntu.edu.sg
+date = 2016-11-16
+topic = Computer Science/Programming Languages/Logics, Tools
+abstract =
+  We bring the labelled sequent calculus $LS_{PASL}$ for propositional
+  abstract separation logic to Isabelle. The tactics given here are
+  directly applied on an extension of the Separation Algebra in the AFP.
+  In addition to the cancellative separation algebra, we further
+  consider some useful properties in the heap model of separation logic,
+  such as indivisible unit, disjointness, and cross-split. The tactics
+  are essentially a proof search procedure for the calculus $LS_{PASL}$.
+  We wrap the tactics in an Isabelle method called separata, and give a
+  few examples of separation logic formulae which are provable by
+  separata.
+
 [LOFT]
 title = LOFT — Verified Migration of Linux Firewalls to SDN
 author = Julius Michaelis <http://liftm.de/>, Cornelius Diekmann <http://net.in.tum.de/~diekmann>
@@ -4964,4 +4982,26 @@ abstract =
   polished) development is covered in the book
   <a href="http://dx.doi.org/10.1007/978-3-319-10542-0">Concrete Semantics</a>.
 
+[Complx]
+title = COMPLX: A Verification Framework for Concurrent Imperative Programs
+author = Sidney Amani<>, June Andronick<>, Maksym Bortin<>, Corey Lewis<>, Christine Rizkallah<>, Joseph Tuong<>
+notify = sidney.amani@data61.csiro.au, corey.lewis@data61.csiro.au
+date = 2016-11-29
+topic = Computer Science/Programming Languages/Logics, Computer Science/Programming Languages/Language Definitions
+abstract = 
+  We propose a concurrency reasoning framework for imperative programs,
+  based on the Owicki-Gries (OG) foundational shared-variable
+  concurrency method. Our framework combines the approaches of
+  Hoare-Parallel, a formalisation of OG in Isabelle/HOL for a simple
+  while-language, and Simpl, a generic imperative language embedded in
+  Isabelle/HOL, allowing formal reasoning on C programs. We define the
+  Complx language, extending the syntax and semantics of Simpl with
+  support for parallel composition and synchronisation. We additionally
+  define an OG logic, which we prove sound w.r.t. the  semantics, and a
+  verification condition generator, both supporting involved low-level
+  imperative constructs such as function calls and abrupt termination.
+  We illustrate our framework on an example that features exceptions,
+  guards and function calls.  We aim to then target concurrent operating
+  systems, such as the interruptible eChronos embedded operating system
+  for which we already have a model-level OG proof using Hoare-Parallel.
 

@@ -53,10 +53,33 @@ is available <a href="citing.shtml">[here]</a>.
 	</tr>
 
 <tr><td class="entry">
+2016-11-29:
+<a href="entries/Complx.shtml">COMPLX: A Verification Framework for Concurrent Imperative Programs</a>
+<br>Author:
+Sidney Amani,
+June Andronick,
+Maksym Bortin,
+Corey Lewis,
+Christine Rizkallah and 
+Joseph Tuong
+</td></tr>
+
+<tr><td class="entry">
 2016-11-23:
 <a href="entries/Abs_Int_ITP2012.shtml">Abstract Interpretation of Annotated Commands</a>
 <br>Author:
 <a href="http://www.in.tum.de/~nipkow">Tobias Nipkow</a>
+</td></tr>
+
+<tr><td class="entry">
+2016-11-16:
+<a href="entries/Separata.shtml">Separata: Isabelle tactics for Separation Algebra</a>
+<br>Author:
+Zhe Hou,
+David Sanan,
+Alwen Tiu,
+Rajeev Gore and 
+Ranald Clouston
 </td></tr>
 
 <tr><td class="entry">

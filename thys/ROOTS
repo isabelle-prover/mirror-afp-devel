@@ -54,6 +54,7 @@ Coinductive_Languages
 Collections
 Compiling-Exceptions-Correctly
 Completeness
+Complx
 ComponentDependencies
 ConcurrentGC
 ConcurrentIMP
@@ -264,6 +265,7 @@ SIFUM_Type_Systems
 Secondary_Sylow
 Selection_Heap_Sort
 SenSocialChoice
+Separata
 Separation_Algebra
 Separation_Logic_Imperative_HOL
 SequentInvertibility

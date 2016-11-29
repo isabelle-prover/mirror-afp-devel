@@ -53,7 +53,7 @@ the checkers operate on binary decision trees and are reasonably efficient
     <tr><td class="datahead" valign="top">Change history:</td>
         <td class="abstract">
 
-[2015-09-23]: Salomon Sickert added an interface that does not require the usage of the Boolean formula datatype. Furthermore the general Mapping type is used instead of an associative list.
+[2015-09-23]: Salomon Sickert added an interface that does not require the usage of the Boolean formula datatype. Furthermore the general Mapping type is used instead of an association list.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
