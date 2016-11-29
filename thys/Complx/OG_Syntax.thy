@@ -235,13 +235,13 @@ print_translation \<open> let
   fun annbexp_tr' name (r :: (Const (@{const_syntax Collect}, _) $ t) :: ts) =
         annquote_tr' (Syntax.const name) (r :: t :: ts)
     | annbexp_tr' name x =
-        let val _ = if syntax_debug then writeln (PolyML.makestring x) else () in
+        let val _ = if syntax_debug then writeln (@{make_string} x) else () in
         raise Match end;
 
   fun annassign_tr' (r :: Abs (x, _, f $ k $ Bound 0) :: ts) =
         quote_tr' (Syntax.const @{syntax_const "_AnnAssign"} $ r $ Syntax_Trans.update_name_tr' f)
           (Abs (x, dummyT, Syntax_Trans.const_abs_tr' k) :: ts)
-    | annassign_tr' r = let val _ = writeln (PolyML.makestring r) in
+    | annassign_tr' r = let val _ = writeln (@{make_string} r) in
      raise Match end;
 
   fun dest_list (Const (@{const_syntax Nil}, _)) = []
@@ -354,7 +354,7 @@ print_translation \<open> let
                Const (@{const_syntax com}, _) $ p' :: ts) =
        let val _ = if syntax_debug then writeln "ann_com" else ()
           in if p = p' then p else raise Match end
-    | AnnCom_tr x = let val _ = if syntax_debug then writeln (PolyML.makestring x) else ()
+    | AnnCom_tr x = let val _ = if syntax_debug then writeln (@{make_string} x) else ()
           in raise Match end;
 
     fun oghoare_tr (gamma :: sigma :: F :: r :: c :: Q :: A :: ts) =
@@ -362,7 +362,7 @@ print_translation \<open> let
           in Syntax.const @{syntax_const "_oghoare"} $
                gamma $ sigma $ F $ new_AnnCom r c $ Q $ A
           end
-      | oghoare_tr x = let val _ = writeln (PolyML.makestring x)
+      | oghoare_tr x = let val _ = writeln (@{make_string} x)
             in raise Match end;
 
     fun oghoare_seq_tr (gamma :: sigma :: F :: P :: r :: c :: Q :: A :: ts) =
@@ -370,7 +370,7 @@ print_translation \<open> let
           in Syntax.const @{syntax_const "_oghoare_seq"} $
                gamma $ sigma $ F $ P $ new_AnnCom r c $ Q $ A
           end
-      | oghoare_seq_tr x = let val _ = writeln (PolyML.makestring x)
+      | oghoare_seq_tr x = let val _ = writeln (@{make_string} x)
             in raise Match end;
 
   in

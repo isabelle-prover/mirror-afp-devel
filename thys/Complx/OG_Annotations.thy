@@ -74,18 +74,7 @@ lemma "\<not>pre_par c  \<Longrightarrow> pre c \<in> pre_set c"
 
 lemma pre_set:
   "pre c = \<Inter> pre_set c"
-  apply (induct c)
-        apply (simp ; fail)+
-   apply (rule equalityI)
-    apply clarsimp
-    apply (drule meta_spec)+
-    apply (erule (1) meta_impE)
-    apply (erule meta_impE, rule fsts.intros)
-    apply simp
-    apply fastforce
-   apply clarsimp
-  apply simp
- done
+  by (induct c; fastforce)
 
 lemma pre_imp_pre_set:
   "s \<in> pre c \<Longrightarrow> a \<in> pre_set c \<Longrightarrow> s \<in> a"

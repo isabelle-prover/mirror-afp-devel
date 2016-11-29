@@ -68,13 +68,13 @@ where
 definition
   array_nat_sum :: "('a :: len0) word array \<Rightarrow> nat"
 where
-  "array_nat_sum arr \<equiv> listsum (map unat arr)"
+  "array_nat_sum arr \<equiv> sum_list (map unat arr)"
 
 definition
   "local_sum arr \<equiv> of_nat (min (unat MAXSUM) (array_nat_sum arr))"
 
 definition
-  "global_sum arr \<equiv> listsum (map local_sum arr)"
+  "global_sum arr \<equiv> sum_list (map local_sum arr)"
 
 definition
   "tarr_inv s i \<equiv>
@@ -274,7 +274,7 @@ lemma local_sum_MAXSUM:
   apply (rule min_absorb1[symmetric])
   apply (subst (asm) word_le_nat_alt)
   apply (rule le_trans[rotated])
-   apply (rule elem_le_listsum_nat)
+   apply (rule elem_le_sum_list_nat)
    apply simp
   apply clarsimp
  done

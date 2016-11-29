@@ -1510,8 +1510,7 @@ lemma oghoare_sound_Parallel_Normal_case[rule_format, OF _ refl refl]:
      apply (clarsimp simp: in_set_conv_nth)
      apply fastforce
     apply (drule oghoare_Skip)
-    apply clarsimp
-    apply blast
+    apply auto[1]
 --\<open>ParThrow\<close>
    apply clarsimp
    apply (frule no_steps_final, simp add: final_def)
