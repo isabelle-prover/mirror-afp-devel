@@ -4725,3 +4725,27 @@ abstract =
   contain binding names. The logic is generalized to treat different
   bisimulation variants such as early, late and open in a systematic
   way.
+
+[Complx]
+title = COMPLX: A Verification Framework for Concurrent Imperative Programs
+author = Sidney Amani<>, June Andronick<>, Maksym Bortin<>, Corey Lewis<>, Christine Rizkallah<>, Joseph Tuong<>
+notify = sidney.amani@data61.csiro.au, corey.lewis@data61.csiro.au
+date = 2016-11-29
+topic = Computer Science/Programming Languages/Logics, Computer Science/Programming Languages/Language Definitions
+abstract = 
+  We propose a concurrency reasoning framework for imperative programs,
+  based on the Owicki-Gries (OG) foundational shared-variable
+  concurrency method. Our framework combines the approaches of
+  Hoare-Parallel, a formalisation of OG in Isabelle/HOL for a simple
+  while-language, and Simpl, a generic imperative language embedded in
+  Isabelle/HOL, allowing formal reasoning on C programs. We define the
+  Complx language, extending the syntax and semantics of Simpl with
+  support for parallel composition and synchronisation. We additionally
+  define an OG logic, which we prove sound w.r.t. the  semantics, and a
+  verification condition generator, both supporting involved low-level
+  imperative constructs such as function calls and abrupt termination.
+  We illustrate our framework on an example that features exceptions,
+  guards and function calls.  We aim to then target concurrent operating
+  systems, such as the interruptible eChronos embedded operating system
+  for which we already have a model-level OG proof using Hoare-Parallel.
+

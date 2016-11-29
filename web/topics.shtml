@@ -211,6 +211,7 @@
 <a href="entries/FocusStreamsCaseStudies.shtml">FocusStreamsCaseStudies</a> &nbsp;
 <a href="entries/Isabelle_Meta_Model.shtml">Isabelle_Meta_Model</a> &nbsp;
 <a href="entries/Simpl.shtml">Simpl</a> &nbsp;
+<a href="entries/Complx.shtml">Complx</a> &nbsp;
 
 <strong>Lambda Calculi:</strong>&nbsp;<a href="entries/Launchbury.shtml">Launchbury</a> &nbsp;
 <a href="entries/PCF.shtml">PCF</a> &nbsp;
@@ -243,6 +244,7 @@
 <a href="entries/TLA.shtml">TLA</a> &nbsp;
 <a href="entries/Ribbon_Proofs.shtml">Ribbon_Proofs</a> &nbsp;
 <a href="entries/Separata.shtml">Separata</a> &nbsp;
+<a href="entries/Complx.shtml">Complx</a> &nbsp;
 
 <strong>Compiling:</strong>&nbsp;<a href="entries/Compiling-Exceptions-Correctly.shtml">Compiling-Exceptions-Correctly</a> &nbsp;
 <a href="entries/NormByEval.shtml">NormByEval</a> &nbsp;

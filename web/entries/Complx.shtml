@@ -24,45 +24,57 @@
 <div align="center">
 <p>&nbsp;</p>
 
-<h1><font class="first">F</font>inite
-<font class="first">M</font>achine
-<font class="first">W</font>ord
-<font class="first">L</font>ibrary
+<h1><font class="first">C</font>OMPLX:
+<font class="first">A</font>
+<font class="first">V</font>erification
+<font class="first">F</font>ramework
+for
+<font class="first">C</font>oncurrent
+<font class="first">I</font>mperative
+<font class="first">P</font>rograms
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Finite Machine Word Library</td></tr>
+        <td class="data" width="80%">COMPLX: A Verification Framework for Concurrent Imperative Programs</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Joel Beeren, Matthew Fernandez, Xin Gao, <a href="http://www.cse.unsw.edu.au/~kleing/">Gerwin Klein</a>, Rafal Kolanski, Japheth Lim, Corey Lewis, Daniel Matichuk and Thomas Sewell</td></tr>
+        <td class="data">Sidney Amani, June Andronick, Maksym Bortin, Corey Lewis, Christine Rizkallah and Joseph Tuong</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2016-06-09</td></tr>
+        <td class="data">2016-11-29</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
 
-This entry contains an extension to the Isabelle library for
-fixed-width machine words. In particular, the entry adds quickcheck setup
-for words, printing as hexadecimals, additional operations, reasoning
-about alignment, signed words, enumerations of words, normalisation of
-word numerals, and an extensive library of properties about generic
-fixed-width words, as well as an instantiation of many of these to the
-commonly used 32 and 64-bit bases.
+We propose a concurrency reasoning framework for imperative programs,
+based on the Owicki-Gries (OG) foundational shared-variable
+concurrency method. Our framework combines the approaches of
+Hoare-Parallel, a formalisation of OG in Isabelle/HOL for a simple
+while-language, and Simpl, a generic imperative language embedded in
+Isabelle/HOL, allowing formal reasoning on C programs. We define the
+Complx language, extending the syntax and semantics of Simpl with
+support for parallel composition and synchronisation. We additionally
+define an OG logic, which we prove sound w.r.t. the  semantics, and a
+verification condition generator, both supporting involved low-level
+imperative constructs such as function calls and abrupt termination.
+We illustrate our framework on an example that features exceptions,
+guards and function calls.  We aim to then target concurrent operating
+systems, such as the interruptible eChronos embedded operating system
+for which we already have a model-level OG proof using Hoare-Parallel.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{Word_Lib-AFP,
-  author  = {Joel Beeren and Matthew Fernandez and Xin Gao and Gerwin Klein and Rafal Kolanski and Japheth Lim and Corey Lewis and Daniel Matichuk and Thomas Sewell},
-  title   = {Finite Machine Word Library},
+			<pre>@article{Complx-AFP,
+  author  = {Sidney Amani and June Andronick and Maksym Bortin and Corey Lewis and Christine Rizkallah and Joseph Tuong},
+  title   = {COMPLX: A Verification Framework for Concurrent Imperative Programs},
   journal = {Archive of Formal Proofs},
-  month   = jun,
+  month   = nov,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Word_Lib.shtml},
+  note    = {\url{http://isa-afp.org/entries/Complx.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -72,9 +84,9 @@ commonly used 32 and 64-bit bases.
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
+    <tr><td class="datahead">Depends on:</td>
+        <td class="data"><a href="Word_Lib.shtml">Word_Lib</a></td></tr>
 
-    <tr><td class="datahead">Used by:</td>
-        <td class="data"><a href="Complx.shtml">Complx</a>, <a href="IP_Addresses.shtml">IP_Addresses</a>, <a href="Iptables_Semantics.shtml">Iptables_Semantics</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->
@@ -87,7 +99,7 @@ commonly used 32 and 64-bit bases.
 
 <p></p>
 
-<!--#set var="name" value="Word_Lib" -->
+<!--#set var="name" value="Complx" -->
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
