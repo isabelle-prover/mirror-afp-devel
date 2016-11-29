@@ -7,7 +7,8 @@
  *
  * @TAG(DATA61_BSD)
  *)
-chapter {* The COMPLX Syntax *}
+
+section {* The COMPLX Syntax *}
 
 theory Language
 imports Main
