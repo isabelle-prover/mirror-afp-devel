@@ -14,21 +14,10 @@ begin
 
 subsection \<open>Natural (Hessenberg) Product\<close>
 
-instantiation zhmultiset :: one
+instantiation zhmultiset :: comm_ring_1
 begin
 
 lift_definition one_zhmultiset :: zhmultiset is "{#0#}\<^sub>z" .
-
-instance
-  by intro_classes
-
-end
-
-lemma zhmset_of_1: "zhmset_of 1 = 1"
-  by (simp add: one_hmultiset_def one_zhmultiset_def)
-
-instantiation zhmultiset :: comm_ring_1
-begin
 
 lift_definition times_zhmultiset :: "zhmultiset \<Rightarrow> zhmultiset \<Rightarrow> zhmultiset" is
   "\<lambda>M N.
@@ -73,6 +62,9 @@ next
 qed
 
 end
+
+lemma zhmset_of_1: "zhmset_of 1 = 1"
+  by (simp add: one_hmultiset_def one_zhmultiset_def)
 
 lemma zhmset_of_times: "zhmset_of (A * B) = zhmset_of A * zhmset_of B"
   by transfer simp
@@ -239,7 +231,7 @@ lemma nonneg_le_mult_right_mono_zhmset:
   by (meson dual_order.trans leD mult_less_cancel_right2 not_le_imp_less)
 
 instance hmultiset :: ordered_cancel_comm_semiring
-  by intro_classes (simp add: mult_le_mono2_hmset)
+  by intro_classes
 
 instance hmultiset :: linordered_semiring_1_strict
   by intro_classes
@@ -248,13 +240,13 @@ instance hmultiset :: bounded_lattice_bot
   by intro_classes
 
 instance hmultiset :: zero_less_one
-  by intro_classes (simp add: zero_less_iff_neq_zero_hmset)
+  by intro_classes
 
 instance hmultiset :: linordered_nonzero_semiring
   by intro_classes
 
 instance hmultiset :: semiring_no_zero_divisors
-  by intro_classes (use mult_pos_pos not_gr_zero_hmset in blast)
+  by intro_classes
 
 lemma zero_lt_\<omega>\<^sub>z[simp]: "0 < \<omega>\<^sub>z"
   by (metis of_nat_lt_\<omega>\<^sub>z of_nat_0)
