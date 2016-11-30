@@ -19,7 +19,7 @@ the applicative encoding of higher-order terms and assigning the lowest preceden
 application symbol.
 \<close>
 
-locale rpo_app = gt_sym "op >\<^sub>s"
+locale kbo_app = gt_sym "op >\<^sub>s"
     for gt_sym :: "'s \<Rightarrow> 's \<Rightarrow> bool" (infix ">\<^sub>s" 50) +
   fixes
     wt_sym :: "'s \<Rightarrow> nat" and
