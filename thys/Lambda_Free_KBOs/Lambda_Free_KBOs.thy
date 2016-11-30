@@ -21,8 +21,8 @@ definition arity_sym :: "nat \<Rightarrow> enat" where
 definition arity_var :: "nat \<Rightarrow> enat" where
   "arity_var n = \<infinity>"
 
-definition ground_head_vars :: "nat \<Rightarrow> nat set" where
-  "ground_head_vars x = UNIV"
+definition ground_head_var :: "nat \<Rightarrow> nat set" where
+  "ground_head_var x = UNIV"
 
 definition gt_sym :: "nat \<Rightarrow> nat \<Rightarrow> bool" where
   "gt_sym g f \<longleftrightarrow> g > f"
@@ -45,14 +45,14 @@ definition coef_sym\<^sub>h :: "nat \<Rightarrow> nat \<Rightarrow> hmultiset" w
 sublocale app: kbo_app gt_sym wt_sym \<epsilon> len_lexext
   by unfold_locales (auto simp: gt_sym_def \<epsilon>_def wt_sym_def intro: wf_less[folded wfP_def])
 
-sublocale basic: kbo_basic gt_sym wt_sym \<epsilon> "\<lambda>f. len_lexext" ground_head_vars
-  by unfold_locales (auto simp: ground_head_vars_def gt_sym_def \<epsilon>_def wt_sym_def)
+sublocale basic: kbo_basic gt_sym wt_sym \<epsilon> "\<lambda>f. len_lexext" ground_head_var
+  by unfold_locales (auto simp: ground_head_var_def gt_sym_def \<epsilon>_def wt_sym_def)
 
-sublocale std: kbo_std ground_head_vars gt_sym \<epsilon> \<delta> "\<lambda>f. len_lexext" arity_sym arity_var wt_sym
+sublocale std: kbo_std ground_head_var gt_sym \<epsilon> \<delta> "\<lambda>f. len_lexext" arity_sym arity_var wt_sym
   by unfold_locales
-    (auto simp: arity_sym_def arity_var_def ground_head_vars_def \<epsilon>_def \<delta>_def wt_sym_def)
+    (auto simp: arity_sym_def arity_var_def ground_head_var_def \<epsilon>_def \<delta>_def wt_sym_def)
 
-sublocale sc: tkbo_coefs ground_head_vars gt_sym \<epsilon> \<delta> "\<lambda>f. len_lexext" arity_sym arity_var wt_sym\<^sub>h
+sublocale sc: tkbo_coefs ground_head_var gt_sym \<epsilon> \<delta> "\<lambda>f. len_lexext" arity_sym arity_var wt_sym\<^sub>h
     coef_sym\<^sub>h
   by unfold_locales (auto simp: \<epsilon>_def \<delta>_def wt_sym\<^sub>h_def coef_sym\<^sub>h_def)
 

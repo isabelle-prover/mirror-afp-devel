@@ -39,7 +39,7 @@ lemma ext_mono[mono]: "gt \<le> gt' \<Longrightarrow> ext gt \<le> ext gt'"
 fun wt :: "('s, 'v) tm \<Rightarrow> nat" where
   "wt (Hd (Var x)) = \<epsilon>"
 | "wt (Hd (Sym f)) = wt_sym f"
-| "wt (App s t) = wt s + wt t"
+| "wt (App s t) = wt s + wt t + \<epsilon>"
 
 inductive gt :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix ">\<^sub>t" 50) where
   gt_wt: "vars_mset t \<supseteq># vars_mset s \<Longrightarrow> wt t > wt s \<Longrightarrow> t >\<^sub>t s"
