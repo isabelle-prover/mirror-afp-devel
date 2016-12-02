@@ -74,7 +74,7 @@ proof -
     by (metis P_least)
 qed
 
-lemma Least_eq_0_enat[simp]: "P 0 \<Longrightarrow> (LEAST x :: enat. P x) = 0"
+lemma Least_eq_0_enat: "P 0 \<Longrightarrow> (LEAST x :: enat. P x) = 0"
   by (simp add: Least_equality)
 
 
@@ -346,21 +346,12 @@ lemma enat_the_enat_le: "enat (the_enat x) \<le> x"
 lemma enat_the_enat_minus_le: "enat (the_enat (x - y)) \<le> x"
   by (cases x; cases y; simp)
 
-lemma enat_le_imp_minus_le:
-  fixes k m n :: enat
-  assumes le: "k \<le> m"
-  shows "k - n \<le> m"
-proof -
-  have "\<And>e. e \<le> m \<or> \<not> e \<le> k"
-    using le by force
-  moreover have "m \<ge> 0 \<or> k = \<infinity>"
-    by force
-  ultimately show ?thesis
-    using le enat_the_enat_iden
-    by (metis diff_le_self enat_ord_code(1) enat_ord_simps(3) idiff_enat_enat idiff_infinity_right)
-qed
+lemma enat_le_imp_minus_le:"k \<le> m \<Longrightarrow> k - n \<le> m" for k m n :: enat
+  by (metis Groups.add_ac(2) enat_diff_diff_eq enat_ord_simps(3) enat_sub_add_same
+    enat_the_enat_iden enat_the_enat_minus_le idiff_0_right idiff_infinity idiff_infinity_right
+    order_trans_rules(23) plus_enat_simps(3))
 
-lemma add_diff_assoc2_enat: "m \<ge> n \<Longrightarrow> (m :: enat) - n + p = m + p - n"
+lemma add_diff_assoc2_enat: "m \<ge> n \<Longrightarrow> m - n + p = m + p - n" for m n p :: enat
   by (cases m; cases n; cases p; auto)
 
 lemma enat_mult_minus_distrib: "enat x * (y - z) = enat x * y - enat x * z"
