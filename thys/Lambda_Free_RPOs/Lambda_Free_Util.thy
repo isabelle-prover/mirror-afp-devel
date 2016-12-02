@@ -346,7 +346,7 @@ lemma enat_the_enat_le: "enat (the_enat x) \<le> x"
 lemma enat_the_enat_minus_le: "enat (the_enat (x - y)) \<le> x"
   by (cases x; cases y; simp)
 
-lemma enat_le_imp_minus_le:"k \<le> m \<Longrightarrow> k - n \<le> m" for k m n :: enat
+lemma enat_le_imp_minus_le: "k \<le> m \<Longrightarrow> k - n \<le> m" for k m n :: enat
   by (metis Groups.add_ac(2) enat_diff_diff_eq enat_ord_simps(3) enat_sub_add_same
     enat_the_enat_iden enat_the_enat_minus_le idiff_0_right idiff_infinity idiff_infinity_right
     order_trans_rules(23) plus_enat_simps(3))
