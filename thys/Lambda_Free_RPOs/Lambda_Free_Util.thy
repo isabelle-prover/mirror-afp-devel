@@ -54,9 +54,7 @@ lemma funpow_less_iter:
 
 subsection \<open>Least Operator\<close>
 
-lemma Least_eq[simp]:
-  fixes x :: "'a::order"
-  shows "(LEAST y. y = x) = x" and "(LEAST y. x = y) = x"
+lemma Least_eq[simp]: "(LEAST y. y = x) = x" and "(LEAST y. x = y) = x" for x :: "'a::order"
   by (blast intro: Least_equality)+
 
 lemma Least_in_nonempty_set_imp_ex:
@@ -107,8 +105,8 @@ proof -
     by (auto intro: fin dest!: infinite_super)
 
   have "\<not> acyclic ?R"
-    apply (rule notI, drule finite_acyclic_wf[OF fin_R], unfold wf_eq_minimal, drule spec[of _ A])
-    using ex_y nemp by blast
+    by (rule notI, drule finite_acyclic_wf[OF fin_R], unfold wf_eq_minimal, drule spec[of _ A],
+      use ex_y nemp in blast)
   thus ?thesis
     using R_sub_r acyclic_subset by auto
 qed
@@ -363,16 +361,13 @@ subsection \<open>Multisets\<close>
 lemma add_mset_lt_left_lt: "a < b \<Longrightarrow> add_mset a A < add_mset b A"
   unfolding less_multiset\<^sub>H\<^sub>O by auto
 
-lemma add_mset_le_left_le:
-  fixes a :: "'a :: linorder"
-  shows "a \<le> b \<Longrightarrow> add_mset a A \<le> add_mset b A"
+lemma add_mset_le_left_le: "a \<le> b \<Longrightarrow> add_mset a A \<le> add_mset b A" for a :: "'a :: linorder"
   unfolding less_multiset\<^sub>H\<^sub>O by auto
 
 lemma add_mset_lt_right_lt: "A < B \<Longrightarrow> add_mset a A < add_mset a B"
   unfolding less_multiset\<^sub>H\<^sub>O by auto
 
-lemma add_mset_le_right_le:
-  shows "A \<le> B \<Longrightarrow> add_mset a A \<le> add_mset a B"
+lemma add_mset_le_right_le: "A \<le> B \<Longrightarrow> add_mset a A \<le> add_mset a B"
   unfolding less_multiset\<^sub>H\<^sub>O by auto
 
 lemma add_mset_lt_lt_lt:
@@ -383,9 +378,7 @@ lemma add_mset_lt_lt_lt:
 lemma add_mset_lt_lt_le: "a < b \<Longrightarrow> A \<le> B \<Longrightarrow> add_mset a A < add_mset b B"
   using add_mset_lt_lt_lt le_neq_trans by fastforce
 
-lemma add_mset_lt_le_lt:
-  fixes a :: "'a :: linorder"
-  shows "a \<le> b \<Longrightarrow> A < B \<Longrightarrow> add_mset a A < add_mset b B"
+lemma add_mset_lt_le_lt: "a \<le> b \<Longrightarrow> A < B \<Longrightarrow> add_mset a A < add_mset b B" for a :: "'a :: linorder"
   using add_mset_lt_lt_lt by (metis add_mset_lt_right_lt le_less)
 
 lemma add_mset_le_le_le:
