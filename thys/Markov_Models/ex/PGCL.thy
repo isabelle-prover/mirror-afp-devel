@@ -6,6 +6,8 @@ theory PGCL
   imports "../Markov_Decision_Process"
 begin
 
+subsection \<open>Syntax\<close>
+
 datatype 's pgcl =
     Skip
   | Abort
@@ -15,6 +17,8 @@ datatype 's pgcl =
   | If "'s \<Rightarrow> bool" "'s pgcl" "'s pgcl"
   | Prob "bool pmf" "'s pgcl" "'s pgcl"
   | While "'s \<Rightarrow> bool" "'s pgcl"
+
+subsection \<open>Denotational Semantics\<close>
 
 primrec wp :: "'s pgcl \<Rightarrow> ('s \<Rightarrow> ennreal) \<Rightarrow> ('s \<Rightarrow> ennreal)" where
   "wp Skip f          = f"
@@ -33,6 +37,8 @@ lemma wp_mono: "mono (wp c)"
 
 abbreviation det :: "'s pgcl \<Rightarrow> 's \<Rightarrow> ('s pgcl \<times> 's) pmf set" ("\<lless> _, _ \<ggreater>") where
   "det c s \<equiv> {return_pmf (c, s)}"
+
+subsection \<open>Operational Semantics\<close>
 
 fun step :: "('s pgcl \<times> 's) \<Rightarrow> ('s pgcl \<times> 's) pmf set" where
   "step (Skip, s)        = \<lless>Skip, s\<ggreater>"
@@ -210,6 +216,8 @@ proof (rule antisym)
   finally show "step.E_inf (While g c, s) (r f) \<le> \<dots>"
     .
 qed
+
+subsection \<open>Equate Both Semantics\<close>
 
 lemma E_inf_r_eq_wp: "step.E_inf (c, s) (r f) = wp c f s"
 proof (induction c arbitrary: f s)

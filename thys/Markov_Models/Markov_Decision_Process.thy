@@ -11,7 +11,7 @@ definition "some_elem s = (SOME x. x \<in> s)"
 lemma some_elem_ne: "s \<noteq> {} \<Longrightarrow> some_elem s \<in> s"
   unfolding some_elem_def by (auto intro: someI)
 
-subsection {* Schedulers *}
+subsection {* Configurations *}
 
 text {*
 
@@ -147,7 +147,7 @@ qed
 
 (* TODO: show cfg is BNF -- the 's in scheduler is dead, but can be resurrected to live in cfg *)
 
-subsubsection {* Memoryless scheduler *}
+subsection {* Configuration with Memoryless Scheduler *}
 
 definition "memoryless_on f s = cfg_corec s f (\<lambda>_ t. t) s"
 
@@ -166,7 +166,7 @@ lemma set_K_cfg: "set_pmf (K_cfg cfg) = cont cfg ` set_pmf (action cfg)"
 lemma nn_integral_K_cfg: "(\<integral>\<^sup>+cfg. f cfg \<partial>K_cfg cfg) = (\<integral>\<^sup>+s. f (cont cfg s) \<partial>action cfg)"
   by (simp add: K_cfg_def map_pmf_rep_eq nn_integral_distr)
 
-subsection {* Markov Decision Process *}
+subsection {* MDP Kernel and Induced Configurations *}
 
 locale Markov_Decision_Process =
   fixes K :: "'s \<Rightarrow> 's pmf set"
@@ -217,6 +217,8 @@ sublocale MC: MC_syntax K_cfg .
 
 abbreviation St :: "'s stream measure" where
   "St \<equiv> stream_space (count_space UNIV)"
+
+subsection \<open>Trace Space\<close>
 
 definition "T cfg = distr (MC.T cfg) St (smap state)"
 
@@ -746,6 +748,8 @@ proof -
 qed
 
 end
+
+subsection \<open>Finite MDPs\<close>
 
 locale Finite_Markov_Decision_Process = Markov_Decision_Process K for K :: "'s \<Rightarrow> 's pmf set" +
   fixes S :: "'s set"
