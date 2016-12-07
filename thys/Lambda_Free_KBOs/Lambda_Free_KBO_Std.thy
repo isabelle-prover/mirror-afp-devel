@@ -955,12 +955,11 @@ proof (simp only: atomize_imp,
         hence "extf f (op >\<^sub>t) (args (subst \<rho> t)) (args (subst \<rho> s))"
           by (auto simp: hd_s_eq_hd_t intro: extf_compat_append_left)
       }
-      hence extf_subst: "\<forall>f \<in> ground_heads (head (subst \<rho> t)).
+      hence "\<forall>f \<in> ground_heads (head (subst \<rho> t)).
         extf f (op >\<^sub>t) (args (subst \<rho> t)) (args (subst \<rho> s))"
         by blast
-
-      show ?thesis
-        by (rule gt_same[OF vars_\<rho>s wt_\<rho>t_eq_\<rho>s hd_\<rho>t extf_subst])
+      thus ?thesis
+        by (rule gt_same[OF vars_\<rho>s wt_\<rho>t_eq_\<rho>s hd_\<rho>t])
     qed
   qed
 qed

@@ -1631,12 +1631,11 @@ proof (simp only: atomize_imp,
         hence "extf f (op >\<^sub>t) (args (subst \<rho> t)) (args (subst \<rho> s))"
           by (auto simp: hd_s_eq_hd_t intro: extf_compat_append_left)
       }
-      hence extf_subst: "\<forall>f \<in> ground_heads (head (subst \<rho> t)).
+      hence "\<forall>f \<in> ground_heads (head (subst \<rho> t)).
         extf f (op >\<^sub>t) (args (subst \<rho> t)) (args (subst \<rho> s))"
         by blast
-
-      show ?thesis
-        by (rule gt_same[OF wt_\<rho>t_ge_\<rho>s hd_\<rho>t extf_subst])
+      thus ?thesis
+        by (rule gt_same[OF wt_\<rho>t_ge_\<rho>s hd_\<rho>t])
     }
   qed
 qed
@@ -1644,7 +1643,7 @@ qed
 
 subsection \<open>Totality on Ground Terms\<close>
 
-lemma wt_gt_total_ground:
+lemma wt_total_ground:
   assumes
     gr_t: "ground t" and
     gr_s: "ground s"
@@ -1746,7 +1745,7 @@ proof (induct t arbitrary: s rule: tm_induct_apps)
     qed
   }
   ultimately show ?case
-    using wt_gt_total_ground[OF gr_t gr_s] by fast
+    using wt_total_ground[OF gr_t gr_s] by fast
 qed
 
 
@@ -1812,7 +1811,7 @@ proof -
       "{(s, t). ground t \<and> (gt_wt t s \<or> gt_diff t s \<or> gt_same t s)} =
        {(s, t). ground t \<and> gt_wt t s}
        \<union> {(s, t). ground t \<and> wt t =\<^sub>p wt s \<and> (gt_diff t s \<or> gt_same t s)}"
-      using gt_ge_tpoly_trans gt_tpoly_irrefl wt_ge_vars wt_gt_total_ground
+      using gt_ge_tpoly_trans gt_tpoly_irrefl wt_ge_vars wt_total_ground
       by (fastforce simp: gt_wt.simps gt_diff.simps gt_same.simps)
 
     obtain k1 where bad_diff_same:
