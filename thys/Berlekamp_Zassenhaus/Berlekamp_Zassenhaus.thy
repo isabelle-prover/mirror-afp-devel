@@ -101,9 +101,11 @@ proof -
   note n = find_exponent[OF p1, of "2 * abs ?lc * factor_bound f (degree_bound gs)",
     folded n_def]
   note bh = berlekamp_and_hensel_separated[OF prime cop sf refl berl n(2)]
+  have db: "degree_bound (berlekamp_hensel p n f) = degree_bound gs" unfolding bh
+    degree_bound_def max_factor_degree_def by simp
   note res = res[folded n_def bh(1)]
-  from zassenhaus_reconstruction[OF prime cop sf deg refl _ this] n bh
-  show ?thesis by (auto simp: degree_bound_def)
+  show ?thesis 
+    by (rule zassenhaus_reconstruction[OF prime cop sf deg refl _ res], insert n db, auto)
 qed
 
 end

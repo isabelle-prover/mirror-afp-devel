@@ -1351,6 +1351,118 @@ qed
 
 end
 
+datatype 'a factor_tree = Factor_Leaf 'a "int poly" | Factor_Node 'a "'a factor_tree" "'a factor_tree" 
+
+fun factor_node_info :: "'a factor_tree \<Rightarrow> 'a" where
+  "factor_node_info (Factor_Leaf i x) = i" 
+| "factor_node_info (Factor_Node i l r) = i" 
+  
+fun factors_of_factor_tree :: "'a factor_tree \<Rightarrow> int poly multiset" where
+  "factors_of_factor_tree (Factor_Leaf i x) = {#x#}" 
+| "factors_of_factor_tree (Factor_Node i l r) = factors_of_factor_tree l + factors_of_factor_tree r"
+  
+fun product_factor_tree :: "int \<Rightarrow> 'a factor_tree \<Rightarrow> int poly factor_tree" where
+  "product_factor_tree p (Factor_Leaf i x) = (Factor_Leaf x x)" 
+| "product_factor_tree p (Factor_Node i l r) = (let 
+    L = product_factor_tree p l;
+    R = product_factor_tree p r;
+    f = factor_node_info L;
+    g = factor_node_info R;
+    fg = poly_mod.Mp p (f * g) 
+   in Factor_Node fg L R)"
+  
+fun sub_trees :: "'a factor_tree \<Rightarrow> 'a factor_tree set" where
+  "sub_trees (Factor_Leaf i x) = {Factor_Leaf i x}" 
+| "sub_trees (Factor_Node i l r) = insert (Factor_Node i l r) (sub_trees l \<union> sub_trees r)" 
+  
+lemma sub_trees_refl[simp]: "t \<in> sub_trees t" by (cases t, auto)
+  
+lemma product_factor_tree: assumes "\<And> x. x \<in># factors_of_factor_tree t \<Longrightarrow> poly_mod.Mp p x = x" 
+  shows "u \<in> sub_trees (product_factor_tree p t) \<Longrightarrow> factor_node_info u = f \<Longrightarrow> 
+  poly_mod.Mp p f = f \<and> f = poly_mod.Mp p (prod_mset (factors_of_factor_tree u)) \<and> 
+  factors_of_factor_tree (product_factor_tree p t) = factors_of_factor_tree t" 
+  using assms
+proof (induct t arbitrary: u f)
+  case (Factor_Leaf i x u)
+  thus ?case by auto
+next
+  case (Factor_Node i l r u f)
+  interpret poly_mod p . 
+  let ?L = "product_factor_tree p l" 
+  let ?R = "product_factor_tree p r"
+  let ?f = "factor_node_info ?L"
+  let ?g = "factor_node_info ?R"
+  let ?fg = "Mp (?f * ?g)" 
+  have "Mp ?f = ?f \<and> ?f = Mp (prod_mset (factors_of_factor_tree ?L)) \<and>
+      (factors_of_factor_tree ?L) = (factors_of_factor_tree l)"      
+      by (rule Factor_Node(1)[OF sub_trees_refl refl], insert Factor_Node(5), auto)
+  hence IH1: "?f = Mp (prod_mset (factors_of_factor_tree ?L))" 
+      "(factors_of_factor_tree ?L) = (factors_of_factor_tree l)" by blast+
+  have "Mp ?g = ?g \<and> ?g = Mp (prod_mset (factors_of_factor_tree ?R)) \<and>
+      (factors_of_factor_tree ?R) = (factors_of_factor_tree r)" 
+      by (rule Factor_Node(2)[OF sub_trees_refl refl], insert Factor_Node(5), auto)
+  hence IH2: "?g = Mp (prod_mset (factors_of_factor_tree ?R))" 
+      "(factors_of_factor_tree ?R) = (factors_of_factor_tree r)" by blast+
+  have id: "(factors_of_factor_tree (product_factor_tree p (Factor_Node i l r))) =
+    (factors_of_factor_tree (Factor_Node i l r))" by (simp add: Let_def IH1 IH2)
+  from Factor_Node(3) consider (root) "u = Factor_Node ?fg ?L ?R" 
+    | (l) "u \<in> sub_trees ?L" | (r) "u \<in> sub_trees ?R" 
+    by (auto simp: Let_def)  
+  thus ?case
+  proof cases
+    case root
+    with Factor_Node have f: "f = ?fg" by auto
+    show ?thesis unfolding f root id by (simp add: Let_def ac_simps IH1 IH2)
+  next
+    case l
+    have "Mp f = f \<and> f = Mp (prod_mset (factors_of_factor_tree u))" 
+      using Factor_Node(1)[OF l Factor_Node(4)] Factor_Node(5) by auto
+    thus ?thesis unfolding id by blast
+  next
+    case r
+    have "Mp f = f \<and> f = Mp (prod_mset (factors_of_factor_tree u))" 
+      using Factor_Node(2)[OF r Factor_Node(4)] Factor_Node(5) by auto
+    thus ?thesis unfolding id by blast
+  qed
+qed
+
+fun create_factor_tree :: "int poly list \<Rightarrow> unit factor_tree" where
+  "create_factor_tree xs = (let n = length xs in if n \<le> 1 then Factor_Leaf () (hd xs)
+    else let i = n div 2;
+      xs1 = take i xs;
+      xs2 = drop i xs
+      in Factor_Node () (create_factor_tree xs1) (create_factor_tree xs2)
+      )" 
+  
+declare create_factor_tree.simps[simp del]
+  
+lemma create_factor_tree: "xs \<noteq> [] \<Longrightarrow> factors_of_factor_tree (create_factor_tree xs) = mset xs" 
+proof (induct xs rule: wf_induct[OF wf_measure[of length]])
+  case (1 xs)
+  from 1(2) have xs: "length xs \<noteq> 0" by auto
+  then consider (base) "length xs = 1" | (step) "length xs > 1" by linarith
+  thus ?case
+  proof cases
+    case base
+    then obtain x where xs: "xs = [x]" by (cases xs; cases "tl xs"; auto)
+    thus ?thesis by (auto simp: create_factor_tree.simps)
+  next
+    case step
+    let ?i = "length xs div 2" 
+    let ?xs1 = "take ?i xs" 
+    let ?xs2 = "drop ?i xs" 
+    from step have xs1: "(?xs1, xs) \<in> measure length" "?xs1 \<noteq> []" by auto
+    from step have xs2: "(?xs2, xs) \<in> measure length" "?xs2 \<noteq> []" by auto
+    from step have id: "create_factor_tree xs = Factor_Node () (create_factor_tree (take ?i xs))
+            (create_factor_tree (drop ?i xs))" unfolding create_factor_tree.simps[of xs] Let_def by auto
+    have xs: "xs = ?xs1 @ ?xs2" by auto
+    show ?thesis unfolding id arg_cong[OF xs, of mset] mset_append
+      using 1(1)[rule_format, OF xs1] 1(1)[rule_format, OF xs2]
+      by auto
+  qed
+qed
+  
+
 context
   fixes p pn :: int
   and lg_n :: nat
@@ -1362,26 +1474,23 @@ definition quadratic_hensel_binary :: "int poly \<Rightarrow> int poly \<Rightar
      (D',H') = quadratic_hensel_main C lg_n p S T D H
      in if two_lg_n_is_n then (D',H') else let Mo = poly_mod.Mp pn in (Mo D', Mo H'))" 
 
-fun hensel_lifting_main :: "int poly \<Rightarrow> int poly list \<Rightarrow> int poly list" where
-  "hensel_lifting_main u vs' = (let n = length vs' in if n \<le> 1 then if n = 1 then [u] else []
-    else let 
-      i = n div 2;
-      vs_1 = take i vs';
-      vs_2 = drop i vs';
-      Mp = poly_mod.Mp p;
-      v = Mp (prod_list vs_1); 
-      w = Mp (prod_list vs_2); 
-      (V,W) = quadratic_hensel_binary u v w
-      in hensel_lifting_main V vs_1 @ hensel_lifting_main W vs_2)"
+fun hensel_lifting_main :: "int poly \<Rightarrow> int poly factor_tree \<Rightarrow> int poly list" where
+  "hensel_lifting_main U (Factor_Leaf _ _) = [U]"
+| "hensel_lifting_main U (Factor_Node _ l r) = (let 
+    v = factor_node_info l;
+    w = factor_node_info r;
+    (V,W) = quadratic_hensel_binary U v w
+    in hensel_lifting_main V l @ hensel_lifting_main W r)"
 end
 
 definition hensel_lifting_monic :: "int \<Rightarrow> nat \<Rightarrow> int poly \<Rightarrow> int poly list \<Rightarrow> int poly list" where
-  "hensel_lifting_monic p n u vs = (let 
+  "hensel_lifting_monic p n u vs = (if vs = [] then [] else let 
      pn = p^n; 
      lg_n = log_ceiling 2 n;
      two_lg_n_is_n = (2^lg_n = n);
-     C = poly_mod.Mp pn u     
-     in hensel_lifting_main p pn lg_n two_lg_n_is_n C vs)" 
+     C = poly_mod.Mp pn u;
+     tree = product_factor_tree p (create_factor_tree vs)
+     in hensel_lifting_main p pn lg_n two_lg_n_is_n C tree)" 
 
 locale poly_mod_prime_hensel = poly_mod p for p :: int +
   fixes pn n lg_n two_lg_n_is_n
@@ -1454,131 +1563,135 @@ proof -
 qed
 
 lemma hensel_main: 
-  assumes eq: "equivalent C (prod_list Fs)"
-  and "\<And> F. F \<in> set Fs \<Longrightarrow> Mp F = F \<and> monic F"  
+  assumes eq: "equivalent C (prod_mset (factors_of_factor_tree Fs))"
+  and "\<And> F. F \<in># factors_of_factor_tree Fs \<Longrightarrow> Mp F = F \<and> monic F"  
   and hensel_result: "hensel_main C Fs = Gs" 
   and C: "monic C" "poly_mod.Mp (p^n) C = C" 
   and sf: "square_free_m C" 
+  and "\<And> f t. t \<in> sub_trees Fs \<Longrightarrow> factor_node_info t = f \<Longrightarrow> f = Mp (prod_mset (factors_of_factor_tree t))"
   shows "poly_mod.equivalent (p^n) C (prod_list Gs) (* the main result: equivalence mod p^n *)
-    \<and> length Fs = length Gs
-    \<and> (\<forall> G. G \<in> set Gs \<longrightarrow> monic G \<and> poly_mod.Mp (p^n) G = G)
-    \<and> (\<forall> F G. (F,G) \<in> set (zip Fs Gs) \<longrightarrow> equivalent F G)"
+    \<and> factors_of_factor_tree Fs = mset (map Mp Gs)
+    \<and> (\<forall> G. G \<in> set Gs \<longrightarrow> monic G \<and> poly_mod.Mp (p^n) G = G)"
   using assms
-proof (induct Fs arbitrary: C Gs rule: wf_induct[OF wf_measure[of length]])
-  case (1 Fs C Gs)
-  note simps = hensel_lifting_main.simps[of p pn lg_n two_lg_n_is_n C Fs]
-  note IH = 1(1)[rule_format]
-  note res = 1(4)[unfolded simps Let_def]
-  note eq = 1(2)
-  note Fs = 1(3)
-  note C = 1(5,6)
-  note sf = 1(7)
-  let ?n = "length Fs" 
-  show ?case
-  proof (cases "?n \<le> 1")
-    case True
-    show ?thesis
-    proof (cases "?n = 1")
-      case True
-      with res have Gs: "Gs = [C]" by auto
-      from True obtain F where F: "Fs = [F]" by (cases Fs, auto)
-      with eq Fs[of F] Gs C show ?thesis by (auto simp: poly_mod.equivalent_def)
-    next
-      case False
-      with True have Fs: "Fs = []" by (cases Fs, auto)
-      from False True res have Gs: "Gs = []" by auto
-      from eq C have "Mp C = 1" unfolding Fs by (simp add: poly_mod.equivalent_def)
-      hence "degree (Mp C) = 0" by simp
-      with degree_m_eq_monic[OF C(1) m1] have "degree C = 0" unfolding degree_m_def by simp
-      with C(1) have "C = 1" using monic_degree_0 by blast
-      thus ?thesis using C eq unfolding Fs Gs by (simp add: poly_mod.equivalent_def)
-    qed
-  next
-    case False
-    let ?Mp = "poly_mod.Mp (p^n)" 
-    define D where "D \<equiv> take (?n div 2) Fs" 
-    define H where "H \<equiv> drop (?n div 2) Fs" 
-    have FDH: "Fs = D @ H" unfolding D_def H_def by simp
-    let ?D = "Mp (prod_list D)" 
-    let ?H = "Mp (prod_list H)"
-    obtain A B where hen: "hensel_binary C ?D ?H = (A,B)" by force
-    obtain AD where AD': "AD = hensel_main A D" by auto
-    obtain BH where BH': "BH = hensel_main B H" by auto
-    from square_free_m_cong[OF sf, of "prod_list D * prod_list H"] eq[unfolded FDH]
-    have sf': "square_free_m (prod_list D * prod_list H)" by (auto simp: equivalent_def)
-    from poly_mod_prime.square_free_m_prod_imp_coprime_m[OF _ this]
-    have "coprime_m (prod_list D) (prod_list H)" unfolding poly_mod_prime_def using prime .
-    hence cop': "coprime_m ?D ?H" unfolding coprime_m_def dvdm_def equivalent_def Mp_Mp .
-    from eq have eq': "equivalent C (?D * ?H)" unfolding FDH by (simp add: equivalent_def)
-    have step: "poly_mod.equivalent (p ^ n) C (A * B) \<and> monic A \<and> equivalent ?D A \<and>
-       equivalent ?H B \<and> ?Mp A = A \<and> ?Mp B = B" 
-      by (rule hensel_binary[OF cop' eq' Mp_Mp Mp_Mp monic_Mp[OF monic_prod_list] hen],
-        insert Fs, auto simp: FDH)
-    from res[folded D_def H_def, unfolded hen split] False 
-    have Gs: "Gs = AD @ BH" by (simp add: AD' BH')
-    have AD: "equivalent A (prod_list D)" "?Mp A = A"  and monA: "monic A"
-      using step by (auto simp: equivalent_def)
-    from False have lenD: "(D,Fs) \<in> measure length" unfolding D_def by auto
-    note sf_fact = square_free_m_factor[OF sf']
-    from square_free_m_cong[OF sf_fact(1)] AD have sfA: "square_free_m A" unfolding equivalent_def by auto 
-    have IH1: "poly_mod.equivalent (p ^ n) A (prod_list AD) \<and>
-      length D = length AD \<and>
-      (\<forall>G. G \<in> set AD \<longrightarrow> monic G \<and> ?Mp G = G) \<and>
-      (\<forall>F G. (F, G) \<in> set (zip D AD) \<longrightarrow> equivalent F G)" 
-      by (rule IH[OF lenD AD(1) _ AD'[symmetric] monA AD(2) sfA],
-        insert Fs, auto simp: FDH)
-    from False have lenH: "(H,Fs) \<in> measure length" unfolding H_def by auto
-    have BH: "equivalent B (prod_list H)" "poly_mod.Mp (p ^ n) B = B"
-      using step by (auto simp: equivalent_def)
-    from step have "poly_mod.equivalent (p ^ n) C (A * B)" by simp
-    hence "?Mp C = ?Mp (A * B)" by (simp add: poly_mod.equivalent_def)
-    with C monA AD(2) BH(2) have monB: "monic B"
-      by (metis (no_types, lifting) coeff_degree_mult degree_map_poly leading_coeff_neq_0  
-       mult.commute mult.right_neutral poly_mod.M_0 poly_mod.Mp_coeff poly_mod.Mp_def)
-    from square_free_m_cong[OF sf_fact(2)] BH have sfB: "square_free_m B" unfolding equivalent_def by auto 
-    have IH2: "poly_mod.equivalent (p ^ n) B (prod_list BH) \<and>
-      length H = length BH \<and>
-      (\<forall>G. G \<in> set BH \<longrightarrow> monic G \<and> ?Mp G = G) \<and>
-      (\<forall>F G. (F, G) \<in> set (zip H BH) \<longrightarrow> equivalent F G)" 
-      by (rule IH[OF lenH BH(1) _ BH'[symmetric] monB BH(2) sfB],
-        insert Fs, auto simp: FDH)
-    from step have "?Mp C = ?Mp (?Mp A * ?Mp B)" by (auto simp: poly_mod.equivalent_def) 
-    also have "?Mp A = ?Mp (prod_list AD)" using IH1 by (auto simp: poly_mod.equivalent_def)
-    also have "?Mp B = ?Mp (prod_list BH)" using IH2 by (auto simp: poly_mod.equivalent_def)
-    finally have "poly_mod.equivalent (p ^ n) C (prod_list AD * prod_list BH)" 
-      by (auto simp: poly_mod.equivalent_def poly_mod.mult_Mp)
-    thus ?thesis unfolding Gs FDH using IH1 IH2 by (auto simp: poly_mod.equivalent_def)
-  qed
+proof (induct Fs arbitrary: C Gs)
+  case (Factor_Leaf f fs C Gs)
+  thus ?case by (auto simp: poly_mod.equivalent_def)
+next
+  case (Factor_Node f l r C Gs) note * = this
+  note simps = hensel_lifting_main.simps
+  note IH1 = *(1)[rule_format]
+  note IH2 = *(2)[rule_format]
+  note res = *(5)[unfolded simps Let_def]
+  note eq = *(3)
+  note Fs = *(4)
+  note C = *(6,7)
+  note sf = *(8)
+  note inv = *(9)
+  let ?Mp = "poly_mod.Mp (p^n)" 
+  define D where "D \<equiv> prod_mset (factors_of_factor_tree l)" 
+  define H where "H \<equiv> prod_mset (factors_of_factor_tree r)" 
+  let ?D = "Mp D" 
+  let ?H = "Mp H"
+  let ?D' = "factor_node_info l" 
+  let ?H' = "factor_node_info r" 
+  obtain A B where hen: "hensel_binary C ?D' ?H' = (A,B)" by force
+  note res = res[unfolded hen split]  
+  obtain AD where AD': "AD = hensel_main A l" by auto
+  obtain BH where BH': "BH = hensel_main B r" by auto
+  from inv[of l, OF _ refl] have D': "?D' = ?D" unfolding D_def by auto
+  from inv[of r, OF _ refl] have H': "?H' = ?H" unfolding H_def by auto
+  from eq[unfolded equivalent_def, simplified]
+  have eq': "Mp C = Mp (?D * ?H)" unfolding D_def H_def by simp
+  from square_free_m_cong[OF sf, of "?D * ?H", OF eq'] 
+  have sf': "square_free_m (?D * ?H)" .
+  from poly_mod_prime.square_free_m_prod_imp_coprime_m[OF _ this]
+  have cop': "coprime_m ?D ?H" unfolding poly_mod_prime_def using prime .
+  from eq' have eq': "equivalent C (?D * ?H)" by (simp add: equivalent_def)
+  have monD: "monic D" unfolding D_def by (rule monic_prod_mset, insert Fs, auto)
+  from hensel_binary[OF _ _ _ _ _ hen, unfolded D' H', OF cop' eq' Mp_Mp Mp_Mp monic_Mp[OF monD]] 
+  have step: "poly_mod.equivalent (p ^ n) C (A * B) \<and> monic A \<and> equivalent ?D A \<and>
+     equivalent ?H B \<and> ?Mp A = A \<and> ?Mp B = B" .
+  from res have Gs: "Gs = AD @ BH" by (simp add: AD' BH')
+  have AD: "equivalent A ?D" "?Mp A = A" "equivalent A (prod_mset (factors_of_factor_tree l))"  
+    and monA: "monic A"
+    using step by (auto simp: equivalent_def D_def)
+  note sf_fact = square_free_m_factor[OF sf']
+  from square_free_m_cong[OF sf_fact(1)] AD have sfA: "square_free_m A" unfolding equivalent_def by auto
+  have IH1: "poly_mod.equivalent (p ^ n) A (prod_list AD) \<and>
+    factors_of_factor_tree l = mset (map Mp AD) \<and>
+    (\<forall>G. G \<in> set AD \<longrightarrow> monic G \<and> ?Mp G = G)"
+    by (rule IH1[OF AD(3) Fs AD'[symmetric] monA AD(2) sfA inv], auto)
+  have BH: "equivalent B ?H" "poly_mod.Mp (p ^ n) B = B" "equivalent B (prod_mset (factors_of_factor_tree r))"
+      using step by (auto simp: equivalent_def H_def)
+  from step have "poly_mod.equivalent (p ^ n) C (A * B)" by simp
+  hence "?Mp C = ?Mp (A * B)" by (simp add: poly_mod.equivalent_def)
+  with C monA AD(2) BH(2) have monB: "monic B"
+    by (metis (no_types, lifting) coeff_degree_mult degree_map_poly leading_coeff_neq_0  
+     mult.commute mult.right_neutral poly_mod.M_0 poly_mod.Mp_coeff poly_mod.Mp_def)
+  from square_free_m_cong[OF sf_fact(2)] BH have sfB: "square_free_m B" unfolding equivalent_def by auto 
+  have IH2: "poly_mod.equivalent (p ^ n) B (prod_list BH) \<and>
+      factors_of_factor_tree r = mset (map Mp BH) \<and>
+      (\<forall>G. G \<in> set BH \<longrightarrow> monic G \<and> ?Mp G = G)" 
+    by (rule IH2[OF BH(3) Fs BH'[symmetric] monB BH(2) sfB inv], auto)
+  from step have "?Mp C = ?Mp (?Mp A * ?Mp B)" by (auto simp: poly_mod.equivalent_def) 
+  also have "?Mp A = ?Mp (prod_list AD)" using IH1 by (auto simp: poly_mod.equivalent_def)
+  also have "?Mp B = ?Mp (prod_list BH)" using IH2 by (auto simp: poly_mod.equivalent_def)
+  finally have "poly_mod.equivalent (p ^ n) C (prod_list AD * prod_list BH)" 
+    by (auto simp: poly_mod.equivalent_def poly_mod.mult_Mp)
+  thus ?case unfolding Gs using IH1 IH2 by (auto simp: poly_mod.equivalent_def)
 qed
 end
 
 lemma hensel_lifting_monic: 
   assumes eq: "poly_mod.equivalent p C (prod_list Fs)"
   and Fs: "\<And> F. F \<in> set Fs \<Longrightarrow> poly_mod.Mp p F = F \<and> monic F"  
-  and hensel_result: "hensel_lifting_monic p n C Fs = Gs" 
+  and res: "hensel_lifting_monic p n C Fs = Gs" 
   and mon: "monic (poly_mod.Mp (p^n) C)" 
   and prime: "prime p" 
   and sf: "poly_mod.square_free_m p C"
   and n: "n \<noteq> 0" 
   shows "poly_mod.equivalent (p^n) C (prod_list Gs)"
-    "length Fs = length Gs"
-    "\<And> G. G \<in> set Gs \<Longrightarrow> monic G \<and> poly_mod.Mp (p^n) G = G"
-    "\<And> F G. (F,G) \<in> set (zip Fs Gs) \<Longrightarrow> poly_mod.equivalent p F G"
+    "mset (map (poly_mod.Mp p) Gs) = mset Fs" 
+    "G \<in> set Gs \<Longrightarrow> monic G \<and> poly_mod.Mp (p^n) G = G"
 proof -
+  note res = res[unfolded hensel_lifting_monic_def Let_def]
   let ?Mp = "poly_mod.Mp (p ^ n)" 
+  let ?C = "?Mp C" 
   interpret poly_mod_prime_hensel p "p^n" n "log_ceiling 2 n" "2^(log_ceiling 2 n) = n"
     by (unfold_locales, insert n prime, auto)
-  from hensel_result[unfolded hensel_lifting_monic_def Let_def]
-  have hen: "hensel_main (?Mp C) Fs = Gs" by simp
+  interpret pn: poly_mod_2 "p^n" using m1 n poly_mod_2.intro by auto
   from eq n have eq: "equivalent (?Mp C) (prod_list Fs)"
-      using Mp_Mp_pow_is_Mp eq m1 n poly_mod.equivalent_def by force
-  have "Mp C = Mp (?Mp C)" using n by (simp add: Mp_Mp_pow_is_Mp m1)
-  from hensel_main[OF eq Fs hen mon poly_mod.Mp_Mp square_free_m_cong[OF sf this]]
-  show "poly_mod.equivalent (p^n) C (prod_list Gs)"
-    "length Fs = length Gs"
-    "\<And> G. G \<in> set Gs \<Longrightarrow> monic G \<and> poly_mod.Mp (p^n) G = G"
-    "\<And> F G. (F,G) \<in> set (zip Fs Gs) \<Longrightarrow> poly_mod.equivalent p F G" 
-    by (auto simp: poly_mod.equivalent_def poly_mod.Mp_Mp)
+    using Mp_Mp_pow_is_Mp eq m1 n poly_mod.equivalent_def by force
+  have "poly_mod.equivalent (p^n) C (prod_list Gs) \<and> mset (map (poly_mod.Mp p) Gs) = mset Fs
+    \<and> (G \<in> set Gs \<longrightarrow> monic G \<and> poly_mod.Mp (p^n) G = G)" 
+  proof (cases "Fs = []")
+    case True
+    with res have Gs: "Gs = []" by auto
+    from eq have "Mp ?C = 1" unfolding True by (simp add: poly_mod.equivalent_def)
+    hence "degree (Mp ?C) = 0" by simp
+    with degree_m_eq_monic[OF mon m1] have "degree ?C = 0" unfolding degree_m_def by simp
+    with mon have "?C = 1" using monic_degree_0 by blast
+    thus ?thesis unfolding True Gs poly_mod.equivalent_def by auto
+  next
+    case False
+    with res have hen: "hensel_main ?C (product_factor_tree p (create_factor_tree Fs)) = Gs" by auto
+    note tree = create_factor_tree[OF False]
+    let ?t = "create_factor_tree Fs" 
+    have tree1: "x \<in># factors_of_factor_tree ?t \<Longrightarrow> Mp x = x" for x unfolding tree using Fs by auto
+    from product_factor_tree[OF tree1 sub_trees_refl refl, of ?t]
+    have id: "(factors_of_factor_tree (product_factor_tree p ?t)) =
+        (factors_of_factor_tree ?t)" by auto
+    have eq: "equivalent ?C (prod_mset (factors_of_factor_tree (product_factor_tree p (create_factor_tree Fs))))"
+      unfolding id tree using eq by auto  
+    have id': "Mp C = Mp ?C" using n by (simp add: Mp_Mp_pow_is_Mp m1)
+    have "pn.equivalent ?C (prod_list Gs) \<and> mset Fs = mset (map Mp Gs) \<and> (\<forall>G. G \<in> set Gs \<longrightarrow> monic G \<and> pn.Mp G = G)"
+      by (rule hensel_main[OF eq Fs hen mon pn.Mp_Mp square_free_m_cong[OF sf id'], unfolded id tree],
+      insert product_factor_tree[OF tree1], auto)
+    thus ?thesis by (auto simp: poly_mod.equivalent_def)
+  qed
+  thus "poly_mod.equivalent (p^n) C (prod_list Gs)"
+    "mset (map (poly_mod.Mp p) Gs) = mset Fs" 
+    "G \<in> set Gs \<Longrightarrow> monic G \<and> poly_mod.Mp (p^n) G = G" by blast+
 qed
 
 definition hensel_lifting :: "int \<Rightarrow> nat \<Rightarrow> int poly \<Rightarrow> int poly list \<Rightarrow> int poly list" where 
@@ -1598,7 +1711,7 @@ lemma hensel_lifting: assumes
   and c: "c \<in> {0..<p}" 
   and norm: "(\<forall>fi\<in>set fs. set (coeffs fi) \<subseteq> {0..<p})" 
 shows "poly_mod.factorization_m (p^n) f (lead_coeff f, mset gs)" (* factorization mod p^n *)
-    "map degree fs = map degree gs"                              (* degrees stay the same *)
+    "sort (map degree fs) = sort (map degree gs)"                (* degrees stay the same *)
     "\<And> g. g \<in> set gs \<Longrightarrow> monic g \<and> poly_mod.Mp (p^n) g = g \<and>    (* monic and normalized *)
       poly_mod.irreducible_m p g \<and>                               (* irreducibility even mod p *)
       poly_mod.degree_m p g = degree g"   (* mod p does not change degree of g *)     
@@ -1659,7 +1772,7 @@ proof -
       by auto
   } note fs = this
   note hen = hensel_lifting_monic[OF eq fs hen mon prime sf n]
-  from hen(2) have len: "length fs = length gs" by auto
+  from hen(2) have gs_fs: "mset (map Mp gs) = mset fs" by auto
   have eq: "q.equivalent f (smult ?lc (prod_list gs))" 
     unfolding q.equivalent_def f using arg_cong[OF hen(1)[unfolded q.equivalent_def], 
     of "\<lambda> f. q.Mp (smult ?lc f)"] by simp
@@ -1667,9 +1780,9 @@ proof -
     fix g 
     assume g: "g \<in> set gs"
     from hen(3)[OF _ g] have mon_g: "monic g" and Mp_g: "q.Mp g = g" by auto
-    from g obtain f where fg: "(f,g) \<in> set (zip fs gs)" and f: "f \<in> set fs" unfolding set_zip 
-      unfolding set_conv_nth len by auto
-    from hen(4)[OF _ fg] have fg: "equivalent f g" by auto
+    from g have "Mp g \<in># mset (map Mp gs)" by auto
+    from this[unfolded gs_fs] obtain f where f: "f \<in> set fs" and fg: "equivalent f g" 
+      unfolding equivalent_def by auto
     from mon_fs f fs have irr_f: "irreducible_m f" and mon_f: "monic f" and Mp_f: "Mp f = f" by auto
     have deg: "degree_m g = degree g" 
       by (rule degree_m_eq_monic[OF mon_g m1])
@@ -1685,24 +1798,15 @@ proof -
     from g[OF this]
     show "monic g \<and> q.Mp g = g \<and> irreducible_m g \<and> degree_m g = degree g" by auto
   }
-  show "map degree fs = map degree gs"
-  proof (intro nth_equalityI allI impI; unfold length_map)
-    show "length fs = length gs" using len by simp
-    fix i
-    assume i: "i < length fs" 
-    with len have zip: "(fs ! i, gs ! i) \<in> set (zip fs gs)" and i': "i < length gs" 
-      and mem: "fs ! i \<in> set fs" "gs ! i \<in> set gs" 
-      using in_set_conv_nth by fastforce+
-    from g[OF mem(2)]
-    have mon: "monic (gs ! i)" by auto
-    from hen(4)[OF _ zip] have eq: "equivalent (fs ! i) (gs ! i)" by auto
-    have "map degree fs ! i = map degree gs ! i \<longleftrightarrow> degree (fs ! i) = degree (gs ! i)" 
-      using i i' by auto
-    also have "degree (fs ! i) = degree (Mp (fs ! i))" using fs[OF mem(1)] by simp
-    also have "\<dots> = degree (Mp (gs ! i))" using eq unfolding equivalent_def by auto
-    also have "\<dots> = degree (gs ! i)" using mon by (rule monic_degree_Mp)
-    finally show "map degree fs ! i = map degree gs ! i" by simp
-  qed
+  show "sort (map degree fs) = sort (map degree gs)" 
+  proof (rule sort_key_eq_sort_key)
+    have "mset (map degree fs) = image_mset degree (mset fs)" by auto
+    also have "\<dots> = image_mset degree (mset (map Mp gs))" unfolding gs_fs ..
+    also have "\<dots> = mset (map degree (map Mp gs))" unfolding mset_map ..
+    also have "map degree (map Mp gs) = map degree_m gs" unfolding degree_m_def by auto
+    also have "\<dots> = map degree gs" using g(3) by auto
+    finally show "mset (map degree fs) = mset (map degree gs)" .
+  qed auto
   show "q.factorization_m f (lead_coeff f, mset gs)" 
     using eq g unfolding q.factorization_m_def by auto
 qed

@@ -34,7 +34,7 @@ lemma berlekamp_hensel_main: assumes
   and sf: "poly_mod.square_free_m p f" 
   and berl: "finite_field_factorization_int p f = (c,fs)" 
 shows "poly_mod.factorization_m (p ^ n) f (lead_coeff f, mset gs)" (* factorization mod p^n *)
-    "map degree fs = map degree gs" 
+    "sort (map degree fs) = sort (map degree gs)"
     "\<And> g. g \<in> set gs \<Longrightarrow> monic g \<and> poly_mod.Mp (p^n) g = g \<and>  (* monic and normalized *)
       poly_mod.irreducible_m p g \<and> (* irreducibility even mod p *)
       poly_mod.degree_m p g = degree g"   (* mod p does not change degree of g *)     
@@ -46,7 +46,7 @@ proof -
     by (auto simp: poly_mod.unique_factorization_m_alt_def)
   note hen = hensel_lifting[OF prime n hen cop sf, OF this]
   show "poly_mod.factorization_m (p ^ n) f (lead_coeff f, mset gs)" 
-    "map degree fs = map degree gs" 
+    "sort (map degree fs) = sort (map degree gs)"
     "\<And> g. g \<in> set gs \<Longrightarrow> monic g \<and> poly_mod.Mp (p^n) g = g \<and>  
       poly_mod.irreducible_m p g \<and> 
       poly_mod.degree_m p g = degree g" using hen by auto
@@ -76,12 +76,12 @@ lemma berlekamp_and_hensel_separated: assumes
   and berl: "finite_field_factorization_int p f = (c,fs)" 
   and n: "n \<noteq> 0" 
 shows "berlekamp_hensel p n f = gs" 
-  "map degree fs = map degree gs" 
+  "sort (map degree fs) = sort (map degree gs)" 
 proof -
   show "berlekamp_hensel p n f = gs" unfolding res[symmetric]
     berlekamp_hensel_def hensel_lifting_def berl split Let_def ..
-  from berlekamp_hensel_main[OF prime n this cop sf berl] show "map degree fs = map degree gs"
-    by auto
+  from berlekamp_hensel_main[OF prime n this cop sf berl] show "sort (map degree fs) = sort (map degree gs)"
+    by auto 
 qed
 
   
@@ -578,13 +578,13 @@ lemma hensel_lifting_unique: assumes
   and c: "c \<in> {0..<p}" 
   and norm: "(\<forall>fi\<in>set fs. set (coeffs fi) \<subseteq> {0..<p})" 
 shows "poly_mod.unique_factorization_m (p^n) f (lead_coeff f, mset gs)" (* unique factorization mod p^n *)
-    "map degree fs = map degree gs"                              (* degrees stay the same *)
+    "sort (map degree fs) = sort (map degree gs)"                              (* degrees stay the same *)
     "\<And> g. g \<in> set gs \<Longrightarrow> monic g \<and> poly_mod.Mp (p^n) g = g \<and>    (* monic and normalized *)
       poly_mod.irreducible_m p g \<and>                               (* irreducibility even mod p *)
       poly_mod.degree_m p g = degree g"   (* mod p does not change degree of g *)
 proof -
   note hensel = hensel_lifting[OF assms]
-  show "map degree fs = map degree gs"                        
+  show "sort (map degree fs) = sort (map degree gs)" 
     "\<And> g. g \<in> set gs \<Longrightarrow> monic g \<and> poly_mod.Mp (p^n) g = g \<and> 
       poly_mod.irreducible_m p g \<and>                            
       poly_mod.degree_m p g = degree g" using hensel by auto
