@@ -285,7 +285,7 @@ proof (rule measure_induct_rule[of "\<lambda>(t, s). size t + size s"
       moreover
       {
         assume t2_gt_s: "t2 >\<^sub>t s"
-        have t2_gto_s: "t2 >\<^sub>t\<^sub>o s"
+        have "t2 >\<^sub>t\<^sub>o s"
           by (rule ih[THEN iffD1, OF _ t2_gt_s]) (simp add: t)
         hence ?thesis
           by (rule rpo_optim.gt_trans[OF rpo_optim t_gto_t2])
