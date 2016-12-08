@@ -1,0 +1,126 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="../front.css">
+  <script src="../jquery.min.js"></script>
+  <script src="../script.js"></script>
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p>&nbsp;</p>
+
+<h1><font class="first">P</font>araconsistency
+</h1>
+<p></p>
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+        <td class="data" width="80%">Paraconsistency</td></tr>
+
+    <tr><td class="datahead">Author:</td>
+        <td class="data"><a href="https://people.compute.dtu.dk/andschl/">Anders Schlichtkrull</a> and <a href="https://people.compute.dtu.dk/jovi/">Jørgen Villadsen</a></td></tr>
+
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2016-12-07</td></tr>
+
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+
+
+Paraconsistency is about handling inconsistency in a coherent way. In
+classical and intuitionistic logic everything follows from an
+inconsistent theory. A paraconsistent logic avoids the explosion.
+Quite a few applications in computer science and engineering are
+discussed in the Intelligent Systems Reference Library Volume 110:
+Towards Paraconsistent Engineering (Springer 2016). We formalize a
+paraconsistent many-valued logic that we motivated and described in a
+special issue on logical approaches to paraconsistency (Journal of
+Applied Non-Classical Logics 2005). We limit ourselves to the
+propositional fragment of the higher-order logic. The logic is based
+on so-called key equalities and has a countably infinite number of
+truth values. We prove theorems in the logic using the definition of
+validity. We verify truth tables and also counterexamples for
+non-theorems. We prove meta-theorems about the logic and finally we
+investigate a case study.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Paraconsistency-AFP,
+  author  = {Anders Schlichtkrull and Jørgen Villadsen},
+  title   = {Paraconsistency},
+  journal = {Archive of Formal Proofs},
+  month   = dec,
+  year    = 2016,
+  note    = {\url{http://isa-afp.org/entries/Paraconsistency.shtml},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
+
+
+
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!--#set var="afp-version" value="-AFPVERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
+
+  </tbody>
+</table>
+
+<p></p>
+
+<!--#set var="name" value="Paraconsistency" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
+
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	<!-- link to README.hmtl if no document exists -->	
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+    <tr><td class="links">Older releases:
+None    </td></tr>
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+
+</body>
+</html>
