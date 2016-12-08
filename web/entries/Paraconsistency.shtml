@@ -24,49 +24,50 @@
 <div align="center">
 <p>&nbsp;</p>
 
-<h1><font class="first">N</font>ominal
-2
+<h1><font class="first">P</font>araconsistency
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Nominal 2</td></tr>
+        <td class="data" width="80%">Paraconsistency</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://www.inf.kcl.ac.uk/staff/urbanc/">Christian Urban</a>, <a href="http://www.in.tum.de/~berghofe">Stefan Berghofer</a> and Cezary Kaliszyk</td></tr>
+        <td class="data"><a href="https://people.compute.dtu.dk/andschl/">Anders Schlichtkrull</a> and <a href="https://people.compute.dtu.dk/jovi/">Jørgen Villadsen</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2013-02-21</td></tr>
+        <td class="data">2016-12-07</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
 
-<p>Dealing with binders, renaming of bound variables, capture-avoiding
-substitution, etc., is very often a major problem in formal
-proofs, especially in proofs by structural and rule
-induction. Nominal Isabelle is designed to make such proofs easy to
-formalise: it provides an infrastructure for declaring nominal
-datatypes (that is alpha-equivalence classes) and for defining
-functions over them by structural recursion. It also provides
-induction principles that have Barendregt’s variable convention
-already built in.
-</p><p>
-This entry can be used as a more advanced replacement for
-HOL/Nominal in the Isabelle distribution.
-</p>
+Paraconsistency is about handling inconsistency in a coherent way. In
+classical and intuitionistic logic everything follows from an
+inconsistent theory. A paraconsistent logic avoids the explosion.
+Quite a few applications in computer science and engineering are
+discussed in the Intelligent Systems Reference Library Volume 110:
+Towards Paraconsistent Engineering (Springer 2016). We formalize a
+paraconsistent many-valued logic that we motivated and described in a
+special issue on logical approaches to paraconsistency (Journal of
+Applied Non-Classical Logics 2005). We limit ourselves to the
+propositional fragment of the higher-order logic. The logic is based
+on so-called key equalities and has a countably infinite number of
+truth values. We prove theorems in the logic using the definition of
+validity. We verify truth tables and also counterexamples for
+non-theorems. We prove meta-theorems about the logic and finally we
+investigate a case study.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{Nominal2-AFP,
-  author  = {Christian Urban and Stefan Berghofer and Cezary Kaliszyk},
-  title   = {Nominal 2},
+			<pre>@article{Paraconsistency-AFP,
+  author  = {Anders Schlichtkrull and Jørgen Villadsen},
+  title   = {Paraconsistency},
   journal = {Archive of Formal Proofs},
-  month   = feb,
-  year    = 2013,
-  note    = {\url{http://isa-afp.org/entries/Nominal2.shtml},
+  month   = dec,
+  year    = 2016,
+  note    = {\url{http://isa-afp.org/entries/Paraconsistency.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -77,17 +78,13 @@ HOL/Nominal in the Isabelle distribution.
 
 
 
-    <tr><td class="datahead">Used by:</td>
-        <td class="data"><a href="Incompleteness.shtml">Incompleteness</a>, <a href="Launchbury.shtml">Launchbury</a>, <a href="Modal_Logics_for_NTS.shtml">Modal_Logics_for_NTS</a>, <a href="Rewriting_Z.shtml">Rewriting_Z</a></td></tr>
-
-
 
   </tbody>
 </table>
 
 <p></p>
 
-<!--#set var="name" value="Nominal2" -->
+<!--#set var="name" value="Paraconsistency" -->
 
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
@@ -114,11 +111,7 @@ HOL/Nominal in the Isabelle distribution.
   </tr>
 
 
-    <tr><td class="links">Older releases: <ul>
-<li>Isabelle 2013-1: <a href="../release/afp-<!--#echo var="name" -->-2013-11-17.tar.gz">afp-<!--#echo var="name" -->-2013-11-17.tar.gz</a></li>
-<li>Isabelle 2013: <a href="../release/afp-<!--#echo var="name" -->-2013-02-24.tar.gz">afp-<!--#echo var="name" -->-2013-02-24.tar.gz</a></li>
-
-</ul>
+    <tr><td class="links">Older releases: None
     </td></tr>
 
   </tbody>
