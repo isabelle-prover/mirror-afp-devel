@@ -112,7 +112,7 @@ lemma perm_swap_permutes2:
   shows "perm_swap x y f permutes S"
   using assms
   by (auto simp: perm_swap_def permutes_conv_has_dom has_dom_perm_swap[unfolded perm_swap_def])
-    (metis bij_swap_iff bij_swap_ompose_bij comp_id comp_swap)
+    (metis bij_swap_iff bij_swap_compose_bij comp_id comp_swap)
 
 section \<open>Cyclic Permutations\<close>
 
