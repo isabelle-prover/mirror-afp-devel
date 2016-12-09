@@ -1426,17 +1426,17 @@ next
   qed
 qed
 
-fun create_factor_tree :: "int poly list \<Rightarrow> unit factor_tree" where
-  "create_factor_tree xs = (let n = length xs in if n \<le> 1 then Factor_Leaf () (hd xs)
+fun create_factor_tree_simple :: "int poly list \<Rightarrow> unit factor_tree" where
+  "create_factor_tree_simple xs = (let n = length xs in if n \<le> 1 then Factor_Leaf () (hd xs)
     else let i = n div 2;
       xs1 = take i xs;
       xs2 = drop i xs
-      in Factor_Node () (create_factor_tree xs1) (create_factor_tree xs2)
+      in Factor_Node () (create_factor_tree_simple xs1) (create_factor_tree_simple xs2)
       )" 
   
-declare create_factor_tree.simps[simp del]
+declare create_factor_tree_simple.simps[simp del]
   
-lemma create_factor_tree: "xs \<noteq> [] \<Longrightarrow> factors_of_factor_tree (create_factor_tree xs) = mset xs" 
+lemma create_factor_tree_simple: "xs \<noteq> [] \<Longrightarrow> factors_of_factor_tree (create_factor_tree_simple xs) = mset xs" 
 proof (induct xs rule: wf_induct[OF wf_measure[of length]])
   case (1 xs)
   from 1(2) have xs: "length xs \<noteq> 0" by auto
@@ -1445,7 +1445,7 @@ proof (induct xs rule: wf_induct[OF wf_measure[of length]])
   proof cases
     case base
     then obtain x where xs: "xs = [x]" by (cases xs; cases "tl xs"; auto)
-    thus ?thesis by (auto simp: create_factor_tree.simps)
+    thus ?thesis by (auto simp: create_factor_tree_simple.simps)
   next
     case step
     let ?i = "length xs div 2" 
@@ -1453,15 +1453,91 @@ proof (induct xs rule: wf_induct[OF wf_measure[of length]])
     let ?xs2 = "drop ?i xs" 
     from step have xs1: "(?xs1, xs) \<in> measure length" "?xs1 \<noteq> []" by auto
     from step have xs2: "(?xs2, xs) \<in> measure length" "?xs2 \<noteq> []" by auto
-    from step have id: "create_factor_tree xs = Factor_Node () (create_factor_tree (take ?i xs))
-            (create_factor_tree (drop ?i xs))" unfolding create_factor_tree.simps[of xs] Let_def by auto
+    from step have id: "create_factor_tree_simple xs = Factor_Node () (create_factor_tree_simple (take ?i xs))
+            (create_factor_tree_simple (drop ?i xs))" unfolding create_factor_tree_simple.simps[of xs] Let_def by auto
     have xs: "xs = ?xs1 @ ?xs2" by auto
     show ?thesis unfolding id arg_cong[OF xs, of mset] mset_append
       using 1(1)[rule_format, OF xs1] 1(1)[rule_format, OF xs2]
       by auto
   qed
 qed
+
+text \<open>We define a better factorization tree which balances the trees according to their degree.,
+  cf. Modern Computer Algebra, Chapter 15.5 on Multifactor Hensel lifting.\<close>
   
+fun partition_factors_main :: "nat \<Rightarrow> ('a \<times> nat) list \<Rightarrow> ('a \<times> nat) list \<times> ('a \<times> nat) list" where
+  "partition_factors_main s [] = ([], [])" 
+| "partition_factors_main s ((f,d) # xs) = (if d \<le> s then case partition_factors_main (s - d) xs of
+     (l,r) \<Rightarrow> ((f,d) # l, r) else case partition_factors_main d xs of 
+     (l,r) \<Rightarrow> (l, (f,d) # r))" 
+  
+lemma partition_factors_main: "partition_factors_main s xs = (a,b) \<Longrightarrow> mset xs = mset a + mset b" 
+  by (induct s xs arbitrary: a b rule: partition_factors_main.induct, auto split: if_splits prod.splits)
+
+definition partition_factors :: "('a \<times> nat) list \<Rightarrow> ('a \<times> nat) list \<times> ('a \<times> nat) list" where
+  "partition_factors xs = (let n = sum_list (map snd xs) div 2 in
+     case partition_factors_main n xs of
+     ([], x # y # ys) \<Rightarrow> ([x], y # ys)
+   | (x # y # ys, []) \<Rightarrow> ([x], y # ys)
+   | pair \<Rightarrow> pair)" 
+  
+lemma partition_factors: "partition_factors xs = (a,b) \<Longrightarrow> mset xs = mset a + mset b"
+  unfolding partition_factors_def Let_def 
+  by (cases "partition_factors_main (sum_list (map snd xs) div 2) xs", auto split: list.splits
+    simp: partition_factors_main)
+
+lemma partition_factors_length: assumes "\<not> length xs \<le> 1" "(a,b) = partition_factors xs"
+  shows [termination_simp]: "length a < length xs" "length b < length xs" and "a \<noteq> []" "b \<noteq> []" 
+proof -
+  obtain ys zs where main: "partition_factors_main (sum_list (map snd xs) div 2) xs = (ys,zs)" by force
+  note res = assms(2)[unfolded partition_factors_def Let_def main split]
+  from arg_cong[OF partition_factors_main[OF main], of size] have len: "length xs = length ys + length zs" by auto
+  with assms(1) have len2: "length ys + length zs \<ge> 2" by auto
+  from res len2 have "length a < length xs \<and> length b < length xs \<and> a \<noteq> [] \<and> b \<noteq> []" unfolding len
+    by (cases ys; cases zs; cases "tl ys"; cases "tl zs"; auto)
+  thus "length a < length xs" "length b < length xs" "a \<noteq> []" "b \<noteq> []" by blast+
+qed 
+  
+fun create_factor_tree_balanced :: "(int poly \<times> nat)list \<Rightarrow> unit factor_tree" where
+  "create_factor_tree_balanced xs = (if length xs \<le> 1 then Factor_Leaf () (fst (hd xs)) else
+     case partition_factors xs of (l,r) \<Rightarrow> Factor_Node () 
+      (create_factor_tree_balanced l)
+      (create_factor_tree_balanced r))" 
+
+definition create_factor_tree :: "int poly list \<Rightarrow> unit factor_tree" where
+  "create_factor_tree xs = (let ys = map (\<lambda> f. (f, degree f)) xs;
+     zs = rev (sort_key snd ys)
+     in create_factor_tree_balanced zs)" 
+
+lemma create_factor_tree_balanced: "xs \<noteq> [] \<Longrightarrow> factors_of_factor_tree (create_factor_tree_balanced xs) = mset (map fst xs)" 
+proof (induct xs rule: create_factor_tree_balanced.induct)
+  case (1 xs)
+  show ?case
+  proof (cases "length xs \<le> 1")
+    case True
+    with 1(3) obtain x where xs: "xs = [x]" by (cases xs; cases "tl xs", auto)
+    show ?thesis unfolding xs by auto
+  next
+    case False
+    obtain a b where part: "partition_factors xs = (a,b)" by force
+    note abp = this[symmetric]
+    note nonempty = partition_factors_length(3-4)[OF False abp]
+    note IH = 1(1)[OF False abp nonempty(1)] 1(2)[OF False abp nonempty(2)]
+    show ?thesis unfolding create_factor_tree_balanced.simps[of xs] part split using 
+      False IH partition_factors[OF part] by auto
+  qed
+qed
+
+lemma create_factor_tree: assumes "xs \<noteq> []"
+  shows "factors_of_factor_tree (create_factor_tree xs) = mset xs" 
+proof -
+  let ?xs = "rev (sort_key snd (map (\<lambda>f. (f, degree f)) xs))" 
+  from assms have "set xs \<noteq> {}" by auto
+  hence "set ?xs \<noteq> {}" by auto
+  hence xs: "?xs \<noteq> []" by blast
+  show ?thesis unfolding create_factor_tree_def Let_def create_factor_tree_balanced[OF xs]
+    by (auto, induct xs, auto)
+qed
 
 context
   fixes p pn :: int
@@ -1674,14 +1750,14 @@ proof -
     thus ?thesis unfolding True Gs poly_mod.equivalent_def by auto
   next
     case False
-    with res have hen: "hensel_main ?C (product_factor_tree p (create_factor_tree Fs)) = Gs" by auto
-    note tree = create_factor_tree[OF False]
     let ?t = "create_factor_tree Fs" 
+    note tree = create_factor_tree[OF False]
+    from False res have hen: "hensel_main ?C (product_factor_tree p ?t) = Gs" by auto
     have tree1: "x \<in># factors_of_factor_tree ?t \<Longrightarrow> Mp x = x" for x unfolding tree using Fs by auto
     from product_factor_tree[OF tree1 sub_trees_refl refl, of ?t]
     have id: "(factors_of_factor_tree (product_factor_tree p ?t)) =
         (factors_of_factor_tree ?t)" by auto
-    have eq: "equivalent ?C (prod_mset (factors_of_factor_tree (product_factor_tree p (create_factor_tree Fs))))"
+    have eq: "equivalent ?C (prod_mset (factors_of_factor_tree (product_factor_tree p ?t)))"
       unfolding id tree using eq by auto  
     have id': "Mp C = Mp ?C" using n by (simp add: Mp_Mp_pow_is_Mp m1)
     have "pn.equivalent ?C (prod_list Gs) \<and> mset Fs = mset (map Mp Gs) \<and> (\<forall>G. G \<in> set Gs \<longrightarrow> monic G \<and> pn.Mp G = G)"
