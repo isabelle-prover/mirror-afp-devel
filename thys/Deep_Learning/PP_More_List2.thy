@@ -1,5 +1,5 @@
 (* Author: Andreas Lochbihler, ETH Zurich
-   Author: Florian Haftmann, TU Muenchen 
+   Author: Florian Haftmann, TU Muenchen
 *)
 
 section \<open>Less common functions on lists\<close>
@@ -17,7 +17,7 @@ where
 lemma strip_while_rev [simp]:
   "strip_while P (rev xs) = rev (dropWhile P xs)"
   by (simp add: strip_while_def)
-  
+
 lemma strip_while_Nil [simp]:
   "strip_while P [] = []"
   by (simp add: strip_while_def)
@@ -240,7 +240,7 @@ lemma last_conv_nth_default:
   assumes "xs \<noteq> []"
   shows "last xs = nth_default dflt xs (length xs - 1)"
   using assms by (simp add: nth_default_def last_conv_nth)
-  
+
 lemma nth_default_map_eq:
   "f dflt' = dflt \<Longrightarrow> nth_default dflt (map f xs) n = f (nth_default dflt' xs n)"
   by (simp add: nth_default_def)
@@ -313,7 +313,7 @@ proof
         using eq by simp
       moreover from len have "length ?ys - 1 \<ge> length ?xs" by simp
       ultimately have False by (simp only: nth_default_beyond) simp
-    } 
+    }
     from this [of xs ys] this [of ys xs] len eq show False
       by (auto simp only: linorder_class.neq_iff)
   qed

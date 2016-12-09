@@ -30,7 +30,7 @@ using assms proof (induction xs)
   then show ?case by auto
 next
   case (Cons x xs)
-  then show ?case 
+  then show ?case
     using find_first.simps(2) nth_Cons_0 nth_Cons_Suc set_ConsD by auto
 qed
 
@@ -42,7 +42,7 @@ using assms proof (induction xs)
   then show ?case by auto
 next
   case (Cons x xs)
-  then show ?case 
+  then show ?case
     using find_first.simps(2) nth_Cons_0 nth_Cons_Suc set_ConsD by auto
 qed
 

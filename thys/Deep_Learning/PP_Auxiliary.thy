@@ -17,7 +17,7 @@ begin
 lemma add_left_left_cancel [simp]:
   "a + b = a \<longleftrightarrow> b = 0"
 proof (rule iffI)
-  assume "a + b = a" 
+  assume "a + b = a"
   then have "a + b = a + 0" by simp
   then show "b = 0" by (rule add_left_imp_eq)
 qed simp

@@ -41,7 +41,7 @@ lemma cprank_max1_prod_listE:
   obtains Bs a where "\<And>B. B\<in>set Bs \<Longrightarrow> order B = 1" "a \<cdot> prod_list Bs = A"
 using assms proof (induction A arbitrary:thesis rule:cprank_max1.induct)
   case (order1 A)
-  then show ?case 
+  then show ?case
   proof (cases "order A = 0")
     case True
     then obtain a where "A = a \<cdot> prod_list []" using order_0_multiple_of_one using prod_list.Nil by auto
@@ -64,7 +64,7 @@ inductive cprank_max :: "nat \<Rightarrow> 'a::ring_1 tensor \<Rightarrow> bool"
 cprank_max0: "cprank_max 0 (tensor0 ds)" |
 cprank_max_Suc: "dims A = dims B \<Longrightarrow> cprank_max1 A \<Longrightarrow> cprank_max j B \<Longrightarrow> cprank_max (Suc j) (A+B)"
 
-lemma cprank_max1: "cprank_max1 A \<Longrightarrow> cprank_max 1 A" 
+lemma cprank_max1: "cprank_max1 A \<Longrightarrow> cprank_max 1 A"
   by (metis One_nat_def dims_tensor0 cprank_max.simps cprank_max0 tensor_add_0_right)
 
 lemma cprank_max_plus: "cprank_max i A \<Longrightarrow> cprank_max j B \<Longrightarrow> dims A = dims B \<Longrightarrow> cprank_max (i+j) (A+B)"
@@ -94,11 +94,11 @@ using assms proof (induction arbitrary:thesis rule:cprank_max.induct)
   then show ?case using cprank_max0.prems by fastforce
 next
   case (cprank_max_Suc A B j)
-  then obtain BS where BS_def:"(\<And>B. B \<in> set BS \<Longrightarrow> cprank_max1 B)" "(\<And>B'. B' \<in> set BS \<Longrightarrow> dims B' = dims B)" 
+  then obtain BS where BS_def:"(\<And>B. B \<in> set BS \<Longrightarrow> cprank_max1 B)" "(\<And>B'. B' \<in> set BS \<Longrightarrow> dims B' = dims B)"
                        "listsum (dims B) BS = B" "length BS = j" by metis
   then have "listsum (dims (A + B)) (A # BS) = A + B"
     by (simp add: listsum_Cons cprank_max_Suc.hyps(1))
-  then show ?case using BS_def length_Cons cprank_max_Suc.hyps(2) cprank_max_Suc.prems set_ConsD 
+  then show ?case using BS_def length_Cons cprank_max_Suc.hyps(2) cprank_max_Suc.prems set_ConsD
     by (metis plus_dim1 cprank_max_Suc.hyps(1))
 qed
 
@@ -126,7 +126,7 @@ using assms proof (induction CS)
 next
   case (Cons C CS)
   then have "dims C = dims (listsum ds CS)" by (simp add: list.set_intros(1) list.set_intros(2) listsum_dims)
-  then show ?case unfolding listsum_Cons list.map(2) 
+  then show ?case unfolding listsum_Cons list.map(2)
     using tensor_prod_distr_right Cons.IH Cons.prems list.set_intros(2) by fastforce
 qed
 
@@ -135,15 +135,15 @@ assumes "order A = 1"
 and "cprank_max n B"
 shows "cprank_max n (A\<otimes>B)"
 proof -
-  obtain CS where "(\<And>C. C\<in>set CS \<Longrightarrow> cprank_max1 C)" 
-              and "(\<And>C. C\<in>set CS \<Longrightarrow> dims C = dims B)" 
-              and "listsum (dims B) CS = B" 
+  obtain CS where "(\<And>C. C\<in>set CS \<Longrightarrow> cprank_max1 C)"
+              and "(\<And>C. C\<in>set CS \<Longrightarrow> dims C = dims B)"
+              and "listsum (dims B) CS = B"
               and "length CS = n"
     using assms(2) cprank_maxE by metis
   def CS' == "map (\<lambda>C. A\<otimes>C) CS"
-  then have "\<And>C'. C'\<in>set CS' \<Longrightarrow> cprank_max1 C'" 
+  then have "\<And>C'. C'\<in>set CS' \<Longrightarrow> cprank_max1 C'"
     using assms(1) higher_order \<open>\<And>C. C \<in> set CS \<Longrightarrow> cprank_max1 C\<close> imageE set_map by auto
-  have "listsum (dims A @ dims B) CS' = A\<otimes>B" using CS'_def \<open>Tensor_Plus.listsum (dims B) CS = B\<close> 
+  have "listsum (dims A @ dims B) CS' = A\<otimes>B" using CS'_def \<open>Tensor_Plus.listsum (dims B) CS = B\<close>
     using \<open>\<And>Ca. Ca \<in> set CS \<Longrightarrow> dims Ca = dims B\<close> listsum_prod_distr_right by fastforce
   then show ?thesis by (metis (mono_tags, lifting) CS'_def \<open>\<And>C'. C' \<in> set CS' \<Longrightarrow> cprank_max1 C'\<close> \<open>\<And>Ca. Ca \<in> set CS \<Longrightarrow> dims Ca = dims B\<close> \<open>length CS = n\<close> dims_tensor_prod imageE length_map cprank_maxI set_map)
 qed
@@ -151,18 +151,18 @@ qed
 lemma cprank_max_upper_bound: (* Stronger bound is possible, one of the factors in prod_list can be dropped. *)
 shows "cprank_max (prod_list (dims A)) A"
 proof (induction A rule:subtensor_induct)
-  case (order_0 A) 
+  case (order_0 A)
   then have "cprank_max 1 A" using order1 cprank_max1 by force
   then show ?case using order_0 by auto
 next
   case (order_step A)
   def Bs == "map (\<lambda>i. unit_vec (hd (dims A)) i \<otimes> subtensor A i) [0..<hd (dims A)]"
-  have "\<And>B. B \<in> set Bs \<Longrightarrow> dims A = dims B" 
+  have "\<And>B. B \<in> set Bs \<Longrightarrow> dims A = dims B"
   proof -
     fix B assume "B \<in> set Bs"
     obtain i where "i<hd (dims A)" "Bs!i=B" using Bs_def \<open>B \<in> set Bs\<close> by auto
-    then have "dims (unit_vec (hd (dims A)) i \<otimes> subtensor A i) = dims A" 
-      using dims_unit_vec order_step.hyps 
+    then have "dims (unit_vec (hd (dims A)) i \<otimes> subtensor A i) = dims A"
+      using dims_unit_vec order_step.hyps
       by (metis append_Cons dims_subtensor dims_tensor_prod list.exhaust_sel self_append_conv2)
     then show "dims A = dims B" using Bs_def \<open>Bs ! i = B\<close> \<open>i < hd (dims A)\<close> by auto
   qed
@@ -170,18 +170,18 @@ next
   proof -
     fix B assume "B \<in> set Bs"
     obtain i where "i<hd (dims A)" "Bs!i=B" using Bs_def \<open>B \<in> set Bs\<close> by auto
-    then have "cprank_max (prod_list (tl (dims A))) (unit_vec (hd (dims A)) i \<otimes> subtensor A i)" 
+    then have "cprank_max (prod_list (tl (dims A))) (unit_vec (hd (dims A)) i \<otimes> subtensor A i)"
       by (metis One_nat_def dims_subtensor dims_unit_vec length_Cons list.size(3) order_step.IH order_step.hyps cprank_max_prod_order1)
     then show "cprank_max (prod_list (tl (dims A))) B" using Bs_def \<open>Bs ! i = B\<close> \<open>i < hd (dims A)\<close> by auto
   qed
-  then show ?case using subtensor_decomposition[OF order_step.hyps] cprank_max_listsum 
+  then show ?case using subtensor_decomposition[OF order_step.hyps] cprank_max_listsum
     by (metis (no_types, lifting) Bs_def \<open>\<And>Ba. Ba \<in> set Bs \<Longrightarrow> dims A = dims Ba\<close> diff_zero length_map length_upt list.exhaust_sel prod_list.Cons mult.commute order_step.hyps)
 qed
 
 definition cprank :: "'a::ring_1 tensor \<Rightarrow> nat" where
 "cprank A = (LEAST n. cprank_max n A)"
 
-lemma cprank_upper_bound: "cprank A \<le> prod_list (dims A)" 
+lemma cprank_upper_bound: "cprank A \<le> prod_list (dims A)"
 unfolding cprank_def using cprank_max_upper_bound Least_le by fastforce
 
 lemma cprank_max_cprank: "cprank_max (cprank A) A"

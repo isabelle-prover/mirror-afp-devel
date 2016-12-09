@@ -12,8 +12,8 @@ assumes "gen_set {v}"
 assumes "v \<noteq> \<zero>\<^bsub>V\<^esub>" "v \<in> carrier V"
 shows "dim = 1"
 proof -
-  have "basis {v}" by (metis assms(1) assms(2) assms(3) basis_def empty_iff empty_subsetI 
-   finite.emptyI finite_lin_indpt2 insert_iff insert_subset insert_union lin_dep_iff_in_span 
+  have "basis {v}" by (metis assms(1) assms(2) assms(3) basis_def empty_iff empty_subsetI
+   finite.emptyI finite_lin_indpt2 insert_iff insert_subset insert_union lin_dep_iff_in_span
    span_empty)
   then show ?thesis using dim_basis by force
 qed
@@ -29,8 +29,8 @@ qed
 lemma (in vectorspace) dim_le1I:
 assumes "gen_set {v}"
 assumes "v \<in> carrier V"
-shows "dim \<le> 1" 
-by (metis One_nat_def assms(1) assms(2) bot.extremum card.empty card.insert empty_iff finite.intros(1) 
+shows "dim \<le> 1"
+by (metis One_nat_def assms(1) assms(2) bot.extremum card.empty card.insert empty_iff finite.intros(1)
 finite.intros(2) insert_subset vectorspace.gen_ge_dim vectorspace_axioms)
 
 end
