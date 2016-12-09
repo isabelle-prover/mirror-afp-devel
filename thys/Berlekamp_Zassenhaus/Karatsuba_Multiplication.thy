@@ -174,4 +174,9 @@ qed
 lemma karatsuba_mult_poly_code_unfold[code_unfold]: "op * = karatsuba_mult_poly" 
   by (intro ext, unfold karatsuba_mult_poly, auto)
 
+text \<open>The following declaration will resolve a race-conflict between @{thm karatsuba_mult_poly_code_unfold}
+  and @{thm monom_mult_unfold}.\<close>
+lemmas karatsuba_monom_mult_code_unfold[code_unfold] = 
+  monom_mult_unfold[where f = "f :: 'a :: comm_ring_1 poly" for f, unfolded karatsuba_mult_poly_code_unfold]
+
 end
