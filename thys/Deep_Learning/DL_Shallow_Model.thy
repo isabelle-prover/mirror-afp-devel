@@ -14,8 +14,8 @@ definition shallow_model where
 "shallow_model Y Z M N = Conv (Y,Z) (shallow_model' Z M N)"
 
 lemma valid_shallow_model': "valid_net (shallow_model' Z M N)" 
- apply (induction N) unfolding shallow_model'.simps  
- by (simp add: valid_net.intros, metis shallow_model'.elims shallow_model'.simps(1) valid_net.intros output_size.simps)
+  apply (induction N) unfolding shallow_model'.simps  
+  by (simp add: valid_net.intros, metis shallow_model'.elims shallow_model'.simps(1) valid_net.intros output_size.simps)
 
 lemma output_size_shallow_model': "output_size (shallow_model' Z M N) = Z" 
   apply (induction N) unfolding shallow_model'.simps using output_size.simps by simp_all

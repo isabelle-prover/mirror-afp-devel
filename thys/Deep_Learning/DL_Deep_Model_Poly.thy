@@ -163,7 +163,6 @@ next
       unfolding semigroup_add_class.add.assoc ab_semigroup_add_class.add.commute[of "x1 * x2" a]
       by blast
 
-
     have "output_size m = x2" using Conv.prems(2) \<open>x = (x1, x2)\<close> valid_net.cases by fastforce
     show "\<And>f. extract_matrix (\<lambda>i. f (i + a)) x1 x2 \<in> carrier\<^sub>m x1 (output_size m)" unfolding `output_size m = x2` using dim_extract_matrix
       using mat_carrierI by (metis (no_types, lifting))

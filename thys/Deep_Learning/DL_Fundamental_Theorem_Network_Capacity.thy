@@ -3,8 +3,7 @@
 section \<open>Fundamental Theorem of Network Capacity\<close>
 
 theory DL_Fundamental_Theorem_Network_Capacity
-imports DL_Rank_CP_Rank DL_Deep_Model_Poly Lebesgue_Zero_Set DL_Rank_Submatrix "~~/src/HOL/Probability/Complete_Measure" DL_Shallow_Model
-DL_Missing_Complete_Measure
+imports DL_Rank_CP_Rank DL_Deep_Model_Poly Lebesgue_Zero_Set DL_Rank_Submatrix "~~/src/HOL/Analysis/Complete_Measure" DL_Shallow_Model
 begin
 
 context deep_model_correct_params_y
