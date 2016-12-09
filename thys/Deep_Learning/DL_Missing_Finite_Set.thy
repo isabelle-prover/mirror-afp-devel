@@ -33,5 +33,4 @@ next
     by (simp add: finite_M_bounded_by_nat less_not_refl2)
 qed
 
-
 end
