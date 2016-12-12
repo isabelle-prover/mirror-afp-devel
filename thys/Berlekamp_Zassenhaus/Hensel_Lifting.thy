@@ -21,7 +21,7 @@ imports
   "~~/src/HOL/Number_Theory/Euclidean_Algorithm"
   Poly_Mod_Finite_Field_Record_Based
   "../Sqrt_Babylonian/NthRoot_Impl" (* for log_ceil *)
-  "~~/src/HOL/Library/Types_To_Sets"
+  "~~/src/HOL/Types_To_Sets/Types_To_Sets"
   "../Polynomial_Factorization/Square_Free_Factorization"
 begin
 

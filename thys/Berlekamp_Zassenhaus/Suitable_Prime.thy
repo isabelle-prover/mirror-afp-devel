@@ -20,7 +20,7 @@ imports
   Poly_Mod
   Square_Free_Int_To_Square_Free_GFp
   Poly_Mod_Finite_Field_Record_Based
-  "~~/src/HOL/Library/Types_To_Sets"
+  "~~/src/HOL/Types_To_Sets/Types_To_Sets"
 begin
 
 lemma square_free_coprime_pderiv_GFp: fixes f :: "'a :: prime_card mod_ring poly"
