@@ -761,7 +761,7 @@ apply(rule conjI)
  apply (thin_tac "\<forall>x\<in> A \<union> B. P x" for A B P)
  apply (thin_tac "\<forall>x\<in> A \<union> B. P x" for A B P)
  apply (clarsimp simp add: xcpt_app_def relevant_entries_def)
- apply (simp add: nth_append is_relevant_entry_def split: if_split_asm)
+ apply (simp add: nth_append is_relevant_entry_def split!: if_splits)
   apply (drule_tac x="\<tau>s\<^sub>1!pc" in bspec)
    apply (blast intro: nth_mem) 
   apply fastforce
