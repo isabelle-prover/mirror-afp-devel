@@ -6,11 +6,9 @@ theory Generic_Extract imports
   Generic_Interpretation
 begin
 
-(* Actually write the file to disk *)
-
 export_code open
   set sorted_list_of_set disjoint RBT.fold
   gen_ssa_cfg_wf gen_wf_var gen_ssa_wf_notriv_substAll'
-  in OCaml module_name BraunSSA file "BraunSSA.ml"
+  in OCaml module_name BraunSSA
 
 end
