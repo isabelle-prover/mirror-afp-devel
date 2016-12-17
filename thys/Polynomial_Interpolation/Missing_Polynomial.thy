@@ -1009,7 +1009,7 @@ proof (rule ccontr)
   ultimately show False by (simp add: coeff_eq_0)
 qed
 
-lemma map_div_is_smult_inverse: "Polynomial_Factorial.map_poly (\<lambda>x. x / (a :: 'a :: field)) p = smult (inverse a) p" 
+lemma map_div_is_smult_inverse: "Polynomial.map_poly (\<lambda>x. x / (a :: 'a :: field)) p = smult (inverse a) p" 
   unfolding smult_conv_map_poly
   by (simp add: divide_inverse_commute)
 

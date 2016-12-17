@@ -98,7 +98,7 @@ proof -
   from assms have "normalize c = 1"
     by (meson dvd_field_iff is_unit_normalize)
   then show ?thesis
-    by (metis (no_types) Polynomial_Factorial.normalize_smult gcd.commute gcd.left_commute gcd_left_idem gcd_self smult_1_left)
+    by (metis (no_types) Polynomial.normalize_smult gcd.commute gcd.left_commute gcd_left_idem gcd_self smult_1_left)
 qed
 
 lemma gcd_smult_right: "c \<noteq> 0 \<Longrightarrow> gcd f (smult c g) = gcd f (g :: 'b :: {field, factorial_ring_gcd} poly)"
@@ -145,7 +145,7 @@ next
   next
     case 4
     show ?case unfolding normalize_poly_def 
-      by (rule poly_eqI, simp, subst Polynomial_Factorial.coeff_map_poly, force, insert gcd0,
+      by (rule poly_eqI, simp, subst Polynomial.coeff_map_poly, force, insert gcd0,
         simp add: lead_coeff_def field_simps)
   qed
 qed
@@ -227,8 +227,8 @@ proof (intro conjI)
   thus "0 < lead_coeff (gcd F G)" unfolding 
     arg_cong[OF normalize_gcd[of F G], of lead_coeff, symmetric]
     unfolding normalize_poly_def H lead_coeff_def
-    by (auto, subst Polynomial_Factorial.coeff_map_poly, auto, 
-    subst Polynomial_Factorial.degree_map_poly, auto simp: sgn_if)
+    by (auto, subst Polynomial.coeff_map_poly, auto, 
+    subst Polynomial.degree_map_poly, auto simp: sgn_if)
   have "H dvd F" unfolding H[symmetric] by auto
   then obtain K where F: "F = H * K" unfolding dvd_def by auto
   from arg_cong[OF this, of content, unfolded gauss_lemma ff(8)]

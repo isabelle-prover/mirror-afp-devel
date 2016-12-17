@@ -368,15 +368,19 @@ end
 context inj_field_hom'
 begin
 
+lemma map_poly_normalize: "map_poly hom (normalize p) =
+  normalize (map_poly hom p)"
+  by (simp add: normalize_poly_eq_div map_poly_div lead_coeff_def)
+
 lemma map_poly_gcd: "map_poly hom (gcd p q) = gcd (map_poly hom p) (map_poly hom q)"
 proof (induct p q rule: gcd_eucl.induct)
   case (1 p b)
-  thus ?case
+  then show ?case
     by (cases "b = 0")
-       (simp_all add: gcd_non_0 coeff_map_poly normalize_poly_altdef 
-          map_poly_mod map_poly_div lead_coeff_def map_poly_compose)
+      (simp_all add: map_poly_normalize gcd_non_0 map_poly_mod)
 qed
-  end
+
+end
 
 
 definition div_poly :: "'a :: semiring_div \<Rightarrow> 'a poly \<Rightarrow> 'a poly" where
