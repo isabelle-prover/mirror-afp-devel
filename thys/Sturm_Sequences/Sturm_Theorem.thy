@@ -1215,7 +1215,7 @@ proof (intro sturm_adjacent_root_aux[OF assms(2,3,4)], goal_cases)
         unfolding q_def r_def s_def by (simp add: div_mult_mod_eq)
     hence "q' = (q div r * r - s) div d" by (simp add: q'_def)
     also have "... = (q div r * r) div d - s'"
-        unfolding s'_def by (simp)
+      by (simp add: s'_def poly_div_diff_left)
     also have "... = q div r * r' - s'"
         using dvd_div_mult[OF `d dvd r`, of "q div r"]
         by (simp add: algebra_simps r'_def)
