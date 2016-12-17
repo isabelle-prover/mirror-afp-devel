@@ -77,18 +77,9 @@ lift_definition times_mod_ring :: "'a mod_ring \<Rightarrow> 'a mod_ring \<Right
 lift_definition zero_mod_ring :: "'a mod_ring" is 0 by simp
 
 instance
-proof
-  fix a b c::"'a mod_ring"
-  show "a + b + c = a + (b + c)" by (transfer, unfold atLeastLessThan_iff, presburger)
-  show "a + b = b + a" by (transfer, unfold atLeastLessThan_iff, presburger)
-  show "0 + a = a"  using mod_pos_pos_trivial by(transfer, auto)
-  show "- a + a = 0" by(transfer, auto)
-  note mod_add_right_eq[symmetric, simp] mod_mult_right_eq[symmetric, simp]
-  show "a - b = a + - b" by (transfer, subst if_distrib[of "\<lambda>x. (_ + x) mod _"], subst(2) mod_add_eq, auto)
-  show "a * b * c = a * (b * c)" by (transfer, auto simp: ac_simps)
-  show "(a + b) * c = a * c + b * c" by (transfer, auto simp: ac_simps distrib_left)
-  show "a * b = b * a" by (transfer, auto simp:ac_simps)
-qed
+  by standard
+    (transfer; auto simp add: mod_simps algebra_simps intro: mod_diff_cong)+
+
 end
 
 lift_definition to_int_mod_ring :: "'a::finite mod_ring \<Rightarrow> int" is "\<lambda> x. x" .
@@ -131,12 +122,14 @@ instance by (intro_classes; transfer, simp)
 
 end
 
-lemma of_nat_of_int_mod_ring[code_unfold]: "of_nat = of_int_mod_ring o int"
+lemma of_nat_of_int_mod_ring [code_unfold]:
+  "of_nat = of_int_mod_ring o int"
 proof (rule ext, unfold o_def)
   show "of_nat n = of_int_mod_ring (int n)" for n
   proof (induct n)
     case (Suc n)
-    show ?case by (unfold of_nat_Suc Suc, transfer, presburger)
+    show ?case
+      by (simp only: of_nat_Suc Suc, transfer) (simp add: mod_simps)
   qed simp
 qed
 
@@ -151,7 +144,7 @@ proof (rule ext)
   obtain n1 n2 where x: "x = int n1 - int n2" by (rule int_diff_cases)
   show "of_int x = of_int_mod_ring x"
     unfolding x of_int_diff of_int_of_nat_eq of_nat_of_int_mod_ring o_def
-    by (transfer, simp add: mod_diff_right_eq[symmetric] mod_diff_left_eq[symmetric])
+    by (transfer, simp add: mod_diff_right_eq mod_diff_left_eq)
 qed
 
 unbundle lifting_syntax
@@ -192,7 +185,7 @@ proof (intro rel_funI,simp)
     also have "... = to_int_mod_ring x * (to_int_mod_ring x ^ n mod CARD('a)) mod CARD('a)"
       using Suc.hyps by auto
     also have "... = to_int_mod_ring x ^ Suc n mod int CARD('a)"
-      by (simp add: zmod_simps(3))
+      by (simp add: mod_simps)
     finally show ?case ..
   qed
 qed
@@ -266,7 +259,7 @@ proof
       finally show ?thesis .
     qed
     have "x ^ (CARD('a) - 2) mod CARD('a) * x mod CARD('a) 
-      = (x ^ nat (CARD('a) - 2) * x) mod CARD('a)" by (simp add: zmod_simps)
+      = (x ^ nat (CARD('a) - 2) * x) mod CARD('a)" by (simp add: mod_simps)
     also have "... =  (x ^ nat (?p - 1) mod ?p)" unfolding rw by simp
     also have "... = (x ^ (nat ?p - 1) mod ?p)" using p0' by (simp add: nat_diff_distrib')
     also have "... = 1" using fermat_theorem[OF prime_card_int p_not_dvd_x] by (auto simp: cong_int_def)

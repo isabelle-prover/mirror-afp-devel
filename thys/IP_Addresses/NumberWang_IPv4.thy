@@ -14,7 +14,7 @@ proof -
   also have "\<dots>  = (d + 256 * c) mod 256"
     using mod_mult_self2[where a="d + 256 * c" and b="256" and c="256 * b"] by simp
   also have "\<dots> = d mod 256" using mod_mult_self2 by blast
-  finally show ?thesis by presburger
+  finally show ?thesis by simp
 qed
 
 lemma div65536: assumes "a < 256" "b < 256" "c < 256" "d < 256" 

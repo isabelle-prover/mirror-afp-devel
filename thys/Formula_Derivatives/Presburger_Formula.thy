@@ -322,7 +322,7 @@ proof -
     from Suc(1)[of "n - 1" "p div 2"] Suc(2,3) show ?case
       by (auto simp: div_mult2_eq mod_mult2_eq Suc_less_eq2)
   qed
-  with \<open>m < n\<close> show ?thesis by (subst mod_add_eq) auto
+  with \<open>m < n\<close> show ?thesis by (subst mod_add_eq [symmetric]) auto
 qed
 
 lemma cut_bits_set_bit[Presb_simps]: "cut_bits n (set_bit m p) =

@@ -162,7 +162,7 @@ lemma converse_lehmer_weak:
         define q r where "q = i div x" and "r = i mod x"
         have "i = q*x + r" by (simp add: r_def q_def)
         hence y_q_r:"y = (((a ^ (q*x)) mod p) * ((a ^ r) mod p)) mod p"
-          by (simp add: i power_add mod_mult_eq[symmetric])
+          by (simp add: i power_add mod_mult_eq)
         have "a ^ (q*x) mod p = (a ^ x mod p) ^ q mod p"
           by (simp add: power_mod mult.commute power_mult[symmetric])
         hence y_r:"y = a ^ r mod p" using `p\<ge>2` x by (simp add: cong_nat_def y_q_r)

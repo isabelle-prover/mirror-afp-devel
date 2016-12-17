@@ -105,7 +105,7 @@ proof -
     apply (subst (asm) unat_word_ariths(2))+
     apply (subst (asm) 2)+
     apply (subst (asm) word_unat_power, subst (asm) unat_of_nat)+
-    apply (simp add: mod_mult_right_eq[symmetric])
+    apply (simp add: mod_mult_right_eq)
     done
   with suc_n suc_m
   show ?thesis
@@ -1153,10 +1153,7 @@ proof cases
     apply (subst iffD1 [OF unat_add_lem], rule ux)
     apply simp
     apply (subst unat_mult_power_lem, assumption+)
-    apply (subst mod_add_left_eq)
-    apply (simp)
-    apply (rule mod_less[OF less_le_trans[OF unat_mono], OF kv])
-    apply (erule eq_imp_le[OF unat_power_lower])
+    apply (auto simp add: kv unat_less_power)
     done
 next
   assume "\<not> sz < len_of TYPE('a)"
@@ -2473,7 +2470,8 @@ lemma zmod_helper:
   by (metis add.commute mod_add_right_eq)
 
 lemma int_div_sub_1:
-  "\<lbrakk> m \<ge> 1 \<rbrakk> \<Longrightarrow> (n - (1 :: int)) div m = (if m dvd n then (n div m) - 1 else n div m)"
+  "(n - (1 :: int)) div m = (if m dvd n then (n div m) - 1 else n div m)" if "m \<ge> 1"
+  using that
   apply (subgoal_tac "m = 0 \<or> (n - (1 :: int)) div m = (if m dvd n then (n div m) - 1 else n div m)")
    apply fastforce
   apply (subst mult_cancel_right[symmetric])
@@ -2482,25 +2480,9 @@ lemma int_div_sub_1:
   apply (clarsimp simp: field_simps)
   apply (clarsimp simp: dvd_eq_mod_eq_0)
   apply (cases "m = 1")
-   apply simp
-  apply (subst mod_diff_eq, simp add: zmod_minus1 mod_pos_pos_trivial)
-  apply clarsimp
-  apply (subst diff_add_cancel[where b=1, symmetric])
-  apply (subst push_mods(1))
-  apply (simp add: field_simps mod_pos_pos_trivial)
-  apply (rule mod_pos_pos_trivial)
-   apply (subst add_0_right[where a=0, symmetric])
-   apply (rule add_mono)
-    apply simp
-   apply simp
-  apply (cases "(n - 1) mod m = m - 1")
-   apply (drule zmod_helper[where a=1])
-   apply simp
-  apply (subgoal_tac "1 + (n - 1) mod m \<le> m")
-   apply simp
-  apply (subst field_simps, rule zless_imp_add1_zle)
-  apply simp
-  done
+   apply auto
+  apply (subst mod_diff_eq [symmetric], simp add: zmod_minus1 mod_pos_pos_trivial)
+  by (smt Divides.pos_mod_bound Divides.pos_mod_sign int_mod_eq mod_add_left_eq)
 
 lemma ptr_add_image_multI:
   "\<lbrakk> \<And>x y. (x * val = y * val') = (x * val'' = y); x * val'' \<in> S \<rbrakk> \<Longrightarrow>
@@ -2826,7 +2808,7 @@ lemma ucast_ucast_add:
   apply (rule word_unat.Rep_eqD)
   apply (simp add: unat_ucast unat_word_ariths mod_mod_power
                    min.absorb2 unat_of_nat)
-  apply (subst mod_add_left_eq)
+  apply (subst mod_add_left_eq [symmetric])
   apply (simp add: mod_mod_power min.absorb2)
   apply (subst mod_add_right_eq)
   apply simp
@@ -3503,21 +3485,15 @@ lemma ucast_distrib:
 
 lemma ucast_down_add:
     "is_down (ucast:: 'a word \<Rightarrow> 'b word) \<Longrightarrow>  ucast ((a :: 'a::len word) + b) = (ucast a + ucast b :: 'b::len word)"
-  by (rule ucast_distrib [where L="op +"], (clarsimp simp: uint_word_ariths)+, presburger, simp)
+  by (rule ucast_distrib [where L = plus]) (auto simp add: uint_word_ariths mod_simps)
 
 lemma ucast_down_minus:
     "is_down (ucast:: 'a word \<Rightarrow> 'b word) \<Longrightarrow>  ucast ((a :: 'a::len word) - b) = (ucast a - ucast b :: 'b::len word)"
-  apply (rule ucast_distrib [where L="op -"], (clarsimp simp: uint_word_ariths)+)
-  apply (metis zdiff_zmod_left zdiff_zmod_right)
-  apply simp
-  done
+  by (rule ucast_distrib [where L = minus]) (auto simp add: uint_word_ariths mod_simps)
 
 lemma ucast_down_mult:
     "is_down (ucast:: 'a word \<Rightarrow> 'b word) \<Longrightarrow>  ucast ((a :: 'a::len word) * b) = (ucast a * ucast b :: 'b::len word)"
-  apply (rule ucast_distrib [where L="op *"], (clarsimp simp: uint_word_ariths)+)
-  apply (metis mod_mult_eq)
-  apply simp
-  done
+  by (rule ucast_distrib [where L = times]) (auto simp add: uint_word_ariths mod_simps)
 
 lemma scast_distrib:
   fixes M :: "'a::len word \<Rightarrow> 'a::len word \<Rightarrow> 'a::len word"
@@ -3539,21 +3515,15 @@ lemma scast_distrib:
 
 lemma scast_down_add:
     "is_down (scast:: 'a word \<Rightarrow> 'b word) \<Longrightarrow>  scast ((a :: 'a::len word) + b) = (scast a + scast b :: 'b::len word)"
-  by (rule scast_distrib [where L="op +"], (clarsimp simp: uint_word_ariths)+, presburger, simp)
+  by (rule scast_distrib [where L = plus]) (auto simp add: uint_word_ariths mod_simps)
 
 lemma scast_down_minus:
     "is_down (scast:: 'a word \<Rightarrow> 'b word) \<Longrightarrow>  scast ((a :: 'a::len word) - b) = (scast a - scast b :: 'b::len word)"
-  apply (rule scast_distrib [where L="op -"], (clarsimp simp: uint_word_ariths)+)
-  apply (metis zdiff_zmod_left zdiff_zmod_right)
-  apply simp
-  done
+  by (rule scast_distrib [where L = minus]) (auto simp add: uint_word_ariths mod_simps)
 
 lemma scast_down_mult:
     "is_down (scast:: 'a word \<Rightarrow> 'b word) \<Longrightarrow>  scast ((a :: 'a::len word) * b) = (scast a * scast b :: 'b::len word)"
-  apply (rule scast_distrib [where L="op *"], (clarsimp simp: uint_word_ariths)+)
-  apply (metis mod_mult_eq)
-  apply simp
-  done
+  by (rule scast_distrib [where L = times]) (auto simp add: uint_word_ariths mod_simps)
 
 lemma scast_ucast_1:
   "\<lbrakk> is_down (ucast :: 'a word \<Rightarrow> 'b word); is_down (ucast :: 'b word \<Rightarrow> 'c word) \<rbrakk> \<Longrightarrow>
@@ -4934,7 +4904,7 @@ proof -
     apply (subst unat_word_ariths(1) unat_word_ariths(2))+
     apply (subst uno_simps)
     apply (subst unat_1)
-    apply (subst mod_add_right_eq [symmetric])
+    apply (subst mod_add_right_eq)
     apply simp
     apply (subst power_mod_div)
     apply (subst div_mult_self1)

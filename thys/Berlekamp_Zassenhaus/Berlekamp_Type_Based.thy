@@ -420,8 +420,8 @@ proof -
       case False
       with r have r: "r = 1" by simp
       show ?thesis
-        by (unfold d div Let_def, simp add: n r id power_mod mult_mod_right,
-          simp add: ac_simps, rule mod_mult_right_eq)
+        by (auto simp add: d r div Let_def mod_simps)
+          (simp add: n r mod_simps ac_simps power_mult_distrib power_mult power2_eq_square)
     qed
   qed
 qed
@@ -463,7 +463,7 @@ proof
   assume H: "x mod n = y mod n"
   hence "x mod n - y mod n = 0" by simp
   hence "(x mod n - y mod n) mod n = 0" by simp
-  hence "(x - y) mod n = 0" by (simp add: mod_diff_eq[symmetric])
+  hence "(x - y) mod n = 0" by (simp add: mod_diff_eq)
   thus "n dvd x - y" by (simp add: dvd_eq_mod_eq_0)
 next
   assume H: "n dvd x - y"
@@ -904,7 +904,7 @@ next
       also have "... = (curr_p * mult_p mod u) * mult_p ^ (i-1) mod u"
         by (rule Suc.hyps, auto simp add: i_less_n less_imp_diff_less)
       also have "... = curr_p * mult_p ^ i mod u"
-        by (metis (no_types, lifting) False realpow_num_eq_if semiring_normalization_rules(18) zmod_simps(4))
+        using False by (cases i) (simp_all add: algebra_simps mod_simps)
       finally show ?thesis .
     next
       case False
@@ -917,7 +917,7 @@ next
         show "curr_p * mult_p mod u = curr_p * mult_p mod u mod u" by simp
       qed
       also have "... = curr_p * mult_p ^ i mod u"
-        by (metis i_n i_not_0 realpow_num_eq_if semiring_normalization_rules(18) zmod_simps(4))
+        using i_n [symmetric] i_not_0 by (cases i) (simp_all add: algebra_simps mod_simps)
       finally show ?thesis .
     qed
   qed

@@ -20,17 +20,20 @@ begin
 
 definition M :: "int \<Rightarrow> int" where "M x = x mod m" 
 
-lemma M_0[simp]: "M 0 = 0" unfolding M_def by auto
+lemma M_0[simp]: "M 0 = 0"
+  by (auto simp add: M_def)
 
-lemma M_M[simp]: "M (M x) = M x" unfolding M_def by auto
+lemma M_M[simp]: "M (M x) = M x"
+  by (auto simp add: M_def)
 
-lemma M_plus[simp]: "M (M x + y) = M (x + y)" "M (x + M y) = M (x + y)" unfolding M_def by presburger+
+lemma M_plus[simp]: "M (M x + y) = M (x + y)" "M (x + M y) = M (x + y)"
+  by (auto simp add: M_def mod_simps)
+  
+lemma M_minus[simp]: "M (M x - y) = M (x - y)" "M (x - M y) = M (x - y)" 
+  by (auto simp add: M_def mod_simps)
 
-lemma M_minus[simp]: "M (M x - y) = M (x - y)" "M (x - M y) = M (x - y)" unfolding M_def 
-  by (auto simp: zdiff_zmod_left zdiff_zmod_right)
-
-lemma M_times[simp]: "M (M x * y) = M (x * y)" "M (x * M y) = M (x * y)" unfolding M_def
-  by (auto simp: zmod_simps)
+lemma M_times[simp]: "M (M x * y) = M (x * y)" "M (x * M y) = M (x * y)"
+  by (auto simp add: M_def mod_simps)
 
 lemma M_sum: "M (sum (\<lambda> x. M (f x)) A) = M (sum f A)"
 proof (induct A rule: infinite_finite_induct) 

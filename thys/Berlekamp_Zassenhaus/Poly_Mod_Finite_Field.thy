@@ -278,7 +278,7 @@ proof (intro rel_funI, goal_cases)
   proof (intro allI, goal_cases)
     case (1 n)
     have "x * coeff f n mod m = (x mod m) * (coeff f n mod m) mod m" 
-      by (simp add: zmod_simps)
+      by (simp add: mod_simps)
     also have "\<dots> = to_int_mod_ring x' * (to_int_mod_ring (coeff f' n)) mod m" 
       using 1 by auto
     also have " \<dots> = to_int_mod_ring (x' * coeff f' n)" 

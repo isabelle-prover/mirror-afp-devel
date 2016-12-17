@@ -191,7 +191,7 @@ lemma eq_mod_dvd_minus:
   fixes c::"'a::ring_div"
   assumes "c \<noteq> 0" and "a mod c = b mod c" 
   shows "c dvd a - b"
-  using assms by (simp add: dvd_eq_mod_eq_0 mod_diff_eq)
+  using assms by (simp add: mod_eq_dvd_iff)
 
 lemma dvd_cong_not_eq_mod:
   fixes c::"'a::ring_div"

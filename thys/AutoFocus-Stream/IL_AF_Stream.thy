@@ -836,8 +836,8 @@ apply (rule context_conjI)
  apply (rule conj_cong, simp)
  apply (rule iffI)
   apply simp
- apply (frule_tac x=x and m=k in less_mod_eq_imp_add_divisor_le)
-  apply (simp add: mod_diff_right_eq[symmetric])
+   apply (frule_tac x=x and m=k in less_mod_eq_imp_add_divisor_le)
+  apply (simp add: mod_diff_right_eq [symmetric])
  apply simp
 apply (clarsimp simp: f_join_nth f_join_length f_shrink_length)
 apply (simp add: iT_Plus_inext_nth iT_Plus_not_empty)

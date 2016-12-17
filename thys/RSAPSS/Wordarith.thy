@@ -43,7 +43,8 @@ primrec remzero:: "bv \<Rightarrow> bv" where
 
 lemma remzeroeq: "bv_to_nat a = bv_to_nat (remzero a)"
 proof (induct a)
-  show "bv_to_nat [] = bv_to_nat (remzero [])" by (simp add: remzero.simps)
+  show "bv_to_nat [] = bv_to_nat (remzero [])"
+    by simp
 next
   case (Cons a1 a2)
   show "bv_to_nat a2 = bv_to_nat (remzero a2) \<Longrightarrow>
@@ -284,9 +285,7 @@ proof -
 qed
 
 lemma odd_mul_odd: "\<lbrakk>~(2::nat) dvd p; ~2 dvd q\<rbrakk> \<Longrightarrow> ~2 dvd p*q"
-  apply (simp add: dvd_eq_mod_eq_0)
-  apply (simp add: mod_mult_right_eq)
-  done
+  by simp
 
 lemma prime_equal: fixes p::nat shows "\<lbrakk>prime p; prime q; 2^x=p*q\<rbrakk> \<Longrightarrow> (p=q)"
 proof -

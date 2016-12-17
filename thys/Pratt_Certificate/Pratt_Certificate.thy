@@ -24,7 +24,7 @@ proof (induction b e m rule: mod_exp.induct, goal_cases)
 next
   case (3 e b m)
   from 3 have "mod_exp b e m = b ^ (Suc (2 * (e div 2))) mod m"
-    by (simp only: power_mult power_Suc) (simp add: power_mod mod_mult_right_eq [symmetric])
+    by (simp only: power_mult power_Suc) (simp add: power_mod mod_mult_right_eq)
   also from 3 have "Suc (2 * (e div 2)) = e" by simp
   finally show ?case .
 qed simp

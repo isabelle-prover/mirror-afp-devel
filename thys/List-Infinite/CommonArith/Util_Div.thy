@@ -178,16 +178,16 @@ lemma mod_add1_eq_if: "
   (a + b) mod (m::nat) = (
   if (a mod m + b mod m < m) then a mod m + b mod m
   else a mod m + b mod m - m)"
-by (simp add: mod_add_eq[of a b] mod_add_mod_if)
+by (simp add: mod_add_eq[symmetric, of a b] mod_add_mod_if)
 
 lemma mod_add_eq_mod_conv: "0 < (m::nat) \<Longrightarrow>
   ((x + a) mod m = b mod m ) =
   (x mod m = (m + b mod m - a mod m) mod m)"
-apply (simp only: mod_add_eq[of x a])
+apply (simp only: mod_add_eq[symmetric, of x a])
 apply (rule iffI)
  apply (drule sym)
  apply (simp add: mod_add_mod_if)
-apply (simp add: mod_add_left_eq[symmetric] le_add_diff_inverse2[OF trans_le_add1[OF mod_le_divisor]])
+apply (simp add: mod_add_left_eq le_add_diff_inverse2[OF trans_le_add1[OF mod_le_divisor]])
 done
 
 
@@ -435,7 +435,7 @@ done
 
 lemma zdiff_mod_0_imp_mod_eq:"
   (b - a) mod m = 0 \<Longrightarrow> (a::int) mod m = b mod m"
-by (metis dvd_eq_mod_eq_0 zmod_eq_dvd_iff)
+by (metis dvd_eq_mod_eq_0 mod_eq_dvd_iff)
 
 lemma zmod_eq_diff_mod_0_conv: "
   ((a::int) mod m = b mod m) = ((b - a) mod m = 0)"
