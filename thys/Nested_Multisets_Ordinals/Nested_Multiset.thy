@@ -52,7 +52,7 @@ text \<open>The Dershowitz--Manna extension:\<close>
 
 definition less_multiset_ext\<^sub>D\<^sub>M where
   "less_multiset_ext\<^sub>D\<^sub>M R M N \<longleftrightarrow>
-   (\<exists>X Y. X \<noteq> {#} \<and> X \<le># N \<and> M = (N - X) + Y \<and> (\<forall>k. k \<in># Y \<longrightarrow> (\<exists>a. a \<in># X \<and> R k a)))"
+   (\<exists>X Y. X \<noteq> {#} \<and> X \<subseteq># N \<and> M = (N - X) + Y \<and> (\<forall>k. k \<in># Y \<longrightarrow> (\<exists>a. a \<in># X \<and> R k a)))"
 
 lemma less_multiset_ext\<^sub>D\<^sub>M_imp_mult:
   assumes
@@ -60,13 +60,13 @@ lemma less_multiset_ext\<^sub>D\<^sub>M_imp_mult:
   shows "(M, N) \<in> mult {(x, y). x \<in> A \<and> y \<in> A \<and> R x y}"
 proof -
   from less obtain X Y where
-    "X \<noteq> {#}" and "X \<le># N" and "M = N - X + Y" and "\<forall>k. k \<in># Y \<longrightarrow> (\<exists>a. a \<in># X \<and> R k a)"
+    "X \<noteq> {#}" and "X \<subseteq># N" and "M = N - X + Y" and "\<forall>k. k \<in># Y \<longrightarrow> (\<exists>a. a \<in># X \<and> R k a)"
     unfolding less_multiset_ext\<^sub>D\<^sub>M_def by blast
   with N_A M_A have "(N - X + Y, N - X + X) \<in> mult {(x, y). x \<in> A \<and> y \<in> A \<and> R x y}"
     by (intro one_step_implies_mult, blast,
       metis (mono_tags, lifting) case_prodI mem_Collect_eq mset_subset_eqD mset_subset_eq_add_right
         subsetCE)
-  with \<open>M = N - X + Y\<close> \<open>X \<le># N\<close> show "(M, N) \<in> mult {(x, y). x \<in> A \<and> y \<in> A \<and> R x y}"
+  with \<open>M = N - X + Y\<close> \<open>X \<subseteq># N\<close> show "(M, N) \<in> mult {(x, y). x \<in> A \<and> y \<in> A \<and> R x y}"
     by (simp add: subset_mset.diff_add)
 qed
 
@@ -165,7 +165,7 @@ instantiation nmultiset :: (preorder) preorder
 begin
 
 lemma less_multiset_ext\<^sub>D\<^sub>M_cong[fundef_cong]:
-  "(\<And>X Y k a. X \<noteq> {#} \<Longrightarrow> X \<le># N \<Longrightarrow> M = (N - X) + Y \<Longrightarrow> k \<in># Y \<Longrightarrow> R k a = S k a) \<Longrightarrow>
+  "(\<And>X Y k a. X \<noteq> {#} \<Longrightarrow> X \<subseteq># N \<Longrightarrow> M = (N - X) + Y \<Longrightarrow> k \<in># Y \<Longrightarrow> R k a = S k a) \<Longrightarrow>
   less_multiset_ext\<^sub>D\<^sub>M R M N = less_multiset_ext\<^sub>D\<^sub>M S M N"
   unfolding less_multiset_ext\<^sub>D\<^sub>M_def by metis
 

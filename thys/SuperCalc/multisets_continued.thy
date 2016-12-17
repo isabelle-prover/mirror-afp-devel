@@ -41,7 +41,7 @@ lemma equal_image_mset:
 by (meson assms count_eq_zero_iff count_mset_set(3) image_mset_cong)
 
 lemma multiset_order_inclusion:
-  assumes "E <# F"
+  assumes "E \<subset># F"
   assumes "trans r"
   shows "(E,F) \<in> (mult r)"
 proof -

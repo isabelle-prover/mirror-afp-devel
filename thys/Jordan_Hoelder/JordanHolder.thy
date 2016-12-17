@@ -175,14 +175,14 @@ proof (induction "length \<GG>" arbitrary: \<GG> \<HH> G rule: full_nat_induct)
       have not\<GG>PnSub\<HH>Pm:"\<not> (\<GG> ! (n - 1) \<subseteq> \<HH> ! (m - 1))" using \<GG>Pnmax.max_normal \<HH>PmnormG False \<HH>Pmmax.proper by simp
       
       -- {* Show that @{term "G Mod (\<HH> ! (m - 1) \<inter> \<GG> ! (n - 1))"} is a simple group. *}
-      have \<HH>PmSubSetmult:"\<HH> ! (m - 1) \<subseteq> \<HH> ! (m - 1) <#>\<^bsub>G\<^esub> \<GG> ! (n - 1)"
+      have \<HH>PmSubSetmult:"\<HH> ! (m - 1) \<subseteq> \<HH> ! (m - 1) \<subset>#>\<^bsub>G\<^esub> \<GG> ! (n - 1)"
         using second_isomorphism_grp.H_contained_in_set_mult \<GG>Pnmax.is_normal \<HH>PmnormG normal_imp_subgroup
         unfolding second_isomorphism_grp_def second_isomorphism_grp_axioms_def max_normal_subgroup_def by metis
-      have \<GG>PnSubSetmult:"\<GG> ! (n - 1) \<subseteq> \<HH> ! (m - 1) <#>\<^bsub>G\<^esub> \<GG> ! (n - 1)"
+      have \<GG>PnSubSetmult:"\<GG> ! (n - 1) \<subseteq> \<HH> ! (m - 1) \<subset>#>\<^bsub>G\<^esub> \<GG> ! (n - 1)"
         using second_isomorphism_grp.S_contained_in_set_mult \<GG>Pnmax.is_normal \<HH>PmnormG normal_imp_subgroup
         unfolding second_isomorphism_grp_def second_isomorphism_grp_axioms_def max_normal_subgroup_def by metis
-      have "\<GG> ! (n - 1) \<noteq> (\<HH> ! (m - 1)) <#>\<^bsub>G\<^esub> (\<GG> ! (n - 1))" using \<HH>PmSubSetmult not\<HH>PmSub\<GG>Pn by auto
-      hence set_multG:"(\<HH> ! (m - 1)) <#>\<^bsub>G\<^esub> (\<GG> ! (n - 1)) = carrier G"
+      have "\<GG> ! (n - 1) \<noteq> (\<HH> ! (m - 1)) \<subset>#>\<^bsub>G\<^esub> (\<GG> ! (n - 1))" using \<HH>PmSubSetmult not\<HH>PmSub\<GG>Pn by auto
+      hence set_multG:"(\<HH> ! (m - 1)) \<subset>#>\<^bsub>G\<^esub> (\<GG> ! (n - 1)) = carrier G"
         using \<GG>Pnmax.max_normal \<GG>Pnmax.is_normal \<HH>PmnormG comp\<GG>.normal_subgroup_set_mult_closed \<GG>PnSubSetmult by metis
       then obtain \<phi> where "\<phi> \<in> (\<GG>Pn Mod (\<HH> ! (m - 1) \<inter> \<GG> ! (n - 1))) \<cong> (G\<lparr>carrier := carrier G\<rparr> Mod \<HH> ! (m - 1))"
         using second_isomorphism_grp.normal_intersection_quotient_isom \<HH>PmnormG \<GG>Pnmax.is_normal normal_imp_subgroup
@@ -197,14 +197,14 @@ proof (induction "length \<GG>" arbitrary: \<GG> \<HH> G rule: full_nat_induct)
       interpret grpGMod\<HH>Pm: group "(G Mod \<HH> ! (m - 1))" by (metis \<HH>PmnormG normal.factorgroup_is_group)
 
       -- {* Show analogues of the previous statements for @{term "\<HH> ! (m - 1)"} instead of @{term "\<GG> ! (n - 1)"}. *}
-      have \<HH>PmSubSetmult':"\<HH> ! (m - 1) \<subseteq> \<GG> ! (n - 1) <#>\<^bsub>G\<^esub> \<HH> ! (m - 1)"
+      have \<HH>PmSubSetmult':"\<HH> ! (m - 1) \<subseteq> \<GG> ! (n - 1) \<subset>#>\<^bsub>G\<^esub> \<HH> ! (m - 1)"
         using second_isomorphism_grp.S_contained_in_set_mult \<GG>Pnmax.is_normal \<HH>PmnormG normal_imp_subgroup
         unfolding second_isomorphism_grp_def second_isomorphism_grp_axioms_def max_normal_subgroup_def by metis
-      have \<GG>PnSubSetmult':"\<GG> ! (n - 1) \<subseteq> \<GG> ! (n - 1) <#>\<^bsub>G\<^esub> \<HH> ! (m - 1)"
+      have \<GG>PnSubSetmult':"\<GG> ! (n - 1) \<subseteq> \<GG> ! (n - 1) \<subset>#>\<^bsub>G\<^esub> \<HH> ! (m - 1)"
         using second_isomorphism_grp.H_contained_in_set_mult \<GG>Pnmax.is_normal \<HH>PmnormG normal_imp_subgroup
         unfolding second_isomorphism_grp_def second_isomorphism_grp_axioms_def max_normal_subgroup_def by metis
-      have "\<HH> ! (m - 1) \<noteq> (\<GG> ! (n - 1)) <#>\<^bsub>G\<^esub> (\<HH> ! (m - 1))" using \<GG>PnSubSetmult' not\<GG>PnSub\<HH>Pm by auto
-      hence set_multG:"(\<GG> ! (n - 1)) <#>\<^bsub>G\<^esub> (\<HH> ! (m - 1)) = carrier G"
+      have "\<HH> ! (m - 1) \<noteq> (\<GG> ! (n - 1)) \<subset>#>\<^bsub>G\<^esub> (\<HH> ! (m - 1))" using \<GG>PnSubSetmult' not\<GG>PnSub\<HH>Pm by auto
+      hence set_multG:"(\<GG> ! (n - 1)) \<subset>#>\<^bsub>G\<^esub> (\<HH> ! (m - 1)) = carrier G"
         using \<HH>Pmmax.max_normal \<HH>Pmmax.is_normal \<GG>PnnormG comp\<GG>.normal_subgroup_set_mult_closed \<HH>PmSubSetmult' by metis
       from set_multG obtain \<psi> where "\<psi> \<in> (\<HH>Pm Mod (\<GG> ! (n - 1) \<inter> \<HH> ! (m - 1))) \<cong> (G\<lparr>carrier := carrier G\<rparr> Mod \<GG> ! (n - 1))"
         using second_isomorphism_grp.normal_intersection_quotient_isom \<GG>PnnormG \<HH>Pmmax.is_normal normal_imp_subgroup

@@ -64,7 +64,7 @@ lemma diff_from_empty: "{#}-s S = {#}" unfolding diff_def by auto
 
 lemma diff_empty: "M -s {} = M" unfolding diff_def by (rule multiset_eqI) simp
 
-lemma submultiset_implies_subset: assumes "M \<le># N" shows "set_mset M \<subseteq> set_mset N"
+lemma submultiset_implies_subset: assumes "M \<subseteq># N" shows "set_mset M \<subseteq> set_mset N"
  using assms mset_subset_eqD by auto
 
 lemma subset_implies_remove_empty: assumes "set_mset M \<subseteq> S" shows "M -s S = {#}"
@@ -273,7 +273,7 @@ lemma dl_monotone: "dl r (\<sigma>@\<tau>) \<subseteq> dl r (\<sigma>@\<tau>'@\<
 
 text {* Lemma 2.6.2 *}
 
-lemma lemma2_6_2_a: assumes t: "trans r" and "M \<le># N" shows "(M,N) \<in> mul_eq r" proof -
+lemma lemma2_6_2_a: assumes t: "trans r" and "M \<subseteq># N" shows "(M,N) \<in> mul_eq r" proof -
  from assms(2) obtain J where "N=M+J" by (metis assms(2) mset_subset_eq_exists_conv)
  hence "M = M + {#}" and "N = M + J" and "set_mset {#} \<subseteq> dm r J" by auto
  thus ?thesis unfolding mul_eq_def by fast
@@ -489,7 +489,7 @@ qed
 
 text {* missing?; similar to lemma\_2.6.2? *}
 lemma lemma2_6_8: assumes t: "trans r" and "S \<subseteq> T" shows "(M -s T,M -s S) \<in> mul_eq r" proof -
- from assms(2) have "(M -s T) \<le># (M -s S)"
+ from assms(2) have "(M -s T) \<subseteq># (M -s S)"
   by (metis Un_absorb2 Un_commute lemmaA_3_10 lemmaA_3_9 mset_subset_eq_add_right)
  thus ?thesis using lemma2_6_2_a[OF t] by auto
 qed
@@ -580,10 +580,10 @@ definition LD' :: "'a rel \<Rightarrow> 'a \<Rightarrow> 'a
 
 text {* auxiliary properties on multisets *}
 
-lemma lexmax_le_multiset: assumes t:"trans r" shows "r|\<sigma>| \<le># mset \<sigma>" proof (induct "\<sigma>")
+lemma lexmax_le_multiset: assumes t:"trans r" shows "r|\<sigma>| \<subseteq># mset \<sigma>" proof (induct "\<sigma>")
  case Nil thus ?case unfolding lexmax.simps by auto
  next
- case (Cons s \<tau>) hence "lexmax r \<tau> -s ds r {s} \<le># mset \<tau>" using lemmaA_3_10 mset_subset_eq_add_right subset_mset.order_trans by metis
+ case (Cons s \<tau>) hence "lexmax r \<tau> -s ds r {s} \<subseteq># mset \<tau>" using lemmaA_3_10 mset_subset_eq_add_right subset_mset.order_trans by metis
  thus ?case by simp
 qed
 
@@ -1173,7 +1173,7 @@ qed
 
 lemma lemma2_6_2_set: assumes "S \<subseteq> T" shows "ds r S \<subseteq> ds r T" using assms unfolding ds_def by auto
 
-lemma leq_imp_subseteq: assumes "M \<le># N" shows "set_mset M \<subseteq> set_mset N" using assms mset_subset_eqD by auto
+lemma leq_imp_subseteq: assumes "M \<subseteq># N" shows "set_mset M \<subseteq> set_mset N" using assms mset_subset_eqD by auto
 
 lemma mul_add_mul_eq_imp_mul: assumes "(M,N) \<in> mul r" and "(P,Q) \<in> mul_eq r" shows "(M+P,N+Q) \<in> mul r" proof -
  from assms(1) obtain I J K where a:"M = I + K" "N = I + J" "set_mset K \<subseteq> dm r J" "J \<noteq> {#}" unfolding mul_def by auto

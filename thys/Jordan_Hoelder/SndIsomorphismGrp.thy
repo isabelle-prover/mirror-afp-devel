@@ -34,7 +34,7 @@ proof -
     show "subgroup N (G\<lparr>carrier := S\<rparr>)" using assms is_group by (metis subgroup.subgroup_of_subset normal_inv_iff)
   next
     from SsubG have "S \<subseteq> carrier G" by (rule subgroup_imp_subset)
-    thus "\<forall>x\<in>carrier (G\<lparr>carrier := S\<rparr>). N #>\<^bsub>G\<lparr>carrier := S\<rparr>\<^esub> x = x <#\<^bsub>G\<lparr>carrier := S\<rparr>\<^esub> N"
+    thus "\<forall>x\<in>carrier (G\<lparr>carrier := S\<rparr>). N #>\<^bsub>G\<lparr>carrier := S\<rparr>\<^esub> x = x \<subset>#\<^bsub>G\<lparr>carrier := S\<rparr>\<^esub> N"
       using Nnormal unfolding normal_def normal_axioms_def l_coset_def r_coset_def by fastforce
   qed
 qed
@@ -98,25 +98,25 @@ next
 qed
 
 lemma normal_set_mult_subgroup:
-  shows "subgroup (H <#> S) G"
+  shows "subgroup (H \<subset>#> S) G"
 proof(rule subgroupI)
-  show "H <#> S \<subseteq> carrier G" by (metis setmult_subset_G subgroup_imp_subset subgrpS subset)
+  show "H \<subset>#> S \<subseteq> carrier G" by (metis setmult_subset_G subgroup_imp_subset subgrpS subset)
 next
   have "\<one> \<in> H" "\<one> \<in> S" using is_subgroup subgrpS subgroup.one_closed by auto
-  hence "\<one> \<otimes> \<one> \<in> H <#> S" unfolding set_mult_def by blast
-  thus "H <#> S \<noteq> {}" by auto
+  hence "\<one> \<otimes> \<one> \<in> H \<subset>#> S" unfolding set_mult_def by blast
+  thus "H \<subset>#> S \<noteq> {}" by auto
 next
   fix g
-  assume g:"g \<in> H <#> S"
+  assume g:"g \<in> H \<subset>#> S"
   then obtain h s where h:"h \<in> H" and s:"s \<in> S" and ghs:"g = h \<otimes> s" unfolding set_mult_def by auto
   hence "s \<in> carrier G" by (metis subgroup.mem_carrier subgrpS)
   with h ghs obtain h' where h':"h' \<in> H" and "g = s \<otimes> h'" using coset_eq unfolding r_coset_def l_coset_def by auto
   with s have "inv g = (inv h') \<otimes> (inv s)" by (metis inv_mult_group mem_carrier subgroup.mem_carrier subgrpS)
   moreover from h' s subgrpS have "inv h' \<in> H" "inv s \<in> S" using subgroup.m_inv_closed m_inv_closed by auto
-  ultimately show "inv g \<in> H <#> S" unfolding set_mult_def by auto
+  ultimately show "inv g \<in> H \<subset>#> S" unfolding set_mult_def by auto
 next
   fix g g'
-  assume g:"g \<in> H <#> S" and h:"g' \<in> H <#> S"
+  assume g:"g \<in> H \<subset>#> S" and h:"g' \<in> H \<subset>#> S"
   then obtain h h' s s' where hh'ss':"h \<in> H" "h' \<in> H" "s \<in> S" "s' \<in> S" and "g = h \<otimes> s" and "g' = h' \<otimes> s'" unfolding set_mult_def by auto
   hence "g \<otimes> g' = (h \<otimes> s) \<otimes> (h' \<otimes> s')" by metis
   also from hh'ss' have inG:"h \<in> carrier G" "h' \<in> carrier G" "s \<in> carrier G" "s' \<in> carrier G" using subgrpS mem_carrier subgroup.mem_carrier by force+
@@ -125,57 +125,57 @@ next
   hence "h \<otimes> (s \<otimes> h') \<otimes> s' = h \<otimes> (h'' \<otimes> s) \<otimes> s'" by simp
   also from h'' inG have "... = (h \<otimes> h'') \<otimes> (s \<otimes> s')" using m_assoc mem_carrier by auto
   finally have "g \<otimes> g' = h \<otimes> h'' \<otimes> (s \<otimes> s')".
-  moreover with h'' hh'ss' have "... \<in> H <#> S" unfolding set_mult_def using subgrpS subgroup.m_closed by fastforce
-  ultimately show "g \<otimes> g' \<in> H <#> S" by simp
+  moreover with h'' hh'ss' have "... \<in> H \<subset>#> S" unfolding set_mult_def using subgrpS subgroup.m_closed by fastforce
+  ultimately show "g \<otimes> g' \<in> H \<subset>#> S" by simp
 qed
 
 lemma oneH:"\<one> \<in> H" by (metis is_subgroup subgroup.one_closed)
 
 lemma H_contained_in_set_mult:
-  shows "H \<subseteq> H <#> S"
+  shows "H \<subseteq> H \<subset>#> S"
 proof auto
   have "\<one> \<in> S" by (metis subgroup.one_closed subgrpS)
   fix x
   assume x:"x \<in> H"
-  with `\<one> \<in> S` have "x \<otimes> \<one> \<in> H <#> S" unfolding set_mult_def by force
-  with x show  "x \<in> H <#> S" by (metis mem_carrier r_one)
+  with `\<one> \<in> S` have "x \<otimes> \<one> \<in> H \<subset>#> S" unfolding set_mult_def by force
+  with x show  "x \<in> H \<subset>#> S" by (metis mem_carrier r_one)
 qed
 
 lemma S_contained_in_set_mult:
-  shows "S \<subseteq> H <#> S"
+  shows "S \<subseteq> H \<subset>#> S"
 proof auto
   fix s
   assume s:"s \<in> S"
-  with oneH have "\<one> \<otimes> s \<in> H <#> S" unfolding set_mult_def by force
-  with s show "s \<in> H <#> S" using subgrpS subgroup.mem_carrier l_one by force
+  with oneH have "\<one> \<otimes> s \<in> H \<subset>#> S" unfolding set_mult_def by force
+  with s show "s \<in> H \<subset>#> S" using subgrpS subgroup.mem_carrier l_one by force
 qed
 
 lemma normal_intersection_hom:
-  shows "group_hom (G\<lparr>carrier := S\<rparr>) ((G\<lparr>carrier := H <#> S\<rparr>) Mod H) (\<lambda>g. H #> g)"
+  shows "group_hom (G\<lparr>carrier := S\<rparr>) ((G\<lparr>carrier := H \<subset>#> S\<rparr>) Mod H) (\<lambda>g. H #> g)"
 proof (auto del: equalityI simp: group_hom_def group_hom_axioms_def hom_def groupS.is_group)
-  have  gr:"group (G\<lparr>carrier := H <#> S\<rparr>)" by (metis normal_set_mult_subgroup subgroup_imp_group)
-  moreover have "H \<subseteq> H <#> S" by (rule H_contained_in_set_mult)
-  moreover have "subgroup (H <#> S) G" by (metis normal_set_mult_subgroup)
-  ultimately have "H \<lhd> (G\<lparr>carrier := H <#> S\<rparr>)" using normal_restrict_supergroup by (metis inv_op_closed2 is_subgroup normal_inv_iff)
-  with gr show "group ((G\<lparr>carrier := H <#> S\<rparr>) Mod H)" by (metis normal.factorgroup_is_group)
+  have  gr:"group (G\<lparr>carrier := H \<subset>#> S\<rparr>)" by (metis normal_set_mult_subgroup subgroup_imp_group)
+  moreover have "H \<subseteq> H \<subset>#> S" by (rule H_contained_in_set_mult)
+  moreover have "subgroup (H \<subset>#> S) G" by (metis normal_set_mult_subgroup)
+  ultimately have "H \<lhd> (G\<lparr>carrier := H \<subset>#> S\<rparr>)" using normal_restrict_supergroup by (metis inv_op_closed2 is_subgroup normal_inv_iff)
+  with gr show "group ((G\<lparr>carrier := H \<subset>#> S\<rparr>) Mod H)" by (metis normal.factorgroup_is_group)
 next
   fix g
   assume g:"g \<in> S"
-  with subgrpS have "\<one> \<otimes> g \<in> H <#> S" unfolding set_mult_def by fastforce
-  with g have "g \<in> H <#> S" by (metis l_one subgroup.mem_carrier subgrpS)
-  thus "H #> g \<in> carrier ((G\<lparr>carrier := H <#> S\<rparr>) Mod H)" unfolding FactGroup_def RCOSETS_def r_coset_def by auto
+  with subgrpS have "\<one> \<otimes> g \<in> H \<subset>#> S" unfolding set_mult_def by fastforce
+  with g have "g \<in> H \<subset>#> S" by (metis l_one subgroup.mem_carrier subgrpS)
+  thus "H #> g \<in> carrier ((G\<lparr>carrier := H \<subset>#> S\<rparr>) Mod H)" unfolding FactGroup_def RCOSETS_def r_coset_def by auto
 next
   fix g g' xa
   assume g:"g \<in> S" and g':"g' \<in> S"
-  hence "(H #> g) <#> (H #> g') = H #> (g \<otimes> g')" by (metis rcos_sum subgroup.mem_carrier subgrpS)
-  thus "H #> (g \<otimes> g') = (H #> g) <#>\<^bsub>G\<lparr>carrier := H <#> S\<rparr>\<^esub> (H #> g')" unfolding set_mult_def by auto
+  hence "(H #> g) \<subset>#> (H #> g') = H #> (g \<otimes> g')" by (metis rcos_sum subgroup.mem_carrier subgrpS)
+  thus "H #> (g \<otimes> g') = (H #> g) \<subset>#>\<^bsub>G\<lparr>carrier := H \<subset>#> S\<rparr>\<^esub> (H #> g')" unfolding set_mult_def by auto
 qed
 
 lemma normal_intersection_hom_kernel:
-  shows "kernel (G\<lparr>carrier := S\<rparr>) ((G\<lparr>carrier := H <#> S\<rparr>) Mod H) (\<lambda>g. H #> g) = H \<inter> S"
+  shows "kernel (G\<lparr>carrier := S\<rparr>) ((G\<lparr>carrier := H \<subset>#> S\<rparr>) Mod H) (\<lambda>g. H #> g) = H \<inter> S"
 proof -
-  have "kernel (G\<lparr>carrier := S\<rparr>) ((G\<lparr>carrier := H <#> S\<rparr>) Mod H) (\<lambda>g. H #> g)
-                 = {g \<in> S. H #> g = \<one>\<^bsub>(G\<lparr>carrier := H <#> S\<rparr>) Mod H\<^esub>}" unfolding kernel_def by auto
+  have "kernel (G\<lparr>carrier := S\<rparr>) ((G\<lparr>carrier := H \<subset>#> S\<rparr>) Mod H) (\<lambda>g. H #> g)
+                 = {g \<in> S. H #> g = \<one>\<^bsub>(G\<lparr>carrier := H \<subset>#> S\<rparr>) Mod H\<^esub>}" unfolding kernel_def by auto
   also have "... = {g \<in> S. H #> g = H}" unfolding FactGroup_def by auto
   also have "... = {g \<in> S. g \<in> H}" by (metis coset_eq is_subgroup lcoset_join2 rcos_self subgroup.mem_carrier subgrpS)
   also have "... = H \<inter> S" by auto
@@ -183,15 +183,15 @@ proof -
 qed
 
 lemma normal_intersection_hom_surj:
-  shows "(\<lambda>g. H #> g) ` carrier (G\<lparr>carrier := S\<rparr>) = carrier ((G\<lparr>carrier := H <#> S\<rparr>) Mod H)"
+  shows "(\<lambda>g. H #> g) ` carrier (G\<lparr>carrier := S\<rparr>) = carrier ((G\<lparr>carrier := H \<subset>#> S\<rparr>) Mod H)"
 proof auto
   fix g
   assume "g \<in> S"
-  hence "g \<in> H <#> S" using S_contained_in_set_mult by auto
-  thus "H #> g \<in> carrier ((G\<lparr>carrier := H <#> S\<rparr>) Mod H)" unfolding FactGroup_def RCOSETS_def r_coset_def by auto
+  hence "g \<in> H \<subset>#> S" using S_contained_in_set_mult by auto
+  thus "H #> g \<in> carrier ((G\<lparr>carrier := H \<subset>#> S\<rparr>) Mod H)" unfolding FactGroup_def RCOSETS_def r_coset_def by auto
 next
   fix x
-  assume "x \<in> carrier (G\<lparr>carrier := H <#> S\<rparr> Mod H)"
+  assume "x \<in> carrier (G\<lparr>carrier := H \<subset>#> S\<rparr> Mod H)"
   then obtain h s where h:"h \<in> H" and s:"s \<in> S" and "x = H #> (h \<otimes> s)"
     unfolding FactGroup_def RCOSETS_def r_coset_def set_mult_def by auto
   hence "x = (H #> h) #> s" by (metis h s coset_mult_assoc mem_carrier subgroup.mem_carrier subgrpS subset)
@@ -203,7 +203,7 @@ qed
 text {* Finally we can prove the actual isomorphism theorem: *}
 
 theorem normal_intersection_quotient_isom:
-  shows "(\<lambda>X. the_elem ((\<lambda>g. H #> g) ` X)) \<in> ((G\<lparr>carrier := S\<rparr>) Mod (H \<inter> S)) \<cong> (((G\<lparr>carrier := H <#> S\<rparr>)) Mod H)"
+  shows "(\<lambda>X. the_elem ((\<lambda>g. H #> g) ` X)) \<in> ((G\<lparr>carrier := S\<rparr>) Mod (H \<inter> S)) \<cong> (((G\<lparr>carrier := H \<subset>#> S\<rparr>)) Mod H)"
 using normal_intersection_hom_kernel[symmetric] normal_intersection_hom normal_intersection_hom_surj
 by (metis group_hom.FactGroup_iso)
 

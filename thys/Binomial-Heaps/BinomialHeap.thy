@@ -789,7 +789,7 @@ lemma queue_invar_remove1: "queue_invar q \<Longrightarrow> queue_invar (remove1
   by (auto simp add: queue_invar_def)
 
 lemma qtm_in_set_subset: "t \<in> set q \<Longrightarrow> 
-  tree_to_multiset t \<le># queue_to_multiset q"
+  tree_to_multiset t \<subseteq># queue_to_multiset q"
 proof(induct q)
   case Nil
   then show ?case by simp
@@ -802,7 +802,7 @@ next
   next
     case False
     with Cons have t_in_q: "t \<in> set q" by simp
-    have "queue_to_multiset q \<le># queue_to_multiset (a # q)"
+    have "queue_to_multiset q \<subseteq># queue_to_multiset (a # q)"
       by simp
     from subset_mset.order_trans[OF Cons(1)[OF t_in_q] this] show ?thesis .
   qed
@@ -1000,7 +1000,7 @@ proof -
   let ?Q = "queue_to_multiset q"
   let ?MT = "tree_to_multiset (getMinTree q)"
   from q_ne have head_subset_min: 
-    "{# (val (getMinTree q), prio (getMinTree q)) #} \<le># ?MT"
+    "{# (val (getMinTree q), prio (getMinTree q)) #} \<subseteq># ?MT"
     by(cases "getMinTree q") simp
   let ?Q = "queue_to_multiset q"
   let ?MT = "tree_to_multiset (getMinTree q)"

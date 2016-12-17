@@ -1110,8 +1110,8 @@ proof -
   from this and `(s1,s2) \<in> trm_ord` have 
     s2max: "\<forall>x. (x \<in># {# t1,t1,s1,s1 #} \<longrightarrow> (x,s2) \<in> trm_ord)" 
      by auto
-   have "{# s2 #} <# {# t2,t2,s2,s2 #}" by simp 
-   from `{# s2 #} <# {# t2,t2,s2,s2 #}` 
+   have "{# s2 #} \<subset># {# t2,t2,s2,s2 #}" by simp 
+   from `{# s2 #} \<subset># {# t2,t2,s2,s2 #}` 
    have "( {# s2 #}, {# t2,t2,s2,s2 #} ) \<in> mult trm_ord"
      using trm_ord_trans multiset_order_inclusion [of "{# s2 #}" "{# t2,t2,s2,s2 #}" "trm_ord"] by auto
   have "p1 = neg \<or> p1 = pos" using sign.exhaust by auto 

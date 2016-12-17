@@ -412,13 +412,13 @@ where
   "supset_zmset A B \<equiv> B \<subset>#\<^sub>z A"
 
 notation (input)
-  subseteq_zmset (infix "\<le>#\<^sub>z" 50) and
-  supseteq_zmset (infix "\<ge>#\<^sub>z" 50)
+  subseteq_zmset (infix "\<subseteq>#\<^sub>z" 50) and
+  supseteq_zmset (infix "\<supseteq>#\<^sub>z" 50)
 
 notation (ASCII)
-  subseteq_zmset (infix "<=#\<^sub>z" 50) and
-  subset_zmset (infix "<#\<^sub>z" 50) and
-  supseteq_zmset (infix ">=#\<^sub>z" 50) and
+  subseteq_zmset (infix "\<subseteq>#\<^sub>z" 50) and
+  subset_zmset (infix "\<subset>#\<^sub>z" 50) and
+  supseteq_zmset (infix "\<supseteq>#\<^sub>z" 50) and
   supset_zmset (infix ">#\<^sub>z" 50)
 
 interpretation subset_zmset: ordered_ab_semigroup_add_imp_le "op +" "op -" "op \<subseteq>#\<^sub>z" "op \<subset>#\<^sub>z"
@@ -426,7 +426,7 @@ interpretation subset_zmset: ordered_ab_semigroup_add_imp_le "op +" "op -" "op \
     intro: order_trans antisym)
 
 interpretation subset_zmset:
-  ordered_ab_semigroup_monoid_add_imp_le "op +" 0 "op -" "op \<le>#\<^sub>z" "op <#\<^sub>z"
+  ordered_ab_semigroup_monoid_add_imp_le "op +" 0 "op -" "op \<subseteq>#\<^sub>z" "op \<subset>#\<^sub>z"
   by unfold_locales
 
 lemma zmset_subset_eqI: "(\<And>a. zcount A a \<le> zcount B a) \<Longrightarrow> A \<subseteq>#\<^sub>z B"
