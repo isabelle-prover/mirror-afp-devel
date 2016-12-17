@@ -123,7 +123,10 @@ such as Bilinear Dominance or Pairwise Comparison.
   </tr>
 
 
-    <tr><td class="links">Older releases: None
+    <tr><td class="links">Older releases: <ul>
+<li>Isabelle 2016: <a href="../release/afp-<!--#echo var="name" -->-2016-05-05.tar.gz">afp-<!--#echo var="name" -->-2016-05-05.tar.gz</a></li>
+
+</ul>
     </td></tr>
 
   </tbody>

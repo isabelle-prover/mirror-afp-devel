@@ -128,7 +128,10 @@ Added security locale support for the imposition of requirements on the initial 
   </tr>
 
 
-    <tr><td class="links">Older releases: None
+    <tr><td class="links">Older releases: <ul>
+<li>Isabelle 2016: <a href="../release/afp-<!--#echo var="name" -->-2016-06-25.tar.gz">afp-<!--#echo var="name" -->-2016-06-25.tar.gz</a></li>
+
+</ul>
     </td></tr>
 
   </tbody>
