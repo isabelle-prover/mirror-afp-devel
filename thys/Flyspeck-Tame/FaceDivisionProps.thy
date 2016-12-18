@@ -459,37 +459,45 @@ lemma is_nextElem_rotate1_aux:
 proof -
   assume is_nextElem: "is_nextElem (rotate m ls) x y"
   def n \<equiv> "m mod length ls"
-  then have rot_eq: "rotate m ls = rotate n ls" by (auto intro: rotate_conv_mod)
-  with is_nextElem have "is_nextElem (rotate n ls) x y" by auto
+  then have rot_eq: "rotate m ls = rotate n ls"
+    by (auto intro: rotate_conv_mod)
+  with is_nextElem have "is_nextElem (rotate n ls) x y"
+    by simp
   then obtain i j where vors:"i < length (rotate n ls) \<and> j < length (rotate n ls) \<and>
     (rotate n ls)!i = x \<and> (rotate n ls)!j = y \<and>
-    (Suc i) mod (length (rotate n ls)) = j" by (drule_tac is_nextElem_nth1) auto
-  then have lls: "0 < length ls" by auto
+    (Suc i) mod (length (rotate n ls)) = j"
+    by (drule_tac is_nextElem_nth1) auto
+  then have lls: "0 < length ls"
+    by auto
   def k \<equiv> "(i+n) mod (length ls)"
-  with lls have sk: "k < length ls" by auto
-  from k_def lls vors have "ls!k = (rotate n ls)!(i mod (length ls))"  by (simp add: nth_rotate)
-  with vors have lsk: "ls!k = x" by auto
+  with lls have sk: "k < length ls"
+    by simp
+  from k_def lls vors have "ls!k = (rotate n ls)!(i mod (length ls))"
+    by (simp add: nth_rotate)
+  with vors have lsk: "ls!k = x"
+    by simp
   def l \<equiv> "(j+n) mod (length ls)"
-  with lls have sl: "l < length ls" by auto
-  from l_def lls vors have "ls!l = (rotate n ls)!(j mod (length ls))"  by (simp add: nth_rotate)
-  with vors have lsl: "ls!l = y" by auto
-  have mod_add1_eq': "\<And> a b c. (a mod c + b mod c) mod c = (a+b) mod (c::nat)"
-    apply (rule sym)  by (rule mod_add_eq)
+  with lls have sl: "l < length ls"
+    by simp
+  from l_def lls vors have "ls!l = (rotate n ls)!(j mod (length ls))"
+    by (simp add: nth_rotate)
+  with vors have lsl: "ls!l = y"
+    by simp
   from vors k_def l_def
-  have "(Suc i) mod length ls = j " by auto
-  then have "(Suc i) mod length ls = j mod length ls" by auto
-  then have "(Suc i) mod length ls + n mod (length ls) = j mod length ls + n mod (length ls)"
+  have "(Suc i) mod length ls = j"
+    by simp
+  then have "(Suc i) mod length ls = j mod length ls"
     by auto
   then have "((Suc i) mod length ls + n mod (length ls)) mod length ls
-    = (j mod length ls + n mod (length ls)) mod length ls" by auto
-  then have "((Suc i) + n) mod length ls = (j + n ) mod length ls" by (simp add: mod_add1_eq')
-  then have "(1 + i + n) mod length ls = (j + n ) mod length ls" by simp
-  then have "(1 mod length ls  + (i + n) mod length ls) mod length ls = (j + n ) mod length ls"
-    by (simp add: mod_add1_eq')
-  with lls have "(1 + (i + n) mod length ls) mod length ls = (j + n ) mod length ls"
-    apply (cases "1 < length ls") apply force  apply (subgoal_tac "length ls = 1") apply simp by arith
-  with vors k_def l_def have "(Suc k) mod (length ls) = l" by auto
-  with sk lsk sl lsl show ?thesis by (auto intro: is_nextElem_nth2)
+    = (j mod length ls + n mod (length ls)) mod length ls"
+    by simp
+  then have "((Suc i) + n) mod length ls = (j + n) mod length ls"
+    by (simp add: mod_simps)
+  with vors k_def l_def have "(Suc k) mod (length ls) = l"
+    by (simp add: mod_simps)
+  with sk lsk sl lsl
+  show ?thesis
+    by (auto intro: is_nextElem_nth2)
 qed
 
 lemma is_nextElem_rotate_eq[simp]: "is_nextElem (rotate m ls) x y = is_nextElem ls x y"
