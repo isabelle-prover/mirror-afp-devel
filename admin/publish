@@ -3,8 +3,8 @@
 # Author: Gerwin Klein, NICTA
 #
 # publishes archive entry + main web pages on isa-afp
-# 
-# This script expects Isabelle version >= 2008-10-05 
+#
+# This script expects Isabelle version >= 2008-10-05
 # (uses isabelle instead of isatool)
 
 ## settings
@@ -40,19 +40,18 @@ DIR="$(dirname "$0")"
 function usage()
 {
   echo
-  echo "Usage: $PRG [options] <tag> [<entries>|-]"
-  echo 
+  echo "Usage: $PRG [options] [<entries>|-]"
+  echo
   echo "  Checks out web site and archive entries and publishes them on the isa-afp.org web site"
   echo
   echo "Options:"
-  echo "  -f             do not ask before publishing"
-  echo "  -t <isabelle>  use specified path to isabelle tool script"
-  echo "  -r             use env variable ISABELLE_RELEASES to find isabelle"
+  echo "  -f                  do not ask before publishing"
+  echo "  -t <isabelle> <tag> use specified path to isabelle tool script"
   echo
   echo "Examples:"
-  echo "  $PRG -t /usr/proj/Isabelle2009/bin/isabelle Isabelle2009 Example-Submission"  
+  echo "  $PRG -t /usr/proj/Isabelle2009/bin/isabelle Isabelle2009 Example-Submission"
   echo
-  echo "  $PRG -r Isabelle2009 Example-Submission"  
+  echo "  $PRG Example-Submission"
   exit 1
 }
 
@@ -72,32 +71,30 @@ function check_isabelle_tool()
 
 ## argument checking
 
-[ "$#" -lt "2" -o "$1" = "-?" ] && usage
+[ "$#" -lt "1" -o "$1" = "-?" ] && usage
 
 ISABELLE_TOOL=isabelle
+USE_RELEASE=1
+TAG="Isabelle$VERSION"
 INTERACTIVE="yes"
 
 while getopts "ft:r" OPT
 do
     case "$OPT" in
-      r)
-        [ "$ISABELLE_RELEASES" == "" ] && fail "ISABELLE_RELEASES not set"
-        USE_RELEASE=1
-        ;;
       f)
         INTERACTIVE="no"
+        shift
         ;;
       t)
+        USE_RELEASE=0
         ISABELLE_TOOL="$OPTARG"
+        shift $(($OPTIND - 1))
+        TAG="$1"
+        shift
         check_isabelle_tool
         ;;
     esac
 done
-
-shift $(($OPTIND - 1))
-
-TAG="$1" 
-shift
 
 if [ "$USE_RELEASE" == "1" ]; then
     ISABELLE_TOOL="$ISABELLE_RELEASES/$TAG/bin/isabelle"
@@ -134,7 +131,7 @@ if [ "$1" != "-" ]; then
     HTML_THYS=web/browser_info/$TAG
     TARS=web/release
     mkdir -p $HTML_THYS
-    ln -s $TAG web/browser_info/current 
+    ln -s $TAG web/browser_info/current
     ln -s ../front.css web/entries/front.css
     mkdir -p $TARS
 
@@ -163,7 +160,7 @@ if [ "$1" != "-" ]; then
     echo "Copying generated HTML"
     for DIR in $BROWSER_INFO/*; do
         if [ -d $DIR ]; then
-            cp -r $DIR $HTML_THYS        
+            cp -r $DIR $HTML_THYS
         fi
     done
 
@@ -176,7 +173,7 @@ if [ "$1" != "-" ]; then
         RESPONSE="y"
     fi
 else
-    RESPONSE="y"    
+    RESPONSE="y"
 fi
 
 if [ "$RESPONSE" == "y" ]; then

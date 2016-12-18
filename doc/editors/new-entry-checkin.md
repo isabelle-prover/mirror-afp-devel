@@ -44,7 +44,7 @@ Everything happens in the release branch `afp/release`.
 
 3.  to check, run in `afp/release/thys`
 
-         ../admin/testall -r Isabelle201X -c <name>
+         ../admin/testall -c <name>
 
      (be sure to have `ISABELLE_RELEASES` set to the path where Isabelle
     releases are kept, e.g. `/home/proj/isabelle/`)
@@ -66,7 +66,7 @@ Everything happens in the release branch `afp/release`.
     changes aren't pushed.
 11. to publish the changes to the web, run
 
-         ../admin/publish -r Isabelle201X <name>
+         ../admin/publish <name>
 
     This will check out the Isabelle201X (=release) version of the
     archive from bitbucket, will run the session `name` to generate
