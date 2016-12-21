@@ -1074,7 +1074,8 @@ proof -
   qed
   moreover have "(fact n::nat) = fact k * fact (n-k) * (n choose k)"
     using binomial_fact_lemma kn by auto
-  ultimately show ?thesis using prime_n by auto
+  ultimately show ?thesis using prime_n
+    by (auto simp add: prime_dvd_mult_iff)
 qed
 
 

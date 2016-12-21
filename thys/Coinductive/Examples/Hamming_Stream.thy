@@ -238,7 +238,7 @@ lemma prime_nat_dvdD: "prime p \<Longrightarrow> (n :: nat) dvd p \<Longrightarr
 unfolding prime_nat_iff by simp
 
 lemma smooth_times [simp]: "smooth (x * y) \<longleftrightarrow> smooth x \<and> smooth y"
-by(auto simp add: smooth_def)
+by(auto simp add: smooth_def prime_dvd_mult_iff)
 
 lemma smooth2 [simp]: "smooth 2"
 by(auto simp add: smooth_def dest: prime_nat_dvdD[of 2, simplified])

@@ -294,7 +294,8 @@ proof (cases "p = 0 \<or> q = 0")
       with `int n dvd coeff p r * coeff q s` pn r s
         have "n dvd (nat (abs ?r) * nat (abs ?s))"
           by (subst (asm) (1 2) prime_dvd_mult_eq_int) simp_all
-      with pn have "n dvd nat (abs ?r) \<or> n dvd nat (abs ?s)" by simp
+        with pn have "n dvd nat (abs ?r) \<or> n dvd nat (abs ?s)"
+          by (simp add: prime_dvd_mult_iff)
       also have "(n dvd nat (abs ?r)) = (?n dvd ?r)" using int_dvd_iff by blast
       also have "(n dvd nat (abs ?s)) = (?n dvd ?s)" using int_dvd_iff by blast
       finally have False using r s by auto

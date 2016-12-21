@@ -107,7 +107,8 @@ proof
       using assms(1) h3(3) coprime_common_divisor_nat[of a' b' ?p] not_prime_1 by linarith
   }
   hence "\<not> (?p dvd a'^2)" ..
-  hence h7: "\<not> (?p dvd a')" using assms(1) by (simp add: power2_eq_square)
+  hence h7: "\<not> (?p dvd a')" using assms(1)
+    by (simp add: power2_eq_square prime_dvd_mult_iff)
   hence "gcd ?p a' = 1" using assms(1) by (fastforce intro: prime_imp_coprime_nat)
   thm prime_imp_coprime_nat
   moreover have "a' \<noteq> 0" using h7 dvd_0_right[of ?p] by meson

@@ -287,7 +287,8 @@ proof (rule ccontr)
     assume "?gcd \<noteq> 0" 
     from prime_divisor_exists[OF this no_unit] obtain f
       where fg: "f dvd ?gcd" and f: "prime f" by auto
-    from f have prime: "\<And>s t. f dvd s * t \<Longrightarrow> f dvd s \<or> f dvd t" by auto
+    from f have prime: "\<And>s t. f dvd s * t \<Longrightarrow> f dvd s \<or> f dvd t"
+      by (rule prime_dvd_multD)
     have "?gcd dvd p" "?gcd dvd q" by auto
     with fg have "f dvd p" "f dvd q" by auto
     from no_prime_divisor[OF this prime] have "is_unit f" by auto

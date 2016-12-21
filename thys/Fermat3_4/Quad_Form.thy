@@ -147,7 +147,7 @@ proof -
       finally show ?thesis by simp
     qed
     with ass have "?P dvd (b*p + a*q) \<or> ?P dvd (b*p - a*q)"
-      by (simp add: nat_abs_mult_distrib prime_int_iff)
+      by (simp add: nat_abs_mult_distrib prime_int_iff prime_dvd_mult_iff)
     moreover
     { assume "?P dvd b*p + a*q"
       hence "?P dvd b*p + 1*a*q \<and> \<bar>1\<bar> = (1::int)" by simp }

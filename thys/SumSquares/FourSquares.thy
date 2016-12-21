@@ -117,7 +117,7 @@ proof -
       hence "p dvd x^2-y^2" using cong_altdef_int by blast
       hence "p dvd (x+y)*(x-y)" by (simp add: power2_eq_square algebra_simps)
       hence "p dvd x+y \<or> p dvd x-y" using p1 p0 
-        by (auto dest: prime_dvd_multD simp: prime_int_nat_transfer)
+        by (auto dest: prime_dvd_multD simp: prime_dvd_mult_iff prime_int_nat_transfer)
       moreover
       { assume "p dvd x+y"
         moreover from xn yn n have "x+y < p" by auto
@@ -154,7 +154,7 @@ proof -
       ultimately have "p dvd x^2-y^2" by simp
       hence "p dvd (x+y)*(x-y)" by (simp add: power2_eq_square algebra_simps)
       with p1 have "p dvd x+y \<or> p dvd x-y" using p1 p0 
-        by (auto dest: prime_dvd_multD simp: prime_int_nat_transfer)
+        by (auto dest: prime_dvd_multD simp: prime_dvd_mult_iff prime_int_nat_transfer)
       moreover
       { assume "p dvd x+y"
         moreover from xn yn n have "x+y < p" by auto
