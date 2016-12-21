@@ -478,13 +478,13 @@ by(simp add: restrictP_subsume1)
 subsection {* Maximal elements w.r.t. a total order *}
 
 definition max_torder :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"
-where "max_torder r a b = (if DomainP r a \<and> DomainP r b then if r a b then b else a
-  else if a = b then a else SOME a. \<not> DomainP r a)"
+where "max_torder r a b = (if Domainp r a \<and> Domainp r b then if r a b then b else a
+  else if a = b then a else SOME a. \<not> Domainp r a)"
 
 lemma refl_on_DomainD: "refl_on A r \<Longrightarrow> A = Domain r"
 by(auto simp add: Domain_unfold dest: refl_onD refl_onD1)
 
-lemma refl_onP_DomainPD: "refl_onP A r \<Longrightarrow> A = {a. DomainP r a}"
+lemma refl_onP_DomainPD: "refl_onP A r \<Longrightarrow> A = {a. Domainp r a}"
 by(drule refl_on_DomainD) auto
 
 lemma semilattice_max_torder:
@@ -496,16 +496,16 @@ proof -
     and trans: "transP r"
     and refl: "refl_onP A r" 
     by(auto elim: torder_onE porder_onE)
-  from refl have "{a. DomainP r a} = A" by (rule refl_onP_DomainPD[symmetric])
-  from this [symmetric] have "domain": "\<And>a. DomainP r a \<longleftrightarrow> a \<in> A" by simp
+  from refl have "{a. Domainp r a} = A" by (rule refl_onP_DomainPD[symmetric])
+  from this [symmetric] have "domain": "\<And>a. Domainp r a \<longleftrightarrow> a \<in> A" by simp
   show ?thesis
   proof
     fix x y z
     show "max_torder r (max_torder r x y) z = max_torder r x (max_torder r y z)"
     proof (cases "x \<noteq> y \<and> x \<noteq> z \<and> y \<noteq> z")
       case True
-      have *: "\<And>a b. a \<noteq> b \<Longrightarrow> max_torder r a b = (if DomainP r a \<and> DomainP r b then
-        if r a b then b else a else SOME a. \<not> DomainP r a)"
+      have *: "\<And>a b. a \<noteq> b \<Longrightarrow> max_torder r a b = (if Domainp r a \<and> Domainp r b then
+        if r a b then b else a else SOME a. \<not> Domainp r a)"
         by (auto simp add: max_torder_def)
       with True show ?thesis
         apply (simp only: max_torder_def "domain")
@@ -539,8 +539,8 @@ proof -
     and trans: "transP r"
     and refl: "refl_onP A r" 
     by(auto elim: torder_onE porder_onE)
-  from refl have "{a. DomainP r a} = A" by (rule refl_onP_DomainPD[symmetric])
-  from this [symmetric] have "domain": "\<And>a. DomainP r a \<longleftrightarrow> a \<in> A" by simp
+  from refl have "{a. Domainp r a} = A" by (rule refl_onP_DomainPD[symmetric])
+  from this [symmetric] have "domain": "\<And>a. Domainp r a \<longleftrightarrow> a \<in> A" by simp
   show ?thesis using x y
     by(simp add: max_torder_def "domain")(blast dest: total_onPD[OF to] transPD[OF trans])
 qed
@@ -559,9 +559,9 @@ lemma semilattice_set:
   by (rule semilattice_set.intro, rule semilattice_max_torder) (fact tot)
 
 lemma domain:
-  "DomainP r a \<longleftrightarrow> a \<in> A"
+  "Domainp r a \<longleftrightarrow> a \<in> A"
 proof -
-  from tot have "{a. DomainP r a} = A"
+  from tot have "{a. Domainp r a} = A"
     by (auto elim: torder_onE porder_onE dest: refl_onP_DomainPD [symmetric])
   from this [symmetric] show ?thesis by simp
 qed

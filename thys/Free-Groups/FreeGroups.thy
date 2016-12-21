@@ -82,7 +82,7 @@ lemma canceled_rev:
   shows "canceled (rev l)"
 proof(rule ccontr)
   assume "\<not>canceled (rev l)"
-  hence "DomainP cancels_to_1 (rev l)" by (simp add: canceled_def)
+  hence "Domainp cancels_to_1 (rev l)" by (simp add: canceled_def)
   then obtain l' where "cancels_to_1 (rev l) l'" by auto
   then obtain i where "cancels_to_1_at i (rev l) l'" by (auto simp add:cancels_to_1_def)
   hence "Suc i < length (rev l)"

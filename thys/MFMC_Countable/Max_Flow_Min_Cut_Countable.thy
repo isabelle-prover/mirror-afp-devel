@@ -28,7 +28,7 @@ text \<open>
 \<close>
 
 definition vertex :: "('v, 'more) graph_scheme \<Rightarrow> 'v \<Rightarrow> bool"
-where "vertex G x \<longleftrightarrow> DomainP (edge G) x \<or> RangeP (edge G) x"
+where "vertex G x \<longleftrightarrow> Domainp (edge G) x \<or> Rangep (edge G) x"
 
 lemma vertexI:
   shows vertexI1: "edge \<Gamma> x y \<Longrightarrow> vertex \<Gamma> x"
