@@ -5028,3 +5028,22 @@ abstract =
   non-theorems. We prove meta-theorems about the logic and finally we
   investigate a case study.
 
+[Proof_Strategy_Language]
+title = Proof Strategy Language
+author = Yutaka Nagashima<>
+topic = Tools
+date = 2016-12-20
+notify = Yutaka.Nagashima@data61.csiro.au
+abstract = 
+  Isabelle includes various automatic tools for finding proofs under
+  certain conditions. However, for each conjecture, knowing which
+  automation to use, and how to tweak its parameters, is currently
+  labour intensive. We have developed a language, PSL, designed to
+  capture high level proof strategies. PSL offloads the construction of
+  human-readable fast-to-replay proof scripts to automatic search,
+  making use of search-time information about each conjecture. Our
+  preliminary evaluations show that PSL reduces the labour cost of
+  interactive theorem proving. This submission contains the
+  implementation of PSL and an example theory file, Example.thy, showing
+  how to write poof strategies in PSL.
+
