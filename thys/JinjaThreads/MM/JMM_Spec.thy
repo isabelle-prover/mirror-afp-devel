@@ -507,8 +507,8 @@ lemma antisym_action_order:
 by(rule antisymI)(auto elim!: action_orderE)
 
 lemma trans_action_order:
-  "transP (action_order E)"
-by(rule transI)(auto elim!: action_orderE intro: action_orderI)
+  "transp (action_order E)"
+by(rule transpI)(auto elim!: action_orderE intro: action_orderI)
 
 lemma porder_action_order:
   "porder_on (actions E) (action_order E)"
@@ -606,8 +606,8 @@ using antisymD[OF antisym_action_order]
 by(auto intro: antisymI elim!: program_orderE)
 
 lemma trans_program_order:
-  "transP (program_order E)"
-by(rule transI)(auto elim!: program_orderE intro: program_orderI dest: transPD[OF trans_action_order])
+  "transp (program_order E)"
+by(rule transpI)(auto elim!: program_orderE intro: program_orderI dest: transPD[OF trans_action_order])
 
 lemma porder_program_order:
   "porder_on (actions E) (program_order E)"
@@ -639,8 +639,8 @@ using antisymD[OF antisym_action_order]
 by(rule antisymI)(auto elim!: sync_orderE)
 
 lemma trans_sync_order:
-  "transP (sync_order P E)"
-by(rule transI)(auto elim!: sync_orderE intro: sync_orderI dest: transPD[OF trans_action_order])
+  "transp (sync_order P E)"
+by(rule transpI)(auto elim!: sync_orderE intro: sync_orderI dest: transPD[OF trans_action_order])
 
 lemma porder_sync_order:
   "porder_on (sactions P E) (sync_order P E)"

@@ -32,7 +32,7 @@ definition irreflclp :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 
 where "r\<^sup>\<noteq>\<^sup>\<noteq> a b = (r a b \<and> a \<noteq> b)"
 
 definition porder_on :: "'a set \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
-where "porder_on A r \<longleftrightarrow> refl_onP A r \<and> transP r \<and> antisymP r"
+where "porder_on A r \<longleftrightarrow> refl_onP A r \<and> transp r \<and> antisymP r"
 
 definition torder_on :: "'a set \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
 where "torder_on A r \<longleftrightarrow> porder_on A r \<and> total_onP A r"
@@ -105,15 +105,14 @@ lemma irreflclpE [elim!]:
   obtains "r a b" "a \<noteq> b"
 using assms by(simp add: irreflclp_def)
 
-lemma transPI: "(\<And>x y z. \<lbrakk> r x y; r y z \<rbrakk> \<Longrightarrow> r x z) \<Longrightarrow> transP r"
-using transI[where r="{(x, y). r x y}"] by blast
+lemma transPI: "(\<And>x y z. \<lbrakk> r x y; r y z \<rbrakk> \<Longrightarrow> r x z) \<Longrightarrow> transp r"
+  by (fact transpI)
 
-lemma transPD: "\<lbrakk>transP r; r x y; r y z \<rbrakk> \<Longrightarrow> r x z"
-by(drule transD) auto
+lemma transPD: "\<lbrakk>transp r; r x y; r y z \<rbrakk> \<Longrightarrow> r x z"
+  by (fact transpD)
 
-lemma transP_tranclp: "transP r^++"
-using trans_trancl[of "{(x, y). r x y}"]
-unfolding trancl_def by simp
+lemma transP_tranclp: "transp r^++"
+  by (fact trans_trancl [to_pred])
 
 lemma antisymPI: "(\<And>x y. \<lbrakk> r x y; r y x \<rbrakk> \<Longrightarrow> x = y) \<Longrightarrow> antisymP r"
 using antisymI[of "{(x, y). r x y}"] by blast
@@ -134,12 +133,12 @@ by(blast dest: symD)
 subsection {* Easy properties *}
 
 lemma porder_onI:
-  "\<lbrakk> refl_onP A r; antisymP r; transP r \<rbrakk> \<Longrightarrow> porder_on A r"
+  "\<lbrakk> refl_onP A r; antisymP r; transp r \<rbrakk> \<Longrightarrow> porder_on A r"
 unfolding porder_on_def by blast
 
 lemma porder_onE:
   assumes "porder_on A r"
-  obtains "refl_onP A r" "antisymP r" "transP r"
+  obtains "refl_onP A r" "antisymP r" "transp r"
 using assms unfolding porder_on_def by blast
 
 lemma torder_onI:
@@ -217,8 +216,8 @@ lemma porder_torder_tranclpE [consumes 5, case_names base step]:
   obtains "r x y"
         | u v where "r x u" "s u v" "r v y"
 proof(atomize_elim)
-  from r have "refl_onP A r" "transP r" by(blast elim: porder_onE)+
-  from s have "refl_onP B s" "total_onP B s" "transP s"
+  from r have "refl_onP A r" "transp r" by(blast elim: porder_onE)+
+  from s have "refl_onP B s" "total_onP B s" "transp s"
     by(blast elim: torder_onE porder_onE)+
 
   from trancl show "r x y \<or> (\<exists>u v. r x u \<and> s u v \<and> r v y)"
@@ -257,8 +256,8 @@ proof(atomize_elim)
         with `total_onP B s` `refl_onP B s` order_consistent_sym[OF consist]
         have "s v y" using `y \<in> B` `r v y`
           by(rule total_on_refl_on_consistent_into)
-        with `transP s` have "s v z" using `s y z` by(rule transPD)
-        with `transP s` `s u v` have "s u z" by(rule transPD)
+        with `transp s` have "s v z" using `s y z` by(rule transPD)
+        with `transp s` `s u v` have "s u z" by(rule transPD)
         moreover from `z \<in> B` B_subset_A have "z \<in> A" ..
         with `refl_onP A r` have "r z z" by(rule refl_onPD)
         ultimately show ?thesis using `r x u` by blast
@@ -266,7 +265,7 @@ proof(atomize_elim)
     next
       assume "r y z"
       with IH show ?thesis
-        by(blast intro: transPD[OF `transP r`])
+        by(blast intro: transPD[OF `transp r`])
     qed
   qed
 qed
@@ -281,8 +280,8 @@ proof(rule antisymPI)
   fix x y
   let ?rs = "\<lambda>x y. r x y \<or> s x y"
   assume "?rs^++ x y" "?rs^++ y x"
-  from r have "antisymP r" "transP r" by(blast elim: porder_onE)+
-  from s have "total_onP B s" "refl_onP B s" "transP s" "antisymP s"
+  from r have "antisymP r" "transp r" by(blast elim: porder_onE)+
+  from s have "total_onP B s" "refl_onP B s" "transp s" "antisymP s"
     by(blast elim: torder_onE porder_onE)+
 
   from r s consist B_subset_A `?rs^++ x y`
@@ -296,9 +295,9 @@ proof(rule antisymPI)
       with `antisymP r` `r x y` show ?thesis by(rule antisymPD)
     next
       case (step u v)
-      from `r v x` `r x y` `r y u` have "r v u" by(blast intro: transPD[OF `transP r`])
+      from `r v x` `r x y` `r y u` have "r v u" by(blast intro: transPD[OF `transp r`])
       with consist have "v = u" using `s u v` by(rule order_consistentD)
-      with `r y u` `r v x` have "r y x" by(blast intro: transPD[OF `transP r`])
+      with `r y u` `r v x` have "r y x" by(blast intro: transPD[OF `transp r`])
       with `r x y` show ?thesis by(rule antisymPD[OF `antisymP r`])
     qed
   next
@@ -307,28 +306,28 @@ proof(rule antisymPI)
     show ?thesis
     proof(cases rule: porder_torder_tranclpE)
       case base
-      from `r v y` `r y x` `r x u` have "r v u" by(blast intro: transPD[OF `transP r`])
+      from `r v y` `r y x` `r x u` have "r v u" by(blast intro: transPD[OF `transp r`])
       with order_consistent_sym[OF consist] `s u v`
       have "u = v" by(rule order_consistentD)
-      with `r v y` `r x u` have "r x y" by(blast intro: transPD[OF `transP r`])
+      with `r v y` `r x u` have "r x y" by(blast intro: transPD[OF `transp r`])
       thus ?thesis using `r y x` by(rule antisymPD[OF `antisymP r`])
     next
       case (step u' v')
       note r_into_s = total_on_refl_on_consistent_into[OF `total_onP B s` `refl_onP B s` order_consistent_sym[OF consist]]
       from `refl_onP B s` `s u v` `s u' v'`
       have "u \<in> B" "v \<in> B" "u' \<in> B" "v' \<in> B" by(blast dest: refl_onPD1 refl_onPD2)+
-      from `r v' x` `r x u` have "r v' u" by(rule transPD[OF `transP r`])
+      from `r v' x` `r x u` have "r v' u" by(rule transPD[OF `transp r`])
       with `v' \<in> B` `u \<in> B` have "s v' u" by(rule r_into_s)
       also note `s u v`
-      also (transPD[OF `transP s`])
-      from `r v y` `r y u'` have "r v u'" by(rule transPD[OF `transP r`])
+      also (transPD[OF `transp s`])
+      from `r v y` `r y u'` have "r v u'" by(rule transPD[OF `transp r`])
       with `v \<in> B` `u' \<in> B` have "s v u'" by(rule r_into_s)
-      finally (transPD[OF `transP s`])
+      finally (transPD[OF `transp s`])
       have "v' = u'" using `s u' v'` by(rule antisymPD[OF `antisymP s`])
-      moreover with `s v u'` `s v' u` have "s v u" by(blast intro: transPD[OF `transP s`])
+      moreover with `s v u'` `s v' u` have "s v u" by(blast intro: transPD[OF `transp s`])
       with `s u v` have "u = v" by(rule antisymPD[OF `antisymP s`])
       ultimately have "r x y" "r y x" using `r x u` `r v y` `r y u'` `r v' x`
-        by(blast intro: transPD[OF `transP r`])+
+        by(blast intro: transPD[OF `transp r`])+
       thus ?thesis by(rule antisymPD[OF `antisymP r`])
     qed
   qed
@@ -348,7 +347,7 @@ proof(rule porder_onI)
   also from subset have "A \<union> B = A" by blast
   finally show "refl_onP A ?rs^++" by(rule refl_onP_tranclp)
 
-  show "transP ?rs^++" by(rule transP_tranclp)
+  show "transp ?rs^++" by(rule transP_tranclp)
 
   from r s consist subset show "antisymP ?rs^++"
     by (rule torder_on_porder_on_consistent_tranclp_antisym)
@@ -396,7 +395,7 @@ proof(rule porder_onI)
     thus "?rt^++ a a" by(blast intro: tranclp.r_into_trancl)
   qed
 
-  show "transP ?rt^++" by(rule transP_tranclp)
+  show "transp ?rt^++" by(rule transP_tranclp)
 qed
 
 subsection {* Order restrictions *}
@@ -426,7 +425,7 @@ lemma antisym_restrictPI:
 by(rule antisymPI)(blast dest: antisymPD)
 
 lemma trans_restrictPI:
-  "transP r \<Longrightarrow> transP (r |` A)"
+  "transp r \<Longrightarrow> transp (r |` A)"
 by(rule transPI)(blast dest: transPD)
 
 lemma porder_on_restrictPI:
@@ -493,7 +492,7 @@ lemma semilattice_max_torder:
 proof -
   from tot have as: "antisymP r" 
     and to: "total_onP A r" 
-    and trans: "transP r"
+    and trans: "transp r"
     and refl: "refl_onP A r" 
     by(auto elim: torder_onE porder_onE)
   from refl have "{a. Domainp r a} = A" by (rule refl_onP_DomainPD[symmetric])
@@ -536,7 +535,7 @@ lemma max_torder_ge_conv_disj:
 proof -
   from tot have as: "antisymP r" 
     and to: "total_onP A r" 
-    and trans: "transP r"
+    and trans: "transp r"
     and refl: "refl_onP A r" 
     by(auto elim: torder_onE porder_onE)
   from refl have "{a. Domainp r a} = A" by (rule refl_onP_DomainPD[symmetric])

@@ -94,16 +94,6 @@ by (blast intro: refl_onI)
 
 lemmas total_onI = iffD2[OF total_on_def, rule_format]
 
-lemma trans_empty [iff]:
-  shows "trans {}"
-    and "transP (\<lambda>x y. False)"
-by (blast intro: transI)+
-
-lemma trans_singleton [iff]:
-  shows "trans {(a, a)}"
-    and "transP (\<lambda>x y. x = a \<and> y = a)"
-by (blast intro: transI)+
-
 lemma squared_Field [iff]:
   shows "Field (x \<times> x) = x"
 unfolding Field_def by blast

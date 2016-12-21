@@ -3760,8 +3760,8 @@ proof -
 qed      
 
 lemma trans_llexord:
-  "transP r \<Longrightarrow> transP (llexord r)"
-by(auto intro!: transI elim: llexord_trans dest: transD)
+  "transp r \<Longrightarrow> transp (llexord r)"
+  by(auto intro!: transpI elim: llexord_trans dest: transpD)
   
 lemma llexord_linear:
   assumes linear: "!!x y. r x y \<or> x = y \<or> r y x"
