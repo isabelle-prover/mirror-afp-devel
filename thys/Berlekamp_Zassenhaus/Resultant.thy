@@ -1592,15 +1592,10 @@ proof -
   ultimately show ?thesis by auto
 qed
 
-lemma mod_const_0[simp]: "c \<noteq> 0 \<Longrightarrow> f mod [:c:] = 0" 
-proof -
-  assume c: "c \<noteq> 0" 
-  obtain q r where "pdivmod f [:c:] = (q,r)" by force
-  hence pd: "pdivmod_rel f [:c:] q r"
-    by (simp add: Ring_Hom_Poly.pdivmod_pdivmodrel)
-  from this[unfolded pdivmod_rel_def] c have "r = 0" by auto
-  thus ?thesis using mod_poly_eq[OF pd] by simp
-qed
+lemma mod_const_0 [simp]:
+  "f mod [:c:] = 0" if "c \<noteq> 0"
+  using eucl_rel_poly [of f "[:c:]", unfolded eucl_rel_poly_iff] that
+  by simp
 
 lemma resultant_non_zero_imp_coprime: assumes nz: "resultant (f :: 'a :: {field,euclidean_ring_gcd} poly) g \<noteq> 0" 
   and nz': "f \<noteq> 0 \<or> g \<noteq> 0" 
