@@ -333,7 +333,7 @@ qed simp_all
 
 lemma eq_mlex_I:
   fixes f :: "'a \<Rightarrow> nat" and R :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
-  assumes "\<And>X Y. f X < f Y \<Longrightarrow> R X Y" and "antisymP R"
+  assumes "\<And>X Y. f X < f Y \<Longrightarrow> R X Y" and "antisymp R"
   shows "{(X, Y). R X Y} = f <*mlex*> {(X, Y). f X = f Y \<and> R X Y}"
 proof safe
   fix X Y
@@ -349,8 +349,8 @@ proof safe
       by (intro mlex_leq) auto
   next
     case greater
-    from \<open>R X Y\<close> assms(1)[OF greater] \<open>antisymP R\<close> greater show ?thesis
-      unfolding antisym_def by auto
+    from \<open>R X Y\<close> assms(1)[OF greater] \<open>antisymp R\<close> greater show ?thesis
+      unfolding antisymp_def by auto
   qed
 next
   fix X Y
@@ -400,7 +400,7 @@ qed
 lemma wf_less_nmultiset: "wf {(X :: 'a nmultiset, Y :: 'a nmultiset). X < Y}" (is "wf ?R")
 proof -
   have "?R = depth_nmultiset <*mlex*> {(X, Y). |X| = |Y| \<and> X < Y}"
-    by (rule eq_mlex_I) (auto simp: antisym_def less_depth_nmultiset_imp_less_nmultiset)
+    by (rule eq_mlex_I) (auto simp: antisymp_def less_depth_nmultiset_imp_less_nmultiset)
   also have "{(X, Y). |X| = |Y| \<and> X < Y} = (\<Union>i. {(X, Y). |X| = i \<and> |Y| = i \<and> X < Y})"
     by auto
   finally show ?thesis

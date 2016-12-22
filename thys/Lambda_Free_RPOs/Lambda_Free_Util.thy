@@ -81,8 +81,8 @@ subsection \<open>Antisymmetric Relations\<close>
 lemma irrefl_trans_imp_antisym: "irrefl r \<Longrightarrow> trans r \<Longrightarrow> antisym r"
   unfolding irrefl_def trans_def antisym_def by fast
 
-lemma irreflp_transp_imp_antisymP: "irreflp p \<Longrightarrow> transp p \<Longrightarrow> antisymP p"
-  unfolding irreflp_def transp_def antisym_def by fast
+lemma irreflp_transp_imp_antisymP: "irreflp p \<Longrightarrow> transp p \<Longrightarrow> antisymp p"
+  by (fact irrefl_trans_imp_antisym [to_pred])
 
 
 subsection \<open>Acyclic Relations\<close>

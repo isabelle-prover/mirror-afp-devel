@@ -32,7 +32,7 @@ definition irreflclp :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 
 where "r\<^sup>\<noteq>\<^sup>\<noteq> a b = (r a b \<and> a \<noteq> b)"
 
 definition porder_on :: "'a set \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
-where "porder_on A r \<longleftrightarrow> refl_onP A r \<and> transp r \<and> antisymP r"
+where "porder_on A r \<longleftrightarrow> refl_onP A r \<and> transp r \<and> antisymp r"
 
 definition torder_on :: "'a set \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
 where "torder_on A r \<longleftrightarrow> porder_on A r \<and> total_onP A r"
@@ -114,15 +114,15 @@ lemma transPD: "\<lbrakk>transp r; r x y; r y z \<rbrakk> \<Longrightarrow> r x 
 lemma transP_tranclp: "transp r^++"
   by (fact trans_trancl [to_pred])
 
-lemma antisymPI: "(\<And>x y. \<lbrakk> r x y; r y x \<rbrakk> \<Longrightarrow> x = y) \<Longrightarrow> antisymP r"
-using antisymI[of "{(x, y). r x y}"] by blast
+lemma antisymPI: "(\<And>x y. \<lbrakk> r x y; r y x \<rbrakk> \<Longrightarrow> x = y) \<Longrightarrow> antisymp r"
+  by (fact antisympI)
 
-lemma antisymPD: "\<lbrakk> antisymP r; r a b; r b a \<rbrakk> \<Longrightarrow> a = b"
-using antisymD[where r="{(a, b). r a b}"] by blast
+lemma antisymPD: "\<lbrakk> antisymp r; r a b; r b a \<rbrakk> \<Longrightarrow> a = b"
+  by (fact antisympD)
 
 lemma antisym_subset:
-  "\<lbrakk> antisymP r; \<And>a a'. s a a' \<Longrightarrow> r a a' \<rbrakk> \<Longrightarrow> antisymP s"
-by(blast intro: antisymI antisymD)
+  "\<lbrakk> antisymp r; \<And>a a'. s a a' \<Longrightarrow> r a a' \<rbrakk> \<Longrightarrow> antisymp s"
+  by (blast intro: antisymp_less_eq [of s r])
 
 lemma symPI: "(\<And>x y. r x y \<Longrightarrow> r y x) \<Longrightarrow> symP r"
 by(rule symI)(blast)
@@ -133,12 +133,12 @@ by(blast dest: symD)
 subsection {* Easy properties *}
 
 lemma porder_onI:
-  "\<lbrakk> refl_onP A r; antisymP r; transp r \<rbrakk> \<Longrightarrow> porder_on A r"
+  "\<lbrakk> refl_onP A r; antisymp r; transp r \<rbrakk> \<Longrightarrow> porder_on A r"
 unfolding porder_on_def by blast
 
 lemma porder_onE:
   assumes "porder_on A r"
-  obtains "refl_onP A r" "antisymP r" "transp r"
+  obtains "refl_onP A r" "antisymp r" "transp r"
 using assms unfolding porder_on_def by blast
 
 lemma torder_onI:
@@ -185,8 +185,8 @@ lemma order_consistent_sym:
 by(blast intro: order_consistentI dest: order_consistentD)
 
 lemma antisym_order_consistent_self:
-  "antisymP r \<Longrightarrow> order_consistent r r"
-by(rule order_consistentI)(erule antisymD, simp_all)
+  "antisymp r \<Longrightarrow> order_consistent r r"
+by(rule order_consistentI)(erule antisympD, simp_all)
 
 lemma total_on_refl_on_consistent_into:
   assumes r: "total_onP A r" "refl_onP A r"
@@ -275,13 +275,13 @@ lemma torder_on_porder_on_consistent_tranclp_antisym:
   and s: "torder_on B s"
   and consist: "order_consistent r s"
   and B_subset_A: "B \<subseteq> A"
-  shows "antisymP (\<lambda>x y. r x y \<or> s x y)^++"
+  shows "antisymp (\<lambda>x y. r x y \<or> s x y)^++"
 proof(rule antisymPI)
   fix x y
   let ?rs = "\<lambda>x y. r x y \<or> s x y"
   assume "?rs^++ x y" "?rs^++ y x"
-  from r have "antisymP r" "transp r" by(blast elim: porder_onE)+
-  from s have "total_onP B s" "refl_onP B s" "transp s" "antisymP s"
+  from r have "antisymp r" "transp r" by(blast elim: porder_onE)+
+  from s have "total_onP B s" "refl_onP B s" "transp s" "antisymp s"
     by(blast elim: torder_onE porder_onE)+
 
   from r s consist B_subset_A `?rs^++ x y`
@@ -292,13 +292,13 @@ proof(rule antisymPI)
     show ?thesis
     proof(cases rule: porder_torder_tranclpE)
       case base
-      with `antisymP r` `r x y` show ?thesis by(rule antisymPD)
+      with `antisymp r` `r x y` show ?thesis by(rule antisymPD)
     next
       case (step u v)
       from `r v x` `r x y` `r y u` have "r v u" by(blast intro: transPD[OF `transp r`])
       with consist have "v = u" using `s u v` by(rule order_consistentD)
       with `r y u` `r v x` have "r y x" by(blast intro: transPD[OF `transp r`])
-      with `r x y` show ?thesis by(rule antisymPD[OF `antisymP r`])
+      with `r x y` show ?thesis by(rule antisymPD[OF `antisymp r`])
     qed
   next
     case (step u v)
@@ -310,7 +310,7 @@ proof(rule antisymPI)
       with order_consistent_sym[OF consist] `s u v`
       have "u = v" by(rule order_consistentD)
       with `r v y` `r x u` have "r x y" by(blast intro: transPD[OF `transp r`])
-      thus ?thesis using `r y x` by(rule antisymPD[OF `antisymP r`])
+      thus ?thesis using `r y x` by(rule antisymPD[OF `antisymp r`])
     next
       case (step u' v')
       note r_into_s = total_on_refl_on_consistent_into[OF `total_onP B s` `refl_onP B s` order_consistent_sym[OF consist]]
@@ -323,12 +323,12 @@ proof(rule antisymPI)
       from `r v y` `r y u'` have "r v u'" by(rule transPD[OF `transp r`])
       with `v \<in> B` `u' \<in> B` have "s v u'" by(rule r_into_s)
       finally (transPD[OF `transp s`])
-      have "v' = u'" using `s u' v'` by(rule antisymPD[OF `antisymP s`])
+      have "v' = u'" using `s u' v'` by(rule antisymPD[OF `antisymp s`])
       moreover with `s v u'` `s v' u` have "s v u" by(blast intro: transPD[OF `transp s`])
-      with `s u v` have "u = v" by(rule antisymPD[OF `antisymP s`])
+      with `s u v` have "u = v" by(rule antisymPD[OF `antisymp s`])
       ultimately have "r x y" "r y x" using `r x u` `r v y` `r y u'` `r v' x`
         by(blast intro: transPD[OF `transp r`])+
-      thus ?thesis by(rule antisymPD[OF `antisymP r`])
+      thus ?thesis by(rule antisymPD[OF `antisymp r`])
     qed
   qed
 qed
@@ -349,7 +349,7 @@ proof(rule porder_onI)
 
   show "transp ?rs^++" by(rule transP_tranclp)
 
-  from r s consist subset show "antisymP ?rs^++"
+  from r s consist subset show "antisymp ?rs^++"
     by (rule torder_on_porder_on_consistent_tranclp_antisym)
 qed
 
@@ -363,9 +363,9 @@ lemma porder_on_sub_torder_on_tranclp_porder_onI:
 proof(rule porder_onI)
   let ?rt = "\<lambda>x y. r x y \<or> t x y"
   let ?rs = "\<lambda>x y. r x y \<or> s x y"
-  from r s consist subset have "antisymP ?rs^++"
+  from r s consist subset have "antisymp ?rs^++"
     by(rule torder_on_porder_on_consistent_tranclp_antisym)
-  thus "antisymP ?rt^++"
+  thus "antisymp ?rt^++"
   proof(rule antisym_subset)
     fix x y
     assume "?rt^++ x y" thus "?rs^++ x y"
@@ -421,7 +421,7 @@ lemma refl_on_restrictPI':
 by(simp add: refl_on_restrictPI)
 
 lemma antisym_restrictPI:
-  "antisymP r \<Longrightarrow> antisymP (r |` A)"
+  "antisymp r \<Longrightarrow> antisymp (r |` A)"
 by(rule antisymPI)(blast dest: antisymPD)
 
 lemma trans_restrictPI:
@@ -490,7 +490,7 @@ lemma semilattice_max_torder:
   assumes tot: "torder_on A r"
   shows "semilattice (max_torder r)"
 proof -
-  from tot have as: "antisymP r" 
+  from tot have as: "antisymp r" 
     and to: "total_onP A r" 
     and trans: "transp r"
     and refl: "refl_onP A r" 
@@ -533,7 +533,7 @@ lemma max_torder_ge_conv_disj:
   assumes tot: "torder_on A r" and x: "x \<in> A" and y: "y \<in> A"
   shows "r z (max_torder r x y) \<longleftrightarrow> r z x \<or> r z y"
 proof -
-  from tot have as: "antisymP r" 
+  from tot have as: "antisymp r" 
     and to: "total_onP A r" 
     and trans: "transp r"
     and refl: "refl_onP A r" 

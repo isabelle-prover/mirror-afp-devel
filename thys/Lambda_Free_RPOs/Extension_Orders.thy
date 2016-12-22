@@ -1155,7 +1155,7 @@ proof (induct rule: trancl_induct)
 next
   case (step Ys Zs)
 
-  have asym[unfolded antisym_def, simplified]: "antisymP gt"
+  have asym[unfolded antisym_def, simplified]: "antisymp gt"
     by (rule irreflp_transp_imp_antisymP[OF irrefl trans])
 
   from step(3) have "mset xs \<noteq> Ys" and
@@ -1197,7 +1197,7 @@ next
       { assume "aa a \<noteq> a"
         then have "mset xs = Zs \<and> count Zs (aa a) < count K (aa a) + count M0 (aa a) \<longrightarrow>
           count K (aa a) + count M0 (aa a) < count Zs (aa a)"
-          using f5 f3 f2 f1 "*"(4) asym by force }
+          using f5 f3 f2 f1 "*"(4) asym by (auto dest!: antisympD) }
       ultimately show ?thesis
         using f6 f5 f4 f1 by (metis less_imp_not_less)
     qed
@@ -1210,7 +1210,8 @@ next
       with ** obtain z where z: "gt z a" "count (mset xs) z < count Ys z"
         by blast
       with * have "count Ys z \<le> count Zs z"
-        by (auto simp: asym intro: count_inI)
+        using asym
+        by (auto simp: intro: count_inI dest: antisympD)
       with z have "\<exists>z. gt z a \<and> count (mset xs) z < count Zs z" by auto
   }
   note count_a = this

@@ -92,14 +92,14 @@ done
 lemma single_valued_widen1:
   assumes wf: "wf_prog wf_md P"
   shows "single_valued (widen1 P)"
-proof(rule single_valuedI, intro strip)
+proof(rule single_valuedI)
   fix x y z
   assume "P \<turnstile> x <\<^sup>1 y" "P \<turnstile> x <\<^sup>1 z"
   thus "y = z"
   proof(induct arbitrary: z rule: widen1.induct)
     case widen1_Class
     with single_valued_subcls1[OF wf] show ?case
-      by(auto dest: single_valuedD)
+      by(auto dest: single_valuedpD)
   next
     case (widen1_Array_Array T U z)
     from `P \<turnstile> T\<lfloor>\<rceil> <\<^sup>1 z` `P \<turnstile> T <\<^sup>1 U` `\<not> is_NT_Array T`

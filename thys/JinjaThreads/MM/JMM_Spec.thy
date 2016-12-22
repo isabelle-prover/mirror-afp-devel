@@ -503,8 +503,8 @@ lemma refl_action_order:
 by(rule refl_onPI)(auto elim: action_orderE intro: action_orderI)
 
 lemma antisym_action_order:
-  "antisymP (action_order E)"
-by(rule antisymI)(auto elim!: action_orderE)
+  "antisymp (action_order E)"
+by(rule antisympI)(auto elim!: action_orderE)
 
 lemma trans_action_order:
   "transp (action_order E)"
@@ -601,9 +601,9 @@ lemma refl_on_program_order:
 by(rule refl_onPI)(auto elim: action_orderE program_orderE intro: program_orderI refl_onPD[OF refl_action_order])
 
 lemma antisym_program_order:
-  "antisymP (program_order E)"
-using antisymD[OF antisym_action_order]
-by(auto intro: antisymI elim!: program_orderE)
+  "antisymp (program_order E)"
+using antisympD[OF antisym_action_order]
+by(auto intro: antisympI elim!: program_orderE)
 
 lemma trans_program_order:
   "transp (program_order E)"
@@ -634,9 +634,9 @@ lemma refl_on_sync_order:
 by(rule refl_onPI)(fastforce elim: sync_orderE intro: sync_orderI refl_onPD[OF refl_action_order])+
 
 lemma antisym_sync_order:
-  "antisymP (sync_order P E)"
-using antisymD[OF antisym_action_order]
-by(rule antisymI)(auto elim!: sync_orderE)
+  "antisymp (sync_order P E)"
+using antisympD[OF antisym_action_order]
+by(rule antisympI)(auto elim!: sync_orderE)
 
 lemma trans_sync_order:
   "transp (sync_order P E)"
@@ -679,7 +679,7 @@ lemma irrefl_sync_with:
 by(rule irreflPI)(auto elim: sync_withE intro: irreflPD[OF irrefl_synchronizes_with])
 
 lemma anitsym_sync_with:
-  "antisymP (sync_with P E)"
+  "antisymp (sync_with P E)"
 using antisymPD[OF antisym_sync_order, of P E]
 by -(rule antisymPI, auto elim: sync_withE)
 

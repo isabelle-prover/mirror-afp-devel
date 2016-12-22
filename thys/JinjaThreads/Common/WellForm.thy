@@ -183,9 +183,9 @@ lemma wf_subcls1:
 by(rule acyclicP_wf_subcls1)(rule acyclic_subcls1)
 
 lemma single_valued_subcls1:
-  "wf_prog wf_md G \<Longrightarrow> single_valuedP (subcls1 G)"
+  "wf_prog wf_md G \<Longrightarrow> single_valuedp (subcls1 G)"
 (*<*)
-by(auto simp:wf_prog_def distinct_fst_def single_valued_def dest!:subcls1D)
+by(auto simp:wf_prog_def distinct_fst_def single_valuedp_def dest!:subcls1D)
 (*>*)
 
 

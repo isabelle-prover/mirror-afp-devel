@@ -413,8 +413,10 @@ proof -
   have "Ex ?P"
   proof(cases "linear_order {(a, b). a \<le> b}")
     case False
-    have "antisymP op \<sqsubseteq>''" by(rule antisymI)(simp add: set_less_eq_aux'_antisym)
-    thus ?thesis using False by(auto intro: antisym_order_consistent_self)
+    have "antisym {(a, b). a \<sqsubseteq>'' b}"
+      by (rule antisymI) (simp add: set_less_eq_aux'_antisym)
+    then show ?thesis using False
+      by (auto intro: antisym_order_consistent_self)
   next
     case True
     hence "partial_order_on infinite_complement_partition {(A, B). A \<sqsubseteq>'' B}"
