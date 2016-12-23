@@ -3358,8 +3358,8 @@ val argsP = Scan.repeat argP
 val default_args = [("spec","spec"),("strip_guards","false")]
 
 val vcg_simp_modifiers =
-  [Args.add -- Args.colon >> K (Method.modifier vcg_simp_add @{here}),
-   Args.del -- Args.colon >> K (Method.modifier vcg_simp_del @{here})];
+  [Args.add -- Args.colon >> K (Method.modifier vcg_simp_add \<^here>),
+   Args.del -- Args.colon >> K (Method.modifier vcg_simp_del \<^here>)];
 
 fun assocs2 key = map snd o filter (curry (op =) key o fst);
 

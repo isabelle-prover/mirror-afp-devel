@@ -352,16 +352,16 @@ end;
 
     val rec_modifiers = [
       Args.$$$ "rec" -- Scan.option Args.add -- Args.colon 
-        >> K (Method.modifier rec_thms.add @{here}),
+        >> K (Method.modifier rec_thms.add \<^here>),
       Args.$$$ "rec" -- Scan.option Args.del -- Args.colon 
-        >> K (Method.modifier rec_thms.del @{here})
+        >> K (Method.modifier rec_thms.del \<^here>)
     ];
 
     val solve_modifiers = [
       Args.$$$ "solve" -- Scan.option Args.add -- Args.colon 
-        >> K (Method.modifier solve_thms.add @{here}),
+        >> K (Method.modifier solve_thms.add \<^here>),
       Args.$$$ "solve" -- Scan.option Args.del -- Args.colon 
-        >> K (Method.modifier solve_thms.del @{here})
+        >> K (Method.modifier solve_thms.del \<^here>)
     ];
 
     val vc_solve_modifiers = 
