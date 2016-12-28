@@ -218,7 +218,8 @@ fun generate_equalitys_from_bnf_fp tyco lthy =
     val bindings = tycos ~~ Ts |> map mk_pcomp
       |> map (fn (name, T) => (Binding.name name, SOME T, NoSyn))
     val ((pcomps, _, pcomp_simps), lthy) = lthy
-      |> BNF_LFP_Rec_Sugar.primrec [] bindings (map (fn t => ((Binding.empty_atts, t), [], [])) eqs)
+      |> BNF_LFP_Rec_Sugar.primrec false [] bindings
+        (map (fn t => ((Binding.empty_atts, t), [], [])) eqs)
     val (phi, lthy) = restore_with_morphism lthy
     val pcomps = map (Morphism.term phi) pcomps
     val pcomp_simps = pcomp_simps |> map (Morphism.fact phi)
