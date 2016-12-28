@@ -75,8 +75,8 @@ imports Printer
 (*>*)
 begin
 
-text\<open>In the ``dynamic'' solution: the exportation is automatically handled inside Isabelle/jEdit. 
-Inputs are provided using the syntax of the Toy Language, and in output 
+text\<open>In the ``dynamic'' solution: the exportation is automatically handled inside Isabelle/jEdit.
+Inputs are provided using the syntax of the Toy Language, and in output
 we basically have two options:
 \begin{itemize}
 \item The first is to generate an Isabelle file for inspection or debugging.
@@ -90,13 +90,13 @@ This mode corresponds to the ``shallow reflection'' mode or shortly ``shallow'' 
 \end{itemize}
 In both modes, the reflection is necessary since the main part used by both
 was defined at Isabelle side.
-As a consequence, experimentations in ``deep'' and ``shallow'' are performed 
+As a consequence, experimentations in ``deep'' and ``shallow'' are performed
 without leaving the editing session, in the same as the one the meta-compiler is actually running.\<close>
 
 apply_code_printing_reflect \<open>
   val stdout_file = Unsynchronized.ref ""
 \<close> text\<open>This variable is not used in this theory (only in @{file "Generator_static.thy"}),
-       but needed for well typechecking the reflected SML code.\<close> 
+       but needed for well typechecking the reflected SML code.\<close>
 
 code_reflect' open META
    functions (* executing the compiler as monadic combinators for deep and shallow *)
@@ -169,7 +169,7 @@ fun check l_oid l =
   META.check_export_code
     (writeln o Mi)
     (warning o Mi)
-    (writeln o Markup.markup Markup.bad o Mi)
+    (fn s => writeln (Markup.markup (Markup.bad ()) (Mi s)))
     (error o To_string0)
     (Ml (Mp I Me) l_oid)
     ((META.SS_base o META.ST) l)
@@ -204,7 +204,7 @@ fun semi__thm_attribute ctxt = let open META open META_overload val S = fn Thms_
                                                          val M = fn Thms_mult' t => t in
  fn Thm_thm s => Thms_single' (Proof_Context.get_thm ctxt (To_string0 s))
   | Thm_thms s => Thms_mult' (Proof_Context.get_thms ctxt (To_string0 s))
-  | Thm_THEN (e1, e2) => 
+  | Thm_THEN (e1, e2) =>
       (case (semi__thm_attribute ctxt e1, semi__thm_attribute ctxt e2) of
          (Thms_single' e1, Thms_single' e2) => Thms_single' (e1 RSN (1, e2))
        | (Thms_mult' e1, Thms_mult' e2) => Thms_mult' (e1 RLN (1, e2)))
@@ -220,7 +220,7 @@ fun semi__thm_attribute ctxt = let open META open META_overload val S = fn Thms_
                                    (((To_string0 var, 0), Position.none), of_semi__term expr)) l)
                       []
                       (S (semi__thm_attribute ctxt nth)))
-  | Thm_symmetric e1 => 
+  | Thm_symmetric e1 =>
       let val e2 = S (semi__thm_attribute ctxt (Thm_thm (From.string "sym"))) in
         case semi__thm_attribute ctxt e1 of
           Thms_single' e1 => Thms_single' (e1 RSN (1, e2))
@@ -261,7 +261,7 @@ fun semi__method expr = let open META open Method open META_overload in case exp
   | Method_erule s => Basic (fn ctxt => erule ctxt 0 [semi__thm_attribute_single ctxt s])
   | Method_elim s => Basic (fn ctxt => elim ctxt [semi__thm_attribute_single ctxt s])
   | Method_intro l => Basic (fn ctxt => intro ctxt (map (semi__thm_attribute_single ctxt) l))
-  | Method_subst (asm, l, s) => Basic (fn ctxt => 
+  | Method_subst (asm, l, s) => Basic (fn ctxt =>
       SIMPLE_METHOD' ((if asm then EqSubst.eqsubst_asm_tac else EqSubst.eqsubst_tac)
                         ctxt
                         (map (fn s => case Int.fromString (To_string0 s) of
@@ -362,7 +362,7 @@ val semi__command_proof = let open META_overload
                                 Proof.let_bind_cmd [([of_semi__term e1], of_semi__term e2)])
                              l_let
                       o Proof.fix_cmd (List.map (fn i => (To_sbinding i, NONE, NoSyn)) l))
-                      ( case o_exp of NONE => thesis | SOME (l_spec, _) => 
+                      ( case o_exp of NONE => thesis | SOME (l_spec, _) =>
                          (String.concatWith (" \<Longrightarrow> ")
                                             (List.map of_semi__term l_spec))
                       , case o_exp of NONE => [] | SOME (_, l_when) => List.map of_semi__term l_when)
@@ -547,15 +547,15 @@ fun all_meta aux ret = let open META open META_overload in fn
     (map2_ctxt_term
       (fn T_pure x => T_pure x
         | e =>
-          let fun aux e = case e of 
+          let fun aux e = case e of
             T_to_be_parsed (s, _) => SOME let val t = Syntax.read_term (Proof_Context.init_global thy)
                                                                        (To_string0 s) in
                                           (t, Term.add_frees t [])
                                           end
           | T_lambda (a, e) =>
             Option.map
-              (fn (e, l_free) => 
-               let val a = To_string0 a 
+              (fn (e, l_free) =>
+               let val a = To_string0 a
                    val (t, l_free) = case List.partition (fn (x, _) => x = a) l_free of
                                        ([], l_free) => (Term.TFree ("'a", ["HOL.type"]), l_free)
                                      | ([(_, t)], l_free) => (t, l_free) in
@@ -754,16 +754,16 @@ val compiler = let open Export_code_env in
                [ [ "ML{" ^ esc_star ]
                , map (fn s => s ^ ";") l
                , [ esc_star ^ "}"] ]
-             val () = 
+             val () =
                let val fic = mk_fic (SML.Filename.function ml_ext_ml) in
                (* replace ("\\" ^ "<") by ("\\\060") in 'fic' *)
                File.write_list fic
-                 (map (fn s => 
+                 (map (fn s =>
                          (if s = "" then
                            ""
                          else
                            String.concatWith "\\"
-                             (map (fn s => 
+                             (map (fn s =>
                                      let val l = String.size s in
                                      if l > 0 andalso String.sub (s,0) = #"<" then
                                        "\\060" ^ String.substring (s, 1, String.size s - 1)
@@ -963,7 +963,7 @@ val code_expr_argsP = Scan.optional (@{keyword "("} |-- Parse.args --| @{keyword
 val parse_scheme =
   @{keyword "design"} >> K META.Gen_only_design || @{keyword "analysis"} >> K META.Gen_only_analysis
 
-val parse_sorry_mode = 
+val parse_sorry_mode =
   Scan.optional (  @{keyword "SORRY"} >> K (SOME META.Gen_sorry)
                 || @{keyword "no_dirty"} >> K (SOME META.Gen_no_dirty)) NONE
 
@@ -1021,7 +1021,7 @@ val mode =
      (fn ((design_analysis, oid_start), sorry_mode) =>
        fn ctxt =>
        Gen_shallow ( mk_env true
-                            NONE 
+                            NONE
                             oid_start
                             design_analysis
                             sorry_mode
@@ -1309,7 +1309,7 @@ structure TOY_parse = struct
 
   val name_object = optional (Parse.list1 Parse.binding --| colon) -- Parse.binding
 
-  val type_object_weak = 
+  val type_object_weak =
     let val name_object = Parse.binding >> (fn s => (NONE, s)) in
                     name_object -- Scan.repeat (Parse.$$$ "<" |-- Parse.list1 name_object) >>
     let val f = fn (_, s) => META.ToyTyCore_pre (From.binding s) in
@@ -1322,7 +1322,7 @@ structure TOY_parse = struct
     fn (s, l) => META.ToyTyObj (f s, map (map f) l)
     end
 
-  val category = 
+  val category =
        multiplicity
     -- optional (@{keyword "Role"} |-- Parse.binding)
     -- Scan.repeat (   @{keyword "Ordered"} >> K META.Ordered0
@@ -1345,7 +1345,7 @@ structure TOY_parse = struct
 
   fun use_type_gen type_object v =
      ((* collection *)
-      Parse.reserved "Set" |-- use_type >> 
+      Parse.reserved "Set" |-- use_type >>
         (fn l => META.ToyTy_collection (META.Toy_multiplicity_ext ([], NONE, [META.Set], ()), l))
    || Parse.reserved "Sequence" |-- use_type >>
         (fn l => META.ToyTy_collection (META.Toy_multiplicity_ext ([], NONE, [META.Sequence], ()), l))
@@ -1396,7 +1396,7 @@ structure TOY_parse = struct
 
   val association = optional @{keyword "Between"} |-- Scan.optional (repeat2 association_end) []
 
-  val invariant = 
+  val invariant =
          optional @{keyword "Constraints"}
      |-- Scan.optional (@{keyword "Existential"} >> K true) false
      --| @{keyword "Inv"}
@@ -1443,7 +1443,7 @@ structure TOY_parse = struct
 
   datatype use_classDefinition = TOY_class | TOY_class_abstract
   datatype ('a, 'b) use_classDefinition_content = TOY_class_content of 'a | TOY_class_synonym of 'b
-  
+
   structure Outer_syntax_Class = struct
     fun make from_expr abstract ty_object attribute oper =
       META.Toy_class_raw_ext
@@ -1504,7 +1504,7 @@ structure TOY_parse = struct
   datatype state_content =
     ST_l_attr of (((binding * binding) option * binding) * META.toy_data_shallow) list * binding list
   | ST_binding of binding
-  
+
   val state_parse = parse_l' (   object_cast >> ST_l_attr
                               || Parse.binding >> ST_binding)
 
@@ -1521,7 +1521,7 @@ structure TOY_parse = struct
 
   datatype state_pp_content = ST_PP_l_attr of state_content list
                             | ST_PP_binding of binding
-  
+
   val state_pp_parse = state_parse >> ST_PP_l_attr
                        || Parse.binding >> ST_PP_binding
 
@@ -1536,7 +1536,7 @@ ML\<open>
 val () =
   outer_syntax_command @{mk_string} @{command_keyword Enum} ""
     (Parse.binding -- parse_l1' Parse.binding)
-    (fn (n1, n2) => 
+    (fn (n1, n2) =>
       K (META.META_enum (META.ToyEnum (From.binding n1, From.list From.binding n2))))
 \<close>
 
@@ -1561,7 +1561,7 @@ local
                              ty_object
                              attribute
                              oper)
-        | TOY_class_synonym (n1, n2) => 
+        | TOY_class_synonym (n1, n2) =>
             META.META_class_synonym (META.ToyClassSynonym (From.binding n1, n2)))
 in
 val () = mk_classDefinition TOY_class @{command_keyword Class}
@@ -1641,7 +1641,7 @@ val () =
     (curry META.META_ctxt META.Floor1)
     (curry META.META_ctxt META.Floor2)
     (fn (from_expr, META_ctxt) =>
-    (fn ((l_param, name), l) => 
+    (fn ((l_param, name), l) =>
     META_ctxt
       (META.Toy_ctxt_ext
         ( case l_param of NONE => [] | SOME l => From.list From.binding l
