@@ -81,6 +81,23 @@ abstract =
 	cardinality of partial equivalence relations over a finite set of
 	cardinality n is equal to the n+1-th Bell number.
 
+[Twelvefold_Way]
+title = The Twelvefold Way
+author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
+topic = Mathematics/Combinatorics
+date = 2016-12-29
+notify = lukas.bulwahn@gmail.com
+abstract =
+  This entry provides all cardinality theorems of the Twelvefold Way.
+  The Twelvefold Way systematically classifies twelve related
+  combinatorial problems concerning two finite sets, which include
+  counting permutations, combinations, multisets, set partitions and
+  number partitions. This development builds upon the existing formal
+  developments with cardinality theorems for those structures. It
+  provides twelve bijections from the various structures to different
+  equivalence classes on finite functions, and hence, proves cardinality
+  formulae for these equivalence classes on finite functions.
+
 [Chord_Segments]
 title = Intersecting Chords Theorem
 author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
@@ -4988,7 +5005,7 @@ author = Sidney Amani<>, June Andronick<>, Maksym Bortin<>, Corey Lewis<>, Chris
 notify = sidney.amani@data61.csiro.au, corey.lewis@data61.csiro.au
 date = 2016-11-29
 topic = Computer Science/Programming Languages/Logics, Computer Science/Programming Languages/Language Definitions
-abstract = 
+abstract =
   We propose a concurrency reasoning framework for imperative programs,
   based on the Owicki-Gries (OG) foundational shared-variable
   concurrency method. Our framework combines the approaches of
@@ -5011,7 +5028,7 @@ author = Anders Schlichtkrull <https://people.compute.dtu.dk/andschl/>, Jørgen 
 topic = Logic
 date = 2016-12-07
 notify = andschl@dtu.dk, jovi@dtu.dk
-abstract = 
+abstract =
   Paraconsistency is about handling inconsistency in a coherent way. In
   classical and intuitionistic logic everything follows from an
   inconsistent theory. A paraconsistent logic avoids the explosion.
@@ -5034,7 +5051,7 @@ author = Yutaka Nagashima<>
 topic = Tools
 date = 2016-12-20
 notify = Yutaka.Nagashima@data61.csiro.au
-abstract = 
+abstract =
   Isabelle includes various automatic tools for finding proofs under
   certain conditions. However, for each conjecture, knowing which
   automation to use, and how to tweak its parameters, is currently
