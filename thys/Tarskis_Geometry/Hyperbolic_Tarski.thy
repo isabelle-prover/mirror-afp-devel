@@ -121,7 +121,6 @@ lemma conic_sgn_abs:
 proof -
   from `v \<noteq> 0` and proj2_rep_abs2
   obtain j where "j \<noteq> 0" and "proj2_rep (proj2_abs v) = j *\<^sub>R v" by auto
-  from `j \<noteq> 0` have "j\<^sup>2 > 0" by simp
 
   from `proj2_rep (proj2_abs v) = j *\<^sub>R v`
   have "conic_sgn (proj2_abs v) = sgn (j\<^sup>2 * (v \<bullet> (M *v v)))"
@@ -133,7 +132,8 @@ proof -
       power2_eq_square
       algebra_simps)
   also have "\<dots> = sgn (j\<^sup>2) * sgn (v \<bullet> (M *v v))" by (rule sgn_mult)
-  also from `j\<^sup>2 > 0` have "\<dots> = sgn (v \<bullet> (M *v v))" by simp
+  also from `j \<noteq> 0` have "\<dots> = sgn (v \<bullet> (M *v v))"
+    by (simp add: power2_eq_square sgn_mult)
   finally show "conic_sgn (proj2_abs v) = sgn (v \<bullet> (M *v v))" .
 qed
 

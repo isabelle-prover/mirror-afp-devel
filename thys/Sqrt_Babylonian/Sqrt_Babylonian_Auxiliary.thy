@@ -119,21 +119,17 @@ lemma divide_less_floor1: "n / y < of_int (floor (n / y)) + 1"
 
 context linordered_idom
 begin
-lemma sgn_int_pow[simp]: "sgn ((x :: 'a) ^ p) = sgn x ^ p"
-  by (induct p, auto simp: sgn_mult)
 
-lemma sgn_int_pow_if[simp]: assumes x: "(x :: 'a) \<noteq> 0"
-  shows "sgn x ^ p = (if even p then 1 else sgn x)"
-proof (induct p, auto)
-  show "sgn x * sgn x = 1" using x 
-  by (metis linorder_neqE_linordered_idom mult_eq_0_iff not_square_less_zero sgn_pos sgn_mult)
-qed
+lemma sgn_int_pow_if [simp]:
+  "sgn x ^ p = (if even p then 1 else sgn x)" if "x \<noteq> 0"
+  using that by (induct p) simp_all
 
 lemma compare_pow_le_iff: "p > 0 \<Longrightarrow> (x :: 'a) \<ge> 0 \<Longrightarrow> y \<ge> 0 \<Longrightarrow> (x ^ p \<le> y ^ p) = (x \<le> y)"
   by (metis eq_iff linear power_eq_imp_eq_base power_mono)
 
 lemma compare_pow_less_iff: "p > 0 \<Longrightarrow> (x :: 'a) \<ge> 0 \<Longrightarrow> y \<ge> 0 \<Longrightarrow> (x ^ p < y ^ p) = (x < y)"
   by (metis power_less_imp_less_base power_strict_mono)
+    
 end
 
 lemma quotient_of_int[simp]: "quotient_of (of_int i) = (i,1)" 
