@@ -645,8 +645,8 @@ definition
   "hensel_1 (ty ::'p :: prime_card itself)
     (u :: 'pq :: nontriv mod_ring poly) (v :: 'q :: nontriv mod_ring poly) (w :: 'q mod_ring poly) \<equiv>
    if v = 1 then (1,u) else
-   let (s,t,one) = euclid_ext (#v :: 'p mod_ring poly) (#w) in
-   let (a,b) = dupe_monic (#v::'p mod_ring poly) (#w) s t 1 in
+   let (s, t) = bezout_coefficients (#v :: 'p mod_ring poly) (#w) in
+   let (a, b) = dupe_monic (#v::'p mod_ring poly) (#w) s t 1 in
    (Knuth_ex_4_6_2_22_main.V TYPE('q) b u v w, Knuth_ex_4_6_2_22_main.W TYPE('q) a b u v w)"
 
 fun hensel ::
@@ -675,14 +675,14 @@ proof-
   have degv: "degree (#v :: 'p mod_ring poly) = degree v"
     by (simp add: ring_hom_of_int.monic_degree_map_poly_hom)
   from monic
-  have monic2: "monic (#v :: 'p mod_ring poly)" by (auto simp: lead_coeff_def degv)
-  obtain s t one where st1: "euclid_ext (#v :: 'p mod_ring poly) (#w) = (s,t,one)"
-    by (cases "euclid_ext (#v :: 'p mod_ring poly) (#w)", auto)
-  from euclid_ext_correct[of "#v :: 'p mod_ring poly" "#w", unfolded this]
-  have "s * #v + t * #w = one" and "one = gcd (#v :: 'p mod_ring poly) (#w)" by auto
-  with coprime st1
-  have euc: "euclid_ext (#v :: 'p mod_ring poly) (#w) = (s,t,1)" and "s * #v + t * #w = 1" by auto
-  then have vswt: "#v * s + #w * t = 1" by (simp add: ac_simps)
+  have monic2: "monic (#v :: 'p mod_ring poly)"
+    by (auto simp: lead_coeff_def degv)
+  obtain s t where bezout: "bezout_coefficients (#v :: 'p mod_ring poly) (#w) = (s, t)"
+    by (auto simp add: prod_eq_iff)
+  then have "s * #v + t * #w = gcd (#v :: 'p mod_ring poly) (#w)"
+    by (rule bezout_coefficients)
+  with coprime have vswt: "#v * s + #w * t = 1"
+    by (simp add: ac_simps)
   obtain a b where dupe: "dupe_monic (#v) (#w) s t 1 = (a, b)" by force
   from dupe_monic(1,2)[OF vswt monic2, where U=1, unfolded this]
   have avbw: "a * #v + b * #w = 1" and degb: "b = 0 \<or> degree b < degree (#v::'p mod_ring poly)" by auto
@@ -694,7 +694,8 @@ proof-
       by (metis degree_1 degree_mult_eq_0 mult_zero_left one_neq_zero)
     from this[unfolded degv] monic_degree_0[OF monic[unfolded lead_coeff_def]]
     have 1: "v = 1" by auto
-    with b0 out uvw have 2: "V' = 1" "W' = u" by (unfold split hensel_1_def Let_def euc dupe, auto)
+    with b0 out uvw have 2: "V' = 1" "W' = u"
+      by (unfold split hensel_1_def Let_def dupe) auto
     have 3: ?unique apply (simp add: 1 2) by (metis lead_coeff_def monic_degree_0 mult.left_neutral)
     with uvw degu show ?thesis unfolding 1 2 by auto
   next
@@ -704,9 +705,9 @@ proof-
     interpret Knuth_ex_4_6_2_22_prime "TYPE('p)" "TYPE('q)" "TYPE('pq)" a b
       by (unfold_locales; fact assms degb avbw)
     show ?thesis
-    proof(intro conjI)
-      from out[unfolded hensel_1_def] v1
-      have 1[simp]: "V' = V" "W' = W" by (auto simp: euc dupe)
+    proof (intro conjI)
+      from out [unfolded hensel_1_def] v1
+      have 1 [simp]: "V' = V" "W' = W" by (auto simp: bezout dupe)
       from uVW show "u = V' * W'" by auto
       from degV show [simp]: "degree V' = degree v" by simp
       from degW show [simp]: "degree W' = degree w" by simp

@@ -288,10 +288,10 @@ end
 instantiation mod_ring :: (prime_card) euclidean_ring_gcd
 begin
 
-definition gcd_mod_ring :: "'a mod_ring \<Rightarrow> 'a mod_ring \<Rightarrow> 'a mod_ring" where "gcd_mod_ring = gcd_eucl"
-definition lcm_mod_ring :: "'a mod_ring \<Rightarrow> 'a mod_ring \<Rightarrow> 'a mod_ring" where "lcm_mod_ring = lcm_eucl"
-definition Gcd_mod_ring :: "'a mod_ring set \<Rightarrow> 'a mod_ring" where "Gcd_mod_ring = Gcd_eucl"
-definition Lcm_mod_ring :: "'a mod_ring set \<Rightarrow> 'a mod_ring" where "Lcm_mod_ring = Lcm_eucl"
+definition gcd_mod_ring :: "'a mod_ring \<Rightarrow> 'a mod_ring \<Rightarrow> 'a mod_ring" where "gcd_mod_ring = Euclidean_Algorithm.gcd"
+definition lcm_mod_ring :: "'a mod_ring \<Rightarrow> 'a mod_ring \<Rightarrow> 'a mod_ring" where "lcm_mod_ring = Euclidean_Algorithm.lcm"
+definition Gcd_mod_ring :: "'a mod_ring set \<Rightarrow> 'a mod_ring" where "Gcd_mod_ring = Euclidean_Algorithm.Gcd"
+definition Lcm_mod_ring :: "'a mod_ring set \<Rightarrow> 'a mod_ring" where "Lcm_mod_ring = Euclidean_Algorithm.Lcm"
 
 instance by (intro_classes, auto simp: gcd_mod_ring_def lcm_mod_ring_def Gcd_mod_ring_def Lcm_mod_ring_def)
 end

@@ -278,17 +278,12 @@ next
 qed
 
 
-definition euclid_ext_poly_no_gcd :: "'a :: prime_card mod_ring poly \<Rightarrow> 'a mod_ring poly \<Rightarrow> 'a mod_ring  poly \<times> 'a mod_ring  poly" where
-  "euclid_ext_poly_no_gcd f g = (case euclid_ext f g of (a,b,_) \<Rightarrow> (a, b))"
-
-lemma euclid_ext_poly_no_gcd: assumes cop: "coprime f g" and ext: "euclid_ext_poly_no_gcd f g = (a,b)" 
-  shows "f * a + g * b = 1"  
-proof -
-  obtain a' b' c where fg: "euclid_ext f g = (a',b',c)" by (cases "euclid_ext f g")
-  from euclid_ext_correct[of f g, unfolded fg split cop] have "f * a' + g * b' = 1"
-    by (simp add: ac_simps)
-  with ext show "f * a + g * b = 1" unfolding euclid_ext_poly_no_gcd_def fg split by auto
-qed
+lemma coprime_bezout_coefficients:
+  assumes cop: "coprime f g"
+    and ext: "bezout_coefficients f g = (a, b)" 
+  shows "a * f + b * g = 1"
+  using assms bezout_coefficients [of f g a b]
+  by simp
 
 context poly_mod_2
 begin
@@ -504,32 +499,33 @@ end
 
 context poly_mod_type
 begin
-lemma euclid_ext_poly_no_gcd_mod_int: assumes f: "(F :: 'a mod_ring poly) = of_int_poly f"
+
+lemma bezout_coefficients_mod_int: assumes f: "(F :: 'a mod_ring poly) = of_int_poly f"
   and g: "(G :: 'a mod_ring poly) = of_int_poly g" 
   and cop: "coprime_m f g" 
-  and fact: "euclid_ext_poly_no_gcd F G = (A,B)" 
+  and fact: "bezout_coefficients F G = (A,B)" 
   and a: "a = to_int_poly A"
   and b: "b = to_int_poly B"
-  shows "f * a + g * b =m 1" 
+  shows "f * a + g * b =m 1"
 proof -
   have f[transfer_rule]: "MP_Rel f F" unfolding f MP_Rel_def by (simp add: Mp_f_representative)
   have g[transfer_rule]: "MP_Rel g G" unfolding g MP_Rel_def by (simp add: Mp_f_representative)
   have [transfer_rule]: "MP_Rel a A" unfolding a MP_Rel_def by (rule Mp_to_int_poly)
   have [transfer_rule]: "MP_Rel b B" unfolding b MP_Rel_def by (rule Mp_to_int_poly)
   from cop have "coprime F G" using coprime_MP_Rel[unfolded rel_fun_def] f g by auto
-  from euclid_ext_poly_no_gcd[OF this fact]
-  have "F * A + G * B = 1" .
-  from this[untransferred]
-  show ?thesis .
+  from coprime_bezout_coefficients [OF this fact]
+  have "A * F + B * G = 1" .
+  from this [untransferred]
+  show ?thesis by (simp add: ac_simps)
 qed
+
 end
   
-definition euclid_ext_poly_no_gcd_i :: "'i arith_ops_record \<Rightarrow> 'i list \<Rightarrow> 'i list \<Rightarrow> 'i list \<times> 'i list" where
-  "euclid_ext_poly_no_gcd_i ff_ops f g = (case euclid_ext_poly_i ff_ops f g of 
-      (a,b,_) \<Rightarrow> (a, b))" 
+definition bezout_coefficients_i :: "'i arith_ops_record \<Rightarrow> 'i list \<Rightarrow> 'i list \<Rightarrow> 'i list \<times> 'i list" where
+  "bezout_coefficients_i ff_ops f g = fst (euclid_ext_poly_i ff_ops f g)"
 
 definition euclid_ext_poly_mod_main :: "int \<Rightarrow> 'a arith_ops_record \<Rightarrow> int poly \<Rightarrow> int poly \<Rightarrow> int poly \<times> int poly" where
-  "euclid_ext_poly_mod_main p ff_ops f g = (case euclid_ext_poly_no_gcd_i ff_ops (of_int_poly_i ff_ops f) (of_int_poly_i ff_ops g) of 
+  "euclid_ext_poly_mod_main p ff_ops f g = (case bezout_coefficients_i ff_ops (of_int_poly_i ff_ops f) (of_int_poly_i ff_ops g) of 
       (a,b) \<Rightarrow> (to_int_poly_i ff_ops a, to_int_poly_i ff_ops b))" 
 
 definition euclid_ext_poly_mod :: "int \<Rightarrow> int poly \<Rightarrow> int poly \<Rightarrow> int poly \<times> int poly" where
@@ -540,20 +536,19 @@ definition euclid_ext_poly_mod :: "int \<Rightarrow> int poly \<Rightarrow> int 
   
 context prime_field_gen
 begin
-lemma euclid_ext_poly_no_gcd_i[transfer_rule]: 
+lemma bezout_coefficients_i[transfer_rule]: 
   "(poly_rel ===> poly_rel ===> rel_prod poly_rel poly_rel)
-     (euclid_ext_poly_no_gcd_i ff_ops) euclid_ext_poly_no_gcd"
-  unfolding euclid_ext_poly_no_gcd_i_def[abs_def] euclid_ext_poly_no_gcd_def[abs_def]
+     (bezout_coefficients_i ff_ops) bezout_coefficients"
+  unfolding bezout_coefficients_i_def bezout_coefficients_def
   by transfer_prover
 
-
-lemma euclid_ext_poly_no_gcd_i_sound: assumes f: "f' = of_int_poly_i ff_ops f" "Mp f = f"
+lemma bezout_coefficients_i_sound: assumes f: "f' = of_int_poly_i ff_ops f" "Mp f = f"
   and g: "g' = of_int_poly_i ff_ops g" "Mp g = g"  
   and cop: "coprime_m f g" 
-  and res: "euclid_ext_poly_no_gcd_i ff_ops f' g' = (a',b')" 
+  and res: "bezout_coefficients_i ff_ops f' g' = (a',b')" 
   and a: "a = to_int_poly_i ff_ops a'"
   and b: "b = to_int_poly_i ff_ops b'"
-  shows "f * a + g * b =m 1" 
+  shows "f * a + g * b =m 1"
 proof -
   from f have f': "f' = of_int_poly_i ff_ops (Mp f)" by simp
   define f'' where "f'' \<equiv> of_int_poly (Mp f) :: 'a mod_ring poly"
@@ -565,13 +560,13 @@ proof -
   have g'': "g'' = of_int_poly g" unfolding g''_def g by simp
   have rel_g[transfer_rule]: "poly_rel g' g''"     
     by (rule poly_rel_coeffs_Mp_of_int_poly[OF g'], simp add: g'' g)
-  obtain a'' b'' where eucl: "euclid_ext_poly_no_gcd f'' g'' = (a'',b'')" by force
-  from euclid_ext_poly_no_gcd_i[unfolded rel_fun_def rel_prod_conv, rule_format, OF rel_f rel_g,
+  obtain a'' b'' where eucl: "bezout_coefficients f'' g'' = (a'',b'')" by force
+  from bezout_coefficients_i[unfolded rel_fun_def rel_prod_conv, rule_format, OF rel_f rel_g,
     unfolded res split eucl]
   have rel[transfer_rule]: "poly_rel a' a''" "poly_rel b' b''" by auto
   with to_int_poly_i have a: "a = to_int_poly a''" 
     and b: "b = to_int_poly b''" unfolding a b by auto
-  from euclid_ext_poly_no_gcd_mod_int[OF f'' g'' cop eucl a b]
+  from bezout_coefficients_mod_int [OF f'' g'' cop eucl a b]
   show ?thesis .
 qed
 
@@ -580,11 +575,11 @@ lemma euclid_ext_poly_mod_main: assumes cop: "coprime_m f g"
   and res: "euclid_ext_poly_mod_main m ff_ops f g = (a,b)" 
 shows "f * a + g * b =m 1" 
 proof -
-  obtain a' b' where res': "euclid_ext_poly_no_gcd_i ff_ops (of_int_poly_i ff_ops f) 
+  obtain a' b' where res': "bezout_coefficients_i ff_ops (of_int_poly_i ff_ops f) 
     (of_int_poly_i ff_ops g) = (a', b')" by force
   show ?thesis
-    by (rule euclid_ext_poly_no_gcd_i_sound[OF refl f refl g cop res'], insert
-    res[unfolded euclid_ext_poly_mod_main_def res'], auto)
+    by (rule bezout_coefficients_i_sound[OF refl f refl g cop res'], insert
+    res [unfolded euclid_ext_poly_mod_main_def res'], auto)
 qed
 end
 
@@ -974,15 +969,21 @@ proof -
 qed  
 
 definition inverse_mod :: "int \<Rightarrow> int \<Rightarrow> int" where
-  "inverse_mod x m = (case euclid_ext x m of (a,b,g) \<Rightarrow> a)" 
+  "inverse_mod x m = fst (bezout_coefficients x m)" 
 
-lemma inverse_mod: assumes "coprime x m" "m > 1" shows "(inverse_mod x m * x) mod m = 1" 
-proof (cases "euclid_ext x m")
-  case (fields i a g)
-  from euclid_ext_correct[of x m, unfolded this split assms] have i: "i * x + a * m = g" by simp
-  from arg_cong[OF this, of "\<lambda> x. x mod m"] assms(2) have "(i * x) mod m = 1"
-    by (simp add: \<open>i * x + a * m = g \<and> g = 1\<close> add.commute)
-  thus ?thesis unfolding inverse_mod_def fields split .
+lemma inverse_mod:
+  assumes "coprime x m" "m > 1"
+  shows "(inverse_mod x m * x) mod m = 1" 
+proof -
+  from bezout_coefficients [of x m "inverse_mod x m" "snd (bezout_coefficients x m)"]
+  have "inverse_mod x m * x + snd (bezout_coefficients x m) * m = gcd x m"
+    by (simp add: inverse_mod_def)
+  also note \<open>coprime x m\<close>
+  finally have "inverse_mod x m * x + snd (bezout_coefficients x m) * m = 1" .
+  then have "(inverse_mod x m * x + snd (bezout_coefficients x m) * m) mod m = 1 mod m"
+    by simp
+  with \<open>m > 1\<close> show ?thesis
+    by simp
 qed
 
 lemma inverse_mod_pow: assumes "coprime x p" "p > 1" "n \<noteq> 0" 
@@ -1090,8 +1091,9 @@ proof -
   obtain D1 H1 where main: "linear_hensel_main C p S T D H n = (D1,H1)" by force
   from hensel_result[unfolded linear_hensel_binary_def ext split Let_def main]
   have id: "D1 = D'" "H1 = H'" by auto
-  from linear_hensel_main[OF euclid_ext_poly_mod[OF cop normalized_input prime ext] 
-      eq monic_input normalized_input main[unfolded id] n prime cop] show ?thesis by auto
+  from linear_hensel_main [OF euclid_ext_poly_mod [OF cop normalized_input prime ext]
+    eq monic_input normalized_input main [unfolded id] n prime cop]
+  show ?thesis by auto
 qed
 end
 

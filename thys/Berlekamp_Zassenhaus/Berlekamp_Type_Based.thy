@@ -473,9 +473,9 @@ next
   thus "x mod n = y mod n" by (simp add: mod_add_left_eq)
 qed
 
-lemma cong_gcd_eq_poly: "[(a::'a mod_ring poly) = b] (mod m) \<Longrightarrow> gcd a m = gcd b m"
-  unfolding cong_poly_def using gcd.commute gcd_mod2 by metis
-
+lemma cong_gcd_eq_poly:
+  "gcd a m = gcd b m" if "[(a::'a mod_ring poly) = b] (mod m)"
+  using that by (simp add: cong_poly_def) (metis gcd_mod_left mod_by_0)
 
 lemma coprime_h_c_poly:
 fixes h::"'a mod_ring poly"

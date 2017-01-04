@@ -2956,14 +2956,14 @@ lemma echelon_form_of_invertible:
 text{*Executable version*}
  
 corollary echelon_form_echelon_form_of_euclidean:
-  fixes A::"'a::{euclidean_ring}^'cols::{mod_type}^'rows::{mod_type}"
+  fixes A::"'a::{euclidean_ring_gcd}^'cols::{mod_type}^'rows::{mod_type}"
   shows "echelon_form (echelon_form_of_euclidean A)"
   using echelon_form_echelon_form_of is_bezout_ext_euclid_ext2 
   unfolding echelon_form_of_euclidean_def
   by auto
 
 corollary echelon_form_of_euclidean_invertible:
-  fixes A::"'a::{euclidean_ring}^'cols::{mod_type}^'rows::{mod_type}"
+  fixes A::"'a::{euclidean_ring_gcd}^'cols::{mod_type}^'rows::{mod_type}"
   shows "\<exists>P. invertible P \<and> P**A = (echelon_form_of A euclid_ext2) 
          \<and> echelon_form (echelon_form_of A euclid_ext2)"
   using echelon_form_of_invertible[OF is_bezout_ext_euclid_ext2] .

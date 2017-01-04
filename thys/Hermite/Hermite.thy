@@ -393,8 +393,7 @@ lemma abs_mod_less:
     neg_mod_conj not_less not_less_iff_gr_or_eq pos_mod_conj)
 
 lemma ass_function_int: "ass_function_int = ass_function_euclidean"
-  unfolding fun_eq_iff ass_function_int_def ass_function_euclidean_def
-  by (metis gcd_0 gcd_0_int)
+  by (unfold ass_function_int_def ass_function_euclidean_def) simp
 
 lemma ass_function_int_UNIV: "(ass_function_int` UNIV) = {x. x\<ge>0}"
   unfolding ass_function_int_def image_def

@@ -72,19 +72,19 @@ partial_function (tailrec) gcd_eucl_i :: "'i \<Rightarrow> 'i \<Rightarrow> 'i" 
   "gcd_eucl_i a b = (if b = zero 
     then normalize a else gcd_eucl_i b (modulo a b))"
 
-partial_function (tailrec) euclid_ext_aux_i :: "'i \<Rightarrow> 'i \<Rightarrow> 'i \<Rightarrow> 'i \<Rightarrow> 'i \<Rightarrow> 'i \<Rightarrow> 'i \<times> 'i \<times> 'i" where
-  "euclid_ext_aux_i r' r s' s t' t = (
-     if r = zero then let c = divide one (unit_factor r') in (times s' c, times t' c, normalize r')
+partial_function (tailrec) euclid_ext_aux_i :: "'i \<Rightarrow> 'i \<Rightarrow> 'i \<Rightarrow> 'i \<Rightarrow> 'i \<Rightarrow> 'i \<Rightarrow> ('i \<times> 'i) \<times> 'i" where
+  "euclid_ext_aux_i s' s t' t r' r = (
+     if r = zero then let c = divide one (unit_factor r') in ((times s' c, times t' c), normalize r')
      else let q = divide r' r
-          in  euclid_ext_aux_i r (modulo r' r) s (minus s' (times q s)) t (minus t' (times q t)))"
+          in  euclid_ext_aux_i s (minus s' (times q s)) t (minus t' (times q t)) r (modulo r' r))"
 
-definition euclid_ext_i :: "'i \<Rightarrow> 'i \<Rightarrow> 'i \<times> 'i \<times> 'i" where 
-  "euclid_ext_i a b = euclid_ext_aux_i a b one zero zero one" 
+abbreviation (input) euclid_ext_i :: "'i \<Rightarrow> 'i \<Rightarrow> ('i \<times> 'i) \<times> 'i" where 
+  "euclid_ext_i \<equiv> euclid_ext_aux_i one zero zero one" 
+
 end
 
 declare arith_ops.gcd_eucl_i.simps[code]
 declare arith_ops.euclid_ext_aux_i.simps[code]
-declare arith_ops.euclid_ext_i_def[code]
  
 unbundle lifting_syntax
                                                        
@@ -126,14 +126,14 @@ locale euclidean_semiring_ops = idom_ops ops R for ops :: "'i arith_ops_record" 
     and normalize[transfer_rule]: "(R ===> R) normalize Rings.normalize"
     and unit_factor[transfer_rule]: "(R ===> R) unit_factor Rings.unit_factor"
 begin
-lemma gcd_eucl_i [transfer_rule]: "(R ===> R ===> R) gcd_eucl_i gcd_eucl" 
+lemma gcd_eucl_i [transfer_rule]: "(R ===> R ===> R) gcd_eucl_i Euclidean_Algorithm.gcd" 
 proof (intro rel_funI, goal_cases)
   case (1 x X y Y)
   thus ?case
-  proof (induct X Y arbitrary: x y rule: gcd_eucl.induct)
+  proof (induct X Y arbitrary: x y rule: Euclidean_Algorithm.gcd.induct)
     case (1 X Y x y)
     note [transfer_rule] = 1(2-)
-    note simps = gcd_eucl_i.simps[of x y] gcd_eucl.simps[of X Y]
+    note simps = gcd_eucl_i.simps[of x y] Euclidean_Algorithm.gcd.simps[of X Y]
     have eq: "(y = zero) = (Y = 0)" by transfer_prover
     show ?case
     proof (cases "Y = 0")
@@ -144,7 +144,7 @@ proof (intro rel_funI, goal_cases)
     next
       case False
       with eq have yz: "y \<noteq> zero" by simp
-      have "R (gcd_eucl_i y (modulo x y)) (gcd_eucl Y (X mod Y))"
+      have "R (gcd_eucl_i y (modulo x y)) (Euclidean_Algorithm.gcd Y (X mod Y))"
         by (rule 1(1)[OF False], transfer_prover+)
       thus ?thesis unfolding simps using False yz by simp
     qed
@@ -153,40 +153,42 @@ qed
 end
 
 locale euclidean_ring_ops = euclidean_semiring_ops ops R for ops :: "'i arith_ops_record" and
-  R :: "'i \<Rightarrow> 'a :: {idom,euclidean_ring} \<Rightarrow> bool"  +
+  R :: "'i \<Rightarrow> 'a :: {idom,euclidean_ring_gcd} \<Rightarrow> bool"  +
   assumes divide[transfer_rule]: "(R ===> R ===> R) divide (op div)"
 begin
 lemma euclid_ext_aux_i[transfer_rule]: 
-  "(R ===> R ===> R ===> R ===> R ===> R ===> rel_prod R (rel_prod R R)) euclid_ext_aux_i euclid_ext_aux"
+  "(R ===> R ===> R ===> R ===> R ===> R ===> rel_prod (rel_prod R R) R) euclid_ext_aux_i euclid_ext_aux"
 proof (intro rel_funI, goal_cases)
-  case (1 x X y Y z Z a A b B c C)
+  case (1 z Z a A b B c C x X y Y)
   thus ?case
-  proof (induct X Y Z A B C arbitrary: x y z a b c rule: euclid_ext_aux.induct)
-    case (1 X Y Z A B C x y z a b c)
+  proof (induct Z A B C X Y arbitrary: z a b c x y rule: euclid_ext_aux.induct)
+    case (1 Z A B C X Y z a b c x y)
     note [transfer_rule] = 1(2-)
-    note simps = euclid_ext_aux_i.simps[of x y z a b c] euclid_ext_aux.simps[of X Y Z A B C]
+    note simps = euclid_ext_aux_i.simps[of z a b c x y] euclid_ext_aux.simps[of Z A B C X Y]
     have eq: "(y = zero) = (Y = 0)" by transfer_prover
     show ?case
     proof (cases "Y = 0")
       case True
       hence *: "(y = zero) = True" "(Y = 0) = True" using eq by auto
-      show ?thesis unfolding simps unfolding * if_True by transfer_prover
+      show ?thesis unfolding simps unfolding * if_True
+        by transfer_prover
     next
       case False
       hence *: "(y = zero) = False" "(Y = 0) = False" using eq by auto
       have XY: "R (modulo x y) (X mod Y)" by transfer_prover
       have YA: "R (minus z (times (divide x y) a)) (Z - X div Y * A)" by transfer_prover
       have YC: "R (minus b (times (divide x y) c)) (B - X div Y * C)" by transfer_prover
-      note [transfer_rule] = 1(1)[OF False refl 1(3) XY 1(5) YA 1(7) YC]
+      note [transfer_rule] = 1(1)[OF False refl 1(3) YA 1(5) YC 1(7) XY]
+
       show ?thesis unfolding simps * if_False Let_def by transfer_prover
     qed
   qed
 qed
 
-lemma euclid_ext_i[transfer_rule]: 
-  "(R ===> R ===> rel_prod R (rel_prod R R)) euclid_ext_i euclid_ext"
-  unfolding euclid_ext_i_def[abs_def] euclid_ext_def[abs_def]
+lemma euclid_ext_i [transfer_rule]:
+  "(R ===> R ===> rel_prod (rel_prod R R) R) euclid_ext_i euclid_ext"
   by transfer_prover
+
 end
 
 locale field_ops = idom_divide_ops ops R + euclidean_semiring_ops ops R for ops :: "'i arith_ops_record" and

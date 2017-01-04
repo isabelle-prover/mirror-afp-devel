@@ -170,9 +170,14 @@ proof -
       by (auto simp: lead_coeff_mult)
     hence "lead_coeff g dvd lead_coeff f" by auto
     with cop have cop: "coprime (lead_coeff g) p" by (metis coprime_divisors dvd_def mult.right_neutral)
-    from this[unfolded gcd_non_0[OF p0]] have "coprime p 0" using g0 unfolding M_def by simp
-    also have "gcd p 0 = p" using p0 by (simp add: p prime_ge_0_int)
-    finally show False using p by simp
+    with p0 have "coprime (lead_coeff g mod p) p"
+      by (simp add: gcd_mod_left)
+    also have "lead_coeff g mod p = 0"
+      using M_def g0 by simp
+    finally show False using p
+      apply simp
+        unfolding prime_int_iff
+      by (simp add: prime_int_iff)
   qed
 qed
 

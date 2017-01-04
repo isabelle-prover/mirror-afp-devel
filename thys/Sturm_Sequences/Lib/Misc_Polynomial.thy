@@ -91,8 +91,12 @@ lemma poly_div_gcd_squarefree_aux:
   shows "coprime (p div d) (pderiv (p div d))" and
         "\<And>x. poly (p div d) x = 0 \<longleftrightarrow> poly p x = 0"
 proof -
-  from bezout[of p "pderiv p"] obtain r s where rs [symmetric]: "r * p + s * pderiv p = d"
-    unfolding d_def by force
+  obtain r s where "bezout_coefficients p (pderiv p) = (r, s)"
+    by (auto simp add: prod_eq_iff)
+  then have "r * p + s * pderiv p = gcd p (pderiv p)"
+    by (rule bezout_coefficients)
+  then have rs: "d = r * p + s * pderiv p"
+    by (simp add: d_def)
   def t \<equiv> "p div d"
   def [simp]: p' \<equiv> "pderiv p"
   def [simp]: d' \<equiv> "pderiv d"

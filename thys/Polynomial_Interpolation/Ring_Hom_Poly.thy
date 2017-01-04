@@ -369,12 +369,8 @@ lemma map_poly_normalize: "map_poly hom (normalize p) =
   by (simp add: normalize_poly_eq_div map_poly_div lead_coeff_def)
 
 lemma map_poly_gcd: "map_poly hom (gcd p q) = gcd (map_poly hom p) (map_poly hom q)"
-proof (induct p q rule: gcd_eucl.induct)
-  case (1 p b)
-  then show ?case
-    by (cases "b = 0")
-      (simp_all add: map_poly_normalize gcd_non_0 map_poly_mod)
-qed
+  by (induct p q rule: eucl_induct)
+    (simp_all add: map_poly_normalize gcd_mod_right map_poly_mod ac_simps)
 
 end
 

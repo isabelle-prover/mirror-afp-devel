@@ -109,9 +109,10 @@ proof -
       with coph show ?thesis by (simp add: gcd_mult_cancel)
     qed    
     with id have cop_prod: "coprime (lead_coeff (h * ?k)) p" by simp
-    from h0 k0 have lc0: "lead_coeff (h * ?k) \<noteq> 0" unfolding lead_coeff_mult by auto
-    from cop_prod[unfolded gcd_non_0[OF p0]] have lcp: "lead_coeff (h * ?k) mod p \<noteq> 0" using p
-      by (metis M_def gcd_mod2 inverse_mod_coprime mod_mult_self1_is_0 mod_self mult.commute zero_neq_one)
+    from h0 k0 have lc0: "lead_coeff (h * ?k) \<noteq> 0"
+      unfolding lead_coeff_mult by auto
+    from p have lcp: "lead_coeff (h * ?k) mod p \<noteq> 0"
+      using M_1 M_def cop_prod by auto
     have deg_eq: "degree_m (h * ?k) = degree (h * Mp k)" 
       by (rule degree_m_eq[OF _ m1], unfold lead_coeff_def[symmetric], insert lcp)
     from this[unfolded degm0] have "degree (h * Mp k) = 0" by simp

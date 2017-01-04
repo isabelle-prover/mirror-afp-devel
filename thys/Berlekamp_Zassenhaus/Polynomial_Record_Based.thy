@@ -188,11 +188,12 @@ definition poly_ops :: "'i list arith_ops_record" where
 definition gcd_poly_i :: "'i list \<Rightarrow> 'i list \<Rightarrow> 'i list" where
   "gcd_poly_i = arith_ops.gcd_eucl_i poly_ops"
 
-definition euclid_ext_poly_i :: "'i list \<Rightarrow> 'i list \<Rightarrow> 'i list \<times> 'i list \<times> 'i list" where
+definition euclid_ext_poly_i :: "'i list \<Rightarrow> 'i list \<Rightarrow> ('i list \<times> 'i list) \<times> 'i list" where
   "euclid_ext_poly_i = arith_ops.euclid_ext_i poly_ops"
 
 definition square_free_i :: "'i list \<Rightarrow> bool" where
   "square_free_i xs \<equiv> gcd_poly_i xs (pderiv_i xs) = one_poly_i"
+
 end
 
 (* **************************************************************************** *)
@@ -762,12 +763,12 @@ qed
 lemma poly_rel_gcd [transfer_rule]: "(poly_rel ===> poly_rel ===> poly_rel) (gcd_poly_i ops) gcd"
 proof -
   interpret poly: euclidean_ring_ops "poly_ops ops" poly_rel by (rule euclidean_ring_ops_poly)
-  show ?thesis using poly.gcd_eucl_i unfolding gcd_poly_i_def gcd_poly_def gcd_eucl_eq_gcd_factorial .
+  show ?thesis using poly.gcd_eucl_i unfolding gcd_poly_i_def gcd_eucl .
 qed
 
 (* euclid_ext poly *)
 lemma poly_rel_euclid_ext [transfer_rule]: "(poly_rel ===> poly_rel ===> 
-  rel_prod poly_rel (rel_prod poly_rel poly_rel)) (euclid_ext_poly_i ops) euclid_ext"
+  rel_prod (rel_prod poly_rel poly_rel) poly_rel) (euclid_ext_poly_i ops) euclid_ext"
 proof -
   interpret poly: euclidean_ring_ops "poly_ops ops" poly_rel by (rule euclidean_ring_ops_poly)
   show ?thesis using poly.euclid_ext_i unfolding euclid_ext_poly_i_def .

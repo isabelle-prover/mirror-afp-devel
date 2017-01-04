@@ -287,7 +287,7 @@ corollary det_echelon_form_of_det_prod:
   unfolding det_echelon_form[OF ef_echelon_form_of_det[OF ib]] by auto
 
 corollary det_echelon_form_of_euclidean[code]:
-  fixes A::"'a::{euclidean_ring}^'n::{mod_type}^'n::{mod_type}"
+  fixes A::"'a::{euclidean_ring_gcd}^'n::{mod_type}^'n::{mod_type}"
   shows "det A = 1 div (fst (echelon_form_of_det A euclid_ext2)) 
   * prod (\<lambda>i. snd (echelon_form_of_det A euclid_ext2) $ i $ i) (UNIV:: 'n set)"
   by (rule det_echelon_form_of_det_prod[OF is_bezout_ext_euclid_ext2])

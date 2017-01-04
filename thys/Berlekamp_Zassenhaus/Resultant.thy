@@ -1628,11 +1628,16 @@ next
     from res[unfolded this resultant_const] have cf: "c ^ degree f \<noteq> 0" by auto
     {
       assume c: "c \<noteq> 0" 
-      have "gcd f g = gcd g 0" unfolding g gcd_poly_def gcd_eucl_eq_gcd_factorial[symmetric] gcd_eucl.simps[of f] using c
+      with g have "g \<noteq> 0"
         by simp
-      also have "\<dots> = normalize [:c:]" unfolding g by simp
-      also have "\<dots> = 1" using c by (metis Polynomial_Division.normalize_smult normalize_1 smult_1)
-      finally have "coprime f g" .
+      then have "normalize g = 1"
+        using g by simp (metis Polynomial_Division.normalize_smult normalize_1 smult_1)
+      from \<open>g \<noteq> 0\<close> have "gcd f g = gcd (f mod g) g"
+        by (simp add: gcd_mod_left)
+      also have "f mod g = 0"
+        using \<open>c \<noteq> 0\<close> g by simp
+      finally have "coprime f g"
+        using \<open>normalize g = 1\<close> by simp
     }
     moreover
     {

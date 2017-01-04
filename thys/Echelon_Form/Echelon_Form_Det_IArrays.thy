@@ -289,7 +289,7 @@ lemma fst_echelon_form_of_det[code_unfold]:
 subsubsection{*Computing the determinant*}
 
 lemma det_echelon_form_of_euclidean_iarrays[code]:
-  fixes A::"'a::{euclidean_ring}^'n::{mod_type}^'n::{mod_type}"
+  fixes A::"'a::{euclidean_ring_gcd}^'n::{mod_type}^'n::{mod_type}"
   shows "det A = (let A' = echelon_form_of_det_iarrays (matrix_to_iarray A) euclid_ext2 
   in 1 div (fst A') 
   * prod_list (map (\<lambda>i. (snd A') !! i !! i) [0..<nrows_iarray (matrix_to_iarray A)]))"
@@ -326,7 +326,7 @@ qed
 
 
 corollary matrix_to_iarray_det_euclidean_ring:
-  fixes A::"'a::{euclidean_ring}^'n::{mod_type}^'n::{mod_type}"
+  fixes A::"'a::{euclidean_ring_gcd}^'n::{mod_type}^'n::{mod_type}"
   shows "det A = det_iarrays_rings (matrix_to_iarray A)"
   unfolding det_echelon_form_of_euclidean_iarrays det_iarrays_rings_def ..
 

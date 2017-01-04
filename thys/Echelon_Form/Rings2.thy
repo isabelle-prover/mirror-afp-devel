@@ -950,51 +950,36 @@ proof
   qed
 qed
 
-context euclidean_ring
+context euclidean_ring_gcd
 begin
 
 text{*This is similar to the @{text "euclid_ext"} operation, but involving two more parameters
 to satisfy that @{text "is_bezout_ext euclid_ext2"}*}
 
-definition "euclid_ext2 a b = (let (p, q, d) = euclid_ext a b
-                                  in (p, q, -b div d, a div d, d))"
-
-lemma euclid_ext_impl_euclid_ext2:
-  assumes e: "euclid_ext a b = (p, q, d)"
-  shows "euclid_ext2 a b = (p, q, -b div d, a div d, d)"
-    using e unfolding euclid_ext2_def by auto
-
-lemma euclid_ext2_impl_euclid_ext:
-  assumes e: "euclid_ext2 a b = (p, q, u, v, d)"
-  shows "euclid_ext a b = (p, q, d)"
-  using e unfolding euclid_ext2_def by (cases "euclid_ext a b", auto)
+definition euclid_ext2 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<times> 'a \<times> 'a \<times> 'a \<times> 'a"
+  where "euclid_ext2 a b =
+   (fst (bezout_coefficients a b), snd (bezout_coefficients a b), - b div gcd a b, a div gcd a b, gcd a b)"
 
 lemma is_bezout_ext_euclid_ext2: "is_bezout_ext (euclid_ext2)"
 proof (unfold is_bezout_ext_def Let_def, clarify, intro conjI)
   fix a b p q u v d
   assume e: "euclid_ext2 a b = (p, q, u, v, d)"
-  hence e2: "euclid_ext a b = (p, q, d)"
-   using e unfolding euclid_ext2_def by (cases "euclid_ext a b", auto)
-  show "p * a + q * b = d" using euclid_ext_correct' [of a b] unfolding e2 by auto
-  show da: "d dvd a" using euclid_ext_gcd_eucl [of a b] unfolding e2 using gcd_eucl_dvd1 [of a b] by simp
-  show db: "d dvd b" using euclid_ext_gcd_eucl [of a b] unfolding e2 using gcd_eucl_dvd2 [of a b] by simp
-  show "\<forall>d'. d' dvd a \<and> d' dvd b \<longrightarrow> d' dvd d"
-    using euclid_ext_gcd_eucl [of a b] using e2 using gcd_eucl_greatest [of _ a b] by force
+  then have "bezout_coefficients a b = (p, q)" and "gcd a b = d"
+    by (auto simp add: euclid_ext2_def)
+  then show "p * a + q * b = d"
+    by (simp add: bezout_coefficients)
+  from \<open>gcd a b = d\<close> show "d dvd a" and "d dvd b"
+    by auto
+  from \<open>gcd a b = d\<close> show "\<forall>d'. d' dvd a \<and> d' dvd b \<longrightarrow> d' dvd d"
+    by auto
   have "a div d = v" and "-b div d = u"
-    using e using euclid_ext_impl_euclid_ext2 [OF e2] by (simp_all)
-  thus "d * v = a" and "d * u = - b" using da db by auto
+    using e by (auto simp add: euclid_ext2_def)
+  then show "d * v = a" and "d * u = - b"
+    using \<open>d dvd a\<close> and \<open>d dvd b\<close> by auto
 qed
 
-lemma is_bezout_euclid_ext: "is_bezout (euclid_ext)"
-proof (unfold is_bezout_def Let_def, clarify, intro conjI)
-  fix a b p q d
-  assume e: "euclid_ext a b = (p, q, d)"
-  show "p * a + q * b = d"  using euclid_ext_correct' [of a b] unfolding e by auto
-  show da: "d dvd a" using euclid_ext_gcd_eucl [of a b] unfolding e using gcd_eucl_dvd1 [of a b] by simp
-  show db: "d dvd b" using euclid_ext_gcd_eucl [of a b] unfolding e using gcd_eucl_dvd2 [of a b] by simp
-  show "\<forall>d'. d' dvd a \<and> d' dvd b \<longrightarrow> d' dvd d"
-    using euclid_ext_gcd_eucl [of a b] unfolding e using gcd_eucl_greatest [of _ a b] by auto
-qed
+lemma is_bezout_euclid_ext: "is_bezout (\<lambda>a b. (fst (bezout_coefficients a b), snd (bezout_coefficients a b), gcd a b))"
+  by (auto simp add: is_bezout_def bezout_coefficients)
 
 end
 
