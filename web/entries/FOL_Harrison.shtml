@@ -1,0 +1,119 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="../front.css">
+  <script src="../jquery.min.js"></script>
+  <script src="../script.js"></script>
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p>&nbsp;</p>
+
+<h1><font class="first">F</font>irst-Order
+<font class="first">L</font>ogic
+<font class="first">A</font>ccording
+to
+<font class="first">H</font>arrison
+</h1>
+<p></p>
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+        <td class="data" width="80%">First-Order Logic According to Harrison</td></tr>
+
+    <tr><td class="datahead">Author:</td>
+        <td class="data"><a href="https://people.compute.dtu.dk/aleje/">Alexander Birch Jensen</a>, <a href="https://people.compute.dtu.dk/andschl/">Anders Schlichtkrull</a> and <a href="https://people.compute.dtu.dk/jovi/">Jørgen Villadsen</a></td></tr>
+
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2017-01-01</td></tr>
+
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+
+
+We present a certified declarative first-order prover with equality
+based on John Harrison's Handbook of Practical Logic and
+Automated Reasoning, Cambridge University Press, 2009. ML code
+reflection is used such that the entire prover can be executed within
+Isabelle as a very simple interactive proof assistant. As examples we
+consider Pelletier's problems 1-46.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{FOL_Harrison-AFP,
+  author  = {Alexander Birch Jensen and Anders Schlichtkrull and Jørgen Villadsen},
+  title   = {First-Order Logic According to Harrison},
+  journal = {Archive of Formal Proofs},
+  month   = jan,
+  year    = 2017,
+  note    = {\url{http://isa-afp.org/entries/FOL_Harrison.shtml},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
+
+
+
+
+  </tbody>
+</table>
+
+<p></p>
+
+<!--#set var="name" value="FOL_Harrison" -->
+
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+
+
+    <tr><td class="links">Older releases: None
+    </td></tr>
+
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+
+</body>
+</html>
