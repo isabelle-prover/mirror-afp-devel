@@ -920,17 +920,22 @@ proof
         by (auto, metis Diff_iff I d)
     next
       fix a assume a: "a \<in> I"
-      obtain q r where a_dqr: "a = d*q + r" and r_fr_fd: "(euclidean_size r < euclidean_size d)"
-        using d_not_0 by (metis euclidean_division mult_commute)
+      obtain q r where "a = q * d + r"
+        and fr_fd: "euclidean_size r < euclidean_size d"
+        using div_mult_mod_eq [of a d, symmetric] d_not_0 mod_size_less
+        by blast
       show "a \<in> ideal_generated {d}"
       proof (cases "r=0")
-        case True hence "a = d*q" using a_dqr by auto
-        thus ?thesis unfolding ideal_generated_def unfolding ideal_def right_ideal_def by auto
+        case True hence "a = q * d" using \<open>a = q * d + r\<close>
+          by auto
+        then show ?thesis unfolding ideal_generated_def
+          unfolding ideal_def right_ideal_def
+          by (simp add: ac_simps)
       next
         case False
         hence r_noteq_0: "r \<noteq> 0" by simp
-        hence fr_fd: "euclidean_size r < euclidean_size d" using r_fr_fd by simp
-        have "r = a - d*q" using a_dqr by (metis add_commute diff_eq_eq)
+        have "r = a - d * q" using \<open>a = q * d + r\<close>
+          by (simp add: algebra_simps)
         also have "... \<in> I"
         proof (rule left_ideal_minus)
           show "left_ideal I" using I unfolding ideal_def by simp
