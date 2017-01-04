@@ -58,6 +58,7 @@ Complx
 ComponentDependencies
 ConcurrentGC
 ConcurrentIMP
+Concurrent_Ref_Alg
 Consensus_Refined
 Containers
 CoreC++

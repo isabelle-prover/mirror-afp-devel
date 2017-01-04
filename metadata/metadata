@@ -5064,3 +5064,29 @@ abstract =
   implementation of PSL and an example theory file, Example.thy, showing
   how to write poof strategies in PSL.
 
+[Concurrent_Ref_Alg]
+title = Concurrent Refinement Algebra and Rely Quotients
+author = Julian Fell <mailto:julian.fell@uq.net.au>, Ian Hayes <mailto:Ian.Hayes@itee.uq.edu.au>, Andrius Velykis <http://andrius.velykis.lt>
+topic = Computer Science/Concurrency
+date = 2016-12-30
+notify = Ian.Hayes@itee.uq.edu.au
+abstract = 
+  The concurrent refinement algebra developed here is designed to
+  provide a foundation for rely/guarantee reasoning about concurrent
+  programs. The algebra builds on a complete lattice of commands by
+  providing sequential composition, parallel composition and a novel
+  weak conjunction operator. The weak conjunction operator coincides
+  with the lattice supremum providing its arguments are non-aborting,
+  but aborts if either of its arguments do. Weak conjunction provides an
+  abstract version of a guarantee condition as a guarantee process. We
+  distinguish between models that distribute sequential composition over
+  non-deterministic choice from the left (referred to as being
+  conjunctive in the refinement calculus literature) and those that
+  don't. Least and greatest fixed points of monotone functions are
+  provided to allow recursion and iteration operators to be added to the
+  language. Additional iteration laws are available for conjunctive
+  models. The rely quotient of processes <i>c</i> and
+  <i>i</i> is the process that, if executed in parallel with
+  <i>i</i> implements <i>c</i>. It represents an
+  abstract version of a rely condition generalised to a process.
+
