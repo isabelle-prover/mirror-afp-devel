@@ -58,7 +58,7 @@ proof -
       by auto
     with False have "lead_coeff (-p) > 0" 
       by (cases rule: linorder_cases[of "lead_coeff p" 0]) 
-         (simp_all add: lead_coeff_def)
+         (simp_all add:)
     ultimately show ?thesis using that P[of "-p"] by auto
   qed
 qed
@@ -640,9 +640,9 @@ proof -
   also have "even (coeff_sign_changes p) \<longleftrightarrow> sgn (hd (coeffs p)) = sgn (last (coeffs p))"
     using const_coeff assms by (intro even_sign_changes_iff) (auto simp: last_coeffs_not_0)
   also have "last (coeffs p) = lead_coeff p" 
-    by (simp add: last_coeffs_eq_coeff_degree lead_coeff_def)
+    by (simp add: last_coeffs_eq_coeff_degree)
   finally have "sgn (hd (coeffs p)) * sgn (lead_coeff p) < 0" 
-    using const_coeff by (auto simp: sgn_if lead_coeff_def split: if_split_asm)
+    using const_coeff by (auto simp: sgn_if split: if_split_asm)
   also from \<open>p \<noteq> 0\<close> have "hd (coeffs p) = poly p 0" by (induction p) auto
   finally have "poly p 0 * lead_coeff p < 0" by (auto simp: mult_less_0_iff)
 

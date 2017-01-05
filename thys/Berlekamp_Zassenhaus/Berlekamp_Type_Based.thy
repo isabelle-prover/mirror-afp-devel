@@ -205,7 +205,7 @@ lemma Poly_list_of_vec_0[simp]: "Poly (list_of_vec (\<zero>\<^sub>v 0)) = [:0:]"
 
 lemma monic_normalize:
 assumes "(p :: 'b :: {field,euclidean_ring_gcd} poly) \<noteq> 0" shows "monic (normalize p)"
-by (simp add: assms normalize_poly_old_def lead_coeff_def)
+by (simp add: assms normalize_poly_old_def)
 
 
 lemma exists_factorization_prod_list:

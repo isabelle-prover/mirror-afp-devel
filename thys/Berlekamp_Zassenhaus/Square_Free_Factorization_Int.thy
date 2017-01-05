@@ -145,8 +145,7 @@ next
   next
     case 4
     show ?case unfolding normalize_poly_def 
-      by (rule poly_eqI, simp, subst Polynomial.coeff_map_poly, force, insert gcd0,
-        simp add: lead_coeff_def field_simps)
+      by (rule poly_eqI) simp
   qed
 qed
 
@@ -226,7 +225,7 @@ proof (intro conjI)
   hence "H \<noteq> 0" "lc \<noteq> 0" unfolding H[symmetric] lc[symmetric] by auto
   thus "0 < lead_coeff (gcd F G)" unfolding 
     arg_cong[OF normalize_gcd[of F G], of lead_coeff, symmetric]
-    unfolding normalize_poly_def H lead_coeff_def
+    unfolding normalize_poly_def H
     by (auto, subst Polynomial.coeff_map_poly, auto, 
     subst Polynomial.degree_map_poly, auto simp: sgn_if)
   have "H dvd F" unfolding H[symmetric] by auto
@@ -374,7 +373,7 @@ proof (cases "square_free_heuristic f")
   let ?rp = "map_poly ?r" 
   define G where "G = smult (inverse (lead_coeff (?rp f))) (?rp f)" 
   have "?rp f \<noteq> 0" using f0 by auto
-  hence mon: "monic G" unfolding G_def coeff_smult lead_coeff_def by simp    
+  hence mon: "monic G" unfolding G_def coeff_smult by simp    
   obtain Fs where Fs: "yun_gcd.yun_monic_factorization gcd G = Fs" by blast
   from lc have lg: "lead_coeff (?rp f) \<noteq> 0" by auto
   let ?c = "lead_coeff (?rp f)" 

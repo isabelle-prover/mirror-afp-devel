@@ -67,7 +67,7 @@ declare map_poly_0_iff[simp add]
 lemma map_poly_preservers:
   "hom (lead_coeff p) = lead_coeff (map_poly hom p)"
   "hom (coeff p n) = coeff (map_poly hom p) n"
-  unfolding poly_eq_iff lead_coeff_def by simp_all
+  unfolding poly_eq_iff by simp_all
 end
 
 abbreviation complex_of_int::"int => complex" where
@@ -95,7 +95,7 @@ lemma complex_roots:
   "smult (lead_coeff p) (\<Prod>a\<leftarrow>complex_roots_complex p. [:- a, 1:]) = p"
   "length (complex_roots_complex p) = degree p"
   using someI_ex[OF fundamental_theorem_algebra_factorized]
-  unfolding complex_roots_complex_def lead_coeff_def by simp_all
+  unfolding complex_roots_complex_def by simp_all
 
 lemma complex_roots_c:"complex_roots_complex [:c:] = []"
   using complex_roots(2)[of "[:c:]"] by auto
@@ -116,8 +116,8 @@ proof -
   interpret inj_semiring_hom complex_of_int by(unfold_locales,auto)
   show   "smult (lead_coeff p) (\<Prod>a\<leftarrow>complex_roots_int p. [:- a, 1:]) = map_poly of_int p"
   "length (complex_roots_int p) = degree p"
-  using complex_roots[of "map_poly of_int p"] unfolding complex_roots_int_def 
-  by (simp_all add: map_poly_preservers)
+    using complex_roots[of "map_poly of_int p"] unfolding complex_roots_int_def
+      by simp_all
 qed
 
 text {* The measure for polynomials, after K. Mahler *}
@@ -190,7 +190,7 @@ lemma complex_roots_complex_prod [simp]:
 proof -
   let ?p = "f * g"
   let "?lc v" = "(lead_coeff (v:: complex poly))"
-  have nonzero_prod:"?lc ?p \<noteq> 0" using assms unfolding lead_coeff_def by auto
+  have nonzero_prod:"?lc ?p \<noteq> 0" using assms by auto
   from reconstruct_prod[of "?lc f" "complex_roots_complex f" "?lc g" "complex_roots_complex g"]
   have "reconstruct_poly (?lc ?p) (complex_roots_complex ?p)
        = reconstruct_poly (?lc ?p) (complex_roots_complex f @ complex_roots_complex g)"
@@ -421,7 +421,7 @@ lemma mahler_measure_constant[simp]: "mahler_measure_poly [:c:] = cmod c"
 proof -
   have main: "complex_roots_complex [:c:] = []" unfolding complex_roots_complex_def
     by (rule some_equality, auto)
-  show ?thesis unfolding mahler_measure_poly_def lead_coeff_def main by auto
+  show ?thesis unfolding mahler_measure_poly_def main by auto
 qed
   
 lemma mahler_measure_factor[simp]: "mahler_measure_poly [:- a, 1:] = max 1 (cmod a)" 
@@ -431,7 +431,7 @@ proof -
     case (1 as)
     thus ?case by (cases as, auto)
   qed
-  show ?thesis unfolding mahler_measure_poly_def lead_coeff_def main by auto
+  show ?thesis unfolding mahler_measure_poly_def main by auto
 qed
 
 lemma mahler_measure_poly_explicit: "mahler_measure_poly (smult c (\<Prod>a\<leftarrow>as. [:- a, 1:]))

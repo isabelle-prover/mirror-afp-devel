@@ -16,7 +16,7 @@ subsection{* Hensel Lifting in a Type-Based Setting *}
 lemma degree_smult_eq_iff:
   "degree (smult a p) = degree p \<longleftrightarrow> degree p = 0 \<or> a * lead_coeff p \<noteq> 0"
   by (metis (no_types, lifting) coeff_smult degree_0 degree_smult_le le_antisym 
-      le_degree le_zero_eq lead_coeff_def leading_coeff_0_iff)
+      le_degree le_zero_eq leading_coeff_0_iff)
 
 lemma degree_smult_eqI[intro!]:
   assumes "degree p \<noteq> 0 \<Longrightarrow> a * lead_coeff p \<noteq> 0"
@@ -48,7 +48,7 @@ proof(intro antisym[OF degree_mult_le] le_degree, unfold coeff_mult)
       }
       then show ?thesis by (intro sum.neutral, auto)
     qed
-  finally show "(\<Sum>i\<le>?r. ?f i) \<noteq> 0" using assms by (auto simp: lead_coeff_def)
+  finally show "(\<Sum>i\<le>?r. ?f i) \<noteq> 0" using assms by (auto simp:)
 qed
 
 lemma degree_mult_eq_left_unit:
@@ -61,7 +61,7 @@ proof(intro degree_mult_eq2 notI)
   moreover assume "lead_coeff p * lead_coeff q = 0"
     then have "c * lead_coeff p * lead_coeff q = 0" by (auto simp: ac_simps)
   ultimately have "lead_coeff q = 0" by auto
-  with q0 show False using lead_coeff_nonzero by auto
+  with q0 show False by auto
 qed
 
 context ring_hom begin
@@ -112,7 +112,7 @@ lemma(in ring_hom) hom_dvd_1: assumes "a dvd 1" shows "hom a dvd 1"
 
 lemma(in ring_hom) degree_map_poly_unit: assumes "lead_coeff p dvd 1"
   shows "degree (map_poly hom p) = degree p"
-  apply(rule degree_map_poly[of hom, OF hom_zero], fold lead_coeff_def)
+  apply(rule degree_map_poly[of hom, OF hom_zero])
   using hom_dvd_1[OF assms] by auto
 
 lemma rebase_poly_eq_0_iff:
@@ -148,7 +148,7 @@ lemma degree_rebase_poly_eq[simp]:
 
 lemma lead_coeff_rebase_poly[simp]:
   "lead_coeff (#(p::'a mod_ring poly) :: 'b mod_ring poly) = @lead_coeff p"
-  unfolding lead_coeff_def by simp
+  by simp
 
 lemma to_int_mod_ring_rebase: "to_int_mod_ring(@(x :: 'a mod_ring)::'b mod_ring) = to_int_mod_ring x"
   using card by (transfer, auto)
@@ -427,11 +427,11 @@ lemma t_ex: "\<exists>t :: 'p mod_ring poly. degree (b * f - t * #v) < degree v"
 proof-
   define v' where "v' \<equiv> #v :: 'p mod_ring poly"
   from monic_v
-  have 1: "lead_coeff v' = 1" by (simp add: v'_def lead_coeff_def deg_v)
+  have 1: "lead_coeff v' = 1" by (simp add: v'_def deg_v)
   then have 4: "v' \<noteq> 0" by auto
   obtain t rem :: "'p mod_ring poly"
   where "pseudo_divmod (b * f) v' = (t,rem)" by force
-  from pseudo_divmod[OF 4 this, folded lead_coeff_def, unfolded 1]
+  from pseudo_divmod[OF 4 this, folded, unfolded 1]
   have "b * f = v' * t + rem" and deg: "rem = 0 \<or> degree rem < degree v'" by auto
   then have "rem = b * f - t * v'" by(auto simp: ac_simps)
   also have "... = b * f - #(#t :: 'p mod_ring poly) * v'" (is "_ = _ - ?t * v'") by simp
@@ -463,7 +463,7 @@ proof (intro degree_smult_eqI)
   assume "degree (#f :: 'pq mod_ring poly) \<noteq> 0"
   then have f0: "degree f \<noteq> 0" by simp
   moreover define l where "l \<equiv> lead_coeff f"
-  ultimately have l0: "l \<noteq> 0" by (auto intro!: lead_coeff_nonzero)
+  ultimately have l0: "l \<noteq> 0" by auto
   then show "of_nat CARD('q) * lead_coeff (#f::'pq mod_ring poly) \<noteq> 0"
   apply (unfold rebase_p_to_pq.lead_coeff_rebase_poly, fold l_def)
   apply (transfer)
@@ -482,7 +482,7 @@ proof(rule ccontr)
   then have w'0: "w' \<noteq> 0" by auto
 
   have 3: "degree (#v * w') = degree (#v :: 'p mod_ring poly) + degree w'"
-      using monic_v[unfolded lead_coeff_def] by (intro degree_monic_mult[OF _ w'0], auto simp: deg_v)
+      using monic_v[unfolded] by (intro degree_monic_mult[OF _ w'0], auto simp: deg_v)
 
   have "degree f \<le> degree u"
   proof(rule ccontr)
@@ -490,7 +490,7 @@ proof(rule ccontr)
     then have *: "degree u < degree f" by auto
     with degu have 1: "degree v + degree w < degree f" by auto
     define lcf where "lcf \<equiv> lead_coeff f"
-    with 1 have lcf0: "lcf \<noteq> 0" by (unfold lead_coeff_def, auto)
+    with 1 have lcf0: "lcf \<noteq> 0" by (unfold, auto)
     have "degree f = degree ?qf" by simp
     also have "... = degree (#v * #w + ?qf)"
     proof(rule sym, rule degree_add_eq_right)
@@ -543,12 +543,12 @@ proof-
   proof (rule degree_smult_eqI, safe, unfold rebase_p_to_pq.degree_rebase_poly_eq)
     define l where "l \<equiv> lead_coeff v'"
     assume "degree v' > 0"
-    then have "lead_coeff v' \<noteq> 0" by (intro lead_coeff_nonzero, auto)
-    then have "(@l :: 'pq mod_ring) \<noteq> 0" by (simp add: lead_coeff_def l_def)
+    then have "lead_coeff v' \<noteq> 0" by auto
+    then have "(@l :: 'pq mod_ring) \<noteq> 0" by (simp add: l_def)
     then have "(of_nat q * @l :: 'pq mod_ring) \<noteq> 0"
       apply (transfer fixing:q_ty) using p_dvd_q p1 q1 1 by auto
-    moreover assume "of_nat q * lead_coeff (#v' :: 'pq mod_ring poly) = 0"
-    ultimately show False by (auto simp: l_def lead_coeff_def)
+    moreover assume " of_nat q * coeff (#v') (degree v') = (0 :: 'pq mod_ring)"
+    ultimately show False by (auto simp: l_def)
   qed
   also from degv' have "... < degree (#v::'pq mod_ring poly)" by simp
   finally have *: "degree qv' < degree (#v :: 'pq mod_ring poly)".
@@ -556,10 +556,10 @@ proof-
   show **: "degree V = degree v" by (simp add: v'_def)
 
   from * have "coeff qv' (degree v) = 0" by (intro coeff_eq_0, auto)
-  then show "lead_coeff V = @lead_coeff v" by (unfold lead_coeff_def **, auto simp: v'_def)
+  then show "lead_coeff V = @lead_coeff v" by (unfold **, auto simp: v'_def)
 
   with u0 uVW have "degree (V * W) = degree V + degree W"
-    by (intro degree_mult_eq_left_unit, auto simp: monic_v lead_coeff_def)
+    by (intro degree_mult_eq_left_unit, auto simp: monic_v)
   from this[folded uVW, unfolded degu **] show "degree W = degree w" by auto
 qed
 
@@ -614,7 +614,7 @@ proof-
     and v'': "V2 - #v = smult (of_nat CARD('q)) (#v'')" by (elim exE conjE)
   then have V2: "V2 = #v + ..." by (metis add_diff_cancel_left' diff_add_cancel)
 
-  from lc[unfolded lead_coeff_def degV2, unfolded V2]
+  from lc[unfolded degV2, unfolded V2]
   have "of_nat q * (@coeff v'' (degree v) :: 'pq mod_ring) = of_nat q * 0" by auto
   from this[unfolded q rebase_pq_to_p.rebase_mult_eq]
   have "coeff v'' (degree v) = 0" by simp
@@ -676,7 +676,7 @@ proof-
     by (simp add: ring_hom_of_int.monic_degree_map_poly_hom)
   from monic
   have monic2: "monic (#v :: 'p mod_ring poly)"
-    by (auto simp: lead_coeff_def degv)
+    by (auto simp: degv)
   obtain s t where bezout: "bezout_coefficients (#v :: 'p mod_ring poly) (#w) = (s, t)"
     by (auto simp add: prod_eq_iff)
   then have "s * #v + t * #w = gcd (#v :: 'p mod_ring poly) (#w)"
@@ -692,11 +692,11 @@ proof-
     with avbw have "a * #v = 1" by auto
     then have "degree (#v :: 'p mod_ring poly) = 0"
       by (metis degree_1 degree_mult_eq_0 mult_zero_left one_neq_zero)
-    from this[unfolded degv] monic_degree_0[OF monic[unfolded lead_coeff_def]]
+    from this[unfolded degv] monic_degree_0[OF monic[unfolded]]
     have 1: "v = 1" by auto
     with b0 out uvw have 2: "V' = 1" "W' = u"
       by (unfold split hensel_1_def Let_def dupe) auto
-    have 3: ?unique apply (simp add: 1 2) by (metis lead_coeff_def monic_degree_0 mult.left_neutral)
+    have 3: ?unique apply (simp add: 1 2) by (metis monic_degree_0 mult.left_neutral)
     with uvw degu show ?thesis unfolding 1 2 by auto
   next
     case b0: False
@@ -712,7 +712,7 @@ proof-
       from degV show [simp]: "degree V' = degree v" by simp
       from degW show [simp]: "degree W' = degree w" by simp
       from lcV have "lead_coeff V' = @lead_coeff v" by simp
-      with monic_v show "monic V'" by (simp add: lead_coeff_def)
+      with monic_v show "monic V'" by (simp add:)
       from vV show "v = #V'" by simp
       from wW show "w = #W'" by simp
       from coprime_preserves show "coprime (#V' :: 'p mod_ring poly) (#W')" by simp

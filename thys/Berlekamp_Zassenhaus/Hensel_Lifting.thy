@@ -299,7 +299,7 @@ proof -
     by (simp add: equivalent_def)
   also have "Mp (smult c (prod_mset fs)) = Mp (smult (M c) (Mp (prod_mset fs)))" by simp
   finally show ?thesis using monic
-    by (metis M_M Mp_0 Mp_coeff degree_m_eq lead_coeff_def lead_coeff_smult m1 
+    by (metis M_M Mp_0 Mp_coeff degree_m_eq lead_coeff_smult m1 
       mult_cancel_left2 poly_mod.M_def poly_mod.degree_m_def smult_eq_0_iff)
 qed
 
@@ -379,7 +379,7 @@ proof -
 qed
 
 lemma degree_m_eq_lead_coeff: "degree_m f = degree f \<Longrightarrow> lead_coeff (Mp f) = M (lead_coeff f)" 
-  unfolding lead_coeff_def degree_m_def
+  unfolding degree_m_def
   by (simp add: Mp_coeff)
 
 lemma unique_factorization_m_zero: assumes "unique_factorization_m f (c,fs)" 
@@ -1823,8 +1823,8 @@ proof -
       unfolding q.M_def by auto
     with inv have False by auto
   } note not_dvd = this
-  have mon: "monic (q.Mp F)" unfolding F_def q.Mp_coeff coeff_smult q.degree_m_def[symmetric]
-    by (subst q.degree_m_eq[OF _ q.m1], insert not_dvd, auto simp: inv ilc0 lead_coeff_def[symmetric])
+  have mon: "monic (q.Mp F)" unfolding F_def q.Mp_coeff coeff_smult q.degree_m_def [symmetric]
+    by (subst q.degree_m_eq [OF _ q.m1]) (auto simp: inv ilc0 [symmetric] intro: not_dvd)
   have "q.Mp f = q.Mp (smult (q.M (?lc * ilc)) f)" using inv by (simp add: ac_simps)
   also have "\<dots> = q.Mp (smult ?lc F)" by (simp add: F_def)
   finally have f: "q.Mp f = q.Mp (smult ?lc F)" .
@@ -1840,7 +1840,7 @@ proof -
   have fact: "factorization_m F (c', mset fs)" unfolding c'_def factorization_m_def equivalent_def by auto
   hence eq: "equivalent F (smult c' (prod_list fs))" unfolding factorization_m_def by auto
   from factorization_m_lead_coeff[OF fact] monic_Mp[OF mon, unfolded Mp_id] have "M c' = 1" 
-    unfolding lead_coeff_def by auto
+    by auto
   hence c': "c' = 1" unfolding c'_def by auto
   with eq have eq: "equivalent F (prod_list fs)" by auto 
   {

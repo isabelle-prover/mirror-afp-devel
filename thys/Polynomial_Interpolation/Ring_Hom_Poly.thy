@@ -366,7 +366,7 @@ begin
 
 lemma map_poly_normalize: "map_poly hom (normalize p) =
   normalize (map_poly hom p)"
-  by (simp add: normalize_poly_eq_div map_poly_div lead_coeff_def)
+  by (simp add: normalize_poly_eq_div map_poly_div)
 
 lemma map_poly_gcd: "map_poly hom (gcd p q) = gcd (map_poly hom p) (map_poly hom q)"
   by (induct p q rule: eucl_induct)

@@ -17,6 +17,17 @@ imports
   Code_Abort_Gcd
 begin
 
+lemma Gcd_set_eq_list_gcd:
+  "Gcd (set xs) = list_gcd xs" for xs :: "'a::semiring_Gcd list"
+  by (induct xs) (simp_all add: list_gcd_def)
+
+lemma Lcm_set_eq_list_lcm:
+  "Lcm (set xs) = list_lcm xs" for xs :: "'a::semiring_Gcd list"
+  by (induct xs) (simp_all add: list_lcm_def)
+
+lemma content_same: "Polynomial.content f = content f"
+  by (simp add: Polynomial.content_def Gauss_Lemma.content_def Gcd_set_eq_list_gcd)
+
 definition coprime_approx_main :: "int \<Rightarrow> 'i arith_ops_record \<Rightarrow> int poly \<Rightarrow> int poly \<Rightarrow> bool" where
   "coprime_approx_main p ff_ops f g = (gcd_poly_i ff_ops (of_int_poly_i ff_ops (poly_mod.Mp p f))
      (of_int_poly_i ff_ops (poly_mod.Mp p g)) = one_poly_i ff_ops)" 
@@ -95,7 +106,7 @@ proof -
     with cop have coph: "coprime (lead_coeff h) p" by (metis coprime_divisors dvd_def mult.right_neutral)
     let ?k = "Mp k"  
     from arg_cong[OF unit, of degree] have degm0: "degree_m (h * ?k) = 0" unfolding degree_m_def by simp
-    have "lead_coeff ?k \<in> {0 ..< p}" unfolding lead_coeff_def Mp_coeff M_def using m1 by simp
+    have "lead_coeff ?k \<in> {0 ..< p}" unfolding Mp_coeff M_def using m1 by simp
     with k0 have lk: "lead_coeff ?k \<ge> 1" "lead_coeff ?k < p"
       by (auto simp add: int_one_le_iff_zero_less order.not_eq_order_implies_strict)
     have id: "lead_coeff (h * ?k) = lead_coeff h * lead_coeff ?k" unfolding lead_coeff_mult ..
@@ -114,7 +125,7 @@ proof -
     from p have lcp: "lead_coeff (h * ?k) mod p \<noteq> 0"
       using M_1 M_def cop_prod by auto
     have deg_eq: "degree_m (h * ?k) = degree (h * Mp k)" 
-      by (rule degree_m_eq[OF _ m1], unfold lead_coeff_def[symmetric], insert lcp)
+      by (rule degree_m_eq[OF _ m1], insert lcp)
     from this[unfolded degm0] have "degree (h * Mp k) = 0" by simp
     with degree_mult_eq[OF h0 k0] have deg0: "degree h = 0" by auto
     from degree0_coeffs[OF this] obtain h0 where h: "h = [:h0:]" by auto
@@ -161,17 +172,10 @@ definition gcd_int_poly :: "int poly \<Rightarrow> int poly \<Rightarrow> int po
   "gcd_int_poly f g =
     (if f = 0 then normalize g
      else if g = 0 then normalize f
-          else let ct = gcd (Polynomial_Factorial.content f) (Polynomial_Factorial.content g);
+          else let ct = gcd (Polynomial.content f) (Polynomial.content g);
             ff = primitive_part f; 
             gg = primitive_part g
           in if coprime_heuristic ff gg then [:ct:] else smult ct (gcd_poly_code_aux ff gg))" 
-  
-lemma content_same: "Polynomial_Factorial.content f = content f"
-proof -
-  obtain xs where id: "coeffs f = xs" by auto
-  show ?thesis unfolding Polynomial_Factorial.content_def content_def id list_gcd_def
-    by (induct xs, auto)
-qed
   
 lemma gcd_int_poly_code[code_unfold]: "gcd = gcd_int_poly" 
 proof (intro ext)

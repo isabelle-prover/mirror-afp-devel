@@ -486,7 +486,7 @@ qed
 lemma finite_field_factorization_i[transfer_rule]: 
   "(poly_rel ===> rel_prod R (list_all2 poly_rel))
      (finite_field_factorization_i p ff_ops) finite_field_factorization" 
-  unfolding finite_field_factorization_i_def[abs_def] finite_field_factorization_def[abs_def] Let_def
+  unfolding finite_field_factorization_i_def finite_field_factorization_def Let_def lead_coeff_i_def'
   by transfer_prover
 
 text \<open>Since the implementation is sound, we can now combine it with the soundness result

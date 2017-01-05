@@ -163,7 +163,7 @@ proof -
     then obtain h where f: "f = g * g * h" unfolding dvd_def by auto
     from arg_cong[OF this, of Mp] have "dvdm (g * g) f" unfolding dvdm_def equivalent_def by auto
     with ndvd[of g] have deg0: "degree_m g = 0" by auto
-    hence g0: "M (lead_coeff g) = 0" unfolding Mp_def lead_coeff_def using deg
+    hence g0: "M (lead_coeff g) = 0" unfolding Mp_def using deg
       by (metis M_0 Mp_def Ring_Hom_Poly.degree_map_poly degree_m_def)
     from p have p0: "p \<noteq> 0" by auto
     from arg_cong[OF f, of lead_coeff] have "lead_coeff f = lead_coeff g * lead_coeff g * lead_coeff h" 
@@ -207,7 +207,7 @@ proof -
       by (metis (no_types) assms gcd.commute prime_imp_coprime zdvd_not_zless)
   } note main = this
   define lc where "lc = lead_coeff f" 
-  from f have lc0: "lc \<noteq> 0" unfolding lc_def lead_coeff_def by auto
+  from f have lc0: "lc \<noteq> 0" unfolding lc_def by auto
   from large have large: "p > abs lc" unfolding lc_def by auto
   have "coprime lc p" 
   proof (cases "lc > 0")

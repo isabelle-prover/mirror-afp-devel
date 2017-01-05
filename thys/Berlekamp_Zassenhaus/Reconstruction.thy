@@ -291,9 +291,9 @@ proof -
     have mon: "monic (prod_mset vs)" 
       by (rule monic_prod_mset, insert mi, auto)
     hence vs0: "prod_mset vs \<noteq> 0" by (metis coeff_0 zero_neq_one)
-    from mon have l_vs: "lead_coeff (prod_mset vs) = 1" unfolding lead_coeff_def .
+    from mon have l_vs: "lead_coeff (prod_mset vs) = 1" .
     have deg_ws: "degree_m (smult lu (prod_mset vs)) = degree (smult lu (prod_mset vs))"
-      by (rule degree_m_eq[OF _ m1], unfold lead_coeff_def[symmetric] lead_coeff_smult,
+      by (rule degree_m_eq[OF _ m1], unfold lead_coeff_smult,
       insert cop n p.m1 l_vs, auto simp: m)
     with eq have "degree_m u = degree (smult lu (prod_mset vs))" unfolding degree_m_def
       equivalent_def by auto
@@ -345,7 +345,7 @@ proof -
       have q_eq: "q =m smult (lead_coeff q) (prod_mset fs)" by auto
       have "degree_m q = degree q" 
         by (rule degree_m_eq[OF _ m1], insert cop_q(1) n p.m1, unfold m, 
-          auto simp: lead_coeff_def)
+          auto simp:)
       with q_eq have degm_q: "degree q = degree (Mp (smult (lead_coeff q) (prod_mset fs)))" 
         unfolding degree_m_def equivalent_def by auto
       with deg_q have fs_nempty: "fs \<noteq> {#}" 
@@ -354,7 +354,7 @@ proof -
       have q'_eq: "q' =m smult (lead_coeff q') (prod_mset gs)" by auto
       have "degree_m q' = degree q'" 
         by (rule degree_m_eq[OF _ m1], insert cop_q(2) n p.m1, unfold m, 
-          auto simp: lead_coeff_def)
+          auto simp:)
       with q'_eq have degm_q': "degree q' = degree (Mp (smult (lead_coeff q') (prod_mset gs)))" 
         unfolding degree_m_def equivalent_def by auto
       with deg_q' have gs_nempty: "gs \<noteq> {#}" 
@@ -461,7 +461,7 @@ proof -
         using set_mset_mono sublists_length_simple_False by auto fastforce
       have mon_ws: "monic (prod_mset (mset ws))" 
         by (rule monic_prod_mset, insert ws_vs vs_mi, auto) 
-      have l_ws: "lead_coeff (prod_mset (mset ws)) = 1" using mon_ws unfolding lead_coeff_def .
+      have l_ws: "lead_coeff (prod_mset (mset ws)) = 1" using mon_ws .
       have lv': "M lv' = M (coeff (smult lu (prod_list ws)) 0)" 
         unfolding lv'' coeff_smult
         by (induct ws arbitrary: lu, auto simp: mul_const_def M_def coeff_mult_0)
@@ -522,7 +522,7 @@ proof -
               with test[unfolded test_dvd_exec_def] 
               have neq: "v' \<noteq> inv_Mp (Mp (smult lu (prod_mset ws')))" by auto
               have deg_m_v': "degree_m v' = degree v'" 
-                by (rule degree_m_eq[OF _ m1], unfold lead_coeff_def[symmetric] lc m, 
+                by (rule degree_m_eq[OF _ m1], unfold lc m, 
                 insert cop prime n coprime_exp_mod, auto)
               with v'_ws' have "degree v' = degree_m ?ws" unfolding degree_m_def by simp
               also have "\<dots> \<le> degree_m (prod_mset ws')" by (rule degree_m_smult_le)
@@ -537,7 +537,7 @@ proof -
               have v': "v' = inv_Mp (Mp ?ws)" by auto
               have deg_ws: "degree_m ?ws = degree ?ws" 
               proof (rule degree_m_eq[OF _ m1], 
-                unfold lead_coeff_def[symmetric] lead_coeff_smult True l_ws, rule)
+                unfold lead_coeff_smult True l_ws, rule)
                 assume "lead_coeff w * l * 1 mod m = 0" 
                 hence 0: "M (lead_coeff w * l) = 0" unfolding M_def by simp
                 have "Mp ?ws = Mp (smult (M (lead_coeff w * l)) (prod_mset ws'))" by simp
@@ -716,7 +716,7 @@ proof -
           have q_eq: "q =m smult (lead_coeff q) (prod_mset fs)" by auto
           have "degree_m q = degree q" 
             by (rule degree_m_eq[OF _ m1], insert cop_qr(1) n p.m1, unfold m, 
-              auto simp: lead_coeff_def)
+              auto simp:)
           with q_eq have degm_q: "degree q = degree (Mp (smult (lead_coeff q) (prod_mset fs)))" 
             unfolding degree_m_def equivalent_def by auto
           with deg_q have fs_nempty: "fs \<noteq> {#}" 
@@ -725,7 +725,7 @@ proof -
           have r_eq: "r =m smult (lead_coeff r) (prod_mset gs)" by auto
           have "degree_m r = degree r" 
             by (rule degree_m_eq[OF _ m1], insert cop_qr(2) n p.m1, unfold m, 
-              auto simp: lead_coeff_def)
+              auto simp:)
           with r_eq have degm_r: "degree r = degree (Mp (smult (lead_coeff r) (prod_mset gs)))" 
             unfolding degree_m_def equivalent_def by auto
           with deg_r have gs_nempty: "gs \<noteq> {#}" 
@@ -846,7 +846,7 @@ proof -
   have ufact: "unique_factorization_m f (?lc, mset hs)" by simp
   note bh = berlekamp_hensel[OF prime cop sf bh n]
   from deg have f0: "f \<noteq> 0" and lf0: "?lc \<noteq> 0" by auto
-  hence ff0: "?ff \<noteq> 0" unfolding lead_coeff_def by auto
+  hence ff0: "?ff \<noteq> 0" by auto
   have bnd: "\<forall>g k. g dvd ?ff \<longrightarrow> degree g \<le> degree_bound hs \<longrightarrow> 2 * \<bar>coeff g k\<bar> < p ^ n"
   proof (intro allI impI, goal_cases)
     case (1 g k)
@@ -858,7 +858,7 @@ proof -
   qed
   note bh' = bh[unfolded factorization_m_def split]
   have deg_f: "degree_m f = degree f" 
-    by (rule degree_m_eq[OF _ m1], unfold lead_coeff_def[symmetric], 
+    by (rule degree_m_eq[OF _ m1], 
     insert coprime_exp[OF cop, of n] m1, auto)
   have mon_hs: "monic (prod_list hs)" using bh' by (auto intro: monic_prod_list)
   have Mlc: "M ?lc \<in> {1 ..< p^n}" 

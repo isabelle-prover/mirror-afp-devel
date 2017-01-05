@@ -133,9 +133,9 @@ proof -
   from cop have copm: "coprime (lead_coeff f) m" "coprime (lead_coeff g) m" 
     unfolding m by (metis coprime_exp)+
   have df: "degree_m f = degree f" 
-    by (rule degree_m_eq[OF _ m1], insert copm(1) m1, unfold lead_coeff_def, auto)  
+    by (rule degree_m_eq[OF _ m1], insert copm(1) m1, auto)  
   have dg: "degree_m g = degree g" 
-    by (rule degree_m_eq[OF _ m1], insert copm(2) m1, unfold lead_coeff_def, auto)  
+    by (rule degree_m_eq[OF _ m1], insert copm(2) m1, auto)  
   define fs where "fs \<equiv> mset (berlekamp_hensel p n f)"
   define gs where "gs \<equiv> mset (berlekamp_hensel p n g)"
   from berlekamp_hensel[OF prime cop(1) sf(1) refl n, folded m]
@@ -222,7 +222,7 @@ proof -
   have d:"degree (Mp (Polynomial.smult c gs)) = degree gs"
   proof -
     have f1: "0 \<noteq> c" by (metis "0" Mp_0 a(1) poly_mod.equivalent_def smult_eq_0_iff)
-    then have "M c \<noteq> 0" by (metis (no_types) "0" assms(1) factorization_m_lead_coeff lead_coeff_def leading_coeff_0_iff)
+    then have "M c \<noteq> 0" by (metis (no_types) "0" assms(1) factorization_m_lead_coeff leading_coeff_0_iff)
     then show "degree (Mp (Polynomial.smult c gs)) = degree gs"
       unfolding monic_degree_Mp[OF mon_gs,symmetric]
       using f1 by (metis coeff_smult degree_m_eq degree_smult_eq m1 mon_gs monic_degree_Mp mult_cancel_left1 poly_mod.M_def poly_mod.degree_m_def)
@@ -287,7 +287,7 @@ proof -
     fix f
     assume f: "f \<in># fs" 
     from mon[OF this] have mon_qf: "monic (q.Mp f)" .
-    hence lc: "lead_coeff (q.Mp f) = 1" unfolding lead_coeff_def by auto
+    hence lc: "lead_coeff (q.Mp f) = 1" by auto
     from mon_qf show mon_f: "monic (Mp f)" 
       by (metis Mp_Mp_pow_is_Mp m1 monic_Mp n)
     from irr[OF f] have irr: "q.irreducible_m f" .
@@ -303,7 +303,7 @@ proof -
     have sf_f: "square_free_m f" by simp
     have sf_Mf: "square_free_m (q.Mp f)"
       by (rule square_free_m_cong[OF sf_f], auto simp: Mp_Mp_pow_is_Mp n m1) 
-    have "coprime (lead_coeff (q.Mp f)) p" using mon[OF f] prime unfolding lead_coeff_def by simp
+    have "coprime (lead_coeff (q.Mp f)) p" using mon[OF f] prime by simp
     from berlekamp_hensel[OF prime this sf_Mf refl n, unfolded lc] obtain gs where
       qfact: "q.factorization_m (q.Mp f) (1, mset gs)"
       and "\<And> g. g \<in> set gs \<Longrightarrow> irreducible_m g" by blast
@@ -366,7 +366,7 @@ proof (induct Fs arbitrary: C rule: wf_induct[OF wf_measure[of size]])
     fix d gs
     assume qfact: "q.factorization_m C (d,gs)" 
     from q.factorization_m_lead_coeff[OF this] q.monic_Mp[OF monC] 
-    have d1: "q.M d = 1" unfolding lead_coeff_def by auto
+    have d1: "q.M d = 1" by auto
     
     from factorization_pn_to_factorization_p[OF qfact sf n]
     have "factorization_m C (d,gs)" .
@@ -421,7 +421,7 @@ proof (induct Fs arbitrary: C rule: wf_induct[OF wf_measure[of size]])
         using monicP f4 by (metis (no_types) norm(2) q.degree_m_def q.degree_m_eq q.m1)
     hence monB: "monic B"
         using f4 monicP by (metis norm(2) leading_coeff_0_iff)
-    from monA monB have lcAB: "lead_coeff (A * B) = 1" unfolding lead_coeff_def by (rule monic_mult)
+    from monA monB have lcAB: "lead_coeff (A * B) = 1" by (rule monic_mult)
     hence copAB: "coprime (lead_coeff (A * B)) p" by auto
     from arg_cong[OF CAB[unfolded q.equivalent_def], of Mp] 
     have CAB': "equivalent C (A * B)" unfolding equivalent_def by auto
@@ -509,7 +509,7 @@ proof -
     from prime have p1: "p > 1" by (simp add: prime_int_iff)
   let ?lc = "coeff f (degree f)" 
   define ilc where "ilc \<equiv> inverse_mod ?lc (p ^ n)"
-  from inverse_mod_pow[OF cop[unfolded lead_coeff_def] p1 n, folded ilc_def]
+  from inverse_mod_pow[OF cop[unfolded] p1 n, folded ilc_def]
   have inv: "q.M (ilc * ?lc) = 1" unfolding q.M_def .
   hence ilc0: "ilc \<noteq> 0" by (cases "ilc = 0", auto)
   {
@@ -541,7 +541,7 @@ proof -
   from unique_factorization_m_imp_factorization[OF this]
   have fact: "factorization_m ?in (a, mset b)" .
   from factorization_m_lead_coeff[OF this] monic_Mp[OF mon] 
-  have "M a = 1" unfolding lead_coeff_def by auto
+  have "M a = 1" by auto
   with ufact have "unique_factorization_m ?in (1, mset b)" 
     unfolding unique_factorization_m_def Mf_def by auto
   from unique_monic_hensel_factorization[OF this mon sf n]
@@ -559,13 +559,13 @@ proof -
     assume other_fact: "q.factorization_m f (d,us)" 
     from q.factorization_m_lead_coeff[OF this] have lc: "q.M d = lead_coeff (q.Mp f)" ..
     have lc: "q.M d = q.M ?lc" unfolding lc
-      by (metis bh_fact lead_coeff_def q.factorization_m_lead_coeff)
+      by (metis bh_fact q.factorization_m_lead_coeff)
     from q.factorization_m_smult[OF other_fact, of ilc] unique
     have eq: "q.Mf (d * ilc, us) = q.Mf (1, hs)" unfolding q.unique_factorization_m_def by auto
     thus "q.Mf (d, us) = q.Mf (?lc, hs)" using lc unfolding q.Mf_def by auto
   qed
   with bh_fact show "q.unique_factorization_m f (lead_coeff f, mset gs)" 
-    unfolding lead_coeff_def[symmetric] q.unique_factorization_m_alt_def by metis
+    unfolding q.unique_factorization_m_alt_def by metis
 qed
 
 lemma hensel_lifting_unique: assumes 

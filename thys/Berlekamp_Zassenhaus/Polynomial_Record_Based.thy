@@ -532,7 +532,7 @@ proof (cases x, auto, goal_cases)
 qed
 
 lemma poly_rel_lead_coeff[transfer_rule]: "(poly_rel ===> R) (lead_coeff_i ops) lead_coeff"
-  unfolding lead_coeff_i_def'[abs_def] lead_coeff_def[abs_def] by transfer_prover
+  unfolding lead_coeff_i_def' [abs_def] by transfer_prover
 
 (* minus_poly_rev_list *)
 lemma poly_rel_minus_poly_rev_list[transfer_rule]: 
@@ -632,7 +632,7 @@ lemma poly_rel_irreducible[transfer_rule]: "(poly_rel ===> op =) (irreducible_i 
   by (transfer_prover_start, transfer_step+, auto)
 
 lemma poly_rel_monic[transfer_rule]: "(poly_rel ===> op =) (monic_i ops) monic"
-  unfolding monic_i_def[abs_def] lead_coeff_def[symmetric] by transfer_prover
+  unfolding monic_i_def lead_coeff_i_def' by transfer_prover
 
 lemma idom_ops_poly: "idom_ops (poly_ops ops) poly_rel"
   by (unfold_locales, auto simp: poly_ops_def  
@@ -731,13 +731,13 @@ qed
 (* normalize *)
 lemma poly_rel_normalize [transfer_rule]: "(poly_rel ===> poly_rel) 
   (normalize_poly_i ops) Rings.normalize"
-  unfolding normalize_poly_old_def[abs_def] normalize_poly_i_def[abs_def]
+  unfolding normalize_poly_old_def normalize_poly_i_def lead_coeff_i_def'
   by transfer_prover
 
 (* unit_factor *)
 lemma poly_rel_unit_factor [transfer_rule]: "(poly_rel ===> poly_rel) 
   (unit_factor_poly_i ops) Rings.unit_factor"
-  unfolding unit_factor_poly_def[abs_def] unit_factor_poly_i_def[abs_def]
+  unfolding unit_factor_poly_def unit_factor_poly_i_def lead_coeff_i_def'
   unfolding monom_0 by transfer_prover
 
 lemma idom_divide_ops_poly: "idom_divide_ops (poly_ops ops) poly_rel"

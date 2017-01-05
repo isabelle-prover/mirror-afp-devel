@@ -45,7 +45,7 @@ proof (cases "degree f = 0")
   from f c have c0: "c \<noteq> 0" by auto
   from False c0 have deg_g: "degree g \<noteq> 0" unfolding g_def by auto
   have mon_g: "monic g" unfolding g_def
-    by (metis c c0 field_class.field_inverse lead_coeff_def lead_coeff_smult)
+    by (metis c c0 field_class.field_inverse lead_coeff_smult)
   from sf_f have sf_g: "square_free g" unfolding g_def by (simp add: c0)
   from c0 have f: "f = smult c g" unfolding g_def by auto
   have "g = prod_list (map snd gs) \<and> (\<forall> (i,f) \<in> set gs. degree f \<noteq> 0 \<and> monic f \<and> (\<forall> h. h dvd f \<longrightarrow> degree h = i \<longrightarrow> irreducible h))" 
