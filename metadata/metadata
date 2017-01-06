@@ -4152,6 +4152,27 @@ abstract =
 	</p>
 notify = pasquale.noce.lavoro@gmail.com
 
+[Password_Authentication_Protocol]
+title = Verification of a Diffie-Hellman Password-based Authentication Protocol by Extending the Inductive Method
+author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
+topic = Computer Science/Security
+date = 2017-01-03
+notify = pasquale.noce.lavoro@gmail.com
+abstract =
+  This paper constructs a formal model of a Diffie-Hellman
+  password-based authentication protocol between a user and a smart
+  card, and proves its security. The protocol provides for the dispatch
+  of the user's password to the smart card on a secure messaging
+  channel established by means of Password Authenticated Connection
+  Establishment (PACE), where the mapping method being used is Chip
+  Authentication Mapping. By applying and suitably extending
+  Paulson's Inductive Method, this paper proves that the protocol
+  establishes trustworthy secure messaging channels, preserves the
+  secrecy of users' passwords, and provides an effective mutual
+  authentication service. What is more, these security properties turn
+  out to hold independently of the secrecy of the PACE authentication
+  key.
+
 [Jordan_Normal_Form]
 title = Matrices, Jordan Normal Forms, and Spectral Radius Theory
 topic = Mathematics/Algebra
@@ -5070,7 +5091,7 @@ author = Julian Fell <mailto:julian.fell@uq.net.au>, Ian Hayes <mailto:Ian.Hayes
 topic = Computer Science/Concurrency
 date = 2016-12-30
 notify = Ian.Hayes@itee.uq.edu.au
-abstract = 
+abstract =
   The concurrent refinement algebra developed here is designed to
   provide a foundation for rely/guarantee reasoning about concurrent
   programs. The algebra builds on a complete lattice of commands by
@@ -5096,7 +5117,7 @@ author = Alexander Birch Jensen <https://people.compute.dtu.dk/aleje/>, Anders S
 topic = Logic
 date = 2017-01-01
 notify = aleje@dtu.dk, andschl@dtu.dk, jovi@dtu.dk
-abstract = 
+abstract =
   We present a certified declarative first-order prover with equality
   based on John Harrison's Handbook of Practical Logic and
   Automated Reasoning, Cambridge University Press, 2009. ML code
