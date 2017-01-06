@@ -1421,11 +1421,11 @@ more effort, to derive efficient algorithms; see, for instance,
 
 lemma gfp_F_code[code]:
   shows "gfp_F ds = map_prod id undual (while (\<lambda>A. F ds A \<noteq> A) (F ds) top)"
-using %invisible gfp_F_def gfp_while[OF F_mono] by simp
+using %invisible gfp_F_def gfp_while_lattice[OF F_mono] by simp
 
 lemma lfp_F_code[code]:
   shows "lfp_F ds = map_prod id undual (while (\<lambda>A. F ds A \<noteq> A) (F ds) bot)"
-using %invisible lfp_F_def lfp_while[OF F_mono] by simp
+using %invisible lfp_F_def lfp_while_lattice[OF F_mono] by simp
 
 end
 
@@ -1884,7 +1884,7 @@ proof %invisible -
     using while_option_finite_increasing_Some[OF F'_mono _ F'_start, simplified] by blast
   with while_option_stop2[OF XXX] fix_F'_stable_pair_on[where A=P]
   show ?thesis1 and ?thesis2
-    using funpow_mono_order[OF F'_mono _ order.refl F'_start, where i=0]
+    using funpow_mono2[OF F'_mono _ order.refl F'_start, where i=0]
     unfolding F'_iter_def while_def by auto
 qed
 
@@ -2022,7 +2022,7 @@ proof %invisible -
   finally have "?Sum_Cd_XD = ?Sum_Cd_gfp"
     using Cd_XD_gfp_F_card by (simp add: eq_iff sum_mono)
   with Cd_XD_gfp_F_card show "d \<in> ds \<Longrightarrow> card (Cd d (fst XD_XH)) = card (Cd d (fst (gfp_F ds)))"
-    by (fastforce elim: setsum_mono_inv)
+    by (fastforce elim: sum_mono_inv)
 
   have "?Sum_Ch_XH = ?Sum_Cd_XD"
     using stable_pair_on_CD_on_CH[OF \<open>stable_pair_on ds XD_XH\<close>] CD_on_card[symmetric] CH_card[symmetric] by simp
@@ -2033,7 +2033,7 @@ proof %invisible -
   finally have "?Sum_Ch_gfp = ?Sum_Ch_XH"
     using Ch_gfp_F_XH_card by (simp add: eq_iff sum_mono)
   with Ch_gfp_F_XH_card show "card (Ch h (snd XD_XH)) = card (Ch h (snd (gfp_F ds)))"
-    by (fastforce elim: sym[OF setsum_mono_inv])
+    by (fastforce elim: sym[OF sum_mono_inv])
 qed
 
 end

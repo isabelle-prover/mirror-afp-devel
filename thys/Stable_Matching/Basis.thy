@@ -12,15 +12,6 @@ section\<open> Preliminaries \<close>
 
 subsection\<open> HOL Detritus \<close>
 
-(* Much of this is in Isabelle/hg fba08009ff3e (after Isabelle2016). *)
-
-lemma disj_imp: "P \<or> Q \<longleftrightarrow> \<not>P \<longrightarrow> Q" by blast
-
-lemma FieldI1 [intro]:
-  assumes "(x, y) \<in> r"
-  shows "x \<in> Field r"
-unfolding Field_def using assms by blast
-
 lemma Above_union:
   shows "x \<in> Above r (X \<union> Y) \<longleftrightarrow> x \<in> Above r X \<and> x \<in> Above r Y"
 unfolding Above_def by blast
@@ -41,38 +32,10 @@ lemma Above_Linear_singleton:
   shows "x \<in> Above r {x}"
 using assms unfolding Above_def order_on_defs by (force dest: refl_onD)
 
-lemma override_on_insert:
-  shows "override_on f g (insert x X) = (override_on f g X)(x:=g x)"
-unfolding override_on_def by (simp add: fun_eq_iff)
-
-lemma override_on_insert':
-  shows "override_on f g (insert x X) = (override_on (f(x:=g x)) g X)"
-unfolding override_on_def by (simp add: fun_eq_iff)
-
-lemma sublists_refl:
-  shows "xs \<in> set (sublists xs)"
-by (induct xs) (simp_all add: Let_def)
-
 lemma sublists_set:
   assumes "y \<in> set (sublists xs)"
   shows "set y \<subseteq> set xs"
 using assms by (metis Pow_iff image_eqI sublists_powset)
-
-lemma subset_sublists:
-  shows "X \<subseteq> set xs \<Longrightarrow> X \<in> set ` set (sublists xs)"
-unfolding sublists_powset by simp
-
-lemma sublists_Cons_inv:
-  assumes "y # ys \<in> set (sublists xs)"
-  shows "ys \<in> set (sublists xs)"
-using assms by (induct xs) (auto simp: Let_def)
-
-lemma sublists_distinct:
-  assumes "ys \<in> set (sublists xs)"
-  assumes "distinct xs"
-  shows "distinct ys"
-using assms
-by (induct xs arbitrary: ys) (auto simp: Let_def dest: subsetD[OF sublists_set])
 
 primrec map_of_default :: "'v \<Rightarrow> ('k \<times> 'v) list \<Rightarrow> 'k \<Rightarrow> 'v" where
   "map_of_default v0 [] k = v0"
@@ -80,49 +43,12 @@ primrec map_of_default :: "'v \<Rightarrow> ('k \<times> 'v) list \<Rightarrow> 
 
 lemmas set_elem_equalityI = Set.equalityI[OF Set.subsetI Set.subsetI]
 
-lemma antisym_singleton [iff]:
-  "antisym {a}"
-by (blast intro: antisymI)
-
-lemma total_on_singleton [iff]:
-  "total_on {a} {(a, a)}"
-unfolding total_on_def by blast
-
-lemma refl_on_singleton [iff]:
-  shows "refl_on {a} {(a, a)}"
-by (blast intro: refl_onI)
-
 lemmas total_onI = iffD2[OF total_on_def, rule_format]
-
-lemma squared_Field [iff]:
-  shows "Field (x \<times> x) = x"
-unfolding Field_def by blast
-
-lemma linear_order_on_singleton [iff]:
-  shows "linear_order_on {x} {(x, x)}"
-unfolding order_on_defs by simp
-
-lemma linear_order_on_Restr:
-  assumes "linear_order_on A r"
-  shows "linear_order_on (A \<inter> above r x) (Restr r (above r x))"
-using assms unfolding order_on_defs refl_on_def trans_def antisym_def total_on_def
-by simp (safe; blast)
 
 lemma partial_order_on_acyclic:
   assumes "partial_order_on A r"
   shows "acyclic (r - Id)"
 by (metis acyclic_irrefl assms irrefl_diff_Id partial_order_on_def preorder_on_def trancl_id trans_diff_Id)
-
-lemma linear_order_on_acyclic:
-  assumes "linear_order_on A r"
-  shows "acyclic (r - Id)"
-by (metis acyclic_irrefl assms strict_linear_order_on_def strict_linear_order_on_diff_Id trancl_id)
-
-lemma linear_order_on_well_order_on:
-  assumes "finite r"
-  shows "linear_order_on A r \<longleftrightarrow> well_order_on A r"
-unfolding well_order_on_def
-using assms finite_acyclic_wf[OF _ linear_order_on_acyclic, of r] by blast
 
 lemma finite_Linear_order_induct[consumes 3, case_names step]:
   assumes "Linear_order r"
@@ -138,44 +64,6 @@ proof(induct rule: wf_induct[of "r\<inverse> - Id"])
 next
   case (2 x) then show ?case
     by - (rule step; auto simp: aboveS_def intro: FieldI2)
-qed
-
-lemma setsum_mono_inv:
-  fixes I :: "'z set"
-  fixes f :: "'z \<Rightarrow> nat"
-  assumes "sum f I = sum g I"
-  assumes "\<And>i. i \<in> I \<Longrightarrow> f i \<le> g i"
-  assumes "i \<in> I"
-  assumes "finite I"
-  shows "f i = g i"
-using assms by (metis le_neq_trans less_irrefl sum_strict_mono_ex1)
-
-(* From Finite_Set, strengthen: inductive F is a subset of what we started with. *)
-lemma finite_subset_induct' [consumes 2, case_names empty insert]:
-  assumes "finite F" and "F \<subseteq> A"
-    and empty: "P {}"
-    and insert: "\<And>a F. \<lbrakk>finite F; a \<in> A; F \<subseteq> A; a \<notin> F; P F \<rbrakk> \<Longrightarrow> P (insert a F)"
-  shows "P F"
-proof -
-  from \<open>finite F\<close>
-  have "F \<subseteq> A \<Longrightarrow> ?thesis"
-  proof induct
-    show "P {}" by fact
-  next
-    fix x F
-    assume "finite F" and "x \<notin> F" and
-      P: "F \<subseteq> A \<Longrightarrow> P F" and i: "insert x F \<subseteq> A"
-    show "P (insert x F)"
-    proof (rule insert)
-      from i show "x \<in> A" by blast
-      from i have "F \<subseteq> A" by blast
-      with P show "P F" .
-      show "finite F" by fact
-      show "x \<notin> F" by fact
-      show "F \<subseteq> A" by fact
-    qed
-  qed
-  with \<open>F \<subseteq> A\<close> show ?thesis by blast
 qed
 
 text\<open>
@@ -197,132 +85,6 @@ using mono_onD by blast
 lemma mono_on_mono:
   "mono_on UNIV = mono"
 by (clarsimp simp: mono_on_def mono_def fun_eq_iff)
-
-lemma funpow_mono_order_aux:
-  fixes f :: "'a \<Rightarrow> ('a::order)"
-  shows "mono f \<Longrightarrow> A \<le> B \<Longrightarrow> (f ^^ n) A \<le> (f ^^ n) B"
-  by (induct n arbitrary: A B)
-     (auto simp del: funpow.simps(2) simp add: funpow_Suc_right monoD)
-
-lemma funpow_mono_order:
-  assumes "mono f"
-  assumes "i \<le> j"
-  assumes "x \<le> y"
-  assumes "x \<le> f x"
-  shows "(f ^^ i) x \<le> (f ^^ j) y"
-using assms(2,3)
-proof(induct j arbitrary: y)
-  case (Suc j) show ?case
-  proof(cases "i = Suc j")
-    case True with assms(1) Suc show ?thesis
-      by (simp del: funpow.simps add: funpow_simps_right monoD funpow_mono_order_aux)
-  next
-    case False with assms(1,4) Suc show ?thesis
-      by (simp del: funpow.simps add: funpow_simps_right le_eq_less_or_eq)
-         (simp add: Suc.hyps monoD order_subst1)
-  qed
-qed simp
-
-
-subsection\<open> Relate @{const "gfp"} and @{const "while"} \<close>
-
-text\<open>
-
-We adapt and generalise the lemmas relating @{const "lfp"} to @{const
-"while"} in \<open>While_Combinator\<close> to an arbitrary finite
-complete lattice and play the same game for @{const "gfp"}. This story
-could be generalized from finite types to chain-finite lattices.
-
-\<close>
-
-(* Nat, Kleene iteration for gfp. *)
-subsection \<open>Kleene iteration\<close>
-
-lemma Kleene_iter_gpfp:
-assumes "mono f" and "p \<le> f p" shows "p \<le> (f^^k) (top::'a::order_top)"
-proof(induction k)
-  case 0 show ?case by simp
-next
-  case Suc
-  from monoD[OF assms(1) Suc] assms(2)
-  show ?case by simp
-qed
-
-lemma gfp_Kleene_iter: assumes "mono f" and "(f^^Suc k) top = (f^^k) top"
-shows "gfp f = (f^^k) top"
-proof(rule antisym)
-  show "(f^^k) top \<le> gfp f"
-  proof(rule gfp_upperbound)
-    show "(f^^k) top \<le> f ((f^^k) top)" using assms(2) by simp
-  qed
-next
-  show "gfp f \<le> (f^^k) top"
-    using Kleene_iter_gpfp[OF assms(1)] gfp_unfold[OF assms(1)] by simp
-qed
-
-(* While_Combinator *)
-
-lemma wf_finite_less:
-  assumes "finite (C :: 'a::order set)"
-  shows "wf {(x, y). {x, y} \<subseteq> C \<and> x < y}"
-by (rule wf_measure[where f="\<lambda>b. card {a. a \<in> C \<and> a < b}", THEN wf_subset])
-   (fastforce simp: less_eq assms intro: psubset_card_mono)
-
-lemma wf_finite_greater:
-  assumes "finite (C :: 'a::order set)"
-  shows "wf {(x, y). {x, y} \<subseteq> C \<and> y < x}"
-by (rule wf_measure[where f="\<lambda>b. card {a. a \<in> C \<and> b < a}", THEN wf_subset])
-   (fastforce simp: less_eq assms intro: psubset_card_mono)
-
-lemma while_option_finite_increasing_Some:
-  fixes f :: "'a::order \<Rightarrow> 'a"
-  assumes "mono f" and "finite (UNIV :: 'a set)" and "s \<le> f s"
-  shows "\<exists>P. while_option (\<lambda>A. f A \<noteq> A) f s = Some P"
-by (rule wf_rel_while_option_Some[where R="{(x, y). y < x}" and P="\<lambda>A. A \<le> f A" and s="s"])
-   (auto simp: assms monoD intro: wf_finite_greater[where C="UNIV::'a set", simplified])
-
-lemma lfp_the_while_option:
-  fixes f :: "'a::complete_lattice \<Rightarrow> 'a"
-  assumes "mono f" and "finite (UNIV :: 'a set)"
-  shows "lfp f = the(while_option (\<lambda>A. f A \<noteq> A) f bot)"
-proof -
-  obtain P where "while_option (\<lambda>A. f A \<noteq> A) f bot = Some P"
-    using while_option_finite_increasing_Some[OF assms, where s=bot] by simp blast
-  with while_option_stop2[OF this] lfp_Kleene_iter[OF assms(1)]
-  show ?thesis by auto
-qed
-
-lemma lfp_while:
-  fixes f :: "'a::complete_lattice \<Rightarrow> 'a"
-  assumes "mono f" and "finite (UNIV :: 'a set)"
-  shows "lfp f = while (\<lambda>A. f A \<noteq> A) f bot"
-unfolding while_def using assms by (rule lfp_the_while_option)
-
-(* gfp *)
-
-lemma while_option_finite_decreasing_Some:
-  fixes f :: "'a::order \<Rightarrow> 'a"
-  assumes "mono f" and "finite (UNIV :: 'a set)" and "f s \<le> s"
-  shows "\<exists>P. while_option (\<lambda>A. f A \<noteq> A) f s = Some P"
-by (rule wf_rel_while_option_Some[where R="{(x, y). x < y}" and P="\<lambda>A. f A \<le> A" and s="s"])
-   (auto simp add: assms monoD intro: wf_finite_less[where C="UNIV::'a set", simplified])
-
-lemma gfp_the_while_option:
-  fixes f :: "'a::complete_lattice \<Rightarrow> 'a"
-  assumes "mono f" and "finite (UNIV :: 'a set)"
-  shows "gfp f = the(while_option (\<lambda>A. f A \<noteq> A) f top)"
-proof -
-  obtain P where "while_option (\<lambda>A. f A \<noteq> A) f top = Some P"
-    using while_option_finite_decreasing_Some[OF assms, where s=top] by simp blast
-  with while_option_stop2[OF this] gfp_Kleene_iter[OF assms(1)]
-  show ?thesis by auto
-qed
-
-lemma gfp_while:
-  fixes f :: "'a::complete_lattice \<Rightarrow> 'a"
-  assumes "mono f" and "finite (UNIV :: 'a set)"
-  shows "gfp f = while (\<lambda>A. f A \<noteq> A) f top"
-unfolding while_def using assms by (rule gfp_the_while_option)
 
 
 (*>*)
@@ -453,7 +215,7 @@ proof induct
 next
   note ins = insert
   case (insert b B) with assms r_Linear_order show ?case
-    unfolding order_on_defs total_on_def by (fastforce simp: ins maxR_def elim: transE)
+    unfolding order_on_defs total_on_def by (fastforce simp: ins maxR_def elim: transE intro: FieldI1)
 qed
 
 lemma MaxR_opt_is_greatest:
@@ -661,7 +423,7 @@ lemma sorted_on_many:
   assumes "(x, y) \<in> r"
   assumes "sorted_on r (y # zs)"
   shows "sorted_on r (x # y # zs)"
-using assms \<open>Linear_order r\<close> unfolding order_on_defs by (auto elim: transE)
+using assms \<open>Linear_order r\<close> unfolding order_on_defs by (auto elim: transE intro: FieldI1)
 
 lemma sorted_on_Cons:
   shows "sorted_on r (x # xs) \<longleftrightarrow> (x \<in> Field r \<and> sorted_on r xs \<and> (\<forall>y\<in>set xs. (x, y) \<in> r))"
@@ -765,7 +527,7 @@ proof(rule equalityI)
 next
   { fix x y assume xy: "(x, y) \<in> r"
     with \<open>Linear_order r\<close> have "(y, x) \<notin> r - Id"
-      using Linear_order_in_diff_Id by fastforce
+      using Linear_order_in_diff_Id by (fastforce intro: FieldI1)
     with linord_of_list_Linear_order[of "rev xs" "Field r"] assms xy
     have "(x, y) \<in> linord_of_list (rev xs)"
       by simp (metis Diff_subset FieldI1 FieldI2 Linear_order_in_diff_Id linord_of_list_Field set_rev sorted_on_linord_of_list_subseteq_r subset_eq) }
@@ -786,7 +548,7 @@ using assms
 proof(induct ys)
   case (Cons y ys) then show ?case
     using linord_of_list_Linear_order[where xs="rev xs" and ys="Field (linord_of_list (rev xs))"]
-    by (force simp: sublists_Cons_inv sorted_on_Cons linord_of_list_linord_of_listP linord_of_listP_rev dest: sublists_set)
+    by (force simp: Cons_in_sublistsD sorted_on_Cons linord_of_list_linord_of_listP linord_of_listP_rev dest: sublists_set)
 qed simp
 
 lemma linord_of_list_sorted_on:

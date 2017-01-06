@@ -1304,7 +1304,8 @@ proof -
       with Ch_singular Pd_linear show "x \<in> CD_on ds (X \<union> Ch h (A X))"
         unfolding A_def
         by (auto 9 3 simp: mem_CD_on_Cd Cd_greatest greatest_def
-                     dest: Ch_range' Pd_range' Cd_Xd Cd_single inj_onD underS_incl_iff)
+                     dest: Ch_range' Pd_range' Cd_Xd Cd_single inj_onD underS_incl_iff
+                    intro: FieldI1)
     qed
     with \<open>stable_on ds X\<close> show False by blast
   qed
@@ -1341,7 +1342,7 @@ proof -
   finally have "?Sum_Cd_X = ?Sum_Cd_COP"
     using RHT_Cd_card by (simp add: eq_iff sum_mono)
   with RHT_Cd_card show "d \<in> ds \<Longrightarrow> card (Cd d X) = card (Cd d (CH (fp_cop_F ds)))"
-    by (fastforce elim: setsum_mono_inv)
+    by (fastforce elim: sum_mono_inv)
 
   have "?Sum_Ch_X = ?Sum_Cd_X"
     using \<open>stable_on ds X\<close> stable_on_CD_on stable_on_CH CD_on_card[symmetric] CH_card[symmetric] by simp
@@ -1353,7 +1354,7 @@ proof -
   finally have "?Sum_Ch_COP = ?Sum_Ch_X"
     using RHT_Ch_card by (simp add: eq_iff sum_mono)
   with RHT_Ch_card show "card (Ch h X) = card (Ch h (fp_cop_F ds))"
-    by (fastforce elim: sym[OF setsum_mono_inv])
+    by (fastforce elim: sym[OF sum_mono_inv])
 qed
 
 end

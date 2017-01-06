@@ -785,7 +785,7 @@ next
               by (clarsimp simp: Pdds'.mem_CD_on_Cd Pds'.mem_CD_on_Cd Pds'.Cd_Above Pdds'.Cd_Above
                                  Int_Un_distrib2 Pd_shuffle_to_top_Field)
                  (clarsimp simp: Pd_shuffle_to_top_simps dX_singular dX_Int_Field_Pd;
-                  fastforce simp: Above_def AboveS_def Pd_refl shuffle_to_top_def dX_def dest: Pd_range' iff: inj_on_eq_iff)
+                  fastforce simp: Above_def AboveS_def Pd_refl shuffle_to_top_def dX_def intro: FieldI1 dest: Pd_range' iff: inj_on_eq_iff)
          next
             case False
             from Pbos \<open>Xd x \<noteq> d\<close>
@@ -868,7 +868,7 @@ next
                 by (clarsimp simp: Pdds'.mem_CD_on_Cd Pds'.mem_CD_on_Cd Pds'.Cd_Above Pdds'.Cd_Above
                                    Int_Un_distrib2)
                    (clarsimp simp: Pd_shuffle_to_top_simps shuffle_to_top_Field dX_singular dX_Int_Field_Pd Un_absorb2,
-                    force simp: \<open>y \<in> Y\<close> shuffle_to_top_def dX_def Above_def dest: inj_onD)
+                    force simp: \<open>y \<in> Y\<close> shuffle_to_top_def dX_def Above_def dest: inj_onD intro: FieldI1)
             next
               case False
               from Pbos \<open>Xd x \<noteq> d\<close> show ?thesis
