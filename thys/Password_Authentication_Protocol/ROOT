@@ -1,0 +1,12 @@
+chapter AFP
+
+session "Password_Authentication_Protocol" (AFP) = HOL +
+  options [timeout = 300]
+  theories [document = false]
+    "~~/src/HOL/Library/Countable"
+  theories
+    Propaedeutics
+    Protocol
+  document_files
+    "root.bib"
+    "root.tex"
