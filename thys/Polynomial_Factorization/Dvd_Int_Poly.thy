@@ -165,7 +165,7 @@ lemma div_int_poly_step_surjective : "Some a = div_int_poly_step q b c \<Longrig
 
 lemma  div_mod_int_poly_then_pdivmod:
   assumes "div_mod_int_poly p q = Some (r,m)"
-  shows   "pdivmod (rp p) (rp q) = (rp r, rp m)"
+  shows   "(rp p div rp q, rp p mod rp q) = (rp r, rp m)"
     and   "q \<noteq> 0"
 proof -
   let ?rpp = "(\<lambda> (a,b). (rp a,rp b))"
@@ -193,8 +193,9 @@ proof -
     \<Longrightarrow> ?rpp (r,m) = foldr (?div_rat_step) (map rat_of_int (coeffs p)) (?rpp (0,0))".
   have "(map rat_of_int (coeffs p) = coeffs ?p)" by (simp add: ri.coeffs_map_poly)
   hence "(?r,?m) = (foldr (?div_rat_step) (coeffs ?p) (0,0))" using equal_foldr innerRes by simp
-  thus "pdivmod ?p ?q = (?r,?m)" 
-    using fold_coeffs_def[of "?div_rat_step" ?p] q0 pdivmod_fold_coeffs[of ?p ?q] 
+  thus "(?p div ?q, ?p mod ?q) = (?r,?m)" 
+    using fold_coeffs_def [of "?div_rat_step" ?p] q0 
+      div_mod_fold_coeffs [of ?p ?q]
     unfolding div_rat_poly_step_def by auto
 qed
 
@@ -226,7 +227,7 @@ proof -
 qed
 
 lemma  pdivmod_then_div_mod_int_poly:
-  assumes q0: "q \<noteq> 0" and "pdivmod (rp p) (rp q) = (rp r, rp m)" 
+  assumes q0: "q \<noteq> 0" and "(rp p div rp q, rp p mod rp q) = (rp r, rp m)" 
   shows   "div_mod_int_poly p q = Some (r,m)"
 proof -
   let ?rpp = "(\<lambda> (a,b). (rp a,rp b))" (* rp pair *)
@@ -258,7 +259,8 @@ proof -
                    \<Longrightarrow> Some (r,m) = foldr (?div_int_step) (coeffs p) (Some (0,0))"
     by simp
   have "(?r,?m) = (foldr (?div_rat_step) (coeffs ?p) (0,0))"
-    using fold_coeffs_def[of "?div_rat_step" ?p] assms pdivmod_fold_coeffs[of ?p ?q]
+    using fold_coeffs_def[of "?div_rat_step" ?p] assms
+      div_mod_fold_coeffs [of ?p ?q]
     unfolding div_rat_poly_step_def by auto
   hence "Some (r,m) = foldr (?div_int_step) (coeffs p) (Some (0,0))"
     using equal_foldr by (simp add: ri.coeffs_map_poly)
@@ -277,7 +279,7 @@ proof -
   have "Some (r,0) = div_mod_int_poly p q" using assms unfolding div_int_poly_def
       by (auto split:  option.splits prod.splits if_splits)
   with div_mod_int_poly_then_pdivmod[of p q r 0]
-  have "?p div ?q = ?r \<and> ?p mod ?q = 0" using pdivmod_def by (simp add: pdivmod_def)
+  have "?p div ?q = ?r \<and> ?p mod ?q = 0" by simp
   with div_mult_mod_eq[of ?p ?q]
   have "?p = ?r * ?q" by auto
   also have "\<dots> = rp (r * q)" by simp
@@ -299,10 +301,10 @@ proof -
   have "?p = ?r * ?q" using assms(1) by auto
   hence "?p div ?q = ?r" and "?p mod ?q = 0"
     using q0 ri.map_poly_0_iff by simp_all
-  hence "pdivmod (rp p) (rp q) = (rp r, 0)" using pdivmod_def[of "rp p" "rp q"] by (auto split: prod.splits)
-  hence "pdivmod (rp p) (rp q) = (rp r, rp 0)" by simp
+  hence "(rp p div rp q, rp p mod rp q) = (rp r, 0)" by (auto split: prod.splits)
+  hence "(rp p div rp q, rp p mod rp q) = (rp r, rp 0)" by simp
   hence "Some (r,0) = div_mod_int_poly p q"
-    using pdivmod_then_div_mod_int_poly[OF q0,of p r 0] pdivmod_def[of "rp p" "rp q"] by simp
+    using pdivmod_then_div_mod_int_poly[OF q0,of p r 0] by simp
   thus ?thesis unfolding div_mod_int_poly_def div_int_poly_def using q0 
     by (metis (mono_tags, lifting) option.simps(5) split_conv)
 qed

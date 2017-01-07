@@ -333,14 +333,17 @@ context inj_field_hom
 begin
 
 lemma map_poly_pdivmod: 
-  "map_prod (map_poly hom) (map_poly hom) (pdivmod p q) = pdivmod (map_poly hom p) (map_poly hom q)"
+  "map_prod (map_poly hom) (map_poly hom) (p div q, p mod q) =
+    (map_poly hom p div map_poly hom q, map_poly hom p mod map_poly hom q)"
   (is "?l = ?r")
 proof -
   let ?mp = "map_poly hom"
-  obtain r s where dm: "pdivmod p q = (r,s)" by force  
+  obtain r s where dm: "(p div q, p mod q) = (r, s)"
+    by force  
   hence r: "r = p div q" and s: "s = p mod q"
-    by (auto simp add: pdivmod_def)
-  from dm [folded pdivmod_pdivmodrel] have "eucl_rel_poly p q (r, s)" by auto
+    by simp_all
+  from dm [folded pdivmod_pdivmodrel] have "eucl_rel_poly p q (r, s)"
+    by auto
   from this[unfolded eucl_rel_poly_iff]
   have eq: "p = r * q + s" and cond: "(if q = 0 then r = 0 else s = 0 \<or> degree s < degree q)" by auto
   from arg_cong[OF eq, of ?mp, unfolded map_poly_add map_poly_mult]
@@ -354,10 +357,10 @@ proof -
 qed
 
 lemma map_poly_div: "map_poly hom (p div q) = map_poly hom p div map_poly hom q"
-  using map_poly_pdivmod[of p q] unfolding pdivmod_def by simp
+  using map_poly_pdivmod[of p q] by simp
 
 lemma map_poly_mod: "map_poly hom (p mod q) = map_poly hom p mod map_poly hom q"
-  using map_poly_pdivmod[of p q] unfolding pdivmod_def by simp
+  using map_poly_pdivmod[of p q] by simp
 
 end
 
