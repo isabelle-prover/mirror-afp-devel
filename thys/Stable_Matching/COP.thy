@@ -1223,8 +1223,7 @@ This theorem is the foundation for all later strategic results.
 
 \<close>
 
-locale ContractsWithUnilateralSubstitutesAndIRCAndLAD = ContractsWithUnilateralSubstitutesAndIRC +
-  assumes Ch_lad: "\<forall>h. lad (Ch h)"
+locale ContractsWithUnilateralSubstitutesAndIRCAndLAD = ContractsWithUnilateralSubstitutesAndIRC + ContractsWithLAD
 
 sublocale ContractsWithSubstitutesAndLAD < ContractsWithUnilateralSubstitutesAndIRCAndLAD
 using %invisible Ch_lad by unfold_locales
