@@ -13,6 +13,5 @@ session "Stable_Matching" (AFP) = "HOL-Library" +
     Bossiness
     Strategic
   document_files
-    "mathpartir.sty"
     "root.tex"
     "root.bib"
