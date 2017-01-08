@@ -6,8 +6,9 @@
  * This file is part of HOL-TestGen.
  *
  * Copyright (c) 2005-2012 ETH Zurich, Switzerland
- *               2008-2014 Achim D. Brucker, Germany
- *               2009-2014 Université Paris-Sud, France
+ *               2008-2015 Achim D. Brucker, Germany
+ *               2009-2017 Université Paris-Sud, France
+ *               2015-2017 The University of Sheffield, UK  
  *
  * All rights reserved.
  *
@@ -39,13 +40,12 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
-(* $Id: UPFCore.thy 10951 2014-11-21 21:54:46Z wolff $ *)
 
 section{* The Core of the Unified Policy Framework (UPF) *}
 theory
   UPFCore
-imports 
-  Monads
+  imports 
+    Monads
 begin
 
 
@@ -230,11 +230,15 @@ lemma override_A_empty[simp]: "p \<Oplus>\<^sub>A \<emptyset> = p"
 lemma empty_override_A[simp]: "\<emptyset> \<Oplus>\<^sub>A p = p" 
   apply (rule ext)
   apply (simp add:override_A_def)
-  apply (case_tac "p x")
-    apply (simp_all)
-  apply (case_tac a)
-    apply (simp_all)
-done
+  subgoal for x 
+    apply (case_tac "p x")
+     apply (simp_all)
+    subgoal for a
+      apply (case_tac a)
+       apply (simp_all)
+      done
+    done 
+  done 
 
 
 lemma override_A_assoc: "p1 \<Oplus>\<^sub>A (p2 \<Oplus>\<^sub>A p3) = (p1 \<Oplus>\<^sub>A p2) \<Oplus>\<^sub>A p3" 
@@ -260,9 +264,13 @@ lemma override_D_empty[simp]: "p \<Oplus>\<^sub>D \<emptyset> = p"
 lemma empty_override_D[simp]: "\<emptyset> \<Oplus>\<^sub>D p = p" 
   apply (rule ext)
   apply (simp add:override_D_def)
-  apply (case_tac "p x", simp_all)
-  apply (case_tac a, simp_all)
-done
+  subgoal for x 
+    apply (case_tac "p x", simp_all)
+    subgoal for a
+      apply (case_tac a, simp_all)
+      done
+    done
+  done
 
 lemma override_D_assoc: "p1 \<Oplus>\<^sub>D (p2 \<Oplus>\<^sub>D p3) = (p1 \<Oplus>\<^sub>D p2) \<Oplus>\<^sub>D p3"
   apply (rule ext)
@@ -295,7 +303,7 @@ translations
 lemma policy_range_comp_strict : "f o\<^sub>f \<emptyset> = \<emptyset>"
   apply (rule ext)
   apply (simp add: policy_range_comp_def)
-done
+  done
 
 
 text{* 
@@ -313,21 +321,25 @@ where "(P) \<nabla> p = (\<lambda>x. case p x of
 lemma range_split_strict[simp]: "P \<nabla> \<emptyset> = \<emptyset>"
   apply (rule ext)
   apply (simp add: range_split_def)
-done
+  done
 
 
 lemma range_split_charn:
-        "(f,g) \<nabla> p = (\<lambda>x. case p x of 
+  "(f,g) \<nabla> p = (\<lambda>x. case p x of 
                            \<lfloor>allow x\<rfloor> \<Rightarrow> \<lfloor>allow (f x)\<rfloor>
                          | \<lfloor>deny x\<rfloor>  \<Rightarrow> \<lfloor>deny (g x)\<rfloor> 
                          | \<bottom>        \<Rightarrow> \<bottom>)"
   apply (simp add: range_split_def)
   apply (rule ext)
-  apply (case_tac "p x")
-    apply (simp_all)
-  apply (case_tac "a")
-    apply (simp_all)
-done
+  subgoal for x 
+    apply (case_tac "p x")
+     apply (simp_all)
+    subgoal for a
+      apply (case_tac "a")
+       apply (simp_all)
+      done
+    done
+  done
 
 text{* 
   The connection between these two becomes apparent if considering the following lemma:
@@ -335,25 +347,32 @@ text{*
 
 lemma range_split_vs_range_compose: "(f,f) \<nabla> p = f o\<^sub>f p"
   by(simp add: range_split_charn policy_range_comp_def)
-
+    
 lemma range_split_id [simp]: "(id,id) \<nabla> p = p"
   apply (rule ext)
   apply (simp add: range_split_charn id_def)
-  apply (case_tac "p x")
-    apply (simp_all)
-  apply (case_tac "a")
-    apply (simp_all)
-done
+  subgoal for x
+    apply (case_tac "p x")
+     apply (simp_all)
+    subgoal for a
+      apply (case_tac "a")
+       apply (simp_all)
+      done
+    done 
+  done 
 
 lemma range_split_bi_compose [simp]: "(f1,f2) \<nabla> (g1,g2) \<nabla> p = (f1 o g1,f2 o g2) \<nabla> p"
   apply (rule ext)
   apply (simp add: range_split_charn comp_def)
-  apply (case_tac "p x")
-    apply (simp_all)
-  apply (case_tac "a")
-    apply (simp_all)
-done
-
+  subgoal for x 
+    apply (case_tac "p x")
+     apply (simp_all)
+    subgoal for a
+      apply (case_tac "a")
+       apply (simp_all)
+      done
+    done
+  done
 
 text{* 
   The next three operators are rather exotic and in most cases not used. 

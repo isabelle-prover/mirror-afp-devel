@@ -38,13 +38,12 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
-(* $Id: ServiceExample.thy 10954 2014-11-24 12:43:29Z wolff $ *)
 
 section {* Instantiating Our Secure Service Example *}
 theory 
   ServiceExample
-imports 
-  Service
+  imports 
+    Service
 begin
 text {*
   In the following, we briefly present an instantiations  of our secure service example 
@@ -98,7 +97,7 @@ lemma [simp]: "(case a of allow d \<Rightarrow> \<lfloor>X\<rfloor> | deny d2 \<
 
 lemma [cong,simp]: 
  "((if hasLR urp1_alice 1 \<Sigma>0 then \<lfloor>allow ()\<rfloor> else \<lfloor>deny ()\<rfloor>) = \<bottom>) = False"
-by (simp)
+  by (simp)
 
 lemmas MonSimps =  valid_SE_def unit_SE_def bind_SE_def
 lemmas Psplits  = option.splits unit.splits prod.splits decision.splits
@@ -112,23 +111,26 @@ lemmas PolSimps = valid_SE_def unit_SE_def bind_SE_def if_splits policy2MON_def
                   entry3_def FunPolicy_def SE_LR_FUN_Policy_def o_def image_def UPFDefs
 
 lemma "SE_LR_RBAC_Policy ((createSCR alice Clerical patient1),\<sigma>0)= Some (deny ())"
-by (simp add: PolSimps)
-
-lemma exBool[simp]: "\<exists>a::bool. a"  by auto
-
-lemma deny_allow[simp]: " \<lfloor>deny ()\<rfloor> \<notin> Some ` range allow"  by auto
-
-lemma allow_deny[simp]: " \<lfloor>allow ()\<rfloor> \<notin> Some ` range deny" by auto
-
+  by (simp add: PolSimps)
+    
+lemma exBool[simp]: "\<exists>a::bool. a"  
+  by auto
+    
+lemma deny_allow[simp]: " \<lfloor>deny ()\<rfloor> \<notin> Some ` range allow"  
+  by auto
+    
+lemma allow_deny[simp]: " \<lfloor>allow ()\<rfloor> \<notin> Some ` range deny" 
+  by auto
+    
 text{* Policy as monad. Alice using her first urp can read the SCR of patient1. *}
 lemma 
-"(\<sigma>0 \<Turnstile> (os \<leftarrow> mbind [(createSCR alice Clerical patient1)] (PolMon); 
+  "(\<sigma>0 \<Turnstile> (os \<leftarrow> mbind [(createSCR alice Clerical patient1)] (PolMon); 
        (return (os = [(deny (Out) )]))))"
-by (simp add: PolMon_def MonSimps PolSimps)
-
+  by (simp add: PolMon_def MonSimps PolSimps)
+    
 text{* Presenting her other urp, she is not allowed to read it. *}
 lemma "SE_LR_RBAC_Policy ((appendEntry alice Clerical patient1 ei d),\<sigma>0)= \<lfloor>deny ()\<rfloor>"
-by (simp add: PolSimps)  
+  by (simp add: PolSimps)  
 
 end
 
