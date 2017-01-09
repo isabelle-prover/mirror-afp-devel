@@ -207,7 +207,7 @@ proof-
       then obtain c where [simp]: "p = [:c:]" using pderiv_iszero by blast
       from assms(1) have "c \<noteq> 0" by simp
       from True have "d = smult (inverse c) p"
-          by (simp add: d_def normalize_poly_def map_poly_pCons field_simps)
+        by (simp add: d_def normalize_poly_def map_poly_pCons field_simps one_poly_def)
       hence "p div d = [:c:]" using `c \<noteq> 0`
           by (simp add: div_smult_right assms(1) one_poly_def[symmetric])
       thus ?thesis using `c \<noteq> 0` by (simp add: normalize_const_poly one_poly_def)

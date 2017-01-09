@@ -145,7 +145,7 @@ next
   next
     case 4
     show ?case unfolding normalize_poly_def 
-      by (rule poly_eqI) simp
+      by (rule poly_eqI) (simp add: one_poly_def [symmetric])
   qed
 qed
 
@@ -225,7 +225,7 @@ proof (intro conjI)
   hence "H \<noteq> 0" "lc \<noteq> 0" unfolding H[symmetric] lc[symmetric] by auto
   thus "0 < lead_coeff (gcd F G)" unfolding 
     arg_cong[OF normalize_gcd[of F G], of lead_coeff, symmetric]
-    unfolding normalize_poly_def H
+    unfolding normalize_poly_eq_map_poly H
     by (auto, subst Polynomial.coeff_map_poly, auto, 
     subst Polynomial.degree_map_poly, auto simp: sgn_if)
   have "H dvd F" unfolding H[symmetric] by auto

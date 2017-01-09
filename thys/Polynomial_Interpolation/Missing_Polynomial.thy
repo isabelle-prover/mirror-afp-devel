@@ -269,7 +269,7 @@ proof -
 qed
 
 lemma normalize_monic: "monic p \<Longrightarrow> normalize p = p"
-  by (simp add: normalize_poly_def)
+  by (simp add: normalize_poly_eq_map_poly is_unit_unit_factor)
 
 lemma lcoeff_monic_mult: assumes monic: "monic (p :: 'a :: comm_semiring_1 poly)"
   shows "coeff (p * q) (degree p + degree q) = coeff q (degree q)"
@@ -1013,8 +1013,9 @@ lemma map_div_is_smult_inverse: "Polynomial.map_poly (\<lambda>x. x / (a :: 'a :
   unfolding smult_conv_map_poly
   by (simp add: divide_inverse_commute)
 
-lemma normalize_poly_old_def: "normalize (f :: 'a :: {normalization_semidom,field} poly) = 
-  smult (inverse (unit_factor (lead_coeff f))) f" unfolding normalize_poly_def map_div_is_smult_inverse by simp
+lemma normalize_poly_old_def:
+  "normalize (f :: 'a :: {normalization_semidom,field} poly) = smult (inverse (unit_factor (lead_coeff f))) f"
+  by (simp add: normalize_poly_eq_map_poly map_div_is_smult_inverse)
 
 (* was in Euclidean_Algorithm in Number_Theory before, but has been removed *)
 lemma poly_dvd_antisym:
