@@ -25,9 +25,6 @@ lemma Lcm_set_eq_list_lcm:
   "Lcm (set xs) = list_lcm xs" for xs :: "'a::semiring_Gcd list"
   by (induct xs) (simp_all add: list_lcm_def)
 
-lemma content_same: "Polynomial.content f = content f"
-  by (simp add: Polynomial.content_def Gauss_Lemma.content_def Gcd_set_eq_list_gcd)
-
 definition coprime_approx_main :: "int \<Rightarrow> 'i arith_ops_record \<Rightarrow> int poly \<Rightarrow> int poly \<Rightarrow> bool" where
   "coprime_approx_main p ff_ops f g = (gcd_poly_i ff_ops (of_int_poly_i ff_ops (poly_mod.Mp p f))
      (of_int_poly_i ff_ops (poly_mod.Mp p g)) = one_poly_i ff_ops)" 
@@ -191,7 +188,7 @@ proof (intro ext)
     case False
     hence cop: "coprime_heuristic ?ff ?gg" by simp
     from False have "f \<noteq> 0" by auto
-    from content_primitive_part[OF this] have cnt: "content ?ff = 1" unfolding content_same .
+    with content_primitive_part have cnt: "content ?ff = 1" .
     have id: "coprime ?ff ?gg" 
       by (rule coprime_heuristic[OF cop], insert cnt, auto)
     show ?thesis unfolding gcd_poly_decompose[of f g] unfolding gcd_int_poly_def Let_def id

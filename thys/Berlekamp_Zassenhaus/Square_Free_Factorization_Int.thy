@@ -511,7 +511,8 @@ proof -
       lg content_ge_0_int[of g] have lg': "lead_coeff ng > 0" unfolding ng_def 
       by (metis \<open>content g \<noteq> 0\<close> dual_order.antisym dual_order.strict_implies_order zero_less_mult_iff)
     from content_normalize_content_1[OF g0] have c_ng: "content ng = 1" unfolding ng_def .
-    have "degree ng = degree f" using \<open>content [:sgn (lead_coeff f):] = 1\<close> g_def ng_def by auto
+    have "degree ng = degree f" using \<open>content [:sgn (lead_coeff f):] = 1\<close> g_def ng_def
+      by (auto simp add: sgn_eq_0_iff)
     with False have "degree ng \<noteq> 0" by auto
     note main = square_free_factorization_int_main[OF fs c_ng lg' this] 
     show ?thesis
@@ -520,7 +521,8 @@ proof -
         assume "(fi, i) \<in> set fs" 
         with main show "content fi = 1" "0 < lead_coeff fi" by auto
       }
-      have d0: "d \<noteq> 0" using \<open>content [:?s:] = 1\<close> d by auto
+      have d0: "d \<noteq> 0" using \<open>content [:?s:] = 1\<close> d
+        by (auto simp add: sgn_eq_0_iff)
       have "smult d ng = smult ?s (smult (content g) (normalize_content g))" 
         unfolding ng_def d cg by simp
       also have "smult (content g) (normalize_content g) = g" using smult_normalize_content .
@@ -605,7 +607,8 @@ proof -
   note sff = square_free_factorization_int'(1-2)[OF sf]
   note xs = x_split[OF xs]
   let ?x = "monom 1 1 :: int poly" 
-  have x: "content ?x = 1 \<and> lead_coeff ?x = 1 \<and> degree ?x = 1" by code_simp
+  have x: "content ?x = 1 \<and> lead_coeff ?x = 1 \<and> degree ?x = 1"
+    by (auto simp add: degree_monom_eq content_def monom_Suc)
   thus "(fi, i) \<in> set fs \<Longrightarrow> content fi = 1 \<and> lead_coeff fi > 0" using sff(2) unfolding fs
     by (cases n, auto)
   show "square_free_factorization f (d,fs)" 

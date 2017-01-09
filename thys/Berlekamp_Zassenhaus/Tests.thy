@@ -146,7 +146,7 @@ code_reserved Haskell Mathematica
 
 code_printing
   constant external_factorization \<rightharpoonup> (Haskell) "Mathematica.factorize"
-  
+
 export_code test_intern test_extern in Haskell module_name "Factorize" file "~/Code"
  
 end

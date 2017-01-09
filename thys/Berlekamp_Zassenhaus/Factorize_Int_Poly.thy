@@ -387,7 +387,8 @@ proof -
     hence "coeff g 0 \<noteq> 0" by (simp add: monom_1_dvd_iff')
     note fact = factorize_int_last_nz_poly[OF fact this]
     let ?x = "monom 1 1 :: int poly" 
-    have x: "content ?x = 1 \<and> lead_coeff ?x = 1 \<and> degree ?x = 1" by code_simp
+    have x: "content ?x = 1 \<and> lead_coeff ?x = 1 \<and> degree ?x = 1"
+      by (auto simp add: degree_monom_eq monom_Suc content_def)
     from res False have res: "(if n = 0 then (d, hs) else (d, (?x, n - 1) # hs)) = (c, fs)" by auto
     show ?thesis
     proof (cases n)
