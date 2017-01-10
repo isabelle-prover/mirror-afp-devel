@@ -488,6 +488,10 @@ lemma mset_set_set_mset_subseteq[simp]: "mset_set (set_mset A) \<subseteq># A"
 lemma mset_sorted_list_of_set[simp]: "mset (sorted_list_of_set A) = mset_set A"
   by (metis mset_sorted_list_of_multiset sorted_list_of_mset_set)
 
+lemma sorted_sorted_list_of_multiset[simp]:
+  "sorted (sorted_list_of_multiset (M :: 'a::linorder multiset))"
+  by (metis mset_sorted_list_of_multiset sorted_list_of_multiset_mset sorted_sort)
+
 lemma mset_take_subseteq: "mset (take n xs) \<subseteq># mset xs"
   apply (induct xs arbitrary: n)
    apply simp
