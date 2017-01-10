@@ -3,12 +3,12 @@ chapter AFP
 session Allen_Calculus (AFP) = HOL +
   options [timeout = 600]
   theories
-	xor_cal
-	axioms
-	allen
-	disjoint_relations
-	jointly_exhaustive
-	examples
-	nest
+    xor_cal
+    axioms
+    allen
+    disjoint_relations
+    jointly_exhaustive
+    examples
+    nest
   document_files
     "root.tex"
