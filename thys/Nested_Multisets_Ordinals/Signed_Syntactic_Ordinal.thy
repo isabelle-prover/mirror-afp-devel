@@ -320,7 +320,7 @@ lemma zhmset_of_enat_lt_iff_ne_infinity: "zhmset_of_enat x < \<omega>\<^sub>z \<
 subsection \<open>An Example\<close>
 
 text \<open>
-A new proof of @{thm waldmann_less}:
+A new proof of @{thm ludwig_waldmann_less}:
 \<close>
 
 lemma

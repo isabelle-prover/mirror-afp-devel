@@ -861,7 +861,7 @@ The following proof is based on an informal proof by Uwe Waldmann, inspired by
 a similar argument by Michel Ludwig.
 \<close>
 
-lemma waldmann_less:
+lemma ludwig_waldmann_less:
   fixes \<alpha>1 \<alpha>2 \<beta>1 \<beta>2 \<gamma> \<delta> :: hmultiset
   assumes
     \<alpha>\<beta>2\<gamma>_lt_\<alpha>\<beta>1\<gamma>: "\<alpha>2 + \<beta>2 * \<gamma> < \<alpha>1 + \<beta>1 * \<gamma>" and
