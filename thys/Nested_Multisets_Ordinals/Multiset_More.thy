@@ -556,6 +556,9 @@ lemma mset_take_subseteq: "mset (take n xs) \<subseteq># mset xs"
    apply simp
   by (case_tac n) simp_all
 
+lemma sorted_list_of_multiset_eq_Nil[simp]: "sorted_list_of_multiset M = [] \<longleftrightarrow> M = {#}"
+  by (metis mset_sorted_list_of_multiset sorted_list_of_multiset_empty)
+
 
 subsection \<open>Duplicate Removal\<close>
 
