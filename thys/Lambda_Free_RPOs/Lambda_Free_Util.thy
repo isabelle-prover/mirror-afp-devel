@@ -245,12 +245,6 @@ lemma (in wellorder) exists_minimal:
   shows "\<exists>x. P x \<and> (\<forall>y. P y \<longrightarrow> y \<ge> x)"
   using assms by (auto intro: LeastI Least_le)
 
-lemma wellorder_measure_induct_rule[case_names less]:
-  fixes f :: "'a \<Rightarrow> 'b :: wellorder"
-  assumes step: "\<And>x. (\<And>y. f y < f x \<Longrightarrow> P y) \<Longrightarrow> P x"
-  shows "P a"
-  by (induct m \<equiv> "f a" arbitrary: a rule: less_induct) (auto intro: step)
-
 
 subsection \<open>Lists\<close>
 

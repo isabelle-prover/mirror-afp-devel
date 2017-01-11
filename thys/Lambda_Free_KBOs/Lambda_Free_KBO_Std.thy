@@ -341,7 +341,7 @@ lemma gt_arg: "wary s \<Longrightarrow> is_App s \<Longrightarrow> s >\<^sub>t a
 
 theorem gt_trans: "wary u \<Longrightarrow> wary t \<Longrightarrow> wary s \<Longrightarrow> u >\<^sub>t t \<Longrightarrow> t >\<^sub>t s \<Longrightarrow> u >\<^sub>t s"
 proof (simp only: atomize_imp,
-    rule wellorder_measure_induct_rule[of "\<lambda>(u, t, s). {#size u, size t, size s#}"
+    rule measure_induct_rule[of "\<lambda>(u, t, s). {#size u, size t, size s#}"
         "\<lambda>(u, t, s). wary u \<longrightarrow> wary t \<longrightarrow> wary s \<longrightarrow> u >\<^sub>t t \<longrightarrow> t >\<^sub>t s \<longrightarrow> u >\<^sub>t s" "(u, t, s)",
       simplified prod.case],
     simp only: split_paired_all prod.case atomize_imp[symmetric])
@@ -833,7 +833,7 @@ theorem gt_subst:
   assumes wary_\<rho>: "wary_subst \<rho>"
   shows "wary t \<Longrightarrow> wary s \<Longrightarrow> t >\<^sub>t s \<Longrightarrow> subst \<rho> t >\<^sub>t subst \<rho> s"
 proof (simp only: atomize_imp,
-    rule wellorder_measure_induct_rule[of "\<lambda>(t, s). {#size t, size s#}"
+    rule measure_induct_rule[of "\<lambda>(t, s). {#size t, size s#}"
         "\<lambda>(t, s). wary t \<longrightarrow> wary s \<longrightarrow> t >\<^sub>t s \<longrightarrow> subst \<rho> t >\<^sub>t subst \<rho> s" "(t, s)",
       simplified prod.case],
     simp only: split_paired_all prod.case atomize_imp[symmetric])
