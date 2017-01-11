@@ -355,6 +355,9 @@ lemma removeAll_mset_filter_mset:
 abbreviation remove1_mset :: "'a \<Rightarrow> 'a multiset \<Rightarrow> 'a multiset" where
   "remove1_mset C M \<equiv> M - {#C#}"
 
+lemma removeAll_subseteq_remove1_mset: "removeAll_mset x M \<subseteq># remove1_mset x M"
+  by (auto simp: subseteq_mset_def)
+
 lemma in_remove1_mset_neq:
   assumes ab: "a \<noteq> b"
   shows "a \<in># remove1_mset b C \<longleftrightarrow> a \<in># C"
@@ -447,6 +450,17 @@ lemma trivial_add_mset_remove_iff: \<open>add_mset a (N - {#b#}) = N \<longleftr
 
 lemma remove1_single_empty_iff[simp]: \<open>remove1_mset L {#L'#} = {#} \<longleftrightarrow> L = L'\<close>
   using add_mset_remove_trivial_iff by fastforce
+
+lemma add_mset_less_imp_less_remove1_mset:
+  assumes xM_lt_N: "add_mset x M < N"
+  shows "M < remove1_mset x N"
+proof -
+  have "M < N"
+    using xM_lt_N le_multiset_right_total mset_le_trans by blast
+  thus ?thesis
+    using xM_lt_N by (metis (no_types) add_le_cancel_right add_mset_add_single
+      diff_single_trivial insert_DiffM2 le_neq_trans less_imp_le less_multiset\<^sub>H\<^sub>O)
+qed
 
 
 subsection \<open>Lemmas about Replicate\<close>
