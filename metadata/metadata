@@ -531,6 +531,21 @@ abstract =
 	decision only.
 notify = adbrucker@0x5f.org, wolff@lri.fr, lukas.a.bruegger@gmail.com
 
+[UPF_Firewall]
+title = Formal Network Models and Their Application to Firewall Policies
+author = Achim D. Brucker <https:/www.brucker.ch>, Lukas Brügger<>, Burkhart Wolff <https://www.lri.fr/~wolff/>
+topic = Computer Science/Security, Computer Science/Networks
+date = 2017-01-08
+notify = adbrucker@0x5f.org
+abstract = 
+  We present a formal model of network protocols and their application
+  to modeling firewall policies. The formalization is based on the
+  Unified Policy Framework (UPF). The formalization was originally
+  developed with for generating test cases for testing the security
+  configuration actual firewall and router (middle-boxes) using
+  HOL-TestGen. Our work focuses on modeling application level protocols
+  on top of tcp/ip.
+
 [AODV]
 title = Loop freedom of the (untimed) AODV routing protocol
 author = Timothy Bourke <http://www.tbrk.org/>, Peter Höfner <http://www.hoefner-online.de/>
