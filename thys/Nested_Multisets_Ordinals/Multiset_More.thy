@@ -173,6 +173,31 @@ proof -
   qed (auto simp: y_nemp y_sub_N image_mset_subseteq_mono)
 qed
 
+lemma mset_lt_single_right_iff[simp]: "M < {#y#} \<longleftrightarrow> (\<forall>x \<in># M. x < y)" for y :: "'a::linorder"
+proof (rule iffI)
+  assume M_lt_y: "M < {#y#}"
+  show "\<forall>x \<in># M. x < y"
+  proof
+    fix x
+    assume x_in: "x \<in># M"
+    hence M: "M - {#x#} + {#x#} = M"
+      by (meson insert_DiffM2)
+    hence "\<not> {#x#} < {#y#} \<Longrightarrow> x < y"
+      using x_in M_lt_y
+      by (metis diff_single_eq_union le_multiset_empty_left less_add_same_cancel2 mset_le_trans)
+    thus "x < y"
+      by blast
+  qed
+next
+  assume y_max: "\<forall>x \<in># M. x < y"
+  show "M < {#y#}"
+    by (rule all_lt_Max_imp_lt_multiset) (auto intro!: y_max)
+qed
+
+lemma mset_le_single_right_iff[simp]:
+  "M \<le> {#y#} \<longleftrightarrow> M = {#y#} \<or> (\<forall>x \<in># M. x < y)" for y :: "'a::linorder"
+  by (meson less_eq_multiset_def mset_lt_single_right_iff)
+
 
 subsection \<open>Lemmas about Intersection, Union and Pointwise Inclusion\<close>
 
@@ -615,8 +640,7 @@ proof (rule allI)
     by simp
 qed
 
-lemma distinct_mset_minus[simp]:
-  "distinct_mset A \<Longrightarrow> distinct_mset (A - B)"
+lemma distinct_mset_minus[simp]: "distinct_mset A \<Longrightarrow> distinct_mset (A - B)"
   by (metis diff_subset_eq_self mset_subset_eq_exists_conv distinct_mset_union)
 
 lemma count_remdups_mset_If: \<open>count (remdups_mset A) a = (if a \<in># A then 1 else 0)\<close>
@@ -1001,8 +1025,8 @@ proof -
     by transfer_prover
 qed
 
-lemma sum_mset_transfer[transfer_rule]: "R 0 0 \<Longrightarrow> rel_fun R (rel_fun R R) op + op + \<Longrightarrow>
-  (rel_fun (rel_mset R) R) sum_mset sum_mset"
+lemma sum_mset_transfer[transfer_rule]:
+  "R 0 0 \<Longrightarrow> rel_fun R (rel_fun R R) op + op + \<Longrightarrow> (rel_fun (rel_mset R) R) sum_mset sum_mset"
   using sum_list_transfer[of R] unfolding rel_fun_def rel_mset_def by auto
 
 lemma Sigma_mset_transfer[transfer_rule]:

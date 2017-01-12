@@ -372,8 +372,6 @@ lemma plus_of_nat_minus_of_nat_hmset:
 
 lemma of_nat_lt_\<omega>[simp]: "of_nat n < \<omega>"
   by (auto simp: of_nat_hmset zero_less_iff_neq_zero_hmset \<omega>_def less_multiset_ext\<^sub>D\<^sub>M_less)
-    (metis One_nat_def count_replicate_mset count_single gr_implies_not0 lessI less_multiset\<^sub>H\<^sub>O
-       not_gr_zero_hmset zero_neq_one)
 
 lemma of_nat_ne_\<omega>[simp]: "of_nat n \<noteq> \<omega>"
   by (metis of_nat_lt_\<omega> mset_le_asym mset_lt_single_iff)
@@ -444,7 +442,7 @@ proof -
     using m_le_n unfolding head_\<omega>_def
     by (cases m, cases n,
       auto simp del: hmsetmset_le simp: head_\<omega>_def hmsetmset_le[symmetric] zero_hmultiset_def,
-      meson hmsetmset_le le_in_le_max[OF _ Max_in[OF finite_set_mset]] set_mset_eq_empty_iff)
+      metis Max_in dual_order.antisym finite_set_mset le_in_le_max le_less set_mset_eq_empty_iff)
 qed
 
 lemma head_\<omega>_lt_imp_lt: "head_\<omega> m < head_\<omega> n \<Longrightarrow> m < n"
