@@ -113,6 +113,9 @@ lemma HMSet_less[simp]: "HMSet M < HMSet N \<longleftrightarrow> M < N"
 lemma HMSet_le[simp]: "HMSet M \<le> HMSet N \<longleftrightarrow> M \<le> N"
   by (simp add: hmsetmset_le[symmetric])
 
+lemma mem_imp_less_HMSet: "k \<in># L \<Longrightarrow> k < HMSet L"
+  by (induct k arbitrary: L) (auto intro: ex_gt_imp_less_multiset)
+
 inductive_set hmultiset_sub where
   "X \<in># M \<Longrightarrow> (X, HMSet M) \<in> hmultiset_sub"
 
