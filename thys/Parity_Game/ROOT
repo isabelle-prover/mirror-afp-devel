@@ -5,6 +5,7 @@ session Parity_Game (AFP) = Coinductive +
   theories
     PositionalDeterminacy
     AttractorInductive
+    Graph_TheoryCompatibility
   document_files
     "root.tex"
     "root.bib"
