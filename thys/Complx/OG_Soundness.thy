@@ -295,7 +295,9 @@ lemma BasicRule: "P \<subseteq> {s. (f s) \<in> Q} \<Longrightarrow> \<Gamma>, \
   apply (auto intro: Basic)
 done
 
-lemma SpecRule: "P \<subseteq> {s. (\<forall>t. (s, t) \<in> r \<longrightarrow> t \<in> Q) \<and> (\<exists>t. (s, t) \<in> r)} \<Longrightarrow> \<Gamma>, \<Theta> \<turnstile>\<^bsub>/F\<^esub> (AnnExpr P) (Spec r) Q, A"
+lemma SpecRule:
+  "P \<subseteq> {s. (\<forall>t. (s, t) \<in> r \<longrightarrow> t \<in> Q) \<and> (\<exists>t. (s, t) \<in> r)}
+    \<Longrightarrow> \<Gamma>, \<Theta> \<turnstile>\<^bsub>/F\<^esub> (AnnExpr P) (Spec r) Q, A"
   apply (rule Conseq, simp, rule exI[where x="{s. (\<forall>t. (s, t) \<in> r \<longrightarrow> t \<in> Q) \<and> (\<exists>t. (s, t) \<in> r) }"])
   apply (rule exI[where x=Q], rule exI[where x=A])
   apply simp
@@ -1462,77 +1464,77 @@ lemma oghoare_sound_Parallel_Normal_case[rule_format, OF _ refl refl]:
    apply (clarsimp simp: final_def)
   apply(erule step.cases, simp_all)
 --\<open>Parallel\<close>
-      apply clarsimp
-      apply (frule Normal_pre_star)
-      apply (drule oghoare_Parallel)
-      apply clarsimp
-      apply (rename_tac i cs c1' x y  s' as)
-      apply (subgoal_tac "\<Gamma>\<turnstile> (Parallel cs, Normal x) \<rightarrow> (Parallel (cs[i := c1']), Normal s')")
-       apply (frule_tac c="Parallel cs" and
-                       a="AnnPar as"  and
-                       Q="(\<Inter>x\<in>set as. postcond x)" and A ="(\<Union>x\<in>set as. abrcond x)" in
-                       oghoare_step[where \<Theta>=\<Theta> and F=F])
-         apply(rule Parallel, simp)
-             apply clarsimp
-            apply (rule Conseq, rule exI[where x="{}"], fastforce)
-           apply clarsimp
-          apply force
-         apply force
-        apply clarsimp
-       apply clarsimp
-       apply (rename_tac a')
-       apply (drule_tac x=a' in spec)
-       apply (drule mp, rule Conseq)
-        apply (rule_tac x="{}" in exI)
-        apply (rule_tac x="(\<Inter>x\<in>set as. postcond x)" in exI)
-        apply (rule_tac x="(\<Union>x\<in>set as. abrcond x)" in exI)
-        apply (simp)
-       apply clarsimp
-      apply(erule (1) step.Parallel)
---\<open>ParSkip\<close>
-    apply (frule no_steps_final, simp add: final_def)
     apply clarsimp
+    apply (frule Normal_pre_star)
     apply (drule oghoare_Parallel)
     apply clarsimp
-    apply (rule imageI)
-    apply (erule subsetD)
-    apply clarsimp
-    apply (clarsimp simp: in_set_conv_nth)
-    apply (rename_tac i)
-    apply (frule_tac x="i" in spec)
-    apply clarsimp
-    apply (frule_tac x="cs!i" in bspec)
-     apply (clarsimp simp: in_set_conv_nth)
-     apply (rule_tac x="i" in exI)
+    apply (rename_tac i cs c1' x y  s' as)
+    apply (subgoal_tac "\<Gamma>\<turnstile> (Parallel cs, Normal x) \<rightarrow> (Parallel (cs[i := c1']), Normal s')")
+     apply (frule_tac c="Parallel cs" and
+                      a="AnnPar as"  and
+                      Q="(\<Inter>x\<in>set as. postcond x)" and A ="(\<Union>x\<in>set as. abrcond x)"
+                   in oghoare_step[where \<Theta>=\<Theta> and F=F])
+       apply(rule Parallel, simp)
+          apply clarsimp
+          apply (rule Conseq, rule exI[where x="{}"], fastforce)
+         apply clarsimp
+        apply force
+       apply force
+      apply clarsimp
      apply clarsimp
-    apply clarsimp
-    apply (drule_tac x="as ! i" in bspec)
-     apply (clarsimp simp: in_set_conv_nth)
-     apply fastforce
-    apply (drule oghoare_Skip)
-    apply auto[1]
---\<open>ParThrow\<close>
-   apply clarsimp
+     apply (rename_tac a')
+     apply (drule_tac x=a' in spec)
+     apply (drule mp, rule Conseq)
+      apply (rule_tac x="{}" in exI)
+      apply (rule_tac x="(\<Inter>x\<in>set as. postcond x)" in exI)
+      apply (rule_tac x="(\<Union>x\<in>set as. abrcond x)" in exI)
+      apply (simp)
+     apply clarsimp
+    apply(erule (1) step.Parallel)
+--\<open>ParSkip\<close>
    apply (frule no_steps_final, simp add: final_def)
    apply clarsimp
    apply (drule oghoare_Parallel)
-   apply (clarsimp simp: in_set_conv_nth)
-   apply (drule_tac x=i in spec)
-    apply clarsimp
-   apply (drule oghoare_Throw)
-   apply clarsimp
-   apply (rename_tac i as Q' A' P')
-   apply (drule_tac x="as ! i" in bspec)
-    apply (clarsimp simp: in_set_conv_nth)
-    apply (rule_tac x=i in exI, fastforce)
    apply clarsimp
    apply (rule imageI)
-   apply (erule_tac  A="(\<Union>x\<in>set as. abrcond x)" in subsetD)
+   apply (erule subsetD)
    apply clarsimp
-   apply (rule_tac x="as!i" in bexI)
-    apply blast
+   apply (clarsimp simp: in_set_conv_nth)
+   apply (rename_tac i)
+   apply (frule_tac x="i" in spec)
    apply clarsimp
- done
+   apply (frule_tac x="cs!i" in bspec)
+    apply (clarsimp simp: in_set_conv_nth)
+    apply (rule_tac x="i" in exI)
+    apply clarsimp
+   apply clarsimp
+   apply (drule_tac x="as ! i" in bspec)
+    apply (clarsimp simp: in_set_conv_nth)
+    apply fastforce
+   apply (drule oghoare_Skip)
+   apply fastforce
+--\<open>ParThrow\<close>
+  apply clarsimp
+  apply (frule no_steps_final, simp add: final_def)
+  apply clarsimp
+  apply (drule oghoare_Parallel)
+  apply (clarsimp simp: in_set_conv_nth)
+  apply (drule_tac x=i in spec)
+  apply clarsimp
+  apply (drule oghoare_Throw)
+  apply clarsimp
+  apply (rename_tac i as Q' A' P')
+  apply (drule_tac x="as ! i" in bspec)
+   apply (clarsimp simp: in_set_conv_nth)
+   apply (rule_tac x=i in exI, fastforce)
+  apply clarsimp
+  apply (rule imageI)
+  apply (erule_tac  A="(\<Union>x\<in>set as. abrcond x)" in subsetD)
+  apply clarsimp
+  apply (rule_tac x="as!i" in bexI)
+   apply blast
+  apply clarsimp
+  done
 
 lemma oghoare_step_Fault[rule_format, OF _ refl refl]:
  "\<Gamma>\<turnstile> cf \<rightarrow> cf' \<Longrightarrow>

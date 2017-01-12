@@ -99,8 +99,27 @@ syntax
 definition "FAKE_ANN \<equiv> UNIV"
 
 translations
-  "r \<acute>x := a" \<rightharpoonup> "CONST AnnCom (CONST AnnExpr r) (CONST Basic \<guillemotleft>\<acute>(_update_name x (\<lambda>_. a))\<guillemotright>)"
+  "r \<acute>x := a" \<rightharpoonup> "CONST AnnCom (CONST AnnExpr r)
+                               (CONST Basic \<guillemotleft>\<acute>(_update_name x (\<lambda>_. a))\<guillemotright>)"
   "\<acute>x := a" \<rightleftharpoons> "CONST FAKE_ANN \<acute>x := a"
+
+abbreviation
+  "update_var f S s \<equiv> (\<lambda>v. f (\<lambda>_. v) s) ` S"
+
+abbreviation
+  "fun_to_rel f \<equiv>  \<Union> ((\<lambda>s. (\<lambda>v. (s, v)) ` f s) ` UNIV)"
+
+syntax
+  "_Spec"      :: "idt \<Rightarrow> 'b \<Rightarrow> ('s,'p,'f) ann_com"
+                   ("(\<acute>_ :\<in>/ _)" [70, 65] 61)
+  "_AnnSpec"   :: "'a assn \<Rightarrow> idt \<Rightarrow> 'b \<Rightarrow> ('s,'p,'f) ann_com"
+                   ("(_//\<acute>_ :\<in>/ _)" [90,70,65] 61)
+
+translations
+  "r \<acute>x :\<in> S" \<rightharpoonup> "CONST AnnCom (CONST AnnExpr r)
+                               (CONST Spec (CONST fun_to_rel \<guillemotleft>\<acute>(CONST update_var (_update_name x) S)\<guillemotright>))"
+  "\<acute>x :\<in> S" \<rightleftharpoons> "CONST FAKE_ANN \<acute>x :\<in> S"
+
 
 nonterminal grds and grd
 
@@ -303,6 +322,13 @@ print_translation \<open> let
       let val _ = if syntax_debug then writeln "Basic" else () in
         quote_tr' (Syntax.const @{syntax_const "_AnnAssign"} $ r $ Syntax_Trans.update_name_tr' f)
           (k :: ts) end
+    | AnnCom_tr (Const (@{const_syntax AnnExpr}, _) $ r ::
+               Const (@{const_syntax Spec}, _) $ (_ $ _ $ Abs (_,_, _ $ _ $ ((_ $ f) $ S $ _))) :: ts) =
+      let val _ = if syntax_debug then writeln ("Spec") else () in
+        (Syntax.const @{syntax_const "_AnnSpec"} $ r $
+           Syntax_Trans.update_name_tr' f $
+           Syntax_Trans.antiquote_tr' @{syntax_const "_antiquote"} S)
+      end
     | AnnCom_tr (Const (@{const_syntax AnnComp}, _) $ r $ r' ::
                Const (@{const_syntax Seq}, _) $ c $ c' :: ts) =
       let val _ = if syntax_debug then writeln "Seq" else ()
