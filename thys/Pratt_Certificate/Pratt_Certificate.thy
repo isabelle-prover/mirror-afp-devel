@@ -688,7 +688,7 @@ end
 
 method_setup pratt = \<open>
   Scan.option (Scan.lift (Args.bracks Pratt.parse_cert)) >> 
-    (SIMPLE_METHOD o HEADGOAL oo Pratt.pratt_tac)
+    (SIMPLE_METHOD o HEADGOAL oo Pratt.pratt_tac true)
 \<close> "Prove primality of natural numbers using Pratt certificates."
 
 

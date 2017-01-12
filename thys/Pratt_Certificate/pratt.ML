@@ -7,7 +7,7 @@ type pratt_cert = pratt list
 val termify_pratt : pratt -> term
 val termify_cert : pratt_cert -> term
 val certify_prime : int -> pratt_cert option
-val pratt_tac : pratt_cert option -> Proof.context -> int -> tactic
+val pratt_tac : bool -> pratt_cert option -> Proof.context -> int -> tactic
 
 val pretty_pratt : pratt -> Pretty.T
 val pretty_cert : pratt_cert -> Pretty.T
@@ -145,7 +145,7 @@ fun pretty_pratt (Prime p) = pretty_int p
 val pretty_cert = Pretty.list "[" "]" o map pretty_pratt
 end
   
-fun pratt_tac cert ctxt i =
+fun pratt_tac print cert ctxt i =
   let
     fun print_cert cert =
       [Pretty.keyword1 "by", Pretty.brk 1, Pretty.str "(", Pretty.str "pratt ", 
@@ -164,7 +164,7 @@ fun pratt_tac cert ctxt i =
         in
           case certify_prime p' of
             NONE => NONE
-          | SOME cert => let val _ = print_cert cert in SOME cert end
+          | SOME cert => let val _ = if print then print_cert cert else () in SOME cert end
         end
     fun tac cert =
       let
