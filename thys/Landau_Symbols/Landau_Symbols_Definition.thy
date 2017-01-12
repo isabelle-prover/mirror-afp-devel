@@ -1914,5 +1914,113 @@ lemma (in landau_symbol) meta_cong_bigtheta: "\<Theta>(f) \<equiv> \<Theta>(g) \
 lemmas landau_bigtheta_meta_congs = landau_symbols[THEN landau_symbol.meta_cong_bigtheta]
 
 (* TODO: Make this work with bigtheta_powr_eq_set_powr *)
+  
+  
+(* Additional theorems, contributed by Andreas Lochbihler and adapted by Manuel Eberl *)
+
+lemma eventually_nonneg_at_top: 
+  assumes "filterlim f at_top at_top"
+  shows   "eventually_nonneg f"
+proof -
+  from assms have "eventually (\<lambda>x. f x \<ge> 0) at_top"
+    by (simp add: filterlim_at_top)
+  thus ?thesis unfolding eventually_nonneg_def by eventually_elim simp
+qed
+
+lemma eventually_nonzero_at_top: 
+  assumes "filterlim f at_top at_top"
+  shows   "eventually_nonzero f"
+proof -
+  from assms have "eventually (\<lambda>x. f x \<ge> 1) at_top"
+    by (simp add: filterlim_at_top)
+  thus ?thesis unfolding eventually_nonzero_def by eventually_elim simp
+qed
+
+lemma eventually_nonneg_at_top_ASSUMPTION [eventually_nonzero_simps]:
+  "ASSUMPTION (filterlim f at_top at_top) \<Longrightarrow> eventually_nonneg f"
+  by (simp add: ASSUMPTION_def eventually_nonneg_at_top)
+
+lemma eventually_nonzero_at_top_ASSUMPTION [eventually_nonzero_simps]:
+  "ASSUMPTION (filterlim f at_top at_top) \<Longrightarrow> eventually_nonzero f"
+  by (simp add: ASSUMPTION_def eventually_nonzero_at_top)
+
+lemma filterlim_at_top_iff_smallomega:
+  fixes f :: "_ \<Rightarrow> 'a :: linordered_field"
+  shows "filterlim f at_top at_top \<longleftrightarrow> f \<in> \<omega>(\<lambda>_. 1) \<and> eventually_nonneg f"
+  unfolding eventually_nonneg_def
+proof safe
+  assume A: "filterlim f at_top at_top"
+  thus B: "eventually (\<lambda>x. f x \<ge> 0) at_top" by (simp add: eventually_nonzero_simps)
+  {
+    fix c
+    from A have "eventually (\<lambda>x. f x \<ge> c) at_top" by (simp add: filterlim_at_top)
+    with B have "eventually (\<lambda>x. \<bar>f x\<bar> \<ge> c) at_top" 
+      by eventually_elim (simp add: field_simps)
+  }
+  thus "f \<in> \<omega>(\<lambda>_. 1)" by (rule landau_omega.smallI)
+next
+  assume A: "f \<in> \<omega>(\<lambda>_. 1)" and B: "eventually (\<lambda>x. f x \<ge> 0) at_top"
+  {
+    fix c :: 'a assume "c > 0"
+    from landau_omega.smallD[OF A this] B 
+      have "eventually (\<lambda>x. f x \<ge> c) at_top" by eventually_elim simp
+  }
+  thus "filterlim f at_top at_top"
+    by (subst filterlim_at_top_gt[of _ _ 0]) simp_all
+qed
+
+lemma smallomega_1_iff: 
+  "eventually_nonneg f \<Longrightarrow> f \<in> \<omega>(\<lambda>_. 1) \<longleftrightarrow> filterlim f at_top at_top"
+  by (simp add: filterlim_at_top_iff_smallomega)
+
+lemma smallo_1_iff: 
+  "eventually_nonneg f \<Longrightarrow> (\<lambda>_. 1) \<in> o(f) \<longleftrightarrow> filterlim f at_top at_top"
+  by (simp add: filterlim_at_top_iff_smallomega smallomega_iff_smallo)
+
+lemma eventually_nonneg_add1 [eventually_nonzero_simps]:
+  assumes "eventually_nonneg f" "g \<in> o(f)"
+  shows   "eventually_nonneg (\<lambda>x. f x + g x)"
+  using  landau_o.smallD[OF assms(2) zero_less_one] assms(1) unfolding eventually_nonneg_def
+  by eventually_elim simp_all
+
+lemma eventually_nonneg_add2 [eventually_nonzero_simps]:
+  assumes "eventually_nonneg g" "f \<in> o(g)"
+  shows   "eventually_nonneg (\<lambda>x. f x + g x)"
+  using  landau_o.smallD[OF assms(2) zero_less_one] assms(1) unfolding eventually_nonneg_def
+  by eventually_elim simp_all
+
+lemma eventually_nonneg_diff1 [eventually_nonzero_simps]:
+  assumes "eventually_nonneg f" "g \<in> o(f)"
+  shows   "eventually_nonneg (\<lambda>x. f x - g x)"
+  using  landau_o.smallD[OF assms(2) zero_less_one] assms(1) unfolding eventually_nonneg_def
+  by eventually_elim simp_all
+
+lemma eventually_nonneg_diff2 [eventually_nonzero_simps]:
+  assumes "eventually_nonneg (\<lambda>x. - g x)" "f \<in> o(g)"
+  shows   "eventually_nonneg (\<lambda>x. f x - g x)"
+  using  landau_o.smallD[OF assms(2) zero_less_one] assms(1) unfolding eventually_nonneg_def
+  by eventually_elim simp_all
+
+lemma bigo_const_inverse [simp]:
+  assumes "filterlim f at_top at_top"
+  shows "(\<lambda>_ :: _ :: linorder. c) \<in> O(\<lambda>x. inverse (f x)) \<longleftrightarrow> c = 0"
+proof -
+  {
+    assume A: "(\<lambda>_. 1) \<in> O(\<lambda>x. inverse (f x))"
+    from assms have "(\<lambda>_. 1) \<in> o(f)"
+      by (simp add: eventually_nonzero_simps smallomega_iff_smallo filterlim_at_top_iff_smallomega)
+    also from assms A have "f \<in> O(\<lambda>_. 1)"
+      by (simp add: eventually_nonzero_simps landau_divide_simps)
+    finally have False by (simp add: landau_o.small_refl_iff)
+  }
+  thus ?thesis by (cases "c = 0") auto
+qed
+ 
+lemma smallo_const_inverse [simp]:
+  "filterlim f at_top at_top \<Longrightarrow> (\<lambda>_ :: _ :: linorder. c) \<in> o(\<lambda>x. inverse (f x)) \<longleftrightarrow> c = 0"
+by(auto dest: landau_o.small_imp_big)
+
+lemma const_in_smallo_const [simp]: "(\<lambda>_. b) \<in> o(\<lambda>_ :: _ :: linorder. c) \<longleftrightarrow> b = 0" (is "?lhs \<longleftrightarrow> ?rhs")
+  by (cases "b = 0"; cases "c = 0") (simp_all add: landau_o.small_refl_iff)
 
 end
