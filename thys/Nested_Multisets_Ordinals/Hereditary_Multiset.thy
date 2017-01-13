@@ -25,8 +25,7 @@ primrec Rep_hmultiset :: "hmultiset \<Rightarrow> unit nmultiset" where
 primrec (nonexhaustive) Abs_hmultiset :: "unit nmultiset \<Rightarrow> hmultiset" where
   "Abs_hmultiset (MSet M) = HMSet (image_mset Abs_hmultiset M)"
 
-lemma type_definition_hmultiset:
-  "type_definition Rep_hmultiset Abs_hmultiset {X. no_elem X}"
+lemma type_definition_hmultiset: "type_definition Rep_hmultiset Abs_hmultiset {X. no_elem X}"
 proof (unfold_locales, unfold mem_Collect_eq)
   fix X
   show "no_elem (Rep_hmultiset X)"
@@ -115,17 +114,6 @@ lemma HMSet_le[simp]: "HMSet M \<le> HMSet N \<longleftrightarrow> M \<le> N"
 
 lemma mem_imp_less_HMSet: "k \<in># L \<Longrightarrow> k < HMSet L"
   by (induct k arbitrary: L) (auto intro: ex_gt_imp_less_multiset)
-
-inductive_set hmultiset_sub where
-  "X \<in># M \<Longrightarrow> (X, HMSet M) \<in> hmultiset_sub"
-
-lemma wf_hmultiset_sub[simp]: "wf hmultiset_sub"
-proof (rule wfUNIVI)
-  fix P and M :: hmultiset
-  assume ih: "\<forall>M. (\<forall>N. (N, M) \<in> hmultiset_sub \<longrightarrow> P N) \<longrightarrow> P M"
-  show "P M"
-    by (induct M; rule ih[rule_format]) (auto simp: hmultiset_sub.simps)
-qed
 
 
 subsection \<open>Disjoint Union and Truncated Difference\<close>

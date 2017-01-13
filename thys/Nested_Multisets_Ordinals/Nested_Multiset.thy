@@ -20,10 +20,10 @@ datatype 'a nmultiset =
   Elem 'a
 | MSet "'a nmultiset multiset"
 
-inductive no_elem where
+inductive no_elem :: "'a nmultiset \<Rightarrow> bool" where
   "(\<And>X. X \<in># M \<Longrightarrow> no_elem X) \<Longrightarrow> no_elem (MSet M)"
 
-inductive_set nmultiset_sub where
+inductive_set nmultiset_sub :: "('a nmultiset \<times> 'a nmultiset) set" where
   "X \<in># M \<Longrightarrow> (X, MSet M) \<in> nmultiset_sub"
 
 lemma wf_nmultiset_sub[simp]: "wf nmultiset_sub"
@@ -37,8 +37,7 @@ qed
 primrec depth_nmultiset ("|_|") where
   "|Elem a| = 0"
 | "|MSet M| =
-     (let X = set_mset (image_mset depth_nmultiset M)
-     in if X = {} then 0 else Suc (Max X))"
+   (let X = set_mset (image_mset depth_nmultiset M) in if X = {} then 0 else Suc (Max X))"
 
 lemma depth_nmultiset_MSet: "x \<in># M \<Longrightarrow> |x| < |MSet M|"
   by (auto simp: less_Suc_eq_le)
