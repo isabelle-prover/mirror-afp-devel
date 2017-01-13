@@ -1,3 +1,16 @@
+[E_Transcendental]
+title = The Transcendence of e
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Analysis, Mathematics/Number Theory
+date = 2017-01-12
+notify = eberlm@in.tum.de
+abstract = 
+  <p>This work contains a proof that Euler's number e is transcendental. The
+  proof follows the standard approach of assuming that e is algebraic and
+  then using a specific integer polynomial to derive two inconsistent bounds,
+  leading to a contradiction.</p> <p>This kind of approach can be found in
+  many different sources; this formalisation mostly follows a <a  href="http://planetmath.org/proofoflindemannweierstrasstheoremandthateandpiaretranscendental">PlanetMath article</a> by Roger Lipsett.</p>
+
 [DFS_Framework]
 title = A Framework for Verifying Depth-First Search Algorithms
 author = Peter Lammich <http://www21.in.tum.de/~lammich/>, René Neumann <mailto:neumannr@in.tum.de>
@@ -226,7 +239,7 @@ notify = andreas.lochbihler@inf.ethz.ch
 title = Liouville numbers
 author = Manuel Eberl <http://in.tum.de/~eberlm>
 date = 2015-12-28
-topic = Mathematics/Analysis
+topic = Mathematics/Analysis, Mathematics/Number Theory
 abstract =
 	Liouville numbers are a class of transcendental numbers that can be approximated
 	particularly well with rational numbers. Historically, they were the first

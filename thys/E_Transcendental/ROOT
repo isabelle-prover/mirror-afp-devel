@@ -1,0 +1,13 @@
+chapter AFP
+
+session E_Transcendental (AFP) = "HOL-Analysis" +
+  options [timeout=600]
+  theories [document = false]
+    "~~/src/HOL/Analysis/Analysis"
+    "~~/src/HOL/Library/Polynomial"
+    "~~/src/HOL/Number_Theory/Number_Theory"
+  theories
+    E_Transcendental
+  document_files
+    "root.tex"
+    "root.bib"
