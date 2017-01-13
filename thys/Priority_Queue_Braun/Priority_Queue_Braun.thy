@@ -200,7 +200,7 @@ proof(cases t rule: del_min.cases)
 qed (insert assms, auto)
 
 lemma mset_del_min: assumes "braun t" "heap t" "t \<noteq> Leaf"
-shows "mset_tree t = {#val t#} + mset_tree(del_min t)"
+shows "mset_tree t = {#root_val t#} + mset_tree(del_min t)"
 proof(cases t rule: del_min.cases)
   case 1 with assms show ?thesis by simp
 next
@@ -218,7 +218,7 @@ next
 qed
 
 lemma set_del_min: "\<lbrakk> braun t; heap t; t \<noteq> Leaf \<rbrakk>
-  \<Longrightarrow> set_tree t = insert (val t) (set_tree(del_min t))"
+  \<Longrightarrow> set_tree t = insert (root_val t) (set_tree(del_min t))"
 by(drule (2) arg_cong[where f=set_mset, OF mset_del_min]) (simp)
 
 
