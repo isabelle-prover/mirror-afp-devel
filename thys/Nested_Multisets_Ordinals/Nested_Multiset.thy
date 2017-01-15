@@ -23,33 +23,32 @@ datatype 'a nmultiset =
 inductive no_elem :: "'a nmultiset \<Rightarrow> bool" where
   "(\<And>X. X \<in># M \<Longrightarrow> no_elem X) \<Longrightarrow> no_elem (MSet M)"
 
-inductive_set nmultiset_sub :: "('a nmultiset \<times> 'a nmultiset) set" where
-  "X \<in># M \<Longrightarrow> (X, MSet M) \<in> nmultiset_sub"
+inductive_set sub_nmset :: "('a nmultiset \<times> 'a nmultiset) set" where
+  "X \<in># M \<Longrightarrow> (X, MSet M) \<in> sub_nmset"
 
-lemma wf_nmultiset_sub[simp]: "wf nmultiset_sub"
+lemma wf_sub_nmset[simp]: "wf sub_nmset"
 proof (rule wfUNIVI)
   fix P :: "'a nmultiset \<Rightarrow> bool" and M :: "'a nmultiset"
-  assume IH: "\<forall>M. (\<forall>N. (N, M) \<in> nmultiset_sub \<longrightarrow> P N) \<longrightarrow> P M"
+  assume IH: "\<forall>M. (\<forall>N. (N, M) \<in> sub_nmset \<longrightarrow> P N) \<longrightarrow> P M"
   show "P M"
-    by (induct M; rule IH[rule_format]) (auto simp: nmultiset_sub.simps)
+    by (induct M; rule IH[rule_format]) (auto simp: sub_nmset.simps)
 qed
 
-primrec depth_nmultiset ("|_|") where
+primrec depth_nmset :: "'a nmultiset \<Rightarrow> nat" ("|_|") where
   "|Elem a| = 0"
-| "|MSet M| =
-   (let X = set_mset (image_mset depth_nmultiset M) in if X = {} then 0 else Suc (Max X))"
+| "|MSet M| = (let X = set_mset (image_mset depth_nmset M) in if X = {} then 0 else Suc (Max X))"
 
-lemma depth_nmultiset_MSet: "x \<in># M \<Longrightarrow> |x| < |MSet M|"
+lemma depth_nmset_MSet: "x \<in># M \<Longrightarrow> |x| < |MSet M|"
   by (auto simp: less_Suc_eq_le)
 
-declare depth_nmultiset.simps(2)[simp del]
+declare depth_nmset.simps(2)[simp del]
 
 
 subsection \<open>Dershowitz and Manna's Nested Multiset Order\<close>
 
 text \<open>The Dershowitz--Manna extension:\<close>
 
-definition less_multiset_ext\<^sub>D\<^sub>M where
+definition less_multiset_ext\<^sub>D\<^sub>M :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a multiset \<Rightarrow> 'a multiset \<Rightarrow> bool" where
   "less_multiset_ext\<^sub>D\<^sub>M R M N \<longleftrightarrow>
    (\<exists>X Y. X \<noteq> {#} \<and> X \<subseteq># N \<and> M = (N - X) + Y \<and> (\<forall>k. k \<in># Y \<longrightarrow> (\<exists>a. a \<in># X \<and> R k a)))"
 
@@ -168,15 +167,15 @@ lemma less_multiset_ext\<^sub>D\<^sub>M_cong[fundef_cong]:
   less_multiset_ext\<^sub>D\<^sub>M R M N = less_multiset_ext\<^sub>D\<^sub>M S M N"
   unfolding less_multiset_ext\<^sub>D\<^sub>M_def by metis
 
-function (sequential) less_nmultiset :: "'a nmultiset \<Rightarrow> 'a nmultiset \<Rightarrow> bool" where
-  "less_nmultiset (Elem a) (Elem b) = (a < b)"
-| "less_nmultiset (Elem a) (MSet M) = True"
-| "less_nmultiset (MSet M) (Elem a) = False"
-| "less_nmultiset (MSet M) (MSet N) = less_multiset_ext\<^sub>D\<^sub>M less_nmultiset M N"
+function less_nmultiset :: "'a nmultiset \<Rightarrow> 'a nmultiset \<Rightarrow> bool" where
+  "less_nmultiset (Elem a) (Elem b) \<longleftrightarrow> a < b"
+| "less_nmultiset (Elem a) (MSet M) \<longleftrightarrow> True"
+| "less_nmultiset (MSet M) (Elem a) \<longleftrightarrow> False"
+| "less_nmultiset (MSet M) (MSet N) \<longleftrightarrow> less_multiset_ext\<^sub>D\<^sub>M less_nmultiset M N"
   by pat_completeness auto
 termination
-  by (relation "nmultiset_sub <*lex*> nmultiset_sub", fastforce,
-    metis nmultiset_sub.simps in_lex_prod mset_subset_eqD mset_subset_eq_add_right)
+  by (relation "sub_nmset <*lex*> sub_nmset", fastforce,
+    metis sub_nmset.simps in_lex_prod mset_subset_eqD mset_subset_eq_add_right)
 
 lemmas less_nmultiset_induct =
   less_nmultiset.induct[case_names Elem_Elem Elem_MSet MSet_Elem MSet_MSet]
@@ -184,9 +183,7 @@ lemmas less_nmultiset_induct =
 lemmas less_nmultiset_cases =
   less_nmultiset.cases[case_names Elem_Elem Elem_MSet MSet_Elem MSet_MSet]
 
-lemma trans_less_nmultiset:
-  fixes X Y Z :: "'a nmultiset"
-  shows "X < Y \<Longrightarrow> Y < Z \<Longrightarrow> X < Z"
+lemma trans_less_nmultiset: "X < Y \<Longrightarrow> Y < Z \<Longrightarrow> X < Z" for X Y Z :: "'a nmultiset"
 proof (induct "Max {|X|, |Y|, |Z|}" arbitrary: X Y Z
     rule: less_induct)
   case less
@@ -196,7 +193,7 @@ proof (induct "Max {|X|, |Y|, |Z|}" arbitrary: X Y Z
     define A where "A = set_mset M \<union> set_mset N \<union> set_mset N'"
     assume XYZ: "X = MSet M" "Y = MSet N" "Z = MSet N'"
     then have trans: "\<forall>x \<in> A. \<forall>y \<in> A. \<forall>z \<in> A. x < y \<longrightarrow> y < z \<longrightarrow> x < z"
-      by (auto elim!: less(1)[rotated -1] dest!: depth_nmultiset_MSet simp add: A_def)
+      by (auto elim!: less(1)[rotated -1] dest!: depth_nmset_MSet simp add: A_def)
     have "set_mset M \<subseteq> A" "set_mset N \<subseteq> A" "set_mset N' \<subseteq> A"
       unfolding A_def by auto
     with less(2,3) XYZ show "X < Z"
@@ -296,21 +293,19 @@ qed
 
 end
 
-lemma less_depth_nmultiset_imp_less_nmultiset:
-  "|X| < |Y| \<Longrightarrow> X < Y"
+lemma less_depth_nmset_imp_less_nmultiset: "|X| < |Y| \<Longrightarrow> X < Y"
 proof (induct X Y rule: less_nmultiset_induct)
   case (MSet_MSet M N)
   then show ?case
   proof (cases "M = {#}")
     case False
     with MSet_MSet show ?thesis
-      by (auto 0 4 simp: depth_nmultiset.simps(2) less_multiset_ext\<^sub>D\<^sub>M_def not_le Max_gr_iff
+      by (auto 0 4 simp: depth_nmset.simps(2) less_multiset_ext\<^sub>D\<^sub>M_def not_le Max_gr_iff
         intro: exI[of _ N] split: if_splits)
-  qed (auto simp: depth_nmultiset.simps(2) less_multiset_ext\<^sub>D\<^sub>M_less split: if_splits)
+  qed (auto simp: depth_nmset.simps(2) less_multiset_ext\<^sub>D\<^sub>M_less split: if_splits)
 qed simp_all
 
-lemma less_nmultiset_imp_le_depth_nmultiset:
-  "X < Y \<Longrightarrow> |X| \<le> |Y|"
+lemma less_nmultiset_imp_le_depth_nmset: "X < Y \<Longrightarrow> |X| \<le> |Y|"
 proof (induct X Y rule: less_nmultiset_induct)
   case (MSet_MSet M N)
   then have "M < N" by (simp add: less_multiset_ext\<^sub>D\<^sub>M_less)
@@ -318,16 +313,16 @@ proof (induct X Y rule: less_nmultiset_induct)
   proof (cases "M = {#}" "N = {#}" rule: bool.exhaust[case_product bool.exhaust])
     case [simp]: False_False
     show ?thesis
-    unfolding depth_nmultiset.simps(2) Let_def False_False Suc_le_mono set_image_mset image_is_empty
+    unfolding depth_nmset.simps(2) Let_def False_False Suc_le_mono set_image_mset image_is_empty
       set_mset_eq_empty_iff if_False
     proof (intro iffD2[OF Max_le_iff] ballI iffD2[OF Max_ge_iff]; (elim imageE)?; simp)
       fix X
       assume [simp]: "X \<in># M"
       with MSet_MSet(1)[of N M X, simplified] \<open>M < N\<close> show "\<exists>Y\<in>#N. |X| \<le> |Y|"
-        by (meson ex_gt_imp_less_multiset less_asym' less_depth_nmultiset_imp_less_nmultiset
+        by (meson ex_gt_imp_less_multiset less_asym' less_depth_nmset_imp_less_nmultiset
           not_le_imp_less)
     qed
-  qed (auto simp: depth_nmultiset.simps(2))
+  qed (auto simp: depth_nmset.simps(2))
 qed simp_all
 
 lemma eq_mlex_I:
@@ -361,12 +356,12 @@ qed
 instantiation nmultiset :: (wellorder) wellorder
 begin
 
-lemma depth_nmultiset_eq_0[simp]: "|X| = 0 \<longleftrightarrow> (X = MSet {#} \<or> (\<exists>x. X = Elem x))"
-  by (cases X; simp add: depth_nmultiset.simps(2))
+lemma depth_nmset_eq_0[simp]: "|X| = 0 \<longleftrightarrow> (X = MSet {#} \<or> (\<exists>x. X = Elem x))"
+  by (cases X; simp add: depth_nmset.simps(2))
 
-lemma depth_nmultiset_eq_Suc[simp]: "|X| = Suc n \<longleftrightarrow>
+lemma depth_nmset_eq_Suc[simp]: "|X| = Suc n \<longleftrightarrow>
   (\<exists>N. X = MSet N \<and> (\<exists>Y \<in># N. |Y| = n) \<and> (\<forall>Y \<in># N. |Y| \<le> n))"
-  by (cases X; auto simp add: depth_nmultiset.simps(2) intro!: Max_eqI)
+  by (cases X; auto simp add: depth_nmset.simps(2) intro!: Max_eqI)
     (metis (no_types, lifting) Max_in finite_imageI finite_set_mset imageE image_is_empty
       set_mset_eq_empty_iff)
 
@@ -375,12 +370,12 @@ lemma wf_less_nmultiset_depth:
 proof (induct i rule: less_induct)
   case (less i)
   define A :: "'a nmultiset set" where "A = {X. |X| < i}"
-  from less have "wf ((depth_nmultiset :: 'a nmultiset \<Rightarrow> nat) <*mlex*>
+  from less have "wf ((depth_nmset :: 'a nmultiset \<Rightarrow> nat) <*mlex*>
       (\<Union>j < i. {(X, Y). |X| = j \<and> |Y| = j \<and> X < Y}))"
     by (intro wf_UN wf_mlex) auto
   then have *: "wf (mult {(X :: 'a nmultiset, Y). X \<in> A \<and> Y \<in> A \<and> X < Y})"
     by (intro wf_mult, elim wf_subset) (force simp: A_def mlex_prod_def not_less_iff_gr_or_eq
-      dest!: less_depth_nmultiset_imp_less_nmultiset)
+      dest!: less_depth_nmset_imp_less_nmultiset)
   show ?case
   proof (cases i)
     case 0
@@ -398,8 +393,8 @@ qed
 
 lemma wf_less_nmultiset: "wf {(X :: 'a nmultiset, Y :: 'a nmultiset). X < Y}" (is "wf ?R")
 proof -
-  have "?R = depth_nmultiset <*mlex*> {(X, Y). |X| = |Y| \<and> X < Y}"
-    by (rule eq_mlex_I) (auto simp: antisymp_def less_depth_nmultiset_imp_less_nmultiset)
+  have "?R = depth_nmset <*mlex*> {(X, Y). |X| = |Y| \<and> X < Y}"
+    by (rule eq_mlex_I) (auto simp: antisymp_def less_depth_nmset_imp_less_nmultiset)
   also have "{(X, Y). |X| = |Y| \<and> X < Y} = (\<Union>i. {(X, Y). |X| = i \<and> |Y| = i \<and> X < Y})"
     by auto
   finally show ?thesis

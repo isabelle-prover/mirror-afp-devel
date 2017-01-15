@@ -76,7 +76,7 @@ proof (transfer, unfold less_nmultiset.simps less_multiset_ext\<^sub>D\<^sub>M_d
   show
     "\<exists>X'\<in>Collect (pred_mset no_elem). \<exists>Y'\<in>Collect (pred_mset no_elem).
       X' \<noteq> {#} \<and> filter_mset no_elem X' \<subseteq># filter_mset no_elem N \<and> N - X + Y = N - X' + Y' \<and>
-      (\<forall>k\<in>Collect no_elem.  k \<in># Y' \<longrightarrow> (\<exists>a\<in>Collect no_elem. a \<in># X' \<and> k < a))"
+      (\<forall>k\<in>Collect no_elem. k \<in># Y' \<longrightarrow> (\<exists>a\<in>Collect no_elem. a \<in># X' \<and> k < a))"
     by (rule bexI[OF _ \<open>X \<in> Collect (pred_mset no_elem)\<close>],
         rule bexI[OF _ \<open>Y \<in> Collect (pred_mset no_elem)\<close>])
       (insert *; force simp: set_mset_diff multiset.pred_set multiset_filter_mono)
