@@ -32,7 +32,6 @@ import json
 from config import *
 from metadata import *
 from terminal import *
-from templates import *
 import templates
 import afpstats
 
