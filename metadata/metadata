@@ -5004,6 +5004,11 @@ abstract =
   guards and function calls.  We aim to then target concurrent operating
   systems, such as the interruptible eChronos embedded operating system
   for which we already have a model-level OG proof using Hoare-Parallel.
+extra-history =
+	Change history:
+        [2017-01-13]:
+        Improve VCG for nested parallels and sequential sections
+        (revision 30739dbc3dcb)
 
 [Paraconsistency]
 title = Paraconsistency
