@@ -46,12 +46,21 @@ class afp_entry:
         self.name = name
         self.afp_dict = afp_dict
         self.path = os.path.join(self.afp_dict.path, self.name)
-        self.authors = set()
+        self.title = entry_dict['title']
+        #TODO: fix author generation, Contributors???
+        self.authors = []
         for name, _address in entry_dict['author']:
-            self.authors.add(afp_dict.authors[name])
+            self.authors.append(afp_dict.authors[name])
             afp_dict.authors[name].articles.add(self)
         self.publish_date = datetime.strptime(entry_dict['date'], "%Y-%m-%d")
+        self.abstract = entry_dict['abstract']
+        self.license = entry_dict['license']
+        self.releases = list(entry_dict['releases'].items())
+        self.contributors = (entry_dict['contributors']
+                             if entry_dict['contributors'][0][0] else [])
+        self.extra = entry_dict['extra']
         self.thys = set()
+        self.status = None
         for root, _dirnames, filenames in os.walk(self.path):
             for f in filenames:
                 if f.endswith(".thy"):

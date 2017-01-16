@@ -1,9 +1,10 @@
 from collections import OrderedDict
-from operator import itemgetter
+from jinja2 import Environment, FileSystemLoader
+from itertools import groupby
 import os
+import datetime
 
 from config import *
-
 
 ### topics
 
@@ -65,298 +66,141 @@ def read_topics(filename):
 # for topics page: group entries by topic
 def collect_topics(entries):
 	tree = read_topics(os.path.join(options.metadata_dir, "topics"))
-	for entry, attributes in entries:
+	for entry, attributes in entries.items():
 		for topic in attributes['topic']:
 			tree.add_to_topic([str.strip() for str in topic.split('/')], entry)
 	return tree
 
-def generate_link_list(entries):
-	return ''.join([html_topic_link.format(e) for e in entries])
 
-# HTML formatting for topics page
-def generate_topics(entries):
-	def _gen(tree, level):
-		result = ""
-		if level <= html_until_level:
-			if len(tree.entries) > 0:
-				result += html_topic_link_list.format(generate_link_list(tree.entries))
-			for topic, subtree in tree.subtopics.items():
-				result += html_topic_headings[level].format(topic)
-				if level < html_until_level:
-					result += _gen(subtree, level + 1)
-				else:
-					result += html_topic_link_list.format(_gen(subtree, level + 1))
-		else:
-			result = generate_link_list(tree.entries)
-			for topic, subtree in tree.subtopics.items():
-				result += html_topic_headings[level].format(topic)
-				result += _gen(subtree, level + 1)
+class Builder():
+	"""Contains environment for building webpages from templates"""
 
-		return result
+	def __init__(self, template_dir, root_output_dir, entries, afp_entries,
+		is_devel):
+		self.j2_env = Environment(loader = FileSystemLoader(template_dir),
+			trim_blocks=True)
+		# pass functions to environment for use in templates
+		self.prepare_env()
+		self.root_output_dir = root_output_dir
+		#TODO: use only afp_entries
+		self.entries = entries
+		self.afp_entries = afp_entries
+		self.is_devel = is_devel
 
-	tree = collect_topics(entries)
-	return _gen(tree, 0)
+	def prepare_env(self):
+		def startswith(value, beginning):
+			return value.startswith(beginning)
+		def datetimeformat(value, format='%Y-%m-%d'):
+			return value.strftime(format)
+		def split(value):
+			return value.split()
+		def short_month(value):
+			return "jan feb mar apr may jun jul aug sep oct nov dec".split(" ")[value - 1]
+		self.j2_env.filters['startswith'] = startswith
+		self.j2_env.filters['datetimeformat'] = datetimeformat
+		self.j2_env.filters['split'] = split
+		self.j2_env.filters['short_month'] = short_month
 
+	def write_file(self, filename, template, values):
+		# UTF-8 hack because of different string handling in python 2 vs 3
+		with open(os.path.join(self.root_output_dir, filename), 'wb') as f:
+			f.write(template.render(values).encode('utf8'))
 
-### index
+	def generate_topics(self):
+		template = self.j2_env.get_template("topics.tpl")
+		tree = collect_topics(self.entries)
+		self.write_file("topics.shtml", template, {'tree': tree})
 
-# takes a list of author-URL pairs and formats a string, either with
-# or without email addresses
-def generate_author_list(authors, spacer, last_spacer, ignore_mail = True, ignore_url = False):
-	def _to_str(author):
-		name, url = author
-		if url and not ignore_url:
-			if url.startswith("mailto:"):
-				if ignore_mail:
-					return name
-				else:
-					return u"{0} ({1})".format(name, url[7:])
-			return html_author_link.format(url, name)
-		else:
-			return name
+	def generate_index(self):
+		template = self.j2_env.get_template("index.tpl")
+		#TODO: use groupby
+		by_year = dict()
+		for e in self.afp_entries.values():
+			try:
+				by_year[e.publish_date.year].add(e)
+			except KeyError:
+				by_year[e.publish_date.year] = {e}
+		for y in by_year:
+			by_year[y] = sorted(by_year[y], key = lambda e: (e.publish_date,
+				e.name), reverse=True)
+		# pass the startswith function to the template
+		self.write_file("index.shtml", template,
+			{'by_year': by_year, 'is_devel': self.is_devel})
 
-	authors = list(map(_to_str, authors))
-	if len(authors) == 0:
-		return ""
-	elif len(authors) == 1:
-		return authors[0]
-	else:
-		return u"{0}{1}{2}".format(
-		  spacer.join(authors[:len(authors)-1]),
-		  last_spacer,
-		  authors[len(authors)-1]
-		)
+	def generate_entries(self):
+		template = self.j2_env.get_template("entry.tpl")
+		for name, entry in self.afp_entries.items():
+			#TODO: Solve more elegantly
+			entry.imports = sorted(entry.imports, key = lambda x: x.name)
+			entry.used = sorted(entry.used, key = lambda x: x.name)
+			self.write_file(os.path.join("entries", name + ".shtml"), template,
+				{'entry': entry, 'is_devel': self.is_devel})
 
-# group entries by year
-def collect_years(entries):
-	extracted = [
-		(attributes['date'] if attributes['date'] != '' else 'unknown', entry, attributes)
-		for entry, attributes in entries
-	]
-	extracted.sort(key = itemgetter(0), reverse = True)
-	years = OrderedDict()
-	for date, entry, attributes in extracted:
-		key = date[0:4] if date != 'unknown' else date
-		if key in years:
-			years[key].append((entry, attributes))
-		else:
-			years[key] = [(entry, attributes)]
-	return years.items()
+	def generate_download(self):
+		template = self.j2_env.get_template("download.tpl")
+		self.write_file("download.shtml", template,
+			{'today': datetime.datetime.now().strftime("%Y-%m-%d"),
+			'is_devel': self.is_devel})
 
-def generate_index(entries, param):
-	if param == "devel":
-		if options.is_devel():
-			return html_index_devel
-		else:
-			return html_index_stable
-	elif param == "table":
-		years = collect_years(entries)
-		result = ""
-		for year, list in years:
-			rows = ""
-			for entry, attributes in list:
-				rows += html_index_entry.format(
-					attributes['date'],
-					entry,
-					attributes['title'] if attributes['title'] != '' else entry,
-					generate_author_list(attributes['author'], ",\n", " and \n")
-				)
-			result += html_index_year.format(year, rows)
-		return result
-	else:
-		raise Exception("In generator 'index': Unknown parameter "+param)
+	def generate_statistics(self):
+		#TODO: simplify with itertools
+		# Count loc and articles per year
+		articles_years = dict()
+		loc_years = dict()
+		for article in self.afp_entries.values():
+			try:
+				articles_years[article.publish_date.year] += 1
+				loc_years[article.publish_date.year] += article.loc
+			except KeyError:
+				articles_years[article.publish_date.year] = 1
+				loc_years[article.publish_date.year] = article.loc
+		# Count new authors per year
+		author_years = dict()
+		for author in self.afp_entries.authors.values():
+			first_year = min([e.publish_date.year for e in author.articles])
+			try:
+				author_years[first_year] += 1
+			except KeyError:
+				author_years[first_year] = 1
+		# Build cumulative values
+		author_years_cumulative = author_years.copy()
+		for y in sorted(articles_years)[1:]:
+			articles_years[y] += articles_years[y - 1]
+			loc_years[y] += loc_years[y - 1]
+			author_years_cumulative[y] += author_years_cumulative[y - 1]
+		# Find 10 most imported entries, entries with the same number of
+		# imports share one place.
+		most_used = sorted([a for a in self.afp_entries.values()],
+			key = lambda x: (-len(x.used), x.name))
+		# Show more than 10 articles but not more than necessary
+		i = 0
+		while(i < 10 or len(most_used[i].used) == len(most_used[i + 1].used)):
+			i += 1
+		most_used = groupby(most_used[:i + 1], key = lambda x: len(x.used))
+		articles_by_time = sorted(self.afp_entries.values(),
+			key = lambda x: x.publish_date)
+		articles_by_time1 = groupby(articles_by_time,
+			key = lambda x: x.publish_date.year)
+		template = self.j2_env.get_template("statistics.tpl")
+		self.write_file("statistics.shtml", template,
+			{'entries': self.afp_entries,
+			'num_lemmas': sum([a.lemmas for a in self.afp_entries.values()]),
+			'num_loc': sum([a.loc for a in self.afp_entries.values()]),
+			'years': sorted(articles_years),
+			'articles_year': [articles_years[y] for y in sorted(articles_years)],
+			'loc_years': map(lambda x: round(x, -2),
+				[loc_years[y] for y in sorted(loc_years)]),
+			'author_years': [author_years[y] for y in sorted(author_years)],
+			'author_years_cumulative': [author_years_cumulative[y] for y in
+				sorted(author_years_cumulative)],
+			'most_used': most_used,
+			'articles_by_time': articles_by_time,
+			'articles_by_time1': articles_by_time1})
 
+	def generate_status(self, build_data):
+		template = self.j2_env.get_template("status.tpl")
+		self.write_file("status.shtml", template,
+			{'entries': [self.afp_entries[e]
+				for e in sorted(self.afp_entries)],
+			'build_data': build_data})
 
-### entry
-
-# Extracts parts of a date, used in the bibtex files
-def month_of_date(date):
-	return "jan feb mar apr may jun jul aug sep oct nov dec".split(" ")[int(date.split("-")[1]) - 1]
-
-def year_of_date(date):
-	return date.split("-")[0]
-
-def format_entry_text(title, text):
-	return html_entry_text_wrapper.format(
-		title, "\n" + text
-	)
-
-def format_entry_pre_text(title, text):
-	return html_entry_pre_text_wrapper.format(
-		title, text
-	)
-
-def depends_on_string(deps):
-	sorted_deps = list(deps)
-	sorted_deps.sort()
-	return ', '.join(html_entry_link.format(dep, dep + ".shtml") for dep in sorted_deps)
-
-def format_depends_on(deps):
-	return html_entry_depends_on_wrapper.format(depends_on_string(deps)) if len(deps) > 0 else ''
-
-def format_used_by(deps):
-	return html_entry_used_by_wrapper.format(depends_on_string(deps)) if len(deps) > 0 else ''
-
-def format_opt_contributors(contributors):
-	if contributors == [("", None)]:
-		return ""
-	else:
-		return html_contributors.format(generate_author_list(contributors, ', ', ' and ', ignore_mail = False))
-
-def format_status(attributes):
-	return html_entry_status_wrapper.format(attributes['status']) if options.is_devel() else ''
-
-# HTML formatting for entry page
-# supports the following parameters:
-#   'header' for entry header (author, title, date etc.)
-#   'older' for list of older releases
-def generate_entry(entry, attributes, param):
-	if param == "header":
-		result = ""
-		capitalized_title = ""
-		for word in [str.strip() for str in attributes['title'].split(' ')]:
-			if len(word) > 0 and word[0].isupper():
-				capitalized_title += html_entry_capitalized.format(word[0], word[1:])
-			else:
-				capitalized_title += word + "\n"
-		result += html_entry_heading.format(capitalized_title)
-
-		text_columns = format_entry_text("Abstract", attributes['abstract'])
-		text_columns += "".join([format_entry_text(k, v) for k, v in attributes['extra'].values()])
-		text_columns += format_entry_pre_text("BibTeX",
-			bibtex_wrapper.format(
-				entry,
-				generate_author_list(attributes['author'], ' and ', ' and ', ignore_url = True),
-				attributes['title'],
-				month_of_date(attributes['date']),
-				year_of_date(attributes['date']))
-		)
-
-		result += html_entry_header_wrapper.format(
-			attributes['title'],
-			generate_author_list(attributes['author'], ', ', ' and ', ignore_mail = False),
-			format_opt_contributors(attributes['contributors']),
-			attributes['date'],
-			text_columns,
-			html_license_link.format(attributes['license'][0], attributes['license'][1]),
-			entry,
-			format_depends_on(attributes['depends-on']),
-			format_used_by(attributes['used-by']),
-			format_status(attributes)
-		)
-	elif param == "older":
-		if options.is_devel():
-			return ""
-
-		if len(attributes['releases']) > 1:
-			str = ""
-			for version, release_dates in list(attributes['releases'].items())[1:]:
-				str += "".join(html_entry_older_release.format(version, release_date) for release_date in release_dates)
-			result = html_entry_older_list.format(str)
-		else:
-			result = "None"
-
-		result = html_entry_older_wrapper.format(result)
-	else:
-		raise Exception("In generator 'entry': Unknown parameter "+param)
-
-	return result
-
-
-### status
-
-def generate_status(entries, param, build_data):
-	if param == "header":
-		return html_status_header.format(
-			build_data['isabelle_id'],
-			build_data['afp_id'],
-			build_data['time'],
-			build_data['url'],
-			build_data['job']
-		)
-	elif param == "table":
-		rows = ""
-		for entry, attributes in sorted(entries):
-			rows += html_status_entry.format(attributes['status'], entry)
-
-		return rows
-	else:
-		raise Exception("In generator 'status': Unknown parameter "+param)
-
-
-### download
-
-def generate_download(entries):
-	if options.is_devel():
-		return ""
-
-	else:
-		return html_download_stable
-
-### statistics
-
-def generate_statistics(entries):
-	i = 1
-	num_of_imports = -1
-	most_used = ""
-	# Put articles with same number of imports on same position
-	for (n, l) in STAT_FIGURES['most_used10']:
-		pos = (str(i) + "." if num_of_imports != l else "")
-		i += (1 if num_of_imports != l else 0)
-		num_of_imports = l
-		most_used += html_most_used_table_row.format(pos = pos, name = n, num = l)
-	return html_statistics_text_wrapper.format(
-			loc = int(round(STAT_FIGURES['loc'], -2)),
-			num_articles = len(entries),
-			num_lemmas = int(round(STAT_FIGURES['num_lemmas'], -2)),
-			num_authors = STAT_FIGURES['num_authors'],
-			years = "["
-			         + ", ".join([str(y) for y in 
-			                      sorted(STAT_FIGURES['articles_years'])])
-			         + "]",
-			no_articles = "["
-			              + ", ".join([str(STAT_FIGURES['articles_years'][y])
-			                           for y
-			                           in sorted(STAT_FIGURES['articles_years'])])
-			              + "]",
-			no_loc = "["
-			         + ", ".join([str(round(STAT_FIGURES['loc_years'][y], -2))
-			                      for y in sorted(STAT_FIGURES['loc_years'])])
-			         + "]",
-			no_authors = "["
-			             + ", ".join([str(STAT_FIGURES['author_years'][y])
-			                          for y in sorted(STAT_FIGURES['author_years'])])
-			             + "]",
-			no_authors_series = "["
-			                    + ", ".join([str(STAT_FIGURES['author_years_series'][y])
-			                                 for y
-			                                 in sorted(STAT_FIGURES['author_years_series'])])
-			                    + "]",
-			most_used = most_used,
-			all_articles = "['" + "','".join(STAT_FIGURES['all_articles']) + "']",
-			loc_articles = "[" + ",".join(map(str, STAT_FIGURES['loc_articles'])) + "]",
-			years_loc_articles = "[" + ",".join(map(str, STAT_FIGURES['years_loc_articles'])) + "]"
-			)
-
-
-# key : (path, generator, for-each)
-#   'key' denotes the filename of the template (without suffix)
-#   'path' denotes the destination sub-path for generated files
-#   'generator' is the generating function for the data of the template. The
-#     parameters this function will get is determined by 'for-each'.
-#   'for-each' determines generation behaviour: if set to None, one file
-#     will be generated for all entries together and the 'generator' function will
-#     receive a list of all entries. Otherwise, a function expression
-#     is expected which gets the entry name and returns a filename to store the
-#     result in (without suffix) and the 'generator' function will get just one
-#     entry name and its attributes
-#   'devel' indicates that the generator should only be invoked when in devel
-#     mode, i.e. if a build status file is present
-templates = {
-	'topics': ('.', generate_topics, None, False),
-	'index': ('.', generate_index, None, False),
-	'entry': ('./entries', generate_entry, lambda entry: entry, False),
-	'download': ('.', generate_download, None, False),
-	'status': ('.', generate_status, None, True),
-	'statistics': ('.', generate_statistics, None, False)
-}
