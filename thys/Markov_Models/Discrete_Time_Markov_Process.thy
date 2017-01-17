@@ -318,9 +318,9 @@ proof (rule measure_eqI_PiM_infinite)
     qed (use y in \<open>simp add: PiM_empty distr_return\<close>)
     then have "C 1 n (case_nat y ?U) (Pi\<^sub>E {0..<Suc n} F) =
       (distr (y.C 0 n ?U) (\<Pi>\<^sub>M i\<in>{0..<Suc n}. M) ?y) (Pi\<^sub>E {0..<Suc n} F)" by simp
-    also have "\<dots> = ?I * y.C 0 n ?U (PiE {0..<n} (F \<circ> Suc))"
+    also have "\<dots> = ?I * y.C 0 n ?U (Pi\<^sub>E {0..<n} (F \<circ> Suc))"
       by (subst emeasure_distr) (auto simp: y.sets_C y.space_C eq1 cong: measurable_cong_sets)
-    also have "\<dots> = ?I * lim_sequence y (PF.emb UNIV {0..<n} (PiE {0..<n} (F \<circ> Suc)))"
+    also have "\<dots> = ?I * lim_sequence y (PF.emb UNIV {0..<n} (Pi\<^sub>E {0..<n} (F \<circ> Suc)))"
       using y by (simp add: emeasure_lim_sequence_emb_I0o sets_PiM_I_finite)
     also have "\<dots> = distr (lim_sequence y) (Pi\<^sub>M UNIV (\<lambda>j. M)) ?y (PF.emb UNIV {0..<Suc n} (Pi\<^sub>E {0..<Suc n} F))"
       using y by (subst emeasure_distr) (simp_all add: eq2 space_lim_sequence)

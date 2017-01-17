@@ -25,7 +25,7 @@ lemma l_borel_f_1: "distr (lborel_f 1) lborel (\<lambda>x. x 0) = lborel"
   using product_sigma_finite.distr_singleton[OF product_sigma_finite_interval, of 0]
     lborel_eq_real lessThan_Suc by auto
 
-lemma space_lborel_f: "space (lborel_f n) = PiE {..<n} (\<lambda>_. UNIV)" unfolding lborel_f_def
+lemma space_lborel_f: "space (lborel_f n) = Pi\<^sub>E {..<n} (\<lambda>_. UNIV)" unfolding lborel_f_def
   unfolding space_PiM space_lborel space_borel by metis
 
 lemma space_lborel_f_subset: "space (lborel_f n) \<subseteq> space (lborel_f (Suc n))"

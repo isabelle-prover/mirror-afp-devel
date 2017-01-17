@@ -949,7 +949,7 @@ proof atomize_elim
 
         from v_less obtain D where "D \<in> K s" "?v s < integral\<^sup>N D ?v"
           by (auto simp: less_SUP_iff)
-        with ct `s\<in>S` `s\<in>S\<^sub>r` have "(ct(s:=D), ct) \<in> R" "ct(s:=D) \<in> PiE S K"
+        with ct `s\<in>S` `s\<in>S\<^sub>r` have "(ct(s:=D), ct) \<in> R" "ct(s:=D) \<in> Pi\<^sub>E S K"
           unfolding R_def by (auto simp: PiE_def extensional_def)
         from proper[OF this(1)] min[OF this(1)] ct `D \<in> K s` `s\<in>S` this(2)
         have False
