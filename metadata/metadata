@@ -4,7 +4,7 @@ author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
 topic = Mathematics/Analysis, Mathematics/Number Theory
 date = 2017-01-12
 notify = eberlm@in.tum.de
-abstract = 
+abstract =
   <p>This work contains a proof that Euler's number e is transcendental. The
   proof follows the standard approach of assuming that e is algebraic and
   then using a specific integer polynomial to derive two inconsistent bounds,
@@ -550,7 +550,7 @@ author = Achim D. Brucker <https:/www.brucker.ch>, Lukas Brügger<>, Burkhart Wo
 topic = Computer Science/Security, Computer Science/Networks
 date = 2017-01-08
 notify = adbrucker@0x5f.org
-abstract = 
+abstract =
   We present a formal model of network protocols and their application
   to modeling firewall policies. The formalization is based on the
   Unified Policy Framework (UPF). The formalization was originally
@@ -4762,6 +4762,21 @@ abstract =
 	list. The algorithm proceeds by traversing the list and in
 	each step swapping the current element with a random element from the
 	remaining list.</p>
+
+[Bertrands_Postulate]
+title = Bertrand's postulate
+author = Julian Biendarra, Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Number Theory
+date = 2017-01-17
+notify = eberlm@in.tum.de
+abstract =
+  <p>Bertrand's postulate is an early result on the
+  distribution of prime numbers: For every positive integer n, there
+  exists a prime number that lies strictly between n and 2n.
+  The proof is ported from John Harrison's formalisation
+  in HOL Light. It proceeds by first showing that the property is true
+  for all n greater than or equal to 600 and then showing that it also
+  holds for all n below 600 by case distinction. </p>
 
 [Rewriting_Z]
 title = The Z Property
