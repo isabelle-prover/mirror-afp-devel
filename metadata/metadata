@@ -4440,6 +4440,31 @@ abstract =
 	project</a> with it.
 notify = denis.lohner@kit.edu
 
+[Minimal_SSA]
+title = Minimal Static Single Assignment Form
+author = Max Wagner <mailto:max@trollbu.de>, Denis Lohner <http://pp.ipd.kit.edu/person.php?id=88>
+topic = Computer Science/Programming Languages/Transformations
+date = 2017-01-17
+notify = denis.lohner@kit.edu
+abstract = 
+  <p>This formalization is an extension to <a
+  href="https://www.isa-afp.org/entries/Formal_SSA.shtml">"Verified
+  Construction of Static Single Assignment Form"</a>. In
+  their work, the authors have shown that <a
+  href="http://dx.doi.org/10.1007/978-3-642-37051-9_6">Braun
+  et al.'s static single assignment (SSA) construction
+  algorithm</a> produces minimal SSA form for input programs with
+  a reducible control flow graph (CFG). However Braun et al. also
+  proposed an extension to their algorithm that they claim produces
+  minimal SSA form even for irreducible CFGs.<br> In this
+  formalization we support that claim by giving a mechanized proof.
+  </p>
+  <p>As the extension of Braun et al.'s algorithm
+  aims for removing so-called redundant strongly connected components of
+  phi functions, we show that this suffices to guarantee minimality
+  according to <a href="http://dx.doi.org/10.1145/115372.115320">Cytron et
+  al.</a>.</p>
+
 [PropResPI]
 title = Propositional Resolution and Prime Implicates Generation
 author = Nicolas Peltier <http://membres-lig.imag.fr/peltier/>
@@ -4765,7 +4790,7 @@ abstract =
 
 [Bertrands_Postulate]
 title = Bertrand's postulate
-author = Julian Biendarra, Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Julian Biendarra<>, Manuel Eberl <https://www21.in.tum.de/~eberlm>
 topic = Mathematics/Number Theory
 date = 2017-01-17
 notify = eberlm@in.tum.de

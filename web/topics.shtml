@@ -267,6 +267,7 @@
 <a href="entries/Refine_Imperative_HOL.shtml">Refine_Imperative_HOL</a> &nbsp;
 <a href="entries/WorkerWrapper.shtml">WorkerWrapper</a> &nbsp;
 <a href="entries/Formal_SSA.shtml">Formal_SSA</a> &nbsp;
+<a href="entries/Minimal_SSA.shtml">Minimal_SSA</a> &nbsp;
 
 <strong>Misc:</strong>&nbsp;<a href="entries/JiveDataStoreModel.shtml">JiveDataStoreModel</a> &nbsp;
 <a href="entries/Pop_Refinement.shtml">Pop_Refinement</a> &nbsp;
