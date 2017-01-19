@@ -17,14 +17,6 @@ imports
   Code_Abort_Gcd
 begin
 
-lemma Gcd_set_eq_list_gcd:
-  "Gcd (set xs) = list_gcd xs" for xs :: "'a::semiring_Gcd list"
-  by (induct xs) (simp_all add: list_gcd_def)
-
-lemma Lcm_set_eq_list_lcm:
-  "Lcm (set xs) = list_lcm xs" for xs :: "'a::semiring_Gcd list"
-  by (induct xs) (simp_all add: list_lcm_def)
-
 definition coprime_approx_main :: "int \<Rightarrow> 'i arith_ops_record \<Rightarrow> int poly \<Rightarrow> int poly \<Rightarrow> bool" where
   "coprime_approx_main p ff_ops f g = (gcd_poly_i ff_ops (of_int_poly_i ff_ops (poly_mod.Mp p f))
      (of_int_poly_i ff_ops (poly_mod.Mp p g)) = one_poly_i ff_ops)" 
@@ -126,7 +118,7 @@ proof -
     from this[unfolded degm0] have "degree (h * Mp k) = 0" by simp
     with degree_mult_eq[OF h0 k0] have deg0: "degree h = 0" by auto
     from degree0_coeffs[OF this] obtain h0 where h: "h = [:h0:]" by auto
-    have "content h = abs h0" unfolding content_def h by (cases "h0 = 0", auto simp: list_gcd_def)
+    have "content h = abs h0" unfolding content_def h by (cases "h0 = 0", auto)
     hence "abs h0 = 1" using cnt by auto
     hence "h0 \<in> {-1,1}" by auto
     hence "h = 1 \<or> h = -1" unfolding h by (auto)

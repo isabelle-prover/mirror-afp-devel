@@ -41,7 +41,7 @@ proof -
     with deg have "degree F = 0" by auto
     from degree0_coeffs[OF this] obtain c where F: "F = [:c:]" and c: "c = lead_coeff F" by auto
     from c * have c0: "c > 0" by auto
-    hence cF: "content F = c" unfolding F content_def list_gcd_def by auto
+    hence cF: "content F = c" unfolding F content_def by auto
     with * have "c = 1" by auto
     with F have "F = 1" by (simp add: one_poly_def)
   }
@@ -63,7 +63,7 @@ proof -
 qed
 
 lemma yun_rel_1[simp]: "yun_rel 1 1 1" 
-  by (auto simp: yun_rel_def yun_wrel_def content_def list_gcd_def)
+  by (auto simp: yun_rel_def yun_wrel_def content_def)
 
 lemma yun_erel_1[simp]: "yun_erel 1 1" unfolding yun_erel_def using yun_rel_1 by blast
 
@@ -345,7 +345,7 @@ proof -
   from map_poly_inj[OF this] have fg: "[:b:] * f = [:a:] * g" by auto
   from arg_cong[OF this, of content, unfolded gauss_lemma f(8) g(8)] 
   have "content [: b :] = content [: a :]" by simp
-  hence abs: "abs a = abs b" unfolding content_def list_gcd_def using b a by auto
+  hence abs: "abs a = abs b" unfolding content_def using b a by auto
   from arg_cong[OF fg, of "\<lambda> x. lead_coeff x > 0", unfolded lead_coeff_mult] f(5) g(5) a b 
   have "(a > 0) = (b > 0)" by (simp add: zero_less_mult_iff)
   with a b abs have "a = b" by auto
@@ -428,7 +428,7 @@ proof (cases "square_free_heuristic f")
       from rel(2)[unfolded cop] have "?rp (gcd a A) = [: c :]" by simp
       from arg_cong[OF this, of degree] have "degree (gcd a A) = 0" by simp
       from degree0_coeffs[OF this] obtain c where gcd: "gcd a A = [: c :]" by auto        
-      from rel(8) rel(5) show "coprime a A" unfolding content_def gcd list_gcd_def
+      from rel(8) rel(5) show "coprime a A" unfolding content_def gcd
         by auto
     }
     let ?prod = "\<lambda> fs. (\<Prod>(a, i)\<in>set fs. a ^ Suc i)" 
@@ -491,7 +491,7 @@ proof -
     let ?d = "?s * content f"
     have "content g = content ([:?s:] * f)" unfolding g_def by simp
     also have "\<dots> = content [:?s:] * content f" unfolding gauss_lemma by simp
-    also have "content [:?s:] = 1" using s by (auto simp: content_def list_gcd_def)
+    also have "content [:?s:] = 1" using s by (auto simp: content_def)
     finally have cg: "content g = content f" by simp
     from False res 
     have d: "d = ?d" and fs: "fs = square_free_factorization_int_main (div_poly ?d f)" by auto
@@ -644,7 +644,7 @@ proof -
           case False
           with divides_degree[OF d(1), unfolded degx] have "degree d = 0" by auto
           from degree0_coeffs[OF this] obtain c where dc: "d = [:c:]" by auto
-          from cnt[unfolded dc] have "is_unit c" by (auto simp: content_def list_gcd_def, cases "c = 0", auto)
+          from cnt[unfolded dc] have "is_unit c" by (auto simp: content_def, cases "c = 0", auto)
           hence "d * d = 1" unfolding dc by (auto simp: one_poly_def, cases "c = -1"; cases "c = 1", auto)
           thus "is_unit d" by (metis dvd_triv_right)
         next
@@ -656,7 +656,7 @@ proof -
           from degree0_coeffs[OF this] xde obtain e where xde: "?x = [:e:] * d" by auto
           from arg_cong[OF this, of content, unfolded gauss_lemma] x
           have "content [:e:] * content d = 1" by auto
-          also have "content [:e :] = abs e" by (auto simp: content_def list_gcd_def, cases "e = 0", auto)
+          also have "content [:e :] = abs e" by (auto simp: content_def, cases "e = 0", auto)
           finally have "\<bar>e\<bar> * content d = 1" .
           from pos_zmult_eq_1_iff_lemma[OF this] have "e * e = 1" by (cases "e = 1"; cases "e = -1", auto)
           with arg_cong[OF xde, of "smult e"] have "d = ?x * [:e:]" by auto

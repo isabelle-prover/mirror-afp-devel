@@ -81,7 +81,7 @@ proof -
   have c: "c = fst (common_denom (coeffs (map_poly rat_of_int p)))" by auto
   also have "\<dots> = list_lcm xs" 
     unfolding common_denom_def Let_def xs_def by simp
-  also have "\<dots> = 1" using xs unfolding list_lcm_def
+  also have "\<dots> = 1" using xs
     by (induct xs, auto)
   finally show c: "c = 1" by auto
   from ri.map_poly_inj[of p q] rat_to_int_poly[OF rp, unfolded c] show "q = p" by auto
@@ -144,7 +144,7 @@ proof -
 qed
 
 lemma content_x_minus_const_int[simp]: "content [: c, 1 :] = (1 :: int)"
-  unfolding content_def list_gcd_def by auto
+  unfolding content_def by auto
 
 lemma length_upto_add_nat[simp]: "length [a .. a + int n] = Suc n"
 proof (induct n arbitrary: a)

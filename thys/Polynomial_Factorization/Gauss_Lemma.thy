@@ -122,7 +122,7 @@ lemma content_0_iff: "content p = 0 \<longleftrightarrow> p = 0"
   by (fact content_eq_zero_iff)
 
 lemma content_ge_0_int: "content p \<ge> (0 :: int)"
-  unfolding content_def list_gcd_def
+  unfolding content_def
   by (cases "coeffs p", auto)
   
 lemma abs_content_int[simp]: fixes p :: "int poly"
