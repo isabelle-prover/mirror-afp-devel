@@ -1,5 +1,6 @@
 from datetime import datetime
 import os.path
+import pytz
 import re
 
 #TODO: script relies on checking paths, can this be broken?
@@ -53,6 +54,8 @@ class afp_entry:
             self.authors.append(afp_dict.authors[name])
             afp_dict.authors[name].articles.add(self)
         self.publish_date = datetime.strptime(entry_dict['date'], "%Y-%m-%d")
+        #add UTC timezone to date
+        self.publish_date = self.publish_date.replace(tzinfo = pytz.UTC)
         self.abstract = entry_dict['abstract']
         self.license = entry_dict['license']
         self.releases = list(entry_dict['releases'].items())

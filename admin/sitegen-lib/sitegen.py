@@ -271,6 +271,7 @@ if __name__ == "__main__":
 		builder.generate_index()
 		builder.generate_entries()
 		builder.generate_statistics()
+		builder.generate_rss(30)
 		if options.build_download:
 			builder.generate_download()
 		#TODO: look over it one more time

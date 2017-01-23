@@ -5,6 +5,7 @@
 <title>{% block title %}Archive of Formal Proofs{% endblock %}</title>
 <link rel="stylesheet" type="text/css" href="{{ ROOT_PATH }}front.css">
 <link rel="icon" href="{{ ROOT_PATH }}images/favicon.ico" type="image/icon">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="{{ ROOT_PATH }}rss.xml">
 </head>
 
 <body>

@@ -92,12 +92,18 @@ class Builder():
 			return value.startswith(beginning)
 		def datetimeformat(value, format='%Y-%m-%d'):
 			return value.strftime(format)
+		def rfc822(value):
+			# Locale could be not set to something english, to prevent printing
+			# non english weekdays and months, we use this fix
+			month = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ")[value.month - 1]
+			return value.strftime("%d " + month + " %Y %T %z")
 		def split(value):
 			return value.split()
 		def short_month(value):
 			return "jan feb mar apr may jun jul aug sep oct nov dec".split(" ")[value - 1]
 		self.j2_env.filters['startswith'] = startswith
 		self.j2_env.filters['datetimeformat'] = datetimeformat
+		self.j2_env.filters['rfc822'] = rfc822
 		self.j2_env.filters['split'] = split
 		self.j2_env.filters['short_month'] = short_month
 
@@ -123,7 +129,6 @@ class Builder():
 		for y in by_year:
 			by_year[y] = sorted(by_year[y], key = lambda e: (e.publish_date,
 				e.name), reverse=True)
-		# pass the startswith function to the template
 		self.write_file("index.shtml", template,
 			{'by_year': by_year, 'is_devel': self.is_devel})
 
@@ -203,4 +208,10 @@ class Builder():
 			{'entries': [self.afp_entries[e]
 				for e in sorted(self.afp_entries)],
 			'build_data': build_data})
+
+	def generate_rss(self, num_entries):
+		template = self.j2_env.get_template("rss.tpl")
+		entries = sorted(self.afp_entries.values(),
+				key = lambda e: (e.publish_date, e.name), reverse=True)
+		self.write_file("rss.xml", template, {'entries': entries[:num_entries]})
 
