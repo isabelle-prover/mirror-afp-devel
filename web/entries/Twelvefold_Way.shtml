@@ -1,0 +1,124 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="../front.css">
+  <script src="../jquery.min.js"></script>
+  <script src="../script.js"></script>
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p>&nbsp;</p>
+
+<h1><font class="first">T</font>he
+<font class="first">T</font>welvefold
+<font class="first">W</font>ay
+</h1>
+<p></p>
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+        <td class="data" width="80%">The Twelvefold Way</td></tr>
+
+    <tr><td class="datahead">Author:</td>
+        <td class="data">Lukas Bulwahn (lukas /dot/ bulwahn /at/ gmail /dot/ com)</td></tr>
+
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2016-12-29</td></tr>
+
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+
+
+This entry provides all cardinality theorems of the Twelvefold Way.
+The Twelvefold Way systematically classifies twelve related
+combinatorial problems concerning two finite sets, which include
+counting permutations, combinations, multisets, set partitions and
+number partitions. This development builds upon the existing formal
+developments with cardinality theorems for those structures. It
+provides twelve bijections from the various structures to different
+equivalence classes on finite functions, and hence, proves cardinality
+formulae for these equivalence classes on finite functions.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Twelvefold_Way-AFP,
+  author  = {Lukas Bulwahn},
+  title   = {The Twelvefold Way},
+  journal = {Archive of Formal Proofs},
+  month   = dec,
+  year    = 2016,
+  note    = {\url{http://isa-afp.org/entries/Twelvefold_Way.shtml},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
+
+
+    <tr><td class="datahead">Depends on:</td>
+        <td class="data"><a href="Bell_Numbers_Spivey.shtml">Bell_Numbers_Spivey</a>, <a href="Card_Multisets.shtml">Card_Multisets</a>, <a href="Card_Number_Partitions.shtml">Card_Number_Partitions</a>, <a href="Card_Partitions.shtml">Card_Partitions</a></td></tr>
+
+
+
+
+  </tbody>
+</table>
+
+<p></p>
+
+<!--#set var="name" value="Twelvefold_Way" -->
+
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+
+
+    <tr><td class="links">Older releases: None
+    </td></tr>
+
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+
+</body>
+</html>

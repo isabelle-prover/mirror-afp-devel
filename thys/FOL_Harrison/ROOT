@@ -1,0 +1,11 @@
+chapter AFP
+
+session FOL_Harrison (AFP) = HOL +
+  options [timeout = 600]
+  theories [document = false]
+     "~~/src/HOL/Library/Char_ord"
+     "~~/src/HOL/Library/Code_Char"
+  theories
+    FOL_Harrison
+  document_files
+    "root.tex"

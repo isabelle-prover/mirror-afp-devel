@@ -19,6 +19,7 @@ Automatic_Refinement
 BDD
 Bell_Numbers_Spivey
 Berlekamp_Zassenhaus
+Bertrands_Postulate
 BinarySearchTree
 Binomial-Heaps
 Binomial-Queues
@@ -58,6 +59,7 @@ Complx
 ComponentDependencies
 ConcurrentGC
 ConcurrentIMP
+Concurrent_Ref_Alg
 Consensus_Refined
 Containers
 CoreC++
@@ -88,9 +90,11 @@ Encodability_Process_Calculi
 Ergodic_Theory
 Euler_Partition
 Example-Submission
+E_Transcendental
 FFT
 FLP
 FOL-Fitting
+FOL_Harrison
 FeatherweightJava
 Featherweight_OCL
 Fermat3_4
@@ -182,6 +186,7 @@ Matrix_Tensor
 Max-Card-Matching
 MFMC_Countable
 MiniML
+Minimal_SSA
 Modal_Logics_for_NTS
 MonoBoolTranAlgebra
 MSO_Regex_Equivalence
@@ -209,6 +214,7 @@ Pairing_Heap
 Paraconsistency
 Parity_Game
 Partial_Function_MR
+Password_Authentication_Protocol
 PCF
 Perfect-Number-Thm
 Perron_Frobenius
@@ -230,6 +236,7 @@ Probabilistic_Noninterference
 Probabilistic_System_Zoo
 Program-Conflict-Analysis
 Promela
+Proof_Strategy_Language
 PropResPI
 PseudoHoops
 Psi_Calculi
@@ -309,9 +316,11 @@ Tree-Automata
 Tree_Decomposition
 Triangle
 Trie
+Twelvefold_Way
 Tycon
 UpDown_Scheme
 UPF
+UPF_Firewall
 Valuation
 VectorSpace
 Verified-Prover

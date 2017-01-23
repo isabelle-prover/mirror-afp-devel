@@ -1,3 +1,16 @@
+[E_Transcendental]
+title = The Transcendence of e
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Analysis, Mathematics/Number Theory
+date = 2017-01-12
+notify = eberlm@in.tum.de
+abstract =
+  <p>This work contains a proof that Euler's number e is transcendental. The
+  proof follows the standard approach of assuming that e is algebraic and
+  then using a specific integer polynomial to derive two inconsistent bounds,
+  leading to a contradiction.</p> <p>This kind of approach can be found in
+  many different sources; this formalisation mostly follows a <a  href="http://planetmath.org/proofoflindemannweierstrasstheoremandthateandpiaretranscendental">PlanetMath article</a> by Roger Lipsett.</p>
+
 [DFS_Framework]
 title = A Framework for Verifying Depth-First Search Algorithms
 author = Peter Lammich <http://www21.in.tum.de/~lammich/>, René Neumann <mailto:neumannr@in.tum.de>
@@ -80,6 +93,23 @@ abstract =
 	observation and the results on equivalence relations, we show that the
 	cardinality of partial equivalence relations over a finite set of
 	cardinality n is equal to the n+1-th Bell number.
+
+[Twelvefold_Way]
+title = The Twelvefold Way
+author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
+topic = Mathematics/Combinatorics
+date = 2016-12-29
+notify = lukas.bulwahn@gmail.com
+abstract =
+  This entry provides all cardinality theorems of the Twelvefold Way.
+  The Twelvefold Way systematically classifies twelve related
+  combinatorial problems concerning two finite sets, which include
+  counting permutations, combinations, multisets, set partitions and
+  number partitions. This development builds upon the existing formal
+  developments with cardinality theorems for those structures. It
+  provides twelve bijections from the various structures to different
+  equivalence classes on finite functions, and hence, proves cardinality
+  formulae for these equivalence classes on finite functions.
 
 [Chord_Segments]
 title = Intersecting Chords Theorem
@@ -209,7 +239,7 @@ notify = andreas.lochbihler@inf.ethz.ch
 title = Liouville numbers
 author = Manuel Eberl <http://in.tum.de/~eberlm>
 date = 2015-12-28
-topic = Mathematics/Analysis
+topic = Mathematics/Analysis, Mathematics/Number Theory
 abstract =
 	Liouville numbers are a class of transcendental numbers that can be approximated
 	particularly well with rational numbers. Historically, they were the first
@@ -513,6 +543,21 @@ abstract =
 	type (allow, deny, undefined), 4) Output type not containing the
 	decision only.
 notify = adbrucker@0x5f.org, wolff@lri.fr, lukas.a.bruegger@gmail.com
+
+[UPF_Firewall]
+title = Formal Network Models and Their Application to Firewall Policies
+author = Achim D. Brucker <https:/www.brucker.ch>, Lukas Brügger<>, Burkhart Wolff <https://www.lri.fr/~wolff/>
+topic = Computer Science/Security, Computer Science/Networks
+date = 2017-01-08
+notify = adbrucker@0x5f.org
+abstract =
+  We present a formal model of network protocols and their application
+  to modeling firewall policies. The formalization is based on the
+  Unified Policy Framework (UPF). The formalization was originally
+  developed with for generating test cases for testing the security
+  configuration actual firewall and router (middle-boxes) using
+  HOL-TestGen. Our work focuses on modeling application level protocols
+  on top of tcp/ip.
 
 [AODV]
 title = Loop freedom of the (untimed) AODV routing protocol
@@ -4135,6 +4180,27 @@ abstract =
 	</p>
 notify = pasquale.noce.lavoro@gmail.com
 
+[Password_Authentication_Protocol]
+title = Verification of a Diffie-Hellman Password-based Authentication Protocol by Extending the Inductive Method
+author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
+topic = Computer Science/Security
+date = 2017-01-03
+notify = pasquale.noce.lavoro@gmail.com
+abstract =
+  This paper constructs a formal model of a Diffie-Hellman
+  password-based authentication protocol between a user and a smart
+  card, and proves its security. The protocol provides for the dispatch
+  of the user's password to the smart card on a secure messaging
+  channel established by means of Password Authenticated Connection
+  Establishment (PACE), where the mapping method being used is Chip
+  Authentication Mapping. By applying and suitably extending
+  Paulson's Inductive Method, this paper proves that the protocol
+  establishes trustworthy secure messaging channels, preserves the
+  secrecy of users' passwords, and provides an effective mutual
+  authentication service. What is more, these security properties turn
+  out to hold independently of the secrecy of the PACE authentication
+  key.
+
 [Jordan_Normal_Form]
 title = Matrices, Jordan Normal Forms, and Spectral Radius Theory
 topic = Mathematics/Algebra
@@ -4373,6 +4439,31 @@ abstract =
 	algorithm of the <a href="http://dx.doi.org/10.1145/2579080">CompCertSSA
 	project</a> with it.
 notify = denis.lohner@kit.edu
+
+[Minimal_SSA]
+title = Minimal Static Single Assignment Form
+author = Max Wagner <mailto:max@trollbu.de>, Denis Lohner <http://pp.ipd.kit.edu/person.php?id=88>
+topic = Computer Science/Programming Languages/Transformations
+date = 2017-01-17
+notify = denis.lohner@kit.edu
+abstract = 
+  <p>This formalization is an extension to <a
+  href="https://www.isa-afp.org/entries/Formal_SSA.shtml">"Verified
+  Construction of Static Single Assignment Form"</a>. In
+  their work, the authors have shown that <a
+  href="http://dx.doi.org/10.1007/978-3-642-37051-9_6">Braun
+  et al.'s static single assignment (SSA) construction
+  algorithm</a> produces minimal SSA form for input programs with
+  a reducible control flow graph (CFG). However Braun et al. also
+  proposed an extension to their algorithm that they claim produces
+  minimal SSA form even for irreducible CFGs.<br> In this
+  formalization we support that claim by giving a mechanized proof.
+  </p>
+  <p>As the extension of Braun et al.'s algorithm
+  aims for removing so-called redundant strongly connected components of
+  phi functions, we show that this suffices to guarantee minimality
+  according to <a href="http://dx.doi.org/10.1145/115372.115320">Cytron et
+  al.</a>.</p>
 
 [PropResPI]
 title = Propositional Resolution and Prime Implicates Generation
@@ -4697,6 +4788,21 @@ abstract =
 	each step swapping the current element with a random element from the
 	remaining list.</p>
 
+[Bertrands_Postulate]
+title = Bertrand's postulate
+author = Julian Biendarra<>, Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Number Theory
+date = 2017-01-17
+notify = eberlm@in.tum.de
+abstract =
+  <p>Bertrand's postulate is an early result on the
+  distribution of prime numbers: For every positive integer n, there
+  exists a prime number that lies strictly between n and 2n.
+  The proof is ported from John Harrison's formalisation
+  in HOL Light. It proceeds by first showing that the property is true
+  for all n greater than or equal to 600 and then showing that it also
+  holds for all n below 600 by case distinction. </p>
+
 [Rewriting_Z]
 title = The Z Property
 author = Bertram Felgenhauer<>, Julian Nagele<>, Vincent van Oostrom<>, Christian Sternagel<>
@@ -4988,7 +5094,7 @@ author = Sidney Amani<>, June Andronick<>, Maksym Bortin<>, Corey Lewis<>, Chris
 notify = sidney.amani@data61.csiro.au, corey.lewis@data61.csiro.au
 date = 2016-11-29
 topic = Computer Science/Programming Languages/Logics, Computer Science/Programming Languages/Language Definitions
-abstract = 
+abstract =
   We propose a concurrency reasoning framework for imperative programs,
   based on the Owicki-Gries (OG) foundational shared-variable
   concurrency method. Our framework combines the approaches of
@@ -5016,7 +5122,7 @@ author = Anders Schlichtkrull <https://people.compute.dtu.dk/andschl/>, Jørgen 
 topic = Logic
 date = 2016-12-07
 notify = andschl@dtu.dk, jovi@dtu.dk
-abstract = 
+abstract =
   Paraconsistency is about handling inconsistency in a coherent way. In
   classical and intuitionistic logic everything follows from an
   inconsistent theory. A paraconsistent logic avoids the explosion.
@@ -5032,4 +5138,63 @@ abstract =
   validity. We verify truth tables and also counterexamples for
   non-theorems. We prove meta-theorems about the logic and finally we
   investigate a case study.
+
+[Proof_Strategy_Language]
+title = Proof Strategy Language
+author = Yutaka Nagashima<>
+topic = Tools
+date = 2016-12-20
+notify = Yutaka.Nagashima@data61.csiro.au
+abstract =
+  Isabelle includes various automatic tools for finding proofs under
+  certain conditions. However, for each conjecture, knowing which
+  automation to use, and how to tweak its parameters, is currently
+  labour intensive. We have developed a language, PSL, designed to
+  capture high level proof strategies. PSL offloads the construction of
+  human-readable fast-to-replay proof scripts to automatic search,
+  making use of search-time information about each conjecture. Our
+  preliminary evaluations show that PSL reduces the labour cost of
+  interactive theorem proving. This submission contains the
+  implementation of PSL and an example theory file, Example.thy, showing
+  how to write poof strategies in PSL.
+
+[Concurrent_Ref_Alg]
+title = Concurrent Refinement Algebra and Rely Quotients
+author = Julian Fell <mailto:julian.fell@uq.net.au>, Ian Hayes <mailto:Ian.Hayes@itee.uq.edu.au>, Andrius Velykis <http://andrius.velykis.lt>
+topic = Computer Science/Concurrency
+date = 2016-12-30
+notify = Ian.Hayes@itee.uq.edu.au
+abstract =
+  The concurrent refinement algebra developed here is designed to
+  provide a foundation for rely/guarantee reasoning about concurrent
+  programs. The algebra builds on a complete lattice of commands by
+  providing sequential composition, parallel composition and a novel
+  weak conjunction operator. The weak conjunction operator coincides
+  with the lattice supremum providing its arguments are non-aborting,
+  but aborts if either of its arguments do. Weak conjunction provides an
+  abstract version of a guarantee condition as a guarantee process. We
+  distinguish between models that distribute sequential composition over
+  non-deterministic choice from the left (referred to as being
+  conjunctive in the refinement calculus literature) and those that
+  don't. Least and greatest fixed points of monotone functions are
+  provided to allow recursion and iteration operators to be added to the
+  language. Additional iteration laws are available for conjunctive
+  models. The rely quotient of processes <i>c</i> and
+  <i>i</i> is the process that, if executed in parallel with
+  <i>i</i> implements <i>c</i>. It represents an
+  abstract version of a rely condition generalised to a process.
+
+[FOL_Harrison]
+title = First-Order Logic According to Harrison
+author = Alexander Birch Jensen <https://people.compute.dtu.dk/aleje/>, Anders Schlichtkrull <https://people.compute.dtu.dk/andschl/>, Jørgen Villadsen <https://people.compute.dtu.dk/jovi/>
+topic = Logic
+date = 2017-01-01
+notify = aleje@dtu.dk, andschl@dtu.dk, jovi@dtu.dk
+abstract =
+  We present a certified declarative first-order prover with equality
+  based on John Harrison's Handbook of Practical Logic and
+  Automated Reasoning, Cambridge University Press, 2009. ML code
+  reflection is used such that the entire prover can be executed within
+  Isabelle as a very simple interactive proof assistant. As examples we
+  consider Pelletier's problems 1-46.
 

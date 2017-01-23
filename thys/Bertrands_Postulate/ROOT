@@ -1,0 +1,12 @@
+chapter AFP
+
+session Bertrands_Postulate (AFP) = "HOL-Number_Theory" +
+  options [timeout=600, document=pdf]
+  theories [document = false]
+    "~~/src/HOL/Decision_Procs/Approximation"
+    "~~/src/HOL/Library/Discrete"
+  theories
+    Bertrand
+  document_files
+    "root.tex"
+    "root.bib"
