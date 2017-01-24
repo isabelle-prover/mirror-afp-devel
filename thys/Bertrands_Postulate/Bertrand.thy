@@ -11,7 +11,6 @@ theory Bertrand
     "~~/src/HOL/Number_Theory/Number_Theory"
     "~~/src/HOL/Library/Discrete"
     "~~/src/HOL/Decision_Procs/Approximation"
-    Bertrand_Discrete_Sqrt
 begin
 
 subsection \<open>Auxiliary facts\<close>
