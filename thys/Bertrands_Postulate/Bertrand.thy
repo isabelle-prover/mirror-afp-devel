@@ -12,7 +12,56 @@ theory Bertrand
     "~~/src/HOL/Library/Discrete"
     "~~/src/HOL/Decision_Procs/Approximation"
     Bertrand_Discrete_Sqrt
-begin  
+begin
+
+subsection \<open>Auxiliary facts\<close>
+
+lemma of_nat_ge_1_iff: "(of_nat x :: 'a :: linordered_semidom) \<ge> 1 \<longleftrightarrow> x \<ge> 1"
+  using of_nat_le_iff[of 1 x] by (subst (asm) of_nat_1)
+  
+lemma floor_conv_div_nat:
+  "of_int (floor (real m / real n)) = real (m div n)"
+  by (subst floor_divide_of_nat_eq) simp
+
+lemma frac_conv_mod_nat:
+  "frac (real m / real n) = real (m mod n) / real n"
+  by (cases "n = 0")
+     (simp_all add: frac_def floor_conv_div_nat field_simps of_nat_mult 
+        [symmetric] of_nat_add [symmetric] del: of_nat_mult of_nat_add)
+
+lemma of_nat_prod_mset: "prod_mset (image_mset of_nat A) = of_nat (prod_mset A)"
+  by (induction A) simp_all
+
+lemma prod_mset_pos: "(\<And>x :: 'a :: linordered_semidom. x \<in># A \<Longrightarrow> x > 0) \<Longrightarrow> prod_mset A > 0"
+  by (induction A) simp_all
+
+lemma ln_msetprod:
+  assumes "\<And>x. x \<in>#I \<Longrightarrow> x > 0"
+  shows "(\<Sum>p::nat\<in>#I. ln p) = ln (\<Prod>p\<in>#I. p)"
+  using assms by (induction I) (simp_all add: of_nat_prod_mset ln_mult prod_mset_pos)
+
+lemma ln_fact: "ln (fact n) = (\<Sum>d=1..n. ln d)"
+  by (induction n) (simp_all add: ln_mult)
+
+lemma overpower_lemma:
+  fixes f g :: "real \<Rightarrow> real"
+  assumes "f a \<le> g a"
+  assumes "\<And>x. a \<le> x \<Longrightarrow> ((\<lambda>x. g x - f x) has_real_derivative (d x)) (at x)"
+  assumes "\<And>x. a \<le> x \<Longrightarrow> d x \<ge> 0"
+  assumes "a \<le> x"
+  shows   "f x \<le> g x"
+proof (cases "a < x")
+  case True
+  with assms have "\<exists>z. z > a \<and> z < x \<and> g x - f x - (g a - f a) = (x - a) * d z"
+    by (intro MVT2) auto
+  then obtain z where z: "z > a" "z < x" "g x - f x - (g a - f a) = (x - a) * d z" by blast
+  hence "f x = g x + (f a - g a) + (a - x) * d z" by (simp add: algebra_simps)
+  also from assms have "f a - g a \<le> 0" by (simp add: algebra_simps)
+  also from assms z have "(a - x) * d z \<le> 0 * d z"
+    by (intro mult_right_mono) simp_all
+  finally show ?thesis by simp
+qed (insert assms, auto)
+
 
 subsection \<open>Preliminary definitions\<close>
   
@@ -268,7 +317,8 @@ proof -
     by (intro aprimedivisor_dvd prime_aprimedivisor; simp)+
   hence "r dvd q ^ Suc (multiplicity q n)"
     by (subst (asm) n) (simp_all add: \<open>p = q\<close>)
-  with r have "r dvd q" by (auto intro: prime_dvd_power_nat)
+  with r have "r dvd q" 
+    by (auto intro: prime_dvd_power_nat simp: prime_dvd_mult_iff dest: prime_dvd_power)
   with r q have "r = q" by (intro primes_dvd_imp_eq)
   thus "aprimedivisor (p * n) = p" by (simp add: r_def \<open>p = q\<close>)
 qed
@@ -417,335 +467,27 @@ proof -
   finally show ?thesis ..
 qed    
 
+lemma primepow_gt_0: "primepow n \<Longrightarrow> n > 0"
+  using primepow_gt_Suc_0[of n] by simp
 
-subsection \<open>Bounding the psi function\<close>
+lemma multiplicity_aprimedivisor_Suc_0_iff:
+  assumes "primepow n"
+  shows   "multiplicity (aprimedivisor n) n = Suc 0 \<longleftrightarrow> prime n"
+  by (subst (3) primepow_decompose [OF assms, symmetric])
+     (insert assms primepow_gt_Suc_0[OF assms],
+      auto simp add: prime_power_iff intro!: prime_aprimedivisor)
 
-context
-begin
+lemma primepow_cases:
+  "primepow d \<longleftrightarrow>
+     (  primepow_even d \<and> \<not> primepow_odd d \<and> \<not> prime d) \<or>
+     (\<not> primepow_even d \<and>   primepow_odd d \<and> \<not> prime d) \<or>
+     (\<not> primepow_even d \<and> \<not> primepow_odd d \<and>   prime d)"
+  by (auto simp: primepow_even_altdef primepow_odd_altdef multiplicity_aprimedivisor_Suc_0_iff
+           elim!: oddE intro!: Nat.gr0I)  
 
-private lemma Ball_insertD:
-  assumes "\<forall>x\<in>insert y A. P x"
-  shows   "P y" "\<forall>x\<in>A. P x"
-  using assms by auto
-
-private lemma meta_eq_TrueE: "PROP A \<equiv> Trueprop True \<Longrightarrow> PROP A"
-  by simp
-
-private lemma pre_mangoldt_pos: "pre_mangoldt n > 0"
-  unfolding pre_mangoldt_def by (auto simp: primepow_gt_Suc_0)
-
-private lemma psi_conv_pre_mangoldt: "psi n = ln (real (prod pre_mangoldt {1..n}))"
-  by (auto simp: psi_def mangoldt_def pre_mangoldt_def ln_prod primepow_gt_Suc_0 intro!: sum.cong)
-
-private lemma eval_psi_aux1: "psi 0 = ln (real (numeral Num.One))"
-  by (simp add: psi_def)
-
-private lemma eval_psi_aux2:
-  assumes "psi m = ln (real (numeral x))" "pre_mangoldt n = y" "m + 1 = n" "numeral x * y = z"
-  shows   "psi n = ln (real z)"
-proof -
-  from assms(2) [symmetric] have [simp]: "y > 0" by (simp add: pre_mangoldt_pos)
-  have "psi n = psi (Suc m)" by (simp add: assms(3) [symmetric])
-  also have "\<dots> = ln (real y * (\<Prod>x = Suc 0..m. real (pre_mangoldt x)))"
-    using assms(2,3) [symmetric] by (simp add: psi_conv_pre_mangoldt prod_nat_ivl_Suc' mult_ac)
-  also have "\<dots> = ln (real y) + psi m"
-    by (subst ln_mult) (simp_all add: pre_mangoldt_pos prod_pos psi_conv_pre_mangoldt)
-  also have "psi m = ln (real (numeral x))" by fact
-  also have "ln (real y) + \<dots> = ln (real (numeral x * y))" by (simp add: ln_mult)
-  finally show ?thesis by (simp add: assms(4) [symmetric])
-qed
-
-private lemma Ball_atLeast0AtMost_doubleton:
-  assumes "psi 0 \<le> 4407 / 2048 * ln 2 * real 0"
-  assumes "psi 1 \<le> 4407 / 2048 * ln 2 * real 1"
-  shows   "(\<forall>x\<in>{0..1}. psi x \<le> 4407 / 2048 * ln 2 * real x)"
-  using assms unfolding One_nat_def atLeast0_atMost_Suc ball_simps by auto
-
-private lemma Ball_atLeast0AtMost_insert:
-  assumes "(\<forall>x\<in>{0..m}. psi x \<le> 4407 / 2048 * ln 2 * real x)"
-  assumes "psi (numeral n) \<le> 4407 / 2048 * ln 2 * real (numeral n)" "m = pred_numeral n"
-  shows   "(\<forall>x\<in>{0..numeral n}. psi x \<le> 4407 / 2048 * ln 2 * real x)"
-  using assms
-  by (subst numeral_eq_Suc[of n], subst atLeast0_atMost_Suc,
-      subst ball_simps, simp only: numeral_eq_Suc [symmetric])
-
-private lemma eval_psi_ineq_aux:
-  assumes "psi n = x" "x \<le> 4407 / 2048 * ln 2 * n"
-  shows   "psi n \<le> 4407 / 2048 * ln 2 * n"
-  using assms by simp_all
-
-private definition prime_nat_consts where
-  "prime_nat_consts (A :: nat set) \<equiv> Trueprop (\<forall>p\<in>A. 1 < p \<and> {} \<noteq> {Suc 0} \<and>
-     (\<forall>n\<in>{1<..<p}. \<not> n dvd p) \<and> (0 = Suc 0 \<and> 1 = (2::nat) \<and> (2::nat) = 3))"
-
-ML_file \<open>bertrand.ML\<close>
-
-(* This one takes a while (about a minute). *)
-local_setup \<open> fn ctxt =>
-let
-  fun tac {context = ctxt, ...} =
-    let
-      val psi_cache = Bertrand.prove_psi ctxt 1025
-      fun prove_psi_ineqs ctxt cache =
-        let
-          fun tac {context = ctxt, ...} = HEADGOAL (Approximation.approximation_tac 5 [] NONE ctxt)
-          fun prove (_, _, thm) =
-            let
-              val thm = thm RS @{thm eval_psi_ineq_aux}
-              val [prem] = Thm.prems_of thm
-              val prem = Goal.prove ctxt [] [] prem tac
-            in
-              prem RS thm
-            end
-        in
-          cache |> chop_groups 100 |> Par_List.map (map prove) |> flat
-        end
-      val psi_ineqs = prove_psi_ineqs ctxt psi_cache
-      fun prove_ball ctxt (thm1 :: thm2 :: thms) =
-            let
-              val thm = @{thm Ball_atLeast0AtMost_doubleton} OF [thm1, thm2]
-              fun solve_prem thm =
-                let
-                  fun tac {context = ctxt, ...} = HEADGOAL (Simplifier.simp_tac ctxt)
-                  val thm' = Goal.prove ctxt [] [] (Thm.cprem_of thm 1 |> Thm.term_of) tac
-                in
-                  thm' RS thm
-                end
-              fun go thm thm' = (@{thm Ball_atLeast0AtMost_insert} OF [thm', thm]) |> solve_prem
-            in
-              fold go thms thm
-            end
-        | prove_ball _ _ = raise Match
-    in
-      HEADGOAL (resolve_tac ctxt [prove_ball ctxt psi_ineqs])
-    end
-  val thm = Goal.prove_future @{context} [] [] 
-              @{prop "\<forall>n\<in>{0..1024}. psi n \<le> 4407 / 2048 * ln 2 * n"} tac
-in
-  Local_Theory.note ((@{binding psi_ubound_log_1024}, []), [thm]) ctxt |> snd
-end
-\<close>
-
-end
-
-lemma of_nat_prod_mset: "prod_mset (image_mset of_nat A) = of_nat (prod_mset A)"
-  by (induction A) simp_all
-
-lemma prod_mset_pos: "(\<And>x :: 'a :: linordered_semidom. x \<in># A \<Longrightarrow> x > 0) \<Longrightarrow> prod_mset A > 0"
-  by (induction A) simp_all
-
-lemma ln_msetprod:
-  assumes "\<And>x. x \<in>#I \<Longrightarrow> x > 0"
-  shows "(\<Sum>p::nat\<in>#I. ln p) = ln (\<Prod>p\<in>#I. p)"
-  using assms by (induction I) (simp_all add: of_nat_prod_mset ln_mult prod_mset_pos)
-
-lemma ln_fact: "ln (fact n) = (\<Sum>d=1..n. ln d)"
-  by (induction n) (simp_all add: ln_mult)
-
-lemma ln_primefact:
-  assumes "n \<noteq> 0"
-  shows   "ln n = (\<Sum>d=1..n. if primepow d \<and> d dvd n then ln (aprimedivisor d) else 0)" 
-          (is "?lhs = ?rhs")
-proof -
-  have "?rhs = (\<Sum>d\<in>{x \<in> {1..n}. primepow x \<and> x dvd n}. ln (real (aprimedivisor d)))" 
-    unfolding primepows_def by (subst sum.inter_filter [symmetric]) simp_all
-  also have "{x \<in> {1..n}. primepow x \<and> x dvd n} = primepows n"
-    using assms by (auto simp: primepows_def dest: dvd_imp_le primepow_gt_Suc_0)
-  finally have *: "(\<Sum>d\<in>primepows n. ln (real (aprimedivisor d))) = ?rhs" ..
-  from in_prime_factors_imp_prime prime_gt_0_nat 
-    have pf_pos: "\<And>p. p\<in>#prime_factorization n \<Longrightarrow> p > 0"
-    by blast
-  from ln_msetprod[of "prime_factorization n", OF pf_pos] assms
-    have "ln n = (\<Sum>p\<in>#prime_factorization n. ln p)"
-      by (simp add: of_nat_prod_mset)
-  also from * sum_prime_factorization_conv_sum_primepows[of n ln, OF assms(1)]
-    have "\<dots> = ?rhs" by simp
-  finally show ?thesis .
-qed
-
-lemma divisors:
-  fixes x d::nat
-  assumes "x \<in> {1..n}"
-  assumes "d dvd x"
-  shows "\<exists>k\<in>{1..n div d}. x = d * k"
-proof -
-  from assms have "x \<le> n"
-    by simp
-  then have ub: "x div d \<le> n div d"
-    by (simp add: div_le_mono \<open>x \<le> n\<close>)
-  from assms have "1 \<le> x div d" by (auto elim!: dvdE)
-  with ub have "x div d \<in> {1..n div d}"
-    by simp
-  with \<open>d dvd x\<close> show ?thesis by (auto intro!: bexI[of _ "x div d"])
-qed
-
-lemma ln_fact_conv_mangoldt:
-  shows "ln (fact n) = (\<Sum>d=1..n. mangoldt d * floor (n / d))"
-proof -
-  have *: "(\<Sum>da=1..n. if primepow da \<and>
-        da dvd d then ln (aprimedivisor da) else 0) = 
-        (\<Sum>da=1..d. if primepow da \<and>
-        da dvd d then ln (aprimedivisor da) else 0)" if d: "d \<in> {1..n}" for d
-    by (rule sum.mono_neutral_right, insert d) (auto dest: dvd_imp_le)
-  have "(\<Sum>d=1..n. \<Sum>da=1..d. if primepow da \<and>
-      da dvd d then ln (aprimedivisor da) else 0) = 
-      (\<Sum>d=1..n. \<Sum>da=1..n. if primepow da \<and>
-      da dvd d then ln (aprimedivisor da) else 0)"
-    by (rule sum.cong) (insert *, simp_all)
-  also have "\<dots> = (\<Sum>da=1..n. \<Sum>d=1..n. if primepow da \<and>
-                     da dvd d then ln (aprimedivisor da) else 0)"
-    by (rule sum.commute)
-  also have "\<dots> = sum (\<lambda>d. mangoldt d * floor (n/d)) {1..n}"
-  proof (rule sum.cong)
-    fix d assume d: "d \<in> {1..n}"
-    have "(\<Sum>da = 1..n. if primepow d \<and> d dvd da then ln (real (aprimedivisor d)) else 0) =
-            (\<Sum>da = 1..n. if d dvd da then mangoldt d else 0)"
-      by (intro sum.cong) (simp_all add: mangoldt_def)
-    also have "\<dots> = mangoldt d * real (card {x. x \<in> {1..n} \<and> d dvd x})"
-      by (subst sum.inter_filter [symmetric]) (simp_all add: algebra_simps)
-    also {
-      have "{x. x \<in> {1..n} \<and> d dvd x} = {x. \<exists>k \<in>{1..n div d}. x=k*d}"
-      proof safe
-        fix x assume "x \<in> {1..n}" "d dvd x"
-        thus "\<exists>k\<in>{1..n div d}. x = k * d" using divisors[of x n d] by auto
-      next
-        fix x k assume k: "k \<in> {1..n div d}"
-        from k have "k * d \<le> n div d * d" by (intro mult_right_mono) simp_all
-        also have "n div d * d \<le> n div d * d + n mod d" by (rule le_add1)
-        also have "\<dots> = n" by simp
-        finally have "k * d \<le> n" .
-        thus "k * d \<in> {1..n}" using d k by auto
-      qed auto
-      also have "\<dots> = (\<lambda>k. k*d) ` {1..n div d}"
-        by fast
-      also have "card \<dots> = card {1..n div d}"
-        by (rule card_image) (simp add: inj_on_def)
-      also have "\<dots> = n div d"
-        by simp
-      also have "... = \<lfloor>n / d\<rfloor>"
-        by (simp add: floor_divide_of_nat_eq)
-      finally have "real (card {x. x \<in> {1..n} \<and> d dvd x}) = real_of_int \<lfloor>n / d\<rfloor>"
-        by force
-    }
-    finally show "(\<Sum>da = 1..n. if primepow d \<and> d dvd da then ln (real (aprimedivisor d)) else 0) =
-            mangoldt d * real_of_int \<lfloor>real n / real d\<rfloor>" .
-  qed simp_all
-  finally have "(\<Sum>d=1..n. \<Sum>da=1..d. if primepow da \<and>
-      da dvd d then ln (aprimedivisor da) else 0) = 
-    sum (\<lambda>d. mangoldt d * floor (n/d)) {1..n}" .
-  with ln_primefact have "(\<Sum>d=1..n. ln d) =
-    (\<Sum>d=1..n. mangoldt d * floor (n/d))"
-    by simp
-  with ln_fact show ?thesis
-    by simp
-qed
-
-lemma mangoldt_pos: "0 \<le> mangoldt d"
-  using aprimedivisor_gt_1[of d]
-  by (auto simp: mangoldt_def of_nat_le_iff[of 1 x for x, unfolded of_nat_1] Suc_le_eq
-           intro!: ln_ge_zero dest: primepow_gt_Suc_0)
-
-lemma floor_conv_div_nat:
-  "of_int (floor (real m / real n)) = real (m div n)"
-  by (subst floor_divide_of_nat_eq) simp
-
-lemma frac_conv_mod_nat:
-  "frac (real m / real n) = real (m mod n) / real n"
-  by (cases "n = 0")
-     (simp_all add: frac_def floor_conv_div_nat field_simps of_nat_mult 
-        [symmetric] of_nat_add [symmetric] del: of_nat_mult of_nat_add)
-
-lemma div_2_mult_2_bds:
-  fixes n d :: nat
-  assumes "d > 0"
-  shows "0 \<le> \<lfloor>n / d\<rfloor> - 2 * \<lfloor>(n div 2) / d\<rfloor>" "\<lfloor>n / d\<rfloor> - 2 * \<lfloor>(n div 2) / d\<rfloor> \<le> 1"
-proof -
-  have "\<lfloor>2::real\<rfloor> * \<lfloor>(n div 2) / d\<rfloor> \<le> \<lfloor>2 * ((n div 2) / d)\<rfloor>" 
-    by (rule le_mult_floor) simp_all
-  also from assms have "\<dots> \<le> \<lfloor>n / d\<rfloor>" by (intro floor_mono) (simp_all add: field_simps)
-  finally show "0 \<le> \<lfloor>n / d\<rfloor> - 2 * \<lfloor>(n div 2) / d\<rfloor>" by (simp add: algebra_simps)
-next  
-  have "real (n div d) \<le> real (2 * ((n div 2) div d) + 1)"
-    by (subst div_mult2_eq [symmetric], simp only: mult.commute, subst div_mult2_eq) simp
-  thus "\<lfloor>n / d\<rfloor> - 2 * \<lfloor>(n div 2) / d\<rfloor> \<le> 1"
-    unfolding of_nat_add of_nat_mult floor_conv_div_nat [symmetric] by simp_all
-qed
-
-lemma n_div_d_eq_1: "d \<in> {n div 2 + 1..n} \<Longrightarrow> \<lfloor>real n / real d\<rfloor> = 1"
-  by (cases "n = d") (auto simp: field_simps intro: floor_eq)
-
-lemma psi_bounds_ln_fact:
-  shows "ln (fact n) - 2 * ln (fact (n div 2)) \<le> psi n"
-        "psi n - psi (n div 2) \<le> ln (fact n) - 2 * ln (fact (n div 2))"
-proof -
-  fix n::nat
-  let ?k = "n div 2" and ?d = "n mod 2"
-  have *: "\<lfloor>?k / d\<rfloor> = 0" if "d > ?k" for d
-  proof -
-    from that div_less have "0 = ?k div d" by simp
-    also have "\<dots> = \<lfloor>?k / d\<rfloor>" by (rule floor_divide_of_nat_eq [symmetric])
-    finally show "\<lfloor>?k / d\<rfloor> = 0" by simp
-  qed
-  have sum_eq: "(\<Sum>d=1..2*?k+?d. mangoldt d * \<lfloor>?k / d\<rfloor>) = (\<Sum>d=1..?k. mangoldt d * \<lfloor>?k / d\<rfloor>)"
-    by (intro sum.mono_neutral_right) (auto simp: *)
-  from ln_fact_conv_mangoldt have "ln (fact n) = (\<Sum>d=1..n. mangoldt d * \<lfloor>n / d\<rfloor>)" .
-  also have "\<dots> = (\<Sum>d=1..n. mangoldt d * \<lfloor>(2 * (n div 2) + n mod 2) / d\<rfloor>)"
-    by simp
-  also have "\<dots> \<le> (\<Sum>d=1..n. mangoldt d * (2 * \<lfloor>?k / d\<rfloor> + 1))"
-    using div_2_mult_2_bds(2)[of _ n]
-    by (intro sum_mono mult_left_mono, subst of_int_le_iff)
-       (auto simp: algebra_simps mangoldt_pos)
-  also have "\<dots> = 2 * (\<Sum>d=1..n. mangoldt d * \<lfloor>(n div 2) / d\<rfloor>) + (\<Sum>d=1..n. mangoldt d)"
-    by (simp add: algebra_simps sum.distrib sum_distrib_left)
-  also have "\<dots> = 2 * (\<Sum>d=1..2*?k+?d. mangoldt d * \<lfloor>(n div 2) / d\<rfloor>) + (\<Sum>d=1..n. mangoldt d)"
-    by presburger
-  also from sum_eq have "\<dots> = 2 * (\<Sum>d=1..?k. mangoldt d * \<lfloor>(n div 2) / d\<rfloor>) + (\<Sum>d=1..n. mangoldt d)"
-    by presburger
-  also from ln_fact_conv_mangoldt psi_def have "\<dots> = 2 * ln (fact ?k) + psi n"
-    by presburger
-  finally show "ln (fact n) - 2 * ln (fact (n div 2)) \<le> psi n"
-    by simp
-next
-  fix n::nat
-  let ?k = "n div 2" and  ?d = "n mod 2"
-  from psi_def have "psi n - psi ?k = (\<Sum>d=1..2*?k+?d. mangoldt d) - (\<Sum>d=1..?k. mangoldt d)"
-    by presburger
-  also have "\<dots> = sum mangoldt ({1..2 * (n div 2) + n mod 2} - {1..n div 2})"
-    by (subst sum_diff) simp_all
-  also have "\<dots> = (\<Sum>d\<in>({1..2 * (n div 2) + n mod 2} - {1..n div 2}). 
-                    (if d \<le> ?k then 0 else mangoldt d))"
-    by (intro sum.cong) simp_all
-  also have "\<dots> = (\<Sum>d=1..2*?k+?d. (if d \<le> ?k then 0 else mangoldt d))"
-    by (intro sum.mono_neutral_left) auto
-  also have "\<dots> = (\<Sum>d=1..n. (if d \<le> ?k then 0 else mangoldt d))"
-    by presburger
-  also have "\<dots> = (\<Sum>d=1..n. (if d \<le> ?k then mangoldt d * 0 else mangoldt d))"
-    by (intro sum.cong) simp_all
-  also from div_2_mult_2_bds(1) have "\<dots> \<le> (\<Sum>d=1..n. (if d \<le> ?k then mangoldt d * (\<lfloor>n/d\<rfloor> - 2 * \<lfloor>?k/d\<rfloor>) else mangoldt d))"
-    by (intro sum_mono) 
-       (auto simp: algebra_simps mangoldt_pos intro!: mult_left_mono simp del: of_int_mult)
-  also from n_div_d_eq_1 have "\<dots> = (\<Sum>d=1..n. (if d \<le> ?k then mangoldt d * (\<lfloor>n/d\<rfloor> - 2 * \<lfloor>?k/d\<rfloor>) else mangoldt d * \<lfloor>n/d\<rfloor>))"
-    by (intro sum.cong refl) auto
-  also have "\<dots> = (\<Sum>d=1..n. mangoldt d * real_of_int (\<lfloor>real n / real d\<rfloor>) -
-                     (if d \<le> ?k then 2 * mangoldt d * real_of_int \<lfloor>real ?k / real d\<rfloor> else 0))"
-    by (intro sum.cong refl) (auto simp: algebra_simps)
-  also have "\<dots> = (\<Sum>d=1..n. mangoldt d * real_of_int (\<lfloor>real n / real d\<rfloor>)) - 
-                  (\<Sum>d=1..n. (if d \<le> ?k then 2 * mangoldt d * real_of_int \<lfloor>real ?k / real d\<rfloor> else 0))"
-    by (rule sum_subtractf)    
-  also have "(\<Sum>d=1..n. (if d \<le> ?k then 2 * mangoldt d * real_of_int \<lfloor>real ?k / real d\<rfloor> else 0)) =
-               (\<Sum>d=1..?k. (if d \<le> ?k then 2 * mangoldt d * real_of_int \<lfloor>real ?k / real d\<rfloor> else 0))"
-    by (intro sum.mono_neutral_right) auto
-  also have "\<dots> = (\<Sum>d=1..?k. 2 * mangoldt d * real_of_int \<lfloor>real ?k / real d\<rfloor>)"
-    by (intro sum.cong) simp_all
-  also have "\<dots> = 2 * (\<Sum>d=1..?k. mangoldt d * real_of_int \<lfloor>real ?k / real d\<rfloor>)"
-    by (simp add: sum_distrib_left mult_ac)
-  also have "(\<Sum>d = 1..n. mangoldt d * real_of_int \<lfloor>real n / real d\<rfloor>) - \<dots> = 
-               ln (fact n) - 2 * ln (fact (n div 2))"
-    by (simp add: ln_fact_conv_mangoldt)
-  finally show "psi n - psi (n div 2) \<le> ln (fact n) - 2 * ln (fact (n div 2))" .
-qed
-
-
+  
+subsection \<open>Deriving a recurrence for the psi function\<close>
+  
 lemma ln_fact_bounds:
   assumes "n > 0"
   shows "abs(ln (fact n) - n * ln n + n) \<le> 1 + ln n"
@@ -948,7 +690,210 @@ next
     by simp
   then show ?thesis 
     by simp
+qed  
+  
+lemma ln_primefact:
+  assumes "n \<noteq> 0"
+  shows   "ln n = (\<Sum>d=1..n. if primepow d \<and> d dvd n then ln (aprimedivisor d) else 0)" 
+          (is "?lhs = ?rhs")
+proof -
+  have "?rhs = (\<Sum>d\<in>{x \<in> {1..n}. primepow x \<and> x dvd n}. ln (real (aprimedivisor d)))" 
+    unfolding primepows_def by (subst sum.inter_filter [symmetric]) simp_all
+  also have "{x \<in> {1..n}. primepow x \<and> x dvd n} = primepows n"
+    using assms by (auto simp: primepows_def dest: dvd_imp_le primepow_gt_Suc_0)
+  finally have *: "(\<Sum>d\<in>primepows n. ln (real (aprimedivisor d))) = ?rhs" ..
+  from in_prime_factors_imp_prime prime_gt_0_nat 
+    have pf_pos: "\<And>p. p\<in>#prime_factorization n \<Longrightarrow> p > 0"
+    by blast
+  from ln_msetprod[of "prime_factorization n", OF pf_pos] assms
+    have "ln n = (\<Sum>p\<in>#prime_factorization n. ln p)"
+      by (simp add: of_nat_prod_mset)
+  also from * sum_prime_factorization_conv_sum_primepows[of n ln, OF assms(1)]
+    have "\<dots> = ?rhs" by simp
+  finally show ?thesis .
 qed
+
+context
+begin
+
+private lemma divisors:
+  fixes x d::nat
+  assumes "x \<in> {1..n}"
+  assumes "d dvd x"
+  shows "\<exists>k\<in>{1..n div d}. x = d * k"
+proof -
+  from assms have "x \<le> n"
+    by simp
+  then have ub: "x div d \<le> n div d"
+    by (simp add: div_le_mono \<open>x \<le> n\<close>)
+  from assms have "1 \<le> x div d" by (auto elim!: dvdE)
+  with ub have "x div d \<in> {1..n div d}"
+    by simp
+  with \<open>d dvd x\<close> show ?thesis by (auto intro!: bexI[of _ "x div d"])
+qed
+
+lemma ln_fact_conv_mangoldt:
+  shows "ln (fact n) = (\<Sum>d=1..n. mangoldt d * floor (n / d))"
+proof -
+  have *: "(\<Sum>da=1..n. if primepow da \<and>
+        da dvd d then ln (aprimedivisor da) else 0) = 
+        (\<Sum>da=1..d. if primepow da \<and>
+        da dvd d then ln (aprimedivisor da) else 0)" if d: "d \<in> {1..n}" for d
+    by (rule sum.mono_neutral_right, insert d) (auto dest: dvd_imp_le)
+  have "(\<Sum>d=1..n. \<Sum>da=1..d. if primepow da \<and>
+      da dvd d then ln (aprimedivisor da) else 0) = 
+      (\<Sum>d=1..n. \<Sum>da=1..n. if primepow da \<and>
+      da dvd d then ln (aprimedivisor da) else 0)"
+    by (rule sum.cong) (insert *, simp_all)
+  also have "\<dots> = (\<Sum>da=1..n. \<Sum>d=1..n. if primepow da \<and>
+                     da dvd d then ln (aprimedivisor da) else 0)"
+    by (rule sum.commute)
+  also have "\<dots> = sum (\<lambda>d. mangoldt d * floor (n/d)) {1..n}"
+  proof (rule sum.cong)
+    fix d assume d: "d \<in> {1..n}"
+    have "(\<Sum>da = 1..n. if primepow d \<and> d dvd da then ln (real (aprimedivisor d)) else 0) =
+            (\<Sum>da = 1..n. if d dvd da then mangoldt d else 0)"
+      by (intro sum.cong) (simp_all add: mangoldt_def)
+    also have "\<dots> = mangoldt d * real (card {x. x \<in> {1..n} \<and> d dvd x})"
+      by (subst sum.inter_filter [symmetric]) (simp_all add: algebra_simps)
+    also {
+      have "{x. x \<in> {1..n} \<and> d dvd x} = {x. \<exists>k \<in>{1..n div d}. x=k*d}"
+      proof safe
+        fix x assume "x \<in> {1..n}" "d dvd x"
+        thus "\<exists>k\<in>{1..n div d}. x = k * d" using divisors[of x n d] by auto
+      next
+        fix x k assume k: "k \<in> {1..n div d}"
+        from k have "k * d \<le> n div d * d" by (intro mult_right_mono) simp_all
+        also have "n div d * d \<le> n div d * d + n mod d" by (rule le_add1)
+        also have "\<dots> = n" by simp
+        finally have "k * d \<le> n" .
+        thus "k * d \<in> {1..n}" using d k by auto
+      qed auto
+      also have "\<dots> = (\<lambda>k. k*d) ` {1..n div d}"
+        by fast
+      also have "card \<dots> = card {1..n div d}"
+        by (rule card_image) (simp add: inj_on_def)
+      also have "\<dots> = n div d"
+        by simp
+      also have "... = \<lfloor>n / d\<rfloor>"
+        by (simp add: floor_divide_of_nat_eq)
+      finally have "real (card {x. x \<in> {1..n} \<and> d dvd x}) = real_of_int \<lfloor>n / d\<rfloor>"
+        by force
+    }
+    finally show "(\<Sum>da = 1..n. if primepow d \<and> d dvd da then ln (real (aprimedivisor d)) else 0) =
+            mangoldt d * real_of_int \<lfloor>real n / real d\<rfloor>" .
+  qed simp_all
+  finally have "(\<Sum>d=1..n. \<Sum>da=1..d. if primepow da \<and>
+      da dvd d then ln (aprimedivisor da) else 0) = 
+    sum (\<lambda>d. mangoldt d * floor (n/d)) {1..n}" .
+  with ln_primefact have "(\<Sum>d=1..n. ln d) =
+    (\<Sum>d=1..n. mangoldt d * floor (n/d))"
+    by simp
+  with ln_fact show ?thesis
+    by simp
+qed
+
+end
+
+lemma mangoldt_pos: "0 \<le> mangoldt d"
+  using aprimedivisor_gt_1[of d]
+  by (auto simp: mangoldt_def of_nat_le_iff[of 1 x for x, unfolded of_nat_1] Suc_le_eq
+           intro!: ln_ge_zero dest: primepow_gt_Suc_0)
+  
+context
+begin
+
+private lemma div_2_mult_2_bds:
+  fixes n d :: nat
+  assumes "d > 0"
+  shows "0 \<le> \<lfloor>n / d\<rfloor> - 2 * \<lfloor>(n div 2) / d\<rfloor>" "\<lfloor>n / d\<rfloor> - 2 * \<lfloor>(n div 2) / d\<rfloor> \<le> 1"
+proof -
+  have "\<lfloor>2::real\<rfloor> * \<lfloor>(n div 2) / d\<rfloor> \<le> \<lfloor>2 * ((n div 2) / d)\<rfloor>" 
+    by (rule le_mult_floor) simp_all
+  also from assms have "\<dots> \<le> \<lfloor>n / d\<rfloor>" by (intro floor_mono) (simp_all add: field_simps)
+  finally show "0 \<le> \<lfloor>n / d\<rfloor> - 2 * \<lfloor>(n div 2) / d\<rfloor>" by (simp add: algebra_simps)
+next  
+  have "real (n div d) \<le> real (2 * ((n div 2) div d) + 1)"
+    by (subst div_mult2_eq [symmetric], simp only: mult.commute, subst div_mult2_eq) simp
+  thus "\<lfloor>n / d\<rfloor> - 2 * \<lfloor>(n div 2) / d\<rfloor> \<le> 1"
+    unfolding of_nat_add of_nat_mult floor_conv_div_nat [symmetric] by simp_all
+qed
+
+private lemma n_div_d_eq_1: "d \<in> {n div 2 + 1..n} \<Longrightarrow> \<lfloor>real n / real d\<rfloor> = 1"
+  by (cases "n = d") (auto simp: field_simps intro: floor_eq)
+    
+lemma psi_bounds_ln_fact:
+  shows "ln (fact n) - 2 * ln (fact (n div 2)) \<le> psi n"
+        "psi n - psi (n div 2) \<le> ln (fact n) - 2 * ln (fact (n div 2))"
+proof -
+  fix n::nat
+  let ?k = "n div 2" and ?d = "n mod 2"
+  have *: "\<lfloor>?k / d\<rfloor> = 0" if "d > ?k" for d
+  proof -
+    from that div_less have "0 = ?k div d" by simp
+    also have "\<dots> = \<lfloor>?k / d\<rfloor>" by (rule floor_divide_of_nat_eq [symmetric])
+    finally show "\<lfloor>?k / d\<rfloor> = 0" by simp
+  qed
+  have sum_eq: "(\<Sum>d=1..2*?k+?d. mangoldt d * \<lfloor>?k / d\<rfloor>) = (\<Sum>d=1..?k. mangoldt d * \<lfloor>?k / d\<rfloor>)"
+    by (intro sum.mono_neutral_right) (auto simp: *)
+  from ln_fact_conv_mangoldt have "ln (fact n) = (\<Sum>d=1..n. mangoldt d * \<lfloor>n / d\<rfloor>)" .
+  also have "\<dots> = (\<Sum>d=1..n. mangoldt d * \<lfloor>(2 * (n div 2) + n mod 2) / d\<rfloor>)"
+    by simp
+  also have "\<dots> \<le> (\<Sum>d=1..n. mangoldt d * (2 * \<lfloor>?k / d\<rfloor> + 1))"
+    using div_2_mult_2_bds(2)[of _ n]
+    by (intro sum_mono mult_left_mono, subst of_int_le_iff)
+       (auto simp: algebra_simps mangoldt_pos)
+  also have "\<dots> = 2 * (\<Sum>d=1..n. mangoldt d * \<lfloor>(n div 2) / d\<rfloor>) + (\<Sum>d=1..n. mangoldt d)"
+    by (simp add: algebra_simps sum.distrib sum_distrib_left)
+  also have "\<dots> = 2 * (\<Sum>d=1..2*?k+?d. mangoldt d * \<lfloor>(n div 2) / d\<rfloor>) + (\<Sum>d=1..n. mangoldt d)"
+    by presburger
+  also from sum_eq have "\<dots> = 2 * (\<Sum>d=1..?k. mangoldt d * \<lfloor>(n div 2) / d\<rfloor>) + (\<Sum>d=1..n. mangoldt d)"
+    by presburger
+  also from ln_fact_conv_mangoldt psi_def have "\<dots> = 2 * ln (fact ?k) + psi n"
+    by presburger
+  finally show "ln (fact n) - 2 * ln (fact (n div 2)) \<le> psi n"
+    by simp
+next
+  fix n::nat
+  let ?k = "n div 2" and  ?d = "n mod 2"
+  from psi_def have "psi n - psi ?k = (\<Sum>d=1..2*?k+?d. mangoldt d) - (\<Sum>d=1..?k. mangoldt d)"
+    by presburger
+  also have "\<dots> = sum mangoldt ({1..2 * (n div 2) + n mod 2} - {1..n div 2})"
+    by (subst sum_diff) simp_all
+  also have "\<dots> = (\<Sum>d\<in>({1..2 * (n div 2) + n mod 2} - {1..n div 2}). 
+                    (if d \<le> ?k then 0 else mangoldt d))"
+    by (intro sum.cong) simp_all
+  also have "\<dots> = (\<Sum>d=1..2*?k+?d. (if d \<le> ?k then 0 else mangoldt d))"
+    by (intro sum.mono_neutral_left) auto
+  also have "\<dots> = (\<Sum>d=1..n. (if d \<le> ?k then 0 else mangoldt d))"
+    by presburger
+  also have "\<dots> = (\<Sum>d=1..n. (if d \<le> ?k then mangoldt d * 0 else mangoldt d))"
+    by (intro sum.cong) simp_all
+  also from div_2_mult_2_bds(1) have "\<dots> \<le> (\<Sum>d=1..n. (if d \<le> ?k then mangoldt d * (\<lfloor>n/d\<rfloor> - 2 * \<lfloor>?k/d\<rfloor>) else mangoldt d))"
+    by (intro sum_mono) 
+       (auto simp: algebra_simps mangoldt_pos intro!: mult_left_mono simp del: of_int_mult)
+  also from n_div_d_eq_1 have "\<dots> = (\<Sum>d=1..n. (if d \<le> ?k then mangoldt d * (\<lfloor>n/d\<rfloor> - 2 * \<lfloor>?k/d\<rfloor>) else mangoldt d * \<lfloor>n/d\<rfloor>))"
+    by (intro sum.cong refl) auto
+  also have "\<dots> = (\<Sum>d=1..n. mangoldt d * real_of_int (\<lfloor>real n / real d\<rfloor>) -
+                     (if d \<le> ?k then 2 * mangoldt d * real_of_int \<lfloor>real ?k / real d\<rfloor> else 0))"
+    by (intro sum.cong refl) (auto simp: algebra_simps)
+  also have "\<dots> = (\<Sum>d=1..n. mangoldt d * real_of_int (\<lfloor>real n / real d\<rfloor>)) - 
+                  (\<Sum>d=1..n. (if d \<le> ?k then 2 * mangoldt d * real_of_int \<lfloor>real ?k / real d\<rfloor> else 0))"
+    by (rule sum_subtractf)    
+  also have "(\<Sum>d=1..n. (if d \<le> ?k then 2 * mangoldt d * real_of_int \<lfloor>real ?k / real d\<rfloor> else 0)) =
+               (\<Sum>d=1..?k. (if d \<le> ?k then 2 * mangoldt d * real_of_int \<lfloor>real ?k / real d\<rfloor> else 0))"
+    by (intro sum.mono_neutral_right) auto
+  also have "\<dots> = (\<Sum>d=1..?k. 2 * mangoldt d * real_of_int \<lfloor>real ?k / real d\<rfloor>)"
+    by (intro sum.cong) simp_all
+  also have "\<dots> = 2 * (\<Sum>d=1..?k. mangoldt d * real_of_int \<lfloor>real ?k / real d\<rfloor>)"
+    by (simp add: sum_distrib_left mult_ac)
+  also have "(\<Sum>d = 1..n. mangoldt d * real_of_int \<lfloor>real n / real d\<rfloor>) - \<dots> = 
+               ln (fact n) - 2 * ln (fact (n div 2))"
+    by (simp add: ln_fact_conv_mangoldt)
+  finally show "psi n - psi (n div 2) \<le> ln (fact n) - 2 * ln (fact (n div 2))" .
+qed
+
+end
 
 lemma psi_bounds_induct:
   "real n * ln 2 - (4 * ln (real (if n = 0 then 1 else n)) + 3) \<le> psi n"
@@ -973,27 +918,213 @@ next
   finally show "psi n - psi (n div 2) \<le> real n * ln 2 + (4 * ln (real (if n = 0 then 1 else n)) + 3)"
     by simp
 qed
+  
+
+subsection \<open>Bounding the psi function\<close>
+
+text \<open>
+  In this section, we will first prove the relatively tight estimate
+  @{prop "psi n \<le> 3 / 2 + ln 2 * n"} for @{term "n \<le> 128"} and then use the 
+  recurrence we have just derived to extend it to @{prop "psi n \<le> 551 / 256"} for 
+  @{term "n \<le> 1024"}, at which point applying the recurrence can be used to prove 
+  the same bound for arbitrarily big numbers.
+
+  First of all, we will prove the bound for @{term "n <= 128"} using reflection and
+  approximation.
+\<close>  
+
+context
+begin
+
+private lemma Ball_insertD:
+  assumes "\<forall>x\<in>insert y A. P x"
+  shows   "P y" "\<forall>x\<in>A. P x"
+  using assms by auto
+
+private lemma meta_eq_TrueE: "PROP A \<equiv> Trueprop True \<Longrightarrow> PROP A"
+  by simp
+
+private lemma pre_mangoldt_pos: "pre_mangoldt n > 0"
+  unfolding pre_mangoldt_def by (auto simp: primepow_gt_Suc_0)
+
+private lemma psi_conv_pre_mangoldt: "psi n = ln (real (prod pre_mangoldt {1..n}))"
+  by (auto simp: psi_def mangoldt_def pre_mangoldt_def ln_prod primepow_gt_Suc_0 intro!: sum.cong)
+
+private lemma eval_psi_aux1: "psi 0 = ln (real (numeral Num.One))"
+  by (simp add: psi_def)
+
+private lemma eval_psi_aux2:
+  assumes "psi m = ln (real (numeral x))" "pre_mangoldt n = y" "m + 1 = n" "numeral x * y = z"
+  shows   "psi n = ln (real z)"
+proof -
+  from assms(2) [symmetric] have [simp]: "y > 0" by (simp add: pre_mangoldt_pos)
+  have "psi n = psi (Suc m)" by (simp add: assms(3) [symmetric])
+  also have "\<dots> = ln (real y * (\<Prod>x = Suc 0..m. real (pre_mangoldt x)))"
+    using assms(2,3) [symmetric] by (simp add: psi_conv_pre_mangoldt prod_nat_ivl_Suc' mult_ac)
+  also have "\<dots> = ln (real y) + psi m"
+    by (subst ln_mult) (simp_all add: pre_mangoldt_pos prod_pos psi_conv_pre_mangoldt)
+  also have "psi m = ln (real (numeral x))" by fact
+  also have "ln (real y) + \<dots> = ln (real (numeral x * y))" by (simp add: ln_mult)
+  finally show ?thesis by (simp add: assms(4) [symmetric])
+qed
+
+private lemma Ball_atLeast0AtMost_doubleton:
+  assumes "psi 0 \<le> 3 / 2 * ln 2 * real 0"
+  assumes "psi 1 \<le> 3 / 2 * ln 2 * real 1"
+  shows   "(\<forall>x\<in>{0..1}. psi x \<le> 3 / 2 * ln 2 * real x)"
+  using assms unfolding One_nat_def atLeast0_atMost_Suc ball_simps by auto
+
+private lemma Ball_atLeast0AtMost_insert:
+  assumes "(\<forall>x\<in>{0..m}. psi x \<le> 3 / 2 * ln 2 * real x)"
+  assumes "psi (numeral n) \<le> 3 / 2 * ln 2 * real (numeral n)" "m = pred_numeral n"
+  shows   "(\<forall>x\<in>{0..numeral n}. psi x \<le> 3 / 2 * ln 2 * real x)"
+  using assms
+  by (subst numeral_eq_Suc[of n], subst atLeast0_atMost_Suc,
+      subst ball_simps, simp only: numeral_eq_Suc [symmetric])
+
+private lemma eval_psi_ineq_aux:
+  assumes "psi n = x" "x \<le> 3 / 2 * ln 2 * n"
+  shows   "psi n \<le> 3 / 2 * ln 2 * n"
+  using assms by simp_all
+
+private definition prime_nat_consts where
+  "prime_nat_consts (A :: nat set) \<equiv> Trueprop (\<forall>p\<in>A. 1 < p \<and> {} \<noteq> {Suc 0} \<and>
+     (\<forall>n\<in>{1<..<p}. \<not> n dvd p) \<and> (0 = Suc 0 \<and> 1 = (2::nat) \<and> (2::nat) = 3))"
+
+ML_file \<open>bertrand.ML\<close>
+
+(* This should not take more than a few seconds *)
+local_setup \<open> fn ctxt =>
+let
+  fun tac {context = ctxt, ...} =
+    let
+      val psi_cache = Bertrand.prove_psi ctxt 129
+      fun prove_psi_ineqs ctxt cache =
+        let
+          fun tac {context = ctxt, ...} = 
+            HEADGOAL (Approximation.approximation_tac 12 [] NONE ctxt)
+          fun prove (_, _, thm) =
+            let
+              val thm = thm RS @{thm eval_psi_ineq_aux}
+              val [prem] = Thm.prems_of thm
+              val prem = Goal.prove ctxt [] [] prem tac
+            in
+              prem RS thm
+            end
+        in
+          cache |> map prove
+        end
+      val psi_ineqs = prove_psi_ineqs ctxt psi_cache
+      fun prove_ball ctxt (thm1 :: thm2 :: thms) =
+            let
+              val thm = @{thm Ball_atLeast0AtMost_doubleton} OF [thm1, thm2]
+              fun solve_prem thm =
+                let
+                  fun tac {context = ctxt, ...} = HEADGOAL (Simplifier.simp_tac ctxt)
+                  val thm' = Goal.prove ctxt [] [] (Thm.cprem_of thm 1 |> Thm.term_of) tac
+                in
+                  thm' RS thm
+                end
+              fun go thm thm' = (@{thm Ball_atLeast0AtMost_insert} OF [thm', thm]) |> solve_prem
+            in
+              fold go thms thm
+            end
+        | prove_ball _ _ = raise Match
+    in
+      HEADGOAL (resolve_tac ctxt [prove_ball ctxt psi_ineqs])
+    end
+  val thm = Goal.prove @{context} [] [] @{prop "\<forall>n\<in>{0..128}. psi n \<le> 3 / 2 * ln 2 * n"} tac
+in
+  Local_Theory.note ((@{binding psi_ubound_log_128}, []), [thm]) ctxt |> snd
+end
+\<close>
+
+end
 
 
-lemma overpower_lemma:
-  fixes f g :: "real \<Rightarrow> real"
-  assumes "f a \<le> g a"
-  assumes "\<And>x. a \<le> x \<Longrightarrow> ((\<lambda>x. g x - f x) has_real_derivative (d x)) (at x)"
-  assumes "\<And>x. a \<le> x \<Longrightarrow> d x \<ge> 0"
-  assumes "a \<le> x"
-  shows   "f x \<le> g x"
-proof (cases "a < x")
+context
+begin
+  
+private lemma psi_ubound_aux:
+  defines "f \<equiv> \<lambda>x::real. (4 * ln x + 3) / (ln 2 * x)"
+  assumes "x \<ge> 2" "x \<le> y"
+  shows   "f x \<ge> f y"
+using assms(3)
+proof (rule DERIV_nonpos_imp_nonincreasing, clarify, goal_cases)
+  case (1 t)
+  define f' where "f' = (\<lambda>x. (1 - 4 * ln x) / x^2 / ln 2 :: real)"
+  from 1 assms(2) have "(f has_real_derivative f' t) (at t)" unfolding f_def f'_def
+    by (auto intro!: derivative_eq_intros simp: field_simps power2_eq_square)
+  moreover {
+    have "1/4 \<le> ln (2::real)" by (approximation 5)
+    also from assms(2) 1 have "\<dots> \<le> ln t" by simp
+    finally have "ln t \<ge> 1/4" .
+  }
+  with 1 assms(2) have "f' t \<le> 0" by (simp add: f'_def field_simps)
+  ultimately show ?case by (intro exI[of _ "f' t"]) simp_all
+qed  
+
+text \<open>
+  These next rules are used in combination with @{thm psi_bounds_induct} and 
+  @{thm psi_ubound_log_128} to extend the upper bound for @{term "psi"} from values no greater 
+  than 128 to values no greater than 1024. The constant factor of the upper bound changes every 
+  time, but once we have reached 1024, the recurrence is self-sustaining in the sense that we do 
+  not have to adjust the constant factor anymore in order to double the range.
+\<close>
+lemma psi_ubound_log_double_cases':
+  assumes "\<And>n. n \<le> m \<Longrightarrow> psi n \<le> c * ln 2 * real n" "n \<le> m'" "m' = 2*m"
+          "c \<le> c'" "c \<ge> 0" "m \<ge> 1" "c' \<ge> 1 + c/2 + (4 * ln (m+1) + 3) / (ln 2 * (m+1))"
+  shows   "psi n \<le> c' * ln 2 * real n"
+proof (cases "n > m")
+  case False
+  hence "psi n \<le> c * ln 2 * real n" by (intro assms) simp_all
+  also have "c \<le> c'" by fact
+  finally show ?thesis by - (simp_all add: mult_right_mono)
+next
   case True
-  with assms have "\<exists>z. z > a \<and> z < x \<and> g x - f x - (g a - f a) = (x - a) * d z"
-    by (intro MVT2) auto
-  then obtain z where z: "z > a" "z < x" "g x - f x - (g a - f a) = (x - a) * d z" by blast
-  hence "f x = g x + (f a - g a) + (a - x) * d z" by (simp add: algebra_simps)
-  also from assms have "f a - g a \<le> 0" by (simp add: algebra_simps)
-  also from assms z have "(a - x) * d z \<le> 0 * d z"
-    by (intro mult_right_mono) simp_all
-  finally show ?thesis by simp
-qed (insert assms, auto)  
+  hence n: "n \<ge> m+1" by simp
+  from psi_bounds_induct(2)[of n] True
+    have "psi n \<le> real n * ln 2 + 4 * ln (real n) + 3 + psi (n div 2)" by simp
+  also from assms have "psi (n div 2) \<le> c * ln 2 * real (n div 2)" 
+    by (intro assms) simp_all
+  also have "real (n div 2) \<le> real n / 2" by simp
+  also have "c * ln 2 * \<dots> = c / 2 * ln 2 * real n" by simp
+  also have "real n * ln 2 + 4 * ln (real n) + 3 + \<dots> = 
+               (1 + c/2) * ln 2 * real n + (4 * ln (real n) + 3)" by (simp add: field_simps)
+  also {
+    have "(4 * ln (real n) + 3) / (ln 2 * (real n)) \<le> (4 * ln (m+1) + 3) / (ln 2 * (m+1))"
+      using n assms by (intro psi_ubound_aux) simp_all
+    also from assms have "(4 * ln (m+1) + 3) / (ln 2 * (m+1)) \<le> c' - 1 - c/2" 
+      by (simp add: algebra_simps)
+    finally have "4 * ln (real n) + 3 \<le> (c' - 1 - c/2) * ln 2 * real n" 
+      using n by (simp add: field_simps)
+  }
+  also have "(1 + c / 2) * ln 2 * real n + (c' - 1 - c / 2) * ln 2 * real n = c' * ln 2 * real n"
+    by (simp add: field_simps)
+  finally show ?thesis using \<open>c \<ge> 0\<close> by (simp_all add: mult_left_mono)
+qed
 
+end  
+
+lemma psi_ubound_log_double_cases:
+  assumes "\<forall>n\<le>m. psi n \<le> c * ln 2 * real n"
+          "c' \<ge> 1 + c/2 + (4 * ln (m+1) + 3) / (ln 2 * (m+1))"
+          "m' = 2*m" "c \<le> c'" "c \<ge> 0" "m \<ge> 1" 
+  shows   "\<forall>n\<le>m'. psi n \<le> c' * ln 2 * real n"
+  using assms(1) by (intro allI impI assms psi_ubound_log_double_cases'[of m c _ m' c']) auto
+
+lemma psi_ubound_log_1024:
+  "\<forall>n\<le>1024. psi n \<le> 551 / 256 * ln 2 * real n"
+proof -
+  from psi_ubound_log_128 have "\<forall>n\<le>128. psi n \<le> 3 / 2 * ln 2 * real n" by simp
+  hence "\<forall>n\<le>256. psi n \<le> 1025 / 512 * ln 2 * real n"
+    by (rule psi_ubound_log_double_cases) (approximation 10, simp_all)
+  hence "\<forall>n\<le>512. psi n \<le> 549 / 256 * ln 2 * real n"
+    by (rule psi_ubound_log_double_cases) (approximation 10, simp_all)
+  thus "\<forall>n\<le>1024. psi n \<le> 551 / 256 * ln 2 * real n"
+    by (rule psi_ubound_log_double_cases) (approximation 10, simp_all)
+qed  
+  
 lemma psi_bounds_sustained_induct:
   assumes "4 * ln (1 + 2 ^ j) + 3 \<le> d * ln 2 * (1 + 2^j)"
   assumes "4 / (1 + 2^j) \<le> d * ln 2"
@@ -1096,19 +1227,18 @@ proof -
     with *[of n n] show ?thesis by simp
 qed
 
-lemma psi_ubound_log: "psi n \<le> 4407 / 2048 * ln 2 * n"
+lemma psi_ubound_log: "psi n \<le> 551 / 256 * ln 2 * n"
 proof (rule psi_bounds_sustained)
-  show "0 \<le> 4407 / (2048 :: real)" by simp
+  show "0 \<le> 551 / (256 :: real)" by simp
 next
   fix n :: nat assume "n \<le> 2 ^ 10"
-  with psi_ubound_log_1024 show "psi n \<le> 4407 / 2048 * ln 2 * real n" by auto
-qed (approximation 4)+
+  with psi_ubound_log_1024 show "psi n \<le> 551 / 256 * ln 2 * real n" by auto
+qed (approximation 5)+
 
 lemma psi_ubound_3_2: "psi n \<le> 3/2 * n"
 proof -
-  have "4407 / 2048 * ln 2 \<le> 3/(2::real)"
-    by (approximation 8)
-  with of_nat_0_le_iff mult_right_mono have "4407 / 2048 * ln 2 * n \<le> 3/2 * n"
+  have "551 / 256 * ln 2 \<le> 3/(2::real)" by (approximation 10)
+  with of_nat_0_le_iff mult_right_mono have "551 / 256 * ln 2 * n \<le> 3/2 * n"
     by blast
   with psi_ubound_log[of "n"] show ?thesis
     by linarith
@@ -1116,9 +1246,6 @@ qed
 
 
 subsection \<open>Doubling psi and theta\<close>  
-
-lemma of_nat_ge_1_iff: "(of_nat x :: 'a :: linordered_semidom) \<ge> 1 \<longleftrightarrow> x \<ge> 1"
-  using of_nat_le_iff[of 1 x] by (subst (asm) of_nat_1)
 
 lemma psi_residues_compare_2:
   "psi_odd_2 n \<le> psi_even_2 n"
@@ -1259,24 +1386,6 @@ next
     qed
 qed
 
-lemma primepow_gt_0: "primepow n \<Longrightarrow> n > 0"
-  using primepow_gt_Suc_0[of n] by simp
-
-lemma multiplicity_aprimedivisor_Suc_0_iff:
-  assumes "primepow n"
-  shows   "multiplicity (aprimedivisor n) n = Suc 0 \<longleftrightarrow> prime n"
-  by (subst (3) primepow_decompose [OF assms, symmetric])
-     (insert assms primepow_gt_Suc_0[OF assms],
-      auto simp add: prime_power_iff intro!: prime_aprimedivisor)
-
-lemma primepow_cases:
-  "primepow d \<longleftrightarrow>
-     (  primepow_even d \<and> \<not> primepow_odd d \<and> \<not> prime d) \<or>
-     (\<not> primepow_even d \<and>   primepow_odd d \<and> \<not> prime d) \<or>
-     (\<not> primepow_even d \<and> \<not> primepow_odd d \<and>   prime d)"
-  by (auto simp: primepow_even_altdef primepow_odd_altdef multiplicity_aprimedivisor_Suc_0_iff
-           elim!: oddE intro!: Nat.gr0I)
-
 lemma mangoldt_split:
   "mangoldt d = mangoldt_1 d + mangoldt_even d + mangoldt_odd d"
 proof (cases "primepow d")
@@ -1318,11 +1427,14 @@ lemma psi_theta:
   using psi_odd_pos[of n] psi_residues_compare[of n] psi_sqrt[of n] psi_split[of n]
   by simp_all
 
-lemma sum_minus_one: 
+context
+begin
+
+private lemma sum_minus_one: 
   "(\<Sum>x \<in> {1..y}. (- 1 :: real) ^ (x + 1)) = (if odd y then 1 else 0)"
   by (induction y) simp_all
-
-lemma div_invert:
+  
+private lemma div_invert:
   fixes x y n :: nat
   assumes "x > 0" "y > 0" "y \<le> n div x"
   shows "x \<le> n div y"
@@ -1362,7 +1474,7 @@ proof -
   finally show ?thesis .
 qed
 
-lemma floor_half_interval:
+private lemma floor_half_interval:
   fixes n d :: nat
   assumes "d \<noteq> 0"
   shows "real (n div d) - real (2 * ((n div 2) div d)) = (if odd (n div d) then 1 else 0)"
@@ -1400,6 +1512,8 @@ proof -
   also from sum_expand_lemma[symmetric] have "\<dots> = (\<Sum>d=1..n. (-1)^(d+1) * psi (n div d))" .  
   finally show ?thesis .
 qed
+  
+end
 
 lemma psi_expansion_cutoff:
   assumes "m \<le> p"
@@ -1530,7 +1644,7 @@ qed
 
 lemma psi_double_lemma:
   assumes "n \<ge> 1200"
-  shows "n/6 \<le> psi n - psi (n div 2)"
+  shows "real n / 6 \<le> psi n - psi (n div 2)"
 proof -
   from ln_fact_diff_bounds
     have "\<bar>ln (fact n) - 2 * ln (fact (n div 2)) - real n * ln 2\<bar>
