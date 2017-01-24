@@ -5193,3 +5193,25 @@ abstract =
   Isabelle as a very simple interactive proof assistant. As examples we
   consider Pelletier's problems 1-46.
 
+[Bernoulli]
+title = Bernoulli Numbers
+author = Lukas Bulwahn<mailto:lukas.bulwahn@gmail.com>, Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Analysis, Mathematics/Number Theory
+date = 2017-01-24
+notify = eberlm@in.tum.de
+abstract = 
+  <p>Bernoulli numbers were first discovered in the closed-form
+  expansion of the sum 1<sup>m</sup> +
+  2<sup>m</sup> + &hellip; + n<sup>m</sup>
+  for a fixed m and appear in many other places. This entry provides
+  three different definitions for them: a recursive one, an explicit
+  one, and one through their exponential generating function.</p>
+  <p>In addition, we prove some basic facts, e.g. their relation
+  to sums of powers of integers and that all odd Bernoulli numbers
+  except the first are zero. We also prove the correctness of the
+  Akiyama&ndash;Tanigawa algorithm for computing Bernoulli numbers
+  with reasonable efficiency, and we define the periodic Bernoulli
+  polynomials (which appear e.g. in the Euler&ndash;MacLaurin
+  summation formula and the expansion of the log-Gamma function) and
+  prove their basic properties.</p>
+
