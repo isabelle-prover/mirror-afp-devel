@@ -213,8 +213,7 @@ ML {*
       val c = mk_CONSTRAINT c |> HOLogic.mk_Trueprop
       val g = Logic.list_implies (ps,c)
     in
-      (* FIXME use proper context *)
-      Goal.prove_global (Proof_Context.theory_of ctxt) [] [] g
+      Goal.prove ctxt [] [] g
         (K (resolve_tac ctxt @{thms CONSTRAINTI} 1))
     end;
 
