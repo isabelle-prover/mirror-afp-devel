@@ -5067,6 +5067,11 @@ abstract =
   contain binding names. The logic is generalized to treat different
   bisimulation variants such as early, late and open in a systematic
   way.
+extra-history =
+	Change history:
+        [2017-01-29]:
+        Formalization of weak bisimilarity added
+        (revision c87cc2057d9c)
 
 [Abs_Int_ITP2012]
 title = Abstract Interpretation of Annotated Commands
