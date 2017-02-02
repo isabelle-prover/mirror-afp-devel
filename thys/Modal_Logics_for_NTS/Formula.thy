@@ -1182,6 +1182,9 @@ by (metis Pred.rep_eq supp_Pred\<^sub>\<alpha> supp_Rep_formula)
 lemma supp_Act [simp]: "supp (Act \<alpha> x) = supp \<alpha> \<union> supp x - bn \<alpha>"
 by (metis Act.rep_eq finite_supp supp_Act\<^sub>\<alpha> supp_Rep_formula)
 
+lemma bn_fresh_Act [simp]: "bn \<alpha> \<sharp>* Act \<alpha> x"
+by (simp add: fresh_def fresh_star_def)
+
 text \<open>The lifted constructors are injective (except for @{const Act}).\<close>
 
 lemma Conj_eq_iff [simp]:

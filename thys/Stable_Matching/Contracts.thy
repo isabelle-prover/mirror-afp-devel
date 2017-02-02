@@ -53,8 +53,9 @@ We fix four constants:
 \item \<open>Ch\<close> maps hospitals to their choice functions
   (\S\ref{sec:cf}), which are similarly constrained to contracts that
   name them (assumption @{thm [source] Ch_range}). Moreover their
-  choices must name each doctor at most once, i.e. \<open>Xd\<close> must
-  be injective on these (assumption @{thm [source] "Ch_singular"}).
+  choices must name each doctor at most once, i.e., \<open>Xd\<close>
+  must be injective on these (assumption @{thm [source]
+  "Ch_singular"}).
 
 \end{itemize}
 
@@ -78,13 +79,13 @@ that must be trusted for the results we prove to be meaningful.
 definition Cd :: "'d \<Rightarrow> 'x cfun" where
   "Cd d \<equiv> set_option \<circ> MaxR.MaxR_opt (Pd d)"
 
-definition CD_on :: "'d set \<Rightarrow> 'x set \<Rightarrow> 'x set" where
+definition CD_on :: "'d set \<Rightarrow> 'x cfun" where
   "CD_on ds X = (\<Union>d\<in>ds. Cd d X)"
 
 abbreviation CD :: "'x set \<Rightarrow> 'x set" where
   "CD \<equiv> CD_on UNIV"
 
-definition CH :: "'x set \<Rightarrow> 'x set" where
+definition CH :: "'x cfun" where
   "CH X = (\<Union>h. Ch h X)"
 
 text\<open>
@@ -102,16 +103,16 @@ are rejected by the doctors (hospitals). (The abbreviation @{const
 
 \<close>
 
-abbreviation (input) RD_on :: "'d set \<Rightarrow> 'x set \<Rightarrow> 'x set" where
+abbreviation (input) RD_on :: "'d set \<Rightarrow> 'x cfun" where
   "RD_on ds \<equiv> Rf (CD_on ds)"
 
-abbreviation (input) RD :: "'x set \<Rightarrow> 'x set" where
+abbreviation (input) RD :: "'x cfun" where
   "RD \<equiv> RD_on UNIV"
 
-abbreviation (input) Rh :: "'h \<Rightarrow> 'x set \<Rightarrow> 'x set" where
+abbreviation (input) Rh :: "'h \<Rightarrow> 'x cfun" where
   "Rh h \<equiv> Rf (Ch h)"
 
-abbreviation (input) RH :: "'x set \<Rightarrow> 'x set" where
+abbreviation (input) RH :: "'x cfun" where
   "RH \<equiv> Rf CH"
 
 text \<open>
@@ -411,7 +412,7 @@ participants. Note that this implies the match is an @{const
 \<close>
 
 definition individually_rational_on :: "'d set \<Rightarrow> 'x set \<Rightarrow> bool" where
-  "individually_rational_on ds X = (CD_on ds X = X \<and> CH X = X)"
+  "individually_rational_on ds X \<longleftrightarrow> CD_on ds X = X \<and> CH X = X"
 
 abbreviation individually_rational :: "'x set \<Rightarrow> bool" where
   "individually_rational \<equiv> individually_rational_on UNIV"
@@ -427,16 +428,16 @@ definition with the classical one for stable marriages given in
 \<close>
 
 definition blocking_on :: "'d set \<Rightarrow> 'x set \<Rightarrow> 'h \<Rightarrow> 'x set \<Rightarrow> bool" where
-  "blocking_on ds X h X'' = (X'' \<noteq> Ch h X \<and> X'' = Ch h (X \<union> X'') \<and> X'' \<subseteq> CD_on ds (X \<union> X''))"
+  "blocking_on ds X h X' \<longleftrightarrow> X' \<noteq> Ch h X \<and> X' = Ch h (X \<union> X') \<and> X' \<subseteq> CD_on ds (X \<union> X')"
 
 definition stable_no_blocking_on :: "'d set \<Rightarrow> 'x set \<Rightarrow> bool" where
-  "stable_no_blocking_on ds X = (\<forall>h X''. \<not>blocking_on ds X h X'')"
+  "stable_no_blocking_on ds X \<longleftrightarrow> (\<forall>h X'. \<not>blocking_on ds X h X')"
 
 abbreviation stable_no_blocking :: "'x set \<Rightarrow> bool" where
   "stable_no_blocking \<equiv> stable_no_blocking_on UNIV"
 
 definition stable_on :: "'d set \<Rightarrow> 'x set \<Rightarrow> bool" where
-  "stable_on ds X = (individually_rational_on ds X \<and> stable_no_blocking_on ds X)"
+  "stable_on ds X \<longleftrightarrow> individually_rational_on ds X \<and> stable_no_blocking_on ds X"
 
 abbreviation stable :: "'x set \<Rightarrow> bool" where
   "stable \<equiv> stable_on UNIV"
@@ -464,6 +465,10 @@ lemma individually_rational_on_Cd:
   shows "Cd d X = dX X d"
 using individually_rational_on_CD_on[OF assms]
 by (auto simp: dX_def mem_CD_on_Cd dest: Cd_range' Cd_Xd)
+
+lemma individually_rational_on_empty:
+  shows "individually_rational_on ds {}"
+by (simp add: CD_on_simps CH_simps individually_rational_onI)
 
 lemma blocking_onI:
   assumes "X'' \<noteq> Ch h X"
@@ -514,9 +519,8 @@ lemma stable_no_blocking_onI2:
   shows "stable_no_blocking_on ds X"
 unfolding stable_no_blocking_on_def using assms by blast
 
-lemma individually_rational_on_empty:
-  shows "individually_rational_on ds {}"
-by (rule individually_rational_onI) (auto simp: CD_on_simps CH_simps)
+lemma "stable_no_blocking_on ds UNIV"
+using stable_no_blocking_onI by fastforce
 
 lemma
   assumes "stable_on ds X"
@@ -758,7 +762,7 @@ lemmas X4_pow = subset_sublists[OF subset_trans[OF subset_UNIV Set.equalityD1[OF
 instance X4 :: finite
 by standard (simp add: X4_UNIV)
 
-lemma X4_All:
+lemma X4_ALL:
   shows "(\<forall>X''. P X'') \<longleftrightarrow> (\<forall>X''\<in>set ` set (sublists [Xd1, Xd1', Xd2, Xd2']). P X'')"
 using X4_pow by blast
 
@@ -777,7 +781,7 @@ primrec PX4d :: "D2 \<Rightarrow> X4 rel" where
   "PX4d D1 = linord_of_list [Xd1', Xd1]"
 | "PX4d D2 = linord_of_list [Xd2, Xd2']"
 
-function CX4h :: "H1 \<Rightarrow> X4 set \<Rightarrow> X4 set" where
+function CX4h :: "H1 \<Rightarrow> X4 cfun" where
   "CX4h _ {Xd1} = {Xd1}"
 | "CX4h _ {Xd1'} = {Xd1'}"
 | "CX4h _ {Xd2} = {Xd2}"
@@ -870,7 +874,7 @@ proof(rule iffI)
     unfolding StableNoDecomp.stable_on_def StableNoDecomp.individually_rational_on_def
               StableNoDecomp.stable_no_blocking_on_def StableNoDecomp.blocking_on_def
               StableNoDecomp.CD_on_def StableNoDecomp.CH_def
-    by simp (elim disjE, simp_all add: D2_UNION X4_All insert_commute StableNoDecomp.maxR_def)
+    by simp (elim disjE, simp_all add: D2_UNION X4_ALL insert_commute StableNoDecomp.maxR_def)
 next
   assume ?rhs then show ?lhs
     using Xd1_Xd2_stable Xd1'_Xd2'_stable by blast
@@ -896,7 +900,7 @@ proof(rule iffI)
     apply (elim disjE)
     apply (simp_all add: StableNoDecomp.CD_on_def StableNoDecomp.CH_def)
     unfolding X4_UNIV[simplified]
-    apply (auto simp: D2_ALL D2_UNION X4_All insert_commute StableNoDecomp.maxR_def linord_of_list_linord_of_listP)
+    apply (auto simp: D2_ALL D2_UNION X4_ALL insert_commute StableNoDecomp.maxR_def linord_of_list_linord_of_listP)
     done
 next
   assume ?rhs then show ?lhs
@@ -952,46 +956,13 @@ text\<open>
 Therefore while @{const "substitutes"} supports the monotonicity argument
 that underpins their deferred-acceptance algorithm (see
 \S\ref{sec:contracts-algorithmics}), it is not enough to rescue
-Theorem~1. One way forward is to further constrain the hospitals'
+Theorem~1. One way forward is to constrain the hospitals'
 choice functions, which we discuss in the next section.
 
 \<close>
 
 
 subsubsection\<open> Theorem 1 holds with @{emph \<open>independence of rejected contracts\<close>} \label{sec:contracts-irc} \<close>
-
-text\<open>
-
-The counter example of the previous section demonstrates that the
-@{const "substitutes"} condition on hospital choice functions is not
-sufficient to guarantee the existence of stable matches. We still
-introduce a locale that extends \<open>Contracts\<close> with this
-hypothesis, however, to serve as a basis for later locales (see also
-\S\ref{sec:contracts-rh}).
-
-\<close>
-
-locale ContractsWithSubstitutes = Contracts +
-  assumes Ch_substitutes: "\<forall>h. substitutes (Ch h)"
-begin
-
-lemma Rh_mono:
-  shows "mono (Rh h)"
-using %invisible substitutes_on_Rf_mono_on[OF spec[OF Ch_substitutes]] mono_on_mono by (simp add: fun_eq_iff) blast
-
-lemmas Ch_iia = Rh_mono[unfolded Rf_mono_iia]
-lemmas Ch_Chernoff = Ch_iia[unfolded Chernoff_on_iia_on[symmetric]]
-lemmas Ch_subsitutes_idem = iia_f_idem[OF Ch_f_range Ch_iia, simplified]
-
-lemma RH_mono:
-  shows "mono RH"
-unfolding %invisible CH_def by (rule monoI) (auto dest: monoD[OF Rh_mono])
-
-lemmas CH_iia = RH_mono[unfolded Rf_mono_iia]
-lemmas CH_Chernoff = CH_iia[unfolded Chernoff_on_iia_on[symmetric]]
-lemmas CH_substitutes_idem = iia_f_idem[OF CH_f_range_on CH_iia, simplified]
-
-end
 
 text\<open>
 
@@ -1008,8 +979,7 @@ by %invisible (fastforce simp: insert_commute dest: irc_onD[where a="Xd2" and B=
 
 text\<open>
 
-We adopt this hypothesis by extending the @{const
-"ContractsWithSubstitutes"} locale:
+We adopt this hypothesis by extending the @{const "Contracts"} locale:
 
 \<close>
 
@@ -1050,32 +1020,13 @@ lemma Ch_CH_irc_idem:
   shows "Ch h (CH A) = Ch h A"
 using %invisible CH_domain CH_irc_idem Ch_domain by blast
 
-end
-
 text\<open>
 
-Assuming that hospital choices satisfy both @{const "substitutes"} and
-@{const "irc"} is equivalent to them satisfying @{const
-"path_independent"} (see \S\ref{sec:cf-path-independence}).
+This suffices to show the left-to-right direction of Theorem~1.
 
 \<close>
 
-locale ContractsWithSubstitutesAndIRC =
-  ContractsWithSubstitutes + ContractsWithIRC
-begin
-
-lemma Ch_path_independent:
-  shows "path_independent (Ch h)"
-using %invisible Ch_range Ch_Chernoff Ch_consistency by (blast intro: path_independent_onI2 f_range_onI)
-
-text\<open>
-
-With these constraints on \<open>Ch\<close> we can show the left-to-right
-direction of Theorem~1.
-
-\<close>
-
-lemma (in ContractsWithIRC) stable_pair_on_individually_rational:
+lemma stable_pair_on_individually_rational:
   assumes "stable_pair_on ds XD_XH"
   shows "individually_rational_on ds (match XD_XH)"
 by %invisible (metis CD_on_idem CH_irc_idem stable_pair_on_CD_on stable_pair_on_CD_on_CH assms individually_rational_onI)
@@ -1097,9 +1048,8 @@ proof(rule stable_no_blocking_onI)
       using CD_on_Chernoff unfolding Chernoff_on_def by (simp add: inf_commute)
     ultimately show ?thesis using assms unfolding stable_pair_on_def split_def by blast
   qed
-  then have "Ch h (snd XD_XH) = Ch h (Ch h (snd XD_XH) \<union> X'')" \<comment> \<open> the key step: path independence of \<open>Ch\<close> \<close>
-    using Ch_path_independent[of h] unfolding path_independent_on_def
-    by (simp add: Un_commute sup_absorb2)
+  then have "Ch h (snd XD_XH) = Ch h (Ch h (snd XD_XH) \<union> X'')"
+    by (force intro!: consistencyD[OF Ch_consistency] dest: Ch_range')
   moreover from NE have "X'' \<noteq> Ch h (snd XD_XH)"
     using stable_pair_on_CH[OF assms] CH_domain[of _ h] Ch_domain[of h] by (metis Ch_irc_idem)
   ultimately have "X'' \<noteq> Ch h (match XD_XH \<union> X'')"
@@ -1133,7 +1083,7 @@ satisfy @{const "substitutes"} and @{const "irc"}.
 
 \<close>
 
-context ContractsWithSubstitutesAndIRC
+context ContractsWithIRC
 begin
 
 context
@@ -1158,7 +1108,7 @@ definition XH_largest :: "'a set" where
   "XH_largest =
      {y. Xd y \<in> ds
        \<and> y \<in> Field (Pd (Xd y))
-       \<and> (\<forall>x \<in> dX X (Xd y). (x, y) \<in> Pd (Xd x))}"
+       \<and> (\<forall>x \<in> dX X (Xd y). (x, y) \<in> Pd (Xd y))}"
 
 definition XD_smallest :: "'a set" where
   "XD_smallest = - (XH_largest - X)"
@@ -1202,8 +1152,8 @@ The goal of the next few lemmas is to show the constituents of @{term
 "stable_pair_on ds (XD_smallest, XH_largest)"}.
 
 Intuitively, if a doctor has a contract @{term "x"} in @{term "X"},
-then all of their contracts in @{const "XH_largest"} is at least as
-desirable to that doctor as @{term "x"}, and so the @{const
+then all of their contracts in @{const "XH_largest"} are at least as
+desirable as @{term "x"}, and so the @{const
 "stable_no_blocking"} hypothesis guarantees the hospitals choose
 @{term "x"} from @{const "XH_largest"}, and similarly the doctors
 @{term "x"} from @{const "XD_smallest"}.
@@ -1229,8 +1179,8 @@ proof -
     using XH_largestCdXXH_largest Ch_XH_largest_Xd Ch_XH_largest_Field unfolding CD_on_def by blast
   from \<open>stable_on ds X\<close> have "Ch h XH_largest = Ch h X" for h
     using \<open>Ch h XH_largest \<subseteq> CD_on ds (X \<union> Ch h XH_largest)\<close> X_subseteq_XH_largest
-    by - (erule stable_on_blocking_onD[where h=h and X''="Ch h XH_largest"],
-          simp_all add: path_independent_onD[OF Ch_path_independent, symmetric] Un_absorb1)
+    by - (erule stable_on_blocking_onD[where h=h and X''="Ch h XH_largest"];
+          force intro!: consistencyD[OF Ch_consistency] dest: Ch_range')
   with stable_on_CH[OF \<open>stable_on ds X\<close>] show ?thesis unfolding CH_def by simp
 qed
 
@@ -1277,7 +1227,7 @@ text\<open>
 
 Our ultimate statement of Theorem~1 of \cite{HatfieldMilgrom:2005} ala
 \citet{AygunSonmez:2012-WP2} goes as follows, bearing in mind that we
-are working in the @{const "ContractsWithSubstitutesAndIRC"} locale:
+are working in the @{const "ContractsWithIRC"} locale:
 
 \<close>
 
@@ -1290,41 +1240,28 @@ end
 
 subsection\<open> Theorem~3: Algorithmics \label{sec:contracts-algorithmics} \<close>
 
-text (in ContractsWithSubstitutes) \<open>
+text (in Contracts) \<open>
 
 Having revived Theorem~1, we reformulate @{const "stable_pair"} as a
 monotone (aka @{emph \<open>isotone\<close>}) function and exploit the lattice
 structure of its fixed points, following \citet[{\S}II,
 Theorem~3]{HatfieldMilgrom:2005}. This underpins all of their results
-that we formulate here. They and \citet[\S2]{Fleiner:2002} provide
-intuitive glosses of these definitions.
+that we formulate here. \citet[\S2]{Fleiner:2002} provides an
+intuitive gloss of these definitions.
 
 \<close>
 
-context ContractsWithSubstitutes
+context Contracts
 begin
 
-definition F1 :: "'a set \<Rightarrow> 'a set" where
+definition F1 :: "'x cfun" where
   "F1 X' = - RH X'"
 
-definition F2 :: "'b set \<Rightarrow> 'a set \<Rightarrow> 'a set" where
+definition F2 :: "'d set \<Rightarrow> 'x cfun" where
   "F2 ds X' = - RD_on ds X'"
 
-definition F :: "'b set \<Rightarrow> 'a set \<times> 'a set dual \<Rightarrow> 'a set \<times> 'a set dual" where
+definition F :: "'d set \<Rightarrow> 'x set \<times> 'x set dual \<Rightarrow> 'x set \<times> 'x set dual" where
   "F ds = (\<lambda>(XD, XH). (F1 (undual XH), dual (F2 ds (F1 (undual XH)))))"
-
-lemma F1_antimono:
-  shows "antimono F1"
-by %invisible (rule antimonoI) (auto simp: F1_def dest: Diff_mono[OF _ monoD[OF RH_mono]])
-
-lemma F2_antimono:
-  shows "antimono (F2 ds)"
-by %invisible (rule antimonoI) (auto simp: F2_def dest: Diff_mono[OF _ monoD[OF RD_on_mono]])
-
-lemma F_mono:
-  shows "mono (F ds)"
-unfolding %invisible F_def using antimonoD[OF F1_antimono] antimonoD[OF F2_antimono]
-by (auto intro: monoI simp: less_eq_dual_def)
 
 text\<open>
 
@@ -1357,6 +1294,52 @@ using %invisible assms
 unfolding F_def F1_def F2_def stable_pair_on_def split_def
 by (metis fst_map_prod id_apply prod.collapse snd_map_prod undual_dual)
 
+end
+
+text (in Contracts) \<open>
+
+The function @{const F} is monotonic under @{const substitutes}.
+
+\<close>
+
+locale ContractsWithSubstitutes = Contracts +
+  assumes Ch_substitutes: "\<forall>h. substitutes (Ch h)"
+begin
+
+(*<*)
+
+lemma Rh_mono:
+  shows "mono (Rh h)"
+using %invisible substitutes_on_Rf_mono_on[OF spec[OF Ch_substitutes]] mono_on_mono by (simp add: fun_eq_iff) blast
+
+lemmas Ch_iia = Rh_mono[unfolded Rf_mono_iia]
+lemmas Ch_Chernoff = Ch_iia[unfolded Chernoff_on_iia_on[symmetric]]
+lemmas Ch_subsitutes_idem = iia_f_idem[OF Ch_f_range Ch_iia, simplified]
+
+lemma RH_mono:
+  shows "mono RH"
+unfolding %invisible CH_def by (rule monoI) (auto dest: monoD[OF Rh_mono])
+
+lemmas CH_iia = RH_mono[unfolded Rf_mono_iia]
+lemmas CH_Chernoff = CH_iia[unfolded Chernoff_on_iia_on[symmetric]]
+lemmas CH_substitutes_idem = iia_f_idem[OF CH_f_range_on CH_iia, simplified]
+
+(*>*)
+text\<open>\<close>
+
+lemma F1_antimono:
+  shows "antimono F1"
+by %invisible (rule antimonoI) (auto simp: F1_def dest: Diff_mono[OF _ monoD[OF RH_mono]])
+
+lemma F2_antimono:
+  shows "antimono (F2 ds)"
+by %invisible (rule antimonoI) (auto simp: F2_def dest: Diff_mono[OF _ monoD[OF RD_on_mono]])
+
+lemma F_mono:
+  shows "mono (F ds)"
+unfolding %invisible F_def using antimonoD[OF F1_antimono] antimonoD[OF F2_antimono]
+by (auto intro: monoI simp: less_eq_dual_def)
+
 text\<open>
 
 We define the extremal fixed points using Isabelle/HOL's least and
@@ -1373,15 +1356,10 @@ definition lfp_F :: "'b set \<Rightarrow> 'a set \<times> 'a set" where
 lemmas gfp_F_stable_pair_on = fix_F_stable_pair_on[OF gfp_unfold[OF F_mono], folded gfp_F_def]
 lemmas lfp_F_stable_pair_on = fix_F_stable_pair_on[OF lfp_unfold[OF F_mono], folded lfp_F_def]
 
-lemmas (in ContractsWithSubstitutesAndIRC) gfp_F_stable_on = stable_pair_on_stable_on[OF gfp_F_stable_pair_on]
-lemmas (in ContractsWithSubstitutesAndIRC) lfp_F_stable_on = stable_pair_on_stable_on[OF lfp_F_stable_pair_on]
-
 text\<open>
 
 These last two lemmas show that the least and greatest fixed points do
 satisfy @{const "stable_pair"}.
-
-\label{sec:algorithmics-gfp-F-decomposition}
 
 Using standard fixed-point properties, we can establish:
 
@@ -1391,18 +1369,36 @@ lemma F2_o_F1_mono:
   shows "mono (F2 ds \<circ> F1)"
 by %invisible (metis F2_antimono F1_antimono antimono_def comp_apply monoI)
 
+lemmas F2_F1_mono = F2_o_F1_mono[unfolded o_def]
+
 lemma gfp_F_lfp_F:
   shows "gfp_F ds = (F1 (lfp (F2 ds \<circ> F1)), lfp (F2 ds \<circ> F1))"
 proof %invisible -
   let ?F' = "dual \<circ> F2 ds \<circ> F1 \<circ> undual"
   have "gfp (F ds) = (F1 (undual (gfp ?F')), gfp ?F')"
     by (subst gfp_prod[OF F_mono]) (simp add: F_def o_def gfp_const)
-  moreover
-  have "gfp ?F' = dual (lfp (F2 ds \<circ> F1))"
-    by (simp only: undual_equality[symmetric] lfp_dual_gfp[OF F2_o_F1_mono, simplified o_assoc, symmetric]) simp
-  ultimately show ?thesis
-    unfolding gfp_F_def by simp
+  also have "gfp ?F' = dual (lfp (F2 ds \<circ> F1))"
+    by (simp add: undual_equality[symmetric] lfp_dual_gfp[OF F2_o_F1_mono, simplified o_assoc])
+  finally show ?thesis unfolding gfp_F_def by simp
 qed
+
+end
+
+text\<open>
+
+We need hospital CFs to satisfy both @{const substitutes} and @{const irc}
+to relate these fixed points to stable matches.
+
+\<close>
+
+locale ContractsWithSubstitutesAndIRC =
+  ContractsWithSubstitutes + ContractsWithIRC
+begin
+
+lemmas gfp_F_stable_on = stable_pair_on_stable_on[OF gfp_F_stable_pair_on]
+lemmas lfp_F_stable_on = stable_pair_on_stable_on[OF lfp_F_stable_pair_on]
+
+end
 
 text\<open>
 
@@ -1418,6 +1414,9 @@ more effort, to derive efficient algorithms; see, for instance,
 \citet{Bijlsma:1991,Bulwahn-et-al:2008:imp_HOL}.
 
 \<close>
+
+context ContractsWithSubstitutes
+begin
 
 lemma gfp_F_code[code]:
   shows "gfp_F ds = map_prod id undual (while (\<lambda>A. F ds A \<noteq> A) (F ds) top)"
@@ -1498,6 +1497,10 @@ end
 
 lemma H2_ALL [simp]:
   shows "(\<forall>h. P h) = (\<forall>h\<in>{H1, H2}. P h)"
+using H2_UNIV by auto
+
+lemma H2_UNION:
+  shows "(\<Union>h. P h) = (\<Union>h\<in>{H1, H2}. P h)"
 using H2_UNIV by auto
 
 lemma P_D2_H2_d_linear:
@@ -2305,6 +2308,7 @@ by %invisible (rule bourbaki_witt_fixpoint_complete_latticeI[OF cop_F_increasing
 definition fp_cop_F :: "'d set \<Rightarrow> 'x set" where
   "fp_cop_F ds = COP.fixp_above ds {}"
 
+abbreviation "cop ds \<equiv> CH (fp_cop_F ds)"
 (*<*)
 
 lemmas fp_cop_F_unfold = COP.fixp_above_unfold[where a="{}", folded fp_cop_F_def, simplified Field_def, simplified]
@@ -2406,9 +2410,8 @@ text (in ContractsWithSubstitutes) \<open>
 generated by increasing functions do not necessarily form a lattice,
 so there is not necessarily a hospital-optimal match, and indeed in
 general these do not exist.)  Our proof is eased by the decomposition
-lemma @{thm [source] gfp_F_lfp_F}
-(\S\ref{sec:algorithmics-gfp-F-decomposition}) and the standard
-properties of fixed points in a lattice.
+lemma @{thm [source] gfp_F_lfp_F} and the standard properties of fixed
+points in a lattice.
 
 \<close>
 
@@ -2418,22 +2421,22 @@ begin
 lemma lfp_F2_o_F1_fp_cop_F:
   shows "lfp (F2 ds \<circ> F1) = fp_cop_F ds"
 proof(rule antisym)
-  show "lfp (F2 ds \<circ> F1) \<subseteq> fp_cop_F ds"
-    apply (rule lfp_lowerbound)
-    apply (subst (2) fp_cop_F_unfold)
-    apply (clarsimp simp: F2_def F1_def cop_F_def)
-    done
+  have "(F2 ds \<circ> F1) (fp_cop_F ds) \<subseteq> cop_F ds (fp_cop_F ds)"
+    by (clarsimp simp: F2_def F1_def cop_F_def)
+  then show "lfp (F2 ds \<circ> F1) \<subseteq> fp_cop_F ds"
+    by (simp add: lfp_lowerbound fp_cop_F_unfold[symmetric])
 next
   show "fp_cop_F ds \<subseteq> lfp (F2 ds \<circ> F1)"
   proof(induct rule: fp_cop_F_induct)
-    case (step fp) then show ?case
-      unfolding cop_F_def
-      apply simp
-      apply (subst lfp_unfold)
-       using F2_o_F1_mono apply (simp add: o_def)
-      apply (metis Compl_Diff_eq F1_antimono F1_def F2_antimono F2_def Un_subset_iff antimonoD)
-      done
-  qed simp
+    case base then show ?case by simp
+  next
+    case (step fp) note IH = \<open>fp \<subseteq> lfp (F2 ds \<circ> F1)\<close>
+    then have "CD_on ds (- RH fp) \<subseteq> lfp (F2 ds \<circ> F1)"
+      by (subst lfp_unfold[OF F2_o_F1_mono])
+         (metis (no_types, lifting) Compl_Diff_eq F1_antimono F2_antimono F1_def F2_def Un_subset_iff antimonoD comp_apply)
+    with IH show ?case
+      unfolding cop_F_def by blast
+  qed
 qed
 
 theorem Theorem_15:
@@ -2489,10 +2492,10 @@ lemma %invisible CH_Ch_singular:
 unfolding CH_def using assms by auto
 
 definition cop_F_range_inv :: "'d set \<Rightarrow> 'x set \<Rightarrow> bool" where
-  "cop_F_range_inv ds fp = (\<forall>x\<in>fp. x \<in> Field (Pd (Xd x)) \<and> Xd x \<in> ds)"
+  "cop_F_range_inv ds fp \<longleftrightarrow> (\<forall>x\<in>fp. x \<in> Field (Pd (Xd x)) \<and> Xd x \<in> ds)"
 
 definition cop_F_closed_inv :: "'d set \<Rightarrow> 'x set \<Rightarrow> bool" where
-  "cop_F_closed_inv ds fp = (\<forall>x\<in>fp. above (Pd (Xd x)) x \<subseteq> fp)"
+  "cop_F_closed_inv ds fp \<longleftrightarrow> (\<forall>x\<in>fp. above (Pd (Xd x)) x \<subseteq> fp)"
 
 text\<open>
 
@@ -2602,8 +2605,8 @@ end
 context ContractsWithIRC
 begin
 
-lemma fp_cop_F_stable_no_blocking_on:
-  shows "stable_no_blocking_on ds (CH (fp_cop_F ds))"
+lemma cop_stable_no_blocking_on:
+  shows "stable_no_blocking_on ds (cop ds)"
 proof(rule stable_no_blocking_onI)
   fix h X''
   assume C: "X'' = Ch h (CH (fp_cop_F ds) \<union> X'')"
@@ -2617,7 +2620,7 @@ qed
 
 theorem Theorem_16:
   assumes h: "(UNIV::'c set) = {h}"
-  shows "stable_on ds (CH (fp_cop_F ds))" (is "stable_on ds ?fp")
+  shows "stable_on ds (cop ds)" (is "stable_on ds ?fp")
 proof(rule stable_onI)
   show "individually_rational_on ds ?fp"
   proof(rule individually_rational_onI)
@@ -2626,7 +2629,7 @@ proof(rule stable_onI)
       by (rule CD_on_closed) (blast dest: CH_range' fp_cop_F_range_inv')
     show "CH (CH (fp_cop_F ds)) = CH (fp_cop_F ds)" by (simp add: CH_irc_idem)
   qed
-  show "stable_no_blocking_on ds ?fp" by (rule fp_cop_F_stable_no_blocking_on)
+  show "stable_no_blocking_on ds ?fp" by (rule cop_stable_no_blocking_on)
 qed
 
 end

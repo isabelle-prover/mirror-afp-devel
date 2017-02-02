@@ -342,8 +342,6 @@ proof(rule antisym)
     done
 qed
 
-thm gfp_rolling
-
 lemma gfp_dual_lfp:
   fixes f :: "'a::complete_lattice \<Rightarrow> 'a"
   assumes "mono f"

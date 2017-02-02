@@ -356,23 +356,14 @@ shows
   apply oghoare (*23*)
   unfolding tarr_inv_def array_length_def array_nth_def array_in_bound_def
     sumarr_in_lock1_def sumarr_in_lock2_def
-  prefer 17
-  prefer 19
-  defer
-  defer
-  apply ((clarsimp simp: local_postcond_def global_sum_def ex_in_conv[symmetric]);
-         fastforce dest!: less_2_cases intro: local_sum_Suc unat_mono)+ (* ~17s *)
-(*  apply (tactic "PARALLEL_GOALS ((TRY' o SOLVED')
+  apply (tactic "PARALLEL_ALLGOALS ((TRY' o SOLVED')
           (clarsimp_tac (@{context} addsimps
                 @{thms local_postcond_def global_sum_def ex_in_conv[symmetric]}) 
           THEN_ALL_NEW fast_force_tac
              (@{context} addSDs @{thms less_2_cases}
                          addIs @{thms local_sum_Suc unat_mono}
                         )
-          ) 1)") (*2*)
-*)
-   apply clarsimp
-   apply unat_arith
+          ))") (*2*)
    apply clarsimp
    apply (rule conjI)
     apply (fastforce intro!: local_sum_Suc unat_mono)
@@ -383,6 +374,8 @@ shows
     apply unat_arith
    apply (clarsimp simp: not_le)
    apply (erule (1) local_sum_MAXSUM'[rotated] ; unat_arith)
+  apply clarsimp
+  apply unat_arith
  done
 
 lemma less_than_two_2[simp]:
@@ -419,14 +412,12 @@ shows
   unfolding 
     tarr_inv_def local_postcond_def sumarr_in_lock1_def
     sumarr_in_lock2_def
-  by (tactic "TRY (remove_single_Bound_mem @{context} 1)",
-        clarsimp; fastforce dest!: less_2_cases)+ (* 5m *)
-(*  by (tactic "PARALLEL_GOALS (
-                  TRY (remove_single_Bound_mem @{context} 1) THEN
+  by (tactic "PARALLEL_ALLGOALS (
+                  TRY' (remove_single_Bound_mem @{context}) THEN'
                   (TRY' o SOLVED')
                   (clarsimp_tac @{context} THEN_ALL_NEW
                     fast_force_tac (@{context} addSDs @{thms less_2_cases})
-                  ) 1)") (* 1m20sec *) *)
+                  ))") (* 2 minutes *)
 
 lemma pre_call_sumarr:
   "i < 2 \<Longrightarrow> precond x \<Longrightarrow> x \<in> pre (ann (call_sumarr i))"

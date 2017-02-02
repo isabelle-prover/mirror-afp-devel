@@ -47,6 +47,9 @@ qed simp
 
 lemma squarefree_part_pos [simp]: "\<Prod>(squarefree_part n) > 0"
   using prime_gt_0_nat unfolding squarefree_part_def by auto
+    
+lemma squarefree_part_ge_Suc_0 [simp]: "\<Prod>(squarefree_part n) \<ge> Suc 0"
+  using squarefree_part_pos[of n] by presburger
 
 lemma squarefree_part_subset [intro]: "squarefree_part n \<subseteq> prime_factors n"
   unfolding squarefree_part_def by auto
@@ -72,8 +75,23 @@ lemma squarefree_part_le: "p \<in> squarefree_part n \<Longrightarrow> p \<le> n
 lemma square_part_le: "square_part n \<le> n"
   by (cases "n = 0") (simp_all add: dvd_imp_le)
 
+lemma square_part_le_sqrt: "square_part n \<le> nat \<lfloor>sqrt (real n)\<rfloor>"
+proof -
+  have "1 * square_part n ^ 2 \<le> \<Prod>(squarefree_part n) * square_part n ^ 2"
+    by (intro mult_right_mono) simp_all
+  also have "\<dots> = n" by (rule squarefree_decompose)
+  finally have "real (square_part n ^ 2) \<le> real n" by (subst of_nat_le_iff) simp
+  hence "sqrt (real (square_part n ^ 2)) \<le> sqrt (real n)" 
+    by (subst real_sqrt_le_iff) simp_all
+  also have "sqrt (real (square_part n ^ 2)) = real (square_part n)" by simp
+  finally show ?thesis by linarith
+qed    
+
 lemma square_part_pos [simp]: "n > 0 \<Longrightarrow> square_part n > 0"
   unfolding square_part_def using prime_gt_0_nat by auto
+    
+lemma square_part_ge_Suc_0 [simp]: "n > 0 \<Longrightarrow> square_part n \<ge> Suc 0"
+  using square_part_pos[of n] by presburger
 
 lemma zero_not_in_squarefree_part [simp]: "0 \<notin> squarefree_part n"
   unfolding squarefree_part_def by auto
@@ -169,6 +187,49 @@ proof -
   moreover have "A2 = squarefree_part n" "s2 = square_part n" 
     by ((rule squarefree_decomposition_unique2[of n A2 s2], insert assms n, simp_all)[])+
   ultimately show "A1 = A2" "s1 = s2" by simp_all
+qed
+
+text \<open>
+  The following is a nice and simple lower bound on the number of prime numbers less than 
+  a given number due to Erd\H{o}s. In particular, it implies that there are infinitely many primes.
+\<close>
+lemma primes_lower_bound:
+  fixes n :: nat
+  assumes "n > 0"
+  defines "\<pi> \<equiv> \<lambda>n. card {p. prime p \<and> p \<le> n}"
+  shows   "real (\<pi> n) \<ge> ln (real n) / ln 4"
+proof -
+  have "real n = real (card {1..n})" by simp
+  also have "{1..n} = (\<lambda>(A, b). \<Prod>A * b^2) ` (\<lambda>n. (squarefree_part n, square_part n)) ` {1..n}"
+    unfolding image_comp o_def squarefree_decompose case_prod_unfold fst_conv snd_conv by simp
+  also have "card \<dots> \<le> card ((\<lambda>n. (squarefree_part n, square_part n)) ` {1..n})"
+    by (rule card_image_le) simp_all
+  also have "\<dots> \<le> card (squarefree_part ` {1..n} \<times> square_part ` {1..n})"
+    by (rule card_mono) auto
+  also have "real \<dots> = real (card (squarefree_part ` {1..n})) * real (card (square_part ` {1..n}))"
+    by simp
+  also have "\<dots> \<le> 2 ^ \<pi> n * sqrt (real n)"
+  proof (rule mult_mono)
+    have "card (squarefree_part ` {1..n}) \<le> card (Pow {p. prime p \<and> p \<le> n})"
+      using squarefree_part_subset squarefree_part_le by (intro card_mono) force+
+    also have "real \<dots> = 2 ^ \<pi> n" by (simp add: \<pi>_def card_Pow)
+    finally show "real (card (squarefree_part ` {1..n})) \<le> 2 ^ \<pi> n" by - simp_all
+  next
+    have "square_part k \<le> nat \<lfloor>sqrt n\<rfloor>" if "k \<le> n" for k
+      by (rule order.trans[OF square_part_le_sqrt])
+         (insert that, auto intro!: nat_mono floor_mono)
+    hence "card (square_part ` {1..n}) \<le> card {1..nat \<lfloor>sqrt n\<rfloor>}"
+      by (intro card_mono) (auto intro: order.trans[OF square_part_le_sqrt])
+    also have "\<dots> = nat \<lfloor>sqrt n\<rfloor>" by simp
+    also have "real \<dots> \<le> sqrt n" by simp
+    finally show "real (card (square_part ` {1..n})) \<le> sqrt (real n)" by - simp_all
+  qed simp_all
+  finally have "real n \<le> 2 ^ \<pi> n * sqrt (real n)" by - simp_all
+  with \<open>n > 0\<close> have "ln (real n) \<le> ln (2 ^ \<pi> n * sqrt (real n))"
+    by (subst ln_le_cancel_iff) simp_all
+  moreover have "ln (4 :: real) = real 2 * ln 2" by (subst ln_realpow [symmetric]) simp_all
+  ultimately show ?thesis using \<open>n > 0\<close>
+    by (simp add: ln_mult ln_realpow[of _ "\<pi> n"] ln_sqrt field_simps)
 qed
 
 end

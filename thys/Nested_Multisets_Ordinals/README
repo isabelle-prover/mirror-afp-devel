@@ -8,13 +8,6 @@ The ".thy" files are Isabelle theory files. They can be processed as follows:
 
     isabelle jedit Syntactic_Ordinal.thy
 
-The main files are
-
-    Nested_Multiset.thy
-    (Signed_)Hereditary_Multiset.thy
-    (Signed_)Syntactic_Ordinal.thy
-    Signed_Multiset.thy
-
 A PDF version of the proof is available as
 
     document.pdf

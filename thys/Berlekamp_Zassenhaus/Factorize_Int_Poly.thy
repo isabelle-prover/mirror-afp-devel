@@ -180,7 +180,7 @@ proof -
         with sf[unfolded square_free_def] have deg: "degree g = 0" by auto
         from content_dvd_1[OF cnt g'(1)] have cnt: "content g = 1" .
         from degree0_coeffs[OF deg] obtain c where gc: "g = [: c :]" by auto
-        from cnt[unfolded gc content_def list_gcd_def, simplified] have "abs c = 1" 
+        from cnt[unfolded gc content_def, simplified] have "abs c = 1" 
           by (cases "c = 0", auto)
         with g gc have "gcd fi Fi \<in> {1,-1}" by fastforce
         thus "coprime fi Fi" by (metis coprime_1_left gcd_neg1 gcd_right_idem insertE singletonD)
@@ -425,7 +425,7 @@ proof -
             case False
             with divides_degree[OF d(1), unfolded degx] have "degree d = 0" by auto
             from degree0_coeffs[OF this] obtain c where dc: "d = [:c:]" by auto
-            from cnt[unfolded dc] have "is_unit c" by (auto simp: content_def list_gcd_def, cases "c = 0", auto)
+            from cnt[unfolded dc] have "is_unit c" by (auto simp: content_def, cases "c = 0", auto)
             hence "d * d = 1" unfolding dc by (auto simp: one_poly_def, cases "c = -1"; cases "c = 1", auto)
             thus "is_unit d" by (metis dvd_triv_right)
           next
@@ -437,7 +437,7 @@ proof -
             from degree0_coeffs[OF this] xde obtain e where xde: "?x = [:e:] * d" by auto
             from arg_cong[OF this, of content, unfolded gauss_lemma] x
             have "content [:e:] * content d = 1" by auto
-            also have "content [:e :] = abs e" by (auto simp: content_def list_gcd_def, cases "e = 0", auto)
+            also have "content [:e :] = abs e" by (auto simp: content_def, cases "e = 0", auto)
             finally have "\<bar>e\<bar> * content d = 1" .
             from pos_zmult_eq_1_iff_lemma[OF this] have "e * e = 1" by (cases "e = 1"; cases "e = -1", auto)
             with arg_cong[OF xde, of "smult e"] have "d = ?x * [:e:]" by auto

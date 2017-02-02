@@ -369,12 +369,10 @@ lemma set_mset_minus_replicate_mset[simp]:
 abbreviation removeAll_mset :: "'a \<Rightarrow> 'a multiset \<Rightarrow> 'a multiset" where
 "removeAll_mset C M \<equiv> M - replicate_mset (count M C) C"
 
-lemma mset_removeAll[simp, code]:
-  "removeAll_mset C (mset L) = mset (removeAll C L)"
+lemma mset_removeAll[simp, code]: "removeAll_mset C (mset L) = mset (removeAll C L)"
   by (induction L) (auto simp: ac_simps multiset_eq_iff split: if_split_asm)
 
-lemma removeAll_mset_filter_mset:
-  "removeAll_mset C M = filter_mset (op \<noteq> C) M"
+lemma removeAll_mset_filter_mset: "removeAll_mset C M = filter_mset (op \<noteq> C) M"
   by (induction M) (auto simp: ac_simps multiset_eq_iff)
 
 abbreviation remove1_mset :: "'a \<Rightarrow> 'a multiset \<Rightarrow> 'a multiset" where

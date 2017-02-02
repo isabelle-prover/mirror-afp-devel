@@ -1,7 +1,7 @@
 This archive contains the Isabelle formalization of the results presented in
 the paper
 
-    Lambda-Free Higher-Order Knuth-Bendix Orders
+    Transfinite Knuth--Bendix Orders for Lambda-Free Higher-Order Terms
     by Heiko Becker, Jasmin Christian Blanchette, Uwe Waldmann, and Daniel Wand
 
 The ".thy" files are Isabelle theory files. They can be processed as follows:

@@ -331,24 +331,22 @@ lemma
     \<gamma>_lt_\<delta>: "\<gamma> < \<delta>"
   shows "\<alpha>2 + \<beta>2 * \<delta> < \<alpha>1 + \<beta>1 * \<delta>"
 proof -
-  let ?Z = zhmset_of
+  let ?z = zhmset_of
 
   note \<alpha>\<beta>2\<gamma>_lt_\<alpha>\<beta>1\<gamma>' = \<alpha>\<beta>2\<gamma>_lt_\<alpha>\<beta>1\<gamma>[THEN zhmset_of_less[THEN iffD2],
     simplified zhmset_of_plus zhmset_of_times]
   note \<beta>2_le_\<beta>1' = \<beta>2_le_\<beta>1[THEN zhmset_of_le[THEN iffD2]]
   note \<gamma>_lt_\<delta>' = \<gamma>_lt_\<delta>[THEN zhmset_of_less[THEN iffD2]]
 
-  have "?Z \<alpha>2 + ?Z \<beta>2 * ?Z \<delta> = ?Z \<alpha>2 + ?Z \<beta>2 * ?Z \<gamma> + ?Z \<beta>2 * (?Z \<delta> - ?Z \<gamma>)"
+  have "?z \<alpha>2 + ?z \<beta>2 * ?z \<delta> = ?z \<alpha>2 + ?z \<beta>2 * ?z \<gamma> + ?z \<beta>2 * (?z \<delta> - ?z \<gamma>)"
     by (simp add: algebra_simps)
-  also have "\<dots> < ?Z \<alpha>1 + ?Z \<beta>1 * ?Z \<gamma> + ?Z \<beta>2 * (?Z \<delta> - ?Z \<gamma>)"
+  also have "\<dots> < ?z \<alpha>1 + ?z \<beta>1 * ?z \<gamma> + ?z \<beta>2 * (?z \<delta> - ?z \<gamma>)"
     using \<alpha>\<beta>2\<gamma>_lt_\<alpha>\<beta>1\<gamma>' by simp
-  also have "\<dots> \<le> ?Z \<alpha>1 + ?Z \<beta>1 * ?Z \<gamma> + ?Z \<beta>1 * (?Z \<delta> - ?Z \<gamma>)"
+  also have "\<dots> \<le> ?z \<alpha>1 + ?z \<beta>1 * ?z \<gamma> + ?z \<beta>1 * (?z \<delta> - ?z \<gamma>)"
     using \<beta>2_le_\<beta>1' \<gamma>_lt_\<delta>' by simp
-  also have "\<dots> = ?Z \<alpha>1 + ?Z \<beta>1 * ?Z \<delta>"
+  also have "\<dots> = ?z \<alpha>1 + ?z \<beta>1 * ?z \<delta>"
     by (simp add: algebra_simps)
-  finally have "?Z \<alpha>2 + ?Z \<beta>2 * ?Z \<delta> < ?Z \<alpha>1 + ?Z \<beta>1 * ?Z \<delta>"
-    by assumption
-  thus ?thesis
+  finally show ?thesis
     by (simp add: zmset_of_less zhmset_of_times[symmetric]
       zhmset_of_plus[symmetric])
 qed

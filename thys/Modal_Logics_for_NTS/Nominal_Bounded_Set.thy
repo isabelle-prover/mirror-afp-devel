@@ -60,4 +60,13 @@ lemma map_bset_eqvt [eqvt]:
   "p \<bullet> map_bset f B = map_bset (p \<bullet> f) (p \<bullet> B)"
 by transfer simp
 
+lemma bempty_eqvt [eqvt]: "p \<bullet> bempty = bempty"
+by transfer simp
+
+lemma binsert_eqvt [eqvt]: "p \<bullet> (binsert x B) = binsert (p \<bullet> x) (p \<bullet> B)"
+by transfer simp
+
+lemma bsingleton_eqvt [eqvt]: "p \<bullet> bsingleton x = bsingleton (p \<bullet> x)"
+by (simp add: map_bset_permute)
+
 end

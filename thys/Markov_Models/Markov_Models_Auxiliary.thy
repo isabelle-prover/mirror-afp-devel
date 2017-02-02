@@ -296,11 +296,11 @@ lemma nn_integral_stretch:
 
 lemma prod_sum_distrib:
   fixes f g :: "'a \<Rightarrow> 'b \<Rightarrow> 'c::comm_semiring_1"
-  assumes "finite I" shows "(\<And>i. i \<in> I \<Longrightarrow> finite (J i)) \<Longrightarrow> (\<Prod>i\<in>I. \<Sum>j\<in>J i. f i j) = (\<Sum>m\<in>PiE I J. \<Prod>i\<in>I. f i (m i))"
+  assumes "finite I" shows "(\<And>i. i \<in> I \<Longrightarrow> finite (J i)) \<Longrightarrow> (\<Prod>i\<in>I. \<Sum>j\<in>J i. f i j) = (\<Sum>m\<in>Pi\<^sub>E I J. \<Prod>i\<in>I. f i (m i))"
   using \<open>finite I\<close>
 proof induction
   case (insert i I) then show ?case
-    by (auto simp: PiE_insert_eq finite_PiE sum.reindex inj_combinator sum.commute[of _ "PiE I J"]
+    by (auto simp: PiE_insert_eq finite_PiE sum.reindex inj_combinator sum.commute[of _ "Pi\<^sub>E I J"]
                    sum_cartesian_product' sum_distrib_left sum_distrib_right
              intro!: sum.cong prod.cong arg_cong[where f="op * x" for x])
 qed simp

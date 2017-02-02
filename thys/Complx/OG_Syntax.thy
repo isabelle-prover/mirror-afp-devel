@@ -99,8 +99,27 @@ syntax
 definition "FAKE_ANN \<equiv> UNIV"
 
 translations
-  "r \<acute>x := a" \<rightharpoonup> "CONST AnnCom (CONST AnnExpr r) (CONST Basic \<guillemotleft>\<acute>(_update_name x (\<lambda>_. a))\<guillemotright>)"
+  "r \<acute>x := a" \<rightharpoonup> "CONST AnnCom (CONST AnnExpr r)
+                               (CONST Basic \<guillemotleft>\<acute>(_update_name x (\<lambda>_. a))\<guillemotright>)"
   "\<acute>x := a" \<rightleftharpoons> "CONST FAKE_ANN \<acute>x := a"
+
+abbreviation
+  "update_var f S s \<equiv> (\<lambda>v. f (\<lambda>_. v) s) ` S"
+
+abbreviation
+  "fun_to_rel f \<equiv>  \<Union> ((\<lambda>s. (\<lambda>v. (s, v)) ` f s) ` UNIV)"
+
+syntax
+  "_Spec"      :: "idt \<Rightarrow> 'b \<Rightarrow> ('s,'p,'f) ann_com"
+                   ("(\<acute>_ :\<in>/ _)" [70, 65] 61)
+  "_AnnSpec"   :: "'a assn \<Rightarrow> idt \<Rightarrow> 'b \<Rightarrow> ('s,'p,'f) ann_com"
+                   ("(_//\<acute>_ :\<in>/ _)" [90,70,65] 61)
+
+translations
+  "r \<acute>x :\<in> S" \<rightharpoonup> "CONST AnnCom (CONST AnnExpr r)
+                               (CONST Spec (CONST fun_to_rel \<guillemotleft>\<acute>(CONST update_var (_update_name x) S)\<guillemotright>))"
+  "\<acute>x :\<in> S" \<rightleftharpoons> "CONST FAKE_ANN \<acute>x :\<in> S"
+
 
 nonterminal grds and grd
 
@@ -128,15 +147,17 @@ syntax
                     ("(WHILE _//(2DO/ (_))//OD)"  [0, 0] 61)
   "_Await"       :: "'s bexp  \<Rightarrow> ('s,'p,'f) ann_com \<Rightarrow> ('s,'p,'f) ann_com"
                     ("(AWAIT _/ (2THEN/ (_))/ END)"  [0,0] 61)
+  "_Atom"        :: "('s,'p,'f) ann_com \<Rightarrow> ('s,'p,'f) ann_com"
+                    ("(\<langle>_\<rangle>)" [0] 61)
   "_Wait"        :: "'s bexp \<Rightarrow> ('s,'p,'f) ann_com"
                     ("(WAIT _/ END)" [0] 61)
   "_grd"         :: "'f \<Rightarrow> 's bexp \<Rightarrow> grd"
                     ("'(_, _')" [1000] 1000)
   "_last_grd"    :: "grd \<Rightarrow> grds"   ("_" 1000)
   "_grds"        :: "[grd, grds] \<Rightarrow> grds"
-                    ("_,/ _" [999,1000] 1000)
+                    ("(_,/ _)" [999,1000] 1000)
   "_guards"      :: "'s assn \<Rightarrow> grds  \<Rightarrow> ('s,'p,'f) ann_com \<Rightarrow> ('s,'p,'f) ann_com"
-                    ("(_//(2_/ \<longmapsto>/ (_)))" [90, 0, 56] 61)
+                    ("(_//(2_ \<longmapsto>/ (_)))" [90, 0, 56] 61)
   "_Throw"       :: "('s,'p,'f) ann_com"
                     ("THROW" 61)
   "_AnnThrow"    :: "'s assn \<Rightarrow> ('s,'p,'f) ann_com"
@@ -169,6 +190,7 @@ translations
   "WHILE b DO c OD" \<rightleftharpoons> "CONST FAKE_ANN WHILE b INV CONST FAKE_ANN DO c OD"
   "WHILE b INV i DO c OD" \<rightleftharpoons> "CONST FAKE_ANN WHILE b INV i DO c OD"
   "AWAIT b THEN c END" \<rightleftharpoons> "CONST FAKE_ANN AWAIT b THEN c END"
+  "\<langle>c\<rangle>" \<rightleftharpoons> "CONST FAKE_ANN AWAIT CONST True THEN c END"
   "WAIT b END" \<rightleftharpoons> "AWAIT b THEN SKIP END"
 
   "_grd f g" \<rightharpoonup> "(f, g)"
@@ -234,14 +256,20 @@ print_translation \<open> let
 
   fun annbexp_tr' name (r :: (Const (@{const_syntax Collect}, _) $ t) :: ts) =
         annquote_tr' (Syntax.const name) (r :: t :: ts)
+    | annbexp_tr' name (r :: Const (@{const_syntax UNIV}, _) :: ts) =
+        annquote_tr' (Syntax.const name)
+                     (r :: Abs ("s", dummyT, Const (@{const_syntax True}, dummyT)) :: ts)
+    | annbexp_tr' name (r :: Const (@{const_syntax Set.empty}, _) :: ts) =
+        annquote_tr' (Syntax.const name)
+                     (r :: Abs ("s", dummyT, Const (@{const_syntax False}, dummyT)) :: ts)
     | annbexp_tr' name x =
-        let val _ = if syntax_debug then writeln (@{make_string} x) else () in
+        let val _ = if syntax_debug then writeln ("annbexp_tr'\n " ^ @{make_string} x) else () in
         raise Match end;
 
   fun annassign_tr' (r :: Abs (x, _, f $ k $ Bound 0) :: ts) =
         quote_tr' (Syntax.const @{syntax_const "_AnnAssign"} $ r $ Syntax_Trans.update_name_tr' f)
           (Abs (x, dummyT, Syntax_Trans.const_abs_tr' k) :: ts)
-    | annassign_tr' r = let val _ = writeln (@{make_string} r) in
+    | annassign_tr' r = let val _ = writeln ("annassign_tr'\n " ^ @{make_string} r) in
      raise Match end;
 
   fun dest_list (Const (@{const_syntax Nil}, _)) = []
@@ -303,6 +331,13 @@ print_translation \<open> let
       let val _ = if syntax_debug then writeln "Basic" else () in
         quote_tr' (Syntax.const @{syntax_const "_AnnAssign"} $ r $ Syntax_Trans.update_name_tr' f)
           (k :: ts) end
+    | AnnCom_tr (Const (@{const_syntax AnnExpr}, _) $ r ::
+               Const (@{const_syntax Spec}, _) $ (_ $ _ $ Abs (_,_, _ $ _ $ ((_ $ f) $ S $ _))) :: ts) =
+      let val _ = if syntax_debug then writeln ("Spec") else () in
+        (Syntax.const @{syntax_const "_AnnSpec"} $ r $
+           Syntax_Trans.update_name_tr' f $
+           Syntax_Trans.antiquote_tr' @{syntax_const "_antiquote"} S)
+      end
     | AnnCom_tr (Const (@{const_syntax AnnComp}, _) $ r $ r' ::
                Const (@{const_syntax Seq}, _) $ c $ c' :: ts) =
       let val _ = if syntax_debug then writeln "Seq" else ()
@@ -354,7 +389,7 @@ print_translation \<open> let
                Const (@{const_syntax com}, _) $ p' :: ts) =
        let val _ = if syntax_debug then writeln "ann_com" else ()
           in if p = p' then p else raise Match end
-    | AnnCom_tr x = let val _ = if syntax_debug then writeln (@{make_string} x) else ()
+    | AnnCom_tr x = let val _ = if syntax_debug then writeln ("AnnCom_tr\n " ^ @{make_string} x) else ()
           in raise Match end;
 
     fun oghoare_tr (gamma :: sigma :: F :: r :: c :: Q :: A :: ts) =
@@ -362,15 +397,15 @@ print_translation \<open> let
           in Syntax.const @{syntax_const "_oghoare"} $
                gamma $ sigma $ F $ new_AnnCom r c $ Q $ A
           end
-      | oghoare_tr x = let val _ = writeln (@{make_string} x)
+      | oghoare_tr x = let val _ = writeln ("oghoare_tr\n " ^ @{make_string} x)
             in raise Match end;
 
     fun oghoare_seq_tr (gamma :: sigma :: F :: P :: r :: c :: Q :: A :: ts) =
-        let val _ = if syntax_debug then writeln "oghoare" else ()
+        let val _ = if syntax_debug then writeln "oghoare_seq" else ()
           in Syntax.const @{syntax_const "_oghoare_seq"} $
                gamma $ sigma $ F $ P $ new_AnnCom r c $ Q $ A
           end
-      | oghoare_seq_tr x = let val _ = writeln (@{make_string} x)
+      | oghoare_seq_tr x = let val _ = writeln ("oghoare_seq_tr\n " ^ @{make_string} x)
             in raise Match end;
 
   in
