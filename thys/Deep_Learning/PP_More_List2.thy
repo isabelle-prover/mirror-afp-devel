@@ -7,7 +7,6 @@ section \<open>Less common functions on lists\<close>
 theory PP_More_List2
 imports
   Main
-  PP_Auxiliary
 begin
 
 definition strip_while :: "('a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list"
