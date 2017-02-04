@@ -1,5 +1,11 @@
 chapter AFP
 
+(* There must be one session with the name of the entry.
+   This session generates the web document and must test all theories.
+   There may be further sessions but they will not be run by the automatic
+   regression tests.
+*)
+
 (* Session name, add to AFP group, list base session: *)
 session "Example-Submission" (AFP) = HOL +
 
