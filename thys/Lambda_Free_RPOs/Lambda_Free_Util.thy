@@ -269,8 +269,17 @@ lemma butlast_append_Cons[simp]: "butlast (xs @ y # ys) = xs @ butlast (y # ys)"
 lemma rev_in_lists[simp]: "rev xs \<in> lists A \<longleftrightarrow> xs \<in> lists A"
   by auto
 
+lemma hd_le_sum_list:
+  fixes xs :: "'a::ordered_ab_semigroup_monoid_add_imp_le list"
+  assumes "xs \<noteq> []" and "\<forall>i < length xs. xs ! i \<ge> 0"
+  shows "hd xs \<le> sum_list xs"
+  using assms
+  by (induct xs rule: rev_induct, simp_all,
+    metis add_cancel_right_left add_increasing2 hd_append2 lessI less_SucI list.sel(1) nth_append
+      nth_append_length order_refl self_append_conv2 sum_list.Nil)
+
 lemma sum_list_ge_length_times:
-  fixes a :: "'a :: {ordered_ab_semigroup_add,semiring_1}"
+  fixes a :: "'a::{ordered_ab_semigroup_add,semiring_1}"
   assumes "\<forall>i < length xs. xs ! i \<ge> a"
   shows "sum_list xs \<ge> of_nat (length xs) * a"
   using assms
