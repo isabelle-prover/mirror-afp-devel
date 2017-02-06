@@ -6,7 +6,7 @@ the paper
 
 and in the accompanying report. References to definitions, lemmas, and
 theorems below are given for the report. The corresponding number for the
-paper is given in parentheses when the numbers differ.
+paper is given in square brackets when the numbers differ.
 
 The ".thy" files are Isabelle theory files. They can be processed as follows:
 
@@ -53,6 +53,6 @@ Most of Section 4 ("Properties") is formalized in "Lambda_Free_RPO_Std.thy":
 
 The rest of Section 4 is formalized in "Lambda_Free_RPO_Optim.thy":
 
-  * Lemma 20 (20(1)) corresponds to "lemma gt_trans".
-  * Lemma 21 (20(2)) corresponds to "lemma gt_sub_fun".
-  * Theorem 22 (21) corresponds to "theorem gt_iff_optim".
+  * Lemma 20 [20(1)] corresponds to "lemma gt_trans".
+  * Lemma 21 [20(2)] corresponds to "lemma gt_sub_fun".
+  * Theorem 22 [21] corresponds to "theorem gt_iff_optim".
