@@ -6,7 +6,7 @@
     Maintainer:  Jasmin Blanchette <jasmin.blanchette at inria.fr>
 *)
 
-section \<open>The Graceful Transfinite Knuth-Bendix Order with Subterm Coefficients for
+section \<open>The Graceful Transfinite Knuth--Bendix Order with Subterm Coefficients for
   Lambda-Free Higher-Order Terms\<close>
 
 theory Lambda_Free_TKBO_Coefs
@@ -80,8 +80,19 @@ lemmas \<epsilon>\<^sub>h_gt_0 = \<epsilon>_gt_0[folded of_nat_less_hmset, unfol
 lemmas \<delta>\<^sub>h_le_\<epsilon>\<^sub>h = \<delta>_le_\<epsilon>[folded of_nat_le_hmset]
 lemmas arity_hd\<^sub>h_lt_\<omega>_if_\<delta>\<^sub>h_gt_0 = arity_hd_ne_infinity_if_\<delta>_gt_0
   [folded of_nat_less_hmset, unfolded of_nat_0, folded hmset_of_enat_lt_iff_ne_infinity]
-lemmas wt_sym_0_imp_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h = wt_sym_0_imp_\<delta>_eq_\<epsilon>[folded of_nat_inject_hmset, unfolded of_nat_0]
-lemmas wt_sym_0_unary\<^sub>h = wt_sym_0_unary[folded hmset_of_enat_inject, unfolded hmset_of_enat_1]
+
+lemma wt_sym_ge\<^sub>h: "wt_sym f \<ge> \<epsilon>\<^sub>h - \<delta>\<^sub>h * arity_sym\<^sub>h f"
+proof -
+  have "of_nat (the_enat (of_nat \<delta> * arity_sym f)) = \<delta>\<^sub>h * arity_sym\<^sub>h f"
+  by (cases "arity_sym f", simp add: of_nat_eq_enat,
+    metis arity_sym_ne_infinity_if_\<delta>_gt_0 gr_zeroI mult_eq_0_iff of_nat_0 the_enat_0)
+  thus ?thesis
+    using wt_sym_ge[unfolded of_nat_minus_hmset] by metis
+qed
+
+lemmas unary_wt_sym_0_gt\<^sub>h = unary_wt_sym_0_gt[folded hmset_of_enat_inject, unfolded hmset_of_enat_1]
+lemmas unary_wt_sym_0_imp_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h = unary_wt_sym_0_imp_\<delta>_eq_\<epsilon>
+  [folded of_nat_inject_hmset, unfolded of_nat_0]
 lemmas extf_ext_snoc_if_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h = extf_ext_snoc_if_\<delta>_eq_\<epsilon>[folded of_nat_inject_hmset]
 lemmas extf_snoc_if_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h = ext_snoc.snoc[OF extf_ext_snoc_if_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h]
 lemmas arity_sym\<^sub>h_lt_\<omega>_if_\<delta>\<^sub>h_gt_0 = arity_sym_ne_infinity_if_\<delta>_gt_0
@@ -343,11 +354,6 @@ next
     by (simp add: zhmset_of_plus)
 qed
 
-lemma \<delta>\<^sub>h_times_arity_sym\<^sub>h_lt_\<omega>: "\<delta>\<^sub>h * arity_sym\<^sub>h f < \<omega>"
-  using arity_sym\<^sub>h_lt_\<omega>_if_\<delta>\<^sub>h_gt_0
-  by (cases \<delta>, simp, metis of_nat_0 of_nat_lt_\<omega> of_nat_less_hmset lt_\<omega>_lt_\<omega>_imp_times_lt_\<omega>
-    zero_less_Suc)
-
 lemma wt_ge_\<epsilon>\<^sub>h:
   assumes legal: "legal_zpassign A"
   shows "eval_ztpoly A (wt s) \<ge> zhmset_of \<epsilon>\<^sub>h"
@@ -355,55 +361,54 @@ proof (induct s rule: tm_induct_apps)
   case (apps \<zeta> ss)
   note ih = this(1)
 
-  let ?f = "min_ground_head \<zeta>"
-
   {
-    assume wt_f: "wt_sym ?f = 0"
-    hence \<delta>_eq_\<epsilon>: "\<delta>\<^sub>h = \<epsilon>\<^sub>h"
-      using wt_sym_0_imp_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h by blast
+    assume ss_eq_nil: "ss = []"
 
-    have ?case (is "_ \<le> ?rhs")
-    proof (cases "length ss = 0")
-      case True
-      thus ?thesis
-        using wt0_ge_min_ground_head[OF legal]
-        by (clarsimp simp: \<delta>_eq_\<epsilon>[symmetric] wt_sym_0_unary\<^sub>h[OF wt_f])
-          (metis hmsetmset_0 wt_f zero_zhmultiset.abs_eq zmset_of_empty)
-    next
-      case len_ss_nz: False
-      hence "zip ss [0..<length ss] = (hd ss, 0) # zip (tl ss) [1..<length ss]"
-        by (metis One_nat_def length_0_conv length_greater_0_conv list.exhaust_sel upt_rec
-          zip_Cons_Cons)
-      hence wt_args_split:
-        "wt_args 0 A \<zeta> ss = eval_ztpoly A (PMult [coef_hd \<zeta> 0, wt (hd ss)]) + wt_args 1 A \<zeta> (tl ss)"
-        by (simp add: wt_args_def) (metis (no_types) Suc_pred len_ss_nz neq0_conv upt_Suc_append)
-
-      have "zhmset_of \<epsilon>\<^sub>h \<le> eval_ztpoly A (coef_hd \<zeta> 0) * eval_ztpoly A (wt (hd ss))"
-        using ih[of "hd ss", OF hd_in_set[OF len_ss_nz]]
-        by (metis coef_hd_gt_0 legal mult.comm_neutral mult.commute mult_mono' of_nat_0_le_iff
-          of_nat_zhmset zero_le_one zero_less_iff_1_le_zhmset)
-      also have "\<dots> \<le> ?rhs"
-        by (auto simp: comp_def wt_args_split[unfolded wt_args_def comp_def, simplified]
-          intro!: add_nonneg_nonneg mult_nonneg_nonneg sum_list_nonneg eval_ztpoly_nonneg[OF legal])
-      finally show ?thesis
-        by assumption
-    qed
+    have "\<epsilon>\<^sub>h \<le> wt_sym (min_ground_head \<zeta>) + \<delta>\<^sub>h * arity_sym\<^sub>h (min_ground_head \<zeta>)"
+      using wt_sym_ge\<^sub>h[of "min_ground_head \<zeta>"]
+      by (metis add_diff_cancel_left' leD leI le_imp_minus_plus_hmset le_minus_plus_same_hmset
+        less_le_trans)
+    hence "zhmset_of \<epsilon>\<^sub>h
+      \<le> zhmset_of (wt_sym (min_ground_head \<zeta>)) + zhmset_of (\<delta>\<^sub>h * arity_sym\<^sub>h (min_ground_head \<zeta>))"
+      by (metis zhmset_of_le zhmset_of_plus)
+    also have "\<dots>
+      \<le> eval_tpoly A (map_tpoly (\<lambda>x. x) zhmset_of (wt0 \<zeta>))
+        + zhmset_of (\<delta>\<^sub>h * arity_sym\<^sub>h (min_ground_head \<zeta>))"
+      using wt0_ge_min_ground_head[OF legal] by simp
+    finally have ?case
+      using ss_eq_nil by simp
   }
   moreover
   {
-    assume wt_f_ge_\<epsilon>: "wt_sym ?f \<ge> \<epsilon>\<^sub>h"
+    let ?arg_wt =
+      "eval_tpoly A \<circ> (map_tpoly (\<lambda>x. x) zhmset_of \<circ> (\<lambda>(s, i). PMult [coef_hd \<zeta> i, wt s]))"
 
-    have "zhmset_of \<epsilon>\<^sub>h \<le> eval_tpoly A (zhmset_of_tpoly (wt0 \<zeta>))"
-      using wt0_ge_min_ground_head[OF legal, of \<zeta>] wt_f_ge_\<epsilon>
-      by (meson leD leI less_le_trans zhmset_of_le)
-    also have "\<dots> \<le> eval_tpoly A (zhmset_of_tpoly (wt (apps (Hd \<zeta>) ss)))"
-      by (auto intro!: add_nonneg_nonneg mult_nonneg_nonneg sum_list_nonneg
-        eval_ztpoly_nonneg[OF legal])
+    assume ss_ne_nil: "ss \<noteq> []"
+    hence "zhmset_of \<epsilon>\<^sub>h
+      \<le> eval_tpoly A (map_tpoly (\<lambda>x. x) zhmset_of (PMult [coef_hd \<zeta> 0, wt (hd ss)]))"
+      by (simp add: ih coef_hd_gt_0[OF legal] nonneg_le_mult_right_mono_zhmset)
+    also have "\<dots> = hd (map ?arg_wt (zip ss [0..<length ss]))"
+      using ss_ne_nil by (simp add: hd_map zip_nth_conv hd_conv_nth)
+    also have "\<dots> \<le> sum_list (map ?arg_wt (zip ss [0..<length ss]))"
+      by (rule hd_le_sum_list,
+        metis (no_types, lifting) length_greater_0_conv list.collapse list.simps(3) list.simps(9)
+          ss_ne_nil upt_conv_Cons zip_Cons_Cons,
+        simp add: eval_ztpoly_nonneg legal)
+    also have "\<dots>
+      \<le> eval_tpoly A (map_tpoly (\<lambda>x. x) zhmset_of (wt0 \<zeta>)) +
+        (zhmset_of (\<delta>\<^sub>h * (arity_sym\<^sub>h (min_ground_head \<zeta>) - of_nat (length ss))) +
+         sum_list (map ?arg_wt (zip ss [0..<length ss])))"
+    proof -
+      have "0 \<le> eval_tpoly A (map_tpoly (\<lambda>p. p) zhmset_of (wt0 \<zeta>))"
+        using legal eval_ztpoly_nonneg by blast
+      then show ?thesis
+        by (meson leD leI le_add_same_cancel2 less_le_trans zhmset_of_nonneg)
+    qed
     finally have ?case
-      by assumption
+      by simp
   }
   ultimately show ?case
-    using wt_sym_0_or_ge_\<epsilon> by meson
+    by linarith
 qed
 
 lemma wt_args_ge_length_times_\<epsilon>\<^sub>h:
@@ -642,7 +647,8 @@ subsection \<open>Inductive Definitions\<close>
 inductive gt :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix ">\<^sub>t" 50) where
   gt_wt: "wt t >\<^sub>p wt s \<Longrightarrow> t >\<^sub>t s"
 | gt_unary: "wt t \<ge>\<^sub>p wt s \<Longrightarrow> \<not> head t \<le>\<ge>\<^sub>h\<^sub>d head s \<Longrightarrow> num_args t = 1 \<Longrightarrow>
-    (\<exists>f \<in> ground_heads (head t). wt_sym f = 0) \<Longrightarrow> arg t >\<^sub>t s \<or> arg t = s \<Longrightarrow> t >\<^sub>t s"
+    (\<exists>f \<in> ground_heads (head t). arity_sym f = 1 \<and> wt_sym f = 0) \<Longrightarrow> arg t >\<^sub>t s \<or> arg t = s \<Longrightarrow>
+    t >\<^sub>t s"
 | gt_diff: "wt t \<ge>\<^sub>p wt s \<Longrightarrow> head t >\<^sub>h\<^sub>d head s \<Longrightarrow> t >\<^sub>t s"
 | gt_same: "wt t \<ge>\<^sub>p wt s \<Longrightarrow> head t = head s \<Longrightarrow>
     (\<forall>f \<in> ground_heads (head t). extf f (op >\<^sub>t) (args t) (args s)) \<Longrightarrow> t >\<^sub>t s"
@@ -655,7 +661,7 @@ inductive gt_wt :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" wh
 
 inductive gt_unary :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" where
   gt_unaryI: "wt t \<ge>\<^sub>p wt s \<Longrightarrow> \<not> head t \<le>\<ge>\<^sub>h\<^sub>d head s \<Longrightarrow> num_args t = 1 \<Longrightarrow>
-    (\<exists>f \<in> ground_heads (head t). wt_sym f = 0) \<Longrightarrow> arg t \<ge>\<^sub>t s \<Longrightarrow> gt_unary t s"
+    (\<exists>f \<in> ground_heads (head t). arity_sym f = 1 \<and> wt_sym f = 0) \<Longrightarrow> arg t \<ge>\<^sub>t s \<Longrightarrow> gt_unary t s"
 
 inductive gt_diff :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" where
   gt_diffI: "wt t \<ge>\<^sub>p wt s \<Longrightarrow> head t >\<^sub>h\<^sub>d head s \<Longrightarrow> gt_diff t s"
@@ -727,6 +733,9 @@ proof (induct t arbitrary: s rule: measure_induct_rule[of size])
 
     have \<delta>_eq_\<epsilon>: "\<delta>\<^sub>h = \<epsilon>\<^sub>h"
       using wt_App_fun_\<delta>\<^sub>h[OF legal] wt_\<delta>\<^sub>h_imp_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h[OF legal] wt_st by blast
+    hence \<delta>_gt_0: "\<delta>\<^sub>h > 0"
+      using \<epsilon>\<^sub>h_gt_0 by simp
+
     have wt_s: "eval_ztpoly A (wt s) = zhmset_of \<delta>\<^sub>h"
       by (rule wt_App_fun_\<delta>\<^sub>h[OF legal wt_st])
 
@@ -742,26 +751,33 @@ proof (induct t arbitrary: s rule: measure_induct_rule[of size])
       by (metis less_one nargs_lt of_nat_1 of_nat_less_hmset)
     hence s_eq_hd: "s = Hd (head s)"
       by (simp add: Hd_head_id)
-    hence wt_0: "\<exists>f \<in> ground_heads (head s). wt_sym f = 0"
+    obtain f where
+      f_in: "f \<in> ground_heads (head s)" and
+      wt_f_etc: "wt_sym f + \<delta>\<^sub>h * arity_sym\<^sub>h f = \<delta>\<^sub>h"
     proof -
-      obtain f where
-        f: "(\<exists>g. g \<in> local.ground_heads (head s)
-              \<and> zhmset_of (wt_sym g + \<delta>\<^sub>h * arity_sym\<^sub>h g) \<le> eval_ztpoly A (wt (Hd (head s)))) \<longleftrightarrow>
-            f \<in> local.ground_heads (head s)
-              \<and> zhmset_of (wt_sym f + \<delta>\<^sub>h * arity_sym\<^sub>h f) \<le> eval_ztpoly A (wt (Hd (head s)))"
-        by moura
-      hence "wt_sym f + \<delta>\<^sub>h * arity_sym\<^sub>h f \<le> \<epsilon>\<^sub>h"
-        by (metis \<delta>_eq_\<epsilon> exists_wt_sym[OF legal] s_eq_hd wt_s zhmset_of_le)
-      thus ?thesis
-        using f by (metis (no_types, lifting) \<delta>_eq_\<epsilon> \<epsilon>\<^sub>h_gt_0 ary_hd_s add_le_same_cancel1
-          dual_order.trans exists_wt_sym[OF legal] ground_heads_arity\<^sub>h
-          mult_le_cancel_right1_hmset wt_sym_0_or_ge_\<epsilon> not_one_le_zero)
+      assume a: "\<And>f. \<lbrakk>f \<in> local.ground_heads (head s); wt_sym f + \<delta>\<^sub>h * arity_sym\<^sub>h f = \<delta>\<^sub>h\<rbrakk> \<Longrightarrow> thesis"
+      have "\<And>f. \<delta>\<^sub>h - \<delta>\<^sub>h * arity_sym\<^sub>h f \<le> wt_sym f"
+        using wt_s by (metis legal wt_\<delta>\<^sub>h_imp_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h wt_sym_ge\<^sub>h)
+      hence "\<And>s. \<not> \<delta>\<^sub>h * arity_sym\<^sub>h s + wt_sym s < \<delta>\<^sub>h"
+        by (metis add_diff_cancel_left' le_imp_minus_plus_hmset leD le_minus_plus_same_hmset
+            less_le_trans)
+      thus thesis
+        using a wt_s s_eq_hd
+        by (metis exists_wt_sym legal add.commute order.not_eq_order_implies_strict zhmset_of_le)
     qed
+
+    have ary_f_1: "arity_sym f = 1"
+      by (metis \<delta>_gt_0 add_diff_cancel_left' ary_hd_s diff_le_self_hmset dual_order.order_iff_strict
+        f_in ground_heads_arity\<^sub>h gt_0_lt_mult_gt_1_hmset hmset_of_enat_1 hmset_of_enat_inject leD
+        wt_f_etc)
+    hence wt_f_0: "wt_sym f = 0"
+      using wt_f_etc by simp
 
     {
       assume hd_s_ncmp_t: "\<not> head s \<le>\<ge>\<^sub>h\<^sub>d head t"
       have ?case
-        by (rule gt_unary[OF wt_App_ge_arg]) (auto simp: hd_s_ncmp_t nargs_s intro: wt_0)
+        by (rule gt_unary[OF wt_App_ge_arg])
+          (auto simp: hd_s_ncmp_t nargs_s intro: f_in ary_f_1 wt_f_0)
     }
     moreover
     {
@@ -773,7 +789,8 @@ proof (induct t arbitrary: s rule: measure_induct_rule[of size])
     {
       assume "head t >\<^sub>h\<^sub>d head s"
       hence False
-        using wt_0 gt_hd_irrefl gt_sym_antisym wt_sym_0_gt unfolding gt_hd_def by blast
+        using ary_f_1 wt_f_0 f_in gt_hd_irrefl gt_sym_antisym unary_wt_sym_0_gt\<^sub>h hmset_of_enat_1
+        unfolding gt_hd_def by metis
     }
     moreover
     {
@@ -856,7 +873,7 @@ proof (simp only: atomize_imp,
       by (metis tm.collapse(2) wary_AppE wary_t)
 
     have \<delta>_eq_\<epsilon>: "\<delta>\<^sub>h = \<epsilon>\<^sub>h"
-      using gt_unary_t_s(4) wt_sym_0_imp_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h by blast
+      using gt_unary_t_s(4) unary_wt_sym_0_imp_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h by blast
 
     show ?thesis
       using u_gt_t
@@ -902,11 +919,9 @@ proof (simp only: atomize_imp,
 
         {
           assume hd_u_eq_s: "head u = head s"
-          hence "\<exists>f \<in> ground_heads (head s). wt_sym f = 0"
-            using gt_unary_u_t(4) by simp
           hence ary_hd_s: "arity_hd (head s) = 1"
-            by (metis dual_order.antisym ground_heads_arity gt_unary_u_t(3) hd_u_eq_s one_enat_def
-              wary_num_args_le_arity_head wary_u wt_sym_0_unary)
+            using ground_heads_arity gt_unary_u_t(3,4) hd_u_eq_s one_enat_def
+              wary_num_args_le_arity_head wary_u by fastforce
 
           have extf: "extf f op >\<^sub>t (args u) (args s)" for f
           proof (cases "args s")
@@ -969,7 +984,7 @@ proof (simp only: atomize_imp,
         {
           assume "head s >\<^sub>h\<^sub>d head u"
           hence False
-            using gt_hd_def gt_hd_irrefl gt_sym_antisym gt_unary_u_t(4) wt_sym_0_gt by blast
+            using gt_hd_def gt_hd_irrefl gt_sym_antisym gt_unary_u_t(4) unary_wt_sym_0_gt by blast
         }
         moreover
         {
@@ -985,7 +1000,7 @@ proof (simp only: atomize_imp,
     next
       case gt_diff_u_t: gt_diff
       have False
-        using gt_diff_u_t(2) gt_hd_def gt_hd_irrefl gt_sym_antisym gt_unary_t_s(4) wt_sym_0_gt
+        using gt_diff_u_t(2) gt_hd_def gt_hd_irrefl gt_sym_antisym gt_unary_t_s(4) unary_wt_sym_0_gt
         by blast
       thus ?thesis
         by sat
@@ -995,12 +1010,12 @@ proof (simp only: atomize_imp,
       have hd_u_ncomp_s: "\<not> head u \<le>\<ge>\<^sub>h\<^sub>d head s"
         by (rule gt_unary_t_s(2)[folded gt_same_u_t(2)])
 
-      have "\<exists>f \<in> ground_heads (head u). wt_sym f = 0"
+      have "\<exists>f \<in> ground_heads (head u). arity_sym f = 1 \<and> wt_sym f = 0"
         by (rule gt_unary_t_s(4)[folded gt_same_u_t(2)])
       hence "arity_hd (head u) = 1"
-        by (metis One_nat_def Suc_ile_eq dual_order.antisym ground_heads_arity gt_same_u_t(2)
-          head_fun le_zero_eq less_imp_le nargs_fun_t neq_iff one_enat_def wt_sym_0_unary
-          zero_enat_def)
+        by (metis dual_order.order_iff_strict gr_implies_not_zero_hmset ground_heads_arity
+          gt_same_u_t(2) head_fun hmset_of_enat_1 hmset_of_enat_less lt_1_iff_eq_0_hmset
+          nargs_fun_t)
       hence "num_args u \<le> 1"
         using of_nat_le_hmset wary_num_args_le_arity_head\<^sub>h wary_u by fastforce
       hence nargs_u: "num_args u = 1"
@@ -1056,7 +1071,7 @@ proof (simp only: atomize_imp,
       {
         assume "head s >\<^sub>h\<^sub>d head u"
         hence False
-          using gt_hd_def gt_hd_irrefl gt_sym_antisym gt_unary_u_t(4) wt_sym_0_gt by blast
+          using gt_hd_def gt_hd_irrefl gt_sym_antisym gt_unary_u_t(4) unary_wt_sym_0_gt by blast
       }
       moreover
       {
@@ -1305,8 +1320,8 @@ proof -
   next
     case gt_unary_s'_s: gt_unary
     have False
-      by (metis ground_heads_arity\<^sub>h gt_unary_s'_s(3) gt_unary_s'_s(4) leD of_nat_1 wary_AppE\<^sub>h
-        wary_s't wt_sym_0_unary\<^sub>h)
+      by (metis ground_heads_arity\<^sub>h gt_unary_s'_s(3) gt_unary_s'_s(4) hmset_of_enat_1 leD of_nat_1
+        wary_AppE\<^sub>h wary_s't)
     thus ?thesis
       by sat
   next

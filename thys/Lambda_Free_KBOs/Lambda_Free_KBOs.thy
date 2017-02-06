@@ -42,18 +42,18 @@ definition wt_sym\<^sub>h :: "nat \<Rightarrow> hmultiset" where
 definition coef_sym\<^sub>h :: "nat \<Rightarrow> nat \<Rightarrow> hmultiset" where
   "coef_sym\<^sub>h n i = 1"
 
-sublocale app: kbo_app gt_sym wt_sym \<epsilon> len_lexext
+sublocale kbo_app: kbo_app gt_sym wt_sym \<epsilon> len_lexext
   by unfold_locales (auto simp: gt_sym_def \<epsilon>_def wt_sym_def intro: wf_less[folded wfP_def])
 
-sublocale basic: kbo_basic gt_sym wt_sym \<epsilon> "\<lambda>f. len_lexext" ground_head_var
+sublocale kbo_basic: kbo_basic gt_sym wt_sym \<epsilon> "\<lambda>f. len_lexext" ground_head_var
   by unfold_locales (auto simp: ground_head_var_def gt_sym_def \<epsilon>_def wt_sym_def)
 
-sublocale std: kbo_std ground_head_var gt_sym \<epsilon> \<delta> "\<lambda>f. len_lexext" arity_sym arity_var wt_sym
+sublocale kbo_std: kbo_std ground_head_var gt_sym \<epsilon> \<delta> "\<lambda>f. len_lexext" arity_sym arity_var wt_sym
   by unfold_locales
     (auto simp: arity_sym_def arity_var_def ground_head_var_def \<epsilon>_def \<delta>_def wt_sym_def)
 
-sublocale sc: tkbo_coefs ground_head_var gt_sym \<epsilon> \<delta> "\<lambda>f. len_lexext" arity_sym arity_var wt_sym\<^sub>h
-    coef_sym\<^sub>h
+sublocale tkbo_coefs: tkbo_coefs ground_head_var gt_sym \<epsilon> \<delta> "\<lambda>f. len_lexext" arity_sym arity_var
+    wt_sym\<^sub>h coef_sym\<^sub>h
   by unfold_locales (auto simp: \<epsilon>_def \<delta>_def wt_sym\<^sub>h_def coef_sym\<^sub>h_def)
 
 end
