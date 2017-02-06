@@ -95,7 +95,7 @@ proof (simp only: atomize_imp,
   qed
 qed
 
-theorem gt_trans: "u >\<^sub>t t \<Longrightarrow> t >\<^sub>t s \<Longrightarrow> u >\<^sub>t s"
+lemma gt_trans: "u >\<^sub>t t \<Longrightarrow> t >\<^sub>t s \<Longrightarrow> u >\<^sub>t s"
 proof (simp only: atomize_imp,
     rule measure_induct_rule[of "\<lambda>(u, t, s). {#size u, size t, size s#}"
         "\<lambda>(u, t, s). u >\<^sub>t t \<longrightarrow> t >\<^sub>t s \<longrightarrow> u >\<^sub>t s" "(u, t, s)",
