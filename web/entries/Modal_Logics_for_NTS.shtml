@@ -58,6 +58,14 @@ bisimulation variants such as early, late and open in a systematic
 way.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">Change history:</td>
+        <td class="abstract">
+
+[2017-01-29]:
+Formalization of weak bisimilarity added
+(revision c87cc2057d9c)
+        </td></tr>
+
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{Modal_Logics_for_NTS-AFP,

@@ -1594,6 +1594,26 @@ abstract =
 	algorithms, and classify them based on those choices.
 notify = omaric@inf.ethz.ch
 
+[Key_Agreement_Strong_Adversaries]
+title = Refining Authenticated Key Agreement with Strong Adversaries
+author = Joseph Lallemand <mailto:joseph.lallemand@loria.fr>, Christoph Sprenger <mailto:sprenger@inf.ethz.ch>
+topic = Computer Science/Security
+license = LGPL
+date = 2017-01-31
+notify = joseph.lallemand@loria.fr, sprenger@inf.ethz.ch
+abstract =
+  We develop a family of key agreement protocols that are correct by
+  construction. Our work substantially extends prior work on developing
+  security protocols by refinement. First, we strengthen the adversary
+  by allowing him to compromise different resources of protocol
+  participants, such as their long-term keys or their session keys. This
+  enables the systematic development of protocols that ensure strong
+  properties such as perfect forward secrecy. Second, we broaden the
+  class of protocols supported to include those with non-atomic keys and
+  equationally defined cryptographic operators. We use these extensions
+  to develop key agreement protocols including signed Diffie-Hellman and
+  the core of IKEv1 and SKEME.
+
 [Abortable_Linearizable_Modules]
 title = Abortable Linearizable Modules
 author = Rachid Guerraoui <mailto:rachid.guerraoui@epfl.ch>, Viktor Kuncak <http://lara.epfl.ch/~kuncak/>, Giuliano Losa <mailto:giuliano.losa@epfl.ch>
@@ -4446,7 +4466,7 @@ author = Max Wagner <mailto:max@trollbu.de>, Denis Lohner <http://pp.ipd.kit.edu
 topic = Computer Science/Programming Languages/Transformations
 date = 2017-01-17
 notify = denis.lohner@kit.edu
-abstract = 
+abstract =
   <p>This formalization is an extension to <a
   href="https://www.isa-afp.org/entries/Formal_SSA.shtml">"Verified
   Construction of Static Single Assignment Form"</a>. In
@@ -5202,4 +5222,26 @@ abstract =
   reflection is used such that the entire prover can be executed within
   Isabelle as a very simple interactive proof assistant. As examples we
   consider Pelletier's problems 1-46.
+
+[Bernoulli]
+title = Bernoulli Numbers
+author = Lukas Bulwahn<mailto:lukas.bulwahn@gmail.com>, Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Analysis, Mathematics/Number Theory
+date = 2017-01-24
+notify = eberlm@in.tum.de
+abstract =
+  <p>Bernoulli numbers were first discovered in the closed-form
+  expansion of the sum 1<sup>m</sup> +
+  2<sup>m</sup> + &hellip; + n<sup>m</sup>
+  for a fixed m and appear in many other places. This entry provides
+  three different definitions for them: a recursive one, an explicit
+  one, and one through their exponential generating function.</p>
+  <p>In addition, we prove some basic facts, e.g. their relation
+  to sums of powers of integers and that all odd Bernoulli numbers
+  except the first are zero. We also prove the correctness of the
+  Akiyama&ndash;Tanigawa algorithm for computing Bernoulli numbers
+  with reasonable efficiency, and we define the periodic Bernoulli
+  polynomials (which appear e.g. in the Euler&ndash;MacLaurin
+  summation formula and the expansion of the log-Gamma function) and
+  prove their basic properties.</p>
 

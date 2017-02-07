@@ -53,6 +53,22 @@ is available <a href="citing.shtml">[here]</a>.
 	</tr>
 
 <tr><td class="entry">
+2017-01-31:
+<a href="entries/Key_Agreement_Strong_Adversaries.shtml">Refining Authenticated Key Agreement with Strong Adversaries</a>
+<br>Author:
+Joseph Lallemand and 
+Christoph Sprenger
+</td></tr>
+
+<tr><td class="entry">
+2017-01-24:
+<a href="entries/Bernoulli.shtml">Bernoulli Numbers</a>
+<br>Author:
+Lukas Bulwahn and 
+<a href="https://www21.in.tum.de/~eberlm">Manuel Eberl</a>
+</td></tr>
+
+<tr><td class="entry">
 2017-01-17:
 <a href="entries/Minimal_SSA.shtml">Minimal Static Single Assignment Form</a>
 <br>Author:

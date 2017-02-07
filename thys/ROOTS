@@ -19,6 +19,7 @@ Automatic_Refinement
 BDD
 Bell_Numbers_Spivey
 Berlekamp_Zassenhaus
+Bernoulli
 Bertrands_Postulate
 BinarySearchTree
 Binomial-Heaps
@@ -152,6 +153,7 @@ Jordan_Normal_Form
 KAD
 KAT_and_DRA
 KBPs
+Key_Agreement_Strong_Adversaries
 Kleene_Algebra
 Knot_Theory
 Koenigsberg_Friendship

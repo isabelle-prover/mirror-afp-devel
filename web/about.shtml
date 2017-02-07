@@ -46,11 +46,13 @@ Isabelle. Older versions of archive entries will remain available.</p>
 <p><a name="editors">The editors of the archive are</a></p>
 <ul>
 <li><a href="http://www.cse.unsw.edu.au/~kleing/">Gerwin Klein</a>,
-    <a href="http://www.nicta.com.au">NICTA</a></li>
+    <a href="http://www.data61.csiro.au">Data61</a></li>
 <li><a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a>,
     <a href="http://www.tum.de/">Technische Universit&auml;t M&uuml;nchen</a></li>
 <li><a href="http://www.cl.cam.ac.uk/users/lcp/">Larry Paulson</a>,
     <a href="http://www.cam.ac.uk/">University of Cambridge</a></li>
+<li><a href="http://cl-informatik.uibk.ac.at/users/thiemann/">René Thiemann</a>,
+    <a href="https://www.uibk.ac.at/">University of Innsbruck</a></li>
 </ul>
 
 <h2>Why</h2>

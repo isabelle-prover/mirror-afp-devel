@@ -1,0 +1,11 @@
+chapter AFP
+
+session Bernoulli (AFP) = "HOL-Library" +
+  options [timeout=600]
+  theories
+    Bernoulli
+    Periodic_Bernpoly
+    Bernoulli_FPS
+  document_files
+    "root.tex"
+    "root.bib"
