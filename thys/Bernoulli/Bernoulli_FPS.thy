@@ -285,11 +285,13 @@ qed
 subsection \<open>Generating function of Bernoulli numbers\<close>
 
 text \<open>
-  We will show that the Bernoulli numbers are the coefficients of the
-  exponential generating function $\frac{x}{e^x - 1}$, i.\,e.
-    \[\sum_{n=0}^\infty B_n \frac{x^n}{n!} = \frac{x}{e^x - 1}\]
+  We will show that the negative and positive Bernoulli numbers are the coefficients of the
+  exponential generating function $\frac{x}{e^x - 1}$ (resp. $\frac{x}{1-e^{-x}}$), i.\,e.
+    \[\sum_{n=0}^\infty B_n^{-} \frac{x^n}{n!} = \frac{x}{e^x - 1}\]
+    \[\sum_{n=0}^\infty B_n^{+} \frac{x^n}{n!} = \frac{x}{1 - e^{-1}}\]
 \<close> 
 definition bernoulli_fps :: "real fps" where "bernoulli_fps = X / (E 1 - 1)"
+definition bernoulli'_fps :: "real fps" where "bernoulli'_fps = X / (1 - (E (-1)))"
 
 lemma bernoulli_fps_altdef: "bernoulli_fps = Abs_fps (\<lambda>n. bernoulli n / fact n)"
   and bernoulli_fps_aux:    "bernoulli_fps * (E 1 - 1) = X"
@@ -319,10 +321,38 @@ proof -
     unfolding bernoulli_fps_def by (subst * [symmetric]) simp_all
   ultimately show "bernoulli_fps * (E 1 - 1) = X" by simp
 qed
-    
+  
 theorem fps_nth_bernoulli_fps [simp]: "fps_nth bernoulli_fps n = bernoulli n / fact n"
   by (simp add: bernoulli_fps_altdef)
+
+lemma bernoulli'_fps_aux:  "(E 1 - 1) * Abs_fps (\<lambda>n. bernoulli' n / fact n) = E 1 * X"
+  and bernoulli'_fps_aux': "(1 - E (-1)) * Abs_fps (\<lambda>n. bernoulli' n / fact n) = X"
+  and bernoulli'_fps_altdef: "bernoulli'_fps = Abs_fps (\<lambda>n. bernoulli' n / fact n)"
+proof -
+  have "Abs_fps (\<lambda>n. bernoulli' n / fact n) = bernoulli_fps + X"
+    by (simp add: fps_eq_iff bernoulli'_def)
+  also have "(E 1 - 1) * \<dots> = E 1 * X"
+    using bernoulli_fps_aux by (simp add: algebra_simps)
+  finally show "(E 1 - 1) * Abs_fps (\<lambda>n. bernoulli' n / fact n) = E 1 * X" .
+  also have "(E 1 - 1) = E 1 * (1 - E (-1 :: real))" 
+    by (simp add: algebra_simps E_add_mult [symmetric])
+  also note mult.assoc
+  finally show *: "(1 - E (-1)) * Abs_fps (\<lambda>n. bernoulli' n / fact n) = X"
+    by (subst (asm) mult_left_cancel) simp_all
+  show "bernoulli'_fps = Abs_fps (\<lambda>n. bernoulli' n / fact n)"
+    unfolding bernoulli'_fps_def by (subst * [symmetric]) simp_all
+qed
+
+theorem fps_nth_bernoulli'_fps [simp]: "fps_nth bernoulli'_fps n = bernoulli' n / fact n"
+  by (simp add: bernoulli'_fps_altdef)
   
+lemma bernoulli_fps_conv_bernoulli'_fps: "bernoulli_fps = bernoulli'_fps - X"
+  by (simp add: fps_eq_iff bernoulli'_def)
+    
+lemma bernoulli'_fps_conv_bernoulli_fps: "bernoulli'_fps = bernoulli_fps + X"
+  by (simp add: fps_eq_iff bernoulli'_def)
+
+ 
 theorem bernoulli_odd_eq_0:
   assumes "n \<noteq> 1" and "odd n"
   shows   "bernoulli n = 0"
@@ -361,13 +391,20 @@ proof -
   finally show ?thesis by simp
 qed
   
+lemma bernoulli'_odd_eq_0: "n \<noteq> 1 \<Longrightarrow> odd n \<Longrightarrow> bernoulli' n = 0"
+  by (simp add: bernoulli'_def bernoulli_odd_eq_0)
+  
 text \<open>
   The following simplification rule takes care of rewriting @{term "bernoulli n"} to $0$ for
   any odd numeric constant greater than $1$:
 \<close>
 lemma bernoulli_odd_numeral_eq_0 [simp]: "bernoulli (numeral (Num.Bit1 n)) = 0"
   by (rule bernoulli_odd_eq_0[OF _ odd_numeral]) auto
-  
+    
+lemma bernoulli'_odd_numeral_eq_0 [simp]: "bernoulli' (numeral (Num.Bit1 n)) = 0"
+  by (simp add: bernoulli'_def)
+
+
 text \<open>
   The following explicit formula for Bernoulli numbers can also derived reasonably easily
   using the generating functions of Stirling numbers and Bernoulli numbers. The proof follows 
@@ -553,11 +590,10 @@ text \<open>
   As Kaneko notes in his afore-mentioned remark, if we let $a_{0,k} = \frac{1}{k+1}$, we obtain
     \[A(z) = \sum_{k=0}^\infty \frac{x^k}{k+1} = -\frac{\ln (1 - x)}{x}\]
   and therefore
-    \[\sum_{n=0}^\infty a_{n,0} \frac{x^n}{n!} = \frac{x e^x}{e^x - 1} = \frac{x}{e^x - 1} + x,\]
-  which immediately gives us the connection to the Bernoulli numbers.
+    \[\sum_{n=0}^\infty a_{n,0} \frac{x^n}{n!} = \frac{x e^x}{e^x - 1} = \frac{x}{1 - e^{-x}},\]
+  which immediately gives us the connection to the positive Bernoulli numbers.
 \<close>
-theorem bernoulli_conv_akiyama_tanigawa:
-  "bernoulli n = akiyama_tanigawa n 0 - (if n = 1 then 1 else 0)"
+theorem bernoulli'_conv_akiyama_tanigawa: "bernoulli' n = akiyama_tanigawa n 0"
 proof -  
   define f where "f = (\<lambda>n. 1 / real (Suc n))"
   note gen_akiyama_tanigawa_fps[of f]
@@ -576,24 +612,17 @@ proof -
     also have "\<dots> = X / (E 1 - 1)" by (simp add: L_E_inv LE_compose)
     finally have "Abs_fps f oo 1 - E 1 = X / (E 1 - 1)" .
   }
-  finally have "Abs_fps (\<lambda>n. gen_akiyama_tanigawa f n 0 / fact n) = (X / (E 1 - 1)) * E 1"
-    by simp
-  also {
-    have "X * E 1 + (-X) * (E 1 - 1 :: real fps) = X"  by (simp add: algebra_simps)
-    hence "(X * E 1 + (-X) * (E 1 - 1)) / (E 1 - 1) = bernoulli_fps" 
-      by (simp only: bernoulli_fps_def)
-    also have "(X * E 1 + (-X) * (E 1 - 1)) / (E 1 - 1) = X * E 1 / (E 1 - 1) - (X :: real fps)"
-      by (subst div_mult_self1) simp_all
-    also have "subdegree (E 1 - 1 :: real fps) \<le> 1" by (intro subdegree_leI) simp_all
-    hence "(E 1 - 1 :: real fps) dvd X" by (subst fps_dvd_iff) simp_all
-    hence "X * E 1 / (E 1 - 1) = X / (E 1 - 1 :: real fps) * E 1"
-      by (subst dvd_div_mult) simp_all
-    finally have "X / (E 1 - 1) * E 1 = bernoulli_fps + X" by (simp add: algebra_simps)
-  }
-  finally have "Abs_fps (\<lambda>n. gen_akiyama_tanigawa f n 0 / fact n) $ n = (bernoulli_fps + X) $ n"
-    by (simp only: )
-  thus ?thesis by (auto simp: field_simps akiyama_tanigawa_def f_def)
+  also have "E (1::real) - 1 = (1 - E (-1)) * E 1"
+    by (simp add: algebra_simps E_add_mult [symmetric])
+  also have "E 1 * (X / \<dots>) = bernoulli'_fps" unfolding bernoulli'_fps_def
+    by (subst dvd_div_mult2_eq) (auto simp: fps_dvd_iff intro!: subdegree_leI)
+  finally have "Abs_fps (\<lambda>n. gen_akiyama_tanigawa f n 0 / fact n) = bernoulli'_fps" .
+  thus ?thesis by (simp add: fps_eq_iff akiyama_tanigawa_def f_def)
 qed
+  
+theorem bernoulli_conv_akiyama_tanigawa: 
+  "bernoulli n = akiyama_tanigawa n 0 - (if n = 1 then 1 else 0)"
+  using bernoulli'_conv_akiyama_tanigawa[of n] by (auto simp: bernoulli_conv_bernoulli')
 
 end
 
@@ -615,6 +644,10 @@ fun akiyama_tanigawa_step_aux :: "nat \<Rightarrow> real list \<Rightarrow> real
 lemma length_akiyama_tanigawa_step_aux [simp]: 
   "length (akiyama_tanigawa_step_aux m xs) = length xs - 1"
   by (induction m xs rule: akiyama_tanigawa_step_aux.induct) simp_all
+    
+lemma akiyama_tanigawa_step_aux_eq_Nil_iff [simp]:
+  "akiyama_tanigawa_step_aux m xs = [] \<longleftrightarrow> length xs < 2"
+  by (subst length_0_conv [symmetric]) auto
 
 lemma nth_akiyama_tanigawa_step_aux: 
   "n < length xs - 1 \<Longrightarrow> 
@@ -625,32 +658,71 @@ proof (induction m xs arbitrary: n rule: akiyama_tanigawa_step_aux.induct)
 qed auto
 
 definition gen_akiyama_tanigawa_row where
-  "gen_akiyama_tanigawa_row f n l = map (gen_akiyama_tanigawa f n) [0..<l]"
-  
-lemma length_gen_akiyama_tanigawa_row [simp]: "length (gen_akiyama_tanigawa_row f n l) = l"
+  "gen_akiyama_tanigawa_row f n l u = map (gen_akiyama_tanigawa f n) [l..<u]"
+
+lemma length_gen_akiyama_tanigawa_row [simp]: "length (gen_akiyama_tanigawa_row f n l u) = u - l"
   by (simp add: gen_akiyama_tanigawa_row_def)
+
+lemma gen_akiyama_tanigawa_row_eq_Nil_iff [simp]:
+  "gen_akiyama_tanigawa_row f n l u = [] \<longleftrightarrow> l \<ge> u"
+  by (auto simp add: gen_akiyama_tanigawa_row_def)
     
 lemma nth_gen_akiyama_tanigawa_row: 
-  "i < l \<Longrightarrow> gen_akiyama_tanigawa_row f n l ! i = gen_akiyama_tanigawa f n i"
-  by (simp add: gen_akiyama_tanigawa_row_def)
+  "i < u - l \<Longrightarrow> gen_akiyama_tanigawa_row f n l u ! i = gen_akiyama_tanigawa f n (i + l)"
+  by (simp add: gen_akiyama_tanigawa_row_def add_ac)
     
 lemma gen_akiyama_tanigawa_row_0 [code]:
-  "gen_akiyama_tanigawa_row f 0 l = map f [0..<l]"
+  "gen_akiyama_tanigawa_row f 0 l u = map f [l..<u]"
   by (simp add: gen_akiyama_tanigawa_row_def)
     
 lemma gen_akiyama_tanigawa_row_Suc [code]:
-  "gen_akiyama_tanigawa_row f (Suc n) l = 
-     akiyama_tanigawa_step_aux 1 (gen_akiyama_tanigawa_row f n (Suc l))"
+  "gen_akiyama_tanigawa_row f (Suc n) l u = 
+     akiyama_tanigawa_step_aux (Suc l) (gen_akiyama_tanigawa_row f n l (Suc u))"
   by (rule nth_equalityI) (auto simp: nth_gen_akiyama_tanigawa_row nth_akiyama_tanigawa_step_aux)
 
 lemma gen_akiyama_tanigawa_row_numeral:
-  "gen_akiyama_tanigawa_row f (numeral n) l = 
-     akiyama_tanigawa_step_aux 1 (gen_akiyama_tanigawa_row f (pred_numeral n) (Suc l))"
+  "gen_akiyama_tanigawa_row f (numeral n) l u = 
+     akiyama_tanigawa_step_aux (Suc l) (gen_akiyama_tanigawa_row f (pred_numeral n) l (Suc u))"
   by (simp only: numeral_eq_Suc gen_akiyama_tanigawa_row_Suc)
 
 lemma gen_akiyama_tanigawa_code [code]:
-  "gen_akiyama_tanigawa f n k = last (gen_akiyama_tanigawa_row f n (Suc k))"
-  by (subst last_conv_nth) (auto simp: nth_gen_akiyama_tanigawa_row length_0_conv [symmetric])
+  "gen_akiyama_tanigawa f n k = hd (gen_akiyama_tanigawa_row f n k (Suc k))"
+  by (subst hd_conv_nth) (auto simp: nth_gen_akiyama_tanigawa_row length_0_conv [symmetric])   
+    
+
+definition akiyama_tanigawa_row where
+  "akiyama_tanigawa_row n l u = map (akiyama_tanigawa n) [l..<u]"
+
+lemma length_akiyama_tanigawa_row [simp]: "length (akiyama_tanigawa_row n l u) = u - l"
+  by (simp add: akiyama_tanigawa_row_def)
+
+lemma akiyama_tanigawa_row_eq_Nil_iff [simp]:
+  "akiyama_tanigawa_row n l u = [] \<longleftrightarrow> l \<ge> u"
+  by (auto simp add: akiyama_tanigawa_row_def)
+    
+lemma nth_akiyama_tanigawa_row: 
+  "i < u - l \<Longrightarrow> akiyama_tanigawa_row n l u ! i = akiyama_tanigawa n (i + l)"
+  by (simp add: akiyama_tanigawa_row_def add_ac)
+    
+lemma akiyama_tanigawa_row_0 [code]:
+  "akiyama_tanigawa_row 0 l u = map (\<lambda>n. inverse (real (Suc n))) [l..<u]"
+  by (simp add: akiyama_tanigawa_row_def akiyama_tanigawa_def divide_simps)
+    
+lemma akiyama_tanigawa_row_Suc [code]:
+  "akiyama_tanigawa_row (Suc n) l u = 
+     akiyama_tanigawa_step_aux (Suc l) (akiyama_tanigawa_row n l (Suc u))"
+  by (rule nth_equalityI) (auto simp: nth_akiyama_tanigawa_row 
+                             nth_akiyama_tanigawa_step_aux akiyama_tanigawa_def)
+
+lemma akiyama_tanigawa_row_numeral:
+  "akiyama_tanigawa_row (numeral n) l u = 
+     akiyama_tanigawa_step_aux (Suc l) (akiyama_tanigawa_row (pred_numeral n) l (Suc u))"
+  by (simp only: numeral_eq_Suc akiyama_tanigawa_row_Suc)
+
+lemma akiyama_tanigawa_code [code]:
+  "akiyama_tanigawa n k = hd (akiyama_tanigawa_row n k (Suc k))"
+  by (subst hd_conv_nth) (auto simp: nth_akiyama_tanigawa_row length_0_conv [symmetric])    
+
 
 lemma bernoulli_code [code]:
   "bernoulli n = 
@@ -659,6 +731,11 @@ proof (cases "n = 0 \<or> n = 1 \<or> odd n")
   case False
   thus ?thesis by (auto simp add: bernoulli_conv_akiyama_tanigawa)
 qed (auto simp: bernoulli_odd_eq_0)
+  
+lemma bernoulli'_code [code]:
+  "bernoulli' n =
+     (if n = 0 then 1 else if n = 1 then 1/2 else if odd n then 0 else akiyama_tanigawa n 0)"
+  by (simp add: bernoulli'_def bernoulli_code)
 
   
 text \<open>
@@ -666,15 +743,37 @@ text \<open>
   with much better efficiency than before:
 \<close>
 lemmas eval_bernoulli =
-  akiyama_tanigawa_def gen_akiyama_tanigawa_code gen_akiyama_tanigawa_row_numeral
-  numeral_2_eq_2 [symmetric] gen_akiyama_tanigawa_row_Suc upt_conv_Cons
-  gen_akiyama_tanigawa_row_0 bernoulli_code[of "numeral n" for n]
+  akiyama_tanigawa_code akiyama_tanigawa_row_numeral
+  numeral_2_eq_2 [symmetric] akiyama_tanigawa_row_Suc upt_conv_Cons
+  akiyama_tanigawa_row_0 bernoulli_code[of "numeral n" for n]
+  
+lemmas eval_bernoulli' = eval_bernoulli bernoulli'_code[of "numeral n" for n]
 
 (* This should only take a few seconds *)
 lemma bernoulli_upto_20 [simp]:
-  "bernoulli 2 = 1/6" "bernoulli 4 = - (1 / 30)" "bernoulli 6 * 42 = 1" "bernoulli 8 = - (1 / 30)"
-  "bernoulli 10 * 66 = 5" "bernoulli 12 = - (691 / 2730)" "bernoulli 14 * 6 = 7"
-  "bernoulli 16 = - (3617 / 510)" "bernoulli 18 * 798 = 43867" "bernoulli 20 = - (174611 / 330)"
+  "bernoulli 2 = 1 / 6" 
+  "bernoulli 4 = -(1 / 30)" 
+  "bernoulli 6 = 1 / 42" 
+  "bernoulli 8 = - (1 / 30)"
+  "bernoulli 10 = 5 / 66" 
+  "bernoulli 12 = - (691 / 2730)" 
+  "bernoulli 14 = 7 / 6"
+  "bernoulli 16 = -(3617 / 510)" 
+  "bernoulli 18 = 43867 / 798" 
+  "bernoulli 20 = -(174611 / 330)"
   by (simp_all add: eval_bernoulli)
-
+    
+lemma bernoulli'_upto_20 [simp]:
+  "bernoulli' 2 = 1 / 6" 
+  "bernoulli' 4 = -(1 / 30)" 
+  "bernoulli' 6 = 1 / 42" 
+  "bernoulli' 8 = - (1 / 30)"
+  "bernoulli' 10 = 5 / 66" 
+  "bernoulli' 12 = - (691 / 2730)" 
+  "bernoulli' 14 = 7 / 6"
+  "bernoulli' 16 = -(3617 / 510)" 
+  "bernoulli' 18 = 43867 / 798" 
+  "bernoulli' 20 = -(174611 / 330)"
+  by (simp_all add: bernoulli'_def)
+ 
 end

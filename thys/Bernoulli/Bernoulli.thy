@@ -37,6 +37,9 @@ qed
 
 lemma sum_diff: "((\<Sum>i\<le>n::nat. f (i + 1) - f i)::'a::field) = f (n + 1) - f 0"
   by (induct n) (auto simp add: field_simps)
+    
+lemma Rats_sum: "(\<And>x. x \<in> A \<Longrightarrow> f x \<in> \<rat>) \<Longrightarrow> sum f A \<in> \<rat>"
+  by (induction A rule: infinite_finite_induct) simp_all
 
 
 subsection \<open>Bernoulli Numbers and Bernoulli Polynomials\<close>
@@ -54,6 +57,42 @@ lemmas bernoulli_0 [simp] = bernoulli.simps(1)
 lemmas bernoulli_Suc = bernoulli.simps(2)
 lemma bernoulli_1 [simp]: "bernoulli 1 = -1/2" by (simp add: bernoulli_Suc)
 lemma bernoulli_Suc_0 [simp]: "bernoulli (Suc 0) = -1/2" by (simp add: bernoulli_Suc)
+
+    
+text \<open>
+  The ``normal'' Bernoulli numbers are the negative Bernoulli numbers $B_n^{-}$ we just defined
+  (so called because $B_1^{-} = -\frac{1}{2}$). There is also another convention, the 
+  positive Bernoulli numbers $B_n^{+}$, which differ from the negative ones only in that 
+  $B_1^{+} = \frac{1}{2}$. Both conventions have their justification, since a number of theorems 
+  are easier to state with one than the other.
+\<close>
+definition bernoulli' where
+  "bernoulli' n = (if n = 1 then 1/2 else bernoulli n)"
+  
+lemma bernoulli'_0 [simp]: "bernoulli' 0 = 1" by (simp add: bernoulli'_def)
+    
+lemma bernoulli'_1 [simp]: "bernoulli' (Suc 0) = 1/2"
+  by (simp add: bernoulli'_def)
+
+lemma bernoulli_conv_bernoulli': "n \<noteq> 1 \<Longrightarrow> bernoulli n = bernoulli' n"
+  by (simp add: bernoulli'_def)
+    
+lemma bernoulli'_conv_bernoulli: "n \<noteq> 1 \<Longrightarrow> bernoulli' n = bernoulli n"
+  by (simp add: bernoulli'_def)
+    
+lemma bernoulli_conv_bernoulli'_if: 
+    "n \<noteq> 1 \<Longrightarrow> bernoulli n = (if n = 1 then -1/2 else bernoulli' n)"
+  by (simp add: bernoulli'_def)
+
+lemma bernoulli_in_Rats: "bernoulli n \<in> \<rat>"
+proof (induction n rule: less_induct)
+  case (less n)
+  thus ?case
+    by (cases n) (auto simp: bernoulli_Suc intro!: Rats_minus Rats_sum Rats_divide Rats_mult)
+qed
+
+lemma bernoulli'_in_Rats: "bernoulli' n \<in> \<rat>"
+  by (simp add: bernoulli'_def bernoulli_in_Rats)
 
 definition
   "bernpoly n = (\<lambda>x. \<Sum>k \<le> n. (n choose k) * bernoulli k * x ^ (n - k))"
@@ -191,6 +230,9 @@ next
   with diff_bernpoly[of n 0] show ?thesis
     by (simp add: power_0_left bernpoly_0)
 qed
+  
+lemma bernpoly_1': "bernpoly n 1 = bernoulli' n"
+  using  bernpoly_1_1 by (cases "n = 1") (simp_all add: bernpoly_1 bernoulli'_def)
 
 theorem sum_of_powers: 
   "(\<Sum>k\<le>n::nat. (real k) ^ m) = (bernpoly (Suc m) (n + 1) - bernpoly (Suc m) 0) / (m + 1)"
