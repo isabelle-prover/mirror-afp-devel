@@ -5234,4 +5234,19 @@ abstract =
   polynomials (which appear e.g. in the Euler&ndash;MacLaurin
   summation formula and the expansion of the log-Gamma function) and
   prove their basic properties.</p>
+  
+[Stone_Relation_Algebras]
+title = Stone Relation Algebras
+author = Walter Guttmann <http://www.cosc.canterbury.ac.nz/walter.guttmann/>
+topic = Mathematics/Algebra
+date = 2017-02-07
+notify = walter.guttmann@canterbury.ac.nz
+abstract = 
+  We develop Stone relation algebras, which generalise relation algebras
+  by replacing the underlying Boolean algebra structure with a Stone
+  algebra. We show that finite matrices over extended real numbers form
+  an instance. As a consequence, relation-algebraic concepts and methods
+  can be used for reasoning about weighted graphs. We also develop a
+  fixpoint calculus and apply it to compare different definitions of
+  reflexive-transitive closures in semirings.
 
