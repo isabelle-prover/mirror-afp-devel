@@ -45,9 +45,10 @@ lemma powr_closureE:
 
 
 locale landau_function_family =
-  fixes H :: "('a::linorder \<Rightarrow> 'b :: linordered_field) set"
-  assumes pos: "h \<in> H \<Longrightarrow> eventually (\<lambda>x. h x > 0) at_top"
-  assumes linear: "h1 \<in> H \<Longrightarrow> h2 \<in> H \<Longrightarrow> h1 \<in> o(h2) \<or> h2 \<in> o(h1) \<or> h1 \<in> \<Theta>(h2)"
+  fixes F :: "'a filter" and H :: "('a \<Rightarrow> real) set"
+  assumes F_nontrivial: "F \<noteq> bot"
+  assumes pos: "h \<in> H \<Longrightarrow> eventually (\<lambda>x. h x > 0) F"
+  assumes linear: "h1 \<in> H \<Longrightarrow> h2 \<in> H \<Longrightarrow> h1 \<in> o[F](h2) \<or> h2 \<in> o[F](h1) \<or> h1 \<in> \<Theta>[F](h2)"
   assumes mult: "h1 \<in> H \<Longrightarrow> h2 \<in> H \<Longrightarrow> (\<lambda>x. h1 x * h2 x) \<in> H"
   assumes inverse: "h \<in> H \<Longrightarrow> (\<lambda>x. inverse (h x)) \<in> H"
 begin
@@ -55,41 +56,41 @@ begin
 lemma div: "h1 \<in> H \<Longrightarrow> h2 \<in> H \<Longrightarrow> (\<lambda>x. h1 x / h2 x) \<in> H"
   by (subst divide_inverse) (intro mult inverse)
 
-lemma nonzero: "h \<in> H \<Longrightarrow> eventually (\<lambda>x. h x \<noteq> 0) at_top"
+lemma nonzero: "h \<in> H \<Longrightarrow> eventually (\<lambda>x. h x \<noteq> 0) F"
   by (drule pos) (auto elim: eventually_mono)
 
 lemma landau_cases:
   assumes "h1 \<in> H" "h2 \<in> H"
-  obtains "h1 \<in> o(h2)" | "h2 \<in> o(h1)" | "h1 \<in> \<Theta>(h2)"
+  obtains "h1 \<in> o[F](h2)" | "h2 \<in> o[F](h1)" | "h1 \<in> \<Theta>[F](h2)"
   using linear[OF assms] by blast
 
 lemma small_big_antisym:
-  assumes "h1 \<in> H" "h2 \<in> H" "h1 \<in> o(h2)" "h2 \<in> O(h1)" shows False
+  assumes "h1 \<in> H" "h2 \<in> H" "h1 \<in> o[F](h2)" "h2 \<in> O[F](h1)" shows False
 proof-
   from nonzero[OF assms(1)] nonzero[OF assms(2)] landau_o.small_big_asymmetric[OF assms(3,4)]
-    have "eventually (\<lambda>_::'a. False) at_top" by eventually_elim simp
-  thus False by force
+    have "eventually (\<lambda>_::'a. False) F" by eventually_elim simp
+  thus False by (simp add: eventually_False F_nontrivial)
 qed
 
 lemma small_antisym:
-  assumes "h1 \<in> H" "h2 \<in> H" "h1 \<in> o(h2)" "h2 \<in> o(h1)" shows False
+  assumes "h1 \<in> H" "h2 \<in> H" "h1 \<in> o[F](h2)" "h2 \<in> o[F](h1)" shows False
   using assms by (blast intro: small_big_antisym landau_o.small_imp_big)
 
 end
 
 locale landau_function_family_pair = 
-  G: landau_function_family G + H: landau_function_family H for G H +
+  G: landau_function_family F G + H: landau_function_family F H for F G H +
   fixes g 
-  assumes gs_dominate: "g1 \<in> G \<Longrightarrow> g2 \<in> G \<Longrightarrow> h1 \<in> H \<Longrightarrow> h2 \<in> H \<Longrightarrow> g1 \<in> o(g2) \<Longrightarrow>
-     (\<lambda>x. g1 x * h1 x) \<in> o(\<lambda>x. g2 x * h2 x)"
+  assumes gs_dominate: "g1 \<in> G \<Longrightarrow> g2 \<in> G \<Longrightarrow> h1 \<in> H \<Longrightarrow> h2 \<in> H \<Longrightarrow> g1 \<in> o[F](g2) \<Longrightarrow>
+     (\<lambda>x. g1 x * h1 x) \<in> o[F](\<lambda>x. g2 x * h2 x)"
   assumes g: "g \<in> G"
-  assumes g_dominates: "h \<in> H \<Longrightarrow> h \<in> o(g)"
+  assumes g_dominates: "h \<in> H \<Longrightarrow> h \<in> o[F](g)"
 begin
 
-sublocale GH: landau_function_family "G * H"
-proof (unfold_locales; elim set_times_elim; hypsubst)
+sublocale GH: landau_function_family F "G * H"
+proof (unfold_locales; (elim set_times_elim; hypsubst)?)
   fix g h assume "g \<in> G" "h \<in> H"
-  from G.pos[OF this(1)] H.pos[OF this(2)] show "eventually (\<lambda>x. (g*h) x > 0) at_top"
+  from G.pos[OF this(1)] H.pos[OF this(2)] show "eventually (\<lambda>x. (g*h) x > 0) F"
     by eventually_elim simp
 next
   fix g h assume A: "g \<in> G" "h \<in> H"
@@ -100,34 +101,34 @@ next
   fix g1 g2 h1 h2 assume A: "g1 \<in> G" "g2 \<in> G" "h1 \<in> H" "h2 \<in> H"
   from gs_dominate[OF this] gs_dominate[OF this(2,1,4,3)] 
        G.linear[OF this(1,2)] H.linear[OF this(3,4)]
-    show "g1 * h1 \<in> o(g2 * h2) \<or> g2 * h2 \<in> o(g1 * h1) \<or> g1 * h1 \<in> \<Theta>(g2 * h2)"
+    show "g1 * h1 \<in> o[F](g2 * h2) \<or> g2 * h2 \<in> o[F](g1 * h1) \<or> g1 * h1 \<in> \<Theta>[F](g2 * h2)"
     by (elim disjE) (force simp: func_times bigomega_iff_bigo intro: landau_theta.mult 
          landau_o.small.mult landau_o.small_big_mult landau_o.big_small_mult)+
   have B: "(\<lambda>x. (g1 * h1) x * (g2 * h2) x) = (g1 * g2) * (h1 * h2)"
     by (rule ext) (simp add: func_times mult_ac)
   from A show "(\<lambda>x. (g1 * h1) x * (g2 * h2) x) \<in> G * H"
     by (subst B, intro set_times_intro) (auto intro: G.mult H.mult simp: func_times)
-qed
+qed (fact G.F_nontrivial)
 
 lemma smallo_iff:
   assumes "g1 \<in> G" "g2 \<in> G" "h1 \<in> H" "h2 \<in> H"
-  shows "(\<lambda>x. g1 x * h1 x) \<in> o(\<lambda>x. g2 x * h2 x) \<longleftrightarrow>
-             g1 \<in> o(g2) \<or> (g1 \<in> \<Theta>(g2) \<and> h1 \<in> o(h2))" (is "?P \<longleftrightarrow> ?Q")
+  shows "(\<lambda>x. g1 x * h1 x) \<in> o[F](\<lambda>x. g2 x * h2 x) \<longleftrightarrow>
+             g1 \<in> o[F](g2) \<or> (g1 \<in> \<Theta>[F](g2) \<and> h1 \<in> o[F](h2))" (is "?P \<longleftrightarrow> ?Q")
 proof (rule G.landau_cases[OF assms(1,2)])
-  assume "g1 \<in> o(g2)"
+  assume "g1 \<in> o[F](g2)"
   thus ?thesis by (auto intro!: gs_dominate assms)
 next
-  assume A: "g1 \<in> \<Theta>(g2)"
-  hence B: "g2 \<in> O(g1)" by (subst (asm) bigtheta_sym) (rule bigthetaD1)
-  hence "g1 \<notin> o(g2)" using assms by (auto dest: G.small_big_antisym)
-  moreover from A have "o(\<lambda>x. g2 x * h2 x) = o(\<lambda>x. g1 x * h2 x)"
+  assume A: "g1 \<in> \<Theta>[F](g2)"
+  hence B: "g2 \<in> O[F](g1)" by (subst (asm) bigtheta_sym) (rule bigthetaD1)
+  hence "g1 \<notin> o[F](g2)" using assms by (auto dest: G.small_big_antisym)
+  moreover from A have "o[F](\<lambda>x. g2 x * h2 x) = o[F](\<lambda>x. g1 x * h2 x)"
     by (intro landau_o.small.cong_bigtheta landau_theta.mult_right, subst bigtheta_sym)
   ultimately show ?thesis using G.nonzero[OF assms(1)] A 
     by (auto simp add: landau_o.small.mult_cancel_left)
 next
-  assume A: "g2 \<in> o(g1)"
-  from gs_dominate[OF assms(2,1,4,3) this] have B: "g2 * h2 \<in> o(g1 * h1)" by (simp add: func_times)
-  have "g1 \<notin> o(g2)" "g1 \<notin> \<Theta>(g2)" using assms A
+  assume A: "g2 \<in> o[F](g1)"
+  from gs_dominate[OF assms(2,1,4,3) this] have B: "g2 * h2 \<in> o[F](g1 * h1)" by (simp add: func_times)
+  have "g1 \<notin> o[F](g2)" "g1 \<notin> \<Theta>[F](g2)" using assms A
     by (auto dest: G.small_antisym G.small_big_antisym simp: bigomega_iff_bigo)
   moreover have "\<not>?P"
     by (intro notI GH.small_antisym[OF _ _ B] set_times_intro) (simp_all add: func_times assms)
@@ -136,31 +137,31 @@ qed
 
 lemma bigo_iff:
   assumes "g1 \<in> G" "g2 \<in> G" "h1 \<in> H" "h2 \<in> H"
-  shows "(\<lambda>x. g1 x * h1 x) \<in> O(\<lambda>x. g2 x * h2 x) \<longleftrightarrow>
-             g1 \<in> o(g2) \<or> (g1 \<in> \<Theta>(g2) \<and> h1 \<in> O(h2))" (is "?P \<longleftrightarrow> ?Q")
+  shows "(\<lambda>x. g1 x * h1 x) \<in> O[F](\<lambda>x. g2 x * h2 x) \<longleftrightarrow>
+             g1 \<in> o[F](g2) \<or> (g1 \<in> \<Theta>[F](g2) \<and> h1 \<in> O[F](h2))" (is "?P \<longleftrightarrow> ?Q")
 proof (rule G.landau_cases[OF assms(1,2)])
-  assume "g1 \<in> o(g2)"
+  assume "g1 \<in> o[F](g2)"
   thus ?thesis by (auto intro!: gs_dominate assms landau_o.small_imp_big)
 next
-  assume A: "g2 \<in> o(g1)"
-  hence "g1 \<notin> O(g2)" using assms by (auto dest: G.small_big_antisym)
-  moreover from gs_dominate[OF assms(2,1,4,3) A] have "g2*h2 \<in> o(g1*h1)" by (simp add: func_times)
-  hence "g1*h1 \<notin> O(g2*h2)" by (blast intro: GH.small_big_antisym assms)
+  assume A: "g2 \<in> o[F](g1)"
+  hence "g1 \<notin> O[F](g2)" using assms by (auto dest: G.small_big_antisym)
+  moreover from gs_dominate[OF assms(2,1,4,3) A] have "g2*h2 \<in> o[F](g1*h1)" by (simp add: func_times)
+  hence "g1*h1 \<notin> O[F](g2*h2)" by (blast intro: GH.small_big_antisym assms)
   ultimately show ?thesis using A assms
     by (auto simp: func_times dest: landau_o.small_imp_big)
 next
-  assume A: "g1 \<in> \<Theta>(g2)"
-  hence "g1 \<notin> o(g2)" unfolding bigtheta_def using assms
+  assume A: "g1 \<in> \<Theta>[F](g2)"
+  hence "g1 \<notin> o[F](g2)" unfolding bigtheta_def using assms
     by (auto dest: G.small_big_antisym simp: bigomega_iff_bigo)
-  moreover have "O(\<lambda>x. g2 x * h2 x) = O(\<lambda>x. g1 x * h2 x)"
+  moreover have "O[F](\<lambda>x. g2 x * h2 x) = O[F](\<lambda>x. g1 x * h2 x)"
     by (subst landau_o.big.cong_bigtheta[OF landau_theta.mult_right[OF A]]) (rule refl)
   ultimately show ?thesis using A G.nonzero[OF assms(2)]
-    by (auto simp: landau_o.big.mult_cancel_left)
+    by (auto simp: landau_o.big.mult_cancel_left eventually_nonzero_bigtheta)
 qed
 
 lemma bigtheta_iff:
   "g1 \<in> G \<Longrightarrow> g2 \<in> G \<Longrightarrow> h1 \<in> H \<Longrightarrow> h2 \<in> H \<Longrightarrow> 
-    (\<lambda>x. g1 x * h1 x) \<in> \<Theta>(\<lambda>x. g2 x * h2 x) \<longleftrightarrow> g1 \<in> \<Theta>(g2) \<and> h1 \<in> \<Theta>(h2)"
+    (\<lambda>x. g1 x * h1 x) \<in> \<Theta>[F](\<lambda>x. g2 x * h2 x) \<longleftrightarrow> g1 \<in> \<Theta>[F](g2) \<and> h1 \<in> \<Theta>[F](h2)"
   by (auto simp: bigtheta_def bigo_iff bigomega_iff_bigo intro: landau_o.small_imp_big
            dest: G.small_antisym G.small_big_antisym)
 
@@ -168,135 +169,135 @@ end
 
 
 lemma landau_function_family_powr_closure: 
-  assumes "filterlim f at_top at_top"
-  shows   "landau_function_family (powr_closure f)"
-proof (unfold_locales; elim powr_closureE; hypsubst)
-  from assms have "eventually (\<lambda>x. f x \<ge> 1) at_top" using filterlim_at_top by auto
-  hence A: "eventually (\<lambda>x. f x \<noteq> 0) at_top" by eventually_elim simp
+  assumes "F \<noteq> bot" "filterlim f at_top F"
+  shows   "landau_function_family F (powr_closure f)"
+proof (unfold_locales; (elim powr_closureE; hypsubst)?)
+  from assms have "eventually (\<lambda>x. f x \<ge> 1) F" using filterlim_at_top by auto
+  hence A: "eventually (\<lambda>x. f x \<noteq> 0) F" by eventually_elim simp
   {
     fix p q :: real
-    show "(\<lambda>x. f x powr p) \<in> o(\<lambda>x. f x powr q) \<or>
-          (\<lambda>x. f x powr q) \<in> o(\<lambda>x. f x powr p) \<or>
-          (\<lambda>x. f x powr p) \<in> \<Theta>(\<lambda>x. f x powr q)"
+    show "(\<lambda>x. f x powr p) \<in> o[F](\<lambda>x. f x powr q) \<or>
+          (\<lambda>x. f x powr q) \<in> o[F](\<lambda>x. f x powr p) \<or>
+          (\<lambda>x. f x powr p) \<in> \<Theta>[F](\<lambda>x. f x powr q)"
     by (cases p q rule: linorder_cases)
        (force intro!: smalloI_tendsto tendsto_neg_powr simp: powr_divide2 assms A)+
   }
   fix p
-  show "eventually (\<lambda>x. f x powr p > 0) at_top" using A by simp
-qed (auto simp: powr_add[symmetric] powr_minus[symmetric] intro: powr_closureI)
+  show "eventually (\<lambda>x. f x powr p > 0) F" using A by simp
+qed (auto simp: powr_add[symmetric] powr_minus[symmetric] \<open>F \<noteq> bot\<close> intro: powr_closureI)
 
 lemma landau_function_family_pair_trans:
-  assumes "landau_function_family_pair F G f"
-  assumes "landau_function_family_pair G H g"
-  shows   "landau_function_family_pair F (G*H) f"
+  assumes "landau_function_family_pair Ftr F G f"
+  assumes "landau_function_family_pair Ftr G H g"
+  shows   "landau_function_family_pair Ftr F (G*H) f"
 proof-
-  interpret FG: landau_function_family_pair F G f by fact
-  interpret GH: landau_function_family_pair G H g by fact
+  interpret FG: landau_function_family_pair Ftr F G f by fact
+  interpret GH: landau_function_family_pair Ftr G H g by fact
   show ?thesis
   proof (unfold_locales; (elim set_times_elim)?; (clarify)?;
          (unfold func_times mult.assoc[symmetric])?)
     fix f1 f2 g1 g2 h1 h2
-    assume A: "f1 \<in> F" "f2 \<in> F" "g1 \<in> G" "g2 \<in> G" "h1 \<in> H" "h2 \<in> H" "f1 \<in> o(f2)"
+    assume A: "f1 \<in> F" "f2 \<in> F" "g1 \<in> G" "g2 \<in> G" "h1 \<in> H" "h2 \<in> H" "f1 \<in> o[Ftr](f2)"
     
-    from A have "(\<lambda>x. f1 x * g1 x * h1 x) \<in> o(\<lambda>x. f1 x * g1 x * g x)"
+    from A have "(\<lambda>x. f1 x * g1 x * h1 x) \<in> o[Ftr](\<lambda>x. f1 x * g1 x * g x)"
       by (intro landau_o.small.mult_left GH.g_dominates)
     also have "(\<lambda>x. f1 x * g1 x * g x) = (\<lambda>x. f1 x * (g1 x * g x))" by (simp only: mult.assoc)
-    also from A have "... \<in> o(\<lambda>x. f2 x * (g2 x / g x))"
+    also from A have "... \<in> o[Ftr](\<lambda>x. f2 x * (g2 x / g x))"
       by (intro FG.gs_dominate FG.H.mult FG.H.div GH.g)
-    also from A have "(\<lambda>x. inverse (h2 x)) \<in> o(g)" by (intro GH.g_dominates GH.H.inverse)
-    with GH.g A have "(\<lambda>x. f2 x * (g2 x / g x)) \<in> o(\<lambda>x. f2 x * (g2 x * h2 x))"
+    also from A have "(\<lambda>x. inverse (h2 x)) \<in> o[Ftr](g)" by (intro GH.g_dominates GH.H.inverse)
+    with GH.g A have "(\<lambda>x. f2 x * (g2 x / g x)) \<in> o[Ftr](\<lambda>x. f2 x * (g2 x * h2 x))"
       by (auto simp: FG.H.nonzero GH.H.nonzero divide_inverse 
                intro!: landau_o.small.mult_left intro: landau_o.small.inverse_flip)
-    also have "... = o(\<lambda>x. f2 x * g2 x * h2 x)" by (simp only: mult.assoc)
-    finally show "(\<lambda>x. f1 x * g1 x * h1 x) \<in> o(\<lambda>x. f2 x * g2 x * h2 x)" .
+    also have "... = o[Ftr](\<lambda>x. f2 x * g2 x * h2 x)" by (simp only: mult.assoc)
+    finally show "(\<lambda>x. f1 x * g1 x * h1 x) \<in> o[Ftr](\<lambda>x. f2 x * g2 x * h2 x)" .
   next
     fix g1 h1 assume A: "g1 \<in> G" "h1 \<in> H"
-    hence "(\<lambda>x. g1 x * h1 x) \<in> o(\<lambda>x. g1 x * g x)"
+    hence "(\<lambda>x. g1 x * h1 x) \<in> o[Ftr](\<lambda>x. g1 x * g x)"
       by (intro landau_o.small.mult_left GH.g_dominates)
-    also from A have "(\<lambda>x. g1 x * g x) \<in> o(f)" by (intro FG.g_dominates FG.H.mult GH.g)
-    finally show "(\<lambda>x. g1 x * h1 x) \<in> o(f)" .
+    also from A have "(\<lambda>x. g1 x * g x) \<in> o[Ftr](f)" by (intro FG.g_dominates FG.H.mult GH.g)
+    finally show "(\<lambda>x. g1 x * h1 x) \<in> o[Ftr](f)" .
   qed (simp_all add: FG.g)
 qed
 
 lemma landau_function_family_pair_trans_powr:
-  assumes "landau_function_family_pair (powr_closure g) H (\<lambda>x. g x powr 1)"
-  assumes "filterlim f at_top at_top"
-  assumes "\<And>p. (\<lambda>x. g x powr p) \<in> o(f)"
-  shows   "landau_function_family_pair (powr_closure f) (powr_closure g * H) (\<lambda>x. f x powr 1)"
+  assumes "landau_function_family_pair F (powr_closure g) H (\<lambda>x. g x powr 1)"
+  assumes "filterlim f at_top F"
+  assumes "\<And>p. (\<lambda>x. g x powr p) \<in> o[F](f)"
+  shows   "landau_function_family_pair F (powr_closure f) (powr_closure g * H) (\<lambda>x. f x powr 1)"
 proof (rule landau_function_family_pair_trans[OF _ assms(1)])
-  interpret GH: landau_function_family_pair "powr_closure g" H "\<lambda>x. g x powr 1" by fact
-  interpret F: landau_function_family "powr_closure f" 
+  interpret GH: landau_function_family_pair F "powr_closure g" H "\<lambda>x. g x powr 1" by fact
+  interpret F: landau_function_family F "powr_closure f" 
     by (rule landau_function_family_powr_closure) fact+
-  show "landau_function_family_pair (powr_closure f) (powr_closure g) (\<lambda>x. f x powr 1)"
+  show "landau_function_family_pair F (powr_closure f) (powr_closure g) (\<lambda>x. f x powr 1)"
   proof (unfold_locales; (elim powr_closureE; hypsubst)?)
     show "(\<lambda>x. f x powr 1) \<in> powr_closure f" by (rule powr_closureI)
   next
     fix p ::real
     note assms(3)[of p]
-    also from assms(2) have "eventually (\<lambda>x. f x \<ge> 1) at_top" by (force simp: filterlim_at_top) 
-    hence "f \<in> \<Theta>(\<lambda>x. f x powr 1)" by (auto intro!: bigthetaI_cong elim!: eventually_mono)
-    finally show "(\<lambda>x. g x powr p) \<in> o(\<lambda>x. f x powr 1)" .
+    also from assms(2) have "eventually (\<lambda>x. f x \<ge> 1) F" by (force simp: filterlim_at_top) 
+    hence "f \<in> \<Theta>[F](\<lambda>x. f x powr 1)" by (auto intro!: bigthetaI_cong elim!: eventually_mono)
+    finally show "(\<lambda>x. g x powr p) \<in> o[F](\<lambda>x. f x powr 1)" .
   next
     fix p p1 p2 p3 :: real
-    assume A: "(\<lambda>x. f x powr p) \<in> o(\<lambda>x. f x powr p1)"
+    assume A: "(\<lambda>x. f x powr p) \<in> o[F](\<lambda>x. f x powr p1)"
     have p: "p < p1"
     proof (cases p p1 rule: linorder_cases)
       assume "p > p1"
-      moreover from assms(2) have "eventually (\<lambda>x. f x \<ge> 1) at_top"
+      moreover from assms(2) have "eventually (\<lambda>x. f x \<ge> 1) F"
         by (force simp: filterlim_at_top)
-      hence "eventually (\<lambda>x. f x \<noteq> 0) at_top" by eventually_elim simp
-      ultimately have "(\<lambda>x. f x powr p1) \<in> o(\<lambda>x. f x powr p)" using assms
+      hence "eventually (\<lambda>x. f x \<noteq> 0) F" by eventually_elim simp
+      ultimately have "(\<lambda>x. f x powr p1) \<in> o[F](\<lambda>x. f x powr p)" using assms
         by (auto intro!: smalloI_tendsto tendsto_neg_powr simp: powr_divide2)
       from F.small_antisym[OF _ _ this A] show ?thesis by (auto simp: powr_closureI)
     next
       assume "p = p1"
-      hence "(\<lambda>x. f x powr p1) \<in> O(\<lambda>x. f x powr p)" by (intro bigthetaD1) simp
+      hence "(\<lambda>x. f x powr p1) \<in> O[F](\<lambda>x. f x powr p)" by (intro bigthetaD1) simp
       with F.small_big_antisym[OF _ _ A this] show ?thesis by (auto simp: powr_closureI)
     qed
     
-    from assms(2) have f_pos: "eventually (\<lambda>x. f x \<ge> 1) at_top" by (force simp: filterlim_at_top)
-    from assms have "(\<lambda>x. g x powr ((p2 - p3)/(p1 - p))) \<in> o(f)" by simp
+    from assms(2) have f_pos: "eventually (\<lambda>x. f x \<ge> 1) F" by (force simp: filterlim_at_top)
+    from assms have "(\<lambda>x. g x powr ((p2 - p3)/(p1 - p))) \<in> o[F](f)" by simp
     from smallo_powr[OF this, of "p1 - p"] p
-      have "(\<lambda>x. g x powr (p2 - p3)) \<in> o(\<lambda>x. \<bar>f x\<bar> powr (p1 - p))" by (simp add: powr_powr)
-    hence "(\<lambda>x. \<bar>f x\<bar> powr p * g x powr p2) \<in> o(\<lambda>x. \<bar>f x\<bar> powr p1 * g x powr p3)" (is ?P)
+      have "(\<lambda>x. g x powr (p2 - p3)) \<in> o[F](\<lambda>x. \<bar>f x\<bar> powr (p1 - p))" by (simp add: powr_powr)
+    hence "(\<lambda>x. \<bar>f x\<bar> powr p * g x powr p2) \<in> o[F](\<lambda>x. \<bar>f x\<bar> powr p1 * g x powr p3)" (is ?P)
       using GH.G.nonzero[OF GH.g] F.nonzero[OF powr_closureI]
       by (simp add: powr_divide2[symmetric] landau_o.small.divide_eq1 
                     landau_o.small.divide_eq2 mult.commute)
-    also have "?P \<longleftrightarrow> (\<lambda>x. f x powr p * g x powr p2) \<in> o(\<lambda>x. f x powr p1 * g x powr p3)"
+    also have "?P \<longleftrightarrow> (\<lambda>x. f x powr p * g x powr p2) \<in> o[F](\<lambda>x. f x powr p1 * g x powr p3)"
       using f_pos by (intro landau_o.small.cong_ex) (auto elim!: eventually_mono)
-    finally show "(\<lambda>x. f x powr p * g x powr p2) \<in> o(\<lambda>x. f x powr p1 * g x powr p3)" .
+    finally show "(\<lambda>x. f x powr p * g x powr p2) \<in> o[F](\<lambda>x. f x powr p1 * g x powr p3)" .
   qed
 qed
 
 
-definition dominates :: "('a :: linorder \<Rightarrow> real) \<Rightarrow> ('a \<Rightarrow> real) \<Rightarrow> bool" where
-  "dominates f g = (\<forall>p. (\<lambda>x. g x powr p) \<in> o(f))"
+definition dominates :: "'a filter \<Rightarrow> ('a \<Rightarrow> real) \<Rightarrow> ('a \<Rightarrow> real) \<Rightarrow> bool" where
+  "dominates F f g = (\<forall>p. (\<lambda>x. g x powr p) \<in> o[F](f))"
 
 lemma dominates_trans:
-  assumes "eventually (\<lambda>x. g x > 0) at_top"
-  assumes "dominates f g" "dominates g h"
-  shows   "dominates f h"
+  assumes "eventually (\<lambda>x. g x > 0) F"
+  assumes "dominates F f g" "dominates F g h"
+  shows   "dominates F f h"
 unfolding dominates_def
 proof
   fix p :: real
-  from assms(3) have "(\<lambda>x. h x powr p) \<in> o(g)" unfolding dominates_def by simp
-  also from assms(1) have "g \<in> \<Theta>(\<lambda>x. g x powr 1)"
+  from assms(3) have "(\<lambda>x. h x powr p) \<in> o[F](g)" unfolding dominates_def by simp
+  also from assms(1) have "g \<in> \<Theta>[F](\<lambda>x. g x powr 1)"
     by (intro bigthetaI_cong) (auto elim!: eventually_mono)
-  also from assms(2) have "(\<lambda>x. g x powr 1) \<in> o(f)" unfolding dominates_def by simp
-  finally show "(\<lambda>x. h x powr p) \<in> o(f)" .
+  also from assms(2) have "(\<lambda>x. g x powr 1) \<in> o[F](f)" unfolding dominates_def by simp
+  finally show "(\<lambda>x. h x powr p) \<in> o[F](f)" .
 qed
 
 fun landau_dominating_chain where
-  "landau_dominating_chain (f # g # gs) \<longleftrightarrow>
-    dominates f g \<and> landau_dominating_chain (g # gs)"
-| "landau_dominating_chain [f] \<longleftrightarrow> (\<lambda>x. 1) \<in> o(f)"
-| "landau_dominating_chain [] \<longleftrightarrow> True"
+  "landau_dominating_chain F (f # g # gs) \<longleftrightarrow>
+    dominates F f g \<and> landau_dominating_chain F (g # gs)"
+| "landau_dominating_chain F [f] \<longleftrightarrow> (\<lambda>x. 1) \<in> o[F](f)"
+| "landau_dominating_chain F [] \<longleftrightarrow> True"
 
 primrec landau_dominating_chain' where
-  "landau_dominating_chain' [] \<longleftrightarrow> True"
-| "landau_dominating_chain' (f # gs) \<longleftrightarrow>
-    landau_function_family_pair (powr_closure f) (prod_list (map powr_closure gs)) (\<lambda>x. f x powr 1) \<and> 
-    landau_dominating_chain' gs"
+  "landau_dominating_chain' F [] \<longleftrightarrow> True"
+| "landau_dominating_chain' F (f # gs) \<longleftrightarrow>
+    landau_function_family_pair F (powr_closure f) (prod_list (map powr_closure gs)) (\<lambda>x. f x powr 1) \<and> 
+    landau_dominating_chain' F gs"
 
 
 
@@ -310,20 +311,20 @@ primrec pos_list where
 
 
 lemma dominating_chain_imp_dominating_chain': 
-  "(\<And>g. g \<in> set gs \<Longrightarrow> filterlim g at_top at_top) \<Longrightarrow>
-     landau_dominating_chain gs \<Longrightarrow> landau_dominating_chain' gs"
+  "Ftr \<noteq> bot \<Longrightarrow> (\<And>g. g \<in> set gs \<Longrightarrow> filterlim g at_top Ftr) \<Longrightarrow>
+     landau_dominating_chain Ftr gs \<Longrightarrow> landau_dominating_chain' Ftr gs"
 proof (induction gs rule: landau_dominating_chain.induct)
-  case (1 f g gs)
+  case (1 F f g gs)
   from 1 show ?case 
     by (auto intro!: landau_function_family_pair_trans_powr simp add: dominates_def)
 next
-  case (2 f)
-  then interpret F: landau_function_family "powr_closure f"
+  case (2 F f)
+  then interpret F: landau_function_family F "powr_closure f"
     by (intro landau_function_family_powr_closure) simp_all
-  from 2 have "eventually (\<lambda>x. f x \<ge> 1) at_top" by (force simp: filterlim_at_top)
-  hence "o(\<lambda>x. f x powr 1) = o(\<lambda>x. f x)" 
+  from 2 have "eventually (\<lambda>x. f x \<ge> 1) F" by (force simp: filterlim_at_top)
+  hence "o[F](\<lambda>x. f x powr 1) = o[F](\<lambda>x. f x)" 
     by (intro landau_o.small.cong) (auto elim!: eventually_mono)
-  with 2 have "landau_function_family_pair (powr_closure f) {\<lambda>_. 1} (\<lambda>x. f x powr 1)"
+  with 2 have "landau_function_family_pair F (powr_closure f) {\<lambda>_. 1} (\<lambda>x. f x powr 1)"
     by unfold_locales (auto intro: powr_closureI)
   thus ?case by (simp add: one_fun_def)
 next
@@ -333,23 +334,25 @@ qed
 
 
 locale landau_function_family_chain = 
+  fixes F :: "'b filter"
   fixes gs :: "'a list" 
   fixes get_param :: "'a \<Rightarrow> real"
-  fixes get_fun :: "'a \<Rightarrow> ('b::linorder \<Rightarrow> real)"
-  assumes gs_pos: "g \<in> set (map get_fun gs) \<Longrightarrow> filterlim g at_top at_top"
-  assumes dominating_chain: "landau_dominating_chain (map get_fun gs)"
+  fixes get_fun :: "'a \<Rightarrow> ('b \<Rightarrow> real)"
+  assumes F_nontrivial: "F \<noteq> bot"
+  assumes gs_pos: "g \<in> set (map get_fun gs) \<Longrightarrow> filterlim g at_top F"
+  assumes dominating_chain: "landau_dominating_chain F (map get_fun gs)"
 begin
 
-lemma dominating_chain': "landau_dominating_chain' (map get_fun gs)"
-  by (intro dominating_chain_imp_dominating_chain' gs_pos dominating_chain)
+lemma dominating_chain': "landau_dominating_chain' F (map get_fun gs)"
+  by (intro dominating_chain_imp_dominating_chain' gs_pos dominating_chain F_nontrivial)
 
 lemma gs_powr_0_eq_one: 
-  "eventually (\<lambda>x. (\<Prod>g\<leftarrow>gs. get_fun g x powr 0) = 1) at_top"
+  "eventually (\<lambda>x. (\<Prod>g\<leftarrow>gs. get_fun g x powr 0) = 1) F"
 using gs_pos
 proof (induction gs)
   case (Cons g gs)
-  from Cons have "eventually (\<lambda>x. get_fun g x > 0) at_top" by (auto simp: filterlim_at_top_dense)
-  moreover from Cons have "eventually (\<lambda>x. (\<Prod>g\<leftarrow>gs. get_fun g x powr 0) = 1) at_top" by simp
+  from Cons have "eventually (\<lambda>x. get_fun g x > 0) F" by (auto simp: filterlim_at_top_dense)
+  moreover from Cons have "eventually (\<lambda>x. (\<Prod>g\<leftarrow>gs. get_fun g x powr 0) = 1) F" by simp
   ultimately show ?case by eventually_elim simp
 qed simp_all
 
@@ -368,21 +371,22 @@ proof-
 qed
 
 lemma smallo_iff:
-  "(\<lambda>_. 1) \<in> o(\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr get_param g) \<longleftrightarrow> pos_list (map get_param gs)"
+  "(\<lambda>_. 1) \<in> o[F](\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr get_param g) \<longleftrightarrow> pos_list (map get_param gs)"
 proof-
-  have "((\<lambda>_. 1) \<in> o(\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr get_param g)) \<longleftrightarrow>
-          ((\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr 0) \<in> o(\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr get_param g))"
+  have "((\<lambda>_. 1) \<in> o[F](\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr get_param g)) \<longleftrightarrow>
+          ((\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr 0) \<in> o[F](\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr get_param g))"
     by (rule sym, intro landau_o.small.in_cong gs_powr_0_eq_one) 
   also from gs_pos dominating_chain' have "... \<longleftrightarrow> pos_list (map get_param gs)"
   proof (induction gs)
     case Nil
-    have "(\<lambda>x::'b. 1::real) \<notin> o(\<lambda>x. 1)" by (auto dest!: landau_o.small_big_asymmetric)
+    have "(\<lambda>x::'b. 1::real) \<notin> o[F](\<lambda>x. 1)" using F_nontrivial 
+      by (auto dest!: landau_o.small_big_asymmetric)
     thus ?case by simp
   next
     case (Cons g gs)
-    then interpret G: landau_function_family_pair "powr_closure (get_fun g)" 
+    then interpret G: landau_function_family_pair F "powr_closure (get_fun g)" 
        "prod_list (map powr_closure (map get_fun gs))" "\<lambda>x. get_fun g x powr 1" by simp
-    from Cons show ?case using listmap_gs_in_listmap[of get_fun _ gs]
+    from Cons show ?case using listmap_gs_in_listmap[of get_fun _ gs] F_nontrivial
       by (simp_all add: G.smallo_iff listmap_gs_in_listmap powr_smallo_iff powr_bigtheta_iff  
                    del: powr_zero_eq_one)
   qed
@@ -390,10 +394,10 @@ proof-
 qed
 
 lemma bigo_iff:
-  "(\<lambda>_. 1) \<in> O(\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr get_param g) \<longleftrightarrow> nonneg_list (map get_param gs)"
+  "(\<lambda>_. 1) \<in> O[F](\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr get_param g) \<longleftrightarrow> nonneg_list (map get_param gs)"
 proof-
-  have "((\<lambda>_. 1) \<in> O(\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr get_param g)) \<longleftrightarrow>
-          ((\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr 0) \<in> O(\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr get_param g))"
+  have "((\<lambda>_. 1) \<in> O[F](\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr get_param g)) \<longleftrightarrow>
+          ((\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr 0) \<in> O[F](\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr get_param g))"
     by (rule sym, intro landau_o.big.in_cong gs_powr_0_eq_one) 
   also from gs_pos dominating_chain' have "... \<longleftrightarrow> nonneg_list (map get_param gs)"
   proof (induction gs)
@@ -401,9 +405,9 @@ proof-
     then show ?case by (simp add: func_one)
   next
     case (Cons g gs)
-    then interpret G: landau_function_family_pair "powr_closure (get_fun g)" 
+    then interpret G: landau_function_family_pair F "powr_closure (get_fun g)" 
        "prod_list (map powr_closure (map get_fun gs))" "\<lambda>x. get_fun g x powr 1" by simp
-    from Cons show ?case using listmap_gs_in_listmap[of get_fun _ gs]
+    from Cons show ?case using listmap_gs_in_listmap[of get_fun _ gs] F_nontrivial
       by (simp_all add: G.bigo_iff listmap_gs_in_listmap powr_smallo_iff powr_bigtheta_iff  
                    del: powr_zero_eq_one)
   qed
@@ -411,10 +415,10 @@ proof-
 qed
 
 lemma bigtheta_iff:
-  "(\<lambda>_. 1) \<in> \<Theta>(\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr get_param g) \<longleftrightarrow> list_all (op= 0) (map get_param gs)"
+  "(\<lambda>_. 1) \<in> \<Theta>[F](\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr get_param g) \<longleftrightarrow> list_all (op= 0) (map get_param gs)"
 proof-
-  have "((\<lambda>_. 1) \<in> \<Theta>(\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr get_param g)) \<longleftrightarrow>
-          ((\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr 0) \<in> \<Theta>(\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr get_param g))"
+  have "((\<lambda>_. 1) \<in> \<Theta>[F](\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr get_param g)) \<longleftrightarrow>
+          ((\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr 0) \<in> \<Theta>[F](\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr get_param g))"
     by (rule sym, intro landau_theta.in_cong gs_powr_0_eq_one) 
   also from gs_pos dominating_chain' have "... \<longleftrightarrow> list_all (op= 0) (map get_param gs)"
   proof (induction gs)
@@ -422,9 +426,9 @@ proof-
     then show ?case by (simp add: func_one)
   next
     case (Cons g gs)
-    then interpret G: landau_function_family_pair "powr_closure (get_fun g)" 
+    then interpret G: landau_function_family_pair F "powr_closure (get_fun g)" 
        "prod_list (map powr_closure (map get_fun gs))" "\<lambda>x. get_fun g x powr 1" by simp
-    from Cons show ?case using listmap_gs_in_listmap[of get_fun _ gs]
+    from Cons show ?case using listmap_gs_in_listmap[of get_fun _ gs] F_nontrivial
       by (simp_all add: G.bigtheta_iff listmap_gs_in_listmap powr_smallo_iff powr_bigtheta_iff  
                    del: powr_zero_eq_one)
   qed
@@ -465,16 +469,17 @@ proof (rule smalloI_tendsto)
   thus "eventually (\<lambda>x. f x \<noteq> 0) at_top" by eventually_elim simp
 qed
 
-lemma ln_chain_dominates: "m > n \<Longrightarrow> dominates ((ln::real \<Rightarrow> real)^^n) (ln^^m)"
+lemma ln_chain_dominates: "m > n \<Longrightarrow> dominates at_top ((ln::real \<Rightarrow> real)^^n) (ln^^m)"
 proof (erule less_Suc_induct)
-  fix n show "dominates ((ln::real\<Rightarrow>real)^^n) (ln^^(Suc n))" unfolding dominates_def
+  fix n show "dominates at_top ((ln::real\<Rightarrow>real)^^n) (ln^^(Suc n))" unfolding dominates_def
     by (force intro: ln_fun_in_smallo_fun fun_chain_at_top_at_top ln_at_top)
 next
   fix k m n 
-  assume A: "dominates ((ln::real \<Rightarrow> real)^^k) (ln^^m)" "dominates ((ln::real \<Rightarrow> real)^^m) (ln^^n)"
+  assume A: "dominates at_top ((ln::real \<Rightarrow> real)^^k) (ln^^m)"
+            "dominates at_top ((ln::real \<Rightarrow> real)^^m) (ln^^n)"
   from fun_chain_at_top_at_top[OF ln_at_top, of m] 
     have "eventually (\<lambda>x::real. (ln^^m) x > 0) at_top" by (simp add: filterlim_at_top_dense)
-  from this A show "dominates ((ln::real \<Rightarrow> real)^^k) ((ln::real \<Rightarrow> real)^^n)" 
+  from this A show "dominates at_top ((ln::real \<Rightarrow> real)^^k) ((ln::real \<Rightarrow> real)^^n)" 
     by (rule dominates_trans)
 qed
 
@@ -542,7 +547,7 @@ lemma eval_primfun'_at_top: "filterlim (eval_primfun' f) at_top at_top"
   by (cases f) (auto intro!: fun_chain_at_top_at_top ln_at_top)
 
 lemma primfun_dominates: 
-  "f < g \<Longrightarrow> dominates (eval_primfun' f) (eval_primfun' g)"
+  "f < g \<Longrightarrow> dominates at_top (eval_primfun' f) (eval_primfun' g)"
   by (elim less_primfun.elims; hypsubst) (simp_all add: ln_chain_dominates)
 
 lemma eval_primfun_pos: "eventually (\<lambda>x::real. eval_primfun f x > 0) at_top"
@@ -553,7 +558,7 @@ proof (cases f, hypsubst)
   thus "eventually (\<lambda>x::real. eval_primfun (f,e) x > 0) at_top" by eventually_elim simp
 qed
 
-lemma eventually_nonneg_primfun: "eventually_nonneg (eval_primfun f)"
+lemma eventually_nonneg_primfun: "eventually_nonneg at_top (eval_primfun f)"
   unfolding eventually_nonneg_def using eval_primfun_pos[of f] by eventually_elim simp
 
 lemma eval_primfun_nonzero: "eventually (\<lambda>x. eval_primfun f x \<noteq> 0) at_top"
@@ -610,16 +615,16 @@ lemma set_mult_is_times: "set_mult A B = A * B"
   unfolding set_mult_def set_times_def func_times by blast 
 
 lemma set_powr_mult: 
-  assumes "eventually_nonneg f" and "eventually_nonneg g"
-  shows   "\<Theta>(\<lambda>x. (f x * g x :: real) powr p) = set_mult (\<Theta>(\<lambda>x. f x powr p)) (\<Theta>(\<lambda>x. g x powr p))"
+  assumes "eventually_nonneg F f" and "eventually_nonneg F g"
+  shows   "\<Theta>[F](\<lambda>x. (f x * g x :: real) powr p) = set_mult (\<Theta>[F](\<lambda>x. f x powr p)) (\<Theta>[F](\<lambda>x. g x powr p))"
 proof-
-  from assms have "eventually (\<lambda>x. f x \<ge> 0) at_top" "eventually (\<lambda>x. g x \<ge> 0) at_top" 
+  from assms have "eventually (\<lambda>x. f x \<ge> 0) F" "eventually (\<lambda>x. g x \<ge> 0) F" 
     by (simp_all add: eventually_nonneg_def)
-  hence "eventually (\<lambda>x. (f x * g x :: real) powr p = f x powr p * g x powr p) at_top"
+  hence "eventually (\<lambda>x. (f x * g x :: real) powr p = f x powr p * g x powr p) F"
     by eventually_elim (simp add: powr_mult)
-  hence "\<Theta>(\<lambda>x. (f x * g x :: real) powr p) = \<Theta>(\<lambda>x. f x powr p * g x powr p)"
+  hence "\<Theta>[F](\<lambda>x. (f x * g x :: real) powr p) = \<Theta>[F](\<lambda>x. f x powr p * g x powr p)"
     by (rule landau_theta.cong)
-  also have "... = set_mult (\<Theta>(\<lambda>x. f x powr p)) (\<Theta>(\<lambda>x. g x powr p))"
+  also have "... = set_mult (\<Theta>[F](\<lambda>x. f x powr p)) (\<Theta>[F](\<lambda>x. g x powr p))"
     by (simp add: bigtheta_mult_eq_set_mult)
   finally show ?thesis .
 qed
@@ -631,7 +636,7 @@ lemma eventually_nonneg_bigtheta_pow_realpow:
 
 lemma BIGTHETA_CONST_fold: 
   "BIGTHETA_CONST (c::real) (BIGTHETA_CONST d A) = BIGTHETA_CONST (c*d) A"
-  "bigtheta_pow (BIGTHETA_CONST c \<Theta>(eval_primfun pf)) k = 
+  "bigtheta_pow at_top (BIGTHETA_CONST c \<Theta>(eval_primfun pf)) k = 
      BIGTHETA_CONST (c ^ k) \<Theta>(\<lambda>x. eval_primfun pf x powr k)"
   "set_inverse (BIGTHETA_CONST c \<Theta>(f)) = BIGTHETA_CONST (inverse c) \<Theta>(\<lambda>x. inverse (f x))"
   "set_mult (BIGTHETA_CONST c \<Theta>(f)) (BIGTHETA_CONST d \<Theta>(g)) = 
@@ -723,18 +728,18 @@ lemma inverse_prod_list_field:
   by (induction xs) simp_all
 
 lemma landau_prod_meta_cong:
-  assumes "landau_symbol L"
+  assumes "landau_symbol L L' Lr"
   assumes "\<Theta>(f) \<equiv> BIGTHETA_CONST c1 (\<Theta>(eval_primfuns fs))"
   assumes "\<Theta>(g) \<equiv> BIGTHETA_CONST c2 (\<Theta>(eval_primfuns gs))"
-  shows   "f \<in> L(g) \<equiv> LANDAU_PROD L c1 c2 (map inverse_primfun fs @ gs)"
+  shows   "f \<in> L at_top (g) \<equiv> LANDAU_PROD (L at_top) c1 c2 (map inverse_primfun fs @ gs)"
 proof-
-  interpret landau_symbol L by fact
-  have "f \<in> L(g) \<longleftrightarrow> (\<lambda>x. c1 * eval_primfuns fs x) \<in> L(\<lambda>x. c2 * eval_primfuns gs x)"
+  interpret landau_symbol L L' Lr by fact
+  have "f \<in> L at_top (g) \<longleftrightarrow> (\<lambda>x. c1 * eval_primfuns fs x) \<in> L at_top (\<lambda>x. c2 * eval_primfuns gs x)"
     using assms(2,3)[symmetric] unfolding BIGTHETA_CONST_def
     by (intro cong_ex_bigtheta) (simp_all add: bigtheta_mult_eq_set_mult[symmetric])
-  also have "... \<longleftrightarrow> (\<lambda>x. c1) \<in> L(\<lambda>x. c2 * eval_primfuns gs x / eval_primfuns fs x)"
+  also have "... \<longleftrightarrow> (\<lambda>x. c1) \<in> L at_top (\<lambda>x. c2 * eval_primfuns gs x / eval_primfuns fs x)"
     by (simp_all add: eval_primfuns_nonzero divide_eq1)
-  finally show "f \<in> L(g) \<equiv> LANDAU_PROD L c1 c2 (map inverse_primfun fs @ gs)" 
+  finally show "f \<in> L at_top (g) \<equiv> LANDAU_PROD (L at_top) c1 c2 (map inverse_primfun fs @ gs)" 
     by (simp add: LANDAU_PROD_def eval_primfuns_def eval_inverse_primfun 
                   divide_inverse o_def inverse_prod_list_field mult_ac)
 qed
@@ -776,14 +781,15 @@ qed
 lemma landau_function_family_chain_primfuns: 
   assumes "sorted (map fst fs)"
   assumes "distinct (map fst fs)"
-  shows   "landau_function_family_chain fs (eval_primfun' o fst)"
+  shows   "landau_function_family_chain at_top fs (eval_primfun' o fst)"
 proof (standard, goal_cases)
-  case 2
+  case 3
   from assms show ?case
   proof (induction fs rule: list_ConsCons_induct)
     case (2 g)
     from eval_primfun'_at_top[of "fst g"] 
-      have "eval_primfun' (fst g) \<in> \<omega>(\<lambda>_. 1)" by (intro smallomegaI_filterlim_at_top') simp
+      have "eval_primfun' (fst g) \<in> \<omega>(\<lambda>_. 1)" 
+      by (intro smallomegaI_filterlim_at_infinity filterlim_at_top_imp_at_infinity) simp
     thus ?case by (simp add: smallomega_iff_smallo)
   next
     case (3 f g gs)
@@ -824,7 +830,7 @@ lemma landau_primfuns_iff:
   "((\<lambda>_. 1) \<in> o(eval_primfuns fs)) = pos_primfun_list (group_primfuns fs)" (is "?B")
   "((\<lambda>_. 1) \<in> \<Theta>(eval_primfuns fs)) = iszero_primfun_list (group_primfuns fs)" (is "?C")
 proof-
-  interpret landau_function_family_chain "group_primfuns fs" snd "eval_primfun' o fst"
+  interpret landau_function_family_chain at_top "group_primfuns fs" snd "eval_primfun' o fst"
     by (rule landau_function_family_chain_primfuns)
        (simp_all add: group_primfuns_def groupsort_primfun.sorted_group_sort 
                       groupsort_primfun.distinct_group_sort)
@@ -850,17 +856,17 @@ qed
 
 
 lemma LANDAU_PROD_bigo_iff:
-  "LANDAU_PROD bigo c1 c2 fs \<longleftrightarrow> c1 = 0 \<or> (c2 \<noteq> 0 \<and> nonneg_primfun_list (group_primfuns fs))"
+  "LANDAU_PROD (bigo at_top) c1 c2 fs \<longleftrightarrow> c1 = 0 \<or> (c2 \<noteq> 0 \<and> nonneg_primfun_list (group_primfuns fs))"
   unfolding LANDAU_PROD_def
   by (cases "c1 = 0", simp, cases "c2 = 0", simp) (simp_all add: landau_primfuns_iff)
 
 lemma LANDAU_PROD_smallo_iff:
-  "LANDAU_PROD smallo c1 c2 fs \<longleftrightarrow> c1 = 0 \<or> (c2 \<noteq> 0 \<and> pos_primfun_list (group_primfuns fs))"
+  "LANDAU_PROD (smallo at_top) c1 c2 fs \<longleftrightarrow> c1 = 0 \<or> (c2 \<noteq> 0 \<and> pos_primfun_list (group_primfuns fs))"
   unfolding LANDAU_PROD_def
   by (cases "c1 = 0", simp, cases "c2 = 0", simp) (simp_all add: landau_primfuns_iff)
 
 lemma LANDAU_PROD_bigtheta_iff:
-  "LANDAU_PROD bigtheta c1 c2 fs \<longleftrightarrow> (c1 = 0 \<and> c2 = 0) \<or> (c1 \<noteq> 0 \<and> c2 \<noteq> 0 \<and> 
+  "LANDAU_PROD (bigtheta at_top) c1 c2 fs \<longleftrightarrow> (c1 = 0 \<and> c2 = 0) \<or> (c1 \<noteq> 0 \<and> c2 \<noteq> 0 \<and> 
      iszero_primfun_list (group_primfuns fs))"
 proof-
   have A: "\<And>P x. (x = 0 \<Longrightarrow> P) \<Longrightarrow> (x \<noteq> 0 \<Longrightarrow> P) \<Longrightarrow> P" by blast

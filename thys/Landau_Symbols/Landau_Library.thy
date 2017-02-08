@@ -46,11 +46,6 @@ lemma filterlim_cong':
   shows   "filterlim g F G"
   using assms by (subst filterlim_cong[OF refl refl, of _ f]) (auto elim: eventually_mono)
 
-lemma tendsto_cong:
-  assumes "eventually (\<lambda>x. f x = g x) F"
-  shows   "(f \<longlongrightarrow> (x::real)) F \<longleftrightarrow> (g \<longlongrightarrow> x) F"
-  by (subst (1 2) tendsto_iff, subst eventually_subst'[OF assms]) (rule refl)
-
 lemma eventually_ln_at_top: "eventually (\<lambda>x. P (ln x :: real)) at_top = eventually P at_top"
 proof
   fix P assume "eventually (\<lambda>x. P (ln x :: real)) at_top"

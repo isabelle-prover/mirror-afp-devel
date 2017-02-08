@@ -37,7 +37,7 @@ private lemma negl_mult: "negl f \<Longrightarrow> negl g \<Longrightarrow> negl
 private lemma ev4:
   assumes g: "negl g"
   shows   "eventually (\<lambda>x. ln (b*x) powr (-e/2) - ln x powr (-e/2) \<ge> g x) at_top"
-proof (rule smallo_imp_le)
+proof (rule smallo_imp_le_real)
   define h1 where [abs_def]:
     "h1 x = (1 + ln b/ln x) powr (-e/2) - 1 + e/2 * (ln b/ln x)" for x
   define h2 where [abs_def]:
@@ -127,7 +127,7 @@ proof -
   next
     from g(2) have "g \<in> o(\<lambda>x. 1)" by (rule landau_o.small_big_trans) simp
     with bep have "eventually (\<lambda>x. \<bar>ln (b*x) powr (-e/2) * (1 + g x)\<bar> < 1) at_top"
-      by (intro smallo_imp_abs_less) simp_all
+      by (intro smallo_imp_abs_less_real) simp_all
     thus "eventually (\<lambda>x. \<bar>ln (b*x) powr (-e/2) + h x\<bar> < 1) at_top"
       by (simp add: algebra_simps h_def)
   next
@@ -241,7 +241,7 @@ proof-
     apply (auto elim!: eventually_mono intro!: add_pos_nonneg simp: field_simps)
     done
   hence ev_g: "eventually (\<lambda>x. \<bar>1 - ?g x\<bar> < 1) at_top"
-    by (intro smallo_imp_abs_less smalloI_tendsto) simp_all
+    by (intro smallo_imp_abs_less_real smalloI_tendsto) simp_all
   
   have A: "eventually (\<lambda>x. ?f x * ?g x \<le> 1 - ln (b*x) powr (-e/2) + h x) at_top"
     using g(2,3) ev_g f

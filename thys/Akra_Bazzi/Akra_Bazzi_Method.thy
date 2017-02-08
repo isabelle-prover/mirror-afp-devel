@@ -15,9 +15,9 @@ imports
 begin
 
 lemma landau_symbol_ge_3_cong:
-  assumes "landau_symbol L"
+  assumes "landau_symbol L L' Lr"
   assumes "\<And>x::'a::linordered_semidom. x \<ge> 3 \<Longrightarrow> f x = g x"
-  shows   "L(f) = L(g)"
+  shows   "L at_top (f) = L at_top (g)"
 apply (rule landau_symbol.cong[OF assms(1)])
 apply (subst eventually_at_top_linorder, rule exI[of _ 3], simp add: assms(2))
 done
@@ -216,15 +216,18 @@ lemma MASTER_BOUND_postproc:
 context
 begin
 
-private lemma CLAMP_: "landau_symbol L \<Longrightarrow> L(f::nat \<Rightarrow> real) \<equiv> L(\<lambda>x. CLAMP f x)"
+private lemma CLAMP_: 
+  "landau_symbol L L' Lr \<Longrightarrow> L at_top (f::nat \<Rightarrow> real) \<equiv> L at_top (\<lambda>x. CLAMP f x)"
   using eventually_ge_at_top[of "3::nat"] unfolding CLAMP_def[abs_def]
   by (intro landau_symbol.cong eq_reflection) (auto elim!: eventually_mono)
 
-private lemma UNCLAMP'_: "landau_symbol L \<Longrightarrow> L(CLAMP' (MASTER_BOUND a b c)) \<equiv> L(MASTER_BOUND a b c)"
+private lemma UNCLAMP'_: 
+  "landau_symbol L L' Lr \<Longrightarrow> L at_top (CLAMP' (MASTER_BOUND a b c)) \<equiv> L at_top (MASTER_BOUND a b c)"
   using eventually_ge_at_top[of "3::nat"] unfolding CLAMP'_def[abs_def] CLAMP_def[abs_def]
   by (auto intro!: landau_symbol.cong eq_reflection elim!: eventually_mono) 
 
-private lemma UNCLAMP_: "landau_symbol L \<Longrightarrow> L(CLAMP f) \<equiv> L(f)"
+private lemma UNCLAMP_: 
+  "landau_symbol L L' Lr \<Longrightarrow> L at_top (CLAMP f) \<equiv> L at_top (f)"
   using eventually_ge_at_top[of "3::nat"] unfolding CLAMP'_def[abs_def] CLAMP_def[abs_def]
   by (auto intro!: landau_symbol.cong eq_reflection elim!: eventually_mono) 
 

@@ -895,7 +895,7 @@ proof (rule akra_bazzi_termI[OF zero_less_one])
           real (nat \<lfloor>b * real x + c\<rfloor>)" by linarith
 next
   have "(\<lambda>x::nat. real_of_int \<lfloor>b * real x + c\<rfloor> - b * real x) \<in> O(\<lambda>_. \<bar>c\<bar> + 1)"
-    by (intro landau_o.big_mono always_eventually allI) linarith
+    by (intro landau_o.big_mono always_eventually allI, unfold real_norm_def) linarith
   also have "(\<lambda>_::nat. \<bar>c\<bar> + 1) \<in> O(\<lambda>x. real x / ln (real x) powr (1 + 1))" by force
   finally show "(\<lambda>x::nat. real_of_int \<lfloor>b * real x + c\<rfloor> - b * real x) \<in> 
                     O(\<lambda>x. real x / ln (real x) powr (1+1))" .
@@ -972,7 +972,7 @@ proof (rule akra_bazzi_termI[OF zero_less_one])
     using assms bx_nonneg by simp
 next
   have "(\<lambda>x::nat. real_of_int \<lceil>b * real x + c\<rceil> - b * real x) \<in> O(\<lambda>_. \<bar>c\<bar> + 1)"
-    by (intro landau_o.big_mono always_eventually allI) linarith
+    by (intro landau_o.big_mono always_eventually allI, unfold real_norm_def) linarith
   also have "(\<lambda>_::nat. \<bar>c\<bar> + 1) \<in> O(\<lambda>x. real x / ln (real x) powr (1 + 1))" by force
   finally show "(\<lambda>x::nat. real_of_int \<lceil>b * real x + c\<rceil> - b * real x) \<in> 
                     O(\<lambda>x. real x / ln (real x) powr (1+1))" .
