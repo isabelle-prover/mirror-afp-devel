@@ -214,6 +214,9 @@ locale landau_symbol =
   and   Lr  :: "'a filter \<Rightarrow> ('a \<Rightarrow> real) \<Rightarrow> ('a \<Rightarrow> real) set"
   assumes bot': "L bot f = UNIV"
   assumes filter_mono': "F1 \<le> F2 \<Longrightarrow> L F2 f \<subseteq> L F1 f"
+  assumes in_filtermap_iff: 
+    "f' \<in> L (filtermap h' F') g' \<longleftrightarrow> (\<lambda>x. f' (h' x)) \<in> L' F' (\<lambda>x. g' (h' x))"
+  assumes sup: "f \<in> L F1 g \<Longrightarrow> f \<in> L F2 g \<Longrightarrow> f \<in> L (sup F1 F2) g"
   assumes in_cong: "eventually (\<lambda>x. f x = g x) F \<Longrightarrow> f \<in> L F (h) \<longleftrightarrow> g \<in> L F (h)"
   assumes cong: "eventually (\<lambda>x. f x = g x) F \<Longrightarrow> L F (f) = L F (g)"
   assumes cong_bigtheta: "f \<in> \<Theta>[F](g) \<Longrightarrow> L F (f) = L F (g)"
@@ -785,7 +788,19 @@ proof
     assume "f \<in> L F g" and "filterlim h F G"
     thus "(\<lambda>x. f (h x)) \<in> L' G (\<lambda>x. g (h x))" by (auto simp: L_def L'_def filterlim_iff)
   }
-qed (auto simp: L_def Lr_def intro: filter_leD exI[of _ "1::real"])
+  {
+    fix f g :: "'a \<Rightarrow> 'b" and F G :: "'a filter"
+    assume "f \<in> L F g" "f \<in> L G g"
+    from this [THEN bigE] guess c1 c2 . note c12 = this
+    define c where "c = (if R c1 c2 then c2 else c1)"
+    from c12 have c: "R c1 c" "R c2 c" "c > 0" by (auto simp: c_def dest: R_linear)
+    with c12(2,4) have "eventually (\<lambda>x. R (norm (f x)) (c * norm (g x))) F"
+                     "eventually (\<lambda>x. R (norm (f x)) (c * norm (g x))) G"
+      by (force elim: eventually_mono intro: R_trans[OF _ R_mult_right_mono])+
+    with c show "f \<in> L (sup F G) g" by (auto simp: L_def eventually_sup)
+  }
+qed (auto simp: L_def Lr_def eventually_filtermap L'_def
+          intro: filter_leD exI[of _ "1::real"])
 
 sublocale small: landau_symbol l l' lr
 proof
@@ -860,7 +875,7 @@ proof
     thus "(\<lambda>x. f (h x)) \<in> l' G (\<lambda>x. g (h x))"
       by (auto simp: l_def l'_def filterlim_iff)
   }
-qed (auto simp: l_def lr_def intro: filter_leD)
+qed (auto simp: l_def lr_def eventually_filtermap l'_def eventually_sup intro: filter_leD)
 
 
 text {* These rules allow chaining of Landau symbol propositions in Isar with "also".*}
@@ -978,6 +993,8 @@ qed (auto simp: bigtheta_def landau_o.big.norm_iff
                 landau_o.big.inverse landau_omega.big.inverse 
                 landau_o.big.compose landau_omega.big.compose
                 landau_o.big.bot' landau_omega.big.bot'
+                landau_o.big.in_filtermap_iff landau_omega.big.in_filtermap_iff
+                landau_o.big.sup landau_omega.big.sup
           dest: landau_o.big.cong landau_omega.big.cong)
 
 lemmas landau_symbols = 
