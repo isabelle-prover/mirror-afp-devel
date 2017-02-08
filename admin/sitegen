@@ -34,7 +34,7 @@ fi
 echo "Checking presence of bootstrapping ..."
 
 BOOTSTRAP_DIR="$ROOT/admin/py-bootstrap"
-export PYTHONPATH="$(readlink -m "$BOOTSTRAP_DIR/lib/python")"
+export PYTHONPATH="$BOOTSTRAP_DIR/lib/python"
 
 if [ ! -d "$BOOTSTRAP_DIR" ]; then
   echo "Bootstrapping ..."
