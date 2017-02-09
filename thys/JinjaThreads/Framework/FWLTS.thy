@@ -22,7 +22,14 @@ lemma redT_upd_\<epsilon>_redT_upd:
   "redT_upd s t \<epsilon> x' m' (redT_upd_\<epsilon> s t x' m')"
 by(auto simp add: redT_updLns_def redT_updWs_def)
 
-
+context multithreaded begin
+  
+sublocale trsys "r t" for t .
+    
+sublocale mthr: trsys redT .
+    
+end
+  
 subsection {* The multithreaded semantics with internal actions *}
 
 type_synonym

@@ -70,11 +70,9 @@ locale J_JVM_conf_read =
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
   and hconf :: "'heap \<Rightarrow> bool"
   and P :: "'addr J_prog"
+begin
 
-sublocale J_JVM_conf_read < J_JVM_heap_conf_base
-by(unfold_locales)
-
-context J_JVM_conf_read begin
+sublocale J_JVM_heap_conf_base by(unfold_locales)
 
 theorem bisimJ2JVM_weak_bisim:
   assumes wf: "wf_J_prog P"
