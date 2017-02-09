@@ -111,8 +111,16 @@ where
 
 coinductive Rtrancl3p :: "'s \<Rightarrow> ('tl, 's) tllist \<Rightarrow> bool"
 where 
-  Rtrancl3p_refl: "Rtrancl3p a (TNil a)"
-| Rtrancl3p_into_Rtrancl3p: "\<lbrakk> trsys a b a'; Rtrancl3p a' tr \<rbrakk> \<Longrightarrow> Rtrancl3p a (TCons b bs)"
+  Rtrancl3p_stop: "(\<And>tl s'. \<not> s -tl\<rightarrow> s') \<Longrightarrow>  Rtrancl3p s (TNil s)"
+| Rtrancl3p_into_Rtrancl3p: "\<And>tl. \<lbrakk> s -tl\<rightarrow> s'; Rtrancl3p s' tlss \<rbrakk> \<Longrightarrow> Rtrancl3p s (TCons tl tlss)"
+  
+inductive_simps Rtrancl3p_simps:
+  "Rtrancl3p s (TNil s')"
+  "Rtrancl3p s (TCons tl' tlss)"
+
+inductive_cases Rtrancl3p_cases:
+  "Rtrancl3p s (TNil s')"
+  "Rtrancl3p s (TCons tl' tlss)"
 
 coinductive Runs :: "'s \<Rightarrow> 'tl llist \<Rightarrow> bool"
 where
@@ -195,10 +203,6 @@ proof(coinduction arbitrary: s stls rule: inf_step.coinduct)
   thus ?case by cases auto
 qed
 
-lemma rtrancl3p_into_Rtrancl3p:
-  "rtrancl3p trsys a bs a' \<Longrightarrow> Rtrancl3p a (tllist_of_llist a' (llist_of bs))"
-by(induct rule: rtrancl3p_converse_induct)(auto intro: Rtrancl3p.intros)
-
 lemma Runs_table_into_Runs:
   "Runs_table s stlss \<Longrightarrow> Runs s (lmap (\<lambda>(s, tl, s'). tl) stlss)"
 proof(coinduction arbitrary: s stlss)
@@ -280,8 +284,43 @@ lemma Trsys_into_Runs:
 using assms
 by(induct rule: rtrancl3p_converse_induct)(auto intro: Runs.Step)
 
-end
+lemma rtrancl3p_into_Rtrancl3p:
+  "\<lbrakk> rtrancl3p trsys a bs a'; \<And>b a''. \<not> a' -b\<rightarrow> a'' \<rbrakk> \<Longrightarrow> Rtrancl3p a (tllist_of_llist a' (llist_of bs))"
+  by(induct rule: rtrancl3p_converse_induct)(auto intro: Rtrancl3p.intros)
+    
+lemma Rtrancl3p_into_Runs:
+  "Rtrancl3p s tlss \<Longrightarrow> Runs s (llist_of_tllist tlss)"
+by(coinduction arbitrary: s tlss rule: Runs.coinduct)(auto elim: Rtrancl3p.cases)
 
+lemma Runs_into_Rtrancl3p:
+  assumes "Runs s tls"
+  obtains tlss where "tls = llist_of_tllist tlss" "Rtrancl3p s tlss"
+proof
+  let ?Q = "\<lambda>s tls s'. s -lhd tls\<rightarrow> s' \<and> Runs s' (ltl tls)"
+  define tlss where "tlss = corec_tllist 
+    (\<lambda>(s, tls). lnull tls) (\<lambda>(s, tls). s)
+    (\<lambda>(s, tls). lhd tls)
+    (\<lambda>_. False) undefined (\<lambda>(s, tls). (SOME s'. ?Q s tls s', ltl tls))"
+  have [simp]:
+    "tlss (s, LNil) = TNil s"
+    "tlss (s, LCons tl tls) = TCons tl (tlss (SOME s'. ?Q s (LCons tl tls) s', tls))"
+    for s tl tls by(auto simp add: tlss_def intro: tllist.expand)
+
+  show "tls = llist_of_tllist (tlss (s, tls))" using assms
+    by(coinduction arbitrary: s tls)(erule Runs.cases; fastforce intro: someI2)
+      
+  show "Rtrancl3p s (tlss (s, tls))" using assms
+    by(coinduction arbitrary: s tls)(erule Runs.cases; simp; iprover intro: someI2[where Q="trsys _ _"] someI2[where Q="\<lambda>s'. Runs s' _"])
+qed
+
+lemma fixes tl
+  assumes "Rtrancl3p s tlss" "tfinite tlss"
+  shows Rtrancl3p_into_Trsys: "Trsys s (list_of (llist_of_tllist tlss)) (terminal tlss)"
+    and terminal_Rtrancl3p_final: "\<not> terminal tlss -tl\<rightarrow> s'"
+using assms(2,1) by(induction arbitrary: s rule: tfinite_induct)(auto simp add: Rtrancl3p_simps intro: rtrancl3p_step_converse)
+
+end
+  
 subsection {* Labelled transition systems with internal actions *}
 
 locale \<tau>trsys = trsys +
