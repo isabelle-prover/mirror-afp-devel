@@ -378,25 +378,29 @@ proof (induct ni arbitrary: n i "is" jj res rule: wf_induct[OF
         thus ?thesis unfolding res by auto
       qed
     next
-      case True note i_n = this
-      with res have res: "res = (i' \<ge> n)" by auto
-      from i_n obtain k where id: "n = i' * k" unfolding dvd_def by auto
-      with n have "k \<noteq> 0" by (cases "k = 0", auto)
-      with id have le: "i' \<le> n" by auto    
+      case True
       have "i' \<ge> 2" using i i' by auto
-      show ?thesis 
-      proof (cases "i' \<ge> n")
-        case False
-        hence "i' < n" by auto
-        with `i' \<ge> 2` i_n have "\<not> prime n" unfolding prime_nat_iff by auto
-        with False show ?thesis unfolding res by auto
+      from \<open>i' dvd n\<close> obtain k where "n = i' * k" ..
+      with n have "k \<noteq> 0" by (cases "k = 0", auto)
+      with \<open>n = i' * k\<close> have *: "i' < n \<or> i' = n"
+        by auto
+      with True res have "res \<longleftrightarrow> i' = n"
+        by auto
+      also have "\<dots> = prime n"
+      using * proof
+        assume "i' < n"
+        with `i' \<ge> 2` \<open>i' dvd n\<close> have "\<not> prime n"
+          by (auto simp add: prime_nat_iff)
+        with \<open>i' < n\<close> show ?thesis
+          by auto
       next
-        case True
-        with le have "n = i'" by simp
-        with dvd[folded this] n i'2 have "prime n"
-          by (auto simp: prime_nat_simp) 
-        with True show ?thesis unfolding res by auto
+        assume "i' = n"
+        with dvd n have "prime n"
+          by (simp add: prime_nat_iff')
+        with \<open>i' = n\<close> show ?thesis 
+          by auto
       qed
+      finally show ?thesis .
     qed
   qed
 qed
