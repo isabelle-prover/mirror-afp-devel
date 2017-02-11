@@ -932,6 +932,33 @@ text \<open>
   approximation.
 \<close>  
 
+ML \<open>
+structure Bertrand = 
+struct
+
+local
+
+fun prime (ct, b) = Thm.mk_binop @{cterm "Pure.eq :: bool \<Rightarrow> bool \<Rightarrow> prop"}
+  ct (if b then @{cterm True} else @{cterm False});
+
+val (_, prime_oracle) = Context.>>> (Context.map_theory_result
+  (Thm.add_oracle (@{binding prime}, prime)));
+
+in
+
+val raw_prime_computation_conv =
+  (@{computation_conv bool terms: "prime :: nat \<Rightarrow> bool"
+     "Ball :: nat set \<Rightarrow> _" "{0, 1, 2, 3} :: nat set"}
+  (fn b => fn ct => prime_oracle (ct, b)))
+
+fun prime_computation_conv ctxt =
+  HOLogic.Trueprop_conv (raw_prime_computation_conv ctxt);
+
+end
+
+end;
+\<close>
+  
 context
 begin
 
@@ -985,10 +1012,6 @@ private lemma eval_psi_ineq_aux:
   assumes "psi n = x" "x \<le> 3 / 2 * ln 2 * n"
   shows   "psi n \<le> 3 / 2 * ln 2 * n"
   using assms by simp_all
-
-private definition prime_nat_consts where
-  "prime_nat_consts (A :: nat set) \<equiv> Trueprop (\<forall>p\<in>A. 1 < p \<and> {} \<noteq> {Suc 0} \<and>
-     (\<forall>n\<in>{1<..<p}. \<not> n dvd p) \<and> (0 = Suc 0 \<and> 1 = (2::nat) \<and> (2::nat) = 3))"
 
 ML_file \<open>bertrand.ML\<close>
 

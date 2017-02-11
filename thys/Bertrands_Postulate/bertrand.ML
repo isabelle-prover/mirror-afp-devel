@@ -20,6 +20,8 @@ end
 structure Bertrand : BERTRAND = 
 struct
 
+open Bertrand;
+
 type cache = (int * thm) list
 
 datatype primepow_cert = Primepow of int * int | NotPrimepow of int * int
@@ -41,9 +43,6 @@ fun mk_primepow_cert n =
     if m = 1 then Primepow (p, k) else NotPrimepow (p, find_prime_divisor m)
   end
 
-val prime_eval_conv =
-  Code_Runtime.static_holds_conv {consts = [@{const_name prime_nat_consts}], ctxt = @{context}}
-
 fun prove_prime ctxt cache p =
   case get_cached_prime_thm cache (snd (HOLogic.dest_number p)) of
     SOME thm => thm
@@ -51,7 +50,7 @@ fun prove_prime ctxt cache p =
       @{term "prime :: nat \<Rightarrow> bool"} $ p
       |> HOLogic.mk_Trueprop
       |> Thm.cterm_of ctxt
-      |> prime_eval_conv ctxt
+      |> prime_computation_conv ctxt
 
 fun bool_thm_to_eq_thm thm =
   case HOLogic.dest_Trueprop (Thm.concl_of thm) of
@@ -80,7 +79,7 @@ fun mk_prime_cache ctxt n =
     val t = ps |> map mk_nat |> HOLogic.mk_set @{typ nat}
     val prop = betapply (@{term "\<lambda>A. \<forall>p\<in>A. prime (p :: nat)"}, t)
       |> HOLogic.mk_Trueprop |> Thm.cterm_of ctxt
-    val thm = prime_eval_conv ctxt prop
+    val thm = prime_computation_conv ctxt prop
     fun deconstruct_thm thm acc =
       case Thm.concl_of thm of
         Const (@{const_name HOL.Trueprop}, _) $
