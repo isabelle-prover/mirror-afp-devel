@@ -1,4 +1,4 @@
-section {* Proving Relation (In)equalities via Regular Expressions *}
+section \<open>Proving Relation (In)equalities via Regular Expressions\<close>
 
 theory Regexp_Method
 imports Equivalence_Checking Relation_Interpretation
@@ -26,7 +26,7 @@ by (rule Relation_Interpretation.soundness)
 lemmas regexp_reify = rel_of_regexp.simps rel_eq.simps
 lemmas regexp_unfold = trancl_unfold_left subset_Un_eq
 
-method_setup regexp = {*
+method_setup regexp = \<open>
   let
     val regexp_conv = Code_Runtime.static_holds_conv { ctxt = @{context},
       consts = [@{const_name "Nat.zero_nat_inst.zero_nat"}, @{const_name Suc},
@@ -43,12 +43,12 @@ method_setup regexp = {*
           THEN CONVERSION (regexp_conv ctxt') 1
           THEN resolve_tac ctxt' [TrueI] 1) ctxt)))
   end
-*} "decide relation equalities via regular expressions"
+\<close> "decide relation equalities via regular expressions"
 
 hide_const (open) le_rexp nPlus nTimes norm nullable bisimilar is_bisimulation closure
   pre_bisim add_atoms check_eqv rel word_rel rel_eq
 
-text {* Example: *}
+text \<open>Example:\<close>
 
 lemma "(r \<union> s^+)^* = (r \<union> s)^*"
   by regexp

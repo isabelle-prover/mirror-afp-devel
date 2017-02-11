@@ -1,13 +1,13 @@
-section {* Normalizing Derivative *}
+section \<open>Normalizing Derivative\<close>
 
 theory NDerivative
 imports
   Regular_Exp
 begin
 
-subsection {* Normalizing operations *}
+subsection \<open>Normalizing operations\<close>
 
-text {* associativity, commutativity, idempotence, zero *}
+text \<open>associativity, commutativity, idempotence, zero\<close>
 
 fun nPlus :: "'a::order rexp \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp"
 where
@@ -26,7 +26,7 @@ where
 lemma lang_nPlus[simp]: "lang (nPlus r s) = lang (Plus r s)"
 by (induction r s rule: nPlus.induct) auto
 
-text {* associativity, zero, one *}
+text \<open>associativity, zero, one\<close>
 
 fun nTimes :: "'a::order rexp \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp"
 where

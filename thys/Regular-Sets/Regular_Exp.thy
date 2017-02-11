@@ -33,7 +33,7 @@ primrec nullable :: "'a rexp \<Rightarrow> bool" where
 lemma nullable_iff: "nullable r \<longleftrightarrow> [] \<in> lang r"
 by (induct r) (auto simp add: conc_def split: if_splits)
 
-text{* Composition on rhs usually complicates matters: *}
+text\<open>Composition on rhs usually complicates matters:\<close>
 lemma map_map_rexp:
   "map_rexp f (map_rexp g r) = map_rexp (\<lambda>r. f (g r)) r"
   unfolding rexp.map_comp o_def ..
@@ -59,7 +59,7 @@ lemma lang_eq_ext_Nil_fold_Deriv:
   unfolding lang_eq_ext \<BB>_def by (subst (1 2) in_fold_Deriv[of "[]", simplified, symmetric]) auto
 
 
-subsection {* Term ordering *}
+subsection \<open>Term ordering\<close>
 
 instantiation rexp :: (order) "{order}"
 begin

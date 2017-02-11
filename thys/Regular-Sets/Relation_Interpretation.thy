@@ -1,4 +1,4 @@
-section {* Regular Expressions as Homogeneous Binary Relations *}
+section \<open>Regular Expressions as Homogeneous Binary Relations\<close>
 
 theory Relation_Interpretation
 imports Regular_Exp
@@ -44,7 +44,7 @@ next
 qed auto
 
 
-text {* Soundness: *}
+text \<open>Soundness:\<close>
 
 lemma soundness:
  "lang r = lang s \<Longrightarrow> rel v r = rel v s"

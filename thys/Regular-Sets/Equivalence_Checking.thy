@@ -1,4 +1,4 @@
-section {* Deciding Regular Expression Equivalence *}
+section \<open>Deciding Regular Expression Equivalence\<close>
 
 theory Equivalence_Checking
 imports
@@ -7,7 +7,7 @@ imports
 begin
 
 
-subsection {* Bisimulation between languages and regular expressions *}
+subsection \<open>Bisimulation between languages and regular expressions\<close>
 
 coinductive bisimilar :: "'a lang \<Rightarrow> 'a lang \<Rightarrow> bool" where
 "([] \<in> K \<longleftrightarrow> [] \<in> L) 
@@ -18,12 +18,12 @@ lemma equal_if_bisimilar:
 assumes "bisimilar K L" shows "K = L"
 proof (rule set_eqI)
   fix w
-  from `bisimilar K L` show "w \<in> K \<longleftrightarrow> w \<in> L"
+  from \<open>bisimilar K L\<close> show "w \<in> K \<longleftrightarrow> w \<in> L"
   proof (induct w arbitrary: K L)
     case Nil thus ?case by (auto elim: bisimilar.cases)
   next
     case (Cons a w K L)
-    from `bisimilar K L` have "bisimilar (Deriv a K) (Deriv a L)"
+    from \<open>bisimilar K L\<close> have "bisimilar (Deriv a K) (Deriv a L)"
       by (auto elim: bisimilar.cases)
     then have "w \<in> Deriv a K \<longleftrightarrow> w \<in> Deriv a L" by (rule Cons(1))
     thus ?case by (auto simp: Deriv_def)
@@ -37,7 +37,7 @@ assumes "\<And>K L. K \<sim> L \<Longrightarrow> ([] \<in> K \<longleftrightarro
 assumes "\<And>K L x. K \<sim> L \<Longrightarrow> Deriv x K \<sim> Deriv x L"
 shows "K = L"
 apply (rule equal_if_bisimilar)
-apply (rule bisimilar.coinduct[of R, OF `K \<sim> L`])
+apply (rule bisimilar.coinduct[of R, OF \<open>K \<sim> L\<close>])
 apply (auto simp: assms)
 done
 
@@ -61,7 +61,7 @@ proof -
   let ?R = "\<lambda>K L. (\<exists>(r,s)\<in>ps'. K = lang r \<and> L = lang s)"
   show ?thesis
   proof (rule language_coinduct[where R="?R"])
-    from `(r, s) \<in> ps` 
+    from \<open>(r, s) \<in> ps\<close> 
     have "(r, s) \<in> ps'" by (auto simp: ps'_def)
     thus "?R (lang r) (lang s)" by auto
   next
@@ -93,7 +93,7 @@ proof -
   qed  
 qed
 
-subsection {* Closure computation *}
+subsection \<open>Closure computation\<close>
 
 definition closure ::
   "'a::order list \<Rightarrow> 'a rexp_pair \<Rightarrow> ('a rexp_pairs * 'a rexp_pair set) option"
@@ -138,11 +138,11 @@ proof-
   thus "lang r = lang s" by (rule bisim_lang_eq)
 qed
 
-subsection {* Bisimulation-free proof of closure computation *}
+subsection \<open>Bisimulation-free proof of closure computation\<close>
 
-text{* The equivalence check can be viewed as the product construction
+text\<open>The equivalence check can be viewed as the product construction
 of two automata. The state space is the reflexive transitive closure of
-the pair of next-state functions, i.e. derivatives. *}
+the pair of next-state functions, i.e. derivatives.\<close>
 
 lemma rtrancl_nderiv_nderivs: defines "nderivs == foldl (%r a. nderiv a r)"
 shows "{((r,s),(nderiv a r,nderiv a s))| r s a. a : A}^* =
@@ -190,7 +190,7 @@ proof -
   show ?thesis by (auto simp add: leq Ball_def split: if_splits)
 qed
 
-subsection {* The overall procedure *}
+subsection \<open>The overall procedure\<close>
 
 primrec add_atoms :: "'a rexp \<Rightarrow> 'a list \<Rightarrow> 'a list"
 where
@@ -223,7 +223,7 @@ proof -
   thus "lang r = lang s" by simp
 qed
 
-text{* Test: *}
+text\<open>Test:\<close>
 lemma "check_eqv (Plus One (Times (Atom 0) (Star(Atom 0)))) (Star(Atom 0))"
 by eval
 

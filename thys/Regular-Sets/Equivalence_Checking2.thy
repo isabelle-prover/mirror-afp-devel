@@ -1,10 +1,10 @@
-section {* Deciding Equivalence of Extended Regular Expressions *}
+section \<open>Deciding Equivalence of Extended Regular Expressions\<close>
 
 theory Equivalence_Checking2
 imports Regular_Exp2 "~~/src/HOL/Library/While_Combinator"
 begin
 
-subsection {* Term ordering *}
+subsection \<open>Term ordering\<close>
 
 fun le_rexp :: "nat rexp \<Rightarrow> nat rexp \<Rightarrow> bool"
 where
@@ -32,9 +32,9 @@ where
 | "le_rexp (Inter r r') (Inter s s') =
     (if r = s then le_rexp r' s' else le_rexp r s)"
 
-subsection {* Normalizing operations *}
+subsection \<open>Normalizing operations\<close>
 
-text {* associativity, commutativity, idempotence, zero *}
+text \<open>associativity, commutativity, idempotence, zero\<close>
 
 fun nPlus :: "nat rexp \<Rightarrow> nat rexp \<Rightarrow> nat rexp"
 where
@@ -53,7 +53,7 @@ where
 lemma lang_nPlus[simp]: "lang S (nPlus r s) = lang S (Plus r s)"
 by (induct r s rule: nPlus.induct) auto
 
-text {* associativity, zero, one *}
+text \<open>associativity, zero, one\<close>
 
 fun nTimes :: "nat rexp \<Rightarrow> nat rexp \<Rightarrow> nat rexp"
 where
@@ -67,7 +67,7 @@ where
 lemma lang_nTimes[simp]: "lang S (nTimes r s) = lang S (Times r s)"
 by (induct r s rule: nTimes.induct) (auto simp: conc_assoc)
 
-text {* more optimisations: *}
+text \<open>more optimisations:\<close>
 
 fun nInter :: "nat rexp \<Rightarrow> nat rexp \<Rightarrow> nat rexp"
 where
@@ -93,7 +93,7 @@ lemma lang_norm[simp]: "lang S (norm r) = lang S r"
 by (induct r) auto
 
 
-subsection {* Derivative *}
+subsection \<open>Derivative\<close>
 
 primrec nderiv :: "nat \<Rightarrow> nat rexp \<Rightarrow> nat rexp"
 where
@@ -127,7 +127,7 @@ lemma atoms_nderiv: "atoms (nderiv a r) \<subseteq> atoms r"
 by (induct r) (auto simp: Let_def dest!:subsetD[OF atoms_nTimes]subsetD[OF atoms_nInter])
 
 
-subsection {* Bisimulation between languages and regular expressions *}
+subsection \<open>Bisimulation between languages and regular expressions\<close>
 
 context
 fixes S :: "'a set"
@@ -151,7 +151,7 @@ proof (rule set_eqI)
     show ?case
     proof cases
       assume "a : S"
-      with `bisimilar K L` have "bisimilar (Deriv a K) (Deriv a L)"
+      with \<open>bisimilar K L\<close> have "bisimilar (Deriv a K) (Deriv a L)"
         by (auto elim: bisimilar.cases)
       then have "w \<in> Deriv a K \<longleftrightarrow> w \<in> Deriv a L"
         by (metis Cons.IH bisimilar.cases)
@@ -173,7 +173,7 @@ shows "K = L"
 apply (rule equal_if_bisimilar)
 apply (metis assms(1) assms(2))
 apply (metis assms(1) assms(2))
-apply (rule bisimilar.coinduct[of R, OF `K \<sim> L`])
+apply (rule bisimilar.coinduct[of R, OF \<open>K \<sim> L\<close>])
 apply (auto simp: assms)
 done
 
@@ -197,7 +197,7 @@ proof -
   let ?R = "\<lambda>K L. (\<exists>(r,s)\<in>set ps. K = lang (set as) r \<and> L = lang (set as) s)"
   show ?thesis
   proof (rule language_coinduct[where R="?R" and S = "set as"])
-    from `(r, s) \<in> set ps` show "?R (lang (set as) r) (lang (set as) s)"
+    from \<open>(r, s) \<in> set ps\<close> show "?R (lang (set as) r) (lang (set as) s)"
       by auto
   next
     fix K L assume "?R K L"
@@ -206,21 +206,21 @@ proof -
     with bisim have "nullable r \<longleftrightarrow> nullable s"
       by (auto simp: is_bisimulation_def)
     thus "[] \<in> K \<longleftrightarrow> [] \<in> L" by (auto simp: nullable_iff[where S="set as"] KL)
-  txt{* next case, but shared context *}
+  txt\<open>next case, but shared context\<close>
     from bisim rs KL lang_subset_lists[of _ "set as"]
     show "K \<subseteq> lists (set as) \<and> L \<subseteq> lists (set as)"
       unfolding is_bisimulation_def by blast
-  txt{* next case, but shared context *}
+  txt\<open>next case, but shared context\<close>
     fix a assume "a \<in> set as"
     with rs bisim
     have "(nderiv a r, nderiv a s) \<in> set ps"
       by (auto simp: is_bisimulation_def)
-    thus "?R (Deriv a K) (Deriv a L)" using `a \<in> set as`
+    thus "?R (Deriv a K) (Deriv a L)" using \<open>a \<in> set as\<close>
       by (force simp: KL lang_nderiv)
   qed
 qed
 
-subsection {* Closure computation *}
+subsection \<open>Closure computation\<close>
 
 fun test :: "rexp_pairs * rexp_pairs \<Rightarrow> bool"
 where "test (ws, ps) = (case ws of [] \<Rightarrow>  False | (p,q)#_ \<Rightarrow> nullable p = nullable q)"
@@ -268,7 +268,7 @@ proof-
 qed
 
 
-subsection {* The overall procedure *}
+subsection \<open>The overall procedure\<close>
 
 primrec add_atoms :: "nat rexp \<Rightarrow> nat list \<Rightarrow> nat list"
 where

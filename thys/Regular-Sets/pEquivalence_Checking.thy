@@ -1,13 +1,13 @@
-section {* Deciding Regular Expression Equivalence (2) *}
+section \<open>Deciding Regular Expression Equivalence (2)\<close>
 
 theory pEquivalence_Checking
 imports Equivalence_Checking Derivatives
 begin
 
-text{* \noindent Similar to theory @{theory Equivalence_Checking}, but
-with partial derivatives instead of derivatives. *}
+text\<open>\noindent Similar to theory @{theory Equivalence_Checking}, but
+with partial derivatives instead of derivatives.\<close>
 
-text{* Lifting many notions to sets: *}
+text\<open>Lifting many notions to sets:\<close>
 
 definition "Lang R == UN r:R. lang r"
 definition "Nullable R == EX r:R. nullable r"
@@ -65,7 +65,7 @@ proof -
   let ?R = "\<lambda>K L. (\<exists>(R,S)\<in>set ps'. K = Lang R \<and> L = Lang S)"
   show ?thesis
   proof (rule language_coinduct[where R="?R"])
-    from `(R,S) \<in> set ps`
+    from \<open>(R,S) \<in> set ps\<close>
     have "(R,S) \<in> set ps'" by (auto simp: ps'_def)
     thus "?R (Lang R) (Lang S)" by auto
   next
@@ -99,7 +99,7 @@ proof -
 qed
 
 
-subsection {* Closure computation *}
+subsection \<open>Closure computation\<close>
 
 fun test :: "'a Rexp_pairs * 'a Rexp_pairs \<Rightarrow> bool" where
 "test (ws, ps) = (case ws of [] \<Rightarrow>  False | (R,S)#_ \<Rightarrow> Nullable R = Nullable S)"
@@ -147,9 +147,9 @@ proof-
     next
       case prems: (2 ws ps ws' ps')
       note prems(2)[simp]
-      from `test st` obtain wstl R S where [simp]: "ws = (R,S)#wstl"
+      from \<open>test st\<close> obtain wstl R S where [simp]: "ws = (R,S)#wstl"
         by (auto split: list.splits)
-      from `step as st = (ws',ps')` obtain P where [simp]: "ps' = (R,S) # ps"
+      from \<open>step as st = (ws',ps')\<close> obtain P where [simp]: "ps' = (R,S) # ps"
         and [simp]: "ws' = remdups(filter P (map (\<lambda>a. (Pderiv a R, Pderiv a S)) as)) @ wstl"
         by auto
       have "\<forall>(R',S')\<in>set wstl \<union> set ps'. Atoms R' \<union> Atoms S' \<subseteq> set as"
@@ -175,7 +175,7 @@ proof-
 qed
 
 
-subsection {* The overall procedure *}
+subsection \<open>The overall procedure\<close>
 
 definition check_eqv :: "'a rexp \<Rightarrow> 'a rexp \<Rightarrow> bool"
 where
@@ -194,7 +194,7 @@ proof -
   thus "lang r = lang s" by simp
 qed
 
-text{* Test: *}
+text\<open>Test:\<close>
 lemma "check_eqv
   (Plus One (Times (Atom 0) (Star(Atom 0))))
   (Star(Atom(0::nat)))"
@@ -214,10 +214,10 @@ lemma Pderiv_PDERIVS: assumes "R' \<subseteq> PDERIVS R" shows "Pderiv a R' \<su
 proof
   fix r assume "r : Pderiv a R'"
   then obtain r' where "r' : R'" "r : pderiv a r'" by(auto simp: Pderiv_def)
-  from `r' : R'` `R' \<subseteq> PDERIVS R` obtain s w where "s : R" "r' : pderivs w s"
+  from \<open>r' : R'\<close> \<open>R' \<subseteq> PDERIVS R\<close> obtain s w where "s : R" "r' : pderivs w s"
     by(auto simp: PDERIVS_def pderivs_lang_def)
-  hence "r \<in> pderivs (w @ [a]) s" using `r : pderiv a r'` by(auto simp add:pderivs_snoc)
-  thus "r : PDERIVS R" using `s : R` by(auto simp: PDERIVS_def pderivs_lang_def)
+  hence "r \<in> pderivs (w @ [a]) s" using \<open>r : pderiv a r'\<close> by(auto simp add:pderivs_snoc)
+  thus "r : PDERIVS R" using \<open>s : R\<close> by(auto simp: PDERIVS_def pderivs_lang_def)
 qed
 
 lemma finite_PDERIVS: "finite R \<Longrightarrow> finite(PDERIVS R)"
@@ -231,7 +231,7 @@ proof(unfold closure_def)
   have Inv0: "?Inv ([(R0, S0)], [])" by simp
   { fix s assume "test s" "?Inv s"
     obtain ws bs where [simp]: "s = (ws,bs)" by fastforce
-    from `test s` obtain R S ws' where [simp]: "ws = (R,S)#ws'"
+    from \<open>test s\<close> obtain R S ws' where [simp]: "ws = (R,S)#ws'"
       by(auto split: prod.splits list.splits)
     let ?bs' = "(R,S) # bs"
     let ?succs = "map (\<lambda>a. (Pderiv a R, Pderiv a S)) as"
@@ -239,18 +239,18 @@ proof(unfold closure_def)
     let ?ws' = "remdups ?new @ ws'"
     have *: "?Inv (step as s)"
     proof -
-      from `?Inv s` have "distinct ?ws'" by auto
-      have "ALL (R,S) : set ?ws'. R \<subseteq> PDERIVS R0 \<and> S \<subseteq> PDERIVS S0 \<and> (R,S) \<notin> set ?bs'" using `?Inv s`
+      from \<open>?Inv s\<close> have "distinct ?ws'" by auto
+      have "ALL (R,S) : set ?ws'. R \<subseteq> PDERIVS R0 \<and> S \<subseteq> PDERIVS S0 \<and> (R,S) \<notin> set ?bs'" using \<open>?Inv s\<close>
         by(simp add: Ball_def image_iff) (metis Pderiv_PDERIVS)
-      with `distinct ?ws'` show ?thesis by(simp)
+      with \<open>distinct ?ws'\<close> show ?thesis by(simp)
     qed
     have "?m2(step as s) < ?m2 s"
     proof -
       have "finite(?m1 bs)"
         by(metis assms finite_Diff finite_PDERIVS finite_cartesian_product finite_Pow_iff)
-      moreover have "?m2(step as s) < ?m2 s" using `?Inv s`
-        by(auto intro: psubset_card_mono[OF `finite(?m1 bs)`])
-      then show ?thesis using `?Inv s` by simp
+      moreover have "?m2(step as s) < ?m2 s" using \<open>?Inv s\<close>
+        by(auto intro: psubset_card_mono[OF \<open>finite(?m1 bs)\<close>])
+      then show ?thesis using \<open>?Inv s\<close> by simp
     qed
     note * and this
   } note step = this
@@ -266,18 +266,18 @@ proof-
   have Inv0: "?Inv ([({r},{s})],[])" by simp (metis pderivs.simps(1))
   { fix p assume "?Inv p" "test p"
     obtain ws bs where [simp]: "p = (ws,bs)" by fastforce
-    from `test p` obtain R S ws' where [simp]: "ws = (R,S)#ws'"
+    from \<open>test p\<close> obtain R S ws' where [simp]: "ws = (R,S)#ws'"
       by(auto split: prod.splits list.splits)
     let ?succs = "map (\<lambda>a. (Pderiv a R, Pderiv a S)) as"
     let ?new = "filter (\<lambda>p. p \<notin> set bs \<union> set ws) ?succs"
     let ?ws' = "remdups ?new @ ws'"
-    from `?Inv p` obtain w where [simp]: "R = pderivs w r" "S = pderivs w s"
+    from \<open>?Inv p\<close> obtain w where [simp]: "R = pderivs w r" "S = pderivs w s"
       by auto
     { fix x assume "x : set as"
       have "EX w. Pderiv x R = pderivs w r \<and> Pderiv x S = pderivs w s"
         by(rule_tac x="w@[x]" in exI)(simp add: pderivs_append Pderiv_def)
     }
-    with `?Inv p` have "?Inv (step as p)" by auto
+    with \<open>?Inv p\<close> have "?Inv (step as p)" by auto
   } note Inv_step = this
   show ?thesis
     apply(rule while_option_rule[OF _ 1])
