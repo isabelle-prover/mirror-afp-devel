@@ -9,6 +9,7 @@ Abortable_Linearizable_Modules
 Abstract_Completeness
 Abstract-Hoare-Logics
 Abstract-Rewriting
+Abstract_Soundness
 Abs_Int_ITP2012
 Algebraic_Numbers
 Allen_Calculus
@@ -297,6 +298,7 @@ Stable_Matching
 Stern_Brocot
 Stirling_Formula
 Stone_Algebras
+Stone_Relation_Algebras
 Stream_Fusion_Code
 Stream-Fusion
 Strong_Security

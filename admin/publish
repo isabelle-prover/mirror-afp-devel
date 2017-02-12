@@ -97,7 +97,10 @@ do
 done
 
 if [ "$USE_RELEASE" == "1" ]; then
-    ISABELLE_TOOL="$ISABELLE_RELEASES/$TAG/bin/isabelle"
+    if [[ $OSTYPE == darwin* ]];
+      then ISABELLE_TOOL="$ISABELLE_RELEASES/${TAG}.app/Isabelle/bin/isabelle"
+      else ISABELLE_TOOL="$ISABELLE_RELEASES/$TAG/bin/isabelle"
+    fi
     check_isabelle_tool
 fi
 
