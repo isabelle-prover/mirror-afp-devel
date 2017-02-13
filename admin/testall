@@ -65,10 +65,12 @@ THYS="$(dirname "$0")/../thys"
 #ISABELLE_TOOL=$(which isabelle)
 # for release version:
 [ "$ISABELLE_RELEASES" == "" ] && fail "ISABELLE_RELEASES not set"
-if [[ $OSTYPE == darwin* ]];
-then ISABELLE_TOOL="$ISABELLE_RELEASES/Isabelle2016-1.app/Isabelle/bin/isabelle"
-else ISABELLE_TOOL="$ISABELLE_RELEASES/Isabelle2016-1/bin/isabelle"
-fi 
+if [[ $OSTYPE == darwin* ]]; then
+  ISABELLE_TOOL="$ISABELLE_RELEASES/${TAG}.app/Isabelle/bin/isabelle"
+fi
+if [ ! -x "$ISABELLE_TOOL" ]; then
+  ISABELLE_TOOL="$ISABELLE_RELEASES/$TAG/bin/isabelle"
+fi
 check_isabelle
 
 INCLUDE_INFREQUENT="yes"
