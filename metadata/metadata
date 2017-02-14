@@ -5265,3 +5265,21 @@ abstract =
   Reasoning</em>. The abstract proof can be instantiated for
   various formalisms, including first-order logic with inductive
   predicates.
+
+[Differential_Dynamic_Logic]
+title = Differential Dynamic Logic
+author = Brandon Bohrer <mailto:bbohrer@cs.cmu.edu>
+topic = Logic, Computer Science/Programming Languages/Logics
+date = 2017-02-13
+notify = bbohrer@cs.cmu.edu
+abstract = 
+  We formalize differential dynamic logic, a logic for proving
+  properties of hybrid systems. The proof calculus in this formalization
+  is based on the uniform substitution principle. We show it is sound
+  with respect to our denotational semantics, which provides increased
+  confidence in the correctness of the KeYmaera X theorem prover based
+  on this calculus. As an application, we include a proof term checker
+  embedded in Isabelle/HOL with several example proofs.  Published in:
+  Brandon Bohrer, Vincent Rahli, Ivana Vukotic, Marcus Völp, André
+  Platzer: Formally verified differential dynamic logic. CPP 2017.
+
