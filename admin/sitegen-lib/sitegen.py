@@ -267,7 +267,6 @@ if __name__ == "__main__":
 		builder = templates.Builder("admin/sitegen-lib/templates", "web",
 			entries, afp_dict, is_devel)
 		builder.generate_topics()
-		is_devel = options.status_file is not None
 		builder.generate_index()
 		builder.generate_entries()
 		builder.generate_statistics()

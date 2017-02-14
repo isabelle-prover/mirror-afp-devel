@@ -38,3 +38,7 @@ def error(message, exception = None, abort = False):
 	if abort:
 		error("Fatal. Aborting")
 		exit(1)
+
+def success(message):
+	print(colored("Success: {0}".format(message), 'green'), file=stderr)
+

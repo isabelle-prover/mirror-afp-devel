@@ -5,6 +5,7 @@ import os
 import datetime
 
 from config import *
+import terminal
 
 ### topics
 
@@ -93,8 +94,8 @@ class Builder():
 		def datetimeformat(value, format='%Y-%m-%d'):
 			return value.strftime(format)
 		def rfc822(value):
-			# Locale could be not set to something english, to prevent printing
-			# non english weekdays and months, we use this fix
+			# Locale could be something different than english, to prevent printing
+			# non english months, we use this fix
 			month = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ")[value.month - 1]
 			return value.strftime("%d " + month + " %Y %T %z")
 		def split(value):
@@ -116,6 +117,7 @@ class Builder():
 		template = self.j2_env.get_template("topics.tpl")
 		tree = collect_topics(self.entries)
 		self.write_file("topics.shtml", template, {'tree': tree})
+		terminal.success("Generated topics.shtml")
 
 	def generate_index(self):
 		template = self.j2_env.get_template("index.tpl")
@@ -131,21 +133,26 @@ class Builder():
 				e.name), reverse=True)
 		self.write_file("index.shtml", template,
 			{'by_year': by_year, 'is_devel': self.is_devel})
+		terminal.success("Generated index.shtml")
 
 	def generate_entries(self):
+		counter = 0
 		template = self.j2_env.get_template("entry.tpl")
 		for name, entry in self.afp_entries.items():
+			counter += 1
 			#TODO: Solve more elegantly
 			entry.imports = sorted(entry.imports, key = lambda x: x.name)
 			entry.used = sorted(entry.used, key = lambda x: x.name)
 			self.write_file(os.path.join("entries", name + ".shtml"), template,
 				{'entry': entry, 'is_devel': self.is_devel})
+		terminal.success("Generated shtml files for {:d} entries".format(counter))
 
 	def generate_download(self):
 		template = self.j2_env.get_template("download.tpl")
 		self.write_file("download.shtml", template,
 			{'today': datetime.datetime.now().strftime("%Y-%m-%d"),
 			'is_devel': self.is_devel})
+		terminal.success("Generated download.shtml")
 
 	def generate_statistics(self):
 		#TODO: simplify with itertools
@@ -201,6 +208,7 @@ class Builder():
 			'most_used': most_used,
 			'articles_by_time': articles_by_time,
 			'articles_by_time1': articles_by_time1})
+		terminal.success("Generated statistics.shtml")
 
 	def generate_status(self, build_data):
 		template = self.j2_env.get_template("status.tpl")
@@ -208,10 +216,12 @@ class Builder():
 			{'entries': [self.afp_entries[e]
 				for e in sorted(self.afp_entries)],
 			'build_data': build_data})
+		terminal.success("Generated status.shtml")
 
 	def generate_rss(self, num_entries):
 		template = self.j2_env.get_template("rss.tpl")
 		entries = sorted(self.afp_entries.values(),
 				key = lambda e: (e.publish_date, e.name), reverse=True)
 		self.write_file("rss.xml", template, {'entries': entries[:num_entries]})
+		terminal.success("Generated rss.xml")
 
