@@ -23,10 +23,10 @@ begin
       by (metis bisimilar_simulation_step)
 
     from eq obtain p where px: "x' = p \<bullet> x"
-      by (auto simp add: Act_eq_iff Act\<^sub>\<alpha>_eq_iff alphas) (metis Rep_formula_inverse Tree\<^sub>\<alpha>.abs_eq_iff Tree\<^sub>\<alpha>_abs_rep permute_Tree\<^sub>\<alpha>.abs_eq permute_formula.rep_eq)
+      by (metis Act_eq_iff_perm)
 
     with valid have "-p \<bullet> P' \<Turnstile> x"
-      by (metis permute_minus_cancel(2) valid_eqvt)
+      by (metis permute_minus_cancel(1) valid_eqvt)
     moreover from bisim' have "(-p \<bullet> P') \<sim>\<cdot> (-p \<bullet> Q')"
       by (metis bisimilar_eqvt)
     ultimately have "-p \<bullet> Q' \<Turnstile> x"

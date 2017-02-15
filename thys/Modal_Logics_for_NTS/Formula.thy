@@ -1202,6 +1202,79 @@ by (metis Pred.rep_eq Pred\<^sub>\<alpha>_eq_iff)
 lemma Act_eq_iff: "Act \<alpha>1 x1 = Act \<alpha>2 x2 \<longleftrightarrow> Act\<^sub>\<alpha> \<alpha>1 (Rep_formula x1) = Act\<^sub>\<alpha> \<alpha>2 (Rep_formula x2)"
 by (metis Act.rep_eq Rep_formula_inverse)
 
+text \<open>Helpful lemmas for dealing with equalities involving~@{const Act}.\<close>
+
+lemma Act_eq_iff_perm: "Act \<alpha>1 x1 = Act \<alpha>2 x2 \<longleftrightarrow>
+  (\<exists>p. supp x1 - bn \<alpha>1 = supp x2 - bn \<alpha>2 \<and> (supp x1 - bn \<alpha>1) \<sharp>* p \<and> p \<bullet> x1 = x2 \<and> supp \<alpha>1 - bn \<alpha>1 = supp \<alpha>2 - bn \<alpha>2 \<and> (supp \<alpha>1 - bn \<alpha>1) \<sharp>* p \<and> p \<bullet> \<alpha>1 = \<alpha>2)"
+  (is "?l \<longleftrightarrow> ?r")
+proof
+  assume "?l"
+  then obtain p where alpha: "(bn \<alpha>1, rep_Tree\<^sub>\<alpha> (Rep_formula x1)) \<approx>set (op =\<^sub>\<alpha>) (supp_rel (op =\<^sub>\<alpha>)) p (bn \<alpha>2, rep_Tree\<^sub>\<alpha> (Rep_formula x2))" and eq: "(bn \<alpha>1, \<alpha>1) \<approx>set (op =) supp p (bn \<alpha>2, \<alpha>2)"
+    by (metis Act_eq_iff Act\<^sub>\<alpha>_eq_iff alpha_tAct)
+  from alpha have "supp x1 - bn \<alpha>1 = supp x2 - bn \<alpha>2"
+    by (metis alpha_set.simps supp_Rep_formula supp_alpha_supp_rel)
+  moreover from alpha have "(supp x1 - bn \<alpha>1) \<sharp>* p"
+    by (metis alpha_set.simps supp_Rep_formula supp_alpha_supp_rel)
+  moreover from alpha have "p \<bullet> x1 = x2"
+    by (metis Rep_formula_eqvt Rep_formula_inject Tree\<^sub>\<alpha>.abs_eq_iff Tree\<^sub>\<alpha>_abs_rep alpha_Tree_permute_rep_commute alpha_set.simps)
+  moreover from eq have "supp \<alpha>1 - bn \<alpha>1 = supp \<alpha>2 - bn \<alpha>2"
+    by (metis alpha_set.simps)
+  moreover from eq have "(supp \<alpha>1 - bn \<alpha>1) \<sharp>* p"
+    by (metis alpha_set.simps)
+  moreover from eq have "p \<bullet> \<alpha>1 = \<alpha>2"
+    by (simp add: alpha_set.simps)
+  ultimately show "?r"
+    by metis
+next
+  assume "?r"
+  then obtain p where 1: "supp x1 - bn \<alpha>1 = supp x2 - bn \<alpha>2" and 2: "(supp x1 - bn \<alpha>1) \<sharp>* p" and 3: "p \<bullet> x1 = x2"
+    and 4: "supp \<alpha>1 - bn \<alpha>1 = supp \<alpha>2 - bn \<alpha>2" and 5: "(supp \<alpha>1 - bn \<alpha>1) \<sharp>* p" and 6: "p \<bullet> \<alpha>1 = \<alpha>2"
+    by metis
+  from 1 2 3 6 have "(bn \<alpha>1, rep_Tree\<^sub>\<alpha> (Rep_formula x1)) \<approx>set (op =\<^sub>\<alpha>) (supp_rel (op =\<^sub>\<alpha>)) p (bn \<alpha>2, rep_Tree\<^sub>\<alpha> (Rep_formula x2))"
+    by (metis (no_types, lifting) Rep_formula_eqvt alpha_Tree_permute_rep_commute alpha_set.simps bn_eqvt supp_Rep_formula supp_alpha_supp_rel)
+  moreover from 4 5 6 have "(bn \<alpha>1, \<alpha>1) \<approx>set (op =) supp p (bn \<alpha>2, \<alpha>2)"
+    by (simp add: alpha_set.simps bn_eqvt)
+  ultimately show "Act \<alpha>1 x1 = Act \<alpha>2 x2"
+    by (metis Act_eq_iff Act\<^sub>\<alpha>_eq_iff alpha_tAct)
+qed
+
+lemma Act_eq_iff_perm_renaming: "Act \<alpha>1 x1 = Act \<alpha>2 x2 \<longleftrightarrow>
+  (\<exists>p. supp x1 - bn \<alpha>1 = supp x2 - bn \<alpha>2 \<and> (supp x1 - bn \<alpha>1) \<sharp>* p \<and> p \<bullet> x1 = x2 \<and> supp \<alpha>1 - bn \<alpha>1 = supp \<alpha>2 - bn \<alpha>2 \<and> (supp \<alpha>1 - bn \<alpha>1) \<sharp>* p \<and> p \<bullet> \<alpha>1 = \<alpha>2 \<and> supp p \<subseteq> bn \<alpha>1 \<union> p \<bullet> bn \<alpha>1)"
+  (is "?l \<longleftrightarrow> ?r")
+proof
+  assume "?l"
+  then obtain p where p: "supp x1 - bn \<alpha>1 = supp x2 - bn \<alpha>2 \<and> (supp x1 - bn \<alpha>1) \<sharp>* p \<and> p \<bullet> x1 = x2 \<and> supp \<alpha>1 - bn \<alpha>1 = supp \<alpha>2 - bn \<alpha>2 \<and> (supp \<alpha>1 - bn \<alpha>1) \<sharp>* p \<and> p \<bullet> \<alpha>1 = \<alpha>2"
+    by (metis Act_eq_iff_perm)
+  moreover obtain q where q_p: "\<forall>b\<in>bn \<alpha>1. q \<bullet> b = p \<bullet> b" and supp_q: "supp q \<subseteq> bn \<alpha>1 \<union> p \<bullet> bn \<alpha>1"
+    by (metis set_renaming_perm2)
+  have "supp q \<subseteq> supp p"
+  proof
+    fix a assume *: "a \<in> supp q" then show "a \<in> supp p"
+    proof (cases "a \<in> bn \<alpha>1")
+      case True then show ?thesis
+        using "*" q_p by (metis mem_Collect_eq supp_perm)
+    next
+      case False then have "a \<in> p \<bullet> bn \<alpha>1"
+        using "*" supp_q using UnE subsetCE by blast
+      with False have "p \<bullet> a \<noteq> a"
+        by (metis mem_permute_iff)
+      then show ?thesis
+        using fresh_def fresh_perm by blast
+    qed
+  qed
+  with p have "(supp x1 - bn \<alpha>1) \<sharp>* q" and "(supp \<alpha>1 - bn \<alpha>1) \<sharp>* q"
+    by (meson fresh_def fresh_star_def subset_iff)+
+  moreover with p and q_p have "\<And>a. a \<in> supp \<alpha>1 \<Longrightarrow> q \<bullet> a = p \<bullet> a" and "\<And>a. a \<in> supp x1 \<Longrightarrow> q \<bullet> a = p \<bullet> a"
+    by (metis Diff_iff fresh_perm fresh_star_def)+
+  then have "q \<bullet> \<alpha>1 = p \<bullet> \<alpha>1" and "q \<bullet> x1 = p \<bullet> x1"
+    by (metis supp_perm_perm_eq)+
+  ultimately show "?r"
+    using supp_q by (metis bn_eqvt)
+next
+  assume "?r" then show "?l"
+    by (meson Act_eq_iff_perm)
+qed
+
 text \<open>The lifted constructors are free (except for @{const Act}).\<close>
 
 lemma Tree_free [simp]:
