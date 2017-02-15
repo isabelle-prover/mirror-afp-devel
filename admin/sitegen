@@ -2,5 +2,78 @@
 
 # standard invocation of sitegen.py
 
-cd $(hg root)
-admin/sitegen-lib/sitegen.py --dest=web --metadata=metadata thys $@
+### <CONFIGURATION> ###
+VENV_VERSION="15.1.0"
+URL="https://pypi.python.org/packages/d4/0c/9840c08189e030873387a73b90ada981885010dd9aea134d6de30cd24cb8/virtualenv-$VENV_VERSION.tar.gz"
+### </CONFIGURATION> ###
+
+
+set -e
+
+err() {
+  echo "### $1"
+  exit 1
+}
+
+ROOT="$(hg root)"
+cd "$ROOT"
+
+echo "Checking presence of Python ..."
+
+case "$(uname -s)" in
+  Darwin)
+    echo "Running on macOS, using system python"
+    PYTHON="/usr/bin/python"
+    ;;
+  *)
+    echo "Running on Linux, trying to find Python 2.x"
+    PYTHON="$(which python2 2> /dev/null)"
+    if [ -z "$PYTHON" ]; then
+      PYTHON="$(which python 2> /dev/null)"
+    fi
+    ;;
+esac
+
+if [ ! -f "$PYTHON" ]; then
+  err "No suitable Python found"
+else
+  echo "Found Python at $PYTHON"
+fi
+
+echo "Checking presence of bootstrapping ..."
+
+BOOTSTRAP_DIR="$ROOT/admin/py-bootstrap"
+export PYTHONPATH="$BOOTSTRAP_DIR/lib/python"
+
+if [ ! -d "$BOOTSTRAP_DIR" ]; then
+  echo "Bootstrapping ..."
+  mkdir -p "$BOOTSTRAP_DIR/bin"
+  mkdir -p "$BOOTSTRAP_DIR/lib/python"
+  (
+    cd "$BOOTSTRAP_DIR"
+    curl -sS "$URL" | tar xzf -
+    cd "virtualenv-$VENV_VERSION"
+    "$PYTHON" setup.py install --home "$BOOTSTRAP_DIR"
+  )
+fi
+
+echo "Bootstrapped."
+
+VENV_DIR="$ROOT/admin/venv"
+
+if [ ! -d "$VENV_DIR" ]; then
+  echo "Creating venv ..."
+  "$PYTHON" "$BOOTSTRAP_DIR/bin/virtualenv" "$VENV_DIR"
+fi
+
+echo "Activating venv ..."
+source "$VENV_DIR/bin/activate"
+
+PYTHON="$VENV_DIR/bin/python"
+PIP="$VENV_DIR/bin/pip"
+
+echo "Installing dependencies ..."
+"$PIP" install -r "$ROOT/admin/sitegen-req.txt"
+
+echo "Running sitegen ..."
+"$PYTHON" admin/sitegen-lib/sitegen.py --dest=web --metadata=metadata thys $@

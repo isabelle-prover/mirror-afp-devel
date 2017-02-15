@@ -1,39 +1,65 @@
-<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
-		"http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-  <title>Archive of Formal Proofs</title>
-  <link rel="stylesheet" type="text/css" href="front.css">
-  <link rel="icon" href="images/favicon.ico" type="image/icon">
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-</head>
-<body>
+{% extends "base.tpl" %}
 
-<table width="100%">
-  <tbody>
-    <tr>
-      <td width="20%" align="center" valign="top">
-      <!-- navigation -->
-      <!--#include file="nav.html"-->
-      </td>
-      <td width="80%" valign="top">
-      <!-- content -->
+{% block headline %}
+<font class="first">S</font>tatistics
+{% endblock %}
 
-<div align="center">
-<p>&nbsp;</p>
-<h1><font class="first">A</font>rchive of
-    <font class="first">F</font>ormal
-    <font class="first">P</font>roofs</h1>
-<p>&nbsp;</p>
-
-
+{% block content %}
 <table width="80%" class="descr">
   <tbody>
     <tr><td>
       <h2>Statistics</h2>
 
-<!--gen-->
+<table>
+<tr><td>Number of Articles:</td><td class="statsnumber">{{ entries|length }}</td></tr>
+<tr><td>Number of Authors:</td><td class="statsnumber">{{ entries.authors|length }}</td></tr>
+<tr><td>Number of lemmas:</td><td class="statsnumber">~{{ '{:,d}'.format(num_lemmas|round(-2)|int) }}</td></tr>
+<tr><td>Lines of Code:</td><td class="statsnumber">~{{ '{:,d}'.format(num_loc|round(-2)|int) }}</td></tr>
+</table>
+<h4>Most used AFP articles:</h4>
+<table id="most_used">
+<tr>
+<th></th><th>Name</th><th>Used by ? articles</th>
+</tr>
 
+{# You could use loop.index here, but there's an obscure bug in Jinja2 with
+   loop.index and groupBy #}
+{% set position = 1 %}
+{% for no_of_imports, articles in most_used %}
+  <tr><td>{{ position }}.</td>
+  {% set td_joiner = joiner('<td></td>') %}
+  {% for article in articles %}
+    {{ td_joiner() }}
+    <td><a href="entries/{{ article.name }}.shtml">{{ article.name }}</a></td>
+    <td>{{ no_of_imports }}</td>
+    </tr>
+  {% endfor %}
+  {% set position = position + 1 %}
+{% endfor %}
+
+</table>
+<script>
+// DATA
+var years = [{{ years|join(", ") }}];
+var no_articles = [{{ articles_year|join(", ") }}];
+var no_loc = [{{ loc_years|join(", ") }} ];
+var no_authors = [{{ author_years|join(", ") }}];
+var no_authors_series = [{{ author_years_cumulative|join(", ") }}];
+{% set comma = joiner(",") %}
+var all_articles = [ {% for article in articles_by_time %}{{ comma() }}"{{article.name}}"{% endfor %}];
+{% set comma = joiner(",") %}
+var years_loc_articles = [
+{%- for year, articles in articles_by_time1 %}
+  {{ comma() }}{{year}}
+  {%- set comma1 = joiner(",") %}
+  {%- for article in articles %}
+    {{ comma1() }}
+  {%- endfor %}
+{%- endfor %}];
+{% set comma = joiner(",") %}
+var loc_articles = [ {% for article in articles_by_time %}{{ comma() }}"{{article.loc}}"{% endfor %}];
+
+</script>
 <h4>Growth in number of articles:</h4>
 <script src="Chart.js"></script>
 <div class="chart">
@@ -178,8 +204,8 @@ var myChart = new Chart(ctx, {
 
   </tbody>
 </table>
+{% endblock %}
 
-</div>
-</td> </tr> </table>
-</body>
-</html>
+{% block footer %}
+<script src="Chart.js"></script>
+{% endblock %}
