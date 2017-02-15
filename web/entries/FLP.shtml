@@ -133,7 +133,7 @@ reused for further proofs of properties of distributed systems.</td>
   journal = {Archive of Formal Proofs},
   month   = may,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/FLP.html},
+  note    = {\url{http://isa-afp.org/entries/FLP.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

@@ -124,7 +124,7 @@ commonly used 32 and 64-bit bases.</td>
   journal = {Archive of Formal Proofs},
   month   = jun,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Word_Lib.html},
+  note    = {\url{http://isa-afp.org/entries/Word_Lib.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

@@ -116,7 +116,7 @@
   journal = {Archive of Formal Proofs},
   month   = mar,
   year    = 2006,
-  note    = {\url{http://isa-afp.org/entries/FeatherweightJava.html},
+  note    = {\url{http://isa-afp.org/entries/FeatherweightJava.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

@@ -124,7 +124,7 @@ command.</td>
   journal = {Archive of Formal Proofs},
   month   = aug,
   year    = 2012,
-  note    = {\url{http://isa-afp.org/entries/Datatype_Order_Generator.html},
+  note    = {\url{http://isa-afp.org/entries/Datatype_Order_Generator.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -136,10 +136,10 @@ command.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Collections.html">Collections</a>, <a href="Deriving.html">Deriving</a>      </td></tr>
+          <td class="data"><a href="Collections.shtml">Collections</a>, <a href="Deriving.shtml">Deriving</a>      </td></tr>
           
                       <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Show.html">Show</a>      </td></tr>
+          <td class="data"><a href="Show.shtml">Show</a>      </td></tr>
           
 
         

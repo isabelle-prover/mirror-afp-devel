@@ -134,7 +134,7 @@ techniques.</td>
   journal = {Archive of Formal Proofs},
   month   = feb,
   year    = 2014,
-  note    = {\url{http://isa-afp.org/entries/Selection_Heap_Sort.html},
+  note    = {\url{http://isa-afp.org/entries/Selection_Heap_Sort.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

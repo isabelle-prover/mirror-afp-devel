@@ -114,7 +114,7 @@ many different sources; this formalisation mostly follows a <a  href="http://pla
   journal = {Archive of Formal Proofs},
   month   = jan,
   year    = 2017,
-  note    = {\url{http://isa-afp.org/entries/E_Transcendental.html},
+  note    = {\url{http://isa-afp.org/entries/E_Transcendental.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

@@ -118,7 +118,7 @@
   journal = {Archive of Formal Proofs},
   month   = mar,
   year    = 2011,
-  note    = {\url{http://isa-afp.org/entries/Transitive-Closure.html},
+  note    = {\url{http://isa-afp.org/entries/Transitive-Closure.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -130,10 +130,10 @@
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Collections.html">Collections</a>, <a href="Matrix.html">Matrix</a>      </td></tr>
+          <td class="data"><a href="Collections.shtml">Collections</a>, <a href="Matrix.shtml">Matrix</a>      </td></tr>
           
                       <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="KBPs.html">KBPs</a>, <a href="Network_Security_Policy_Verification.html">Network_Security_Policy_Verification</a>, <a href="Planarity_Certificates.html">Planarity_Certificates</a>      </td></tr>
+          <td class="data"><a href="KBPs.shtml">KBPs</a>, <a href="Network_Security_Policy_Verification.shtml">Network_Security_Policy_Verification</a>, <a href="Planarity_Certificates.shtml">Planarity_Certificates</a>      </td></tr>
           
 
         

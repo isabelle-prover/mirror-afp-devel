@@ -134,7 +134,7 @@ relations on processes.</td>
   journal = {Archive of Formal Proofs},
   month   = aug,
   year    = 2015,
-  note    = {\url{http://isa-afp.org/entries/Encodability_Process_Calculi.html},
+  note    = {\url{http://isa-afp.org/entries/Encodability_Process_Calculi.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

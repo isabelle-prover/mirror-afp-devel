@@ -138,7 +138,7 @@ Project <a href="http://www.euromils.eu">http://www.euromils.eu</a>.</p></td>
   journal = {Archive of Formal Proofs},
   month   = jul,
   year    = 2014,
-  note    = {\url{http://isa-afp.org/entries/CISC-Kernel.html},
+  note    = {\url{http://isa-afp.org/entries/CISC-Kernel.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

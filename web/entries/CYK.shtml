@@ -118,7 +118,7 @@ The formalized algorithm is executable.</td>
   journal = {Archive of Formal Proofs},
   month   = apr,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/CYK.html},
+  note    = {\url{http://isa-afp.org/entries/CYK.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

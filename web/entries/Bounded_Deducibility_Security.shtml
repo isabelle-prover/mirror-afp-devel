@@ -113,7 +113,7 @@ which these upper bounds are no longer guaranteed.</td>
   journal = {Archive of Formal Proofs},
   month   = apr,
   year    = 2014,
-  note    = {\url{http://isa-afp.org/entries/Bounded_Deducibility_Security.html},
+  note    = {\url{http://isa-afp.org/entries/Bounded_Deducibility_Security.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

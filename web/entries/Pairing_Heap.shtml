@@ -117,7 +117,7 @@ The amortized complexity of pairing heaps is analyzed in the AFP article
   journal = {Archive of Formal Proofs},
   month   = jul,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Pairing_Heap.html},
+  note    = {\url{http://isa-afp.org/entries/Pairing_Heap.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

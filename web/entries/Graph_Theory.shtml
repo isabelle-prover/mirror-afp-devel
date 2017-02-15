@@ -107,7 +107,7 @@ This formalization is used to prove characterizations of Euler Trails, Shortest 
   journal = {Archive of Formal Proofs},
   month   = apr,
   year    = 2013,
-  note    = {\url{http://isa-afp.org/entries/Graph_Theory.html},
+  note    = {\url{http://isa-afp.org/entries/Graph_Theory.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

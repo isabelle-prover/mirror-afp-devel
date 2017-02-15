@@ -110,7 +110,7 @@ formalisation of Gödel’s incompleteness theorems.</td>
   journal = {Archive of Formal Proofs},
   month   = jul,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Surprise_Paradox.html},
+  note    = {\url{http://isa-afp.org/entries/Surprise_Paradox.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -122,7 +122,7 @@ formalisation of Gödel’s incompleteness theorems.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Incompleteness.html">Incompleteness</a>      </td></tr>
+          <td class="data"><a href="Incompleteness.shtml">Incompleteness</a>      </td></tr>
           
                       <tr><td class="datahead">Used by:</td>
           <td class="data">      </td></tr>

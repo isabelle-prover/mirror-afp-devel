@@ -107,7 +107,7 @@
   journal = {Archive of Formal Proofs},
   month   = apr,
   year    = 2004,
-  note    = {\url{http://isa-afp.org/entries/BinarySearchTree.html},
+  note    = {\url{http://isa-afp.org/entries/BinarySearchTree.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

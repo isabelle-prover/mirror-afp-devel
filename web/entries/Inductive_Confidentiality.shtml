@@ -109,7 +109,7 @@
   journal = {Archive of Formal Proofs},
   month   = may,
   year    = 2012,
-  note    = {\url{http://isa-afp.org/entries/Inductive_Confidentiality.html},
+  note    = {\url{http://isa-afp.org/entries/Inductive_Confidentiality.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

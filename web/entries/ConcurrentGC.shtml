@@ -126,7 +126,7 @@ This development accompanies the PLDI 2015 paper of the same name.
   journal = {Archive of Formal Proofs},
   month   = apr,
   year    = 2015,
-  note    = {\url{http://isa-afp.org/entries/ConcurrentGC.html},
+  note    = {\url{http://isa-afp.org/entries/ConcurrentGC.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -138,7 +138,7 @@ This development accompanies the PLDI 2015 paper of the same name.
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="ConcurrentIMP.html">ConcurrentIMP</a>      </td></tr>
+          <td class="data"><a href="ConcurrentIMP.shtml">ConcurrentIMP</a>      </td></tr>
           
                       <tr><td class="datahead">Used by:</td>
           <td class="data">      </td></tr>

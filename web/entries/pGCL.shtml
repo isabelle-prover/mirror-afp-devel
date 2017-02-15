@@ -115,7 +115,7 @@ document includes a brief tutorial.</p></td>
   journal = {Archive of Formal Proofs},
   month   = jul,
   year    = 2014,
-  note    = {\url{http://isa-afp.org/entries/pGCL.html},
+  note    = {\url{http://isa-afp.org/entries/pGCL.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

@@ -143,7 +143,7 @@ The formalization is described in this <a href="http://www.in.tum.de/~nipkow/pub
   journal = {Archive of Formal Proofs},
   month   = jun,
   year    = 2014,
-  note    = {\url{http://isa-afp.org/entries/MSO_Regex_Equivalence.html},
+  note    = {\url{http://isa-afp.org/entries/MSO_Regex_Equivalence.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -155,7 +155,7 @@ The formalization is described in this <a href="http://www.in.tum.de/~nipkow/pub
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Deriving.html">Deriving</a>, <a href="List-Index.html">List-Index</a>      </td></tr>
+          <td class="data"><a href="Deriving.shtml">Deriving</a>, <a href="List-Index.shtml">List-Index</a>      </td></tr>
           
                       <tr><td class="datahead">Used by:</td>
           <td class="data">      </td></tr>

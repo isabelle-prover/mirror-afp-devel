@@ -120,7 +120,7 @@ then <i>M</i> is a maximum cardinality matching.</td>
   journal = {Archive of Formal Proofs},
   month   = jul,
   year    = 2011,
-  note    = {\url{http://isa-afp.org/entries/Max-Card-Matching.html},
+  note    = {\url{http://isa-afp.org/entries/Max-Card-Matching.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

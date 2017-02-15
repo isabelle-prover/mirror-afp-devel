@@ -117,7 +117,7 @@
   journal = {Archive of Formal Proofs},
   month   = jul,
   year    = 2013,
-  note    = {\url{http://isa-afp.org/entries/IEEE_Floating_Point.html},
+  note    = {\url{http://isa-afp.org/entries/IEEE_Floating_Point.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

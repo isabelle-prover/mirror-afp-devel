@@ -123,7 +123,7 @@ prove that the well-formedness of a Statechart is preserved by the semantics.</t
   journal = {Archive of Formal Proofs},
   month   = aug,
   year    = 2010,
-  note    = {\url{http://isa-afp.org/entries/Statecharts.html},
+  note    = {\url{http://isa-afp.org/entries/Statecharts.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

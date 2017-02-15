@@ -144,7 +144,7 @@ Formalization of Logic</a>. <a href="https://bitbucket.org/jasmin_blanchette/isa
   journal = {Archive of Formal Proofs},
   month   = jun,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Resolution_FOL.html},
+  note    = {\url{http://isa-afp.org/entries/Resolution_FOL.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

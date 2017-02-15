@@ -125,7 +125,7 @@ replace sets as FinFuns by predicates as FinFuns because the set type constructo
   journal = {Archive of Formal Proofs},
   month   = may,
   year    = 2009,
-  note    = {\url{http://isa-afp.org/entries/FinFun.html},
+  note    = {\url{http://isa-afp.org/entries/FinFun.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

@@ -120,7 +120,7 @@ HOL/Nominal in the Isabelle distribution.
   journal = {Archive of Formal Proofs},
   month   = feb,
   year    = 2013,
-  note    = {\url{http://isa-afp.org/entries/Nominal2.html},
+  note    = {\url{http://isa-afp.org/entries/Nominal2.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

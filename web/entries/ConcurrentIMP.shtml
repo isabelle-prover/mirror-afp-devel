@@ -107,7 +107,7 @@ non-determinism and constructs for synchronous message passing.</td>
   journal = {Archive of Formal Proofs},
   month   = apr,
   year    = 2015,
-  note    = {\url{http://isa-afp.org/entries/ConcurrentIMP.html},
+  note    = {\url{http://isa-afp.org/entries/ConcurrentIMP.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

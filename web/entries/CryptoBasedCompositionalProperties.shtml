@@ -111,7 +111,7 @@
   journal = {Archive of Formal Proofs},
   month   = jan,
   year    = 2014,
-  note    = {\url{http://isa-afp.org/entries/CryptoBasedCompositionalProperties.html},
+  note    = {\url{http://isa-afp.org/entries/CryptoBasedCompositionalProperties.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

@@ -115,7 +115,7 @@ combinatory logic.</td>
   journal = {Archive of Formal Proofs},
   month   = jun,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Rewriting_Z.html},
+  note    = {\url{http://isa-afp.org/entries/Rewriting_Z.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -127,7 +127,7 @@ combinatory logic.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Abstract-Rewriting.html">Abstract-Rewriting</a>, <a href="Nominal2.html">Nominal2</a>      </td></tr>
+          <td class="data"><a href="Abstract-Rewriting.shtml">Abstract-Rewriting</a>, <a href="Nominal2.shtml">Nominal2</a>      </td></tr>
           
                       <tr><td class="datahead">Used by:</td>
           <td class="data">      </td></tr>

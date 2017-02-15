@@ -107,7 +107,7 @@
   journal = {Archive of Formal Proofs},
   month   = jul,
   year    = 2004,
-  note    = {\url{http://isa-afp.org/entries/Compiling-Exceptions-Correctly.html},
+  note    = {\url{http://isa-afp.org/entries/Compiling-Exceptions-Correctly.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

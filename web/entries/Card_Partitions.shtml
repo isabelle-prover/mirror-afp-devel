@@ -118,7 +118,7 @@ of these explanations.</td>
   journal = {Archive of Formal Proofs},
   month   = dec,
   year    = 2015,
-  note    = {\url{http://isa-afp.org/entries/Card_Partitions.html},
+  note    = {\url{http://isa-afp.org/entries/Card_Partitions.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -130,10 +130,10 @@ of these explanations.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Discrete_Summation.html">Discrete_Summation</a>      </td></tr>
+          <td class="data"><a href="Discrete_Summation.shtml">Discrete_Summation</a>      </td></tr>
           
                       <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Bell_Numbers_Spivey.html">Bell_Numbers_Spivey</a>, <a href="Card_Equiv_Relations.html">Card_Equiv_Relations</a>, <a href="Twelvefold_Way.html">Twelvefold_Way</a>      </td></tr>
+          <td class="data"><a href="Bell_Numbers_Spivey.shtml">Bell_Numbers_Spivey</a>, <a href="Card_Equiv_Relations.shtml">Card_Equiv_Relations</a>, <a href="Twelvefold_Way.shtml">Twelvefold_Way</a>      </td></tr>
           
 
         

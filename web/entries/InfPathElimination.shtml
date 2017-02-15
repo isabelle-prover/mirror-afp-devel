@@ -145,7 +145,7 @@ https://www.lri.fr/∼wolff/papers/conf/2016-itp-InfPathsNSE.pdf.</td>
   journal = {Archive of Formal Proofs},
   month   = aug,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/InfPathElimination.html},
+  note    = {\url{http://isa-afp.org/entries/InfPathElimination.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

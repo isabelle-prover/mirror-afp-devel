@@ -128,7 +128,7 @@ on top of tcp/ip.</td>
   journal = {Archive of Formal Proofs},
   month   = jan,
   year    = 2017,
-  note    = {\url{http://isa-afp.org/entries/UPF_Firewall.html},
+  note    = {\url{http://isa-afp.org/entries/UPF_Firewall.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -140,7 +140,7 @@ on top of tcp/ip.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="UPF.html">UPF</a>      </td></tr>
+          <td class="data"><a href="UPF.shtml">UPF</a>      </td></tr>
           
                       <tr><td class="datahead">Used by:</td>
           <td class="data">      </td></tr>

@@ -107,7 +107,7 @@
   journal = {Archive of Formal Proofs},
   month   = sep,
   year    = 2014,
-  note    = {\url{http://isa-afp.org/entries/Jordan_Hoelder.html},
+  note    = {\url{http://isa-afp.org/entries/Jordan_Hoelder.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -119,7 +119,7 @@
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Secondary_Sylow.html">Secondary_Sylow</a>      </td></tr>
+          <td class="data"><a href="Secondary_Sylow.shtml">Secondary_Sylow</a>      </td></tr>
           
                       <tr><td class="datahead">Used by:</td>
           <td class="data">      </td></tr>

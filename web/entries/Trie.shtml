@@ -111,7 +111,7 @@ in the trie are lists.</td>
   journal = {Archive of Formal Proofs},
   month   = mar,
   year    = 2015,
-  note    = {\url{http://isa-afp.org/entries/Trie.html},
+  note    = {\url{http://isa-afp.org/entries/Trie.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

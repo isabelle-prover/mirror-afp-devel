@@ -121,7 +121,7 @@
   journal = {Archive of Formal Proofs},
   month   = nov,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Nested_Multisets_Ordinals.html},
+  note    = {\url{http://isa-afp.org/entries/Nested_Multisets_Ordinals.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

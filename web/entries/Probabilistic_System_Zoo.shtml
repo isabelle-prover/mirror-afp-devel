@@ -121,7 +121,7 @@ This work is described in detail in the ITP 2015 publication by the authors.</td
   journal = {Archive of Formal Proofs},
   month   = may,
   year    = 2015,
-  note    = {\url{http://isa-afp.org/entries/Probabilistic_System_Zoo.html},
+  note    = {\url{http://isa-afp.org/entries/Probabilistic_System_Zoo.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

@@ -115,7 +115,7 @@ the checkers operate on binary decision trees and are reasonably efficient
   journal = {Archive of Formal Proofs},
   month   = jun,
   year    = 2014,
-  note    = {\url{http://isa-afp.org/entries/Boolean_Expression_Checkers.html},
+  note    = {\url{http://isa-afp.org/entries/Boolean_Expression_Checkers.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

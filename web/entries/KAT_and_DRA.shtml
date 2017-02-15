@@ -128,7 +128,7 @@ program verification tool prototype based on the algebraic approach.</td>
   journal = {Archive of Formal Proofs},
   month   = jan,
   year    = 2014,
-  note    = {\url{http://isa-afp.org/entries/KAT_and_DRA.html},
+  note    = {\url{http://isa-afp.org/entries/KAT_and_DRA.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -140,10 +140,10 @@ program verification tool prototype based on the algebraic approach.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Kleene_Algebra.html">Kleene_Algebra</a>      </td></tr>
+          <td class="data"><a href="Kleene_Algebra.shtml">Kleene_Algebra</a>      </td></tr>
           
                       <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Algebraic_VCs.html">Algebraic_VCs</a>      </td></tr>
+          <td class="data"><a href="Algebraic_VCs.shtml">Algebraic_VCs</a>      </td></tr>
           
 
         

@@ -115,7 +115,7 @@ intervals.</td>
   journal = {Archive of Formal Proofs},
   month   = dec,
   year    = 2015,
-  note    = {\url{http://isa-afp.org/entries/Liouville_Numbers.html},
+  note    = {\url{http://isa-afp.org/entries/Liouville_Numbers.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

@@ -133,7 +133,7 @@ approximations imply the semantic side conditions.</td>
   journal = {Archive of Formal Proofs},
   month   = apr,
   year    = 2014,
-  note    = {\url{http://isa-afp.org/entries/Strong_Security.html},
+  note    = {\url{http://isa-afp.org/entries/Strong_Security.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

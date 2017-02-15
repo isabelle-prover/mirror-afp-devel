@@ -145,7 +145,7 @@ is a modified version of the non-deterministic monad from NICTA/l4v.</td>
   journal = {Archive of Formal Proofs},
   month   = oct,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/SPARCv8.html},
+  note    = {\url{http://isa-afp.org/entries/SPARCv8.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

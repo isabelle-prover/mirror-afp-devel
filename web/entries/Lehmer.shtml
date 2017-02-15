@@ -109,7 +109,7 @@ the notion of the order of an element of a group, and the cyclicity of the multi
   journal = {Archive of Formal Proofs},
   month   = jul,
   year    = 2013,
-  note    = {\url{http://isa-afp.org/entries/Lehmer.html},
+  note    = {\url{http://isa-afp.org/entries/Lehmer.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

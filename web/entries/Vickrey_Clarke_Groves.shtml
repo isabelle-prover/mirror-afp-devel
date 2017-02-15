@@ -125,7 +125,7 @@ automatically extracted Scala code.</td>
   journal = {Archive of Formal Proofs},
   month   = apr,
   year    = 2015,
-  note    = {\url{http://isa-afp.org/entries/Vickrey_Clarke_Groves.html},
+  note    = {\url{http://isa-afp.org/entries/Vickrey_Clarke_Groves.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

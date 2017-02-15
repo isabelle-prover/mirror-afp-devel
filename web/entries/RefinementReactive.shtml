@@ -130,7 +130,7 @@ for implementations.</td>
   journal = {Archive of Formal Proofs},
   month   = oct,
   year    = 2014,
-  note    = {\url{http://isa-afp.org/entries/RefinementReactive.html},
+  note    = {\url{http://isa-afp.org/entries/RefinementReactive.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

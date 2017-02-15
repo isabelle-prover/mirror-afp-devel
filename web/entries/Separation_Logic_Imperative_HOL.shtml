@@ -128,7 +128,7 @@ ML, OCaml, Haskell, and Scala.</td>
   journal = {Archive of Formal Proofs},
   month   = nov,
   year    = 2012,
-  note    = {\url{http://isa-afp.org/entries/Separation_Logic_Imperative_HOL.html},
+  note    = {\url{http://isa-afp.org/entries/Separation_Logic_Imperative_HOL.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -140,10 +140,10 @@ ML, OCaml, Haskell, and Scala.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Automatic_Refinement.html">Automatic_Refinement</a>, <a href="Collections.html">Collections</a>      </td></tr>
+          <td class="data"><a href="Automatic_Refinement.shtml">Automatic_Refinement</a>, <a href="Collections.shtml">Collections</a>      </td></tr>
           
                       <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="ROBDD.html">ROBDD</a>, <a href="Refine_Imperative_HOL.html">Refine_Imperative_HOL</a>, <a href="UpDown_Scheme.html">UpDown_Scheme</a>      </td></tr>
+          <td class="data"><a href="ROBDD.shtml">ROBDD</a>, <a href="Refine_Imperative_HOL.shtml">Refine_Imperative_HOL</a>, <a href="UpDown_Scheme.shtml">UpDown_Scheme</a>      </td></tr>
           
 
         

@@ -110,7 +110,7 @@
   journal = {Archive of Formal Proofs},
   month   = dec,
   year    = 2009,
-  note    = {\url{http://isa-afp.org/entries/Presburger-Automata.html},
+  note    = {\url{http://isa-afp.org/entries/Presburger-Automata.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

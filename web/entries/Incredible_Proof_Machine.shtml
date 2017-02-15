@@ -122,7 +122,7 @@ it is just as powerful as natural deduction.</td>
   journal = {Archive of Formal Proofs},
   month   = may,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Incredible_Proof_Machine.html},
+  note    = {\url{http://isa-afp.org/entries/Incredible_Proof_Machine.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -134,7 +134,7 @@ it is just as powerful as natural deduction.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Abstract_Completeness.html">Abstract_Completeness</a>      </td></tr>
+          <td class="data"><a href="Abstract_Completeness.shtml">Abstract_Completeness</a>      </td></tr>
           
                       <tr><td class="datahead">Used by:</td>
           <td class="data">      </td></tr>

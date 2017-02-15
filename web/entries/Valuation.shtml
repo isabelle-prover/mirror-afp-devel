@@ -117,7 +117,7 @@
   journal = {Archive of Formal Proofs},
   month   = aug,
   year    = 2007,
-  note    = {\url{http://isa-afp.org/entries/Valuation.html},
+  note    = {\url{http://isa-afp.org/entries/Valuation.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -129,7 +129,7 @@
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Group-Ring-Module.html">Group-Ring-Module</a>      </td></tr>
+          <td class="data"><a href="Group-Ring-Module.shtml">Group-Ring-Module</a>      </td></tr>
           
                       <tr><td class="datahead">Used by:</td>
           <td class="data">      </td></tr>

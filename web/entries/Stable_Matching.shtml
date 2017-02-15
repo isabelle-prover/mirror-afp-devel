@@ -110,7 +110,7 @@ executable algorithms for computing optimal stable matches.</td>
   journal = {Archive of Formal Proofs},
   month   = oct,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Stable_Matching.html},
+  note    = {\url{http://isa-afp.org/entries/Stable_Matching.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

@@ -108,7 +108,7 @@ The abstract proof can be instantiated for a wide range of Gentzen and tableau s
   journal = {Archive of Formal Proofs},
   month   = apr,
   year    = 2014,
-  note    = {\url{http://isa-afp.org/entries/Abstract_Completeness.html},
+  note    = {\url{http://isa-afp.org/entries/Abstract_Completeness.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -120,10 +120,10 @@ The abstract proof can be instantiated for a wide range of Gentzen and tableau s
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Collections.html">Collections</a>      </td></tr>
+          <td class="data"><a href="Collections.shtml">Collections</a>      </td></tr>
           
                       <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Abstract_Soundness.html">Abstract_Soundness</a>, <a href="Incredible_Proof_Machine.html">Incredible_Proof_Machine</a>      </td></tr>
+          <td class="data"><a href="Abstract_Soundness.shtml">Abstract_Soundness</a>, <a href="Incredible_Proof_Machine.shtml">Incredible_Proof_Machine</a>      </td></tr>
           
 
         

@@ -107,7 +107,7 @@
   journal = {Archive of Formal Proofs},
   month   = oct,
   year    = 2010,
-  note    = {\url{http://isa-afp.org/entries/Binomial-Queues.html},
+  note    = {\url{http://isa-afp.org/entries/Binomial-Queues.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

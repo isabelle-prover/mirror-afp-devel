@@ -118,7 +118,7 @@ how to write poof strategies in PSL.</td>
   journal = {Archive of Formal Proofs},
   month   = dec,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Proof_Strategy_Language.html},
+  note    = {\url{http://isa-afp.org/entries/Proof_Strategy_Language.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

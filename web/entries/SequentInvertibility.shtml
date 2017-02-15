@@ -109,7 +109,7 @@
   journal = {Archive of Formal Proofs},
   month   = aug,
   year    = 2009,
-  note    = {\url{http://isa-afp.org/entries/SequentInvertibility.html},
+  note    = {\url{http://isa-afp.org/entries/SequentInvertibility.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

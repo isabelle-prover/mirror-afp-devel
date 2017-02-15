@@ -131,7 +131,7 @@ removal of a suffix to the input lists.
   journal = {Archive of Formal Proofs},
   month   = jun,
   year    = 2015,
-  note    = {\url{http://isa-afp.org/entries/List_Interleaving.html},
+  note    = {\url{http://isa-afp.org/entries/List_Interleaving.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

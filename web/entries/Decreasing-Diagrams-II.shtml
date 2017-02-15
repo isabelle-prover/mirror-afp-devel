@@ -107,7 +107,7 @@
   journal = {Archive of Formal Proofs},
   month   = aug,
   year    = 2015,
-  note    = {\url{http://isa-afp.org/entries/Decreasing-Diagrams-II.html},
+  note    = {\url{http://isa-afp.org/entries/Decreasing-Diagrams-II.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -119,7 +119,7 @@
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Abstract-Rewriting.html">Abstract-Rewriting</a>, <a href="Well_Quasi_Orders.html">Well_Quasi_Orders</a>      </td></tr>
+          <td class="data"><a href="Abstract-Rewriting.shtml">Abstract-Rewriting</a>, <a href="Well_Quasi_Orders.shtml">Well_Quasi_Orders</a>      </td></tr>
           
                       <tr><td class="datahead">Used by:</td>
           <td class="data">      </td></tr>

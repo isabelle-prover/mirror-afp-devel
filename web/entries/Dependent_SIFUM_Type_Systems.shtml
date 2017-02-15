@@ -140,7 +140,7 @@ Added security locale support for the imposition of requirements on the initial 
   journal = {Archive of Formal Proofs},
   month   = jun,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Dependent_SIFUM_Type_Systems.html},
+  note    = {\url{http://isa-afp.org/entries/Dependent_SIFUM_Type_Systems.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

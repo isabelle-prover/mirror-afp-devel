@@ -114,7 +114,7 @@ of the conference Certified Programs and Proofs 2012.</td>
   journal = {Archive of Formal Proofs},
   month   = sep,
   year    = 2012,
-  note    = {\url{http://isa-afp.org/entries/Possibilistic_Noninterference.html},
+  note    = {\url{http://isa-afp.org/entries/Possibilistic_Noninterference.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

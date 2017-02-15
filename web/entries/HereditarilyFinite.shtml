@@ -121,7 +121,7 @@ which has been <a href="Incompleteness.shtml">formalised separately</a>.</td>
   journal = {Archive of Formal Proofs},
   month   = nov,
   year    = 2013,
-  note    = {\url{http://isa-afp.org/entries/HereditarilyFinite.html},
+  note    = {\url{http://isa-afp.org/entries/HereditarilyFinite.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

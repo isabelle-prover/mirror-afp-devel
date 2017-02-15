@@ -109,7 +109,7 @@
   journal = {Archive of Formal Proofs},
   month   = nov,
   year    = 2011,
-  note    = {\url{http://isa-afp.org/entries/Efficient-Mergesort.html},
+  note    = {\url{http://isa-afp.org/entries/Efficient-Mergesort.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

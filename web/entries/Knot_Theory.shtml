@@ -112,7 +112,7 @@ attempt to formalize any aspect of knot theory in an interactive proof assistant
   journal = {Archive of Formal Proofs},
   month   = jan,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Knot_Theory.html},
+  note    = {\url{http://isa-afp.org/entries/Knot_Theory.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -124,7 +124,7 @@ attempt to formalize any aspect of knot theory in an interactive proof assistant
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Matrix_Tensor.html">Matrix_Tensor</a>      </td></tr>
+          <td class="data"><a href="Matrix_Tensor.shtml">Matrix_Tensor</a>      </td></tr>
           
                       <tr><td class="datahead">Used by:</td>
           <td class="data">      </td></tr>

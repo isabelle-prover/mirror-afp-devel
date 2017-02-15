@@ -110,7 +110,7 @@ have treewidth n-1.</td>
   journal = {Archive of Formal Proofs},
   month   = may,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Tree_Decomposition.html},
+  note    = {\url{http://isa-afp.org/entries/Tree_Decomposition.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

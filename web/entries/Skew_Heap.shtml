@@ -112,7 +112,7 @@ The amortized complexity of skew heaps is analyzed in the AFP entry
   journal = {Archive of Formal Proofs},
   month   = aug,
   year    = 2014,
-  note    = {\url{http://isa-afp.org/entries/Skew_Heap.html},
+  note    = {\url{http://isa-afp.org/entries/Skew_Heap.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

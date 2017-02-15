@@ -111,7 +111,7 @@
   journal = {Archive of Formal Proofs},
   month   = jan,
   year    = 2008,
-  note    = {\url{http://isa-afp.org/entries/LinearQuantifierElim.html},
+  note    = {\url{http://isa-afp.org/entries/LinearQuantifierElim.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

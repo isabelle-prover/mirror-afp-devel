@@ -119,7 +119,7 @@ This entry is based on our ITP-2016 paper with the same title.</td>
   journal = {Archive of Formal Proofs},
   month   = aug,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/EdmondsKarp_Maxflow.html},
+  note    = {\url{http://isa-afp.org/entries/EdmondsKarp_Maxflow.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -131,7 +131,7 @@ This entry is based on our ITP-2016 paper with the same title.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Automatic_Refinement.html">Automatic_Refinement</a>, <a href="DFS_Framework.html">DFS_Framework</a>, <a href="Refine_Imperative_HOL.html">Refine_Imperative_HOL</a>, <a href="Refine_Monadic.html">Refine_Monadic</a>      </td></tr>
+          <td class="data"><a href="Automatic_Refinement.shtml">Automatic_Refinement</a>, <a href="DFS_Framework.shtml">DFS_Framework</a>, <a href="Refine_Imperative_HOL.shtml">Refine_Imperative_HOL</a>, <a href="Refine_Monadic.shtml">Refine_Monadic</a>      </td></tr>
           
                       <tr><td class="datahead">Used by:</td>
           <td class="data">      </td></tr>

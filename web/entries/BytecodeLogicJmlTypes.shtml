@@ -116,7 +116,7 @@
   journal = {Archive of Formal Proofs},
   month   = dec,
   year    = 2008,
-  note    = {\url{http://isa-afp.org/entries/BytecodeLogicJmlTypes.html},
+  note    = {\url{http://isa-afp.org/entries/BytecodeLogicJmlTypes.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

@@ -111,7 +111,7 @@ to which we refer for examples of its usage.</td>
   journal = {Archive of Formal Proofs},
   month   = oct,
   year    = 2014,
-  note    = {\url{http://isa-afp.org/entries/XML.html},
+  note    = {\url{http://isa-afp.org/entries/XML.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -123,7 +123,7 @@ to which we refer for examples of its usage.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Certification_Monads.html">Certification_Monads</a>, <a href="Partial_Function_MR.html">Partial_Function_MR</a>, <a href="Show.html">Show</a>      </td></tr>
+          <td class="data"><a href="Certification_Monads.shtml">Certification_Monads</a>, <a href="Partial_Function_MR.shtml">Partial_Function_MR</a>, <a href="Show.shtml">Show</a>      </td></tr>
           
                       <tr><td class="datahead">Used by:</td>
           <td class="data">      </td></tr>

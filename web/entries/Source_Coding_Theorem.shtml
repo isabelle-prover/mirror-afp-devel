@@ -112,7 +112,7 @@ coding theorem, which is itself an equivalence.</td>
   journal = {Archive of Formal Proofs},
   month   = oct,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Source_Coding_Theorem.html},
+  note    = {\url{http://isa-afp.org/entries/Source_Coding_Theorem.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

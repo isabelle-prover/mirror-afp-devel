@@ -108,7 +108,7 @@ as a closed formula. This theorem is the 88th theorem in a list of the
   journal = {Archive of Formal Proofs},
   month   = jun,
   year    = 2015,
-  note    = {\url{http://isa-afp.org/entries/Derangements.html},
+  note    = {\url{http://isa-afp.org/entries/Derangements.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

@@ -136,7 +136,7 @@ to nondeterministic systems.
   journal = {Archive of Formal Proofs},
   month   = may,
   year    = 2014,
-  note    = {\url{http://isa-afp.org/entries/Noninterference_CSP.html},
+  note    = {\url{http://isa-afp.org/entries/Noninterference_CSP.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

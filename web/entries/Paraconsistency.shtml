@@ -119,7 +119,7 @@ investigate a case study.</td>
   journal = {Archive of Formal Proofs},
   month   = dec,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Paraconsistency.html},
+  note    = {\url{http://isa-afp.org/entries/Paraconsistency.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

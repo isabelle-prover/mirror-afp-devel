@@ -119,7 +119,7 @@ the model, noninterference is given by a (finitary) syntactic formula.</td>
   journal = {Archive of Formal Proofs},
   month   = apr,
   year    = 2014,
-  note    = {\url{http://isa-afp.org/entries/HyperCTL.html},
+  note    = {\url{http://isa-afp.org/entries/HyperCTL.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

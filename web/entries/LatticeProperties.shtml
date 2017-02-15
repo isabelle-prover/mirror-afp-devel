@@ -112,7 +112,7 @@ Removed the syntactic classes for inf and sup which are in the standard library 
   journal = {Archive of Formal Proofs},
   month   = sep,
   year    = 2011,
-  note    = {\url{http://isa-afp.org/entries/LatticeProperties.html},
+  note    = {\url{http://isa-afp.org/entries/LatticeProperties.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

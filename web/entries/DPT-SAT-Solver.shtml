@@ -119,7 +119,7 @@
   journal = {Archive of Formal Proofs},
   month   = dec,
   year    = 2009,
-  note    = {\url{http://isa-afp.org/entries/DPT-SAT-Solver.html},
+  note    = {\url{http://isa-afp.org/entries/DPT-SAT-Solver.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

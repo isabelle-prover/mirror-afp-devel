@@ -127,7 +127,7 @@ automata, re-using most of the existing proofs.</td>
   journal = {Archive of Formal Proofs},
   month   = may,
   year    = 2014,
-  note    = {\url{http://isa-afp.org/entries/Gabow_SCC.html},
+  note    = {\url{http://isa-afp.org/entries/Gabow_SCC.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -139,10 +139,10 @@ automata, re-using most of the existing proofs.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="CAVA_Automata.html">CAVA_Automata</a>      </td></tr>
+          <td class="data"><a href="CAVA_Automata.shtml">CAVA_Automata</a>      </td></tr>
           
                       <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="CAVA_LTL_Modelchecker.html">CAVA_LTL_Modelchecker</a>      </td></tr>
+          <td class="data"><a href="CAVA_LTL_Modelchecker.shtml">CAVA_LTL_Modelchecker</a>      </td></tr>
           
 
         

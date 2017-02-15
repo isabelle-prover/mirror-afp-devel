@@ -112,7 +112,7 @@ P has exactly n roots in the interval I” or “P(x) > Q(x) for all x
   journal = {Archive of Formal Proofs},
   month   = jan,
   year    = 2014,
-  note    = {\url{http://isa-afp.org/entries/Sturm_Sequences.html},
+  note    = {\url{http://isa-afp.org/entries/Sturm_Sequences.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

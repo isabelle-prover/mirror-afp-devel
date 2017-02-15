@@ -119,7 +119,7 @@ the nondeterminism monad and various collection datastructures.</td>
   journal = {Archive of Formal Proofs},
   month   = oct,
   year    = 2013,
-  note    = {\url{http://isa-afp.org/entries/Automatic_Refinement.html},
+  note    = {\url{http://isa-afp.org/entries/Automatic_Refinement.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

@@ -120,7 +120,7 @@ refinement proof in the I/O-automata framework of Lynch and Tuttle.</td>
   journal = {Archive of Formal Proofs},
   month   = mar,
   year    = 2012,
-  note    = {\url{http://isa-afp.org/entries/Abortable_Linearizable_Modules.html},
+  note    = {\url{http://isa-afp.org/entries/Abortable_Linearizable_Modules.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

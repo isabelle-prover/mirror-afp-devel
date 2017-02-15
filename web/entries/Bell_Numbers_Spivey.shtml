@@ -126,7 +126,7 @@ predicates and rules, and follows a repeating structure in its Isar proof.</td>
   journal = {Archive of Formal Proofs},
   month   = may,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Bell_Numbers_Spivey.html},
+  note    = {\url{http://isa-afp.org/entries/Bell_Numbers_Spivey.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -138,10 +138,10 @@ predicates and rules, and follows a repeating structure in its Isar proof.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Card_Number_Partitions.html">Card_Number_Partitions</a>, <a href="Card_Partitions.html">Card_Partitions</a>      </td></tr>
+          <td class="data"><a href="Card_Number_Partitions.shtml">Card_Number_Partitions</a>, <a href="Card_Partitions.shtml">Card_Partitions</a>      </td></tr>
           
                       <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Card_Equiv_Relations.html">Card_Equiv_Relations</a>, <a href="Twelvefold_Way.html">Twelvefold_Way</a>      </td></tr>
+          <td class="data"><a href="Card_Equiv_Relations.shtml">Card_Equiv_Relations</a>, <a href="Twelvefold_Way.shtml">Twelvefold_Way</a>      </td></tr>
           
 
         

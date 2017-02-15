@@ -107,7 +107,7 @@
   journal = {Archive of Formal Proofs},
   month   = oct,
   year    = 2005,
-  note    = {\url{http://isa-afp.org/entries/FFT.html},
+  note    = {\url{http://isa-afp.org/entries/FFT.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

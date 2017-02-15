@@ -126,7 +126,7 @@ second one.</td>
   journal = {Archive of Formal Proofs},
   month   = mar,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Timed_Automata.html},
+  note    = {\url{http://isa-afp.org/entries/Timed_Automata.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

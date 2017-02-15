@@ -119,7 +119,7 @@ Brzozowski's minimization algorithm. Uniqueness up to isomorphism of minimal DFA
   journal = {Archive of Formal Proofs},
   month   = feb,
   year    = 2015,
-  note    = {\url{http://isa-afp.org/entries/Finite_Automata_HF.html},
+  note    = {\url{http://isa-afp.org/entries/Finite_Automata_HF.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -131,7 +131,7 @@ Brzozowski's minimization algorithm. Uniqueness up to isomorphism of minimal DFA
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="HereditarilyFinite.html">HereditarilyFinite</a>, <a href="Regular-Sets.html">Regular-Sets</a>      </td></tr>
+          <td class="data"><a href="HereditarilyFinite.shtml">HereditarilyFinite</a>, <a href="Regular-Sets.shtml">Regular-Sets</a>      </td></tr>
           
                       <tr><td class="datahead">Used by:</td>
           <td class="data">      </td></tr>

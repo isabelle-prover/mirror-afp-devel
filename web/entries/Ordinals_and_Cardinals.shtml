@@ -111,7 +111,7 @@
   journal = {Archive of Formal Proofs},
   month   = sep,
   year    = 2009,
-  note    = {\url{http://isa-afp.org/entries/Ordinals_and_Cardinals.html},
+  note    = {\url{http://isa-afp.org/entries/Ordinals_and_Cardinals.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

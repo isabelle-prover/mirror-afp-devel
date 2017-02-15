@@ -115,7 +115,7 @@
   journal = {Archive of Formal Proofs},
   month   = aug,
   year    = 2011,
-  note    = {\url{http://isa-afp.org/entries/Gauss-Jordan-Elim-Fun.html},
+  note    = {\url{http://isa-afp.org/entries/Gauss-Jordan-Elim-Fun.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

@@ -128,7 +128,7 @@ polynomial interpretations over the reals.</td>
   journal = {Archive of Formal Proofs},
   month   = feb,
   year    = 2014,
-  note    = {\url{http://isa-afp.org/entries/Real_Impl.html},
+  note    = {\url{http://isa-afp.org/entries/Real_Impl.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -140,10 +140,10 @@ polynomial interpretations over the reals.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Show.html">Show</a>, <a href="Sqrt_Babylonian.html">Sqrt_Babylonian</a>      </td></tr>
+          <td class="data"><a href="Show.shtml">Show</a>, <a href="Sqrt_Babylonian.shtml">Sqrt_Babylonian</a>      </td></tr>
           
                       <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="QR_Decomposition.html">QR_Decomposition</a>      </td></tr>
+          <td class="data"><a href="QR_Decomposition.shtml">QR_Decomposition</a>      </td></tr>
           
 
         

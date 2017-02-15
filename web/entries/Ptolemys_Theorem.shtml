@@ -110,7 +110,7 @@ This theorem is the 95th theorem of the Top 100 Theorems list.</td>
   journal = {Archive of Formal Proofs},
   month   = aug,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Ptolemys_Theorem.html},
+  note    = {\url{http://isa-afp.org/entries/Ptolemys_Theorem.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

@@ -108,7 +108,7 @@
   journal = {Archive of Formal Proofs},
   month   = jul,
   year    = 2015,
-  note    = {\url{http://isa-afp.org/entries/Hermite.html},
+  note    = {\url{http://isa-afp.org/entries/Hermite.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -120,7 +120,7 @@
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Echelon_Form.html">Echelon_Form</a>      </td></tr>
+          <td class="data"><a href="Echelon_Form.shtml">Echelon_Form</a>      </td></tr>
           
                       <tr><td class="datahead">Used by:</td>
           <td class="data">      </td></tr>

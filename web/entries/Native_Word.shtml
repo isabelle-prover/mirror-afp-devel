@@ -125,7 +125,7 @@ proper test setup with compilation and execution of tests in all target language
   journal = {Archive of Formal Proofs},
   month   = sep,
   year    = 2013,
-  note    = {\url{http://isa-afp.org/entries/Native_Word.html},
+  note    = {\url{http://isa-afp.org/entries/Native_Word.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
