@@ -1,54 +1,111 @@
-<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
-		"http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>Archive of Formal Proofs</title>
-  <link rel="stylesheet" type="text/css" href="../front.css">
-  <script src="../jquery.min.js"></script>
-  <script src="../script.js"></script>
-  <link rel="icon" href="../images/favicon.ico" type="image/icon">
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta charset="utf-8">
+<title>Archive of Formal Proofs</title>
+<link rel="stylesheet" type="text/css" href="../front.css">
+<link rel="icon" href="../images/favicon.ico" type="image/icon">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
 </head>
+
 <body>
 
 <table width="100%">
-  <tbody>
+<tbody>
+<tr>
+
+<!-- Navigation -->
+<td width="20%" align="center" valign="top">
+  <p>&nbsp;</p>
+  <a href="http://isabelle.in.tum.de">
+    <img src="../images/isabelle.png" width="100" height="86" border=0>
+  </a>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+  <table class="nav" width="80%">
     <tr>
-      <td width="20%" align="center" valign="top">
-      <!-- navigation -->
-      <!--#include file="nav.html"-->
-      </td>
-      <td width="80%" valign="top">
-      <!-- content -->
+      <td class="nav" width="100%"><a href="../index.shtml">Home</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../about.shtml">About</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../submitting.shtml">Submission Guidelines</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../updating.shtml">Updating entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../using.shtml">Using entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../search.shtml">Search</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../statistics.shtml">Statistics</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../topics.shtml">Index</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../download.shtml">Download</a></td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+</td>
 
+
+<!-- Content -->
+<td width="80%" valign="top">
 <div align="center">
-<p>&nbsp;</p>
-
-<h1><font class="first">A</font>nalysing
-and
-<font class="first">C</font>omparing
-<font class="first">E</font>ncodability
-<font class="first">C</font>riteria
-for
-<font class="first">P</font>rocess
-<font class="first">C</font>alculi
+  <p>&nbsp;</p>
+  <h1>          <font class="first">A</font>nalysing
+  
+          and
+  
+          <font class="first">C</font>omparing
+  
+          <font class="first">E</font>ncodability
+  
+          <font class="first">C</font>riteria
+  
+          for
+  
+          <font class="first">P</font>rocess
+  
+          <font class="first">C</font>alculi
+  
 </h1>
-<p></p>
+  <p>&nbsp;</p>
+
 <table width="80%" class="data">
-  <tbody>
-    <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Analysing and Comparing Encodability Criteria for Process Calculi</td></tr>
+<tbody>
+<tr>
+  <td class="datahead" width="20%">Title:</td>
+  <td class="data" width="80%">Analysing and Comparing Encodability Criteria for Process Calculi</td>
+</tr>
 
-    <tr><td class="datahead">Author:</td>
-        <td class="data">Kirstin Peters (kirstin /dot/ peters /at/ tu-berlin /dot/ de) and <a href="http://theory.stanford.edu/~rvg/">Rob van Glabbeek</a></td></tr>
+<tr>
+  <td class="datahead">
+          Authors:
+      </td>
+  <td class="data">
+                    Kirstin Peters (kirstin /dot/ peters /at/ tu-berlin /dot/ de) and
+          <a href="http://theory.stanford.edu/~rvg/">Rob van Glabbeek</a>
+      </td>
+</tr>
 
-    <tr><td class="datahead">Submission date:</td>
-        <td class="data">2015-08-10</td></tr>
 
-    <tr><td class="datahead" valign="top">Abstract:</td>
-        <td class="abstract">
 
-Encodings or the proof of their absence are the main way to
+<tr>
+  <td class="datahead">Submission date:</td>
+  <td class="data">2015-08-10</td>
+</tr>
+
+<tr>
+  <td class="datahead" valign="top">Abstract:</td>
+  <td class="abstract">Encodings or the proof of their absence are the main way to
 compare process calculi. To analyse the quality of encodings and to rule out
 trivial or meaningless encodings, they are augmented with quality
 criteria. There exists a bunch of different criteria and different variants
@@ -64,73 +121,85 @@ analyse the exact nature of the simulation relation (coupled simulation
 versus bisimulation) that is induced by different variants of operational
 correspondence. This way we reduce the problem of analysing or comparing
 encodability criteria to the better understood problem of comparing
-relations on processes.
-        </td></tr>
+relations on processes.</td>
+</tr>
 
-    <tr><td class="datahead" valign="top">BibTeX:</td>
-        <td class="formatted">
-			<pre>@article{Encodability_Process_Calculi-AFP,
+
+<tr>
+  <td class="datahead" valign="top">BibTeX:</td>
+  <td class="formatted">
+        <pre>@article{Encodability_Process_Calculi-AFP,
   author  = {Kirstin Peters and Rob van Glabbeek},
   title   = {Analysing and Comparing Encodability Criteria for Process Calculi},
   journal = {Archive of Formal Proofs},
   month   = aug,
   year    = 2015,
-  note    = {\url{http://isa-afp.org/entries/Encodability_Process_Calculi.shtml},
+  note    = {\url{http://isa-afp.org/entries/Encodability_Process_Calculi.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-        </td></tr>
+  </td>
+</tr>
 
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
+    
+                    
+                    
 
-
-
+        
   </tbody>
 </table>
 
 <p></p>
 
-<!--#set var="name" value="Encodability_Process_Calculi" -->
-
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
-<!--#set var="doc" value="${binfo}/document.pdf" -->
-<!--#set var="outline" value="${binfo}/outline.pdf" -->
-<!--#set var="browse" value="${binfo}/index.html" -->
-<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
-
 <table class="links">
   <tbody>
     <tr>
-  <td class="links">
-	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
-	<a href="<!--#echo var="doc" -->">Proof document</a>
-  </td>
-	</tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/Encodability_Process_Calculi/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Encodability_Process_Calculi/document.pdf">Proof document</a>
+    </td>
+    </tr>
     <tr>
-  <td class="links">
-	<a href="<!--#echo var="browse" -->">Browse theories</a>
-	</td></tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/Encodability_Process_Calculi/index.html">Browse theories</a>
+      </td></tr>
     <tr>
-  <td class="links"> 
-	<a href="<!--#echo var="tar" -->">Download this entry</a>
-	</td>
-  </tr>
+    <td class="links">
+      <a href="../release/afp-Encodability_Process_Calculi-current.tar.gz">Download this entry</a>
+    </td>
+    </tr>
 
 
-    <tr><td class="links">Older releases: <ul>
-<li>Isabelle 2016: <a href="../release/afp-<!--#echo var="name" -->-2016-02-22.tar.gz">afp-<!--#echo var="name" -->-2016-02-22.tar.gz</a></li>
-<li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2015-08-11.tar.gz">afp-<!--#echo var="name" -->-2015-08-11.tar.gz</a></li>
-
-</ul>
-    </td></tr>
+    <tr><td class="links">Older releases:
+          <ul>
+                        <li>Isabelle 2016:
+          <a href="../release/afp-Encodability_Process_Calculi-2016-02-22.tar.gz">
+            afp-Encodability_Process_Calculi-2016-02-22.tar.gz
+          </a>
+          </li>
+                                <li>Isabelle 2015:
+          <a href="../release/afp-Encodability_Process_Calculi-2015-08-11.tar.gz">
+            afp-Encodability_Process_Calculi-2015-08-11.tar.gz
+          </a>
+          </li>
+                    </ul>
+        </td></tr>
 
   </tbody>
 </table>
-<!-- entry data end -->
 
-</td> </tr> </table>
+</div>
+</td>
+
+</tr>
+</tbody>
+</table>
+
+<script src="../jquery.min.js"></script>
+<script src="../script.js"></script>
 
 </body>
 </html>

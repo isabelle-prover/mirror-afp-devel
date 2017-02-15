@@ -1,135 +1,219 @@
-<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
-		"http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>Archive of Formal Proofs</title>
-  <link rel="stylesheet" type="text/css" href="../front.css">
-  <script src="../jquery.min.js"></script>
-  <script src="../script.js"></script>
-  <link rel="icon" href="../images/favicon.ico" type="image/icon">
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta charset="utf-8">
+<title>Archive of Formal Proofs</title>
+<link rel="stylesheet" type="text/css" href="../front.css">
+<link rel="icon" href="../images/favicon.ico" type="image/icon">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
 </head>
+
 <body>
 
 <table width="100%">
-  <tbody>
+<tbody>
+<tr>
+
+<!-- Navigation -->
+<td width="20%" align="center" valign="top">
+  <p>&nbsp;</p>
+  <a href="http://isabelle.in.tum.de">
+    <img src="../images/isabelle.png" width="100" height="86" border=0>
+  </a>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+  <table class="nav" width="80%">
     <tr>
-      <td width="20%" align="center" valign="top">
-      <!-- navigation -->
-      <!--#include file="nav.html"-->
-      </td>
-      <td width="80%" valign="top">
-      <!-- content -->
+      <td class="nav" width="100%"><a href="../index.shtml">Home</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../about.shtml">About</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../submitting.shtml">Submission Guidelines</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../updating.shtml">Updating entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../using.shtml">Using entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../search.shtml">Search</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../statistics.shtml">Statistics</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../topics.shtml">Index</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../download.shtml">Download</a></td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+</td>
 
+
+<!-- Content -->
+<td width="80%" valign="top">
 <div align="center">
-<p>&nbsp;</p>
-
-<h1><font class="first">S</font>tuttering
-<font class="first">E</font>quivalence
+  <p>&nbsp;</p>
+  <h1>          <font class="first">S</font>tuttering
+  
+          <font class="first">E</font>quivalence
+  
 </h1>
-<p></p>
+  <p>&nbsp;</p>
+
 <table width="80%" class="data">
-  <tbody>
-    <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Stuttering Equivalence</td></tr>
+<tbody>
+<tr>
+  <td class="datahead" width="20%">Title:</td>
+  <td class="data" width="80%">Stuttering Equivalence</td>
+</tr>
 
-    <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://www.loria.fr/~merz/">Stephan Merz</a></td></tr>
+<tr>
+  <td class="datahead">
+          Author:
+      </td>
+  <td class="data">
+              <a href="http://www.loria.fr/~merz">Stephan Merz</a>
+      </td>
+</tr>
 
-    <tr><td class="datahead">Submission date:</td>
-        <td class="data">2012-05-07</td></tr>
 
-    <tr><td class="datahead" valign="top">Abstract:</td>
-        <td class="abstract">
 
-<p>Two omega-sequences are stuttering equivalent if they differ only by finite repetitions of elements. Stuttering equivalence is a fundamental concept in the theory of concurrent and distributed systems. Notably, Lamport argues that refinement notions for such systems should be insensitive to finite stuttering. Peled and Wilke showed that all PLTL (propositional linear-time temporal logic) properties that are insensitive to stuttering equivalence can be expressed without the next-time operator. Stuttering equivalence is also important for certain verification techniques such as partial-order reduction for model checking.</p> <p>We formalize stuttering equivalence in Isabelle/HOL. Our development relies on the notion of stuttering sampling functions that may skip blocks of identical sequence elements. We also encode PLTL and prove the theorem due to Peled and Wilke.</p>
-        </td></tr>
+<tr>
+  <td class="datahead">Submission date:</td>
+  <td class="data">2012-05-07</td>
+</tr>
 
-    <tr><td class="datahead" valign="top">Change history:</td>
-        <td class="abstract">
+<tr>
+  <td class="datahead" valign="top">Abstract:</td>
+  <td class="abstract"><p>Two omega-sequences are stuttering equivalent if they differ only by finite repetitions of elements. Stuttering equivalence is a fundamental concept in the theory of concurrent and distributed systems. Notably, Lamport argues that refinement notions for such systems should be insensitive to finite stuttering. Peled and Wilke showed that all PLTL (propositional linear-time temporal logic) properties that are insensitive to stuttering equivalence can be expressed without the next-time operator. Stuttering equivalence is also important for certain verification techniques such as partial-order reduction for model checking.</p> <p>We formalize stuttering equivalence in Isabelle/HOL. Our development relies on the notion of stuttering sampling functions that may skip blocks of identical sequence elements. We also encode PLTL and prove the theorem due to Peled and Wilke.</p></td>
+</tr>
 
-[2013-01-31]: Added encoding of PLTL and proved Peled and Wilke's theorem. Adjusted abstract accordingly.
-        </td></tr>
+  <tr>
+    <td class="datahead" valign="top">Change history:</td>
+    <td class="abstract">[2013-01-31]: Added encoding of PLTL and proved Peled and Wilke's theorem. Adjusted abstract accordingly.</td>
+  </tr>
 
-    <tr><td class="datahead" valign="top">BibTeX:</td>
-        <td class="formatted">
-			<pre>@article{Stuttering_Equivalence-AFP,
+<tr>
+  <td class="datahead" valign="top">BibTeX:</td>
+  <td class="formatted">
+        <pre>@article{Stuttering_Equivalence-AFP,
   author  = {Stephan Merz},
   title   = {Stuttering Equivalence},
   journal = {Archive of Formal Proofs},
   month   = may,
   year    = 2012,
-  note    = {\url{http://isa-afp.org/entries/Stuttering_Equivalence.shtml},
+  note    = {\url{http://isa-afp.org/entries/Stuttering_Equivalence.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-        </td></tr>
+  </td>
+</tr>
 
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
+    
+                      <tr><td class="datahead">Depends on:</td>
+          <td class="data"><a href="LTL.html">LTL</a>      </td></tr>
+          
+                      <tr><td class="datahead">Used by:</td>
+          <td class="data"><a href="Consensus_Refined.html">Consensus_Refined</a>, <a href="Heard_Of.html">Heard_Of</a>, <a href="LTL_to_GBA.html">LTL_to_GBA</a>      </td></tr>
+          
 
-    <tr><td class="datahead">Depends on:</td>
-        <td class="data"><a href="LTL.shtml">LTL</a></td></tr>
-
-
-
-    <tr><td class="datahead">Used by:</td>
-        <td class="data"><a href="Consensus_Refined.shtml">Consensus_Refined</a>, <a href="Heard_Of.shtml">Heard_Of</a>, <a href="LTL_to_GBA.shtml">LTL_to_GBA</a></td></tr>
-
-
-
+        
   </tbody>
 </table>
 
 <p></p>
 
-<!--#set var="name" value="Stuttering_Equivalence" -->
-
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
-<!--#set var="doc" value="${binfo}/document.pdf" -->
-<!--#set var="outline" value="${binfo}/outline.pdf" -->
-<!--#set var="browse" value="${binfo}/index.html" -->
-<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
-
 <table class="links">
   <tbody>
     <tr>
-  <td class="links">
-	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
-	<a href="<!--#echo var="doc" -->">Proof document</a>
-  </td>
-	</tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/Stuttering_Equivalence/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Stuttering_Equivalence/document.pdf">Proof document</a>
+    </td>
+    </tr>
     <tr>
-  <td class="links">
-	<a href="<!--#echo var="browse" -->">Browse theories</a>
-	</td></tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/Stuttering_Equivalence/index.html">Browse theories</a>
+      </td></tr>
     <tr>
-  <td class="links"> 
-	<a href="<!--#echo var="tar" -->">Download this entry</a>
-	</td>
-  </tr>
+    <td class="links">
+      <a href="../release/afp-Stuttering_Equivalence-current.tar.gz">Download this entry</a>
+    </td>
+    </tr>
 
 
-    <tr><td class="links">Older releases: <ul>
-<li>Isabelle 2016: <a href="../release/afp-<!--#echo var="name" -->-2016-02-22.tar.gz">afp-<!--#echo var="name" -->-2016-02-22.tar.gz</a></li>
-<li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2015-05-27.tar.gz">afp-<!--#echo var="name" -->-2015-05-27.tar.gz</a></li>
-<li>Isabelle 2014: <a href="../release/afp-<!--#echo var="name" -->-2014-08-28.tar.gz">afp-<!--#echo var="name" -->-2014-08-28.tar.gz</a></li>
-<li>Isabelle 2013-2: <a href="../release/afp-<!--#echo var="name" -->-2013-12-11.tar.gz">afp-<!--#echo var="name" -->-2013-12-11.tar.gz</a></li>
-<li>Isabelle 2013-1: <a href="../release/afp-<!--#echo var="name" -->-2013-11-17.tar.gz">afp-<!--#echo var="name" -->-2013-11-17.tar.gz</a></li>
-<li>Isabelle 2013: <a href="../release/afp-<!--#echo var="name" -->-2013-02-16.tar.gz">afp-<!--#echo var="name" -->-2013-02-16.tar.gz</a></li>
-<li>Isabelle 2012: <a href="../release/afp-<!--#echo var="name" -->-2013-02-02.tar.gz">afp-<!--#echo var="name" -->-2013-02-02.tar.gz</a></li>
-<li>Isabelle 2012: <a href="../release/afp-<!--#echo var="name" -->-2012-05-24.tar.gz">afp-<!--#echo var="name" -->-2012-05-24.tar.gz</a></li>
-<li>Isabelle 2011-1: <a href="../release/afp-<!--#echo var="name" -->-2012-05-08.tar.gz">afp-<!--#echo var="name" -->-2012-05-08.tar.gz</a></li>
-
-</ul>
-    </td></tr>
+    <tr><td class="links">Older releases:
+          <ul>
+                        <li>Isabelle 2016:
+          <a href="../release/afp-Stuttering_Equivalence-2016-02-22.tar.gz">
+            afp-Stuttering_Equivalence-2016-02-22.tar.gz
+          </a>
+          </li>
+                                <li>Isabelle 2015:
+          <a href="../release/afp-Stuttering_Equivalence-2015-05-27.tar.gz">
+            afp-Stuttering_Equivalence-2015-05-27.tar.gz
+          </a>
+          </li>
+                                <li>Isabelle 2014:
+          <a href="../release/afp-Stuttering_Equivalence-2014-08-28.tar.gz">
+            afp-Stuttering_Equivalence-2014-08-28.tar.gz
+          </a>
+          </li>
+                                <li>Isabelle 2013-2:
+          <a href="../release/afp-Stuttering_Equivalence-2013-12-11.tar.gz">
+            afp-Stuttering_Equivalence-2013-12-11.tar.gz
+          </a>
+          </li>
+                                <li>Isabelle 2013-1:
+          <a href="../release/afp-Stuttering_Equivalence-2013-11-17.tar.gz">
+            afp-Stuttering_Equivalence-2013-11-17.tar.gz
+          </a>
+          </li>
+                                <li>Isabelle 2013:
+          <a href="../release/afp-Stuttering_Equivalence-2013-02-16.tar.gz">
+            afp-Stuttering_Equivalence-2013-02-16.tar.gz
+          </a>
+          </li>
+                                <li>Isabelle 2012:
+          <a href="../release/afp-Stuttering_Equivalence-2013-02-02.tar.gz">
+            afp-Stuttering_Equivalence-2013-02-02.tar.gz
+          </a>
+          </li>
+                  <li>Isabelle 2012:
+          <a href="../release/afp-Stuttering_Equivalence-2012-05-24.tar.gz">
+            afp-Stuttering_Equivalence-2012-05-24.tar.gz
+          </a>
+          </li>
+                                <li>Isabelle 2011-1:
+          <a href="../release/afp-Stuttering_Equivalence-2012-05-08.tar.gz">
+            afp-Stuttering_Equivalence-2012-05-08.tar.gz
+          </a>
+          </li>
+                    </ul>
+        </td></tr>
 
   </tbody>
 </table>
-<!-- entry data end -->
 
-</td> </tr> </table>
+</div>
+</td>
+
+</tr>
+</tbody>
+</table>
+
+<script src="../jquery.min.js"></script>
+<script src="../script.js"></script>
 
 </body>
 </html>

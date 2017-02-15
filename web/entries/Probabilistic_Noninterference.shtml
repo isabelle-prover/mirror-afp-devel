@@ -1,120 +1,191 @@
-<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
-		"http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>Archive of Formal Proofs</title>
-  <link rel="stylesheet" type="text/css" href="../front.css">
-  <script src="../jquery.min.js"></script>
-  <script src="../script.js"></script>
-  <link rel="icon" href="../images/favicon.ico" type="image/icon">
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta charset="utf-8">
+<title>Archive of Formal Proofs</title>
+<link rel="stylesheet" type="text/css" href="../front.css">
+<link rel="icon" href="../images/favicon.ico" type="image/icon">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
 </head>
+
 <body>
 
 <table width="100%">
-  <tbody>
+<tbody>
+<tr>
+
+<!-- Navigation -->
+<td width="20%" align="center" valign="top">
+  <p>&nbsp;</p>
+  <a href="http://isabelle.in.tum.de">
+    <img src="../images/isabelle.png" width="100" height="86" border=0>
+  </a>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+  <table class="nav" width="80%">
     <tr>
-      <td width="20%" align="center" valign="top">
-      <!-- navigation -->
-      <!--#include file="nav.html"-->
-      </td>
-      <td width="80%" valign="top">
-      <!-- content -->
+      <td class="nav" width="100%"><a href="../index.shtml">Home</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../about.shtml">About</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../submitting.shtml">Submission Guidelines</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../updating.shtml">Updating entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../using.shtml">Using entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../search.shtml">Search</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../statistics.shtml">Statistics</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../topics.shtml">Index</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../download.shtml">Download</a></td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+</td>
 
+
+<!-- Content -->
+<td width="80%" valign="top">
 <div align="center">
-<p>&nbsp;</p>
-
-<h1><font class="first">P</font>robabilistic
-<font class="first">N</font>oninterference
+  <p>&nbsp;</p>
+  <h1>          <font class="first">P</font>robabilistic
+  
+          <font class="first">N</font>oninterference
+  
 </h1>
-<p></p>
+  <p>&nbsp;</p>
+
 <table width="80%" class="data">
-  <tbody>
-    <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Probabilistic Noninterference</td></tr>
+<tbody>
+<tr>
+  <td class="datahead" width="20%">Title:</td>
+  <td class="data" width="80%">Probabilistic Noninterference</td>
+</tr>
 
-    <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://www21.in.tum.de/~popescua">Andrei Popescu</a> and <a href="http://home.in.tum.de/~hoelzl">Johannes Hölzl</a></td></tr>
+<tr>
+  <td class="datahead">
+          Authors:
+      </td>
+  <td class="data">
+                    Andrei Popescu (uuomul /at/ yahoo /dot/ com) and
+          <a href="http://home.in.tum.de/~hoelzl">Johannes Hölzl</a>
+      </td>
+</tr>
 
-    <tr><td class="datahead">Submission date:</td>
-        <td class="data">2014-03-11</td></tr>
 
-    <tr><td class="datahead" valign="top">Abstract:</td>
-        <td class="abstract">
 
-We formalize a probabilistic noninterference for a multi-threaded language with uniform scheduling, where probabilistic behaviour comes from both the scheduler and the individual threads. We define notions probabilistic noninterference in two variants: resumption-based and trace-based. For the resumption-based notions, we prove compositionality w.r.t. the language constructs and establish sound type-system-like syntactic criteria. This is a formalization of the mathematical development presented at CPP 2013 and CALCO 2013. It is the probabilistic variant of the Possibilistic Noninterference AFP entry.
-        </td></tr>
+<tr>
+  <td class="datahead">Submission date:</td>
+  <td class="data">2014-03-11</td>
+</tr>
 
-    <tr><td class="datahead" valign="top">BibTeX:</td>
-        <td class="formatted">
-			<pre>@article{Probabilistic_Noninterference-AFP,
+<tr>
+  <td class="datahead" valign="top">Abstract:</td>
+  <td class="abstract">We formalize a probabilistic noninterference for a multi-threaded language with uniform scheduling, where probabilistic behaviour comes from both the scheduler and the individual threads. We define notions probabilistic noninterference in two variants: resumption-based and trace-based. For the resumption-based notions, we prove compositionality w.r.t. the language constructs and establish sound type-system-like syntactic criteria. This is a formalization of the mathematical development presented at CPP 2013 and CALCO 2013. It is the probabilistic variant of the Possibilistic Noninterference AFP entry.</td>
+</tr>
+
+
+<tr>
+  <td class="datahead" valign="top">BibTeX:</td>
+  <td class="formatted">
+        <pre>@article{Probabilistic_Noninterference-AFP,
   author  = {Andrei Popescu and Johannes Hölzl},
   title   = {Probabilistic Noninterference},
   journal = {Archive of Formal Proofs},
   month   = mar,
   year    = 2014,
-  note    = {\url{http://isa-afp.org/entries/Probabilistic_Noninterference.shtml},
+  note    = {\url{http://isa-afp.org/entries/Probabilistic_Noninterference.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-        </td></tr>
+  </td>
+</tr>
 
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
+    
+                      <tr><td class="datahead">Depends on:</td>
+          <td class="data"><a href="Markov_Models.html">Markov_Models</a>      </td></tr>
+          
+                      <tr><td class="datahead">Used by:</td>
+          <td class="data">      </td></tr>
+          
 
-    <tr><td class="datahead">Depends on:</td>
-        <td class="data"><a href="Markov_Models.shtml">Markov_Models</a></td></tr>
-
-
-
-
+        
   </tbody>
 </table>
 
 <p></p>
 
-<!--#set var="name" value="Probabilistic_Noninterference" -->
-
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
-<!--#set var="doc" value="${binfo}/document.pdf" -->
-<!--#set var="outline" value="${binfo}/outline.pdf" -->
-<!--#set var="browse" value="${binfo}/index.html" -->
-<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
-
 <table class="links">
   <tbody>
     <tr>
-  <td class="links">
-	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
-	<a href="<!--#echo var="doc" -->">Proof document</a>
-  </td>
-	</tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/Probabilistic_Noninterference/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Probabilistic_Noninterference/document.pdf">Proof document</a>
+    </td>
+    </tr>
     <tr>
-  <td class="links">
-	<a href="<!--#echo var="browse" -->">Browse theories</a>
-	</td></tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/Probabilistic_Noninterference/index.html">Browse theories</a>
+      </td></tr>
     <tr>
-  <td class="links"> 
-	<a href="<!--#echo var="tar" -->">Download this entry</a>
-	</td>
-  </tr>
+    <td class="links">
+      <a href="../release/afp-Probabilistic_Noninterference-current.tar.gz">Download this entry</a>
+    </td>
+    </tr>
 
 
-    <tr><td class="links">Older releases: <ul>
-<li>Isabelle 2016: <a href="../release/afp-<!--#echo var="name" -->-2016-02-22.tar.gz">afp-<!--#echo var="name" -->-2016-02-22.tar.gz</a></li>
-<li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2015-05-27.tar.gz">afp-<!--#echo var="name" -->-2015-05-27.tar.gz</a></li>
-<li>Isabelle 2014: <a href="../release/afp-<!--#echo var="name" -->-2014-08-28.tar.gz">afp-<!--#echo var="name" -->-2014-08-28.tar.gz</a></li>
-<li>Isabelle 2013-2: <a href="../release/afp-<!--#echo var="name" -->-2014-03-16.tar.gz">afp-<!--#echo var="name" -->-2014-03-16.tar.gz</a></li>
-
-</ul>
-    </td></tr>
+    <tr><td class="links">Older releases:
+          <ul>
+                        <li>Isabelle 2016:
+          <a href="../release/afp-Probabilistic_Noninterference-2016-02-22.tar.gz">
+            afp-Probabilistic_Noninterference-2016-02-22.tar.gz
+          </a>
+          </li>
+                                <li>Isabelle 2015:
+          <a href="../release/afp-Probabilistic_Noninterference-2015-05-27.tar.gz">
+            afp-Probabilistic_Noninterference-2015-05-27.tar.gz
+          </a>
+          </li>
+                                <li>Isabelle 2014:
+          <a href="../release/afp-Probabilistic_Noninterference-2014-08-28.tar.gz">
+            afp-Probabilistic_Noninterference-2014-08-28.tar.gz
+          </a>
+          </li>
+                                <li>Isabelle 2013-2:
+          <a href="../release/afp-Probabilistic_Noninterference-2014-03-16.tar.gz">
+            afp-Probabilistic_Noninterference-2014-03-16.tar.gz
+          </a>
+          </li>
+                    </ul>
+        </td></tr>
 
   </tbody>
 </table>
-<!-- entry data end -->
 
-</td> </tr> </table>
+</div>
+</td>
+
+</tr>
+</tbody>
+</table>
+
+<script src="../jquery.min.js"></script>
+<script src="../script.js"></script>
 
 </body>
 </html>

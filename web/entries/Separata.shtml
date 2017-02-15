@@ -1,52 +1,110 @@
-<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
-		"http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>Archive of Formal Proofs</title>
-  <link rel="stylesheet" type="text/css" href="../front.css">
-  <script src="../jquery.min.js"></script>
-  <script src="../script.js"></script>
-  <link rel="icon" href="../images/favicon.ico" type="image/icon">
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta charset="utf-8">
+<title>Archive of Formal Proofs</title>
+<link rel="stylesheet" type="text/css" href="../front.css">
+<link rel="icon" href="../images/favicon.ico" type="image/icon">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
 </head>
+
 <body>
 
 <table width="100%">
-  <tbody>
+<tbody>
+<tr>
+
+<!-- Navigation -->
+<td width="20%" align="center" valign="top">
+  <p>&nbsp;</p>
+  <a href="http://isabelle.in.tum.de">
+    <img src="../images/isabelle.png" width="100" height="86" border=0>
+  </a>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+  <table class="nav" width="80%">
     <tr>
-      <td width="20%" align="center" valign="top">
-      <!-- navigation -->
-      <!--#include file="nav.html"-->
-      </td>
-      <td width="80%" valign="top">
-      <!-- content -->
+      <td class="nav" width="100%"><a href="../index.shtml">Home</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../about.shtml">About</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../submitting.shtml">Submission Guidelines</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../updating.shtml">Updating entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../using.shtml">Using entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../search.shtml">Search</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../statistics.shtml">Statistics</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../topics.shtml">Index</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../download.shtml">Download</a></td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+</td>
 
+
+<!-- Content -->
+<td width="80%" valign="top">
 <div align="center">
-<p>&nbsp;</p>
-
-<h1><font class="first">S</font>eparata:
-<font class="first">I</font>sabelle
-tactics
-for
-<font class="first">S</font>eparation
-<font class="first">A</font>lgebra
+  <p>&nbsp;</p>
+  <h1>          <font class="first">S</font>eparata:
+  
+          <font class="first">I</font>sabelle
+  
+          tactics
+  
+          for
+  
+          <font class="first">S</font>eparation
+  
+          <font class="first">A</font>lgebra
+  
 </h1>
-<p></p>
+  <p>&nbsp;</p>
+
 <table width="80%" class="data">
-  <tbody>
-    <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Separata: Isabelle tactics for Separation Algebra</td></tr>
+<tbody>
+<tr>
+  <td class="datahead" width="20%">Title:</td>
+  <td class="data" width="80%">Separata: Isabelle tactics for Separation Algebra</td>
+</tr>
 
-    <tr><td class="datahead">Author:</td>
-        <td class="data">Zhe Hou (zhe /dot/ hou /at/ ntu /dot/ edu /dot/ sg), David Sanan (sanan /at/ ntu /dot/ edu /dot/ sg), Alwen Tiu (ATiu /at/ ntu /dot/ edu /dot/ sg), Rajeev Gore (rajeev /dot/ gore /at/ anu /dot/ edu /dot/ au) and Ranald Clouston (ranald /dot/ clouston /at/ cs /dot/ au /dot/ dk)</td></tr>
+<tr>
+  <td class="datahead">
+          Authors:
+      </td>
+  <td class="data">
+                      Zhe Hou (zhe /dot/ hou /at/ ntu /dot/ edu /dot/ sg),
+                  David Sanan (sanan /at/ ntu /dot/ edu /dot/ sg),
+                  Alwen Tiu (ATiu /at/ ntu /dot/ edu /dot/ sg),
+                Rajeev Gore (rajeev /dot/ gore /at/ anu /dot/ edu /dot/ au) and
+          Ranald Clouston (ranald /dot/ clouston /at/ cs /dot/ au /dot/ dk)
+      </td>
+</tr>
 
-    <tr><td class="datahead">Submission date:</td>
-        <td class="data">2016-11-16</td></tr>
-
-    <tr><td class="datahead" valign="top">Abstract:</td>
-        <td class="abstract">
 
 
+<tr>
+  <td class="datahead">Submission date:</td>
+  <td class="data">2016-11-16</td>
+</tr>
+
+<tr>
+  <td class="datahead" valign="top">Abstract:</td>
+  <td class="abstract">
 We bring the labelled sequent calculus $LS_{PASL}$ for propositional
 abstract separation logic to Isabelle. The tactics given here are
 directly applied on an extension of the Separation Algebra in the AFP.
@@ -56,76 +114,84 @@ such as indivisible unit, disjointness, and cross-split. The tactics
 are essentially a proof search procedure for the calculus $LS_{PASL}$.
 We wrap the tactics in an Isabelle method called separata, and give a
 few examples of separation logic formulae which are provable by
-separata.
-        </td></tr>
+separata.</td>
+</tr>
 
-    <tr><td class="datahead" valign="top">BibTeX:</td>
-        <td class="formatted">
-			<pre>@article{Separata-AFP,
+
+<tr>
+  <td class="datahead" valign="top">BibTeX:</td>
+  <td class="formatted">
+        <pre>@article{Separata-AFP,
   author  = {Zhe Hou and David Sanan and Alwen Tiu and Rajeev Gore and Ranald Clouston},
   title   = {Separata: Isabelle tactics for Separation Algebra},
   journal = {Archive of Formal Proofs},
   month   = nov,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Separata.shtml},
+  note    = {\url{http://isa-afp.org/entries/Separata.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-        </td></tr>
+  </td>
+</tr>
 
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
+    
+                      <tr><td class="datahead">Depends on:</td>
+          <td class="data"><a href="Separation_Algebra.html">Separation_Algebra</a>      </td></tr>
+          
+                      <tr><td class="datahead">Used by:</td>
+          <td class="data">      </td></tr>
+          
 
-    <tr><td class="datahead">Depends on:</td>
-        <td class="data"><a href="Separation_Algebra.shtml">Separation_Algebra</a></td></tr>
-
-
-
-
+        
   </tbody>
 </table>
 
 <p></p>
 
-<!--#set var="name" value="Separata" -->
-
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
-<!--#set var="doc" value="${binfo}/document.pdf" -->
-<!--#set var="outline" value="${binfo}/outline.pdf" -->
-<!--#set var="browse" value="${binfo}/index.html" -->
-<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
-
 <table class="links">
   <tbody>
     <tr>
-  <td class="links">
-	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
-	<a href="<!--#echo var="doc" -->">Proof document</a>
-  </td>
-	</tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/Separata/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Separata/document.pdf">Proof document</a>
+    </td>
+    </tr>
     <tr>
-  <td class="links">
-	<a href="<!--#echo var="browse" -->">Browse theories</a>
-	</td></tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/Separata/index.html">Browse theories</a>
+      </td></tr>
     <tr>
-  <td class="links"> 
-	<a href="<!--#echo var="tar" -->">Download this entry</a>
-	</td>
-  </tr>
+    <td class="links">
+      <a href="../release/afp-Separata-current.tar.gz">Download this entry</a>
+    </td>
+    </tr>
 
 
-    <tr><td class="links">Older releases: <ul>
-<li>Isabelle 2016: <a href="../release/afp-<!--#echo var="name" -->-2016-11-17.tar.gz">afp-<!--#echo var="name" -->-2016-11-17.tar.gz</a></li>
-
-</ul>
-    </td></tr>
+    <tr><td class="links">Older releases:
+          <ul>
+                        <li>Isabelle 2016:
+          <a href="../release/afp-Separata-2016-11-17.tar.gz">
+            afp-Separata-2016-11-17.tar.gz
+          </a>
+          </li>
+                    </ul>
+        </td></tr>
 
   </tbody>
 </table>
-<!-- entry data end -->
 
-</td> </tr> </table>
+</div>
+</td>
+
+</tr>
+</tbody>
+</table>
+
+<script src="../jquery.min.js"></script>
+<script src="../script.js"></script>
 
 </body>
 </html>

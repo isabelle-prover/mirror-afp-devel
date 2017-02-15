@@ -1,127 +1,177 @@
-<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
-		"http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>Archive of Formal Proofs</title>
-  <link rel="stylesheet" type="text/css" href="../front.css">
-  <script src="../jquery.min.js"></script>
-  <script src="../script.js"></script>
-  <link rel="icon" href="../images/favicon.ico" type="image/icon">
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta charset="utf-8">
+<title>Archive of Formal Proofs</title>
+<link rel="stylesheet" type="text/css" href="../front.css">
+<link rel="icon" href="../images/favicon.ico" type="image/icon">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
 </head>
+
 <body>
 
 <table width="100%">
-  <tbody>
+<tbody>
+<tr>
+
+<!-- Navigation -->
+<td width="20%" align="center" valign="top">
+  <p>&nbsp;</p>
+  <a href="http://isabelle.in.tum.de">
+    <img src="../images/isabelle.png" width="100" height="86" border=0>
+  </a>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+  <table class="nav" width="80%">
     <tr>
-      <td width="20%" align="center" valign="top">
-      <!-- navigation -->
-      <!--#include file="nav.html"-->
-      </td>
-      <td width="80%" valign="top">
-      <!-- content -->
+      <td class="nav" width="100%"><a href="../index.shtml">Home</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../about.shtml">About</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../submitting.shtml">Submission Guidelines</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../updating.shtml">Updating entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../using.shtml">Using entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../search.shtml">Search</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../statistics.shtml">Statistics</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../topics.shtml">Index</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../download.shtml">Download</a></td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+</td>
 
+
+<!-- Content -->
+<td width="80%" valign="top">
 <div align="center">
-<p>&nbsp;</p>
-
-<h1><font class="first">P</font>airing
-<font class="first">H</font>eap
+  <p>&nbsp;</p>
+  <h1>          <font class="first">P</font>airing
+  
+          <font class="first">H</font>eap
+  
 </h1>
-<p></p>
+  <p>&nbsp;</p>
+
 <table width="80%" class="data">
-  <tbody>
-    <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Pairing Heap</td></tr>
+<tbody>
+<tr>
+  <td class="datahead" width="20%">Title:</td>
+  <td class="data" width="80%">Pairing Heap</td>
+</tr>
 
-    <tr><td class="datahead">Author:</td>
-        <td class="data">Hauke Brinkop (hauke /dot/ brinkop /at/ googlemail /dot/ com) and <a href="http://in.tum.de/~nipkow/">Tobias Nipkow</a></td></tr>
+<tr>
+  <td class="datahead">
+          Authors:
+      </td>
+  <td class="data">
+                    Hauke Brinkop (hauke /dot/ brinkop /at/ googlemail /dot/ com) and
+          <a href="http://www.in.tum.de/~nipkow">Tobias Nipkow</a>
+      </td>
+</tr>
 
-    <tr><td class="datahead">Submission date:</td>
-        <td class="data">2016-07-14</td></tr>
-
-    <tr><td class="datahead" valign="top">Abstract:</td>
-        <td class="abstract">
 
 
+<tr>
+  <td class="datahead">Submission date:</td>
+  <td class="data">2016-07-14</td>
+</tr>
+
+<tr>
+  <td class="datahead" valign="top">Abstract:</td>
+  <td class="abstract">
 This library defines three different versions of pairing heaps: a
 functional version of the original design based on binary
 trees [Fredman et al. 1986], the version by Okasaki [1998] and
 a modified version of the latter that is free of structural invariants.
 <p>
 The amortized complexity of pairing heaps is analyzed in the AFP article
-<a href="http://isa-afp.org/entries/Amortized_Complexity.shtml">Amortized Complexity</a>.
-        </td></tr>
+<a href="http://isa-afp.org/entries/Amortized_Complexity.shtml">Amortized Complexity</a>.</td>
+</tr>
 
-    <tr><td class="datahead" valign="top">Origin:</td>
-        <td class="abstract">
+  <tr>
+    <td class="datahead" valign="top">Origin:</td>
+    <td class="abstract">This library was extracted from Amortized Complexity and extended.</td>
+  </tr>
 
-This library was extracted from Amortized Complexity and extended.
-        </td></tr>
-
-    <tr><td class="datahead" valign="top">BibTeX:</td>
-        <td class="formatted">
-			<pre>@article{Pairing_Heap-AFP,
+<tr>
+  <td class="datahead" valign="top">BibTeX:</td>
+  <td class="formatted">
+        <pre>@article{Pairing_Heap-AFP,
   author  = {Hauke Brinkop and Tobias Nipkow},
   title   = {Pairing Heap},
   journal = {Archive of Formal Proofs},
   month   = jul,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Pairing_Heap.shtml},
+  note    = {\url{http://isa-afp.org/entries/Pairing_Heap.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-        </td></tr>
+  </td>
+</tr>
 
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
+    
+                    
+                    
 
-
-    <tr><td class="datahead">Used by:</td>
-        <td class="data"><a href="Amortized_Complexity.shtml">Amortized_Complexity</a></td></tr>
-
-
-
+        
   </tbody>
 </table>
 
 <p></p>
 
-<!--#set var="name" value="Pairing_Heap" -->
-
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
-<!--#set var="doc" value="${binfo}/document.pdf" -->
-<!--#set var="outline" value="${binfo}/outline.pdf" -->
-<!--#set var="browse" value="${binfo}/index.html" -->
-<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
-
 <table class="links">
   <tbody>
     <tr>
-  <td class="links">
-	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
-	<a href="<!--#echo var="doc" -->">Proof document</a>
-  </td>
-	</tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/Pairing_Heap/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Pairing_Heap/document.pdf">Proof document</a>
+    </td>
+    </tr>
     <tr>
-  <td class="links">
-	<a href="<!--#echo var="browse" -->">Browse theories</a>
-	</td></tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/Pairing_Heap/index.html">Browse theories</a>
+      </td></tr>
     <tr>
-  <td class="links"> 
-	<a href="<!--#echo var="tar" -->">Download this entry</a>
-	</td>
-  </tr>
+    <td class="links">
+      <a href="../release/afp-Pairing_Heap-current.tar.gz">Download this entry</a>
+    </td>
+    </tr>
 
 
-    <tr><td class="links">Older releases: None
-    </td></tr>
+    <tr><td class="links">Older releases:
+        None
+        </td></tr>
 
   </tbody>
 </table>
-<!-- entry data end -->
 
-</td> </tr> </table>
+</div>
+</td>
+
+</tr>
+</tbody>
+</table>
+
+<script src="../jquery.min.js"></script>
+<script src="../script.js"></script>
 
 </body>
 </html>

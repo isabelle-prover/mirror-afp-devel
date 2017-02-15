@@ -1,121 +1,181 @@
-<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
-		"http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>Archive of Formal Proofs</title>
-  <link rel="stylesheet" type="text/css" href="../front.css">
-  <script src="../jquery.min.js"></script>
-  <script src="../script.js"></script>
-  <link rel="icon" href="../images/favicon.ico" type="image/icon">
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta charset="utf-8">
+<title>Archive of Formal Proofs</title>
+<link rel="stylesheet" type="text/css" href="../front.css">
+<link rel="icon" href="../images/favicon.ico" type="image/icon">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
 </head>
+
 <body>
 
 <table width="100%">
-  <tbody>
+<tbody>
+<tr>
+
+<!-- Navigation -->
+<td width="20%" align="center" valign="top">
+  <p>&nbsp;</p>
+  <a href="http://isabelle.in.tum.de">
+    <img src="../images/isabelle.png" width="100" height="86" border=0>
+  </a>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+  <table class="nav" width="80%">
     <tr>
-      <td width="20%" align="center" valign="top">
-      <!-- navigation -->
-      <!--#include file="nav.html"-->
-      </td>
-      <td width="80%" valign="top">
-      <!-- content -->
+      <td class="nav" width="100%"><a href="../index.shtml">Home</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../about.shtml">About</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../submitting.shtml">Submission Guidelines</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../updating.shtml">Updating entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../using.shtml">Using entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../search.shtml">Search</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../statistics.shtml">Statistics</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../topics.shtml">Index</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../download.shtml">Download</a></td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+</td>
 
+
+<!-- Content -->
+<td width="80%" valign="top">
 <div align="center">
-<p>&nbsp;</p>
-
-<h1><font class="first">F</font>ormalization
-of
-<font class="first">N</font>ested
-<font class="first">M</font>ultisets,
-<font class="first">H</font>ereditary
-<font class="first">M</font>ultisets,
-and
-<font class="first">S</font>yntactic
-<font class="first">O</font>rdinals
+  <p>&nbsp;</p>
+  <h1>          <font class="first">F</font>ormalization
+  
+          of
+  
+          <font class="first">N</font>ested
+  
+          <font class="first">M</font>ultisets,
+  
+          <font class="first">H</font>ereditary
+  
+          <font class="first">M</font>ultisets,
+  
+          and
+  
+          <font class="first">S</font>yntactic
+  
+          <font class="first">O</font>rdinals
+  
 </h1>
-<p></p>
+  <p>&nbsp;</p>
+
 <table width="80%" class="data">
-  <tbody>
-    <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals</td></tr>
+<tbody>
+<tr>
+  <td class="datahead" width="20%">Title:</td>
+  <td class="data" width="80%">Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals</td>
+</tr>
 
-    <tr><td class="datahead">Author:</td>
-        <td class="data">Jasmin Christian Blanchette (jasmin /dot/ blanchette /at/ gmail /dot/ com), Mathias Fleury (fleury /at/ mpi-inf /dot/ mpg /dot/ de) and Dmitriy Traytel (traytel /at/ inf /dot/ ethz /dot/ ch)</td></tr>
+<tr>
+  <td class="datahead">
+          Authors:
+      </td>
+  <td class="data">
+                      Jasmin Christian Blanchette (jasmin /dot/ blanchette /at/ gmail /dot/ com),
+                Mathias Fleury (fleury /at/ mpi-inf /dot/ mpg /dot/ de) and
+          Dmitriy Traytel (traytel /at/ inf /dot/ ethz /dot/ ch)
+      </td>
+</tr>
 
-    <tr><td class="datahead">Submission date:</td>
-        <td class="data">2016-11-12</td></tr>
 
-    <tr><td class="datahead" valign="top">Abstract:</td>
-        <td class="abstract">
 
-This Isabelle/HOL formalization introduces a nested multiset datatype and defines Dershowitz and Manna's nested multiset order. The order is proved well founded and linear. By removing one constructor, we transform the nested multisets into hereditary multisets. These are isomorphic to the syntactic ordinals—the ordinals can be recursively expressed in Cantor normal form. Addition, subtraction, multiplication, and linear orders are provided on this type.
-        </td></tr>
+<tr>
+  <td class="datahead">Submission date:</td>
+  <td class="data">2016-11-12</td>
+</tr>
 
-    <tr><td class="datahead" valign="top">BibTeX:</td>
-        <td class="formatted">
-			<pre>@article{Nested_Multisets_Ordinals-AFP,
+<tr>
+  <td class="datahead" valign="top">Abstract:</td>
+  <td class="abstract">This Isabelle/HOL formalization introduces a nested multiset datatype and defines Dershowitz and Manna's nested multiset order. The order is proved well founded and linear. By removing one constructor, we transform the nested multisets into hereditary multisets. These are isomorphic to the syntactic ordinals—the ordinals can be recursively expressed in Cantor normal form. Addition, subtraction, multiplication, and linear orders are provided on this type.</td>
+</tr>
+
+
+<tr>
+  <td class="datahead" valign="top">BibTeX:</td>
+  <td class="formatted">
+        <pre>@article{Nested_Multisets_Ordinals-AFP,
   author  = {Jasmin Christian Blanchette and Mathias Fleury and Dmitriy Traytel},
   title   = {Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals},
   journal = {Archive of Formal Proofs},
   month   = nov,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Nested_Multisets_Ordinals.shtml},
+  note    = {\url{http://isa-afp.org/entries/Nested_Multisets_Ordinals.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-        </td></tr>
+  </td>
+</tr>
 
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
+    
+                    
+                    
 
-
-    <tr><td class="datahead">Used by:</td>
-        <td class="data"><a href="Lambda_Free_KBOs.shtml">Lambda_Free_KBOs</a></td></tr>
-
-
-
+        
   </tbody>
 </table>
 
 <p></p>
 
-<!--#set var="name" value="Nested_Multisets_Ordinals" -->
-
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
-<!--#set var="doc" value="${binfo}/document.pdf" -->
-<!--#set var="outline" value="${binfo}/outline.pdf" -->
-<!--#set var="browse" value="${binfo}/index.html" -->
-<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
-
 <table class="links">
   <tbody>
     <tr>
-  <td class="links">
-	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
-	<a href="<!--#echo var="doc" -->">Proof document</a>
-  </td>
-	</tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/Nested_Multisets_Ordinals/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Nested_Multisets_Ordinals/document.pdf">Proof document</a>
+    </td>
+    </tr>
     <tr>
-  <td class="links">
-	<a href="<!--#echo var="browse" -->">Browse theories</a>
-	</td></tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/Nested_Multisets_Ordinals/index.html">Browse theories</a>
+      </td></tr>
     <tr>
-  <td class="links"> 
-	<a href="<!--#echo var="tar" -->">Download this entry</a>
-	</td>
-  </tr>
+    <td class="links">
+      <a href="../release/afp-Nested_Multisets_Ordinals-current.tar.gz">Download this entry</a>
+    </td>
+    </tr>
 
 
-    <tr><td class="links">Older releases: None
-    </td></tr>
+    <tr><td class="links">Older releases:
+        None
+        </td></tr>
 
   </tbody>
 </table>
-<!-- entry data end -->
 
-</td> </tr> </table>
+</div>
+</td>
+
+</tr>
+</tbody>
+</table>
+
+<script src="../jquery.min.js"></script>
+<script src="../script.js"></script>
 
 </body>
 </html>

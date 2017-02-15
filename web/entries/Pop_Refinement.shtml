@@ -1,115 +1,184 @@
-<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
-		"http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>Archive of Formal Proofs</title>
-  <link rel="stylesheet" type="text/css" href="../front.css">
-  <script src="../jquery.min.js"></script>
-  <script src="../script.js"></script>
-  <link rel="icon" href="../images/favicon.ico" type="image/icon">
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta charset="utf-8">
+<title>Archive of Formal Proofs</title>
+<link rel="stylesheet" type="text/css" href="../front.css">
+<link rel="icon" href="../images/favicon.ico" type="image/icon">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
 </head>
+
 <body>
 
 <table width="100%">
-  <tbody>
+<tbody>
+<tr>
+
+<!-- Navigation -->
+<td width="20%" align="center" valign="top">
+  <p>&nbsp;</p>
+  <a href="http://isabelle.in.tum.de">
+    <img src="../images/isabelle.png" width="100" height="86" border=0>
+  </a>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+  <table class="nav" width="80%">
     <tr>
-      <td width="20%" align="center" valign="top">
-      <!-- navigation -->
-      <!--#include file="nav.html"-->
-      </td>
-      <td width="80%" valign="top">
-      <!-- content -->
+      <td class="nav" width="100%"><a href="../index.shtml">Home</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../about.shtml">About</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../submitting.shtml">Submission Guidelines</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../updating.shtml">Updating entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../using.shtml">Using entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../search.shtml">Search</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../statistics.shtml">Statistics</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../topics.shtml">Index</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../download.shtml">Download</a></td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+</td>
 
+
+<!-- Content -->
+<td width="80%" valign="top">
 <div align="center">
-<p>&nbsp;</p>
-
-<h1><font class="first">P</font>op-Refinement
+  <p>&nbsp;</p>
+  <h1>          <font class="first">P</font>op-Refinement
+  
 </h1>
-<p></p>
+  <p>&nbsp;</p>
+
 <table width="80%" class="data">
-  <tbody>
-    <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Pop-Refinement</td></tr>
+<tbody>
+<tr>
+  <td class="datahead" width="20%">Title:</td>
+  <td class="data" width="80%">Pop-Refinement</td>
+</tr>
 
-    <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://www.kestrel.edu/~coglio">Alessandro Coglio</a></td></tr>
+<tr>
+  <td class="datahead">
+          Author:
+      </td>
+  <td class="data">
+              <a href="http://www.kestrel.edu/~coglio">Alessandro Coglio</a>
+      </td>
+</tr>
 
-    <tr><td class="datahead">Submission date:</td>
-        <td class="data">2014-07-03</td></tr>
 
-    <tr><td class="datahead" valign="top">Abstract:</td>
-        <td class="abstract">
 
-Pop-refinement is an approach to stepwise refinement, carried out inside an interactive theorem prover by constructing a monotonically decreasing sequence of predicates over deeply embedded target programs. The sequence starts with a predicate that characterizes the possible implementations, and ends with a predicate that characterizes a unique program in explicit syntactic form. Pop-refinement enables more requirements (e.g. program-level and non-functional) to be captured in the initial specification and preserved through refinement. Security requirements expressed as hyperproperties (i.e. predicates over sets of traces) are always preserved by pop-refinement, unlike the popular notion of refinement as trace set inclusion. Two simple examples in Isabelle/HOL are presented, featuring program-level requirements, non-functional requirements, and hyperproperties.
-        </td></tr>
+<tr>
+  <td class="datahead">Submission date:</td>
+  <td class="data">2014-07-03</td>
+</tr>
 
-    <tr><td class="datahead" valign="top">BibTeX:</td>
-        <td class="formatted">
-			<pre>@article{Pop_Refinement-AFP,
+<tr>
+  <td class="datahead" valign="top">Abstract:</td>
+  <td class="abstract">Pop-refinement is an approach to stepwise refinement, carried out inside an interactive theorem prover by constructing a monotonically decreasing sequence of predicates over deeply embedded target programs. The sequence starts with a predicate that characterizes the possible implementations, and ends with a predicate that characterizes a unique program in explicit syntactic form. Pop-refinement enables more requirements (e.g. program-level and non-functional) to be captured in the initial specification and preserved through refinement. Security requirements expressed as hyperproperties (i.e. predicates over sets of traces) are always preserved by pop-refinement, unlike the popular notion of refinement as trace set inclusion. Two simple examples in Isabelle/HOL are presented, featuring program-level requirements, non-functional requirements, and hyperproperties.</td>
+</tr>
+
+
+<tr>
+  <td class="datahead" valign="top">BibTeX:</td>
+  <td class="formatted">
+        <pre>@article{Pop_Refinement-AFP,
   author  = {Alessandro Coglio},
   title   = {Pop-Refinement},
   journal = {Archive of Formal Proofs},
   month   = jul,
   year    = 2014,
-  note    = {\url{http://isa-afp.org/entries/Pop_Refinement.shtml},
+  note    = {\url{http://isa-afp.org/entries/Pop_Refinement.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-        </td></tr>
+  </td>
+</tr>
 
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
+    
+                    
+                    
 
-
-
+        
   </tbody>
 </table>
 
 <p></p>
 
-<!--#set var="name" value="Pop_Refinement" -->
-
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
-<!--#set var="doc" value="${binfo}/document.pdf" -->
-<!--#set var="outline" value="${binfo}/outline.pdf" -->
-<!--#set var="browse" value="${binfo}/index.html" -->
-<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
-
 <table class="links">
   <tbody>
     <tr>
-  <td class="links">
-	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
-	<a href="<!--#echo var="doc" -->">Proof document</a>
-  </td>
-	</tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/Pop_Refinement/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Pop_Refinement/document.pdf">Proof document</a>
+    </td>
+    </tr>
     <tr>
-  <td class="links">
-	<a href="<!--#echo var="browse" -->">Browse theories</a>
-	</td></tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/Pop_Refinement/index.html">Browse theories</a>
+      </td></tr>
     <tr>
-  <td class="links"> 
-	<a href="<!--#echo var="tar" -->">Download this entry</a>
-	</td>
-  </tr>
+    <td class="links">
+      <a href="../release/afp-Pop_Refinement-current.tar.gz">Download this entry</a>
+    </td>
+    </tr>
 
 
-    <tr><td class="links">Older releases: <ul>
-<li>Isabelle 2016: <a href="../release/afp-<!--#echo var="name" -->-2016-02-22.tar.gz">afp-<!--#echo var="name" -->-2016-02-22.tar.gz</a></li>
-<li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2015-05-27.tar.gz">afp-<!--#echo var="name" -->-2015-05-27.tar.gz</a></li>
-<li>Isabelle 2014: <a href="../release/afp-<!--#echo var="name" -->-2014-08-28.tar.gz">afp-<!--#echo var="name" -->-2014-08-28.tar.gz</a></li>
-<li>Isabelle 2013-2: <a href="../release/afp-<!--#echo var="name" -->-2014-07-03.tar.gz">afp-<!--#echo var="name" -->-2014-07-03.tar.gz</a></li>
-
-</ul>
-    </td></tr>
+    <tr><td class="links">Older releases:
+          <ul>
+                        <li>Isabelle 2016:
+          <a href="../release/afp-Pop_Refinement-2016-02-22.tar.gz">
+            afp-Pop_Refinement-2016-02-22.tar.gz
+          </a>
+          </li>
+                                <li>Isabelle 2015:
+          <a href="../release/afp-Pop_Refinement-2015-05-27.tar.gz">
+            afp-Pop_Refinement-2015-05-27.tar.gz
+          </a>
+          </li>
+                                <li>Isabelle 2014:
+          <a href="../release/afp-Pop_Refinement-2014-08-28.tar.gz">
+            afp-Pop_Refinement-2014-08-28.tar.gz
+          </a>
+          </li>
+                                <li>Isabelle 2013-2:
+          <a href="../release/afp-Pop_Refinement-2014-07-03.tar.gz">
+            afp-Pop_Refinement-2014-07-03.tar.gz
+          </a>
+          </li>
+                    </ul>
+        </td></tr>
 
   </tbody>
 </table>
-<!-- entry data end -->
 
-</td> </tr> </table>
+</div>
+</td>
+
+</tr>
+</tbody>
+</table>
+
+<script src="../jquery.min.js"></script>
+<script src="../script.js"></script>
 
 </body>
 </html>

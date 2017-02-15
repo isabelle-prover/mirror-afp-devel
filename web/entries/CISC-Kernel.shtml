@@ -1,53 +1,117 @@
-<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
-		"http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>Archive of Formal Proofs</title>
-  <link rel="stylesheet" type="text/css" href="../front.css">
-  <script src="../jquery.min.js"></script>
-  <script src="../script.js"></script>
-  <link rel="icon" href="../images/favicon.ico" type="image/icon">
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta charset="utf-8">
+<title>Archive of Formal Proofs</title>
+<link rel="stylesheet" type="text/css" href="../front.css">
+<link rel="icon" href="../images/favicon.ico" type="image/icon">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
 </head>
+
 <body>
 
 <table width="100%">
-  <tbody>
+<tbody>
+<tr>
+
+<!-- Navigation -->
+<td width="20%" align="center" valign="top">
+  <p>&nbsp;</p>
+  <a href="http://isabelle.in.tum.de">
+    <img src="../images/isabelle.png" width="100" height="86" border=0>
+  </a>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+  <table class="nav" width="80%">
     <tr>
-      <td width="20%" align="center" valign="top">
-      <!-- navigation -->
-      <!--#include file="nav.html"-->
-      </td>
-      <td width="80%" valign="top">
-      <!-- content -->
+      <td class="nav" width="100%"><a href="../index.shtml">Home</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../about.shtml">About</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../submitting.shtml">Submission Guidelines</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../updating.shtml">Updating entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../using.shtml">Using entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../search.shtml">Search</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../statistics.shtml">Statistics</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../topics.shtml">Index</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../download.shtml">Download</a></td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+</td>
 
+
+<!-- Content -->
+<td width="80%" valign="top">
 <div align="center">
-<p>&nbsp;</p>
-
-<h1><font class="first">F</font>ormal
-<font class="first">S</font>pecification
-of
-a
-<font class="first">G</font>eneric
-<font class="first">S</font>eparation
-<font class="first">K</font>ernel
+  <p>&nbsp;</p>
+  <h1>          <font class="first">F</font>ormal
+  
+          <font class="first">S</font>pecification
+  
+          of
+  
+          a
+  
+          <font class="first">G</font>eneric
+  
+          <font class="first">S</font>eparation
+  
+          <font class="first">K</font>ernel
+  
 </h1>
-<p></p>
+  <p>&nbsp;</p>
+
 <table width="80%" class="data">
-  <tbody>
-    <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Formal Specification of a Generic Separation Kernel</td></tr>
+<tbody>
+<tr>
+  <td class="datahead" width="20%">Title:</td>
+  <td class="data" width="80%">Formal Specification of a Generic Separation Kernel</td>
+</tr>
 
-    <tr><td class="datahead">Author:</td>
-        <td class="data">Freek Verbeek (Freek /dot/ Verbeek /at/ ou /dot/ nl), Sergey Tverdyshev (stv /at/ sysgo /dot/ com), Oto Havle (oha /at/ sysgo /dot/ com), Holger Blasum (holger /dot/ blasum /at/ sysgo /dot/ com), Bruno Langenstein (langenstein /at/ dfki /dot/ de), Werner Stephan (stephan /at/ dfki /dot/ de), Yakoub Nemouchi (nemouchi /at/ lri /dot/ fr), Abderrahmane Feliachi (Abderrahmane /dot/ FELIACHI /at/ lri /dot/ fr), Burkhart Wolff (wolff /at/ lri /dot/ fr) and Julien Schmaltz (Julien /dot/ Schmaltz /at/ ou /dot/ nl)</td></tr>
+<tr>
+  <td class="datahead">
+          Authors:
+      </td>
+  <td class="data">
+                      Freek Verbeek (Freek /dot/ Verbeek /at/ ou /dot/ nl),
+                  Sergey Tverdyshev (stv /at/ sysgo /dot/ com),
+                  Oto Havle (oha /at/ sysgo /dot/ com),
+                  Holger Blasum (holger /dot/ blasum /at/ sysgo /dot/ com),
+                  Bruno Langenstein (langenstein /at/ dfki /dot/ de),
+                  Werner Stephan (stephan /at/ dfki /dot/ de),
+                  Yakoub Nemouchi (nemouchi /at/ lri /dot/ fr),
+                  Abderrahmane Feliachi (abderrahmane /dot/ feliachi /at/ lri /dot/ fr),
+                Burkhart Wolff ( wolff /at/ lri /dot/ fr) and
+          Julien Schmaltz (Julien /dot/ Schmaltz /at/ ou /dot/ nl)
+      </td>
+</tr>
 
-    <tr><td class="datahead">Submission date:</td>
-        <td class="data">2014-07-18</td></tr>
-
-    <tr><td class="datahead" valign="top">Abstract:</td>
-        <td class="abstract">
 
 
+<tr>
+  <td class="datahead">Submission date:</td>
+  <td class="data">2014-07-18</td>
+</tr>
+
+<tr>
+  <td class="datahead" valign="top">Abstract:</td>
+  <td class="abstract">
 <p>Intransitive noninterference has been a widely studied topic in the last
 few decades. Several well-established methodologies apply interactive
 theorem proving to formulate a noninterference theorem over abstract
@@ -61,75 +125,95 @@ realistic and industrial systems such as PikeOS. Using a refinement-based
 theorem proving approach, we ensure that proofs remain manageable.</p>
 <p>
 This document corresponds to the deliverable D31.1 of the EURO-MILS
-Project <a href="http://www.euromils.eu">http://www.euromils.eu</a>.</p>
-        </td></tr>
+Project <a href="http://www.euromils.eu">http://www.euromils.eu</a>.</p></td>
+</tr>
 
-    <tr><td class="datahead" valign="top">BibTeX:</td>
-        <td class="formatted">
-			<pre>@article{CISC-Kernel-AFP,
+
+<tr>
+  <td class="datahead" valign="top">BibTeX:</td>
+  <td class="formatted">
+        <pre>@article{CISC-Kernel-AFP,
   author  = {Freek Verbeek and Sergey Tverdyshev and Oto Havle and Holger Blasum and Bruno Langenstein and Werner Stephan and Yakoub Nemouchi and Abderrahmane Feliachi and Burkhart Wolff and Julien Schmaltz},
   title   = {Formal Specification of a Generic Separation Kernel},
   journal = {Archive of Formal Proofs},
   month   = jul,
   year    = 2014,
-  note    = {\url{http://isa-afp.org/entries/CISC-Kernel.shtml},
+  note    = {\url{http://isa-afp.org/entries/CISC-Kernel.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-        </td></tr>
+  </td>
+</tr>
 
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
+    
+                    
+                    
 
-
-
+        
   </tbody>
 </table>
 
 <p></p>
 
-<!--#set var="name" value="CISC-Kernel" -->
-
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
-<!--#set var="doc" value="${binfo}/document.pdf" -->
-<!--#set var="outline" value="${binfo}/outline.pdf" -->
-<!--#set var="browse" value="${binfo}/index.html" -->
-<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
-
 <table class="links">
   <tbody>
     <tr>
-  <td class="links">
-	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
-	<a href="<!--#echo var="doc" -->">Proof document</a>
-  </td>
-	</tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/CISC-Kernel/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/CISC-Kernel/document.pdf">Proof document</a>
+    </td>
+    </tr>
     <tr>
-  <td class="links">
-	<a href="<!--#echo var="browse" -->">Browse theories</a>
-	</td></tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/CISC-Kernel/index.html">Browse theories</a>
+      </td></tr>
     <tr>
-  <td class="links"> 
-	<a href="<!--#echo var="tar" -->">Download this entry</a>
-	</td>
-  </tr>
+    <td class="links">
+      <a href="../release/afp-CISC-Kernel-current.tar.gz">Download this entry</a>
+    </td>
+    </tr>
 
 
-    <tr><td class="links">Older releases: <ul>
-<li>Isabelle 2016: <a href="../release/afp-<!--#echo var="name" -->-2016-02-22.tar.gz">afp-<!--#echo var="name" -->-2016-02-22.tar.gz</a></li>
-<li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2015-05-27.tar.gz">afp-<!--#echo var="name" -->-2015-05-27.tar.gz</a></li>
-<li>Isabelle 2014: <a href="../release/afp-<!--#echo var="name" -->-2014-08-28.tar.gz">afp-<!--#echo var="name" -->-2014-08-28.tar.gz</a></li>
-<li>Isabelle 2013-2: <a href="../release/afp-<!--#echo var="name" -->-2014-07-18.tar.gz">afp-<!--#echo var="name" -->-2014-07-18.tar.gz</a></li>
-
-</ul>
-    </td></tr>
+    <tr><td class="links">Older releases:
+          <ul>
+                        <li>Isabelle 2016:
+          <a href="../release/afp-CISC-Kernel-2016-02-22.tar.gz">
+            afp-CISC-Kernel-2016-02-22.tar.gz
+          </a>
+          </li>
+                                <li>Isabelle 2015:
+          <a href="../release/afp-CISC-Kernel-2015-05-27.tar.gz">
+            afp-CISC-Kernel-2015-05-27.tar.gz
+          </a>
+          </li>
+                                <li>Isabelle 2014:
+          <a href="../release/afp-CISC-Kernel-2014-08-28.tar.gz">
+            afp-CISC-Kernel-2014-08-28.tar.gz
+          </a>
+          </li>
+                                <li>Isabelle 2013-2:
+          <a href="../release/afp-CISC-Kernel-2014-07-18.tar.gz">
+            afp-CISC-Kernel-2014-07-18.tar.gz
+          </a>
+          </li>
+                    </ul>
+        </td></tr>
 
   </tbody>
 </table>
-<!-- entry data end -->
 
-</td> </tr> </table>
+</div>
+</td>
+
+</tr>
+</tbody>
+</table>
+
+<script src="../jquery.min.js"></script>
+<script src="../script.js"></script>
 
 </body>
 </html>
