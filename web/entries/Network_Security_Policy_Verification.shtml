@@ -1,50 +1,102 @@
-<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
-		"http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>Archive of Formal Proofs</title>
-  <link rel="stylesheet" type="text/css" href="../front.css">
-  <script src="../jquery.min.js"></script>
-  <script src="../script.js"></script>
-  <link rel="icon" href="../images/favicon.ico" type="image/icon">
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta charset="utf-8">
+<title>Archive of Formal Proofs</title>
+<link rel="stylesheet" type="text/css" href="../front.css">
+<link rel="icon" href="../images/favicon.ico" type="image/icon">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
 </head>
+
 <body>
 
 <table width="100%">
-  <tbody>
+<tbody>
+<tr>
+
+<!-- Navigation -->
+<td width="20%" align="center" valign="top">
+  <p>&nbsp;</p>
+  <a href="http://isabelle.in.tum.de">
+    <img src="../images/isabelle.png" width="100" height="86" border=0>
+  </a>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+  <table class="nav" width="80%">
     <tr>
-      <td width="20%" align="center" valign="top">
-      <!-- navigation -->
-      <!--#include file="nav.html"-->
-      </td>
-      <td width="80%" valign="top">
-      <!-- content -->
+      <td class="nav" width="100%"><a href="../index.shtml">Home</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../about.shtml">About</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../submitting.shtml">Submission Guidelines</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../updating.shtml">Updating entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../using.shtml">Using entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../search.shtml">Search</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../statistics.shtml">Statistics</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../topics.shtml">Index</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../download.shtml">Download</a></td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+</td>
 
+
+<!-- Content -->
+<td width="80%" valign="top">
 <div align="center">
-<p>&nbsp;</p>
-
-<h1><font class="first">N</font>etwork
-<font class="first">S</font>ecurity
-<font class="first">P</font>olicy
-<font class="first">V</font>erification
+  <p>&nbsp;</p>
+  <h1>          <font class="first">N</font>etwork
+  
+          <font class="first">S</font>ecurity
+  
+          <font class="first">P</font>olicy
+  
+          <font class="first">V</font>erification
+  
 </h1>
-<p></p>
+  <p>&nbsp;</p>
+
 <table width="80%" class="data">
-  <tbody>
-    <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Network Security Policy Verification</td></tr>
+<tbody>
+<tr>
+  <td class="datahead" width="20%">Title:</td>
+  <td class="data" width="80%">Network Security Policy Verification</td>
+</tr>
 
-    <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://www.net.in.tum.de/de/mitarbeiter/diekmann/">Cornelius Diekmann</a></td></tr>
+<tr>
+  <td class="datahead">
+          Author:
+      </td>
+  <td class="data">
+              <a href="http://net.in.tum.de/~diekmann">Cornelius Diekmann</a>
+      </td>
+</tr>
 
-    <tr><td class="datahead">Submission date:</td>
-        <td class="data">2014-07-04</td></tr>
-
-    <tr><td class="datahead" valign="top">Abstract:</td>
-        <td class="abstract">
 
 
+<tr>
+  <td class="datahead">Submission date:</td>
+  <td class="data">2014-07-04</td>
+</tr>
+
+<tr>
+  <td class="datahead" valign="top">Abstract:</td>
+  <td class="abstract">
 We present a unified theory for verifying network security policies.
 A security policy is represented as directed graph.
 To check high-level security goals, security invariants over the policy are
@@ -78,20 +130,20 @@ Components and Systems, Berlin, Germany, June 2014.</li>
 In J. Pang and Y. Liu, editors, Engineering Safety and Security Systems,
 volume 150 of Electronic Proceedings in Theoretical Computer Science,
 pages 20-34, Singapore, May 2014. Open Publishing Association.</li>
-</ul>
-        </td></tr>
+</ul></td>
+</tr>
 
-    <tr><td class="datahead" valign="top">Change history:</td>
-        <td class="abstract">
-
-[2015-04-14]:
+  <tr>
+    <td class="datahead" valign="top">Change history:</td>
+    <td class="abstract">[2015-04-14]:
 Added Distributed WebApp example and improved graphviz visualization
-(revision 4dde08ca2ab8)<br>
-        </td></tr>
+(revision 4dde08ca2ab8)<br></td>
+  </tr>
 
-    <tr><td class="datahead" valign="top">BibTeX:</td>
-        <td class="formatted">
-			<pre>@article{Network_Security_Policy_Verification-AFP,
+<tr>
+  <td class="datahead" valign="top">BibTeX:</td>
+  <td class="formatted">
+        <pre>@article{Network_Security_Policy_Verification-AFP,
   author  = {Cornelius Diekmann},
   title   = {Network Security Policy Verification},
   journal = {Archive of Formal Proofs},
@@ -101,64 +153,80 @@ Added Distributed WebApp example and improved graphviz visualization
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-        </td></tr>
+  </td>
+</tr>
 
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
+    
+                      <tr><td class="datahead">Depends on:</td>
+          <td class="data"><a href="Automatic_Refinement.shtml">Automatic_Refinement</a>, <a href="Transitive-Closure.shtml">Transitive-Closure</a>      </td></tr>
+          
+                    
 
-    <tr><td class="datahead">Depends on:</td>
-        <td class="data"><a href="Automatic_Refinement.shtml">Automatic_Refinement</a>, <a href="Transitive-Closure.shtml">Transitive-Closure</a></td></tr>
-
-
-
-
+        
   </tbody>
 </table>
 
 <p></p>
 
-<!--#set var="name" value="Network_Security_Policy_Verification" -->
-
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
-<!--#set var="doc" value="${binfo}/document.pdf" -->
-<!--#set var="outline" value="${binfo}/outline.pdf" -->
-<!--#set var="browse" value="${binfo}/index.html" -->
-<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
-
 <table class="links">
   <tbody>
     <tr>
-  <td class="links">
-	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
-	<a href="<!--#echo var="doc" -->">Proof document</a>
-  </td>
-	</tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/Network_Security_Policy_Verification/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Network_Security_Policy_Verification/document.pdf">Proof document</a>
+    </td>
+    </tr>
     <tr>
-  <td class="links">
-	<a href="<!--#echo var="browse" -->">Browse theories</a>
-	</td></tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/Network_Security_Policy_Verification/index.html">Browse theories</a>
+      </td></tr>
     <tr>
-  <td class="links"> 
-	<a href="<!--#echo var="tar" -->">Download this entry</a>
-	</td>
-  </tr>
+    <td class="links">
+      <a href="../release/afp-Network_Security_Policy_Verification-current.tar.gz">Download this entry</a>
+    </td>
+    </tr>
 
 
-    <tr><td class="links">Older releases: <ul>
-<li>Isabelle 2016: <a href="../release/afp-<!--#echo var="name" -->-2016-02-22.tar.gz">afp-<!--#echo var="name" -->-2016-02-22.tar.gz</a></li>
-<li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2015-05-27.tar.gz">afp-<!--#echo var="name" -->-2015-05-27.tar.gz</a></li>
-<li>Isabelle 2014: <a href="../release/afp-<!--#echo var="name" -->-2014-08-28.tar.gz">afp-<!--#echo var="name" -->-2014-08-28.tar.gz</a></li>
-<li>Isabelle 2013-2: <a href="../release/afp-<!--#echo var="name" -->-2014-07-09.tar.gz">afp-<!--#echo var="name" -->-2014-07-09.tar.gz</a></li>
-
-</ul>
-    </td></tr>
+    <tr><td class="links">Older releases:
+          <ul>
+                        <li>Isabelle 2016:
+          <a href="../release/afp-Network_Security_Policy_Verification-2016-02-22.tar.gz">
+            afp-Network_Security_Policy_Verification-2016-02-22.tar.gz
+          </a>
+          </li>
+                                <li>Isabelle 2015:
+          <a href="../release/afp-Network_Security_Policy_Verification-2015-05-27.tar.gz">
+            afp-Network_Security_Policy_Verification-2015-05-27.tar.gz
+          </a>
+          </li>
+                                <li>Isabelle 2014:
+          <a href="../release/afp-Network_Security_Policy_Verification-2014-08-28.tar.gz">
+            afp-Network_Security_Policy_Verification-2014-08-28.tar.gz
+          </a>
+          </li>
+                                <li>Isabelle 2013-2:
+          <a href="../release/afp-Network_Security_Policy_Verification-2014-07-09.tar.gz">
+            afp-Network_Security_Policy_Verification-2014-07-09.tar.gz
+          </a>
+          </li>
+                    </ul>
+        </td></tr>
 
   </tbody>
 </table>
-<!-- entry data end -->
 
-</td> </tr> </table>
+</div>
+</td>
+
+</tr>
+</tbody>
+</table>
+
+<script src="../jquery.min.js"></script>
+<script src="../script.js"></script>
 
 </body>
 </html>

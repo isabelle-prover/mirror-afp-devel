@@ -32,7 +32,7 @@ import json
 from config import *
 from metadata import *
 from terminal import *
-from templates import *
+import templates
 import afpstats
 
 
@@ -88,7 +88,7 @@ def validate(entry, attributes):
 			for appkey, str in attributes.items():
 				if appkey.startswith(shortkey + "-"):
 					processed_keys.add(appkey)
-					app = appkey[:len(shortkey)]
+					app = appkey[len(shortkey) + 1:]
 					if not split:
 						result[app] = process(str.strip(), appendix = app)
 					else:
@@ -191,128 +191,6 @@ def associate_releases(entries, versions, filename):
 		error(u"In file {0}: error".format(filename), exception = ex)
 		error("Not processing releases")
 
-
-# look for templates in the metadata directory according to the definitions
-# in the global configuration
-def scan_templates(entries, build_data):
-	for template in templates.keys():
-		try:
-			template_filename = os.path.join(metadata_dir, template + template_suffix)
-			if os.path.exists(template_filename):
-				handle_template(entries, build_data, template, read_template(template_filename))
-			else:
-				raise(Exception("File not found. Make sure the files defined in 'templates' dict exist".format(template_filename)))
-		except UnicodeDecodeError as ex:
-			error(u"In file {0}: invalid UTF-8 character".format(template_filename), exception = ex)
-			stats.failed_tpls += 1
-			return
-		except Exception as ex:
-			error(u"In template {0}: File couldn't be processed".format(template_filename), exception = ex)
-			stats.failed_tpls += 1
-			return
-
-# reads a template line by line and returns a list
-# Suppose you have the following template content:
-#   foo
-#   bar
-#   <!--gen-->
-#   baz
-#   <!--gen:param-->
-#   qux
-# then you will get the following result:
-# [
-#   (['foo', 'bar'], ''),
-#   (['baz'], 'param'),
-#   (['qux'], None)
-# ]
-def read_template(template_filename):
-	lines = []
-	result = []
-	with codecs.open(template_filename, encoding='UTF-8', errors='strict') as input:
-		debug(u"Reading template {0}".format(template_filename))
-		found = False
-		for line in input:
-			stripped = line.strip()
-			if stripped.startswith(magic_str_start) and stripped.endswith(magic_str_end):
-				found = True
-
-				param = stripped[len(magic_str_start):len(stripped)-len(magic_str_end)]
-				if param.startswith(":"):
-					param = param[1:].strip()
-					debug(u"In file {0}: Found generator with parameter {1}".format(template_filename, param))
-				else:
-					debug(u"In file {0}: Found generator without parameter".format(template_filename))
-
-				result.append((lines, param))
-				lines = []
-			else:
-				lines.append(line)
-		if not found:
-			warn(u"In file {0}: No generator found".format(template_filename))
-
-	result.append((lines, None))
-	return result
-
-# opens a file, invokes the generator and writes the result
-def write_output(filename, content, generator):
-	stats.gens += 1
-	debug(u"Writing result to {0}".format(filename))
-	failed = False
-	try:
-		with codecs.open(filename, mode='w', encoding='UTF-8', errors='strict') as output:
-			for lines, param in content:
-				for line in lines:
-					output.write(line)
-				if param != None:
-					try:
-						if param == '':
-							result = generator()
-						else:
-							result = generator(param = param)
-					except Exception as ex:
-						failed = True
-
-						error(u"For output file {0}: generator failed".format(filename), exception = ex)
-					else:
-						output.write(result)
-	except Exception as ex:
-		failed = True
-		error(u"For output file {0}: error".format(filename), exception = ex)
-	finally:
-		if failed:
-			stats.failed_gens += 1
-
-# main function for handling a template
-# Steps:
-# * search the appropriate generator function
-# * create destination directories
-# * call write_output for each entry or for all entries together
-def handle_template(entries, build_data, template, content):
-	dir, generator, for_each_func, devel = templates[template]
-
-	if devel and not options.is_devel(): return
-
-	extra_args = dict()
-	if devel: extra_args['build_data'] = build_data
-
-	stats.tpls += 1
-
-	dest_subdir = os.path.join(options.dest_dir, dir)
-	try:
-		os.makedirs(dest_subdir)
-	except Exception as ex:
-		if not os.path.exists(dest_subdir):
-			error(u"In template {0}: directory {1} couldn't be created".format(template, dest_subdir), exception = ex)
-			return
-
-	if for_each_func:
-		for entry, attributes in entries.items():
-			output_filename = os.path.join(dest_subdir, for_each_func(entry) + output_suffix)
-			write_output(output_filename, content, partial(generator, entry, attributes, **extra_args))
-	else:
-		output_filename = os.path.join(dest_subdir, template + output_suffix)
-		write_output(output_filename, content, partial(generator, entries.items(), **extra_args))
-
 def parse_status(filename):
 	with open(filename) as input:
 		data = json.load(input)
@@ -341,6 +219,7 @@ if __name__ == "__main__":
 	parser.add_option("--debug", action = "store_true", dest = "enable_debug", help = "display debug output")
 	parser.add_option("--metadata", action = "store", type = "string", dest = "metadata_dir", help = "metadata location")
 	parser.add_option("--status", action = "store", type = "string", dest = "status_file", help = "status file location (devel)")
+	parser.add_option("--download", action = "store_true", dest = "build_download", help = "build download page")
 
 
 	(_, args) = parser.parse_args(argv, values = options)
@@ -364,64 +243,6 @@ if __name__ == "__main__":
 	for e in entries:
 		entries[e]['depends-on'] = list(map(str, afp_dict[e].imports))
 		entries[e]['used-by'] = list(map(str, afp_dict[e].used))
-	loc = 0
-	num_lemmas = 0
-	for _k, a in afp_dict.items():
-		loc += a.loc
-		num_lemmas += a.lemmas
-	STAT_FIGURES['loc'] = loc
-	STAT_FIGURES['num_lemmas'] = num_lemmas
-	STAT_FIGURES['num_authors'] = len(afp_dict.authors)
-
-	# Generate data for graphs in statistics page
-	articles_years = dict()
-	loc_years = dict()
-	for _k, a in afp_dict.items():
-		try:
-			articles_years[a.publish_date.year] += 1
-		except KeyError:
-			articles_years[a.publish_date.year] = 1
-		try:
-			loc_years[a.publish_date.year] += a.loc
-		except KeyError:
-			loc_years[a.publish_date.year] = a.loc
-	author_years = dict()
-	for _k, a in afp_dict.authors.items():
-		first_year = min([e.publish_date.year for e in a.articles])
-		try:
-			author_years[first_year] += 1
-		except KeyError:
-			author_years[first_year] = 1
-	author_years_series = author_years.copy()
-	for y in sorted(articles_years)[1:]:
-		articles_years[y] += articles_years[y - 1]
-		loc_years[y] += loc_years[y - 1]
-		author_years_series[y] += author_years_series[y - 1]
-	most_used = sorted([(a.name, len(a.used)) for _k, a in afp_dict.items()],
-	                     key = lambda x: (-x[1], x[0]))
-	most_used10 = most_used[:10]
-	i = 10
-	while most_used10[-1][1] == most_used[i][1]:
-		most_used10.append(most_used[i])
-		i += 1
-	STAT_FIGURES['articles_years'] = articles_years
-	STAT_FIGURES['loc_years'] = loc_years
-	STAT_FIGURES['author_years'] = author_years
-	STAT_FIGURES['author_years_series'] = author_years_series
-	STAT_FIGURES['most_used10'] = most_used10
-	all_articles = sorted(afp_dict, key = lambda x: afp_dict[x].publish_date)
-	years = [2004]
-	# FIXME: All of it
-	for i in range(1, len(all_articles)):
-		if (afp_dict[all_articles[i]].publish_date.year !=
-		  afp_dict[all_articles[i - 1]].publish_date.year):
-			years.append(afp_dict[all_articles[i]].publish_date.year)
-		else:
-			years.append("")
-	years += ""
-	STAT_FIGURES['all_articles'] = all_articles
-	STAT_FIGURES['years_loc_articles'] = years
-	STAT_FIGURES['loc_articles'] = [afp_dict[a].loc for a in all_articles]
 
 	# perform check
 	if options.do_check:
@@ -432,18 +253,27 @@ if __name__ == "__main__":
 
 	# perform generation
 	if options.dest_dir:
-		# parse status file
 		if options.is_devel():
 			(build_data, status) = parse_status(options.status_file)
-			add_status(entries, status)
+			for a in afp_dict:
+				if a in status:
+					afp_dict[a].status = status[a]
+				else:
+					afp_dict[a].status = "skipped"
 		else:
 			build_data = dict()
 
-		# parse template format
-		magic_str_pos = magic_str.index("$")
-		magic_str_start = magic_str[:magic_str_pos]
-		magic_str_end = magic_str[magic_str_pos+1:]
+		is_devel = options.status_file is not None
+		builder = templates.Builder("admin/sitegen-lib/templates", "web",
+			entries, afp_dict, is_devel)
+		builder.generate_topics()
+		builder.generate_index()
+		builder.generate_entries()
+		builder.generate_statistics()
+		builder.generate_rss(30)
+		if options.build_download:
+			builder.generate_download()
+		#TODO: look over it one more time
+		if options.is_devel():
+			builder.generate_status(build_data)
 
-		stats = Stats()
-		scan_templates(entries, build_data)
-		print(stats)

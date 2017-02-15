@@ -1,60 +1,121 @@
-<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
-		"http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>Archive of Formal Proofs</title>
-  <link rel="stylesheet" type="text/css" href="../front.css">
-  <script src="../jquery.min.js"></script>
-  <script src="../script.js"></script>
-  <link rel="icon" href="../images/favicon.ico" type="image/icon">
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta charset="utf-8">
+<title>Archive of Formal Proofs</title>
+<link rel="stylesheet" type="text/css" href="../front.css">
+<link rel="icon" href="../images/favicon.ico" type="image/icon">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
 </head>
+
 <body>
 
 <table width="100%">
-  <tbody>
+<tbody>
+<tr>
+
+<!-- Navigation -->
+<td width="20%" align="center" valign="top">
+  <p>&nbsp;</p>
+  <a href="http://isabelle.in.tum.de">
+    <img src="../images/isabelle.png" width="100" height="86" border=0>
+  </a>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+  <table class="nav" width="80%">
     <tr>
-      <td width="20%" align="center" valign="top">
-      <!-- navigation -->
-      <!--#include file="nav.html"-->
-      </td>
-      <td width="80%" valign="top">
-      <!-- content -->
+      <td class="nav" width="100%"><a href="../index.shtml">Home</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../about.shtml">About</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../submitting.shtml">Submission Guidelines</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../updating.shtml">Updating entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../using.shtml">Using entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../search.shtml">Search</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../statistics.shtml">Statistics</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../topics.shtml">Index</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../download.shtml">Download</a></td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+</td>
 
+
+<!-- Content -->
+<td width="80%" valign="top">
 <div align="center">
-<p>&nbsp;</p>
-
-<h1><font class="first">F</font>ormalization
-of
-<font class="first">R</font>ecursive
-<font class="first">P</font>ath
-<font class="first">O</font>rders
-for
-<font class="first">L</font>ambda-Free
-<font class="first">H</font>igher-Order
-<font class="first">T</font>erms
+  <p>&nbsp;</p>
+  <h1>          <font class="first">F</font>ormalization
+  
+          of
+  
+          <font class="first">R</font>ecursive
+  
+          <font class="first">P</font>ath
+  
+          <font class="first">O</font>rders
+  
+          for
+  
+          <font class="first">L</font>ambda-Free
+  
+          <font class="first">H</font>igher-Order
+  
+          <font class="first">T</font>erms
+  
 </h1>
-<p></p>
+  <p>&nbsp;</p>
+
 <table width="80%" class="data">
-  <tbody>
-    <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Formalization of Recursive Path Orders for Lambda-Free Higher-Order Terms</td></tr>
+<tbody>
+<tr>
+  <td class="datahead" width="20%">Title:</td>
+  <td class="data" width="80%">Formalization of Recursive Path Orders for Lambda-Free Higher-Order Terms</td>
+</tr>
 
-    <tr><td class="datahead">Author:</td>
-        <td class="data">Jasmin Christian Blanchette (jasmin /dot/ blanchette /at/ gmail /dot/ com), Uwe Waldmann (waldmann /at/ mpi-inf /dot/ mpg /dot/ de) and Daniel Wand (dwand /at/ mpi-inf /dot/ mpg /dot/ de)</td></tr>
+<tr>
+  <td class="datahead">
+          Authors:
+      </td>
+  <td class="data">
+                      Jasmin Christian Blanchette (jasmin /dot/ blanchette /at/ gmail /dot/ com),
+                Uwe Waldmann (waldmann /at/ mpi-inf /dot/ mpg /dot/ de) and
+          Daniel Wand (dwand /at/ mpi-inf /dot/ mpg /dot/ de)
+      </td>
+</tr>
 
-    <tr><td class="datahead">Submission date:</td>
-        <td class="data">2016-09-23</td></tr>
 
-    <tr><td class="datahead" valign="top">Abstract:</td>
-        <td class="abstract">
 
-This Isabelle/HOL formalization defines recursive path orders (RPOs) for higher-order terms without lambda-abstraction and proves many useful properties about them. The main order fully coincides with the standard RPO on first-order terms also in the presence of currying, distinguishing it from previous work. An optimized variant is formalized as well. It appears promising as the basis of a higher-order superposition calculus.
-        </td></tr>
+<tr>
+  <td class="datahead">Submission date:</td>
+  <td class="data">2016-09-23</td>
+</tr>
 
-    <tr><td class="datahead" valign="top">BibTeX:</td>
-        <td class="formatted">
-			<pre>@article{Lambda_Free_RPOs-AFP,
+<tr>
+  <td class="datahead" valign="top">Abstract:</td>
+  <td class="abstract">This Isabelle/HOL formalization defines recursive path orders (RPOs) for higher-order terms without lambda-abstraction and proves many useful properties about them. The main order fully coincides with the standard RPO on first-order terms also in the presence of currying, distinguishing it from previous work. An optimized variant is formalized as well. It appears promising as the basis of a higher-order superposition calculus.</td>
+</tr>
+
+
+<tr>
+  <td class="datahead" valign="top">BibTeX:</td>
+  <td class="formatted">
+        <pre>@article{Lambda_Free_RPOs-AFP,
   author  = {Jasmin Christian Blanchette and Uwe Waldmann and Daniel Wand},
   title   = {Formalization of Recursive Path Orders for Lambda-Free Higher-Order Terms},
   journal = {Archive of Formal Proofs},
@@ -64,58 +125,59 @@ This Isabelle/HOL formalization defines recursive path orders (RPOs) for higher-
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-        </td></tr>
+  </td>
+</tr>
 
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
+    
+                    
+                      <tr><td class="datahead">Used by:</td>
+          <td class="data"><a href="Lambda_Free_KBOs.shtml">Lambda_Free_KBOs</a>      </td></tr>
+          
 
-
-    <tr><td class="datahead">Used by:</td>
-        <td class="data"><a href="Lambda_Free_KBOs.shtml">Lambda_Free_KBOs</a></td></tr>
-
-
-
+        
   </tbody>
 </table>
 
 <p></p>
 
-<!--#set var="name" value="Lambda_Free_RPOs" -->
-
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
-<!--#set var="doc" value="${binfo}/document.pdf" -->
-<!--#set var="outline" value="${binfo}/outline.pdf" -->
-<!--#set var="browse" value="${binfo}/index.html" -->
-<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
-
 <table class="links">
   <tbody>
     <tr>
-  <td class="links">
-	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
-	<a href="<!--#echo var="doc" -->">Proof document</a>
-  </td>
-	</tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/Lambda_Free_RPOs/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Lambda_Free_RPOs/document.pdf">Proof document</a>
+    </td>
+    </tr>
     <tr>
-  <td class="links">
-	<a href="<!--#echo var="browse" -->">Browse theories</a>
-	</td></tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/Lambda_Free_RPOs/index.html">Browse theories</a>
+      </td></tr>
     <tr>
-  <td class="links"> 
-	<a href="<!--#echo var="tar" -->">Download this entry</a>
-	</td>
-  </tr>
+    <td class="links">
+      <a href="../release/afp-Lambda_Free_RPOs-current.tar.gz">Download this entry</a>
+    </td>
+    </tr>
 
 
-    <tr><td class="links">Older releases: None
-    </td></tr>
+    <tr><td class="links">Older releases:
+        None
+        </td></tr>
 
   </tbody>
 </table>
-<!-- entry data end -->
 
-</td> </tr> </table>
+</div>
+</td>
+
+</tr>
+</tbody>
+</table>
+
+<script src="../jquery.min.js"></script>
+<script src="../script.js"></script>
 
 </body>
 </html>

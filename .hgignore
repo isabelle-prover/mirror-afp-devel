@@ -40,3 +40,6 @@ thys/CAVA_LTL_Modelchecker/code/CAVA_Export.sml
 thys/Collections/Examples/Autoref/nested_dfs.sml
 thys/Promela/Promela.sml
 thys/Formal_SSA/BraunSSA.ml
+
+admin/py-bootstrap
+admin/venv

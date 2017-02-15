@@ -1,55 +1,114 @@
-<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
-		"http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>Archive of Formal Proofs</title>
-  <link rel="stylesheet" type="text/css" href="../front.css">
-  <script src="../jquery.min.js"></script>
-  <script src="../script.js"></script>
-  <link rel="icon" href="../images/favicon.ico" type="image/icon">
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta charset="utf-8">
+<title>Archive of Formal Proofs</title>
+<link rel="stylesheet" type="text/css" href="../front.css">
+<link rel="icon" href="../images/favicon.ico" type="image/icon">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
 </head>
+
 <body>
 
 <table width="100%">
-  <tbody>
+<tbody>
+<tr>
+
+<!-- Navigation -->
+<td width="20%" align="center" valign="top">
+  <p>&nbsp;</p>
+  <a href="http://isabelle.in.tum.de">
+    <img src="../images/isabelle.png" width="100" height="86" border=0>
+  </a>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+  <table class="nav" width="80%">
     <tr>
-      <td width="20%" align="center" valign="top">
-      <!-- navigation -->
-      <!--#include file="nav.html"-->
-      </td>
-      <td width="80%" valign="top">
-      <!-- content -->
+      <td class="nav" width="100%"><a href="../index.shtml">Home</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../about.shtml">About</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../submitting.shtml">Submission Guidelines</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../updating.shtml">Updating entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../using.shtml">Using entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../search.shtml">Search</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../statistics.shtml">Statistics</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../topics.shtml">Index</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../download.shtml">Download</a></td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+</td>
 
+
+<!-- Content -->
+<td width="80%" valign="top">
 <div align="center">
-<p>&nbsp;</p>
-
-<h1><font class="first">A</font>
-<font class="first">F</font>ormalization
-of
-<font class="first">A</font>ssumptions
-and
-<font class="first">G</font>uarantees
-for
-<font class="first">C</font>ompositional
-<font class="first">N</font>oninterference
+  <p>&nbsp;</p>
+  <h1>          <font class="first">A</font>
+  
+          <font class="first">F</font>ormalization
+  
+          of
+  
+          <font class="first">A</font>ssumptions
+  
+          and
+  
+          <font class="first">G</font>uarantees
+  
+          for
+  
+          <font class="first">C</font>ompositional
+  
+          <font class="first">N</font>oninterference
+  
 </h1>
-<p></p>
+  <p>&nbsp;</p>
+
 <table width="80%" class="data">
-  <tbody>
-    <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">A Formalization of Assumptions and Guarantees for Compositional Noninterference</td></tr>
+<tbody>
+<tr>
+  <td class="datahead" width="20%">Title:</td>
+  <td class="data" width="80%">A Formalization of Assumptions and Guarantees for Compositional Noninterference</td>
+</tr>
 
-    <tr><td class="datahead">Author:</td>
-        <td class="data">Sylvia Grewe (grewe /at/ cs /dot/ tu-darmstadt /dot/ de), Heiko Mantel (mantel /at/ mais /dot/ informatik /dot/ tu-darmstadt /dot/ de) and Daniel Schoepe (daniel /at/ schoepe /dot/ org)</td></tr>
+<tr>
+  <td class="datahead">
+          Authors:
+      </td>
+  <td class="data">
+                      Sylvia Grewe (grewe /at/ cs /dot/ tu-darmstadt /dot/ de),
+                Heiko Mantel (mantel /at/ mais /dot/ informatik /dot/ tu-darmstadt /dot/ de) and
+          Daniel Schoepe (daniel /at/ schoepe /dot/ org)
+      </td>
+</tr>
 
-    <tr><td class="datahead">Submission date:</td>
-        <td class="data">2014-04-23</td></tr>
 
-    <tr><td class="datahead" valign="top">Abstract:</td>
-        <td class="abstract">
 
-Research in information-flow security aims at developing methods to
+<tr>
+  <td class="datahead">Submission date:</td>
+  <td class="data">2014-04-23</td>
+</tr>
+
+<tr>
+  <td class="datahead" valign="top">Abstract:</td>
+  <td class="abstract">Research in information-flow security aims at developing methods to
 identify undesired information leaks within programs from private
 (high) sources to public (low) sinks. For a concurrent system, it is
 desirable to have compositional analysis methods that allow for
@@ -64,12 +123,14 @@ The paper "Assumptions and Guarantees for Compositional
 Noninterference" by Mantel et. al. presents one solution for this problem:
 an approach for compositionally reasoning about non-interference in
 concurrent programs via rely-guarantee-style reasoning.  We present an
-Isabelle/HOL formalization of the concepts and proofs of this approach.
-        </td></tr>
+Isabelle/HOL formalization of the concepts and proofs of this approach.</td>
+</tr>
 
-    <tr><td class="datahead" valign="top">BibTeX:</td>
-        <td class="formatted">
-			<pre>@article{SIFUM_Type_Systems-AFP,
+
+<tr>
+  <td class="datahead" valign="top">BibTeX:</td>
+  <td class="formatted">
+        <pre>@article{SIFUM_Type_Systems-AFP,
   author  = {Sylvia Grewe and Heiko Mantel and Daniel Schoepe},
   title   = {A Formalization of Assumptions and Guarantees for Compositional Noninterference},
   journal = {Archive of Formal Proofs},
@@ -79,61 +140,83 @@ Isabelle/HOL formalization of the concepts and proofs of this approach.
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-        </td></tr>
+  </td>
+</tr>
 
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
+    
+                    
+                    
 
-
-
+        
   </tbody>
 </table>
 
 <p></p>
 
-<!--#set var="name" value="SIFUM_Type_Systems" -->
-
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
-<!--#set var="doc" value="${binfo}/document.pdf" -->
-<!--#set var="outline" value="${binfo}/outline.pdf" -->
-<!--#set var="browse" value="${binfo}/index.html" -->
-<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
-
 <table class="links">
   <tbody>
     <tr>
-  <td class="links">
-	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
-	<a href="<!--#echo var="doc" -->">Proof document</a>
-  </td>
-	</tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/SIFUM_Type_Systems/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/SIFUM_Type_Systems/document.pdf">Proof document</a>
+    </td>
+    </tr>
     <tr>
-  <td class="links">
-	<a href="<!--#echo var="browse" -->">Browse theories</a>
-	</td></tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/SIFUM_Type_Systems/index.html">Browse theories</a>
+      </td></tr>
     <tr>
-  <td class="links"> 
-	<a href="<!--#echo var="tar" -->">Download this entry</a>
-	</td>
-  </tr>
+    <td class="links">
+      <a href="../release/afp-SIFUM_Type_Systems-current.tar.gz">Download this entry</a>
+    </td>
+    </tr>
 
 
-    <tr><td class="links">Older releases: <ul>
-<li>Isabelle 2016: <a href="../release/afp-<!--#echo var="name" -->-2016-02-22.tar.gz">afp-<!--#echo var="name" -->-2016-02-22.tar.gz</a></li>
-<li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2015-05-27.tar.gz">afp-<!--#echo var="name" -->-2015-05-27.tar.gz</a></li>
-<li>Isabelle 2014: <a href="../release/afp-<!--#echo var="name" -->-2014-08-28.tar.gz">afp-<!--#echo var="name" -->-2014-08-28.tar.gz</a></li>
-<li>Isabelle 2013-2: <a href="../release/afp-<!--#echo var="name" -->-2014-04-25.tar.gz">afp-<!--#echo var="name" -->-2014-04-25.tar.gz</a></li>
-<li>Isabelle 2013-2: <a href="../release/afp-<!--#echo var="name" -->-2014-04-24.tar.gz">afp-<!--#echo var="name" -->-2014-04-24.tar.gz</a></li>
-
-</ul>
-    </td></tr>
+    <tr><td class="links">Older releases:
+          <ul>
+                        <li>Isabelle 2016:
+          <a href="../release/afp-SIFUM_Type_Systems-2016-02-22.tar.gz">
+            afp-SIFUM_Type_Systems-2016-02-22.tar.gz
+          </a>
+          </li>
+                                <li>Isabelle 2015:
+          <a href="../release/afp-SIFUM_Type_Systems-2015-05-27.tar.gz">
+            afp-SIFUM_Type_Systems-2015-05-27.tar.gz
+          </a>
+          </li>
+                                <li>Isabelle 2014:
+          <a href="../release/afp-SIFUM_Type_Systems-2014-08-28.tar.gz">
+            afp-SIFUM_Type_Systems-2014-08-28.tar.gz
+          </a>
+          </li>
+                                <li>Isabelle 2013-2:
+          <a href="../release/afp-SIFUM_Type_Systems-2014-04-25.tar.gz">
+            afp-SIFUM_Type_Systems-2014-04-25.tar.gz
+          </a>
+          </li>
+                  <li>Isabelle 2013-2:
+          <a href="../release/afp-SIFUM_Type_Systems-2014-04-24.tar.gz">
+            afp-SIFUM_Type_Systems-2014-04-24.tar.gz
+          </a>
+          </li>
+                    </ul>
+        </td></tr>
 
   </tbody>
 </table>
-<!-- entry data end -->
 
-</td> </tr> </table>
+</div>
+</td>
+
+</tr>
+</tbody>
+</table>
+
+<script src="../jquery.min.js"></script>
+<script src="../script.js"></script>
 
 </body>
 </html>

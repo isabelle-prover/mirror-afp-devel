@@ -114,7 +114,7 @@ td.head {
  text-alignment: left;
  text-indentation: 2em;
  line-height: normal;
- margin:  1em 1em 1em 0em;
+ margin:  0.5em 1em 0.5em 0em;
  padding:  0.5ex 0.5ex 0.5ex 0.5ex;
  border-width: thin thin thin thin;
  border-style: none none none none;
@@ -140,7 +140,7 @@ td.entry {
  text-alignment: left;
  text-indentation: 2em;
  line-height: normal;
- margin:  0em 1em 1em 5%;
+ margin:  0em 0.1em 0.1em 5%;
  padding:  0.5ex 0.5ex 0.5ex 0.5ex;
  border-width: thin thin thin thin;
  border-style: none none none none;
