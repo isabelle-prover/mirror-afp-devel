@@ -124,7 +124,7 @@ HG_EXPORT=afp-export-$DATE
 rm -rf $HG_EXPORT
 $HG archive -I thys -I web -I etc -I tools $HG_EXPORT || fail "hg archive failed."
 cd $HG_EXPORT
-admin/sitegen --download
+echo -n $DATE > web/release-date.txt
 mkdir $EXPORT
 mv thys etc tools $EXPORT/
 
