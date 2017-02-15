@@ -6,6 +6,15 @@ imports
   "./Syntax"
 begin
 context ids begin
+
+section\<open>Syntax Pretty-Printer\<close>
+text \<open>
+  The deeply-embedded syntax is difficult to read for large formulas.
+  This pretty-printer produces a more human-friendly syntax, 
+  which can be helpful if you want to produce a proof term by hand for
+  the proof checker (not recommended for most users).
+\<close>
+  
 fun join :: "string \<Rightarrow> char list list \<Rightarrow> char list"
 where "join S [] = []"
   | "join S [S'] = S'"

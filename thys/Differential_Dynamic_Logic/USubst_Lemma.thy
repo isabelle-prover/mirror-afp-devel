@@ -11,12 +11,17 @@ imports
   "./Bound_Effect"
   "./USubst"
 begin context ids begin
+section \<open>Soundness proof for uniform substitution rule\<close>
 lemma interp_eq:
   "f = f' \<Longrightarrow> p = p' \<Longrightarrow> c = c' \<Longrightarrow> PP = PP' \<Longrightarrow> ode = ode' \<Longrightarrow> odebv = odebv' \<Longrightarrow>
    \<lparr>Functions = f, Predicates = p, Contexts = c, Programs = PP, ODEs = ode, ODEBV = odebv\<rparr> =
    \<lparr>Functions = f', Predicates = p', Contexts = c', Programs = PP', ODEs = ode', ODEBV = odebv'\<rparr>"
   by auto
 
+subsection \<open>Lemmas about well-formedness of (adjoint) interpretations.\<close>
+
+text \<open>When adding a function to an interpretation with {\tt extendf}, we need to show it's C1 continuous.
+  We do this by explicitly constructing the derivative {\tt extendf\_deriv} and showing it's continuous.\<close>
 primrec extendf_deriv :: "('sf,'sc,'sz) interp \<Rightarrow> 'sf \<Rightarrow> ('sf + 'sz,'sz) trm \<Rightarrow> 'sz state \<Rightarrow> 'sz Rvec \<Rightarrow> ('sz Rvec \<Rightarrow> real)"
 where
   "extendf_deriv I _ (Var i) \<nu> x = (\<lambda>_. 0)"
@@ -487,7 +492,7 @@ lemma adjointFO_safe:
     done
   done
 
-(* Properties of adjoints *)
+subsection \<open>Lemmas about adjoint interpretations\<close>
 lemma adjoint_consequence:"(\<And>f f'. SFunctions \<sigma> f = Some f' \<Longrightarrow> dsafe f') \<Longrightarrow> (\<And>f f'. SPredicates \<sigma> f = Some f' \<Longrightarrow> fsafe f') \<Longrightarrow> Vagree \<nu> \<omega> (FVS \<sigma>) \<Longrightarrow> adjoint I \<sigma> \<nu> = adjoint I \<sigma> \<omega>"
   apply(unfold FVS_def)
   apply(auto)
@@ -1857,6 +1862,7 @@ proof -
     done
 qed
 
+subsection\<open>Substitution theorems for terms\<close>
 lemma nsubst_sterm:
   fixes I::"('sf, 'sc, 'sz) interp"
   fixes \<nu>::"'sz state"
@@ -2112,6 +2118,7 @@ next
     by auto
 qed auto  
 
+subsection\<open>Substitution theorems for ODEs\<close>
 lemma osubst_preserves_safe:
   assumes ssafe:"ssafe \<sigma>"
   shows "(osafe ODE \<Longrightarrow> Oadmit \<sigma> ODE U \<Longrightarrow> osafe (Osubst ODE \<sigma>))"
@@ -2301,6 +2308,7 @@ lemma NO_sub:"OadmitFO \<sigma> ODE A \<Longrightarrow> B \<subseteq> A \<Longri
 lemma NO_to_NOU:"OadmitFO \<sigma> ODE S \<Longrightarrow> OUadmitFO \<sigma> ODE S"
   by(induction ODE, auto simp add: OUadmitFO_def)
   
+subsection\<open>Substitution theorems for formulas and programs\<close>
 lemma nsubst_hp_fml:
   fixes I::"('sf, 'sc, 'sz) interp"
   assumes good_interp:"is_interp I"    
@@ -4101,6 +4109,7 @@ proof -
     using subst_eq by auto
   qed
 
+subsection \<open>Soundness of substitution rule\<close>
 theorem subst_rule:
   assumes sound:"sound R"
   assumes Radmit:"Radmit \<sigma> R"

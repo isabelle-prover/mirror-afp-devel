@@ -7,10 +7,10 @@ imports
   "./Denotational_Semantics"
 begin context ids begin
 
-subsection \<open>Axioms\<close>
+section \<open>Axioms\<close>
 text \<open>
   The uniform substitution calculus is based on a finite list of concrete
-  axioms, which are defined and proved sound in this section. When axioms apply
+  axioms, which are defined and proved valid (as in sound) in this section. When axioms apply
   to arbitrary programs or formulas, they mention concrete program or formula
   variables, which are then instantiated by uniform substitution, as opposed
   metavariables.
@@ -69,7 +69,9 @@ where [axiom_defs]:"Iaxiom \<equiv>
 definition Vaxiom :: "('sf, 'sc, 'sz) formula"
 where [axiom_defs]:"Vaxiom \<equiv> ($\<phi> vid1 empty) \<rightarrow> ([[$\<alpha> vid1]]($\<phi> vid1 empty))"
 
-subsection \<open>Validity/Soundness proofs for axioms and rules\<close>
+subsection \<open>Validity proofs for axioms\<close>
+text \<open>Because an axiom in a uniform substitution calculus is an individual formula, 
+  proving the validity of that formula suffices to prove soundness\<close>
 theorem test_valid: "valid test_axiom"
   by (auto simp add: valid_def test_axiom_def)  
 
@@ -180,7 +182,6 @@ theorem V_valid: "valid Vaxiom"
   apply(rule allI | rule impI)+
   apply(auto simp add: empty_def)
 done
-
   
 definition G_holds :: "('sf, 'sc, 'sz) formula \<Rightarrow> ('sf, 'sc, 'sz) hp \<Rightarrow> bool"
 where "G_holds \<phi> \<alpha> \<equiv> valid \<phi> \<longrightarrow> valid ([[\<alpha>]]\<phi>)"
@@ -202,9 +203,8 @@ where "CQ_holds p \<theta> \<theta>' \<equiv> valid (Equals \<theta> \<theta>')
 definition CE_holds :: "'sc \<Rightarrow> ('sf, 'sc, 'sz) formula \<Rightarrow> ('sf, 'sc, 'sz) formula \<Rightarrow> bool"
 where "CE_holds var \<phi> \<psi> \<equiv> valid (\<phi> \<leftrightarrow> \<psi>)
   \<longrightarrow> valid (InContext var \<phi> \<leftrightarrow> InContext var \<psi>)"
-
   
-subsection \<open>Soundness for rules\<close>
+subsection \<open>Soundness proofs for rules\<close>
 theorem G_sound: "G_holds \<phi> \<alpha>"
   by (simp add: G_holds_def valid_def box_sem)
 

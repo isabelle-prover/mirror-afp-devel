@@ -10,9 +10,16 @@ imports
   "./Coincidence"
   "./Bound_Effect"
 begin context ids begin
+
+section \<open>Uniform and Bound Renaming\<close>
+text \<open>Definitions and soundness proofs for the renaming rules Uniform Renaming and Bound Renaming.
+Renaming in dL swaps the names of two variables x and y, as in the swap operator of Nominal Logic.
+\<close>
 fun swap ::"'sz \<Rightarrow> 'sz \<Rightarrow> 'sz \<Rightarrow> 'sz"
 where "swap x y z = (if z = x then  y else if z = y then x else z)"
-  
+ 
+subsection \<open>Uniform Renaming Definitions\<close>
+
 primrec TUrename :: "'sz \<Rightarrow> 'sz \<Rightarrow> ('sf, 'sz) trm \<Rightarrow> ('sf, 'sz) trm"
 where 
   "TUrename x y (Var z) = Var (swap x y z)"
@@ -54,6 +61,8 @@ where
 | "FUrename x y (Diamond \<alpha> \<phi>) = Diamond (PUrename x y \<alpha>) (FUrename x y \<phi>)"
 | "FUrename x y (InContext C \<phi>) = undefined"
 
+subsection \<open>Uniform Renaming Admissibility\<close>
+
 inductive PRadmit :: "('sf, 'sc, 'sz) hp \<Rightarrow> bool"
   and     FRadmit ::"('sf, 'sc, 'sz) formula \<Rightarrow> bool"
 where
@@ -87,6 +96,8 @@ lemma SUren: "sterm_sem I (TUrename x y \<theta>) \<nu> = sterm_sem I \<theta> (
 
 lemma ren_preserves_dfree:"dfree \<theta> \<Longrightarrow> dfree (TUrename x y \<theta>)"
   by(induction rule: dfree.induct, auto intro: dfree.intros)
+
+subsection \<open>Uniform Renaming Soundness Proof and Lemmas\<close>
 
 lemma TUren_frechet:
   assumes good_interp:"is_interp I"
@@ -996,9 +1007,11 @@ qed (auto simp add: Radj_def)
 lemma FUren:"is_interp I \<Longrightarrow> FRadmit \<phi> \<Longrightarrow> fsafe \<phi> \<Longrightarrow> (\<And>\<nu>. (\<nu> \<in> fml_sem I (FUrename x y \<phi>)) = (Radj x y \<nu> \<in> fml_sem I \<phi>))"
   using PUren_FUren by blast
 
+subsection \<open>Uniform Renaming Rule Soundness\<close>
 lemma URename_sound:"FRadmit \<phi> \<Longrightarrow> fsafe \<phi> \<Longrightarrow> valid \<phi> \<Longrightarrow> valid (FUrename x y \<phi>)"
   unfolding valid_def using FUren by blast
 
+subsection \<open>Bound Renaming Rule Soundness\<close>
 lemma BRename_sound:
   assumes FRA:"FRadmit([[Assign x \<theta>]]\<phi>)"
   assumes fsafe:"fsafe ([[Assign x \<theta>]]\<phi>)"

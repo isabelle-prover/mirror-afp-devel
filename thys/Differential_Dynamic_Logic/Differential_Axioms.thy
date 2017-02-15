@@ -15,7 +15,7 @@ Axioms for computing the derivatives of terms and axioms for proving properties 
 The derivative axioms are all corollaries of the frechet correctness theorem. The ODE
 axioms are more involved, often requiring extensive use of the ODE libraries.\<close> 
 
-subsection \<open>Differentiation Axioms\<close>
+subsection \<open>Derivative Axioms\<close>
 definition diff_const_axiom :: "('sf, 'sc, 'sz) formula"
 where [axiom_defs]:"diff_const_axiom \<equiv> Equals (Differential ($f fid1 empty)) (Const 0)"
 
@@ -110,7 +110,7 @@ where [axiom_defs]:"DGaxiom = (([[EvolveODE (OSing vid1 (f1 fid1 vid1)) (p1 vid1
     ([[EvolveODE (OProd (OSing vid1 (f1 fid1 vid1)) (OSing vid2 (Plus (Times (f1 fid2 vid1) (Var vid2)) (f1 fid3 vid1)))) (p1 vid1 vid1)]]
        p1 vid2 vid1)))"
 
-subsection \<open>Proofs for Differentiation Axioms\<close>
+subsection \<open>Proofs for Derivative Axioms\<close>
 lemma constant_deriv_inner:
  assumes interp:"\<forall>x i. (Functions I i has_derivative FunctionFrechet I i x) (at x)"
  shows "FunctionFrechet I id1 (vec_lambda (\<lambda>i. sterm_sem I (empty i) (fst \<nu>))) (vec_lambda(\<lambda>i. frechet I (empty i) (fst \<nu>) (snd \<nu>)))= 0"

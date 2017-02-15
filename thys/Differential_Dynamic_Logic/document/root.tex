@@ -35,7 +35,7 @@
 
 \begin{document}
 
-\title{Differential Dynamic Logic}
+\title{Differential-Dynamic-Logic}
 \author{Brandon Bohrer}
 \maketitle
 
@@ -49,8 +49,20 @@
  a proof term checker embedded in Isabelle/HOL with several example
  proofs.
 
-Pulished in \cite{BohrerCPP17}
+Published in \cite{BohrerCPP17}
 \end{abstract}
+
+  We present a formalization of a uniform substitution calculus for
+  differential dynamic logic (dL). In this calculus, the soundness of dL
+  proofs is reduced to the soundness of a finite number of axioms, standard
+  propositional rules and a central \textit{uniform substitution} rule for
+  combining axioms. We present a formal definition for the denotational
+  semantics of dL and prove the uniform substitution calculus sound by showing
+  that all inference rules are sound with respect to the denotational
+  semantics, and all axioms valid (true in every state and interpretation).
+
+  This work is published in \cite{BohrerCPP17} along with a Coq formalization.
+  It is based on prior non-mechanized proofs~\cite{DBLP:journals/jar/Platzer16,DBLP:conf/cade/Platzer15}.
 
 \tableofcontents
 
