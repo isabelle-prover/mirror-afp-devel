@@ -130,7 +130,9 @@ the partition function and related recurrence relations.</td>
 
     
                     
-                    
+                      <tr><td class="datahead">Used by:</td>
+          <td class="data"><a href="Bell_Numbers_Spivey.shtml">Bell_Numbers_Spivey</a>, <a href="Euler_Partition.shtml">Euler_Partition</a>, <a href="Twelvefold_Way.shtml">Twelvefold_Way</a>      </td></tr>
+          
 
         
   </tbody>

@@ -127,7 +127,9 @@ The amortized complexity of splay trees and heaps is analyzed in the AFP entry
 
     
                     
-                    
+                      <tr><td class="datahead">Used by:</td>
+          <td class="data"><a href="Amortized_Complexity.shtml">Amortized_Complexity</a>      </td></tr>
+          
 
         
   </tbody>

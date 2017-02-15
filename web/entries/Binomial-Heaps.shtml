@@ -137,7 +137,9 @@ operations.  Our implementation follows the paper by Brodal and Okasaki.</td>
 
     
                     
-                    
+                      <tr><td class="datahead">Used by:</td>
+          <td class="data"><a href="Collections.shtml">Collections</a>      </td></tr>
+          
 
         
   </tbody>

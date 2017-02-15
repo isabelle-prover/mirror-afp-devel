@@ -119,7 +119,9 @@ This formalization is used to prove characterizations of Euler Trails, Shortest 
 
     
                     
-                    
+                      <tr><td class="datahead">Used by:</td>
+          <td class="data"><a href="Planarity_Certificates.shtml">Planarity_Certificates</a>, <a href="ShortestPath.shtml">ShortestPath</a>      </td></tr>
+          
 
         
   </tbody>

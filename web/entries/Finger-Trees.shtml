@@ -129,7 +129,9 @@ The code generator can be used to get efficient, verified code.</td>
 
     
                     
-                    
+                      <tr><td class="datahead">Used by:</td>
+          <td class="data"><a href="Collections.shtml">Collections</a>      </td></tr>
+          
 
         
   </tbody>

@@ -141,7 +141,9 @@ programming applications can quickly be explored, implemented and verified.</td>
 
     
                     
-                    
+                      <tr><td class="datahead">Used by:</td>
+          <td class="data"><a href="KAD.shtml">KAD</a>, <a href="KAT_and_DRA.shtml">KAT_and_DRA</a>, <a href="Multirelations.shtml">Multirelations</a>, <a href="Regular_Algebras.shtml">Regular_Algebras</a>, <a href="Relation_Algebra.shtml">Relation_Algebra</a>, <a href="Residuated_Lattices.shtml">Residuated_Lattices</a>      </td></tr>
+          
 
         
   </tbody>

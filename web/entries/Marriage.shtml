@@ -124,7 +124,9 @@
 
     
                     
-                    
+                      <tr><td class="datahead">Used by:</td>
+          <td class="data"><a href="Latin_Square.shtml">Latin_Square</a>      </td></tr>
+          
 
         
   </tbody>

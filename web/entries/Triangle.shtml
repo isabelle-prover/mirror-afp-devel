@@ -131,7 +131,9 @@ theorems in the Isabelle formalisation hold for all real inner product spaces.</
 
     
                     
-                    
+                      <tr><td class="datahead">Used by:</td>
+          <td class="data"><a href="Chord_Segments.shtml">Chord_Segments</a>      </td></tr>
+          
 
         
   </tbody>
