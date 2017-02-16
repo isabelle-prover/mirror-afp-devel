@@ -124,8 +124,8 @@ notation
   elem_zmset ("(_/ \<in>#\<^sub>z _)" [51, 51] 50)
 
 notation (ASCII)
-  elem_zmset ("op :#hy") and
-  elem_zmset ("(_/ :#hy _)" [51, 51] 50)
+  elem_zmset ("op :#z") and
+  elem_zmset ("(_/ :#z _)" [51, 51] 50)
 
 abbreviation not_elem_zmset :: "'a \<Rightarrow> 'a zmultiset \<Rightarrow> bool" where
   "not_elem_zmset a M \<equiv> a \<notin> set_zmset M"
@@ -135,8 +135,8 @@ notation
   not_elem_zmset ("(_/ \<notin>#\<^sub>z _)" [51, 51] 50)
 
 notation (ASCII)
-  not_elem_zmset ("op ~:#hy") and
-  not_elem_zmset ("(_/ ~:#hy _)" [51, 51] 50)
+  not_elem_zmset ("op ~:#z") and
+  not_elem_zmset ("(_/ ~:#z _)" [51, 51] 50)
 
 context
 begin
@@ -553,7 +553,7 @@ lift_definition filter_zmset :: "('a \<Rightarrow> bool) \<Rightarrow> 'a zmulti
   by (auto simp del: filter_union_mset simp: equiv_zmset_def filter_union_mset[symmetric])
 
 syntax (ASCII)
-  "_MCollect" :: "pttrn \<Rightarrow> 'a zmultiset \<Rightarrow> bool \<Rightarrow> 'a zmultiset" ("(1{#_ :#hy _./ _#})")
+  "_MCollect" :: "pttrn \<Rightarrow> 'a zmultiset \<Rightarrow> bool \<Rightarrow> 'a zmultiset" ("(1{#_ :#z _./ _#})")
 syntax
   "_MCollect" :: "pttrn \<Rightarrow> 'a zmultiset \<Rightarrow> bool \<Rightarrow> 'a zmultiset" ("(1{#_ \<in>#\<^sub>z _./ _#})")
 translations
