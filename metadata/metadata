@@ -5283,3 +5283,15 @@ abstract =
   Brandon Bohrer, Vincent Rahli, Ivana Vukotic, Marcus Völp, André
   Platzer: Formally verified differential dynamic logic. CPP 2017.
 
+[Example-Submission]
+title = Example Submission
+author = Gerwin Klein <http://www.cse.unsw.edu.au/~kleing/>
+topic = Mathematics/Analysis, Mathematics/Number Theory
+date = 2004-02-25
+notify = kleing@cse.unsw.edu.au
+abstract =
+  This is an example submission to the Archive of Formal Proofs. It shows
+  submission requirements and explains the structure of a simple typical
+  submission.
+extra-no-index = no-index: true
+

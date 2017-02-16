@@ -43,7 +43,7 @@ class afp_entry:
        afp_dict.
        It still relies on information created by the entries-dict in sitegen.py.
        """
-    def __init__(self, name, entry_dict, afp_dict):
+    def __init__(self, name, entry_dict, afp_dict, no_index = False):
         self.name = name
         self.afp_dict = afp_dict
         self.path = os.path.join(self.afp_dict.path, self.name)
@@ -52,7 +52,8 @@ class afp_entry:
         self.authors = []
         for name, _address in entry_dict['author']:
             self.authors.append(afp_dict.authors[name])
-            afp_dict.authors[name].articles.add(self)
+            if not no_index:
+                afp_dict.authors[name].articles.add(self)
         self.publish_date = datetime.strptime(entry_dict['date'], "%Y-%m-%d")
         #add UTC timezone to date
         self.publish_date = self.publish_date.replace(tzinfo = pytz.UTC)
@@ -188,11 +189,20 @@ class afp_dict(dict):
         dict.__init__(self, *args)
         self.path = normpath(afp_thys_path)
         self.authors = dict()
-        for e in entries:
-            for name, address in entries[e]['author']:
+        # Extra dict for entries which don't show up in index and statistics
+        #TODO: document how it works, improve how it works
+        self.no_index = dict()
+        for entry in entries.values():
+            for name, address in entry['author']:
                 self.authors[name] = afp_author(name, address)
-        for e in entries:
-            self[e] = afp_entry(e, entries[e], self)
+        for name, entry in entries.items():
+            if 'extra' in entry and 'no-index' in entry['extra']:
+                self.no_index[name] = afp_entry(name, entry, self,
+                                                no_index = True)
+            else:
+                self[name] = afp_entry(name, entry, self)
+        for name in self.no_index.keys():
+            del entries[name]
         # all_thys is a dict which maps a thy file to its corresponding AFP
         # entry
         self.all_thys = dict()

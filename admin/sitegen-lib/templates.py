@@ -113,6 +113,11 @@ class Builder():
 		with open(os.path.join(self.root_output_dir, filename), 'wb') as f:
 			f.write(template.render(values).encode('utf8'))
 
+	def generate_standard(self, filename, template_name):
+		template = self.j2_env.get_template(template_name)
+		self.write_file(filename, template, {})
+		terminal.success("Generated {}".format(filename))
+
 	def generate_topics(self):
 		template = self.j2_env.get_template("topics.tpl")
 		tree = collect_topics(self.entries)
@@ -139,12 +144,16 @@ class Builder():
 		counter = 0
 		template = self.j2_env.get_template("entry.tpl")
 		for name, entry in self.afp_entries.items():
-			counter += 1
 			#TODO: Solve more elegantly
 			entry.imports = sorted(entry.imports, key = lambda x: x.name)
 			entry.used = sorted(entry.used, key = lambda x: x.name)
 			self.write_file(os.path.join("entries", name + ".shtml"), template,
 				{'entry': entry, 'is_devel': self.is_devel})
+			counter += 1
+		for name, entry in self.afp_entries.no_index.items():
+			self.write_file(os.path.join("entries", name + ".shtml"), template,
+				{'entry': entry, 'is_devel': self.is_devel})
+			counter += 1
 		terminal.success("Generated shtml files for {:d} entries".format(counter))
 
 	def generate_download(self):

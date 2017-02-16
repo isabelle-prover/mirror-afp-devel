@@ -270,6 +270,9 @@ if __name__ == "__main__":
 		builder.generate_index()
 		builder.generate_entries()
 		builder.generate_statistics()
+		for s in ["about", "citing", "updating", "search",
+			"submitting", "using"]:
+			builder.generate_standard(s + ".shtml", s + ".tpl")
 		builder.generate_rss(30)
 		if options.build_download:
 			builder.generate_download()
