@@ -5,6 +5,7 @@
   A proof of Stirling's formula, i.e. an asymptotic approximation of
   the Gamma function and the factorial.
 *)
+section \<open>Stirling's Formula\<close>
 theory Stirling_Formula
 imports
   "~~/src/HOL/Analysis"

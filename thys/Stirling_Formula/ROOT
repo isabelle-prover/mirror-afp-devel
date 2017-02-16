@@ -6,6 +6,7 @@ session Stirling_Formula (AFP) = "Landau_Analysis" +
     "../Landau_Symbols/Landau_Symbols"
   theories
     Stirling_Formula
+    Ln_Gamma_Asymptotics
   document_files
     "root.tex"
     "root.bib"
