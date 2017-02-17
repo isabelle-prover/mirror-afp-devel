@@ -12,22 +12,22 @@ begin
     assumes "\<And>P Q. P \<approx>\<cdot> Q \<Longrightarrow> P \<Turnstile> x \<longleftrightarrow> Q \<Turnstile> x"
     and "P \<approx>\<cdot> Q"
     -- \<open>not needed: and @{prop "weak_formula x"}\<close>
-    and "P \<Turnstile> Act \<alpha> x"
-    shows "Q \<Turnstile> Act \<alpha> x"
+    and "P \<Turnstile> \<langle>\<langle>\<alpha>\<rangle>\<rangle>x"
+    shows "Q \<Turnstile> \<langle>\<langle>\<alpha>\<rangle>\<rangle>x"
   proof -
     have "finite (supp Q)"
       by (fact finite_supp)
-    with `P \<Turnstile> Act \<alpha> x` obtain \<alpha>' x' P' where eq: "Act \<alpha> x = Act \<alpha>' x'" and trans: "P \<Rightarrow>\<langle>\<alpha>'\<rangle> P'" and valid: "P' \<Turnstile> x'" and fresh: "bn \<alpha>' \<sharp>* Q"
-      by (metis valid_Act_strong)
+    with `P \<Turnstile> \<langle>\<langle>\<alpha>\<rangle>\<rangle>x` obtain \<alpha>' x' P' where eq: "Act \<alpha> x = Act \<alpha>' x'" and trans: "P \<Rightarrow>\<langle>\<alpha>'\<rangle> P'" and valid: "P' \<Turnstile> x'" and fresh: "bn \<alpha>' \<sharp>* Q"
+      by (metis valid_weak_action_modality_strong)
 
     from `P \<approx>\<cdot> Q` and fresh and trans obtain Q' where trans': "Q \<Rightarrow>\<langle>\<alpha>'\<rangle> Q'" and bisim': "P' \<approx>\<cdot> Q'"
       by (metis weakly_bisimilar_weak_simulation_step)
 
     from eq obtain p where px: "x' = p \<bullet> x"
-      by (auto simp add: Act_eq_iff Act\<^sub>\<alpha>_eq_iff alphas) (metis Rep_formula_inverse Tree\<^sub>\<alpha>.abs_eq_iff Tree\<^sub>\<alpha>_abs_rep permute_Tree\<^sub>\<alpha>.abs_eq permute_formula.rep_eq)
+      by (metis Act_eq_iff_perm)
 
     with valid have "-p \<bullet> P' \<Turnstile> x"
-      by (metis permute_minus_cancel(2) valid_eqvt)
+      by (metis permute_minus_cancel(1) valid_eqvt)
     moreover from bisim' have "(-p \<bullet> P') \<approx>\<cdot> (-p \<bullet> Q')"
       by (metis weakly_bisimilar_eqvt)
     ultimately have "-p \<bullet> Q' \<Turnstile> x"
@@ -35,28 +35,26 @@ begin
     with px have "Q' \<Turnstile> x'"
       by (metis permute_minus_cancel(1) valid_eqvt)
 
-    with eq and trans' show "Q \<Turnstile> Act \<alpha> x"
-      unfolding valid_Act by metis
+    with eq and trans' show "Q \<Turnstile> \<langle>\<langle>\<alpha>\<rangle>\<rangle>x"
+      unfolding valid_weak_action_modality by metis
   qed
 
   lemma weak_bisimilarity_implies_weak_equivalence_Pred:
     assumes "\<And>P Q. P \<approx>\<cdot> Q \<Longrightarrow> P \<Turnstile> x \<longleftrightarrow> Q \<Turnstile> x"
     and "P \<approx>\<cdot> Q"
     -- \<open>not needed: and @{prop "weak_formula x"}\<close>
-    and "P \<Turnstile> Act \<tau> (Conj (binsert (Pred \<phi>) (bsingleton x)))"
-    shows "Q \<Turnstile> Act \<tau> (Conj (binsert (Pred \<phi>) (bsingleton x)))"
+    and "P \<Turnstile> \<langle>\<langle>\<tau>\<rangle>\<rangle>(Conj (binsert (Pred \<phi>) (bsingleton x)))"
+    shows "Q \<Turnstile> \<langle>\<langle>\<tau>\<rangle>\<rangle>(Conj (binsert (Pred \<phi>) (bsingleton x)))"
   proof -
     let ?c = "Conj (binsert (Pred \<phi>) (bsingleton x))"
 
-    have "bn \<tau>  \<sharp>* P"
-      by (simp add: fresh_star_def)
-    with `P \<Turnstile> Act \<tau> ?c` obtain P' where trans: "P \<Rightarrow>\<langle>\<tau>\<rangle> P'" and valid: "P' \<Turnstile> ?c"
-      by (metis valid_Act_fresh)
+    from `P \<Turnstile> \<langle>\<langle>\<tau>\<rangle>\<rangle>?c` obtain P' where trans: "P \<Rightarrow> P'" and valid: "P' \<Turnstile> ?c"
+      using valid_weak_action_modality by auto
 
     have "bn \<tau>  \<sharp>* Q"
       by (simp add: fresh_star_def)
-    with `P \<approx>\<cdot> Q` and trans obtain Q' where trans': "Q \<Rightarrow>\<langle>\<tau>\<rangle> Q'" and bisim': "P' \<approx>\<cdot> Q'"
-      by (metis weakly_bisimilar_weak_simulation_step)
+    with `P \<approx>\<cdot> Q` and trans obtain Q' where trans': "Q \<Rightarrow> Q'" and bisim': "P' \<approx>\<cdot> Q'"
+      by (metis weakly_bisimilar_weak_simulation_step weak_transition_tau_iff)
 
     from valid have *: "P' \<turnstile> \<phi>" and **: "P' \<Turnstile> x"
       by (simp add: binsert.rep_eq)+
@@ -70,10 +68,10 @@ begin
       by (simp add: binsert.rep_eq)
 
     moreover from trans' and trans'' have "Q \<Rightarrow>\<langle>\<tau>\<rangle> Q''"
-      using tau_refl weak_transition_weakI by blast
+      by (metis tau_transition_trans weak_transition_tau_iff)
 
-    ultimately show "Q \<Turnstile> Act \<tau> ?c"
-      unfolding valid_Act by metis
+    ultimately show "Q \<Turnstile> \<langle>\<langle>\<tau>\<rangle>\<rangle>?c"
+      unfolding valid_weak_action_modality by metis
   qed
 
   theorem weak_bisimilarity_implies_weak_equivalence: assumes "P \<approx>\<cdot> Q" shows "P \<equiv>\<cdot> Q"
@@ -92,7 +90,7 @@ begin
       case (wf_Act x \<alpha>) then show ?case
         by (metis weakly_bisimilar_symp weak_bisimilarity_implies_weak_equivalence_Act sympE)
     next
-      case (wf_Pred x \<alpha> \<phi>) then show ?case
+      case (wf_Pred x \<phi>) then show ?case
         by (metis weakly_bisimilar_symp weak_bisimilarity_implies_weak_equivalence_Pred sympE)
       qed
     }

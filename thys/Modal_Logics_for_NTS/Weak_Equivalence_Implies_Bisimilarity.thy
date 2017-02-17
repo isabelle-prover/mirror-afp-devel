@@ -178,30 +178,30 @@ begin
                   using "*" by metis
               qed
 
-            let ?z = "Act \<tau> (Conj (binsert (Pred \<phi>) (bsingleton ?y)))"
+            let ?z = "\<langle>\<langle>\<tau>\<rangle>\<rangle>(Conj (binsert (Pred \<phi>) (bsingleton ?y)))"
             have "weak_formula ?z"
               by standard (fact `weak_formula ?y`)
             moreover have "P \<Turnstile> ?z"
-              unfolding valid_Act proof (standard+)
-                show "P \<Rightarrow>\<langle>\<tau>\<rangle> P"
+              proof -
+                have "P \<Rightarrow>\<langle>\<tau>\<rangle> P"
                   by simp
-              next
+                moreover
                 {
                   fix Q'
                   assume "Q \<Rightarrow> Q' \<and> Q' \<turnstile> \<phi>"
                   with "*" have "P \<Turnstile> f Q'"
                     by (metis distinguishing_formula_def mem_Collect_eq)
                 }
-                with `P \<turnstile> \<phi>` show "P \<Turnstile> Conj (binsert (Pred \<phi>) (bsingleton ?y))"
+                with `P \<turnstile> \<phi>` have "P \<Turnstile> Conj (binsert (Pred \<phi>) (bsingleton ?y))"
                   by (simp add: binsert.rep_eq finite_supp_image card_image)
+                ultimately show ?thesis
+                  using valid_weak_action_modality by blast
               qed
             moreover have "\<not> Q \<Turnstile> ?z"
               proof
                 assume "Q \<Turnstile> ?z"
-                moreover have "bn \<tau> \<sharp>* Q"
-                  by (simp add: fresh_star_def)
-                ultimately obtain Q' where 1: "Q \<Rightarrow> Q'" and "Q' \<Turnstile> Conj (binsert (Pred \<phi>) (bsingleton ?y))"
-                  using valid_Act_fresh weak_transition_tau_iff by blast
+                then obtain Q' where 1: "Q \<Rightarrow> Q'" and "Q' \<Turnstile> Conj (binsert (Pred \<phi>) (bsingleton ?y))"
+                  using valid_weak_action_modality by auto
                 then have 2: "Q' \<turnstile> \<phi>" and 3: "Q' \<Turnstile> ?y"
                   by (simp add: binsert.rep_eq finite_supp_image card_image)+
                 from 3 have "\<And>Q''. Q \<Rightarrow> Q'' \<and> Q'' \<turnstile> \<phi> \<longrightarrow> Q' \<Turnstile> f Q''"
@@ -276,7 +276,7 @@ begin
             finally have card_image: "|f ` ?Q'| <o natLeq +c |UNIV :: 'idx set|" .
 
             let ?y = "Conj (Abs_bset (f ` ?Q')) :: ('idx, 'pred, 'act) formula"
-            have "weak_formula (Act \<alpha> ?y)"
+            have "weak_formula (\<langle>\<langle>\<alpha>\<rangle>\<rangle>?y)"
               proof (standard+)
                 show "finite (supp (Abs_bset (f ` ?Q') :: _ set['idx]))"
                   using finite_supp_image card_image by simp
@@ -287,8 +287,8 @@ begin
                 then show "weak_formula x"
                   using "*" by metis
               qed
-            moreover have "P \<Turnstile> Act \<alpha> ?y"
-              unfolding valid_Act proof (standard+)
+            moreover have "P \<Turnstile> \<langle>\<langle>\<alpha>\<rangle>\<rangle>?y"
+              unfolding valid_weak_action_modality proof (standard+)
                 from `P \<rightarrow> \<langle>\<alpha>,P'\<rangle>` show "P \<Rightarrow>\<langle>\<alpha>\<rangle> P'"
                   by simp
               next
@@ -301,11 +301,11 @@ begin
                 then show "P' \<Turnstile> ?y"
                   by (simp add: finite_supp_image card_image)
               qed
-            moreover have "\<not> Q \<Turnstile> Act \<alpha> ?y"
+            moreover have "\<not> Q \<Turnstile> \<langle>\<langle>\<alpha>\<rangle>\<rangle>?y"
               proof
-                assume "Q \<Turnstile> Act \<alpha> ?y"
+                assume "Q \<Turnstile> \<langle>\<langle>\<alpha>\<rangle>\<rangle>?y"
                 then obtain Q' where 1: "Q \<Rightarrow>\<langle>\<alpha>\<rangle> Q'" and 2: "Q' \<Turnstile> ?y"
-                  using `bn \<alpha> \<sharp>* Q` by (metis valid_Act_fresh)
+                  using `bn \<alpha> \<sharp>* Q` by (metis valid_weak_action_modality_fresh)
                 from 2 have "\<And>Q''. Q \<Rightarrow>\<langle>\<alpha>\<rangle> Q'' \<longrightarrow> Q' \<Turnstile> f Q''"
                   by (simp add: finite_supp_image card_image)
                 with 1 and "*" show False

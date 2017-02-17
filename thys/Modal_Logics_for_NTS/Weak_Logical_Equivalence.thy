@@ -6,15 +6,7 @@ begin
 
 section \<open>Weak Logical Equivalence\<close>
 
-text \<open>The definition of formulas is parametric in the index type, but from now on we want to work
-with a fixed (sufficiently large) index type.\<close>
-
-locale indexed_weak_nominal_ts = weak_nominal_ts satisfies transition
-  for satisfies :: "'state::fs \<Rightarrow> 'pred::fs \<Rightarrow> bool" (infix "\<turnstile>" 70)
-  and transition :: "'state \<Rightarrow> ('act::bn,'state) residual \<Rightarrow> bool" (infix "\<rightarrow>" 70) +
-  assumes card_idx_perm: "|UNIV::perm set| <o |UNIV::'idx set|"
-      and card_idx_state: "|UNIV::'state set| <o |UNIV::'idx set|"
-      and card_idx_pred: "|UNIV::'pred set| <o |UNIV::'idx set|"
+context indexed_weak_nominal_ts
 begin
 
   text \<open>Two states are weakly logically equivalent if they validate the same weak formulas.\<close>

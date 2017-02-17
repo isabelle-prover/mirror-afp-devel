@@ -14,8 +14,11 @@ locale weak_nominal_ts = nominal_ts satisfies transition
   assumes tau_eqvt [eqvt]: "p \<bullet> \<tau> = \<tau>"
 begin
 
-  lemma bn_tau [simp]: "bn \<tau> = {}"
+  lemma bn_tau_empty [simp]: "bn \<tau> = {}"
   using bn_eqvt bn_finite tau_eqvt by (metis eqvt_def supp_finite_atom_set supp_fun_eqvt)
+
+  lemma bn_tau_fresh [simp]: "bn \<tau> \<sharp>* P"
+  by (simp add: fresh_star_def)
 
   inductive tau_transition :: "'state \<Rightarrow> 'state \<Rightarrow> bool" (infix "\<Rightarrow>" 70) where
     tau_refl [simp]: "P \<Rightarrow> P"
@@ -227,7 +230,7 @@ begin
   next
     case (tau_step P P'' P')
     from `P \<rightarrow> \<langle>\<tau>,P''\<rangle>` and `P \<approx>\<cdot> Q` obtain Q'' where "Q \<Rightarrow> Q''" and "P'' \<approx>\<cdot> Q''"
-      by (metis bn_tau empty_iff fresh_star_def is_weak_bisimulation_def weak_transition_def weakly_bisimilar_is_weak_bisimulation)
+      by (metis bn_tau_fresh is_weak_bisimulation_def weak_transition_def weakly_bisimilar_is_weak_bisimulation)
     then show ?case
       using tau_step.hyps(3) tau_step.prems(1) by (metis tau_transition_trans)
   qed
