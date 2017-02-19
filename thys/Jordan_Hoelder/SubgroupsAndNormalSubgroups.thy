@@ -163,7 +163,7 @@ proof (rule group.normalI)
 next
   from \<phi> \<phi>surj show "subgroup (\<phi> ` H) F" by (rule surj_hom_subgroup)
 next
-  show "\<forall>x\<in>carrier F. \<phi> ` H #>\<^bsub>F\<^esub> x = x \<subset>#\<^bsub>F\<^esub> \<phi> ` H"
+  show "\<forall>x\<in>carrier F. \<phi> ` H #>\<^bsub>F\<^esub> x = x <#\<^bsub>F\<^esub> \<phi> ` H"
   proof
     fix f
     assume f:"f \<in> carrier F"
@@ -172,12 +172,12 @@ next
     also have "... = (\<lambda>x. (\<phi> x) \<otimes>\<^bsub>F\<^esub> (\<phi> g)) ` H" unfolding r_coset_def image_def by auto
     also have "... = (\<lambda>x. \<phi> (x \<otimes> g)) ` H" using subset g \<phi> group_hom.hom_mult unfolding image_def by fastforce
     also have "... = \<phi> ` (H #> g)" using \<phi> unfolding r_coset_def by auto
-    also have "... = \<phi> ` (g \<subset># H)" by (metis coset_eq g(1))
+    also have "... = \<phi> ` (g <# H)" by (metis coset_eq g(1))
     also have "... = (\<lambda>x. \<phi> (g \<otimes> x)) ` H" using \<phi> unfolding l_coset_def by auto
     also have "... = (\<lambda>x. (\<phi> g) \<otimes>\<^bsub>F\<^esub> (\<phi> x)) ` H" using subset g \<phi> group_hom.hom_mult by fastforce
-    also have "... = \<phi> g \<subset>#\<^bsub>F\<^esub> \<phi> ` H" unfolding l_coset_def image_def by auto
-    also have "... = f \<subset>#\<^bsub>F\<^esub> \<phi> ` H" using g by simp
-    finally show "\<phi> ` H #>\<^bsub>F\<^esub> f = f \<subset>#\<^bsub>F\<^esub> \<phi> ` H".
+    also have "... = \<phi> g <#\<^bsub>F\<^esub> \<phi> ` H" unfolding l_coset_def image_def by auto
+    also have "... = f <#\<^bsub>F\<^esub> \<phi> ` H" using g by simp
+    finally show "\<phi> ` H #>\<^bsub>F\<^esub> f = f <#\<^bsub>F\<^esub> \<phi> ` H".
   qed
 qed
 
@@ -223,27 +223,27 @@ text {* The set product of two normal subgroups is a normal subgroup. *}
 
 lemma (in group) setmult_lcos_assoc:
      "\<lbrakk>H \<subseteq> carrier G; K \<subseteq> carrier G; x \<in> carrier G\<rbrakk>
-      \<Longrightarrow> (x \<subset># H) \<subset>#> K = x \<subset># (H \<subset>#> K)"
+      \<Longrightarrow> (x <# H) <#> K = x <# (H <#> K)"
 by (force simp add: l_coset_def set_mult_def m_assoc)
 
 lemma (in group) normal_subgroup_set_mult_closed:
   assumes "M \<lhd> G" and "N \<lhd> G"
-  shows "M \<subset>#> N \<lhd> G"
+  shows "M <#> N \<lhd> G"
 proof (rule normalI)
-  from assms show "subgroup (M \<subset>#> N) G"
+  from assms show "subgroup (M <#> N) G"
     using second_isomorphism_grp.normal_set_mult_subgroup normal_imp_subgroup
     unfolding second_isomorphism_grp_def second_isomorphism_grp_axioms_def by force
 next
-  show "\<forall>x\<in>carrier G. M \<subset>#> N #> x = x \<subset># (M \<subset>#> N)"
+  show "\<forall>x\<in>carrier G. M <#> N #> x = x <# (M <#> N)"
   proof
     fix x
     assume x:"x \<in> carrier G"
-    have "M \<subset>#> N #> x = M \<subset>#> (N #> x)" by (metis assms(1,2) normal_inv_iff setmult_rcos_assoc subgroup_imp_subset x)
-    also have "\<dots> = M \<subset>#> (x \<subset># N)" by (metis assms(2) normal.coset_eq x)
-    also have "\<dots> = (M #> x) \<subset>#> N" by (metis assms(1,2) normal_imp_subgroup rcos_assoc_lcos subgroup_imp_subset x)
-    also have "\<dots> = (x \<subset># M) \<subset>#> N" by (metis assms(1) normal.coset_eq x)
-    also have "\<dots> = x \<subset># (M \<subset>#> N)" by (metis assms(1,2) normal_imp_subgroup setmult_lcos_assoc subgroup_imp_subset x)
-    finally show "M \<subset>#> N #> x = x \<subset># (M \<subset>#> N)".
+    have "M <#> N #> x = M <#> (N #> x)" by (metis assms(1,2) normal_inv_iff setmult_rcos_assoc subgroup_imp_subset x)
+    also have "\<dots> = M <#> (x <# N)" by (metis assms(2) normal.coset_eq x)
+    also have "\<dots> = (M #> x) <#> N" by (metis assms(1,2) normal_imp_subgroup rcos_assoc_lcos subgroup_imp_subset x)
+    also have "\<dots> = (x <# M) <#> N" by (metis assms(1) normal.coset_eq x)
+    also have "\<dots> = x <# (M <#> N)" by (metis assms(1,2) normal_imp_subgroup setmult_lcos_assoc subgroup_imp_subset x)
+    finally show "M <#> N #> x = x <# (M <#> N)".
   qed
 qed
 
@@ -283,10 +283,10 @@ proof -
   interpret GModN: group "G Mod N" using assms(1) by (rule normal.factorgroup_is_group)
   have "N \<lhd> G\<lparr>carrier := H\<rparr>" using assms by (metis normal_restrict_supergroup)
   hence grpHN:"group (G\<lparr>carrier := H\<rparr> Mod N)" by (rule normal.factorgroup_is_group)
-  have "op \<subset>#>\<^bsub>G\<lparr>carrier := H\<rparr>\<^esub> = (\<lambda>U K. (\<Union>h\<in>U. \<Union>k\<in>K. {h \<otimes>\<^bsub>G\<lparr>carrier := H\<rparr>\<^esub> k}))" using set_mult_def by metis
+  have "op <#>\<^bsub>G\<lparr>carrier := H\<rparr>\<^esub> = (\<lambda>U K. (\<Union>h\<in>U. \<Union>k\<in>K. {h \<otimes>\<^bsub>G\<lparr>carrier := H\<rparr>\<^esub> k}))" using set_mult_def by metis
   moreover have "\<dots> = (\<lambda>U K. (\<Union>h\<in>U. \<Union>k\<in>K. {h \<otimes>\<^bsub>G\<^esub> k}))" by auto
-  moreover have "op \<subset>#> = (\<lambda>U K. (\<Union>h\<in>U. \<Union>k\<in>K. {h \<otimes> k}))" using set_mult_def by metis
-  ultimately have "op \<subset>#>\<^bsub>G\<lparr>carrier := H\<rparr>\<^esub> = op \<subset>#>\<^bsub>G\<^esub>" by simp
+  moreover have "op <#> = (\<lambda>U K. (\<Union>h\<in>U. \<Union>k\<in>K. {h \<otimes> k}))" using set_mult_def by metis
+  ultimately have "op <#>\<^bsub>G\<lparr>carrier := H\<rparr>\<^esub> = op <#>\<^bsub>G\<^esub>" by simp
   with grpHN have "group ((G Mod N)\<lparr>carrier := (rcosets\<^bsub>G\<lparr>carrier := H\<rparr>\<^esub> N)\<rparr>)" unfolding FactGroup_def by auto
   moreover have "rcosets\<^bsub>G\<lparr>carrier := H\<rparr>\<^esub> N \<subseteq> carrier (G Mod N)" unfolding FactGroup_def RCOSETS_def r_coset_def
     using assms(3) subgroup_imp_subset by fastforce
@@ -311,15 +311,15 @@ proof -
     hence hG:"h \<in> carrier G" using HG normal_imp_subgroup subgroup.mem_carrier by force
     hence ghG:"g \<otimes> h \<in> carrier G" using g m_closed by auto
     from g h have "g \<otimes> h \<otimes> inv g \<in> H" using HG normal_inv_iff by auto
-    moreover have "U \<subset>#> V \<subset>#> inv\<^bsub>G Mod N\<^esub> U = N #> (g \<otimes> h \<otimes> inv g)"
+    moreover have "U <#> V <#> inv\<^bsub>G Mod N\<^esub> U = N #> (g \<otimes> h \<otimes> inv g)"
     proof -
       from g U have "inv\<^bsub>G Mod N\<^esub> U = N #> inv g" using NG normal.inv_FactGroup normal.rcos_inv by fastforce
-      hence "U \<subset>#> V \<subset>#> inv\<^bsub>G Mod N\<^esub> U = (N #> g) \<subset>#> (N #> h) \<subset>#> (N #> inv g)" using g h by simp
-      also have "\<dots> = N #> (g \<otimes> h) \<subset>#> (N #> inv g)" using g hG NG normal.rcos_sum by force
+      hence "U <#> V <#> inv\<^bsub>G Mod N\<^esub> U = (N #> g) <#> (N #> h) <#> (N #> inv g)" using g h by simp
+      also have "\<dots> = N #> (g \<otimes> h) <#> (N #> inv g)" using g hG NG normal.rcos_sum by force
       also have "\<dots> = N #> (g \<otimes> h \<otimes> inv g)" using g inv_closed ghG NG normal.rcos_sum by force
       finally show ?thesis .
     qed
-    ultimately show "U \<subset>#> V \<subset>#> inv\<^bsub>G Mod N\<^esub> U \<in> rcosets\<^bsub>G\<lparr>carrier := H\<rparr>\<^esub> N" unfolding RCOSETS_def r_coset_def by auto
+    ultimately show "U <#> V <#> inv\<^bsub>G Mod N\<^esub> U \<in> rcosets\<^bsub>G\<lparr>carrier := H\<rparr>\<^esub> N" unfolding RCOSETS_def r_coset_def by auto
   qed
 qed
 
@@ -392,7 +392,7 @@ proof -
     assume "x \<in> {x \<in> carrier G. H #> x \<in> A}" and "y \<in> {x \<in> carrier G. H #> x \<in> A}"
     hence x:"x \<in> carrier G" "H #> x \<in> A" and y:"y \<in> carrier G" "H #> y \<in> A" by auto
     hence xyG:"x \<otimes> y \<in> carrier G" by (metis m_closed)
-    from assms x y have "(H #> x) \<subset>#> (H #> y) \<in> A" using subgroup.m_closed unfolding FactGroup_def by fastforce
+    from assms x y have "(H #> x) <#> (H #> y) \<in> A" using subgroup.m_closed unfolding FactGroup_def by fastforce
     hence "H #> (x \<otimes> y) \<in> A" by (metis rcos_sum x(1) y(1))
     with xyG show "x \<otimes> y \<in> {x \<in> carrier G. H #> x \<in> A}" by simp
   next
@@ -429,31 +429,31 @@ proof -
     hence x':"x' \<in> carrier G" "H #> x' \<in> A" by auto
     from x(1) have Hx:"H #> x \<in> carrier (G Mod H)" unfolding FactGroup_def RCOSETS_def by force
     with x' have "(inv\<^bsub>G Mod H\<^esub> (H #> x)) \<otimes>\<^bsub>G Mod H\<^esub> (H #> x') \<otimes>\<^bsub>G Mod H\<^esub> (H #> x) \<in> A" using Anormal.inv_op_closed1 by auto
-    hence "(set_inv (H #> x)) \<subset>#> (H #> x') \<subset>#> (H #> x) \<in> A" using inv_FactGroup Hx unfolding FactGroup_def by auto
-    hence "(H #> (inv x)) \<subset>#> (H #> x') \<subset>#> (H #> x) \<in> A" using x(1) by (metis rcos_inv)
-    hence "(H #> (inv x \<otimes> x')) \<subset>#> (H #> x) \<in> A" by (metis inv_closed rcos_sum x'(1) x(1))
+    hence "(set_inv (H #> x)) <#> (H #> x') <#> (H #> x) \<in> A" using inv_FactGroup Hx unfolding FactGroup_def by auto
+    hence "(H #> (inv x)) <#> (H #> x') <#> (H #> x) \<in> A" using x(1) by (metis rcos_inv)
+    hence "(H #> (inv x \<otimes> x')) <#> (H #> x) \<in> A" by (metis inv_closed rcos_sum x'(1) x(1))
     hence "H #> (inv x \<otimes> x' \<otimes> x) \<in> A" by (metis inv_closed m_closed rcos_sum x'(1) x(1))
     moreover have "inv x \<otimes> x' \<otimes> x \<in> carrier G" using x x' by (metis inv_closed m_closed)
     ultimately have "inv x \<otimes> x' \<otimes> x \<in> {x \<in> carrier G. H #> x \<in> A}" by auto
-    hence xcoset:"x \<otimes> (inv x \<otimes> x' \<otimes> x) \<in> x \<subset># {x \<in> carrier G. H #> x \<in> A}" unfolding l_coset_def using x(1) by auto
+    hence xcoset:"x \<otimes> (inv x \<otimes> x' \<otimes> x) \<in> x <# {x \<in> carrier G. H #> x \<in> A}" unfolding l_coset_def using x(1) by auto
     have "x \<otimes> (inv x \<otimes> x' \<otimes> x) = (x \<otimes> inv x) \<otimes> x' \<otimes> x" by (metis Units_eq Units_inv_Units m_assoc m_closed x'(1) x(1))
     also have "\<dots> = x' \<otimes> x" by (metis l_one r_inv x'(1) x(1))
     also have "\<dots> = y" by (metis `y = x' \<otimes> x`)
     finally have "x \<otimes> (inv x \<otimes> x' \<otimes> x) = y".
-    with xcoset show "y \<in> x \<subset># {x \<in> carrier G. H #> x \<in> A}" by auto
+    with xcoset show "y \<in> x <# {x \<in> carrier G. H #> x \<in> A}" by auto
   next
     interpret Anormal: normal A "(G Mod H)" using assms by simp
     fix x y
-    assume x:"x \<in> carrier G" "y \<in> x \<subset># {x \<in> carrier G. H #> x \<in> A}"
+    assume x:"x \<in> carrier G" "y \<in> x <# {x \<in> carrier G. H #> x \<in> A}"
     then obtain x' where "x' \<in> {x \<in> carrier G. H #> x \<in> A}" "y = x \<otimes> x'" unfolding l_coset_def by auto
     hence x':"x' \<in> carrier G" "H #> x' \<in> A" by auto
     from x(1) have invx:"inv x \<in> carrier G" by (rule inv_closed)
     hence Hinvx:"H #> (inv x) \<in> carrier (G Mod H)" unfolding FactGroup_def RCOSETS_def by force
     with x' have "(inv\<^bsub>G Mod H\<^esub> (H #> inv x)) \<otimes>\<^bsub>G Mod H\<^esub> (H #> x') \<otimes>\<^bsub>G Mod H\<^esub> (H #> inv x) \<in> A" using invx Anormal.inv_op_closed1 by auto
-    hence "(set_inv (H #> inv x)) \<subset>#> (H #> x') \<subset>#> (H #> inv x) \<in> A" using inv_FactGroup Hinvx unfolding FactGroup_def by auto
-    hence "(H #> inv (inv x)) \<subset>#> (H #> x') \<subset>#> (H #> inv x) \<in> A" using invx by (metis rcos_inv)
-    hence "(H #> x) \<subset>#> (H #> x') \<subset>#> (H #> inv x) \<in> A" by (metis inv_inv x(1))
-    hence "(H #> (x \<otimes> x')) \<subset>#> (H #> inv x) \<in> A" by (metis rcos_sum x'(1) x(1))
+    hence "(set_inv (H #> inv x)) <#> (H #> x') <#> (H #> inv x) \<in> A" using inv_FactGroup Hinvx unfolding FactGroup_def by auto
+    hence "(H #> inv (inv x)) <#> (H #> x') <#> (H #> inv x) \<in> A" using invx by (metis rcos_inv)
+    hence "(H #> x) <#> (H #> x') <#> (H #> inv x) \<in> A" by (metis inv_inv x(1))
+    hence "(H #> (x \<otimes> x')) <#> (H #> inv x) \<in> A" by (metis rcos_sum x'(1) x(1))
     hence "H #> (x \<otimes> x' \<otimes> inv x) \<in> A" by (metis inv_closed m_closed rcos_sum x'(1) x(1))
     moreover have "x \<otimes> x' \<otimes> inv x \<in> carrier G" using x x' by (metis inv_closed m_closed)
     ultimately have "x \<otimes> x' \<otimes> inv x \<in> {x \<in> carrier G. H #> x \<in> A}" by auto
