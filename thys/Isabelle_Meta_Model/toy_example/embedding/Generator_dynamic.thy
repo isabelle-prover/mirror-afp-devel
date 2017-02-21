@@ -1193,7 +1193,7 @@ fun outer_syntax_command0 mk_string cmd_spec cmd_descr parser get_all_meta_embed
              let fun aux (env, thy) x =
                   META.fold_thy_shallow
                    (fn f => f () handle ERROR e =>
-                     ( warning "Shallow Backtracking: (true) Isabelle declarations occuring among the META-simulated ones are ignored (if any)"
+                     ( warning "Shallow Backtracking: (true) Isabelle declarations occurring among the META-simulated ones are ignored (if any)"
                        (* TODO automatically determine if there is such Isabelle declarations,
                                for raising earlier a specific error message *)
                      ; error e))

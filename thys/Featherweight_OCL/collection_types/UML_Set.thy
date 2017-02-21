@@ -59,7 +59,7 @@ text{* Our notion of typed set goes beyond the usual notion of a finite executab
 is powerful enough to capture \emph{the extension of a type} in UML and OCL. This means
 we can have in Featherweight OCL Sets containing all possible elements of a type, not only
 those (finite) ones representable in a state. This holds for base types as well as class types,
-although the notion for class-types --- involving object id's not occuring in a state ---
+although the notion for class-types --- involving object id's not occurring in a state ---
 requires some care.
 
 In a world with @{term invalid} and @{term null}, there are two notions extensions possible:

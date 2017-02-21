@@ -616,7 +616,7 @@ by(simp add: OclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny 
 
 section{* OclAllInstances *}
 
-text{* To denote OCL-types occuring in OCL expressions syntactically---as, for example,  as
+text{* To denote OCL-types occurring in OCL expressions syntactically---as, for example,  as
 ``argument'' of \inlineisar{oclAllInstances()}---we use the inverses of the injection
 functions into the object universes; we show that this is sufficient ``characterization.'' *}
 

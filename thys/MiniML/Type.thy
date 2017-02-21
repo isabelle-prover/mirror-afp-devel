@@ -26,11 +26,11 @@ type_synonym subst = "nat => typ"
 
 class type_struct =
   fixes free_tv :: "'a => nat set"
-    -- {* @{text "free_tv s"}: the type variables occuring freely in the type structure s *}
+    -- {* @{text "free_tv s"}: the type variables occurring freely in the type structure s *}
   fixes free_tv_ML :: "'a => nat list"
     -- {* executable version of @{text free_tv}: Implementation with lists *}
   fixes bound_tv :: "'a => nat set"
-    -- {* @{text "bound_tv s"}: the type variables occuring bound in the type structure s *}
+    -- {* @{text "bound_tv s"}: the type variables occurring bound in the type structure s *}
   fixes min_new_bound_tv :: "'a => nat"
     -- "minimal new free / bound variable"
   fixes app_subst :: "subst => 'a => 'a" ("$")
@@ -108,7 +108,7 @@ end
 text  
 {* @{text "new_tv s n"} computes whether n is a new type variable w.r.t. a type 
    structure s, i.e. whether n is greater than any type variable 
-   occuring in the type structure *}
+   occurring in the type structure *}
 definition
   new_tv :: "[nat,'a::type_struct] => bool" where
   "new_tv n ts = (! m. m:(free_tv ts) --> m<n)"

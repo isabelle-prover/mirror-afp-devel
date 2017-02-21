@@ -140,7 +140,7 @@ subsection {* Soundness *}
 
 text {*
   In Section \ref{sec:pratt} we introduced the predicates $\text{Prime}(p)$ and $(p, a, x)$.
-  In this section we show that for a certificate every predicate occuring in this certificate
+  In this section we show that for a certificate every predicate occurring in this certificate
   holds. In particular, if $\text{Prime}(p)$ occurs in a certificate, $p$ is prime.
 *}
 

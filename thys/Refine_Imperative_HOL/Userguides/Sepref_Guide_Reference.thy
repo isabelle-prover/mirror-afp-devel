@@ -420,7 +420,7 @@ text \<open>
   the near future.
 
   An operator-step itself consists of several sub-phases:
-  \<^descr>[Align goal] Splits the precondition into the arguments actually occuring in
+  \<^descr>[Align goal] Splits the precondition into the arguments actually occurring in
     the operation, and the rest (called frame).
   \<^descr>[Frame rule] Applies a frame rule to focus on the actual arguments. Moreover,
     it inserts a subgoal of the form @{term "RECOVER_PURE \<Gamma> \<Gamma>'"}, which is used 
