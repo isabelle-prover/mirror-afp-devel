@@ -1042,7 +1042,7 @@ proof (induction s)
   with S1 have [simp]: "s \<in> S" by auto
   let ?I = "\<lambda>D::'s pmf. \<integral>\<^sup>+t. n t \<partial>D"
   have "0 < Min (?I`K s)"
-  proof (safe intro!: Min_grI)
+  proof (safe intro!: Min_gr_iff [THEN iffD2])
     fix D assume [simp]: "D \<in> K s"
     from cont[OF `P s` `s \<in> S1` `D \<in> K s`]
     obtain w where w: "w \<in> D" "0 < n w"

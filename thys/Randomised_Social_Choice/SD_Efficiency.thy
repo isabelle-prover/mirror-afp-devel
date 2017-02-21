@@ -42,7 +42,7 @@ proof -
     using that by (auto simp: supp_def set_pmf_eq)
 
   from finite support subset have \<epsilon>: "\<epsilon> > 0" unfolding \<epsilon>_def 
-    by (intro Min_grI) (auto simp: field_simps set_pmf_eq')
+    by (auto simp: field_simps set_pmf_eq')
   have nonneg: "pmf p x + \<epsilon> * (pmf q' x - pmf p' x) \<ge> 0" for x
   proof (cases "pmf p' x > pmf q' x")
     case True
