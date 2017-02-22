@@ -5444,7 +5444,7 @@ proof -
       thus ?thesis using e by(simp)
     qed
     have \<zeta>_pos: "0 < \<zeta>" unfolding \<zeta>_def using le
-      by(auto intro: Min_grI j_free diff_gr0_ennreal)
+      by(auto intro: j_free diff_gr0_ennreal)
     have \<zeta>_le: "\<zeta> \<le> cap' e" if "e \<in> set ?E" for e using that unfolding \<zeta>_def by auto
     have finite_\<zeta> [simplified]: "\<zeta> < \<top>" unfolding \<zeta>_def
       by(intro Min_less_iff[THEN iffD2])(auto simp add: less_top[symmetric])
