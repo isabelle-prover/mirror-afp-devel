@@ -947,9 +947,9 @@ val (_, prime_oracle) = Context.>>> (Context.map_theory_result
 in
 
 val raw_prime_computation_conv =
-  (@{computation_conv bool terms: "prime :: nat \<Rightarrow> bool"
+  @{computation_conv bool terms: "prime :: nat \<Rightarrow> bool"
      "Ball :: nat set \<Rightarrow> _" "{0, 1, 2, 3} :: nat set"}
-  (fn b => fn ct => prime_oracle (ct, b)))
+  (fn _ => fn b => fn ct => prime_oracle (ct, b));
 
 fun prime_computation_conv ctxt =
   HOLogic.Trueprop_conv (raw_prime_computation_conv ctxt);

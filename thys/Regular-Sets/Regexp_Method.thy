@@ -38,8 +38,8 @@ val (_, check_eqv_oracle) = Context.>>> (Context.map_theory_result
 in
 
 val regexp_conv =
-  (@{computation_conv bool terms: check_eqv datatypes: "nat rexp"}
-  (fn b => fn ct => check_eqv_oracle (ct, b)))
+  @{computation_conv bool terms: check_eqv datatypes: "nat rexp"}
+  (fn _ => fn b => fn ct => check_eqv_oracle (ct, b))
 
 end
 \<close>
