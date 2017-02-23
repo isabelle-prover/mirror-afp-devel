@@ -15,8 +15,7 @@ locale progress = multithreaded final r convert_RA
   and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
   +
   fixes wf_state :: "('l,'t,'x,'m,'w) state set"
-  assumes invariant3p_wf_state: "invariant3p redT wf_state"
-  and wf_stateD: "s \<in> wf_state \<Longrightarrow> lock_thread_ok (locks s) (thr s) \<and> wset_final_ok (wset s) (thr s)"
+  assumes wf_stateD: "s \<in> wf_state \<Longrightarrow> lock_thread_ok (locks s) (thr s) \<and> wset_final_ok (wset s) (thr s)"
   and wf_red:
   "\<lbrakk> s \<in> wf_state; thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>;
      t \<turnstile> (x, shr s) -ta\<rightarrow> (x', m'); \<not> waiting (wset s t) \<rbrakk>

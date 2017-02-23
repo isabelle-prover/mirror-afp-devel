@@ -369,13 +369,10 @@ context J_typesafe begin
 
 lemma wf_progress: 
   assumes wf: "wf_J_prog P"
-  shows "progress final_expr (mred P) convert_RA 
+  shows "progress final_expr (mred P)
             (red_mthr.wset_Suspend_ok P ({s. sync_es_ok (thr s) (shr s) \<and> lock_ok (locks s) (thr s)} \<inter> {s. \<exists>Es. sconf_type_ts_ok Es (thr s) (shr s)} \<inter> {s. def_ass_ts_ok (thr s) (shr s)}))"
-  (is "progress _ _ _ ?wf_state")
+  (is "progress _ _ ?wf_state")
 proof
-  show "invariant3p (mredT P) ?wf_state"
-    by(intro red_mthr.invariant3p_wset_Suspend_ok invariant3p_IntI invariant3p_sync_es_ok_lock_ok[OF wf] lifting_inv.invariant3p_ts_inv[OF lifting_inv_sconf_subject_ok[OF wf]] lifting_wf.invariant3p_ts_ok[OF lifting_wf_def_ass[OF wf]])
-next
   {
     fix s t x ta x' m' w
     assume "mred P t (x, shr s) ta (x', m')"

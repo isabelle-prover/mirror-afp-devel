@@ -460,12 +460,9 @@ context JVM_typesafe begin
 
 lemma execd_wf_progress:
   assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
-  shows "progress JVM_final (mexecd P) convert_RA (execd_mthr.wset_Suspend_ok P (correct_jvm_state \<Phi>))"
-  (is "progress _ _ _ ?wf_state")
+  shows "progress JVM_final (mexecd P) (execd_mthr.wset_Suspend_ok P (correct_jvm_state \<Phi>))"
+  (is "progress _ _ ?wf_state")
 proof
-  show "invariant3p (mexecdT P) ?wf_state"
-    by(rule execd_mthr.invariant3p_wset_Suspend_ok)(rule invariant3p_correct_jvm_state_mexecdT[OF wf])
-next
   {
     fix s t x ta x' m' w
     assume mexecd: "mexecd P t (x, shr s) ta (x', m')"
@@ -817,16 +814,13 @@ context JVM_typesafe begin
 
 lemma exec_wf_progress:
   assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
-  shows "progress JVM_final (mexec P) convert_RA (exec_mthr.wset_Suspend_ok P (correct_jvm_state \<Phi>))"
-  (is "progress _ _ _ ?wf_state")
+  shows "progress JVM_final (mexec P) (exec_mthr.wset_Suspend_ok P (correct_jvm_state \<Phi>))"
+  (is "progress _ _ ?wf_state")
 proof -
   interpret progress: progress JVM_final "mexecd P" convert_RA ?wf_state
     using assms unfolding wset_Suspend_ok_mexecd_mexec[OF wf] by(rule execd_wf_progress)
   show ?thesis
   proof(unfold_locales)
-    show "invariant3p (mexecT P) ?wf_state"
-      by(rule exec_mthr.invariant3p_wset_Suspend_ok)(rule invariant3p_correct_jvm_state_mexecT[OF wf])
-  next
     fix s
     assume "s \<in> ?wf_state"
     thus "lock_thread_ok (locks s) (thr s) \<and> exec_mthr.wset_final_ok (wset s) (thr s)"
