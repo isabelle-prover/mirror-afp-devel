@@ -902,7 +902,7 @@ proof -
     unfolding \<gamma> \<delta> distrib_left add.assoc[symmetric] by (rule refl)
   also have "\<dots> \<le> \<alpha>1 + \<beta>1a * \<eta> + \<beta>0 * \<eta> + \<beta>0 * \<delta>a + \<beta>1a * \<delta>a"
   proof -
-    have **: "\<beta>1a * \<gamma>a + \<beta>2a * \<delta>a \<le> \<beta>1a * \<delta>a"
+    have "\<beta>1a * \<gamma>a + \<beta>2a * \<delta>a \<le> \<beta>1a * \<delta>a"
     proof (cases "\<beta>2a = 0 \<and> \<beta>1a = 0")
       case False
       hence "head_\<omega> \<beta>2a < head_\<omega> \<beta>1a"
@@ -914,11 +914,8 @@ proof -
       thus ?thesis
         by simp
     qed simp
-    hence "\<not> \<alpha>1 + \<beta>1a * \<eta> + \<beta>0 * \<eta> + \<beta>0 * \<delta>a + \<beta>1a * \<delta>a
-      < \<alpha>1 + \<beta>1a * \<eta> + \<beta>0 * \<eta> + \<beta>0 * \<delta>a + (\<beta>1a * \<gamma>a + \<beta>2a * \<delta>a)"
-      by force
     thus ?thesis
-      by (simp add: semiring_normalization_rules(23,25))
+      by simp
   qed
   finally show ?thesis
     unfolding \<beta>1 \<delta>
