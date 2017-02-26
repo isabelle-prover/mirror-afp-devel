@@ -9,12 +9,12 @@ section {* Auxiliary Definitions and Lemmata *}
 theory Auxiliary
 imports
   Complex_Main
-  "~~/src/HOL/Library/FinFun"
   "~~/src/HOL/Library/Transitive_Closure_Table"
   "~~/src/HOL/Library/Predicate_Compile_Alternative_Defs"
   "~~/src/HOL/Library/Code_Char"
   "~~/src/HOL/Library/Monad_Syntax"
   "~~/src/HOL/Library/Infinite_Set"
+  "../../FinFun/FinFun"
 begin
 
 unbundle finfun_syntax

@@ -9,7 +9,7 @@ imports "~~/src/HOL/Library/Old_Datatype"
         "~~/src/HOL/Library/Infinite_Set"
         "~~/src/HOL/Library/Multiset"
         "~~/src/HOL/Library/FSet"
-        "~~/src/HOL/Library/FinFun"
+        "../FinFun/FinFun"
 keywords
   "atom_decl" "equivariance" :: thy_decl 
 begin
