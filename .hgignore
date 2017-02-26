@@ -41,5 +41,7 @@ thys/Collections/Examples/Autoref/nested_dfs.sml
 thys/Promela/Promela.sml
 thys/Formal_SSA/BraunSSA.ml
 
+thys/EdmondsKarp_Maxflow/evaluation/fofu-SML/Fofu_Export.sml
+
 admin/py-bootstrap
 admin/venv
