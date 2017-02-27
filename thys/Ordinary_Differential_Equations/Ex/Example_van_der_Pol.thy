@@ -105,7 +105,7 @@ definition
 schematic_goal solve_vdp_limit:
   "vdp_limit (-2) 2 (-9) 1 21 = ?X"
   using [[code_timing]]
-  by eval_lhs
+  by guess_rhs eval
 
 concrete_definition vdp_result uses solve_vdp_limit is "_ = dRETURN ?X"
 definition "vdp_reachi = map_option (map aform_of_list_aform) ((snd (vdp_result)))"
