@@ -10,91 +10,6 @@ begin
 
 subsection \<open>Preliminaries\<close>
 
-subsubsection \<open>Addition to Fields\<close>
-
-lemma divide_eq_minus_1_iff:
-  fixes a b :: "'a :: field"
-  shows "(a / b = - 1) \<longleftrightarrow> b \<noteq> 0 \<and> a = - b"
-using divide_eq_1_iff by fastforce
-
-subsubsection \<open>Addition to Power\<close>
-
-lemma power2_eq_iff_nonneg:
-  fixes x y :: "'a :: linordered_semidom"
-  assumes "0 \<le> x" "0 \<le> y"
-  shows "(x ^ 2 = y ^ 2) \<longleftrightarrow> x = y"
-using assms power2_eq_imp_eq by blast
-
-subsubsection \<open>Addition to Transcendental\<close>
-
-lemma arccos_minus_abs:
-  assumes "\<bar>x\<bar> \<le> 1"
-  shows "arccos (- x) = pi - arccos x"
-using assms by (simp add: arccos_minus)
-
-subsubsection \<open>Additions to Convex Euclidean Space\<close>
-
-lemma between_same:
-  assumes "between (a, a) x"
-  shows "x = a"
-using assms unfolding between_mem_segment by simp
-
-lemma betweenI:
-  assumes "0 \<le> u" "u \<le> 1" "x = (1 - u) *\<^sub>R a + u *\<^sub>R b"
-  shows "between (a, b) x"
-using assms unfolding between_def closed_segment_def by auto
-
-lemma betweenE:
-  assumes "between (a, b) x"
-  obtains u where "0 \<le> u" "u \<le> 1" "x = (1 - u) *\<^sub>R a + u *\<^sub>R b"
-using assms unfolding between_def closed_segment_def by auto
-
-lemma betweenI':
-  assumes "0 \<le> u" "u \<le> 1" "x = u *\<^sub>R a + (1 - u) *\<^sub>R b"
-  shows "between (a, b) x"
-proof -
-  from assms have "between (b, a) x" by (auto intro: betweenI)
-  from this show "between (a, b) x" by (simp add: between_commute)
-qed
-
-lemma betweenE':
-  assumes "between (a, b) x"
-  obtains u where "0 \<le> u" "u \<le> 1" "x = u *\<^sub>R a + (1 - u) *\<^sub>R b"
-proof -
-  from assms have "between (b, a) x" by (simp add: between_commute)
-  from this obtain u where "0 \<le> u" "u \<le> 1" "x = u *\<^sub>R a + (1 - u) *\<^sub>R b"
-    by (auto elim: betweenE)
-  from this that show thesis by blast
-qed
-
-lemma between_implies_scaled_diff:
-  assumes "between (S, T) X" "between (S, T) Y" "S \<noteq> Y"
-  obtains c where "(X - Y) = c *\<^sub>R (S - Y)"
-proof -
-  from \<open>between (S, T) X\<close> obtain u\<^sub>X where X: "X = u\<^sub>X *\<^sub>R S + (1 - u\<^sub>X) *\<^sub>R T"
-    by (auto elim: betweenE')
-  from \<open>between (S, T) Y\<close> obtain u\<^sub>Y where Y: "Y = u\<^sub>Y *\<^sub>R S + (1 - u\<^sub>Y) *\<^sub>R T"
-    by (auto elim: betweenE')
-  have "X - Y = (u\<^sub>X - u\<^sub>Y) *\<^sub>R (S - T)"
-  proof -
-    from X Y have "X - Y =  u\<^sub>X *\<^sub>R S - u\<^sub>Y *\<^sub>R S + ((1 - u\<^sub>X) *\<^sub>R T - (1 - u\<^sub>Y) *\<^sub>R T)" by simp
-    also have "\<dots> = (u\<^sub>X - u\<^sub>Y) *\<^sub>R S - (u\<^sub>X - u\<^sub>Y) *\<^sub>R T" by (simp add: scaleR_left.diff)
-    finally show ?thesis by (simp add: real_vector.scale_right_diff_distrib)
-  qed
-  moreover from Y have "S - Y = (1 - u\<^sub>Y) *\<^sub>R (S - T)"
-    by (simp add: real_vector.scale_left_diff_distrib real_vector.scale_right_diff_distrib)
-  moreover note \<open>S \<noteq> Y\<close>
-  ultimately have "(X - Y) = ((u\<^sub>X - u\<^sub>Y) / (1 - u\<^sub>Y)) *\<^sub>R (S - Y)" by auto
-  from this that show thesis by blast
-qed
-
-lemma between_swap:
-  fixes A B X Y :: "'a::euclidean_space"
-  assumes "between (A, B) X"
-  assumes "between (A, B) Y"
-  shows "between (X, B) Y \<longleftrightarrow> between (A, Y) X"
-using assms by (auto simp add: between)
-
 lemma betweenE_if_dist_leq:
   fixes A B X :: "'a::euclidean_space"
   assumes "between (A, B) X"
@@ -103,7 +18,7 @@ lemma betweenE_if_dist_leq:
 proof (cases "A = B")
   assume "A \<noteq> B"
   from \<open>between (A, B) X\<close> obtain u where u: "u \<ge> 0" "u \<le> 1" and X: "X = u *\<^sub>R A + (1 - u) *\<^sub>R B"
-    by (auto elim: betweenE')
+    by (metis add.commute betweenE between_commute)
   from X have "X = B + u *\<^sub>R (A - B)" and "X = A + (u - 1) *\<^sub>R (A - B)"
     by (simp add: scaleR_diff_left real_vector.scale_right_diff_distrib)+
   from \<open>X = B + u *\<^sub>R (A - B)\<close> have dist_B: "dist B X = norm (u *\<^sub>R (A - B))"
@@ -118,7 +33,7 @@ next
   assume "A = B"
   define u :: real where "u = 1"
   from \<open>between (A, B) X\<close> \<open>A = B\<close> have "1 / 2 \<le> u" "u \<le> 1" "X = u *\<^sub>R A + (1 - u) *\<^sub>R B"
-    unfolding u_def by (auto simp add: between_same)
+    unfolding u_def by auto
   from this that show thesis by blast
 qed
 
@@ -144,7 +59,7 @@ proof
   qed
   moreover from u have 2: "(1 / (2 * u)) \<ge> 0" "(1 / (2 * u)) \<le> 1" by auto
   ultimately show "between (X, B) (midpoint A B)"
-    using betweenI' by blast
+    using betweenI [of concl: B X]  by (metis add.commute between_commute)
 next
   assume "between (X, B) (midpoint A B)"
   from this have "between (A, midpoint A B) X"
@@ -156,121 +71,6 @@ next
   also from \<open>between (X, B) (midpoint A B)\<close> have "dist B (midpoint A B) \<le> dist B X"
     using between zero_le_dist by (metis add.commute dist_commute le_add_same_cancel1)
   finally show "dist A X \<le> dist B X" .
-qed
-
-subsubsection \<open>Additions to Angles\<close>
-
-lemma vangle_scales:
-  assumes "0 < c"
-  shows "vangle (c *\<^sub>R v\<^sub>1) v\<^sub>2 = vangle v\<^sub>1 v\<^sub>2"
-using assms unfolding vangle_def by auto
-
-lemma vangle_inverse:
-  "vangle (- v\<^sub>1) v\<^sub>2 = pi - vangle v\<^sub>1 v\<^sub>2"
-proof -
-  have "\<bar>v\<^sub>1 \<bullet> v\<^sub>2 / (norm v\<^sub>1 * norm v\<^sub>2)\<bar> \<le> 1"
-  proof cases
-    assume "v\<^sub>1 \<noteq> 0 \<and> v\<^sub>2 \<noteq> 0"
-    from this show ?thesis by (simp add: Cauchy_Schwarz_ineq2)
-  next
-    assume "\<not> (v\<^sub>1 \<noteq> 0 \<and> v\<^sub>2 \<noteq> 0)"
-    from this show ?thesis by auto
-  qed
-  from this show ?thesis
-    unfolding vangle_def by (simp add: arccos_minus_abs)
-qed
-
-lemma orthogonal_iff_angle:
-  shows "orthogonal (A - B) (C - B) \<longleftrightarrow> angle A B C = pi / 2"
-unfolding angle_def by (auto simp only: orthogonal_iff_vangle)
-
-lemma angle_inverse:
-  assumes "between (A, C) B"
-  assumes "A \<noteq> B" "B \<noteq> C"
-  shows "angle A B D = pi - angle C B D"
-proof -
-  from \<open>between (A, C) B\<close> obtain u where u: "u \<ge> 0" "u \<le> 1"
-    and X: "B = u *\<^sub>R A + (1 - u) *\<^sub>R C" by (auto elim: betweenE')
-  from \<open>A \<noteq> B\<close> \<open>B \<noteq> C\<close> X have "u \<noteq> 0" "u \<noteq> 1" by auto
-  have "0 < ((1 - u) / u)"
-    using \<open>u \<noteq> 0\<close> \<open>u \<noteq> 1\<close> \<open>u \<ge> 0\<close> \<open>u \<le> 1\<close> by simp
-  from X have "A - B = - (1 - u) *\<^sub>R (C - A)"
-    by (simp add: real_vector.scale_right_diff_distrib real_vector.scale_left_diff_distrib)
-  moreover from X have "C - B = u *\<^sub>R (C - A)"
-    by (simp add: scaleR_diff_left real_vector.scale_right_diff_distrib)
-  ultimately have "A - B = - (((1 - u) / u) *\<^sub>R (C - B))"
-    using \<open>u \<noteq> 0\<close> by simp (metis minus_diff_eq real_vector.scale_minus_left)
-  from this have "vangle (A - B) (D - B) = pi - vangle (C - B) (D - B)"
-    using \<open>0 < (1 - u) / u\<close> by (simp add: vangle_inverse vangle_scales)
-  from this show ?thesis
-    unfolding angle_def by simp
-qed
-
-lemma strictly_between_implies_angle_eq_pi:
-  assumes "between (A, C) B"
-  assumes "A \<noteq> B" "B \<noteq> C"
-  shows "angle A B C = pi"
-proof -
-  from \<open>between (A, C) B\<close> obtain u where u: "u \<ge> 0" "u \<le> 1"
-    and X: "B = u *\<^sub>R A + (1 - u) *\<^sub>R C" by (auto elim: betweenE')
-  from \<open>A \<noteq> B\<close> \<open>B \<noteq> C\<close> X have "u \<noteq> 0" "u \<noteq> 1" by auto
-  from \<open>A \<noteq> B\<close> \<open>B \<noteq> C\<close> \<open>between (A, C) B\<close> have "A \<noteq> C"
-    using between_same by blast
-  from X have "A - B = - (1 - u) *\<^sub>R (C - A)"
-    by (simp add: real_vector.scale_right_diff_distrib real_vector.scale_left_diff_distrib)
-  moreover from this have "dist A B = norm ((1 - u) *\<^sub>R (C - A))"
-    using \<open>u \<ge> 0\<close> \<open>u \<le> 1\<close> by (simp add: dist_norm)
-  moreover from X have "C - B = u *\<^sub>R (C - A)"
-    by (simp add: scaleR_diff_left real_vector.scale_right_diff_distrib)
-  moreover from this have "dist C B = norm (u *\<^sub>R (C - A))"
-    by (simp add: dist_norm)
-  ultimately have "(A - B) \<bullet> (C - B) / (dist A B * dist C B) = u * (u - 1) / (\<bar>1 - u\<bar> * \<bar>u\<bar>)"
-    using \<open>A \<noteq> C\<close> by (simp add: dot_square_norm power2_eq_square)
-  also have "\<dots> = - 1"
-    using \<open>u \<noteq> 0\<close> \<open>u \<noteq> 1\<close> \<open>u \<ge> 0\<close> \<open>u \<le> 1\<close> by (simp add: divide_eq_minus_1_iff)
-  finally show ?thesis
-    unfolding angle_altdef by simp
-qed
-
-subsubsection \<open>Additions to Triangles\<close>
-
-lemma pythagoras:
-  fixes A B C :: "'a :: euclidean_space"
-  assumes "orthogonal (A - C) (B - C)"
-  shows "(dist B C) ^ 2 + (dist C A) ^ 2 = (dist A B) ^ 2"
-proof -
-  from assms have "cos (angle A C B) = 0"
-    by (metis orthogonal_iff_angle cos_pi_half)
-  from this show ?thesis
-    by (simp add: cosine_law_triangle[of A B C] dist_commute)
-qed
-
-lemma isosceles_triangle_orthogonal_on_midpoint:
-  fixes A B C :: "'a::euclidean_space"
-  assumes "dist C A = dist C B"
-  shows "orthogonal (C - midpoint A B) (A - midpoint A B)"
-proof (cases "A = B")
-  assume "A \<noteq> B"
-  let ?M = "midpoint A B"
-  have "angle A ?M C = pi - angle B ?M C"
-    using \<open>A \<noteq> B\<close> angle_inverse between_midpoint(1) midpoint_eq_endpoint by metis
-  moreover have "angle A ?M C = angle C ?M B"
-  proof -
-    have congruence: "congruent_triangle C A ?M C B ?M"
-    proof (rule congruent_triangleI_sss)
-      show "dist C A = dist C B" using assms .
-      show "dist A ?M = dist B ?M" by (simp add: dist_midpoint)
-      show "dist C (midpoint A B) = dist C (midpoint A B)" ..
-    qed
-    from this show ?thesis by (simp add: congruent_triangle.angles(6))
-  qed
-  ultimately have "angle A ?M C = pi / 2" by (simp add: angle_commute)
-  from this show ?thesis
-    by (simp add: orthogonal_iff_angle orthogonal_commute)
-next
-  assume "A = B"
-  from this show ?thesis
-    by (simp add: orthogonal_clauses(1))
 qed
 
 subsection \<open>Properties of Chord Segments\<close>
@@ -336,7 +136,7 @@ proof -
     next
       assume "S = M"
       from this \<open>between (S, T) X\<close> have "X = M"
-        unfolding M_def by (metis between_same midpoint_eq_endpoint(1))
+        by (simp add: midpoint_between M_def)
       from \<open>X = M\<close> \<open>S = M\<close> have "(X - M) = 0 *\<^sub>R (S - M)" by simp
       from this that show thesis by blast
     qed
@@ -346,7 +146,7 @@ proof -
   from \<open>orthogonal (C - M) (S - M)\<close> \<open>orthogonal (C - M) (X - M)\<close> have
     "(dist S M) ^ 2 + (dist M C) ^ 2 = (dist C S) ^ 2"
     "(dist X M) ^ 2 + (dist M C) ^ 2 = (dist C X) ^ 2"
-    by (auto simp only: pythagoras)
+    by (auto simp only: Pythagoras)
   from this have geometric_observation:
     "(dist S M) ^ 2 = (dist C S) ^ 2 - (dist M C) ^ 2"
     "(dist X M) ^ 2 = (dist C X) ^ 2 - (dist M C) ^ 2"
