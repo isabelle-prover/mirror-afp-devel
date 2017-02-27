@@ -3717,6 +3717,21 @@ abstract =
 	application of this theorem we prove that complete graphs of size n
 	have treewidth n-1.
 
+[Menger]
+title = Menger's Theorem
+author = Christoph Dittmann <mailto:isabelle@christoph-d.de>
+topic = Mathematics/Graph Theory
+date = 2017-02-26
+notify = isabelle@christoph-d.de
+abstract = 
+  We present a formalization of Menger's Theorem for directed and
+  undirected graphs in Isabelle/HOL.  This well-known result shows that
+  if two non-adjacent distinct vertices u, v in a directed graph have no
+  separator smaller than n, then there exist n internally
+  vertex-disjoint paths from u to v.  The version for undirected graphs
+  follows immediately because undirected graphs are a special case of
+  directed graphs.
+
 [IEEE_Floating_Point]
 title = A Formal Model of IEEE Floating Point Arithmetic
 author = Lei Yu <mailto:ly271@cam.ac.uk>
