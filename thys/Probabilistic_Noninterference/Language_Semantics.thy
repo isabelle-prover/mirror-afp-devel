@@ -9,8 +9,6 @@ subsection {* Preliminaries *}
 
 text{* Trivia *}
 
-hide_const ii
-
 declare zero_le_mult_iff[simp]
 declare split_mult_pos_le[simp]
 declare zero_le_divide_iff[simp]
