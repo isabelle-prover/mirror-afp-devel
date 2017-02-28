@@ -49,7 +49,7 @@ proofs.</p>
 
 <p>We encourage authors of publications that contain Isabelle developments
 to make their theories available in the Archive of Formal Proofs and to refer
-to the archive entry in their publication. It makes it easer for referees to
+to the archive entry in their publication. It makes it easier for referees to
 check the validity of theorems (all entries in the archive are
 mechanically checked), it makes it easier for readers of the publication to
 understand details of your development, and it makes it easier to use and

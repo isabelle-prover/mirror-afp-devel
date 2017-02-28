@@ -76,13 +76,13 @@ your own developments. If you would like to make your work available to others
 <i>without</i> having to include the AFP articles you depend on, here is how to do it.
 </p>
 <p>
-If you are using Isabelle 2016, and have downloaded your AFP directory to
+If you are using Isabelle 2016-1, and have downloaded your AFP directory to
 <code>/home/myself/afp</code>, you should run the following commands
 <a href="#1">[1]</a> <a href="#2">[2]</a>:</p>
 <p>
 <pre class="code">
-    mkdir -p ~/.isabelle/Isabelle2016/etc/
-    echo "/home/myself/afp" >> ~/.isabelle/Isabelle2016/etc/components
+    mkdir -p ~/.isabelle/Isabelle2016-1/etc/
+    echo "/home/myself/afp" >> ~/.isabelle/Isabelle2016-1/etc/components
 </pre>
 
 <p>
