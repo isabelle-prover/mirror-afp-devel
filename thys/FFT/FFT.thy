@@ -161,7 +161,7 @@ proof -
     apply (rule geometric_sum)
     apply (unfold root_def)
     apply (simp add: DeMoivre)
-    using real0 realk sin_cos_between_zero_two_pi 
+    using real0 realk sin_cos_between_zero_two_pi
     apply (auto simp add: complex_eq_iff)
     done
   also have "... = ((root n ^ n) ^ k - 1) / (root n ^ k - 1)"
@@ -213,7 +213,7 @@ lemma root2 [simp]:
   by (simp add: complex_eq_iff root_def)
 
 lemma root4 [simp]:
-  "root 4 = ii"
+  "root 4 = \<i>"
   by (simp add: complex_eq_iff root_def)
 
 

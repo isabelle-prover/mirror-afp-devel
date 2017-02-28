@@ -64,7 +64,7 @@ proof -
   have der_dif: "(deriv ^^ n) (\<lambda>w. f w - y) z = (deriv ^^ n) f z"
     using \<open>0 < r\<close> \<open>0 < n\<close>
     by (auto simp: higher_deriv_diff [OF holf holomorphic_on_const])
-  have "norm ((2 * of_real pi * ii)/(fact n) * (deriv ^^ n) (\<lambda>w. f w - y) z)
+  have "norm ((2 * of_real pi * \<i>)/(fact n) * (deriv ^^ n) (\<lambda>w. f w - y) z)
         \<le> (B0/r^(Suc n)) * (2 * pi * r)"
     apply (rule has_contour_integral_bound_circlepath [of "(\<lambda>u. (f u - y)/(u - z)^(Suc n))" _ z])
     using Cauchy_has_contour_integral_higher_derivative_circlepath [OF contf' holf']
@@ -410,7 +410,7 @@ theorem second_Cartan_dim_1:
       and fg: "\<And>z. z \<in> ball 0 r \<Longrightarrow> f (g z) = z"
       and gf: "\<And>z. z \<in> ball 0 r \<Longrightarrow> g (f z) = z"
       and "0 < r"
-    shows "\<exists>t. \<forall>z \<in> ball 0 r. g z = exp(ii * of_real t) * z"
+    shows "\<exists>t. \<forall>z \<in> ball 0 r. g z = exp(\<i> * of_real t) * z"
 proof -
   have c_le_1: "c \<le> 1"
     if "0 \<le> c" "\<And>x. 0 \<le> x \<Longrightarrow> x < r \<Longrightarrow> c * x < r" for c
