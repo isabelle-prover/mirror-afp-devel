@@ -5,10 +5,10 @@ session "Nominal2" (AFP) = HOL +
   theories [document = false]
     "~~/src/HOL/Library/Old_Datatype"
     "~~/src/HOL/Library/Cardinality"
-    "~~/src/HOL/Library/FinFun"
     "~~/src/HOL/Library/Infinite_Set"
     "~~/src/HOL/Library/Phantom_Type"
     "~~/src/HOL/Library/FSet"
+    "../FinFun/FinFun"
   theories
     "Nominal2"
     "Atoms"

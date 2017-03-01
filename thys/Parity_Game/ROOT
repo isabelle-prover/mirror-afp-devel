@@ -1,10 +1,14 @@
 chapter AFP
 
-session Parity_Game (AFP) = Coinductive +
+session Parity_Game (AFP) = HOL +
   options [timeout = 600]
+  theories [document = false]
+    "../Coinductive/Coinductive_List"
+    "../Graph_Theory/Digraph_Isomorphism"
   theories
     PositionalDeterminacy
     AttractorInductive
+    Graph_TheoryCompatibility
   document_files
     "root.tex"
     "root.bib"

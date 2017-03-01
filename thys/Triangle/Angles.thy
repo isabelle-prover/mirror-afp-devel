@@ -174,4 +174,80 @@ lemma not_collinear_angle: "\<not>collinear {a,b,c} \<Longrightarrow> angle a b 
   using angle_bounds[of a b c] angle_collinear[of a b c]
   by (cases "angle a b c = 0 \<or> angle a b c = pi") auto
 
+subsection\<open>Contributions from Lukas Bulwahn\<close>
+
+lemma vangle_scales:
+  assumes "0 < c"
+  shows "vangle (c *\<^sub>R v\<^sub>1) v\<^sub>2 = vangle v\<^sub>1 v\<^sub>2"
+using assms unfolding vangle_def by auto
+
+lemma vangle_inverse:
+  "vangle (- v\<^sub>1) v\<^sub>2 = pi - vangle v\<^sub>1 v\<^sub>2"
+proof -
+  have "\<bar>v\<^sub>1 \<bullet> v\<^sub>2 / (norm v\<^sub>1 * norm v\<^sub>2)\<bar> \<le> 1"
+  proof cases
+    assume "v\<^sub>1 \<noteq> 0 \<and> v\<^sub>2 \<noteq> 0"
+    from this show ?thesis by (simp add: Cauchy_Schwarz_ineq2)
+  next
+    assume "\<not> (v\<^sub>1 \<noteq> 0 \<and> v\<^sub>2 \<noteq> 0)"
+    from this show ?thesis by auto
+  qed
+  from this show ?thesis
+    unfolding vangle_def
+    by (simp add: arccos_minus_abs)
+qed
+
+lemma orthogonal_iff_angle:
+  shows "orthogonal (A - B) (C - B) \<longleftrightarrow> angle A B C = pi / 2"
+unfolding angle_def by (auto simp only: orthogonal_iff_vangle)
+
+lemma angle_inverse:
+  assumes "between (A, C) B"
+  assumes "A \<noteq> B" "B \<noteq> C"
+  shows "angle A B D = pi - angle C B D"
+proof -
+  from \<open>between (A, C) B\<close> obtain u where u: "u \<ge> 0" "u \<le> 1"
+    and X: "B = u *\<^sub>R A + (1 - u) *\<^sub>R C"
+    by (metis add.commute betweenE between_commute)
+  from \<open>A \<noteq> B\<close> \<open>B \<noteq> C\<close> X have "u \<noteq> 0" "u \<noteq> 1" by auto
+  have "0 < ((1 - u) / u)"
+    using \<open>u \<noteq> 0\<close> \<open>u \<noteq> 1\<close> \<open>u \<ge> 0\<close> \<open>u \<le> 1\<close> by simp
+  from X have "A - B = - (1 - u) *\<^sub>R (C - A)"
+    by (simp add: real_vector.scale_right_diff_distrib real_vector.scale_left_diff_distrib)
+  moreover from X have "C - B = u *\<^sub>R (C - A)"
+    by (simp add: scaleR_diff_left real_vector.scale_right_diff_distrib)
+  ultimately have "A - B = - (((1 - u) / u) *\<^sub>R (C - B))"
+    using \<open>u \<noteq> 0\<close> by simp (metis minus_diff_eq real_vector.scale_minus_left)
+  from this have "vangle (A - B) (D - B) = pi - vangle (C - B) (D - B)"
+    using \<open>0 < (1 - u) / u\<close> by (simp add: vangle_inverse vangle_scales)
+  from this show ?thesis
+    unfolding angle_def by simp
+qed
+
+lemma strictly_between_implies_angle_eq_pi:
+  assumes "between (A, C) B"
+  assumes "A \<noteq> B" "B \<noteq> C"
+  shows "angle A B C = pi"
+proof -
+  from \<open>between (A, C) B\<close> obtain u where u: "u \<ge> 0" "u \<le> 1"
+    and X: "B = u *\<^sub>R A + (1 - u) *\<^sub>R C"
+    by (metis add.commute betweenE between_commute)
+  from \<open>A \<noteq> B\<close> \<open>B \<noteq> C\<close> X have "u \<noteq> 0" "u \<noteq> 1" by auto
+  from \<open>A \<noteq> B\<close> \<open>B \<noteq> C\<close> \<open>between (A, C) B\<close> have "A \<noteq> C" by auto
+  from X have "A - B = - (1 - u) *\<^sub>R (C - A)"
+    by (simp add: real_vector.scale_right_diff_distrib real_vector.scale_left_diff_distrib)
+  moreover from this have "dist A B = norm ((1 - u) *\<^sub>R (C - A))"
+    using \<open>u \<ge> 0\<close> \<open>u \<le> 1\<close> by (simp add: dist_norm)
+  moreover from X have "C - B = u *\<^sub>R (C - A)"
+    by (simp add: scaleR_diff_left real_vector.scale_right_diff_distrib)
+  moreover from this have "dist C B = norm (u *\<^sub>R (C - A))"
+    by (simp add: dist_norm)
+  ultimately have "(A - B) \<bullet> (C - B) / (dist A B * dist C B) = u * (u - 1) / (\<bar>1 - u\<bar> * \<bar>u\<bar>)"
+    using \<open>A \<noteq> C\<close> by (simp add: dot_square_norm power2_eq_square)
+  also have "\<dots> = - 1"
+    using \<open>u \<noteq> 0\<close> \<open>u \<noteq> 1\<close> \<open>u \<ge> 0\<close> \<open>u \<le> 1\<close> by (simp add: divide_eq_minus_1_iff)
+  finally show ?thesis
+    unfolding angle_altdef by simp
+qed
+
 end

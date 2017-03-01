@@ -7,13 +7,13 @@ imports
   "./Ids"
 begin
 context ids begin
-subsection \<open>Characterization of Term Derivatives\<close>
+section \<open>Characterization of Term Derivatives\<close>
 text \<open>
  This section builds up to a proof that in well-formed interpretations, all
  terms have derivatives, and those derivatives agree with the expected rules
  of derivatives. In particular, we show the [frechet] function given in the
  denotational semantics is the true Frechet derivative of a term. From this
- theorem we can recover all the standard derivative rules as corollaries.
+ theorem we can recover all the standard derivative identities as corollaries.
 \<close>
 
 lemma inner_prod_eq:
@@ -113,11 +113,11 @@ lemma func_lemma:
   apply(auto)  
   done
 
-(* Our syntactically-defined derivatives of terms agree with the actual derivatives of the terms.
- * Since our definition of derivative is total, this gives us that derivatives are "decidable" for
- * terms (modulo computations on reals) and that they obey all the expected identities, which gives
- * us the axioms we want for differential terms essentially for free.
- *)
+text \<open> The syntactic definition of term derivatives agrees with the semantic definition.
+  Since the syntactic definition of derivative is total, this gives us that derivatives are "decidable" for
+  terms (modulo computations on reals) and that they obey all the expected identities, which gives
+  us the axioms we want for differential terms essentially for free.
+ \<close>
 lemma frechet_correctness:
   fixes I :: "('a::finite, 'b::finite, 'c::finite) interp" and \<nu>
   assumes good_interp: "is_interp I"
@@ -130,6 +130,7 @@ next
     by (intro func_lemma) auto
 qed auto
 
+text \<open>If terms are semantically equivalent in all states, so are their derivatives\<close>
 lemma sterm_determines_frechet:
   fixes I ::"('a1::finite, 'b1::finite, 'c::finite) interp"
     and J ::"('a2::finite, 'b2::finite, 'c::finite) interp"

@@ -549,7 +549,7 @@ proof -
     by (auto simp: mod_Suc step_def dest: decide_step)
 
   have "step (r1 + k') = step (step r1 + k')"
-    unfolding step_def by (rule mod_add_left_eq)
+    unfolding step_def by (simp add: mod_add_left_eq)
   with rs0 rks0 have "step k' = 0" by (auto simp: step_def mod_Suc)
   then obtain k'' where "k' = k''*nSteps" by (auto simp: step_def)
   with dn2' dv2' 

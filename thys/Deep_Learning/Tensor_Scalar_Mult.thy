@@ -12,9 +12,9 @@ definition vec_smult::"'a::ring \<Rightarrow> 'a list \<Rightarrow> 'a list" whe
 lemma vec_smult0: "vec_smult 0 as = vec0 (length as)"
   by (induction as; auto simp add:vec0_def vec_smult_def)
 
-lemma vec_smult_distr_right: 
+lemma vec_smult_distr_right:
 shows "vec_smult (\<alpha> + \<beta>) as = vec_plus (vec_smult \<alpha> as) (vec_smult \<beta> as)"
-  unfolding vec_smult_def vec_plus_def 
+  unfolding vec_smult_def vec_plus_def
   by (induction as; simp add: distrib_right)
 
 lemma vec_smult_Cons:
@@ -23,7 +23,7 @@ shows "vec_smult \<alpha> (a # as) = (\<alpha> * a) # vec_smult \<alpha> as" by 
 lemma vec_plus_Cons:
 shows "vec_plus (a # as) (b # bs) = (a+b) # vec_plus as bs" by (simp add: vec_plus_def)
 
-lemma vec_smult_distr_left: 
+lemma vec_smult_distr_left:
 assumes "length as = length bs"
 shows "vec_smult \<alpha> (vec_plus as bs) = vec_plus (vec_smult \<alpha> as) (vec_smult \<alpha> bs)"
 using assms proof (induction as arbitrary:bs)
@@ -32,30 +32,30 @@ using assms proof (induction as arbitrary:bs)
 next
   case (Cons a as')
   then obtain b bs' where "bs = b # bs'" by (metis Suc_length_conv)
-  then have 0:"vec_smult \<alpha> (vec_plus (a # as') bs) = (\<alpha>*(a+b)) # vec_smult \<alpha> (vec_plus as' bs')" 
+  then have 0:"vec_smult \<alpha> (vec_plus (a # as') bs) = (\<alpha>*(a+b)) # vec_smult \<alpha> (vec_plus as' bs')"
     unfolding vec_smult_def vec_plus_def using Cons.IH[of bs'] by simp
   have "length bs' = length as'" using Cons.prems \<open>bs = b # bs'\<close> by auto
-  then show ?case unfolding 0 unfolding  `bs = b # bs'` vec_smult_Cons vec_plus_Cons 
+  then show ?case unfolding 0 unfolding  `bs = b # bs'` vec_smult_Cons vec_plus_Cons
     by (simp add: Cons.IH distrib_left)
 qed
 
 lemma length_vec_smult: "length (vec_smult \<alpha> v) = length v" unfolding vec_smult_def by simp
 
-definition smult::"'a::ring \<Rightarrow> 'a tensor \<Rightarrow> 'a tensor" (infixl "\<cdot>" 70) where 
+definition smult::"'a::ring \<Rightarrow> 'a tensor \<Rightarrow> 'a tensor" (infixl "\<cdot>" 70) where
 "smult \<alpha> A = (tensor_from_vec (dims A) (vec_smult \<alpha> (vec A)))"
 
 
 lemma tensor_smult0: fixes A::"'a::ring tensor"
-shows "0 \<cdot> A = tensor0 (dims A)" 
+shows "0 \<cdot> A = tensor0 (dims A)"
   unfolding smult_def tensor0_def vec_smult_def using vec_smult0 length_vec
   by (metis (no_types) vec_smult_def)
 
-lemma dims_smult[simp]:"dims (\<alpha> \<cdot> A) = dims A" 
+lemma dims_smult[simp]:"dims (\<alpha> \<cdot> A) = dims A"
 and   vec_smult[simp]: "vec  (\<alpha> \<cdot> A) = map (op * \<alpha>) (vec A)"
   unfolding smult_def vec_smult_def by (simp add: length_vec)+
 
 lemma tensor_smult_distr_right: "(\<alpha> + \<beta>) \<cdot> A = \<alpha> \<cdot> A  + \<beta> \<cdot> A"
-  unfolding plus_def plus_base_def 
+  unfolding plus_def plus_base_def
   by (auto; metis smult_def vec_smult_def vec_smult_distr_right)
 
 lemma tensor_smult_distr_left: "dims A = dims B \<Longrightarrow> \<alpha> \<cdot> (A + B) = \<alpha> \<cdot> A  + \<alpha> \<cdot> B"
@@ -70,7 +70,7 @@ proof -
   have "length (vec_smult \<alpha> (vec B)) = length (vec B)"
     by (simp add: vec_smult_def)
   then show ?thesis
-    unfolding plus_def plus_base_def using f4 f3 f2 a1 
+    unfolding plus_def plus_base_def using f4 f3 f2 a1
     by (simp add: length_vec smult_def vec_smult_distr_left)
 qed
 
@@ -87,7 +87,7 @@ proof (rule tensor_eqI)
     using dims_smult dims_subtensor assms(1) assms(2) by simp
   show "vec (\<alpha> \<cdot> subtensor A i) = vec (subtensor (\<alpha> \<cdot> A) i)"
     unfolding vec_smult
-    unfolding vec_subtensor[OF `dims A \<noteq> []` `i < hd (dims A)`] 
+    unfolding vec_subtensor[OF `dims A \<noteq> []` `i < hd (dims A)`]
     using vec_subtensor[of "\<alpha> \<cdot> A" i]
     by (simp add: assms(1) assms(2) drop_map fixed_length_sublist_def take_map)
 qed
@@ -104,14 +104,14 @@ using assms proof (induction A arbitrary:"is" rule:subtensor_induct)
 next
   case (order_step A "is")
   then obtain i is' where "is = i # is'" by blast
-  then have "lookup (\<alpha> \<cdot> subtensor A i) is' = \<alpha> * lookup (subtensor A i) is'" 
+  then have "lookup (\<alpha> \<cdot> subtensor A i) is' = \<alpha> * lookup (subtensor A i) is'"
     by (metis (no_types, lifting) dims_subtensor list.sel(1) list.sel(3) order_step.IH order_step.hyps order_step.prems valid_index_dimsE)
-  then show ?case using smult_subtensor `is = i # is'` dims_smult lookup_subtensor1 
+  then show ?case using smult_subtensor `is = i # is'` dims_smult lookup_subtensor1
     list.sel(1) order_step.hyps order_step.prems valid_index_dimsE
     by metis
 qed
 
-lemma tensor_smult_assoc: 
+lemma tensor_smult_assoc:
 fixes A::"'a::ring tensor"
 shows "\<alpha> \<cdot> (\<beta> \<cdot> A) = (\<alpha> * \<beta>) \<cdot> A"
 by (rule tensor_lookup_eqI, simp, metis lookup_smult dims_smult mult.assoc)

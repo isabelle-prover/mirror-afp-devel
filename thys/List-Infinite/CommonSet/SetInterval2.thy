@@ -836,18 +836,21 @@ subsection {* Some auxiliary results for set operations *}
 
 subsubsection {* Some additional abbreviations for relations *}
 
-text {* Abbreviations for @{text "refl"}, @{text "sym"}, @{text "equiv"}, @{text "refl"} similar to @{text "transP"} from HOL/Predicate. *}
+text {* Abbreviations for @{text "refl"}, @{text "sym"}, @{text "equiv"}, @{text "refl"}, @{text "trans"} *}
 
-abbreviation reflP :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool" where
+abbreviation (input) reflP :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool" where
   "reflP r \<equiv> refl {(x, y). r x y}"
 
-abbreviation symP :: "('a => 'a => bool) => bool" where
+abbreviation (input) symP :: "('a => 'a => bool) => bool" where
   "symP r == sym {(x, y). r x y}"
 
-abbreviation equivP :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool" where
-  "equivP r \<equiv> reflP r \<and> symP r \<and> transP r"
+abbreviation (input) transP :: "('a => 'a => bool) => bool" where
+  "transP r == trans {(x, y). r x y}"
 
-abbreviation irreflP :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool" where
+abbreviation (input) equivP :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool" where
+  "equivP r \<equiv> reflP r \<and> symP r \<and> transp r"
+
+abbreviation (input) irreflP :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool" where
   "irreflP r \<equiv> irrefl {(x, y). r x y}"
 
 

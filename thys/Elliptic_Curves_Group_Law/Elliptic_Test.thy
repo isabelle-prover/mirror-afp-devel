@@ -20,6 +20,7 @@ where "x --\<^bsub>m\<^esub> y = (x - y) mod m"
 definition mpow :: "int \<Rightarrow> int \<Rightarrow> nat \<Rightarrow> int" (infixr "^^^\<index>" 80)
 where "x ^^^\<^bsub>m\<^esub> n = x ^ n mod m"
 
+(* This part has to updated from Isabelle 2016-1 submission to development 
 lemma (in residues) res_of_natural_eq: "\<guillemotleft>n\<guillemotright>\<^sub>\<nat> = int n mod m"
   by (induct n)
     (simp_all add: of_natural_def res_zero_eq res_one_eq res_add_eq mod_add_right_eq [symmetric])
@@ -266,5 +267,5 @@ lemma "mmake_affine m (fast_ppoint_mult m a priv (gx, gy, 1)) = Point pubx puby"
 
 lemma "mmake_affine m (fast_ppoint_mult m a order (gx, gy, 1)) = Infinity"
   by eval
-  
+*)
 end

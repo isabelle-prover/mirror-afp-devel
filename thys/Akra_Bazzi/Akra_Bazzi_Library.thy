@@ -77,29 +77,33 @@ lemma smallo_1_tendsto_0: "(f \<longlongrightarrow> 0) at_top \<Longrightarrow> 
   by (rule smalloI_tendsto) simp_all
 
 lemma filterlim_at_top_smallomega_1: 
-  "f \<in> \<omega>(\<lambda>x. 1 :: real) \<Longrightarrow> eventually (\<lambda>x. f x > 0) at_top \<Longrightarrow> filterlim f at_top at_top"
-  apply (drule smallomegaD_filterlim_at_top, simp)
-  apply (subst filterlim_cong[OF refl refl, of _ "\<lambda>x. abs (f x)"])
-  apply (auto elim!: eventually_mono)
-  done
-
-lemma smallo_imp_abs_less:
-  assumes "f \<in> o(g)" "eventually (\<lambda>x. g x > (0::'a::linordered_field)) at_top"
-  shows   "eventually (\<lambda>x. \<bar>f x\<bar> < g x) at_top"
+  assumes "f \<in> \<omega>[F](\<lambda>x. 1 :: real)" "eventually (\<lambda>x. f x > 0) F"
+  shows   "filterlim f at_top F"
 proof -
-  have "1/2 > (0::'a)" by simp
+  from assms have "filterlim (\<lambda>x. norm (f x / 1)) at_top F"
+    by (intro smallomegaD_filterlim_at_top_norm) (auto elim: eventually_mono)
+  also have "?this \<longleftrightarrow> ?thesis"
+    using assms by (intro filterlim_cong refl) (auto elim!: eventually_mono)
+  finally show ?thesis .
+qed
+
+lemma smallo_imp_abs_less_real:
+  assumes "f \<in> o[F](g)" "eventually (\<lambda>x. g x > (0::real)) F"
+  shows   "eventually (\<lambda>x. \<bar>f x\<bar> < g x) F"
+proof -
+  have "1/2 > (0::real)" by simp
   from landau_o.smallD[OF assms(1) this] assms(2) show ?thesis
     by eventually_elim auto
 qed
 
-lemma smallo_imp_less: 
-  assumes "f \<in> o(g)" "eventually (\<lambda>x. g x > 0) at_top"
-  shows   "eventually (\<lambda>x. f x < g x) at_top"
-  using smallo_imp_abs_less[OF assms] by eventually_elim simp
+lemma smallo_imp_less_real:
+  assumes "f \<in> o[F](g)" "eventually (\<lambda>x. g x > (0::real)) F"
+  shows   "eventually (\<lambda>x. f x < g x) F"
+  using smallo_imp_abs_less_real[OF assms] by eventually_elim simp
 
-lemma smallo_imp_le: 
-  assumes "f \<in> o(g)" "eventually (\<lambda>x. g x \<ge> 0) at_top"
-  shows   "eventually (\<lambda>x. f x \<le> g x) at_top"
+lemma smallo_imp_le_real: 
+  assumes "f \<in> o[F](g)" "eventually (\<lambda>x. g x \<ge> (0::real)) F"
+  shows   "eventually (\<lambda>x. f x \<le> g x) F"
   using landau_o.smallD[OF assms(1) zero_less_one] assms(2) by eventually_elim simp
 
 (* TODO MOVE *)
@@ -158,28 +162,28 @@ proof-
 qed
 
 lemma one_plus_x_powr_taylor2_bigo:
-  assumes lim: "(f \<longlongrightarrow> 0) at_top"
-  shows   "(\<lambda>x. (1 + f x) powr (p::real) - 1 - p * f x) \<in> O(\<lambda>x. f x ^ 2)"
+  assumes lim: "(f \<longlongrightarrow> 0) F"
+  shows   "(\<lambda>x. (1 + f x) powr (p::real) - 1 - p * f x) \<in> O[F](\<lambda>x. f x ^ 2)"
 proof -
   from one_plus_x_powr_taylor2[of p] guess k .
   moreover from tendstoD[OF lim, of "1/2"] 
-    have "eventually (\<lambda>x. abs (f x) < 1/2) at_top" by (simp add: dist_real_def)
-  ultimately have "eventually (\<lambda>x. abs ((1 + f x) powr p - 1 - p * f x) \<le> k * abs (f x ^ 2)) at_top"
+    have "eventually (\<lambda>x. abs (f x) < 1/2) F" by (simp add: dist_real_def)
+  ultimately have "eventually (\<lambda>x. norm ((1 + f x) powr p - 1 - p * f x) \<le> k * norm (f x ^ 2)) F"
     by (auto elim!: eventually_mono)
   thus ?thesis by (rule bigoI)
 qed
 
 lemma one_plus_x_powr_taylor1_bigo:
-  assumes lim: "(f \<longlongrightarrow> 0) at_top"
-  shows   "(\<lambda>x. (1 + f x) powr (p::real) - 1) \<in> O(\<lambda>x. f x)"
+  assumes lim: "(f \<longlongrightarrow> 0) F"
+  shows   "(\<lambda>x. (1 + f x) powr (p::real) - 1) \<in> O[F](\<lambda>x. f x)"
 proof -
-  from assms have "(\<lambda>x. (1 + f x) powr p - 1 - p * f x) \<in> O(\<lambda>x. (f x)\<^sup>2)"
+  from assms have "(\<lambda>x. (1 + f x) powr p - 1 - p * f x) \<in> O[F](\<lambda>x. (f x)\<^sup>2)"
     by (rule one_plus_x_powr_taylor2_bigo)
-  also from assms have "f \<in> O(\<lambda>_. 1)" by (intro bigoI_tendsto) simp_all
-  from landau_o.big.mult[of f f, OF _ this] have "(\<lambda>x. (f x)^2) \<in> O(\<lambda>x. f x)"
+  also from assms have "f \<in> O[F](\<lambda>_. 1)" by (intro bigoI_tendsto) simp_all
+  from landau_o.big.mult[of f F f, OF _ this] have "(\<lambda>x. (f x)^2) \<in> O[F](\<lambda>x. f x)"
     by (simp add: power2_eq_square)
-  finally have A: "(\<lambda>x. (1 + f x) powr p - 1 - p * f x) \<in> O(f)" .
-  have B: "(\<lambda>x. p * f x) \<in> O(f)" by simp
+  finally have A: "(\<lambda>x. (1 + f x) powr p - 1 - p * f x) \<in> O[F](f)" .
+  have B: "(\<lambda>x. p * f x) \<in> O[F](f)" by simp
   from sum_in_bigo(1)[OF A B] show ?thesis by simp
 qed
 

@@ -58,7 +58,7 @@ session Refine_Imperative_HOL (AFP) = Sepref_Prereq +
 
 (* Smaller Sessions: *)
 session Sepref_Basic (AFP) = Sepref_Prereq +
-  options [document = false, timeout = 120]
+  options [document = false, timeout = 200]
   theories [document = false]
     Sepref
 

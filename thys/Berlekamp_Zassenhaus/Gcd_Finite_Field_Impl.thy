@@ -95,7 +95,7 @@ proof -
     with cop have coph: "coprime (lead_coeff h) p" by (metis coprime_divisors dvd_def mult.right_neutral)
     let ?k = "Mp k"  
     from arg_cong[OF unit, of degree] have degm0: "degree_m (h * ?k) = 0" unfolding degree_m_def by simp
-    have "lead_coeff ?k \<in> {0 ..< p}" unfolding lead_coeff_def Mp_coeff M_def using m1 by simp
+    have "lead_coeff ?k \<in> {0 ..< p}" unfolding Mp_coeff M_def using m1 by simp
     with k0 have lk: "lead_coeff ?k \<ge> 1" "lead_coeff ?k < p"
       by (auto simp add: int_one_le_iff_zero_less order.not_eq_order_implies_strict)
     have id: "lead_coeff (h * ?k) = lead_coeff h * lead_coeff ?k" unfolding lead_coeff_mult ..
@@ -109,15 +109,16 @@ proof -
       with coph show ?thesis by (simp add: gcd_mult_cancel)
     qed    
     with id have cop_prod: "coprime (lead_coeff (h * ?k)) p" by simp
-    from h0 k0 have lc0: "lead_coeff (h * ?k) \<noteq> 0" unfolding lead_coeff_mult by auto
-    from cop_prod[unfolded gcd_non_0[OF p0]] have lcp: "lead_coeff (h * ?k) mod p \<noteq> 0" using p
-      by (metis M_def gcd_mod2 inverse_mod_coprime mod_mult_self1_is_0 mod_self mult.commute zero_neq_one)
+    from h0 k0 have lc0: "lead_coeff (h * ?k) \<noteq> 0"
+      unfolding lead_coeff_mult by auto
+    from p have lcp: "lead_coeff (h * ?k) mod p \<noteq> 0"
+      using M_1 M_def cop_prod by auto
     have deg_eq: "degree_m (h * ?k) = degree (h * Mp k)" 
-      by (rule degree_m_eq[OF _ m1], unfold lead_coeff_def[symmetric], insert lcp)
+      by (rule degree_m_eq[OF _ m1], insert lcp)
     from this[unfolded degm0] have "degree (h * Mp k) = 0" by simp
     with degree_mult_eq[OF h0 k0] have deg0: "degree h = 0" by auto
     from degree0_coeffs[OF this] obtain h0 where h: "h = [:h0:]" by auto
-    have "content h = abs h0" unfolding content_def h by (cases "h0 = 0", auto simp: list_gcd_def)
+    have "content h = abs h0" unfolding content_def h by (cases "h0 = 0", auto)
     hence "abs h0 = 1" using cnt by auto
     hence "h0 \<in> {-1,1}" by auto
     hence "h = 1 \<or> h = -1" unfolding h by (auto)
@@ -160,17 +161,10 @@ definition gcd_int_poly :: "int poly \<Rightarrow> int poly \<Rightarrow> int po
   "gcd_int_poly f g =
     (if f = 0 then normalize g
      else if g = 0 then normalize f
-          else let ct = gcd (Polynomial_Factorial.content f) (Polynomial_Factorial.content g);
+          else let ct = gcd (Polynomial.content f) (Polynomial.content g);
             ff = primitive_part f; 
             gg = primitive_part g
           in if coprime_heuristic ff gg then [:ct:] else smult ct (gcd_poly_code_aux ff gg))" 
-  
-lemma content_same: "Polynomial_Factorial.content f = content f"
-proof -
-  obtain xs where id: "coeffs f = xs" by auto
-  show ?thesis unfolding Polynomial_Factorial.content_def content_def id list_gcd_def
-    by (induct xs, auto)
-qed
   
 lemma gcd_int_poly_code[code_unfold]: "gcd = gcd_int_poly" 
 proof (intro ext)
@@ -186,7 +180,7 @@ proof (intro ext)
     case False
     hence cop: "coprime_heuristic ?ff ?gg" by simp
     from False have "f \<noteq> 0" by auto
-    from content_primitive_part[OF this] have cnt: "content ?ff = 1" unfolding content_same .
+    with content_primitive_part have cnt: "content ?ff = 1" .
     have id: "coprime ?ff ?gg" 
       by (rule coprime_heuristic[OF cop], insert cnt, auto)
     show ?thesis unfolding gcd_poly_decompose[of f g] unfolding gcd_int_poly_def Let_def id

@@ -32,11 +32,11 @@ lemma confluentD:
   "\<lbrakk> confluent R; R^** a b; R^** a c  \<rbrakk> \<Longrightarrow> \<exists>d. R^** b d \<and> R^** c d"
 by(auto simp add: commute_def diamond_def square_def)
 
-lemma tranclp_DomainP: "R^++ a b \<Longrightarrow> DomainP R a"
+lemma tranclp_DomainP: "R^++ a b \<Longrightarrow> Domainp R a"
 by(auto elim: converse_tranclpE)
 
 lemma confluent_unique_normal_form:
-  "\<lbrakk> confluent R; R^** a b; R^** a c; \<not> DomainP R b; \<not> DomainP R c  \<rbrakk> \<Longrightarrow> b = c"
+  "\<lbrakk> confluent R; R^** a b; R^** a c; \<not> Domainp R b; \<not> Domainp R c  \<rbrakk> \<Longrightarrow> b = c"
 by(fastforce dest!: confluentD[of R a b c] dest: tranclp_DomainP rtranclpD[where a=b] rtranclpD[where a=c])
 
 subsection {* Definition of the @{term "canceling"} relation *}
@@ -126,7 +126,7 @@ lemma cancels_to_trans [trans]:
 by (auto simp add:cancels_to_def)
 
 definition canceled :: "'a word_g_i \<Rightarrow> bool"
- where "canceled l = (\<not> DomainP cancels_to_1 l)"
+ where "canceled l = (\<not> Domainp cancels_to_1 l)"
 
 (* Alternative view on cancelation, sometimes easier to work with *)
 lemma cancels_to_1_unfold:
@@ -366,9 +366,9 @@ proof-
   moreover
   from `cancels_to a c` have "cancels_to_1^** a c" by (simp add: cancels_to_def)
   moreover
-  from `canceled b` have "\<not> DomainP cancels_to_1 b" by (simp add: canceled_def)
+  from `canceled b` have "\<not> Domainp cancels_to_1 b" by (simp add: canceled_def)
   moreover
-  from `canceled c` have "\<not> DomainP cancels_to_1 c" by (simp add: canceled_def)
+  from `canceled c` have "\<not> Domainp cancels_to_1 c" by (simp add: canceled_def)
   ultimately
   show "b = c"
     by (rule confluent_unique_normal_form)
@@ -442,7 +442,7 @@ lemma cons_canceled:
   shows   "canceled x"
 proof(rule ccontr)
   assume "\<not> canceled x"
-  hence "DomainP cancels_to_1 x" by (simp add:canceled_def)
+  hence "Domainp cancels_to_1 x" by (simp add:canceled_def)
   then obtain x' where "cancels_to_1 x x'" by auto
   then obtain xs1 x1 x2 xs2
     where x: "x = xs1 @ x1 # x2 # xs2"
@@ -494,7 +494,7 @@ proof-
 
   have "canceled l'"
   proof(rule ccontr)
-    assume "\<not> canceled l'" hence "DomainP cancels_to_1 l'" by (simp add: canceled_def)
+    assume "\<not> canceled l'" hence "Domainp cancels_to_1 l'" by (simp add: canceled_def)
     then obtain y where "cancels_to_1 l' y" by auto
     with `cancels_to l l'` have "cancels_to l y" by (auto simp add: cancels_to_def)
     from `cancels_to_1 l' y` have "y \<notin> ?Q" by(rule minimal)
@@ -686,7 +686,7 @@ proof
   (* This statement is needed explicitly later in this proof *)
   have different_images: "\<And> f a b. f a \<noteq> f b \<Longrightarrow> a \<noteq> b" by auto
 
-  assume "DomainP cancels_to_1 (map (map_prod f g) l)"
+  assume "Domainp cancels_to_1 (map (map_prod f g) l)"
   then obtain l' where "cancels_to_1 (map (map_prod f g) l) l'" by auto
   then obtain i where "Suc i < length l"
     and "canceling (map (map_prod f g) l ! i) (map (map_prod f g) l ! Suc i)"

@@ -10,16 +10,19 @@ begin
 section \<open>Static Semantics\<close>
 text \<open>This section introduces functions for computing properties of the static semantics, specifically
  the following dependencies:
-  Signatures: Symbols (from the interpretation) which influence the result of a term, ode, formula, program
-  Free variables: Variables (from the state) which influence the result of a term, ode, formula, program
-  Bound variables: Variables (from the state) that *might* be influenced by a program
-  Must-bound variables: Variables (from the state) that are *always* influenced by a program (i.e.
+  \begin{itemize}
+    \item Signatures: Symbols (from the interpretation) which influence the result of a term, ode, formula, program
+    \item Free variables: Variables (from the state) which influence the result of a term, ode, formula, program
+    \item Bound variables: Variables (from the state) that *might* be influenced by a program
+    \item Must-bound variables: Variables (from the state) that are *always* influenced by a program (i.e.
   will never depend on anything other than the free variables of that program)
+  \end{itemize}
    
   We also prove basic lemmas about these definitions, but their overall correctness is proved elsewhere
   in the Bound Effect and Coincidence theorems.
   \<close>
 
+subsection \<open>Signature Definitions\<close>
 primrec SIGT :: "('a, 'c) trm \<Rightarrow> 'a set"
 where
   "SIGT (Var var) = {}"
@@ -66,7 +69,7 @@ text\<open>
   where all the (Inl x) elements are unprimed variables x and all the (Inr x) elements are
   primed variables x'.
   \<close>
-(* Free variables of a term *)
+text\<open>Free variables of a term \<close>
 primrec FVT :: "('a, 'c) trm \<Rightarrow> ('c + 'c) set"
 where
   "FVT (Var x) = {Inl x}"
@@ -80,15 +83,14 @@ where
 fun FVDiff :: "('a, 'c) trm \<Rightarrow> ('c + 'c) set"
 where "FVDiff f = (\<Union>x \<in> (FVT f). primify x)"
 
-(* Free variables of an ODE includes both the bound variables and the terms *)
+text\<open> Free variables of an ODE includes both the bound variables and the terms \<close>
 fun FVO :: "('a, 'c) ODE \<Rightarrow> 'c set"
 where
   "FVO (OVar c) = UNIV"
 | "FVO (OSing x \<theta>) = {x} \<union> {x . Inl x \<in> FVT \<theta>}"
 | "FVO (OProd ODE1 ODE2) = FVO ODE1 \<union> FVO ODE2"
-(* Bound variables of a formula
-   Bound variables of a program *)
-  
+
+text\<open> Bound variables of ODEs, formulas, programs \<close>
 fun BVO :: "('a, 'c) ODE \<Rightarrow> ('c + 'c) set"
 where 
   "BVO (OVar c) = UNIV"
@@ -115,7 +117,7 @@ where
 | "BVP (Sequence \<alpha> \<beta>) = BVP \<alpha> \<union> BVP \<beta>"
 | "BVP (Loop \<alpha>) = BVP \<alpha>"
 
-(* Must-bound variables (of a program)*)
+text\<open> Must-bound variables (of a program)\<close>
 fun MBV :: "('a, 'b, 'c) hp \<Rightarrow> ('c + 'c) set"
 where
   "MBV (Pvar a) = {}"
@@ -125,8 +127,8 @@ where
 | "MBV (EvolveODE ODE _) = (Inl ` (ODE_dom ODE)) \<union> (Inr ` (ODE_dom ODE))"
 | "MBV \<alpha> = BVP \<alpha>"
 
-(* Free variables of a formula *)
-(* Free variables of a program *)
+text\<open>Free variables of a formula,
+ free variables of a program \<close>
 fun FVF :: "('a, 'b, 'c) formula \<Rightarrow> ('c + 'c) set"
 and FVP :: "('a, 'b, 'c) hp \<Rightarrow> ('c + 'c) set"
 where

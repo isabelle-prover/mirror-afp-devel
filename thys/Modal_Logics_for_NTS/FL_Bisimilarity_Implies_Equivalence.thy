@@ -19,13 +19,13 @@ begin
   proof -
     have "finite (supp (\<langle>f\<rangle>Q, F))"
       by (fact finite_supp)
-    with `P \<Turnstile> Act f \<alpha> x` obtain \<alpha>' x' P' where alpha: "Act f \<alpha> x = Act f \<alpha>' x'" and trans: "\<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>',P'\<rangle>" and valid: "P' \<Turnstile> x'" and fresh: "bn \<alpha>' \<sharp>* (\<langle>f\<rangle>Q, F)"
+    with `P \<Turnstile> Act f \<alpha> x` obtain \<alpha>' x' P' where eq: "Act f \<alpha> x = Act f \<alpha>' x'" and trans: "\<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>',P'\<rangle>" and valid: "P' \<Turnstile> x'" and fresh: "bn \<alpha>' \<sharp>* (\<langle>f\<rangle>Q, F)"
       by (metis valid_Act_strong)
 
     from `P \<sim>\<cdot>[F] Q` and `f \<in>\<^sub>f\<^sub>s F` and fresh and trans obtain Q' where trans': "\<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>',Q'\<rangle>" and bisim': "P' \<sim>\<cdot>[L (\<alpha>',F)] Q'"
       by (metis FL_bisimilar_simulation_step)
 
-    from alpha obtain p where p_\<alpha>: "\<alpha>' = p \<bullet> \<alpha>" and p_x: "x' = p \<bullet> x"
+    from eq obtain p where p_\<alpha>: "\<alpha>' = p \<bullet> \<alpha>" and p_x: "x' = p \<bullet> x"
         and fresh_p: "(supp x - bn \<alpha>) \<sharp>* p \<and> (supp \<alpha> - bn \<alpha>) \<sharp>* p"
         and supp_p: "supp p \<subseteq> bn \<alpha> \<union> p \<bullet> bn \<alpha>"
       by (metis Act_eq_iff_perm_renaming)
@@ -46,7 +46,7 @@ begin
     with p_x have "Q' \<Turnstile> x'"
       by (metis permute_minus_cancel(1) valid_eqvt)
 
-    with alpha and trans' show "Q \<Turnstile> Act f \<alpha> x"
+    with eq and trans' show "Q \<Turnstile> Act f \<alpha> x"
       unfolding valid_Act by metis
   qed
 

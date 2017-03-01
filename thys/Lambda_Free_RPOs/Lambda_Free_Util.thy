@@ -11,7 +11,7 @@ begin
 
 text \<open>
 This theory gathers various lemmas that likely belong elsewhere in Isabelle or
-the \emph{Archive of Formal Proofs}. Most (but certainly not all of) them are
+the \emph{Archive of Formal Proofs}. Most (but certainly not all) of them are
 used to formalize orders on @{text \<lambda>}-free higher-order terms.
 \<close>
 
@@ -54,9 +54,7 @@ lemma funpow_less_iter:
 
 subsection \<open>Least Operator\<close>
 
-lemma Least_eq[simp]:
-  fixes x :: "'a::order"
-  shows "(LEAST y. y = x) = x" and "(LEAST y. x = y) = x"
+lemma Least_eq[simp]: "(LEAST y. y = x) = x" and "(LEAST y. x = y) = x" for x :: "'a::order"
   by (blast intro: Least_equality)+
 
 lemma Least_in_nonempty_set_imp_ex:
@@ -74,7 +72,7 @@ proof -
     by (metis P_least)
 qed
 
-lemma Least_eq_0_enat[simp]: "P 0 \<Longrightarrow> (LEAST x :: enat. P x) = 0"
+lemma Least_eq_0_enat: "P 0 \<Longrightarrow> (LEAST x :: enat. P x) = 0"
   by (simp add: Least_equality)
 
 
@@ -83,8 +81,8 @@ subsection \<open>Antisymmetric Relations\<close>
 lemma irrefl_trans_imp_antisym: "irrefl r \<Longrightarrow> trans r \<Longrightarrow> antisym r"
   unfolding irrefl_def trans_def antisym_def by fast
 
-lemma irreflp_transp_imp_antisymP: "irreflp p \<Longrightarrow> transp p \<Longrightarrow> antisymP p"
-  unfolding irreflp_def transp_def antisym_def by fast
+lemma irreflp_transp_imp_antisymP: "irreflp p \<Longrightarrow> transp p \<Longrightarrow> antisymp p"
+  by (fact irrefl_trans_imp_antisym [to_pred])
 
 
 subsection \<open>Acyclic Relations\<close>
@@ -107,8 +105,8 @@ proof -
     by (auto intro: fin dest!: infinite_super)
 
   have "\<not> acyclic ?R"
-    apply (rule notI, drule finite_acyclic_wf[OF fin_R], unfold wf_eq_minimal, drule spec[of _ A])
-    using ex_y nemp by blast
+    by (rule notI, drule finite_acyclic_wf[OF fin_R], unfold wf_eq_minimal, drule spec[of _ A],
+      use ex_y nemp in blast)
   thus ?thesis
     using R_sub_r acyclic_subset by auto
 qed
@@ -247,12 +245,6 @@ lemma (in wellorder) exists_minimal:
   shows "\<exists>x. P x \<and> (\<forall>y. P y \<longrightarrow> y \<ge> x)"
   using assms by (auto intro: LeastI Least_le)
 
-lemma wellorder_measure_induct_rule[case_names less]:
-  fixes f :: "'a \<Rightarrow> 'b :: wellorder"
-  assumes step: "\<And>x. (\<And>y. f y < f x \<Longrightarrow> P y) \<Longrightarrow> P x"
-  shows "P a"
-  by (induct m \<equiv> "f a" arbitrary: a rule: less_induct) (auto intro: step)
-
 
 subsection \<open>Lists\<close>
 
@@ -277,8 +269,17 @@ lemma butlast_append_Cons[simp]: "butlast (xs @ y # ys) = xs @ butlast (y # ys)"
 lemma rev_in_lists[simp]: "rev xs \<in> lists A \<longleftrightarrow> xs \<in> lists A"
   by auto
 
+lemma hd_le_sum_list:
+  fixes xs :: "'a::ordered_ab_semigroup_monoid_add_imp_le list"
+  assumes "xs \<noteq> []" and "\<forall>i < length xs. xs ! i \<ge> 0"
+  shows "hd xs \<le> sum_list xs"
+  using assms
+  by (induct xs rule: rev_induct, simp_all,
+    metis add_cancel_right_left add_increasing2 hd_append2 lessI less_SucI list.sel(1) nth_append
+      nth_append_length order_refl self_append_conv2 sum_list.Nil)
+
 lemma sum_list_ge_length_times:
-  fixes a :: "'a :: {ordered_ab_semigroup_add,semiring_1}"
+  fixes a :: "'a::{ordered_ab_semigroup_add,semiring_1}"
   assumes "\<forall>i < length xs. xs ! i \<ge> a"
   shows "sum_list xs \<ge> of_nat (length xs) * a"
   using assms
@@ -346,21 +347,12 @@ lemma enat_the_enat_le: "enat (the_enat x) \<le> x"
 lemma enat_the_enat_minus_le: "enat (the_enat (x - y)) \<le> x"
   by (cases x; cases y; simp)
 
-lemma enat_le_imp_minus_le:
-  fixes k m n :: enat
-  assumes le: "k \<le> m"
-  shows "k - n \<le> m"
-proof -
-  have "\<And>e. e \<le> m \<or> \<not> e \<le> k"
-    using le by force
-  moreover have "m \<ge> 0 \<or> k = \<infinity>"
-    by force
-  ultimately show ?thesis
-    using le enat_the_enat_iden
-    by (metis diff_le_self enat_ord_code(1) enat_ord_simps(3) idiff_enat_enat idiff_infinity_right)
-qed
+lemma enat_le_imp_minus_le: "k \<le> m \<Longrightarrow> k - n \<le> m" for k m n :: enat
+  by (metis Groups.add_ac(2) enat_diff_diff_eq enat_ord_simps(3) enat_sub_add_same
+    enat_the_enat_iden enat_the_enat_minus_le idiff_0_right idiff_infinity idiff_infinity_right
+    order_trans_rules(23) plus_enat_simps(3))
 
-lemma add_diff_assoc2_enat: "m \<ge> n \<Longrightarrow> (m :: enat) - n + p = m + p - n"
+lemma add_diff_assoc2_enat: "m \<ge> n \<Longrightarrow> m - n + p = m + p - n" for m n p :: enat
   by (cases m; cases n; cases p; auto)
 
 lemma enat_mult_minus_distrib: "enat x * (y - z) = enat x * y - enat x * z"
@@ -372,16 +364,13 @@ subsection \<open>Multisets\<close>
 lemma add_mset_lt_left_lt: "a < b \<Longrightarrow> add_mset a A < add_mset b A"
   unfolding less_multiset\<^sub>H\<^sub>O by auto
 
-lemma add_mset_le_left_le:
-  fixes a :: "'a :: linorder"
-  shows "a \<le> b \<Longrightarrow> add_mset a A \<le> add_mset b A"
+lemma add_mset_le_left_le: "a \<le> b \<Longrightarrow> add_mset a A \<le> add_mset b A" for a :: "'a :: linorder"
   unfolding less_multiset\<^sub>H\<^sub>O by auto
 
 lemma add_mset_lt_right_lt: "A < B \<Longrightarrow> add_mset a A < add_mset a B"
   unfolding less_multiset\<^sub>H\<^sub>O by auto
 
-lemma add_mset_le_right_le:
-  shows "A \<le> B \<Longrightarrow> add_mset a A \<le> add_mset a B"
+lemma add_mset_le_right_le: "A \<le> B \<Longrightarrow> add_mset a A \<le> add_mset a B"
   unfolding less_multiset\<^sub>H\<^sub>O by auto
 
 lemma add_mset_lt_lt_lt:
@@ -392,9 +381,7 @@ lemma add_mset_lt_lt_lt:
 lemma add_mset_lt_lt_le: "a < b \<Longrightarrow> A \<le> B \<Longrightarrow> add_mset a A < add_mset b B"
   using add_mset_lt_lt_lt le_neq_trans by fastforce
 
-lemma add_mset_lt_le_lt:
-  fixes a :: "'a :: linorder"
-  shows "a \<le> b \<Longrightarrow> A < B \<Longrightarrow> add_mset a A < add_mset b B"
+lemma add_mset_lt_le_lt: "a \<le> b \<Longrightarrow> A < B \<Longrightarrow> add_mset a A < add_mset b B" for a :: "'a :: linorder"
   using add_mset_lt_lt_lt by (metis add_mset_lt_right_lt le_less)
 
 lemma add_mset_le_le_le:

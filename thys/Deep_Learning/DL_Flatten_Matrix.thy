@@ -32,14 +32,14 @@ proof -
   then show ?thesis unfolding extract_matrix_def by auto
 qed
 
-lemma extract_matrix_flatten_matrix: 
+lemma extract_matrix_flatten_matrix:
 "extract_matrix (flatten_matrix A) (dim\<^sub>r A) (dim\<^sub>c A) = A"
 unfolding extract_matrix_def flatten_matrix_def by auto
 
 lemma flatten_matrix_extract_matrix:
 shows "\<And>k. k<m*n \<Longrightarrow> flatten_matrix (extract_matrix a m n) k = a k"
-  unfolding extract_matrix_def flatten_matrix_def 
-  by (metis (no_types, lifting) Divides.div_mult2_eq case_prod_conv div_eq_0_iff mat_dim_col_mat(1) 
+  unfolding extract_matrix_def flatten_matrix_def
+  by (metis (no_types, lifting) Divides.div_mult2_eq case_prod_conv div_eq_0_iff mat_dim_col_mat(1)
   mat_index_mat(1) div_mult_mod_eq mod_less_divisor mult.commute mult_zero_right not_gr0 not_less0)
 
 lemma index_extract_matrix:
@@ -48,8 +48,8 @@ shows "extract_matrix a m n $$ (i,j) = a (i*n + j)"
   unfolding extract_matrix_def using assms by simp
 
 lemma dim_extract_matrix:
-shows "dim\<^sub>r (extract_matrix as m n) = m" 
-and "dim\<^sub>c (extract_matrix as m n) = n" 
+shows "dim\<^sub>r (extract_matrix as m n) = m"
+and "dim\<^sub>c (extract_matrix as m n) = n"
   unfolding extract_matrix_def by simp_all
 
-end 
+end

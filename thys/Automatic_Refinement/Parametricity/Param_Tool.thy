@@ -240,11 +240,11 @@ begin
         open Refine_Util
 
         val param_modifiers =
-          [Args.add -- Args.colon >> K (Method.modifier add_dflt_attr @{here}),
-           Args.del -- Args.colon >> K (Method.modifier del_dflt_attr @{here}),
+          [Args.add -- Args.colon >> K (Method.modifier add_dflt_attr \<^here>),
+           Args.del -- Args.colon >> K (Method.modifier del_dflt_attr \<^here>),
            Args.$$$ "only" -- Args.colon >>
             K {init = Context.proof_map (dflt_rules.map (K net_empty)),
-                attribute = add_dflt_attr, pos = @{here}}]
+                attribute = add_dflt_attr, pos = \<^here>}]
 
         val param_flags = 
            parse_bool_config "use_asm" cfg_use_asm

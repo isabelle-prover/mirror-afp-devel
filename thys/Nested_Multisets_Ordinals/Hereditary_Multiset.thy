@@ -25,8 +25,7 @@ primrec Rep_hmultiset :: "hmultiset \<Rightarrow> unit nmultiset" where
 primrec (nonexhaustive) Abs_hmultiset :: "unit nmultiset \<Rightarrow> hmultiset" where
   "Abs_hmultiset (MSet M) = HMSet (image_mset Abs_hmultiset M)"
 
-lemma type_definition_hmultiset:
-  "type_definition Rep_hmultiset Abs_hmultiset {X. no_elem X}"
+lemma type_definition_hmultiset: "type_definition Rep_hmultiset Abs_hmultiset {X. no_elem X}"
 proof (unfold_locales, unfold mem_Collect_eq)
   fix X
   show "no_elem (Rep_hmultiset X)"
@@ -77,7 +76,7 @@ proof (transfer, unfold less_nmultiset.simps less_multiset_ext\<^sub>D\<^sub>M_d
   show
     "\<exists>X'\<in>Collect (pred_mset no_elem). \<exists>Y'\<in>Collect (pred_mset no_elem).
       X' \<noteq> {#} \<and> filter_mset no_elem X' \<subseteq># filter_mset no_elem N \<and> N - X + Y = N - X' + Y' \<and>
-      (\<forall>k\<in>Collect no_elem.  k \<in># Y' \<longrightarrow> (\<exists>a\<in>Collect no_elem. a \<in># X' \<and> k < a))"
+      (\<forall>k\<in>Collect no_elem. k \<in># Y' \<longrightarrow> (\<exists>a\<in>Collect no_elem. a \<in># X' \<and> k < a))"
     by (rule bexI[OF _ \<open>X \<in> Collect (pred_mset no_elem)\<close>],
         rule bexI[OF _ \<open>Y \<in> Collect (pred_mset no_elem)\<close>])
       (insert *; force simp: set_mset_diff multiset.pred_set multiset_filter_mono)
@@ -113,16 +112,8 @@ lemma HMSet_less[simp]: "HMSet M < HMSet N \<longleftrightarrow> M < N"
 lemma HMSet_le[simp]: "HMSet M \<le> HMSet N \<longleftrightarrow> M \<le> N"
   by (simp add: hmsetmset_le[symmetric])
 
-inductive_set hmultiset_sub where
-  "X \<in># M \<Longrightarrow> (X, HMSet M) \<in> hmultiset_sub"
-
-lemma wf_hmultiset_sub[simp]: "wf hmultiset_sub"
-proof (rule wfUNIVI)
-  fix P and M :: hmultiset
-  assume ih: "\<forall>M. (\<forall>N. (N, M) \<in> hmultiset_sub \<longrightarrow> P N) \<longrightarrow> P M"
-  show "P M"
-    by (induct M; rule ih[rule_format]) (auto simp: hmultiset_sub.simps)
-qed
+lemma mem_imp_less_HMSet: "k \<in># L \<Longrightarrow> k < HMSet L"
+  by (induct k arbitrary: L) (auto intro: ex_gt_imp_less_multiset)
 
 
 subsection \<open>Disjoint Union and Truncated Difference\<close>
@@ -170,6 +161,29 @@ lemma diff_diff_add_hmset[simp]: "a - b - c = a - (b + c)" for a b c :: hmultise
 instance hmultiset :: comm_monoid_diff
   by intro_classes (auto simp: zero_hmultiset_def minus_hmultiset_def)
 
+simproc_setup hmseteq_cancel
+  ("(l::hmultiset) + m = n" | "(l::hmultiset) = m + n") =
+  \<open>fn phi => Cancel_Simprocs.eq_cancel\<close>
+
+simproc_setup hmsetdiff_cancel
+  ("((l::hmultiset) + m) - n" | "(l::hmultiset) - (m + n)") =
+  \<open>fn phi => Cancel_Simprocs.diff_cancel\<close>
+
+simproc_setup hmsetless_cancel
+  ("(l::hmultiset) + m < n" | "(l::hmultiset) < m + n") =
+  \<open>fn phi => Cancel_Simprocs.less_cancel\<close>
+
+simproc_setup hmsetless_eq_cancel
+  ("(l::hmultiset) + m \<le> n" | "(l::hmultiset) \<le> m + n") =
+  \<open>fn phi => Cancel_Simprocs.less_eq_cancel\<close>
+
+instance hmultiset :: ordered_cancel_comm_monoid_add
+  by intro_classes (simp del: hmsetmset_less add: plus_hmultiset_def order_le_less
+    hmsetmset_less[symmetric] less_multiset_ext\<^sub>D\<^sub>M_less)
+
+instance hmultiset :: ordered_ab_semigroup_add_imp_le
+  by intro_classes (simp add: plus_hmultiset_def order_le_less less_multiset_ext\<^sub>D\<^sub>M_less)
+
 instantiation hmultiset :: order_bot
 begin
 
@@ -188,18 +202,12 @@ end
 instance hmultiset :: no_top
 proof (intro_classes, goal_cases gt_ex)
   case (gt_ex a)
-  have "a < a + HMSet {#HMSet {#}#}"
-    by (simp add: plus_hmultiset_def hmsetmset_less[symmetric] less_multiset_ext\<^sub>D\<^sub>M_def)
+  have "a < a + HMSet {#0#}"
+    by (simp add: zero_hmultiset_def)
   thus ?case
     by (rule exI)
 qed
 
-instance hmultiset :: ordered_cancel_comm_monoid_add
-  by intro_classes (simp del: hmsetmset_less add: plus_hmultiset_def order_le_less
-    hmsetmset_less[symmetric] less_multiset_ext\<^sub>D\<^sub>M_less)
-
-instance hmultiset :: ordered_ab_semigroup_add_imp_le
-  by intro_classes (simp add: plus_hmultiset_def order_le_less less_multiset_ext\<^sub>D\<^sub>M_less)
 
 lemma le_minus_plus_same_hmset: "m \<le> m - n + n" for m n :: hmultiset
 proof (cases m n rule: hmultiset.exhaust[case_product hmultiset.exhaust])

@@ -6,8 +6,9 @@
  * This file is part of HOL-TestGen.
  *
  * Copyright (c) 2005-2012 ETH Zurich, Switzerland
- *               2008-2014 Achim D. Brucker, Germany
- *               2009-2014 Université Paris-Sud, France
+ *               2008-2015 Achim D. Brucker, Germany
+ *               2009-2017 Université Paris-Sud, France
+ *               2015-2017 The University of Sheffield, UK
  *
  * All rights reserved.
  *
@@ -39,13 +40,12 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
-(* $Id: ElementaryPolicies.thy 10945 2014-11-21 12:50:43Z wolff $ *)
 
 section{* Elementary Policies *}
 theory 
   ElementaryPolicies
-imports 
-  UPFCore
+  imports 
+    UPFCore
 begin
 text{*
   In this theory, we introduce the elementary policies of UPF that build the basis 
@@ -86,30 +86,32 @@ notation (xsymbols)
 
 lemma AllD_norm[simp]: "deny_pfun (id o (\<lambda>x. \<lfloor>x\<rfloor>)) = (\<forall>Dx. \<lfloor>x\<rfloor>)"
   by(simp add:id_def comp_def)
-
+    
 lemma AllD_norm2[simp]: "deny_pfun (Some o id) = (\<forall>Dx. \<lfloor>x\<rfloor>)"
   by(simp add:id_def comp_def)
-
+    
 lemma AllA_norm[simp]: "allow_pfun (id o Some) = (\<forall>Ax. \<lfloor>x\<rfloor>)"
   by(simp add:id_def comp_def)
-
+    
 lemma AllA_norm2[simp]: "allow_pfun (Some o id) = (\<forall>Ax. \<lfloor>x\<rfloor>)"
   by(simp add:id_def comp_def)
-
+    
 lemma AllA_apply[simp]: "(\<forall>Ax. Some (P x)) x = \<lfloor>allow (P x)\<rfloor>"
   by(simp add:allow_pfun_def)
-
+    
 lemma AllD_apply[simp]: "(\<forall>Dx. Some (P x)) x = \<lfloor>deny (P x)\<rfloor>"
   by(simp add:deny_pfun_def)
 
 lemma neq_Allow_Deny: "pf \<noteq> \<emptyset> \<Longrightarrow> (deny_pfun pf) \<noteq> (allow_pfun pf)"
   apply (erule contrapos_nn)
   apply (rule ext)
-  apply (drule_tac x=x in fun_cong)
-  apply (auto simp: deny_pfun_def allow_pfun_def)
-  apply (case_tac "pf x =  \<bottom>")
-  apply (auto)
-done
+  subgoal for x
+    apply (drule_tac x=x in fun_cong)
+    apply (auto simp: deny_pfun_def allow_pfun_def)
+    apply (case_tac "pf x =  \<bottom>")
+     apply (auto)
+    done
+  done
 
 subsection{* Common Instances *}
 
@@ -138,13 +140,11 @@ definition
 text{* ... and resulting properties: *}
 
 lemma "A\<^sub>I  \<Oplus> empty  = A\<^sub>I"
-  apply simp
-  done
-
+  by simp 
+  
 lemma "A\<^sub>f f  \<Oplus> empty  = A\<^sub>f f"
-  apply simp
-  done
-
+  by simp 
+  
 lemma "allow_pfun empty = empty"
   apply (rule ext)
   apply (simp add: allow_pfun_def)
@@ -158,8 +158,7 @@ lemma allow_left_cancel :"dom pf = UNIV \<Longrightarrow> (allow_pfun pf) \<Oplu
 
 lemma deny_left_cancel :"dom pf = UNIV \<Longrightarrow> (deny_pfun pf) \<Oplus> x = (deny_pfun pf)"
   apply (rule ext)+
-  apply (auto simp: deny_pfun_def option.splits)
-  done
+  by (auto simp: deny_pfun_def option.splits)
 
 subsection{* Domain, Range, and Restrictions *}
 
@@ -193,24 +192,28 @@ text{*
   However, some properties are specific to policy concepts: 
 *}
 lemma sub_ran : "ran p  \<subseteq> Allow \<union> Deny"
-  apply (auto simp: Allow_def Deny_def ran_def full_SetCompr_eq[symmetric])
-  apply (case_tac "x")
-  apply (simp_all)
-  apply (rename_tac \<alpha>)
-  apply (erule_tac x="\<alpha>" in allE)
-  apply (simp)
-  done
-
+  apply (auto simp: Allow_def Deny_def ran_def full_SetCompr_eq[symmetric])[1]
+  subgoal for x a
+    apply (case_tac "x")
+     apply (simp_all)
+    apply (rename_tac \<alpha>)
+    apply (erule_tac x="\<alpha>" in allE)
+    apply (simp)
+    done
+  done 
+    
 lemma dom_allow_pfun [simp]:"dom(allow_pfun f) = dom f"
   apply (auto simp: allow_pfun_def)
-  apply (case_tac "f x", simp_all)
+  subgoal for x y
+    apply (case_tac "f x", simp_all)
+    done
   done
-
+    
 lemma dom_allow_all: "dom(A\<^sub>f f) = UNIV"
   by(auto simp: allow_all_fun_def o_def)
 
 lemma dom_deny_pfun [simp]:"dom(deny_pfun f) = dom f"
-  apply (auto simp: deny_pfun_def)
+  apply (auto simp: deny_pfun_def)[1]
   apply (case_tac "f x")
   apply (simp_all)
   done
@@ -221,34 +224,44 @@ lemma dom_deny_all: " dom(D\<^sub>f f) = UNIV"
 lemma ran_allow_pfun [simp]:"ran(allow_pfun f) = allow `(ran f)"
   apply (simp add: allow_pfun_def ran_def) 
   apply (rule set_eqI)
-  apply (auto)
-  apply (case_tac "f a")
-  apply (auto simp: image_def)
-  apply (rule_tac x=a in exI)
-  apply (simp)
-done
+  apply (auto)[1]
+  subgoal for x a 
+    apply (case_tac "f a")
+     apply (auto simp: image_def)[1]
+     apply (auto simp: image_def)[1]
+    done 
+  subgoal for xa a
+    apply (rule_tac x=a in exI)
+    apply (simp)
+    done
+  done
 
 lemma ran_allow_all: "ran(A\<^sub>f id) = Allow"
   apply (simp add: allow_all_fun_def Allow_def o_def)
   apply (rule set_eqI)
   apply (auto simp: image_def ran_def)
-done
-
+  done
+    
 lemma ran_deny_pfun[simp]: "ran(deny_pfun f) = deny ` (ran f)"
   apply (simp add: deny_pfun_def ran_def)
   apply (rule set_eqI)
-  apply (auto)
-  apply (case_tac "f a")
-  apply (auto simp: image_def)
-  apply (rule_tac x=a in exI)
-  apply (simp)
-done
-
+  apply (auto)[1] 
+  subgoal for x a 
+    apply (case_tac "f a")
+     apply (auto simp: image_def)[1]
+    apply (auto simp: image_def)[1]
+    done
+  subgoal for xa a
+    apply (rule_tac x=a in exI)
+    apply (simp)
+    done
+  done 
+    
 lemma ran_deny_all: "ran(D\<^sub>f id) = Deny"
   apply (simp add: deny_all_fun_def Deny_def o_def)
   apply (rule set_eqI)
   apply (auto simp: image_def ran_def)
-done
+  done
 
 
 text{*
@@ -272,23 +285,27 @@ where     "S \<triangleleft> p \<equiv> (\<lambda>x. if x \<in> S then p x else 
 
 lemma dom_dom_restrict[simp] : "dom(S \<triangleleft> p) = S \<inter> dom p"
   apply (auto simp: dom_restrict_def)
-  apply (case_tac "x \<in> S")
-  apply (simp_all)
-  apply (case_tac "x \<in> S")
-  apply (simp_all)
-done
+  subgoal for x y
+    apply (case_tac "x \<in> S")
+     apply (simp_all)
+    done 
+  subgoal for x y 
+    apply (case_tac "x \<in> S")
+     apply (simp_all)
+    done
+  done 
 
 lemma dom_restrict_idem[simp] : "(dom p) \<triangleleft> p = p"
   apply (rule ext) 
   apply (auto simp: dom_restrict_def
-             dest: neq_commute[THEN iffD1,THEN not_None_eq [THEN iffD1]])
-done
+      dest: neq_commute[THEN iffD1,THEN not_None_eq [THEN iffD1]])
+  done
 
 lemma dom_restrict_inter[simp] : "T \<triangleleft> S \<triangleleft> p = T \<inter> S \<triangleleft> p"
   apply (rule ext)
   apply (auto simp: dom_restrict_def
-             dest: neq_commute[THEN iffD1,THEN not_None_eq [THEN iffD1]])
-done
+      dest: neq_commute[THEN iffD1,THEN not_None_eq [THEN iffD1]])
+  done
 
 definition ran_restrict :: "['\<alpha>\<mapsto>'\<beta>,'\<beta> decision set] \<Rightarrow> '\<alpha> \<mapsto>'\<beta>" (infixr "\<triangleright>" 55)
 where     "p \<triangleright> S \<equiv> (\<lambda>x. if p x \<in> (Some`S) then p x else \<bottom>)"
@@ -299,38 +316,39 @@ where     "p \<triangleright>2 S \<equiv> (\<lambda>x. if (the (p x)) \<in> (S) 
 lemma "ran_restrict = ran_restrict2"
   apply (rule ext)+
   apply (simp add: ran_restrict_def ran_restrict2_def)
-  apply (case_tac "x xb")
-  apply simp_all 
-  apply (metis inj_Some inj_image_mem_iff)
-done
-
+  subgoal for x xa xb
+    apply (case_tac "x xb")
+     apply simp_all 
+    apply (metis inj_Some inj_image_mem_iff)
+    done
+  done 
 
 
 lemma ran_ran_restrict[simp] : "ran(p \<triangleright> S) = S \<inter> ran p"
   by(auto simp: ran_restrict_def image_def ran_def)
-
+    
 lemma ran_restrict_idem[simp] : "p \<triangleright> (ran p) = p"
   apply (rule ext)
   apply (auto simp: ran_restrict_def image_def Ball_def ran_def)
   apply (erule contrapos_pp)
   apply (auto dest!: neq_commute[THEN iffD1,THEN not_None_eq [THEN iffD1]])
-done
-
+  done
+    
 lemma ran_restrict_inter[simp] : "(p \<triangleright> S) \<triangleright> T = p \<triangleright> T \<inter> S"
   apply (rule ext) 
   apply (auto simp: ran_restrict_def
-             dest: neq_commute[THEN iffD1,THEN not_None_eq [THEN iffD1]])
-done
-
+      dest: neq_commute[THEN iffD1,THEN not_None_eq [THEN iffD1]])
+  done
+    
 lemma ran_gen_A[simp] : "(\<forall>Ax. \<lfloor>P x\<rfloor>) \<triangleright> Allow = (\<forall>Ax. \<lfloor>P x\<rfloor>)"
   apply (rule ext)
   apply (auto simp: Allow_def ran_restrict_def)
-done
-
+  done
+    
 lemma ran_gen_D[simp] : "(\<forall>Dx. \<lfloor>P x\<rfloor>) \<triangleright> Deny = (\<forall>Dx. \<lfloor>P x\<rfloor>)"
   apply (rule ext)
   apply (auto simp: Deny_def ran_restrict_def)
-done
+  done
 
 lemmas ElementaryPoliciesDefs = deny_pfun_def allow_pfun_def allow_all_fun_def deny_all_fun_def 
                                 allow_all_id_def deny_all_id_def allow_all_def deny_all_def 

@@ -95,9 +95,9 @@ proof (simp only: atomize_imp,
   qed
 qed
 
-theorem gt_trans: "u >\<^sub>t t \<Longrightarrow> t >\<^sub>t s \<Longrightarrow> u >\<^sub>t s"
+lemma gt_trans: "u >\<^sub>t t \<Longrightarrow> t >\<^sub>t s \<Longrightarrow> u >\<^sub>t s"
 proof (simp only: atomize_imp,
-    rule wellorder_measure_induct_rule[of "\<lambda>(u, t, s). {#size u, size t, size s#}"
+    rule measure_induct_rule[of "\<lambda>(u, t, s). {#size u, size t, size s#}"
         "\<lambda>(u, t, s). u >\<^sub>t t \<longrightarrow> t >\<^sub>t s \<longrightarrow> u >\<^sub>t s" "(u, t, s)",
       simplified prod.case],
     simp only: split_paired_all prod.case atomize_imp[symmetric])
@@ -285,7 +285,7 @@ proof (rule measure_induct_rule[of "\<lambda>(t, s). size t + size s"
       moreover
       {
         assume t2_gt_s: "t2 >\<^sub>t s"
-        have t2_gto_s: "t2 >\<^sub>t\<^sub>o s"
+        have "t2 >\<^sub>t\<^sub>o s"
           by (rule ih[THEN iffD1, OF _ t2_gt_s]) (simp add: t)
         hence ?thesis
           by (rule rpo_optim.gt_trans[OF rpo_optim t_gto_t2])

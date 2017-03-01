@@ -372,8 +372,6 @@ lemma plus_of_nat_minus_of_nat_hmset:
 
 lemma of_nat_lt_\<omega>[simp]: "of_nat n < \<omega>"
   by (auto simp: of_nat_hmset zero_less_iff_neq_zero_hmset \<omega>_def less_multiset_ext\<^sub>D\<^sub>M_less)
-    (metis One_nat_def count_replicate_mset count_single gr_implies_not0 lessI less_multiset\<^sub>H\<^sub>O
-       not_gr_zero_hmset zero_neq_one)
 
 lemma of_nat_ne_\<omega>[simp]: "of_nat n \<noteq> \<omega>"
   by (metis of_nat_lt_\<omega> mset_le_asym mset_lt_single_iff)
@@ -444,7 +442,7 @@ proof -
     using m_le_n unfolding head_\<omega>_def
     by (cases m, cases n,
       auto simp del: hmsetmset_le simp: head_\<omega>_def hmsetmset_le[symmetric] zero_hmultiset_def,
-      meson hmsetmset_le le_in_le_max[OF _ Max_in[OF finite_set_mset]] set_mset_eq_empty_iff)
+      metis Max_in dual_order.antisym finite_set_mset le_in_le_max le_less set_mset_eq_empty_iff)
 qed
 
 lemma head_\<omega>_lt_imp_lt: "head_\<omega> m < head_\<omega> n \<Longrightarrow> m < n"
@@ -861,7 +859,7 @@ The following proof is based on an informal proof by Uwe Waldmann, inspired by
 a similar argument by Michel Ludwig.
 \<close>
 
-lemma waldmann_less:
+lemma ludwig_waldmann_less:
   fixes \<alpha>1 \<alpha>2 \<beta>1 \<beta>2 \<gamma> \<delta> :: hmultiset
   assumes
     \<alpha>\<beta>2\<gamma>_lt_\<alpha>\<beta>1\<gamma>: "\<alpha>2 + \<beta>2 * \<gamma> < \<alpha>1 + \<beta>1 * \<gamma>" and
@@ -870,8 +868,8 @@ lemma waldmann_less:
   shows "\<alpha>2 + \<beta>2 * \<delta> < \<alpha>1 + \<beta>1 * \<delta>"
 proof -
   obtain \<beta>0 \<beta>2a \<beta>1a where
-    \<beta>2: "\<beta>2 = \<beta>0 + \<beta>2a" and
     \<beta>1: "\<beta>1 = \<beta>0 + \<beta>1a" and
+    \<beta>2: "\<beta>2 = \<beta>0 + \<beta>2a" and
     hd_\<beta>2a_vs_\<beta>1a: "head_\<omega> \<beta>2a < head_\<omega> \<beta>1a \<or> \<beta>2a = 0 \<and> \<beta>1a = 0"
     using hmset_pair_decompose_less_eq[OF \<beta>2_le_\<beta>1] by blast
 
@@ -887,23 +885,8 @@ proof -
     by (rule \<alpha>\<beta>2\<gamma>_lt_\<alpha>\<beta>1\<gamma>)
   also have "\<dots> = \<alpha>1 + \<beta>0 * \<gamma> + \<beta>1a * \<gamma>"
     unfolding \<beta>1 by (simp add: add.commute add.left_commute distrib_left mult.commute)
-  finally have "\<alpha>2 + \<beta>0 * \<gamma> + \<beta>2a * \<gamma> < \<alpha>1 + \<beta>0 * \<gamma> + \<beta>1a * \<gamma>"
-    by assumption
-  hence *: "\<alpha>2 + \<beta>2a * \<gamma> < \<alpha>1 + \<beta>1a * \<gamma>"
+  finally have *: "\<alpha>2 + \<beta>2a * \<gamma> < \<alpha>1 + \<beta>1a * \<gamma>"
     by (metis add_less_cancel_right semiring_normalization_rules(23))
-
-  have **: "\<beta>1a * \<gamma>a + \<beta>2a * \<delta>a \<le> \<beta>1a * \<delta>a"
-  proof (cases "\<beta>2a = 0 \<and> \<beta>1a = 0")
-    case False
-    hence "head_\<omega> \<beta>2a < head_\<omega> \<beta>1a"
-      using hd_\<beta>2a_vs_\<beta>1a by blast
-    hence "head_\<omega> (\<beta>1a * \<gamma>a + \<beta>2a * \<delta>a) < head_\<omega> (\<beta>1a * \<delta>a)"
-      using hd_\<gamma>a_lt_\<delta>a by (auto intro: gr_zeroI_hmset simp: sup_hmultiset_def)
-    hence "\<beta>1a * \<gamma>a + \<beta>2a * \<delta>a < \<beta>1a * \<delta>a"
-      by (rule head_\<omega>_lt_imp_lt)
-    thus ?thesis
-      by simp
-  qed simp
 
   have "\<alpha>2 + \<beta>2 * \<delta> = \<alpha>2 + \<beta>0 * \<delta> + \<beta>2a * \<delta>"
     unfolding \<beta>2 by (simp add: ab_semigroup_add_class.add_ac(1) distrib_right)
@@ -919,17 +902,24 @@ proof -
     unfolding \<gamma> \<delta> distrib_left add.assoc[symmetric] by (rule refl)
   also have "\<dots> \<le> \<alpha>1 + \<beta>1a * \<eta> + \<beta>0 * \<eta> + \<beta>0 * \<delta>a + \<beta>1a * \<delta>a"
   proof -
-    have "\<not> \<alpha>1 + \<beta>1a * \<eta> + \<beta>0 * \<eta> + \<beta>0 * \<delta>a + \<beta>1a * \<delta>a
-      < \<alpha>1 + \<beta>1a * \<eta> + \<beta>0 * \<eta> + \<beta>0 * \<delta>a + (\<beta>1a * \<gamma>a + \<beta>2a * \<delta>a)"
-      using ** by force
+    have "\<beta>1a * \<gamma>a + \<beta>2a * \<delta>a \<le> \<beta>1a * \<delta>a"
+    proof (cases "\<beta>2a = 0 \<and> \<beta>1a = 0")
+      case False
+      hence "head_\<omega> \<beta>2a < head_\<omega> \<beta>1a"
+        using hd_\<beta>2a_vs_\<beta>1a by blast
+      hence "head_\<omega> (\<beta>1a * \<gamma>a + \<beta>2a * \<delta>a) < head_\<omega> (\<beta>1a * \<delta>a)"
+        using hd_\<gamma>a_lt_\<delta>a by (auto intro: gr_zeroI_hmset simp: sup_hmultiset_def)
+      hence "\<beta>1a * \<gamma>a + \<beta>2a * \<delta>a < \<beta>1a * \<delta>a"
+        by (rule head_\<omega>_lt_imp_lt)
+      thus ?thesis
+        by simp
+    qed simp
     thus ?thesis
-      by (simp add: semiring_normalization_rules(23,25))
+      by simp
   qed
-  also have "\<dots> = \<alpha>1 + \<beta>1 * \<delta>"
+  finally show ?thesis
     unfolding \<beta>1 \<delta>
     by (simp add: distrib_left distrib_right add.assoc[symmetric] semiring_normalization_rules(23))
-  finally show ?thesis
-    by assumption
 qed
 
 end

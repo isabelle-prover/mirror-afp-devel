@@ -56,16 +56,16 @@ subsection {* Simproc setup *}
 
 
 lemma landau_gt_1_cong: 
-  "landau_symbol L \<Longrightarrow> (\<And>x::real. x > 1 \<Longrightarrow> f x = g x) \<Longrightarrow> L(f) = L(g)"
+  "landau_symbol L L' Lr \<Longrightarrow> (\<And>x::real. x > 1 \<Longrightarrow> f x = g x) \<Longrightarrow> L at_top (f) = L at_top (g)"
   using eventually_gt_at_top[of "1::real"] by (auto elim!: eventually_mono landau_symbol.cong)
 
 lemma landau_gt_1_in_cong: 
-  "landau_symbol L \<Longrightarrow> (\<And>x::real. x > 1 \<Longrightarrow> f x = g x) \<Longrightarrow> f \<in> L(h) \<longleftrightarrow> g \<in> L(h)"
+  "landau_symbol L L' Lr \<Longrightarrow> (\<And>x::real. x > 1 \<Longrightarrow> f x = g x) \<Longrightarrow> f \<in> L at_top (h) \<longleftrightarrow> g \<in> L at_top (h)"
   using eventually_gt_at_top[of "1::real"] by (auto elim!: eventually_mono landau_symbol.in_cong)
 
 lemma landau_prop_equalsI:
-  "landau_symbol L \<Longrightarrow> (\<And>x::real. x > 1 \<Longrightarrow> f1 x = f2 x) \<Longrightarrow> (\<And>x. x > 1 \<Longrightarrow> g1 x = g2 x) \<Longrightarrow> 
-     f1 \<in> L(g1) \<longleftrightarrow> f2 \<in> L(g2)"
+  "landau_symbol L L' Lr \<Longrightarrow> (\<And>x::real. x > 1 \<Longrightarrow> f1 x = f2 x) \<Longrightarrow> (\<And>x. x > 1 \<Longrightarrow> g1 x = g2 x) \<Longrightarrow> 
+     f1 \<in> L at_top (g1) \<longleftrightarrow> f2 \<in> L at_top (g2)"
 apply (subst landau_gt_1_cong, assumption+)
 apply (subst landau_gt_1_in_cong, assumption+)
 apply (rule refl)
@@ -85,10 +85,10 @@ lemmas landau_cancel = landau_symbol.mult_cancel_left
 lemmas mult_cancel_left' = landau_symbol.mult_cancel_left[OF _ bigtheta_refl eventually_nonzeroD]
 
 lemma mult_cancel_left_1:
-  assumes "landau_symbol L" "eventually_nonzero f"
-  shows   "f \<in> L(\<lambda>x. f x * g2 x) \<longleftrightarrow> (\<lambda>_. 1) \<in> L(g2)"
-          "(\<lambda>x. f x * f2 x) \<in> L(f) \<longleftrightarrow> f2 \<in> L(\<lambda>_. 1)"
-          "f \<in> L(f) \<longleftrightarrow> (\<lambda>_. 1) \<in> L(\<lambda>_. 1)"
+  assumes "landau_symbol L L' Lr" "eventually_nonzero F f"
+  shows   "f \<in> L F (\<lambda>x. f x * g2 x) \<longleftrightarrow> (\<lambda>_. 1) \<in> L F (g2)"
+          "(\<lambda>x. f x * f2 x) \<in> L F (f) \<longleftrightarrow> f2 \<in> L F (\<lambda>_. 1)"
+          "f \<in> L F (f) \<longleftrightarrow> (\<lambda>_. 1) \<in> L F (\<lambda>_. 1)"
   using mult_cancel_left'[OF assms, of "\<lambda>_. 1"] mult_cancel_left'[OF assms, of _ "\<lambda>_. 1"]
         mult_cancel_left'[OF assms, of "\<lambda>_. 1" "\<lambda>_. 1"] by simp_all
 
@@ -102,17 +102,17 @@ lemmas bigtheta_simps =
 
 
 simproc_setup landau_cancel_factor (
-    "f \<in> o(g)" | "f \<in> O(g)" | "f \<in> \<omega>(g)" | "f \<in> \<Omega>(g)" | "f \<in> \<Theta>(g)"
+    "f \<in> o[F](g)" | "f \<in> O[F](g)" | "f \<in> \<omega>[F](g)" | "f \<in> \<Omega>[F](g)" | "f \<in> \<Theta>[F](g)"
   ) = {* K Landau.cancel_factor_simproc *}
 
 simproc_setup simplify_landau_sum (
-    "o(\<lambda>x. f x)" | "O(\<lambda>x. f x)" | "\<omega>(\<lambda>x. f x)" | "\<Omega>(\<lambda>x. f x)" | "\<Theta>(\<lambda>x. f x)" |
-    "f \<in> o(g)" | "f \<in> O(g)" | "f \<in> \<omega>(g)" | "f \<in> \<Omega>(g)" | "f \<in> \<Theta>(g)"
+    "o[F](\<lambda>x. f x)" | "O[F](\<lambda>x. f x)" | "\<omega>[F](\<lambda>x. f x)" | "\<Omega>[F](\<lambda>x. f x)" | "\<Theta>[F](\<lambda>x. f x)" |
+    "f \<in> o[F](g)" | "f \<in> O[F](g)" | "f \<in> \<omega>[F](g)" | "f \<in> \<Omega>[F](g)" | "f \<in> \<Theta>[F](g)"
   ) = {* K (Landau.lift_landau_simproc Landau.simplify_landau_sum_simproc) *}
                                    
 simproc_setup simplify_landau_product (
-    "o(\<lambda>x. f x)" | "O(\<lambda>x. f x)" | "\<omega>(\<lambda>x. f x)" | "\<Omega>(\<lambda>x. f x)" | "\<Theta>(\<lambda>x. f x)" |
-    "f \<in> o(g)" | "f \<in> O(g)" | "f \<in> \<omega>(g)" | "f \<in> \<Omega>(g)" | "f \<in> \<Theta>(g)"
+    "o[F](\<lambda>x. f x)" | "O[F](\<lambda>x. f x)" | "\<omega>[F](\<lambda>x. f x)" | "\<Omega>[F](\<lambda>x. f x)" | "\<Theta>[F](\<lambda>x. f x)" |
+    "f \<in> o[F](g)" | "f \<in> O[F](g)" | "f \<in> \<omega>[F](g)" | "f \<in> \<Omega>[F](g)" | "f \<in> \<Theta>[F](g)"
   ) = {* K (Landau.lift_landau_simproc Landau.simplify_landau_product_simproc) *}
 
 simproc_setup landau_real_prod (
@@ -127,10 +127,10 @@ subsection {* Tests *}
 
 subsubsection {* Product simplification tests *}
 
-lemma "(\<lambda>x::_::field. f x * x) \<in> O(\<lambda>x. g x / (h x / x)) \<longleftrightarrow> f \<in> O(\<lambda>x. g x / h x)"
+lemma "(\<lambda>x::real. f x * x) \<in> O(\<lambda>x. g x / (h x / x)) \<longleftrightarrow> f \<in> O(\<lambda>x. g x / h x)"
   by simp
 
-lemma "(\<lambda>x::_::field. x) \<in> \<omega>(\<lambda>x. g x / (h x / x)) \<longleftrightarrow> (\<lambda>x. 1) \<in> \<omega>(\<lambda>x. g x / h x)"
+lemma "(\<lambda>x::real. x) \<in> \<omega>(\<lambda>x. g x / (h x / x)) \<longleftrightarrow> (\<lambda>x. 1) \<in> \<omega>(\<lambda>x. g x / h x)"
   by simp
 
 

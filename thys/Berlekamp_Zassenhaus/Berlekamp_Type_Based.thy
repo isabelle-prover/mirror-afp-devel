@@ -205,7 +205,7 @@ lemma Poly_list_of_vec_0[simp]: "Poly (list_of_vec (\<zero>\<^sub>v 0)) = [:0:]"
 
 lemma monic_normalize:
 assumes "(p :: 'b :: {field,euclidean_ring_gcd} poly) \<noteq> 0" shows "monic (normalize p)"
-by (simp add: assms normalize_poly_old_def lead_coeff_def)
+by (simp add: assms normalize_poly_old_def)
 
 
 lemma exists_factorization_prod_list:
@@ -420,8 +420,8 @@ proof -
       case False
       with r have r: "r = 1" by simp
       show ?thesis
-        by (unfold d div Let_def, simp add: n r id power_mod mult_mod_right,
-          simp add: ac_simps, rule mod_mult_right_eq)
+        by (auto simp add: d r div Let_def mod_simps)
+          (simp add: n r mod_simps ac_simps power_mult_distrib power_mult power2_eq_square)
     qed
   qed
 qed
@@ -463,7 +463,7 @@ proof
   assume H: "x mod n = y mod n"
   hence "x mod n - y mod n = 0" by simp
   hence "(x mod n - y mod n) mod n = 0" by simp
-  hence "(x - y) mod n = 0" by (simp add: mod_diff_eq[symmetric])
+  hence "(x - y) mod n = 0" by (simp add: mod_diff_eq)
   thus "n dvd x - y" by (simp add: dvd_eq_mod_eq_0)
 next
   assume H: "n dvd x - y"
@@ -473,9 +473,9 @@ next
   thus "x mod n = y mod n" by (simp add: mod_add_left_eq)
 qed
 
-lemma cong_gcd_eq_poly: "[(a::'a mod_ring poly) = b] (mod m) \<Longrightarrow> gcd a m = gcd b m"
-  unfolding cong_poly_def using gcd.commute gcd_mod2 by metis
-
+lemma cong_gcd_eq_poly:
+  "gcd a m = gcd b m" if "[(a::'a mod_ring poly) = b] (mod m)"
+  using that by (simp add: cong_poly_def) (metis gcd_mod_left mod_by_0)
 
 lemma coprime_h_c_poly:
 fixes h::"'a mod_ring poly"
@@ -904,7 +904,7 @@ next
       also have "... = (curr_p * mult_p mod u) * mult_p ^ (i-1) mod u"
         by (rule Suc.hyps, auto simp add: i_less_n less_imp_diff_less)
       also have "... = curr_p * mult_p ^ i mod u"
-        by (metis (no_types, lifting) False realpow_num_eq_if semiring_normalization_rules(18) zmod_simps(4))
+        using False by (cases i) (simp_all add: algebra_simps mod_simps)
       finally show ?thesis .
     next
       case False
@@ -917,7 +917,7 @@ next
         show "curr_p * mult_p mod u = curr_p * mult_p mod u mod u" by simp
       qed
       also have "... = curr_p * mult_p ^ i mod u"
-        by (metis i_n i_not_0 realpow_num_eq_if semiring_normalization_rules(18) zmod_simps(4))
+        using i_n [symmetric] i_not_0 by (cases i) (simp_all add: algebra_simps mod_simps)
       finally show ?thesis .
     qed
   qed
@@ -1074,7 +1074,8 @@ proof -
   qed
   moreover have "(fact n::nat) = fact k * fact (n-k) * (n choose k)"
     using binomial_fact_lemma kn by auto
-  ultimately show ?thesis using prime_n by auto
+  ultimately show ?thesis using prime_n
+    by (auto simp add: prime_dvd_mult_iff)
 qed
 
 

@@ -93,7 +93,7 @@ ML {*
 
   val sep_cancel_syntax = Method.sections [
     Args.add -- Args.colon >>
-      K (Method.modifier (Named_Theorems.add @{named_theorems sep_cancel}) @{here})];
+      K (Method.modifier (Named_Theorems.add @{named_theorems sep_cancel}) \<^here>)];
 *}
 
 method_setup sep_cancel = {*

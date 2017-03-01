@@ -19,7 +19,7 @@ definition "inverse_matrix_ring_iarray A = (let d=det_iarrays_rings A in
   if is_unit d then Some(1 div d *ssi adjugate_iarrays A) else None)"
 
 lemma matrix_to_iarray_inverse: 
-  fixes A::"'a::{euclidean_ring}^'n::{mod_type}^'n::{mod_type}"
+  fixes A::"'a::{euclidean_ring_gcd}^'n::{mod_type}^'n::{mod_type}"
   shows"matrix_to_iarray_option (inverse_matrix A) = inverse_matrix_ring_iarray (matrix_to_iarray A)"
   unfolding inverse_matrix_ring_iarray_def inverse_matrix_code_rings matrix_to_iarray_option_def
   unfolding matrix_to_iarray_det_euclidean_ring matrix_to_iarray_adjugate 

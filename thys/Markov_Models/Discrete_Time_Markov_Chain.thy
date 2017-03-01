@@ -12,6 +12,8 @@ Markov chain with discrete time steps and discrete state space.
 
 *}
 
+subsection \<open>Discrete Markov Kernel\<close>
+
 locale MC_syntax =
   fixes K :: "'s \<Rightarrow> 's pmf"
 begin
@@ -149,6 +151,8 @@ proof -
   then show ?thesis
     by (simp add: g_def n_def)
 qed
+
+subsection \<open>Trace Space for Discrete-Time Markov Chains\<close>
 
 definition T :: "'s \<Rightarrow> 's stream measure" where
   "T s = distr (stream_space (\<Pi>\<^sub>M s\<in>UNIV. K s)) S (walk s)"
@@ -381,6 +385,8 @@ lemma AE_suntil:
   apply (auto simp: T.emeasure_eq_measure mult_eq_1)
   done
 
+subsection \<open>Fairness\<close>
+
 definition fair :: "'s \<Rightarrow> 's \<Rightarrow> 's stream \<Rightarrow> bool" where
   "fair s t = alw (ev (HLD {s})) impl alw (ev (HLD {s} aand nxt (HLD {t})))"
 
@@ -577,6 +583,8 @@ proof -
     by (auto simp: measure_nonneg)
 qed
 
+subsection \<open>First Hitting Time\<close>
+
 lemma nn_integral_sfirst_finite':
   assumes "s \<notin> H"
   assumes [simp]: "finite (acc_on (-H) `` {s})"
@@ -705,7 +713,7 @@ lemma prob_T:
 lemma T_subprob[measurable]: "T \<in> measurable (measure_pmf I) (subprob_algebra S)"
   by (auto intro!: space_bind simp: space_subprob_algebra) unfold_locales
 
-subsection {* Markov chain with initial distribution @{term_type "I::'s pmf"}: *}
+subsection {* Markov chain with Initial Distribution *}
 
 definition T' :: "'s pmf \<Rightarrow> 's stream measure" where
   "T' I = bind I (\<lambda>s. distr (T s) S (op ## s))"
@@ -873,7 +881,7 @@ proof -
     by simp
 qed
 
-subsection {* Trace space with restriction *}
+subsection \<open>Trace space with Restriction\<close>
 
 definition "rT x = restrict_space (T x) {\<omega>. enabled x \<omega>}"
 
@@ -956,6 +964,8 @@ proof -
   ultimately show ?thesis
     by (auto simp: measurable_def space_rT sets_rT)
 qed
+
+subsection \<open>Bisimulation\<close>
 
 lemma T_coinduct[consumes 1, case_names prob sets cont]:
   assumes "R x M"
@@ -1140,6 +1150,8 @@ qed
 
 end
 
+subsection \<open>Reward Structure on Markov Chains\<close>
+
 locale MC_with_rewards = MC_syntax K for K :: "'s \<Rightarrow> 's pmf" +
   fixes \<iota> :: "'s \<Rightarrow> 's \<Rightarrow> ennreal" and \<rho> :: "'s \<Rightarrow> ennreal"
   assumes \<iota>_nonneg: "\<And>s t. 0 \<le> \<iota> s t" and \<rho>_nonneg: "\<And>s. 0 \<le> \<rho> s"
@@ -1284,6 +1296,8 @@ next
 qed
 
 end
+
+subsection \<open>Product Construction\<close>
 
 locale MC_pair =
   K1: MC_syntax K1 + K2: MC_syntax K2 for K1 K2

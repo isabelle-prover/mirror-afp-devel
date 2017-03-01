@@ -2910,7 +2910,7 @@ lemmas bounded_linear_uniform_limit_intros[uniform_limit_intros] =
   bounded_linear.uniform_limit[OF bounded_linear_apply_blinfun]
   bounded_linear.uniform_limit[OF bounded_linear_blinfun_matrix]
 
-lemmas uniform_limit_subset_union = uniform_limit_on_subset[OF uniform_limit_on_union]
+lemmas uniform_limit_subset_union = uniform_limit_on_subset[OF uniform_limit_on_Un]
 
 subsection \<open>Bounded Linear Functions\<close>
 

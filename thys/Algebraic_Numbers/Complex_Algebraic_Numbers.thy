@@ -70,8 +70,9 @@ definition root_poly_Im :: "rat poly \<Rightarrow> rat poly list" where
     in remdups ((if (\<exists> f \<in> set fs. coeff f 0 = 0) then [[:0,1:]] else [])) @ 
       [ poly_mult (normalize_rat_poly poly_1_2i) (normalize_rat_poly f) . 
     f \<leftarrow> fs])"
-    
-lemma poly_1_2i_code_unfold[code_unfold]: "snd (rat_to_int_poly poly_1_2i) = [:1,0,4:]"
+
+lemma poly_1_2i_code_unfold [code_unfold]:
+  "snd (rat_to_int_poly poly_1_2i) = [:1, 0, 4:]"
   by eval
 
 context inj_field_hom_0'

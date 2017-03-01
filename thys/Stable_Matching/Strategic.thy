@@ -23,8 +23,7 @@ subsection\<open> \citet{HatfieldMilgrom:2005}: Theorems~10 and~11: Truthful rev
 text (in ContractsWithSubstitutes) \<open>
 
 Theorems~10 and 11 demonstrate that doctors cannot obtain better
-results for themselves in the doctor-optimal match (i.e., @{term "CH
-(fp_cop_F ds)"}, equal to @{term "match (gfp_F ds)"} by @{thm [source]
+results for themselves in the doctor-optimal match (i.e., @{term "cop ds"}, equal to @{term "match (gfp_F ds)"} by @{thm [source]
 "Theorem_15_match"} assuming hospital preferences satisfy @{const
 "substitutes"}) by misreporting their preferences. (See
 \citet[\S4.2]{RothSotomayor:1990} for a discussion about the
@@ -99,7 +98,7 @@ theorem Pd_above_irrelevant:
   assumes d'_Above: "Above (Pd' d') (dX X d') \<subseteq> Above (Pd d') (dX X d')"
   assumes "x \<in> X"
   assumes "stable_on ds X"
-  shows "\<exists>y \<in> CH (PdXXX.fp_cop_F ds). (x, y) \<in> Pd' (Xd x)"
+  shows "\<exists>y \<in> PdXXX.cop ds. (x, y) \<in> Pd' (Xd x)"
 proof(rule PdXXX.Theorem_5[OF ccontr \<open>x \<in> X\<close>])
   assume "\<not>PdXXX.stable_on ds X"
   then show False
@@ -139,7 +138,7 @@ proof(rule PdXXX.Theorem_5[OF ccontr \<open>x \<in> X\<close>])
         with \<open>x \<in> PdXXX.CD_on ds (X \<union> X'')\<close> show ?thesis
           by (clarsimp simp: Pd' PdXXX.mem_CD_on_Cd mem_CD_on_Cd PdXXX.Cd_greatest Cd_greatest)
       qed
-    qed (insert \<open>PdXXX.blocking_on ds X h X''\<close>, simp_all add: PdXXX.blocking_on_def)
+    qed (use \<open>PdXXX.blocking_on ds X h X''\<close> in \<open>simp_all add: PdXXX.blocking_on_def\<close>)
     with \<open>stable_on ds X\<close> show False by (simp add: blocking_on_imp_not_stable)
   qed
 qed
@@ -222,13 +221,13 @@ doctor-optimal match and all other doctors do at least as well.
 
 theorem Theorem_10_fp_cop_F:
   assumes "x \<in> X"
-  shows "\<exists>y \<in> CH (Singleton_for_d.fp_cop_F d ds). (x, y) \<in> Pd_singletons_for_ds X {d} (Xd x)"
+  shows "\<exists>y \<in> Singleton_for_d.cop d ds. (x, y) \<in> Pd_singletons_for_ds X {d} (Xd x)"
 proof(rule Pd_above_irrelevant[where ds=ds and d'=d and X=X])
   from stable_on_allocation \<open>stable_on ds X\<close>
   show "Above (Pd_singletons_for_ds X {d} d) (Singleton_for_d.dX X d) \<subseteq> Above (Pd d) (Singleton_for_d.dX X d)"
     by (clarsimp simp: Above_def Pd_singletons_for_ds_simps dX_def) (metis inj_on_eq_iff stable_on_range' Pd_refl)
-qed (insert stable_on_allocation \<open>stable_on ds X\<close> Pd_singletons_for_ds_linear Pd_singletons_for_ds_range assms,
-     simp_all, simp_all add: Pd_singletons_for_ds_simps dX_def)
+qed (use stable_on_allocation \<open>stable_on ds X\<close> Pd_singletons_for_ds_linear Pd_singletons_for_ds_range assms
+     in \<open>simp_all, simp_all add: Pd_singletons_for_ds_simps dX_def\<close>)
 
 end
 
@@ -364,9 +363,9 @@ unfolding TruePref_tax.Cd_def Singleton_for_d.Cd_def by (simp add: Pd'_tax_def P
 (*>*)
 
 lemma Theorem_11_Pd'_tax:
-  shows "\<exists>y\<in>CH (TruePref_tax.fp_cop_F ds). (x, y) \<in> Pd'_tax (Xd x)"
+  shows "\<exists>y\<in>TruePref_tax.cop ds. (x, y) \<in> Pd'_tax (Xd x)"
 proof(rule ccontr)
-  let ?Z = "CH (TruePref_tax.fp_cop_F ds)"
+  let ?Z = "TruePref_tax.cop ds"
   assume "\<not>?thesis" then have "Xd x \<notin> Xd ` ?Z"
     using Pd'_range Pd'_linear[of "Xd x"] Pd'_d'_x unfolding order_on_defs
     by - (clarsimp, drule (1) bspec,
@@ -380,7 +379,7 @@ proof(rule ccontr)
     have "x \<in> CH (Singleton_for_d.fp_cop_F ds)"
       by (force simp: Pd_singletons_for_ds_simps dX_def dest: inj_onD stable_on_allocation)
     with Singleton_for_d.fp_cop_F_allocation
-    have "Singleton_for_d.Cd (Xd x) (Singleton_for_d.CH (Singleton_for_d.fp_cop_F ds)) = {x}"
+    have "Singleton_for_d.Cd (Xd x) (Singleton_for_d.cop ds) = {x}"
       by (meson Singleton_for_d.Cd_single Singleton_for_d.Cd_singleton Singleton_for_d.fp_cop_F_range_inv'
                 TruePref_tax.CH_range')
     with Singleton_for_d.Theorem_1[of ds]
@@ -426,14 +425,14 @@ proof(rule ccontr)
           case False with YYY show ?thesis
             by (simp add: Singleton_for_d.mem_CD_on_Cd TruePref_tax.mem_CD_on_Cd TruePref_tax_Cd_not_x)
         qed
-      qed (insert \<open>Singleton_for_d.blocking_on ds ?Z h X''\<close>, simp_all add: Singleton_for_d.blocking_on_def)
+      qed (use \<open>Singleton_for_d.blocking_on ds ?Z h X''\<close> in \<open>simp_all add: Singleton_for_d.blocking_on_def\<close>)
       with TruePref_tax.Theorem_1[of ds] show False by (simp add: TruePref_tax.blocking_on_imp_not_stable)
     qed
   qed
 qed
 
 theorem Theorem_11_fp_cop_F:
-  shows "\<exists>y\<in>CH (TruePref.fp_cop_F ds). (x, y) \<in> Pd' (Xd x)"
+  shows "\<exists>y\<in>TruePref.cop ds. (x, y) \<in> Pd' (Xd x)"
 proof -
   from Theorem_11_Pd'_tax
   obtain y where y: "y \<in> CH (TruePref_tax.fp_cop_F ds)"
@@ -545,7 +544,7 @@ unfolding strategy_proof_def AboveS_def using assms by blast
 text\<open>\<close>
 
 theorem fp_cop_F_strategy_proof:
-  shows "strategy_proof ds (\<lambda>Pd Ch ds. Contracts.CH Ch (Contracts.fp_cop_F Pd Ch ds))" (is "strategy_proof _ ?\<phi>")
+  shows "strategy_proof ds Contracts.cop" (is "strategy_proof _ ?\<phi>")
 proof %invisible (rule strategy_proofI)
   fix Pd Pd' Ch d y
   assume A: "mechanism_domain Pd Ch" and B: "mechanism_domain (Pd(d:=Pd')) Ch"
@@ -554,7 +553,7 @@ proof %invisible (rule strategy_proofI)
   from B interpret ManiPref: ContractsWithUnilateralSubstitutesAndIRCAndLAD Xd Xh "Pd(d := Pd')" Ch .
   from B y interpret ManiPref: ContractsWithUnilateralSubstitutesAndIRCAndLADAndTruePrefs Xd Xh "Pd(d := Pd')" Ch y "?\<phi> (Pd(d := Pd')) Ch ds" ds Pd
     by unfold_locales (simp_all add: FieldI2 TruePref.Pd_Xd TruePref.Pd_linear TruePref.Pd_range' subsetI ManiPref.Theorem_1)
-  from ManiPref.Theorem_11_fp_cop_F obtain z where "z \<in> ManiPref.CH (TruePref.fp_cop_F ds)" "(y, z) \<in> Pd (Xd y)" ..
+  from ManiPref.Theorem_11_fp_cop_F obtain z where "z \<in> TruePref.cop ds" "(y, z) \<in> Pd (Xd y)" ..
   with TruePref.Pd_linear TruePref.stable_on_allocation[OF TruePref.Theorem_1[of ds]] TruePref.Pd_Xd TruePref.Pd_range' y
   show False
     unfolding order_on_defs antisym_def dX_def by (metis (mono_tags, lifting) mem_Collect_eq)
@@ -724,8 +723,8 @@ begin
 
 lemma Lemma_1:
   assumes "allocation Y"
-  assumes III: "\<forall>d\<in>ds''. \<exists>y\<in>Y. y \<in> AboveS (Pd d) (dX (CH (fp_cop_F ds)) d)"
-  shows "CH (fp_cop_F ds) = CH (Contracts.fp_cop_F (Pd_shuffle_to_top ds'' Y) Ch ds)"
+  assumes III: "\<forall>d\<in>ds''. \<exists>y\<in>Y. y \<in> AboveS (Pd d) (dX (cop ds) d)"
+  shows "cop ds = Contracts.cop (Pd_shuffle_to_top ds'' Y) Ch ds"
 using finite[of ds''] subset_refl
 proof(induct ds'' rule: finite_subset_induct')
   case empty show ?case by (simp add: Pd_shuffle_to_top_simps)
@@ -736,7 +735,7 @@ next
     using %invisible Pd_shuffle_to_top_linear[OF \<open>allocation Y\<close>] Pd_shuffle_to_top_range Ch_range Ch_singular Ch_unilateral_substitutes Ch_irc Ch_lad
     by unfold_locales simp_all
   let ?Z = "CH (Pds'.fp_cop_F ds)"
-  note IH = \<open>CH (fp_cop_F ds) = ?Z\<close>
+  note IH = \<open>cop ds = ?Z\<close>
   let ?Pd_shuffle_to_top = "Pd_shuffle_to_top (insert d ds') Y"
   from insert interpret Pdds': ContractsWithUnilateralSubstitutesAndIRCAndLAD Xd Xh ?Pd_shuffle_to_top Ch
     using %invisible Pd_shuffle_to_top_linear[OF \<open>allocation Y\<close>] Pd_shuffle_to_top_range Ch_range Ch_singular Ch_unilateral_substitutes Ch_irc Ch_lad
@@ -785,7 +784,7 @@ next
               by (clarsimp simp: Pdds'.mem_CD_on_Cd Pds'.mem_CD_on_Cd Pds'.Cd_Above Pdds'.Cd_Above
                                  Int_Un_distrib2 Pd_shuffle_to_top_Field)
                  (clarsimp simp: Pd_shuffle_to_top_simps dX_singular dX_Int_Field_Pd;
-                  fastforce simp: Above_def AboveS_def Pd_refl shuffle_to_top_def dX_def dest: Pd_range' iff: inj_on_eq_iff)
+                  fastforce simp: Above_def AboveS_def Pd_refl shuffle_to_top_def dX_def intro: FieldI1 dest: Pd_range' iff: inj_on_eq_iff)
          next
             case False
             from Pbos \<open>Xd x \<noteq> d\<close>
@@ -793,16 +792,16 @@ next
               by (simp add: Pdds'.mem_CD_on_Cd Pds'.mem_CD_on_Cd Pds'.Cd_greatest Pdds'.Cd_greatest)
                  (simp add: Pd_shuffle_to_top_simps)
           qed
-        qed (insert \<open>Pdds'.blocking_on ds ?Z h X''\<close>, simp_all add: Pdds'.blocking_on_def)
+        qed (use \<open>Pdds'.blocking_on ds ?Z h X''\<close> in \<open>simp_all add: Pdds'.blocking_on_def\<close>)
         with Pds'.Theorem_1[of ds] show False by (simp add: Pds'.blocking_on_imp_not_stable)
       qed
     qed
   next
     fix W w assume "Pdds'.stable_on ds W" "w \<in> W"
       from III \<open>d \<in> ds''\<close> IH
-      obtain y where Y: "y \<in> Y" "y \<in> AboveS (Pd d) (dX (CH (Pds'.fp_cop_F ds)) d)" "Xd y = d"
+      obtain y where Y: "y \<in> Y" "y \<in> AboveS (Pd d) (dX (Pds'.cop ds) d)" "Xd y = d"
         by (metis AboveS_Pd_Xd)
-      show "\<exists>z\<in>Pdds'.CH (Pds'.fp_cop_F ds). (w, z) \<in> Pd_shuffle_to_top (insert d ds') Y (Xd w)"
+      show "\<exists>z\<in>Pds'.cop ds. (w, z) \<in> Pd_shuffle_to_top (insert d ds') Y (Xd w)"
       proof(cases "y \<in> W")
         case True note \<open>y \<in> W\<close>
         from \<open>d \<notin> ds'\<close> \<open>Pdds'.stable_on ds W\<close> Y \<open>y \<in> W\<close>
@@ -868,21 +867,21 @@ next
                 by (clarsimp simp: Pdds'.mem_CD_on_Cd Pds'.mem_CD_on_Cd Pds'.Cd_Above Pdds'.Cd_Above
                                    Int_Un_distrib2)
                    (clarsimp simp: Pd_shuffle_to_top_simps shuffle_to_top_Field dX_singular dX_Int_Field_Pd Un_absorb2,
-                    force simp: \<open>y \<in> Y\<close> shuffle_to_top_def dX_def Above_def dest: inj_onD)
+                    force simp: \<open>y \<in> Y\<close> shuffle_to_top_def dX_def Above_def dest: inj_onD intro: FieldI1)
             next
               case False
               from Pbos \<open>Xd x \<noteq> d\<close> show ?thesis
                 by (simp add: Pdds'.mem_CD_on_Cd Pds'.mem_CD_on_Cd Pds'.Cd_greatest Pdds'.Cd_greatest)
                    (simp add: Pd_shuffle_to_top_simps)
             qed
-          qed (insert \<open>Pds'.blocking_on ds W h X''\<close>, simp_all add: Pds'.blocking_on_def)
+          qed (use \<open>Pds'.blocking_on ds W h X''\<close> in \<open>simp_all add: Pds'.blocking_on_def\<close>)
           with \<open>Pdds'.stable_on ds W\<close> have False by (simp add: Pdds'.blocking_on_imp_not_stable)
           then show ?thesis ..
         qed
       qed
     qed
   qed
-  from \<open>?Z = CH (Pdds'.fp_cop_F ds)\<close> IH show "CH (fp_cop_F ds) = CH (Pdds'.fp_cop_F ds)" by simp
+  from \<open>?Z = CH (Pdds'.fp_cop_F ds)\<close> IH show "cop ds = Pdds'.cop ds" by simp
 qed
 
 text\<open>
@@ -894,7 +893,7 @@ raw constants from the @{const "Contracts"} locale.
 \<close>
 
 theorem fp_cop_F_group_strategy_proof:
-  shows "group_strategy_proof ds (\<lambda>Pd Ch ds. Contracts.CH Ch (Contracts.fp_cop_F Pd Ch ds))"
+  shows "group_strategy_proof ds Contracts.cop"
         (is "group_strategy_proof _ ?\<phi>")
 proof(rule group_strategy_proofI)
   fix Pd Pds' Ch ds'
@@ -904,15 +903,15 @@ proof(rule group_strategy_proofI)
   from XXX(1) interpret TruePref: ContractsWithUnilateralSubstitutesAndIRCAndLAD Xd Xh Pd Ch .
   from XXX(2) interpret
     ManiPref: ContractsWithUnilateralSubstitutesAndIRCAndLAD Xd Xh "override_on Pd Pds' ds'" Ch .
-  let ?Y = "ManiPref.CH (ManiPref.fp_cop_F ds)"
-  let ?Z = "TruePref.CH (TruePref.fp_cop_F ds)"
+  let ?Y = "ManiPref.cop ds"
+  let ?Z = "TruePref.cop ds"
   let ?Pd_shuffle_to_top = "TruePref.Pd_shuffle_to_top ds' ?Y"
   interpret ManiPref': ContractsWithUnilateralSubstitutesAndIRCAndLAD Xd Xh ?Pd_shuffle_to_top Ch
     using TruePref.Ch_unilateral_substitutes TruePref.Ch_irc TruePref.Ch_lad TruePref.Ch_range TruePref.Ch_singular
           TruePref.Pd_shuffle_to_top_linear ManiPref.stable_on_allocation[OF ManiPref.Theorem_1[of ds]]
           TruePref.Pd_shuffle_to_top_range ManiPref.dX_range
     by unfold_locales simp_all
-  let ?Y' = "ManiPref.CH (ManiPref'.fp_cop_F ds)"
+  let ?Y' = "ManiPref'.cop ds"
   have "ManiPref'.stable_on ds ?Y"
   proof(rule ManiPref'.stable_onI)
     show "ManiPref'.individually_rational_on ds ?Y"
@@ -964,7 +963,7 @@ proof(rule group_strategy_proofI)
             by (fastforce simp: ManiPref'.mem_CD_on_Cd ManiPref'.Cd_greatest ManiPref.mem_CD_on_Cd
                                 ManiPref.Cd_greatest TruePref.Pd_shuffle_to_top_simps)
         qed
-      qed (insert \<open>ManiPref'.blocking_on ds ?Y h X''\<close>, simp_all add: ManiPref'.blocking_on_def)
+      qed (use \<open>ManiPref'.blocking_on ds ?Y h X''\<close> in \<open>simp_all add: ManiPref'.blocking_on_def\<close>)
       with ManiPref.Theorem_1[of ds] show False by (simp add: ManiPref.blocking_on_imp_not_stable)
     qed
   qed
@@ -1000,10 +999,10 @@ begin
 theorem Corollary_2:
   assumes "ds \<noteq> {}"
   shows "\<not>(\<exists>Y. individually_rational_on ds Y
-        \<and> (\<forall>d\<in>ds. \<exists>y\<in>Y. y \<in> AboveS (Pd d) (dX (CH (fp_cop_F ds)) d)))"
+        \<and> (\<forall>d\<in>ds. \<exists>y\<in>Y. y \<in> AboveS (Pd d) (dX (cop ds) d)))"
 proof(unfold individually_rational_on_def, safe)
   fix Y assume "CD_on ds Y = Y" "CH Y = Y"
-           and Z: "\<forall>d\<in>ds. \<exists>y\<in>Y. y \<in> AboveS (Pd d) (dX (CH (fp_cop_F ds)) d)"
+           and Z: "\<forall>d\<in>ds. \<exists>y\<in>Y. y \<in> AboveS (Pd d) (dX (cop ds) d)"
   from \<open>CD_on ds Y = Y\<close> have "allocation Y" by (metis CD_on_inj_on_Xd)
   from \<open>CD_on ds Y = Y\<close>
   interpret Y: ContractsWithUnilateralSubstitutesAndIRCAndLAD Xd Xh "Pd_singletons_for_ds Y ds" Ch

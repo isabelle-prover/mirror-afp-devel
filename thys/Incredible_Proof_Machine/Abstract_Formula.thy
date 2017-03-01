@@ -10,7 +10,7 @@ text \<open>
 The following locale describes an abstract interface for a set of formulas, without fixing the
 concret shape, or set of variables.
 
-The variables mentioned in this locale are only the @{emph \<open>locally fixed constants\<close>} occuring in
+The variables mentioned in this locale are only the @{emph \<open>locally fixed constants\<close>} occurring in
 formulas, e.g.\@ in the introduction rule for the universal quantifier. Normal variables are not
 something we care about at this point; they are handled completely abstractly by the abstract notion
 of a substitution.

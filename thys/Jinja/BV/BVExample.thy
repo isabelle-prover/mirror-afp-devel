@@ -93,7 +93,7 @@ lemma subcls1:
   apply (simp add: class_defs system_defs E_def class_def)
   (* FIXME: cannot simply expand class names, since
      inequality proofs on strings are too inefficient *)
-  apply (auto simp: distinct_classes split: if_split_asm)
+  apply (auto simp: distinct_classes split!: if_splits)
   done
 (*>*)
 

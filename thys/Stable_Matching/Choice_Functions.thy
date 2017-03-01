@@ -704,13 +704,13 @@ using %invisible greatest_is_MaxR_opt MaxR_opt_is_greatest unfolding greatest_de
 lemma greatest_r_mono:
   assumes "Above r X \<subseteq> Above r' X"
   shows "greatest r X \<subseteq> greatest r' X"
-using assms unfolding greatest_def Above_def by fast
+using assms unfolding greatest_def Above_def by (fast intro: FieldI1)
 
 lemmas greatest_r_mono' = subsetD[OF greatest_r_mono, rotated]
 
 lemma greatest_Above:
   shows "greatest r X = Above r X \<inter> X"
-unfolding greatest_def Above_def by blast
+unfolding greatest_def Above_def by (blast intro: FieldI1)
 
 (*>*)
 text\<open>
@@ -849,7 +849,7 @@ lemma %invisible rationalizable_binary_onI:
   assumes "\<And>B x y. \<lbrakk>B \<subseteq> A; y \<in> f B; x \<in> B; y \<in> B\<rbrakk> \<Longrightarrow> y \<in> f {x, y}"
   assumes "\<And>B y. \<lbrakk>B \<subseteq> A; y \<in> B; \<forall>x\<in>B. y \<in> f {x, y}\<rbrakk> \<Longrightarrow> y \<in> f B"
   shows "rationalizable_binary_on A f"
-unfolding rationalizable_binary_on_def using assms by (blast dest: f_range_onD')
+unfolding rationalizable_binary_on_def using assms by (blast dest: f_range_onD' intro: FieldI1)
 
 theorem V_axiom_realizable_binary:
   assumes "f_range_on A f"

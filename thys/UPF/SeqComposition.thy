@@ -5,8 +5,9 @@
  * This file is part of HOL-TestGen.
  *
  * Copyright (c) 2005-2012 ETH Zurich, Switzerland
- *               2008-2014 Achim D. Brucker, Germany
- *               2009-2014 Université Paris-Sud, France
+ *               2008-2015 Achim D. Brucker, Germany
+ *               2009-2017 Université Paris-Sud, France
+ *               2015-2017 The University of Sheffield, UK
  *
  * All rights reserved.
  *
@@ -38,13 +39,12 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
-(* $Id: SeqComposition.thy 10879 2014-10-26 11:35:31Z brucker $ *)
 
 section{* Sequential Composition *}
 theory  
   SeqComposition
-imports 
-  ElementaryPolicies
+  imports 
+    ElementaryPolicies
 begin
 
 text{* 
@@ -62,14 +62,14 @@ where "flat_orA(allow(allow y)) = allow y"
      |"flat_orA(allow(deny y))  = allow y"
      |"flat_orA(deny(allow y))  = allow y"
      |"flat_orA(deny(deny y))   = deny y"
-
+       
 lemma flat_orA_deny[dest]:"flat_orA x = deny y \<Longrightarrow> x = deny(deny y)"
   apply (case_tac "x")
    apply (rename_tac \<alpha>)
    apply (case_tac "\<alpha>", simp_all)[1]
   apply (rename_tac \<alpha>)
   apply (case_tac "\<alpha>", simp_all)[1]
-done
+  done
 
 lemma flat_orA_allow[dest]: "flat_orA x = allow y \<Longrightarrow> x = allow(allow y) 
                                                     \<or> x = allow(deny y) 
@@ -79,21 +79,21 @@ lemma flat_orA_allow[dest]: "flat_orA x = allow y \<Longrightarrow> x = allow(al
    apply (case_tac "\<alpha>", simp_all)[1]
   apply (rename_tac \<alpha>)
   apply (case_tac "\<alpha>", simp_all)[1]
-done
+  done
 
 fun    flat_orD :: "('\<alpha> decision) decision \<Rightarrow> ('\<alpha> decision)"
 where "flat_orD(allow(allow y)) = allow y"
      |"flat_orD(allow(deny y))  = deny y"
      |"flat_orD(deny(allow y))  = deny y"
      |"flat_orD(deny(deny y))   = deny y"
-
+       
 lemma flat_orD_allow[dest]: "flat_orD x = allow y \<Longrightarrow> x = allow(allow y)"
   apply (case_tac "x")
    apply (rename_tac \<alpha>)
    apply (case_tac "\<alpha>", simp_all)[1]
   apply (rename_tac \<alpha>)
   apply (case_tac "\<alpha>", simp_all)[1]
-done
+  done
 
 lemma flat_orD_deny[dest]: "flat_orD x = deny y \<Longrightarrow>  x = deny(deny y) 
                                                    \<or> x = allow(deny y) 
@@ -103,7 +103,7 @@ lemma flat_orD_deny[dest]: "flat_orD x = deny y \<Longrightarrow>  x = deny(deny
    apply (case_tac "\<alpha>", simp_all)[1]
   apply (rename_tac \<alpha>)
   apply (case_tac "\<alpha>", simp_all)[1]
-done
+  done
 
 fun    flat_1 :: "('\<alpha> decision) decision \<Rightarrow> ('\<alpha> decision)"
 where "flat_1(allow(allow y)) = allow y"
@@ -117,7 +117,7 @@ lemma flat_1_allow[dest]: "flat_1 x = allow y \<Longrightarrow> x = allow(allow 
    apply (case_tac "\<alpha>", simp_all)[1]
   apply (rename_tac \<alpha>)
   apply (case_tac "\<alpha>", simp_all)[1]
-done
+  done
 
 lemma flat_1_deny[dest]: "flat_1 x = deny y \<Longrightarrow>  x = deny(deny y) \<or> x = deny(allow y)"
   apply (case_tac "x")
@@ -125,7 +125,7 @@ lemma flat_1_deny[dest]: "flat_1 x = deny y \<Longrightarrow>  x = deny(deny y) 
    apply (case_tac "\<alpha>", simp_all)[1]
   apply (rename_tac \<alpha>)
   apply (case_tac "\<alpha>", simp_all)[1]
-done
+  done
 
 fun    flat_2 :: "('\<alpha> decision) decision \<Rightarrow> ('\<alpha> decision)"
 where "flat_2(allow(allow y)) = allow y"
@@ -147,7 +147,7 @@ lemma flat_2_deny[dest]: "flat_2 x = deny y \<Longrightarrow>  x = deny(deny y) 
    apply (case_tac "\<alpha>", simp_all)[1]
   apply (rename_tac \<alpha>)
   apply (case_tac "\<alpha>", simp_all)[1]
-done
+  done
 
 subsection{* Policy Composition *}
 text{* 
@@ -164,10 +164,11 @@ where "lift f (deny s)  = (case f s of
 
 lemma lift_mt [simp]: "lift \<emptyset> = \<emptyset>"
   apply (rule ext)
-  apply (case_tac "x")
-  apply (simp_all)  
-done
-
+  subgoal for x 
+    apply (case_tac "x")
+     apply (simp_all)  
+    done
+  done
 
 text{* 
   Since policies are maps, we inherit a composition on them. However, this results in nestings 

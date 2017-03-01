@@ -324,7 +324,7 @@ begin
     shows "P \<Turnstile> Act f \<alpha> x \<longleftrightarrow> (\<exists>\<alpha>' x' P'. Act f \<alpha> x = Act f \<alpha>' x' \<and> \<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>',P'\<rangle> \<and> P' \<Turnstile> x' \<and> bn \<alpha>' \<sharp>* X)"
   proof
     assume "P \<Turnstile> Act f \<alpha> x"
-    then obtain \<alpha>' x' P' where alpha: "Act f \<alpha> x = Act f \<alpha>' x'" and transition: "\<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>',P'\<rangle>" and valid: "P' \<Turnstile> x'"
+    then obtain \<alpha>' x' P' where eq: "Act f \<alpha> x = Act f \<alpha>' x'" and trans: "\<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>',P'\<rangle>" and valid: "P' \<Turnstile> x'"
       by (metis valid_Act)
 
     have "finite (bn \<alpha>')"
@@ -352,7 +352,7 @@ begin
       by (metis abs_residual_pair_eqvt supp_perm_eq)
 
     ultimately show "\<exists>\<alpha>' x' P'. Act f \<alpha> x = Act f \<alpha>' x' \<and> \<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>',P'\<rangle> \<and> P' \<Turnstile> x' \<and> bn \<alpha>' \<sharp>* X"
-      using alpha transition valid fresh_X by (metis bn_eqvt valid_eqvt)
+      using eq and trans and valid and fresh_X by (metis bn_eqvt valid_eqvt)
   next
     assume "\<exists>\<alpha>' x' P'. Act f \<alpha> x = Act f \<alpha>' x' \<and> \<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>',P'\<rangle> \<and> P' \<Turnstile> x' \<and> bn \<alpha>' \<sharp>* X"
     then show "P \<Turnstile> Act f \<alpha> x" by (metis valid_Act)
@@ -367,12 +367,10 @@ begin
     moreover have "finite (supp (\<langle>f\<rangle>P))"
       by (fact finite_supp)
     ultimately obtain \<alpha>' x' P' where
-      alpha: "Act f \<alpha> x = Act f \<alpha>' x'" and transition: "\<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>',P'\<rangle>" and valid: "P' \<Turnstile> x'" and fresh: "bn \<alpha>' \<sharp>* \<langle>f\<rangle>P"
+      eq: "Act f \<alpha> x = Act f \<alpha>' x'" and trans: "\<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>',P'\<rangle>" and valid: "P' \<Turnstile> x'" and fresh: "bn \<alpha>' \<sharp>* \<langle>f\<rangle>P"
       by (metis valid_Act_strong)
 
-    from alpha obtain p where p_\<alpha>: "\<alpha>' = p \<bullet> \<alpha>" and p_x: "x' = p \<bullet> x"
-        and fresh_p: "(supp x - bn \<alpha>) \<sharp>* p \<and> (supp \<alpha> - bn \<alpha>) \<sharp>* p"
-        and supp_p: "supp p \<subseteq> bn \<alpha> \<union> p \<bullet> bn \<alpha>"
+    from eq obtain p where p_\<alpha>: "\<alpha>' = p \<bullet> \<alpha>" and p_x: "x' = p \<bullet> x" and supp_p: "supp p \<subseteq> bn \<alpha> \<union> p \<bullet> bn \<alpha>"
       by (metis Act_eq_iff_perm_renaming)
 
     from assms and fresh have "(bn \<alpha> \<union> p \<bullet> bn \<alpha>) \<sharp>* \<langle>f\<rangle>P"
@@ -382,13 +380,15 @@ begin
     then have p_P: "-p \<bullet> \<langle>f\<rangle>P = \<langle>f\<rangle>P"
       by (metis perm_supp_eq supp_minus_perm)
 
-    from transition have "\<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>,-p \<bullet> P'\<rangle>"
-      using p_\<alpha> p_P by (metis permute_minus_cancel(2) transition_eqvt')
+    from trans have "\<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>,-p \<bullet> P'\<rangle>"
+      using p_P p_\<alpha> by (metis permute_minus_cancel(1) transition_eqvt')
     moreover from valid have "-p \<bullet> P' \<Turnstile> x"
-      using p_x by (metis permute_minus_cancel(2) valid_eqvt)
-    ultimately show "\<exists>P'. \<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>,P'\<rangle> \<and> P' \<Turnstile> x" by metis
+      using p_x by (metis permute_minus_cancel(1) valid_eqvt)
+    ultimately show "\<exists>P'. \<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>,P'\<rangle> \<and> P' \<Turnstile> x"
+      by meson
   next
-    assume "\<exists>P'. \<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>,P'\<rangle> \<and> P' \<Turnstile> x" then show "P \<Turnstile> Act f \<alpha> x"
+    assume "\<exists>P'. \<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>,P'\<rangle> \<and> P' \<Turnstile> x"
+    then show "P \<Turnstile> Act f \<alpha> x"
       by (metis valid_Act)
   qed
 

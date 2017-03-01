@@ -208,8 +208,8 @@ proof -
   show ?thesis
   proof(cases "y \<le> x - ?q * y")
     case True
-    hence "x div y mod 2 \<noteq> 0" unfolding r
-      by(metis minus_div_mult_eq_mod [symmetric] True assms diff_is_0_eq div_le_mono mod_by_0 mod_div_trivial mod_self mod_simps(1) minus_mod_eq_mult_div [symmetric] q)
+    with assms q have "x div y mod 2 \<noteq> 0" unfolding r
+      by (metis Nat.add_0_right diff_0_eq_0 diff_Suc_1 le_div_geq mod2_gr_0 mod_div_trivial mult_0 neq0_conv numeral_1_eq_Suc_0 numerals(1)) 
     hence "x div y = ?q + 1" unfolding q
       by(metis le_add_diff_inverse mod_2_not_eq_zero_eq_one_nat mod_less_eq_dividend add.commute)
     moreover hence "x mod y = ?r - y"

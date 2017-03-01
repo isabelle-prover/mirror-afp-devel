@@ -6,8 +6,9 @@
  * This file is part of HOL-TestGen.
  *
  * Copyright (c) 2005-2012 ETH Zurich, Switzerland
- *               2009-2014 Univ. Paris-Sud, France 
- *               2009-2014 Achim D. Brucker, Germany
+ *               2009-2017 Univ. Paris-Sud, France 
+ *               2009-2015 Achim D. Brucker, Germany
+ *               2015-2017 The University of Sheffield, UK
  *
  * All rights reserved.
  *
@@ -39,13 +40,12 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
-(* $Id: Monads.thy 10922 2014-11-10 15:41:49Z wolff $ *)
 
 section {* Basic Monad Theory for Sequential Computations *}
 theory 
   Monads 
-imports 
-  Main
+  imports 
+    Main
 begin 
 
 subsection{* General Framework for Monad-based Sequence-Test *}
@@ -109,21 +109,27 @@ text{*
 
 lemma bind_left_unit : "(x \<leftarrow> return a; k) = k"
   apply (simp add: unit_SE_def bind_SE_def)
-done
+  done
 
 lemma bind_right_unit: "(x \<leftarrow> m; return x) = m"
   apply (simp add:  unit_SE_def bind_SE_def)
   apply (rule ext)
-  apply (case_tac "m \<sigma>")
-  apply ( simp_all)
-done
+  subgoal for "\<sigma>"
+    apply (case_tac "m \<sigma>")
+     apply ( simp_all)
+    done
+  done
 
 lemma bind_assoc: "(y \<leftarrow> (x \<leftarrow> m; k); h) = (x \<leftarrow> m; (y \<leftarrow> k; h))"
   apply (simp add: unit_SE_def bind_SE_def)
   apply (rule ext)
-  apply (case_tac "m \<sigma>", simp_all)
-  apply (case_tac "a", simp_all)
-done
+  subgoal for "\<sigma>"
+    apply (case_tac "m \<sigma>", simp_all)
+    subgoal for a
+      apply (case_tac "a", simp_all)
+      done
+    done
+  done
 
 text{*  
   In order to express test-sequences also on the object-level and to make our theory amenable to 
@@ -174,8 +180,8 @@ steps only by missing results ... *}
 
 
 fun    mbind :: "'\<iota> list  \<Rightarrow>  ('\<iota> \<Rightarrow> ('o,'\<sigma>) MON\<^sub>S\<^sub>E) \<Rightarrow> ('o list,'\<sigma>) MON\<^sub>S\<^sub>E"  
-where "mbind [] iostep \<sigma> = Some([], \<sigma>)" |
-      "mbind (a#H) iostep \<sigma> = 
+  where "mbind [] iostep \<sigma> = Some([], \<sigma>)" |
+    "mbind (a#H) iostep \<sigma> = 
                 (case iostep a \<sigma> of 
                      None   \<Rightarrow> Some([], \<sigma>)
                   |  Some (out, \<sigma>') \<Rightarrow> (case mbind H iostep \<sigma>' of 
@@ -187,20 +193,26 @@ the current state is maintained, no result is reported.
 An alternative is the fail-strict variant @{text "mbind'"} defined below. *}
 
 lemma mbind_unit [simp]: "mbind [] f = (return [])"
-      by(rule ext, simp add: unit_SE_def)
+  by(rule ext, simp add: unit_SE_def)
 
+    
 lemma mbind_nofailure [simp]: "mbind S f \<sigma> \<noteq> None"
   apply (rule_tac x=\<sigma> in spec)
   apply (induct S)
-  apply (auto simp:unit_SE_def)
-  apply (case_tac "f a x")
-    apply ( auto)
-  apply (erule_tac x="b" in allE)
-  apply (erule exE)
-  apply (erule exE)
-  apply (simp)
-done
-
+  using mbind.simps(1) apply force
+  apply(simp add:unit_SE_def)
+  apply(safe)[1]
+  subgoal for a S x
+    apply (case_tac "f a x")
+     apply(simp)
+    apply(safe)[1]
+    subgoal for aa b
+      apply (erule_tac x="b" in allE)
+      apply (erule exE)+
+      apply (simp)
+      done 
+    done
+  done
 
 text{* The fail-strict version of @{text mbind'} looks as follows: *}
 fun    mbind' :: "'\<iota> list  \<Rightarrow>  ('\<iota> \<Rightarrow> ('o,'\<sigma>) MON\<^sub>S\<^sub>E) \<Rightarrow> ('o list,'\<sigma>) MON\<^sub>S\<^sub>E"
@@ -237,12 +249,17 @@ lemma mbind_try:
       else (x \<leftarrow> mbind S F; M (the a' # x)))"
   apply (rule ext)
   apply (simp add: bind_SE_def try_SE_def)
-  apply (case_tac "F a x")
-    apply (auto)
-  apply (simp add: bind_SE_def try_SE_def)
-  apply (case_tac "mbind S F b") 
-    apply (auto)
-done
+  subgoal for x 
+    apply (case_tac "F a x")
+     apply(simp)
+    apply (safe)[1]
+    apply (simp add: bind_SE_def try_SE_def)
+    subgoal for aa b
+      apply (case_tac "mbind S F b") 
+       apply (auto)
+      done
+    done 
+  done
 
 text{* On this basis, a symbolic evaluation scheme can be established
   that reduces @{term mbind}-code to @{term try_SE}-code and If-cascades. *}
@@ -257,10 +274,10 @@ where     "malt_SE S = foldr alt_SE S fail\<^sub>S\<^sub>E"
 notation   malt_SE ("\<Sqinter>\<^sub>S\<^sub>E")
 
 lemma malt_SE_mt [simp]: "\<Sqinter>\<^sub>S\<^sub>E [] = fail\<^sub>S\<^sub>E"
-by(simp add: malt_SE_def)
+  by(simp add: malt_SE_def)
 
 lemma malt_SE_cons [simp]: "\<Sqinter>\<^sub>S\<^sub>E (a # S) = (a \<sqinter>\<^sub>S\<^sub>E (\<Sqinter>\<^sub>S\<^sub>E S))"
-by(simp add: malt_SE_def)
+  by(simp add: malt_SE_def)
 
 subsubsection{* State-Backtrack Monads *}
 text{*This subsection is still rudimentary and as such an interesting
@@ -289,7 +306,7 @@ translations
 lemma bind_left_unit_SB : "(x := returns a; m) = m"
   apply (rule ext)
   apply (simp add: unit_SB_def bind_SB_def)
-done
+  done
 
 lemma bind_right_unit_SB: "(x := m; returns x) = m"
   apply (rule ext)
@@ -341,54 +358,59 @@ notation   havoc_SBE ("havoc\<^sub>S\<^sub>B\<^sub>E")
 lemma bind_left_unit_SBE : "(x :\<equiv> returning a; m) = m"
   apply (rule ext)
   apply (simp add: unit_SBE_def bind_SBE_def)
-done
+  done
 
 lemma bind_right_unit_SBE: "(x :\<equiv> m; returning x) = m"
   apply (rule ext)
   apply (simp add: unit_SBE_def bind_SBE_def)
-  apply (case_tac "m x")
-    apply (simp_all add:Let_def)
-  apply (rule HOL.ccontr)
-  apply (simp add: Set.image_iff)
-done
+  subgoal for x 
+    apply (case_tac "m x")
+     apply (simp_all add:Let_def)
+    apply (rule HOL.ccontr)
+    apply (simp add: Set.image_iff)
+    done
+  done 
    
 lemmas aux = trans[OF HOL.neq_commute,OF Option.not_None_eq]
 
 lemma bind_assoc_SBE: "(y :\<equiv> (x :\<equiv> m; k); h) = (x :\<equiv> m; (y :\<equiv> k; h))"
-proof (rule ext, simp add: unit_SBE_def bind_SBE_def,
-       case_tac "m x", simp_all add: Let_def Set.image_iff, safe)
-  case goal1 then show ?case
-       by(rule_tac x="(a, b)" in bexI, simp_all)
+proof (rule ext, simp add: unit_SBE_def bind_SBE_def, rename_tac x,
+    case_tac "m x", simp_all add: Let_def Set.image_iff, safe,goal_cases)
+  case (1 x a aa b ab ba a b)
+  then show ?case  by(rule_tac x="(a, b)" in bexI, simp_all)
 next
-  case goal2 then show ?case
-       apply (rule_tac x="(aa, b)" in bexI, simp_all add:split_def)
-       apply (erule_tac x="(aa,b)" in ballE)
-       apply (auto simp: aux image_def split_def intro!: rev_bexI)
-     done
+  case (2 x a aa b ab ba)
+  then show ?case  
+    apply (rule_tac x="(aa, b)" in bexI, simp_all add:split_def)
+    apply (erule_tac x="(aa,b)" in ballE)
+     apply (auto simp: aux image_def split_def intro!: rev_bexI)
+    done
 next
-  case goal3 then show ?case
-       by(rule_tac x="(a, b)" in bexI, simp_all)
+  case (3 x a a b)
+  then show ?case  by(rule_tac x="(a, b)" in bexI, simp_all)
 next
-  case goal4 then show ?case    
-       apply (erule_tac Q="None = X" for X in contrapos_pp)
-       apply (erule_tac x="(aa,b)" and P="\<lambda> x. None \<noteq> case_prod (\<lambda>out. k) x" in ballE)
-       apply (auto simp: aux (*Option.not_None_eq*) image_def split_def intro!: rev_bexI)
-     done
-next 
-  case goal5 then show ?case 
-       apply simp apply ((erule_tac x="(ab,ba)" in ballE)+)
-       apply (simp_all add: aux (* Option.not_None_eq *), (erule exE)+, simp add:split_def)
-       apply (erule rev_bexI, case_tac "None\<in>(\<lambda>p. h(snd p))`y",auto simp:split_def)
-     done
- 
+  case (4 x a aa b)
+  then show ?case 
+    apply (erule_tac Q="None = X" for X in contrapos_pp)
+    apply (erule_tac x="(aa,b)" and P="\<lambda> x. None \<noteq> case_prod (\<lambda>out. k) x" in ballE)
+     apply (auto simp: aux image_def split_def intro!: rev_bexI)
+    done
 next
-  case goal6 then show ?case
-       apply simp apply ((erule_tac x="(a,b)" in ballE)+)
-       apply (simp_all add: aux (* Option.not_None_eq *), (erule exE)+, simp add:split_def)
-       apply (erule rev_bexI, case_tac "None\<in>(\<lambda>p. h(snd p))`y",auto simp:split_def)
-     done
-qed
-
+  case (5 x a aa b ab ba a b)
+  then show ?case  apply simp apply ((erule_tac x="(ab,ba)" in ballE)+)
+       apply (simp_all add: aux, (erule exE)+, simp add:split_def)
+    apply (erule rev_bexI, case_tac "None\<in>(\<lambda>p. h(snd p))`y",auto simp:split_def)
+    done
+      
+next
+  case (6 x a aa b a b)
+  then show ?case    apply simp apply ((erule_tac x="(a,b)" in ballE)+)
+       apply (simp_all add: aux, (erule exE)+, simp add:split_def)
+    apply (erule rev_bexI, case_tac "None\<in>(\<lambda>p. h(snd p))`y",auto simp:split_def)
+    done
+qed 
+  
+  
 
 subsection{* Valid Test Sequences in the State Exception Monad *}
 text{* 
@@ -418,32 +440,32 @@ text{* Recall mbind\_unit for the base case. *}
 lemma valid_failure: "ioprog a \<sigma> = None \<Longrightarrow> 
                                    (\<sigma> \<Turnstile> (s \<leftarrow> mbind (a#S) ioprog ; M s)) = 
                                    (\<sigma> \<Turnstile> (M []))"
-by(simp add: valid_SE_def unit_SE_def bind_SE_def)
+  by(simp add: valid_SE_def unit_SE_def bind_SE_def)
 
 
 
 lemma valid_failure': "A \<sigma> = None \<Longrightarrow> \<not>(\<sigma> \<Turnstile> ((s \<leftarrow> A ; M s)))"
-by(simp add: valid_SE_def unit_SE_def bind_SE_def)
+  by(simp add: valid_SE_def unit_SE_def bind_SE_def)
 
 lemma valid_successElem: (* atomic boolean Monad "Query Functions" *) 
                          "M \<sigma> = Some(f \<sigma>,\<sigma>) \<Longrightarrow>  (\<sigma> \<Turnstile> M) = f \<sigma>"
-by(simp add: valid_SE_def unit_SE_def bind_SE_def )
+  by(simp add: valid_SE_def unit_SE_def bind_SE_def )
 
 lemma valid_success:  "ioprog a \<sigma> = Some(b,\<sigma>') \<Longrightarrow> 
                                   (\<sigma>  \<Turnstile> (s \<leftarrow> mbind (a#S) ioprog ; M s)) = 
                                   (\<sigma>' \<Turnstile> (s \<leftarrow> mbind S ioprog ; M (b#s)))"
   apply (simp add: valid_SE_def unit_SE_def bind_SE_def )
   apply (cases "mbind S ioprog \<sigma>'", auto)
-done
+  done
 
 lemma valid_success'': "ioprog a \<sigma> = Some(b,\<sigma>') \<Longrightarrow>
                                     (\<sigma>  \<Turnstile> (s \<leftarrow> mbind (a#S) ioprog ; return (P s))) =
                                     (\<sigma>' \<Turnstile> (s \<leftarrow> mbind S ioprog ; return (P (b#s))))"
   apply (simp add: valid_SE_def unit_SE_def bind_SE_def )
   apply (cases "mbind S ioprog \<sigma>'")
-  apply (simp_all)
+   apply (simp_all)
   apply (auto)
-done
+  done
 
 lemma valid_success':  "A \<sigma> = Some(b,\<sigma>') \<Longrightarrow> (\<sigma> \<Turnstile> ((s \<leftarrow> A ; M s))) = (\<sigma>' \<Turnstile> (M b))"
 by(simp add: valid_SE_def unit_SE_def bind_SE_def )
@@ -453,48 +475,47 @@ lemma valid_both: "(\<sigma> \<Turnstile> (s \<leftarrow> mbind (a#S) ioprog ; r
                                None \<Rightarrow> (\<sigma>  \<Turnstile> (return (P [])))
                              | Some(b,\<sigma>') \<Rightarrow> (\<sigma>'  \<Turnstile> (s \<leftarrow> mbind S ioprog ; return (P (b#s)))))"
   apply (case_tac "ioprog a \<sigma>")
-  apply (simp_all add: valid_failure valid_success'' split: prod.splits)
-done
+   apply (simp_all add: valid_failure valid_success'' split: prod.splits)
+  done
 
 lemma valid_propagate_1 [simp]: "(\<sigma> \<Turnstile> (return P)) = (P)"
   by(auto simp: valid_SE_def unit_SE_def)
-
+    
 lemma valid_propagate_2: "\<sigma> \<Turnstile> ((s \<leftarrow> A ; M s)) \<Longrightarrow>  \<exists> v \<sigma>'. the(A \<sigma>) = (v,\<sigma>') \<and> \<sigma>' \<Turnstile> (M v)"
   apply (auto simp: valid_SE_def unit_SE_def bind_SE_def)
   apply (cases "A \<sigma>")
-  apply (simp_all)
+   apply (simp_all)
   apply (drule_tac x="A \<sigma>" and f=the in arg_cong)
-  apply (simp)
+  apply (simp) 
+  apply (rename_tac a b aa )
   apply (rule_tac x="fst aa" in exI)
   apply (rule_tac x="snd aa" in exI)
-  apply (auto)
-done
-
-
+  by (auto)          
+       
 lemma valid_propagate_2': "\<sigma> \<Turnstile> ((s \<leftarrow> A ; M s)) \<Longrightarrow>  \<exists> a. (A \<sigma>) = Some a \<and> (snd a) \<Turnstile> (M (fst a))"
   apply (auto simp: valid_SE_def unit_SE_def bind_SE_def)
   apply (cases "A \<sigma>")
-  apply (simp_all)
+   apply (simp_all)
   apply (simp_all split: prod.splits)
   apply (drule_tac x="A \<sigma>" and f=the in arg_cong)
   apply (simp)
+  apply (rename_tac a b aa x1 x2)
   apply (rule_tac x="fst aa" in exI)
   apply (rule_tac x="snd aa" in exI)
   apply (auto)
-done
-
-
+  done
 
 lemma valid_propagate_2'': "\<sigma> \<Turnstile> ((s \<leftarrow> A ; M s)) \<Longrightarrow> \<exists> v \<sigma>'. A \<sigma> = Some(v,\<sigma>') \<and> \<sigma>' \<Turnstile> (M v)"
   apply (auto simp: valid_SE_def unit_SE_def bind_SE_def)
   apply (cases "A \<sigma>")
-  apply (simp_all)
+   apply (simp_all)
   apply (drule_tac x="A \<sigma>" and f=the in arg_cong)
   apply (simp)
+  apply (rename_tac a b aa )
   apply (rule_tac x="fst aa" in exI)
   apply (rule_tac x="snd aa" in exI)
   apply (auto)
-done
+  done
 
 lemma valid_propoagate_3[simp]: "(\<sigma>\<^sub>0 \<Turnstile> (\<lambda>\<sigma>. Some (f \<sigma>, \<sigma>))) = (f \<sigma>\<^sub>0)"
   by(simp add: valid_SE_def )
@@ -513,18 +534,20 @@ lemma assert_disch3 :" \<not> P \<sigma> \<Longrightarrow> \<not> (\<sigma> \<Tu
 
 lemma assert_D : "(\<sigma> \<Turnstile> (x \<leftarrow> assert\<^sub>S\<^sub>E P; M x)) \<Longrightarrow> P \<sigma> \<and> (\<sigma> \<Turnstile> (M True))"
   by(auto simp: bind_SE_def assert_SE_def valid_SE_def split: HOL.if_split_asm)
-
+    
 lemma assume_D : "(\<sigma> \<Turnstile> (x \<leftarrow> assume\<^sub>S\<^sub>E P; M x)) \<Longrightarrow> \<exists> \<sigma>. (P \<sigma> \<and>  \<sigma> \<Turnstile> (M ()))"
   apply (auto simp: bind_SE_def assume_SE_def valid_SE_def split: HOL.if_split_asm)
   apply (rule_tac x="Eps P" in exI)
-  apply (auto)
-  apply (rule_tac x="True" in exI, rule_tac x="b" in exI)
-  apply (subst Hilbert_Choice.someI)
-    apply (assumption)
+  apply (auto)[1]
+  subgoal for x a b 
+    apply (rule_tac x="True" in exI, rule_tac x="b" in exI)
+    apply (subst Hilbert_Choice.someI)
+     apply (assumption)
     apply (simp)
+    done
   apply (subst Hilbert_Choice.someI,assumption)
   apply (simp)
-done
+  done
 
 text{* 
   These two rule prove that the SE Monad in connection with the notion of valid sequence is 
@@ -532,45 +555,44 @@ text{*
   sets of states---to be shown below---is strictly speaking not necessary (and will therefore
   be discontinued in the development). 
 *}
-
+  
 lemma if_SE_D1 : "P \<sigma> \<Longrightarrow> (\<sigma> \<Turnstile> if\<^sub>S\<^sub>E P B\<^sub>1 B\<^sub>2) = (\<sigma> \<Turnstile> B\<^sub>1)"
   by(auto simp: if_SE_def valid_SE_def)
-
+    
 lemma if_SE_D2 : "\<not> P \<sigma> \<Longrightarrow> (\<sigma> \<Turnstile> if\<^sub>S\<^sub>E P B\<^sub>1 B\<^sub>2) = (\<sigma> \<Turnstile> B\<^sub>2)"
   by(auto simp: if_SE_def valid_SE_def)
-
+    
 lemma if_SE_split_asm : " (\<sigma> \<Turnstile> if\<^sub>S\<^sub>E P B\<^sub>1 B\<^sub>2) = ((P \<sigma> \<and> (\<sigma> \<Turnstile> B\<^sub>1)) \<or> (\<not> P \<sigma> \<and> (\<sigma> \<Turnstile> B\<^sub>2)))"
   by(cases "P \<sigma>",auto simp: if_SE_D1 if_SE_D2)
-
+    
 lemma if_SE_split : " (\<sigma> \<Turnstile> if\<^sub>S\<^sub>E P B\<^sub>1 B\<^sub>2) = ((P \<sigma> \<longrightarrow> (\<sigma> \<Turnstile> B\<^sub>1)) \<and> (\<not> P \<sigma> \<longrightarrow> (\<sigma> \<Turnstile> B\<^sub>2)))"
   by(cases "P \<sigma>", auto simp: if_SE_D1 if_SE_D2)
-
+    
 lemma [code]: "(\<sigma> \<Turnstile> m) = (case (m \<sigma>) of None  \<Rightarrow> False | (Some (x,y))  \<Rightarrow> x)"
   apply (simp add: valid_SE_def)
   apply (cases "m \<sigma> = None")
-  apply (simp_all)
+   apply (simp_all)
   apply (insert not_None_eq)
   apply (auto)
-done
-
+  done
+    
 subsection{* Valid Test Sequences in the State Exception Backtrack Monad *}
 text{* 
   This is still an unstructured merge of executable monad concepts and specification oriented 
   high-level properties initiating test procedures. 
 *}
-
+  
 definition valid_SBE :: "'\<sigma> \<Rightarrow> ('a,'\<sigma>) MON\<^sub>S\<^sub>B\<^sub>E \<Rightarrow> bool" (infix "\<Turnstile>\<^sub>S\<^sub>B\<^sub>E" 15)
-where "\<sigma> \<Turnstile>\<^sub>S\<^sub>B\<^sub>E m \<equiv> (m \<sigma> \<noteq> None)"
+  where "\<sigma> \<Turnstile>\<^sub>S\<^sub>B\<^sub>E m \<equiv> (m \<sigma> \<noteq> None)"
 text{* 
   This notation considers all non-failures as valid. 
 *}
-
+  
 lemma assume_assert: "(\<sigma> \<Turnstile>\<^sub>S\<^sub>B\<^sub>E ( _ :\<equiv> assume\<^sub>S\<^sub>B\<^sub>E P ; assert\<^sub>S\<^sub>B\<^sub>E Q)) = (P \<sigma> \<longrightarrow> Q \<sigma>)" 
   by(simp add: valid_SBE_def assume_SBE_def assert_SBE_def bind_SBE_def)
-
+    
 lemma assert_intro: "Q \<sigma> \<Longrightarrow> \<sigma> \<Turnstile>\<^sub>S\<^sub>B\<^sub>E (assert\<^sub>S\<^sub>B\<^sub>E Q)"
   by(simp add: valid_SBE_def assume_SBE_def assert_SBE_def bind_SBE_def)
-
-
-(* legacy : lemmas valid_failure''=valid_failure *)
+    
+    
 end

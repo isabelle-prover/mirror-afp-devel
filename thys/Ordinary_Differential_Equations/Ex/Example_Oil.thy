@@ -89,7 +89,7 @@ definition "solve_oil w x0 = oil.poincare_irects_listres (oil_optns' w) (Some [x
 
 schematic_goal solve_ivl_oil:
   "solve_oil (-13) (aform_of_point (10, 0)) = ?X"
-  by (eval_lhs)
+  by guess_rhs eval
 
 concrete_definition oil_result uses solve_ivl_oil is "_ = dRETURN ?X"
 

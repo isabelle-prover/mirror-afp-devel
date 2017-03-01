@@ -1867,14 +1867,13 @@ subsection {* Pair of Minimal Symbols *}
 
 text {*
 The @{text minima} predicate expresses that two symbols
-$a$, $b \in @{term "alphabet t"}$ have the lowest frequencies in the tree $t$
-and that @{prop "freq t a \<le> freq t b"}. Minimal symbols need not be uniquely
-defined.
+$a$, $b \in @{term "alphabet t"}$ have the lowest frequencies in the tree $t$.
+Minimal symbols need not be uniquely defined.
 *}
 
 definition minima :: "'a tree \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" where
 "minima t a b \<equiv>
-     a \<in> alphabet t \<and> b \<in> alphabet t \<and> a \<noteq> b \<and> freq t a \<le> freq t b
+     a \<in> alphabet t \<and> b \<in> alphabet t \<and> a \<noteq> b
      \<and> (\<forall>c \<in> alphabet t. c \<noteq> a \<longrightarrow> c \<noteq> b \<longrightarrow>
                          freq t c \<ge> freq t a \<and> freq t c \<ge> freq t b)"
 
@@ -2046,8 +2045,7 @@ minima of $u$.
 lemma twice_freq_le_imp_minima:
 "\<lbrakk>\<forall>c \<in> alphabet t. w\<^sub>a \<le> freq t c \<and> w\<^sub>b \<le> freq t c;
   alphabet u = alphabet t \<union> {b}; a \<in> alphabet u; a \<noteq> b;
-  freq u = (\<lambda>c. if c = a then w\<^sub>a else if c = b then w\<^sub>b else freq t c);
-  w\<^sub>a \<le> w\<^sub>b\<rbrakk> \<Longrightarrow>
+  freq u = (\<lambda>c. if c = a then w\<^sub>a else if c = b then w\<^sub>b else freq t c)\<rbrakk> \<Longrightarrow>
  minima u a b"
 by (simp add: minima_def)
 
@@ -2058,7 +2056,6 @@ Now comes the key lemma.
 lemma optimum_splitLeaf:
 assumes "consistent t" "optimum t" "a \<in> alphabet t" "b \<notin> alphabet t"
         "freq t a = w\<^sub>a + w\<^sub>b" "\<forall>c \<in> alphabet t. freq t c \<ge> w\<^sub>a \<and> freq t c \<ge> w\<^sub>b"
-        "w\<^sub>a \<le> w\<^sub>b"
 shows "optimum (splitLeaf t w\<^sub>a a w\<^sub>b b)"
 proof (unfold optimum_def, clarify)
   fix u

@@ -116,7 +116,7 @@ schematic_goal solve_lorenzc:
     0 0       (* uncertainty = 0*)
   =
   ?X"
-  by (eval_lhs)
+  by guess_rhs eval
 concrete_definition lorenzc_result uses solve_lorenzc is "_ = dRETURN ?X"
 definition "lorenzc_reach = map aform_of_list_aform (the (snd (lorenzc_result)))"
 

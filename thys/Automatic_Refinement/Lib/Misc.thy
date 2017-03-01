@@ -715,24 +715,24 @@ subsubsection {* Pointwise ordering *}
 
   (*declare mset_le_trans[trans] Seems to be in there now. Why is this not done in Multiset.thy or order-class ? *)
 
-  lemma mset_le_incr_right1: "a\<le>#(b::'a multiset) \<Longrightarrow> a\<le>#b+c" using mset_subset_eq_mono_add[of a b "{#}" c, simplified] .
-  lemma mset_le_incr_right2: "a\<le>#(b::'a multiset) \<Longrightarrow> a\<le>#c+b" using mset_le_incr_right1
+  lemma mset_le_incr_right1: "a\<subseteq>#(b::'a multiset) \<Longrightarrow> a\<subseteq>#b+c" using mset_subset_eq_mono_add[of a b "{#}" c, simplified] .
+  lemma mset_le_incr_right2: "a\<subseteq>#(b::'a multiset) \<Longrightarrow> a\<subseteq>#c+b" using mset_le_incr_right1
     by (auto simp add: union_commute)
   lemmas mset_le_incr_right = mset_le_incr_right1 mset_le_incr_right2
 
-  lemma mset_le_decr_left1: "a+c\<le>#(b::'a multiset) \<Longrightarrow> a\<le>#b" using mset_le_incr_right1 mset_subset_eq_mono_add_right_cancel
+  lemma mset_le_decr_left1: "a+c\<subseteq>#(b::'a multiset) \<Longrightarrow> a\<subseteq>#b" using mset_le_incr_right1 mset_subset_eq_mono_add_right_cancel
     by blast
-  lemma mset_le_decr_left2: "c+a\<le>#(b::'a multiset) \<Longrightarrow> a\<le>#b" using mset_le_decr_left1
+  lemma mset_le_decr_left2: "c+a\<subseteq>#(b::'a multiset) \<Longrightarrow> a\<subseteq>#b" using mset_le_decr_left1
     by (auto simp add: union_ac)
-  lemma mset_le_add_mset_decr_left1: "add_mset c a\<le>#(b::'a multiset) \<Longrightarrow> a\<le>#b"
+  lemma mset_le_add_mset_decr_left1: "add_mset c a\<subseteq>#(b::'a multiset) \<Longrightarrow> a\<subseteq>#b"
     by (simp add: mset_subset_eq_insertD subset_mset.dual_order.strict_implies_order)
-  lemma mset_le_add_mset_decr_left2: "add_mset c a\<le>#(b::'a multiset) \<Longrightarrow> {#c#}\<le>#b"
+  lemma mset_le_add_mset_decr_left2: "add_mset c a\<subseteq>#(b::'a multiset) \<Longrightarrow> {#c#}\<subseteq>#b"
     by (simp add: mset_subset_eq_insertD subset_mset.dual_order.strict_implies_order)
   
   lemmas mset_le_decr_left = mset_le_decr_left1 mset_le_decr_left2 mset_le_add_mset_decr_left1
     mset_le_add_mset_decr_left2
 
-  lemma mset_le_subtract: "A\<le>#B \<Longrightarrow> A-C \<le># B-(C::'a multiset)"
+  lemma mset_le_subtract: "A\<subseteq>#B \<Longrightarrow> A-C \<subseteq># B-(C::'a multiset)"
     apply (unfold subseteq_mset_def count_diff)
     apply clarify
     apply (subgoal_tac "count A a \<le> count B a")
@@ -740,35 +740,35 @@ subsubsection {* Pointwise ordering *}
     apply simp
     done
 
-  lemma mset_union_subset: "A+B \<le># C \<Longrightarrow> A\<le>#C \<and> B\<le>#(C::'a multiset)"
+  lemma mset_union_subset: "A+B \<subseteq># C \<Longrightarrow> A\<subseteq>#C \<and> B\<subseteq>#(C::'a multiset)"
     by (auto dest: mset_le_decr_left)
   
-  lemma mset_le_add_mset: "add_mset x B \<le># C \<Longrightarrow> {#x#}\<le>#C \<and> B\<le>#(C::'a multiset)"
+  lemma mset_le_add_mset: "add_mset x B \<subseteq># C \<Longrightarrow> {#x#}\<subseteq>#C \<and> B\<subseteq>#(C::'a multiset)"
     by (auto dest: mset_le_decr_left)
   
-  lemma mset_le_subtract_left: "A+B \<le># (X::'a multiset) \<Longrightarrow> B \<le># X-A \<and> A\<le>#X"
+  lemma mset_le_subtract_left: "A+B \<subseteq># (X::'a multiset) \<Longrightarrow> B \<subseteq># X-A \<and> A\<subseteq>#X"
     by (auto dest: mset_le_subtract[of "A+B" "X" "A"] mset_union_subset)
-  lemma mset_le_subtract_right: "A+B \<le># (X::'a multiset) \<Longrightarrow> A \<le># X-B \<and> B\<le>#X"
+  lemma mset_le_subtract_right: "A+B \<subseteq># (X::'a multiset) \<Longrightarrow> A \<subseteq># X-B \<and> B\<subseteq>#X"
     by (auto dest: mset_le_subtract[of "A+B" "X" "B"] mset_union_subset)
 
-  lemma mset_le_subtract_add_mset_left: "add_mset x B \<le># (X::'a multiset) \<Longrightarrow> B \<le># X-{#x#} \<and> {#x#}\<le>#X"
+  lemma mset_le_subtract_add_mset_left: "add_mset x B \<subseteq># (X::'a multiset) \<Longrightarrow> B \<subseteq># X-{#x#} \<and> {#x#}\<subseteq>#X"
     by (auto dest: mset_le_subtract[of "add_mset x B" "X" "{#x#}"] mset_le_add_mset)
 
-  lemma mset_le_subtract_add_mset_right: "add_mset x B \<le># (X::'a multiset) \<Longrightarrow> {#x#} \<le># X-B \<and> B\<le>#X"
+  lemma mset_le_subtract_add_mset_right: "add_mset x B \<subseteq># (X::'a multiset) \<Longrightarrow> {#x#} \<subseteq># X-B \<and> B\<subseteq>#X"
     by (auto dest: mset_le_subtract[of "add_mset x B" "X" "B"] mset_le_add_mset)
   
-  lemma mset_le_addE: "\<lbrakk> xs \<le># (ys::'a multiset); !!zs. ys=xs+zs \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P" using mset_subset_eq_exists_conv
+  lemma mset_le_addE: "\<lbrakk> xs \<subseteq># (ys::'a multiset); !!zs. ys=xs+zs \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P" using mset_subset_eq_exists_conv
     by blast
 
   declare subset_mset.diff_add[simp, intro]
 
   lemma mset_2dist2_cases:
-    assumes A: "{#a#}+{#b#} \<le># A+B"
-    assumes CASES: "{#a#}+{#b#} \<le># A \<Longrightarrow> P" "{#a#}+{#b#} \<le># B \<Longrightarrow> P" "\<lbrakk>a \<in># A; b \<in># B\<rbrakk> \<Longrightarrow> P" "\<lbrakk>a \<in># B; b \<in># A\<rbrakk> \<Longrightarrow> P"
+    assumes A: "{#a#}+{#b#} \<subseteq># A+B"
+    assumes CASES: "{#a#}+{#b#} \<subseteq># A \<Longrightarrow> P" "{#a#}+{#b#} \<subseteq># B \<Longrightarrow> P" "\<lbrakk>a \<in># A; b \<in># B\<rbrakk> \<Longrightarrow> P" "\<lbrakk>a \<in># B; b \<in># A\<rbrakk> \<Longrightarrow> P"
     shows "P"
   proof -
     { assume C: "a \<in># A" "b \<in># A-{#a#}" 
-      with mset_subset_eq_mono_add[of "{#a#}" "{#a#}" "{#b#}" "A-{#a#}"] have "{#a#}+{#b#} \<le># A" by auto
+      with mset_subset_eq_mono_add[of "{#a#}" "{#a#}" "{#b#}" "A-{#a#}"] have "{#a#}+{#b#} \<subseteq># A" by auto
     } moreover {
       assume C: "a \<in># A" "\<not> (b \<in># A-{#a#})"
       with A have "b \<in># B"
@@ -777,7 +777,7 @@ subsubsection {* Pointwise ordering *}
       assume C: "\<not> (a \<in># A)" "b \<in># B-{#a#}"
       with A have "a \<in># B"
         by (auto dest: mset_subset_eqD)
-       with C mset_subset_eq_mono_add[of "{#a#}" "{#a#}" "{#b#}" "B-{#a#}"] have "{#a#}+{#b#} \<le># B" by auto
+       with C mset_subset_eq_mono_add[of "{#a#}" "{#a#}" "{#b#}" "B-{#a#}"] have "{#a#}+{#b#} \<subseteq># B" by auto
     } moreover {
       assume C: "\<not> (a \<in># A)" "\<not> (b \<in># B-{#a#})"
       with A have "a \<in># B \<and> b \<in># A"
@@ -789,24 +789,24 @@ subsubsection {* Pointwise ordering *}
   qed
 
 
-  lemma mset_union_subset_s: "{#a#}+B \<le># C \<Longrightarrow> a \<in># C \<and> B \<le># C"
+  lemma mset_union_subset_s: "{#a#}+B \<subseteq># C \<Longrightarrow> a \<in># C \<and> B \<subseteq># C"
     by (drule mset_union_subset) simp
 
   (* TODO: Check which of these lemmas are already introduced by order-classes ! *)
 
 
-  lemma mset_le_single_cases[consumes 1, case_names empty singleton]: "\<lbrakk>M\<le>#{#a#}; M={#} \<Longrightarrow> P; M={#a#} \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
+  lemma mset_le_single_cases[consumes 1, case_names empty singleton]: "\<lbrakk>M\<subseteq>#{#a#}; M={#} \<Longrightarrow> P; M={#a#} \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
     by (induct M) auto
 
-  lemma mset_le_distrib[consumes 1, case_names dist]: "\<lbrakk>(X::'a multiset)\<le>#A+B; !!Xa Xb. \<lbrakk>X=Xa+Xb; Xa\<le>#A; Xb\<le>#B\<rbrakk> \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
+  lemma mset_le_distrib[consumes 1, case_names dist]: "\<lbrakk>(X::'a multiset)\<subseteq>#A+B; !!Xa Xb. \<lbrakk>X=Xa+Xb; Xa\<subseteq>#A; Xb\<subseteq>#B\<rbrakk> \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
     by (auto elim!: mset_le_addE mset_distrib)
 
-lemma mset_le_mono_add_single: "\<lbrakk>a \<in># ys; b \<in># ws\<rbrakk> \<Longrightarrow> {#a#} + {#b#} \<le># ys + ws"
+lemma mset_le_mono_add_single: "\<lbrakk>a \<in># ys; b \<in># ws\<rbrakk> \<Longrightarrow> {#a#} + {#b#} \<subseteq># ys + ws"
   by (meson mset_subset_eq_mono_add single_subset_iff)
 
   lemma mset_size1elem: "\<lbrakk>size P \<le> 1; q \<in># P\<rbrakk> \<Longrightarrow> P={#q#}"
     by (auto elim: mset_size_le1_cases)
-  lemma mset_size2elem: "\<lbrakk>size P \<le> 2; {#q#}+{#q'#} \<le># P\<rbrakk> \<Longrightarrow> P={#q#}+{#q'#}"
+  lemma mset_size2elem: "\<lbrakk>size P \<le> 2; {#q#}+{#q'#} \<subseteq># P\<rbrakk> \<Longrightarrow> P={#q#}+{#q'#}"
     by (auto elim: mset_le_addE)
 
 
@@ -826,7 +826,7 @@ text {* The following is a very specialized lemma. Intuitively, it splits the or
   Application:
   This lemma came in handy when proving the correctness of a constraint system that collects at most k sized submultisets of the sets of spawned threads.
 *}
-lemma mset_map_split_orig_le: assumes A: "f `# P \<le># M1+M2" and EX: "!!P1 P2. \<lbrakk>P=P1+P2; f `# P1 \<le># M1; f `# P2 \<le># M2\<rbrakk> \<Longrightarrow> Q" shows "Q"
+lemma mset_map_split_orig_le: assumes A: "f `# P \<subseteq># M1+M2" and EX: "!!P1 P2. \<lbrakk>P=P1+P2; f `# P1 \<subseteq># M1; f `# P2 \<subseteq># M2\<rbrakk> \<Longrightarrow> Q" shows "Q"
   using A EX by (auto elim: mset_le_distrib mset_map_split_orig)
 
 

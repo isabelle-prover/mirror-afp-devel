@@ -16,13 +16,16 @@ text\<open>This section defines substitutions and implements the substitution op
   from other identifiers. In order to expose a simpler interface, we also have a "subst" variant
   which does not delete variables.
   
-  Substitution is not always sound. The various admissibility predicates *admit describe conditions
-  under which the various substitution operations are sound.
+  Naive substitution without side conditions would not always be sound. The various admissibility 
+  predicates *admit describe conditions under which the various substitution operations are sound.
   \<close>
 
+text\<open> 
+Explicit data structure for substitutions.
+
+The RHS of a function or predicate substitution is a term or formula
+with extra variables, which are used to refer to arguments. \<close>
 record ('a, 'b, 'c) subst =
-  (* The RHS of a function or predicate substitution is a term or formula
-   * with extra variables, which are used to refer to arguments. *)
   SFunctions       :: "'a \<rightharpoonup> ('a + 'c, 'c) trm"
   SPredicates      :: "'c \<rightharpoonup> ('a + 'c, 'b, 'c) formula"
   SContexts        :: "'b \<rightharpoonup> ('a, 'b + unit, 'c) formula"

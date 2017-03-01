@@ -127,6 +127,12 @@ systems, such as the interruptible eChronos embedded operating system
 for which we already have a model-level OG proof using Hoare-Parallel.</td>
 </tr>
 
+  <tr>
+    <td class="datahead" valign="top">Change history:</td>
+    <td class="abstract">[2017-01-13]:
+Improve VCG for nested parallels and sequential sections
+(revision 30739dbc3dcb)</td>
+  </tr>
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>

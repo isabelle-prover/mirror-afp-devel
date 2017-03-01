@@ -1,6 +1,6 @@
 chapter AFP
 
-session Lambda_Free_KBOs (AFP) = HOL +
+session Lambda_Free_KBOs (AFP) = Nested_Multisets_Ordinals +
   options [timeout = 600]
   theories [document = false]
     "../Lambda_Free_RPOs/Extension_Orders"

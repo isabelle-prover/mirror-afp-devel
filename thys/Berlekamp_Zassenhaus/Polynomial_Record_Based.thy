@@ -188,11 +188,12 @@ definition poly_ops :: "'i list arith_ops_record" where
 definition gcd_poly_i :: "'i list \<Rightarrow> 'i list \<Rightarrow> 'i list" where
   "gcd_poly_i = arith_ops.gcd_eucl_i poly_ops"
 
-definition euclid_ext_poly_i :: "'i list \<Rightarrow> 'i list \<Rightarrow> 'i list \<times> 'i list \<times> 'i list" where
+definition euclid_ext_poly_i :: "'i list \<Rightarrow> 'i list \<Rightarrow> ('i list \<times> 'i list) \<times> 'i list" where
   "euclid_ext_poly_i = arith_ops.euclid_ext_i poly_ops"
 
 definition square_free_i :: "'i list \<Rightarrow> bool" where
   "square_free_i xs \<equiv> gcd_poly_i xs (pderiv_i xs) = one_poly_i"
+
 end
 
 (* **************************************************************************** *)
@@ -531,7 +532,7 @@ proof (cases x, auto, goal_cases)
 qed
 
 lemma poly_rel_lead_coeff[transfer_rule]: "(poly_rel ===> R) (lead_coeff_i ops) lead_coeff"
-  unfolding lead_coeff_i_def'[abs_def] lead_coeff_def[abs_def] by transfer_prover
+  unfolding lead_coeff_i_def' [abs_def] by transfer_prover
 
 (* minus_poly_rev_list *)
 lemma poly_rel_minus_poly_rev_list[transfer_rule]: 
@@ -631,7 +632,7 @@ lemma poly_rel_irreducible[transfer_rule]: "(poly_rel ===> op =) (irreducible_i 
   by (transfer_prover_start, transfer_step+, auto)
 
 lemma poly_rel_monic[transfer_rule]: "(poly_rel ===> op =) (monic_i ops) monic"
-  unfolding monic_i_def[abs_def] lead_coeff_def[symmetric] by transfer_prover
+  unfolding monic_i_def lead_coeff_i_def' by transfer_prover
 
 lemma idom_ops_poly: "idom_ops (poly_ops ops) poly_rel"
   by (unfold_locales, auto simp: poly_ops_def  
@@ -730,13 +731,13 @@ qed
 (* normalize *)
 lemma poly_rel_normalize [transfer_rule]: "(poly_rel ===> poly_rel) 
   (normalize_poly_i ops) Rings.normalize"
-  unfolding normalize_poly_old_def[abs_def] normalize_poly_i_def[abs_def]
+  unfolding normalize_poly_old_def normalize_poly_i_def lead_coeff_i_def'
   by transfer_prover
 
 (* unit_factor *)
 lemma poly_rel_unit_factor [transfer_rule]: "(poly_rel ===> poly_rel) 
   (unit_factor_poly_i ops) Rings.unit_factor"
-  unfolding unit_factor_poly_def[abs_def] unit_factor_poly_i_def[abs_def]
+  unfolding unit_factor_poly_def unit_factor_poly_i_def lead_coeff_i_def'
   unfolding monom_0 by transfer_prover
 
 lemma idom_divide_ops_poly: "idom_divide_ops (poly_ops ops) poly_rel"
@@ -762,12 +763,12 @@ qed
 lemma poly_rel_gcd [transfer_rule]: "(poly_rel ===> poly_rel ===> poly_rel) (gcd_poly_i ops) gcd"
 proof -
   interpret poly: euclidean_ring_ops "poly_ops ops" poly_rel by (rule euclidean_ring_ops_poly)
-  show ?thesis using poly.gcd_eucl_i unfolding gcd_poly_i_def gcd_poly_def gcd_eucl_eq_gcd_factorial .
+  show ?thesis using poly.gcd_eucl_i unfolding gcd_poly_i_def gcd_eucl .
 qed
 
 (* euclid_ext poly *)
 lemma poly_rel_euclid_ext [transfer_rule]: "(poly_rel ===> poly_rel ===> 
-  rel_prod poly_rel (rel_prod poly_rel poly_rel)) (euclid_ext_poly_i ops) euclid_ext"
+  rel_prod (rel_prod poly_rel poly_rel) poly_rel) (euclid_ext_poly_i ops) euclid_ext"
 proof -
   interpret poly: euclidean_ring_ops "poly_ops ops" poly_rel by (rule euclidean_ring_ops_poly)
   show ?thesis using poly.euclid_ext_i unfolding euclid_ext_poly_i_def .

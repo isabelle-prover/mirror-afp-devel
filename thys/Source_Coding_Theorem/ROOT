@@ -1,10 +1,9 @@
 chapter AFP
 
 session Source_Coding_Theorem (AFP) = "HOL-Probability" +
-
-  theories [timeout=60]
+  options [timeout = 60]
+  theories
     Source_Coding_Theorem
-    
   document_files
     "root.bib"
     "root.tex"

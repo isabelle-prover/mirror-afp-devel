@@ -164,23 +164,23 @@ lemma real_poly_minus:
 lemma real_poly_pdivmod: fixes p :: "'a :: real_field poly" 
   assumes p: "set (coeffs p) \<subseteq> \<real>" 
   and *: "set (coeffs q) \<subseteq> \<real>"
-    "pdivmod q p = (r,s)"
+    "(q div p, q mod p) = (r,s)"
   shows "set (coeffs r) \<subseteq> \<real> \<and> set (coeffs s) \<subseteq> \<real>"
   using *
 proof (induct q arbitrary: r s)
   case 0
-  thus ?case unfolding pdivmod_0 by auto
+  then show ?case by auto
 next
   case (pCons a q r s)
   from pCons(1,3) have a: "a \<in> \<real>" and q: "set (coeffs q) \<subseteq> \<real>" by auto
-  note res = pCons(4)[unfolded pdivmod_pCons]
+  note res = pCons(4) [unfolded div_pCons_eq mod_pCons_eq]
   show ?case
   proof (cases "p = 0")
     case True
     with res pCons(3) show ?thesis by auto
   next
     case False
-    obtain ss rr where r: "pdivmod q p = (ss, rr)" by force
+    obtain ss rr where r: "(q div p, q mod p) = (ss, rr)" by force
     from pCons(2)[OF q r] have IH: "set (coeffs ss) \<subseteq> \<real>" "set (coeffs rr) \<subseteq> \<real>" by auto
     define c where "c = coeff (pCons a rr) (degree p) / coeff p (degree p)"
     {
@@ -190,9 +190,9 @@ next
         by (rule real_poly_real_coeff[OF p])
       ultimately have "c \<in> \<real>" unfolding c_def by simp
     } note c = this
-    from res[unfolded Let_def r split] False
+    from res [symmetric] False r
     have r: "r = pCons c ss" and s: "s = pCons a rr - smult c p" 
-      unfolding c_def by auto
+      using c_def by auto
     have "set (coeffs r) \<subseteq> \<real>" using c IH unfolding r by (intro real_poly_pCons)
     moreover have "set (coeffs s) \<subseteq> \<real>" using c IH unfolding s using c a p
       by (intro real_poly_minus real_poly_smult real_poly_pCons, auto)
@@ -205,9 +205,9 @@ lemma real_poly_div: fixes p :: "'a :: real_field poly"
   and q: "set (coeffs q) \<subseteq> \<real>"    
   shows "set (coeffs (p div q)) \<subseteq> \<real>"
 proof -
-  obtain r s where pq: "pdivmod p q = (r,s)" by force
-  from real_poly_pdivmod[OF q p this]
-  show ?thesis using pq[unfolded pdivmod_def] by auto
+  obtain r s where pq: "(p div q, p mod q) = (r, s)" by force
+  from real_poly_pdivmod [OF q p this]
+  show ?thesis using pq [unfolded] by auto
 qed
 
 lemma real_poly_factor: fixes p :: "'a :: real_field poly"

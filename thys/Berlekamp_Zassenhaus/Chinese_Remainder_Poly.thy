@@ -89,9 +89,9 @@ proof (cases "n = 0")
 next
  case False
  note n_not_0 = False
- show ?thesis 
-   using bezout [of a n] 
-   by auto (metis cong_iff_lin_poly mult.commute)
+ show ?thesis
+   using bezout_coefficients_fst_snd [of a n, symmetric]
+   by (auto simp add: cong_iff_lin_poly mult.commute [of a] mult.commute [of n])
 qed
 
 
@@ -99,11 +99,11 @@ lemma cong_solve_coprime_poly:
 assumes coprime_an:"coprime (a::'b::{factorial_ring_gcd,field} poly) n"
 shows "EX x. [a * x = 1] (mod n)"
 proof (cases "a = 0")
-  case True note a0=True
+  case True
   show ?thesis unfolding cong_poly_def
-    by (metis a0 bezout comm_monoid_add_class.add_0 coprime_an mod_mult_self2_is_0 mult_not_zero)
+    by (metis \<open>a = 0\<close> bezout_coefficients_fst_snd comm_monoid_add_class.add_0 coprime_an mod_mult_self2_is_0 mult_not_zero)
 next
-  case False note a_not_0 = False  
+  case False  
   show ?thesis
     using coprime_an cong_solve_poly[OF False, of n]
     unfolding cong_poly_def

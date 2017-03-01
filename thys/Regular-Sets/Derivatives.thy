@@ -6,9 +6,9 @@ theory Derivatives
 imports Regular_Exp
 begin
 
-text{* This theory is based on work by Brozowski \cite{Brzozowski64} and Antimirov \cite{Antimirov95}. *}
+text\<open>This theory is based on work by Brozowski \cite{Brzozowski64} and Antimirov \cite{Antimirov95}.\<close>
 
-subsection {* Brzozowski's derivatives of regular expressions *}
+subsection \<open>Brzozowski's derivatives of regular expressions\<close>
 
 primrec
   deriv :: "'a \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp"
@@ -40,7 +40,7 @@ by (induct r) (simp_all add: nullable_iff)
 lemma lang_derivs: "lang (derivs s r) = Derivs s (lang r)"
 by (induct s arbitrary: r) (simp_all add: lang_deriv)
 
-text {* A regular expression matcher: *}
+text \<open>A regular expression matcher:\<close>
 
 definition matcher :: "'a rexp \<Rightarrow> 'a list \<Rightarrow> bool" where
 "matcher r s = nullable (derivs s r)"
@@ -50,7 +50,7 @@ by (induct s arbitrary: r)
    (simp_all add: nullable_iff lang_deriv matcher_def Deriv_def)
 
 
-subsection {* Antimirov's partial derivatives *}
+subsection \<open>Antimirov's partial derivatives\<close>
 
 abbreviation
   "Timess rs r \<equiv> (\<Union>r' \<in> rs. {Times r' r})"
@@ -104,7 +104,7 @@ lemma pderivs_Atom:
   shows "pderivs s (Atom c) \<subseteq> {Atom c, One}"
 by (induct s) (simp_all)
 
-subsection {* Relating left-quotients and partial derivatives *}
+subsection \<open>Relating left-quotients and partial derivatives\<close>
 
 lemma Deriv_pderiv:
   shows "Deriv c (lang r) = \<Union> (lang ` pderiv c r)"
@@ -125,7 +125,7 @@ proof (induct s arbitrary: r)
   finally show "Derivs (c # s) (lang r) = \<Union> (lang ` pderivs (c # s) r)" .
 qed (simp add: Derivs_def)
 
-subsection {* Relating derivatives and partial derivatives *}
+subsection \<open>Relating derivatives and partial derivatives\<close>
 
 lemma deriv_pderiv:
   shows "\<Union> (lang ` (pderiv c r)) = lang (deriv c r)"
@@ -136,7 +136,7 @@ lemma derivs_pderivs:
 unfolding lang_derivs Derivs_pderivs by simp
 
 
-subsection {* Finiteness property of partial derivatives *}
+subsection \<open>Finiteness property of partial derivatives\<close>
 
 definition
   pderivs_lang :: "'a lang \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp set"
@@ -183,7 +183,7 @@ lemma pderivs_lang_Plus [simp]:
 unfolding UNIV1_def pderivs_lang_def by auto
 
 
-text {* Non-empty suffixes of a string (needed for the cases of @{const Times} and @{const Star} below) *}
+text \<open>Non-empty suffixes of a string (needed for the cases of @{const Times} and @{const Star} below)\<close>
 
 definition
   "PSuf s \<equiv> {v. v \<noteq> [] \<and> (\<exists>u. u @ v = s)}"
@@ -314,9 +314,9 @@ lemma finite_pderivs_lang:
 by (metis finite_pderivs_lang_UNIV pderivs_lang_subset rev_finite_subset subset_UNIV)
 
 
-text{* The following relationship between the alphabetic width of regular expressions
+text\<open>The following relationship between the alphabetic width of regular expressions
 (called @{text awidth} below) and the number of partial derivatives was proved
-by Antimirov~\cite{Antimirov95} and formalized by Max Haslbeck. *}
+by Antimirov~\cite{Antimirov95} and formalized by Max Haslbeck.\<close>
 
 fun awidth :: "'a rexp \<Rightarrow> nat" where
 "awidth Zero = 0" |
@@ -357,7 +357,7 @@ next
   finally show ?case .
 qed (auto)
 
-text{* Antimirov's Theorem 3.4: *}
+text\<open>Antimirov's Theorem 3.4:\<close>
 theorem card_pderivs_lang_UNIV_le_awidth: "card (pderivs_lang UNIV r) \<le> awidth r + 1"
 proof -
   have "card (insert r (pderivs_lang UNIV1 r)) \<le> Suc (card (pderivs_lang UNIV1 r))"
@@ -366,7 +366,7 @@ proof -
   finally show ?thesis by(simp add: pderivs_lang_UNIV)
 qed 
 
-text{* Antimirov's Corollary 3.5: *}
+text\<open>Antimirov's Corollary 3.5:\<close>
 corollary card_pderivs_lang_le_awidth: "card (pderivs_lang A r) \<le> awidth r + 1"
 by(rule order_trans[OF
   card_mono[OF finite_pderivs_lang_UNIV pderivs_lang_subset[OF subset_UNIV]]

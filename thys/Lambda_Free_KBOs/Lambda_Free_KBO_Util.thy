@@ -3,7 +3,7 @@
     Maintainer:  Jasmin Blanchette <jasmin.blanchette at inria.fr>
 *)
 
-section \<open>Utilities for Knuth-Bendix Orders for Lambda-Free Higher-Order Terms\<close>
+section \<open>Utilities for Knuth--Bendix Orders for Lambda-Free Higher-Order Terms\<close>
 
 theory Lambda_Free_KBO_Util
 imports "../Lambda_Free_RPOs/Lambda_Free_Term" "../Lambda_Free_RPOs/Extension_Orders"
@@ -51,10 +51,9 @@ locale kbo_std_basis = ground_heads "op >\<^sub>s" arity_sym arity_var
     \<epsilon>_gt_0: "\<epsilon> > 0" and
     \<delta>_le_\<epsilon>: "\<delta> \<le> \<epsilon>" and
     arity_hd_ne_infinity_if_\<delta>_gt_0: "\<delta> > 0 \<Longrightarrow> arity_hd \<zeta> \<noteq> \<infinity>" and
-    wt_sym_0_or_ge_\<epsilon>: "wt_sym f = 0 \<or> wt_sym f \<ge> of_nat \<epsilon>" and
-    wt_sym_0_imp_\<delta>_eq_\<epsilon>: "wt_sym f = 0 \<Longrightarrow> \<delta> = \<epsilon>" and
-    wt_sym_0_unary: "wt_sym f = 0 \<Longrightarrow> arity_sym f = 1" and
-    wt_sym_0_gt: "wt_sym f = 0 \<Longrightarrow> f >\<^sub>s g \<or> g = f" and
+    wt_sym_ge: "wt_sym f \<ge> of_nat (\<epsilon> - the_enat (of_nat \<delta> * arity_sym f))" and
+    unary_wt_sym_0_gt: "arity_sym f = 1 \<Longrightarrow> wt_sym f = 0 \<Longrightarrow> f >\<^sub>s g \<or> g = f" and
+    unary_wt_sym_0_imp_\<delta>_eq_\<epsilon>: "arity_sym f = 1 \<Longrightarrow> wt_sym f = 0 \<Longrightarrow> \<delta> = \<epsilon>" and
     extf_ext_irrefl_before_trans: "ext_irrefl_before_trans (extf f)" and
     extf_ext_compat_list_strong: "ext_compat_list_strong (extf f)" and
     extf_ext_hd_or_tl: "ext_hd_or_tl (extf f)" and

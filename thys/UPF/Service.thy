@@ -5,8 +5,9 @@
  * This file is part of HOL-TestGen.
  *
  * Copyright (c) 2010-2012 ETH Zurich, Switzerland
- *               2010-2014 Achim D. Brucker, Germany
- *               2010-2014 Université Paris-Sud, France
+ *               2010-2015 Achim D. Brucker, Germany
+ *               2010-2017 Université Paris-Sud, France
+ *               2015-2017 The Univeristy of Sheffield, UK
  *
  * All rights reserved.
  *
@@ -38,13 +39,12 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
-(* $Id: Service.thy 10945 2014-11-21 12:50:43Z wolff $ *)
 
 section {* Secure Service Specification *}
 theory 
   Service
-imports 
-  UPF
+  imports 
+    UPF
 begin
 text {*
   In this section, we model a simple Web service and its access control model 
@@ -76,13 +76,13 @@ text{*
 *}     
 type_synonym lr_id = int
 type_synonym LR    = "lr_id \<rightharpoonup> (user set)"
-
+  
 text{* The security context stores all the existing LRs. *}
 type_synonym \<Sigma> = "patient \<rightharpoonup> LR"
-
+  
 text{* The user context stores the roles the users are in. *}
 type_synonym \<upsilon> = "user \<rightharpoonup> role"
-
+  
 subsection {* Modelling Health Records and the Web Service API*}
 subsubsection {* Health Records *}
 text {* The content and the status of the entries of a health record *}

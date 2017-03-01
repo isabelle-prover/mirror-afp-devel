@@ -75,7 +75,7 @@ definition "solve_bessel = bessel.one_step_until_time_ivl_listres (bessel_optns)
 definition "solve_bessel_ex (_::unit) = solve_bessel (aform_of_ivl (-1,J0l,J0l') (-1,J0u,J0u')) True 2"
 schematic_goal solve_ivl_bessel:
   "solve_bessel_ex () = ?X"
-  by (eval_lhs)
+  by guess_rhs eval
 concrete_definition bessel_result uses solve_ivl_bessel is "_ = dRETURN ?X"
 definition "bessel_reach = map aform_of_list_aform (the (snd (bessel_result)))"
 

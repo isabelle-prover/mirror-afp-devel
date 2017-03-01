@@ -391,7 +391,7 @@ proof -
   then obtain pp :: "(('a literal set \<times> ('a \<times> 'a trm) list) \<times> 'a literal set \<times> ('a \<times> 'a trm) list) set \<Rightarrow> 'a literal set \<times> ('a \<times> 'a trm) list" and ppa :: "(('a literal set \<times> ('a \<times> 'a trm) list) \<times> 'a literal set \<times> ('a \<times> 'a trm) list) set \<Rightarrow> 'a literal set \<times> ('a \<times> 'a trm) list" and ppb :: "(('a literal set \<times> ('a \<times> 'a trm) list) \<times> 'a literal set \<times> ('a \<times> 'a trm) list) set \<Rightarrow> 'a literal set \<times> ('a \<times> 'a trm) list" where
     f1: "\<forall>r. (\<not> trans r \<or> (\<forall>p pa pb. (p, pa) \<notin> r \<or> (pa, pb) \<notin> r \<or> (p, pb) \<in> r)) \<and> (trans r \<or> (pp r, ppa r) \<in> r \<and> (ppa r, ppb r) \<in> r \<and> (pp r, ppb r) \<notin> r)"
     by (metis (no_types))
-  have f2: "transP (\<lambda>p pa. (mset_cl p, mset_cl pa) \<in> mult (mult trm_ord))"
+  have f2: "trans {(p, pa). (mset_cl p, mset_cl pa) \<in> mult (mult trm_ord)}"
     using cl_ord_def cl_ord_trans by presburger
   { assume "\<not> (case (ppa (cl_ord \<union> {(p, pa). mset_cl p = mset_cl pa}), ppb (cl_ord \<union> {(p, pa). mset_cl p = mset_cl pa})) of (p, pa) \<Rightarrow> mset_cl p = mset_cl pa)"
     { assume "(ppa (cl_ord \<union> {(pa, p). mset_cl pa = mset_cl p}), ppb (cl_ord \<union> {(pa, p). mset_cl pa = mset_cl p})) \<in> {(pa, p). (mset_cl pa, mset_cl p) \<in> mult (mult trm_ord)}"
@@ -1110,8 +1110,8 @@ proof -
   from this and `(s1,s2) \<in> trm_ord` have 
     s2max: "\<forall>x. (x \<in># {# t1,t1,s1,s1 #} \<longrightarrow> (x,s2) \<in> trm_ord)" 
      by auto
-   have "{# s2 #} <# {# t2,t2,s2,s2 #}" by simp 
-   from `{# s2 #} <# {# t2,t2,s2,s2 #}` 
+   have "{# s2 #} \<subset># {# t2,t2,s2,s2 #}" by simp 
+   from `{# s2 #} \<subset># {# t2,t2,s2,s2 #}` 
    have "( {# s2 #}, {# t2,t2,s2,s2 #} ) \<in> mult trm_ord"
      using trm_ord_trans multiset_order_inclusion [of "{# s2 #}" "{# t2,t2,s2,s2 #}" "trm_ord"] by auto
   have "p1 = neg \<or> p1 = pos" using sign.exhaust by auto 

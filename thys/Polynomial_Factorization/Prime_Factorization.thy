@@ -178,32 +178,31 @@ proof -
       define j where "j = i - n" 
       have i: "i = n + j" using `n \<le> i` j_def by auto
       have "i mod 30 = (j + n) mod 30" using `n \<le> i` unfolding j_def by simp
-      also have "\<dots> = (j mod 30 + n mod 30) mod 30" by presburger
+      also have "\<dots> = (j mod 30 + n mod 30) mod 30"
+        by (simp add: mod_simps)
       also have "\<dots> = (j mod 30 + 11) mod 30" unfolding n by simp
       finally have i30: "i mod 30 = (j mod 30 + 11) mod 30" by simp
       have 2: "2 dvd (30 :: nat)" and 112: "11 mod (2 :: nat) = 1" by simp_all
-      from arg_cong[OF i30, of "\<lambda> j. j mod 2"] have 2: "i mod 2 = (j mod 2 + 1) mod 2"
-      proof (simp add: mod_mod_cancel[OF 2] mod_add_left_eq[symmetric], subst
-        mod_add_right_eq[of j 11], unfold 112, subst mod_add_left_eq) 
-        show "(j mod 2 + 1) mod 2 = Suc (j mod 2) mod 2" by simp
-      qed
+      have "(j + 11) mod 2 = (j + 1) mod 2"
+        by (rule mod_add_cong) simp_all
+      with arg_cong [OF i30, of "\<lambda>j. j mod 2"]
+      have 2: "i mod 2 = (j mod 2 + 1) mod 2"
+        by (simp add: mod_simps mod_mod_cancel [OF 2])
       have 3: "3 dvd (30 :: nat)" and 113: "11 mod (3 :: nat) = 2" by simp_all
-      from arg_cong[OF i30, of "\<lambda> j. j mod 3"] have 3: "i mod 3 = (j mod 3 + 2) mod 3"
-      proof (simp add: mod_mod_cancel[OF 3] mod_add_left_eq[symmetric], subst
-        mod_add_right_eq[of j 11], unfold 113, subst mod_add_left_eq) 
-        show "(j mod 3 + 2) mod 3 = Suc (Suc (j mod 3)) mod 3" by simp
-      qed
+      have "(j + 11) mod 3 = (j + 2) mod 3"
+        by (rule mod_add_cong) simp_all
+      with arg_cong [OF i30, of "\<lambda> j. j mod 3"] have 3: "i mod 3 = (j mod 3 + 2) mod 3"
+        by (simp add: mod_simps mod_mod_cancel [OF 3])
       have 5: "5 dvd (30 :: nat)" and 115: "11 mod (5 :: nat) = 1" by simp_all
-      from arg_cong[OF i30, of "\<lambda> j. j mod 5"] have 5: "i mod 5 = (j mod 5 + 1) mod 5"
-      proof (simp add: mod_mod_cancel[OF 5] mod_add_left_eq[symmetric], subst
-        mod_add_right_eq[of j 11], unfold 115, subst mod_add_left_eq) 
-        show "(j mod 5 + 1) mod 5 = Suc (j mod 5) mod 5" by simp
-      qed
+      have "(j + 11) mod 5 = (j + 1) mod 5"
+        by (rule mod_add_cong) simp_all
+      with arg_cong [OF i30, of "\<lambda> j. j mod 5"] have 5: "i mod 5 = (j mod 5 + 1) mod 5"
+        by (simp add: mod_simps mod_mod_cancel [OF 5])
       
       from n *(2-)[unfolded ps i, simplified] have 
         "j \<in> {1,3,5,7,9,11,13,15,17,19,21,23,25,27,29} \<or> j \<in> {4,10,16,22,28} \<or> j \<in> {14,24}"
         (is "j \<in> ?j2 \<or> j \<in> ?j3 \<or> j \<in> ?j5")
-        by (simp, presburger)
+        by simp presburger
       moreover
       {
         assume "j \<in> ?j2"
@@ -379,25 +378,29 @@ proof (induct ni arbitrary: n i "is" jj res rule: wf_induct[OF
         thus ?thesis unfolding res by auto
       qed
     next
-      case True note i_n = this
-      with res have res: "res = (i' \<ge> n)" by auto
-      from i_n obtain k where id: "n = i' * k" unfolding dvd_def by auto
-      with n have "k \<noteq> 0" by (cases "k = 0", auto)
-      with id have le: "i' \<le> n" by auto    
+      case True
       have "i' \<ge> 2" using i i' by auto
-      show ?thesis 
-      proof (cases "i' \<ge> n")
-        case False
-        hence "i' < n" by auto
-        with `i' \<ge> 2` i_n have "\<not> prime n" unfolding prime_nat_iff by auto
-        with False show ?thesis unfolding res by auto
+      from \<open>i' dvd n\<close> obtain k where "n = i' * k" ..
+      with n have "k \<noteq> 0" by (cases "k = 0", auto)
+      with \<open>n = i' * k\<close> have *: "i' < n \<or> i' = n"
+        by auto
+      with True res have "res \<longleftrightarrow> i' = n"
+        by auto
+      also have "\<dots> = prime n"
+      using * proof
+        assume "i' < n"
+        with `i' \<ge> 2` \<open>i' dvd n\<close> have "\<not> prime n"
+          by (auto simp add: prime_nat_iff)
+        with \<open>i' < n\<close> show ?thesis
+          by auto
       next
-        case True
-        with le have "n = i'" by simp
-        with dvd[folded this] n i'2 have "prime n"
-          by (auto simp: prime_nat_simp) 
-        with True show ?thesis unfolding res by auto
+        assume "i' = n"
+        with dvd n have "prime n"
+          by (simp add: prime_nat_iff')
+        with \<open>i' = n\<close> show ?thesis 
+          by auto
       qed
+      finally show ?thesis .
     qed
   qed
 qed

@@ -245,7 +245,7 @@ lemma compute_vareq:
 
 schematic_goal solve_vareqtest:
   "vareqtest (aform_of_point (FloatR 5 (- 2), FloatR 146 (- 6), 1, 0, 0, 1)) False 2 = ?X"
-  by (eval_lhs)
+  by guess_rhs eval
 
 concrete_definition vareq_result uses solve_vareqtest is "_ = dRETURN ?X"
 

@@ -2371,7 +2371,7 @@ apply (rule_tac x="l+r-x" in exI)
 apply (simp add: le_diff_swap)
 apply (simp add: le_diff_conv2)
 apply (subst mod_sub_eq_mod_swap, simp+)
-apply (simp add: mod_diff_right_eq[symmetric])
+apply (simp add: mod_diff_right_eq)
 done
 
 lemma iIN_imirror_bounds: "

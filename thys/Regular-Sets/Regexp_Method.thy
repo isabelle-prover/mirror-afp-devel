@@ -1,4 +1,4 @@
-section {* Proving Relation (In)equalities via Regular Expressions *}
+section \<open>Proving Relation (In)equalities via Regular Expressions\<close>
 
 theory Regexp_Method
 imports Equivalence_Checking Relation_Interpretation
@@ -26,29 +26,40 @@ by (rule Relation_Interpretation.soundness)
 lemmas regexp_reify = rel_of_regexp.simps rel_eq.simps
 lemmas regexp_unfold = trancl_unfold_left subset_Un_eq
 
-method_setup regexp = {*
-  let
-    val regexp_conv = Code_Runtime.static_holds_conv { ctxt = @{context},
-      consts = [@{const_name "Nat.zero_nat_inst.zero_nat"}, @{const_name Suc},
-       @{const_name Zero}, @{const_name One}, @{const_name Atom},
-       @{const_name Plus}, @{const_name Times}, @{const_name Star}, 
-       @{const_name check_eqv}, @{const_name Trueprop}] }
-  in Scan.succeed (fn ctxt =>
-      SIMPLE_METHOD' (
-        (TRY o eresolve_tac ctxt @{thms rev_subsetD})
-        THEN' (Subgoal.FOCUS_PARAMS (fn {context = ctxt', ...} =>
-          TRY (Local_Defs.unfold_tac ctxt' @{thms regexp_unfold})
-          THEN Reification.tac ctxt' @{thms regexp_reify} NONE 1
-          THEN resolve_tac ctxt' @{thms rel_eqI} 1
-          THEN CONVERSION (regexp_conv ctxt') 1
-          THEN resolve_tac ctxt' [TrueI] 1) ctxt)))
-  end
-*} "decide relation equalities via regular expressions"
+ML \<open>
+local
+
+fun check_eqv (ct, b) = Thm.mk_binop @{cterm "Pure.eq :: bool \<Rightarrow> bool \<Rightarrow> prop"}
+  ct (if b then @{cterm True} else @{cterm False});
+
+val (_, check_eqv_oracle) = Context.>>> (Context.map_theory_result
+  (Thm.add_oracle (@{binding check_eqv}, check_eqv)));
+
+in
+
+val regexp_conv =
+  @{computation_conv bool terms: check_eqv datatypes: "nat rexp"}
+  (fn _ => fn b => fn ct => check_eqv_oracle (ct, b))
+
+end
+\<close>
+  
+method_setup regexp = \<open>
+  Scan.succeed (fn ctxt =>
+    SIMPLE_METHOD' (
+      (TRY o eresolve_tac ctxt @{thms rev_subsetD})
+      THEN' (Subgoal.FOCUS_PARAMS (fn {context = ctxt', ...} =>
+        TRY (Local_Defs.unfold_tac ctxt' @{thms regexp_unfold})
+        THEN Reification.tac ctxt' @{thms regexp_reify} NONE 1
+        THEN resolve_tac ctxt' @{thms rel_eqI} 1
+        THEN CONVERSION (HOLogic.Trueprop_conv (regexp_conv ctxt')) 1
+        THEN resolve_tac ctxt' [TrueI] 1) ctxt)))
+\<close> \<open>decide relation equalities via regular expressions\<close>
 
 hide_const (open) le_rexp nPlus nTimes norm nullable bisimilar is_bisimulation closure
   pre_bisim add_atoms check_eqv rel word_rel rel_eq
 
-text {* Example: *}
+text \<open>Example:\<close>
 
 lemma "(r \<union> s^+)^* = (r \<union> s)^*"
   by regexp

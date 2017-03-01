@@ -3,7 +3,7 @@ imports
   Complex_Main
   "./Ids"
 begin 
-subsection \<open>Syntax\<close>
+section \<open>Syntax\<close>
 text \<open>
   We define the syntax of dL terms, formulas and hybrid programs. As in
   CADE'15, the syntax allows arbitrarily nested differentials. However, 

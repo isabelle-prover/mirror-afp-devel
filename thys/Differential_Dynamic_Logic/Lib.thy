@@ -2,7 +2,7 @@ theory Lib
 imports
   "../Ordinary_Differential_Equations/ODE_Analysis"
 begin
-subsection \<open>Library of assorted things\<close>
+section \<open>Generic Mathematical Lemmas\<close>
 text\<open>General lemmas that don't have anything to do with dL specifically and could be fit for 
   general-purpose libraries, mostly dealing with derivatives, ODEs and vectors.\<close>
 

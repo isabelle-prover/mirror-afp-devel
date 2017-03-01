@@ -24,7 +24,7 @@ proof (induction b e m rule: mod_exp.induct, goal_cases)
 next
   case (3 e b m)
   from 3 have "mod_exp b e m = b ^ (Suc (2 * (e div 2))) mod m"
-    by (simp only: power_mult power_Suc) (simp add: power_mod mod_mult_right_eq [symmetric])
+    by (simp only: power_mult power_Suc) (simp add: power_mod mod_mult_right_eq)
   also from 3 have "Suc (2 * (e div 2)) = e" by simp
   finally show ?case .
 qed simp
@@ -140,7 +140,7 @@ subsection {* Soundness *}
 
 text {*
   In Section \ref{sec:pratt} we introduced the predicates $\text{Prime}(p)$ and $(p, a, x)$.
-  In this section we show that for a certificate every predicate occuring in this certificate
+  In this section we show that for a certificate every predicate occurring in this certificate
   holds. In particular, if $\text{Prime}(p)$ occurs in a certificate, $p$ is prime.
 *}
 
@@ -688,7 +688,7 @@ end
 
 method_setup pratt = \<open>
   Scan.option (Scan.lift (Args.bracks Pratt.parse_cert)) >> 
-    (SIMPLE_METHOD o HEADGOAL oo Pratt.pratt_tac)
+    (SIMPLE_METHOD o HEADGOAL oo Pratt.pratt_tac true)
 \<close> "Prove primality of natural numbers using Pratt certificates."
 
 

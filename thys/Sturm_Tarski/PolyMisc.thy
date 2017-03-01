@@ -24,16 +24,17 @@ lemma dvd_monic:
   shows "p dvd q" using assms
 proof (cases "q=0 \<or> degree p=0")
   case True
-  thus ?thesis using assms unfolding lead_coeff_def 
+  thus ?thesis using assms 
     by (metis coeff_1 dvd_0_right le_0_eq le_degree one_dvd poly_eqI)
 next
   case False
-  hence "q\<noteq>0" and "degree p\<noteq>0" by auto
-  obtain k where k:"smult c q = p*k" using assms by (blast elim: dvdE)  
-  hence "k\<noteq>0" by (metis False assms(3) mult_zero_right smult_eq_0_iff)
-  hence deg_eq:"degree q=degree p + degree k"
-    using degree_mult_eq monic k unfolding lead_coeff_def
-    by (metis assms(3) degree_smult_eq leading_coeff_0_iff zero_neq_one)
+  then have "q \<noteq> 0" and "degree p \<noteq> 0" and "p \<noteq> 0" by auto
+  from assms(2) obtain k where k: "smult c q = p * k" ..
+  with \<open>q \<noteq> 0\<close> \<open>c \<noteq> 0\<close> have "k \<noteq> 0" 
+    by auto
+  with \<open>p \<noteq> 0\<close> \<open>c \<noteq> 0\<close> k [symmetric]
+  have deg_eq: "degree q = degree p + degree k"
+    by (simp add: degree_mult_eq [symmetric])
   have c_dvd:"\<forall>n\<le>degree k. c dvd coeff k (degree k - n)" 
     proof (rule,rule)
       fix n assume "n \<le> degree k "
@@ -76,7 +77,7 @@ next
                 using coeff_eq_0[of p] unfolding T_def by simp
               hence "sum T {degree p + 1..degree p + degree k - n}=0" by auto
               moreover have "T (degree p)=coeff k (degree k - n)"
-                using monic unfolding T_def lead_coeff_def by auto
+                using monic unfolding T_def by auto
               ultimately show ?thesis by auto
             qed
           finally have c_coeff: "c * coeff q (degree q - n) = sum T {0..<degree p} 
@@ -164,9 +165,10 @@ lemma sgn_inf_sym:
   shows "sgn_pos_inf (pcompose p [:0,-1:]) = sgn_neg_inf p" (is "?L=?R")
 proof -
   have "?L= sgn (lead_coeff p * (- 1) ^ degree p)" 
-    unfolding sgn_pos_inf_def by (subst lead_coeff_comp,unfold lead_coeff_def,auto)
+    unfolding sgn_pos_inf_def
+    by (subst lead_coeff_comp) auto
   thus ?thesis unfolding sgn_neg_inf_def 
-    by (metis mult.right_neutral mult_minus1_right neg_one_even_power neg_one_odd_power sgn_minus)
+    by simp
 qed
 
 lemma poly_sgn_eventually_at_top:
@@ -185,7 +187,7 @@ next
     next
       case False
       hence "lead_coeff (-p) > 0" and "lead_coeff p < 0" unfolding lead_coeff_minus
-        using leading_coeff_neq_0[OF `p\<noteq>0`,folded lead_coeff_def] by linarith+
+        using leading_coeff_neq_0[OF `p\<noteq>0`,folded] by linarith+
       then obtain n where "\<forall>x\<ge>n. lead_coeff p \<ge> poly p x"
         using poly_pinfty_gt_lc[of "-p"] unfolding lead_coeff_minus by auto
       thus ?thesis using `lead_coeff p<0` that[of n] unfolding sgn_pos_inf_def by fastforce

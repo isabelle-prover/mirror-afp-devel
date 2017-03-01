@@ -45,7 +45,7 @@ code_printing
  (* | constant "gcd_integer :: integer => _ => _" \<rightharpoonup> (SML) "(MLton.IntInf.gcd ((_),(_)))"*) (*Only for MLton*)
 
 lemma gcd_code [code]:
-"gcd a b = int_of_integer (gcd_integer (of_int a) (of_int b))"
+  "gcd a b = int_of_integer (gcd_integer (of_int a) (of_int b))"
   by (metis gcd_integer.abs_eq int_of_integer_integer_of_int integer_of_int_eq_of_int)
 
 code_printing

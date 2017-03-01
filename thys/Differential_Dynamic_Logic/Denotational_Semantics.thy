@@ -5,6 +5,14 @@ imports
   "./Ids"
   "./Syntax"
 begin
+subsection \<open>Denotational Semantics\<close>
+text \<open>
+  The canonical dynamic semantics of dL are given as a denotational semantics.
+  The important definitions for the denotational semantics are states $\nu$,
+  interpretations I and the semantic functions $[[\psi]]I$, $[[\theta]]I\nu$,
+  $[[\alpha]]I$, which are represented by the Isabelle functions \verb|fml_sem|,
+  \verb|dterm_sem| and \verb|prog_sem|, respectively.
+  \<close>
 subsection \<open>States\<close>
 text \<open>We formalize a state S as a pair $(S_V, S_V') : R^n \times R^n $, where $S_V$ assigns
   values to the program variables and $S_V$' assigns values to their
@@ -82,24 +90,17 @@ lemma VSagree_sub:"\<And>\<nu> \<omega> A B . A \<subseteq> B \<Longrightarrow> 
 lemma VSagree_refl:"VSagree \<nu> \<nu> A"
   by (auto simp add: VSagree_def)
 
-subsection \<open>Denotational Semantics\<close>
-
-text \<open>
-  The central definitions for the denotational semantics are states $\nu$,
-  interpretations I and the semantic functions $[[\psi]]I$, $[[\theta]]I\nu$,
-  $[[\alpha]]I$, which are represented by the Isabelle functions \verb|fml_sem|,
-  \verb|dterm_sem| and \verb|prog_sem|, respectively.
-
-  For convenience we pretend interpretations contain an extra field called
+subsection Interpretations
+text\<open>
+    For convenience we pretend interpretations contain an extra field called
   FunctionFrechet specifying the Frechet derivative \verb|(FunctionFrechet f \<nu>)| : $R^m \rightarrow R$ 
   for every function in every state. The proposition \verb|(is_interp I)| says that such a
-  derivative actually exists (i.e. all functions are differentiable everywhere)
+  derivative actually exists and is continuous (i.e. all functions are C1-continuous)
   without saying what the exact derivative is.
   
-  The type parameters 'a, 'b, 'c are finite (at least if we want to do anything useful) 
-  types whose cardinalities indicate the maximum number of functions, contexts and 
-  <everything else> defined by the interpretation.
-  \<close>
+  The type parameters 'a, 'b, 'c are finite types whose cardinalities indicate the maximum number 
+  of functions, contexts, and <everything else defined by the interpretation>, respectively.
+\<close>
 record ('a, 'b, 'c) interp =
   Functions       :: "'a \<Rightarrow> 'c Rvec \<Rightarrow> real"
   Predicates      :: "'c \<Rightarrow> 'c Rvec \<Rightarrow> bool"
@@ -197,16 +198,17 @@ where
 | "dterm_sem I (Differential t) = (\<lambda>v. directional_derivative I t v)"
 | "dterm_sem I (Const c) = (\<lambda>v. c)"
 
-(* The semantics of an ODE is the vector field at a given point. ODE's are all time-independent
- * so no time variable is necessary. Terms on the RHS of an ODE must be differential-free, so
- * depends only on the xs. *)
+text\<open> The semantics of an ODE is the vector field at a given point. ODE's are all time-independent
+  so no time variable is necessary. Terms on the RHS of an ODE must be differential-free, so
+  depends only on the xs.
+
+  The safety predicate \texttt{osafe} ensures the domains of ODE1 and ODE2 are disjoint, so vector addition
+  is equivalent to saying "take things defined from ODE1 from ODE1, take things defined
+  by ODE2 from ODE2"\<close>
 fun ODE_sem:: "('a::finite, 'b::finite, 'c::finite) interp \<Rightarrow> ('a, 'c) ODE \<Rightarrow> 'c Rvec \<Rightarrow> 'c Rvec"
   where
   ODE_sem_OVar:"ODE_sem I (OVar x) = ODEs I x"
 | ODE_sem_OSing:"ODE_sem I (OSing x \<theta>) =  (\<lambda>\<nu>. (\<chi> i. if i = x then sterm_sem I \<theta> \<nu> else 0))"
-(* Safety predicate ensures the domains of ODE1 and ODE2 are disjoint, so vector addition
- * is equivalent to saying "take things defined from ODE1 from ODE1, take things defined
- * by ODE2 from ODE2"*)
 (* Note: Could define using SOME operator in a way that more closely matches above description,
  * but that gets complicated in the OVar case because not all variables are bound by the OVar *)
 | ODE_sem_OProd:"ODE_sem I (OProd ODE1 ODE2) = (\<lambda>\<nu>. ODE_sem I ODE1 \<nu> + ODE_sem I ODE2 \<nu>)"
@@ -229,8 +231,8 @@ lemma ODE_vars_lr:
 fun mk_xode::"('a::finite, 'b::finite, 'c::finite) interp \<Rightarrow> ('a::finite, 'c::finite) ODE \<Rightarrow> 'c::finite simple_state \<Rightarrow> 'c::finite state"
 where "mk_xode I ODE sol = (sol, ODE_sem I ODE sol)"
  
-(* Given an initial state \<nu> and solution to an ODE at some point, construct the resulting state \<omega>.
- * This is defined using the SOME operator because the concrete definition is unwieldy. *)
+text\<open> Given an initial state $\nu$ and solution to an ODE at some point, construct the resulting state $\omega$.
+  This is defined using the SOME operator because the concrete definition is unwieldy. \<close>
 definition mk_v::"('a::finite, 'b::finite, 'c::finite) interp \<Rightarrow> ('a::finite, 'c::finite) ODE \<Rightarrow> 'c::finite state \<Rightarrow> 'c::finite simple_state \<Rightarrow> 'c::finite state"
 where "mk_v I ODE \<nu> sol = (THE \<omega>. 
   Vagree \<omega> \<nu> (- semBV I ODE) 
@@ -244,12 +246,7 @@ where "repv v x r = ((\<chi> y. if x = y then r else vec_nth (fst v) y), snd v)"
 fun repd :: "'c::finite state \<Rightarrow> 'c \<Rightarrow> real \<Rightarrow> 'c state"
 where "repd v x r = (fst v, (\<chi> y. if x = y then r else vec_nth (snd v) y))"  
   
-(* Semantics for formulas, differential formulas, programs.
- * Differential formulas do actually have to have their own notion of semantics, because
- * the meaning of a differential formula (\<phi>)' depends on the syntax of the formula \<phi>:
- * we can have two formulas \<phi> and \<psi> that have the exact same semantics, but where
- * the semantics of (\<phi>)' and (\<psi>)' differ because \<phi> and \<psi> differ syntactically.
- *)
+(* Semantics for formulas, differential formulas, programs. *)
 fun fml_sem  :: "('a::finite, 'b::finite, 'c::finite) interp \<Rightarrow> ('a::finite, 'b::finite, 'c::finite) formula \<Rightarrow> 'c::finite state set" and
   prog_sem :: "('a::finite, 'b::finite, 'c::finite) interp \<Rightarrow> ('a::finite, 'b::finite, 'c::finite) hp \<Rightarrow> ('c::finite state * 'c::finite state) set"
 where
@@ -279,10 +276,10 @@ definition valid :: "('sf, 'sc, 'sz) formula \<Rightarrow> bool"
 where "valid \<phi> \<equiv> (\<forall> I. \<forall> \<nu>. is_interp I \<longrightarrow> \<nu> \<in> fml_sem I \<phi>)"
 end
 
-(* Because mk_v is defined with the SOME operator, need to construct a state that satisfies
- *   Vagree \<omega> \<nu> (- ODE_vars ODE) 
- * \<and> Vagree \<omega> (mk_xode I ODE sol) (ODE_vars ODE))"
- * to do anything useful *)
+text\<open> Because mk\_v is defined with the SOME operator, need to construct a state that satisfies
+    ${\tt Vagree} \omega \nu (- {\tt ODE\_vars\ ODE}) 
+     \wedge {\tt Vagree} \omega {\tt (mk\_xode\ I\ ODE\ sol)\ (ODE\_vars\ ODE)})$
+    to do anything useful \<close>
 fun concrete_v::"('a::finite, 'b::finite, 'c::finite) interp \<Rightarrow> ('a::finite, 'c::finite) ODE \<Rightarrow> 'c::finite state \<Rightarrow> 'c::finite simple_state \<Rightarrow> 'c::finite state"
 where "concrete_v I ODE \<nu> sol =
 ((\<chi> i. (if Inl i \<in> semBV I ODE then sol else (fst \<nu>)) $ i),
@@ -428,7 +425,8 @@ definition seq_valid
 where "seq_valid S \<equiv> \<forall>I. is_interp I \<longrightarrow> seq_sem I S = UNIV"  
 
 
-(* *Local* soundness *)
+text\<open> Soundness for derived rules is local soundness, i.e. if the premisses are all true in the same interpretation,
+  then the conclusion is also true in that same interpretation. \<close>
 definition sound :: "('sf, 'sc, 'sz) rule \<Rightarrow> bool"
 where "sound R \<longleftrightarrow> (\<forall>I. is_interp I \<longrightarrow> (\<forall>i. i \<ge> 0 \<longrightarrow> i < length (fst R) \<longrightarrow> seq_sem I (nth (fst R) i) = UNIV) \<longrightarrow> seq_sem I (snd R) = UNIV)"
 

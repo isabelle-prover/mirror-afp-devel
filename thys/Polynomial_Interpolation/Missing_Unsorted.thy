@@ -243,89 +243,67 @@ lemma lcm_abs_mult_left_int[simp]: "lcm x (a * (abs y :: int)) = lcm x (a * y)"
   by (simp add: lcm_int_def nat_abs_mult_distrib)
 
 
-definition list_gcd :: "'a :: semiring_gcd list \<Rightarrow> 'a" where
-  "list_gcd xs \<equiv> foldr gcd xs 0"
+abbreviation (input) list_gcd :: "'a :: semiring_gcd list \<Rightarrow> 'a" where
+  "list_gcd \<equiv> gcd_list"
 
-definition list_lcm :: "'a :: semiring_gcd list \<Rightarrow> 'a" where
-  "list_lcm xs \<equiv> foldr lcm xs 1"
+abbreviation (input) list_lcm :: "'a :: semiring_gcd list \<Rightarrow> 'a" where
+  "list_lcm \<equiv> lcm_list"
 
 
 lemma list_gcd_simps: "list_gcd [] = 0" "list_gcd (x # xs) = gcd x (list_gcd xs)"
-  by (auto simp: list_gcd_def)
+  by simp_all
 
-lemma list_gcd: "x \<in> set xs \<Longrightarrow> list_gcd xs dvd x" 
-proof (induct xs)
-  case (Cons y ys)
-  show ?case
-  proof (cases "x = y")
-    case False
-    with Cons have "list_gcd ys dvd x" by auto
-    thus ?thesis unfolding list_gcd_simps using dvd_trans by blast
-  next
-    case True
-    thus ?thesis unfolding list_gcd_simps using dvd_trans by blast
-  qed
-qed simp
+lemma list_gcd: "x \<in> set xs \<Longrightarrow> list_gcd xs dvd x"
+  by (fact Gcd_fin_dvd)
 
 lemma list_gcd_greatest: "(\<And> x. x \<in> set xs \<Longrightarrow> y dvd x) \<Longrightarrow> y dvd (list_gcd xs)"
-proof (induct xs)
-  case (Cons x xs)
-  from Cons have "y dvd x" "y dvd (list_gcd xs)" by auto
-  thus ?case unfolding list_gcd_simps by (rule gcd_greatest)
-qed (simp add: list_gcd_simps)
+  by (fact gcd_list_greatest)
 
-lemma list_gcd_mult_int[simp]: fixes xs :: "int list"
-  shows "list_gcd (map (op * a) xs) = \<bar>a\<bar> * list_gcd xs"
-  by (induct xs, auto simp: list_gcd_simps gcd_mult_distrib_int)
+lemma list_gcd_mult_int [simp]: 
+  fixes xs :: "int list"
+  shows "list_gcd (map (times a) xs) = \<bar>a\<bar> * list_gcd xs"
+  by (simp add: Gcd_mult)
 
 lemma list_lcm_simps: "list_lcm [] = 1" "list_lcm (x # xs) = lcm x (list_lcm xs)"
-  by (auto simp: list_lcm_def)
+  by simp_all
 
 lemma list_lcm: "x \<in> set xs \<Longrightarrow> x dvd list_lcm xs" 
-proof (induct xs)
-  case (Cons y ys)
-  have res: "list_lcm (y # ys) = lcm y (list_lcm ys)" unfolding list_lcm_def by simp
-  show ?case
-  proof (cases "x = y")
-    case False
-    with Cons have "x dvd list_lcm ys" by auto
-    thus ?thesis unfolding list_lcm_simps by (rule dvd_lcmI2)
-  qed (simp add: list_lcm_simps)
-qed simp
+  by (fact dvd_Lcm_fin)
 
 lemma list_lcm_least: "(\<And> x. x \<in> set xs \<Longrightarrow> x dvd y) \<Longrightarrow> list_lcm xs dvd y"
-proof (induct xs)
-  case (Cons x xs)
-  from Cons have "x dvd y" "list_lcm xs dvd y" by auto
-  thus ?case unfolding list_lcm_simps by (rule lcm_least)
-qed (simp add: list_lcm_simps)
+  by (fact lcm_list_least)
 
 lemma lcm_mult_distrib_nat: "(k :: nat) * lcm m n = lcm (k * m) (k * n)"
-  unfolding lcm_nat_def gcd_mult_distrib_nat[symmetric]
-  by (simp add: Divides.div_mult2_eq div_mult_swap mult.left_commute)
+  by (simp add: lcm_mult_left)
 
 lemma lcm_mult_distrib_int: "abs (k::int) * lcm m n = lcm (k * m) (k * n)"
-  unfolding lcm_int_def nat_mult_distrib[OF abs_ge_zero] abs_mult
-  unfolding lcm_mult_distrib_nat[symmetric] by simp
+  by (simp add: lcm_mult_left)
 
-lemma list_lcm_mult_int[simp]:
-  "list_lcm (map (op * (a :: int)) xs) = (if xs = [] then 1 else \<bar>a\<bar> * list_lcm xs)"
-  by (induct xs, auto simp: list_lcm_simps lcm_mult_distrib_int abs_mult)
+lemma list_lcm_mult_int [simp]:
+  fixes xs :: "int list"
+  shows "list_lcm (map (times a) xs) = (if xs = [] then 1 else \<bar>a\<bar> * list_lcm xs)"
+  by (simp add: Lcm_mult)
 
-lemma list_lcm_pos: "list_lcm xs \<ge> (0 :: int)" "0 \<notin> set xs \<Longrightarrow> list_lcm xs \<noteq> 0"
+lemma list_lcm_pos:
+  "list_lcm xs \<ge> (0 :: int)"
+  "0 \<notin> set xs \<Longrightarrow> list_lcm xs \<noteq> 0"
   "0 \<notin> set xs \<Longrightarrow> list_lcm xs > 0" 
 proof -
-  show ge: "list_lcm xs \<ge> 0"
-    by (induct xs, auto simp: list_lcm_simps)
+  have "0 \<le> \<bar>Lcm (set xs)\<bar>"
+    by (simp only: abs_ge_zero)
+  then have "0 \<le> Lcm (set xs)"
+    by simp
+  then show "list_lcm xs \<ge> 0"
+    by simp
   assume "0 \<notin> set xs"
-  thus neq: "list_lcm xs \<noteq> 0"
-    by (induct xs, auto simp: list_lcm_simps)
-  from ge neq show "list_lcm xs > 0" by auto
+  then show "list_lcm xs \<noteq> 0"
+    by (simp add: Lcm_0_iff)
+  with \<open>list_lcm xs \<ge> 0\<close> show "list_lcm xs > 0"
+    by auto
 qed
 
-
 lemma quotient_of_nonzero: "snd (quotient_of r) > 0" "snd (quotient_of r) \<noteq> 0"
-  using quotient_of_denom_pos[of r] by (cases "quotient_of r", auto)+
+  using quotient_of_denom_pos' [of r] by simp_all
 
 lemma quotient_of_int_div: assumes q: "quotient_of (of_int x / of_int y) = (a, b)"
   and y: "y \<noteq> 0" 

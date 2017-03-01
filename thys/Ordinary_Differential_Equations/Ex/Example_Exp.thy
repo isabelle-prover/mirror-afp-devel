@@ -60,7 +60,7 @@ lemma exp_ode_exp_mem:
 subsection \<open>concrete example\<close>
 
 schematic_goal exp_ode: "exp_ode 1 = ?X"
-  by eval_lhs
+  by guess_rhs eval
 concrete_definition exp_result uses exp_ode is "_ = dRETURN ?X"
 definition "e3_reach = map aform_of_list_aform (the (snd (exp_result)))"
 

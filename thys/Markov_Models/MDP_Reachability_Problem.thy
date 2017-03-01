@@ -949,7 +949,7 @@ proof atomize_elim
 
         from v_less obtain D where "D \<in> K s" "?v s < integral\<^sup>N D ?v"
           by (auto simp: less_SUP_iff)
-        with ct `s\<in>S` `s\<in>S\<^sub>r` have "(ct(s:=D), ct) \<in> R" "ct(s:=D) \<in> PiE S K"
+        with ct `s\<in>S` `s\<in>S\<^sub>r` have "(ct(s:=D), ct) \<in> R" "ct(s:=D) \<in> Pi\<^sub>E S K"
           unfolding R_def by (auto simp: PiE_def extensional_def)
         from proper[OF this(1)] min[OF this(1)] ct `D \<in> K s` `s\<in>S` this(2)
         have False
@@ -1042,7 +1042,7 @@ proof (induction s)
   with S1 have [simp]: "s \<in> S" by auto
   let ?I = "\<lambda>D::'s pmf. \<integral>\<^sup>+t. n t \<partial>D"
   have "0 < Min (?I`K s)"
-  proof (safe intro!: Min_grI)
+  proof (safe intro!: Min_gr_iff [THEN iffD2])
     fix D assume [simp]: "D \<in> K s"
     from cont[OF `P s` `s \<in> S1` `D \<in> K s`]
     obtain w where w: "w \<in> D" "0 < n w"

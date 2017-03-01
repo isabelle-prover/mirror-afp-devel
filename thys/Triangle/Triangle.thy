@@ -295,4 +295,46 @@ lemma isosceles_triangle_converse:
   by (rule congruent_triangle_asa[OF assms(1) _ _ assms(2)])
      (simp_all add: dist_commute angle_commute assms)
 
+
+subsection\<open>Contributions by Lukas Bulwahn\<close>
+  
+lemma Pythagoras:
+  fixes A B C :: "'a :: euclidean_space"
+  assumes "orthogonal (A - C) (B - C)"
+  shows "(dist B C) ^ 2 + (dist C A) ^ 2 = (dist A B) ^ 2"
+proof -
+  from assms have "cos (angle A C B) = 0"
+    by (metis orthogonal_iff_angle cos_pi_half)
+  from this show ?thesis
+    by (simp add: cosine_law_triangle[of A B C] dist_commute)
+qed
+
+lemma isosceles_triangle_orthogonal_on_midpoint:
+  fixes A B C :: "'a::euclidean_space"
+  assumes "dist C A = dist C B"
+  shows "orthogonal (C - midpoint A B) (A - midpoint A B)"
+proof (cases "A = B")
+  assume "A \<noteq> B"
+  let ?M = "midpoint A B"
+  have "angle A ?M C = pi - angle B ?M C"
+    using \<open>A \<noteq> B\<close> angle_inverse between_midpoint(1) midpoint_eq_endpoint by metis
+  moreover have "angle A ?M C = angle C ?M B"
+  proof -
+    have congruence: "congruent_triangle C A ?M C B ?M"
+    proof (rule congruent_triangleI_sss)
+      show "dist C A = dist C B" using assms .
+      show "dist A ?M = dist B ?M" by (simp add: dist_midpoint)
+      show "dist C (midpoint A B) = dist C (midpoint A B)" ..
+    qed
+    from this show ?thesis by (simp add: congruent_triangle.angles(6))
+  qed
+  ultimately have "angle A ?M C = pi / 2" by (simp add: angle_commute)
+  from this show ?thesis
+    by (simp add: orthogonal_iff_angle orthogonal_commute)
+next
+  assume "A = B"
+  from this show ?thesis
+    by (simp add: orthogonal_clauses(1))
+qed
+
 end

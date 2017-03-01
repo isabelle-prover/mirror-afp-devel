@@ -172,7 +172,7 @@ next
       proof (rule ccontr)
         assume "\<not> \<not> 3 dvd ?g" hence "3 dvd 2*p" by simp
         hence "(3::int) dvd 2 \<or> 3 dvd p"
-          using prime_dvd_multD[of 3] by fastforce
+          using prime_dvd_multD[of 3] by (fastforce simp add: prime_dvd_mult_iff)
         with p3 show False by arith
       qed
       have pq_relprime: "gcd p q=1"
@@ -403,7 +403,7 @@ next
           moreover have "(3::int) \<noteq> 0" by simp
           ultimately have "h dvd 2*r" by (rule zdvd_mult_cancel)
           with h have "h dvd 2 \<or> h dvd r" 
-            by (auto simp: prime_int_nat_transfer dest: prime_dvd_multD)
+            by (auto simp: prime_int_nat_transfer prime_dvd_mult_iff dest: prime_dvd_multD)
           moreover have "\<not> h dvd 2" 
           proof (rule ccontr, simp)
             assume "h dvd 2" 

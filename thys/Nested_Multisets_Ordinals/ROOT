@@ -1,6 +1,6 @@
 chapter AFP
 
-session Nested_Multisets_Ordinals (AFP) = HOL +
+session Nested_Multisets_Ordinals (AFP) = Ordinal +
   options [timeout=600]
   theories [document = false]
     "~~/src/HOL/Library/Multiset_Order"
@@ -8,5 +8,6 @@ session Nested_Multisets_Ordinals (AFP) = HOL +
     "~~/src/HOL/Library/Product_Order"
   theories
     Signed_Syntactic_Ordinal
+    Syntactic_Ordinal_Bridge
   document_files
     "root.tex"

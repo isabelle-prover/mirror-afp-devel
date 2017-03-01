@@ -141,9 +141,9 @@ method_setup inv_cterms = \<open>
   in
     (Scan.lift inv_cterms_options --| Method.sections
       ((Args.$$$ invN -- Args.add -- Args.colon >>
-        K (Method.modifier (Named_Theorems.add @{named_theorems cterms_invs}) @{here}))
+        K (Method.modifier (Named_Theorems.add @{named_theorems cterms_invs}) \<^here>))
        :: (Args.$$$ solveN -- Args.colon >>
-        K (Method.modifier (Named_Theorems.add @{named_theorems cterms_final}) @{here}))
+        K (Method.modifier (Named_Theorems.add @{named_theorems cterms_final}) \<^here>))
        :: Simplifier.simp_modifiers)
       >> (fn tac => SIMPLE_METHOD' o tac))
   end

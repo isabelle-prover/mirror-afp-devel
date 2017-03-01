@@ -5102,6 +5102,11 @@ abstract =
   contain binding names. The logic is generalized to treat different
   bisimulation variants such as early, late and open in a systematic
   way.
+extra-history =
+	Change history:
+        [2017-01-29]:
+        Formalization of weak bisimilarity added
+        (revision c87cc2057d9c)
 
 [Abs_Int_ITP2012]
 title = Abstract Interpretation of Annotated Commands
@@ -5145,6 +5150,11 @@ abstract =
   guards and function calls.  We aim to then target concurrent operating
   systems, such as the interruptible eChronos embedded operating system
   for which we already have a model-level OG proof using Hoare-Parallel.
+extra-history =
+	Change history:
+        [2017-01-13]:
+        Improve VCG for nested parallels and sequential sections
+        (revision 30739dbc3dcb)
 
 [Paraconsistency]
 title = Paraconsistency

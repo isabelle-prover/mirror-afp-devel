@@ -326,7 +326,7 @@ lemma asymp_equiv_imp_bigo:
 proof (rule bigoI)
   have "(3/2::real) > 1" by simp
   from asymp_equiv_imp_eventually_le[OF assms this]
-    show "eventually (\<lambda>x. \<bar>f x\<bar> \<le> 3/2 * \<bar>g x\<bar>) at_top"
+    show "eventually (\<lambda>x. norm (f x) \<le> 3/2 * norm (g x)) at_top"
     by eventually_elim simp
 qed
 

@@ -16,14 +16,7 @@ lemma productdivides_lemma: "\<lbrakk>x mod z = (0::nat)\<rbrakk> \<Longrightarr
 
 lemma productdivides: "\<lbrakk>x mod a = (0::nat); x mod b = 0; prime a; prime b; a \<noteq> b\<rbrakk> \<Longrightarrow> x mod (a*b) = 0"
   apply (simp add: mod_eq_0_iff [of x a])
-  apply (erule exE)
-  apply (simp)
-  apply (simp add: dvd_eq_mod_eq_0 [symmetric])
-  apply (drule prime_dvd_mult_nat [of b])
-  apply (erule disjE)
-  apply auto
-  apply (simp add: prime_nat_iff)
-  apply auto
+  apply (auto simp add: dvd_eq_mod_eq_0 [symmetric] prime_dvd_mult_iff dest: primes_dvd_imp_eq)
   done
 
 lemma specializedtoprimes1: 

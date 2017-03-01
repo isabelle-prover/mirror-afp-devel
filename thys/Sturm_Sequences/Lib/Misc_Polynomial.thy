@@ -91,8 +91,12 @@ lemma poly_div_gcd_squarefree_aux:
   shows "coprime (p div d) (pderiv (p div d))" and
         "\<And>x. poly (p div d) x = 0 \<longleftrightarrow> poly p x = 0"
 proof -
-  from bezout[of p "pderiv p"] obtain r s where rs [symmetric]: "r * p + s * pderiv p = d"
-    unfolding d_def by force
+  obtain r s where "bezout_coefficients p (pderiv p) = (r, s)"
+    by (auto simp add: prod_eq_iff)
+  then have "r * p + s * pderiv p = gcd p (pderiv p)"
+    by (rule bezout_coefficients)
+  then have rs: "d = r * p + s * pderiv p"
+    by (simp add: d_def)
   def t \<equiv> "p div d"
   def [simp]: p' \<equiv> "pderiv p"
   def [simp]: d' \<equiv> "pderiv d"
@@ -203,7 +207,7 @@ proof-
       then obtain c where [simp]: "p = [:c:]" using pderiv_iszero by blast
       from assms(1) have "c \<noteq> 0" by simp
       from True have "d = smult (inverse c) p"
-          by (simp add: d_def normalize_poly_def map_poly_pCons field_simps)
+        by (simp add: d_def normalize_poly_def map_poly_pCons field_simps one_poly_def)
       hence "p div d = [:c:]" using `c \<noteq> 0`
           by (simp add: div_smult_right assms(1) one_poly_def[symmetric])
       thus ?thesis using `c \<noteq> 0` by (simp add: normalize_const_poly one_poly_def)

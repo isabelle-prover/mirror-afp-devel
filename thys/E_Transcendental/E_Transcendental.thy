@@ -537,7 +537,7 @@ proof
     define M :: int where "M = (- 1) ^ (n * p) * fact n ^ p"
     with p have p_not_dvd_M: "\<not>int p dvd M"
       by (auto simp: M_def prime_elem_int_not_dvd_neg1_power prime_dvd_power_iff
-            prime_gt_0_nat prime_dvd_fact_iff_int)
+            prime_gt_0_nat prime_dvd_fact_iff_int prime_dvd_mult_iff)
 
     interpret lindemann_weierstrass_aux "of_int_poly f" .
     define J :: complex where "J = (\<Sum>k\<le>n. of_int (coeff q k) * I (of_nat k))"
@@ -607,7 +607,8 @@ proof
     finally have J: "J = -of_int (fact (p - 1) * (coeff q 0 * M + p * N))" by simp
 
     from p q(2) have "\<not>p dvd coeff q 0 * M + p * N"
-      by (auto simp: dvd_add_left_iff p_not_dvd_M prime_dvd_fact_iff_int dest: dvd_imp_le_int)
+      by (auto simp: dvd_add_left_iff p_not_dvd_M prime_dvd_fact_iff_int prime_dvd_mult_iff
+               dest: dvd_imp_le_int)
     hence "coeff q 0 * M + p * N \<noteq> 0" by (intro notI) simp_all
     hence "abs (coeff q 0 * M + p * N) \<ge> 1" by simp
     hence "norm (of_int (coeff q 0 * M + p * N) :: complex) \<ge> 1" by (simp only: norm_of_int)

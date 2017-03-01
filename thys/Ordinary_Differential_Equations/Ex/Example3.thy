@@ -36,7 +36,7 @@ definition "e3_optns = default_optns
 definition "solve_e3 = e3.one_step_until_time_ivl_listres (e3_optns)"
 schematic_goal solve_ivl_e3:
   "solve_e3 (aform_of_point (0, 1)) True (FloatR 32 (- 8)) = ?X"
-  by (eval_lhs)
+  by guess_rhs eval
 concrete_definition e3_result uses solve_ivl_e3 is "_ = dRETURN ?X"
 definition "e3_reach = map aform_of_list_aform (the (snd (e3_result)))"
 

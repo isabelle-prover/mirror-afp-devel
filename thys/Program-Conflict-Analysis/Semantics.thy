@@ -106,7 +106,7 @@ lemma mon_cD: "\<lbrakk>m\<in>mon_c fg c\<rbrakk> \<Longrightarrow> \<exists>s. 
 
 lemma mon_s_mono: "set s \<subseteq> set s' \<Longrightarrow> mon_s fg s \<subseteq> mon_s fg s'"
   by (unfold mon_s_def) auto
-lemma mon_c_mono: "c\<le>#c' \<Longrightarrow> mon_c fg c \<subseteq> mon_c fg c'"
+lemma mon_c_mono: "c\<subseteq>#c' \<Longrightarrow> mon_c fg c \<subseteq> mon_c fg c'"
   by (unfold mon_c_def) (auto dest: mset_subset_eqD)
 
 lemma mon_w_empty[simp]: "mon_w fg [] = {}"
@@ -126,7 +126,7 @@ subsection {* Valid configurations *}
 text_raw {*\label{sec:Semantics:validity}*}
 text {* We call a configuration {\em valid} if each monitor is owned by at most one thread. *}
 definition
-  "valid fg c == \<forall>s s'. {#s, s'#} \<le># c \<longrightarrow> mon_s fg s \<inter> mon_s fg s' = {}"
+  "valid fg c == \<forall>s s'. {#s, s'#} \<subseteq># c \<longrightarrow> mon_s fg s \<inter> mon_s fg s' = {}"
 
 lemma valid_empty[simp, intro!]: "valid fg {#}" 
   by (unfold valid_def, auto)
@@ -140,7 +140,7 @@ lemma valid_split1:
   apply (auto simp add: mset_le_incr_right)
   apply (drule mon_cD)+
   apply auto
-  apply (subgoal_tac "{#s#}+{#sa#} \<le># c+c'")
+  apply (subgoal_tac "{#s#}+{#sa#} \<subseteq># c+c'")
   apply (auto dest!: multi_member_split)
   done
   
@@ -166,7 +166,7 @@ lemmas valid_unconc = valid_union_conc valid_add_mset_conc
 lemma valid_no_mon: "mon_c fg c = {} \<Longrightarrow> valid fg c" 
 proof (unfold valid_def, intro allI impI)
   fix s s'
-  assume A: "mon_c fg c = {}" and B: "{#s, s'#} \<le># c"
+  assume A: "mon_c fg c = {}" and B: "{#s, s'#} \<subseteq># c"
   from mon_c_mono[OF B, of fg] A have "mon_s fg s = {}" "mon_s fg s' = {}" by (auto simp add: mon_c_unconc)
   thus "mon_s fg s \<inter> mon_s fg s' = {}" by blast
 qed
@@ -220,7 +220,7 @@ lemma atU_xchange_stack: "atU U (add_mset (u#r) c) \<Longrightarrow> atU U (add_
 
 -- {* A configuration is {\em simultaneously at} @{term U} and @{term V} if it contains a stack at @{term U} and another one at @{term V} *}
 definition 
-  "atUV U V c == \<exists>su sv. {#su#}+{#sv#} \<le># c \<and> atU_s U su \<and> atU_s V sv"
+  "atUV U V c == \<exists>su sv. {#su#}+{#sv#} \<subseteq># c \<and> atU_s U su \<and> atU_s V sv"
 
 lemma atUV_empty[simp]: "\<not>atUV U V {#}"
   by (unfold atUV_def) auto
@@ -752,9 +752,9 @@ lemma trss_2return_to_2empty: "\<lbrakk> ((s,c),w,([return fg p],c'))\<in>trcl (
   by (auto dest: trcl_rev_cons intro: trss.intros)
 
 subsubsection "Adding threads"
-lemma trss_env_increasing_s: "((s,c),e,(s',c'))\<in>trss fg \<Longrightarrow> c\<le>#c'"
+lemma trss_env_increasing_s: "((s,c),e,(s',c'))\<in>trss fg \<Longrightarrow> c\<subseteq>#c'"
   by (auto elim!: trss.cases)
-lemma trss_env_increasing: "((s,c),w,(s',c'))\<in>trcl (trss fg) \<Longrightarrow> c\<le>#c'"
+lemma trss_env_increasing: "((s,c),w,(s',c'))\<in>trcl (trss fg) \<Longrightarrow> c\<subseteq>#c'"
   by (induct rule: trcl_pair_induct) (auto dest: trss_env_increasing_s order_trans)
 
 subsubsection "Conversion between environment and monitor restrictions"

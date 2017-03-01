@@ -324,7 +324,7 @@ begin
     shows "P \<Turnstile> Act \<alpha> x \<longleftrightarrow> (\<exists>\<alpha>' x' P'. Act \<alpha> x = Act \<alpha>' x' \<and> P \<rightarrow> \<langle>\<alpha>',P'\<rangle> \<and> P' \<Turnstile> x' \<and> bn \<alpha>' \<sharp>* X)"
   proof
     assume "P \<Turnstile> Act \<alpha> x"
-    then obtain \<alpha>' x' P' where alpha: "Act \<alpha> x = Act \<alpha>' x'" and transition: "P \<rightarrow> \<langle>\<alpha>',P'\<rangle>" and valid: "P' \<Turnstile> x'"
+    then obtain \<alpha>' x' P' where eq: "Act \<alpha> x = Act \<alpha>' x'" and trans: "P \<rightarrow> \<langle>\<alpha>',P'\<rangle>" and valid: "P' \<Turnstile> x'"
       by (metis valid_Act)
     have "finite (bn \<alpha>')"
       by (fact bn_finite)
@@ -340,10 +340,11 @@ begin
     then have "Act (p \<bullet> \<alpha>') (p \<bullet> x') = Act \<alpha>' x'" and "\<langle>p \<bullet> \<alpha>', p \<bullet> P'\<rangle> = \<langle>\<alpha>',P'\<rangle>"
       by (metis Act_eqvt supp_perm_eq, metis abs_residual_pair_eqvt supp_perm_eq)
     then show "\<exists>\<alpha>' x' P'. Act \<alpha> x = Act \<alpha>' x' \<and> P \<rightarrow> \<langle>\<alpha>',P'\<rangle> \<and> P' \<Turnstile> x' \<and> bn \<alpha>' \<sharp>* X"
-      by (metis alpha bn_eqvt fresh_X transition valid valid_eqvt)
+      using eq and trans and valid and fresh_X by (metis bn_eqvt valid_eqvt)
   next
     assume "\<exists>\<alpha>' x' P'. Act \<alpha> x = Act \<alpha>' x' \<and> P \<rightarrow> \<langle>\<alpha>',P'\<rangle> \<and> P' \<Turnstile> x' \<and> bn \<alpha>' \<sharp>* X"
-    then show "P \<Turnstile> Act \<alpha> x" by (metis valid_Act)
+    then show "P \<Turnstile> Act \<alpha> x"
+      by (metis valid_Act)
   qed
 
   lemma valid_Act_fresh:
@@ -355,53 +356,25 @@ begin
     moreover have "finite (supp P)"
       by (fact finite_supp)
     ultimately obtain \<alpha>' x' P' where
-      alpha: "Act \<alpha> x = Act \<alpha>' x'" and transition: "P \<rightarrow> \<langle>\<alpha>',P'\<rangle>" and valid: "P' \<Turnstile> x'" and fresh: "bn \<alpha>' \<sharp>* P"
+      eq: "Act \<alpha> x = Act \<alpha>' x'" and trans: "P \<rightarrow> \<langle>\<alpha>',P'\<rangle>" and valid: "P' \<Turnstile> x'" and fresh: "bn \<alpha>' \<sharp>* P"
       by (metis valid_Act_strong)
 
-    from alpha obtain p where p_\<alpha>: "\<alpha>' = p \<bullet> \<alpha>" and p_x: "x' = p \<bullet> x" and fresh_p: "supp (Act \<alpha> x) \<sharp>* p"
-      by (auto simp add: bn_eqvt Act_eq_iff Act\<^sub>\<alpha>_eq_iff alpha_set) (metis Rep_formula_inverse Tree\<^sub>\<alpha>.abs_eq_iff Tree\<^sub>\<alpha>_abs_rep Un_Diff fresh_star_Un permute_Tree\<^sub>\<alpha>.abs_eq permute_formula.rep_eq supp_Rep_formula supp_alpha_supp_rel)
-
-    obtain q where q_p: "\<forall>b\<in>bn \<alpha>. q \<bullet> b = p \<bullet> b" and supp_q: "supp q \<subseteq> bn \<alpha> \<union> p \<bullet> bn \<alpha>"
-      by (metis set_renaming_perm2)
+    from eq obtain p where p_\<alpha>: "\<alpha>' = p \<bullet> \<alpha>" and p_x: "x' = p \<bullet> x" and supp_p: "supp p \<subseteq> bn \<alpha> \<union> p \<bullet> bn \<alpha>"
+      by (metis Act_eq_iff_perm_renaming)
 
     from assms and fresh have "(bn \<alpha> \<union> p \<bullet> bn \<alpha>) \<sharp>* P"
       using p_\<alpha> by (metis bn_eqvt fresh_star_Un)
-    then have "supp q \<sharp>* P"
-      using supp_q by (metis fresh_star_def subset_eq)
-    then have q_P: "-q \<bullet> P = P"
+    then have "supp p \<sharp>* P"
+      using supp_p by (metis fresh_star_def subset_eq)
+    then have p_P: "-p \<bullet> P = P"
       by (metis perm_supp_eq supp_minus_perm)
 
-    {
-      fix a assume *: "a \<in> supp \<alpha> \<union> supp x"
-      have "q \<bullet> a = p \<bullet> a"
-        proof (cases "a \<in> bn \<alpha>")
-          case True then show ?thesis
-            using q_p by simp
-        next
-          case False then have "a \<in> supp (Act \<alpha> x)"
-            using "*" by (metis Diff_iff supp_Act)
-          then have 1: "p \<bullet> a = a"
-            by (metis fresh_p fresh_perm fresh_star_def)
-          then have "a \<notin> p \<bullet> bn \<alpha>"
-            using False by (metis mem_permute_iff)
-          then have "a \<notin> supp q"
-            using False by (metis UnE set_rev_mp supp_q)
-          then have 2: "q \<bullet> a = a"
-            by (metis fresh_def fresh_perm)
-          from 1 and 2 show ?thesis
-            by simp
-        qed
-      then have "a \<sharp> -q + p"
-        by (metis fresh_perm permute_minus_cancel(1) permute_plus)
-    }
-    then have q_p_\<alpha>: "-q \<bullet> p \<bullet> \<alpha> = \<alpha>" and q_p_x: "-q \<bullet> p \<bullet> x = x"
-      by (metis fresh_star_Un fresh_star_def permute_plus supp_perm_eq)+
-
-    from transition have "P \<rightarrow> \<langle>\<alpha>,-q \<bullet> P'\<rangle>"
-      by (metis p_\<alpha> q_P q_p_\<alpha> transition_eqvt')
-    moreover from valid have "-q \<bullet> P' \<Turnstile> x"
-      by (metis p_x q_p_x valid_eqvt)
-    ultimately show "\<exists>P'. P \<rightarrow> \<langle>\<alpha>,P'\<rangle> \<and> P' \<Turnstile> x" by metis
+    from trans have "P \<rightarrow> \<langle>\<alpha>,-p \<bullet> P'\<rangle>"
+      using p_P p_\<alpha> by (metis permute_minus_cancel(1) transition_eqvt')
+    moreover from valid have "-p \<bullet> P' \<Turnstile> x"
+      using p_x by (metis permute_minus_cancel(1) valid_eqvt)
+    ultimately show "\<exists>P'. P \<rightarrow> \<langle>\<alpha>,P'\<rangle> \<and> P' \<Turnstile> x"
+      by meson
   next
     assume "\<exists>P'. P \<rightarrow> \<langle>\<alpha>,P'\<rangle> \<and> P' \<Turnstile> x" then show "P \<Turnstile> Act \<alpha> x"
       by (metis valid_Act)

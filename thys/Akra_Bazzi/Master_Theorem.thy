@@ -73,7 +73,7 @@ private lemma g_pos:
   assumes "eventually (\<lambda>x. h x > 0) at_top"
   shows   "eventually (\<lambda>x. g x > 0) at_top"
 proof-
-  from landau_omega.bigE_nonneg[OF assms(1) g_nonneg'] guess c . note c = this
+  from landau_omega.bigE_nonneg_real[OF assms(1) g_nonneg'] guess c . note c = this
   from assms(2) c(2) show ?thesis
     by eventually_elim (rule less_le_trans[OF mult_pos_pos[OF c(1)]], simp_all)
 qed

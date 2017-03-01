@@ -32,7 +32,7 @@ definition "e1_optns = default_optns
 definition "solve_e1 = e1.one_step_until_time_ivl_listres (e1_optns)"
 schematic_goal solve_ivl_e1:
   "solve_e1 (aform_of_point (real_of_float 0, FloatR 23 (- 5))) True 4 = ?X"
-  by (eval_lhs)
+  by guess_rhs eval
 concrete_definition e1_result uses solve_ivl_e1 is "_ = dRETURN ?X"
 definition "e1_reach = map aform_of_list_aform (the (snd (e1_result)))"
 

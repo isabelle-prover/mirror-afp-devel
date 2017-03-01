@@ -48,13 +48,10 @@ next
 
   show ?case
     by (simp add: times_zhmultiset_def ZHMSet_plus[symmetric] zmset_of_plus[symmetric]
-        hmsetmset_plus[symmetric] algebra_simps,
-      simp add: add.assoc[symmetric] hmset_pos_plus hmset_neg_plus,
-      simp add: algebra_simps,
-      simp add: mult.commute[of _ "hmset_pos c"] mult.commute[of _ "hmset_neg c"]
+        hmsetmset_plus[symmetric] algebra_simps hmset_pos_plus hmset_neg_plus)
+     (simp add: mult.commute[of _ "hmset_pos c"] mult.commute[of _ "hmset_neg c"]
         add.commute[of "hmset_neg c * M" "hmset_pos c * N" for M N]
-        add.left_commute[of "hmset_neg c * M" "hmset_pos c * N" for M N],
-      simp add: add.assoc[symmetric] ring_distribs(1)[symmetric] hmset_pos_neg_dual)
+        add.assoc[symmetric] ring_distribs(1)[symmetric] hmset_pos_neg_dual)
 next
   case zero_neq_one
   show ?case
@@ -93,13 +90,13 @@ lemma of_nat_inject_zhmset[simp]: "(of_nat m :: zhmultiset) = of_nat n \<longlef
 
 lemma plus_of_nat_plus_of_nat_zhmset:
   "k + of_nat m + of_nat n = k + of_nat (m + n)" for k :: zhmultiset
-  by (simp add: add.assoc)
+  by simp
 
 lemma plus_of_nat_minus_of_nat_zhmset:
   fixes k :: zhmultiset
   assumes "n \<le> m"
   shows "k + of_nat m - of_nat n = k + of_nat (m - n)"
-  using assms by (metis add.left_commute add_diff_cancel_left' le_add_diff_inverse of_nat_add)
+  using assms by (simp add: of_nat_diff)
 
 lemma of_nat_lt_\<omega>\<^sub>z[simp]: "of_nat n < \<omega>\<^sub>z"
   by (simp add: \<omega>\<^sub>z_as_\<omega> of_nat_zhmset zmset_of_less)
@@ -179,8 +176,7 @@ qed (auto simp: sgn_zhmultiset_def abs_zhmultiset_def)
 end
 
 lemma le_zhmset_of_pos: "M \<le> zhmset_of (hmset_pos M)"
-  by (metis add_diff_cancel_left diff_le_eq hmultiset.sel less_eq_multiset_plus_left ZHMSet_le
-    mset_pos_as_neg zhmsetmset_inverse zmset_of_le zmset_of_plus)
+  by (simp add: less_eq_zhmultiset.rep_eq mset_pos_supset subset_eq_imp_le_zmset)
 
 lemma minus_zhmset_of_pos_le: "- zhmset_of (hmset_neg M) \<le> M"
   by (metis le_zhmset_of_pos minus_le_iff mset_pos_uminus zhmsetmset_uminus)
@@ -320,7 +316,7 @@ lemma zhmset_of_enat_lt_iff_ne_infinity: "zhmset_of_enat x < \<omega>\<^sub>z \<
 subsection \<open>An Example\<close>
 
 text \<open>
-A new proof of @{thm waldmann_less}:
+A new proof of @{thm ludwig_waldmann_less}:
 \<close>
 
 lemma
@@ -331,26 +327,20 @@ lemma
     \<gamma>_lt_\<delta>: "\<gamma> < \<delta>"
   shows "\<alpha>2 + \<beta>2 * \<delta> < \<alpha>1 + \<beta>1 * \<delta>"
 proof -
-  let ?Z = zhmset_of
+  let ?z = zhmset_of
 
   note \<alpha>\<beta>2\<gamma>_lt_\<alpha>\<beta>1\<gamma>' = \<alpha>\<beta>2\<gamma>_lt_\<alpha>\<beta>1\<gamma>[THEN zhmset_of_less[THEN iffD2],
     simplified zhmset_of_plus zhmset_of_times]
   note \<beta>2_le_\<beta>1' = \<beta>2_le_\<beta>1[THEN zhmset_of_le[THEN iffD2]]
   note \<gamma>_lt_\<delta>' = \<gamma>_lt_\<delta>[THEN zhmset_of_less[THEN iffD2]]
 
-  have "?Z \<alpha>2 + ?Z \<beta>2 * ?Z \<delta> = ?Z \<alpha>2 + ?Z \<beta>2 * ?Z \<gamma> + ?Z \<beta>2 * (?Z \<delta> - ?Z \<gamma>)"
-    by (simp add: algebra_simps)
-  also have "\<dots> < ?Z \<alpha>1 + ?Z \<beta>1 * ?Z \<gamma> + ?Z \<beta>2 * (?Z \<delta> - ?Z \<gamma>)"
-    using \<alpha>\<beta>2\<gamma>_lt_\<alpha>\<beta>1\<gamma>' by simp
-  also have "\<dots> \<le> ?Z \<alpha>1 + ?Z \<beta>1 * ?Z \<gamma> + ?Z \<beta>1 * (?Z \<delta> - ?Z \<gamma>)"
+  have "?z \<alpha>2 + ?z \<beta>2 * ?z \<delta> < ?z \<alpha>1 + ?z \<beta>1 * ?z \<gamma> + ?z \<beta>2 * (?z \<delta> - ?z \<gamma>)"
+    using \<alpha>\<beta>2\<gamma>_lt_\<alpha>\<beta>1\<gamma>' by (simp add: algebra_simps)
+  also have "\<dots> \<le> ?z \<alpha>1 + ?z \<beta>1 * ?z \<gamma> + ?z \<beta>1 * (?z \<delta> - ?z \<gamma>)"
     using \<beta>2_le_\<beta>1' \<gamma>_lt_\<delta>' by simp
-  also have "\<dots> = ?Z \<alpha>1 + ?Z \<beta>1 * ?Z \<delta>"
-    by (simp add: algebra_simps)
-  finally have "?Z \<alpha>2 + ?Z \<beta>2 * ?Z \<delta> < ?Z \<alpha>1 + ?Z \<beta>1 * ?Z \<delta>"
-    by assumption
-  thus ?thesis
+  finally show ?thesis
     by (simp add: zmset_of_less zhmset_of_times[symmetric]
-      zhmset_of_plus[symmetric])
+      zhmset_of_plus[symmetric] algebra_simps)
 qed
 
 end

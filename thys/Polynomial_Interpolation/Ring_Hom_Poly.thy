@@ -315,10 +315,6 @@ begin
   sublocale inj_ring_hom "map_poly hom" using inj_ring_hom_map_poly.
 end
 
-
-lemma pdivmod_pdivmodrel: "pdivmod_rel p q r s \<longleftrightarrow> pdivmod p q = (r,s)" 
-  by (metis pdivmod_def pdivmod_rel pdivmod_rel_unique prod.sel)
-
 context idom_hom
 begin
 lemma map_poly_pderiv: "pderiv (map_poly hom p) = map_poly hom (pderiv p)"
@@ -337,46 +333,49 @@ context inj_field_hom
 begin
 
 lemma map_poly_pdivmod: 
-  "map_prod (map_poly hom) (map_poly hom) (pdivmod p q) = pdivmod (map_poly hom p) (map_poly hom q)"
+  "map_prod (map_poly hom) (map_poly hom) (p div q, p mod q) =
+    (map_poly hom p div map_poly hom q, map_poly hom p mod map_poly hom q)"
   (is "?l = ?r")
 proof -
   let ?mp = "map_poly hom"
-  obtain r s where dm: "pdivmod p q = (r,s)" by force  
+  obtain r s where dm: "(p div q, p mod q) = (r, s)"
+    by force  
   hence r: "r = p div q" and s: "s = p mod q"
-    by (auto simp add: pdivmod_def)
-  from dm[folded pdivmod_pdivmodrel] have "pdivmod_rel p q r s" by auto
-  from this[unfolded pdivmod_rel_def]
+    by simp_all
+  from dm [folded pdivmod_pdivmodrel] have "eucl_rel_poly p q (r, s)"
+    by auto
+  from this[unfolded eucl_rel_poly_iff]
   have eq: "p = r * q + s" and cond: "(if q = 0 then r = 0 else s = 0 \<or> degree s < degree q)" by auto
   from arg_cong[OF eq, of ?mp, unfolded map_poly_add map_poly_mult]
   have eq: "?mp p = ?mp q * ?mp r + ?mp s" by auto
   from cond have cond: "(if ?mp q = 0 then ?mp r = 0 else ?mp s = 0 \<or> degree (?mp s) < degree (?mp q))"
     unfolding map_poly_0_iff degree_map_poly .
-  from eq cond have "pdivmod_rel (?mp p) (?mp q) (?mp r) (?mp s)"
-    unfolding pdivmod_rel_def by auto
+  from eq cond have "eucl_rel_poly (?mp p) (?mp q) (?mp r, ?mp s)"
+    unfolding eucl_rel_poly_iff by auto
   from this[unfolded pdivmod_pdivmodrel]
   show ?thesis unfolding dm prod.simps by simp
 qed
 
 lemma map_poly_div: "map_poly hom (p div q) = map_poly hom p div map_poly hom q"
-  using map_poly_pdivmod[of p q] unfolding pdivmod_def by simp
+  using map_poly_pdivmod[of p q] by simp
 
 lemma map_poly_mod: "map_poly hom (p mod q) = map_poly hom p mod map_poly hom q"
-  using map_poly_pdivmod[of p q] unfolding pdivmod_def by simp
+  using map_poly_pdivmod[of p q] by simp
 
 end
 
 context inj_field_hom'
 begin
 
+lemma map_poly_normalize: "map_poly hom (normalize p) =
+  normalize (map_poly hom p)"
+  by (simp add: normalize_poly_def map_poly_div)
+
 lemma map_poly_gcd: "map_poly hom (gcd p q) = gcd (map_poly hom p) (map_poly hom q)"
-proof (induct p q rule: gcd_eucl.induct)
-  case (1 p b)
-  thus ?case
-    by (cases "b = 0")
-       (simp_all add: gcd_non_0 coeff_map_poly normalize_poly_altdef 
-          map_poly_mod map_poly_div lead_coeff_def map_poly_compose)
-qed
-  end
+  by (induct p q rule: eucl_induct)
+    (simp_all add: map_poly_normalize map_poly_mod ac_simps)
+
+end
 
 
 definition div_poly :: "'a :: semiring_div \<Rightarrow> 'a poly \<Rightarrow> 'a poly" where

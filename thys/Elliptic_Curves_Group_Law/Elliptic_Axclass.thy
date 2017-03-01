@@ -1,7 +1,7 @@
 section \<open>Formalization using Axiomatic Type Classes\<close>
 
 theory Elliptic_Axclass
-imports Reflective_Field
+imports "~~/src/HOL/Decision_Procs/Reflective_Field"
 begin
 
 subsection \<open>Affine Coordinates\<close>

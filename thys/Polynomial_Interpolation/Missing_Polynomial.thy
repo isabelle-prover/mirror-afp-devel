@@ -265,11 +265,11 @@ proof -
   from assms have "1 = unit_factor (gcd p q)" by (auto simp: unit_factor_gcd)
   also have "\<dots> = [:lead_coeff (gcd p q):]" unfolding unit_factor_poly_def
     by (simp add: monom_0)
-  finally show ?thesis by (simp add: one_poly_def lead_coeff_def)
+  finally show ?thesis by (simp add: one_poly_def)
 qed
 
 lemma normalize_monic: "monic p \<Longrightarrow> normalize p = p"
-  by (simp add: normalize_poly_def lead_coeff_def)
+  by (simp add: normalize_poly_eq_map_poly is_unit_unit_factor)
 
 lemma lcoeff_monic_mult: assumes monic: "monic (p :: 'a :: comm_semiring_1 poly)"
   shows "coeff (p * q) (degree p + degree q) = coeff q (degree q)"
@@ -1009,12 +1009,13 @@ proof (rule ccontr)
   ultimately show False by (simp add: coeff_eq_0)
 qed
 
-lemma map_div_is_smult_inverse: "Polynomial_Factorial.map_poly (\<lambda>x. x / (a :: 'a :: field)) p = smult (inverse a) p" 
+lemma map_div_is_smult_inverse: "Polynomial.map_poly (\<lambda>x. x / (a :: 'a :: field)) p = smult (inverse a) p" 
   unfolding smult_conv_map_poly
   by (simp add: divide_inverse_commute)
 
-lemma normalize_poly_old_def: "normalize (f :: 'a :: {normalization_semidom,field} poly) = 
-  smult (inverse (unit_factor (lead_coeff f))) f" unfolding normalize_poly_def map_div_is_smult_inverse by simp
+lemma normalize_poly_old_def:
+  "normalize (f :: 'a :: {normalization_semidom,field} poly) = smult (inverse (unit_factor (lead_coeff f))) f"
+  by (simp add: normalize_poly_eq_map_poly map_div_is_smult_inverse)
 
 (* was in Euclidean_Algorithm in Number_Theory before, but has been removed *)
 lemma poly_dvd_antisym:
@@ -1043,8 +1044,9 @@ lemma coeff_f_0_code[code_unfold]: "coeff f 0 = (case coeffs f of [] \<Rightarro
 lemma poly_compare_0_code[code_unfold]: "(f = 0) = (case coeffs f of [] \<Rightarrow> True | _ \<Rightarrow> False)" 
   using coeffs_eq_Nil list.disc_eq_case(1) by blast
 
-lemma lead_coeff_code[code]: "lead_coeff f = (let xs = coeffs f in case xs of [] \<Rightarrow> 0 | _ \<Rightarrow> last xs)"
-  by (metis (no_types, lifting) coeffs_0_eq_Nil last_coeffs_eq_coeff_degree lead_coeff_0 lead_coeff_def length_Suc_conv length_coeffs_degree list.simps(4) list.simps(5)) 
+lemma lead_coeff_code[code]: "lead_coeff f =
+  (let xs = coeffs f in if xs = [] then 0 else last xs)"
+  by (auto simp add: last_coeffs_eq_coeff_degree)
 
 lemma nth_coeffs_coeff: "i < length (coeffs f) \<Longrightarrow> coeffs f ! i = coeff f i"
   by (metis nth_default_coeffs_eq nth_default_def)

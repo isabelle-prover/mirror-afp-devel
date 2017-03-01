@@ -465,7 +465,7 @@ yields stable matches under @{const "mechanism_stable"}.
 \<close>
 
 theorem Theorem_1_COP:
-  "\<not>nonbossy ds (\<lambda>Pd Ch ds. Contracts.CH Ch (Contracts.fp_cop_F Pd Ch ds))"
+  "\<not>nonbossy ds Contracts.cop"
 using ContractsWithBilateralSubstitutesAndIRC.Theorem_1 Theorem_1 mechanism_stable_def by blast
 
 end

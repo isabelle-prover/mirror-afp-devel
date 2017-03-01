@@ -47,6 +47,51 @@ proof -
 qed
 
 
+subsection \<open>Induction Principles\<close>
+
+lemma multiset_induct_min[case_names empty add]:
+  fixes M :: "'a::linorder multiset"
+  assumes
+    empty: "P {#}" and
+    add: "\<And>x M. P M \<Longrightarrow> (\<forall>y \<in># M. y \<ge> x) \<Longrightarrow> P (add_mset x M)"
+  shows "P M"
+proof (induct "size M" arbitrary: M)
+  case (Suc k)
+  note ih = this(1) and Sk_eq_sz_M = this(2)
+
+  let ?y = "Min (set_mset M)"
+  let ?N = "M - {#?y#}"
+
+  have M: "M = add_mset ?y ?N"
+    by (metis Min_in Sk_eq_sz_M finite_set_mset insert_DiffM lessI not_less_zero
+      set_mset_eq_empty_iff size_empty)
+  show ?case
+    by (subst M, rule add, rule ih, metis M Sk_eq_sz_M nat.inject size_add_mset,
+      meson Min_le finite_set_mset in_diffD)
+qed (simp add: empty)
+
+lemma multiset_induct_max[case_names empty add]:
+  fixes M :: "'a::linorder multiset"
+  assumes
+    empty: "P {#}" and
+    add: "\<And>x M. P M \<Longrightarrow> (\<forall>y \<in># M. y \<le> x) \<Longrightarrow> P (add_mset x M)"
+  shows "P M"
+proof (induct "size M" arbitrary: M)
+  case (Suc k)
+  note ih = this(1) and Sk_eq_sz_M = this(2)
+
+  let ?y = "Max (set_mset M)"
+  let ?N = "M - {#?y#}"
+
+  have M: "M = add_mset ?y ?N"
+    by (metis Max_in Sk_eq_sz_M finite_set_mset insert_DiffM lessI not_less_zero
+      set_mset_eq_empty_iff size_empty)
+  show ?case
+    by (subst M, rule add, rule ih, metis M Sk_eq_sz_M nat.inject size_add_mset,
+      meson Max_ge finite_set_mset in_diffD)
+qed (simp add: empty)
+
+
 subsection \<open>Lemmas about the Multiset Order\<close>
 
 instantiation multiset :: (linorder) distrib_lattice
@@ -127,6 +172,31 @@ proof -
     qed
   qed (auto simp: y_nemp y_sub_N image_mset_subseteq_mono)
 qed
+
+lemma mset_lt_single_right_iff[simp]: "M < {#y#} \<longleftrightarrow> (\<forall>x \<in># M. x < y)" for y :: "'a::linorder"
+proof (rule iffI)
+  assume M_lt_y: "M < {#y#}"
+  show "\<forall>x \<in># M. x < y"
+  proof
+    fix x
+    assume x_in: "x \<in># M"
+    hence M: "M - {#x#} + {#x#} = M"
+      by (meson insert_DiffM2)
+    hence "\<not> {#x#} < {#y#} \<Longrightarrow> x < y"
+      using x_in M_lt_y
+      by (metis diff_single_eq_union le_multiset_empty_left less_add_same_cancel2 mset_le_trans)
+    thus "x < y"
+      by blast
+  qed
+next
+  assume y_max: "\<forall>x \<in># M. x < y"
+  show "M < {#y#}"
+    by (rule all_lt_Max_imp_lt_multiset) (auto intro!: y_max)
+qed
+
+lemma mset_le_single_right_iff[simp]:
+  "M \<le> {#y#} \<longleftrightarrow> M = {#y#} \<or> (\<forall>x \<in># M. x < y)" for y :: "'a::linorder"
+  by (meson less_eq_multiset_def mset_lt_single_right_iff)
 
 
 subsection \<open>Lemmas about Intersection, Union and Pointwise Inclusion\<close>
@@ -299,16 +369,17 @@ lemma set_mset_minus_replicate_mset[simp]:
 abbreviation removeAll_mset :: "'a \<Rightarrow> 'a multiset \<Rightarrow> 'a multiset" where
 "removeAll_mset C M \<equiv> M - replicate_mset (count M C) C"
 
-lemma mset_removeAll[simp, code]:
-  "removeAll_mset C (mset L) = mset (removeAll C L)"
+lemma mset_removeAll[simp, code]: "removeAll_mset C (mset L) = mset (removeAll C L)"
   by (induction L) (auto simp: ac_simps multiset_eq_iff split: if_split_asm)
 
-lemma removeAll_mset_filter_mset:
-  "removeAll_mset C M = filter_mset (op \<noteq> C) M"
+lemma removeAll_mset_filter_mset: "removeAll_mset C M = filter_mset (op \<noteq> C) M"
   by (induction M) (auto simp: ac_simps multiset_eq_iff)
 
 abbreviation remove1_mset :: "'a \<Rightarrow> 'a multiset \<Rightarrow> 'a multiset" where
   "remove1_mset C M \<equiv> M - {#C#}"
+
+lemma removeAll_subseteq_remove1_mset: "removeAll_mset x M \<subseteq># remove1_mset x M"
+  by (auto simp: subseteq_mset_def)
 
 lemma in_remove1_mset_neq:
   assumes ab: "a \<noteq> b"
@@ -403,6 +474,17 @@ lemma trivial_add_mset_remove_iff: \<open>add_mset a (N - {#b#}) = N \<longleftr
 lemma remove1_single_empty_iff[simp]: \<open>remove1_mset L {#L'#} = {#} \<longleftrightarrow> L = L'\<close>
   using add_mset_remove_trivial_iff by fastforce
 
+lemma add_mset_less_imp_less_remove1_mset:
+  assumes xM_lt_N: "add_mset x M < N"
+  shows "M < remove1_mset x N"
+proof -
+  have "M < N"
+    using xM_lt_N le_multiset_right_total mset_le_trans by blast
+  thus ?thesis
+    using xM_lt_N by (metis (no_types) add_le_cancel_right add_mset_add_single
+      diff_single_trivial insert_DiffM2 le_neq_trans less_imp_le less_multiset\<^sub>H\<^sub>O)
+qed
+
 
 subsection \<open>Lemmas about Replicate\<close>
 
@@ -488,10 +570,17 @@ lemma mset_set_set_mset_subseteq[simp]: "mset_set (set_mset A) \<subseteq># A"
 lemma mset_sorted_list_of_set[simp]: "mset (sorted_list_of_set A) = mset_set A"
   by (metis mset_sorted_list_of_multiset sorted_list_of_mset_set)
 
+lemma sorted_sorted_list_of_multiset[simp]:
+  "sorted (sorted_list_of_multiset (M :: 'a::linorder multiset))"
+  by (metis mset_sorted_list_of_multiset sorted_list_of_multiset_mset sorted_sort)
+
 lemma mset_take_subseteq: "mset (take n xs) \<subseteq># mset xs"
   apply (induct xs arbitrary: n)
    apply simp
   by (case_tac n) simp_all
+
+lemma sorted_list_of_multiset_eq_Nil[simp]: "sorted_list_of_multiset M = [] \<longleftrightarrow> M = {#}"
+  by (metis mset_sorted_list_of_multiset sorted_list_of_multiset_empty)
 
 
 subsection \<open>Duplicate Removal\<close>
@@ -549,8 +638,7 @@ proof (rule allI)
     by simp
 qed
 
-lemma distinct_mset_minus[simp]:
-  "distinct_mset A \<Longrightarrow> distinct_mset (A - B)"
+lemma distinct_mset_minus[simp]: "distinct_mset A \<Longrightarrow> distinct_mset (A - B)"
   by (metis diff_subset_eq_self mset_subset_eq_exists_conv distinct_mset_union)
 
 lemma count_remdups_mset_If: \<open>count (remdups_mset A) a = (if a \<in># A then 1 else 0)\<close>
@@ -935,8 +1023,8 @@ proof -
     by transfer_prover
 qed
 
-lemma sum_mset_transfer[transfer_rule]: "R 0 0 \<Longrightarrow> rel_fun R (rel_fun R R) op + op + \<Longrightarrow>
-  (rel_fun (rel_mset R) R) sum_mset sum_mset"
+lemma sum_mset_transfer[transfer_rule]:
+  "R 0 0 \<Longrightarrow> rel_fun R (rel_fun R R) op + op + \<Longrightarrow> (rel_fun (rel_mset R) R) sum_mset sum_mset"
   using sum_list_transfer[of R] unfolding rel_fun_def rel_mset_def by auto
 
 lemma Sigma_mset_transfer[transfer_rule]:

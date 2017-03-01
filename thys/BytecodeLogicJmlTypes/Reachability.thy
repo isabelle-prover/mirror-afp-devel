@@ -20,7 +20,7 @@ all heap components of states observed during the execution of a
 method, including subframes. None of the previous three operational
 judgements allows us to express these interpretations, as @{text Step}
 injects the execution of an invoked method as a single step. Thus,
-states occurring in subframes cannot be related to states occuring in
+states occurring in subframes cannot be related to states occurring in
 the parent frame using these judgements. This motivates the
 introduction of predicates relating states $s$ and $t$ whenever the
 latter can be reach from the former, i.e.~whenever $t$ occurs as a

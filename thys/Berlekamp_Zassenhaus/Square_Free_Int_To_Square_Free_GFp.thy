@@ -127,7 +127,7 @@ proof (intro conjI, rule notI)
   let ?m = "map_poly ?i" 
   let ?f = "?m f" 
   from sf[unfolded square_free_def] have f0: "f \<noteq> 0" by auto
-  hence lf: "lead_coeff f \<noteq> 0" unfolding lead_coeff_def by auto
+  hence lf: "lead_coeff f \<noteq> 0" by auto
   {
     fix k :: int
     have C1: "int CARD('a) > 1" using prime_card[where 'a = 'a] by (auto simp: prime_nat_iff)
@@ -144,13 +144,13 @@ proof (intro conjI, rule notI)
     have "degree (?m g) = degree g"
     proof (rule degree_map_poly, force)
       assume "?i (coeff g (degree g)) = 0" 
-      from of_int_0[OF abs[unfolded lead_coeff_def] this]
+      from of_int_0[OF abs[unfolded] this]
       show "g = 0" by auto
     qed
   } note deg = this
   note large = large[unfolded square_free_bound_def]
   from of_int_0[of "lead_coeff f"] large lf have "?i (lead_coeff f) \<noteq> 0" by auto
-  also have "?i (lead_coeff f) = coeff ?f (degree f)" unfolding lead_coeff_def by simp
+  also have "?i (lead_coeff f) = coeff ?f (degree f)" by simp
   finally show f0: "?f \<noteq> 0" unfolding poly_eq_iff by auto  
   assume 0: "resultant ?f (pderiv ?f) = 0" 
   have "resultant ?f (pderiv ?f) = ?i (resultant f (pderiv f))"

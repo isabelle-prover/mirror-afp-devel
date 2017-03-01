@@ -22,12 +22,20 @@ imports
   "../Polynomial_Interpolation/Ring_Hom_Poly"
 begin
 
-definition content :: "'a :: semiring_gcd poly \<Rightarrow> 'a" where 
-  "content p \<equiv> list_gcd (coeffs p)"
+abbreviation (input) normalize_content :: "'a::semiring_gcd poly \<Rightarrow> 'a poly"
+  where "normalize_content \<equiv> primitive_part"
 
-definition normalize_content :: "'a :: {semiring_gcd,semiring_div} poly \<Rightarrow> 'a poly" where 
-  "normalize_content p = (div_poly (content p) p)"
-
+lemma map_poly_eq:
+  "Polynomial.map_poly f = Missing_Polynomial.map_poly f" if "f 0 = 0"
+proof (rule ext)
+  fix p
+  show "Polynomial.map_poly f p = Missing_Polynomial.map_poly f p"
+    by (induct p) (simp_all add: Polynomial.map_poly_pCons that)
+qed
+      
+lemma normalize_content_def:
+  "normalize_content p = div_poly (content p) p"
+  by (simp add: primitive_part_def div_poly_def map_poly_eq)
 
 definition common_denom :: "rat list \<Rightarrow> int \<times> int list" where
   "common_denom xs \<equiv> let 
@@ -104,53 +112,28 @@ proof -
      rule map_poly_eqI, insert f0 id d, auto simp: field_simps) 
 qed
 
-lemma content_iff: "x dvd content p \<longleftrightarrow> (\<forall> c \<in> set (coeffs p). x dvd c)" (is "?l = ?r")
-proof
-  assume "x dvd content p"
-  from dvd_trans[OF this, unfolded content_def, OF list_gcd] show ?r by auto
-next
-  assume ?r
-  thus ?l unfolding content_def by (intro list_gcd_greatest, auto)
-qed
-
+lemma content_iff: "x dvd content p \<longleftrightarrow> (\<forall> c \<in> set (coeffs p). x dvd c)"
+  by (simp add: content_def dvd_gcd_list_iff)
+  
 lemma content_dvd: "x \<in> set (coeffs p) \<Longrightarrow> content p dvd x"
-  unfolding content_def by (rule list_gcd)
+  by (fact content_dvd_coeffs)
 
-lemma content_0[simp]: "content 0 = 0" unfolding content_def list_gcd_def by simp
-
-lemma content_0_iff[simp]: "content p = (0 :: 'a :: {semiring_gcd,idom}) \<longleftrightarrow> p = 0"
-proof (cases "p = 0")
-  case False
-  define a where "a = last (coeffs p)"
-  define xs where "xs = coeffs p"
-  from last_coeffs_not_0[OF False] not_0_coeffs_not_Nil[OF False]
-  have mem: "a \<in> set (coeffs p)" and a: "a \<noteq> 0" unfolding a_def by auto
-  from mem have "content p \<noteq> 0" unfolding content_def xs_def[symmetric]
-  proof (induct xs)
-    case (Cons x xs)
-    thus ?case using a unfolding list_gcd_def
-      by (cases "x = a", auto)
-  qed simp
-  with False show ?thesis by auto
-qed simp
+lemma content_0_iff: "content p = 0 \<longleftrightarrow> p = 0"
+  by (fact content_eq_zero_iff)
 
 lemma content_ge_0_int: "content p \<ge> (0 :: int)"
-  unfolding content_def list_gcd_def
+  unfolding content_def
   by (cases "coeffs p", auto)
   
 lemma abs_content_int[simp]: fixes p :: "int poly"
   shows "abs (content p) = content p" using content_ge_0_int[of p] by auto
 
 lemma smult_normalize_content: "smult (content p) (normalize_content p) = p"  
-  unfolding  normalize_content_def
-  by (rule smult_div_poly, unfold content_def, rule list_gcd)
+  by (simp add: content_dvd_coeffs smult_div_poly normalize_content_def)
 
 lemma content_smult_int: fixes p :: "int poly" 
   shows "content (smult a p) = abs a * content p" (is "?l = ?r")
-proof (cases "a = 0")
-  case False 
-  thus ?thesis unfolding content_def coeffs_smult by simp
-qed simp
+  by simp
 
 lemma content_normalize_content_1: assumes p0: "p \<noteq> 0" 
   shows "content (normalize_content (p :: int poly)) = 1"
@@ -161,12 +144,11 @@ proof -
   show ?thesis by (simp add: content_ge_0_int)
 qed
 
-lemma normalize_content_0[simp]: "normalize_content 0 = 0"
-  by (simp add: normalize_content_def div_poly_def eval_poly_def)
+lemma normalize_content_0: "normalize_content 0 = 0"
+  by simp
 
 lemma normalize_non_0_smult: "\<exists> a. (a :: int) \<noteq> 0 \<and> smult a (normalize_content p) = p"
-  by (cases "p = 0", rule exI[of _ 1], simp, rule exI[of _ "content p"], auto
-    simp: smult_normalize_content)
+  by (cases "p = 0", rule exI[of _ 1], simp, rule exI[of _ "content p"], auto)
 
 lemma degree_normalize_content[simp]: "degree (normalize_content (p :: int poly)) = degree p" 
 proof (cases "p = 0")
@@ -294,7 +276,8 @@ proof (cases "p = 0 \<or> q = 0")
       with `int n dvd coeff p r * coeff q s` pn r s
         have "n dvd (nat (abs ?r) * nat (abs ?s))"
           by (subst (asm) (1 2) prime_dvd_mult_eq_int) simp_all
-      with pn have "n dvd nat (abs ?r) \<or> n dvd nat (abs ?s)" by simp
+        with pn have "n dvd nat (abs ?r) \<or> n dvd nat (abs ?s)"
+          by (simp add: prime_dvd_mult_iff)
       also have "(n dvd nat (abs ?r)) = (?n dvd ?r)" using int_dvd_iff by blast
       also have "(n dvd nat (abs ?s)) = (?n dvd ?s)" using int_dvd_iff by blast
       finally have False using r s by auto
@@ -345,7 +328,8 @@ next
   hence "c dvd ?c q * ?c r" by auto
   then obtain d where id: "?c q * ?c r = c * d" unfolding dvd_def by auto
   have "?cp = ?pn q * ?pn r" by fact
-  also have "\<dots> = smult (c * d) (?n q * ?n r)" unfolding id[symmetric] by (simp add: mult.commute)
+  also have "\<dots> = smult (c * d) (?n q * ?n r)" unfolding id [symmetric]
+    by (metis content_mult content_times_primitive_part primitive_part_mult)
   finally have id: "?cp = smult c (?n q * smult d (?n r))" by (simp add: mult.commute)      
   have "p = ?n q * smult d (?n r)"
     using map_poly_inj[OF id[unfolded smult_map_poly[of c]]] c by auto
@@ -557,7 +541,7 @@ proof -
   have "f dvd g = (smult ?cf ?nf dvd smult ?cg ?ng)" 
     unfolding smult_normalize_content[of f] smult_normalize_content[of g] by auto
   also have "\<dots> = (smult ?cf ?nf dvd smult ?cf ?nf * smult ch nh)" unfolding cg ng
-    by (auto simp: ac_simps)
+    by (metis mult.commute mult_smult_right smult_smult)
   also have "\<dots>" by (rule dvd_triv_left)
   finally show ?thesis .
 qed
@@ -582,7 +566,8 @@ proof -
     with False have ch: "ch \<noteq> 0" by auto
     from g have "smult (?cf * ch) ?ng = smult ?cf ?nf * h" 
       unfolding cg[symmetric] smult_normalize_content .
-    hence "smult ?cf (smult ch ?ng) = smult ?cf (?nf * h)" by auto 
+    hence "smult ?cf (smult ch ?ng) = smult ?cf (?nf * h)"
+      by (metis mult_smult_left smult_smult)
     from arg_cong[OF this, of "div_poly ?cf"] have "smult ch ?ng = ?nf * h"
       unfolding div_poly_smult[OF cf] by simp
     hence "?nf dvd smult ch ?ng" by auto
@@ -630,6 +615,5 @@ proof (cases "d = 0 \<or> f = 0")
     qed auto
   qed    
 qed auto  
-
 
 end

@@ -124,8 +124,8 @@ notation
   elem_zmset ("(_/ \<in>#\<^sub>z _)" [51, 51] 50)
 
 notation (ASCII)
-  elem_zmset ("op :#hy") and
-  elem_zmset ("(_/ :#hy _)" [51, 51] 50)
+  elem_zmset ("op :#z") and
+  elem_zmset ("(_/ :#z _)" [51, 51] 50)
 
 abbreviation not_elem_zmset :: "'a \<Rightarrow> 'a zmultiset \<Rightarrow> bool" where
   "not_elem_zmset a M \<equiv> a \<notin> set_zmset M"
@@ -135,8 +135,8 @@ notation
   not_elem_zmset ("(_/ \<notin>#\<^sub>z _)" [51, 51] 50)
 
 notation (ASCII)
-  not_elem_zmset ("op ~:#hy") and
-  not_elem_zmset ("(_/ ~:#hy _)" [51, 51] 50)
+  not_elem_zmset ("op ~:#z") and
+  not_elem_zmset ("(_/ ~:#z _)" [51, 51] 50)
 
 context
 begin
@@ -412,13 +412,13 @@ where
   "supset_zmset A B \<equiv> B \<subset>#\<^sub>z A"
 
 notation (input)
-  subseteq_zmset (infix "\<le>#\<^sub>z" 50) and
-  supseteq_zmset (infix "\<ge>#\<^sub>z" 50)
+  subseteq_zmset (infix "\<subseteq>#\<^sub>z" 50) and
+  supseteq_zmset (infix "\<supseteq>#\<^sub>z" 50)
 
 notation (ASCII)
-  subseteq_zmset (infix "<=#\<^sub>z" 50) and
-  subset_zmset (infix "<#\<^sub>z" 50) and
-  supseteq_zmset (infix ">=#\<^sub>z" 50) and
+  subseteq_zmset (infix "\<subseteq>#\<^sub>z" 50) and
+  subset_zmset (infix "\<subset>#\<^sub>z" 50) and
+  supseteq_zmset (infix "\<supseteq>#\<^sub>z" 50) and
   supset_zmset (infix ">#\<^sub>z" 50)
 
 interpretation subset_zmset: ordered_ab_semigroup_add_imp_le "op +" "op -" "op \<subseteq>#\<^sub>z" "op \<subset>#\<^sub>z"
@@ -426,7 +426,7 @@ interpretation subset_zmset: ordered_ab_semigroup_add_imp_le "op +" "op -" "op \
     intro: order_trans antisym)
 
 interpretation subset_zmset:
-  ordered_ab_semigroup_monoid_add_imp_le "op +" 0 "op -" "op \<le>#\<^sub>z" "op <#\<^sub>z"
+  ordered_ab_semigroup_monoid_add_imp_le "op +" 0 "op -" "op \<subseteq>#\<^sub>z" "op \<subset>#\<^sub>z"
   by unfold_locales
 
 lemma zmset_subset_eqI: "(\<And>a. zcount A a \<le> zcount B a) \<Longrightarrow> A \<subseteq>#\<^sub>z B"
@@ -553,7 +553,7 @@ lift_definition filter_zmset :: "('a \<Rightarrow> bool) \<Rightarrow> 'a zmulti
   by (auto simp del: filter_union_mset simp: equiv_zmset_def filter_union_mset[symmetric])
 
 syntax (ASCII)
-  "_MCollect" :: "pttrn \<Rightarrow> 'a zmultiset \<Rightarrow> bool \<Rightarrow> 'a zmultiset" ("(1{#_ :#hy _./ _#})")
+  "_MCollect" :: "pttrn \<Rightarrow> 'a zmultiset \<Rightarrow> bool \<Rightarrow> 'a zmultiset" ("(1{#_ :#z _./ _#})")
 syntax
   "_MCollect" :: "pttrn \<Rightarrow> 'a zmultiset \<Rightarrow> bool \<Rightarrow> 'a zmultiset" ("(1{#_ \<in>#\<^sub>z _./ _#})")
 translations
@@ -738,8 +738,78 @@ lemma zmset_of_le: "zmset_of M \<le> zmset_of N \<longleftrightarrow> M \<le> N"
 instance zmultiset :: (preorder) ordered_ab_semigroup_add
   by (intro_classes, unfold less_eq_zmultiset_def, transfer, auto simp: equiv_zmset_def)
 
+lemma add_zmset_eq_add_NO_MATCH[cancelation_simproc_pre]:
+  \<open>NO_MATCH {#}\<^sub>z H \<Longrightarrow> add_zmset a H = {#a#}\<^sub>z + H\<close>
+  by auto
+
+lemma repeat_zmset_iterate_add: \<open>repeat_zmset n M = iterate_add n M\<close>
+  unfolding iterate_add_def by (induction n) auto
+
+declare repeat_zmset_iterate_add[cancelation_simproc_pre]
+
+declare repeat_zmset_iterate_add[symmetric, cancelation_simproc_post]
+
+simproc_setup zmseteq_cancel_numerals
+  ("(l::'a zmultiset) + m = n" | "(l::'a zmultiset) = m + n" |
+   "add_zmset a m = n" | "m = add_zmset a n" |
+   "replicate_zmset p a = n" | "m = replicate_zmset p a" |
+   "repeat_zmset p m = n" | "m = repeat_zmset p m") =
+  \<open>fn phi => Cancel_Simprocs.eq_cancel\<close>
+
+lemma zmset_subseteq_add_iff1:
+  \<open>j \<le> i \<Longrightarrow> (repeat_zmset i u + m \<subseteq>#\<^sub>z repeat_zmset j u + n) = (repeat_zmset (i - j) u + m \<subseteq>#\<^sub>z n)\<close>
+  by (simp add: add.commute add_diff_eq left_diff_repeat_zmset_distrib' subset_eq_diff_conv_zmset)
+
+lemma zmset_subseteq_add_iff2:
+  \<open>i \<le> j \<Longrightarrow> (repeat_zmset i u + m \<subseteq>#\<^sub>z repeat_zmset j u + n) = (m \<subseteq>#\<^sub>z repeat_zmset (j - i) u + n)\<close>
+proof -
+  assume "i \<le> j"
+  then have "\<And>z. repeat_zmset j (z::'a zmultiset) - repeat_zmset i z = repeat_zmset (j - i) z"
+    by (simp add: left_diff_repeat_zmset_distrib')
+  then show ?thesis
+    by (metis add.commute diff_diff_eq2 subset_eq_diff_conv_zmset)
+qed
+
+lemma zmset_subset_add_iff1:
+  \<open>j \<le> i \<Longrightarrow> (repeat_zmset i u + m \<subset>#\<^sub>z repeat_zmset j u + n) = (repeat_zmset (i - j) u + m \<subset>#\<^sub>z n)\<close>
+  by (simp add: subset_zmset.less_le_not_le zmset_subseteq_add_iff1 zmset_subseteq_add_iff2)
+
+lemma zmset_subset_add_iff2:
+  \<open>i \<le> j \<Longrightarrow> (repeat_zmset i u + m \<subset>#\<^sub>z repeat_zmset j u + n) = (m \<subset>#\<^sub>z repeat_zmset (j - i) u + n)\<close>
+  by (simp add: subset_zmset.less_le_not_le zmset_subseteq_add_iff1 zmset_subseteq_add_iff2)
+
+ML_file \<open>zmultiset_simprocs.ML\<close>
+
+simproc_setup zmsetsubset_cancel
+  ("(l::'a zmultiset) + m \<subset>#\<^sub>z n" | "(l::'a zmultiset) \<subset>#\<^sub>z m + n" |
+   "add_zmset a m \<subset>#\<^sub>z n" | "m \<subset>#\<^sub>z add_zmset a n" |
+   "replicate_zmset p a \<subset>#\<^sub>z n" | "m \<subset>#\<^sub>z replicate_zmset p a" |
+   "repeat_zmset p m \<subset>#\<^sub>z n" | "m \<subset>#\<^sub>z repeat_zmset p m") =
+  \<open>fn phi => ZMultiset_Simprocs.subset_cancel_zmsets\<close>
+
+simproc_setup zmsetsubseteq_cancel
+  ("(l::'a zmultiset) + m \<subseteq>#\<^sub>z n" | "(l::'a zmultiset) \<subseteq>#\<^sub>z m + n" |
+   "add_zmset a m \<subseteq>#\<^sub>z n" | "m \<subseteq>#\<^sub>z add_zmset a n" |
+   "replicate_zmset p a \<subseteq>#\<^sub>z n" | "m \<subseteq>#\<^sub>z replicate_zmset p a" |
+   "repeat_zmset p m \<subseteq>#\<^sub>z n" | "m \<subseteq>#\<^sub>z repeat_zmset p m") =
+  \<open>fn phi => ZMultiset_Simprocs.subseteq_cancel_zmsets\<close>
+
 instance zmultiset :: (preorder) ordered_ab_semigroup_add_imp_le
-  by (intro_classes; unfold less_eq_zmultiset_def; transfer; auto simp: equiv_zmset_def)
+  by (intro_classes; unfold less_eq_zmultiset_def; transfer; auto)
+
+simproc_setup zmsetless_cancel
+  ("(l::'a::preorder zmultiset) + m < n" | "(l::'a zmultiset) < m + n" |
+   "add_zmset a m < n" | "m < add_zmset a n" |
+   "replicate_zmset p a < n" | "m < replicate_zmset p a" |
+   "repeat_zmset p m < n" | "m < repeat_zmset p m") =
+  \<open>fn phi => Cancel_Simprocs.less_cancel\<close>
+
+simproc_setup zmsetless_eq_cancel
+  ("(l::'a::preorder zmultiset) + m \<le> n" | "(l::'a zmultiset) \<le> m + n" |
+   "add_zmset a m \<le> n" | "m \<le> add_zmset a n" |
+   "replicate_zmset p a \<le> n" | "m \<le> replicate_zmset p a" |
+   "repeat_zmset p m \<le> n" | "m \<le> repeat_zmset p m") =
+  \<open>fn phi => Cancel_Simprocs.less_eq_cancel\<close>
 
 instance zmultiset :: (linorder) linordered_cancel_ab_semigroup_add
   by (intro_classes, unfold less_eq_zmultiset_def, transfer, auto simp: equiv_zmset_def add.commute)
@@ -777,6 +847,19 @@ proof (rule ccontr, clarsimp)
     by (simp add: subset_eq_imp_le_zmset)
   thus False
     using m_lt_n by simp
+qed
+
+instance zmultiset :: (preorder) no_top
+proof
+  fix M :: \<open>'a zmultiset\<close>
+  obtain a :: 'a where True by fast
+  let ?M = \<open>zmset_of (mset_pos M) + zmset_of (mset_neg M)\<close>
+  have \<open>M < add_zmset a ?M + ?M\<close>
+    by (subst mset_pos_neg_partition)
+      (auto simp: subset_zmset_def subseteq_zmset_def zmultiset_eq_iff
+        intro!: subset_imp_less_zmset)
+  then show \<open>\<exists>N. M < N\<close>
+    by blast
 qed
 
 end

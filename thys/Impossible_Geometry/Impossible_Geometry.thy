@@ -320,7 +320,7 @@ lemma radical_sqrt_correct_expr:
   done
 
 text {* The order of an expression is the maximum number of radicals
-one over another occuring in a given expression. Using the example
+one over another occurring in a given expression. Using the example
 above, suppose @{term "expr"} is of the form : expr = Addition (Sqrt
 (Addition (Const @{term a}) Sqrt (Const @{term b}))) (Sqrt (Addition
 (Const @{term c}) (Sqrt (Sqrt (Const @{term d}))))), where @{term a},

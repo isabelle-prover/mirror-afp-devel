@@ -35,7 +35,7 @@ lemma sum_mod:
   assumes "finite A"
   assumes "\<And>a. a \<in> A \<Longrightarrow> f a mod b = (0::'b::{semiring_div})"
   shows "(\<Sum>a\<in>A. f a) mod b = 0"
-using assms by induct (auto simp add: mod_add_eq)
+using assms by induct (auto simp add: mod_add_eq [symmetric])
 
 subsubsection {* Additions to Set-Interval Theory *}
 

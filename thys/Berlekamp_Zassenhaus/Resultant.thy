@@ -1592,15 +1592,10 @@ proof -
   ultimately show ?thesis by auto
 qed
 
-lemma mod_const_0[simp]: "c \<noteq> 0 \<Longrightarrow> f mod [:c:] = 0" 
-proof -
-  assume c: "c \<noteq> 0" 
-  obtain q r where "pdivmod f [:c:] = (q,r)" by force
-  hence pd: "pdivmod_rel f [:c:] q r"
-    by (simp add: Ring_Hom_Poly.pdivmod_pdivmodrel)
-  from this[unfolded pdivmod_rel_def] c have "r = 0" by auto
-  thus ?thesis using mod_poly_eq[OF pd] by simp
-qed
+lemma mod_const_0 [simp]:
+  "f mod [:c:] = 0" if "c \<noteq> 0"
+  using eucl_rel_poly [of f "[:c:]", unfolded eucl_rel_poly_iff] that
+  by simp
 
 lemma resultant_non_zero_imp_coprime: assumes nz: "resultant (f :: 'a :: {field,euclidean_ring_gcd} poly) g \<noteq> 0" 
   and nz': "f \<noteq> 0 \<or> g \<noteq> 0" 
@@ -1633,11 +1628,16 @@ next
     from res[unfolded this resultant_const] have cf: "c ^ degree f \<noteq> 0" by auto
     {
       assume c: "c \<noteq> 0" 
-      have "gcd f g = gcd g 0" unfolding g gcd_poly_def gcd_eucl_eq_gcd_factorial[symmetric] gcd_eucl.simps[of f] using c
+      with g have "g \<noteq> 0"
         by simp
-      also have "\<dots> = normalize [:c:]" unfolding g by simp
-      also have "\<dots> = 1" using c by (metis Polynomial_Division.normalize_smult normalize_1 smult_1)
-      finally have "coprime f g" .
+      then have "normalize g = 1"
+        using g by simp (metis Polynomial_Division.normalize_smult normalize_1 smult_1)
+      from \<open>g \<noteq> 0\<close> have "gcd f g = gcd (f mod g) g"
+        by (simp add: gcd_mod_left)
+      also have "f mod g = 0"
+        using \<open>c \<noteq> 0\<close> g by simp
+      finally have "coprime f g"
+        using \<open>normalize g = 1\<close> by simp
     }
     moreover
     {

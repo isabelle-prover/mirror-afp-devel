@@ -162,7 +162,7 @@ proof -
   let ?g = "gcd f (pderiv f)"
   define G where "G = ?g"
   from poly_gcd_monic[of f "pderiv f"] f have mon: "monic ?g"
-    unfolding lead_coeff_def by auto
+    by auto
   have deg: "degree G \<noteq> 0" 
   proof (cases "degree G")
     case 0

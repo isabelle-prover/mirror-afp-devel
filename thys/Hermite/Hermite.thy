@@ -191,7 +191,7 @@ lemma eq_mod_dvd_minus:
   fixes c::"'a::ring_div"
   assumes "c \<noteq> 0" and "a mod c = b mod c" 
   shows "c dvd a - b"
-  using assms by (simp add: dvd_eq_mod_eq_0 mod_diff_eq)
+  using assms by (simp add: mod_eq_dvd_iff)
 
 lemma dvd_cong_not_eq_mod:
   fixes c::"'a::ring_div"
@@ -393,8 +393,7 @@ lemma abs_mod_less:
     neg_mod_conj not_less not_less_iff_gr_or_eq pos_mod_conj)
 
 lemma ass_function_int: "ass_function_int = ass_function_euclidean"
-  unfolding fun_eq_iff ass_function_int_def ass_function_euclidean_def
-  by (metis gcd_0 gcd_0_int)
+  by (unfold ass_function_int_def ass_function_euclidean_def) simp
 
 lemma ass_function_int_UNIV: "(ass_function_int` UNIV) = {x. x\<ge>0}"
   unfolding ass_function_int_def image_def

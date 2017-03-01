@@ -132,7 +132,9 @@ prove their basic properties.</p></td>
 
     
                     
-                    
+                      <tr><td class="datahead">Used by:</td>
+          <td class="data"><a href="Stirling_Formula.shtml">Stirling_Formula</a>      </td></tr>
+          
 
         
   </tbody>

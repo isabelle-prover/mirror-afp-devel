@@ -3729,24 +3729,25 @@ lemma llexord_lappend_left:
 by(blast intro: llexord_lappend_leftI llexord_lappend_leftD)
 
 lemma antisym_llexord:
-  assumes r: "antisymP r"
+  assumes r: "antisymp r"
   and irrefl: "\<And>x. \<not> r x x"
-  shows "antisymP (llexord r)"
-proof(rule antisymI)
+  shows "antisymp (llexord r)"
+proof(rule antisympI)
   fix xs ys
-  assume "(xs, ys) \<in> {(xs, ys). llexord r xs ys}"
-    and "(ys, xs) \<in> {(xs, ys). llexord r xs ys}"
+  assume "llexord r xs ys"
+    and "llexord r ys xs"
   hence "llexord r xs ys \<and> llexord r ys xs" by auto
   thus "xs = ys"
-    by(coinduct rule: llist.coinduct)(auto 4 3 simp add: not_lnull_conv irrefl dest: antisymD[OF r, simplified])
+    by (coinduct rule: llist.coinduct)
+      (auto 4 3 simp add: not_lnull_conv irrefl dest: antisympD[OF r, simplified])
 qed
 
 lemma llexord_antisym:
   "\<lbrakk> llexord r xs ys; llexord r ys xs; 
     !!a b. \<lbrakk> r a b; r b a \<rbrakk> \<Longrightarrow> False \<rbrakk> 
   \<Longrightarrow> xs = ys"
-using antisymD[OF antisym_llexord, of r xs ys]
-by(auto intro: antisymI)
+using antisympD[OF antisym_llexord, of r xs ys]
+by(auto intro: antisympI)
 
 lemma llexord_trans:
   assumes 1: "llexord r xs ys"
@@ -3760,8 +3761,8 @@ proof -
 qed      
 
 lemma trans_llexord:
-  "transP r \<Longrightarrow> transP (llexord r)"
-by(auto intro!: transI elim: llexord_trans dest: transD)
+  "transp r \<Longrightarrow> transp (llexord r)"
+  by(auto intro!: transpI elim: llexord_trans dest: transpD)
   
 lemma llexord_linear:
   assumes linear: "!!x y. r x y \<or> x = y \<or> r y x"

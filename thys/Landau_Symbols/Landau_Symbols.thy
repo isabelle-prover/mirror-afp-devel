@@ -4,7 +4,7 @@
 *)
 theory Landau_Symbols
 imports 
-  Landau_Symbols_Definition Landau_Simprocs Asymptotic_Equivalence
+  Landau_Symbols_Definition Landau_Simprocs Landau_More Asymptotic_Equivalence
 begin
 
 end

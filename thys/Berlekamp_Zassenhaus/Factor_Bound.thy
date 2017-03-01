@@ -174,10 +174,16 @@ lemma mignotte_coeff_helper:
 end
 
 lemma mahler_measure_poly_ge_1:
-  assumes "h\<noteq>0"
+  assumes "h \<noteq> 0"
   shows "(1::real) \<le> mahler_measure h"
 proof -
-  from assms have "cmod (lead_coeff (map_poly complex_of_int h)) > 0" by simp
+  from assms
+  have "map_poly complex_of_int h \<noteq> 0"
+    by simp
+  then have "lead_coeff (map_poly complex_of_int h) \<noteq> 0"
+    by (rule leading_coeff_neq_0)
+  then have "cmod (lead_coeff (map_poly complex_of_int h)) > 0"
+    by simp
   hence "cmod (lead_coeff (map_poly complex_of_int h)) \<ge> 1"
     by(cases "abs (lead_coeff h)";auto)
   from mult_mono[OF this mahler_measure_monic_ge_1 norm_ge_zero]

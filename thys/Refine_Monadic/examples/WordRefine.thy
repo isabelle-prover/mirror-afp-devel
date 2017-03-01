@@ -17,13 +17,12 @@ lemma [simp, relator_props]:
   "single_valued word_nat_rel" unfolding word_nat_rel_def
   by blast
 
-lemma [simp]: "single_valuedP (\<lambda>c a. a = unat c)" 
-  by (rule single_valuedI) blast
+lemma [simp]: "single_valuedp (\<lambda>c a. a = unat c)" 
+  by (rule single_valuedpI) blast
 
 lemma [simp, relator_props]: "single_valued (converse word_nat_rel)" 
-  unfolding word_nat_rel_def
-  apply (auto simp del: build_rel_def)
-  by (metis injI order_antisym order_eq_refl word_le_nat_alt)
+  apply (auto intro!: injI)
+  by (metis order_antisym order_eq_refl word_le_nat_alt)
 
 lemmas [refine_hsimp] = 
   word_less_nat_alt word_le_nat_alt unat_sub iffD1[OF unat_add_lem]

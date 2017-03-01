@@ -5,8 +5,9 @@
  * This file is part of HOL-TestGen.
  *
  * Copyright (c) 2005-2012 ETH Zurich, Switzerland
- *               2008-2014 Achim D. Brucker, Germany
- *               2009-2014 Université Paris-Sud, France
+ *               2008-2015 Achim D. Brucker, Germany
+ *               2009-2017 Université Paris-Sud, France
+ *               2015-2017 The University of Sheffield, UK
  *
  * All rights reserved.
  *
@@ -38,13 +39,12 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
-(* $Id: ParallelComposition.thy 10879 2014-10-26 11:35:31Z brucker $ *)
 
 section{* Parallel Composition*}
 theory  
   ParallelComposition
-imports 
-  ElementaryPolicies
+  imports 
+    ElementaryPolicies
 begin
 
 text{* 
@@ -69,7 +69,7 @@ text {*
 *}
 
 definition prod_orA ::"['\<alpha>\<mapsto>'\<beta>, '\<gamma> \<mapsto>'\<delta>] \<Rightarrow> ('\<alpha>\<times>'\<gamma> \<mapsto> '\<beta>\<times>'\<delta>)"  (infixr "\<Otimes>\<^sub>\<or>\<^sub>A" 55)
-where "p1 \<Otimes>\<^sub>\<or>\<^sub>A p2 =
+  where "p1 \<Otimes>\<^sub>\<or>\<^sub>A p2 =
        (\<lambda>(x,y). (case p1 x of
              \<lfloor>allow d1\<rfloor> \<Rightarrow>(case p2 y of 
                                    \<lfloor>allow d2\<rfloor> \<Rightarrow> \<lfloor>allow(d1,d2)\<rfloor>
@@ -80,25 +80,25 @@ where "p1 \<Otimes>\<^sub>\<or>\<^sub>A p2 =
                                  | \<lfloor>deny d2\<rfloor>  \<Rightarrow> \<lfloor>deny (d1,d2)\<rfloor> 
                                  | \<bottom> \<Rightarrow> \<bottom>)
            | \<bottom> \<Rightarrow> \<bottom>))"
-
+    
 lemma prod_orA_mt[simp]:"p \<Otimes>\<^sub>\<or>\<^sub>A \<emptyset> = \<emptyset>"
   apply (rule ext)
   apply (simp add: prod_orA_def)
   apply (auto)
   apply (simp split: option.splits decision.splits)
-done
+  done
 
 lemma mt_prod_orA[simp]:"\<emptyset> \<Otimes>\<^sub>\<or>\<^sub>A p = \<emptyset>"
   apply (rule ext)
   apply (simp add: prod_orA_def)
-done
-
+  done
+    
 lemma prod_orA_quasi_commute: "p2 \<Otimes>\<^sub>\<or>\<^sub>A p1 = (((\<lambda>(x,y). (y,x)) o_f (p1 \<Otimes>\<^sub>\<or>\<^sub>A p2))) o (\<lambda>(a,b).(b,a))"
   apply (rule ext)
   apply (simp add: prod_orA_def policy_range_comp_def o_def)
-  apply (auto)
+  apply (auto)[1]
   apply (simp split: option.splits decision.splits)
-done
+  done
 
 definition prod_orD ::"['\<alpha> \<mapsto> '\<beta>, '\<gamma> \<mapsto>   '\<delta>] \<Rightarrow>  ('\<alpha> \<times> '\<gamma> \<mapsto>  '\<beta> \<times> '\<delta> )" (infixr "\<Otimes>\<^sub>\<or>\<^sub>D" 55)
 where "p1 \<Otimes>\<^sub>\<or>\<^sub>D p2 =
@@ -116,28 +116,28 @@ where "p1 \<Otimes>\<^sub>\<or>\<^sub>D p2 =
 lemma prod_orD_mt[simp]:"p \<Otimes>\<^sub>\<or>\<^sub>D \<emptyset> = \<emptyset>"
   apply (rule ext)
   apply (simp add: prod_orD_def)
-  apply (auto)
+  apply (auto)[1]
   apply (simp split: option.splits decision.splits)
-done
-
+  done
+    
 lemma mt_prod_orD[simp]:"\<emptyset> \<Otimes>\<^sub>\<or>\<^sub>D p = \<emptyset>"
   apply (rule ext)
   apply (simp add: prod_orD_def)
-done
-
+  done
+    
 lemma prod_orD_quasi_commute: "p2 \<Otimes>\<^sub>\<or>\<^sub>D p1 = (((\<lambda>(x,y). (y,x)) o_f (p1 \<Otimes>\<^sub>\<or>\<^sub>D p2))) o (\<lambda>(a,b).(b,a))"
   apply (rule ext)
   apply (simp add: prod_orD_def policy_range_comp_def o_def)
-  apply (auto)
+  apply (auto)[1]
   apply (simp split: option.splits decision.splits)
-done
+  done
 
 text{* 
   The following two combinators are by definition non-commutative, but still strict. 
 *}
-
+  
 definition prod_1 :: "['\<alpha>\<mapsto>'\<beta>, '\<gamma> \<mapsto>'\<delta>] \<Rightarrow> ('\<alpha>\<times>'\<gamma> \<mapsto> '\<beta>\<times>'\<delta>)" (infixr "\<Otimes>\<^sub>1" 55)
-where "p1 \<Otimes>\<^sub>1 p2 \<equiv>
+  where "p1 \<Otimes>\<^sub>1 p2 \<equiv>
        (\<lambda>(x,y). (case p1 x of
              \<lfloor>allow d1\<rfloor>\<Rightarrow>(case p2 y of 
                                    \<lfloor>allow d2\<rfloor> \<Rightarrow> \<lfloor>allow(d1,d2)\<rfloor>
@@ -148,21 +148,21 @@ where "p1 \<Otimes>\<^sub>1 p2 \<equiv>
                                  | \<lfloor>deny d2\<rfloor>  \<Rightarrow> \<lfloor>deny(d1,d2)\<rfloor>
                                  | \<bottom> \<Rightarrow> \<bottom>)
            |\<bottom> \<Rightarrow> \<bottom>))"
-
+    
 lemma prod_1_mt[simp]:"p \<Otimes>\<^sub>1 \<emptyset> = \<emptyset>"
   apply (rule ext) 
   apply (simp add: prod_1_def)
-  apply (auto)
+  apply (auto)[1]
   apply (simp split: option.splits decision.splits)
-done
-
+  done
+    
 lemma mt_prod_1[simp]:"\<emptyset> \<Otimes>\<^sub>1 p = \<emptyset>"
   apply (rule ext)
   apply (simp add: prod_1_def)
-done
-
+  done
+    
 definition prod_2 :: "['\<alpha>\<mapsto>'\<beta>, '\<gamma> \<mapsto>'\<delta>] \<Rightarrow> ('\<alpha>\<times>'\<gamma> \<mapsto> '\<beta>\<times>'\<delta>)" (infixr "\<Otimes>\<^sub>2" 55)
-where "p1 \<Otimes>\<^sub>2 p2 \<equiv>
+  where "p1 \<Otimes>\<^sub>2 p2 \<equiv>
        (\<lambda>(x,y). (case p1 x of
              \<lfloor>allow d1\<rfloor> \<Rightarrow>(case p2 y of 
                                    \<lfloor>allow d2\<rfloor> \<Rightarrow> \<lfloor>allow(d1,d2)\<rfloor>
@@ -173,54 +173,54 @@ where "p1 \<Otimes>\<^sub>2 p2 \<equiv>
                                  | \<lfloor>deny d2\<rfloor> \<Rightarrow>  \<lfloor>deny (d1,d2)\<rfloor> 
                                  | \<bottom> \<Rightarrow> \<bottom>)
            |\<bottom> \<Rightarrow>\<bottom>))"
-
+    
 lemma prod_2_mt[simp]:"p \<Otimes>\<^sub>2 \<emptyset> = \<emptyset>"
   apply (rule ext)
   apply (simp add: prod_2_def)
-  apply (auto)
+  apply (auto)[1]
   apply (simp split: option.splits decision.splits)
-done
-
+  done
+    
 lemma mt_prod_2[simp]:"\<emptyset> \<Otimes>\<^sub>2 p = \<emptyset>"
   apply (rule ext) 
   apply (simp add: prod_2_def)
-done
-
+  done
+    
 definition prod_1_id ::"['\<alpha>\<mapsto>'\<beta>, '\<alpha>\<mapsto>'\<gamma>] \<Rightarrow> ('\<alpha> \<mapsto> '\<beta>\<times>'\<gamma>)" (infixr "\<Otimes>\<^sub>1\<^sub>I" 55)
-where "p \<Otimes>\<^sub>1\<^sub>I q = (p \<Otimes>\<^sub>1 q) o (\<lambda>x. (x,x))"
-
+  where "p \<Otimes>\<^sub>1\<^sub>I q = (p \<Otimes>\<^sub>1 q) o (\<lambda>x. (x,x))"
+    
 lemma prod_1_id_mt[simp]:"p \<Otimes>\<^sub>1\<^sub>I \<emptyset> = \<emptyset>"
   apply (rule ext)
   apply (simp add: prod_1_id_def)
-done
-
+  done
+    
 lemma mt_prod_1_id[simp]:"\<emptyset> \<Otimes>\<^sub>1\<^sub>I p = \<emptyset>"
   apply (rule ext) 
   apply (simp add: prod_1_id_def prod_1_def)
-done
-
+  done
+    
 definition prod_2_id ::"['\<alpha>\<mapsto>'\<beta>, '\<alpha>\<mapsto>'\<gamma>] \<Rightarrow> ('\<alpha> \<mapsto> '\<beta>\<times>'\<gamma>)" (infixr "\<Otimes>\<^sub>2\<^sub>I" 55)
-where"p \<Otimes>\<^sub>2\<^sub>I q = (p \<Otimes>\<^sub>2 q) o (\<lambda>x. (x,x))"
-
+  where"p \<Otimes>\<^sub>2\<^sub>I q = (p \<Otimes>\<^sub>2 q) o (\<lambda>x. (x,x))"
+    
 lemma prod_2_id_mt[simp]:"p \<Otimes>\<^sub>2\<^sub>I \<emptyset> = \<emptyset>"
   apply (rule ext)
   apply (simp add: prod_2_id_def)
-done
-
+  done
+    
 lemma mt_prod_2_id[simp]:"\<emptyset> \<Otimes>\<^sub>2\<^sub>I p = \<emptyset>"
   apply (rule ext)
   apply (simp add: prod_2_id_def prod_2_def)
-done
-
+  done
+    
 subsection{* Combinators for Transition Policies *}
 text {* 
   For constructing transition policies, two additional combinators are required: one combines 
   state transitions by pairing the states, the other works equivalently on general maps. 
 *}
-
+  
 definition parallel_map :: "('\<alpha> \<rightharpoonup> '\<beta>) \<Rightarrow> ('\<delta> \<rightharpoonup> '\<gamma>) \<Rightarrow> 
                             ('\<alpha> \<times> '\<delta>  \<rightharpoonup> '\<beta> \<times> '\<gamma>)" (infixr "\<Otimes>\<^sub>M" 60) 
-where  "p1 \<Otimes>\<^sub>M p2 = (\<lambda> (x,y). case p1 x of \<lfloor>d1\<rfloor> \<Rightarrow>
+  where  "p1 \<Otimes>\<^sub>M p2 = (\<lambda> (x,y). case p1 x of \<lfloor>d1\<rfloor> \<Rightarrow>
                               (case p2 y of \<lfloor>d2\<rfloor> \<Rightarrow> \<lfloor>(d1,d2)\<rfloor>
                                                 | \<bottom> \<Rightarrow> \<bottom>)
                                       | \<bottom> \<Rightarrow> \<bottom>)"
@@ -249,81 +249,93 @@ lemma comp_ran_split_charn:
   "(f, g)  \<Otimes>\<^sub>\<nabla> p = (
 (((p  \<triangleright> Allow)\<Otimes>\<^sub>\<or>\<^sub>A (A\<^sub>p f)) \<Oplus> 
  ((p  \<triangleright> Deny) \<Otimes>\<^sub>\<or>\<^sub>A (D\<^sub>p g))))"
- apply (rule ext)
- apply (simp add: comp_ran_split_def map_add_def o_def ran_restrict_def image_def
-                 Allow_def Deny_def dom_restrict_def prod_orA_def 
-                 allow_pfun_def deny_pfun_def 
-            split:option.splits decision.splits) 
+  apply (rule ext)
+  apply (simp add: comp_ran_split_def map_add_def o_def ran_restrict_def image_def
+      Allow_def Deny_def dom_restrict_def prod_orA_def 
+      allow_pfun_def deny_pfun_def 
+      split:option.splits decision.splits) 
   apply (auto)
-done
+  done
 
 subsection {* Distributivity of the parallel combinators *}
-
+  
 lemma distr_or1_a: "(F = F1 \<Oplus> F2) \<Longrightarrow>  (((N  \<Otimes>\<^sub>1 F) o f) = 
                (((N \<Otimes>\<^sub>1 F1) o f)  \<Oplus> ((N   \<Otimes>\<^sub>1 F2)  o f))) "
   apply (rule ext)
   apply (simp add:  prod_1_def map_add_def 
-            split: decision.splits option.splits)
-  apply (case_tac "f x")
-  apply (simp_all add: prod_1_def map_add_def 
-                split: decision.splits option.splits)
-done
+      split: decision.splits option.splits)
+  subgoal for x 
+    apply (case_tac "f x")
+    apply (simp_all add: prod_1_def map_add_def 
+        split: decision.splits option.splits)
+    done
+  done
 
 lemma distr_or1: "(F = F1 \<Oplus> F2) \<Longrightarrow>  ((g o_f ((N  \<Otimes>\<^sub>1 F) o f)) = 
                ((g o_f ((N \<Otimes>\<^sub>1 F1) o f)) \<Oplus>  (g o_f ((N \<Otimes>\<^sub>1 F2)  o f)))) "
   apply (rule ext)+
   apply (simp add: prod_1_def map_add_def policy_range_comp_def 
-            split: decision.splits option.splits)
-  apply (case_tac "f x")
-  apply (simp_all add: prod_1_def map_add_def 
-                split: decision.splits option.splits)
-done
-
+      split: decision.splits option.splits)
+  subgoal for x
+    apply (case_tac "f x")
+    apply (simp_all add: prod_1_def map_add_def 
+        split: decision.splits option.splits)
+    done
+  done 
+    
 lemma distr_or2_a: "(F = F1 \<Oplus> F2) \<Longrightarrow>  (((N  \<Otimes>\<^sub>2 F) o f) = 
                (((N \<Otimes>\<^sub>2 F1) o f)  \<Oplus> ((N  \<Otimes>\<^sub>2 F2)  o f))) "
   apply (rule ext)
   apply (simp add: prod_2_id_def prod_2_def map_add_def 
-            split: decision.splits option.splits)
-  apply (case_tac "f x")
-  apply (simp_all add: prod_2_def map_add_def 
-                split: decision.splits option.splits)
-done
-
+      split: decision.splits option.splits)
+  subgoal for x
+    apply (case_tac "f x")
+    apply (simp_all add: prod_2_def map_add_def 
+        split: decision.splits option.splits)
+    done
+  done
+    
 lemma distr_or2: "(F = F1 \<Oplus> F2) \<Longrightarrow>  ((r o_f ((N  \<Otimes>\<^sub>2 F) o f)) = 
                ((r o_f ((N \<Otimes>\<^sub>2 F1) o f))  \<Oplus> (r o_f ((N  \<Otimes>\<^sub>2 F2)  o f)))) "
   apply (rule ext)
   apply (simp add: prod_2_id_def prod_2_def map_add_def policy_range_comp_def
-            split: decision.splits option.splits)
-  apply (case_tac "f x")
-  apply (simp_all add: prod_2_def map_add_def 
-                split: decision.splits option.splits)
-done
-
+      split: decision.splits option.splits)
+  subgoal for x 
+    apply (case_tac "f x")
+    apply (simp_all add: prod_2_def map_add_def 
+        split: decision.splits option.splits)
+    done
+  done 
+    
 lemma distr_orA: "(F = F1 \<Oplus> F2) \<Longrightarrow>  ((g o_f ((N  \<Otimes>\<^sub>\<or>\<^sub>A F) o f)) = 
                ((g o_f ((N  \<Otimes>\<^sub>\<or>\<^sub>A F1) o f))  \<Oplus>  (g o_f ((N  \<Otimes>\<^sub>\<or>\<^sub>A F2)  o f)))) "
   apply (rule ext)+
   apply (simp add: prod_orA_def map_add_def policy_range_comp_def 
-            split: decision.splits option.splits)
-  apply (case_tac "f x")
-  apply (simp_all add:  map_add_def 
-            split: decision.splits option.splits)
-done
-
+      split: decision.splits option.splits)
+  subgoal for x 
+    apply (case_tac "f x")
+    apply (simp_all add:  map_add_def 
+        split: decision.splits option.splits)
+    done
+  done 
+    
 lemma distr_orD: "(F = F1 \<Oplus> F2) \<Longrightarrow>  ((g o_f ((N  \<Otimes>\<^sub>\<or>\<^sub>D F) o f)) = 
                ((g o_f ((N \<Otimes>\<^sub>\<or>\<^sub>D F1) o f))  \<Oplus>  (g o_f ((N \<Otimes>\<^sub>\<or>\<^sub>D F2)  o f)))) "
   apply (rule ext)+
   apply (simp add: prod_orD_def map_add_def policy_range_comp_def 
-            split: decision.splits option.splits)
-  apply (case_tac "f x")
-  apply (simp_all add:  map_add_def 
-                split: decision.splits option.splits)
-done
-
+      split: decision.splits option.splits)
+  subgoal for x 
+    apply (case_tac "f x")
+    apply (simp_all add:  map_add_def 
+        split: decision.splits option.splits)
+    done
+  done 
+    
 lemma coerc_assoc: "(r o_f P) o d = r o_f (P o d)"
   apply (simp add: policy_range_comp_def)
   apply (rule ext)
   apply (simp split: option.splits decision.splits)
-done
+  done
 
 lemmas ParallelDefs = prod_orA_def prod_orD_def prod_1_def prod_2_def parallel_map_def 
                       parallel_st_def comp_ran_split_def

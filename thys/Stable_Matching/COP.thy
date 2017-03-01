@@ -327,7 +327,7 @@ next
 qed
 
 lemma fp_cop_F_allocation:
-  shows "allocation (CH (fp_cop_F ds))"
+  shows "allocation (cop ds)"
 proof %invisible -
   have "invariant ds (\<lambda>ds fp. cop_F_range_inv ds fp \<and> cop_F_closed_inv ds fp \<and> allocation (CH fp))"
     using cop_F_range_inv cop_F_closed_inv cop_F_allocation_inv
@@ -336,30 +336,171 @@ proof %invisible -
 qed
 
 theorem Theorem_1:
-  shows "stable_on ds (CH (fp_cop_F ds))"
-(*<*)
-(is "stable_on ds ?fp")
+  shows "stable_on ds (cop ds)"
 proof %invisible (rule stable_onI)
-  show "individually_rational_on ds ?fp"
+  show "individually_rational_on ds (cop ds)"
   proof(rule individually_rational_onI)
-    from fp_cop_F_allocation show "CD_on ds ?fp = ?fp"
+    from fp_cop_F_allocation show "CD_on ds (cop ds) = cop ds"
       by (rule CD_on_closed) (blast dest: fp_cop_F_range_inv' CH_range')
-    show "CH (CH (fp_cop_F ds)) = CH (fp_cop_F ds)" by (simp add: CH_irc_idem)
+    show "CH (cop ds) = cop ds" by (simp add: CH_irc_idem)
   qed
-  show "stable_no_blocking_on ds ?fp" by (rule fp_cop_F_stable_no_blocking_on)
+  show "stable_no_blocking_on ds (cop ds)" by (rule cop_stable_no_blocking_on)
 qed
-(*>*)
 
-text\<open>
+end
+
+text (in ContractsWithBilateralSubstitutesAndIRC) \<open>
 
 \citet[\S3.1]{HatfieldKojima:2010} provide an example that shows that
 the traditional optimality and strategic results do not hold under
-@{const "bilateral_substitutes"}. This motivates looking for a
+@{const "bilateral_substitutes"}, which motivates looking for a
 stronger condition that remains weaker than @{const "substitutes"}.
+
+Their example involves two doctors, two hospitals, and five contracts.
 
 \<close>
 
-end
+datatype X5 = Xd1 | Xd1' | Xd2 | Xd2' | Xd2''
+
+primrec X5d :: "X5 \<Rightarrow> D2" where
+  "X5d Xd1 = D1"
+| "X5d Xd1' = D1"
+| "X5d Xd2 = D2"
+| "X5d Xd2' = D2"
+| "X5d Xd2'' = D2"
+
+primrec X5h :: "X5 \<Rightarrow> H2" where
+  "X5h Xd1 = H1"
+| "X5h Xd1' = H1"
+| "X5h Xd2 = H1"
+| "X5h Xd2' = H2"
+| "X5h Xd2'' = H1"
+
+primrec PX5d :: "D2 \<Rightarrow> X5 rel" where
+  "PX5d D1 = linord_of_list [Xd1, Xd1']"
+| "PX5d D2 = linord_of_list [Xd2, Xd2', Xd2'']"
+
+primrec CX5h :: "H2 \<Rightarrow> X5 cfun" where
+  "CX5h H1 A =
+     (if {Xd1', Xd2} \<subseteq> A then {Xd1', Xd2} else
+      if {Xd2''} \<subseteq> A then {Xd2''} else
+      if {Xd1} \<subseteq> A then {Xd1} else
+      if {Xd1'} \<subseteq> A then {Xd1'} else
+      if {Xd2} \<subseteq> A then {Xd2} else {})"
+| "CX5h H2 A = { x . x \<in> A \<and> x = Xd2' }"
+
+(*<*)
+
+lemma X5_UNIV:
+  shows "UNIV = set [Xd1, Xd1', Xd2, Xd2', Xd2'']"
+using X5.exhaust by auto
+
+lemmas X5_pow = subset_sublists[OF subset_trans[OF subset_UNIV Set.equalityD1[OF X5_UNIV]]]
+
+instance X5 :: finite
+by standard (simp add: X5_UNIV)
+
+lemma X5_ALL:
+  shows "(\<forall>X''. P X'') \<longleftrightarrow> (\<forall>X''\<in>set ` set (sublists [Xd1, Xd1', Xd2, Xd2', Xd2'']). P X'')"
+using X5_pow by blast
+
+lemma PX5d_linear:
+  shows "Linear_order (PX5d d)"
+by (cases d) (simp_all add: linord_of_list_Linear_order)
+
+lemma PX5d_range:
+  shows "Field (PX5d d) \<subseteq> {x. X5d x = d}"
+by (cases d) simp_all
+
+lemma CX5h_range:
+  shows "CX5h h X \<subseteq> {x \<in> X. X5h x = h}"
+by (cases h) auto
+
+lemma CX5h_singular:
+  shows "inj_on X5d (CX5h h X)"
+by (cases h) (auto intro: inj_onI)
+
+(*>*)
+text\<open>\<close>
+
+interpretation BSI: Contracts X5d X5h PX5d CX5h
+using %invisible PX5d_linear PX5d_range CX5h_range CX5h_singular by unfold_locales blast+
+
+lemma CX5h_bilateral_substitutes:
+  shows "BSI.bilateral_substitutes (CX5h h)"
+unfolding BSI.bilateral_substitutes_def by (cases h) (auto simp: X5_ALL)
+
+lemma CX5h_irc:
+  shows "irc (CX5h h)"
+unfolding irc_def by (cases h) (auto simp: X5_ALL)
+
+interpretation BSI: ContractsWithBilateralSubstitutesAndIRC X5d X5h PX5d CX5h
+using %invisible CX5h_bilateral_substitutes CX5h_irc by unfold_locales blast+
+
+text\<open>
+
+There are two stable matches in this model.
+
+\<close>
+(*<*)
+
+lemma Xd1_Xd2'_stable:
+  shows "BSI.stable {Xd1, Xd2'}"
+proof(rule BSI.stable_onI)
+  show "BSI.individually_rational {Xd1, Xd2'}"
+    unfolding BSI.individually_rational_on_def BSI.CD_on_def BSI.CH_def
+    by (auto simp: insert_commute D2_UNION H2_UNION)
+  show "BSI.stable_no_blocking {Xd1, Xd2'}"
+    unfolding BSI.stable_no_blocking_on_def
+    by (auto simp: X5_ALL BSI.blocking_on_def BSI.mem_CD_on_Cd BSI.maxR_def linord_of_list_linord_of_listP)
+qed
+
+lemma Xd1'_Xd2_stable:
+  shows "BSI.stable {Xd1', Xd2}"
+proof(rule BSI.stable_onI)
+  show "BSI.individually_rational {Xd1', Xd2}"
+    unfolding BSI.individually_rational_on_def BSI.CD_on_def BSI.CH_def
+    by (auto simp: insert_commute D2_UNION H2_UNION)
+  show "BSI.stable_no_blocking {Xd1', Xd2}"
+    unfolding BSI.stable_no_blocking_on_def
+    by (auto simp: X5_ALL BSI.blocking_on_def BSI.mem_CD_on_Cd BSI.maxR_def linord_of_list_linord_of_listP)
+qed
+
+(*>*)
+text\<open>\<close>
+
+lemma BSI_stable:
+  shows "BSI.stable X \<longleftrightarrow> X = {Xd1, Xd2'} \<or> X = {Xd1', Xd2}"
+(*<*)
+(is "?lhs = ?rhs")
+proof(rule iffI)
+  assume ?lhs then show ?rhs
+    using X5_pow[where X=X] BSI.stable_on_allocation[OF \<open>?lhs\<close>]
+    apply clarsimp
+    apply (elim disjE; simp add: insert_eq_iff)
+    apply (simp_all only: BSI.stable_on_def BSI.individually_rational_on_def BSI.stable_no_blocking_on_def BSI.blocking_on_def BSI.CH_def)
+    apply (auto 0 1 simp: D2_UNION H2_UNION X5_ALL BSI.mem_CD_on_Cd BSI.maxR_def linord_of_list_linord_of_listP)
+    done
+next
+  assume ?rhs then show ?lhs
+    using Xd1'_Xd2_stable Xd1_Xd2'_stable by blast
+qed
+
+(*>*)
+text (in Contracts) \<open>
+
+Therefore there is no doctor-optimal match under these preferences:
+
+\<close>
+
+lemma
+  "\<not>(\<exists> (Y::X5 set). BSI.doctor_optimal_match UNIV Y)"
+unfolding BSI.doctor_optimal_match_def BSI_stable
+apply clarsimp
+apply (cut_tac X=Y in X5_pow)
+apply clarsimp
+apply (elim disjE; simp add: insert_eq_iff; simp add: X5_ALL linord_of_list_linord_of_listP)
+done
 
 
 subsection\<open> Theorem~3: @{emph \<open>pareto separability\<close>} relates @{emph \<open>unilateral substitutes\<close>} and @{emph \<open>substitutes\<close>} \<close>
@@ -664,7 +805,7 @@ proof(rule doctor_separable_onI)
       with \<open>\<forall>B\<subseteq>A. allocation (f B)\<close> \<open>f_range_on A f\<close> XXX(1-4) a' a'X
       show "f (insert a' (insert b (insert c ?B))) \<subseteq> insert a' (insert b (insert c {x \<in> ?B. Xd x \<noteq> Xd a \<or> x = a'}))"
         by clarsimp (rule conjI, blast dest!: f_range_onD'[where A=A], metis inj_on_contraD insert_subset)
-    qed (insert \<open>irc_on A f\<close> XXX(1-4) a', auto)
+    qed (use \<open>irc_on A f\<close> XXX(1-4) a' in auto)
     with a' a'X abcC show False by simp (metis insert_Diff insert_Diff_single insert_commute)
   qed
   moreover note \<open>f_range_on A f\<close> XXX
@@ -689,7 +830,7 @@ proof(rule unilateral_substitutes_onI)
       by clarsimp (metis f_range_onD' image_eqI insertE insert_subset)
     with \<open>doctor_separable_on A f\<close> XXX Cc show ?thesis
       by (auto simp: insert_commute dest: doctor_separable_onD)
-  qed (insert \<open>bilateral_substitutes_on A f\<close> XXX, simp add: bilateral_substitutes_onD)
+  qed (use \<open>bilateral_substitutes_on A f\<close> XXX in \<open>simp add: bilateral_substitutes_onD\<close>)
 qed
 
 theorem unilateral_substitutes_on_doctor_separable_on_bilateral_substitutes_on:
@@ -791,7 +932,7 @@ with respect to the doctor's preferences.
 definition
   cop_F_rejected_inv :: "'b set \<Rightarrow> 'a set \<Rightarrow> bool"
 where
-  "cop_F_rejected_inv ds fp = (\<forall>x\<in>RH fp. \<exists>fp'\<subseteq>fp. x \<in> fp' \<and> above (Pd (Xd x)) x \<subseteq> fp' \<and> Xd x \<notin> Xd ` CH fp')"
+  "cop_F_rejected_inv ds fp \<longleftrightarrow> (\<forall>x\<in>RH fp. \<exists>fp'\<subseteq>fp. x \<in> fp' \<and> above (Pd (Xd x)) x \<subseteq> fp' \<and> Xd x \<notin> Xd ` CH fp')"
 
 (*<*)
 
@@ -915,7 +1056,7 @@ contracts that the doctors have offered.
 \<close>
 
 corollary fp_cop_F_worst:
-  assumes "x \<in> CH (fp_cop_F ds)"
+  assumes "x \<in> cop ds"
   assumes "y \<in> fp_cop_F ds"
   assumes "Xd y = Xd x"
   shows "(x, y) \<in> Pd (Xd x)"
@@ -923,7 +1064,7 @@ proof %invisible (rule ccontr)
   assume "(x, y) \<notin> Pd (Xd x)"
   with assms have "(y, x) \<in> Pd (Xd x) \<and> x \<noteq> y"
     by (metis CH_range' Pd_linear eq_iff fp_cop_F_range_inv' order_on_defs(3) total_on_def underS_incl_iff)
-  with assms have "y \<notin> CH (fp_cop_F ds)"
+  with assms have "y \<notin> (cop ds)"
     using fp_cop_F_allocation by (blast dest: inj_onD)
   with fp_cop_F_rejected_inv[of ds] \<open>y \<in> fp_cop_F ds\<close>
   obtain fp' where "fp' \<subseteq> fp_cop_F ds \<and> y \<in> fp' \<and> above (Pd (Xd y)) y \<subseteq> fp' \<and> Xd y \<notin> Xd ` CH fp'"
@@ -944,7 +1085,7 @@ contract in any stable match is ever rejected.
 definition
   theorem_5_inv :: "'b set \<Rightarrow> 'a set \<Rightarrow> bool"
 where
-  "theorem_5_inv ds fp = (RH fp \<inter> \<Union>{X. stable_on ds X} = {})"
+  "theorem_5_inv ds fp \<longleftrightarrow> RH fp \<inter> \<Union>{X. stable_on ds X} = {}"
 
 (*<*)
 
@@ -972,7 +1113,7 @@ next
     fix z X assume z: "z \<in> RH (cop_F ds fp)" and "z \<in> X" and "stable_on ds X"
     from \<open>theorem_5_inv ds fp\<close> \<open>z \<in> X\<close> \<open>stable_on ds X\<close>
     have z': "z \<notin> RH fp" unfolding theorem_5_inv_def by blast
-    def Y \<equiv> "Ch (Xh z) (cop_F ds fp)"
+    define Y where "Y \<equiv> Ch (Xh z) (cop_F ds fp)"
     from z have YYY: "z \<notin> Ch (Xh z) (insert z Y)"
       using consistencyD[OF Ch_consistency]
       by (simp add: mem_CH_Ch Y_def)
@@ -1072,15 +1213,15 @@ qed
 theorem Theorem_5:
   assumes "stable_on ds X"
   assumes "x \<in> X"
-  shows "\<exists>y \<in> CH (fp_cop_F ds). (x, y) \<in> Pd (Xd x)"
+  shows "\<exists>y \<in> cop ds. (x, y) \<in> Pd (Xd x)"
 proof -
   from fp_cop_F_theorem_5_inv assms
   have x: "x \<notin> RH (fp_cop_F ds)"
     unfolding theorem_5_inv_def by blast
   show ?thesis
-  proof(cases "Xd x \<in> Xd ` CH (fp_cop_F ds)")
+  proof(cases "Xd x \<in> Xd ` cop ds")
     case True
-    then obtain z where z: "z \<in> CH (fp_cop_F ds)" "Xd z = Xd x" by auto
+    then obtain z where z: "z \<in> cop ds" "Xd z = Xd x" by auto
     show ?thesis
     proof(cases "(x, z) \<in> Pd (Xd x)")
       case True with z show ?thesis by blast
@@ -1096,14 +1237,14 @@ proof -
         by (meson equalityD2 stable_on_range' underS_incl_iff)
     qed
   next
-    case False note \<open>Xd x \<notin> Xd ` CH (fp_cop_F ds)\<close>
+    case False note \<open>Xd x \<notin> Xd ` cop ds\<close>
     with assms x show ?thesis
       by (metis DiffI Diff_eq_empty_iff fp_cop_F_all emptyE imageI stable_on_Xd stable_on_range')
   qed
 qed
 
 theorem fp_cop_F_doctor_optimal_match:
-  shows "doctor_optimal_match ds (CH (fp_cop_F ds))"
+  shows "doctor_optimal_match ds (cop ds)"
 by %invisible (rule doctor_optimal_matchI[OF Theorem_1 Theorem_5]) auto
 
 end
@@ -1180,13 +1321,13 @@ begin
 
 theorem Corollary_1:
   assumes "stable_on ds Z"
-  shows "dpref Z (CH (fp_cop_F ds))"
-    and "x \<in> Z \<Longrightarrow> x \<in> Ch (Xh x) (CH (fp_cop_F ds) \<union> Z)"
+  shows "dpref Z (cop ds)"
+    and "x \<in> Z \<Longrightarrow> x \<in> Ch (Xh x) (cop ds \<union> Z)"
 proof -
-  show "dpref Z (CH (fp_cop_F ds))"
+  show "dpref Z (cop ds)"
     by (rule dprefI[OF Theorem_5[OF \<open>stable_on ds Z\<close>]])
-  fix x assume "x \<in> Z" with assms show "x \<in> Ch (Xh x) (CH (fp_cop_F ds) \<union> Z)"
-    using Lemma_1[OF Theorem_1 assms \<open>dpref Z (CH (fp_cop_F ds))\<close>] stable_on_CH
+  fix x assume "x \<in> Z" with assms show "x \<in> Ch (Xh x) (cop ds \<union> Z)"
+    using Lemma_1[OF Theorem_1 assms \<open>dpref Z (cop ds)\<close>] stable_on_CH
     by (fastforce simp: mem_CH_Ch)
 qed
 
@@ -1214,7 +1355,8 @@ satisfy @{const "unilateral_substitutes"} and @{const "lad"}, as for
 \S\ref{sec:contracts-rh}. However \citet[\S4,
 Example~1]{AygunSonmez:2012-WP} observe that @{thm [source]
 "lad_on_substitutes_on_irc_on"} does not hold with @{const
-"bilateral_substitutes"} instead of @{const "substitutes"}. Moreover
+"bilateral_substitutes"} instead of @{const "substitutes"}, and their
+Example~3 similarly for @{const "unilateral_substitutes"}. Moreover
 @{const "fp_cop_F"} can yield an unstable allocation with just these
 two hypotheses. Ergo we need to assume @{const "irc"} even when we
 have @{const "lad"}, unlike before (see \S\ref{sec:contracts-rh}).
@@ -1223,8 +1365,7 @@ This theorem is the foundation for all later strategic results.
 
 \<close>
 
-locale ContractsWithUnilateralSubstitutesAndIRCAndLAD = ContractsWithUnilateralSubstitutesAndIRC +
-  assumes Ch_lad: "\<forall>h. lad (Ch h)"
+locale ContractsWithUnilateralSubstitutesAndIRCAndLAD = ContractsWithUnilateralSubstitutesAndIRC + ContractsWithLAD
 
 sublocale ContractsWithSubstitutesAndLAD < ContractsWithUnilateralSubstitutesAndIRCAndLAD
 using %invisible Ch_lad by unfold_locales
@@ -1249,14 +1390,14 @@ definition of the function @{term "A"} as we did in
 
 lemma RHT_Cd_card:
   assumes "d \<in> ds"
-  shows "card (Cd d X) \<le> card (Cd d (CH (fp_cop_F ds)))"
+  shows "card (Cd d X) \<le> card (Cd d (cop ds))"
 proof %invisible (cases "d \<in> Xd ` X")
   case True
   then obtain x where "x \<in> X" "Xd x = d" by blast
   with \<open>stable_on ds X\<close> have "Cd d X = {x}"
     using Cd_singleton mem_CD_on_Cd stable_on_CD_on by blast
   moreover
-  from Theorem_5[OF \<open>stable_on ds X\<close> \<open>x \<in> X\<close>] obtain y where "Cd d (CH (fp_cop_F ds)) = {y}"
+  from Theorem_5[OF \<open>stable_on ds X\<close> \<open>x \<in> X\<close>] obtain y where "Cd d (cop ds) = {y}"
     using Cd_single Cd_singleton FieldI2 \<open>Xd x = d\<close> fp_cop_F_allocation by metis
   ultimately show ?thesis by simp
 next
@@ -1269,12 +1410,12 @@ qed
 lemma RHT_Ch_card:
   shows "card (Ch h (fp_cop_F ds)) \<le> card (Ch h X)"
 proof -
-  def A \<equiv> "\<lambda>X. {y |y. Xd y \<in> ds \<and> y \<in> Field (Pd (Xd y)) \<and> (\<forall>x \<in> X. Xd x = Xd y \<longrightarrow> (x, y) \<in> Pd (Xd x))}"
-  have "A (CH (fp_cop_F ds)) = fp_cop_F ds" (is "?lhs = ?rhs")
+  define A where "A \<equiv> \<lambda>X. {y |y. Xd y \<in> ds \<and> y \<in> Field (Pd (Xd y)) \<and> (\<forall>x \<in> X. Xd x = Xd y \<longrightarrow> (x, y) \<in> Pd (Xd x))}"
+  have "A (cop ds) = fp_cop_F ds" (is "?lhs = ?rhs")
   proof(rule set_elem_equalityI)
     fix x assume "x \<in> ?lhs"
     show "x \<in> ?rhs"
-    proof(cases "Xd x \<in> Xd ` CH (fp_cop_F ds)")
+    proof(cases "Xd x \<in> Xd ` cop ds")
       case True with \<open>x \<in> ?lhs\<close> show ?thesis
         unfolding A_def by clarsimp (metis CH_range' above_def fp_cop_F_closed_inv' mem_Collect_eq)
     next
@@ -1304,14 +1445,15 @@ proof -
       with Ch_singular Pd_linear show "x \<in> CD_on ds (X \<union> Ch h (A X))"
         unfolding A_def
         by (auto 9 3 simp: mem_CD_on_Cd Cd_greatest greatest_def
-                     dest: Ch_range' Pd_range' Cd_Xd Cd_single inj_onD underS_incl_iff)
+                     dest: Ch_range' Pd_range' Cd_Xd Cd_single inj_onD underS_incl_iff
+                    intro: FieldI1)
     qed
     with \<open>stable_on ds X\<close> show False by blast
   qed
   moreover
-  from Pd_linear Theorem_5[OF \<open>stable_on ds X\<close>] \<open>stable_on ds X\<close> have "A (CH (fp_cop_F ds)) \<subseteq> A X"
+  from Pd_linear Theorem_5[OF \<open>stable_on ds X\<close>] \<open>stable_on ds X\<close> have "A (cop ds) \<subseteq> A X"
     unfolding A_def order_on_defs by (fastforce dest: Pd_Xd elim: transE)
-  then have "card (Ch h (A (CH (fp_cop_F ds)))) \<le> card (Ch h (A X))"
+  then have "card (Ch h (A (cop ds))) \<le> card (Ch h (A X))"
     by (fastforce intro: ladD[OF spec[OF Ch_lad]])
   ultimately show ?thesis by (metis (no_types, lifting) Ch_CH_irc_idem)
 qed
@@ -1323,10 +1465,10 @@ The top-level proof is the same as in \S\ref{sec:contracts-rh}.
 \<close>
 
 lemma Theorem_6_fp_cop_F:
-  shows "d \<in> ds \<Longrightarrow> card (Cd d X) = card (Cd d (CH (fp_cop_F ds)))"
+  shows "d \<in> ds \<Longrightarrow> card (Cd d X) = card (Cd d (cop ds))"
     and "card (Ch h X) = card (Ch h (fp_cop_F ds))"
 proof -
-  let ?Sum_Cd_COP = "\<Sum>d\<in>ds. card (Cd d (CH (fp_cop_F ds)))"
+  let ?Sum_Cd_COP = "\<Sum>d\<in>ds. card (Cd d (cop ds))"
   let ?Sum_Ch_COP = "\<Sum>h\<in>UNIV. card (Ch h (fp_cop_F ds))"
   let ?Sum_Cd_X = "\<Sum>d\<in>ds. card (Cd d X)"
   let ?Sum_Ch_X = "\<Sum>h\<in>UNIV. card (Ch h X)"
@@ -1340,8 +1482,8 @@ proof -
     using \<open>stable_on ds X\<close> stable_on_CD_on stable_on_CH by auto
   finally have "?Sum_Cd_X = ?Sum_Cd_COP"
     using RHT_Cd_card by (simp add: eq_iff sum_mono)
-  with RHT_Cd_card show "d \<in> ds \<Longrightarrow> card (Cd d X) = card (Cd d (CH (fp_cop_F ds)))"
-    by (fastforce elim: setsum_mono_inv)
+  with RHT_Cd_card show "d \<in> ds \<Longrightarrow> card (Cd d X) = card (Cd d (cop ds))"
+    by (fastforce elim: sum_mono_inv)
 
   have "?Sum_Ch_X = ?Sum_Cd_X"
     using \<open>stable_on ds X\<close> stable_on_CD_on stable_on_CH CD_on_card[symmetric] CH_card[symmetric] by simp
@@ -1353,7 +1495,7 @@ proof -
   finally have "?Sum_Ch_COP = ?Sum_Ch_X"
     using RHT_Ch_card by (simp add: eq_iff sum_mono)
   with RHT_Ch_card show "card (Ch h X) = card (Ch h (fp_cop_F ds))"
-    by (fastforce elim: sym[OF setsum_mono_inv])
+    by (fastforce elim: sym[OF sum_mono_inv])
 qed
 
 end

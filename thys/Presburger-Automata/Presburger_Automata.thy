@@ -3389,11 +3389,11 @@ proof (induct ks xs rule: eval_dioph.induct)
   case (1 k ks x xs)
   have "eval_dioph (k # ks) (x # xs) mod int n =
     ((k * int x) mod int n + eval_dioph ks xs mod int n) mod int n"
-    by (simp add: mod_add_eq [symmetric])
+    by (simp add: mod_add_eq)
   also have "\<dots> = ((k * (int x mod int n)) mod int n +
     eval_dioph ks (map (\<lambda>x. x mod n) xs) mod int n) mod int n"
-    by (simp add: 1 mod_mult_right_eq [symmetric])
-  finally show ?case by (simp add: zmod_int mod_add_eq [symmetric])
+    by (simp add: 1 mod_mult_right_eq)
+  finally show ?case by (simp add: zmod_int mod_add_eq)
 qed simp_all
 
 lemma eval_dioph_div_mod:
@@ -3424,9 +3424,9 @@ next
     by simp
   then have "(l mod 2 - eval_dioph ks (map (\<lambda>x. x mod 2) xs) mod 2 mod 2) mod 2 =
     (l mod 2 - l mod 2 mod 2) mod 2"
-    by (simp only: mod_diff_eq [symmetric])
+    by (simp only: mod_diff_eq)
   then have eq1': "(l - eval_dioph ks (map (\<lambda>x. x mod 2) xs)) mod 2 = 0"
-    by (simp add: mod_diff_eq [symmetric])
+    by (simp add: mod_diff_eq)
   from eq2 have
     "eval_dioph ks (map (\<lambda>x. x div 2) xs) * 2 +
      (l - eval_dioph ks (map (\<lambda>x. x mod 2) xs)) mod 2 =

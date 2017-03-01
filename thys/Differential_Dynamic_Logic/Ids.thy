@@ -1,8 +1,10 @@
 theory "Ids"
 imports Complex_Main
 begin
-(*Differential dynamic logic can be defined for any finite types, given a 
-  few elements of those types (so that we can generate axioms). *)
+section \<open>Identifier locale\<close>
+text \<open>The differential dynamic logic formalization is parameterized by the type of identifiers.
+  The identifier type(s) must be finite and have at least 3-4 distinct elements.
+  Distinctness is required for soundness of some axioms. \<close>
 locale ids =
   fixes vid1 :: "('sz::{finite,linorder})"
   fixes vid2 :: 'sz

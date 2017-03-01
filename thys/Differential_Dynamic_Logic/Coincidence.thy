@@ -8,7 +8,7 @@ imports
   "./Frechet_Correctness"
   "./Static_Semantics"
 begin
-section \<open>Coincidence and ODE semantics\<close>
+section \<open>Coincidence Theorems and Corollaries\<close>
 text \<open>This section proves coincidence: semantics of terms, odes, formulas and programs depend only
   on the free variables. This is one of the major lemmas for the correctness of uniform substitutions.
   Along the way, we also prove the equivalence between two similar, but different semantics for ODE programs:
@@ -27,6 +27,7 @@ text \<open>This section proves coincidence: semantics of terms, odes, formulas 
   \<close>
 
 context ids begin
+subsection \<open>Term Coincidence Theorems\<close>
 lemma coincidence_sterm:"Vagree \<nu> \<nu>' (FVT \<theta>) \<Longrightarrow> sterm_sem I  \<theta> (fst \<nu>) = sterm_sem I \<theta> (fst \<nu>')"
   apply(induct "\<theta>") (* 7 subgoals *)
   apply(auto simp add: Vagree_def)
@@ -335,6 +336,7 @@ next
     using IH1[OF VA1 IA1] IH2[OF VA2 IA2] by auto  
 qed (auto simp: Vagree_def directional_derivative_def coincidence_frechet')
 
+subsection \<open>ODE Coincidence Theorems\<close>
 lemma coincidence_ode:
   fixes I J :: "('a::finite, 'b::finite, 'c::finite) interp" and \<nu> :: "'c::finite state" and \<nu>'::"'c::finite state"
   shows "osafe ODE \<Longrightarrow> 
@@ -468,6 +470,7 @@ where "coincide_fml \<phi> \<longleftrightarrow> (\<forall> \<nu> \<nu>' I J . I
 lemma coinc_fml [simp]: "coincide_fml \<phi>  = (\<forall> \<nu> \<nu>' I J. Iagree I J (SIGF \<phi>) \<longrightarrow> Vagree \<nu> \<nu>' (FVF \<phi>) \<longrightarrow> \<nu> \<in> fml_sem I \<phi> \<longleftrightarrow> \<nu>' \<in> fml_sem J \<phi>)"
   unfolding coincide_fml_def by auto
 
+subsection \<open>Coincidence Theorems for Programs and Formulas\<close>
 lemma coincidence_hp_fml:
   fixes \<alpha>::"('a::finite, 'b::finite, 'c::finite) hp"
   fixes \<phi>::"('a::finite, 'b::finite, 'c::finite) formula"
@@ -1443,7 +1446,9 @@ proof -
   then show "(\<exists>\<mu>'. (\<nu>', \<mu>') \<in> prog_sem J \<alpha> \<and> Vagree \<mu> \<mu>' (MBV \<alpha> \<union> V))"
     using IA VA sub sem by auto
 qed
-    
+
+subsection \<open>Corollaries: Alternate ODE semantics definition\<close>
+
 lemma ode_sem_eq:
   fixes I::"('a::finite,'b::finite,'c::finite) interp" and ODE::"('a,'c) ODE" and \<phi>::"('a,'b,'c) formula"
   assumes osafe:"osafe ODE"

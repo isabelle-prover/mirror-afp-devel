@@ -54,7 +54,7 @@ Isabelle (version 3.6) mentions:
    of their own. No starting spaces, nothing after it."
 In particular, it is not advised to put these tags in a single line:
 \isatagafp ... \endisatagafp % wrong
-otherwise as side effects some parts occuring after these tags may be
+otherwise as side effects some parts occurring after these tags may be
 skipped. The recommanded solution is to always write each tag in a
 separate line:
 \isatagafp

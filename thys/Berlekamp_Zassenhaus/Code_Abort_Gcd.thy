@@ -17,8 +17,6 @@ definition "dummy_Lcm x = (Code.abort (STR ''Lcm on int'') (\<lambda> _. Lcm (x 
 lemma [code]: "Gcd = dummy_Gcd" unfolding dummy_Gcd_def by simp
 lemma [code]: "Lcm = dummy_Lcm" unfolding dummy_Lcm_def by simp 
 
-declare [[code abort: Gcd_eucl Lcm_eucl]]
+declare [[code abort: Euclidean_Algorithm.Gcd Euclidean_Algorithm.Lcm]]
 
 end
-
-

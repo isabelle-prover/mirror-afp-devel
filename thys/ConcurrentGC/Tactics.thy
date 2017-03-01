@@ -193,7 +193,7 @@ schematic_goal system_responds_action_specE:
 lemmas loc_simps =
   bex_simps
   append.simps list.simps rev.simps (* evaluate string equality *)
-  Char_eq_Char_iff cut_eq_simps (* evaluate character equality *)
+  Char_eq_Char_iff cong_exp_iff_simps (* evaluate character equality *)
   prefix_code suffix_to_prefix
   mem_Collect_eq Un_iff UNION_eq Compl_iff insertI1 insertI2 singleton_iff Diff_iff UNIV_I
   if_True if_False

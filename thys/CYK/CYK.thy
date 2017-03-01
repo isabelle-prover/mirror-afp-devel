@@ -925,7 +925,7 @@ text "Representing the empty table."
 definition "emptyT = (\<lambda>(i, j). [])" 
 
 text "The following function initialises the empty table for subwords of
-      length $1$, i.e. each symbol occuring in the given word."
+      length $1$, i.e. each symbol occurring in the given word."
 fun init' :: "('n, 't) CNG \<Rightarrow> 't list \<Rightarrow> nat \<Rightarrow> nat \<times> nat \<Rightarrow> 'n list"
 where "init' G [] k = emptyT" |
       "init' G (t#ts) k = (init' G ts (k + 1))((k, 1) := init_match G t)" 

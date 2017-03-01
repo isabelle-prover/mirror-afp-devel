@@ -41,7 +41,7 @@ proof -
     with deg have "degree F = 0" by auto
     from degree0_coeffs[OF this] obtain c where F: "F = [:c:]" and c: "c = lead_coeff F" by auto
     from c * have c0: "c > 0" by auto
-    hence cF: "content F = c" unfolding F content_def list_gcd_def by auto
+    hence cF: "content F = c" unfolding F content_def by auto
     with * have "c = 1" by auto
     with F have "F = 1" by (simp add: one_poly_def)
   }
@@ -63,7 +63,7 @@ proof -
 qed
 
 lemma yun_rel_1[simp]: "yun_rel 1 1 1" 
-  by (auto simp: yun_rel_def yun_wrel_def content_def list_gcd_def)
+  by (auto simp: yun_rel_def yun_wrel_def content_def)
 
 lemma yun_erel_1[simp]: "yun_erel 1 1" unfolding yun_erel_def using yun_rel_1 by blast
 
@@ -98,7 +98,7 @@ proof -
   from assms have "normalize c = 1"
     by (meson dvd_field_iff is_unit_normalize)
   then show ?thesis
-    by (metis (no_types) Polynomial_Factorial.normalize_smult gcd.commute gcd.left_commute gcd_left_idem gcd_self smult_1_left)
+    by (metis (no_types) Polynomial.normalize_smult gcd.commute gcd.left_commute gcd_left_idem gcd_self smult_1_left)
 qed
 
 lemma gcd_smult_right: "c \<noteq> 0 \<Longrightarrow> gcd f (smult c g) = gcd f (g :: 'b :: {field, factorial_ring_gcd} poly)"
@@ -145,8 +145,7 @@ next
   next
     case 4
     show ?case unfolding normalize_poly_def 
-      by (rule poly_eqI, simp, subst Polynomial_Factorial.coeff_map_poly, force, insert gcd0,
-        simp add: lead_coeff_def field_simps)
+      by (rule poly_eqI) (simp add: one_poly_def [symmetric])
   qed
 qed
 
@@ -226,9 +225,9 @@ proof (intro conjI)
   hence "H \<noteq> 0" "lc \<noteq> 0" unfolding H[symmetric] lc[symmetric] by auto
   thus "0 < lead_coeff (gcd F G)" unfolding 
     arg_cong[OF normalize_gcd[of F G], of lead_coeff, symmetric]
-    unfolding normalize_poly_def H lead_coeff_def
-    by (auto, subst Polynomial_Factorial.coeff_map_poly, auto, 
-    subst Polynomial_Factorial.degree_map_poly, auto simp: sgn_if)
+    unfolding normalize_poly_eq_map_poly H
+    by (auto, subst Polynomial.coeff_map_poly, auto, 
+    subst Polynomial.degree_map_poly, auto simp: sgn_if)
   have "H dvd F" unfolding H[symmetric] by auto
   then obtain K where F: "F = H * K" unfolding dvd_def by auto
   from arg_cong[OF this, of content, unfolded gauss_lemma ff(8)]
@@ -346,7 +345,7 @@ proof -
   from map_poly_inj[OF this] have fg: "[:b:] * f = [:a:] * g" by auto
   from arg_cong[OF this, of content, unfolded gauss_lemma f(8) g(8)] 
   have "content [: b :] = content [: a :]" by simp
-  hence abs: "abs a = abs b" unfolding content_def list_gcd_def using b a by auto
+  hence abs: "abs a = abs b" unfolding content_def using b a by auto
   from arg_cong[OF fg, of "\<lambda> x. lead_coeff x > 0", unfolded lead_coeff_mult] f(5) g(5) a b 
   have "(a > 0) = (b > 0)" by (simp add: zero_less_mult_iff)
   with a b abs have "a = b" by auto
@@ -374,7 +373,7 @@ proof (cases "square_free_heuristic f")
   let ?rp = "map_poly ?r" 
   define G where "G = smult (inverse (lead_coeff (?rp f))) (?rp f)" 
   have "?rp f \<noteq> 0" using f0 by auto
-  hence mon: "monic G" unfolding G_def coeff_smult lead_coeff_def by simp    
+  hence mon: "monic G" unfolding G_def coeff_smult by simp    
   obtain Fs where Fs: "yun_gcd.yun_monic_factorization gcd G = Fs" by blast
   from lc have lg: "lead_coeff (?rp f) \<noteq> 0" by auto
   let ?c = "lead_coeff (?rp f)" 
@@ -429,7 +428,7 @@ proof (cases "square_free_heuristic f")
       from rel(2)[unfolded cop] have "?rp (gcd a A) = [: c :]" by simp
       from arg_cong[OF this, of degree] have "degree (gcd a A) = 0" by simp
       from degree0_coeffs[OF this] obtain c where gcd: "gcd a A = [: c :]" by auto        
-      from rel(8) rel(5) show "coprime a A" unfolding content_def gcd list_gcd_def
+      from rel(8) rel(5) show "coprime a A" unfolding content_def gcd
         by auto
     }
     let ?prod = "\<lambda> fs. (\<Prod>(a, i)\<in>set fs. a ^ Suc i)" 
@@ -492,7 +491,7 @@ proof -
     let ?d = "?s * content f"
     have "content g = content ([:?s:] * f)" unfolding g_def by simp
     also have "\<dots> = content [:?s:] * content f" unfolding gauss_lemma by simp
-    also have "content [:?s:] = 1" using s by (auto simp: content_def list_gcd_def)
+    also have "content [:?s:] = 1" using s by (auto simp: content_def)
     finally have cg: "content g = content f" by simp
     from False res 
     have d: "d = ?d" and fs: "fs = square_free_factorization_int_main (div_poly ?d f)" by auto
@@ -512,7 +511,8 @@ proof -
       lg content_ge_0_int[of g] have lg': "lead_coeff ng > 0" unfolding ng_def 
       by (metis \<open>content g \<noteq> 0\<close> dual_order.antisym dual_order.strict_implies_order zero_less_mult_iff)
     from content_normalize_content_1[OF g0] have c_ng: "content ng = 1" unfolding ng_def .
-    have "degree ng = degree f" using \<open>content [:sgn (lead_coeff f):] = 1\<close> g_def ng_def by auto
+    have "degree ng = degree f" using \<open>content [:sgn (lead_coeff f):] = 1\<close> g_def ng_def
+      by (auto simp add: sgn_eq_0_iff)
     with False have "degree ng \<noteq> 0" by auto
     note main = square_free_factorization_int_main[OF fs c_ng lg' this] 
     show ?thesis
@@ -521,7 +521,8 @@ proof -
         assume "(fi, i) \<in> set fs" 
         with main show "content fi = 1" "0 < lead_coeff fi" by auto
       }
-      have d0: "d \<noteq> 0" using \<open>content [:?s:] = 1\<close> d by auto
+      have d0: "d \<noteq> 0" using \<open>content [:?s:] = 1\<close> d
+        by (auto simp add: sgn_eq_0_iff)
       have "smult d ng = smult ?s (smult (content g) (normalize_content g))" 
         unfolding ng_def d cg by simp
       also have "smult (content g) (normalize_content g) = g" using smult_normalize_content .
@@ -606,7 +607,8 @@ proof -
   note sff = square_free_factorization_int'(1-2)[OF sf]
   note xs = x_split[OF xs]
   let ?x = "monom 1 1 :: int poly" 
-  have x: "content ?x = 1 \<and> lead_coeff ?x = 1 \<and> degree ?x = 1" by code_simp
+  have x: "content ?x = 1 \<and> lead_coeff ?x = 1 \<and> degree ?x = 1"
+    by (auto simp add: degree_monom_eq content_def monom_Suc)
   thus "(fi, i) \<in> set fs \<Longrightarrow> content fi = 1 \<and> lead_coeff fi > 0" using sff(2) unfolding fs
     by (cases n, auto)
   show "square_free_factorization f (d,fs)" 
@@ -642,7 +644,7 @@ proof -
           case False
           with divides_degree[OF d(1), unfolded degx] have "degree d = 0" by auto
           from degree0_coeffs[OF this] obtain c where dc: "d = [:c:]" by auto
-          from cnt[unfolded dc] have "is_unit c" by (auto simp: content_def list_gcd_def, cases "c = 0", auto)
+          from cnt[unfolded dc] have "is_unit c" by (auto simp: content_def, cases "c = 0", auto)
           hence "d * d = 1" unfolding dc by (auto simp: one_poly_def, cases "c = -1"; cases "c = 1", auto)
           thus "is_unit d" by (metis dvd_triv_right)
         next
@@ -654,7 +656,7 @@ proof -
           from degree0_coeffs[OF this] xde obtain e where xde: "?x = [:e:] * d" by auto
           from arg_cong[OF this, of content, unfolded gauss_lemma] x
           have "content [:e:] * content d = 1" by auto
-          also have "content [:e :] = abs e" by (auto simp: content_def list_gcd_def, cases "e = 0", auto)
+          also have "content [:e :] = abs e" by (auto simp: content_def, cases "e = 0", auto)
           finally have "\<bar>e\<bar> * content d = 1" .
           from pos_zmult_eq_1_iff_lemma[OF this] have "e * e = 1" by (cases "e = 1"; cases "e = -1", auto)
           with arg_cong[OF xde, of "smult e"] have "d = ?x * [:e:]" by auto

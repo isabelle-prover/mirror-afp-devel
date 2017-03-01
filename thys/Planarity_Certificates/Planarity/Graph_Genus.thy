@@ -12,7 +12,7 @@ proof -
   from assms have b_mod: "b mod c \<le> a"
     by (metis mod_less_eq_dividend linear not_le order_trans)
   have "int ((a - b) mod c) = (int a - int b mod int c) mod int c"
-    using assms by (simp add: zmod_int of_nat_diff zdiff_zmod_right)
+    using assms by (simp add: zmod_int of_nat_diff mod_simps)
   also have "\<dots> = int ((a - b mod c) mod c)"
     using assms b_mod
     by (simp add: zmod_int [symmetric] of_nat_diff [symmetric])

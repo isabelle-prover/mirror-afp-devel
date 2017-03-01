@@ -18,6 +18,10 @@ where
   "pred 0 = 0"
 | "pred (Suc a) = a"
 
+lemma pred_unfold:
+  "pred n = n - 1"
+  by (induct n) simp_all
+  
 lemma fermat:
   assumes "prime p" "m mod p \<noteq> 0" shows "m^(p-(1::nat)) mod p = 1"
 using fermat_theorem_nat [of p m] assms
@@ -29,8 +33,9 @@ lemma cryptinverts_hilf1: "prime p \<Longrightarrow> (m * m ^(k * pred p)) mod p
   apply (simp only: mult.commute [of k "pred p"]
     power_mult mod_mult_right_eq [of "m" "(m^pred p)^k" "p"]
     remainderexp [of "m^pred p" "p" "k", symmetric])
-  apply (insert fermat [of p m], auto)
-  by (metis Cryptinverts.pred.simps(2) One_nat_def Suc_lessD Suc_pred mod_mult_right_eq monoid_mult_class.mult.right_neutral power_Suc_0 prime_gt_1_nat)
+   apply (insert fermat [of p m], auto)
+  apply (simp add: mult.commute [of k] power_mult pred_unfold)
+  by (metis One_nat_def mod_mult_right_eq mult.right_neutral power_Suc_0 power_mod)
 
 lemma cryptinverts_hilf2: "prime p \<Longrightarrow> m*(m^(k * (pred p) * (pred q))) mod p = m mod p"
   apply (simp add: mult.commute [of "k * pred p" "pred q"] mult.assoc [symmetric])

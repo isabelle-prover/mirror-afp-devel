@@ -21,27 +21,24 @@ lemmas SeqSkipRule = SeqSkip
 lemmas SeqThrowRule = SeqThrow
 lemmas SeqBasicRule = SeqBasic
 lemmas SeqSpecRule = SeqSpec
-
-lemma SeqSeqRule:
- "\<lbrakk> \<Gamma>, \<Theta> \<tturnstile>\<^bsub>/F\<^esub> R P\<^sub>2 c\<^sub>2 Q,A ; \<Gamma>, \<Theta> \<tturnstile>\<^bsub>/F\<^esub> P P\<^sub>1 c\<^sub>1 R,A ;  P' \<subseteq> P\<rbrakk>
-         \<Longrightarrow> \<Gamma>, \<Theta> \<tturnstile>\<^bsub>/F\<^esub> P' (AnnComp P\<^sub>1 P\<^sub>2) (Seq c\<^sub>1 c\<^sub>2) Q,A"
-  apply (erule SeqSeq)
-  apply (erule (1) SeqConseq)
-   apply simp+
- done
+lemmas SeqSeqRule = SeqSeq
 
 lemma SeqCondRule: 
  "\<lbrakk>  \<Gamma>, \<Theta> \<tturnstile>\<^bsub>/F\<^esub> C1 P\<^sub>1 c\<^sub>1 Q,A;
-    (P \<inter> b) \<subseteq> C1;
-    \<Gamma>, \<Theta> \<tturnstile>\<^bsub>/F\<^esub> C2 P\<^sub>2 c\<^sub>2 Q,A;
-    (P \<inter> -b) \<subseteq> C2\<rbrakk>
-   \<Longrightarrow> \<Gamma>, \<Theta> \<tturnstile>\<^bsub>/F\<^esub> P (AnnBin r P\<^sub>1 P\<^sub>2) (Cond b c\<^sub>1 c\<^sub>2) Q,A"
-  by (simp add: SeqCond SeqConseq)
+    \<Gamma>, \<Theta> \<tturnstile>\<^bsub>/F\<^esub> C2 P\<^sub>2 c\<^sub>2 Q,A \<rbrakk>
+   \<Longrightarrow> \<Gamma>, \<Theta> \<tturnstile>\<^bsub>/F\<^esub> {s. (s\<in>b \<longrightarrow> s\<in>C1) \<and> (s\<notin>b \<longrightarrow> s\<in>C2)} (AnnBin r P\<^sub>1 P\<^sub>2)
+                   (Cond b c\<^sub>1 c\<^sub>2) Q,A"
+  apply (rule SeqCond)
+   apply (erule SeqConseq[rotated]; clarsimp)
+  apply (erule SeqConseq[rotated]; clarsimp)
+  done
 
 lemma SeqWhileRule:
-  "\<lbrakk> \<Gamma>, \<Theta> \<tturnstile>\<^bsub>/F\<^esub> P' a c P,A; P \<inter> b \<subseteq> P' \<rbrakk>
-   \<Longrightarrow> \<Gamma>, \<Theta> \<tturnstile>\<^bsub>/F\<^esub> P (AnnWhile r i a) (While b c) (P \<inter> -b),A"
-  by (simp add: SeqWhile SeqConseq)
+  "\<lbrakk> \<Gamma>, \<Theta> \<tturnstile>\<^bsub>/F\<^esub> (i \<inter> b) a c i,A; i \<inter> - b \<subseteq> Q \<rbrakk>
+   \<Longrightarrow> \<Gamma>, \<Theta> \<tturnstile>\<^bsub>/F\<^esub> i (AnnWhile r i a) (While b c) Q,A"
+  apply (rule SeqConseq[OF _ SeqWhile])
+     prefer 2 apply assumption
+    by simp+ 
 
 lemma DynComRule:
  "\<lbrakk> r \<subseteq> pre a;  \<And>s. s\<in>r \<Longrightarrow> \<Gamma>, \<Theta> \<turnstile>\<^bsub>/F\<^esub> a (c s) Q,A \<rbrakk> \<Longrightarrow> 
@@ -243,6 +240,31 @@ lemma Guard_inter_right:
      \<Longrightarrow> interfree_aux_right \<Gamma> \<Theta> F (q, Guard f g c, AnnRec r a)"
  by(auto simp: interfree_aux_right_def elim: atomicsR.cases)
 
+lemma Parallel_inter_right_empty:
+  "interfree_aux_right \<Gamma> \<Theta> F (q, Parallel [], AnnPar [])"
+ by(auto simp: interfree_aux_right_def elim: atomicsR.cases)
+
+lemma Parallel_inter_right_List:
+  "\<lbrakk>interfree_aux_right \<Gamma> \<Theta> F (q, c, a);
+    interfree_aux_right \<Gamma> \<Theta> F (q, Parallel cs, AnnPar as)\<rbrakk>
+     \<Longrightarrow> interfree_aux_right \<Gamma> \<Theta> F (q, Parallel (c#cs), AnnPar ((a, Q, A) #as))"
+  apply (clarsimp simp: interfree_aux_right_def)
+  apply (erule atomicsR.cases; clarsimp)
+  apply (rename_tac i aa b)
+  apply (case_tac i, simp)
+  apply (fastforce intro: AtParallelExprs)
+  done
+
+lemma Parallel_inter_right_Map:
+  "\<forall>k. i\<le>k \<and> k<j \<longrightarrow> interfree_aux_right \<Gamma> \<Theta> F (q, c k, a k)
+     \<Longrightarrow> interfree_aux_right \<Gamma> \<Theta> F
+                (q, Parallel (map c [i..<j]), AnnPar (map (\<lambda>i. (a i, Q, A)) [i..<j]))"
+  apply (clarsimp simp: interfree_aux_right_def)
+  apply (erule atomicsR.cases; clarsimp)
+  apply (rename_tac ia aa b)
+  apply (drule_tac x="i+ia" in spec)
+  by fastforce
+
 lemma Seq_inter_right: 
   "\<lbrakk> interfree_aux_right \<Gamma> \<Theta> F (q, c\<^sub>1, a1); interfree_aux_right \<Gamma> \<Theta> F (q, c\<^sub>2, a2) \<rbrakk>\<Longrightarrow> 
   interfree_aux_right \<Gamma> \<Theta> F (q, Seq c\<^sub>1 c\<^sub>2, AnnComp a1 a2)"
@@ -302,12 +324,12 @@ lemma Spec_inter_aux:
     interfree_aux \<Gamma> \<Theta> F (Spec rel, (AnnExpr r, q, a), com, ann)"
  by (auto elim: assertionsR.cases simp: interfree_aux_def interfree_aux_right_def)
 
-lemma Seq_inter_aux_any: 
+(*lemma Seq_inter_aux_any: 
   "\<lbrakk> interfree_aux \<Gamma> \<Theta> F (Any, (AnyAnn, q, a), c\<^sub>1, a1);
     interfree_aux \<Gamma> \<Theta> F (Any, (AnyAnn, q, a), c\<^sub>2, a2) \<rbrakk>\<Longrightarrow> 
   interfree_aux \<Gamma> \<Theta> F (Any, (AnyAnn, q, a), Seq c\<^sub>1 c\<^sub>2, AnnComp a1 a2)"
  by (fastforce simp add:  interfree_aux_def interfree_aux_right_def
-               elim: atomicsR.cases[where ?a1.0="AnnComp _ _"])
+               elim: atomicsR.cases[where ?a1.0="AnnComp _ _"])*)
 
 lemma Seq_inter_aux:
   "\<lbrakk> interfree_aux \<Gamma> \<Theta> F (c\<^sub>1, (r\<^sub>1, pre r\<^sub>2, A), com, ann);
@@ -365,6 +387,39 @@ lemma Guard_inter_aux:
      interfree_aux \<Gamma> \<Theta> F (c, (P, Q, A), com, ann) \<rbrakk> \<Longrightarrow>
      interfree_aux \<Gamma> \<Theta> F (Guard f g c, (AnnRec r P, Q, A), com, ann)"
 by (auto elim: assertionsR.cases simp: interfree_aux_def interfree_aux_right_def)
+
+definition
+  inter_aux_Par :: "('s,'p,'f) body \<Rightarrow> ('s,'p,'f) proc_assns \<Rightarrow> 'f set \<Rightarrow>
+                    (('s, 'p, 'f) com list \<times> (('s, 'p, 'f) ann_triple) list \<times> ('s, 'p, 'f) com \<times> ('s, 'p, 'f) ann) \<Rightarrow> bool" where
+  "inter_aux_Par \<Gamma> \<Theta> F \<equiv>
+     \<lambda>(cs, as, c, a). \<forall>i < length cs. interfree_aux \<Gamma> \<Theta> F (cs ! i, as ! i, c, a)"
+
+lemma inter_aux_Par_Empty: "inter_aux_Par \<Gamma> \<Theta> F ([], [], c, a)"
+by(simp add:inter_aux_Par_def)
+
+lemma inter_aux_Par_List:
+  "\<lbrakk> interfree_aux \<Gamma> \<Theta> F (x, a, y, a');
+  inter_aux_Par \<Gamma> \<Theta> F (xs, as, y, a')\<rbrakk> 
+  \<Longrightarrow> inter_aux_Par \<Gamma> \<Theta> F (x#xs, a#as, y, a')"
+  apply (simp add: inter_aux_Par_def)
+  apply (rule allI)
+  apply (rename_tac v)
+  apply (case_tac v)
+    apply simp_all
+  done
+
+lemma inter_aux_Par_Map: "\<forall>k. i\<le>k \<and> k<j \<longrightarrow> interfree_aux \<Gamma> \<Theta> F (c k, Q k, x, a)
+ \<Longrightarrow> inter_aux_Par \<Gamma> \<Theta> F (map c [i..<j], map Q [i..<j], x, a)"
+  by(force simp add: inter_aux_Par_def less_diff_conv)
+
+lemma Parallel_inter_aux:
+  "\<lbrakk> interfree_aux_right \<Gamma> \<Theta> F (Q, com, ann);
+     interfree_aux_right \<Gamma> \<Theta> F (A, com, ann);
+     interfree_aux_right \<Gamma> \<Theta> F (\<Inter> set (map postcond as), com, ann);
+     inter_aux_Par \<Gamma> \<Theta> F (cs, as, com, ann) \<rbrakk> \<Longrightarrow>
+     interfree_aux \<Gamma> \<Theta> F (Parallel cs, (AnnPar as, Q, A), com, ann)"
+  apply (clarsimp simp: interfree_aux_def interfree_aux_right_def inter_aux_Par_def)
+  by (erule assertionsR.cases; fastforce)
 
 definition interfree_swap :: "('s,'p,'f) body \<Rightarrow> ('s,'p,'f) proc_assns \<Rightarrow> 'f set \<Rightarrow> (('s, 'p, 'f) com \<times> (('s, 'p, 'f) ann \<times> 's assn \<times> 's assn) \<times> ('s, 'p, 'f) com list \<times> (('s, 'p, 'f) ann \<times> 's assn \<times> 's assn) list) \<Rightarrow> bool" where
   "interfree_swap \<Gamma> \<Theta> F \<equiv> \<lambda>(x, a, xs, as). \<forall>y < length xs. interfree_aux \<Gamma> \<Theta> F (x, a, xs ! y, pres (as ! y))
@@ -495,7 +550,7 @@ fun trace str = if enable_trace then tracing str else ();
 fun HoareRuleTac (ctxt' as (ctxt,args)) i st =
   (Cache_Tactics.SUBGOAL_CACHE (nth args 0)
   (fn (_,i) => (SUBGOAL (fn (_,i) =>
-    (EVERY[rts ctxt @{thms Seq Catch SeqSeq SeqCatch SeqSeqRule} i,
+    (EVERY[rts ctxt @{thms Seq Catch SeqSeq SeqCatch} i,
         HoareRuleTac ctxt' (i+1),
         HoareRuleTac ctxt' i]
     ORELSE
@@ -513,7 +568,7 @@ fun HoareRuleTac (ctxt' as (ctxt,args)) i st =
                HoareRuleTac ctxt' (i+2),
                HoareRuleTac ctxt' (i+1)],
          EVERY[rt ctxt @{thm SeqCondRule} i,
-               HoareRuleTac ctxt' (i+2),
+               HoareRuleTac ctxt' (i+1),
                HoareRuleTac ctxt' i],
          EVERY[rt ctxt  (@{thm WhileRule}) i,
                HoareRuleTac ctxt' (i+3)],
@@ -575,6 +630,15 @@ and interfree_swap_Tac (ctxt' as (ctxt,args)) i st = st |>
                  rt ctxt (@{thm allI}) i, rt ctxt (@{thm impI}) i,
                  conjI_Tac ctxt (interfree_aux_Tac ctxt') i]])
 
+and inter_aux_Par_Tac (ctxt' as (ctxt,args)) i st = st |>
+    (FIRST[rt ctxt (@{thm inter_aux_Par_Empty}) i,
+           EVERY[rt ctxt (@{thm inter_aux_Par_List}) i,
+                 inter_aux_Par_Tac ctxt' (i+1),
+                 interfree_aux_Tac ctxt' i ],
+           EVERY[rt ctxt (@{thm inter_aux_Par_Map}) i,
+                 rt ctxt (@{thm allI}) i, rt ctxt (@{thm impI}) i,
+                 interfree_aux_Tac ctxt' i]])
+
 and interfree_aux_Tac ctxt' i = dest_inter_aux_Tac ctxt' i
 
 and dest_inter_aux_Tac (ctxt' as (ctxt,args)) i st =
@@ -613,6 +677,11 @@ and dest_inter_aux_Tac (ctxt' as (ctxt,args)) i st =
                  dest_inter_aux_Tac ctxt' (i+2),
                  dest_inter_right_Tac ctxt' (i+1),
                  dest_inter_right_Tac ctxt' i],
+           EVERY[rt ctxt (@{thm Parallel_inter_aux}) i,
+                 inter_aux_Par_Tac ctxt' (i+3),
+                 dest_inter_right_Tac ctxt' (i+2),
+                 dest_inter_right_Tac ctxt' (i+1),
+                 dest_inter_right_Tac ctxt' i],
            dest_inter_right_Tac ctxt' i]))
          THEN_ALL_NEW hyp_tac) i)) i st
 
@@ -631,7 +700,6 @@ and dest_inter_right_Tac (ctxt' as (ctxt,args)) i st =
            EVERY[rt ctxt (@{thm While_inter_right}) i,
                  dest_inter_right_Tac ctxt' i],
            EVERY[rt ctxt (@{thm Await_inter_right}) i,
-                 ParallelConseq ctxt (i+1),
                  HoareRuleTac ctxt' (i+1),
                  simp ctxt (@{thms atom_com.simps}) i],
            EVERY[rt ctxt (@{thm Call_inter_right}) i,
@@ -641,6 +709,13 @@ and dest_inter_right_Tac (ctxt' as (ctxt,args)) i st =
                    dest_inter_right_Tac ctxt' i],
            EVERY[rt ctxt (@{thm Guard_inter_right}) i,
                    dest_inter_right_Tac ctxt' i],
+           rt ctxt (@{thm Parallel_inter_right_empty}) i,
+           EVERY[rt ctxt (@{thm Parallel_inter_right_List}) i,
+                 dest_inter_right_Tac ctxt' (i+1),
+                 dest_inter_right_Tac ctxt' i],
+           EVERY[rt ctxt (@{thm Parallel_inter_right_Map}) i,
+                 rt ctxt (@{thm allI}) i, rt ctxt (@{thm impI}) i,
+                 dest_inter_right_Tac ctxt' i],
            K all_tac i])) i st
 *}
 

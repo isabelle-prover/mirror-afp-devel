@@ -96,7 +96,7 @@ proof -
 
   def \<epsilon> \<equiv> "Min (insert 1 ?A) / 2"
   from finite have "Min (insert 1 ?A) > 0"
-    by (intro Min_grI) (auto intro!: divide_pos_pos simp: utility_less)
+    by (auto intro!: divide_pos_pos simp: utility_less)
   hence \<epsilon>: "\<epsilon> > 0" unfolding \<epsilon>_def by simp
 
   have mono: "u x + \<epsilon> * f x < u y + \<epsilon> * f y" if xy: "x \<prec>[le] y" for x y

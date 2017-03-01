@@ -16,7 +16,15 @@ imports
   "./Pretty_Printer"
   
 begin context ids begin
-    
+section \<open>Proof Checker\<close>
+text \<open>This proof checker defines a datatype for proof terms in dL and a function for checking proof
+ terms, with a soundness proof that any proof accepted by the checker is a proof of a sound rule or
+ valid formula.
+
+ A simple concrete hybrid system and a differential invariant rule for conjunctions are provided
+ as example proofs.
+\<close>
+  
 lemma sound_weaken_gen:"\<And>A B C. sublist A B \<Longrightarrow> sound (A, C) \<Longrightarrow> sound (B,C)"
 proof (rule soundI_mem)
   fix A B::"('sf,'sc,'sz) sequent list" 
@@ -71,6 +79,8 @@ where "start_proof S = ([S], S)"
 lemma start_proof_sound:"sound (start_proof S)"
   unfolding sound_def by auto
   
+section \<open>Proof Checker Implementation\<close>
+
 datatype axiom =
   AloopIter | AI | Atest | Abox | Achoice | AK | AV | Aassign | Adassign
 | AdConst | AdPlus | AdMult
@@ -385,6 +395,8 @@ where
   Proof_ok:"deriv_ok (start_proof D) S \<Longrightarrow> proof_ok (D,S)"
 
 inductive_simps Proof_ok_simps[prover]: "proof_ok (D,S)"
+
+subsection \<open>Soundness\<close>
 
 named_theorems member_intros "Prove that stuff is in lists"
 
@@ -1426,7 +1438,8 @@ lemma proof_sound:"proof_ok Pf \<Longrightarrow> sound (proof_result Pf)"
   apply assumption
   by(rule start_proof_sound)
   
-(* DI Example *)  
+section \<open>Example 1: Differential Invariants\<close>
+
 definition DIAndConcl::"('sf,'sc,'sz) sequent"
 where "DIAndConcl = ([], [Implies (And (Predicational pid1) (Predicational pid2)) 
        (Implies ([[Pvar vid1]](And (Predicational pid3) (Predicational pid4))) 
@@ -1605,6 +1618,8 @@ lemma DIAndSound_lemma:"sound (proof_result (proof_take 61 DIAndProof))"
   apply (auto simp add: prover)
   done
   
+section \<open>Example 2: Concrete Hybrid System\<close>
+
 (* v \<ge> 0 \<and> A() \<ge> 0 \<longrightarrow> [v' = A, x' = v]v' \<ge> 0*)
 definition SystemConcl::"('sf,'sc,'sz) sequent"
 where "SystemConcl = 

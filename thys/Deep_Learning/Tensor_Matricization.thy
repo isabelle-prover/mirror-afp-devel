@@ -42,27 +42,27 @@ next
   case (Cons "is" ds i d)
   have "(i + d * digit_decode ds is) div (d * prod_list ds) = 0"
     using Cons.IH Cons.hyps(2) Divides.div_mult2_eq by force
-  then show ?case unfolding digit_decode.simps prod_list.Cons 
+  then show ?case unfolding digit_decode.simps prod_list.Cons
     by (metis (no_types) Cons.IH Cons.hyps(2) div_eq_0_iff mult_eq_0_iff not_less0)
 qed
 
 lemma digit_encode_valid_index:
 assumes "a < prod_list ds"
 shows "digit_encode ds a \<lhd> ds"
-using assms proof (induction ds arbitrary:a) 
+using assms proof (induction ds arbitrary:a)
   case Nil
   show ?case by (simp add: valid_index.Nil)
 next
   case (Cons d ds a)
   then show ?case
     unfolding digit_encode.simps using Cons
-    by (metis Divides.div_mult2_eq div_eq_0_iff gr_implies_not0 prod_list.Cons mod_div_trivial 
+    by (metis Divides.div_mult2_eq div_eq_0_iff gr_implies_not0 prod_list.Cons mod_div_trivial
      mult_not_zero valid_index.Cons)
 qed
 
 lemma length_digit_encode:
 shows "length (digit_encode ds a) = length ds"
-  by (induction ds arbitrary:a; simp_all) 
+  by (induction ds arbitrary:a; simp_all)
 
 lemma digit_encode_0:
 "prod_list ds dvd a \<Longrightarrow> digit_encode ds a = replicate (length ds) 0"
@@ -71,9 +71,9 @@ proof (induction ds arbitrary:a)
   then show ?case by simp
 next
   case (Cons d ds a)
-  then have "prod_list ds dvd (a div d)" unfolding prod_list.Cons 
+  then have "prod_list ds dvd (a div d)" unfolding prod_list.Cons
     by (metis dvd_0_right dvd_div_iff_mult dvd_mult_left mult.commute split_div)
-  then show ?case unfolding digit_encode.simps length_Cons replicate_Suc prod_list.Cons using Cons 
+  then show ?case unfolding digit_encode.simps length_Cons replicate_Suc prod_list.Cons using Cons
     using dvd_imp_mod_0 dvd_mult_left prod_list.Cons by force
 qed
 
@@ -90,9 +90,9 @@ shows "weave A xs ys ! i = (if i\<in>A then xs!(card {a\<in>A. a<i}) else ys!(ca
 proof -
   have "i < length xs + length ys" using length_weave using assms by metis
   then have "i < length [0..<length xs + length ys]" by auto
-  then have "[0..<length xs + length ys] ! i = i" 
+  then have "[0..<length xs + length ys] ! i = i"
     by (metis \<open>i < length xs + length ys\<close> add.left_neutral nth_upt)
-  then show ?thesis      
+  then show ?thesis
     unfolding weave_def nth_map[OF `i < length [0..<length xs + length ys]`] by presburger
 qed
 
@@ -111,26 +111,26 @@ proof (rule nth_equalityI)
       case True
       then have "(weave A xs ys @ [x]) ! i = x" using length_weave by (metis nth_append_length)
       have "card {a \<in> A. a < i} = length xs" using assms(2) True by auto
-      then show ?thesis unfolding nth_weave[OF `i < length (weave A (xs @ [x]) ys)`] 
+      then show ?thesis unfolding nth_weave[OF `i < length (weave A (xs @ [x]) ys)`]
         `(weave A xs ys @ [x]) ! i = x` using True assms(1) by simp
     next
       case False
-      have "i < length (weave A xs ys)" using \<open>i < length (weave A (xs @ [x]) ys)\<close> 
-        \<open>length (weave A (xs @ [x]) ys) = length (weave A xs ys @ [x])\<close> length_append_singleton 
+      have "i < length (weave A xs ys)" using \<open>i < length (weave A (xs @ [x]) ys)\<close>
+        \<open>length (weave A (xs @ [x]) ys) = length (weave A xs ys @ [x])\<close> length_append_singleton
         length_weave less_antisym False by fastforce
       then have "(weave A xs ys @ [x]) ! i = (weave A xs ys) ! i" by (simp add: nth_append)
       {
-        assume "i\<in>A" 
+        assume "i\<in>A"
         have  "i<length xs + length ys" by (metis \<open>i < length (weave A xs ys)\<close> length_weave)
-        then have "{a \<in> A. a < i} \<subset> {a\<in>A. a < length xs + length ys}" 
+        then have "{a \<in> A. a < i} \<subset> {a\<in>A. a < length xs + length ys}"
           using assms(1) `i<length xs + length ys` `i\<in>A` by auto
         then have "card {a \<in> A. a < i} < card {a\<in>A. a < length xs + length ys}"
           using psubset_card_mono[of "{a\<in>A. a < length xs + length ys}" "{a \<in> A. a < i}"]  by simp
-        then have "(xs @ [x]) ! card {a \<in> A. a < i} = xs ! card {a \<in> A. a < i}" 
+        then have "(xs @ [x]) ! card {a \<in> A. a < i} = xs ! card {a \<in> A. a < i}"
         by (metis (no_types, lifting)  assms(2) nth_append)
       }
       then show ?thesis unfolding nth_weave[OF `i < length (weave A (xs @ [x]) ys)`]
-        `(weave A xs ys @ [x]) ! i = (weave A xs ys) ! i` nth_weave[OF `i < length (weave A xs ys)`] 
+        `(weave A xs ys @ [x]) ! i = (weave A xs ys) ! i` nth_weave[OF `i < length (weave A xs ys)`]
         by simp
     qed
   qed
@@ -151,36 +151,36 @@ proof (rule nth_equalityI)
       case True
       then have "(weave A xs ys @ [y]) ! i = y" using length_weave by (metis nth_append_length)
       have "card {a \<in> -A. a < i} = length ys" using assms(2) True by auto
-      then show ?thesis unfolding nth_weave[OF `i < length (weave A xs (ys @ [y]))`] 
+      then show ?thesis unfolding nth_weave[OF `i < length (weave A xs (ys @ [y]))`]
         `(weave A xs ys @ [y]) ! i = y` using True assms(1) by simp
     next
       case False
-      have "i < length (weave A xs ys)" using \<open>i < length (weave A xs (ys @ [y]))\<close> 
-        \<open>length (weave A xs (ys @ [y])) = length (weave A xs ys @ [y])\<close> length_append_singleton 
+      have "i < length (weave A xs ys)" using \<open>i < length (weave A xs (ys @ [y]))\<close>
+        \<open>length (weave A xs (ys @ [y])) = length (weave A xs ys @ [y])\<close> length_append_singleton
         length_weave less_antisym False by fastforce
       then have "(weave A xs ys @ [y]) ! i = (weave A xs ys) ! i" by (simp add: nth_append)
       {
-        assume "i\<notin>A" 
+        assume "i\<notin>A"
         have  "i<length xs + length ys" by (metis \<open>i < length (weave A xs ys)\<close> length_weave)
-        then have "{a \<in> -A. a < i} \<subset> {a\<in>-A. a < length xs + length ys}" 
+        then have "{a \<in> -A. a < i} \<subset> {a\<in>-A. a < length xs + length ys}"
           using assms(1) `i<length xs + length ys` `i\<notin>A` by auto
         then have "card {a \<in> -A. a < i} < card {a\<in>-A. a < length xs + length ys}"
           using psubset_card_mono[of "{a\<in>-A. a < length xs + length ys}" "{a \<in> -A. a < i}"]  by simp
-        then have "(ys @ [y]) ! card {a \<in> -A. a < i} = ys ! card {a \<in> -A. a < i}" 
+        then have "(ys @ [y]) ! card {a \<in> -A. a < i} = ys ! card {a \<in> -A. a < i}"
         by (metis (no_types, lifting)  assms(2) nth_append)
       }
       then show ?thesis unfolding nth_weave[OF `i < length (weave A xs (ys @ [y]))`]
-        `(weave A xs ys @ [y]) ! i = (weave A xs ys) ! i` nth_weave[OF `i < length (weave A xs ys)`] 
+        `(weave A xs ys @ [y]) ! i = (weave A xs ys) ! i` nth_weave[OF `i < length (weave A xs ys)`]
         by simp
     qed
   qed
 qed
 
 (* TODO: verschieben *)
-lemma valid_index_list_all2_iff: "is \<lhd> ds \<longleftrightarrow> list_all2 (op <) is ds" 
+lemma valid_index_list_all2_iff: "is \<lhd> ds \<longleftrightarrow> list_all2 (op <) is ds"
 by (metis list_all2_conv_all_nth list_all2_nthD valid_indexI valid_index_length valid_index_lt)
 
-lemma sublist_nth: 
+lemma sublist_nth:
 assumes "n\<in>A" "n<length xs"
 shows "sublist xs A ! (card {i. i<n \<and> i\<in>A}) = xs ! n"
 using assms proof (induction xs rule:rev_induct)
@@ -191,17 +191,17 @@ next
   then show ?case
   proof (cases "n = length xs")
     case True
-    then show ?thesis unfolding sublist_append[of xs "[x]" A] nth_append 
+    then show ?thesis unfolding sublist_append[of xs "[x]" A] nth_append
       using length_sublist[of xs A] sublist_singleton snoc.prems(1) by auto
   next
     case False
     then have "n < length xs" using snoc by auto
     then have 0:"sublist xs A ! card {i. i < n \<and> i \<in> A} = xs ! n" using snoc by auto
-    
+
     have "{i. i < n \<and> i \<in> A} \<subset> {i. i < length xs \<and> i \<in> A}" using `n < length xs` snoc by force
-    then have "card {i. i < n \<and> i \<in> A} < length (sublist xs A)" unfolding length_sublist 
+    then have "card {i. i < n \<and> i \<in> A} < length (sublist xs A)" unfolding length_sublist
       by (simp add: psubset_card_mono)
-    then show ?thesis unfolding sublist_append[of xs "[x]" A] nth_append using 0 
+    then show ?thesis unfolding sublist_append[of xs "[x]" A] nth_append using 0
       by (simp add: \<open>n < length xs\<close>)
   qed
 qed
@@ -217,16 +217,16 @@ proof -
     then show False
     proof (cases "length xs \<in> A")
       case False
-      have "{i. i < length xs \<and> i \<in> - A} \<subset> {i. i < length ys \<and> i \<in> - A}" 
+      have "{i. i < length xs \<and> i \<in> - A} \<subset> {i. i < length ys \<and> i \<in> - A}"
         using False `length xs < length ys` by force
-      then have "length (sublist ys (-A)) > length (sublist xs (-A))" 
+      then have "length (sublist ys (-A)) > length (sublist xs (-A))"
         unfolding length_sublist by (simp add: psubset_card_mono)
       then show False using assms(2) list_all2_lengthD not_less_iff_gr_or_eq by blast
     next
       case True
-      have "{i. i < length xs \<and> i \<in> A} \<subset> {i. i < length ys \<and> i \<in> A}" 
+      have "{i. i < length xs \<and> i \<in> A} \<subset> {i. i < length ys \<and> i \<in> A}"
         using True `length xs < length ys` by force
-      then have "length (sublist ys A) > length (sublist xs A)" 
+      then have "length (sublist ys A) > length (sublist xs A)"
         unfolding length_sublist by (simp add: psubset_card_mono)
       then show False using assms(1) list_all2_lengthD not_less_iff_gr_or_eq by blast
     qed
@@ -237,16 +237,16 @@ proof -
     then show False
     proof (cases "length ys \<in> A")
       case False
-      have "{i. i < length ys \<and> i \<in> -A} \<subset> {i. i < length xs \<and> i \<in> -A}" 
+      have "{i. i < length ys \<and> i \<in> -A} \<subset> {i. i < length xs \<and> i \<in> -A}"
         using False `length xs > length ys`  by force
-      then have "length (sublist xs (-A)) > length (sublist ys (-A))" 
+      then have "length (sublist xs (-A)) > length (sublist ys (-A))"
         unfolding length_sublist by (simp add: psubset_card_mono)
       then show False using assms(2) list_all2_lengthD dual_order.strict_implies_not_eq by blast
     next
       case True
-      have "{i. i < length ys \<and> i \<in> A} \<subset> {i. i < length xs \<and> i \<in> A}" 
+      have "{i. i < length ys \<and> i \<in> A} \<subset> {i. i < length xs \<and> i \<in> A}"
         using True `length xs > length ys` by force
-      then have "length (sublist xs A) > length (sublist ys A)" 
+      then have "length (sublist xs A) > length (sublist ys A)"
         unfolding length_sublist by (simp add: psubset_card_mono)
       then show False using assms(1) list_all2_lengthD dual_order.strict_implies_not_eq by blast
     qed
@@ -260,18 +260,18 @@ proof -
     proof (cases "n\<in>A")
       case True
       have "{i. i < n \<and> i \<in> A} \<subset> {i. i < length xs \<and> i \<in> A}" using `n < length xs` `n\<in>A` by force
-      then have "card {i. i < n \<and> i \<in> A} < length (sublist xs A)" unfolding length_sublist 
+      then have "card {i. i < n \<and> i \<in> A} < length (sublist xs A)" unfolding length_sublist
         by (simp add: psubset_card_mono)
       show ?thesis using sublist_nth[OF `n\<in>A` `n < length xs`] sublist_nth[OF `n\<in>A` `n < length ys`]
-        list_all2_nthD[OF assms(1), of "card {i. i < n \<and> i \<in> A}"] length_sublist 
+        list_all2_nthD[OF assms(1), of "card {i. i < n \<and> i \<in> A}"] length_sublist
         by (simp add: \<open>card {i. i < n \<and> i \<in> A} < length (sublist xs A)\<close>)
     next
       case False then have "n\<in>-A" by auto
       have "{i. i < n \<and> i \<in> -A} \<subset> {i. i < length xs \<and> i \<in> -A}" using `n < length xs` `n\<in>-A` by force
-      then have "card {i. i < n \<and> i \<in> -A} < length (sublist xs (-A))" unfolding length_sublist 
+      then have "card {i. i < n \<and> i \<in> -A} < length (sublist xs (-A))" unfolding length_sublist
         by (simp add: psubset_card_mono)
       show ?thesis using sublist_nth[OF `n\<in>-A` `n < length xs`] sublist_nth[OF `n\<in>-A` `n < length ys`]
-        list_all2_nthD[OF assms(2), of "card {i. i < n \<and> i \<in> -A}"] length_sublist 
+        list_all2_nthD[OF assms(2), of "card {i. i < n \<and> i \<in> -A}"] length_sublist
         using \<open>card {i. i < n \<and> i \<in> - A} < length (sublist xs (- A))\<close> by auto   next
     qed
   qed
@@ -282,7 +282,7 @@ qed
  (* TODO: How to avoid the copy & paste above? *)
 
 
-lemma sublist_weave: 
+lemma sublist_weave:
 assumes "length xs = card {a\<in>A. a < length xs + length ys}"
 assumes "length ys = card {a\<in>(-A). a < length xs + length ys}"
 shows "sublist (weave A xs ys) A = xs \<and> sublist (weave A xs ys) (-A) = ys"
@@ -302,11 +302,11 @@ next
     have length_xs':"length xs' = card {a \<in> A. a < length xs' + length ys}"
     proof -
       have "{a \<in> A. a < length xs + length ys} = {a \<in> A. a < length xs' + length ys} \<union> {l}"
-        using `xs = xs' @ [x]` `l\<in>{a \<in> A. a < length xs + length ys}` `l = length xs' + length ys` 
-        by force 
-      then have "card {a \<in> A. a < length xs + length ys} = card {a \<in> A. a < length xs' + length ys} + 1" 
+        using `xs = xs' @ [x]` `l\<in>{a \<in> A. a < length xs + length ys}` `l = length xs' + length ys`
+        by force
+      then have "card {a \<in> A. a < length xs + length ys} = card {a \<in> A. a < length xs' + length ys} + 1"
         using `l = length xs' + length ys` by fastforce
-      then show ?thesis by (metis One_nat_def Suc.prems(1) \<open>xs = xs' @ [x]\<close> add_right_imp_eq 
+      then show ?thesis by (metis One_nat_def Suc.prems(1) \<open>xs = xs' @ [x]\<close> add_right_imp_eq
         length_Cons length_append list.size(3))
     qed
     have length_ys:"length ys = card {a \<in> - A. a < length xs' + length ys}"
@@ -325,7 +325,7 @@ next
        `xs = xs' @ [x]` using weave_append1[OF `length xs' + length ys \<in> A` length_xs'] by metis
     also have "... = sublist (weave A xs' ys) A @ sublist [x] {a. a + (length xs' + length ys) \<in> A}"
       using sublist_append length_weave by metis
-    also have "... = sublist (weave A xs' ys) A @ [x]" 
+    also have "... = sublist (weave A xs' ys) A @ [x]"
       using sublist_singleton `length xs' + length ys \<in> A` by auto
     also have "... = xs" using Suc.hyps(1)[OF `l = length xs' + length ys` length_xs' length_ys]
      `xs = xs' @ [x]` by presburger
@@ -335,9 +335,9 @@ next
        `xs = xs' @ [x]` using weave_append1[OF `length xs' + length ys \<in> A` length_xs'] by metis
     also have "... = sublist (weave A xs' ys) (-A) @ sublist [x] {a. a + (length xs' + length ys) \<in> (-A)}"
       using sublist_append length_weave by metis
-    also have "... = sublist (weave A xs' ys) (-A)" 
+    also have "... = sublist (weave A xs' ys) (-A)"
       using sublist_singleton `length xs' + length ys \<in> A` by auto
-    also have "... = ys" 
+    also have "... = ys"
       using Suc.hyps(1)[OF `l = length xs' + length ys` length_xs' length_ys] by presburger
     finally show ?thesis using `sublist (weave A xs ys) A = xs` by auto
   next
@@ -349,11 +349,11 @@ next
     have length_ys':"length ys' = card {a \<in> -A. a < length xs + length ys'}"
     proof -
       have "{a \<in> -A. a < length xs + length ys} = {a \<in> -A. a < length xs + length ys'} \<union> {l}"
-        using `ys = ys' @ [y]` `l\<notin>{a \<in> A. a < length xs + length ys}` `l = length xs + length ys'` 
-        by force 
-      then have "card {a \<in> -A. a < length xs + length ys} = card {a \<in> -A. a < length xs + length ys'} + 1" 
+        using `ys = ys' @ [y]` `l\<notin>{a \<in> A. a < length xs + length ys}` `l = length xs + length ys'`
+        by force
+      then have "card {a \<in> -A. a < length xs + length ys} = card {a \<in> -A. a < length xs + length ys'} + 1"
         using `l = length xs + length ys'` by fastforce
-      then show ?thesis by (metis One_nat_def Suc.prems(2) \<open>ys = ys' @ [y]\<close> add_right_imp_eq 
+      then show ?thesis by (metis One_nat_def Suc.prems(2) \<open>ys = ys' @ [y]\<close> add_right_imp_eq
         length_Cons length_append list.size(3))
     qed
     have length_xs:"length xs = card {a \<in> A. a < length xs + length ys'}"
@@ -372,9 +372,9 @@ next
        `ys = ys' @ [y]` using weave_append2[OF `length xs + length ys' \<notin> A` length_ys'] by metis
     also have "... = sublist (weave A xs ys') A @ sublist [y] {a. a + (length xs + length ys') \<in> A}"
       using sublist_append length_weave by metis
-    also have "... = sublist (weave A xs ys') A" 
+    also have "... = sublist (weave A xs ys') A"
       using sublist_singleton `length xs + length ys' \<notin> A` by auto
-    also have "... = xs" 
+    also have "... = xs"
       using Suc.hyps(1)[OF `l = length xs + length ys'` length_xs length_ys'] by auto
     finally have "sublist (weave A xs ys) A = xs" by auto
 
@@ -382,9 +382,9 @@ next
        `ys = ys' @ [y]` using weave_append2[OF `length xs + length ys' \<notin> A` length_ys'] by metis
     also have "... = sublist (weave A xs ys') (-A) @ sublist [y] {a. a + (length xs + length ys') \<in> (-A)}"
       using sublist_append length_weave by metis
-    also have "... = sublist (weave A xs ys') (-A) @ [y]" 
+    also have "... = sublist (weave A xs ys') (-A) @ [y]"
       using sublist_singleton `length xs + length ys' \<notin> A` by auto
-    also have "... = ys" 
+    also have "... = ys"
       using Suc.hyps(1)[OF `l = length xs + length ys'` length_xs length_ys'] `ys = ys' @ [y]` by simp
     finally show ?thesis using `sublist (weave A xs ys) A = xs` by auto
   qed
@@ -399,10 +399,10 @@ proof
   proof
     fix x assume "x\<in>set (weave A xs ys)"
     then obtain i where "weave A xs ys ! i = x" "i<length (weave A xs ys)" by (meson in_set_conv_nth)
-    show "x \<in> set xs \<union> set ys" 
+    show "x \<in> set xs \<union> set ys"
     proof (cases "i\<in>A")
       case True
-      then have "i \<in> {a\<in>A. a < length xs + length ys}" unfolding length_weave 
+      then have "i \<in> {a\<in>A. a < length xs + length ys}" unfolding length_weave
         by (metis \<open>i < length (weave A xs ys)\<close> length_weave mem_Collect_eq)
       then have "{a \<in> A. a < i} \<subset> {a\<in>A. a < length xs + length ys}"
         using Collect_mono \<open>i < length (weave A xs ys)\<close>[unfolded length_weave] le_Suc_ex  less_imp_le_nat trans_less_add1
@@ -424,7 +424,7 @@ proof
         using UnI1 assms(2) nth_mem by auto
     qed
   qed
-  show "set xs \<union> set ys \<subseteq> set (weave A xs ys)" 
+  show "set xs \<union> set ys \<subseteq> set (weave A xs ys)"
     using sublist_weave[OF assms] by (metis Un_subset_iff set_sublist_subset)
 qed
 
@@ -439,9 +439,9 @@ next
   have length_xs:"length xs = length (sublist xs A) + length (sublist xs (-A))" by (metis length_weave snoc.IH)
   show ?case
   proof (cases "(length xs)\<in>A")
-    case True 
+    case True
     have 0:"length (sublist xs A) + length (sublist xs (-A)) \<in> A" using length_xs True by metis
-    have 1:"length (sublist xs A) = card {a \<in> A. a < length (sublist xs A) + length (sublist xs (-A))}" 
+    have 1:"length (sublist xs A) = card {a \<in> A. a < length (sublist xs A) + length (sublist xs (-A))}"
       using length_sublist[of xs A] by (metis (no_types, lifting) Collect_cong length_xs)
     have 2:"sublist (xs @ [x]) A = sublist xs A @ [x]"
       unfolding sublist_append[of xs "[x]" A] using sublist_singleton True by auto
@@ -451,7 +451,7 @@ next
   next
     case False
     have 0:"length (sublist xs A) + length (sublist xs (-A)) \<notin> A" using length_xs False by metis
-    have 1:"length (sublist xs (-A)) = card {a \<in> -A. a < length (sublist xs A) + length (sublist xs (-A))}" 
+    have 1:"length (sublist xs (-A)) = card {a \<in> -A. a < length (sublist xs A) + length (sublist xs (-A))}"
       using length_sublist[of xs "-A"] by (metis (no_types, lifting) Collect_cong length_xs)
     have 2:"sublist (xs @ [x]) A = sublist xs A"
       unfolding sublist_append[of xs "[x]" A] using sublist_singleton False by auto
@@ -472,7 +472,7 @@ shows "weave A is1 is2 \<lhd> ds"
 and "sublist (weave A is1 is2) A = is1"
 and "sublist (weave A is1 is2) (-A) = is2"
 proof -
-  have length_ds: "length is1 + length is2 = length ds" 
+  have length_ds: "length is1 + length is2 = length ds"
     using valid_index_length[OF assms(1)] valid_index_length[OF assms(2)]
     length_weave  weave_complementary_sublists by metis
   have 1:"length is1 = card {i \<in> A. i < length is1 + length is2}" unfolding length_ds
@@ -489,8 +489,8 @@ definition matricize :: "nat set \<Rightarrow> 'a tensor \<Rightarrow> 'a mat" w
 "matricize rmodes T = mat
   (prod_list (sublist (Tensor.dims T) rmodes))
   (prod_list (sublist (Tensor.dims T) (-rmodes)))
-  (\<lambda>(r, c). Tensor.lookup T (weave rmodes 
-    (digit_encode (sublist (Tensor.dims T) rmodes) r) 
+  (\<lambda>(r, c). Tensor.lookup T (weave rmodes
+    (digit_encode (sublist (Tensor.dims T) rmodes) r)
     (digit_encode (sublist (Tensor.dims T) (-rmodes)) c)
   ))
 "
@@ -502,7 +502,7 @@ definition dematricize::"nat set \<Rightarrow> 'a mat \<Rightarrow> nat list \<R
  )
 "
 
-lemma dims_matricize: 
+lemma dims_matricize:
 "dim\<^sub>r (matricize rmodes T) = prod_list (sublist (Tensor.dims T) rmodes)"
 "dim\<^sub>c (matricize rmodes T) = prod_list (sublist (Tensor.dims T) (-rmodes))"
   unfolding matricize_def using mat_dim_row_mat by simp_all
@@ -533,15 +533,15 @@ proof (rule tensor_lookup_eqI)
   then have "is \<lhd> Tensor.dims T" using 1 by auto
   let ?rds = "(sublist (Tensor.dims T) rmodes)"
   let ?cds = "(sublist (Tensor.dims T) (-rmodes))"
-  have decode_r: "digit_decode ?rds (sublist is rmodes) < prod_list ?rds" 
+  have decode_r: "digit_decode ?rds (sublist is rmodes) < prod_list ?rds"
     by (simp add: \<open>is \<lhd> Tensor.dims T\<close> valid_index_sublist digit_decode_lt)
-  have decode_c: "digit_decode ?cds (sublist is (-rmodes)) < prod_list ?cds" 
+  have decode_c: "digit_decode ?cds (sublist is (-rmodes)) < prod_list ?cds"
     by (simp add: \<open>is \<lhd> Tensor.dims T\<close> valid_index_sublist digit_decode_lt)
   have "(matricize rmodes T) $$
      (digit_decode ?rds (sublist is rmodes),
       digit_decode ?cds (sublist is (- rmodes))) =
     Tensor.lookup T is"
-    unfolding matricize_def 
+    unfolding matricize_def
     by (simp add: decode_r decode_c \<open>is \<lhd> Tensor.dims T\<close> valid_index_sublist)
   then show "Tensor.lookup (dematricize rmodes (matricize rmodes T) (Tensor.dims T)) is = Tensor.lookup T is"
     by (simp add: dematricize_def dims_tensor_from_lookup lookup_tensor_from_lookup[OF `is \<lhd> Tensor.dims T`])
@@ -552,26 +552,26 @@ assumes " dim\<^sub>r A = prod_list (sublist ds rmodes)"
 and " dim\<^sub>c A = prod_list (sublist ds (-rmodes))"
 shows "matricize rmodes (dematricize rmodes A ds) = A"
 proof (rule mat_eqI)
-  show "dim\<^sub>r (matricize rmodes (dematricize rmodes A ds)) = dim\<^sub>r A" 
+  show "dim\<^sub>r (matricize rmodes (dematricize rmodes A ds)) = dim\<^sub>r A"
     unfolding assms(1) dematricize_def dims_tensor_from_lookup matricize_def mat_dim_row_mat by metis
-  show "dim\<^sub>c (matricize rmodes (dematricize rmodes A ds)) = dim\<^sub>c A" 
+  show "dim\<^sub>c (matricize rmodes (dematricize rmodes A ds)) = dim\<^sub>c A"
     unfolding assms(2) dematricize_def dims_tensor_from_lookup matricize_def mat_dim_col_mat by metis
   fix r c assume "r < dim\<^sub>r A" "c < dim\<^sub>c A"
   have valid1:"digit_encode (sublist ds rmodes) r \<lhd> sublist ds rmodes" and
-       valid2:"digit_encode (sublist ds (- rmodes)) c \<lhd> sublist ds (- rmodes)" 
+       valid2:"digit_encode (sublist ds (- rmodes)) c \<lhd> sublist ds (- rmodes)"
     using \<open>r < dim\<^sub>r A\<close> assms(1) \<open>c < dim\<^sub>c A\<close> assms(2) digit_encode_valid_index by auto
   have 0:"Tensor.lookup (dematricize rmodes A ds)
-     (weave rmodes 
+     (weave rmodes
        (digit_encode (sublist (Tensor.dims (dematricize rmodes A ds)) rmodes) r)
        (digit_encode (sublist (Tensor.dims (dematricize rmodes A ds)) (- rmodes)) c)
      ) =  A $$ (r, c)"
       unfolding dematricize_def unfolding dims_tensor_from_lookup
       unfolding lookup_tensor_from_lookup[OF valid_index_weave(1)[OF valid1 valid2]]
-      using digit_decode_encode_lt[OF \<open>c < dim\<^sub>c A\<close>[unfolded assms(2)]] 
-      digit_decode_encode_lt[OF \<open>r < dim\<^sub>r A\<close>[unfolded assms(1)]]  
+      using digit_decode_encode_lt[OF \<open>c < dim\<^sub>c A\<close>[unfolded assms(2)]]
+      digit_decode_encode_lt[OF \<open>r < dim\<^sub>r A\<close>[unfolded assms(1)]]
       valid_index_weave(2)[OF valid1 valid2] valid_index_weave(3)[OF valid1 valid2]
-      by presburger  
-  from `r < dim\<^sub>r A` have r_le: "r < prod_list (sublist (Tensor.dims (dematricize rmodes A ds)) rmodes)" 
+      by presburger
+  from `r < dim\<^sub>r A` have r_le: "r < prod_list (sublist (Tensor.dims (dematricize rmodes A ds)) rmodes)"
     by (metis \<open>dim\<^sub>r (matricize rmodes (dematricize rmodes A ds)) = dim\<^sub>r A\<close> matricize_def mat_dim_row_mat(1))
   from `c < dim\<^sub>c A `have c_le: "c < prod_list (sublist (Tensor.dims (dematricize rmodes A ds)) (- rmodes))"
     by (metis \<open>dim\<^sub>c (matricize rmodes (dematricize rmodes A ds)) = dim\<^sub>c A\<close> matricize_def mat_dim_col_mat(1))
@@ -586,12 +586,12 @@ proof (rule mat_eqI)
   show "dim\<^sub>r (matricize I A \<oplus>\<^sub>m matricize I B) = dim\<^sub>r (matricize I (A + B))" by (simp add: assms dims_matricize(1))
   show "dim\<^sub>c (matricize I A \<oplus>\<^sub>m matricize I B) = dim\<^sub>c (matricize I (A + B))" by (simp add: assms dims_matricize(2))
   fix i j assume ij_le1:"i < dim\<^sub>r (matricize I (A + B))" "j < dim\<^sub>c (matricize I (A + B))"
-  then have 
+  then have
     ij_le2:"i < prod_list (sublist (Tensor.dims A) I)"  "j < prod_list (sublist (Tensor.dims A) (-I))" and
     ij_le3:"i < prod_list (sublist (Tensor.dims B) I)"  "j < prod_list (sublist (Tensor.dims B) (-I))" and
-    ij_le4:"i < prod_list (sublist (Tensor.dims (A + B)) I)"  "j < prod_list (sublist (Tensor.dims (A + B)) (-I))" 
+    ij_le4:"i < prod_list (sublist (Tensor.dims (A + B)) I)"  "j < prod_list (sublist (Tensor.dims (A + B)) (-I))"
     by (simp_all add: assms dims_matricize)
-  then have ij_le5:"i < dim\<^sub>r (matricize I B)" "j < dim\<^sub>c (matricize I B)" 
+  then have ij_le5:"i < dim\<^sub>r (matricize I B)" "j < dim\<^sub>c (matricize I B)"
     by (simp_all add: assms dims_matricize)
   show "(matricize I A \<oplus>\<^sub>m matricize I B) $$ (i, j) = matricize I (A + B) $$ (i, j)"
     unfolding mat_index_add(1)[OF ij_le5] unfolding matricize_def unfolding mat_index_mat[OF ij_le2] mat_index_mat[OF ij_le3] mat_index_mat[OF ij_le4]
@@ -601,17 +601,17 @@ qed
 lemma matricize_0:
 shows "matricize I (tensor0 ds) = \<zero>\<^sub>m (dim\<^sub>r (matricize I (tensor0 ds))) (dim\<^sub>c (matricize I (tensor0 ds)))"
 proof (rule mat_eqI)
-  show "dim\<^sub>r (matricize I (tensor0 ds)) = dim\<^sub>r (\<zero>\<^sub>m (dim\<^sub>r (matricize I (tensor0 ds))) (dim\<^sub>c (matricize I (tensor0 ds))))" 
+  show "dim\<^sub>r (matricize I (tensor0 ds)) = dim\<^sub>r (\<zero>\<^sub>m (dim\<^sub>r (matricize I (tensor0 ds))) (dim\<^sub>c (matricize I (tensor0 ds))))"
     unfolding mat_zero_def mat_dim_row_mat by (simp add: dims_matricize(1))
-  show "dim\<^sub>c (matricize I (tensor0 ds)) = dim\<^sub>c (\<zero>\<^sub>m (dim\<^sub>r (matricize I (tensor0 ds))) (dim\<^sub>c (matricize I (tensor0 ds))))" 
+  show "dim\<^sub>c (matricize I (tensor0 ds)) = dim\<^sub>c (\<zero>\<^sub>m (dim\<^sub>r (matricize I (tensor0 ds))) (dim\<^sub>c (matricize I (tensor0 ds))))"
     unfolding mat_zero_def mat_dim_row_mat by (simp add: dims_matricize(2))
   fix i j assume ij_le1: "i < dim\<^sub>r (\<zero>\<^sub>m (dim\<^sub>r (matricize I (tensor0 ds))) (dim\<^sub>c (matricize I (tensor0 ds))))"
                  "j < dim\<^sub>c (\<zero>\<^sub>m (dim\<^sub>r (matricize I (tensor0 ds))) (dim\<^sub>c (matricize I (tensor0 ds))))"
   then have ij_le2:"i < dim\<^sub>r (matricize I (tensor0 ds))" "j < dim\<^sub>c (matricize I (tensor0 ds))"
     unfolding mat_zero_def mat_dim_row_mat by (simp_all add: dims_matricize)
   show "matricize I (tensor0 ds) $$ (i, j) = \<zero>\<^sub>m (dim\<^sub>r (matricize I (tensor0 ds))) (dim\<^sub>c (matricize I (tensor0 ds))) $$ (i, j)"
-    unfolding mat_zero_def  mat_index_mat[OF ij_le2] unfolding matricize_def mat_index_mat[OF ij_le2[unfolded dims_matricize]] 
-    by (simp, metis lookup_tensor0 digit_encode_valid_index dims_matricize(1) dims_matricize(2) dims_tensor0 
+    unfolding mat_zero_def  mat_index_mat[OF ij_le2] unfolding matricize_def mat_index_mat[OF ij_le2[unfolded dims_matricize]]
+    by (simp, metis lookup_tensor0 digit_encode_valid_index dims_matricize(1) dims_matricize(2) dims_tensor0
     ij_le2(1) ij_le2(2) valid_index_weave(1))
 qed
 

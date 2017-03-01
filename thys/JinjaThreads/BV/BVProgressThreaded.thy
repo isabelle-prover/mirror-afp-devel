@@ -7,6 +7,7 @@ section {* Progress result for both of the multithreaded JVMs *}
 theory BVProgressThreaded
 imports
   "../Framework/FWProgress"
+  "../Framework/FWLTS"
   BVNoTypeError
   "../JVM/JVMThreaded"
 begin
@@ -459,12 +460,9 @@ context JVM_typesafe begin
 
 lemma execd_wf_progress:
   assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
-  shows "progress JVM_final (mexecd P) convert_RA (execd_mthr.wset_Suspend_ok P (correct_jvm_state \<Phi>))"
-  (is "progress _ _ _ ?wf_state")
+  shows "progress JVM_final (mexecd P) (execd_mthr.wset_Suspend_ok P (correct_jvm_state \<Phi>))"
+  (is "progress _ _ ?wf_state")
 proof
-  show "invariant3p (mexecdT P) ?wf_state"
-    by(rule execd_mthr.invariant3p_wset_Suspend_ok)(rule invariant3p_correct_jvm_state_mexecdT[OF wf])
-next
   {
     fix s t x ta x' m' w
     assume mexecd: "mexecd P t (x, shr s) ta (x', m')"
@@ -816,16 +814,13 @@ context JVM_typesafe begin
 
 lemma exec_wf_progress:
   assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
-  shows "progress JVM_final (mexec P) convert_RA (exec_mthr.wset_Suspend_ok P (correct_jvm_state \<Phi>))"
-  (is "progress _ _ _ ?wf_state")
+  shows "progress JVM_final (mexec P) (exec_mthr.wset_Suspend_ok P (correct_jvm_state \<Phi>))"
+  (is "progress _ _ ?wf_state")
 proof -
   interpret progress: progress JVM_final "mexecd P" convert_RA ?wf_state
     using assms unfolding wset_Suspend_ok_mexecd_mexec[OF wf] by(rule execd_wf_progress)
   show ?thesis
   proof(unfold_locales)
-    show "invariant3p (mexecT P) ?wf_state"
-      by(rule exec_mthr.invariant3p_wset_Suspend_ok)(rule invariant3p_correct_jvm_state_mexecT[OF wf])
-  next
     fix s
     assume "s \<in> ?wf_state"
     thus "lock_thread_ok (locks s) (thr s) \<and> exec_mthr.wset_final_ok (wset s) (thr s)"
@@ -942,6 +937,50 @@ lemma start_mexec_mexecd_commute:
 using correct_jvm_state_initial[OF assms]
 by(clarsimp simp add: correct_jvm_state_def)(rule mExecT_eq_mExecdT[symmetric, OF wf])
 
+theorem mRtrancl_eq_mRtrancld:
+  assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
+  and ct: "correct_state_ts \<Phi> (thr s) (shr s)"
+  shows "exec_mthr.mthr.Rtrancl3p P s ttas \<longleftrightarrow> execd_mthr.mthr.Rtrancl3p P s ttas" (is "?lhs \<longleftrightarrow> ?rhs")
+proof
+  show ?lhs if ?rhs using that ct
+  proof(coinduction arbitrary: s ttas)
+    case Rtrancl3p
+    interpret lifting_wf "JVM_final" "mexecd P" convert_RA "\<lambda>t (xcp, frs) h. \<Phi> \<turnstile> t: (xcp, h, frs) \<surd>"
+      using wf by(rule lifting_wf_correct_state_d)
+    from Rtrancl3p(1) show ?case
+    proof cases
+      case stop: Rtrancl3p_stop
+      then show ?thesis using mexecT_eq_mexecdT[OF wf Rtrancl3p(2)] by clarsimp
+    next
+      case (Rtrancl3p_into_Rtrancl3p s' ttas' tta)
+      then show ?thesis using mexecT_eq_mexecdT[OF wf Rtrancl3p(2)] Rtrancl3p(2)
+        by(cases tta; cases s')(fastforce simp add: split_paired_Ex dest: redT_preserves)
+    qed
+  qed
+    
+  show ?rhs if ?lhs using that ct
+  proof(coinduction arbitrary: s ttas)
+    case Rtrancl3p
+    interpret lifting_wf "JVM_final" "mexec P" convert_RA "\<lambda>t (xcp, frs) h. \<Phi> \<turnstile> t: (xcp, h, frs) \<surd>"
+      using wf by(rule lifting_wf_correct_state)
+    from Rtrancl3p(1) show ?case
+    proof cases
+      case stop: Rtrancl3p_stop
+      then show ?thesis using mexecT_eq_mexecdT[OF wf Rtrancl3p(2)] by clarsimp
+    next
+      case (Rtrancl3p_into_Rtrancl3p s' ttas' tta)
+      then show ?thesis using mexecT_eq_mexecdT[OF wf Rtrancl3p(2)] Rtrancl3p(2)
+        by(cases tta; cases s')(fastforce simp add: split_paired_Ex dest: redT_preserves)
+    qed
+  qed
+qed
+
+lemma start_mRtrancl_mRtrancld_commute:
+  assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
+  and start: "wf_start_state P C M vs"
+  shows "exec_mthr.mthr.Rtrancl3p P (JVM_start_state P C M vs) ttas \<longleftrightarrow> execd_mthr.mthr.Rtrancl3p P (JVM_start_state P C M vs) ttas"
+using correct_jvm_state_initial[OF assms] by(clarsimp simp add: correct_jvm_state_def mRtrancl_eq_mRtrancld[OF wf])
+  
 end
 
 subsection {* Determinism *}

@@ -7,7 +7,7 @@
 signature LANDAU =
 sig
   val landau_const_names : string list
-  val dest_landau : term -> term * term
+  val dest_landau : term -> term * term * term
 
   val lift_landau_conv : conv -> conv
   val lift_landau_simproc : 
@@ -49,14 +49,14 @@ fun get_landau_symbol_thm t = nth @{thms landau_symbols} (get_landau_id t)
 
 fun get_bigtheta_cong t = nth @{thms landau_bigtheta_meta_congs} (get_landau_id t)
 
-fun dest_landau (t as Const (s, T) $ f) =
+fun dest_landau (t as Const (s, T) $ fltr $ f) =
       if member op= landau_const_names s then
-        (Const (s, T), f) 
+        (Const (s, T), fltr, f) 
       else 
         raise TERM ("dest_landau", [t])
   | dest_landau t = raise TERM ("dest_landau", [t])
 
-fun dest_bigtheta (Const (@{const_name bigtheta}, _) $ a) = a
+fun dest_bigtheta (Const (@{const_name bigtheta}, _) $ fltr $ a) = (fltr, a)
   | dest_bigtheta t = raise TERM ("dest_bigtheta", [t])
 
 fun dest_member (Const (@{const_name Set.member}, _) $ a $ b) = (a, b)
@@ -157,10 +157,12 @@ fun extract_leaf_conv path =
   end
 end
 
+fun filterT T = Type (@{type_name Filter.filter}, [T])
+
 fun cancel_factor_conv' ctxt ct = 
   let
     val t = Thm.term_of ct
-    val (f, (L, g)) = dest_member t ||> dest_landau
+    val (f, (L, fltr, g)) = dest_member t ||> dest_landau
     val landau_symbol_thm = get_landau_symbol_thm L
 
     fun dest_abs t =
@@ -172,7 +174,8 @@ fun cancel_factor_conv' ctxt ct =
     fun abs x body = Abs (x, S, body)
 
     fun mk_eventually_nonzero t =
-      Const (@{const_name eventually_nonzero}, (S --> T) --> HOLogic.boolT) $ t
+      Const (@{const_name eventually_nonzero}, filterT S --> (S --> T) --> HOLogic.boolT) $ 
+        fltr $  t
 
     val (f_leaves, g_leaves) = (pick_leaf f_body T, pick_leaf g_body T)
     fun cancel' (t, rest1, path1) (_, rest2, path2) = 
@@ -221,14 +224,15 @@ val minus_absorb_thms1 = @{thms landau_symbols[THEN landau_symbol.diff_absorb1]}
 val minus_absorb_thms2 = @{thms landau_symbols[THEN landau_symbol.diff_absorb2]}
 
 local
-  fun mk_smallo S T = Const (@{const_name smallo}, (S --> T) --> HOLogic.mk_setT (S --> T))
+  fun mk_smallo fltr S T = 
+    Const (@{const_name smallo}, filterT S --> (S --> T) --> HOLogic.mk_setT (S --> T)) $ fltr
   fun mk_member T = Const (@{const_name Set.member}, T --> HOLogic.mk_setT T --> HOLogic.boolT)
-  fun mk_in_smallo S T f g = mk_member (S --> T) $ f $ (mk_smallo S T $ g)
+  fun mk_in_smallo fltr S T f g = mk_member (S --> T) $ f $ (mk_smallo fltr S T $ g)
 in
   fun simplify_landau_sum_simproc ctxt ct =
     let
       val t = Thm.term_of ct
-      val (L, f) = dest_landau t
+      val (L, fltr, f) = dest_landau t
       val L_name = dest_Const L |> fst
       val (x_name, S, f_body) = 
         case f of
@@ -259,7 +263,7 @@ in
           fun tac {context = ctxt, ...} =
                 Simplifier.asm_full_simp_tac ctxt 1
                 THEN TRY (resolve_tac ctxt @{thms TrueI} 1)
-          val prop = HOLogic.mk_Trueprop (mk_in_smallo S T l r)
+          val prop = HOLogic.mk_Trueprop (mk_in_smallo fltr S T l r)
         in
           case try (fn () => Goal.prove ctxt [] [] prop tac) () of
             NONE => NONE
@@ -293,9 +297,9 @@ fun changed_conv conv ct =
 fun landau_conv conv ctxt = changed_conv (fn ct =>
   let 
     val t = Thm.term_of ct
-    val (L as (Const (_, T)), f) = dest_landau t
+    val (L as (Const (_, T)), fltr, f) = dest_landau t
     val cong = get_bigtheta_cong L
-    val ct' = Const (@{const_name bigtheta}, T) $ f |> Thm.cterm_of ctxt
+    val ct' = Const (@{const_name bigtheta}, T) $ fltr $ f |> Thm.cterm_of ctxt
   in
     conv ct' RS cong
   end)
@@ -348,9 +352,9 @@ fun reify_landau_prod_prop_conv ctxt ct =
   let
     val t = Thm.term_of ct
     val (f, t) = dest_member t
-    val (L as (Const (_, T)), g) = dest_landau t
+    val (L as (Const (_, T)), fltr, g) = dest_landau t
     val cong = nth @{thms landau_symbols[THEN landau_prod_meta_cong]} (get_landau_id L)
-    fun mk_thm f = Const (@{const_name bigtheta}, T) $ f |>
+    fun mk_thm f = Const (@{const_name bigtheta}, T) $ fltr $ f |>
       Thm.cterm_of ctxt |> reify_prod_bigtheta_conv ctxt
     val (thm1, thm2) = (mk_thm f, mk_thm g)
     val thm = cong OF [thm1, thm2]
