@@ -1,8 +1,9 @@
 chapter AFP
 
 session "Elliptic_Curves_Group_Law" (AFP) = "HOL" +
+  options [timeout = 600]
   theories [document = false]
-    Reflective_Field
+    "~~/src/HOL/Decision_Procs/Reflective_Field"
     "~~/src/HOL/Number_Theory/Residues"
   theories
     Elliptic_Axclass
