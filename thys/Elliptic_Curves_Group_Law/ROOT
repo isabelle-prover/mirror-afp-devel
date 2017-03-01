@@ -1,0 +1,12 @@
+chapter AFP
+
+session "Elliptic_Curves_Group_Law" (AFP) = "HOL" +
+  theories [document = false]
+    Reflective_Field
+    "~~/src/HOL/Number_Theory/Residues"
+  theories
+    Elliptic_Axclass
+    Elliptic_Test
+  document_files
+    "root.tex"
+    "root.bib"
