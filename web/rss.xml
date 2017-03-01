@@ -9,7 +9,21 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>26 Feb 2017 00:00:00 +0000</pubDate>
+    <pubDate>28 Feb 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>The Group Law for Elliptic Curves</title>
+              <link>https://www.isa-afp.org/entries/Elliptic_Curves_Group_Law.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Elliptic_Curves_Group_Law.shtml</guid>
+       <dc:creator> Stefan Berghofer       </dc:creator>
+       <pubDate>28 Feb 2017 00:00:00 +0000</pubDate>
+       <description>
+We prove the group law for elliptic curves in Weierstrass form over
+fields of characteristic greater than 2. In addition to affine
+coordinates, we also formalize projective coordinates, which allow for
+more efficient computations. By specializing the abstract
+formalization to prime fields, we can apply the curve operations to
+parameters used in standard security protocols.</description>
+    </item>
     <item>
        <title>Menger's Theorem</title>
               <link>https://www.isa-afp.org/entries/Menger.shtml</link>
@@ -501,15 +515,6 @@ the orthogonality of two lines and the Pythagoras Law. Hence, one can
 understand the formalized proof easily with the knowledge of a few
 general geometric facts that are commonly taught in high-school.  This
 theorem is the 55th theorem of the Top 100 Theorems list.</description>
-    </item>
-    <item>
-       <title>Lp spaces</title>
-              <link>https://www.isa-afp.org/entries/Lp.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Lp.shtml</guid>
-       <dc:creator> Sebastien Gouezel       </dc:creator>
-       <pubDate>05 Oct 2016 00:00:00 +0000</pubDate>
-       <description>
-Lp is the space of functions whose p-th power is integrable. It is one of the most fundamental Banach spaces that is used in analysis and probability. We develop a framework for function spaces, and then implement the Lp spaces in this framework using the existing integration theory in Isabelle/HOL. Our development contains most fundamental properties of Lp spaces, notably the Hölder and Minkowski inequalities, completeness of Lp, duality, stability under almost sure convergence, multiplication of functions in Lp and Lq, stability under conditional expectation.</description>
     </item>
   </channel>
 </rss>

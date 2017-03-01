@@ -5298,6 +5298,20 @@ abstract =
   Brandon Bohrer, Vincent Rahli, Ivana Vukotic, Marcus Völp, André
   Platzer: Formally verified differential dynamic logic. CPP 2017.
 
+[Elliptic_Curves_Group_Law]
+title = The Group Law for Elliptic Curves
+author = Stefan Berghofer <http://www.in.tum.de/~berghofe>
+topic = Computer Science/Security
+date = 2017-02-28
+notify = berghofe@in.tum.de
+abstract = 
+  We prove the group law for elliptic curves in Weierstrass form over
+  fields of characteristic greater than 2. In addition to affine
+  coordinates, we also formalize projective coordinates, which allow for
+  more efficient computations. By specializing the abstract
+  formalization to prime fields, we can apply the curve operations to
+  parameters used in standard security protocols.
+
 [Example-Submission]
 title = Example Submission
 author = Gerwin Klein <http://www.cse.unsw.edu.au/~kleing/>
