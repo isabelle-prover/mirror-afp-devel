@@ -1,10 +1,10 @@
 from collections import OrderedDict
-from jinja2 import Environment, FileSystemLoader
 from itertools import groupby
 import os
 import datetime
+from jinja2 import Environment, FileSystemLoader
 
-from config import *
+from config import options
 import terminal
 
 ### topics
@@ -26,7 +26,7 @@ class Tree(object):
 	def add_to_topic(self, topic, entry):
 		if len(topic) > 0:
 			if topic[0] not in self.subtopics:
-				warn(u"In entry {0}: unknown (sub)topic {1}".format(entry, topic))
+				terminal.warn(u"In entry {0}: unknown (sub)topic {1}".format(entry, topic))
 			else:
 				self.subtopics[topic[0]].add_to_topic(topic[1:], entry)
 		else:
@@ -48,8 +48,8 @@ class Tree(object):
 def read_topics(filename):
 	tree = Tree()
 	stack = []
-	with open(filename) as input:
-		for line in input:
+	with open(filename) as f:
+		for line in f:
 			count = 0
 			while line[count] == ' ':
 				count += 1
@@ -69,7 +69,7 @@ def collect_topics(entries):
 	tree = read_topics(os.path.join(options.metadata_dir, "topics"))
 	for entry, attributes in entries.items():
 		for topic in attributes['topic']:
-			tree.add_to_topic([str.strip() for str in topic.split('/')], entry)
+			tree.add_to_topic([s.strip() for s in topic.split('/')], entry)
 	return tree
 
 
@@ -91,8 +91,8 @@ class Builder():
 	def prepare_env(self):
 		def startswith(value, beginning):
 			return value.startswith(beginning)
-		def datetimeformat(value, format='%Y-%m-%d'):
-			return value.strftime(format)
+		def datetimeformat(value, format_str='%Y-%m-%d'):
+			return value.strftime(format_str)
 		def rfc822(value):
 			# Locale could be something different than english, to prevent printing
 			# non english months, we use this fix
@@ -195,7 +195,7 @@ class Builder():
 			key = lambda x: (-len(x.used), x.name))
 		# Show more than 10 articles but not more than necessary
 		i = 0
-		while(i < 10 or len(most_used[i].used) == len(most_used[i + 1].used)):
+		while i < 10 or len(most_used[i].used) == len(most_used[i + 1].used):
 			i += 1
 		most_used = groupby(most_used[:i + 1], key = lambda x: len(x.used))
 		articles_by_time = sorted(self.afp_entries.values(),
@@ -209,8 +209,7 @@ class Builder():
 			'num_loc': sum([a.loc for a in self.afp_entries.values()]),
 			'years': sorted(articles_years),
 			'articles_year': [articles_years[y] for y in sorted(articles_years)],
-			'loc_years': map(lambda x: round(x, -2),
-				[loc_years[y] for y in sorted(loc_years)]),
+			'loc_years': [round(loc_years[y], -2) for y in sorted(loc_years)],
 			'author_years': [author_years[y] for y in sorted(author_years)],
 			'author_years_cumulative': [author_years_cumulative[y] for y in
 				sorted(author_years_cumulative)],
@@ -233,4 +232,3 @@ class Builder():
 				key = lambda e: (e.publish_date, e.name), reverse=True)
 		self.write_file("rss.xml", template, {'entries': entries[:num_entries]})
 		terminal.success("Generated rss.xml")
-
