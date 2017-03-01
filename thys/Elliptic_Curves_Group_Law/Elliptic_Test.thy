@@ -20,22 +20,20 @@ where "x --\<^bsub>m\<^esub> y = (x - y) mod m"
 definition mpow :: "int \<Rightarrow> int \<Rightarrow> nat \<Rightarrow> int" (infixr "^^^\<index>" 80)
 where "x ^^^\<^bsub>m\<^esub> n = x ^ n mod m"
 
-(* This part has to updated from Isabelle 2016-1 submission to development 
 lemma (in residues) res_of_natural_eq: "\<guillemotleft>n\<guillemotright>\<^sub>\<nat> = int n mod m"
   by (induct n)
-    (simp_all add: of_natural_def res_zero_eq res_one_eq res_add_eq mod_add_right_eq [symmetric])
+    (simp_all add: of_natural_def res_zero_eq res_one_eq res_add_eq mod_add_right_eq)
 
 lemma (in residues) res_of_integer_eq: "\<guillemotleft>i\<guillemotright> = i mod m"
-  by (simp add: of_integer_def res_of_natural_eq res_neg_eq mod_minus_eq [symmetric])
+  by (simp add: of_integer_def res_of_natural_eq res_neg_eq mod_minus_eq)
 
 lemma (in residues) res_pow_eq: "x (^) (n::nat) = x ^ n mod m"
   using m_gt_one
   by (induct n)
-    (simp_all add: res_one_eq res_mult_eq mult_ac mod_mult_right_eq [symmetric])
+    (simp_all add: res_one_eq res_mult_eq mult_ac mod_mult_right_eq)
 
 lemma (in residues) res_sub_eq: "(x mod m) \<ominus> (y mod m) = (x mod m - y mod m) mod m"
-  by (simp add: minus_eq res_neg_eq res_add_eq mod_minus_eq [symmetric] mod_add_eq [symmetric]
-    mod_diff_eq [symmetric])
+  by (simp add: minus_eq res_neg_eq res_add_eq mod_minus_eq mod_add_eq mod_diff_eq)
 
 definition mpdouble :: "int \<Rightarrow> int \<Rightarrow> int ppoint \<Rightarrow> int ppoint" where
   "mpdouble m a p =
@@ -178,7 +176,7 @@ definition mmake_affine :: "int \<Rightarrow> int ppoint \<Rightarrow> int point
   "mmake_affine q p =
      (let (x, y, z) = p
       in if z = 0 then Infinity else
-        let (a, b) = euclid_ext' z q
+        let (a, b) = bezout_coefficients z q
         in Point (a **\<^bsub>q\<^esub> x) (a **\<^bsub>q\<^esub>y))"
 
 lemma (in residues_prime) make_affine_residue_eq:
@@ -193,23 +191,23 @@ proof (cases q)
   next
     case False
     show ?thesis
-    proof (cases "euclid_ext' z (int p)")
+    proof (cases "bezout_coefficients z (int p)")
       case (Pair a b)
       with fields p_prime False assms have "coprime z (int p)"
         by (simp add: in_carrierp_def res_carrier_eq gcd.commute [of z]
           prime_imp_coprime zdvd_not_zless)
-      then have "fst (euclid_ext' z (int p)) * z +
-        snd (euclid_ext' z (int p)) * int p = 1"
-        by (simp add: euclid_ext'_correct)
-      with m_gt_one have "fst (euclid_ext' z (int p)) * z mod int p = 1"
+      then have "fst (bezout_coefficients z (int p)) * z +
+        snd (bezout_coefficients z (int p)) * int p = 1"
+        by (simp add: bezout_coefficients_fst_snd)
+      with m_gt_one have "fst (bezout_coefficients z (int p)) * z mod int p = 1"
         by (auto dest: arg_cong [of _ _ "\<lambda>x. x mod int p"])
-      then have "z \<otimes> (fst (euclid_ext' z (int p)) mod int p) = \<one>"
-        by (simp add: res_mult_eq res_one_eq mult.commute mod_mult_right_eq [symmetric])
-      with fields assms have "inv z = fst (euclid_ext' z (int p)) mod int p"
+      then have "z \<otimes> (fst (bezout_coefficients z (int p)) mod int p) = \<one>"
+        by (simp add: res_mult_eq res_one_eq mult.commute mod_mult_right_eq)
+      with fields assms have "inv z = fst (bezout_coefficients z (int p)) mod int p"
         by (simp add: inverse_unique in_carrierp_def res_carrier_eq)
       with fields Pair False show ?thesis
         by (simp add: make_affine_def mmake_affine_def res_zero_eq m_div_def
-          res_mult_eq mmult_def mod_mult_right_eq [symmetric] mult.commute)
+          res_mult_eq mmult_def mod_mult_right_eq mult.commute)
     qed
   qed
 qed
@@ -267,5 +265,5 @@ lemma "mmake_affine m (fast_ppoint_mult m a priv (gx, gy, 1)) = Point pubx puby"
 
 lemma "mmake_affine m (fast_ppoint_mult m a order (gx, gy, 1)) = Infinity"
   by eval
-*)
+  
 end
