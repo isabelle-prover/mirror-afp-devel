@@ -33,7 +33,7 @@ lemma size_pass\<^sub>1: "size (pass\<^sub>1 h) = size h"
 lemma size_pass\<^sub>2: "size (pass\<^sub>2 h) = size h" 
   by (induct h rule: pass\<^sub>2.induct) simp_all
 
-lemma size_meld[simp]: 
+lemma size_meld: 
   "is_root h1 \<Longrightarrow> is_root h2 \<Longrightarrow> size (meld h1 h2) = size h1 + size h2"
   by (simp split: tree.splits)
 
@@ -42,14 +42,22 @@ lemma \<Delta>\<Phi>_insert: "is_root h \<Longrightarrow> \<Phi> (insert x h) - 
 
 lemma \<Delta>\<Phi>_meld:
   assumes "h1 = Node lx x Leaf" "h2 = Node ly y Leaf" 
-  shows "\<Phi> (meld h1 h2) - \<Phi> h1 - \<Phi> h2 \<le> 2*log 2 (size h1 + size h2)" 
+  shows "\<Phi> (meld h1 h2) - \<Phi> h1 - \<Phi> h2 \<le> log 2 (size h1 + size h2) + 1" 
 proof -
   let ?hs = "Node lx x (Node ly y Leaf)"
-  have "\<Phi> (link ?hs) - \<Phi> ?hs \<le> log 2  (size lx + size ly + 1)" by (simp add: algebra_simps)
-  also have "\<dots> \<le> log 2  (size h1 + size h2)" by (simp add: assms)
-  moreover have "\<Phi> ?hs - \<Phi> h1 - \<Phi> h2 \<le> \<dots>" using assms by simp
-  ultimately have "\<Phi> (link ?hs) - \<Phi> h1 - \<Phi> h2 \<le> 2*\<dots>" by linarith
-  thus ?thesis using assms by simp
+  have "\<Phi> (meld h1 h2) = \<Phi> (link ?hs)" using assms by simp
+  also have "\<dots> = \<Phi> lx + \<Phi> ly + log 2 (size lx + size ly + 1) + log 2 (size lx + size ly + 2)"
+    by (simp add: algebra_simps)
+  also have "\<dots> = \<Phi> lx + \<Phi> ly + log 2 (size lx + size ly + 1) + log 2 (size h1 + size h2)"
+     using assms by simp
+  finally have "\<Phi> (meld h1 h2) = \<dots>" .
+  have "\<Phi> (meld h1 h2) - \<Phi> h1 - \<Phi> h2 =
+   log 2 (size lx + size ly + 1) + log 2 (size h1 + size h2)
+   - log 2 (size lx + 1) - log 2 (size ly + 1)"
+     using assms by (simp add: algebra_simps)
+  also have "\<dots> \<le> log 2 (size h1 + size h2) + 1"
+    using ld_le_2ld[of "size lx" "size ly"] assms by (simp add: algebra_simps)
+  finally show ?thesis .
 qed
 
 fun upperbound :: "'a tree \<Rightarrow> real" where
@@ -200,7 +208,7 @@ fun U :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a tree list \<Rightar
   "U Empty [] = 1"
 | "U (Insert a) [h] = log 2 (size h + 1) + 1"
 | "U Del_min [h] = 3*log 2 (size h + 1) + 4"
-| "U Meld [h1,h2] = 2*log 2 (size h1 + size h2 + 1) + 1"
+| "U Meld [h1,h2] = log 2 (size h1 + size h2 + 1) + 2"
 
 interpretation Amortized
 where arity = arity and exec = exec and cost = cost and inv = is_root 
@@ -253,10 +261,10 @@ next
         case Leaf thus ?thesis using h1 by simp
       next
         case h2: Node
-        have "\<Phi> (meld h1 h2) - \<Phi> h1 - \<Phi> h2 \<le> 2 * log 2 (real (size h1 + size h2))"
+        have "\<Phi> (meld h1 h2) - \<Phi> h1 - \<Phi> h2 \<le> log 2 (real (size h1 + size h2)) + 1"
           apply(rule \<Delta>\<Phi>_meld) using h1 h2 1 by auto
-        also have "\<dots> \<le> 2 * log 2 (size h1 + size h2 + 1)" by (simp add: h1)
-        finally show ?thesis by(simp)
+        also have "\<dots> \<le> log 2 (size h1 + size h2 + 1) + 1" by (simp add: h1)
+        finally show ?thesis by(simp add: algebra_simps)
       qed
     qed
   qed

@@ -111,9 +111,14 @@ by(cases h)(auto simp: size_hp_meld)
 
 lemma \<Delta>\<Phi>_meld:
   "\<Phi> (meld h1 h2) - \<Phi> h1 - \<Phi> h2
-  \<le> 2 * log 2 (size_hp h1 + size_hp h2 + 1)"
-by(induction h1 h2 rule: meld.induct)
-  (auto simp add: add_increasing xt1(3)[OF mult_2, OF add_mono])
+  \<le> log 2 (size_hp h1 + size_hp h2 + 1) + 1"
+proof(induction h1 h2 rule: meld.induct)
+  case (3 x lx y ly)
+  thus ?case
+    using ld_le_2ld[of "size_hps lx" "size_hps ly"]
+      log_le_cancel_iff[of 2 "size_hps lx + size_hps ly + 2" "size_hps lx + size_hps ly + 3"]
+    by (auto simp del: log_le_cancel_iff)
+qed auto
 
 fun sum_ub :: "'a heap list \<Rightarrow> real" where
   "sum_ub [] = 0"
@@ -249,7 +254,7 @@ fun U :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap list \<Rightar
 "U Empty _ = 1" |
 "U (Insert a) [h] = log 2 (size_hp h + 1) + 1" |
 "U Del_min [h] = 3*log 2 (size_hp h + 1) + 4" |
-"U Meld [h1,h2] = 2*log 2 (size_hp h1 + size_hp h2 + 1) + 1"
+"U Meld [h1,h2] = log 2 (size_hp h1 + size_hp h2 + 1) + 2"
 
 interpretation pairing: Amortized
 where arity = arity and exec = exec and cost = cost and inv = "is_root"
@@ -319,7 +324,7 @@ next
       case False
       then obtain x1 x2 hs1 hs2 where [simp]: "h1 = Hp x1 hs1" "h2 = Hp x2 hs2"
         by (meson hps.cases) 
-      have "\<Phi> (meld h1 h2) - \<Phi> h1 - \<Phi> h2 \<le> 2 * log 2 (size_hp h1 + size_hp h2 + 1)"
+      have "\<Phi> (meld h1 h2) - \<Phi> h1 - \<Phi> h2 \<le> log 2 (size_hp h1 + size_hp h2 + 1) + 1"
         using \<Delta>\<Phi>_meld[of h1 h2] by simp
       thus ?thesis by(simp)
     qed
