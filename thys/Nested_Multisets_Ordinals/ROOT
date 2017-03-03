@@ -9,5 +9,6 @@ session Nested_Multisets_Ordinals (AFP) = Ordinal +
   theories
     Signed_Syntactic_Ordinal
     Syntactic_Ordinal_Bridge
+    McCarthy_91
   document_files
     "root.tex"
