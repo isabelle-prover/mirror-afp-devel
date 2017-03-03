@@ -1,6 +1,5 @@
 (*  Title:       Termination of McCarthy's 91 function following Dershowitz and Manna
-    Author:      Jasmin Blanchette <jasmin.blanchette at inria.fr>, 2016
-    Author:      Dmitriy Traytel <traytel at inf.ethz.ch>, 2016
+    Author:      Jasmin Blanchette <jasmin.blanchette at inria.fr>, 2017
     Maintainer:  Jasmin Blanchette <jasmin.blanchette at inria.fr>
 *)
 
