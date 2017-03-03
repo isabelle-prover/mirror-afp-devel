@@ -293,7 +293,7 @@ fun exec :: "ops \<Rightarrow> tab list \<Rightarrow> tab" where
 fun cost :: "ops \<Rightarrow> tab list \<Rightarrow> nat" where
 "cost Empty _ = 1" |
 "cost Ins [(n,l)] = (if n<l then 1 else n+1)" |
-"cost Del [(n,l)] = (if n=1 then 1 else if 4*(n - 1)<l then n else 1)"
+"cost Del [(n,l)] = (if n\<le>1 then 1 else if 4*(n - 1)<l then n else 1)"
 
 interpretation Amortized
 where arity = arity and exec = exec
@@ -336,14 +336,14 @@ fun exec :: "'a ops \<Rightarrow> 'a queue list \<Rightarrow> 'a queue" where
 "exec Deq [(xs,ys)] = (if ys = [] then ([], tl(rev xs)) else (xs,tl ys))"
 
 fun cost :: "'a ops \<Rightarrow> 'a queue list \<Rightarrow> nat" where
-"cost Empty _ = 1" |
+"cost Empty _ = 0" |
 "cost (Enq x) [(xs,ys)] = 1" |
 "cost Deq [(xs,ys)] = (if ys = [] then length xs else 0)"
 
 interpretation Amortized
 where arity = arity and exec = exec and inv = "\<lambda>_. True"
 and cost = cost and \<Phi> = "\<lambda>(xs,ys). length xs"
-and U = "\<lambda>f _. case f of Empty \<Rightarrow> 1 | Enq _ \<Rightarrow> 2 | Deq \<Rightarrow> 0"
+and U = "\<lambda>f _. case f of Empty \<Rightarrow> 0 | Enq _ \<Rightarrow> 2 | Deq \<Rightarrow> 0"
 proof (standard, goal_cases)
   case 1 show ?case by simp
 next
@@ -377,7 +377,7 @@ fun exec :: "'a ops \<Rightarrow> 'a queue list \<Rightarrow> 'a queue" where
 "exec Deq [(xs,ys)] = balance (xs, tl ys)"
 
 fun cost :: "'a ops \<Rightarrow> 'a queue list \<Rightarrow> nat" where
-"cost Empty _ = 1" |
+"cost Empty _ = 0" |
 "cost (Enq x) [(xs,ys)] = 1 + (if size xs + 1 \<le> size ys then 0 else size xs + 1 + size ys)" |
 "cost Deq [(xs,ys)] = (if size xs \<le> size ys - 1 then 0 else size xs + (size ys - 1))"
 
@@ -385,7 +385,7 @@ interpretation Amortized
 where arity = arity and exec = exec
 and inv = "\<lambda>(xs,ys). size xs \<le> size ys"
 and cost = cost and \<Phi> = "\<lambda>(xs,ys). 2 * size xs"
-and U = "\<lambda>f _. case f of Empty \<Rightarrow> 1 | Enq _ \<Rightarrow> 3 | Deq \<Rightarrow> 0"
+and U = "\<lambda>f _. case f of Empty \<Rightarrow> 0 | Enq _ \<Rightarrow> 3 | Deq \<Rightarrow> 0"
 proof (standard, goal_cases)
   case (1 _ f) thus ?case by (cases f) (auto split: if_splits)
 next
