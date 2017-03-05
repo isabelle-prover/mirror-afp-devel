@@ -40,7 +40,7 @@ declare powr_numeral[of "numeral m" for m, simplified, simp]
 
 lemma ld_sum_inequality:
   assumes "x > 0" "y > 0"
-  shows   "2 + log 2 x + log 2 y \<le> 2 * log 2 (x + y)"
+  shows   "log 2 x + log 2 y + 2 \<le> 2 * log 2 (x + y)"
 proof -
   have 0: "0 \<le> (x-y)^2" using assms by(simp)
   have "2 powr (2 + log 2 x + log 2 y) = 4 * x * y" using assms

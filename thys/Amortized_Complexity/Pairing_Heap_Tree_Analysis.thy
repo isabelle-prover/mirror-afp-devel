@@ -83,26 +83,17 @@ next
   let ?t ="log 2 (size lx + size ly + 1) - log 2 (size ly + size ?ry + 1)"
   have "\<Phi> (pass\<^sub>1 ?h) - \<Phi> ?h \<le> ?t + upperbound ?ry" 
     using "4.IH" by (simp add: size_pass\<^sub>1 algebra_simps)
-  also have "?t \<le> 2*log 2  (size ?h) - 2*log 2 (size ?ry) - 2"
+  moreover have "log 2 (size lx + size ly + 1) + 2 * log 2 (size ?ry) + 2
+    \<le> 2 * log 2 (size ?h) + log 2 (size ly + size ?ry + 1)" (is "?l \<le> ?r")
   proof -
-    have "log 2 (size lx + size ly + 1) + log 2  (size ?ry) - 2*log 2 (size ?h) 
-      = log 2 ((size lx + size ly + 1)/(size ?h) ) + log 2 (size ?ry / size ?h)"
-      (is "_ = log 2 ?t1 + log 2 ?t2") by (simp add: log_divide)
-    also have "\<dots> \<le> -2" 
-    proof -
-      have "2 + \<dots> \<le> 2*log 2 (?t1 + ?t2)"
-        using ld_sum_inequality [of "?t1" "?t2"] by simp
-      also have "\<dots> \<le> 0" by (simp add: field_simps del: of_nat_Suc)
-      finally show ?thesis by linarith
-    qed 
-    finally have "log 2 (size lx + size ly + 1) + log 2 (size ?ry) + 2
-      \<le>  2*log 2 (size ?h)" by simp
-    moreover have "log 2 (size ?ry) \<le> log 2 (size ?rx)" by simp  
-    ultimately have "log 2 (size lx + size ly + 1) - \<dots> 
-      \<le>  2*log 2 (size ?h) - 2*log 2 (size ?ry) - 2" by linarith
-    thus ?thesis by simp
+    have "?l \<le> 2 * log 2 (size lx + size ly + size ?ry + 1) + log 2 (size ?ry)"
+      using ld_sum_inequality [of "size lx + size ly + 1" "size ?ry"] by simp
+    also have "\<dots> \<le> 2 * log 2 (size lx + size ly + size ?ry + 2) + log 2 (size ?ry)"
+      by simp
+    also have "\<dots> \<le> ?r" by simp
+    finally show ?thesis .
   qed
-  finally show ?case by (simp add: algebra_simps)
+  ultimately show ?case by simp
 qed simp_all
 
 lemma \<Delta>\<Phi>_pass1: assumes "hs \<noteq> Leaf"
