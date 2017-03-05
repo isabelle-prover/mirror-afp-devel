@@ -442,9 +442,9 @@ proof (induction p rule: less_induct)
     let ?cert = "[Prime 3, Triple 3 2 2, Triple 3 2 1, Prime 2, Triple 2 1 1]"
 
     have "length ?cert \<le> 6*log 2 p - 4
-          \<longleftrightarrow> 2 powr 9 \<le> 2 powr (log 2 p * 6)" by auto
+          \<longleftrightarrow> 2 powr 9 \<le> 2 powr (log 2 p * 6)" by (simp del: numeral_powr_numeral)
     also have "\<dots> \<longleftrightarrow> True"
-      by (simp add: powr_powr[symmetric] powr_numeral)
+      by (simp add: powr_powr[symmetric])
     finally have ?case
       by (intro exI[where x="?cert"]) (simp add: cong_nat_def)
   }

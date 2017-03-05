@@ -140,7 +140,7 @@ proof -
     "udecimal 21 (- 2) = 15132094747964867 / 72057594037927936"
     "ldecimal 130 (- 2) = 11709359031163289 / 9007199254740992"
     "udecimal 225 (- 2) = 2.25"
-    by (auto simp: powr_minus powr_numeral decs)
+    by (auto simp: powr_minus decs)
 
   have *: "aform.set_of_irect
      (int (irect_mod (vdp_optns' (- 2) 2 (- 9) 1))) = aform.set_of_irect 6"
@@ -150,12 +150,12 @@ proof -
 
   have subset1: "?I \<subseteq> UNIV \<times> {2.25 .. 2.25}"
     by (auto simp: aform_of_point_def Affine_aform_of_ivl zero_prod_def Affine_msum_aform
-      powr_minus powr_numeral dec_rat)
+      powr_minus dec_rat)
 
   have subset2: "{(1.3, 2.25) .. (1.5, 2.25)} \<subseteq> ?I"
     by (rule subset_Affine_msum_aform'_point_ivl)
       (auto simp: aform_of_point_def Affine_aform_of_ivl zero_prod_def Affine_msum_aform
-        powr_minus powr_numeral dec_rat)
+        powr_minus dec_rat)
   have "vdp.flowsto
     (vdp.set_of_coll Affine
      (Some [msum_aform' (aform_of_point (ldecimal 130 (- 2), udecimal 225 (- 2)))

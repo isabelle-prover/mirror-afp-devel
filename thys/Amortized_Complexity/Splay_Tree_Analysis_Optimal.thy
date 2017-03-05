@@ -298,7 +298,7 @@ interpretation S34: Splay_Analysis "root 3 4" "1/3"
 proof (standard, goal_cases)
   case 2 thus ?case
     by(simp add: root_simps)
-      (auto simp: powr_numeral numeral_eq_Suc split_mult_pos_le intro!: mult_mono)
+      (auto simp: numeral_eq_Suc split_mult_pos_le intro!: mult_mono)
 next
   case 3 thus ?case by(simp add: root_simps cancel nl3)
 next
