@@ -129,8 +129,8 @@ proof -
   show ?thesis by (auto simp add: size_pass\<^sub>1 mergepairs_pass12)
 qed
 
-lemma \<Delta>\<Phi>_del_min: "lx \<noteq> Leaf \<Longrightarrow>
-  \<Phi> (del_min (Node lx x Leaf)) - \<Phi> (Node lx x Leaf) 
+lemma \<Delta>\<Phi>_del_min: assumes "lx \<noteq> Leaf"
+shows "\<Phi> (del_min (Node lx x Leaf)) - \<Phi> (Node lx x Leaf) 
   \<le> 3*log 2 (size lx) - len lx + 2"
 proof -
   let ?h = "Node lx x Leaf"
@@ -143,8 +143,7 @@ proof -
   moreover have "lx \<noteq> Leaf \<Longrightarrow> \<Phi> (pass\<^sub>1 lx) - \<Phi> lx \<le>  2*\<dots> - len lx + 2" 
     using \<Delta>\<Phi>_pass1 by metis
   moreover have "?\<Delta>\<Phi> \<le> ?\<Delta>\<Phi>\<^sub>2" by simp
-  moreover assume "lx \<noteq> Leaf"
-  ultimately show ?thesis by linarith
+  ultimately show ?thesis using assms by linarith
 qed
 
 lemma is_root_meld:

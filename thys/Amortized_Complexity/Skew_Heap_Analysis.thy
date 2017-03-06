@@ -5,6 +5,7 @@ imports
   "../Skew_Heap/Skew_Heap"
   Amortized_Framework
   Priority_Queue_ops_meld
+   Lemmas_log
 begin
 
 text{* The following proof is a simplified version of the one by Kaldewaij and
@@ -69,8 +70,10 @@ apply(induction t1 t2 rule: meld2.induct)
 apply(auto simp: max_def)  (*slow*)
 done
 
-lemma plus_log_le_2log_plus: assumes [arith]: "x \<ge> 1" " y\<ge> 1" "b > 1"
-shows "log b x + log b y \<le> 2 * log b (x + y)"
+lemma plus_log_le_2log_plus:
+  "\<lbrakk> x > 0; y > 0 \<rbrakk> \<Longrightarrow> log 2 x + log 2 y \<le> 2 * log 2 (x + y)"
+using ld_sum_inequality[of x y] by linarith
+(*
 proof -
   have 1: "x*y \<le> (x+y)^2"
     by (simp add: numeral_eq_Suc algebra_simps add_increasing)
@@ -78,6 +81,7 @@ proof -
   also have "\<dots> \<le> log b ((x+y)^2)" by (simp add: 1)
   finally show ?thesis by (simp add: log_nat_power)
 qed
+*)
 
 lemma amor_le:
   "t\<^sub>m\<^sub>e\<^sub>l\<^sub>d t1 t2 + \<Phi> (meld t1 t2) - \<Phi> t1 - \<Phi> t2 \<le>
