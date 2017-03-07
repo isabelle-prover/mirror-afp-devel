@@ -73,39 +73,9 @@
 <a href="https://ci.isabelle.systems/afp-submission/">via this web page</a>.
 </p>
 
-<p>You will need to supply the following information:</p>
-<ul>
-<li>Title, authors and abstract in plain text.</li>
-<li>A short name. It will become the directory name of the archive
-entry.</li>
-<li>Name/contact of the maintainer of the entry (usually the author).</li>
-<li>URL or email address of authors to display on the web page.</li>
-<li>The topic(s) the entry should be listed under in <a href="topics.shtml">the index</a>.</li>
-<li>A tar file with the theory files, ROOT file, and
-    document directory. The theories should work with the current
-    release of <a href="http://isabelle.in.tum.de/">Isabelle</a>.
-<li>A notice whether you license your submission under BSD 
-    or LGPL if accepted. For LGPL submissions, please include the
-    header "License: LGPL" in each file.</li>
-</ul>
-
-<p>The submission must build with the current Isabelle release version.
-   Submissions for older Isabelle versions are not accepted.</p>
-
-<p>Submissions for the Isabelle development version are also acceptable,
-but publication of the entry on the front page will be deferred until the
-next Isabelle release. In the meantime the entry will only be visible on
-the <a href="https://devel.isa-afp.org">development pages</a>.
-In this case,
-submit your article as described above. Because your article is tested
-against the release version, this will fail (otherwise your article does
-not need the development version!) and you cannot perform the final step
-in the submission process. When that happens, simply copy the url of the
-submission page at that point into an email to <a href="&#109;&#97;&#105;&#108;&#116;&#111;:&#97;&#102;&#112;-&#115;&#117;&#98;&#109;&#105;&#116;&#64;&#105;&#110;&#46;&#116;&#117;&#109;&#46;&#100;&#101;">&#97;&#102;&#112;-&#115;&#117;&#98;&#109;&#105;&#116;&#64;&#105;&#110;&#46;&#116;&#117;&#109;&#46;&#100;&#101;</a>.
-</p>
-
-<p>The submission must follow the following Isabelle style rules.
-    For additional guidelines on Isabelle proofs, also see the this <a href="http://proofcraft.org/blog/isabelle-style.html">guide</a> (feel free to follow all of these; only the below are mandatory).</p>
+<p><strong>The submission must follow the following Isabelle style rules.</strong>
+    For additional guidelines on Isabelle proofs, also see the this <a href="http://proofcraft.org/blog/isabelle-style.html">guide</a> (feel free to follow all of these; only the below are mandatory).
+    <strong>Technical details about the submission process and the format of the submission are explained on the submission site.</strong></p>
 <ul>
     <li>No use of the commands <code>sorry</code> or <code>back</code>.</li>
 
@@ -132,10 +102,6 @@ submission page at that point into an email to <a href="&#109;&#97;&#105;&#108;&
     than roughly 1 min, please add a short comment to that step, so
     maintainers will know what to expect.</li>
 </ul>
-
-<p>There is an
- <a href="entries/Example-Submission.shtml">example submission</a>
-that contains further information.</p>
 
 <p>It is possible and encouraged to build on other archive entries
    in your submission. There is a standardised way to 
