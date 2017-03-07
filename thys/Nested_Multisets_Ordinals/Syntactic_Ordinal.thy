@@ -170,6 +170,9 @@ lemma not_gr_zero_hmset[simp]: "\<not> 0 < M \<longleftrightarrow> M = 0" for M 
 lemma zero_less_iff_neq_zero_hmset: "0 < M \<longleftrightarrow> M \<noteq> 0" for M :: hmultiset
   using not_gr_zero_hmset by blast
 
+lemma zero_less_HMSet_iff[simp]: "0 < HMSet M \<longleftrightarrow> M \<noteq> {#}"
+  by (simp only: zero_less_iff_neq_zero_hmset HMSet_eq_0_iff)
+
 lemma gr_zeroI_hmset: "(M = 0 \<Longrightarrow> False) \<Longrightarrow> 0 < M" for M :: hmultiset
   by (rule zero_less_iff_neq_zero_hmset[THEN iffD2]) iprover
 
@@ -178,9 +181,6 @@ lemma gr_implies_not_zero_hmset: "M < N \<Longrightarrow> N \<noteq> 0" for M N 
 
 lemma add_eq_0_iff_both_eq_0_hmset[simp]: "M + N = 0 \<longleftrightarrow> M = 0 \<and> N = 0" for M N :: hmultiset
   by (intro add_nonneg_eq_0_iff zero_le_hmset)
-
-lemma zero_eq_add_iff_both_eq_0_hmset[simp]: "0 = M + N \<longleftrightarrow> M = 0 \<and> N = 0" for M N :: hmultiset
-  using add_eq_0_iff_both_eq_0_hmset[of M N] unfolding eq_commute[of 0] .
 
 lemma trans_less_add1_hmset: "i < j \<Longrightarrow> i < j + m" for i j m :: hmultiset
   by (metis add_increasing2 leD le_less not_gr_zero_hmset)
