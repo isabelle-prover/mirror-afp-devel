@@ -195,4 +195,6 @@ proof -
   qed
 qed
 
+declare g.simps[simp del]
+
 end
