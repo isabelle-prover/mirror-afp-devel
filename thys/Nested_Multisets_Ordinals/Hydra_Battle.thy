@@ -1,4 +1,4 @@
-(*  Title:       Termination of the Hydra Battle following Dershowitz and Moser
+(*  Title:       Termination of the hydra battle following Dershowitz and Moser
     Author:      Jasmin Blanchette <jasmin.blanchette at inria.fr>, 2017
     Maintainer:  Jasmin Blanchette <jasmin.blanchette at inria.fr>
 *)
@@ -11,6 +11,12 @@ begin
 
 hide_const (open) Nil Cons
 
+text \<open>
+The @{text h} function and its auxiliaries @{text f} and @{text d} represent the
+hydra battle. The @{text hmset_of_lisp} function converts a hydra (represented
+as a Lisp-like tree) to a syntactic ordinal.
+\<close>
+
 datatype lisp =
   Nil
 | Cons (car: lisp) (cdr: lisp)
@@ -21,12 +27,6 @@ where
 primrec hmset_of_lisp :: "lisp \<Rightarrow> hmultiset" where
   "hmset_of_lisp Nil = 0"
 | "hmset_of_lisp (Cons l r) = HMSet {#hmset_of_lisp l#} + hmset_of_lisp r"
-
-lemma hmset_of_lisp_left_less: "hmset_of_lisp l < hmset_of_lisp (Cons l r)"
-  by (auto simp: mem_imp_less_HMSet intro: trans_less_add1_hmset)
-
-lemma hmset_of_lisp_right_less: "hmset_of_lisp r < hmset_of_lisp (Cons l r)"
-  by simp
 
 primrec f :: "nat \<Rightarrow> lisp \<Rightarrow> lisp \<Rightarrow> lisp" where
   "f 0 y x = x"
