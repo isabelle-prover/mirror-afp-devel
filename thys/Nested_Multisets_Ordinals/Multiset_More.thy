@@ -366,19 +366,20 @@ lemma sum_mset_dvd:
 
 (* TODO: Move to Main? *)
 lemma div_plus_div_distrib_dvd_left: "k dvd x \<Longrightarrow> (x + y) div k = (x div k) + (y div k)"
-  for k :: "'a::{semidom_divide,semiring_div}"
+  for k :: "'a::{comm_semiring_1_cancel,semiring_div}"
   by (metis (no_types) add.commute add_cancel_left_left div_by_0 div_mult_self1 dvd_div_mult_self)
 
 (* TODO: Move to Main? *)
 lemma div_plus_div_distrib_dvd_right: "k dvd y \<Longrightarrow> (x + y) div k = (x div k) + (y div k)"
-  for k :: "'a::{semidom_divide,semiring_div}"
+  for k :: "'a::{comm_semiring_1_cancel,semiring_div}"
   by (metis add.commute div_plus_div_distrib_dvd_left)
 
 lemma sum_mset_distrib_div_if_dvd:
-  fixes k :: "'a::{algebraic_semidom,semiring_div}"
+  fixes k :: "'a::{comm_semiring_1_cancel,semiring_div}"
   assumes "\<forall>m \<in># M. k dvd f m"
   shows "(\<Sum>m \<in># M. f m) div k = (\<Sum>m \<in># M. f m div k)"
   using assms by (induct M) (auto simp: div_plus_div_distrib_dvd_left)
+
 
 subsection \<open>Lemmas about Remove\<close>
 
