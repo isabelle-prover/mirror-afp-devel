@@ -249,4 +249,55 @@ instance
 
 end
 
+
+subsection \<open>Inequalities\<close>
+
+lemma zero_le_hmset[simp]: "0 \<le> M" for M :: hmultiset
+  by (simp add: order_le_less) (metis hmsetmset_less le_multiset_empty_left hmsetmset_empty_iff)
+
+lemma
+  le_add1_hmset: "n \<le> n + m" and
+  le_add2_hmset: "n \<le> m + n" for n :: hmultiset
+  by simp+
+
+lemma le_zero_eq_hmset[simp]: "M \<le> 0 \<longleftrightarrow> M = 0" for M :: hmultiset
+  by (simp add: dual_order.antisym)
+
+lemma not_less_zero_hmset[simp]: "\<not> M < 0" for M :: hmultiset
+  using not_le zero_le_hmset by blast
+
+lemma not_gr_zero_hmset[simp]: "\<not> 0 < M \<longleftrightarrow> M = 0" for M :: hmultiset
+  using neqE not_less_zero_hmset by blast
+
+lemma zero_less_iff_neq_zero_hmset: "0 < M \<longleftrightarrow> M \<noteq> 0" for M :: hmultiset
+  using not_gr_zero_hmset by blast
+
+lemma zero_less_HMSet_iff[simp]: "0 < HMSet M \<longleftrightarrow> M \<noteq> {#}"
+  by (simp only: zero_less_iff_neq_zero_hmset HMSet_eq_0_iff)
+
+lemma gr_zeroI_hmset: "(M = 0 \<Longrightarrow> False) \<Longrightarrow> 0 < M" for M :: hmultiset
+  using not_gr_zero_hmset by blast
+
+lemma gr_implies_not_zero_hmset: "M < N \<Longrightarrow> N \<noteq> 0" for M N :: hmultiset
+  by auto
+
+lemma add_eq_0_iff_both_eq_0_hmset[simp]: "M + N = 0 \<longleftrightarrow> M = 0 \<and> N = 0" for M N :: hmultiset
+  by (intro add_nonneg_eq_0_iff zero_le_hmset)
+
+lemma trans_less_add1_hmset: "i < j \<Longrightarrow> i < j + m" for i j m :: hmultiset
+  by (metis add_increasing2 leD le_less not_gr_zero_hmset)
+
+lemma trans_less_add2_hmset: "i < j \<Longrightarrow> i < m + j" for i j m :: hmultiset
+  by (simp add: add.commute trans_less_add1_hmset)
+
+lemma trans_le_add1_hmset: "i \<le> j \<Longrightarrow> i \<le> j + m" for i j m :: hmultiset
+  by (simp add: add_increasing2)
+
+lemma trans_le_add2_hmset: "i \<le> j \<Longrightarrow> i \<le> m + j" for i j m :: hmultiset
+  by (simp add: add_increasing)
+
+lemma diff_le_self_hmset: "m - n \<le> m" for m n :: hmultiset
+  by (metis add.commute add.right_neutral diff_add_zero diff_diff_add_hmset
+    le_minus_plus_same_hmset)
+
 end

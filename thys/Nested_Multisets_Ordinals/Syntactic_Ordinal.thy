@@ -137,9 +137,6 @@ lemma times_hmultiset_monoL:
 instance hmultiset :: linordered_semiring_strict
   by intro_classes (subst (1 2) mult.commute, rule times_hmultiset_monoL)
 
-lemma zero_le_hmset[simp]: "0 \<le> M" for M :: hmultiset
-  by (simp add: order_le_less) (metis hmsetmset_less le_multiset_empty_left hmsetmset_empty_iff)
-
 lemma mult_le_mono1_hmset: "i \<le> j \<Longrightarrow> i * k \<le> j * k" for i j k :: hmultiset
   by (simp add: mult_right_mono)
 
@@ -148,51 +145,6 @@ lemma mult_le_mono2_hmset: "i \<le> j \<Longrightarrow> k * i \<le> k * j" for i
 
 lemma mult_le_mono_hmset: "i \<le> j \<Longrightarrow> k \<le> l \<Longrightarrow> i * k \<le> j * l" for i j k l :: hmultiset
   by (simp add: mult_mono)
-
-lemma
-  le_add1_hmset: "n \<le> n + m" and
-  le_add2_hmset: "n \<le> m + n" for n :: hmultiset
-  by simp+
-
-lemma le_zero_eq_hmset[simp]: "M \<le> 0 \<longleftrightarrow> M = 0" for M :: hmultiset
-proof (cases M)
-  case (HMSet x)
-  thus ?thesis
-    by (cases x) (auto simp: zero_hmultiset_def order_le_less less_multiset_ext\<^sub>D\<^sub>M_less)
-qed
-
-lemma not_less_zero_hmset[simp]: "\<not> M < 0" for M :: hmultiset
-  using not_le zero_le_hmset by blast
-
-lemma not_gr_zero_hmset[simp]: "\<not> 0 < M \<longleftrightarrow> M = 0" for M :: hmultiset
-  using neqE not_less_zero_hmset by blast
-
-lemma zero_less_iff_neq_zero_hmset: "0 < M \<longleftrightarrow> M \<noteq> 0" for M :: hmultiset
-  using not_gr_zero_hmset by blast
-
-lemma zero_less_HMSet_iff[simp]: "0 < HMSet M \<longleftrightarrow> M \<noteq> {#}"
-  by (simp only: zero_less_iff_neq_zero_hmset HMSet_eq_0_iff)
-
-lemma gr_zeroI_hmset: "(M = 0 \<Longrightarrow> False) \<Longrightarrow> 0 < M" for M :: hmultiset
-  by (rule zero_less_iff_neq_zero_hmset[THEN iffD2]) iprover
-
-lemma gr_implies_not_zero_hmset: "M < N \<Longrightarrow> N \<noteq> 0" for M N :: hmultiset
-  by auto
-
-lemma add_eq_0_iff_both_eq_0_hmset[simp]: "M + N = 0 \<longleftrightarrow> M = 0 \<and> N = 0" for M N :: hmultiset
-  by (intro add_nonneg_eq_0_iff zero_le_hmset)
-
-lemma trans_less_add1_hmset: "i < j \<Longrightarrow> i < j + m" for i j m :: hmultiset
-  by (metis add_increasing2 leD le_less not_gr_zero_hmset)
-
-lemma trans_less_add2_hmset: "i < j \<Longrightarrow> i < m + j" for i j m :: hmultiset
-  by (metis add_increasing leD le_less not_gr_zero_hmset)
-
-lemma trans_le_add1_hmset: "i \<le> j \<Longrightarrow> i \<le> j + m" for i j m :: hmultiset
-  by (simp add: add_increasing2)
-
-lemma trans_le_add2_hmset: "i \<le> j \<Longrightarrow> i \<le> m + j" for i j m :: hmultiset
-  by (simp add: add_increasing)
 
 lemma less_iff_add1_le_hmset: "m < n \<longleftrightarrow> m + 1 \<le> n" for m n :: hmultiset
 proof (cases m n rule: hmultiset.exhaust[case_product hmultiset.exhaust])
@@ -323,10 +275,6 @@ lemma le_square_hmset: "m \<le> m * m" for m :: hmultiset
 
 lemma le_cube_hmset: "m \<le> m * (m * m)" for m :: hmultiset
   using mult_le_cancel_left1_hmset by force
-
-lemma diff_le_self_hmset: "m - n \<le> m" for m n :: hmultiset
-  by (metis add.commute add.right_neutral diff_add_zero diff_diff_add_hmset
-    le_minus_plus_same_hmset)
 
 lemma
   less_imp_minus_plus_hmset: "m < n \<Longrightarrow> k < k - m + n" and
