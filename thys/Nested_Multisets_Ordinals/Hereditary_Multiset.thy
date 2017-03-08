@@ -127,6 +127,9 @@ definition zero_hmultiset :: hmultiset where
 lemma hmsetmset_empty_iff[simp]: "hmsetmset n = {#} \<longleftrightarrow> n = 0"
   unfolding zero_hmultiset_def by (cases n) simp
 
+lemma hmsetmset_0[simp]: "hmsetmset 0 = {#}"
+  by simp
+
 lemma
   HMSet_eq_0_iff[simp]: "HMSet m = 0 \<longleftrightarrow> m = {#}" and
   zero_eq_HMSet[simp]: "0 = HMSet m \<longleftrightarrow> m = {#}"
