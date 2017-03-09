@@ -361,11 +361,14 @@ subsection \<open>Head Omega\<close>
 definition head_\<omega> :: "hmultiset \<Rightarrow> hmultiset" where
   "head_\<omega> M = (if M = 0 then 0 else HMSet {#Max (set_mset (hmsetmset M))#})"
 
+lemma head_\<omega>_subseteq: "hmsetmset (head_\<omega> M) \<subseteq># hmsetmset M"
+  unfolding head_\<omega>_def by simp
+
 lemma head_\<omega>_eq_0_iff[simp]: "head_\<omega> m = 0 \<longleftrightarrow> m = 0"
   unfolding head_\<omega>_def zero_hmultiset_def by simp
 
 lemma head_\<omega>_0[simp]: "head_\<omega> 0 = 0"
-  unfolding head_\<omega>_def by simp
+  by simp
 
 lemma head_\<omega>_1[simp]: "head_\<omega> 1 = 1"
   unfolding head_\<omega>_def one_hmultiset_def by simp

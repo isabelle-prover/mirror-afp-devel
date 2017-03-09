@@ -355,6 +355,16 @@ lemma image_mset_filter_swap2: \<open>{#C \<in># {#P x. x \<in># D#}. Q C #} = {
 
 subsection \<open>Lemma about Sum\<close>
 
+lemma sum_image_mset_mono:
+  fixes f :: "'a \<Rightarrow> 'b::canonically_ordered_monoid_add"
+  assumes sub: "A \<subseteq># B"
+  shows "(\<Sum>m \<in># A. f m) \<le> (\<Sum>m \<in># B. f m)"
+  by (metis image_mset_union le_iff_add sub subset_mset.add_diff_inverse sum_mset.union)
+
+lemma sum_image_mset_mono_mem:
+  "n \<in># M \<Longrightarrow> f n \<le> (\<Sum>m \<in># M. f m)" for f :: "'a \<Rightarrow> 'b::canonically_ordered_monoid_add"
+  by (metis image_mset_single mset_subset_eq_single sum_image_mset_mono sum_mset.singleton)
+
 lemma count_sum_mset_if_1_0: \<open>count M a = (\<Sum>x\<in>#M. if x = a then 1 else 0)\<close>
   by (induction M) auto
 
