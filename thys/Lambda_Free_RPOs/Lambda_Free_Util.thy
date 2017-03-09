@@ -455,11 +455,6 @@ proof -
     by fastforce
 qed
 
-lemma count_image_mset_inj:
-  assumes inj_y: "\<forall>z \<in># M. f z = f y \<longrightarrow> z = y"
-  shows "count (image_mset f M) (f y) = count M y"
-  using inj_y by (induct M) auto
-
 lemma count_image_mset_lt_imp_lt_raw:
   assumes
     "finite A" and
