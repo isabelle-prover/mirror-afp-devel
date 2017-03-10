@@ -96,7 +96,7 @@ function encode :: "nat \<Rightarrow> nat \<Rightarrow> hmultiset" where
   by pat_completeness auto
 termination
   using base_ge_2
-proof (relation "measure (\<lambda>(e, n). n * base ^ e + n)"; clarsimp)
+proof (relation "measure (\<lambda>(e, n). n * (base ^ e + 1))"; simp)
   fix e n :: nat
   assume n_ge_0: "n > 0"
 
@@ -107,16 +107,16 @@ proof (relation "measure (\<lambda>(e, n). n * base ^ e + n)"; clarsimp)
     using base_ge_2 by (simp add: power_mono)
   also have "\<dots> \<le> n * base ^ e"
     using n_ge_0 by (simp add: Suc_leI)
-  also have "\<dots> < n * base ^ e + n"
+  also have "\<dots> < n + n * base ^ e"
     using n_ge_0 by simp
-  finally show "e + e < n * base ^ e + n"
+  finally show "e + e < n + n * base ^ e"
     by assumption
 
   have "n div base * (base * base ^ e) \<le> n * base ^ e"
     using base_ge_2 by (auto intro: div_mult_le)
   moreover have "n div base < n"
     using n_ge_0 base_ge_2 by simp
-  ultimately show "n div base * (base * base ^ e) + n div base < n * base ^ e + n"
+  ultimately show "n div base + n div base * (base * base ^ e) < n + n * base ^ e"
     by linarith
 qed
 
