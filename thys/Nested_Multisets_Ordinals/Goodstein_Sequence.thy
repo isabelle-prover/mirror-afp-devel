@@ -501,10 +501,10 @@ proof (induct e n rule: encode.induct)
           less_imp_decode_less[OF well_base\<^sub>h_encode aligned\<^sub>d_0 aligned\<^sub>d_0] less_imp_encode_less)
 
     show ?thesis
-     using ih base_ge_2
-     by (subst encode.simps[unfolded of_nat_times_\<omega>_exp])
-       (simp add: decode_plus[OF align\<^sub>d1[unfolded of_nat_times_\<omega>_exp]]
-          decode_exp_shift_Suc[OF align\<^sub>d2])
+      using ih base_ge_2
+      by (subst encode.simps[unfolded of_nat_times_\<omega>_exp])
+        (simp add: decode_plus[OF align\<^sub>d1[unfolded of_nat_times_\<omega>_exp]]
+           decode_exp_shift_Suc[OF align\<^sub>d2])
   qed simp
 qed
 
