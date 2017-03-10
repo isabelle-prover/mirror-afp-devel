@@ -33,8 +33,8 @@ primrec f :: "nat \<Rightarrow> lisp \<Rightarrow> lisp \<Rightarrow> lisp" wher
   "f 0 y x = x"
 | "f (Suc m) y x = Cons y (f m y x)"
 
-lemma encode_f: "encode (f n y x) = HMSet (replicate_mset n (encode y)) + encode x"
-  by (induct n) (auto simp: HMSet_plus[symmetric])
+lemma encode_f: "encode (f n y x) = of_nat n * \<omega>^(encode y) + encode x"
+  unfolding of_nat_times_\<omega>_exp by (induct n) (auto simp: HMSet_plus[symmetric])
 
 function d :: "nat \<Rightarrow> lisp \<Rightarrow> lisp" where
   "d n x =
@@ -72,7 +72,7 @@ proof -
         {
           assume "car l = Nil"
           show "encode (f n (cdr l) r) < \<omega>^(encode l) + encode r"
-            using l_cons by (cases l) (auto simp: encode_f)
+            using l_cons by (cases l) (auto simp: encode_f[unfolded of_nat_times_\<omega>_exp])
         }
         {
           show "encode (d n l) < encode l"

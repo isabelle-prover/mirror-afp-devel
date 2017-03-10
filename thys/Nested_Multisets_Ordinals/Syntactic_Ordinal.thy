@@ -322,13 +322,19 @@ lemma of_nat_lt_\<omega>[simp]: "of_nat n < \<omega>"
   by (auto simp: of_nat_hmset zero_less_iff_neq_zero_hmset less_multiset_ext\<^sub>D\<^sub>M_less)
 
 lemma of_nat_ne_\<omega>[simp]: "of_nat n \<noteq> \<omega>"
-  by (metis of_nat_lt_\<omega> mset_le_asym mset_lt_single_iff)
+  by (simp add: neq_iff)
 
 lemma of_nat_less_hmset[simp]: "(of_nat M :: hmultiset) < of_nat N \<longleftrightarrow> M < N"
   unfolding of_nat_hmset less_multiset_ext\<^sub>D\<^sub>M_less by simp
 
 lemma of_nat_le_hmset[simp]: "(of_nat M :: hmultiset) \<le> of_nat N \<longleftrightarrow> M \<le> N"
   unfolding of_nat_hmset order_le_less less_multiset_ext\<^sub>D\<^sub>M_less by simp
+
+lemma of_nat_times_\<omega>_exp: "of_nat n * \<omega>^m = HMSet (replicate_mset n m)"
+  by (induct n) (simp_all add: hmsetmset_plus one_hmultiset_def)
+
+lemma \<omega>_exp_times_of_nat: "\<omega>^m * of_nat n = HMSet (replicate_mset n m)"
+  using of_nat_times_\<omega>_exp by simp
 
 
 subsection \<open>Embedding of Extended Natural Numbers\<close>
