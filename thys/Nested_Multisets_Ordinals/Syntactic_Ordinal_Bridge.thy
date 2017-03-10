@@ -64,7 +64,7 @@ lemma ordinal_of_hmset_1[simp]: "ordinal_of_hmset 1 = 1"
   using ordinal_of_hmset_suc[of 0] by simp
 
 lemma ordinal_of_hmset_\<omega>[simp]: "ordinal_of_hmset \<omega>\<^sub>h = \<omega>"
-  unfolding \<omega>_def by simp
+  by simp
 
 lemma ordinal_of_hmset_singleton[simp]: "ordinal_of_hmset (HMSet {#k#}) = \<omega> ** ordinal_of_hmset k"
   by simp

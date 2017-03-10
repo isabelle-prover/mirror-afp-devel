@@ -73,11 +73,11 @@ lemma zhmset_of_prod_list:
 
 subsection \<open>Omega\<close>
 
-definition \<omega>\<^sub>z :: zhmultiset where
-  "\<omega>\<^sub>z = ZHMSet {#1#}\<^sub>z"
+abbreviation \<omega>\<^sub>z :: zhmultiset where
+  "\<omega>\<^sub>z \<equiv> ZHMSet {#1#}\<^sub>z"
 
 lemma \<omega>\<^sub>z_as_\<omega>: "\<omega>\<^sub>z = zhmset_of \<omega>"
-  unfolding \<omega>\<^sub>z_def \<omega>_def by simp
+  by simp
 
 
 subsection \<open>Embedding of Natural Numbers\<close>
@@ -99,7 +99,7 @@ lemma plus_of_nat_minus_of_nat_zhmset:
   using assms by (simp add: of_nat_diff)
 
 lemma of_nat_lt_\<omega>\<^sub>z[simp]: "of_nat n < \<omega>\<^sub>z"
-  by (simp add: \<omega>\<^sub>z_as_\<omega> of_nat_zhmset zmset_of_less)
+  unfolding \<omega>\<^sub>z_as_\<omega> using of_nat_lt_\<omega> of_nat_zhmset zhmset_of_less by presburger
 
 lemma of_nat_ne_\<omega>\<^sub>z[simp]: "of_nat n \<noteq> \<omega>\<^sub>z"
   by (metis of_nat_lt_\<omega>\<^sub>z mset_le_asym mset_lt_single_iff)
@@ -339,8 +339,7 @@ proof -
   also have "\<dots> \<le> ?z \<alpha>1 + ?z \<beta>1 * ?z \<gamma> + ?z \<beta>1 * (?z \<delta> - ?z \<gamma>)"
     using \<beta>2_le_\<beta>1' \<gamma>_lt_\<delta>' by simp
   finally show ?thesis
-    by (simp add: zmset_of_less zhmset_of_times[symmetric]
-      zhmset_of_plus[symmetric] algebra_simps)
+    by (simp add: zmset_of_less zhmset_of_times[symmetric] zhmset_of_plus[symmetric] algebra_simps)
 qed
 
 end

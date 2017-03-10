@@ -293,8 +293,8 @@ instance hmultiset :: linordered_comm_semiring_strict
 
 subsection \<open>Omega\<close>
 
-definition \<omega> :: hmultiset where
-  "\<omega> = HMSet {#1#}"
+abbreviation \<omega> :: hmultiset where
+  "\<omega> \<equiv> HMSet {#1#}"
 
 
 subsection \<open>Embedding of Natural Numbers\<close>
@@ -310,7 +310,7 @@ lemma of_nat_minus_hmset: "of_nat (m - n) = (of_nat m :: hmultiset) - of_nat n"
 
 lemma plus_of_nat_plus_of_nat_hmset:
   "k + of_nat m + of_nat n = k + of_nat (m + n)" for k :: hmultiset
-  by (simp add: add.assoc)
+  by simp
 
 lemma plus_of_nat_minus_of_nat_hmset:
   fixes k :: hmultiset
@@ -319,7 +319,7 @@ lemma plus_of_nat_minus_of_nat_hmset:
   using assms by (metis add.left_commute add_diff_cancel_left' le_add_diff_inverse of_nat_add)
 
 lemma of_nat_lt_\<omega>[simp]: "of_nat n < \<omega>"
-  by (auto simp: of_nat_hmset zero_less_iff_neq_zero_hmset \<omega>_def less_multiset_ext\<^sub>D\<^sub>M_less)
+  by (auto simp: of_nat_hmset zero_less_iff_neq_zero_hmset less_multiset_ext\<^sub>D\<^sub>M_less)
 
 lemma of_nat_ne_\<omega>[simp]: "of_nat n \<noteq> \<omega>"
   by (metis of_nat_lt_\<omega> mset_le_asym mset_lt_single_iff)
@@ -380,7 +380,7 @@ lemma head_\<omega>_numeral[simp]: "head_\<omega> (numeral n) = 1"
   by (metis head_\<omega>_of_nat of_nat_numeral zero_neq_numeral)
 
 lemma head_\<omega>_\<omega>[simp]: "head_\<omega> \<omega> = \<omega>"
-  unfolding head_\<omega>_def \<omega>_def by simp
+  unfolding head_\<omega>_def by simp
 
 lemma le_imp_head_\<omega>_le:
   assumes m_le_n: "m \<le> n"
@@ -527,8 +527,7 @@ lemma lt_\<omega>_imp_ex_of_nat:
   shows "\<exists>n. M = of_nat n"
 proof -
   have M_lt_single_1: "hmsetmset M < {#1#}"
-    by (rule M_lt_\<omega>[unfolded \<omega>_def hmsetmset_less[symmetric] less_multiset_ext\<^sub>D\<^sub>M_less
-      hmultiset.sel])
+    by (rule M_lt_\<omega>[unfolded hmsetmset_less[symmetric] less_multiset_ext\<^sub>D\<^sub>M_less hmultiset.sel])
 
   have "N = 0" if "N \<in># hmsetmset M" for N
   proof -
@@ -563,20 +562,20 @@ lemma lt_\<omega>_lt_\<omega>_imp_times_lt_\<omega>: "M < \<omega> \<Longrightar
   by (metis lt_\<omega>_imp_ex_of_nat of_nat_lt_\<omega> of_nat_mult)
 
 lemma times_\<omega>_minus_of_nat[simp]: "m * \<omega> - of_nat n = m * \<omega>"
-  by (auto intro!: Diff_triv_mset simp: \<omega>_def times_hmultiset_def minus_hmultiset_def
+  by (auto intro!: Diff_triv_mset simp: times_hmultiset_def minus_hmultiset_def
     Times_mset_single_right of_nat_hmset disjunct_not_in image_def)
 
 lemma times_\<omega>_minus_numeral[simp]: "m * \<omega> - numeral n = m * \<omega>"
   by (metis of_nat_numeral times_\<omega>_minus_of_nat)
 
 lemma \<omega>_minus_of_nat[simp]: "\<omega> - of_nat n = \<omega>"
-  by (rule times_\<omega>_minus_of_nat[of 1, simplified])
+  using times_\<omega>_minus_of_nat[of 1] by (metis mult.left_neutral)
 
 lemma \<omega>_minus_1[simp]: "\<omega> - 1 = \<omega>"
-  by (simp add: \<omega>_minus_of_nat[of 1, simplified])
+  using \<omega>_minus_of_nat[of 1] by simp
 
 lemma \<omega>_minus_numeral[simp]: "\<omega> - numeral n = \<omega>"
-  by (rule times_\<omega>_minus_numeral[of 1, simplified])
+  using times_\<omega>_minus_numeral[of 1] by (metis mult.left_neutral)
 
 lemma hmset_of_enat_minus_enat[simp]: "hmset_of_enat (m - enat n) = hmset_of_enat m - of_nat n"
   by (cases m) (auto simp: of_nat_minus_hmset)
