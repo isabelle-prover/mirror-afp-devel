@@ -1,9 +1,9 @@
-(*  Title:       Termination of McCarthy's 91 function following Dershowitz and Manna
+(*  Title:       Termination of McCarthy's 91 function
     Author:      Jasmin Blanchette <jasmin.blanchette at inria.fr>, 2017
     Maintainer:  Jasmin Blanchette <jasmin.blanchette at inria.fr>
 *)
 
-section \<open>Termination of McCarthy's 91 Function Following Dershowitz and Manna\<close>
+section \<open>Termination of McCarthy's 91 Function\<close>
 
 theory McCarthy_91
 imports "~~/src/HOL/Library/Multiset_Order"
@@ -16,7 +16,8 @@ lemma funpow_rec: "f ^^ n = (if n = 0 then id else f \<circ> f ^^ (n - 1))"
 text \<open>
 The @{text f} function captures the semantics of McCarthy's 91 function. The
 @{text g} function is a tail-recursive implementation of the function, whose
-termination is established using the multiset order.
+termination is established using the multiset order. The definitions follow
+Dershowitz and Manna.
 \<close>
 
 definition f :: "int \<Rightarrow> int" where

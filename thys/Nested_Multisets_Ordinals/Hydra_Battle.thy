@@ -1,9 +1,9 @@
-(*  Title:       Termination of the hydra battle following Dershowitz and Moser
+(*  Title:       Termination of the hydra battle
     Author:      Jasmin Blanchette <jasmin.blanchette at inria.fr>, 2017
     Maintainer:  Jasmin Blanchette <jasmin.blanchette at inria.fr>
 *)
 
-section \<open>Termination of the Hydra Battle Following Dershowitz and Moser\<close>
+section \<open>Termination of the Hydra Battle\<close>
 
 theory Hydra_Battle
 imports Syntactic_Ordinal
@@ -13,8 +13,9 @@ hide_const (open) Nil Cons
 
 text \<open>
 The @{text h} function and its auxiliaries @{text f} and @{text d} represent the
-hydra battle. The @{text hmset_of_lisp} function converts a hydra (represented
-as a Lisp-like tree) to a syntactic ordinal.
+hydra battle. The @{text encode} function converts a hydra (represented as a
+Lisp-like tree) to a syntactic ordinal. The definitions follow Dershowitz and
+Moser.
 \<close>
 
 datatype lisp =
@@ -24,16 +25,15 @@ where
   "car Nil = Nil"
 | "cdr Nil = Nil"
 
-primrec hmset_of_lisp :: "lisp \<Rightarrow> hmultiset" where
-  "hmset_of_lisp Nil = 0"
-| "hmset_of_lisp (Cons l r) = HMSet {#hmset_of_lisp l#} + hmset_of_lisp r"
+primrec encode :: "lisp \<Rightarrow> hmultiset" where
+  "encode Nil = 0"
+| "encode (Cons l r) = HMSet {#encode l#} + encode r"
 
 primrec f :: "nat \<Rightarrow> lisp \<Rightarrow> lisp \<Rightarrow> lisp" where
   "f 0 y x = x"
 | "f (Suc m) y x = Cons y (f m y x)"
 
-lemma hmset_of_lisp_f:
-  "hmset_of_lisp (f n y x) = HMSet (replicate_mset n (hmset_of_lisp y)) + hmset_of_lisp x"
+lemma encode_f: "encode (f n y x) = HMSet (replicate_mset n (encode y)) + encode x"
   by (induct n) (auto simp: HMSet_plus[symmetric])
 
 function d :: "nat \<Rightarrow> lisp \<Rightarrow> lisp" where
@@ -52,7 +52,7 @@ function h :: "nat \<Rightarrow> lisp \<Rightarrow> lisp" where
   by pat_completeness auto
 termination
 proof -
-  let ?R = "inv_image {(m, n). m < n} (\<lambda>(n, x). hmset_of_lisp x)"
+  let ?R = "inv_image {(m, n). m < n} (\<lambda>(n, x). encode x)"
 
   show ?thesis
   proof (relation ?R)
@@ -71,11 +71,11 @@ proof -
         assume l_cons: "l \<noteq> Nil"
         {
           assume "car l = Nil"
-          show "hmset_of_lisp (f n (cdr l) r) < HMSet {#hmset_of_lisp l#} + hmset_of_lisp r"
-            using l_cons by (cases l) (auto simp: hmset_of_lisp_f)
+          show "encode (f n (cdr l) r) < HMSet {#encode l#} + encode r"
+            using l_cons by (cases l) (auto simp: encode_f)
         }
         {
-          show "hmset_of_lisp (d n l) < hmset_of_lisp l"
+          show "encode (d n l) < encode l"
             by (rule ihl[OF l_cons])
         }
       qed

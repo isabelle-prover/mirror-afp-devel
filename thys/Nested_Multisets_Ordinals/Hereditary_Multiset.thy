@@ -115,6 +115,9 @@ lemma HMSet_le[simp]: "HMSet M \<le> HMSet N \<longleftrightarrow> M \<le> N"
 lemma mem_imp_less_HMSet: "k \<in># L \<Longrightarrow> k < HMSet L"
   by (induct k arbitrary: L) (auto intro: ex_gt_imp_less_multiset)
 
+lemma mem_hmsetmset_imp_less: "M \<in># hmsetmset N \<Longrightarrow> M < N"
+  using mem_imp_less_HMSet by force
+
 
 subsection \<open>Disjoint Union and Truncated Difference\<close>
 
