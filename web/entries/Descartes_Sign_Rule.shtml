@@ -99,6 +99,7 @@
   <td class="abstract">
 Descartes' Rule of Signs relates the number of positive real roots of a
 polynomial with the number of sign changes in its coefficient sequence.
+
 Our proof follows the simple inductive proof given by Rob Arthan, which was also
 used by John Harrison in his HOL Light formalisation. We proved most of the
 lemmas for arbitrary linearly-ordered integrity domains (e.g. integers,

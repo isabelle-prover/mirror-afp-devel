@@ -103,6 +103,7 @@ but each element must only have finitely many (indirect) successors.
 Moreover, a subsumption relation can be used instead of pure equality.
 An executable variant of the algorithm is available where the generic operations
 are instantiated with list operations.
+
 This formalization was performed as part of the IsaFoR/CeTA project,
 and it has been used to certify size-change
 termination proofs where large transitive closures have to be computed.</td>

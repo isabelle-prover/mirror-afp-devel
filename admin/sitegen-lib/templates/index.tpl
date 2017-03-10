@@ -43,7 +43,7 @@ A <a href="http://devel.isa-afp.org">development version</a> of the archive is a
 
 <p>&nbsp;</p>
 
-{% for year, entries in by_year|dictsort|reverse %}
+{% for year, entries in by_year %}
 <p>&nbsp;</p>
 
 <table width="80%" class="entries">

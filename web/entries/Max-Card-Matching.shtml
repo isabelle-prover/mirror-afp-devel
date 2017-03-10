@@ -102,6 +102,7 @@ labeling of the nodes of <i>G</i> with integers such that every edge of
 <i>G</i> is either incident to a node labeled 1 or connects two nodes
 labeled with the same number <i>i &ge; 2</i>.
 This article proves Edmonds theorem:
+
 Let <i>M</i> be a matching in a graph <i>G</i> and let <i>OSC</i> be an
 odd-set cover of <i>G</i>.
 For any <i>i &ge; 0</i>, let <var>n(i)</var> be the number of nodes
