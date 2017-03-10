@@ -17,8 +17,14 @@ subsection \<open>Natural (Hessenberg) Product\<close>
 instantiation hmultiset :: comm_semiring_1
 begin
 
+abbreviation \<omega>_exp :: "hmultiset \<Rightarrow> hmultiset" ("\<omega>^") where
+  "\<omega>^ \<equiv> \<lambda>m. HMSet {#m#}"
+
 definition one_hmultiset :: hmultiset where
-  "1 = HMSet {#0#}"
+  "1 = \<omega>^0"
+
+abbreviation \<omega> :: hmultiset where
+  "\<omega> \<equiv> \<omega>^1"
 
 definition times_hmultiset :: "hmultiset \<Rightarrow> hmultiset \<Rightarrow> hmultiset"  where
   "A * B = HMSet (image_mset (case_prod (op +)) (hmsetmset A \<times>mset hmsetmset B))"
@@ -69,11 +75,11 @@ lemma empty_times_right_hmset[simp]: "M * HMSet {#} = 0"
   by (metis mult_zero_right zero_hmultiset_def)
 
 lemma singleton_times_left_hmset[simp]:
-  "HMSet {#M#} * N = HMSet (image_mset ((op +) M) (hmsetmset N))"
+  "\<omega>^M * N = HMSet (image_mset ((op +) M) (hmsetmset N))"
   by (simp add: times_hmultiset_def Times_mset_single_left)
 
 lemma singleton_times_right_hmset[simp]:
-  "N * HMSet {#M#} = HMSet (image_mset ((op +) M) (hmsetmset N))"
+  "N * \<omega>^M = HMSet (image_mset ((op +) M) (hmsetmset N))"
   by (metis mult.commute singleton_times_left_hmset)
 
 
@@ -291,12 +297,6 @@ instance hmultiset :: linordered_comm_semiring_strict
   by intro_classes simp
 
 
-subsection \<open>Omega\<close>
-
-abbreviation \<omega> :: hmultiset where
-  "\<omega> \<equiv> HMSet {#1#}"
-
-
 subsection \<open>Embedding of Natural Numbers\<close>
 
 lemma of_nat_hmset: "of_nat n = HMSet (replicate_mset n 0)"
@@ -359,7 +359,7 @@ lemma hmset_of_enat_eq_\<omega>_iff[simp]: "hmset_of_enat n = \<omega> \<longlef
 subsection \<open>Head Omega\<close>
 
 definition head_\<omega> :: "hmultiset \<Rightarrow> hmultiset" where
-  "head_\<omega> M = (if M = 0 then 0 else HMSet {#Max (set_mset (hmsetmset M))#})"
+  "head_\<omega> M = (if M = 0 then 0 else \<omega>^(Max (set_mset (hmsetmset M))))"
 
 lemma head_\<omega>_subseteq: "hmsetmset (head_\<omega> M) \<subseteq># hmsetmset M"
   unfolding head_\<omega>_def by simp

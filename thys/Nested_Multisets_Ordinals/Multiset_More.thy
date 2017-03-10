@@ -413,7 +413,7 @@ lemma image_mset_filter_swap2: \<open>{#C \<in># {#P x. x \<in># D#}. Q C #} = {
   by (simp add: image_mset_filter_swap)
 
 
-subsection \<open>Lemma about Sum\<close>
+subsection \<open>Lemmas about Sum\<close>
 
 lemma sum_image_mset_mono:
   fixes f :: "'a \<Rightarrow> 'b::canonically_ordered_monoid_add"

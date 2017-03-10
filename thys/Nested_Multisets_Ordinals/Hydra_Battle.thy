@@ -27,7 +27,7 @@ where
 
 primrec encode :: "lisp \<Rightarrow> hmultiset" where
   "encode Nil = 0"
-| "encode (Cons l r) = HMSet {#encode l#} + encode r"
+| "encode (Cons l r) = \<omega>^(encode l) + encode r"
 
 primrec f :: "nat \<Rightarrow> lisp \<Rightarrow> lisp \<Rightarrow> lisp" where
   "f 0 y x = x"
@@ -71,7 +71,7 @@ proof -
         assume l_cons: "l \<noteq> Nil"
         {
           assume "car l = Nil"
-          show "encode (f n (cdr l) r) < HMSet {#encode l#} + encode r"
+          show "encode (f n (cdr l) r) < \<omega>^(encode l) + encode r"
             using l_cons by (cases l) (auto simp: encode_f)
         }
         {

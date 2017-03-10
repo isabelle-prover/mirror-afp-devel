@@ -399,7 +399,7 @@ proof (induct M arbitrary: N e rule: less_induct)
     using hmset_pair_decompose_less[OF M_lt_N] by blast
 
   obtain H where
-    H: "head_\<omega> Na = HMSet {#H#}"
+    H: "head_\<omega> Na = \<omega>^H"
     using hds head_\<omega>_def by fastforce
   have H_in: "H \<in># hmsetmset Na"
     by (metis (no_types) H Max_in add_mset_eq_single add_mset_not_empty finite_set_mset head_\<omega>_def

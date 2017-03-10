@@ -50,6 +50,9 @@ subsection \<open>Embedding of Syntactic Ordinals into Huffman's Ordinals\<close
 abbreviation \<omega>\<^sub>h :: hmultiset where
   "\<omega>\<^sub>h \<equiv> Syntactic_Ordinal.\<omega>"
 
+abbreviation \<omega>\<^sub>h_exp :: "hmultiset \<Rightarrow> hmultiset" ("\<omega>\<^sub>h^") where
+  "\<omega>\<^sub>h^ \<equiv> Syntactic_Ordinal.\<omega>_exp"
+
 primrec ordinal_of_hmset :: "hmultiset \<Rightarrow> ordinal" where
   "ordinal_of_hmset (HMSet M) =
    from_cnf (rev (sorted_list_of_multiset (image_mset ordinal_of_hmset M)))"
@@ -66,7 +69,7 @@ lemma ordinal_of_hmset_1[simp]: "ordinal_of_hmset 1 = 1"
 lemma ordinal_of_hmset_\<omega>[simp]: "ordinal_of_hmset \<omega>\<^sub>h = \<omega>"
   by simp
 
-lemma ordinal_of_hmset_singleton[simp]: "ordinal_of_hmset (HMSet {#k#}) = \<omega> ** ordinal_of_hmset k"
+lemma ordinal_of_hmset_singleton[simp]: "ordinal_of_hmset (\<omega>^k) = \<omega> ** ordinal_of_hmset k"
   by simp
 
 lemma ordinal_of_hmset_iff[simp]: "ordinal_of_hmset k = 0 \<longleftrightarrow> k = 0"
@@ -183,7 +186,7 @@ proof (simp only: atomize_imp,
           by (metis add_mset_add_single hmsetmset_less hmultiset.sel k k_eq_xKa l l_eq_yLa
             le_multiset_right_total mset_lt_single_iff union_less_mono)
       next
-        have "HMSet {#x#} + HMSet Ka < HMSet {#y#} + HMSet La"
+        have "\<omega>^x + HMSet Ka < \<omega>^y + HMSet La"
           using k_lt_l[unfolded k_eq_xKa l_eq_yLa]
           by (metis HMSet_plus add.commute add_mset_add_single)
         thus "HMSet Ka < HMSet La"
@@ -213,7 +216,7 @@ proof (simp only: atomize_imp,
           by (metis Max_ge finite_set_mset less_le_trans not_less_iff_gr_or_eq that x x_lt_y)
       qed
 
-      have "ordinal_of_hmset k < ordinal_of_hmset (HMSet {#y#})"
+      have "ordinal_of_hmset k < ordinal_of_hmset (\<omega>^y)"
       proof (cases La)
         case empty
         show ?thesis
@@ -222,10 +225,10 @@ proof (simp only: atomize_imp,
         case La: (add ya Lb)
         show ?thesis
         proof (rule ih)
-          show "{#k, HMSet {#y#}#} < {#k, l#}"
+          show "{#k, \<omega>^y#} < {#k, l#}"
             unfolding l_eq_yLa La by simp
         next
-          show "k < HMSet {#y#}"
+          show "k < \<omega>^y"
           proof -
             have "\<And>m. x < Max (set_mset (add_mset y m))"
               by (meson Max_ge finite_set_mset less_le_trans union_single_eq_member x_lt_y)

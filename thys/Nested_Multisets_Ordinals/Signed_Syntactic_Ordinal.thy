@@ -17,7 +17,16 @@ subsection \<open>Natural (Hessenberg) Product\<close>
 instantiation zhmultiset :: comm_ring_1
 begin
 
+abbreviation \<omega>\<^sub>z_exp :: "hmultiset \<Rightarrow> zhmultiset" ("\<omega>\<^sub>z^") where
+  "\<omega>\<^sub>z^ \<equiv> \<lambda>m. ZHMSet {#m#}\<^sub>z"
+
 lift_definition one_zhmultiset :: zhmultiset is "{#0#}\<^sub>z" .
+
+abbreviation \<omega>\<^sub>z :: zhmultiset where
+  "\<omega>\<^sub>z \<equiv> \<omega>\<^sub>z^1"
+
+lemma \<omega>\<^sub>z_as_\<omega>: "\<omega>\<^sub>z = zhmset_of \<omega>"
+  by simp
 
 lift_definition times_zhmultiset :: "zhmultiset \<Rightarrow> zhmultiset \<Rightarrow> zhmultiset" is
   "\<lambda>M N.
@@ -69,15 +78,6 @@ lemma zhmset_of_times: "zhmset_of (A * B) = zhmset_of A * zhmset_of B"
 lemma zhmset_of_prod_list:
   "zhmset_of (prod_list Ms) = prod_list (map zhmset_of Ms)"
   by (induct Ms) (auto simp: one_hmultiset_def one_zhmultiset_def zhmset_of_times)
-
-
-subsection \<open>Omega\<close>
-
-abbreviation \<omega>\<^sub>z :: zhmultiset where
-  "\<omega>\<^sub>z \<equiv> ZHMSet {#1#}\<^sub>z"
-
-lemma \<omega>\<^sub>z_as_\<omega>: "\<omega>\<^sub>z = zhmset_of \<omega>"
-  by simp
 
 
 subsection \<open>Embedding of Natural Numbers\<close>
