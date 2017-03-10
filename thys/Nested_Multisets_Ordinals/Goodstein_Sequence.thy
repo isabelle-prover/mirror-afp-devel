@@ -92,8 +92,7 @@ subsection \<open>Encoding of Natural Numbers into Ordinals\<close>
 
 function encode :: "nat \<Rightarrow> nat \<Rightarrow> hmultiset" where
   "encode e n =
-   (if n = 0 then 0
-    else HMSet (replicate_mset (n mod base) (encode 0 e)) + encode (e + 1) (n div base))"
+   (if n = 0 then 0 else of_nat (n mod base) * \<omega>^(encode 0 e) + encode (e + 1) (n div base))"
   by pat_completeness auto
 termination
   using base_ge_2
@@ -127,8 +126,7 @@ lemma encode_0[simp]: "encode e 0 = 0"
   by (subst encode.simps) simp
 
 lemma encode_Suc:
-  "encode e (Suc n) =
-   HMSet (replicate_mset (Suc n mod base) (encode 0 e)) + encode (e + 1) (Suc n div base)"
+  "encode e (Suc n) = of_nat (Suc n mod base) * \<omega>^(encode 0 e) + encode (e + 1) (Suc n div base)"
   by (subst encode.simps) simp
 
 lemma encode_0_iff: "encode e n = 0 \<longleftrightarrow> n = 0"
@@ -155,7 +153,7 @@ proof (induct n arbitrary: e rule: less_induct)
     next
       case False
       thus ?thesis
-        using n plus_hmultiset_def by (simp add: encode_Suc)
+        using n plus_hmultiset_def by (simp add: encode_Suc[unfolded of_nat_times_\<omega>_exp])
     qed
   qed
 qed
@@ -192,7 +190,8 @@ proof (induct e n rule: encode.induct)
         using ih(2) le_add1 n order_trans by blast
     }
     ultimately show ?thesis
-      using M_in[unfolded n encode_Suc, folded n] unfolding hmsetmset_plus by auto
+      using M_in[unfolded n encode_Suc[unfolded of_nat_times_\<omega>_exp], folded n]
+      unfolding hmsetmset_plus by auto
   qed
 qed
 
@@ -274,7 +273,7 @@ proof (induct e n arbitrary: p rule: encode.induct)
           intro conjI impI allI X_nemp X_sub' mam_eq, elim max_X)
     qed
     thus ?thesis
-      using n_nz n_lt_p by (subst (1 2) encode.simps) auto
+      using n_nz n_lt_p by (subst (1 2) encode.simps[unfolded of_nat_times_\<omega>_exp]) auto
   qed
 qed
 
@@ -303,12 +302,13 @@ proof (induct e n rule: encode.induct)
   show ?case
   proof (rule well_base\<^sub>h.intros)
     show "\<forall>M \<in># hmsetmset (encode e n). well_base\<^sub>h M"
-      by (subst encode.simps, simp add: zero_hmultiset_def hmsetmset_plus,
-        use ih(1) well2 in blast)
+      by (subst encode.simps[unfolded of_nat_times_\<omega>_exp],
+        simp add: zero_hmultiset_def hmsetmset_plus, use ih(1) well2 in blast)
   next
     show "well_base (hmsetmset (encode e n))"
       using cnt1 base_ge_2
-      by (subst encode.simps, simp add: well_base.simps zero_hmultiset_def hmsetmset_plus,
+      by (subst encode.simps[unfolded of_nat_times_\<omega>_exp],
+        simp add: well_base.simps zero_hmultiset_def hmsetmset_plus,
         metis ih(2) well_base\<^sub>h.simps Suc_eq_plus1 less_numeral_extra(3) well_base.simps)
   qed
 qed
@@ -493,8 +493,8 @@ proof (induct e n rule: encode.induct)
   proof (cases "n = 0")
     case n_nz: False
 
-    have align\<^sub>d1: "aligned\<^sub>d e (HMSet (replicate_mset (n mod base) (encode 0 e)))"
-      using n_nz by (auto simp: ih(1) aligned\<^sub>d.simps)
+    have align\<^sub>d1: "aligned\<^sub>d e (of_nat (n mod base) * \<omega>^(encode 0 e))"
+      unfolding of_nat_times_\<omega>_exp using n_nz by (auto simp: ih(1) aligned\<^sub>d.simps)
     have align\<^sub>d2: "aligned\<^sub>d (Suc e) (encode (Suc e) (n div base))"
       by (safe intro!: aligned\<^sub>d.intros, subst ih(1)[OF n_nz, symmetric],
         auto dest: mem_hmsetmset_encodeD intro!: Suc_le_eq[THEN iffD2]
@@ -502,7 +502,9 @@ proof (induct e n rule: encode.induct)
 
     show ?thesis
      using ih base_ge_2
-     by (subst encode.simps) (simp add: decode_plus[OF align\<^sub>d1] decode_exp_shift_Suc[OF align\<^sub>d2])
+     by (subst encode.simps[unfolded of_nat_times_\<omega>_exp])
+       (simp add: decode_plus[OF align\<^sub>d1[unfolded of_nat_times_\<omega>_exp]]
+          decode_exp_shift_Suc[OF align\<^sub>d2])
   qed simp
 qed
 
