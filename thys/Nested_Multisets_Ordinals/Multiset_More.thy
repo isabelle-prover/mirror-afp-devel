@@ -291,14 +291,74 @@ lemma size_psubset: "\<Sigma> \<subseteq># \<Sigma>' \<Longrightarrow> size \<Si
 
 subsection \<open>Lemmas about Filter and Image\<close>
 
-lemma count_image_mset_ge_count:
-  "count (image_mset f A) (f b) \<ge> count A b"
+lemma count_image_mset_ge_count: "count (image_mset f A) (f b) \<ge> count A b"
   by (induction A) auto
 
 lemma count_image_mset_inj:
   assumes \<open>inj f\<close>
   shows  \<open>count (image_mset f M) (f x) = count M x\<close>
-  by (induction M) (use assms in \<open>auto simp: inj_on_def\<close>)
+  by (induct M) (use assms in \<open>auto simp: inj_on_def\<close>)
+
+lemma count_image_mset_le_count_inj_on:
+  "inj_on f (set_mset M) \<Longrightarrow> count (image_mset f M) y \<le> count M (inv_into (set_mset M) f y)"
+proof (induct M)
+  case (add x M)
+  note ih = this(1) and inj_xM = this(2)
+
+  have inj_M: "inj_on f (set_mset M)"
+    using inj_xM by simp
+
+  show ?case
+  proof (cases "x \<in># M")
+    case x_in_M: True
+    show ?thesis
+    proof (cases "y = f x")
+      case y_eq_fx: True
+      show ?thesis
+        using x_in_M ih[OF inj_M] unfolding y_eq_fx by (simp add: inj_M insert_absorb)
+    next
+      case y_ne_fx: False
+      show ?thesis
+        using x_in_M ih[OF inj_M] y_ne_fx insert_absorb by fastforce
+    qed
+  next
+    case x_ni_M: False
+    show ?thesis
+    proof (cases "y = f x")
+      case y_eq_fx: True
+      have "f x \<notin># image_mset f M"
+        using x_ni_M inj_xM by force
+      thus ?thesis
+        unfolding y_eq_fx
+        by (metis (no_types) inj_xM count_add_mset count_greater_eq_Suc_zero_iff count_inI
+          image_mset_add_mset inv_into_f_f union_single_eq_member)
+    next
+      case y_ne_fx: False
+      show ?thesis
+      proof (rule ccontr)
+        assume neg_conj: "\<not> count (image_mset f (add_mset x M)) y
+          \<le> count (add_mset x M) (inv_into (set_mset (add_mset x M)) f y)"
+
+        have cnt_y: "count (add_mset (f x) (image_mset f M)) y = count (image_mset f M) y"
+          using y_ne_fx by simp
+
+        have "inv_into (set_mset M) f y \<in># add_mset x M \<Longrightarrow>
+          inv_into (set_mset (add_mset x M)) f (f (inv_into (set_mset M) f y)) =
+          inv_into (set_mset M) f y"
+          by (meson inj_xM inv_into_f_f)
+        hence "0 < count (image_mset f (add_mset x M)) y \<Longrightarrow>
+          count M (inv_into (set_mset M) f y) = 0 \<or> x = inv_into (set_mset M) f y"
+          using neg_conj cnt_y ih[OF inj_M]
+          by (metis (no_types) count_add_mset count_greater_zero_iff count_inI f_inv_into_f
+            image_mset_add_mset set_image_mset)
+        thus False
+          using neg_conj cnt_y x_ni_M ih[OF inj_M]
+          by (metis (no_types) count_greater_zero_iff count_inI eq_iff image_mset_add_mset
+            less_imp_le)
+      qed
+    qed
+  qed
+qed simp
 
 lemma mset_filter_compl: "mset (filter p xs) + mset (filter (Not \<circ> p) xs) = mset xs"
   by (induction xs) (auto simp: mset_filter ac_simps)
