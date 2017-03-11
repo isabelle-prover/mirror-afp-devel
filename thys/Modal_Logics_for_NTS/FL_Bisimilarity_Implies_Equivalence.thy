@@ -10,19 +10,19 @@ begin
 
   lemma FL_bisimilarity_implies_equivalence_Act:
     assumes "f \<in>\<^sub>f\<^sub>s F"
-    and "bn \<alpha> \<sharp>* F"
-    and "x \<in> \<A>[L (\<alpha>, F)]"
-    and "\<And>P Q. P \<sim>\<cdot>[L (\<alpha>, F)] Q \<Longrightarrow> P \<Turnstile> x \<longleftrightarrow> Q \<Turnstile> x"
+    and "bn \<alpha> \<sharp>* (F, f)"
+    and "x \<in> \<A>[L (\<alpha>, F, f)]"
+    and "\<And>P Q. P \<sim>\<cdot>[L (\<alpha>, F, f)] Q \<Longrightarrow> P \<Turnstile> x \<longleftrightarrow> Q \<Turnstile> x"
     and "P \<sim>\<cdot>[F] Q"
     and "P \<Turnstile> Act f \<alpha> x"
     shows "Q \<Turnstile> Act f \<alpha> x"
   proof -
-    have "finite (supp (\<langle>f\<rangle>Q, F))"
+    have "finite (supp (\<langle>f\<rangle>Q, F, f))"
       by (fact finite_supp)
-    with `P \<Turnstile> Act f \<alpha> x` obtain \<alpha>' x' P' where eq: "Act f \<alpha> x = Act f \<alpha>' x'" and trans: "\<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>',P'\<rangle>" and valid: "P' \<Turnstile> x'" and fresh: "bn \<alpha>' \<sharp>* (\<langle>f\<rangle>Q, F)"
+    with `P \<Turnstile> Act f \<alpha> x` obtain \<alpha>' x' P' where eq: "Act f \<alpha> x = Act f \<alpha>' x'" and trans: "\<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>',P'\<rangle>" and valid: "P' \<Turnstile> x'" and fresh: "bn \<alpha>' \<sharp>* (\<langle>f\<rangle>Q, F, f)"
       by (metis valid_Act_strong)
 
-    from `P \<sim>\<cdot>[F] Q` and `f \<in>\<^sub>f\<^sub>s F` and fresh and trans obtain Q' where trans': "\<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>',Q'\<rangle>" and bisim': "P' \<sim>\<cdot>[L (\<alpha>',F)] Q'"
+    from `P \<sim>\<cdot>[F] Q` and `f \<in>\<^sub>f\<^sub>s F` and fresh and trans obtain Q' where trans': "\<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>',Q'\<rangle>" and bisim': "P' \<sim>\<cdot>[L (\<alpha>',F,f)] Q'"
       by (metis FL_bisimilar_simulation_step)
 
     from eq obtain p where p_\<alpha>: "\<alpha>' = p \<bullet> \<alpha>" and p_x: "x' = p \<bullet> x"
@@ -33,15 +33,18 @@ begin
     from valid and p_x have "-p \<bullet> P' \<Turnstile> x"
       by (metis permute_minus_cancel(2) valid_eqvt)
 
-    moreover from fresh and p_\<alpha> have "(p \<bullet> bn \<alpha>) \<sharp>* F"
+    moreover from fresh and p_\<alpha> have "(p \<bullet> bn \<alpha>) \<sharp>* (F, f)"
       by (simp add: bn_eqvt fresh_star_Pair)
-    with `bn \<alpha> \<sharp>* F` and supp_p have "supp F \<sharp>* p"
+    with `bn \<alpha> \<sharp>* (F, f)` and supp_p have "supp (F, f) \<sharp>* p"
       by (meson UnE fresh_def fresh_star_def subsetCE)
-    with bisim' and p_\<alpha> have "(-p \<bullet> P') \<sim>\<cdot>[L (\<alpha>, F)] (-p \<bullet> Q')"
+    then have "supp F \<sharp>* p" and "supp f \<sharp>* p"
+      by (simp add: fresh_star_Un supp_Pair)+
+
+    with bisim' and p_\<alpha> have "(-p \<bullet> P') \<sim>\<cdot>[L (\<alpha>, F, f)] (-p \<bullet> Q')"
       by (metis FL_bisimilar_eqvt L_eqvt' permute_minus_cancel(2) supp_perm_eq)
 
     ultimately have "-p \<bullet> Q' \<Turnstile> x"
-      using `\<And>P Q. P \<sim>\<cdot>[L (\<alpha>, F)] Q \<Longrightarrow> P \<Turnstile> x \<longleftrightarrow> Q \<Turnstile> x` by metis
+      using `\<And>P Q. P \<sim>\<cdot>[L (\<alpha>, F, f)] Q \<Longrightarrow> P \<Turnstile> x \<longleftrightarrow> Q \<Turnstile> x` by metis
 
     with p_x have "Q' \<Turnstile> x'"
       by (metis permute_minus_cancel(1) valid_eqvt)

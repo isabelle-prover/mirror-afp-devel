@@ -20,9 +20,9 @@ following a transition.\<close>
 type_synonym 'eff first = "'eff fs_set"
 
 text \<open>\emph{Later} is a function that represents how the set~$F$ (for \emph{first}) changes
-depending on the action of a transition.\<close>
+depending on the action of a transition and the chosen effect.\<close>
 
-type_synonym ('a,'eff) later = "'a \<times> 'eff first \<Rightarrow> 'eff first"
+type_synonym ('a,'eff) later = "'a \<times> 'eff first \<times> 'eff \<Rightarrow> 'eff first"
 
 locale effect_nominal_ts = nominal_ts satisfies transition
   for satisfies :: "'state::fs \<Rightarrow> 'pred::fs \<Rightarrow> bool" (infix "\<turnstile>" 70)
@@ -43,7 +43,7 @@ begin
   lemma L_eqvt_aux [simp]: "p \<bullet> L = L"
   by (metis L_eqvt eqvt_def)
 
-  lemma L_eqvt' [eqvt]: "p \<bullet> L (\<alpha>, P) = L (p \<bullet> \<alpha>, p \<bullet> P)"
+  lemma L_eqvt' [eqvt]: "p \<bullet> L (\<alpha>, P, f) = L (p \<bullet> \<alpha>, p \<bullet> P, p \<bullet> f)"
   by simp
 
 end
@@ -58,8 +58,8 @@ begin
     "is_L_bisimulation R \<equiv>
       \<forall>F. symp (R F) \<and>
           (\<forall>P Q. R F P Q \<longrightarrow> (\<forall>f. f \<in>\<^sub>f\<^sub>s F \<longrightarrow> (\<forall>\<phi>. \<langle>f\<rangle>P \<turnstile> \<phi> \<longrightarrow> \<langle>f\<rangle>Q \<turnstile> \<phi>))) \<and>
-          (\<forall>P Q. R F P Q \<longrightarrow> (\<forall>f. f \<in>\<^sub>f\<^sub>s F \<longrightarrow> (\<forall>\<alpha> P'. bn \<alpha> \<sharp>* (\<langle>f\<rangle>Q, F) \<longrightarrow>
-                  \<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>,P'\<rangle> \<longrightarrow> (\<exists>Q'. \<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle> \<and> R (L (\<alpha>,F)) P' Q'))))"
+          (\<forall>P Q. R F P Q \<longrightarrow> (\<forall>f. f \<in>\<^sub>f\<^sub>s F \<longrightarrow> (\<forall>\<alpha> P'. bn \<alpha> \<sharp>* (\<langle>f\<rangle>Q, F, f) \<longrightarrow>
+                  \<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>,P'\<rangle> \<longrightarrow> (\<exists>Q'. \<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle> \<and> R (L (\<alpha>,F,f)) P' Q'))))"
 
   definition FL_bisimilar :: "'effect first \<Rightarrow> 'state \<Rightarrow> 'state \<Rightarrow> bool" where
     "FL_bisimilar F P Q \<equiv> \<exists>R. is_L_bisimulation R \<and> (R F) P Q"
@@ -92,28 +92,28 @@ begin
         then show "\<langle>f\<rangle>Q \<turnstile> \<phi>"
           by (metis (full_types) effect_apply_eqvt' permute_minus_cancel(1) satisfies_eqvt)
       qed
-    moreover have "\<forall>P Q. (p \<bullet> R) F P Q \<longrightarrow> (\<forall>f. f \<in>\<^sub>f\<^sub>s F \<longrightarrow> (\<forall>\<alpha> P'. bn \<alpha> \<sharp>* (\<langle>f\<rangle>Q, F) \<longrightarrow>
-                                \<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>,P'\<rangle> \<longrightarrow> (\<exists>Q'. \<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle> \<and> (p \<bullet> R) (L (\<alpha>, F)) P' Q')))" (is ?U)
+    moreover have "\<forall>P Q. (p \<bullet> R) F P Q \<longrightarrow> (\<forall>f. f \<in>\<^sub>f\<^sub>s F \<longrightarrow> (\<forall>\<alpha> P'. bn \<alpha> \<sharp>* (\<langle>f\<rangle>Q, F, f) \<longrightarrow>
+                                \<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>,P'\<rangle> \<longrightarrow> (\<exists>Q'. \<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle> \<and> (p \<bullet> R) (L (\<alpha>, F, f)) P' Q')))" (is ?U)
       proof (clarify)
         fix P Q f \<alpha> P'
-        assume pR: "(p \<bullet> R) F P Q" and effect: "f \<in>\<^sub>f\<^sub>s F" and fresh: "bn \<alpha> \<sharp>* (\<langle>f\<rangle>Q, F)" and trans: "\<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>,P'\<rangle>"
+        assume pR: "(p \<bullet> R) F P Q" and effect: "f \<in>\<^sub>f\<^sub>s F" and fresh: "bn \<alpha> \<sharp>* (\<langle>f\<rangle>Q, F, f)" and trans: "\<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>,P'\<rangle>"
         from pR have "R (-p \<bullet> F) (-p \<bullet> P) (-p \<bullet> Q)"
           by (simp add: eqvt_lambda permute_bool_def unpermute_def)
         moreover have "(-p \<bullet> f) \<in>\<^sub>f\<^sub>s (-p \<bullet> F)"
           using effect by simp
-        moreover have "bn (-p \<bullet> \<alpha>) \<sharp>* (\<langle>-p \<bullet> f\<rangle>(-p \<bullet> Q), -p \<bullet> F)"
+        moreover have "bn (-p \<bullet> \<alpha>) \<sharp>* (\<langle>-p \<bullet> f\<rangle>(-p \<bullet> Q), -p \<bullet> F, -p \<bullet> f)"
           using fresh by (metis (full_types) effect_apply_eqvt' bn_eqvt fresh_star_Pair fresh_star_permute_iff)
         moreover have "\<langle>-p \<bullet> f\<rangle>(-p \<bullet> P) \<rightarrow> \<langle>-p \<bullet> \<alpha>, -p \<bullet> P'\<rangle>"
           using trans by (metis effect_apply_eqvt' transition_eqvt')
-        ultimately obtain Q' where T: "\<langle>-p \<bullet> f\<rangle>(-p \<bullet> Q) \<rightarrow> \<langle>-p \<bullet> \<alpha>,Q'\<rangle>" and R: "R (L (-p \<bullet> \<alpha>, -p \<bullet> F)) (-p \<bullet> P') Q'"
+        ultimately obtain Q' where T: "\<langle>-p \<bullet> f\<rangle>(-p \<bullet> Q) \<rightarrow> \<langle>-p \<bullet> \<alpha>,Q'\<rangle>" and R: "R (L (-p \<bullet> \<alpha>, -p \<bullet> F, -p \<bullet> f)) (-p \<bullet> P') Q'"
           using assms unfolding is_L_bisimulation_def by meson
         from T have "\<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>, p \<bullet> Q'\<rangle>"
           by (metis (no_types, lifting) effect_apply_eqvt' abs_residual_pair_eqvt permute_minus_cancel(1) transition_eqvt)
-        moreover from R have "(p \<bullet> R) (p \<bullet> L (-p \<bullet> \<alpha>, -p \<bullet> F)) (p \<bullet> -p \<bullet> P') (p \<bullet> Q')"
+        moreover from R have "(p \<bullet> R) (p \<bullet> L (-p \<bullet> \<alpha>, -p \<bullet> F, -p \<bullet> f)) (p \<bullet> -p \<bullet> P') (p \<bullet> Q')"
           by (metis permute_boolI permute_fun_def permute_minus_cancel(2))
-        then have "(p \<bullet> R) (L (\<alpha>,F)) P' (p \<bullet> Q')"
+        then have "(p \<bullet> R) (L (\<alpha>,F,f)) P' (p \<bullet> Q')"
           by (simp add: permute_self)
-        ultimately show "\<exists>Q'. \<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle> \<and> (p \<bullet> R) (L (\<alpha>,F)) P' Q'"
+        ultimately show "\<exists>Q'. \<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle> \<and> (p \<bullet> R) (L (\<alpha>,F,f)) P' Q'"
           by metis
       qed
     ultimately show "?S \<and> ?T \<and> ?U" by simp
@@ -152,16 +152,16 @@ begin
       by (fact FL_bisimilar_symp)
     moreover have "\<forall>P Q. P \<sim>\<cdot>[F] Q \<longrightarrow> (\<forall>f. f \<in>\<^sub>f\<^sub>s F \<longrightarrow> (\<forall>\<phi>. \<langle>f\<rangle>P \<turnstile> \<phi> \<longrightarrow> \<langle>f\<rangle>Q \<turnstile> \<phi>))" (is ?S)
       by (auto simp add: is_L_bisimulation_def FL_bisimilar_def)
-    moreover have "\<forall>P Q. P \<sim>\<cdot>[F] Q \<longrightarrow> (\<forall>f. f \<in>\<^sub>f\<^sub>s F \<longrightarrow> (\<forall>\<alpha> P'. bn \<alpha> \<sharp>* (\<langle>f\<rangle>Q, F) \<longrightarrow>
-          \<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>,P'\<rangle> \<longrightarrow> (\<exists>Q'. \<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle> \<and> P' \<sim>\<cdot>[L (\<alpha>, F)] Q')))" (is ?T)
+    moreover have "\<forall>P Q. P \<sim>\<cdot>[F] Q \<longrightarrow> (\<forall>f. f \<in>\<^sub>f\<^sub>s F \<longrightarrow> (\<forall>\<alpha> P'. bn \<alpha> \<sharp>* (\<langle>f\<rangle>Q, F, f) \<longrightarrow>
+          \<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>,P'\<rangle> \<longrightarrow> (\<exists>Q'. \<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle> \<and> P' \<sim>\<cdot>[L (\<alpha>, F, f)] Q')))" (is ?T)
       by (auto simp add: is_L_bisimulation_def FL_bisimilar_def) blast
     ultimately show "?R \<and> ?S \<and> ?T"
       by metis
   qed
 
   lemma FL_bisimilar_simulation_step:
-    assumes "P \<sim>\<cdot>[F] Q" and "f \<in>\<^sub>f\<^sub>s F" and "bn \<alpha> \<sharp>* (\<langle>f\<rangle>Q, F)" and "\<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>,P'\<rangle>"
-    obtains Q' where "\<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle>" and "P' \<sim>\<cdot>[L (\<alpha>,F)] Q'"
+    assumes "P \<sim>\<cdot>[F] Q" and "f \<in>\<^sub>f\<^sub>s F" and "bn \<alpha> \<sharp>* (\<langle>f\<rangle>Q, F, f)" and "\<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>,P'\<rangle>"
+    obtains Q' where "\<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle>" and "P' \<sim>\<cdot>[L (\<alpha>,F,f)] Q'"
   using assms by (metis (poly_guards_query) FL_bisimilar_is_L_bisimulation is_L_bisimulation_def)
 
   lemma FL_bisimilar_transp: "transp (FL_bisimilar F)"
@@ -183,46 +183,46 @@ begin
     moreover have "\<And>F. \<forall>P Q. ?FL_bisim F P Q \<longrightarrow> (\<forall>f. f \<in>\<^sub>f\<^sub>s F \<longrightarrow> (\<forall>\<phi>. \<langle>f\<rangle>P \<turnstile> \<phi> \<longrightarrow> \<langle>f\<rangle>Q \<turnstile> \<phi>))"
       using FL_bisimilar_is_L_bisimulation is_L_bisimulation_def by auto
     moreover have "\<And>F. \<forall>P Q. ?FL_bisim F P Q \<longrightarrow>
-           (\<forall>f. f \<in>\<^sub>f\<^sub>s F \<longrightarrow> (\<forall>\<alpha> P'. bn \<alpha> \<sharp>* (\<langle>f\<rangle>Q, F) \<longrightarrow>
-                     \<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>,P'\<rangle> \<longrightarrow> (\<exists>Q'. \<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle> \<and> ?FL_bisim (L (\<alpha>,F)) P' Q')))"
+           (\<forall>f. f \<in>\<^sub>f\<^sub>s F \<longrightarrow> (\<forall>\<alpha> P'. bn \<alpha> \<sharp>* (\<langle>f\<rangle>Q, F, f) \<longrightarrow>
+                     \<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>,P'\<rangle> \<longrightarrow> (\<exists>Q'. \<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle> \<and> ?FL_bisim (L (\<alpha>,F,f)) P' Q')))"
       proof (clarify)
         fix F P R Q f \<alpha> P'
-        assume PR: "P \<sim>\<cdot>[F] R" and RQ: "R \<sim>\<cdot>[F] Q" and effect: "f \<in>\<^sub>f\<^sub>s F" and fresh: "bn \<alpha> \<sharp>* (\<langle>f\<rangle>Q, F)" and trans: "\<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>,P'\<rangle>"
-        -- \<open>rename~@{term "\<langle>\<alpha>,P'\<rangle>"} to avoid~@{term "(\<langle>f\<rangle>R, F)"}, without touching~@{term "(\<langle>f\<rangle>Q, F)"}\<close>
-        obtain p where 1: "(p \<bullet> bn \<alpha>) \<sharp>* (\<langle>f\<rangle>R, F)" and 2: "supp (\<langle>\<alpha>,P'\<rangle>, (\<langle>f\<rangle>Q, F)) \<sharp>* p"
-          proof (rule at_set_avoiding2[of "bn \<alpha>" "(\<langle>f\<rangle>R, F)" "(\<langle>\<alpha>,P'\<rangle>, (\<langle>f\<rangle>Q, F))", THEN exE])
+        assume PR: "P \<sim>\<cdot>[F] R" and RQ: "R \<sim>\<cdot>[F] Q" and effect: "f \<in>\<^sub>f\<^sub>s F" and fresh: "bn \<alpha> \<sharp>* (\<langle>f\<rangle>Q, F, f)" and trans: "\<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>,P'\<rangle>"
+        -- \<open>rename~@{term "\<langle>\<alpha>,P'\<rangle>"} to avoid~@{term "(\<langle>f\<rangle>R, F)"}, without touching~@{term "(\<langle>f\<rangle>Q, F, f)"}\<close>
+        obtain p where 1: "(p \<bullet> bn \<alpha>) \<sharp>* (\<langle>f\<rangle>R, F, f)" and 2: "supp (\<langle>\<alpha>,P'\<rangle>, (\<langle>f\<rangle>Q, F, f)) \<sharp>* p"
+          proof (rule at_set_avoiding2[of "bn \<alpha>" "(\<langle>f\<rangle>R, F, f)" "(\<langle>\<alpha>,P'\<rangle>, (\<langle>f\<rangle>Q, F, f))", THEN exE])
             show "finite (bn \<alpha>)" by (fact bn_finite)
           next
-            show "finite (supp (\<langle>f\<rangle>R, F))" by (fact finite_supp)
+            show "finite (supp (\<langle>f\<rangle>R, F, f))" by (fact finite_supp)
           next
-            show "finite (supp (\<langle>\<alpha>,P'\<rangle>, (\<langle>f\<rangle>Q, F)))" by (simp add: finite_supp supp_Pair)
+            show "finite (supp (\<langle>\<alpha>,P'\<rangle>, (\<langle>f\<rangle>Q, F, f)))" by (simp add: finite_supp supp_Pair)
           next
-            show "bn \<alpha> \<sharp>* (\<langle>\<alpha>,P'\<rangle>, (\<langle>f\<rangle>Q, F))"
+            show "bn \<alpha> \<sharp>* (\<langle>\<alpha>,P'\<rangle>, (\<langle>f\<rangle>Q, F, f))"
               using bn_abs_residual_fresh fresh fresh_star_Pair by blast
           qed metis
-        from 2 have 3: "supp \<langle>\<alpha>,P'\<rangle> \<sharp>* p" and 4: "supp (\<langle>f\<rangle>Q, F) \<sharp>* p"
+        from 2 have 3: "supp \<langle>\<alpha>,P'\<rangle> \<sharp>* p" and 4: "supp (\<langle>f\<rangle>Q, F, f) \<sharp>* p"
           by (simp add: fresh_star_Un supp_Pair)+
         from 3 have "\<langle>p \<bullet> \<alpha>, p \<bullet> P'\<rangle> = \<langle>\<alpha>,P'\<rangle>"
           using supp_perm_eq by fastforce
-        then obtain pR' where 5: "\<langle>f\<rangle>R \<rightarrow> \<langle>p \<bullet> \<alpha>, pR'\<rangle>" and 6: "(p \<bullet> P') \<sim>\<cdot>[L (p \<bullet> \<alpha>,F)] pR'"
+        then obtain pR' where 5: "\<langle>f\<rangle>R \<rightarrow> \<langle>p \<bullet> \<alpha>, pR'\<rangle>" and 6: "(p \<bullet> P') \<sim>\<cdot>[L (p \<bullet> \<alpha>,F,f)] pR'"
           using PR effect trans 1 by (metis FL_bisimilar_simulation_step bn_eqvt)
-        from fresh and 4 have "bn (p \<bullet> \<alpha>) \<sharp>* (\<langle>f\<rangle>Q, F)"
+        from fresh and 4 have "bn (p \<bullet> \<alpha>) \<sharp>* (\<langle>f\<rangle>Q, F, f)"
           by (metis bn_eqvt fresh_star_permute_iff supp_perm_eq)
-        then obtain pQ' where 7: "\<langle>f\<rangle>Q \<rightarrow> \<langle>p \<bullet> \<alpha>, pQ'\<rangle>" and 8: "pR' \<sim>\<cdot>[L (p \<bullet> \<alpha>,F)] pQ'"
+        then obtain pQ' where 7: "\<langle>f\<rangle>Q \<rightarrow> \<langle>p \<bullet> \<alpha>, pQ'\<rangle>" and 8: "pR' \<sim>\<cdot>[L (p \<bullet> \<alpha>,F,f)] pQ'"
           using RQ effect 5 by (metis FL_bisimilar_simulation_step)
         from 4 have "supp (\<langle>f\<rangle>Q) \<sharp>* p"
           by (simp add: fresh_star_Un supp_Pair)
         with 7 have "\<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>, -p \<bullet> pQ'\<rangle>"
           by (metis permute_minus_cancel(2) supp_perm_eq transition_eqvt')
-        moreover from 6 and 8 have "?FL_bisim (L (p \<bullet> \<alpha>, F)) (p \<bullet> P') pQ'"
+        moreover from 6 and 8 have "?FL_bisim (L (p \<bullet> \<alpha>, F, f)) (p \<bullet> P') pQ'"
           by (metis relcompp.relcompI)
-        then have "?FL_bisim (-p \<bullet> L (p \<bullet> \<alpha>, F)) (-p \<bullet> p \<bullet> P') (-p \<bullet> pQ')"
+        then have "?FL_bisim (-p \<bullet> L (p \<bullet> \<alpha>, F, f)) (-p \<bullet> p \<bullet> P') (-p \<bullet> pQ')"
           using FL_bisimilar_eqvt by blast
-        then have "?FL_bisim (L (\<alpha>, -p \<bullet> F)) P' (-p \<bullet> pQ')"
+        then have "?FL_bisim (L (\<alpha>, -p \<bullet> F, -p \<bullet> f)) P' (-p \<bullet> pQ')"
           by (simp add: L_eqvt')
-        then have "?FL_bisim (L (\<alpha>,F)) P' (-p \<bullet> pQ')"
+        then have "?FL_bisim (L (\<alpha>,F,f)) P' (-p \<bullet> pQ')"
           using 4 by (metis fresh_star_Un permute_minus_cancel(2) supp_Pair supp_perm_eq)
-        ultimately show "\<exists>Q'. \<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle> \<and> ?FL_bisim (L (\<alpha>,F)) P' Q'"
+        ultimately show "\<exists>Q'. \<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle> \<and> ?FL_bisim (L (\<alpha>,F,f)) P' Q'"
           by metis
       qed
     ultimately have "is_L_bisimulation ?FL_bisim"
