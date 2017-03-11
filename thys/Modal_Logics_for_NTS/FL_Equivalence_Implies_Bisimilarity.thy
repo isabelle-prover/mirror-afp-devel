@@ -124,23 +124,23 @@ begin
     moreover
     {
       fix F P Q f \<alpha> P'
-      assume "FL_logically_equivalent F P Q" and "f \<in>\<^sub>f\<^sub>s F" and "bn \<alpha> \<sharp>* (\<langle>f\<rangle>Q, F)" and "\<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>,P'\<rangle>"
-      then have "\<exists>Q'. \<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle> \<and> FL_logically_equivalent (L (\<alpha>,F)) P' Q'"
+      assume "FL_logically_equivalent F P Q" and "f \<in>\<^sub>f\<^sub>s F" and "bn \<alpha> \<sharp>* (\<langle>f\<rangle>Q, F, f)" and "\<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>,P'\<rangle>"
+      then have "\<exists>Q'. \<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle> \<and> FL_logically_equivalent (L (\<alpha>,F,f)) P' Q'"
         proof -
           {
             let ?Q' = "{Q'. \<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle>}"
-            assume "\<forall>Q'\<in>?Q'. \<not> FL_logically_equivalent (L (\<alpha>,F)) P' Q'"
-            then have "\<forall>Q'\<in>?Q'. \<exists>x :: ('idx, 'pred, 'act, 'effect) formula. x \<in> \<A>[L (\<alpha>,F)] \<and> x distinguishes P' from Q'"
+            assume "\<forall>Q'\<in>?Q'. \<not> FL_logically_equivalent (L (\<alpha>,F,f)) P' Q'"
+            then have "\<forall>Q'\<in>?Q'. \<exists>x :: ('idx, 'pred, 'act, 'effect) formula. x \<in> \<A>[L (\<alpha>,F,f)] \<and> x distinguishes P' from Q'"
               by (metis FL_equivalent_iff_not_distinguished)
-            then have "\<forall>Q'\<in>?Q'. \<exists>x :: ('idx, 'pred, 'act, 'effect) formula. x \<in> \<A>[L (\<alpha>,F)] \<and> supp x \<subseteq> supp (L (\<alpha>,F), P') \<and> x distinguishes P' from Q'"
+            then have "\<forall>Q'\<in>?Q'. \<exists>x :: ('idx, 'pred, 'act, 'effect) formula. x \<in> \<A>[L (\<alpha>,F,f)] \<and> supp x \<subseteq> supp (L (\<alpha>,F,f), P') \<and> x distinguishes P' from Q'"
               by (metis FL_distinguished_bounded_support)
             then obtain g :: "'state \<Rightarrow> ('idx, 'pred, 'act, 'effect) formula" where
-              *: "\<forall>Q'\<in>?Q'. g Q' \<in> \<A>[L (\<alpha>,F)] \<and> supp (g Q') \<subseteq> supp (L (\<alpha>,F), P') \<and> (g Q') distinguishes P' from Q'"
+              *: "\<forall>Q'\<in>?Q'. g Q' \<in> \<A>[L (\<alpha>,F,f)] \<and> supp (g Q') \<subseteq> supp (L (\<alpha>,F,f), P') \<and> (g Q') distinguishes P' from Q'"
               by metis
-            have "supp (L (\<alpha>,F), P') supports (g ` ?Q')"
+            have "supp (L (\<alpha>,F,f), P') supports (g ` ?Q')"
               unfolding supports_def proof (clarify)
                 fix a b
-                assume a: "a \<notin> supp (L (\<alpha>,F), P')" and b: "b \<notin> supp (L (\<alpha>,F), P')"
+                assume a: "a \<notin> supp (L (\<alpha>,F,f), P')" and b: "b \<notin> supp (L (\<alpha>,F,f), P')"
                 have "(a \<rightleftharpoons> b) \<bullet> (g ` ?Q') \<subseteq> g ` ?Q'"
                 proof
                   fix x'
@@ -169,7 +169,7 @@ begin
                 qed
                 ultimately show "(a \<rightleftharpoons> b) \<bullet> (g ` ?Q') = g ` ?Q'" ..
               qed
-            then have supp_image_subset_supp_P': "supp (g ` ?Q') \<subseteq> supp (L (\<alpha>,F), P')"
+            then have supp_image_subset_supp_P': "supp (g ` ?Q') \<subseteq> supp (L (\<alpha>,F,f), P')"
               by (metis (erased, lifting) finite_supp supp_is_subset)
             then have finite_supp_image: "finite (supp (g ` ?Q'))"
               using finite_supp rev_finite_subset by blast
@@ -185,10 +185,10 @@ begin
               proof
                 from `f \<in>\<^sub>f\<^sub>s F` show "f \<in>\<^sub>f\<^sub>s F" .
               next
-                from `bn \<alpha> \<sharp>* (\<langle>f\<rangle>Q, F)` show "bn \<alpha> \<sharp>* F"
+                from `bn \<alpha> \<sharp>* (\<langle>f\<rangle>Q, F, f)` show "bn \<alpha> \<sharp>* (F, f)"
                   using fresh_star_Pair by blast
               next
-                show "Conj (Abs_bset (g ` ?Q')) \<in> \<A>[L (\<alpha>, F)]"
+                show "Conj (Abs_bset (g ` ?Q')) \<in> \<A>[L (\<alpha>, F, f)]"
                   proof
                     show "finite (supp (Abs_bset (g ` ?Q') :: (_,_,_,_) formula set['idx]))"
                       using finite_supp_image card_image by simp
@@ -197,7 +197,7 @@ begin
                     assume "x' \<in> set_bset (Abs_bset (g ` ?Q') :: (_,_,_,_) formula set['idx])"
                     then obtain Q' where "x' = g Q'" and "\<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle>"
                       using card_image by auto
-                    with "*" show "x' \<in> \<A>[L (\<alpha>, F)]"
+                    with "*" show "x' \<in> \<A>[L (\<alpha>, F, f)]"
                       using mem_Collect_eq by blast
                   qed
               qed
@@ -218,7 +218,7 @@ begin
               proof
                 assume "Q \<Turnstile> Act f \<alpha> ?y"
                 then obtain Q' where 1: "\<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle>" and 2: "Q' \<Turnstile> ?y"
-                  using `bn \<alpha> \<sharp>* (\<langle>f\<rangle>Q, F)` by (metis fresh_star_Pair valid_Act_fresh)
+                  using `bn \<alpha> \<sharp>* (\<langle>f\<rangle>Q, F, f)` by (metis fresh_star_Pair valid_Act_fresh)
                 from 2 have "\<And>Q''. \<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>,Q''\<rangle> \<longrightarrow> Q' \<Turnstile> g Q''"
                   by (simp add: finite_supp_image card_image)
                 with 1 and "*" show False

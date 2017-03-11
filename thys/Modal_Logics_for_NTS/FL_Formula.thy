@@ -1350,7 +1350,7 @@ where
   Conj: "finite (supp xset) \<Longrightarrow> (\<And>x. x \<in> set_bset xset \<Longrightarrow> is_FL_formula F x) \<Longrightarrow> is_FL_formula F (Conj xset)"
 | Not:  "is_FL_formula F x \<Longrightarrow> is_FL_formula F (Not x)"
 | Pred: "f \<in>\<^sub>f\<^sub>s F \<Longrightarrow> is_FL_formula F (Pred f \<phi>)"
-| Act:  "f \<in>\<^sub>f\<^sub>s F \<Longrightarrow> bn \<alpha> \<sharp>* F \<Longrightarrow> is_FL_formula (L (\<alpha>,F)) x \<Longrightarrow> is_FL_formula F (Act f \<alpha> x)"
+| Act:  "f \<in>\<^sub>f\<^sub>s F \<Longrightarrow> bn \<alpha> \<sharp>* (F,f) \<Longrightarrow> is_FL_formula (L (\<alpha>,F,f)) x \<Longrightarrow> is_FL_formula F (Act f \<alpha> x)"
 
 abbreviation in_\<A> :: "('idx,'pred,'act,'effect) formula \<Rightarrow> 'effect first \<Rightarrow> bool"
   ("_ \<in> \<A>[_]" [51,0] 50) where
@@ -1380,9 +1380,9 @@ next
     by (simp add: Pred)
 next
   fix f F \<alpha> and x :: "('a, 'pred, 'act, 'effect) formula"
-  assume "f \<in>\<^sub>f\<^sub>s F" and "bn \<alpha> \<sharp>* F" and "p \<bullet> x \<in> \<A>[p \<bullet> L (\<alpha>, F)]"
+  assume "f \<in>\<^sub>f\<^sub>s F" and "bn \<alpha> \<sharp>* (F,f)" and "p \<bullet> x \<in> \<A>[p \<bullet> L (\<alpha>, F, f)]"
   then show "p \<bullet> Act f \<alpha> x \<in> \<A>[p \<bullet> F]"
-    by (metis (mono_tags, lifting) Act Act_eqvt L_eqvt' bn_eqvt fresh_star_permute_iff member_fs_set_permute_iff)
+    by (metis (mono_tags, lifting) Act Act_eqvt L_eqvt' Pair_eqvt bn_eqvt fresh_star_permute_iff member_fs_set_permute_iff)
 qed
 
 end
