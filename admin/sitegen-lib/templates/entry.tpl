@@ -11,6 +11,10 @@
   {% endif %}
 {% endmacro %}
 
+{% block title %}
+{{ entry.title }} - Archive of Formal Proofs
+{% endblock %}
+
 {% block headline %}
 {% for s in entry.title|split %}
   {{ first_bigger(s) }}
