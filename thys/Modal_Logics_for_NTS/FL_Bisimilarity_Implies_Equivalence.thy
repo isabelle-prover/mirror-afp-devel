@@ -20,7 +20,7 @@ begin
     have "finite (supp (\<langle>f\<rangle>Q, F, f))"
       by (fact finite_supp)
     with `P \<Turnstile> Act f \<alpha> x` obtain \<alpha>' x' P' where eq: "Act f \<alpha> x = Act f \<alpha>' x'" and trans: "\<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>',P'\<rangle>" and valid: "P' \<Turnstile> x'" and fresh: "bn \<alpha>' \<sharp>* (\<langle>f\<rangle>Q, F, f)"
-      by (metis valid_Act_strong)
+      by (metis FL_valid_Act_strong)
 
     from `P \<sim>\<cdot>[F] Q` and `f \<in>\<^sub>f\<^sub>s F` and fresh and trans obtain Q' where trans': "\<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>',Q'\<rangle>" and bisim': "P' \<sim>\<cdot>[L (\<alpha>',F,f)] Q'"
       by (metis FL_bisimilar_simulation_step)
@@ -31,7 +31,7 @@ begin
       by (metis Act_eq_iff_perm_renaming)
 
     from valid and p_x have "-p \<bullet> P' \<Turnstile> x"
-      by (metis permute_minus_cancel(2) valid_eqvt)
+      by (metis permute_minus_cancel(2) FL_valid_eqvt)
 
     moreover from fresh and p_\<alpha> have "(p \<bullet> bn \<alpha>) \<sharp>* (F, f)"
       by (simp add: bn_eqvt fresh_star_Pair)
@@ -47,10 +47,10 @@ begin
       using `\<And>P Q. P \<sim>\<cdot>[L (\<alpha>, F, f)] Q \<Longrightarrow> P \<Turnstile> x \<longleftrightarrow> Q \<Turnstile> x` by metis
 
     with p_x have "Q' \<Turnstile> x'"
-      by (metis permute_minus_cancel(1) valid_eqvt)
+      by (metis permute_minus_cancel(1) FL_valid_eqvt)
 
     with eq and trans' show "Q \<Turnstile> Act f \<alpha> x"
-      unfolding valid_Act by metis
+      unfolding FL_valid_Act by metis
   qed
 
   theorem FL_bisimilarity_implies_equivalence: assumes "P \<sim>\<cdot>[F] Q" shows "FL_logically_equivalent F P Q"
@@ -67,7 +67,7 @@ begin
           by simp
       next
         case Pred then show ?case
-          by (metis FL_bisimilar_is_L_bisimulation is_L_bisimulation_def symp_def valid_Pred)
+          by (metis FL_bisimilar_is_L_bisimulation is_L_bisimulation_def symp_def FL_valid_Pred)
       next
         case Act then show ?case
           by (metis FL_bisimilar_symp FL_bisimilarity_implies_equivalence_Act sympE)

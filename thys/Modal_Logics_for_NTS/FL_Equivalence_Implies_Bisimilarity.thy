@@ -16,11 +16,11 @@ begin
   lemma distinguishing_formula_eqvt [eqvt]:
     assumes "x distinguishes P from Q" shows "(p \<bullet> x) distinguishes (p \<bullet> P) from (p \<bullet> Q)"
   using assms unfolding distinguishing_formula_def
-  by (metis permute_minus_cancel(2) valid_eqvt)
+  by (metis permute_minus_cancel(2) FL_valid_eqvt)
 
   lemma FL_equivalent_iff_not_distinguished:
     "FL_logically_equivalent F P Q \<longleftrightarrow> \<not>(\<exists>x. x \<in> \<A>[F] \<and> x distinguishes P from Q)"
-  by (meson FL_logically_equivalent_def Not distinguishing_formula_def valid_Not)
+  by (meson FL_logically_equivalent_def Not distinguishing_formula_def FL_valid_Not)
 
   text \<open>There exists a distinguishing formula for~@{term P} and~@{term Q} in~@{text "\<A>[F]"} whose
     support is contained in~@{term "supp (F,P)"}.\<close>
@@ -99,7 +99,7 @@ begin
     moreover have "?y distinguishes P from Q"
       unfolding distinguishing_formula_def proof
         from `x distinguishes P from Q` show "P \<Turnstile> ?y"
-          by (auto simp add: card_B finite_supp_B) (metis distinguishing_formula_def fresh_star_Un supp_Pair supp_perm_eq valid_eqvt)
+          by (auto simp add: card_B finite_supp_B) (metis distinguishing_formula_def fresh_star_Un supp_Pair supp_perm_eq FL_valid_eqvt)
       next
         from `x distinguishes P from Q` show "\<not> Q \<Turnstile> ?y"
           by (auto simp add: card_B finite_supp_B) (metis distinguishing_formula_def permute_zero fresh_star_zero)
@@ -119,7 +119,7 @@ begin
       fix F P Q f \<phi>
       assume "FL_logically_equivalent F P Q" and "f \<in>\<^sub>f\<^sub>s F" and "\<langle>f\<rangle>P \<turnstile> \<phi>"
       then have "\<langle>f\<rangle>Q \<turnstile> \<phi>"
-        by (metis FL_logically_equivalent_def Pred valid_Pred)
+        by (metis FL_logically_equivalent_def Pred FL_valid_Pred)
     }
     moreover
     {
@@ -202,7 +202,7 @@ begin
                   qed
               qed
             moreover have "P \<Turnstile> Act f \<alpha> ?y"
-              unfolding valid_Act proof (standard+)
+              unfolding FL_valid_Act proof (standard+)
                 show "\<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>,P'\<rangle>" by fact
               next
                 {
@@ -218,7 +218,7 @@ begin
               proof
                 assume "Q \<Turnstile> Act f \<alpha> ?y"
                 then obtain Q' where 1: "\<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle>" and 2: "Q' \<Turnstile> ?y"
-                  using `bn \<alpha> \<sharp>* (\<langle>f\<rangle>Q, F, f)` by (metis fresh_star_Pair valid_Act_fresh)
+                  using `bn \<alpha> \<sharp>* (\<langle>f\<rangle>Q, F, f)` by (metis fresh_star_Pair FL_valid_Act_fresh)
                 from 2 have "\<And>Q''. \<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>,Q''\<rangle> \<longrightarrow> Q' \<Turnstile> g Q''"
                   by (simp add: finite_supp_image card_image)
                 with 1 and "*" show False
