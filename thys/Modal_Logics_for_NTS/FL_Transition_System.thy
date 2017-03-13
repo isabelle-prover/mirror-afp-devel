@@ -233,7 +233,7 @@ begin
       unfolding FL_bisimilar_def by meson
   qed
 
-  lemma bisimilar_equivp: "equivp (FL_bisimilar F)"
+  lemma FL_bisimilar_equivp: "equivp (FL_bisimilar F)"
   by (metis FL_bisimilar_reflp FL_bisimilar_symp FL_bisimilar_transp equivp_reflp_symp_transp)
 
 end
