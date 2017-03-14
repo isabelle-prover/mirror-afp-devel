@@ -7,6 +7,8 @@
 
 ## settings
 
+VERSION=Isabelle2016-1
+
 function usage()
 {
   echo
@@ -66,10 +68,10 @@ THYS="$(dirname "$0")/../thys"
 # for release version:
 [ "$ISABELLE_RELEASES" == "" ] && fail "ISABELLE_RELEASES not set"
 if [[ $OSTYPE == darwin* ]]; then
-  ISABELLE_TOOL="$ISABELLE_RELEASES/${TAG}.app/Isabelle/bin/isabelle"
+  ISABELLE_TOOL="$ISABELLE_RELEASES/${VERSION}.app/Isabelle/bin/isabelle"
 fi
 if [ ! -x "$ISABELLE_TOOL" ]; then
-  ISABELLE_TOOL="$ISABELLE_RELEASES/$TAG/bin/isabelle"
+  ISABELLE_TOOL="$ISABELLE_RELEASES/$VERSION/bin/isabelle"
 fi
 check_isabelle
 
