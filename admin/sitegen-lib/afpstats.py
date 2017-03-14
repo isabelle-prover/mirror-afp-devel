@@ -22,7 +22,7 @@ def format_lib_src(libstr):
     else:
         return libstr
 
-class afp_author:
+class afp_author(object):
     """An AFP author has a name and a web or mail address"""
     def __init__(self, name, address):
         self.name = name
@@ -35,7 +35,7 @@ class afp_author:
     def __hash__(self):
         return hash(self.name)
 
-class afp_entry:
+class afp_entry(object):
     """An AFP entry consists of metadata (date, authors, etc), used imports,
        used library imports, paths to thys files and which AFP entries import
        it.

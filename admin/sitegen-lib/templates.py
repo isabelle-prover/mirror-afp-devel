@@ -73,7 +73,7 @@ def collect_topics(entries):
 	return tree
 
 
-class Builder():
+class Builder(object):
 	"""Contains environment for building webpages from templates"""
 
 	def __init__(self, template_dir, root_output_dir, entries, afp_entries,
