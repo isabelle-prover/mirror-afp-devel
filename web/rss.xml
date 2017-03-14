@@ -9,7 +9,28 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>28 Feb 2017 00:00:00 +0000</pubDate>
+    <pubDate>10 Mar 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>The Euler–MacLaurin Formula</title>
+              <link>https://www.isa-afp.org/entries/Euler_MacLaurin.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Euler_MacLaurin.shtml</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>10 Mar 2017 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;The Euler-MacLaurin formula relates the value of a
+discrete sum to that of the corresponding integral in terms of the
+derivatives at the borders of the summation and a remainder term.
+Since the remainder term is often very small as the summation bounds
+grow, this can be used to compute asymptotic expansions for
+sums.&lt;/p&gt;  &lt;p&gt;This entry contains a proof of this formula
+for functions from the reals to an arbitrary Banach space. Two
+variants of the formula are given: the standard textbook version and a
+variant outlined in &lt;em&gt;Concrete Mathematics&lt;/em&gt; that is
+more useful for deriving asymptotic estimates.&lt;/p&gt;  &lt;p&gt;As
+example applications, we use that formula to derive the full
+asymptotic expansion of the harmonic numbers and the sum of inverse
+squares.&lt;/p&gt;</description>
+    </item>
     <item>
        <title>The Group Law for Elliptic Curves</title>
               <link>https://www.isa-afp.org/entries/Elliptic_Curves_Group_Law.shtml</link>
@@ -498,23 +519,6 @@ local type definitions.
 &lt;p&gt;Through experiments we verify that our algorithm factors polynomials of degree
 100 within seconds.
 &lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Intersecting Chords Theorem</title>
-              <link>https://www.isa-afp.org/entries/Chord_Segments.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Chord_Segments.shtml</guid>
-       <dc:creator> Lukas Bulwahn       </dc:creator>
-       <pubDate>11 Oct 2016 00:00:00 +0000</pubDate>
-       <description>
-This entry provides a geometric proof of the intersecting chords
-theorem. The theorem states that when two chords intersect each other
-inside a circle, the products of their segments are equal.  After a
-short review of existing proofs in the literature, I decided to use a
-proof approach that employs reasoning about lengths of line segments,
-the orthogonality of two lines and the Pythagoras Law. Hence, one can
-understand the formalized proof easily with the knowledge of a few
-general geometric facts that are commonly taught in high-school.  This
-theorem is the 55th theorem of the Top 100 Theorems list.</description>
     </item>
   </channel>
 </rss>

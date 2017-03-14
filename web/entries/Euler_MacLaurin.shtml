@@ -60,9 +60,11 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">B</font>ernoulli
+  <h1>          <font class="first">T</font>he
   
-          <font class="first">N</font>umbers
+          <font class="first">E</font>uler–MacLaurin
+  
+          <font class="first">F</font>ormula
   
 </h1>
   <p>&nbsp;</p>
@@ -71,16 +73,15 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Bernoulli Numbers</td>
+  <td class="data" width="80%">The Euler–MacLaurin Formula</td>
 </tr>
 
 <tr>
   <td class="datahead">
-          Authors:
+          Author:
       </td>
   <td class="data">
-                    Lukas Bulwahn (lukas /dot/ bulwahn /at/ gmail /dot/ com) and
-          <a href="https://www21.in.tum.de/~eberlm">Manuel Eberl</a>
+              <a href="https://www21.in.tum.de/~eberlm">Manuel Eberl</a>
       </td>
 </tr>
 
@@ -88,39 +89,38 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2017-01-24</td>
+  <td class="data">2017-03-10</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-<p>Bernoulli numbers were first discovered in the closed-form
-expansion of the sum 1<sup>m</sup> +
-2<sup>m</sup> + &hellip; + n<sup>m</sup>
-for a fixed m and appear in many other places. This entry provides
-three different definitions for them: a recursive one, an explicit
-one, and one through their exponential generating function.</p>
-<p>In addition, we prove some basic facts, e.g. their relation
-to sums of powers of integers and that all odd Bernoulli numbers
-except the first are zero. We also prove the correctness of the
-Akiyama&ndash;Tanigawa algorithm for computing Bernoulli numbers
-with reasonable efficiency, and we define the periodic Bernoulli
-polynomials (which appear e.g. in the Euler&ndash;MacLaurin
-summation formula and the expansion of the log-Gamma function) and
-prove their basic properties.</p></td>
+<p>The Euler-MacLaurin formula relates the value of a
+discrete sum to that of the corresponding integral in terms of the
+derivatives at the borders of the summation and a remainder term.
+Since the remainder term is often very small as the summation bounds
+grow, this can be used to compute asymptotic expansions for
+sums.</p>  <p>This entry contains a proof of this formula
+for functions from the reals to an arbitrary Banach space. Two
+variants of the formula are given: the standard textbook version and a
+variant outlined in <em>Concrete Mathematics</em> that is
+more useful for deriving asymptotic estimates.</p>  <p>As
+example applications, we use that formula to derive the full
+asymptotic expansion of the harmonic numbers and the sum of inverse
+squares.</p></td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Bernoulli-AFP,
-  author  = {Lukas Bulwahn and Manuel Eberl},
-  title   = {Bernoulli Numbers},
+        <pre>@article{Euler_MacLaurin-AFP,
+  author  = {Manuel Eberl},
+  title   = {The Euler–MacLaurin Formula},
   journal = {Archive of Formal Proofs},
-  month   = jan,
+  month   = mar,
   year    = 2017,
-  note    = {\url{http://isa-afp.org/entries/Bernoulli.shtml},
+  note    = {\url{http://isa-afp.org/entries/Euler_MacLaurin.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -131,10 +131,10 @@ prove their basic properties.</p></td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                    
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Euler_MacLaurin.shtml">Euler_MacLaurin</a>      </td></tr>
+                      <tr><td class="datahead">Depends on:</td>
+          <td class="data"><a href="Bernoulli.shtml">Bernoulli</a>, <a href="Landau_Symbols.shtml">Landau_Symbols</a>      </td></tr>
           
+                    
 
         
   </tbody>
@@ -146,17 +146,17 @@ prove their basic properties.</p></td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Bernoulli/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Bernoulli/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Euler_MacLaurin/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Euler_MacLaurin/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Bernoulli/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Euler_MacLaurin/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Bernoulli-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Euler_MacLaurin-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
