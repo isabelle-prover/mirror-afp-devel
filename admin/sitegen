@@ -20,16 +20,27 @@ cd "$ROOT"
 
 echo "Checking presence of Python ..."
 
+USE_PYTHON_3=false
+if [ "$1" = "--python3" ]; then
+  USE_PYTHON_3=true
+  shift
+fi
+
 case "$(uname -s)" in
   Darwin)
     echo "Running on macOS, using system python"
     PYTHON="/usr/bin/python"
     ;;
   *)
-    echo "Running on Linux, trying to find Python 2.x"
-    PYTHON="$(which python2 2> /dev/null)"
-    if [ -z "$PYTHON" ]; then
-      PYTHON="$(which python 2> /dev/null)"
+    if [ "$USE_PYTHON_3" = false ]; then
+      echo "Running on Linux, trying to find Python 2.x"
+      PYTHON="$(which python2 2> /dev/null)"
+      if [ -z "$PYTHON" ]; then
+        PYTHON="$(which python 2> /dev/null)"
+      fi
+    else
+      echo "Running on Linux, trying to find Python 3.x"
+      PYTHON="$(which python3 2> /dev/null)"
     fi
     ;;
 esac
