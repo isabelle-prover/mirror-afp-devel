@@ -3,6 +3,16 @@ theory Initial_Value_Problem
 imports "../ODE_Auxiliarities"
 begin
 
+lemma clamp_le[simp]: "x \<le> a \<Longrightarrow> clamp a b x = a" for x::"'a::ordered_euclidean_space"
+  by (auto simp: clamp_def eucl_le[where 'a='a] intro!: euclidean_eqI[where 'a='a])
+
+lemma clamp_ge[simp]: "a \<le> b \<Longrightarrow> b \<le> x \<Longrightarrow> clamp a b x = b" for x::"'a::ordered_euclidean_space"
+  by (force simp: clamp_def eucl_le[where 'a='a] not_le not_less  intro!: euclidean_eqI[where 'a='a])
+
+abbreviation cfuncset :: "'a::topological_space set \<Rightarrow> 'b::metric_space set \<Rightarrow> ('a \<Rightarrow>\<^sub>C 'b) set"
+  (infixr "\<rightarrow>\<^sub>C" 60)
+  where "A \<rightarrow>\<^sub>C B \<equiv> PiC A (\<lambda>_. B)"
+
 lemma closed_segment_translation_zero: "z \<in> {z + a--z + b} \<longleftrightarrow> 0 \<in> {a -- b}"
   by (metis add.right_neutral closed_segment_translation_eq)
 
@@ -1342,6 +1352,9 @@ lemma T_def: "T = {tmin .. tmax}"
   using closed_segment_subset_interval[OF interval tmin(2) tmax(2)]
   by (auto simp: closed_segment_real subset_iff intro!: tmin tmax)
 
+lemma mem_T_I[intro, simp]: "tmin \<le> t \<Longrightarrow> t \<le> tmax \<Longrightarrow> t \<in> T"
+  using interval mem_is_interval_1_I tmax(2) tmin(2) by blast
+
 end
 
 locale self_mapping = interval T for T +
@@ -1377,99 +1390,110 @@ text \<open>Picard Iteration\<close>
 
 definition P_inner where "P_inner x t = x0 + ivl_integral t0 t (\<lambda>t. f  t (x t))"
 
-lemma P_inner_t0[simp]: "P_inner (Rep_bcontfun g) t0 = x0"
+definition P::"(real \<Rightarrow>\<^sub>C 'a) \<Rightarrow> (real \<Rightarrow>\<^sub>C 'a)"
+  where "P x = (SOME g::real\<Rightarrow>\<^sub>C 'a.
+    (\<forall>t \<in> T. g t = P_inner x t) \<and>
+    (\<forall>t\<le>tmin. g t = P_inner x tmin) \<and>
+    (\<forall>t\<ge>tmax. g t = P_inner x tmax))"
+
+lemma cont_P_inner_ivl:
+  "x \<in> T \<rightarrow>\<^sub>C X \<Longrightarrow> continuous_on {tmin..tmax} (P_inner (apply_bcontfun x))"
+  apply (auto simp: real_Icc_closed_segment P_inner_def Pi_iff mem_PiC_iff
+      intro!: continuous_intros indefinite_ivl_integral_continuous_subset
+      integrable_continuous_closed_segment tmin(1) tmax(1))
+  using closed_segment_subset_domainI tmax(2) tmin(2) apply blast
+  using closed_segment_subset_domainI tmax(2) tmin(2) apply blast
+  using T_def closed_segment_eq_real_ivl iv_defined(1) by auto
+
+lemma P_inner_t0[simp]: "P_inner g t0 = x0"
   by (simp add: P_inner_def)
-
-definition P::"(real, 'a) bcontfun \<Rightarrow> (real, 'a) bcontfun" where "P x = ext_cont (P_inner x) tmin tmax"
-
-lemma
-  continuous_f:
-  assumes "y \<in> closed_segment t0 t \<rightarrow> X"
-  assumes "continuous_on (closed_segment t0 t) y"
-  assumes "t \<in> T"
-  shows "continuous_on (closed_segment t0 t) (\<lambda>t. f t (y t))"
-  using assms closed_segment_iv_subset_domain[OF \<open>t \<in> T\<close>]
-  by (auto intro!: assms continuous_intros)
-
-lemma P_inner_bcontfun:
-  assumes "y \<in> T \<rightarrow> X"
-  assumes y_cont: "continuous_on T y"
-  shows "(\<lambda>x. P_inner y (clamp tmin tmax x)) \<in> bcontfun"
-proof -
-  have "continuous_on {tmin .. tmax} (\<lambda>x. ivl_integral t0 x (\<lambda>t. f t (y t)))"
-    unfolding real_Icc_closed_segment[OF tmin_le_tmax]
-    using iv_defined assms T_def
-    by (intro indefinite_ivl_integral_continuous_subset integrable_continuous_closed_segment)
-      (auto intro!: continuous_intros simp: real_Icc_closed_segment)
-  then show ?thesis
-    by (auto intro!: clamp_bcontfun continuous_intros simp: P_inner_def)
-qed
 
 lemma t0_cs_tmin_tmax: "t0 \<in> {tmin--tmax}" and cs_tmin_tmax_subset: "{tmin--tmax} \<subseteq> T"
   using iv_defined T_def closed_segment_eq_real_ivl
   by auto
 
+lemma
+  P_eqs:
+  assumes "x \<in> T \<rightarrow>\<^sub>C X"
+  shows P_eq_P_inner: "t \<in> T \<Longrightarrow> P x t = P_inner x t"
+    and P_le_tmin: "t \<le> tmin \<Longrightarrow> P x t = P_inner x tmin"
+    and P_ge_tmax: "t \<ge> tmax \<Longrightarrow> P x t = P_inner x tmax"
+  unfolding atomize_conj atomize_imp
+proof goal_cases
+  case 1
+  obtain g where
+    "tmin \<le> t \<Longrightarrow> t \<le> tmax \<Longrightarrow> apply_bcontfun g t = P_inner (apply_bcontfun x) t"
+    "apply_bcontfun g t = P_inner (apply_bcontfun x) (clamp tmin tmax t)"
+    for t
+    by (metis continuous_on_interval_bcontfunE[OF cont_P_inner_ivl[OF assms(1)]])
+  with T_def have "\<exists>g::real\<Rightarrow>\<^sub>C 'a.
+    (\<forall>t \<in> T. g t = P_inner x t) \<and>
+    (\<forall>t\<le>tmin. g t = P_inner x tmin) \<and>
+    (\<forall>t\<ge>tmax. g t = P_inner x tmax)"
+    by (auto intro!: exI[where x=g])
+  then have "(\<forall>t \<in> T. P x t = P_inner x t) \<and>
+    (\<forall>t\<le>tmin. P x t = P_inner x tmin) \<and>
+    (\<forall>t\<ge>tmax. P x t = P_inner x tmax)"
+    unfolding P_def
+    by (rule someI_ex)
+  then show ?case using T_def by auto
+qed
+
+lemma P_if_eq:
+  "x \<in> T \<rightarrow>\<^sub>C X \<Longrightarrow>
+    P x t = (if tmin \<le> t \<and> t \<le> tmax then P_inner x t else if t \<ge> tmax then P_inner x tmax else P_inner x tmin)"
+  by (auto simp: P_eqs)
+
+lemma dist_P_le:
+  assumes y: "y \<in> T \<rightarrow>\<^sub>C X" and z: "z \<in> T \<rightarrow>\<^sub>C X"
+  assumes le: "\<And>t. tmin \<le> t \<Longrightarrow> t \<le> tmax \<Longrightarrow> dist (P_inner y t) (P_inner z t) \<le> R"
+  assumes "0 \<le> R"
+  shows "dist (P y t) (P z t) \<le> R"
+  by (cases "t \<le> tmin"; cases "t \<ge> tmax") (auto simp: P_eqs y z not_le intro!: le)
+
 lemma P_def':
   assumes "t \<in> T"
-  assumes "\<And>t. t \<in> T \<Longrightarrow> Rep_bcontfun fixed_point t \<in> X"
+  assumes "fixed_point \<in> T \<rightarrow>\<^sub>C X"
   shows "(P fixed_point) t = x0 + ivl_integral t0 t (\<lambda>x. f x (fixed_point x))"
-  apply (subst P_def)
-  apply (subst P_inner_def[abs_def])
-  apply (subst ext_cont_cancel)
-  subgoal using assms T_def by simp
-  subgoal
-    using assms iv_defined t0_cs_tmin_tmax cs_tmin_tmax_subset
-    by (auto
-        intro!: continuous_intros indefinite_ivl_integral_continuous_subset integrable_continuous_closed_segment
-        simp: real_Icc_closed_segment )
-  subgoal by simp
-  done
+  by (simp add: P_eq_P_inner assms P_inner_def)
 
-definition "iter_space = (Abs_bcontfun ` ((T \<rightarrow> X) \<inter> bcontfun \<inter> {x. x t0 = x0}))"
+definition "iter_space = PiC T ((\<lambda>_. X)(t0:={x0}))"
 
 lemma iter_spaceI:
-  assumes "(\<And>x. x \<in> T \<Longrightarrow> Rep_bcontfun g x \<in> X)" "g t0 = x0"
+  assumes "g \<in> T \<rightarrow>\<^sub>C X" "g t0 = x0"
   shows "g \<in> iter_space"
   using assms
-  by (auto simp: iter_space_def Rep_bcontfun Rep_bcontfun_inverse
-      intro!: Rep_bcontfun image_eqI[where x="Rep_bcontfun g"])
+  by (simp add: iter_space_def mem_PiC_iff Pi_iff)
 
 lemma iter_spaceD:
   assumes "g \<in> iter_space"
-  shows "\<And>x. x \<in> T \<Longrightarrow> g x \<in> X" "g t0 = x0"
-  using assms
-  by (auto simp add: iter_space_def Abs_bcontfun_inverse)
+  shows "g \<in> T \<rightarrow>\<^sub>C X" "apply_bcontfun g t0 = x0"
+  using assms iv_defined
+  by (auto simp add: iter_space_def mem_PiC_iff split: if_splits)
 
-lemma const_in_subspace: "(\<lambda>_. x0) \<in> (T \<rightarrow> X) \<inter> bcontfun \<inter> {x. x t0 = x0}"
-  by (auto intro: const_bcontfun iv_defined)
+lemma const_in_iter_space: "const_bcontfun x0 \<in> iter_space"
+  by (auto simp: iter_space_def iv_defined mem_PiC_iff)
 
 lemma closed_iter_space: "closed iter_space"
-proof -
-  have "(T \<rightarrow> X) \<inter> bcontfun \<inter> {x. x t0 = x0} =
-    Pi T (\<lambda>i. if i = t0 then {x0} else X) \<inter> bcontfun"
-    using iv_defined
-    by (force simp: Pi_iff split_ifs)
-  thus ?thesis using closed
-    by (auto simp add: iter_space_def intro!: closed_Pi_bcontfun)
-qed
+  by (auto simp: iter_space_def intro!: closed_PiC closed)
 
 lemma iter_space_notempty: "iter_space \<noteq> {}"
-  using const_in_subspace by (auto simp: iter_space_def)
+  using const_in_iter_space by blast
 
-lemma clamb_in_eq[simp]: fixes a x b::real shows "a \<le> x \<Longrightarrow> x \<le> b \<Longrightarrow> clamp a b x = x"
+lemma clamp_in_eq[simp]: fixes a x b::real shows "a \<le> x \<Longrightarrow> x \<le> b \<Longrightarrow> clamp a b x = x"
   by (auto simp: clamp_def)
 
 lemma P_self_mapping:
   assumes in_space: "g \<in> iter_space"
   shows "P g \<in> iter_space"
 proof (rule iter_spaceI)
-  from iter_spaceD[OF in_space] iv_defined
-  show "Rep_bcontfun (P g) t0 = x0"
-    by (auto simp: P_def')
-  from iter_spaceD[OF in_space] iv_defined
-  show "Rep_bcontfun (P g) t \<in> X" if "t \<in> T" for t
-    using that closed_segment_iv_subset_domain[OF \<open>t \<in> T\<close>]
-    by (auto simp: P_def' intro!: self_mapping)
+  show x0: "P g t0 = x0"
+    by (auto simp: P_def' iv_defined iter_spaceD[OF in_space])
+  from iter_spaceD(1)[OF in_space] show "P g \<in> T \<rightarrow>\<^sub>C X"
+    unfolding mem_PiC_iff Pi_iff
+    apply (auto simp: mem_PiC_iff Pi_iff P_def')
+    apply (auto simp: iter_spaceD(2)[OF in_space, symmetric] intro!: self_mapping)
+    using closed_segment_subset_domainI iv_defined(1) by blast
 qed
 
 lemma continuous_on_T: "continuous_on {tmin .. tmax} g \<Longrightarrow> continuous_on T g"
@@ -1489,49 +1513,41 @@ lemma tmin_le_t0[intro, simp]: "tmin \<le> t0"
   unfolding closed_segment_real
   by simp_all
 
-lemma ext_cont_solution_fixed_point:
-  assumes ode: "(x solves_ode f) T X"
+lemma apply_bcontfun_solution_fixed_point:
+  assumes ode: "(apply_bcontfun x solves_ode f) T X"
   assumes iv: "x t0 = x0"
-  shows "P (ext_cont x tmin tmax) = ext_cont x tmin tmax"
-  unfolding P_def
-proof (rule ext_cont_cong)
-  show "P_inner (Rep_bcontfun (ext_cont x tmin tmax)) t = x t" if "t \<in> cbox tmin tmax" for t
-  proof -
-    from that have "t \<in> T" using T_def by simp
-    then have "{t0--t} \<subseteq> T" by (rule closed_segment_iv_subset_domain)
-    with ode have "(x solves_ode f) {t0--t} X"
-      by (rule solves_ode_on_subset) simp
-    then have "x t = x t0 + ivl_integral t0 t (\<lambda>t. f t (x t))"
-      by (rule solution_fixed_point[symmetric]) simp
-    also have "ivl_integral t0 t (\<lambda>t. f t (x t)) = ivl_integral t0 t (\<lambda>t. f t ((ext_cont x tmin tmax) t))"
-      using \<open>{t0--t} \<subseteq> T\<close> T_def
-      by (intro ivl_integral_cong) (auto simp: ext_cont_cancel solves_ode_continuous_on[OF ode])
-    finally show ?thesis by (simp add: iv P_inner_def)
-  qed
-  show "continuous_on (cbox tmin tmax) x" using solves_ode_continuous_on[OF ode] T_def by auto
-  then show "continuous_on (cbox tmin tmax) (P_inner (ext_cont x tmin tmax))"
-    using solves_odeD(2)[OF ode]
-    by (auto simp: P_inner_def real_Icc_closed_segment
-      intro!: continuous_intros indefinite_ivl_integral_continuous_subset
-        integrable_continuous_closed_segment)
-qed auto
+  assumes t: "t \<in> T"
+  shows "P x t = x t"
+proof -
+  have "t \<in> {t0 -- t}" by simp
+  have ode': "(apply_bcontfun x solves_ode f) {t0--t} X" "t \<in> {t0 -- t}"
+    using ode T_def closed_segment_eq_real_ivl t apply auto
+    using closed_segment_iv_subset_domain solves_ode_on_subset apply fastforce
+    using closed_segment_iv_subset_domain solves_ode_on_subset apply fastforce
+    done
+  from solves_odeD[OF ode]
+  have x: "x \<in> T \<rightarrow>\<^sub>C X" by (auto simp: mem_PiC_iff)
+  from solution_fixed_point[OF ode'] iv
+  show ?thesis
+    unfolding P_def'[OF t x]
+    by simp
+qed
 
 lemma
   solution_in_iter_space:
-  assumes ode: "(z solves_ode f) T X"
+  assumes ode: "(apply_bcontfun z solves_ode f) T X"
   assumes iv: "z t0 = x0"
-  shows "ext_cont z tmin tmax \<in> iter_space" (is "?z \<in> _")
+  shows "z \<in> iter_space" (is "?z \<in> _")
 proof -
   from T_def ode have ode: "(z solves_ode f) {tmin -- tmax} X"
     by (simp add: closed_segment_real)
   have "(?z solves_ode f) T X"
     using is_solution_ext_cont[OF solves_ode_continuous_on[OF ode], of f X] ode T_def
     by (auto simp: min_def max_def closed_segment_real)
-  then have "\<And>t. t \<in> T \<Longrightarrow> ext_cont z tmin tmax t \<in> X"
-    by (auto simp add: solves_ode_def)
-  thus "?z \<in> iter_space" using solves_odeD[OF ode] solves_ode_continuous_on[OF ode]
-    by (auto simp: iv closed_segment_real min_def max_def
-      intro!: iter_spaceI)
+  then have "z \<in> T \<rightarrow>\<^sub>C X"
+    by (auto simp add: solves_ode_def mem_PiC_iff)
+  thus "?z \<in> iter_space"
+    by (auto simp: iv intro!: iter_spaceI)
 qed
 
 end
@@ -1548,80 +1564,54 @@ lemma lipschitz_P:
   shows "lipschitz iter_space P ((tmax - tmin) * L)"
 proof (rule lipschitzI)
   have "t0 \<in> T" by (simp add: iv_defined)
-  thus "0 \<le> (tmax - tmin) * L"
+  then show "0 \<le> (tmax - tmin) * L"
     using T_def
     by (auto intro!: mult_nonneg_nonneg lipschitz lipschitz_nonneg[OF lipschitz]
       iv_defined)
   fix y z
   assume "y \<in> iter_space" and "z \<in> iter_space"
-  hence y_defined: "Rep_bcontfun y \<in> (T \<rightarrow> X)"
-    and z_defined: "Rep_bcontfun z \<in> (T \<rightarrow> X)"
-    by (auto simp: Abs_bcontfun_inverse iter_space_def)
+  hence y_defined: "y \<in> (T \<rightarrow>\<^sub>C X)" and "y t0 = x0"
+    and z_defined: "z \<in> (T \<rightarrow>\<^sub>C X)" and "y t0 = x0"
+    by (auto dest: iter_spaceD)
+  have defined: "s \<in> T" "y s \<in> X" "z s \<in> X" if "s \<in> closed_segment tmin tmax" for s
+    using y_defined z_defined that T_def
+    by (auto simp: mem_PiC_iff)
   {
-    fix y z::"real\<Rightarrow>'a"
-    assume "y \<in> bcontfun" and y_defined: "y \<in> (T \<rightarrow> X)"
-    assume "z \<in> bcontfun" and z_defined: "z \<in> (T \<rightarrow> X)"
-    from bcontfunE[OF \<open>y \<in> bcontfun\<close>] have y[THEN continuous_on_compose2, continuous_intros]: "continuous_on UNIV y" by auto
-    from bcontfunE[OF \<open>z \<in> bcontfun\<close>] have z[THEN continuous_on_compose2, continuous_intros]: "continuous_on UNIV z" by auto
-    have defined: "s \<in> T" "y s \<in> X" "z s \<in> X" if "s \<in> closed_segment tmin tmax" for s
-      using y_defined z_defined that T_def
-      by (auto simp: )    {
-      note [intro, simp] = integrable_continuous_closed_segment
-      fix t
-      assume t_bounds: "t \<in> closed_segment tmin tmax"
-      then have cs_subs: "closed_segment t0 t \<subseteq> closed_segment tmin tmax"
-        by (auto simp: closed_segment_real)
-      then have cs_subs_ext: "\<And>ta. ta \<in> {t0--t} \<Longrightarrow> ta \<in> {tmin--tmax}" by auto
+    note [intro, simp] = integrable_continuous_closed_segment
+    fix t
+    assume t_bounds: "tmin \<le> t" "t \<le> tmax"
+    then have cs_subs: "closed_segment t0 t \<subseteq> closed_segment tmin tmax"
+      by (auto simp: closed_segment_real)
+    then have cs_subs_ext: "\<And>ta. ta \<in> {t0--t} \<Longrightarrow> ta \<in> {tmin--tmax}" by auto
 
-      have "norm (P_inner y t - P_inner z t) =
-        norm (ivl_integral t0 t (\<lambda>t. f t (y t) - f t (z t)))"
-        by (subst ivl_integral_diff)
-          (auto intro!: integrable_continuous_closed_segment continuous_intros defined cs_subs_ext simp: P_inner_def)
-      also have "... \<le> abs (ivl_integral t0 t (\<lambda>t. norm (f t (y t) - f t (z t))))"
-        by (rule ivl_integral_norm_bound_ivl_integral)
-          (auto intro!: ivl_integral_norm_bound_ivl_integral continuous_intros integrable_continuous_closed_segment
-            simp: defined cs_subs_ext)
-      also have "... \<le> abs (ivl_integral t0 t (\<lambda>t. L * norm (y t - z t)))"
-        using lipschitz t_bounds T_def y_defined z_defined cs_subs
-        by (intro norm_ivl_integral_le) (auto intro!: continuous_intros integrable_continuous_closed_segment
-          simp add: dist_norm lipschitz_def Pi_iff)
-      also have "... \<le> abs (ivl_integral t0 t (\<lambda>t. L * norm (Abs_bcontfun y - Abs_bcontfun  z)))"
-        using norm_bounded[of "Abs_bcontfun y - Abs_bcontfun z"]
-          L_nonneg
-        by (intro norm_ivl_integral_le) (auto intro!: continuous_intros mult_left_mono
-          simp add: Abs_bcontfun_inverse[OF \<open>y \<in> bcontfun\<close>]
-          Abs_bcontfun_inverse[OF \<open>z \<in> bcontfun\<close>])
-      also have "... =
-        L * abs (t - t0) * norm (Abs_bcontfun y - Abs_bcontfun z)"
-        using t_bounds L_nonneg by (simp add: abs_mult)
-      also have "... \<le> L * (tmax - tmin) * norm (Abs_bcontfun y - Abs_bcontfun z)"
-        using t_bounds zero_le_dist L_nonneg cs_subs tmin_le_t0 tmax_ge_t0
-        by (auto intro!: mult_right_mono mult_left_mono simp: closed_segment_real abs_real_def
-          simp del: tmin_le_t0 tmax_ge_t0 split: if_split_asm)
-      finally
-      have "norm (P_inner y t - P_inner z t)
-        \<le> L * (tmax - tmin) * norm (Abs_bcontfun y - Abs_bcontfun z)" .
-    } note * = this
-    have "dist (P (Abs_bcontfun y)) (P (Abs_bcontfun z)) \<le>
-      L * (tmax - tmin) * dist (Abs_bcontfun y) (Abs_bcontfun z)"
-      unfolding P_def dist_norm ext_cont_def
-        Abs_bcontfun_inverse[OF \<open>y \<in> bcontfun\<close>]
-        Abs_bcontfun_inverse[OF \<open>z \<in> bcontfun\<close>]
-      using T_def iv_defined \<open>y \<in> bcontfun\<close> \<open>z \<in> bcontfun\<close>
-        y_defined z_defined
-        clamp_in_interval[of "tmin" "tmax"]
-      apply (intro norm_bound)
-      unfolding Rep_bcontfun_minus
-      apply (subst Abs_bcontfun_inverse,
-        fastforce simp add: elim!: bcontfunE  intro!: P_inner_bcontfun * intro: continuous_on_subset)
-      apply (subst Abs_bcontfun_inverse,
-        fastforce simp add: elim!: bcontfunE  intro!: P_inner_bcontfun * intro: continuous_on_subset)
-      by (auto intro!: P_inner_bcontfun * elim!: bcontfunE simp: real_Icc_closed_segment
-        intro: continuous_on_subset)
-  }
-  from this[OF Rep_bcontfun y_defined Rep_bcontfun z_defined]
+    have "norm (P_inner y t - P_inner z t) =
+      norm (ivl_integral t0 t (\<lambda>t. f t (y t) - f t (z t)))"
+      by (subst ivl_integral_diff)
+        (auto intro!: integrable_continuous_closed_segment continuous_intros defined cs_subs_ext simp: P_inner_def)
+    also have "... \<le> abs (ivl_integral t0 t (\<lambda>t. norm (f t (y t) - f t (z t))))"
+      by (rule ivl_integral_norm_bound_ivl_integral)
+        (auto intro!: ivl_integral_norm_bound_ivl_integral continuous_intros integrable_continuous_closed_segment
+          simp: defined cs_subs_ext)
+    also have "... \<le> abs (ivl_integral t0 t (\<lambda>t. L * norm (y t - z t)))"
+      using lipschitz t_bounds T_def y_defined z_defined cs_subs
+      by (intro norm_ivl_integral_le) (auto intro!: continuous_intros integrable_continuous_closed_segment
+        simp add: dist_norm lipschitz_def mem_PiC_iff Pi_iff)
+    also have "... \<le> abs (ivl_integral t0 t (\<lambda>t. L * norm (y - z)))"
+      using norm_bounded[of "y - z"]
+        L_nonneg
+      by (intro norm_ivl_integral_le) (auto intro!: continuous_intros mult_left_mono)
+    also have "... = L * abs (t - t0) * norm (y - z)"
+      using t_bounds L_nonneg by (simp add: abs_mult)
+    also have "... \<le> L * (tmax - tmin) * norm (y - z)"
+      using t_bounds zero_le_dist L_nonneg cs_subs tmin_le_t0 tmax_ge_t0
+      by (auto intro!: mult_right_mono mult_left_mono simp: closed_segment_real abs_real_def
+        simp del: tmin_le_t0 tmax_ge_t0 split: if_split_asm)
+    finally
+    have "dist (P_inner y t) (P_inner z t) \<le> (tmax - tmin) * L * dist y z"
+      by (simp add: dist_norm ac_simps)
+  } note * = this
   show "dist (P y) (P z) \<le> (tmax - tmin) * L * dist y z"
-    unfolding Rep_bcontfun_inverse by (simp add: field_simps)
+    by (auto intro!: dist_bound dist_P_le * y_defined z_defined mult_nonneg_nonneg L_nonneg)
 qed
 
 
@@ -1656,24 +1646,24 @@ lemma fixed_point_equality: "x \<in> iter_space \<Longrightarrow> P x = x \<Long
 lemma fixed_point_iv: "fixed_point t0 = x0"
   and fixed_point_domain: "x \<in> T \<Longrightarrow> fixed_point x \<in> X"
   using fixed_point
-  by (auto dest: iter_spaceD)
+  by (force dest: iter_spaceD simp: mem_PiC_iff)+
 
 lemma fixed_point_has_vderiv_on: "(fixed_point has_vderiv_on (\<lambda>t. f t (fixed_point t))) T"
 proof -
-  have "continuous_on {tmin--tmax} (\<lambda>x. f x (fixed_point x))"
+  have "continuous_on T (\<lambda>x. f x (fixed_point x))"
     using fixed_point_domain
     by (auto intro!: continuous_intros)
-  then have "((\<lambda>u. x0 + ivl_integral t0 u (\<lambda>x. f x (fixed_point x))) has_vderiv_on (\<lambda>t. f t (fixed_point t))) {tmin -- tmax}"
-    by (auto intro!: derivative_intros ivl_integral_has_vderiv_on_subset)
+  then have "((\<lambda>u. x0 + ivl_integral t0 u (\<lambda>x. f x (fixed_point x))) has_vderiv_on (\<lambda>t. f t (fixed_point t))) T"
+    by (auto intro!: derivative_intros ivl_integral_has_vderiv_on_compact_interval interval compact_time)
   then show ?thesis
   proof (rule has_vderiv_eq)
     fix t
-    assume t: "t \<in> {tmin--tmax}"
+    assume t: "t \<in> T"
     have "fixed_point t = P fixed_point t"
       using fixed_point by simp
     also have "\<dots> = x0 + ivl_integral t0 t (\<lambda>x. f x (fixed_point x))"
       using t fixed_point_domain
-      by (auto simp: P_def')
+      by (auto simp: P_def' mem_PiC_iff)
     finally show "x0 + ivl_integral t0 t (\<lambda>x. f x (fixed_point x)) = fixed_point t" by simp
   qed (insert T_def, auto simp: closed_segment_real)
 qed
@@ -1690,16 +1680,40 @@ text\<open>\label{sec:ivp-ubs}\<close>
 lemma solves_ode_equals_fixed_point:
   assumes ode: "(x solves_ode f) T X"
   assumes iv: "x t0 = x0"
-  assumes "t \<in> T"
+  assumes t: "t \<in> T"
   shows "x t = fixed_point t"
 proof -
-  have "ext_cont fixed_point tmin tmax t = ext_cont x tmin tmax t"
-    by (metis ode ext_cont_solution_fixed_point fixed_point_iv fixed_point_solution
-      iv solution_in_iter_space unique_on_bounded_closed.fixed_point_equality'
-      unique_on_bounded_closed_axioms)
-  then show "x t = fixed_point t"
-    using solves_ode_continuous_on[OF ode] solves_ode_continuous_on[OF fixed_point_solution] \<open>t \<in> T\<close> T_def
-    by (auto simp: closed_segment_real min_def max_def split: if_split_asm)
+  from solves_ode_continuous_on[OF ode] T_def
+  have "continuous_on {tmin .. tmax} x" by simp
+  from continuous_on_interval_bcontfunE[OF this]
+  obtain g where g:
+    "tmin \<le> t \<Longrightarrow> t \<le> tmax \<Longrightarrow> apply_bcontfun g t = x t"
+    "apply_bcontfun g t = x (clamp tmin tmax t)"
+    for t
+    by metis
+  with ode T_def have ode_g: "(g solves_ode f) T X"
+    by (metis (no_types, lifting) solves_ode_cong tmax(1) tmin(1))
+  have "x t = g t"
+    using t T_def
+    by (intro g[symmetric]) auto
+  also
+  have "g t0 = x0" "g \<in> T \<rightarrow>\<^sub>C X"
+    using iv g solves_odeD(2)[OF ode_g]
+    unfolding mem_PiC_iff
+    by blast+
+  then have "g \<in> iter_space"
+    by (intro iter_spaceI)
+  then have "g = fixed_point"
+    apply (rule fixed_point_equality[symmetric])
+    apply (rule bcontfun_eqI)
+    subgoal for t
+      using apply_bcontfun_solution_fixed_point[OF ode_g \<open>g t0 = x0\<close>, of tmin]
+        apply_bcontfun_solution_fixed_point[OF ode_g \<open>g t0 = x0\<close>, of tmax]
+        apply_bcontfun_solution_fixed_point[OF ode_g \<open>g t0 = x0\<close>, of t]
+      using T_def
+      by (fastforce simp: P_eqs not_le \<open>g \<in> T \<rightarrow>\<^sub>C X\<close> g)
+    done
+  finally show ?thesis .
 qed
 
 lemma solves_ode_on_closed_segment_equals_fixed_point:
