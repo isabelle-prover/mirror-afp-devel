@@ -139,9 +139,6 @@ class Builder():
         counter = 0
         template = self.j2_env.get_template("entry.tpl")
         for name, entry in self.afp_entries.items():
-            #TODO: Solve more elegantly
-            entry.imports = sorted(entry.imports, key=lambda x: x.name)
-            entry.used = sorted(entry.used, key=lambda x: x.name)
             self.write_file(os.path.join("entries", name + ".shtml"), template,
                             {'entry': entry, 'is_devel': self.is_devel})
             counter += 1
