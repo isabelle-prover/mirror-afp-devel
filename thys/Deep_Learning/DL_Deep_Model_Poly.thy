@@ -285,7 +285,7 @@ context deep_model_correct_params_y
 begin
 
 definition witness_submatrix where
-"witness_submatrix j f = submatrix (A' f) rows_with_1 rows_with_1"
+"witness_submatrix f = submatrix (A' f) rows_with_1 rows_with_1"
 
 
 lemma polyfun_tensor_deep_model:
@@ -326,7 +326,7 @@ qed
 lemma polyfun_submatrix_deep_model:
 assumes "i < r ^ N_half"
 assumes "j < r ^ N_half"
-shows "polyfun {..<weight_space_dim} (\<lambda>f. witness_submatrix y f $$ (i,j))"
+shows "polyfun {..<weight_space_dim} (\<lambda>f. witness_submatrix f $$ (i,j))"
 unfolding witness_submatrix_def
 proof (rule polyfun_submatrix)
   have 1:"\<And>f. remove_weights (insert_weights (deep_model_l rs) f) = deep_model_l rs"
@@ -344,16 +344,16 @@ proof (rule polyfun_submatrix)
 qed
 
 lemma polyfun_det_deep_model:
-shows "polyfun {..<weight_space_dim} (\<lambda>f. det (witness_submatrix y f))"
+shows "polyfun {..<weight_space_dim} (\<lambda>f. det (witness_submatrix f))"
 proof (rule polyfun_det)
   fix f
   have "remove_weights (insert_weights (deep_model_l rs) f) = deep_model_l rs"
     using remove_insert_weights by metis
 
-  show "witness_submatrix y f \<in> carrier\<^sub>m (r ^ N_half) (r ^ N_half)"
+  show "witness_submatrix f \<in> carrier\<^sub>m (r ^ N_half) (r ^ N_half)"
     unfolding witness_submatrix_def apply (rule mat_carrierI) unfolding dim_submatrix[unfolded set_le_in]
     unfolding dims_A'_pow[unfolded weight_space_dim_def] using card_rows_with_1 dims_Aw'_pow by simp_all
-  show "\<And>i j. i < r ^ N_half \<Longrightarrow> j < r ^ N_half \<Longrightarrow> polyfun {..<weight_space_dim} (\<lambda>f. witness_submatrix y f $$ (i, j))"
+  show "\<And>i j. i < r ^ N_half \<Longrightarrow> j < r ^ N_half \<Longrightarrow> polyfun {..<weight_space_dim} (\<lambda>f. witness_submatrix f $$ (i, j))"
     using polyfun_submatrix_deep_model by blast
 qed
 

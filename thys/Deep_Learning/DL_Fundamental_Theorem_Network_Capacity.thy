@@ -15,7 +15,7 @@ and "\<And>x. insertion x p \<noteq> 0 \<Longrightarrow> r ^ N_half \<le> cprank
 proof -
   assume assumption:"\<And>p. p \<noteq> 0 \<Longrightarrow> vars p \<subseteq> {..<weight_space_dim} \<Longrightarrow>
    (\<And>x. insertion x p \<noteq> 0 \<Longrightarrow> r ^ N_half \<le> cprank (A x)) \<Longrightarrow> thesis"
-  obtain p where p_def:"\<And>x. insertion x p = Determinant.det (witness_submatrix y x)" and
+  obtain p where p_def:"\<And>x. insertion x p = Determinant.det (witness_submatrix x)" and
                  vars_p:"vars p \<subseteq> {..<weight_space_dim}"
     using polyfun_det_deep_model[unfolded polyfun_def] by auto
   then have "insertion witness_weights p \<noteq> 0"
@@ -25,11 +25,11 @@ proof -
   have "\<And>x. insertion x p \<noteq> 0 \<Longrightarrow> r ^ N_half \<le> cprank (A x)"
   proof -
     fix x assume "insertion x p \<noteq> 0"
-    then have "Determinant.det (witness_submatrix y x) \<noteq> 0" using p_def by auto
+    then have "Determinant.det (witness_submatrix x) \<noteq> 0" using p_def by auto
     have 0:"weight_space_dim \<le> length (map x [0..<weight_space_dim])" by auto
     have "r ^ N_half \<le> mrank (A' x)"
       using vec_space.rank_gt_minor[OF mat_carrierI[OF dims_A'_pow, unfolded weight_space_dim_def]
-      `Determinant.det (witness_submatrix y x) \<noteq> 0`[unfolded witness_submatrix_def]]
+      `Determinant.det (witness_submatrix x) \<noteq> 0`[unfolded witness_submatrix_def]]
       card_rows_with_1[unfolded dims_Aw'_pow] by (metis (no_types, lifting) Collect_cong dims_A'_pow(1))
     also have "... \<le> cprank (A x)" using matrix_rank_le_cp_rank A'_def by auto
     finally show "r ^ N_half \<le> cprank (A x)" .
