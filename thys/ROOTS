@@ -55,6 +55,7 @@ CofGroups
 Coinductive
 Coinductive_Languages
 Collections
+Comparison_Sort_Lower_Bound
 Compiling-Exceptions-Correctly
 Completeness
 Complx
@@ -249,6 +250,7 @@ PseudoHoops
 Psi_Calculi
 Ptolemys_Theorem
 QR_Decomposition
+Quick_Sort_Cost
 RIPEMD-160-SPARK
 ROBDD
 RSAPSS
