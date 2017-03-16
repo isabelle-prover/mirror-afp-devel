@@ -199,12 +199,17 @@ class Builder():
         i = 0
         while i < 10 or len(most_used[i].used) == len(most_used[i + 1].used):
             i += 1
-        data['most_used'] = groupby(most_used[:i + 1],
-                                    key=lambda x: len(x.used))
+        # Groupby iterators trigger some obscure bug in jinja2
+        # https://github.com/pallets/jinja/issues/555
+        # So don't use groupby iterator directly and convert to list of lists
+        data['most_used'] = [(len_used, list(articles)) for (len_used, articles)
+                             in groupby(most_used[:i + 1],
+                                        key=lambda x: len(x.used))]
         data['articles_by_time'] = sorted(self.afp_entries.values(),
                                           key=lambda x: x.publish_date)
-        data['articles_per_year'] = groupby(data['articles_by_time'],
-                                            key=lambda x: x.publish_date.year)
+        data['articles_per_year'] = [(year, list(articles)) for (year, articles)
+                                     in groupby(data['articles_by_time'],
+                                                key=lambda x: x.publish_date.year)]
         template = self.j2_env.get_template("statistics.tpl")
         self.write_file("statistics.shtml", template, data)
         terminal.success("Generated statistics.shtml")
