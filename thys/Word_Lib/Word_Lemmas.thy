@@ -166,7 +166,7 @@ lemma ucast_ucast_eq:
   apply (rule word_eqI)
   apply (subst (asm) bang_eq)
   apply (erule_tac x=n in allE)
-  apply (simp add: nth_ucast word_size)
+  apply (auto simp: nth_ucast word_size)
   done
 
 
@@ -1317,7 +1317,7 @@ lemma ucast_range_less:
   apply (drule less_mask_eq)
   apply (rule word_eqI)
   apply (drule_tac x=n in word_eqD)
-  apply (simp add: word_size nth_ucast)
+  apply (auto simp: word_size nth_ucast)
   done
 
 lemma word_power_less_diff:
@@ -2102,8 +2102,7 @@ lemma split_word_eq_on_mask:
   apply safe
   apply (rule word_eqI)
   apply (drule_tac x=n in word_eqD)+
-  apply (simp add: word_size word_ops_nth_size)
-  apply auto
+  apply (auto simp: word_size word_ops_nth_size)
   done
 
 lemma map2_Cons_2_3:
@@ -2634,7 +2633,7 @@ lemma shiftr_mask_eq:
   fixes x :: "'a :: len word"
   shows "(x >> n) && mask (size x - n) = x >> n"
   apply (rule word_eqI)
-  apply (simp add: word_size nth_shiftr)
+  apply (clarsimp simp: word_size nth_shiftr)
   apply (rule iffI)
    apply clarsimp
   apply (clarsimp)
@@ -3170,8 +3169,7 @@ lemma sgn_sdiv_eq_sgn_mult:
   apply (subst sgn_div_eq_sgn_mult)
    apply simp
   apply (clarsimp simp: sgn_mult)
-  apply (metis abs_mult div_0 nonzero_mult_div_cancel_right sgn_0_0 sgn_1_pos sgn_mult zero_less_abs_iff)
-  done
+  using sgn_0 by blast
 
 lemma int_sdiv_same_is_1 [simp]:
     "a \<noteq> 0 \<Longrightarrow> ((a :: int) sdiv b = a) = (b = 1)"
@@ -3839,31 +3837,32 @@ lemma aligned_shift':
   apply (simp add: nth_shiftr)
   apply safe
   apply (drule(1) nth_bounded)
-  apply simp+
-done
+   apply simp+
+  done
 
 lemma neg_mask_add_mask:
   "((x:: 'a :: len word) && ~~ mask n) + (2 ^ n - 1) = x || mask n"
   apply (simp add:mask_2pm1[symmetric])
   apply (rule word_eqI)
+  apply (rule impI)
   apply (rule iffI)
-    apply (clarsimp simp:word_size not_less)
-    apply (cut_tac w = "((x && ~~ mask n) + mask n)" and
-      m = n and n = "na - n" in nth_shiftr[symmetric])
-    apply clarsimp
-    apply (subst (asm) aligned_shift')
-  apply (simp add:mask_lt_2pn nth_shiftr is_aligned_neg_mask word_size)+
+   apply (clarsimp simp:word_size not_less)
+   apply (cut_tac w = "((x && ~~ mask n) + mask n)" and
+                  m = n and n = "na - n" in nth_shiftr[symmetric])
+   apply clarsimp
+   apply (subst (asm) aligned_shift')
+      apply (simp add:mask_lt_2pn nth_shiftr is_aligned_neg_mask word_size)+
   apply (case_tac "na<n")
-    apply clarsimp
-    apply (subst word_plus_and_or_coroll)
+   apply clarsimp
+   apply (subst word_plus_and_or_coroll)
     apply (rule iffD1[OF is_aligned_mask])
     apply (simp add:is_aligned_neg_mask word_size not_less)+
   apply (cut_tac w = "((x && ~~ mask n) + mask n)" and
-      m = n and n = "na - n" in nth_shiftr[symmetric])
+                 m = n and n = "na - n" in nth_shiftr[symmetric])
   apply clarsimp
   apply (subst (asm) aligned_shift')
-  apply (simp add:mask_lt_2pn is_aligned_neg_mask nth_shiftr neg_mask_bang)+
-done
+     apply (simp add:mask_lt_2pn is_aligned_neg_mask nth_shiftr neg_mask_bang)+
+  done
 
 lemma subtract_mask:
   "p - (p && mask n) = (p && ~~ mask n)"
