@@ -95,20 +95,24 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">A <em>matching</em> in a graph <i>G</i> is a subset <i>M</i> of the
+  <td class="abstract">
+<p>
+A <em>matching</em> in a graph <i>G</i> is a subset <i>M</i> of the
 edges of <i>G</i> such that no two share an endpoint. A matching has maximum
 cardinality if its cardinality is at least as large as that of any other
 matching. An <em>odd-set cover</em> <i>OSC</i> of a graph <i>G</i> is a
 labeling of the nodes of <i>G</i> with integers such that every edge of
 <i>G</i> is either incident to a node labeled 1 or connects two nodes
 labeled with the same number <i>i &ge; 2</i>.
-This article proves Edmonds theorem:
+</p><p>
+This article proves Edmonds theorem:<br>
 Let <i>M</i> be a matching in a graph <i>G</i> and let <i>OSC</i> be an
 odd-set cover of <i>G</i>.
 For any <i>i &ge; 0</i>, let <var>n(i)</var> be the number of nodes
 labeled <i>i</i>. If <i>|M| = n(1) +
 &sum;<sub>i &ge; 2</sub>(n(i) div 2)</i>,
-then <i>M</i> is a maximum cardinality matching.</td>
+then <i>M</i> is a maximum cardinality matching.
+</p></td>
 </tr>
 
 

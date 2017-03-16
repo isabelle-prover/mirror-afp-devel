@@ -94,16 +94,20 @@
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
+<p>
 Liouville numbers are a class of transcendental numbers that can be approximated
 particularly well with rational numbers. Historically, they were the first
 numbers whose transcendence was proven.
+</p><p>
 In this entry, we define the concept of Liouville numbers as well as the
 standard construction to obtain Liouville numbers (including Liouville's
 constant) and we prove their most important properties: irrationality and
 transcendence.
+</p><p>
 The proof is very elementary and requires only standard arithmetic, the Mean
 Value Theorem for polynomials, and the boundedness of polynomials on compact
-intervals.</td>
+intervals.
+</p></td>
 </tr>
 
 
