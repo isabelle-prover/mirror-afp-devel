@@ -433,6 +433,7 @@ fixes g :: "nat \<Rightarrow> real" shows "prod g {..<n+m} = prod g {..<n} * pro
 using Groups_Big.comm_monoid_mult_class.prod.union_inter_neutral[of "{..<n}" "{n..<n+m}" g, unfolded ivl_disj_un_one(2)[OF le_add1], OF finite_lessThan finite_atLeastLessThan]
 by (metis (no_types) add.commute add.left_neutral atLeast0LessThan empty_iff ivl_disj_int_one(2) prod_shift_bounds_nat_ivl)
 
+(* This is a nice lemma, but never used to prove the Fundamental Theorem of Network Capacity: *)
 lemma evaluate_net_from_tensors:
 assumes "valid_net' m"
 and "map dim\<^sub>v inputs = input_sizes m"

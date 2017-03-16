@@ -1,7 +1,7 @@
 (* Author: Alexander Bentkamp, Universität des Saarlandes
 *)
 
-section \<open>Ranks of Submatrices\<close>
+section \<open>Rank and Submatrices\<close>
 
 theory DL_Rank_Submatrix
 imports DL_Rank DL_Submatrix DL_Missing_Matrix

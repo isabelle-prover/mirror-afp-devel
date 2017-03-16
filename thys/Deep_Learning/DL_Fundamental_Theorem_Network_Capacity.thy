@@ -92,9 +92,9 @@ qed
 
 theorem fundamental_theorem_network_capacity_v2:
 shows "AE weights_deep in lborel_f weight_space_dim.
-   \<not>(\<exists>weights_shallow Z. Z < r ^ N_half \<and> (\<forall>inputs. map dim\<^sub>v inputs = input_sizes (deep_model_l rs) \<longrightarrow>
-evaluate_net (insert_weights (deep_model_l rs) weights_deep) inputs
- = evaluate_net (insert_weights (shallow_model (rs ! 0) Z (last rs) (2*N_half-1)) weights_shallow) inputs))"
+   \<not>(\<exists>weights_shallow Z. Z < r ^ N_half \<and> 
+evaluate_net (insert_weights (deep_model_l rs) weights_deep) 
+ = evaluate_net (insert_weights (shallow_model (rs ! 0) Z (last rs) (2*N_half-1)) weights_shallow))"
 (is "almost_everywhere ?M ?P")
 proof (rule Filter.eventually_mono)
   show "AE weights_deep in lborel_f weight_space_dim.
@@ -102,19 +102,19 @@ proof (rule Filter.eventually_mono)
     tensors_from_net (insert_weights (deep_model_l rs) weights_deep)
     = tensors_from_net (insert_weights (shallow_model (rs ! 0) Z (last rs) (2*N_half -1)) weights_shallow))"
     (is "almost_everywhere ?M ?P'")
-    using null_set_tensors_equal by metis
+    using null_set_tensors_equal .
   have "\<And>x. \<not>?P x \<Longrightarrow> \<not>?P' x"
   proof -
     fix weights_deep assume "\<not>?P weights_deep"
     then obtain weights_shallow Z where 0:"Z < r ^ N_half"
-          and eval_eq:"\<And>inputs. map dim\<^sub>v inputs = input_sizes (deep_model_l rs) \<Longrightarrow>
-            evaluate_net (insert_weights (deep_model_l rs) weights_deep) inputs
-            = evaluate_net (insert_weights (shallow_model (rs ! 0) Z (last rs) (2*N_half-1)) weights_shallow) inputs"
+          and eval_eq:"
+            evaluate_net (insert_weights (deep_model_l rs) weights_deep)
+            = evaluate_net (insert_weights (shallow_model (rs ! 0) Z (last rs) (2*N_half-1)) weights_shallow)"
       by blast
     have "2 \<le> length rs" using deep by linarith
     have "tensors_from_net (insert_weights (deep_model_l rs) weights_deep) =
           tensors_from_net (insert_weights (shallow_model (rs ! 0) Z (last rs) (2 * N_half - 1)) weights_shallow)"
-      using tensors_from_net_eqI[OF _ _ _ eval_eq, unfolded remove_insert_weights, OF valid_deep_model valid_shallow_model]
+      using eval_eq remove_insert_weights tensors_from_net_eqI valid_deep_model valid_shallow_model
       input_sizes_deep_model[OF `2 \<le> length rs`] input_sizes_shallow_model input_sizes_remove_weights remove_insert_weights
       by (metis (no_types, lifting) N_half_def Suc_diff_1 Suc_diff_Suc Suc_le_lessD deep numeral_2_eq_2 numeral_3_eq_3 power_Suc power_eq_0_iff zero_less_power zero_power2)
     then show "\<not>?P' weights_deep"
