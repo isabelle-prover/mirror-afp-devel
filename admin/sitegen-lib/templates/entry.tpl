@@ -137,7 +137,7 @@
 
     {% macro print_dep(entries, title) %}
       {% set comma = joiner(", ") %}
-      {% if entries %}
+      {% if entries|sort(attribute='title') %}
       <tr><td class="datahead">{{title}}:</td>
           <td class="data">
       {%- for article in entries|sort(attribute='name') %}

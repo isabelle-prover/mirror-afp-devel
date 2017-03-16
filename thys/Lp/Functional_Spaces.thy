@@ -553,39 +553,41 @@ text {*The Banach space of bounded continuous functions is defined in
 results proved in this file to the current framework.*}
 
 definition bcontfun\<^sub>N::"('a::topological_space \<Rightarrow> 'b::real_normed_vector) quasinorm"
-  where "bcontfun\<^sub>N = quasinorm_of (1, \<lambda>f. if f \<in> bcontfun then norm(Abs_bcontfun f) else (\<infinity>::ennreal))"
+  where "bcontfun\<^sub>N = quasinorm_of (1, \<lambda>f. if f \<in> bcontfun then norm(Bcontfun f) else (\<infinity>::ennreal))"
 
 lemma bcontfun\<^sub>N:
   fixes f::"('a::topological_space \<Rightarrow> 'b::real_normed_vector)"
-  shows "eNorm bcontfun\<^sub>N f = (if f \<in> bcontfun then norm(Abs_bcontfun f) else (\<infinity>::ennreal))"
-        "Norm bcontfun\<^sub>N f = (if f \<in> bcontfun then norm(Abs_bcontfun f) else 0)"
+  shows "eNorm bcontfun\<^sub>N f = (if f \<in> bcontfun then norm(Bcontfun f) else (\<infinity>::ennreal))"
+        "Norm bcontfun\<^sub>N f = (if f \<in> bcontfun then norm(Bcontfun f) else 0)"
         "defect (bcontfun\<^sub>N::(('a \<Rightarrow> 'b) quasinorm)) = 1"
 proof -
-  have *: "quasinorm_on bcontfun 1 (\<lambda>(f::('a \<Rightarrow> 'b)). norm(Abs_bcontfun f))"
+  have *: "quasinorm_on bcontfun 1 (\<lambda>(f::('a \<Rightarrow> 'b)). norm(Bcontfun f))"
   proof (rule quasinorm_onI, auto)
     fix f g::"'a \<Rightarrow> 'b" assume H: "f \<in> bcontfun" "g \<in> bcontfun"
     then show "f + g \<in> bcontfun" unfolding plus_fun_def by (simp add: plus_cont)
-    have *: "Abs_bcontfun(f + g) = Abs_bcontfun f + Abs_bcontfun g"
-      using H unfolding plus_fun_def plus_bcontfun_def by (simp add: Abs_bcontfun_inverse)
-    show "ennreal (norm (Abs_bcontfun (f + g))) \<le> ennreal (norm (Abs_bcontfun f)) + ennreal (norm (Abs_bcontfun g))"
+    have *: "Bcontfun(f + g) = Bcontfun f + Bcontfun g"
+      using H
+      by (auto simp: eq_onp_def plus_fun_def bcontfun_def intro!: plus_bcontfun.abs_eq[symmetric])
+    show "ennreal (norm (Bcontfun (f + g))) \<le> ennreal (norm (Bcontfun f)) + ennreal (norm (Bcontfun g))"
       unfolding * using ennreal_leI[OF norm_triangle_ineq] by auto
   next
     fix c::real and f::"'a \<Rightarrow> 'b" assume H: "f \<in> bcontfun"
     then show "c *\<^sub>R f \<in> bcontfun" unfolding scaleR_fun_def by (simp add: scaleR_cont)
-    have *: "Abs_bcontfun(c *\<^sub>R f) = c *\<^sub>R Abs_bcontfun f"
-      using H unfolding scaleR_fun_def scaleR_bcontfun_def by (simp add: Abs_bcontfun_inverse)
-    show "ennreal (norm (Abs_bcontfun (c *\<^sub>R f))) \<le> ennreal \<bar>c\<bar> * ennreal (norm (Abs_bcontfun f))"
+    have *: "Bcontfun(c *\<^sub>R f) = c *\<^sub>R Bcontfun f"
+      using H
+      by (auto simp: eq_onp_def scaleR_fun_def bcontfun_def intro!: scaleR_bcontfun.abs_eq[symmetric])
+    show "ennreal (norm (Bcontfun (c *\<^sub>R f))) \<le> ennreal \<bar>c\<bar> * ennreal (norm (Bcontfun f))"
       unfolding * by (simp add: ennreal_mult'')
   next
-    show "0 \<in> bcontfun" "Abs_bcontfun 0 = 0"
+    show "(0::'a\<Rightarrow>'b) \<in> bcontfun" "Bcontfun 0 = 0"
       unfolding zero_fun_def zero_bcontfun_def by (auto simp add: const_bcontfun)
   qed
-  have **: "quasinorm_on UNIV 1 (\<lambda>(f::'a\<Rightarrow>'b). if f \<in> bcontfun then norm(Abs_bcontfun f) else (\<infinity>::ennreal))"
+  have **: "quasinorm_on UNIV 1 (\<lambda>(f::'a\<Rightarrow>'b). if f \<in> bcontfun then norm(Bcontfun f) else (\<infinity>::ennreal))"
     by (rule extend_quasinorm[OF *])
-  show "eNorm bcontfun\<^sub>N f = (if f \<in> bcontfun then norm(Abs_bcontfun f) else (\<infinity>::ennreal))"
+  show "eNorm bcontfun\<^sub>N f = (if f \<in> bcontfun then norm(Bcontfun f) else (\<infinity>::ennreal))"
        "defect (bcontfun\<^sub>N::('a \<Rightarrow> 'b) quasinorm) = 1"
     using quasinorm_of[OF **] unfolding bcontfun\<^sub>N_def by auto
-  then show "Norm bcontfun\<^sub>N f = (if f \<in> bcontfun then norm(Abs_bcontfun f) else 0)"
+  then show "Norm bcontfun\<^sub>N f = (if f \<in> bcontfun then norm(Bcontfun f) else 0)"
     unfolding Norm_def by auto
 qed
 
@@ -596,8 +598,8 @@ using bcontfun\<^sub>N(1) by (metis (no_types, lifting) Collect_cong bcontfun_de
 
 lemma bcontfun\<^sub>N_zero_space:
   "zero_space\<^sub>N bcontfun\<^sub>N = {0}"
-apply (auto simp add: zero_spaceN_iff)
-by (metis Abs_bcontfun_inject bcontfun\<^sub>N(1) eNorm_zero ennreal_eq_zero_iff ennreal_zero_neq_top infinity_ennreal_def norm_eq_zero norm_imp_pos_and_ge)
+  apply (auto simp add: zero_spaceN_iff)
+  by (metis Bcontfun_inject bcontfun\<^sub>N(1) eNorm_zero ennreal_eq_zero_iff ennreal_zero_neq_top infinity_ennreal_def norm_eq_zero norm_imp_pos_and_ge)
 
 lemma bcontfun\<^sub>ND:
   assumes "f \<in> space\<^sub>N bcontfun\<^sub>N"
@@ -607,7 +609,7 @@ proof-
   have "f \<in> bcontfun" using assms unfolding bcontfun\<^sub>N_space by simp
   then show "continuous_on UNIV f" unfolding bcontfun_def by auto
   show "\<And>x. norm(f x) \<le> Norm bcontfun\<^sub>N f"
-    using norm_bounded bcontfun\<^sub>N(2) `f \<in> bcontfun` by (metis Abs_bcontfun_inverse)
+    using norm_bounded bcontfun\<^sub>N(2) `f \<in> bcontfun` by (metis Bcontfun_inverse)
 qed
 
 lemma bcontfun\<^sub>NI:
@@ -619,7 +621,7 @@ proof -
   have "f \<in> bcontfun" using assms bcontfun_normI by blast
   then show "f \<in> space\<^sub>N bcontfun\<^sub>N" unfolding bcontfun\<^sub>N_space by simp
   show "Norm bcontfun\<^sub>N f \<le> C" unfolding bcontfun\<^sub>N(2) using `f \<in> bcontfun` apply auto
-    using assms(2) by (metis Rep_bcontfun_cases Rep_bcontfun_inverse norm_bound)
+    using assms(2) by (metis apply_bcontfun_cases apply_bcontfun_inverse norm_bound)
 qed
 
 
@@ -1275,21 +1277,21 @@ lemma complete_bcontfunN:
 proof (rule complete\<^sub>N_I)
   fix u::"nat \<Rightarrow> ('a \<Rightarrow> 'b)" assume H: "cauchy_in\<^sub>N bcontfun\<^sub>N u" "\<forall>n. u n \<in> space\<^sub>N bcontfun\<^sub>N"
   then have H2: "u n \<in> bcontfun" for n using bcontfun\<^sub>N_space by auto
-  then have **: "Abs_bcontfun(u n - u m) = Abs_bcontfun (u n) - Abs_bcontfun (u m)" for m n
-    unfolding minus_fun_def minus_bcontfun_def by (simp add: Abs_bcontfun_inverse)
-  have *: "Norm bcontfun\<^sub>N (u n - u m) = norm (Abs_bcontfun (u n - u m))" for n m
+  then have **: "Bcontfun(u n - u m) = Bcontfun (u n) - Bcontfun (u m)" for m n
+    unfolding minus_fun_def minus_bcontfun_def by (simp add: Bcontfun_inverse)
+  have *: "Norm bcontfun\<^sub>N (u n - u m) = norm (Bcontfun (u n - u m))" for n m
     unfolding bcontfun\<^sub>N(2) using H(2) bcontfun\<^sub>N_space by auto
-  have "Cauchy (\<lambda>n. Abs_bcontfun (u n))"
+  have "Cauchy (\<lambda>n. Bcontfun (u n))"
     using H(1) unfolding Cauchy_def cauchy_in\<^sub>N_def dist_norm * ** by simp
-  then obtain v where v: "(\<lambda>n. Abs_bcontfun (u n)) \<longlonglongrightarrow> v"
+  then obtain v where v: "(\<lambda>n. Bcontfun (u n)) \<longlonglongrightarrow> v"
     using convergent_eq_Cauchy by blast
-  have v_space: "Rep_bcontfun v \<in> space\<^sub>N bcontfun\<^sub>N" unfolding bcontfun\<^sub>N_space by (simp add: Rep_bcontfun)
-  have ***: "Norm bcontfun\<^sub>N (u n - v) = norm(Abs_bcontfun (u n) - v)" for n
+  have v_space: "apply_bcontfun v \<in> space\<^sub>N bcontfun\<^sub>N" unfolding bcontfun\<^sub>N_space by (simp add: apply_bcontfun)
+  have ***: "Norm bcontfun\<^sub>N (u n - v) = norm(Bcontfun (u n) - v)" for n
   proof -
-    have "Norm bcontfun\<^sub>N (u n - v) = norm (Abs_bcontfun(u n - v))"
+    have "Norm bcontfun\<^sub>N (u n - v) = norm (Bcontfun(u n - v))"
       unfolding bcontfun\<^sub>N(2) using H(2) bcontfun\<^sub>N_space v_space by auto
-    moreover have "Abs_bcontfun(u n - v) = Abs_bcontfun (u n) - v"
-      unfolding minus_fun_def minus_bcontfun_def by (simp add: Abs_bcontfun_inverse H2)
+    moreover have "Bcontfun(u n - v) = Bcontfun (u n) - v"
+      unfolding minus_fun_def minus_bcontfun_def by (simp add: Bcontfun_inverse H2)
     ultimately show ?thesis by simp
   qed
   have "tendsto_in\<^sub>N bcontfun\<^sub>N u v"

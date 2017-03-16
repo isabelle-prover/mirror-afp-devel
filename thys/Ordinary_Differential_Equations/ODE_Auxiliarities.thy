@@ -2308,6 +2308,44 @@ lemma ivl_integral_has_vector_derivative_subset:
   using ivl_integral_has_vderiv_on_subset[OF assms(1)] assms(2-)
   by (auto simp: has_vderiv_on_def)
 
+lemma
+  compact_interval_eq_Inf_Sup:
+  fixes A::"real set"
+  assumes "is_interval A" "compact A" "A \<noteq> {}"
+  shows "A = {Inf A .. Sup A}"
+  apply (auto simp: closed_segment_real
+      intro!: cInf_lower cSup_upper bounded_imp_bdd_below bounded_imp_bdd_above
+      compact_imp_bounded assms)
+  by (metis assms(1) assms(2) assms(3) cInf_eq_minimum cSup_eq_maximum compact_attains_inf
+      compact_attains_sup mem_is_interval_1_I)
+
+lemma ivl_integral_has_vderiv_on_compact_interval:
+  fixes f :: "real \<Rightarrow> 'a::banach"
+  assumes "continuous_on A f"
+    and "c \<in> A" "is_interval A" "compact A"
+  shows "((\<lambda>u. ivl_integral c u f) has_vderiv_on f) A"
+proof -
+  have "A = {Inf A .. Sup A}"
+    by (rule compact_interval_eq_Inf_Sup) (use assms in auto)
+  also have "\<dots> = {Inf A -- Sup A}" using assms
+    by (auto simp add: closed_segment_real
+        intro!: cInf_le_cSup bounded_imp_bdd_below bounded_imp_bdd_above compact_imp_bounded)
+  finally have *: "A = {Inf A -- Sup A}" .
+  show ?thesis
+    apply (subst *)
+    apply (rule ivl_integral_has_vderiv_on_subset)
+    unfolding *[symmetric]
+    by fact+
+qed
+
+lemma ivl_integral_has_vector_derivative_compact_interval:
+  fixes f :: "real \<Rightarrow> 'a::banach"
+  assumes "continuous_on A f"
+    and "is_interval A" "compact A" "x \<in> A" "c \<in> A"
+  shows "((\<lambda>u. ivl_integral c u f) has_vector_derivative f x) (at x within A)"
+  using ivl_integral_has_vderiv_on_compact_interval[OF assms(1)] assms(2-)
+  by (auto simp: has_vderiv_on_def)
+
 lemma ivl_integral_combine:
   fixes f::"real \<Rightarrow> 'a::banach"
   assumes "f integrable_on (closed_segment a b)"
@@ -2910,7 +2948,7 @@ lemmas bounded_linear_uniform_limit_intros[uniform_limit_intros] =
   bounded_linear.uniform_limit[OF bounded_linear_apply_blinfun]
   bounded_linear.uniform_limit[OF bounded_linear_blinfun_matrix]
 
-lemmas uniform_limit_subset_union = uniform_limit_on_subset[OF uniform_limit_on_Un]
+lemmas uniform_limit_subset_union = uniform_limit_on_subset[OF uniform_limit_on_Union]
 
 subsection \<open>Bounded Linear Functions\<close>
 
