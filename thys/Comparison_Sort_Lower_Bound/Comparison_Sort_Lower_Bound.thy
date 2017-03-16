@@ -144,7 +144,7 @@ subsection \<open>Lower bounds on number of comparisons\<close>
 text \<open>
   For a list of $n$ distinct elements, there are $n!$ linear orderings on $n$ elements,
   each of which leads to a different result after sorting the original list. 
-  Since a sorter can produce at least $2^k$ different results with $k$ comparisons, we get 
+  Since a sorter can produce at most $2^k$ different results with $k$ comparisons, we get 
   the bound $2^k \geq n!$:
 \<close>
 theorem
