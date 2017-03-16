@@ -505,7 +505,7 @@ proof -
     have "(\<lambda>x. 1 * harm x) \<in> o(\<lambda>x. real x * harm x)" 
       by (intro landau_o.small_big_mult smallo_real_nat_transfer) simp_all
     moreover have "harm \<in> \<omega>(\<lambda>_. 1 :: real)"
-      by (intro smallomegaI_filterlim_at_top) (auto simp: harm_at_top)
+      by (intro smallomegaI_filterlim_at_top_norm) (auto simp: harm_at_top)
     hence "(\<lambda>x. real x * 1) \<in> o(\<lambda>x. real x * harm x)"
       by (intro landau_o.big_small_mult) (simp_all add: smallomega_iff_smallo)
     ultimately show "(\<lambda>n. 2 * harm n - 4 * real n) \<in> o(\<lambda>n. 2 * real n * harm n)"
