@@ -8,10 +8,6 @@ begin
   
 subsection \<open>Auxiliary facts\<close>
 
-(* Remove for Isabelle2017 *)
-definition bernoulli' where
-  "bernoulli' n = (if n = 1 then 1/2 else bernoulli n)"
-
 (* TODO Move *)
 lemma minus_one_power_If: "(-1 :: 'a :: ring_1) ^ n = (if even n then 1 else -1)"
   by auto  

@@ -40,7 +40,7 @@ proof -
   thus "(\<lambda>x::int. norm (EM_remainder n f x)) \<in> O(g)"
     by (intro bigoI[of _ "abs D / fact n"]) (auto elim!: eventually_mono)
   hence "(\<lambda>x::nat. norm (EM_remainder n f (int x))) \<in> O(\<lambda>x. g (of_int (int x)))"
-    by (rule bigo_compose) (fact filterlim_int_sequentially)
+    by (rule landau_o.big.compose) (fact filterlim_int_sequentially)
   thus "(\<lambda>x::nat. norm (EM_remainder n f x)) \<in> O(g)" by simp
 qed
 
@@ -75,11 +75,11 @@ proof -
   also have "(\<lambda>n. -S n - harm_remainder (Suc N) n) \<in> O(\<lambda>n. 1 / real n ^ (2 * N + 2))"
   proof (intro sum_in_bigo)
     show "(\<lambda>x. - S x) \<in> O(\<lambda>n. 1 / real n ^ (2 * N + 2))" unfolding S_def
-      by (rule bigo_compose[OF _ filterlim_real_sequentially]) simp
+      by (rule landau_o.big.compose[OF _ filterlim_real_sequentially]) simp
     have "harm_remainder (Suc N) \<in> O(\<lambda>n. 1 / real n ^ (2 * Suc N + 1))"
       by (rule harm_remainder_bigo) simp_all
     also have "(\<lambda>n. 1 / real n ^ (2 * Suc N + 1)) \<in> O(\<lambda>n. 1 / real n ^ (2 * N + 2))"
-      by (rule bigo_compose[OF _ filterlim_real_sequentially]) simp
+      by (rule landau_o.big.compose[OF _ filterlim_real_sequentially]) simp
     finally show "harm_remainder (Suc N) \<in> \<dots>" .
   qed
   finally show ?thesis .
@@ -97,7 +97,7 @@ proof -
     have "(\<lambda>n. harm n - (ln n + euler_mascheroni + 1 / (2 * n))) \<in> O(\<lambda>n. 1 / real n ^ 2)"
       using harm_expansion_bigo_simple1 by simp
     also have "(\<lambda>n. 1 / real n ^ 2) \<in> O(\<lambda>n. 1 / real n)"
-      by (rule bigo_compose[OF _ filterlim_real_sequentially]) simp_all
+      by (rule landau_o.big.compose[OF _ filterlim_real_sequentially]) simp_all
     finally show "(\<lambda>n. harm n - (ln n + euler_mascheroni + 1 / (2 * n))) \<in> O(\<lambda>n. 1 / n)" by simp
   qed simp_all
   thus ?thesis by (simp add: algebra_simps)
@@ -147,12 +147,12 @@ proof -
   also have "(\<lambda>n. -S n - R (Suc N) n) \<in> O(\<lambda>n. 1 / real n ^ (2 * N + 3))"
   proof (intro sum_in_bigo)
     show "(\<lambda>x. - S x) \<in> O(\<lambda>n. 1 / real n ^ (2 * N + 3))" unfolding S_def
-      by (rule bigo_compose[OF _ filterlim_real_sequentially]) simp
+      by (rule landau_o.big.compose[OF _ filterlim_real_sequentially]) simp
     have "R (Suc N) \<in> O(\<lambda>n. 1 / real n ^ (2 * Suc N + 2))"
       by (rule sum_inverse_squares_remainder_bigo) simp_all
     also have "2 * Suc N + 2 = 2 * N + 4" by simp
     also have "(\<lambda>n. 1 / real n ^ (2 * N + 4)) \<in> O(\<lambda>n. 1 / real n ^ (2 * N + 3))"
-      by (rule bigo_compose[OF _ filterlim_real_sequentially]) simp
+      by (rule landau_o.big.compose[OF _ filterlim_real_sequentially]) simp
     finally show "R (Suc N) \<in> \<dots>" .
   qed
   finally show ?thesis .
