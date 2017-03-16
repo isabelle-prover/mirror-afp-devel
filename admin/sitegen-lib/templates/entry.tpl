@@ -11,6 +11,10 @@
   {% endif %}
 {% endmacro %}
 
+{% block title %}
+{{ entry.title }} - Archive of Formal Proofs
+{% endblock %}
+
 {% block headline %}
 {% for s in entry.title|split %}
   {{ first_bigger(s) }}
@@ -133,10 +137,10 @@
 
     {% macro print_dep(entries, title) %}
       {% set comma = joiner(", ") %}
-      {% if entries|sort %}
+      {% if entries %}
       <tr><td class="datahead">{{title}}:</td>
           <td class="data">
-      {%- for article in entries %}
+      {%- for article in entries|sort(attribute='name') %}
       {{- comma() }}<a href="{{ article.name }}.shtml">{{ article.name }}</a>
       {%- endfor %}
       </td></tr>

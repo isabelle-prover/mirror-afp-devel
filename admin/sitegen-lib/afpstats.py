@@ -1,7 +1,8 @@
 from datetime import datetime
 import os.path
-import pytz
 import re
+
+import pytz
 
 #TODO: script relies on checking paths, can this be broken?
 
@@ -43,7 +44,7 @@ class afp_entry:
        afp_dict.
        It still relies on information created by the entries-dict in sitegen.py.
        """
-    def __init__(self, name, entry_dict, afp_dict, no_index = False):
+    def __init__(self, name, entry_dict, afp_dict, no_index=False):
         self.name = name
         self.afp_dict = afp_dict
         self.path = os.path.join(self.afp_dict.path, self.name)
@@ -56,7 +57,7 @@ class afp_entry:
                 afp_dict.authors[name].articles.add(self)
         self.publish_date = datetime.strptime(entry_dict['date'], "%Y-%m-%d")
         #add UTC timezone to date
-        self.publish_date = self.publish_date.replace(tzinfo = pytz.UTC)
+        self.publish_date = self.publish_date.replace(tzinfo=pytz.UTC)
         self.abstract = entry_dict['abstract']
         self.license = entry_dict['license']
         self.releases = list(entry_dict['releases'].items())
@@ -145,8 +146,8 @@ class afp_entry:
 
 
     def add_root_lib_dependencies(self):
-        pattern0 = re.compile("^~~/src/(.*)")
-        pattern1 = re.compile("^session.*= (.*) \+")
+        pattern0 = re.compile(r"^~~/src/(.*)")
+        pattern1 = re.compile(r"^session.*= (.*) \+")
         with open(os.path.join(self.path, "ROOT"), 'r') as r:
             root_content = r.read()
         for word in [x.strip("\"' \t") for x in root_content.split()]:
@@ -158,7 +159,7 @@ class afp_entry:
                 match1 = pattern1.search(line)
                 if match1 is not None:
                     lib = match1.group(1).strip("\"' \t")
-                    if (lib.startswith("HOL-") and not lib.endswith("Library")):
+                    if lib.startswith("HOL-") and not lib.endswith("Library"):
                         self.lib_imports.add(lib[4:])
 
     def add_loc(self):
@@ -198,10 +199,10 @@ class afp_dict(dict):
         for name, entry in entries.items():
             if 'extra' in entry and 'no-index' in entry['extra']:
                 self.no_index[name] = afp_entry(name, entry, self,
-                                                no_index = True)
+                                                no_index=True)
             else:
                 self[name] = afp_entry(name, entry, self)
-        for name in self.no_index.keys():
+        for name in self.no_index:
             del entries[name]
         # all_thys is a dict which maps a thy file to its corresponding AFP
         # entry
@@ -211,13 +212,12 @@ class afp_dict(dict):
                 self.all_thys[t] = self[a]
 
     def build_stats(self):
-         for _k, a in self.items():
-             a.add_imports()
-             a.add_lib_imports()
-             a.add_loc()
-             a.add_number_of_lemmas()
-             a.used = set()
-         for _k, a in self.items():
-             for i in a.imports:
-                 i.used.add(a)
-
+        for _k, a in self.items():
+            a.add_imports()
+            a.add_lib_imports()
+            a.add_loc()
+            a.add_number_of_lemmas()
+            a.used = set()
+        for _k, a in self.items():
+            for i in a.imports:
+                i.used.add(a)

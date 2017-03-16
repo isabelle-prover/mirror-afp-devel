@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Archive of Formal Proofs</title>
+<title>The Divergence of the Prime Harmonic Series - Archive of Formal Proofs
+</title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
@@ -30,7 +31,7 @@
       <td class="nav"><a href="../about.shtml">About</a></td>
     </tr>
     <tr>
-      <td class="nav"><a href="../submitting.shtml">Submission Guidelines</a></td>
+      <td class="nav"><a href="../submitting.shtml">Submission</a></td>
     </tr>
     <tr>
       <td class="nav"><a href="../updating.shtml">Updating entries</a></td>
@@ -106,6 +107,7 @@
 In this work, we prove the lower bound ln (H_n) - ln(5/3) for the
 partial sum of the Prime Harmonic series and, based on this, the divergence of
 the Prime Harmonic Series ∑ [p prime] · 1/p.
+
 The proof relies on the unique squarefree decomposition of natural numbers. This
 is similar to Euler's original proof (which was highly informal and morally
 questionable). Its advantage over proofs by contradiction, like the famous one

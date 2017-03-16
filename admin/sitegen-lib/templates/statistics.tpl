@@ -49,7 +49,7 @@ var no_authors_series = [{{ author_years_cumulative|join(", ") }}];
 var all_articles = [ {% for article in articles_by_time %}{{ comma() }}"{{article.name}}"{% endfor %}];
 {% set comma = joiner(",") %}
 var years_loc_articles = [
-{%- for year, articles in articles_by_time1 %}
+{%- for year, articles in articles_per_year %}
   {{ comma() }}{{year}}
   {%- set comma1 = joiner(",") %}
   {%- for article in articles %}

@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Archive of Formal Proofs</title>
+<title>Maximum Cardinality Matching - Archive of Formal Proofs
+</title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
@@ -30,7 +31,7 @@
       <td class="nav"><a href="../about.shtml">About</a></td>
     </tr>
     <tr>
-      <td class="nav"><a href="../submitting.shtml">Submission Guidelines</a></td>
+      <td class="nav"><a href="../submitting.shtml">Submission</a></td>
     </tr>
     <tr>
       <td class="nav"><a href="../updating.shtml">Updating entries</a></td>
@@ -102,6 +103,7 @@ labeling of the nodes of <i>G</i> with integers such that every edge of
 <i>G</i> is either incident to a node labeled 1 or connects two nodes
 labeled with the same number <i>i &ge; 2</i>.
 This article proves Edmonds theorem:
+
 Let <i>M</i> be a matching in a graph <i>G</i> and let <i>OSC</i> be an
 odd-set cover of <i>G</i>.
 For any <i>i &ge; 0</i>, let <var>n(i)</var> be the number of nodes

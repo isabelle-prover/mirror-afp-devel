@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Archive of Formal Proofs</title>
+<title>Descartes' Rule of Signs - Archive of Formal Proofs
+</title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
@@ -30,7 +31,7 @@
       <td class="nav"><a href="../about.shtml">About</a></td>
     </tr>
     <tr>
-      <td class="nav"><a href="../submitting.shtml">Submission Guidelines</a></td>
+      <td class="nav"><a href="../submitting.shtml">Submission</a></td>
     </tr>
     <tr>
       <td class="nav"><a href="../updating.shtml">Updating entries</a></td>
@@ -99,6 +100,7 @@
   <td class="abstract">
 Descartes' Rule of Signs relates the number of positive real roots of a
 polynomial with the number of sign changes in its coefficient sequence.
+
 Our proof follows the simple inductive proof given by Rob Arthan, which was also
 used by John Harrison in his HOL Light formalisation. We proved most of the
 lemmas for arbitrary linearly-ordered integrity domains (e.g. integers,
