@@ -305,6 +305,27 @@ abstract =
 	theorem and was therefore only proven for real polynomials.
 notify = eberlm@in.tum.de
 
+[Euler_MacLaurin]
+title = The Euler–MacLaurin Formula
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Analysis
+date = 2017-03-10
+notify = eberlm@in.tum.de
+abstract =
+  <p>The Euler-MacLaurin formula relates the value of a
+  discrete sum to that of the corresponding integral in terms of the
+  derivatives at the borders of the summation and a remainder term.
+  Since the remainder term is often very small as the summation bounds
+  grow, this can be used to compute asymptotic expansions for
+  sums.</p>  <p>This entry contains a proof of this formula
+  for functions from the reals to an arbitrary Banach space. Two
+  variants of the formula are given: the standard textbook version and a
+  variant outlined in <em>Concrete Mathematics</em> that is
+  more useful for deriving asymptotic estimates.</p>  <p>As
+  example applications, we use that formula to derive the full
+  asymptotic expansion of the harmonic numbers and the sum of inverse
+  squares.</p>
+
 [Card_Partitions]
 title = Cardinality of Set Partitions
 author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
@@ -3723,7 +3744,7 @@ author = Christoph Dittmann <mailto:isabelle@christoph-d.de>
 topic = Mathematics/Graph Theory
 date = 2017-02-26
 notify = isabelle@christoph-d.de
-abstract = 
+abstract =
   We present a formalization of Menger's Theorem for directed and
   undirected graphs in Isabelle/HOL.  This well-known result shows that
   if two non-adjacent distinct vertices u, v in a directed graph have no
@@ -5259,14 +5280,14 @@ abstract =
   polynomials (which appear e.g. in the Euler&ndash;MacLaurin
   summation formula and the expansion of the log-Gamma function) and
   prove their basic properties.</p>
-  
+
 [Stone_Relation_Algebras]
 title = Stone Relation Algebras
 author = Walter Guttmann <http://www.cosc.canterbury.ac.nz/walter.guttmann/>
 topic = Mathematics/Algebra
 date = 2017-02-07
 notify = walter.guttmann@canterbury.ac.nz
-abstract = 
+abstract =
   We develop Stone relation algebras, which generalise relation algebras
   by replacing the underlying Boolean algebra structure with a Stone
   algebra. We show that finite matrices over extended real numbers form
@@ -5281,7 +5302,7 @@ author = Jasmin Christian Blanchette <mailto:jasmin.blanchette@gmail.com>, Andre
 topic = Logic
 date = 2017-02-10
 notify = jasmin.blanchette@gmail.com
-abstract = 
+abstract =
   A formalized coinductive account of the abstract development of
   Brotherston, Gorogiannis, and Petersen [APLAS 2012], in a slightly
   more general form since we work with arbitrary infinite proofs, which
@@ -5297,7 +5318,7 @@ author = Brandon Bohrer <mailto:bbohrer@cs.cmu.edu>
 topic = Logic, Computer Science/Programming Languages/Logics
 date = 2017-02-13
 notify = bbohrer@cs.cmu.edu
-abstract = 
+abstract =
   We formalize differential dynamic logic, a logic for proving
   properties of hybrid systems. The proof calculus in this formalization
   is based on the uniform substitution principle. We show it is sound
@@ -5314,7 +5335,7 @@ author = Stefan Berghofer <http://www.in.tum.de/~berghofe>
 topic = Computer Science/Security
 date = 2017-02-28
 notify = berghofe@in.tum.de
-abstract = 
+abstract =
   We prove the group law for elliptic curves in Weierstrass form over
   fields of characteristic greater than 2. In addition to affine
   coordinates, we also formalize projective coordinates, which allow for
