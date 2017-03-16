@@ -90,6 +90,22 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
   </tr>
       <tr>
       <td class="entry">
+        2017-03-15: <a href="entries/Quick_Sort_Cost.shtml">The number of comparisons in QuickSort</a>
+        <br>
+                  Author:
+                        <a href="https://www21.in.tum.de/~eberlm">Manuel Eberl</a>
+                        </td>
+    </tr>
+      <tr>
+      <td class="entry">
+        2017-03-15: <a href="entries/Comparison_Sort_Lower_Bound.shtml">Lower bound on comparison-based sorting algorithms</a>
+        <br>
+                  Author:
+                        <a href="https://www21.in.tum.de/~eberlm">Manuel Eberl</a>
+                        </td>
+    </tr>
+      <tr>
+      <td class="entry">
         2017-03-10: <a href="entries/Euler_MacLaurin.shtml">The Euler–MacLaurin Formula</a>
         <br>
                   Author:

@@ -119,7 +119,7 @@
     
                     
                       <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Formula_Derivatives.shtml">Formula_Derivatives</a>, <a href="Jinja.shtml">Jinja</a>, <a href="List_Update.shtml">List_Update</a>, <a href="LTL_to_DRA.shtml">LTL_to_DRA</a>, <a href="MSO_Regex_Equivalence.shtml">MSO_Regex_Equivalence</a>, <a href="Planarity_Certificates.shtml">Planarity_Certificates</a>, <a href="Randomised_Social_Choice.shtml">Randomised_Social_Choice</a>, <a href="Refine_Imperative_HOL.shtml">Refine_Imperative_HOL</a>      </td></tr>
+          <td class="data"><a href="Comparison_Sort_Lower_Bound.shtml">Comparison_Sort_Lower_Bound</a>, <a href="Formula_Derivatives.shtml">Formula_Derivatives</a>, <a href="Jinja.shtml">Jinja</a>, <a href="List_Update.shtml">List_Update</a>, <a href="LTL_to_DRA.shtml">LTL_to_DRA</a>, <a href="MSO_Regex_Equivalence.shtml">MSO_Regex_Equivalence</a>, <a href="Planarity_Certificates.shtml">Planarity_Certificates</a>, <a href="Quick_Sort_Cost.shtml">Quick_Sort_Cost</a>, <a href="Randomised_Social_Choice.shtml">Randomised_Social_Choice</a>, <a href="Refine_Imperative_HOL.shtml">Refine_Imperative_HOL</a>      </td></tr>
           
 
         

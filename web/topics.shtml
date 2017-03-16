@@ -103,6 +103,8 @@
                 </div>
       <h3>Algorithms</h3>
     <div class="list">
+          <a href="entries/Comparison_Sort_Lower_Bound.shtml">Comparison_Sort_Lower_Bound</a> &nbsp;
+          <a href="entries/Quick_Sort_Cost.shtml">Quick_Sort_Cost</a> &nbsp;
           <a href="entries/DFS_Framework.shtml">DFS_Framework</a> &nbsp;
           <a href="entries/TortoiseHare.shtml">TortoiseHare</a> &nbsp;
           <a href="entries/Roy_Floyd_Warshall.shtml">Roy_Floyd_Warshall</a> &nbsp;

@@ -1,3 +1,40 @@
+[Comparison_Sort_Lower_Bound]
+title = Lower bound on comparison-based sorting algorithms
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Computer Science/Algorithms
+date = 2017-03-15
+notify = eberlm@in.tum.de
+abstract = 
+  <p>This article contains a formal proof of the well-known fact
+  that number of comparisons that a comparison-based sorting algorithm
+  needs to perform to sort a list of length <em>n</em> is at
+  least <em>log<sub>2</sub>&nbsp;(n!)</em>
+  in the worst case, i.&thinsp;e.&nbsp;<em>Ω(n log
+  n)</em>.</p>  <p>For this purpose, a shallow
+  embedding for comparison-based sorting algorithms is defined: a
+  sorting algorithm is a recursive datatype containing either a HOL
+  function or a query of a comparison oracle with a continuation
+  containing the remaining computation. This makes it possible to force
+  the algorithm to use only comparisons and to track the number of
+  comparisons made.</p>
+
+[Quick_Sort_Cost]
+title = The number of comparisons in QuickSort
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Computer Science/Algorithms
+date = 2017-03-15
+notify = eberlm@in.tum.de
+abstract = 
+  <p>We give a formal proof of the well-known results about the
+  number of comparisons performed by two variants of QuickSort: first,
+  the expected number of comparisons of randomised QuickSort
+  (i.&thinsp;e.&nbsp;QuickSort with random pivot choice) is
+  <em>2&thinsp;(n+1)&thinsp;H<sub>n</sub> -
+  4&thinsp;n</em>, which is asymptotically equivalent to
+  <em>2&thinsp;n ln n</em>; second, the number of
+  comparisons performed by the classic non-randomised QuickSort has the
+  same distribution in the average case as the randomised one.</p>
+
 [E_Transcendental]
 title = The Transcendence of e
 author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
