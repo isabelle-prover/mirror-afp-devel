@@ -96,6 +96,7 @@
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
+<p>
 We provide a generic work-list algorithm to compute the
 (reflexive-)transitive closure of relations where only successors of newly
 detected states are generated.
@@ -104,9 +105,11 @@ but each element must only have finitely many (indirect) successors.
 Moreover, a subsumption relation can be used instead of pure equality.
 An executable variant of the algorithm is available where the generic operations
 are instantiated with list operations.
+</p><p>
 This formalization was performed as part of the IsaFoR/CeTA project,
 and it has been used to certify size-change
-termination proofs where large transitive closures have to be computed.</td>
+termination proofs where large transitive closures have to be computed.
+</p></td>
 </tr>
 
 

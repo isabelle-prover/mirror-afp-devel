@@ -24,9 +24,8 @@
 
 {# You could use loop.index here, but there's an obscure bug in Jinja2 with
    loop.index and groupBy #}
-{% set position = 1 %}
 {% for no_of_imports, articles in most_used %}
-  <tr><td>{{ position }}.</td>
+  <tr><td>{{ loop.index }}.</td>
   {% set td_joiner = joiner('<td></td>') %}
   {% for article in articles %}
     {{ td_joiner() }}
@@ -34,7 +33,6 @@
     <td>{{ no_of_imports }}</td>
     </tr>
   {% endfor %}
-  {% set position = position + 1 %}
 {% endfor %}
 
 </table>
