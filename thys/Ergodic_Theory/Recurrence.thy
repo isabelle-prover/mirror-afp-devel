@@ -487,7 +487,7 @@ proof -
   moreover have "\<And>n. A \<inter> (T^^n)-`A = A \<inter> (T^^n)--`A"
     unfolding vimage_restr_def using `A \<in> sets M` sets.sets_into_space by auto
   ultimately have "recurrent_subset A = (\<Union>n\<in> {1..}. A \<inter> (T^^n)--`A)" by simp
-  then have "recurrent_subset A = (\<Union>n. B n)" unfolding B_def using atLeast_Suc_greaterThan by simp
+  then have "recurrent_subset A = (\<Union>n. B n)" by (simp add: B_def atLeast_Suc_greaterThan greaterThan_0)
   also have "... = (\<Union>n. return_partition A (n+1))" using * UN_disjointed_eq[of B] by simp
   finally show "(\<Union>n. return_partition A (n+1)) = recurrent_subset A" by simp
 qed
@@ -1023,7 +1023,7 @@ proof -
   then have *: "T--`(first_entrance_set A n) - A = (T^^(n+1))--`A - (A \<union> (\<Union> i<n. (T^^(i+1))--`A))"
     by blast
   have "(\<Union> i<n. (T^^(i+1))--`A) = (\<Union> j\<in>{1..<n+1}. (T^^j)--`A)"
-    by (metis (mono_tags, lifting) UN_le_add_shift_strict SUP_cong)
+    by (metis (no_types, lifting) SUP_cong UN_le_add_shift_strict)
   then have "A \<union> (\<Union> i<n. (T^^(i+1))--`A) = (\<Union> j\<in>{0..<n+1}. (T^^j)--`A)"
     by (metis A0 Un_commute atLeast0LessThan UN_le_eq_Un0_strict)
   then show ?thesis using * first_entrance_set_def by auto

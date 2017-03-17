@@ -172,7 +172,7 @@ next
 
   have "C \<subseteq> (\<Inter>n\<in>{1..}. (T^^n)--`A)" unfolding C_def by auto
   moreover have "T--`C = (\<Inter>n\<in>{1..}. (T^^n)--`A)"
-    unfolding C_def using T_vrestr_composed(2)[OF assms] atLeast_Suc_greaterThan by auto
+    using T_vrestr_composed(2)[OF assms] by (simp add: C_def atLeast_Suc_greaterThan greaterThan_0)
   ultimately have "C \<subseteq> T--`C" by blast
   then have "(T^^0)--`C \<subseteq> (T^^1)--`C" using T_vrestr_0 by auto
   moreover have "(T^^1)--`C \<subseteq> (\<Union>n\<in>{1..}. (T^^n)--`C)" by auto
@@ -192,7 +192,7 @@ next
   then have a: "A \<Delta> B \<in> null_sets M" by (simp add: Un_commute)
 
   have "T--`B = (\<Union>n\<in>{1..}. (T^^n)--`C)"
-    unfolding B_def using T_vrestr_composed(2)[OF `C \<in> sets M`] atLeast_Suc_greaterThan by auto
+    using T_vrestr_composed(2)[OF `C \<in> sets M`] by (simp add: B_def atLeast_Suc_greaterThan greaterThan_0)
   then have "T--`B = B" unfolding B_def using C2 by simp
   then have "B \<in> sets Invariants" using Invariants_sets `B \<in> sets M` vimage_restr_def by auto
 
@@ -275,7 +275,7 @@ next
   then have [measurable]: "C \<in> sets M" by auto
 
   have "T--`C = (\<Union>n\<in>{1..}. (T^^n)--`B)"
-    unfolding C_def using T_vrestr_composed(2)[OF `B \<in> sets M`] atLeast_Suc_greaterThan by auto
+    using T_vrestr_composed(2)[OF `B \<in> sets M`] by (simp add: C_def atLeast_Suc_greaterThan greaterThan_0)
   then have Cinc: "T--`C \<subseteq> C" unfolding C_def by auto
 
   text {* \verb+good_set+ is the set of points for which $f$ is constant on their orbit. Here, we define
@@ -1477,7 +1477,7 @@ proof -
     ultimately have "emeasure M {x \<in> space M. \<forall>n\<in>{N..}. birkhoff_sum f n x \<notin> {0..e}} = 0" using `e>0` Ax_def by simp
     then have "{x \<in> space M. \<forall>n\<in>{N..}. birkhoff_sum f n x \<notin> {0..e}} \<in> null_sets M" by auto
   }
-  then have "(\<Union>N\<in>{0<..}. {x \<in> space M. \<forall>n\<in>{N..}. birkhoff_sum f n x \<notin> {0..e}}) \<in> null_sets M" by auto
+  then have "(\<Union>N\<in>{0<..}. {x \<in> space M. \<forall>n\<in>{N..}. birkhoff_sum f n x \<notin> {0..e}}) \<in> null_sets M" by (auto simp: greaterThan_0)
   moreover have "{x \<in> space M. \<not>(infinite {n. birkhoff_sum f n x \<in> {0..e}})} \<subseteq> (\<Union>N\<in>{0<..}. {x \<in> space M. \<forall>n\<in>{N..}. birkhoff_sum f n x \<notin> {0..e}})"
   proof
     fix x assume H: "x \<in> {x \<in> space M. \<not>(infinite {n. birkhoff_sum f n x \<in> {0..e}})}"
