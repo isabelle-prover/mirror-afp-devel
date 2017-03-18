@@ -18,11 +18,8 @@ matrices is over a finite index set. This follows essentially Droste
 and Kuich's introductory article in the Handbook of Weighted Automata~\cite{weightedautomata09}.
 
 Under these assumptions we show that dioids are closed under matrix
-formation. Our proof are similar to those for formal power series, but
-simpler. *}
-
-class finite =
-  assumes finiteuniv: "finite UNIV"
+formation. Our proofs are similar to those for formal power series,
+but simpler. *}
 
 type_synonym ('a, 'b, 'c) matrix = "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 
@@ -68,7 +65,7 @@ proof -
     also have "... = \<Sum>{f i k \<cdot> g k j + f i k \<cdot> h k j |k. k \<in> UNIV}"
       by (simp only: distrib_left)
     also have "... = \<Sum>{f i k \<cdot> g k j |k. k \<in> UNIV} + \<Sum>{f i k \<cdot> h k j |k. k \<in> UNIV}"
-      by (simp only: fset_to_im sum_fun_sum finiteuniv)
+      by (simp only: fset_to_im sum_fun_sum finite_UNIV)
     finally have "(f \<otimes> (g \<oplus> h)) i j  = ((f \<otimes> g) \<oplus> (f \<otimes> h)) i j"
       by (simp only: mat_mult_def mat_add_def)
   }
@@ -85,7 +82,7 @@ proof -
     also have "... = \<Sum>{f i k \<cdot> h k j + g i k \<cdot> h k j |k. k \<in> UNIV}"
       by (simp only: distrib_right)
     also have "... = \<Sum>{f i k \<cdot> h k j |k. k \<in> UNIV} + \<Sum>{g i k \<cdot> h k j |k. k \<in> UNIV}"
-      by (simp only: fset_to_im sum_fun_sum finiteuniv)
+      by (simp only: fset_to_im sum_fun_sum finite_UNIV)
     finally have "((f \<oplus> g) \<otimes> h) i j  = ((f \<otimes> h) \<oplus> (g \<otimes> h)) i j"
       by (simp only: mat_mult_def mat_add_def)
   }
@@ -159,11 +156,11 @@ proof -
     have "(f \<otimes> (g \<otimes> h)) i j = \<Sum>{f i k1 \<cdot> \<Sum>{g k1 k2 \<cdot> h k2 j |k2. k2 \<in> UNIV} |k1. k1 \<in> UNIV}"
       by (simp only: mat_mult_def)
     also have "... = \<Sum>{\<Sum>{f i k1 \<cdot> g k1 k2 \<cdot> h k2 j |k2. k2 \<in> UNIV} |k1. k1 \<in> UNIV}"
-      by (simp only: fset_to_im sum_fun_distl finiteuniv mult.assoc)
+      by (simp only: fset_to_im sum_fun_distl finite_UNIV mult.assoc)
     also have "... = \<Sum>{\<Sum>{(f i k1 \<cdot> g k1 k2) \<cdot> h k2 j|k1. k1 \<in> UNIV} |k2. k2 \<in> UNIV}"
-      by (rule mat_rearrange, auto simp add: finiteuniv)
+      by (rule mat_rearrange, auto simp add: finite_UNIV)
     also have "... = \<Sum>{\<Sum>{f i k1 \<cdot> g k1 k2 |k1. k1 \<in> UNIV} \<cdot> h k2 j |k2. k2 \<in> UNIV}"
-      by (simp only: fset_to_im sum_fun_distr finiteuniv)
+      by (simp only: fset_to_im sum_fun_distr finite_UNIV)
     finally have "(f \<otimes> (g \<otimes> h)) i j  = ((f \<otimes> g) \<otimes> h) i j "
       by (simp only: mat_mult_def)
   }
