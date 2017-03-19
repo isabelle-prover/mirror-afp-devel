@@ -36,7 +36,7 @@ case (fp x)
   have "g\<cdot>x \<union> (\<Union>i. g\<cdot>(r\<^bsup>i\<^esup>\<cdot>(r\<cdot>x))) = g\<cdot>(r\<^bsup>0\<^esup>\<cdot>x) \<union> (\<Union>i. g\<cdot>(r\<^bsup>Suc i\<^esup>\<cdot>x))"
     by (simp add: iterate_Suc2 del: iterate_Suc)
   also have "\<dots> = g\<cdot>(r\<^bsup>0\<^esup>\<cdot>x) \<union> (\<Union>i\<in>{0<..}. g\<cdot>(r\<^bsup>i\<^esup>\<cdot>x))"
-    by auto
+    using less_iff_Suc_add by auto
   also have "\<dots>  = (\<Union>i\<in>insert 0 {0<..}. g\<cdot>(r\<^bsup>i\<^esup>\<cdot>x))"
     by simp
   also have "... = (\<Union>i. g\<cdot>(r\<^bsup>i\<^esup>\<cdot>x))"
