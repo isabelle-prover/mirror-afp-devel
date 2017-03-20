@@ -6,7 +6,7 @@ session "Ergodic_Theory" (AFP) = "HOL-Probability" +
     SG_Library_Complement
     Conditional_Expectation
     Fekete
-    Banach_Density
+    Asymptotic_Density
     Measure_Preserving_Transformations
     Recurrence
     Invariants

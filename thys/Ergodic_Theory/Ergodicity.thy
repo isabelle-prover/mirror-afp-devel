@@ -6,17 +6,17 @@ theory Ergodicity
 imports Invariants
 begin
 
-section {*Ergodicity*}
+section \<open>Ergodicity\<close>
 
-text {*A transformation is \emph{ergodic} if any invariant set has zero measure or full measure.
+text \<open>A transformation is \emph{ergodic} if any invariant set has zero measure or full measure.
 Ergodic transformations are, in a sense, extremal among measure preserving transformations.
 Hence, any transformation can be seen as an average of ergodic ones. This can be made precise
 by the notion of ergodic decomposition, only valid on standard measure spaces.
 
 Many statements get nicer in the ergodic case, hence we will reformulate many
-of the previous results in this setting.*}
+of the previous results in this setting.\<close>
 
-subsection {*Ergodicity locales*}
+subsection \<open>Ergodicity locales\<close>
 
 locale ergodic_qmpt = qmpt +
   assumes ergodic: "\<And>A. A \<in> sets Invariants \<Longrightarrow> (A \<in> null_sets M \<or> space M - A \<in> null_sets M)"
@@ -43,7 +43,10 @@ sublocale ergodic_fmpt \<subseteq> ergodic_conservative_mpt
 sublocale ergodic_conservative_mpt \<subseteq> ergodic_conservative
   by unfold_locales
 
-subsection {*Behavior of sets in ergodic transformations*}
+subsection \<open>Behavior of sets in ergodic transformations\<close>
+
+text \<open>The main property of an ergodic transformation, essentially equivalent to the definition,
+is that a set which is almost invariant under the dynamics is null or conull.\<close>
 
 lemma (in ergodic_qmpt) AE_equal_preimage_then_null_or_conull:
   assumes [measurable]: "A \<in> sets M" and "A \<Delta> T--`A \<in> null_sets M"
@@ -62,13 +65,15 @@ proof -
     assume "\<not>(B \<in> null_sets M)"
     then have i: "space M - B \<in> null_sets M" using * by simp
     have "(space M - B) \<Delta> (space M - A) = A \<Delta> B"
-      using sets.sets_into_space[OF `A \<in> sets M`] sets.sets_into_space[OF `B \<in> sets M`] by blast
+      using sets.sets_into_space[OF \<open>A \<in> sets M\<close>] sets.sets_into_space[OF \<open>B \<in> sets M\<close>] by blast
     then have "(space M - B) \<Delta> (space M - A) \<in> null_sets M" using B(2) by auto
     then have "space M - A \<in> null_sets M"
       using Delta_null_of_null_is_null[where ?A = "space M - B" and ?B = "space M - A"] i by auto
     then show ?thesis by simp
   qed
 qed
+
+text \<open>The inverse of an ergodic transformation is also ergodic.\<close>
 
 lemma (in ergodic_qmpt) ergodic_Tinv:
   assumes "invertible_qmpt"
@@ -83,6 +88,10 @@ proof
     then show "A \<in> null_sets M \<or> space M - A \<in> null_sets M" using ergodic by auto
   qed
 qed
+
+text \<open>In the conservative case, instead of the almost invariance of a set, it suffices to
+assume that the preimage is contained in the set, or contains the set, to deduce that it is null
+or conull.\<close>
 
 lemma (in ergodic_conservative) preimage_included_then_null_or_conull:
   assumes "A \<in> sets M" "T--`A \<subseteq> A"
@@ -113,17 +122,24 @@ proof -
     using preimage_included_then_null_or_conull by auto
   have "A \<subseteq> B" unfolding B_def using T_vrestr_0 assms(1) by blast
   then have "emeasure M B > 0" using assms(2)
-    by (metis `B \<in> sets M` emeasure_eq_0 zero_less_iff_neq_zero)
+    by (metis \<open>B \<in> sets M\<close> emeasure_eq_0 zero_less_iff_neq_zero)
   then have "B \<notin> null_sets M" by auto
   then have i: "space M - B \<in> null_sets M" using * by auto
   then show "space M - (\<Union>n. (T^^n)--`A) \<in> null_sets M" using B_def by auto
 
-  have "B \<subseteq> space M" using sets.sets_into_space[OF `B \<in> sets M`] by auto
+  have "B \<subseteq> space M" using sets.sets_into_space[OF \<open>B \<in> sets M\<close>] by auto
   then have "space M \<Delta> B \<in> null_sets M" using i by (simp add: Diff_mono sup.absorb1)
   then show "space M \<Delta> (\<Union>n. (T^^n)--`A) \<in> null_sets M" using B_def by auto
 qed
 
-subsection {*Behavior of functions in ergodic transformations*}
+subsection \<open>Behavior of functions in ergodic transformations\<close>
+
+text \<open>In the same way that invariant sets are null or conull, invariant functions are almost
+everywhere constant in an ergodic transformation. For real functions, one can consider
+the set where $\{f x \geq d \}$, it has measure $0$ or $1$ depending on $d$.
+Then $f$ is almost surely equal to the maximal $d$ such that this set has measure $1$. For functions
+taking values in a general space, the argument is essentially the same, replacing intervals by
+a basis of the topology.\<close>
 
 lemma (in ergodic_qmpt) Invariant_func_is_AE_constant:
   fixes f::"_\<Rightarrow> 'b::{second_countable_topology, t1_space}"
@@ -132,47 +148,50 @@ lemma (in ergodic_qmpt) Invariant_func_is_AE_constant:
 proof (cases)
   assume "space M \<in> null_sets M"
   obtain y::'b where "True" by auto
-  have "AE x in M. f x = y" using `space M \<in> null_sets M` AE_I' by blast
+  have "AE x in M. f x = y" using \<open>space M \<in> null_sets M\<close> AE_I' by blast
   then show ?thesis by auto
 next
   assume *: "\<not>(space M \<in> null_sets M)"
   obtain B::"'b set set" where B: "countable B" "topological_basis B" using ex_countable_basis by auto
   define C where "C = {b \<in> B. space M - f-`b \<in> null_sets M}"
-  then have "countable C" using `countable B` by auto
+  then have "countable C" using \<open>countable B\<close> by auto
   define Y where "Y = \<Inter> C"
   have "space M - f-`Y = (\<Union> b\<in> C. space M - f-`b)" unfolding Y_def by auto
   moreover have "\<And>b. b \<in> C \<Longrightarrow> space M - f-`b \<in> null_sets M" unfolding C_def by blast
-  ultimately have i: "space M - f-`Y \<in> null_sets M" using `countable C` by (metis null_sets_UN')
+  ultimately have i: "space M - f-`Y \<in> null_sets M" using \<open>countable C\<close> by (metis null_sets_UN')
   then have "f-`Y \<noteq> {}" using * by auto
   then have "Y \<noteq> {}" by auto
   then obtain y where "y \<in> Y" by auto
   define D where "D = {b \<in> B. y\<notin>b \<and> f-`b \<inter> space M \<in> null_sets M}"
-  have "countable D" using `countable B` D_def by auto
+  have "countable D" using \<open>countable B\<close> D_def by auto
   {
     fix z assume "z \<noteq> y"
     obtain U where U: "open U" "z \<in> U" "y \<notin> U"
-      using t1_space[OF `z \<noteq> y`] by blast
-    obtain V where "V \<in> B" "V \<subseteq> U" "z \<in> V" by (rule topological_basisE[OF `topological_basis B` `open U` `z \<in> U`])
+      using t1_space[OF \<open>z \<noteq> y\<close>] by blast
+    obtain V where "V \<in> B" "V \<subseteq> U" "z \<in> V" by (rule topological_basisE[OF \<open>topological_basis B\<close> \<open>open U\<close> \<open>z \<in> U\<close>])
     then have "y \<notin> V" using U by blast
-    then have "V \<notin> C" using `y \<in> Y` Y_def by auto
-    then have "space M - f-`V \<inter> space M \<notin> null_sets M" unfolding C_def using `V \<in> B`
+    then have "V \<notin> C" using \<open>y \<in> Y\<close> Y_def by auto
+    then have "space M - f-`V \<inter> space M \<notin> null_sets M" unfolding C_def using \<open>V \<in> B\<close>
       by (metis (no_types, lifting) Diff_Int2 inf.idem mem_Collect_eq)
     moreover have "f-`V \<inter> space M \<in> sets Invariants"
-      using measurable_sets[OF assms borel_open[OF topological_basis_open[OF B(2) `V \<in> B`]]] subalgebra_def Invariants_is_subalg by metis
+      using measurable_sets[OF assms borel_open[OF topological_basis_open[OF B(2) \<open>V \<in> B\<close>]]] subalgebra_def Invariants_is_subalg by metis
     ultimately have "f-`V \<inter> space M \<in> null_sets M" using ergodic by auto
-    then have "V \<in> D" unfolding D_def using `V \<in> B` `y \<notin> V` by auto
-    then have "\<exists>b \<in> D. z \<in> b" using `z \<in> V` by auto
+    then have "V \<in> D" unfolding D_def using \<open>V \<in> B\<close> \<open>y \<notin> V\<close> by auto
+    then have "\<exists>b \<in> D. z \<in> b" using \<open>z \<in> V\<close> by auto
   }
   then have *: "\<Union>D = UNIV - {y}"
     apply auto unfolding D_def by auto
   have "space M - f-`{y} = f-`(UNIV -{y}) \<inter> space M" by blast
   also have "... = (\<Union>b\<in>D. f-`b \<inter> space M)" using * by auto
-  also have "... \<in> null_sets M" using D_def `countable D`
+  also have "... \<in> null_sets M" using D_def \<open>countable D\<close>
     by (metis (no_types, lifting) mem_Collect_eq null_sets_UN')
   finally have "space M - f-`{y} \<in> null_sets M" by blast
   with AE_not_in[OF this] have "AE x in M. x \<in> f-`{y}" by auto
   then show ?thesis by auto
 qed
+
+text \<open>The same goes for functions which are only almost invariant, as they coindice almost
+everywhere with genuine invariant functions.\<close>
 
 lemma (in ergodic_qmpt) AE_Invariant_func_is_AE_constant:
   fixes f::"_ \<Rightarrow> 'b::{second_countable_topology, t2_space}"
@@ -185,6 +204,9 @@ proof -
   have "AE x in M. f x = y" using g(2) y by auto
   then show ?thesis by auto
 qed
+
+text \<open>In conservative systems, it suffices to have an inequality between $f$ and $f \circ T$,
+since such a function is almost invariant.\<close>
 
 lemma (in ergodic_conservative) AE_decreasing_func_is_AE_constant:
   fixes f::"_ \<Rightarrow> 'b::{linorder_topology, second_countable_topology}"
@@ -205,6 +227,9 @@ proof -
   have "AE x in M. f(T x) = f x" using AE_increasing_then_invariant[OF assms] by auto
   then show ?thesis using AE_Invariant_func_is_AE_constant[OF assms(2)] by auto
 qed
+
+text \<open>When the function takes values in a Banach space, the value of the invariant (hence constant)
+function can be recovered by integrating the function.\<close>
 
 lemma (in ergodic_fmpt) Invariant_func_integral:
   fixes f::"_ \<Rightarrow> 'b::{banach, second_countable_topology}"
@@ -233,6 +258,10 @@ proof -
   qed
 qed
 
+text \<open>As the conditional expectation of a function and the original function have the same
+integral, it follows that the conditional expectation of a function with respect to the
+invariant sigma algebra is given by the average of the function.\<close>
+
 lemma (in ergodic_fmpt) Invariants_cond_exp_is_integral_fmpt:
   fixes f::"_ \<Rightarrow> real"
   assumes "integrable M f"
@@ -252,7 +281,11 @@ lemma (in ergodic_pmpt) Invariants_cond_exp_is_integral:
 by (metis div_by_1 prob_space Invariants_cond_exp_is_integral_fmpt[OF assms])
 
 
-subsection {*Kac formula*}
+subsection \<open>Kac formula\<close>
+
+text \<open>We reformulate the different versions of Kac formula. They simplify as, for any set $A$
+with positive measure, the union $\bigcup T^{-n} A$ (which appears in all these statements)
+almost coincides with the whole space.\<close>
 
 lemma (in ergodic_conservative_mpt) local_time_unbounded:
   assumes [measurable]: "A \<in> sets M" "B \<in> sets M"
@@ -312,12 +345,12 @@ proof -
   finally show "(\<integral>y. induced_function A f y \<partial>(restrict_space M A)) = (\<integral> x. f x \<partial>M)" by simp
 qed
 
-subsection {*Birkhoff theorem*}
+subsection \<open>Birkhoff theorem\<close>
 
-text {*The general versions of Birkhoff theorem are formulated in terms of conditional expectations.
+text \<open>The general versions of Birkhoff theorem are formulated in terms of conditional expectations.
 In ergodic probability measure preserving transformations (the most common setting), they
 reduce to simpler versions that we state now, as the conditional expectations are simply the
-averages of the functions.*}
+averages of the functions.\<close>
 
 theorem (in ergodic_pmpt) birkhoff_theorem_AE:
   fixes f::"'a \<Rightarrow> real"
