@@ -919,6 +919,179 @@ lemma limit_foTn_over_n':
 by (rule limit_foTn_over_n, simp, rule Bochner_Integration.integrable_diff)
    (auto intro: assms T_integral_preserving(1))
 
+text \<open>It is often useful to show that a function is cohomologous to a nicer function, i.e., to
+prove that a given $f$ can be written as $f = g + u - u \circ T$ where $g$ is nicer than $f$. We
+show below that any integrable function is cohomologous to a function which is arbitrarily close to
+$E(f|I)$. This is an improved version of Lemma 2.1 in [Benoist-Quint, Annals of maths, 2011]. Note
+that the function $g$ to which $f$ is cohomologous is very nice (and, in particular, integrable),
+but the transfer function is only measurable in this argument. The fact that the control on
+conditional expectation is nevertheless preserved throughout the argument follows from
+Lemma~\verb+limit_foTn_over_n+ above.\<close>
+
+text \<open>We start with the lemma (and the proof) of [BQ2011]. It shows that, if a function has a
+conditional expectation with respect to invariants which is positive, then it is cohomologous to a
+nonnegative function. The argument is the clever remark that $g = \max (0, \inf_n S_n f)$ and $u =
+\min (0, \inf_n S_n f)$ work (where these expressions are well defined as $S_n f$ tends to infinity
+thanks to our assumption).\<close>
+
+lemma cohomologous_approx_cond_exp_aux:
+  fixes f::"'a \<Rightarrow> real"
+  assumes [measurable]: "integrable M f"
+      and "AE x in M. real_cond_exp M Invariants f x > 0"
+    shows "\<exists>u g. u \<in> borel_measurable M \<and> (integrable M g) \<and> (AE x in M. g x \<ge> 0 \<and> g x \<le> max 0 (f x)) \<and> (\<forall>x. f x = g x + u x - u (T x))"
+proof -
+  define h::"'a \<Rightarrow> real" where "h = (\<lambda>x. (INF n:{1..}. birkhoff_sum f n x))"
+  define u where "u = (\<lambda>x. min (h x) 0)"
+  define g where "g = (\<lambda>x. f x - u x + u (T x))"
+  have [measurable]: "h \<in> borel_measurable M" "u \<in> borel_measurable M" "g \<in> borel_measurable M"
+    unfolding g_def h_def u_def by auto
+  have "f x = g x + u x - u (T x)" for x unfolding g_def by auto
+  {
+    fix x assume H: "real_cond_exp M Invariants f x > 0"
+                    "(\<lambda>n. birkhoff_sum f n x / n) \<longlonglongrightarrow> real_cond_exp M Invariants f x"
+    have "eventually (\<lambda>n. ereal(birkhoff_sum f n x / n) * ereal n = ereal(birkhoff_sum f n x)) sequentially"
+      unfolding eventually_sequentially by (rule exI[of _ 1], auto)
+    moreover have "(\<lambda>n. ereal(birkhoff_sum f n x / n) * ereal n) \<longlonglongrightarrow> ereal(real_cond_exp M Invariants f x) * \<infinity>"
+      apply (intro tendsto_intros) using H by auto
+    ultimately have "(\<lambda>n. ereal(birkhoff_sum f n x)) \<longlonglongrightarrow> ereal(real_cond_exp M Invariants f x) * \<infinity>"
+      by (rule Lim_transform_eventually)
+    then have "(\<lambda>n. ereal(birkhoff_sum f n x)) \<longlonglongrightarrow> \<infinity>"
+      using H by auto
+    then have B: "\<exists>C. \<forall>n. C \<le> birkhoff_sum f n x"
+      by (intro liminf_finite_then_bounded_below, simp add: liminf_PInfty)
+
+    have "h x \<le> f x"
+      unfolding h_def apply (rule cInf_lower) using B by force+
+
+    have "{birkhoff_sum f n (T x) |n. n \<in> {1..}} = {birkhoff_sum f (1+n) (x) - f x |n. n \<in> {1..}}"
+      unfolding birkhoff_sum_cocycle by auto
+    also have "... = {birkhoff_sum f n x - f x |n. n \<in> {2..}}"
+      by (metis (no_types, hide_lams) Suc_1 Suc_eq_plus1_left Suc_le_D Suc_le_mono atLeast_iff)
+    finally have *: "{birkhoff_sum f n (T x) |n. n \<in> {1..}} = (\<lambda>t. t - (f x))`{birkhoff_sum f n x |n. n \<in> {2..}}"
+      by auto
+
+    have "h(T x) = Inf {birkhoff_sum f n (T x) |n. n \<in> {1..}}"
+      unfolding h_def by (metis Setcompr_eq_image)
+    also have "... = (\<lambda>t. t - (f x)) (Inf {birkhoff_sum f n x |n. n \<in> {2..}})"
+      unfolding * apply (rule mono_bij_cInf[symmetric], auto simp add: mono_def bij_def inj_def)
+      apply (metis (full_types) UNIV_I add_diff_cancel_left' image_iff) using B by auto
+    finally have I: "Inf {birkhoff_sum f n x |n. n \<in> {2..}} = f x + h (T x)" by auto
+
+    have "max 0 (h x) + u x = h x"
+      unfolding u_def by auto
+    also have "... = Inf {birkhoff_sum f n x |n. n \<in> {1..}}"
+      unfolding h_def by (metis Setcompr_eq_image)
+    also have "... = Inf ({birkhoff_sum f n x |n. n \<in> {1}} \<union> {birkhoff_sum f n x |n. n \<in> {2..}})"
+      by (auto intro!: arg_cong[of _ _ Inf], metis One_nat_def Suc_1 antisym birkhoff_sum_1(2) not_less_eq_eq, force)
+    also have "Inf ({birkhoff_sum f n x |n. n \<in> {1}} \<union> {birkhoff_sum f n x |n. n \<in> {2..}})
+      = min (Inf {birkhoff_sum f n x |n. n \<in> {1}}) (Inf {birkhoff_sum f n x |n. n \<in> {2..}})"
+      unfolding inf_min[symmetric] apply (intro cInf_union_distrib) using B by auto
+    also have "... = min (f x) (f x + h (T x))" using I by auto
+    also have "... = f x + u (T x)" unfolding u_def by auto
+    finally have "max 0 (h x) = f x + u (T x) - u x" by auto
+    then have "g x = max 0 (h x)" unfolding g_def by auto
+    then have "g x \<ge> 0 \<and> g x \<le> max 0 (f x)" using \<open>h x \<le> f x\<close> by auto
+  }
+  then have *: "AE x in M. g x \<ge> 0 \<and> g x \<le> max 0 (f x)"
+    using assms(2) birkhoff_theorem_AE_nonergodic[OF assms(1)] by auto
+  moreover have "integrable M g"
+    apply (rule Bochner_Integration.integrable_bound[of _ f]) using * by (auto simp add: assms)
+  ultimately have "u \<in> borel_measurable M \<and> integrable M g \<and> (AE x in M. 0 \<le> g x \<and> g x \<le> max 0 (f x)) \<and> (\<forall>x. f x = g x + u x - u (T x))"
+    using \<open>\<And>x. f x = g x + u x - u (T x)\<close> \<open>u \<in> borel_measurable M\<close> by auto
+  then show ?thesis by blast
+qed
+
+text \<open>To deduce the stronger version that $f$ is cohomologous to an arbitrarily good approximation
+of $E(f|I)$, we apply the previous lemma twice, to control successively the negative and the
+positive side. The sign control in the conclusion of the previous lemma implies that the second step
+does not spoil the first one.\<close>
+
+lemma cohomologous_approx_cond_exp:
+  fixes f::"'a \<Rightarrow> real" and B::"'a \<Rightarrow> real"
+  assumes [measurable]: "integrable M f" "B \<in> borel_measurable M"
+      and "AE x in M. B x > 0"
+    shows "\<exists>g u. u \<in> borel_measurable M
+              \<and> integrable M g
+              \<and> (\<forall>x. f x = g x + u x - u (T x))
+              \<and> (AE x in M. abs(g x - real_cond_exp M Invariants f x) \<le> B x)"
+proof -
+  define C where "C = (\<lambda>x. min (B x) 1)"
+  have [measurable]: "integrable M C"
+    apply (rule Bochner_Integration.integrable_bound[of _ "\<lambda>_. (1::real)"], auto)
+    unfolding C_def using assms(3) by auto
+  have "C x \<le> B x" for x unfolding C_def by auto
+  have "AE x in M. C x > 0" unfolding C_def using assms(3) by auto
+  have AECI: "AE x in M. real_cond_exp M Invariants C x > 0"
+    by (intro real_cond_exp_gr_c \<open>integrable M C\<close> \<open>AE x in M. C x > 0\<close>)
+
+  define f1 where "f1 = (\<lambda>x. f x - real_cond_exp M Invariants f x)"
+  have "integrable M f1"
+    unfolding f1_def by (intro Bochner_Integration.integrable_diff \<open>integrable M f\<close> real_cond_exp_int(1))
+  have "AE x in M. real_cond_exp M Invariants f1 x = real_cond_exp M Invariants f x - real_cond_exp M Invariants (real_cond_exp M Invariants f) x"
+    unfolding f1_def apply (rule real_cond_exp_diff) by (intro Bochner_Integration.integrable_diff
+                \<open>integrable M f\<close> \<open>integrable M C\<close> real_cond_exp_int(1))+
+  moreover have "AE x in M. real_cond_exp M Invariants (real_cond_exp M Invariants f) x = real_cond_exp M Invariants f x"
+    by (intro real_cond_exp_nested_subalg subalg \<open>integrable M f\<close>, auto)
+  ultimately have AEf1: "AE x in M. real_cond_exp M Invariants f1 x = 0" by auto
+
+  have A [measurable]: "integrable M (\<lambda>x. f1 x + C x)"
+    by (intro Bochner_Integration.integrable_add \<open>integrable M f1\<close> \<open>integrable M C\<close>)
+  have "AE x in M. real_cond_exp M Invariants (\<lambda>x. f1 x + C x) x = real_cond_exp M Invariants f1 x + real_cond_exp M Invariants C x"
+    by (intro real_cond_exp_add \<open>integrable M f1\<close> \<open>integrable M C\<close>)
+  then have B: "AE x in M. real_cond_exp M Invariants (\<lambda>x. f1 x + C x) x > 0"
+    using AECI AEf1 by auto
+
+  obtain u2 g2 where H2: "u2 \<in> borel_measurable M" "integrable M g2" "AE x in M. g2 x \<ge> 0 \<and> g2 x \<le> max 0 (f1 x + C x)" "\<And>x. f1 x + C x = g2 x + u2 x - u2 (T x)"
+    using cohomologous_approx_cond_exp_aux[OF A B] by blast
+
+  define f2 where "f2 = (\<lambda>x. (g2 x - C x))"
+  have *: "u2(T x) - u2 x = f2 x -f1 x" for x unfolding f2_def using H2(4)[of x] by auto
+  have "AE x in M. f2 x \<ge> - C x" using H2(3) unfolding f2_def by auto
+  have "integrable M f2"
+    unfolding f2_def by (intro Bochner_Integration.integrable_diff \<open>integrable M g2\<close> \<open>integrable M C\<close>)
+  have "AE x in M. real_cond_exp M Invariants (\<lambda>x. u2(T x) - u2 x) x = 0"
+  proof (rule limit_foTn_over_n)
+    show "integrable M (\<lambda>x. u2(T x) - u2 x)"
+      unfolding * by (intro Bochner_Integration.integrable_diff \<open>integrable M f1\<close> \<open>integrable M f2\<close>)
+  qed (simp add: \<open>u2 \<in> borel_measurable M\<close>)
+  then have "AE x in M. real_cond_exp M Invariants (\<lambda>x. f2 x - f1 x) x = 0"
+    unfolding * by simp
+  moreover have "AE x in M. real_cond_exp M Invariants (\<lambda>x. f2 x - f1 x) x = real_cond_exp M Invariants f2 x - real_cond_exp M Invariants f1 x"
+    by (intro real_cond_exp_diff \<open>integrable M f2\<close> \<open>integrable M f1\<close>)
+  ultimately have AEf2: "AE x in M. real_cond_exp M Invariants f2 x = 0"
+    using AEf1 by auto
+
+  have A [measurable]: "integrable M (\<lambda>x. C x - f2 x)"
+    by (intro Bochner_Integration.integrable_diff \<open>integrable M f2\<close> \<open>integrable M C\<close>)
+  have "AE x in M. real_cond_exp M Invariants (\<lambda>x. C x - f2 x) x = real_cond_exp M Invariants C x - real_cond_exp M Invariants f2 x"
+    by (intro real_cond_exp_diff \<open>integrable M f2\<close> \<open>integrable M C\<close>)
+  then have B: "AE x in M. real_cond_exp M Invariants (\<lambda>x. C x - f2 x) x > 0"
+    using AECI AEf2 by auto
+
+  obtain u3 g3 where H3: "u3 \<in> borel_measurable M" "integrable M g3" "AE x in M. g3 x \<ge> 0 \<and> g3 x \<le> max 0 (C x - f2 x)" "\<And>x. C x - f2 x = g3 x + u3 x - u3 (T x)"
+    using cohomologous_approx_cond_exp_aux[OF A B] by blast
+
+  define f3 where "f3 = (\<lambda>x. C x - g3 x)"
+  have "AE x in M. f3 x \<ge> min (C x) (f2 x)" unfolding f3_def using H3(3) by auto
+  then have "AE x in M. f3 x \<ge> -C x" using \<open>AE x in M. f2 x \<ge> - C x\<close> \<open>AE x in M. C x > 0\<close> by auto
+  moreover have "AE x in M. f3 x \<le> C x" unfolding f3_def using H3(3) by auto
+  ultimately have "AE x in M. abs(f3 x) \<le> C x" by auto
+  then have *: "AE x in M. abs(f3 x) \<le> B x" using order_trans[OF _ \<open>\<And>x. C x \<le> B x\<close>] by auto
+
+  define g where "g = (\<lambda>x. f3 x + real_cond_exp M Invariants f x)"
+  define u where "u = (\<lambda>x. u2 x - u3 x)"
+  have "AE x in M. abs (g x - real_cond_exp M Invariants f x) \<le> B x"
+    unfolding g_def using * by auto
+  moreover have "f x = g x + u x - u(T x)" for x
+    using H3(4)[of x] H2(4)[of x] unfolding u_def g_def f3_def f2_def f1_def by auto
+  moreover have "u \<in> borel_measurable M"
+    unfolding u_def using \<open>u2 \<in> borel_measurable M\<close> \<open>u3 \<in> borel_measurable M\<close> by auto
+  moreover have "integrable M g"
+    unfolding g_def f3_def by (intro Bochner_Integration.integrable_add Bochner_Integration.integrable_diff
+    \<open>integrable M C\<close> \<open>integrable M g3\<close> \<open>integrable M f\<close> real_cond_exp_int(1))
+  ultimately show ?thesis by auto
+qed
+
 
 subsubsection \<open>$L^1$ version of Birkhoff theorem\<close>
 
