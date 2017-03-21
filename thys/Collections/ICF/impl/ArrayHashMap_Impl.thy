@@ -5,6 +5,7 @@
 section {* \isaheader{Array-based hash map implementation} *}
 theory ArrayHashMap_Impl imports 
   "../../Lib/HashCode"
+  "../../Lib/Code_Target_ICF"
   "../../Lib/Diff_Array"
   "../gen_algo/ListGA"
   "ListMapImpl"

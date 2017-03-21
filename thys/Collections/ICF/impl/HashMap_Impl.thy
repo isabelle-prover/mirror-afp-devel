@@ -8,6 +8,7 @@ imports
   RBTMapImpl 
   ListMapImpl
   "../../Lib/HashCode"
+  "../../Lib/Code_Target_ICF"
 begin
 
 text {*
