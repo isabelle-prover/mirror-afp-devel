@@ -209,8 +209,10 @@ proof -
   have rr': "set rr' = {x. rpoly p x = 0}" unfolding rr'_def
     using real_roots_of_rat_poly[OF p] .
   have rr: "set rr = {x. rpoly p x = 0}" unfolding rr_def using rr' by auto
+  have Cx0: "Complex x 0 = of_real x" for x
+    by (simp add: complex_of_real_def)
   have rrts: "set rrts = {x. poly ?q x = 0 \<and> x \<in> \<real>}" unfolding rrts_def set_map rr q_def
-    by (auto simp: eval_poly_def) 
+    by (auto simp: eval_poly_def Complex_in_Reals Cx0) 
        (metis (full_types) Reals_cases cr.hom_0_iff cr.poly_map_poly image_eqI mem_Collect_eq)
   have cr: "count_roots_rat p = card {x. poly ?q x = 0 \<and> x \<in> \<real>}" 
     unfolding q_def[symmetric] count_roots_rat[of p] eval_poly_def 
@@ -304,7 +306,7 @@ proof -
       have l: "?l = of_real ` {x. poly q x = 0} \<union> set (croots2 ?c2)"
         unfolding d rts_def id if_False if_True set_append rrts 
         using real_roots_of_rat_poly[OF p] pq 
-        by (auto simp: q_def Reals_cnj_iff Reals_def)
+        by (auto simp: q_def Reals_cnj_iff Reals_def Cx0)
       from dist
       have len_rr: "length rr = card {x. poly q x = 0}" unfolding rr[unfolded pq, symmetric] 
         by (simp add: distinct_card)
