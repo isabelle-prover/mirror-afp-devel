@@ -4,7 +4,6 @@ import os
 import datetime
 from jinja2 import Environment, FileSystemLoader
 
-from config import options
 import terminal
 
 ### topics
@@ -65,8 +64,8 @@ def read_topics(filename):
     return tree
 
 # for topics page: group entries by topic
-def collect_topics(entries):
-    tree = read_topics(os.path.join(options.metadata_dir, "topics"))
+def collect_topics(entries, metadata_dir):
+    tree = read_topics(os.path.join(metadata_dir, "topics"))
     for entry, attributes in entries.items():
         for topic in attributes['topic']:
             tree.add_to_topic([s.strip() for s in topic.split('/')], entry)
@@ -76,17 +75,15 @@ def collect_topics(entries):
 class Builder():
     """Contains environment for building webpages from templates"""
 
-    def __init__(self, template_dir, root_output_dir, entries, afp_entries,
-                 is_devel):
-        self.j2_env = Environment(loader=FileSystemLoader(template_dir),
+    def __init__(self, options, entries, afp_entries):
+        self.j2_env = Environment(loader=FileSystemLoader(options.templates_dir),
                                   trim_blocks=True)
         # pass functions to environment for use in templates
         self.prepare_env()
-        self.root_output_dir = root_output_dir
+        self.options = options
         #TODO: use only afp_entries
         self.entries = entries
         self.afp_entries = afp_entries
-        self.is_devel = is_devel
 
     def prepare_env(self):
         def startswith(value, beginning):
@@ -110,7 +107,7 @@ class Builder():
 
     def write_file(self, filename, template, values):
         # UTF-8 hack because of different string handling in python 2 vs 3
-        with open(os.path.join(self.root_output_dir, filename), 'wb') as f:
+        with open(os.path.join(self.options.dest_dir, filename), 'wb') as f:
             f.write(template.render(values).encode('utf8'))
 
     def generate_standard(self, filename, template_name):
@@ -119,13 +116,13 @@ class Builder():
         terminal.success("Generated {}".format(filename))
 
     def generate_topics(self):
-        tree = collect_topics(self.entries)
+        tree = collect_topics(self.entries, self.options.metadata_dir)
         template = self.j2_env.get_template("topics.tpl")
         self.write_file("topics.shtml", template, {'tree': tree})
         terminal.success("Generated topics.shtml")
 
     def generate_index(self):
-        data = {'is_devel': self.is_devel}
+        data = {'is_devel': self.options.is_devel}
         by_year = groupby(sorted(self.afp_entries.values(),
                                  key=lambda e: (e.publish_date, e.name),
                                  reverse=True),
@@ -140,11 +137,11 @@ class Builder():
         template = self.j2_env.get_template("entry.tpl")
         for name, entry in self.afp_entries.items():
             self.write_file(os.path.join("entries", name + ".shtml"), template,
-                            {'entry': entry, 'is_devel': self.is_devel})
+                            {'entry': entry, 'is_devel': self.options.is_devel})
             counter += 1
         for name, entry in self.afp_entries.no_index.items():
             self.write_file(os.path.join("entries", name + ".shtml"), template,
-                            {'entry': entry, 'is_devel': self.is_devel})
+                            {'entry': entry, 'is_devel': self.options.is_devel})
             counter += 1
         terminal.success("Generated shtml files for {:d} entries".format(counter))
 
@@ -152,7 +149,7 @@ class Builder():
         template = self.j2_env.get_template("download.tpl")
         self.write_file("download.shtml", template,
                         {'today': datetime.datetime.now().strftime("%Y-%m-%d"),
-                         'is_devel': self.is_devel})
+                         'is_devel': self.options.is_devel})
         terminal.success("Generated download.shtml")
 
     def generate_statistics(self):

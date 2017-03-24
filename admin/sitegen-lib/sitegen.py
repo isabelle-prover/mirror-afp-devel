@@ -18,9 +18,8 @@ except ImportError:
     from six.moves import configparser
 
 from collections import OrderedDict
-#TODO: replace optparse with argparse
-from optparse import OptionParser
-from sys import argv, stderr
+import argparse
+from sys import stderr
 from functools import partial
 from operator import itemgetter
 import codecs
@@ -36,7 +35,6 @@ import metadata
 from terminal import warn, error
 import templates
 import afpstats
-
 
 
 class Stats(object):
@@ -215,40 +213,41 @@ def add_status(entries, status):
             entries[e]['status'] = "skipped"
 
 def main():
-    parser = OptionParser(usage="Usage: %prog [--no-warn] [--debug] [--check] [--dest=DEST_DIR] [--status=STATUS_FILE] --metadata=METADATA_DIR THYS_DIR")
-    parser.add_option("--no-warn", action="store_false", dest="enable_warnings",
-                      help="disable output of warnings")
-    parser.add_option("--check", action="store_true", dest="do_check",
-                      help="compare the contents of the metadata file with actual file system contents")
-    parser.add_option("--dest", action="store", type="string", dest="dest_dir",
-                      help="generate files for each template in the metadata directory")
-    parser.add_option("--debug", action="store_true", dest="enable_debug",
-                      help="display debug output")
-    parser.add_option("--metadata", action="store", type="string", dest="metadata_dir",
-                      help="metadata location")
-    parser.add_option("--status", action="store", type="string", dest="status_file",
-                      help="status file location (devel)")
-    parser.add_option("--download", action="store_true", dest="build_download",
-                      help="build download page")
+    usage = "sitegen.py [-h] [--check] [--templates TEMPLATES_DIR --dest DEST_DIR] [--status STATUS_FILE] [--no-warn] [--debug] METADATA_DIR THYS_DIR"
+    parser = argparse.ArgumentParser(usage=usage)
+    parser.add_argument("metadata_dir", metavar="METADATA_DIR", action="store",
+                        help="metadata location")
+    parser.add_argument("thys_dir", metavar="THYS_DIR", action="store",
+                        help="directory with afp entries")
+    parser.add_argument("--check", action="store_true", dest="do_check",
+                        help="compare the contents of the metadata file with actual file system contents")
+    parser.add_argument("--templates", action="store", dest="templates_dir",
+                        help="directory with Jinja2 templates")
+    parser.add_argument("--dest", action="store", dest="dest_dir",
+                        help="destination dir for generated html files")
+    parser.add_argument("--status", action="store", dest="status_file",
+                        help="status file location (devel)")
+    parser.add_argument("--no-warn", action="store_false", dest="enable_warnings",
+                        help="disable output of warnings")
+    parser.add_argument("--debug", action="store_true", dest="enable_debug",
+                        help="display debug output")
 
+    parser.parse_args(namespace=options)
+    options.is_devel = options.status_file is not None
 
-    (_, args) = parser.parse_args(argv, values=options)
-    if len(args) != 2:
-        parser.error("You must supply the theories directory. For usage, supply --help.")
-
-    thys_dir = args[1]
-    metadata_dir = options.metadata_dir
+    if options.dest_dir and not options.templates_dir:
+        error("Please specify templates dir", abort=True)
 
     # parse metadata
-    entries = parse(os.path.join(metadata_dir, "metadata"))
-    versions = read_versions(os.path.join(metadata_dir, "release-dates"))
-    associate_releases(entries, versions, os.path.join(metadata_dir, "releases"))
+    entries = parse(os.path.join(options.metadata_dir, "metadata"))
+    versions = read_versions(os.path.join(options.metadata_dir, "release-dates"))
+    associate_releases(entries, versions, os.path.join(options.metadata_dir, "releases"))
     if len(entries) == 0:
         warn("In metadata: No entries found")
 
     # generate depends-on, used-by entries, lines of code and number of lemmas
     # by using an afp_dict object
-    afp_dict = afpstats.afp_dict(entries, thys_dir)
+    afp_dict = afpstats.afp_dict(entries, options.thys_dir)
     afp_dict.build_stats()
     for e in entries:
         entries[e]['depends-on'] = list(map(str, afp_dict[e].imports))
@@ -256,14 +255,14 @@ def main():
 
     # perform check
     if options.do_check:
-        count = check_fs(entries, thys_dir)
-        output = "Checked directory {0}. Found {1} warnings.".format(thys_dir, count)
+        count = check_fs(entries, options.thys_dir)
+        output = "Checked directory {0}. Found {1} warnings.".format(options.thys_dir, count)
         color = 'yellow' if count > 0 else 'green'
         print(colored(output, color, attrs=['bold']))
 
     # perform generation
     if options.dest_dir:
-        if options.is_devel():
+        if options.status_file is not None:
             (build_data, status) = parse_status(options.status_file)
             for a in afp_dict:
                 if a in status:
@@ -273,10 +272,7 @@ def main():
         else:
             build_data = dict()
 
-        is_devel = options.status_file is not None
-        #TODO: remove hard coded path
-        builder = templates.Builder("admin/sitegen-lib/templates", "web",
-                                    entries, afp_dict, is_devel)
+        builder = templates.Builder(options, entries, afp_dict)
         builder.generate_topics()
         builder.generate_index()
         builder.generate_entries()
@@ -288,7 +284,7 @@ def main():
         if options.build_download:
             builder.generate_download()
         #TODO: look over it one more time
-        if options.is_devel():
+        if options.is_devel:
             builder.generate_status(build_data)
 
 if __name__ == "__main__":

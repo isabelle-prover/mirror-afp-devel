@@ -76,4 +76,6 @@ echo "Installing dependencies ..."
 "$PIP" install -q -r "$ROOT/admin/sitegen-req.txt"
 
 echo "Running sitegen ..."
-"$PYTHON" admin/sitegen-lib/sitegen.py --dest=web --metadata=metadata thys $@
+"$PYTHON" admin/sitegen-lib/sitegen.py --dest=web \
+                                       --templates=admin/sitegen-lib/templates \
+                                       metadata thys $@
