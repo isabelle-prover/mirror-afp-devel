@@ -148,8 +148,7 @@ class Builder():
     def generate_download(self):
         template = self.j2_env.get_template("download.tpl")
         self.write_file("download.shtml", template,
-                        {'today': datetime.datetime.now().strftime("%Y-%m-%d"),
-                         'is_devel': self.options.is_devel})
+                        {'is_devel': self.options.is_devel})
         terminal.success("Generated download.shtml")
 
     def generate_statistics(self):
