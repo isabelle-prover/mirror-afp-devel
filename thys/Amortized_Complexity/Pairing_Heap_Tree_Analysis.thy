@@ -124,7 +124,7 @@ qed simp
 lemma \<Delta>\<Phi>_mergepairs: assumes "hs \<noteq> Leaf"
   shows "\<Phi> (mergepairs hs) - \<Phi> hs \<le> 3 * log 2 (size hs) - len hs + 2"
 proof -
-  have "pass\<^sub>1 hs \<noteq> Leaf" by (metis assms size_0_iff_Leaf size_pass\<^sub>1)
+  have "pass\<^sub>1 hs \<noteq> Leaf" by (metis assms eq_size_0 size_pass\<^sub>1)
   with assms \<Delta>\<Phi>_pass1[of hs] \<Delta>\<Phi>_pass2[of "pass\<^sub>1 hs"]
   show ?thesis by (auto simp add: size_pass\<^sub>1 mergepairs_pass12)
 qed
@@ -138,8 +138,7 @@ proof -
   let ?\<Delta>\<Phi>\<^sub>2 = "\<Phi>(pass\<^sub>2(pass\<^sub>1 lx)) - \<Phi> lx"
   let ?\<Delta>\<Phi> = "\<Phi> (del_min ?h) - \<Phi> ?h"
   have "lx \<noteq> Leaf \<Longrightarrow> \<Phi>(pass\<^sub>2(pass\<^sub>1 lx)) - \<Phi> (pass\<^sub>1 lx) \<le> log 2  (size lx)" 
-    using \<Delta>\<Phi>_pass2 [of "pass\<^sub>1 lx"] 
-    size_0_iff_Leaf size_pass\<^sub>1 by metis
+    using \<Delta>\<Phi>_pass2 [of "pass\<^sub>1 lx"] by(metis eq_size_0 size_pass\<^sub>1)
   moreover have "lx \<noteq> Leaf \<Longrightarrow> \<Phi> (pass\<^sub>1 lx) - \<Phi> lx \<le>  2*\<dots> - len lx + 2" 
     using \<Delta>\<Phi>_pass1 by metis
   moreover have "?\<Delta>\<Phi> \<le> ?\<Delta>\<Phi>\<^sub>2" by simp

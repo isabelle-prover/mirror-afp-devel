@@ -204,7 +204,7 @@ shows "mset_tree t = {#root_val t#} + mset_tree(del_min t)"
 proof(cases t rule: del_min.cases)
   case 1 with assms show ?thesis by simp
 next
-  case 2 with assms show ?thesis by (simp add: size_0_iff_Leaf)
+  case 2 with assms show ?thesis by (simp)
 next
   case [simp]: (3 ll b lr a r)
   { fix y l' assume del: "del_left (Node ll b lr) = (y,l')"
