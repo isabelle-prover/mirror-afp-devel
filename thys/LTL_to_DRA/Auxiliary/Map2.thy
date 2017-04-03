@@ -6,7 +6,7 @@
 section \<open>Auxiliary Map Facts\<close>
 
 theory Map2
-  imports Main "~~/src/HOL/Library/Map"
+  imports Main
 begin 
 
 lemma map_of_tabulate:  

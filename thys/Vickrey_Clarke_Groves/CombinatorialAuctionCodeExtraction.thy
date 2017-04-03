@@ -21,10 +21,9 @@ theory CombinatorialAuctionCodeExtraction
 imports
 CombinatorialAuction
 
-(* The following three theories are needed for the extraction of Scala code *)
+(* The following theories are needed for the extraction of Scala code *)
 "~~/src/HOL/Library/Code_Target_Nat" 
-"~~/src/HOL/Library/Code_Target_Int" 
-"~~/src/HOL/Library/Code_Numeral"
+"~~/src/HOL/Library/Code_Target_Int"
 
 begin
 

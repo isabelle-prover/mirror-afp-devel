@@ -4,8 +4,8 @@ session Groebner_Bases (AFP) = Polynomials +
   options [timeout = 600]
   theories [document = false]
     "../Abstract-Rewriting/Abstract_Rewriting"
-    "../Multivariate_Polynomials/Abstract_Poly"
-    "../Multivariate_Polynomials/Poly_Lists"
+    "../Polynomials/Abstract_Poly"
+    "../Polynomials/Poly_Lists"
   theories
     "Computations"
   document_files

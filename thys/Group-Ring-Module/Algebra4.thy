@@ -25,7 +25,7 @@
  **)
 
 theory Algebra4
-imports Algebra3 "~~/src/HOL/Binomial" "~~/src/HOL/Library/Zorn"
+imports Algebra3 Binomial Zorn
 begin
 
 section "Abelian groups"
