@@ -4528,22 +4528,31 @@ author = Sebastian Ullrich <mailto:sebasti@nullri.ch>, Denis Lohner <http://pp.i
 date = 2016-02-05
 topic = Computer Science/Algorithms, Computer Science/Programming Languages/Transformations
 abstract =
+	<p>
 	We define a functional variant of the static single assignment (SSA)
 	form construction algorithm described by <a
 	href="http://dx.doi.org/10.1007/978-3-642-37051-9_6">Braun et al.</a>,
 	which combines simplicity and efficiency. The definition is based on a
 	general, abstract control flow graph representation using Isabelle locales.
+	</p>
 	<p>
 	We prove that the algorithm's output is semantically equivalent to the
 	input according to a small-step semantics, and that it is in minimal SSA
 	form for the common special case of reducible inputs. We then show the
 	satisfiability of the locale assumptions by giving instantiations for a
 	simple While language.
+	</p>
 	<p>
 	Furthermore, we use a generic instantiation based on typedefs in order
 	to extract OCaml code and replace the unverified SSA construction
 	algorithm of the <a href="http://dx.doi.org/10.1145/2579080">CompCertSSA
 	project</a> with it.
+	</p>
+	<p>
+	A more detailed description of the verified SSA construction can be found
+	in the paper <a href="http://dx.doi.org/10.1145/2892208.2892211">Verified
+	Construction of Static Single Assignment Form</a>, CC 2016.
+	</p>
 notify = denis.lohner@kit.edu
 
 [Minimal_SSA]
