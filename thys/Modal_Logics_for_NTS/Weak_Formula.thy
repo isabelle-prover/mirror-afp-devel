@@ -118,7 +118,7 @@ begin
               by (metis Act_tau_eq_iff)
             with Act.hyps show ?thesis
               by (metis add_Suc tau_steps.simps(2) tau_steps_add)
-          qed (simp_all)
+          qed simp_all
       qed
   next
     assume "n = 0" then show "x = tau_steps x n"

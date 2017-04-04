@@ -8,7 +8,7 @@
 section \<open>Stirling's Formula\<close>
 theory Stirling_Formula
 imports
-  "~~/src/HOL/Analysis"
+  Analysis
   "../Landau_Symbols/Landau_Symbols"
 begin
 

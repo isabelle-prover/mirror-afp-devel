@@ -30,13 +30,13 @@
       <td class="nav"><a href="about.shtml">About</a></td>
     </tr>
     <tr>
-      <td class="nav"><a href="submitting.shtml">Submission Guidelines</a></td>
+      <td class="nav"><a href="submitting.shtml">Submission</a></td>
     </tr>
     <tr>
-      <td class="nav"><a href="updating.shtml">Updating entries</a></td>
+      <td class="nav"><a href="updating.shtml">Updating Entries</a></td>
     </tr>
     <tr>
-      <td class="nav"><a href="using.shtml">Using entries</a></td>
+      <td class="nav"><a href="using.shtml">Using Entries</a></td>
     </tr>
     <tr>
       <td class="nav"><a href="search.shtml">Search</a></td>
@@ -103,6 +103,8 @@
                 </div>
       <h3>Algorithms</h3>
     <div class="list">
+          <a href="entries/Comparison_Sort_Lower_Bound.shtml">Comparison_Sort_Lower_Bound</a> &nbsp;
+          <a href="entries/Quick_Sort_Cost.shtml">Quick_Sort_Cost</a> &nbsp;
           <a href="entries/DFS_Framework.shtml">DFS_Framework</a> &nbsp;
           <a href="entries/TortoiseHare.shtml">TortoiseHare</a> &nbsp;
           <a href="entries/Roy_Floyd_Warshall.shtml">Roy_Floyd_Warshall</a> &nbsp;
@@ -434,6 +436,7 @@
           <a href="entries/E_Transcendental.shtml">E_Transcendental</a> &nbsp;
           <a href="entries/Liouville_Numbers.shtml">Liouville_Numbers</a> &nbsp;
           <a href="entries/Descartes_Sign_Rule.shtml">Descartes_Sign_Rule</a> &nbsp;
+          <a href="entries/Euler_MacLaurin.shtml">Euler_MacLaurin</a> &nbsp;
           <a href="entries/Real_Impl.shtml">Real_Impl</a> &nbsp;
           <a href="entries/Lower_Semicontinuous.shtml">Lower_Semicontinuous</a> &nbsp;
           <a href="entries/Affine_Arithmetic.shtml">Affine_Arithmetic</a> &nbsp;

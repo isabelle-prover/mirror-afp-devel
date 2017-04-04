@@ -24,9 +24,8 @@
 
 {# You could use loop.index here, but there's an obscure bug in Jinja2 with
    loop.index and groupBy #}
-{% set position = 1 %}
 {% for no_of_imports, articles in most_used %}
-  <tr><td>{{ position }}.</td>
+  <tr><td>{{ loop.index }}.</td>
   {% set td_joiner = joiner('<td></td>') %}
   {% for article in articles %}
     {{ td_joiner() }}
@@ -34,7 +33,6 @@
     <td>{{ no_of_imports }}</td>
     </tr>
   {% endfor %}
-  {% set position = position + 1 %}
 {% endfor %}
 
 </table>
@@ -49,7 +47,7 @@ var no_authors_series = [{{ author_years_cumulative|join(", ") }}];
 var all_articles = [ {% for article in articles_by_time %}{{ comma() }}"{{article.name}}"{% endfor %}];
 {% set comma = joiner(",") %}
 var years_loc_articles = [
-{%- for year, articles in articles_by_time1 %}
+{%- for year, articles in articles_per_year %}
   {{ comma() }}{{year}}
   {%- set comma1 = joiner(",") %}
   {%- for article in articles %}

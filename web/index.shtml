@@ -30,13 +30,13 @@
       <td class="nav"><a href="about.shtml">About</a></td>
     </tr>
     <tr>
-      <td class="nav"><a href="submitting.shtml">Submission Guidelines</a></td>
+      <td class="nav"><a href="submitting.shtml">Submission</a></td>
     </tr>
     <tr>
-      <td class="nav"><a href="updating.shtml">Updating entries</a></td>
+      <td class="nav"><a href="updating.shtml">Updating Entries</a></td>
     </tr>
     <tr>
-      <td class="nav"><a href="using.shtml">Using entries</a></td>
+      <td class="nav"><a href="using.shtml">Using Entries</a></td>
     </tr>
     <tr>
       <td class="nav"><a href="search.shtml">Search</a></td>
@@ -88,6 +88,30 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
   <tr>
     <td class="head">2017</td>
   </tr>
+      <tr>
+      <td class="entry">
+        2017-03-15: <a href="entries/Quick_Sort_Cost.shtml">The number of comparisons in QuickSort</a>
+        <br>
+                  Author:
+                        <a href="https://www21.in.tum.de/~eberlm">Manuel Eberl</a>
+                        </td>
+    </tr>
+      <tr>
+      <td class="entry">
+        2017-03-15: <a href="entries/Comparison_Sort_Lower_Bound.shtml">Lower bound on comparison-based sorting algorithms</a>
+        <br>
+                  Author:
+                        <a href="https://www21.in.tum.de/~eberlm">Manuel Eberl</a>
+                        </td>
+    </tr>
+      <tr>
+      <td class="entry">
+        2017-03-10: <a href="entries/Euler_MacLaurin.shtml">The Euler–MacLaurin Formula</a>
+        <br>
+                  Author:
+                        <a href="https://www21.in.tum.de/~eberlm">Manuel Eberl</a>
+                        </td>
+    </tr>
       <tr>
       <td class="entry">
         2017-02-28: <a href="entries/Elliptic_Curves_Group_Law.shtml">The Group Law for Elliptic Curves</a>

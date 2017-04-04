@@ -1,9 +1,7 @@
 chapter AFP
 
 session Card_Multisets (AFP) = "HOL-Library" +
-  options [timeout=300]
-  theories [document = false]
-    Binomial
+  options [timeout = 300]
   theories
     Card_Multisets
   document_files

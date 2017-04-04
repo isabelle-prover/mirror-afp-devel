@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Archive of Formal Proofs</title>
+<title>Deriving class instances for datatypes - Archive of Formal Proofs
+</title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
@@ -30,13 +31,13 @@
       <td class="nav"><a href="../about.shtml">About</a></td>
     </tr>
     <tr>
-      <td class="nav"><a href="../submitting.shtml">Submission Guidelines</a></td>
+      <td class="nav"><a href="../submitting.shtml">Submission</a></td>
     </tr>
     <tr>
-      <td class="nav"><a href="../updating.shtml">Updating entries</a></td>
+      <td class="nav"><a href="../updating.shtml">Updating Entries</a></td>
     </tr>
     <tr>
-      <td class="nav"><a href="../using.shtml">Using entries</a></td>
+      <td class="nav"><a href="../using.shtml">Using Entries</a></td>
     </tr>
     <tr>
       <td class="nav"><a href="../search.shtml">Search</a></td>
@@ -100,19 +101,19 @@
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-We provide a framework for registering automatic methods
+<p>We provide a framework for registering automatic methods
 to derive class instances of datatypes,
-as it is possible using Haskell's ``deriving Ord, Show, ...'' feature.
-We further implemented such automatic methods to derive comparators, linear orders, parametrizable equality functions,
+as it is possible using Haskell's ``deriving Ord, Show, ...'' feature.</p>
+<p>We further implemented such automatic methods to derive comparators, linear orders, parametrizable equality functions,
 and hash-functions which are required in the
 Isabelle Collection Framework and the Container Framework.
 Moreover, for the tactic of Blanchette to show that a datatype is countable, we implemented a
 wrapper so that this tactic becomes accessible in our framework. All of the generators are based on
-the infrastructure that is provided by the BNF-based datatype package.
-Our formalization was performed as part of the <a href="http://cl-informatik.uibk.ac.at/software/ceta">IsaFoR/CeTA</a> project.
+the infrastructure that is provided by the BNF-based datatype package.</p>
+<p>Our formalization was performed as part of the <a href="http://cl-informatik.uibk.ac.at/software/ceta">IsaFoR/CeTA</a> project.
 With our new tactics we could remove
 several tedious proofs for (conditional) linear orders, and conditional equality operators
-within IsaFoR and the Container Framework.</td>
+within IsaFoR and the Container Framework.</p></td>
 </tr>
 
 

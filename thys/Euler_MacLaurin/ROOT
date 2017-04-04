@@ -1,0 +1,16 @@
+chapter AFP
+
+session Euler_MacLaurin (AFP) = Landau_Analysis +
+  options [timeout=300]
+  theories [document=false]
+    "~~/src/HOL/Analysis/Analysis"
+    "../Bernoulli/Periodic_Bernpoly"
+    "../Bernoulli/Bernoulli_FPS"
+    "../Landau_Symbols/Landau_Symbols"
+  theories
+    Euler_MacLaurin
+    Euler_MacLaurin_Landau
+  document_files
+    "root.tex"
+    "root.bib"
+

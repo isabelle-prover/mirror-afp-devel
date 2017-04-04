@@ -2,7 +2,7 @@ section "LTL integration"
 theory PromelaLTL
 imports
   "Promela"
-  "../LTL_to_GBA/LTL"
+  "../LTL/LTL"
 begin
 
 text {* We have a semantic engine for Promela. But we need to have 

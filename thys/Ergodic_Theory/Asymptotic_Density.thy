@@ -2,36 +2,43 @@
     License: BSD
 *)
 
-theory Banach_Density
+theory Asymptotic_Density
 imports SG_Library_Complement
 
 begin
 
-section {*Banach densities*}
+section \<open>Asymptotic densities\<close>
 
-text {*The upper Banach density of a subset $A$ of the integers is
+text \<open>The upper asymptotic density of a subset $A$ of the integers is
 $\limsup Card(A \cap [0,n)) / n \in [0,1]$. It measures how big a set of integers is,
 at some times. In this paragraph, we establish the basic properties of this notion.
 
-There is a corresponding notion of lower Banach density, with a liminf instead
+There is a corresponding notion of lower asymptotic density, with a liminf instead
 of a limsup, measuring how big a set is at all times. The corresponding properties
 are proved exactly in the same way.
-*}
+\<close>
 
-subsection {*Upper Banach densities*}
+subsection \<open>Upper asymptotic densities\<close>
 
-definition upper_Banach_density::"nat set \<Rightarrow> real"
-  where "upper_Banach_density A = real_of_ereal(limsup (\<lambda>n. card(A \<inter> {..<n})/n))"
+text \<open>As limsups are only defined for sequences taking values in a complete lattice
+(here the extended reals), we define it in the extended reals and then go back to the reals.
+This is a little bit artificial, but it is not a real problem as in the applications we
+will never come back to this definition.\<close>
 
-lemma upper_Banach_density_in_01:
-  "ereal(upper_Banach_density A) = limsup (\<lambda>n. card(A \<inter> {..<n})/n)"
-  "upper_Banach_density A \<le> 1"
-  "upper_Banach_density A \<ge> 0"
+definition upper_asymptotic_density::"nat set \<Rightarrow> real"
+  where "upper_asymptotic_density A = real_of_ereal(limsup (\<lambda>n. card(A \<inter> {..<n})/n))"
+
+text \<open>First basic property: the asymptotic density is between $0$ and $1$.\<close>
+
+lemma upper_asymptotic_density_in_01:
+  "ereal(upper_asymptotic_density A) = limsup (\<lambda>n. card(A \<inter> {..<n})/n)"
+  "upper_asymptotic_density A \<le> 1"
+  "upper_asymptotic_density A \<ge> 0"
 proof -
   {
     fix n::nat assume "n>0"
     have "card(A \<inter> {..<n}) \<le> n" by (metis card_lessThan Int_lower2 card_mono finite_lessThan)
-    then have "card(A \<inter> {..<n}) / n \<le> ereal 1" using `n>0` by auto
+    then have "card(A \<inter> {..<n}) / n \<le> ereal 1" using \<open>n>0\<close> by auto
   }
   then have "eventually (\<lambda>n. card(A \<inter> {..<n}) / n \<le> ereal 1) sequentially"
     by (simp add: eventually_at_top_dense)
@@ -42,19 +49,23 @@ proof -
   then have b: "limsup (\<lambda>n. card(A \<inter> {..<n})/n) \<ge> 0" by (meson Liminf_le_Limsup order_trans sequentially_bot)
 
   have "abs(limsup (\<lambda>n. card(A \<inter> {..<n})/n)) \<noteq> \<infinity>" using a b by auto
-  then show "ereal(upper_Banach_density A) = limsup (\<lambda>n. card(A \<inter> {..<n})/n)"
-    unfolding upper_Banach_density_def by auto
-  show "upper_Banach_density A \<le> 1" "upper_Banach_density A \<ge> 0" unfolding upper_Banach_density_def
+  then show "ereal(upper_asymptotic_density A) = limsup (\<lambda>n. card(A \<inter> {..<n})/n)"
+    unfolding upper_asymptotic_density_def by auto
+  show "upper_asymptotic_density A \<le> 1" "upper_asymptotic_density A \<ge> 0" unfolding upper_asymptotic_density_def
     using a b by (auto simp add: real_of_ereal_le_1 real_of_ereal_pos)
 qed
 
-lemma upper_Banach_density_event1:
+text \<open>The two next propositions give the usable characterization of the asymptotic density, in
+terms of the eventual cardinality of $A \cap [0, n)$. Note that the inequality is strict for one
+implication and large for the other.\<close>
+
+proposition upper_asymptotic_density_event1:
   fixes l::real
-  assumes "upper_Banach_density A < l"
+  assumes "upper_asymptotic_density A < l"
   shows "eventually (\<lambda>n. card(A \<inter> {..<n}) < l * n) sequentially"
 proof -
   have "limsup (\<lambda>n. card(A \<inter> {..<n})/n) < l"
-    using assms upper_Banach_density_in_01(1) ereal_less_ereal_Ex by auto
+    using assms upper_asymptotic_density_in_01(1) ereal_less_ereal_Ex by auto
   then have "eventually (\<lambda>n. card(A \<inter> {..<n})/n < ereal l) sequentially"
     using Limsup_lessD by blast
   then have "eventually (\<lambda>n. card(A \<inter> {..<n})/n < ereal l \<and> n > 0) sequentially"
@@ -65,10 +76,10 @@ proof -
     by (simp add: eventually_mono)
 qed
 
-lemma upper_Banach_density_event2:
+proposition upper_asymptotic_density_event2:
   fixes l::real
   assumes "eventually (\<lambda>n. card(A \<inter> {..<n}) \<le> l * n) sequentially"
-  shows "upper_Banach_density A \<le> l"
+  shows "upper_asymptotic_density A \<le> l"
 proof -
   have "eventually (\<lambda>n. card(A \<inter> {..<n}) \<le> l * n \<and> n > 0) sequentially"
     using assms eventually_gt_at_top eventually_conj by blast
@@ -78,10 +89,12 @@ proof -
     by (simp add: eventually_mono)
   then have "limsup (\<lambda>n. card(A \<inter> {..<n})/n) \<le> ereal l"
     by (simp add: Limsup_bounded)
-  then have "ereal(upper_Banach_density A) \<le> ereal l"
-    using upper_Banach_density_in_01(1) by auto
+  then have "ereal(upper_asymptotic_density A) \<le> ereal l"
+    using upper_asymptotic_density_in_01(1) by auto
   then show ?thesis by auto
 qed
+
+text \<open>The following trivial lemma is useful to control the asymptotic density of unions.\<close>
 
 lemma lem_ge_sum:
   fixes l x y::real
@@ -93,13 +106,15 @@ proof -
   then show ?thesis by auto
 qed
 
-lemma upper_Banach_density_union:
-  shows "upper_Banach_density (A \<union> B) \<le> upper_Banach_density A + upper_Banach_density B"
+text \<open>The asymptotic density of a union is bounded by the sum of the asymptotic densities.\<close>
+
+lemma upper_asymptotic_density_union:
+  shows "upper_asymptotic_density (A \<union> B) \<le> upper_asymptotic_density A + upper_asymptotic_density B"
 proof -
-  {
-    fix l assume "l > upper_Banach_density A + upper_Banach_density B"
-    then obtain lA lB where l: "l = lA+lB" and lA: "lA > upper_Banach_density A" and lB: "lB > upper_Banach_density B"
-      using lem_ge_sum by blast
+  have "upper_asymptotic_density (A \<union> B) \<le> l" if H: "l > upper_asymptotic_density A + upper_asymptotic_density B" for l
+  proof -
+    obtain lA lB where l: "l = lA+lB" and lA: "lA > upper_asymptotic_density A" and lB: "lB > upper_asymptotic_density B"
+      using lem_ge_sum H by blast
     {
       fix n assume H: "card (A \<inter> {..<n}) < lA * n \<and> card (B \<inter> {..<n}) < lB * n"
       have "card((A\<union>B) \<inter> {..<n}) \<le> card(A \<inter> {..<n}) + card(B \<inter> {..<n})"
@@ -108,94 +123,106 @@ proof -
       finally have "card ((A\<union>B) \<inter> {..<n}) \<le> l * n" by simp
     }
     moreover have "eventually (\<lambda>n. card (A \<inter> {..<n}) < lA * n \<and> card (B \<inter> {..<n}) < lB * n) sequentially"
-      using upper_Banach_density_event1[OF lA] upper_Banach_density_event1[OF lB] eventually_conj by blast
+      using upper_asymptotic_density_event1[OF lA] upper_asymptotic_density_event1[OF lB] eventually_conj by blast
     ultimately have "eventually (\<lambda>n. card((A\<union>B) \<inter> {..<n}) \<le> l * n) sequentially"
       by (simp add: eventually_mono)
-    then have "upper_Banach_density (A \<union> B) \<le> l" using upper_Banach_density_event2 by auto
-  }
+    then show "upper_asymptotic_density (A \<union> B) \<le> l" using upper_asymptotic_density_event2 by auto
+  qed
   then show ?thesis by (meson dense not_le)
 qed
 
-lemma upper_Banach_density_subset:
+text \<open>It follows that the asymptotic density is an increasing function for inclusion.\<close>
+
+lemma upper_asymptotic_density_subset:
   assumes "A \<subseteq> B"
-  shows "upper_Banach_density A \<le> upper_Banach_density B"
+  shows "upper_asymptotic_density A \<le> upper_asymptotic_density B"
 proof -
   {
-    fix l::real assume l: "l > upper_Banach_density B"
+    fix l::real assume l: "l > upper_asymptotic_density B"
     have "card(A \<inter> {..<n}) \<le> card(B \<inter> {..<n})" for n
       using assms by (metis Int_lower2 Int_mono card_mono finite_lessThan finite_subset inf.left_idem)
     then have "card(A \<inter> {..<n}) \<le> l * n" if "card(B \<inter> {..<n}) < l * n" for n
       using that by (meson lessThan_def less_imp_le of_nat_le_iff order_trans)
     moreover have "eventually (\<lambda>n. card(B \<inter> {..<n}) < l * n) sequentially"
-      using upper_Banach_density_event1 l by simp
+      using upper_asymptotic_density_event1 l by simp
     ultimately have "eventually (\<lambda>n. card(A \<inter> {..<n}) \<le> l * n) sequentially"
       by (simp add: eventually_mono)
-    then have "upper_Banach_density A \<le> l" using upper_Banach_density_event2 by auto
+    then have "upper_asymptotic_density A \<le> l" using upper_asymptotic_density_event2 by auto
   }
   then show ?thesis by (meson dense not_le)
 qed
 
-lemma upper_Banach_density_lim:
+text \<open>If a set has a density, then it is also its asymptotic density.\<close>
+
+lemma upper_asymptotic_density_lim:
   assumes "(\<lambda>n. card(A \<inter> {..<n})/n) \<longlonglongrightarrow> l"
-  shows "upper_Banach_density A = l"
+  shows "upper_asymptotic_density A = l"
 proof -
   have "(\<lambda>n. ereal(card(A \<inter> {..<n})/n)) \<longlonglongrightarrow> l" using assms by auto
   then have "limsup (\<lambda>n. card(A \<inter> {..<n})/n) = l"
     using sequentially_bot tendsto_iff_Liminf_eq_Limsup by blast
-  then show ?thesis unfolding upper_Banach_density_def by auto
+  then show ?thesis unfolding upper_asymptotic_density_def by auto
 qed
 
-lemma upper_Banach_density_0_diff:
-  assumes "A \<subseteq> B" "upper_Banach_density (B-A) = 0"
-  shows "upper_Banach_density A = upper_Banach_density B"
+text \<open>If two sets are equal up to something small, i.e. a set with zero upper density,
+then they have the same upper density.\<close>
+
+lemma upper_asymptotic_density_0_diff:
+  assumes "A \<subseteq> B" "upper_asymptotic_density (B-A) = 0"
+  shows "upper_asymptotic_density A = upper_asymptotic_density B"
 proof -
-  have "upper_Banach_density B \<le> upper_Banach_density A + upper_Banach_density (B-A)"
-    using upper_Banach_density_union[of A "B-A"] by (simp add: assms(1) sup.absorb2)
-  then have "upper_Banach_density B \<le> upper_Banach_density A"
+  have "upper_asymptotic_density B \<le> upper_asymptotic_density A + upper_asymptotic_density (B-A)"
+    using upper_asymptotic_density_union[of A "B-A"] by (simp add: assms(1) sup.absorb2)
+  then have "upper_asymptotic_density B \<le> upper_asymptotic_density A"
     using assms(2) by simp
-  then show ?thesis using upper_Banach_density_subset[OF assms(1)] by simp
+  then show ?thesis using upper_asymptotic_density_subset[OF assms(1)] by simp
 qed
 
-lemma
-  assumes "upper_Banach_density (A \<Delta> B) = 0"
-  shows "upper_Banach_density A = upper_Banach_density B"
+lemma upper_asymptotic_density_0_Delta:
+  assumes "upper_asymptotic_density (A \<Delta> B) = 0"
+  shows "upper_asymptotic_density A = upper_asymptotic_density B"
 proof -
   have "A- (A\<inter>B) \<subseteq> A \<Delta> B" "B- (A\<inter>B) \<subseteq> A \<Delta> B"
     using assms(1) by (auto simp add: Diff_Int Un_infinite)
-  then have "upper_Banach_density (A - (A\<inter>B)) = 0"
-            "upper_Banach_density (B - (A\<inter>B)) = 0"
-    using upper_Banach_density_subset assms(1) upper_Banach_density_in_01(3)
+  then have "upper_asymptotic_density (A - (A\<inter>B)) = 0"
+            "upper_asymptotic_density (B - (A\<inter>B)) = 0"
+    using upper_asymptotic_density_subset assms(1) upper_asymptotic_density_in_01(3)
     by (metis inf.absorb_iff2 inf.orderE)+
-  then have "upper_Banach_density (A\<inter>B) = upper_Banach_density A"
-            "upper_Banach_density (A\<inter>B) = upper_Banach_density B"
-    using upper_Banach_density_0_diff by auto
+  then have "upper_asymptotic_density (A\<inter>B) = upper_asymptotic_density A"
+            "upper_asymptotic_density (A\<inter>B) = upper_asymptotic_density B"
+    using upper_asymptotic_density_0_diff by auto
   then show ?thesis by simp
 qed
 
-lemma upper_Banach_density_finite:
+text \<open>Finite sets have vanishing upper asymptotic density.\<close>
+
+lemma upper_asymptotic_density_finite:
   assumes "finite A"
-  shows "upper_Banach_density A = 0"
+  shows "upper_asymptotic_density A = 0"
 proof -
   have "(\<lambda>n. card(A \<inter> {..<n})/n) \<longlonglongrightarrow> 0"
-  proof (rule tendsto_sandwich[where ?f= "\<lambda>n. 0" and ?h = "\<lambda>(n::nat). card A / n"])
+  proof (rule tendsto_sandwich[where ?f = "\<lambda>n. 0" and ?h = "\<lambda>(n::nat). card A / n"])
     have "card(A \<inter> {..<n})/n \<le> card A / n" if "n>0" for n
-      using that `finite A` by (simp add: card_mono divide_right_mono)
+      using that \<open>finite A\<close> by (simp add: card_mono divide_right_mono)
     then show "eventually (\<lambda>n. card(A \<inter> {..<n})/n \<le> card A / n) sequentially"
       by (simp add: eventually_at_top_dense)
     have "(\<lambda>n. real (card A)* (1 / real n)) \<longlonglongrightarrow> real(card A) * 0"
-      by (rule tendsto_mult, simp, simp add: lim_1_over_n)
+      by (intro tendsto_intros)
     then show "(\<lambda>n. real (card A) / real n) \<longlonglongrightarrow> 0" by auto
   qed (auto)
-  then show "upper_Banach_density A = 0" using upper_Banach_density_lim by auto
+  then show "upper_asymptotic_density A = 0" using upper_asymptotic_density_lim by auto
 qed
 
-lemma upper_Banach_density_shift:
+text \<open>It is sometimes useful to compute the asymptotic density by shifting a little bit the set:
+this only makes a finite difference that vanishes when divided by $n$.\<close>
+
+lemma upper_asymptotic_density_shift:
   fixes k::nat and l::int
-  shows "ereal(upper_Banach_density A) = limsup (\<lambda>n. card(A \<inter> {k..nat(n+l)}) / n)"
+  shows "ereal(upper_asymptotic_density A) = limsup (\<lambda>n. card(A \<inter> {k..nat(n+l)}) / n)"
 proof -
   define C where "C = k+2*nat(abs(l))+1"
   have *: "(\<lambda>n. C*(1/n)) \<longlonglongrightarrow> real C * 0"
-    by (rule tendsto_mult, auto simp add: lim_1_over_n)
+    by (intro tendsto_intros)
   have l0: "limsup (\<lambda>n. C/n) = 0"
     apply (rule lim_imp_Limsup, simp) using * by (simp add: zero_ereal_def)
 
@@ -249,29 +276,35 @@ proof -
     using l0 by simp
   then have "limsup (\<lambda>n. card(A \<inter> {..<n}) / n) = limsup (\<lambda>n. card (A \<inter> {k..nat(n+l)})/n)"
     using a by auto
-  then show ?thesis using upper_Banach_density_in_01(1) by auto
+  then show ?thesis using upper_asymptotic_density_in_01(1) by auto
 qed
 
-lemma upper_Banach_density_meas [measurable]:
+text \<open>Upper asymptotic density is measurable.\<close>
+
+lemma upper_asymptotic_density_meas [measurable]:
   assumes [measurable]: "\<And>(n::nat). Measurable.pred M (P n)"
-  shows "(\<lambda>x. upper_Banach_density {n. P n x}) \<in> borel_measurable M"
-unfolding upper_Banach_density_def by auto
+  shows "(\<lambda>x. upper_asymptotic_density {n. P n x}) \<in> borel_measurable M"
+unfolding upper_asymptotic_density_def by auto
 
 
-subsection {*Lower Banach densities*}
+subsection \<open>Lower asymptotic densities\<close>
 
-definition lower_Banach_density::"nat set \<Rightarrow> real"
-  where "lower_Banach_density A = real_of_ereal(liminf (\<lambda>n. card(A \<inter> {..<n})/n))"
+text \<open>The lower asymptotic density of a set of natural numbers is defined just as its
+upper asymptotic density but using a liminf instead of a limsup. Its properties are proved
+exactly in the same way.\<close>
 
-lemma lower_Banach_density_in_01:
-  "ereal(lower_Banach_density A) = liminf (\<lambda>n. card(A \<inter> {..<n})/n)"
-  "lower_Banach_density A \<le> 1"
-  "lower_Banach_density A \<ge> 0"
+definition lower_asymptotic_density::"nat set \<Rightarrow> real"
+  where "lower_asymptotic_density A = real_of_ereal(liminf (\<lambda>n. card(A \<inter> {..<n})/n))"
+
+lemma lower_asymptotic_density_in_01:
+  "ereal(lower_asymptotic_density A) = liminf (\<lambda>n. card(A \<inter> {..<n})/n)"
+  "lower_asymptotic_density A \<le> 1"
+  "lower_asymptotic_density A \<ge> 0"
 proof -
   {
     fix n::nat assume "n>0"
     have "card(A \<inter> {..<n}) \<le> n" by (metis card_lessThan Int_lower2 card_mono finite_lessThan)
-    then have "card(A \<inter> {..<n}) / n \<le> ereal 1" using `n>0` by auto
+    then have "card(A \<inter> {..<n}) / n \<le> ereal 1" using \<open>n>0\<close> by auto
   }
   then have "eventually (\<lambda>n. card(A \<inter> {..<n}) / n \<le> ereal 1) sequentially"
     by (simp add: eventually_at_top_dense)
@@ -283,23 +316,23 @@ proof -
   then have b: "liminf (\<lambda>n. card(A \<inter> {..<n})/n) \<ge> 0" by (simp add: le_Liminf_iff less_le_trans)
 
   have "abs(liminf (\<lambda>n. card(A \<inter> {..<n})/n)) \<noteq> \<infinity>" using a b by auto
-  then show "ereal(lower_Banach_density A) = liminf (\<lambda>n. card(A \<inter> {..<n})/n)"
-    unfolding lower_Banach_density_def by auto
-  show "lower_Banach_density A \<le> 1" "lower_Banach_density A \<ge> 0" unfolding lower_Banach_density_def
+  then show "ereal(lower_asymptotic_density A) = liminf (\<lambda>n. card(A \<inter> {..<n})/n)"
+    unfolding lower_asymptotic_density_def by auto
+  show "lower_asymptotic_density A \<le> 1" "lower_asymptotic_density A \<ge> 0" unfolding lower_asymptotic_density_def
     using a b by (auto simp add: real_of_ereal_le_1 real_of_ereal_pos)
 qed
 
-lemma lower_Banach_density_le_upper:
-  "lower_Banach_density A \<le> upper_Banach_density A"
-using lower_Banach_density_in_01(1) upper_Banach_density_in_01(1)
+lemma lower_asymptotic_density_le_upper:
+  "lower_asymptotic_density A \<le> upper_asymptotic_density A"
+using lower_asymptotic_density_in_01(1) upper_asymptotic_density_in_01(1)
 by (metis (mono_tags, lifting) Liminf_le_Limsup ereal_less_eq(3) sequentially_bot)
 
-text {*The lower Banach density of a set is $1$ minus the upper Banach density of its complement.
+text \<open>The lower asymptotic density of a set is $1$ minus the upper asymptotic density of its complement.
 Hence, most statements about one of them follow from statements about the other one,
-although we will rather give direct proofs as they are not more complicated.*}
+although we will rather give direct proofs as they are not more complicated.\<close>
 
-lemma lower_upper_Banach_density_complement:
-  "lower_Banach_density A = 1 - upper_Banach_density (UNIV - A)"
+lemma lower_upper_asymptotic_density_complement:
+  "lower_asymptotic_density A = 1 - upper_asymptotic_density (UNIV - A)"
 proof -
   {
     fix n assume "n>(0::nat)"
@@ -312,7 +345,7 @@ proof -
     then have "card (A \<inter> {..<n})/n = (real n - card((UNIV-A) \<inter> {..<n})) / n"
       by (metis Int_lower2 card_lessThan card_mono finite_lessThan of_nat_diff)
     then have "card (A \<inter> {..<n})/n = ereal 1 - card((UNIV-A) \<inter> {..<n})/n"
-      using `n>0` by (simp add: diff_divide_distrib)
+      using \<open>n>0\<close> by (simp add: diff_divide_distrib)
   }
   then have "eventually (\<lambda>n. card (A \<inter> {..<n})/n = ereal 1 - card((UNIV-A) \<inter> {..<n})/n) sequentially"
     by (simp add: eventually_at_top_dense)
@@ -320,18 +353,18 @@ proof -
     by (rule Liminf_eq)
   also have "... = ereal 1 - limsup (\<lambda>n. card((UNIV-A) \<inter> {..<n})/n)"
     by (rule liminf_ereal_cminus, simp)
-  finally show ?thesis unfolding lower_Banach_density_def
-    by (metis ereal_minus(1) real_of_ereal.simps(1) upper_Banach_density_in_01(1))
+  finally show ?thesis unfolding lower_asymptotic_density_def
+    by (metis ereal_minus(1) real_of_ereal.simps(1) upper_asymptotic_density_in_01(1))
 qed
 
-lemma lower_Banach_density_event1:
+proposition lower_asymptotic_density_event1:
   fixes l::real
-  assumes "lower_Banach_density A > l"
+  assumes "lower_asymptotic_density A > l"
   shows "eventually (\<lambda>n. card(A \<inter> {..<n}) > l * n) sequentially"
 proof -
-  have "ereal(lower_Banach_density A) > l" using assms by auto
+  have "ereal(lower_asymptotic_density A) > l" using assms by auto
   then have "liminf (\<lambda>n. card(A \<inter> {..<n})/n) > l"
-    using lower_Banach_density_in_01(1) by auto
+    using lower_asymptotic_density_in_01(1) by auto
   then have "eventually (\<lambda>n. card(A \<inter> {..<n})/n > ereal l) sequentially"
     using less_LiminfD by blast
   then have "eventually (\<lambda>n. card(A \<inter> {..<n})/n > ereal l \<and> n > 0) sequentially"
@@ -342,10 +375,10 @@ proof -
     by (simp add: eventually_mono)
 qed
 
-lemma lower_Banach_density_event2:
+proposition lower_asymptotic_density_event2:
   fixes l::real
   assumes "eventually (\<lambda>n. card(A \<inter> {..<n}) \<ge> l * n) sequentially"
-  shows "lower_Banach_density A \<ge> l"
+  shows "lower_asymptotic_density A \<ge> l"
 proof -
   have "eventually (\<lambda>n. card(A \<inter> {..<n}) \<ge> l * n \<and> n > 0) sequentially"
     using assms eventually_gt_at_top eventually_conj by blast
@@ -355,44 +388,44 @@ proof -
     by (simp add: eventually_mono)
   then have "liminf (\<lambda>n. card(A \<inter> {..<n})/n) \<ge> ereal l"
     by (simp add: Liminf_bounded)
-  then have "ereal(lower_Banach_density A) \<ge> ereal l"
-    using lower_Banach_density_in_01(1) by auto
+  then have "ereal(lower_asymptotic_density A) \<ge> ereal l"
+    using lower_asymptotic_density_in_01(1) by auto
   then show ?thesis by auto
 qed
 
-lemma lower_Banach_density_subset:
+lemma lower_asymptotic_density_subset:
   assumes "A \<subseteq> B"
-  shows "lower_Banach_density A \<le> lower_Banach_density B"
+  shows "lower_asymptotic_density A \<le> lower_asymptotic_density B"
 proof -
-  {
-    fix l::real assume l: "l < lower_Banach_density A"
+  have "lower_asymptotic_density B \<ge> l" if "l < lower_asymptotic_density A" for l
+  proof -
     have "card(A \<inter> {..<n}) \<le> card(B \<inter> {..<n})" for n
       using assms by (metis Int_lower2 Int_mono card_mono finite_lessThan finite_subset inf.left_idem)
     then have "card(B \<inter> {..<n}) \<ge> l * n" if "card(A \<inter> {..<n}) > l * n" for n
       using that by (meson lessThan_def less_imp_le of_nat_le_iff order_trans)
     moreover have "eventually (\<lambda>n. card(A \<inter> {..<n}) > l * n) sequentially"
-      using lower_Banach_density_event1 l by simp
+      using lower_asymptotic_density_event1 that by simp
     ultimately have "eventually (\<lambda>n. card(B \<inter> {..<n}) \<ge> l * n) sequentially"
       by (simp add: eventually_mono)
-    then have "lower_Banach_density B \<ge> l" using lower_Banach_density_event2 by auto
-  }
+    then show "lower_asymptotic_density B \<ge> l" using lower_asymptotic_density_event2 by auto
+  qed
   then show ?thesis by (meson dense not_le)
 qed
 
-lemma lower_Banach_density_lim:
+lemma lower_asymptotic_density_lim:
   assumes "(\<lambda>n. card(A \<inter> {..<n})/n) \<longlonglongrightarrow> l"
-  shows "lower_Banach_density A = l"
+  shows "lower_asymptotic_density A = l"
 proof -
   have "(\<lambda>n. ereal(card(A \<inter> {..<n})/n)) \<longlonglongrightarrow> l" using assms by auto
   then have "liminf (\<lambda>n. card(A \<inter> {..<n})/n) = l"
     using sequentially_bot tendsto_iff_Liminf_eq_Limsup by blast
-  then show ?thesis unfolding lower_Banach_density_def by auto
+  then show ?thesis unfolding lower_asymptotic_density_def by auto
 qed
 
-lemma lower_Banach_density_finite:
+lemma lower_asymptotic_density_finite:
   assumes "finite A"
-  shows "lower_Banach_density A = 0"
-using lower_Banach_density_in_01(3) upper_Banach_density_finite[OF assms] lower_Banach_density_le_upper
+  shows "lower_asymptotic_density A = 0"
+using lower_asymptotic_density_in_01(3) upper_asymptotic_density_finite[OF assms] lower_asymptotic_density_le_upper
 by (metis antisym_conv)
 
 end

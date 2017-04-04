@@ -6,7 +6,6 @@ section {* \isaheader {The hashable Typeclass} *}
 theory HashCode
 imports 
   "../../Native_Word/Uint32" 
-  "Code_Target_ICF"
 begin
 
 text_raw {*\label{thy:HashCode}*}

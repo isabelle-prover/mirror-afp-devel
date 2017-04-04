@@ -55,6 +55,7 @@ CofGroups
 Coinductive
 Coinductive_Languages
 Collections
+Comparison_Sort_Lower_Bound
 Compiling-Exceptions-Correctly
 Completeness
 Complx
@@ -92,6 +93,7 @@ Efficient-Mergesort
 Elliptic_Curves_Group_Law
 Encodability_Process_Calculi
 Ergodic_Theory
+Euler_MacLaurin
 Euler_Partition
 Example-Submission
 E_Transcendental
@@ -248,6 +250,7 @@ PseudoHoops
 Psi_Calculi
 Ptolemys_Theorem
 QR_Decomposition
+Quick_Sort_Cost
 RIPEMD-160-SPARK
 ROBDD
 RSAPSS

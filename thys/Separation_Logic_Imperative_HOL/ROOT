@@ -6,6 +6,7 @@ session "Separation_Logic_Imperative_HOL" (AFP) = "HOL-Library" +
     "Tools/Imperative_HOL_Add"
     "Tools/Syntax_Match"
     "../Collections/Lib/HashCode"
+    "../Collections/Lib/Code_Target_ICF"
     "../Automatic_Refinement/Lib/Misc"
     "Tools/Sep_Misc"
   theories

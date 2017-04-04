@@ -3,7 +3,7 @@ chapter AFP
 session Stern_Brocot (AFP) = Applicative_Lifting +
   options [timeout = 600]
   theories [document=false]
-    "../Applicative/Applicative_Stream"
+    "../Applicative_Lifting/Applicative_Stream"
     "~~/src/HOL/Library/Sublist"
     "~~/src/HOL/Library/BNF_Corec"
   theories

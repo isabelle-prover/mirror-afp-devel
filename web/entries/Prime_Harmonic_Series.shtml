@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Archive of Formal Proofs</title>
+<title>The Divergence of the Prime Harmonic Series - Archive of Formal Proofs
+</title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
@@ -30,13 +31,13 @@
       <td class="nav"><a href="../about.shtml">About</a></td>
     </tr>
     <tr>
-      <td class="nav"><a href="../submitting.shtml">Submission Guidelines</a></td>
+      <td class="nav"><a href="../submitting.shtml">Submission</a></td>
     </tr>
     <tr>
-      <td class="nav"><a href="../updating.shtml">Updating entries</a></td>
+      <td class="nav"><a href="../updating.shtml">Updating Entries</a></td>
     </tr>
     <tr>
-      <td class="nav"><a href="../using.shtml">Using entries</a></td>
+      <td class="nav"><a href="../using.shtml">Using Entries</a></td>
     </tr>
     <tr>
       <td class="nav"><a href="../search.shtml">Search</a></td>
@@ -103,14 +104,19 @@
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-In this work, we prove the lower bound ln (H_n) - ln(5/3) for the
+<p>
+In this work, we prove the lower bound <span class="nobr">ln(H_n) -
+ln(5/3)</span> for the
 partial sum of the Prime Harmonic series and, based on this, the divergence of
-the Prime Harmonic Series ∑ [p prime] · 1/p.
+the Prime Harmonic Series
+<span class="nobr">∑[p&thinsp;prime]&thinsp;·&thinsp;1/p.</span>
+</p><p>
 The proof relies on the unique squarefree decomposition of natural numbers. This
 is similar to Euler's original proof (which was highly informal and morally
 questionable). Its advantage over proofs by contradiction, like the famous one
 by Paul Erdős, is that it provides a relatively good lower bound for the partial
-sums.</td>
+sums.
+</p></td>
 </tr>
 
 

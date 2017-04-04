@@ -19,7 +19,7 @@ imports
   "../Intf/IICF_Set"
   "../Intf/IICF_List"
 
-  "../../../Collections/ICF/Tools/Locale_Code"
+  "../../../Collections/ICF/tools/Locale_Code"
 begin
   text \<open>This theory binds collection data structures from the 
     basic collection framework established in 

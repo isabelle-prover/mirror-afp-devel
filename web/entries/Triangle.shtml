@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Archive of Formal Proofs</title>
+<title>Basic Geometric Properties of Triangles - Archive of Formal Proofs
+</title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
@@ -30,13 +31,13 @@
       <td class="nav"><a href="../about.shtml">About</a></td>
     </tr>
     <tr>
-      <td class="nav"><a href="../submitting.shtml">Submission Guidelines</a></td>
+      <td class="nav"><a href="../submitting.shtml">Submission</a></td>
     </tr>
     <tr>
-      <td class="nav"><a href="../updating.shtml">Updating entries</a></td>
+      <td class="nav"><a href="../updating.shtml">Updating Entries</a></td>
     </tr>
     <tr>
-      <td class="nav"><a href="../using.shtml">Using entries</a></td>
+      <td class="nav"><a href="../using.shtml">Using Entries</a></td>
     </tr>
     <tr>
       <td class="nav"><a href="../search.shtml">Search</a></td>
@@ -99,14 +100,17 @@
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
+<p>
 This entry contains a definition of angles between vectors and between three
 points. Building on this, we prove basic geometric properties of triangles, such
 as the Isosceles Triangle Theorem, the Law of Sines and the Law of Cosines, that
 the sum of the angles of a triangle is π, and the congruence theorems for
 triangles.
+</p><p>
 The definitions and proofs were developed following those by John Harrison in
 HOL Light. However, due to Isabelle's type class system, all definitions and
-theorems in the Isabelle formalisation hold for all real inner product spaces.</td>
+theorems in the Isabelle formalisation hold for all real inner product spaces.
+</p></td>
 </tr>
 
 

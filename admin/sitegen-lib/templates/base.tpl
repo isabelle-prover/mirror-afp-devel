@@ -32,13 +32,13 @@
       <td class="nav"><a href="{{ ROOT_PATH }}about.shtml">About</a></td>
     </tr>
     <tr>
-      <td class="nav"><a href="{{ ROOT_PATH }}submitting.shtml">Submission Guidelines</a></td>
+      <td class="nav"><a href="{{ ROOT_PATH }}submitting.shtml">Submission</a></td>
     </tr>
     <tr>
-      <td class="nav"><a href="{{ ROOT_PATH }}updating.shtml">Updating entries</a></td>
+      <td class="nav"><a href="{{ ROOT_PATH }}updating.shtml">Updating Entries</a></td>
     </tr>
     <tr>
-      <td class="nav"><a href="{{ ROOT_PATH }}using.shtml">Using entries</a></td>
+      <td class="nav"><a href="{{ ROOT_PATH }}using.shtml">Using Entries</a></td>
     </tr>
     <tr>
       <td class="nav"><a href="{{ ROOT_PATH }}search.shtml">Search</a></td>

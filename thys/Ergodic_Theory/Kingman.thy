@@ -6,42 +6,24 @@ theory Kingman
 imports Ergodicity Fekete
 begin
 
-lemma
-  fixes f g::"nat \<Rightarrow> real"
-  assumes "f \<longlonglongrightarrow> l" "\<And>n. g n = f n"
-  shows "g \<longlonglongrightarrow> l"
-using assms(1) assms(2) by presburger
+section \<open>Subcocycles, subadditive ergodic theory\<close>
 
-
-lemma e2ennreal_Liminf:
-  "F \<noteq> bot \<Longrightarrow> e2ennreal (Liminf F f) = Liminf F (\<lambda>n. e2ennreal (f n))"
-  by (rule Liminf_compose_continuous_mono[symmetric])
-     (auto simp: mono_def e2ennreal_mono continuous_on_e2ennreal)
-
-lemma e2ennreal_ereal: "e2ennreal (ereal x) = ennreal x"
-  unfolding ennreal.abs_eq by (cases "0 \<le> x") (auto simp add: e2ennreal_neg max.absorb2)
-
-lemma e2ennreal_eq_infty[simp]: "0 \<le> x \<Longrightarrow> e2ennreal x = top \<longleftrightarrow> x = \<infinity>"
-  by (cases x) (auto simp: e2ennreal_infty e2ennreal_ereal)
-
-section {*Subcocycles, subadditive ergodic theory*}
-
-text {*Subadditive ergodic theory is the branch of ergodic theory devoted
+text \<open>Subadditive ergodic theory is the branch of ergodic theory devoted
 to the study of subadditive cocycles (named subcocycles in what follows), i.e.,
 functions such that $u(n+m, x) \leq u(n, x) + u(m, T^n x)$ for all $x$ and $m,n$.
 
-For instance, birkhoff sums are examples of such subadditive cocycles (in fact, they are
+For instance, Birkhoff sums are examples of such subadditive cocycles (in fact, they are
 additive), but more interesting examples are genuinely subadditive. The main result
 of the theory is Kingman's theorem, asserting the almost sure convergence of
 $u_n / n$ (this is a generalization of Birkhoff theorem). If the asymptotic average
 $\lim \int u_n / n$ (which exists by subadditivity and Fekete lemma) is not $-\infty$,
 then the convergence takes also place in $L^1$. We prove all this below.
-*}
+\<close>
 
 context mpt
 begin
 
-subsection {*Definition and basic properties*}
+subsection \<open>Definition and basic properties\<close>
 
 definition subcocycle::"(nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> bool"
   where "subcocycle u = ((\<forall>n. integrable M (u n)) \<and> (\<forall>n m x. u (n+m) x \<le> u n x + u m ((T^^n) x)))"
@@ -70,6 +52,9 @@ lemma subcocycle_birkhoff:
   assumes "integrable M f"
   shows "subcocycle (birkhoff_sum f)"
 unfolding subcocycle_def by (auto simp add: assms birkhoff_sum_integral(1) birkhoff_sum_cocycle)
+
+text \<open>The set of subcocycles is stable under addition, multiplication by positive numbers,
+and $\max$.\<close>
 
 lemma subcocycle_add:
   assumes "subcocycle u" "subcocycle v"
@@ -109,22 +94,25 @@ next
     by simp
 qed
 
+text \<open>Applying inductively the subcocycle equation, it follows that a subcocycle is bounded
+by the Birkhoff sum of the subcocycle at time $1$.\<close>
+
 lemma subcocycle_bounded_by_birkhoff1:
   assumes "subcocycle u" "n > 0"
   shows "u n x \<le> birkhoff_sum (u 1) n x"
-using `n > 0` proof (induction rule: ind_from_1)
+using \<open>n > 0\<close> proof (induction rule: ind_from_1)
   case 1
   show ?case by auto
 next
   case (Suc p)
   have "u (Suc p) x \<le> u p x + u 1 ((T^^p)x)" using assms(1) subcocycle_def by (metis Suc_eq_plus1)
-  then show ?case using Suc birkhoff_sum_cocycle[where ?n=p and ?m=1] \<open> p>0 \<close> by (simp add: birkhoff_sum_def)
+  then show ?case using Suc birkhoff_sum_cocycle[where ?n = p and ?m = 1] \<open> p>0 \<close> by (simp add: birkhoff_sum_def)
 qed
 
-text {*It is often important to bound a cocycle $u_n(x)$ by the Birkhoff sums of $u_N/N$. Compared
+text \<open>It is often important to bound a cocycle $u_n(x)$ by the Birkhoff sums of $u_N/N$. Compared
 to the trivial upper bound for $u_1$, there are additional boundary errors that make the
 estimate more cumbersome (but these terms only come from a $N$-neighborhood of $0$ and $n$, so
-they are negligible if $N$ is fixed and $n$ tends to infinity.*}
+they are negligible if $N$ is fixed and $n$ tends to infinity.\<close>
 
 lemma subcocycle_bounded_by_birkhoffN:
   assumes "subcocycle u" "n > 2*N" "N>0"
@@ -170,52 +158,51 @@ proof -
   define E2 where "E2 = (\<Sum>i<2*N. abs(u 1 ((T^^(n-(2*N-i))) x)))"
   have "E2 \<ge> 0" unfolding E2_def by auto
 
-
   obtain a0 s0 where 0: "s0 < N" "n = a0 * N + s0"
-    by (metis `0 < N` add.commute mod_eqD mod_less_divisor)
-  then have "a0 \<ge> 1" using `n > 2 * N` `N>0`
+    by (metis \<open>0 < N\<close> add.commute mod_eqD mod_less_divisor)
+  then have "a0 \<ge> 1" using \<open>n > 2 * N\<close> \<open>N>0\<close>
     by (metis Nat.add_0_right add.commute add_lessD1 add_mult_distrib comm_monoid_mult_class.mult_1 eq_imp_le
     less_imp_add_positive less_imp_le_nat less_one linorder_neqE_nat mult.left_neutral mult_not_zero not_add_less1 one_add_one)
   define a s where "a = a0-1" and "s = s0+N"
-  then have as: "n = a * N + s" unfolding a_def s_def using `a0 \<ge> 1` 0 by (simp add: mult_eq_if)
+  then have as: "n = a * N + s" unfolding a_def s_def using \<open>a0 \<ge> 1\<close> 0 by (simp add: mult_eq_if)
   have s: "s \<ge> N" "s < 2*N" using 0 unfolding s_def by auto
-  have a: "a*N > n - 2*N" "a*N \<le> n - N" using as s `n > 2*N` by auto
-  then have "(a*N - (n-2*N)) \<le> N" using `n > 2*N` by auto
+  have a: "a*N > n - 2*N" "a*N \<le> n - N" using as s \<open>n > 2*N\<close> by auto
+  then have "(a*N - (n-2*N)) \<le> N" using \<open>n > 2*N\<close> by auto
   have "a*N \<ge> n - 2*N" using a by simp
 
   {
     fix r::nat assume "r < N"
-    have "a*N+r > n - 2*N" using `n>2*N` as s by auto
+    have "a*N+r > n - 2*N" using \<open>n>2*N\<close> as s by auto
 
     define tr where "tr = n-(a*N+r)"
-    have "tr > 0" unfolding tr_def using as s `r<N` by auto
+    have "tr > 0" unfolding tr_def using as s \<open>r<N\<close> by auto
     then have *: "n = (a*N+r) + tr" unfolding tr_def by auto
 
     have "birkhoff_sum (u 1) tr ((T^^(a*N+r))x) = (\<Sum>i<tr. u 1 ((T^^(a*N+r+i))x))"
       unfolding birkhoff_sum_def by (simp add: add.commute funpow_add)
     also have "... = (\<Sum>i\<in>{a*N+r..<a*N+r+tr}. u 1 ((T^^i) x))"
-      by (rule sum.reindex_bij_betw, rule bij_betw_byWitness[where ?f'= "\<lambda>i. i - (a * N + r)"], auto)
+      by (rule sum.reindex_bij_betw, rule bij_betw_byWitness[where ?f' = "\<lambda>i. i - (a * N + r)"], auto)
     also have "... \<le> (\<Sum>i\<in>{a*N+r..<a*N+r+tr}. abs(u 1 ((T^^i) x)))"
       by (simp add: sum_mono)
     also have "... \<le> (\<Sum>i\<in>{n-2*N..<n}. abs(u 1 ((T^^i) x)))"
-      apply (rule sum_mono2) using as s `r<N` tr_def by auto
+      apply (rule sum_mono2) using as s \<open>r<N\<close> tr_def by auto
     also have "... = E2" unfolding E2_def
-      apply (rule sum.reindex_bij_betw[symmetric], rule bij_betw_byWitness[where ?f'= "\<lambda>i. i - (n-2*N)"])
-      using `n > 2*N` by auto
+      apply (rule sum.reindex_bij_betw[symmetric], rule bij_betw_byWitness[where ?f' = "\<lambda>i. i - (n-2*N)"])
+      using \<open>n > 2*N\<close> by auto
     finally have A: "birkhoff_sum (u 1) tr ((T^^(a*N+r))x) \<le> E2" by simp
 
     have "u n x \<le> u (a*N+r) x + u tr ((T^^(a*N+r))x)"
       using assms(1) * unfolding subcocycle_def by auto
     also have "... \<le> u (a*N+r) x + birkhoff_sum (u 1) tr ((T^^(a*N+r))x)"
-      using subcocycle_bounded_by_birkhoff1[OF assms(1)] `tr > 0` by auto
+      using subcocycle_bounded_by_birkhoff1[OF assms(1)] \<open>tr > 0\<close> by auto
     finally have B: "u n x \<le> u (a*N+r) x + E2"
       using A by auto
 
     have "u (a*N+r) x \<le> (\<Sum>i<N. abs(u 1 ((T^^i)x))) + (\<Sum>i<a. u N ((T^^(i*N+r))x))"
-    proof (cases "r=0")
+    proof (cases "r = 0")
       case True
-      then have "a>0" using `a*N+r > n - 2*N` not_less by fastforce
-      have "u(a*N+r) x \<le> (\<Sum>i<a. u N ((T^^(i*N+r))x))" using Ia[OF `a>0`] True by auto
+      then have "a>0" using \<open>a*N+r > n - 2*N\<close> not_less by fastforce
+      have "u(a*N+r) x \<le> (\<Sum>i<a. u N ((T^^(i*N+r))x))" using Ia[OF \<open>a>0\<close>] True by auto
       moreover have "0 \<le> (\<Sum>i<N. abs(u 1 ((T^^i)x)))" by auto
       ultimately show ?thesis by linarith
     next
@@ -226,34 +213,33 @@ proof -
       also have "... \<le> (\<Sum>i<r. abs(u 1 ((T^^i)x)))"
         by (simp add: sum_mono)
       also have "... \<le> (\<Sum>i<N. abs(u 1 ((T^^i)x)))"
-        apply (rule sum_mono2) using `r<N` by auto
+        apply (rule sum_mono2) using \<open>r<N\<close> by auto
       finally show ?thesis using I by auto
     qed
     then have "u n x \<le> E1 + (\<Sum>i<a. u N ((T^^(i*N+r))x)) + E2"
       unfolding E1_def using B by auto
   } note * = this
 
-
   have I: "u N ((T^^j) x) \<le> E2" if "j\<in>{n-2*N..<a*N}" for j
   proof -
     have "u N ((T^^j) x) \<le> (\<Sum>i<N. u 1 ((T^^i) ((T^^j)x)))"
-      using subcocycle_bounded_by_birkhoff1[OF assms(1) `N>0`] unfolding birkhoff_sum_def by auto
+      using subcocycle_bounded_by_birkhoff1[OF assms(1) \<open>N>0\<close>] unfolding birkhoff_sum_def by auto
     also have "... = (\<Sum>i<N. u 1 ((T^^(i+j))x))" by (simp add: funpow_add)
     also have "... \<le> (\<Sum>i<N. abs(u 1 ((T^^(i+j))x)))" by (rule sum_mono, auto)
     also have "... = (\<Sum>k\<in>{j..<N+j}. abs(u 1 ((T^^k)x)))"
-      by (rule sum.reindex_bij_betw, rule bij_betw_byWitness[where ?f'= "\<lambda>k. k-j"], auto)
+      by (rule sum.reindex_bij_betw, rule bij_betw_byWitness[where ?f' = "\<lambda>k. k-j"], auto)
     also have "... \<le> (\<Sum>i\<in>{n-2*N..<n}. abs(u 1 ((T^^i) x)))"
-      apply (rule sum_mono2) using `j\<in>{n-2*N..<a*N}` `a*N \<le> n - N` by auto
+      apply (rule sum_mono2) using \<open>j\<in>{n-2*N..<a*N}\<close> \<open>a*N \<le> n - N\<close> by auto
     also have "... = E2" unfolding E2_def
-      apply (rule sum.reindex_bij_betw[symmetric], rule bij_betw_byWitness[where ?f'= "\<lambda>i. i - (n-2*N)"])
-      using `n > 2*N` by auto
+      apply (rule sum.reindex_bij_betw[symmetric], rule bij_betw_byWitness[where ?f' = "\<lambda>i. i - (n-2*N)"])
+      using \<open>n > 2*N\<close> by auto
     finally show ?thesis by auto
   qed
   have "(\<Sum>j<a*N. u N ((T^^j) x)) - (\<Sum>j<n-2*N. u N ((T^^j) x)) = (\<Sum>j\<in>{n-2*N..<a*N}. u N ((T^^j) x))"
-    using sum_add_nat_ivl[OF _ `a*N \<ge> n - 2*N`, of 0 "\<lambda>j. u N ((T^^j) x)", symmetric] atLeast0LessThan by simp
+    using sum_add_nat_ivl[OF _ \<open>a*N \<ge> n - 2*N\<close>, of 0 "\<lambda>j. u N ((T^^j) x)", symmetric] atLeast0LessThan by simp
   also have "... \<le> (\<Sum>j\<in>{n-2*N..<a*N}. E2)" by (rule sum_mono[OF I])
   also have "... = (a*N - (n-2*N)) * E2" by simp
-  also have "... \<le> N * E2" using `(a*N - (n-2*N)) \<le> N` `E2 \<ge> 0` by (simp add: mult_right_mono)
+  also have "... \<le> N * E2" using \<open>(a*N - (n-2*N)) \<le> N\<close> \<open>E2 \<ge> 0\<close> by (simp add: mult_right_mono)
   finally have J: "(\<Sum>j<a*N. u N ((T^^j) x)) \<le> (\<Sum>j<n-2*N. u N ((T^^j) x)) + N * E2" by auto
 
   have "N * u n x = (\<Sum>r<N. u n x)" by auto
@@ -266,25 +252,26 @@ proof -
   also have "... \<le> N *(E1+E2) + (\<Sum>j<n-2*N. u N ((T^^j) x)) + N*E2"
     using J by auto
   also have "... = N * (E1+E2) + N * (\<Sum>j<n-2*N. u N ((T^^j) x) / N) + N * E2"
-    using `N>0` by (simp add: sum_distrib_left)
+    using \<open>N>0\<close> by (simp add: sum_distrib_left)
   also have "... = N*(E1 + E2 + (\<Sum>j<n-2*N. u N ((T^^j) x) / N) + E2)"
     by (simp add: distrib_left)
   finally have "u n x \<le> E1 + 2*E2 + birkhoff_sum (\<lambda>x. u N x / N) (n-2*N) x"
-    unfolding birkhoff_sum_def using `N>0` by auto
+    unfolding birkhoff_sum_def using \<open>N>0\<close> by auto
   then show ?thesis unfolding E1_def E2_def by auto
 qed
 
-text {*Many natural cocycles are only defined almost everywhere, and then the
-subadditivity property only makes sense almost everywhere. We wish now to show
+text \<open>Many natural cocycles are only defined almost everywhere, and then the
+subadditivity property only makes sense almost everywhere. We will now show
 that such an a.e.-subcocycle coincides almost everywhere with a genuine subcocycle
 in the above sense. Then, all the results for subcocycles will apply to such
-a.e.-subcocycles.*
+a.e.-subcocycles. (Usually, in ergodic theory, subcocycles only satisfy the subadditivity
+property almost everywhere, but we have requested it everywhere for simplicity in the proofs.)
 
 The subcocycle will be defined in a recursive way. This means that is can not be defined in a
 proof (since complicated function definitions are not available inside proofs). Since it is
 defined in terms of $u$, then $u$ has to be available at the top level, which is most
 conveniently done using a context.
-*}
+\<close>
 context
   fixes u::"nat \<Rightarrow> 'a \<Rightarrow> real"
   assumes H: "\<And>m n. AE x in M. u (n+m) x \<le> u n x + u m ((T^^n) x)"
@@ -300,16 +287,16 @@ private lemma integrable_v:
   "integrable M (v n)" for n
 proof (induction n rule: nat_less_induct)
   case (1 n)
-  consider "n=0" | "n=1" | "n>1" by linarith
+  consider "n = 0" | "n = 1" | "n>1" by linarith
   then show ?case
   proof (cases)
     assume "n = 0"
     have "v 0 x = max (u 0 x) 0" for x by simp
-    then show ?thesis using integrable_max[OF H(2)[of 0]] `n=0` by auto
+    then show ?thesis using integrable_max[OF H(2)[of 0]] \<open>n = 0\<close> by auto
   next
     assume "n = 1"
     have "v 1 x = u 1 x" for x by simp
-    then show ?thesis using H(2)[of 1] `n=1` by auto
+    then show ?thesis using H(2)[of 1] \<open>n = 1\<close> by auto
   next
     assume "n > 1"
     {
@@ -317,7 +304,7 @@ proof (induction n rule: nat_less_induct)
       have *: "(\<lambda>k. v k x + v (n-k) ((T^^k) x))`{0<..<n} = {v k x + v (n-k) ((T^^k) x) |k. k \<in> {0<..<n}}"
         by blast
       have "v n x = min (u n x) (Min ((\<lambda>k. v k x + v (n-k) ((T^^k) x))`{0<..<n}))"
-        using `1<n` by auto
+        using \<open>1<n\<close> by auto
       then have "v n x = min (u n x) (Min { v k x + v (n-k) ((T^^k) x) |k. k \<in> {0<..<n}})"
         using * by auto
     }
@@ -325,7 +312,7 @@ proof (induction n rule: nat_less_induct)
       apply (rule integrable_min)
       apply (simp add: H(2))
       apply (rule integrable_Min, simp)
-      using `n >1` apply auto[1]
+      using \<open>n >1\<close> apply auto[1]
       apply (rule Bochner_Integration.integrable_add)
       using "1.IH" apply auto[1]
       apply (rule Tn_integral_preserving(1))
@@ -338,18 +325,18 @@ private lemma u_eq_v_AE:
   "AE x in M. v n x = u n x" for n
 proof (induction n rule: nat_less_induct)
   case (1 n)
-  consider "n=0" | "n=1" | "n>1" by linarith
+  consider "n = 0" | "n = 1" | "n>1" by linarith
   then show ?case
   proof (cases)
     assume "n = 0"
     have "AE x in M. u 0 x \<le> u 0 x + u 0 x" using H(1)[of 0 0] by auto
     then have "AE x in M. u 0 x \<ge> 0" by auto
     moreover have "v 0 x = max (u 0 x) 0" for x by simp
-    ultimately show ?thesis using `n=0` by auto
+    ultimately show ?thesis using \<open>n = 0\<close> by auto
   next
     assume "n = 1"
     have "v 1 x = u 1 x" for x by simp
-    then show ?thesis using `n=1` by simp
+    then show ?thesis using \<open>n = 1\<close> by simp
   next
     assume "n > 1"
     {
@@ -372,14 +359,14 @@ proof (induction n rule: nat_less_induct)
         fix k assume "k \<in> {0<..<n}"
         then have K: "k<n" "n-k<n" by auto
         have "u n x \<le> u k x + u (n-k) ((T^^k) x)" using Hx(2) K by (metis le_add_diff_inverse less_imp_le_nat)
-        also have "... = v k x + v (n-k) ((T^^k)x)" using Hx(1)[OF `k <n`, of 0] Hx(1)[OF `n-k <n`, of k] by auto
+        also have "... = v k x + v (n-k) ((T^^k)x)" using Hx(1)[OF \<open>k <n\<close>, of 0] Hx(1)[OF \<open>n-k <n\<close>, of k] by auto
         finally have "u n x \<le> v k x + v (n-k) ((T^^k)x)" by simp
       }
       then have *: "\<And>z. z \<in> (\<lambda>k. v k x + v (n-k) ((T^^k) x))`{0<..<n} \<Longrightarrow> u n x \<le> z" by blast
       have "u n x \<le> Min ((\<lambda>k. v k x + v (n-k) ((T^^k) x))`{0<..<n})"
-        apply (rule Min.boundedI) using `n>1` * by auto
+        apply (rule Min.boundedI) using \<open>n>1\<close> * by auto
       moreover have "v n x = min (u n x) (Min ((\<lambda>k. v k x + v (n-k) ((T^^k) x))`{0<..<n}))"
-        using `1<n` by auto
+        using \<open>1<n\<close> by auto
       ultimately have "v n x = u n x" by auto
     }
     ultimately show ?thesis by auto
@@ -389,16 +376,16 @@ qed
 private lemma subcocycle_v:
   "v (n+m) x \<le> v n x + v m ((T^^n) x)"
 proof -
-  consider "n=0" | "m=0" | "n>0 \<and> m >0" by auto
+  consider "n = 0" | "m = 0" | "n>0 \<and> m >0" by auto
   then show ?thesis
   proof (cases)
     case 1
     then have "v n x \<ge> 0" by simp
-    then show ?thesis using `n=0` by auto
+    then show ?thesis using \<open>n = 0\<close> by auto
   next
     case 2
     then have "v m x \<ge> 0" by simp
-    then show ?thesis using `m=0` by auto
+    then show ?thesis using \<open>m = 0\<close> by auto
   next
     case 3
     then have "n+m > 1" by simp
@@ -430,11 +417,12 @@ lemma subcocycle_AE:
 using subcocycle_AE_in_context assms by blast
 
 
-subsection {*The asymptotic average*}
+subsection \<open>The asymptotic average\<close>
 
-text {*In this subsection, we define the asymptotic average of a subcocycle $u$, i.e., the
-limit of $\int u_n(x)/n$ (the convergence follows from subadditivity) and study its basic
-properties, especially in terms of operations on subcocycles.*}
+text \<open>In this subsection, we define the asymptotic average of a subcocycle $u$, i.e., the
+limit of $\int u_n(x)/n$ (the convergence follows from subadditivity of $\int u_n$) and study its
+basic properties, especially in terms of operations on subcocycles. In general, it can be
+$-\infty$, so we define it in the extended reals.\<close>
 
 definition subcocycle_avg_ereal::"(nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> ereal" where
   "subcocycle_avg_ereal u = Inf {ereal((\<integral>x. u n x \<partial>M) / n) |n. n > 0}"
@@ -466,6 +454,8 @@ lemma subcocycle_int_tendsto_avg_ereal:
 unfolding subcocycle_avg_ereal_def
 using subadditive_converges_ereal[OF subcocycle_avg_subadditive[OF assms]] by auto
 
+text \<open>The average behaves well under addition, scalar multiplication and max, trivially.\<close>
+
 lemma subcocycle_avg_ereal_add:
   assumes "subcocycle u" "subcocycle v"
   shows "subcocycle_avg_ereal (\<lambda>n x. u n x + v n x) = subcocycle_avg_ereal u + subcocycle_avg_ereal v"
@@ -482,8 +472,7 @@ proof -
   }
   moreover have "(\<lambda>n. ereal (\<integral>x. u n x / n \<partial>M) + (\<integral>x. v n x / n \<partial>M))
                   \<longlonglongrightarrow> subcocycle_avg_ereal u + subcocycle_avg_ereal v"
-    apply (rule tendsto_add_ereal_general[OF _ subcocycle_int_tendsto_avg_ereal[OF assms(1)]
-          subcocycle_int_tendsto_avg_ereal[OF assms(2)]])
+    apply (intro tendsto_intros subcocycle_int_tendsto_avg_ereal[OF assms(1)] subcocycle_int_tendsto_avg_ereal[OF assms(2)])
     using subcocycle_avg_finite by auto
   ultimately have "(\<lambda>n. (\<integral>x. (u n x + v n x) / n \<partial>M)) \<longlonglongrightarrow> subcocycle_avg_ereal u + subcocycle_avg_ereal v"
     by auto
@@ -495,7 +484,7 @@ qed
 lemma subcocycle_avg_ereal_cmult:
   assumes "subcocycle u" "c \<ge> (0::real)"
   shows "subcocycle_avg_ereal (\<lambda>n x. c * u n x) = c * subcocycle_avg_ereal u"
-proof (cases "c=0")
+proof (cases "c = 0")
   case True
   have *: "ereal (\<integral>x. (c * u n x) / n \<partial>M) = 0" if "n>0" for n
     by (subst True, auto)
@@ -537,6 +526,9 @@ proof (auto)
           subcocycle_int_tendsto_avg_ereal[OF subcocycle_max[OF assms]]] by auto
 qed
 
+text \<open>For a Birkhoff sum, the average at each time is the same, equal to the average of the
+function, so the asymptotic average is also equal to this common value.\<close>
+
 lemma subcocycle_avg_ereal_birkhoff:
   assumes "integrable M u"
   shows "subcocycle_avg_ereal (birkhoff_sum u) = (\<integral>x. u x \<partial>M)"
@@ -550,8 +542,13 @@ proof -
   ultimately show ?thesis using LIMSEQ_unique by blast
 qed
 
-text {*In nice situations, where one can avoid the use of ereal, the following
-definition is more convenient*}
+text \<open>In nice situations, where one can avoid the use of ereal, the following
+definition is more convenient. The kind of statements we are after is as follows: if the
+ereal average is finite, then something holds, likely involving the real average.
+
+In particular, we show in this setting what we have proved above under this new assumption:
+convergence (in real numbers) of the average to the asymptotic average, as well as good behavior
+under sum, scalar multiplication by positive numbers, max, formula for Birkhoff sums.\<close>
 
 definition subcocycle_avg::"(nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> real" where
   "subcocycle_avg u = real_of_ereal(subcocycle_avg_ereal u)"
@@ -603,9 +600,9 @@ end
 
 
 
-subsection {*Almost sure convergence of subcocycles*}
+subsection \<open>Almost sure convergence of subcocycles\<close>
 
-text {*In this paragraph, we prove Kingman's theorem, i.e., the almost sure convergence of
+text \<open>In this paragraph, we prove Kingman's theorem, i.e., the almost sure convergence of
 subcocycles. Their limit is almost surely invariant. There is no really easy proof. The one we use
 below is arguably the simplest known one, due to Steele (1989). The idea is to show that the limsup
 of the subcocycle is bounded by the liminf (which is almost surely constant along trajectories), by
@@ -614,17 +611,20 @@ For some points, the liminf takes a large time $>N$ to be reached. We neglect th
 introducing an additional error that gets smaller with $N$, thanks to Birkhoff ergodic theorem
 applied to the set of bad points. The error is most easily managed if the subcocycle is assumed to
 be nonpositive, which one can assume in a first step. The general case is reduced to this one by
-replacing $u_n$ with $u_n - S_n u_1 \leq 0$, and using Birkhoff theorem to control $S_n u_1$.*}
+replacing $u_n$ with $u_n - S_n u_1 \leq 0$, and using Birkhoff theorem to control $S_n u_1$.\<close>
 
 context fmpt begin
 
+text \<open>First, as explained above, we prove the theorem for nonpositive subcocycles.\<close>
+
 lemma kingman_theorem_AE_aux1:
-  assumes "subcocycle u" "\<And>x. u 1 x \<le> 0"
+  assumes "subcocycle u"
+          "\<And>x. u 1 x \<le> 0"
   shows "\<exists>(g::'a\<Rightarrow>ereal). (g\<in>borel_measurable Invariants \<and> (\<forall>x. g x < \<infinity>) \<and> (AE x in M. (\<lambda>n. u n x / n) \<longlonglongrightarrow> g x))"
 proof -
   define l where "l = (\<lambda>x. liminf (\<lambda>n. u n x / n))"
   have u_meas [measurable]: "\<And>n. u n \<in> borel_measurable M" using assms(1) unfolding subcocycle_def by auto
-  then have l_meas [measurable]: "l \<in> borel_measurable M" unfolding l_def by auto
+  have l_meas [measurable]: "l \<in> borel_measurable M" unfolding l_def by auto
 
   {
     fix x assume *: "(\<lambda>n. birkhoff_sum (u 1) n x / n) \<longlonglongrightarrow> real_cond_exp M Invariants (u 1) x"
@@ -644,9 +644,8 @@ proof -
   then have "AE x in M. l x < \<infinity>"
     using birkhoff_theorem_AE_nonergodic[of "u 1"] subcocycle_def assms(1) by auto
 
-  have l_dec: "\<And>x. l x \<le> l (T x)"
+  have l_dec: "l x \<le> l (T x)" for x
   proof -
-    fix x
     have "l x = liminf (\<lambda>n. ereal ((u (n+1) x)/(n+1)))"
       unfolding l_def by (rule liminf_shift[of "\<lambda>n. ereal (u n x / real n)", symmetric])
     also have "... \<le> liminf (\<lambda>n. ereal((u 1 x)/(n+1)) + ereal((u n (T x))/(n+1)))"
@@ -660,8 +659,8 @@ proof -
     qed
     also have "... = 0 + liminf(\<lambda>n. ereal((u n (T x))/(n+1)))"
     proof (rule ereal_liminf_lim_add[of "\<lambda>n. ereal((u 1 x)/real(n+1))" 0 "\<lambda>n. ereal((u n (T x))/(n+1))"])
-      have "(\<lambda>n. 1/real(n+1)) \<longlonglongrightarrow> 0" using lim_1_over_n LIMSEQ_ignore_initial_segment by blast
-      with tendsto_mult_right_zero[OF this] have "(\<lambda>n. (u 1 x)/real(n+1)) \<longlonglongrightarrow> 0" by auto
+      have "(\<lambda>n. ereal((u 1 x)*(1/real(n+1)))) \<longlonglongrightarrow> ereal((u 1 x) * 0)"
+        by (intro tendsto_intros LIMSEQ_ignore_initial_segment)
       then show "(\<lambda>n. ereal((u 1 x)/real(n+1))) \<longlonglongrightarrow> 0" by (simp add: zero_ereal_def)
     qed (simp)
     also have "... = 1 * liminf(\<lambda>n. ereal((u n (T x))/(n+1)))" by simp
@@ -671,25 +670,26 @@ proof -
       with eventually_mono[OF eventually_gt_at_top[of "0::nat"] this]
       have "eventually (\<lambda>n. real (n+1) / real n = 1 + 1/real n) sequentially" by simp
       moreover have "(\<lambda>n. 1 + 1/real n) \<longlonglongrightarrow> 1 + 0"
-        apply (rule tendsto_add) using lim_1_over_n by auto
+        by (intro tendsto_intros)
       ultimately have "(\<lambda>n. real (n+1) / real n) \<longlonglongrightarrow> 1" using Lim_transform_eventually by (simp add: filterlim_cong)
       then show "(\<lambda>n. ereal(real (n+1) / real n)) \<longlonglongrightarrow> 1" by (simp add: one_ereal_def)
     qed (auto)
     also have "... = l (T x)" unfolding l_def by auto
     finally show "l x \<le> l (T x)" by simp
   qed
-  have "AE x in M. l (T x) = l x" apply (rule AE_increasing_then_invariant) using l_dec by auto
+  have "AE x in M. l (T x) = l x"
+    apply (rule AE_increasing_then_invariant) using l_dec by auto
   then obtain g0 where g0: "g0 \<in> borel_measurable Invariants" "AE x in M. l x = g0 x"
     using Invariants_quasi_Invariants_functions[OF l_meas] by auto
   define g where "g = (\<lambda>x. if g0 x = \<infinity> then 0 else g0 x)"
   have g: "g \<in> borel_measurable Invariants" "AE x in M. g x = l x"
-    unfolding g_def using g0(1) `AE x in M. l x = g0 x` `AE x in M. l x < \<infinity>` by auto
+    unfolding g_def using g0(1) \<open>AE x in M. l x = g0 x\<close> \<open>AE x in M. l x < \<infinity>\<close> by auto
   have [measurable]: "g \<in> borel_measurable M" using g(1) Invariants_measurable_func by blast
   have "\<And>x. g x < \<infinity>" unfolding g_def by auto
 
   define A where "A = {x \<in> space M. l x < \<infinity> \<and> (\<forall>n. l ((T^^n) x) = g ((T^^n) x))}"
   have A_meas [measurable]: "A \<in> sets M" unfolding A_def by auto
-  have "AE x in M. x \<in> A" unfolding A_def using T_AE_iterates[OF g(2)] `AE x in M. l x < \<infinity>` by auto
+  have "AE x in M. x \<in> A" unfolding A_def using T_AE_iterates[OF g(2)] \<open>AE x in M. l x < \<infinity>\<close> by auto
   then have "space M - A \<in> null_sets M" by (simp add: AE_iff_null set_diff_eq)
 
   have l_inv: "l((T^^n) x) = l x" if "x \<in> A" for x n
@@ -722,7 +722,7 @@ proof -
     proof (cases "x \<in> ?B")
       case False
       then have "t x = 1" by (simp add: t_def)
-      then show ?thesis using `N>1`by auto
+      then show ?thesis using \<open>N>1\<close>by auto
     next
       case True
       let ?A = "{n\<in>{1..N}. u n x - n * ?F x < 0}"
@@ -753,15 +753,16 @@ proof -
     define S where "S = (\<lambda>n x. (\<Sum>i<n. t((TB^^i) x)))"
     have [measurable]: "S n \<in> measurable M (count_space UNIV)" for n unfolding S_def by measurable
     have TB_pow: "(TB^^n) x = (T^^(S n x)) x" for n x
-    unfolding S_def TB_def by (induction n, auto, metis (mono_tags, lifting) add.commute funpow_add o_apply)
+      unfolding S_def TB_def
+      by (induction n, auto, metis (mono_tags, lifting) add.commute funpow_add o_apply)
 
     have uS: "u (S n x) x \<le> (S n x) * ?F x + birkhoff_sum ?I (S n x) x * abs(?F x)" if "x \<in> A" "n>0" for x n
-    using `n > 0` proof (induction rule: ind_from_1)
+    using \<open>n > 0\<close> proof (induction rule: ind_from_1)
       case 1
       show ?case unfolding S_def using bound1 by auto
     next
       case (Suc n)
-      have *: "?F((TB^^n) x) = ?F x" apply (subst TB_pow) unfolding F_def using l_inv[OF `x\<in>A`] by auto
+      have *: "?F((TB^^n) x) = ?F x" apply (subst TB_pow) unfolding F_def using l_inv[OF \<open>x\<in>A\<close>] by auto
       have **: "S n x + t ((TB^^n) x) = S (Suc n) x" unfolding S_def by auto
       have "u (S (Suc n) x) x = u (S n x + t((TB^^n) x)) x" unfolding S_def by auto
       also have "... \<le> u (S n x) x + u (t((TB^^n) x)) ((T^^(S n x)) x)"
@@ -796,61 +797,60 @@ proof -
       moreover have "0 \<notin> ?A" unfolding S_def by auto
       ultimately have "?iA \<noteq> 0" by fastforce
       define j where "j = ?iA - 1"
-      then have "j < ?iA" using `?iA \<noteq> 0` by auto
+      then have "j < ?iA" using \<open>?iA \<noteq> 0\<close> by auto
       then have "j \<notin> ?A" by (meson bdd_below_def cInf_lower le0 not_less)
       then have "S j x \<le> n" by auto
       define k where "k = n - S j x"
-      have "n = S j x + k" unfolding k_def using `S j x \<le> n` by auto
-      have "n < S (j+1) x" unfolding j_def using `?iA \<noteq> 0` `?iA \<in> ?A` by auto
+      have "n = S j x + k" unfolding k_def using \<open>S j x \<le> n\<close> by auto
+      have "n < S (j+1) x" unfolding j_def using \<open>?iA \<noteq> 0\<close> \<open>?iA \<in> ?A\<close> by auto
       also have "... = S j x + t((TB^^j) x)" unfolding S_def by auto
       also have "... \<le> S j x + N" using t1 by auto
-      finally have "k \<le> N" unfolding k_def using `n > N` by auto
-      then have "S j x > 0" unfolding k_def using `n > N` by auto
+      finally have "k \<le> N" unfolding k_def using \<open>n > N\<close> by auto
+      then have "S j x > 0" unfolding k_def using \<open>n > N\<close> by auto
       then have "j > 0" unfolding S_def using not_gr0 by fastforce
 
       have "birkhoff_sum ?I (S j x) x \<le> birkhoff_sum ?I n x"
-        unfolding birkhoff_sum_def I_def using `S j x \<le> n`
+        unfolding birkhoff_sum_def I_def using \<open>S j x \<le> n\<close>
         by (metis finite_Collect_less_nat indicator_pos_le lessThan_def lessThan_subset_iff sum_mono2)
 
       have "u n x \<le> u (S j x) x"
-      proof (cases "k=0")
+      proof (cases "k = 0")
         case True
-        show ?thesis using True unfolding k_def using `S j x \<le> n` by auto
+        show ?thesis using True unfolding k_def using \<open>S j x \<le> n\<close> by auto
       next
         case False
         then have "k > 0" by simp
         have "u k ((T^^(S j x)) x) \<le> birkhoff_sum (u 1) k ((T ^^ S j x) x)"
-          using subcocycle_bounded_by_birkhoff1[OF assms(1) `k>0`, of "(T^^(S j x)) x"] by simp
+          using subcocycle_bounded_by_birkhoff1[OF assms(1) \<open>k>0\<close>, of "(T^^(S j x)) x"] by simp
         also have "... \<le> 0" unfolding birkhoff_sum_def using sum_mono assms(2) by (simp add: sum_nonpos)
         also have "u n x \<le> u (S j x) x + u k ((T^^(S j x)) x)"
-          apply (subst `n = S j x + k`) using assms(1) subcocycle_def by auto
+          apply (subst \<open>n = S j x + k\<close>) using assms(1) subcocycle_def by auto
         ultimately show ?thesis by auto
       qed
       also have "... \<le> (S j x) * ?F x + birkhoff_sum ?I (S j x) x * abs(?F x)"
-        using uS[OF `x \<in> A` `j>0`] by simp
+        using uS[OF \<open>x \<in> A\<close> \<open>j>0\<close>] by simp
       also have "... \<le> (S j x) * ?F x + birkhoff_sum ?I n x * abs(?F x)"
-        using `birkhoff_sum ?I (S j x) x \<le> birkhoff_sum ?I n x` by (simp add: mult_right_mono)
+        using \<open>birkhoff_sum ?I (S j x) x \<le> birkhoff_sum ?I n x\<close> by (simp add: mult_right_mono)
       also have "... = n * ?F x - k * ?F x + birkhoff_sum ?I n x * abs(?F x)"
-        by (metis `n = S j x + k` add_diff_cancel_right' le_add2 left_diff_distrib' of_nat_diff)
+        by (metis \<open>n = S j x + k\<close> add_diff_cancel_right' le_add2 left_diff_distrib' of_nat_diff)
       also have "... \<le> n * ?F x + k * abs(?F x) + birkhoff_sum ?I n x * abs(?F x)"
         by (auto, metis abs_ge_minus_self abs_mult abs_of_nat)
       also have "... \<le> n * ?F x + N * abs(?F x) + birkhoff_sum ?I n x * abs(?F x)"
-        using `k \<le> N` by (simp add: mult_right_mono)
+        using \<open>k \<le> N\<close> by (simp add: mult_right_mono)
       finally show ?thesis by simp
     qed
 
     have "limsup (\<lambda>n. u n x / n) \<le> ?F x + limsup (\<lambda>n. abs(?F x) * ereal(birkhoff_sum ?I n x / n))" if "x \<in> A" for x
     proof -
-      have "(\<lambda>n. ?F x + N * abs(?F x) / n) \<longlonglongrightarrow> ?F x + 0"
-        apply (rule tendsto_add, auto) using tendsto_mult[OF _ lim_1_over_n] by auto
-      then have "(\<lambda>n. ereal(?F x + N * abs(?F x)/n)) \<longlonglongrightarrow> ereal(?F x)" by auto
+      have "(\<lambda>n. ereal(?F x + N * abs(?F x) * (1 / n))) \<longlonglongrightarrow> ereal(?F x + N * abs (?F x) * 0)"
+        by (intro tendsto_intros)
       then have *: "limsup (\<lambda>n. ?F x + N * abs(?F x)/n) = ?F x"
-        using sequentially_bot tendsto_iff_Liminf_eq_Limsup by blast
+        using sequentially_bot tendsto_iff_Liminf_eq_Limsup by force
 
       {
         fix n assume "n > N"
         have "u n x / real n \<le> ?F x + N * abs(?F x) / n + abs(?F x) * birkhoff_sum ?I n x / n"
-          using un[OF `x \<in> A` `n > N`] using `n>N` by (auto simp add: divide_simps mult.commute)
+          using un[OF \<open>x \<in> A\<close> \<open>n > N\<close>] using \<open>n>N\<close> by (auto simp add: divide_simps mult.commute)
         then have "ereal(u n x/n) \<le> ereal(?F x + N * abs(?F x) / n) + abs(?F x) * ereal(birkhoff_sum ?I n x / n)"
           by auto
       }
@@ -866,7 +866,7 @@ proof -
       finally show ?thesis by auto
     qed
     then have *: "AE x in M. limsup (\<lambda>n. u n x / n) \<le> ?F x + limsup (\<lambda>n. abs(?F x) * ereal(birkhoff_sum ?I n x / n))"
-      using `AE x in M. x \<in> A` by auto
+      using \<open>AE x in M. x \<in> A\<close> by auto
 
     {
       fix x assume H: "(\<lambda>n. birkhoff_sum ?I n x / n) \<longlonglongrightarrow> real_cond_exp M Invariants ?I x"
@@ -888,12 +888,12 @@ proof -
     have C_meas [measurable]: "\<And>N. C N \<in> sets M" unfolding C_def by auto
     {
       fix x assume "x \<in> A"
-      have "F K e x > l x" using `x \<in> A` `e > 0` unfolding F_def A_def
+      have "F K e x > l x" using \<open>x \<in> A\<close> \<open>e > 0\<close> unfolding F_def A_def
         by (cases "l x", auto, metis add.commute ereal_max less_add_same_cancel2 max_less_iff_conj real_of_ereal.simps(1))
       then have "\<exists>n>0. ereal(u n x / n) < F K e x" unfolding l_def using liminf_upper_bound by fastforce
       then obtain n where "n>0" "ereal(u n x / n) < F K e x" by auto
       then have "u n x - n * F K e x < 0" by (simp add: divide_less_eq mult.commute)
-      then have "x \<notin> C n" unfolding C_def B_def using `x \<in> A` `n>0` by auto
+      then have "x \<notin> C n" unfolding C_def B_def using \<open>x \<in> A\<close> \<open>n>0\<close> by auto
       then have "x \<notin> (\<Inter>n. C n)" by auto
     }
     then have "(\<Inter>n. C n) = {}" unfolding C_def by auto
@@ -909,7 +909,7 @@ proof -
         by auto
       also have "... = (\<integral>x. I n K e x \<partial>M)"
         apply (rule integral_cong_AE, auto)
-        unfolding C_def I_def indicator_def using `AE x in M. x \<in> A` by auto
+        unfolding C_def I_def indicator_def using \<open>AE x in M. x \<in> A\<close> by auto
       also have "... = (\<integral>x. real_cond_exp M Invariants (I n K e) x \<partial>M)"
         by (rule real_cond_exp_int(2)[symmetric, OF I_int])
       also have "... = (\<integral>x. norm(real_cond_exp M Invariants (I n K e) x) \<partial>M)"
@@ -923,28 +923,22 @@ proof -
     then obtain r where "subseq r" "AE x in M. (\<lambda>n. real_cond_exp M Invariants (I (r n) K e) x) \<longlonglongrightarrow> 0"
       by auto
     moreover have "AE x in M. \<forall>N \<in> {1<..}. limsup (\<lambda>n. u n x / n) \<le> F K e x + abs(F K e x) * ereal(real_cond_exp M Invariants (I N K e) x)"
-      apply (rule AE_ball_countable') using main[OF _ `K>0` `e>0`] by auto
+      apply (rule AE_ball_countable') using main[OF _ \<open>K>0\<close> \<open>e>0\<close>] by auto
     moreover
     {
       fix x assume H: "(\<lambda>n. real_cond_exp M Invariants (I (r n) K e) x) \<longlonglongrightarrow> 0"
                       "\<And>N. N > 1 \<Longrightarrow> limsup (\<lambda>n. u n x / n) \<le> F K e x + abs(F K e x) * ereal(real_cond_exp M Invariants (I N K e) x)"
       have 1: "eventually (\<lambda>N. limsup (\<lambda>n. u n x / n) \<le> F K e x + abs(F K e x) * ereal(real_cond_exp M Invariants (I (r N) K e) x)) sequentially"
-        apply (rule eventually_mono[OF eventually_gt_at_top[of 1] H(2)]) using `subseq r` less_le_trans seq_suble by blast
-      have "(\<lambda>N. F K e x + (abs(F K e x) * ereal(real_cond_exp M Invariants (I (r N) K e) x))) \<longlonglongrightarrow> ereal(F K e x) + (abs(F K e x) * ereal 0)"
-        by (rule tendsto_add_ereal_general, simp, simp, rule tendsto_mult_ereal, auto simp add: H(1))
-      then have 2: "(\<lambda>N. F K e x + (abs(F K e x) * ereal(real_cond_exp M Invariants (I (r N) K e) x))) \<longlonglongrightarrow> F K e x"
-        by auto
+        apply (rule eventually_mono[OF eventually_gt_at_top[of 1] H(2)]) using \<open>subseq r\<close> less_le_trans seq_suble by blast
+      have 2: "(\<lambda>N. F K e x + (abs(F K e x) * ereal(real_cond_exp M Invariants (I (r N) K e) x))) \<longlonglongrightarrow> ereal(F K e x) + (abs(F K e x) * ereal 0)"
+        by (intro tendsto_intros) (auto simp add: H(1))
       have "limsup (\<lambda>n. u n x / n) \<le> F K e x"
-        apply (rule LIMSEQ_le_const[OF 2]) using 1 by (simp add: eventually_at_top_linorder)
+        apply (rule LIMSEQ_le_const) using 1 2 by (auto simp add: eventually_at_top_linorder)
     }
     ultimately show "AE x in M. limsup (\<lambda>n. u n x / n) \<le> F K e x" by auto
   qed
   have "AE x in M. limsup (\<lambda>n. u n x / n) \<le> real_of_ereal(max (l x) (-ereal K))" if "K>(0::nat)" for K
-  proof -
-    have "\<And>e. e > (0::real) \<Longrightarrow> AE x in M. limsup (\<lambda>n. u n x / n) \<le> real_of_ereal(max (l x) (-ereal K)) + ereal e"
-      using bound2 `K>0` unfolding F_def by auto
-    then show ?thesis by (rule AE_upper_bound_inf_ereal, auto)
-  qed
+    apply (rule AE_upper_bound_inf_ereal) using bound2 \<open>K>0\<close> unfolding F_def by auto
   then have "AE x in M. \<forall>K\<in>{(0::nat)<..}. limsup (\<lambda>n. u n x / n) \<le> real_of_ereal(max (l x) (-ereal K))"
     by (rule AE_ball_countable', auto)
   moreover have "(\<lambda>n. u n x / n) \<longlonglongrightarrow> l x"
@@ -967,8 +961,11 @@ proof -
   ultimately have "AE x in M. (\<lambda>n. u n x / n) \<longlonglongrightarrow> l x" by auto
   then have "AE x in M. (\<lambda>n. u n x / n) \<longlonglongrightarrow> g x" using g(2) by auto
   then show "\<exists>(g::'a\<Rightarrow>ereal). (g\<in>borel_measurable Invariants \<and> (\<forall>x. g x < \<infinity>) \<and> (AE x in M. (\<lambda>n. u n x / n) \<longlonglongrightarrow> g x))"
-    using g(1) `\<And>x. g x < \<infinity>` by auto
+    using g(1) \<open>\<And>x. g x < \<infinity>\<close> by auto
 qed
+
+text \<open>We deduce it for general subcocycles, by reducing to nonpositive subcocycles by subtracting
+the Birkhoff sum of $u_1$ (for which the convergence follows from Birkhoff theorem).\<close>
 
 theorem kingman_theorem_AE_aux2:
   assumes "subcocycle u"
@@ -979,7 +976,7 @@ proof -
     apply (rule subcocycle_add[OF assms], rule subcocycle_birkhoff)
     using assms unfolding subcocycle_def by auto
   have "\<exists>(gv::'a\<Rightarrow>ereal). (gv\<in>borel_measurable Invariants \<and> (\<forall>x. gv x < \<infinity>) \<and> (AE x in M. (\<lambda>n. v n x / n) \<longlonglongrightarrow> gv x))"
-    apply (rule kingman_theorem_AE_aux1[OF `subcocycle v`]) unfolding v_def by auto
+    apply (rule kingman_theorem_AE_aux1[OF \<open>subcocycle v\<close>]) unfolding v_def by auto
   then obtain gv where gv: "gv \<in> borel_measurable Invariants" "AE x in M. (\<lambda>n. v n x / n) \<longlonglongrightarrow> (gv x::ereal)" "\<And>x. gv x < \<infinity>"
     by blast
   define g where "g = (\<lambda>x. gv x + ereal(real_cond_exp M Invariants (u 1) x))"
@@ -991,7 +988,7 @@ proof -
   moreover
   {
     fix x assume H: "(\<lambda>n. v n x / n) \<longlonglongrightarrow> (gv x)"
-                   "(\<lambda>n. birkhoff_sum (u 1) n x / n) \<longlonglongrightarrow> real_cond_exp M Invariants (u 1) x"
+                    "(\<lambda>n. birkhoff_sum (u 1) n x / n) \<longlonglongrightarrow> real_cond_exp M Invariants (u 1) x"
     then have "(\<lambda>n. ereal(birkhoff_sum (u 1) n x / n)) \<longlonglongrightarrow> ereal(real_cond_exp M Invariants (u 1) x)"
       by auto
     {
@@ -1003,16 +1000,20 @@ proof -
         by auto
     } note * = this
     have "(\<lambda>n. ereal(u n x / n)) \<longlonglongrightarrow> g x" unfolding * g_def
-      apply (rule tendsto_add_ereal_general) using H by auto
+      apply (intro tendsto_intros) using H by auto
   }
   ultimately have "AE x in M. (\<lambda>n. ereal(u n x / n)) \<longlonglongrightarrow> g x" using gv(2) by auto
   then show ?thesis using g_meas g_fin by blast
 qed
 
-text {* For applications, it is convenient to have a limit which is really measurable with respect
+text \<open>For applications, it is convenient to have a limit which is really measurable with respect
 to the invariant sigma algebra and does not come from a hard to use abstract existence statement.
 Hence we introduce the following definition for the would-be limit -- Kingman's theorem shows that
-it is indeed a limit.*}
+it is indeed a limit.
+
+We introduce the definition for any function, not only subcocycles, but it will only be usable for
+subcocycles. We introduce an if clause in the definition so that the limit is always measurable,
+even when $u$ is not a subcocycle and there is no convergence.\<close>
 
 definition subcocycle_lim_ereal::"(nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> ('a \<Rightarrow> ereal)"
   where "subcocycle_lim_ereal u = (
@@ -1030,7 +1031,7 @@ lemma subcocycle_lim_meas_Inv [measurable]:
   "subcocycle_lim u \<in> borel_measurable Invariants"
 proof -
   show "subcocycle_lim_ereal u \<in> borel_measurable Invariants"
-    proof (cases "\<exists>(g::'a\<Rightarrow>ereal). (g\<in>borel_measurable Invariants \<and> (\<forall>x. g x < \<infinity>) \<and> (AE x in M. (\<lambda>n. u n x / n) \<longlonglongrightarrow> g x))")
+  proof (cases "\<exists>(g::'a\<Rightarrow>ereal). (g\<in>borel_measurable Invariants \<and> (\<forall>x. g x < \<infinity>) \<and> (AE x in M. (\<lambda>n. u n x / n) \<longlonglongrightarrow> g x))")
     case True
     then have "subcocycle_lim_ereal u = (SOME (g::'a\<Rightarrow>ereal). g\<in>borel_measurable Invariants \<and>
           (\<forall>x. g x < \<infinity>) \<and> (AE x in M. (\<lambda>n. u n x / n) \<longlonglongrightarrow> g x))"
@@ -1064,9 +1065,9 @@ next
   then show ?thesis by auto
 qed
 
-text {*We reformulate the subadditive ergodic theorem of Kingman with this definition.
+text \<open>We reformulate the subadditive ergodic theorem of Kingman with this definition.
 From this point on, the technical definition of \verb+subcocycle_lim_ereal+ will never be used, only
-the following property will be relevant.*}
+the following property will be relevant.\<close>
 
 theorem kingman_theorem_AE_nonergodic_ereal:
   assumes "subcocycle u"
@@ -1079,6 +1080,10 @@ proof -
     unfolding subcocycle_lim_ereal_def by auto
   then show ?thesis using someI_ex[OF *] by auto
 qed
+
+text \<open>The subcocycle limit behaves well under addition, multiplication by a positive scalar,
+max, and is simply the conditional expectation with respect to invariants for Birkhoff sums,
+thanks to Birkhoff theorem.\<close>
 
 lemma subcocycle_lim_ereal_add:
   assumes "subcocycle u" "subcocycle v"
@@ -1095,12 +1100,10 @@ proof -
     fix x assume H: "(\<lambda>n. (u n x + v n x)/n) \<longlonglongrightarrow> subcocycle_lim_ereal (\<lambda>n x. u n x + v n x) x"
                     "(\<lambda>n. u n x / n) \<longlonglongrightarrow> subcocycle_lim_ereal u x"
                     "(\<lambda>n. v n x / n) \<longlonglongrightarrow> subcocycle_lim_ereal v x"
-    have "(\<lambda>n. ereal (u n x / n) + (v n x / n)) \<longlonglongrightarrow> subcocycle_lim_ereal u x + subcocycle_lim_ereal v x"
-      apply (rule tendsto_add_ereal_general[OF _ H(2) H(3)]) using subcocycle_lim_ereal_not_PInf by auto
-    moreover have "ereal (u n x / n) + (v n x / n) = (u n x + v n x)/n" for n
+    have *: "(u n x + v n x)/n = ereal (u n x / n) + (v n x / n)" for n
       by (simp add: add_divide_distrib)
-    ultimately have "(\<lambda>n. (u n x + v n x)/n) \<longlonglongrightarrow> subcocycle_lim_ereal u x + subcocycle_lim_ereal v x"
-      by auto
+    have "(\<lambda>n. (u n x + v n x)/n) \<longlonglongrightarrow> subcocycle_lim_ereal u x + subcocycle_lim_ereal v x"
+      unfolding * apply (intro tendsto_intros H(2) H(3)) using subcocycle_lim_ereal_not_PInf by auto
     then have "subcocycle_lim_ereal (\<lambda>n x. u n x + v n x) x = subcocycle_lim_ereal u x + subcocycle_lim_ereal v x"
       using H(1) by (simp add: LIMSEQ_unique)
   }
@@ -1178,15 +1181,20 @@ proof -
   ultimately show ?thesis by auto
 qed
 
-subsection {*$L^1$ and a.e.\ convergence of subcocycles with finite asymptotic average*}
 
-text {*In this subsection, we show that the almost sure convergence in Kingman theorem
+subsection \<open>$L^1$ and a.e.\ convergence of subcocycles with finite asymptotic average\<close>
+
+text \<open>In this subsection, we show that the almost sure convergence in Kingman theorem
 also takes place in $L^1$ if the limit is integrable, i.e., if the asymptotic average
 of the subcocycle is $> -\infty$. To deduce it from the almost sure convergence, we only need
 to show that there is no loss of mass, i.e., that the integral of the limit is not
 strictly larger than the limit of the integrals (thanks to Scheffe criterion). This follows
 from comparison to Birkhoff sums, for which we know that the average of the limit is
-the same as the average of the function.*}
+the same as the average of the function.\<close>
+
+text \<open>First, we show that the subcocycle limit is bounded by the limit of the Birkhoff sums of
+$u_N$, i.e., its conditional expectation. This follows from the fact that $u_n$ is bounded by the
+Birkhoff sum of $u_N$ (up to negligible boundary terms).\<close>
 
 lemma subcocycle_lim_ereal_atmost_uN_invariants:
   assumes "subcocycle u" "N>(0::nat)"
@@ -1213,45 +1221,28 @@ proof -
       have "u n x / n \<le> (birkhoff_sum (\<lambda>x. u N x / real N) (n - 2 * N) x
                   + (\<Sum>i<N. \<bar>u 1 ((T ^^ i) x)\<bar>)
                   + 2 * (\<Sum>i<2*N. \<bar>u 1 ((T ^^ (n - (2 * N - i))) x)\<bar>)) / n"
-        using subcocycle_bounded_by_birkhoffN[OF assms(1) `n>2*N` `N>0`, of x] `n>2*N` by (simp add: divide_right_mono)
+        using subcocycle_bounded_by_birkhoffN[OF assms(1) \<open>n>2*N\<close> \<open>N>0\<close>, of x] \<open>n>2*N\<close> by (simp add: divide_right_mono)
       also have "... = ?f n"
         apply (subst add_divide_distrib)+ by (auto simp add: sum_divide_distrib[symmetric])
       finally have "u n x / n \<le> ?f n" by simp
       then have "u n x / n \<le> ereal(?f n)" by simp
     }
 
-    have *: "(\<lambda>n. (1/n)*\<bar>u 1 ((T ^^ i) x)\<bar>) \<longlonglongrightarrow> 0 * \<bar>u 1 ((T ^^ i) x)\<bar>" for i
-        by (rule tendsto_mult, auto simp add: lim_1_over_n)
-    have "(\<lambda>n. (\<Sum>i<N. (1/n)*\<bar>u 1 ((T ^^ i) x)\<bar>)) \<longlonglongrightarrow> (\<Sum>i<N. 0)"
-      apply (rule tendsto_sum) using * by auto
-    then have S1: "(\<lambda>n. (\<Sum>i<N. (1/n)*\<bar>u 1 ((T ^^ i) x)\<bar>)) \<longlonglongrightarrow> 0" by simp
-
-    have S2: "(\<lambda>n. birkhoff_sum (\<lambda>x. u N x / real N) (n - 2 * N) x / n) \<longlonglongrightarrow> real_cond_exp M Invariants (\<lambda>x. u N x / N) x"
-      using tendsto_shift_1_over_n'[OF H(2), of "2*N"] by simp
-
-    have A: "(\<lambda>n. abs(u 1((T^^n) x)) / n) \<longlonglongrightarrow> 0" using tendsto_norm[OF H(1)] by auto
-    have B: "(\<lambda>n. abs(u 1((T^^(n-(2*N-i))) x)) / n) \<longlonglongrightarrow> 0" for i
-      using tendsto_shift_1_over_n'[OF A, of "2*N-i"] by simp
-    have "(\<lambda>n. 2 * (\<Sum>i<2*N. \<bar>u 1 ((T ^^ (n - (2 * N - i))) x)\<bar>/n)) \<longlonglongrightarrow> 2 * (\<Sum>i<2*N. 0)"
-      apply (rule tendsto_mult, simp)
-      apply (rule tendsto_sum) using B by blast
-    then have S3: "(\<lambda>n. 2 * (\<Sum>i<2*N. \<bar>u 1 ((T ^^ (n - (2 * N - i))) x)\<bar>/n)) \<longlonglongrightarrow> 0" by simp
-
-    have "(\<lambda>n. ?f n) \<longlonglongrightarrow> real_cond_exp M Invariants (\<lambda>x. u N x / N) x + 0 + 0"
-      apply (rule tendsto_add, rule tendsto_add) using S1 S2 S3 by auto
+    have "(\<lambda>n. ?f n) \<longlonglongrightarrow> real_cond_exp M Invariants (\<lambda>x. u N x / N) x + (\<Sum>i<N. 0 * \<bar>u 1 ((T ^^ i) x)\<bar>) + 2 * (\<Sum>i<2*N. 0)"
+      apply (intro tendsto_intros) using H(2) tendsto_norm[OF H(1)] by auto
     then have "(\<lambda>n. ereal(?f n)) \<longlonglongrightarrow> real_cond_exp M Invariants (\<lambda>x. u N x / N) x"
       by auto
-    with ereal_lim_mono[OF `\<And>n. n \<ge> 2*N+1 \<Longrightarrow> u n x / n \<le> ereal(?f n)` H(3) this]
+    with ereal_lim_mono[OF \<open>\<And>n. n \<ge> 2*N+1 \<Longrightarrow> u n x / n \<le> ereal(?f n)\<close> H(3) this]
     have "subcocycle_lim_ereal u x \<le> real_cond_exp M Invariants (\<lambda>x. u N x / N) x" by simp
   }
   ultimately show ?thesis by auto
 qed
 
-text {*To apply Scheffe criterion, we need to deal with nonnegative functions, or equivalently
+text \<open>To apply Scheffe criterion, we need to deal with nonnegative functions, or equivalently
 with nonpositive functions after a change of sign. Hence, as in the proof of the almost
 sure version of Kingman theorem above, we first give the proof assuming that the
 subcocycle is nonpositive, and deduce the general statement by adding a suitable
-Birkhoff sum.*}
+Birkhoff sum.\<close>
 
 lemma kingman_theorem_L1_aux:
   assumes "subcocycle u" "subcocycle_avg_ereal u > -\<infinity>" "\<And>x. u 1 x \<le> 0"
@@ -1262,17 +1253,16 @@ proof -
   have int_u [measurable]: "\<And>n. integrable M (u n)" using assms(1) subcocycle_def by auto
   then have int_F [measurable]: "\<And>n. integrable M (\<lambda>x. - u n x/ n)" by auto
 
-  have F_pos: "- u n x / n \<ge> 0" for x and n::nat
+  have F_pos: "- u n x / n \<ge> 0" for x n
   proof (cases "n > 0")
     case True
     have "u n x \<le> (\<Sum>i<n. u 1 ((T ^^ i) x))"
-      using subcocycle_bounded_by_birkhoff1[OF assms(1) `n>0`] unfolding birkhoff_sum_def by simp
+      using subcocycle_bounded_by_birkhoff1[OF assms(1) \<open>n>0\<close>] unfolding birkhoff_sum_def by simp
     also have "... \<le> 0" using sum_mono[OF assms(3)] by auto
     finally have "u n x \<le> 0" by simp
     then have "-u n x \<ge> 0" by simp
-    with divide_nonneg_nonneg[OF this] show "- u n x / n \<ge> 0" using `n>0` by auto
+    with divide_nonneg_nonneg[OF this] show "- u n x / n \<ge> 0" using \<open>n>0\<close> by auto
   qed (auto)
-
 
   {
     fix x assume *: "(\<lambda>n. u n x / n) \<longlonglongrightarrow> subcocycle_lim_ereal u x"
@@ -1353,7 +1343,7 @@ proof -
     {
       fix n assume "n>(0::nat)"
       have *: "AE x in M. subcocycle_lim u x \<le> real_cond_exp M Invariants (\<lambda>x. u n x / n) x"
-        using subcocycle_lim_ereal_atmost_uN_invariants[OF assms(1) `n>0`] AE_2(1)
+        using subcocycle_lim_ereal_atmost_uN_invariants[OF assms(1) \<open>n>0\<close>] AE_2(1)
         unfolding subcocycle_lim_def by auto
       have "(\<integral>x. subcocycle_lim u x \<partial>M) \<le> (\<integral>x. real_cond_exp M Invariants (\<lambda>x. u n x / n) x \<partial>M)"
         apply (rule integral_mono_AE[OF int_Gr _ *], rule real_cond_exp_int(1)) using int_u by auto
@@ -1361,7 +1351,7 @@ proof -
       finally have A: "(\<integral>x. subcocycle_lim u x \<partial>M) \<le> (\<integral>x. u n x / n \<partial>M)" by auto
 
       have "(\<integral>\<^sup>+x. abs(u n x) / n \<partial>M) = (\<integral>\<^sup>+x. - u n x / n \<partial>M)"
-        apply (rule nn_integral_cong) using F_pos abs_of_nonneg by (intro arg_cong[where f=ennreal]) fastforce
+        apply (rule nn_integral_cong) using F_pos abs_of_nonneg by (intro arg_cong[where f = ennreal]) fastforce
       also have "... = (\<integral>x. - u n x / n \<partial>M)"
         apply (rule nn_integral_eq_integral) using F_pos int_F by auto
       also have "... \<le> (\<integral>x. - subcocycle_lim u x \<partial>M)" using A by (auto intro!: ennreal_leI)
@@ -1383,6 +1373,9 @@ proof -
     by auto
 qed
 
+text \<open>We can then remove the nonpositivity assumption, by subtracting the Birkhoff sums of $u_1$
+to a general subcocycle $u$.\<close>
+
 theorem kingman_theorem_nonergodic:
   assumes "subcocycle u" "subcocycle_avg_ereal u > -\<infinity>"
   shows "AE x in M. (\<lambda>n. u n x / n) \<longlonglongrightarrow> subcocycle_lim u x"
@@ -1402,7 +1395,7 @@ proof -
   have uvw: "u n x = v n x + w n x" for n x
     unfolding v_def w_def birkhoff_sum_def by (auto simp add: sum_negf)
   then have "subcocycle_avg_ereal (\<lambda>n x. u n x) = subcocycle_avg_ereal v + subcocycle_avg_ereal w"
-    using subcocycle_avg_ereal_add[OF `subcocycle v` `subcocycle w`] by auto
+    using subcocycle_avg_ereal_add[OF \<open>subcocycle v\<close> \<open>subcocycle w\<close>] by auto
   then have "subcocycle_avg_ereal u = subcocycle_avg_ereal v + subcocycle_avg_ereal w"
     by auto
   then have "subcocycle_avg_ereal v > -\<infinity>"
@@ -1414,7 +1407,7 @@ proof -
   have v: "AE x in M. (\<lambda>n. v n x / n) \<longlonglongrightarrow> subcocycle_lim v x"
             "integrable M (subcocycle_lim v)"
             "(\<lambda>n. (\<integral>\<^sup>+x. abs(v n x / n - subcocycle_lim v x) \<partial>M)) \<longlonglongrightarrow> 0"
-    using kingman_theorem_L1_aux[OF `subcocycle v` `subcocycle_avg_ereal v > -\<infinity>` `\<And>x. v 1 x \<le> 0`] by auto
+    using kingman_theorem_L1_aux[OF \<open>subcocycle v\<close> \<open>subcocycle_avg_ereal v > -\<infinity>\<close> \<open>\<And>x. v 1 x \<le> 0\<close>] by auto
   have w: "AE x in M. (\<lambda>n. w n x / n) \<longlonglongrightarrow> subcocycle_lim w x"
             "integrable M (subcocycle_lim w)"
             "(\<lambda>n. (\<integral>\<^sup>+x. abs(w n x / n - subcocycle_lim w x) \<partial>M)) \<longlonglongrightarrow> 0"
@@ -1423,7 +1416,7 @@ proof -
       unfolding w_def subcocycle_lim_def using subcocycle_lim_ereal_birkhoff[OF int_u]
       birkhoff_theorem_AE_nonergodic[OF int_u] by auto
     show "integrable M (subcocycle_lim w)"
-      apply (subst integrable_cong_AE[where ?g= "\<lambda>x. real_cond_exp M Invariants (u 1) x"])
+      apply (subst integrable_cong_AE[where ?g = "\<lambda>x. real_cond_exp M Invariants (u 1) x"])
       unfolding w_def subcocycle_lim_def
       using subcocycle_lim_ereal_birkhoff[OF int_u] real_cond_exp_int(1)[OF int_u] by auto
     have "(\<integral>\<^sup>+x. abs(w n x / n - subcocycle_lim w x) \<partial>M)
@@ -1439,7 +1432,7 @@ proof -
                     "(\<lambda>n. w n x / n) \<longlonglongrightarrow> subcocycle_lim w x"
                     "(\<lambda>n. u n x / n) \<longlonglongrightarrow> subcocycle_lim_ereal u x"
     then have "(\<lambda>n. v n x / n + w n x / n) \<longlonglongrightarrow> subcocycle_lim v x + subcocycle_lim w x"
-      unfolding H(3) using tendsto_add[OF H(1) H(2)] by simp
+      using tendsto_add[OF H(1) H(2)] by simp
     then have *: "(\<lambda>n. ereal(u n x / n)) \<longlonglongrightarrow> ereal(subcocycle_lim v x + subcocycle_lim w x)"
       unfolding uvw by (simp add: add_divide_distrib)
     then have "subcocycle_lim_ereal u x = ereal(subcocycle_lim v x + subcocycle_lim w x)"
@@ -1491,6 +1484,10 @@ proof -
   qed
 qed
 
+text \<open>From the almost sure convergence, we can prove the basic properties of the (real)
+subcocycle limit: relationship to the asymptotic average, behavior under sum, multiplication,
+max, behavior for Birkhoff sums.\<close>
+
 lemma subcocycle_lim_avg:
   assumes "subcocycle u" "subcocycle_avg_ereal u > -\<infinity>"
   shows "(\<integral>x. subcocycle_lim u x \<partial>M) = subcocycle_avg u"
@@ -1539,12 +1536,10 @@ proof -
     fix x assume H: "(\<lambda>n. (u n x + v n x)/n) \<longlonglongrightarrow> subcocycle_lim (\<lambda>n x. u n x + v n x) x"
                     "(\<lambda>n. u n x / n) \<longlonglongrightarrow> subcocycle_lim u x"
                     "(\<lambda>n. v n x / n) \<longlonglongrightarrow> subcocycle_lim v x"
-    have "(\<lambda>n. (u n x / n) + (v n x / n)) \<longlonglongrightarrow> subcocycle_lim u x + subcocycle_lim v x"
-      by (rule tendsto_add[OF H(2) H(3)])
-    moreover have "(u n x / n) + (v n x / n) = (u n x + v n x)/n" for n
+    have *: "(u n x + v n x)/n = (u n x / n) + (v n x / n)" for n
       by (simp add: add_divide_distrib)
-    ultimately have "(\<lambda>n. (u n x + v n x)/n) \<longlonglongrightarrow> subcocycle_lim u x + subcocycle_lim v x"
-      by auto
+    have "(\<lambda>n. (u n x + v n x)/n) \<longlonglongrightarrow> subcocycle_lim u x + subcocycle_lim v x"
+      unfolding * by (intro tendsto_intros H)
     then have "subcocycle_lim (\<lambda>n x. u n x + v n x) x = subcocycle_lim u x + subcocycle_lim v x"
       using H(1) by (simp add: LIMSEQ_unique)
   }
@@ -1629,9 +1624,10 @@ proof -
   ultimately show "AE x in M. subcocycle_lim (birkhoff_sum u) x = real_cond_exp M Invariants u x" by auto
 qed
 
-subsection {*Conditional expectations of subcocycles*}
 
-text {*In this subsection, we show that the conditional expectations of a subcocycle
+subsection \<open>Conditional expectations of subcocycles\<close>
+
+text \<open>In this subsection, we show that the conditional expectations of a subcocycle
 (with respect to the invariant subalgebra) also converge, with the same limit as the
 cocycle.
 
@@ -1646,7 +1642,9 @@ the domination of the subcocycle by the Birkhoff sums of $u_n$ for fixed $n$
 the other. Hence, they coincide almost everywhere.
 
 The case when the asymptotic average is $-\infty$ is deduced from the previous one by truncation.
-*}
+\<close>
+
+text \<open>First, we prove the result when the asymptotic average with finite.\<close>
 
 theorem kingman_theorem_nonergodic_invariant:
   assumes "subcocycle u" "subcocycle_avg_ereal u > -\<infinity>"
@@ -1698,10 +1696,10 @@ proof -
     using subcocycle_int_tendsto_avg_ereal[OF assms(1)] LIMSEQ_unique by auto
   then have "subcocycle_avg_ereal w > -\<infinity>" using assms(2) by simp
   have "subcocycle_avg u = subcocycle_avg w"
-    using `subcocycle_avg_ereal u = subcocycle_avg_ereal w` unfolding subcocycle_avg_def by simp
+    using \<open>subcocycle_avg_ereal u = subcocycle_avg_ereal w\<close> unfolding subcocycle_avg_def by simp
 
   have *: "AE x in M. N > 0 \<longrightarrow> subcocycle_lim_ereal u x \<le> real_cond_exp M Invariants (\<lambda>x. u N x / N) x" for N
-    by (cases "N=0", auto simp add: subcocycle_lim_ereal_atmost_uN_invariants[OF assms(1)])
+    by (cases "N = 0", auto simp add: subcocycle_lim_ereal_atmost_uN_invariants[OF assms(1)])
   have "AE x in M. \<forall>N. N > 0 \<longrightarrow> subcocycle_lim_ereal u x \<le> real_cond_exp M Invariants (\<lambda>x. u N x / N) x"
     by (subst AE_all_countable, intro allI, simp add: *)
   moreover have "AE x in M. subcocycle_lim_ereal u x = ereal(subcocycle_lim u x)"
@@ -1709,7 +1707,7 @@ proof -
   moreover have "AE x in M. (\<lambda>N. u N x / N) \<longlonglongrightarrow> subcocycle_lim u x"
     using kingman_theorem_nonergodic[OF assms] by simp
   moreover have "AE x in M. (\<lambda>N. w N x / N) \<longlonglongrightarrow> subcocycle_lim w x"
-    using kingman_theorem_nonergodic[OF w(1) `subcocycle_avg_ereal w > -\<infinity>` ] by simp
+    using kingman_theorem_nonergodic[OF w(1) \<open>subcocycle_avg_ereal w > -\<infinity>\<close> ] by simp
   moreover have "AE x in M. \<forall>n. w n x = real_cond_exp M Invariants (u n) x"
     using w(2) by simp
   moreover have "AE x in M. \<forall>n. real_cond_exp M Invariants (u n) x / n = real_cond_exp M Invariants (\<lambda>x. u n x / n) x"
@@ -1725,7 +1723,7 @@ proof -
     {
       fix N::nat assume "N\<ge>1"
       have "subcocycle_lim u x \<le> real_cond_exp M Invariants (\<lambda>x. u N x / N) x"
-        using x(1) x(2) `N\<ge>1` by auto
+        using x(1) x(2) \<open>N\<ge>1\<close> by auto
       also have "... = real_cond_exp M Invariants (u N) x / N"
         using x(6) by simp
       also have "... = w N x / N"
@@ -1739,13 +1737,13 @@ proof -
   ultimately have *: "AE x in M. subcocycle_lim u x \<le> subcocycle_lim w x"
     by auto
   have **: "(\<integral>x. subcocycle_lim u x \<partial>M) = (\<integral>x. subcocycle_lim w x \<partial>M)"
-    using subcocycle_lim_avg[OF assms] subcocycle_lim_avg[OF w(1) `subcocycle_avg_ereal w > -\<infinity>`]
-            `subcocycle_avg u = subcocycle_avg w` by simp
+    using subcocycle_lim_avg[OF assms] subcocycle_lim_avg[OF w(1) \<open>subcocycle_avg_ereal w > -\<infinity>\<close>]
+            \<open>subcocycle_avg u = subcocycle_avg w\<close> by simp
   have AE_eq: "AE x in M. subcocycle_lim u x = subcocycle_lim w x"
     by (rule integral_ineq_eq_0_then_AE[OF * kingman_theorem_nonergodic(2)[OF assms]
-        kingman_theorem_nonergodic(2)[OF w(1) `subcocycle_avg_ereal w > -\<infinity>`] **])
+        kingman_theorem_nonergodic(2)[OF w(1) \<open>subcocycle_avg_ereal w > -\<infinity>\<close>] **])
   moreover have "AE x in M. (\<lambda>n. w n x / n) \<longlonglongrightarrow> subcocycle_lim w x"
-    by (rule kingman_theorem_nonergodic(1)[OF w(1) `subcocycle_avg_ereal w > -\<infinity>`])
+    by (rule kingman_theorem_nonergodic(1)[OF w(1) \<open>subcocycle_avg_ereal w > -\<infinity>\<close>])
   moreover have "AE x in M. \<forall>n. w n x = real_cond_exp M Invariants (u n) x"
     using w(2) by auto
   moreover
@@ -1781,10 +1779,13 @@ proof -
       by (rule nn_integral_cong_AE)
   }
   moreover have "(\<lambda>n. (\<integral>\<^sup>+ x. \<bar>w n x / real n - subcocycle_lim w x\<bar> \<partial>M)) \<longlonglongrightarrow> 0"
-    by (rule kingman_theorem_nonergodic(3)[OF w(1) `subcocycle_avg_ereal w > -\<infinity>`])
+    by (rule kingman_theorem_nonergodic(3)[OF w(1) \<open>subcocycle_avg_ereal w > -\<infinity>\<close>])
   ultimately show "(\<lambda>n. (\<integral>\<^sup>+ x. \<bar>real_cond_exp M Invariants (u n) x / real n - subcocycle_lim u x\<bar> \<partial>M)) \<longlonglongrightarrow> 0"
     by auto
 qed
+
+text \<open>Then, we extend it by truncation to the general case, i.e., to the asymptotic
+limit in extended reals.\<close>
 
 theorem kingman_theorem_AE_nonergodic_invariant_ereal:
   assumes "subcocycle u"
@@ -1796,7 +1797,7 @@ proof -
   have limsup_ineq_K: "AE x in M.
     limsup (\<lambda>n. real_cond_exp M Invariants (u n) x / n) \<le> max (subcocycle_lim_ereal u x) (-real K)" for K::nat
   proof -
-    define v where "v =(\<lambda> (n::nat) (x::'a). (-n * real K))"
+    define v where "v = (\<lambda> (n::nat) (x::'a). (-n * real K))"
     have [simp]: "subcocycle v"
       unfolding v_def subcocycle_def by (auto simp add: algebra_simps)
     have "ereal (\<integral>x. v n x / n \<partial>M) = ereal(- real K * measure M (space M))" if "n\<ge>1" for n
@@ -1804,7 +1805,7 @@ proof -
     then have "(\<lambda>n. ereal (\<integral>x. v n x / n \<partial>M)) \<longlonglongrightarrow> ereal(- real K * measure M (space M))"
       using tendsto_explicit by force
     moreover have "(\<lambda>n. ereal (\<integral>x. v n x / n \<partial>M)) \<longlonglongrightarrow> subcocycle_avg_ereal v"
-      using subcocycle_int_tendsto_avg_ereal[OF `subcocycle v`] by auto
+      using subcocycle_int_tendsto_avg_ereal[OF \<open>subcocycle v\<close>] by auto
     ultimately have "subcocycle_avg_ereal v = - real K * measure M (space M)"
       using LIMSEQ_unique by blast
     then have "subcocycle_avg_ereal v > -\<infinity>"
@@ -1820,7 +1821,7 @@ proof -
         using H LIMSEQ_unique by blast
     }
     then have "AE x in M. subcocycle_lim_ereal v x = -real K"
-      using kingman_theorem_AE_nonergodic_ereal[OF `subcocycle v`] by auto
+      using kingman_theorem_AE_nonergodic_ereal[OF \<open>subcocycle v\<close>] by auto
 
     define w where "w = (\<lambda>n x. max (u n x) (v n x))"
     have [simp]: "subcocycle w"
@@ -1828,17 +1829,17 @@ proof -
     have "subcocycle_avg_ereal w \<ge> subcocycle_avg_ereal v"
       unfolding w_def using subcocycle_avg_ereal_max by auto
     then have "subcocycle_avg_ereal w > -\<infinity>"
-      using `subcocycle_avg_ereal v > -\<infinity>` by auto
+      using \<open>subcocycle_avg_ereal v > -\<infinity>\<close> by auto
 
     have *: "AE x in M. real_cond_exp M Invariants (u n) x \<le> real_cond_exp M Invariants (w n) x" for n
       apply (rule real_cond_exp_mono)
-      using subcocycle_integrable[OF assms, of n] subcocycle_integrable[OF `subcocycle w`, of n] apply auto
+      using subcocycle_integrable[OF assms, of n] subcocycle_integrable[OF \<open>subcocycle w\<close>, of n] apply auto
       unfolding w_def by auto
     have "AE x in M. \<forall>n. real_cond_exp M Invariants (u n) x \<le> real_cond_exp M Invariants (w n) x"
       apply (subst AE_all_countable) using * by auto
     moreover have "AE x in M. (\<lambda>n. real_cond_exp M Invariants (w n) x / n) \<longlonglongrightarrow> subcocycle_lim w x"
       apply (rule kingman_theorem_nonergodic_invariant(1))
-      using `subcocycle_avg_ereal w > -\<infinity>` by auto
+      using \<open>subcocycle_avg_ereal w > -\<infinity>\<close> by auto
     moreover have "AE x in M. subcocycle_lim_ereal w x = max (subcocycle_lim_ereal u x) (subcocycle_lim_ereal v x)"
       unfolding w_def using subcocycle_lim_ereal_max by auto
     moreover
@@ -1865,7 +1866,7 @@ proof -
       then have "limsup (\<lambda>n. real_cond_exp M Invariants (u n) x / n) \<le> max (subcocycle_lim_ereal u x) (-real K)"
         using * H(2) H(3) by auto
     }
-    ultimately show ?thesis using `AE x in M. subcocycle_lim_ereal v x = -real K` by auto
+    ultimately show ?thesis using \<open>AE x in M. subcocycle_lim_ereal v x = -real K\<close> by auto
   qed
   have "AE x in M. \<forall>K::nat.
         limsup (\<lambda>n. real_cond_exp M Invariants (u n) x / n) \<le> max (subcocycle_lim_ereal u x) (-real K)"
@@ -1874,7 +1875,7 @@ proof -
   moreover have "AE x in M. liminf (\<lambda>n. real_cond_exp M Invariants (u n) x / n) \<ge> subcocycle_lim_ereal u x"
   proof -
     have *: "AE x in M. N > 0 \<longrightarrow> subcocycle_lim_ereal u x \<le> real_cond_exp M Invariants (\<lambda>x. u N x / N) x" for N
-      by (cases "N=0", auto simp add: subcocycle_lim_ereal_atmost_uN_invariants[OF assms(1)])
+      by (cases "N = 0", auto simp add: subcocycle_lim_ereal_atmost_uN_invariants[OF assms(1)])
     have "AE x in M. \<forall>N. N > 0 \<longrightarrow> subcocycle_lim_ereal u x \<le> real_cond_exp M Invariants (\<lambda>x. u N x / N) x"
       by (subst AE_all_countable, intro allI, simp add: *)
     moreover have "AE x in M. \<forall>n. real_cond_exp M Invariants (\<lambda>x. u n x / n) x = real_cond_exp M Invariants (u n) x / n"
@@ -1913,7 +1914,10 @@ qed
 
 end
 
-subsection {*Subcocycles in the ergodic case*}
+subsection \<open>Subcocycles in the ergodic case\<close>
+
+text \<open>In this subsection, we describe how all the previous results simplify in the ergodic case.
+Indeed, subcocycle limits are almost surely constant, given by the asymptotic average.\<close>
 
 context ergodic_pmpt begin
 
@@ -1933,7 +1937,7 @@ proof -
       have "AE x in M. real_cond_exp M Invariants (\<lambda>x. u N x / N) x = (\<integral> x. u N x / N \<partial>M)"
         apply (rule Invariants_cond_exp_is_integral) using I by auto
       moreover have "AE x in M. subcocycle_lim_ereal u x \<le> real_cond_exp M Invariants (\<lambda>x. u N x / N) x"
-        using subcocycle_lim_ereal_atmost_uN_invariants[OF assms `N>0`] by simp
+        using subcocycle_lim_ereal_atmost_uN_invariants[OF assms \<open>N>0\<close>] by simp
       ultimately have "AE x in M. c \<le> (\<integral>x. u N x / N \<partial>M)"
         using c by force
       then have "c \<le> (\<integral>x. u N x / N \<partial>M)" by auto
@@ -1986,19 +1990,19 @@ qed
 end
 
 
-subsection {*Subocycles for invertible maps*}
+subsection \<open>Subocycles for invertible maps\<close>
 
-text {*If $T$ is invertible, then a subcocycle $u_n$ for $T$ gives rise to another subcocycle
+text \<open>If $T$ is invertible, then a subcocycle $u_n$ for $T$ gives rise to another subcocycle
 for $T^{-1}$. Intuitively, if $u$ is subadditive along the time interval $[0,n)$, then
 it should also be subadditive along the time interval $[-n,0)$. This is true, and
-formalized with the following statement.*}
+formalized with the following statement.\<close>
 
 proposition (in mpt) subcocycle_u_Tinv:
   assumes "subcocycle u"
           "invertible_qmpt"
   shows "mpt.subcocycle M Tinv (\<lambda>n x. u n (((Tinv)^^n) x))"
 proof -
-  have bij: "bij T" using `invertible_qmpt` unfolding invertible_qmpt_def by auto
+  have bij: "bij T" using \<open>invertible_qmpt\<close> unfolding invertible_qmpt_def by auto
   have int: "integrable M (u n)" for n
     using subcocycle_integrable[OF assms(1)] by simp
   interpret I: mpt M Tinv using Tinv_mpt[OF assms(2)] by simp
@@ -2014,7 +2018,7 @@ proof -
     have "u (n + m) ((Tinv ^^ (n + m)) x) = u (m+n) y"
       unfolding y_def by (simp add: add.commute[of n m])
     also have "... \<le> u m y + u n ((T^^m) y)"
-      using subcocycle_ineq[OF `subcocycle u`, of m n y] by simp
+      using subcocycle_ineq[OF \<open>subcocycle u\<close>, of m n y] by simp
     also have "... = u m ((Tinv^^(m+n)) x) + u n ((Tinv^^n) x)"
       using * y_def by auto
     finally show "u (n + m) ((Tinv ^^ (n + m)) x) \<le> u n ((Tinv ^^ n) x) + u m ((Tinv ^^ m) ((Tinv ^^ n) x))"
@@ -2022,12 +2026,14 @@ proof -
   qed
 qed
 
+text \<open>The subcocycle averages for $T$ and $T^{-1}$ coincide.\<close>
+
 proposition (in mpt) subcocycle_avg_ereal_Tinv:
   assumes "subcocycle u"
           "invertible_qmpt"
   shows "mpt.subcocycle_avg_ereal M (\<lambda>n x. u n (((Tinv)^^n) x)) = subcocycle_avg_ereal u"
 proof -
-  have bij: "bij T" using `invertible_qmpt` unfolding invertible_qmpt_def by auto
+  have bij: "bij T" using \<open>invertible_qmpt\<close> unfolding invertible_qmpt_def by auto
   have int: "integrable M (u n)" for n
     using subcocycle_integrable[OF assms(1)] by simp
   interpret I: mpt M Tinv using Tinv_mpt[OF assms(2)] by simp
@@ -2042,23 +2048,23 @@ proof -
   ultimately have "(\<lambda>n. (\<integral>x. u n x / n \<partial>M)) \<longlonglongrightarrow> I.subcocycle_avg_ereal (\<lambda>n x. u n (((Tinv)^^n) x))"
     by presburger
   moreover have "(\<lambda>n. (\<integral>x. u n x / n \<partial>M)) \<longlonglongrightarrow> subcocycle_avg_ereal u"
-    using subcocycle_int_tendsto_avg_ereal[OF `subcocycle u`] by simp
+    using subcocycle_int_tendsto_avg_ereal[OF \<open>subcocycle u\<close>] by simp
   ultimately show ?thesis
     using LIMSEQ_unique by simp
 qed
 
-text {*The asymptotic limit of the subcocycle is the same for $T$ and $T^{-1}$. This is clear
-in the ergodic case, and follows from the ergodic decomposition in the general case. We
-give a direct proof below using the fact that the asymptotic limit is the same for
-the subcocycle conditioned by the invariant sigma-algebra, which is clearly the same for
-$T$ and $T^{-1}$ as it is constant along orbits.*}
+text \<open>The asymptotic limit of the subcocycle is the same for $T$ and $T^{-1}$. This is clear in the
+ergodic case, and follows from the ergodic decomposition in the general case (on a standard
+probability space). We give a direct proof below (on a general probability space) using the fact
+that the asymptotic limit is the same for the subcocycle conditioned by the invariant sigma-algebra,
+which is clearly the same for $T$ and $T^{-1}$ as it is constant along orbits.\<close>
 
 proposition (in fmpt) subcocycle_lim_ereal_Tinv:
   assumes "subcocycle u"
           "invertible_qmpt"
   shows "AE x in M. fmpt.subcocycle_lim_ereal M Tinv (\<lambda>n x. u n (((Tinv)^^n) x)) x = subcocycle_lim_ereal u x"
 proof -
-  have bij: "bij T" using `invertible_qmpt` unfolding invertible_qmpt_def by auto
+  have bij: "bij T" using \<open>invertible_qmpt\<close> unfolding invertible_qmpt_def by auto
   have int: "integrable M (u n)" for n
     using subcocycle_integrable[OF assms(1)] by simp
   interpret I: fmpt M Tinv using Tinv_fmpt[OF assms(2)] by simp
@@ -2069,7 +2075,7 @@ proof -
                   = real_cond_exp M I.Invariants (u n) x"
     apply (subst AE_all_countable) using * by simp
   moreover have "AE x in M. (\<lambda>n. real_cond_exp M Invariants (u n) x / n) \<longlonglongrightarrow> subcocycle_lim_ereal u x"
-    using kingman_theorem_AE_nonergodic_invariant_ereal[OF `subcocycle u`] by simp
+    using kingman_theorem_AE_nonergodic_invariant_ereal[OF \<open>subcocycle u\<close>] by simp
   moreover have "AE x in M. (\<lambda>n. real_cond_exp M I.Invariants (\<lambda> x. u n (((Tinv)^^n) x)) x / n)
           \<longlonglongrightarrow> I.subcocycle_lim_ereal (\<lambda> n x. u n (((Tinv)^^n) x)) x"
     using I.kingman_theorem_AE_nonergodic_invariant_ereal[OF subcocycle_u_Tinv[OF assms]] by simp
@@ -2082,7 +2088,7 @@ proof -
                         \<longlonglongrightarrow> I.subcocycle_lim_ereal (\<lambda> n x. u n (((Tinv)^^n) x)) x"
     have "ereal(real_cond_exp M Invariants (u n) x / n)
           = ereal(real_cond_exp M I.Invariants (\<lambda> x. u n (((Tinv)^^n) x)) x / n)" for n
-      using H(1) Invariants_Tinv[OF `invertible_qmpt`] by auto
+      using H(1) Invariants_Tinv[OF \<open>invertible_qmpt\<close>] by auto
     then have "(\<lambda>n. real_cond_exp M Invariants (u n) x / n)
                 \<longlonglongrightarrow> I.subcocycle_lim_ereal (\<lambda> n x. u n (((Tinv)^^n) x)) x"
       using H(3) by presburger

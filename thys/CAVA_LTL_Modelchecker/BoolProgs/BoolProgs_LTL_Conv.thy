@@ -2,7 +2,7 @@ theory BoolProgs_LTL_Conv
 imports
   "BoolProgs_Extras"
   "~~/src/HOL/Library/Mapping"
-  "../../LTL_to_GBA/LTL"
+  "../../LTL/LTL"
 begin
 
 fun b2l :: "bexp \<Rightarrow> nat ltlc" where

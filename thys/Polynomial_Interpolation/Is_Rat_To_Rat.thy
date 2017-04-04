@@ -47,37 +47,19 @@ definition "to_rat_real (x :: real) = (if x \<in> \<rat> then (THE y. x = of_rat
 end
 
 lemma of_nat_complex: "of_nat n = Complex (of_nat n) 0"
-  by (induct n, auto)
+  by (simp add: complex_equality)
 
 lemma of_int_complex: "of_int z = Complex (of_int z) 0"
-proof -
-  {
-    fix z :: int
-    assume z: "z \<ge> 0"
-    define n where "n = nat z"
-    have z: "z = int n" unfolding n_def using z by auto
-    have "of_int z = Complex (of_int z) 0"
-      unfolding z of_int_of_nat_eq by (rule of_nat_complex)
-  } note pos = this
-  show ?thesis 
-  proof (cases "z \<ge> 0")
-    case True
-    from pos[OF this] show ?thesis .
-  next
-    case False
-    hence "-z \<ge> 0" by auto
-    from arg_cong[OF pos[OF this, unfolded of_int_minus], of uminus]
-    show ?thesis by simp
-  qed
-qed
+  by (simp add: complex_Re_Im_cancel_iff)
 
 lemma of_rat_complex: "of_rat q = Complex (of_rat q) 0"
 proof -
-  obtain d n where q: "quotient_of q = (d,n)" by force
-  from quotient_of_div[OF q] have q: "q = of_int d / of_int n" by auto
-  have id: "Complex (real_of_int d / real_of_int n) 0 = Complex (real_of_int d) 0 / Complex (real_of_int n) 0"
-    by simp
-  show ?thesis unfolding q of_rat_divide of_rat_of_int_eq id of_int_complex by simp
+  obtain d n where dn: "quotient_of q = (d,n)" by force
+  from quotient_of_div[OF dn] have q: "q = of_int d / of_int n" by auto
+  then have "of_rat q = complex_of_real (real_of_rat q) \<or> (0::complex) = of_int n \<or> 0 = real_of_int n"
+    by (simp add: of_rat_divide q)
+  then show ?thesis
+    using Complex_eq_0 complex_of_real_def q by auto
 qed
 
 lemma complex_of_real_of_rat[simp]: "complex_of_real (real_of_rat q) = of_rat q"
@@ -88,14 +70,14 @@ proof
   assume "x \<in> \<rat>"
   then obtain q where x: "x = of_rat q" unfolding Rats_def by auto
   let ?y = "Complex (of_rat q) 0"
-  have "x - ?y = 0" unfolding x by simp
+  have "x - ?y = 0" unfolding x by (simp add: Complex_eq)
   hence x: "x = ?y" by simp
   show "Re x \<in> \<rat> \<and> Im x = 0" unfolding x complex.sel by auto
 next
   assume "Re x \<in> \<rat> \<and> Im x = 0"
   then obtain q where "Re x = of_rat q" "Im x = 0" unfolding Rats_def by auto
   hence "x = Complex (of_rat q) 0" by (metis complex_surj)
-  thus "x \<in> \<rat>" by auto
+  thus "x \<in> \<rat>" by (simp add: Complex_eq)
 qed
   
 instantiation complex :: is_rat

@@ -15,6 +15,7 @@ session Collections (AFP) = Refine_Monadic +
   (* Libraries and Tools *)
     "Lib/Sorted_List_Operations"
     "Lib/HashCode"
+    "Lib/Code_Target_ICF"
     "Lib/RBT_add"
     "Lib/Dlist_add"
     "Lib/Assoc_List"

@@ -1,48 +1,48 @@
-from terminal import *
+import terminal
 from config import licenses
 
 def parse_extra(extra, **kwargs):
-	k, v = extra.split(":", 1)
-	return k.strip(), v.strip()
+    k, v = extra.split(":", 1)
+    return k.strip(), v.strip()
 
 # extracts name and URL from 'name <URL>' as a pair
 def parse_name_url(name, entry, key):
-	if name.find(" and ") != -1:
-		warn(u"In entry {0}: {1} field contains 'and'. Use ',' to separate names.".format(entry, key))
-	url_start = name.find('<')
-	url_end = name.find('>')
-	if url_start != -1 and url_end != -1:
-		url = name[url_start+1:url_end].strip()
-		if url.startswith("mailto:"):
-			url = url.replace("@", " /at/ ").replace(".", " /dot/ ")
-		elif "@" in url:
-			warn(u"In entry {0}: Found mail address without 'mailto:': {1}".format(entry, url))
-			url = "mailto:" + url
-			url = url.replace("@", " /at/ ").replace(".", " /dot/ ")
-		return name[:url_start].strip(), url
-	else:
-		notice(u"In entry {0}: no URL specified for {1} {2} ".format(entry, key, name))
-		return name, None
+    if name.find(" and ") != -1:
+        terminal.warn(u"In entry {0}: {1} field contains 'and'. Use ',' to separate names.".format(entry, key))
+    url_start = name.find('<')
+    url_end = name.find('>')
+    if url_start != -1 and url_end != -1:
+        url = name[url_start+1:url_end].strip()
+        if url.startswith("mailto:"):
+            url = url.replace("@", " /at/ ").replace(".", " /dot/ ")
+        elif "@" in url:
+            terminal.warn(u"In entry {0}: Found mail address without 'mailto:': {1}".format(entry, url))
+            url = "mailto:" + url
+            url = url.replace("@", " /at/ ").replace(".", " /dot/ ")
+        return name[:url_start].strip(), url
+    else:
+        terminal.notice(u"In entry {0}: no URL specified for {1} {2} ".format(entry, key, name))
+        return name, None
 
 def parse_author(author, entry, key):
-	return parse_name_url(author, entry, key)
+    return parse_name_url(author, entry, key)
 
 def parse_contributors(contributor, entry, key):
-	if contributor == "":
-		return "", None
-	else:
-		return parse_name_url(contributor, entry, key)
+    if contributor == "":
+        return "", None
+    else:
+        return parse_name_url(contributor, entry, key)
 
-def parse_license(license, **kwargs):
-	if license not in licenses:
-		raise ValueError(u"Unknown license {0}".formate(license))
-	return licenses[license]
+def parse_license(name, **kwargs):
+    if name not in licenses:
+        raise ValueError(u"Unknown license {0}".format(name))
+    return licenses[name]
 
 def parse_email(email, entry, key):
-	stripped = email.strip()
-	if ' ' in stripped:
-		warn(u"In entry {0}: possibly malformed email in field {1}: '{2}'".format(entry, key, email))
-	return stripped
+    stripped = email.strip()
+    if ' ' in stripped:
+        terminal.warn(u"In entry {0}: possibly malformed email in field {1}: '{2}'".format(entry, key, email))
+    return stripped
 
 # key : (split, processor, default)
 #   'key' denotes the key of the key-value pair in the metadata file
@@ -57,13 +57,13 @@ def parse_email(email, entry, key):
 #     as if it has been read from the file, i. e. is subject to splitting and
 #     processing
 attribute_schema = {
-	'topic': (True, None, None),
-	'date': (False, None, None),
-	'author': (True, parse_author, None),
-	'contributors': (True, parse_contributors, ""),
-	'title': (False, None, None),
-	'abstract': (False, None, None),
-	'license': (False, parse_license, "BSD"),
-	'extra*': (False, parse_extra, None),
-	'notify': (True, parse_email, "")
+    'topic': (True, None, None),
+    'date': (False, None, None),
+    'author': (True, parse_author, None),
+    'contributors': (True, parse_contributors, ""),
+    'title': (False, None, None),
+    'abstract': (False, None, None),
+    'license': (False, parse_license, "BSD"),
+    'extra*': (False, parse_extra, None),
+    'notify': (True, parse_email, "")
 }

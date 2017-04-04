@@ -3,25 +3,26 @@
 *)
 
 theory Fekete
-imports SG_Library_Complement
-
+  imports "~~/src/HOL/Analysis/Analysis"
 begin
 
-section {*Subadditive and submultiplicative sequences*}
+section \<open>Subadditive and submultiplicative sequences\<close>
 
-text {*A real sequence is subadditive if $u_{n+m} \leq u_n+u_m$. This implies the
+text \<open>A real sequence is subadditive if $u_{n+m} \leq u_n+u_m$. This implies the
 convergence of $u_n/n$ to $Inf\{u_n/n\} \in [-\infty, +\infty)$, a useful result known
 as Fekete lemma. We prove it below.
 
 Taking logarithms, the same result applies to submultiplicative sequences. We illustrate
 it with the definition of the spectral radius as the limit of $\|x^n\|^{1/n}$, the
-convergence following from Fekete lemma.*}
+convergence following from Fekete lemma.\<close>
 
 
-subsection {*Subadditive sequences*}
+subsection \<open>Subadditive sequences\<close>
+
+text \<open>We define subadditive sequences, either from the start or eventually.\<close>
 
 definition subadditive::"(nat\<Rightarrow>real) \<Rightarrow> bool"
-  where "subadditive u= (\<forall>m n. u (m+n) \<le> u m + u n)"
+  where "subadditive u = (\<forall>m n. u (m+n) \<le> u m + u n)"
 
 definition eventually_subadditive::"(nat\<Rightarrow>real) \<Rightarrow> nat \<Rightarrow> bool"
   where "eventually_subadditive u N0 = (\<forall>m>N0. \<forall>n>N0. u (m+n) \<le> u m + u n)"
@@ -31,116 +32,103 @@ lemma subadditive_imp_eventually_subadditive:
   shows "eventually_subadditive u 0"
 using assms unfolding subadditive_def eventually_subadditive_def by auto
 
-lemma eventually_subadditive_epsilon:
-  assumes "eventually_subadditive u N0"
-  shows "\<forall>\<epsilon>>0. \<forall>n>N0. \<exists>N>N0. \<forall>m\<ge>N. u m/m < u n/n + \<epsilon>"
-proof (intro allI impI)
+text \<open>The main inequality that will lead to convergence is given in the next lemma:
+given $n$, then eventually $u_m/m$ is bounded by $u_n/n$, up to an arbitrarily small error.
+This is proved by doing the euclidean division of $m$ by $n$ and using the subadditivity.
+(the remainder in the euclidean division will give the error term.)\<close>
+
+lemma eventually_subadditive_ineq:
+  assumes "eventually_subadditive u N0" "e>0" "n>N0"
+  shows "\<exists>N>N0. \<forall>m\<ge>N. u m/m < u n/n + e"
+proof -
   have ineq_rec: "u(a*n+r) \<le> a * u n + u r" if "n>N0" "r>N0" for a n r
   proof (induct a)
     case (Suc a)
-    have "a*n+r>N0" using `r>N0` by simp
-    have "u((Suc a)*n+r) = u(a*n+r+n)" by (simp add: add.commute add.left_commute)
-    also have "... \<le> u(a*n+r)+u n" using assms `n>N0` `a*n+r>N0` eventually_subadditive_def by blast
+    have "a*n+r>N0" using \<open>r>N0\<close> by simp
+    have "u((Suc a)*n+r) = u(a*n+r+n)" by (simp add: algebra_simps)
+    also have "... \<le> u(a*n+r)+u n" using assms \<open>n>N0\<close> \<open>a*n+r>N0\<close> eventually_subadditive_def by blast
     also have "... \<le> a*u n + u r + u n" by (simp add: Suc.hyps)
-    also have "... = (Suc a) * u n + u r" by (simp add: distrib_left mult.commute)
+    also have "... = (Suc a) * u n + u r" by (simp add: algebra_simps)
     finally show ?case by simp
   qed (simp)
 
-  fix \<epsilon>::real and n::nat
-  assume "\<epsilon>>0" "n>N0"
-  have "n>0" using `n>N0` by simp
-  then have "real n>0" by simp
-
-  let ?V="{abs(u i) |i. i\<le>2*n}"
-  have "bdd_above ?V" by simp
-  then obtain C where C_def: "\<And>t. t\<in>?V \<Longrightarrow> t\<le>C" by (meson bdd_above_def)
+  have "n>0" "real n > 0" using \<open>n>N0\<close> by auto
+  define C where "C = Max {abs(u i) |i. i\<le>2*n}"
+  have ineq_C: "abs(u i) \<le> C" if "i \<le> 2 * n" for i
+    unfolding C_def by (intro Max_ge, auto simp add: that)
 
   have ineq_all_m: "u m/m \<le> u n/n + 3*C/m" if "m\<ge>n" for m
   proof -
-    have "real m>0" using `m\<ge>n` `real n>0` by auto
+    have "real m>0" using \<open>m\<ge>n\<close> \<open>0 < real n\<close> by linarith
 
-    obtain a0 r0 where "r0<n" "m=a0*n+r0"
-      by (metis `0 < n` add.commute mod_eqD mod_less_divisor)
+    obtain a0 r0 where "r0<n" "m = a0*n+r0"
+      by (metis \<open>0 < n\<close> add.commute mod_eqD mod_less_divisor)
     define a where "a = a0-1"
     define r where "r = r0+n"
-    have "r<2*n" unfolding r_def by (simp add:`r0<n`)
-    have "r\<ge>n" unfolding r_def by simp
-    have "a0>0" using `m = a0*n + r0` `n \<le> m` `r0 < n` not_le by fastforce
-    then have "m=a*n+r" using a_def r_def `m=a0*n+r0` mult_eq_if by auto
-    then have real_eq:"real n*a - m = -r" by simp
+    have "r<2*n" "r\<ge>n" unfolding r_def by (auto simp add:\<open>r0<n\<close>)
+    have "a0>0" using \<open>m = a0*n + r0\<close> \<open>n \<le> m\<close> \<open>r0 < n\<close> not_le by fastforce
+    then have "m = a * n + r" using a_def r_def \<open>m = a0*n+r0\<close> mult_eq_if by auto
+    then have real_eq: "-r = real n * a - m" by simp
 
-    have "r>N0" using `r\<ge>n` `n>N0` by simp
-    then have "u m \<le> a*u n + u r" using ineq_rec `m=a*n+r` `n>N0` by simp
-    then have "n*u m \<le> n*(a*u n + u r)" using `real n>0` by simp
-    then have "n*u m \<le> n*a*u n + n*u r" by (simp add: distrib_left)
-    then have "n*u m - m*u n \<le> (n*a-real m)*u n + n*u r"by (simp add: left_diff_distrib)
-    then have *: "n*u m - m*u n \<le> -r*u n + n*u r" using real_eq by auto
-
-    have "-r*u n \<le> abs(r*u n)" by linarith
-    also have "... \<le> r*abs(u n)" by (simp add: abs_mult)
-    also have "... \<le> n*2*abs(u n)" using `r < 2 * n` less_eq_real_def by auto
-    finally have "-r*u n \<le> n*2*abs(u n)".
-    moreover have "n*u r \<le> n*abs(u r)" by (simp add: ordered_comm_semiring_class.comm_mult_left_mono)
-    then have **: "-r*u n + n*u r \<le> n*2*abs(u n) + n*abs(u r)" using add_mono calculation by blast
-
-    have "n \<le> 2*n" by auto
-    then have "abs(u n) \<le> C" using C_def by blast
-    moreover have "abs(u r) \<le> C" using `r<2*n` C_def less_imp_le by auto
-    ultimately have "2*abs(u n) + abs(u r) \<le> 3*C" by linarith
-    then have "n*(2*abs(u n) + abs(u r)) \<le> 3*C*n" using `real n>0` by simp
-    then have "n*2*abs(u n) + n*abs(u r) \<le> 3*C*n" by (simp add: distrib_left)
-
-    then have "n*u m - m*u n \<le> 3*C*n" using * ** by linarith
-    then show "u m/m \<le> u n/n + 3*C/m" using `0 < real n` `0 < real m` by (simp add: divide_simps mult.commute)
+    have "r>N0" using \<open>r\<ge>n\<close> \<open>n>N0\<close> by simp
+    then have "u m \<le> a * u n + u r" using ineq_rec \<open>m = a*n+r\<close> \<open>n>N0\<close> by simp
+    then have "n * u m \<le> n * (a * u n + u r)" using \<open>real n>0\<close> by simp
+    then have "n * u m - m * u n \<le> -r * u n + n * u r"
+      unfolding real_eq by (simp add: algebra_simps)
+    also have "... \<le> r * abs(u n) + n * abs(u r)"
+      apply (intro add_mono mult_left_mono) using real_0_le_add_iff by fastforce+
+    also have "... \<le> (2 * n) * C + n * C"
+      apply (intro add_mono mult_mono ineq_C) using less_imp_le[OF \<open>r < 2 * n\<close>] by auto
+    finally have "n * u m - m * u n \<le> 3*C*n" by auto
+    then show "u m/m \<le> u n/n + 3*C/m"
+      using \<open>0 < real n\<close> \<open>0 < real m\<close> by (simp add: divide_simps mult.commute)
   qed
 
-  obtain M::nat where "M \<ge> 3*C/\<epsilon>" using real_nat_ceiling_ge by auto
-  define N where "N = M+n+N0+1"
-  then have "N>M" by simp
-  then have "N>3*C/ \<epsilon>" using `3 * C / \<epsilon> \<le> real M` by linarith
-  have "N\<ge>n" using N_def by simp
-  have "N>N0" using N_def by simp
-  {
-    fix m::nat
-    assume "m\<ge>N"
-    have "3*C < \<epsilon>*N" by (metis `0 < \<epsilon>` `3 * C / \<epsilon> < real N` linordered_field_class.sign_simps(24) pos_divide_less_eq)
-    moreover have "\<epsilon>*N \<le> \<epsilon>*m" using `0 < \<epsilon>` `N \<le> m` by auto
-    ultimately have "3*C < \<epsilon>*m" by simp
-    then have "3*C/m < \<epsilon>" by (simp add: `0 < \<epsilon>` divide_simps)
-    moreover have "u m/m \<le> u n/n + 3*C/m" using ineq_all_m `n \<le> N` `N \<le> m` by auto
-    ultimately have "u m/m < u n/n + \<epsilon>" by simp
-  }
-  then show "\<exists>N>N0. \<forall>m\<ge>N. u m/m < u n/n + \<epsilon>" using `N0 < N` by blast
+  obtain M::nat where M: "M \<ge> 3 * C / e" using real_nat_ceiling_ge by auto
+  define N where "N = M + n + N0 + 1"
+  have "N > 3 * C / e" "N \<ge> n" "N > N0" unfolding N_def using M by auto
+  have "u m/m < u n/n + e" if "m \<ge> N" for m
+  proof -
+    have "3 * C / m < e"
+      using that \<open>N > 3 * C / e\<close> \<open>e > 0\<close> apply (auto simp add: algebra_simps divide_simps)
+      by (meson le_less_trans linorder_not_le mult_less_cancel_left_pos of_nat_less_iff)
+    then show ?thesis using ineq_all_m[of m] \<open>n \<le> N\<close> \<open>N \<le> m\<close> by auto
+  qed
+  then show ?thesis using \<open>N0 < N\<close> by blast
 qed
+
+text \<open>From the inequality above, we deduce the convergence of $u_n/n$ to its infimum. As this
+infimum might be $-\infty$, we formulate this convergence in the extended reals. Then, we
+specialize it to the real situation, separating the cases where $u_n/n$ is bounded below or not.\<close>
 
 lemma subadditive_converges_ereal':
   assumes "eventually_subadditive u N0"
   shows "(\<lambda>m. ereal(u m/m)) \<longlonglongrightarrow> Inf {ereal(u n/n) | n. n>N0}"
 proof -
-  have main_ineq: "\<forall>e>0. \<forall>n>N0. \<exists>N>N0. \<forall>m\<ge>N. u m/m < u n/n + e"
-    using assms(1) eventually_subadditive_epsilon by simp
-
   define v where "v = (\<lambda>m. ereal(u m/m))"
   define V where "V = {v n | n. n>N0}"
   define l where "l = Inf V"
 
   have "\<And>t. t\<in>V \<Longrightarrow> t\<ge>l" by (simp add: Inf_lower l_def)
-  then have "\<And>n. n>N0 \<Longrightarrow> v n \<ge> l" using V_def by blast
-  then have lower: "eventually (\<lambda>n. a<v n) sequentially" if "a<l" for a
+  then have "v n \<ge> l" if "n > N0" for n using V_def that by blast
+  then have lower: "eventually (\<lambda>n. a < v n) sequentially" if "a < l" for a
     by (meson that dual_order.strict_trans1 eventually_at_top_dense)
 
-  have upper: "eventually (\<lambda>n. a > v n) sequentially" if "a>l" for a
+  have upper: "eventually (\<lambda>n. a > v n) sequentially" if "a > l" for a
   proof -
-    obtain t where "t\<in>V" "t<a" by (metis `a>l` Inf_greatest l_def not_le)
+    obtain t where "t\<in>V" "t<a" by (metis \<open>a>l\<close> Inf_greatest l_def not_le)
     then obtain e::real where "e>0" "t+e < a" by (meson ereal_le_epsilon2 leD le_less_linear)
-    obtain n where "n>N0" "t=u n/n" using V_def v_def `t \<in> V` by blast
-    then have "u n/n + e < a" using `t+e < a` by simp
-    obtain N where "\<forall>m\<ge>N. u m/m < u n/n + e" using main_ineq `0 < e` `N0 < n` by blast
-    then have "\<forall>m\<ge>N. u m/m < a" using `u n/n + e < a` less_ereal.simps(1) less_trans by blast
-    then have "\<forall>m\<ge>N. v m<a" using v_def by blast
+    obtain n where "n>N0" "t = u n/n" using V_def v_def \<open>t \<in> V\<close> by blast
+    then have "u n/n + e < a" using \<open>t+e < a\<close> by simp
+    obtain N where "\<forall>m\<ge>N. u m/m < u n/n + e"
+      using eventually_subadditive_ineq[OF assms] \<open>0 < e\<close> \<open>N0 < n\<close> by blast
+    then have "u m/m < a" if "m \<ge> N" for m
+      using that \<open>u n/n + e < a\<close> less_ereal.simps(1) less_trans by blast
+    then have "v m< a" if "m \<ge> N" for m using v_def that by blast
     then show ?thesis using eventually_at_top_linorder by auto
   qed
-  from lower and upper show ?thesis unfolding V_def l_def v_def by (simp add: order_tendsto_iff)
+  show ?thesis
+    using lower upper unfolding V_def l_def v_def by (simp add: order_tendsto_iff)
 qed
 
 lemma subadditive_converges_ereal:
@@ -180,7 +168,7 @@ proof -
   define V where "V = {u n/n | n. n>N0}"
   then have "\<not> bdd_below V" using assms by simp
   have "Inf {ereal(t) | t. t\<in>V} = -\<infinity>"
-    by (rule ereal_bot, metis (mono_tags, lifting) `\<not> bdd_below V` bdd_below_def
+    by (rule ereal_bot, metis (mono_tags, lifting) \<open>\<not> bdd_below V\<close> bdd_below_def
         leI Inf_lower2 ereal_less_eq(3) le_less mem_Collect_eq)
   moreover have "{ereal(t)| t. t\<in>V} = {ereal(u n/n)|n. n > N0}" using V_def by blast
   ultimately have "Inf {ereal(u n/n)|n. n > N0} = -\<infinity>" by auto
@@ -193,7 +181,16 @@ lemma subadditive_converges_unbounded:
   shows "(\<lambda>n. ereal(u n/n)) \<longlonglongrightarrow> -\<infinity>"
 by (rule subadditive_converges_unbounded'[OF subadditive_imp_eventually_subadditive[OF assms(1)] assms(2)])
 
-subsection {*Submultiplicative sequences, application to the spectral radius*}
+
+subsection \<open>Submultiplicative sequences, application to the spectral radius\<close>
+
+text \<open>In the same way as subadditive sequences, one may define submultiplicative sequences.
+Essentially, a sequence is submultiplicative if its logarithm is subadditive. A difference is
+that we allow a submultiplicative sequence to take the value $0$, as this shows up in applications.
+This implies that we have to distinguish in the proofs the situations where the value $0$
+is taken or not. In the latter situation, we can use directly the results from the
+subadditive case to deduce convergence. In the former situation, convergence to $0$ is obvious
+as the sequence vanishes eventually.\<close>
 
 lemma submultiplicative_converges:
   fixes u::"nat\<Rightarrow>real"
@@ -204,34 +201,33 @@ proof -
   define v where "v = (\<lambda> n. root n (u n))"
   define V where "V = {v n | n. n>0}"
   then have "V \<noteq> {}" by blast
-  have "\<And>t. t\<in>V \<Longrightarrow> t \<ge> 0" using V_def v_def assms(1) by auto
-  then have "Inf V \<ge> 0" by (simp add: `V \<noteq> {}` cInf_greatest)
-  then have "bdd_below V" by (meson `\<And>t. t \<in> V \<Longrightarrow> 0 \<le> t` bdd_below_def)
+  have "t \<ge> 0" if "t \<in> V" for t using that V_def v_def assms(1) by auto
+  then have "Inf V \<ge> 0" by (simp add: \<open>V \<noteq> {}\<close> cInf_greatest)
+  have "bdd_below V" by (meson \<open>\<And>t. t \<in> V \<Longrightarrow> 0 \<le> t\<close> bdd_below_def)
 
   show ?thesis
   proof cases
     assume "\<exists>n. u n = 0"
     then obtain n where "u n = 0" by auto
-    then have "\<And>m. m\<ge>n \<Longrightarrow> u m = 0" by (metis antisym_conv assms(1) assms(2) le_Suc_ex mult_zero_left)
-    then have "\<And>m. m\<ge>n \<Longrightarrow> v m = 0" using v_def by simp
+    then have "u m = 0" if "m \<ge> n" for m by (metis that antisym_conv assms(1) assms(2) le_Suc_ex mult_zero_left)
+    then have *: "v m = 0" if "m \<ge> n" for m using v_def that by simp
     then have "v \<longlonglongrightarrow> 0" using tendsto_explicit by force
 
-    obtain m where "m>0" "v m=0" using `\<And>m. n \<le> m \<Longrightarrow> v m = 0` le_less_linear by blast
-    have "v m \<in> V" using V_def `0 < m` by blast
-    then have "Inf V \<le> 0" by (simp add: `bdd_below V` `v m = 0` cInf_lower)
-    then have "Inf V = 0" using `0 \<le> Inf V` by auto
-
-    then show ?thesis using V_def v_def `v \<longlonglongrightarrow> 0` by auto
+    have "v (Suc n) \<in> V" using V_def by blast
+    moreover have "v (Suc n) = 0" using * by auto
+    ultimately have "Inf V \<le> 0" by (simp add: \<open>bdd_below V\<close> cInf_lower)
+    then have "Inf V = 0" using \<open>0 \<le> Inf V\<close> by auto
+    then show ?thesis using V_def v_def \<open>v \<longlonglongrightarrow> 0\<close> by auto
   next
     assume "\<not> (\<exists>n. u n = 0)"
-    then have "\<And>n. u n > 0" by (metis assms(1) less_eq_real_def)
+    then have "u n > 0" for n by (metis assms(1) less_eq_real_def)
     define w where "w n = ln (u n)" for n
     have express_vn: "v n = exp(w n/n)" if "n>0" for n
     proof -
       have "(exp(w n/n))^n = exp(n*(w n/n))" using exp_real_of_nat_mult by presburger
-      also have "... = exp(w n)" by (simp add: `0 < n`)
-      also have "... = u n" by (simp add: `\<And>n. 0 < u n` w_def)
-      finally have "exp(w n/n) = root n (u n)" by (metis `0 < n` exp_ge_zero real_root_power_cancel)
+      also have "... = exp(w n)" by (simp add: \<open>0 < n\<close>)
+      also have "... = u n" by (simp add: \<open>\<And>n. 0 < u n\<close> w_def)
+      finally have "exp(w n/n) = root n (u n)" by (metis \<open>0 < n\<close> exp_ge_zero real_root_power_cancel)
       then show ?thesis unfolding v_def by simp
     qed
 
@@ -239,53 +235,56 @@ proof -
     proof (auto)
       fix m n
       have "w (m+n) = ln (u (m+n))" by (simp add: w_def)
-      also have "... \<le> ln(u m * u n)" by (simp add: `\<And>n. 0 < u n` assms(2))
-      also have "... = ln(u m) + ln(u n)" by (simp add: `\<And>n. 0 < u n` ln_mult)
+      also have "... \<le> ln(u m * u n)" by (simp add: \<open>\<And>n. 0 < u n\<close> assms(2))
+      also have "... = ln(u m) + ln(u n)" by (simp add: \<open>\<And>n. 0 < u n\<close> ln_mult)
       also have "... = w m + w n" by (simp add: w_def)
       finally show "w (m+n) \<le> w m + w n".
     qed
-    then have main_ineq: "\<forall>e>0. \<forall>n>0. \<exists>N>0. \<forall>m\<ge>N. w m/m < w n/n + e"
-      using eventually_subadditive_epsilon by blast
 
     define l where "l = Inf V"
-    then have "\<And>n. n>0 \<Longrightarrow> v n\<ge>l" using V_def by (metis (mono_tags, lifting) `bdd_below V` cInf_lower mem_Collect_eq)
-    then have lower: "\<And>a. a < l \<Longrightarrow> eventually (\<lambda>n. a < v n) sequentially" by (meson dual_order.strict_trans1 eventually_at_top_dense)
+    then have "v n\<ge>l" if "n > 0" for n
+      using V_def that by (metis (mono_tags, lifting) \<open>bdd_below V\<close> cInf_lower mem_Collect_eq)
+    then have lower: "eventually (\<lambda>n. a < v n) sequentially" if "a < l" for a
+      by (meson that dual_order.strict_trans1 eventually_at_top_dense)
 
-    have upper: "eventually (\<lambda>n. a > v n) sequentially" if "a>l" for a
+    have upper: "eventually (\<lambda>n. a > v n) sequentially" if "a > l" for a
     proof -
-      obtain t where "t\<in>V" "t<a" using `V \<noteq> {}` cInf_lessD l_def `a>l` by blast
-      then have "t>0" using V_def `\<And>n. 0 < u n` v_def by auto
-      then have "a/t > 1" using `t<a` by simp
+      obtain t where "t\<in>V" "t < a" using \<open>V \<noteq> {}\<close> cInf_lessD l_def \<open>a>l\<close> by blast
+      then have "t > 0" using V_def \<open>\<And>n. 0 < u n\<close> v_def by auto
+      then have "a/t > 1" using \<open>t<a\<close> by simp
       define e where "e = ln(a/t)/2"
-      have "e > 0" "e < ln(a/t)" unfolding e_def by (simp_all add: `1 < a / t` ln_gt_zero)
-      then have "exp(e) < a/t" by (metis `1 < a / t` exp_less_cancel_iff exp_ln less_trans zero_less_one)
+      have "e > 0" "e < ln(a/t)" unfolding e_def by (simp_all add: \<open>1 < a / t\<close> ln_gt_zero)
+      then have "exp(e) < a/t" by (metis \<open>1 < a / t\<close> exp_less_cancel_iff exp_ln less_trans zero_less_one)
 
-      obtain n where "n>0" "t=v n" using V_def v_def `t \<in> V` by blast
-      then have "v n * exp(e) < a" using `exp(e) < a/t` by (metis `0 < t` linordered_field_class.sign_simps(24) pos_less_divide_eq)
+      obtain n where "n>0" "t = v n" using V_def v_def \<open>t \<in> V\<close> by blast
+      then have "v n * exp(e) < a" using \<open>exp(e) < a/t\<close> by (metis \<open>0 < t\<close> linordered_field_class.sign_simps(24) pos_less_divide_eq)
 
-      obtain N where *: "N>0" "\<forall>m\<ge>N. w m/m < w n/n + e" using main_ineq `0 < n` `e>0` by blast
-      {
-        fix m
-        assume "m\<ge>N"
-        then have "m>0" using `N>0` by simp
-        have "w m/m < w n/n + e" by (simp add: `N \<le> m` *)
+      obtain N where *: "N>0" "\<And>m. m\<ge>N \<Longrightarrow> w m/m < w n/n + e"
+        using eventually_subadditive_ineq[OF \<open>eventually_subadditive w 0\<close>] \<open>0 < n\<close> \<open>e>0\<close> by blast
+      have "v m < a" if "m \<ge> N" for m
+      proof -
+        have "m>0" using that \<open>N>0\<close> by simp
+        have "w m/m < w n/n + e" by (simp add: \<open>N \<le> m\<close> *)
         then have "exp(w m/m) < exp(w n/n + e)" by simp
         also have "... = exp(w n/n) * exp(e)" by (simp add: mult_exp_exp)
-        finally have "v m < v n * exp(e)" using express_vn `m>0` `n>0` by simp
-        then have "v m < a" using `v n * exp(e) < a` by simp
-      }
+        finally have "v m < v n * exp(e)" using express_vn \<open>m>0\<close> \<open>n>0\<close> by simp
+        then show "v m < a" using \<open>v n * exp(e) < a\<close> by simp
+      qed
       then show ?thesis using eventually_at_top_linorder by auto
     qed
 
-    from lower and upper show ?thesis unfolding v_def l_def V_def by (simp add: order_tendsto_iff)
+    show ?thesis
+      using lower upper unfolding v_def l_def V_def by (simp add: order_tendsto_iff)
   qed
 qed
 
-definition
-  spectral_radius::"'a::real_normed_algebra_1 \<Rightarrow> real"
+text \<open>An important application of submultiplicativity is to prove the existence of the
+spectral radius of a matrix, as the limit of $\|A^n\|^{1/n}$.\<close>
+
+definition spectral_radius::"'a::real_normed_algebra_1 \<Rightarrow> real"
   where "spectral_radius x = Inf {root n (norm(x^n))| n. n>0}"
 
-lemma spectral_radius_inclusions:
+lemma spectral_radius_aux:
   fixes x::"'a::real_normed_algebra_1"
   defines "V \<equiv> {root n (norm(x^n))| n. n>0}"
   shows "\<And>t. t\<in>V \<Longrightarrow> t \<ge> spectral_radius x"
@@ -297,20 +296,20 @@ proof -
   show "V\<noteq>{}" using V_def by blast
   show *: "t \<ge> 0" if "t \<in> V" for t using that unfolding V_def using real_root_pos_pos_le by auto
   then show "bdd_below V" by (meson bdd_below_def)
-  then show "Inf V \<ge> 0" by (simp add: `V \<noteq> {}` * cInf_greatest)
-  show "\<And>t. t\<in>V \<Longrightarrow> t \<ge> spectral_radius x" by (metis (mono_tags, lifting) `bdd_below V` assms cInf_lower spectral_radius_def)
+  then show "Inf V \<ge> 0" by (simp add: \<open>V \<noteq> {}\<close> * cInf_greatest)
+  show "\<And>t. t\<in>V \<Longrightarrow> t \<ge> spectral_radius x" by (metis (mono_tags, lifting) \<open>bdd_below V\<close> assms cInf_lower spectral_radius_def)
 qed
 
-lemma spectral_radius_nonneg:
+lemma spectral_radius_nonneg [simp]:
   "spectral_radius x \<ge> 0"
-by (simp add: spectral_radius_inclusions(5) spectral_radius_def)
+by (simp add: spectral_radius_aux(5) spectral_radius_def)
 
-lemma spectral_radius_upper_bound:
+lemma spectral_radius_upper_bound [simp]:
   "(spectral_radius x)^n \<le> norm(x^n)"
 proof (cases)
-  assume "\<not>(n=0)"
-  have "root n (norm(x^n)) \<ge> spectral_radius x" using spectral_radius_inclusions `n \<noteq> 0` by auto
-  then show ?thesis by (metis `n \<noteq> 0` spectral_radius_nonneg norm_ge_zero not_gr0 power_mono real_root_pow_pos2)
+  assume "\<not>(n = 0)"
+  have "root n (norm(x^n)) \<ge> spectral_radius x" using spectral_radius_aux \<open>n \<noteq> 0\<close> by auto
+  then show ?thesis by (metis \<open>n \<noteq> 0\<close> spectral_radius_nonneg norm_ge_zero not_gr0 power_mono real_root_pow_pos2)
 qed (simp)
 
 lemma spectral_radius_limit:

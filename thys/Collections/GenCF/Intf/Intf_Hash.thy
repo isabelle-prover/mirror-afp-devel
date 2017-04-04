@@ -3,6 +3,7 @@ theory Intf_Hash
 imports 
     Main
     "../../Lib/HashCode"
+    "../../Lib/Code_Target_ICF"
     "../../../Automatic_Refinement/Automatic_Refinement"
 begin
 

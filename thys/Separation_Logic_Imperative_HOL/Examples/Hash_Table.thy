@@ -1,6 +1,9 @@
 section "Hash-Tables"
 theory Hash_Table
-imports "../../Collections/Lib/HashCode" "../Sep_Main"
+imports
+  "../../Collections/Lib/HashCode"
+  "../../Collections/Lib/Code_Target_ICF"
+  "../Sep_Main"
 begin
 
 subsection {* Datatype *}

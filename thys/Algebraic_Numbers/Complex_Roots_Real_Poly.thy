@@ -254,7 +254,7 @@ proof -
         thus ?thesis by auto
       next
         case False
-        hence neq: "?c \<noteq> c" by (cases c, auto)
+        hence neq: "?c \<noteq> c" by (simp add: Reals_cnj_iff)
         let ?fac1 = "[: -c, 1 :]"
         let ?fac2 = "[: -?c, 1 :]"
         let ?fac = "?fac1 * ?fac2"
@@ -267,7 +267,7 @@ proof -
         from `p \<noteq> 0` have nz: "?fac1 \<noteq> 0" "?fac2 \<noteq> 0" "?fac \<noteq> 0" "r \<noteq> 0" unfolding p by auto
         have id: "?fac = [: ?c * c, - (?c + c), 1 :]" by simp
         have cfac: "coeffs ?fac = [ ?c * c, - (?c + c), 1 ]" unfolding id by simp
-        have cfac: "set (coeffs ?fac) \<subseteq> \<real>" unfolding cfac by (cases c, auto simp: field_simps)
+        have cfac: "set (coeffs ?fac) \<subseteq> \<real>" unfolding cfac by (auto simp: field_simps Reals_cnj_iff)
         have "degree p = degree ?fac + degree r" unfolding p
           by (rule degree_mult_eq, insert nz, auto)
         also have "degree ?fac = degree ?fac1 + degree ?fac2"

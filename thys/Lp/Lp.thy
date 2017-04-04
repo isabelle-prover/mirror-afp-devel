@@ -470,7 +470,7 @@ proof (auto simp del: infinity_ennreal_def)
   then show "f \<in> borel_measurable M"
     unfolding space\<^sub>N_def using L_infinity(1)[of M] top.not_eq_extremum by fastforce
   then have *: "esssup M (\<lambda>x. \<bar>f x\<bar>) < \<infinity>"
-    using H unfolding space\<^sub>N_def using L_infinity(1)[of M] e2ennreal_infty by auto
+    using H unfolding space\<^sub>N_def L_infinity(1)[of M] by (auto simp add: e2ennreal_infty)
   define C where "C = real_of_ereal(esssup M (\<lambda>x. \<bar>f x\<bar>))"
   have "AE x in M. ereal \<bar>f x\<bar> \<le> ereal C"
   proof (cases "emeasure M (space M) = 0")
@@ -2236,7 +2236,6 @@ proof (cases "eNorm (\<LL> p M) f = \<infinity>")
   show ?thesis
     using Lp_real_cond_exp[OF assms `f \<in> space\<^sub>N (\<LL> p M)`] by (subst eNorm_Norm, auto simp: `f \<in> space\<^sub>N (\<LL> p M)`)+
 qed (simp)
-
 
 end
 

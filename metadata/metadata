@@ -1,3 +1,40 @@
+[Comparison_Sort_Lower_Bound]
+title = Lower bound on comparison-based sorting algorithms
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Computer Science/Algorithms
+date = 2017-03-15
+notify = eberlm@in.tum.de
+abstract = 
+  <p>This article contains a formal proof of the well-known fact
+  that number of comparisons that a comparison-based sorting algorithm
+  needs to perform to sort a list of length <em>n</em> is at
+  least <em>log<sub>2</sub>&nbsp;(n!)</em>
+  in the worst case, i.&thinsp;e.&nbsp;<em>Ω(n log
+  n)</em>.</p>  <p>For this purpose, a shallow
+  embedding for comparison-based sorting algorithms is defined: a
+  sorting algorithm is a recursive datatype containing either a HOL
+  function or a query of a comparison oracle with a continuation
+  containing the remaining computation. This makes it possible to force
+  the algorithm to use only comparisons and to track the number of
+  comparisons made.</p>
+
+[Quick_Sort_Cost]
+title = The number of comparisons in QuickSort
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Computer Science/Algorithms
+date = 2017-03-15
+notify = eberlm@in.tum.de
+abstract = 
+  <p>We give a formal proof of the well-known results about the
+  number of comparisons performed by two variants of QuickSort: first,
+  the expected number of comparisons of randomised QuickSort
+  (i.&thinsp;e.&nbsp;QuickSort with random pivot choice) is
+  <em>2&thinsp;(n+1)&thinsp;H<sub>n</sub> -
+  4&thinsp;n</em>, which is asymptotically equivalent to
+  <em>2&thinsp;n ln n</em>; second, the number of
+  comparisons performed by the classic non-randomised QuickSort has the
+  same distribution in the average case as the randomised one.</p>
+
 [E_Transcendental]
 title = The Transcendence of e
 author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
@@ -241,18 +278,20 @@ author = Manuel Eberl <http://in.tum.de/~eberlm>
 date = 2015-12-28
 topic = Mathematics/Analysis, Mathematics/Number Theory
 abstract =
+	<p>
 	Liouville numbers are a class of transcendental numbers that can be approximated
 	particularly well with rational numbers. Historically, they were the first
 	numbers whose transcendence was proven.
-
+	</p><p>
 	In this entry, we define the concept of Liouville numbers as well as the
 	standard construction to obtain Liouville numbers (including Liouville's
 	constant) and we prove their most important properties: irrationality and
 	transcendence.
-
+	</p><p>
 	The proof is very elementary and requires only standard arithmetic, the Mean
 	Value Theorem for polynomials, and the boundedness of polynomials on compact
 	intervals.
+	</p>
 notify = eberlm@in.tum.de
 
 [Triangle]
@@ -261,15 +300,17 @@ author = Manuel Eberl <http://in.tum.de/~eberlm>
 date = 2015-12-28
 topic = Mathematics/Geometry
 abstract =
+	<p>
 	This entry contains a definition of angles between vectors and between three
 	points. Building on this, we prove basic geometric properties of triangles, such
 	as the Isosceles Triangle Theorem, the Law of Sines and the Law of Cosines, that
 	the sum of the angles of a triangle is π, and the congruence theorems for
 	triangles.
-
+	</p><p>
 	The definitions and proofs were developed following those by John Harrison in
 	HOL Light. However, due to Isabelle's type class system, all definitions and
 	theorems in the Isabelle formalisation hold for all real inner product spaces.
+	</p>
 notify = eberlm@in.tum.de
 
 [Prime_Harmonic_Series]
@@ -278,15 +319,19 @@ author = Manuel Eberl <http://in.tum.de/~eberlm>
 date = 2015-12-28
 topic = Mathematics/Number Theory
 abstract =
-	In this work, we prove the lower bound ln (H_n) - ln(5/3) for the
+	<p>
+	In this work, we prove the lower bound <span class="nobr">ln(H_n) -
+	ln(5/3)</span> for the
 	partial sum of the Prime Harmonic series and, based on this, the divergence of
-	the Prime Harmonic Series ∑ [p prime] · 1/p.
-
+	the Prime Harmonic Series 
+	<span class="nobr">∑[p&thinsp;prime]&thinsp;·&thinsp;1/p.</span>
+	</p><p>
 	The proof relies on the unique squarefree decomposition of natural numbers. This
 	is similar to Euler's original proof (which was highly informal and morally
 	questionable). Its advantage over proofs by contradiction, like the famous one
 	by Paul Erdős, is that it provides a relatively good lower bound for the partial
 	sums.
+	</p>
 notify = eberlm@in.tum.de
 
 [Descartes_Sign_Rule]
@@ -295,15 +340,38 @@ author = Manuel Eberl <http://in.tum.de/~eberlm>
 date = 2015-12-28
 topic = Mathematics/Analysis
 abstract =
+	<p>
 	Descartes' Rule of Signs relates the number of positive real roots of a
 	polynomial with the number of sign changes in its coefficient sequence.
-
+	</p><p>
 	Our proof follows the simple inductive proof given by Rob Arthan, which was also
 	used by John Harrison in his HOL Light formalisation. We proved most of the
 	lemmas for arbitrary linearly-ordered integrity domains (e.g. integers,
 	rationals, reals); the main result, however, requires the intermediate value
 	theorem and was therefore only proven for real polynomials.
+	</p>
 notify = eberlm@in.tum.de
+
+[Euler_MacLaurin]
+title = The Euler–MacLaurin Formula
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Analysis
+date = 2017-03-10
+notify = eberlm@in.tum.de
+abstract =
+  <p>The Euler-MacLaurin formula relates the value of a
+  discrete sum to that of the corresponding integral in terms of the
+  derivatives at the borders of the summation and a remainder term.
+  Since the remainder term is often very small as the summation bounds
+  grow, this can be used to compute asymptotic expansions for
+  sums.</p>  <p>This entry contains a proof of this formula
+  for functions from the reals to an arbitrary Banach space. Two
+  variants of the formula are given: the standard textbook version and a
+  variant outlined in <em>Concrete Mathematics</em> that is
+  more useful for deriving asymptotic estimates.</p>  <p>As
+  example applications, we use that formula to derive the full
+  asymptotic expansion of the harmonic numbers and the sum of inverse
+  squares.</p>
 
 [Card_Partitions]
 title = Cardinality of Set Partitions
@@ -1491,6 +1559,7 @@ date = 2012-02-29
 author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 license = LGPL
 abstract =
+	<p>
 	We provide a generic work-list algorithm to compute the
 	(reflexive-)transitive closure of relations where only successors of newly
 	detected states are generated.
@@ -1499,10 +1568,11 @@ abstract =
 	Moreover, a subsumption relation can be used instead of pure equality.
 	An executable variant of the algorithm is available where the generic operations
 	are instantiated with list operations.
-
+	</p><p>
 	This formalization was performed as part of the IsaFoR/CeTA project,
 	and it has been used to certify size-change
 	termination proofs where large transitive closures have to be computed.
+	</p>
 notify = rene.thiemann@uibk.ac.at
 
 [MuchAdoAboutTwo]
@@ -1917,21 +1987,19 @@ author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <mai
 date = 2015-03-11
 topic = Computer Science/Data Structures
 abstract =
-	We provide a framework for registering automatic methods
+	<p>We provide a framework for registering automatic methods
 	to derive class instances of datatypes,
-	as it is possible using Haskell's ``deriving Ord, Show, ...'' feature.
-
-	We further implemented such automatic methods to derive comparators, linear orders, parametrizable equality functions,
+	as it is possible using Haskell's ``deriving Ord, Show, ...'' feature.</p>
+	<p>We further implemented such automatic methods to derive comparators, linear orders, parametrizable equality functions,
 	and hash-functions which are required in the
 	Isabelle Collection Framework and the Container Framework.
 	Moreover, for the tactic of Blanchette to show that a datatype is countable, we implemented a
 	wrapper so that this tactic becomes accessible in our framework. All of the generators are based on
-	the infrastructure that is provided by the BNF-based datatype package.
-
-	Our formalization was performed as part of the <a href="http://cl-informatik.uibk.ac.at/software/ceta">IsaFoR/CeTA</a> project.
+	the infrastructure that is provided by the BNF-based datatype package.</p>
+	<p>Our formalization was performed as part of the <a href="http://cl-informatik.uibk.ac.at/software/ceta">IsaFoR/CeTA</a> project.
 	With our new tactics we could remove
 	several tedious proofs for (conditional) linear orders, and conditional equality operators
-	within IsaFoR and the Container Framework.
+	within IsaFoR and the Container Framework.</p>
 notify = rene.thiemann@uibk.ac.at
 
 [List-Index]
@@ -3493,21 +3561,24 @@ title = Maximum Cardinality Matching
 author = Christine Rizkallah <http://www.mpi-inf.mpg.de/homepage/crizkall/>
 date = 2011-07-21
 topic = Mathematics/Graph Theory
-abstract = A <em>matching</em> in a graph <i>G</i> is a subset <i>M</i> of the
+abstract =
+	<p>
+	A <em>matching</em> in a graph <i>G</i> is a subset <i>M</i> of the
 	edges of <i>G</i> such that no two share an endpoint. A matching has maximum
 	cardinality if its cardinality is at least as large as that of any other
 	matching. An <em>odd-set cover</em> <i>OSC</i> of a graph <i>G</i> is a
 	labeling of the nodes of <i>G</i> with integers such that every edge of
 	<i>G</i> is either incident to a node labeled 1 or connects two nodes
 	labeled with the same number <i>i &ge; 2</i>.
-	This article proves Edmonds theorem:
-
+	</p><p>
+	This article proves Edmonds theorem:<br>
 	Let <i>M</i> be a matching in a graph <i>G</i> and let <i>OSC</i> be an
 	odd-set cover of <i>G</i>.
 	For any <i>i &ge; 0</i>, let <var>n(i)</var> be the number of nodes
 	labeled <i>i</i>. If <i>|M| = n(1) +
 	&sum;<sub>i &ge; 2</sub>(n(i) div 2)</i>,
 	then <i>M</i> is a maximum cardinality matching.
+	</p>
 notify = nipkow@in.tum.de
 
 [Girth_Chromatic]
@@ -3723,7 +3794,7 @@ author = Christoph Dittmann <mailto:isabelle@christoph-d.de>
 topic = Mathematics/Graph Theory
 date = 2017-02-26
 notify = isabelle@christoph-d.de
-abstract = 
+abstract =
   We present a formalization of Menger's Theorem for directed and
   undirected graphs in Isabelle/HOL.  This well-known result shows that
   if two non-adjacent distinct vertices u, v in a directed graph have no
@@ -4457,22 +4528,31 @@ author = Sebastian Ullrich <mailto:sebasti@nullri.ch>, Denis Lohner <http://pp.i
 date = 2016-02-05
 topic = Computer Science/Algorithms, Computer Science/Programming Languages/Transformations
 abstract =
+	<p>
 	We define a functional variant of the static single assignment (SSA)
 	form construction algorithm described by <a
 	href="http://dx.doi.org/10.1007/978-3-642-37051-9_6">Braun et al.</a>,
 	which combines simplicity and efficiency. The definition is based on a
 	general, abstract control flow graph representation using Isabelle locales.
+	</p>
 	<p>
 	We prove that the algorithm's output is semantically equivalent to the
 	input according to a small-step semantics, and that it is in minimal SSA
 	form for the common special case of reducible inputs. We then show the
 	satisfiability of the locale assumptions by giving instantiations for a
 	simple While language.
+	</p>
 	<p>
 	Furthermore, we use a generic instantiation based on typedefs in order
 	to extract OCaml code and replace the unverified SSA construction
 	algorithm of the <a href="http://dx.doi.org/10.1145/2579080">CompCertSSA
 	project</a> with it.
+	</p>
+	<p>
+	A more detailed description of the verified SSA construction can be found
+	in the paper <a href="http://dx.doi.org/10.1145/2892208.2892211">Verified
+	Construction of Static Single Assignment Form</a>, CC 2016.
+	</p>
 notify = denis.lohner@kit.edu
 
 [Minimal_SSA]
@@ -5259,14 +5339,14 @@ abstract =
   polynomials (which appear e.g. in the Euler&ndash;MacLaurin
   summation formula and the expansion of the log-Gamma function) and
   prove their basic properties.</p>
-  
+
 [Stone_Relation_Algebras]
 title = Stone Relation Algebras
 author = Walter Guttmann <http://www.cosc.canterbury.ac.nz/walter.guttmann/>
 topic = Mathematics/Algebra
 date = 2017-02-07
 notify = walter.guttmann@canterbury.ac.nz
-abstract = 
+abstract =
   We develop Stone relation algebras, which generalise relation algebras
   by replacing the underlying Boolean algebra structure with a Stone
   algebra. We show that finite matrices over extended real numbers form
@@ -5281,7 +5361,7 @@ author = Jasmin Christian Blanchette <mailto:jasmin.blanchette@gmail.com>, Andre
 topic = Logic
 date = 2017-02-10
 notify = jasmin.blanchette@gmail.com
-abstract = 
+abstract =
   A formalized coinductive account of the abstract development of
   Brotherston, Gorogiannis, and Petersen [APLAS 2012], in a slightly
   more general form since we work with arbitrary infinite proofs, which
@@ -5297,7 +5377,7 @@ author = Brandon Bohrer <mailto:bbohrer@cs.cmu.edu>
 topic = Logic, Computer Science/Programming Languages/Logics
 date = 2017-02-13
 notify = bbohrer@cs.cmu.edu
-abstract = 
+abstract =
   We formalize differential dynamic logic, a logic for proving
   properties of hybrid systems. The proof calculus in this formalization
   is based on the uniform substitution principle. We show it is sound
@@ -5314,7 +5394,7 @@ author = Stefan Berghofer <http://www.in.tum.de/~berghofe>
 topic = Computer Science/Security
 date = 2017-02-28
 notify = berghofe@in.tum.de
-abstract = 
+abstract =
   We prove the group law for elliptic curves in Weierstrass form over
   fields of characteristic greater than 2. In addition to affine
   coordinates, we also formalize projective coordinates, which allow for

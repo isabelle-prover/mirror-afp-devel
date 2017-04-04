@@ -3,7 +3,7 @@ theory CAVA_Abstract
 imports 
   "../CAVA_Automata/CAVA_Base/CAVA_Base"
   "../CAVA_Automata/Automata"
-  "../LTL_to_GBA/LTL"
+  "../LTL/LTL"
 begin
 text {*
   This theory defines the abstract version of the cava model checker, 

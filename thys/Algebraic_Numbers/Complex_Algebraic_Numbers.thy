@@ -127,7 +127,7 @@ proof -
   from alg_poly_mult_rat[OF _ alg_poly_add_complex[OF ap apc'], of "inverse 2"]
   have "alg_poly (1 / 2 * (x + cnj x)) ?Rep" unfolding root_poly_Re_def Let_def by auto
   also have "1 / 2 * (x + cnj x) = of_real (Re x)"
-    by (cases x, auto)
+    by (simp add: complex_eq_iff)
   finally have Rep: "?Rep \<noteq> 0" and rt: "rpoly ?Rep (complex_of_real (Re x)) = 0" unfolding alg_poly_def by auto
   from rt[folded poly_complex_of_rat_poly, unfolded poly_complex_to_real]
   have "rpoly ?Rep (Re x) = 0" unfolding poly_real_of_rat_poly .
@@ -139,7 +139,7 @@ proof -
     and appi: "alg_poly (x - cnj x) pi" by auto
   hence appi': "alg_poly (x - cnj x) (?n pi)" by simp
   have id: "1 / (2 * \<i>) * (x - cnj x) = of_real (Im x)"
-    by (cases x, auto)
+    by (simp add: complex_eq_iff)
   from alg_poly_1_2i have 12: "alg_poly (1 / (2 * \<i>)) (?n poly_1_2i)" by simp
   have "\<exists> qi \<in> set ?Imp. (alg_poly (1 / (2 * \<i>) * (x - cnj x)) qi)" 
   proof (cases "x - cnj x = 0")
@@ -149,7 +149,7 @@ proof -
     show ?thesis unfolding root_poly_Im_def Let_def by auto
   next
     case True
-    hence id2: "Im x = 0" by (cases x, auto)
+    hence id2: "Im x = 0" by (auto simp: complex_eq_iff)
     from appi[unfolded True alg_poly_def] have "coeff pi 0 = 0" by (cases pi, auto) 
       (metis add.right_neutral mult_zero_left poly_pCons rpoly.eval_poly_poly rpoly.hom_inj rpoly.hom_zero, 
        metis add.right_neutral mult_eq_0_iff poly_pCons rpoly.eval_poly_poly rpoly.hom_inj rpoly.hom_zero)
@@ -209,8 +209,10 @@ proof -
   have rr': "set rr' = {x. rpoly p x = 0}" unfolding rr'_def
     using real_roots_of_rat_poly[OF p] .
   have rr: "set rr = {x. rpoly p x = 0}" unfolding rr_def using rr' by auto
+  have Cx0: "Complex x 0 = of_real x" for x
+    by (simp add: complex_of_real_def)
   have rrts: "set rrts = {x. poly ?q x = 0 \<and> x \<in> \<real>}" unfolding rrts_def set_map rr q_def
-    by (auto simp: eval_poly_def) 
+    by (auto simp: eval_poly_def Complex_in_Reals Cx0) 
        (metis (full_types) Reals_cases cr.hom_0_iff cr.poly_map_poly image_eqI mem_Collect_eq)
   have cr: "count_roots_rat p = card {x. poly ?q x = 0 \<and> x \<in> \<real>}" 
     unfolding q_def[symmetric] count_roots_rat[of p] eval_poly_def 
@@ -258,8 +260,10 @@ proof -
             by (auto simp: real_roots_of_rat_poly)    
           have x: "x = ?x" by (cases x, auto)
           with rt have rt: "rpoly p ?x = 0" by auto
-          have intro: "\<And> y Y. y \<in> Y \<Longrightarrow> complex_of_real (Re x) + \<i> * y \<in> Complex (Re x) ` Y" by simp
-          from rt qi gt mem(2) have "?x \<in> set cpx" unfolding cpx_def by (auto intro!: bexI[OF _ mem(1)] intro)
+          have intro: "\<And> y Y. y \<in> Y \<Longrightarrow> complex_of_real (Re x) + \<i> * y \<in> Complex (Re x) ` Y" 
+            by (auto simp: complex_eq_iff)
+          from rt qi gt mem(2) have "?x \<in> set cpx" unfolding cpx_def 
+            by (auto intro!: bexI[OF _ mem(1)] intro simp: complex_eq_iff)
           hence "x \<in> set cpx" using x by simp
         } note gt = this
         have cases: "Im x = 0 \<or> Im x > 0 \<or> Im x < 0" by auto
@@ -302,7 +306,7 @@ proof -
       have l: "?l = of_real ` {x. poly q x = 0} \<union> set (croots2 ?c2)"
         unfolding d rts_def id if_False if_True set_append rrts 
         using real_roots_of_rat_poly[OF p] pq 
-        by (auto simp: q_def Reals_def)
+        by (auto simp: q_def Reals_cnj_iff Reals_def Cx0)
       from dist
       have len_rr: "length rr = card {x. poly q x = 0}" unfolding rr[unfolded pq, symmetric] 
         by (simp add: distinct_card)
