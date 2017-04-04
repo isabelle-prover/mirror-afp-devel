@@ -9,7 +9,24 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>15 Mar 2017 00:00:00 +0000</pubDate>
+    <pubDate>04 Apr 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>Expected Shape of Random Binary Search Trees</title>
+              <link>https://www.isa-afp.org/entries/Random_BSTs.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Random_BSTs.shtml</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>04 Apr 2017 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;This entry contains proofs for the textbook results about the
+distributions of the height and internal path length of random binary
+search trees (BSTs), i.&amp;thinsp;e. BSTs that are formed by taking
+an empty BST and inserting elements from a fixed set in random
+order.&lt;/p&gt;  &lt;p&gt;In particular, we prove a logarithmic upper
+bound on the expected height and the &lt;em&gt;Θ(n log n)&lt;/em&gt;
+closed-form solution for the expected internal path length in terms of
+the harmonic numbers. We also show how the internal path length
+relates to the average-case cost of a lookup in a BST.&lt;/p&gt;</description>
+    </item>
     <item>
        <title>The number of comparisons in QuickSort</title>
               <link>https://www.isa-afp.org/entries/Quick_Sort_Cost.shtml</link>
@@ -503,18 +520,6 @@ Linux-based firewall into a set of static OpenFlow rules. Our
 implementation is verified against a model of a simplified Linux-based
 router and we can directly show how much of the original functionality
 is preserved.</description>
-    </item>
-    <item>
-       <title>Source Coding Theorem</title>
-              <link>https://www.isa-afp.org/entries/Source_Coding_Theorem.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Source_Coding_Theorem.shtml</guid>
-       <dc:creator> Quentin Hibon, Lawrence Paulson       </dc:creator>
-       <pubDate>19 Oct 2016 00:00:00 +0000</pubDate>
-       <description>
-This document contains a proof of the necessary condition on the code
-rate of a source code, namely that this code rate is bounded by the
-entropy of the source. This represents one half of Shannon&#39;s source
-coding theorem, which is itself an equivalence.</description>
     </item>
   </channel>
 </rss>

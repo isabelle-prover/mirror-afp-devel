@@ -35,6 +35,23 @@ abstract =
   comparisons performed by the classic non-randomised QuickSort has the
   same distribution in the average case as the randomised one.</p>
 
+[Random_BSTs]
+title = Expected Shape of Random Binary Search Trees
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Computer Science/Data Structures
+date = 2017-04-04
+notify = eberlm@in.tum.de
+abstract = 
+  <p>This entry contains proofs for the textbook results about the
+  distributions of the height and internal path length of random binary
+  search trees (BSTs), i.&thinsp;e. BSTs that are formed by taking
+  an empty BST and inserting elements from a fixed set in random
+  order.</p>  <p>In particular, we prove a logarithmic upper
+  bound on the expected height and the <em>Θ(n log n)</em>
+  closed-form solution for the expected internal path length in terms of
+  the harmonic numbers. We also show how the internal path length
+  relates to the average-case cost of a lookup in a BST.</p>
+
 [E_Transcendental]
 title = The Transcendence of e
 author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
