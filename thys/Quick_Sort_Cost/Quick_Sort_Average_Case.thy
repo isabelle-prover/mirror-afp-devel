@@ -6,7 +6,7 @@
 *)
 section \<open>Average case analysis of deterministic QuickSort\<close>
 theory Quick_Sort_Average_Case
-  imports Randomised_Quick_Sort More_Shuffle_Product
+  imports Randomised_Quick_Sort
 begin
   
 subsection \<open>Definition of deterministic QuickSort\<close>
@@ -93,13 +93,18 @@ subsection \<open>Analysis\<close>
 text \<open>
   We will reduce the average-case analysis to showing that it is essentially equivalent to 
   the randomised QuickSort we analysed earlier. Similar, but more direct analyses are given 
-  by Hoare~\cite{hoare} and Sedgewick~\cite{sedgewick}.
+  by Hoare~\cite{hoare} and Sedgewick~\cite{sedgewick}. 
 
-  We first need the following lemma that states that if we 
-  draw a permutation of a set uniformly at random and then partition the permutation into two 
-  halves w.\,r.\,t.\ some predicate, we can also first partition the original set and then 
-  draw permutations of the two halves independently and uniformly at random and get the 
-  same result.
+  A formal proof of the analysis is given by van der Waagen and McKinna~\cite{vdw}. Unlike we,
+  they prove the result without the usual assumption that the input list has no repeated
+  elements. Due to this, they also use a slightly modified QuickSort algorithm with special
+  treatment of elements that are equal to the pivot. For simplicity, we chose not to do this,
+  but it would be relatively easy to adapt our formalisation to this.
+
+  For our analysis, we first need the following lemma that states that if we draw a permutation 
+  of a set uniformly at random and then partition the permutation into two halves w.\,r.\,t.\ 
+  some predicate, we can also first partition the original set and then draw permutations of the 
+  two halves independently and uniformly at random and get the same result.
 \<close>
 lemma partition_random_permutations:
   assumes "finite A"
@@ -128,7 +133,8 @@ proof (rule pmf_eqI, clarify, goal_cases)
     also have "partition P -` {(xs, ys)} = shuffle xs ys" 
       using True by (intro inv_image_partition) (auto simp: permutations_of_set_def)
     also have "permutations_of_set A \<inter> shuffle xs ys = shuffle xs ys"
-      using True distinct_disjoint_shuffle[of xs ys] by (auto simp: permutations_of_set_def)
+      using True distinct_disjoint_shuffle[of xs ys] 
+      by (auto simp: permutations_of_set_def dest: set_shuffle)
     also have "card (shuffle xs ys) = length xs + length ys choose length xs"
       using True by (intro card_disjoint_shuffle) (auto simp: permutations_of_set_def)
     also have "length xs + length ys = card A" by (simp add: card_eq)
