@@ -538,6 +538,7 @@ proof -
     "(fi, i) \<in> set fs \<Longrightarrow> content fi = 1 \<and> lead_coeff fi > 0" "distinct (map snd fs)" by auto
 qed
 
+ 
 definition x_split :: "'a :: semiring_0 poly \<Rightarrow> nat \<times> 'a poly" where
   "x_split f = (let fs = coeffs f; zs = takeWhile (op = 0) fs
      in case zs of [] \<Rightarrow> (0,f) | _ \<Rightarrow> (length zs, poly_of_list (dropWhile (op = 0) fs)))" 
@@ -576,15 +577,12 @@ proof -
       have ys: "ys \<noteq> []" using nz[unfolded ff] by auto            
       with ys_def have hd: "hd ys \<noteq> 0" by (metis (full_types) hd_dropWhile)
       hence "coeff (poly_of_list ys) 0 \<noteq> 0" unfolding poly_of_list_def coeff_Poly using ys by (cases ys, auto)
-      from ys hd have id: "(coeffs (Poly ys) = []) = False" by auto
-      from nz(2)[unfolded ff] ys have ys0: "last ys \<noteq> 0" by simp
-      show ?thesis unfolding dvd g
-      proof (intro conjI impI)
-        show "coeff (poly_of_list ys) 0 \<noteq> 0" by fact
-        show "f = monom 1 n * poly_of_list ys" unfolding monom_mult_def[symmetric] 
-          coeffs_eq_iff monom_mult_code Let_def ff poly_of_list_def id if_False
-          unfolding coeffs_Poly using ff ys0 by auto
-      qed
+      moreover have "coeffs (Poly ys) = ys"
+        by (simp add: ys_def strip_while_dropWhile_commute)
+      then have "coeffs (monom_mult n (Poly ys)) = replicate n 0 @ ys"
+        by (simp add: coeffs_eq_iff monom_mult_def [symmetric] ff ys monom_mult_code)
+      ultimately show ?thesis unfolding dvd g
+        by (auto simp add: coeffs_eq_iff monom_mult_def [symmetric] ff)
     qed
   qed
   thus "f = monom 1 n * g" "n \<noteq> 0 \<or> f \<noteq> 0 \<Longrightarrow> \<not> monom 1 1 dvd g" by auto

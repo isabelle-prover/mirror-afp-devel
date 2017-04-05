@@ -34,7 +34,7 @@ private abbreviation (input) unit_factor where "unit_factor \<equiv> arith_ops_r
 private abbreviation (input) DP where "DP \<equiv> arith_ops_record.DP ops"
 
 definition is_poly :: "'i list \<Rightarrow> bool" where
-  "is_poly xs = (list_all DP xs \<and> (xs = [] \<or> last xs \<noteq> zero))"
+  "is_poly xs \<longleftrightarrow> list_all DP xs \<and> no_trailing (HOL.eq zero) xs"
 
 definition cCons_i :: "'i \<Rightarrow> 'i list \<Rightarrow> 'i list" 
 where
@@ -205,7 +205,7 @@ context idom_ops
 begin
 
 definition poly_rel :: "'i list \<Rightarrow> 'a poly \<Rightarrow> bool" where
-  "poly_rel x x' = (list_all2 R x (coeffs x'))"
+  "poly_rel x x' \<longleftrightarrow> list_all2 R x (coeffs x')"
 
 lemma right_total_poly_rel[transfer_rule]: 
   "right_total poly_rel"
@@ -215,41 +215,42 @@ lemma bi_unique_poly_rel[transfer_rule]: "bi_unique poly_rel"
   using list.bi_unique_rel[of R] bi_unique unfolding poly_rel_def bi_unique_def coeffs_eq_iff by auto
 
 lemma Domainp_is_poly [transfer_domain_rule]: 
-  "Domainp (poly_rel) = (is_poly ops)"
-  unfolding poly_rel_def[abs_def] is_poly_def[abs_def]
+  "Domainp poly_rel = is_poly ops"
+unfolding poly_rel_def [abs_def] is_poly_def [abs_def]
 proof (intro ext iffI, unfold Domainp_iff)
-  note DPR = fun_cong[OF list.Domainp_rel[of R, unfolded DPR], unfolded Domainp_iff]
+  note DPR = fun_cong [OF list.Domainp_rel [of R, unfolded DPR],
+    unfolded Domainp_iff]
+  let ?no_trailing = "no_trailing (HOL.eq zero)"
   fix xs
-  {
-    fix xs'
-    assume *: "list_all2 R xs xs'"
-    have "(xs' = [] \<or> last (xs') \<noteq> 0) = (xs = [] \<or> last xs \<noteq> zero)"
-    proof (cases "xs = []")
-      case False
-      hence "xs' \<noteq> []" using list_all2_lengthD[OF *] by auto
-      from append_butlast_last_id[OF this] obtain y' ys' where xs': "xs' = ys' @ [y']" by metis
-      from append_butlast_last_id[OF False] obtain y ys where xs: "xs = ys @ [y]" by metis
-      from *[unfolded xs xs'] have "R y y'" by auto
-      with zero eq[unfolded rel_fun_def] show ?thesis unfolding xs xs' by simp
-    next
-      case True
-      with * show ?thesis by simp
-    qed 
-  } note last = this
+  have no_trailing: "no_trailing (HOL.eq 0) xs' \<longleftrightarrow> ?no_trailing xs"
+    if "list_all2 R xs xs'" for xs'
+  proof (cases xs rule: rev_cases)
+    case Nil
+    with that show ?thesis
+      by simp
+  next
+    case (snoc ys y)
+    with that have "xs' \<noteq> []"
+      by auto
+    then obtain ys' y' where "xs' = ys' @ [y']"
+      by (cases xs' rule: rev_cases) simp_all
+    with that snoc show ?thesis
+      by simp (meson bi_unique bi_unique_def zero)
+  qed
   let ?DPR = "arith_ops_record.DP ops"
   {
     assume "\<exists>x'. list_all2 R xs (coeffs x')"
     then obtain xs' where *: "list_all2 R xs (coeffs xs')" by auto
-    with DPR[of xs] have 1: "list_all ?DPR xs" by auto
-    have 2: "coeffs xs' = [] \<or> last (coeffs xs') \<noteq> 0" using last_coeffs_not_0 by auto
-    hence "xs = [] \<or> last xs \<noteq> zero" unfolding last[OF *] .
-    with 1 show "list_all ?DPR xs \<and> (xs = [] \<or> last xs \<noteq> zero)" by auto
+    with DPR [of xs] have "list_all ?DPR xs" by auto
+    then show "list_all ?DPR xs \<and> ?no_trailing xs"
+      using no_trailing [OF *] by simp
   }
   {
-    assume "list_all ?DPR xs \<and> (xs = [] \<or> last xs \<noteq> zero)"
-    with DPR[of xs] obtain xs' where *: "list_all2 R xs xs'" and "xs = [] \<or> last xs \<noteq> zero" 
+    assume "list_all ?DPR xs \<and> ?no_trailing xs"
+    with DPR [of xs] obtain xs' where *: "list_all2 R xs xs'" and "?no_trailing xs" 
       by auto
-    from last[OF *] this(2) have "xs' = [] \<or> last xs' \<noteq> 0" by simp
+    from no_trailing [OF *] this(2) have "no_trailing (HOL.eq 0) xs'"
+      by simp
     hence "coeffs (poly_of_list xs') = xs'" unfolding poly_of_list_impl by auto
     with * show "\<exists>x'. list_all2 R xs (coeffs x')" by metis
   }
