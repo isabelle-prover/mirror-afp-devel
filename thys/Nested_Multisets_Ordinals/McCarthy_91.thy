@@ -114,7 +114,7 @@ proof -
           case False
           hence n_ge_2: "n \<ge> 2"
             using n_ne_0 by simp
-              
+
           have
             split_l: "[2..int n] = [2..int (n - 1)] @ [int n]" and
             split_r: "[1..int n - 1] = [1..int (n - 1) - 1] @ [int n - 1]"
@@ -131,8 +131,11 @@ proof -
              apply (simp add: funpow_rec f_def)
             apply (subst (1 2) funpow_rec)
             apply simp
-            by (smt One_nat_def Suc_nat_eq_nat_zadd1 diff_Suc_1 of_nat_0_le_iff) (* FIXME *)
-              
+            by (metis Nat_Transfer.transfer_int_nat_functions(1) One_nat_def Suc_1 add_Suc_shift
+              diff_Suc_Suc minus_nat.diff_0 nat_int numeral_3_eq_3 plus_nat.add_0
+              transfer_int_nat_numerals(2) transfer_int_nat_numerals(3)
+              transfer_int_nat_numerals(4))
+
           show ?thesis
             using n_ge_2 unfolding split_l split_r list.map f_repeat map_append
               by (auto intro: ih[of "nat (int n - 1)"] simp: less.hyps)
@@ -196,6 +199,6 @@ proof -
   qed
 qed
 
-declare g.simps[simp del]
+declare g.simps [simp del]
 
 end
