@@ -8,9 +8,9 @@ subsection \<open>Polynomials in a Finite Field\<close>
 text \<open>We connect polynomials in a prime field with integer polynomials modulo some prime.\<close>
 
 theory Poly_Mod_Finite_Field
-imports 
-  Poly_Mod
+  imports
   Finite_Field
+  Poly_Mod
   "../Polynomial_Interpolation/Ring_Hom_Poly"
 begin
 

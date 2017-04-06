@@ -9,6 +9,10 @@ session "Lehmer" (AFP) = "HOL-Number_Theory" +
     "~~/src/HOL/Algebra/RingHom"
     "~~/src/HOL/Algebra/Module"
     "~~/src/HOL/Algebra/UnivPoly"
+    "~~/src/HOL/Algebra/More_Group"
+    "~~/src/HOL/Algebra/More_Finite_Product"
+    "~~/src/HOL/Algebra/More_Ring"
+    "~~/src/HOL/Algebra/Multiplicative_Group"
   theories
     Lehmer
   document_files

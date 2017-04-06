@@ -1,7 +1,7 @@
 theory Lehmer
 imports
   Main
-  Multiplicative_Group
+  "~~/src/HOL/Number_Theory/Residues"
 begin
 
 section {* Lehmer's Theorem *}
@@ -22,24 +22,6 @@ proof -
     by (simp add: coprime_power gcd.commute del: One_nat_def)
 qed
 
-lemma phi_leq: "phi x \<le> nat x - 1"
-proof -
-  have "phi x \<le> card {1..x - 1}"
-    unfolding phi_def by (rule card_mono) auto
-  then show ?thesis by simp
-qed
-
-lemma phi_nonzero:
-  assumes "2 \<le> x" shows "phi x \<noteq> 0"
-proof -
-  have "coprime ((x - 1) + 1) (x - 1)"
-    by (simp only: coprime_plus_one)
-  with assms have "card {x - 1} \<le> phi x"
-    unfolding phi_def by (intro card_mono bounded_set1_int) (simp add: gcd.commute)
-    (* XXX: We need bounded_set1_int here because of the finite_Collect simproc) *)
-  then show ?thesis by auto
-qed
-
 text {*
   This is a weak variant of Lehmer's theorem: All numbers less then @{term "p - 1 :: nat"}
   must be considered.
@@ -57,7 +39,9 @@ proof -
     by (intro euler_theorem[transferred]) auto
   then have "phi (int p) \<ge> p - 1 \<or> phi (int p) = 0"
     using min_cong1[of "phi (int p)"] by fastforce
-  then show "prime p" using phi_leq[transferred, of p] phi_nonzero `2 \<le> p`
+  moreover have "phi p > 0"
+    using `2 \<le> p` by (auto intro: phi_nonzero)
+  ultimately show "prime p" using phi_leq [transferred, of p]
     by (auto intro: prime_phi)
 qed
 

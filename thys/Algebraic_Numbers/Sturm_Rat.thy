@@ -8,8 +8,8 @@ text \<open>We adapt the existing theory on Sturm's theorem to work on rational 
 
 theory Sturm_Rat
 imports 
-  "../Sturm_Sequences/Sturm_Theorem"
   Algebraic_Numbers_Prelim
+  "../Sturm_Sequences/Sturm_Theorem"
 begin
 
 subsection \<open>Interface for Separating Roots\<close>
