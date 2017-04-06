@@ -220,8 +220,8 @@ object profile extends isabelle.CI_Profile
       print_section("COMPLETED")
     }
 
-  def select_sessions(tree: Sessions.Tree): (List[String], Sessions.Tree) =
-    tree.selection(
+  def select_sessions(sessions: Sessions.T) =
+    sessions.selection(
       session_groups = List("AFP"),
       exclude_session_groups = List("slow"))
 
