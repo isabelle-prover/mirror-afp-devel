@@ -300,35 +300,8 @@ lemma Derivs_alt_def: "Derivs w L = fold Deriv w L"
 
 subsection \<open>Shuffle product\<close>
 
-fun shuffle where
-  "shuffle [] ys = {ys}"
-| "shuffle xs [] = {xs}"
-| "shuffle (x # xs) (y # ys) =
-    {x # w | w . w \<in> shuffle xs (y # ys)} \<union>
-    {y # w | w . w \<in> shuffle (x # xs) ys}"
-
-lemma shuffle_empty2[simp]: "shuffle xs [] = {xs}"
-  by (cases xs) auto
-
-lemma Nil_in_shuffle[simp]: "[] \<in> shuffle xs ys \<longleftrightarrow> xs = [] \<and> ys = []"
-  by (induct xs ys rule: shuffle.induct) auto
-
 definition Shuffle (infixr "\<parallel>" 80) where
   "Shuffle A B = \<Union>{shuffle xs ys | xs ys. xs \<in> A \<and> ys \<in> B}"
-
-lemma shuffleE:
-  "zs \<in> shuffle xs ys \<Longrightarrow>
-    (zs = xs \<Longrightarrow> ys = [] \<Longrightarrow> P) \<Longrightarrow>
-    (zs = ys \<Longrightarrow> xs = [] \<Longrightarrow> P) \<Longrightarrow>
-    (\<And>x xs' z zs'. xs = x # xs' \<Longrightarrow> zs = z # zs' \<Longrightarrow> x = z \<Longrightarrow> zs' \<in> shuffle xs' ys \<Longrightarrow> P) \<Longrightarrow>
-    (\<And>y ys' z zs'. ys = y # ys' \<Longrightarrow> zs = z # zs' \<Longrightarrow> y = z \<Longrightarrow> zs' \<in> shuffle xs ys' \<Longrightarrow> P) \<Longrightarrow> P"
-  by (induct xs ys rule: shuffle.induct) auto
-
-lemma Cons_in_shuffle_iff:
-  "z # zs \<in> shuffle xs ys \<longleftrightarrow>
-    (xs \<noteq> [] \<and> hd xs = z \<and> zs \<in> shuffle (tl xs) ys \<or>
-     ys \<noteq> [] \<and> hd ys = z \<and> zs \<in> shuffle xs (tl ys))"
-  by (induct xs ys rule: shuffle.induct) auto
 
 lemma Deriv_Shuffle[simp]:
   "Deriv a (A \<parallel> B) = Deriv a A \<parallel> B \<union> A \<parallel> Deriv a B"

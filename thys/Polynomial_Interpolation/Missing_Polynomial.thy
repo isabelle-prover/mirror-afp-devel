@@ -1073,41 +1073,19 @@ proof (induct A rule: infinite_finite_induct)
   finally show ?case ..
 qed auto
 
-definition monom_mult :: "nat \<Rightarrow> 'a :: comm_semiring_1 poly \<Rightarrow> 'a poly" where
-  "monom_mult n f = monom 1 n * f" 
-  
-lemma monom_mult_unfold: "monom 1 n * f = monom_mult n f"
+definition monom_mult :: "nat \<Rightarrow> 'a :: comm_semiring_1 poly \<Rightarrow> 'a poly"
+  where "monom_mult n f = monom 1 n * f" 
+
+lemma monom_mult_unfold [code_unfold]:
+  "monom 1 n * f = monom_mult n f"
   "f * monom 1 n = monom_mult n f" 
   by (auto simp: monom_mult_def ac_simps)
 
-declare monom_mult_unfold[code_unfold]
-
-lemma monom_mult_code[code abstract]: "coeffs (monom_mult n f) = (let xs = coeffs f in
-  if xs = [] then xs else replicate n 0 @ xs)" 
-proof (cases "f = 0")
-  case False
-  hence cf: "(coeffs f = []) = False" by auto
-  from False have last: "last (coeffs f) \<noteq> 0" by (rule last_coeffs_not_0)
-  show ?thesis unfolding monom_mult_def Let_def cf if_False
-  proof (rule coeffs_eqI)
-    show "last (replicate n 0 @ coeffs f) \<noteq> 0" using cf last by auto
-    fix i
-    show "coeff (monom 1 n * f) i = nth_default 0 (replicate n 0 @ coeffs f) i" 
-    proof (cases "n \<le> i")
-      case True
-      hence "coeff (monom 1 n * f) i = coeff f (i - n)" unfolding coeff_monom_mult by auto
-      also have "\<dots> = nth_default 0 (replicate n 0 @ coeffs f) i" 
-        unfolding nth_default_append[of _ _ _ i] nth_default_coeffs_eq using True by simp
-      finally show ?thesis .
-    next
-      case False
-      hence "coeff (monom 1 n * f) i = 0" unfolding coeff_monom_mult by auto
-      also have "\<dots> = nth_default 0 (replicate n 0 @ coeffs f) i" using False
-        unfolding nth_default_append[of _ _ _ i] by auto
-      finally show ?thesis .
-    qed
-  qed
-qed (auto simp: monom_mult_def)    
+lemma monom_mult_code [code abstract]:
+  "coeffs (monom_mult n f) = (let xs = coeffs f in
+    if xs = [] then xs else replicate n 0 @ xs)" 
+  by (rule coeffs_eqI)
+    (auto simp add: Let_def monom_mult_def coeff_monom_mult nth_default_append nth_default_coeffs_eq)
 
 lemma coeff_pcompose_monom: fixes f :: "'a :: comm_ring_1 poly" 
   assumes n: "j < n" 
@@ -1129,11 +1107,9 @@ proof (induct f arbitrary: i)
   qed
 qed auto
 
-
 lemma coeff_pcompose_x_pow_n: fixes f :: "'a :: comm_ring_1 poly" 
   assumes n: "n \<noteq> 0" 
   shows "coeff (f \<circ>\<^sub>p monom 1 n) (n * i) = coeff f i"     
   using coeff_pcompose_monom[of 0 n f i] n by auto
-
 
 end

@@ -2,6 +2,7 @@ section \<open>The Euler--MacLaurin summation formula\<close>
 theory Euler_MacLaurin
 imports 
   "~~/src/HOL/Analysis/Analysis"
+  "~~/src/HOL/Library/Multiset"
   "../Bernoulli/Periodic_Bernpoly"
   "../Bernoulli/Bernoulli_FPS"
 begin

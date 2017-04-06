@@ -629,20 +629,19 @@ text \<open>
   opposite and non-zero signs. Then, the polynomial obviously has a positive root.
 \<close>
 private lemma odd_coeff_sign_changes_imp_pos_roots_aux:
-  assumes "p \<noteq> (0 :: real poly)" "poly p 0 \<noteq> 0"
+  assumes [simp]: "p \<noteq> (0 :: real poly)" "poly p 0 \<noteq> 0"
   assumes "odd (coeff_sign_changes p)"
   obtains x where "x > 0" "poly p x = 0"
 proof -
-  from assms have [simp]: "p \<noteq> 0" by auto
-  from \<open>poly p 0 \<noteq> 0\<close> have const_coeff: "hd (coeffs p) \<noteq> 0" by (induction p) auto
-
-  from assms have  "\<not>even (coeff_sign_changes p)" by blast
-  also have "even (coeff_sign_changes p) \<longleftrightarrow> sgn (hd (coeffs p)) = sgn (last (coeffs p))"
-    using const_coeff assms by (intro even_sign_changes_iff) (auto simp: last_coeffs_not_0)
-  also have "last (coeffs p) = lead_coeff p" 
-    by (simp add: last_coeffs_eq_coeff_degree)
+  from \<open>poly p 0 \<noteq> 0\<close>
+  have [simp]: "hd (coeffs p) \<noteq> 0"
+    by (induct p) auto
+  from assms have  "\<not> even (coeff_sign_changes p)"
+    by blast
+  also have "even (coeff_sign_changes p) \<longleftrightarrow> sgn (hd (coeffs p)) = sgn (lead_coeff p)"
+    by (auto simp add: even_sign_changes_iff last_coeffs_eq_coeff_degree)
   finally have "sgn (hd (coeffs p)) * sgn (lead_coeff p) < 0" 
-    using const_coeff by (auto simp: sgn_if split: if_split_asm)
+    by (auto simp: sgn_if split: if_split_asm)
   also from \<open>p \<noteq> 0\<close> have "hd (coeffs p) = poly p 0" by (induction p) auto
   finally have "poly p 0 * lead_coeff p < 0" by (auto simp: mult_less_0_iff)
 
@@ -748,9 +747,12 @@ proof -
   have "sign_changes (psums xs) < sign_changes xs \<and> 
         odd (sign_changes xs - sign_changes (psums xs))"
   proof (rule arthan)
-    show "xs \<noteq> []" by (auto simp: xs_def nz simp del: mult_pCons_left)
-    thus "sum_list xs = 0" by (simp add: last_psums [symmetric] ys [symmetric] ys_def)
-  qed (auto simp: last_coeffs_not_0 xs_def nz simp del: mult_pCons_left)
+    show "xs \<noteq> []"
+      by (auto simp: xs_def nz simp del: mult_pCons_left)
+    then show "sum_list xs = 0" by (simp add: last_psums [symmetric] ys [symmetric] ys_def)
+    show "last xs \<noteq> 0"
+      by (auto simp: xs_def nz last_coeffs_eq_coeff_degree simp del: mult_pCons_left)
+  qed
   with ys have "sign_changes ys < sign_changes xs \<and> 
                 odd (sign_changes xs - sign_changes ys)" by simp
   also have "sign_changes xs = v ([:1, -1:] * g)" unfolding v_def
