@@ -12,86 +12,6 @@ theory Randomised_Quick_Sort
     "../Comparison_Sort_Lower_Bound/Linorder_Relations"
 begin
 
-subsection \<open>Auxiliary lemmas\<close>
-
-(* TODO Move *)
-lemma harm_at_top: "filterlim (harm :: nat \<Rightarrow> real) at_top sequentially"
-proof (rule filterlim_at_top_mono)
-  show "eventually (\<lambda>n. harm n \<ge> ln (real (Suc n))) at_top"
-    using ln_le_harm by (intro always_eventually allI) (simp_all add: add_ac)
-  show "filterlim (\<lambda>n. ln (real (Suc n))) at_top sequentially"
-    by (intro filterlim_compose[OF ln_at_top] filterlim_compose[OF filterlim_real_sequentially] 
-              filterlim_Suc)
-qed
-
-lemma asymp_equiv_harm [asymp_equiv_intros]: "harm \<sim> (\<lambda>n. ln (real n))"
-proof -
-  have "(\<lambda>n. harm n - ln (real n)) \<in> O(\<lambda>_. 1)" using euler_mascheroni_LIMSEQ
-    by (intro bigoI_tendsto[where c = euler_mascheroni]) simp_all
-  also have "(\<lambda>_. 1) \<in> o(\<lambda>n. ln (real n))" by auto
-  finally have "(\<lambda>n. ln (real n) + (harm n - ln (real n))) \<sim> (\<lambda>n. ln (real n))"
-    by (subst asymp_equiv_add_right) simp_all
-  thus ?thesis by simp
-qed
-  
-
-lemma abs_harm [simp]: "(abs (harm n) :: real) = harm n"
-  using harm_nonneg[of n] by (rule abs_of_nonneg)
-
-lemma map_pmf_of_set_bij_betw:
-  assumes "bij_betw f A B" "A \<noteq> {}" "finite A"
-  shows   "map_pmf f (pmf_of_set A) = pmf_of_set B"
-proof -
-  have "map_pmf f (pmf_of_set A) = pmf_of_set (f ` A)"
-    by (intro map_pmf_of_set_inj assms bij_betw_imp_inj_on[OF assms(1)])
-  also from assms have "f ` A = B" by (simp add: bij_betw_def)
-  finally show ?thesis .
-qed
-
-lemma expectation_return_pmf [simp]:
-  fixes f :: "'a \<Rightarrow> 'b::{banach, second_countable_topology}"
-  shows "measure_pmf.expectation (return_pmf x) f = f x"
-  by (subst integral_measure_pmf[of "{x}"]) simp_all
-
-lemma pmf_expectation_bind:
-  fixes p :: "'a pmf" and f :: "'a \<Rightarrow> 'b pmf"
-    and  h :: "'b \<Rightarrow> 'c::{banach, second_countable_topology}"
-  assumes "finite A" "\<And>x. x \<in> A \<Longrightarrow> finite (set_pmf (f x))" "set_pmf p \<subseteq> A"
-  shows "measure_pmf.expectation (p \<bind> f) h =
-           (\<Sum>a\<in>A. pmf p a *\<^sub>R measure_pmf.expectation (f a) h)"
-proof -
-  term prob_space
-  have "measure_pmf.expectation (p \<bind> f) h = (\<Sum>a\<in>(\<Union>x\<in>A. set_pmf (f x)). pmf (p \<bind> f) a *\<^sub>R h a)"
-    using assms by (intro integral_measure_pmf) auto
-  also have "\<dots> = (\<Sum>x\<in>(\<Union>x\<in>A. set_pmf (f x)). (\<Sum>a\<in>A. (pmf p a * pmf (f a) x) *\<^sub>R h x))"
-  proof (intro sum.cong refl, goal_cases)
-    case (1 x)
-    thus ?case
-      by (subst pmf_bind, subst integral_measure_pmf[of A]) 
-         (insert assms, auto simp: scaleR_sum_left)
-  qed
-  also have "\<dots> = (\<Sum>j\<in>A. pmf p j *\<^sub>R (\<Sum>i\<in>(\<Union>x\<in>A. set_pmf (f x)). pmf (f j) i *\<^sub>R h i))"
-    by (subst sum.commute) (simp add: scaleR_sum_right)
-  also have "\<dots> = (\<Sum>j\<in>A. pmf p j *\<^sub>R measure_pmf.expectation (f j) h)"
-  proof (intro sum.cong refl, goal_cases)
-    case (1 x)
-    thus ?case
-      by (subst integral_measure_pmf[of "(\<Union>x\<in>A. set_pmf (f x))"]) 
-         (insert assms, auto simp: scaleR_sum_left)
-  qed
-  finally show ?thesis .
-qed
-
-lemma pmf_expectation_bind_pmf_of_set:
-  fixes A :: "'a set" and f :: "'a \<Rightarrow> 'b pmf"
-    and  h :: "'b \<Rightarrow> 'c::{banach, second_countable_topology}"
-  assumes "A \<noteq> {}" "finite A" "\<And>x. x \<in> A \<Longrightarrow> finite (set_pmf (f x))"
-  shows "measure_pmf.expectation (pmf_of_set A \<bind> f) h =
-           (\<Sum>a\<in>A. measure_pmf.expectation (f a) h /\<^sub>R real (card A))"
-  using assms
-  by (subst pmf_expectation_bind[of A]) (auto simp: divide_simps)
-
-
 subsection \<open>Deletion by index\<close>  
 
 text \<open>
@@ -492,6 +412,17 @@ proof -
     by (simp add: field_simps)
   also have "F n * real (n + 1) = rqs_cost_exp n" by (simp add: F_def add_ac)
   finally show ?thesis .
+qed
+
+(* TODO Move *)
+lemma asymp_equiv_harm [asymp_equiv_intros]: "harm \<sim> (\<lambda>n. ln (real n))"
+proof -
+  have "(\<lambda>n. harm n - ln (real n)) \<in> O(\<lambda>_. 1)" using euler_mascheroni_LIMSEQ
+    by (intro bigoI_tendsto[where c = euler_mascheroni]) simp_all
+  also have "(\<lambda>_. 1) \<in> o(\<lambda>n. ln (real n))" by auto
+  finally have "(\<lambda>n. ln (real n) + (harm n - ln (real n))) \<sim> (\<lambda>n. ln (real n))"
+    by (subst asymp_equiv_add_right) simp_all
+  thus ?thesis by simp
 qed
   
 corollary rqs_cost_exp_asymp_equiv: "rqs_cost_exp \<sim> (\<lambda>n. 2 * n * ln n)"

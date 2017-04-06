@@ -95,68 +95,7 @@ text \<open>
   the randomised QuickSort we analysed earlier. Similar, but more direct analyses are given 
   by Hoare~\cite{hoare} and Sedgewick~\cite{sedgewick}. 
 
-  A formal proof of the analysis is given by van der Waagen and McKinna~\cite{vdw}. Unlike we,
-  they prove the result without the usual assumption that the input list has no repeated
-  elements. Due to this, they also use a slightly modified QuickSort algorithm with special
-  treatment of elements that are equal to the pivot. For simplicity, we chose not to do this,
-  but it would be relatively easy to adapt our formalisation to this.
-
-  For our analysis, we first need the following lemma that states that if we draw a permutation 
-  of a set uniformly at random and then partition the permutation into two halves w.\,r.\,t.\ 
-  some predicate, we can also first partition the original set and then draw permutations of the 
-  two halves independently and uniformly at random and get the same result.
-\<close>
-lemma partition_random_permutations:
-  assumes "finite A"
-  shows   "map_pmf (partition P) (pmf_of_set (permutations_of_set A)) = 
-             pair_pmf (pmf_of_set (permutations_of_set {x\<in>A. P x}))
-                      (pmf_of_set (permutations_of_set {x\<in>A. \<not>P x}))" (is "?lhs = ?rhs")
-proof (rule pmf_eqI, clarify, goal_cases)
-  case (1 xs ys)
-  show ?case
-  proof (cases "xs \<in> permutations_of_set {x\<in>A. P x} \<and> ys \<in> permutations_of_set {x\<in>A. \<not>P x}")
-    case True
-    let ?n1 = "card {x\<in>A. P x}" and ?n2 = "card {x\<in>A. \<not>P x}"
-    have card_eq: "card A = ?n1 + ?n2"
-    proof -
-      have "?n1 + ?n2 = card ({x\<in>A. P x} \<union> {x\<in>A. \<not>P x})"
-        using assms by (intro card_Un_disjoint [symmetric]) auto
-      also have "{x\<in>A. P x} \<union> {x\<in>A. \<not>P x} = A" by blast
-      finally show ?thesis ..
-    qed
-
-    from True have lengths [simp]: "length xs = ?n1" "length ys = ?n2"
-      by (auto intro!: length_finite_permutations_of_set)
-    have "pmf ?lhs (xs, ys) = 
-            real (card (permutations_of_set A \<inter> partition P -` {(xs, ys)})) / fact (card A)"
-      using assms by (auto simp: pmf_map measure_pmf_of_set)
-    also have "partition P -` {(xs, ys)} = shuffle xs ys" 
-      using True by (intro inv_image_partition) (auto simp: permutations_of_set_def)
-    also have "permutations_of_set A \<inter> shuffle xs ys = shuffle xs ys"
-      using True distinct_disjoint_shuffle[of xs ys] 
-      by (auto simp: permutations_of_set_def dest: set_shuffle)
-    also have "card (shuffle xs ys) = length xs + length ys choose length xs"
-      using True by (intro card_disjoint_shuffle) (auto simp: permutations_of_set_def)
-    also have "length xs + length ys = card A" by (simp add: card_eq)
-    also have "real (card A choose length xs) = fact (card A) / (fact ?n1 * fact (card A - ?n1))"
-      by (subst binomial_fact) (auto intro!: card_mono assms)
-    also have "\<dots> / fact (card A) = 1 / (fact ?n1 * fact ?n2)"
-      by (simp add: divide_simps card_eq)
-    also have "\<dots> = pmf ?rhs (xs, ys)" using True assms by (simp add: pmf_pair)
-    finally show ?thesis .
-  next
-    case False
-    hence *: "xs \<notin> permutations_of_set {x\<in>A. P x} \<or> ys \<notin> permutations_of_set {x\<in>A. \<not>P x}" by blast
-    hence eq: "permutations_of_set A \<inter> (partition P -` {(xs, ys)}) = {}"
-      by (auto simp: o_def permutations_of_set_def)
-    from * show ?thesis
-      by (elim disjE) (insert assms eq, simp_all add: pmf_pair pmf_map measure_pmf_of_set)
-  qed
-qed
-
-
-text \<open>
-  It is now relatively straightforward -- but still a bit messy -- to show that the cost 
+  The proof is relatively straightforward -- but still a bit messy. We show that the cost 
   distribution of QuickSort run on a random permutation of a set of size $n$ is exactly the same 
   as that of randomised QuickSort being run on any fixed list of size $n$ (which we analysed 
   before):  

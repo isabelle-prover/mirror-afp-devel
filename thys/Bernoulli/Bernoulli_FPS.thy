@@ -27,71 +27,6 @@ text \<open>
   Kaneko~\cite{kaneko2000}.
 \<close>
 
-subsection \<open>General facts about formal power series\<close>
-  
-(* TODO Move *)
-lemma fps_compose_uminus': 
-  "fps_compose f (-X :: 'a :: comm_ring_1 fps) = Abs_fps (\<lambda>n. (-1)^n * f $ n)"
-  using fps_compose_linear[of f "-1"] 
-  by (simp only: fps_const_neg [symmetric] fps_const_1_eq_1) simp
-
-lemma X_dvd_L [simp]: "X dvd L c"
-proof -
-  have "L c = X * Abs_fps (\<lambda>n. (-1) ^ n / (of_nat (Suc n) * c))"
-    by (intro fps_ext) (auto simp: L_def of_nat_diff)
-  thus ?thesis by simp
-qed
-
-lemma fps_compose_E_linear [simp]: "E (d::'a::field_char_0) oo (fps_const c * X) = E (c * d)"
-  by (simp add: fps_compose_linear E_def fps_eq_iff power_mult_distrib)
-  
-lemma fps_compose_E1_minus [simp]: "fps_compose (E c) (-X) = E (-c :: 'a :: field_char_0)"
-  using fps_compose_E_linear[of c "-1 :: 'a"] 
-  unfolding fps_const_neg [symmetric] fps_const_1_eq_1 by simp
-
-lemma E_eq_iff [simp]: "E c = E d \<longleftrightarrow> c = (d :: 'a :: field_char_0)"
-proof
-  assume "E c = E d"
-  from arg_cong[of _ _ "\<lambda>F. F $ 1", OF this] show "c = d" by simp
-qed simp_all
-
-lemma E_eq_fps_const_iff [simp]: "E (c :: 'a :: field_char_0) = fps_const c' \<longleftrightarrow> c = 0 \<and> c' = 1"
-proof
-  assume "c = 0 \<and> c' = 1"
-  thus "E c = fps_const c'" by (auto simp: fps_eq_iff)
-next
-  assume "E c = fps_const c'"
-  from arg_cong[of _ _ "\<lambda>F. F $ 1", OF this] arg_cong[of _ _ "\<lambda>F. F $ 0", OF this] 
-    show "c = 0 \<and> c' = 1" by simp_all
-qed
-
-lemma E_neq_0 [simp]: "\<not>E (c :: 'a :: field_char_0) = 0"
-  unfolding fps_const_0_eq_0 [symmetric] E_eq_fps_const_iff by simp  
-
-lemma E_eq_1_iff [simp]: "E (c :: 'a :: field_char_0) = 1 \<longleftrightarrow> c = 0"
-  unfolding fps_const_1_eq_1 [symmetric] E_eq_fps_const_iff by simp
-    
-lemma E_neq_numeral_iff [simp]: "E (c :: 'a :: field_char_0) = numeral n \<longleftrightarrow> c = 0 \<and> n = Num.One"
-  unfolding numeral_fps_const E_eq_fps_const_iff by simp
-  
-lemma numeral_neq_fps_zero [simp]: "(numeral f :: 'a :: field_char_0 fps) \<noteq> 0"
-proof
-  assume "numeral f = (0 :: 'a fps)"
-  from arg_cong[of _ _ "\<lambda>F. F $ 0", OF this] show False by simp
-qed 
-
-lemma fps_deriv_of_nat [simp]: "fps_deriv (of_nat n) = 0"
-  by (simp add: fps_of_nat [symmetric])
-lemma fps_deriv_of_int [simp]: "fps_deriv (of_int n) = 0"
-  by (simp add: fps_of_int [symmetric])
-lemma fps_deriv_numeral [simp]: "fps_deriv (numeral n) = 0"
-  by (simp add: numeral_fps_const)
-    
-lemma fps_0th_higher_deriv: 
-  "(fps_deriv ^^ n) f $ 0 = (fact n * f $ n :: 'a :: {comm_ring_1, semiring_char_0})"
-  by (induction n arbitrary: f) (simp_all del: funpow.simps add: funpow_Suc_right algebra_simps)
-(* END TODO *)
-
 
 text \<open>
   The following operator is a variant of the @{term XD} operator where the multiplication
@@ -179,7 +114,7 @@ text \<open>
     \[\sum_{n=0}^\infty \genfrac{\{}{\}}{0pt}{}{n}{m} \frac{x^n}{n!} = \frac{(e^x - 1)^m}{m!}\]
 \<close>
 definition Stirling_fps :: "nat \<Rightarrow> real fps" where
-  "Stirling_fps m = fps_const (1 / fact m) * (E 1 - 1) ^ m"
+  "Stirling_fps m = fps_const (1 / fact m) * (fps_exp 1 - 1) ^ m"
   
 theorem sum_Stirling_binomial:
   "Stirling (Suc n) (Suc m) = (\<Sum>i = 0..n. Stirling i m * (n choose i))"
@@ -218,7 +153,7 @@ proof -
   thus ?thesis by (subst (asm) of_nat_eq_iff)
 qed
 
-lemma Stirling_fps_aux: "(E 1 - 1) ^ m $ n * fact n = fact m * real (Stirling n m)"
+lemma Stirling_fps_aux: "(fps_exp 1 - 1) ^ m $ n * fact n = fact m * real (Stirling n m)"
 proof (induction m arbitrary: n)
   case 0
   thus ?case by (simp add: Stirling_n_0)
@@ -230,20 +165,20 @@ next
     thus ?thesis by simp
   next
     case (Suc n')
-    hence "(E 1 - 1 :: real fps) ^ Suc m $ n * fact n = 
-              fps_deriv ((E 1 - 1) ^ Suc m) $ n' * fact n'"
+    hence "(fps_exp 1 - 1 :: real fps) ^ Suc m $ n * fact n = 
+              fps_deriv ((fps_exp 1 - 1) ^ Suc m) $ n' * fact n'"
       by (simp_all add: algebra_simps del: power_Suc)
-    also have "fps_deriv ((E 1 - 1 :: real fps) ^ Suc m) = 
-                 fps_const (real (Suc m)) * ((E 1 - 1) ^ m * E 1)"
+    also have "fps_deriv ((fps_exp 1 - 1 :: real fps) ^ Suc m) = 
+                 fps_const (real (Suc m)) * ((fps_exp 1 - 1) ^ m * fps_exp 1)"
       by (subst fps_deriv_power) simp_all
     also have "\<dots> $ n' * fact n' = 
-      real (Suc m) * ((\<Sum>i = 0..n'. (E 1 - 1) ^ m $ i / fact (n' - i)) * fact n')"
+      real (Suc m) * ((\<Sum>i = 0..n'. (fps_exp 1 - 1) ^ m $ i / fact (n' - i)) * fact n')"
       unfolding fps_mult_left_const_nth
       by (simp add: fps_mult_nth Suc.IH sum_distrib_right del: of_nat_Suc)
-    also have "(\<Sum>i = 0..n'. (E 1 - 1 :: real fps) ^ m $ i / fact (n' - i)) * fact n' = 
-                 (\<Sum>i = 0..n'. (E 1 - 1) ^ m $ i * fact n' / fact (n' - i))"
+    also have "(\<Sum>i = 0..n'. (fps_exp 1 - 1 :: real fps) ^ m $ i / fact (n' - i)) * fact n' = 
+                 (\<Sum>i = 0..n'. (fps_exp 1 - 1) ^ m $ i * fact n' / fact (n' - i))"
       by (subst sum_distrib_right, rule sum.cong) (simp_all add: divide_simps)
-    also have "\<dots> = (\<Sum>i = 0..n'. (E 1 - 1) ^ m $ i * fact i * (n' choose i))"
+    also have "\<dots> = (\<Sum>i = 0..n'. (fps_exp 1 - 1) ^ m $ i * fact i * (n' choose i))"
       by (intro sum.cong refl) (simp_all add: binomial_fact)
     also have "\<dots> = (\<Sum>i = 0..n'. fact m * real (Stirling i m) * real (n' choose i))" 
       by (simp only: Suc.IH)
@@ -266,12 +201,12 @@ theorem Stirling_fps_altdef: "Stirling_fps m = Abs_fps (\<lambda>n. Stirling n m
 theorem Stirling_closed_form:
   "real (Stirling n k) = (\<Sum>j\<le>k. (-1)^(k - j) * real (k choose j) * real j ^ n) / fact k"
 proof -
-  have "(E 1 - 1 :: real fps) = (E 1 + (-1))" by simp
-  also have "\<dots> ^ k = (\<Sum>j = 0..k. of_nat (k choose j) * E 1 ^ j * (- 1) ^ (k - j))" 
+  have "(fps_exp 1 - 1 :: real fps) = (fps_exp 1 + (-1))" by simp
+  also have "\<dots> ^ k = (\<Sum>j = 0..k. of_nat (k choose j) * fps_exp 1 ^ j * (- 1) ^ (k - j))" 
     unfolding binomial_ring ..
-  also have "\<dots> = (\<Sum>j = 0..k. fps_const ((-1) ^ (k - j) * real (k choose j)) * E (real j))"
+  also have "\<dots> = (\<Sum>j = 0..k. fps_const ((-1) ^ (k - j) * real (k choose j)) * fps_exp (real j))"
     by (simp add: fps_const_mult [symmetric] fps_const_power [symmetric] 
-                  fps_const_neg [symmetric] mult_ac fps_of_nat E_power_mult
+                  fps_const_neg [symmetric] mult_ac fps_of_nat fps_exp_power_mult
              del: fps_const_mult fps_const_power fps_const_neg)
   also have "\<dots> $ n = (\<Sum>j = 0..k. (- 1) ^ (k - j) * real (k choose j) * real j ^ n) / fact n" 
     by (simp add: fps_sum_nth sum_divide_distrib)
@@ -290,16 +225,16 @@ text \<open>
     \[\sum_{n=0}^\infty B_n^{-} \frac{x^n}{n!} = \frac{x}{e^x - 1}\]
     \[\sum_{n=0}^\infty B_n^{+} \frac{x^n}{n!} = \frac{x}{1 - e^{-1}}\]
 \<close> 
-definition bernoulli_fps :: "real fps" where "bernoulli_fps = X / (E 1 - 1)"
-definition bernoulli'_fps :: "real fps" where "bernoulli'_fps = X / (1 - (E (-1)))"
+definition bernoulli_fps :: "real fps" where "bernoulli_fps = X / (fps_exp 1 - 1)"
+definition bernoulli'_fps :: "real fps" where "bernoulli'_fps = X / (1 - (fps_exp (-1)))"
 
 lemma bernoulli_fps_altdef: "bernoulli_fps = Abs_fps (\<lambda>n. bernoulli n / fact n)"
-  and bernoulli_fps_aux:    "bernoulli_fps * (E 1 - 1) = X"
+  and bernoulli_fps_aux:    "bernoulli_fps * (fps_exp 1 - 1) = X"
 proof -
-  have *: "Abs_fps (\<lambda>n. bernoulli n / fact n) * (E 1 - 1) = X"  
+  have *: "Abs_fps (\<lambda>n. bernoulli n / fact n) * (fps_exp 1 - 1) = X"  
   proof (rule fps_ext)
     fix n
-    have "(Abs_fps (\<lambda>n. bernoulli n / fact n) * (E 1 - 1)) $ n = 
+    have "(Abs_fps (\<lambda>n. bernoulli n / fact n) * (fps_exp 1 - 1)) $ n = 
             (\<Sum>i = 0..n. bernoulli i * (1 / fact (n - i) - (if n = i then 1 else 0)) / fact i)"
       by (simp add: fps_mult_nth split: if_splits)
     also have "\<dots> = (\<Sum>i = 0..n. bernoulli i / (fact i * fact (n - i)) -
@@ -315,29 +250,29 @@ proof -
                  (\<Sum>i<n. (n choose i) * bernoulli i)" 
       by (intro sum.cong) (simp_all add: binomial_fact)
     also have "\<dots> / fact n = X $ n" by (subst sum_binomial_times_bernoulli') simp_all
-    finally show "(Abs_fps (\<lambda>n. bernoulli n / fact n) * (E 1 - 1)) $ n = X $ n" .
+    finally show "(Abs_fps (\<lambda>n. bernoulli n / fact n) * (fps_exp 1 - 1)) $ n = X $ n" .
   qed
   moreover show "bernoulli_fps = Abs_fps (\<lambda>n. bernoulli n / fact n)"
     unfolding bernoulli_fps_def by (subst * [symmetric]) simp_all
-  ultimately show "bernoulli_fps * (E 1 - 1) = X" by simp
+  ultimately show "bernoulli_fps * (fps_exp 1 - 1) = X" by simp
 qed
   
 theorem fps_nth_bernoulli_fps [simp]: "fps_nth bernoulli_fps n = bernoulli n / fact n"
   by (simp add: bernoulli_fps_altdef)
 
-lemma bernoulli'_fps_aux:  "(E 1 - 1) * Abs_fps (\<lambda>n. bernoulli' n / fact n) = E 1 * X"
-  and bernoulli'_fps_aux': "(1 - E (-1)) * Abs_fps (\<lambda>n. bernoulli' n / fact n) = X"
+lemma bernoulli'_fps_aux:  "(fps_exp 1 - 1) * Abs_fps (\<lambda>n. bernoulli' n / fact n) = fps_exp 1 * X"
+  and bernoulli'_fps_aux': "(1 - fps_exp (-1)) * Abs_fps (\<lambda>n. bernoulli' n / fact n) = X"
   and bernoulli'_fps_altdef: "bernoulli'_fps = Abs_fps (\<lambda>n. bernoulli' n / fact n)"
 proof -
   have "Abs_fps (\<lambda>n. bernoulli' n / fact n) = bernoulli_fps + X"
     by (simp add: fps_eq_iff bernoulli'_def)
-  also have "(E 1 - 1) * \<dots> = E 1 * X"
+  also have "(fps_exp 1 - 1) * \<dots> = fps_exp 1 * X"
     using bernoulli_fps_aux by (simp add: algebra_simps)
-  finally show "(E 1 - 1) * Abs_fps (\<lambda>n. bernoulli' n / fact n) = E 1 * X" .
-  also have "(E 1 - 1) = E 1 * (1 - E (-1 :: real))" 
-    by (simp add: algebra_simps E_add_mult [symmetric])
+  finally show "(fps_exp 1 - 1) * Abs_fps (\<lambda>n. bernoulli' n / fact n) = fps_exp 1 * X" .
+  also have "(fps_exp 1 - 1) = fps_exp 1 * (1 - fps_exp (-1 :: real))" 
+    by (simp add: algebra_simps fps_exp_add_mult [symmetric])
   also note mult.assoc
-  finally show *: "(1 - E (-1)) * Abs_fps (\<lambda>n. bernoulli' n / fact n) = X"
+  finally show *: "(1 - fps_exp (-1)) * Abs_fps (\<lambda>n. bernoulli' n / fact n) = X"
     by (subst (asm) mult_left_cancel) simp_all
   show "bernoulli'_fps = Abs_fps (\<lambda>n. bernoulli' n / fact n)"
     unfolding bernoulli'_fps_def by (subst * [symmetric]) simp_all
@@ -357,27 +292,27 @@ theorem bernoulli_odd_eq_0:
   assumes "n \<noteq> 1" and "odd n"
   shows   "bernoulli n = 0"
 proof -
-  from bernoulli_fps_aux have "2 * bernoulli_fps * (E 1 - 1) = 2 * X" by simp
-  hence "(2 * bernoulli_fps + X) * (E 1 - 1) = X * (E 1 + 1)" 
+  from bernoulli_fps_aux have "2 * bernoulli_fps * (fps_exp 1 - 1) = 2 * X" by simp
+  hence "(2 * bernoulli_fps + X) * (fps_exp 1 - 1) = X * (fps_exp 1 + 1)" 
     by (simp add: algebra_simps)
-  also have "E 1 - 1 = E(1/2) * (E (1/2) - E (-1/2 :: real))" 
-    by (simp add: algebra_simps E_add_mult [symmetric])
-  also have "E 1 + 1 = E(1/2) * (E (1/2) + E (-1/2 :: real))" 
-    by (simp add: algebra_simps E_add_mult [symmetric])
-  finally have "E (1/2) * ((2 * bernoulli_fps + X) * (E (1/2) - E (- 1/2))) =
-                   E (1/2) * (X * (E (1/2) + E (-1/2)))" by (simp add: algebra_simps)
-  hence *: "(2 * bernoulli_fps + X) * (E (1/2) - E (- 1/2)) = X * (E (1/2) + E (-1/2))" 
+  also have "fps_exp 1 - 1 = fps_exp (1/2) * (fps_exp (1/2) - fps_exp (-1/2 :: real))" 
+    by (simp add: algebra_simps fps_exp_add_mult [symmetric])
+  also have "fps_exp 1 + 1 = fps_exp (1/2) * (fps_exp (1/2) + fps_exp (-1/2 :: real))" 
+    by (simp add: algebra_simps fps_exp_add_mult [symmetric])
+  finally have "fps_exp (1/2) * ((2 * bernoulli_fps + X) * (fps_exp (1/2) - fps_exp (- 1/2))) =
+                   fps_exp (1/2) * (X * (fps_exp (1/2) + fps_exp (-1/2)))" by (simp add: algebra_simps)
+  hence *: "(2 * bernoulli_fps + X) * (fps_exp (1/2) - fps_exp (- 1/2)) = X * (fps_exp (1/2) + fps_exp (-1/2))" 
     (is "?lhs = ?rhs") by (subst (asm) mult_cancel_left) simp_all
   have "fps_compose ?lhs (-X) = fps_compose ?rhs (-X)" by (simp only: *)
   also have "fps_compose ?lhs (-X) = 
-               (-2 * (bernoulli_fps oo - X) + X) * (E ((1/2)) - E (-1/2))" 
+               (-2 * (bernoulli_fps oo - X) + X) * (fps_exp ((1/2)) - fps_exp (-1/2))" 
     by (simp add: fps_compose_mult_distrib fps_compose_add_distrib
                    fps_compose_sub_distrib algebra_simps)
   also have "fps_compose ?rhs (-X) = -?rhs"
     by (simp add: fps_compose_mult_distrib fps_compose_add_distrib fps_compose_sub_distrib)
   also note * [symmetric]
-  also have "- ((2 * bernoulli_fps + X) * (E (1/2) - E (-1/2))) = 
-               ((-2 * bernoulli_fps - X) * (E (1/2) - E (-1/2)))" by (simp add: algebra_simps)
+  also have "- ((2 * bernoulli_fps + X) * (fps_exp (1/2) - fps_exp (-1/2))) = 
+               ((-2 * bernoulli_fps - X) * (fps_exp (1/2) - fps_exp (-1/2)))" by (simp add: algebra_simps)
   finally have "2 * (bernoulli_fps oo - X) = 2 * (bernoulli_fps + X)"
     by (subst (asm) mult_cancel_right) (simp add: algebra_simps)
   hence **: "bernoulli_fps oo -X = bernoulli_fps + X" by (subst (asm) mult_cancel_left) simp
@@ -416,7 +351,7 @@ proof -
   have "(\<Sum>m\<le>n. \<Sum>k\<le>m. (-1)^k * real (m choose k) * real k^n / real (Suc m)) =
           (\<Sum>m\<le>n. (\<Sum>k\<le>m. (-1)^k * real (m choose k) * real k^n) / real (Suc m))"
     by (subst sum_divide_distrib) simp_all
-  also have "\<dots> = fact n * (\<Sum>m\<le>n. (- 1) ^ m  / real (Suc m) * (E 1 - 1) ^ m $ n)"
+  also have "\<dots> = fact n * (\<Sum>m\<le>n. (- 1) ^ m  / real (Suc m) * (fps_exp 1 - 1) ^ m $ n)"
   proof (subst sum_distrib_left, intro sum.cong refl)
     fix m assume m: "m \<in> {..n}"
     have "(\<Sum>k\<le>m. (-1)^k * real (m choose k) * real k^n) = 
@@ -426,20 +361,21 @@ proof -
       by (subst Stirling_closed_form) simp_all
     also have "real (Stirling n m) = Stirling_fps m $ n * fact n"
       by (subst Stirling_fps_nth) simp_all
-    also have "\<dots> * fact m = (E 1 - 1) ^ m $ n * fact n" by (simp add: Stirling_fps_def)
+    also have "\<dots> * fact m = (fps_exp 1 - 1) ^ m $ n * fact n" by (simp add: Stirling_fps_def)
     finally show "(\<Sum>k\<le>m. (-1)^k * real (m choose k) * real k^n) / real (Suc m) = 
-                     fact n * ((- 1) ^ m / real (Suc m) * (E 1 - 1) ^ m $ n)" by simp
+                     fact n * ((- 1) ^ m / real (Suc m) * (fps_exp 1 - 1) ^ m $ n)" by simp
   qed
-  also have "(\<Sum>m\<le>n. (- 1) ^ m / real (Suc m) * (E 1 - 1) ^ m $ n) =
-                fps_compose (Abs_fps (\<lambda>m. (-1) ^ m / real (Suc m))) (E 1 - 1) $ n"
+  also have "(\<Sum>m\<le>n. (- 1) ^ m / real (Suc m) * (fps_exp 1 - 1) ^ m $ n) =
+                fps_compose (Abs_fps (\<lambda>m. (-1) ^ m / real (Suc m))) (fps_exp 1 - 1) $ n"
     by (simp add: fps_compose_def atLeast0AtMost fps_sum_nth)
-  also have "L 1 = X * Abs_fps (\<lambda>m. (-1) ^ m / real (Suc m))"
-    unfolding L_def by (auto simp: fps_eq_iff)
-  hence "Abs_fps (\<lambda>m. (-1) ^ m / real (Suc m)) = L 1 / X" by simp
-  also have "fps_compose \<dots> (E 1 - 1) = fps_compose (L 1) (E 1 - 1) / (E 1 - 1)"
+  also have "fps_ln 1 = X * Abs_fps (\<lambda>m. (-1) ^ m / real (Suc m))"
+    unfolding fps_ln_def by (auto simp: fps_eq_iff)
+  hence "Abs_fps (\<lambda>m. (-1) ^ m / real (Suc m)) = fps_ln 1 / X" by simp
+  also have "fps_compose \<dots> (fps_exp 1 - 1) = fps_compose (fps_ln 1) (fps_exp 1 - 1) / (fps_exp 1 - 1)"
     by (simp add: fps_compose_divide_distrib)
-  also have "fps_compose (L 1) (E 1 - 1 :: real fps) = X" by (simp add: L_E_inv LE_compose)
-  also have "(X / (E 1 - 1)) = bernoulli_fps" by (simp add: bernoulli_fps_def)
+  also have "fps_compose (fps_ln 1) (fps_exp 1 - 1 :: real fps) = X"
+    by (simp add: fps_ln_fps_exp_inv fps_inv_fps_exp_compose)
+  also have "(X / (fps_exp 1 - 1)) = bernoulli_fps" by (simp add: bernoulli_fps_def)
   also have "fact n * \<dots> $ n = bernoulli n" by simp
   finally show ?thesis ..
 qed
@@ -541,12 +477,12 @@ text \<open>
   formally.
 \<close>
 lemma gen_akiyama_tanigawa_fps: 
-  "Abs_fps (\<lambda>n. gen_akiyama_tanigawa f n 0 / fact n) = E 1 * fps_compose (Abs_fps f) (1 - E 1)"
+  "Abs_fps (\<lambda>n. gen_akiyama_tanigawa f n 0 / fact n) = fps_exp 1 * fps_compose (Abs_fps f) (1 - fps_exp 1)"
 proof (rule fps_ext)
   fix n :: nat     
   have "(fps_const (fact n) * 
-          (fps_compose (Abs_fps (\<lambda>n. gen_akiyama_tanigawa f 0 n)) (1 - E 1) * E 1)) $ n = 
-          (\<Sum>m\<le>n. \<Sum>k\<le>m. (1 - E 1) ^ k $ m * fact n / fact (n - m) * f k)"
+          (fps_compose (Abs_fps (\<lambda>n. gen_akiyama_tanigawa f 0 n)) (1 - fps_exp 1) * fps_exp 1)) $ n = 
+          (\<Sum>m\<le>n. \<Sum>k\<le>m. (1 - fps_exp 1) ^ k $ m * fact n / fact (n - m) * f k)"
     unfolding fps_mult_left_const_nth
     by (simp add: fps_times_def fps_compose_def gen_akiyama_tanigawa_n_0 sum_Stirling_binomial
                   field_simps sum_distrib_left sum_distrib_right atLeast0AtMost
@@ -554,10 +490,10 @@ proof (rule fps_ext)
   also have "\<dots> = (\<Sum>m\<le>n. \<Sum>k\<le>m. (-1)^k * fact k * real (Stirling m k) * real (n choose m) * f k)"
   proof (intro sum.cong refl, goal_cases)
     case (1 m k)
-    have "(1 - E 1 :: real fps) ^ k = (-E 1 + 1 :: real fps) ^ k" by simp
-    also have "\<dots> = (\<Sum>i\<le>k. of_nat (k choose i) * (-1) ^ i * E (real i))" 
-      by (subst binomial_ring) (simp add: atLeast0AtMost power_minus' E_power_mult mult.assoc)
-    also have "\<dots> = (\<Sum>i\<le>k. fps_const (real (k choose i) * (-1) ^ i) * E (real i))"
+    have "(1 - fps_exp 1 :: real fps) ^ k = (-fps_exp 1 + 1 :: real fps) ^ k" by simp
+    also have "\<dots> = (\<Sum>i\<le>k. of_nat (k choose i) * (-1) ^ i * fps_exp (real i))" 
+      by (subst binomial_ring) (simp add: atLeast0AtMost power_minus' fps_exp_power_mult mult.assoc)
+    also have "\<dots> = (\<Sum>i\<le>k. fps_const (real (k choose i) * (-1) ^ i) * fps_exp (real i))"
       by (simp add: fps_const_mult [symmetric] fps_of_nat fps_const_power [symmetric] 
                     fps_const_neg [symmetric] del: fps_const_mult fps_const_power fps_const_neg)
     also have "\<dots> $ m = (\<Sum>i\<le>k. real (k choose i) * (- 1) ^ i * real i ^ m) / fact m" 
@@ -567,7 +503,7 @@ proof (rule fps_ext)
     also have "(\<Sum>i\<le>k. (-1) ^ (k - i) * real (k choose i) * real i ^ m) = 
                  real (Stirling m k) * fact k"
       by (subst Stirling_closed_form) (simp_all add: field_simps)
-    finally have *: "(1 - E 1 :: real fps) ^ k $ m * fact n / fact (n - m) = 
+    finally have *: "(1 - fps_exp 1 :: real fps) ^ k $ m * fact n / fact (n - m) = 
                        (- 1) ^ k * fact k * real (Stirling m k) * real (n choose m)"
       using 1 by (simp add: binomial_fact del: of_nat_Suc)
     show ?case using 1 by (subst *) simp
@@ -582,7 +518,7 @@ proof (rule fps_ext)
     by (simp add: gen_akiyama_tanigawa_n_0 sum_Stirling_binomial sum_distrib_left sum_distrib_right
           mult.assoc atLeast0AtMost del: Stirling.simps)
   finally show "Abs_fps (\<lambda>n. gen_akiyama_tanigawa f n 0 / fact n) $ n =
-                  (E 1 * (Abs_fps f oo 1 - E 1)) $ n"
+                  (fps_exp 1 * (Abs_fps f oo 1 - fps_exp 1)) $ n"
     by (subst (asm) fps_mult_left_const_nth) (simp add: field_simps del: of_nat_Suc)
 qed
 
@@ -598,23 +534,23 @@ proof -
   define f where "f = (\<lambda>n. 1 / real (Suc n))"
   note gen_akiyama_tanigawa_fps[of f]
   also {
-    have "L 1 = X * Abs_fps (\<lambda>n. (-1)^n / real (Suc n))"
-      by (intro fps_ext) (simp del: of_nat_Suc add: L_def)
-    hence "L 1 / X = Abs_fps (\<lambda>n. (-1)^n / real (Suc n))" by simp
+    have "fps_ln 1 = X * Abs_fps (\<lambda>n. (-1)^n / real (Suc n))"
+      by (intro fps_ext) (simp del: of_nat_Suc add: fps_ln_def)
+    hence "fps_ln 1 / X = Abs_fps (\<lambda>n. (-1)^n / real (Suc n))" by simp
     also have "fps_compose \<dots> (-X) = Abs_fps f"
       by (simp add: fps_compose_uminus' fps_eq_iff f_def)
-    finally have "Abs_fps f = fps_compose (L 1 / X) (-X)" ..
-    also have "L 1 / X oo - X oo 1 - E (1::real) = L 1 / X oo E 1 - 1"
+    finally have "Abs_fps f = fps_compose (fps_ln 1 / X) (-X)" ..
+    also have "fps_ln 1 / X oo - X oo 1 - fps_exp (1::real) = fps_ln 1 / X oo fps_exp 1 - 1"
       by (subst fps_compose_assoc [symmetric])
          (simp_all add: fps_compose_uminus)
-    also have "\<dots> = (L 1 oo E 1 - 1) / (E 1 - 1)"
+    also have "\<dots> = (fps_ln 1 oo fps_exp 1 - 1) / (fps_exp 1 - 1)"
       by (subst fps_compose_divide_distrib) auto
-    also have "\<dots> = X / (E 1 - 1)" by (simp add: L_E_inv LE_compose)
-    finally have "Abs_fps f oo 1 - E 1 = X / (E 1 - 1)" .
+    also have "\<dots> = X / (fps_exp 1 - 1)" by (simp add: fps_ln_fps_exp_inv fps_inv_fps_exp_compose)
+    finally have "Abs_fps f oo 1 - fps_exp 1 = X / (fps_exp 1 - 1)" .
   }
-  also have "E (1::real) - 1 = (1 - E (-1)) * E 1"
-    by (simp add: algebra_simps E_add_mult [symmetric])
-  also have "E 1 * (X / \<dots>) = bernoulli'_fps" unfolding bernoulli'_fps_def
+  also have "fps_exp (1::real) - 1 = (1 - fps_exp (-1)) * fps_exp 1"
+    by (simp add: algebra_simps fps_exp_add_mult [symmetric])
+  also have "fps_exp 1 * (X / \<dots>) = bernoulli'_fps" unfolding bernoulli'_fps_def
     by (subst dvd_div_mult2_eq) (auto simp: fps_dvd_iff intro!: subdegree_leI)
   finally have "Abs_fps (\<lambda>n. gen_akiyama_tanigawa f n 0 / fact n) = bernoulli'_fps" .
   thus ?thesis by (simp add: fps_eq_iff akiyama_tanigawa_def f_def)
