@@ -8,7 +8,7 @@ subsection {* Finite Rings *}
 
 theory Finite_Field
 imports 
-  "~~/src/HOL/Number_Theory/Primes"
+  "~~/src/HOL/Computational_Algebra/Primes"
   "~~/src/HOL/Number_Theory/Residues"
   "../Containers/Set_Impl"
   Binary_Exponentiation

@@ -8,7 +8,7 @@ section{*Code Cayley Hamilton*}
 
 theory Code_Cayley_Hamilton
   imports 
-  "~~/src/HOL/Library/Polynomial"
+  "~~/src/HOL/Computational_Algebra/Polynomial"
   "Cayley_Hamilton_Compatible"
   "../Gauss_Jordan/Code_Matrix"
 begin

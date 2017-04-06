@@ -4,7 +4,7 @@ session "Cayley_Hamilton" (AFP) = "HOL-Analysis" +
   description {* Cayley_Hamilton *}
   options [show_question_marks = false, timeout = 600]
   theories [document = false]
-    "~~/src/HOL/Library/Polynomial"
+    "~~/src/HOL/Computational_Algebra/Polynomial"
   theories
     Cayley_Hamilton
   document_files

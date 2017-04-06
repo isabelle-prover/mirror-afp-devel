@@ -7,7 +7,7 @@ section \<open>Connecting Polynomials with Homomorphism Locales\<close>
 
 theory Ring_Hom_Poly
 imports 
-  "~~/src/HOL/Number_Theory/Euclidean_Algorithm"
+  "~~/src/HOL/Computational_Algebra/Euclidean_Algorithm"
   Ring_Hom
   Missing_Polynomial
   Rat

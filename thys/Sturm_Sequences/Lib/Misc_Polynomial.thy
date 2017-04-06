@@ -1,6 +1,6 @@
 (* Author: Manuel Eberl <eberlm@in.tum.de> *)
 theory Misc_Polynomial
-imports "~~/src/HOL/Library/Polynomial" "~~/src/HOL/Library/Polynomial_Factorial"
+imports "~~/src/HOL/Computational_Algebra/Polynomial" "~~/src/HOL/Computational_Algebra/Polynomial_Factorial"
 begin
 
 subsection {* Analysis *}

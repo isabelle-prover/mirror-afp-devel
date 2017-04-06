@@ -11,9 +11,9 @@ text \<open>The theory contains some basic results on polynomials which have not
 
 theory Missing_Polynomial
 imports 
-  "~~/src/HOL/Library/Polynomial_Factorial"
+  "~~/src/HOL/Computational_Algebra/Polynomial_Factorial"
   Missing_Unsorted
-begin       
+begin
 
 subsection \<open>Basic Properties\<close>
 

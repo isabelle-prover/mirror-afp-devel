@@ -1,7 +1,7 @@
 section{*Basics needed*}
 
 theory PerfectBasics
-imports Main "~~/src/HOL/Number_Theory/Primes" "~~/src/HOL/Algebra/Exponent"
+imports Main "~~/src/HOL/Computational_Algebra/Primes" "~~/src/HOL/Algebra/Exponent"
 begin
 
 lemma sum_mono2_nat: "finite (B::nat set) \<Longrightarrow> A <= B \<Longrightarrow> \<Sum> A <= \<Sum> B"

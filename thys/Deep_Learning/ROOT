@@ -13,7 +13,7 @@ session "Deep_Learning_Lib" (AFP) = "HOL-Probability" +
   options [timeout = 600, document = false]
   theories
     "~~/src/HOL/Library/More_List"
-    "~~/src/HOL/Library/Polynomial"
+    "~~/src/HOL/Computational_Algebra/Polynomial"
     "~~/src/HOL/Algebra/Congruence"
     "~~/src/HOL/Algebra/Lattice"
     "~~/src/HOL/Algebra/Group"
@@ -33,7 +33,7 @@ session "Deep_Learning_Lib" (AFP) = "HOL-Probability" +
     "../Jordan_Normal_Form/VS_Connect"
     "../Jordan_Normal_Form/Missing_VectorSpace"
     "../Jordan_Normal_Form/Missing_Permutations"
-    "~~/src/HOL/Library/Fraction_Field"
+    "~~/src/HOL/Computational_Algebra/Fraction_Field"
     "../Jordan_Normal_Form/Missing_Fraction_Field"
     "../Jordan_Normal_Form/Gauss_Jordan_Elimination"
     "../Jordan_Normal_Form/Column_Operations"

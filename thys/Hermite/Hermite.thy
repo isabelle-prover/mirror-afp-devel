@@ -10,7 +10,7 @@ theory Hermite
   imports 
   "../Echelon_Form/Echelon_Form_Inverse"
   "../Echelon_Form/Examples_Echelon_Form_Abstract"
-  "~~/src/HOL/Number_Theory/Euclidean_Algorithm"
+  "~~/src/HOL/Computational_Algebra/Euclidean_Algorithm"
 begin
 
 subsection{*Some previous properties*}

@@ -1,7 +1,10 @@
 section{*Kauffman Matrix and Kauffman Bracket- Definitions and Properties*}
 theory Kauffman_Matrix
-imports "../Matrix_Tensor/Matrix_Tensor" Link_Algebra "~~/src/HOL/Library/Polynomial"
- "~~/src/HOL/Library/Fraction_Field" 
+imports
+  "../Matrix_Tensor/Matrix_Tensor"
+  Link_Algebra
+  "~~/src/HOL/Computational_Algebra/Polynomial"
+  "~~/src/HOL/Computational_Algebra/Fraction_Field" 
 begin
 
 

@@ -10,7 +10,7 @@ section \<open>Connection of Bernoulli numbers to formal power series\<close>
 theory Bernoulli_FPS
   imports 
     Bernoulli 
-    "~~/src/HOL/Library/Formal_Power_Series"
+    "~~/src/HOL/Computational_Algebra/Formal_Power_Series"
     "~~/src/HOL/Library/Stirling"
 begin
   

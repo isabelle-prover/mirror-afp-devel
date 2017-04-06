@@ -5,7 +5,7 @@ session Rep_Fin_Groups (AFP) = "HOL" +
   theories [document = false]
     "~~/src/HOL/Library/Function_Algebras"
     "~~/src/HOL/Library/Set_Algebras"
-    "~~/src/HOL/Library/Polynomial"
+    "~~/src/HOL/Computational_Algebra/Polynomial"
   theories
     Rep_Fin_Groups
   document_files

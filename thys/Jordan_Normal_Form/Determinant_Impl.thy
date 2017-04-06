@@ -18,7 +18,7 @@ text \<open>We compute determinants on arbitrary rings by applying elementary ro
 theory Determinant_Impl
 imports
   "../Polynomial_Interpolation/Missing_Polynomial"
-  "~~/src/HOL/Library/Polynomial_Factorial"
+  "~~/src/HOL/Computational_Algebra/Polynomial_Factorial"
   Determinant
 begin
 

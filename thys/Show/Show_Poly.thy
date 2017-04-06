@@ -9,7 +9,7 @@ text \<open>We define a method which converts polynomials to strings and registe
 theory Show_Poly
 imports 
   Show_Instances
-  "~~/src/HOL/Library/Polynomial"
+  "~~/src/HOL/Computational_Algebra/Polynomial"
 begin
 
 fun show_factor :: "nat \<Rightarrow> string" where

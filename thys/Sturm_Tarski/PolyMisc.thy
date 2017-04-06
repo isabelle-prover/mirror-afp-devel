@@ -4,7 +4,7 @@
 
 theory PolyMisc imports
   Complex_Main 
-  "~~/src/HOL/Library/Polynomial_Factorial"
+  "~~/src/HOL/Computational_Algebra/Polynomial_Factorial"
 begin
 
 section{*Misc*}

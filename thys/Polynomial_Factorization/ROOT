@@ -32,4 +32,4 @@ session Pre_Polynomial_Factorization (AFP) = "JNF-AFP-Lib" +
     "../Sqrt_Babylonian/Sqrt_Babylonian"
     "../Show/Show_Poly"
     "~~/src/HOL/Library/RBT_Mapping"
-    "~~/src/HOL/Library/Polynomial"
+    "~~/src/HOL/Computational_Algebra/Polynomial"

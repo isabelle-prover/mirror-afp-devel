@@ -9,7 +9,7 @@ section{*Rings*}
 theory Rings2
 imports
    "~~/src/HOL/Analysis/Analysis"
-   "~~/src/HOL/Library/Polynomial_Factorial"
+   "~~/src/HOL/Computational_Algebra/Polynomial_Factorial"
 begin
 
 subsection{*Previous lemmas and results*}

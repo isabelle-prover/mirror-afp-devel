@@ -13,7 +13,7 @@ theory Arithmetic_Record_Based
 imports 
   "~~/src/HOL/Fields"
   "~~/src/HOL/Library/More_List"
-  "~~/src/HOL/Number_Theory/Euclidean_Algorithm"
+  "~~/src/HOL/Computational_Algebra/Euclidean_Algorithm"
 begin
 datatype 'a arith_ops_record = Arith_Ops_Record
   (zero : 'a)

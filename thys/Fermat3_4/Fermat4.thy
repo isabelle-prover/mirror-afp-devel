@@ -6,7 +6,7 @@
 section {* Pythagorean triples and Fermat's last theorem, case $n=4$ *}
 
 theory Fermat4
-imports "~~/src/HOL/Number_Theory/Primes"
+imports "~~/src/HOL/Computational_Algebra/Primes"
 begin
 
 context

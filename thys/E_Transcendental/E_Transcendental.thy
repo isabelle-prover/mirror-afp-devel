@@ -11,7 +11,7 @@ theory E_Transcendental
   imports
     "~~/src/HOL/Analysis/Analysis"
     "~~/src/HOL/Number_Theory/Number_Theory"
-    "~~/src/HOL/Library/Polynomial"
+    "~~/src/HOL/Computational_Algebra/Polynomial"
 begin
 
 (* TODO: Lots of stuff to move to the distribution *)

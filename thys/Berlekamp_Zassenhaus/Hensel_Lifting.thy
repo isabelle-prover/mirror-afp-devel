@@ -18,7 +18,7 @@ text \<open>We define and prove properties of Hensel-lifting. Here, we show the 
 
 theory Hensel_Lifting
 imports 
-  "~~/src/HOL/Number_Theory/Euclidean_Algorithm"
+  "~~/src/HOL/Computational_Algebra/Euclidean_Algorithm"
   Poly_Mod_Finite_Field_Record_Based
   "../Sqrt_Babylonian/NthRoot_Impl" (* for log_ceil *)
   "~~/src/HOL/Types_To_Sets/Types_To_Sets"

@@ -25,7 +25,7 @@ section {* Auxiliary lemmas which might be moved into the Isabelle distribution.
 
 theory Real_Impl_Auxiliary
 imports 
-  "~~/src/HOL/Number_Theory/Primes"
+  "~~/src/HOL/Computational_Algebra/Primes"
 begin
 
 lemma multiplicity_prime: 

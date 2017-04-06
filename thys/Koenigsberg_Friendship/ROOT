@@ -28,7 +28,7 @@ session Koenigsberg_Friendship_Base (AFP) = HOL +
     "~~/src/HOL/Number_Theory/Cong"
     "~~/src/HOL/Number_Theory/Fib"
     "~~/src/HOL/Number_Theory/Number_Theory"
-    "~~/src/HOL/Number_Theory/Primes"
+    "~~/src/HOL/Computational_Algebra/Primes"
     "~~/src/HOL/Number_Theory/Residues"
     "../Dijkstra_Shortest_Path/Graph"
 

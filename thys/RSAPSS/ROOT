@@ -4,7 +4,7 @@ session RSAPSS (AFP) = HOL +
   options [timeout = 600]
   theories [document = false]
     "~~/src/HOL/Library/Code_Target_Numeral"
-    "~~/src/HOL/Number_Theory/Primes"
+    "~~/src/HOL/Computational_Algebra/Primes"
     Word  (* local, not HOL-Word! *)
   theories
     RSAPSS

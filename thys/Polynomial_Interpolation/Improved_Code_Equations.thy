@@ -9,7 +9,7 @@ text \<open>This theory contains improved code equations for certain algorithms.
 
 theory Improved_Code_Equations
 imports 
-  "~~/src/HOL/Library/Polynomial"
+  "~~/src/HOL/Computational_Algebra/Polynomial"
   Code_Numeral 
   Binomial
 begin

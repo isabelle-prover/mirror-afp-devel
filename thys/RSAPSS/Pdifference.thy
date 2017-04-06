@@ -6,7 +6,7 @@
 section "Positive differences"
 
 theory Pdifference
-imports "~~/src/HOL/Number_Theory/Primes" Mod
+imports "~~/src/HOL/Computational_Algebra/Primes" Mod
 begin
 
 definition

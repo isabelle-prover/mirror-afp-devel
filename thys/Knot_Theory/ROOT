@@ -3,8 +3,8 @@ chapter AFP
 session Knot_Theory (AFP) = "Matrix_Tensor" +
   options [timeout = 600]
   theories [document = false]
-   "~~/src/HOL/Library/Polynomial"
-   "~~/src/HOL/Library/Fraction_Field" 
+   "~~/src/HOL/Computational_Algebra/Polynomial"
+   "~~/src/HOL/Computational_Algebra/Fraction_Field" 
   theories
     Example
     Kauffman_Invariance
