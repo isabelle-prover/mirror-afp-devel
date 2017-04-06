@@ -540,7 +540,7 @@ lemma goodstein_step:
 proof -
   let ?Gi = "encode (i + 2) 0 (goodstein i)"
   let ?reencode = "encode (i + 3) 0"
-  let ?decoded_Gi= "decode (i + 3) 0 ?Gi"
+  let ?decoded_Gi = "decode (i + 3) 0 ?Gi"
 
   have two_le: "2 \<le> i + 3"
     by simp
@@ -551,8 +551,8 @@ proof -
     by (rule well_base\<^sub>h_mono_base) simp_all
 
   have decoded_Gi_gt_0: "?decoded_Gi > 0"
-    by (metis gi_gt_0 gr0I encode_0_iff le_add2
-      decode_0_iff[OF _ well\<^sub>h aligned\<^sub>d_0, THEN iffD1] two_le)
+    by (metis gi_gt_0 gr0I encode_0_iff le_add2 decode_0_iff[OF _ well\<^sub>h aligned\<^sub>d_0, THEN iffD1]
+      two_le)
 
   have "?reencode (?decoded_Gi - 1) < ?reencode ?decoded_Gi"
     by (rule less_imp_encode_less[OF two_le]) (use decoded_Gi_gt_0 in linarith)

@@ -1,8 +1,8 @@
-(* Author: Mathias Fleury, MPII
+(*  Title:       $AFP/Nested_Multisets_Ordinals/zmultiset_simprocs.ML
+    Author:      Mathias Fleury <mathias.fleury at mpi-inf.mpg.de>, 2017
 
-
-Simprocs for zmultisets, based on Larry Paulson's simprocs for
-natural numbers and numerals.
+Simprocs for zmultisets, based on Larry Paulson's simprocs for natural numbers
+and numerals.
 *)
 
 signature ZMULTISET_SIMPROCS =
