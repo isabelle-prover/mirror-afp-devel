@@ -153,6 +153,10 @@ text \<open>
 
 lift_definition monom :: "(nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow> 'a::zero \<Rightarrow> 'a mpoly"
   is "PP_Poly_Mapping.single :: (nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow> _" .
+    
+lemma mapping_of_monom [simp]:
+  "mapping_of (monom m a) = PP_Poly_Mapping.single m a"
+  by(fact monom.rep_eq)
 
 lemma monom_zero [simp]:
   "monom 0 0 = 0"
