@@ -133,7 +133,7 @@ fun note_named_thm (name, thm) ctxt =
 fun equivariance_cmd pred_name ctxt =
   let
     val ({names, ...}, {preds, raw_induct, intrs, ...}) =
-      Inductive.the_inductive ctxt (long_name ctxt pred_name)
+      Inductive.the_inductive_global ctxt (long_name ctxt pred_name)
     val thms = raw_equivariance ctxt preds raw_induct intrs
   in
     fold_map note_named_thm (names ~~ thms) ctxt |> snd

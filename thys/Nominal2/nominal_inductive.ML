@@ -394,7 +394,7 @@ fun prove_strong_inductive pred_names rule_names avoids raw_induct intrs ctxt =
 fun prove_strong_inductive_cmd (pred_name, avoids) ctxt =
   let
     val ({names, ...}, {raw_induct, intrs, ...}) =
-      Inductive.the_inductive ctxt (long_name ctxt pred_name)
+      Inductive.the_inductive_global ctxt (long_name ctxt pred_name)
 
     val rule_names = hd names
       |> the o Induct.lookup_inductP ctxt
