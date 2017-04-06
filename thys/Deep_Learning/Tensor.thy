@@ -80,6 +80,8 @@ shows "is1 @ is2 \<lhd> ds1 @ ds2"
   using valid_index_lt[OF is2_valid] valid_index_lt[OF is1_valid] valid_index_length[OF is1_valid] valid_index_length[OF is2_valid] length_append
   by (auto simp add: `length is1 = length ds1`)
 
+lemma valid_index_list_all2_iff: "is \<lhd> ds \<longleftrightarrow> list_all2 (op <) is ds"
+by (metis list_all2_conv_all_nth list_all2_nthD valid_indexI valid_index_length valid_index_lt)
 
 definition fixed_length_sublist::"'a list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a list" where
 "fixed_length_sublist xs l i = (take l (drop (l*i) xs))"

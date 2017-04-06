@@ -26,6 +26,8 @@ lemma vec_of_list_index: "vec_of_list xs $ j = xs ! j"
 
 lemma list_of_vec_index: "list_of_vec v ! j = v $ j"
   by (metis vec_list vec_of_list_index)
+    
+lemma list_of_vec_map: "list_of_vec xs = map (op $ xs) [0..<dim\<^sub>v xs]" by transfer auto
 
 definition "component_mult v w = vec (min (dim\<^sub>v v) (dim\<^sub>v w)) (\<lambda>i. v $ i * w $ i)"
 definition vec_set::"'a vec \<Rightarrow> 'a set" ("set\<^sub>v")

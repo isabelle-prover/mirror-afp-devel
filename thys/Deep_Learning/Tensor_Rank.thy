@@ -10,8 +10,6 @@ inductive cprank_max1::"'a::ring_1 tensor \<Rightarrow> bool" where
 order1: "order A \<le> 1 \<Longrightarrow> cprank_max1 A" |
 higher_order: "order A = 1 \<Longrightarrow> cprank_max1 B \<Longrightarrow> cprank_max1 (A \<otimes> B)"
 
-(* TODO: Alternativen: über prod_list, oder immer order1 mit cprank1 multiplizieren (besser, da induct stärker). *)
-
 lemma cprank_max1_order0: "cprank_max1 B \<Longrightarrow> order A = 0 \<Longrightarrow> cprank_max1 (A \<otimes> B)"
 proof (induction B rule:cprank_max1.induct)
   case order1

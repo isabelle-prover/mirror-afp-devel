@@ -322,9 +322,6 @@ next
     using  `\<not>j<M` by (simp add: lookup_tensor0[OF assms(2)] `is \<noteq> [j, j]`)
 qed
 
-(* TODO: move? *)
-lemma list_of_vec_map: "list_of_vec xs = map (op $ xs) [0..<dim\<^sub>v xs]" by transfer auto
-
 lemma lookup_tensors_ht_l1:
 assumes "j < r1"
 and "is \<lhd> [M,M]"

@@ -294,8 +294,6 @@ proof -
   ultimately show ?thesis using coeff_eq by auto
 qed
 
-
-(* TODO: Beweis durch transfer möglich? *)
 lemma mpoly_induct [case_names monom sum]:
 assumes monom:"\<And>m a. P (monom m a)"
 and sum:"(\<And>p1 p2 m a. P p1 \<Longrightarrow> P p2 \<Longrightarrow> p2 = (monom m a) \<Longrightarrow> m \<notin> keys (mapping_of p1) \<Longrightarrow> P (p1+p2))"

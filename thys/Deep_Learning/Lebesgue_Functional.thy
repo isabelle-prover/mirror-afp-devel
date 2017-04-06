@@ -13,7 +13,6 @@ of the Lebesgue measure as follows. This version of the Lebesgue measure measure
 from nat to real whose values are undefined for arguments higher than n. These "Extensional Function Spaces"
  are defined in HOL/Library/FuncSet. \<close>
 
-(* TODO: make abbrev *)
 definition lborel_f :: "nat \<Rightarrow> (nat \<Rightarrow> real) measure" where
   "lborel_f n = (\<Pi>\<^sub>M b\<in>{..<n}. lborel)"
 

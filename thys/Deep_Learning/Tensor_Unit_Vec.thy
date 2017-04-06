@@ -6,8 +6,6 @@ theory Tensor_Unit_Vec
 imports Tensor_Product
 begin
 
-(* TODO:eventually remove completely, as it is mostly not necessary.*)
-
 definition unit_vec::"nat \<Rightarrow> nat \<Rightarrow> 'a::ring_1 tensor"
 where "unit_vec n i = tensor_from_lookup [n] (\<lambda>x. if x=[i] then 1 else 0)"
 
@@ -23,7 +21,6 @@ proof -
   then show ?thesis by auto
 qed
 
-(* TODO:needed?*)
 lemma subtensor_prod_with_unit_vec:
 fixes A::"'a::ring_1 tensor"
 assumes "j<n"
@@ -39,7 +36,6 @@ proof -
     by (metis (no_types, lifting) tensor_from_lookup_eqI)
 qed
 
-(* TODO:needed?*)
 lemma subtensor_decomposition:
 assumes "dims A \<noteq> []"
 shows "listsum (dims A) (map (\<lambda>i. unit_vec (hd (dims A)) i \<otimes> subtensor A i) [0..<hd (dims A)]) = A" (is "?LS = A")

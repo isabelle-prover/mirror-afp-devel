@@ -81,8 +81,7 @@ lift_definition smult :: "'a::{times,zero} \<Rightarrow> 'a mpoly \<Rightarrow> 
   is "\<lambda>a. PP_Poly_Mapping.map (Groups.times a) :: ((nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'a) \<Rightarrow> _" .
 
 (* left lemmas in subsection \<open>Pseudo-division of polynomials\<close>,
-   because I couldn't disentangle them and the notion of monomials.
-   TODO: investigate the !two! subsection \<open>Monomials\<close> in this thy. *)
+   because I couldn't disentangle them and the notion of monomials. *)
 
 subsection \<open>Multiplicative structure\<close>
 
@@ -393,23 +392,6 @@ lemma degree_one [simp]:
 lemma total_degree_one [simp]:
   "total_degree 1 = 0"
   by transfer simp
-
-
-subsection \<open>Monomials\<close>
-
-lemma mapping_of_monom [simp]:
-  "mapping_of (monom m a) = PP_Poly_Mapping.single m a"
-  by(fact monom.rep_eq)
-
-text \<open>Naive construction of monomials\<close>
-
-definition M :: "nat list \<Rightarrow> 'a::zero \<Rightarrow> 'a mpoly"
-where
-  "M ms = monom (PP_Poly_Mapping.nth ms)"
-
-declare [[code abort: monom]]
-value "M [1,2,3] (2::int) + M [2,0,1] 3 + M [2,0,1] 7"
-
 
 subsection \<open>Pseudo-division of polynomials\<close>
 
