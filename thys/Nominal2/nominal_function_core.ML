@@ -1019,7 +1019,7 @@ fun prepare_nominal_function config defname [((fname, fT), mixfix)] abstract_qgl
     val n = length abstract_qglrs
 
     fun build_tree (ClauseContext { ctxt, rhs, ...}) =
-       Function_Context_Tree.mk_tree (fname, fT) h ctxt rhs
+       Function_Context_Tree.mk_tree (Free (fname, fT)) h ctxt rhs
 
     val trees = map build_tree clauses
     val RCss = map find_calls trees
