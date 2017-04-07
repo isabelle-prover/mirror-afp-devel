@@ -4,7 +4,8 @@ theory PP_Univariate
 imports PP_MPoly PP_More_MPoly "~~/src/HOL/Computational_Algebra/Polynomial"
 begin
 
-text \<open>This file connects univariate MPolys to the theory of univariate polynomials from HOL/Computational_Algebra/Polynomial.\<close>
+text \<open>This file connects univariate MPolys to the theory of univariate polynomials from
+  @{file "~~/src/HOL/Computational_Algebra/Polynomial.thy"}.\<close>
 
 definition poly_to_mpoly::"nat \<Rightarrow> 'a::comm_monoid_add poly \<Rightarrow> 'a mpoly"
 where "poly_to_mpoly v p = MPoly (Abs_poly_mapping (\<lambda>m. (coeff p (PP_Poly_Mapping.lookup m v)) when PP_Poly_Mapping.keys m \<subseteq> {v}))"
