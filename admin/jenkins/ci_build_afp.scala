@@ -220,8 +220,8 @@ object profile extends isabelle.CI_Profile
       print_section("COMPLETED")
     }
 
-  def select_sessions(sessions: Sessions.T) =
-    sessions.selection(
+  def selection =
+    Sessions.Selection(
       session_groups = List("AFP"),
       exclude_session_groups = List("slow"))
 
