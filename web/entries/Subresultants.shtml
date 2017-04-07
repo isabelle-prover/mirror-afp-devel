@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>The number of comparisons in QuickSort - Archive of Formal Proofs
+<title>Subresultants - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,17 +61,7 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">T</font>he
-  
-          number
-  
-          of
-  
-          comparisons
-  
-          in
-  
-          <font class="first">Q</font>uickSort
+  <h1>          <font class="first">S</font>ubresultants
   
 </h1>
   <p>&nbsp;</p>
@@ -80,15 +70,17 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">The number of comparisons in QuickSort</td>
+  <td class="data" width="80%">Subresultants</td>
 </tr>
 
 <tr>
   <td class="datahead">
-          Author:
+          Authors:
       </td>
   <td class="data">
-              <a href="https://www21.in.tum.de/~eberlm">Manuel Eberl</a>
+                      Sebastiaan Joosten (sebastiaan /dot/ joosten /at/ uibk /dot/ ac /dot/ at),
+                René Thiemann (rene /dot/ thiemann /at/ uibk /dot/ ac /dot/ at) and
+          Akihisa Yamada (akihisa /dot/ yamada /at/ uibk /dot/ ac /dot/ at)
       </td>
 </tr>
 
@@ -96,34 +88,29 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2017-03-15</td>
+  <td class="data">2017-04-06</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-<p>We give a formal proof of the well-known results about the
-number of comparisons performed by two variants of QuickSort: first,
-the expected number of comparisons of randomised QuickSort
-(i.&thinsp;e.&nbsp;QuickSort with random pivot choice) is
-<em>2&thinsp;(n+1)&thinsp;H<sub>n</sub> -
-4&thinsp;n</em>, which is asymptotically equivalent to
-<em>2&thinsp;n ln n</em>; second, the number of
-comparisons performed by the classic non-randomised QuickSort has the
-same distribution in the average case as the randomised one.</p></td>
+We formalize the theory of subresultants and the subresultant
+polynomial remainder sequence as described by Brown and Traub. As a
+result, we obtain efficient certified algorithms for computing the
+resultant and the greatest common divisor of polynomials.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Quick_Sort_Cost-AFP,
-  author  = {Manuel Eberl},
-  title   = {The number of comparisons in QuickSort},
+        <pre>@article{Subresultants-AFP,
+  author  = {Sebastiaan Joosten and René Thiemann and Akihisa Yamada},
+  title   = {Subresultants},
   journal = {Archive of Formal Proofs},
-  month   = mar,
+  month   = apr,
   year    = 2017,
-  note    = {\url{http://isa-afp.org/entries/Quick_Sort_Cost.shtml},
+  note    = {\url{http://isa-afp.org/entries/Subresultants.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -135,11 +122,9 @@ same distribution in the average case as the randomised one.</p></td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Comparison_Sort_Lower_Bound.shtml">Comparison_Sort_Lower_Bound</a>, <a href="Landau_Symbols.shtml">Landau_Symbols</a>, <a href="List-Index.shtml">List-Index</a>, <a href="Regular-Sets.shtml">Regular-Sets</a>      </td></tr>
+          <td class="data"><a href="Berlekamp_Zassenhaus.shtml">Berlekamp_Zassenhaus</a>, <a href="Jordan_Normal_Form.shtml">Jordan_Normal_Form</a>      </td></tr>
           
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Random_BSTs.shtml">Random_BSTs</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -151,17 +136,17 @@ same distribution in the average case as the randomised one.</p></td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Quick_Sort_Cost/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Quick_Sort_Cost/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Subresultants/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Subresultants/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Quick_Sort_Cost/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Subresultants/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Quick_Sort_Cost-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Subresultants-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 

@@ -163,6 +163,7 @@
               </div>
       <h3>Data Structures</h3>
     <div class="list">
+          <a href="entries/Random_BSTs.shtml">Random_BSTs</a> &nbsp;
           <a href="entries/List_Interleaving.shtml">List_Interleaving</a> &nbsp;
           <a href="entries/Refine_Imperative_HOL.shtml">Refine_Imperative_HOL</a> &nbsp;
           <a href="entries/Amortized_Complexity.shtml">Amortized_Complexity</a> &nbsp;
@@ -391,6 +392,7 @@
     </div>
         <h3>Algebra</h3>
     <div class="list">
+          <a href="entries/Subresultants.shtml">Subresultants</a> &nbsp;
           <a href="entries/Buildings.shtml">Buildings</a> &nbsp;
           <a href="entries/Algebraic_VCs.shtml">Algebraic_VCs</a> &nbsp;
           <a href="entries/Multirelations.shtml">Multirelations</a> &nbsp;
