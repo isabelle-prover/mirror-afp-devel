@@ -9,7 +9,19 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>04 Apr 2017 00:00:00 +0000</pubDate>
+    <pubDate>06 Apr 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>Subresultants</title>
+              <link>https://www.isa-afp.org/entries/Subresultants.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Subresultants.shtml</guid>
+       <dc:creator> Sebastiaan Joosten, René Thiemann, Akihisa Yamada       </dc:creator>
+       <pubDate>06 Apr 2017 00:00:00 +0000</pubDate>
+       <description>
+We formalize the theory of subresultants and the subresultant
+polynomial remainder sequence as described by Brown and Traub. As a
+result, we obtain efficient certified algorithms for computing the
+resultant and the greatest common divisor of polynomials.</description>
+    </item>
     <item>
        <title>Expected Shape of Random Binary Search Trees</title>
               <link>https://www.isa-afp.org/entries/Random_BSTs.shtml</link>
@@ -506,20 +518,6 @@ contracts literature, which generalize those of the classical
 two-sided matching scenarios that go by the name of stable marriage.
 Our focus is on game theoretic issues. Along the way we develop
 executable algorithms for computing optimal stable matches.</description>
-    </item>
-    <item>
-       <title>LOFT — Verified Migration of Linux Firewalls to SDN</title>
-              <link>https://www.isa-afp.org/entries/LOFT.shtml</link>
-       <guid>https://www.isa-afp.org/entries/LOFT.shtml</guid>
-       <dc:creator> Julius Michaelis, Cornelius Diekmann       </dc:creator>
-       <pubDate>21 Oct 2016 00:00:00 +0000</pubDate>
-       <description>
-We present LOFT — Linux firewall OpenFlow Translator, a system that
-transforms the main routing table and FORWARD chain of iptables of a
-Linux-based firewall into a set of static OpenFlow rules. Our
-implementation is verified against a model of a simplified Linux-based
-router and we can directly show how much of the original functionality
-is preserved.</description>
     </item>
   </channel>
 </rss>

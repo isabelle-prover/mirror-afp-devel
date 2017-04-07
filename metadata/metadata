@@ -1,3 +1,15 @@
+[Subresultants]
+title = Subresultants
+author = Sebastiaan Joosten <mailto:sebastiaan.joosten@uibk.ac.at>, René Thiemann <mailto:rene.thiemann@uibk.ac.at>, Akihisa Yamada <mailto:akihisa.yamada@uibk.ac.at>
+topic = Mathematics/Algebra
+date = 2017-04-06
+notify = rene.thiemann@uibk.ac.at
+abstract = 
+  We formalize the theory of subresultants and the subresultant
+  polynomial remainder sequence as described by Brown and Traub. As a
+  result, we obtain efficient certified algorithms for computing the
+  resultant and the greatest common divisor of polynomials.
+
 [Comparison_Sort_Lower_Bound]
 title = Lower bound on comparison-based sorting algorithms
 author = Manuel Eberl <https://www21.in.tum.de/~eberlm>

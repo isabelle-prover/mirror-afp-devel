@@ -1,0 +1,17 @@
+chapter AFP
+
+session Subresultants (AFP) = "Berlekamp_Zassenhaus" +
+  description {* Algebraic Numbers *}
+  options [timeout = 600]
+  theories [document = false]
+    "../Jordan_Normal_Form/Determinant"
+    "../Berlekamp_Zassenhaus/Resultant"
+    "../Berlekamp_Zassenhaus/Mahler_Measure"
+  theories
+    "Missing_Determinant"
+    "Missing_Polynomial_Factorial"
+  theories
+    "Subresultant_Gcd"
+  document_files
+    "root.bib"
+    "root.tex"
