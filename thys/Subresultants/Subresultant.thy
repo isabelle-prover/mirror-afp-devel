@@ -1,13 +1,13 @@
 section \<open>Subresultants and the subresultant PRS\<close>
-  
+
 text \<open>This theory contains most of the soundness proofs of the subresultant PRS algorithm,
   where we closely follow the papers of Brown \cite{Brown} and Brown and Traub \cite{BrownTraub}.
-  This is in contrast to a similar Coq formalization of Mahboubi \cite{Mahboubi06} which 
+  This is in contrast to a similar Coq formalization of Mahboubi \cite{Mahboubi06} which
   is based on polynomial determinants.
 
   Whereas the current file only contains an algorithm to compute the resultant of two polynomials
   efficiently, there is another theory ``Subresultant-Gcd'' which also contains the algorithm
-  to compute the GCD of two polynomials via the subresultant algorithm.\<close> 
+  to compute the GCD of two polynomials via the subresultant algorithm.\<close>
 
 theory Subresultant
 imports
@@ -15,6 +15,10 @@ imports
   "../Berlekamp_Zassenhaus/Mahler_Measure" (* for inj_idom_hom, TODO: reorganize *)
   "../Berlekamp_Zassenhaus/Resultant"
 begin
+
+abbreviation pdivmod :: "'a::field poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly \<times> 'a poly"
+where
+  "pdivmod p q \<equiv> (p div q, p mod q)"
 
 subsection \<open>Algorithm\<close>
 
@@ -27,12 +31,12 @@ partial_function(tailrec) subresultant_prs_main where
    d1 = ni_1 - ni;
    hi = gi ^ d1 div hi_1 ^ (d1 - 1);
    pmod = pseudo_mod Gi_1 Gi
-  in (if pmod = 0 then (Gi,hi) else 
-  let 
+  in (if pmod = 0 then (Gi,hi) else
+  let
      divisor = (-1) ^ (d1 + 1) * gi_1 * (hi_1 ^ d1) ;
      Gi_p1 = divide_poly pmod divisor;
      ni_p1 = degree Gi_p1
-     in subresultant_prs_main Gi Gi_p1 hi))" 
+     in subresultant_prs_main Gi Gi_p1 hi))"
 
 definition subresultant_prs where
   [code del]: "subresultant_prs G1 G2 = (let
@@ -42,35 +46,35 @@ definition subresultant_prs where
     in if pmod = 0 then (G2,h2) else let
       G_3 = (- 1) ^ (delta_1 + 1) * pmod
     in subresultant_prs_main G2 G_3 h2)"
-  
-definition resultant_impl_main where 
-  [code del]: "resultant_impl_main G1 G2 = (if G2 = 0 then (if degree G1 = 0 then 1 else 0) else 
+
+definition resultant_impl_main where
+  [code del]: "resultant_impl_main G1 G2 = (if G2 = 0 then (if degree G1 = 0 then 1 else 0) else
      case subresultant_prs G1 G2 of
-     (Gk,hk) \<Rightarrow> (if degree Gk = 0 then hk else 0))"   
+     (Gk,hk) \<Rightarrow> (if degree Gk = 0 then hk else 0))"
 
 definition resultant_impl where
-  "resultant_impl f g = 
-     (if length (coeffs f) \<ge> length (coeffs g) then resultant_impl_main f g 
-     else let res = resultant_impl_main g f in 
-      if even (degree f) \<or> even (degree g) then res else - res)" 
+  "resultant_impl f g =
+     (if length (coeffs f) \<ge> length (coeffs g) then resultant_impl_main f g
+     else let res = resultant_impl_main g f in
+      if even (degree f) \<or> even (degree g) then res else - res)"
 
 subsection \<open>Soundness Proof for @{term "resultant_impl = resultant"}\<close>
 
 lemma even_sum_list: assumes "\<And> x. x \<in> set xs \<Longrightarrow> even (f x) = even (g x)"
-  shows "even (sum_list (map f xs)) = even (sum_list (map g xs))" 
+  shows "even (sum_list (map f xs)) = even (sum_list (map g xs))"
   using assms by (induct xs, auto)
 
 lemma for_all_Suc: "P i \<Longrightarrow> (\<forall> j \<ge> Suc i. P j) = (\<forall> j \<ge> i. P j)" for P
-  by (metis (full_types) Suc_le_eq less_le)      
-    
+  by (metis (full_types) Suc_le_eq less_le)
+
 (* part on pseudo_divmod *)
-lemma pseudo_mod_left_0[simp]: "pseudo_mod 0 x = 0" 
-  unfolding pseudo_mod_def pseudo_divmod_def 
+lemma pseudo_mod_left_0[simp]: "pseudo_mod 0 x = 0"
+  unfolding pseudo_mod_def pseudo_divmod_def
   by (cases "x = 0"; cases "length (coeffs x)", auto)
-    
-lemma pseudo_mod_right_0[simp]: "pseudo_mod x 0 = x" 
+
+lemma pseudo_mod_right_0[simp]: "pseudo_mod x 0 = x"
   unfolding pseudo_mod_def pseudo_divmod_def by simp
-    
+
 lemma snd_pseudo_divmod_main_cong:
   assumes "a1 = b1" "a3 = b3" "a4 = b4" "a5 = b5" "a6 = b6" (* note that a2 = b2 is not required! *)
   shows "snd (pseudo_divmod_main a1 a2 a3 a4 a5 a6) = snd (pseudo_divmod_main b1 b2 b3 b4 b5 b6)"
@@ -108,7 +112,7 @@ lemma snd_pseudo_mod_smult_invar_left:
 proof(induct n arbitrary:x lc q q' r d dr)
   case (Suc n)
   have sm:"smult lc (smult x r) - monom (coeff (smult x r) dr) n * d
-          =smult x (smult lc r - monom (coeff r dr) n * d) " 
+          =smult x (smult lc r - monom (coeff r dr) n * d) "
     by (auto simp:smult_diff_right smult_monom smult_monom_mult mult.commute[of lc x])
   let ?q' = "(Polynomial.smult lc q' + monom (coeff r dr) n)"
   show ?case unfolding pseudo_divmod_main.simps Let_def Suc(1)[of lc _ _ _ _ _ ?q'] sm by auto
@@ -134,110 +138,110 @@ unfolding pseudo_divmod_def by auto
 
 context inj_ring_hom
 begin
-lemma length_coeffs_hom[simp]:"length (coeffs (map_poly hom q)) = length (coeffs q)" 
+lemma length_coeffs_hom[simp]:"length (coeffs (map_poly hom q)) = length (coeffs q)"
   by(induct q,auto)
-lemma pseudo_divmod_main_hom: 
-  "pseudo_divmod_main (hom lc) (map_poly hom q) (map_poly hom r) (map_poly hom d) dr i = 
+lemma pseudo_divmod_main_hom:
+  "pseudo_divmod_main (hom lc) (map_poly hom q) (map_poly hom r) (map_poly hom d) dr i =
   map_prod (map_poly hom) (map_poly hom) (pseudo_divmod_main lc q r d dr i)"
   by (induct lc q r d dr i rule:pseudo_divmod_main.induct, auto simp: map_poly_minus Let_def)
 
 lemma pseudo_divmod_hom: "pseudo_divmod (map_poly hom p) (map_poly hom q) = map_prod (map_poly hom) (map_poly hom) (pseudo_divmod p q)"
   unfolding pseudo_divmod_def using pseudo_divmod_main_hom[of _ 0] by (cases "q = 0",auto)
 end
-  
+
 lemma (in inj_idom_hom) pseudo_mod_hom: "pseudo_mod (map_poly hom p) (map_poly hom q) = map_poly hom (pseudo_mod p q)"
   using pseudo_divmod_hom unfolding pseudo_mod_def by auto
-  
+
 (* part on prod_list *)
-  
+
 lemma prod_combine:
   assumes "j \<le> i"
   shows "f i * (\<Prod>l\<leftarrow>[j..<i]. (f l :: 'a::comm_monoid_mult)) = prod_list (map f [j..<Suc i])"
 proof(subst prod_list_map_remove1[of i "[j..<Suc i]" f],goal_cases)
   case 2
-  have "remove1 i ([j..<i] @ [i]) = [j..<i]" by (simp add: remove1_append) 
+  have "remove1 i ([j..<i] @ [i]) = [j..<i]" by (simp add: remove1_append)
   thus ?case by auto
 qed (insert assms, auto)
 
 lemma prod_list_minus_1_exp: "prod_list (map (\<lambda> i. (-1)^(f i)) xs)
-  = (-1)^(sum_list (map f xs))" 
+  = (-1)^(sum_list (map f xs))"
   by (induct xs, auto simp: power_add)
-  
-lemma minus_1_power_even: "(- (1 :: 'b :: comm_ring_1))^ k = (if even k then 1 else (-1))" 
+
+lemma minus_1_power_even: "(- (1 :: 'b :: comm_ring_1))^ k = (if even k then 1 else (-1))"
   by auto
 
 lemma minus_1_even_eqI: assumes "even k = even l" shows
-    "(- (1 :: 'b :: comm_ring_1))^k = (- 1)^l" 
+    "(- (1 :: 'b :: comm_ring_1))^k = (- 1)^l"
     unfolding minus_1_power_even assms by auto
-  
+
 lemma (in comm_monoid_mult) prod_list_multf:
   "(\<Prod>x\<leftarrow>xs. f x * g x) = prod_list (map f xs) * prod_list (map g xs)"
   by (induct xs) (simp_all add: algebra_simps)
 
-lemma inverse_prod_list: "inverse (prod_list xs) = prod_list (map inverse (xs :: 'a :: field list))" 
+lemma inverse_prod_list: "inverse (prod_list xs) = prod_list (map inverse (xs :: 'a :: field list))"
   by (induct xs, auto)
-    
+
 (* part on pow_int, i.e., exponentiation with integer exponent *)
 definition pow_int :: "'a :: field \<Rightarrow> int \<Rightarrow> 'a" where
-  "pow_int x e = (if e < 0 then 1 / (x ^ (nat (-e))) else x ^ (nat e))" 
-  
+  "pow_int x e = (if e < 0 then 1 / (x ^ (nat (-e))) else x ^ (nat e))"
+
 lemma pow_int_0[simp]: "pow_int x 0 = 1" unfolding pow_int_def by auto
 
 lemma pow_int_1[simp]: "pow_int x 1 = x" unfolding pow_int_def by auto
 
-lemma exp_pow_int: "x ^ n = pow_int x n"     
+lemma exp_pow_int: "x ^ n = pow_int x n"
   unfolding pow_int_def by auto
-    
-lemma pow_int_add: assumes x: "x \<noteq> 0" shows "pow_int x (a + b) = pow_int x a * pow_int x b" 
-proof -
-  have *: 
-    "\<not> a + b < 0 \<Longrightarrow> a < 0 \<Longrightarrow> nat b = nat (a + b) + nat (-a)" 
-    "\<not> a + b < 0 \<Longrightarrow> b < 0 \<Longrightarrow> nat a = nat (a + b) + nat (-b)" 
-    "a + b < 0 \<Longrightarrow> \<not> a < 0 \<Longrightarrow> nat (-b) = nat a + nat (-a -b) " 
-    "a + b < 0 \<Longrightarrow> \<not> b < 0 \<Longrightarrow> nat (-a) = nat b + nat (-a -b) " 
-  by auto      
-  have pow_eq: "l = m \<Longrightarrow> (x ^ l = x ^ m)" for l m by auto
-  from x show ?thesis unfolding pow_int_def 
-    by (auto split: if_splits simp: power_add[symmetric] simp: * intro!: pow_eq, auto simp: power_add)
-qed    
 
-lemma pow_int_mult: "pow_int (x * y) a = pow_int x a * pow_int y a" 
+lemma pow_int_add: assumes x: "x \<noteq> 0" shows "pow_int x (a + b) = pow_int x a * pow_int x b"
+proof -
+  have *:
+    "\<not> a + b < 0 \<Longrightarrow> a < 0 \<Longrightarrow> nat b = nat (a + b) + nat (-a)"
+    "\<not> a + b < 0 \<Longrightarrow> b < 0 \<Longrightarrow> nat a = nat (a + b) + nat (-b)"
+    "a + b < 0 \<Longrightarrow> \<not> a < 0 \<Longrightarrow> nat (-b) = nat a + nat (-a -b) "
+    "a + b < 0 \<Longrightarrow> \<not> b < 0 \<Longrightarrow> nat (-a) = nat b + nat (-a -b) "
+  by auto
+  have pow_eq: "l = m \<Longrightarrow> (x ^ l = x ^ m)" for l m by auto
+  from x show ?thesis unfolding pow_int_def
+    by (auto split: if_splits simp: power_add[symmetric] simp: * intro!: pow_eq, auto simp: power_add)
+qed
+
+lemma pow_int_mult: "pow_int (x * y) a = pow_int x a * pow_int y a"
   unfolding pow_int_def by (cases "a < 0", auto simp: power_mult_distrib)
 
-lemma pow_int_base_1[simp]: "pow_int 1 a = 1" 
+lemma pow_int_base_1[simp]: "pow_int 1 a = 1"
   unfolding pow_int_def by (cases "a < 0", auto)
-    
-lemma pow_int_divide: "a / pow_int x b = a * pow_int x (-b)" 
+
+lemma pow_int_divide: "a / pow_int x b = a * pow_int x (-b)"
   unfolding pow_int_def by (cases b rule: linorder_cases[of _ 0], auto)
-    
+
 lemma divide_prod_assoc: "x / (y * z :: 'a :: field) = x / y / z" by (simp add: field_simps)
-    
+
 lemma minus_1_inverse_pow[simp]: "x / (-1)^n = (x :: 'a :: field) * (-1)^n"
   by (simp add: minus_1_power_even)
-    
+
 
 (* part on icoeff, i.e., coeff with integer index *)
 
 definition icoeff :: "'a :: zero poly \<Rightarrow> int \<Rightarrow> 'a" where
-  "icoeff p i = (if i < 0 then 0 else coeff p (nat i))" 
-  
-lemma icoeff_eq_0: "i < 0 \<or> i > int (degree p) \<Longrightarrow> icoeff p i = 0" 
+  "icoeff p i = (if i < 0 then 0 else coeff p (nat i))"
+
+lemma icoeff_eq_0: "i < 0 \<or> i > int (degree p) \<Longrightarrow> icoeff p i = 0"
   unfolding icoeff_def
   by (cases "i < 0", auto intro: coeff_eq_0)
-  
-lemma icoeff_smult[simp]: "icoeff (smult c p) i = c * icoeff p i" 
+
+lemma icoeff_smult[simp]: "icoeff (smult c p) i = c * icoeff p i"
   unfolding icoeff_def by simp
 
-lemma icoeff_signof_mult: "icoeff (signof x * f) i = signof x * (icoeff f i)" 
+lemma icoeff_signof_mult: "icoeff (signof x * f) i = signof x * (icoeff f i)"
   unfolding signof_def by (auto simp: icoeff_def)
-    
-lemma icoeff_sum: "icoeff (sum p A) i = (\<Sum>x\<in>A. icoeff (p x) i)" 
+
+lemma icoeff_sum: "icoeff (sum p A) i = (\<Sum>x\<in>A. icoeff (p x) i)"
   using coeff_sum[of p A "nat i"] unfolding icoeff_def
   by (cases "i < 0", auto)
-  
+
 lemma icoeff_0[simp]: "icoeff f 0 = coeff f 0" unfolding icoeff_def by simp
-      
-lemma icoeff_monom_mult: "icoeff (monom a d * f) i = (a * icoeff f (i - d))" 
+
+lemma icoeff_monom_mult: "icoeff (monom a d * f) i = (a * icoeff f (i - d))"
 proof (cases "i < 0")
   case True
   thus ?thesis unfolding icoeff_def by simp
@@ -249,49 +253,49 @@ next
   proof (cases "i \<ge> d")
     case True
     with i have "nat (int j - int d) = j - d" by auto
-    with coeff_monom_mult[of a] show ?thesis unfolding icoeff_def i 
+    with coeff_monom_mult[of a] show ?thesis unfolding icoeff_def i
       by simp
   next
     case False
     thus ?thesis unfolding i by (simp add: icoeff_def coeff_monom_mult)
   qed
 qed
-    
-lemma coeff_prod_const: assumes "finite xs" and "y \<notin> xs" 
-  and "\<And> x. x \<in> xs \<Longrightarrow> degree (f x) = 0" 
-shows "coeff (prod f (insert y xs)) i = prod (\<lambda> x. coeff (f x) 0) xs * coeff (f y) i" 
+
+lemma coeff_prod_const: assumes "finite xs" and "y \<notin> xs"
+  and "\<And> x. x \<in> xs \<Longrightarrow> degree (f x) = 0"
+shows "coeff (prod f (insert y xs)) i = prod (\<lambda> x. coeff (f x) 0) xs * coeff (f y) i"
   using assms
 proof (induct xs rule: finite_induct)
   case (insert x xs)
   from insert(2,4) have id: "insert y (insert x xs) - {x} = insert y xs" by auto
-  have "prod f (insert y (insert x xs)) = f x * prod f (insert y xs)" 
+  have "prod f (insert y (insert x xs)) = f x * prod f (insert y xs)"
     by (subst prod.remove[of _ x], insert insert(1,2) id, auto)
   hence "coeff (prod f (insert y (insert x xs))) i = coeff (f x * prod f (insert y xs)) i" by simp
-  also have "\<dots> = coeff (f x) 0 * (coeff (prod f (insert y xs)) i)" 
+  also have "\<dots> = coeff (f x) 0 * (coeff (prod f (insert y xs)) i)"
   proof -
     from insert(5)[of x] degree0_coeffs[of "f x"] obtain c where fx: "f x = [: c :]" by auto
     show ?thesis unfolding fx by auto
   qed
   also have "(coeff (prod f (insert y xs)) i) = (\<Prod>x\<in>xs. coeff (f x) 0) * coeff (f y) i" using insert by auto
-  also have "coeff (f x) 0 * \<dots> = prod (\<lambda> x. coeff (f x) 0) (insert x xs) * coeff (f y) i" 
+  also have "coeff (f x) 0 * \<dots> = prod (\<lambda> x. coeff (f x) 0) (insert x xs) * coeff (f y) i"
     by (subst prod.insert_remove, insert insert(1,2,4), auto simp: ac_simps)
   finally show ?case .
 qed simp
-  
-lemma icoeff_prod_const: assumes "finite xs" and "y \<notin> xs" 
-  and "\<And> x. x \<in> xs \<Longrightarrow> degree (f x) = 0" 
-shows "icoeff (prod f (insert y xs)) i = prod (\<lambda> x. icoeff (f x) 0) xs * icoeff (f y) i" 
+
+lemma icoeff_prod_const: assumes "finite xs" and "y \<notin> xs"
+  and "\<And> x. x \<in> xs \<Longrightarrow> degree (f x) = 0"
+shows "icoeff (prod f (insert y xs)) i = prod (\<lambda> x. icoeff (f x) 0) xs * icoeff (f y) i"
   using coeff_prod_const[OF assms] unfolding icoeff_def by (cases "i < 0", auto)
-    
-  
-(* part on subresultants *)    
+
+
+(* part on subresultants *)
 definition subresultant_mat :: "nat \<Rightarrow> 'a :: comm_ring_1 poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly mat" where
-  "subresultant_mat J F G = (let 
+  "subresultant_mat J F G = (let
      dg = degree G; df = degree F; f = icoeff F; g = icoeff G; n = (df - J) + (dg - J)
-     in mat n n (\<lambda> (i,j). if j < dg - J then 
-       if i = n - 1 then monom 1 (dg - J - 1 - j) * F else [: f (df - int i + int j) :] 
+     in mat n n (\<lambda> (i,j). if j < dg - J then
+       if i = n - 1 then monom 1 (dg - J - 1 - j) * F else [: f (df - int i + int j) :]
       else let jj = j - (dg - J) in
-       if i = n - 1 then monom 1 (df - J - 1 - jj) * G else [: g (dg - int i + int jj) :]))"  
+       if i = n - 1 then monom 1 (df - J - 1 - jj) * G else [: g (dg - int i + int jj) :]))"
 
 lemma subresultant_mat_dim[simp]:
   fixes j p q
@@ -300,29 +304,29 @@ lemma subresultant_mat_dim[simp]:
   unfolding S_def subresultant_mat_def Let_def by auto
 
 definition subresultant'_mat :: "nat \<Rightarrow> nat \<Rightarrow> 'a :: comm_ring_1 poly \<Rightarrow> 'a poly \<Rightarrow> 'a mat" where
-  "subresultant'_mat J l F G = (let 
-     \<gamma> = degree G; \<phi> = degree F; f = icoeff F; g = icoeff G; n = (\<phi> - J) + (\<gamma> - J)
-     in mat n n (\<lambda> (i,j). if j < \<gamma> - J then 
-       if i = n - 1 then (f (l - int (\<gamma> - J - 1) + int j)) else (f (\<phi> - int i + int j)) 
+  "subresultant'_mat J l F G = (let
+     \<gamma> = degree G; phi = degree F; f = icoeff F; g = icoeff G; n = (phi - J) + (\<gamma> - J)
+     in mat n n (\<lambda> (i,j). if j < \<gamma> - J then
+       if i = n - 1 then (f (l - int (\<gamma> - J - 1) + int j)) else (f (phi - int i + int j))
       else let jj = j - (\<gamma> - J) in
-       if i = n - 1 then (g (l - int (\<phi> - J - 1) + int jj)) else (g (\<gamma> - int i + int jj))))"  
-    
+       if i = n - 1 then (g (l - int (phi - J - 1) + int jj)) else (g (\<gamma> - int i + int jj))))"
+
 lemma subresultant_mat_index:
   fixes F G
   assumes i: "i < (degree F - J) + (degree G - J)" and j: "j < (degree F - J) + (degree G - J)"
   shows "subresultant_mat J F G $$ (i,j) =
-    (if j < degree G - J then 
-       if i = (degree F - J) + (degree G - J) - 1 then monom 1 (degree G - J - 1 - j) * F else ([: icoeff F ( degree F - int i + int j) :]) 
+    (if j < degree G - J then
+       if i = (degree F - J) + (degree G - J) - 1 then monom 1 (degree G - J - 1 - j) * F else ([: icoeff F ( degree F - int i + int j) :])
       else let jj = j - (degree G - J) in
        if i = (degree F - J) + (degree G - J) - 1 then monom 1 ( degree F - J - 1 - jj) * G else ([: icoeff G (degree G - int i + int jj) :]))"
   unfolding subresultant_mat_def Let_def
   unfolding mat_index_mat(1)[OF i j] split by auto
 
 definition subresultant :: "nat \<Rightarrow> 'a :: comm_ring_1 poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly" where
-  "subresultant J F G = det (subresultant_mat J F G)" 
+  "subresultant J F G = det (subresultant_mat J F G)"
 
 
-lemma subresultant_smult_left: assumes "(c :: 'a :: {comm_ring_1, semiring_no_zero_divisors}) \<noteq> 0" 
+lemma subresultant_smult_left: assumes "(c :: 'a :: {comm_ring_1, semiring_no_zero_divisors}) \<noteq> 0"
   shows "subresultant J (smult c f) g = smult (c ^ (degree g - J)) (subresultant J f g)"
 proof -
   let ?df = "degree f"
@@ -340,14 +344,14 @@ proof -
   have "?cS = ?S \<otimes>\<^sub>m ?M"
   proof (rule mat_eqI, unfold dim' dim)
     fix i j
-    assume ij: "i < ?n" "j < ?n"  
+    assume ij: "i < ?n" "j < ?n"
     have "(?S \<otimes>\<^sub>m ?M) $$ (i,j) = row ?S i \<bullet> col ?M j"
       by (rule mat_index_mat_mult_mat, insert ij dim, auto)
     also have "\<dots> = (\<Sum>k = 0..<?n. row S i $ k * col ?M j $ k)" unfolding scalar_prod_def S_def[symmetric]
       by simp
     also have "\<dots> = (\<Sum>k = 0..<?n. S $$ (i,k) * ?M $$ (k,j))"
       by (rule sum.cong, insert ij, auto simp: S_def)
-    also have "\<dots> = S $$ (i,j) * ?M $$ (j,j) + sum (\<lambda> k. S $$ (i,k) * ?M $$ (k,j)) ({0..<?n} - {j})" 
+    also have "\<dots> = S $$ (i,j) * ?M $$ (j,j) + sum (\<lambda> k. S $$ (i,k) * ?M $$ (k,j)) ({0..<?n} - {j})"
       by (rule sum.remove, insert ij, auto)
     also have "\<dots> = S $$ (i,j) * ?M $$ (j,j)"
       by (subst sum.neutral, insert ij, auto)
@@ -356,11 +360,11 @@ proof -
     finally show "?cS $$ (i,j) = (?S \<otimes>\<^sub>m ?M) $$ (i,j)" by simp
   qed auto
   from arg_cong[OF this, of det] det_mult[OF C(1) C(3)]
-  have "subresultant J (smult c f) g = subresultant J f g * det ?M" 
+  have "subresultant J (smult c f) g = subresultant J f g * det ?M"
     unfolding subresultant_def by auto
   also have "det ?M = [:c ^ ?m :]"
   proof (subst det_upper_triangular[OF _ C(3)])
-    show "upper_triangular ?M" 
+    show "upper_triangular ?M"
       by (rule upper_triangularI, auto)
     have "prod_list (mat_diag ?M) = (\<Prod>k = 0..<?n. (?M $$ (k,k)))"
       unfolding prod_list_diag_prod by simp
@@ -369,31 +373,31 @@ proof -
     also have "(\<Prod>k = 0..<?m. ?M $$ (k,k)) = (\<Prod>k = 0..<?m. [: c :])"
       by (rule prod.cong, auto)
     also have "(\<Prod>k = 0..<?m. [: c :]) = [: c :] ^ ?m" by simp
-    also have "(\<Prod>k = ?m..<?n. ?M $$ (k,k)) = (\<Prod>k = ?m..<?n. 1)" 
+    also have "(\<Prod>k = ?m..<?n. ?M $$ (k,k)) = (\<Prod>k = ?m..<?n. 1)"
       by (rule prod.cong, auto)
     finally show "prod_list (mat_diag ?M) = [: c^?m :]" unfolding poly_const_pow by simp
   qed
   finally show ?thesis by simp
-qed  
-  
+qed
+
 lemma subresultant_swap:
   shows "subresultant J f g = smult ((- 1) ^ ((degree f - J) * (degree g - J))) (subresultant J g f)"
 proof -
-  let ?A = "subresultant_mat J f g" 
-  let ?k = "degree f - J" 
-  let ?n = "degree g - J" 
+  let ?A = "subresultant_mat J f g"
+  let ?k = "degree f - J"
+  let ?n = "degree g - J"
   have nk: "?n + ?k = ?k + ?n" by simp
   have change: "j < degree f - J + (degree g - J) \<Longrightarrow> ((if j < degree f - J then j + (degree g - J) else j - (degree f - J)) < degree g - J)
     = (\<not> (j < degree f - J))" for j by auto
   have "subresultant J f g = det ?A" unfolding subresultant_def by simp
-  also have "\<dots> = (-1)^(?k * ?n) * det (mat (?k + ?n) (?k + ?n) (\<lambda> (i,j). let c = 
+  also have "\<dots> = (-1)^(?k * ?n) * det (mat (?k + ?n) (?k + ?n) (\<lambda> (i,j). let c =
       (if j < ?k then j + ?n else j - ?k)
       in ?A $$ (i,c)))" (is "_ = _ * det ?B")
     by (rule det_swap_cols, auto simp: subresultant_mat_def Let_def)
-  also have "?B = subresultant_mat J g f" 
+  also have "?B = subresultant_mat J g f"
     unfolding subresultant_mat_def Let_def
-    by (rule mat_eqI, unfold mat_dim_row_mat mat_dim_col_mat nk mat_index_mat split, 
-      subst mat_index_mat, (auto)[2], unfold split, subst change, force, 
+    by (rule mat_eqI, unfold mat_dim_row_mat mat_dim_col_mat nk mat_index_mat split,
+      subst mat_index_mat, (auto)[2], unfold split, subst change, force,
       unfold If_not, rule if_cong[OF refl if_cong if_cong], auto)
   also have "det \<dots> = subresultant J g f" unfolding subresultant_def ..
   also have "(-1)^(?k * ?n) * \<dots> = [: -1 :]^(?k * ?n) * \<dots> " by (simp add: one_poly_def)
@@ -402,13 +406,13 @@ proof -
   finally show ?thesis .
 qed
 
-lemma subresultant_smult_right:assumes "(c :: 'a :: {comm_ring_1, semiring_no_zero_divisors}) \<noteq> 0" 
+lemma subresultant_smult_right:assumes "(c :: 'a :: {comm_ring_1, semiring_no_zero_divisors}) \<noteq> 0"
   shows "subresultant J f (smult c g) = smult (c ^ (degree f - J)) (subresultant J f g)"
-  unfolding subresultant_swap[of _ f] subresultant_smult_left[OF assms] 
-    degree_smult_eq using assms by (simp add: ac_simps)          
+  unfolding subresultant_swap[of _ f] subresultant_smult_left[OF assms]
+    degree_smult_eq using assms by (simp add: ac_simps)
 
-lemma coeff_subresultant: "coeff (subresultant J F G) l = 
-  (if degree F - J + (degree G - J) = 0 \<and> l \<noteq> 0 then 0 else det (subresultant'_mat J l F G))" 
+lemma coeff_subresultant: "coeff (subresultant J F G) l =
+  (if degree F - J + (degree G - J) = 0 \<and> l \<noteq> 0 then 0 else det (subresultant'_mat J l F G))"
 proof (cases "degree F - J + (degree G - J) = 0")
   case True
   show ?thesis unfolding subresultant_def subresultant_mat_def subresultant'_mat_def Let_def True
@@ -416,71 +420,71 @@ proof (cases "degree F - J + (degree G - J) = 0")
 next
   case False
   let ?n = "degree F - J + (degree G - J)"
-  define n where "n = ?n" 
+  define n where "n = ?n"
   from False have n: "n \<noteq> 0" unfolding n_def by auto
   hence id: "{0..<n} = insert (n - 1) {0..< (n - 1)}" by (cases n, auto)
   have idn: "(x = x) = True" for x :: nat by simp
-  let ?M = "subresultant_mat J F G" 
-  define M where "M = ?M" 
-  let ?L = "subresultant'_mat J l F G" 
-  define L where "L = ?L" 
+  let ?M = "subresultant_mat J F G"
+  define M where "M = ?M"
+  let ?L = "subresultant'_mat J l F G"
+  define L where "L = ?L"
   {
     fix p
     assume p: "p permutes {0..<n}"
     from n p have n1: "n - 1 < n" "p (n - 1) < n" by auto
-    have "icoeff (\<Prod>i = 0..<n. M $$ (i, p i)) l = 
-      (\<Prod>i = 0 ..< (n - 1). icoeff (M $$ (i, p i)) 0) * icoeff (M $$ (n - 1, p (n - 1))) l" 
+    have "icoeff (\<Prod>i = 0..<n. M $$ (i, p i)) l =
+      (\<Prod>i = 0 ..< (n - 1). icoeff (M $$ (i, p i)) 0) * icoeff (M $$ (n - 1, p (n - 1))) l"
       unfolding id
     proof (rule icoeff_prod_const, (auto)[2])
       fix i
-      assume "i \<in> {0 ..< n - 1}" 
+      assume "i \<in> {0 ..< n - 1}"
       with p have i: "i \<noteq> n - 1" and "i < n" "p i < n" by (auto simp: n_def)
-      note id = subresultant_mat_index[OF this(2-3)[unfolded n_def], folded M_def n_def] 
+      note id = subresultant_mat_index[OF this(2-3)[unfolded n_def], folded M_def n_def]
       show "degree (M $$ (i, p i)) = 0" unfolding id Let_def using i
         by (simp split: if_splits)
-    qed      
+    qed
     also have "(\<Prod>i = 0 ..< (n - 1). icoeff (M $$ (i, p i)) 0)
-       = (\<Prod>i = 0 ..< (n - 1). L $$ (i, p i))" 
+       = (\<Prod>i = 0 ..< (n - 1). L $$ (i, p i))"
     proof (rule prod.cong[OF refl])
       fix i
-      assume "i \<in> {0 ..< n - 1}" 
+      assume "i \<in> {0 ..< n - 1}"
       with p have i: "i \<noteq> n - 1" and ii: "i < n" "p i < n" by (auto simp: n_def)
-      note id = subresultant_mat_index[OF this(2-3)[unfolded n_def], folded M_def n_def] 
+      note id = subresultant_mat_index[OF this(2-3)[unfolded n_def], folded M_def n_def]
       note id' = L_def[unfolded subresultant'_mat_def Let_def, folded n_def] mat_index_mat[OF ii]
-      show "icoeff (M $$ (i, p i)) 0 = L $$ (i, p i)" 
+      show "icoeff (M $$ (i, p i)) 0 = L $$ (i, p i)"
         unfolding id id' split using i proof (simp add: if_splits Let_def)
       qed
     qed
-    also have "icoeff (M $$ (n - 1, p (n - 1))) l = 
-      (if p (n - 1) < degree G - J then 
+    also have "icoeff (M $$ (n - 1, p (n - 1))) l =
+      (if p (n - 1) < degree G - J then
          icoeff (monom 1 (degree G - J - 1 - p (n - 1)) * F) l
-         else icoeff (monom 1 (degree F - J - 1 - (p (n - 1) - (degree G - J))) * G) l)" 
+         else icoeff (monom 1 (degree F - J - 1 - (p (n - 1) - (degree G - J))) * G) l)"
       using subresultant_mat_index[OF n1[unfolded n_def], folded M_def n_def, unfolded idn if_True Let_def]
       by simp
-    also have "\<dots> = (if p (n - 1) < degree G - J 
+    also have "\<dots> = (if p (n - 1) < degree G - J
       then icoeff F (int l - int (degree G - J - 1 - p (n - 1)))
-      else icoeff G (int l - int (degree F - J - 1 - (p (n - 1) - (degree G - J)))))" 
+      else icoeff G (int l - int (degree F - J - 1 - (p (n - 1) - (degree G - J)))))"
         unfolding icoeff_monom_mult by simp
-    also have "\<dots> = (if p (n - 1) < degree G - J 
+    also have "\<dots> = (if p (n - 1) < degree G - J
       then icoeff F (int l - int (degree G - J - 1) + p (n - 1))
-      else icoeff G (int l - int (degree F - J - 1) + (p (n - 1) - (degree G - J))))" 
+      else icoeff G (int l - int (degree F - J - 1) + (p (n - 1) - (degree G - J))))"
     proof (cases "p (n - 1) < degree G - J")
       case True
       hence "int (degree G - J - 1 - p (n - 1)) = int (degree G - J - 1) - p (n - 1)" by simp
       hence id: "int l - int (degree G - J - 1 - p (n - 1)) = int l - int (degree G - J - 1) + p (n - 1)" by simp
-      show ?thesis using True unfolding id by simp 
+      show ?thesis using True unfolding id by simp
     next
       case False
-      from n1 False have "degree F - J - 1 \<ge> p (n - 1) - (degree G - J)" 
+      from n1 False have "degree F - J - 1 \<ge> p (n - 1) - (degree G - J)"
         unfolding n_def by linarith
       hence "int (degree F - J - 1 - (p (n - 1) - (degree G - J))) = int (degree F - J - 1) - (p (n - 1) - (degree G - J))"
         by linarith
-      hence id: "int l - int (degree F - J - 1 - (p (n - 1) - (degree G - J))) = 
+      hence id: "int l - int (degree F - J - 1 - (p (n - 1) - (degree G - J))) =
        int l - int (degree F - J - 1) + (p (n - 1) - (degree G - J))" by simp
       show ?thesis unfolding id using False by simp
-    qed 
+    qed
     also have "\<dots> = L $$ (n - 1, p (n - 1))"
-      unfolding L_def subresultant'_mat_def Let_def n_def[symmetric] using n1 by simp 
+      unfolding L_def subresultant'_mat_def Let_def n_def[symmetric] using n1 by simp
     also have "(\<Prod>i = 0..<n - 1. L $$ (i, p i)) * \<dots> = (\<Prod>i = 0..<n. L $$ (i, p i))"
       unfolding id by simp
     finally have "icoeff (\<Prod>i = 0..<n. M $$ (i, p i)) (int l) = (\<Prod>i = 0..<n. L $$ (i, p i))" .
@@ -489,29 +493,29 @@ next
     (\<Sum>p\<in>{p. p permutes {0..<n}}. signof p * icoeff (\<Prod>i = 0..<n. M $$ (i, p i)) l)"
     unfolding subresultant_def det_def subresultant_mat_dim idn if_True n_def[symmetric] M_def
       icoeff_sum icoeff_signof_mult by simp
-  also have "\<dots> = (\<Sum>p\<in>{p. p permutes {0..<n}}. signof p * (\<Prod>i = 0..<n. L $$ (i, p i)))" 
+  also have "\<dots> = (\<Sum>p\<in>{p. p permutes {0..<n}}. signof p * (\<Prod>i = 0..<n. L $$ (i, p i)))"
     by (rule sum.cong[OF refl], insert *, simp)
-  also have "\<dots> = det L" 
+  also have "\<dots> = det L"
   proof -
-    have id: "dim\<^sub>r (subresultant'_mat J l F G) = n" 
-      "dim\<^sub>c (subresultant'_mat J l F G) = n" unfolding subresultant'_mat_def Let_def n_def 
+    have id: "dim\<^sub>r (subresultant'_mat J l F G) = n"
+      "dim\<^sub>c (subresultant'_mat J l F G) = n" unfolding subresultant'_mat_def Let_def n_def
       by auto
     show ?thesis unfolding det_def L_def id by simp
   qed
   finally show ?thesis unfolding L_def icoeff_def using False by auto
 qed
 
-lemma subresultant'_zero_ge: assumes "(degree f - J) + (degree g - J) \<noteq> 0" and "k \<ge> degree f + (degree g - J)" 
+lemma subresultant'_zero_ge: assumes "(degree f - J) + (degree g - J) \<noteq> 0" and "k \<ge> degree f + (degree g - J)"
   shows "det (subresultant'_mat J k f g) = 0" (* last row is zero *)
 proof -
   obtain dg where dg: "degree g - J = dg" by simp
-  obtain df where df: "degree f - J = df" by simp 
+  obtain df where df: "degree f - J = df" by simp
   obtain ddf where ddf: "degree f = ddf" by simp
   note * = assms(2)[unfolded ddf dg] assms(1)
   define M where "M = (\<lambda> i j. if j < dg
             then icoeff f (degree f - int i + int j)
-            else icoeff g (degree g - int i + int (j - dg)))" 
-  let ?M = "subresultant'_mat J k f g" 
+            else icoeff g (degree g - int i + int (j - dg)))"
+  let ?M = "subresultant'_mat J k f g"
   have M: "det ?M = det (mat (df + dg) (df + dg)
     (\<lambda>(i, j).
         if i = df + dg - 1 then
@@ -524,38 +528,38 @@ proof -
   also have "?N = mat (df + dg) (df + dg)
     (\<lambda>(i, j).
         if i = df + dg - 1 then 0
-        else M i j)" 
+        else M i j)"
     by (rule mat_cong[OF refl refl], unfold split, rule if_cong[OF refl _ refl],
-      auto simp add: icoeff_def df dg ddf intro!: coeff_eq_0, insert *(1), 
+      auto simp add: icoeff_def df dg ddf intro!: coeff_eq_0, insert *(1),
       unfold ddf[symmetric] dg[symmetric] df[symmetric], linarith+)
-  also have "\<dots> = mat\<^sub>r (df + dg) (df + dg) (\<lambda>i. if i = df + dg - 1 then \<zero>\<^sub>v (df + dg) else 
-    vec (df + dg) (\<lambda> j. M i j))" 
+  also have "\<dots> = mat\<^sub>r (df + dg) (df + dg) (\<lambda>i. if i = df + dg - 1 then \<zero>\<^sub>v (df + dg) else
+    vec (df + dg) (\<lambda> j. M i j))"
     by (rule mat_eqI, auto)
-  also have "det \<dots> = 0" 
+  also have "det \<dots> = 0"
     by (rule det_row_0, insert *, auto simp: df[symmetric] dg[symmetric] ddf[symmetric])
   finally show ?thesis .
-qed  
-        
-lemma subresultant'_zero_lt: assumes 
-  J: "J \<le> degree f" "J \<le> degree g" "J < k" 
-  and k: "k < degree f + (degree g - J)" 
+qed
+
+lemma subresultant'_zero_lt: assumes
+  J: "J \<le> degree f" "J \<le> degree g" "J < k"
+  and k: "k < degree f + (degree g - J)"
   shows "det (subresultant'_mat J k f g) = 0" (* last row is identical to last row - k *)
 proof -
   obtain dg where dg: "dg = degree g - J" by simp
-  obtain df where df: "df = degree f - J" by simp 
+  obtain df where df: "df = degree f - J" by simp
   note * = assms[folded df dg]
   define M where "M = (\<lambda> i j. if j < dg
             then icoeff f (degree f - int i + int j)
-            else icoeff g (degree g - int i + int (j - dg)))" 
+            else icoeff g (degree g - int i + int (j - dg)))"
   define N where "N = (\<lambda> j. if j < dg
             then icoeff f (int k - int (dg - 1) + int j)
-            else icoeff g (int k - int (df - 1) + int (j - dg)))" 
-  let ?M = "subresultant'_mat J k f g" 
+            else icoeff g (int k - int (df - 1) + int (j - dg)))"
+  let ?M = "subresultant'_mat J k f g"
   have M: "?M = mat (df + dg) (df + dg)
     (\<lambda>(i, j).
         if i = df + dg - 1 then N j
-        else M i j)" 
-    unfolding subresultant'_mat_def Let_def 
+        else M i j)"
+    unfolding subresultant'_mat_def Let_def
     by (rule mat_eqI, auto simp: df dg M_def N_def)
   also have "\<dots> = mat (df + dg) (df + dg)
     (\<lambda>(i, j).
@@ -565,24 +569,24 @@ proof -
     by (rule mat_cong[OF refl refl], unfold split, rule if_cong[OF refl refl], unfold M_def N_def,
       insert J k, auto simp: df dg intro!: arg_cong[of _ _ "icoeff _"])
   finally have id: "?M = ?N" .
-  have deg: "degree f + dg - 1 - k < df + dg" "df + dg - 1 < df + dg" 
+  have deg: "degree f + dg - 1 - k < df + dg" "df + dg - 1 < df + dg"
     using k J unfolding df dg by auto
-  have id: "row ?M (degree f + dg - 1 - k) = row ?M (df + dg - 1)" 
+  have id: "row ?M (degree f + dg - 1 - k) = row ?M (df + dg - 1)"
     unfolding arg_cong[OF id, of row]
-    by (rule vec_eqI, insert deg, auto) 
+    by (rule vec_eqI, insert deg, auto)
   show ?thesis
-    by (rule det_identical_rows[OF _ _ _ _ id, of "df + dg"], insert deg assms, 
+    by (rule det_identical_rows[OF _ _ _ _ id, of "df + dg"], insert deg assms,
       auto simp: subresultant'_mat_def Let_def df dg)
 qed
 
-lemma subresultant'_mat_sylvester_mat: "transpose\<^sub>m (subresultant'_mat 0 0 f g) = sylvester_mat f g" 
+lemma subresultant'_mat_sylvester_mat: "transpose\<^sub>m (subresultant'_mat 0 0 f g) = sylvester_mat f g"
 proof -
   obtain dg where dg: "degree g = dg" by simp
   obtain df where df: "degree f = df" by simp
-  let ?M = "transpose\<^sub>m (subresultant'_mat 0 0 f g)" 
-  let ?n = "degree f + degree g" 
+  let ?M = "transpose\<^sub>m (subresultant'_mat 0 0 f g)"
+  let ?n = "degree f + degree g"
   have dim: "dim\<^sub>r ?M = ?n" "dim\<^sub>c ?M = ?n" by (auto simp: subresultant'_mat_def Let_def)
-  show ?thesis 
+  show ?thesis
   proof (rule mat_eqI, unfold sylvester_mat_dim dim df dg, goal_cases)
     case ij: (1 i j)
     have "?M $$ (i,j) = (if i < dg
@@ -591,32 +595,32 @@ proof -
               else icoeff f (int df - int j + int i)
          else if j = df + dg - 1
               then icoeff g (- int (df - 1) + int (i - dg))
-              else icoeff g (int dg - int j + int (i - dg)))"         
+              else icoeff g (int dg - int j + int (i - dg)))"
       using ij unfolding subresultant'_mat_def Let_def by (simp add: if_splits df dg)
     also have "\<dots> = (if i < dg
          then icoeff f (int df - int j + int i)
-         else icoeff g (int dg - int j + int (i - dg)))" 
+         else icoeff g (int dg - int j + int (i - dg)))"
     proof -
-      have cong: "(b \<Longrightarrow> x = z) \<Longrightarrow> (\<not> b \<Longrightarrow> y = z) \<Longrightarrow> (if b then icoeff f x else icoeff f y) = icoeff f z" 
+      have cong: "(b \<Longrightarrow> x = z) \<Longrightarrow> (\<not> b \<Longrightarrow> y = z) \<Longrightarrow> (if b then icoeff f x else icoeff f y) = icoeff f z"
         for b x y z and f :: "'a poly" by auto
       show ?thesis
         by (rule if_cong[OF refl cong cong], insert ij, auto)
     qed
-    also have "\<dots> = sylvester_mat f g $$ (i,j)" 
+    also have "\<dots> = sylvester_mat f g $$ (i,j)"
     proof -
       have *: "i \<le> j \<Longrightarrow> j - i \<le> df \<Longrightarrow> nat (int df - int j + int i) = df - (j - i)" for j i df
-        by simp 
+        by simp
       show ?thesis unfolding sylvester_mat_index[OF ij[folded df dg]] df dg
       proof (rule if_cong[OF refl])
-        assume i: "i < dg" 
+        assume i: "i < dg"
         have "int df - int j + int i < 0 \<longrightarrow> \<not> j - i \<le> df" by auto
-        thus "icoeff f (int df - int j + int i) = (if i \<le> j \<and> j - i \<le> df then coeff f (df + i - j) else 0)" 
+        thus "icoeff f (int df - int j + int i) = (if i \<le> j \<and> j - i \<le> df then coeff f (df + i - j) else 0)"
           using i ij by (simp add: icoeff_def *, intro impI  coeff_eq_0[of f, unfolded df], linarith)
       next
-        assume i: "\<not> i < dg" 
+        assume i: "\<not> i < dg"
         hence **: "i - dg \<le> j \<Longrightarrow> dg - (j + dg - i) = i - j" using ij by linarith
         have "int dg - int j + int (i - dg) < 0 \<longrightarrow> \<not> j \<le> i" by auto
-        thus "icoeff g (int dg - int j + int (i - dg)) = (if i - dg \<le> j \<and> j \<le> i then coeff g (i - j) else 0)" 
+        thus "icoeff g (int dg - int j + int (i - dg)) = (if i - dg \<le> j \<and> j \<le> i then coeff g (i - j) else 0)"
           using ij i by (simp add: icoeff_def * **, intro impI  coeff_eq_0[of g, unfolded dg], linarith)
       qed
     qed
@@ -624,40 +628,40 @@ proof -
   qed auto
 qed
 
-lemma coeff_subresultant_0_0_resultant: "coeff (subresultant 0 f g) 0 = resultant f g" 
+lemma coeff_subresultant_0_0_resultant: "coeff (subresultant 0 f g) 0 = resultant f g"
 proof -
-  let ?M = "transpose\<^sub>m (subresultant'_mat 0 0 f g)" 
-  have "det (subresultant'_mat 0 0 f g) = det ?M" 
+  let ?M = "transpose\<^sub>m (subresultant'_mat 0 0 f g)"
+  have "det (subresultant'_mat 0 0 f g) = det ?M"
     by (subst det_transpose, auto simp: subresultant'_mat_def Let_def)
-  also have "?M = sylvester_mat f g" 
+  also have "?M = sylvester_mat f g"
     by (rule subresultant'_mat_sylvester_mat)
   finally show ?thesis by (simp add: coeff_subresultant resultant_def)
 qed
-      
+
 lemma subresultant_zero_ge: assumes "k \<ge> degree f + (degree g - J)"
-  and "(degree f - J) + (degree g - J) \<noteq> 0"  
+  and "(degree f - J) + (degree g - J) \<noteq> 0"
   shows "coeff (subresultant J f g) k = 0"
   unfolding coeff_subresultant
   by (subst subresultant'_zero_ge[OF assms(2,1)], simp)
 
-lemma subresultant_zero_lt: assumes "k < degree f + (degree g - J)" 
+lemma subresultant_zero_lt: assumes "k < degree f + (degree g - J)"
   and "J \<le> degree f" "J \<le> degree g" "J < k"
   shows "coeff (subresultant J f g) k = 0"
   unfolding coeff_subresultant
   by (subst subresultant'_zero_lt[OF assms(2,3,4,1)], simp)
-        
-lemma subresultant_resultant: "subresultant 0 f g = [: resultant f g :]" 
+
+lemma subresultant_resultant: "subresultant 0 f g = [: resultant f g :]"
 proof (cases "degree f + degree g = 0")
   case True
   thus ?thesis unfolding subresultant_def subresultant_mat_def resultant_def Let_def
-      sylvester_mat_def sylvester_mat_sub_def 
+      sylvester_mat_def sylvester_mat_sub_def
     by (simp add: one_poly_def)
 next
   case 0: False
   show ?thesis
   proof (rule poly_eqI)
     fix k
-    show "coeff (subresultant 0 f g) k = coeff [:resultant f g:] k" 
+    show "coeff (subresultant 0 f g) k = coeff [:resultant f g:] k"
     proof (cases "k = 0")
       case True
       thus ?thesis using coeff_subresultant_0_0_resultant[of f g] by auto
@@ -669,18 +673,18 @@ next
     qed
   qed
 qed
-  
-lemma (in inj_ring_hom) subresultant_hom: "map_poly hom (subresultant J f g) = subresultant J (map_poly hom f) (map_poly hom g)" 
+
+lemma (in inj_ring_hom) subresultant_hom: "map_poly hom (subresultant J f g) = subresultant J (map_poly hom f) (map_poly hom g)"
 proof -
   note d = subresultant_mat_def Let_def
   interpret p: inj_ring_hom "map_poly hom" by (rule inj_ring_hom_map_poly)
   show ?thesis unfolding subresultant_def unfolding p.hom_det[symmetric]
   proof (rule arg_cong[of _ _ det])
     show "p.mat_hom (subresultant_mat J f g) =
-      subresultant_mat J (map_poly hom f) (map_poly hom g)" 
+      subresultant_mat J (map_poly hom f) (map_poly hom g)"
     proof (rule mat_eqI, goal_cases)
       case (1 i j)
-      hence ij: "i < degree f - J + (degree g - J)" "j < degree f - J + (degree g - J)" 
+      hence ij: "i < degree f - J + (degree g - J)" "j < degree f - J + (degree g - J)"
         unfolding d degree_map_poly by auto
       show ?case unfolding d degree_map_poly mat_dim_row_mat mat_dim_col_mat mat_map_def
         mat_index_mat(1)[OF ij] split if_distrib[of "map_poly hom"] p.hom_mult monom_hom[symmetric] hom_one
@@ -688,25 +692,25 @@ proof -
         auto simp: icoeff_def)
     qed (auto simp: d)
   qed
-qed  
-  
+qed
+
 
 text \<open>The following equations are taken from Brown-Traub ``On Euclid's Algorithm and
 the Theory of Subresultant'' (BT)\<close>
-  
+
 lemma  fixes F B G H :: "'a :: idom poly" and J :: nat
        defines df: "df \<equiv> degree F"
-  and dg: "dg \<equiv> degree G" 
-  and dh: "dh \<equiv> degree H" 
+  and dg: "dg \<equiv> degree G"
+  and dh: "dh \<equiv> degree H"
   and db: "db \<equiv> degree B"
   defines
-    n: "n \<equiv> (df - J) + (dg - J)" 
+    n: "n \<equiv> (df - J) + (dg - J)"
   and f: "f \<equiv> icoeff F"
   and b: "b \<equiv> icoeff B"
   and g: "g \<equiv> icoeff G"
-  and h: "h \<equiv> icoeff H"   
+  and h: "h \<equiv> icoeff H"
   assumes FGH: "F + B * G = H"
-  and dfg: "df \<ge> dg" 
+  and dfg: "df \<ge> dg"
   and choice: "dg > dh \<or> H = 0 \<and> F \<noteq> 0 \<and> G \<noteq> 0"
 shows BT_eq_18: "subresultant J F G = smult ((-1)^((df - J) * (dg - J))) (det (mat n n
   (\<lambda> (i,j).
@@ -717,18 +721,18 @@ shows BT_eq_18: "subresultant J F G = smult ((-1)^((df - J) * (dg - J))) (det (m
                    else [:h (int df - int i + int (j - (df - J))):])))"
    (is "_ = smult ?m1 ?right")
   and BT_eq_19: "dh \<le> J \<Longrightarrow> J < dg \<Longrightarrow> subresultant J F G = smult (
-    (-1)^((df - J) * (dg - J)) * lead_coeff G ^ (df - J) * coeff H J ^ (dg - J - 1)) H" 
+    (-1)^((df - J) * (dg - J)) * lead_coeff G ^ (df - J) * coeff H J ^ (dg - J - 1)) H"
     (is "_ \<Longrightarrow> _ \<Longrightarrow> _ = smult (_ * ?G * ?H) H")
   and BT_lemma_1_12: "J < dh \<Longrightarrow> subresultant J F G = smult (
-    (-1)^((df - J) * (dg - J)) * lead_coeff G ^ (df - dh)) (subresultant J G H)" 
+    (-1)^((df - J) * (dg - J)) * lead_coeff G ^ (df - dh)) (subresultant J G H)"
   and BT_lemma_1_13': "J = dh \<Longrightarrow> dg > dh \<or> H \<noteq> 0 \<Longrightarrow> subresultant dh F G = smult (
-    (-1)^((df - dh) * (dg - dh)) * lead_coeff G ^ (df - dh) * lead_coeff H ^ (dg - dh - 1)) H" 
+    (-1)^((df - dh) * (dg - dh)) * lead_coeff G ^ (df - dh) * lead_coeff H ^ (dg - dh - 1)) H"
   and BT_lemma_1_14: "dh < J \<Longrightarrow> J < dg - 1 \<Longrightarrow> subresultant J F G = 0"
   and BT_lemma_1_15': "J = dg - 1 \<Longrightarrow> dg > dh \<or> H \<noteq> 0 \<Longrightarrow> subresultant (dg - 1) F G = smult (
-    (-1)^(df - dg + 1) * lead_coeff G ^ (df - dg + 1)) H" 
+    (-1)^(df - dg + 1) * lead_coeff G ^ (df - dg + 1)) H"
 proof -
-  define dfj where "dfj = df - J" 
-  define dgj where "dgj = dg - J" 
+  define dfj where "dfj = df - J"
+  define dgj where "dgj = dg - J"
   note d = df dg dh db
   have F0: "F \<noteq> 0" using dfg choice df by auto
   have G0: "G \<noteq> 0" using choice dg by auto
@@ -748,11 +752,11 @@ proof -
   qed
   hence dfbg: "df = db + dg" using degree_mult_eq[OF B0 G0] by (simp add: d)
   hence dbfg: "db = df - dg" by simp
-  let ?dfj = "df - J" 
-  let ?dgj = "dg - J" 
+  let ?dfj = "df - J"
+  let ?dgj = "dg - J"
   have norm: "?dgj + ?dfj = ?dfj + ?dgj" by simp
-  let ?bij = "\<lambda> i j. b (db - int i + int (j - dfj))" 
-  let ?M = "mat n n (\<lambda> (i,j). if i = j then 1 else if j < dfj then 0 else if i < j 
+  let ?bij = "\<lambda> i j. b (db - int i + int (j - dfj))"
+  let ?M = "mat n n (\<lambda> (i,j). if i = j then 1 else if j < dfj then 0 else if i < j
     then [:  ?bij i j :] else 0)" (* this is the matrix which contains all the column-operations
      that are required to transform the subresultant-matrix of F and G into the one of G and H (
      the matrix depicted in equation (18) in BT *)
@@ -761,111 +765,111 @@ proof -
               then if i = n - 1 then monom 1 (dfj - 1 - j) * G
                    else [:g (int dg - int i + int j):]
               else if i = n - 1 then monom 1 (dgj - 1 - (j - dfj)) * F
-                   else [:f (int df - int i + int (j - dfj)):]" 
-  let ?G_F = "mat n n (\<lambda> (i,j). ?GF i j)" 
+                   else [:f (int df - int i + int (j - dfj)):]"
+  let ?G_F = "mat n n (\<lambda> (i,j). ?GF i j)"
   let ?GH = "\<lambda> i j.
               if j < dfj
               then if i = n - 1 then monom 1 (dfj - 1 - j) * G
                    else [:g (int dg - int i + int j):]
               else if i = n - 1 then monom 1 (dgj - 1 - (j - dfj)) * H
-                   else [:h (int df - int i + int (j - dfj)):]" 
-  let ?G_H = "mat n n (\<lambda> (i,j). ?GH i j)" 
+                   else [:h (int df - int i + int (j - dfj)):]"
+  let ?G_H = "mat n n (\<lambda> (i,j). ?GH i j)"
   have hfg: "h i = f i + icoeff (B * G) i" for i
     unfolding FGH[symmetric] f g h unfolding icoeff_def by simp
-  have dM1: "det ?M = 1" 
-    by (subst det_upper_triangular, (auto)[2], subst prod_list_diag_prod, auto) 
+  have dM1: "det ?M = 1"
+    by (subst det_upper_triangular, (auto)[2], subst prod_list_diag_prod, auto)
   have "subresultant J F G = smult ?m1 (subresultant J G F)"
     unfolding subresultant_swap[of _ F] d by simp
-  also have "subresultant J G F = det ?G_F" 
+  also have "subresultant J G F = det ?G_F"
     unfolding subresultant_def n norm subresultant_mat_def g f Let_def d[symmetric] dfj_def dgj_def by simp
-  also have "\<dots> = det (?G_F \<otimes>\<^sub>m ?M)" 
+  also have "\<dots> = det (?G_F \<otimes>\<^sub>m ?M)"
     by (subst det_mult[of _ n], unfold dM1, auto)
-  also have "?G_F \<otimes>\<^sub>m ?M = ?G_H"   
+  also have "?G_F \<otimes>\<^sub>m ?M = ?G_H"
   proof (rule mat_eqI, unfold mat_dim_col_mat mat_dim_row_mat)
     fix i j
-    assume i: "i < n" and j: "j < n" 
-    have "(?G_F \<otimes>\<^sub>m ?M) $$ (i,j) = row (?G_F) i \<bullet> col ?M j" 
-      using i j by simp 
-    also have "\<dots> = ?GH i j" 
+    assume i: "i < n" and j: "j < n"
+    have "(?G_F \<otimes>\<^sub>m ?M) $$ (i,j) = row (?G_F) i \<bullet> col ?M j"
+      using i j by simp
+    also have "\<dots> = ?GH i j"
     proof (cases "j < dfj")
-      case True 
-      have id: "col ?M j = unit\<^sub>v n j" 
+      case True
+      have id: "col ?M j = unit\<^sub>v n j"
         by (rule vec_eqI, insert True i j, auto)
       show ?thesis unfolding id using True i j by simp
     next
       case False
-      define d where "d = j - dfj" 
+      define d where "d = j - dfj"
       from False have jd: "j = d + dfj" unfolding d_def by auto
       hence idj: "{0 ..< j} = {0 ..< dfj} \<union> {dfj ..< dfj + d}" by auto
-      let ?H = "(if i = n - 1 then monom 1 (dgj - Suc d) * H else [:h (int df - int i + int d):])"      
+      let ?H = "(if i = n - 1 then monom 1 (dgj - Suc d) * H else [:h (int df - int i + int d):])"
       have idr: "?GH i j = ?H" unfolding d_def using jd by auto
-      let ?bi = "\<lambda> i. b (db - int i + int d)" 
-      let ?m = "\<lambda> i. if i = j then 1 else if i < j then [:?bij i j:] else 0" 
-      let ?P = "\<lambda> k. (?GF i k * ?m k)" 
-      let ?Q = "\<lambda> k. ?GF i k * [: ?bi k :]" 
-      let ?G = "\<lambda> k. if i = n - 1 then monom 1 (dfj - 1 - k) * G else [:g (int dg - int i + int k):]" 
+      let ?bi = "\<lambda> i. b (db - int i + int d)"
+      let ?m = "\<lambda> i. if i = j then 1 else if i < j then [:?bij i j:] else 0"
+      let ?P = "\<lambda> k. (?GF i k * ?m k)"
+      let ?Q = "\<lambda> k. ?GF i k * [: ?bi k :]"
+      let ?G = "\<lambda> k. if i = n - 1 then monom 1 (dfj - 1 - k) * G else [:g (int dg - int i + int k):]"
       let ?Gb = "\<lambda> k. ?G k * [:?bi k:]"
-      let ?off = "- (int db - int dfj + 1 + int d)" 
+      let ?off = "- (int db - int dfj + 1 + int d)"
       have off0: "?off \<ge> 0" using False dfg j unfolding dfj_def d_def dbfg n by simp
       from nat_0_le[OF this]
       obtain off where off: "int off = ?off" by blast
       have "int off \<le> int dfj" unfolding off by auto
-      hence "off \<le> dfj" by simp          
+      hence "off \<le> dfj" by simp
       hence split1: "{0 ..< dfj} = {0 ..< off} \<union> {off ..< dfj}" by auto
       have "int off + Suc db \<le> dfj" unfolding off by auto
-      hence split2: "{off ..< dfj} = {off .. off + db} \<union> {off + Suc db ..< dfj} " by auto 
+      hence split2: "{off ..< dfj} = {off .. off + db} \<union> {off + Suc db ..< dfj} " by auto
       let ?g_b = "\<lambda>k. (if i = n - 1 then monom 1 k * G else [:g (int dg - int i + int (dfj - Suc k)):]) *
             [:b (k - int off):]"
       let ?gb = "\<lambda>k. (if i = n - 1 then monom 1 (k + off) * G else [:g (int dg - int i + int (dfj - Suc k - off)):]) *
             [:coeff B k:]"
       let ?F = "\<lambda> k. if i = n - 1 then monom 1 (dgj - 1 - (k - dfj)) * F
-                   else [:f (int df - int i + int (k - dfj)):]" 
+                   else [:f (int df - int i + int (k - dfj)):]"
       let ?Fb = "\<lambda> k. ?F k * [:?bi k:]"
-      let ?Pj = "if i = n - 1 then  monom 1 (dgj - Suc d) * F else [:f (int df - int i + int d):]" 
-      from False have id: "col ?M j = vec n ?m" 
-        using j i by (intro vec_eqI, auto)      
+      let ?Pj = "if i = n - 1 then  monom 1 (dgj - Suc d) * F else [:f (int df - int i + int d):]"
+      from False have id: "col ?M j = vec n ?m"
+        using j i by (intro vec_eqI, auto)
       have "row ?G_F i \<bullet> col ?M j = sum ?P {0 ..< n}"
         using i j unfolding id by (simp add: scalar_prod_def)
       also have "{0 ..< n} = {0 ..< j} \<union> {j} \<union> {Suc j ..< n}" using j by auto
-      also have "sum ?P \<dots> = sum ?P {0 ..< j} + ?P j + sum ?P {Suc j ..< n}" 
-        by (simp add: sum.union_disjoint)          
+      also have "sum ?P \<dots> = sum ?P {0 ..< j} + ?P j + sum ?P {Suc j ..< n}"
+        by (simp add: sum.union_disjoint)
       also have "sum ?P {Suc j ..< n} = 0" by (rule sum.neutral, auto)
-      also have "?P j = ?Pj" 
+      also have "?P j = ?Pj"
         unfolding d_def using jd by simp
-      also have "sum ?P {0 ..< j} = sum ?Q {0 ..< j}" 
+      also have "sum ?P {0 ..< j} = sum ?Q {0 ..< j}"
         by (rule sum.cong[OF refl], unfold d_def, insert jd, auto)
       also have "sum ?Q {0 ..< j} = sum ?Q {0 ..< dfj} + sum ?Q {dfj ..< dfj+d}" unfolding idj
-        by (simp add: sum.union_disjoint) 
-      also have "sum ?Q {0 ..< dfj} = sum ?Gb {0 ..< dfj}" 
+        by (simp add: sum.union_disjoint)
+      also have "sum ?Q {0 ..< dfj} = sum ?Gb {0 ..< dfj}"
         by (rule sum.cong, auto)
-      also have "sum ?Q {dfj ..< dfj+d} = sum ?Fb {dfj ..< dfj+d}" 
+      also have "sum ?Q {dfj ..< dfj+d} = sum ?Fb {dfj ..< dfj+d}"
         by (rule sum.cong, auto)
-      also have "\<dots> = 0" 
+      also have "\<dots> = 0"
       proof (rule sum.neutral, intro ballI)
-        fix k 
-        assume k: "k \<in> {dfj ..< dfj+d}" 
+        fix k
+        assume k: "k \<in> {dfj ..< dfj+d}"
         hence k: "db + d < k" using k j False unfolding n db[symmetric] dfbg dfj_def d_def by auto
         let ?k = "(int db - int k + int d)"
-        have "?k < 0" using k by auto  
+        have "?k < 0" using k by auto
         hence "b ?k = 0" unfolding b by (intro icoeff_eq_0, auto)
         thus "?Fb k = 0" by simp
       qed
-      also have "sum ?Gb {0 ..< dfj} = sum ?g_b {0 ..< dfj}" 
+      also have "sum ?Gb {0 ..< dfj} = sum ?g_b {0 ..< dfj}"
       proof (rule sum.reindex_cong[of "\<lambda> k. dfj - Suc k"], (auto simp: inj_on_def off)[2], goal_cases)
         case (1 k)
         hence "k = dfj - (Suc (dfj - Suc k))" and "(dfj - Suc k) \<in> {0..<dfj}"  by auto
         thus ?case by blast
       next
         case (2 k)
-        hence [simp]: "dfj - Suc (dfj - Suc k) = k" 
-          "int db - int (dfj - Suc k) + int d = int k - off" by (auto simp: off) 
+        hence [simp]: "dfj - Suc (dfj - Suc k) = k"
+          "int db - int (dfj - Suc k) + int d = int k - off" by (auto simp: off)
         show ?case by auto
-      qed   
+      qed
       also have "\<dots>  = sum ?g_b {0 ..< off} + sum ?g_b {off ..< dfj}" unfolding split1
-        by (simp add: sum.union_disjoint)          
-      also have "sum ?g_b {0 ..< off} = 0" 
+        by (simp add: sum.union_disjoint)
+      also have "sum ?g_b {0 ..< off} = 0"
         by (rule sum.neutral, intro ballI, auto simp: b icoeff_def)
-      also have "sum ?g_b {off ..< dfj} = sum ?g_b {off .. off + db} + sum ?g_b {off + Suc db ..< dfj}" 
+      also have "sum ?g_b {off ..< dfj} = sum ?g_b {off .. off + db} + sum ?g_b {off + Suc db ..< dfj}"
         unfolding split2 by (rule sum.union_disjoint, auto)
       also have "sum ?g_b {off + Suc db ..< dfj} = 0"
       proof (rule sum.neutral, intro ballI, goal_cases)
@@ -873,22 +877,22 @@ proof -
         hence "b (int k - int off) = 0" unfolding b db
           by (intro icoeff_eq_0, auto)
         thus ?case by simp
-      qed        
-      also have "sum ?g_b {off .. off + db} = sum ?gb {0 .. db}" 
+      qed
+      also have "sum ?g_b {off .. off + db} = sum ?gb {0 .. db}"
         by (rule sum.reindex_cong[of "\<lambda> x. x + off"], auto simp: b icoeff_def)
-      finally have id: "row ?G_F i \<bullet> col ?M j - ?H = ?Pj + sum ?gb {0 .. db} - ?H" 
+      finally have id: "row ?G_F i \<bullet> col ?M j - ?H = ?Pj + sum ?gb {0 .. db} - ?H"
         (is "_ = ?E")
-        by (simp add: ac_simps)      
-      define E where "E = ?E" 
-      let ?b = "coeff B" 
+        by (simp add: ac_simps)
+      define E where "E = ?E"
+      let ?b = "coeff B"
       have Bsum: "(\<Sum>k = 0..db. monom (?b k) k) = B" unfolding db
         using atMost_atLeast0 poly_as_sum_of_monoms by auto
-      have "E = 0" 
+      have "E = 0"
       proof (cases "i = n - 1")
         case i_n: False
         hence id: "(i = n - 1) = False" by simp
         with i have i: "i < n - 1" by auto
-        let ?ii = "int df - int i + int d" 
+        let ?ii = "int df - int i + int d"
         have "?thesis = ([:f ?ii:] +
          (\<Sum>k = 0..db.
           [:g (int dg - int i + int (dfj - Suc k - off)):] * [:?b k:]) -
@@ -904,13 +908,13 @@ proof -
         qed
         also have "[: ?e :] = 0 \<longleftrightarrow> ?e = 0" by simp
         also have "?e = (\<Sum>k = 0..db. g (int dg - int i + int (dfj - Suc k - off)) * ?b k)
-          - icoeff (B * G) ?ii" 
+          - icoeff (B * G) ?ii"
           unfolding hfg by simp
         also have "(B * G) = (\<Sum>k = 0..db. monom (?b k) k) * G" unfolding Bsum by simp
         also have "\<dots> = (\<Sum>k = 0..db. monom (?b k) k * G)" by (rule sum_distrib_right)
-        also have "icoeff \<dots> ?ii = (\<Sum>k = 0..db. g (?ii - k) * ?b k)" 
+        also have "icoeff \<dots> ?ii = (\<Sum>k = 0..db. g (?ii - k) * ?b k)"
           unfolding icoeff_sum icoeff_monom_mult g by (simp add: ac_simps)
-        also have "\<dots> = (\<Sum>k = 0..db. g (int dg - int i + int (dfj - Suc k - off)) * ?b k)" 
+        also have "\<dots> = (\<Sum>k = 0..db. g (int dg - int i + int (dfj - Suc k - off)) * ?b k)"
         proof (rule sum.cong[OF refl], goal_cases)
           case (1 k)
           hence "k \<le> db" by simp
@@ -922,33 +926,33 @@ proof -
         finally show ?thesis by simp
       next
         case True
-        let ?jj = "dgj - Suc d" 
+        let ?jj = "dgj - Suc d"
         have zero: "int off - (dgj - Suc d) = 0" using dfg False j unfolding off dbfg dfj_def d_def dgj_def n
           by linarith
         from True have "E = monom 1 ?jj * F + (\<Sum>k = 0.. db.
-          monom 1 (k + off) * G * [: ?b k :]) - monom 1 ?jj * H" 
+          monom 1 (k + off) * G * [: ?b k :]) - monom 1 ?jj * H"
           (is "_ = ?A + ?sum - ?mon") unfolding id E_def by simp
-        also have "?mon = monom 1 ?jj * F + monom 1 ?jj * (B * G)" 
+        also have "?mon = monom 1 ?jj * F + monom 1 ?jj * (B * G)"
           unfolding FGH[symmetric] by (simp add: ring_distribs)
         also have "?A + ?sum - \<dots> = ?sum - (monom 1 ?jj * G) * B" (is "_ = _ - ?GB * B") by simp
         also have "?sum = (\<Sum>k = 0..db.
-          (monom 1 ?jj * G) * (monom 1 (k + off - ?jj) * [: ?b k :]))" 
+          (monom 1 ?jj * G) * (monom 1 (k + off - ?jj) * [: ?b k :]))"
         proof (rule sum.cong[OF refl], goal_cases)
-          case (1 k) 
-          let ?one = "1 :: 'a" 
-          have "int off \<ge> int ?jj" using j False i True 
+          case (1 k)
+          let ?one = "1 :: 'a"
+          have "int off \<ge> int ?jj" using j False i True
             unfolding off d_def dfj_def dgj_def dfbg n by linarith
           hence "k + off = ?jj + (k + off - ?jj)" by linarith
           hence id: "monom ?one (k + off) = monom (1 * 1) (?jj + (k + off - ?jj))" by simp
           show ?case unfolding id[folded mult_monom] by (simp add: ac_simps)
         qed
-        also have "\<dots> = (monom 1 ?jj * G) * (\<Sum>k = 0..db.  monom 1 (k + off - ?jj) * [:?b k:])" 
+        also have "\<dots> = (monom 1 ?jj * G) * (\<Sum>k = 0..db.  monom 1 (k + off - ?jj) * [:?b k:])"
           (is "_ = _ * ?sum")
           unfolding sum_distrib_left ..
         also have "\<dots> - (monom 1 ?jj * G) * B = (monom 1 ?jj * G) * (?sum - B)" by (simp add: ring_distribs)
-        also have "?sum = (\<Sum>k = 0..db.  monom 1 k * [:?b k:])" 
+        also have "?sum = (\<Sum>k = 0..db.  monom 1 k * [:?b k:])"
           by (rule sum.cong[OF refl], insert zero, auto)
-        also have "\<dots> = (\<Sum>k = 0..db.  monom (?b k) k)" 
+        also have "\<dots> = (\<Sum>k = 0..db.  monom (?b k) k)"
           by (rule sum.cong[OF refl], rule poly_eqI, auto)
         also have "\<dots> = B" unfolding Bsum ..
         finally show ?thesis by simp
@@ -962,25 +966,25 @@ proof -
   finally show eq_18: "subresultant J F G = smult ?m1 (det ?G_H)" unfolding dfj_def dgj_def .
   {
     fix i j
-    assume ij: "i < j" and j: "j < n" 
+    assume ij: "i < j" and j: "j < n"
     with dgh have "int dg - int i + int j > int dg" by auto
     hence "g (int dg - int i + int j) = 0" unfolding g dg by (intro icoeff_eq_0, auto)
   } note g0 = this
   {
-    assume *: "dh \<le> J" "J < dg" 
+    assume *: "dh \<le> J" "J < dg"
     have n_dfj: "n > dfj" using * unfolding n dfj_def by auto
     note eq_18
-    also have "det ?G_H = prod_list (mat_diag ?G_H)" 
+    also have "det ?G_H = prod_list (mat_diag ?G_H)"
     proof (rule det_lower_triangular[of n])
       fix i j
-      assume ij: "i < j" and j: "j < n" 
+      assume ij: "i < j" and j: "j < n"
       from ij j have if_e: "i = n - 1 \<longleftrightarrow> False" by auto
       have "?G_H $$ (i,j) = ?GH i j" using ij j by auto
-      also have "\<dots> = 0" 
+      also have "\<dots> = 0"
       proof (cases "j < dfj")
         case True
         with True g0[OF ij j] show ?thesis unfolding if_e by simp
-      next 
+      next
         case False
         have "h (int df - int i + int (j - dfj)) = 0" unfolding h
           by (rule icoeff_eq_0, insert False * ij j dfg, unfold dfj_def dh[symmetric], auto)
@@ -988,28 +992,28 @@ proof -
       qed
       finally show "?G_H $$ (i,j) = 0" .
     qed auto
-    also have "\<dots> = (\<Prod>i = 0..<n. ?GH i i)" 
+    also have "\<dots> = (\<Prod>i = 0..<n. ?GH i i)"
       by (subst prod_list_diag_prod, simp)
     also have "{0 ..< n} = {0 ..< dfj} \<union> {dfj ..< n}" unfolding n dfj_def by auto
-    also have "prod (\<lambda> i. ?GH i i) \<dots> = prod (\<lambda> i. ?GH i i) {0 ..< dfj} * prod (\<lambda> i. ?GH i i) {dfj ..< n}" 
+    also have "prod (\<lambda> i. ?GH i i) \<dots> = prod (\<lambda> i. ?GH i i) {0 ..< dfj} * prod (\<lambda> i. ?GH i i) {dfj ..< n}"
       by (simp add: prod.union_disjoint)
-    also have "prod (\<lambda> i. ?GH i i) {0 ..< dfj} = prod (\<lambda> i. [: lead_coeff G :]) {0 ..< dfj}" 
+    also have "prod (\<lambda> i. ?GH i i) {0 ..< dfj} = prod (\<lambda> i. [: lead_coeff G :]) {0 ..< dfj}"
     proof -
       show ?thesis
-        by (rule prod.cong[OF refl], insert n_dfj, auto simp: g icoeff_def dg lead_coeff_def)
+        by (rule prod.cong[OF refl], insert n_dfj, auto simp: g icoeff_def dg)
     qed
     also have "\<dots> = [: (lead_coeff G)^dfj :]" by (simp add: poly_const_pow)
     also have "{dfj ..< n} = {dfj ..< n-1} \<union> {n - 1}" using n_dfj by auto
-    also have "prod (\<lambda> i. ?GH i i) \<dots> = prod (\<lambda> i. ?GH i i) {dfj ..< n-1} * ?GH (n - 1) (n - 1)" 
+    also have "prod (\<lambda> i. ?GH i i) \<dots> = prod (\<lambda> i. ?GH i i) {dfj ..< n-1} * ?GH (n - 1) (n - 1)"
       by (simp add: prod.union_disjoint)
-    also have "?GH (n - 1) (n - 1) = H" 
+    also have "?GH (n - 1) (n - 1) = H"
     proof -
       have "dgj - 1 - (n - 1 - dfj) = 0" using n_dfj unfolding dgj_def dfj_def n by auto
       with n_dfj show ?thesis by auto
     qed
-    also have "prod (\<lambda> i. ?GH i i) {dfj ..< n-1} = prod (\<lambda> i. [:h (int df - dfj):]) {dfj ..< n-1}" 
+    also have "prod (\<lambda> i. ?GH i i) {dfj ..< n-1} = prod (\<lambda> i. [:h (int df - dfj):]) {dfj ..< n-1}"
       by (rule prod.cong[OF refl], auto intro!: arg_cong[of _ _ h])
-    also have "\<dots> = [: h (int df - dfj) ^ (n - 1 - dfj) :]" 
+    also have "\<dots> = [: h (int df - dfj) ^ (n - 1 - dfj) :]"
       unfolding prod_constant by (simp add: poly_const_pow)
     also have "n - 1 - dfj = dg - J - 1" unfolding n dfj_def by simp
     also have "int df - dfj = J" using * dfg unfolding dfj_def by auto
@@ -1017,46 +1021,46 @@ proof -
     finally show "subresultant J F G = smult (?m1 * ?G * ?H) H" by (simp add: dfj_def ac_simps)
   } note eq_19 = this
   {
-    assume J: "J < dh" 
-    define dhj where "dhj = dh - J" 
+    assume J: "J < dh"
+    define dhj where "dhj = dh - J"
     have n_add: "n = (df - dh) + (dhj + dgj)" unfolding dhj_def dgj_def n using J dfg dgh by auto
-    let ?split = "split_block ?G_H (df - dh) (df - dh)" 
-    have dim: "dim\<^sub>r ?G_H = (df - dh) + (dhj + dgj)" 
+    let ?split = "split_block ?G_H (df - dh) (df - dh)"
+    have dim: "dim\<^sub>r ?G_H = (df - dh) + (dhj + dgj)"
       "dim\<^sub>c ?G_H = (df - dh) + (dhj + dgj)"
       unfolding n_add by auto
     obtain UL UR LL LR where spl: "?split = (UL,UR,LL,LR)" by (cases ?split, auto)
     note spl' = spl[unfolded split_block_def Let_def, simplified]
-    let ?LR = "subresultant_mat J G H" 
-    have "LR = mat (dgj + dhj) (dgj + dhj) 
-       (\<lambda> (i,j). ?GH (i + (df - dh)) (j + (df - dh)))" 
+    let ?LR = "subresultant_mat J G H"
+    have "LR = mat (dgj + dhj) (dgj + dhj)
+       (\<lambda> (i,j). ?GH (i + (df - dh)) (j + (df - dh)))"
       using spl' by (auto simp: n_add)
-    also have "\<dots> = ?LR" 
+    also have "\<dots> = ?LR"
       unfolding subresultant_mat_def Let_def dhj_def dgj_def d[symmetric]
     proof (rule mat_eqI, unfold mat_dim_row_mat mat_dim_col_mat mat_index_mat split dfj_def, goal_cases)
       case (1 i j)
       hence id1: "(j + (df - dh) < df - J) = (j < dh - J)" using dgh dfg J by auto
-      have id2: "(i + (df - dh) = n - 1) = (i = dg - J + (dh - J) - 1)" 
+      have id2: "(i + (df - dh) = n - 1) = (i = dg - J + (dh - J) - 1)"
         unfolding n_add dhj_def dgj_def using dgh dfg J by auto
       have id3: "(df - J - 1 - (j + (df - dh))) = (dh - J - 1 - j)"
-        and id4: "(int dg - int (i + (df - dh)) + int (j + (df - dh))) = (int dg - int i + int j)" 
-        and id5: "(dg - J - 1 - (j + (df - dh) - (df - J))) = (dg - J - 1 - (j - (dh - J)))" 
-        and id6: "(int df - int (i + (df - dh)) + int (j + (df - dh) - (df - J))) = (int dh - int i + int (j - (dh - J)))" 
+        and id4: "(int dg - int (i + (df - dh)) + int (j + (df - dh))) = (int dg - int i + int j)"
+        and id5: "(dg - J - 1 - (j + (df - dh) - (df - J))) = (dg - J - 1 - (j - (dh - J)))"
+        and id6: "(int df - int (i + (df - dh)) + int (j + (df - dh) - (df - J))) = (int dh - int i + int (j - (dh - J)))"
         using dgh dfg J by auto
       show ?case unfolding g[symmetric] h[symmetric] id3 id4 id5 id6
         by (rule if_cong[OF id1 if_cong[OF id2 refl refl] if_cong[OF id2 refl refl]])
     qed auto
-    finally have "LR = ?LR" . 
+    finally have "LR = ?LR" .
     note spl = spl[unfolded this]
-    let ?UR = "\<zero>\<^sub>m (df - dh) (dgj + dhj)" 
-    have "UR = mat (df - dh) (dgj + dhj) 
-       (\<lambda> (i,j). ?GH i (j + (df - dh)))" 
+    let ?UR = "\<zero>\<^sub>m (df - dh) (dgj + dhj)"
+    have "UR = mat (df - dh) (dgj + dhj)
+       (\<lambda> (i,j). ?GH i (j + (df - dh)))"
       using spl' by (auto simp: n_add)
-    also have "\<dots> = ?UR" 
+    also have "\<dots> = ?UR"
     proof (rule mat_eqI, unfold mat_dim_row_mat mat_dim_col_mat mat_index_mat split dfj_def mat_index_zero, goal_cases)
       case (1 i j)
       hence n1: "(if i = n - 1 then t else e) = e" for t e using J unfolding dgj_def dhj_def n_add by auto
       {
-        assume "j + (df - dh) < df - J" 
+        assume "j + (df - dh) < df - J"
         hence "dg < int dg - int i + int (j + (df - dh))" using 1 J unfolding dgj_def dhj_def by auto
         hence "g \<dots> = 0" unfolding dg g by (intro icoeff_eq_0, auto)
       } note g = this
@@ -1070,27 +1074,27 @@ proof -
     finally have "UR = ?UR" .
     note spl = spl[unfolded this]
     let ?G = "\<lambda> (i,j). if i = j then [:lead_coeff G:] else if i < j then 0 else ?GH i j"
-    let ?UL = "mat (df - dh) (df - dh) ?G" 
-    have "UL = mat (df - dh) (df - dh) (\<lambda> (i,j). ?GH i j)" 
+    let ?UL = "mat (df - dh) (df - dh) ?G"
+    have "UL = mat (df - dh) (df - dh) (\<lambda> (i,j). ?GH i j)"
       using spl' by (auto simp: n_add)
-    also have "\<dots> = ?UL" 
+    also have "\<dots> = ?UL"
     proof (rule mat_eqI, unfold mat_dim_row_mat mat_dim_col_mat mat_index_mat split, goal_cases)
       case (1 i j)
       {
-        assume "i = j" 
+        assume "i = j"
         hence "int dg - int i + int j = dg" using 1 by auto
-        hence "g (int dg - int i + int j) = lead_coeff G" 
-          unfolding g lead_coeff_def dg icoeff_def by simp
+        hence "g (int dg - int i + int j) = lead_coeff G"
+          unfolding g dg icoeff_def by simp
       } note eq = this
       {
-        assume "i < j" 
+        assume "i < j"
         hence "dg < int dg - int i + int j" using 1 by auto
-        hence "g (int dg - int i + int j) = 0" 
+        hence "g (int dg - int i + int j) = 0"
           unfolding g dg by (intro icoeff_eq_0, auto)
       } note lt = this
       from 1 have *: "j < dfj" "i \<noteq> n - 1" using J unfolding n_add dhj_def dgj_def dfj_def  by auto
       hence "?GH i j = [:g (int dg - int i + int j):]" by simp
-      also have "\<dots> = (if i = j then [: lead_coeff G :] else if i < j then 0 else ?GH i j)" 
+      also have "\<dots> = (if i = j then [: lead_coeff G :] else if i < j then 0 else ?GH i j)"
         using eq lt * by auto
       finally show ?case by simp
     qed auto
@@ -1104,54 +1108,54 @@ proof -
       "?LR \<in> carrier\<^sub>m (dhj + dgj) (dhj + dgj)" by auto
     from arg_cong[OF GH, of det]
     have "det ?G_H = det (four_block_mat ?UL ?UR LL ?LR)" unfolding GH[symmetric] ..
-    also have "\<dots> = det ?UL * det ?LR" 
+    also have "\<dots> = det ?UL * det ?LR"
       by (rule det_four_block_mat_upper_right_zero[OF _ refl], insert C, auto simp: ac_simps)
     also have "det ?LR = subresultant J G H" unfolding subresultant_def by simp
-    also have "det ?UL = prod_list (mat_diag ?UL)" 
-      by (rule det_lower_triangular[of "df - dh"], auto)        
+    also have "det ?UL = prod_list (mat_diag ?UL)"
+      by (rule det_lower_triangular[of "df - dh"], auto)
     also have "\<dots> = (\<Prod>i = 0..< (df - dh). [: lead_coeff G :])" unfolding prod_list_diag_prod by simp
     also have "\<dots> = [: lead_coeff G ^ (df - dh) :]" by (simp add: poly_const_pow)
-    finally have det: "det ?G_H = [:lead_coeff G ^ (df - dh):] * subresultant J G H" by auto    
-    show "subresultant J F G = smult (?m1 * lead_coeff G ^ (df - dh)) (subresultant J G H)" 
+    finally have det: "det ?G_H = [:lead_coeff G ^ (df - dh):] * subresultant J G H" by auto
+    show "subresultant J F G = smult (?m1 * lead_coeff G ^ (df - dh)) (subresultant J G H)"
       unfolding eq_18 det by simp
   }
   {
-    assume J: "dh < J" "J < dg - 1" 
+    assume J: "dh < J" "J < dg - 1"
     hence "dh \<le> J" "J < dg" by auto
     from eq_19[OF this]
-    have "subresultant J F G = smult ((- 1) ^ ((df - J) * (dg - J)) * lead_coeff G ^ (df - J) * coeff H J ^ (dg - J - 1)) H" 
+    have "subresultant J F G = smult ((- 1) ^ ((df - J) * (dg - J)) * lead_coeff G ^ (df - J) * coeff H J ^ (dg - J - 1)) H"
       by simp
     also have "coeff H J = 0" by (rule coeff_eq_0, insert J, auto simp: dh)
     also have "\<dots> ^ (dg - J - 1) = 0" using J by auto
     finally show "subresultant J F G = 0" by simp
-  }      
-  {
-    assume J: "J = dh" and "dg > dh \<or> H \<noteq> 0" 
-    with choice have dgh: "dg > dh" by auto
-    show "subresultant dh F G = smult (
-      (-1)^((df - dh) * (dg - dh)) * lead_coeff G ^ (df - dh) * lead_coeff H ^ (dg - dh - 1)) H" 
-      unfolding eq_19[unfolded J, OF le_refl dgh] unfolding dh lead_coeff_def by simp
   }
   {
-    assume J: "J = dg - 1" and "dg > dh \<or> H \<noteq> 0" 
+    assume J: "J = dh" and "dg > dh \<or> H \<noteq> 0"
+    with choice have dgh: "dg > dh" by auto
+    show "subresultant dh F G = smult (
+      (-1)^((df - dh) * (dg - dh)) * lead_coeff G ^ (df - dh) * lead_coeff H ^ (dg - dh - 1)) H"
+      unfolding eq_19[unfolded J, OF le_refl dgh] unfolding dh by simp
+  }
+  {
+    assume J: "J = dg - 1" and "dg > dh \<or> H \<noteq> 0"
     with choice have dgh: "dg > dh" by auto
     have *: "dh \<le> dg - 1" "dg - 1 < dg" using dgh by auto
-    have **: "df - (dg - 1) = df - dg + 1" "dg - (dg - 1) - 1 = 0" "dg - (dg - 1) = 1" 
+    have **: "df - (dg - 1) = df - dg + 1" "dg - (dg - 1) - 1 = 0" "dg - (dg - 1) = 1"
       using dfg dgh by linarith+
     show "subresultant (dg - 1) F G = smult (
-      (-1)^(df - dg + 1) * lead_coeff G ^ (df - dg + 1)) H" 
+      (-1)^(df - dg + 1) * lead_coeff G ^ (df - dg + 1)) H"
       unfolding eq_19[unfolded J, OF *] unfolding ** by simp
   }
 qed
-  
+
 lemmas BT_lemma_1_13 = BT_lemma_1_13'[OF _ _ _ refl]
 lemmas BT_lemma_1_15 = BT_lemma_1_15'[OF _ _ _ refl]
-  
-lemma subresultant_product: fixes F :: "'a :: idom poly" 
-  assumes "F = B * G" 
-  and FG: "degree F \<ge> degree G" 
-shows "subresultant J F G = (if J < degree G then 0 else 
-   if J < degree F then smult (lead_coeff G ^ (degree F - J - 1)) G else 1)" 
+
+lemma subresultant_product: fixes F :: "'a :: idom poly"
+  assumes "F = B * G"
+  and FG: "degree F \<ge> degree G"
+shows "subresultant J F G = (if J < degree G then 0 else
+   if J < degree F then smult (lead_coeff G ^ (degree F - J - 1)) G else 1)"
 proof (cases "J < degree G")
   case J: True
   from assms have eq: "F + (-B) * G = 0" by auto
@@ -1165,21 +1169,21 @@ proof (cases "J < degree G")
   thus ?thesis using J by simp
 next
   case J: False
-  hence dg: "degree G - J = 0" by simp      
-  let ?n = "degree F - J" 
+  hence dg: "degree G - J = 0" by simp
+  let ?n = "degree F - J"
   have *: "(if (j :: nat) < 0 then t else e) = e" "j - 0 = j" for j t e by auto
   let ?M = "mat ?n ?n
           (\<lambda>(i, j).
               if i = ?n - 1 then monom 1 (?n - 1 - j) * G
-              else [:icoeff G (int (degree G) - int i + int j):])" 
-  have "subresultant J F G = det ?M" 
+              else [:icoeff G (int (degree G) - int i + int j):])"
+  have "subresultant J F G = det ?M"
     unfolding subresultant_def subresultant_mat_def Let_def dg * by auto
-  also have "det ?M = prod_list (mat_diag ?M)" 
+  also have "det ?M = prod_list (mat_diag ?M)"
     by (rule det_lower_triangular[of ?n], auto intro: icoeff_eq_0)
   also have "\<dots> = (\<Prod>i = 0..< ?n. ?M $$ (i,i))" unfolding prod_list_diag_prod by simp
-  also have "\<dots> = (\<Prod>i = 0..< ?n. if i = ?n - 1 then G else [: lead_coeff G :])" 
-    by (rule prod.cong[OF refl], auto simp: icoeff_def lead_coeff_def)
-  also have "\<dots> = (if J < degree F then smult (lead_coeff G ^ (?n - 1)) G else 1)" 
+  also have "\<dots> = (\<Prod>i = 0..< ?n. if i = ?n - 1 then G else [: lead_coeff G :])"
+    by (rule prod.cong[OF refl], auto simp: icoeff_def)
+  also have "\<dots> = (if J < degree F then smult (lead_coeff G ^ (?n - 1)) G else 1)"
   proof (cases "J < degree F")
     case True
     hence id: "{ 0 ..< ?n} = { 0 ..< ?n - 1} \<union> {?n - 1}" by auto
@@ -1187,9 +1191,9 @@ next
       = (\<Prod>i = 0 ..< ?n - 1. if i = ?n - 1 then G else [: lead_coeff G :]) * G" (is "_ = ?P * G")
       unfolding id
       by (subst prod.union_disjoint, auto)
-    also have "?P = (\<Prod>i = 0 ..< ?n - 1. [: lead_coeff G :])" 
+    also have "?P = (\<Prod>i = 0 ..< ?n - 1. [: lead_coeff G :])"
       by (rule prod.cong, auto)
-    also have "\<dots> = [: lead_coeff G ^ (?n - 1) :]"  
+    also have "\<dots> = [: lead_coeff G ^ (?n - 1) :]"
       by (simp add: poly_const_pow)
     finally show ?thesis by auto
   qed auto
@@ -1197,67 +1201,67 @@ next
       (if J < degree F then smult (lead_coeff G ^ (degree F - J - 1)) G else 1)" .
   thus ?thesis using J by simp
 qed
-      
-lemma resultant_pseudo_mod_0: assumes "pseudo_mod f g = (0 :: 'a :: idom_divide poly)" 
-  and dfg: "degree f \<ge> degree g" 
-  and f: "f \<noteq> 0" and g: "g \<noteq> 0" 
+
+lemma resultant_pseudo_mod_0: assumes "pseudo_mod f g = (0 :: 'a :: idom_divide poly)"
+  and dfg: "degree f \<ge> degree g"
+  and f: "f \<noteq> 0" and g: "g \<noteq> 0"
   shows "resultant f g = (if degree g = 0 then lead_coeff g^degree f else 0)"
-proof -  
-  let ?df = "degree f" let ?dg = "degree g" 
-  obtain d r where pd: "pseudo_divmod f g = (d,r)" by force  
+proof -
+  let ?df = "degree f" let ?dg = "degree g"
+  obtain d r where pd: "pseudo_divmod f g = (d,r)" by force
   from pd have r: "r = pseudo_mod f g" unfolding pseudo_mod_def by simp
   with assms pd have pd: "pseudo_divmod f g = (d,0)" by auto
   from pseudo_divmod[OF g pd] g
-  obtain a q where prod: "smult a f = g * q" and a: "a \<noteq> 0" "a = lead_coeff g ^ (Suc ?df - ?dg)" 
-    by (auto simp: lead_coeff_def)
+  obtain a q where prod: "smult a f = g * q" and a: "a \<noteq> 0" "a = lead_coeff g ^ (Suc ?df - ?dg)"
+    by auto
   from a dfg have dfg: "degree g \<le> degree (smult a f)" by auto
   have g0: "degree g = 0 \<Longrightarrow> coeff g 0 = 0 \<Longrightarrow> g = 0"
     using leading_coeff_0_iff by fastforce
   from prod have "smult a f = q * g" by simp
   from arg_cong[OF subresultant_product[OF this dfg, of 0, unfolded subresultant_resultant
     resultant_smult_left[OF a(1)]], of "\<lambda> x. coeff x 0"]
-  show ?thesis using a g0 by (cases "degree f", auto simp: one_poly_def lead_coeff_def)
+  show ?thesis using a g0 by (cases "degree f", auto simp: one_poly_def)
 qed
-  
-locale primitive_remainder_sequence = 
-  fixes F :: "nat \<Rightarrow> 'a :: idom_divide poly" 
-    and n :: "nat \<Rightarrow> nat" 
-    and \<delta> :: "nat \<Rightarrow> nat" 
+
+locale primitive_remainder_sequence =
+  fixes F :: "nat \<Rightarrow> 'a :: idom_divide poly"
+    and n :: "nat \<Rightarrow> nat"
+    and \<delta> :: "nat \<Rightarrow> nat"
     and f :: "nat \<Rightarrow> 'a"
     and k :: nat
-    and \<beta> :: "nat \<Rightarrow> 'a" 
-  assumes f: "\<And> i. f i = lead_coeff (F i)" 
-      and n: "\<And> i. n i = degree (F i)" 
-      and \<delta>: "\<And> i. \<delta> i = n i - n (Suc i)" 
-      and n12: "n 1 \<ge> n 2" 
-      and F12: "F 1 \<noteq> 0" "F 2 \<noteq> 0" 
-      and F0: "\<And> i. i \<noteq> 0 \<Longrightarrow> F i = 0 \<longleftrightarrow> i > k" 
-      and \<beta>0: "\<And> i. \<beta> i \<noteq> 0" 
+    and \<beta> :: "nat \<Rightarrow> 'a"
+  assumes f: "\<And> i. f i = lead_coeff (F i)"
+      and n: "\<And> i. n i = degree (F i)"
+      and \<delta>: "\<And> i. \<delta> i = n i - n (Suc i)"
+      and n12: "n 1 \<ge> n 2"
+      and F12: "F 1 \<noteq> 0" "F 2 \<noteq> 0"
+      and F0: "\<And> i. i \<noteq> 0 \<Longrightarrow> F i = 0 \<longleftrightarrow> i > k"
+      and \<beta>0: "\<And> i. \<beta> i \<noteq> 0"
       and pmod: "\<And> i. i \<ge> 3 \<Longrightarrow> i \<le> Suc k \<Longrightarrow> smult (\<beta> i) (F i) = pseudo_mod (F (i - 2)) (F (i - 1))"
 begin
-  
+
 lemma f10: "f 1 \<noteq> 0" and f20: "f 2 \<noteq> 0" unfolding f using F12 by auto
 
-lemma f0: "i \<noteq> 0 \<Longrightarrow> f i = 0 \<longleftrightarrow> i > k" 
+lemma f0: "i \<noteq> 0 \<Longrightarrow> f i = 0 \<longleftrightarrow> i > k"
   using F0[of i] unfolding f by auto
-  
-lemma n_gt: assumes "2 \<le> i" "i < k" 
-  shows "n i > n (Suc i)" 
+
+lemma n_gt: assumes "2 \<le> i" "i < k"
+  shows "n i > n (Suc i)"
 proof -
-  from assms have "3 \<le> Suc i" "Suc i \<le> Suc k" by auto   
+  from assms have "3 \<le> Suc i" "Suc i \<le> Suc k" by auto
   note pmod = pmod[OF this]
   from assms F0 have "F (Suc i - 1) \<noteq> 0" "F (Suc i) \<noteq> 0" by auto
   from pseudo_mod(2)[OF this(1), of "F (Suc i - 2)", folded pmod] this(2)
   show ?thesis unfolding n using \<beta>0 by auto
 qed
-  
-  
-lemma n_ge: assumes "1 \<le> i" "i < k" 
-  shows "n i \<ge> n (Suc i)" 
+
+
+lemma n_ge: assumes "1 \<le> i" "i < k"
+  shows "n i \<ge> n (Suc i)"
   using n12 n_gt[OF _ assms(2)] assms(1) by (cases "i = 1", auto simp: numeral_2_eq_2)
-    
-lemma n_ge_trans: assumes "1 \<le> i" "i \<le> j" "j \<le> k" 
-  shows "n i \<ge> n j" 
+
+lemma n_ge_trans: assumes "1 \<le> i" "i \<le> j" "j \<le> k"
+  shows "n i \<ge> n j"
 proof -
   from assms(2) have "j = i + (j - i)" by simp
   then obtain jj where j: "j = i + jj" by blast
@@ -1271,37 +1275,37 @@ proof -
     with IH show ?case by auto
   qed auto
 qed
-  
-lemma delta_gt: assumes "2 \<le> i" "i < k" 
+
+lemma delta_gt: assumes "2 \<le> i" "i < k"
   shows "\<delta> i > 0" using n_gt[OF assms] unfolding \<delta> by auto
 
 lemma k2:"2 \<le> k"
-  by (metis le_cases linorder_not_le F0 F12(2) zero_order(2))    
+  by (metis le_cases linorder_not_le F0 F12(2) zero_order(2))
 
 lemma k0: "k \<noteq> 0" using k2 by auto
 
-    
+
 lemma ni2:"3 \<le> i \<Longrightarrow> i \<le> k \<Longrightarrow> n i \<noteq> n 2"
   by (metis Suc_numeral \<delta> delta_gt k2 le_imp_less_Suc le_less n_ge_trans not_le one_le_numeral
-      semiring_norm(5) zero_less_diff)    
+      semiring_norm(5) zero_less_diff)
 end
-  
-  
+
+
 locale subresultant_prs_locale = primitive_remainder_sequence F n \<delta> f k \<beta> for
-       F :: "nat \<Rightarrow> 'a :: idom_divide fract poly" 
-    and n :: "nat \<Rightarrow> nat" 
-    and \<delta> :: "nat \<Rightarrow> nat" 
+       F :: "nat \<Rightarrow> 'a :: idom_divide fract poly"
+    and n :: "nat \<Rightarrow> nat"
+    and \<delta> :: "nat \<Rightarrow> nat"
     and f :: "nat \<Rightarrow> 'a fract"
     and k :: nat
     and \<beta> :: "nat \<Rightarrow> 'a fract" +
-  fixes G1 G2 :: "'a poly" 
-  assumes F1: "F 1 = map_poly to_fract G1" 
+  fixes G1 G2 :: "'a poly"
+  assumes F1: "F 1 = map_poly to_fract G1"
     and F2: "F 2 = map_poly to_fract G2"
 begin
-  
+
 definition "\<alpha> i = (f (i - 1))^(Suc (\<delta> (i - 2)))"
 
-lemma \<alpha>0: "i > 1 \<Longrightarrow> \<alpha> i = 0 \<longleftrightarrow> (i - 1) > k" 
+lemma \<alpha>0: "i > 1 \<Longrightarrow> \<alpha> i = 0 \<longleftrightarrow> (i - 1) > k"
   unfolding \<alpha>_def using f0[of "i - 1"] by auto
 
 lemma \<alpha>_char:
@@ -1328,7 +1332,7 @@ next
     by (auto simp:\<delta> n degree_eq_length_coeffs)
   show ?thesis unfolding \<alpha>_def * by simp
 qed
-  
+
 definition Q :: "nat \<Rightarrow> 'a fract poly" where
   "Q i \<equiv> smult (\<alpha> i) (fst (pdivmod (F (i - 2)) (F (i - 1))))"
 
@@ -1352,11 +1356,12 @@ proof -
     unfolding Q_def by auto
   have "pdivmod (F (i - 2)) (F (i - 1)) = (smult ?c (Q i), smult ?c (smult (\<beta> i) (F i)))"
     unfolding c_times_Q
-    unfolding pdivmod_via_pseudo_divmod pmod[OF assms] f lead_coeff_def n c_times_Q 
+    unfolding pdivmod_via_pseudo_divmod pmod[OF assms] f n c_times_Q
               pseudo_mod_smult_right[OF f0_b, of "F (i - 2)",symmetric] f0 if_False Let_def
     unfolding pseudo_mod_def by (auto split:prod.split)
-  from this[folded pdivmod_pdivmodrel,unfolded pdivmod_rel_def]
-  have pr:"F (i - 2) = smult ?c (Q i) * F (i - 1) + smult ?c ( smult (\<beta> i) (F i))" by auto
+  from this[folded pdivmod_pdivmodrel]
+  have pr:"F (i - 2) = smult ?c (Q i) * F (i - 1) + smult ?c ( smult (\<beta> i) (F i))"
+    by (auto simp: eucl_rel_poly_iff)
   hence "F (i - 2) = smult (inverse (\<alpha> i)) (Q i) * F (i - 1)
                    + smult (inverse (\<alpha> i)) ( smult (\<beta> i) (F i))" (is "?l = ?r" is "_ = ?t + _")
                    unfolding inv.
@@ -1398,35 +1403,36 @@ proof -
   have "max (n (i - 2)) (n (i - 1)) = n (i - 2)" using n_ge[of "i-2"] assms
     unfolding max_def by auto
   with diff_add_assoc[OF n_ge[of "i-1"],symmetric] assms
-  have ns : "n (i - 2) - n (i - 1) + (n (i - 1) - n i) = n (i - 2) - n i" 
+  have ns : "n (i - 2) - n (i - 1) + (n (i - 1) - n i) = n (i - 2) - n i"
      by (auto simp:nat_minus_add_max)
   { assume "j < n i"
     hence j:"j < degree (Polynomial.smult (\<beta> i) (F i))" using \<beta>0 unfolding n by auto
-    from BT_lemma_1_12[OF beta_F_as_sum df j] 
+    from BT_lemma_1_12[OF beta_F_as_sum df j]
     show ?eq_21
       unfolding subresultant_smult_right[OF \<beta>0] subresultant_smult_left[OF \<alpha>0]
                 degree_smult_eq[OF \<alpha>0] degree_smult_eq[OF \<beta>0] n[symmetric] f[symmetric] \<delta> s ns
+      using f n
       by auto}
-  { from BT_lemma_1_13[OF beta_F_as_sum df df(2)] 
+  { from BT_lemma_1_13[OF beta_F_as_sum df df(2)]
     show ?eq_22
-      unfolding subresultant_smult_left[OF \<alpha>0] lead_coeff_smult smult_smult * mult.assoc **
+      unfolding subresultant_smult_left[OF \<alpha>0] lead_coeff_smult smult_smult
                 degree_smult_eq[OF \<alpha>0] degree_smult_eq[OF \<beta>0] n[symmetric] f[symmetric] \<delta> s ns
-      by (auto simp:mult.commute)}
+      by (metis (no_types, lifting) * ** coeff_smult f mult.assoc n)}
   { assume "n i < j" "j < n (i - 1) - 1"
     hence j:"degree (Polynomial.smult (\<beta> i) (F i)) < j" "j < degree (F (i - 1)) - 1"
       using \<beta>0 unfolding n by auto
-    from BT_lemma_1_14[OF beta_F_as_sum df j] 
+    from BT_lemma_1_14[OF beta_F_as_sum df j]
     show ?eq_23 unfolding subresultant_smult_left[OF \<alpha>0] smult_eq_0_iff using \<alpha>0pow by auto}
   { have ***: "n (i - 1) - (n (i - 1) - 1) = 1" using n_lt by auto
-    from BT_lemma_1_15[OF beta_F_as_sum df df(2)] 
+    from BT_lemma_1_15[OF beta_F_as_sum df df(2)]
     show ?eq_24
-      unfolding subresultant_smult_left[OF \<alpha>0] *** degree_smult_eq[OF \<alpha>0] n[symmetric] f \<delta> 
+      unfolding subresultant_smult_left[OF \<alpha>0] *** degree_smult_eq[OF \<alpha>0] n[symmetric] f \<delta>
       by (auto simp:mult.commute)}
 qed
-  
+
 lemma BT_eq_30: "3 \<le> i \<Longrightarrow> i \<le> k + 1 \<Longrightarrow> j < n (i - 1) \<Longrightarrow>
     smult (\<Prod>l\<leftarrow>[3..<i]. \<alpha> l ^ (n (l - 1) - j)) (subresultant j (F 1) (F 2))
-  = smult (\<Prod>l\<leftarrow>[3..<i]. \<beta> l ^ (n (l - 1) - j) * f (l - 1) ^ (\<delta> (l - 2) + \<delta> (l - 1)) 
+  = smult (\<Prod>l\<leftarrow>[3..<i]. \<beta> l ^ (n (l - 1) - j) * f (l - 1) ^ (\<delta> (l - 2) + \<delta> (l - 1))
         * (- 1) ^ ((n (l - 2) - j) * (n (l - 1) - j))) (subresultant j (F (i - 2)) (F (i - 1)))"
 proof (induct "i - 3" arbitrary:i)
   case (Suc x)
@@ -1447,36 +1453,36 @@ qed auto
 
 lemma nonzero_alphaprod: assumes "i \<le> k + 1" shows "(\<Prod>l\<leftarrow>[3..<i]. \<alpha> l ^ (p l)) \<noteq> 0"
   unfolding prod_list_zero_iff using assms by (auto simp: \<alpha>0)
-    
-lemma BT_eq_30': assumes i: "3 \<le> i" "i \<le> k + 1" "j < n (i - 1)" 
+
+lemma BT_eq_30': assumes i: "3 \<le> i" "i \<le> k + 1" "j < n (i - 1)"
 shows "subresultant j (F 1) (F 2)
   = smult ((- 1) ^ (\<Sum>l\<leftarrow>[3..<i]. (n (l - 2) - j) * (n (l - 1) - j))
      * (\<Prod>l\<leftarrow>[3..<i]. (\<beta> l / \<alpha> l) ^ (n (l - 1) - j)) * (\<Prod>l\<leftarrow>[3..<i]. f (l - 1) ^ (\<delta> (l - 2) + \<delta> (l - 1)))) (subresultant j (F (i - 2)) (F (i - 1)))"
   (is "_ = smult (?mm * ?b * ?f) _")
 proof -
-  let ?a = "\<Prod>l\<leftarrow>[3..<i]. \<alpha> l ^ (n (l - 1) - j)" 
+  let ?a = "\<Prod>l\<leftarrow>[3..<i]. \<alpha> l ^ (n (l - 1) - j)"
   let ?d = "\<Prod>l\<leftarrow>[3..<i]. \<beta> l ^ (n (l - 1) - j) * f (l - 1) ^ (\<delta> (l - 2) + \<delta> (l - 1)) *
-                     (- 1) ^ ((n (l - 2) - j) * (n (l - 1) - j))" 
-  let ?m = "\<Prod>l\<leftarrow>[3..<i]. (- 1) ^ ((n (l - 2) - j) * (n (l - 1) - j))" 
+                     (- 1) ^ ((n (l - 2) - j) * (n (l - 1) - j))"
+  let ?m = "\<Prod>l\<leftarrow>[3..<i]. (- 1) ^ ((n (l - 2) - j) * (n (l - 1) - j))"
   have a0: "?a \<noteq> 0" by (rule nonzero_alphaprod, rule i)
-  with arg_cong[OF BT_eq_30[OF i], of "smult (inverse ?a)", unfolded smult_smult] 
+  with arg_cong[OF BT_eq_30[OF i], of "smult (inverse ?a)", unfolded smult_smult]
   have "subresultant j (F 1) (F 2) = smult (inverse ?a * ?d)
-    (subresultant j (F (i - 2)) (F (i - 1)))" 
+    (subresultant j (F (i - 2)) (F (i - 1)))"
     by simp
-  also have "inverse ?a * ?d = ?b * ?f * ?m" unfolding prod_list_multf inverse_prod_list map_map o_def 
+  also have "inverse ?a * ?d = ?b * ?f * ?m" unfolding prod_list_multf inverse_prod_list map_map o_def
       power_inverse[symmetric] power_mult_distrib divide_inverse_commute
     by simp
-  also have "?m = ?mm" 
+  also have "?m = ?mm"
     unfolding prod_list_minus_1_exp by simp
   finally show ?thesis by (simp add: ac_simps)
 qed
-  
-text \<open>For defining the subresultant PRS, we mainly follow Brown's ``The Subresultant PRS Algorithm'' (B).\<close>
-  
-definition "R j = (if j = n 2 then divide_poly (smult ((lead_coeff G2)^(\<delta> 1)) G2) (lead_coeff G2) else subresultant j G1 G2)" 
 
-abbreviation "ff i \<equiv> to_fract (i :: 'a)" 
-abbreviation "ffp \<equiv> map_poly ff" 
+text \<open>For defining the subresultant PRS, we mainly follow Brown's ``The Subresultant PRS Algorithm'' (B).\<close>
+
+definition "R j = (if j = n 2 then divide_poly (smult ((lead_coeff G2)^(\<delta> 1)) G2) (lead_coeff G2) else subresultant j G1 G2)"
+
+abbreviation "ff i \<equiv> to_fract (i :: 'a)"
+abbreviation "ffp \<equiv> map_poly ff"
 sublocale idom_hom ff
   by (unfold_locales, auto simp: fract_collapse)
 sublocale inj_idom_hom ff
@@ -1487,50 +1493,50 @@ sublocale p: inj_idom_hom ffp
   by (unfold_locales, auto)
 
 (* for \<sigma> and \<tau> we only take additions, so that no negative number-problems occur *)
-definition "\<sigma> i = (\<Sum>l\<leftarrow>[3..<Suc i]. (n (l - 2) + n (i - 1) + 1) * (n (l - 1) + n (i - 1) + 1))" 
+definition "\<sigma> i = (\<Sum>l\<leftarrow>[3..<Suc i]. (n (l - 2) + n (i - 1) + 1) * (n (l - 1) + n (i - 1) + 1))"
 definition "\<tau> i = (\<Sum>l\<leftarrow>[3..<Suc i]. (n (l - 2) + n i) * (n (l - 1) + n i))"
-  
-definition "\<gamma> i = (-1)^(\<sigma> i) * pow_int ( f (i - 1)) (1 - int (\<delta> (i - 1))) * (\<Prod>l\<leftarrow>[3..<Suc i]. 
-  (\<beta> l / \<alpha> l)^(n (l - 1) - n (i - 1) + 1) * (f (l - 1))^(\<delta> (l - 2) + \<delta> (l - 1)))" 
-definition "\<Theta> i = (-1)^(\<tau> i) * pow_int (f i) (int (\<delta> (i - 1)) - 1) * (\<Prod>l\<leftarrow>[3..<Suc i]. 
-  (\<beta> l / \<alpha> l)^(n (l - 1) - n i) * (f (l - 1))^(\<delta> (l - 2) + \<delta> (l - 1)))" 
-    
+
+definition "\<gamma> i = (-1)^(\<sigma> i) * pow_int ( f (i - 1)) (1 - int (\<delta> (i - 1))) * (\<Prod>l\<leftarrow>[3..<Suc i].
+  (\<beta> l / \<alpha> l)^(n (l - 1) - n (i - 1) + 1) * (f (l - 1))^(\<delta> (l - 2) + \<delta> (l - 1)))"
+definition "\<Theta> i = (-1)^(\<tau> i) * pow_int (f i) (int (\<delta> (i - 1)) - 1) * (\<Prod>l\<leftarrow>[3..<Suc i].
+  (\<beta> l / \<alpha> l)^(n (l - 1) - n i) * (f (l - 1))^(\<delta> (l - 2) + \<delta> (l - 1)))"
+
 (* is eq 29 in BT *)
 lemma fundamental_theorem_eq_4: assumes i: "3 \<le> i" "i \<le> k"
   shows "ffp (R (n (i - 1) - 1)) = smult (\<gamma> i) (F i)"
 proof -
   have "n (i - 1) \<le> n 2" by (rule n_ge_trans, insert i, auto)
-  with n_gt[of "i - 1"] i have "n (i - 1) - 1 < n 2" 
+  with n_gt[of "i - 1"] i have "n (i - 1) - 1 < n 2"
     and lt: "n (i - 1) - 1 < n (i - 1)" by linarith+
   hence "R (n (i - 1) - 1) = subresultant (n (i - 1) - 1) G1 G2"
     unfolding R_def by auto
   from arg_cong[OF this, of ffp, unfolded subresultant_hom, folded F1 F2]
   have id1: "ffp (R (n (i - 1) - 1)) = subresultant (n (i - 1) - 1) (F 1) (F 2)" .
   note eq_24 = BT_lemma_2_24[OF i]
-  let ?o = "(- 1) :: 'a fract" 
-  let ?m1 = "(\<delta> (i - 2) + 1)" 
-  let ?d1 = "f (i - 1) ^ (\<delta> (i - 2) + 1) * \<beta> i" 
-  let ?c1 = "?o ^ ?m1  * ?d1" 
-  let ?c0 = "\<alpha> i" 
+  let ?o = "(- 1) :: 'a fract"
+  let ?m1 = "(\<delta> (i - 2) + 1)"
+  let ?d1 = "f (i - 1) ^ (\<delta> (i - 2) + 1) * \<beta> i"
+  let ?c1 = "?o ^ ?m1  * ?d1"
+  let ?c0 = "\<alpha> i"
   have "?c0 \<noteq> 0" using \<alpha>0[of i] i by auto
   with arg_cong[OF eq_24, of "smult (inverse ?c0)"]
-  have id2: "subresultant (n (i - 1) - 1) (F (i - 2)) (F (i - 1)) = 
-     smult (inverse ?c0 * ?c1) (F i)" 
+  have id2: "subresultant (n (i - 1) - 1) (F (i - 2)) (F (i - 1)) =
+     smult (inverse ?c0 * ?c1) (F i)"
     by (auto intro: poly_eqI)
   from i have "3 \<le> i" "i \<le> k + 1" by auto
   note id3 = BT_eq_30'[OF this lt]
-  let ?f = "\<lambda> l. f (l - 1) ^ (\<delta> (l - 2) + \<delta> (l - 1))" 
-  let ?b = "\<lambda> l. (\<beta> l / \<alpha> l) ^ (n (l - 1) - (n (i - 1) - 1))" 
-  let ?b' = "\<lambda> l. (\<beta> l / \<alpha> l) ^ (n (l - 1) - n (i - 1) + 1)" 
-  let ?m = "\<lambda> l.  (n (l - 2) - (n (i - 1) - 1)) * (n (l - 1) - (n (i - 1) - 1))" 
-  let ?m' = "\<lambda> l. (n (l - 2) + n (i - 1) + 1) * (n (l - 1) + n (i - 1) + 1)" 
-  let ?m2 = "(\<Sum>l\<leftarrow>[3..<i]. ?m l)" 
-  let ?b2 = "(\<Prod>l\<leftarrow>[3..<i]. ?b l)" 
-  let ?f2 = "(\<Prod>l\<leftarrow>[3..<i]. ?f l)" 
-  let ?f1 = "pow_int ( f (i - 1)) (1 - int (\<delta> (i - 1)))" 
+  let ?f = "\<lambda> l. f (l - 1) ^ (\<delta> (l - 2) + \<delta> (l - 1))"
+  let ?b = "\<lambda> l. (\<beta> l / \<alpha> l) ^ (n (l - 1) - (n (i - 1) - 1))"
+  let ?b' = "\<lambda> l. (\<beta> l / \<alpha> l) ^ (n (l - 1) - n (i - 1) + 1)"
+  let ?m = "\<lambda> l.  (n (l - 2) - (n (i - 1) - 1)) * (n (l - 1) - (n (i - 1) - 1))"
+  let ?m' = "\<lambda> l. (n (l - 2) + n (i - 1) + 1) * (n (l - 1) + n (i - 1) + 1)"
+  let ?m2 = "(\<Sum>l\<leftarrow>[3..<i]. ?m l)"
+  let ?b2 = "(\<Prod>l\<leftarrow>[3..<i]. ?b l)"
+  let ?f2 = "(\<Prod>l\<leftarrow>[3..<i]. ?f l)"
+  let ?f1 = "pow_int ( f (i - 1)) (1 - int (\<delta> (i - 1)))"
   have id4: "\<gamma> i = ?o ^ (?m1 + ?m2) * (inverse ?c0 * ?d1 * ?b2 * ?f2)"
   proof -
-    have id: "\<gamma> i = (-1)^(\<sigma> i) * (?f1 * (\<Prod>l\<leftarrow>[3..<Suc i]. ?b' l) * (\<Prod>l\<leftarrow>[3..<Suc i]. ?f l))" 
+    have id: "\<gamma> i = (-1)^(\<sigma> i) * (?f1 * (\<Prod>l\<leftarrow>[3..<Suc i]. ?b' l) * (\<Prod>l\<leftarrow>[3..<Suc i]. ?f l))"
       unfolding \<gamma>_def prod_list_multf by simp
     have cong: "even m1 = even m2 \<Longrightarrow> c1 = c2 \<Longrightarrow> ?o^m1 * c1 = ?o^m2 * c2" for m1 m2 c1 c2
       unfolding minus_1_power_even by auto
@@ -1539,24 +1545,24 @@ proof -
       from n_gt[of "i - 1"] i have n1: "n (i - 1) \<noteq> 0" by linarith
       {
         fix l
-        assume "2 \<le> l" "l \<le> i" 
+        assume "2 \<le> l" "l \<le> i"
         hence l: "l \<ge> 2" "l - 1 \<le> i - 1" "l \<le> k" using i by auto
         from n_ge_trans[OF _ l(2)] l i have n2: "n (i - 1) \<le> n (l - 1)" by auto
         from n1 n2 have id: "n (l - 1) - (n (i - 1) - 1) = n (l - 1) - n (i - 1) + 1" by auto
-        have "even (n (l - 1) - (n (i - 1) - 1)) = even (n (l - 1) + n (i - 1) + 1)" 
+        have "even (n (l - 1) - (n (i - 1) - 1)) = even (n (l - 1) + n (i - 1) + 1)"
           unfolding id using n2 by auto
         note id n2 this
       } note diff = this
       have f0: "f (i - 1) \<noteq> 0" using f0[of "i - 1"] i by auto
-      have "(\<Prod>l\<leftarrow>[3..<Suc i]. ?b' l) = (\<Prod>l\<leftarrow>[3..<Suc i]. ?b l)" 
+      have "(\<Prod>l\<leftarrow>[3..<Suc i]. ?b' l) = (\<Prod>l\<leftarrow>[3..<Suc i]. ?b l)"
         by (rule prod_list_cong[OF refl], goal_cases, insert diff(1), auto)
       also have "\<dots> = ?b2 * ?b i" using i by auto
-      finally have "?f1 * (\<Prod>l\<leftarrow>[3..<Suc i]. ?b' l) * (\<Prod>l\<leftarrow>[3..<Suc i]. ?f l) = 
+      finally have "?f1 * (\<Prod>l\<leftarrow>[3..<Suc i]. ?b' l) * (\<Prod>l\<leftarrow>[3..<Suc i]. ?f l) =
          (?b2 * ?f2) * (?f1 * ?b i * ?f i)" using i by simp
-      also have "?f1 * ?b i * ?f i = (?f1 * ?f i) * \<beta> i * inverse ?c0" using n1 by (simp add: divide_inverse) 
-      also have "?f1 * ?f i = f (i - 1) ^ (\<delta> (i - 2) + 1)" 
+      also have "?f1 * ?b i * ?f i = (?f1 * ?f i) * \<beta> i * inverse ?c0" using n1 by (simp add: divide_inverse)
+      also have "?f1 * ?f i = f (i - 1) ^ (\<delta> (i - 2) + 1)"
         unfolding exp_pow_int pow_int_add[OF f0, symmetric] by simp
-      finally 
+      finally
       show "?f1 * (\<Prod>l\<leftarrow>[3..<Suc i]. ?b' l) * (\<Prod>l\<leftarrow>[3..<Suc i]. ?f l)
          = inverse ?c0 * ?d1 * ?b2 * ?f2" by simp
       have "even (\<sigma> i) = even ((\<Sum>l\<leftarrow>[3..<i]. ?m' l) + ?m' i)" unfolding \<sigma>_def using i by simp
@@ -1585,32 +1591,32 @@ proof -
 qed
 
 (* equation 28 in BT *)
-lemma fundamental_theorem_eq_5: assumes i: "3 \<le> i" "i \<le> k" "n i < j" "j < n (i - 1) - 1" 
-  shows "R j = 0" 
+lemma fundamental_theorem_eq_5: assumes i: "3 \<le> i" "i \<le> k" "n i < j" "j < n (i - 1) - 1"
+  shows "R j = 0"
 proof -
   from BT_lemma_2_23[OF i] have id1: "subresultant j (F (i - 2)) (F (i - 1)) = 0" .
   have "n (i - 1) \<le> n 2" by (rule n_ge_trans, insert i, auto)
-  with n_gt[of "i - 1"] i have "n (i - 1) - 1 < n 2" 
+  with n_gt[of "i - 1"] i have "n (i - 1) - 1 < n 2"
     and lt: "j < n (i - 1)" by linarith+
   with i have "R j = subresultant j G1 G2" unfolding R_def by auto
   from arg_cong[OF this, of ffp, unfolded subresultant_hom, folded F1 F2]
   have id2: "ffp (R j) = subresultant j (F 1) (F 2)" .
   from i have "3 \<le> i" "i \<le> k + 1" by auto
   note eq_30 = BT_eq_30[OF this lt]
-  let ?c3 = "\<Prod>l\<leftarrow>[3..<i]. \<alpha> l ^ (n (l - 1) - j)" 
+  let ?c3 = "\<Prod>l\<leftarrow>[3..<i]. \<alpha> l ^ (n (l - 1) - j)"
   let ?c2 = "\<Prod>l\<leftarrow>[3..<i]. \<beta> l ^ (n (l - 1) - j) * f (l - 1) ^ (\<delta> (l - 2) + \<delta> (l - 1)) *
-                  (- 1) ^ ((n (l - 2) - j) * (n (l - 1) - j))" 
+                  (- 1) ^ ((n (l - 2) - j) * (n (l - 1) - j))"
   have "?c3 \<noteq> 0" by (rule nonzero_alphaprod, insert i, auto)
   with arg_cong[OF eq_30, of "smult (inverse ?c3)"]
-  have id3: "subresultant j (F 1) (F 2) = smult (inverse ?c3 * ?c2) 
-     (subresultant j (F (i - 2)) (F (i - 1)))" 
+  have id3: "subresultant j (F 1) (F 2) = smult (inverse ?c3 * ?c2)
+     (subresultant j (F (i - 2)) (F (i - 1)))"
     by (auto intro: poly_eqI)
   have "ffp (R j) = 0" unfolding id1 id2 id3 by simp
   thus ?thesis by simp
 qed
 
 (* equation 27 in BT *)
-lemma fundamental_theorem_eq_6: assumes "3 \<le> i" "i \<le> k" shows "ffp (R (n i)) = smult (\<Theta> i) (F i)" 
+lemma fundamental_theorem_eq_6: assumes "3 \<le> i" "i \<le> k" shows "ffp (R (n i)) = smult (\<Theta> i) (F i)"
   (is "?lhs=?rhs")
 proof -
   from assms have i1:"1 \<le> i" by auto
@@ -1655,17 +1661,17 @@ proof -
     by (auto simp:ac_simps exp_pow_int[symmetric] power_add ***** ****)
   finally show ?thesis.
 qed
-  
+
 (* equation 26 in BT *)
 lemma fundamental_theorem_eq_7: assumes j: "j < n k" shows "R j = 0"
 proof -
-  let ?P = "pseudo_divmod (F (k - 1)) (F k)" 
+  let ?P = "pseudo_divmod (F (k - 1)) (F k)"
   from F0[of k] k2 have Fk: "F k \<noteq> 0" by auto
   from pmod[of "Suc k"] k2 F0[of "Suc k"]
   have "pseudo_mod (F (k - 1)) (F k) = 0" by auto
-  then obtain Q where "?P = (Q,0)" 
+  then obtain Q where "?P = (Q,0)"
     unfolding pseudo_mod_def by (cases ?P, auto)
-  from pseudo_divmod(1)[OF Fk this] Fk obtain c where id: "smult c (F (k - 1)) = F k * Q" 
+  from pseudo_divmod(1)[OF Fk this] Fk obtain c where id: "smult c (F (k - 1)) = F k * Q"
     and c: "c \<noteq> 0" by auto
   from id have id: "smult c (F (k - 1)) = Q * F k" by auto
   from n_ge[unfolded n, of "k - 1"] k2 c have "degree (F k) \<le> degree (smult c (F (k - 1)))" by auto
@@ -1677,30 +1683,30 @@ proof -
   from BT_eq_30[OF this,unfolded *] nonzero_alphaprod[OF le_refl] ** F1 F2 subresultant_hom[symmetric]
   show ?thesis by (auto simp:R_def F0)
 qed
-  
 
-definition "G i = R (n (i - 1) - 1)" 
-definition "H i = R (n i)" 
-    
+
+definition "G i = R (n (i - 1) - 1)"
+definition "H i = R (n i)"
+
 lemma gamma_delta_beta_3: "\<gamma> 3 = (- 1) ^ (\<delta> 1 + 1) * \<beta> 3"
 proof -
   have "\<gamma> 3 = (- 1) ^ \<sigma> 3 * pow_int (f 2) (1 - int (\<delta> 2)) *
-    (\<beta> 3 / (f 2 ^ Suc (\<delta> 1)) * f 2 ^ (\<delta> 1 + \<delta> 2))" 
-    unfolding \<gamma>_def \<delta> \<alpha>_def by (simp add: \<delta>)  
-  also have "f 2 ^ (\<delta> 1 + \<delta> 2) = pow_int (f 2) (int (\<delta> 1 + \<delta> 2))" 
+    (\<beta> 3 / (f 2 ^ Suc (\<delta> 1)) * f 2 ^ (\<delta> 1 + \<delta> 2))"
+    unfolding \<gamma>_def \<delta> \<alpha>_def by (simp add: \<delta>)
+  also have "f 2 ^ (\<delta> 1 + \<delta> 2) = pow_int (f 2) (int (\<delta> 1 + \<delta> 2))"
     unfolding pow_int_def nat_int by auto
   also have "int (\<delta> 1 + \<delta> 2) = int (Suc (\<delta> 1)) + (int (\<delta> 2) - 1)" by simp
-  also have "pow_int (f 2) \<dots> = pow_int (f 2) (Suc (\<delta> 1)) * pow_int (f 2) (int (\<delta> 2) - 1)" 
+  also have "pow_int (f 2) \<dots> = pow_int (f 2) (Suc (\<delta> 1)) * pow_int (f 2) (int (\<delta> 2) - 1)"
     by (rule pow_int_add, insert f20, auto)
   also have "pow_int (f 2) (Suc (\<delta> 1)) = f 2 ^ (Suc (\<delta> 1))" unfolding pow_int_def nat_int by simp
   also have "\<beta> 3 / (f 2 ^ Suc (\<delta> 1)) *
    (f 2 ^ Suc (\<delta> 1) * pow_int (f 2) (int (\<delta> 2) - 1))
     = (\<beta> 3 / (f 2 ^ Suc (\<delta> 1)) *  f 2 ^ Suc (\<delta> 1) * pow_int (f 2) (int (\<delta> 2) - 1))" by simp
   also have "\<beta> 3 / (f 2 ^ Suc (\<delta> 1)) * f 2 ^ Suc (\<delta> 1) = \<beta> 3" using f20 by auto
-  finally have "\<gamma> 3 = ((- 1) ^ \<sigma> 3 * \<beta> 3) * (pow_int (f 2) (1 - int (\<delta> 2)) * pow_int (f 2) (int (\<delta> 2) - 1))" 
+  finally have "\<gamma> 3 = ((- 1) ^ \<sigma> 3 * \<beta> 3) * (pow_int (f 2) (1 - int (\<delta> 2)) * pow_int (f 2) (int (\<delta> 2) - 1))"
     by simp
   also have "pow_int (f 2) (1 - int (\<delta> 2)) * pow_int (f 2) (int (\<delta> 2) - 1)
-    = 1" 
+    = 1"
     by (subst pow_int_add[symmetric], insert f20, auto)
   finally have "\<gamma> 3 = (- 1) ^ \<sigma> 3 * \<beta> 3" by simp
   also have "\<sigma> 3 = (n 1 + n 2 + 1) * (n 2 + n 2 + 1)" unfolding \<sigma>_def
@@ -1709,66 +1715,66 @@ proof -
     by (rule minus_1_even_eqI, insert n12, auto)
   also have "\<dots> = (- 1)^(\<delta> 1 + 1)" unfolding \<delta> by (simp add: numeral_2_eq_2)
   finally show "\<gamma> 3 = (- 1) ^ (\<delta> 1 + 1) * \<beta> 3" .
-qed  
+qed
 
 fun h :: "nat \<Rightarrow> 'a fract" where
-  "h i = (if (i \<le> 1) then 1 else if i = 2 then (f 2 ^ \<delta> 1) else (f i ^ \<delta> (i - 1) / (h (i - 1) ^ (\<delta> (i - 1) - 1))))" 
-  
+  "h i = (if (i \<le> 1) then 1 else if i = 2 then (f 2 ^ \<delta> 1) else (f i ^ \<delta> (i - 1) / (h (i - 1) ^ (\<delta> (i - 1) - 1))))"
+
 lemma div_divide_ff: assumes "x \<in> range ff"
-  and "x = y / z" 
+  and "x = y / z"
   and "x' = y' div z'"
-  and "y = ff y'" "z = ff z'"   
-  shows "x = ff x'" 
+  and "y = ff y'" "z = ff z'"
+  shows "x = ff x'"
 proof (cases "z' = 0")
   case True
   thus ?thesis using assms by auto
 next
-  case False    
+  case False
   from assms obtain r where "ff y' / ff z' = ff r" by auto
   thus ?thesis using False assms
     by (simp add: eq_fract(1) to_fract_def)
 qed
-  
-lemma smult_inverse_divide_poly: assumes ffp: "p \<in> range ffp" 
-  and p: "p = smult (inverse x) q" 
-  and p': "p' = divide_poly q' x'" 
+
+lemma smult_inverse_divide_poly: assumes ffp: "p \<in> range ffp"
+  and p: "p = smult (inverse x) q"
+  and p': "p' = divide_poly q' x'"
   and xx: "x = ff x'"
   and qq: "q = ffp q'"
-shows "p = ffp p'" 
+shows "p = ffp p'"
 proof (rule poly_eqI)
   fix i
   have "coeff p i = coeff q i / x" unfolding p by (simp add: field_simps)
   also have "\<dots> = ff (coeff q' i) / ff x'" unfolding qq xx by simp
   finally have cpi: "coeff p i = ff (coeff q' i) / ff x'" .
   from ffp obtain r where pr: "p = ffp r" by auto
-  from arg_cong[OF this, of "\<lambda> p. coeff p i", unfolded cpi] 
+  from arg_cong[OF this, of "\<lambda> p. coeff p i", unfolded cpi]
   have "ff (coeff q' i) / ff x' \<in> range ff" by auto
-  hence id: "ff (coeff q' i) / ff x' = ff (coeff q' i div x')" 
+  hence id: "ff (coeff q' i) / ff x' = ff (coeff q' i div x')"
     by (rule div_divide_ff, auto)
-  show "coeff p i = coeff (ffp p') i" unfolding cpi id p'      
+  show "coeff p i = coeff (ffp p') i" unfolding cpi id p'
     by (simp add: divide_poly_def coeff_map_poly)
 qed
 
 end
-  
+
 locale subresultant_prs_locale2 = subresultant_prs_locale F n \<delta> f k \<beta> G1 G2 for
-       F :: "nat \<Rightarrow> 'a :: idom_divide fract poly" 
-    and n :: "nat \<Rightarrow> nat" 
-    and \<delta> :: "nat \<Rightarrow> nat" 
+       F :: "nat \<Rightarrow> 'a :: idom_divide fract poly"
+    and n :: "nat \<Rightarrow> nat"
+    and \<delta> :: "nat \<Rightarrow> nat"
     and f :: "nat \<Rightarrow> 'a fract"
     and k :: nat
-    and \<beta> :: "nat \<Rightarrow> 'a fract" 
+    and \<beta> :: "nat \<Rightarrow> 'a fract"
     and G1 G2 :: "'a poly" +
-  assumes \<beta>3: "\<beta> 3 = (-1)^(\<delta> 1 + 1)" 
+  assumes \<beta>3: "\<beta> 3 = (-1)^(\<delta> 1 + 1)"
   and \<beta>i: "\<And> i. 4 \<le> i \<Longrightarrow> i \<le> Suc k \<Longrightarrow> \<beta> i = (-1)^(\<delta> (i - 2) + 1) * f (i - 2) * h (i - 2) ^ (\<delta> (i - 2))"
 begin
-  
-lemma B_eq_17_main: "2 \<le> i \<Longrightarrow> i \<le> k \<Longrightarrow> 
+
+lemma B_eq_17_main: "2 \<le> i \<Longrightarrow> i \<le> k \<Longrightarrow>
     h i = (-1) ^ (n 1 + n i + i + 1) / f i
-   * (\<Prod>l\<leftarrow>[3..< Suc (Suc i)]. (\<alpha> l / \<beta> l)) \<and> h i \<noteq> 0" 
+   * (\<Prod>l\<leftarrow>[3..< Suc (Suc i)]. (\<alpha> l / \<beta> l)) \<and> h i \<noteq> 0"
 proof (induct i rule: less_induct)
   case (less i)
-  from less(2-) have fi0: "f i \<noteq> 0" using f0[of i] by simp  
+  from less(2-) have fi0: "f i \<noteq> 0" using f0[of i] by simp
   have 1: "(- 1) \<noteq> (0 :: 'a fract)" by simp
   show ?case (is "h i = ?r i \<and> _")
   proof (cases "i = 2")
@@ -1776,45 +1782,45 @@ proof (induct i rule: less_induct)
     have f20: "f 2 \<noteq> 0" using f20 by auto
     have hi: "h i = f 2 ^ \<delta> 1" unfolding True h.simps[of 2] by simp
     have id: "int (\<delta> 1) = int (n 1) - int (n 2)" using n12 unfolding \<delta> numeral_2_eq_2 by simp
-    have "?r i = (- 1) ^ (1 + n 1 + n 2) 
+    have "?r i = (- 1) ^ (1 + n 1 + n 2)
       * ((f 2 ^ Suc (\<delta> 1)) / (\<beta> 3)) / pow_int (f 2) 1" unfolding True \<alpha>_def by simp
-    also have "\<beta> 3 = (- 1) ^ (\<delta> 1 + 1)" by (rule \<beta>3)    
+    also have "\<beta> 3 = (- 1) ^ (\<delta> 1 + 1)" by (rule \<beta>3)
     also have "f 2 ^ Suc (\<delta> 1) / \<dots> = \<dots> * f 2 ^ Suc (\<delta> 1)" by simp
-    finally have "?r i = ((- 1) ^ (1 + n 1 + n 2) * ((- 1) ^ (\<delta> 1 + 1))) * 
-        pow_int (f 2) (int (Suc (\<delta> 1)) + (-1))" (is "_ = ?a * _") 
+    finally have "?r i = ((- 1) ^ (1 + n 1 + n 2) * ((- 1) ^ (\<delta> 1 + 1))) *
+        pow_int (f 2) (int (Suc (\<delta> 1)) + (-1))" (is "_ = ?a * _")
       unfolding pow_int_divide exp_pow_int power_add pow_int_add[OF f20] by (simp add: ac_simps pow_int_add)
     also have "?a = (-1)^(1 + n 1 + n 2 + \<delta> 1 + 1)" unfolding power_add by simp
-    also have "\<dots> = (-1)^0" 
+    also have "\<dots> = (-1)^0"
       by (rule minus_1_even_eqI, insert n12, auto simp: \<delta> numeral_2_eq_2, presburger)
     finally have ri: "?r i = pow_int (f 2) (int (\<delta> 1))" by simp
     show ?thesis unfolding ri hi exp_pow_int[symmetric] using f20 by simp
   next
-    case False        
+    case False
     hence i: "i \<ge> 3" and ii: "i - 1 < i" "2 \<le> i - 1" "i - 1 \<le> k" using less(2-) by auto
     from i less(2-) have cc: "4 \<le> Suc i" "Suc i \<le> Suc k" by auto
-    define P where "P = (\<Prod>l\<leftarrow>[3..< Suc i]. \<alpha> l / \<beta> l)" 
-    define Q where "Q = P * pow_int (h (i - 1)) (- int (\<delta> (i - 1)))" 
-    define R where "R = f i ^ \<delta> (i - 1)" 
-    define S where "S = pow_int (f (i - 1)) (- 1)" 
+    define P where "P = (\<Prod>l\<leftarrow>[3..< Suc i]. \<alpha> l / \<beta> l)"
+    define Q where "Q = P * pow_int (h (i - 1)) (- int (\<delta> (i - 1)))"
+    define R where "R = f i ^ \<delta> (i - 1)"
+    define S where "S = pow_int (f (i - 1)) (- 1)"
     note IH = less(1)[OF ii]
     hence hi0: "h (i - 1) \<noteq> 0" by auto
-    have hii: "h i = f i ^ \<delta> (i - 1) / h (i - 1) ^ (\<delta> (i - 1) - 1)" 
+    have hii: "h i = f i ^ \<delta> (i - 1) / h (i - 1) ^ (\<delta> (i - 1) - 1)"
       unfolding h.simps[of i] using i by simp
-    also have "\<dots> = f i ^ \<delta> (i - 1) * pow_int (h (i - 1)) (- int (\<delta> (i - 1) - 1))" 
+    also have "\<dots> = f i ^ \<delta> (i - 1) * pow_int (h (i - 1)) (- int (\<delta> (i - 1) - 1))"
       unfolding exp_pow_int pow_int_divide by simp
-    also have "int (\<delta> (i - 1) - 1) = int (\<delta> (i - 1)) - 1" 
+    also have "int (\<delta> (i - 1) - 1) = int (\<delta> (i - 1)) - 1"
     proof -
       have "\<delta> (i - 1) > 0" unfolding \<delta>[of "i - 1"] using n_gt[OF ii(2)] less(2-) by auto
       thus ?thesis by simp
     qed
     also have "- (int (\<delta> (i - 1)) - 1) = 1 + (- int (\<delta> (i - 1)))" by simp
-    finally have hi: "h i = (- 1) ^ (n 1 + n (i - 1) + i) * (R * Q * S)" 
+    finally have hi: "h i = (- 1) ^ (n 1 + n (i - 1) + i) * (R * Q * S)"
       unfolding pow_int_add[OF hi0] P_def Q_def pow_int_divide[symmetric] R_def S_def using IH i by (simp add: ac_simps)
     from i have id: "[3..<Suc (Suc i)] = [3 ..< Suc i] @ [Suc i]" by simp
     have "?r i = (- 1) ^ (n 1 + n i + i + 1)
-      * pow_int (f i) (- 1) * P * \<alpha> (Suc i) / \<beta> (Suc i)" 
+      * pow_int (f i) (- 1) * P * \<alpha> (Suc i) / \<beta> (Suc i)"
       unfolding pow_int_divide[symmetric] P_def id Fract_conv_to_fract by simp
-    also have "\<beta> (Suc i) = (- 1) ^ (\<delta> (i - 1) + 1) * f (i - 1) * h (i - 1) ^ \<delta> (i - 1)" 
+    also have "\<beta> (Suc i) = (- 1) ^ (\<delta> (i - 1) + 1) * f (i - 1) * h (i - 1) ^ \<delta> (i - 1)"
       using \<beta>i[OF cc] by simp
     also have "\<alpha> (Suc i) = f i ^ Suc (\<delta> (i - 1))" unfolding \<alpha>_def by simp
     finally have "?r i = (- 1) ^ (n 1 + n i + i + 1) * pow_int (f i) (- 1) * P *  (f i ^ Suc (\<delta> (i - 1))) /
@@ -1822,13 +1828,13 @@ proof (induct i rule: less_induct)
       (is "_ = ?a1 * ?fi1 * P * ?fi2 / ?a2 * ?b / ?c")
       unfolding exp_pow_int pow_int_divide[symmetric] by simp
     also have "\<dots> = (?a1 / ?a2) * (?fi1 * ?fi2) * (P / ?c) * ?b" by (simp add: ac_simps)
-    also have "?a1 / ?a2 = (- 1) ^ (n 1 + n i + i + 1 + \<delta> (i - 1) + 1)" 
+    also have "?a1 / ?a2 = (- 1) ^ (n 1 + n i + i + 1 + \<delta> (i - 1) + 1)"
       by (simp add: power_add)
-    also have "\<dots> = (-1) ^ (n 1 + n i + i + \<delta> (i - 1))" 
+    also have "\<dots> = (-1) ^ (n 1 + n i + i + \<delta> (i - 1))"
       by (rule minus_1_even_eqI, auto)
-    also have "n 1 + n i + i + \<delta> (i - 1) = n 1 + n (i - 1) + i" 
+    also have "n 1 + n i + i + \<delta> (i - 1) = n 1 + n (i - 1) + i"
       unfolding \<delta> using i less(2-) n_ge[of "i - 1"] by simp
-    also have "?fi1 * ?fi2 = pow_int (f i) (-1 + int (Suc (\<delta> (i - 1))))" 
+    also have "?fi1 * ?fi2 = pow_int (f i) (-1 + int (Suc (\<delta> (i - 1))))"
       unfolding exp_pow_int pow_int_add[OF fi0] by simp
     also have "\<dots> = pow_int (f i) (int (\<delta> (i - 1)))" by simp
     also have "P / ?c = Q"  unfolding Q_def exp_pow_int pow_int_divide by simp
@@ -1836,50 +1842,50 @@ proof (induct i rule: less_induct)
     finally have ri: "?r i = (-1)^(n 1 + n (i - 1) + i)
       * (R * Q * S)" by (simp add: exp_pow_int R_def)
     have id: "h i = ?r i" unfolding hi ri ..
-    show ?thesis 
+    show ?thesis
       by (rule conjI[OF id], unfold hii, insert IH fi0, auto)
   qed
 qed
-  
-lemma B_eq_17: "2 \<le> i \<Longrightarrow> i \<le> k \<Longrightarrow> 
-    h i = (-1) ^ (n 1 + n i + i + 1) / f i * (\<Prod>l\<leftarrow>[3..< Suc (Suc i)]. (\<alpha> l / \<beta> l))" 
+
+lemma B_eq_17: "2 \<le> i \<Longrightarrow> i \<le> k \<Longrightarrow>
+    h i = (-1) ^ (n 1 + n i + i + 1) / f i * (\<Prod>l\<leftarrow>[3..< Suc (Suc i)]. (\<alpha> l / \<beta> l))"
   using B_eq_17_main by blast
-    
+
 lemma B_theorem_2: "3 \<le> i \<Longrightarrow> i \<le> Suc k \<Longrightarrow> \<gamma> i = 1"
 proof (induct i rule: less_induct)
   case (less i)
   show ?case
   proof (cases "i = 3")
     case True
-    show ?thesis unfolding True unfolding gamma_delta_beta_3 \<beta>3 by simp        
+    show ?thesis unfolding True unfolding gamma_delta_beta_3 \<beta>3 by simp
   next
     case False
     with less(2-)
-    have i: "i \<ge> 4" and ii: "i - 1 < i" "3 \<le> i - 1" "i - 1 \<le> Suc k" 
-      and iii: "4 \<le> i" "i \<le> Suc k" 
+    have i: "i \<ge> 4" and ii: "i - 1 < i" "3 \<le> i - 1" "i - 1 \<le> Suc k"
+      and iii: "4 \<le> i" "i \<le> Suc k"
       and iv: "2 \<le> i - 2" "i - 2 \<le> k" by auto
     from less(1)[OF ii] have IH: "\<gamma> (i - 1) = 1" .
-    define L where "L = [3..< i]" 
-    have id: "[3..<Suc (i - 1)] = L" "[3..<Suc i] = L @ [i]" "Suc (Suc (i - 2)) = i" 
+    define L where "L = [3..< i]"
+    have id: "[3..<Suc (i - 1)] = L" "[3..<Suc i] = L @ [i]" "Suc (Suc (i - 2)) = i"
       unfolding L_def using i by auto
-    define B where "B = (\<lambda> l. \<beta> l / \<alpha> l)" 
-    define A where "A = (\<lambda> l. \<alpha> l / \<beta> l)" 
-    define Q where "Q = (\<lambda> l. f (l - 1) ^ (\<delta> (l - 2) + \<delta> (l - 1)))" 
-    define R where "R = (\<lambda> i l. B l ^ (n (l - 1) - n (i - 1) + 1))" 
+    define B where "B = (\<lambda> l. \<beta> l / \<alpha> l)"
+    define A where "A = (\<lambda> l. \<alpha> l / \<beta> l)"
+    define Q where "Q = (\<lambda> l. f (l - 1) ^ (\<delta> (l - 2) + \<delta> (l - 1)))"
+    define R where "R = (\<lambda> i l. B l ^ (n (l - 1) - n (i - 1) + 1))"
     define P where "P = (\<lambda> i l. R i l * Q l)"
     have fi0: "f (i - 1) \<noteq> 0" using f0[of "i - 1"] less(2-) by auto
     have fi0': "f (i - 2) \<noteq> 0" using f0[of "i - 2"] less(2-) by auto
     {
       fix j
-      assume "j \<in> set L" 
+      assume "j \<in> set L"
       hence "j \<ge> 3" "j < i" unfolding L_def by auto
       with less(3) have j: "j - 1 \<noteq> 0" "j - 1 < k" by auto
       hence Q: "Q j \<noteq> 0" unfolding Q_def using f0[of "j - 1"] by auto
-      from j \<alpha>0 \<beta>0[of j] have 0: "\<alpha> j \<noteq> 0" "\<beta> j \<noteq> 0" by auto        
+      from j \<alpha>0 \<beta>0[of j] have 0: "\<alpha> j \<noteq> 0" "\<beta> j \<noteq> 0" by auto
       hence "B j \<noteq> 0" "A j \<noteq> 0" unfolding B_def A_def by auto
       note Q this
     } note L0 = this
-    let ?exp = "\<delta> (i - 2)" 
+    let ?exp = "\<delta> (i - 2)"
     have "\<gamma> i = \<gamma> i / \<gamma> (i - 1)" unfolding IH by simp
     also have "\<dots> = (- 1) ^ \<sigma> i * pow_int (f (i - 1)) (1 - int (\<delta> (i - 1))) *
       (\<Prod>l\<leftarrow>L. P i l) * P i i /
@@ -1888,24 +1894,24 @@ proof (induct i rule: less_induct)
       unfolding \<gamma>_def id P_def Q_def R_def B_def by (simp add: numeral_2_eq_2)
     also have "\<dots> = (?a1 * ?a2) * (?f1 * P i i) / ?f2 * (?L1 / ?L2)" unfolding divide_prod_assoc by simp
     also have "?a1 * ?a2 = (-1)^(\<sigma> i + \<sigma> (i - 1))" (is "_ = ?a") unfolding power_add by simp
-    also have "?L1 / ?L2 = (\<Prod>l\<leftarrow>L. R i l) / (\<Prod>l\<leftarrow>L. R (i - 1) l) * ((\<Prod>l\<leftarrow>L. Q l) / (\<Prod>l\<leftarrow>L. Q l))" 
+    also have "?L1 / ?L2 = (\<Prod>l\<leftarrow>L. R i l) / (\<Prod>l\<leftarrow>L. R (i - 1) l) * ((\<Prod>l\<leftarrow>L. Q l) / (\<Prod>l\<leftarrow>L. Q l))"
       unfolding P_def prod_list_multf divide_prod_assoc by simp
     also have "\<dots> = (\<Prod>l\<leftarrow>L. R i l) / (\<Prod>l\<leftarrow>L. R (i - 1) l)" (is "_ = ?L1 / ?L2")
     proof -
-      have "(\<Prod>l\<leftarrow>L. Q l) \<noteq> 0" unfolding prod_list_zero_iff using L0 by auto 
+      have "(\<Prod>l\<leftarrow>L. Q l) \<noteq> 0" unfolding prod_list_zero_iff using L0 by auto
       thus ?thesis by simp
     qed
     also have "?f1 * P i i = (?f1 * pow_int (f (i - 1)) (int ?exp + int (\<delta> (i - 1)))) * R i i" unfolding P_def Q_def
       exp_pow_int by simp
-    also have "?f1 * pow_int (f (i - 1)) (int ?exp + \<delta> (i - 1)) = pow_int (f (i - 1)) 
-      (1 + int ?exp)" (is "_ = ?f1") 
+    also have "?f1 * pow_int (f (i - 1)) (int ?exp + \<delta> (i - 1)) = pow_int (f (i - 1))
+      (1 + int ?exp)" (is "_ = ?f1")
       unfolding pow_int_add[OF fi0, symmetric] by simp
     also have "R i i = \<beta> i / \<alpha> i" unfolding B_def R_def Fract_conv_to_fract by simp
     also have "\<alpha> i = f (i - 1) ^ Suc ?exp" unfolding \<alpha>_def by simp
-    also have "\<beta> i / \<dots> = \<beta> i * pow_int (f (i - 1)) (- 1 - ?exp)" 
+    also have "\<beta> i / \<dots> = \<beta> i * pow_int (f (i - 1)) (- 1 - ?exp)"
       (is "_ = ?\<beta> * ?f12")
       unfolding exp_pow_int pow_int_divide by simp
-    finally have "\<gamma> i = (?a * (?f1 * ?f12)) *  ?\<beta> / ?f2 * (?L1 / ?L2)" 
+    finally have "\<gamma> i = (?a * (?f1 * ?f12)) *  ?\<beta> / ?f2 * (?L1 / ?L2)"
       by simp
     also have "?a * (?f1 * ?f12) = ?a" unfolding pow_int_add[OF fi0, symmetric] by simp
     also have "?L1 / ?L2 = pow_int (\<Prod>l\<leftarrow>L. A l) (- ?exp)"
@@ -1917,26 +1923,26 @@ proof (induct i rule: less_induct)
         case (Cons l L)
         from Cons(2) have l: "3 \<le> l" "l \<le> k" "l < i" and L: "set L \<subseteq> {l. 3 \<le> l \<and> l \<le> k \<and> l < i}" by auto
         note IH = Cons(1)[OF L]
-        from l \<alpha>0 \<beta>0[of l] have 0: "\<alpha> l \<noteq> 0" "\<beta> l \<noteq> 0" by auto        
+        from l \<alpha>0 \<beta>0[of l] have 0: "\<alpha> l \<noteq> 0" "\<beta> l \<noteq> 0" by auto
         hence B0: "B l \<noteq> 0" unfolding B_def by auto
         have "(\<Prod>l\<leftarrow>l # L. B l ^ (n (l - 1) - n (i - 1) + 1)) / (\<Prod>l\<leftarrow>l # L. B l ^ (n (l - 1) - n (i - 2) + 1))
-          = (B l ^ (n (l - 1) - n (i - 1) + 1) * (\<Prod>l\<leftarrow>L. B l ^ (n (l - 1) - n (i - 1) + 1))) / 
-            (B l ^ (n (l - 1) - n (i - 2) + 1) * (\<Prod>l\<leftarrow>L. B l ^ (n (l - 1) - n (i - 2) + 1)))" 
+          = (B l ^ (n (l - 1) - n (i - 1) + 1) * (\<Prod>l\<leftarrow>L. B l ^ (n (l - 1) - n (i - 1) + 1))) /
+            (B l ^ (n (l - 1) - n (i - 2) + 1) * (\<Prod>l\<leftarrow>L. B l ^ (n (l - 1) - n (i - 2) + 1)))"
           (is "_ = (?l1 * ?L1) / (?l2 * ?L2)") by simp
         also have "\<dots> = (?l1 / ?l2) * (?L1 / ?L2)" by simp
         also have "?L1 / ?L2 = pow_int (prod_list (map A L)) (- int (\<delta> (i - 2)))" by (rule IH)
         also have "?l1 / ?l2 = pow_int (B l) (int (n (l - 1) - n (i - 1)) - int (n (l - 1) - n (i - 2)))" unfolding exp_pow_int pow_int_divide pow_int_add[OF B0, symmetric]
           by simp
-        also have "int (n (l - 1) - n (i - 1)) - int (n (l - 1) - n (i - 2)) = int ?exp" 
+        also have "int (n (l - 1) - n (i - 1)) - int (n (l - 1) - n (i - 2)) = int ?exp"
         proof -
           have "n (l - 1) \<ge> n (i - 2)" "n (l - 1) \<ge> n (i - 1)" "n (i - 2) \<ge> n (i - 1)"
             using i l less(3)
             by (intro n_ge_trans, auto)+
           hence id: "int (n (l - 1) - n (i - 1)) = int (n (l - 1)) - int (n (i - 1))"
                 "int (n (l - 1) - n (i - 2)) = int (n (l - 1)) - int (n (i - 2))"
-                "int (n (i - 2) - n (i - 1)) = int (n (i - 2)) - int (n (i - 1))" 
+                "int (n (i - 2) - n (i - 1)) = int (n (i - 2)) - int (n (i - 1))"
             by simp_all
-          have id2: "int ?exp = int (n (i - 2) - n (i - 1))" 
+          have id2: "int ?exp = int (n (i - 2) - n (i - 1))"
             unfolding \<delta> using i by (cases i; cases "i - 1", auto)
           show ?thesis unfolding id2 unfolding id by simp
         qed
@@ -1945,14 +1951,14 @@ proof (induct i rule: less_induct)
         also have "inverse (B l) = A l" unfolding B_def A_def by simp
         also have "pow_int (A l) (- int ?exp) * pow_int (prod_list (map A L)) (- int ?exp)
           = pow_int (prod_list (map A (l # L))) (- int ?exp)"
-          by (simp add: pow_int_mult)  
+          by (simp add: pow_int_mult)
         finally show ?case .
       qed simp
     qed
-    also have "\<beta> i = (- 1) ^ (?exp + 1) * f (i - 2) * h (i - 2) ^ ?exp" 
+    also have "\<beta> i = (- 1) ^ (?exp + 1) * f (i - 2) * h (i - 2) ^ ?exp"
       unfolding \<beta>i[OF iii] ..
-    finally have "\<gamma> i =  (((- 1) ^ (\<sigma> i + \<sigma> (i - 1)) * (- 1) ^ (?exp + 1))) * 
-      (pow_int (f (i - 2)) 1 * 
+    finally have "\<gamma> i =  (((- 1) ^ (\<sigma> i + \<sigma> (i - 1)) * (- 1) ^ (?exp + 1))) *
+      (pow_int (f (i - 2)) 1 *
       pow_int (f (i - 2)) (int ?exp - 1)) *
       h (i - 2) ^ ?exp /
       (\<Prod>l\<leftarrow>L. A l) ^ ?exp" (is "_ = ?a * ?f1 * ?H / ?L") unfolding pow_int_divide exp_pow_int by simp
@@ -1963,9 +1969,9 @@ proof (induct i rule: less_induct)
     also have "((- (1 :: 'a fract)) ^ (\<sigma> i + \<sigma> (i - 1)) * (- 1) ^ (?exp + 1)) =
       ((- 1) ^ (\<sigma> i + \<sigma> (i - 1) + ?exp + 1))" (is "_ = ?a1") by (simp add: power_add)
     finally have "\<gamma> i = ?a1 * ?f1 * (?a2 / ?f2 * ?L) ^ ?exp / ?L ^ ?exp" by simp
-    also have "\<dots> = (?a1 * ?a2^?exp) * (?f1 / ?f2 ^ ?exp) * (?L^?exp / ?L ^ ?exp)" 
+    also have "\<dots> = (?a1 * ?a2^?exp) * (?f1 / ?f2 ^ ?exp) * (?L^?exp / ?L ^ ?exp)"
       unfolding power_mult_distrib power_divide by auto
-    also have " ?L ^ ?exp / ?L ^ ?exp = 1" 
+    also have " ?L ^ ?exp / ?L ^ ?exp = 1"
     proof -
       have "?L \<noteq> 0" unfolding prod_list_zero_iff using L0 by auto
       thus ?thesis by simp
@@ -1974,22 +1980,22 @@ proof (induct i rule: less_induct)
       pow_int_add[OF fi0', symmetric] by simp
     also have "?a2^?exp = (- 1) ^ ((n 1 + n (i - 2) + (i - 2) + 1) * ?exp)"
       by (rule semiring_normalization_rules)
-    also have "?a1 * \<dots> = (- 1) ^ (\<sigma> i + \<sigma> (i - 1) + ?exp + 1 + (n 1 + n (i - 2) + (i - 2) + 1) * ?exp)" 
+    also have "?a1 * \<dots> = (- 1) ^ (\<sigma> i + \<sigma> (i - 1) + ?exp + 1 + (n 1 + n (i - 2) + (i - 2) + 1) * ?exp)"
       (is "_ = _ ^ ?e")
       by (simp add: power_add)
-    also have "\<dots> = (-1)^0" 
+    also have "\<dots> = (-1)^0"
     proof -
-      define e where "e = ?e" 
+      define e where "e = ?e"
       have *: "?e = (2 * ?exp + \<sigma> i + \<sigma> (i - 1) + 1 + (n 1 + n (i - 2) + (i - 2)) * ?exp)" by simp
-      define A where "A = (\<lambda> i l. (n (l - 2) + n (i - 1) + 1) * (n (l - 1) + n (i - 1) + 1))" 
-      define B where "B = (\<lambda> i. (n (i - 1) + 1) * (n (i - 1) + 1))" 
-      define C where "C = (\<lambda> l. (n (l - 1) + n (l - 2) + n (l - 1) * n (l - 2)))" 
-      define D where "D = (\<lambda> l. n (l - 1) + n (l - 2))" 
-      define m2 where "m2 = n (i - 2)" 
-      define m1 where "m1 = n (i - 1)" 
-      define m0 where "m0 = n 1" 
-      define i3 where "i3 = i - 3" 
-      have m12: "m2 \<ge> m1" unfolding m2_def m1_def using n_ge[of "i - 2"] i less(3) 
+      define A where "A = (\<lambda> i l. (n (l - 2) + n (i - 1) + 1) * (n (l - 1) + n (i - 1) + 1))"
+      define B where "B = (\<lambda> i. (n (i - 1) + 1) * (n (i - 1) + 1))"
+      define C where "C = (\<lambda> l. (n (l - 1) + n (l - 2) + n (l - 1) * n (l - 2)))"
+      define D where "D = (\<lambda> l. n (l - 1) + n (l - 2))"
+      define m2 where "m2 = n (i - 2)"
+      define m1 where "m1 = n (i - 1)"
+      define m0 where "m0 = n 1"
+      define i3 where "i3 = i - 3"
+      have m12: "m2 \<ge> m1" unfolding m2_def m1_def using n_ge[of "i - 2"] i less(3)
         by (cases i, auto)
       have idd: "Suc (i - 2) = i - 1" "i - 1 - 1 = i - 2" using i by auto
       have id4: "i - 2 = Suc i3" unfolding i3_def using i by auto
@@ -2011,49 +2017,49 @@ proof (induct i rule: less_induct)
           also have "n (ii - 1) = n (i - 2)" unfolding i by simp
           finally show ?thesis by blast
         qed
-      qed   
+      qed
       then obtain kk where DL: "sum_list (map D L) = n 1 + n (i - 2) + 2 * kk" ..
-      let ?l = "i - 3" 
+      let ?l = "i - 3"
       have len: "length L = i - 3" unfolding L_def using i by auto
       have A: "A i l = B i + D l * n (i - 1) + C l" for i l
-        unfolding A_def B_def C_def D_def ring_distribs by simp 
-      have id2: "[3..<Suc i] = 3 # [Suc 3 ..< Suc i]"  
+        unfolding A_def B_def C_def D_def ring_distribs by simp
+      have id2: "[3..<Suc i] = 3 # [Suc 3 ..< Suc i]"
         unfolding L_def using i by (auto simp: upt_rec[of 3])
       have "even e = even ?e" unfolding e_def by simp
       also have "\<dots> = even ((1 + (n 1 + n (i - 2) + (i - 2)) * ?exp) + (\<sigma> i + \<sigma> (i - 1)))"
         (is "_ = even (?g + ?j)")
         unfolding * by (simp add: ac_simps)
-      also have "?j = (\<Sum>l\<leftarrow>L @ [i]. A i l) + (\<Sum>l\<leftarrow>L. A (i - 1) l)" 
+      also have "?j = (\<Sum>l\<leftarrow>L @ [i]. A i l) + (\<Sum>l\<leftarrow>L. A (i - 1) l)"
         unfolding \<sigma>_def id A_def by simp
-      also have "\<dots> = 2 * (\<Sum>l\<leftarrow>L. C l) + (Suc ?l) * B i + (\<Sum>l\<leftarrow>L @ [i]. D l * n (i - 1)) + C i + 
-          ?l * B (i - 1) + (\<Sum>l\<leftarrow>L. D l * n (i - 1 - 1))" 
-        unfolding A sum_list_addf by (simp add: sum_list_triv len) 
-      also have "\<dots> = ((Suc ?l * B i + C i + 
-          ?l * B (i - 1) + D i * n (i - 1)) + ((\<Sum>l\<leftarrow>L. D l) * (n (i - 1) + n (i - 2)) + 2 * (\<Sum>l\<leftarrow>L. C l)))" 
+      also have "\<dots> = 2 * (\<Sum>l\<leftarrow>L. C l) + (Suc ?l) * B i + (\<Sum>l\<leftarrow>L @ [i]. D l * n (i - 1)) + C i +
+          ?l * B (i - 1) + (\<Sum>l\<leftarrow>L. D l * n (i - 1 - 1))"
+        unfolding A sum_list_addf by (simp add: sum_list_triv len)
+      also have "\<dots> = ((Suc ?l * B i + C i +
+          ?l * B (i - 1) + D i * n (i - 1)) + ((\<Sum>l\<leftarrow>L. D l) * (n (i - 1) + n (i - 2)) + 2 * (\<Sum>l\<leftarrow>L. C l)))"
         (is "_ = ?i + ?j")
         unfolding sum_list_mult_const by (simp add: ring_distribs numeral_2_eq_2)
-      also have "?j = 
-          (n 1 + n (i - 2)) * (n (i - 1) + n (i - 2)) + 2 * (kk * (n (i - 1) + n (i - 2)) + (\<Sum>l\<leftarrow>L. C l))" 
+      also have "?j =
+          (n 1 + n (i - 2)) * (n (i - 1) + n (i - 2)) + 2 * (kk * (n (i - 1) + n (i - 2)) + (\<Sum>l\<leftarrow>L. C l))"
         (is "_ = ?h + 2 * ?f")
-        unfolding DL by (simp add: ring_distribs)      
-      finally have "even e = even (?g + ?i + ?h + 2 * ?f)" by presburger      
+        unfolding DL by (simp add: ring_distribs)
+      finally have "even e = even (?g + ?i + ?h + 2 * ?f)" by presburger
       also have "\<dots> = even (?g + ?i + ?h)" by simp
-      also have "?g + ?i + ?h =  
-         i3 * (m2 - m1 + m1 * m1 + m2 * m2) 
-         + (m2 - m1 + m1 + m2) * (m0 + m2) 
-         + (m1 + m2 + (m2 - m1)) 
-         + 2 * (m1 * m2 + m1 * m1 + 1 + i3 + m1 * Suc i3 + m2 * i3)" unfolding idd B_def D_def C_def \<delta> 
+      also have "?g + ?i + ?h =
+         i3 * (m2 - m1 + m1 * m1 + m2 * m2)
+         + (m2 - m1 + m1 + m2) * (m0 + m2)
+         + (m1 + m2 + (m2 - m1))
+         + 2 * (m1 * m2 + m1 * m1 + 1 + i3 + m1 * Suc i3 + m2 * i3)" unfolding idd B_def D_def C_def \<delta>
         m1_def[symmetric] m2_def[symmetric] m0_def[symmetric]
         unfolding i3_def[symmetric] id4
         by (simp add: ring_distribs)
       also have "(m1 + m2 + (m2 - m1)) = 2 * m2" using m12 by simp
       also have "(m2 - m1 + m1 + m2) * (m0 + m2) = 2 * (m2 * (m0 + m2))" using m12 by simp
-      finally obtain l1 l2 l3 where 
-        "even e = even (i3 * (m2 - m1 + m1 * m1 + m2 * m2)  + 2 * l1 + 2 * l2 + 2 * l3)" 
+      finally obtain l1 l2 l3 where
+        "even e = even (i3 * (m2 - m1 + m1 * m1 + m2 * m2)  + 2 * l1 + 2 * l2 + 2 * l3)"
         by blast
       also have "\<dots> = even (i3 * (m2 - m1 + m1 * m1 + m2 * m2))" by simp
       also have "\<dots> = even (i3 * (2 * m1 + (m2 - m1 + m1 * m1 + m2 * m2)))" by simp
-      also have "2 * m1 + (m2 - m1 + m1 * m1 + m2 * m2) = m1 + m2 + m1 * m1 + m2 * m2" 
+      also have "2 * m1 + (m2 - m1 + m1 * m1 + m2 * m2) = m1 + m2 + m1 * m1 + m2 * m2"
         using m12 by simp
       also have "even (i3 * \<dots>)" by auto
       finally have "even e" .
@@ -2063,16 +2069,16 @@ proof (induct i rule: less_induct)
     finally show "\<gamma> i = 1" by simp
   qed
 qed
-        
+
 context
   fixes i :: nat
-  assumes i: "3 \<le> i" "i \<le> k" 
+  assumes i: "3 \<le> i" "i \<le> k"
 begin
-lemma B_theorem_3_b: "\<Theta> i * f i = ff (lead_coeff (H i))" 
+lemma B_theorem_3_b: "\<Theta> i * f i = ff (lead_coeff (H i))"
   using arg_cong[OF fundamental_theorem_eq_6[folded H_def, OF i], of lead_coeff] unfolding f[of i]
   lead_coeff_smult map_poly_preservers by simp
 
-lemma B_theorem_3_main: "\<Theta> i * f i / \<gamma> (i + 1) = (-1)^(n 1 + n i + i + 1) / f i * (\<Prod>l\<leftarrow>[3..< Suc (Suc i)]. (\<alpha> l / \<beta> l))" 
+lemma B_theorem_3_main: "\<Theta> i * f i / \<gamma> (i + 1) = (-1)^(n 1 + n i + i + 1) / f i * (\<Prod>l\<leftarrow>[3..< Suc (Suc i)]. (\<alpha> l / \<beta> l))"
 proof (cases "f i = 0")
   case True
   thus ?thesis by simp
@@ -2081,21 +2087,21 @@ next
   from i(1) have "Suc (Suc i) > 3" by auto
   hence id: "[3 ..< Suc (i + 1)] = [3 ..< Suc i] @ [Suc i]" "[3 ..< Suc (Suc i)] = [3 ..< Suc i] @ [Suc i]" by auto
   have cong: "\<And> a b c d. a = c \<Longrightarrow> b = d \<Longrightarrow> a * b = c * (d :: 'a fract)" by auto
-  define AB where "AB = (\<lambda> l. \<beta> l / \<alpha> l)"  
-  define ABP where "ABP = (\<lambda> l. AB l ^ (n (l - 1) - n i) * f (l - 1) ^ (\<delta> (l - 2) + \<delta> (l - 1)))" 
-  define PR where "PR = (\<Prod>l\<leftarrow>[3..<Suc i]. ABP l)" 
-  define PR2 where "PR2 = (\<Prod>l\<leftarrow>[3..<Suc i]. AB l)" 
-  from F0[of i] 
+  define AB where "AB = (\<lambda> l. \<beta> l / \<alpha> l)"
+  define ABP where "ABP = (\<lambda> l. AB l ^ (n (l - 1) - n i) * f (l - 1) ^ (\<delta> (l - 2) + \<delta> (l - 1)))"
+  define PR where "PR = (\<Prod>l\<leftarrow>[3..<Suc i]. ABP l)"
+  define PR2 where "PR2 = (\<Prod>l\<leftarrow>[3..<Suc i]. AB l)"
+  from F0[of i]
   have "\<Theta> i * f i / \<gamma> (i + 1) = (
   ((- 1) ^ \<tau> i * (- 1) ^ \<sigma> (i + 1)) * (pow_int (f i) (int (\<delta> (i - 1)) - 1) *
     PR * f i /
     pow_int (f i) (1 - int (\<delta> i)) / ((\<Prod>l\<leftarrow>[3..<Suc i]. ABP l * AB l) *
-        AB (Suc i) * f i ^ (\<delta> (i - 1) + \<delta> i))))"  
+        AB (Suc i) * f i ^ (\<delta> (i - 1) + \<delta> i))))"
     unfolding id prod_list.append map_append \<Theta>_def \<gamma>_def divide_prod_assoc
     by (simp add: field_simps power_add AB_def ABP_def PR_def)
-  also have "(- 1 :: 'a fract) ^ \<tau> i * (- 1) ^ \<sigma> (i + 1) = (- 1) ^ (\<tau> i + \<sigma> (i + 1))" 
+  also have "(- 1 :: 'a fract) ^ \<tau> i * (- 1) ^ \<sigma> (i + 1) = (- 1) ^ (\<tau> i + \<sigma> (i + 1))"
     unfolding power_add by (auto simp: field_simps)
-  also have "\<dots> = (- 1) ^ (n 1 + n i + i + 1)" 
+  also have "\<dots> = (- 1) ^ (n 1 + n i + i + 1)"
   proof (cases "i = 2")
     case True
     show ?thesis unfolding \<tau>_def \<sigma>_def True by (auto, rule minus_1_even_eqI, auto)
@@ -2103,61 +2109,61 @@ next
     case False
     define a where "a = (\<lambda> l. n (l - 2) + n i)"
     define b where "b = (\<lambda> l. n (l - 1) + n i)"
-    define c where "c = (\<Sum>l\<leftarrow>[3..<Suc i]. (a l * b l + n i))" 
-    define d where "d = c + (\<Sum>l\<leftarrow>[3..<i]. n (l - 1))" 
-    define e where "e = (n (i - 1) + n i + 1) * n i" 
-    have "(\<tau> i + \<sigma> (i + 1)) = 
-      ((\<Sum>l\<leftarrow>[3..<Suc i]. (a l * b l) + (a l + 1) * (b l + 1))) + (a (Suc i) + 1) * (b (Suc i) + 1)" 
-      unfolding \<sigma>_def \<tau>_def id a_def b_def sum_list_addf by simp 
-    also have "(\<Sum>l\<leftarrow>[3..<Suc i]. (a l * b l) + (a l + 1) * (b l + 1)) = 
-       (\<Sum>l\<leftarrow>[3..<Suc i]. 2 * a l * b l + (a l + b l) + 1)" 
+    define c where "c = (\<Sum>l\<leftarrow>[3..<Suc i]. (a l * b l + n i))"
+    define d where "d = c + (\<Sum>l\<leftarrow>[3..<i]. n (l - 1))"
+    define e where "e = (n (i - 1) + n i + 1) * n i"
+    have "(\<tau> i + \<sigma> (i + 1)) =
+      ((\<Sum>l\<leftarrow>[3..<Suc i]. (a l * b l) + (a l + 1) * (b l + 1))) + (a (Suc i) + 1) * (b (Suc i) + 1)"
+      unfolding \<sigma>_def \<tau>_def id a_def b_def sum_list_addf by simp
+    also have "(\<Sum>l\<leftarrow>[3..<Suc i]. (a l * b l) + (a l + 1) * (b l + 1)) =
+       (\<Sum>l\<leftarrow>[3..<Suc i]. 2 * a l * b l + (a l + b l) + 1)"
       by (rule sum_list_cong, auto)
-    also have "\<dots> = (\<Sum>l\<leftarrow>[3..<Suc i]. 2 * (a l * b l + n i) + (n (l - 1) + n (l - 2)) + 1)" 
+    also have "\<dots> = (\<Sum>l\<leftarrow>[3..<Suc i]. 2 * (a l * b l + n i) + (n (l - 1) + n (l - 2)) + 1)"
       by (simp add: field_simps a_def b_def)
     also have "\<dots> = 2 * c + (\<Sum>l\<leftarrow>[3..<Suc i]. (n (l - 1) + n (l - 2))) + length [3 ..< Suc i]"
       unfolding sum_list_addf c_def sum_list_const_mult sum_list_triv by simp
     also have "(\<Sum>l\<leftarrow>[3..<Suc i]. (n (l - 1) + n (l - 2)))
-      = (\<Sum>l\<leftarrow>[3..<Suc i]. n (l - 1)) + (\<Sum>l\<leftarrow>[3..<Suc i]. n (l - 2))" 
-      by (simp add: sum_list_addf) 
-    also have "(\<Sum>l\<leftarrow>[3..<Suc i]. n (l - 2)) = (\<Sum>l\<leftarrow>3 # [4..<Suc i]. n (l - 2))" 
-      by (rule sum_list_cong, insert i False, auto simp: upt_rec[of 3]) 
+      = (\<Sum>l\<leftarrow>[3..<Suc i]. n (l - 1)) + (\<Sum>l\<leftarrow>[3..<Suc i]. n (l - 2))"
+      by (simp add: sum_list_addf)
+    also have "(\<Sum>l\<leftarrow>[3..<Suc i]. n (l - 2)) = (\<Sum>l\<leftarrow>3 # [4..<Suc i]. n (l - 2))"
+      by (rule sum_list_cong, insert i False, auto simp: upt_rec[of 3])
     also have "\<dots> = n 1 + (\<Sum>l\<leftarrow>[(Suc 3)..<Suc i]. n (l - 2))" by auto
-    also have "(\<Sum>l\<leftarrow>[(Suc 3)..<Suc i]. n (l - 2)) = (\<Sum>l\<leftarrow>[3..<i]. n (l - 1))" 
+    also have "(\<Sum>l\<leftarrow>[(Suc 3)..<Suc i]. n (l - 2)) = (\<Sum>l\<leftarrow>[3..<i]. n (l - 1))"
     proof (rule arg_cong[of _ _ sum_list], rule nth_equalityI, force, auto simp: nth_append, goal_cases)
       case (1 j)
       hence "i - 2 = Suc (Suc j)" by simp
       thus ?case by simp
     qed
-    also have "(\<Sum>l\<leftarrow>[3..<Suc i]. n (l - 1)) = (\<Sum>l\<leftarrow>[3..<i] @ [i]. n (l - 1))" 
-      by (rule sum_list_cong, insert i False, auto) 
+    also have "(\<Sum>l\<leftarrow>[3..<Suc i]. n (l - 1)) = (\<Sum>l\<leftarrow>[3..<i] @ [i]. n (l - 1))"
+      by (rule sum_list_cong, insert i False, auto)
     finally have "\<tau> i + \<sigma> (i + 1) =
-      2 * d + n (i - 1) + n 1 +  length [3..<Suc i] + (a (Suc i) + 1) * (b (Suc i) + 1)" 
+      2 * d + n (i - 1) + n 1 +  length [3..<Suc i] + (a (Suc i) + 1) * (b (Suc i) + 1)"
       by (simp add: d_def)
     also have "length [3 ..< Suc i] = i - 2" using i by auto
     also have "(a (Suc i) + 1) * (b (Suc i) + 1) = 2 * e + n (i - 1) + n i + 1" unfolding a_def b_def e_def
       by simp
-    finally have id: "\<tau> i + \<sigma> (i + 1) = 2 * (d + n (i - 1) + e) + n 1 + (i - 2) + n i + 1" 
+    finally have id: "\<tau> i + \<sigma> (i + 1) = 2 * (d + n (i - 1) + e) + n 1 + (i - 2) + n i + 1"
       by simp
     show ?thesis
       by (rule minus_1_even_eqI, unfold id, insert i, auto)
   qed
-  also have "(\<Prod>l\<leftarrow>[3..<Suc i]. ABP l * AB l) = PR * PR2" 
-    unfolding PR_def prod_list_multf PR2_def by simp 
-  also have "(pow_int (f i) (int (\<delta> (i - 1)) - 1) * PR * f i / pow_int (f i) (1 - int (\<delta> i)) 
-    / (PR * PR2 * AB (Suc i) * f i ^ (\<delta> (i - 1) + \<delta> i))) = 
-    ((pow_int (f i) (int (\<delta> (i - 1)) - 1) * pow_int (f i) 1 * pow_int (f i) (int (\<delta> i) - 1) 
+  also have "(\<Prod>l\<leftarrow>[3..<Suc i]. ABP l * AB l) = PR * PR2"
+    unfolding PR_def prod_list_multf PR2_def by simp
+  also have "(pow_int (f i) (int (\<delta> (i - 1)) - 1) * PR * f i / pow_int (f i) (1 - int (\<delta> i))
+    / (PR * PR2 * AB (Suc i) * f i ^ (\<delta> (i - 1) + \<delta> i))) =
+    ((pow_int (f i) (int (\<delta> (i - 1)) - 1) * pow_int (f i) 1 * pow_int (f i) (int (\<delta> i) - 1)
     / pow_int (f i) (int (\<delta> (i - 1) + \<delta> i)))) * (PR / PR / (PR2 * AB (Suc i)))"
     (is "\<dots> = ?x * ?y")
     unfolding exp_pow_int[symmetric] by (simp add: pow_int_divide ac_simps)
-  also have "?x = pow_int (f i) (-1)" 
+  also have "?x = pow_int (f i) (-1)"
     unfolding pow_int_divide pow_int_add[OF ff0, symmetric] by simp
-  also have "\<dots> = 1 / (f i)" 
-    unfolding pow_int_def by simp  
+  also have "\<dots> = 1 / (f i)"
+    unfolding pow_int_def by simp
   also have "PR / PR = 1"
   proof -
     have "PR \<noteq> 0" unfolding PR_def prod_list_zero_iff set_map
-    proof 
-      assume "0 \<in> ABP ` set [3 ..< Suc i]" 
+    proof
+      assume "0 \<in> ABP ` set [3 ..< Suc i]"
       then obtain j where j: "3 \<le> j" "j < Suc i" and 0: "ABP j = 0" by auto
       with i have jk: "j \<le> k" and j1: "j - 1 \<noteq> 0" "j - 1 < k" by auto
       hence 1: "\<alpha> j \<noteq> 0" "f (j - 1) \<noteq> 0" using \<alpha>0 f0 by auto
@@ -2174,33 +2180,33 @@ next
   finally show ?thesis by simp
 qed
 
-lemma B_theorem_3: "h i = \<Theta> i * f i" "h i = ff (lead_coeff (H i))" 
+lemma B_theorem_3: "h i = \<Theta> i * f i" "h i = ff (lead_coeff (H i))"
 proof -
-  have "\<Theta> i * f i = \<Theta> i * f i / \<gamma> (i + 1)" 
+  have "\<Theta> i * f i = \<Theta> i * f i / \<gamma> (i + 1)"
     using B_theorem_2[of "i + 1"] i by auto
-  also have "\<dots> = (- 1) ^ (n 1 + n i + i + 1) / f i * 
+  also have "\<dots> = (- 1) ^ (n 1 + n i + i + 1) / f i *
     (\<Prod>l\<leftarrow>[3..<Suc (Suc i)]. \<alpha> l / \<beta> l)" by (rule B_theorem_3_main)
   also have "\<dots> = h i" using B_eq_17[of i] i by simp
   finally show "h i = \<Theta> i * f i" ..
   thus "h i = ff (lead_coeff (H i))" using B_theorem_3_b by auto
 qed
 end
-  
-lemma h0: "i \<le> k \<Longrightarrow> h i \<noteq> 0" 
+
+lemma h0: "i \<le> k \<Longrightarrow> h i \<noteq> 0"
 proof (induct i)
   case (Suc i)
   thus ?case unfolding h.simps[of "Suc i"] using f0 by (auto simp del: h.simps)
 qed auto
-    
+
 lemma subresultant_prs_main: assumes "subresultant_prs_main Gi_1 Gi hi_1 = (Gk, hk)"
   and "F i = ffp Gi"
-  and "F (i - 1) = ffp Gi_1" 
-  and "h (i - 1) = ff hi_1" 
-  and "i \<ge> 3" "i \<le> k" 
+  and "F (i - 1) = ffp Gi_1"
+  and "h (i - 1) = ff hi_1"
+  and "i \<ge> 3" "i \<le> k"
 shows "F k = ffp Gk \<and> h k = ff hk \<and> (\<forall> j. i \<le> j \<longrightarrow> j \<le> k \<longrightarrow> F j \<in> range ffp \<and> \<beta> (Suc j) \<in> range ff)"
 proof -
   obtain m where m: "m = k - i" by auto
-  show ?thesis using m assms 
+  show ?thesis using m assms
   proof (induct m arbitrary: Gi_1 Gi hi_1 i rule: less_induct)
     case (less m Gi_1 Gi hi_1 i)
     note IH = less(1)
@@ -2208,33 +2214,33 @@ proof -
     note res = less(3)
     note id = less(4-6)
     note i = less(7-8)
-    let ?pmod = "pseudo_mod Gi_1 Gi" 
-    let ?ni = "degree Gi" 
-    let ?ni_1 = "degree Gi_1" 
-    let ?gi = "lead_coeff Gi" 
-    let ?gi_1 = "lead_coeff Gi_1" 
-    let ?d1 = "?ni_1 - ?ni" 
+    let ?pmod = "pseudo_mod Gi_1 Gi"
+    let ?ni = "degree Gi"
+    let ?ni_1 = "degree Gi_1"
+    let ?gi = "lead_coeff Gi"
+    let ?gi_1 = "lead_coeff Gi_1"
+    let ?d1 = "?ni_1 - ?ni"
     obtain hi where hi: "hi = ?gi ^ ?d1 div (hi_1 ^ (?d1 - 1))" by auto
     obtain divisor where div: "divisor = (-1) ^ (?d1 + 1) * ?gi_1 * (hi_1 ^ ?d1)" by auto
     obtain G1_p1 where G1_p1: "G1_p1 = divide_poly ?pmod divisor" by auto
-    note res = res[unfolded subresultant_prs_main.simps[of Gi_1] Let_def, 
+    note res = res[unfolded subresultant_prs_main.simps[of Gi_1] Let_def,
       folded hi, folded div, folded G1_p1]
     have h_i: "h i = f i ^ \<delta> (i - 1) / h (i - 1) ^ (\<delta> (i - 1) - 1)" unfolding h.simps[of i] using i by simp
     have hi_ff: "h i \<in> range ff" using B_theorem_3[OF _ i(2)] i by auto
     have d1: "\<delta> (i - 1) = ?d1" unfolding \<delta> n using id(1,2) using i by simp
     have fi: "f i = ff ?gi" unfolding f id map_poly_preservers by simp
     have fi1: "f (i - 1) = ff ?gi_1" unfolding f id map_poly_preservers by simp
-    have idh: "h i = ff hi" 
+    have idh: "h i = ff hi"
       by (rule div_divide_ff[OF hi_ff h_i hi], unfold d1 fi id, auto)
     have "\<beta> (Suc i) = (- 1) ^ (\<delta> (i - 1) + 1) * f (i - 1) * h (i - 1) ^ \<delta> (i - 1)"
       using \<beta>i[of "Suc i"] i by auto
-    also have "\<dots> = ff ((- 1) ^ (\<delta> (i - 1) + 1) * lead_coeff Gi_1 * hi_1 ^ \<delta> (i - 1))" 
+    also have "\<dots> = ff ((- 1) ^ (\<delta> (i - 1) + 1) * lead_coeff Gi_1 * hi_1 ^ \<delta> (i - 1))"
       unfolding id f map_poly_preservers[symmetric]  by simp
     also have "\<dots> \<in> range ff" by blast
     finally have beta: "\<beta> (Suc i) \<in> range ff" .
-    have pm: "pseudo_mod (F (i - 1)) (F i) = ffp ?pmod" 
+    have pm: "pseudo_mod (F (i - 1)) (F i) = ffp ?pmod"
       unfolding pseudo_mod_hom[symmetric] id by simp
-    have eq: "(?pmod = 0) = (i = k)" 
+    have eq: "(?pmod = 0) = (i = k)"
       using pm i pmod[of "Suc i"] F0[of "Suc i"] i \<beta>0[of "Suc i"] by auto
     show ?case
     proof (cases "i = k")
@@ -2245,41 +2251,41 @@ proof -
       thus ?thesis using beta unfolding True by auto
     next
       case False
-      with res eq have res: 
+      with res eq have res:
          "subresultant_prs_main Gi G1_p1 hi = (Gk, hk)" by auto
       from m False i have m: "m - 1 < m" "m - 1 = k - Suc i" by auto
-      have si: "Suc i - 1 = i" and ii: "3 \<le> Suc i" "Suc i \<le> k" and iii: "3 \<le> Suc i" "Suc i \<le> Suc k" 
+      have si: "Suc i - 1 = i" and ii: "3 \<le> Suc i" "Suc i \<le> k" and iii: "3 \<le> Suc i" "Suc i \<le> Suc k"
         using False i by auto
-      have *: "(\<forall>j\<ge>Suc i. j \<le> k \<longrightarrow> F j \<in> range ffp \<and> \<beta> (Suc j) \<in> range ff) = (\<forall>j\<ge>i. j \<le> k \<longrightarrow> F j \<in> range ffp  \<and> \<beta> (Suc j) \<in> range ff)" 
+      have *: "(\<forall>j\<ge>Suc i. j \<le> k \<longrightarrow> F j \<in> range ffp \<and> \<beta> (Suc j) \<in> range ff) = (\<forall>j\<ge>i. j \<le> k \<longrightarrow> F j \<in> range ffp  \<and> \<beta> (Suc j) \<in> range ff)"
         by (rule for_all_Suc, insert id(1) beta, auto)
-      show ?thesis 
+      show ?thesis
       proof (rule IH[OF m res, unfolded si, OF _ id(1) idh ii, unfolded *])
         have F_ffp: "F (Suc i) \<in> range ffp" using fundamental_theorem_eq_4[OF ii, symmetric] B_theorem_2[OF iii] by auto
-        from pmod[OF iii] have "smult (\<beta> (Suc i)) (F (Suc i)) = pseudo_mod (F (i - 1)) (F i)" 
+        from pmod[OF iii] have "smult (\<beta> (Suc i)) (F (Suc i)) = pseudo_mod (F (i - 1)) (F i)"
           by simp
         from arg_cong[OF this, of "\<lambda> x. smult (inverse (\<beta> (Suc i))) x"]
-        have Fsi: "F (Suc i) = smult (inverse (\<beta> (Suc i))) (pseudo_mod (F (i - 1)) (F i))" 
-          using \<beta>0[of "Suc i"] by auto        
-        show "F (Suc i) = ffp G1_p1" 
+        have Fsi: "F (Suc i) = smult (inverse (\<beta> (Suc i))) (pseudo_mod (F (i - 1)) (F i))"
+          using \<beta>0[of "Suc i"] by auto
+        show "F (Suc i) = ffp G1_p1"
         proof (rule smult_inverse_divide_poly[OF F_ffp Fsi G1_p1 _ pm])
           from i ii have iv: "4 \<le> Suc i" "Suc i \<le> Suc k" by auto
           have *: "Suc i - 2 = i - 1" by auto
-          show "\<beta> (Suc i) = ff divisor" unfolding \<beta>i[OF iv] div d1 * fi1 
+          show "\<beta> (Suc i) = ff divisor" unfolding \<beta>i[OF iv] div d1 * fi1
             using id by simp
         qed
       qed
     qed
   qed
-qed  
-      
-lemma subresultant_prs: assumes res: "subresultant_prs G1 G2 = (Gk, hk)" 
-  shows "F k = ffp Gk \<and> h k = ff hk \<and> (i \<noteq> 0 \<longrightarrow> F i \<in> range ffp) \<and> (3 \<le> i \<longrightarrow> i \<le> Suc k \<longrightarrow> \<beta> i \<in> range ff)" 
+qed
+
+lemma subresultant_prs: assumes res: "subresultant_prs G1 G2 = (Gk, hk)"
+  shows "F k = ffp Gk \<and> h k = ff hk \<and> (i \<noteq> 0 \<longrightarrow> F i \<in> range ffp) \<and> (3 \<le> i \<longrightarrow> i \<le> Suc k \<longrightarrow> \<beta> i \<in> range ff)"
 proof -
-  let ?pmod = "pseudo_mod G1 G2" 
-  have pm: "pseudo_mod (F 1) (F 2) = ffp ?pmod" 
+  let ?pmod = "pseudo_mod G1 G2"
+  have pm: "pseudo_mod (F 1) (F 2) = ffp ?pmod"
     unfolding pseudo_mod_hom[symmetric] F1 F2 by simp
-  let ?g2 = "lead_coeff G2" 
-  let ?n2 = "degree G2" 
+  let ?g2 = "lead_coeff G2"
+  let ?n2 = "degree G2"
   obtain d1 where d1: "d1 = degree G1 - ?n2" by auto
   obtain h2 where h2: "h2 = ?g2 ^ d1" by auto
   have "(?pmod = 0) = (pseudo_mod (F 1) (F 2) = 0)" using pm by auto
@@ -2287,7 +2293,7 @@ proof -
   finally have eq: "?pmod = 0 \<longleftrightarrow> k = 2" using k2 by linarith
   note res = res[unfolded subresultant_prs_def Let_def eq, folded d1, folded h2]
   have idh2: "h 2 = ff h2" unfolding h2 d1 h.simps[of 2] \<delta> n F1
-    using F2 by (simp add: numeral_2_eq_2 map_poly_preservers f)
+    using F2 Suc_1 f hom_power local.degree_map_poly map_poly_preservers(2) by presburger
   have main: "F k = ffp Gk \<and> h k = ff hk \<and> (i \<ge> 3 \<longrightarrow> i \<le> k \<longrightarrow> F i \<in> range ffp \<and> \<beta> (Suc i) \<in> range ff)" for i
   proof (cases "k = 2")
     case True
@@ -2296,51 +2302,51 @@ proof -
   next
     case False
     hence "(k = 2) = False" by simp
-    note res = res[unfolded this if_False] 
+    note res = res[unfolded this if_False]
     have F_2: "F (3 - 1) = ffp G2" using F2 by simp
     have h2: "h (3 - 1) = ff h2" using idh2 by simp
     have n2: "degree G2 = n (3 - 1)" unfolding n using F2 by simp
     from False k2 have k3: "3 \<le> k" by auto
-    have "F k = ffp Gk \<and> h k = ff hk \<and> (\<forall>j\<ge>3. j \<le> k \<longrightarrow> F j \<in> range ffp \<and> \<beta> (Suc j) \<in> range ff)" 
+    have "F k = ffp Gk \<and> h k = ff hk \<and> (\<forall>j\<ge>3. j \<le> k \<longrightarrow> F j \<in> range ffp \<and> \<beta> (Suc j) \<in> range ff)"
     proof (rule subresultant_prs_main[OF res _ F_2 h2 le_refl k3])
-      let ?pow = "(- 1) ^ (\<delta> 1 + 1) :: 'a fract" 
+      let ?pow = "(- 1) ^ (\<delta> 1 + 1) :: 'a fract"
       from pmod[of 3] k3
       have "smult (\<beta> 3) (F 3) = pseudo_mod (F 1) (F 2)" by simp
       also have "\<dots> = pseudo_mod (ffp G1) (ffp G2)" using F1 F2 by auto
       also have "\<dots> = ffp (pseudo_mod G1 G2)" unfolding pseudo_mod_hom by simp
       also have "\<beta> 3 = (- 1) ^ (\<delta> 1 + 1)" unfolding \<beta>3 by simp
       finally have "smult ((- 1) ^ (\<delta> 1 + 1)) (F 3) = ffp (pseudo_mod G1 G2)" by simp
-      also have "smult ((- 1) ^ (\<delta> 1 + 1)) (F 3) = [: ?pow :] * F 3" 
+      also have "smult ((- 1) ^ (\<delta> 1 + 1)) (F 3) = [: ?pow :] * F 3"
         by simp
       also have "[: ?pow :] = (- 1) ^ (\<delta> 1 + 1)" by (simp add: one_poly_def poly_const_pow)
       finally have "(- 1) ^ (\<delta> 1 + 1) * F 3 = ffp (pseudo_mod G1 G2)" by simp
       from arg_cong[OF this, of "\<lambda> i. (- 1) ^ (\<delta> 1 + 1) * i"]
       have "F 3 = (- 1) ^ (\<delta> 1 + 1) * ffp (pseudo_mod G1 G2)" by simp
-      also have "\<delta> 1 = d1" unfolding \<delta> n d1 using F1 F2 by (simp add: numeral_2_eq_2)      
+      also have "\<delta> 1 = d1" unfolding \<delta> n d1 using F1 F2 by (simp add: numeral_2_eq_2)
       finally show F3: "F 3 = ffp ((- 1) ^ (d1 + 1) * pseudo_mod G1 G2)" by simp
     qed
     thus ?thesis by auto
   qed
   show ?thesis
   proof (intro conjI impI)
-    assume "i \<noteq> 0" 
+    assume "i \<noteq> 0"
     then consider (12) "i = 1 \<or> i = 2" | (i3) "i \<ge> 3 \<and> i \<le> k" | (ik) "i > k" by linarith
-    thus "F i \<in> range ffp" 
+    thus "F i \<in> range ffp"
     proof cases
       case 12
       thus ?thesis using F1 F2 by auto
     next
       case i3
       thus ?thesis using main by auto
-    next 
+    next
       case ik
       hence "F i = 0" using F0 by auto
       thus ?thesis by simp
     qed
   next
-    assume "3 \<le> i" and "i \<le> Suc k" 
+    assume "3 \<le> i" and "i \<le> Suc k"
     then consider (3) "i = 3" | (4) "3 \<le> i - 1" "i - 1 \<le> k" by linarith
-    thus "\<beta> i \<in> range ff" 
+    thus "\<beta> i \<in> range ff"
     proof (cases)
       case 3
       have "\<beta> i = ff ((- 1) ^ (\<delta> 1 + 1))" unfolding 3 \<beta>3 by auto
@@ -2348,19 +2354,19 @@ proof -
     next
       case 4
       with main[of "i - 1"] show ?thesis by auto
-    qed      
+    qed
   qed (insert main, auto)
 qed
-  
+
 lemma deg_G12: "degree G1 \<ge> degree G2" using n12
   unfolding n F1 F2 by auto
-  
 
-lemma R0: shows "R 0 = [: resultant G1 G2 :]" 
+
+lemma R0: shows "R 0 = [: resultant G1 G2 :]"
 proof(cases "n 2 = 0")
   case True
   hence d:"degree G2 = 0" unfolding n F2 by auto
-  from degree0_coeffs[OF d] F2 F12 obtain a where 
+  from degree0_coeffs[OF d] F2 F12 obtain a where
     G2: "G2 = [:a:]" and a: "a \<noteq> 0" by auto
   have "divide_poly [:a * a ^ degree G1:] a = [:a ^ degree G1:]" using a
     unfolding divide_poly_def by auto
@@ -2375,13 +2381,13 @@ next
   finally show ?thesis .
 qed
 
-  
-lemma resultant_impl_main: "resultant_impl_main G1 G2 = resultant G1 G2" 
+
+lemma resultant_impl_main: "resultant_impl_main G1 G2 = resultant G1 G2"
 proof -
-  from F0[of 2] F12(2) have k2: "k \<ge> 2" by auto 
+  from F0[of 2] F12(2) have k2: "k \<ge> 2" by auto
   obtain Gk hk where sub: "subresultant_prs G1 G2 = (Gk, hk)" by force
   from subresultant_prs[OF this] have *: "F k = ffp Gk" "h k = ff hk" by auto
-  have "resultant_impl_main G1 G2 = (if degree (F k) = 0 then hk else 0)" 
+  have "resultant_impl_main G1 G2 = (if degree (F k) = 0 then hk else 0)"
     unfolding resultant_impl_main_def sub split * using F2 F12 by auto
   also have "\<dots> = resultant G1 G2"
   proof (cases "n k = 0")
@@ -2406,8 +2412,8 @@ proof -
       from subresultant_prs_def[of G1 G2, unfolded sub Let_def this]
       have id: "Gk = G2" "hk = lead_coeff G2 ^ (degree G1 - degree G2)" by auto
       from F12 F1 F2 have "G1 \<noteq> 0" "G2 \<noteq> 0" by auto
-      from resultant_pseudo_mod_0[OF pm deg_G12 this] 
-      have res: "resultant G1 G2 = (if degree G2 = 0 then lead_coeff G2 ^ degree G1 else 0)" 
+      from resultant_pseudo_mod_0[OF pm deg_G12 this]
+      have res: "resultant G1 G2 = (if degree G2 = 0 then lead_coeff G2 ^ degree G1 else 0)"
         by simp
       from True[unfolded 2 n F2] have "degree G2 = 0" by simp
       thus ?thesis unfolding res 2 F2 id by simp
@@ -2415,36 +2421,36 @@ proof -
   qed
   finally show ?thesis .
 qed
-end  
-   
+end
+
 text \<open>At this point, we have soundness of the resultant-implementation, provided that we can
   instantiate the locale by constructing suitable values of F, b, h, etc. Now we show the
   existence of suitable locale parameters by constructively computing them.\<close>
-  
+
 context
-  fixes G1 G2 :: "'a :: idom_divide poly" 
+  fixes G1 G2 :: "'a :: idom_divide poly"
 begin
-  
+
 private function F and b and h where "F i = (if i = (0 :: nat) then 1
   else if i = 1 then map_poly to_fract G1 else if i = 2 then map_poly to_fract G2
   else (let G = pseudo_mod (F (i - 2)) (F (i - 1))
-    in if F (i - 1) = 0 \<or> G = 0 then 0 else smult (inverse (b i)) G))"  
-| "b i = (if i \<le> 2 then 1 else 
+    in if F (i - 1) = 0 \<or> G = 0 then 0 else smult (inverse (b i)) G))"
+| "b i = (if i \<le> 2 then 1 else
    if i = 3 then (- 1) ^ (degree (F 1) - degree (F 2) + 1)
    else if F (i - 2) = 0 then 1 else (- 1) ^ (degree (F (i - 2)) - degree (F (i - 1)) + 1) * lead_coeff (F (i - 2)) *
-         h (i - 2) ^ (degree (F (i - 2)) - degree (F (i - 1))))" 
-| "h i = (if (i \<le> 1) then 1 else if i = 2 then (lead_coeff (F 2) ^ (degree (F 1) - degree (F 2))) else 
-    if F i = 0 then 1 else (lead_coeff (F i) ^ (degree (F (i - 1)) - degree (F i)) / (h (i - 1) ^ ((degree (F (i - 1)) - degree (F i)) - 1))))" 
+         h (i - 2) ^ (degree (F (i - 2)) - degree (F (i - 1))))"
+| "h i = (if (i \<le> 1) then 1 else if i = 2 then (lead_coeff (F 2) ^ (degree (F 1) - degree (F 2))) else
+    if F i = 0 then 1 else (lead_coeff (F i) ^ (degree (F (i - 1)) - degree (F i)) / (h (i - 1) ^ ((degree (F (i - 1)) - degree (F i)) - 1))))"
   by pat_completeness auto
-termination 
-proof 
+termination
+proof
   show "wf (measure (case_sum (\<lambda> fi. 3 * fi +1)  (case_sum (\<lambda> bi. 3 * bi) (\<lambda> hi. 3 * hi + 2))))" by simp
 qed (auto simp: termination_simp)
-  
+
 declare h.simps[simp del] b.simps[simp del] F.simps[simp del]
-  
-private lemma Fb0: assumes base: "G1 \<noteq> 0" "G2 \<noteq> 0" 
-  shows "(F i = 0 \<longrightarrow> F (Suc i) = 0) \<and> b i \<noteq> 0 \<and> h i \<noteq> 0" 
+
+private lemma Fb0: assumes base: "G1 \<noteq> 0" "G2 \<noteq> 0"
+  shows "(F i = 0 \<longrightarrow> F (Suc i) = 0) \<and> b i \<noteq> 0 \<and> h i \<noteq> 0"
 proof (induct i rule: less_induct)
   case (less i)
   note * [simp] = F.simps[of i] b.simps[of i] h.simps[of i]
@@ -2463,30 +2469,30 @@ proof (induct i rule: less_induct)
     from 2 have "i - 1 < i" "i - 2 < i" by auto
     note IH = less[OF this(1)] less[OF this(2)]
     hence b: "b (i - 1) \<noteq> 0" and h: "h (i - 1) \<noteq> 0" "h (i - 2) \<noteq> 0" by auto
-    from h have hi: "h i \<noteq> 0" unfolding h.simps[of i] using 2 F2 by auto    
+    from h have hi: "h i \<noteq> 0" unfolding h.simps[of i] using 2 F2 by auto
     have bi: "b i \<noteq> 0" unfolding b.simps[of i] using h(2) by auto
     show ?thesis using hi bi F by blast
   qed
 qed
 
-private definition "k = (LEAST i. F (Suc i) = 0)" 
-  
+private definition "k = (LEAST i. F (Suc i) = 0)"
+
 private lemma k_exists: "\<exists> i. F (Suc i) = 0"
 proof -
   obtain n i where "i \<ge> 3" "length (coeffs (F (Suc i))) = n" by blast
   thus ?thesis
   proof (induct n arbitrary: i rule: less_induct)
-    case (less n i)    
-    let ?ii = "Suc (Suc i)" 
-    let ?i = "Suc i" 
+    case (less n i)
+    let ?ii = "Suc (Suc i)"
+    let ?i = "Suc i"
     from less(2) have i: "?i \<ge> 3" by auto
-    let ?mod = "pseudo_mod (F (?ii - 2)) (F ?i)" 
-    have Fi: "F ?ii = (if F ?i = 0 \<or> ?mod = 0 then 0 else smult (inverse (b ?ii)) ?mod)" 
+    let ?mod = "pseudo_mod (F (?ii - 2)) (F ?i)"
+    have Fi: "F ?ii = (if F ?i = 0 \<or> ?mod = 0 then 0 else smult (inverse (b ?ii)) ?mod)"
       unfolding F.simps[of ?ii] using i by auto
-    show ?case 
+    show ?case
     proof (cases "F ?ii = 0")
       case False
-      hence Fi: "F ?ii = smult (inverse (b ?ii)) ?mod" and mod: "?mod \<noteq> 0" and Fi1: "F ?i \<noteq> 0" 
+      hence Fi: "F ?ii = smult (inverse (b ?ii)) ?mod" and mod: "?mod \<noteq> 0" and Fi1: "F ?i \<noteq> 0"
         unfolding Fi by auto
       from pseudo_mod[OF Fi1, of "F (?ii - 2)"] mod have "degree ?mod < degree (F ?i)" by simp
       hence deg: "degree (F ?ii) < degree (F ?i)" unfolding Fi by auto
@@ -2494,38 +2500,38 @@ proof -
       from less(1)[OF _ i refl, folded less(3), OF this] show ?thesis by auto
     qed blast
   qed
-qed 
-    
-private lemma k: "F (Suc k) = 0" "i < k \<Longrightarrow> F (Suc i) \<noteq> 0" 
+qed
+
+private lemma k: "F (Suc k) = 0" "i < k \<Longrightarrow> F (Suc i) \<noteq> 0"
 proof -
   show "F (Suc k) = 0" unfolding k_def using k_exists by (rule LeastI2_ex)
   assume "i < k" from not_less_Least[OF this[unfolded k_def]] show "F (Suc i) \<noteq> 0" .
 qed
-      
+
 lemma enter_subresultant_prs: assumes len: "length (coeffs G1) \<ge> length (coeffs G2)"
-  and G2: "G2 \<noteq> 0" 
-shows "\<exists> F n d f k b. subresultant_prs_locale2 F n d f k b G1 G2" 
+  and G2: "G2 \<noteq> 0"
+shows "\<exists> F n d f k b. subresultant_prs_locale2 F n d f k b G1 G2"
 proof (intro exI)
   from G2 len have G1: "G1 \<noteq> 0" by auto
-  from len have deg_le: "degree (F 2) \<le> degree (F 1)" 
+  from len have deg_le: "degree (F 2) \<le> degree (F 1)"
     by (simp add: F.simps, (subst degree_map_poly, auto)+, auto simp: degree_eq_length_coeffs)
   from G2 G1 have F1: "F 1 \<noteq> 0" and F2: "F 2 \<noteq> 0" by (auto simp: F.simps)
   note Fb0 = Fb0[OF G1 G2]
-  interpret s: subresultant_prs_locale F "\<lambda> i. degree (F i)" "\<lambda> i. degree (F i) - degree (F (Suc i))" 
+  interpret s: subresultant_prs_locale F "\<lambda> i. degree (F i)" "\<lambda> i. degree (F i) - degree (F (Suc i))"
     "\<lambda> i. lead_coeff (F i)" k b G1 G2
   proof (unfold_locales, rule refl, rule refl, rule refl, rule deg_le, rule F1, rule F2)
     from k(1) F1 have k0: "k \<noteq> 0" by (cases k, auto)
     show Fk: "(F i = 0) = (k < i)" for i
-    proof 
-      assume "F i = 0" with k(2)[of "i - 1"] 
+    proof
+      assume "F i = 0" with k(2)[of "i - 1"]
       have "\<not> (i - 1 < k)" by (cases i, auto simp: F.simps)
       thus "i > k" using k0 by auto
     next
-      assume "i > k" 
+      assume "i > k"
       then obtain j l where i: "i = j + l" and "j = Suc k" and "l = i - Suc k" and Fj: "F j = 0" using k(1)
         by auto
       with F1 F2 k0 have j2: "j \<ge> 2" by auto
-      show "F i = 0" unfolding i 
+      show "F i = 0" unfolding i
       proof (induct l)
         case (Suc l)
         thus ?case unfolding F.simps[of "j + Suc l"] using j2 by auto
@@ -2535,12 +2541,12 @@ proof (intro exI)
     show "F 1 = map_poly to_fract G1" unfolding F.simps[of 1] by simp
     show "F 2 = map_poly to_fract G2" unfolding F.simps[of 2] by simp
     fix i
-    let ?mod = "pseudo_mod (F (i - 2)) (F (i - 1))" 
-    assume i: "3 \<le> i" "i \<le> Suc k" 
+    let ?mod = "pseudo_mod (F (i - 2)) (F (i - 1))"
+    assume i: "3 \<le> i" "i \<le> Suc k"
     from Fk[of "i - 1"] i have "F (i - 1) \<noteq> 0" by auto
-    with i have Fi: "F i = (if ?mod = 0 then 0 else smult (inverse (b i)) ?mod)" unfolding F.simps[of i] 
+    with i have Fi: "F i = (if ?mod = 0 then 0 else smult (inverse (b i)) ?mod)" unfolding F.simps[of i]
       Let_def by simp
-    show "smult (b i) (F i) = ?mod" 
+    show "smult (b i) (F i) = ?mod"
     proof (cases "?mod = 0")
       case True
       thus ?thesis unfolding Fi by simp
@@ -2551,12 +2557,12 @@ proof (intro exI)
     qed
   qed
   note s.h.simps[simp del]
-  show "subresultant_prs_locale2 F (\<lambda> i. degree (F i)) (\<lambda> i. degree (F i) - degree (F (Suc i))) 
-    (\<lambda> i. lead_coeff (F i)) k b G1 G2" 
+  show "subresultant_prs_locale2 F (\<lambda> i. degree (F i)) (\<lambda> i. degree (F i) - degree (F (Suc i)))
+    (\<lambda> i. lead_coeff (F i)) k b G1 G2"
   proof
     show "b 3 = (- 1) ^ (degree (F 1) - degree (F (Suc 1)) + 1)" unfolding b.simps numeral_2_eq_2 by simp
     fix i
-    assume i: "4 \<le> i" "i \<le> Suc k" 
+    assume i: "4 \<le> i" "i \<le> Suc k"
     with s.F0[of "i - 2"] have "F (i - 2) \<noteq> 0" by auto
     hence bi: "b i = (- 1) ^ (degree (F (i - 2)) - degree (F (i - 1)) + 1) * lead_coeff (F (i - 2)) *
                     h (i - 2) ^ (degree (F (i - 2)) - degree (F (i - 1)))" unfolding b.simps
@@ -2569,20 +2575,20 @@ proof (intro exI)
       case (Suc i)
       from Suc(2) s.F0[of "Suc i"] have "F (Suc i) \<noteq> 0" by auto
       with Suc show ?case unfolding h.simps[of "Suc i"] s.h.simps[of "Suc i"] numeral_2_eq_2 by simp
-    qed    
+    qed
     hence sh: "s.h (i - 2) = h (i - 2)" using i by simp
     from i have *: "Suc (i - 2) = i - 1" by auto
     show "b i = (- 1) ^ (degree (F (i - 2)) - degree (F (Suc (i - 2))) + 1) * lead_coeff (F (i - 2)) *
-         s.h (i - 2) ^ (degree (F (i - 2)) - degree (F (Suc (i - 2))))" 
+         s.h (i - 2) ^ (degree (F (i - 2)) - degree (F (Suc (i - 2))))"
       unfolding sh bi * ..
   qed
 qed
 end
-  
+
 text \<open>Now we obtain the soundness lemma outside the locale.\<close>
-  
-lemma resultant_impl_main: assumes len: "length (coeffs G1) \<ge> length (coeffs G2)" 
-  shows "resultant_impl_main G1 G2 = resultant G1 G2" 
+
+lemma resultant_impl_main: assumes len: "length (coeffs G1) \<ge> length (coeffs G2)"
+  shows "resultant_impl_main G1 G2 = resultant G1 G2"
 proof (cases "G2 = 0")
   case G2: False
   from enter_subresultant_prs[OF len G2] obtain F n d f k b
@@ -2591,14 +2597,14 @@ proof (cases "G2 = 0")
   show ?thesis by (rule resultant_impl_main)
 next
   case G2: True
-  show ?thesis unfolding G2 
-    resultant_impl_main_def using resultant_const(2)[of G1 0] by simp 
+  show ?thesis unfolding G2
+    resultant_impl_main_def using resultant_const(2)[of G1 0] by simp
 qed
-  
-theorem resultant_impl[simp]: "resultant_impl = resultant" 
+
+theorem resultant_impl[simp]: "resultant_impl = resultant"
 proof (intro ext)
-  fix f g :: "'a poly" 
-  show "resultant_impl f g = resultant f g" 
+  fix f g :: "'a poly"
+  show "resultant_impl f g = resultant f g"
   proof (cases "length (coeffs f) \<ge> length (coeffs g)")
     case True
     thus ?thesis unfolding resultant_impl_def resultant_impl_main[OF True] by auto
@@ -2609,12 +2615,12 @@ proof (intro ext)
     show ?thesis unfolding resultant_impl_def resultant_swap[of f g] using False by auto
   qed
 qed
-    
+
 subsection \<open>Code Equations\<close>
-  
+
 text \<open>In the following code-equations, we only compute the required values, e.g., $h_k$
   is not required if $n_k > 0$, we compute $(-1)^{\ldots} * \ldots$ via a case-analysis,
-  and we perform special cases for $\delta_i = 1$, which is the most frequent case.\<close> 
+  and we perform special cases for $\delta_i = 1$, which is the most frequent case.\<close>
 
 partial_function(tailrec) subresultant_prs_main_impl where
   "subresultant_prs_main_impl f Gi_1 Gi ni_1 d1_1 hi_2 = (let
@@ -2623,12 +2629,12 @@ partial_function(tailrec) subresultant_prs_main_impl where
      hi_1 = gi_1 ^ d1_1 div hi_2 ^ (d1_1 - 1);
      d1 = ni_1 - ni;
      pmod = pseudo_mod Gi_1 Gi
-    in (if pmod = 0 then f (Gi,lead_coeff Gi ^ d1 div hi_1 ^ (d1 - 1)) else 
-    let 
+    in (if pmod = 0 then f (Gi,lead_coeff Gi ^ d1 div hi_1 ^ (d1 - 1)) else
+    let
        gi = lead_coeff Gi;
        divisor = (-1) ^ (d1 + 1) * gi_1 * (hi_1 ^ d1) ;
        Gi_p1 = divide_poly pmod divisor
-       in subresultant_prs_main_impl f Gi Gi_p1 ni d1 hi_1))" 
+       in subresultant_prs_main_impl f Gi Gi_p1 ni d1 hi_1))"
 
 declare subresultant_prs_main_impl.simps[simp del]
 
@@ -2643,33 +2649,33 @@ definition subresultant_prs_impl where
       G3 = (- 1) ^ (delta_1 + 1) * pmod;
       g3 = lead_coeff G3;
       n3 = degree G3;
-      d2 = n2 - n3; 
-      pmod = pseudo_mod G2 G3 
+      d2 = n2 - n3;
+      pmod = pseudo_mod G2 G3
     in if pmod = 0 then f (G3, g3 ^ (n2 - n3) div h2 ^ (d2 - 1))
     else let divisor = (- 1) ^ (d2 + 1) * g2 * h2 ^ d2; G4 = divide_poly pmod divisor
-         in subresultant_prs_main_impl f G3 G4 n3 d2 h2 
+         in subresultant_prs_main_impl f G3 G4 n3 d2 h2
     )"
-      
-lemma subresultant_prs_impl: "subresultant_prs_impl f G1 G2 = f (subresultant_prs G1 G2)" 
+
+lemma subresultant_prs_impl: "subresultant_prs_impl f G1 G2 = f (subresultant_prs G1 G2)"
 proof -
-  define h2 where "h2 = lead_coeff G2 ^ (degree G1 - degree G2)" 
-  define G3 where "G3 = ((- 1) ^ (degree G1 - degree G2 + 1) * pseudo_mod G1 G2)" 
+  define h2 where "h2 = lead_coeff G2 ^ (degree G1 - degree G2)"
+  define G3 where "G3 = ((- 1) ^ (degree G1 - degree G2 + 1) * pseudo_mod G1 G2)"
   define G4 where "G4 = divide_poly (pseudo_mod G2 G3)
        ((- 1) ^ (degree G2 - degree G3 + 1) * lead_coeff G2 *
-        (lead_coeff G2 ^ (degree G1 - degree G2)) ^ (degree G2 - degree G3))" 
-  define d2 where "d2 = degree G2 - degree G3" 
+        (lead_coeff G2 ^ (degree G1 - degree G2)) ^ (degree G2 - degree G3))"
+  define d2 where "d2 = degree G2 - degree G3"
   show ?thesis
     unfolding subresultant_prs_impl_def subresultant_prs_def Let_def
       subresultant_prs_main.simps[of G2]
       if_distrib[of f]
-  proof (rule if_cong[OF refl refl if_cong[OF refl refl]], 
+  proof (rule if_cong[OF refl refl if_cong[OF refl refl]],
     unfold G3_def[symmetric], unfold G4_def[symmetric], unfold h2_def[symmetric], unfold d2_def[symmetric])
-    note simp = subresultant_prs_main_impl.simps[of f] subresultant_prs_main.simps  
+    note simp = subresultant_prs_main_impl.simps[of f] subresultant_prs_main.simps
     show "subresultant_prs_main_impl f G3 G4 (degree G3) d2 h2 =
-      f (subresultant_prs_main G3 G4 (lead_coeff G3 ^ d2 div h2 ^ (d2 - 1)))" 
+      f (subresultant_prs_main G3 G4 (lead_coeff G3 ^ d2 div h2 ^ (d2 - 1)))"
     proof (induct G4 arbitrary: G3 d2 h2 rule: wf_induct[OF wf_measure[of degree]])
       case (1 G4 G3 d2 h2)
-      let ?M = "pseudo_mod G3 G4" 
+      let ?M = "pseudo_mod G3 G4"
       show ?case
       proof (cases "?M = 0")
         case True
@@ -2678,8 +2684,8 @@ proof -
         case False
         hence id: "(if ?M = 0 then t else e) = e" for t e by auto
         let ?c = "((- 1) ^ (degree G3 - degree G4 + 1) * lead_coeff G3 *
-            (lead_coeff G3 ^ d2 div h2 ^ (d2 - 1)) ^ (degree G3 - degree G4))" 
-        let ?N = "divide_poly ?M ?c" 
+            (lead_coeff G3 ^ d2 div h2 ^ (d2 - 1)) ^ (degree G3 - degree G4))"
+        let ?N = "divide_poly ?M ?c"
         show ?thesis
         proof (cases "G4 = 0")
           case G4: False
@@ -2696,94 +2702,94 @@ proof -
     qed
   qed
 qed
-  
-definition [code del]: 
-  "resultant_impl_rec = subresultant_prs_main_impl (\<lambda> (Gk,hk). if degree Gk = 0 then hk else 0)" 
-definition [code del]: 
-  "resultant_impl_start = subresultant_prs_impl (\<lambda> (Gk,hk). if degree Gk = 0 then hk else 0)" 
 
-lemma resultant_impl_start_code[code]: 
-  "resultant_impl_start G1 G2 = 
-     (let pmod = pseudo_mod G1 G2; 
+definition [code del]:
+  "resultant_impl_rec = subresultant_prs_main_impl (\<lambda> (Gk,hk). if degree Gk = 0 then hk else 0)"
+definition [code del]:
+  "resultant_impl_start = subresultant_prs_impl (\<lambda> (Gk,hk). if degree Gk = 0 then hk else 0)"
+
+lemma resultant_impl_start_code[code]:
+  "resultant_impl_start G1 G2 =
+     (let pmod = pseudo_mod G1 G2;
           n2 = degree G2;
           n1 = degree G1;
           g2 = lead_coeff G2;
           d1 = n1 - n2
          in if pmod = 0 then if n2 = 0 then if d1 = 0 then 1 else if d1 = 1 then g2 else g2 ^ d1 else 0
-            else let 
-                 G3 = if even d1 then - pmod else pmod; 
-                 n3 = degree G3; 
+            else let
+                 G3 = if even d1 then - pmod else pmod;
+                 n3 = degree G3;
                  pmod = pseudo_mod G2 G3
                  in if pmod = 0
-                    then if n3 = 0 then 
+                    then if n3 = 0 then
                      let d2 = n2 - n3;
                          g3 = lead_coeff G3
-                        in (if d2 = 1 then g3 else 
-                              let h2 = (if d1 = 1 then g2 else g2 ^ d1) in 
+                        in (if d2 = 1 then g3 else
+                              let h2 = (if d1 = 1 then g2 else g2 ^ d1) in
                                 if d2 = 2 then g3 * g3 div h2 else g3 ^ d2 div h2 ^ (d2 - 1)) else 0
                     else let
                            h2 = (if d1 = 1 then g2 else g2 ^ d1);
                            d2 = n2 - n3;
-                           divisor = (if d2 = 1 then g2 * h2 else if even d2 then - g2 * h2 ^ d2 else g2 * h2 ^ d2); 
+                           divisor = (if d2 = 1 then g2 * h2 else if even d2 then - g2 * h2 ^ d2 else g2 * h2 ^ d2);
                            G4 = divide_poly pmod divisor
-                         in resultant_impl_rec G3 G4 n3 d2 h2)" 
+                         in resultant_impl_rec G3 G4 n3 d2 h2)"
 proof -
   obtain d1 where d1: "degree G1 - degree G2 = d1" by auto
-  have id1: "(if even d1 then - pmod else pmod) = (-1)^ (d1 + 1) * (pmod :: 'a poly)" for pmod by simp 
-  have id3: "(if d2 = 1 then g2 * h2 else if even d2 then - g2 * h2 ^ d2 else g2 * h2 ^ d2) = 
-    ((- 1) ^ (d2 + 1) * g2 * h2 ^ d2)" 
+  have id1: "(if even d1 then - pmod else pmod) = (-1)^ (d1 + 1) * (pmod :: 'a poly)" for pmod by simp
+  have id3: "(if d2 = 1 then g2 * h2 else if even d2 then - g2 * h2 ^ d2 else g2 * h2 ^ d2) =
+    ((- 1) ^ (d2 + 1) * g2 * h2 ^ d2)"
     for d2 and g2 h2 :: 'a by auto
-  have id4: "(if d2 = 1 then g3 else 
-                          let h2 = (if d1 = 1 then g2 else g2 ^ d1) in 
-                            if d2 = 2 then g3 * g3 div h2 else g3 ^ d2 div h2 ^ (d2 - 1)) = 
-    g3 ^ d2 div (g2 ^ d1) ^ (d2 - 1)" 
+  have id4: "(if d2 = 1 then g3 else
+                          let h2 = (if d1 = 1 then g2 else g2 ^ d1) in
+                            if d2 = 2 then g3 * g3 div h2 else g3 ^ d2 div h2 ^ (d2 - 1)) =
+    g3 ^ d2 div (g2 ^ d1) ^ (d2 - 1)"
     for d2 d1 and g3 g2 :: 'a by (auto simp: power2_eq_square)
   note id4 = id4[unfolded Let_def]
   show ?thesis
-    unfolding resultant_impl_start_def subresultant_prs_impl_def resultant_impl_rec_def[symmetric] Let_def split 
+    unfolding resultant_impl_start_def subresultant_prs_impl_def resultant_impl_rec_def[symmetric] Let_def split
     unfolding d1
     unfolding id1
-    unfolding id4 
-    unfolding id3    
+    unfolding id4
+    unfolding id3
     by (rule if_cong[OF refl if_cong if_cong], auto simp: power2_eq_square)
 qed
-    
-lemma resultant_impl_rec_code[code]: 
+
+lemma resultant_impl_rec_code[code]:
   "resultant_impl_rec Gi_1 Gi ni_1 d1_1 hi_2 = (
-    let ni = degree Gi; 
+    let ni = degree Gi;
         pmod = pseudo_mod Gi_1 Gi
-     in 
-     if pmod = 0 
-        then if ni = 0 
-          then 
-            let 
-              d1 = ni_1 - ni; 
+     in
+     if pmod = 0
+        then if ni = 0
+          then
+            let
+              d1 = ni_1 - ni;
               gi = lead_coeff Gi
-            in if d1 = 1 then gi else 
-              let gi_1 = lead_coeff Gi_1; 
-                  hi_1 = (if d1_1 = 1 then gi_1 else if d1_1 = 2 then gi_1 * gi_1 div hi_2 
+            in if d1 = 1 then gi else
+              let gi_1 = lead_coeff Gi_1;
+                  hi_1 = (if d1_1 = 1 then gi_1 else if d1_1 = 2 then gi_1 * gi_1 div hi_2
                   else gi_1 ^ d1_1 div hi_2 ^ (d1_1 - 1)) in
-                if d1 = 2 then gi * gi div hi_1 else gi ^ d1 div hi_1 ^ (d1 - 1) 
+                if d1 = 2 then gi * gi div hi_1 else gi ^ d1 div hi_1 ^ (d1 - 1)
           else 0
-        else let         
-           d1 = ni_1 - ni; 
+        else let
+           d1 = ni_1 - ni;
            gi_1 = lead_coeff Gi_1;
-           hi_1 = (if d1_1 = 1 then gi_1 else if d1_1 = 2 then gi_1 * gi_1 div hi_2 
+           hi_1 = (if d1_1 = 1 then gi_1 else if d1_1 = 2 then gi_1 * gi_1 div hi_2
                else gi_1 ^ d1_1 div hi_2 ^ (d1_1 - 1));
            divisor = if d1 = 1 then gi_1 * hi_1 else if even d1 then - gi_1 * hi_1 ^ d1 else gi_1 * hi_1 ^ d1;
            Gi_p1 = divide_poly pmod divisor
-       in resultant_impl_rec Gi Gi_p1 ni d1 hi_1)" 
-  unfolding resultant_impl_rec_def subresultant_prs_main_impl.simps[of _ Gi_1] split Let_def 
+       in resultant_impl_rec Gi Gi_p1 ni d1 hi_1)"
+  unfolding resultant_impl_rec_def subresultant_prs_main_impl.simps[of _ Gi_1] split Let_def
   unfolding resultant_impl_rec_def[symmetric]
   by (rule if_cong[OF refl if_cong[OF refl] _], auto simp: power2_eq_square)
 
-lemma resultant_impl_main_code[code]: "resultant_impl_main G1 G2 = 
+lemma resultant_impl_main_code[code]: "resultant_impl_main G1 G2 =
   (if G2 = 0 then if degree G1 = 0 then 1 else 0
-     else resultant_impl_start G1 G2)" 
+     else resultant_impl_start G1 G2)"
   unfolding resultant_impl_main_def resultant_impl_start_def subresultant_prs_impl by simp
 
 
-declare resultant_code[code del] (* old implementation *)  
+declare resultant_code[code del] (* old implementation *)
 lemma resultant_code[code]: "resultant f g = resultant_impl f g" by simp
-    
+
 end
