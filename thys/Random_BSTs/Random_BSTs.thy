@@ -14,12 +14,12 @@ theory Random_BSTs
 begin
 
 (* TODO: Hide this in the proper place *)
-hide_const (open) Tree_Set.insert  
-  
+hide_const (open) Tree_Set.insert
+
 subsection \<open>Auxiliary lemmas\<close>
-  
+
 (* TODO: Move? *)
-lemma linorder_on_linorder_class [intro]: 
+lemma linorder_on_linorder_class [intro]:
   "linorder_on UNIV {(x, y). x \<le> (y :: 'a :: linorder)}"
   by (auto simp: linorder_on_def refl_on_def antisym_def trans_def total_on_def)
 
@@ -28,14 +28,14 @@ lemma Nil_in_permutations_of_set_iff [simp]: "[] \<in> permutations_of_set A \<l
 
 lemma max_power_distrib_right:
   fixes a :: "'a :: linordered_semidom"
-  shows "a > 1 \<Longrightarrow> max (a ^ b) (a ^ c) = a ^ max b c"  
+  shows "a > 1 \<Longrightarrow> max (a ^ b) (a ^ c) = a ^ max b c"
   by (auto simp: max_def)
 
 lemma set_tree_empty_iff [simp]: "set_tree t = {} \<longleftrightarrow> t = Leaf"
   by (cases t) auto
-    
+
 lemma card_set_tree_bst: "bst t \<Longrightarrow> card (set_tree t) = size t"
-proof (induction t) 
+proof (induction t)
   case (Node l x r)
   have "set_tree \<langle>l, x, r\<rangle> = insert x (set_tree l \<union> set_tree r)" by simp
   also from Node.prems have "card \<dots> = Suc (card (set_tree l \<union> set_tree r))"
@@ -56,7 +56,7 @@ lemma expectation_add_pair_pmf:
            measure_pmf.expectation p f + measure_pmf.expectation q g"
 proof -
   have "measure_pmf.expectation (pair_pmf p q) (\<lambda>(x,y). f x + g y) =
-          measure_pmf.expectation (pair_pmf p q) (\<lambda>z. f (fst z) + g (snd z))" 
+          measure_pmf.expectation (pair_pmf p q) (\<lambda>z. f (fst z) + g (snd z))"
     by (simp add: case_prod_unfold)
   also have "\<dots> = measure_pmf.expectation (pair_pmf p q) (\<lambda>z. f (fst z)) +
                   measure_pmf.expectation (pair_pmf p q) (\<lambda>z. g (snd z))"
@@ -70,30 +70,30 @@ proof -
   finally show ?thesis .
 qed
 
-  
+
 subsection \<open>Creating a BST from a list\<close>
 
 text \<open>
-  The following recursive function creates a binary search tree from a given list of 
+  The following recursive function creates a binary search tree from a given list of
   elements by inserting them into an initially empty BST from left to right. We will prove
-  that this is the case later, but the recursive definition has the advantage of giving us 
+  that this is the case later, but the recursive definition has the advantage of giving us
   a useful induction rule, so we chose that definition and prove the alternative definitions later.
 
-  This recursion, which already almost looks like QuickSort, will be key in analysing the 
+  This recursion, which already almost looks like QuickSort, will be key in analysing the
   shape distributions of random BSTs.
 \<close>
 fun bst_of_list :: "'a :: linorder list \<Rightarrow> 'a tree" where
   "bst_of_list [] = Leaf"
 | "bst_of_list (x # xs) =
      Node (bst_of_list [y \<leftarrow> xs. y < x]) x (bst_of_list [y \<leftarrow> xs. y > x])"
-  
+
 lemma bst_of_list_eq_Leaf_iff [simp]: "bst_of_list xs = Leaf \<longleftrightarrow> xs = []"
   by (induction xs) auto
 
 lemma bst_of_list_snoc [simp]:
   "bst_of_list (xs @ [y]) = Tree_Set.insert y (bst_of_list xs)"
   by (induction xs rule: bst_of_list.induct) auto
-    
+
 lemma bst_of_list_append:
   "bst_of_list (xs @ ys) = fold Tree_Set.insert ys (bst_of_list xs)"
 proof (induction ys arbitrary: xs)
@@ -105,7 +105,7 @@ proof (induction ys arbitrary: xs)
 qed simp_all
 
 text \<open>
-  The following now shows that the recursive function indeed corresponds to the 
+  The following now shows that the recursive function indeed corresponds to the
   notion of inserting the elements from the list from left to right.
 \<close>
 lemma bst_of_list_altdef: "bst_of_list xs = fold Tree_Set.insert xs Leaf"
@@ -124,21 +124,21 @@ lemma size_bst_of_list_distinct [simp]:
   assumes "distinct xs"
   shows   "size (bst_of_list xs) = length xs"
   using assms by (induction xs rule: rev_induct) (auto simp: size_bst_insert)
-    
+
 
 
 subsection \<open>Random BSTs\<close>
 
 text \<open>
-  Analogously to the previous section, we can now view the concept of a random BST 
-  (i.\,e.\ a BST obtained by inserting a given set of elements in random order) in two 
+  Analogously to the previous section, we can now view the concept of a random BST
+  (i.\,e.\ a BST obtained by inserting a given set of elements in random order) in two
   different ways.
 
   We again start with the recursive variant:
 \<close>
 function random_bst :: "'a :: linorder set \<Rightarrow> 'a tree pmf" where
-  "random_bst A = 
-     (if \<not>finite A \<or> A = {} then 
+  "random_bst A =
+     (if \<not>finite A \<or> A = {} then
         return_pmf Leaf
       else do {
         x \<leftarrow> pmf_of_set A;
@@ -148,9 +148,9 @@ function random_bst :: "'a :: linorder set \<Rightarrow> 'a tree pmf" where
      })"
   by auto
 termination by (relation finite_psubset) auto
-    
+
 declare random_bst.simps [simp del]
-  
+
 lemma random_bst_empty [simp]: "random_bst {} = return_pmf Leaf"
   by (simp add: random_bst.simps)
 
@@ -159,7 +159,7 @@ lemma set_pmf_random_permutation [simp]:
   by (subst set_pmf_of_set) (auto dest: permutations_of_setD)
 
 text \<open>
-  The alternative characterisation is the more intuitive one where we simply pick a 
+  The alternative characterisation is the more intuitive one where we simply pick a
   random permutation of the set elements uniformly at random and insert them into an empty
   tree from left to right:
 \<close>
@@ -175,12 +175,12 @@ proof (induction A rule: finite_psubset_induct)
     hence *: "L x \<subset> A" "R x \<subset> A" by (auto simp: L_def R_def)
     note this [THEN psubset.IH]
   } note IH = this
-    
+
   show ?case
   proof (cases "A = {}")
     case False
     note A = \<open>finite A\<close> \<open>A \<noteq> {}\<close>
-    have "random_bst A = 
+    have "random_bst A =
             do {
               x \<leftarrow> pmf_of_set A;
               (l, r) \<leftarrow> pair_pmf (random_bst (L x)) (random_bst (R x));
@@ -189,7 +189,7 @@ proof (induction A rule: finite_psubset_induct)
       by (subst random_bst.simps) (simp add: bind_return_pmf bind_assoc_pmf)
     also have "\<dots> = do {
                       x \<leftarrow> pmf_of_set A;
-                      (l, r) \<leftarrow> pair_pmf 
+                      (l, r) \<leftarrow> pair_pmf
                         (map_pmf bst_of_list (pmf_of_set (permutations_of_set (L x))))
                         (map_pmf bst_of_list (pmf_of_set (permutations_of_set (R x))));
                       return_pmf (Node l x r)
@@ -197,7 +197,7 @@ proof (induction A rule: finite_psubset_induct)
      using A by (intro bind_pmf_cong refl) (simp_all add: IH)
     also have "\<dots> = do {
                      x \<leftarrow> pmf_of_set A;
-                     (ls, rs) \<leftarrow> pair_pmf (pmf_of_set (permutations_of_set (L x))) 
+                     (ls, rs) \<leftarrow> pair_pmf (pmf_of_set (permutations_of_set (L x)))
                                           (pmf_of_set (permutations_of_set (R x)));
                      return_pmf (Node (bst_of_list ls) x (bst_of_list rs))
                    }" unfolding map_pair [symmetric]
@@ -206,20 +206,20 @@ proof (induction A rule: finite_psubset_induct)
     also have "R = (\<lambda>x. {y \<in> A - {x}. \<not>y \<le> x})" by (auto simp: R_def)
     also have "do {
                  x \<leftarrow> pmf_of_set A;
-                 (ls, rs) \<leftarrow> pair_pmf (pmf_of_set (permutations_of_set {y \<in> A - {x}. y \<le> x})) 
+                 (ls, rs) \<leftarrow> pair_pmf (pmf_of_set (permutations_of_set {y \<in> A - {x}. y \<le> x}))
                                       (pmf_of_set (permutations_of_set {y \<in> A - {x}. \<not>y \<le> x}));
                  return_pmf (Node (bst_of_list ls) x (bst_of_list rs))
-               } = 
+               } =
                do {
                  x \<leftarrow> pmf_of_set A;
-                 (ls, rs) \<leftarrow> map_pmf (partition (\<lambda>y. y \<le> x)) 
+                 (ls, rs) \<leftarrow> map_pmf (partition (\<lambda>y. y \<le> x))
                                (pmf_of_set (permutations_of_set (A - {x})));
                  return_pmf (Node (bst_of_list ls) x (bst_of_list rs))
                }" using \<open>finite A\<close>
       by (intro bind_pmf_cong refl partition_random_permutations [symmetric]) auto
     also have "\<dots> = do {
                       x \<leftarrow> pmf_of_set A;
-                      (ls, rs) \<leftarrow> map_pmf (\<lambda>xs. ([y\<leftarrow>xs. y < x], [y\<leftarrow>xs. y > x])) 
+                      (ls, rs) \<leftarrow> map_pmf (\<lambda>xs. ([y\<leftarrow>xs. y < x], [y\<leftarrow>xs. y > x]))
                                     (pmf_of_set (permutations_of_set (A - {x})));
                       return_pmf (Node (bst_of_list ls) x (bst_of_list rs))
                     }" using A
@@ -275,11 +275,11 @@ subsection \<open>Expected height\<close>
 text \<open>
   For the purposes of the analysis of the expected height, we define the following notion
   of `expected height', which is essentially two to the power of the height (as defined
-  by Cormen \textit{et al.}) with a special treatment for the empty tree, which has exponential 
+  by Cormen \textit{et al.}) with a special treatment for the empty tree, which has exponential
   height 0.
 
   Note that the height defined by Cormen \textit{et al.}\ differs from the @{const height}
-  function here in Isabelle in that for them, the height of the empty tree is undefined and 
+  function here in Isabelle in that for them, the height of the empty tree is undefined and
   the height of a singleton tree is 0 etc., whereas in Isabelle, the height of the empty tree is
   0 and the height of a singleton tree is 1.
 \<close>
@@ -292,21 +292,21 @@ lemma eheight_Leaf [simp]: "eheight Leaf = 0"
 lemma eheight_Node_singleton [simp]: "eheight (Node Leaf x Leaf) = 1"
   by (simp add: eheight_def)
 
-lemma eheight_Node: 
+lemma eheight_Node:
   "l \<noteq> Leaf \<or> r \<noteq> Leaf \<Longrightarrow> eheight (Node l x r) = 2 * max (eheight l) (eheight r)"
   by (cases l; cases r) (simp_all add: eheight_def max_power_distrib_right)
-  
+
 
 text \<open>
-  We now define the following upper bound on the expected exponential height due to 
+  We now define the following upper bound on the expected exponential height due to
   Cormen\ \textit{et\ al.}~\cite{cormen}:
-\<close>  
+\<close>
 definition eheight_exp_approx :: "nat \<Rightarrow> real" where
   "eheight_exp_approx n = real ((n + 3) choose 3) / 4"
- 
+
 text \<open>
   We then show that this is indeed an upper bound on the expected exponential height by induction
-  over the set of elements. This proof mostly follows that by Cormen\ \textit{et al.}~\cite{cormen}, 
+  over the set of elements. This proof mostly follows that by Cormen\ \textit{et al.}~\cite{cormen},
   and partially an answer on the Computer Science Stack Exchange~\cite{sofl}.
 \<close>
 lemma eheight_expectation_bound:
@@ -333,17 +333,17 @@ proof (induction A rule: finite_psubset_induct)
     from A have n: "n \<noteq> 0" by (auto simp: n_def)
     let ?rank = "linorder_rank {(x,y). x \<le> y} A"
     let ?eheight' = "\<lambda>t::'a tree. if t = Leaf then 0 else (2 ^ height t :: nat)"
-      
+
     have "EXP (random_bst A) (\<lambda>t. real (eheight t)) =
             measure_pmf.expectation (map_pmf (\<lambda>t. real (eheight t)) (random_bst A)) id"
       unfolding integral_map_pmf using A
       by (intro integral_cong_AE) (auto simp: random_bst_altdef eheight_def AE_measure_pmf_iff)
     also have "map_pmf (\<lambda>t. real (eheight t)) (random_bst A) =
-      pmf_of_set A \<bind> (\<lambda>x. map_pmf (\<lambda>(l,r). real (eheight (Node l x r))) 
+      pmf_of_set A \<bind> (\<lambda>x. map_pmf (\<lambda>(l,r). real (eheight (Node l x r)))
         (pair_pmf (random_bst {y\<in>A. y < x}) (random_bst {y\<in>A. y > x})))"
       using A by (subst random_bst.simps)
                  (simp_all add: A map_pmf_def bind_assoc_pmf bind_return_pmf pair_pmf_def)
-    also have "\<dots> = 
+    also have "\<dots> =
       pmf_of_set A \<bind> (\<lambda>x. map_pmf (\<lambda>(l,r). 2 * real (max (eheight l) (eheight r)))
         (pair_pmf (random_bst {y\<in>A. y < x}) (random_bst {y\<in>A. y > x})))"
     proof (intro bind_pmf_cong map_pmf_cong refl, clarify, goal_cases)
@@ -355,7 +355,7 @@ proof (induction A rule: finite_psubset_induct)
       with 1(2) and A have "l \<noteq> Leaf \<or> r \<noteq> Leaf" by (auto simp: random_bst_altdef)
       thus ?case by (simp add: eheight_Node)
     qed
-    also from A have "EXP \<dots> id = 
+    also from A have "EXP \<dots> id =
       (\<Sum>x\<in>A. EXP (pair_pmf (random_bst {y \<in> A. y < x}) (random_bst {y \<in> A. x < y}))
                 (\<lambda>(l,r). 2 * max (eheight l) (eheight r))) / n" (is "_ = ?S / _")
       by (subst pmf_expectation_bind_pmf_of_set)
@@ -365,7 +365,7 @@ proof (induction A rule: finite_psubset_induct)
                                  eheight_exp_approx (n - 1 - ?rank x)))"
     proof (intro sum_mono, goal_cases)
       case (1 x)
-      define lhs where 
+      define lhs where
         "lhs = EXP (pair_pmf (random_bst {y \<in> A. y < x}) (random_bst {y \<in> A. x < y}))
                    (\<lambda>(l,r). 2 * real (max (eheight l) (eheight r)))"
       have "lhs = 2 * EXP (pair_pmf (random_bst {y \<in> A. y < x}) (random_bst {y \<in> A. x < y}))
@@ -378,7 +378,7 @@ proof (induction A rule: finite_psubset_induct)
       also have "\<dots> = EXP (random_bst {y \<in> A. y < x}) eheight +
                       EXP (random_bst {y \<in> A. y > x}) eheight"
         unfolding eheight_def using A by (intro expectation_add_pair_pmf) auto
-      also have "\<dots> \<le> eheight_exp_approx (card {y \<in> A. y < x}) + 
+      also have "\<dots> \<le> eheight_exp_approx (card {y \<in> A. y < x}) +
                       eheight_exp_approx (card {y \<in> A. y > x})"
         using \<open>x \<in> A\<close> by (intro add_mono psubset.IH) auto
       also have "{y \<in> A. y > x} = A - {x} - {y \<in> A. y < x}" by auto
@@ -398,7 +398,7 @@ proof (induction A rule: finite_psubset_induct)
     also have "(\<Sum>i<n. eheight_exp_approx (n - 1 - i)) = (\<Sum>i<n. eheight_exp_approx i)"
       by (intro sum.reindex_bij_witness[of _ "\<lambda>i. n - 1 - i" "\<lambda>i. n - 1 - i"]) auto
     also have "2 * (\<dots> + \<dots>) = 4 * \<dots>" by simp
-    also have "4 * (\<Sum>i<n. eheight_exp_approx i) / real n = 
+    also have "4 * (\<Sum>i<n. eheight_exp_approx i) / real n =
                  (\<Sum>i<n. (i + 3) choose 3) / real n"
       using n by (simp add: eheight_exp_approx_def sum_divide_distrib [symmetric])
     also have "(\<Sum>i<n. (i + 3) choose 3) = (\<Sum>i\<le>n - 1. (i + 3) choose 3)"
@@ -424,7 +424,7 @@ text \<open>
 \<close>
 definition height_exp_approx :: "nat \<Rightarrow> real" where
   "height_exp_approx n = log 2 (eheight_exp_approx n) + 1"
-  
+
 theorem height_expectation_bound:
   assumes "finite A" "A \<noteq> {}"
   shows   "measure_pmf.expectation (random_bst A) height
@@ -440,7 +440,7 @@ proof -
        (auto intro!: integrable_measure_pmf_finite)
   also have "(\<lambda>t. 2 powr real (height t - 1)) = (\<lambda>t. 2 ^ (height t - 1))"
     by (simp add: powr_realpow)
-  also have "measure_pmf.expectation (random_bst A) (\<lambda>t. 2 ^ (height t - 1)) = 
+  also have "measure_pmf.expectation (random_bst A) (\<lambda>t. 2 ^ (height t - 1)) =
                measure_pmf.expectation (random_bst A) (\<lambda>t. real (eheight t))"
     using assms
     by (intro integral_cong_AE)
@@ -450,8 +450,8 @@ proof -
                measure_pmf.expectation (random_bst A) (\<lambda>t. real (height t) - 1)"
   proof (intro integral_cong_AE AE_pmfI, goal_cases)
     case (3 t)
-    with \<open>A \<noteq> {}\<close> and assms show ?case 
-      by (subst of_nat_diff) (auto simp: Suc_le_eq random_bst_altdef height_0_iff_Leaf)
+    with \<open>A \<noteq> {}\<close> and assms show ?case
+      by (subst of_nat_diff) (auto simp: Suc_le_eq random_bst_altdef)
   qed auto
   finally have "2 powr measure_pmf.expectation (random_bst A) (\<lambda>t. real (height t) - 1)
                   \<le> eheight_exp_approx (card A)" .
@@ -461,15 +461,15 @@ proof -
   also have "?lhs = measure_pmf.expectation (random_bst A) (\<lambda>t. real (height t) - 1)"
     by simp
   also have "\<dots> = measure_pmf.expectation (random_bst A) (\<lambda>t. real (height t)) - 1"
-    using assms 
+    using assms
     by (subst Bochner_Integration.integral_diff) (auto intro!: integrable_measure_pmf_finite)
   finally show ?thesis by (simp add: height_exp_approx_def)
 qed
-  
+
 text \<open>
-  This upper bound is asymptotically equivalent to $c \ln n$ with 
-  $c = \frac{3}{\ln 2} \approx 4.328$. This is actually a relatively tight upper bound, since 
-  the exact asymptotics of the expected height of a random BST is $c \ln n$ with 
+  This upper bound is asymptotically equivalent to $c \ln n$ with
+  $c = \frac{3}{\ln 2} \approx 4.328$. This is actually a relatively tight upper bound, since
+  the exact asymptotics of the expected height of a random BST is $c \ln n$ with
   $c \approx 4.311$.~\cite{reed} However, the proof of these precise asymptotics is very intricate
   and we will therefore be content with the upper bound.
 
@@ -491,10 +491,10 @@ next
     show "((\<lambda>x. inverse (x + c) / inverse x) \<longlongrightarrow> 1) at_top"
     proof (rule Lim_transform_eventually)
       show "eventually (\<lambda>x. inverse (1 + c / x) = inverse (x + c) / inverse x) at_top"
-        using eventually_gt_at_top[of "0::real"] eventually_gt_at_top[of "-c"] 
+        using eventually_gt_at_top[of "0::real"] eventually_gt_at_top[of "-c"]
         by eventually_elim (simp add: field_simps)
       have "((\<lambda>x. inverse (1 + c / x)) \<longlongrightarrow> inverse (1 + 0)) at_top"
-        by (intro tendsto_inverse tendsto_add tendsto_const 
+        by (intro tendsto_inverse tendsto_add tendsto_const
               real_tendsto_divide_at_top[OF tendsto_const] filterlim_ident) simp_all
       thus "((\<lambda>x. inverse (1 + c / x)) \<longlongrightarrow> 1) at_top" by simp
     qed
@@ -504,7 +504,7 @@ qed
 corollary height_expectation_bigo: "height_exp_approx \<in> O(ln)"
 proof -
   let ?T = "\<lambda>x::real. log 2 (x + 1) + log 2 (x + 2) + log 2 (x + 3) + (1 - log 2 24)"
-  have "eventually (\<lambda>n. height_exp_approx n = 
+  have "eventually (\<lambda>n. height_exp_approx n =
           log 2 (real n + 1) + log 2 (real n + 2) + log 2 (real n + 3) + (1 - log 2 24)) at_top"
     (is "eventually (\<lambda>n. _ = ?T n) at_top") using eventually_gt_at_top[of "0::nat"]
   proof eventually_elim
@@ -531,67 +531,67 @@ qed
 subsection \<open>Lookup costs\<close>
 
 text \<open>
-  The following function describes the cost incurred when looking up a specific element 
+  The following function describes the cost incurred when looking up a specific element
   in a specific BST. The cost corresponds to the number of edges traversed in the lookup.
 \<close>
 
 primrec lookup_cost :: "'a :: linorder \<Rightarrow> 'a tree \<Rightarrow> nat" where
   "lookup_cost x Leaf = 0"
-| "lookup_cost x (Node l y r) = 
+| "lookup_cost x (Node l y r) =
      (if x = y then 0
       else if x < y then Suc (lookup_cost x l)
       else Suc (lookup_cost x r))"
-  
+
 text \<open>
   Some of the literature defines these costs as 1 in the case that the current node is
   the correct one, i.\,e.\ their costs are our costs plus 1. These alternative costs are
-  exactly the number of comparisons performed in the lookup. Our cost function has the 
-  advantage of precisely summing up to the internal path length and therefore gives us 
-  slightly nicer results, and since the difference is only a ${}+1$ in the end, this 
+  exactly the number of comparisons performed in the lookup. Our cost function has the
+  advantage of precisely summing up to the internal path length and therefore gives us
+  slightly nicer results, and since the difference is only a ${}+1$ in the end, this
   variant seemed more reasonable.
 \<close>
 
 text \<open>
-  It can be shown with a simple induction that The sum of all lookup costs in a tree is the 
+  It can be shown with a simple induction that The sum of all lookup costs in a tree is the
   internal path length of the tree.
 \<close>
-theorem sum_lookup_costs: 
+theorem sum_lookup_costs:
   fixes t :: "'a :: linorder tree"
   assumes "bst t"
-  shows   "(\<Sum>x\<in>set_tree t. lookup_cost x t) = path_len t"
+  shows   "(\<Sum>x\<in>set_tree t. lookup_cost x t) = ipl t"
 using assms
 proof (induction t)
   case (Node l x r)
-  from Node.prems 
+  from Node.prems
     have disj: "x \<notin> set_tree l" "x \<notin> set_tree r" "set_tree l \<inter> set_tree r = {}" by force+
   have "set_tree (Node l x r) = insert x (set_tree l \<union> set_tree r)" by simp
-  also have "(\<Sum>y\<in>\<dots>. lookup_cost y (Node l x r)) = lookup_cost x \<langle>l, x, r\<rangle> + 
+  also have "(\<Sum>y\<in>\<dots>. lookup_cost y (Node l x r)) = lookup_cost x \<langle>l, x, r\<rangle> +
                (\<Sum>y\<in>set_tree l. lookup_cost y \<langle>l, x, r\<rangle>) + (\<Sum>y\<in>set_tree r. lookup_cost y \<langle>l, x, r\<rangle>)"
     using disj by (simp add: sum.union_disjoint)
   also have "(\<Sum>y\<in>set_tree l. lookup_cost y \<langle>l, x, r\<rangle>) = (\<Sum>y\<in>set_tree l. 1 + lookup_cost y l)"
     using disj and Node by (intro sum.cong refl) auto
-  also have "\<dots> = size l + path_len l" using Node 
+  also have "\<dots> = size l + ipl l" using Node
     by (subst sum.distrib) (simp_all add: card_set_tree_bst)
   also have "(\<Sum>y\<in>set_tree r. lookup_cost y \<langle>l, x, r\<rangle>) = (\<Sum>y\<in>set_tree r. 1 + lookup_cost y r)"
     using disj and Node by (intro sum.cong refl) auto
-  also have "\<dots> = size r + path_len r" using Node
+  also have "\<dots> = size r + ipl r" using Node
     by (subst sum.distrib) (simp_all add: card_set_tree_bst)
   finally show ?case by simp
 qed simp_all
 
 text \<open>
-  This allows us to easily show that the expected cost of looking up a random element in a 
+  This allows us to easily show that the expected cost of looking up a random element in a
   fixed tree is the internal path length divided by the number of elements.
 \<close>
 theorem expected_lookup_cost:
   assumes "bst t" "t \<noteq> Leaf"
-  shows   "measure_pmf.expectation (pmf_of_set (set_tree t)) (\<lambda>x. lookup_cost x t) = 
-             path_len t / size t"
+  shows   "measure_pmf.expectation (pmf_of_set (set_tree t)) (\<lambda>x. lookup_cost x t) =
+             ipl t / size t"
   using assms by (subst integral_pmf_of_set)
                  (simp_all add: sum_lookup_costs of_nat_sum [symmetric] card_set_tree_bst)
-                 
+
 text \<open>
-  Therefore, we will now turn to analysing the internal path length of a random BST. This 
+  Therefore, we will now turn to analysing the internal path length of a random BST. This
   then clearly related to the expected lookup costs of a random element in a random BST by
   the above result.
 \<close>
@@ -600,14 +600,14 @@ text \<open>
 subsection \<open>Average Path Length\<close>
 
 text \<open>
-  The internal path length satisfies the recursive equation @{thm path_len.simps(2)[of l x r]}.
+  The internal path length satisfies the recursive equation @{thm ipl.simps(2)[of l x r]}.
   This is quite similar to the number of comparisons performed by QuickSort, and indeed, we can
-  reduce the internal path length of a random BST to the number of comparisons performed by 
+  reduce the internal path length of a random BST to the number of comparisons performed by
   QuickSort on a randomly-ordered list relatively easily:
 \<close>
 theorem map_pmf_random_bst_eq_rqs_cost:
   assumes "finite A"
-  shows   "map_pmf path_len (random_bst A) = rqs_cost (card A)"
+  shows   "map_pmf ipl (random_bst A) = rqs_cost (card A)"
 using assms
 proof (induction A rule: finite_psubset_induct)
   case (psubset A)
@@ -618,18 +618,18 @@ proof (induction A rule: finite_psubset_induct)
     define n where "n = card A - 1"
     define rank :: "'a \<Rightarrow> nat" where "rank = linorder_rank {(x,y). x \<le> y} A"
     from A have card: "card A = Suc n" by (cases "card A") (auto simp: n_def)
-    from A have "map_pmf path_len (random_bst A) =
+    from A have "map_pmf ipl (random_bst A) =
                    do {
                      x \<leftarrow> pmf_of_set A;
                      (l,r) \<leftarrow> pair_pmf (random_bst {y \<in> A. y < x}) (random_bst {y \<in> A. y > x});
-                     return_pmf (path_len (Node l x r))
-                   }" 
-      by (subst random_bst.simps) 
+                     return_pmf (ipl (Node l x r))
+                   }"
+      by (subst random_bst.simps)
          (simp_all add: pair_pmf_def card map_pmf_def bind_assoc_pmf bind_return_pmf)
     also have "\<dots> = do {
                       x \<leftarrow> pmf_of_set A;
                       (l,r) \<leftarrow> pair_pmf (random_bst {y \<in> A. y < x}) (random_bst {y \<in> A. y > x});
-                      return_pmf (n + path_len l + path_len r)
+                      return_pmf (n + ipl l + ipl r)
                     }"
     proof (intro bind_pmf_cong refl, clarify, goal_cases)
       case (1 x l r)
@@ -638,13 +638,13 @@ proof (induction A rule: finite_psubset_induct)
       also have "card \<dots> = card {y\<in>A. y < x} + card {y\<in>A. y > x}"
         using \<open>finite A\<close> by (intro card_Un_disjoint) auto
       also from 1 and A have "card {y\<in>A. y < x} = size l" by (auto dest: size_random_bst)
-      also from 1 and A have "card {y\<in>A. y > x} = size r" by (auto dest: size_random_bst)   
+      also from 1 and A have "card {y\<in>A. y > x} = size r" by (auto dest: size_random_bst)
       finally show ?case by simp
     qed
     also have "\<dots> = do {
                       x \<leftarrow> pmf_of_set A;
-                      (l,r) \<leftarrow> pair_pmf (map_pmf path_len (random_bst {y \<in> A. y < x})) 
-                                        (map_pmf path_len (random_bst {y \<in> A. y > x}));
+                      (l,r) \<leftarrow> pair_pmf (map_pmf ipl (random_bst {y \<in> A. y < x}))
+                                        (map_pmf ipl (random_bst {y \<in> A. y > x}));
                       return_pmf (n + l + r)
                     }" by (simp add: map_pair [symmetric] case_prod_unfold bind_map_pmf)
     also have "\<dots> = do {
@@ -654,14 +654,14 @@ proof (induction A rule: finite_psubset_induct)
                     }" (is "_ = bind_pmf _ ?f") unfolding bind_map_pmf
     proof (intro bind_pmf_cong refl pair_pmf_cong, goal_cases)
       case (1 x)
-      have "map_pmf path_len (random_bst {y \<in> A. y < x}) = rqs_cost (card {y \<in> A. y < x})"
+      have "map_pmf ipl (random_bst {y \<in> A. y < x}) = rqs_cost (card {y \<in> A. y < x})"
         using 1 and A by (intro psubset.IH) auto
       also have "{y \<in> A. y < x} = {y \<in> A - {x}. y \<le> x}" by auto
       hence "card {y \<in> A. y < x} = rank x" by (simp add: rank_def linorder_rank_def)
       finally show ?case .
     next
       case (2 x)
-      have "map_pmf path_len (random_bst {y \<in> A. y > x}) = rqs_cost (card {y \<in> A. y > x})"
+      have "map_pmf ipl (random_bst {y \<in> A. y > x}) = rqs_cost (card {y \<in> A. y > x})"
         using 2 and A by (intro psubset.IH) auto
       also have "{y \<in> A. y > x} = A - {x} - {y \<in> A - {x}. y \<le> x}" by auto
       hence "card {y \<in> A. y > x} = card \<dots>" by (simp only:)
@@ -681,27 +681,27 @@ qed
 text \<open>
   In particular, this means that the expected values are the same:
 \<close>
-corollary expected_path_len_random_bst_eq:
+corollary expected_ipl_random_bst_eq:
   assumes "finite A"
-  shows   "measure_pmf.expectation (random_bst A) path_len = rqs_cost_exp (card A)"
+  shows   "measure_pmf.expectation (random_bst A) ipl = rqs_cost_exp (card A)"
 proof -
-  have "measure_pmf.expectation (random_bst A) path_len =
-          measure_pmf.expectation (map_pmf path_len (random_bst A)) real" by simp
-  also from assms have "map_pmf path_len (random_bst A) = rqs_cost (card A)"
+  have "measure_pmf.expectation (random_bst A) ipl =
+          measure_pmf.expectation (map_pmf ipl (random_bst A)) real" by simp
+  also from assms have "map_pmf ipl (random_bst A) = rqs_cost (card A)"
     by (rule map_pmf_random_bst_eq_rqs_cost)
   also have "measure_pmf.expectation \<dots> real = rqs_cost_exp (card A)"
     by (rule expectation_rqs_cost)
   finally show ?thesis .
 qed
-  
+
 text \<open>
-  Therefore, the results about the expected number of comparisons of QuickSort carry over 
+  Therefore, the results about the expected number of comparisons of QuickSort carry over
   to the expected internal path length:
 \<close>
-corollary expected_path_len_random_bst_eq':
+corollary expected_ipl_random_bst_eq':
   assumes "finite A"
-  shows   "measure_pmf.expectation (random_bst A) path_len = 
+  shows   "measure_pmf.expectation (random_bst A) ipl =
              2 * real (card A + 1) * harm (card A) - 4 * real (card A)"
-  by (simp add: expected_path_len_random_bst_eq rqs_cost_exp_eq assms)  
-  
+  by (simp add: expected_ipl_random_bst_eq rqs_cost_exp_eq assms)
+
 end
