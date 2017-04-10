@@ -738,6 +738,13 @@ lemma zmset_of_le: "zmset_of M \<le> zmset_of N \<longleftrightarrow> M \<le> N"
 instance zmultiset :: (preorder) ordered_ab_semigroup_add
   by (intro_classes, unfold less_eq_zmultiset_def, transfer, auto simp: equiv_zmset_def)
 
+lemma uminus_add_conv_diff_mset[cancelation_simproc_pre]: \<open>-a + b = b - a\<close> for a :: \<open>'a zmultiset\<close>
+  by (simp add: add.commute)
+
+
+lemma uminus_add_add_uminus[cancelation_simproc_pre]: \<open>b -a + c = b + c - a\<close> for a :: \<open>'a zmultiset\<close>
+  by (simp add: uminus_add_conv_diff_mset zmset_subset_eq_zmultiset_union_diff_commute)
+
 lemma add_zmset_eq_add_NO_MATCH[cancelation_simproc_pre]:
   \<open>NO_MATCH {#}\<^sub>z H \<Longrightarrow> add_zmset a H = {#a#}\<^sub>z + H\<close>
   by auto
@@ -810,6 +817,13 @@ simproc_setup zmsetless_eq_cancel
    "replicate_zmset p a \<le> n" | "m \<le> replicate_zmset p a" |
    "repeat_zmset p m \<le> n" | "m \<le> repeat_zmset p m") =
   \<open>fn phi => Cancel_Simprocs.less_eq_cancel\<close>
+
+simproc_setup zmsetdiff_cancel
+  ("n + (l::'a zmultiset)" | "(l::'a zmultiset) - m" |
+   "add_zmset a m - n" | "m - add_zmset a n" |
+   "replicate_zmset p r - n" | "m - replicate_zmset p r" |
+   "repeat_zmset p m - n" | "m - repeat_zmset p m") =
+  \<open>fn phi => Cancel_Simprocs.diff_cancel\<close>
 
 instance zmultiset :: (linorder) linordered_cancel_ab_semigroup_add
   by (intro_classes, unfold less_eq_zmultiset_def, transfer, auto simp: equiv_zmset_def add.commute)
