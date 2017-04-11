@@ -49,27 +49,6 @@ proof - let "?P x y" = "f x = f y"
   show ?thesis using comm_monoid_mult_class.prod_list.induct_gen_abs[of _ ?P,OF assms] by auto
 qed
 
-context semiring_hom begin
-lemma map_poly_single[simp]:
-  "map_poly hom [:h:] = ([:hom h:])"
-  unfolding map_poly_def fold_coeffs_def coeffs_def by simp
-lemma map_poly_preserves_prod_list[simp]:
-  "map_poly hom (prod_list x) = prod_list (map (map_poly hom) x)"
-  by(induct x,auto simp:one_poly_def)
-lemma map_poly_preserves_sum_list[simp]:
-  "map_poly hom (sum_list x) = sum_list (map (map_poly hom) x)"
-  by(induct x,auto simp:one_poly_def)
-end
-
-context inj_semiring_hom
-begin
-declare map_poly_0_iff[simp add]
-lemma map_poly_preservers:
-  "hom (lead_coeff p) = lead_coeff (map_poly hom p)"
-  "hom (coeff p n) = coeff (map_poly hom p) n"
-  unfolding poly_eq_iff by simp_all
-end
-
 abbreviation complex_of_int::"int => complex" where
   "complex_of_int \<equiv> of_int"
 
@@ -237,7 +216,7 @@ lemma prod_cmod[simp]:
   by(induct lst,auto simp:real_normed_div_algebra_class.norm_mult)
 
 lemma lead_coeff_of_prod[simp]:
-  "lead_coeff (\<Prod>a\<leftarrow>lst. f a::'a::{idom} poly) = (\<Prod>a\<leftarrow>lst. lead_coeff (f a))"
+  "lead_coeff (\<Prod>a\<leftarrow>lst. f a::'a::idom poly) = (\<Prod>a\<leftarrow>lst. lead_coeff (f a))"
 by(induct lst,auto simp:lead_coeff_mult)
 
 lemma ineq_about_squares:assumes "x \<le> (y::real)" shows "x \<le> c^2 + y" using assms
@@ -714,7 +693,7 @@ lemma (in inj_ring_hom) map_poly_poly_square_subst:
   unfolding poly_square_subst_def coeffs_map_poly drop_half_map poly_of_list_def
   by (rule poly_eqI, auto simp: nth_default_map_eq)
 
-locale inj_idom_hom = idom_hom + inj_ring_hom
+context inj_idom_hom 
 begin
 
 lemma graeffe_poly_impl_hom: 

@@ -93,6 +93,8 @@ end
 
 locale idom_hom = ring_hom hom 
   for hom :: "'a :: idom \<Rightarrow> 'b :: idom"
+  
+locale inj_idom_hom = idom_hom + inj_ring_hom
 
 locale field_hom = idom_hom hom
   for hom :: "'a :: field \<Rightarrow> 'b :: field"

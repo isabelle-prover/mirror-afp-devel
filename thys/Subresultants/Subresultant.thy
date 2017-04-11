@@ -11,14 +11,9 @@ text \<open>This theory contains most of the soundness proofs of the subresultan
 
 theory Subresultant
 imports
-  Missing_Determinant
-  "../Berlekamp_Zassenhaus/Mahler_Measure" (* for inj_idom_hom, TODO: reorganize *)
+  "../Jordan_Normal_Form/Determinant"
   "../Berlekamp_Zassenhaus/Resultant"
 begin
-
-abbreviation pdivmod :: "'a::field poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly \<times> 'a poly"
-where
-  "pdivmod p q \<equiv> (p div q, p mod q)"
 
 subsection \<open>Algorithm\<close>
 
@@ -59,6 +54,10 @@ definition resultant_impl where
       if even (degree f) \<or> even (degree g) then res else - res)"
 
 subsection \<open>Soundness Proof for @{term "resultant_impl = resultant"}\<close>
+
+abbreviation pdivmod :: "'a::field poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly \<times> 'a poly"
+where
+  "pdivmod p q \<equiv> (p div q, p mod q)"
 
 lemma even_sum_list: assumes "\<And> x. x \<in> set xs \<Longrightarrow> even (f x) = even (g x)"
   shows "even (sum_list (map f xs)) = even (sum_list (map g xs))"
@@ -135,22 +134,6 @@ lemma pseudo_mod_zero[simp]:
 "pseudo_mod f 0 = f"
 unfolding pseudo_mod_def snd_pseudo_mod_smult_left[of 0 _ f,simplified]
 unfolding pseudo_divmod_def by auto
-
-context inj_ring_hom
-begin
-lemma length_coeffs_hom[simp]:"length (coeffs (map_poly hom q)) = length (coeffs q)"
-  by(induct q,auto)
-lemma pseudo_divmod_main_hom:
-  "pseudo_divmod_main (hom lc) (map_poly hom q) (map_poly hom r) (map_poly hom d) dr i =
-  map_prod (map_poly hom) (map_poly hom) (pseudo_divmod_main lc q r d dr i)"
-  by (induct lc q r d dr i rule:pseudo_divmod_main.induct, auto simp: map_poly_minus Let_def)
-
-lemma pseudo_divmod_hom: "pseudo_divmod (map_poly hom p) (map_poly hom q) = map_prod (map_poly hom) (map_poly hom) (pseudo_divmod p q)"
-  unfolding pseudo_divmod_def using pseudo_divmod_main_hom[of _ 0] by (cases "q = 0",auto)
-end
-
-lemma (in inj_idom_hom) pseudo_mod_hom: "pseudo_mod (map_poly hom p) (map_poly hom q) = map_poly hom (pseudo_mod p q)"
-  using pseudo_divmod_hom unfolding pseudo_mod_def by auto
 
 (* part on prod_list *)
 
@@ -390,9 +373,8 @@ proof -
   have change: "j < degree f - J + (degree g - J) \<Longrightarrow> ((if j < degree f - J then j + (degree g - J) else j - (degree f - J)) < degree g - J)
     = (\<not> (j < degree f - J))" for j by auto
   have "subresultant J f g = det ?A" unfolding subresultant_def by simp
-  also have "\<dots> = (-1)^(?k * ?n) * det (mat (?k + ?n) (?k + ?n) (\<lambda> (i,j). let c =
-      (if j < ?k then j + ?n else j - ?k)
-      in ?A $$ (i,c)))" (is "_ = _ * det ?B")
+  also have "\<dots> = (-1)^(?k * ?n) * det (mat (?k + ?n) (?k + ?n) (\<lambda> (i,j). 
+    ?A $$ (i,(if j < ?k then j + ?n else j - ?k))))" (is "_ = _ * det ?B")
     by (rule det_swap_cols, auto simp: subresultant_mat_def Let_def)
   also have "?B = subresultant_mat J g f"
     unfolding subresultant_mat_def Let_def
@@ -2635,8 +2617,6 @@ partial_function(tailrec) subresultant_prs_main_impl where
        divisor = (-1) ^ (d1 + 1) * gi_1 * (hi_1 ^ d1) ;
        Gi_p1 = divide_poly pmod divisor
        in subresultant_prs_main_impl f Gi Gi_p1 ni d1 hi_1))"
-
-declare subresultant_prs_main_impl.simps[simp del]
 
 definition subresultant_prs_impl where
   [code del]: "subresultant_prs_impl f G1 G2 = (let

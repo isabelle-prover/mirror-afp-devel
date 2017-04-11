@@ -6,9 +6,7 @@ session Subresultants (AFP) = "Berlekamp_Zassenhaus" +
   theories [document = false]
     "../Jordan_Normal_Form/Determinant"
     "../Berlekamp_Zassenhaus/Resultant"
-    "../Berlekamp_Zassenhaus/Mahler_Measure"
   theories
-    "Missing_Determinant"
     "Missing_Polynomial_Factorial"
   theories
     "Subresultant_Gcd"

@@ -498,6 +498,10 @@ lemma mat_carrierD[dest,simp]: assumes "A \<in> mat_carrier nr nc"
   shows "dim\<^sub>r A = nr" "dim\<^sub>c A = nc" using assms
   unfolding mat_carrier_def by auto
 
+lemma mat_cong: assumes "nr = nr'" "nc = nc'" "\<And> i j. i < nr \<Longrightarrow> j < nc \<Longrightarrow> 
+  f (i,j) = f' (i,j)" shows "mat nr nc f = mat nr' nc' f'" 
+  by (rule mat_eqI, insert assms, auto)
+    
 definition row :: "'a mat \<Rightarrow> nat \<Rightarrow> 'a vec" where 
   "row A i = vec (dim\<^sub>c A) (\<lambda> j. A $$ (i,j))"
 

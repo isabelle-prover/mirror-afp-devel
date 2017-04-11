@@ -189,11 +189,11 @@ lemma coeff_map_poly_hom[simp]: "coeff (map_poly hom p) i = hom (coeff p i)"
 lemma map_poly_pCons_hom[simp]: "map_poly hom (pCons a p) = pCons (hom a) (map_poly hom p)"
   unfolding map_poly_simps by auto
 
-lemma (in semiring_hom) monom_hom: "monom (hom a) d = map_poly hom (monom a d)"
+lemma monom_hom: "monom (hom a) d = map_poly hom (monom a d)"
   apply(induct d) unfolding monom_0 apply simp
   unfolding monom_Suc by simp
 
-lemma (in semiring_hom) map_poly_hom_as_monom_sum:
+lemma map_poly_hom_as_monom_sum:
   "(\<Sum>j\<le>degree p. monom (hom (coeff p j)) j) = map_poly hom p"
 proof -
   interpret rhm: semiring_hom "map_poly hom" by(unfold_locales,auto)
@@ -205,6 +205,18 @@ qed
 lemma map_poly_pcompose: 
   "map_poly hom (f \<circ>\<^sub>p g) = map_poly hom f \<circ>\<^sub>p map_poly hom g" 
   by (induct f arbitrary: g, auto)
+
+lemma map_poly_single[simp]:
+  "map_poly hom [:h:] = ([:hom h:])"
+  unfolding map_poly_def fold_coeffs_def coeffs_def by simp
+
+lemma map_poly_preserves_prod_list[simp]:
+  "map_poly hom (prod_list x) = prod_list (map (map_poly hom) x)"
+  by(induct x,auto simp:one_poly_def)
+
+lemma map_poly_preserves_sum_list[simp]:
+  "map_poly hom (sum_list x) = sum_list (map (map_poly hom) x)"
+  by(induct x,auto simp:one_poly_def)    
 end
 
 locale map_poly_semiring_hom = semiring_hom
@@ -269,7 +281,10 @@ qed
   
 context inj_semiring_hom
 begin
-lemma map_poly_0_iff: "map_poly hom p = 0 \<longleftrightarrow> p = 0"
+lemma length_coeffs_hom[simp]: "length (coeffs (map_poly hom q)) = length (coeffs q)"
+  by(induct q,auto)
+
+lemma map_poly_0_iff[simp]: "map_poly hom p = 0 \<longleftrightarrow> p = 0"
   unfolding poly_eq_iff coeff_map_poly by auto
 
 lemma degree_map_poly[simp]: "degree (map_poly hom p) = degree p"
@@ -279,6 +294,11 @@ lemma map_poly_inj: assumes "map_poly hom p = map_poly hom q"
   shows "p = q"
   by (rule map_poly_inj[OF assms], auto simp: hom_inj)
 
+lemma map_poly_preservers:
+  "hom (lead_coeff p) = lead_coeff (map_poly hom p)"
+  "hom (coeff p n) = coeff (map_poly hom p) n"
+  unfolding poly_eq_iff by simp_all
+    
 lemma coeffs_map_poly: "(coeffs (map_poly hom p)) = map hom (coeffs p)" 
   by (rule coeffs_map_poly, auto)
 
@@ -287,15 +307,31 @@ proof -
   interpret semiring_hom "map_poly hom" by (rule semiring_hom_map_poly)
   show ?thesis
     by (unfold_locales, rule map_poly_inj)
-qed
+qed  
 end
 
-lemma (in inj_ring_hom) inj_ring_hom_map_poly: "inj_ring_hom (map_poly hom)"
+context inj_ring_hom
+begin
+lemma pseudo_divmod_main_hom:
+  "pseudo_divmod_main (hom lc) (map_poly hom q) (map_poly hom r) (map_poly hom d) dr i =
+  map_prod (map_poly hom) (map_poly hom) (pseudo_divmod_main lc q r d dr i)"
+  by (induct lc q r d dr i rule:pseudo_divmod_main.induct, auto simp: map_poly_minus Let_def)
+  
+lemma pseudo_divmod_hom: "pseudo_divmod (map_poly hom p) (map_poly hom q) = map_prod (map_poly hom) (map_poly hom) (pseudo_divmod p q)"
+  unfolding pseudo_divmod_def using pseudo_divmod_main_hom[of _ 0] by (cases "q = 0",auto)
+    
+lemma inj_ring_hom_map_poly: "inj_ring_hom (map_poly hom)"
 proof -
   interpret inj_semiring_hom "map_poly hom" by (rule inj_semiring_hom_map_poly)
   interpret ring_hom "map_poly hom" by (rule ring_hom_map_poly)
   show ?thesis by unfold_locales
-qed
+qed  
+end
+
+lemma (in inj_idom_hom) pseudo_mod_hom: 
+  "pseudo_mod (map_poly hom p) (map_poly hom q) = map_poly hom (pseudo_mod p q)"
+  using pseudo_divmod_hom unfolding pseudo_mod_def by auto
+  
 
 locale inj_ring_hom_map_poly = inj_ring_hom
 begin
