@@ -1,7 +1,7 @@
 chapter AFP
 
 session Subresultants (AFP) = "Berlekamp_Zassenhaus" +
-  description {* Algebraic Numbers *}
+  description {* Subresultants *}
   options [timeout = 600]
   theories [document = false]
     "../Jordan_Normal_Form/Determinant"
