@@ -758,10 +758,6 @@ proof -
 qed
 
 subsection \<open>Map over Polynomial Coefficients\<close>
-
-definition map_poly :: "('a::zero \<Rightarrow> 'b::zero) \<Rightarrow> 'a poly \<Rightarrow> 'b poly"
-  where "map_poly f p = fold_coeffs (\<lambda>c. pCons (f c)) p 0"
-
 lemma map_poly_simps:
   shows "map_poly f (pCons c p) =
     (if c = 0 \<and> p = 0 then 0 else pCons (f c) (map_poly f p))"
@@ -770,26 +766,16 @@ proof (cases "c = 0")
     proof (cases "p = 0")
       case True thus ?thesis using c0 unfolding map_poly_def by simp
       next case False thus ?thesis
-        unfolding map_poly_def
-        apply(subst fold_coeffs_pCons_not_0_0_eq) by auto
+        unfolding map_poly_def by auto
     qed
   next case False thus ?thesis
-    unfolding map_poly_def
-    apply (subst fold_coeffs_pCons_coeff_not_0_eq) by auto
+    unfolding map_poly_def by auto
 qed
 
 lemma map_poly_pCons[simp]:
   assumes "c \<noteq> 0 \<or> p \<noteq> 0"
   shows "map_poly f (pCons c p) = pCons (f c) (map_poly f p)"
   unfolding map_poly_simps using assms by auto
-
-lemma map_poly_simp_0[simp]:
-  shows "map_poly f 0 = 0" unfolding map_poly_def by simp
-
-lemma map_poly_id[simp]: "map_poly (id::'a::zero \<Rightarrow> 'a) = id"
-proof(rule ext)
-  fix p::"'a poly" show "map_poly id p = id p" by (induct p; simp)
-qed
 
 lemma map_poly_map_poly:
   assumes f0: "f 0 = 0"
@@ -815,40 +801,6 @@ lemma map_poly_zero:
   assumes f: "\<forall>c. f c = 0 \<longrightarrow> c = 0"
   shows [simp]: "map_poly f p = 0 \<longleftrightarrow> p = 0"
   by (induct p; auto simp: map_poly_simps f)
-
-lemma coeff_map_poly:
-  assumes "f 0 = 0"
-  shows "coeff (map_poly f p) i = f (coeff p i)"
-proof(induct p arbitrary:i)
-  case 0 show ?case using assms by simp
-  next case (pCons c p)
-    hence cp0: "\<not> (c = 0 \<and> p = 0)" by auto
-    show ?case
-    proof(cases "i = 0")
-      case True thus ?thesis
-        unfolding map_poly_simps using assms by simp
-      next case False
-        then obtain j where j: "i = Suc j" using not0_implies_Suc by blast
-        show ?thesis
-        unfolding map_poly_simps j
-        using pCons by(simp add: cp0)
-    qed
-qed
-
-lemma map_poly_monom:
-  assumes "f 0 = 0" shows "map_poly f (monom a i) = monom (f a) i"
-proof(induct i)
-  case 0 show ?case
-    unfolding monom_0 unfolding map_poly_simps using assms by simp
-  next case (Suc i) show ?case
-    unfolding monom_Suc unfolding map_poly_simps unfolding Suc
-    using assms by simp
-qed
-
-lemma map_poly_ext:
-  assumes "\<And>a. a \<in> set (coeffs p) \<Longrightarrow> f a = g a"
-  shows "map_poly f p = map_poly g p"
-  using assms by(induct p, auto)
 
 lemma map_poly_add:
   assumes h0: "h 0 = 0"
@@ -1009,7 +961,7 @@ proof (rule ccontr)
   ultimately show False by (simp add: coeff_eq_0)
 qed
 
-lemma map_div_is_smult_inverse: "Polynomial.map_poly (\<lambda>x. x / (a :: 'a :: field)) p = smult (inverse a) p" 
+lemma map_div_is_smult_inverse: "map_poly (\<lambda>x. x / (a :: 'a :: field)) p = smult (inverse a) p" 
   unfolding smult_conv_map_poly
   by (simp add: divide_inverse_commute)
 

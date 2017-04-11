@@ -140,7 +140,7 @@ proof -
   have p: "p = map_poly int_of_rat rp" and ball: "Ball (set (coeffs rp)) is_int_rat"
     by (auto split: if_splits)
   have id: "rp = map_poly ?r p" unfolding p
-    by (rule sym, subst map_poly_compose, force+, rule map_poly_eqI, insert ball, auto)
+    by (rule sym, subst map_poly_map_poly, force+, rule map_poly_idI, insert ball, auto)
   note inter = interpolation_poly[OF dist rp]
   {
     fix x y

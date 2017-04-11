@@ -1065,7 +1065,7 @@ proof
       have "Mp (h * [: d :]) = Mp (Mp h * [: d :])" by simp
       also have "\<dots> = Mp ([: c * d :])" unfolding hc by (auto simp: ac_simps)
       also have "\<dots> = [: M (c * d) :]" unfolding Mp_def
-          by (metis (no_types) M_0 Missing_Polynomial.map_poly_pCons Mp_0 Mp_def d zero_neq_one)
+        by (metis (no_types) M_0 map_poly_pCons Mp_0 Mp_def d zero_neq_one)
       also have "\<dots> = 1" unfolding d one_poly_def by simp
       finally show "Mp 1 = Mp (h * [:d:])" by simp
     qed

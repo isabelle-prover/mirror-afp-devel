@@ -36,7 +36,7 @@ proof -
   have id: "of_rat = complex_of_real o real_of_rat" by auto
   interpret cr: semiring_hom complex_of_real by (unfold_locales, auto)
   show ?thesis unfolding id
-    by (subst map_poly_compose[symmetric], force+)
+    by (subst map_poly_map_poly[symmetric], force+)
 qed
 
 lemma alg_poly_cnj: assumes "alg_poly x p"
@@ -227,7 +227,7 @@ proof -
     by (auto simp: rr'[symmetric] card_distinct) 
   have conv: "\<And> x. rpoly p x = 0 \<longleftrightarrow> poly ?q x = 0"
     unfolding poly_complex_of_rat_poly[symmetric] q_def
-    by (subst map_poly_compose, auto simp: o_def)
+    by (subst map_poly_map_poly, auto simp: o_def)
   have r: "?r = {x. poly ?q x = 0}" unfolding conv ..
   show ?thesis
   proof (cases "degree p = count_roots_rat p")
@@ -294,7 +294,7 @@ proof -
       let ?cr = "map_poly of_real :: real poly \<Rightarrow> complex poly"
       define pp where "pp = complex_of_rat_poly p"
       have id: "pp = map_poly of_real q" unfolding q_def pp_def
-        by (subst map_poly_compose, auto simp: o_def)
+        by (subst map_poly_map_poly, auto simp: o_def)
       let ?rts = "map (\<lambda> x. [:-x,1:]) rr"
       define rts where "rts = prod_list ?rts"
       let ?c2 = "?cr (q div rts)"
@@ -481,9 +481,9 @@ proof -
         from 0 1 2 have l: "?l = set (complex_roots_of_rat_poly ?q)" unfolding d by auto
         from deg 0 1 2 have rat: "set (coeffs p) \<subseteq> \<rat>" by auto
         have "p = map_poly (of_rat o to_rat) p"
-          by (rule sym, rule map_poly_eqI, insert rat, auto)
+          by (rule sym, rule map_poly_idI, insert rat, auto)
         also have "\<dots> = complex_of_rat_poly ?q"
-          by (subst map_poly_compose, auto simp: to_rat)
+          by (subst map_poly_map_poly, auto simp: to_rat)
         finally have id: "{x. poly p x = 0} = {x. poly (complex_of_rat_poly ?q) x = 0}" and q: "?q \<noteq> 0" 
           using p by auto
         from complex_roots_of_rat_poly[OF q, folded id[unfolded poly_complex_of_rat_poly] l] show ?thesis .

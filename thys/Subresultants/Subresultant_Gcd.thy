@@ -315,8 +315,7 @@ lemma gcd_impl_main_code[code]:
       p2 = map_poly (\<lambda> x. x div c2) G2
      in smult (gcd c1 c2) (normalize (primitive_part (gcd_impl_start p1 p2))))"
   unfolding gcd_impl_main_def Let_def primitive_part_def gcd_impl_start_def gcd_impl_primitive_def
-    subresultant_prs_impl
-  by (simp add: map_poly_eq)
+    subresultant_prs_impl by simp
 
 text \<open>Note that we did not activate @{thm gcd_impl} as code-equation, since according to our experiments,
   the subresultant-gcd algorithm is not always more efficient than the currently active equation.

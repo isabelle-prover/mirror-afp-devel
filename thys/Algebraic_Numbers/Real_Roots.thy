@@ -513,9 +513,9 @@ proof -
         from 0 1 2 have l: "?l = set (real_roots_of_rat_poly ?q)" unfolding d by auto
         from deg 0 1 2 have rat: "set (coeffs p) \<subseteq> \<rat>" by auto
         have "p = map_poly (of_rat o to_rat) p"
-          by (rule sym, rule map_poly_eqI, insert rat, auto)
+          by (rule sym, rule map_poly_idI, insert rat, auto)
         also have "\<dots> = real_of_rat_poly ?q"
-          by (subst map_poly_compose, auto simp: to_rat)
+          by (subst map_poly_map_poly, auto simp: to_rat)
         finally have id: "{x. poly p x = 0} = {x. poly (real_of_rat_poly ?q) x = 0}" and q: "?q \<noteq> 0" 
           using p by auto
         from real_roots_of_rat_poly[OF q, folded id[unfolded poly_real_of_rat_poly] l] show ?thesis .

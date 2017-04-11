@@ -813,7 +813,7 @@ proof -
     show "horner_composition (?mir (rev ?nc)) xs
       = map_poly ?ir (horner_composition (rev ?nc) (?mri xs))"
       unfolding id unfolding cs_def[symmetric] ics_def[symmetric]
-      by (subst map_poly_compose, auto simp: o_def map_poly_eqI)
+      by (subst map_poly_map_poly, auto simp: o_def map_poly_idI)
   qed
 qed
 end

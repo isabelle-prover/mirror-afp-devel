@@ -24,18 +24,10 @@ begin
 
 abbreviation (input) normalize_content :: "'a::semiring_gcd poly \<Rightarrow> 'a poly"
   where "normalize_content \<equiv> primitive_part"
-
-lemma map_poly_eq:
-  "Polynomial.map_poly f = Missing_Polynomial.map_poly f" if "f 0 = 0"
-proof (rule ext)
-  fix p
-  show "Polynomial.map_poly f p = Missing_Polynomial.map_poly f p"
-    by (induct p) (simp_all add: Polynomial.map_poly_pCons that)
-qed
       
 lemma normalize_content_def:
   "normalize_content p = div_poly (content p) p"
-  by (simp add: primitive_part_def div_poly_def map_poly_eq)
+  by (simp add: primitive_part_def div_poly_def)
 
 definition common_denom :: "rat list \<Rightarrow> int \<times> int list" where
   "common_denom xs \<equiv> let 
@@ -108,8 +100,8 @@ proof -
   show "d > 0" by fact
   show "p = smult (inverse (of_int d)) (map_poly of_int q)"
     unfolding q smult_map_poly
-    by (rule sym, subst map_poly_compose, force+, subst map_poly_compose, force, rule f0,
-     rule map_poly_eqI, insert f0 id d, auto simp: field_simps) 
+    by (rule sym, subst map_poly_map_poly, force+, subst map_poly_map_poly, force,
+     rule map_poly_idI, insert f0 id d, auto simp: field_simps) 
 qed
 
 lemma content_iff: "x dvd content p \<longleftrightarrow> (\<forall> c \<in> set (coeffs p). x dvd c)"
@@ -197,7 +189,7 @@ proof -
   qed
   thus p: "p = smult d (map_poly of_int q)" and d: "d > 0" and "p \<noteq> 0 \<Longrightarrow> content q = 1" by auto
   show "degree q = degree p" unfolding p smult_map_poly
-    by (rule sym, subst map_poly_compose, force+, rule degree_map_poly, insert d, auto)
+    by (rule sym, subst map_poly_map_poly, force+, rule degree_map_poly, insert d, auto)
 qed
 
  

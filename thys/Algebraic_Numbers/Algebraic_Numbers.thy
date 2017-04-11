@@ -231,7 +231,7 @@ proof -
   show "rpoly p (complex_of_real x) = ?c (rpoly p x)" 
     unfolding rpoly.poly_map_poly_eval_poly[symmetric] 
     unfolding id
-    by (subst map_poly_compose[symmetric], auto)
+    by (subst map_poly_map_poly[symmetric], auto)
 qed
 
 lemma alg_poly_complex_of_real: "alg_poly (complex_of_real x) p = alg_poly x p"

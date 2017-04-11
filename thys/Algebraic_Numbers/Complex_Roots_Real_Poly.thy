@@ -65,9 +65,9 @@ lemma map_poly_Re_poly: fixes x :: real
 proof -
   interpret cr: ring_hom complex_of_real by (unfold_locales, auto)
   have id: "map_poly (of_real o Re) p = p"
-    by (rule map_poly_eqI, insert coeffs, auto)
+    by (rule map_poly_idI, insert coeffs, auto)
   show ?thesis unfolding arg_cong[OF id, of poly, symmetric]
-    by (subst map_poly_compose[symmetric], force+)
+    by (subst map_poly_map_poly[symmetric], force+)
 qed
 
 lemma map_poly_Re_coeffs:  
@@ -307,10 +307,10 @@ qed
 
 lemma map_poly_of_real_Re: assumes "set (coeffs p) \<subseteq> \<real>"
   shows "map_poly of_real (map_poly Re p) = p"
-  by (subst map_poly_compose, force+, rule map_poly_eqI, insert assms, auto)
+  by (subst map_poly_map_poly, force+, rule map_poly_idI, insert assms, auto)
 
 lemma map_poly_Re_of_real: "map_poly Re (map_poly of_real p) = p"
-  by (subst map_poly_compose, force+, rule map_poly_eqI, auto)
+  by (subst map_poly_map_poly, force+, rule map_poly_idI, auto)
 
 lemma map_poly_Re_mult: assumes p: "set (coeffs p) \<subseteq> \<real>"
   and q: "set (coeffs q) \<subseteq> \<real>" shows "map_poly Re (p * q) = map_poly Re p * map_poly Re q"
@@ -411,7 +411,7 @@ proof -
   obtain qs where p: "?p = prod_list qs" and 
     qs: "\<And> q. q \<in> set qs \<Longrightarrow> set (coeffs q) \<subseteq> \<real> \<and> degree q \<le> 2" by auto
   have p: "p = ?rp (prod_list qs)" unfolding arg_cong[OF p, of ?rp, symmetric]
-    by (subst map_poly_compose, force+, rule sym, rule map_poly_eqI, auto)
+    by (subst map_poly_map_poly, force+, rule sym, rule map_poly_idI, auto)
   from qs have "\<exists> rs. prod_list qs = ?cp (prod_list rs) \<and> (\<forall> r \<in> set rs. degree r \<le> 2)"
   proof (induct qs)
     case Nil
@@ -423,14 +423,14 @@ proof -
     from Cons(2)[of q] have q: "set (coeffs q) \<subseteq> \<real>" and dq: "degree q \<le> 2" by auto
     define r where "r = ?rp q"
     have q: "q = ?cp r" unfolding r_def
-      by (subst map_poly_compose, force+, rule sym, rule map_poly_eqI, insert q, auto)
+      by (subst map_poly_map_poly, force+, rule sym, rule map_poly_idI, insert q, auto)
     have dr: "degree r \<le> 2" using dq unfolding q by (simp add: degree_map_poly)
     show ?case
       by (rule exI[of _ "r # rs"], unfold prod_list.Cons cr.map_poly_mult qs q, insert dr rs, auto)
   qed
   then obtain rs where id: "prod_list qs = ?cp (prod_list rs)" and deg: "\<forall> r \<in> set rs. degree r \<le> 2" by auto
   show ?thesis unfolding p id
-    by (intro exI, rule conjI[OF _ deg], subst map_poly_compose, force+, rule map_poly_eqI, auto)
+    by (intro exI, rule conjI[OF _ deg], subst map_poly_map_poly, force+, rule map_poly_idI, auto)
 qed
     
   

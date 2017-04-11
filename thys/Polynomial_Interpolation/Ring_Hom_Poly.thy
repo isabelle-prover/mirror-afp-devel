@@ -102,19 +102,6 @@ proof (rule poly_eqI)
     unfolding coeff_monom using 2 by auto
 qed  
 
-lemma map_poly_compose: assumes h: "h 0 = 0" and g: "g 0 = 0"
-  shows "map_poly h (map_poly g p) = map_poly (h o g) p"
-  by (rule poly_eqI, insert h g, auto simp: coeff_map_poly)
-
-lemma map_poly_eqI: assumes f: "\<And> x. x \<in> set (coeffs p) \<Longrightarrow> f x = x" and f0: "f 0 = 0"
-  shows "map_poly f p = p"
-proof (rule poly_eqI)
-  fix i
-  show "coeff (map_poly f p) i = coeff p i" using f[of "coeff p i"] f0
-    unfolding coeff_map_poly[of f p i, OF f0] using range_coeff[of p]
-    by (cases "coeff p i \<in> set (coeffs p)", force+)
-qed
-
 lemma smult_map_poly: "smult a = map_poly (op * a)"
   by (rule ext, rule poly_eqI, subst coeff_map_poly, auto)
 
@@ -384,7 +371,7 @@ definition div_poly :: "'a :: semiring_div \<Rightarrow> 'a poly \<Rightarrow> '
 lemma smult_div_poly: assumes "\<And> c. c \<in> set (coeffs p) \<Longrightarrow> a dvd c"
   shows "smult a (div_poly a p) = p" 
   unfolding smult_map_poly div_poly_def 
-  by (subst map_poly_compose, force+, subst map_poly_eqI, insert assms, auto)
+  by (subst map_poly_map_poly, force+, subst map_poly_idI, insert assms, auto)
 
 lemma coeff_div_poly: "coeff (div_poly a f) n = coeff f n div a" 
   unfolding div_poly_def
