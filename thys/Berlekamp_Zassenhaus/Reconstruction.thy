@@ -14,7 +14,7 @@ imports
   Berlekamp_Hensel
   "../Polynomial_Factorization/Gauss_Lemma"
   "../Polynomial_Factorization/Dvd_Int_Poly"
-  "../Polynomial_Factorization/Polynomial_Division"
+  "../Polynomial_Factorization/Gcd_Rat_Poly"
   Degree_Bound
   Factor_Bound
   Sublist_Iteration

@@ -1063,5 +1063,18 @@ lemma coeff_pcompose_x_pow_n: fixes f :: "'a :: comm_ring_1 poly"
   assumes n: "n \<noteq> 0" 
   shows "coeff (f \<circ>\<^sub>p monom 1 n) (n * i) = coeff f i"     
   using coeff_pcompose_monom[of 0 n f i] n by auto
+    
+lemma normalize_smult: 
+  assumes "a \<noteq> (0::'a::{field,euclidean_ring_gcd})"
+  shows   "normalize (smult a p) = normalize p"
+proof -
+  have "smult a p = [:a:] * p" by simp
+  also from assms have "normalize \<dots> = normalize p"
+    by (subst normalize_mult) (simp_all add: normalize_const_poly is_unit_normalize dvd_field_iff)
+  finally show ?thesis .
+qed
+    
+lemma dvd_dvd_smult: "a dvd b \<Longrightarrow> f dvd g \<Longrightarrow> smult a f dvd smult b g"
+  unfolding dvd_def by (metis mult_smult_left mult_smult_right smult_smult)
 
 end

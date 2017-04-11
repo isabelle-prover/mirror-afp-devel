@@ -5,7 +5,7 @@
 *)
 section \<open>Rational Factorization\<close>
 
-text \<open>We combine the rational root test, the factorization oracle, the
+text \<open>We combine the rational root test, the
   formulas for explicit roots, and the Kronecker's factorization algorithm to provide a
   basic factorization algorithm for polynomial over rational numbers. Moreover, also the roots
   of a rational polynomial can be determined.\<close>
@@ -16,7 +16,7 @@ imports
   Kronecker_Factorization
   Square_Free_Factorization
   Rational_Root_Test
-  Polynomial_Division
+  Gcd_Rat_Poly
   "../Show/Show_Poly"
 begin
 
@@ -447,6 +447,6 @@ lemma factorize_rat_poly_basic: assumes res: "factorize_rat_poly_basic p = (c,qs
   using factorize_rat_poly_main[OF res[unfolded factorize_rat_poly_basic_def]] by auto
 
 text \<open>We removed the factorize-rat-poly function from this theory, since the one in 
-  Berlekamp-Zassenhaus is easier to use and implements are more efficient algorithm.\<close>
+  Berlekamp-Zassenhaus is easier to use and implements a more efficient algorithm.\<close>
 
 end

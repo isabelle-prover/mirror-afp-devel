@@ -1631,9 +1631,8 @@ next
       with g have "g \<noteq> 0"
         by simp
       then have "normalize g = 1"
-        using g by simp (metis Polynomial_Division.normalize_smult normalize_1 smult_1)
-      from \<open>g \<noteq> 0\<close> have "gcd f g = gcd (f mod g) g"
-        by (simp add: gcd_mod_left)
+        using g by simp (metis normalize_smult normalize_1 smult_1)
+      from \<open>g \<noteq> 0\<close> have "gcd f g = gcd (f mod g) g" by simp
       also have "f mod g = 0"
         using \<open>c \<noteq> 0\<close> g by simp
       finally have "coprime f g"
@@ -1647,7 +1646,7 @@ next
       from degree0_coeffs[OF this] obtain d where f: "f = [:d:]" by auto
       from nz[unfolded g f] have d: "d \<noteq> 0" by auto
       have "gcd f g = normalize [:d:]" unfolding g f by simp
-      also have "\<dots> = 1" using d by (metis Polynomial_Division.normalize_smult normalize_1 smult_1)
+      also have "\<dots> = 1" using d by (metis normalize_smult normalize_1 smult_1)
       finally have "coprime f g" .
     }
     ultimately have "coprime f g" by auto
@@ -2068,20 +2067,10 @@ definition resultant_impl :: "'a poly \<Rightarrow> 'a poly \<Rightarrow> 'a" wh
 lemma resultant_impl[simp]: "resultant_impl f g = resultant f g"
    using resultant_impl_main[OF refl refl, of f g] resultant_impl_main[OF refl refl, of g f] 
    unfolding Let_def resultant_impl_def using resultant_swap[of f g] by auto
-end
-  
+end  
 
-lift_definition common_divisor_int_poly :: "int poly common_divisor" is gcd_int_poly
-  using gcd_int_poly[OF refl] by auto       
-  
 lift_definition gcd_divisor :: "'a :: {idom_divide,semiring_gcd} common_divisor" is gcd
   by auto
-
-definition resultant_int_poly :: "int poly poly \<Rightarrow> int poly poly \<Rightarrow> int poly" where
-  [simp]: "resultant_int_poly x y = resultant x y"
-
-lemma resultant_int_poly_code[code]: "resultant_int_poly = resultant_impl common_divisor_int_poly"
-  by (intro ext, auto)
   
 lemma resultant_code[code]: "resultant x y = resultant_impl gcd_divisor x y"
   by simp
