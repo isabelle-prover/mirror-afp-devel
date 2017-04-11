@@ -29,8 +29,9 @@ imports
   "../Jordan_Normal_Form/Gauss_Jordan_IArray_Impl"
   Algebraic_Numbers
   Sturm_Rat
+  "../Subresultants/Subresultant" 
 begin
-
+  
 (* **************************************************************** *)
 subsection \<open>Real Algebraic Numbers -- Innermost Layer\<close>
 
@@ -3837,8 +3838,7 @@ declare real_alg_code_eqns[code]
 subsection \<open>Computing Resultants via Integer Polynomials\<close>
 
 text \<open>In order to compute resultants (over rational polynomials with integer coefficients), it 
-  is better to directly compute resultants over integer polynomials and then use the 
-  specialized @{const resultant_int_poly} algorithm.\<close>
+  is better to directly compute resultants over integer polynomials.\<close>
 
 definition poly_add_int :: "int poly \<Rightarrow> int poly \<Rightarrow> int poly" where
   "poly_add_int = poly_add"
@@ -3849,14 +3849,6 @@ definition poly_mult_int :: "int poly \<Rightarrow> int poly \<Rightarrow> int p
 definition poly_mult'_int :: "int poly \<Rightarrow> int poly \<Rightarrow> int poly" where
   "poly_mult'_int = poly_mult'"
   
-lemma poly_add_int_code[code]: 
-  "poly_add_int p q = resultant_int_poly (poly_x_minus_y p) (poly_lift q)"
-  unfolding poly_add_int_def poly_add_def by simp
-
-lemma poly_mult'_int_code[code]: 
-  "poly_mult'_int p q = resultant_int_poly (poly_x_div_y p) (poly_lift q)"
-  unfolding poly_mult'_int_def poly_mult'_def by simp
-
 lemma poly_mult_int_code[code]: 
   "poly_mult_int p q = poly_mult'_int (eliminate_zero_divisors p) (eliminate_zero_divisors q)"
   unfolding poly_mult_int_def poly_mult_def poly_mult'_int_def ..
