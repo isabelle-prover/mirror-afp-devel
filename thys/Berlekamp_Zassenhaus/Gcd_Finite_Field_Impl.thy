@@ -161,9 +161,12 @@ definition gcd_int_poly :: "int poly \<Rightarrow> int poly \<Rightarrow> int po
   "gcd_int_poly f g =
     (if f = 0 then normalize g
      else if g = 0 then normalize f
-          else let ct = gcd (Polynomial.content f) (Polynomial.content g);
-            ff = primitive_part f; 
-            gg = primitive_part g
+          else let 
+            cf = Polynomial.content f;
+            cg = Polynomial.content g;
+            ct = gcd cf cg;
+            ff = map_poly (\<lambda> x. x div cf) f; 
+            gg = map_poly (\<lambda> x. x div cg) g
           in if coprime_heuristic ff gg then [:ct:] else smult ct (gcd_poly_code_aux ff gg))" 
   
 lemma gcd_int_poly_code[code_unfold]: "gcd = gcd_int_poly" 
@@ -175,7 +178,7 @@ proof (intro ext)
   show "gcd f g = gcd_int_poly f g" 
   proof (cases "f = 0 \<or> g = 0 \<or> \<not> coprime_heuristic ?ff ?gg")
     case True
-    thus ?thesis unfolding d by auto
+    thus ?thesis unfolding d by (auto simp: Let_def primitive_part_def)
   next
     case False
     hence cop: "coprime_heuristic ?ff ?gg" by simp
@@ -184,7 +187,7 @@ proof (intro ext)
     have id: "coprime ?ff ?gg" 
       by (rule coprime_heuristic[OF cop], insert cnt, auto)
     show ?thesis unfolding gcd_poly_decompose[of f g] unfolding gcd_int_poly_def Let_def id
-      using False by auto
+      using False by (auto simp: primitive_part_def)
   qed
 qed
 
