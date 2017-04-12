@@ -71,7 +71,8 @@ private lemma product_two_squares_int: "is_sum2sq_int m \<Longrightarrow> is_sum
 private lemma product_two_squares_nat: "is_sum2sq_nat m \<Longrightarrow> is_sum2sq_nat n \<Longrightarrow> is_sum2sq_nat (m*n)"
   using product_two_squares_int is_sum2sq_int_nat_eq by simp
 
-private lemma sots1_aux: assumes "prime (4*k+3)"
+private lemma sots1_aux:
+  assumes "prime (4*k+3)"
   assumes "odd (multiplicity (4*k+3) n)"
   shows "\<not> is_sum2sq_nat n"
 proof
@@ -133,8 +134,8 @@ proof
     hence "False" using assms(1) by simp
   }
   hence "\<not> (?p dvd ?bdiva)" ..
-  hence h9: "[?bdiva^(?p-1) = 1] (mod ?p)" using assms(1)
-    by (intro fermat_theorem_nat, subst prime_nat_int_transfer)
+  hence h9: "[?bdiva^(?p-1) = 1] (mod ?p)"
+    using assms(1) fermat_theorem [of ?p ?bdiva] by simp
   have h10: "?p\<ge>3" by simp
   have h11: "[?bdiva^(4*k+2) = 1] (mod ?p)" using h9 by auto
   have "[(?bdiva^2 + 1)^2 = 0] (mod ?p)" using h8 cong_exp_nat[of "?bdiva^2 + 1" 0 ?p 2] by auto

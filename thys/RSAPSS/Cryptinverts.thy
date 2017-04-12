@@ -23,9 +23,14 @@ lemma pred_unfold:
   by (induct n) simp_all
   
 lemma fermat:
-  assumes "prime p" "m mod p \<noteq> 0" shows "m^(p-(1::nat)) mod p = 1"
-using fermat_theorem_nat [of p m] assms
-by (metis cong_nat_def dvd_eq_mod_eq_0 Divides.mod_less prime_gt_1_nat prime_nat_int_transfer)
+  assumes "prime p" "m mod p \<noteq> 0"
+  shows "m^(p-(1::nat)) mod p = 1"
+proof -
+  from assms have "[m ^ (p - 1) = 1] (mod p)"
+    using fermat_theorem [of p m] by (simp add: mod_eq_0_iff_dvd)
+  then show ?thesis
+    using \<open>prime p\<close> cong_nat_def prime_nat_iff by auto
+qed
 
 lemma cryptinverts_hilf1: "prime p \<Longrightarrow> (m * m ^(k * pred p)) mod p = m mod p"
   apply (cases "m mod p = 0")

@@ -444,12 +444,17 @@ proof (cases "a=0")
 next
   case False
   thus ?thesis
-  proof (transfer)
-    fix a assume a: "a \<in> {0..<int CARD('a)}" and a0: "a \<noteq> 0"
-    hence not_dvd: "\<not> CARD('a) dvd a" using zdvd_not_zless by auto
-    have "a ^ (CARD('a) - 1) mod int CARD('a) = 1"
-      using fermat_theorem[OF prime_card_int not_dvd] unfolding cong_int_def
-      by auto
+  proof transfer
+    fix a
+    assume a: "a \<in> {0..<int CARD('a)}" and a0: "a \<noteq> 0"
+    then have not_dvd: "\<not> CARD('a) dvd nat a"
+      by (auto simp add: zdvd_int zdvd_not_zless)
+    with prime_card have "[nat a ^ (CARD('a) - 1) = 1] (mod CARD('a))"
+      by (rule fermat_theorem)
+    with a have "a ^ (CARD('a) - 1) mod CARD('a) = 1"
+      by (auto simp add: cong_nat_def)
+        (metis Divides.transfer_int_nat_functions(2) One_nat_def int_nat_eq of_nat_1 of_nat_power one_mod_card)
+       
     hence "a * (a ^ (CARD('a) - 1) mod int CARD('a)) = a" by auto
     thus  "a ^ CARD('a) mod int CARD('a) = a"
       by (metis a atLeastLessThan_iff mod_mult_right_eq mod_pos_pos_trivial

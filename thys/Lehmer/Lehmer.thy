@@ -32,17 +32,17 @@ lemma lehmers_weak_theorem:
   assumes min_cong1: "\<And>x. 0 < x \<Longrightarrow> x < p - 1 \<Longrightarrow> [a ^ x \<noteq> 1] (mod p)"
   assumes cong1: "[a ^ (p - 1) = 1] (mod p)"
   shows "prime p"
-proof -
+using \<open>2 \<le> p\<close> proof (rule totient_prime)
   from `2 \<le> p` cong1 have "coprime a p"
     by (intro mod_1_coprime_nat[of "p - 1"]) auto
-  then have "[a ^ phi (int p) = 1] (mod p)"
-    by (intro euler_theorem[transferred]) auto
-  then have "phi (int p) \<ge> p - 1 \<or> phi (int p) = 0"
-    using min_cong1[of "phi (int p)"] by fastforce
-  moreover have "phi p > 0"
-    using `2 \<le> p` by (auto intro: phi_nonzero)
-  ultimately show "prime p" using phi_leq [transferred, of p]
-    by (auto intro: prime_phi)
+  then have "[a ^ totient p = 1] (mod p)"
+    by (intro euler_theorem) auto
+  then have "totient p \<ge> p - 1 \<or> totient p = 0"
+    using min_cong1[of "totient p"] by fastforce
+  moreover have "totient p > 0"
+    using `2 \<le> p` by simp
+  ultimately show "totient p = p - 1"
+    by (simp add: order_antisym)
 qed
 
 lemma prime_factors_elem:
@@ -182,11 +182,13 @@ lemma converse_lehmer_weak:
       have "p \<le> a" using dvd_nat_bounds[OF _ `p dvd a`] a by simp
       thus False using `a>1` a by force
     qed
-    hence "coprime a p" using prime_imp_coprime_nat[OF prime_p]  by (simp add: gcd.commute)
-    hence "coprime (int a) (int p)" by (simp add: transfer_int_nat_gcd(1))
-    have "phi (int p) = p - 1" using phi_prime[of p] prime_p by simp
-    hence "[a^(p - 1) = 1] (mod p)" using euler_theorem[OF _ `coprime (int a) (int p)`]
-      by (simp add: transfer_int_nat_cong[symmetric])
+    hence "coprime a p"
+      using prime_imp_coprime_nat [OF prime_p] by (simp add: ac_simps)
+    then have "[a ^ totient p = 1] (mod p)"
+      by (rule euler_theorem)
+    also from prime_p have "totient p = p - 1"
+      by (rule prime_totient)
+    finally have "[a ^ (p - 1) = 1] (mod p)" .
   }
   hence "[a^(p - 1) = 1] (mod p)" using a by fastforce
   thus ?thesis using a_is_gen a by auto

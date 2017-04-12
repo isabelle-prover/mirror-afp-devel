@@ -243,10 +243,13 @@ proof
   show "a \<noteq> 0 \<Longrightarrow> inverse a * a = 1"
   proof (unfold inverse_mod_ring_def, transfer)
     let ?p="CARD('a)"
-    fix x assume x: "x \<in> {0..<int CARD('a)}" and x0: "x \<noteq> 0"
+    fix x
+    assume x: "x \<in> {0..<int CARD('a)}" and x0: "x \<noteq> 0"
     have p0': "0\<le>?p" by auto
-    have p_not_dvd_x: "\<not> ?p dvd x"
+    have "\<not> ?p dvd x"
       using x x0 zdvd_imp_le by fastforce
+    with x have "\<not> CARD('a) dvd nat x"
+      by (simp add: zdvd_int)
     have rw: "x ^ nat (int (?p - 2)) * x = x ^ nat (?p - 1)"
     proof -
       have p2: "0 \<le> int (?p-2)" using x by simp
@@ -262,7 +265,10 @@ proof
       = (x ^ nat (CARD('a) - 2) * x) mod CARD('a)" by (simp add: mod_simps)
     also have "... =  (x ^ nat (?p - 1) mod ?p)" unfolding rw by simp
     also have "... = (x ^ (nat ?p - 1) mod ?p)" using p0' by (simp add: nat_diff_distrib')
-    also have "... = 1" using fermat_theorem[OF prime_card_int p_not_dvd_x] by (auto simp: cong_int_def)
+    also have "... = 1"
+      using x fermat_theorem [OF prime_card \<open>\<not> CARD('a) dvd nat x\<close>]
+      by (auto simp add: cong_nat_def)
+        (metis Divides.transfer_int_nat_functions(2) One_nat_def int_nat_eq of_nat_1 of_nat_power one_mod_card)
     finally show "(if x = 0 then 0 else x ^ nat (int (CARD('a) - 2)) mod CARD('a)) * x mod CARD('a) = 1"
       using x0 by auto
   qed
