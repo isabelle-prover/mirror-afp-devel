@@ -21,18 +21,20 @@ lemma intervall_simps [summation]:
   by (simp_all add: add.commute)
 
 lemma \<Delta>_ffact:
-  "\<Delta> (ffact (Suc n)) k = of_nat (Suc n) * ffact n (of_int k)"
+  "\<Delta> (ffact (Suc n)) k = of_nat (Suc n) * ffact n (of_int k :: 'a :: comm_ring_1)"
 proof (induct n)
-  case 0 then show ?case by (simp add: \<Delta>_def)
+  case 0 then show ?case
+    by (simp add: \<Delta>_def ffact_Suc)
 next
   case (Suc n)
   obtain m where "m = Suc n" by blast
   have "\<Delta> (ffact (Suc m)) k =
-    ffact (Suc m) (of_int (k + 1)) - ffact (Suc m) (of_int k)" 
+    ffact (Suc m) (of_int (k + 1)) - ffact (Suc m) (of_int k :: 'a)" 
     by (simp add: \<Delta>_def)
   also have "\<dots> = of_int (k + 1) * ffact m (of_int k)
     - (ffact m (of_int k) * (of_int k - of_nat m))"
-    using ffact_Suc [of m "of_int k :: 'b"] by (simp add: mult.commute)
+    using ffact_Suc_rev [of m "of_int k"]
+    by (simp add: ac_simps ffact_Suc)
   also have "\<dots> = (of_int k + 1 - of_int k + of_nat m) * ffact m (of_int k)"
     by (simp add: algebra_simps)
   also have "\<dots> = of_nat (Suc m) * ffact m (of_int k)" by simp
@@ -126,15 +128,15 @@ lemma [summation]:
 
 lemma [summation]:
   "lift_nat (\<lambda>n. m * f n) = (\<lambda>k. int m * lift_nat f k)"
-  by (simp add: lift_nat_def fun_eq_iff of_nat_mult)
+  by (simp add: lift_nat_def fun_eq_iff)
 
 lemma [summation]:
   "lift_nat (\<lambda>n. f n * m) = (\<lambda>k. lift_nat f k * int m)"
-  by (simp add: lift_nat_def fun_eq_iff of_nat_mult)
+  by (simp add: lift_nat_def fun_eq_iff)
 
 lemma [summation]:
   "lift_nat (\<lambda>n. f n ^ m) = (\<lambda>k. lift_nat f k ^ m)"
-  by (simp add: lift_nat_def fun_eq_iff of_nat_power)
+  by (simp add: lift_nat_def fun_eq_iff)
 
   
 text \<open>Generic conversion\<close>  
@@ -148,7 +150,7 @@ end
 structure Summation : SUMMATION =
 struct
 
-val simps2 = @{thms Stirling.simps ffact.simps nat_simps};
+val simps2 = @{thms Stirling.simps ffact_0 ffact_Suc nat_simps};
 val simpset3 =
   @{context}
   |> fold Simplifier.add_simp @{thms field_simps}
