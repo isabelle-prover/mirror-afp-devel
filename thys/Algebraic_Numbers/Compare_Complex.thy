@@ -16,8 +16,26 @@ imports
   "../Containers/Set_Impl"
 begin
 
-lemma in_reals_code[code_unfold]: "((x :: complex) \<in> \<real>) = (Im x = 0)" 
-  by (rule complex_is_Real_iff)
+declare [[code drop: Gcd_fin]]
+declare [[code drop: Lcm_fin]]
+
+definition gcds :: "'a::semiring_gcd list \<Rightarrow> 'a"
+  where [simp, code_abbrev]: "gcds xs = gcd_list xs"
+
+lemma [code]:
+  "gcds xs = fold gcd xs 0"
+  by (simp add: Gcd_fin.set_eq_fold)
+
+definition lcms :: "'a::semiring_gcd list \<Rightarrow> 'a"
+  where [simp, code_abbrev]: "lcms xs = lcm_list xs"
+
+lemma [code]:
+  "lcms xs = fold lcm xs 1"
+  by (simp add: Lcm_fin.set_eq_fold)
+
+lemma in_reals_code [code_unfold]:
+  "x \<in> \<real> \<longleftrightarrow> Im x = 0" 
+  by (fact complex_is_Real_iff)
 
 definition is_norm_1 :: "complex \<Rightarrow> bool" where
   "is_norm_1 z = ((Re z)\<^sup>2 + (Im z)\<^sup>2 = 1)"
