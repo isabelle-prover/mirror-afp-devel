@@ -95,7 +95,7 @@ proof(induct n arbitrary: q q' r dr)
   have [simp]: "\<And> n. x ^ n * (x * lc) = lc * (x * x ^ n)"
                "\<And> n c. x ^ n * (x * c) = x * x ^ n * c"
                "\<And> n. x * x ^ n * lc = lc * (x * x ^ n)"
-      by (metis (no_types, lifting) mult.commute semiring_normalization_rules(18))+
+    by (auto simp: ac_simps)
   have "snd (pseudo_divmod_main (x * lc) q r (smult x d) dr (Suc n)) = snd ?rec_lhs"
     by (auto simp:Let_def)
   also have "\<dots> = snd ?rec_rhs" using Suc by auto
@@ -116,7 +116,7 @@ proof(induct n arbitrary:x lc q q' r d dr)
   have sm:"smult lc (smult x r) - monom (coeff (smult x r) dr) n * d
           =smult x (smult lc r - monom (coeff r dr) n * d) "
     by (auto simp:smult_diff_right smult_monom smult_monom_mult mult.commute[of lc x])
-  let ?q' = "(Polynomial.smult lc q' + monom (coeff r dr) n)"
+  let ?q' = "smult lc q' + monom (coeff r dr) n"
   show ?case unfolding pseudo_divmod_main.simps Let_def Suc(1)[of lc _ _ _ _ _ ?q'] sm by auto
 qed auto
 
@@ -1043,7 +1043,7 @@ proof -
     also have "\<dots> = ?UR"
     proof (rule mat_eqI, unfold mat_dim_row_mat mat_dim_col_mat mat_index_mat split dfj_def mat_index_zero, goal_cases)
       case (1 i j)
-      hence n1: "(if i = n - 1 then t else e) = e" for t e using J unfolding dgj_def dhj_def n_add by auto
+      hence in1: "i \<noteq> n - 1" using J unfolding dgj_def dhj_def n_add by auto
       {
         assume "j + (df - dh) < df - J"
         hence "dg < int dg - int i + int (j + (df - dh))" using 1 J unfolding dgj_def dhj_def by auto
@@ -1054,7 +1054,7 @@ proof -
         hence "dh < int df - int i + int (j + (df - dh) - (df - J))" using 1 J unfolding dgj_def dhj_def by auto
         hence "h \<dots> = 0" unfolding dh h by (intro icoeff_eq_0, auto)
       } note h = this
-      show ?case unfolding n1 using g h by auto
+      show ?case using in1 g h by auto
     qed auto
     finally have "UR = ?UR" .
     note spl = spl[unfolded this]
@@ -1156,7 +1156,7 @@ next
   case J: False
   hence dg: "degree G - J = 0" by simp
   let ?n = "degree F - J"
-  have *: "(if (j :: nat) < 0 then t else e) = e" "j - 0 = j" for j t e by auto
+  have *: "(j :: nat) < 0 \<longleftrightarrow> False" "j - 0 = j" for j by auto
   let ?M = "mat ?n ?n
           (\<lambda>(i, j).
               if i = ?n - 1 then monom 1 (?n - 1 - j) * G
@@ -1378,7 +1378,7 @@ proof -
   have \<alpha>0:"\<alpha> i \<noteq> 0" using assms f0[of "i - 1"] unfolding \<alpha>_def f by auto
   hence \<alpha>0pow:"\<And> x. \<alpha> i ^ x \<noteq> 0" by auto
   have df:"degree (F (i - 1)) \<le> degree (smult (\<alpha> i) (F (i - 2)))"
-          "degree (Polynomial.smult (\<beta> i) (F i)) < degree (F (i - 1)) \<or> b" for b
+          "degree (smult (\<beta> i) (F i)) < degree (F (i - 1)) \<or> b" for b
     using n_ge[of "i-2"] n_gt[of "i-1"] assms \<alpha>0 \<beta>0 unfolding n by auto
   have degree_smult_eq:"\<And> c f. (c::_::{idom_divide}) \<noteq> 0 \<Longrightarrow> degree (smult c f) = degree f" by auto
   have n_lt:"n i < n (i - 1)" using n_gt[of "i-1"] assms unfolding n by auto
@@ -1393,7 +1393,7 @@ proof -
   have ns : "n (i - 2) - n (i - 1) + (n (i - 1) - n i) = n (i - 2) - n i"
      by (auto simp:nat_minus_add_max)
   { assume "j < n i"
-    hence j:"j < degree (Polynomial.smult (\<beta> i) (F i))" using \<beta>0 unfolding n by auto
+    hence j:"j < degree (smult (\<beta> i) (F i))" using \<beta>0 unfolding n by auto
     from BT_lemma_1_12[OF beta_F_as_sum df j]
     show ?eq_21
       unfolding subresultant_smult_right[OF \<beta>0] subresultant_smult_left[OF \<alpha>0]
@@ -1406,7 +1406,7 @@ proof -
                 degree_smult_eq[OF \<alpha>0] degree_smult_eq[OF \<beta>0] n[symmetric] f[symmetric] \<delta> s ns
       by (metis (no_types, lifting) * ** coeff_smult f mult.assoc n)}
   { assume "n i < j" "j < n (i - 1) - 1"
-    hence j:"degree (Polynomial.smult (\<beta> i) (F i)) < j" "j < degree (F (i - 1)) - 1"
+    hence j:"degree (smult (\<beta> i) (F i)) < j" "j < degree (F (i - 1)) - 1"
       using \<beta>0 unfolding n by auto
     from BT_lemma_1_14[OF beta_F_as_sum df j]
     show ?eq_23 unfolding subresultant_smult_left[OF \<alpha>0] smult_eq_0_iff using \<alpha>0pow by auto}
@@ -1628,7 +1628,7 @@ proof -
     qed
   have "ffp (R (n i)) = subresultant (n i) (F 1) (F 2)" unfolding R_def F1 F2
     by (auto simp: to_fract_hom.subresultant_hom ni2[OF assms])
-  also have "\<dots> = Polynomial.smult
+  also have "\<dots> = smult
      ((- 1) ^ (\<Sum>l\<leftarrow>[3..<i]. (n (l - 2) - n i) * (n (l - 1) - n i)) *
       (\<Prod>x\<leftarrow>[3..<i]. (\<beta> x / \<alpha> x) ^ (n (x - 1) - n i) * f (x - 1) ^ (\<delta> (x - 1) + \<delta> (x - 2))) *
       (((\<beta> i / \<alpha> i) ^ \<delta> (i - 1)) * f (i - 1) ^ (\<delta> (i - 1) + \<delta> (i - 2))) *
@@ -2661,7 +2661,7 @@ proof -
         thus ?thesis unfolding simp[of G3] Let_def by simp
       next
         case False
-        hence id: "(if ?M = 0 then t else e) = e" for t e by auto
+        hence id: "(?M = 0) = False" by auto
         let ?c = "((- 1) ^ (degree G3 - degree G4 + 1) * lead_coeff G3 *
             (lead_coeff G3 ^ d2 div h2 ^ (d2 - 1)) ^ (degree G3 - degree G4))"
         let ?N = "divide_poly ?M ?c"
@@ -2670,7 +2670,7 @@ proof -
           case G4: False
           have "degree ?N \<le> degree ?M" unfolding divide_poly_def by (rule degree_map_poly_le)
           also have "\<dots> < degree G4" using pseudo_mod[OF G4, of G3] False by auto
-          finally show ?thesis unfolding simp[of G3] Let_def id
+          finally show ?thesis unfolding simp[of G3] Let_def id if_False
             by (intro 1(1)[rule_format], auto)
         next
           case 0: True
