@@ -7,6 +7,8 @@ imports DL_Network Tensor_Matricization DL_Submatrix DL_Concrete_Matrices
 DL_Missing_Finite_Set DL_Missing_Sublist "../Jordan_Normal_Form/Determinant"
 begin
 
+hide_const(open) Polynomial.order
+
 fun deep_model and deep_model' where
 "deep_model' Y [] = Input Y" |
 "deep_model' Y (r # rs) = Pool (deep_model Y r rs) (deep_model Y r rs)" |

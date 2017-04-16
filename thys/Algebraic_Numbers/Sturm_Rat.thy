@@ -8,8 +8,8 @@ text \<open>We adapt the existing theory on Sturm's theorem to work on rational 
 
 theory Sturm_Rat
 imports 
-  Algebraic_Numbers_Prelim
   "../Sturm_Sequences/Sturm_Theorem"
+  Algebraic_Numbers_Prelim
 begin
 
 subsection \<open>Interface for Separating Roots\<close>
@@ -17,9 +17,9 @@ subsection \<open>Interface for Separating Roots\<close>
 text \<open>For a given rational polynomial, we need to know how many real roots are in a given closed interval,
   and how many real roots are in an interval $(-\infty,r]$.\<close>
 
-datatype root_info = Root_Info (l_r: "rat \<Rightarrow> rat \<Rightarrow> nat") (inf_r: "rat \<Rightarrow> nat")
+datatype root_info = Root_Info (l_r: "rat \<Rightarrow> rat \<Rightarrow> nat") (number_root: "rat \<Rightarrow> nat")
 hide_const (open) l_r
-hide_const (open) inf_r
+hide_const (open) number_root
 
 definition count_roots_interval_sf :: "real poly \<Rightarrow> (real \<Rightarrow> real \<Rightarrow> nat) \<times> (real \<Rightarrow> nat)" where
   "count_roots_interval_sf p = (let ps = sturm_squarefree p
@@ -51,70 +51,80 @@ proof -
     count_roots_between_def Let_def using p by auto
 qed
 
-lemma count_roots_interval: assumes p: "p \<noteq> 0" 
-  and cr: "count_roots_interval p = (cr,nr)"
+lemma count_roots_interval: assumes cr: "count_roots_interval p = (cr,nr)"
   and sf: "square_free p"
   shows "a \<le> b \<Longrightarrow> cr a b = (card {x. a \<le> x \<and> x \<le> b \<and> poly p x = 0})"
     "nr a = card {x. x \<le> a \<and> poly p x = 0}"
-  using count_roots_interval_sf[OF p cr[unfolded count_roots_interval_iff[OF sf]]] by blast+
+  using count_roots_interval_sf[OF _ cr[unfolded count_roots_interval_iff[OF sf]]] 
+    sf[unfolded square_free_def] by blast+
 
-definition root_cond :: "rat poly \<times> rat \<times> rat \<Rightarrow> real \<Rightarrow> bool" where
-  "root_cond plr x = (case plr of (p,l,r) \<Rightarrow> of_rat l \<le> x \<and> x \<le> of_rat r \<and> rpoly p x = 0)"
+definition root_cond :: "int poly \<times> rat \<times> rat \<Rightarrow> real \<Rightarrow> bool" where
+  "root_cond plr x = (case plr of (p,l,r) \<Rightarrow> of_rat l \<le> x \<and> x \<le> of_rat r \<and> ipoly p x = 0)"
 
-definition root_info_cond :: "root_info \<Rightarrow> rat poly \<Rightarrow> bool" where
+definition root_info_cond :: "root_info \<Rightarrow> int poly \<Rightarrow> bool" where
   "root_info_cond ri p \<equiv> (\<forall> a b. a \<le> b \<longrightarrow> root_info.l_r ri a b = card {x. root_cond (p,a,b) x})
-    \<and> (\<forall> a. root_info.inf_r ri a = card {x. x \<le> real_of_rat a \<and> rpoly p x = 0})"
+    \<and> (\<forall> a. root_info.number_root ri a = card {x. x \<le> real_of_rat a \<and> ipoly p x = 0})"
 
 lemma root_info_condD: "root_info_cond ri p \<Longrightarrow> a \<le> b \<Longrightarrow> root_info.l_r ri a b = card {x. root_cond (p,a,b) x}"
-  "root_info_cond ri p \<Longrightarrow> root_info.inf_r ri a = card {x. x \<le> real_of_rat a \<and> rpoly p x = 0}"
+  "root_info_cond ri p \<Longrightarrow> root_info.number_root ri a = card {x. x \<le> real_of_rat a \<and> ipoly p x = 0}"
   unfolding root_info_cond_def by auto
 
-definition count_roots_interval_sf_rat :: "rat poly \<Rightarrow> root_info" where
-  [code del]: "count_roots_interval_sf_rat  p = (let pp = real_of_rat_poly p;
+  
+definition count_roots_interval_sf_rat :: "int poly \<Rightarrow> root_info" where
+  "count_roots_interval_sf_rat  p = (let pp = real_of_int_poly p;
     (cr,nr) = count_roots_interval_sf pp
   in Root_Info (\<lambda> a b. cr (of_rat a) (of_rat b)) (\<lambda> a. nr (of_rat a)))"
 
-definition count_roots_interval_rat :: "rat poly \<Rightarrow> root_info" where
-  [code del]: "count_roots_interval_rat  p = (let pp = real_of_rat_poly p;
+definition count_roots_interval_rat :: "int poly \<Rightarrow> root_info" where
+  [code del]: "count_roots_interval_rat  p = (let pp = real_of_int_poly p;
     (cr,nr) = count_roots_interval pp
   in Root_Info (\<lambda> a b. cr (of_rat a) (of_rat b)) (\<lambda> a. nr (of_rat a)))"
 
-definition count_roots_rat :: "rat poly \<Rightarrow> nat" where
-  [code del]: "count_roots_rat  p = (count_roots (real_of_rat_poly p))"
+definition count_roots_rat :: "int poly \<Rightarrow> nat" where
+  [code del]: "count_roots_rat  p = (count_roots (real_of_int_poly p))"
 
 lemma count_roots_interval_sf_rat: assumes p: "p \<noteq> 0" 
   shows "root_info_cond (count_roots_interval_sf_rat p) p"
 proof -  
-  let ?p = "real_of_rat_poly p"
+  let ?p = "real_of_int_poly p"
   let ?r = real_of_rat
   let ?ri = "count_roots_interval_sf_rat p"
-  from p have p: "?p \<noteq> 0" using real_of_rat_poly_0 by auto
+  from p have p: "?p \<noteq> 0" by auto
   obtain cr nr where cr: "count_roots_interval_sf ?p = (cr,nr)" by force
   have "?ri = Root_Info (\<lambda>a b. cr (?r a) (?r b)) (\<lambda>a. nr (?r a))"
     unfolding count_roots_interval_sf_rat_def Let_def cr by auto
-  hence id: "root_info.l_r ?ri = (\<lambda>a b. cr (?r a) (?r b))" "root_info.inf_r ?ri = (\<lambda>a. nr (?r a))"
+  hence id: "root_info.l_r ?ri = (\<lambda>a b. cr (?r a) (?r b))" "root_info.number_root ?ri = (\<lambda>a. nr (?r a))"
     by auto
   note cr = count_roots_interval_sf[OF p cr]
   show ?thesis unfolding root_info_cond_def id
   proof (intro conjI impI allI)
     fix a
-    show "nr (?r a) = card {x. x \<le> (?r a) \<and> rpoly p x = 0}"
-      using cr(2)[of "?r a"] by (simp add: poly_real_of_rat_poly)
+    show "nr (?r a) = card {x. x \<le> (?r a) \<and> ipoly p x = 0}"
+      using cr(2)[of "?r a"] by simp
   next
     fix a b :: rat
     assume ab: "a \<le> b"
     from ab have ab: "?r a \<le> ?r b" by (simp add: of_rat_less_eq)
     from cr(1)[OF this] show "cr (?r a) (?r b) = card (Collect (root_cond (p, a, b)))"
-      unfolding root_cond_def[abs_def] split 
-      poly_real_of_rat_poly by simp
+      unfolding root_cond_def[abs_def] split by simp
   qed
+qed
+  
+lemma of_rat_of_int_poly: "real_of_rat_poly (of_int_poly p) = real_of_int_poly p" 
+    by (subst map_poly_map_poly, auto simp: o_def)
+  
+lemma square_free_real_of_int_poly: assumes "square_free p" 
+  shows "square_free (real_of_int_poly p)" 
+proof - 
+  have "square_free (real_of_rat_poly (of_int_poly p))"
+    unfolding of_rat_hom.square_free_map_poly by (rule square_free_int_rat[OF assms])
+  thus ?thesis unfolding of_rat_of_int_poly .
 qed
 
 lemma count_roots_interval_rat: assumes sf: "square_free p"
   shows "root_info_cond (count_roots_interval_rat p) p"
 proof -
-  have sf: "square_free (real_of_rat_poly p)"
-    by (subst inj_field_hom_0'.square_free_map_poly, unfold_locales, rule sf)
+  from sf have sf: "square_free (real_of_int_poly p)" by (rule square_free_real_of_int_poly)
   from sf have p: "p \<noteq> 0" unfolding square_free_def by auto
   show ?thesis
   using count_roots_interval_sf_rat[OF p]
@@ -123,8 +133,8 @@ proof -
 qed
 
 
-lemma count_roots_rat: "count_roots_rat p = card {x. rpoly p x = (0 :: real)}"
-  unfolding count_roots_rat_def count_roots_correct poly_real_of_rat_poly ..
+lemma count_roots_rat: "count_roots_rat p = card {x. ipoly p x = (0 :: real)}"
+  unfolding count_roots_rat_def count_roots_correct ..
 
 subsection \<open>Implementing Sturm on Rational Polynomials\<close>
 
@@ -139,52 +149,46 @@ lemma sturm_aux_rat: "sturm_aux (real_of_rat_poly p) (real_of_rat_poly q) =
   map real_of_rat_poly (sturm_aux_rat p q)"
 proof (induct p q rule: sturm_aux_rat.induct)
   case (1 p q)
-  note deg = rpoly.degree_map_poly
+  interpret map_poly_inj_idom_hom of_rat..
+  note deg = of_int_hom.degree_map_poly
   show ?case 
     unfolding sturm_aux.simps[of "real_of_rat_poly p"] sturm_aux_rat.simps[of p]
-    unfolding rpoly.degree_map_poly rpoly.map_poly_mod[symmetric] rpoly.map_poly_uminus[symmetric]
     using 1 by (cases "degree q = 0", auto)
 qed
 
 definition sturm_rat where "sturm_rat p = sturm_aux_rat p (pderiv p)"
 
 lemma sturm_rat: "sturm (real_of_rat_poly p) = map real_of_rat_poly (sturm_rat p)"
-  unfolding sturm_rat_def sturm_def rpoly.map_poly_pderiv sturm_aux_rat ..
+  unfolding sturm_rat_def sturm_def
+  apply (fold of_rat_hom.map_poly_pderiv)
+  unfolding sturm_aux_rat..
 
-definition sturm_squarefree_rat where
-  "sturm_squarefree_rat p = sturm_rat (p div (gcd_rat_poly p (pderiv p)))"
+definition poly_number_rootat :: "rat poly \<Rightarrow> rat" where 
+  "poly_number_rootat p \<equiv> sgn (coeff p (degree p))"
 
-lemma sturm_squarefree_rat: "sturm_squarefree (real_of_rat_poly p) 
-  = map real_of_rat_poly (sturm_squarefree_rat p)"
-  unfolding sturm_squarefree_rat_def sturm_squarefree_def gcd_rat_poly
-    rpoly'.map_poly_gcd[symmetric] rpoly.map_poly_div[symmetric] rpoly.map_poly_pderiv sturm_rat ..
-
-definition poly_inf_rat :: "rat poly \<Rightarrow> rat" where 
-  "poly_inf_rat p \<equiv> sgn (coeff p (degree p))"
-
-definition poly_neg_inf_rat :: "rat poly \<Rightarrow> rat" where 
-  "poly_neg_inf_rat p \<equiv> if even (degree p) then sgn (coeff p (degree p))
+definition poly_neg_number_rootat :: "rat poly \<Rightarrow> rat" where 
+  "poly_neg_number_rootat p \<equiv> if even (degree p) then sgn (coeff p (degree p))
                                        else -sgn (coeff p (degree p))"
 
-lemma poly_inf_rat: "poly_inf (real_of_rat_poly p) = real_of_rat (poly_inf_rat p)"
-  unfolding poly_inf_def poly_inf_rat_def rpoly.degree_map_poly rpoly.coeff_map_poly_hom
+lemma poly_number_rootat: "poly_inf (real_of_rat_poly p) = real_of_rat (poly_number_rootat p)"
+  unfolding poly_inf_def poly_number_rootat_def of_int_hom.degree_map_poly of_rat_hom.coeff_map_poly_hom
     real_of_rat_sgn by simp
 
-lemma poly_neg_inf_rat: "poly_neg_inf (real_of_rat_poly p) = real_of_rat (poly_neg_inf_rat p)"
-  unfolding poly_neg_inf_def poly_neg_inf_rat_def rpoly.degree_map_poly rpoly.coeff_map_poly_hom
+lemma poly_neg_number_rootat: "poly_neg_inf (real_of_rat_poly p) = real_of_rat (poly_neg_number_rootat p)"
+  unfolding poly_neg_inf_def poly_neg_number_rootat_def of_int_hom.degree_map_poly of_rat_hom.coeff_map_poly_hom
     real_of_rat_sgn by simp
 
 definition sign_changes_rat where
 "sign_changes_rat ps (x::rat) =
     length (remdups_adj (filter (\<lambda>x. x \<noteq> 0) (map (\<lambda>p. sgn (poly p x)) ps))) - 1"
 
-definition sign_changes_inf_rat where
-  "sign_changes_inf_rat ps = 
-    length (remdups_adj (filter (\<lambda>x. x \<noteq> 0) (map poly_inf_rat ps))) - 1"
+definition sign_changes_number_rootat where
+  "sign_changes_number_rootat ps = 
+    length (remdups_adj (filter (\<lambda>x. x \<noteq> 0) (map poly_number_rootat ps))) - 1"
 
-definition sign_changes_neg_inf_rat where
-  "sign_changes_neg_inf_rat ps = 
-      length (remdups_adj (filter (\<lambda>x. x \<noteq> 0) (map poly_neg_inf_rat ps))) - 1"
+definition sign_changes_neg_number_rootat where
+  "sign_changes_neg_number_rootat ps = 
+      length (remdups_adj (filter (\<lambda>x. x \<noteq> 0) (map poly_neg_number_rootat ps))) - 1"
 
 lemma real_of_rat_list_neq: "list_neq (map real_of_rat xs) 0 
   = map real_of_rat (list_neq xs 0)"
@@ -198,63 +202,94 @@ lemma sign_changes_rat: "sign_changes (map real_of_rat_poly ps) (real_of_rat x)
 proof - 
   define xs where "xs = list_neq (map (\<lambda>p. sgn (poly p x)) ps) 0"
   have "?l = length (remdups_adj (list_neq (map real_of_rat (map (\<lambda>xa.  (sgn (poly xa x))) ps)) 0)) - 1"
-    unfolding sign_changes_def
-    unfolding map_map o_def real_of_rat_sgn poly_real_of_rat_poly rpoly.eval_poly_poly ..
+    by (simp add: sign_changes_def real_of_rat_sgn o_def)
   also have "\<dots> = ?r" unfolding sign_changes_rat_def real_of_rat_list_neq 
     unfolding real_of_rat_remdups_adj by simp
   finally show ?thesis .
 qed
 
-lemma sign_changes_neg_inf_rat: "sign_changes_neg_inf (map real_of_rat_poly ps)
-  =  sign_changes_neg_inf_rat ps" (is "?l = ?r")
+lemma sign_changes_neg_number_rootat: "sign_changes_neg_inf (map real_of_rat_poly ps)
+  =  sign_changes_neg_number_rootat ps" (is "?l = ?r")
 proof - 
-  have "?l = length (remdups_adj (list_neq (map real_of_rat (map poly_neg_inf_rat ps)) 0)) - 1"
-    unfolding sign_changes_neg_inf_def
-    unfolding map_map o_def real_of_rat_sgn poly_real_of_rat_poly rpoly.eval_poly_poly 
-      poly_neg_inf_rat ..
-  also have "\<dots> = ?r" unfolding sign_changes_neg_inf_rat_def real_of_rat_list_neq 
+  have "?l = length (remdups_adj (list_neq (map real_of_rat (map poly_neg_number_rootat ps)) 0)) - 1"
+    by (simp add: sign_changes_neg_inf_def o_def real_of_rat_sgn poly_neg_number_rootat)
+  also have "\<dots> = ?r" unfolding sign_changes_neg_number_rootat_def real_of_rat_list_neq 
     unfolding real_of_rat_remdups_adj by simp
   finally show ?thesis .
 qed
 
-lemma sign_changes_inf_rat: "sign_changes_inf (map real_of_rat_poly ps)
-  =  sign_changes_inf_rat ps" (is "?l = ?r")
+lemma sign_changes_number_rootat: "sign_changes_inf (map real_of_rat_poly ps)
+  =  sign_changes_number_rootat ps" (is "?l = ?r")
 proof - 
-  have "?l = length (remdups_adj (list_neq (map real_of_rat (map poly_inf_rat ps)) 0)) - 1"
+  have "?l = length (remdups_adj (list_neq (map real_of_rat (map poly_number_rootat ps)) 0)) - 1"
     unfolding sign_changes_inf_def
-    unfolding map_map o_def real_of_rat_sgn poly_real_of_rat_poly rpoly.eval_poly_poly 
-      poly_inf_rat ..
-  also have "\<dots> = ?r" unfolding sign_changes_inf_rat_def real_of_rat_list_neq 
+    unfolding map_map o_def real_of_rat_sgn poly_number_rootat ..
+  also have "\<dots> = ?r" unfolding sign_changes_number_rootat_def real_of_rat_list_neq 
     unfolding real_of_rat_remdups_adj by simp
   finally show ?thesis .
 qed
-
-lemma count_roots_interval_rat_sf_code[code]:
-  "count_roots_interval_sf_rat p = (let ps = sturm_squarefree_rat p
-    in Root_Info 
-      (\<lambda> a b. sign_changes_rat ps a - sign_changes_rat ps b + (if poly p a = 0 then 1 else 0))
-      (\<lambda> a. sign_changes_neg_inf_rat ps - sign_changes_rat ps a))"
-  unfolding count_roots_interval_sf_rat_def Let_def count_roots_interval_sf_def split
-    sturm_squarefree_rat sign_changes_rat poly_real_of_rat_poly rpoly.eval_poly_poly rpoly.hom_0_iff
-    sign_changes_neg_inf_rat
-    by simp
 
 lemma count_roots_interval_rat_code[code]:
-  "count_roots_interval_rat p = (let ps = sturm_rat p
+  "count_roots_interval_rat p = (let rp = map_poly rat_of_int p; ps = sturm_rat rp
     in Root_Info 
-      (\<lambda> a b. sign_changes_rat ps a - sign_changes_rat ps b + (if poly p a = 0 then 1 else 0))
-      (\<lambda> a. sign_changes_neg_inf_rat ps - sign_changes_rat ps a))"
-  unfolding count_roots_interval_rat_def Let_def count_roots_interval_def split
-    sturm_rat sign_changes_rat poly_real_of_rat_poly rpoly.eval_poly_poly rpoly.hom_0_iff
-    sign_changes_neg_inf_rat
-    by simp
-
+      (\<lambda> a b. sign_changes_rat ps a - sign_changes_rat ps b + (if poly rp a = 0 then 1 else 0))
+      (\<lambda> a. sign_changes_neg_number_rootat ps - sign_changes_rat ps a))"
+  unfolding count_roots_interval_rat_def Let_def count_roots_interval_def split of_rat_of_int_poly[symmetric]
+    sturm_rat sign_changes_rat 
+    by (simp add: sign_changes_neg_number_rootat)
 
 lemma count_roots_rat_code[code]:
-  "count_roots_rat p = (if p = 0 then 0 else let ps = sturm_rat p
-    in sign_changes_neg_inf_rat ps - sign_changes_inf_rat ps)"
-  unfolding count_roots_rat_def Let_def sturm_rat count_roots_code
-    rpoly.eval_poly_poly rpoly.hom_0_iff sign_changes_neg_inf_rat sign_changes_inf_rat
-    by simp
+  "count_roots_rat p = (let rp = map_poly rat_of_int p in if p = 0 then 0 else let ps = sturm_rat rp
+    in sign_changes_neg_number_rootat ps - sign_changes_number_rootat ps)"
+  unfolding count_roots_rat_def Let_def sturm_rat count_roots_code of_rat_of_int_poly[symmetric]
+    sign_changes_neg_number_rootat sign_changes_number_rootat
+  by simp
+
+hide_const (open) count_roots_interval_sf_rat
+
+text \<open>Finally we provide an even more efficient implementation which
+  avoids the "poly p x = 0" test, but it is restricted to irreducible polynomials.\<close>
+
+definition root_info :: "int poly \<Rightarrow> root_info" where
+  "root_info p = (if degree p = 1 then 
+    (let x = Rat.Fract (- coeff p 0) (coeff p 1)
+     in Root_Info (\<lambda> l r. if l \<le> x \<and> x \<le> r then 1 else 0)  (\<lambda> b. if x \<le> b then 1 else 0)) else 
+    (let rp = map_poly rat_of_int p; ps = sturm_rat rp in 
+   Root_Info (\<lambda> a b. sign_changes_rat ps a - sign_changes_rat ps b)
+      (\<lambda> a. sign_changes_neg_number_rootat ps - sign_changes_rat ps a)))" 
+
+lemma root_info:
+  assumes irr: "irreducible p" and deg: "degree p \<noteq> 0"
+  shows "root_info_cond (root_info p) p"
+proof (cases "degree p = 1")
+  case deg: True
+  from degree1_coeffs[OF this] obtain a b where p: "p = [:b,a:]" and "a \<noteq> 0" by auto
+  from deg have "degree (real_of_int_poly p) = 1" by simp
+  from roots1[OF this, unfolded roots1_def] p
+  have id: "(ipoly p x = 0) = ((x :: real) = - b / a)" for x by auto
+  have idd: "{x. real_of_rat aa \<le> x \<and>
+                 x \<le> real_of_rat ba \<and> x = real_of_int (- b) / real_of_int a} 
+   = (if real_of_rat aa \<le> real_of_int (- b) / real_of_int a \<and>
+                 real_of_int (- b) / real_of_int a \<le> real_of_rat ba then {real_of_int (- b) / real_of_int a} else {})" 
+    for aa ba by auto
+  have iddd: "{x. x \<le> real_of_rat aa \<and> x = real_of_int (- b) / real_of_int a}
+    = (if real_of_int (- b) / real_of_int a \<le> real_of_rat aa then {real_of_int (- b) / real_of_int a} else {})" for aa
+    by auto
+  have id4: "real_of_int x = real_of_rat (rat_of_int x)" for x by simp
+  show ?thesis unfolding root_info_def deg unfolding root_info_cond_def id root_cond_def split
+    unfolding p Fract_of_int_quotient Let_def idd iddd 
+    unfolding id4 of_rat_divide[symmetric] of_rat_less_eq by auto
+next
+  case False
+  with deg have deg: "degree p > 1" by auto
+  with irreducible_connect_rev[OF irr] have irr: "Missing_Polynomial.irreducible p" by auto
+  from irreducible_root_free[OF Gauss_Lemma.irreducible_int_rat[OF irr]]
+  have idd: "(poly (of_int_poly p) a = 0) = False" for a :: rat
+    unfolding root_free_def using deg by auto
+  have id: "root_info p = count_roots_interval_rat p"
+    unfolding root_info_def if_False count_roots_interval_rat_code Let_def idd using deg by auto
+  show ?thesis unfolding id
+    by (rule count_roots_interval_rat[OF irreducible_square_free[OF irr]])
+qed
 
 end

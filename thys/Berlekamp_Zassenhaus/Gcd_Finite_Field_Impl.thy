@@ -36,7 +36,7 @@ proof -
     by (rule poly_rel_coeffs_Mp_of_int_poly[OF refl], simp add: g''_def)
   have id: "(gcd_poly_i ff_ops (of_int_poly_i ff_ops (Mp f)) (of_int_poly_i ff_ops (Mp g)) = one_poly_i ff_ops)
     = coprime f'' g''"
-    unfolding square_free_i_def by transfer_prover
+    unfolding square_free_i_def coprime_iff_gcd_one by transfer_prover
   have fF: "MP_Rel (Mp f) F" unfolding F MP_Rel_def
     by (simp add: Mp_f_representative)
   have gG: "MP_Rel (Mp g) G" unfolding G MP_Rel_def
@@ -85,14 +85,16 @@ proof -
     assume dvd: "h dvd f" "h dvd g" 
     hence "dvdm h f" "dvdm h g" unfolding dvdm_def equivalent_def dvd_def by auto
     from cop_m[OF this] obtain k where unit: "Mp (h * Mp k) = 1" unfolding dvdm_def equivalent_def by auto
-    from content_dvd_1[of _ h] dvd cnt have cnt: "content h = 1" by auto 
+    from content_dvd_contentI[OF dvd(1)] content_dvd_contentI[OF dvd(2)] cnt
+    have cnt: "content h = 1" by auto 
     let ?k = "Mp k" 
     from unit have h0: "h \<noteq> 0" by auto
     from unit have k0: "?k \<noteq> 0" by fastforce
     from p have p0: "p \<noteq> 0" by auto
     from dvd have "lead_coeff h dvd lead_coeff f" "lead_coeff h dvd lead_coeff g" 
       by (metis dvd_def lead_coeff_mult)+
-    with cop have coph: "coprime (lead_coeff h) p" by (metis coprime_divisors dvd_def mult.right_neutral)
+    with cop have coph: "coprime (lead_coeff h) p"
+      unfolding coprime_iff_gcd_one by (metis coprime_divisors dvd_def mult.right_neutral)
     let ?k = "Mp k"  
     from arg_cong[OF unit, of degree] have degm0: "degree_m (h * ?k) = 0" unfolding degree_m_def by simp
     have "lead_coeff ?k \<in> {0 ..< p}" unfolding Mp_coeff M_def using m1 by simp
@@ -168,7 +170,7 @@ definition gcd_int_poly :: "int poly \<Rightarrow> int poly \<Rightarrow> int po
             ff = map_poly (\<lambda> x. x div cf) f; 
             gg = map_poly (\<lambda> x. x div cg) g
           in if coprime_heuristic ff gg then [:ct:] else smult ct (gcd_poly_code_aux ff gg))" 
-  
+
 lemma gcd_int_poly_code[code_unfold]: "gcd = gcd_int_poly" 
 proof (intro ext)
   fix f g :: "int poly"
@@ -183,9 +185,8 @@ proof (intro ext)
     case False
     hence cop: "coprime_heuristic ?ff ?gg" by simp
     from False have "f \<noteq> 0" by auto
-    with content_primitive_part have cnt: "content ?ff = 1" .
-    have id: "coprime ?ff ?gg" 
-      by (rule coprime_heuristic[OF cop], insert cnt, auto)
+    from content_primitive_part[OF this] coprime_heuristic[OF cop]
+    have id: "gcd ?ff ?gg = 1" by auto
     show ?thesis unfolding gcd_poly_decompose[of f g] unfolding gcd_int_poly_def Let_def id
       using False by (auto simp: primitive_part_def)
   qed

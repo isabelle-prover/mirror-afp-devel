@@ -14,14 +14,8 @@ theory Poly_Mod_Finite_Field
   "../Polynomial_Interpolation/Ring_Hom_Poly"
 begin
 
-abbreviation of_int_poly :: "int poly \<Rightarrow> 'a :: ring_1 poly" where
-  "of_int_poly \<equiv> map_poly of_int"
-
 abbreviation to_int_poly :: "'a :: finite mod_ring poly \<Rightarrow> int poly" where
   "to_int_poly \<equiv> map_poly to_int_mod_ring"
-
-interpretation ring_hom_of_int: ring_hom "of_int :: int \<Rightarrow> 'a :: comm_ring_1"
-  by (unfold_locales, auto)
 
 lemma irreducible_def_lt: "irreducible f = (degree f \<noteq> 0 \<and> 
   (\<forall> g h. degree g < degree f \<longrightarrow> degree h < degree f \<longrightarrow> f \<noteq> g * h))" 

@@ -140,17 +140,17 @@ proof -
   have p: "p = map_poly int_of_rat rp" and ball: "Ball (set (coeffs rp)) is_int_rat"
     by (auto split: if_splits)
   have id: "rp = map_poly ?r p" unfolding p
-    by (rule sym, subst map_poly_map_poly, force+, rule map_poly_idI, insert ball, auto)
+    by (rule sym, subst map_poly_map_poly, force, rule map_poly_idI, insert ball, auto)
   note inter = interpolation_poly[OF dist rp]
   {
     fix x y
     assume "(x,y) \<in> set xs_ys"
     hence "(?r x, ?r y) \<in> set rxs_ys" unfolding rxs_ys_def by auto
     from inter[OF this] have "poly rp (?r x) = ?r y" by auto
-    from this[unfolded id ri.poly_map_poly] show "poly p x = y" by auto
+    from this[unfolded id of_int_hom.poly_map_poly] show "poly p x = y" by auto
   }
   show "degree p \<le> length xs_ys - 1" using degree_interpolation_poly[of alg rxs_ys, folded rp]
-    unfolding id rxs_ys_def ri.degree_map_poly by simp
+    unfolding id rxs_ys_def of_int_hom.degree_map_poly by simp
 qed  
   
 
@@ -168,13 +168,13 @@ proof -
   note degrp = degree_interpolation_poly[of alg rxs_ys, folded rp]
   from q have q': "\<And> x y. (x,y) \<in> set rxs_ys \<Longrightarrow> poly (?rp q) x = y" unfolding rxs_ys_def 
     by auto
-  have [simp]: "degree (?rp q) = degree q" by (rule ri.degree_map_poly)
+  have [simp]: "degree (?rp q) = degree q" by (rule of_int_hom.degree_map_poly)
   have id: "rp = ?rp q"
     by (rule uniqueness_of_interpolation_point_list[OF dist' interpolation_poly[OF dist' rp]],
     insert q' dq degrp, auto simp: rxs_ys_def)
   from p[unfolded interpolation_poly_int_def[OF dist] Let_def, folded rxs_ys_def rp]
   have "\<exists> c \<in> set (coeffs rp). c \<notin> \<int>" by (auto split: if_splits)
-  from this[unfolded id ri.coeffs_map_poly] show False by auto
+  from this[unfolded id of_int_hom.coeffs_map_poly] show False by auto
 qed
 
 lemmas newton_interpolation_poly_int_Some = 

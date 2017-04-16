@@ -156,13 +156,9 @@ proof -
   finally show ?thesis by (simp add: ac_simps)
 qed
 
-context begin
-
-interpretation i1: inj_semiring_hom complex_of_int by(unfold_locales,auto)
-
 lemma cmod_through_lead_coeff[simp]:
   "cmod (lead_coeff (of_int_poly h)) = abs (lead_coeff h)"
-  by (auto simp: i1.map_poly_preservers(1)[symmetric])
+  by (auto simp: of_int_hom.map_poly_preservers(1)[symmetric])
 
 lemma mignotte_coeff_helper:
   "abs (coeff h i) \<le> 
@@ -171,21 +167,15 @@ lemma mignotte_coeff_helper:
   unfolding mahler_measure_def
   using mignotte_helper_coeff[of "of_int_poly h" i] 
   by auto
-end
 
 lemma mahler_measure_poly_ge_1:
   assumes "h \<noteq> 0"
   shows "(1::real) \<le> mahler_measure h"
 proof -
-  from assms
-  have "map_poly complex_of_int h \<noteq> 0"
-    by simp
-  then have "lead_coeff (map_poly complex_of_int h) \<noteq> 0"
-    by (rule leading_coeff_neq_0)
-  then have "cmod (lead_coeff (map_poly complex_of_int h)) > 0"
-    by simp
+  have rc: "\<bar>real_of_int i\<bar> = of_int \<bar>i\<bar>" for i by simp
+  from assms have "cmod (lead_coeff (map_poly complex_of_int h)) > 0" by simp
   hence "cmod (lead_coeff (map_poly complex_of_int h)) \<ge> 1"
-    by(cases "abs (lead_coeff h)";auto)
+    by(cases "lead_coeff h = 0", auto simp del: leading_coeff_0_iff)
   from mult_mono[OF this mahler_measure_monic_ge_1 norm_ge_zero]
   show ?thesis unfolding mahler_measure_def mahler_measure_poly_via_monic
     by auto
@@ -267,7 +257,7 @@ proof -
     by (metis abs_content_int abs_mult dvd_abs_iff)
   from dvd_content_dvd_rev(2)[OF dvd] have "?ng dvd smult (sgn d) ?nf" unfolding normalize_content_smult_int .
   hence dvd_n: "?ng dvd ?nf" using d 
-    by (metis content_0_iff dvd dvd_smult_int f mult_eq_0_iff smult_normalize_content smult_smult)
+    by (metis content_eq_zero_iff dvd dvd_smult_int f mult_eq_0_iff smult_normalize_content smult_smult)
   define gc where "gc = gcd ?cf ?cg" 
   define cg where "cg = ?cg div gc"   
   from dvd d f have g: "g \<noteq> 0" by auto  

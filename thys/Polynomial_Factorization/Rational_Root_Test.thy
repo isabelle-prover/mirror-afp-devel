@@ -83,13 +83,13 @@ proof -
     have ipr: "ip = [: b, a :] * r" using ip q by auto
     from arg_cong[OF ipr, of "\<lambda> p. coeff p 0"] have ba0: "b dvd ?a0" by auto
     have rpq: "?rp q = [: ?r b, ?r a :]" unfolding q
-    proof (rule poly_eqI, unfold ri.coeff_map_poly_hom)
+    proof (rule poly_eqI, unfold of_int_hom.coeff_map_poly_hom)
       fix n
       show "?r (coeff [:b, a:] n) = coeff [: ?r b, ?r a:] n"
         unfolding coeff_pCons
         by (cases n, force, cases "n - 1", auto)
-    qed      
-    from arg_cong[OF ip, of ?rp, unfolded ri.map_poly_mult rpq] have "[: ?r b, ?r a :] dvd ?rp ip"
+    qed
+    from arg_cong[OF ip, of ?rp, unfolded of_int_poly_hom.hom_mult rpq] have "[: ?r b, ?r a :] dvd ?rp ip"
       unfolding dvd_def by blast
     hence "smult (inverse (?r a)) [: ?r b , ?r a :] dvd ?rp ip" 
       by (rule smult_dvd, insert a, auto)

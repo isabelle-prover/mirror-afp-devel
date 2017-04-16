@@ -18,6 +18,7 @@ imports
   Poly_Mod_Finite_Field
 begin
 
+hide_const (open) up_ring.coeff up_ring.monom
 
 subsection \<open>Auxiliary lemmas\<close>
 
@@ -639,12 +640,10 @@ qed
 lemma poly_identity_mod_p:
   "v^(CARD('a)) - v = prod (\<lambda>x. v - [:x:]) (UNIV::'a mod_ring set)"
  proof -
-  interpret r: ring_hom "\<lambda>q. q \<circ>\<^sub>p v"
-    using pcompose_add pcompose_mult pcompose_1 pcompose_uminus by (unfold_locales, auto)
   have id: "monom 1 1 \<circ>\<^sub>p v = v" "[:0, 1:] \<circ>\<^sub>p v = v" unfolding pcompose_def by auto
-  have id2: "monom 1 (CARD('a)) \<circ>\<^sub>p v = v ^ (CARD('a))" by (metis id(1) r.hom_power x_pow_n)
+  have id2: "monom 1 (CARD('a)) \<circ>\<^sub>p v = v ^ (CARD('a))" by (metis id(1) pcompose_hom.hom_power x_pow_n)
   show ?thesis using arg_cong[OF poly_monom_identity_mod_p, of "\<lambda> f. f \<circ>\<^sub>p v"]
-    unfolding r.hom_minus r.hom_prod id pcompose_const id2 .
+    unfolding pcompose_hom.hom_minus pcompose_hom.hom_prod id pcompose_const id2 .
 qed
 
 

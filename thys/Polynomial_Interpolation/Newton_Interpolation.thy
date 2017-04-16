@@ -28,9 +28,9 @@ fun horner_composition :: "'a :: comm_ring_1 list \<Rightarrow> 'a list \<Righta
 | "horner_composition (ci # cs) (xi # xis) = horner_composition cs xis * [:- xi, 1:] + [:ci:]"
 | "horner_composition _ _ = 0"
 
-lemma (in ring_hom) horner_composition_hom: 
+lemma (in map_poly_comm_ring_hom) horner_composition_hom:
   "horner_composition (map hom cs) (map hom xs) = map_poly hom (horner_composition cs xs)"
-  by (induct cs xs rule: horner_composition.induct, auto simp: map_poly_minus)
+  by (induct cs xs rule: horner_composition.induct, auto)
 
 lemma horner_coeffs_ints: assumes len: "length cs \<le> Suc (length ys)"
   shows "(set (coeffs (horner_composition cs (map rat_of_int ys))) \<subseteq> \<int>) = (set cs \<subseteq> \<int>)"
@@ -46,7 +46,7 @@ proof -
     hence ics: "cs = ?mri ics" unfolding ics_def map_map o_def
       by (simp add: map_idI subset_code(1))      
     show "set (coeffs (horner_composition cs (?mri ys))) \<subseteq> \<int>"
-      unfolding ics ri.horner_composition_hom ri.coeffs_map_poly by auto
+      unfolding ics of_int_poly_hom.horner_composition_hom of_int_hom.coeffs_map_poly by auto
   next
     assume "set (coeffs (horner_composition cs (?mri ys))) \<subseteq> \<int>"
     thus "set cs \<subseteq> \<int>" using len
@@ -602,7 +602,7 @@ proof -
   have "rat_of_int a / rat_of_int b = rat_of_int c" unfolding c_def using assms(1) by simp
   hence "rat_of_int a = rat_of_int b * rat_of_int c" using assms(2)
     by (metis divide_cancel_right nonzero_mult_div_cancel_left of_int_eq_0_iff)
-  hence a: "a = b * c" by (simp add: ri.hom_inj)
+  hence a: "a = b * c" by (simp add: of_int_hom.injectivity)
   show "a mod b = 0" unfolding a by simp
 qed
 
@@ -809,7 +809,7 @@ proof -
       by (simp add: map_idI subset_code(1))      
     have id: "horner_composition (rev ?nc) (?mri xs) = map_poly ?ri (horner_composition ics xs)"
       unfolding cs_def[symmetric] ics
-      by (rule ri.horner_composition_hom)
+      by (rule of_int_poly_hom.horner_composition_hom)
     show "horner_composition (?mir (rev ?nc)) xs
       = map_poly ?ir (horner_composition (rev ?nc) (?mri xs))"
       unfolding id unfolding cs_def[symmetric] ics_def[symmetric]

@@ -33,9 +33,6 @@ fun show_factorization :: "'a :: {semiring_1,show} \<times> (('a poly \<times> n
 | "show_factorization (c,((p,i) # ps)) = show_factorization (c,ps) @ '' * ('' @ show p @ '')'' @
   (if i = 1 then [] else ''^'' @ show i)"
 
-definition show_sf_factorization :: "'a :: {semiring_1,show} \<times> (('a poly \<times> nat)list) \<Rightarrow> string" where
-  "show_sf_factorization x = show_factorization (case x of (c,xs) \<Rightarrow> (c, map (\<lambda> (p,i). (p, Suc i)) xs))" 
-  
 text \<open>Determine the roots over the rational, real, and complex numbers.\<close>
 
 definition "testpoly = [:5/2, -7/2, 1/2, -5, 7, -1, 5/2, -7/2, 1/2:]"
@@ -48,7 +45,7 @@ value [code] "show_lines (complex_roots_of_rat_poly testpoly)"
 
 text \<open>Factorize polynomials over the rational, real, and complex numbers.\<close>
 
-value [code] "show_sf_factorization (factorize_rat_poly testpoly)" 
+value [code] "show_factorization (factorize_rat_poly testpoly)" 
 value [code] "show_factorization (the (factorize_real_poly testpoly))"
 value [code] "show_factorization (the (factorize_complex_poly testpoly))"
 

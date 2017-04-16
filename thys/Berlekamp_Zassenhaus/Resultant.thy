@@ -19,8 +19,12 @@ imports
   "../Polynomial_Factorization/Rational_Factorization"
   Bivariate_Polynomials
   Binary_Exponentiation
+  Unique_Factorization_Poly
 begin
 
+(* The following lemma should be coeff_lift_hom.hom_det. There seems a problem in
+   Isabelle's locale mechanism .. *)
+declare comm_ring_hom.hom_det[OF coeff_lift_hom.comm_ring_hom_axioms,simp]
 
 subsubsection\<open>Sylvester Matrix\<close>
 
@@ -547,7 +551,7 @@ lemma resultant_const[simp]:
 lemma resultant_1[simp]:
   fixes p :: "'a :: comm_ring_1 poly"
   shows "resultant 1 p = 1" "resultant p 1 = 1"
-  unfolding one_poly_def by auto
+  unfolding one_poly_def resultant_const by auto
 
 lemma resultant_0[simp]:
   fixes p :: "'a :: comm_ring_1 poly"
@@ -926,7 +930,7 @@ subsubsection \<open>Homomorphism and Resultant\<close>
 
 text \<open>Here we prove Lemma~7.3.1 of the textbook.\<close>
 
-lemma(in ring_hom) resultant_sub_map_poly:
+lemma(in comm_ring_hom) resultant_sub_map_poly:
   fixes p q :: "'a poly"
   shows "hom (resultant_sub m n p q) = resultant_sub m n (map_poly hom p) (map_poly hom q)"
     (is "?l = ?r'")
@@ -938,7 +942,7 @@ proof -
   thus ?thesis unfolding resultant_sub_def.
 qed
 
-lemma (in ring_hom) resultant_map_poly:
+lemma (in comm_ring_hom) resultant_map_poly:
   fixes p q :: "'a poly"
     defines "p' \<equiv> map_poly hom p"
     defines "q' \<equiv> map_poly hom q"
@@ -991,7 +995,7 @@ proof -
   show "hom r = 0" using power_0_Suc by auto
 qed
 
-lemma (in inj_ring_hom) resultant_hom: "resultant (map_poly hom p) (map_poly hom q) = hom (resultant p q)"
+lemma (in inj_comm_ring_hom) resultant_hom: "resultant (map_poly hom p) (map_poly hom q) = hom (resultant p q)"
   by (subst resultant_map_poly(1), auto)
   
 subsubsection\<open>Resultant as Polynomial Expression\<close>
@@ -1058,7 +1062,6 @@ private lemma det_mk_poly:
   fixes A :: "'a :: comm_ring_1 mat"
   shows "det (mk_poly A) = [: det A :]"
 proof (cases "dim\<^sub>r A = dim\<^sub>c A")
-  interpret ring_hom_coeff_lift.
   case True
     define n where "n = dim\<^sub>c A"
     have "map\<^sub>m coeff_lift A \<in> carrier\<^sub>m (dim\<^sub>r A) (dim\<^sub>c A)" by simp
@@ -1068,7 +1071,7 @@ proof (cases "dim\<^sub>r A = dim\<^sub>c A")
       case True thus ?thesis unfolding det_def by simp
       next case False thus ?thesis
       unfolding mk_poly_def
-      by (subst det_mk_poly_sub[OF sq];simp)
+      by (subst det_mk_poly_sub[OF sq]; simp)
     qed
   next case False
     hence f2: "dim\<^sub>r A = dim\<^sub>c A \<longleftrightarrow> False" by simp
@@ -1293,7 +1296,6 @@ lemma resultant_as_poly:
   shows "\<exists>p' q'. degree p' < degree q \<and> degree q' < degree p \<and>
          [: resultant p q :] = p' * p + q' * q"
 proof (intro exI conjI)
-  interpret ring_hom_coeff_lift.
   define m where "m = degree p"
   define n where "n = degree q"
   define d where "d = dim\<^sub>r (mk_poly (sylvester_mat p q))"
@@ -1323,7 +1325,7 @@ proof (intro exI conjI)
       unfolding m_def n_def by (auto simp add: add.assoc)
     also have "i+m+n-1 = i+(m+n-1)" using i[folded mnd] by auto
     finally have "cofactor (mk_poly (sylvester_mat p q)) i (m+n-1) = c i"
-      unfolding c_def cofactor_def by auto
+      unfolding c_def cofactor_def hom_distribs by simp
   }
   hence "... = (\<Sum>i<d. mk_poly (sylvester_mat p q) $$ (i, m+n-1) * c i)"
     (is "_ = sum ?f _") by auto
@@ -1490,67 +1492,56 @@ lemma resultant_as_nonzero_poly:
          [: resultant p q :] = p' * p + q' * q \<and> p' \<noteq> 0 \<and> q' \<noteq> 0"
 proof (cases "resultant p q = 0")
   case False
-    thus ?thesis
-      using resultant_as_nonzero_poly_weak degp degq
-      unfolding m_def n_def by auto
-  next case True
-    define S where "S = transpose\<^sub>m (sylvester_mat p q)"
-    have S: "S \<in> carrier\<^sub>m (m+n) (m+n)" unfolding S_def m_def n_def by auto
-    have "det S = 0" using True
-      unfolding resultant_def S_def apply (subst det_transpose) by auto
-    then obtain v
-      where v: "v \<in> carrier\<^sub>v (m+n)" and v0: "v \<noteq> \<zero>\<^sub>v (m+n)" and "S \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v (m+n)"
-      using det_0_iff_vec_prod_zero[OF S] by auto
-    hence "poly_of_vec (S \<otimes>\<^sub>m\<^sub>v v) = 0" by auto
-    hence main: "poly_of_vec (vec_first v n) * p + poly_of_vec (vec_last v m) * q = 0"
-      (is "?p * _ + ?q * _ = _")
-      using sylvester_vec_poly[OF v[unfolded m_def n_def], folded m_def n_def S_def]
-      by auto
-    have split: "vec_first v n @\<^sub>v vec_last v m = v"
-      using vec_first_last_append[simplified add.commute] v by auto
-    show ?thesis
-    proof(intro exI conjI)
-      show "[: resultant p q :] = ?p * p + ?q * q" unfolding True using main by auto
-      show "?p \<noteq> 0"
-      proof
-        assume p'0: "?p = 0"
-        hence "?q * q = 0" using main by auto
-        hence "?q = 0" using degq n_def by auto
-        hence "vec_last v m = \<zero>\<^sub>v m" unfolding poly_of_vec_0_iff by auto
-        also have "vec_first v n @\<^sub>v ... = \<zero>\<^sub>v (m+n)" using p'0 unfolding poly_of_vec_0_iff by auto
-        finally have "v = \<zero>\<^sub>v (m+n)" using split by auto
-        thus False using v0 by auto
-      qed
-      show "?q \<noteq> 0"
-      proof
-        assume q'0: "?q = 0"
-        hence "?p * p = 0" using main by auto
-        hence "?p = 0" using degp m_def by auto
-        hence "vec_first v n = \<zero>\<^sub>v n" unfolding poly_of_vec_0_iff by auto
-        also have "... @\<^sub>v vec_last v m = \<zero>\<^sub>v (m+n)" using q'0 unfolding poly_of_vec_0_iff by auto
-        finally have "v = \<zero>\<^sub>v (m+n)" using split by auto
-        thus False using v0 by auto
-      qed
-      show "degree ?p < n" using degree_poly_of_vec_less[of "vec_first v n"] using degq by auto
-      show "degree ?q < m" using degree_poly_of_vec_less[of "vec_last v m"] using degp by auto
+  thus ?thesis
+    using resultant_as_nonzero_poly_weak degp degq
+    unfolding m_def n_def by auto
+next case True
+  define S where "S = transpose\<^sub>m (sylvester_mat p q)"
+  have S: "S \<in> carrier\<^sub>m (m+n) (m+n)" unfolding S_def m_def n_def by auto
+  have "det S = 0" using True
+    unfolding resultant_def S_def apply (subst det_transpose) by auto
+  then obtain v
+    where v: "v \<in> carrier\<^sub>v (m+n)" and v0: "v \<noteq> \<zero>\<^sub>v (m+n)" and "S \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v (m+n)"
+    using det_0_iff_vec_prod_zero[OF S] by auto
+  hence "poly_of_vec (S \<otimes>\<^sub>m\<^sub>v v) = 0" by auto
+  hence main: "poly_of_vec (vec_first v n) * p + poly_of_vec (vec_last v m) * q = 0"
+    (is "?p * _ + ?q * _ = _")
+    using sylvester_vec_poly[OF v[unfolded m_def n_def], folded m_def n_def S_def]
+    by auto
+  have split: "vec_first v n @\<^sub>v vec_last v m = v"
+    using vec_first_last_append[simplified add.commute] v by auto
+  show ?thesis
+  proof(intro exI conjI)
+    show "[: resultant p q :] = ?p * p + ?q * q" unfolding True using main by auto
+    show "?p \<noteq> 0"
+    proof
+      assume p'0: "?p = 0"
+      hence "?q * q = 0" using main by auto
+      hence "?q = 0" using degq n_def by auto
+      hence "vec_last v m = \<zero>\<^sub>v m" unfolding poly_of_vec_0_iff by auto
+      also have "vec_first v n @\<^sub>v ... = \<zero>\<^sub>v (m+n)" using p'0 unfolding poly_of_vec_0_iff by auto
+      finally have "v = \<zero>\<^sub>v (m+n)" using split by auto
+      thus False using v0 by auto
     qed
+    show "?q \<noteq> 0"
+    proof
+      assume q'0: "?q = 0"
+      hence "?p * p = 0" using main by auto
+      hence "?p = 0" using degp m_def by auto
+      hence "vec_first v n = \<zero>\<^sub>v n" unfolding poly_of_vec_0_iff by auto
+      also have "... @\<^sub>v vec_last v m = \<zero>\<^sub>v (m+n)" using q'0 unfolding poly_of_vec_0_iff by auto
+      finally have "v = \<zero>\<^sub>v (m+n)" using split by auto
+      thus False using v0 by auto
+    qed
+    show "degree ?p < n" using degree_poly_of_vec_less[of "vec_first v n"] using degq by auto
+    show "degree ?q < m" using degree_poly_of_vec_less[of "vec_last v m"] using degp by auto
+  qed
 qed
 
 text\<open>Corresponds to Lemma 7.2.3 of the textbook\<close>
 
-lemma coprime_mult_cross_dvd:
-  fixes p q :: "'a :: factorial_ring_gcd"
-  assumes coprime: "coprime p q" and eq: "p' * p = q' * q" and p: "p \<noteq> 0" and q: "q \<noteq> 0"
-  shows "p dvd q' \<and> q dvd p'" using assms
-  by (metis coprime_dvd_mult_iff dvd_triv_right gcd.commute)
-
-lemma not_coprime_iff_common_factor:
-  fixes p q :: "'a :: factorial_ring_gcd"
-  shows "\<not> coprime p q \<longleftrightarrow> (\<exists>r. r dvd p \<and> r dvd q \<and> \<not> r dvd 1)"
-  by (metis gcd_dvd1 gcd_dvd2 is_unit_gcd semiring_gcd_class.gcd_greatest_iff)
-
 lemma resultant_zero_imp_common_factor:
-  fixes p q :: "'a :: factorial_ring_gcd poly"
+  fixes p q :: "'a :: ufd poly"
   assumes deg: "degree p > 0 \<or> degree q > 0" and r0: "resultant p q = 0"
   shows "\<not> coprime p q"
   unfolding neq0_conv[symmetric]
@@ -1565,7 +1556,7 @@ proof -
       using resultant_as_nonzero_poly[OF degp degq] r0 by auto
     hence "p' * p = - q' * q" by (simp add: eq_neg_iff_add_eq_0)
     
-    from coprime_mult_cross_dvd[OF cop this p0 q0]
+    from some_gcd.coprime_mult_cross_dvd[OF cop this p0 q0]
     have "p dvd q'" by auto
     from dvd_imp_degree_le[OF this q'0]
     have "degree p \<le> degree q'" by auto
@@ -1597,7 +1588,8 @@ lemma mod_const_0 [simp]:
   using eucl_rel_poly [of f "[:c:]", unfolded eucl_rel_poly_iff] that
   by simp
 
-lemma resultant_non_zero_imp_coprime: assumes nz: "resultant (f :: 'a :: {field,euclidean_ring_gcd} poly) g \<noteq> 0" 
+lemma resultant_non_zero_imp_coprime:
+  assumes nz: "resultant (f :: 'a :: field poly) g \<noteq> 0" 
   and nz': "f \<noteq> 0 \<or> g \<noteq> 0" 
   shows "coprime f g" 
 proof (cases "degree f = 0 \<or> degree g = 0")
@@ -1609,7 +1601,7 @@ proof (cases "degree f = 0 \<or> degree g = 0")
   obtain p q where "degree p < degree g" "degree q < degree f" 
     and id: "r = p * f + q * g"
     and "p \<noteq> 0" "q \<noteq> 0" unfolding r_def by auto
-  define h where "h = gcd f g" 
+  define h where "h = some_gcd f g"
   have "h dvd f" "h dvd g" unfolding h_def by auto
   then obtain j k where f: "f = h * j" and g: "g = h * k" unfolding dvd_def by auto
   from id[unfolded f g] have id: "h * (p * j + q * k) = r" by (auto simp: field_simps)
@@ -1618,50 +1610,34 @@ proof (cases "degree f = 0 \<or> degree g = 0")
   also have "degree (h * (p * j + q * k)) = degree h + degree (p * j + q * k)" 
     by (subst degree_mult_eq, insert id r, auto)
   finally have h: "degree h = 0" "h \<noteq> 0" using r id by auto
-  thus ?thesis unfolding h_def using is_unit_gcd is_unit_iff_degree by blast
+  thus ?thesis unfolding h_def using is_unit_iff_degree some_gcd.gcd_dvd_1 by blast
 next
   case True
   {
-    fix f g :: "'a poly" 
-    assume g: "degree g = 0" and res: "resultant f g \<noteq> 0" and nz: "f \<noteq> 0 \<or> g \<noteq> 0" 
-    from degree0_coeffs[OF g] obtain c where g: "g = [:c:]" by auto
-    from res[unfolded this resultant_const] have cf: "c ^ degree f \<noteq> 0" by auto
-    {
-      assume c: "c \<noteq> 0" 
-      with g have "g \<noteq> 0"
-        by simp
-      then have "normalize g = 1"
-        using g by simp (metis normalize_smult normalize_1 smult_1)
-      from \<open>g \<noteq> 0\<close> have "gcd f g = gcd (f mod g) g" by simp
-      also have "f mod g = 0"
-        using \<open>c \<noteq> 0\<close> g by simp
-      finally have "coprime f g"
-        using \<open>normalize g = 1\<close> by simp
-    }
-    moreover
-    {
-      assume c: "c = 0"
-      with g have g: "g = 0" by auto
-      from c cf have "degree f = 0" by auto
-      from degree0_coeffs[OF this] obtain d where f: "f = [:d:]" by auto
-      from nz[unfolded g f] have d: "d \<noteq> 0" by auto
-      have "gcd f g = normalize [:d:]" unfolding g f by simp
-      also have "\<dots> = 1" using d by (metis normalize_smult normalize_1 smult_1)
-      finally have "coprime f g" .
-    }
-    ultimately have "coprime f g" by auto
+    fix f g :: "'a poly"
+    assume deg_g: "degree g = 0" and res: "resultant f g \<noteq> 0" and nz: "f \<noteq> 0 \<or> g \<noteq> 0"
+    have "coprime f g"
+    proof (cases "g = 0")
+      case False
+      then show ?thesis using divides_degree[of _ g, unfolded deg_g] by (auto intro!: coprimeI)
+    next
+      case g: True
+      then have "g = [:0:]" by auto
+      from res[unfolded this resultant_const] have "degree f = 0" by auto
+      with nz show ?thesis unfolding g by auto
+    qed
   } note main = this
   from True
   show ?thesis
   proof
     assume f: "degree f = 0" 
     from nz[unfolded resultant_swap[of f g]] have "resultant g f \<noteq> 0" by (auto split: if_splits)
-    from main[OF f this] nz' show ?thesis by (auto simp: gcd.commute)
+    from main[OF f this] nz' show ?thesis by (auto simp: ac_simps)
   next
     assume "degree g = 0" 
     from main[OF this nz nz'] show ?thesis .
   qed
-qed  
+qed
 
 subsubsection \<open>Computation of Resultants\<close>
 
@@ -1914,11 +1890,11 @@ next
     also note *[symmetric]
     finally show ?thesis.
 qed
-  
+
 lemma smult_exact_div_poly: assumes "\<And> c. c \<in> set (coeffs p) \<Longrightarrow> a dvd c"
   shows "smult a (divide_poly p a) = p" 
   unfolding smult_map_poly divide_poly_def
-  by (subst map_poly_map_poly, force, rule map_poly_idI, insert assms, auto)
+  by (subst map_poly_map_poly,simp,rule map_poly_eqI, insert assms, auto)
 
 typedef (overloaded) 'a common_divisor = "{f. \<forall> x y :: 'a :: idom_divide. f x y dvd x \<and> f x y dvd y}"
   by (rule exI[of _ "\<lambda> _ _. 1"], auto)
@@ -2067,11 +2043,11 @@ definition resultant_impl :: "'a poly \<Rightarrow> 'a poly \<Rightarrow> 'a" wh
 lemma resultant_impl[simp]: "resultant_impl f g = resultant f g"
    using resultant_impl_main[OF refl refl, of f g] resultant_impl_main[OF refl refl, of g f] 
    unfolding Let_def resultant_impl_def using resultant_swap[of f g] by auto
-end  
+end
 
 lift_definition gcd_divisor :: "'a :: {idom_divide,semiring_gcd} common_divisor" is gcd
   by auto
-  
+
 lemma resultant_code[code]: "resultant x y = resultant_impl gcd_divisor x y"
   by simp
 

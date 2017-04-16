@@ -17,6 +17,8 @@ imports
   "../Polynomial_Factorization/Missing_List"
 begin
 
+hide_const(open) monom coeff
+
 text \<open>Whereas @{thm finite_field_factorization} provides a result for a polynomials over GF(p),
   we now develop a theorem which speaks about integer polynomials modulo p.\<close>
 context poly_mod_type
@@ -538,8 +540,7 @@ proof -
     thus "to_int_poly_i ff_ops (fs' ! i) = to_int_poly (fs'' ! i)" unfolding id .
   qed
   have f: "f'' = of_int_poly f" unfolding poly_eq_iff f''_def
-    unfolding ring_hom_of_int.coeff_map_poly_hom Mp_coeff
-    by (simp add: inj_to_int_mod_ring_point to_int_mod_ring_of_int_M)
+    by (simp add: inj_to_int_mod_ring_point to_int_mod_ring_of_int_M Mp_coeff)
   have *: "unique_factorization_m f (c, mset fs)" 
     using finite_field_factorization_modulo_ring[OF f sq berl cc' fs'] by auto
   have fs': "(\<forall>fi\<in>set fs. set (coeffs fi) \<subseteq> {0..<p})" unfolding fs' 

@@ -300,7 +300,7 @@ proof -
   also have "Mp (smult c (prod_mset fs)) = Mp (smult (M c) (Mp (prod_mset fs)))" by simp
   finally show ?thesis using monic
     by (metis M_M Mp_0 Mp_coeff degree_m_eq lead_coeff_smult m1 
-      mult_cancel_left2 poly_mod.M_def poly_mod.degree_m_def smult_eq_0_iff)
+      mult_cancel_left2 poly_mod.M_def poly_mod.degree_m_def smult_eq_0_iff) (*takes time...*)
 qed
 
 lemma factorization_m_smult: assumes "factorization_m f (c,fs)" 

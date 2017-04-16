@@ -49,6 +49,14 @@ proof - let "?P x y" = "f x = f y"
   show ?thesis using comm_monoid_mult_class.prod_list.induct_gen_abs[of _ ?P,OF assms] by auto
 qed
 
+context inj_comm_semiring_hom
+begin
+lemma map_poly_preservers:
+  "hom (lead_coeff p) = lead_coeff (map_poly hom p)"
+  "hom (coeff p n) = coeff (map_poly hom p) n"
+  unfolding poly_eq_iff by simp_all
+end
+
 abbreviation complex_of_int::"int => complex" where
   "complex_of_int \<equiv> of_int"
 
@@ -92,11 +100,9 @@ lemma complex_roots_int:
   "smult (lead_coeff p) (\<Prod>a\<leftarrow>complex_roots_int p. [:- a, 1:]) = map_poly of_int p"
   "length (complex_roots_int p) = degree p"
 proof -
-  interpret inj_semiring_hom complex_of_int by(unfold_locales,auto)
-  show   "smult (lead_coeff p) (\<Prod>a\<leftarrow>complex_roots_int p. [:- a, 1:]) = map_poly of_int p"
+  show "smult (lead_coeff p) (\<Prod>a\<leftarrow>complex_roots_int p. [:- a, 1:]) = map_poly of_int p"
   "length (complex_roots_int p) = degree p"
-    using complex_roots[of "map_poly of_int p"] unfolding complex_roots_int_def
-      by simp_all
+  using complex_roots[of "map_poly of_int p"] unfolding complex_roots_int_def by auto
 qed
 
 text {* The measure for polynomials, after K. Mahler *}
@@ -236,7 +242,7 @@ lemma square_prod_cmod[simp]:
   "(cmod (a * b))^2 = cmod a ^ 2 * cmod b ^ 2"
 by (simp add: norm_mult power_mult_distrib)
 
-lemma coeffs_smult[simp]:
+lemma sum_coeffs_smult_cmod:
   "(\<Sum>a\<leftarrow>coeffs (smult v p). (cmod a)^2) = (cmod v)^2 * (\<Sum>a\<leftarrow>coeffs p. (cmod a)^2)" 
   (is "?l = ?r")
 proof - 
@@ -362,7 +368,7 @@ proof -
   
   have "norm2 f = (\<Sum>a\<leftarrow>coeffs ?f. (cmod a)^2)" unfolding reconstruct_is_original_poly..
   also have "\<dots> = cmod (lead_coeff f)^2 * (\<Sum>a\<leftarrow>coeffs (\<Prod>a\<leftarrow>?roots. [:- a, 1:]). (cmod a)\<^sup>2)" 
-    unfolding reconstruct_poly_def using coeffs_smult.
+    unfolding reconstruct_poly_def using sum_coeffs_smult_cmod.
   finally have fg_norm:"norm2 f = cmod (lead_coeff f)^2 * (\<Sum>a\<leftarrow>coeffs ?g. (cmod a)^2)"
     unfolding Landau_lemma by auto
 
@@ -688,27 +694,22 @@ lemma graeffe_poly_impl: assumes "f = smult c (\<Prod>a\<leftarrow>as. [:- a, 1:
 lemma drop_half_map: "drop_half (map f xs) = map f (drop_half xs)" 
   by (induct xs rule: drop_half.induct, auto)
 
-lemma (in inj_ring_hom) map_poly_poly_square_subst: 
+lemma (in inj_comm_ring_hom) map_poly_poly_square_subst: 
   "map_poly hom (poly_square_subst f) = poly_square_subst (map_poly hom f)" 
   unfolding poly_square_subst_def coeffs_map_poly drop_half_map poly_of_list_def
   by (rule poly_eqI, auto simp: nth_default_map_eq)
 
-context inj_idom_hom 
+context inj_idom_hom
 begin
 
-lemma graeffe_poly_impl_hom: 
+lemma graeffe_poly_impl_hom:
   "map_poly hom (graeffe_poly_impl f m) = graeffe_poly_impl (map_poly hom f) m"
 proof -
   let ?h = "map_poly hom" 
   obtain c where c: "(((- 1) ^ degree f) :: 'a) = c" by auto
   have c': "(((- 1) ^ degree f) :: 'b) = hom c" unfolding c[symmetric] by simp
   show ?thesis unfolding graeffe_poly_impl_def degree_map_poly c c'
-  proof (induct m arbitrary: f)
-    case (Suc m f)
-    obtain g where g: "(graeffe_poly_impl_main c f m) = g" by auto
-    show ?case unfolding graeffe_poly_impl_main.simps graeffe_one_step_def Suc[symmetric] g map_poly_smult
-      map_poly_poly_square_subst map_poly_mult map_poly_pcompose by simp
-  qed simp
+  by (induct m arbitrary: f, simp_all add: graeffe_one_step_def Suc[symmetric] map_poly_poly_square_subst map_poly_pcompose)
 qed
 end
 
@@ -721,7 +722,7 @@ proof -
   interpret inj_idom_hom complex_of_int by (standard, auto)
   show ?thesis  
     unfolding mahler_measure_def mahler_graeffe[OF eq[symmetric], symmetric]
-     graeffe_poly_impl[OF eq[symmetric], symmetric] by (simp add: graeffe_poly_impl_hom)
+     graeffe_poly_impl[OF eq[symmetric], symmetric] by (simp add: of_int_hom.graeffe_poly_impl_hom)
 qed
 
 definition mahler_landau_graeffe_approximation :: "nat \<Rightarrow> nat \<Rightarrow> int poly \<Rightarrow> int" where

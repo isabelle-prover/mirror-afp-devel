@@ -29,7 +29,7 @@ lemma square_free_coprime_pderiv_GFp: fixes f :: "'a :: prime_card mod_ring poly
   shows "coprime f (pderiv f)"
 proof (rule ccontr)
   assume "\<not> coprime f (pderiv f)" 
-  from square_free_coprime_pderiv_main[OF sf this]
+  with square_free_coprime_pderiv_main[OF sf]
   obtain g k where *: "f = g * k" "degree g \<noteq> 0" and g0: "pderiv g = 0" by auto
   from assms have f: "f \<noteq> 0" unfolding square_free_def by auto
   have "degree f = degree g + degree k" using f unfolding *(1)
@@ -62,7 +62,7 @@ proof -
   have rel_f[transfer_rule]: "poly_rel ?f' f''" 
     by (rule poly_rel_coeffs_Mp_of_int_poly[OF refl], simp add: f''_def)
   have id: "square_free_i ff_ops ?f' = coprime f'' (pderiv f'')"
-    unfolding square_free_i_def by transfer_prover
+    unfolding square_free_i_def apply (unfold coprime_iff_gcd_one) by transfer_prover
   have Mprel [transfer_rule]: "MP_Rel (Mp f) F" unfolding F MP_Rel_def
     by (simp add: Mp_f_representative)
   have "square_free f'' = square_free F" unfolding f''_def F by simp
@@ -169,7 +169,7 @@ proof -
     from arg_cong[OF f, of lead_coeff] have "lead_coeff f = lead_coeff g * lead_coeff g * lead_coeff h" 
       by (auto simp: lead_coeff_mult)
     hence "lead_coeff g dvd lead_coeff f" by auto
-    with cop have cop: "coprime (lead_coeff g) p" by (metis coprime_divisors dvd_def mult.right_neutral)
+    with cop have cop: "coprime (lead_coeff g) p" apply simp by (metis coprime_divisors dvd_def mult.right_neutral)
     with p0 have "coprime (lead_coeff g mod p) p" by simp
     also have "lead_coeff g mod p = 0"
       using M_def g0 by simp
@@ -202,7 +202,7 @@ proof -
   {
     fix lc 
     assume assms:"0 < lc" "lc < p" 
-    from prime have "coprime lc p" 
+    from prime have "coprime lc p" apply simp
       by (metis (no_types) assms gcd.commute prime_imp_coprime zdvd_not_zless)
   } note main = this
   define lc where "lc = lead_coeff f" 

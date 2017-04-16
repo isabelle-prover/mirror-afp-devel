@@ -15,6 +15,9 @@ imports
   "../Berlekamp_Zassenhaus/Resultant"
 begin
 
+declare coeff_lift_hom.hom_minus[simp del]
+declare coeff_lift_hom.hom_power[simp del]
+
 subsection \<open>Algorithm\<close>
 
 partial_function(tailrec) subresultant_prs_main where
@@ -382,9 +385,8 @@ proof -
       subst mat_index_mat, (auto)[2], unfold split, subst change, force,
       unfold If_not, rule if_cong[OF refl if_cong if_cong], auto)
   also have "det \<dots> = subresultant J g f" unfolding subresultant_def ..
-  also have "(-1)^(?k * ?n) * \<dots> = [: -1 :]^(?k * ?n) * \<dots> " by (simp add: one_poly_def)
-  also have "\<dots> = smult ((-1)^(?k * ?n)) (subresultant J g f)"
-    by (simp add: poly_const_pow)
+  also have "(-1)^(?k * ?n) * \<dots> = [: (-1)^(?k * ?n) :] * \<dots> " by (unfold hom_distribs, simp)
+  also have "\<dots> = smult ((-1)^(?k * ?n)) (subresultant J g f)" by simp
   finally show ?thesis .
 qed
 
@@ -637,7 +639,7 @@ proof (cases "degree f + degree g = 0")
   case True
   thus ?thesis unfolding subresultant_def subresultant_mat_def resultant_def Let_def
       sylvester_mat_def sylvester_mat_sub_def
-    by (simp add: one_poly_def)
+    by simp
 next
   case 0: False
   show ?thesis
@@ -656,10 +658,11 @@ next
   qed
 qed
 
-lemma (in inj_ring_hom) subresultant_hom: "map_poly hom (subresultant J f g) = subresultant J (map_poly hom f) (map_poly hom g)"
+lemma (in inj_comm_ring_hom) subresultant_hom:
+  "map_poly hom (subresultant J f g) = subresultant J (map_poly hom f) (map_poly hom g)"
 proof -
   note d = subresultant_mat_def Let_def
-  interpret p: inj_ring_hom "map_poly hom" by (rule inj_ring_hom_map_poly)
+  interpret p: map_poly_inj_comm_ring_hom hom..
   show ?thesis unfolding subresultant_def unfolding p.hom_det[symmetric]
   proof (rule arg_cong[of _ _ det])
     show "p.mat_hom (subresultant_mat J f g) =
@@ -1202,8 +1205,10 @@ proof -
   from prod have "smult a f = q * g" by simp
   from arg_cong[OF subresultant_product[OF this dfg, of 0, unfolded subresultant_resultant
     resultant_smult_left[OF a(1)]], of "\<lambda> x. coeff x 0"]
-  show ?thesis using a g0 by (cases "degree f", auto simp: one_poly_def)
+  show ?thesis using a g0 by (cases "degree f", auto)
 qed
+interpretation to_fract_hom: idom_hom to_fract..
+interpretation to_fract_hom: inj_idom_hom to_fract..
 
 locale primitive_remainder_sequence =
   fixes F :: "nat \<Rightarrow> 'a :: idom_divide poly"
@@ -1465,14 +1470,8 @@ definition "R j = (if j = n 2 then divide_poly (smult ((lead_coeff G2)^(\<delta>
 
 abbreviation "ff i \<equiv> to_fract (i :: 'a)"
 abbreviation "ffp \<equiv> map_poly ff"
-sublocale idom_hom ff
-  by (unfold_locales, auto simp: fract_collapse)
-sublocale inj_idom_hom ff
-  by (unfold_locales, transfer, auto)
-sublocale p: inj_ring_hom ffp
-  by (rule inj_ring_hom_map_poly)
-sublocale p: inj_idom_hom ffp
-  by (unfold_locales, auto)
+
+sublocale map_poly_hom: map_poly_inj_idom_hom to_fract..
 
 (* for \<sigma> and \<tau> we only take additions, so that no negative number-problems occur *)
 definition "\<sigma> i = (\<Sum>l\<leftarrow>[3..<Suc i]. (n (l - 2) + n (i - 1) + 1) * (n (l - 1) + n (i - 1) + 1))"
@@ -1492,7 +1491,7 @@ proof -
     and lt: "n (i - 1) - 1 < n (i - 1)" by linarith+
   hence "R (n (i - 1) - 1) = subresultant (n (i - 1) - 1) G1 G2"
     unfolding R_def by auto
-  from arg_cong[OF this, of ffp, unfolded subresultant_hom, folded F1 F2]
+  from arg_cong[OF this, of ffp, unfolded to_fract_hom.subresultant_hom, folded F1 F2]
   have id1: "ffp (R (n (i - 1) - 1)) = subresultant (n (i - 1) - 1) (F 1) (F 2)" .
   note eq_24 = BT_lemma_2_24[OF i]
   let ?o = "(- 1) :: 'a fract"
@@ -1581,7 +1580,7 @@ proof -
   with n_gt[of "i - 1"] i have "n (i - 1) - 1 < n 2"
     and lt: "j < n (i - 1)" by linarith+
   with i have "R j = subresultant j G1 G2" unfolding R_def by auto
-  from arg_cong[OF this, of ffp, unfolded subresultant_hom, folded F1 F2]
+  from arg_cong[OF this, of ffp, unfolded to_fract_hom.subresultant_hom, folded F1 F2]
   have id2: "ffp (R j) = subresultant j (F 1) (F 2)" .
   from i have "3 \<le> i" "i \<le> k + 1" by auto
   note eq_30 = BT_eq_30[OF this lt]
@@ -1628,7 +1627,7 @@ proof -
       with 1 show ?case by auto
     qed
   have "ffp (R (n i)) = subresultant (n i) (F 1) (F 2)" unfolding R_def F1 F2
-    by (auto simp:subresultant_hom ni2[OF assms])
+    by (auto simp: to_fract_hom.subresultant_hom ni2[OF assms])
   also have "\<dots> = Polynomial.smult
      ((- 1) ^ (\<Sum>l\<leftarrow>[3..<i]. (n (l - 2) - n i) * (n (l - 1) - n i)) *
       (\<Prod>x\<leftarrow>[3..<i]. (\<beta> x / \<alpha> x) ^ (n (x - 1) - n i) * f (x - 1) ^ (\<delta> (x - 1) + \<delta> (x - 2))) *
@@ -1662,8 +1661,8 @@ proof -
   from assms have **:"j \<noteq> n 2"
     by (meson k2 n_ge_trans not_le one_le_numeral order_refl)
   from k2 assms have "3 \<le> k + 1" "k + 1 \<le> k + 1" "j < n (k + 1 - 1)" by auto
-  from BT_eq_30[OF this,unfolded *] nonzero_alphaprod[OF le_refl] ** F1 F2 subresultant_hom[symmetric]
-  show ?thesis by (auto simp:R_def F0)
+  from BT_eq_30[OF this,unfolded *] nonzero_alphaprod[OF le_refl] ** F1 F2
+  show ?thesis by (auto simp:R_def F0 to_fract_hom.subresultant_hom[symmetric])
 qed
 
 
@@ -2058,7 +2057,7 @@ context
 begin
 lemma B_theorem_3_b: "\<Theta> i * f i = ff (lead_coeff (H i))"
   using arg_cong[OF fundamental_theorem_eq_6[folded H_def, OF i], of lead_coeff] unfolding f[of i]
-  lead_coeff_smult map_poly_preservers by simp
+  lead_coeff_smult by simp
 
 lemma B_theorem_3_main: "\<Theta> i * f i / \<gamma> (i + 1) = (-1)^(n 1 + n i + i + 1) / f i * (\<Prod>l\<leftarrow>[3..< Suc (Suc i)]. (\<alpha> l / \<beta> l))"
 proof (cases "f i = 0")
@@ -2210,18 +2209,18 @@ proof -
     have h_i: "h i = f i ^ \<delta> (i - 1) / h (i - 1) ^ (\<delta> (i - 1) - 1)" unfolding h.simps[of i] using i by simp
     have hi_ff: "h i \<in> range ff" using B_theorem_3[OF _ i(2)] i by auto
     have d1: "\<delta> (i - 1) = ?d1" unfolding \<delta> n using id(1,2) using i by simp
-    have fi: "f i = ff ?gi" unfolding f id map_poly_preservers by simp
-    have fi1: "f (i - 1) = ff ?gi_1" unfolding f id map_poly_preservers by simp
+    have fi: "f i = ff ?gi" unfolding f id by simp
+    have fi1: "f (i - 1) = ff ?gi_1" unfolding f id by simp
     have idh: "h i = ff hi"
       by (rule div_divide_ff[OF hi_ff h_i hi], unfold d1 fi id, auto)
     have "\<beta> (Suc i) = (- 1) ^ (\<delta> (i - 1) + 1) * f (i - 1) * h (i - 1) ^ \<delta> (i - 1)"
       using \<beta>i[of "Suc i"] i by auto
     also have "\<dots> = ff ((- 1) ^ (\<delta> (i - 1) + 1) * lead_coeff Gi_1 * hi_1 ^ \<delta> (i - 1))"
-      unfolding id f map_poly_preservers[symmetric]  by simp
+      unfolding id f by simp
     also have "\<dots> \<in> range ff" by blast
     finally have beta: "\<beta> (Suc i) \<in> range ff" .
     have pm: "pseudo_mod (F (i - 1)) (F i) = ffp ?pmod"
-      unfolding pseudo_mod_hom[symmetric] id by simp
+      unfolding to_fract_hom.pseudo_mod_hom[symmetric] id by simp
     have eq: "(?pmod = 0) = (i = k)"
       using pm i pmod[of "Suc i"] F0[of "Suc i"] i \<beta>0[of "Suc i"] by auto
     show ?case
@@ -2265,7 +2264,7 @@ lemma subresultant_prs: assumes res: "subresultant_prs G1 G2 = (Gk, hk)"
 proof -
   let ?pmod = "pseudo_mod G1 G2"
   have pm: "pseudo_mod (F 1) (F 2) = ffp ?pmod"
-    unfolding pseudo_mod_hom[symmetric] F1 F2 by simp
+    unfolding to_fract_hom.pseudo_mod_hom[symmetric] F1 F2 by simp
   let ?g2 = "lead_coeff G2"
   let ?n2 = "degree G2"
   obtain d1 where d1: "d1 = degree G1 - ?n2" by auto
@@ -2275,7 +2274,7 @@ proof -
   finally have eq: "?pmod = 0 \<longleftrightarrow> k = 2" using k2 by linarith
   note res = res[unfolded subresultant_prs_def Let_def eq, folded d1, folded h2]
   have idh2: "h 2 = ff h2" unfolding h2 d1 h.simps[of 2] \<delta> n F1
-    using F2 Suc_1 f hom_power local.degree_map_poly map_poly_preservers(2) by presburger
+    using F2 f by (simp add:numeral_2_eq_2)
   have main: "F k = ffp Gk \<and> h k = ff hk \<and> (i \<ge> 3 \<longrightarrow> i \<le> k \<longrightarrow> F i \<in> range ffp \<and> \<beta> (Suc i) \<in> range ff)" for i
   proof (cases "k = 2")
     case True
@@ -2295,12 +2294,12 @@ proof -
       from pmod[of 3] k3
       have "smult (\<beta> 3) (F 3) = pseudo_mod (F 1) (F 2)" by simp
       also have "\<dots> = pseudo_mod (ffp G1) (ffp G2)" using F1 F2 by auto
-      also have "\<dots> = ffp (pseudo_mod G1 G2)" unfolding pseudo_mod_hom by simp
+      also have "\<dots> = ffp (pseudo_mod G1 G2)" unfolding to_fract_hom.pseudo_mod_hom by simp
       also have "\<beta> 3 = (- 1) ^ (\<delta> 1 + 1)" unfolding \<beta>3 by simp
       finally have "smult ((- 1) ^ (\<delta> 1 + 1)) (F 3) = ffp (pseudo_mod G1 G2)" by simp
       also have "smult ((- 1) ^ (\<delta> 1 + 1)) (F 3) = [: ?pow :] * F 3"
         by simp
-      also have "[: ?pow :] = (- 1) ^ (\<delta> 1 + 1)" by (simp add: one_poly_def poly_const_pow)
+      also have "[: ?pow :] = (- 1) ^ (\<delta> 1 + 1)" by (unfold hom_distribs, simp)
       finally have "(- 1) ^ (\<delta> 1 + 1) * F 3 = ffp (pseudo_mod G1 G2)" by simp
       from arg_cong[OF this, of "\<lambda> i. (- 1) ^ (\<delta> 1 + 1) * i"]
       have "F 3 = (- 1) ^ (\<delta> 1 + 1) * ffp (pseudo_mod G1 G2)" by simp
@@ -2390,7 +2389,7 @@ proof -
       have id: "(if degree (F k) = 0 then hk else 0) = hk" using True unfolding n by simp
       from F0[of 3, unfolded 2] have "F 3 = 0" by simp
       with pmod[of 3, unfolded 2] \<beta>0[of 3] have "pseudo_mod (F 1) (F 2) = 0" by auto
-      hence pm: "pseudo_mod G1 G2 = 0" unfolding F1 F2 pseudo_mod_hom by simp
+      hence pm: "pseudo_mod G1 G2 = 0" unfolding F1 F2 to_fract_hom.pseudo_mod_hom by simp
       from subresultant_prs_def[of G1 G2, unfolded sub Let_def this]
       have id: "Gk = G2" "hk = lead_coeff G2 ^ (degree G1 - degree G2)" by auto
       from F12 F1 F2 have "G1 \<noteq> 0" "G2 \<noteq> 0" by auto
@@ -2496,7 +2495,7 @@ shows "\<exists> F n d f k b. subresultant_prs_locale2 F n d f k b G1 G2"
 proof (intro exI)
   from G2 len have G1: "G1 \<noteq> 0" by auto
   from len have deg_le: "degree (F 2) \<le> degree (F 1)"
-    by (simp add: F.simps, (subst degree_map_poly, auto)+, auto simp: degree_eq_length_coeffs)
+    by (simp add: F.simps degree_eq_length_coeffs)
   from G2 G1 have F1: "F 1 \<noteq> 0" and F2: "F 2 \<noteq> 0" by (auto simp: F.simps)
   note Fb0 = Fb0[OF G1 G2]
   interpret s: subresultant_prs_locale F "\<lambda> i. degree (F i)" "\<lambda> i. degree (F i) - degree (F (Suc i))"

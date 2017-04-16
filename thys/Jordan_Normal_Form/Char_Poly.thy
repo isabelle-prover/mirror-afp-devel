@@ -160,25 +160,21 @@ definition char_poly :: "'a :: comm_ring_1 mat \<Rightarrow> 'a poly" where
 
 lemmas char_poly_defs = char_poly_def char_poly_matrix_def
 
-lemma (in ring_hom) char_poly_matrix_hom: assumes A: "A \<in> carrier\<^sub>m n n"
+lemma (in comm_ring_hom) char_poly_matrix_hom: assumes A: "A \<in> carrier\<^sub>m n n"
   shows "char_poly_matrix (mat\<^sub>h A) = map\<^sub>m (map_poly hom) (char_poly_matrix A)"
-proof -
-  interpret p: ring_hom "map_poly hom" by (rule ring_hom_map_poly)
-  show ?thesis
-    unfolding char_poly_defs
-    by (rule mat_eqI, insert A, auto simp: mat_scalar_mult_def)
-qed
+  unfolding char_poly_defs
+  by (rule mat_eqI, insert A, auto simp: mat_scalar_mult_def)
 
-lemma (in ring_hom) char_poly_hom: assumes A: "A \<in> carrier\<^sub>m n n"
+lemma (in comm_ring_hom) char_poly_hom: assumes A: "A \<in> carrier\<^sub>m n n"
   shows "char_poly (map\<^sub>m hom A) = map_poly hom (char_poly A)"
 proof -
-  interpret p: ring_hom "map_poly hom" by (rule ring_hom_map_poly)
+  interpret map_poly_hom: map_poly_comm_ring_hom hom..
   show ?thesis
-    unfolding char_poly_def p.hom_det[symmetric] char_poly_matrix_hom[OF A] ..
+    unfolding char_poly_def map_poly_hom.hom_det[symmetric] char_poly_matrix_hom[OF A] ..
 qed
 
-context inj_ring_hom 
-begin 
+context inj_comm_ring_hom
+begin
 
 lemma eigenvector_hom: assumes A: "A \<in> carrier\<^sub>m n n"
   and ev: "eigenvector A v ev"

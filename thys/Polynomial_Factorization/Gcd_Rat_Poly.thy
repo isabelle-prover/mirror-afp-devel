@@ -12,7 +12,7 @@ theory Gcd_Rat_Poly
 imports 
   Gauss_Lemma
 begin
-    
+
 definition gcd_rat_poly :: "rat poly \<Rightarrow> rat poly \<Rightarrow> rat poly" where
   "gcd_rat_poly f g = (let
      f' = snd (rat_to_int_poly f);

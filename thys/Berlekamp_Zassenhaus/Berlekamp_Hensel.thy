@@ -18,6 +18,8 @@ imports
   Hensel_Lifting
 begin
 
+hide_const coeff monom
+
 definition berlekamp_hensel :: "int \<Rightarrow> nat \<Rightarrow> int poly \<Rightarrow> int poly list" where
   "berlekamp_hensel p n f = (case finite_field_factorization_int p f of
     (_,fs) \<Rightarrow> hensel_lifting p n f fs)"           

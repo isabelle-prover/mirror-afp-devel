@@ -16,8 +16,8 @@ is non-empty is available for integral domains, not just for fields.\<close>
 theory Determinant
 imports 
   Missing_Permutations
-  Missing_Fraction_Field
   Column_Operations
+  "~~/src/HOL/Computational_Algebra/Polynomial_Factorial" (* Only for to_fract. Probably not the right place. *)
   "../Polynomial_Interpolation/Ring_Hom"
   "../Polynomial_Interpolation/Missing_Unsorted"
 begin
@@ -26,14 +26,11 @@ definition det:: "'a mat \<Rightarrow> 'a :: comm_ring_1" where
   "det A = (if dim\<^sub>r A = dim\<^sub>c A then (\<Sum> p \<in> {p. p permutes {0 ..< dim\<^sub>r A}}. 
      signof p * (\<Prod> i = 0 ..< dim\<^sub>r A. A $$ (i, p i))) else 0)"
 
-context ring_hom
-begin
-lemma hom_signof[simp]: "hom (signof p) = signof p"
+lemma(in ring_hom) hom_signof[simp]: "hom (signof p) = signof p"
   unfolding signof_def by auto
 
-lemma hom_det[simp]: "det (map\<^sub>m hom A) = hom (det A)"
+lemma(in comm_ring_hom) hom_det[simp]: "det (map\<^sub>m hom A) = hom (det A)"
   unfolding det_def by auto
-end
 
 lemma det_def': "A \<in> carrier\<^sub>m n n \<Longrightarrow> 
   det A = (\<Sum> p \<in> {p. p permutes {0 ..< n}}. 
@@ -825,11 +822,11 @@ text \<open>In order to get the result for integral domains, we embed the domain
 lemma det_0_iff_vec_prod_zero: assumes A: "(A :: 'a :: idom mat) \<in> carrier\<^sub>m n n"
   shows "det A = 0 \<longleftrightarrow> (\<exists> v. v \<in> carrier\<^sub>v n \<and> v \<noteq> \<zero>\<^sub>v n \<and> A \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v n)"
 proof -
-  let ?h = "embed_ff :: 'a \<Rightarrow> 'a fract"
+  let ?h = "to_fract :: 'a \<Rightarrow> 'a fract"
   let ?A = "map\<^sub>m ?h A"
   have A': "?A \<in> carrier\<^sub>m n n" using A by auto
-  interpret inj_ring_hom ?h by (rule embed_ff)
-  have "(det A = 0) = (?h (det A) = ?h 0)" using hom_inj by auto
+  interpret inj_comm_ring_hom ?h by (unfold_locales, auto)
+  have "(det A = 0) = (?h (det A) = ?h 0)" by auto
   also have "\<dots> = (det ?A = 0)" unfolding hom_zero hom_det ..
   also have "\<dots> = ((\<exists> v. v \<in> carrier\<^sub>v n \<and> v \<noteq> \<zero>\<^sub>v n \<and> ?A \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v n))"
     unfolding det_0_iff_vec_prod_zero_field[OF A'] ..
@@ -858,7 +855,7 @@ proof -
       hence "b i dvd m" unfolding m_def by auto
       then obtain c where "m = b i * c" ..
       hence "?m * v $ i = ?h (a i * c)" unfolding vi using bi[of i]
-        by (simp add: eq_fract embed_ff_def)
+        by (simp add: eq_fract to_fract_def)
       hence "\<exists> c. ?m * v $ i = ?h c" ..
     }
     hence "\<forall> i. \<exists> c. i < n \<longrightarrow> ?m * v $ i = ?h c" by auto

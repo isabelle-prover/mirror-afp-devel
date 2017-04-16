@@ -1342,13 +1342,13 @@ end
 
 subsection \<open>Yun factorization and homomorphisms\<close>
 
-locale inj_field_hom_0' = inj_field_hom hom
+locale field_hom_0' = field_hom hom
   for hom :: "'a :: {field_char_0,euclidean_ring_gcd} \<Rightarrow> 'b :: {field_char_0,euclidean_ring_gcd}"
 begin
-  sublocale inj_field_hom' ..
+  sublocale field_hom' ..
 end
 
-lemma (in inj_field_hom_0') yun_factorization_main_hom:
+lemma (in field_hom_0') yun_factorization_main_hom:
   defines hp: "hp \<equiv> map_poly hom"
   defines hpi: "hpi \<equiv> map (\<lambda> (f,i). (hp f, i :: nat))"
   assumes monic: "monic p" and f: "f = p div gcd p (pderiv p)" and g: "g = pderiv p div gcd p (pderiv p)"
@@ -1356,9 +1356,10 @@ lemma (in inj_field_hom_0') yun_factorization_main_hom:
 proof -
   let ?P = "\<lambda> f g. \<forall> i as. yun_gcd.yun_factorization_main gcd (hp f) (hp g) i (hpi as) = hpi (yun_gcd.yun_factorization_main gcd f g i as)"
   note ind = yun_factorization_induct[OF _ _ f g monic, of ?P, rule_format]
-  interpret p: inj_ring_hom hp unfolding hp by (rule inj_ring_hom_map_poly)
+  interpret map_poly_hom: map_poly_inj_comm_ring_hom..
+  interpret p: inj_comm_ring_hom hp unfolding hp..
   note homs = map_poly_gcd[folded hp] 
-      map_poly_pderiv[folded hp, symmetric] 
+      map_poly_pderiv[folded hp] 
       p.hom_minus 
       map_poly_div[folded hp]
   show ?thesis
@@ -1370,7 +1371,8 @@ proof -
     case (2 f g i as)
     have id: "\<And> f i fis. hpi ((f,i) # fis) = (hp f, i) # hpi fis" unfolding hpi by auto
     show ?case unfolding yun_gcd.yun_factorization_main.simps[of _ "hp f"] yun_gcd.yun_factorization_main.simps[of _ f]
-      unfolding "p.hom_1_iff" if_distrib[of hpi] Let_def
+      unfolding "p.hom_1_iff"
+      unfolding Let_def
       unfolding homs[symmetric] id[symmetric]
       unfolding 2(2) by simp
   qed
@@ -1384,18 +1386,19 @@ lemma constant_square_free_factorization:
   "degree p = 0 \<Longrightarrow> square_free_factorization p (coeff p 0,[])"
   by (drule degree0_coeffs[of p], auto simp: square_free_factorization_def one_poly_def)
 
-lemma (in inj_field_hom_0') yun_monic_factorization:
+lemma (in field_hom_0') yun_monic_factorization:
   defines hp: "hp \<equiv> map_poly hom"
   defines hpi: "hpi \<equiv> map (\<lambda> (f,i). (hp f, i :: nat))"
   assumes monic: "monic f"
   shows "yun_gcd.yun_monic_factorization gcd (hp f) = hpi (yun_gcd.yun_monic_factorization gcd f)"
 proof -
-  interpret p: inj_ring_hom hp unfolding hp by (rule inj_ring_hom_map_poly)
+  interpret map_poly_hom: map_poly_inj_comm_ring_hom..
+  interpret p: inj_ring_hom hp unfolding hp..
   have hpiN: "hpi [] = []" unfolding hpi by simp
   obtain res where "res = 
     yun_gcd.yun_factorization_main gcd (f div gcd f (pderiv f)) (pderiv f div gcd f (pderiv f)) 0 []" by auto
   note homs = map_poly_gcd[folded hp] 
-      map_poly_pderiv[folded hp, symmetric] 
+      map_poly_pderiv[folded hp] 
       p.hom_minus 
       map_poly_div[folded hp]
       yun_factorization_main_hom[folded hp, folded hpi, symmetric, OF monic refl refl, of _ Nil, unfolded hpiN]
@@ -1407,19 +1410,20 @@ proof -
       by (induct res, auto)
 qed
 
-lemma (in inj_field_hom_0') yun_factorization_hom:
+
+lemma (in field_hom_0') yun_factorization_hom:
   defines hp: "hp \<equiv> map_poly hom"
   defines hpi: "hpi \<equiv> map (\<lambda> (f,i). (hp f, i :: nat))"
   shows "yun_factorization gcd (hp f) = map_prod hom hpi (yun_factorization gcd f)"
-  unfolding yun_factorization_def if_distrib[of "map_prod hom hpi"]
-  unfolding Let_def hp hpi
-  unfolding map_poly_0_iff coeff_map_poly_hom hom_inverse[symmetric] map_poly_smult[symmetric] map_poly_mult[symmetric]
-    by (rule if_cong[OF refl], force, subst yun_monic_factorization, auto)
+  using yun_monic_factorization[of "smult (inverse (coeff f (degree f))) f"]
+  unfolding yun_factorization_def Let_def hp hpi
+   by auto
 
-lemma (in inj_field_hom_0') square_free_map_poly: "square_free (map_poly hom f) = square_free f"
+lemma (in field_hom_0') square_free_map_poly: "square_free (map_poly hom f) = square_free f"
 proof -
-  interpret inj_ring_hom "map_poly hom" by (rule inj_ring_hom_map_poly)
-  show ?thesis unfolding square_free_iff_coprime map_poly_pderiv map_poly_gcd[symmetric] by simp
+  interpret map_poly_hom: map_poly_inj_comm_ring_hom..
+  show ?thesis unfolding square_free_iff_coprime
+    by (unfold hom_distribs[symmetric] (*fold doesn't work!*), simp)
 qed
 
 end

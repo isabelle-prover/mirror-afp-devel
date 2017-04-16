@@ -32,7 +32,8 @@ lemma yun_relD: assumes "yun_rel F c f"
     "f = 1 \<longleftrightarrow> F = 1" "content F = 1" 
 proof -
   note * = assms[unfolded yun_rel_def yun_wrel_def, simplified]
-  show deg: "degree F = degree f" unfolding ri.degree_map_poly[symmetric] using * by auto
+  then have "degree (map_poly rat_of_int F) = degree f" by auto
+  then show deg: "degree F = degree f" by simp
   show "F \<noteq> 0" "lead_coeff F > 0" "monic f" "content F = 1" 
     "map_poly rat_of_int F = smult c f"
     "yun_wrel F c f" using * by (auto simp: yun_wrel_def)
@@ -43,7 +44,7 @@ proof -
     from c * have c0: "c > 0" by auto
     hence cF: "content F = c" unfolding F content_def by auto
     with * have "c = 1" by auto
-    with F have "F = 1" by (simp add: one_poly_def)
+    with F have "F = 1" by simp
   }
   moreover
   {
@@ -68,7 +69,7 @@ lemma yun_rel_1[simp]: "yun_rel 1 1 1"
 lemma yun_erel_1[simp]: "yun_erel 1 1" unfolding yun_erel_def using yun_rel_1 by blast
 
 lemma yun_rel_mult: "yun_rel F c f \<Longrightarrow> yun_rel G d g \<Longrightarrow> yun_rel (F * G) (c * d) (f * g)" 
-  unfolding yun_rel_def yun_wrel_def gauss_lemma lead_coeff_mult 
+  unfolding yun_rel_def yun_wrel_def content_mult lead_coeff_mult 
   by (auto simp: monic_mult)
 
 lemma yun_erel_mult: "yun_erel F f \<Longrightarrow> yun_erel G g \<Longrightarrow> yun_erel (F * G) (f * g)" 
@@ -83,14 +84,11 @@ lemma yun_erel_pow: "yun_erel F f \<Longrightarrow> yun_erel (F^n) (f^n)"
 
 lemma yun_wrel_pderiv: assumes "yun_wrel F c f"
   shows "yun_wrel (pderiv F) c (pderiv f)" 
-proof -
-  show ?thesis unfolding yun_wrel_def ri.map_poly_pderiv[of F, unfolded yun_wrelD[OF assms], symmetric] 
-    by (rule pderiv_smult) 
-qed
+  by (unfold yun_wrel_def, simp add: yun_wrelD[OF assms] pderiv_smult)
 
 lemma yun_wrel_minus: assumes "yun_wrel F c f" "yun_wrel G c g" 
   shows "yun_wrel (F - G) c (f - g)" 
-  using assms unfolding yun_wrel_def ri.map_poly_minus by (auto simp: smult_diff_right)
+  using assms unfolding yun_wrel_def by (auto simp: smult_diff_right)
 
 lemma gcd_smult_left: assumes "c \<noteq> 0"
   shows "gcd (smult c f) g = gcd f (g :: 'b :: {field, factorial_ring_gcd} poly)"
@@ -104,8 +102,8 @@ qed
 lemma gcd_smult_right: "c \<noteq> 0 \<Longrightarrow> gcd f (smult c g) = gcd f (g :: 'b :: {field, factorial_ring_gcd} poly)"
   using gcd_smult_left[of c g f] by (simp add: gcd.commute)
 
-lemma gcd_rat_to_gcd_int: "gcd (map_poly rat_of_int f) (map_poly rat_of_int g) = 
-  smult (inverse (rat_of_int (lead_coeff (gcd f g)))) (map_poly rat_of_int (gcd f g))" 
+lemma gcd_rat_to_gcd_int: "gcd (of_int_poly f :: rat poly) (of_int_poly g) = 
+  smult (inverse (of_int (lead_coeff (gcd f g)))) (of_int_poly (gcd f g))" 
 proof (cases "f = 0 \<and> g = 0")
   case True
   thus ?thesis by simp
@@ -183,7 +181,7 @@ proof -
     from arg_cong[OF fg, of monic] ff(6) gg(6) 
     show "monic (f div g)" using monic_factor by blast
     from dvd have FG: "F = G * (F div G)" by auto
-    from arg_cong[OF FG, of content, unfolded gauss_lemma] ff(8) gg(8)
+    from arg_cong[OF FG, of content, unfolded content_mult] ff(8) gg(8)
     show "content (F div G) = 1" by simp
     from arg_cong[OF FG, of lead_coeff, unfolded lead_coeff_mult] ff(5) gg(5)
     show "lead_coeff (F div G) > 0" by (simp add: zero_less_mult_iff)
@@ -230,7 +228,7 @@ proof (intro conjI)
     subst Polynomial.degree_map_poly, auto simp: sgn_if)
   have "H dvd F" unfolding H[symmetric] by auto
   then obtain K where F: "F = H * K" unfolding dvd_def by auto
-  from arg_cong[OF this, of content, unfolded gauss_lemma ff(8)]
+  from arg_cong[OF this, of content, unfolded content_mult ff(8)]
     content_ge_0_int[of H] have "content H = 1"
     by (metis Nat_Transfer.transfer_nat_int_function_closures(6) dvd_triv_left dvd_triv_right mult.comm_neutral zdvd_antisym_nonneg)
   thus "content (gcd F G) = 1" unfolding H .
@@ -343,7 +341,7 @@ proof -
   have "smult (?r b) (?rp f) = smult (?r a) (?rp g)" using b by auto
   hence "?rp (smult b f) = ?rp (smult a g)" by auto
   from map_poly_inj[OF this] have fg: "[:b:] * f = [:a:] * g" by auto
-  from arg_cong[OF this, of content, unfolded gauss_lemma f(8) g(8)] 
+  from arg_cong[OF this, of content, unfolded content_mult f(8) g(8)] 
   have "content [: b :] = content [: a :]" by simp
   hence abs: "abs a = abs b" unfolding content_def using b a by auto
   from arg_cong[OF fg, of "\<lambda> x. lead_coeff x > 0", unfolded lead_coeff_mult] f(5) g(5) a b 
@@ -421,15 +419,14 @@ proof (cases "square_free_heuristic f")
       then obtain C where Rel: "yun_rel A C B" unfolding yun_erel_def by auto
       note AA = yun_relD[OF this]
       from iI have "(b,i) \<noteq> (B,I)" by auto
-      from sff(3)[OF b B this] have cop: "coprime b B" .
+      from sff(3)[OF b B this] have cop: "coprime b B" by simp
       from AA have C: "C \<noteq> 0" by auto
       from yun_rel_gcd[OF rel AA(1) C refl] obtain c where "yun_rel (gcd a A) c (gcd b B)" by auto
       note rel = yun_relD[OF this]
-      from rel(2)[unfolded cop] have "?rp (gcd a A) = [: c :]" by simp
+      from rel(2) cop have "?rp (gcd a A) = [: c :]" by simp
       from arg_cong[OF this, of degree] have "degree (gcd a A) = 0" by simp
-      from degree0_coeffs[OF this] obtain c where gcd: "gcd a A = [: c :]" by auto        
-      from rel(8) rel(5) show "coprime a A" unfolding content_def gcd
-        by auto
+      from degree0_coeffs[OF this] obtain c where gcd: "gcd a A = [: c :]" by auto
+      from rel(8) rel(5) show "gcd a A = 1" unfolding content_def gcd by auto
     }
     let ?prod = "\<lambda> fs. (\<Prod>(a, i)\<in>set fs. a ^ Suc i)" 
     let ?pr = "\<lambda> fs. (\<Prod>(a, i)\<leftarrow>fs. a ^ Suc i)"
@@ -490,7 +487,7 @@ proof -
     define g where "g = smult ?s f" 
     let ?d = "?s * content f"
     have "content g = content ([:?s:] * f)" unfolding g_def by simp
-    also have "\<dots> = content [:?s:] * content f" unfolding gauss_lemma by simp
+    also have "\<dots> = content [:?s:] * content f" unfolding content_mult by simp
     also have "content [:?s:] = 1" using s by (auto simp: content_def)
     finally have cg: "content g = content f" by simp
     from False res 
@@ -521,8 +518,7 @@ proof -
         assume "(fi, i) \<in> set fs" 
         with main show "content fi = 1" "0 < lead_coeff fi" by auto
       }
-      have d0: "d \<noteq> 0" using \<open>content [:?s:] = 1\<close> d
-        by (auto simp add: sgn_eq_0_iff)
+      have d0: "d \<noteq> 0" using \<open>content [:?s:] = 1\<close> d by (auto simp:sgn_eq_0_iff)
       have "smult d ng = smult ?s (smult (content g) (normalize_content g))" 
         unfolding ng_def d cg by simp
       also have "smult (content g) (normalize_content g) = g" using smult_normalize_content .
@@ -596,7 +592,7 @@ definition square_free_factorization_int :: "int poly \<Rightarrow> int \<times>
 
 lemma square_free_factorization_int: assumes res: "square_free_factorization_int f = (d, fs)"
   shows "square_free_factorization f (d,fs)" 
-    "(fi, i) \<in> set fs \<Longrightarrow> content fi = 1 \<and> lead_coeff fi > 0" 
+    "(fi, i) \<in> set fs \<Longrightarrow> content_free fi \<and> lead_coeff fi > 0" 
 proof -
   obtain n g where xs: "x_split f = (n,g)" by force
   obtain c hs where sf: "square_free_factorization_int' g = (c,hs)" by force
@@ -605,9 +601,9 @@ proof -
   note sff = square_free_factorization_int'(1-2)[OF sf]
   note xs = x_split[OF xs]
   let ?x = "monom 1 1 :: int poly" 
-  have x: "content ?x = 1 \<and> lead_coeff ?x = 1 \<and> degree ?x = 1"
+  have x: "content_free ?x \<and> lead_coeff ?x = 1 \<and> degree ?x = 1"
     by (auto simp add: degree_monom_eq content_def monom_Suc)
-  thus "(fi, i) \<in> set fs \<Longrightarrow> content fi = 1 \<and> lead_coeff fi > 0" using sff(2) unfolding fs
+  thus "(fi, i) \<in> set fs \<Longrightarrow> content_free fi \<and> lead_coeff fi > 0" using sff(2) unfolding fs
     by (cases n, auto)
   show "square_free_factorization f (d,fs)" 
   proof (cases n)
@@ -643,7 +639,7 @@ proof -
           with divides_degree[OF d(1), unfolded degx] have "degree d = 0" by auto
           from degree0_coeffs[OF this] obtain c where dc: "d = [:c:]" by auto
           from cnt[unfolded dc] have "is_unit c" by (auto simp: content_def, cases "c = 0", auto)
-          hence "d * d = 1" unfolding dc by (auto simp: one_poly_def, cases "c = -1"; cases "c = 1", auto)
+          hence "d * d = 1" unfolding dc by (cases "c = -1"; cases "c = 1", auto)
           thus "is_unit d" by (metis dvd_triv_right)
         next
           case True
@@ -652,7 +648,7 @@ proof -
             by (metis True add.right_neutral degree_0 degree_mult_eq one_neq_zero)
           with True have "degree e = 0" by auto
           from degree0_coeffs[OF this] xde obtain e where xde: "?x = [:e:] * d" by auto
-          from arg_cong[OF this, of content, unfolded gauss_lemma] x
+          from arg_cong[OF this, of content, unfolded content_mult] x
           have "content [:e:] * content d = 1" by auto
           also have "content [:e :] = abs e" by (auto simp: content_def, cases "e = 0", auto)
           finally have "\<bar>e\<bar> * content d = 1" .
@@ -681,16 +677,16 @@ proof -
         | (hs_x) "(a,i) \<in> set hs" "b = ?x" 
         | (x_hs) "(b,j) \<in> set hs" "a = ?x" 
         using ai bj diff unfolding fs by auto
-      thus "coprime a b"
+      thus "gcd a b = 1"
       proof cases
         case hs_hs
         from sf(3)[OF this diff] show ?thesis .
       next
         case hs_x
-        from hs_dvd_x(1)[OF hs_x(1)] show ?thesis unfolding hs_x(2) unfolding gcd.commute[of ?x] .
+        from hs_dvd_x(1)[OF hs_x(1)] show ?thesis unfolding hs_x(2) by (simp add: ac_simps)
       next
         case x_hs
-        from hs_dvd_x(1)[OF x_hs(1)] show ?thesis unfolding x_hs(2) .
+        from hs_dvd_x(1)[OF x_hs(1)] show ?thesis unfolding x_hs(2) by simp
       qed
     next
       show "g = 0 \<Longrightarrow> c = 0" using sf(4) by auto

@@ -1,7 +1,7 @@
 section \<open>Real Factorization\<close>
 
 text \<open>This theory contains an algorithm to completely factorize real polynomials with rational
-  coefficients. It internally does a complex-number factorization, and then combines the 
+  coefficients. It internally does a complex polynomial factorization, and then combines 
   all non-real roots with their conjugates.\<close>
 
 theory Real_Factorization
@@ -29,6 +29,9 @@ definition factorize_real_poly :: "real poly \<Rightarrow> (real \<times> (real 
     (\<lambda> (c,ris). (Re c, complex_roots_to_real_factorization ris)) 
     (factorize_complex_main (map_poly of_real p))"
 
+
+lemma monic_imp_nonzero: "monic x \<Longrightarrow> x \<noteq> 0" for x :: "'a :: semiring_1 poly" by auto
+
 lemma delete_cnj: assumes 
   "order x (\<Prod>(x, i)\<leftarrow>xis. [:- x, 1:] ^ Suc i) \<ge> si" "si \<noteq> 0"
   shows "(\<Prod>(x, i)\<leftarrow>xis. [:- x, 1:] ^ Suc i) =
@@ -49,8 +52,8 @@ next
   let ?x = "[: - x, 1 :]"
   let ?xi = "?x ^ i"
   have "monic (\<Prod>(x,i)\<leftarrow>(y, j) # yjs. [:- x, 1:] ^ Suc i)"
-    by (rule monic_prod_list_pow)
-  hence yy0: "?yj * ?yjs \<noteq> 0" by auto
+    by (rule monic_prod_list_pow) then have "monic (?yj * ?yjs)" by simp
+  from monic_imp_nonzero[OF this] have yy0: "?yj * ?yjs \<noteq> 0" by auto
   have id: "(\<Prod>(x,i)\<leftarrow>(y, j) # yjs. [:- x, 1:] ^ Suc i) = ?yj * ?yjs" by simp
   from 1(3-) have ord: "i \<le> order x (?yj * ?yjs)" and i: "i \<noteq> 0" unfolding id by auto
   from ord[unfolded order_mult[OF yy0]] have ord: "i \<le> order x ?yj + order x ?yjs" .
@@ -102,7 +105,8 @@ lemma factorize_real_poly: assumes fp: "factorize_real_poly p = Some (c,qis)"
   shows 
   "p = smult c (\<Prod>(q, i)\<leftarrow>qis. q ^ i)" 
   "(q,j) \<in> set qis \<Longrightarrow> irreducible q \<and> j \<noteq> 0 \<and> monic q \<and> degree q \<in> {1,2}"
-proof - 
+proof -
+  interpret map_poly_inj_idom_hom of_real..
   have "(p = smult c (\<Prod>(q, i)\<leftarrow>qis. q ^ i)) \<and> ((q,j) \<in> set qis \<longrightarrow> irreducible q \<and> j \<noteq> 0 \<and> monic q \<and> degree q \<in> {1,2})"
   proof (cases "p = 0")
     case True
@@ -123,31 +127,27 @@ proof -
       (is "_ = smult d ?q") .
     from arg_cong[OF this, of "\<lambda> p. coeff p (degree p)"]
     have "coeff ?p (degree ?p) = coeff (smult d ?q) (degree (smult d ?q))" .
-    also have "coeff ?p (degree ?p) = ?c (coeff p (degree p))"
-      by (subst degree_map_poly, simp, simp, auto simp: subst coeff_map_poly)
+    also have "coeff ?p (degree ?p) = ?c (coeff p (degree p))" by simp
     also have "coeff (smult d ?q) (degree (smult d ?q)) = d * coeff ?q (degree ?q)"
       by simp
     also have "monic ?q" by (rule monic_prod_list_pow)
     finally have d: "d = ?c (coeff p (degree p))" by auto
     from arg_cong[OF this, of Re, folded c] have c: "c = coeff p (degree p)" by auto
-    have "set (coeffs ?p) \<subseteq> \<real>"
-      by (subst coeffs_map_poly, auto)
+    have "set (coeffs ?p) \<subseteq> \<real>" by auto
     with p have q': "set (coeffs (smult d ?q)) \<subseteq> \<real>" by auto
     from d p0 have d0: "d \<noteq> 0" by auto
-    interpret c: inj_field_hom_0' ?c by (unfold_locales, auto)
     have "smult d ?q = [:d:] * ?q" by auto
     from real_poly_factor[OF q'[unfolded this]] d0 d
     have q: "set (coeffs ?q) \<subseteq> \<real>" by auto 
     have "p = ?rp ?p"
-      by (rule sym, subst map_poly_map_poly, force+, rule map_poly_idI, auto)
+      by (rule sym, subst map_poly_map_poly, force, rule map_poly_eqI, auto)
     also have "\<dots> = ?rp (smult d ?q)" unfolding p ..
     also have "?q = ?cp (?rp ?q)"
       by (rule sym, rule map_poly_of_real_Re, insert q, auto)
     also have "d = ?c c" unfolding d c ..
-    also have "smult (?c c) (?cp (?rp ?q)) = ?cp (smult c (?rp ?q))"
-      unfolding c.map_poly_smult ..
+    also have "smult (?c c) (?cp (?rp ?q)) = ?cp (smult c (?rp ?q))" by simp
     also have "?rp \<dots> = smult c (?rp ?q)" 
-      by (subst map_poly_map_poly, force+, rule map_poly_idI, auto)
+      by (subst map_poly_map_poly, force, rule map_poly_eqI, auto)
     finally have p: "p = smult c (?rp ?q)" .
     let ?fact = complex_roots_to_real_factorization
     have "?rp ?q = (\<Prod>(q, i)\<leftarrow>qis. q ^ i) \<and>
@@ -155,7 +155,7 @@ proof -
       using q unfolding qis
     proof (induct xis rule: complex_roots_to_real_factorization.induct)
       case 1
-      show ?case by (simp add: one_poly_def)
+      show ?case by simp
     next
       case (2 x i xis)
       note IH = 2(1-2)
@@ -193,7 +193,7 @@ proof -
             with IH show ?thesis by auto
           next
             assume "q = [:- Re x, 1:] \<and> j = Suc i"
-            with linear_irreducible[of "[:- Re x, 1:]"] show ?thesis by auto
+            with linear_irreducible_field[of "[:- Re x, 1:]"] show ?thesis by auto
           qed
         qed
       next
@@ -201,14 +201,16 @@ proof -
         define xi where "xi = [:Re x * Re x + Im x * Im x, - (2 * Re x), 1:]"
         obtain xx where xx: "xx = cnj x" by auto
         have xi: "xi = ?rp ([:-x,1:] * [:-xx,1:])" unfolding xx xi_def by auto
-        have cpxi: "?cp xi = [:-x,1:] * [:-xx,1:]" unfolding xi_def        
-          by (auto simp: xx complex_eq_iff)
+        have cpxi: "?cp xi = [:-x,1:] * [:-xx,1:]" unfolding xi_def
+          by (cases x, auto simp: xx legacy_Complex_simps)
         obtain yis where yis: "yis = delete_cnj xx (Suc i) xis" by auto
         from False have fact: "?fact ((x,i) # xis) = ((xi,Suc i) # ?fact yis)"
           unfolding xi_def xx yis by simp
         note IH = IH(2)[OF False xx yis xi]
         have "irreducible xi"
-        proof (rule irreducibleI)
+          apply (fold irreducible_connect)
+          apply (rule Polynomial_Divisibility.irreducible_connect)
+        proof (rule Missing_Polynomial.irreducibleI)
           show "degree xi \<noteq> 0" unfolding xi by auto
           fix q :: "real poly" 
           assume "degree q \<noteq> 0" "degree q < degree xi"
@@ -225,11 +227,10 @@ proof -
             {
               fix c :: complex
               assume rt: "poly (?cp xi) c = 0"
-              hence "poly (?cp q * ?cp p) c = 0"
-                unfolding qp c.map_poly_mult[symmetric] by simp
+              hence "poly (?cp q * ?cp p) c = 0" by (simp add: qp)
               hence "(poly (?cp q) c = 0 \<or> poly (?cp p) c = 0)" by auto
               hence "c = roots1 (?cp q) \<or> c = roots1 (?cp p)"
-                using roots1[of "?cp q"] roots1[of "?cp p"] dp dq by (auto simp: degree_map_poly)
+                using roots1[of "?cp q"] roots1[of "?cp p"] dp dq by auto
               hence "c \<in> \<real>" unfolding roots1_def by auto
               hence "c \<noteq> x" using False by auto
             }
@@ -246,8 +247,8 @@ proof -
           by (rule real_poly_power, auto simp: xi)
         have mon: "monic (\<Prod>(x, i)\<leftarrow>(x, i) # xis. [:- x, 1:] ^ Suc i)"
           by (rule monic_prod_list_pow)
-        hence xixis: "?xi * ?xis \<noteq> 0" unfolding id by auto
-        from False have xxx: "xx \<noteq> x" unfolding xx by (auto simp: Reals_cnj_iff)
+        from monic_imp_nonzero[OF this] have xixis: "?xi * ?xis \<noteq> 0" unfolding id by auto
+        from False have xxx: "xx \<noteq> x" unfolding xx by (cases x, auto simp: legacy_Complex_simps Reals_def)
         from prems[unfolded id] have prems: "set (coeffs (?xi * ?xis)) \<subseteq> \<real>" .
         from id have "[:- x, 1:] ^ Suc i dvd ?xi * ?xis" by auto
         from xixis this[unfolded order_divides] 
@@ -270,8 +271,7 @@ proof -
         note IH = IH[OF yis] 
         have "?rp (?xi * ?xis) = ?rp ?yi * ?rp ?yis" unfolding idd
           by (rule map_poly_Re_mult[OF yi yis])
-        also have "?rp ?yi = xi^Suc i" unfolding c.map_poly_power[symmetric]
-          by (rule map_poly_Re_of_real)
+        also have "?rp ?yi = xi^Suc i" by (fold hom_distribs, rule map_poly_Re_of_real)
         also have "?rp ?yis = (\<Prod> (a,b) \<leftarrow> ?fact yis. a ^ b)"
           using IH by auto
         also have "xi ^ Suc i * (\<Prod> (a,b) \<leftarrow> ?fact yis. a ^ b) = 

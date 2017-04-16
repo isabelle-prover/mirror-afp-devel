@@ -47,12 +47,12 @@ proof -
   qed
 qed
 
-lemma coprime_factorial_ring_iff: 
-  "coprime (p :: 'a :: factorial_ring_gcd) q = (\<forall>r. 
-  r dvd p \<longrightarrow> r dvd q \<longrightarrow> r dvd 1)"
-  by (metis gcd_dvd1 gcd_dvd2 is_unit_gcd semiring_gcd_class.gcd_greatest_iff)  
+lemma content_free_unit:
+  assumes "content (p::'a::{idom,semiring_gcd} poly) = 1"
+  shows "p dvd 1 \<longleftrightarrow> degree p = 0"
+  by (insert assms, auto dest!:degree0_coeffs simp: normalize_1_iff poly_dvd_1)
 
-lemma square_free_imp_resultant_non_zero: assumes sf: "square_free (f :: int poly)" 
+lemma square_free_imp_resultant_non_zero: assumes sf: "square_free (f :: int poly)"
   shows "resultant f (pderiv f) \<noteq> 0" 
 proof (cases "degree f = 0")
   case True
@@ -72,24 +72,21 @@ next
   let ?p' = "pderiv pp" 
   {
     assume "resultant pp ?p' = 0" 
-    from resultant_zero_imp_common_factor[OF deg' this, unfolded coprime_factorial_ring_iff]
+    from resultant_zero_imp_common_factor[OF deg' this, unfolded coprime_def]
     obtain r where r: "r dvd pp" "r dvd ?p'" "\<not> r dvd 1" by auto
     from r(1) obtain k where "pp = r * k" unfolding dvd_def by auto
     from pos_zmult_eq_1_iff_lemma[OF arg_cong[OF this, 
-      of content, unfolded gauss_lemma cp, symmetric]] content_ge_0_int[of r]
+      of content, unfolded content_mult cp, symmetric]] content_ge_0_int[of r]
     have cr: "content r = 1" by auto
-    with r(3) have dr: "degree r \<noteq> 0"
-      by (metis \<open>degree (smult c pp) \<noteq> 0\<close> degree_smult_eq dvdE dvd_poly_int_content_1 
-        is_unit_iff_degree mult_eq_0_iff r(1) 
-        ri.degree_map_poly unit_imp_dvd)
+    with r(3) content_free_unit have dr: "degree r \<noteq> 0" by auto
     let ?r = "map_poly rat_of_int"
     from r(1) have dvd: "?r r dvd ?r pp" unfolding dvd_def by auto
-    from r(2) have "?r r dvd ?r ?p'" unfolding dvd_def by auto
-    also have "?r ?p' = pderiv (?r pp)" unfolding ri.map_poly_pderiv ..
+    from r(2) have "?r r dvd ?r ?p'" apply (intro of_int_poly_hom.hom_dvd) by auto
+    also have "?r ?p' = pderiv (?r pp)" unfolding of_int_hom.map_poly_pderiv ..
     finally have dvd': "?r r dvd pderiv (?r pp)" by auto
     from dr have dr': "degree (?r r) \<noteq> 0" by simp
     from square_free_coprime_pderiv[OF square_free_int_rat[OF sf']]
-    have cop: "coprime (?r pp) (pderiv (?r pp))" .
+    have cop: "coprime (?r pp) (pderiv (?r pp))" by simp
     from f0 f have pp0: "pp \<noteq> 0" by auto
     from dvd dvd' have "?r r dvd gcd (?r pp) (pderiv (?r pp))" by auto
     from divides_degree[OF this] pp0 have "degree (?r r) \<le> degree (gcd (?r pp) (pderiv (?r pp)))" 
@@ -123,8 +120,8 @@ lemma square_free_int_imp_resultant_non_zero_mod_ring: assumes sf: "square_free 
   shows "resultant (map_poly of_int f :: 'a :: prime_card mod_ring poly) (pderiv (map_poly of_int f)) \<noteq> 0
   \<and> map_poly of_int f \<noteq> (0 :: 'a mod_ring poly)" 
 proof (intro conjI, rule notI)
-  let ?i = "of_int :: int \<Rightarrow> 'a mod_ring" 
-  let ?m = "map_poly ?i" 
+  let ?i = "of_int :: int \<Rightarrow> 'a mod_ring"
+  let ?m = "of_int_poly :: _ \<Rightarrow> 'a mod_ring poly"
   let ?f = "?m f" 
   from sf[unfolded square_free_def] have f0: "f \<noteq> 0" by auto
   hence lf: "lead_coeff f \<noteq> 0" by auto
@@ -137,10 +134,9 @@ proof (intro conjI, rule notI)
   } note of_int_0 = this
   from square_free_imp_resultant_non_zero[OF sf]
   have non0: "resultant f (pderiv f) \<noteq> 0" .
-  interpret idom_hom ?i by (standard, auto)
   {
     fix g :: "int poly" 
-    assume abs: "abs (lead_coeff g) < CARD('a)"     
+    assume abs: "abs (lead_coeff g) < CARD('a)"
     have "degree (?m g) = degree g"
     proof (rule degree_map_poly, force)
       assume "?i (coeff g (degree g)) = 0" 
@@ -154,12 +150,11 @@ proof (intro conjI, rule notI)
   finally show f0: "?f \<noteq> 0" unfolding poly_eq_iff by auto  
   assume 0: "resultant ?f (pderiv ?f) = 0" 
   have "resultant ?f (pderiv ?f) = ?i (resultant f (pderiv f))"
-    unfolding map_poly_pderiv
-    by (subst resultant_map_poly(1)[OF deg deg], insert large, auto)
+    unfolding of_int_hom.map_poly_pderiv
+    by (subst of_int_hom.resultant_map_poly(1)[OF deg deg], insert large, auto)
   from of_int_0[OF _ this[symmetric, unfolded 0]] non0
   show False using large by auto
 qed
-   
 
 lemma square_free_int_imp_square_free_mod_ring: assumes sf: "square_free f" 
   and large: "int CARD('a) > square_free_bound f"
@@ -170,7 +165,7 @@ proof -
   have res: "resultant g (pderiv g) \<noteq> 0" and g: "g \<noteq> 0" unfolding g_def by auto
   from resultant_non_zero_imp_coprime[OF res] g
   have "coprime g (pderiv g)" by auto
-  hence "square_free g" by (rule coprime_pderiv_imp_square_free)
+  with coprime_pderiv_imp_square_free have "square_free g" by auto
   thus ?thesis unfolding g_def .
 qed
 

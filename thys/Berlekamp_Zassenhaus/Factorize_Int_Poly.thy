@@ -16,6 +16,8 @@ imports
   Square_Free_Factorization_Int
 begin
 
+hide_const coeff monom
+
 (* main factorization algorithm of polynomials, without preprocessing and special cases *)
 definition internal_int_poly_factorization :: "int poly \<Rightarrow> int \<times> (int poly \<times> nat) list" where
   "internal_int_poly_factorization f = ( 
@@ -34,11 +36,11 @@ definition reflect_factorization :: "int \<times> (int poly \<times> nat) list \
 
 definition factorize_int_last_nz_poly :: "int poly \<Rightarrow> int \<times> (int poly \<times> nat) list" where
   "factorize_int_last_nz_poly f = (let df = degree f
-    in if df = 0 then (coeff f 0, []) else if df = 1 then (1,[(f,0)]) else
+    in if df = 0 then (coeff f 0, []) else if df = 1 then (content f,[(primitive_part f,0)]) else
     if abs (coeff f 0) < abs (coeff f df) (* take reverse polynomial, if f(0) < lc(f) *)
      then reflect_factorization (internal_int_poly_factorization (reflect_poly f))
      else internal_int_poly_factorization f)"   
-  
+
 definition factorize_int_poly :: "int poly \<Rightarrow> int \<times> (int poly \<times> nat) list" where
   "factorize_int_poly f = (case x_split f of (n,g) (* extract x^n *)
     \<Rightarrow> if g = 0 then (0,[]) else case factorize_int_last_nz_poly g of (a,fs) 
@@ -49,40 +51,65 @@ lemma factorize_int_poly_0[simp]: "factorize_int_poly 0 = (0,[])"
   unfolding factorize_int_poly_def x_split_def by simp
 
 
-lemma internal_int_poly_factorization: assumes res: "internal_int_poly_factorization f = (c,fs)"
-shows "square_free_factorization f (c,fs)"
-  "(fi,i) \<in> set fs \<Longrightarrow> irreducible fi"
+(* TODO: redefine square_free? *)
+lemma irreducible_imp_square_free:
+  assumes irr: "irreducible (p::'a::idom poly)" shows "square_free p"
+proof(intro square_freeI)
+  from irr show p0: "p \<noteq> 0" by auto
+  fix a assume "a * a dvd p"
+  then obtain b where paab: "p = a * (a * b)" by (elim dvdE, auto)
+  assume "degree a \<noteq> 0"
+  then have a1: "\<not> a dvd 1" by (auto simp: poly_dvd_1)
+  then have ab1: "\<not> a * b dvd 1" by auto
+  from paab irr a1 ab1 show False by force
+qed
+
+lemma internal_int_poly_factorization_mem:
+  assumes res: "internal_int_poly_factorization f = (c,fs)"
+  and mem: "(fi,i) \<in> set fs"
+  shows "irreducible fi" and "content_free fi" and "degree fi \<noteq> 0"
 proof -
-  obtain a psi where a_psi: "square_free_factorization_int f = (a, psi)" 
+  obtain a psi where a_psi: "square_free_factorization_int f = (a, psi)"
     by force
   from square_free_factorization_int[OF this]
-  have sff: "square_free_factorization f (a, psi)"  
-    and cnt: "\<And> fi i. (fi, i) \<in> set psi \<Longrightarrow> content fi = 1" by blast+
+  have sff: "square_free_factorization f (a, psi)"
+    and cnt: "\<And> fi i. (fi, i) \<in> set psi \<Longrightarrow> content_free fi" by blast+
   note res = res[unfolded internal_int_poly_factorization_def a_psi Let_def split]
   obtain fact where fact: "fact = (\<lambda> (q,i :: nat). (map (\<lambda> f. (f,i)) (berlekamp_zassenhaus_factorization q)))" by auto
   from res[unfolded split Let_def]
   have c: "c = a" and fs: "fs = concat (map fact psi)"
     unfolding fact by auto  
   note sff' = square_free_factorizationD[OF sff]
-  {
-    fix fi i
-    assume "(fi,i) \<in> set fs" 
-    from this[unfolded fs, simplified] obtain d j where psi: "(d,j) \<in> set psi" 
-       and fi: "(fi, i) \<in> set (fact (d,j))" by auto
-    obtain hs where d: "berlekamp_zassenhaus_factorization d = hs" by force   
-    from fi[unfolded d split fact] have fi: "fi \<in> set hs" by auto
-    from berlekamp_zassenhaus_factorization[OF d] fi sff'(2)[OF psi]
-    have "irreducible fi" by auto 
-  } note irr = this
-  show "(fi, i) \<in> set fs \<Longrightarrow> irreducible fi" by fact
-  show "square_free_factorization f (c,fs)" unfolding square_free_factorization_def split
+  from mem[unfolded fs, simplified] obtain d j where psi: "(d,j) \<in> set psi"
+     and fi: "(fi, i) \<in> set (fact (d,j))" by auto
+  obtain hs where d: "berlekamp_zassenhaus_factorization d = hs" by force
+  from fi[unfolded d split fact] have fi: "fi \<in> set hs" by auto
+  from berlekamp_zassenhaus_factorization_content_free[OF d] fi sff'(2)[OF psi] cnt[OF psi]
+  show "irreducible fi" "degree fi \<noteq> 0" "content_free fi" by auto
+qed
+
+lemma internal_int_poly_factorization:
+  assumes res: "internal_int_poly_factorization f = (c,fs)"
+  shows "square_free_factorization f (c,fs)"
+proof -
+  obtain a psi where a_psi: "square_free_factorization_int f = (a, psi)" 
+    by force
+  from square_free_factorization_int[OF this]
+  have sff: "square_free_factorization f (a, psi)"
+    and cnt: "\<And> fi i. (fi, i) \<in> set psi \<Longrightarrow> content_free fi" by blast+
+  obtain fact where fact: "fact = (\<lambda> (q,i :: nat). (map (\<lambda> f. (f,i)) (berlekamp_zassenhaus_factorization q)))" by auto
+  from res[unfolded split Let_def]
+  have c: "c = a" and fs: "fs = concat (map fact psi)"
+    unfolding fact internal_int_poly_factorization_def a_psi by auto
+  note sff' = square_free_factorizationD[OF sff]
+  show ?thesis unfolding square_free_factorization_def split
   proof (intro conjI impI allI)
     show "f = 0 \<Longrightarrow> c = 0" "f = 0 \<Longrightarrow> fs = []" using sff'(4) unfolding c fs by auto
     {
       fix a i
       assume "(a,i) \<in> set fs"
-      from irr[OF this] show "square_free a" "degree a \<noteq> 0" 
-        using irreducible_square_free[of a] unfolding irreducible_def by auto
+      from irreducible_imp_square_free internal_int_poly_factorization_mem[OF res this]
+      show "square_free a" "degree a \<noteq> 0" by auto
     }
     have eq: "f = smult c (\<Prod>(a, i)\<leftarrow>fs. a ^ Suc i)" unfolding 
       prod.distinct_set_conv_list[OF sff'(5)]
@@ -108,12 +135,12 @@ proof -
       fix i j l fi
       assume *: "j < length psi" "l < length (fact (psi ! j))" "fact (psi ! j) ! l = (fi, i)" 
       from * have psi: "psi ! j \<in> set psi" by auto
-      obtain d k where "psi ! j = (d,k)" by force
+      obtain d k where dk: "psi ! j = (d,k)" by force
       with * have psij: "psi ! j = (d,i)" unfolding fact split by auto
       from sff'(2)[OF psi[unfolded psij]] have d: "square_free d" "degree d \<noteq> 0" by auto
       from * psij fact
       have bz: "berlekamp_zassenhaus_factorization d = map fst (fact (psi ! j))" by (auto simp: o_def)
-      from berlekamp_zassenhaus_factorization[OF bz d] 
+      from berlekamp_zassenhaus_factorization_content_free[OF bz d cnt[OF psi[unfolded dk]]]
       have dhs: "d = prod_list (map fst (fact (psi ! j)))" and 
         irr: "(\<forall>fi\<in>set (map fst (fact (psi ! j))). irreducible fi)" by auto
       from * have mem: "fi \<in> set (map fst (fact (psi ! j)))"
@@ -142,7 +169,7 @@ proof -
       from deconstruct[OF j(2) l(2) fs(2)[unfolded f, symmetric]]
       obtain D where Mem: "Fi \<in> set (map fst (fact (psi ! J)))"
         and D: "D = prod_list (map fst (fact (psi ! J)))" "psi ! J = (D, I)" "square_free D" by blast
-      from cnt[OF psij[unfolded d(2)]] have cnt: "content d = 1" .
+      from cnt[OF psij[unfolded d(2)]] have cnt: "content_free d" .
       have "coprime fi Fi" 
       proof (cases "J = j")
         case False
@@ -152,7 +179,7 @@ proof -
         have cop: "coprime d D" by auto
         from prod_list_dvd[OF mem, folded d(1)] have fid: "fi dvd d" by auto
         from prod_list_dvd[OF Mem, folded D(1)] have FiD: "Fi dvd D" by auto
-        from coprime_divisors[OF fid FiD cop] show ?thesis .
+        from coprime_divisors[OF fid FiD] cop show ?thesis by simp
       next
         case True note id = this
         from id diff have diff: "l \<noteq> L" by auto
@@ -183,7 +210,7 @@ proof -
         from cnt[unfolded gc content_def, simplified] have "abs c = 1" 
           by (cases "c = 0", auto)
         with g gc have "gcd fi Fi \<in> {1,-1}" by fastforce
-        thus "coprime fi Fi" by (metis coprime_1_left gcd_neg1 gcd_right_idem insertE singletonD)
+        thus "coprime fi Fi" unfolding coprime_iff_gcd_one by (metis coprime_1_left gcd_neg1 gcd_right_idem insertE singletonD)
       qed
     } note cop = this
     
@@ -194,8 +221,7 @@ proof -
       obtain fi i Fi I where f: "fs ! k = (fi,i)" "fs ! K = (Fi,I)" by force+
       from cop[OF k f diff] have cop: "coprime fi Fi" .
       from k(1) f(1) have "(fi,i) \<in> set fs" unfolding set_conv_nth by force
-      from irr[OF this] have "irreducible fi" by auto
-      hence "degree fi \<noteq> 0" unfolding irreducible_def by auto
+      from internal_int_poly_factorization_mem[OF res this] have "degree fi \<noteq> 0" by auto
       hence "\<not> is_unit fi" by (simp add: poly_dvd_1)
       with cop coprime_id_is_unit[of fi] have "fi \<noteq> Fi" by auto
       thus "fs ! k \<noteq> fs ! K" unfolding f by auto
@@ -207,43 +233,134 @@ proof -
     then obtain k K where k: "k < length fs" "K < length fs" 
       and f: "fs ! k = (fi, i)" "fs ! K = (Fi, I)" unfolding set_conv_nth by auto
     with diff have diff: "k \<noteq> K" by auto
-    from cop[OF k f diff] show "coprime fi Fi" by auto
+    from cop[OF k f diff] show "gcd fi Fi = 1" by auto
   qed
-qed 
-
-lemma irreducible_reflect_poly: assumes nz: "coeff f 0 \<noteq> 0" 
-  shows "irreducible (reflect_poly f) = irreducible f" 
-proof -  
-  {
-    fix f :: "'a poly" 
-    assume nz: "coeff f 0 \<noteq> 0" 
-    and irr: "\<forall>q. degree q \<noteq> 0 \<longrightarrow> degree q < degree f \<longrightarrow> \<not> q dvd reflect_poly f" 
-    have "\<forall>q. degree q \<noteq> 0 \<longrightarrow> degree q < degree f \<longrightarrow> \<not> q dvd f" 
-    proof (intro allI impI notI)
-      fix g
-      assume deg: "degree g \<noteq> 0" "degree g < degree f" and dvd: "g dvd f" 
-      from dvd obtain h where fgh: "f = g * h" unfolding dvd_def by auto
-      from arg_cong[OF this, of "\<lambda> f. coeff f 0"] nz 
-      have nz': "coeff g 0 \<noteq> 0" by (auto simp: coeff_mult_0)
-      from arg_cong[OF fgh, of reflect_poly, unfolded reflect_poly_mult]
-      have dvd: "reflect_poly g dvd reflect_poly f" by auto
-      from deg have "degree (reflect_poly g) \<noteq> 0" "degree (reflect_poly g) < degree f" 
-        unfolding degree_reflect_poly_eq[OF nz'] by auto
-      from irr[rule_format, OF this] dvd show False by auto
-    qed
-  } note main = this
-  from nz have nz': "coeff (reflect_poly f) 0 \<noteq> 0" by auto
-  have "(\<forall>q. degree q \<noteq> 0 \<longrightarrow> degree q < degree f \<longrightarrow> \<not> q dvd reflect_poly f)
-    = (\<forall>q. degree q \<noteq> 0 \<longrightarrow> degree q < degree f \<longrightarrow> \<not> q dvd f)" 
-    using main[OF nz] main[OF nz'] 
-    unfolding degree_reflect_poly_eq[OF nz] reflect_poly_reflect_poly[OF nz] by blast
-  thus ?thesis unfolding irreducible_def degree_reflect_poly_eq[OF nz] by auto
 qed
 
+(* TODO: Move *)
+lemma not_mem_set_dropWhileD: "x \<notin> set (dropWhile P xs) \<Longrightarrow> x \<in> set xs \<Longrightarrow> P x"
+  by (metis dropWhile_append3 in_set_conv_decomp)
+
+lemma content_free_reflect_poly:
+  fixes f :: "'a :: comm_monoid_mult_0 poly"
+  shows "content_free (reflect_poly f) = content_free f"
+proof-
+  have "(\<forall> a \<in> set (coeffs f). x dvd a) \<longleftrightarrow> (\<forall>a \<in> set (dropWhile (op = 0) (coeffs f)). x dvd a)" for x
+    by (auto dest: not_mem_set_dropWhileD set_dropWhileD)
+  then show ?thesis by (auto simp: content_free_def coeffs_reflect_poly)
+qed
+
+(* TODO: move *)
+lemma list_gcd_sub:
+  assumes "set xs \<subseteq> set ys" shows "list_gcd ys dvd list_gcd xs"
+  by (metis Gcd_fin.subset assms semiring_gcd_class.gcd_dvd1)
+
+lemma content_reflect_poly:
+  "content (reflect_poly f) = content f" (is "?l = ?r")
+proof-
+  have l: "?l = gcd_list (dropWhile (op = 0) (coeffs f))" (is "_ = gcd_list ?xs")
+    by (simp add: content_def reflect_poly_def)
+  have "set ?xs \<subseteq> set (coeffs f)" by (auto dest: set_dropWhileD)
+  from list_gcd_sub[OF this]
+  have "?r dvd gcd_list ?xs" by (simp add: content_def)
+  with l have rl: "?r dvd ?l" by auto
+  have "set (coeffs f) \<subseteq> set (0 # ?xs)" by (auto dest: not_mem_set_dropWhileD)
+  from list_gcd_sub[OF this]
+  have "gcd_list ?xs dvd ?r" by (simp add: content_def)
+  with l have lr: "?l dvd ?r" by auto
+  from rl lr show "?l = ?r" by (simp add: associated_eqI)
+qed
+
+lemma coeff_primitive_part: "content f * coeff (primitive_part f) i = coeff f i"
+  using arg_cong[OF smult_normalize_content[of f], of "\<lambda>f. coeff f _", unfolded coeff_smult].
+
+(* TODO: move *)
+lemma smult_cancel[simp]:
+  fixes c :: "'a :: idom"
+  shows "smult c f = smult c g \<longleftrightarrow> c = 0 \<or> f = g"
+proof-
+  have l: "smult c f = [:c:] * f" by simp
+  have r: "smult c g = [:c:] * g" by simp
+  show ?thesis unfolding l r mult_cancel_left by simp
+qed
+
+lemma primitive_part_reflect_poly:
+  fixes f :: "'a :: {semiring_gcd,idom} poly"
+  shows "primitive_part (reflect_poly f) = reflect_poly (primitive_part f)" (is "?l = ?r")
+  using smult_normalize_content[of "reflect_poly f"]
+proof-
+  note content_reflect_poly[of f, symmetric]
+  also have "smult (content (reflect_poly f)) ?l = reflect_poly f" by simp
+  also have "... = reflect_poly (smult (content f) (primitive_part f))" by simp
+  finally show ?thesis unfolding reflect_poly_smult smult_cancel by auto
+qed
+
+(* TODO: move *)
+lemma reflect_poly_eq_zero[simp]:
+  "reflect_poly f = 0 \<longleftrightarrow> f = 0"
+proof
+  assume "reflect_poly f = 0"
+  then have "coeff (reflect_poly f) 0 = 0" by simp
+  then have "lead_coeff f = 0" by simp
+  then show "f = 0" by simp
+qed simp
+
+lemma irreducible_reflect_poly:
+  fixes f :: "'a :: {idom,semiring_gcd} poly"
+  assumes nz: "coeff f 0 \<noteq> 0"
+  shows "irreducible (reflect_poly f) = irreducible f" (is "?l = ?r")
+proof (cases "degree f = 0")
+  case True then obtain f0 where "f = [:f0:]" by (auto dest: degree0_coeffs)
+  then show ?thesis by simp
+next
+  case deg: False
+  show ?thesis
+  proof (cases "content_free f")
+    case False
+    with deg irreducible_imp_content_free[of f] irreducible_imp_content_free[of "reflect_poly f"] nz
+    show ?thesis unfolding content_free_reflect_poly by auto
+  next
+    case cf: True
+    from nz have nz': "coeff (reflect_poly f) 0 \<noteq> 0" by auto
+    let ?ir = Missing_Polynomial.irreducible
+    {
+      fix f :: "'a poly" 
+      assume nz: "coeff f 0 \<noteq> 0" 
+      and irr: "\<forall>q. degree q \<noteq> 0 \<longrightarrow> degree q < degree f \<longrightarrow> \<not> q dvd reflect_poly f" 
+      have "\<forall>q. degree q \<noteq> 0 \<longrightarrow> degree q < degree f \<longrightarrow> \<not> q dvd f" 
+      proof (intro allI impI notI)
+        fix g
+        assume deg: "degree g \<noteq> 0" "degree g < degree f" and dvd: "g dvd f" 
+        from dvd obtain h where fgh: "f = g * h" unfolding dvd_def by auto
+        from arg_cong[OF this, of "\<lambda> f. coeff f 0"] nz 
+        have nz': "coeff g 0 \<noteq> 0" by (auto simp: coeff_mult_0)
+        from arg_cong[OF fgh, of reflect_poly] reflect_poly_mult[of g h]
+        have dvd: "reflect_poly g dvd reflect_poly f" by auto
+        from deg have "degree (reflect_poly g) \<noteq> 0" "degree (reflect_poly g) < degree f" 
+          unfolding degree_reflect_poly_eq[OF nz'] by auto
+        from irr[rule_format, OF this] dvd show False by auto
+      qed
+    }
+    from this[OF nz] this[OF nz']
+    have "(\<forall>q. degree q \<noteq> 0 \<longrightarrow> degree q < degree f \<longrightarrow> \<not> q dvd reflect_poly f)
+      = (\<forall>q. degree q \<noteq> 0 \<longrightarrow> degree q < degree f \<longrightarrow> \<not> q dvd f)"
+      unfolding degree_primitive_part degree_reflect_poly_eq[OF nz]
+      unfolding primitive_part_reflect_poly reflect_poly_reflect_poly[OF nz] by auto
+    then have "?ir f \<longleftrightarrow> ?ir (reflect_poly f)"
+      unfolding Missing_Polynomial.irreducible_def primitive_part_reflect_poly
+      unfolding degree_reflect_poly_eq[OF nz] by auto
+    also have "... \<longleftrightarrow> irreducible (reflect_poly f)"
+      by (rule irreducible_content_free_connect, unfold content_free_reflect_poly, fact cf)
+    finally show ?thesis
+      by (unfold irreducible_content_free_connect[OF cf], auto)
+  qed
+qed
+
+(* TODO: Move *)
 lemma reflect_poly_dvd: "(f :: 'a :: idom poly) dvd g \<Longrightarrow> reflect_poly f dvd reflect_poly g" 
   unfolding dvd_def by (auto simp: reflect_poly_mult)
 
-lemma gcd_reflect_poly: fixes f :: "'a :: factorial_ring_gcd poly" 
+lemma gcd_reflect_poly: fixes f :: "'a :: factorial_ring_gcd poly"
   assumes nz: "coeff f 0 \<noteq> 0" "coeff g 0 \<noteq> 0" 
   shows "gcd (reflect_poly f) (reflect_poly g) = normalize (reflect_poly (gcd f g))" 
 proof (rule sym, rule gcdI)
@@ -263,13 +380,36 @@ proof (rule sym, rule gcdI)
   hence "reflect_poly h dvd gcd f g" by auto
   from reflect_poly_dvd[OF this] h have "h dvd reflect_poly (gcd f g)" by auto
   thus "h dvd normalize (reflect_poly (gcd f g))" by auto
-qed  
+qed
+
+lemma linear_content_free_irreducible:
+  fixes f :: "'a :: {comm_semiring_1,semiring_no_zero_divisors} poly"
+  assumes deg: "degree f = 1" and cf: "content_free f"
+  shows "irreducible f"
+proof
+  fix a b assume fab: "f = a * b"
+  with deg have a0: "a \<noteq> 0" and b0: "b \<noteq> 0" by auto
+  from deg[unfolded fab] degree_mult_eq[OF this] have "degree a = 0 \<or> degree b = 0" by auto
+  then show "a dvd 1 \<or> b dvd 1"
+  proof
+    assume "degree a = 0"
+    then obtain a0 where a: "a = [:a0:]" by (auto dest:degree0_coeffs)
+    with fab have "c \<in> set (coeffs f) \<Longrightarrow> a0 dvd c" for c by (cases "a0 = 0", auto simp: coeffs_smult)
+    with cf show ?thesis by (auto dest: content_freeD simp: a)
+  next
+    assume "degree b = 0"
+    then obtain b0 where b: "b = [:b0:]" by (auto dest:degree0_coeffs)
+    with fab have "c \<in> set (coeffs f) \<Longrightarrow> b0 dvd c" for c by (cases "b0 = 0", auto simp: coeffs_smult)
+    with cf show ?thesis by (auto dest: content_freeD simp: b)
+  qed
+qed (insert deg, auto simp: poly_dvd_1)
 
 lemma factorize_int_last_nz_poly: assumes res: "factorize_int_last_nz_poly f = (c,fs)"
     and nz: "coeff f 0 \<noteq> 0" 
 shows "square_free_factorization f (c,fs)"
   "(fi,i) \<in> set fs \<Longrightarrow> irreducible fi"
-proof -
+  "(fi,i) \<in> set fs \<Longrightarrow> degree fi \<noteq> 0"
+proof (atomize(full))
   from nz have lz: "lead_coeff f \<noteq> 0" by auto
   obtain rev where rev: "(\<bar>coeff f 0\<bar> < \<bar>coeff f (degree f)\<bar>) = rev" by auto
   note res = res[unfolded factorize_int_last_nz_poly_def Let_def rev]
@@ -277,28 +417,29 @@ proof -
     | (1) "degree f = 1" 
     | (complex_rev) "degree f > 1" "rev" 
     | (complex_norm) "degree f > 1" "\<not> rev" by linarith
-  hence "square_free_factorization f (c,fs) \<and> ((fi,i) \<in> set fs \<longrightarrow> irreducible fi)" 
+  then show "square_free_factorization f (c,fs) \<and> ((fi,i) \<in> set fs \<longrightarrow> irreducible fi) \<and> ((fi,i) \<in> set fs \<longrightarrow> degree fi \<noteq> 0)" 
   proof cases
     case 0
     from degree0_coeffs[OF 0] obtain a where f: "f = [:a:]" by auto
     from res show ?thesis unfolding square_free_factorization_def f by auto
   next
-    case 1   
-    from linear_irreducible[OF 1] have irr: "irreducible f" by auto
-    from irreducible_square_free[OF irr] have sf: "square_free f" .
+    case 1
+    then have irr: "irreducible (primitive_part f)"
+      by (auto intro!: linear_content_free_irreducible content_primitive_part)
+    from irreducible_imp_square_free[OF irr] have sf: "square_free (primitive_part f)" .
     from 1 have f0: "f \<noteq> 0" by auto 
     from res irr sf f0 show ?thesis unfolding square_free_factorization_def by (auto simp: 1)
   next
     case complex_norm
     with res have "internal_int_poly_factorization f = (c,fs)" by auto
-    from internal_int_poly_factorization[OF this] show ?thesis by auto
+    from internal_int_poly_factorization[OF this] internal_int_poly_factorization_mem[OF this]
+    show ?thesis by auto
   next
     case complex_rev
     obtain d gs where fact: "internal_int_poly_factorization (reflect_poly f) = (d,gs)" by force
     with res complex_rev have refl: "reflect_factorization (d,gs) = (c,fs)" by auto
-    from internal_int_poly_factorization[OF fact] 
-    have sff: "square_free_factorization (reflect_poly f) (d, gs)" 
-      and irr: "\<And> fi i. (fi, i) \<in> set gs \<Longrightarrow> irreducible fi" by auto
+    note sff = internal_int_poly_factorization[OF fact]
+    note irr = internal_int_poly_factorization_mem[OF fact]
     from nz have nz': "coeff (reflect_poly f) 0 \<noteq> 0" by auto
     {
       fix gi i
@@ -308,8 +449,8 @@ proof -
       obtain c d where fcd: "reflect_poly f = smult c (gi * d)" by (auto simp: ac_simps)
       from arg_cong[OF this, of "\<lambda> f. coeff f 0", simplified] lz
       have nzg: "coeff gi 0 \<noteq> 0" unfolding coeff_mult_0 by auto
-      from irr[OF gi] have irr: "irreducible (reflect_poly gi)" using irreducible_reflect_poly[OF nzg]
-        by auto
+      from irr[OF gi] have irr: "irreducible (reflect_poly gi)" "degree (reflect_poly gi) \<noteq> 0"
+        using nzg by (auto simp: irreducible_reflect_poly)
       note nzg irr
     } note nzg = this
     from refl[unfolded reflect_factorization_def] 
@@ -320,11 +461,12 @@ proof -
       assume "(fi,i) \<in> set fs" 
       then obtain gi where "(gi,i) \<in> set gs" and "fi = reflect_poly gi" 
         using fs by auto
-      with nzg[OF this(1)] have "irreducible fi" by auto
+      with nzg[OF this(1)] have "irreducible fi" "degree fi \<noteq> 0" by auto
     } note irr = this
     show ?thesis unfolding d
     proof (intro conjI allI impI)
       show "(fi, i) \<in> set fs \<Longrightarrow> irreducible fi" by fact
+      show "(fi, i) \<in> set fs \<Longrightarrow> degree fi \<noteq> 0" by fact
       show "square_free_factorization f (d, fs)"
         unfolding square_free_factorization_def split
       proof (intro allI conjI impI)
@@ -332,9 +474,8 @@ proof -
         {
           fix fi i
           assume "(fi, i) \<in> set fs"
-          from irr[OF this] have "irreducible fi" .
-          from irreducible_square_free[OF this] this show "square_free fi" "degree fi \<noteq> 0" 
-            unfolding irreducible_def by auto
+          from irr[OF this] show "square_free fi" "degree fi \<noteq> 0" 
+            by (auto intro!: irreducible_imp_square_free)
         }
         show dist: "distinct fs" unfolding fs distinct_map
           by (rule conjI[OF sf(5) inj_on_inverseI[of _ "\<lambda> (f, i). (reflect_poly f, i)"]],
@@ -357,26 +498,25 @@ proof -
         from mem[unfolded fs] obtain gi gj where fi: "fi = reflect_poly gi" "fj = reflect_poly gj" 
             and gi: "(gi,i) \<in> set gs" "(gj,j) \<in> set gs" by auto
         from diff[unfolded fi] have "(gi,i) \<noteq> (gj,j)" by auto
-        from sf(3)[OF gi this] have cop: "coprime gi gj" .
+        from sf(3)[OF gi this] have cop: "coprime gi gj" by simp
         have nz: "coeff gi 0 \<noteq> 0" "coeff gj 0 \<noteq> 0" using nzg(1)[OF gi(1)] nzg(1)[OF gi(2)] .
-        show "coprime fi fj" unfolding fi gcd_reflect_poly[OF nz] cop by auto
+        show "gcd fi fj = 1" unfolding fi gcd_reflect_poly[OF nz] using cop by auto
       qed
     qed
   qed
-  thus "square_free_factorization f (c,fs)"
-    "(fi,i) \<in> set fs \<Longrightarrow> irreducible fi" by auto
 qed
- 
+
 lemma factorize_int_poly: assumes res: "factorize_int_poly f = (c,fs)"
 shows "square_free_factorization f (c,fs)"
-  "(fi,i) \<in> set fs \<Longrightarrow> irreducible fi"    
-proof -
+  "(fi,i) \<in> set fs \<Longrightarrow> irreducible fi"
+  "(fi,i) \<in> set fs \<Longrightarrow> degree fi \<noteq> 0"
+proof (atomize(full))
   obtain n g where xs: "x_split f = (n,g)" by force
   obtain d hs where fact: "factorize_int_last_nz_poly g = (d,hs)" by force
   from res[unfolded factorize_int_poly_def xs split fact]
   have res: "(if g = 0 then (0, []) else if n = 0 then (d, hs) else (d, (monom 1 1, n - 1) # hs)) = (c, fs)" .
   note xs = x_split[OF xs]
-  have "square_free_factorization f (c,fs) \<and> ((fi,i) \<in> set fs \<longrightarrow> irreducible fi)" 
+  show "square_free_factorization f (c,fs) \<and> ((fi,i) \<in> set fs \<longrightarrow> irreducible fi) \<and> ((fi,i) \<in> set fs \<longrightarrow> degree fi \<noteq> 0)" 
   proof (cases "g = 0")
     case True
     hence "f = 0" "c = 0" "fs = []" using res xs by auto
@@ -396,12 +536,12 @@ proof -
       with res xs have id: "fs = hs" "c = d" "f = g" by auto
       from fact show ?thesis unfolding id by auto
     next
-      case (Suc m)      
+      case (Suc m)
       with res have id: "c = d" "fs = (?x,m) # hs" by auto
       from Suc xs have fg: "f = monom 1 (Suc m) * g" and dvd: "\<not> ?x dvd g" by auto
-      from x linear_irreducible[of ?x] have irr: "irreducible ?x" by auto
-      from irreducible_square_free[OF this] have sfx: "square_free ?x" .
-      from irr fact(2) have one: "(fi, i) \<in> set fs \<longrightarrow> irreducible fi" unfolding id by auto
+      from x linear_content_free_irreducible[of ?x] have irr: "irreducible ?x" by auto
+      from irreducible_imp_square_free[OF this] have sfx: "square_free ?x" .
+      from irr fact have one: "(fi, i) \<in> set fs \<longrightarrow> irreducible fi \<and> degree fi \<noteq> 0" unfolding id by (auto simp: degree_monom_eq)
       have fg: "f = ?x ^ n * g" unfolding fg Suc by (metis x_pow_n)
       from x have degx: "degree ?x = 1" by simp
       note sf = square_free_factorizationD[OF fact(1)]
@@ -426,7 +566,7 @@ proof -
             with divides_degree[OF d(1), unfolded degx] have "degree d = 0" by auto
             from degree0_coeffs[OF this] obtain c where dc: "d = [:c:]" by auto
             from cnt[unfolded dc] have "is_unit c" by (auto simp: content_def, cases "c = 0", auto)
-            hence "d * d = 1" unfolding dc by (auto simp: one_poly_def, cases "c = -1"; cases "c = 1", auto)
+            hence "d * d = 1" unfolding dc by (auto, cases "c = -1"; cases "c = 1", auto)
             thus "is_unit d" by (metis dvd_triv_right)
           next
             case True
@@ -465,16 +605,16 @@ proof -
           | (hs_x) "(a,i) \<in> set hs" "b = ?x" 
           | (x_hs) "(b,j) \<in> set hs" "a = ?x" 
           using ai bj diff unfolding id by auto
-        thus "coprime a b"
+        thus "gcd a b = 1"
         proof cases
           case hs_hs
           from sf(3)[OF this diff] show ?thesis .
         next
           case hs_x
-          from hs_dvd_x(1)[OF hs_x(1)] show ?thesis unfolding hs_x(2) unfolding gcd.commute[of ?x] .
+          from hs_dvd_x(1)[OF hs_x(1)] show ?thesis unfolding hs_x(2) by (simp add: gcd.commute)
         next
           case x_hs
-          from hs_dvd_x(1)[OF x_hs(1)] show ?thesis unfolding x_hs(2) .
+          from hs_dvd_x(1)[OF x_hs(1)] show ?thesis unfolding x_hs(2) by simp
         qed
       next
         show "g = 0 \<Longrightarrow> d = 0" using sf(4) by auto
@@ -484,8 +624,6 @@ proof -
       thus ?thesis using one unfolding id by auto
     qed
   qed
-  thus "square_free_factorization f (c,fs)"
-    "(fi,i) \<in> set fs \<Longrightarrow> irreducible fi" by auto
 qed
-    
+
 end

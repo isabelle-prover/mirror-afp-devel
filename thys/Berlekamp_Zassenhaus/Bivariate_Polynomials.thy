@@ -27,39 +27,17 @@ definition poly2 :: "'a::comm_semiring_1 poly poly \<Rightarrow> 'a \<Rightarrow
 lemma poly2_by_map: "poly2 p x = poly (map_poly (\<lambda>c. poly c x) p)"
   apply (rule ext) unfolding poly2_def by (induct p; simp)
 
-named_theorems poly2_morphs
+lemma poly2_const[simp,hom_removes]: "poly2 [:[:a:]:] x y = a" by (simp add: poly2_def)
+lemma poly2_smult[simp,hom_distribs]: "poly2 (smult a p) x y = poly a x * poly2 p x y" by (simp add: poly2_def)
 
-lemma poly2_0[poly2_morphs]: "poly2 0 x y = 0" unfolding poly2_def by simp
+interpretation poly2_hom: comm_semiring_hom "\<lambda>p. poly2 p x y" by (unfold_locales; simp add: poly2_def)
+interpretation poly2_hom: comm_ring_hom "\<lambda>p. poly2 p x y"..
+interpretation poly2_hom: idom_hom "\<lambda>p. poly2 p x y"..
 
-lemma poly2_1[poly2_morphs]: "poly2 1 x y = 1" unfolding poly2_def by simp
+lemma poly2_pCons[simp,hom_distribs]: "poly2 (pCons a p) x y = poly a x + y * poly2 p x y" by (simp add: poly2_def)
+lemma poly2_monom: "poly2 (monom a n) x y = poly a x * y ^ n" by (auto simp: poly_monom poly2_def)
 
-lemma poly2_const[poly2_morphs]: "poly2 [:[:a:]:] x y = a" unfolding poly2_def by simp
-
-lemma poly2_add[poly2_morphs]: "poly2 (p+q) x y = poly2 p x y + poly2 q x y"
-  unfolding poly2_def by simp
-
-lemma poly2_smult[poly2_morphs]: "poly2 (smult a p) x y = poly a x * poly2 p x y"
-  unfolding poly2_def by simp
-
-lemma poly2_uminus[poly2_morphs]:
-  fixes p :: "'a :: comm_ring_1 poly poly"
-  shows "poly2 (-p) x y = - poly2 p x y"
-  unfolding poly2_def by simp
-
-lemma poly2_mult[poly2_morphs]: "poly2 (p * q) x y = poly2 p x y * poly2 q x y"
-  unfolding poly2_def by simp
-
-interpretation poly2_hom: semiring_hom "\<lambda>p. poly2 p x y"
-  by(unfold_locales; simp add: poly2_morphs)
-
-lemma poly2_pCons[simp]: "poly2 (pCons a p) x y = poly a x + y * poly2 p x y"
-  unfolding poly2_def by simp
-
-lemma poly2_monom: "poly2 (monom a n) x y = poly a x * y ^ n"
-  unfolding poly2_def by (auto simp: poly_monom)
-
-lemma poly_poly_as_poly2: "poly2 p x (poly q x) = poly (poly p q) x"
-  unfolding poly2_def by (induct p;simp)
+lemma poly_poly_as_poly2: "poly2 p x (poly q x) = poly (poly p q) x" by (induct p; simp add:poly2_def)
 
 text \<open>The following lemma is an extension rule for bivariate polynomials.\<close>
 
@@ -75,15 +53,15 @@ qed
 abbreviation (input) "coeff_lift == \<lambda>a. [: a :]"
 abbreviation (input) "coeff_lift2 == \<lambda>a. [:[: a :]:]"
 
-locale ring_hom_coeff_lift begin
-  sublocale inj_ring_hom coeff_lift
-    apply unfold_locales using one_poly_def by auto
-end
+interpretation coeff_lift_hom: inj_comm_semiring_hom coeff_lift
+  by (unfold_locales, auto simp: one_poly_def ac_simps)
+interpretation coeff_lift_hom: inj_comm_ring_hom coeff_lift..
+interpretation coeff_lift_hom: inj_idom_hom coeff_lift..
 
-locale ring_hom_coeff_lift2 begin
-  sublocale inj_ring_hom coeff_lift2
-    apply unfold_locales by(auto simp: one_poly_def)
-end
+text {* The following rule is incompatible with existing simp rules. *}
+declare coeff_lift_hom.hom_mult[simp del]
+declare coeff_lift_hom.hom_add[simp del]
+declare coeff_lift_hom.hom_uminus[simp del]
 
 lemma coeff_lift2_lift: "coeff_lift2 = coeff_lift \<circ> coeff_lift" by auto
 
@@ -105,27 +83,20 @@ lemma poly_lift_pCons[simp]:
 lemma coeff_poly_lift[simp]:
   fixes p:: "'a :: comm_ring_1 poly"
   shows "coeff (poly_lift p) i = coeff_lift (coeff p i)"
-proof-
-  interpret rh: ring_hom_coeff_lift.
-  show ?thesis
-    unfolding poly_lift_def
-    using rh.coeff_map_poly_hom[of p].
-qed
+  unfolding poly_lift_def by simp
 
-locale ring_hom_poly_lift begin
-  interpretation ring_hom_coeff_lift.
-  sublocale irh: inj_ring_hom poly_lift
-    using map_poly_inj by (unfold_locales, unfold poly_lift_def, auto)
-end
+interpretation poly_lift_hom: inj_comm_semiring_hom poly_lift
+  by (unfold_locales, unfold poly_lift_def, auto intro: map_poly_inj)
+interpretation poly_lift_hom: inj_comm_ring_hom poly_lift..
+interpretation poly_lift_hom: inj_idom_hom poly_lift..
 
-lemma (in ring_hom) coeff_lift_hom:
+
+lemma (in comm_ring_hom) coeff_lift_hom:
   "coeff_lift (hom a) = map_poly hom (coeff_lift a)" by simp
 
-lemma (in ring_hom) map_poly_coeff_lift_hom:
+lemma (in comm_ring_hom) map_poly_coeff_lift_hom:
   "map_poly (coeff_lift \<circ> hom) p = map_poly (map_poly hom) (map_poly coeff_lift p)"
 proof (induct p)
-  interpret hc: ring_hom_coeff_lift.
-  interpret mh: map_poly_ring_hom by(unfold_locales;auto)
   case (pCons a p) show ?case
     proof(cases "a = 0")
       case True
@@ -167,10 +138,8 @@ lemma poly_lift2_pCons[simp]:
 
 lemma poly_lift2_lift: "poly_lift2 = poly_lift \<circ> poly_lift" (is "?l = ?r")
 proof
-  interpret ring_hom_coeff_lift.
   fix p show "?l p = ?r p"
-    unfolding poly_lift2_def coeff_lift2_lift poly_lift_def
-    by (induct p; auto)
+    unfolding poly_lift2_def coeff_lift2_lift poly_lift_def by (induct p; auto)
 qed
 
 lemma poly2_poly_lift[simp]: "poly2 (poly_lift p) x y = poly p y" by (induct p;simp)
@@ -181,15 +150,9 @@ lemma poly_lift2_nonzero:
   apply (subst map_poly_zero)
   using assms by auto
 
-locale ring_hom_poly_lift2 begin
-  interpretation ring_hom_coeff_lift2.
-  sublocale irh: inj_ring_hom poly_lift2
-    using map_poly_inj by (unfold_locales, unfold poly_lift2_def, auto)
-end
-
 subsubsection \<open>Swapping the Order of Variables\<close>
 
-definition 
+definition
   "poly_y_x p \<equiv> \<Sum>i\<le>degree p. \<Sum>j\<le>degree (coeff p i). monom (monom (coeff (coeff p i) j) i) j"
 
 lemma poly_y_x_fix_y_deg:
@@ -244,7 +207,7 @@ context begin
 private lemma poly_monom_mult:
   fixes p :: "'a :: comm_semiring_1"
   shows "poly (monom p i * q ^ j) y = poly (monom p j * [:y:] ^ i) (poly q y)"
-  unfolding poly_semiring_hom.hom_mult
+  unfolding poly_hom.hom_mult
   unfolding poly_monom
   apply(subst mult.assoc)
   apply(subst(2) mult.commute)
@@ -257,7 +220,7 @@ lemma poly_poly_y_x:
   apply(subst poly_as_sum_of_monoms[symmetric,of "coeff p _"])
   unfolding poly_y_x_def
   unfolding coeff_sum monom_sum
-  unfolding poly_semiring_hom.hom_sum
+  unfolding poly_hom.hom_sum
   apply(rule sum.cong, simp)
   apply(rule sum.cong, simp)
   unfolding atMost_iff
@@ -269,20 +232,16 @@ end
 lemma poly_y_x_const:
   fixes p :: "'a :: comm_ring_1 poly" shows "poly_y_x [:p:] = poly_lift p" (is "?l = ?r")
 proof -
-  interpret rhc: ring_hom_coeff_lift.
-  interpret rhp: ring_hom_poly_lift.
   have "?l = (\<Sum>j\<le>degree p. monom [:coeff p j:] j)"
     unfolding poly_y_x_def by (simp add: monom_0)
   also have "... = poly_lift (\<Sum>x\<le>degree p. monom (coeff p x) x)"
-    unfolding rhp.irh.hom_sum unfolding poly_lift_def by simp
+    unfolding poly_lift_hom.hom_sum unfolding poly_lift_def by simp
   also have "... = poly_lift p" unfolding poly_as_sum_of_monoms..
   finally show ?thesis.
 qed
 
-lemma poly_y_x_0[simp]: "poly_y_x 0 = 0" unfolding poly_y_x_def by auto
-
-lemma poly_y_x_1[simp]: "poly_y_x 1 = 1"
-  unfolding poly_y_x_def by (auto simp: monom_0 one_poly_def)
+interpretation poly_y_x_hom: zero_hom poly_y_x by (unfold_locales, auto simp: poly_y_x_def)
+interpretation poly_y_x_hom: one_hom poly_y_x by (unfold_locales, auto simp: poly_y_x_def monom_0)
 
 lemma poly_y_x_id[simp]:
   fixes p :: "'a :: {ring_char_0,idom} poly poly"
@@ -304,11 +263,6 @@ proof -
     apply (rule if_dir) by auto
 qed
 
-locale ring_hom_poly_y_x begin
-  sublocale inj_ring_hom "poly_y_x :: 'a :: {ring_char_0, idom} poly poly \<Rightarrow> 'a poly poly"
-    by(unfold_locales; force simp: poly_poly_y_x)
-end
-
 lemma map_poly_sum_commute:
   assumes "h 0 = 0" "\<forall>p q. h (p + q) = h p + h q"
   shows "sum (\<lambda>i. map_poly h (f i)) S = map_poly h (sum f S)"
@@ -319,8 +273,7 @@ lemma poly_y_x_pCons:
   fixes p:: "'a :: comm_ring_1 poly poly"
   shows "poly_y_x (pCons a p) = map_poly coeff_lift a + map_poly (pCons 0) (poly_y_x p)"
 proof(cases "p = 0")
-  interpret rh: ring_hom_coeff_lift.
-  interpret rhm: ring_hom "map_poly coeff_lift" by (unfold_locales,auto)
+  interpret rhm: comm_ring_hom "map_poly coeff_lift" by (unfold_locales,auto)
   { case False show ?thesis (* I know this is a worst kind of a proof... *)
     apply(subst(1) poly_y_x_fixed_deg)
     unfolding degree_pCons_eq[OF False]
@@ -329,7 +282,7 @@ proof(cases "p = 0")
     apply(subst sum.insert,simp,simp)
     unfolding coeff_pCons_0
     unfolding monom_0
-    unfolding rh.monom_hom
+    unfolding coeff_lift_hom.monom_hom
     unfolding rhm.hom_sum[symmetric]
     apply(subst poly_as_sum_of_monoms')
       apply(subst Max_ge,simp,simp,force,simp)
@@ -362,7 +315,40 @@ proof(cases "p = 0")
   case True show ?thesis
     unfolding True
     unfolding poly_y_x_def
-    by (auto simp: monom_0 rh.map_poly_hom_as_monom_sum)
+    by (auto simp: monom_0 coeff_lift_hom.map_poly_hom_as_monom_sum)
+qed
+
+interpretation pCons_0_hom: comm_monoid_add_hom "pCons 0" by (unfold_locales, auto)
+
+locale map_poly_comm_monoid_add_hom = base: comm_monoid_add_hom
+begin
+  sublocale comm_monoid_add_hom "map_poly hom"
+  proof (unfold_locales)
+    fix p q
+    show "map_poly hom (p+q) = map_poly hom p + map_poly hom q" by (subst map_poly_add, auto)
+  qed auto
+end
+
+interpretation poly_y_x_hom: comm_monoid_add_hom "poly_y_x :: 'a :: comm_ring_1 poly poly \<Rightarrow> _"
+proof (unfold_locales)
+  interpret map_poly_comm_monoid_add_hom "pCons 0"..
+  note hom_zero
+  fix p q :: "'a poly poly"
+  show "poly_y_x (p + q) = poly_y_x p + poly_y_x q"
+  proof (induct p arbitrary:q)
+    case 0 show ?case by simp
+  next
+    case (pCons a p)
+    show ?case
+    proof (induct q)
+      case q: (pCons b q)
+      show ?case
+      apply (unfold add_pCons)
+      apply (unfold poly_y_x_pCons)
+      apply (fold poly_lift_def poly_y_x_const)
+      using pCons by (simp add: poly_y_x_const)
+    qed auto
+  qed
 qed
 
 lemma poly_y_x_poly_lift:
@@ -399,8 +385,7 @@ lemma degree_poly_y_x:
     (is "_ = ?d p")
   using assms
 proof(induct p)
-  interpret rh: ring_hom_coeff_lift.
-  interpret rhm: ring_hom "map_poly coeff_lift" by (unfold_locales,auto)
+  interpret rhm: comm_ring_hom "map_poly coeff_lift" by (unfold_locales,auto)
   let ?f = "\<lambda>p i j. monom (monom (coeff (coeff p i) j) i) j"
   case (pCons a p)
     show ?case

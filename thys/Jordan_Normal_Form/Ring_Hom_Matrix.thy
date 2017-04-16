@@ -18,7 +18,7 @@ imports
   "../Polynomial_Interpolation/Ring_Hom"
 begin
 
-locale ord_ring_hom = semiring_hom hom for 
+locale ord_ring_hom = idom_hom hom for 
   hom :: "'a :: linordered_idom \<Rightarrow> 'b :: floor_ceiling" +
   assumes hom_le: "hom x \<le> z \<Longrightarrow> x \<le> of_int \<lceil>z\<rceil>"
 
@@ -33,7 +33,7 @@ class real_embedding = linordered_idom +
     real_le: "real_of x \<le> z \<Longrightarrow> x \<le> of_int \<lceil>z\<rceil>"
 
 interpretation real_embedding: ord_ring_hom "(real_of :: 'a :: real_embedding \<Rightarrow> real)"
-  by (unfold_locales, rule real_add, rule real_mult, rule real_zero, rule real_one, rule real_le)
+  by (unfold_locales; fact real_add real_mult real_zero real_one real_le)
 
 instantiation real :: real_embedding
 begin

@@ -21,59 +21,105 @@ definition factorize_rat_poly :: "rat poly \<Rightarrow> rat \<times> (rat poly 
 lemma factorize_rat_poly_0[simp]: "factorize_rat_poly 0 = (0,[])" 
   unfolding factorize_rat_poly_def rat_to_normalized_int_poly_def by simp
 
-lemma factorize_rat_poly: assumes res: "factorize_rat_poly f = (c,fs)"
-shows "square_free_factorization f (c,fs)"
-  "(fi,i) \<in> set fs \<Longrightarrow> irreducible fi"
-proof -
-  let ?r = rat_of_int
-  let ?rp = "map_poly ?r" 
-  obtain d g where ri: "rat_to_normalized_int_poly f = (d,g)" by force
-  obtain e gs where fi: "factorize_int_poly g = (e,gs)" by force
-  from res[unfolded factorize_rat_poly_def ri fi split]
-  have c: "c = d * ?r e" and fs: "fs = map (\<lambda> (fi,i). (?rp fi, i)) gs" by auto
-  from factorize_int_poly[OF fi] have sff: "square_free_factorization g (e,gs)" 
-    and irr: "\<And> fi i. (fi, i) \<in> set gs \<Longrightarrow> irreducible fi" by auto
-  {
-    fix fi i
-    assume "(fi,i) \<in> set fs" 
-    then obtain gi where fi: "fi = ?rp gi" and gi: "(gi,i) \<in> set gs" unfolding fs by auto
-    from irr[OF gi] show irr: "irreducible fi" unfolding fi by (rule irreducible_int_rat)
-  } note irr = this
-  note sff' = square_free_factorizationD[OF sff]
-  show "square_free_factorization f (c,fs)" unfolding square_free_factorization_def split
-  proof (intro conjI impI allI)
-    {
-      fix a i
-      assume ai: "(a,i) \<in> set fs" 
-      from irr[OF this] show "degree a \<noteq> 0" "square_free a" 
-        using irreducible_square_free irreducibleD by auto
-      from ai obtain A where a: "a = ?rp A" and A: "(A,i) \<in> set gs" unfolding fs by auto
-      fix b j
-      assume "(b,j) \<in> set fs" and diff: "(a,i) \<noteq> (b,j)"
-      from this(1) obtain B where b: "b = ?rp B" and B: "(B,j) \<in> set gs" unfolding fs by auto
-      from diff[unfolded a b] ri.map_poly_inj have "(A,i) \<noteq> (B,j)" by auto
-      from sff'(3)[OF A B this] have "coprime A B" .
-      thus "coprime a b" unfolding a b using gcd_rat_to_gcd_int by auto
-    }
-    {
-      assume "f = 0" with ri have *: "d = 1" "g = 0" unfolding rat_to_normalized_int_poly_def by auto
-      with sff'(4)[OF *(2)] show "c = 0" "fs = []" unfolding c fs by auto
-    }
+(*TODO: Move*)
+interpretation content_hom: monoid_mult_hom "content::'a::factorial_semiring_gcd poly \<Rightarrow> _"
+by (unfold_locales, auto simp: content_mult)
+
+lemma prod_dvd_1_imp_all_dvd_1:
+  assumes "finite X" and "prod f X dvd 1" and "x \<in> X" shows "f x dvd 1"
+proof (insert assms, induct rule:finite_induct)
+  case empty
+  then show ?case by simp
+next
+  case IH: (insert x' X)
+  show ?case
+  proof (cases "x = x'")
+    case True
+    with IH show ?thesis using  dvd_trans[of "f x'" "f x' * _" 1] by (auto intro: dvdI)
+  next
+    case False
+    then show ?thesis using IH by (auto intro!: IH(3) dvd_trans[of "prod f X" "_ * prod f X" 1])
+  qed
+qed
+
+(* TODO: MOVE! *)
+lemma content_pCons[simp]: "content (pCons a p) = gcd a (content p)"
+proof(induct p arbitrary: a)
+  case 0 show ?case by simp
+next
+  case (pCons c p)
+  then show ?case by (cases "p = 0", auto simp: content_def cCons_def)
+qed
+
+(*TODO: move*)
+lemma content_field_poly[simp]:
+  fixes f :: "'a :: {field,semiring_gcd} poly"
+  shows "content f = (if f = 0 then 0 else 1)"
+  by(induct f, auto simp: dvd_field_iff is_unit_normalize)
+
+lemma factorize_rat_poly:
+  assumes res: "factorize_rat_poly f = (c,fs)"
+  shows "square_free_factorization f (c,fs)"
+    and "(fi,i) \<in> set fs \<Longrightarrow> irreducible fi"
+proof(atomize(full), cases "f=0", goal_cases)
+  case 1 with res show ?case by (auto simp: square_free_factorization_def)
+next
+  case 2 show ?case
+  proof (unfold square_free_factorization_def split, intro conjI impI allI)
+    let ?r = rat_of_int
+    let ?rp = "map_poly ?r" 
+    obtain d g where ri: "rat_to_normalized_int_poly f = (d,g)" by force
+    obtain e gs where fi: "factorize_int_poly g = (e,gs)" by force
+    from res[unfolded factorize_rat_poly_def ri fi split]
+    have c: "c = d * ?r e" and fs: "fs = map (\<lambda> (fi,i). (?rp fi, i)) gs" by auto
+    from factorize_int_poly[OF fi]
+    have irr: "(fi, i) \<in> set gs \<Longrightarrow> irreducible fi \<and> content fi = 1" for fi i
+      using irreducible_imp_content_free[of fi] by auto
+    note sff = factorize_int_poly(1)[OF fi]
+    note sff' = square_free_factorizationD[OF sff]
     {
       fix n f 
       have "?rp (f ^ n) = (?rp f) ^ n"
         by (induct n, auto)
     } note exp = this
-    show dist: "distinct fs" using sff'(5) unfolding fs distinct_map inj_on_def using ri.map_poly_inj by auto
+    show dist: "distinct fs" using sff'(5) unfolding fs distinct_map inj_on_def by auto
+    interpret mh: map_poly_inj_idom_hom rat_of_int..
     have "f = smult d (?rp g)" using rat_to_normalized_int_poly[OF ri] by auto
     also have "\<dots> = smult d (?rp (smult e (\<Prod>(a, i)\<in>set gs. a ^ Suc i)))" using sff'(1) by simp
     also have "\<dots> = smult c (?rp (\<Prod>(a, i)\<in>set gs. a ^ Suc i))" unfolding c by simp
     also have "?rp (\<Prod>(a, i)\<in>set gs. a ^ Suc i) = (\<Prod>(a, i)\<in>set fs. a ^ Suc i)"
       unfolding prod.distinct_set_conv_list[OF sff'(5)] prod.distinct_set_conv_list[OF dist]
-      unfolding fs ri.map_poly_preserves_prod_list      
-      by (rule arg_cong[where f = prod_list], insert exp, auto)
-    finally show "f = smult c (\<Prod>(a, i)\<in>set fs. a ^ Suc i)" by auto
-  qed    
+      unfolding fs
+      by (insert exp, auto intro!: arg_cong[of _ _ "\<lambda>x. prod_list (map x gs)"])
+    finally show f: "f = smult c (\<Prod>(a, i)\<in>set fs. a ^ Suc i)" by auto
+    {
+      fix a i
+      assume ai: "(a,i) \<in> set fs" 
+      from ai obtain A where a: "a = ?rp A" and A: "(A,i) \<in> set gs" unfolding fs by auto
+      fix b j
+      assume "(b,j) \<in> set fs" and diff: "(a,i) \<noteq> (b,j)"
+      from this(1) obtain B where b: "b = ?rp B" and B: "(B,j) \<in> set gs" unfolding fs by auto
+      from diff[unfolded a b] have "(A,i) \<noteq> (B,j)" by auto
+      from sff'(3)[OF A B this]
+      show "gcd a b = 1" unfolding a b using gcd_rat_to_gcd_int by auto
+    }
+    {
+      fix fi i
+      assume "(fi,i) \<in> set fs" 
+      then obtain gi where fi: "fi = ?rp gi" and gi: "(gi,i) \<in> set gs" unfolding fs by auto
+      from irr[OF gi] have cf_gi: "content_free gi" by auto
+      then have "content_free (?rp gi)" by auto
+      note [simp] = irreducible_content_free_connect[OF cf_gi] irreducible_content_free_connect[OF this]
+      show "irreducible fi"
+      using irr[OF gi] fi irreducible_int_rat[of gi,simplified] by auto
+      then show "degree fi \<noteq> 0" "square_free fi" unfolding fi
+        by (auto intro: irreducible_square_free)
+    }
+    {
+      assume "f = 0" with ri have *: "d = 1" "g = 0" unfolding rat_to_normalized_int_poly_def by auto
+      with sff'(4)[OF *(2)] show "c = 0" "fs = []" unfolding c fs by auto
+    }
+  qed
 qed
-  
+
 end

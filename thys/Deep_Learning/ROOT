@@ -34,7 +34,6 @@ session "Deep_Learning_Lib" (AFP) = "HOL-Probability" +
     "../Jordan_Normal_Form/Missing_VectorSpace"
     "../Jordan_Normal_Form/Missing_Permutations"
     "~~/src/HOL/Computational_Algebra/Fraction_Field"
-    "../Jordan_Normal_Form/Missing_Fraction_Field"
     "../Jordan_Normal_Form/Gauss_Jordan_Elimination"
     "../Jordan_Normal_Form/Column_Operations"
     "../Polynomial_Interpolation/Missing_Unsorted"

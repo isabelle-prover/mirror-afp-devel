@@ -107,10 +107,7 @@ lemma rebase_poly_self[simp]: "#p = p" by (induct p, auto)
 lemma degree_rebase_poly_le: "degree (#p) \<le> degree p"
   by (fold map_poly_rebase, subst degree_map_poly_le, auto)
 
-lemma(in ring_hom) hom_dvd_1: assumes "a dvd 1" shows "hom a dvd 1"
-  using hom_dvd[OF assms] by auto
-
-lemma(in ring_hom) degree_map_poly_unit: assumes "lead_coeff p dvd 1"
+lemma(in comm_ring_hom) degree_map_poly_unit: assumes "lead_coeff p dvd 1"
   shows "degree (map_poly hom p) = degree p"
   apply(rule degree_map_poly[of hom, OF hom_zero])
   using hom_dvd_1[OF assms] by auto
@@ -187,7 +184,7 @@ proof-
   then show ?thesis by transfer
 qed
 
-sublocale ring_hom "rebase :: 'a mod_ring \<Rightarrow> 'b mod_ring"
+sublocale comm_ring_hom "rebase :: 'a mod_ring \<Rightarrow> 'b mod_ring"
 proof
   fix x y :: "'a mod_ring"
   show hom_add: "(@(x+y) :: 'b mod_ring) = @x + @y"
@@ -201,11 +198,13 @@ qed auto
 lemma of_nat_CARD_eq_0[simp]: "(of_nat CARD('a) :: 'b mod_ring) = 0"
   using dvd by (transfer, presburger)
 
-sublocale poly: ring_hom "rebase_poly :: 'a mod_ring poly \<Rightarrow> 'b mod_ring poly"
-  by (fold map_poly_rebase, rule ring_hom_map_poly)
+interpretation map_poly_hom: map_poly_comm_ring_hom "rebase :: 'a mod_ring \<Rightarrow> 'b mod_ring"..
+
+sublocale poly: comm_ring_hom "rebase_poly :: 'a mod_ring poly \<Rightarrow> 'b mod_ring poly"
+  by (fold map_poly_rebase, unfold_locales)
 
 lemma poly_rebase[simp]: "@poly p x = poly (#(p :: 'a mod_ring poly) :: 'b mod_ring poly) (@(x::'a mod_ring) :: 'b mod_ring)"
-  by (fold map_poly_rebase, rule poly_map_poly[symmetric])
+  by (fold map_poly_rebase poly_map_poly, rule)
 
 lemma rebase_poly_smult[simp]: "(#(smult a p :: 'a mod_ring poly) :: 'b mod_ring poly) = smult (@a) (#p)"
   by(induct p, auto)
@@ -405,7 +404,7 @@ locale Knuth_ex_4_6_2_22_main = Knuth_ex_4_6_2_22_base p_ty q_ty pq_ty
 begin
 
 lemma deg_v: "degree (#v :: 'p mod_ring poly) = degree v"
-  using monic_v by (simp add: ring_hom_of_int.monic_degree_map_poly_hom)
+  using monic_v by (simp add: of_int_hom.monic_degree_map_poly_hom)
 
 lemma u0: "u \<noteq> 0" using degu bv by auto
 
@@ -436,7 +435,7 @@ proof-
   then have "rem = b * f - t * v'" by(auto simp: ac_simps)
   also have "... = b * f - #(#t :: 'p mod_ring poly) * v'" (is "_ = _ - ?t * v'") by simp
   also have "... = b * f - ?t * #v"
-    by (unfold v'_def ring_hom_of_int.hom_ring_simps, rule)
+    by (unfold v'_def, rule)
   finally have "degree rem = degree ..." by auto
   with deg bv have "degree (b * f - ?t * #v :: 'p mod_ring poly) < degree v" by (auto simp: v'_def deg_v)
   then show ?thesis by (rule exI)
@@ -673,7 +672,7 @@ lemma hensel_1:
 proof-
   from monic
   have degv: "degree (#v :: 'p mod_ring poly) = degree v"
-    by (simp add: ring_hom_of_int.monic_degree_map_poly_hom)
+    by (simp add: of_int_hom.monic_degree_map_poly_hom)
   from monic
   have monic2: "monic (#v :: 'p mod_ring poly)"
     by (auto simp: degv)

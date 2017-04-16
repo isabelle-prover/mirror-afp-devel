@@ -63,11 +63,11 @@ begin
 lemma map_poly_Re_poly: fixes x :: real 
   shows "poly (map_poly Re p) x = poly p (of_real x)"
 proof -
-  interpret cr: ring_hom complex_of_real by (unfold_locales, auto)
+  interpret cr: field_hom' complex_of_real by (unfold_locales, auto)
   have id: "map_poly (of_real o Re) p = p"
-    by (rule map_poly_idI, insert coeffs, auto)
+    by (rule map_poly_eqI, insert coeffs, auto)
   show ?thesis unfolding arg_cong[OF id, of poly, symmetric]
-    by (subst map_poly_map_poly[symmetric], force+)
+    by (subst map_poly_map_poly[symmetric], auto)
 qed
 
 lemma map_poly_Re_coeffs:  
@@ -161,53 +161,37 @@ lemma real_poly_minus:
   using assms unfolding diff_conv_add_uminus
   by (intro real_poly_uminus real_poly_add, auto)
 
-lemma real_poly_pdivmod: fixes p :: "'a :: real_field poly" 
-  assumes p: "set (coeffs p) \<subseteq> \<real>" 
-  and *: "set (coeffs q) \<subseteq> \<real>"
-    "(q div p, q mod p) = (r,s)"
-  shows "set (coeffs r) \<subseteq> \<real> \<and> set (coeffs s) \<subseteq> \<real>"
-  using *
-proof (induct q arbitrary: r s)
+lemma fixes p :: "'a :: real_field poly" 
+  assumes p: "set (coeffs p) \<subseteq> \<real>" and *: "set (coeffs q) \<subseteq> \<real>"
+  shows real_poly_div: "set (coeffs (q div p)) \<subseteq> \<real>"
+    and real_poly_mod: "set (coeffs (q mod p)) \<subseteq> \<real>"
+proof (atomize(full), insert *, induct q)
   case 0
-  then show ?case by auto
+  thus ?case by auto
 next
-  case (pCons a q r s)
+  case (pCons a q)
   from pCons(1,3) have a: "a \<in> \<real>" and q: "set (coeffs q) \<subseteq> \<real>" by auto
-  note res = pCons(4) [unfolded div_pCons_eq mod_pCons_eq]
+  note res = pCons
   show ?case
   proof (cases "p = 0")
     case True
     with res pCons(3) show ?thesis by auto
   next
     case False
-    obtain ss rr where r: "(q div p, q mod p) = (ss, rr)" by force
-    from pCons(2)[OF q r] have IH: "set (coeffs ss) \<subseteq> \<real>" "set (coeffs rr) \<subseteq> \<real>" by auto
-    define c where "c = coeff (pCons a rr) (degree p) / coeff p (degree p)"
+    from pCons have IH: "set (coeffs (q div p)) \<subseteq> \<real>" "set (coeffs (q mod p)) \<subseteq> \<real>" by auto
+    define c where "c = coeff (pCons a (q mod p)) (degree p) / coeff p (degree p)"
     {
-      have "coeff (pCons a rr) (degree p) \<in> \<real>"
-        by (rule real_poly_real_coeff, insert IH(2) a, intro real_poly_pCons)
+      have "coeff (pCons a (q mod p)) (degree p) \<in> \<real>"
+        by (rule real_poly_real_coeff, insert IH a, intro real_poly_pCons)
       moreover have "coeff p (degree p) \<in> \<real>" 
         by (rule real_poly_real_coeff[OF p])
       ultimately have "c \<in> \<real>" unfolding c_def by simp
     } note c = this
-    from res [symmetric] False r
-    have r: "r = pCons c ss" and s: "s = pCons a rr - smult c p" 
-      using c_def by auto
-    have "set (coeffs r) \<subseteq> \<real>" using c IH unfolding r by (intro real_poly_pCons)
-    moreover have "set (coeffs s) \<subseteq> \<real>" using c IH unfolding s using c a p
-      by (intro real_poly_minus real_poly_smult real_poly_pCons, auto)
-    ultimately show ?thesis by auto
+    from False
+    have r: "pCons a q div p = pCons c (q div p)" and s: "pCons a q mod p = pCons a (q mod p) - smult c p" 
+      unfolding c_def div_pCons_eq mod_pCons_eq by simp_all
+    show ?thesis unfolding r s using a p c IH by (intro conjI real_poly_pCons real_poly_minus real_poly_smult)
   qed
-qed
-
-lemma real_poly_div: fixes p :: "'a :: real_field poly" 
-  assumes p: "set (coeffs p) \<subseteq> \<real>" 
-  and q: "set (coeffs q) \<subseteq> \<real>"    
-  shows "set (coeffs (p div q)) \<subseteq> \<real>"
-proof -
-  obtain r s where pq: "(p div q, p mod q) = (r, s)" by force
-  from real_poly_pdivmod [OF q p this]
-  show ?thesis using pq [unfolded] by auto
 qed
 
 lemma real_poly_factor: fixes p :: "'a :: real_field poly"
@@ -267,7 +251,7 @@ proof -
         from `p \<noteq> 0` have nz: "?fac1 \<noteq> 0" "?fac2 \<noteq> 0" "?fac \<noteq> 0" "r \<noteq> 0" unfolding p by auto
         have id: "?fac = [: ?c * c, - (?c + c), 1 :]" by simp
         have cfac: "coeffs ?fac = [ ?c * c, - (?c + c), 1 ]" unfolding id by simp
-        have cfac: "set (coeffs ?fac) \<subseteq> \<real>" unfolding cfac by (auto simp: field_simps Reals_cnj_iff)
+        have cfac: "set (coeffs ?fac) \<subseteq> \<real>" unfolding cfac by (cases c, auto simp: Reals_cnj_iff)
         have "degree p = degree ?fac + degree r" unfolding p
           by (rule degree_mult_eq, insert nz, auto)
         also have "degree ?fac = degree ?fac1 + degree ?fac2"
@@ -307,21 +291,20 @@ qed
 
 lemma map_poly_of_real_Re: assumes "set (coeffs p) \<subseteq> \<real>"
   shows "map_poly of_real (map_poly Re p) = p"
-  by (subst map_poly_map_poly, force+, rule map_poly_idI, insert assms, auto)
+  by (subst map_poly_map_poly, force+, rule map_poly_eqI, insert assms, auto)
 
 lemma map_poly_Re_of_real: "map_poly Re (map_poly of_real p) = p"
-  by (subst map_poly_map_poly, force+, rule map_poly_idI, auto)
+  by (subst map_poly_map_poly, force+, rule map_poly_eqI, auto)
 
 lemma map_poly_Re_mult: assumes p: "set (coeffs p) \<subseteq> \<real>"
   and q: "set (coeffs q) \<subseteq> \<real>" shows "map_poly Re (p * q) = map_poly Re p * map_poly Re q"
 proof -
   let ?r = "map_poly Re"
   let ?c = "map_poly complex_of_real"
-  interpret c: inj_field_hom_0 complex_of_real by (unfold_locales, auto)
+  interpret c: field_hom' complex_of_real by (unfold_locales, auto)
   have "?r (p * q) = ?r (?c (?r p) * ?c (?r q))" 
     unfolding map_poly_of_real_Re[OF p] map_poly_of_real_Re[OF q] by simp
-  also have "?c (?r p) * ?c (?r q) = ?c (?r p * ?r q)"
-    unfolding c.map_poly_mult ..
+  also have "?c (?r p) * ?c (?r q) = ?c (?r p * ?r q)" by simp
   also have "?r \<dots> = ?r p * ?r q" unfolding map_poly_Re_of_real ..
   finally show ?thesis .
 qed
@@ -402,16 +385,15 @@ qed
 lemma real_degree_2_factorization_exists: fixes p :: "real poly"
   shows "\<exists> qs. p = prod_list qs \<and> (\<forall> q \<in> set qs. degree q \<le> 2)"
 proof -
-  interpret cr: inj_field_hom complex_of_real by (unfold_locales, auto)
   let ?cp = "map_poly complex_of_real"
   let ?rp = "map_poly Re"
   let ?p = "?cp p"
-  have "set (coeffs ?p) \<subseteq> \<real>" unfolding cr.coeffs_map_poly by auto
+  have "set (coeffs ?p) \<subseteq> \<real>" unfolding of_real_hom.coeffs_map_poly by auto
   from real_degree_2_factorization_exists_complex[OF this]
   obtain qs where p: "?p = prod_list qs" and 
     qs: "\<And> q. q \<in> set qs \<Longrightarrow> set (coeffs q) \<subseteq> \<real> \<and> degree q \<le> 2" by auto
   have p: "p = ?rp (prod_list qs)" unfolding arg_cong[OF p, of ?rp, symmetric]
-    by (subst map_poly_map_poly, force+, rule sym, rule map_poly_idI, auto)
+    by (subst map_poly_map_poly, force, rule sym, rule map_poly_eqI, auto)
   from qs have "\<exists> rs. prod_list qs = ?cp (prod_list rs) \<and> (\<forall> r \<in> set rs. degree r \<le> 2)"
   proof (induct qs)
     case Nil
@@ -423,14 +405,14 @@ proof -
     from Cons(2)[of q] have q: "set (coeffs q) \<subseteq> \<real>" and dq: "degree q \<le> 2" by auto
     define r where "r = ?rp q"
     have q: "q = ?cp r" unfolding r_def
-      by (subst map_poly_map_poly, force+, rule sym, rule map_poly_idI, insert q, auto)
+      by (subst map_poly_map_poly, force, rule sym, rule map_poly_eqI, insert q, auto)
     have dr: "degree r \<le> 2" using dq unfolding q by (simp add: degree_map_poly)
     show ?case
-      by (rule exI[of _ "r # rs"], unfold prod_list.Cons cr.map_poly_mult qs q, insert dr rs, auto)
+      by (rule exI[of _ "r # rs"], unfold prod_list.Cons qs q, insert dr rs, auto)
   qed
   then obtain rs where id: "prod_list qs = ?cp (prod_list rs)" and deg: "\<forall> r \<in> set rs. degree r \<le> 2" by auto
   show ?thesis unfolding p id
-    by (intro exI, rule conjI[OF _ deg], subst map_poly_map_poly, force+, rule map_poly_idI, auto)
+    by (intro exI, rule conjI[OF _ deg], subst map_poly_map_poly, force, rule map_poly_eqI, auto)
 qed
     
   

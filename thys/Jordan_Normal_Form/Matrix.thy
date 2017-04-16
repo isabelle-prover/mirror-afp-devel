@@ -2214,10 +2214,10 @@ proof -
 qed  
 
 lemma (in inj_semiring_hom) mat_hom_inj: "mat\<^sub>h A = mat\<^sub>h B \<Longrightarrow> A = B"
-  unfolding mat_eq_iff by (auto simp: hom_inj)
+  unfolding mat_eq_iff by auto
 
 lemma (in inj_semiring_hom) vec_hom_inj: "vec\<^sub>h v = vec\<^sub>h w \<Longrightarrow> v = w"
-  unfolding vec_eq_iff by (auto simp: hom_inj)
+  unfolding vec_eq_iff by auto
 
 lemma (in semiring_hom) mat_hom_pow: assumes A: "A \<in> carrier\<^sub>m n n"
   shows "mat\<^sub>h (A ^\<^sub>m k) = (mat\<^sub>h A) ^\<^sub>m k"

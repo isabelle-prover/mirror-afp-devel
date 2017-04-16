@@ -580,17 +580,19 @@ next
   thus "a dvd b" unfolding dvd_def by blast
 qed
 
-lemma const_poly_dvd_1: "([:a:] dvd 1) = (a dvd 1)"
+lemma const_poly_dvd_1[simp]: "[:a:] dvd 1 \<longleftrightarrow> a dvd 1"
   unfolding one_poly_def const_poly_dvd ..
 
-lemma poly_dvd_1: "(p dvd (1 :: 'a :: idom poly)) = (degree p = 0 \<and> coeff p 0 dvd 1)"
+lemma poly_dvd_1:
+  fixes p :: "'a :: {comm_semiring_1,semiring_no_zero_divisors} poly"
+  shows "p dvd 1 \<longleftrightarrow> degree p = 0 \<and> coeff p 0 dvd 1"
 proof (cases "degree p = 0")
   case False
   with divides_degree[of p 1] show ?thesis by auto
 next
   case True
   from degree0_coeffs[OF this] obtain a where p: "p = [:a:]" by auto
-  show ?thesis unfolding p const_poly_dvd_1 by auto
+  show ?thesis unfolding p by auto
 qed
 
 definition irreducible :: "'a :: idom poly \<Rightarrow> bool" where
@@ -782,19 +784,18 @@ lemma map_poly_map_poly:
   shows "map_poly f (map_poly g p) = map_poly (f \<circ> g) p"
 proof (induct p)
   case (pCons a p) show ?case
-    proof(cases "g a \<noteq> 0 \<or> map_poly g p \<noteq> 0")
-      case True show ?thesis
-        unfolding map_poly_pCons[OF pCons(1)]
-        unfolding map_poly_pCons[OF True]
-        unfolding pCons(2)
-        by simp
-      next case False
-        hence [simp]: "g a = 0" "map_poly g p = 0" by simp+
-        show ?thesis
-          unfolding map_poly_pCons[OF pCons(1)]
-          unfolding pCons(2)[symmetric]
-          by (simp add: f0)
-    qed
+  proof(cases "g a \<noteq> 0 \<or> map_poly g p \<noteq> 0")
+    case True show ?thesis
+      unfolding map_poly_pCons[OF pCons(1)]
+      unfolding map_poly_pCons[OF True]
+      unfolding pCons(2)
+      by simp
+  next
+    case False then show ?thesis
+      unfolding map_poly_pCons[OF pCons(1)]
+      unfolding pCons(2)[symmetric]
+      by (simp add: f0)
+  qed
 qed simp
 
 lemma map_poly_zero:

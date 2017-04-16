@@ -63,7 +63,7 @@ proof -
       obtain a b where a: "a \<noteq> 0" and b: "b \<noteq> 0" and IH: "smult a (gcd G1 G2) = smult b (gcd (H (i - 1)) (H i))" by auto
       define M where "M = pseudo_mod (H (i - 1)) (H i)"
       define c where "c = \<beta> (Suc i)"
-      have M: "pseudo_mod (F (i - 1)) (F i) = ffp M" unfolding pseudo_mod_hom[symmetric] M_def
+      have M: "pseudo_mod (F (i - 1)) (F i) = ffp M" unfolding to_fract_hom.pseudo_mod_hom[symmetric] M_def
          using i2 FH by auto
       have c: "c \<noteq> 0" using \<beta>0 unfolding c_def .
       from i2 ik have 3: "Suc i \<ge> 3" "Suc i \<le> Suc k" by auto
@@ -73,7 +73,7 @@ proof -
       with c have d: "d \<noteq> 0" by auto
       from pm[unfolded cd M] FH[of "Suc i"]
       have "ffp (smult d (H (Suc i))) = ffp M" by auto
-      hence pm: "smult d (H (Suc i)) = M" by (rule map_poly_inj)
+      hence pm: "smult d (H (Suc i)) = M" by (unfold hom_removes)
       from ik F0[of i] i2 FH[of i] have Hi0: "H i \<noteq> 0" by auto
       from pseudo_mod[OF this, of "H (i - 1)", folded M_def]
       obtain c Q where c: "c \<noteq> 0" and "smult c (H (i - 1)) = H i * Q + M" by auto

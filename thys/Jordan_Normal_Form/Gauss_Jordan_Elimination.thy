@@ -529,12 +529,12 @@ lemma pivot_funD: assumes d: "dim\<^sub>r A = nr"
 
 lemma pivot_fun_multrow: assumes p: "pivot_fun A f jj"
   and d: "dim\<^sub>r A = nr" "dim\<^sub>c A = nc"
-  and fi: "f ii = jj"
+  and fi: "f i0 = jj"
   and jj: "jj \<le> nc"
-  shows "pivot_fun (multrow ii a A) f jj"
+  shows "pivot_fun (multrow i0 a A) f jj"
 proof -
   note p = pivot_funD[OF d(1) p]
-  let ?A = "multrow ii a A"
+  let ?A = "multrow i0 a A"
   have "dim\<^sub>r ?A = nr" using d by simp
   thus ?thesis
   proof (rule pivot_funI)

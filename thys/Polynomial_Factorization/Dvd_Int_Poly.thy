@@ -79,22 +79,21 @@ proof -
   have id1:"?ri (coeff (pCons b c2) (degree q) div coeff q (degree q)) = 
             ?ri (coeff (pCons b c2) (degree q)) / ?ri (coeff q (degree q))" using coeffs by auto
   have id2:"?ident1" unfolding id1
-    by (simp, unfold ri.coeff_map_poly_hom[symmetric] ri.map_poly_pCons_hom[symmetric], simp)
-  hence id3:"?ident2" using id2 ri.map_poly_minus by auto
+    by (simp, fold of_int_hom.coeff_map_poly_hom of_int_hom.map_poly_pCons_hom, simp)
+  hence id3:"?ident2" using id2 by auto
 
   have c1:"((rp (pCons (coeff (pCons b c2) (degree q) div coeff q (degree q)) c1)
             ,rp (pCons b c2 - smult (coeff (pCons b c2) (degree q) div coeff q (degree q)) q))
            = div_rat_poly_step (rp q) (?ri b) (rp c1,rp c2)) \<longleftrightarrow> (?ident1 \<and> ?ident2)"
-    unfolding div_rat_poly_step_def simps ri.degree_map_poly ri.map_poly_pCons_hom ri.coeff_map_poly_hom
+    unfolding div_rat_poly_step_def simps
     by simp
   have "((rp a1, rp a2) = (div_rat_poly_step (rp q) \<circ> rat_of_int) b (rp c1, rp c2)) \<longleftrightarrow>
              (rp a1 = ?withSls1 \<and> rp a2 = ?withSls2)"
-    unfolding div_rat_poly_step_def simps ri.degree_map_poly ri.coeff_map_poly_hom
-    using ri.map_poly_pCons_hom by simp
+    unfolding div_rat_poly_step_def simps by simp
   also have "\<dots> \<longleftrightarrow>
       ((a1 = pCons (coeff (pCons b c2) (degree q) div coeff q (degree q)) c1) \<and>
        (a2 = pCons b c2 - smult (coeff (pCons b c2) (degree q) div coeff q (degree q)) q))"
-    using c1 ri.map_poly_inj id2 id3 ri.map_poly_pCons_hom by force
+    by (fold id2 id3 of_int_hom.map_poly_pCons_hom, unfold of_int_poly_hom.eq_iff, auto)
   also have c0:"\<dots> \<longleftrightarrow> Some (a1,a2) = div_int_poly_step q b (Some (c1,c2))" 
     unfolding divmod_int_def div_int_poly_step_def option.simps Let_def prod.simps
     using coeffs by (auto split: option.splits prod.splits if_splits)
@@ -121,7 +120,7 @@ proof
   hence "v = \<lfloor>rat_of_int x / rat_of_int y\<rfloor>" by linarith
   hence "v * y = x - x mod y" using div_is_floor_divide_rat mod_div_equality_int by simp
   hence "rat_of_int v * rat_of_int y = rat_of_int x - rat_of_int (x mod y)"
-    by (metis ri.hom_minus ri.hom_mult)
+    by (fold hom_distribs, unfold of_int_hom.eq_iff)
   hence "(rat_of_int x / rat_of_int y) * rat_of_int y = rat_of_int x - rat_of_int (x mod y)"
     using v_def by simp
   hence "rat_of_int x = rat_of_int x - rat_of_int (x mod y)" by (simp add: assms)
@@ -145,8 +144,7 @@ proof -
   let ?mustbeint = "rat_of_int (coeff (pCons b2 c2) (degree q)) / rat_of_int (coeff q (degree q))"
   let ?mustbeint2 = "coeff (pCons (rat_of_int b2) (rp c2)) (degree (rp q)) 
     / coeff (rp q) (degree (rp q))"
-  have mustbeint : "?mustbeint = ?mustbeint2"
-    by (metis ri.coeff_map_poly_hom ri.degree_map_poly ri.map_poly_pCons_hom)
+  have mustbeint : "?mustbeint = ?mustbeint2" by (fold hom_distribs of_int_hom.coeff_map_poly_hom, simp)
   note simps = div_int_poly_step_def option.simps Let_def divmod_int_def prod.simps
   from assms leading_coeff_neq_0[of q] have q0:"coeff q (degree q) \<noteq> 0" by simp
 
@@ -191,7 +189,7 @@ proof -
   }
   hence equal_foldr : "Some (r,m) = foldr (?div_int_step) (coeffs p) (Some (0,0)) 
     \<Longrightarrow> ?rpp (r,m) = foldr (?div_rat_step) (map rat_of_int (coeffs p)) (?rpp (0,0))".
-  have "(map rat_of_int (coeffs p) = coeffs ?p)" by (simp add: ri.coeffs_map_poly)
+  have "(map rat_of_int (coeffs p) = coeffs ?p)" by simp
   hence "(?r,?m) = (foldr (?div_rat_step) (coeffs ?p) (0,0))" using equal_foldr innerRes by simp
   thus "(?p div ?q, ?p mod ?q) = (?r,?m)" 
     using fold_coeffs_def [of "?div_rat_step" ?p] q0 
@@ -212,8 +210,9 @@ proof -
     and "rp a2 = pCons (rat_of_int x) b2 - smult p12 (rp q)"
     by (auto split: prod.splits simp add: Let_def div_rat_poly_step_def p12_def)
   then obtain p21 p22 where "rp p21 = pCons p22 b2"
-    by (auto simp add: field_simps)
-      (metis coeff_pCons_0 ri.map_poly_hom_add ri.map_poly_smult ri.coeff_map_poly_hom ri.map_poly_smult)
+    apply (simp add: field_simps)
+    apply (metis coeff_pCons_0 of_int_hom.map_poly_hom_add of_int_hom.map_poly_hom_smult of_int_hom.coeff_map_poly_hom)
+    done
   moreover obtain p21' p21q where "p21 = pCons p21' p21q"
     by (rule pCons_cases)
   ultimately obtain p2 where "b2 = rp p2 "
@@ -240,7 +239,7 @@ proof -
   { fix oldRes res :: "int poly \<times> int poly"
     fix lst :: "int list"
     have inj: "(\<And>a b. (case a of (a, b) \<Rightarrow> (rp a, rp b)) = (case b of (a, b) \<Rightarrow> (rp a, rp b)) \<Longrightarrow> a = b)"
-      by (metis (no_types, lifting) Pair_inject case_prod_unfold prod.collapse ri.map_poly_inj)
+      by auto
     have "(\<And>a b c. b \<in> set lst \<Longrightarrow>
               (case a of (a, b) \<Rightarrow> (map_poly rat_of_int a, map_poly rat_of_int b)) =
               (div_rat_poly_step (map_poly rat_of_int q) \<circ> rat_of_int) b
@@ -263,7 +262,7 @@ proof -
       div_mod_fold_coeffs [of ?p ?q]
     unfolding div_rat_poly_step_def by auto
   hence "Some (r,m) = foldr (?div_int_step) (coeffs p) (Some (0,0))"
-    using equal_foldr by (simp add: ri.coeffs_map_poly)
+    using equal_foldr by (simp add: of_int_hom.coeffs_map_poly)
   thus ?thesis using q0 unfolding div_mod_int_poly_def by (simp add: fold_coeffs_def)
 qed
 
@@ -284,7 +283,7 @@ proof -
   have "?p = ?r * ?q" by auto
   also have "\<dots> = rp (r * q)" by simp
   finally have "?p = rp (r * q)".
-  thus "r * q = p" using ri.map_poly_inj by auto
+  thus "r * q = p" by (simp del: hom_distribs)
   show "q \<noteq> 0" using assms unfolding div_int_poly_def div_mod_int_poly_def
     by (auto split: option.splits prod.splits if_splits)
 qed 
@@ -300,7 +299,7 @@ proof -
   let ?r = "rp r"
   have "?p = ?r * ?q" using assms(1) by auto
   hence "?p div ?q = ?r" and "?p mod ?q = 0"
-    using q0 ri.map_poly_0_iff by simp_all
+    using q0 by simp_all
   hence "(rp p div rp q, rp p mod rp q) = (rp r, 0)" by (auto split: prod.splits)
   hence "(rp p div rp q, rp p mod rp q) = (rp r, rp 0)" by simp
   hence "Some (r,0) = div_mod_int_poly p q"

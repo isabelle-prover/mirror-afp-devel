@@ -75,23 +75,22 @@ lemma rat_to_int_poly_of_int: assumes rp: "rat_to_int_poly (map_poly of_int p) =
   shows "c = 1" "q = p"
 proof -
   define xs where "xs = map (snd \<circ> quotient_of) (coeffs (map_poly rat_of_int p))"
-  have xs: "set xs \<subseteq> {1}" unfolding xs_def
-    by (auto simp: ri.coeffs_map_poly)
+  have xs: "set xs \<subseteq> {1}" unfolding xs_def by auto
   from assms[unfolded rat_to_int_poly_def Let_def]
   have c: "c = fst (common_denom (coeffs (map_poly rat_of_int p)))" by auto
   also have "\<dots> = list_lcm xs" 
-    unfolding common_denom_def Let_def xs_def by simp
+    unfolding common_denom_def Let_def xs_def by (simp add: o_assoc)
   also have "\<dots> = 1" using xs
     by (induct xs, auto)
   finally show c: "c = 1" by auto
-  from ri.map_poly_inj[of p q] rat_to_int_poly[OF rp, unfolded c] show "q = p" by auto
+  from rat_to_int_poly[OF rp, unfolded c] show "q = p" by auto
 qed
 
 lemma rat_to_normalized_int_poly_of_int: assumes "rat_to_normalized_int_poly (map_poly of_int p) = (c,q)"
   shows "c \<in> \<int>" "p \<noteq> 0 \<Longrightarrow> c = of_int (content p) \<and> q = normalize_content p"
 proof -
   obtain d r where ri: "rat_to_int_poly (map_poly rat_of_int p) = (d,r)" by force
-  from rat_to_int_poly_of_int[OF ri] ri.map_poly_0_iff[of p]
+  from rat_to_int_poly_of_int[OF ri]
     assms[unfolded rat_to_normalized_int_poly_def ri split] 
   show "c \<in> \<int>" "p \<noteq> 0 \<Longrightarrow> c = of_int (content p) \<and> q = normalize_content p" 
     by (auto split: if_splits)
@@ -106,7 +105,7 @@ proof -
   proof
     assume "x dvd y"
     then obtain z where "y = x * z" unfolding dvd_def by auto
-    from arg_cong[OF this, of ?rp, unfolded ri.map_poly_mult]
+    from arg_cong[OF this, of ?rp]
     show "?rp x dvd ?rp y" by auto
   next
     assume dvd: "?rp x dvd ?rp y"
@@ -116,9 +115,9 @@ proof -
       thus ?thesis by auto
     next
       case False note y0 = this
-      hence "?rp y \<noteq> 0" unfolding ri.map_poly_0_iff .
+      hence "?rp y \<noteq> 0" by simp
       hence rx0: "?rp x \<noteq> 0" using dvd by auto
-      hence x0: "x \<noteq> 0" unfolding ri.map_poly_0_iff .
+      hence x0: "x \<noteq> 0" by simp
       from dvd obtain z where prod: "?rp y = ?rp x * z" unfolding dvd_def by auto
       obtain cx xx where x: "rat_to_normalized_int_poly (?rp x) = (cx, xx)" by force
       from rat_to_int_factor_explicit[OF prod x] obtain z where y: "y = xx * smult (content y) z" by auto
@@ -130,12 +129,12 @@ proof -
       with cx cx0 have cn0: "cn > 0" by (simp add: zero_less_divide_iff)
       from arg_cong[OF xx, of "smult (?r cd)"] have "smult (?r cd) (?rp x) = smult (?r cn) (?rp xx)"
         unfolding cx using cd0 by (auto simp: field_simps)
-      from ri.map_poly_inj[OF this[folded ri.map_poly_smult]] have id: "smult cd x = smult cn xx" by auto
+      from this have id: "smult cd x = smult cn xx" by (fold hom_distribs, unfold of_int_poly_hom.eq_iff)
       from arg_cong[OF this, of content, unfolded content_smult_int cxx] cn0 cd0 
       have cn: "cn = cd * content x" by auto
       from quotient_of_coprime[OF quot, unfolded cn] cd0 have "cd = 1" by auto
       with cx have cx: "cx = ?r cn" by auto
-      from ri.map_poly_inj[OF xx[unfolded this ri.map_poly_smult[symmetric]]] have x: "x = smult cn xx" by auto
+      from xx[unfolded this] have x: "x = smult cn xx" by (fold hom_distribs, unfold hom_removes)
       from arg_cong[OF this, of content, unfolded content_smult_int c_x cxx] cn0 have "cn = 1" by auto
       with x have xx: "xx = x" by auto
       show "x dvd y" using y[unfolded xx] unfolding dvd_def by blast
@@ -246,10 +245,10 @@ proof -
     "degree Q \<le> bnd"
     and dvd: "Q dvd P" unfolding deg by auto
   from dvd obtain R where PQR: "P = Q * R" unfolding dvd_def by auto
-  from p[unfolded arg_cong[OF this, of ?rp, unfolded ri.map_poly_mult]]
+  from p[unfolded arg_cong[OF this, of ?rp]]
   have "p = q * smult a (?rp R)" unfolding q by auto
   thus "q dvd p" unfolding dvd_def by blast
-  from ri.degree_map_poly[of Q, folded q] dQ show "degree q \<ge> 1" "degree q \<le> bnd" by auto
+  from q dQ show "degree q \<ge> 1" "degree q \<le> bnd" by auto
 qed
 
 
