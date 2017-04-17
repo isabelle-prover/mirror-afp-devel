@@ -248,11 +248,8 @@ private abbreviation (input) r :: "real \<Rightarrow> complex" where
 private abbreviation rv :: "real ^'n \<Rightarrow> complex ^'n" where
   "rv v \<equiv> \<chi> i. r (v $ i)"
 
-interpretation r: inj_semiring_hom r
-by (unfold_locales, simp+)
-
 private lemma rv_0: "(rv v = 0) = (v = 0)"
-  by (simp add: r.map_vector_0 map_vector_def vec_eq_iff)
+  by (simp add: of_real_hom.map_vector_0 map_vector_def vec_eq_iff)
 
 private lemma rv_mult: "A *v rv v = rv (B *v v)"
 proof -
@@ -260,7 +257,7 @@ proof -
     using rnnA unfolding map_matrix_def B_def real_non_neg_mat_def map_vector_def mat_elements_h_def
     by vector
   thus ?thesis
-    using r.map_vector_vmult[of B]
+    using of_real_hom.map_vector_vmult[of B, where 'a = complex]
     unfolding map_vector_def by auto
 qed
 

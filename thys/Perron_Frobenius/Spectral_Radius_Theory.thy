@@ -4,6 +4,7 @@ theory Spectral_Radius_Theory
 imports 
   "../Polynomial_Factorization/Square_Free_Factorization"
   "../Jordan_Normal_Form/Spectral_Radius"
+  "../Jordan_Normal_Form/Char_Poly"
   Perron_Frobenius
 begin
 
@@ -60,9 +61,8 @@ proof (cases "n = 0")
       by (rule vec_eqI, insert rnn[unfolded real_nonneg_vec_def vec_elements_def], auto)
     have B: "B \<in> carrier\<^sub>m n n" unfolding B_def using A by auto
     from AB vw ev have ev: "eigenvector ?A ?v (?cr sr)" by simp
-    interpret inj_ring_hom ?cr by (standard, auto)
-    have "eigenvector B w sr" 
-      by (rule eigenvector_hom_rev[OF B ev])
+    have "eigenvector B w sr"
+      by (rule of_real_hom.eigenvector_hom_rev[OF B ev])
     hence "eigenvalue B sr" unfolding eigenvalue_def by blast
     from ev_le_1[folded B_def, OF this[unfolded eigenvalue_root_char_poly[OF B]]]
     show "sr \<le> 1" .
@@ -94,10 +94,9 @@ proof -
     by (auto simp: mat_elements_def)
   have id: "map\<^sub>m Re ?B = A"
     by (rule mat_eqI, auto)
-  interpret inj_ring_hom ?cr by (standard, auto)
   have "\<exists>c1 c2. \<forall>k. norm_bound (?B ^\<^sub>m k) (c1 + c2 * real k ^ (d - 1))"
     by (rule perron_frobenius_spectral_radius_complex[OF B rnn], unfold id, 
-    insert ev_le_1 ev_order char_poly_hom[OF A], auto)
+    insert ev_le_1 ev_order, auto simp: of_real_hom.char_poly_hom[OF A])
   then obtain c1 c2 where nb: "\<And> k. norm_bound (?B ^\<^sub>m k) (c1 + c2 * real k ^ (d - 1))" by auto
   show ?thesis
   proof (rule exI[of _ c1], rule exI[of _ c2], intro allI impI)
@@ -108,7 +107,7 @@ proof -
     from ij nb[of k] A have "norm ((?B ^\<^sub>m k) $$ (i,j)) \<le> c1 + c2 * real k ^ (d - 1)"
       unfolding norm_bound_def by auto
     also have "(?B ^\<^sub>m k) $$ (i,j) = ?cr a"
-      unfolding mat_hom_pow[OF A, symmetric] a using ij A by auto
+      unfolding of_real_hom.mat_hom_pow[OF A, symmetric] a using ij A by auto
     also have "norm (?cr a) = abs a" by auto
     finally show "abs a \<le> (c1 + c2 * real k ^ (d - 1))" .
   qed
@@ -190,7 +189,7 @@ proof (rule perron_frobenius_spectral_radius[OF A nonneg]; intro allI impI)
   fix x :: complex
   assume x: "norm x = 1"
   have A0: "char_poly A \<noteq> 0" using degree_monic_char_poly[OF A] by auto
-  interpret inj_field_hom_0' ?cr by (standard, auto)
+  interpret field_hom_0' ?cr by (standard, auto)
   from A0 have cp0: "?cp \<noteq> 0" by auto
   obtain ox where ox: "order x ?cp = ox" by blast
   note sff = square_free_factorization_order_root[OF yun_factorization(1)[OF 
@@ -242,7 +241,6 @@ proof (rule perron_frobenius_spectral_radius_yun)
   fix fi i
   let ?cr = complex_of_real
   let ?cp = "map_poly ?cr"
-  interpret inj_field_hom_0 ?cr by (standard, auto)
   assume fi: "(fi, i) \<in> set fis"
     and "\<exists> x. poly (map_poly ?cr fi) x = 0 \<and> norm x = 1"
   then obtain x where rt: "poly (?cp fi) x = 0" and x: "norm x = 1" by auto
@@ -254,13 +252,13 @@ proof (rule perron_frobenius_spectral_radius_yun)
     proof (cases)
       case 1
       from rt have "poly fi 1 = 0" 
-        unfolding 1 hom_one[symmetric] hom_zero[symmetric] poly_map_poly by simp
+        unfolding 1 by simp
       thus ?thesis by simp
     next
       case m1
       have id: "-1 = ?cr (-1)" by simp
       from rt have "poly fi (-1) = 0"
-        unfolding m1 id hom_zero[symmetric] poly_map_poly by simp
+        unfolding m1 id of_real_hom.hom_zero[where 'a=complex,symmetric] of_real_hom.poly_map_poly by simp
       thus ?thesis by simp
     next
       case r
@@ -283,7 +281,7 @@ proof (rule perron_frobenius_spectral_radius_yun)
       from psubset_card_mono[OF fin this] have "card ?l < card ?r" .
       also have "\<dots> \<le> degree (?cp fi)" by (rule poly_roots_degree[OF fi])
       also have "\<dots> = degree fi" by simp
-      also have "?l = ?cr ` {x. poly fi x = 0}" unfolding poly_map_poly by auto
+      also have "?l = ?cr ` {x. poly fi x = 0}" by auto
       also have "card \<dots> = card {x. poly fi x = 0}"
         by (rule card_image, auto simp: inj_on_def)
       finally have "card {x. poly fi x = 0} \<noteq> degree fi" by simp
