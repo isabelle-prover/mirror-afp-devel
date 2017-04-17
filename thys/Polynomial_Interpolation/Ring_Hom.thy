@@ -346,7 +346,7 @@ interpretation of_int_hom: inj_comm_ring_hom "of_int :: int \<Rightarrow> 'a :: 
 interpretation of_int_hom: inj_idom_hom "of_int :: int \<Rightarrow> 'a :: {idom,ring_char_0}"
   by (unfold_locales, auto)
 
-text {* Somehow @{const of_rat} is defined only on char_0. *}
+text {* Somehow @{const of_rat} is defined only on @{text char_0}. *}
 interpretation of_rat_hom: field_char_0_hom "of_rat"
   by (unfold_locales, auto simp: of_rat_add of_rat_mult of_rat_inverse of_rat_minus)
 
