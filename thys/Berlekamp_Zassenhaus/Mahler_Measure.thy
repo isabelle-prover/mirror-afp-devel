@@ -84,11 +84,15 @@ lemma complex_roots:
   using someI_ex[OF fundamental_theorem_algebra_factorized]
   unfolding complex_roots_complex_def by simp_all
 
-lemma complex_roots_c:"complex_roots_complex [:c:] = []"
-  using complex_roots(2)[of "[:c:]"] by auto
-lemma complex_roots_1:"complex_roots_complex 1 = []" unfolding one_poly_def complex_roots_c by auto
+lemma complex_roots_c [simp]:
+  "complex_roots_complex [:c:] = []"
+  using complex_roots(2) [of "[:c:]"] by simp
 
-declare complex_roots(2)[simp add]
+declare complex_roots(2)[simp]
+    
+lemma complex_roots_1 [simp]:
+  "complex_roots_complex 1 = []"
+  using complex_roots_c [of 1] by (simp add: pCons_one)
 
 lemma linear_term_irreducible[simp]: "irreducible [:- a, 1:]" 
   by (rule linear_irreducible, simp)
@@ -439,7 +443,7 @@ next
     finally show ?case by simp
   next
     case Nil
-    show ?case by (simp add: one_poly_def)
+    show ?case by simp
   qed
 qed
 
@@ -585,7 +589,7 @@ proof -
       smult (- 1 * (- 1) ^ length as) (smult (c ^ 2 ^ m) ([:a ^ 2 ^ m, 1:] * (\<Prod>a\<leftarrow>as. [:a ^ 2 ^ m, 1:]))))" by simp
     obtain c d where id': "(\<Prod>a\<leftarrow>as. [:a ^ 2 ^ m, 1:]) = c" "[:a ^ 2 ^ m, 1:] = d" by auto
     show ?case unfolding id unfolding id' by (simp add: ac_simps)
-  qed (simp add: one_poly_def)
+  qed simp
   finally have "f * f \<circ>\<^sub>p [:0, - 1:] =
     smult ((- 1) ^ length as * (c ^ 2 ^ m * c ^ 2 ^ m)) 
     ((\<Prod>a\<leftarrow>as. [:- (a ^ 2 ^ m), 1:]) * (\<Prod>a\<leftarrow>as. [:a ^ 2 ^ m, 1:]))" 
@@ -607,7 +611,7 @@ proof -
     also have "[: - (a ^ 2 ^ (Suc m)), 1:] \<circ>\<^sub>p monom 1 2 * (\<Prod>a\<leftarrow>as. [:- (a ^ 2 ^ Suc m), 1:]) \<circ>\<^sub>p monom 1 2 =
       (\<Prod>a\<leftarrow>a # as. [:- (a ^ 2 ^ Suc m), 1:]) \<circ>\<^sub>p monom 1 2" unfolding pcompose_mult[symmetric] by simp
     finally show ?case .
-  qed (simp add: one_poly_def)
+  qed simp
   finally have "f * f \<circ>\<^sub>p [:0, - 1:] = (smult ((- 1) ^ length as) (graeffe_poly c as (Suc m)) \<circ>\<^sub>p monom 1 2)" 
     unfolding graeffe_poly_def pcompose_smult by simp
   from arg_cong[OF this, of "\<lambda> f. smult ((- 1) ^ length as) (poly_square_subst f)", unfolded poly_square_subst]

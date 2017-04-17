@@ -64,8 +64,8 @@ lemma coeff_const: "coeff [: a :] i = (if i = 0 then a else 0)"
 lemma x_as_monom: "[:0,1:] = monom 1 1"
   by (simp add: monom_0 monom_Suc)
 
-lemma x_pow_n: "(monom 1 1)^n = monom 1 n"
-  by (induct n, auto simp: one_poly_def monom_0 monom_Suc)
+lemma x_pow_n: "monom 1 1 ^ n = monom 1 n"
+  by (induct n) (simp_all add: monom_0 monom_Suc)
 
 lemma map_poly_eval_poly: assumes h0: "h 0 = 0"
   shows "map_poly h p = eval_poly (\<lambda> a. [: h a :]) p [:0,1:]" (is "?mp = ?ep")
@@ -130,7 +130,9 @@ begin
         unfolding map_poly_simps
         by (auto intro: hom_mult_eq_zero)
   qed auto
-  lemma map_poly_hom_1[simp,hom_removes]: "map_poly hom 1 = 1" by (simp add: one_poly_def)
+  lemma map_poly_hom_1 [simp,hom_removes]:
+    "map_poly hom 1 = 1"
+    by simp
   lemma map_poly_hom_add[hom_distribs,simp]:
     "map_poly hom (p + q) = map_poly hom p + map_poly hom q"
     by (rule map_poly_add;simp)
@@ -273,7 +275,7 @@ lemma map_poly_single[simp]:
 
 lemma map_poly_preserves_prod_list[simp]:
   "map_poly hom (prod_list x) = prod_list (map (map_poly hom) x)"
-  by(induct x,auto simp:one_poly_def)
+  by (fact hom_distribs)
 
 lemma map_poly_preserves_sum_list[simp]:
   "map_poly hom (sum_list x) = sum_list (map (map_poly hom) x)"

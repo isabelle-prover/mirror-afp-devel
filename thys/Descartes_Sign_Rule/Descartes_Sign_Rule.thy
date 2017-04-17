@@ -679,7 +679,7 @@ proof -
     note \<open>odd (coeff_sign_changes p)\<close> 
     also have "p = [:0, 1:] ^ n * r" by (simp add: p)
     also have "[:0, 1:] ^ n = monom 1 n" 
-      by (induction n) (simp_all add: monom_Suc monom_0 one_poly_def)
+      by (induction n) (simp_all add: monom_Suc monom_0)
     also have "coeffs (monom 1 n * r) = replicate n 0 @ coeffs r"
       by (induction n) (simp_all add: monom_Suc cCons_def r_nz monom_0)
     also have "sign_changes \<dots> = coeff_sign_changes r"

@@ -335,7 +335,7 @@ proof -
     also have "?P \<otimes>\<^sub>m ?Q = ?I" unfolding PQ[symmetric]
       by (rule map_poly_mult[symmetric, OF P Q])
     also have "[: 0, 1:] \<odot>\<^sub>m ?I = ?XI"
-      by (rule, auto simp: one_poly_def)
+      by rule auto
     finally show ?thesis ..
   qed
   also have "map\<^sub>m ?m (P \<otimes>\<^sub>m B \<otimes>\<^sub>m Q) = ?P \<otimes>\<^sub>m ?B \<otimes>\<^sub>m ?Q" (is "_ = ?right")
@@ -357,7 +357,7 @@ proof -
   also have "det \<dots> = prod_list (mat_diag ?I)"
     by (rule det_upper_triangular[of _ n], auto)
   also have "\<dots> = 1" unfolding prod_list_diag_prod
-    by (rule prod.neutral, auto simp: one_poly_def)
+    by (rule prod.neutral) simp
   finally show ?thesis by simp
 qed
 

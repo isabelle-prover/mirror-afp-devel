@@ -82,7 +82,7 @@ lemma of_int_poly_smult [simp]: "of_int_poly (smult c p) = smult (of_int c) (of_
   by transfer simp
 
 lemma of_int_poly_1 [simp]: "of_int_poly 1 = 1"
-  by (simp add: one_poly_def)
+  by (simp add: one_pCons)
 
 lemma of_int_poly_add [simp]: "of_int_poly (p + q) = of_int_poly p + of_int_poly q"
   by transfer' (simp add: fun_eq_iff)
@@ -175,7 +175,7 @@ lemma pderiv_monom:
      (simp_all add: monom_altdef pderiv_power_Suc pderiv_smult pderiv_pCons mult_ac del: power_Suc)
 
 lemma power_poly_const [simp]: "[:c:] ^ n = [:c ^ n:]"
-  by (induction n) (simp_all add: one_poly_def power_commutes)
+  by (induction n) (simp_all add: power_commutes)
 
 lemma monom_power: "monom c n ^ k = monom (c ^ k) (n * k)"
   by (induction k) (simp_all add: mult_monom)

@@ -49,8 +49,8 @@ proof (intro ext)
     thus dvd_g: "?gcd dvd g"
       by (metis dvdE inverse_zero_imp_zero lc_def leading_coeff_neq_0 mult_eq_0_iff smult_dvd_iff)
     show "normalize ?gcd = ?gcd"
-      by (cases "lc = 0") (simp_all add: normalize_poly_def 
-                             one_poly_def [symmetric] field_simps lc_def)
+      by (cases "lc = 0")
+        (simp_all add: normalize_poly_def pCons_one field_simps lc_def)
     fix k
     assume dvd: "k dvd f" "k dvd g"
     obtain k' c where kck: "rat_to_normalized_int_poly k = (c,k')" by force

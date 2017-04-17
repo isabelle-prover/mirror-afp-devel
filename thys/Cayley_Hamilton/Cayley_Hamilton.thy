@@ -37,7 +37,7 @@ lemma C_0[simp]: "C 0 = 0"
   by (simp add: C_def) 
 
 lemma C_1[simp]: "C 1 = 1"
-  by (simp add: C_def one_poly_def)
+  by (simp add: C_def)
 
 lemma C_linear:
   shows C_mult: "C (a * b) = C b * C a"

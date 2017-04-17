@@ -319,7 +319,7 @@ proof (induct n)
     by (rule map_poly_Re_mult[OF p real_poly_power[OF p]])
   also have "?r (p^n) = (?r p)^n" by (rule Suc)
   finally show ?case by simp
-qed (simp add: one_poly_def)
+qed simp
 
 lemma real_degree_2_factorization_exists_complex: fixes p :: "complex poly"
   assumes pR: "set (coeffs p) \<subseteq> \<real>"

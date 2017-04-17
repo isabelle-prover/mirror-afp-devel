@@ -394,7 +394,7 @@ proof
     from ab have "coeff [:c:] 0 = coeff (a * b) 0" by (simp only: )
     hence "c = a' * b'" by (simp add: ab' mult_ac)
     from A and this have "a' dvd 1 \<or> b' dvd 1" by (rule irreducibleD)
-    with ab' show "a dvd 1 \<or> b dvd 1" by (auto simp: one_poly_def)
+    with ab' show "a dvd 1 \<or> b dvd 1" by auto
   qed (insert A, auto simp: irreducible_def is_unit_poly_iff)
 next
   assume A: "irreducible [:c:]"
@@ -403,8 +403,8 @@ next
     fix a b assume ab: "c = a * b"
     hence "[:c:] = [:a:] * [:b:]" by (simp add: mult_ac)
     from A and this have "[:a:] dvd 1 \<or> [:b:] dvd 1" by (rule irreducibleD)
-    thus "a dvd 1 \<or> b dvd 1" by (simp add: one_poly_def)
-  qed (insert A, auto simp: irreducible_def one_poly_def)
+    thus "a dvd 1 \<or> b dvd 1" by simp
+  qed (insert A, auto simp: irreducible_def)
 qed
 
 subsubsection {* Original part *}

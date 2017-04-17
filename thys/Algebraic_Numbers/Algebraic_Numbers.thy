@@ -138,12 +138,15 @@ interpretation poly_y_x_hom:
 
 interpretation poly_lift_hom:
   unit_preserving_hom "poly_lift :: 'a :: {idom,ring_char_0} poly \<Rightarrow> _"
-proof unfold_locales
-  fix x :: "'a poly" assume "poly_lift x dvd 1"
-  then have "poly_y_x (poly_lift x) dvd poly_y_x 1" by simp
-  from this [unfolded poly_y_x_poly_lift] have "[:x:] dvd 1" by (auto simp: monom_0)
-  from this[unfolded const_poly_dvd]
-  show "x dvd 1" by (auto simp: one_poly_def)
+proof
+  fix x :: "'a poly"
+  assume "poly_lift x dvd 1"
+  then have "poly_y_x (poly_lift x) dvd poly_y_x 1"
+    by simp
+  then have "monom x 0 dvd poly_y_x 1"
+    by (simp add: poly_y_x_poly_lift)
+  then show "x dvd 1"
+    by (simp add: monom_0)
 qed
 
 interpretation poly_lift_hom:

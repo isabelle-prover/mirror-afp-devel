@@ -586,7 +586,7 @@ proof -
       by (auto simp: poly_eq_0_iff_dvd)
     hence "[:-x,1:] dvd gcd (?rp q') (?rp r')" by simp
     hence "gcd (?rp q') (?rp r') = 0 \<or> degree (gcd (?rp q') (?rp r')) \<noteq> 0"
-      by (metis is_unit_iff_degree is_unit_pCons_iff one_neq_zero one_poly_def semiring_gcd_class.is_unit_gcd)
+      by (metis is_unit_gcd is_unit_iff_degree is_unit_pCons_iff one_neq_zero pCons_0_0)
     hence "gcd q' r' = 0 \<or> degree (gcd q' r') \<noteq> 0"
       unfolding gcd_eq_0_iff degree_of_gcd[of q' r',symmetric] by auto
     hence "\<not> coprime q' r'" by auto

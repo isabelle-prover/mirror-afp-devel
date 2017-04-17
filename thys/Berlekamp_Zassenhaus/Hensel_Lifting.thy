@@ -167,7 +167,7 @@ begin
 
 lemma M_1[simp]: "M 1 = 1" unfolding M_def using m1 by auto
 
-lemma Mp_1[simp]: "Mp 1 = 1" unfolding Mp_def one_poly_def by simp
+lemma Mp_1[simp]: "Mp 1 = 1" unfolding Mp_def by simp
 
 lemma monic_degree_Mp: "monic f \<Longrightarrow> degree (Mp f) = degree f" 
   using degree_m_eq_monic[of f] unfolding degree_m_def using m1 by auto
@@ -1066,7 +1066,7 @@ proof
       also have "\<dots> = Mp ([: c * d :])" unfolding hc by (auto simp: ac_simps)
       also have "\<dots> = [: M (c * d) :]" unfolding Mp_def
         by (metis (no_types) M_0 map_poly_pCons Mp_0 Mp_def d zero_neq_one)
-      also have "\<dots> = 1" unfolding d one_poly_def by simp
+      also have "\<dots> = 1" unfolding d by simp
       finally show "Mp 1 = Mp (h * [:d:])" by simp
     qed
   }

@@ -199,7 +199,7 @@ private definition "N i = Xij 0 i"
 
 lemma Xii_1[simp]: "Xij i i = 1" unfolding Xij_def by simp
 lemma smult_1[simp]: "smult d 1 = [:d:]"
-  by (simp add: one_poly_def)
+  by (fact smult_one)
 
 private lemma newton_poly_sum: 
   "newton_poly n = sum_list (map (\<lambda> i. smult (c i) (N i)) [0 ..< Suc n])"

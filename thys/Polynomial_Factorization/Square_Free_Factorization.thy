@@ -166,7 +166,8 @@ proof -
   have deg: "degree G \<noteq> 0" 
   proof (cases "degree G")
     case 0
-    from degree0_coeffs[OF this] cop mon show ?thesis by (auto simp: G_def one_poly_def)
+    from degree0_coeffs[OF this] cop mon show ?thesis
+      by (auto simp: G_def)
   qed auto
   have gf: "G dvd f" unfolding G_def by auto
   have gf': "G dvd pderiv f" unfolding G_def by auto
@@ -372,10 +373,12 @@ proof -
     show "k dvd 1"
     proof (cases "degree k = 0")
       case True
-      with k obtain c where kc: "k = [: c :]" by (metis degree_0_id)
-      with k have "c \<noteq> 0" by auto
-      thus "k dvd 1" unfolding dvd_def kc
-        by (intro exI[of _ "[: 1/c :]"], auto simp: one_poly_def)
+      with k obtain c where "k = [:c:]"
+        by (metis degree_0_id)
+      with k have "c \<noteq> 0"
+        by auto
+      with \<open>k = [:c:]\<close> show "is_unit k"
+        using dvdI [of 1 "[:c:]" "[:1 / c:]"] by auto
     next
       case False
       from irreducible_factor[OF this]
@@ -630,7 +633,8 @@ proof (rule gcdI[symmetric])
   proof (cases "degree k = 0")
     case True
     then obtain c where kc: "k = [: c :]" by (metis degree_0_id)
-    with k have "1 = k * [: 1/c :]" by (simp add: one_poly_def)
+    with k have "1 = k * [:1 / c:]"
+      by simp
     thus ?thesis unfolding dvd_def by blast
   next
     case False
@@ -1384,7 +1388,7 @@ lemma square_free_square_free_factorization:
 
 lemma constant_square_free_factorization: 
   "degree p = 0 \<Longrightarrow> square_free_factorization p (coeff p 0,[])"
-  by (drule degree0_coeffs[of p], auto simp: square_free_factorization_def one_poly_def)
+  by (drule degree0_coeffs [of p]) (auto simp: square_free_factorization_def)
 
 lemma (in field_hom_0') yun_monic_factorization:
   defines hp: "hp \<equiv> map_poly hom"

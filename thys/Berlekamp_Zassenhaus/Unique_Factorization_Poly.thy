@@ -27,7 +27,7 @@ next
   obtain c where c: "p = [:c:]" by auto
   assume "p \<noteq> 0"
   with c have "c \<noteq> 0" by auto
-  with c have "1 = p * [:1/c:]" unfolding one_poly_def by auto
+  with c have "1 = p * [:1/c:]" by auto
   from dvdI[OF this] show "is_unit p".
 qed
 
@@ -666,7 +666,7 @@ lemma irreducible_PFM_degree:
 proof 
   assume "degree p = 0"
   from degree0_coeffs[OF this] assms obtain a where p: "p = [:a:]" and a: "a \<noteq> 0" by auto
-  hence "1 = p * [:inverse a:]" by (auto simp: one_poly_def)
+  hence "1 = p * [:inverse a:]" by auto
   hence "p dvd 1" ..
   hence "p \<in> Units mk_monoid" by simp
   with assms show False unfolding irreducible_def by auto

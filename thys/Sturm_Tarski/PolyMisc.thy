@@ -24,8 +24,8 @@ lemma dvd_monic:
   shows "p dvd q" using assms
 proof (cases "q=0 \<or> degree p=0")
   case True
-  thus ?thesis using assms 
-    by (metis coeff_1 dvd_0_right le_0_eq le_degree one_dvd poly_eqI)
+  with assms show ?thesis
+    by (auto elim!: degree_eq_zeroE simp add: const_poly_dvd_iff)
 next
   case False
   then have "q \<noteq> 0" and "degree p \<noteq> 0" and "p \<noteq> 0" by auto

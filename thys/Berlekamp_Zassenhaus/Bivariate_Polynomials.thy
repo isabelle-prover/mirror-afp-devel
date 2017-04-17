@@ -54,7 +54,7 @@ abbreviation (input) "coeff_lift == \<lambda>a. [: a :]"
 abbreviation (input) "coeff_lift2 == \<lambda>a. [:[: a :]:]"
 
 interpretation coeff_lift_hom: inj_comm_semiring_hom coeff_lift
-  by (unfold_locales, auto simp: one_poly_def ac_simps)
+  by standard (simp_all add: ac_simps)
 interpretation coeff_lift_hom: inj_comm_ring_hom coeff_lift..
 interpretation coeff_lift_hom: inj_idom_hom coeff_lift..
 

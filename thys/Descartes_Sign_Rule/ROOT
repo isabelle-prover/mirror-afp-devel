@@ -1,6 +1,6 @@
 chapter AFP
 
-session Descartes_Sign_Rule (AFP) = "HOL-Library" +
+session Descartes_Sign_Rule (AFP) = "HOL-Computational_Algebra" +
   options [timeout=600]
   theories
     Descartes_Sign_Rule

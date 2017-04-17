@@ -461,7 +461,8 @@ proof -
     fix A :: "'a mat" and A' :: "'a^'n^'n"
     assume [transfer_rule]: "HMA_M A A'"
     hence [simp]: "dim\<^sub>r A = CARD('n)" by (simp add: HMA_M_def)
-    have [simp]: "monom 1 (Suc 0) = [: 0,1 :: 'a :]" by (simp add: monom_Suc one_poly_def)
+    have [simp]: "monom 1 (Suc 0) = [:0, 1 :: 'a :]"
+      by (simp add: monom_Suc)
     have [simp]: "map\<^sub>m uminus (map\<^sub>m (\<lambda>a. [:a:]) A) = map\<^sub>m (\<lambda>a. [:-a:]) A"
       by (rule mat_eqI, auto)
     have "char_poly A = charpoly A'"

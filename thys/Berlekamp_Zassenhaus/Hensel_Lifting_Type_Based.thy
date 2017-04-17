@@ -91,13 +91,19 @@ abbreviation rebase :: "'a :: nontriv mod_ring \<Rightarrow> 'b :: nontriv mod_r
 abbreviation rebase_poly :: "'a :: nontriv mod_ring poly \<Rightarrow> 'b :: nontriv mod_ring poly" ("#_" [100]100)
   where "#x \<equiv> of_int_poly (to_int_poly x)"
 
-lemma rebase_self[simp]: "@x = x" unfolding of_int_of_int_mod_ring by simp
+lemma rebase_self [simp]:
+  "@x = x"
+  by (simp add: of_int_of_int_mod_ring)
 
-lemma map_poly_rebase[simp]: "map_poly rebase p = #p" by(induct p, auto)
+lemma map_poly_rebase [simp]:
+  "map_poly rebase p = #p"
+  by (induct p) simp_all
 
-lemma rebase_poly_0 [simp]: "#0 = 0" by (fold map_poly_rebase,simp)
+lemma rebase_poly_0: "#0 = 0"
+  by simp
 
-lemma rebase_poly_1 [simp]: "#1 = 1" by(fold map_poly_rebase, unfold one_poly_def, auto)
+lemma rebase_poly_1: "#1 = 1"
+  by simp
 
 lemma rebase_poly_pCons[simp]: "#pCons a p = pCons (@a) (#p)"
 by(cases "a = 0 \<and> p = 0", simp, fold map_poly_rebase, subst map_poly_pCons, auto)

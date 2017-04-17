@@ -94,7 +94,7 @@ lemma charpoly_eq: "charpoly A = Cayley_Hamilton.charpoly (from_vec A)"
   unfolding charpoly_def Cayley_Hamilton.charpoly_def det_sq_matrix_eq[symmetric] X_def C_def
   apply (intro arg_cong[where f=Square_Matrix.det])
   apply transfer'
-  apply (simp add: fun_eq_iff mat_def mat2matofpoly_def C_def monom_Suc one_poly_def)
+  apply (simp add: fun_eq_iff mat_def mat2matofpoly_def C_def monom_Suc)
   done
 
 definition adjugate where "adjugate A = transpose (cofactorM A)"

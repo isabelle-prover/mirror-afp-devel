@@ -109,7 +109,7 @@ next
   case True
   with us[unfolded finite_field_factorization_def] have "c = lead_coeff f" and us: "us = []" by auto
   with degree0_coeffs[OF True] have f: "f = [:c:]" by auto
-  show ?thesis unfolding us f by (auto simp: one_poly_def normalize_poly_def)
+  show ?thesis unfolding us f by (auto simp: normalize_poly_def)
 qed
 
 lemma finite_field_factorization:

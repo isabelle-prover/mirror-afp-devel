@@ -454,8 +454,7 @@ next
   have "pderiv ([:-a,1:]^Suc n) = smult (Suc n) ([:-a,1:]^n)"
     proof -
       have "pderiv [:- a, 1::real:] = 1"
-        by (metis monoid_add_class.add.right_neutral one_poly_def pCons_0_0 pderiv_pCons
-          pderiv_singleton)
+        by (simp add: pderiv_pCons)
       thus ?thesis unfolding pderiv_power_Suc by (metis mult_cancel_left1)
     qed
   moreover have " poly ([:- a, 1:] ^ Suc n) a=0" by (metis old.nat.distinct(2) poly_power_n_eq)

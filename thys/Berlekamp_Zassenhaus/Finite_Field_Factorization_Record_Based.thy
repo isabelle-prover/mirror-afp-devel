@@ -397,8 +397,8 @@ proof (induct f g d res arbitrary: F G Res rule: dist_degree_factorize_main.indu
   have v[transfer_rule]: "poly_rel V v" by (rule 1)
   have w[transfer_rule]: "poly_rel W w" by (rule 1)
   have res[transfer_rule]: "list_all2 (rel_prod op = poly_rel) Res res" by (rule 1)
-  have [transfer_rule]: "poly_rel [?on] 1" unfolding one_poly_def poly_rel_def
-    by (auto simp: one)
+  have [transfer_rule]: "poly_rel [?on] 1"
+    by (simp add: one poly_rel_def)
   have id1: "(V = [?on]) = (v = 1)" unfolding finite_field_ops_def by transfer_prover
   have id2: "degree_i V = degree v" by transfer_prover
   note simp = simp[unfolded id1 id2]

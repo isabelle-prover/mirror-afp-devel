@@ -265,7 +265,8 @@ proof -
   from assms have "1 = unit_factor (gcd p q)" by (auto simp: unit_factor_gcd)
   also have "\<dots> = [:lead_coeff (gcd p q):]" unfolding unit_factor_poly_def
     by (simp add: monom_0)
-  finally show ?thesis by (simp add: one_poly_def)
+  finally show ?thesis
+    by (metis coeff_pCons_0 degree_1 lead_coeff_1)
 qed
 
 lemma normalize_monic: "monic p \<Longrightarrow> normalize p = p"
@@ -580,8 +581,9 @@ next
   thus "a dvd b" unfolding dvd_def by blast
 qed
 
-lemma const_poly_dvd_1[simp]: "[:a:] dvd 1 \<longleftrightarrow> a dvd 1"
-  unfolding one_poly_def const_poly_dvd ..
+lemma const_poly_dvd_1 [simp]:
+  "[:a:] dvd 1 \<longleftrightarrow> a dvd 1"
+  by (metis const_poly_dvd one_poly_eq_simps(2))
 
 lemma poly_dvd_1:
   fixes p :: "'a :: {comm_semiring_1,semiring_no_zero_divisors} poly"

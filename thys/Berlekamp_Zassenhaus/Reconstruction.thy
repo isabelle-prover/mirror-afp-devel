@@ -351,7 +351,7 @@ proof -
       with q_eq have degm_q: "degree q = degree (Mp (smult (lead_coeff q) (prod_mset fs)))" 
         unfolding degree_m_def equivalent_def by auto
       with deg_q have fs_nempty: "fs \<noteq> {#}" 
-        by (cases fs; cases "lead_coeff q = 0"; auto simp: one_poly_def Mp_def)
+        by (cases fs; cases "lead_coeff q = 0"; auto simp: Mp_def)
       from uf_q'[unfolded unique_factorization_m_alt_def factorization_m_def split]
       have q'_eq: "q' =m smult (lead_coeff q') (prod_mset gs)" by auto
       have "degree_m q' = degree q'" 
@@ -360,7 +360,7 @@ proof -
       with q'_eq have degm_q': "degree q' = degree (Mp (smult (lead_coeff q') (prod_mset gs)))" 
         unfolding degree_m_def equivalent_def by auto
       with deg_q' have gs_nempty: "gs \<noteq> {#}" 
-        by (cases gs; cases "lead_coeff q' = 0"; auto simp: one_poly_def Mp_def)
+        by (cases gs; cases "lead_coeff q' = 0"; auto simp: Mp_def)
   
       from eq have size: "size fs + size gs = size (mset vs)" by auto
       with d have choice: "size fs < d \<or> size gs < d" by auto
@@ -722,7 +722,7 @@ proof -
           with q_eq have degm_q: "degree q = degree (Mp (smult (lead_coeff q) (prod_mset fs)))" 
             unfolding degree_m_def equivalent_def by auto
           with deg_q have fs_nempty: "fs \<noteq> {#}" 
-            by (cases fs; cases "lead_coeff q = 0"; auto simp: one_poly_def Mp_def)
+            by (cases fs; cases "lead_coeff q = 0"; auto simp: Mp_def)
           from uf_r[unfolded unique_factorization_m_alt_def factorization_m_def split]
           have r_eq: "r =m smult (lead_coeff r) (prod_mset gs)" by auto
           have "degree_m r = degree r" 
@@ -731,7 +731,7 @@ proof -
           with r_eq have degm_r: "degree r = degree (Mp (smult (lead_coeff r) (prod_mset gs)))" 
             unfolding degree_m_def equivalent_def by auto
           with deg_r have gs_nempty: "gs \<noteq> {#}" 
-            by (cases gs; cases "lead_coeff r = 0"; auto simp: one_poly_def Mp_def)
+            by (cases gs; cases "lead_coeff r = 0"; auto simp: Mp_def)
           from gs_nempty have "size gs \<noteq> 0" by auto
           with size have size_fs: "size fs < d" by linarith
           from tests[unfolded test_dvd_def, rule_format, OF _ fs_nempty _ qu deg_q, of "lead_coeff q"]

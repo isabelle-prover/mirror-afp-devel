@@ -168,7 +168,7 @@ proof -
     then obtain c where [simp]: "x = [:c:]" by (cases x, simp split: if_split_asm)
     moreover from `x \<noteq> 0` have "c \<noteq> 0" by simp
     ultimately show "x dvd 1" using dvdI[of 1 x "[:inverse c:]"]
-        by (simp add: one_poly_def)
+      by simp
   qed
 
   then show "coprime t (pderiv t)"
@@ -207,10 +207,11 @@ proof-
       then obtain c where [simp]: "p = [:c:]" using pderiv_iszero by blast
       from assms(1) have "c \<noteq> 0" by simp
       from True have "d = smult (inverse c) p"
-        by (simp add: d_def normalize_poly_def map_poly_pCons field_simps one_poly_def)
-      hence "p div d = [:c:]" using `c \<noteq> 0`
-          by (simp add: div_smult_right assms(1) one_poly_def[symmetric])
-      thus ?thesis using `c \<noteq> 0` by (simp add: normalize_const_poly one_poly_def)
+        by (simp add: d_def normalize_poly_def map_poly_pCons field_simps)
+      with \<open>p \<noteq> 0\<close> \<open>c \<noteq> 0\<close> have "p div d = [:c:]"
+        by (simp add: pCons_one)
+      with \<open>c \<noteq> 0\<close> show ?thesis
+        by (simp add: normalize_const_poly)
   qed
   thus ?A and "\<And>x. ?B x" by simp_all
 qed

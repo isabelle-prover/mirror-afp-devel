@@ -551,7 +551,8 @@ lemma resultant_const[simp]:
 lemma resultant_1[simp]:
   fixes p :: "'a :: comm_ring_1 poly"
   shows "resultant 1 p = 1" "resultant p 1 = 1"
-  unfolding one_poly_def resultant_const by auto
+  using resultant_const(1) [of 1 p] resultant_const(2) [of p 1]
+    by simp_all
 
 lemma resultant_0[simp]:
   fixes p :: "'a :: comm_ring_1 poly"

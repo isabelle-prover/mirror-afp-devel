@@ -543,8 +543,8 @@ next
   also have "char_poly A' = char_poly A1 * char_poly A3" 
     unfolding A'block A0id
     by (rule char_poly_four_block_zeros_col[OF A1 A2 A3])
-  also have "char_poly A1 = [: -e,1 :]" unfolding A1id char_poly_defs det_def
-    by (simp add: signof_def sign_def one_poly_def)
+  also have "char_poly A1 = [: -e,1 :]"
+    by (simp add: A1id char_poly_defs det_def signof_def sign_def)
   finally have cp: "char_poly A3 = (\<Prod> e \<leftarrow> es. [:- e, 1:])"
     by (metis mult_cancel_left pCons_eq_0_iff zero_neq_one)
   from Cons(1)[OF A3 cp schur]

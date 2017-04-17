@@ -2885,7 +2885,8 @@ proof -
           assume "i \<in> ?S"
           hence "?g i \<noteq> 1" by auto
           moreover have mgi: "monic (?g i)" by (rule poly_gcd_monic, insert u0, auto)
-          ultimately have "degree (?g i) \<noteq> 0" by (metis degree_0_id one_poly_def)
+          ultimately have "degree (?g i) \<noteq> 0"
+            using monic_degree_0 by blast
           note this mgi
         } note gS = this
 
@@ -3102,7 +3103,8 @@ proof -
           with 3 Cons(8)[of v u i] show ?thesis by auto
         next
           case True
-          hence deg: "degree (v - [: of_nat i :]) = 0" unfolding one_poly_def by simp
+          hence deg: "degree (v - [: of_nat i :]) = 0"
+            by (metis (no_types, hide_lams) degree_pCons_0 diff_pCons diff_zero pCons_one)
           from 3(2) Cons(5,7)[of u] have "monic u" by auto
           from gcd_monic_constant[OF this deg] show ?thesis .
         qed

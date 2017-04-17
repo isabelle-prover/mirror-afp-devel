@@ -39,7 +39,8 @@ proof (cases "a = 0 \<or> f = 0")
   then obtain G where gh: "?c g = H * G" unfolding dvd_def by blast
   from arg_cong[OF gh, of "\<lambda> f. f div H"] H have G: "G = ?c g div H" by auto
   have "is_unit ?ua" using False by simp
-  hence ua: "is_unit [: ?ua :]" by (simp add: one_poly_def)
+  then have ua: "is_unit [: ?ua :]"
+    by (simp add: is_unit_const_poly_iff)
   have "gcd (smult a f) g = smult (gcd (?na * ?c f) (?c g))
      (gcd (smult ?ua (?pp f)) (?pp g))"
     unfolding gcd_poly_decompose[of "smult a f"]

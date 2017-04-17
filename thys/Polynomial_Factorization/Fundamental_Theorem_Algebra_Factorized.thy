@@ -34,8 +34,7 @@ proof -
     hence "[:-c,1 :] dvd p" by (simp add: dvd_iff_poly_eq_0)
     then obtain q where p: "p = q * [: -c,1 :]" by (metis dvd_def mult.commute)
     from `degree p = Suc n` have dq: "degree q = n" using p
-      by (metis One_nat_def Suc_eq_plus1 `\<not> constant (poly p)` add_right_cancel constant_degree 
-        degree_0 degree_1 degree_mult_eq degree_pCons_eq mult_eq_0_iff one_neq_zero one_poly_def)
+      by simp (metis add.right_neutral degree_synthetic_div diff_Suc_1 mult.commute mult_left_cancel p pCons_eq_0_iff rt synthetic_div_correct' zero_neq_one) 
     from Suc(1)[OF this] obtain as where q: "[:coeff q (degree q):] * (\<Prod>a\<leftarrow>as. [:- a, 1:]) = q"
       and deg: "length as = degree q" by auto
     have dc: "degree p = degree q + degree [: -c, 1 :]" unfolding dq dp by simp
