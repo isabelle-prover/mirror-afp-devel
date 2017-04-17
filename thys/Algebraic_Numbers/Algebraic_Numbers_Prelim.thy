@@ -32,50 +32,51 @@ imports
   "../Berlekamp_Zassenhaus/Factorize_Rat_Poly"
 begin
 
-(* TODO: move *)
 lemma content_free_imp_unit_iff:
-  assumes ca: "content (a :: int poly) dvd 1"
-  shows "a dvd 1 \<longleftrightarrow> degree a = 0"
+  fixes p :: "'a :: {comm_semiring_1,semiring_no_zero_divisors} poly"
+  assumes cf: "content_free p"
+  shows "p dvd 1 \<longleftrightarrow> degree p = 0"
 proof
-  assume "degree a = 0"
-  from degree0_coeffs[OF this] obtain a0 where a: "a = [:a0:]" by auto
-  then have "a0 dvd content a" by (simp add: content_def cCons_def)
-  with ca have "a0 dvd 1" by auto
-  with a show "a dvd 1" by (auto simp: poly_dvd_1)
+  assume "degree p = 0"
+  from degree0_coeffs[OF this] obtain p0 where p: "p = [:p0:]" by auto
+  then have "\<forall>c \<in> set (coeffs p). p0 dvd c" by (simp add: cCons_def)
+  with cf have "p0 dvd 1" by (auto dest: content_freeD)
+  with p show "p dvd 1" by auto
 next
-  assume "a dvd 1"
-  with poly_dvd_1 show "degree a = 0" by auto
+  assume "p dvd 1"
+  then show "degree p = 0" by (auto simp: poly_dvd_1)
 qed
 
-
-
-(* TODO: move/refine *)
-lemma content_dvd_1_degree_0:
-  fixes p :: "int poly"
-  assumes c: "content p dvd 1" and deg: "degree p = 0"
-  shows "p dvd 1"
-proof-
-  from deg c content_free_imp_unit_iff poly_dvd_1 have "coeff p 0 dvd 1" by blast
-    then have "[:coeff p 0:] dvd 1" by (auto simp: poly_dvd_1)
-    with deg have "p dvd 1" by (auto simp: degree_0_id)
-    then show ?thesis by auto
+lemma dvd_all_coeffs_imp_dvd:
+  assumes "\<forall>a \<in> set (coeffs p). c dvd a" shows "[:c:] dvd p"
+proof (insert assms, induct p)
+  case 0
+  then show ?case by simp
+next
+  case (pCons a p)
+  have "pCons a p = [:a:] + pCons 0 p" by simp
+  also have "[:c:] dvd ..."
+  proof (rule dvd_add)
+    from pCons show "[:c:] dvd [:a:]" by (auto simp: cCons_def)
+    from pCons have "[:c:] dvd p" by auto
+    from Rings.dvd_mult[OF this]
+    show "[:c:] dvd pCons 0 p" by (subst pCons_0_as_mult)
+  qed
+  finally show ?case.
 qed
 
 lemma irreducible_content:
-  fixes p :: "'a::{idom,semiring_Gcd} poly"
-  assumes "irreducible p" shows "degree p = 0 \<or> content p dvd 1"
+  fixes p :: "'a::{comm_semiring_1,semiring_no_zero_divisors} poly"
+  assumes "irreducible p" shows "degree p = 0 \<or> content_free p"
 proof(rule ccontr)
   assume not: "\<not>?thesis"
-  from content_dvd_coeff have "content p dvd coeff p i" for i by auto
-  then have "[:content p:] dvd p" by (simp add: const_poly_dvd_iff)
-  then obtain r where p: "p = r * [:content p:]" by (elim dvdE, auto)
-  from irreducibleD[OF assms this] have "r dvd 1 \<or> [:content p:] dvd 1" by auto
-  with not have "r dvd 1" unfolding const_poly_dvd_1 by auto
-  then have "degree r = 0" and "coeff r 0 dvd 1" unfolding poly_dvd_1 by auto
-  with degree0_coeffs obtain r0 where r0: "r = [:r0:]" by auto
-  from p[unfolded r0] have "p = [: r0 * content p :]"
-    by (metis add.right_neutral mult.commute mult_pCons_left mult_zero_right pCons_0_0 smult_pCons)
-  with degree_pCons_0 have "degree p = 0" by metis
+  then obtain c where c1: "\<not>c dvd 1" and "\<forall>a \<in> set (coeffs p). c dvd a" by (auto elim: not_content_freeE)
+  from dvd_all_coeffs_imp_dvd[OF this(2)]
+  obtain r where p: "p = r * [:c:]" by (elim dvdE, auto)
+  from irreducibleD[OF assms this] have "r dvd 1 \<or> [:c:] dvd 1" by auto
+  with c1 have "r dvd 1" unfolding const_poly_dvd_1 by auto
+  then have "degree r = 0" unfolding poly_dvd_1 by auto
+  with p have "degree p = 0" by auto
   with not show False by auto
 qed
 
@@ -91,7 +92,7 @@ proof (intro irreducibleI)
   from degree_mult_eq[OF this, folded p] assms
   consider "degree a = 1" "degree b = 0" | "degree a = 0" "degree b = 1" by force
   then show "a dvd 1 \<or> b dvd 1"
-    by (cases; insert a0 b0, auto intro:content_dvd_1_degree_0)
+    by (cases; insert a0 b0, auto simp: content_free_imp_unit_iff)
 qed
 
 (* TODO: move *)
@@ -110,7 +111,7 @@ proof (intro irreducibleI)
   from degree_mult_eq[OF this, folded p] assms
   consider "degree a = 1" "degree b = 0" | "degree a = 0" "degree b = 1" by force
   then show "a dvd 1 \<or> b dvd 1"
-    by (cases; insert a1 b1, auto intro:content_dvd_1_degree_0)
+    by (cases; insert a1 b1, auto simp: content_free_imp_unit_iff)
 qed
 
 (* TODO: remove *)
@@ -153,13 +154,6 @@ proof -
   have id: "of_int = of_real o of_int" unfolding comp_def by auto
   show ?thesis by (subst id, subst map_poly_map_poly[symmetric], auto)
 qed
-
-
-(* restating with of_int_poly *)
-lemma gcd_rat_to_gcd_int: "gcd (of_int_poly f :: rat poly) (of_int_poly g) = 
-  smult (inverse (of_int (lead_coeff (gcd f g)))) (of_int_poly (gcd f g))" 
-by (fact gcd_rat_to_gcd_int)
-
 
 lemma finite_ipoly_roots: assumes "p \<noteq> 0"
   shows "finite {x :: real. ipoly p x = 0}"
@@ -221,6 +215,16 @@ lemma representsD:
 lemma representsE[elim]:
   assumes "p represents x" and "p \<noteq> 0 \<Longrightarrow> ipoly p x = 0 \<Longrightarrow> thesis"
   shows thesis using assms unfolding represents_def by auto
+
+lemma represents_imp_degree:
+  fixes x :: "'a :: field_char_0"
+  assumes "p represents x" shows "degree p \<noteq> 0"
+proof-
+  from assms have "p \<noteq> 0" and px: "ipoly p x = 0" by auto
+  then have "(of_int_poly p :: 'a poly) \<noteq> 0" by auto
+  then have "degree (of_int_poly p :: 'a poly) \<noteq> 0" by (fold poly_zero[OF px])
+  then show ?thesis by auto
+qed
 
 lemma represents_of_rat[simp]: "p represents (of_rat x) = p represents x" by (auto elim!:representsE)
 lemma represents_of_real[simp]: "p represents (of_real x) = p represents x" by (auto elim!:representsE)
@@ -497,8 +501,40 @@ proof (unfold irreducible_altdef, intro conjI allI impI)
   then show "?p dvd b \<or> b dvd 1" by (auto dest: dvd_trans[OF cf_pos_poly_dvd])
 qed
 
+
+locale dvd_preserving_hom = comm_monoid_mult_0_hom +
+  assumes hom_eq_mult_hom_imp: "hom x = hom y * hz \<Longrightarrow> \<exists>z. hz = hom z \<and> x = y * z"
+begin
+
+  lemma hom_dvd_hom_iff[simp]: "hom x dvd hom y \<longleftrightarrow> x dvd y"
+  proof
+    assume "hom x dvd hom y"
+    then obtain hz where "hom y = hom x * hz" by (elim dvdE)
+    from hom_eq_mult_hom_imp[OF this] obtain z
+    where "hz = hom z" and mult: "y = x * z" by auto
+    then show "x dvd y" by auto
+  qed auto
+
+  sublocale unit_preserving_hom
+  proof unfold_locales
+    fix x assume "hom x dvd 1" then have "hom x dvd hom 1" by simp
+    then show "x dvd 1" by (unfold hom_dvd_hom_iff)
+  qed
+
+  sublocale zero_hom_0
+  proof (unfold_locales)
+    fix a :: 'a
+    assume "hom a = 0"
+    then have "hom 0 dvd hom a" by auto
+    then have "0 dvd a" by (unfold hom_dvd_hom_iff)
+    then show "a = 0" by auto
+  qed
+
+end
+
+
 lemma factors_of_int_poly:
-  defines "rp \<equiv> ipoly :: int poly \<Rightarrow> 'a :: {field_char_0,euclidean_ring_gcd} \<Rightarrow> 'a"
+  defines "rp \<equiv> ipoly :: int poly \<Rightarrow> 'a :: {euclidean_ring_gcd,field_char_0} \<Rightarrow> 'a"
   assumes "factors_of_int_poly p = qs"
   shows "\<And> q. q \<in> set qs \<Longrightarrow> cf_pos q \<and> irreducible q \<and> degree q \<le> degree p \<and> degree q \<noteq> 0"
   "p \<noteq> 0 \<Longrightarrow> rp p x = 0 \<longleftrightarrow> (\<exists> q \<in> set qs. rp q x = 0)"
@@ -696,17 +732,58 @@ qed simp
 
 interpretation of_rat_hom: field_hom_0' of_rat..
 
-lemma represents_irreducible_unique: 
+lemma poly_zero_imp_not_unit:
+  assumes "poly p x = 0" shows "\<not> p dvd 1"
+proof (rule notI)
+  assume "p dvd 1"
+  from poly_hom.hom_dvd_1[OF this] have "poly p x dvd 1" by auto
+  with assms show False by auto
+qed
+
+lemma poly_prod_mset_zero_iff:
+  fixes x :: "'a :: idom"
+  shows "poly (prod_mset F) x = 0 \<longleftrightarrow> (\<exists>f \<in># F. poly f x = 0)"
+  by (induct F, auto simp: poly_mult_zero_iff)
+
+lemma algebraic_imp_represents_irreducible:
+  fixes x :: "'a :: field_char_0"
+  assumes "algebraic x"
+  shows "\<exists>p. p represents x \<and> irreducible p"
+proof -
+  from assms obtain p
+  where px0: "ipoly p x = 0" and p0: "p \<noteq> 0" unfolding algebraic_altdef_ipoly by auto
+  from poly_zero_imp_not_unit[OF px0]
+  have "\<not> p dvd 1" by (auto dest: of_int_poly_hom.hom_dvd_1[where 'a = 'a])
+  from mset_factors_exist[OF p0 this]
+  obtain F where F: "mset_factors F p" by auto
+  then have "p = prod_mset F" by auto
+  also have "(of_int_poly ... :: 'a poly) = prod_mset (image_mset of_int_poly F)" by simp
+  finally have "poly ... x = 0" using px0 by auto
+  from this[unfolded poly_prod_mset_zero_iff]
+  obtain f where "f \<in># F" and fx0: "ipoly f x = 0" by auto
+  with F have "irreducible f" by auto
+  with fx0 show ?thesis by auto
+qed
+
+lemma algebraic_imp_represents_irreducible_cf_pos:
+  assumes "algebraic (x::'a::field_char_0)"
+  shows "\<exists>p. p represents x \<and> irreducible p \<and> cf_pos p"
+proof -
+  from algebraic_imp_represents_irreducible[OF assms(1)]
+  obtain p where px: "p represents x" and irr: "irreducible p" by auto
+  let ?p = "cf_pos_poly p"
+  from px irr represents_imp_degree
+  have 1: "?p represents x" and 2: "irreducible ?p" and 3: "cf_pos ?p" by (auto intro: irreducible_cf_pos_poly)
+  then show ?thesis by (auto intro: exI[of _ ?p])
+qed
+
+lemma algebraic_imp_represents_unique: 
   fixes x :: "'a :: {field_char_0,euclidean_ring_gcd}"
   assumes "algebraic x"
-  shows "\<exists>! p. p represents x \<and> cf_pos p \<and> irreducible p"
+  shows "\<exists>! p. p represents x \<and> cf_pos p \<and> irreducible p" (is "Ex1 ?p")
 proof -
-  let ?p = "\<lambda> p. p represents x \<and> cf_pos p \<and> irreducible p"
-  note irrD = irreducibleD
-  from assms obtain p where
-    "p represents x" unfolding algebraic_altdef_ipoly represents_def by auto
-  from factors_int_poly_represents[OF this] obtain p where
-    p: "?p p" by auto
+  from assms obtain p
+  where p: "?p p" by (auto dest: algebraic_imp_represents_irreducible_cf_pos)
   show ?thesis
   proof (rule ex1I)
     show "?p p" by fact
@@ -735,18 +812,6 @@ proof -
       finally show False using c_def gcd by (simp add: dvd_iff_poly_eq_0)
     qed
   qed
-qed
-
-lemma algebraic_alg_irr_polyE:
-  assumes "algebraic (x::'a::{field_char_0,euclidean_ring_gcd})"
-      and "(\<And> p. p represents x \<Longrightarrow> irreducible p \<Longrightarrow> cf_pos p \<Longrightarrow> P)"
-  shows "P"
-proof -
-  from represents_irreducible_unique[OF assms(1)]
-  obtain p where "p represents x" by auto
-  from factors_int_poly_represents[OF this]
-  obtain p where 1: "p represents x" and 2: "irreducible p" and 3: "cf_pos p" by auto
-  from assms(2)[OF 1 2 3] show P by auto
 qed
 
 lemma ipoly_poly_compose: "ipoly (p \<circ>\<^sub>p q) x = ipoly p (ipoly q x)"
@@ -1147,7 +1212,7 @@ proof (rule ccontr)
   from f[OF r(1)] deg r(2) obtain r where r: "r represents x" "degree r < degree pp" by auto
   from factors_int_poly_represents[OF r(1)] r(2) obtain r where 
     r: "r represents x" "irreducible r" "cf_pos r" and deg: "degree r < degree pp" by force
-  from represents_irreducible_unique[OF ax] r irr cf_pos x have "r = pp" by auto
+  from algebraic_imp_represents_unique[OF ax] r irr cf_pos x have "r = pp" by auto
   with deg show False by auto
 qed
   

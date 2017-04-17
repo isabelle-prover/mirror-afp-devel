@@ -2843,7 +2843,7 @@ proof (cases x)
       from iy
       have algy: "p2 represents ?rx \<and> irreducible p2 \<and> cf_pos p2" unfolding represents_def eq by (auto elim!: invariant_1E)
       from algx have "algebraic ?rx" unfolding algebraic_altdef_ipoly by auto
-      note unique = represents_irreducible_unique[OF this]
+      note unique = algebraic_imp_represents_unique[OF this]
       with algx algy have id: "p2 = p1" by auto
       from eq id n1 n2 show "p1 = p2 \<and> n1 = n2" by auto
     next

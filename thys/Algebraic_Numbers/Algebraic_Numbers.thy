@@ -92,41 +92,13 @@ proof (unfold poly_add_def, rule poly_resultant_zero[OF disjI2])
 qed (insert x y, simp_all)
 
 
-subsection {* For nonzero resultant *}
+subsubsection {* @{const poly_add} is nonzero *}
 
-context begin
+text {*
+  We first prove that @{const poly_lift} preserves factorization. The result will be essential
+  also in the next section for division of algebraic numbers.
+ *}
 
-private abbreviation "y_x == [: [: 0, -1 :], 1 :]"
-
-private lemma poly2_y_x[simp]: fixes x :: "'a :: comm_ring_1" shows "poly2 y_x x y = y - x"
-  unfolding poly2_def by simp
-
-private definition "poly_y_minus_x p \<equiv> poly_lift p \<circ>\<^sub>p y_x"
-
-private lemma poly_y_minus_x_0: "poly_y_minus_x 0 = 0" by (simp add: poly_y_minus_x_def)
-
-private lemma poly_y_minus_x_pCons:
-  "poly_y_minus_x (pCons a p) = [:[: a :]:] + poly_y_minus_x p * y_x" by (simp add: poly_y_minus_x_def)
-
-private lemma poly_poly_y_minus_x:
-  fixes p :: "'a :: comm_ring_1 poly"
-  shows "poly (poly (poly_y_minus_x p) q) x = poly p (poly q x - x)"
-  by (induct p; simp add: ring_distribs poly_y_minus_x_pCons poly_y_minus_x_0)
-
-private lemma poly2_poly_y_minus_x:
-  fixes p :: "'a :: comm_ring_1 poly"
-  shows "poly2 (poly_y_minus_x p) x y = poly p (y - x)"
-  by (simp add: ring_distribs poly2_def poly_poly_y_minus_x)
-
-private lemma poly_y_x_poly_x_minus_y:
-  fixes p :: "'a :: {idom, ring_char_0} poly"
-  shows "poly_y_x (poly_x_minus_y p) = poly_y_minus_x p" by (intro poly2_ext, simp add: poly2_poly_y_minus_x)
-
-lemma degree_poly_y_minus_x[simp]:
-  fixes p :: "'a :: {idom, ring_char_0} poly"
-  shows "degree (poly_y_x (poly_x_minus_y p)) = degree p" by (simp add: poly_y_minus_x_def poly_y_x_poly_x_minus_y)
-
-end
 
 interpretation poly_y_x_hom:
   bijective "poly_y_x :: 'a :: {idom,ring_char_0} poly poly \<Rightarrow> 'a poly poly"
@@ -179,6 +151,12 @@ proof unfold_locales
   qed
 qed
 
+text {*
+  We now show that @{const poly_x_minus_y} is a factor-preserving homomorphism. This is
+  essential for this section. This is easy since @{const poly_x_minus_y} can be represented
+  as the composition of two factor-preserving homomorphisms.
+*}
+
 lemma poly_x_minus_y_as_comp: "poly_x_minus_y = (\<lambda>p. p \<circ>\<^sub>p x_y) \<circ> poly_lift"
   by (intro ext, unfold poly_x_minus_y_def, auto)
 
@@ -194,6 +172,42 @@ proof-
     by (unfold poly_x_minus_y_as_comp, rule factor_preserving_hom_comp, unfold_locales)
 qed
 
+text {*
+  Now we show that results of @{const poly_x_minus_y} and @{const poly_lift} are coprime.
+*}
+context begin
+
+private abbreviation "y_x == [: [: 0, -1 :], 1 :]"
+
+private lemma poly2_y_x[simp]: fixes x :: "'a :: comm_ring_1" shows "poly2 y_x x y = y - x"
+  unfolding poly2_def by simp
+
+private definition "poly_y_minus_x p \<equiv> poly_lift p \<circ>\<^sub>p y_x"
+
+private lemma poly_y_minus_x_0: "poly_y_minus_x 0 = 0" by (simp add: poly_y_minus_x_def)
+
+private lemma poly_y_minus_x_pCons:
+  "poly_y_minus_x (pCons a p) = [:[: a :]:] + poly_y_minus_x p * y_x" by (simp add: poly_y_minus_x_def)
+
+private lemma poly_poly_y_minus_x:
+  fixes p :: "'a :: comm_ring_1 poly"
+  shows "poly (poly (poly_y_minus_x p) q) x = poly p (poly q x - x)"
+  by (induct p; simp add: ring_distribs poly_y_minus_x_pCons poly_y_minus_x_0)
+
+private lemma poly2_poly_y_minus_x:
+  fixes p :: "'a :: comm_ring_1 poly"
+  shows "poly2 (poly_y_minus_x p) x y = poly p (y - x)"
+  by (simp add: ring_distribs poly2_def poly_poly_y_minus_x)
+
+private lemma poly_y_x_poly_x_minus_y:
+  fixes p :: "'a :: {idom, ring_char_0} poly"
+  shows "poly_y_x (poly_x_minus_y p) = poly_y_minus_x p" by (intro poly2_ext, simp add: poly2_poly_y_minus_x)
+
+lemma degree_poly_y_minus_x[simp]:
+  fixes p :: "'a :: {idom, ring_char_0} poly"
+  shows "degree (poly_y_x (poly_x_minus_y p)) = degree p" by (simp add: poly_y_minus_x_def poly_y_x_poly_x_minus_y)
+
+end
 
 lemma coprime_poly_x_minus_y_poly_lift:
   fixes p q :: "'a :: field_char_0 poly"
@@ -245,7 +259,7 @@ proof(rule ccontr)
 qed
 
 lemma poly_add_nonzero:
-  fixes p q :: "'a :: {factorial_ring_gcd, field_char_0} poly"
+  fixes p q :: "'a :: field_char_0 poly"
   assumes p0: "p \<noteq> 0" and q0: "q \<noteq> 0" and x: "poly p x = 0" and y: "poly q y = 0"
   shows "poly_add p q \<noteq> 0"
 proof
@@ -294,17 +308,17 @@ lemma ipoly_poly_add:
   by (unfold of_int_hom.poly_add_hom, rule poly_add, insert assms, auto)
 
 lemma ipoly_poly_add_nonzero:
-  fixes x y :: "'a :: {factorial_ring_gcd, field_char_0}"
+  fixes x y :: "'a :: field_char_0"
   assumes "p \<noteq> 0" and "q \<noteq> 0" and "ipoly p x = 0" and "ipoly q y = 0"
   shows "poly_add p q \<noteq> 0"
 proof-
   from assms have "(of_int_poly (poly_add p q) :: 'a poly) \<noteq> 0"
-    by (subst of_int_hom.poly_add_hom, subst poly_add_nonzero, auto)
+    by (unfold of_int_hom.poly_add_hom, intro poly_add_nonzero, auto)
   then show ?thesis by auto
 qed
 
 lemma represents_add:
-  fixes x y :: "'a :: {factorial_ring_gcd, field_char_0}"
+  fixes x y :: "'a :: field_char_0"
   assumes x: "p represents x" and y: "q represents y"
   shows "(poly_add p q) represents (x + y)"
   using x y by (intro representsI ipoly_poly_add ipoly_poly_add_nonzero, auto)
@@ -409,15 +423,6 @@ qed
 
 lemmas poly_y_x_o_poly_lift = o_def[of poly_y_x poly_lift, unfolded poly_y_x_poly_lift]
 
-lemma prod_mset_roots: (* TODO: move *)
-  assumes Fp: "prod_mset F = p" and p_0: "poly p x \<noteq> 0" and fF: "f \<in># F" shows "poly f x \<noteq> 0"
-proof-
-  from fF obtain F' where "F = add_mset f F'" by (rule mset_add)
-  with Fp have "p = f * prod_mset F'" by auto
-  also have "poly ... x = poly f x * poly (prod_mset F') x" by auto
-  finally show ?thesis using p_0 by auto
-qed
-
 lemma coprime_poly_x_mult_y_poly_lift:
   fixes p q :: "'a :: field_char_0 poly"
   assumes degp: "degree p > 0" and degq: "degree q > 0" and p_0: "poly p 0 \<noteq> 0"
@@ -458,7 +463,7 @@ proof(rule ccontr)
   note this[folded pF,simplified]
   from prime_elem_dvd_prod_mset[OF h[folded prime_elem_iff_irreducible] this]
   obtain f where f: "f \<in># F" and hf: "h dvd poly_y_x (poly_x_mult_y f)" by auto
-  have f_0: "poly f 0 \<noteq> 0" by (rule prod_mset_roots, insert F f p_0, auto)
+  from F f p_0 have f_0: "poly f 0 \<noteq> 0" by auto
 
   from dvd_trans[OF hr rq] have "h dvd [:q:]" by (simp add: poly_y_x_poly_lift monom_0)
   from irreducible_dvd_imp_factor[OF this h pG] q0
@@ -473,7 +478,7 @@ proof(rule ccontr)
 qed
 
 lemma poly_div_nonzero:
-  fixes p q :: "'a :: {factorial_ring_gcd, field_char_0} poly"
+  fixes p q :: "'a :: field_char_0 poly"
   assumes p0: "p \<noteq> 0" and q0: "q \<noteq> 0" and x: "poly p x = 0" and y: "poly q y = 0"
       and p_0: "poly p 0 \<noteq> 0"
   shows "poly_div p q \<noteq> 0"
@@ -513,7 +518,7 @@ lemma ipoly_poly_div:
   by (unfold of_int_hom.poly_div_hom, rule poly_div, insert assms, auto)
 
 lemma ipoly_poly_div_nonzero:
-  fixes x y :: "'a :: {factorial_ring_gcd, field_char_0}"
+  fixes x y :: "'a :: field_char_0"
   assumes "p \<noteq> 0" and "q \<noteq> 0" and "ipoly p x = 0" and "ipoly q y = 0" and "poly p 0 \<noteq> 0"
   shows "poly_div p q \<noteq> 0"
 proof-
@@ -523,7 +528,7 @@ proof-
 qed
 
 lemma represents_div:
-  fixes x y :: "'a :: {factorial_ring_gcd, field_char_0}"
+  fixes x y :: "'a :: field_char_0"
   assumes "p represents x" and "q represents y" and "poly p 0 \<noteq> 0" and "y \<noteq> 0"
   shows "(poly_div p q) represents (x / y)"
   using assms by (intro representsI ipoly_poly_div ipoly_poly_div_nonzero, auto)
@@ -536,7 +541,6 @@ subsection \<open>Multiplication of Algebraic Numbers\<close>
 definition poly_mult where "poly_mult p q \<equiv> poly_div p (poly_inverse q)"
 
 lemma represents_mult:
-  fixes x y :: "'a :: {factorial_ring_gcd, field_char_0}"
   assumes px: "p represents x" and qy: "q represents y" and p_0: "poly p 0 \<noteq> 0" and y0: "y \<noteq> 0"
   shows "(poly_mult p q) represents (x * y)"
 proof-
@@ -551,47 +555,42 @@ subsection \<open>Summary: Closure Properties of Algebraic Numbers\<close>
 lemma algebraic_representsI: "p represents x \<Longrightarrow> algebraic x"
   unfolding represents_def algebraic_altdef_ipoly by auto
 
-lemma algebraic_representsE[consumes 1]: "algebraic x \<Longrightarrow> (\<And> p. p represents x \<Longrightarrow> P) \<Longrightarrow> P"
-  unfolding algebraic_altdef_ipoly represents_def by auto
-
 lemma algebraic_of_rat: "algebraic (of_rat x)"
   by (rule algebraic_representsI[OF poly_rat_represents_of_rat])
 
 lemma algebraic_uminus: "algebraic x \<Longrightarrow> algebraic (-x)"
-  by (elim algebraic_representsE, rule algebraic_representsI[OF represents_uminus])
+  by (auto dest: algebraic_imp_represents_irreducible intro: algebraic_representsI represents_uminus)
 
 lemma algebraic_inverse: "algebraic x \<Longrightarrow> algebraic (inverse x)"
-proof (cases "x = 0")
-  case False
-  thus "algebraic x \<Longrightarrow> algebraic (inverse x)" 
-    by (elim algebraic_representsE, rule algebraic_representsI[OF represents_inverse])
-qed (insert algebraic_of_rat[of 0], auto)
+  using algebraic_of_rat[of 0]
+  by (cases "x = 0", auto dest: algebraic_imp_represents_irreducible intro: algebraic_representsI represents_inverse)
 
-lemma algebraic_plus: fixes x :: "'a :: {factorial_ring_gcd, field_char_0}"
-  shows "algebraic x \<Longrightarrow> algebraic y \<Longrightarrow> algebraic (x + y)"
-  by (elim algebraic_representsE, rule algebraic_representsI[OF represents_add])
+lemma algebraic_plus: "algebraic x \<Longrightarrow> algebraic y \<Longrightarrow> algebraic (x + y)"
+  by (auto dest: algebraic_imp_represents_irreducible intro: algebraic_representsI[OF represents_add])
 
-lemma algebraic_div: fixes x :: "'a :: {euclidean_ring_gcd, field_char_0}"
-  assumes x: "algebraic x" and y: "algebraic y" shows " algebraic (x/y)"
+lemma algebraic_div:
+  assumes x: "algebraic x" and y: "algebraic y" shows "algebraic (x/y)"
 proof(cases "y = 0 \<or> x = 0")
   case True
   then show ?thesis using algebraic_of_rat[of 0] by auto
 next
   case False
-  from algebraic_alg_irr_polyE[OF x] algebraic_alg_irr_polyE[OF y]
-  obtain p q where px: "p represents x" and qy: "q represents y" and p: "irreducible p" and q: "irreducible q" by metis+
-  from px qy p px False represents_irr_non_0
-  show ?thesis by (auto intro!:algebraic_representsI[OF represents_div])
+  then have x0: "x \<noteq> 0" and y0: "y \<noteq> 0" by auto
+  from x y obtain p q
+  where px: "p represents x" and p: "irreducible p" and qy: "q represents y"
+    by (auto dest!: algebraic_imp_represents_irreducible)
+  show ?thesis
+    using False px represents_irr_non_0[OF p px]
+    by (auto intro!: algebraic_representsI[OF represents_div[OF px qy]])
 qed
 
-lemma algebraic_times: fixes x :: "'a :: {euclidean_ring_gcd, field_char_0}"
-  shows "algebraic x \<Longrightarrow> algebraic y \<Longrightarrow> algebraic (x * y)"
+lemma algebraic_times: "algebraic x \<Longrightarrow> algebraic y \<Longrightarrow> algebraic (x * y)"
   using algebraic_div[OF _ algebraic_inverse, of x y] by (simp add: field_simps)
 
 lemma algebraic_root: "algebraic x \<Longrightarrow> algebraic (root n x)"
 proof -
   assume "algebraic x"
-  from algebraic_representsE[OF this] obtain p where p: "p represents x" by auto
+  then obtain p where p: "p represents x" by (auto dest: algebraic_imp_represents_irreducible_cf_pos)
   from 
     algebraic_representsI[OF represents_nth_root_neg_real[OF _ this, of n]]
     algebraic_representsI[OF represents_nth_root_pos_real[OF _ this, of n]]
@@ -600,7 +599,7 @@ proof -
 qed
 
 lemma algebraic_nth_root: "n \<noteq> 0 \<Longrightarrow> algebraic x \<Longrightarrow> y^n = x \<Longrightarrow> algebraic y"
-  by (elim algebraic_representsE, rule algebraic_representsI[OF represents_nth_root], auto)
+  by (auto dest: algebraic_imp_represents_irreducible_cf_pos intro: algebraic_representsI represents_nth_root)
 
 hide_const x_y
 

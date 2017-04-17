@@ -90,7 +90,7 @@ proof -
 qed
 
 
-lemma dvd_mult: fixes p :: "'a poly" 
+lemma dvd_mult_imp_degree: fixes p :: "'a poly" 
   assumes "p dvd q * r"
   and "degree p \<noteq> 0" 
 shows "\<exists> s t. irreducible s \<and> p = s * t \<and> (s dvd q \<or> s dvd r)"
