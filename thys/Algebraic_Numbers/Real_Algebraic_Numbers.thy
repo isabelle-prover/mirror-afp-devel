@@ -170,8 +170,8 @@ qed
 (* **************************************************************** *)
 subsection \<open>Real Algebraic Numbers -- Innermost Layer\<close>
 
-text \<open>We represent a real algebraic number \<alpha> by a tuple (p,l,r):
-    \<alpha> is the unique root in the interval [l,r]
+text \<open>We represent a real algebraic number @{text \<alpha>} by a tuple (p,l,r):
+    @{text \<alpha>} is the unique root in the interval [l,r]
     and l and r have the same sign. We always assume that p is normalized, i.e.,
     p is the unique irreducible and positive content-free polynomial 
     which represents the algebraic number.
