@@ -1486,7 +1486,7 @@ lemma listgcd_dvd_some_gcd_listgcd: "listgcd xs dvd some_gcd.listgcd xs"
 context factorial_ring_gcd begin
 
 text {* Do not declare the following as subclass, to avoid conflict in
-  field \<subseteq> gcd_condition  vs.  factorial_ring_gcd \<subseteq> gcd_condition.
+  @{text "field \<subseteq> gcd_condition"} vs. @{text "factorial_ring_gcd \<subseteq> gcd_condition"}.
  *}
 sublocale as_ufd: ufd
 proof(unfold_locales, goal_cases)
