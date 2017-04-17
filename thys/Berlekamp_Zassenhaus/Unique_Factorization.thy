@@ -276,7 +276,7 @@ begin
     using mult_cancel_left [of c a 1] by simp
 
   text \<open>
-    Following lemmas are adapted and generalized so that they don't use "algebraic_" classes.
+    Following lemmas are adapted and generalized so that they don't use "algebraic" classes.
   \<close>
 
   lemma dvd_times_left_cancel_iff [simp]:
