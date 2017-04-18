@@ -13,11 +13,11 @@ begin
 subsection \<open>Algorithm\<close>
 
 definition gcd_impl_primitive where
-  [code del]: "gcd_impl_primitive G1 G2 = normalize (primitive_part (fst (subresultant_prs G1 G2)))"
+  [code del]: "gcd_impl_primitive G1 G2 = normalize (primitive_part (fst (subresultant_prs dichotomous_Lazard G1 G2)))" 
 
 definition gcd_impl_main where
   [code del]: "gcd_impl_main G1 G2 = (if G1 = 0 then 0 else if G2 = 0 then normalize G1 else
-   smult (gcd (Polynomial.content G1) (Polynomial.content G2))
+   smult (gcd (content G1) (content G2))
      (gcd_impl_primitive (primitive_part G1) (primitive_part G2)))"
 
 definition gcd_impl where
@@ -36,10 +36,10 @@ locale subresultant_prs_gcd = subresultant_prs_locale2 F n \<delta> f k \<beta> 
 begin
 text \<open>The subresultant PRS computes the gcd up to a scalar multiple.\<close>
 
-lemma subresultant_prs_gcd: assumes "subresultant_prs G1 G2 = (Gk, hk)"
+lemma subresultant_prs_gcd: assumes "subresultant_prs dichotomous_Lazard G1 G2 = (Gk, hk)"
   shows "\<exists> a b. a \<noteq> 0 \<and> b \<noteq> 0 \<and> smult a (gcd G1 G2) = smult b (normalize Gk)"
 proof -
-  from subresultant_prs[OF assms]
+  from subresultant_prs[OF dichotomous_Lazard assms]
   have Fk: "F k = ffp Gk" and "\<forall> i. \<exists> H. i \<noteq> 0 \<longrightarrow> F i = ffp H"
     and "\<forall> i. \<exists> b. 3 \<le> i \<longrightarrow> i \<le> Suc k \<longrightarrow> \<beta> i = ff b" by auto
   from choice[OF this(2)] choice[OF this(3)] obtain H beta where
@@ -103,10 +103,10 @@ lemma gcd_impl_primitive: assumes "primitive_part G1 = G1" and "primitive_part G
 shows "gcd_impl_primitive G1 G2 = gcd G1 G2"
 proof -
   let ?pp = primitive_part
-  let ?c = "Polynomial.content"
+  let ?c = "content"
   let ?n = normalize
   from F2 F0[of 2] k2 have G2: "G2 \<noteq> 0" by auto
-  obtain Gk hk where sub: "subresultant_prs G1 G2 = (Gk, hk)" by force
+  obtain Gk hk where sub: "subresultant_prs dichotomous_Lazard G1 G2 = (Gk, hk)" by force
   have impl: "gcd_impl_primitive G1 G2 = ?n (?pp Gk)" unfolding gcd_impl_primitive_def sub by auto
   from subresultant_prs_gcd[OF sub]
   obtain a b where a: "a \<noteq> 0" and b: "b \<noteq> 0" and id: "smult a (gcd G1 G2) = smult b (?n Gk)"
@@ -128,7 +128,7 @@ proof -
   have a: "is_unit a" unfolding a_def using b e
     by (simp add: is_unit_smult_iff)
   define b where "b = unit_factor (?pp Gk)"
-  have "Gk \<noteq> 0" using subresultant_prs[OF sub] F0[OF k0] by auto
+  have "Gk \<noteq> 0" using subresultant_prs[OF dichotomous_Lazard sub] F0[OF k0] by auto
   hence b: "is_unit b" unfolding b_def by auto
   from is_unitE[OF b]
   obtain c where c: "is_unit c" and bc: "b * c = 1" by metis
@@ -200,23 +200,24 @@ proof -
       with len have f: "f \<noteq> 0" by auto
       let ?f = "primitive_part f"
       let ?g = "primitive_part g"
-      let ?c = "Polynomial.content"
+      let ?c = "content"
       from len have len: "length (coeffs ?f) \<ge> length (coeffs ?g)" by simp
-      obtain Gk hk where sub: "subresultant_prs ?f ?g = (Gk,hk)" by force
+      obtain Gk hk where sub: "subresultant_prs dichotomous_Lazard ?f ?g = (Gk,hk)" by force
       have cf: "?c f \<noteq> 0" and cg: "?c g \<noteq> 0" using f g by auto
       {
         from g have "?g \<noteq> 0" by auto
         from enter_subresultant_prs[OF len this] obtain F n d f k b
           where "subresultant_prs_locale2 F n d f k b ?f ?g" by auto
         interpret subresultant_prs_locale2 F n d f k b ?f ?g by fact
-        from subresultant_prs[OF sub] have "h k = ff hk" by auto
+        from subresultant_prs[OF dichotomous_Lazard sub] have "h k = ff hk" by auto
         with h0[OF le_refl] have "hk \<noteq> 0" by auto
       } note hk0 = this
       have "resultant f g = 0 \<longleftrightarrow> resultant (smult (?c f) ?f) (smult (?c g) ?g) = 0" by simp
       also have "\<dots> \<longleftrightarrow> resultant ?f ?g = 0" unfolding resultant_smult_left[OF cf] resultant_smult_right[OF cg]
         using cf cg by auto
-      also have "\<dots> \<longleftrightarrow> resultant_impl_main ?f ?g = 0"
-        unfolding resultant_impl[symmetric] resultant_impl_def using len by auto
+      also have "\<dots> \<longleftrightarrow> resultant_impl_main dichotomous_Lazard ?f ?g = 0" 
+        unfolding resultant_impl[symmetric] resultant_impl_def resultant_impl_main_def 
+        resultant_impl_generic_def using len by auto
       also have "\<dots> \<longleftrightarrow> (degree Gk \<noteq> 0)"
         unfolding resultant_impl_main_def sub split using g hk0 by auto
       also have "degree Gk = degree (gcd_impl_primitive ?f ?g)"
@@ -268,14 +269,13 @@ lemma gcd_impl_rec_code[code]:
            ni = degree Gi;
            d1 = ni_1 - ni;
            gi_1 = lead_coeff Gi_1;
-           hi_1 = (if d1_1 = 1 then gi_1 else if d1_1 = 2 then gi_1 * gi_1 div hi_2
-               else gi_1 ^ d1_1 div hi_2 ^ (d1_1 - 1));
+           hi_1 = (if d1_1 = 1 then gi_1 else dichotomous_Lazard gi_1 hi_2 d1_1);
            divisor = if d1 = 1 then gi_1 * hi_1 else if even d1 then - gi_1 * hi_1 ^ d1 else gi_1 * hi_1 ^ d1;
            Gi_p1 = divide_poly pmod divisor
        in gcd_impl_rec Gi Gi_p1 ni d1 hi_1)"
   unfolding gcd_impl_rec_def subresultant_prs_main_impl.simps[of _ Gi_1] split Let_def
   unfolding gcd_impl_rec_def[symmetric]
-  by (rule if_cong[OF refl _], auto simp: power2_eq_square)
+  by (rule if_cong, auto)
 
 lemma gcd_impl_start_code[code]:
   "gcd_impl_start G1 G2 =
@@ -304,13 +304,13 @@ proof -
     unfolding gcd_impl_start_def subresultant_prs_impl_def gcd_impl_rec_def[symmetric] Let_def split
     unfolding d1
     unfolding id1
-    by (rule if_cong, auto simp: power2_eq_square)
+    by (rule if_cong, auto)
 qed
 
 lemma gcd_impl_main_code[code]:
   "gcd_impl_main G1 G2 = (if G1 = 0 then 0 else if G2 = 0 then normalize G1 else
-    let c1 = Polynomial.content G1;
-      c2 = Polynomial.content G2;
+    let c1 = content G1;
+      c2 = content G2;
       p1 = map_poly (\<lambda> x. x div c1) G1;
       p2 = map_poly (\<lambda> x. x div c2) G2
      in smult (gcd c1 c2) (normalize (primitive_part (gcd_impl_start p1 p2))))"
