@@ -23,10 +23,7 @@ session Berlekamp_Zassenhaus (AFP) = Pre_BZ +
     (* Hensel Lifting *)
     Hensel_Lifting_Type_Based
     Hensel_Lifting
-      Berlekamp_Hensel
-
-    (* Resultants *)
-    Resultant
+    Berlekamp_Hensel
 
     (* Zassenhaus Reconstruction *)
       Square_Free_Int_To_Square_Free_GFp
@@ -47,7 +44,7 @@ session Berlekamp_Zassenhaus (AFP) = Pre_BZ +
     "root.bib"
     "root.tex" 
 
-session Pre_BZ (AFP) = "Polynomial_Factorization" +
+session Pre_BZ (AFP) = "Subresultants" +
   options [document = false, timeout = 600]
   theories
     "../Jordan_Normal_Form/Matrix_Kernel"
@@ -55,6 +52,6 @@ session Pre_BZ (AFP) = "Polynomial_Factorization" +
     "../Efficient-Mergesort/Efficient_Sort"
     "~~/src/HOL/Number_Theory/Residues"
     "~~/src/HOL/Types_To_Sets/Types_To_Sets"
-    "../Jordan_Normal_Form/Determinant_Impl"
     "../Native_Word/Uint32"
     "../Native_Word/Code_Target_Bits_Int"
+    "../Polynomial_Factorization/Rational_Factorization" 

@@ -10,26 +10,9 @@ text \<open>In this theory we prove that the polynomials over a unique factoriza
 theory Unique_Factorization_Poly
 imports
   Unique_Factorization
+  "../Polynomial_Factorization/Missing_Polynomial_Factorial" 
+  "../Subresultants/More_Homomorphisms" 
 begin
-
-
-lemma is_unit_field_poly[simp]: "(p::'a::field poly) dvd 1 \<longleftrightarrow> p \<noteq> 0 \<and> degree p = 0"
-proof(intro iffI conjI, unfold conj_imp_eq_imp_imp)
-  assume "is_unit p"
-  then obtain q where *: "p * q = 1" by (elim dvdE, auto)
-  from * show p0: "p \<noteq> 0" by auto
-  from * have q0: "q \<noteq> 0" by auto
-  from * degree_mult_eq[OF p0 q0]
-  show "degree p = 0" by auto
-next
-  assume "degree p = 0"
-  from degree_0_id[OF this,symmetric]
-  obtain c where c: "p = [:c:]" by auto
-  assume "p \<noteq> 0"
-  with c have "c \<noteq> 0" by auto
-  with c have "1 = p * [:1/c:]" by auto
-  from dvdI[OF this] show "is_unit p".
-qed
 
 instance poly :: (field) unique_factorization
 proof-
@@ -354,7 +337,7 @@ lemma range_to_fract_embed_poly: assumes "set (coeffs p) \<subseteq> range to_fr
   shows "p = map_poly to_fract (map_poly inv_embed p)"
 proof -
   have "p = map_poly (to_fract o inv_embed) p"
-    by (rule sym, rule map_poly_eqI, insert assms, auto)
+    by (rule sym, rule map_poly_idI, insert assms, auto)
   also have "\<dots> = map_poly to_fract (map_poly inv_embed p)" 
     by (subst map_poly_map_poly, auto)
   finally show ?thesis .
@@ -466,8 +449,8 @@ proof (cases "p = 0 \<or> q = 0")
       from choice[OF this] obtain qi where qi: "\<And> i. coeff q i = to_fract (qi i)" by blast
       let ?s = "coeff q s"
       let ?g = "\<lambda> i. coeff p i * coeff q (r + s - i)"
-      def a \<equiv> "(\<Sum>i\<in>{..<r}. (rr i * qi (r + s - i)))"
-      def b \<equiv> "\<Sum> i \<in> {Suc r..r + s}. pi i * (ss (r + s - i))" 
+      define a where "a = (\<Sum>i\<in>{..<r}. (rr i * qi (r + s - i)))"
+      define b where "b = (\<Sum> i \<in> {Suc r..r + s}. pi i * (ss (r + s - i)))" 
       have "coeff (p * q) (r + s) = (\<Sum>i\<le>r + s. ?g i)" unfolding coeff_mult ..
       also have "{..r+s} = {..< r} \<union> {r .. r+s}" by auto
       also have "(\<Sum>i\<in>{..<r} \<union> {r..r + s}. ?g i)
@@ -620,7 +603,7 @@ proof-
     from p' cp have c: "c \<noteq> 0" by auto
     have "?c ?p =dff 1" unfolding cp
     proof (rule ccontr)
-      def cp \<equiv> "normalize_content_ff ?p"
+      define cp where "cp = normalize_content_ff ?p"
       from smult_normalize_content_ff[of ?p] have cps: "?p = smult (to_fract c) cp" unfolding cp_def cp ..
       from content_ff_normalize_content_ff_1[OF p'] have c_cp: "content_ff cp =dff 1" unfolding cp_def .
       from range_to_fract_embed_poly[OF content_ff_1_coeffs_to_fract[OF c_cp]] obtain cp' where "cp = ?E cp'" by auto
@@ -926,23 +909,6 @@ instance poly :: (ufd) ufd
   apply unfold_locales
   done
 
-definition content_free where
-  "content_free f \<longleftrightarrow> (\<forall>x. (\<forall>y \<in> set (coeffs f). x dvd y) \<longrightarrow> x dvd 1)"
-
-lemma content_freeI:
-  assumes "(\<And>x. (\<And>y. y \<in> set (coeffs f) \<Longrightarrow> x dvd y) \<Longrightarrow> x dvd 1)"
-  shows "content_free f" by (insert assms, auto simp: content_free_def)
-
-lemma content_freeD:
-  assumes "content_free f"
-  shows "(\<And>y. y \<in> set (coeffs f) \<Longrightarrow> x dvd y) \<Longrightarrow> x dvd 1"
-    by (insert assms, auto simp: content_free_def)
-
-lemma not_content_freeE:
-  assumes "\<not> content_free f"
-      and "\<And>x. (\<And>y. y \<in> set (coeffs f) \<Longrightarrow> x dvd y) \<Longrightarrow> \<not> x dvd 1 \<Longrightarrow> thesis"
-  shows thesis by (insert assms, auto simp: content_free_def)
-
 
 lemma content_free_iff_some_content_dvd_1:
   fixes f :: "'a :: ufd poly" (* gcd_condition suffices... *)
@@ -960,21 +926,71 @@ next
   show "?c dvd 1" by auto
 qed
 
-lemma content_free_iff_content_eq_1[simp]:
-  fixes f :: "'a :: semiring_gcd poly"
-  shows "content_free f \<longleftrightarrow> content f = 1"
-proof(intro iffI content_freeI)
-  fix x
-  assume "(\<And>y. y \<in> set (coeffs f) \<Longrightarrow> x dvd y)"
-  from listgcd_greatest[of "coeffs f", OF this]
-  have "x dvd content f" by (simp add: content_def listgcd_connect)
-  also assume "content f = 1"
-  finally show "x dvd 1".
-next
-  assume "content_free f"
-  from content_freeD[OF this listgcd[of _ "coeffs f"],unfolded listgcd_connect, folded content_def]
-  show "content f = 1" by simp
+(*TODO:move*)
+lemma irreducible_imp_content_free:
+  fixes f :: "'a :: {idom,semiring_gcd} poly"
+  assumes irr: "irreducible f" and deg: "degree f \<noteq> 0" shows "content_free f"
+proof (rule ccontr)
+  assume not: "\<not> ?thesis"
+  then have "\<not> [:content f:] dvd 1" by simp
+  moreover have "f = [:content f:] * primitive_part f" by simp
+    note irreducibleD[OF irr this]
+  ultimately
+  have "primitive_part f dvd 1" by auto
+  from this[unfolded poly_dvd_1] have "degree f = 0" by auto
+  with deg show False by auto
 qed
 
+(*TODO:move*)
+lemma irreducible_content_free_connect:
+  fixes f :: "'a :: {idom,semiring_gcd} poly"
+  assumes cf: "content_free f" shows "Missing_Polynomial.irreducible f \<longleftrightarrow> irreducible f" (is "?l \<longleftrightarrow> ?r")
+proof
+  assume l: ?l show ?r
+  proof(rule ccontr, elim not_irreducibleE)
+    from l have deg: "degree f > 0" by (auto dest: Missing_Polynomial.irreducibleD)
+    from cf have f0: "f \<noteq> 0" by auto
+    then show "f = 0 \<Longrightarrow> False" by auto
+    show "f dvd 1 \<Longrightarrow> False" using deg by (auto simp:poly_dvd_1)
+    fix a b assume fab: "f = a * b" and a1: "\<not> a dvd 1" and b1: "\<not> b dvd 1"
+    then have af: "a dvd f" and bf: "b dvd f" by auto
+    with f0 have a0: "a \<noteq> 0" and b0: "b \<noteq> 0" by auto
+    from Missing_Polynomial.irreducibleD(2)[OF l, of a] af dvd_imp_degree_le[OF af f0]
+    have "degree a = 0 \<or> degree a = degree f" by force
+    then show False
+    proof(elim disjE)
+      assume "degree a = 0"
+      then obtain c where ac: "a = [:c:]" by (auto dest: degree0_coeffs)
+      from fab[unfolded ac] have "c dvd content f" by (simp add: content_iff coeffs_smult)
+      with cf have "c dvd 1" by simp
+      then have "a dvd 1" by (auto simp: ac)
+      with a1 show False by auto
+    next
+      assume dega: "degree a = degree f"
+      with f0 degree_mult_eq[OF a0 b0] fab have "degree b = 0" by (auto simp: ac_simps)
+      then obtain c where bc: "b = [:c:]" by (auto dest: degree0_coeffs)
+      from fab[unfolded bc] have "c dvd content f" by (simp add: content_iff coeffs_smult)
+      with cf have "c dvd 1" by simp
+      then have "b dvd 1" by (auto simp: bc)
+      with b1 show False by auto
+    qed
+  qed
+next
+  assume r: ?r
+  show ?l
+  proof(intro Missing_Polynomial.irreducibleI notI)
+    assume "degree f = 0"
+    then obtain f0 where f: "f = [:f0:]" by (auto dest: degree0_coeffs)
+    from cf[unfolded this] have "normalize f0 = 1" by auto
+    then have "f0 dvd 1" by (unfold normalize_1_iff)
+    with r[unfolded f irreducible_const_poly_iff] show False by auto
+  next
+    fix g assume deg_g: "degree g \<noteq> 0" and deg_gf: "degree g < degree f" and gf: "g dvd f"
+    from gf obtain h where fgh: "f = g * h" by (elim dvdE)
+    with r have "g dvd 1 \<or> h dvd 1" by auto
+    with deg_g have "degree h = 0" by (auto simp: poly_dvd_1)
+    with deg_gf[unfolded fgh] degree_mult_eq[of g h] show False by (cases "g = 0 \<or> h = 0", auto)
+  qed
+qed
 
 end

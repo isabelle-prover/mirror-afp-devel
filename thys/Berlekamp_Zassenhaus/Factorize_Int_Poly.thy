@@ -272,7 +272,7 @@ proof-
 qed
 
 lemma coeff_primitive_part: "content f * coeff (primitive_part f) i = coeff f i"
-  using arg_cong[OF smult_normalize_content[of f], of "\<lambda>f. coeff f _", unfolded coeff_smult].
+  using arg_cong[OF content_times_primitive_part[of f], of "\<lambda>f. coeff f _", unfolded coeff_smult].
 
 (* TODO: move *)
 lemma smult_cancel[simp]:
@@ -287,7 +287,7 @@ qed
 lemma primitive_part_reflect_poly:
   fixes f :: "'a :: {semiring_gcd,idom} poly"
   shows "primitive_part (reflect_poly f) = reflect_poly (primitive_part f)" (is "?l = ?r")
-  using smult_normalize_content[of "reflect_poly f"]
+  using content_times_primitive_part[of "reflect_poly f"]
 proof-
   note content_reflect_poly[of f, symmetric]
   also have "smult (content (reflect_poly f)) ?l = reflect_poly f" by simp
@@ -559,7 +559,7 @@ proof (atomize(full))
         proof (rule gcdI)
           fix d
           assume d: "d dvd ?x" "d dvd a" 
-          from dvd_content_dvd_rev[OF d(1)] x have cnt: "is_unit (content d)" by auto
+          from content_dvd_contentI[OF d(1)] x have cnt: "is_unit (content d)" by auto
           show "is_unit d"
           proof (cases "degree d = 1")
             case False

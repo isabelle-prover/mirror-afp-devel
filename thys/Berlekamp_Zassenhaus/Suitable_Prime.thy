@@ -15,14 +15,14 @@ text \<open>The Berlekamp-Zassenhaus algorithm demands for an input polynomial $
 
 theory Suitable_Prime
 imports 
-  Polynomial_Record_Based
-  Finite_Field_Record_Based
   Poly_Mod
-  Square_Free_Int_To_Square_Free_GFp
-  Poly_Mod_Finite_Field_Record_Based
+  Finite_Field_Record_Based
   "~~/src/HOL/Types_To_Sets/Types_To_Sets"
+  Poly_Mod_Finite_Field_Record_Based
+  Polynomial_Record_Based
+  Square_Free_Int_To_Square_Free_GFp
 begin
-
+ 
 lemma square_free_coprime_pderiv_GFp: fixes f :: "'a :: prime_card mod_ring poly"
   assumes card: "CARD('a) > degree f"
   and sf: "square_free f" 
@@ -62,7 +62,7 @@ proof -
   have rel_f[transfer_rule]: "poly_rel ?f' f''" 
     by (rule poly_rel_coeffs_Mp_of_int_poly[OF refl], simp add: f''_def)
   have id: "square_free_i ff_ops ?f' = coprime f'' (pderiv f'')"
-    unfolding square_free_i_def apply (unfold coprime_iff_gcd_one) by transfer_prover
+    unfolding square_free_i_def by transfer_prover
   have Mprel [transfer_rule]: "MP_Rel (Mp f) F" unfolding F MP_Rel_def
     by (simp add: Mp_f_representative)
   have "square_free f'' = square_free F" unfolding f''_def F by simp
@@ -169,13 +169,13 @@ proof -
     from arg_cong[OF f, of lead_coeff] have "lead_coeff f = lead_coeff g * lead_coeff g * lead_coeff h" 
       by (auto simp: lead_coeff_mult)
     hence "lead_coeff g dvd lead_coeff f" by auto
-    with cop have cop: "coprime (lead_coeff g) p" apply simp by (metis coprime_divisors dvd_def mult.right_neutral)
+    with cop have cop: "coprime (lead_coeff g) p" 
+      by (metis coprime_divisors dvd_def mult.right_neutral)
     with p0 have "coprime (lead_coeff g mod p) p" by simp
     also have "lead_coeff g mod p = 0"
       using M_def g0 by simp
     finally show False using p
-      apply simp
-        unfolding prime_int_iff
+      unfolding prime_int_iff
       by (simp add: prime_int_iff)
   qed
 qed
@@ -202,7 +202,7 @@ proof -
   {
     fix lc 
     assume assms:"0 < lc" "lc < p" 
-    from prime have "coprime lc p" apply simp
+    from prime have "coprime lc p" 
       by (metis (no_types) assms gcd.commute prime_imp_coprime zdvd_not_zless)
   } note main = this
   define lc where "lc = lead_coeff f" 

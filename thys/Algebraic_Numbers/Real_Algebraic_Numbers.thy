@@ -1878,7 +1878,7 @@ proof (cases y)
     by (metis surj_pair)
   from lr have z: "z = (p,l,r)" by (auto simp: y_def z_def p_def Let_def)
   from inv_y have ur: "unique_root (p, l2 + r1, r2 + r1)"
-    by (auto elim: invariant_1E simp: p_def add_rat_root_cond y_def add_rat_unique_root)
+    by (auto simp: p_def add_rat_root_cond y_def add_rat_unique_root)
   from inv_y[unfolded y_def] have pc2: "poly_cond2 p"
     by (auto elim!: poly_condE invariant_1E intro: poly_add_rat_irreducible intro!:poly_condI simp: p_def)
   note main = tighten_poly_bounds_for_x[OF ur pc2 lr refl, simplified]

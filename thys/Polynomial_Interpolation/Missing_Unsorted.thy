@@ -433,5 +433,19 @@ lemma prod_list_partition: assumes "partition f xs = (ys, zs)"
   using assms by (subst prod_list_filter[symmetric, of f], auto simp: o_def)
 end
 
+lemma dvd_imp_mult_div_cancel_left[simp]:
+  assumes "(a :: 'a :: semidom_divide) dvd b"
+  shows "a * (b div a) = b"
+proof(cases "b = 0")
+  case True then show ?thesis by auto
+next
+  case False
+    with dvdE[OF assms] obtain c where *: "b = a * c" by auto
+    also with False have "a \<noteq> 0" by auto
+    then have "a * c div a = c" by auto
+    also note *[symmetric]
+    finally show ?thesis.
+qed
+  
 
 end

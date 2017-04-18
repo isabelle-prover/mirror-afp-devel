@@ -222,10 +222,10 @@ proof -
   show "A' = A \<and> B' = B" unfolding equivalent_def norm Mp by auto
 qed
 
-lemma Mp_0_smult_div_poly: assumes "Mp f = 0" 
-  shows "smult m (div_poly m f) = f" 
+lemma Mp_0_smult_sdiv_poly: assumes "Mp f = 0" 
+  shows "smult m (sdiv_poly f m) = f" 
   unfolding equivalent_def
-proof (intro poly_eqI, unfold Mp_coeff coeff_smult div_poly_def, subst coeff_map_poly, force)
+proof (intro poly_eqI, unfold Mp_coeff coeff_smult sdiv_poly_def, subst coeff_map_poly, force)
   fix n
   from assms have "coeff (Mp f) n = 0" by simp
   hence 0: "coeff f n mod m = 0" unfolding Mp_coeff M_def .
@@ -693,7 +693,7 @@ fun linear_hensel_main where
 | "linear_hensel_main (Suc n) = (
       let (D,H) = linear_hensel_main n;
         q = p ^ n;
-        U = div_poly q (C - D * H);   (* H2 *)
+        U = sdiv_poly (C - D * H) q;   (* H2 *)
         U = poly_mod.Mp p U;          (* H3 *)
         (A,B) = poly_mod.dupe_monic p D1 H1 S T U
       in (D + smult q B, H + smult q A))" (* H4 *)
@@ -703,7 +703,7 @@ lemma linear_hensel_code[code]: "linear_hensel_main n = (if n \<le> 1 then (D1,H
   let n1 = n - 1;
     (D,H) = linear_hensel_main n1;
         q = p ^ n1;
-        U = div_poly q (C - D * H);  
+        U = sdiv_poly (C - D * H) q;  
         U = poly_mod.Mp p U;         
         (A,B) = poly_mod.dupe_monic p D1 H1 S T U
       in (D + smult q B, H + smult q A))"
@@ -748,8 +748,8 @@ proof (induct n arbitrary: D H D' H')
     interpret q: poly_mod_2 ?q using q unfolding poly_mod_2_def .
     interpret pq: poly_mod_2 ?pq using pq unfolding poly_mod_2_def .
     obtain D H where rec: "linear_hensel_main n = (D,H)" by force
-    obtain V where V: "div_poly (p ^ n) (C - D * H) = V" by force
-    obtain U where U: "p.Mp (div_poly ?q (C - D * H)) = U" by auto
+    obtain V where V: "sdiv_poly (C - D * H) ?q = V" by force
+    obtain U where U: "p.Mp (sdiv_poly (C - D * H) ?q) = U" by auto
     obtain A B where dupe: "p.dupe_monic D1 H1 S T U = (A,B)" by force
     note IH = Suc(1)[OF rec n]
     from IH
@@ -765,7 +765,7 @@ proof (induct n arbitrary: D H D' H')
     from CDH[unfolded q.equivalent_def] have "q.Mp C - q.Mp (D * H) = 0" by simp
     hence "q.Mp (q.Mp C - q.Mp (D * H)) = 0" by simp
     hence "q.Mp (C - D*H) = 0" by simp
-    from q.Mp_0_smult_div_poly[OF this] have CDHq: "smult ?q (div_poly ?q (C - D * H)) = C - D * H" .
+    from q.Mp_0_smult_sdiv_poly[OF this] have CDHq: "smult ?q (sdiv_poly (C - D * H) ?q) = C - D * H" .
     have ADBHU: "p.equivalent (A * D + B * H) U" using p_eq dupe(1) 
       unfolding p.equivalent_def by (metis (mono_tags, lifting) p.mult_Mp(2) poly_mod.plus_Mp)
     
@@ -1117,11 +1117,11 @@ lemma hensel_quadratic_main: assumes
   and p: "p > 1" 
   and D: "poly_mod.Mp q D = D" 
   and H: "poly_mod.Mp q H = H"
-  and U1: "U1 = poly_mod.Mp p (div_poly q (C - D * H))"
+  and U1: "U1 = poly_mod.Mp p (sdiv_poly (C - D * H) q)"
   and dupe1: "poly_mod.dupe_monic p D1 H1 S1 T1 U1 = (A,B)" 
   and D': "D' = D + smult q B"
   and H': "H' = H + smult q A" 
-  and U2: "U2 = poly_mod.Mp q (div_poly p (S*D' + T*H' - 1))" 
+  and U2: "U2 = poly_mod.Mp q (sdiv_poly (S*D' + T*H' - 1) p)" 
   and dupe2: "poly_mod.dupe_monic q D H S T U2 = (A',B')" 
   and rq: "r = p * q" 
   and pq: "p dvd q"  
@@ -1154,7 +1154,7 @@ proof -
   from CDHq[unfolded q.equivalent_def] have "q.Mp C - q.Mp (D * H) = 0" by simp
   hence "q.Mp (q.Mp C - q.Mp (D * H)) = 0" by simp
   hence "q.Mp (C - D*H) = 0" by simp
-  from q.Mp_0_smult_div_poly[OF this] have CDHq: "smult q (div_poly q (C - D * H)) = C - D * H" .
+  from q.Mp_0_smult_sdiv_poly[OF this] have CDHq: "smult q (sdiv_poly (C - D * H) q) = C - D * H" .
   {
     fix A B
     have "Mp (A * D1 + B * H1) = Mp (Mp (A * D1) + Mp (B * H1))" by simp
@@ -1178,7 +1178,7 @@ proof -
   qed
   also have "\<dots> = r.Mp (C - D * H)" 
     unfolding arg_cong[OF CDHq, of r.Mp, symmetric]
-    using Mp_lift_modulus[of U1 "div_poly q (C - D * H)" q] unfolding poly_mod.equivalent_def U1 
+    using Mp_lift_modulus[of U1 "sdiv_poly (C - D * H) q" q] unfolding poly_mod.equivalent_def U1 
     by simp
   also have "r.Mp (D * H + r.Mp (C - D * H) + 0) = r.Mp C" by simp
   finally show CDH: "r.equivalent C (D' * H')" unfolding r.equivalent_def by simp
@@ -1193,8 +1193,8 @@ proof -
   also have "Mp (1 + (smult q (S * B + T * A) - 1)) = Mp (smult q (S * B + T * A))" by simp
   also have "\<dots> = 0" unfolding qp by (metis Mp_smult_m_0 smult_smult)
   finally have "Mp (S * D' + T * H' - 1) = 0" .
-  from Mp_0_smult_div_poly[OF this] 
-  have SDTH: "smult p (div_poly p (S * D' + T * H' - 1)) = S * D' + T * H' - 1" .
+  from Mp_0_smult_sdiv_poly[OF this] 
+  have SDTH: "smult p (sdiv_poly (S * D' + T * H' - 1) p) = S * D' + T * H' - 1" .
   have swap: "q * p = p * q" by simp
   have "r.Mp (D' * S' + H' * T') = 
     r.Mp ((D + smult q B) * (S - smult p A') + (H + smult q A) * (T - smult p B'))"
@@ -1210,7 +1210,7 @@ proof -
     using q.Mp_lift_modulus[OF dupe2(1), of p] unfolding swap r.equivalent_def .
   also have "\<dots> = r.Mp (S * D' + T * H' - 1)" 
     unfolding arg_cong[OF SDTH, of r.Mp, symmetric] 
-    using q.Mp_lift_modulus[of U2 "div_poly p (S * D' + T * H' - 1)" p] 
+    using q.Mp_lift_modulus[of U2 "sdiv_poly (S * D' + T * H' - 1) p" p] 
     unfolding poly_mod.equivalent_def U2 swap by simp
   also have "S * D' + T * H' - 1 = S * D + T * H + smult q (B * S + A * T) - 1" 
     unfolding D' H' by (simp add: field_simps smult_distribs)
@@ -1240,13 +1240,13 @@ qed
   
 fun quadratic_hensel_main where 
   "quadratic_hensel_main (Suc j) q S T D H = (
-      let U = div_poly q (C - D * H) (* Z2 *)
+      let U = sdiv_poly (C - D * H) q (* Z2 *)
         in if U = 0 then (D,H) else let (* optimization (iii) *)
         U = poly_mod.Mp q U;          (* Z3 *)
         (A,B) = poly_mod.dupe_monic q D H S T U;
         D' = D + smult q B; (* Z4 *)
         H' = H + smult q A;
-        U' = div_poly q (S*D' + T*H' - 1); (* Z5 *)
+        U' = sdiv_poly (S*D' + T*H' - 1) q; (* Z5 *)
         U' = poly_mod.Mp q U'; (* Z6 *)
         (A',B') = poly_mod.dupe_monic q D H S T U';
         q' = q * q;
@@ -1258,14 +1258,14 @@ fun quadratic_hensel_main where
 declare quadratic_hensel_main.simps[code del]
 
 lemma quadratic_hensel_main_code[code]: "quadratic_hensel_main (Suc j) q S T D H = (
-      let U = div_poly q (C - D * H) 
+      let U = sdiv_poly (C - D * H) q
         in if U = 0 then (D,H) else let 
         U = poly_mod.Mp q U;          
         (A,B) = poly_mod.dupe_monic q D H S T U;
         D' = D + smult q B; 
         H' = H + smult q A
         in if j = 0 then (D',H') else let (* do not compute S' T' for last iteration *)       
-        U' = div_poly q (S*D' + T*H' - 1); 
+        U' = sdiv_poly (S*D' + T*H' - 1) q; 
         U' = poly_mod.Mp q U';
         (A',B') = poly_mod.dupe_monic q D H S T U';
         q' = q * q;
@@ -1302,20 +1302,20 @@ next
   from q have qq: "q * q > 1" by (simp add: less_1_mult)
   interpret qq: poly_mod_2 "q * q" using qq unfolding poly_mod_2_def .  
   note dupe = dupe_monic[OF 1 mon]
-  define U1 where "U1 = Mp (div_poly q (C - D * H))" 
+  define U1 where "U1 = Mp (sdiv_poly (C - D * H) q)" 
   from CDH[unfolded equivalent_def] have "Mp C - Mp (D * H) = 0" by simp
   hence "Mp (Mp C - Mp (D * H)) = 0" by simp
   hence "Mp (C - D*H) = 0" by simp
-  from Mp_0_smult_div_poly[OF this] have CDHq: "smult q (div_poly q (C - D * H)) = C - D * H" .
+  from Mp_0_smult_sdiv_poly[OF this] have CDHq: "smult q (sdiv_poly (C - D * H) q) = C - D * H" .
   obtain A B where dupe1: "dupe_monic D H S T U1 = (A,B)" by force
   define D' where "D' = D + smult q B" 
   define H' where "H' = H + smult q A"
-  define U2 where "U2 = Mp (div_poly q (S * D' + T * H' - 1))" 
+  define U2 where "U2 = Mp (sdiv_poly (S * D' + T * H' - 1) q)" 
   obtain A' B' where dupe2: "dupe_monic D H S T U2 = (A',B')" by force
   define S' where "S' = qq.Mp (S - smult q A')" 
   define T' where "T' = qq.Mp (T - smult q B')" 
   show ?case
-  proof (cases "div_poly q (C - D * H) = 0")
+  proof (cases "sdiv_poly (C - D * H) q = 0")
     case True
     with res have res: "D'' = D" "H'' = H" by auto
     from True CDHq have C: "C = D * H" by simp
@@ -1328,12 +1328,12 @@ next
       intro!: Mp_ident_product)
   next
     case False
-    hence [simp]: "(div_poly q (C - D * H) = 0) = False" by simp
+    hence [simp]: "(sdiv_poly (C - D * H) q = 0) = False" by simp
     from res[simplified, simplified, folded U1_def, unfolded dupe1 split Let_def, 
       folded D'_def H'_def, folded U2_def, unfolded dupe2 split, folded S'_def T'_def]
     have res: "quadratic_hensel_main j (q * q) S' T' D' H' = (D'', H'')" by auto
     from hensel_quadratic_main[OF 1 1 CDH refl refl refl refl mon mon q q D H U1_def 
-      dupe1 D'_def H'_def U2_def dupe2 refl _ S'_def T'_def]
+      dupe1 D'_def H'_def U2_def dupe2 refl _ S'_def T'_def] 
     have CDH: "qq.equivalent C (D' * H')" and D': "qq.Mp D' = D'" and H': "qq.Mp H' = H'" 
       and 1: "qq.equivalent (D' * S' + H' * T') 1" and mon: "monic D'" by auto
     have qq22: "q ^ (2 * 2 ^ j) = (q * q) ^ (2 ^ j)"

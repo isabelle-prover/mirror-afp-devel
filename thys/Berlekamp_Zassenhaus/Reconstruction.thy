@@ -72,7 +72,7 @@ partial_function (tailrec) reconstruction :: "'state \<Rightarrow> int poly \<Ri
      in if lv dvd coeff luu 0 then let
        vb = inv_Mp2 (Mp (smult lu (prod_list_m ws))) 
     in if vb dvd luu then 
-      let pp_vb = normalize_content vb;
+      let pp_vb = primitive_part vb;
           u' = u div pp_vb;
           r' = r - length ws;
           res' = pp_vb # res
@@ -131,9 +131,6 @@ proof -
   qed
 qed
   
-lemma content_dvd_lead_coeff: "content f dvd lead_coeff (f :: int poly)"
-  by (metis dvd_triv_left lead_coeff_smult smult_normalize_content)
-
 lemma mset_sublists_size: "mset ` {ys. ys \<in> set (sublists xs) \<and> length ys = n} = 
   {ws. ws \<subseteq># mset xs \<and> size ws = n}" 
 proof (induct xs arbitrary: n)
@@ -567,7 +564,7 @@ proof -
         qed (insert d0 Cons cands_empty, auto)
       next
         case True
-        define pp_vb where "pp_vb \<equiv> normalize_content vb" 
+        define pp_vb where "pp_vb \<equiv> primitive_part vb" 
         define u' where "u' \<equiv> u div pp_vb"
         define lu' where "lu' \<equiv> lead_coeff u'" 
         let ?luu' = "smult lu' u'" 
@@ -600,7 +597,7 @@ proof -
         have f: "f = u' * prod_list ?res'" using f u by auto
         let ?fact = "smult lu (prod_mset (mset ws))" 
         have Mp_vb: "Mp vb = Mp (smult lu (prod_list ws))"  unfolding vb_def by simp
-        have pp_vb_vb: "smult (content vb) pp_vb = vb" unfolding pp_vb_def by (rule smult_normalize_content)
+        have pp_vb_vb: "smult (content vb) pp_vb = vb" unfolding pp_vb_def by (rule content_times_primitive_part)
         {
           have "smult (content vb) u = (smult (content vb) pp_vb) * u'" unfolding u by simp
           also have "smult (content vb) pp_vb = vb" by fact
@@ -618,7 +615,7 @@ proof -
         from coprime_divisors[OF ldvd dvd_refl cop_lu]
         have cop_lvb: "coprime (lead_coeff vb) p" .
         have cop_vb: "coprime (content vb) p" 
-          by (rule coprime_divisors[OF content_dvd_lead_coeff dvd_refl cop_lvb])
+          by (rule coprime_divisors[OF content_dvd_coeff dvd_refl cop_lvb])
         from u have "u' dvd u" unfolding dvd_def by auto
         hence "lead_coeff u' dvd lu" unfolding lu by (metis dvd_def lead_coeff_mult)
         from coprime_divisors[OF this dvd_refl cop]

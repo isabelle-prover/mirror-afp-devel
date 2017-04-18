@@ -12,11 +12,12 @@ text \<open>This theory contains most of the soundness proofs of the subresultan
   but not the second optmization described by Ducos \cite{Ducos}.\<close>
 theory Subresultant
 imports
-  "../Jordan_Normal_Form/Determinant"
-  "../Berlekamp_Zassenhaus/Resultant"
+  Resultant_Prelim
   Dichotomous_Lazard
+  Binary_Exponentiation
+  More_Homomorphisms 
 begin
-
+  
 subsection \<open>Algorithm\<close>
 
 context
@@ -33,7 +34,7 @@ partial_function(tailrec) subresultant_prs_main where
    pmod = pseudo_mod f g
   in (if pmod = 0 then (g,hi) else 
   let
-     g' = divide_poly pmod ((-1) ^ (d1 + 1) * lf * (c ^ d1))
+     g' = sdiv_poly pmod ((-1) ^ (d1 + 1) * lf * (c ^ d1))
      in subresultant_prs_main g g' hi))" 
 
 definition subresultant_prs where
@@ -73,9 +74,10 @@ definition resultant_impl :: "'a poly \<Rightarrow> 'a poly \<Rightarrow> 'a :: 
 
 subsection \<open>Soundness Proof for @{term "resultant_impl = resultant"}\<close>
 
+declare comm_ring_hom.hom_det[OF coeff_lift_hom.comm_ring_hom_axioms,simp]
 declare coeff_lift_hom.hom_minus[simp del]
 declare coeff_lift_hom.hom_power[simp del]
-  
+
 lemma basic_div_exp: assumes "(to_fract x)^n / (to_fract y)^(n-1) \<in> range to_fract"
   shows "to_fract (basic_div_exp x y n) = (to_fract x)^n / (to_fract y)^(n-1)"
   unfolding basic_div_exp_def by (rule sym, rule div_divide_to_fract[OF assms refl refl], auto)
@@ -405,7 +407,7 @@ proof -
     unfolding subresultant_mat_def Let_def
     by (rule mat_eqI, unfold mat_dim_row_mat mat_dim_col_mat nk mat_index_mat split,
       subst mat_index_mat, (auto)[2], unfold split, subst change, force,
-      unfold If_not, rule if_cong[OF refl if_cong if_cong], auto)
+      unfold if_conn, rule if_cong[OF refl if_cong if_cong], auto)
   also have "det \<dots> = subresultant J g f" unfolding subresultant_def ..
   also have "(-1)^(?k * ?n) * \<dots> = [: (-1)^(?k * ?n) :] * \<dots> " by (unfold hom_distribs, simp)
   also have "\<dots> = smult ((-1)^(?k * ?n)) (subresultant J g f)" by simp
@@ -700,7 +702,22 @@ proof -
     qed (auto simp: d)
   qed
 qed
+  
+text \<open>We now derive properties of the resultant via the connection to subresultants.\<close>
+  
+lemma resultant_smult_left: assumes "(c :: 'a :: idom) \<noteq> 0" 
+  shows "resultant (smult c f) g = c ^ degree g * resultant f g"
+  unfolding coeff_subresultant_0_0_resultant[symmetric] subresultant_smult_left[OF assms] coeff_smult
+    by simp
 
+lemma resultant_smult_right: assumes "(c :: 'a :: idom) \<noteq> 0" 
+  shows "resultant f (smult c g) = c ^ degree f * resultant f g"
+  unfolding coeff_subresultant_0_0_resultant[symmetric] subresultant_smult_right[OF assms] coeff_smult
+  by simp
+
+lemma resultant_swap: "resultant f g = (-1)^(degree f * degree g) * (resultant g f)"
+  unfolding coeff_subresultant_0_0_resultant[symmetric] 
+  unfolding arg_cong[OF subresultant_swap[of 0 f g], of "\<lambda> x. coeff x 0"] coeff_smult by simp
 
 text \<open>The following equations are taken from Brown-Traub ``On Euclid's Algorithm and
 the Theory of Subresultant'' (BT)\<close>
@@ -1229,8 +1246,6 @@ proof -
     resultant_smult_left[OF a(1)]], of "\<lambda> x. coeff x 0"]
   show ?thesis using a g0 by (cases "degree f", auto)
 qed
-interpretation to_fract_hom: idom_hom to_fract..
-interpretation to_fract_hom: inj_idom_hom to_fract..
 
 locale primitive_remainder_sequence =
   fixes F :: "nat \<Rightarrow> 'a :: idom_divide poly"
@@ -1488,7 +1503,7 @@ qed
 
 text \<open>For defining the subresultant PRS, we mainly follow Brown's ``The Subresultant PRS Algorithm'' (B).\<close>
 
-definition "R j = (if j = n 2 then divide_poly (smult ((lead_coeff G2)^(\<delta> 1)) G2) (lead_coeff G2) else subresultant j G1 G2)"
+definition "R j = (if j = n 2 then sdiv_poly (smult ((lead_coeff G2)^(\<delta> 1)) G2) (lead_coeff G2) else subresultant j G1 G2)"
 
 abbreviation "ff i \<equiv> to_fract (i :: 'a)"
 abbreviation "ffp \<equiv> map_poly ff"
@@ -1723,9 +1738,9 @@ qed
 fun h :: "nat \<Rightarrow> 'a fract" where
   "h i = (if (i \<le> 1) then 1 else if i = 2 then (f 2 ^ \<delta> 1) else (f i ^ \<delta> (i - 1) / (h (i - 1) ^ (\<delta> (i - 1) - 1))))"
 
-lemma smult_inverse_divide_poly: assumes ffp: "p \<in> range ffp"
+lemma smult_inverse_sdiv_poly: assumes ffp: "p \<in> range ffp"
   and p: "p = smult (inverse x) q"
-  and p': "p' = divide_poly q' x'"
+  and p': "p' = sdiv_poly q' x'"
   and xx: "x = ff x'"
   and qq: "q = ffp q'"
 shows "p = ffp p'"
@@ -1740,7 +1755,7 @@ proof (rule poly_eqI)
   hence id: "ff (coeff q' i) / ff x' = ff (coeff q' i div x')"
     by (rule div_divide_to_fract, auto)
   show "coeff p i = coeff (ffp p') i" unfolding cpi id p'
-    by (simp add: divide_poly_def coeff_map_poly)
+    by (simp add: sdiv_poly_def coeff_map_poly)
 qed
 
 end
@@ -2195,8 +2210,8 @@ proof(cases "n 2 = 0")
   hence d:"degree G2 = 0" unfolding n F2 by auto
   from degree0_coeffs[OF d] F2 F12 obtain a where 
     G2: "G2 = [:a:]" and a: "a \<noteq> 0" by auto
-  have "divide_poly [:a * a ^ degree G1:] a = [:a ^ degree G1:]" using a
-    unfolding divide_poly_def by auto
+  have "sdiv_poly [:a * a ^ degree G1:] a = [:a ^ degree G1:]" using a
+    unfolding sdiv_poly_def by auto
   note dp = this
   show ?thesis using G2 F12
     unfolding R_def \<delta> n F1 F2 Suc_1 by (auto split:if_splits simp:mult.commute dp)
@@ -2238,7 +2253,7 @@ proof -
     let ?d1 = "?ni_1 - ?ni"
     obtain hi where hi: "hi = div_exp ?gi hi_1 ?d1" by auto
     obtain divisor where div: "divisor = (-1) ^ (?d1 + 1) * ?gi_1 * (hi_1 ^ ?d1)" by auto
-    obtain G1_p1 where G1_p1: "G1_p1 = divide_poly ?pmod divisor" by auto
+    obtain G1_p1 where G1_p1: "G1_p1 = sdiv_poly ?pmod divisor" by auto
     note res = res[unfolded subresultant_prs_main.simps[of div_exp Gi_1] Let_def, 
       folded hi, folded div, folded G1_p1]
     have h_i: "h i = f i ^ \<delta> (i - 1) / h (i - 1) ^ (\<delta> (i - 1) - 1)" unfolding h.simps[of i] using i by simp
@@ -2286,7 +2301,7 @@ proof -
         have Fsi: "F (Suc i) = smult (inverse (\<beta> (Suc i))) (pseudo_mod (F (i - 1)) (F i))"
           using \<beta>0[of "Suc i"] by auto
         show "F (Suc i) = ffp G1_p1"
-        proof (rule smult_inverse_divide_poly[OF F_ffp Fsi G1_p1 _ pm])
+        proof (rule smult_inverse_sdiv_poly[OF F_ffp Fsi G1_p1 _ pm])
           from i ii have iv: "4 \<le> Suc i" "Suc i \<le> Suc k" by auto
           have *: "Suc i - 2 = i - 1" by auto
           show "\<beta> (Suc i) = ff divisor" unfolding \<beta>i[OF iv] div d1 * fi1
@@ -2615,7 +2630,8 @@ proof (intro ext)
     case False
     hence "length (coeffs g) \<ge> length (coeffs f)" by auto
     from resultant_impl_main[OF this]
-    show ?thesis unfolding resultant_impl_generic_def resultant_swap[of f g] using False by auto
+    show ?thesis unfolding resultant_impl_generic_def resultant_swap[of f g] using False 
+      by (auto simp: Let_def)
   qed
 qed
 end
@@ -2646,7 +2662,7 @@ partial_function(tailrec) subresultant_prs_main_impl where
     let
        gi = lead_coeff Gi;
        divisor = (-1) ^ (d1 + 1) * gi_1 * (hi_1 ^ d1) ;
-       Gi_p1 = divide_poly pmod divisor
+       Gi_p1 = sdiv_poly pmod divisor
        in subresultant_prs_main_impl f Gi Gi_p1 ni d1 hi_1))"
 
 definition subresultant_prs_impl where
@@ -2663,7 +2679,7 @@ definition subresultant_prs_impl where
       d2 = n2 - n3;
       pmod = pseudo_mod G2 G3
     in if pmod = 0 then f (G3, if d2 = 1 then g3 else dichotomous_Lazard g3 h2 d2)
-    else let divisor = (- 1) ^ (d2 + 1) * g2 * h2 ^ d2; G4 = divide_poly pmod divisor
+    else let divisor = (- 1) ^ (d2 + 1) * g2 * h2 ^ d2; G4 = sdiv_poly pmod divisor
          in subresultant_prs_main_impl f G3 G4 n3 d2 h2
     )"
 
@@ -2671,7 +2687,7 @@ lemma subresultant_prs_impl: "subresultant_prs_impl f G1 G2 = f (subresultant_pr
 proof -
   define h2 where "h2 = lead_coeff G2 ^ (degree G1 - degree G2)"
   define G3 where "G3 = ((- 1) ^ (degree G1 - degree G2 + 1) * pseudo_mod G1 G2)"
-  define G4 where "G4 = divide_poly (pseudo_mod G2 G3)
+  define G4 where "G4 = sdiv_poly (pseudo_mod G2 G3)
        ((- 1) ^ (degree G2 - degree G3 + 1) * lead_coeff G2 *
         h2 ^ (degree G2 - degree G3))" 
   define d2 where "d2 = degree G2 - degree G3"
@@ -2698,11 +2714,11 @@ proof -
         hence id: "(?M = 0) = False" by auto
         let ?c = "((- 1) ^ (degree G3 - degree G4 + 1) * lead_coeff G3 *
             (dichotomous_Lazard (lead_coeff G3) h2 d2) ^ (degree G3 - degree G4))" 
-        let ?N = "divide_poly ?M ?c"
+        let ?N = "sdiv_poly ?M ?c"
         show ?thesis
         proof (cases "G4 = 0")
           case G4: False
-          have "degree ?N \<le> degree ?M" unfolding divide_poly_def by (rule degree_map_poly_le)
+          have "degree ?N \<le> degree ?M" unfolding sdiv_poly_def by (rule degree_map_poly_le)
           also have "\<dots> < degree G4" using pseudo_mod[OF G4, of G3] False by auto
           finally show ?thesis unfolding simp[of G3] Let_def id if_False dl1
             by (intro 1(1)[rule_format], auto)
@@ -2745,7 +2761,7 @@ lemma resultant_impl_start_code[code]:
                            h2 = (if d1 = 1 then g2 else g2 ^ d1);
                            d2 = n2 - n3;
                            divisor = (if d2 = 1 then g2 * h2 else if even d2 then - g2 * h2 ^ d2 else g2 * h2 ^ d2);
-                           G4 = divide_poly pmod divisor
+                           G4 = sdiv_poly pmod divisor
                          in resultant_impl_rec G3 G4 n3 d2 h2)"
 proof -
   obtain d1 where d1: "degree G1 - degree G2 = d1" by auto
@@ -2782,7 +2798,7 @@ lemma resultant_impl_rec_code[code]:
            gi_1 = lead_coeff Gi_1;
            hi_1 = (if d1_1 = 1 then gi_1 else dichotomous_Lazard gi_1 hi_2 d1_1);
            divisor = if d1 = 1 then gi_1 * hi_1 else if even d1 then - gi_1 * hi_1 ^ d1 else gi_1 * hi_1 ^ d1;
-           Gi_p1 = divide_poly pmod divisor
+           Gi_p1 = sdiv_poly pmod divisor
        in resultant_impl_rec Gi Gi_p1 ni d1 hi_1)"
   unfolding resultant_impl_rec_def subresultant_prs_main_impl.simps[of _ Gi_1] split Let_def
   unfolding resultant_impl_rec_def[symmetric]
@@ -2800,7 +2816,6 @@ lemma resultant_impl_code[code]: "resultant_impl f g =
       if even (degree f) \<or> even (degree g) then res else - res)" 
   unfolding resultant_impl_def resultant_impl_generic_def resultant_impl_Lazard_def ..
 
-declare resultant_code[code del] (* old implementation *)
 lemma resultant_code[code]: "resultant f g = resultant_impl f g" by simp
 
 end

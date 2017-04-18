@@ -34,4 +34,3 @@ session Pre_Algebraic_Numbers (AFP) = "Berlekamp_Zassenhaus" +
     "../Sturm_Sequences/Sturm_Theorem"
     "../Show/Show_Real"
     "../Show/Show_Complex"
-    "../Subresultants/Subresultant"

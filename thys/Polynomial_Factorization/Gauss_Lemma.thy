@@ -21,14 +21,12 @@ theory Gauss_Lemma
 imports 
   "~~/src/HOL/Computational_Algebra/Primes"
   "../Polynomial_Interpolation/Ring_Hom_Poly"
+  Missing_Polynomial_Factorial
 begin
 
-abbreviation (input) normalize_content :: "'a::semiring_gcd poly \<Rightarrow> 'a poly"
-  where "normalize_content \<equiv> primitive_part"
-
-lemma normalize_content_def:
-  "normalize_content p = div_poly (content p) p"
-  by (simp add: primitive_part_def div_poly_def)
+lemma primitive_part_alt_def:
+  "primitive_part p = sdiv_poly p (content p)"
+  by (simp add: primitive_part_def sdiv_poly_def)
 
 definition common_denom :: "rat list \<Rightarrow> int \<times> int list" where
   "common_denom xs \<equiv> let 
@@ -45,12 +43,12 @@ definition rat_to_int_poly :: "rat poly \<Rightarrow> int \<times> int poly" whe
 
 definition rat_to_normalized_int_poly :: "rat poly \<Rightarrow> rat \<times> int poly" where
   "rat_to_normalized_int_poly p \<equiv> if p = 0 then (1,0) else case rat_to_int_poly p of (s,q)
-    \<Rightarrow> (of_int (content q) / of_int s, normalize_content q)"
+    \<Rightarrow> (of_int (content q) / of_int s, primitive_part q)"
 
 lemma rat_to_normalized_int_poly_code[code]:
   "rat_to_normalized_int_poly p = (if p = 0 then (1,0) else case rat_to_int_poly p of (s,q)
-    \<Rightarrow> let c = content q in (of_int c / of_int s, div_poly c q))"
-    unfolding Let_def rat_to_normalized_int_poly_def normalize_content_def ..
+    \<Rightarrow> let c = content q in (of_int c / of_int s, sdiv_poly q c))"
+    unfolding Let_def rat_to_normalized_int_poly_def primitive_part_alt_def ..
 
 lemma common_denom: assumes cd: "common_denom xs = (dd,ys)"
   shows "xs = map (\<lambda> i. of_int i / of_int dd) ys" "dd > 0"
@@ -106,9 +104,6 @@ proof -
     by (intro poly_eqI, auto simp: field_simps coeff_map_poly)
 qed
 
-lemma content_iff: "x dvd content p \<longleftrightarrow> (\<forall> c \<in> set (coeffs p). x dvd c)"
-  by (simp add: content_def dvd_gcd_list_iff)
-
 lemma content_ge_0_int: "content p \<ge> (0 :: int)"
   unfolding content_def
   by (cases "coeffs p", auto)
@@ -116,34 +111,11 @@ lemma content_ge_0_int: "content p \<ge> (0 :: int)"
 lemma abs_content_int[simp]: fixes p :: "int poly"
   shows "abs (content p) = content p" using content_ge_0_int[of p] by auto
 
-lemma smult_normalize_content: "smult (content p) (normalize_content p) = p"
-  by (simp add: content_dvd_coeffs smult_div_poly normalize_content_def)
-
 lemma content_smult_int: fixes p :: "int poly" 
   shows "content (smult a p) = abs a * content p" by simp
 
-lemma content_normalize_content_1: assumes p0: "p \<noteq> 0"
-  shows "content (normalize_content (p :: int poly)) = 1"
-proof -
-  note id = smult_normalize_content[of p]
-  from id p0 have "content p \<noteq> 0" by auto
-  with arg_cong[OF id, of content, unfolded content_smult_int]
-  show ?thesis by (simp add: content_ge_0_int)
-qed
-
-lemma normalize_content_0: "normalize_content 0 = 0"
-  by simp
-
-lemma normalize_non_0_smult: "\<exists> a. (a :: int) \<noteq> 0 \<and> smult a (normalize_content p) = p"
+lemma normalize_non_0_smult: "\<exists> a. (a :: 'a :: semiring_gcd) \<noteq> 0 \<and> smult a (primitive_part p) = p"
   by (cases "p = 0", rule exI[of _ 1], simp, rule exI[of _ "content p"], auto)
-
-lemma degree_normalize_content[simp]: "degree (normalize_content (p :: int poly)) = degree p" 
-proof (cases "p = 0")
-  case False 
-  thus ?thesis 
-    by (metis degree_smult_eq smult_0_left smult_normalize_content)
-qed simp
-
 
 lemma rat_to_normalized_int_poly: assumes "rat_to_normalized_int_poly p = (d,q)"
   shows "p = smult d (map_poly of_int q)" "d > 0" "p \<noteq> 0 \<Longrightarrow> content q = 1" "degree q = degree p"
@@ -164,8 +136,8 @@ proof -
     and s: "s > 0" by auto
     let ?q = "map_poly rat_of_int q"
     from p0 assms[unfolded rat_to_normalized_int_poly_def id split]
-    have d: "d = ?cr / ?s" and q: "q = normalize_content r" by auto
-    from smult_normalize_content[of r, folded q] have qr: "smult (content r) q = r" .
+    have d: "d = ?cr / ?s" and q: "q = primitive_part r" by auto
+    from content_times_primitive_part[of r, folded q] have qr: "smult (content r) q = r" .
     have "smult d ?q = smult (?cr / ?s) ?q"
       unfolding d by simp
     also have "?cr / ?s = ?cr * inverse ?s" by (rule divide_inverse)
@@ -177,7 +149,7 @@ proof -
     from p p0 have r0: "r \<noteq> 0" by auto
     from content_eq_zero_iff[of r] content_ge_0_int[of r] r0 have cr: "?cr > 0" by linarith
     with s have d0: "d > 0" unfolding d by auto
-    from content_normalize_content_1[OF r0] have cq: "content q = 1" unfolding q .
+    from content_primitive_part[OF r0] have cq: "content q = 1" unfolding q .
     from pq d0 cq show ?thesis by auto
   qed
   thus p: "p = smult d (map_poly of_int q)" and d: "d > 0" and "p \<noteq> 0 \<Longrightarrow> content q = 1" by auto
@@ -185,18 +157,13 @@ proof -
     by (rule sym, subst map_poly_map_poly, force+, rule degree_map_poly, insert d, auto)
 qed
 
-lemma content_dvd_1: assumes "content f = (1 :: int)" "g dvd f" 
-  shows "content g = 1"
-proof -
-  from assms obtain h where f: "f = g * h" unfolding dvd_def by auto
-  from arg_cong[OF this, of content, unfolded assms content_mult]
-  have "content g \<in> {-1,1}" using pos_zmult_eq_1_iff_lemma by fastforce
-  with content_ge_0_int[of g] show "content g = 1" by auto
-qed
+lemma content_dvd_1: assumes "content f = (1 :: 'a :: semiring_gcd)" "g dvd f" 
+  shows "content g = 1" using assms 
+  using content_dvd_contentI by fastforce
 
 lemma dvd_smult_int: fixes c :: int assumes c: "c \<noteq> 0"
   and dvd: "q dvd (smult c p)"
-  shows "normalize_content q dvd p"
+  shows "primitive_part q dvd p"
 proof (cases "p = 0")
   case True thus ?thesis by auto
 next
@@ -206,12 +173,12 @@ next
   from dvd obtain r where prod: "?cp = q * r" unfolding dvd_def by auto
   from prod cp0 have q0: "q \<noteq> 0" and r0: "r \<noteq> 0" by auto
   let ?c = "content :: int poly \<Rightarrow> int"
-  let ?n = "normalize_content :: int poly \<Rightarrow> int poly"
+  let ?n = "primitive_part :: int poly \<Rightarrow> int poly"
   let ?pn = "\<lambda> p. smult (?c p) (?n p)"
   have cq: "(?c q = 0) = False" using content_eq_zero_iff q0 by auto
-  from prod have id1: "?cp = ?pn q * ?pn r" unfolding smult_normalize_content by simp
+  from prod have id1: "?cp = ?pn q * ?pn r" unfolding content_times_primitive_part by simp
   from arg_cong[OF this, of content, unfolded content_smult_int content_mult
-    content_normalize_content_1[OF r0] content_normalize_content_1[OF q0], symmetric]
+    content_primitive_part[OF r0] content_primitive_part[OF q0], symmetric]
     p0[folded content_eq_zero_iff] c
   have "abs c dvd ?c q * ?c r" unfolding dvd_def by auto
   hence "c dvd ?c q * ?c r" by auto
@@ -240,7 +207,7 @@ next
   proof (rule irreducibleI)
     from dp c show "degree ?cp \<noteq> 0" by auto 
     fix q :: "int poly"
-    let ?nq = "normalize_content q"
+    let ?nq = "primitive_part q"
     assume deg: "degree q \<noteq> 0" "degree q < degree ?cp"
     hence deg: "degree q \<noteq> 0" "degree q < degree p" using c by auto
     show "\<not> q dvd ?cp"
@@ -253,12 +220,12 @@ next
   qed
 qed
 
-lemma irreducible_normalize_content[simp]: "irreducible (normalize_content (p :: int poly)) =
+lemma irreducible_primitive_part[simp]: "irreducible (primitive_part (p :: int poly)) =
   irreducible p"
 proof (cases "p = 0")
   case False
-  thus ?thesis using irreducible_smult_int[of "content p" "normalize_content p",
-    unfolded smult_normalize_content[of p]] by auto
+  thus ?thesis using irreducible_smult_int[of "content p" "primitive_part p",
+    unfolded content_times_primitive_part[of p]] by auto
 qed simp
 
 
@@ -346,11 +313,11 @@ proof -
     hence p: "p \<noteq> 0" by auto
     let ?r = "rat_of_int"
     let ?rp = "map_poly ?r"
-    define q where "q = normalize_content p"
-    from smult_normalize_content[of p, folded q_def] content_eq_zero_iff[of p] p
+    define q where "q = primitive_part p"
+    from content_times_primitive_part[of p, folded q_def] content_eq_zero_iff[of p] p
       obtain a where a: "a \<noteq> 0" and pq: "p = smult a q" and acp: "content p = a" by metis
     from a pq p have ra: "?r a \<noteq> 0" and q0: "q \<noteq> 0" by auto
-    from content_normalize_content_1[OF p, folded q_def] have cq: "content q = 1" by auto
+    from content_primitive_part[OF p, folded q_def] have cq: "content q = 1" by auto
     obtain s sh where h: "rat_to_normalized_int_poly (smult (inverse (?r a)) h) = (s,sh)" by force
     from arg_cong[OF pgh[unfolded pq], of "smult (inverse (?r a))"] ra
     have "?rp q = g * smult (inverse (?r a)) h" by auto
@@ -418,79 +385,34 @@ proof -
     unfolding rp irreducible_smult[OF a] .
 qed
 
-lemma dvd_content_dvd: assumes dvd: "content f dvd content g" "normalize_content f dvd normalize_content g"
+lemma dvd_content_dvd: assumes dvd: "content f dvd content g" "primitive_part f dvd primitive_part g"
   shows "f dvd g" 
 proof -
-  let ?cf = "content f" let ?nf = "normalize_content f" 
-  let ?cg = "content g" let ?ng = "normalize_content g" 
+  let ?cf = "content f" let ?nf = "primitive_part f" 
+  let ?cg = "content g" let ?ng = "primitive_part g" 
   have "f dvd g = (smult ?cf ?nf dvd smult ?cg ?ng)" 
-    unfolding smult_normalize_content by auto
+    unfolding content_times_primitive_part by auto
   from dvd(1) obtain ch where cg: "?cg = ?cf * ch" unfolding dvd_def by auto
   from dvd(2) obtain nh where ng: "?ng = ?nf * nh" unfolding dvd_def by auto
   have "f dvd g = (smult ?cf ?nf dvd smult ?cg ?ng)" 
-    unfolding smult_normalize_content[of f] smult_normalize_content[of g] by auto
+    unfolding content_times_primitive_part[of f] content_times_primitive_part[of g] by auto
   also have "\<dots> = (smult ?cf ?nf dvd smult ?cf ?nf * smult ch nh)" unfolding cg ng
     by (metis mult.commute mult_smult_right smult_smult)
   also have "\<dots>" by (rule dvd_triv_left)
   finally show ?thesis .
 qed
 
-lemma div_poly_smult: "c \<noteq> 0 \<Longrightarrow> div_poly c (smult c f) = f"
-  by (intro poly_eqI, unfold coeff_div_poly coeff_smult, auto)
+lemma sdiv_poly_smult: "c \<noteq> 0 \<Longrightarrow> sdiv_poly (smult c f) c = f"
+  by (intro poly_eqI, unfold coeff_sdiv_poly coeff_smult, auto)
 
-lemma dvd_content_dvd_rev: fixes f :: "int poly" 
-  assumes dvd: "f dvd g" 
-  shows "content f dvd content g" "normalize_content f dvd normalize_content g"
-proof -
-  let ?cf = "content f" let ?nf = "normalize_content f" 
-  let ?cg = "content g" let ?ng = "normalize_content g" 
-  from dvd obtain h where g: "g = f * h" unfolding dvd_def by auto
-  from arg_cong[OF g, of content, unfolded content_mult] show dvd: "?cf dvd ?cg" by auto
-  show "?nf dvd ?ng" 
-  proof (cases "g = 0")
-    case False
-    with dvd have f0: "f \<noteq> 0" by auto
-    hence cf: "?cf \<noteq> 0" by auto
-    from dvd obtain ch where cg: "?cg = ?cf * ch" unfolding dvd_def by auto
-    with False have ch: "ch \<noteq> 0" by auto
-    from g have "smult (?cf * ch) ?ng = smult ?cf ?nf * h" 
-      unfolding cg[symmetric] smult_normalize_content .
-    hence "smult ?cf (smult ch ?ng) = smult ?cf (?nf * h)"
-      by (metis mult_smult_left smult_smult)
-    from arg_cong[OF this, of "div_poly ?cf"] have "smult ch ?ng = ?nf * h"
-      unfolding div_poly_smult[OF cf] by simp
-    hence "?nf dvd smult ch ?ng" by auto
-    from dvd_smult_int[OF ch this] have "normalize_content ?nf dvd ?ng" .
-    also have "normalize_content ?nf = ?nf" unfolding normalize_content_def[of ?nf] 
-      content_normalize_content_1[OF f0] by (rule poly_eqI, auto simp: coeff_div_poly)
-    finally show ?thesis .
-  qed auto
-qed
-
-lemma content_dvd_coeff: "content f dvd coeff f i" 
-proof (cases "coeff f i = 0")
-  case False
-  hence "coeff f i \<in> set (coeffs f)" using range_coeff by auto
-  from content_dvd_coeffs[OF this] show ?thesis .
-qed auto
-
-lemma normalize_content_idemp[simp]: fixes f :: "int poly" 
-  shows "normalize_content (normalize_content f) = normalize_content f" 
-proof (cases "f = 0")
-  case False
-  show ?thesis unfolding normalize_content_def[of "normalize_content f"]
-    content_normalize_content_1[OF False]
-    by (rule poly_eqI, auto simp: coeff_div_poly)
-qed auto
-
-lemma normalize_content_smult_int: fixes f :: "int poly" shows
-  "normalize_content (smult d f) = smult (sgn d) (normalize_content f)" 
+lemma primitive_part_smult_int: fixes f :: "int poly" shows
+  "primitive_part (smult d f) = smult (sgn d) (primitive_part f)" 
 proof (cases "d = 0 \<or> f = 0")
   case False
   obtain cf where cf: "content f = cf" by auto
   with False have 0: "d \<noteq> 0" "f \<noteq> 0" "cf \<noteq> 0" by auto
   show ?thesis 
-  proof (rule poly_eqI, unfold normalize_content_def coeff_div_poly content_smult_int coeff_smult cf)
+  proof (rule poly_eqI, unfold primitive_part_alt_def coeff_sdiv_poly content_smult_int coeff_smult cf)
     fix n
     consider (pos) "d > 0" | (neg) "d < 0" using 0(1) by linarith
     thus "d * coeff f n div (\<bar>d\<bar> * cf) = sgn d * (coeff f n div cf)"
@@ -498,7 +420,7 @@ proof (cases "d = 0 \<or> f = 0")
       case neg
       hence "?thesis = (d * coeff f n div - (d * cf) = - (coeff f n div cf))" by auto
       also have "d * coeff f n div - (d * cf) = - (d * coeff f n div (d * cf))" 
-        by (subst dvd_div_neg, insert 0(1), auto simp: content_dvd_coeff cf[symmetric])
+        by (subst dvd_div_neg, insert 0(1), auto simp: cf[symmetric])
       also have "d * coeff f n div (d * cf) = coeff f n div cf" using 0(1) by auto
       finally show ?thesis by simp
     qed auto

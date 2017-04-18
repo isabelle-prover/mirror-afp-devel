@@ -30,7 +30,7 @@ text \<open>Since 0 is always a samples value, we make a case analysis:
    we only take positive divisors of $p(0)$, and consider all divisors for other $p(j)$.\<close>
 definition kronecker_factorization_main :: "int poly \<Rightarrow> int poly option" where
   "kronecker_factorization_main p \<equiv> if degree p \<le> 1 then None else let 
-     p = normalize_content p;
+     p = primitive_part p;
      js = kronecker_samples bnd;
      cjs = map (\<lambda> j. (poly p j, j)) js
    in (case map_of cjs 0 of 
@@ -87,12 +87,12 @@ proof -
 qed
 
 lemma rat_to_normalized_int_poly_of_int: assumes "rat_to_normalized_int_poly (map_poly of_int p) = (c,q)"
-  shows "c \<in> \<int>" "p \<noteq> 0 \<Longrightarrow> c = of_int (content p) \<and> q = normalize_content p"
+  shows "c \<in> \<int>" "p \<noteq> 0 \<Longrightarrow> c = of_int (content p) \<and> q = primitive_part p"
 proof -
   obtain d r where ri: "rat_to_int_poly (map_poly rat_of_int p) = (d,r)" by force
   from rat_to_int_poly_of_int[OF ri]
     assms[unfolded rat_to_normalized_int_poly_def ri split] 
-  show "c \<in> \<int>" "p \<noteq> 0 \<Longrightarrow> c = of_int (content p) \<and> q = normalize_content p" 
+  show "c \<in> \<int>" "p \<noteq> 0 \<Longrightarrow> c = of_int (content p) \<and> q = primitive_part p" 
     by (auto split: if_splits)
 qed
 
@@ -177,7 +177,7 @@ proof -
   from res have dp: "degree p \<ge> 2" and "(degree p \<le> 1) = False" by (auto split: if_splits)
   note res = res[unfolded this if_False]
   note bnd = bnd[OF dp]
-  define P where "P = normalize_content p"
+  define P where "P = primitive_part p"
   have degP: "degree P = degree p" unfolding P_def by simp
   define js where "js = kronecker_samples bnd"
   define filt where "filt = (case_option False (\<lambda>g. dvd_int_poly_non_0 g P \<and> 1 \<le> degree g))"
@@ -224,7 +224,7 @@ proof -
     with dvd dg show ?thesis unfolding gq by auto
   qed note main = this
   thus "degree q \<ge> 1" "degree q \<le> bnd" by auto
-  from smult_normalize_content[of p] have "p = smult (content p) P" unfolding P_def by auto
+  from content_times_primitive_part[of p] have "p = smult (content p) P" unfolding P_def by auto
   with main show "q dvd p" by (metis dvd_smult)
 qed
 
@@ -265,7 +265,7 @@ proof -
   let ?rp = "map_poly ?r"
   from dp have "(degree p \<le> 1) = False" by auto
   note res = none[unfolded kronecker_factorization_main_def Let_def this if_False]
-  define P where "P = normalize_content p"
+  define P where "P = primitive_part p"
   have degP: "degree P = degree p" unfolding P_def by simp
   define js where "js = kronecker_samples bnd"
   define filt where "filt = (case_option False (\<lambda>g. dvd_int_poly_non_0 g P \<and> 1 \<le> degree g))"
@@ -280,12 +280,12 @@ proof -
   {
     fix qq
     assume qq: "1 \<le> degree qq" "degree qq \<le> bnd" and dvd: "qq dvd p"
-    define q' where "q' = normalize_content qq"
+    define q' where "q' = primitive_part qq"
     define q where "q = (if poly q' 0 > 0 then q' else -q')"
     from qq have q': "1 \<le> degree q'" "degree q' \<le> bnd" unfolding q'_def by auto
     hence q: "1 \<le> degree q" "degree q \<le> bnd" unfolding q_def by auto
     from dvd have "qq dvd (smult (content p) P)" 
-      using smult_normalize_content[of p] unfolding P_def by simp
+      using content_times_primitive_part[of p] unfolding P_def by simp
     from dvd_smult_int[OF _ this] dp have "q' dvd P" unfolding q'_def
       by force
     hence dvd: "q dvd P" unfolding q_def by auto      

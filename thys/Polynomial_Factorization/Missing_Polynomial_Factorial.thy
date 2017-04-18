@@ -5,6 +5,7 @@ text \<open>This theory contains several results on content, gcd, primitive part
 
 theory Missing_Polynomial_Factorial
   imports "~~/src/HOL/Computational_Algebra/Polynomial_Factorial"
+   "../Polynomial_Interpolation/Missing_Polynomial"  
 begin
 
 text \<open>Improved code equation for @{const gcd_poly_code}
@@ -115,7 +116,7 @@ lemma gcd_primitive_part:
     have "normalize 1 = normalize (unit_factor (gcd (content f) (content g)))"
       by (simp add: False)
     then show ?thesis unfolding gcd_poly_decompose[of f g]
-      by (metis (no_types) normalize_smult content_gcd_primitive(1)[OF False] content_times_primitive_part normalize_gcd primitive_part_smult)
+      by (metis (no_types) Polynomial.normalize_smult content_gcd_primitive(1)[OF False] content_times_primitive_part normalize_gcd primitive_part_smult)
 qed
 
 lemma primitive_part_gcd: "primitive_part (gcd f g)
@@ -164,5 +165,73 @@ proof (cases "f = 0")
     by (rule degree_mult_eq, insert False, auto)
   finally show ?thesis by simp
 qed simp
+  
+lemma content_iff: "x dvd content p \<longleftrightarrow> (\<forall> c \<in> set (coeffs p). x dvd c)"
+  by (simp add: content_def dvd_gcd_list_iff)
+  
+lemma is_unit_field_poly[simp]: "(p::'a::field poly) dvd 1 \<longleftrightarrow> p \<noteq> 0 \<and> degree p = 0"
+proof(intro iffI conjI, unfold conj_imp_eq_imp_imp)
+  assume "is_unit p"
+  then obtain q where *: "p * q = 1" by (elim dvdE, auto)
+  from * show p0: "p \<noteq> 0" by auto
+  from * have q0: "q \<noteq> 0" by auto
+  from * degree_mult_eq[OF p0 q0]
+  show "degree p = 0" by auto
+next
+  assume "degree p = 0"
+  from degree0_coeffs[OF this]
+  obtain c where c: "p = [:c:]" by auto
+  assume "p \<noteq> 0"
+  with c have "c \<noteq> 0" by auto
+  with c have "1 = p * [:1/c:]" by auto
+  from dvdI[OF this] show "is_unit p".
+qed
+  
+definition content_free where
+  "content_free f \<longleftrightarrow> (\<forall>x. (\<forall>y \<in> set (coeffs f). x dvd y) \<longrightarrow> x dvd 1)"
+
+lemma content_freeI:
+  assumes "(\<And>x. (\<And>y. y \<in> set (coeffs f) \<Longrightarrow> x dvd y) \<Longrightarrow> x dvd 1)"
+  shows "content_free f" by (insert assms, auto simp: content_free_def)
+
+lemma content_freeD:
+  assumes "content_free f"
+  shows "(\<And>y. y \<in> set (coeffs f) \<Longrightarrow> x dvd y) \<Longrightarrow> x dvd 1"
+    by (insert assms, auto simp: content_free_def)
+
+lemma not_content_freeE:
+  assumes "\<not> content_free f"
+      and "\<And>x. (\<And>y. y \<in> set (coeffs f) \<Longrightarrow> x dvd y) \<Longrightarrow> \<not> x dvd 1 \<Longrightarrow> thesis"
+  shows thesis by (insert assms, auto simp: content_free_def)
+
+lemma content_free_iff_content_eq_1[simp]:
+  fixes f :: "'a :: semiring_gcd poly"
+  shows "content_free f \<longleftrightarrow> content f = 1"
+proof(intro iffI content_freeI)
+  fix x
+  assume "(\<And>y. y \<in> set (coeffs f) \<Longrightarrow> x dvd y)"
+  from gcd_list_greatest[of "coeffs f", OF this]
+  have "x dvd content f" by (simp add: content_def)
+  also assume "content f = 1"
+  finally show "x dvd 1".
+next
+  assume "content_free f"
+  from content_freeD[OF this list_gcd[of _ "coeffs f"], folded content_def]
+  show "content f = 1" by simp
+qed
+
+lemma content_free_prod_list:
+  fixes fs :: "'a :: {factorial_semiring,semiring_Gcd} poly list"
+  assumes "content_free (prod_list fs)" and "f \<in> set fs" shows "content_free f"
+proof (insert assms, induct fs arbitrary: f)
+  case (Cons f' fs)
+  from Cons.prems
+  have "is_unit (content f' * content (prod_list fs))" by (auto simp: content_mult)
+  from this[unfolded is_unit_mult_iff]
+  have "content f' = 1" and "content (prod_list fs) = 1" by auto
+  moreover from Cons.prems have "f = f' \<or> f \<in> set fs" by auto
+  ultimately show ?case using Cons.hyps[of f] by auto
+qed auto
+
 
 end

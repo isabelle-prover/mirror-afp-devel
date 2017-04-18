@@ -11,7 +11,7 @@ text \<open>This theory contains the remaining field operations for algebraic nu
 theory Algebraic_Numbers
 imports
   Algebraic_Numbers_Prelim
-  "../Berlekamp_Zassenhaus/Resultant"
+  Resultant
   "../Polynomial_Factorization/Polynomial_Divisibility"
 begin
 
@@ -298,8 +298,8 @@ lemma (in inj_comm_ring_hom) poly_add_hom:
 proof -
   have zero: "\<forall>x. hom x = 0 \<longrightarrow> x = 0" by simp
   interpret mh: map_poly_inj_comm_ring_hom..
-  show ?thesis unfolding poly_add_def
-    by (subst mh.resultant_map_poly(1),simp,simp,simp add: map_poly_x_minus_y)
+  show ?thesis unfolding poly_add_def mh.resultant_hom[symmetric]
+    by (simp add: map_poly_x_minus_y)
 qed
 
 lemma ipoly_poly_add:
@@ -508,8 +508,8 @@ lemma (in inj_comm_ring_hom) poly_div_hom:
 proof -
   have zero: "\<forall>x. hom x = 0 \<longrightarrow> x = 0" by simp
   interpret mh: map_poly_inj_comm_ring_hom..
-  show ?thesis unfolding poly_div_def
-    by (subst mh.resultant_map_poly(1),simp,simp,simp add: poly_x_mult_y_hom)
+  show ?thesis unfolding poly_div_def mh.resultant_hom[symmetric]
+    by (simp add: poly_x_mult_y_hom)
 qed
 
 lemma ipoly_poly_div:

@@ -1066,18 +1066,22 @@ lemma coeff_pcompose_x_pow_n: fixes f :: "'a :: comm_ring_1 poly"
   assumes n: "n \<noteq> 0" 
   shows "coeff (f \<circ>\<^sub>p monom 1 n) (n * i) = coeff f i"     
   using coeff_pcompose_monom[of 0 n f i] n by auto
-    
-lemma normalize_smult: 
-  assumes "a \<noteq> (0::'a::{field,euclidean_ring_gcd})"
-  shows   "normalize (smult a p) = normalize p"
-proof -
-  have "smult a p = [:a:] * p" by simp
-  also from assms have "normalize \<dots> = normalize p"
-    by (subst normalize_mult) (simp_all add: normalize_const_poly is_unit_normalize dvd_field_iff)
-  finally show ?thesis .
-qed
-    
+        
 lemma dvd_dvd_smult: "a dvd b \<Longrightarrow> f dvd g \<Longrightarrow> smult a f dvd smult b g"
   unfolding dvd_def by (metis mult_smult_left mult_smult_right smult_smult)
 
+definition sdiv_poly :: "'a :: idom_divide poly \<Rightarrow> 'a \<Rightarrow> 'a poly" where
+  "sdiv_poly p a = (map_poly (\<lambda> c. c div a) p)"  
+
+lemma smult_map_poly: "smult a = map_poly (op * a)"
+  by (rule ext, rule poly_eqI, subst coeff_map_poly, auto)
+  
+lemma smult_exact_sdiv_poly: assumes "\<And> c. c \<in> set (coeffs p) \<Longrightarrow> a dvd c"
+  shows "smult a (sdiv_poly p a) = p" 
+  unfolding smult_map_poly sdiv_poly_def
+  by (subst map_poly_map_poly,simp,rule map_poly_idI, insert assms, auto)
+
+lemma coeff_sdiv_poly: "coeff (sdiv_poly f a) n = coeff f n div a" 
+  unfolding sdiv_poly_def by (rule coeff_map_poly, auto)    
+    
 end

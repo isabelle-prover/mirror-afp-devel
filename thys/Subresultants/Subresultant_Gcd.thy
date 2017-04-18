@@ -7,7 +7,7 @@ text \<open>This theory now formalizes how the subresultant PRS can be used to c
 theory Subresultant_Gcd
 imports
   Subresultant
-  Missing_Polynomial_Factorial
+  "../Polynomial_Factorization/Missing_Polynomial_Factorial"
 begin
 
 subsection \<open>Algorithm\<close>
@@ -271,7 +271,7 @@ lemma gcd_impl_rec_code[code]:
            gi_1 = lead_coeff Gi_1;
            hi_1 = (if d1_1 = 1 then gi_1 else dichotomous_Lazard gi_1 hi_2 d1_1);
            divisor = if d1 = 1 then gi_1 * hi_1 else if even d1 then - gi_1 * hi_1 ^ d1 else gi_1 * hi_1 ^ d1;
-           Gi_p1 = divide_poly pmod divisor
+           Gi_p1 = sdiv_poly pmod divisor
        in gcd_impl_rec Gi Gi_p1 ni d1 hi_1)"
   unfolding gcd_impl_rec_def subresultant_prs_main_impl.simps[of _ Gi_1] split Let_def
   unfolding gcd_impl_rec_def[symmetric]
@@ -295,7 +295,7 @@ lemma gcd_impl_start_code[code]:
                            h2 = (if d1 = 1 then g2 else g2 ^ d1);
                            d2 = n2 - n3;
                            divisor = (if d2 = 1 then g2 * h2 else if even d2 then - g2 * h2 ^ d2 else g2 * h2 ^ d2);
-                           G4 = divide_poly pmod divisor
+                           G4 = sdiv_poly pmod divisor
                          in gcd_impl_rec G3 G4 n3 d2 h2)"
 proof -
   obtain d1 where d1: "degree G1 - degree G2 = d1" by auto

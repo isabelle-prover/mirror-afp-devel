@@ -462,7 +462,7 @@ definition square_free_factorization_int' :: "int poly \<Rightarrow> int \<times
     then (lead_coeff f,[]) else (let (* content factorization *)
       c = content f;
       d = (sgn (lead_coeff f) * c);
-      g = div_poly d f
+      g = sdiv_poly f d
       (* and square_free factorization *)
     in (d, square_free_factorization_int_main g)))"
 
@@ -491,23 +491,23 @@ proof -
     also have "content [:?s:] = 1" using s by (auto simp: content_def)
     finally have cg: "content g = content f" by simp
     from False res 
-    have d: "d = ?d" and fs: "fs = square_free_factorization_int_main (div_poly ?d f)" by auto
-    let ?g = "normalize_content g" 
-    define ng where "ng = normalize_content g" 
+    have d: "d = ?d" and fs: "fs = square_free_factorization_int_main (sdiv_poly f ?d)" by auto
+    let ?g = "primitive_part g" 
+    define ng where "ng = primitive_part g" 
     note fs
-    also have "div_poly ?d f = div_poly (content g) g" unfolding cg unfolding g_def
-      by (rule poly_eqI, unfold coeff_div_poly coeff_smult, insert s, auto simp: div_minus_right)
+    also have "sdiv_poly f ?d = sdiv_poly g (content g)" unfolding cg unfolding g_def
+      by (rule poly_eqI, unfold coeff_sdiv_poly coeff_smult, insert s, auto simp: div_minus_right)
     finally have fs: "square_free_factorization_int_main ng = fs" 
-      unfolding normalize_content_def ng_def by simp
+      unfolding primitive_part_alt_def ng_def by simp
     have "lead_coeff f \<noteq> 0" using False by auto
     hence lg: "lead_coeff g > 0" unfolding g_def lead_coeff_smult
       by (meson linorder_neqE_linordered_idom sgn_greater sgn_less zero_less_mult_iff)
     hence g0: "g \<noteq> 0" by auto
     from g0 have "content g \<noteq> 0" by simp
-    from arg_cong[OF smult_normalize_content[of g], of lead_coeff, unfolded lead_coeff_smult]
+    from arg_cong[OF content_times_primitive_part[of g], of lead_coeff, unfolded lead_coeff_smult]
       lg content_ge_0_int[of g] have lg': "lead_coeff ng > 0" unfolding ng_def 
       by (metis \<open>content g \<noteq> 0\<close> dual_order.antisym dual_order.strict_implies_order zero_less_mult_iff)
-    from content_normalize_content_1[OF g0] have c_ng: "content ng = 1" unfolding ng_def .
+    from content_primitive_part[OF g0] have c_ng: "content ng = 1" unfolding ng_def .
     have "degree ng = degree f" using \<open>content [:sgn (lead_coeff f):] = 1\<close> g_def ng_def
       by (auto simp add: sgn_eq_0_iff)
     with False have "degree ng \<noteq> 0" by auto
@@ -519,9 +519,9 @@ proof -
         with main show "content fi = 1" "0 < lead_coeff fi" by auto
       }
       have d0: "d \<noteq> 0" using \<open>content [:?s:] = 1\<close> d by (auto simp:sgn_eq_0_iff)
-      have "smult d ng = smult ?s (smult (content g) (normalize_content g))" 
+      have "smult d ng = smult ?s (smult (content g) (primitive_part g))" 
         unfolding ng_def d cg by simp
-      also have "smult (content g) (normalize_content g) = g" using smult_normalize_content .
+      also have "smult (content g) (primitive_part g) = g" using content_times_primitive_part .
       also have "smult ?s g = f" unfolding g_def using s by auto
       finally have id: "smult d ng = f" .
       from main have "square_free_factorization ng (1, fs)" by auto
@@ -632,7 +632,7 @@ proof -
       proof (rule gcdI)
         fix d
         assume d: "d dvd ?x" "d dvd a" 
-        from dvd_content_dvd_rev[OF d(1)] x have cnt: "is_unit (content d)" by auto
+        from content_dvd_contentI[OF d(1)] x have cnt: "is_unit (content d)" by auto
         show "is_unit d"
         proof (cases "degree d = 1")
           case False

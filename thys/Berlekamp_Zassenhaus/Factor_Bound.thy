@@ -249,15 +249,15 @@ lemma factor_bound_smult: assumes f: "f \<noteq> 0" and d: "d \<noteq> 0"
   and dvd: "g dvd smult d f" and deg: "degree g \<le> n" 
   shows "\<bar>coeff g k\<bar> \<le> \<bar>d\<bar> * factor_bound f n" 
 proof -
-  let ?nf = "normalize_content f" let ?cf = "content f" 
-  let ?ng = "normalize_content g" let ?cg = "content g" 
-  from dvd_content_dvd_rev(1)[OF dvd] have "?cg dvd abs d * ?cf" 
+  let ?nf = "primitive_part f" let ?cf = "content f" 
+  let ?ng = "primitive_part g" let ?cg = "content g" 
+  from content_dvd_contentI[OF dvd] have "?cg dvd abs d * ?cf" 
     unfolding content_smult_int .  
   hence dvd_c: "?cg dvd d * ?cf" using d
     by (metis abs_content_int abs_mult dvd_abs_iff)
-  from dvd_content_dvd_rev(2)[OF dvd] have "?ng dvd smult (sgn d) ?nf" unfolding normalize_content_smult_int .
+  from primitive_part_dvd_primitive_partI[OF dvd] have "?ng dvd smult (sgn d) ?nf" unfolding primitive_part_smult_int .
   hence dvd_n: "?ng dvd ?nf" using d 
-    by (metis content_eq_zero_iff dvd dvd_smult_int f mult_eq_0_iff smult_normalize_content smult_smult)
+    by (metis content_eq_zero_iff dvd dvd_smult_int f mult_eq_0_iff content_times_primitive_part smult_smult)
   define gc where "gc = gcd ?cf ?cg" 
   define cg where "cg = ?cg div gc"   
   from dvd d f have g: "g \<noteq> 0" by auto  
@@ -270,10 +270,10 @@ proof -
   have gcf: "\<bar>gc\<bar> dvd content f" unfolding gc_def by auto
   have dvd_f: "smult gc ?ng dvd f" 
   proof (rule dvd_content_dvd, 
-      unfold content_smult_int content_normalize_content_1[OF g] 
-      normalize_content_smult_int normalize_content_idemp)
+      unfold content_smult_int content_primitive_part[OF g] 
+      primitive_part_smult_int primitive_part_idemp)
     show "\<bar>gc\<bar> * 1 dvd content f" using gcf by auto
-    show "smult (sgn gc) (normalize_content g) dvd normalize_content f" 
+    show "smult (sgn gc) (primitive_part g) dvd primitive_part f" 
       using dvd_n cf gc using zsgn_def by force
   qed    
   have "cg dvd d" using dvd_c unfolding gc_def cg_def using cf cg d
@@ -281,7 +281,7 @@ proof -
   then obtain h where dcg: "d = cg * h" unfolding dvd_def by auto
   with d have "h \<noteq> 0" by auto
   hence h1: "\<bar>h\<bar> \<ge> 1" by simp
-  have "degree (smult gc (normalize_content g)) = degree g" 
+  have "degree (smult gc (primitive_part g)) = degree g" 
     using gc by auto
   from factor_bound[OF f dvd_f, unfolded this, OF deg, of k, unfolded coeff_smult]
   have le: "\<bar>gc * coeff ?ng k\<bar> \<le> factor_bound f n" .
@@ -290,7 +290,7 @@ proof -
   have "\<bar>cg * gc * coeff ?ng k\<bar> \<le> \<bar>cg\<bar> * factor_bound f n" 
     unfolding abs_mult[symmetric] by simp
   also have "cg * gc * coeff ?ng k = coeff (smult ?cg ?ng) k" unfolding cg_id by simp
-  also have "\<dots> = coeff g k" unfolding smult_normalize_content by simp
+  also have "\<dots> = coeff g k" unfolding content_times_primitive_part by simp
   finally have "\<bar>coeff g k\<bar> \<le> 1 * (\<bar>cg\<bar> * factor_bound f n)" by simp
   also have "\<dots> \<le> \<bar>h\<bar> * (\<bar>cg\<bar> * factor_bound f n)" 
     by (rule mult_right_mono[OF h1], insert f0, auto)

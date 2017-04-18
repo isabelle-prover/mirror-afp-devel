@@ -256,19 +256,19 @@ definition cf_pos_poly :: "int poly \<Rightarrow> int poly" where
   "cf_pos_poly f = (let
       c = content f;
       d = (sgn (lead_coeff f) * c)
-    in div_poly d f)"
+    in sdiv_poly f d)"
 
 lemma sgn_is_unit[intro!]:
   fixes x :: "'a :: linordered_idom" (* find/make better class *)
   assumes "x \<noteq> 0"
   shows "sgn x dvd 1" using assms by(cases x "0::'a" rule:linorder_cases, auto)
 
-lemma cf_pos_poly_0[simp]: "cf_pos_poly 0 = 0" by (unfold cf_pos_poly_def div_poly_def, auto)
+lemma cf_pos_poly_0[simp]: "cf_pos_poly 0 = 0" by (unfold cf_pos_poly_def sdiv_poly_def, auto)
 
 lemma cf_pos_poly_eq_0[simp]: "cf_pos_poly f = 0 \<longleftrightarrow> f = 0"
 proof(cases "f = 0")
   case True
-  thus ?thesis unfolding cf_pos_poly_def Let_def by (simp add: div_poly_def)
+  thus ?thesis unfolding cf_pos_poly_def Let_def by (simp add: sdiv_poly_def)
 next
   case False
   then have lc0: "lead_coeff f \<noteq> 0" by auto
@@ -279,7 +279,7 @@ next
     have "?s * ?c dvd coeff f i" by (auto simp: unit_dvd_iff)
     then have "coeff f i div (?s * ?c) = 0 \<longleftrightarrow> coeff f i = 0" by (auto simp:dvd_div_eq_0_iff)
   } note * = this
-  show ?thesis unfolding cf_pos_poly_def Let_def div_poly_def poly_eq_iff by (auto simp: coeff_map_poly *)
+  show ?thesis unfolding cf_pos_poly_def Let_def sdiv_poly_def poly_eq_iff by (auto simp: coeff_map_poly *)
 qed
 
 lemma
@@ -301,33 +301,33 @@ next
   also have "content [:?s:] = 1" using s by (auto simp: content_def)
   finally have cg: "content g = content f" by simp
   from f0  
-  have d: "cf_pos_poly f = div_poly d f"  by (auto simp: cf_pos_poly_def Let_def d_def)
-  let ?g = "normalize_content g" 
-  define ng where "ng = normalize_content g"
+  have d: "cf_pos_poly f = sdiv_poly f d"  by (auto simp: cf_pos_poly_def Let_def d_def)
+  let ?g = "primitive_part g" 
+  define ng where "ng = primitive_part g"
   note d
-  also have "div_poly d f = div_poly (content g) g" unfolding cg unfolding g_def d_def
-    by (rule poly_eqI, unfold coeff_div_poly coeff_smult, insert s, auto simp: div_minus_right)
-  finally have fg: "cf_pos_poly f = normalize_content g" unfolding normalize_content_def . 
+  also have "sdiv_poly f d = sdiv_poly g (content g)" unfolding cg unfolding g_def d_def
+    by (rule poly_eqI, unfold coeff_sdiv_poly coeff_smult, insert s, auto simp: div_minus_right)
+  finally have fg: "cf_pos_poly f = primitive_part g" unfolding primitive_part_alt_def . 
   have "lead_coeff f \<noteq> 0" using f0 by auto
   hence lg: "lead_coeff g > 0" unfolding g_def lead_coeff_smult
     by (meson linorder_neqE_linordered_idom sgn_greater sgn_less zero_less_mult_iff)
   hence g0: "g \<noteq> 0" by auto
-  from f0 content_normalize_content_1[OF this]
+  from f0 content_primitive_part[OF this]
   show ?g2 unfolding fg by auto
   from g0 have "content g \<noteq> 0" by simp
-  with arg_cong[OF smult_normalize_content[of g], of lead_coeff, unfolded lead_coeff_smult]
+  with arg_cong[OF content_times_primitive_part[of g], of lead_coeff, unfolded lead_coeff_smult]
     lg content_ge_0_int[of g] have lg': "lead_coeff ng > 0" unfolding ng_def 
     by (metis dual_order.antisym dual_order.strict_implies_order zero_less_mult_iff)
   with f0 show ?g3 unfolding fg ng_def by auto
 
   have d0: "d \<noteq> 0" using s f0 by (force simp add: d_def)
-  have "smult d (cf_pos_poly f) = smult ?s (smult (content f) (div_poly (content f) (smult ?s f)))" 
-    unfolding fg normalize_content_def cg by (simp add: g_def d_def)
-  also have "div_poly (content f) (smult ?s f) = smult ?s (div_poly (content f) f)" 
-    using s by (metis cg g_def normalize_content_def normalize_content_smult_int sgn_sgn)
-  finally have "smult d (cf_pos_poly f) = smult (content f) (normalize_content f)" 
-    unfolding normalize_content_def using s by auto
-  also have "\<dots> = f" by (rule smult_normalize_content)
+  have "smult d (cf_pos_poly f) = smult ?s (smult (content f) (sdiv_poly (smult ?s f) (content f)))" 
+    unfolding fg primitive_part_alt_def cg by (simp add: g_def d_def)
+  also have "sdiv_poly (smult ?s f) (content f) = smult ?s (sdiv_poly f (content f))" 
+    using s by (metis cg g_def primitive_part_alt_def primitive_part_smult_int sgn_sgn)
+  finally have "smult d (cf_pos_poly f) = smult (content f) (primitive_part f)" 
+    unfolding primitive_part_alt_def using s by auto
+  also have "\<dots> = f" by (rule content_times_primitive_part)
   finally have df: "smult d (cf_pos_poly f) = f" .
   with d0 show ?g1 by (auto simp: d_def)
   from df have *: "f = cf_pos_poly f * [:d:]" by simp
@@ -380,7 +380,7 @@ proof(intro iffI conjI)
   assume ?r
   then have df0: "degree f = 0" and f0: "f \<noteq> 0" by auto
   from  degree0_coeffs[OF df0] obtain f0 where f: "f = [:f0:]" by auto
-  show "cf_pos_poly f = 1" using f0 unfolding f cf_pos_poly_def Let_def div_poly_def
+  show "cf_pos_poly f = 1" using f0 unfolding f cf_pos_poly_def Let_def sdiv_poly_def
     by (auto simp: content_def mult_sgn_abs)
 next
   assume l: ?l

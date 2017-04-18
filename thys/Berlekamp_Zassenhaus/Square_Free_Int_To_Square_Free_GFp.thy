@@ -9,10 +9,10 @@ section \<open>Reconstructing Factors of Integer Polynomials\<close>
 subsection \<open>Square-Free Polynomials over Finite Fields and Integers\<close>
 theory Square_Free_Int_To_Square_Free_GFp
 imports   
-  "../Polynomial_Factorization/Square_Free_Factorization"
+  "../Subresultants/Subresultant_Gcd" 
   "../Polynomial_Factorization/Rational_Factorization"
   Finite_Field
-  Resultant
+  "../Polynomial_Factorization/Square_Free_Factorization"
 begin
 
 lemma square_free_int_rat: assumes sf: "square_free f"
@@ -61,19 +61,19 @@ proof (cases "degree f = 0")
   show ?thesis unfolding f by simp
 next
   case False note deg = this
-  define pp where "pp = normalize_content f" 
+  define pp where "pp = primitive_part f" 
   define c where "c = content f"
   from sf have f0: "f \<noteq> 0" unfolding square_free_def by auto
   hence c0: "c \<noteq> 0" unfolding c_def by auto
-  have f: "f = smult c pp" unfolding c_def pp_def unfolding smult_normalize_content[of f] ..
+  have f: "f = smult c pp" unfolding c_def pp_def unfolding content_times_primitive_part[of f] ..
   from sf[unfolded f] c0 have sf': "square_free pp" by (metis dvd_smult smult_0_right square_free_def)  
   from deg[unfolded f] c0 have deg': "\<And> x. degree pp > 0 \<or> x" by auto
-  from content_normalize_content_1[OF f0] have cp: "content pp = 1" unfolding pp_def .
+  from content_primitive_part[OF f0] have cp: "content pp = 1" unfolding pp_def .
   let ?p' = "pderiv pp" 
   {
     assume "resultant pp ?p' = 0" 
-    from resultant_zero_imp_common_factor[OF deg' this, unfolded coprime_def]
-    obtain r where r: "r dvd pp" "r dvd ?p'" "\<not> r dvd 1" by auto
+    from this[unfolded resultant_0_gcd] have "\<not> coprime pp ?p'" by auto
+    then obtain r where r: "r dvd pp" "r dvd ?p'" "\<not> r dvd 1" by force
     from r(1) obtain k where "pp = r * k" unfolding dvd_def by auto
     from pos_zmult_eq_1_iff_lemma[OF arg_cong[OF this, 
       of content, unfolded content_mult cp, symmetric]] content_ge_0_int[of r]
@@ -139,19 +139,18 @@ proof (intro conjI, rule notI)
     assume abs: "abs (lead_coeff g) < CARD('a)"
     have "degree (?m g) = degree g"
     proof (rule degree_map_poly, force)
-      assume "?i (coeff g (degree g)) = 0" 
+      assume "?i (lead_coeff g) = 0" 
       from of_int_0[OF abs[unfolded] this]
       show "g = 0" by auto
     qed
   } note deg = this
   note large = large[unfolded square_free_bound_def]
   from of_int_0[of "lead_coeff f"] large lf have "?i (lead_coeff f) \<noteq> 0" by auto
-  also have "?i (lead_coeff f) = coeff ?f (degree f)" by simp
-  finally show f0: "?f \<noteq> 0" unfolding poly_eq_iff by auto  
+  thus f0: "?f \<noteq> 0" unfolding poly_eq_iff by auto  
   assume 0: "resultant ?f (pderiv ?f) = 0" 
   have "resultant ?f (pderiv ?f) = ?i (resultant f (pderiv f))"
-    unfolding of_int_hom.map_poly_pderiv
-    by (subst of_int_hom.resultant_map_poly(1)[OF deg deg], insert large, auto)
+    unfolding of_int_hom.map_poly_pderiv[symmetric] 
+    by (rule of_int_hom.resultant_map_poly[OF deg deg], insert large, auto)
   from of_int_0[OF _ this[symmetric, unfolded 0]] non0
   show False using large by auto
 qed
@@ -163,8 +162,10 @@ proof -
   define g where "g = map_poly (of_int :: int \<Rightarrow> 'a mod_ring) f"
   from square_free_int_imp_resultant_non_zero_mod_ring[OF sf large]
   have res: "resultant g (pderiv g) \<noteq> 0" and g: "g \<noteq> 0" unfolding g_def by auto
-  from resultant_non_zero_imp_coprime[OF res] g
-  have "coprime g (pderiv g)" by auto
+  from res[unfolded resultant_0_gcd] have "degree (gcd g (pderiv g)) = 0" by auto
+  from degree0_coeffs[OF this]
+  have "coprime g (pderiv g)"
+    by (metis degree_pCons_0 g gcd_eq_0_iff is_unit_gcd is_unit_iff_degree)
   with coprime_pderiv_imp_square_free have "square_free g" by auto
   thus ?thesis unfolding g_def .
 qed

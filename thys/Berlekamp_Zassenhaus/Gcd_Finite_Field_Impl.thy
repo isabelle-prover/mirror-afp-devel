@@ -36,7 +36,7 @@ proof -
     by (rule poly_rel_coeffs_Mp_of_int_poly[OF refl], simp add: g''_def)
   have id: "(gcd_poly_i ff_ops (of_int_poly_i ff_ops (Mp f)) (of_int_poly_i ff_ops (Mp g)) = one_poly_i ff_ops)
     = coprime f'' g''"
-    unfolding square_free_i_def coprime_iff_gcd_one by transfer_prover
+    unfolding square_free_i_def by transfer_prover
   have fF: "MP_Rel (Mp f) F" unfolding F MP_Rel_def
     by (simp add: Mp_f_representative)
   have gG: "MP_Rel (Mp g) G" unfolding G MP_Rel_def
@@ -94,7 +94,7 @@ proof -
     from dvd have "lead_coeff h dvd lead_coeff f" "lead_coeff h dvd lead_coeff g" 
       by (metis dvd_def lead_coeff_mult)+
     with cop have coph: "coprime (lead_coeff h) p"
-      unfolding coprime_iff_gcd_one by (metis coprime_divisors dvd_def mult.right_neutral)
+      by (metis coprime_divisors dvd_def mult.right_neutral)
     let ?k = "Mp k"  
     from arg_cong[OF unit, of degree] have degm0: "degree_m (h * ?k) = 0" unfolding degree_m_def by simp
     have "lead_coeff ?k \<in> {0 ..< p}" unfolding Mp_coeff M_def using m1 by simp
