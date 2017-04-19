@@ -16,7 +16,7 @@ theory Resultant
 imports
   "../Polynomial_Factorization/Rational_Factorization"
   Subresultant_Gcd
-  Unique_Factorization_Poly 
+  "../Berlekamp_Zassenhaus/Unique_Factorization_Poly" 
   Bivariate_Polynomials
 begin
 
@@ -47,7 +47,6 @@ proof
 qed
 
 lemma inj_on_diff_nat2: "inj_on (\<lambda>i. (n::nat) - i) {..n}" by (rule inj_onI, auto)
-lemma inj_on_diff_nat3: "inj_on (\<lambda>i. i - n::nat) {n..m}" by (rule inj_onI, auto)
 
 lemma image_diff_atMost: "(\<lambda>i. (n::nat) - i) ` {..n} = {..n}" (is "?l = ?r")
   unfolding set_eq_iff
@@ -55,16 +54,6 @@ proof (intro allI iffI)
   fix x assume x: "x \<in> ?r"
     thus "x \<in> ?l" unfolding image_def mem_Collect_eq
     by(intro bexI[of _ "n-x"],auto)
-qed auto
-
-lemma atLeastAtMost_shift:
-  assumes nm: "n \<le> m"
-  shows "(\<lambda>i. i - (n::nat)) ` {n..m} = {..m-n}" (is "?l = ?r")
-  unfolding set_eq_iff
-proof (intro allI iffI)
-  fix x assume x: "x \<in> ?r"
-  thus "x \<in> ?l" unfolding image_def mem_Collect_eq
-    using nm by(intro bexI[of _ "x+n"],auto)
 qed auto
 
 lemma sylvester_mat_sum_upper:
@@ -152,14 +141,6 @@ definition "vec_of_poly p \<equiv> let m = degree p in vec (Suc m) (\<lambda>i. 
 
 definition "poly_of_vec v \<equiv> let d = dim\<^sub>v v in \<Sum>i<d. monom (v $ (d - Suc i)) i"
 
-lemma dim_vec_of_poly[simp]: "dim\<^sub>v (vec_of_poly p) = Suc (degree p)"
-  unfolding vec_of_poly_def Let_def by auto
-
-lemma vec_of_poly_index[simp]:
-  assumes "i \<le> degree p" shows "vec_of_poly p $ i = coeff p (degree p - i)"
-  unfolding vec_of_poly_def Let_def
-  using assms by auto
-
 lemma poly_of_vec_of_poly[simp]:
   fixes p :: "'a :: comm_monoid_add poly"
   shows "poly_of_vec (vec_of_poly p) = p"
@@ -167,33 +148,6 @@ lemma poly_of_vec_of_poly[simp]:
   unfolding vec_dim_vec
   unfolding lessThan_Suc_atMost
   using poly_as_sum_of_monoms[of p] by auto
-
-lemma vec_of_poly_eq_iff[simp]:
-  fixes p q :: "'a :: comm_monoid_add poly"
-  shows "vec_of_poly p = vec_of_poly q \<longleftrightarrow> p = q" (is "?p = ?q \<longleftrightarrow> _")
-proof (rule iffI)
-  assume "?p = ?q"
-  hence "poly_of_vec ?p = poly_of_vec ?q" by auto
-  thus "p = q" by auto
-qed auto 
-
-lemma vec_of_poly_0[simp]:
-  fixes p :: "'a :: comm_monoid_add poly"
-  shows "vec_of_poly p = \<zero>\<^sub>v (Suc (degree p)) \<longleftrightarrow> p = 0" (is "?p = ?q \<longleftrightarrow> _")
-proof
-  assume l: "?p = ?q"
-  show "p = 0"
-  proof (rule poly_eqI, unfold coeff_0)
-    fix i
-    show "coeff p i = 0"
-    proof (cases "i \<le> degree p")
-      case True hence "?p $ (degree p - i) = 0" using l by auto
-        thus ?thesis unfolding vec_of_poly_def Let_def using True by auto
-      next case False thus ?thesis using coeff_eq_0[of p i] by auto
-    qed
-  qed
-  next show "p = 0 \<Longrightarrow> ?p = ?q" unfolding vec_of_poly_def Let_def by auto
-qed
 
 lemma poly_of_vec_0[simp]: "poly_of_vec (\<zero>\<^sub>v n) = 0" unfolding poly_of_vec_def Let_def by auto
 
@@ -251,11 +205,6 @@ proof -
   qed
   finally show ?thesis .
 qed
-
-lemma coeff_poly_of_vec_in:
-  assumes i: "i < dim\<^sub>v v"
-  shows "coeff (poly_of_vec v) i = v $ (dim\<^sub>v v - Suc i)"
-  unfolding coeff_poly_of_vec using i by simp
 
 lemma vec_of_poly_rev_shifted_scalar_prod:
   fixes p v
@@ -424,214 +373,6 @@ proof (rule poly_eqI)
   qed
 qed
   
-subsubsection{* Results for Over-Sized Sylvester Matrices *}
-
-lemma sylvester_mat_sub_too_big_lower:
-  assumes deg: "n \<ge> degree q"
-  shows "mat_delete (sylvester_mat_sub m (Suc n) p q) 0 0 = sylvester_mat_sub m n p q"
-    (is "?L = ?R")
-  apply (rule mat_eqI)
-  unfolding four_block_mat_index dim_mat_of sylvester_mat_sub_dim
-proof -
-  note [simp] = sylvester_mat_sub_index
-  fix i j assume imn: "i < m + n" and jmn: "j < m + n"
-  hence SimSn: "Suc i < m + Suc n"
-    and SjmSn: "Suc j < m + Suc n" by auto
-  show "?L $$ (i,j) = ?R $$ (i,j)"
-    apply(subst mat_delete_index[symmetric])
-  proof-
-    show "sylvester_mat_sub m (Suc n) p q $$ (insert_index 0 i, insert_index 0 j) =
-      sylvester_mat_sub m n p q $$ (i, j)"
-      proof(cases "i < Suc n")
-        case True thus ?thesis
-          unfolding sylvester_mat_sub_index[OF imn jmn]
-          using coeff_eq_0[of q] deg
-          by (auto simp: sylvester_mat_sub_index[OF SimSn SjmSn])
-        next case False thus ?thesis
-          unfolding sylvester_mat_sub_index[OF imn jmn]
-          using coeff_eq_0[of q] deg imn
-          by (auto simp: sylvester_mat_sub_index[OF SimSn SjmSn])
-      qed
-  qed (auto simp: imn jmn)
-qed auto
-
-lemma sylvester_mat_sub_too_big_upper:
-  assumes deg: "m \<ge> degree p"
-  shows "mat_delete (sylvester_mat_sub (Suc m) n p q) n 0 = sylvester_mat_sub m n p q"
-    (is "?L = ?R")
-  apply (rule mat_eqI)
-  unfolding four_block_mat_index dim_mat_of sylvester_mat_sub_dim
-proof -
-  note [simp] = sylvester_mat_sub_index
-  fix i j assume imn: "i < m + n" and jmn: "j < m + n"
-  hence iSmn: "i < Suc m + n"
-    and SiSmn: "Suc i < Suc m + n"
-    and SjSmn: "Suc j < Suc m + n" by auto
-  show "?L $$ (i,j) = ?R $$ (i,j)"
-    apply(subst mat_delete_index[symmetric])
-  proof-
-    show "sylvester_mat_sub (Suc m) n p q $$ (insert_index n i, insert_index 0 j) =
-      sylvester_mat_sub m n p q $$ (i, j)"
-      proof(cases "i < n")
-        case True thus ?thesis
-          unfolding sylvester_mat_sub_index[OF imn jmn]
-          using coeff_eq_0[of p] deg
-          by (auto simp: sylvester_mat_sub_index[OF iSmn SjSmn])
-        next case False thus ?thesis
-          unfolding sylvester_mat_sub_index[OF imn jmn]
-          using coeff_eq_0[of p] deg imn
-          by (auto simp: sylvester_mat_sub_index[OF SiSmn SjSmn])
-      qed
-  qed (auto simp: imn jmn)
-qed auto
-
-lemma sylvester_mat_sub_index_most_0:
-  assumes m: "m \<ge> degree p" and n: "n \<ge> degree q" and i: "i < m+n"
-  shows "sylvester_mat_sub m n p q $$ (i,0) =
-    (if i = 0 \<and> n \<noteq> 0 then coeff p m else if i = n then coeff q n else 0)"
-  using assms by(subst sylvester_mat_sub_index, auto)
-
-lemma det_sylvester_mat_sub_too_big_lower:
-  assumes m: "m \<ge> degree p" and n: "n \<ge> degree q"
-  shows "det (sylvester_mat_sub m (Suc n) p q) = coeff p m * det (sylvester_mat_sub m n p q)"
-    (is "det ?l = ?r")
-proof -
-  have "det ?l = (\<Sum>i < m + Suc n. ?l $$ (i, 0) * cofactor ?l i 0)"
-    (is "_ = sum ?f _")
-    apply(subst laplace_expansion_column[OF sylvester_mat_sub_carrier,of 0])
-    unfolding sylvester_mat_sub_dim by auto
-  also have "{..< m + Suc n} = {..m+n}" by auto
-  also have "... = insert 0 (insert n ({..m+n}-{0,n}))" (is "_ = insert _ (insert _ ?r')") by auto
-  also have "sum ?f ... = ?f 0 + sum ?f ?r'" (is "sum _ ?l' = _")
-    proof(cases "n = 0")
-      case True
-        hence "?r' = {..m+n}-{0}" by simp
-        also have "insert n ... = {..m+n}" unfolding True by auto
-        also have "insert 0 ... = {..m+n}" by auto
-        finally have "?l' = insert 0 ?r'" by auto
-        thus ?thesis by auto
-      next case False
-        have "sum ?f ?l' = ?f 0 + ?f n + sum ?f ?r'" using False by auto
-        also have "?f n = 0" using False n by(subst sylvester_mat_sub_index;simp)
-        finally show ?thesis by auto
-    qed
-  also {
-    fix i assume i: "i \<in> {..m+n}-{0,n}"
-    have "?l $$ (i,0) = 0"
-      apply(subst sylvester_mat_sub_index_most_0)
-      using m i n coeff_eq_0[of q] by auto
-    hence "?f i = 0" by auto
-  } hence "sum ?f ({..m+n}-{0,n}) = 0" by auto
-  also have "?f 0 = ?r"
-    unfolding cofactor_def
-    unfolding sylvester_mat_sub_too_big_lower[OF n]
-    by(subst(1) sylvester_mat_sub_index;simp)
-  finally show ?thesis by simp
-qed
-
-lemma det_sylvester_mat_sub_too_big_upper:
-  assumes m: "m \<ge> degree p" and n: "n \<ge> degree q"
-  shows "det (sylvester_mat_sub (Suc m) n p q) = (-1)^n * coeff q n * det (sylvester_mat_sub m n p q)"
-    (is "det ?l = ?r")
-proof -
-  have "det ?l = (\<Sum>i < Suc m + n. ?l $$ (i, 0) * cofactor ?l i 0)"
-    (is "_ = sum ?f _")
-    apply(subst laplace_expansion_column[OF sylvester_mat_sub_carrier,of 0])
-    unfolding sylvester_mat_sub_dim by auto
-  also have "{..< Suc m + n} = {..m+n}" by auto
-  also have "... = insert 0 (insert n ({..m+n}-{0,n}))" (is "_ = insert _ (insert _ ?r')") by auto
-  also have "sum ?f ... = ?f n + sum ?f ?r'" (is "sum _ ?l' = _")
-    proof(cases "n = 0")
-      case True
-        hence "?r' = {..m+n}-{n}" by simp
-        also have "insert n ... = {..m+n}" unfolding True by auto
-        also have "insert 0 ... = {..m+n}" by auto
-        finally have "?l' = insert n ?r'" by auto
-        thus ?thesis by auto
-      next case False
-        have "sum ?f ?l' = ?f 0 + ?f n + sum ?f ?r'" using False by auto
-        also have "?f 0 = 0"
-          using coeff_eq_0[of p] False m n by(subst sylvester_mat_sub_index,auto)
-        finally show ?thesis by auto
-    qed
-  also {
-    fix i assume i: "i \<in> {..m+n}-{0,n}"
-    have "?l $$ (i,0) = 0"
-      apply(subst sylvester_mat_sub_index_most_0)
-      using m i n coeff_eq_0[of q] by auto
-    hence "?f i = 0" by auto
-  } hence "sum ?f ({..m+n}-{0,n}) = 0" by auto
-  also have "?f n = ?r"
-    unfolding cofactor_def
-    unfolding sylvester_mat_sub_too_big_upper[OF m]
-    by(subst(1) sylvester_mat_sub_index;simp)
-  finally show ?thesis by simp
-qed
-
-lemma cofactor_sylvester_too_big_upper:
-  assumes m: "m \<ge> degree p"
-  shows "cofactor (sylvester_mat_sub (Suc m) n p q) n 0 = (- 1) ^ n * resultant_sub m n p q"
-  unfolding cofactor_def
-  using sylvester_mat_sub_too_big_upper[OF m]
-  unfolding resultant_sub_def by auto
-
-lemma resultant_sub_too_big_upper:
-  assumes m: "m \<ge> degree p"
-  shows "resultant_sub (Suc m) n p q = (- 1) ^ n * coeff q n * resultant_sub m n p q" (is "?l = ?r")
-proof -
-  have hint: "coeff p (Suc m) = 0" using m using le_degree less_le_trans not_le by blast
-  let ?S = "sylvester_mat_sub (Suc m) n p q"
-  have "?l = det ?S" unfolding resultant_sub_def by auto
-  also have "... =  (\<Sum>i<Suc m + n. ?S $$ (i,0) * cofactor ?S i 0)"
-        (is "_ = sum ?f ?I")
-    apply(subst laplace_expansion_column[OF sylvester_mat_sub_carrier,of 0],simp)
-    unfolding sylvester_mat_sub_dim..
-  also have "?I = insert n (?I - {n})" by auto
-  also have "sum ?f ... = ?f n + sum ?f (?I-{n})" by (simp add: sum.insert_remove)
-  also have "?f n = ?r"
-    unfolding cofactor_sylvester_too_big_upper[OF m]
-    by(subst sylvester_mat_sub_index,auto)
-  also have "sum ?f (?I-{n}) = 0"
-    apply (rule sum.neutral) using hint by (auto simp: sylvester_mat_sub_index)
-  finally show ?thesis by auto
-qed
-
-lemma resultant_sub_trim_upper:
-  shows "resultant_sub (degree p + m) n p q = ((-1)^n * coeff q n)^m * resultant_sub (degree p) n p q"
-  by (induct "m"; simp add: resultant_sub_too_big_upper)
-
-lemma cofactor_sylvester_too_big_lower:
-  assumes n: "n \<ge> degree q"
-  shows "cofactor (sylvester_mat_sub m (Suc n) p q) 0 0 = resultant_sub m n p q"
-  unfolding cofactor_def
-  using sylvester_mat_sub_too_big_lower[OF n]
-  unfolding resultant_sub_def by auto
-
-lemma resultant_sub_too_big_lower:
-  assumes n: "n \<ge> degree q"
-  shows "resultant_sub m (Suc n) p q = coeff p m * resultant_sub m n p q" (is "?l = ?r")
-proof -
-  have hint: "coeff q (Suc n) = 0" using n using le_degree less_le_trans not_le by blast
-  let ?S = "sylvester_mat_sub m (Suc n) p q"
-  have "?l = det ?S" unfolding resultant_sub_def by auto
-  also have "... =  (\<Sum>i<Suc m + n. ?S $$ (i,0) * cofactor ?S i 0)"
-        (is "_ = sum ?f ?I")
-    apply(subst laplace_expansion_column[OF sylvester_mat_sub_carrier,of 0],simp)
-    unfolding sylvester_mat_sub_dim by auto
-  also have "?I = insert 0 (?I - {0})" by auto
-  also have "sum ?f ... = ?f 0 + sum ?f (?I-{0})" by (simp add: sum.insert_remove)
-  also have "?f 0 = ?r"
-    unfolding cofactor_sylvester_too_big_lower[OF n]
-    by(subst sylvester_mat_sub_index,auto)
-  also have "sum ?f (?I-{0}) = 0"
-    apply (rule sum.neutral) using hint by (auto simp: sylvester_mat_sub_index)
-  finally show ?thesis by auto
-qed
-
-lemma resultant_sub_trim_lower:
-  shows "resultant_sub m (degree q + n) p q = coeff p m ^ n * resultant_sub m (degree q) p q"
-  by (induct "n"; simp add: resultant_sub_too_big_lower)
-
 subsubsection \<open>Homomorphism and Resultant\<close>
 
 text \<open>Here we prove Lemma~7.3.1 of the textbook.\<close>
@@ -802,9 +543,6 @@ private lemma mk_poly2_row_dim[simp]: "dim\<^sub>v (mk_poly2_row A d j pv i) = d
 
 private lemma mk_poly2_col_dim[simp]: "dim\<^sub>v (mk_poly2_col A pv j) = dim\<^sub>v pv"
   by (induct j arbitrary: pv, auto)
-
-private lemma mk_poly2_dim[simp]: "dim\<^sub>v (mk_poly2 A) = dim\<^sub>r A"
-  unfolding mk_poly2_def by simp
 
 private lemma mk_poly2_row:
   assumes n: "n \<le> dim\<^sub>v pv"
@@ -1288,11 +1026,6 @@ proof -
   ultimately show ?thesis by auto
 qed
 
-lemma mod_const_0 [simp]:
-  "f mod [:c:] = 0" if "c \<noteq> 0"
-  using eucl_rel_poly [of f "[:c:]", unfolded eucl_rel_poly_iff] that
-  by simp
-
 lemma resultant_non_zero_imp_coprime:
   assumes nz: "resultant (f :: 'a :: field poly) g \<noteq> 0" 
   and nz': "f \<noteq> 0 \<or> g \<noteq> 0" 
@@ -1343,5 +1076,4 @@ next
     from main[OF this nz nz'] show ?thesis .
   qed
 qed
-
 end
