@@ -15,7 +15,7 @@ text \<open>This theory defines the Sylvester matrix and the resultant and conta
 theory Resultant
 imports
   "../Polynomial_Factorization/Rational_Factorization"
-  Subresultant_Gcd
+  "../Subresultants/Subresultant_Gcd" 
   "../Berlekamp_Zassenhaus/Unique_Factorization_Poly" 
   Bivariate_Polynomials
 begin
