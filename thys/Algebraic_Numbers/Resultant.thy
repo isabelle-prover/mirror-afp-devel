@@ -5,8 +5,8 @@
 *)
 subsection \<open>Resultant\<close>
 
-text \<open>This theory defines the Sylvester matrix and the resultant and contains 
-  facts about these notions which are required for addition and multiplication
+text \<open>This theory contains 
+  facts about resultants which are required for addition and multiplication
   of algebraic numbers.
 
   The results are taken from the textbook \cite[pages 227ff and 235ff]{AlgNumbers}.

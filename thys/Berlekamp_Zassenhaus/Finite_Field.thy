@@ -4,6 +4,10 @@
                   René Thiemann
                   Akihisa Yamada
 *)
+section \<open>Finite Rings and Fields\<close>
+
+text \<open>We start by establishing some preliminary results about finite rings and finite fields\<close>
+
 subsection {* Finite Rings *}
 
 theory Finite_Field

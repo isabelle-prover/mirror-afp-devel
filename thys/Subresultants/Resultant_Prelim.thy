@@ -3,13 +3,15 @@
                  Akihisa Yamada
     License:     BSD
 *)
-subsection \<open>Resultant\<close>
+section \<open>Resultants\<close>
 
 text \<open>This theory defines the Sylvester matrix and the resultant and contains 
-  facts about these notions which are required for addition and multiplication
-  of algebraic numbers.
-
-  The results are taken from the textbook \cite[pages 227ff and 235ff]{AlgNumbers}.
+  basic facts about these notions. After the connection between resultants
+  and subresultants has been established, we then use properties of subresultants
+  to transfer them to resultants. Remark: these properties have previously been proven
+  separately for both resultants and subresultants; and this is the reason for
+  splitting the theory of resultants in two parts, namely ``Resultant-Prelim'' and
+  ``Resultant'' which is located in the Algebraic-Number AFP-entry. 
 \<close> 
 
 theory Resultant_Prelim
@@ -18,8 +20,8 @@ imports
   "../Polynomial_Interpolation/Ring_Hom_Poly" 
 begin
   
-subsubsection\<open>Sylvester Matrix\<close>
-
+text \<open>Sylvester matrix\<close>
+  
 definition sylvester_mat_sub :: "nat \<Rightarrow> nat \<Rightarrow> 'a poly \<Rightarrow> 'a poly \<Rightarrow> 'a :: zero mat" where
   "sylvester_mat_sub m n p q \<equiv>
    mat (m+n) (m+n) (\<lambda> (i,j).
@@ -118,7 +120,6 @@ proof(rule mat_eqI)
     using f0 by auto
 qed
 
-subsubsection \<open>Resultant\<close>
 
 definition resultant :: "'a poly \<Rightarrow> 'a poly \<Rightarrow> 'a :: comm_ring_1" where
   "resultant p q = det (sylvester_mat p q)"

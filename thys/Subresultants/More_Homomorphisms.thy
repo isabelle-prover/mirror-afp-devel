@@ -1,3 +1,8 @@
+section \<open>Homomorphisms\<close>
+
+text \<open>We register two homomorphism, namely lifting constants to polynomials,
+  and lifting elements of some domain into their fraction field.\<close>
+  
 theory More_Homomorphisms
   imports "../Polynomial_Interpolation/Ring_Hom_Poly" 
 begin
