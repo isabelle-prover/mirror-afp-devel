@@ -16,6 +16,7 @@ imports
   "~~/src/HOL/Library/Code_Char"
   "~~/src/HOL/Library/Code_Target_Nat"
   "~~/src/HOL/Library/Code_Target_Int"
+  "../Berlekamp_Zassenhaus/Factorize_Rat_Poly" 
   Real_Factorization
   Show_Real_Precise  
 begin

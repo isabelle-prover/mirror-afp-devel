@@ -141,7 +141,7 @@ proof (cases "degree p" "1::nat" rule: linorder_cases)
     have dvd: "\<not> [:-x,1:] dvd 1" by (auto simp: poly_dvd_1)
     from greater have "degree r \<noteq> 0" using degree_mult_le[of r "[:-x,1:]", unfolded deg, folded p] by auto
     then have "\<not> r dvd 1" by (auto simp: poly_dvd_1)
-    with p irr irreducibleD[OF irr p] dvd have False by auto
+    with p irr Factorial_Ring.irreducibleD[OF irr p] dvd have False by auto
   }
   thus ?thesis unfolding root_free_def by auto
 next
@@ -151,20 +151,6 @@ next
   with p have "poly p x \<noteq> 0" for x by auto
   thus ?thesis by (auto simp: root_free_def)
 qed (auto simp: root_free_def)
-
-lemma irreducible_square_free:
-  fixes p :: "'a :: {idom,comm_ring_1} poly"
-  assumes ir: "irreducible p" shows "square_free p"
-proof (intro square_freeI)
-  fix q
-  assume q: "degree q \<noteq> 0" "q \<noteq> 0" "q * q dvd p"
-  then obtain r where "p = q * (q * r)" by (elim dvdE, auto)
-  from irreducibleD[OF ir this] have "q dvd 1" by auto
-  with q show False by (auto simp: poly_dvd_1)
-next
-  from ir show "p \<noteq> 0" by auto
-qed
-
 
 
 (* **************************************************************** *)
@@ -243,7 +229,7 @@ lemma poly_condI[intro]:
 lemma poly_condD:
   assumes "poly_cond p"
   shows "irreducible p" and "cf_pos p" and "root_free p" and "square_free p" and "p \<noteq> 0"
-  using assms unfolding poly_cond_def using irreducible_root_free irreducible_square_free cf_pos_def by auto
+  using assms unfolding poly_cond_def using irreducible_root_free irreducible_imp_square_free cf_pos_def by auto
 
 lemma poly_condE[elim]:
   assumes "poly_cond p"
@@ -623,8 +609,7 @@ lemma rational_poly_cond_iff: assumes "poly_cond p" and "ipoly p x = 0" and "deg
 proof (rule rational_root_free_degree_iff[OF _ assms(2)])
   from poly_condD[OF assms(1)] have p: "irreducible p" by auto
   have "irreducible (map_poly rat_of_int p)"
-    apply (fold irreducible_connect)
-    apply (rule Polynomial_Divisibility.irreducible_connect)
+    apply (rule irreducible_connect)
     apply (rule irreducible_int_rat)
     apply (rule irreducible_connect_rev)
     using p assms(3) by auto 

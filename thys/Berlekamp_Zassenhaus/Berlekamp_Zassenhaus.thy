@@ -23,7 +23,8 @@ imports
   Code_Abort_Gcd
   Unique_Factorization_Poly
 begin
-
+hide_const (open) Missing_Polynomial.irreducible
+  
 context
 begin
 private partial_function (tailrec) find_exponent_main :: "int \<Rightarrow> int \<Rightarrow> nat \<Rightarrow> int \<Rightarrow> nat" where
@@ -114,7 +115,7 @@ corollary berlekamp_zassenhaus_factorization_content_free:
   assumes res: "berlekamp_zassenhaus_factorization f = fs" 
   and sf: "square_free f"
   and deg: "degree f \<noteq> 0"
-  and cf: "content_free f"
+  and cf: "content_free f"                        
   shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. irreducible fi \<and> degree fi > 0 \<and> content_free fi)" 
 proof (intro conjI ballI)
   note * = berlekamp_zassenhaus_factorization[OF res sf deg]

@@ -208,9 +208,8 @@ proof -
           unfolding xi_def xx yis by simp
         note IH = IH(2)[OF False xx yis xi]
         have "irreducible xi"
-          apply (fold irreducible_connect)
-          apply (rule Polynomial_Divisibility.irreducible_connect)
-        proof (rule Missing_Polynomial.irreducibleI)
+          apply (rule irreducible_connect)
+        proof (rule irreducibleI)
           show "degree xi \<noteq> 0" unfolding xi by auto
           fix q :: "real poly" 
           assume "degree q \<noteq> 0" "degree q < degree xi"
@@ -267,7 +266,7 @@ proof -
         finally have idd: "?xi * ?xis = (?cp xi)^Suc i * ?yis" by simp
         from prems[unfolded idd] have R: "set (coeffs ((?cp xi)^Suc i * ?yis)) \<subseteq> \<real>" .
         have yis: "set (coeffs ?yis) \<subseteq> \<real>"
-          by (rule real_poly_factor[OF R yi], auto simp: coeffs_map_poly, auto simp: xi_def)
+          by (rule real_poly_factor[OF R yi], auto, auto simp: xi_def)
         note IH = IH[OF yis] 
         have "?rp (?xi * ?xis) = ?rp ?yi * ?rp ?yis" unfolding idd
           by (rule map_poly_Re_mult[OF yi yis])

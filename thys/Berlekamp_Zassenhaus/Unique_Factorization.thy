@@ -7,8 +7,9 @@ theory Unique_Factorization
     Divisibility
     "$AFP/Containers/Containers_Auxiliary" (* only for a lemma *)
 begin
-
 hide_const(open) prime
+hide_fact(open) Divisibility.irreducibleI
+hide_fact(open) Divisibility.irreducibleD
 
 (* TODO: move or...? *)
 lemma dvd_rewrites: "dvd.dvd (op *) = op dvd" by (unfold dvd.dvd_def dvd_def, rule)
@@ -19,54 +20,11 @@ lemma (in comm_monoid_mult) prod_mset_prod_list: "prod_mset (mset xs) = prod_lis
 
 
 subsection {* Interfacing UFD properties *}
+hide_const (open) Divisibility.irreducible
+hide_const (open) Missing_Polynomial.irreducible
 
-
-text {* Will be generalized: *}
-context comm_semiring_1 begin
-  lemmas old_irreducible_def = irreducible_def
-  lemmas old_prime_elem_def = prime_elem_def
-end
-
-text {* generalized class for factorization. Most lemmas are imported *}
-
-class comm_monoid_mult_0 = comm_monoid_mult + mult_zero + zero_neq_one
+context comm_semiring_1
 begin
-
-subclass Rings.dvd.
-
-lemma dvd_power [simp]:
-  fixes n :: nat
-  assumes "n > 0 \<or> x = 1"
-  shows "x dvd (x ^ n)"
-  using assms
-proof
-  assume "0 < n"
-  then have "x ^ n = x ^ Suc (n - 1)" by simp
-  then show "x dvd (x ^ n)" by simp
-next
-  assume "x = 1"
-  then show "x dvd (x ^ n)" by simp
-qed
-
-definition irreducible :: "'a \<Rightarrow> bool" where
-  "irreducible p \<longleftrightarrow> p \<noteq> 0 \<and> \<not>p dvd 1 \<and> (\<forall>a b. p = a * b \<longrightarrow> a dvd 1 \<or> b dvd 1)"
-
-lemma not_irreducible_zero [simp]: "\<not>irreducible 0"
-  by (simp add: irreducible_def)
-
-lemma irreducible_not_unit: "irreducible p \<Longrightarrow> \<not>p dvd 1"
-  by (simp add: irreducible_def)
-
-lemma not_irreducible_one [simp]: "\<not>irreducible 1"
-  by (simp add: irreducible_def)
-
-lemma irreducibleI[intro]:
-  "p \<noteq> 0 \<Longrightarrow> \<not>p dvd 1 \<Longrightarrow> (\<And>a b. p = a * b \<Longrightarrow> a dvd 1 \<or> b dvd 1) \<Longrightarrow> irreducible p"
-  by (simp add: irreducible_def)
-
-lemma irreducibleD: "irreducible p \<Longrightarrow> p = a * b \<Longrightarrow> a dvd 1 \<or> b dvd 1"
-  by (simp add: irreducible_def)
-
 lemma irreducibleE[elim]:
   assumes "irreducible p"
       and "p \<noteq> 0 \<Longrightarrow> \<not> p dvd 1 \<Longrightarrow> (\<And>a b. p = a * b \<Longrightarrow> a dvd 1 \<or> b dvd 1) \<Longrightarrow> thesis"
@@ -78,52 +36,6 @@ lemma not_irreducibleE:
       and "x dvd 1 \<Longrightarrow> thesis"
       and "\<And>a b. x = a * b \<Longrightarrow> \<not> a dvd 1 \<Longrightarrow> \<not> b dvd 1 \<Longrightarrow> thesis"
   shows thesis using assms unfolding irreducible_def by auto
-
-definition prime_elem :: "'a \<Rightarrow> bool" where
-  "prime_elem p \<longleftrightarrow> p \<noteq> 0 \<and> \<not>p dvd 1 \<and> (\<forall>a b. p dvd (a * b) \<longrightarrow> p dvd a \<or> p dvd b)"
-
-lemma not_prime_elem_zero [simp]: "\<not>prime_elem 0"
-  by (simp add: prime_elem_def)
-
-lemma prime_elem_not_unit: "prime_elem p \<Longrightarrow> \<not>p dvd 1"
-  by (simp add: prime_elem_def)
-
-lemma prime_elemI:
-    "p \<noteq> 0 \<Longrightarrow> \<not>p dvd 1 \<Longrightarrow> (\<And>a b. p dvd (a * b) \<Longrightarrow> p dvd a \<or> p dvd b) \<Longrightarrow> prime_elem p"
-  by (simp add: prime_elem_def)
-
-lemma prime_elem_dvd_multD:
-    "prime_elem p \<Longrightarrow> p dvd (a * b) \<Longrightarrow> p dvd a \<or> p dvd b"
-  by (simp add: prime_elem_def)
-
-lemma prime_elem_dvd_mult_iff:
-  "prime_elem p \<Longrightarrow> p dvd (a * b) \<longleftrightarrow> p dvd a \<or> p dvd b"
-  by (auto simp: prime_elem_def)
-
-lemma not_prime_elem_one [simp]:
-  "\<not> prime_elem 1"
-  by (auto dest: prime_elem_not_unit)
-
-lemma prime_elem_not_zeroI:
-  assumes "prime_elem p"
-  shows "p \<noteq> 0"
-  using assms by (auto intro: ccontr)
-
-lemma prime_elem_dvd_power: 
-  "prime_elem p \<Longrightarrow> p dvd x ^ n \<Longrightarrow> p dvd x"
-  by (induction n) (auto dest: prime_elem_dvd_multD intro: dvd_trans[of _ 1])
-
-lemma prime_elem_dvd_power_iff:
-  "prime_elem p \<Longrightarrow> n > 0 \<Longrightarrow> p dvd x ^ n \<longleftrightarrow> p dvd x"
-  by (auto dest: prime_elem_dvd_power intro: dvd_trans)
-
-lemma prime_elem_imp_nonzero [simp]:
-  "ASSUMPTION (prime_elem x) \<Longrightarrow> x \<noteq> 0"
-  unfolding ASSUMPTION_def by (rule prime_elem_not_zeroI)
-
-lemma prime_elem_imp_not_one [simp]:
-  "ASSUMPTION (prime_elem x) \<Longrightarrow> x \<noteq> 1"
-  unfolding ASSUMPTION_def by auto
 
 lemma prime_elem_dvd_prod_list:
   assumes p: "prime_elem p" and pA: "p dvd prod_list A" shows "\<exists>a \<in> set A. p dvd a"
@@ -175,18 +87,6 @@ lemma unit_prod [intro]:
 lemma is_unit_mult_iff[simp]:
   shows "(a * b) dvd 1 \<longleftrightarrow> a dvd 1 \<and> b dvd 1"
   by (auto dest: dvd_mult_left dvd_mult_right)
-
-lemma dvd_0_left_iff [simp]: "0 dvd a \<longleftrightarrow> a = 0"
-  by (auto intro: dvd_refl elim!: dvdE)
-
-lemma dvd_0_right [iff]: "a dvd 0"
-proof
-  show "0 = a * 0" by simp
-qed
-
-lemma dvd_0_left: "0 dvd a \<Longrightarrow> a = 0"
-  by simp
-
 end
 
 (* coprime shouldn't need "gcd"... *)
@@ -228,52 +128,13 @@ end
 lemma(in semiring_gcd) coprime_iff_gcd_one[simp,code]:
   "coprime = (\<lambda>x y. gcd x y = 1)" using coprime by (intro ext, auto simp: coprime_def)
 
-lemma(in comm_monoid_mult_0) coprime_0[simp]: "coprime p 0 \<longleftrightarrow> p dvd 1" "coprime 0 p \<longleftrightarrow> p dvd 1"
+lemma(in comm_semiring_1) coprime_0[simp]: "coprime p 0 \<longleftrightarrow> p dvd 1" "coprime 0 p \<longleftrightarrow> p dvd 1"
   by (auto intro: coprimeI elim: coprimeE dest: dvd_trans)
 
+lemma (in semidom) prod_list_zero_iff[simp]: "prod_list xs = 0 \<longleftrightarrow> 0 \<in> set xs" by (induction xs, auto)
 
-class comm_monoid_no_zero_divisors = comm_monoid_mult_0 +
-  assumes no_zero_divisors: "a \<noteq> 0 \<Longrightarrow> b \<noteq> 0 \<Longrightarrow> a * b \<noteq> 0"
+context idom
 begin
-
-  lemma divisors_zero:
-    assumes "a * b = 0"
-    shows "a = 0 \<or> b = 0"
-  proof (rule classical)
-    assume "\<not> ?thesis"
-    then have "a \<noteq> 0" and "b \<noteq> 0" by auto
-    with no_zero_divisors have "a * b \<noteq> 0" by blast
-    with assms show ?thesis by simp
-  qed
-
-  lemma mult_eq_0_iff [simp]: "a * b = 0 \<longleftrightarrow> a = 0 \<or> b = 0"
-  proof (cases "a = 0 \<or> b = 0")
-    case False
-    then have "a \<noteq> 0" and "b \<noteq> 0" by auto
-      then show ?thesis using no_zero_divisors by simp
-  next
-    case True
-    then show ?thesis by auto
-  qed
-
-  lemma prod_list_zero_iff[simp]: "prod_list xs = 0 \<longleftrightarrow> 0 \<in> set xs" by (induction xs, auto)
-
-  lemma prod_mset_zero_iff[simp]: "prod_mset X = 0 \<longleftrightarrow> 0 \<in># X" by (induction X, auto)
-
-end
-
-class comm_monoid_no_zero_divisors_cancel = comm_monoid_no_zero_divisors +
-  assumes mult_cancel_right [simp]: "a * c = b * c \<longleftrightarrow> c = 0 \<or> a = b"
-begin
-  lemma mult_cancel_left [simp]: "c * a = c * b \<longleftrightarrow> c = 0 \<or> a = b" by (simp add:ac_simps)
-  lemma mult_cancel_right1 [simp]: "c = b * c \<longleftrightarrow> c = 0 \<or> b = 1"
-    using mult_cancel_right [of 1 c b] by auto
-  lemma mult_cancel_right2 [simp]: "a * c = c \<longleftrightarrow> c = 0 \<or> a = 1"
-    using mult_cancel_right [of a c 1] by simp
-  lemma mult_cancel_left1 [simp]: "c = c * b \<longleftrightarrow> c = 0 \<or> b = 1"
-    using mult_cancel_left [of c 1 b] by force
-  lemma mult_cancel_left2 [simp]: "c * a = c \<longleftrightarrow> c = 0 \<or> a = 1"
-    using mult_cancel_left [of c a 1] by simp
 
   text \<open>
     Following lemmas are adapted and generalized so that they don't use "algebraic" classes.
@@ -367,46 +228,6 @@ begin
 
 end
 
-subclass (in idom) comm_monoid_no_zero_divisors_cancel by (unfold_locales, auto)
-
-context comm_semiring_1 begin
-  subclass comm_monoid_mult_0..
-  lemma prime_elem_connect[simp]: "comm_semiring_1_class.prime_elem = prime_elem"
-    by (auto simp: old_prime_elem_def prime_elem_def)
-  lemma irreducible_connect[simp]: "comm_semiring_1_class.irreducible = irreducible"
-    by (auto simp: irreducible_def old_irreducible_def)
-end
-
-
-lemma irreducible_const_poly_iff:
-  fixes c :: "'a :: {comm_semiring_1,semiring_no_zero_divisors}"
-  shows "irreducible [:c:] \<longleftrightarrow> irreducible c"
-proof
-  assume A: "irreducible c"
-  show "irreducible [:c:]"
-  proof (rule irreducibleI)
-    fix a b assume ab: "[:c:] = a * b"
-    hence "degree [:c:] = degree (a * b)" by (simp only: )
-    also from A ab have "a \<noteq> 0" "b \<noteq> 0" by auto
-    hence "degree (a * b) = degree a + degree b" by (simp add: degree_mult_eq)
-    finally have "degree a = 0" "degree b = 0" by auto
-    then obtain a' b' where ab': "a = [:a':]" "b = [:b':]" by (auto elim!: degree_eq_zeroE)
-    from ab have "coeff [:c:] 0 = coeff (a * b) 0" by (simp only: )
-    hence "c = a' * b'" by (simp add: ab' mult_ac)
-    from A and this have "a' dvd 1 \<or> b' dvd 1" by (rule irreducibleD)
-    with ab' show "a dvd 1 \<or> b dvd 1" by auto
-  qed (insert A, auto simp: irreducible_def is_unit_poly_iff)
-next
-  assume A: "irreducible [:c:]"
-  show "irreducible c"
-  proof (rule irreducibleI)
-    fix a b assume ab: "c = a * b"
-    hence "[:c:] = [:a:] * [:b:]" by (simp add: mult_ac)
-    from A and this have "[:a:] dvd 1 \<or> [:b:] dvd 1" by (rule irreducibleD)
-    thus "a dvd 1 \<or> b dvd 1" by simp
-  qed (insert A, auto simp: irreducible_def)
-qed
-
 subsubsection {* Original part *}
 
 lemma dvd_dvd_imp_smult:
@@ -444,7 +265,7 @@ context comm_monoid_mult begin
   lemma ddvd_transp: "transp (op ddvd)" by (intro transpI, fact ddvd_trans)
 end
 
-context comm_monoid_mult_0 begin
+context comm_semiring_1 begin
 
 definition mset_factors where "mset_factors F p \<equiv>
   F \<noteq> {#} \<and> (\<forall>f. f \<in># F \<longrightarrow> irreducible f) \<and> p = prod_mset F"
@@ -480,7 +301,7 @@ definition primitive_poly where "primitive_poly f \<equiv> \<forall>d. (\<forall
 
 end
 
-lemma(in comm_monoid_no_zero_divisors) mset_factors_imp_nonzero:
+lemma(in semidom) mset_factors_imp_nonzero:
   assumes "mset_factors F p"
   shows "p \<noteq> 0"
 proof
@@ -490,15 +311,13 @@ proof
   with assms show False by auto
 qed
 
-class unique_factorization = comm_monoid_no_zero_divisors_cancel +
+class ufd = idom +
   assumes mset_factors_exist: "\<And>x. x \<noteq> 0 \<Longrightarrow> \<not> x dvd 1 \<Longrightarrow> \<exists>F. mset_factors F x"
     and mset_factors_unique: "\<And>x F G. x \<noteq> 0 \<Longrightarrow> mset_factors F x \<Longrightarrow> mset_factors G x \<Longrightarrow> rel_mset (op ddvd) F G"
 
-class ufd = idom + unique_factorization
-
 subsubsection {* Connecting to HOL/Divisibility *}
 
-context comm_monoid_mult_0 begin
+context comm_semiring_1 begin
 
   abbreviation "mk_monoid \<equiv> \<lparr>carrier = UNIV - {0}, mult = op *, one = 1\<rparr>"
 
@@ -600,7 +419,7 @@ next
   from this[folded mset_eq_perm] show ?case by force
 qed
 
-context comm_monoid_no_zero_divisors_cancel begin
+context idom begin
   lemma irred_0[simp]: "irred (0::'a)" by (unfold Divisibility.irreducible_def, auto simp: factor properfactor_def)
   lemma factor_idom[simp]: "factor (x::'a) y \<longleftrightarrow> (if y = 0 then x = 0 else x dvd y)"
     by (cases "y = 0"; auto intro: exI[of _ 1] elim: dvdE simp: factor)
@@ -678,7 +497,7 @@ context comm_monoid_no_zero_divisors_cancel begin
 
 end
 
-context unique_factorization begin
+context ufd begin
   interpretation comm_monoid_cancel: comm_monoid_cancel "mk_monoid::'a monoid"
     apply (unfold_locales)
     apply simp_all
@@ -716,9 +535,9 @@ context unique_factorization begin
 
 end
 
-lemma (in comm_monoid_no_zero_divisors_cancel) factorial_monoid_imp_ufd:
+lemma (in idom) factorial_monoid_imp_ufd:
   assumes "factorial_monoid (mk_monoid :: 'a monoid)"
-  shows "class.unique_factorization (op * :: 'a \<Rightarrow> _) 1 0"
+  shows "class.ufd (op * :: 'a \<Rightarrow> _) 1 (op +) 0 (op -) uminus"
 proof (unfold_locales)
   interpret factorial_monoid "mk_monoid :: 'a monoid" by (fact assms)
   {
@@ -743,10 +562,10 @@ qed
 subsection {* Preservation of Irreducibility *}
 
 
-locale comm_monoid_mult_0_hom = comm_monoid_mult_hom hom + zero_hom hom
-  for hom :: "'a :: comm_monoid_mult_0 \<Rightarrow> 'b :: comm_monoid_mult_0"
+locale comm_semiring_1_hom = comm_monoid_mult_hom hom + zero_hom hom
+  for hom :: "'a :: comm_semiring_1 \<Rightarrow> 'b :: comm_semiring_1"
 
-locale irreducibility_hom = comm_monoid_mult_0_hom +
+locale irreducibility_hom = comm_semiring_1_hom +
   assumes irreducible_imp_irreducible_hom: "irreducible a \<Longrightarrow> irreducible (hom a)"
 begin
   lemma hom_mset_factors:
@@ -761,19 +580,19 @@ begin
   qed
 end
 
-locale unit_preserving_hom = comm_monoid_mult_0_hom +
+locale unit_preserving_hom = comm_semiring_1_hom +
   assumes is_unit_hom_if: "\<And>x. hom x dvd 1 \<Longrightarrow> x dvd 1"
 begin
   lemma is_unit_hom_iff[simp]: "hom x dvd 1 \<longleftrightarrow> x dvd 1" using is_unit_hom_if hom_dvd by force
 
   lemma irreducible_hom_imp_irreducible:
     assumes irr: "irreducible (hom a)" shows "irreducible a"
-  proof (intro irreducibleI)
+  proof (intro Factorial_Ring.irreducibleI)
     from irr show "a \<noteq> 0" by auto
     from irr show "\<not> a dvd 1" by (auto dest: irreducible_not_unit)
     fix b c assume "a = b * c"
     then have "hom a = hom b * hom c" by simp
-    with irr have "hom b dvd 1 \<or> hom c dvd 1" by (auto dest: irreducibleD)
+    with irr have "hom b dvd 1 \<or> hom c dvd 1" by (auto dest: Factorial_Ring.irreducibleD)
     then show "b dvd 1 \<or> c dvd 1" by simp
   qed
 end
@@ -803,7 +622,7 @@ context comm_semiring_isom begin
     show "irreducible (hom a)"
     proof (rule ccontr)
       assume "\<not> irreducible (hom a)"
-      from this[unfolded irreducible_def,simplified] a
+      from this[unfolded Factorial_Ring.irreducible_def,simplified] a
       obtain hb hc where eq: "hom a = hb * hc" and nu: "\<not> hb dvd 1" "\<not> hc dvd 1" by auto
       from bij obtain b where hb: "hb = hom b" by (elim bij_pointE)
       from bij obtain c where hc: "hc = hom c" by (elim bij_pointE)
@@ -992,7 +811,7 @@ qed
 
 subsubsection{* Back to divisibility *}
 
-lemma(in comm_monoid_mult_0) mset_factors_mult:
+lemma(in comm_semiring_1) mset_factors_mult:
   assumes F: "mset_factors F a"
       and G: "mset_factors G b"
   shows "mset_factors (F+G) (a*b)"
@@ -1002,7 +821,7 @@ proof(intro mset_factorsI)
   then show "irreducible f" by(cases, insert F G, auto)
 qed (insert F G, auto)
 
-lemma(in unique_factorization) dvd_imp_subset_factors:
+lemma(in ufd) dvd_imp_subset_factors:
   assumes ab: "a dvd b"
       and F: "mset_factors F a"
       and G: "mset_factors G b"
@@ -1050,7 +869,7 @@ proof-
   qed
 qed
 
-lemma(in comm_monoid_no_zero_divisors_cancel) irreducible_factor_singleton:
+lemma(in idom) irreducible_factor_singleton:
   assumes a: "irreducible a"
   shows "mset_factors F a \<longleftrightarrow> F = {#a#}"
 proof(cases F)
@@ -1091,7 +910,7 @@ next
 qed
 
 
-lemma(in unique_factorization) irreducible_dvd_imp_factor:
+lemma(in ufd) irreducible_dvd_imp_factor:
   assumes ab: "a dvd b"
       and a: "irreducible a"
       and G: "mset_factors G b"
@@ -1107,30 +926,17 @@ proof-
   with gG' G'G show ?thesis by auto
 qed
 
-lemma(in comm_monoid_no_zero_divisors_cancel) prod_mset_remove_units:
+lemma(in idom) prod_mset_remove_units:
   "prod_mset F ddvd prod_mset {# f \<in># F. \<not>f dvd 1 #}"
 proof(induct F)
-  case empty show ?case by auto
-next
   case (add f F) then show ?case by (cases "f = 0", auto)
-qed
+qed auto
 
-
-lemma(in unique_factorization) irreducible_dvd_prod_mset:
-  assumes ab: "a dvd b"
-      and a: "irreducible a"
-      and bG: "b = prod_mset G"
-      and b0: "b \<noteq> 0" and b1: "\<not> b dvd 1"
-  shows "\<exists>g \<in># G. a dvd g"
-proof-
-  from mset_factors_exist[OF b0 b1] obtain F where "mset_factors F b" by auto
-  oops
-
-lemma(in comm_monoid_mult_0) mset_factors_imp_dvd:
+lemma(in comm_semiring_1) mset_factors_imp_dvd:
   assumes "mset_factors F x" and "f \<in># F" shows "f dvd x"
   using assms by (simp add: dvd_prod_mset mset_factors_def)
 
-lemma(in unique_factorization) prime_elem_iff_irreducible[iff]:
+lemma(in ufd) prime_elem_iff_irreducible[iff]:
   "prime_elem x \<longleftrightarrow> irreducible x"
 proof (intro iffI, fact prime_elem_imp_irreducible, rule prime_elemI)
   assume r: "irreducible x"
@@ -1222,7 +1028,7 @@ lemma prod_list_remove1: "(x :: 'b :: comm_monoid_mult) \<in> set xs \<Longright
   by (induct xs, auto simp: ac_simps)
 
 (* Isabelle 2015-style and generalized gcd-class without normalization and factors *)
-class comm_monoid_gcd = gcd + comm_monoid_mult_0 +
+class comm_monoid_gcd = gcd + comm_semiring_1 +
   assumes gcd_dvd1[iff]: "gcd a b dvd a"
       and gcd_dvd2[iff]: "gcd a b dvd b"
       and gcd_greatest: "c dvd a \<Longrightarrow> c dvd b \<Longrightarrow> c dvd gcd a b"
@@ -1303,7 +1109,7 @@ context Rings.dvd begin
 
 end
 
-context comm_monoid_mult_0 begin
+context comm_semiring_1 begin
 
   lemma some_gcd_0[intro!]: "is_gcd (some_gcd a 0) a 0" "is_gcd (some_gcd 0 b) 0 b"
     by (auto intro!: is_gcd_some_gcdI intro: exI[of _ a] exI[of _ b])
@@ -1316,7 +1122,7 @@ context comm_monoid_mult_0 begin
 
 end
 
-context comm_monoid_no_zero_divisors_cancel begin
+context idom begin
 
   lemma is_gcd_connect:
     assumes "a \<noteq> 0" "b \<noteq> 0" shows "isgcd mk_monoid x a b \<longleftrightarrow> is_gcd x a b"
@@ -1339,12 +1145,8 @@ begin
 
 end
 
-class comm_monoid_cancel_gcd = comm_monoid_gcd +
-  assumes no_zero_divisors: "a \<noteq> 0 \<Longrightarrow> b \<noteq> 0 \<Longrightarrow> a * b \<noteq> 0"
-      and mult_cancel_right: "a * c = b * c \<longleftrightarrow> c = 0 \<or> a = b"
+class idom_gcd = comm_monoid_gcd + idom
 begin
-
-  subclass comm_monoid_no_zero_divisors_cancel by (unfold_locales; fact no_zero_divisors mult_cancel_right)
 
   interpretation raw: comm_monoid_cancel "mk_monoid :: 'a monoid"
     by (unfold_locales, auto intro: mult_commute mult_assoc)
@@ -1429,7 +1231,7 @@ begin
 
 end
 
-subclass (in ring_gcd) comm_monoid_cancel_gcd by (unfold_locales, auto)
+subclass (in ring_gcd) idom_gcd by (unfold_locales, auto)
 
 lemma coprime_rewrites: "comm_monoid_mult.coprime (op *) 1 = coprime"
   apply (intro ext)
@@ -1440,16 +1242,16 @@ lemma coprime_rewrites: "comm_monoid_mult.coprime (op *) 1 = coprime"
 
 (* TODO: incorporate into the default class hierarchy *)
 locale gcd_condition =
-  fixes ty :: "'a :: comm_monoid_no_zero_divisors_cancel itself"
+  fixes ty :: "'a :: idom itself"
   assumes gcd_exists: "\<And>a b :: 'a. \<exists>x. is_gcd x a b"
 begin
-  sublocale comm_monoid_cancel_gcd "1::'a" 0 "op *" some_gcd
+  sublocale idom_gcd "op *" "1 :: 'a" "op +" 0 "op -" uminus some_gcd 
     rewrites "dvd.dvd (op *) = op dvd"
-        and "comm_monoid_mult.coprime (op *) 1 = Unique_Factorization.coprime"
+        and "comm_monoid_mult.coprime (op * ) 1 = Unique_Factorization.coprime"
   proof-
     have "is_gcd (some_gcd a b) a b" for a b :: 'a by (intro is_gcd_some_gcdI gcd_exists)
     from this[unfolded is_gcd_def]
-    show "class.comm_monoid_cancel_gcd (1::'a) 0 op * some_gcd" by (unfold_locales, auto simp: dvd_rewrites)
+    show "class.idom_gcd op * (1 :: 'a) op + 0 op - uminus some_gcd" by (unfold_locales, auto simp: dvd_rewrites)
   qed (simp_all add: dvd_rewrites coprime_rewrites)
 end
 
@@ -1461,7 +1263,7 @@ proof (intro ext)
   show "listgcd xs = gcd_list xs" by(induct xs, auto)
 qed
 
-interpretation some_gcd: gcd_condition "TYPE('a::unique_factorization)"
+interpretation some_gcd: gcd_condition "TYPE('a::ufd)"
 proof(unfold_locales, intro exI)
   interpret factorial_monoid "mk_monoid :: 'a monoid" by (fact factorial_monoid)
   note d = dvd.dvd_def some_gcd_def carrier_0
@@ -1536,49 +1338,11 @@ qed
 end
 
 instance int :: ufd by (intro class.ufd.of_class.intro as_ufd.ufd_axioms)
-instance int :: comm_monoid_cancel_gcd by (intro_classes, auto)
+instance int :: idom_gcd by (intro_classes, auto)
 
 lemma irreducible_field[simp]:
   "irreducible (x::'a::field) \<longleftrightarrow> False" by (auto simp: dvd_field_iff irreducible_def)
 
 instance field \<subseteq> ufd by (intro_classes, auto simp: dvd_field_iff)
 
-(*
-subsubsection {* Fraction fields with trivial "normalize" etc. *}
-
-instantiation fract :: (idom) normalization_semidom
-begin
-  definition[simp]: "normalize_fract (x::'a fract) \<equiv> (if x = 0 then 0 else 1) :: 'a fract"
-  definition[simp]: "unit_factor_fract (x::'a fract) \<equiv> x"
-  instance by (intro_classes, auto simp: dvd_field_iff)
 end
-
-instance fract :: (idom) factorial_semiring by (intro_classes, auto)
-
-instantiation fract :: (idom) semiring_gcd
-begin
-  definition[simp]: "gcd_fract (x::'a fract) (y::'a fract) \<equiv> (if x = 0 \<and> y = 0 then 0 else 1) :: 'a fract"
-  definition[simp]: "lcm_fract (x::'a fract) (y::'a fract) \<equiv> (normalize (x * y) / gcd x y) :: 'a fract"
-  instance by (intro_classes, auto simp: dvd_field_iff)
-end
-
-(* Without the following separate instantiation, gcd_factorial_def will not be accessible... *)
-instantiation fract :: (idom) Gcd
-begin
-  definition[simp]: "Gcd_fract (X::'a fract set) \<equiv> (if X = {} \<or> X = {0} then 0 else 1) :: 'a fract"
-  definition[simp]: "Lcm_fract (X::'a fract set) \<equiv> (if 0 \<in> X then 0 else 1) :: 'a fract"
-  instance..
-end
-
-instance fract :: (idom) factorial_semiring_gcd
-  apply (intro_classes)
-  apply (auto simp: gcd_factorial_def lcm_factorial_def Gcd_factorial_def Lcm_factorial_def prime_factorization_def prime_def zero_multiset_def[symmetric])
-  done
-
-instance fract :: (idom) factorial_ring_gcd..
-*)
-
-
-end
-
-

@@ -14,33 +14,9 @@ imports
   "../Subresultants/More_Homomorphisms" 
 begin
 
-instance poly :: (field) unique_factorization
-proof-
-  have 0: "class.comm_monoid_mult_0 (op * :: 'a \<Rightarrow> _) 1 0" ..
-  let ?mul = "op * :: 'a poly \<Rightarrow> _ \<Rightarrow> _"
-  have 1: "class.comm_monoid_mult ?mul 1"..
-  have 2: "class.comm_monoid_mult_0 ?mul 1 0"..
-  interpret field_poly: euclidean_ring_gcd
-    where zero = 0 and one = 1 and plus = "op +" and uminus = uminus and minus = "op -"
-    and times = ?mul
-    and normalize = normalize_field_poly and unit_factor = unit_factor_field_poly
-    and euclidean_size = euclidean_size_field_poly
-    and divide = divide and modulo = modulo
-    and gcd = field_poly.gcd
-    and lcm = field_poly.lcm
-    and Gcd = field_poly.Gcd
-    and Lcm = field_poly.Lcm by (unfold_locales,simp_all)
-  note field_poly.as_ufd.mset_factors_exist field_poly.as_ufd.mset_factors_unique
-  note this[unfolded comm_monoid_mult_0.mset_factors_def[OF 2]]
-  note this[unfolded comm_monoid_mult_0.irreducible_def[OF 2]]
-  note this[unfolded comm_monoid_mult.prod_mset_def[OF 1]]
-  note this[unfolded dvd.dvd_def]
-  note this[folded dvd_def]
-  note this[folded prod_mset_def irreducible_def]
-  note this[folded mset_factors_def]
-  then show "OFCLASS('a poly, unique_factorization_class)" by intro_classes
-qed
-
+hide_const (open) Divisibility.irreducible
+hide_const (open) Missing_Polynomial.irreducible
+  
 instantiation fract :: (idom) euclidean_ring
 begin
 
@@ -69,8 +45,6 @@ instance
   by (standard, simp_all add: gcd_fract_def lcm_fract_def Gcd_fract_def Lcm_fract_def)
 
 end
-
-interpretation to_fract_hom: inj_comm_ring_hom to_fract by (unfold_locales, auto)
 
 definition divides_ff :: "'a::idom fract \<Rightarrow> 'a fract \<Rightarrow> bool"
   where "divides_ff x y \<equiv> \<exists> r. y = x * to_fract r"
@@ -103,7 +77,7 @@ definition gcd_ff_list :: "'a::ufd fract list \<Rightarrow> 'a fract \<Rightarro
 
 lemma gcd_ff_list_exists: "\<exists> g. gcd_ff_list (X :: 'a::ufd fract list) g"
 proof -
-  interpret some_gcd: comm_monoid_cancel_gcd "1::'a" 0 "op *" some_gcd
+  interpret some_gcd: idom_gcd "op *" "1 :: 'a" "op +" 0 "op -" uminus some_gcd
     rewrites "dvd.dvd (op *) = op dvd" by (unfold_locales, auto simp: dvd_rewrites)
   from ff_list_pairs[of X] obtain xs where X: "X = map (\<lambda> (x,y). Fraction_Field.Fract x y) xs"
     and xs: "0 \<notin> snd ` set xs" by auto
@@ -780,7 +754,8 @@ qed
 lemma factorial_monoid_poly: "factorial_monoid (mk_monoid :: 'a :: ufd poly monoid)"
 proof (fold factorial_condition_one, intro conjI)
   interpret M: factorial_monoid "mk_monoid :: 'a monoid" by (fact factorial_monoid)
-  interpret PFM: factorial_monoid "mk_monoid :: 'a fract poly monoid" by (fact factorial_monoid)
+  interpret PFM: factorial_monoid "mk_monoid :: 'a fract poly monoid" 
+    by (rule as_ufd.factorial_monoid)
   interpret PM: comm_monoid_cancel "mk_monoid :: 'a poly monoid" by (unfold_locales, auto)
   let ?E = "map_poly to_fract"
   show "divisor_chain_condition_monoid (mk_monoid::'a poly monoid)"
@@ -905,9 +880,7 @@ proof (fold factorial_condition_one, intro conjI)
 qed
 
 instance poly :: (ufd) ufd
-  apply (intro class.ufd.of_class.intro class.ufd.intro factorial_monoid_imp_ufd factorial_monoid_poly)
-  apply unfold_locales
-  done
+  by (intro class.ufd.of_class.intro factorial_monoid_imp_ufd factorial_monoid_poly)
 
 
 lemma content_free_iff_some_content_dvd_1:
@@ -934,7 +907,7 @@ proof (rule ccontr)
   assume not: "\<not> ?thesis"
   then have "\<not> [:content f:] dvd 1" by simp
   moreover have "f = [:content f:] * primitive_part f" by simp
-    note irreducibleD[OF irr this]
+    note Factorial_Ring.irreducibleD[OF irr this]
   ultimately
   have "primitive_part f dvd 1" by auto
   from this[unfolded poly_dvd_1] have "degree f = 0" by auto

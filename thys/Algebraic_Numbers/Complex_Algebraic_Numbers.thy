@@ -20,11 +20,13 @@ imports
   Complex_Roots_Real_Poly
   Compare_Complex
   "../Jordan_Normal_Form/Char_Poly"  
-  Code_Abort_Gcd
+  "../Berlekamp_Zassenhaus/Code_Abort_Gcd"
 begin
 
 subsection \<open>Complex Roots\<close>
 
+hide_const (open) Missing_Polynomial.irreducible
+  
 abbreviation complex_of_int_poly :: "int poly \<Rightarrow> complex poly" where
   "complex_of_int_poly \<equiv> map_poly of_int"
 

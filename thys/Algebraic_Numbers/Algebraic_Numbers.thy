@@ -15,6 +15,8 @@ imports
   "../Polynomial_Factorization/Polynomial_Divisibility"
 begin
 
+hide_const (open) Missing_Polynomial.irreducible
+  
 interpretation coeff_lift_hom:
   factor_preserving_hom "coeff_lift :: 'a :: {comm_semiring_1,semiring_no_zero_divisors} \<Rightarrow> _"
   by (unfold_locales, auto simp: const_poly_dvd_1)

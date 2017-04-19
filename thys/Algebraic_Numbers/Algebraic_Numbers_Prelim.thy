@@ -29,7 +29,7 @@ theory Algebraic_Numbers_Prelim
 imports
   "~~/src/HOL/Library/Fundamental_Theorem_Algebra"
   "../Polynomial_Factorization/Rational_Factorization"
-  "../Berlekamp_Zassenhaus/Factorize_Rat_Poly"
+  "../Berlekamp_Zassenhaus/Factorize_Int_Poly"
 begin
 
 lemma content_free_imp_unit_iff:
@@ -73,7 +73,7 @@ proof(rule ccontr)
   then obtain c where c1: "\<not>c dvd 1" and "\<forall>a \<in> set (coeffs p). c dvd a" by (auto elim: not_content_freeE)
   from dvd_all_coeffs_imp_dvd[OF this(2)]
   obtain r where p: "p = r * [:c:]" by (elim dvdE, auto)
-  from irreducibleD[OF assms this] have "r dvd 1 \<or> [:c:] dvd 1" by auto
+  from Factorial_Ring.irreducibleD[OF assms this] have "r dvd 1 \<or> [:c:] dvd 1" by auto
   with c1 have "r dvd 1" unfolding const_poly_dvd_1 by auto
   then have "degree r = 0" unfolding poly_dvd_1 by auto
   with p have "degree p = 0" by auto
@@ -84,7 +84,7 @@ qed
 lemma linear_irreducible_field:
   fixes p :: "'a :: field poly"
   assumes deg: "degree p = 1" shows "irreducible p"
-proof (intro irreducibleI)
+proof (intro Factorial_Ring.irreducibleI)
   from deg show p0: "p \<noteq> 0" by auto
   from deg show "\<not> p dvd 1" by (auto simp: poly_dvd_1)
   fix a b assume p: "p = a * b"
@@ -100,7 +100,7 @@ lemma linear_irreducible_int:
   fixes p :: "int poly"
   assumes deg: "degree p = 1" and cp: "content p dvd 1"
   shows "irreducible p"
-proof (intro irreducibleI)
+proof (intro Factorial_Ring.irreducibleI)
   from deg show p0: "p \<noteq> 0" by auto
   from deg show "\<not> p dvd 1" by (auto simp: poly_dvd_1)
   fix a b assume p: "p = a * b"
@@ -122,7 +122,7 @@ proof(intro Missing_Polynomial.irreducibleI deg notI)
   fix q assume degq: "degree q \<noteq> 0" and diff: "degree q < degree p" and qp: "q dvd p"
   from degq have nu: "\<not> q dvd 1" by (auto simp: poly_dvd_1)
   from qp obtain r where p: "p = q * r" by (elim dvdE)
-  from irreducibleD[OF irr this] nu have "r dvd 1" by auto
+  from Factorial_Ring.irreducibleD[OF irr this] nu have "r dvd 1" by auto
   then have "degree r = 0" by (auto simp: poly_dvd_1)
   with degq diff show False unfolding p using degree_mult_le[of q r] by auto
 qed
@@ -237,7 +237,7 @@ proof
   assume "poly p 0 = 0"
   hence dvd: "[: 0, 1 :] dvd p" by (unfold dvd_iff_poly_eq_0, simp)
   then obtain q where pq: "p = [:0,1:] * q" by (elim dvdE)
-  from irreducibleD[OF irr this] nu have "q dvd 1" by auto
+  from Factorial_Ring.irreducibleD[OF irr this] nu have "q dvd 1" by auto
   from this obtain r where "q = [:r:]" "r dvd 1" by (auto simp add: poly_dvd_1 dest: degree0_coeffs)
   with pq have "p = [:0,r:]" by auto
   with ap have "x = 0" by auto
@@ -339,13 +339,13 @@ lemma irreducible_connect_int:
   fixes p :: "int poly"
   assumes ir: "Missing_Polynomial.irreducible p" and c: "content p = 1"
   shows "irreducible p"
-proof(intro irreducibleI)
+proof(intro Factorial_Ring.irreducibleI)
   note * = ir[unfolded Missing_Polynomial.irreducible_def]
   from * have p0: "p \<noteq> 0" by auto
   then show "p \<noteq> 0" by auto
   from * show "\<not> p dvd 1" unfolding poly_dvd_1 by auto
   fix a b assume p: "p = a * b"
-  from c[unfolded p gauss_lemma] have cab:"content a * content b = 1" by auto
+  from c[unfolded p content_mult] have cab:"content a * content b = 1" by auto
   from cab have ca: "content a dvd 1" by (intro dvdI, auto)
   from cab have cb: "content b dvd 1" by (intro dvdI, auto simp: ac_simps)
   show "a dvd 1 \<or> b dvd 1"
@@ -414,7 +414,7 @@ lemma poly_rat[simp]: "ipoly (poly_rat x) (of_rat x :: 'a :: field_char_0) = 0" 
   "poly_rat x \<noteq> 0" "ipoly (poly_rat x) y = 0 \<longleftrightarrow> y = (of_rat x :: 'a)" 
 proof -
   from irr_cf_root_free_poly_rat(1)[of x] show "poly_rat x \<noteq> 0" 
-    unfolding irreducible_def by auto  
+    unfolding Factorial_Ring.irreducible_def by auto  
   obtain n d where x: "quotient_of x = (n,d)" by force
   hence id: "poly_rat x = [:-n,d:]" by (auto simp: poly_rat_def)
   from quotient_of_denom_pos[OF x] have d: "d \<noteq> 0" by auto
@@ -435,7 +435,8 @@ lemma ipoly_smult_0_iff: assumes c: "c \<noteq> 0"
 (* TODO *)
 lemma not_irreducibleD:
   assumes "\<not> irreducible x" and "x \<noteq> 0" and "\<not> x dvd 1"
-  shows "\<exists>y z. x = y * z \<and> \<not> y dvd 1 \<and> \<not> z dvd 1" using assms apply (unfold irreducible_def) by auto
+  shows "\<exists>y z. x = y * z \<and> \<not> y dvd 1 \<and> \<not> z dvd 1" using assms 
+  apply (unfold Factorial_Ring.irreducible_def) by auto
 
 
 lemma cf_pos_poly_represents[simp]: "(cf_pos_poly p) represents x \<longleftrightarrow> p represents x"
@@ -502,7 +503,7 @@ proof (unfold irreducible_altdef, intro conjI allI impI)
 qed
 
 
-locale dvd_preserving_hom = comm_monoid_mult_0_hom +
+locale dvd_preserving_hom = comm_semiring_1_hom +
   assumes hom_eq_mult_hom_imp: "hom x = hom y * hz \<Longrightarrow> \<exists>z. hz = hom z \<and> x = y * z"
 begin
 

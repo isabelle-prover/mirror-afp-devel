@@ -17,6 +17,7 @@ imports
 begin
 
 hide_const coeff monom
+hide_const (open) Missing_Polynomial.irreducible
 
 (* main factorization algorithm of polynomials, without preprocessing and special cases *)
 definition internal_int_poly_factorization :: "int poly \<Rightarrow> int \<times> (int poly \<times> nat) list" where
@@ -67,7 +68,7 @@ qed
 lemma internal_int_poly_factorization_mem:
   assumes res: "internal_int_poly_factorization f = (c,fs)"
   and mem: "(fi,i) \<in> set fs"
-  shows "irreducible fi" and "content_free fi" and "degree fi \<noteq> 0"
+  shows "comm_semiring_1_class.irreducible fi" and "content_free fi" and "degree fi \<noteq> 0"
 proof -
   obtain a psi where a_psi: "square_free_factorization_int f = (a, psi)"
     by force
@@ -85,7 +86,7 @@ proof -
   obtain hs where d: "berlekamp_zassenhaus_factorization d = hs" by force
   from fi[unfolded d split fact] have fi: "fi \<in> set hs" by auto
   from berlekamp_zassenhaus_factorization_content_free[OF d] fi sff'(2)[OF psi] cnt[OF psi]
-  show "irreducible fi" "degree fi \<noteq> 0" "content_free fi" by auto
+  show "comm_semiring_1_class.irreducible fi" "degree fi \<noteq> 0" "content_free fi" by auto
 qed
 
 lemma internal_int_poly_factorization:
@@ -142,7 +143,7 @@ proof -
       have bz: "berlekamp_zassenhaus_factorization d = map fst (fact (psi ! j))" by (auto simp: o_def)
       from berlekamp_zassenhaus_factorization_content_free[OF bz d cnt[OF psi[unfolded dk]]]
       have dhs: "d = prod_list (map fst (fact (psi ! j)))" and 
-        irr: "(\<forall>fi\<in>set (map fst (fact (psi ! j))). irreducible fi)" by auto
+        irr: "(\<forall>fi\<in>set (map fst (fact (psi ! j))). comm_semiring_1_class.irreducible fi)" by auto
       from * have mem: "fi \<in> set (map fst (fact (psi ! j)))"
         by (metis fst_conv image_eqI nth_mem set_map)
       from mem dhs psij d have "\<exists> d. fi \<in> set (map fst (fact (psi ! j))) \<and>
@@ -242,7 +243,7 @@ lemma not_mem_set_dropWhileD: "x \<notin> set (dropWhile P xs) \<Longrightarrow>
   by (metis dropWhile_append3 in_set_conv_decomp)
 
 lemma content_free_reflect_poly:
-  fixes f :: "'a :: comm_monoid_mult_0 poly"
+  fixes f :: "'a :: comm_semiring_1 poly"
   shows "content_free (reflect_poly f) = content_free f"
 proof-
   have "(\<forall> a \<in> set (coeffs f). x dvd a) \<longleftrightarrow> (\<forall>a \<in> set (dropWhile (op = 0) (coeffs f)). x dvd a)" for x
@@ -308,7 +309,7 @@ qed simp
 lemma irreducible_reflect_poly:
   fixes f :: "'a :: {idom,semiring_gcd} poly"
   assumes nz: "coeff f 0 \<noteq> 0"
-  shows "irreducible (reflect_poly f) = irreducible f" (is "?l = ?r")
+  shows "comm_semiring_1_class.irreducible (reflect_poly f) = comm_semiring_1_class.irreducible f" (is "?l = ?r")
 proof (cases "degree f = 0")
   case True then obtain f0 where "f = [:f0:]" by (auto dest: degree0_coeffs)
   then show ?thesis by simp
@@ -349,7 +350,7 @@ next
     then have "?ir f \<longleftrightarrow> ?ir (reflect_poly f)"
       unfolding Missing_Polynomial.irreducible_def primitive_part_reflect_poly
       unfolding degree_reflect_poly_eq[OF nz] by auto
-    also have "... \<longleftrightarrow> irreducible (reflect_poly f)"
+    also have "... \<longleftrightarrow> comm_semiring_1_class.irreducible (reflect_poly f)"
       by (rule irreducible_content_free_connect, unfold content_free_reflect_poly, fact cf)
     finally show ?thesis
       by (unfold irreducible_content_free_connect[OF cf], auto)
@@ -386,7 +387,7 @@ lemma linear_content_free_irreducible:
   fixes f :: "'a :: {comm_semiring_1,semiring_no_zero_divisors} poly"
   assumes deg: "degree f = 1" and cf: "content_free f"
   shows "irreducible f"
-proof
+proof (intro Factorial_Ring.irreducibleI)
   fix a b assume fab: "f = a * b"
   with deg have a0: "a \<noteq> 0" and b0: "b \<noteq> 0" by auto
   from deg[unfolded fab] degree_mult_eq[OF this] have "degree a = 0 \<or> degree b = 0" by auto
