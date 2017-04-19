@@ -20,7 +20,6 @@ imports Main
   "~~/src/HOL/ex/Quicksort"
   "~~/src/HOL/Library/Option_ord"
   "~~/src/HOL/Library/Infinite_Set"
-  "List_More"
 begin
 text_raw {*\label{thy:Misc}*}
 
@@ -728,7 +727,7 @@ subsubsection {* Pointwise ordering *}
     by (simp add: mset_subset_eq_insertD subset_mset.dual_order.strict_implies_order)
   lemma mset_le_add_mset_decr_left2: "add_mset c a\<subseteq>#(b::'a multiset) \<Longrightarrow> {#c#}\<subseteq>#b"
     by (simp add: mset_subset_eq_insertD subset_mset.dual_order.strict_implies_order)
-  
+
   lemmas mset_le_decr_left = mset_le_decr_left1 mset_le_decr_left2 mset_le_add_mset_decr_left1
     mset_le_add_mset_decr_left2
 
@@ -742,10 +741,10 @@ subsubsection {* Pointwise ordering *}
 
   lemma mset_union_subset: "A+B \<subseteq># C \<Longrightarrow> A\<subseteq>#C \<and> B\<subseteq>#(C::'a multiset)"
     by (auto dest: mset_le_decr_left)
-  
+
   lemma mset_le_add_mset: "add_mset x B \<subseteq># C \<Longrightarrow> {#x#}\<subseteq>#C \<and> B\<subseteq>#(C::'a multiset)"
     by (auto dest: mset_le_decr_left)
-  
+
   lemma mset_le_subtract_left: "A+B \<subseteq># (X::'a multiset) \<Longrightarrow> B \<subseteq># X-A \<and> A\<subseteq>#X"
     by (auto dest: mset_le_subtract[of "A+B" "X" "A"] mset_union_subset)
   lemma mset_le_subtract_right: "A+B \<subseteq># (X::'a multiset) \<Longrightarrow> A \<subseteq># X-B \<and> B\<subseteq>#X"
@@ -756,7 +755,7 @@ subsubsection {* Pointwise ordering *}
 
   lemma mset_le_subtract_add_mset_right: "add_mset x B \<subseteq># (X::'a multiset) \<Longrightarrow> {#x#} \<subseteq># X-B \<and> B\<subseteq>#X"
     by (auto dest: mset_le_subtract[of "add_mset x B" "X" "B"] mset_le_add_mset)
-  
+
   lemma mset_le_addE: "\<lbrakk> xs \<subseteq># (ys::'a multiset); !!zs. ys=xs+zs \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P" using mset_subset_eq_exists_conv
     by blast
 
@@ -767,7 +766,7 @@ subsubsection {* Pointwise ordering *}
     assumes CASES: "{#a#}+{#b#} \<subseteq># A \<Longrightarrow> P" "{#a#}+{#b#} \<subseteq># B \<Longrightarrow> P" "\<lbrakk>a \<in># A; b \<in># B\<rbrakk> \<Longrightarrow> P" "\<lbrakk>a \<in># B; b \<in># A\<rbrakk> \<Longrightarrow> P"
     shows "P"
   proof -
-    { assume C: "a \<in># A" "b \<in># A-{#a#}" 
+    { assume C: "a \<in># A" "b \<in># A-{#a#}"
       with mset_subset_eq_mono_add[of "{#a#}" "{#a#}" "{#b#}" "A-{#a#}"] have "{#a#}+{#b#} \<subseteq># A" by auto
     } moreover {
       assume C: "a \<in># A" "\<not> (b \<in># A-{#a#})"
