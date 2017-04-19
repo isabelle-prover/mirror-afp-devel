@@ -111,9 +111,9 @@ next
       then have "content_free (?rp gi)" by auto
       note [simp] = irreducible_content_free_connect[OF cf_gi] irreducible_content_free_connect[OF this]
       show "irreducible fi"
-      using irr[OF gi] fi irreducible_int_rat[of gi,simplified] by auto
+      using irr[OF gi] fi irreducible\<^sub>d_int_rat[of gi,simplified] by auto
       then show "degree fi \<noteq> 0" "square_free fi" unfolding fi
-        by (auto intro: irreducible_square_free)
+        by (auto intro: irreducible_imp_square_free)
     }
     {
       assume "f = 0" with ri have *: "d = 1" "g = 0" unfolding rat_to_normalized_int_poly_def by auto

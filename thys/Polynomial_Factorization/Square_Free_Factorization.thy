@@ -44,14 +44,14 @@ proof -
   from dvd[OF this] show "degree h = 0".
 qed
 
-lemma irreducible_square_free: "irreducible p \<Longrightarrow> square_free p"
+lemma irreducible\<^sub>d_square_free: "irreducible\<^sub>d p \<Longrightarrow> square_free p"
 proof (intro square_freeI)
   fix q
-  show "irreducible p \<Longrightarrow> degree q \<noteq> 0 \<Longrightarrow> q \<noteq> 0 \<Longrightarrow> q * q dvd p \<Longrightarrow> False"
-    using irreducibleD(2)[of p q] irreducibleD(1)[of p]
+  show "irreducible\<^sub>d p \<Longrightarrow> degree q \<noteq> 0 \<Longrightarrow> q \<noteq> 0 \<Longrightarrow> q * q dvd p \<Longrightarrow> False"
+    using irreducible\<^sub>dD(2)[of p q] irreducible\<^sub>dD(1)[of p]
     by (metis add_diff_cancel_left' degree_mult_eq degree_smult_eq 
-      dvd_mult_left irreducible_dvd_smult linorder_neqE_nat not_less0 zero_less_diff)
-qed (auto simp: irreducible_def)
+      dvd_mult_left irreducible\<^sub>d_dvd_smult linorder_neqE_nat not_less0 zero_less_diff)
+qed (auto simp: irreducible\<^sub>d_def)
 
 lemma square_free_factor: assumes dvd: "a dvd p"
   and sf: "square_free p"
@@ -171,10 +171,10 @@ proof -
   qed auto
   have gf: "G dvd f" unfolding G_def by auto
   have gf': "G dvd pderiv f" unfolding G_def by auto
-  from irreducible_factor[OF deg] obtain g r where g: "irreducible g" and G: "G = g * r" by auto
+  from irreducible\<^sub>d_factor[OF deg] obtain g r where g: "irreducible\<^sub>d g" and G: "G = g * r" by auto
   from gf have gf: "g dvd f" unfolding G by (rule dvd_mult_left)
   from gf' have gf': "g dvd pderiv f" unfolding G by (rule dvd_mult_left)
-  have g0: "degree g \<noteq> 0" using g unfolding irreducible_def by auto
+  have g0: "degree g \<noteq> 0" using g unfolding irreducible\<^sub>d_def by auto
   from gf obtain k where fgk: "f = g * k" unfolding dvd_def by auto
   have id1: "pderiv f = g * pderiv k + k * pderiv g" unfolding fgk pderiv_mult by simp
   from gf' obtain h where "pderiv f = g * h" unfolding dvd_def by auto
@@ -187,7 +187,7 @@ proof -
     with g0 have "\<not> square_free f" unfolding square_free_def using f by auto
     with assms have False by simp
   }
-  with irreducible_dvd_mult[OF g dvd] 
+  with irreducible\<^sub>d_dvd_mult[OF g dvd] 
   have "g dvd pderiv g" by auto
   from divides_degree[OF this] degree_pderiv_le[of g] g0
   have "pderiv g = 0" by linarith
@@ -309,7 +309,7 @@ locale monic_factorization =
   assumes p: "p = prod (\<lambda> (a,i). a ^ Suc i) as"
   and fin: "finite as"
   assumes as_distinct: "\<And> a i b j. (a,i) \<in> as \<Longrightarrow> (b,j) \<in> as \<Longrightarrow> (a,i) \<noteq> (b,j) \<Longrightarrow> a \<noteq> b"
-  and as_irred: "\<And> a i. (a,i) \<in> as \<Longrightarrow> irreducible a"
+  and as_irred: "\<And> a i. (a,i) \<in> as \<Longrightarrow> irreducible\<^sub>d a"
   and as_monic: "\<And> a i. (a,i) \<in> as \<Longrightarrow> monic a"
 begin
 
@@ -381,14 +381,14 @@ proof -
         using dvdI [of 1 "[:c:]" "[:1 / c:]"] by auto
     next
       case False
-      from irreducible_factor[OF this]
-      obtain p q where k: "k = p * q" and p: "irreducible p" by auto
+      from irreducible\<^sub>d_factor[OF this]
+      obtain p q where k: "k = p * q" and p: "irreducible\<^sub>d p" by auto
       from k dvd have dvd: "p dvd ?single" "p dvd ?onederiv" unfolding dvd_def by auto
-      from irreducible_dvd_prod[OF p dvd(1)] obtain a i where ai: "(a,i) \<in> bs" and pa: "p dvd a"
+      from irreducible\<^sub>d_dvd_prod[OF p dvd(1)] obtain a i where ai: "(a,i) \<in> bs" and pa: "p dvd a"
         by force
       then obtain q where a: "a = p * q" unfolding dvd_def by auto
-      from p[unfolded irreducible_def] have p0: "degree p \<noteq> 0" by auto
-      from irreducible_dvd_smult[OF p0 as_irred pa] ai bs
+      from p[unfolded irreducible\<^sub>d_def] have p0: "degree p \<noteq> 0" by auto
+      from irreducible\<^sub>d_dvd_smult[OF p0 as_irred pa] ai bs
         obtain c where c: "c \<noteq> 0" and ap: "a = smult c p" by auto
       hence ap': "p = smult (1/c) a" by auto
       let ?prod = "\<lambda> a i. (\<Prod>(b, j)\<in>bs - {(a, i)}. b) * smult (of_nat (f i)) (pderiv a)"
@@ -413,15 +413,15 @@ proof -
       qed
       finally have "?onederiv = ?prod a i + p * fac" unfolding fac_def a by simp
       from dvd(2)[unfolded this] have "p dvd ?prod a i" by algebra
-      from irreducible_dvd_mult[OF p this]
+      from irreducible\<^sub>d_dvd_mult[OF p this]
       have False
       proof
         assume "p dvd (\<Prod>(b, j)\<in>bs - {(a, i)}. b)" 
-        from irreducible_dvd_prod[OF p this] obtain b j where bj': "(b,j) \<in> bs - {(a,i)}"
+        from irreducible\<^sub>d_dvd_prod[OF p this] obtain b j where bj': "(b,j) \<in> bs - {(a,i)}"
           and pb: "p dvd b" by auto
         hence bj: "(b,j) \<in> bs" by auto
-        from as_irred bj bs have "irreducible b" by auto
-        from irreducible_dvd_smult[OF p0 this pb] obtain d where d: "d \<noteq> 0" 
+        from as_irred bj bs have "irreducible\<^sub>d b" by auto
+        from irreducible\<^sub>d_dvd_smult[OF p0 this pb] obtain d where d: "d \<noteq> 0" 
           and b: "b = smult d p" by auto
         with ap c have id: "smult (c/d) b = a" and deg: "degree a = degree b" by auto
         from coeff_smult[of "c/d" b "degree b", unfolded id] deg bs_monic[OF ai] bs_monic[OF bj]
@@ -638,17 +638,17 @@ proof (rule gcdI[symmetric])
     thus ?thesis unfolding dvd_def by blast
   next
     case False
-    from irreducible_monic_factor[OF this]
-    obtain q r where k: "k = q * r" and q: "irreducible q" and mq: "monic q" by auto
+    from irreducible\<^sub>d_monic_factor[OF this]
+    obtain q r where k: "k = q * r" and q: "irreducible\<^sub>d q" and mq: "monic q" by auto
     with dvd have dvd: "q dvd A i" "q dvd A j" unfolding dvd_def by auto
-    from q have q0: "degree q \<noteq> 0" unfolding irreducible_def by auto
-    from irreducible_dvd_prod[OF q dvd(1)[unfolded A]]
+    from q have q0: "degree q \<noteq> 0" unfolding irreducible\<^sub>d_def by auto
+    from irreducible\<^sub>d_dvd_prod[OF q dvd(1)[unfolded A]]
       obtain a where ai: "(a,i) \<in> as" and qa: "q dvd a" by auto
-    from irreducible_dvd_prod[OF q dvd(2)[unfolded A]]
+    from irreducible\<^sub>d_dvd_prod[OF q dvd(2)[unfolded A]]
       obtain b where bj: "(b,j) \<in> as" and qb: "q dvd b" by auto
     from as_distinct[OF ai bj] assms have neq: "a \<noteq> b" by auto
-    from irreducible_dvd_smult[OF q0 as_irred[OF ai] qa]
-      irreducible_dvd_smult[OF q0 as_irred[OF bj] qb]
+    from irreducible\<^sub>d_dvd_smult[OF q0 as_irred[OF ai] qa]
+      irreducible\<^sub>d_dvd_smult[OF q0 as_irred[OF bj] qb]
     obtain c d where "c \<noteq> 0" "d \<noteq> 0" "a = smult c q" "b = smult d q" by auto
     hence ab: "a = smult (c / d) b" and "c / d \<noteq> 0" by auto
     with as_monic[OF bj] as_monic[OF ai] arg_cong[OF ab, of "\<lambda> p. coeff p (degree p)"] 
@@ -666,14 +666,14 @@ proof (rule square_freeI)
   have mon: "monic (A i)" by (rule A_monic)
   hence Ai: "A i \<noteq> 0" by auto
   assume q: "degree q \<noteq> 0" and dvd: "q * q dvd A i"
-  from irreducible_monic_factor[OF q] obtain r s where q: "q = r * s" and 
-    irr: "irreducible r" and mr: "monic r" by auto
+  from irreducible\<^sub>d_monic_factor[OF q] obtain r s where q: "q = r * s" and 
+    irr: "irreducible\<^sub>d r" and mr: "monic r" by auto
   from dvd[unfolded q] have dvd2: "r * r dvd A i" and dvd1: "r dvd A i" unfolding dvd_def by auto
-  from irreducible_dvd_prod[OF irr dvd1[unfolded A]] 
+  from irreducible\<^sub>d_dvd_prod[OF irr dvd1[unfolded A]] 
     obtain a where ai: "(a,i) \<in> as" and ra: "r dvd a" by auto
   let ?rem = "(\<Prod>(a, i)\<in>as \<inter> UNIV \<times> {i} - {(a,i)}. a)"
-  have a: "irreducible a" by (rule as_irred[OF ai])
-  from irreducible_dvd_smult[OF _ a ra] irr[unfolded irreducible_def] 
+  have a: "irreducible\<^sub>d a" by (rule as_irred[OF ai])
+  from irreducible\<^sub>d_dvd_smult[OF _ a ra] irr[unfolded irreducible\<^sub>d_def] 
     obtain c where ar: "a = smult c r"  and "c \<noteq> 0" by auto
   with mr as_monic[OF ai] arg_cong[OF ar, of "\<lambda> p. coeff p (degree p)"] 
   have "a = r" unfolding coeff_smult degree_smult_eq by auto 
@@ -681,10 +681,10 @@ proof (rule square_freeI)
   have id: "A i = a * ?rem" unfolding A
     by (subst prod.remove[of _ "(a,i)"], insert ai fin, auto)
   with dvd have "a dvd ?rem" using a id Ai by auto
-  from irreducible_dvd_prod[OF a this] obtain b where bi: "(b,i) \<in> as" 
+  from irreducible\<^sub>d_dvd_prod[OF a this] obtain b where bi: "(b,i) \<in> as" 
     and neq: "b \<noteq> a" and ab: "a dvd b" by auto
-  from as_irred[OF bi] have b: "irreducible b" . 
-  from irreducible_dvd_smult[OF _ b ab] a[unfolded irreducible_def]
+  from as_irred[OF bi] have b: "irreducible\<^sub>d b" . 
+  from irreducible\<^sub>d_dvd_smult[OF _ b ab] a[unfolded irreducible\<^sub>d_def]
   obtain c where "c \<noteq> 0" and ba: "b = smult c a" by auto
   with as_monic[OF bi] as_monic[OF ai] arg_cong[OF ba, of "\<lambda> p. coeff p (degree p)"] 
   have "a = b" unfolding coeff_smult degree_smult_eq by auto
@@ -700,8 +700,8 @@ proof (rule prod_A_is_p_unknown)
   let ?rem = "(\<Prod>(a, i)\<in>as - UNIV \<times> {0..<n} - {(a,i)}. a)"
   have rem: "?rem \<noteq> 0"
     by (rule nonzero_gen, auto)
-  have "irreducible a" using as_irred[OF ai] .
-  hence a: "a \<noteq> 0" "degree a \<noteq> 0" unfolding irreducible_def by auto
+  have "irreducible\<^sub>d a" using as_irred[OF ai] .
+  hence a: "a \<noteq> 0" "degree a \<noteq> 0" unfolding irreducible\<^sub>d_def by auto
   show "i < n"
   proof (rule ccontr)
     assume "\<not> ?thesis"
@@ -849,9 +849,9 @@ end
 lemma monic_factorization: assumes "monic p"
   shows "\<exists> as. monic_factorization as p"
 proof -
-  from monic_irreducible_factorization[OF assms]
+  from monic_irreducible\<^sub>d_factorization[OF assms]
   obtain as f where fin: "finite as" and p: "p = (\<Prod>a\<in>as. a ^ Suc (f a))" 
-    and as: "as \<subseteq> {q. irreducible q \<and> monic q}"
+    and as: "as \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
     by auto
   define cs where "cs = {(a, f a) | a. a \<in> as}"
   show ?thesis
@@ -860,7 +860,7 @@ proof -
     {
       fix a i
       assume "(a,i) \<in> cs"
-      thus "irreducible a" "monic a" unfolding cs_def using as by auto
+      thus "irreducible\<^sub>d a" "monic a" unfolding cs_def using as by auto
     } note irr = this
     show "\<And>a i b j. (a, i) \<in> cs \<Longrightarrow> (b, j) \<in> cs \<Longrightarrow> (a, i) \<noteq> (b, j) \<Longrightarrow> a \<noteq> b" unfolding cs_def by auto
     show "p = (\<Prod>(a, i)\<in>cs. a ^ Suc i)" unfolding p cs_def
@@ -975,7 +975,7 @@ proof -
     using order_smult[OF c] by auto
   define q where "q = [: -x, 1 :]"
   have q0: "q \<noteq> 0" unfolding q_def by auto
-  have iq: "irreducible q" by (rule linear_irreducible, auto simp: q_def)
+  have iq: "irreducible\<^sub>d q" by (rule linear_irreducible\<^sub>d, auto simp: q_def)
   from rt have qa: "q dvd a" unfolding q_def poly_eq_0_iff_dvd .
   then obtain b where aqb: "a = q * b" unfolding dvd_def by auto
   from sff(2)[OF ai] have sq: "square_free a" and mon: "degree a \<noteq> 0" by auto
@@ -993,21 +993,21 @@ proof -
     also have "?prod div q ^ Suc i = b ^ Suc i * ?rem"
       unfolding id by (rule nonzero_mult_div_cancel_left, insert q0, auto)
     finally have "q dvd b \<or> q dvd ?rem"
-      using irreducible_dvd_mult[OF iq] irreducible_dvd_pow[OF iq] by blast
+      using irreducible\<^sub>d_dvd_mult[OF iq] irreducible\<^sub>d_dvd_pow[OF iq] by blast
     hence False
     proof
       assume "q dvd b"
       with aqb have "q * q dvd a" by auto
       with sq[unfolded square_free_def] mon iq show False
-        unfolding irreducible_def by auto
+        unfolding irreducible\<^sub>d_def by auto
     next
       assume "q dvd ?rem"
-      from irreducible_dvd_prod[OF iq this]
+      from irreducible\<^sub>d_dvd_prod[OF iq this]
       obtain b j where bj: "(b,j) \<in> set bs" and neq: "(a,i) \<noteq> (b,j)" and dvd: "q dvd b ^ Suc j" by auto
-      from irreducible_dvd_pow[OF iq dvd] have qb: "q dvd b" .
+      from irreducible\<^sub>d_dvd_pow[OF iq dvd] have qb: "q dvd b" .
       from sff(3)[OF ai bj neq] have gcd: "gcd a b = 1" .
       from qb qa have "q dvd gcd a b" by simp
-      from dvd_imp_degree_le[OF this[unfolded gcd]] iq q0 show False unfolding irreducible_def
+      from dvd_imp_degree_le[OF this[unfolded gcd]] iq q0 show False unfolding irreducible\<^sub>d_def
         by auto
     qed
   }
@@ -1033,10 +1033,10 @@ proof (rule ccontr)
   define q where "q = [: -x, 1 :]"
   from 0 have dvd: "q dvd ?prod" unfolding poly_eq_0_iff_dvd by (simp add: q_def)  
   have q0: "q \<noteq> 0" unfolding q_def by auto
-  have iq: "irreducible q" by (rule linear_irreducible, auto simp: q_def)
-  from irreducible_dvd_prod[OF iq dvd]
+  have iq: "irreducible\<^sub>d q" by (rule linear_irreducible\<^sub>d, auto simp: q_def)
+  from irreducible\<^sub>d_dvd_prod[OF iq dvd]
   obtain a i where ai: "(a,i) \<in> set bs" and dvd: "q dvd a ^ Suc i" by auto
-  from irreducible_dvd_pow[OF iq dvd] have dvd: "q dvd a" .
+  from irreducible\<^sub>d_dvd_pow[OF iq dvd] have dvd: "q dvd a" .
   hence "poly a x = 0" unfolding q_def by (simp add: poly_eq_0_iff_dvd q_def)
   with no_root[OF ai] show False by simp
 qed
@@ -1103,22 +1103,22 @@ proof -
     thus "prod_list (map fst bs) \<noteq> 0" unfolding prod_list_zero_iff by auto
     fix q
     assume "degree q \<noteq> 0" "q * q dvd prod_list (map fst bs)"
-    from irreducible_factor[OF this(1)] this(2) obtain q where 
-      irr: "irreducible q" and dvd: "q * q dvd prod_list (map fst bs)" unfolding dvd_def by auto
+    from irreducible\<^sub>d_factor[OF this(1)] this(2) obtain q where 
+      irr: "irreducible\<^sub>d q" and dvd: "q * q dvd prod_list (map fst bs)" unfolding dvd_def by auto
     hence dvd': "q dvd prod_list (map fst bs)" unfolding dvd_def by auto
-    from irreducible_dvd_prod_list[OF irr dvd'] obtain b i where 
+    from irreducible\<^sub>d_dvd_prod_list[OF irr dvd'] obtain b i where 
       mem: "(b,i) \<in> set bs" and dvd1: "q dvd b" by auto
     from dvd1 obtain k where b: "b = q * k" unfolding dvd_def by auto
     from split_list[OF mem] b obtain bs1 bs2 where bs: "bs = bs1 @ (b, i) # bs2" by auto
-    from irr have q0: "q \<noteq> 0" and dq: "degree q \<noteq> 0" unfolding irreducible_def by auto
+    from irr have q0: "q \<noteq> 0" and dq: "degree q \<noteq> 0" unfolding irreducible\<^sub>d_def by auto
     from sf(2)[OF mem, unfolded b] have "square_free (q * k)" by auto
     from this[unfolded square_free_def, THEN conjunct2, rule_format, OF dq] 
     have qk: "\<not> q dvd k" by simp
     from dvd[unfolded bs b] have "q * q dvd q * (k * prod_list (map fst (bs1 @ bs2)))"
       by (auto simp: ac_simps)
     with q0 have "q dvd k * prod_list (map fst (bs1 @ bs2))" by auto
-    from irreducible_dvd_mult[OF irr this] qk have "q dvd prod_list (map fst (bs1 @ bs2))" by auto
-    from irreducible_dvd_prod_list[OF irr this] obtain b' i' where 
+    from irreducible\<^sub>d_dvd_mult[OF irr this] qk have "q dvd prod_list (map fst (bs1 @ bs2))" by auto
+    from irreducible\<^sub>d_dvd_prod_list[OF irr this] obtain b' i' where 
       mem': "(b',i') \<in> set (bs1 @ bs2)" and dvd2: "q dvd b'" by fastforce
     from dvd1 dvd2 have "q dvd gcd b b'" by auto
     with dq have cop: "\<not> coprime b b'" by (metis is_unit_iff_degree q0)
@@ -1287,13 +1287,13 @@ lemma square_free_factorization_factorI: fixes p :: "'a poly"
   shows "square_free_factorization p (c, bs1 @ ((r,i) # (s,i) # bs2))"
   using square_free_factorization_prod_listI[of p c bs1 "[r,s]" i bs2] sff r s a by auto
   
-lemma monic_square_free_irreducible_factorization: assumes mon: "monic (f :: 'b :: field poly)" 
+lemma monic_square_free_irreducible\<^sub>d_factorization: assumes mon: "monic (f :: 'b :: field poly)" 
   and sf: "square_free f"
-  shows "\<exists> P. finite P \<and> f = \<Prod>P \<and> P \<subseteq> {q. irreducible q \<and> monic q}"
+  shows "\<exists> P. finite P \<and> f = \<Prod>P \<and> P \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
 proof -
   from mon have f0: "f \<noteq> 0" by auto
-  from monic_irreducible_factorization[OF assms(1)] obtain P n where
-    P: "finite P" "P \<subseteq> {q. irreducible q \<and> monic q}" and f: "f = (\<Prod>a\<in>P. a ^ Suc (n a))" by auto
+  from monic_irreducible\<^sub>d_factorization[OF assms(1)] obtain P n where
+    P: "finite P" "P \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}" and f: "f = (\<Prod>a\<in>P. a ^ Suc (n a))" by auto
   have *: "\<forall> a \<in> P. n a = 0"
   proof (rule ccontr)
     assume "\<not> ?thesis"
@@ -1302,7 +1302,7 @@ proof -
       unfolding f by (rule prod.remove[OF P(1) a])
     with n have "a * a dvd f" by (cases "n a", auto)
     with sf[unfolded square_free_def] f0 have "degree a = 0" by auto
-    with a P(2)[unfolded irreducible_def] show False by auto
+    with a P(2)[unfolded irreducible\<^sub>d_def] show False by auto
   qed
   have "f = \<Prod> P" unfolding f
     by (rule prod.cong[OF refl], insert *, auto)
@@ -1313,33 +1313,33 @@ lemma monic_factorization_uniqueness:
 fixes P::"'a poly set"
 assumes finite_P: "finite P" 
   and PQ: "\<Prod>P = \<Prod>Q" 
-  and P: "P \<subseteq> {q. irreducible q \<and> monic q}"
+  and P: "P \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
 and finite_Q: "finite Q" 
-  and Q: "Q \<subseteq> {q. irreducible q \<and> monic q}"
+  and Q: "Q \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
 shows "P = Q" 
 proof (rule; rule subsetI)
   fix x assume x: "x \<in> P"
-  have irr_x: "irreducible x" using x P by auto
+  have irr_x: "irreducible\<^sub>d x" using x P by auto
   have "\<exists>a\<in>Q. x dvd id a"
-  proof (rule irreducible_dvd_prod)
-    show "irreducible x" using x P by auto
+  proof (rule irreducible\<^sub>d_dvd_prod)
+    show "irreducible\<^sub>d x" using x P by auto
     show "x dvd prod id Q" using PQ x 
       by (metis dvd_refl dvd_prod finite_P id_apply prod.cong)
   qed
   from this obtain a where a: "a\<in>Q" and x_dvd_a: "x dvd a" unfolding id_def by blast
-  have "x=a" using x P a Q irreducible_dvd_eq[OF irr_x _ x_dvd_a] by fast
+  have "x=a" using x P a Q irreducible\<^sub>d_dvd_eq[OF irr_x _ x_dvd_a] by fast
   thus "x \<in> Q" using a by simp
 next
   fix x assume x: "x \<in> Q"
-  have irr_x: "irreducible x" using x Q by auto
+  have irr_x: "irreducible\<^sub>d x" using x Q by auto
   have "\<exists>a\<in>P. x dvd id a"
-  proof (rule irreducible_dvd_prod)
-    show "irreducible x" using x Q by auto
+  proof (rule irreducible\<^sub>d_dvd_prod)
+    show "irreducible\<^sub>d x" using x Q by auto
     show "x dvd prod id P" using PQ x 
       by (metis dvd_refl dvd_prod finite_Q id_apply prod.cong)
   qed
   from this obtain a where a: "a\<in>P" and x_dvd_a: "x dvd a" unfolding id_def by blast
-  have "x=a" using x P a Q irreducible_dvd_eq[OF irr_x _ x_dvd_a] by fast
+  have "x=a" using x P a Q irreducible\<^sub>d_dvd_eq[OF irr_x _ x_dvd_a] by fast
   thus "x \<in> P" using a by simp
 qed
 end

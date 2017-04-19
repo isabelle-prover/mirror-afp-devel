@@ -282,14 +282,14 @@ proof (cases "degree p = 1")
 next
   case False
   with deg have deg: "degree p > 1" by auto
-  with irreducible_connect_rev[OF irr] have irr: "Missing_Polynomial.irreducible p" by auto
-  from irreducible_root_free[OF Gauss_Lemma.irreducible_int_rat[OF irr]]
+  with irreducible_connect_rev[OF irr] have irr: "irreducible\<^sub>d p" by auto
+  from irreducible\<^sub>d_root_free[OF irreducible\<^sub>d_int_rat[OF irr]]
   have idd: "(poly (of_int_poly p) a = 0) = False" for a :: rat
     unfolding root_free_def using deg by auto
   have id: "root_info p = count_roots_interval_rat p"
     unfolding root_info_def if_False count_roots_interval_rat_code Let_def idd using deg by auto
   show ?thesis unfolding id
-    by (rule count_roots_interval_rat[OF irreducible_square_free[OF irr]])
+    by (rule count_roots_interval_rat[OF irreducible\<^sub>d_square_free[OF irr]])
 qed
 
 end

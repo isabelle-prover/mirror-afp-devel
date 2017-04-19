@@ -31,7 +31,7 @@ lemma finite_field_factorization_explicit:
   fixes f::"'a mod_ring poly"
   assumes sf_f: "square_free f"
     and us: "finite_field_factorization f = (c,us)"
-  shows "f = smult c (prod_list us) \<and> (\<forall> u \<in> set us. monic u \<and> irreducible u)"
+  shows "f = smult c (prod_list us) \<and> (\<forall> u \<in> set us. monic u \<and> irreducible\<^sub>d u)"
 proof (cases "degree f = 0")
   case False note f = this
   define g where "g = smult (inverse c) f"    
@@ -48,7 +48,7 @@ proof (cases "degree f = 0")
     by (metis c c0 field_class.field_inverse lead_coeff_smult)
   from sf_f have sf_g: "square_free g" unfolding g_def by (simp add: c0)
   from c0 have f: "f = smult c g" unfolding g_def by auto
-  have "g = prod_list (map snd gs) \<and> (\<forall> (i,f) \<in> set gs. degree f \<noteq> 0 \<and> monic f \<and> (\<forall> h. h dvd f \<longrightarrow> degree h = i \<longrightarrow> irreducible h))" 
+  have "g = prod_list (map snd gs) \<and> (\<forall> (i,f) \<in> set gs. degree f \<noteq> 0 \<and> monic f \<and> (\<forall> h. h dvd f \<longrightarrow> degree h = i \<longrightarrow> irreducible\<^sub>d h))" 
   proof (cases exercise_16_finished)
     case True
     with dist have "distinct_degree_factorization g = gs" by auto
@@ -60,16 +60,16 @@ proof (cases "degree f = 0")
       assume "(i,f) \<in> set gs" 
       with dist have "factors_of_same_degree i f" by auto
       from factors_of_same_degreeD[OF this] 
-      show "degree f \<noteq> 0 \<and> monic f \<and> (\<forall>h. h dvd f \<longrightarrow> degree h = i \<longrightarrow> irreducible h)" by auto
+      show "degree f \<noteq> 0 \<and> monic f \<and> (\<forall>h. h dvd f \<longrightarrow> degree h = i \<longrightarrow> irreducible\<^sub>d h)" by auto
     qed
   next
     case False
     with dist have gs: "gs = [(1,g)]" by auto
-    show ?thesis unfolding gs using deg_g mon_g linear_irreducible by auto
+    show ?thesis unfolding gs using deg_g mon_g linear_irreducible\<^sub>d by auto
   qed
   hence g_gs: "g = prod_list (map snd gs)" 
     and mon_gs: "\<And> i f. (i, f) \<in> set gs \<Longrightarrow> monic f \<and> degree f \<noteq> 0" 
-    and irrI: "\<And> i f h . (i, f) \<in> set gs \<Longrightarrow> h dvd f \<Longrightarrow> degree h = i \<Longrightarrow> irreducible h" by auto
+    and irrI: "\<And> i f h . (i, f) \<in> set gs \<Longrightarrow> h dvd f \<Longrightarrow> degree h = i \<Longrightarrow> irreducible\<^sub>d h" by auto
   have g: "g = prod_list (map snd irr) * prod_list (map snd hs)" unfolding g_gs
     using prod_list_map_partition[OF part] .
   {
@@ -77,12 +77,12 @@ proof (cases "degree f = 0")
     assume "f \<in> snd ` set irr" 
     from this[unfolded irr] obtain i where *:  "(i,f) \<in> set gs" "degree f = i" by auto
     have "f dvd f" by auto
-    from irrI[OF *(1) this *(2)] mon_gs[OF *(1)] have "monic f" "irreducible f" by auto
+    from irrI[OF *(1) this *(2)] mon_gs[OF *(1)] have "monic f" "irreducible\<^sub>d f" by auto
   } note irr = this
   let ?berl = "\<lambda> hs. concat (map (\<lambda>(x, y). berlekamp_monic_factorization x y) hs)"
   have "set hs \<subseteq> set gs" using part by auto
   hence "prod_list (map snd hs) = prod_list (?berl hs)
-    \<and> (\<forall> f \<in> set (?berl hs). monic f \<and> irreducible f)" 
+    \<and> (\<forall> f \<in> set (?berl hs). monic f \<and> irreducible\<^sub>d f)" 
   proof (induct hs)
     case (Cons ih hs)
     obtain i h where ih: "ih = (i,h)" by force
@@ -92,17 +92,17 @@ proof (cases "degree f = 0")
     from mem have "h \<in> set (map snd gs)" by force
     from square_free_factor[OF prod_list_dvd[OF this], folded g_gs, OF sf_g] have sf: "square_free h" .
     from mon_gs[OF mem] irrI[OF mem] have *: "degree h \<noteq> 0" "monic h" 
-      "\<And> g. g dvd h \<Longrightarrow> degree g = i \<Longrightarrow> irreducible g" by auto
+      "\<And> g. g dvd h \<Longrightarrow> degree g = i \<Longrightarrow> irreducible\<^sub>d g" by auto
     from berlekamp_monic_factorization[OF sf refl *(3) *(1-2), of i]
     have berl: "prod_list (berlekamp_monic_factorization i h) = h" 
-      and irr: "\<And> f. f \<in> set (berlekamp_monic_factorization i h) \<Longrightarrow> monic f \<and> irreducible f" by auto
+      and irr: "\<And> f. f \<in> set (berlekamp_monic_factorization i h) \<Longrightarrow> monic f \<and> irreducible\<^sub>d f" by auto
     have "prod_list (map snd (Cons ih hs)) = h * prod_list (map snd hs)" unfolding ih by simp
     also have "prod_list (map snd hs) = prod_list (?berl hs)" using IH by auto
     finally have "prod_list (map snd (Cons ih hs)) = prod_list (?berl (Cons ih hs))" 
       unfolding ih using berl by auto
     thus ?case using IH irr unfolding ih by auto
   qed auto
-  with g irr have main: "g = prod_list us \<and> (\<forall> u \<in> set us. monic u \<and> irreducible u)" unfolding us
+  with g irr have main: "g = prod_list us \<and> (\<forall> u \<in> set us. monic u \<and> irreducible\<^sub>d u)" unfolding us
     by auto
   thus ?thesis unfolding f using sf_g by auto
 next

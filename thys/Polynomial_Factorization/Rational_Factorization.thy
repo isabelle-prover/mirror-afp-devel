@@ -129,14 +129,14 @@ qed
 definition root_free :: "'a :: comm_semiring_0 poly \<Rightarrow> bool" where
   "root_free p = (degree p = 1 \<or> (\<forall> x. poly p x \<noteq> 0))"
 
-lemma irreducible_root_free: assumes irr: "irreducible p" shows "root_free p"
+lemma irreducible\<^sub>d_root_free: assumes irr: "irreducible\<^sub>d p" shows "root_free p"
 proof (cases "degree p = 1")
   case False
   {
     fix x
     assume "poly p x = 0"
     hence "[:-x,1:] dvd p" using poly_eq_0_iff_dvd by blast
-    with False irr[unfolded irreducible_def] have False by auto
+    with False irr[unfolded irreducible\<^sub>d_def] have False by auto
   }
   thus ?thesis unfolding root_free_def by auto
 qed (auto simp: root_free_def)
@@ -257,13 +257,13 @@ qed
 
 
 lemma rational_proper_factor: 
-  "degree p \<noteq> 0 \<Longrightarrow> rational_proper_factor p = None \<Longrightarrow> irreducible p" 
+  "degree p \<noteq> 0 \<Longrightarrow> rational_proper_factor p = None \<Longrightarrow> irreducible\<^sub>d p" 
   "rational_proper_factor p = Some q \<Longrightarrow> q dvd p \<and> degree q \<ge> 1 \<and> degree q < degree p"
 proof -
   let ?rp = "rational_proper_factor p"
   let ?rr = "rational_root_test"
   note d = rational_proper_factor_def[of p]
-  have "(degree p \<noteq> 0 \<longrightarrow> ?rp = None \<longrightarrow> irreducible p) \<and> 
+  have "(degree p \<noteq> 0 \<longrightarrow> ?rp = None \<longrightarrow> irreducible\<^sub>d p) \<and> 
         (?rp = Some q \<longrightarrow> q dvd p \<and> degree q \<ge> 1 \<and> degree q < degree p)"
   proof (cases "degree p = 0")
     case True
@@ -274,7 +274,7 @@ proof -
     proof (cases "degree p = 1")
       case True
       hence "?rp = None" unfolding d by auto
-      with linear_irreducible[OF True] show ?thesis by auto
+      with linear_irreducible\<^sub>d[OF True] show ?thesis by auto
     next
       case False note 1 = this
       show ?thesis
@@ -286,8 +286,8 @@ proof -
           case Nil
           with rp have rp: "?rp = None" by auto
           from Nil rat_roots2[OF True] have nex: "\<not> (\<exists> x. poly p x = 0)" by auto
-          have "irreducible p"
-          proof (rule irreducibleI)
+          have "irreducible\<^sub>d p"
+          proof (rule irreducible\<^sub>dI)
             fix q :: "rat poly"
             assume "degree q \<noteq> 0" "degree q < degree p"
             with True have dq: "degree q = 1" by auto
@@ -313,8 +313,8 @@ proof -
             case None
             from rational_root_test(2)[OF None] have nex: "\<not> (\<exists> x. poly p x = 0)" by auto
             from rp[unfolded None] have rp: "?rp = None" by auto
-            have "irreducible p"
-            proof (rule irreducibleI2)
+            have "irreducible\<^sub>d p"
+            proof (rule irreducible\<^sub>dI2)
               fix q :: "rat poly"
               assume "degree q \<ge> 1" "degree q \<le> degree p div 2"
               with True have dq: "degree q = 1" by auto
@@ -346,7 +346,7 @@ proof -
       qed
     qed
   qed
-  thus "degree p \<noteq> 0 \<Longrightarrow> rational_proper_factor p = None \<Longrightarrow> irreducible p" 
+  thus "degree p \<noteq> 0 \<Longrightarrow> rational_proper_factor p = None \<Longrightarrow> irreducible\<^sub>d p" 
     "rational_proper_factor p = Some q \<Longrightarrow> q dvd p \<and> degree q \<ge> 1 \<and> degree q < degree p" by auto
 qed
 
@@ -395,8 +395,8 @@ qed
 declare factorize_rat_poly_main.simps[simp del]
 
 lemma factorize_rat_poly_main: assumes "factorize_rat_poly_main c irr ps = (d,qs)"
-  and "Ball (set irr) irreducible"
-  shows "Ball (set qs) irreducible \<and> smult c (prod_list (irr @ ps)) = smult d (prod_list qs)"
+  and "Ball (set irr) irreducible\<^sub>d"
+  shows "Ball (set qs) irreducible\<^sub>d \<and> smult c (prod_list (irr @ ps)) = smult d (prod_list qs)"
   using assms
 proof (induct c irr ps rule: factorize_rat_poly_main.induct)
   case (1 c irr)
@@ -425,7 +425,7 @@ next
       case None
       with res have res: "?f c (p # irr) ps = (d,qs)" by auto
       from rational_proper_factor(1)[OF `degree p \<noteq> 0` None] 
-      have irp: "irreducible p" by auto
+      have irp: "irreducible\<^sub>d p" by auto
       from IH(1)[OF None res] irr irp show ?thesis by (auto simp: ac_simps)
     next
       case (Some q)
@@ -443,7 +443,7 @@ definition "factorize_rat_poly_basic p = factorize_rat_poly_main 1 [] [p]"
 
 lemma factorize_rat_poly_basic: assumes res: "factorize_rat_poly_basic p = (c,qs)" 
   shows "p = smult c (prod_list qs)" 
-  "\<And> q. q \<in> set qs \<Longrightarrow> irreducible q"
+  "\<And> q. q \<in> set qs \<Longrightarrow> irreducible\<^sub>d q"
   using factorize_rat_poly_main[OF res[unfolded factorize_rat_poly_basic_def]] by auto
 
 text \<open>We removed the factorize-rat-poly function from this theory, since the one in 

@@ -38,7 +38,7 @@ lemma berlekamp_hensel_main: assumes
 shows "poly_mod.factorization_m (p ^ n) f (lead_coeff f, mset gs)" (* factorization mod p^n *)
     "sort (map degree fs) = sort (map degree gs)"
     "\<And> g. g \<in> set gs \<Longrightarrow> monic g \<and> poly_mod.Mp (p^n) g = g \<and>  (* monic and normalized *)
-      poly_mod.irreducible_m p g \<and> (* irreducibility even mod p *)
+      poly_mod.irreducible\<^sub>d_m p g \<and> (* irreducibility even mod p *)
       poly_mod.degree_m p g = degree g"   (* mod p does not change degree of g *)     
 proof -
   from res[unfolded berlekamp_hensel_def berl split] 
@@ -50,7 +50,7 @@ proof -
   show "poly_mod.factorization_m (p ^ n) f (lead_coeff f, mset gs)" 
     "sort (map degree fs) = sort (map degree gs)"
     "\<And> g. g \<in> set gs \<Longrightarrow> monic g \<and> poly_mod.Mp (p^n) g = g \<and>  
-      poly_mod.irreducible_m p g \<and> 
+      poly_mod.irreducible\<^sub>d_m p g \<and> 
       poly_mod.degree_m p g = degree g" using hen by auto
 qed
 
@@ -61,13 +61,13 @@ theorem berlekamp_hensel: assumes
   and res: "berlekamp_hensel p n f = gs"
   and n: "n \<noteq> 0" 
   shows "poly_mod.factorization_m (p^n) f (lead_coeff f, mset gs)" (* factorization mod p^n *)
-    "\<And> g. g \<in> set gs \<Longrightarrow> poly_mod.Mp (p^n) g = g \<and> poly_mod.irreducible_m p g"   
-   (* normalized and irreducible even mod p *)
+    "\<And> g. g \<in> set gs \<Longrightarrow> poly_mod.Mp (p^n) g = g \<and> poly_mod.irreducible\<^sub>d_m p g"   
+   (* normalized and irreducible\<^sub>d even mod p *)
 proof -
   obtain c fs where "finite_field_factorization_int p f = (c,fs)" by force
   from berlekamp_hensel_main[OF prime n res cop sf this]
   show "poly_mod.factorization_m (p^n) f (lead_coeff f, mset gs)" 
-    "\<And> g. g \<in> set gs \<Longrightarrow> poly_mod.Mp (p^n) g = g \<and> poly_mod.irreducible_m p g" by auto
+    "\<And> g. g \<in> set gs \<Longrightarrow> poly_mod.Mp (p^n) g = g \<and> poly_mod.irreducible\<^sub>d_m p g" by auto
 qed
 
 lemma berlekamp_and_hensel_separated: assumes 
@@ -278,7 +278,7 @@ proof -
   interpret q: poly_mod_2 ?q by (standard, insert q, auto)
   from fact[unfolded q.factorization_m_def]
   have eq: "q.Mp C = q.Mp (Polynomial.smult c (prod_mset fs))" 
-    and irr: "\<And> f. f \<in># fs \<Longrightarrow> q.irreducible_m f" 
+    and irr: "\<And> f. f \<in># fs \<Longrightarrow> q.irreducible\<^sub>d_m f" 
     and mon: "\<And> f. f \<in># fs \<Longrightarrow> monic (q.Mp f)" 
     unfolding q.equivalent_def by auto
   from arg_cong[OF eq, of Mp]
@@ -292,8 +292,8 @@ proof -
     hence lc: "lead_coeff (q.Mp f) = 1" by auto
     from mon_qf show mon_f: "monic (Mp f)" 
       by (metis Mp_Mp_pow_is_Mp m1 monic_Mp n)
-    from irr[OF f] have irr: "q.irreducible_m f" .
-    hence "q.degree_m f \<noteq> 0" unfolding q.irreducible_m_def by auto
+    from irr[OF f] have irr: "q.irreducible\<^sub>d_m f" .
+    hence "q.degree_m f \<noteq> 0" unfolding q.irreducible\<^sub>d_m_def by auto
     also have "q.degree_m f = degree_m f" using mon[OF f]
       by (metis Mp_Mp_pow_is_Mp m1 monic_degree_Mp n poly_mod.degree_m_def)
     finally have deg: "degree_m f \<noteq> 0" by auto
@@ -308,26 +308,26 @@ proof -
     have "coprime (lead_coeff (q.Mp f)) p" using mon[OF f] prime by simp
     from berlekamp_hensel[OF prime this sf_Mf refl n, unfolded lc] obtain gs where
       qfact: "q.factorization_m (q.Mp f) (1, mset gs)"
-      and "\<And> g. g \<in> set gs \<Longrightarrow> irreducible_m g" by blast
+      and "\<And> g. g \<in> set gs \<Longrightarrow> irreducible\<^sub>d_m g" by blast
     hence fact: "q.Mp f = q.Mp (prod_list gs)" 
-      and gs: "\<And> g. g\<in> set gs \<Longrightarrow> irreducible_m g \<and> q.irreducible_m g \<and> monic (q.Mp g)" 
+      and gs: "\<And> g. g\<in> set gs \<Longrightarrow> irreducible\<^sub>d_m g \<and> q.irreducible\<^sub>d_m g \<and> monic (q.Mp g)" 
       unfolding q.factorization_m_def q.equivalent_def by auto
     from q.factorization_m_degree[OF qfact]
     have deg: "q.degree_m (q.Mp f) = sum_mset (image_mset q.degree_m (mset gs))"
       using mon_qf by fastforce
-    from irr[unfolded q.irreducible_m_def]
+    from irr[unfolded q.irreducible\<^sub>d_m_def]
     have "sum_mset (image_mset q.degree_m (mset gs)) \<noteq> 0" by (fold deg, auto)
     then obtain g gs' where gs1: "gs = g # gs'" by (cases gs, auto)
     {
       assume "gs' \<noteq> []" 
       then obtain h hs where gs2: "gs' = h # hs" by (cases gs', auto)
-      from deg gs[unfolded q.irreducible_m_def] 
+      from deg gs[unfolded q.irreducible\<^sub>d_m_def] 
       have small: "q.degree_m g < q.degree_m f" 
         "q.degree_m h + sum_mset (image_mset q.degree_m (mset hs)) < q.degree_m f" 
         unfolding gs1 gs2 by auto
       have "q.equivalent f (g * (h * prod_list hs))" 
         using fact unfolding q.equivalent_def gs1 gs2 by simp
-      with irr[unfolded q.irreducible_m_def, THEN conjunct2, rule_format, of g "h * prod_list hs"]
+      with irr[unfolded q.irreducible\<^sub>d_m_def, THEN conjunct2, rule_format, of g "h * prod_list hs"]
         small(1) have "\<not> q.degree_m (h * prod_list hs) < q.degree_m f" by auto
       hence "q.degree_m f \<le> q.degree_m (h * prod_list hs)" by simp
       also have "\<dots> = q.degree_m (prod_mset ({#h#} + mset hs))" by simp
@@ -340,8 +340,8 @@ proof -
     with fact have "q.Mp f = q.Mp g" by auto
     from arg_cong[OF this, of Mp] have eq: "Mp f = Mp g" 
       by (simp add: Mp_Mp_pow_is_Mp m1 n)
-    from gs[unfolded gs1] have g: "irreducible_m g" by auto
-    with eq show "irreducible_m f" unfolding irreducible_m_def degree_m_def equivalent_def by auto
+    from gs[unfolded gs1] have g: "irreducible\<^sub>d_m g" by auto
+    with eq show "irreducible\<^sub>d_m f" unfolding irreducible\<^sub>d_m_def degree_m_def equivalent_def by auto
   qed
 qed
   
@@ -432,10 +432,10 @@ proof (induct Fs arbitrary: C rule: wf_induct[OF wf_measure[of size]])
       using equivalent_def unique_factorization_m_cong by blast
     have "(1 :: nat) \<noteq> 0" "p = p ^ 1" by auto
     note u_factor = unique_factorization_factorI[OF prime ufact copAB sfAB this]
-    from fact DA have "irreducible_m D" "equivalent A D" unfolding equivalent_def 
+    from fact DA have "irreducible\<^sub>d_m D" "equivalent A D" unfolding equivalent_def 
       add factorization_m_def by auto
-    hence "irreducible_m A" using Mp_irreducible_m equivalent_def by fastforce
-    from irreducible_lifting[OF m1 n _ this] have irrA: "q.irreducible_m A" using monA
+    hence "irreducible\<^sub>d_m A" using Mp_irreducible\<^sub>d_m equivalent_def by fastforce
+    from irreducible\<^sub>d_lifting[OF m1 n _ this] have irrA: "q.irreducible\<^sub>d_m A" using monA
       by (simp add: m1 poly_mod.degree_m_eq_monic q.m1)
     
     from add have lenH: "(H,Fs) \<in> measure size" by auto
@@ -467,7 +467,7 @@ proof (induct Fs arbitrary: C rule: wf_induct[OF wf_measure[of size]])
         using gs_fs by (metis add_mset_add_single union_commute)
       from dgs[unfolded q.factorization_m_def split] 
       have eq: "q.Mp C = q.Mp (smult d (prod_mset gs))" 
-        and irr_mon: "\<And> g. g\<in>#gs \<Longrightarrow> q.irreducible_m g \<and> monic (q.Mp g)"
+        and irr_mon: "\<And> g. g\<in>#gs \<Longrightarrow> q.irreducible\<^sub>d_m g \<and> monic (q.Mp g)"
         unfolding q.equivalent_def using d1 by auto
       note eq
       also have "q.Mp (smult d (prod_mset gs)) = q.Mp (smult (q.M d) (prod_mset gs))" 
@@ -582,20 +582,18 @@ lemma hensel_lifting_unique: assumes
 shows "poly_mod.unique_factorization_m (p^n) f (lead_coeff f, mset gs)" (* unique factorization mod p^n *)
     "sort (map degree fs) = sort (map degree gs)"                              (* degrees stay the same *)
     "\<And> g. g \<in> set gs \<Longrightarrow> monic g \<and> poly_mod.Mp (p^n) g = g \<and>    (* monic and normalized *)
-      poly_mod.irreducible_m p g \<and>                               (* irreducibility even mod p *)
+      poly_mod.irreducible\<^sub>d_m p g \<and>                               (* irreducibility even mod p *)
       poly_mod.degree_m p g = degree g"   (* mod p does not change degree of g *)
 proof -
   note hensel = hensel_lifting[OF assms]
   show "sort (map degree fs) = sort (map degree gs)" 
     "\<And> g. g \<in> set gs \<Longrightarrow> monic g \<and> poly_mod.Mp (p^n) g = g \<and> 
-      poly_mod.irreducible_m p g \<and>                            
+      poly_mod.irreducible\<^sub>d_m p g \<and>                            
       poly_mod.degree_m p g = degree g" using hensel by auto
   from berlekamp_hensel_unique[OF prime cop sf refl n]
   have "poly_mod.unique_factorization_m (p ^ n) f (lead_coeff f, mset (berlekamp_hensel p n f))"  by auto
   with hensel(1) show "poly_mod.unique_factorization_m (p^n) f (lead_coeff f, mset gs)" 
     by (metis poly_mod.unique_factorization_m_alt_def)
 qed
-    
-
 
 end

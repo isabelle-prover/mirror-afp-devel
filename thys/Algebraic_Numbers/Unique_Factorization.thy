@@ -2,14 +2,15 @@ theory Unique_Factorization
   imports
     "$AFP/Polynomial_Interpolation/Ring_Hom_Poly"
     "$AFP/Polynomial_Factorization/Polynomial_Divisibility"
-    Permutations
-    Euclidean_Algorithm
-    Divisibility
+    "~~/src/HOL/Library/Permutations" 
+    "~~/src/HOL/Computational_Algebra/Euclidean_Algorithm"
+    "~~/src/HOL/Algebra/Divisibility"
     "$AFP/Containers/Containers_Auxiliary" (* only for a lemma *)
 begin
 hide_const(open) prime
 hide_fact(open) Divisibility.irreducibleI
 hide_fact(open) Divisibility.irreducibleD
+hide_fact(open) Divisibility.irreducibleE
 
 (* TODO: move or...? *)
 lemma dvd_rewrites: "dvd.dvd (op *) = op dvd" by (unfold dvd.dvd_def dvd_def, rule)
@@ -21,7 +22,6 @@ lemma (in comm_monoid_mult) prod_mset_prod_list: "prod_mset (mset xs) = prod_lis
 
 subsection {* Interfacing UFD properties *}
 hide_const (open) Divisibility.irreducible
-hide_const (open) Missing_Polynomial.irreducible
 
 context comm_semiring_1
 begin
@@ -587,12 +587,12 @@ begin
 
   lemma irreducible_hom_imp_irreducible:
     assumes irr: "irreducible (hom a)" shows "irreducible a"
-  proof (intro Factorial_Ring.irreducibleI)
+  proof (intro irreducibleI)
     from irr show "a \<noteq> 0" by auto
     from irr show "\<not> a dvd 1" by (auto dest: irreducible_not_unit)
     fix b c assume "a = b * c"
     then have "hom a = hom b * hom c" by simp
-    with irr have "hom b dvd 1 \<or> hom c dvd 1" by (auto dest: Factorial_Ring.irreducibleD)
+    with irr have "hom b dvd 1 \<or> hom c dvd 1" by (auto dest: irreducibleD)
     then show "b dvd 1 \<or> c dvd 1" by simp
   qed
 end
@@ -1324,8 +1324,8 @@ next
       then show "(\<Prod>i\<in>#image_mset normalize F. i) = (\<Prod>i\<in>#image_mset normalize G. i)" by auto
       from 2 prime_elem_iff_irreducible have "f \<in># F \<Longrightarrow> prime_elem f" "g \<in># G \<Longrightarrow> prime_elem g" for f g
        by (auto intro: prime_elemI)
-      then show " Multiset.Ball (image_mset normalize F) Factorial_Ring.prime"
-        "Multiset.Ball (image_mset normalize G) Factorial_Ring.prime" by auto
+      then show " Multiset.Ball (image_mset normalize F) prime"
+        "Multiset.Ball (image_mset normalize G) prime" by auto
     qed
   also
     obtain gs where G: "G = mset gs" by (metis ex_mset)

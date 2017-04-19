@@ -141,7 +141,7 @@ proof (cases "degree p" "1::nat" rule: linorder_cases)
     have dvd: "\<not> [:-x,1:] dvd 1" by (auto simp: poly_dvd_1)
     from greater have "degree r \<noteq> 0" using degree_mult_le[of r "[:-x,1:]", unfolded deg, folded p] by auto
     then have "\<not> r dvd 1" by (auto simp: poly_dvd_1)
-    with p irr Factorial_Ring.irreducibleD[OF irr p] dvd have False by auto
+    with p irr irreducibleD[OF irr p] dvd have False by auto
   }
   thus ?thesis unfolding root_free_def by auto
 next
@@ -610,7 +610,7 @@ proof (rule rational_root_free_degree_iff[OF _ assms(2)])
   from poly_condD[OF assms(1)] have p: "irreducible p" by auto
   have "irreducible (map_poly rat_of_int p)"
     apply (rule irreducible_connect)
-    apply (rule irreducible_int_rat)
+    apply (rule irreducible\<^sub>d_int_rat)
     apply (rule irreducible_connect_rev)
     using p assms(3) by auto 
   thus "root_free (map_poly rat_of_int p)" by (rule irreducible_root_free) 

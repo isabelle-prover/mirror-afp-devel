@@ -209,7 +209,7 @@ proof -
         note IH = IH(2)[OF False xx yis xi]
         have "irreducible xi"
           apply (rule irreducible_connect)
-        proof (rule irreducibleI)
+        proof (rule irreducible\<^sub>dI)
           show "degree xi \<noteq> 0" unfolding xi by auto
           fix q :: "real poly" 
           assume "degree q \<noteq> 0" "degree q < degree xi"

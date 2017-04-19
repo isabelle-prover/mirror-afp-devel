@@ -116,11 +116,11 @@ lemma lead_coeff_factor: assumes u: "u = v * (w :: 'a ::idom poly)"
   "lead_coeff (smult (lead_coeff w) v) = lead_coeff u" "lead_coeff (smult (lead_coeff v) w) = lead_coeff u" 
   unfolding u by (auto simp: lead_coeff_mult lead_coeff_smult)
 
-lemma not_irreducible_lead_coeff_factors: assumes "\<not> irreducible (u :: 'a :: idom poly)" "degree u \<noteq> 0" 
+lemma not_irreducible\<^sub>d_lead_coeff_factors: assumes "\<not> irreducible\<^sub>d (u :: 'a :: idom poly)" "degree u \<noteq> 0" 
   shows "\<exists> f g. smult (lead_coeff u) u = f * g \<and> lead_coeff f = lead_coeff u \<and> lead_coeff g = lead_coeff u
   \<and> degree f < degree u \<and> degree g < degree u" 
 proof -
-  from assms[unfolded irreducible_def_lt, simplified] 
+  from assms[unfolded irreducible\<^sub>d_def_lt, simplified] 
   obtain v w where deg: "degree v < degree u" "degree w < degree u" and u: "u = v * w" by auto
   define f where "f = smult (lead_coeff w) v" 
   define g where "g = smult (lead_coeff v) w" 
@@ -257,7 +257,7 @@ lemma reconstruction: assumes
   and tests: "\<And> ws. ws \<subseteq># mset vs \<Longrightarrow> ws \<noteq> {#} \<Longrightarrow> 
     size ws < d \<or> size ws = d \<and> ws \<notin> (mset o snd) ` set cands 
     \<Longrightarrow> test_dvd u ws"
-  and irr: "\<And> f. f \<in> set res \<Longrightarrow> irreducible f" 
+  and irr: "\<And> f. f \<in> set res \<Longrightarrow> irreducible\<^sub>d f" 
   and deg: "degree u \<noteq> 0" 
   and cands_ne: "cands \<noteq> [] \<Longrightarrow> d < r" 
   and large: "\<forall> v n. v dvd smult lu u \<longrightarrow> degree v \<le> degree_bound vs 
@@ -265,7 +265,7 @@ lemma reconstruction: assumes
   and f0: "f \<noteq> 0"
   and state: "sli (lu,[]) vs d state" 
   and m2: "m2 = m div 2" 
-  shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. irreducible fi)"
+  shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. irreducible\<^sub>d fi)"
 proof -
   from large have large: "large_m (smult lu u) vs" unfolding large_m_def by auto
   interpret p: poly_mod_2 p using prime unfolding poly_mod_2_def by (simp add: prime_int_iff)  
@@ -283,7 +283,7 @@ proof -
   {
     fix u lu vs
     assume eq: "Mp u = Mp (smult lu (prod_mset vs))" and cop: "coprime lu p" and size: "size vs \<noteq> 0"
-      and mi: "\<And> v. v \<in># vs \<Longrightarrow> irreducible_m v \<and> monic v"     
+      and mi: "\<And> v. v \<in># vs \<Longrightarrow> irreducible\<^sub>d_m v \<and> monic v"     
     from cop p.m1 have lu0: "lu \<noteq> 0" by auto
     from size have "vs \<noteq> {#}" by auto
     then obtain v vs' where vs_v: "vs = vs' + {#v#}" by (cases vs, auto)
@@ -301,8 +301,8 @@ proof -
       by (rule degree_mult_eq, insert vs0[unfolded vs_v], auto)
     also have "\<dots> \<ge> degree v" by simp
     finally have deg_v: "degree v \<le> degree_m u" .
-    from mi[unfolded vs_v, of v] have "irreducible_m v" by auto
-    hence "0 < degree_m v" unfolding irreducible_m_def by auto
+    from mi[unfolded vs_v, of v] have "irreducible\<^sub>d_m v" by auto
+    hence "0 < degree_m v" unfolding irreducible\<^sub>d_m_def by auto
     also have "\<dots> \<le> degree v" by (rule degree_m_le)
     also have "\<dots> \<le> degree_m u" by (rule deg_v)
     also have "\<dots> \<le> degree u" by (rule degree_m_le)
@@ -318,8 +318,8 @@ proof -
     and d: "size (mset vs) < d + d"
     and tests: "\<And> ws. ws \<subseteq># mset vs \<Longrightarrow> ws \<noteq> {#} \<Longrightarrow> size ws < d \<Longrightarrow> test_dvd u ws" 
     from deg_u have u0: "u \<noteq> 0" by auto
-    have "irreducible u" 
-    proof (rule irreducibleI[OF deg_u], intro notI)
+    have "irreducible\<^sub>d u" 
+    proof (rule irreducible\<^sub>dI[OF deg_u], intro notI)
       fix q :: "int poly"  
       assume deg: "degree q \<noteq> 0" "degree q < degree u" and qu: "q dvd u"
       hence deg_q: "0 < degree q" "degree q < degree u" by auto
@@ -376,7 +376,7 @@ proof -
         from this[unfolded test_dvd_def, rule_format, OF _ deg_q'] q'_eq show False unfolding uq by auto
       qed
     qed
-  } note irreducible_via_tests = this
+  } note irreducible\<^sub>d_via_tests = this
   show ?thesis using assms(1-16) large state
   proof (induct meas arbitrary: u lu d r vs res cands state rule: wf_induct[OF wf])
     case (1 meas u lu d r vs res cands state)
@@ -407,7 +407,7 @@ proof -
     have fact: "factorization_m u (lu,mset vs)" by auto
     from this[unfolded factorization_m_def split] norm
     have vs: "u =m smult lu (prod_list vs)" and 
-      vs_mi: "\<And> f. f\<in>#mset vs \<Longrightarrow> irreducible_m f \<and> monic f" by auto
+      vs_mi: "\<And> f. f\<in>#mset vs \<Longrightarrow> irreducible\<^sub>d_m f \<and> monic f" by auto
     let ?luu = "smult lu u" 
     show ?case
     proof (cases cands)
@@ -419,8 +419,8 @@ proof -
         case True
         with res have fs: "fs = u # res" by (simp add: Let_def)
         from True[unfolded r] have size: "size (mset vs) < ?d' + ?d'" by auto
-        have "irreducible u" 
-          by (rule irreducible_via_tests[OF deg_u cop[unfolded lu] factors(1)[unfolded lu] 
+        have "irreducible\<^sub>d u" 
+          by (rule irreducible\<^sub>d_via_tests[OF deg_u cop[unfolded lu] factors(1)[unfolded lu] 
           sf norm size tests], auto simp: Nil)
         with fs f irr show ?thesis by simp
       next
@@ -676,8 +676,8 @@ proof -
         from this cands_empty[unfolded Cons] have "size (mset vs') \<noteq> 0" by auto
         from deg_non_zero[OF eq_u' cop_lu' this vs_mi] 
         have deg_u': "degree u' \<noteq> 0" unfolding vs_split by auto
-        have irr_pp: "irreducible pp_vb" 
-        proof (rule irreducibleI[OF deg_pp], intro notI)
+        have irr_pp: "irreducible\<^sub>d pp_vb" 
+        proof (rule irreducible\<^sub>dI[OF deg_pp], intro notI)
           fix q :: "int poly"
           assume deg: "degree q \<noteq> 0" "degree q < degree pp_vb" and qvb: "q dvd pp_vb"
           from deg dvd_imp_degree_le[OF ppu u0]
@@ -753,8 +753,8 @@ proof -
           case True
           with res have res: "fs = u' # ?res'" by auto
           from True r' have size: "size (mset vs') < d + d" by auto
-          have "irreducible u'" 
-            by (rule irreducible_via_tests[OF deg_u' cop_lu'[unfolded lu'] factors(1)[unfolded lu'] 
+          have "irreducible\<^sub>d u'" 
+            by (rule irreducible\<^sub>d_via_tests[OF deg_u' cop_lu'[unfolded lu'] factors(1)[unfolded lu'] 
             sf_u' norm size tests'], insert set_vs, auto)
           with f res irr irr_pp show ?thesis by auto
         next
@@ -829,7 +829,7 @@ qed
 lemma zassenhaus_reconstruction_generic: 
   assumes sl_impl: "correct_sublists_foldr_impl (\<lambda>v. map_prod (poly_mod.mul_const (p^n) v) (Cons v)) sl_impl sli"
   and res: "zassenhaus_reconstruction_generic sl_impl hs p n f = fs" 
-  shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. irreducible fi)" 
+  shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. irreducible\<^sub>d fi)" 
 proof -
   let ?lc = "lead_coeff f" 
   let ?ff = "smult ?lc f" 
@@ -873,7 +873,7 @@ qed
 
 lemma zassenhaus_reconstruction: 
   assumes res: "zassenhaus_reconstruction hs p n f = fs" 
-  shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. irreducible fi)" 
+  shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. irreducible\<^sub>d fi)" 
 proof -
   interpret poly_mod_prime by (unfold_locales, rule prime)
   from m1 n have pn: "p^n > 1" by simp

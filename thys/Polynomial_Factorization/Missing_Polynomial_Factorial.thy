@@ -232,6 +232,85 @@ proof (insert assms, induct fs arbitrary: f)
   moreover from Cons.prems have "f = f' \<or> f \<in> set fs" by auto
   ultimately show ?case using Cons.hyps[of f] by auto
 qed auto
+  
+context comm_semiring_1
+begin
+lemma irreducibleE[elim]:
+  assumes "irreducible p"
+      and "p \<noteq> 0 \<Longrightarrow> \<not> p dvd 1 \<Longrightarrow> (\<And>a b. p = a * b \<Longrightarrow> a dvd 1 \<or> b dvd 1) \<Longrightarrow> thesis"
+  shows thesis using assms by (auto simp: irreducible_def)
 
+lemma not_irreducibleE:
+  assumes "\<not> irreducible x"
+      and "x = 0 \<Longrightarrow> thesis"
+      and "x dvd 1 \<Longrightarrow> thesis"
+      and "\<And>a b. x = a * b \<Longrightarrow> \<not> a dvd 1 \<Longrightarrow> \<not> b dvd 1 \<Longrightarrow> thesis"
+  shows thesis using assms unfolding irreducible_def by auto
+end
+
+lemma irreducible_imp_content_free:
+  fixes f :: "'a :: {idom,semiring_gcd} poly"
+  assumes irr: "irreducible f" and deg: "degree f \<noteq> 0" shows "content_free f"
+proof (rule ccontr)
+  assume not: "\<not> ?thesis"
+  then have "\<not> [:content f:] dvd 1" by simp
+  moreover have "f = [:content f:] * primitive_part f" by simp
+    note Factorial_Ring.irreducibleD[OF irr this]
+  ultimately
+  have "primitive_part f dvd 1" by auto
+  from this[unfolded poly_dvd_1] have "degree f = 0" by auto
+  with deg show False by auto
+qed
+  
+lemma irreducible_content_free_connect:
+  fixes f :: "'a :: {idom,semiring_gcd} poly"
+  assumes cf: "content_free f" shows "irreducible\<^sub>d f \<longleftrightarrow> irreducible f" (is "?l \<longleftrightarrow> ?r")
+proof
+  assume l: ?l show ?r
+  proof(rule ccontr, elim not_irreducibleE)
+    from l have deg: "degree f > 0" by (auto dest: irreducible\<^sub>dD)
+    from cf have f0: "f \<noteq> 0" by auto
+    then show "f = 0 \<Longrightarrow> False" by auto
+    show "f dvd 1 \<Longrightarrow> False" using deg by (auto simp:poly_dvd_1)
+    fix a b assume fab: "f = a * b" and a1: "\<not> a dvd 1" and b1: "\<not> b dvd 1"
+    then have af: "a dvd f" and bf: "b dvd f" by auto
+    with f0 have a0: "a \<noteq> 0" and b0: "b \<noteq> 0" by auto
+    from irreducible\<^sub>dD(2)[OF l, of a] af dvd_imp_degree_le[OF af f0]
+    have "degree a = 0 \<or> degree a = degree f" by force
+    then show False
+    proof(elim disjE)
+      assume "degree a = 0"
+      then obtain c where ac: "a = [:c:]" by (auto dest: degree0_coeffs)
+      from fab[unfolded ac] have "c dvd content f" by (simp add: content_iff coeffs_smult)
+      with cf have "c dvd 1" by simp
+      then have "a dvd 1" by (auto simp: ac)
+      with a1 show False by auto
+    next
+      assume dega: "degree a = degree f"
+      with f0 degree_mult_eq[OF a0 b0] fab have "degree b = 0" by (auto simp: ac_simps)
+      then obtain c where bc: "b = [:c:]" by (auto dest: degree0_coeffs)
+      from fab[unfolded bc] have "c dvd content f" by (simp add: content_iff coeffs_smult)
+      with cf have "c dvd 1" by simp
+      then have "b dvd 1" by (auto simp: bc)
+      with b1 show False by auto
+    qed
+  qed
+next
+  assume r: ?r
+  show ?l
+  proof(intro irreducible\<^sub>dI notI)
+    assume "degree f = 0"
+    then obtain f0 where f: "f = [:f0:]" by (auto dest: degree0_coeffs)
+    from cf[unfolded this] have "normalize f0 = 1" by auto
+    then have "f0 dvd 1" by (unfold normalize_1_iff)
+    with r[unfolded f irreducible_const_poly_iff] show False by auto
+  next
+    fix g assume deg_g: "degree g \<noteq> 0" and deg_gf: "degree g < degree f" and gf: "g dvd f"
+    from gf obtain h where fgh: "f = g * h" by (elim dvdE)
+    with r have "g dvd 1 \<or> h dvd 1" by auto
+    with deg_g have "degree h = 0" by (auto simp: poly_dvd_1)
+    with deg_gf[unfolded fgh] degree_mult_eq[of g h] show False by (cases "g = 0 \<or> h = 0", auto)
+  qed
+qed
 
 end

@@ -30,6 +30,7 @@ imports
   "~~/src/HOL/Library/Fundamental_Theorem_Algebra"
   "../Polynomial_Factorization/Rational_Factorization"
   "../Berlekamp_Zassenhaus/Factorize_Int_Poly"
+  Unique_Factorization_Poly
 begin
 
 lemma content_free_imp_unit_iff:
@@ -73,7 +74,7 @@ proof(rule ccontr)
   then obtain c where c1: "\<not>c dvd 1" and "\<forall>a \<in> set (coeffs p). c dvd a" by (auto elim: not_content_freeE)
   from dvd_all_coeffs_imp_dvd[OF this(2)]
   obtain r where p: "p = r * [:c:]" by (elim dvdE, auto)
-  from Factorial_Ring.irreducibleD[OF assms this] have "r dvd 1 \<or> [:c:] dvd 1" by auto
+  from irreducibleD[OF assms this] have "r dvd 1 \<or> [:c:] dvd 1" by auto
   with c1 have "r dvd 1" unfolding const_poly_dvd_1 by auto
   then have "degree r = 0" unfolding poly_dvd_1 by auto
   with p have "degree p = 0" by auto
@@ -84,7 +85,7 @@ qed
 lemma linear_irreducible_field:
   fixes p :: "'a :: field poly"
   assumes deg: "degree p = 1" shows "irreducible p"
-proof (intro Factorial_Ring.irreducibleI)
+proof (intro irreducibleI)
   from deg show p0: "p \<noteq> 0" by auto
   from deg show "\<not> p dvd 1" by (auto simp: poly_dvd_1)
   fix a b assume p: "p = a * b"
@@ -100,7 +101,7 @@ lemma linear_irreducible_int:
   fixes p :: "int poly"
   assumes deg: "degree p = 1" and cp: "content p dvd 1"
   shows "irreducible p"
-proof (intro Factorial_Ring.irreducibleI)
+proof (intro irreducibleI)
   from deg show p0: "p \<noteq> 0" by auto
   from deg show "\<not> p dvd 1" by (auto simp: poly_dvd_1)
   fix a b assume p: "p = a * b"
@@ -117,12 +118,12 @@ qed
 (* TODO: remove *)
 lemma irreducible_connect_rev:
   assumes irr: "irreducible p" and deg: "degree p \<noteq> 0"
-  shows "Missing_Polynomial.irreducible p"
-proof(intro Missing_Polynomial.irreducibleI deg notI)
+  shows "irreducible\<^sub>d p"
+proof(intro irreducible\<^sub>dI deg notI)
   fix q assume degq: "degree q \<noteq> 0" and diff: "degree q < degree p" and qp: "q dvd p"
   from degq have nu: "\<not> q dvd 1" by (auto simp: poly_dvd_1)
   from qp obtain r where p: "p = q * r" by (elim dvdE)
-  from Factorial_Ring.irreducibleD[OF irr this] nu have "r dvd 1" by auto
+  from irreducibleD[OF irr this] nu have "r dvd 1" by auto
   then have "degree r = 0" by (auto simp: poly_dvd_1)
   with degq diff show False unfolding p using degree_mult_le[of q r] by auto
 qed
@@ -237,7 +238,7 @@ proof
   assume "poly p 0 = 0"
   hence dvd: "[: 0, 1 :] dvd p" by (unfold dvd_iff_poly_eq_0, simp)
   then obtain q where pq: "p = [:0,1:] * q" by (elim dvdE)
-  from Factorial_Ring.irreducibleD[OF irr this] nu have "q dvd 1" by auto
+  from irreducibleD[OF irr this] nu have "q dvd 1" by auto
   from this obtain r where "q = [:r:]" "r dvd 1" by (auto simp add: poly_dvd_1 dest: degree0_coeffs)
   with pq have "p = [:0,r:]" by auto
   with ap have "x = 0" by auto
@@ -297,7 +298,7 @@ next
   define g where "g \<equiv> smult ?s f" 
   define d where "d \<equiv> ?s * content f"
   have "content g = content ([:?s:] * f)" unfolding g_def by simp
-  also have "\<dots> = content [:?s:] * content f" unfolding gauss_lemma by simp
+  also have "\<dots> = content [:?s:] * content f" unfolding content_mult by simp
   also have "content [:?s:] = 1" using s by (auto simp: content_def)
   finally have cg: "content g = content f" by simp
   from f0  
@@ -337,10 +338,10 @@ qed
 (* TODO: remove *)
 lemma irreducible_connect_int:
   fixes p :: "int poly"
-  assumes ir: "Missing_Polynomial.irreducible p" and c: "content p = 1"
+  assumes ir: "irreducible\<^sub>d p" and c: "content p = 1"
   shows "irreducible p"
-proof(intro Factorial_Ring.irreducibleI)
-  note * = ir[unfolded Missing_Polynomial.irreducible_def]
+proof(intro irreducibleI)
+  note * = ir[unfolded irreducible\<^sub>d_def]
   from * have p0: "p \<noteq> 0" by auto
   then show "p \<noteq> 0" by auto
   from * show "\<not> p dvd 1" unfolding poly_dvd_1 by auto
@@ -405,9 +406,7 @@ proof -
   from this[unfolded cf_pos_def]
   show irr: "irreducible (poly_rat x)" unfolding id using d by (auto intro!: linear_irreducible_int)
   show "square_free (poly_rat x)"
-    apply (rule irreducible_square_free)
-    apply (rule irreducible_connect_rev)
-    apply (fact irr) unfolding id using d by auto
+    by (rule irreducible_imp_square_free[OF irr])
 qed
   
 lemma poly_rat[simp]: "ipoly (poly_rat x) (of_rat x :: 'a :: field_char_0) = 0" "ipoly (poly_rat x) x = 0" 
@@ -696,11 +695,11 @@ next
     have "\<exists> q'. degree q' = degree q \<and> q' dvd p"  by auto
   }
   with irreducible_connect_rev[OF ir deg]
-  have "Missing_Polynomial.irreducible (of_int_poly p::rat poly)"
-    unfolding Missing_Polynomial.irreducible_def by force
-  hence ir:"Missing_Polynomial.irreducible ?p" by(subst irreducible_smult,auto simp:p0)
+  have "irreducible\<^sub>d (of_int_poly p::rat poly)"
+    unfolding irreducible\<^sub>d_def by force
+  hence ir:"irreducible\<^sub>d ?p" by(subst irreducible\<^sub>d_smult,auto simp:p0)
   have pm':"monic ?p" "content p = 1" using pm[unfolded cf_pos_def] by auto
-  note gcd_tangled = monic_irreducible_gcd[OF pm'(1) ir,of "of_int_poly q"]
+  note gcd_tangled = monic_irreducible\<^sub>d_gcd[OF pm'(1) ir,of "of_int_poly q"]
   from gcd_tangled p0 have o0:"of_int_poly (gcd p q) \<noteq> (0::rat poly)" by auto
   have c1:"gcd p q = [:lead_coeff (gcd p q):] \<Longrightarrow> coprime p q"
     using content_const[of "lead_coeff (gcd p q)"] yun_gcd(2,3) by simp
@@ -1199,8 +1198,8 @@ proof (rule ccontr)
     deg: "degree pp \<ge> degree q" and cf_pos: "cf_pos pp" unfolding represents_def pp_def by auto
   from x have ax: "algebraic x" unfolding algebraic_altdef_ipoly represents_def by blast
   assume "\<not> ?thesis"
-  from this irreducible_connect_int[of q] cf have "\<not> Missing_Polynomial.irreducible q" by auto
-  from this[unfolded Missing_Polynomial.irreducible_def] dq obtain r where 
+  from this irreducible_connect_int[of q] cf have "\<not> irreducible\<^sub>d q" by auto
+  from this[unfolded irreducible\<^sub>d_def] dq obtain r where 
     r: "degree r \<noteq> 0" "degree r < degree q" and "r dvd q" by auto
   then obtain rr where q: "q = r * rr" unfolding dvd_def by auto
   have "degree q = degree r + degree rr" using dq unfolding q

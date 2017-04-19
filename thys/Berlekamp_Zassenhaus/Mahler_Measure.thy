@@ -94,8 +94,8 @@ lemma complex_roots_1 [simp]:
   "complex_roots_complex 1 = []"
   using complex_roots_c [of 1] by (simp add: pCons_one)
 
-lemma linear_term_irreducible[simp]: "irreducible [:- a, 1:]" 
-  by (rule linear_irreducible, simp)
+lemma linear_term_irreducible\<^sub>d[simp]: "irreducible\<^sub>d [:- a, 1:]" 
+  by (rule linear_irreducible\<^sub>d, simp)
 
 definition complex_roots_int where
   "complex_roots_int (p::int poly) = complex_roots_complex (map_poly of_int p)"
@@ -155,7 +155,7 @@ proof -
   let ?as = "mset (map (\<lambda> a. [:- a, 1:]) as)"
   let ?bs = "mset (map (\<lambda> a. [:- a, 1:]) bs)"
   have eq_smult:"prod_mset ?as = prod_mset ?bs" using assms by (metis prod_mset_prod_list)
-  have irr:"\<And> as. set_mset (mset (map (\<lambda> a. [:- a, 1:]) as)) \<subseteq> {q. irreducible q \<and> monic q}"
+  have irr:"\<And> as. set_mset (mset (map (\<lambda> a. [:- a, 1:]) as)) \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
     by auto
   from monic_factorization_unique_mset[OF eq_smult irr irr]
   show ?thesis by (simp add: inj_eq multiset.inj_map)

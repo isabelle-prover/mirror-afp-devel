@@ -17,11 +17,11 @@ begin
 abbreviation to_int_poly :: "'a :: finite mod_ring poly \<Rightarrow> int poly" where
   "to_int_poly \<equiv> map_poly to_int_mod_ring"
 
-lemma irreducible_def_lt: "irreducible f = (degree f \<noteq> 0 \<and> 
+lemma irreducible\<^sub>d_def_lt: "irreducible\<^sub>d f = (degree f \<noteq> 0 \<and> 
   (\<forall> g h. degree g < degree f \<longrightarrow> degree h < degree f \<longrightarrow> f \<noteq> g * h))" 
 proof (cases "degree f = 0")
   case True
-  thus ?thesis unfolding irreducible_def by auto
+  thus ?thesis unfolding irreducible\<^sub>d_def by auto
 next
   case False
   from False have f0: "f \<noteq> 0" by auto
@@ -34,17 +34,17 @@ next
   } note deg = this
   have "?thesis = ((\<forall> g h. degree g < degree f \<longrightarrow> degree h < degree f \<longrightarrow> f \<noteq> g * h)
     = (\<forall> g h. degree g \<noteq> 0 \<longrightarrow> degree g < degree f \<longrightarrow> f \<noteq> g * h))" 
-    unfolding irreducible_def dvd_def using False by auto
+    unfolding irreducible\<^sub>d_def dvd_def using False by auto
   also have "\<dots> = True"
     by (auto simp: deg, force+)
   finally show ?thesis by simp
 qed
 
-lemma irreducible_def_0: "irreducible f = (degree f \<noteq> 0 \<and> 
+lemma irreducible\<^sub>d_def_0: "irreducible\<^sub>d f = (degree f \<noteq> 0 \<and> 
   (\<forall> g h. degree g \<noteq> 0 \<longrightarrow> degree h \<noteq> 0 \<longrightarrow> f \<noteq> g * h))" 
 proof (cases "degree f = 0")
   case True
-  thus ?thesis unfolding irreducible_def by auto
+  thus ?thesis unfolding irreducible\<^sub>d_def by auto
 next
   case False
   from False have f0: "f \<noteq> 0" by auto
@@ -57,7 +57,7 @@ next
   } note deg = this
   have "?thesis = ((\<forall> g h. degree g \<noteq> 0 \<longrightarrow> degree h \<noteq> 0 \<longrightarrow> f \<noteq> g * h)
     = (\<forall> g h. degree g \<noteq> 0 \<longrightarrow> degree g < degree f \<longrightarrow> f \<noteq> g * h))" 
-    unfolding irreducible_def dvd_def using False by auto
+    unfolding irreducible\<^sub>d_def dvd_def using False by auto
   also have "\<dots> = True"
     by (auto simp: deg, force+)
   finally show ?thesis by simp
@@ -68,7 +68,7 @@ begin
 
 definition factorization_m :: "int poly \<Rightarrow> (int \<times> int poly multiset) \<Rightarrow> bool" where
   "factorization_m f cfs \<equiv> (case cfs of (c,fs) \<Rightarrow> f =m (smult c (prod_mset fs)) \<and> 
-    (\<forall> f \<in> set_mset fs. irreducible_m f \<and> monic (Mp f)))"  
+    (\<forall> f \<in> set_mset fs. irreducible\<^sub>d_m f \<and> monic (Mp f)))"  
 
 definition Mf :: "int \<times> int poly multiset \<Rightarrow> int \<times> int poly multiset" where
   "Mf cfs \<equiv> case cfs of (c,fs) \<Rightarrow> (M c, image_mset Mp fs)" 
@@ -85,8 +85,8 @@ definition equivalent_fact_m :: "int \<times> int poly multiset \<Rightarrow> in
 definition unique_factorization_m :: "int poly \<Rightarrow> (int \<times> int poly multiset) \<Rightarrow> bool" where
   "unique_factorization_m f cfs = (Mf ` Collect (factorization_m f) = {Mf cfs})"
 
-lemma Mp_irreducible_m[simp]: "irreducible_m (Mp f) = irreducible_m f" 
-  unfolding irreducible_m_def by simp
+lemma Mp_irreducible\<^sub>d_m[simp]: "irreducible\<^sub>d_m (Mp f) = irreducible\<^sub>d_m f" 
+  unfolding irreducible\<^sub>d_m_def by simp
 
 lemma Mf_factorization_m[simp]: "factorization_m f (Mf cfs) = factorization_m f cfs" 
   unfolding factorization_m_def Mf_def
@@ -383,8 +383,8 @@ lemma dvd_MP_Rel[transfer_rule]: "(MP_Rel ===> MP_Rel ===> op =) (op dvdm) (op d
   unfolding dvdm_def[abs_def] dvd_def[abs_def]
   by (transfer_prover_start, transfer_step+, auto)
 
-lemma irreducible_MP_Rel [transfer_rule]: "(MP_Rel ===> op =) irreducible_m irreducible"
-  unfolding irreducible_m_def[abs_def] irreducible_def_lt[abs_def]
+lemma irreducible\<^sub>d_MP_Rel [transfer_rule]: "(MP_Rel ===> op =) irreducible\<^sub>d_m irreducible\<^sub>d"
+  unfolding irreducible\<^sub>d_m_def[abs_def] irreducible\<^sub>d_def_lt[abs_def]
   by (transfer_prover_start, transfer_step+, auto)
 
 lemma UNIV_M_Rel[transfer_rule]: "rel_set M_Rel {0..<m} UNIV" 
@@ -409,8 +409,8 @@ proof (intro allI impI, goal_cases)
   have tr[transfer_rule]: "M_Rel c C" "rel_mset MP_Rel fs Fs" by auto
   have eq: "(f =m smult c (prod_mset fs) = (F = smult C (prod_mset Fs)))" 
     by transfer_prover
-  have "set_mset Fs \<subseteq> Irr_Mon = (\<forall> x \<in># Fs. irreducible x \<and> monic x)" unfolding Irr_Mon_def by auto
-  also have "\<dots> = (\<forall>f\<in>#fs. irreducible_m f \<and> monic (Mp f))"
+  have "set_mset Fs \<subseteq> Irr_Mon = (\<forall> x \<in># Fs. irreducible\<^sub>d x \<and> monic x)" unfolding Irr_Mon_def by auto
+  also have "\<dots> = (\<forall>f\<in>#fs. irreducible\<^sub>d_m f \<and> monic (Mp f))"
   proof (rule sym, transfer_prover_start, transfer_step+)
     {
       fix f
@@ -418,8 +418,8 @@ proof (intro allI impI, goal_cases)
       have "monic (Mp f) \<longleftrightarrow> M (coeff f (degree_m f)) = M 1"
         unfolding Mp_coeff[symmetric] degree_m_def by simp
     }
-    thus "(\<forall>f\<in>#fs. irreducible_m f \<and> monic (Mp f)) = 
-      (\<forall>x\<in>#fs. irreducible_m x \<and> M (coeff x (degree_m x)) = M 1)" by auto
+    thus "(\<forall>f\<in>#fs. irreducible\<^sub>d_m f \<and> monic (Mp f)) = 
+      (\<forall>x\<in>#fs. irreducible\<^sub>d_m x \<and> M (coeff x (degree_m x)) = M 1)" by auto
   qed
   finally     
   show "factorization_m f cfs = factorization Irr_Mon F Cfs" unfolding cfs Cfs

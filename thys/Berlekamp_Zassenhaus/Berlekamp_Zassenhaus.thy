@@ -21,10 +21,8 @@ imports
   Suitable_Prime
   Degree_Bound
   Code_Abort_Gcd
-  Unique_Factorization_Poly
 begin
-hide_const (open) Missing_Polynomial.irreducible
-  
+
 context
 begin
 private partial_function (tailrec) find_exponent_main :: "int \<Rightarrow> int \<Rightarrow> nat \<Rightarrow> int \<Rightarrow> nat" where
@@ -82,11 +80,11 @@ definition berlekamp_zassenhaus_factorization :: "int poly \<Rightarrow> int pol
      (* reconstruct integer factors *) 
    in zassenhaus_reconstruction vs p k f)" 
   
-theorem berlekamp_zassenhaus_factorization: 
+theorem berlekamp_zassenhaus_factorization_irreducible\<^sub>d:  
   assumes res: "berlekamp_zassenhaus_factorization f = fs" 
   and sf: "square_free f"
   and deg: "degree f \<noteq> 0" 
-  shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. Missing_Polynomial.irreducible fi)" 
+  shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. irreducible\<^sub>d fi)" 
 proof -
   let ?lc = "lead_coeff f" 
   define p where "p \<equiv> suitable_prime_bz f" 
@@ -102,7 +100,6 @@ proof -
   define n where "n = find_exponent p (2 * abs ?lc * factor_bound f (degree_bound gs))" 
   note n = find_exponent[OF p1, of "2 * abs ?lc * factor_bound f (degree_bound gs)",
     folded n_def]
-  note cop = cop[unfolded coprime_iff_gcd_one]
   note bh = berlekamp_and_hensel_separated[OF prime cop sf refl berl n(2)]
   have db: "degree_bound (berlekamp_hensel p n f) = degree_bound gs" unfolding bh
     degree_bound_def max_factor_degree_def by simp
@@ -111,19 +108,19 @@ proof -
     by (rule zassenhaus_reconstruction[OF prime cop sf deg refl _ res], insert n db, auto)
 qed
 
-corollary berlekamp_zassenhaus_factorization_content_free:
+corollary berlekamp_zassenhaus_factorization_irreducible:
   assumes res: "berlekamp_zassenhaus_factorization f = fs" 
   and sf: "square_free f"
   and deg: "degree f \<noteq> 0"
   and cf: "content_free f"                        
   shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. irreducible fi \<and> degree fi > 0 \<and> content_free fi)" 
 proof (intro conjI ballI)
-  note * = berlekamp_zassenhaus_factorization[OF res sf deg]
+  note * = berlekamp_zassenhaus_factorization_irreducible\<^sub>d[OF res sf deg]
   from * show f: "f = prod_list fs" by auto
   fix fi assume fi: "fi \<in> set fs"
   with content_free_prod_list[OF cf[unfolded f]] show "content_free fi" by auto
   with * cf[unfolded f] fi
   show "irreducible fi" by (auto simp: irreducible_content_free_connect)
-  from * fi show "degree fi > 0" by (auto simp: Missing_Polynomial.irreducible_def)
+  from * fi show "degree fi > 0" by (auto simp: irreducible\<^sub>d_def)
 qed
 end

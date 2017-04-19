@@ -408,7 +408,7 @@ proof
   } note irr = this    
   have "factorization_m f (0,{# g #})" 
     unfolding factorization_m_def split using irr
-    by (auto simp: irreducible_m_def degree_m_def equivalent_def f mpg)
+    by (auto simp: irreducible\<^sub>d_m_def degree_m_def equivalent_def f mpg)
   moreover have "Mf (0,{# g #}) = (0,{# g #})" unfolding Mf_def by (auto simp: mpg, simp add: g_def)
   ultimately have fact2: "(0, {#g#}) \<in> Mf ` Collect (factorization_m f)" by force
   note [simp] = assms[unfolded unique_factorization_m_def]
@@ -940,16 +940,16 @@ lemma M_M_pow_is_M: "n \<noteq> 0 \<Longrightarrow> p > 1 \<Longrightarrow> poly
   = poly_mod.M p f" using Mp_Mp_pow_is_Mp[of n p "[:f:]"]
   by (metis coeff_pCons_0 poly_mod.Mp_coeff)
 
-lemma irreducible_lifting: assumes p1: "p > 1"
+lemma irreducible\<^sub>d_lifting: assumes p1: "p > 1"
   and n: "n \<noteq> 0" 
   and deg: "poly_mod.degree_m (p^n) f = poly_mod.degree_m p f" 
-  and irr: "poly_mod.irreducible_m p f"
-  shows "poly_mod.irreducible_m (p^n) f" 
+  and irr: "poly_mod.irreducible\<^sub>d_m p f"
+  shows "poly_mod.irreducible\<^sub>d_m (p^n) f" 
 proof -
   interpret poly_mod_2 "p^n" unfolding poly_mod_2_def using p1 n by simp
   interpret p: poly_mod_2 p unfolding poly_mod_2_def using p1 by simp
-  note irr = irr[unfolded p.irreducible_m_def]
-  show "irreducible_m f" unfolding irreducible_m_def dvdm_def
+  note irr = irr[unfolded p.irreducible\<^sub>d_m_def]
+  show "irreducible\<^sub>d_m f" unfolding irreducible\<^sub>d_m_def dvdm_def
   proof (intro conjI allI impI notI)
     from deg irr show "degree_m f = 0 \<Longrightarrow> False" by simp
     note pMp_Mp = Mp_Mp_pow_is_Mp[OF n p1]
@@ -1791,13 +1791,13 @@ lemma hensel_lifting: assumes
 shows "poly_mod.factorization_m (p^n) f (lead_coeff f, mset gs)" (* factorization mod p^n *)
     "sort (map degree fs) = sort (map degree gs)"                (* degrees stay the same *)
     "\<And> g. g \<in> set gs \<Longrightarrow> monic g \<and> poly_mod.Mp (p^n) g = g \<and>    (* monic and normalized *)
-      poly_mod.irreducible_m p g \<and>                               (* irreducibility even mod p *)
+      poly_mod.irreducible\<^sub>d_m p g \<and>                               (* irreducibility even mod p *)
       poly_mod.degree_m p g = degree g"   (* mod p does not change degree of g *)     
 proof -
   interpret poly_mod_2 p using prime unfolding poly_mod_2_def using prime_gt_1_int by fastforce
   interpret q: poly_mod_2 "p^n" using m1 n unfolding poly_mod_2_def by auto
   from fact have eq: "equivalent f (smult c (prod_list fs))"  
-    and mon_fs: "(\<forall>fi\<in>set fs. monic (Mp fi) \<and> irreducible_m fi)" 
+    and mon_fs: "(\<forall>fi\<in>set fs. monic (Mp fi) \<and> irreducible\<^sub>d_m fi)" 
     unfolding factorization_m_def by auto
   {
     fix f
@@ -1861,20 +1861,20 @@ proof -
     from g have "Mp g \<in># mset (map Mp gs)" by auto
     from this[unfolded gs_fs] obtain f where f: "f \<in> set fs" and fg: "equivalent f g" 
       unfolding equivalent_def by auto
-    from mon_fs f fs have irr_f: "irreducible_m f" and mon_f: "monic f" and Mp_f: "Mp f = f" by auto
+    from mon_fs f fs have irr_f: "irreducible\<^sub>d_m f" and mon_f: "monic f" and Mp_f: "Mp f = f" by auto
     have deg: "degree_m g = degree g" 
       by (rule degree_m_eq_monic[OF mon_g m1])
-    from irr_f fg have irr_g: "irreducible_m g" 
-      unfolding irreducible_m_def degree_m_def equivalent_def dvdm_def by simp
-    have "q.irreducible_m g"
-      by (rule irreducible_lifting[OF m1 n _ irr_g], unfold deg, rule q.degree_m_eq_monic[OF mon_g q.m1])
+    from irr_f fg have irr_g: "irreducible\<^sub>d_m g" 
+      unfolding irreducible\<^sub>d_m_def degree_m_def equivalent_def dvdm_def by simp
+    have "q.irreducible\<^sub>d_m g"
+      by (rule irreducible\<^sub>d_lifting[OF m1 n _ irr_g], unfold deg, rule q.degree_m_eq_monic[OF mon_g q.m1])
     note mon_g Mp_g deg irr_g this
   } note g = this
   {
     fix g
     assume "g \<in> set gs" 
     from g[OF this]
-    show "monic g \<and> q.Mp g = g \<and> irreducible_m g \<and> degree_m g = degree g" by auto
+    show "monic g \<and> q.Mp g = g \<and> irreducible\<^sub>d_m g \<and> degree_m g = degree g" by auto
   }
   show "sort (map degree fs) = sort (map degree gs)" 
   proof (rule sort_key_eq_sort_key)

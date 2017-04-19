@@ -614,7 +614,7 @@ proof -
     with xs have fg: "f = monom 1 (Suc m) * g" and dvd: "\<not> ?x dvd g" by auto
     from Suc have fs: "fs = (?x,m) # hs" unfolding fs by auto
     have degx: "degree ?x = 1" by code_simp 
-    from irreducible_square_free[OF linear_irreducible[OF this]] have sfx: "square_free ?x" by auto
+    from irreducible\<^sub>d_square_free[OF linear_irreducible\<^sub>d[OF this]] have sfx: "square_free ?x" by auto
     have fg: "f = ?x ^ n * g" unfolding fg Suc by (metis x_pow_n)
     have eq0: "?x ^ n * g = 0 \<longleftrightarrow> g = 0" by simp
     note sf = square_free_factorizationD[OF sff(1)]

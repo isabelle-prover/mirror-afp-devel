@@ -362,7 +362,7 @@ end
 lemma kronecker_factorization:
   "kronecker_factorization p = Some q \<Longrightarrow> 
     degree q \<ge> 1 \<and> degree q < degree p \<and> q dvd p"
-  "kronecker_factorization p = None \<Longrightarrow> degree p \<ge> 1 \<Longrightarrow> irreducible p" 
+  "kronecker_factorization p = None \<Longrightarrow> degree p \<ge> 1 \<Longrightarrow> irreducible\<^sub>d p" 
 proof -
   note d = kronecker_factorization_def
   {
@@ -371,23 +371,23 @@ proof -
     show "degree q \<ge> 1 \<and> degree q < degree p \<and> q dvd p" by auto linarith
   }
   assume kf: "kronecker_factorization p = None" and deg: "degree p \<ge> 1"
-  show "irreducible p"
+  show "irreducible\<^sub>d p"
   proof (cases "degree p = 1")
     case True 
-    thus ?thesis by (rule linear_irreducible)
+    thus ?thesis by (rule linear_irreducible\<^sub>d)
   next
     case False
     with deg have "degree p \<ge> 2" by auto
     with kronecker_factorization_main_complete[OF divisors_fun_int divisors_pos_fun_int kf[unfolded d] this]
     show ?thesis
-      by (intro irreducibleI2, auto)
+      by (intro irreducible\<^sub>dI2, auto)
   qed
 qed
 
 lemma kronecker_factorization_rat:
   "kronecker_factorization_rat p = Some q \<Longrightarrow> 
     degree q \<ge> 1 \<and> degree q < degree p \<and> q dvd p"
-  "kronecker_factorization_rat p = None \<Longrightarrow> degree p \<ge> 1 \<Longrightarrow> irreducible p" 
+  "kronecker_factorization_rat p = None \<Longrightarrow> degree p \<ge> 1 \<Longrightarrow> irreducible\<^sub>d p" 
 proof -
   note d = kronecker_factorization_rat_def
   {
@@ -396,16 +396,16 @@ proof -
     show "degree q \<ge> 1 \<and> degree q < degree p \<and> q dvd p" by auto linarith
   }
   assume kf: "kronecker_factorization_rat p = None" and deg: "degree p \<ge> 1"
-  show "irreducible p"
+  show "irreducible\<^sub>d p"
   proof (cases "degree p = 1")
     case True 
-    thus ?thesis by (rule linear_irreducible)
+    thus ?thesis by (rule linear_irreducible\<^sub>d)
   next
     case False
     with deg have "degree p \<ge> 2" by auto
     with kronecker_factorization_rat_main_complete[OF divisors_fun_int divisors_pos_fun_int kf[unfolded d] this]
     show ?thesis
-      by (intro irreducibleI2, auto)
+      by (intro irreducible\<^sub>dI2, auto)
   qed
 qed
 

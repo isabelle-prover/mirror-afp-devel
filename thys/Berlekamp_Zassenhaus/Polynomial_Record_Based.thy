@@ -628,8 +628,8 @@ lemma poly_rel_dvd[transfer_rule]: "(poly_rel ===> poly_rel ===> op =) (dvd_poly
   unfolding dvd_poly_i_def[abs_def] dvd_def[abs_def] 
   by (transfer_prover_start, transfer_step+, auto)
 
-lemma poly_rel_irreducible[transfer_rule]: "(poly_rel ===> op =) (irreducible_i ops) irreducible"
-  unfolding irreducible_i_def[abs_def] irreducible_def[abs_def] 
+lemma poly_rel_irreducible[transfer_rule]: "(poly_rel ===> op =) (irreducible_i ops) irreducible\<^sub>d"
+  unfolding irreducible_i_def[abs_def] irreducible\<^sub>d_def[abs_def] 
   by (transfer_prover_start, transfer_step+, auto)
 
 lemma poly_rel_monic[transfer_rule]: "(poly_rel ===> op =) (monic_i ops) monic"

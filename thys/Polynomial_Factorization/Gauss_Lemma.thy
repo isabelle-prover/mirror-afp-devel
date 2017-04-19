@@ -192,19 +192,19 @@ next
   thus dvd: "?n q dvd p" unfolding dvd_def by blast
 qed
 
-lemma irreducible_smult_int[simp]: fixes c :: int assumes c: "c \<noteq> 0"
-  shows "irreducible (smult c p) = irreducible p" (is "?l = ?r")
+lemma irreducible\<^sub>d_smult_int[simp]: fixes c :: int assumes c: "c \<noteq> 0"
+  shows "irreducible\<^sub>d (smult c p) = irreducible\<^sub>d p" (is "?l = ?r")
 proof
   assume ?l
-  thus ?r by (rule irreducible_smultI[OF _ c])
+  thus ?r by (rule irreducible\<^sub>d_smultI[OF _ c])
 next
   let ?cp = "smult c p"
   assume ?r
-  from irreducibleD[OF this]
+  from irreducible\<^sub>dD[OF this]
   have dp: "degree p \<noteq> 0" and p0: "p \<noteq> 0" 
     and irr: "\<And> q. degree q \<noteq> 0 \<Longrightarrow> degree q < degree p \<Longrightarrow> \<not> q dvd p" by auto
   show ?l
-  proof (rule irreducibleI)
+  proof (rule irreducible\<^sub>dI)
     from dp c show "degree ?cp \<noteq> 0" by auto 
     fix q :: "int poly"
     let ?nq = "primitive_part q"
@@ -220,11 +220,11 @@ next
   qed
 qed
 
-lemma irreducible_primitive_part[simp]: "irreducible (primitive_part (p :: int poly)) =
-  irreducible p"
+lemma irreducible\<^sub>d_primitive_part[simp]: "irreducible\<^sub>d (primitive_part (p :: int poly)) =
+  irreducible\<^sub>d p"
 proof (cases "p = 0")
   case False
-  thus ?thesis using irreducible_smult_int[of "content p" "primitive_part p",
+  thus ?thesis using irreducible\<^sub>d_smult_int[of "content p" "primitive_part p",
     unfolded content_times_primitive_part[of p]] by auto
 qed simp
 
@@ -352,11 +352,11 @@ qed
 
 text \<open>A polynomial with integer coefficients is
    irreducible over the rationals, if it is irreducible over the integers.\<close>
-theorem irreducible_int_rat: fixes p :: "int poly" 
-  assumes p: "irreducible p"
-  shows "irreducible (map_poly rat_of_int p)"
-proof (rule irreducibleI)
-  from irreducibleD[OF p] have p: "degree p \<noteq> 0" and 
+theorem irreducible\<^sub>d_int_rat: fixes p :: "int poly" 
+  assumes p: "irreducible\<^sub>d p"
+  shows "irreducible\<^sub>d (map_poly rat_of_int p)"
+proof (rule irreducible\<^sub>dI)
+  from irreducible\<^sub>dD[OF p] have p: "degree p \<noteq> 0" and 
     irr: "\<And> q. degree q \<noteq> 0 \<Longrightarrow> degree q < degree p \<Longrightarrow> \<not> q dvd p" by auto
   let ?r = "rat_of_int"
   let ?rp = "map_poly ?r"
@@ -374,15 +374,15 @@ proof (rule irreducibleI)
   qed
 qed
 
-corollary irreducible_rat_to_normalized_int_poly: 
+corollary irreducible\<^sub>d_rat_to_normalized_int_poly: 
   assumes rp: "rat_to_normalized_int_poly rp = (a, ip)"
-  and ip: "irreducible ip"
-  shows "irreducible rp"
+  and ip: "irreducible\<^sub>d ip"
+  shows "irreducible\<^sub>d rp"
 proof -
   from rat_to_normalized_int_poly[OF rp] 
   have rp: "rp = smult a (map_poly rat_of_int ip)" and a: "a \<noteq> 0" by auto
-  from irreducible_int_rat[OF ip] show ?thesis
-    unfolding rp irreducible_smult[OF a] .
+  from irreducible\<^sub>d_int_rat[OF ip] show ?thesis
+    unfolding rp irreducible\<^sub>d_smult[OF a] .
 qed
 
 lemma dvd_content_dvd: assumes dvd: "content f dvd content g" "primitive_part f dvd primitive_part g"

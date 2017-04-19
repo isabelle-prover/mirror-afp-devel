@@ -12,19 +12,19 @@ imports
 begin
 
 definition factors_of_same_degree :: "nat \<Rightarrow> 'a :: field poly \<Rightarrow> bool" where
-  "factors_of_same_degree i f = (i \<noteq> 0 \<and> degree f \<noteq> 0 \<and> monic f \<and> (\<forall> g. irreducible g \<longrightarrow> g dvd f \<longrightarrow> degree g = i))" 
+  "factors_of_same_degree i f = (i \<noteq> 0 \<and> degree f \<noteq> 0 \<and> monic f \<and> (\<forall> g. irreducible\<^sub>d g \<longrightarrow> g dvd f \<longrightarrow> degree g = i))" 
 
 lemma factors_of_same_degreeD: assumes "factors_of_same_degree i f"
-  shows "i \<noteq> 0" "degree f \<noteq> 0" "monic f" "g dvd f \<Longrightarrow> irreducible g = (degree g = i)" 
+  shows "i \<noteq> 0" "degree f \<noteq> 0" "monic f" "g dvd f \<Longrightarrow> irreducible\<^sub>d g = (degree g = i)" 
 proof -
   note * = assms[unfolded factors_of_same_degree_def]
   show i: "i \<noteq> 0" and f: "degree f \<noteq> 0" "monic f" using * by auto
   assume gf: "g dvd f" 
-  with * have "irreducible g \<Longrightarrow> degree g = i" by auto
+  with * have "irreducible\<^sub>d g \<Longrightarrow> degree g = i" by auto
   moreover
   {
-    assume **: "degree g = i" "\<not> irreducible g" 
-    with irreducible_factor[of g] i obtain h1 h2 where irr: "irreducible h1" and gh: "g = h1 * h2" 
+    assume **: "degree g = i" "\<not> irreducible\<^sub>d g" 
+    with irreducible\<^sub>d_factor[of g] i obtain h1 h2 where irr: "irreducible\<^sub>d h1" and gh: "g = h1 * h2" 
       and deg_h2: "degree h2 < degree g" by auto
     from ** i have g0: "g \<noteq> 0" by auto
     from gf gh g0 have "h1 dvd f" using dvd_mult_left by blast
@@ -34,15 +34,15 @@ proof -
     with **(1) deg_h have "degree h2 = 0" by auto
     from degree0_coeffs[OF this] obtain c where h2: "h2 = [:c:]" by auto
     with gh g0 have g: "g = smult c h1" "c \<noteq> 0" by auto
-    with irr **(2) irreducible_smult[of c h1] have False by auto
+    with irr **(2) irreducible\<^sub>d_smult[of c h1] have False by auto
   }
-  ultimately show "irreducible g = (degree g = i)" by auto
+  ultimately show "irreducible\<^sub>d g = (degree g = i)" by auto
 qed
   
 definition "exercise_16_finished = False" 
 (* Exercise 16 in Knuth, pages 457 and 682 *)
 lemma degree_divisor: assumes exercise_16_finished 
-  and "irreducible (f :: 'a :: prime_card mod_ring poly)" "degree f = d" 
+  and "irreducible\<^sub>d (f :: 'a :: prime_card mod_ring poly)" "degree f = d" 
   shows "f dvd (monom 1 1)^(CARD('a)^d) - monom 1 1" 
   and "1 \<le> c \<Longrightarrow> c < d \<Longrightarrow> \<not> f dvd (monom 1 1)^(CARD('a)^c) - monom 1 1"
     using assms unfolding exercise_16_finished_def by auto
@@ -83,8 +83,8 @@ lemma dist_degree_factorize_main: assumes
   sf: "square_free u" and  
   mon: "monic u" and
   prod: "u = v * prod_list (map snd res)" and
-  deg: "\<And> f. irreducible f \<Longrightarrow> f dvd v \<Longrightarrow> degree f > d" and
-  res: "\<And> i f. (i,f) \<in> set res \<Longrightarrow> i \<noteq> 0 \<and> degree f \<noteq> 0 \<and> monic f \<and> (\<forall> g. irreducible g \<longrightarrow> g dvd f \<longrightarrow> degree g = i)" 
+  deg: "\<And> f. irreducible\<^sub>d f \<Longrightarrow> f dvd v \<Longrightarrow> degree f > d" and
+  res: "\<And> i f. (i,f) \<in> set res \<Longrightarrow> i \<noteq> 0 \<and> degree f \<noteq> 0 \<and> monic f \<and> (\<forall> g. irreducible\<^sub>d g \<longrightarrow> g dvd f \<longrightarrow> degree g = i)" 
 shows "u = prod_list (map snd facts) \<and> (\<forall> i f. (i,f) \<in> set facts \<longrightarrow> factors_of_same_degree i f)" 
   using dist w prod res deg unfolding factors_of_same_degree_def
 proof (induct v w d res rule: dist_degree_factorize_main.induct)
@@ -114,7 +114,7 @@ proof (induct v w d res rule: dist_degree_factorize_main.induct)
       show ?thesis 
       proof (intro allI conjI impI)
         fix i f g
-        assume *: "(i,f) \<in> set facts" "irreducible g" "g dvd f"          
+        assume *: "(i,f) \<in> set facts" "irreducible\<^sub>d g" "g dvd f"          
         show "degree g = i"
         proof (cases "(i,f) \<in> set res")
           case True
@@ -136,9 +136,9 @@ proof (induct v w d res rule: dist_degree_factorize_main.induct)
           moreover
           {
             assume deg_h0: "degree h \<noteq> 0" 
-            hence "\<exists> k. irreducible k \<and> k dvd h" 
-              using dvd_triv_left irreducible_factor by blast
-            then obtain k where irr: "irreducible k" and "k dvd h" by auto
+            hence "\<exists> k. irreducible\<^sub>d k \<and> k dvd h" 
+              using dvd_triv_left irreducible\<^sub>d_factor by blast
+            then obtain k where irr: "irreducible\<^sub>d k" and "k dvd h" by auto
             from dvd_trans[OF this(2), of v] vgh have "k dvd v" by auto
             from fact[OF irr this] have dk: "d < degree k" .
             from divides_degree[OF \<open>k dvd h\<close>] deg_h0 have "degree k \<le> degree h" by auto
@@ -169,7 +169,7 @@ proof (induct v w d res rule: dist_degree_factorize_main.induct)
         by (metis dvd_def dvd_div_mult_self)
       {
         fix f
-        assume irr: "irreducible f" and fv: "f dvd v" and "degree f = ?d" 
+        assume irr: "irreducible\<^sub>d f" and fv: "f dvd v" and "degree f = ?d" 
         from degree_divisor(1)[OF ex16 this(1,3)]
         have "f dvd ?x ^ ?p ^ ?d - ?x" by auto
         hence "f dvd (?x ^ ?p ^ ?d - ?x) mod v" using fv by (rule dvd_mod)
@@ -186,14 +186,14 @@ proof (induct v w d res rule: dist_degree_factorize_main.induct)
         show ?thesis 
         proof (rule IH(1)[OF True dist ww u res])
           fix f
-          assume irr: "irreducible f" and fv: "f dvd v" 
+          assume irr: "irreducible\<^sub>d f" and fv: "f dvd v" 
           from fact[OF this] have "d < degree f" .
           moreover have "degree f \<noteq> ?d"
           proof
             assume "degree f = ?d" 
             from divides_degree[OF deg_d_dvd_g[OF irr fv this]] mon_v
             have "degree f \<le> degree ?g" by auto
-            with irr have "degree ?g \<noteq> 0" unfolding irreducible_def by auto
+            with irr have "degree ?g \<noteq> 0" unfolding irreducible\<^sub>d_def by auto
             with True show False by auto
           qed
           ultimately show "?d < degree f" by auto
@@ -222,7 +222,7 @@ proof (induct v w d res rule: dist_degree_factorize_main.induct)
             show ?thesis unfolding id 
             proof (intro conjI impI allI)
               fix g
-              assume *: "irreducible g" "g dvd ?g"
+              assume *: "irreducible\<^sub>d g" "g dvd ?g"
               hence gv: "g dvd v" using dvd_trans[of g ?g v] by simp
               from fact[OF *(1) this] have dg: "d < degree g" .
               {
@@ -282,7 +282,7 @@ proof -
     hence *: "monom 1 (Suc 0) = monom 1 (Suc 0) mod f"
       by (simp add: degree_monom_eq mod_poly_less)
     show ?thesis
-      by (rule dist_degree_factorize_main[OF ex16 dist _ u mon], insert *, auto simp: irreducible_def)
+      by (rule dist_degree_factorize_main[OF ex16 dist _ u mon], insert *, auto simp: irreducible\<^sub>d_def)
   next
     case True
     hence "degree f = 0 \<or> degree f = 1" by auto
@@ -299,8 +299,8 @@ proof -
       show ?thesis unfolding facts factors_of_same_degree_def
       proof (intro conjI allI impI; clarsimp)
         fix g
-        assume "irreducible g" "g dvd f" 
-        thus "degree g = Suc 0" using deg divides_degree[of g f] by (auto simp: irreducible_def)
+        assume "irreducible\<^sub>d g" "g dvd f" 
+        thus "degree g = Suc 0" using deg divides_degree[of g f] by (auto simp: irreducible\<^sub>d_def)
       qed (insert mon deg, auto)
     qed
   qed
