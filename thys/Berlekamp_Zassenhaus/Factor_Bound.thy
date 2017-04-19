@@ -9,6 +9,7 @@ theory Factor_Bound
 imports 
   Mahler_Measure
   "../Polynomial_Factorization/Gauss_Lemma"
+  "../Subresultants/Coeff_Int" 
 begin
 
 lemma binomial_mono_left: "n \<le> N \<Longrightarrow> n choose k \<le> N choose k" 
@@ -19,26 +20,12 @@ next
   case (Suc n k N) note IH = this
   show ?case
   proof (cases k)
-    case 0
-    thus ?thesis by auto
-  next
     case (Suc kk)
     from IH obtain NN where N: "N = Suc NN" and le: "n \<le> NN" by (cases N, auto)     
     show ?thesis unfolding N Suc using IH(1)[OF le] 
       by (simp add: add_le_mono)
-  qed
+  qed auto
 qed
-
-
-
-definition coeff_int where "coeff_int p i = (if i<0 then 0 else coeff p (nat i))"
-lemma coeff_int[simp]: "coeff_int p n = coeff p n"  unfolding coeff_int_def by auto
-
-lemma coeff_int_oprs[simp]:
-  "coeff_int (a - b) i = coeff_int a i - coeff_int b i"
-  "coeff_int (pCons 0 b) i = coeff_int b (i - 1)"
-  "coeff_int (smult v r) i = v * coeff_int r i"
-  by(auto simp:Nitpick.case_nat_unfold coeff_int_def coeff_pCons nat_diff_distrib')
 
 definition choose_int where "choose_int m n = (if n < 0 then 0 else m choose (nat n))"
 

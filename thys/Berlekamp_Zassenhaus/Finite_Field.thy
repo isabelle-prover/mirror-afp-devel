@@ -15,7 +15,7 @@ imports
   "~~/src/HOL/Computational_Algebra/Primes"
   "~~/src/HOL/Number_Theory/Residues"
   "../Containers/Set_Impl"
-  Binary_Exponentiation
+  "../Subresultants/Binary_Exponentiation"
 begin
 
 typedef ('a::finite) mod_ring = "{0..<int CARD('a)}" by auto

@@ -15,7 +15,8 @@ imports
   Resultant_Prelim
   Dichotomous_Lazard
   Binary_Exponentiation
-  More_Homomorphisms 
+  More_Homomorphisms
+  Coeff_Int
 begin
   
 subsection \<open>Algorithm\<close>
@@ -229,79 +230,10 @@ lemma divide_prod_assoc: "x / (y * z :: 'a :: field) = x / y / z" by (simp add: 
 lemma minus_1_inverse_pow[simp]: "x / (-1)^n = (x :: 'a :: field) * (-1)^n"
   by (simp add: minus_1_power_even)
 
-
-(* part on icoeff, i.e., coeff with integer index *)
-
-definition icoeff :: "'a :: zero poly \<Rightarrow> int \<Rightarrow> 'a" where
-  "icoeff p i = (if i < 0 then 0 else coeff p (nat i))"
-
-lemma icoeff_eq_0: "i < 0 \<or> i > int (degree p) \<Longrightarrow> icoeff p i = 0"
-  unfolding icoeff_def
-  by (cases "i < 0", auto intro: coeff_eq_0)
-
-lemma icoeff_smult[simp]: "icoeff (smult c p) i = c * icoeff p i"
-  unfolding icoeff_def by simp
-
-lemma icoeff_signof_mult: "icoeff (signof x * f) i = signof x * (icoeff f i)"
-  unfolding signof_def by (auto simp: icoeff_def)
-
-lemma icoeff_sum: "icoeff (sum p A) i = (\<Sum>x\<in>A. icoeff (p x) i)"
-  using coeff_sum[of p A "nat i"] unfolding icoeff_def
-  by (cases "i < 0", auto)
-
-lemma icoeff_0[simp]: "icoeff f 0 = coeff f 0" unfolding icoeff_def by simp
-
-lemma icoeff_monom_mult: "icoeff (monom a d * f) i = (a * icoeff f (i - d))"
-proof (cases "i < 0")
-  case True
-  thus ?thesis unfolding icoeff_def by simp
-next
-  case False
-  hence "i \<ge> 0" by auto
-  then obtain j where i: "i = int j" by (rule nonneg_eq_int)
-  show ?thesis
-  proof (cases "i \<ge> d")
-    case True
-    with i have "nat (int j - int d) = j - d" by auto
-    with coeff_monom_mult[of a] show ?thesis unfolding icoeff_def i
-      by simp
-  next
-    case False
-    thus ?thesis unfolding i by (simp add: icoeff_def coeff_monom_mult)
-  qed
-qed
-
-lemma coeff_prod_const: assumes "finite xs" and "y \<notin> xs"
-  and "\<And> x. x \<in> xs \<Longrightarrow> degree (f x) = 0"
-shows "coeff (prod f (insert y xs)) i = prod (\<lambda> x. coeff (f x) 0) xs * coeff (f y) i"
-  using assms
-proof (induct xs rule: finite_induct)
-  case (insert x xs)
-  from insert(2,4) have id: "insert y (insert x xs) - {x} = insert y xs" by auto
-  have "prod f (insert y (insert x xs)) = f x * prod f (insert y xs)"
-    by (subst prod.remove[of _ x], insert insert(1,2) id, auto)
-  hence "coeff (prod f (insert y (insert x xs))) i = coeff (f x * prod f (insert y xs)) i" by simp
-  also have "\<dots> = coeff (f x) 0 * (coeff (prod f (insert y xs)) i)"
-  proof -
-    from insert(5)[of x] degree0_coeffs[of "f x"] obtain c where fx: "f x = [: c :]" by auto
-    show ?thesis unfolding fx by auto
-  qed
-  also have "(coeff (prod f (insert y xs)) i) = (\<Prod>x\<in>xs. coeff (f x) 0) * coeff (f y) i" using insert by auto
-  also have "coeff (f x) 0 * \<dots> = prod (\<lambda> x. coeff (f x) 0) (insert x xs) * coeff (f y) i"
-    by (subst prod.insert_remove, insert insert(1,2,4), auto simp: ac_simps)
-  finally show ?case .
-qed simp
-
-lemma icoeff_prod_const: assumes "finite xs" and "y \<notin> xs"
-  and "\<And> x. x \<in> xs \<Longrightarrow> degree (f x) = 0"
-shows "icoeff (prod f (insert y xs)) i = prod (\<lambda> x. icoeff (f x) 0) xs * icoeff (f y) i"
-  using coeff_prod_const[OF assms] unfolding icoeff_def by (cases "i < 0", auto)
-
-
 (* part on subresultants *)
 definition subresultant_mat :: "nat \<Rightarrow> 'a :: comm_ring_1 poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly mat" where
   "subresultant_mat J F G = (let
-     dg = degree G; df = degree F; f = icoeff F; g = icoeff G; n = (df - J) + (dg - J)
+     dg = degree G; df = degree F; f = coeff_int F; g = coeff_int G; n = (df - J) + (dg - J)
      in mat n n (\<lambda> (i,j). if j < dg - J then
        if i = n - 1 then monom 1 (dg - J - 1 - j) * F else [: f (df - int i + int j) :]
       else let jj = j - (dg - J) in
@@ -315,7 +247,7 @@ lemma subresultant_mat_dim[simp]:
 
 definition subresultant'_mat :: "nat \<Rightarrow> nat \<Rightarrow> 'a :: comm_ring_1 poly \<Rightarrow> 'a poly \<Rightarrow> 'a mat" where
   "subresultant'_mat J l F G = (let
-     \<gamma> = degree G; \<phi> = degree F; f = icoeff F; g = icoeff G; n = (\<phi> - J) + (\<gamma> - J)
+     \<gamma> = degree G; \<phi> = degree F; f = coeff_int F; g = coeff_int G; n = (\<phi> - J) + (\<gamma> - J)
      in mat n n (\<lambda> (i,j). if j < \<gamma> - J then
        if i = n - 1 then (f (l - int (\<gamma> - J - 1) + int j)) else (f (\<phi> - int i + int j)) 
       else let jj = j - (\<gamma> - J) in
@@ -326,9 +258,9 @@ lemma subresultant_mat_index:
   assumes i: "i < (degree F - J) + (degree G - J)" and j: "j < (degree F - J) + (degree G - J)"
   shows "subresultant_mat J F G $$ (i,j) =
     (if j < degree G - J then
-       if i = (degree F - J) + (degree G - J) - 1 then monom 1 (degree G - J - 1 - j) * F else ([: icoeff F ( degree F - int i + int j) :])
+       if i = (degree F - J) + (degree G - J) - 1 then monom 1 (degree G - J - 1 - j) * F else ([: coeff_int F ( degree F - int i + int j) :])
       else let jj = j - (degree G - J) in
-       if i = (degree F - J) + (degree G - J) - 1 then monom 1 ( degree F - J - 1 - jj) * G else ([: icoeff G (degree G - int i + int jj) :]))"
+       if i = (degree F - J) + (degree G - J) - 1 then monom 1 ( degree F - J - 1 - jj) * G else ([: coeff_int G (degree G - int i + int jj) :]))"
   unfolding subresultant_mat_def Let_def
   unfolding mat_index_mat(1)[OF i j] split by auto
 
@@ -440,10 +372,10 @@ next
     fix p
     assume p: "p permutes {0..<n}"
     from n p have n1: "n - 1 < n" "p (n - 1) < n" by auto
-    have "icoeff (\<Prod>i = 0..<n. M $$ (i, p i)) l =
-      (\<Prod>i = 0 ..< (n - 1). icoeff (M $$ (i, p i)) 0) * icoeff (M $$ (n - 1, p (n - 1))) l"
+    have "coeff_int (\<Prod>i = 0..<n. M $$ (i, p i)) l =
+      (\<Prod>i = 0 ..< (n - 1). coeff_int (M $$ (i, p i)) 0) * coeff_int (M $$ (n - 1, p (n - 1))) l"
       unfolding id
-    proof (rule icoeff_prod_const, (auto)[2])
+    proof (rule coeff_int_prod_const, (auto)[2])
       fix i
       assume "i \<in> {0 ..< n - 1}"
       with p have i: "i \<noteq> n - 1" and "i < n" "p i < n" by (auto simp: n_def)
@@ -451,7 +383,7 @@ next
       show "degree (M $$ (i, p i)) = 0" unfolding id Let_def using i
         by (simp split: if_splits)
     qed
-    also have "(\<Prod>i = 0 ..< (n - 1). icoeff (M $$ (i, p i)) 0)
+    also have "(\<Prod>i = 0 ..< (n - 1). coeff_int (M $$ (i, p i)) 0)
        = (\<Prod>i = 0 ..< (n - 1). L $$ (i, p i))"
     proof (rule prod.cong[OF refl])
       fix i
@@ -459,23 +391,23 @@ next
       with p have i: "i \<noteq> n - 1" and ii: "i < n" "p i < n" by (auto simp: n_def)
       note id = subresultant_mat_index[OF this(2-3)[unfolded n_def], folded M_def n_def]
       note id' = L_def[unfolded subresultant'_mat_def Let_def, folded n_def] mat_index_mat[OF ii]
-      show "icoeff (M $$ (i, p i)) 0 = L $$ (i, p i)"
+      show "coeff_int (M $$ (i, p i)) 0 = L $$ (i, p i)"
         unfolding id id' split using i proof (simp add: if_splits Let_def)
       qed
     qed
-    also have "icoeff (M $$ (n - 1, p (n - 1))) l =
+    also have "coeff_int (M $$ (n - 1, p (n - 1))) l =
       (if p (n - 1) < degree G - J then
-         icoeff (monom 1 (degree G - J - 1 - p (n - 1)) * F) l
-         else icoeff (monom 1 (degree F - J - 1 - (p (n - 1) - (degree G - J))) * G) l)"
+         coeff_int (monom 1 (degree G - J - 1 - p (n - 1)) * F) l
+         else coeff_int (monom 1 (degree F - J - 1 - (p (n - 1) - (degree G - J))) * G) l)"
       using subresultant_mat_index[OF n1[unfolded n_def], folded M_def n_def, unfolded idn if_True Let_def]
       by simp
     also have "\<dots> = (if p (n - 1) < degree G - J
-      then icoeff F (int l - int (degree G - J - 1 - p (n - 1)))
-      else icoeff G (int l - int (degree F - J - 1 - (p (n - 1) - (degree G - J)))))"
-        unfolding icoeff_monom_mult by simp
+      then coeff_int F (int l - int (degree G - J - 1 - p (n - 1)))
+      else coeff_int G (int l - int (degree F - J - 1 - (p (n - 1) - (degree G - J)))))"
+        unfolding coeff_int_monom_mult by simp
     also have "\<dots> = (if p (n - 1) < degree G - J
-      then icoeff F (int l - int (degree G - J - 1) + p (n - 1))
-      else icoeff G (int l - int (degree F - J - 1) + (p (n - 1) - (degree G - J))))"
+      then coeff_int F (int l - int (degree G - J - 1) + p (n - 1))
+      else coeff_int G (int l - int (degree F - J - 1) + (p (n - 1) - (degree G - J))))"
     proof (cases "p (n - 1) < degree G - J")
       case True
       hence "int (degree G - J - 1 - p (n - 1)) = int (degree G - J - 1) - p (n - 1)" by simp
@@ -495,12 +427,12 @@ next
       unfolding L_def subresultant'_mat_def Let_def n_def[symmetric] using n1 by simp
     also have "(\<Prod>i = 0..<n - 1. L $$ (i, p i)) * \<dots> = (\<Prod>i = 0..<n. L $$ (i, p i))"
       unfolding id by simp
-    finally have "icoeff (\<Prod>i = 0..<n. M $$ (i, p i)) (int l) = (\<Prod>i = 0..<n. L $$ (i, p i))" .
+    finally have "coeff_int (\<Prod>i = 0..<n. M $$ (i, p i)) (int l) = (\<Prod>i = 0..<n. L $$ (i, p i))" .
   } note * = this
-  have "icoeff (subresultant J F G) l =
-    (\<Sum>p\<in>{p. p permutes {0..<n}}. signof p * icoeff (\<Prod>i = 0..<n. M $$ (i, p i)) l)"
+  have "coeff_int (subresultant J F G) l =
+    (\<Sum>p\<in>{p. p permutes {0..<n}}. signof p * coeff_int (\<Prod>i = 0..<n. M $$ (i, p i)) l)"
     unfolding subresultant_def det_def subresultant_mat_dim idn if_True n_def[symmetric] M_def
-      icoeff_sum icoeff_signof_mult by simp
+      coeff_int_sum coeff_int_signof_mult by simp
   also have "\<dots> = (\<Sum>p\<in>{p. p permutes {0..<n}}. signof p * (\<Prod>i = 0..<n. L $$ (i, p i)))"
     by (rule sum.cong[OF refl], insert *, simp)
   also have "\<dots> = det L"
@@ -510,7 +442,7 @@ next
       by auto
     show ?thesis unfolding det_def L_def id by simp
   qed
-  finally show ?thesis unfolding L_def icoeff_def using False by auto
+  finally show ?thesis unfolding L_def coeff_int_def using False by auto
 qed
 
 lemma subresultant'_zero_ge: assumes "(degree f - J) + (degree g - J) \<noteq> 0" and "k \<ge> degree f + (degree g - J)"
@@ -521,15 +453,15 @@ proof -
   obtain ddf where ddf: "degree f = ddf" by simp
   note * = assms(2)[unfolded ddf dg] assms(1)
   define M where "M = (\<lambda> i j. if j < dg
-            then icoeff f (degree f - int i + int j)
-            else icoeff g (degree g - int i + int (j - dg)))"
+            then coeff_int f (degree f - int i + int j)
+            else coeff_int g (degree g - int i + int (j - dg)))"
   let ?M = "subresultant'_mat J k f g"
   have M: "det ?M = det (mat (df + dg) (df + dg)
     (\<lambda>(i, j).
         if i = df + dg - 1 then
           if j < dg
-            then icoeff f (int k - int (dg - 1) + int j)
-            else icoeff g (int k - int (df - 1) + int (j - dg))
+            then coeff_int f (int k - int (dg - 1) + int j)
+            else coeff_int g (int k - int (df - 1) + int (j - dg))
         else M i j))" (is "_ = det ?N")
     unfolding subresultant'_mat_def Let_def M_def
     by (rule arg_cong[of _ _ det], rule mat_eqI, auto simp: df dg)
@@ -538,7 +470,7 @@ proof -
         if i = df + dg - 1 then 0
         else M i j)"
     by (rule mat_cong[OF refl refl], unfold split, rule if_cong[OF refl _ refl],
-      auto simp add: icoeff_def df dg ddf intro!: coeff_eq_0, insert *(1),
+      auto simp add: coeff_int_def df dg ddf intro!: coeff_eq_0, insert *(1),
       unfold ddf[symmetric] dg[symmetric] df[symmetric], linarith+)
   also have "\<dots> = mat\<^sub>r (df + dg) (df + dg) (\<lambda>i. if i = df + dg - 1 then \<zero>\<^sub>v (df + dg) else
     vec (df + dg) (\<lambda> j. M i j))"
@@ -557,11 +489,11 @@ proof -
   obtain df where df: "df = degree f - J" by simp
   note * = assms[folded df dg]
   define M where "M = (\<lambda> i j. if j < dg
-            then icoeff f (degree f - int i + int j)
-            else icoeff g (degree g - int i + int (j - dg)))"
+            then coeff_int f (degree f - int i + int j)
+            else coeff_int g (degree g - int i + int (j - dg)))"
   define N where "N = (\<lambda> j. if j < dg
-            then icoeff f (int k - int (dg - 1) + int j)
-            else icoeff g (int k - int (df - 1) + int (j - dg)))"
+            then coeff_int f (int k - int (dg - 1) + int j)
+            else coeff_int g (int k - int (df - 1) + int (j - dg)))"
   let ?M = "subresultant'_mat J k f g"
   have M: "?M = mat (df + dg) (df + dg)
     (\<lambda>(i, j).
@@ -575,7 +507,7 @@ proof -
         else if i = degree f + dg - 1 - k then N j else M i j)" (is "_ = ?N")
     unfolding N_def
     by (rule mat_cong[OF refl refl], unfold split, rule if_cong[OF refl refl], unfold M_def N_def,
-      insert J k, auto simp: df dg intro!: arg_cong[of _ _ "icoeff _"])
+      insert J k, auto simp: df dg intro!: arg_cong[of _ _ "coeff_int _"])
   finally have id: "?M = ?N" .
   have deg: "degree f + dg - 1 - k < df + dg" "df + dg - 1 < df + dg"
     using k J unfolding df dg by auto
@@ -599,17 +531,17 @@ proof -
     case ij: (1 i j)
     have "?M $$ (i,j) = (if i < dg
          then if j = df + dg - 1
-              then icoeff f (- int (dg - 1) + int i)
-              else icoeff f (int df - int j + int i)
+              then coeff_int f (- int (dg - 1) + int i)
+              else coeff_int f (int df - int j + int i)
          else if j = df + dg - 1
-              then icoeff g (- int (df - 1) + int (i - dg))
-              else icoeff g (int dg - int j + int (i - dg)))"
+              then coeff_int g (- int (df - 1) + int (i - dg))
+              else coeff_int g (int dg - int j + int (i - dg)))"
       using ij unfolding subresultant'_mat_def Let_def by (simp add: if_splits df dg)
     also have "\<dots> = (if i < dg
-         then icoeff f (int df - int j + int i)
-         else icoeff g (int dg - int j + int (i - dg)))"
+         then coeff_int f (int df - int j + int i)
+         else coeff_int g (int dg - int j + int (i - dg)))"
     proof -
-      have cong: "(b \<Longrightarrow> x = z) \<Longrightarrow> (\<not> b \<Longrightarrow> y = z) \<Longrightarrow> (if b then icoeff f x else icoeff f y) = icoeff f z"
+      have cong: "(b \<Longrightarrow> x = z) \<Longrightarrow> (\<not> b \<Longrightarrow> y = z) \<Longrightarrow> (if b then coeff_int f x else coeff_int f y) = coeff_int f z"
         for b x y z and f :: "'a poly" by auto
       show ?thesis
         by (rule if_cong[OF refl cong cong], insert ij, auto)
@@ -622,14 +554,14 @@ proof -
       proof (rule if_cong[OF refl])
         assume i: "i < dg"
         have "int df - int j + int i < 0 \<longrightarrow> \<not> j - i \<le> df" by auto
-        thus "icoeff f (int df - int j + int i) = (if i \<le> j \<and> j - i \<le> df then coeff f (df + i - j) else 0)"
-          using i ij by (simp add: icoeff_def *, intro impI  coeff_eq_0[of f, unfolded df], linarith)
+        thus "coeff_int f (int df - int j + int i) = (if i \<le> j \<and> j - i \<le> df then coeff f (df + i - j) else 0)"
+          using i ij by (simp add: coeff_int_def *, intro impI  coeff_eq_0[of f, unfolded df], linarith)
       next
         assume i: "\<not> i < dg"
         hence **: "i - dg \<le> j \<Longrightarrow> dg - (j + dg - i) = i - j" using ij by linarith
         have "int dg - int j + int (i - dg) < 0 \<longrightarrow> \<not> j \<le> i" by auto
-        thus "icoeff g (int dg - int j + int (i - dg)) = (if i - dg \<le> j \<and> j \<le> i then coeff g (i - j) else 0)"
-          using ij i by (simp add: icoeff_def * **, intro impI  coeff_eq_0[of g, unfolded dg], linarith)
+        thus "coeff_int g (int dg - int j + int (i - dg)) = (if i - dg \<le> j \<and> j \<le> i then coeff g (i - j) else 0)"
+          using ij i by (simp add: coeff_int_def * **, intro impI  coeff_eq_0[of g, unfolded dg], linarith)
       qed
     qed
     finally show ?case .
@@ -698,7 +630,7 @@ proof -
       show ?case unfolding d degree_map_poly mat_dim_row_mat mat_dim_col_mat mat_map_def
         mat_index_mat(1)[OF ij] split if_distrib[of "map_poly hom"] p.hom_mult monom_hom[symmetric] hom_one
         by (rule if_cong[OF refl if_cong[OF refl refl] if_cong[OF refl refl]],
-        auto simp: icoeff_def)
+        auto simp: coeff_int_def)
     qed (auto simp: d)
   qed
 qed
@@ -729,10 +661,10 @@ lemma  fixes F B G H :: "'a :: idom poly" and J :: nat
   and db: "db \<equiv> degree B"
   defines
     n: "n \<equiv> (df - J) + (dg - J)"
-  and f: "f \<equiv> icoeff F"
-  and b: "b \<equiv> icoeff B"
-  and g: "g \<equiv> icoeff G"
-  and h: "h \<equiv> icoeff H"
+  and f: "f \<equiv> coeff_int F"
+  and b: "b \<equiv> coeff_int B"
+  and g: "g \<equiv> coeff_int G"
+  and h: "h \<equiv> coeff_int H"
   assumes FGH: "F + B * G = H"
   and dfg: "df \<ge> dg"
   and choice: "dg > dh \<or> H = 0 \<and> F \<noteq> 0 \<and> G \<noteq> 0"
@@ -798,8 +730,8 @@ proof -
               else if i = n - 1 then monom 1 (dgj - 1 - (j - dfj)) * H
                    else [:h (int df - int i + int (j - dfj)):]"
   let ?G_H = "mat n n (\<lambda> (i,j). ?GH i j)"
-  have hfg: "h i = f i + icoeff (B * G) i" for i
-    unfolding FGH[symmetric] f g h unfolding icoeff_def by simp
+  have hfg: "h i = f i + coeff_int (B * G) i" for i
+    unfolding FGH[symmetric] f g h unfolding coeff_int_def by simp
   have dM1: "det ?M = 1"
     by (subst det_upper_triangular, (auto)[2], subst prod_list_diag_prod, auto)
   have "subresultant J F G = smult ?m1 (subresultant J G F)"
@@ -875,7 +807,7 @@ proof -
         hence k: "db + d < k" using k j False unfolding n db[symmetric] dfbg dfj_def d_def by auto
         let ?k = "(int db - int k + int d)"
         have "?k < 0" using k by auto
-        hence "b ?k = 0" unfolding b by (intro icoeff_eq_0, auto)
+        hence "b ?k = 0" unfolding b by (intro coeff_int_eq_0, auto)
         thus "?Fb k = 0" by simp
       qed
       also have "sum ?Gb {0 ..< dfj} = sum ?g_b {0 ..< dfj}"
@@ -892,18 +824,18 @@ proof -
       also have "\<dots>  = sum ?g_b {0 ..< off} + sum ?g_b {off ..< dfj}" unfolding split1
         by (simp add: sum.union_disjoint)
       also have "sum ?g_b {0 ..< off} = 0"
-        by (rule sum.neutral, intro ballI, auto simp: b icoeff_def)
+        by (rule sum.neutral, intro ballI, auto simp: b coeff_int_def)
       also have "sum ?g_b {off ..< dfj} = sum ?g_b {off .. off + db} + sum ?g_b {off + Suc db ..< dfj}"
         unfolding split2 by (rule sum.union_disjoint, auto)
       also have "sum ?g_b {off + Suc db ..< dfj} = 0"
       proof (rule sum.neutral, intro ballI, goal_cases)
         case (1 k)
         hence "b (int k - int off) = 0" unfolding b db
-          by (intro icoeff_eq_0, auto)
+          by (intro coeff_int_eq_0, auto)
         thus ?case by simp
       qed
       also have "sum ?g_b {off .. off + db} = sum ?gb {0 .. db}"
-        by (rule sum.reindex_cong[of "\<lambda> x. x + off"], auto simp: b icoeff_def)
+        by (rule sum.reindex_cong[of "\<lambda> x. x + off"], auto simp: b coeff_int_def)
       finally have id: "row ?G_F i \<bullet> col ?M j - ?H = ?Pj + sum ?gb {0 .. db} - ?H"
         (is "_ = ?E")
         by (simp add: ac_simps)
@@ -932,12 +864,12 @@ proof -
         qed
         also have "[: ?e :] = 0 \<longleftrightarrow> ?e = 0" by simp
         also have "?e = (\<Sum>k = 0..db. g (int dg - int i + int (dfj - Suc k - off)) * ?b k)
-          - icoeff (B * G) ?ii"
+          - coeff_int (B * G) ?ii"
           unfolding hfg by simp
         also have "(B * G) = (\<Sum>k = 0..db. monom (?b k) k) * G" unfolding Bsum by simp
         also have "\<dots> = (\<Sum>k = 0..db. monom (?b k) k * G)" by (rule sum_distrib_right)
-        also have "icoeff \<dots> ?ii = (\<Sum>k = 0..db. g (?ii - k) * ?b k)"
-          unfolding icoeff_sum icoeff_monom_mult g by (simp add: ac_simps)
+        also have "coeff_int \<dots> ?ii = (\<Sum>k = 0..db. g (?ii - k) * ?b k)"
+          unfolding coeff_int_sum coeff_int_monom_mult g by (simp add: ac_simps)
         also have "\<dots> = (\<Sum>k = 0..db. g (int dg - int i + int (dfj - Suc k - off)) * ?b k)"
         proof (rule sum.cong[OF refl], goal_cases)
           case (1 k)
@@ -992,7 +924,7 @@ proof -
     fix i j
     assume ij: "i < j" and j: "j < n"
     with dgh have "int dg - int i + int j > int dg" by auto
-    hence "g (int dg - int i + int j) = 0" unfolding g dg by (intro icoeff_eq_0, auto)
+    hence "g (int dg - int i + int j) = 0" unfolding g dg by (intro coeff_int_eq_0, auto)
   } note g0 = this
   {
     assume *: "dh \<le> J" "J < dg"
@@ -1011,7 +943,7 @@ proof -
       next
         case False
         have "h (int df - int i + int (j - dfj)) = 0" unfolding h
-          by (rule icoeff_eq_0, insert False * ij j dfg, unfold dfj_def dh[symmetric], auto)
+          by (rule coeff_int_eq_0, insert False * ij j dfg, unfold dfj_def dh[symmetric], auto)
         with False show ?thesis unfolding if_e by auto
       qed
       finally show "?G_H $$ (i,j) = 0" .
@@ -1024,7 +956,7 @@ proof -
     also have "prod (\<lambda> i. ?GH i i) {0 ..< dfj} = prod (\<lambda> i. [: lead_coeff G :]) {0 ..< dfj}"
     proof -
       show ?thesis
-        by (rule prod.cong[OF refl], insert n_dfj, auto simp: g icoeff_def dg)
+        by (rule prod.cong[OF refl], insert n_dfj, auto simp: g coeff_int_def dg)
     qed
     also have "\<dots> = [: (lead_coeff G)^dfj :]" by (simp add: poly_const_pow)
     also have "{dfj ..< n} = {dfj ..< n-1} \<union> {n - 1}" using n_dfj by auto
@@ -1041,7 +973,7 @@ proof -
       unfolding prod_constant by (simp add: poly_const_pow)
     also have "n - 1 - dfj = dg - J - 1" unfolding n dfj_def by simp
     also have "int df - dfj = J" using * dfg unfolding dfj_def by auto
-    also have "h J = coeff H J" unfolding h icoeff_def by simp
+    also have "h J = coeff H J" unfolding h coeff_int_def by simp
     finally show "subresultant J F G = smult (?m1 * ?G * ?H) H" by (simp add: dfj_def ac_simps)
   } note eq_19 = this
   {
@@ -1086,12 +1018,12 @@ proof -
       {
         assume "j + (df - dh) < df - J"
         hence "dg < int dg - int i + int (j + (df - dh))" using 1 J unfolding dgj_def dhj_def by auto
-        hence "g \<dots> = 0" unfolding dg g by (intro icoeff_eq_0, auto)
+        hence "g \<dots> = 0" unfolding dg g by (intro coeff_int_eq_0, auto)
       } note g = this
       {
         assume "\<not> (j + (df - dh) < df - J)"
         hence "dh < int df - int i + int (j + (df - dh) - (df - J))" using 1 J unfolding dgj_def dhj_def by auto
-        hence "h \<dots> = 0" unfolding dh h by (intro icoeff_eq_0, auto)
+        hence "h \<dots> = 0" unfolding dh h by (intro coeff_int_eq_0, auto)
       } note h = this
       show ?case using in1 g h by auto
     qed auto
@@ -1108,13 +1040,13 @@ proof -
         assume "i = j"
         hence "int dg - int i + int j = dg" using 1 by auto
         hence "g (int dg - int i + int j) = lead_coeff G"
-          unfolding g dg icoeff_def by simp
+          unfolding g dg coeff_int_def by simp
       } note eq = this
       {
         assume "i < j"
         hence "dg < int dg - int i + int j" using 1 by auto
         hence "g (int dg - int i + int j) = 0"
-          unfolding g dg by (intro icoeff_eq_0, auto)
+          unfolding g dg by (intro coeff_int_eq_0, auto)
       } note lt = this
       from 1 have *: "j < dfj" "i \<noteq> n - 1" using J unfolding n_add dhj_def dgj_def dfj_def  by auto
       hence "?GH i j = [:g (int dg - int i + int j):]" by simp
@@ -1199,14 +1131,14 @@ next
   let ?M = "mat ?n ?n
           (\<lambda>(i, j).
               if i = ?n - 1 then monom 1 (?n - 1 - j) * G
-              else [:icoeff G (int (degree G) - int i + int j):])"
+              else [:coeff_int G (int (degree G) - int i + int j):])"
   have "subresultant J F G = det ?M"
     unfolding subresultant_def subresultant_mat_def Let_def dg * by auto
   also have "det ?M = prod_list (mat_diag ?M)"
-    by (rule det_lower_triangular[of ?n], auto intro: icoeff_eq_0)
+    by (rule det_lower_triangular[of ?n], auto intro: coeff_int_eq_0)
   also have "\<dots> = (\<Prod>i = 0..< ?n. ?M $$ (i,i))" unfolding prod_list_diag_prod by simp
   also have "\<dots> = (\<Prod>i = 0..< ?n. if i = ?n - 1 then G else [: lead_coeff G :])"
-    by (rule prod.cong[OF refl], auto simp: icoeff_def)
+    by (rule prod.cong[OF refl], auto simp: coeff_int_def)
   also have "\<dots> = (if J < degree F then smult (lead_coeff G ^ (?n - 1)) G else 1)"
   proof (cases "J < degree F")
     case True
