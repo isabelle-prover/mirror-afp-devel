@@ -4504,7 +4504,7 @@ notify = andreas.lochbihler@inf.ethz.ch
 [Algebraic_Numbers]
 title = Algebraic Numbers in Isabelle/HOL
 topic = Mathematics/Algebra
-author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>, Akihisa Yamada <mailto:akihisa.yamada@uibk.ac.at>
+author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>, Akihisa Yamada <mailto:akihisa.yamada@uibk.ac.at>, Sebastiaan Joosten <mailto:sebastiaan.joosten@uibk.ac.at>
 date = 2015-12-22
 abstract = Based on existing libraries for matrices, factorization of rational polynomials, and Sturm's theorem, we formalized algebraic numbers in Isabelle/HOL. Our development serves as an implementation for real and complex numbers, and it admits to compute roots and completely factorize real and complex polynomials, provided that all coefficients are rational numbers. Moreover, we provide two implementations to display algebraic numbers, an injective and expensive one, or a faster but approximative version.
 	</p><p>
@@ -4512,8 +4512,9 @@ abstract = Based on existing libraries for matrices, factorization of rational p
 	</p>
 extra-history =
 	Change history:
-	[2016-01-29]: Split off Polynomial Interpolation and Polynomial Factorization
-notify = rene.thiemann@uibk.ac.at, akihisa.yamada@uibk.ac.at
+	[2016-01-29]: Split off Polynomial Interpolation and Polynomial Factorization<br>
+	[2017-04-16]: Use certified Berlekamp-Zassenhaus factorization, use subresultant algorithm for computing resultants, improved bisection algorithm
+notify = rene.thiemann@uibk.ac.at, akihisa.yamada@uibk.ac.at, sebastiaan.joosten@uibk.ac.at
 
 [Polynomial_Interpolation]
 title = Polynomial Interpolation
