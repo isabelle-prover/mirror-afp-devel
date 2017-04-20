@@ -84,8 +84,9 @@
           Authors:
       </td>
   <td class="data">
-                    René Thiemann (rene /dot/ thiemann /at/ uibk /dot/ ac /dot/ at) and
-          Akihisa Yamada (akihisa /dot/ yamada /at/ uibk /dot/ ac /dot/ at)
+                      René Thiemann (rene /dot/ thiemann /at/ uibk /dot/ ac /dot/ at),
+                Akihisa Yamada (akihisa /dot/ yamada /at/ uibk /dot/ ac /dot/ at) and
+          Sebastiaan Joosten (sebastiaan /dot/ joosten /at/ uibk /dot/ ac /dot/ at)
       </td>
 </tr>
 
@@ -106,14 +107,15 @@ To this end, we mechanized several results on resultants, which also required us
 
   <tr>
     <td class="datahead" valign="top">Change history:</td>
-    <td class="abstract">[2016-01-29]: Split off Polynomial Interpolation and Polynomial Factorization</td>
+    <td class="abstract">[2016-01-29]: Split off Polynomial Interpolation and Polynomial Factorization<br>
+[2017-04-16]: Use certified Berlekamp-Zassenhaus factorization, use subresultant algorithm for computing resultants, improved bisection algorithm</td>
   </tr>
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
         <pre>@article{Algebraic_Numbers-AFP,
-  author  = {René Thiemann and Akihisa Yamada},
+  author  = {René Thiemann and Akihisa Yamada and Sebastiaan Joosten},
   title   = {Algebraic Numbers in Isabelle/HOL},
   journal = {Archive of Formal Proofs},
   month   = dec,
@@ -130,7 +132,7 @@ To this end, we mechanized several results on resultants, which also required us
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Abstract-Rewriting.shtml">Abstract-Rewriting</a>, <a href="Berlekamp_Zassenhaus.shtml">Berlekamp_Zassenhaus</a>, <a href="Containers.shtml">Containers</a>, <a href="Deriving.shtml">Deriving</a>, <a href="Jordan_Normal_Form.shtml">Jordan_Normal_Form</a>, <a href="Polynomial_Factorization.shtml">Polynomial_Factorization</a>, <a href="Polynomial_Interpolation.shtml">Polynomial_Interpolation</a>, <a href="Show.shtml">Show</a>, <a href="Sturm_Sequences.shtml">Sturm_Sequences</a>      </td></tr>
+          <td class="data"><a href="Abstract-Rewriting.shtml">Abstract-Rewriting</a>, <a href="Berlekamp_Zassenhaus.shtml">Berlekamp_Zassenhaus</a>, <a href="Containers.shtml">Containers</a>, <a href="Deriving.shtml">Deriving</a>, <a href="Jordan_Normal_Form.shtml">Jordan_Normal_Form</a>, <a href="Polynomial_Factorization.shtml">Polynomial_Factorization</a>, <a href="Polynomial_Interpolation.shtml">Polynomial_Interpolation</a>, <a href="Show.shtml">Show</a>, <a href="Sturm_Sequences.shtml">Sturm_Sequences</a>, <a href="Subresultants.shtml">Subresultants</a>      </td></tr>
           
                     
 
