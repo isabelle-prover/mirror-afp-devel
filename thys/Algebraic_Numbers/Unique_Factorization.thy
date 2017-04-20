@@ -1,11 +1,11 @@
 theory Unique_Factorization
   imports
-    "$AFP/Polynomial_Interpolation/Ring_Hom_Poly"
-    "$AFP/Polynomial_Factorization/Polynomial_Divisibility"
+    "../Polynomial_Interpolation/Ring_Hom_Poly"
+    "../Polynomial_Factorization/Polynomial_Divisibility"
     "~~/src/HOL/Library/Permutations" 
     "~~/src/HOL/Computational_Algebra/Euclidean_Algorithm"
     "~~/src/HOL/Algebra/Divisibility"
-    "$AFP/Containers/Containers_Auxiliary" (* only for a lemma *)
+    "../Containers/Containers_Auxiliary" (* only for a lemma *)
 begin
 hide_const(open) prime
 hide_fact(open) Divisibility.irreducibleI
