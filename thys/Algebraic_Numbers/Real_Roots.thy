@@ -17,13 +17,13 @@ begin
 
 hide_const (open) order
 
-partial_function (tailrec) roots_of_rai_main :: 
+partial_function (tailrec) roots_of_2_main :: 
   "int poly \<Rightarrow> root_info \<Rightarrow> (rat \<Rightarrow> rat \<Rightarrow> nat) \<Rightarrow> (rat \<times> rat)list \<Rightarrow> real_alg_2 list \<Rightarrow> real_alg_2 list" where
-  [code]: "roots_of_rai_main p ri cr lrs rais = (case lrs of Nil \<Rightarrow> rais
+  [code]: "roots_of_2_main p ri cr lrs rais = (case lrs of Nil \<Rightarrow> rais
   | (l,r) # lrs \<Rightarrow> let c = cr l r in 
-    if c = 0 then roots_of_rai_main p ri cr lrs rais
-    else if c = 1 then roots_of_rai_main p ri cr lrs (real_alg_2' ri p l r # rais)
-    else let m = (l + r) / 2 in roots_of_rai_main p ri cr ((m,r) # (l,m) # lrs) rais)"
+    if c = 0 then roots_of_2_main p ri cr lrs rais
+    else if c = 1 then roots_of_2_main p ri cr lrs (real_alg_2' ri p l r # rais)
+    else let m = (l + r) / 2 in roots_of_2_main p ri cr ((m,r) # (l,m) # lrs) rais)"
 
 text \<open>Division of integers, rounding to the upper value.\<close>
 definition div_ceiling :: "int \<Rightarrow> int \<Rightarrow> int" where
@@ -44,7 +44,7 @@ definition roots_of_2_irr :: "int poly \<Rightarrow> real_alg_2 list" where
     let ri = root_info p;
         cr = root_info.l_r ri;
         B = root_bound p
-      in (roots_of_rai_main p ri cr [(-B,B)] []))"
+      in (roots_of_2_main p ri cr [(-B,B)] []))"
   
 lemma root_imp_deg_nonzero: assumes "p \<noteq> 0" "poly p x = 0"
   shows "degree p \<noteq> 0" 
@@ -197,13 +197,13 @@ proof -
   thus "norm x \<le> ?r B" unfolding B by simp
 qed
 
-lemma roots_of_2_irr: assumes mrf: "poly_cond p" and deg: "degree p \<noteq> 0"
+lemma roots_of_2_irr: assumes pc: "poly_cond p" and deg: "degree p \<noteq> 0"
   shows "real_of_2 ` set (roots_of_2_irr p) = {x. ipoly p x = 0}" (is "?one")
     "Ball (set (roots_of_2_irr p)) invariant_2" (is "?two")
 proof -
   let ?rr = "set (roots_of_2_irr p)"
   note d = roots_of_2_irr_def
-  from poly_condD[OF mrf] have mon: "cf_pos p" and irr: "irreducible p" by auto
+  from poly_condD[OF pc] have mon: "cf_pos p" and irr: "irreducible p" by auto
   let ?norm = "real_alg_2'"
   have "?one \<and> ?two"
   proof (cases "degree p = 1")
@@ -228,7 +228,7 @@ proof -
     from mon have p: "p \<noteq> 0" by auto
     from root_info[OF irr deg] have ri: "root_info_cond ri p" unfolding ri_def .    
     from False 
-    have rr: "?rr = set (roots_of_rai_main p ri cr bnds empty)"
+    have rr: "?rr = set (roots_of_2_main p ri cr bnds empty)"
       unfolding d ri_def cr_def Let_def bnds_def empty_def by auto
     note root_bound = root_bound[OF refl deg]
     from root_bound(2)
@@ -245,7 +245,7 @@ proof -
     define rel where "rel = inv_image (mult1 rel') mm"
     have wf: "wf rel" unfolding rel_def rel'_def
       by (rule wf_inv_image[OF wf_mult1[OF SN_imp_wf[OF delta_gt_SN[OF delta(1)]]]])
-    let ?main = "roots_of_rai_main p ri cr"    
+    let ?main = "roots_of_2_main p ri cr"    
     have "real_of_2 ` set (?main bnds empty) =
       real_of_2 ` set empty \<union>
       {x. \<exists>l r. root_cond (p, l, r) x \<and> (l, r) \<in> set bnds} \<and>
@@ -256,7 +256,7 @@ proof -
       note rais = 1(2)[rule_format]
       note lrs = 1(3)
       note IH = 1(1)[rule_format]
-      note simp = roots_of_rai_main.simps[of p ri cr lrss rais]
+      note simp = roots_of_2_main.simps[of p ri cr lrss rais]
       show ?case
       proof (cases lrss)
         case Nil
@@ -315,14 +315,14 @@ proof -
             from True simp have simp: "?main lrss rais = ?main lrs (?rai # rais)" by auto
             from card_1_Collect_ex1[OF c[symmetric, unfolded True]] 
             have ur: "unique_root (p,l,r)"  .
-            from real_alg_2'[OF ur mrf ri]
+            from real_alg_2'[OF ur pc ri]
             have rai: "invariant_2 ?rai" "real_of_2 ?rai = the_unique_root (p, l, r)" by auto
             with rais have rais: "\<And> x. x \<in> set (?rai # rais) \<Longrightarrow> invariant_2 x" by auto
             have rt3: "?rt3 = {real_of_2 ?rai}" 
               using rc1 ur rai by (auto intro: the_unique_root_eqI theI')
-            have "real_of_2 ` set (roots_of_rai_main p ri cr lrs (?rai # rais)) =
+            have "real_of_2 ` set (roots_of_2_main p ri cr lrs (?rai # rais)) =
               real_of_2 ` set (?rai # rais) \<union> ?rt2 \<and>
-              Ball (set (roots_of_rai_main p ri cr lrs (?rai # rais))) invariant_2"
+              Ball (set (roots_of_2_main p ri cr lrs (?rai # rais))) invariant_2"
               (is "?one \<and> ?two")
               by (rule IH[OF easy_rel, of "?rai # rais", OF rais lrs], auto)
             hence ?one ?two by blast+
@@ -373,7 +373,7 @@ proof -
       qed
     qed
     hence idd: "?one'" and cond: ?two' by blast+
-    define res where "res = set (roots_of_rai_main p ri cr bnds empty)"
+    define res where "res = set (roots_of_2_main p ri cr bnds empty)"
     have e: "set empty = {}" unfolding empty_def by auto
     from idd[folded res_def] e have idd: "real_of_2 ` res = {} \<union> {x. \<exists>l r. root_cond (p, l, r) x \<and> (l, r) \<in> set bnds}"
       by auto
@@ -495,8 +495,8 @@ private function real_alg_2_list_convert :: "real_alg_2_list \<Rightarrow> real_
 
 termination by (relation "measure real_alg_2_list_length", auto)
 
-private definition roots_of_rai_impl :: "int poly \<Rightarrow> real_alg_3 list" where
-  "roots_of_rai_impl p = real_alg_2_list_convert (roots_of_2_list p)"
+private definition roots_of_3_impl :: "int poly \<Rightarrow> real_alg_3 list" where
+  "roots_of_3_impl p = real_alg_2_list_convert (roots_of_2_list p)"
 
 private lift_definition real_alg_2_list_convert_id :: "real_alg_2_list \<Rightarrow> real_alg_3 list" is id
   by (auto simp: list_all_iff)
@@ -522,8 +522,8 @@ proof (induct xs rule: wf_induct[OF wf_measure[of real_alg_2_list_length], rule_
   qed
 qed
 
-lemma roots_of_rai_code[code]: "roots_of_3 p = roots_of_rai_impl p" 
-  unfolding roots_of_rai_impl_def real_alg_2_list_convert
+lemma roots_of_3_code[code]: "roots_of_3 p = roots_of_3_impl p" 
+  unfolding roots_of_3_impl_def real_alg_2_list_convert
   by (transfer, simp)
 end
 

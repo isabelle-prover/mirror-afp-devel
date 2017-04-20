@@ -1714,10 +1714,18 @@ proof -
 qed
 
 definition real_alg_2' :: "root_info \<Rightarrow> int poly \<Rightarrow> rat \<Rightarrow> rat \<Rightarrow> real_alg_2" where
-  "real_alg_2' ri p l r = (
+  [code del]: "real_alg_2' ri p l r = (
     if degree p = 1 then Rational (Rat.Fract (- coeff p 0) (coeff p 1)) else
     real_alg_2_main ri (case tighten_poly_bounds_for_x p 0 l r (sgn (ipoly p r)) of
               (l',r',sr') \<Rightarrow> (p, l', r')))"
+
+lemma real_alg_2'_code[code]: "real_alg_2' ri p l r =
+ (if degree p = 1 then Rational (Rat.Fract (- coeff p 0) (coeff p 1))
+     else case normalize_bounds_1
+        (case tighten_poly_bounds_for_x p 0 l r (sgn (ipoly p r)) of (l', r', sr') \<Rightarrow> (p, l', r')) 
+     of (p', l, r) \<Rightarrow> Irrational (root_info.number_root ri r) (p', l, r))"  
+  unfolding real_alg_2'_def real_alg_2_main_def
+  by (cases "tighten_poly_bounds_for_x p 0 l r (sgn (ipoly p r))", simp add: Let_def)
 
 lemma poly_cond_degree_0_imp_no_root:
   assumes pc: "poly_cond p" and deg: "degree p = 0" shows "ipoly p x \<noteq> 0"

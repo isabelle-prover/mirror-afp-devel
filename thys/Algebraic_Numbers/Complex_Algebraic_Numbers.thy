@@ -55,7 +55,7 @@ definition poly_inverse_2i :: "int poly" where
 lemma poly_inverse_2i_irr: "irreducible poly_inverse_2i"
 proof -
   have "factors_of_int_poly poly_inverse_2i = [poly_inverse_2i]" 
-    by eval
+    by eval (* takes a while *)
   with factors_of_int_poly(1)[of poly_inverse_2i "[poly_inverse_2i]" poly_inverse_2i]
   show ?thesis by simp
 qed
