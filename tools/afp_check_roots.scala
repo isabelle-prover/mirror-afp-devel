@@ -4,7 +4,7 @@ object AFP_Check_Roots extends isabelle.Isabelle_Tool.Body {
 
   import isabelle._
 
-  val afp_dir = Path.explode("$AFP")
+  val afp_dir = Path.explode("$AFP").expand
 
   def print_good(string: String): Unit =
     println(Console.BOLD + Console.GREEN + string + Console.RESET)
@@ -36,7 +36,7 @@ object AFP_Check_Roots extends isabelle.Isabelle_Tool.Body {
     selected.flatMap { name =>
       val info = tree(name)
       val dir = info.dir
-      if (dir.dir.implode != afp_dir.implode)
+      if (dir.dir.expand.file != afp_dir.file)
         Some((name, dir))
       else
         None
