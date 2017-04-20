@@ -21,7 +21,7 @@ fun init [] = error "empty list"
   | init [_] = []
   | init (x :: xs) = x :: init xs
 
-fun lazify {T, casex, ctrs, case_thms, ...} lthy =
+fun lazify {T, casex, ctrs, case_thms, case_cong, ...} lthy =
   let
     val is_fun = can dest_funT
     val typ_name = fst (dest_Type T)
@@ -66,11 +66,12 @@ fun lazify {T, casex, ctrs, case_thms, ...} lthy =
           Local_Defs.unfold_tac ctxt [thm', nth case_thms idx] THEN
             HEADGOAL (resolve_tac ctxt @{thms refl})
 
-        val frees =
-          fastype_of term' |> strip_type |> fst |> init
-          |> Name.invent_names Name.context "f0"
+        val frees = fastype_of term' |> strip_type |> fst |> init
+        val frees_f = Name.invent_names Name.context "f0" frees
+        val frees_g = Name.invent_names Name.context "g0" frees
 
-        val fs = map Free frees
+        val fs = map Free frees_f
+        val gs = map Free frees_g
 
         fun mk_def_goal ctr idx =
           let
@@ -89,7 +90,7 @@ fun lazify {T, casex, ctrs, case_thms, ...} lthy =
           end
 
         fun prove_defs (frees', goal) idx =
-          Goal.prove_future lthy' (map fst frees @ frees') [] goal (fn {context, ...} =>
+          Goal.prove_future lthy' (map fst frees_f @ frees') [] goal (fn {context, ...} =>
             defs_tac context idx)
 
         val def_thms = map2 prove_defs (map2 mk_def_goal ctrs idxs) idxs
@@ -116,11 +117,52 @@ fun lazify {T, casex, ctrs, case_thms, ...} lthy =
           Goal.prove_future lthy' (map fst frees) [] unfold_goal (fn {context, ...} =>
             unfold_tac context)
 
+        fun mk_cong_prem t ctr (f, g) =
+          let
+            (* FIXME get rid of dummyT here *)
+            fun mk_all t = Logic.all_const dummyT $ Abs ("", dummyT, t)
+            val len = dest_Const ctr |> snd |> strip_type |> fst |> length
+            val args = map Bound (len - 1 downto 0)
+            val ctr_val = list_comb (Logic.unvarify_global ctr, args)
+            val args' = if len = 0 then [Bound 0] else args
+            val lhs = list_comb (f, args')
+            val rhs = list_comb (g, args')
+            val concl = HOLogic.mk_Trueprop (HOLogic.mk_eq (lhs, rhs))
+            val prem = HOLogic.mk_Trueprop (HOLogic.mk_eq (t, ctr_val))
+          in fold (K mk_all) args' (Logic.mk_implies (prem, concl)) end
+
+        val cong_goal =
+          let
+            val t1 = Free ("t1", Logic.unvarifyT_global T)
+            val t2 = Free ("t2", Logic.unvarifyT_global T)
+            val prems =
+              HOLogic.mk_Trueprop (HOLogic.mk_eq (t1, t2)) ::
+                map2 (mk_cong_prem t2) ctrs (fs ~~ gs)
+            val lhs = list_comb (term', fs) $ t1
+            val rhs = list_comb (term', gs) $ t2
+            val concl = HOLogic.mk_Trueprop (HOLogic.mk_eq (lhs, rhs))
+          in
+            Logic.list_implies (prems, concl)
+            |> Syntax.check_term lthy'
+          end
+
+        fun cong_tac ctxt =
+          Local_Defs.unfold_tac ctxt [thm'] THEN
+            HEADGOAL (eresolve_tac ctxt [case_cong]) THEN
+            ALLGOALS (ctxt |> Subgoal.FOCUS
+              (fn {context = ctxt, prems, ...} =>
+                HEADGOAL (resolve_tac ctxt prems THEN' resolve_tac ctxt prems)))
+
+        val cong_thm =
+          Goal.prove_future lthy' ("t1" :: "t2" :: map fst frees_f @ map fst frees_g) [] cong_goal
+            (fn {context, ...} => cong_tac context)
+
         val upd = Data.map (Symtab.update_new (typ_name, ()))
       in
         lthy'
         |> Local_Theory.note ((Binding.empty, @{attributes [code]}), def_thms) |> snd
         |> Local_Theory.note ((Binding.empty, @{attributes [code_unfold]}), [unfold_thm]) |> snd
+        |> Local_Theory.note ((Binding.empty, @{attributes [fundef_cong]}), [cong_thm]) |> snd
         |> Local_Theory.declaration {syntax = false, pervasive = true} (K upd)
       end
   end
