@@ -9,7 +9,21 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>18 Apr 2017 00:00:00 +0000</pubDate>
+    <pubDate>19 Apr 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>Constructor Functions</title>
+              <link>https://www.isa-afp.org/entries/Constructor_Funs.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Constructor_Funs.shtml</guid>
+       <dc:creator> Lars Hupel       </dc:creator>
+       <pubDate>19 Apr 2017 00:00:00 +0000</pubDate>
+       <description>
+Isabelle&#39;s code generator performs various adaptations for target
+languages. Among others, constructor applications have to be fully
+saturated. That means that for constructor calls occuring as arguments
+to higher-order functions, synthetic lambdas have to be inserted. This
+entry provides tooling to avoid this construction altogether by
+introducing constructor functions.</description>
+    </item>
     <item>
        <title>Lazifying case constants</title>
               <link>https://www.isa-afp.org/entries/Lazy_Case.shtml</link>
@@ -508,23 +522,6 @@ separata.</description>
        <pubDate>10 Nov 2016 00:00:00 +0000</pubDate>
        <description>
 Deep learning has had a profound impact on computer science in recent years, with applications to search engines, image recognition and language processing, bioinformatics, and more. Recently, Cohen et al. provided theoretical evidence for the superiority of deep learning over shallow learning. This formalization of their work simplifies and generalizes the original proof, while working around the limitations of the Isabelle type system. To support the formalization, I developed reusable libraries of formalized mathematics, including results about the matrix rank, the Lebesgue measure, and multivariate polynomials, as well as a library for tensor analysis.</description>
-    </item>
-    <item>
-       <title>Modal Logics for Nominal Transition Systems</title>
-              <link>https://www.isa-afp.org/entries/Modal_Logics_for_NTS.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Modal_Logics_for_NTS.shtml</guid>
-       <dc:creator> Tjark Weber, Lars-Henrik Eriksson, Joachim Parrow, Johannes Borgström, Ramunas Gutkovas       </dc:creator>
-       <pubDate>25 Oct 2016 00:00:00 +0000</pubDate>
-       <description>
-We formalize a uniform semantic substrate for a wide variety of
-process calculi where states and action labels can be from arbitrary
-nominal sets. A Hennessy-Milner logic for these systems is defined,
-and proved adequate for bisimulation equivalence. A main novelty is
-the construction of an infinitary nominal data type to model formulas
-with (finitely supported) infinite conjunctions and actions that may
-contain binding names. The logic is generalized to treat different
-bisimulation variants such as early, late and open in a systematic
-way.</description>
     </item>
   </channel>
 </rss>

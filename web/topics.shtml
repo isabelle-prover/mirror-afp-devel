@@ -554,6 +554,7 @@
                 </div>
     <h2>Tools</h2>
   <div class="list">
+      <a href="entries/Constructor_Funs.shtml">Constructor_Funs</a> &nbsp;
       <a href="entries/Lazy_Case.shtml">Lazy_Case</a> &nbsp;
       <a href="entries/Case_Labeling.shtml">Case_Labeling</a> &nbsp;
       <a href="entries/DPT-SAT-Solver.shtml">DPT-SAT-Solver</a> &nbsp;
