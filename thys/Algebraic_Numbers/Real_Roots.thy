@@ -33,7 +33,7 @@ partial_function (tailrec) roots_of_2_main ::
   [code]: "roots_of_2_main p ri cr lrs rais = (case lrs of Nil \<Rightarrow> rais
   | (l,r) # lrs \<Rightarrow> let c = cr l r in 
     if c = 0 then roots_of_2_main p ri cr lrs rais
-    else if c = 1 then roots_of_2_main p ri cr lrs (real_alg_2' ri p l r # rais)
+    else if c = 1 then roots_of_2_main p ri cr lrs (real_alg_2'' ri p l r # rais)
     else let m = (l + r) / 2 in roots_of_2_main p ri cr ((m,r) # (l,m) # lrs) rais)"
   
 definition roots_of_2_irr :: "int poly \<Rightarrow> real_alg_2 list" where
@@ -297,7 +297,7 @@ proof -
           (if c = 0 then ?main lrs rais else if c = 1 then 
              ?main lrs (real_alg_2' ri p l r # rais)
                else let m = (l + r) / 2 in ?main ((m, r) # (l, m) # lrs) rais)"
-          unfolding c_def simp Cons lr' by auto
+          unfolding c_def simp Cons lr' using real_alg_2''[OF False] by auto
         note lrs = lrs[unfolded Cons lr']        
         from lrs have lr: "l \<le> r" by auto
         from root_info_condD(1)[OF ri lr, folded cr_def] 

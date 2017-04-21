@@ -1726,7 +1726,15 @@ lemma real_alg_2'_code[code]: "real_alg_2' ri p l r =
      of (p', l, r) \<Rightarrow> Irrational (root_info.number_root ri r) (p', l, r))"  
   unfolding real_alg_2'_def real_alg_2_main_def
   by (cases "tighten_poly_bounds_for_x p 0 l r (sgn (ipoly p r))", simp add: Let_def)
+    
+definition real_alg_2'' :: "root_info \<Rightarrow> int poly \<Rightarrow> rat \<Rightarrow> rat \<Rightarrow> real_alg_2" where
+  "real_alg_2'' ri p l r = (case normalize_bounds_1
+        (case tighten_poly_bounds_for_x p 0 l r (sgn (ipoly p r)) of (l', r', sr') \<Rightarrow> (p, l', r')) 
+     of (p', l, r) \<Rightarrow> Irrational (root_info.number_root ri r) (p', l, r))" 
 
+lemma real_alg_2'': "degree p \<noteq> 1 \<Longrightarrow> real_alg_2'' ri p l r = real_alg_2' ri p l r" 
+  unfolding real_alg_2'_code real_alg_2''_def by auto
+  
 lemma poly_cond_degree_0_imp_no_root:
   assumes pc: "poly_cond p" and deg: "degree p = 0" shows "ipoly p x \<noteq> 0"
 proof-
