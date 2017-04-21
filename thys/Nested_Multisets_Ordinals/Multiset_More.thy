@@ -173,6 +173,13 @@ proof -
   qed (auto simp: y_nemp y_sub_N image_mset_subseteq_mono)
 qed
 
+lemma image_mset_mono:
+  assumes
+    mono_f: "\<forall>x \<in> set_mset M. \<forall>y \<in> set_mset N. x < y \<longrightarrow> f x < f y" and
+    less: "M \<le> N"
+  shows "image_mset f M \<le> image_mset f N"
+  by (metis eq_iff image_mset_strict_mono less less_imp_le mono_f order.not_eq_order_implies_strict)
+
 lemma mset_lt_single_right_iff[simp]: "M < {#y#} \<longleftrightarrow> (\<forall>x \<in># M. x < y)" for y :: "'a::linorder"
 proof (rule iffI)
   assume M_lt_y: "M < {#y#}"
