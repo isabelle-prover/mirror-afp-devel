@@ -232,7 +232,7 @@ proof (cases m n rule: hmultiset.exhaust[case_product hmultiset.exhaust])
       by (metis mset_subset_eq_add_right subset_eq_diff_conv subset_mset.dual_order.refl
         subset_mset_def)
     hence "m0 < m0 - n0 + n0"
-      by (rule subset_imp_less_multiset)
+      by (rule subset_imp_less_mset)
   }
   ultimately show ?thesis
     by (simp (no_asm) add: m n order_le_less plus_hmultiset_def minus_hmultiset_def) blast

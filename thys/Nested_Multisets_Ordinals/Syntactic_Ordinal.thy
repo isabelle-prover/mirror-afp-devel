@@ -404,7 +404,7 @@ qed
 
 lemma head_\<omega>_lt_imp_lt: "head_\<omega> m < head_\<omega> n \<Longrightarrow> m < n"
   unfolding head_\<omega>_def hmsetmset_less[symmetric]
-  by (rule all_lt_Max_imp_lt_multiset, auto simp: zero_hmultiset_def split: if_splits)
+  by (rule all_lt_Max_imp_lt_mset, auto simp: zero_hmultiset_def split: if_splits)
 
 lemma head_\<omega>_plus[simp]: "head_\<omega> (m + n) = sup (head_\<omega> m) (head_\<omega> n)"
 proof (cases m n rule: hmultiset.exhaust[case_product hmultiset.exhaust])
