@@ -555,9 +555,6 @@ lemma add_mset_eq_add_mset_ne:
   by (metis (no_types, lifting) diff_single_eq_union diff_union_swap multi_self_add_other_not_self
       remove_1_mset_id_iff_notin union_single_eq_diff)
 
-text \<open>This lemma allows to split equality like \<^term>\<open>{#K, K'#} = {#L, L'#}\<close> into
-  \<^term>\<open>(K = L \<and> L = L') \<or> (K \<noteq> L \<and> K = L' \<and> K' = L)\<close>. It can lead to a explosion of the
-  numbers of cases.\<close>
 lemma add_mset_eq_add_mset: \<open>add_mset a M = add_mset b M' \<longleftrightarrow>
   (a = b \<and> M = M') \<or> (a \<noteq> b \<and> b \<in># M \<and> add_mset a (M - {#b#}) = M')\<close>
   by (metis add_mset_eq_add_mset_ne add_mset_remove_trivial union_single_eq_member)
