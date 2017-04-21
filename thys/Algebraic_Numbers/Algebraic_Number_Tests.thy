@@ -57,9 +57,9 @@ value [code] "show_factorization (the (factorize_complex_poly testpoly))"
 
 text \<open>If the input is not a rational polynomial, factorization can fail.\<close>
 
-value [code] "factorize_real_poly [:sqrt(2),1,3,1:]" text \<open>fails\\\<close>
-value [code] "factorize_real_poly [:sqrt(2),1,3:]" text \<open>does not fail, reveals internal representation\\\<close>
-value [code] "show (factorize_real_poly [:sqrt(2),1,3:])" text \<open>does not fail, pretty printed\<close>
+value [code] "factorize_real_poly [:sqrt 2,1,3,1:]" text \<open>fails\\\<close>
+value [code] "factorize_real_poly [:sqrt 2,1,3:]" text \<open>does not fail, reveals internal representation\\\<close>
+value [code] "show (factorize_real_poly [:sqrt 2,1,3:])" text \<open>does not fail, pretty printed\<close>
 
 
 text \<open>A sequence of calculations.\<close>

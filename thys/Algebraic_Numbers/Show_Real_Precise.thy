@@ -6,8 +6,8 @@
 section \<open>Show for Real (Algebraic) Numbers -- Unique Representation\<close>
 
 text \<open>We implement the show-function for real (algebraic) numbers by printing them
-  uniquely via their monic irreducible polynomial. This is currently a costly operation
-  since it involves Kronecker-factorization.\<close>
+  uniquely via their monic irreducible polynomial with a special cases for polynomials 
+  of degree at most 2.\<close>
 
 theory Show_Real_Precise
 imports
