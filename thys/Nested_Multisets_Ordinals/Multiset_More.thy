@@ -36,61 +36,6 @@ declare
 
   sum_mset_sum_list[simp]
 
-lemma add_mset_in_multiset':
-  assumes M: "M \<in> multiset"
-  shows "(\<lambda>b. if b = a then Suc (M a) else M b) \<in> multiset"
-proof -
-  have if_eq: "(\<lambda>b. if b = a then Suc (M a) else M b) = (\<lambda>b. if b = a then Suc (M b) else M b)"
-    by force
-  show ?thesis
-    by (auto simp: if_eq intro!: add_mset_in_multiset[OF M, of a])
-qed
-
-
-subsection \<open>Induction Principles\<close>
-
-lemma multiset_induct_min[case_names empty add]:
-  fixes M :: "'a::linorder multiset"
-  assumes
-    empty: "P {#}" and
-    add: "\<And>x M. P M \<Longrightarrow> (\<forall>y \<in># M. y \<ge> x) \<Longrightarrow> P (add_mset x M)"
-  shows "P M"
-proof (induct "size M" arbitrary: M)
-  case (Suc k)
-  note ih = this(1) and Sk_eq_sz_M = this(2)
-
-  let ?y = "Min (set_mset M)"
-  let ?N = "M - {#?y#}"
-
-  have M: "M = add_mset ?y ?N"
-    by (metis Min_in Sk_eq_sz_M finite_set_mset insert_DiffM lessI not_less_zero
-      set_mset_eq_empty_iff size_empty)
-  show ?case
-    by (subst M, rule add, rule ih, metis M Sk_eq_sz_M nat.inject size_add_mset,
-      meson Min_le finite_set_mset in_diffD)
-qed (simp add: empty)
-
-lemma multiset_induct_max[case_names empty add]:
-  fixes M :: "'a::linorder multiset"
-  assumes
-    empty: "P {#}" and
-    add: "\<And>x M. P M \<Longrightarrow> (\<forall>y \<in># M. y \<le> x) \<Longrightarrow> P (add_mset x M)"
-  shows "P M"
-proof (induct "size M" arbitrary: M)
-  case (Suc k)
-  note ih = this(1) and Sk_eq_sz_M = this(2)
-
-  let ?y = "Max (set_mset M)"
-  let ?N = "M - {#?y#}"
-
-  have M: "M = add_mset ?y ?N"
-    by (metis Max_in Sk_eq_sz_M finite_set_mset insert_DiffM lessI not_less_zero
-      set_mset_eq_empty_iff size_empty)
-  show ?case
-    by (subst M, rule add, rule ih, metis M Sk_eq_sz_M nat.inject size_add_mset,
-      meson Max_ge finite_set_mset in_diffD)
-qed (simp add: empty)
-
 
 subsection \<open>Lemmas about the Multiset Order\<close>
 
