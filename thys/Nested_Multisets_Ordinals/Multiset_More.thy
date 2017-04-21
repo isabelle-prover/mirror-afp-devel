@@ -129,7 +129,7 @@ proof -
     by (rule order_neq_le_trans[rotated 1])
 qed
 
-lemma image_mset_mono:
+lemma image_mset_strict_mono:
   assumes
     mono_f: "\<forall>x \<in> set_mset M. \<forall>y \<in> set_mset N. x < y \<longrightarrow> f x < f y" and
     less: "M < N"

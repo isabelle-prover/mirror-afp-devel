@@ -137,8 +137,8 @@ lemma times_hmultiset_monoL:
   shows "a < b \<Longrightarrow> 0 < c \<Longrightarrow> a * c < b * c"
   by (cases a, cases b, cases c, hypsubst_thin,
     unfold times_hmultiset_def zero_hmultiset_def hmultiset.sel, transfer,
-    auto simp: less_multiset_ext\<^sub>D\<^sub>M_less multiset.pred_set intro!: image_mset_mono Times_mset_monoL
-      elim!: plus_nmultiset_mono)
+    auto simp: less_multiset_ext\<^sub>D\<^sub>M_less multiset.pred_set
+      intro!: image_mset_strict_mono Times_mset_monoL elim!: plus_nmultiset_mono)
 
 instance hmultiset :: linordered_semiring_strict
   by intro_classes (subst (1 2) mult.commute, rule times_hmultiset_monoL)
