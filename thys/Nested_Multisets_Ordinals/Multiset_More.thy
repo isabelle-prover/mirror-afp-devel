@@ -39,11 +39,8 @@ declare
 
 subsection \<open>Lemmas about Intersection, Union and Pointwise Inclusion\<close>
 
-lemma mset_inter_single: "x \<in># M \<Longrightarrow> M \<inter># {#x#} = {#x#}"
-  by simp
-
 lemma subset_add_mset_notin_subset_mset: \<open>A \<subseteq># add_mset b B \<Longrightarrow> b \<notin># A \<Longrightarrow> A \<subseteq># B\<close>
-  by (simp add: subset_mset.sup.absorb_iff2)
+  by (simp add: subset_mset.le_iff_sup)
 
 lemma subset_msetE [elim!]: "\<lbrakk>A \<subset># B; \<lbrakk>A \<subseteq># B; \<not> B \<subseteq># A\<rbrakk> \<Longrightarrow> R\<rbrakk> \<Longrightarrow> R"
   unfolding subseteq_mset_def subset_mset_def by (meson mset_subset_eqI subset_mset.eq_iff)
@@ -59,45 +56,6 @@ proof -
   then show "A - B - (A - B - (B - A)) = {#}"
     by (metis diff_add diff_cancel diff_subset_eq_self subset_mset.diff_add)
 qed
-
-
-subsection \<open>Lemmas about Size\<close>
-
-lemma size_mset_SucE: "size A = Suc n \<Longrightarrow> (\<And>a B. A = {#a#} + B \<Longrightarrow> size B = n \<Longrightarrow> P) \<Longrightarrow> P"
-  by (cases A) (auto simp add: ac_simps)
-
-lemma size_Suc_Diff1: "x \<in># M \<Longrightarrow> Suc (size (M - {#x#})) = size M"
-  using arg_cong[OF insert_DiffM, of _ _ size] by simp
-
-lemma size_Diff_singleton: "x \<in># M \<Longrightarrow> size (M - {#x#}) = size M - 1"
-  by (simp add: size_Suc_Diff1 [symmetric])
-
-lemma size_Diff_singleton_if: "size (A - {#x#}) = (if x \<in># A then size A - 1 else size A)"
-  by (simp add: size_Diff_singleton)
-
-lemma size_Un_Int: "size A + size B = size (A \<union># B) + size (A \<inter># B)"
-  by (metis inter_subset_eq_union size_union subset_mset.diff_add union_diff_inter_eq_sup)
-
-lemma size_Un_disjoint: "A \<inter># B = {#} \<Longrightarrow> size (A \<union># B) = size A + size B"
-  using size_Un_Int[of A B] by simp
-
-lemma size_Diff_subset_Int: "size (M - M') = size M - size (M \<inter># M')"
-  by (metis diff_intersect_left_idem size_Diff_submset subset_mset.inf_le1)
-
-lemma diff_size_le_size_Diff: "size (M :: _ multiset) - size M' \<le> size (M - M')"
-  by (simp add: diff_le_mono2 size_Diff_subset_Int size_mset_mono)
-
-lemma size_Diff1_less: "x\<in># M \<Longrightarrow> size (M - {#x#}) < size M"
-  by (rule Suc_less_SucD) (simp add: size_Suc_Diff1)
-
-lemma size_Diff2_less: "x\<in># M \<Longrightarrow> y\<in># M \<Longrightarrow> size (M - {#x#} - {#y#}) < size M"
-  by (metis less_imp_diff_less size_Diff1_less size_Diff_subset_Int)
-
-lemma size_Diff1_le: "size (M - {#x#}) \<le> size M"
-  by (cases "x \<in># M") (simp_all add: size_Diff1_less less_imp_le)
-
-lemma size_psubset: "M \<subseteq># M' \<Longrightarrow> size M < size M' \<Longrightarrow> M \<subset># M'"
-  using less_irrefl subset_mset_def by blast
 
 
 subsection \<open>Lemmas about Filter and Image\<close>
@@ -293,7 +251,7 @@ lemma size_mset_removeAll_mset_le_iff: "size (removeAll_mset x M) < size M \<lon
   done
 
 lemma size_remove1_mset_If: \<open>size (remove1_mset x M) = size M - (if x \<in># M then 1 else 0)\<close>
-  by (auto simp: size_Diff_subset_Int mset_inter_single)
+  by (auto simp: size_Diff_subset_Int)
 
 lemma size_mset_remove1_mset_le_iff: "size (remove1_mset x M) < size M \<longleftrightarrow> x \<in># M"
   apply (rule iffI)
