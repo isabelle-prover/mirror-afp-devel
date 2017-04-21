@@ -846,7 +846,7 @@ text \<open>Definition of the cartesian products over multisets. The constructio
 definition Sigma_mset :: "'a multiset \<Rightarrow> ('a \<Rightarrow> 'b multiset) \<Rightarrow> ('a \<times> 'b) multiset" where
   "Sigma_mset A B \<equiv> \<Union># {#{#(a, b). b \<in># B a#}. a \<in># A #}"
 
-abbreviation Times_mset :: "'a multiset \<Rightarrow> 'b multiset \<Rightarrow> ('a \<times> 'b) multiset" (infixr "\<times>mset" 80) where
+abbreviation Times_mset :: "'a multiset \<Rightarrow> 'b multiset \<Rightarrow> ('a \<times> 'b) multiset" (infixr "\<times>#" 80) where
   "Times_mset A B \<equiv> Sigma_mset A (\<lambda>_. B)"
 
 hide_const (open) Times_mset
@@ -861,7 +861,7 @@ translations
 
 text \<open>Link between the multiset and the set cartesian product:\<close>
 
-lemma Times_mset_Times: "set_mset (A \<times>mset B) = set_mset A \<times> set_mset B"
+lemma Times_mset_Times: "set_mset (A \<times># B) = set_mset A \<times> set_mset B"
   unfolding Sigma_mset_def by auto
 
 lemma Sigma_msetI [intro!]: "\<lbrakk>a \<in># A; b \<in># B a\<rbrakk> \<Longrightarrow> (a, b) \<in># Sigma_mset A B"
@@ -874,7 +874,7 @@ lemma Sigma_msetE [elim!]:
   \<comment> \<open>The general elimination rule.\<close>
   by (unfold Sigma_mset_def) auto
 
-text \<open>Elimination of @{term "(a, b) \<in># A \<times>mset B"} -- introduces no eigenvariables.\<close>
+text \<open>Elimination of @{term "(a, b) \<in># A \<times># B"} -- introduces no eigenvariables.\<close>
 
 lemma Sigma_msetD1: "(a, b) \<in># Sigma_mset A B \<Longrightarrow> a \<in># A"
   by blast
@@ -903,13 +903,13 @@ lemma Sigma_mset_plus_distrib2[simp]:
   "Sigma_mset A (\<lambda>i. B i + C i) = Sigma_mset A B + Sigma_mset A C"
   unfolding Sigma_mset_def by (induction A) (auto simp: multiset_eq_iff)
 
-lemma Times_mset_single_left: "{#a#} \<times>mset B = image_mset (Pair a) B"
+lemma Times_mset_single_left: "{#a#} \<times># B = image_mset (Pair a) B"
   unfolding Sigma_mset_def by auto
 
-lemma Times_mset_single_right: "A \<times>mset {#b#} = image_mset (\<lambda>a. Pair a b) A"
+lemma Times_mset_single_right: "A \<times># {#b#} = image_mset (\<lambda>a. Pair a b) A"
   unfolding Sigma_mset_def by (induction A) auto
 
-lemma Times_mset_single_single[simp]: "{#a#} \<times>mset {#b#} = {#(a, b)#}"
+lemma Times_mset_single_single[simp]: "{#a#} \<times># {#b#} = {#(a, b)#}"
   unfolding Sigma_mset_def by simp
 
 lemma count_image_mset_Pair:
@@ -922,7 +922,7 @@ lemma count_Sigma_mset: "count (Sigma_mset A B) (a, b) = count A a * count (B a)
 lemma Sigma_mset_empty1 [simp]: "Sigma_mset {#} B = {#}"
   unfolding Sigma_mset_def by auto
 
-lemma Sigma_mset_empty2 [simp]: "A \<times>mset {#} = {#}"
+lemma Sigma_mset_empty2 [simp]: "A \<times># {#} = {#}"
   by (auto simp: multiset_eq_iff count_Sigma_mset)
 
 lemma Sigma_mset_mono:
@@ -938,19 +938,19 @@ qed
 lemma mem_Sigma_mset_iff[iff]: "((a,b) \<in># Sigma_mset A B) = (a \<in># A \<and> b \<in># B a)"
   by blast
 
-lemma mem_Times_mset_iff: "x \<in># A \<times>mset B \<longleftrightarrow> fst x \<in># A \<and> snd x \<in># B"
+lemma mem_Times_mset_iff: "x \<in># A \<times># B \<longleftrightarrow> fst x \<in># A \<and> snd x \<in># B"
   by (induct x) simp
 
 lemma Sigma_mset_empty_iff: "(SIGMAMSET i\<in>#I. X i) = {#} \<longleftrightarrow> (\<forall>i\<in>#I. X i = {#})"
   by (auto simp: Sigma_mset_def)
 
-lemma Times_mset_subset_mset_cancel1: "x \<in># A \<Longrightarrow> (A \<times>mset B \<subseteq># A \<times>mset C) = (B \<subseteq># C)"
+lemma Times_mset_subset_mset_cancel1: "x \<in># A \<Longrightarrow> (A \<times># B \<subseteq># A \<times># C) = (B \<subseteq># C)"
   by (auto simp: subseteq_mset_def count_Sigma_mset)
 
-lemma Times_mset_subset_mset_cancel2: "x \<in># C \<Longrightarrow> (A \<times>mset C \<subseteq># B \<times>mset C) = (A \<subseteq># B)"
+lemma Times_mset_subset_mset_cancel2: "x \<in># C \<Longrightarrow> (A \<times># C \<subseteq># B \<times># C) = (A \<subseteq># B)"
   by (auto simp: subseteq_mset_def count_Sigma_mset)
 
-lemma Times_mset_eq_cancel2: "x\<in>#C \<Longrightarrow> (A \<times>mset C = B \<times>mset C) = (A = B)"
+lemma Times_mset_eq_cancel2: "x\<in>#C \<Longrightarrow> (A \<times># C = B \<times># C) = (A = B)"
   by (auto simp: multiset_eq_iff count_Sigma_mset dest!: in_countE)
 
 lemma split_paired_Ball_mset_Sigma_mset [simp, no_atp]:
@@ -1001,36 +1001,35 @@ lemma Sigma_mset_Union: "Sigma_mset (\<Union>#X) B = (\<Union># (image_mset (\<l
   by (auto simp: multiset_eq_iff count_sum_mset count_image_mset_Pair sum_mset_if_eq_constant
     Sigma_mset_def iterate_op_plus min_def not_in_iff sum_mset_distrib_left)
 
-lemma Times_mset_Un_distrib1: "(A \<union># B) \<times>mset C = A \<times>mset C \<union># B \<times>mset C "
+lemma Times_mset_Un_distrib1: "(A \<union># B) \<times># C = A \<times># C \<union># B \<times># C"
   by (fact Sigma_mset_Un_distrib1)
 
-lemma Times_mset_Int_distrib1: "(A \<inter># B) \<times>mset C = A \<times>mset C \<inter># B \<times>mset C "
+lemma Times_mset_Int_distrib1: "(A \<inter># B) \<times># C = A \<times># C \<inter># B \<times># C"
   by (fact Sigma_mset_Int_distrib1)
 
-lemma Times_mset_Diff_distrib1: "(A - B) \<times>mset C = A \<times>mset C - B \<times>mset C "
+lemma Times_mset_Diff_distrib1: "(A - B) \<times># C = A \<times># C - B \<times># C"
   by (fact Sigma_mset_Diff_distrib1)
 
-lemma Times_mset_empty[simp]: "A \<times>mset B = {#} \<longleftrightarrow> A = {#} \<or> B = {#}"
+lemma Times_mset_empty[simp]: "A \<times># B = {#} \<longleftrightarrow> A = {#} \<or> B = {#}"
   by (auto simp: Sigma_mset_empty_iff)
 
-lemma Times_insert_left: "A \<times>mset add_mset x B = A \<times>mset B + image_mset (\<lambda>a. Pair a x) A"
+lemma Times_insert_left: "A \<times># add_mset x B = A \<times># B + image_mset (\<lambda>a. Pair a x) A"
   unfolding add_mset_add_single[of x B] Sigma_mset_plus_distrib2
   by (simp add: Times_mset_single_right)
 
-lemma Times_insert_right: "add_mset a A \<times>mset B = A \<times>mset B + image_mset (Pair a) B"
+lemma Times_insert_right: "add_mset a A \<times># B = A \<times># B + image_mset (Pair a) B"
   unfolding add_mset_add_single[of a A] Sigma_mset_plus_distrib1
   by (simp add: Times_mset_single_left)
 
 lemma fst_image_mset_times_mset [simp]:
-  "image_mset fst (A \<times>mset B) = (if B = {#} then {#} else repeat_mset (size B) A)"
+  "image_mset fst (A \<times># B) = (if B = {#} then {#} else repeat_mset (size B) A)"
   by (induction B) (auto simp: Times_mset_single_right ac_simps Times_insert_left)
 
 lemma snd_image_mset_times_mset [simp]:
-  "image_mset snd (A \<times>mset B) = (if A = {#} then {#} else repeat_mset (size A) B)"
+  "image_mset snd (A \<times># B) = (if A = {#} then {#} else repeat_mset (size A) B)"
   by (induction B) (auto simp add: Times_mset_single_right image_mset_const Times_insert_left)
 
-lemma product_swap_mset:
-  "image_mset prod.swap (A \<times>mset B) = B \<times>mset A"
+lemma product_swap_mset: "image_mset prod.swap (A \<times># B) = B \<times># A"
   by (induction A) (auto simp add: Times_mset_single_left Times_mset_single_right
       Times_insert_right Times_insert_left)
 
@@ -1038,9 +1037,9 @@ context
 begin
 
 qualified definition product_mset :: "'a multiset \<Rightarrow> 'b multiset \<Rightarrow> ('a \<times> 'b) multiset" where
-  [code_abbrev]: "product_mset A B = A \<times>mset B"
+  [code_abbrev]: "product_mset A B = A \<times># B"
 
-lemma member_product_mset: "x \<in># Multiset_More.product_mset A B \<longleftrightarrow> x \<in># A \<times>mset B"
+lemma member_product_mset: "x \<in># Multiset_More.product_mset A B \<longleftrightarrow> x \<in># A \<times># B"
   by (simp add: Multiset_More.product_mset_def)
 
 end
@@ -1048,17 +1047,17 @@ end
 lemma count_Sigma_mset_abs_def: "count (Sigma_mset A B) = (\<lambda>(a, b) \<Rightarrow> count A a * count (B a) b)"
   by (auto simp: fun_eq_iff count_Sigma_mset)
 
-lemma Times_mset_image_mset1: "image_mset f A \<times>mset B = image_mset (\<lambda>(a, b). (f a, b)) (A \<times>mset B)"
+lemma Times_mset_image_mset1: "image_mset f A \<times># B = image_mset (\<lambda>(a, b). (f a, b)) (A \<times># B)"
   by (induct B) (auto simp: Times_insert_left)
 
-lemma Times_mset_image_mset2: "A \<times>mset image_mset f B = image_mset (\<lambda>(a, b). (a, f b)) (A \<times>mset B)"
+lemma Times_mset_image_mset2: "A \<times># image_mset f B = image_mset (\<lambda>(a, b). (a, f b)) (A \<times># B)"
   by (induct A) (auto simp: Times_insert_right)
 
 lemma sum_le_singleton: "A \<subseteq> {x} \<Longrightarrow> sum f A = (if x \<in> A then f x else 0)"
   by (auto simp: subset_singleton_iff elim: finite_subset)
 
 lemma Times_mset_assoc:
-  "(A \<times>mset B) \<times>mset C = image_mset (\<lambda>(a, b, c). ((a, b), c)) (A \<times>mset B \<times>mset C)"
+  "(A \<times># B) \<times># C = image_mset (\<lambda>(a, b, c). ((a, b), c)) (A \<times># B \<times># C)"
   by (auto simp: multiset_eq_iff count_Sigma_mset count_image_mset vimage_def Times_mset_Times
     Int_commute count_eq_zero_iff
     intro!: trans[OF _ sym[OF sum_le_singleton[of _ "(_, _, _)"]]]

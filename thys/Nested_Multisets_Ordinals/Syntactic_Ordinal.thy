@@ -27,10 +27,10 @@ abbreviation \<omega> :: hmultiset where
   "\<omega> \<equiv> \<omega>^1"
 
 definition times_hmultiset :: "hmultiset \<Rightarrow> hmultiset \<Rightarrow> hmultiset"  where
-  "A * B = HMSet (image_mset (case_prod (op +)) (hmsetmset A \<times>mset hmsetmset B))"
+  "A * B = HMSet (image_mset (case_prod (op +)) (hmsetmset A \<times># hmsetmset B))"
 
 lemma hmsetmset_times:
-  "hmsetmset (m * n) = image_mset (case_prod (op +)) (hmsetmset m \<times>mset hmsetmset n)"
+  "hmsetmset (m * n) = image_mset (case_prod (op +)) (hmsetmset m \<times># hmsetmset n)"
   unfolding times_hmultiset_def by simp
 
 instance
@@ -103,20 +103,20 @@ lemma plus_hmultiset_transfer[transfer_rule]:
 
 lemma Times_mset_monoL:
   assumes less: "M < N" and Z_nemp: "Z \<noteq> {#}"
-  shows "M \<times>mset Z < N \<times>mset Z"
+  shows "M \<times># Z < N \<times># Z"
 proof -
   obtain Y X where
     Y_nemp: "Y \<noteq> {#}" and Y_sub_N: "Y \<subseteq># N" and M_eq: "M = N - Y + X" and
     ex_Y: "\<forall>x. x \<in># X \<longrightarrow> (\<exists>y. y \<in># Y \<and> x < y)"
     using less[unfolded less_multiset\<^sub>D\<^sub>M] by blast
 
-  let ?X = "X \<times>mset Z"
-  let ?Y = "Y \<times>mset Z"
+  let ?X = "X \<times># Z"
+  let ?Y = "Y \<times># Z"
 
   show ?thesis
     unfolding less_multiset\<^sub>D\<^sub>M
   proof (intro exI conjI)
-    show "M \<times>mset Z = N \<times>mset Z - ?Y + ?X"
+    show "M \<times># Z = N \<times># Z - ?Y + ?X"
       unfolding M_eq by (auto simp: Sigma_mset_Diff_distrib1)
   next
     obtain y where y: "\<forall>x. x \<in># X \<longrightarrow> y x \<in># Y \<and> x < y x"
