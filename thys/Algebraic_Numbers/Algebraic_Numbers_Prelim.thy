@@ -444,6 +444,15 @@ lemma cf_pos_poly_represents[simp]: "(cf_pos_poly p) represents x \<longleftrigh
 definition factors_of_int_poly :: "int poly \<Rightarrow> int poly list" where
   "factors_of_int_poly p = map (cf_pos_poly o fst) (snd (factorize_int_poly p))"
 
+lemma factors_of_int_poly_const: assumes "degree p = 0"    
+  shows "factors_of_int_poly p = []"
+proof -
+  from degree0_coeffs[OF assms] obtain a where p: "p = [: a :]" by auto
+  show ?thesis unfolding p factors_of_int_poly_def
+    factorize_int_poly_def x_split_def 
+    by (cases "a = 0", auto simp add: Let_def factorize_int_last_nz_poly_def)
+qed
+  
 lemma coprime_prod: (* TODO: move *)
   "a \<noteq> 0 \<Longrightarrow> c \<noteq> 0 \<Longrightarrow> coprime (a * b) (c * d) \<Longrightarrow> coprime b (d::'a::{semiring_gcd})"
   unfolding coprime_iff_gcd_one

@@ -15,16 +15,6 @@ imports
   Real_Algebraic_Numbers
 begin
 
-hide_const (open) order
-
-partial_function (tailrec) roots_of_2_main :: 
-  "int poly \<Rightarrow> root_info \<Rightarrow> (rat \<Rightarrow> rat \<Rightarrow> nat) \<Rightarrow> (rat \<times> rat)list \<Rightarrow> real_alg_2 list \<Rightarrow> real_alg_2 list" where
-  [code]: "roots_of_2_main p ri cr lrs rais = (case lrs of Nil \<Rightarrow> rais
-  | (l,r) # lrs \<Rightarrow> let c = cr l r in 
-    if c = 0 then roots_of_2_main p ri cr lrs rais
-    else if c = 1 then roots_of_2_main p ri cr lrs (real_alg_2' ri p l r # rais)
-    else let m = (l + r) / 2 in roots_of_2_main p ri cr ((m,r) # (l,m) # lrs) rais)"
-
 text \<open>Division of integers, rounding to the upper value.\<close>
 definition div_ceiling :: "int \<Rightarrow> int \<Rightarrow> int" where
   "div_ceiling x y = (let q = x div y in if q * y = x then q else q + 1)" 
@@ -37,6 +27,14 @@ definition root_bound :: "int poly \<Rightarrow> rat" where
      (* round to the next higher number 2^n, so that bisection will 
        stay on integers for as long as possible *)
    in of_int (2 ^ (log_ceiling 2 m))"
+  
+partial_function (tailrec) roots_of_2_main :: 
+  "int poly \<Rightarrow> root_info \<Rightarrow> (rat \<Rightarrow> rat \<Rightarrow> nat) \<Rightarrow> (rat \<times> rat)list \<Rightarrow> real_alg_2 list \<Rightarrow> real_alg_2 list" where
+  [code]: "roots_of_2_main p ri cr lrs rais = (case lrs of Nil \<Rightarrow> rais
+  | (l,r) # lrs \<Rightarrow> let c = cr l r in 
+    if c = 0 then roots_of_2_main p ri cr lrs rais
+    else if c = 1 then roots_of_2_main p ri cr lrs (real_alg_2' ri p l r # rais)
+    else let m = (l + r) / 2 in roots_of_2_main p ri cr ((m,r) # (l,m) # lrs) rais)"
   
 definition roots_of_2_irr :: "int poly \<Rightarrow> real_alg_2 list" where
   "roots_of_2_irr p = (if degree p = 1
@@ -418,15 +416,6 @@ qed
 definition roots_of_2 :: "int poly \<Rightarrow> real_alg_2 list" where
   "roots_of_2 p = concat (map roots_of_2_irr 
      (factors_of_int_poly p))"
-
-lemma factors_of_int_poly_const: assumes "degree p = 0"    
-  shows "factors_of_int_poly p = []"
-proof -
-  from degree0_coeffs[OF assms] obtain a where p: "p = [: a :]" by auto
-  show ?thesis unfolding p factors_of_int_poly_def
-    factorize_int_poly_def x_split_def 
-    by (cases "a = 0", auto simp add: Let_def factorize_int_last_nz_poly_def)
-qed
     
 lemma roots_of_2:
   shows "p \<noteq> 0 \<Longrightarrow> real_of_2 ` set (roots_of_2 p) = {x. ipoly p x = 0}"
@@ -570,7 +559,7 @@ proof -
 qed
 
 text \<open>It follows an implementation for @{const roots_of_3}, 
-  which is not directly available as code equation.\<close>
+  since the current definition does not provide a code equation.\<close>
 context
 begin
 private typedef real_alg_2_list = "{xs. Ball (set xs) invariant_2}" by (intro exI[of _ Nil], auto)
@@ -671,7 +660,7 @@ proof -
     by auto
 qed
 
-text \<open>The upcoming functions no longer demand a rational polynomial as input.\<close>
+text \<open>The upcoming functions no longer demand an integer or rational polynomial as input.\<close>
 
 definition roots_of_real_main :: "real poly \<Rightarrow> real list" where 
   "roots_of_real_main p \<equiv> let n = degree p in 
