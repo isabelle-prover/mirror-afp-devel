@@ -201,7 +201,7 @@ lemma mset_le_single_right_iff[simp]:
 
 subsection \<open>Lemmas about Intersection, Union and Pointwise Inclusion\<close>
 
-lemma mset_inter_single: "x \<in># \<Sigma> \<Longrightarrow> \<Sigma> \<inter># {#x#} = {#x#}"
+lemma mset_inter_single: "x \<in># M \<Longrightarrow> M \<inter># {#x#} = {#x#}"
   by simp
 
 lemma subset_add_mset_notin_subset_mset: \<open>A \<subseteq># add_mset b B \<Longrightarrow> b \<notin># A  \<Longrightarrow> A \<subseteq># B\<close>
@@ -236,10 +236,10 @@ This sections adds various lemmas about size. Most lemmas have a finite set equi
 lemma size_mset_SucE: "size A = Suc n \<Longrightarrow> (\<And>a B. A = {#a#} + B \<Longrightarrow> size B = n \<Longrightarrow> P) \<Longrightarrow> P"
   by (cases A) (auto simp add: ac_simps)
 
-lemma size_Suc_Diff1: "x \<in># \<Sigma> \<Longrightarrow> Suc (size (\<Sigma> - {#x#})) = size \<Sigma>"
+lemma size_Suc_Diff1: "x \<in># M \<Longrightarrow> Suc (size (M - {#x#})) = size M"
   using arg_cong[OF insert_DiffM, of _ _ size] by simp
 
-lemma size_Diff_singleton: "x \<in># \<Sigma> \<Longrightarrow> size (\<Sigma> - {#x#}) = size \<Sigma> - 1"
+lemma size_Diff_singleton: "x \<in># M \<Longrightarrow> size (M - {#x#}) = size M - 1"
   by (simp add: size_Suc_Diff1 [symmetric])
 
 lemma size_Diff_singleton_if: "size (A - {#x#}) = (if x \<in># A then size A - 1 else size A)"
@@ -262,30 +262,30 @@ lemma size_Un_disjoint:
   using assms size_Un_Int [of A B] by simp
 
 lemma size_Diff_subset_Int:
-  shows "size (\<Sigma> - \<Sigma>') = size \<Sigma> - size (\<Sigma> \<inter># \<Sigma>')"
+  shows "size (M - M') = size M - size (M \<inter># M')"
 proof -
-  have *: "\<Sigma> - \<Sigma>' = \<Sigma> - \<Sigma> \<inter># \<Sigma>'" by (auto simp add: multiset_eq_iff)
+  have *: "M - M' = M - M \<inter># M'" by (auto simp add: multiset_eq_iff)
   show ?thesis unfolding * using size_Diff_submset subset_mset.inf.cobounded1 by blast
 qed
 
-lemma diff_size_le_size_Diff: "size (\<Sigma>:: _ multiset) - size \<Sigma>' \<le> size (\<Sigma> - \<Sigma>')"
+lemma diff_size_le_size_Diff: "size (M:: _ multiset) - size M' \<le> size (M - M')"
 proof-
-  have "size \<Sigma> - size \<Sigma>' \<le> size \<Sigma> - size (\<Sigma> \<inter># \<Sigma>')"
+  have "size M - size M' \<le> size M - size (M \<inter># M')"
     using size_mset_mono diff_le_mono2 subset_mset.inf_le2 by metis
-  also have "\<dots> = size(\<Sigma>-\<Sigma>')" by(simp add: size_Diff_subset_Int)
+  also have "\<dots> = size(M-M')" by(simp add: size_Diff_subset_Int)
   finally show ?thesis .
 qed
 
-lemma size_Diff1_less: "x\<in># \<Sigma> \<Longrightarrow> size (\<Sigma> - {#x#}) < size \<Sigma>"
+lemma size_Diff1_less: "x\<in># M \<Longrightarrow> size (M - {#x#}) < size M"
   by (rule Suc_less_SucD) (simp add: size_Suc_Diff1)
 
-lemma size_Diff2_less: "x\<in># \<Sigma> \<Longrightarrow> y\<in># \<Sigma> \<Longrightarrow> size (\<Sigma> - {#x#} - {#y#}) < size \<Sigma>"
+lemma size_Diff2_less: "x\<in># M \<Longrightarrow> y\<in># M \<Longrightarrow> size (M - {#x#} - {#y#}) < size M"
   by (metis less_imp_diff_less size_Diff1_less size_Diff_subset_Int)
 
-lemma size_Diff1_le: "size (\<Sigma> - {#x#}) \<le> size \<Sigma>"
-  by (cases "x \<in># \<Sigma>") (simp_all add: size_Diff1_less less_imp_le)
+lemma size_Diff1_le: "size (M - {#x#}) \<le> size M"
+  by (cases "x \<in># M") (simp_all add: size_Diff1_less less_imp_le)
 
-lemma size_psubset: "\<Sigma> \<subseteq># \<Sigma>' \<Longrightarrow> size \<Sigma> < size \<Sigma>' \<Longrightarrow> \<Sigma> \<subset># \<Sigma>'"
+lemma size_psubset: "M \<subseteq># M' \<Longrightarrow> size M < size M' \<Longrightarrow> M \<subset># M'"
   using less_irrefl subset_mset_def by blast
 
 
