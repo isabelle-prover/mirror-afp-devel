@@ -7,8 +7,7 @@
 subsubsection {* Verification Examples *}
 
 theory VC_KAT_Examples
-  imports VC_KAT GCD 
-
+  imports VC_KAT
 begin
 
 lemma euclid:

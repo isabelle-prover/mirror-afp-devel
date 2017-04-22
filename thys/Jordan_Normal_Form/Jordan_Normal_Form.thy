@@ -13,7 +13,6 @@ theory Jordan_Normal_Form
 imports 
   Matrix
   Char_Poly
-  Binomial
   "../Polynomial_Interpolation/Missing_Unsorted"
 begin
 

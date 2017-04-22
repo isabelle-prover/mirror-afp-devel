@@ -7,8 +7,7 @@
 subsubsection{* Verification Examples with Automated VCG *}
 
 theory VC_KAD_Examples2
-imports  VC_KAD GCD Binomial "~~/src/HOL/Eisbach/Eisbach"
-
+imports VC_KAD "~~/src/HOL/Eisbach/Eisbach"
 begin
 
 text {* We have provide a simple tactic in the Eisbach proof method language. Additional simplification

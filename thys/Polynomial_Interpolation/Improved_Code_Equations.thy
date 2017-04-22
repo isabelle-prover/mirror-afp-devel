@@ -11,7 +11,6 @@ theory Improved_Code_Equations
 imports 
   "~~/src/HOL/Computational_Algebra/Polynomial"
   Code_Numeral 
-  Binomial
 begin
 
 subsection \<open>@{const divmod_integer}.\<close>

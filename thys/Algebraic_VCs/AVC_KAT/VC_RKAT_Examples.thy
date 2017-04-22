@@ -7,8 +7,7 @@
 subsubsection {* Refinement Examples *}
 
 theory VC_RKAT_Examples 
-  imports VC_RKAT GCD
-
+  imports VC_RKAT
 begin
 
 text {* Currently  there is only one example, and no tactic for automating refinement proofs is provided. *}

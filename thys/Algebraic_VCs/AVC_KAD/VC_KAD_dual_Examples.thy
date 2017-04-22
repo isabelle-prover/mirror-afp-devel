@@ -7,7 +7,7 @@
 subsubsection{* Verification Examples *}
 
 theory VC_KAD_dual_Examples
-imports VC_KAD_dual GCD Binomial
+imports VC_KAD_dual
 
 begin
 

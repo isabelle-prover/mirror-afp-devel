@@ -9,7 +9,7 @@ subsection {* Two Extensions *}
 subsubsection {* KAD Component with Trace Semantics *}
 
 theory Path_Model_Example
-  imports VC_KAD GCD "~~/src/HOL/Eisbach/Eisbach"
+  imports VC_KAD "~~/src/HOL/Eisbach/Eisbach"
 begin
 
 text {* This component supports the verification of simple while programs

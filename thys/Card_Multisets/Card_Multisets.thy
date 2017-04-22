@@ -4,7 +4,6 @@ section {* Cardinality of Multisets *}
 
 theory Card_Multisets
 imports
-  Binomial
   "~~/src/HOL/Library/Multiset"
 begin
 

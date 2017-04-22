@@ -7,8 +7,7 @@
 section {* Two Standalone Components *}
 
 theory VC_KAT_scratch
-  imports Main GCD
-
+  imports Main
 begin
 
 subsection {* Component Based on Kleene Algebra with Tests *}

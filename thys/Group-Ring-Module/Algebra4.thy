@@ -25,7 +25,7 @@
  **)
 
 theory Algebra4
-imports Algebra3 Binomial Zorn
+imports Algebra3 Zorn
 begin
 
 section "Abelian groups"

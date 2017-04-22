@@ -10,8 +10,7 @@ text {* This component supports the verification and step-wise refinement of sim
 in a partial correctness setting. *}
 
 theory VC_KAD_scratch
-  imports Main GCD Binomial
-
+  imports Main
 begin
 
 subsubsection {* KAD: Definitions and Basic Properties *}

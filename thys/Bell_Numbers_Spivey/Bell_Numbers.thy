@@ -4,7 +4,6 @@ section {* Bell Numbers and Spivey's Generalized Recurrence *}
 
 theory Bell_Numbers
 imports
-  Binomial
   "~~/src/HOL/Library/FuncSet"
   "~~/src/HOL/Library/Monad_Syntax"
   "~~/src/HOL/Library/Stirling"

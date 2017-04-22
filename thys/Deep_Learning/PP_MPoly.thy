@@ -5,7 +5,7 @@
 section \<open>An abstract type for multivariate polynomials\<close>
 
 theory PP_MPoly
-imports PP_Poly_Mapping "~~/src/HOL/GCD"
+imports PP_Poly_Mapping
 begin
 
 subsection \<open>Abstract type definition\<close>
