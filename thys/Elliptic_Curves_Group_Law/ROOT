@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Elliptic_Curves_Group_Law" (AFP) = "HOL" +
+session "Elliptic_Curves_Group_Law" (AFP) = "HOL-Number_Theory" +
   options [timeout = 600]
   theories [document = false]
     "~~/src/HOL/Decision_Procs/Reflective_Field"

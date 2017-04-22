@@ -1,6 +1,6 @@
 chapter AFP
 
-session Abstract_Completeness (AFP) = "HOL" +
+session Abstract_Completeness (AFP) = "HOL-Library" +
   options [timeout = 300]
   theories [document = false]
     "~~/src/HOL/Library/Stream"

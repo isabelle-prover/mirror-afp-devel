@@ -10,8 +10,8 @@ session Well_Quasi_Orders (AFP) = "HOL-Library" +
     "~~/src/HOL/Library/Infinite_Set"
     "~~/src/HOL/Library/Ramsey"
     "~~/src/HOL/Library/Multiset"
-  theories
     "~~/src/HOL/Library/Sublist"
+  theories
     Infinite_Sequences
     Minimal_Elements
     Minimal_Bad_Sequences

@@ -3,8 +3,8 @@ chapter AFP
 session Promela (AFP) = LTL_to_GBA +
   options [timeout = 600]
   theories [document = false]
-     "~~/src/HOL/Library/IArray"
-     PromelaStatistics
+    "~~/src/HOL/Library/IArray"
+    PromelaStatistics
   theories
     Promela
     PromelaLTL

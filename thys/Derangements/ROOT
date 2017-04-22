@@ -1,6 +1,6 @@
 chapter AFP
 
-session Derangements (AFP) = HOL +
+session Derangements (AFP) = "HOL-Library" +
   options [timeout=600]
   theories [document = false]
     "~~/src/HOL/Decision_Procs/Approximation"

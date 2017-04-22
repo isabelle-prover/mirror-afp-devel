@@ -1,6 +1,6 @@
 chapter AFP 
 
-session "HyperCTL" (AFP) = "HOL" +
+session "HyperCTL" (AFP) = "HOL-Library" +
   options [timeout = 600]
   theories [document = false]
     "~~/src/HOL/Library/Stream"

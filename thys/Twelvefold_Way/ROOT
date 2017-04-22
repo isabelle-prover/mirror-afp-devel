@@ -1,6 +1,6 @@
 chapter AFP
 
-session Twelvefold_Way (AFP) = "HOL" +
+session Twelvefold_Way (AFP) = "HOL-Library" +
   options [timeout = 300]
   theories [document = false]
     "~~/src/HOL/Library/Multiset"

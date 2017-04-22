@@ -1,6 +1,6 @@
 chapter AFP
 
-session Incompleteness (AFP) = HOL +
+session Incompleteness (AFP) = HereditarilyFinite +
   description {* The Incompleteness Theorems *}
   options [timeout = 1200]
   theories [document = false]

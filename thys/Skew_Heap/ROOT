@@ -1,7 +1,6 @@
 chapter AFP
 
-(* Session name, add to AFP group, list base session: *)
-session Skew_Heap (AFP) = HOL +
+session Skew_Heap (AFP) = "HOL-Library" +
   options [timeout = 600]
   theories [document = false]
     "~~/src/HOL/Library/Multiset"

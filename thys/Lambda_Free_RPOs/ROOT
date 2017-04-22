@@ -1,6 +1,6 @@
 chapter AFP
 
-session Lambda_Free_RPOs (AFP) = HOL +
+session Lambda_Free_RPOs (AFP) = "HOL-Library" +
   options [timeout=600]
   theories [document = false]
     "~~/src/HOL/Cardinals/Wellorder_Extension"

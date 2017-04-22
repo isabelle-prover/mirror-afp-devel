@@ -10,7 +10,7 @@ session Koenigsberg_Friendship (AFP) = Koenigsberg_Friendship_Base +
     "root.bib"
     "root.tex"
 
-session Koenigsberg_Friendship_Base (AFP) = HOL +
+session Koenigsberg_Friendship_Base (AFP) = "HOL-Number_Theory" +
   options [timeout = 3600, document = false]
   theories
     "~~/src/HOL/Algebra/Congruence"

@@ -1,6 +1,6 @@
 chapter AFP
 
-session XML (AFP) = HOL +
+session XML (AFP) = "HOL-Library" +
   options [timeout=600]
   theories [document = false]
     "~~/src/Tools/Adhoc_Overloading"

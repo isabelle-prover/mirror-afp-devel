@@ -1,6 +1,6 @@
 chapter AFP
 
-session RSAPSS (AFP) = HOL +
+session RSAPSS (AFP) = "HOL-Computational_Algebra" +
   options [timeout = 600]
   theories [document = false]
     "~~/src/HOL/Library/Code_Target_Numeral"
