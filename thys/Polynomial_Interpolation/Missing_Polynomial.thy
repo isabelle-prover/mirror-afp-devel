@@ -179,20 +179,6 @@ lemma poly_eqI2:
   shows "p = q"
   apply(rule poly_eqI) by (metis assms le_degree)
 
-text {*
-  A nicer condition for 'a @{type poly} to be @{class ring_char_0} over @{class linordered_field}
-*}
-
-instance poly :: ("{ring_char_0,idom}") ring_char_0
-proof
-  show "inj (of_nat :: nat \<Rightarrow> 'a poly)" unfolding inj_on_def
-  proof (intro impI ballI)
-    fix x y :: nat
-    assume "of_nat x = (of_nat y :: 'a poly)"
-    thus "x = y" unfolding of_nat_poly by auto
-  qed
-qed
-
 text {* A nice extension rule for polynomials. *}
 lemma poly_ext[intro]:
   fixes p q :: "'a :: {ring_char_0, idom} poly"
@@ -1001,14 +987,13 @@ lemma poly_compare_0_code[code_unfold]: "(f = 0) = (case coeffs f of [] \<Righta
   using coeffs_eq_Nil list.disc_eq_case(1) by blast
 
 text \<open>Getting more efficient code for abbreviation @{term lead_coeff}"\<close>
-definition leading_coeff where "leading_coeff x = lead_coeff x" 
 
-lemma leading_coeff_code_unfold[code_unfold]: "lead_coeff x = leading_coeff x" 
-  unfolding leading_coeff_def ..
-    
-lemma leading_coeff_code[code]: "leading_coeff f =
-  (let xs = coeffs f in if xs = [] then 0 else last xs)"
-  by (auto simp: last_coeffs_eq_coeff_degree leading_coeff_def)
+definition leading_coeff
+  where [code_abbrev, simp]: "leading_coeff = lead_coeff" 
+
+lemma leading_coeff_code [code]:
+  "leading_coeff f = (let xs = coeffs f in if xs = [] then 0 else last xs)"
+  by (simp add: last_coeffs_eq_coeff_degree)
 
 lemma nth_coeffs_coeff: "i < length (coeffs f) \<Longrightarrow> coeffs f ! i = coeff f i"
   by (metis nth_default_coeffs_eq nth_default_def)
