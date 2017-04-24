@@ -1224,15 +1224,21 @@ proof-
 qed
 
 lemma poly_inverse_irreducible:
+  fixes x :: "'a :: {field_char_0,euclidean_ring_gcd}"
   assumes p: "irreducible p" and x: "p represents x" and x0: "x \<noteq> 0"
   shows "irreducible (cf_pos_poly (poly_inverse p))"
 proof -
-  have 0: "coeff p 0 \<noteq> 0" using x0 p x by (metis poly_0_coeff_0 represents_irr_non_0)
-  have irr: "irreducible (poly_inverse p)" 
-    unfolding poly_inverse_def irreducible_reflect_poly[OF 0] by (rule p)
-  have "degree (poly_inverse p) \<noteq> 0" unfolding poly_inverse_def using 0 represents_imp_degree x by auto
-  from irreducible_cf_pos_poly[OF irr this]
-  show ?thesis .
+  from represents_inverse[OF x0 x]
+  have y: "cf_pos_poly (poly_inverse p) represents (inverse x)" by simp
+  from x0 have ix0: "inverse x \<noteq> 0" by auto
+  show ?thesis
+  proof (rule irreducible_preservation[OF p x y])
+    fix q
+    assume "q represents (inverse x)"
+    from represents_inverse[OF ix0 this] have "(poly_inverse q) represents x" by simp
+    with degree_poly_inverse_le
+    show "(poly_inverse q) represents x \<and> degree (poly_inverse q) \<le> degree q" by auto
+  qed (insert p, auto simp: degree_poly_inverse_le)
 qed
 
 lemma poly_add_rat_irreducible:
