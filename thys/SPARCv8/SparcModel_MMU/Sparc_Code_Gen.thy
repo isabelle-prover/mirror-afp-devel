@@ -8,10 +8,8 @@
  * Author: Zhe Hou.
  *)
 
-theory sparc_code_gen
-
-imports Main sparc_execution sparc_init_state
-
+theory Sparc_Code_Gen
+imports Main Sparc_Execution Sparc_Init_State
 begin
 
 export_code init_state0 reset_mode_mod reset_mode_val
