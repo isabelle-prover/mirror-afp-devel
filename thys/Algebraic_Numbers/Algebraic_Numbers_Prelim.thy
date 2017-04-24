@@ -859,34 +859,12 @@ qed
 
 
 text \<open>Polynomial for multiplicative inverse.\<close>  
-definition poly_inverse :: "'a :: idom poly \<Rightarrow> 'a poly" where
-  [code del]: "poly_inverse p = (\<Sum> i \<le> degree p. monom (coeff p (degree p - i)) i)"
 
-lemma poly_inverse_rev_coeffs[code]: 
-  "poly_inverse p = poly_of_list (rev (coeffs p))"
-proof (cases "p = 0")
-  case True
-  thus ?thesis by (auto simp: poly_inverse_def)
-next
-  case False
-  show ?thesis unfolding poly_of_list_def poly_eq_iff
-  proof 
-    fix n
-    have "coeff (poly_inverse p) n = (if n \<le> degree p then coeff p (degree p - n) else 0)"
-      unfolding poly_inverse_def coeff_sum coeff_monom
-      by (cases "n \<le> degree p", auto, subst sum.remove[of _ n], auto)
-    also have "\<dots> = coeff (Poly (rev (coeffs p))) n"
-      unfolding poly_inverse_def coeff_sum coeff_monom coeff_Poly
-      by (cases "n < length (coeffs p)", 
-        auto simp: nth_default_def length_coeffs_degree[OF False], subst rev_nth,
-        auto simp: length_coeffs_degree[OF False] coeffs_nth[OF False])
-    finally show "coeff (poly_inverse p) n = coeff (Poly (rev (coeffs p))) n" .
-  qed
-qed  
+definition poly_inverse :: "'a :: idom poly \<Rightarrow> 'a poly" where
+  "poly_inverse p = reflect_poly p" 
 
 lemma degree_poly_inverse_le: "degree (poly_inverse p) \<le> degree p"
-  unfolding poly_inverse_def 
-  by (rule degree_sum_le, force, rule order_trans[OF degree_monom_le], auto)
+  unfolding poly_inverse_def by (rule degree_reflect_poly_le)
 
 lemma inverse_pow_minus: assumes "x \<noteq> (0 :: 'a :: field)"
   and "i \<le> n"
@@ -895,29 +873,19 @@ lemma inverse_pow_minus: assumes "x \<noteq> (0 :: 'a :: field)"
 
 lemma poly_inverse: assumes x: "x \<noteq> (0 :: 'a :: field)"
   shows "poly (poly_inverse p) x = x ^ (degree p) * poly p (inverse x)" (is "?l = ?r")
+  unfolding poly_inverse_def by (rule poly_reflect_poly_nz[OF x])
+
+lemma (in inj_idom_hom) reflect_poly_hom:
+  "reflect_poly (map_poly hom p) = map_poly hom (reflect_poly p)"
 proof -
-  from poly_as_sum_of_monoms[of p]
-  have id: "poly p (inverse x) = poly ((\<Sum>x\<le>degree p. monom (coeff p x) x)) (inverse x)" by simp
-  let ?f = "\<lambda> k. poly (monom (coeff p (degree p - k)) k) x"
-  have "?l = (\<Sum>k\<le>degree p. ?f k)"
-    unfolding poly_inverse_def poly_sum by simp 
-  also have "\<dots> = (\<Sum>k \<le> degree p. ?f (degree p - k))"
-    by (subst sum.reindex_cong[of "\<lambda> i. degree p - i" "{..degree p}"], auto simp: inj_on_def)
-     (metis (full_types) atMost_iff diff_diff_cancel diff_le_mono2 diff_zero image_iff le0)
-  also have "\<dots> = (\<Sum>k\<le>degree p. x ^ degree p * poly (monom (coeff p k) k) (inverse x))"
-    using inverse_pow_minus[OF nonzero_imp_inverse_nonzero[OF x]] by (intro sum.cong, auto simp: poly_monom)
-  also have "\<dots> = ?r"
-    unfolding id poly_sum sum_distrib_left by simp
-  finally show ?thesis .
+  obtain xs where xs: "rev (coeffs p) = xs" by auto
+  show ?thesis unfolding reflect_poly_def coeffs_map_poly rev_map
+    xs by (induct xs, auto)
 qed
 
 lemma (in inj_idom_hom) poly_inverse_hom:
   "poly_inverse (map_poly hom p) = map_poly hom (poly_inverse p)"
-proof -
-  interpret mh: map_poly_inj_idom_hom hom..
-  show ?thesis unfolding poly_inverse_def degree_map_poly by auto
-qed
-
+  unfolding poly_inverse_def by (rule reflect_poly_hom)
 
 lemma ipoly_inverse: assumes x: "(x :: 'a :: field_char_0) \<noteq> 0" 
   shows "ipoly (poly_inverse p) x = x ^ (degree p) * ipoly p (inverse x)" (is "?l = ?r")
@@ -929,8 +897,7 @@ proof -
 qed
 
 lemma poly_inverse_0[simp]: "poly_inverse p = 0 \<longleftrightarrow> p = 0"
-  unfolding poly_inverse_def 
-  by (subst sum_monom_0_iff, force+)
+  unfolding poly_inverse_def by auto
 
 lemma represents_inverse: assumes x: "x \<noteq> 0"
   and alg: "p represents x"
@@ -1257,21 +1224,15 @@ proof-
 qed
 
 lemma poly_inverse_irreducible:
-  fixes x :: "'a :: {field_char_0,euclidean_ring_gcd}"
   assumes p: "irreducible p" and x: "p represents x" and x0: "x \<noteq> 0"
   shows "irreducible (cf_pos_poly (poly_inverse p))"
 proof -
-  from represents_inverse[OF x0 x]
-  have y: "cf_pos_poly (poly_inverse p) represents (inverse x)" by simp
-  from x0 have ix0: "inverse x \<noteq> 0" by auto
-  show ?thesis
-  proof (rule irreducible_preservation[OF p x y])
-    fix q
-    assume "q represents (inverse x)"
-    from represents_inverse[OF ix0 this] have "(poly_inverse q) represents x" by simp
-    with degree_poly_inverse_le
-    show "(poly_inverse q) represents x \<and> degree (poly_inverse q) \<le> degree q" by auto
-  qed (insert p, auto simp: degree_poly_inverse_le)
+  have 0: "coeff p 0 \<noteq> 0" using x0 p x by (metis poly_0_coeff_0 represents_irr_non_0)
+  have irr: "irreducible (poly_inverse p)" 
+    unfolding poly_inverse_def irreducible_reflect_poly[OF 0] by (rule p)
+  have "degree (poly_inverse p) \<noteq> 0" unfolding poly_inverse_def using 0 represents_imp_degree x by auto
+  from irreducible_cf_pos_poly[OF irr this]
+  show ?thesis .
 qed
 
 lemma poly_add_rat_irreducible:
