@@ -13,6 +13,7 @@ session Tycon (AFP) = HOLCF +
     State_Transformer
     Error_Transformer
     Writer_Transformer
+    Monad_Transformer
   document_files
     "root.bib"
     "root.tex"
