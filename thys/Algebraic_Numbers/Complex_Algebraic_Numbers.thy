@@ -159,6 +159,7 @@ definition complex_roots_of_int_poly_all :: "int poly \<Rightarrow> complex list
 
 lemma complex_roots_of_int_poly3: assumes p: "p \<noteq> 0" 
   shows "set (complex_roots_of_int_poly3 p) = {x. ipoly p x = 0}" (is "?l = ?r")
+    "square_free p \<Longrightarrow> distinct (complex_roots_of_int_poly3 p)" 
 proof -
   interpret map_poly_inj_idom_hom of_real..
   define q where "q = real_of_int_poly p"
@@ -173,6 +174,7 @@ proof -
   have rrts: "set rrts = {x. poly ?q x = 0 \<and> x \<in> \<real>}" unfolding rrts_def set_map rr q_def
     complex_of_real_def[symmetric] by (auto elim: Reals_cases)
   have dist: "distinct rr" unfolding rr_def using real_roots_of_int_poly(2) .
+  from dist have dist1: "distinct rrts" unfolding rrts_def distinct_map inj_on_def by auto
   have lrr: "length rr = card {x. poly (real_of_int_poly p) x = 0}"
     unfolding rr_def using real_roots_of_int_poly[of p] p distinct_card by fastforce
   have cr: "length rr = card {x. poly ?q x = 0 \<and> x \<in> \<real>}" unfolding lrr q_def[symmetric]
@@ -186,19 +188,20 @@ proof -
   have conv: "\<And> x. ipoly p x = 0 \<longleftrightarrow> poly ?q x = 0"
     unfolding q_def by (subst map_poly_map_poly, auto simp: o_def)
   have r: "?r = {x. poly ?q x = 0}" unfolding conv ..
-  show ?thesis
+  have "?l = {x. ipoly p x = 0} \<and> (square_free p \<longrightarrow> distinct (complex_roots_of_int_poly3 p))" 
   proof (cases "degree p = length rr")
     case False note oFalse = this
     show ?thesis
     proof (cases "degree p - length rr = 2")
       case False
-      define cpx where "cpx = [c\<leftarrow>concat (map (\<lambda>rx. map (Complex rx)
-          (remdups (filter (op < 0) (concat (map real_roots_of_int_poly (root_poly_Im p))))))
+      define cpxI where "cpxI = (filter (op < 0) (concat (map real_roots_of_int_poly (root_poly_Im p))))" 
+      define cpx where "cpx = [c\<leftarrow>concat (map (\<lambda>rx. map (Complex rx) (remdups cpxI))
               (real_roots_of_int_poly (root_poly_Re p))). ipoly p c = 0]"
       have cpx: "set cpx \<subseteq> ?r" unfolding cpx_def by auto
       have ccpx: "cnj ` set cpx \<subseteq> ?r" using cpx unfolding r 
         by (auto intro!: complex_conjugate_root[of ?q] simp: Reals_def) 
-      have l: "?l = set (rrts @ cpx @ map cnj cpx)" unfolding d cpx_def[symmetric] using False oFalse by auto
+      have l: "complex_roots_of_int_poly3 p = rrts @ cpx @ map cnj cpx" 
+        unfolding d cpx_def[symmetric] cpxI_def[symmetric] using False oFalse by auto
       have "?l \<subseteq> ?r" using rrts cpx ccpx unfolding l r by auto
       moreover
       {
@@ -219,7 +222,7 @@ proof -
           with rt have rt: "ipoly p ?x = 0" by auto
           have intro: "\<And> y Y. y \<in> Y \<Longrightarrow> complex_of_real (Re x) + \<i> * y \<in> Complex (Re x) ` Y"
             by (simp add: legacy_Complex_simps)
-          from rt qi gt mem(2) have "?x \<in> set cpx" unfolding cpx_def
+          from rt qi gt mem(2) have "?x \<in> set cpx" unfolding cpx_def cpxI_def
             by (auto intro!: bexI[OF _ mem(1)] intro simp: complex_eq_iff)
           hence "x \<in> set cpx" using x by simp
         } note gt = this
@@ -245,7 +248,28 @@ proof -
         }
         ultimately have "x \<in> ?l" using cases by blast
       }
-      ultimately show ?thesis by blast
+      ultimately have lr: "?l = {x. ipoly p x = 0}" by blast 
+      let ?rr = "real_roots_of_int_poly (root_poly_Re p)" 
+      have dist2: "distinct ?rr" by (rule real_roots_of_int_poly)
+      have dist3: "distinct (remdups cpxI)" by simp
+      have dist4: "distinct cpx" unfolding cpx_def
+      proof (rule distinct_filter, unfold distinct_conv_nth, intro allI impI, goal_cases) 
+        case (1 i j)
+        from nth_concat_diff[OF 1, unfolded length_map] dist2[unfolded distinct_conv_nth] 
+         dist3[unfolded distinct_conv_nth] show ?case by auto
+      qed
+      have dist5: "distinct (map cnj cpx)" using dist4 unfolding distinct_map by (auto simp: inj_on_def)
+      {
+        fix x :: complex
+        have rrts: "x \<in> set rrts \<Longrightarrow> Im x = 0" unfolding rrts_def by auto
+        have cpx: "\<And> x. x \<in> set cpx \<Longrightarrow> 0 < Im x" unfolding cpx_def cpxI_def by auto
+        have cpx': "x \<in> cnj ` set cpx \<Longrightarrow> 0 > Im x" using cpx by auto
+        have "x \<notin> set rrts \<inter> set cpx \<union> set rrts \<inter> cnj ` set cpx \<union> set cpx \<inter> cnj ` set cpx" 
+          using rrts cpx[of x] cpx' by auto
+      } note dist6 = this
+      have dist: "distinct (complex_roots_of_int_poly3 p)"
+        unfolding l distinct_append using dist6 by (auto simp: dist1 dist4 dist5)
+      with lr show ?thesis by blast
     next
       case True
       let ?cr = "map_poly of_real :: real poly \<Rightarrow> complex poly"
@@ -299,18 +323,44 @@ proof -
         using q_div by simp
       also have "degree rts = length rr" unfolding rts_def by (rule degree_linear_factors)
       also have "\<dots> = card {x. poly q x = 0}" unfolding len_rr by simp
-      finally have "degree ?c2 = 2" using 2 unfolding hom_removes by simp
-      with croots2[OF this] l
-      have l: "?l = of_real ` {x. poly q x = 0} \<union> {x. poly ?c2 x = 0}" by simp
-      have "?r = {x. poly ?q x = 0}" by (rule r)
-      also have "?q = ?cr (q div rts * rts)" using q_div by simp
+      finally have deg2: "degree ?c2 = 2" using 2 unfolding hom_removes by simp
+      note croots2 = croots2[OF deg2, symmetric]
+      have "?q = ?cr (q div rts * rts)" using q_div by simp
       also have "\<dots> = ?cr rts * ?c2" by simp
-      finally have r: "?r = {x. poly (?cr rts) x = 0} \<union> {x. poly ?c2 x = 0}" by auto
+      finally have q_prod: "?q = ?cr rts * ?c2" .
+      from croots2 l
+      have l: "?l = of_real ` {x. poly q x = 0} \<union> {x. poly ?c2 x = 0}" by simp
+      from r[unfolded q_prod]
+      have r: "?r = {x. poly (?cr rts) x = 0} \<union> {x. poly ?c2 x = 0}" by auto
       also have "?cr rts = (\<Prod>x\<leftarrow>rr. ?cr [:- x, 1:])" by (simp add: rts_def o_def)
       also have "{x. poly \<dots> x = 0} = of_real ` set rr" 
         unfolding poly_prod_list_zero_iff by auto
       also have "set rr = {x. poly q x = 0}" unfolding rr q_def by simp
-      finally show ?thesis unfolding l by simp
+      finally have lr: "?l = ?r" unfolding l by simp
+      show ?thesis 
+      proof (intro conjI[OF lr] impI)
+        assume "square_free p" 
+        hence sf: "square_free q" unfolding q_def by (rule square_free_real_of_int_poly)
+        {
+          interpret field_hom_0' complex_of_real ..
+          from sf have "square_free ?q" unfolding square_free_map_poly .
+        } note sf = this
+        have l: "complex_roots_of_int_poly3 p = rrts @ croots2 ?c2" 
+          unfolding d rts_def id if_False if_True set_append rrts q_def complex_of_real_def by auto
+        have dist2: "distinct (croots2 ?c2)" unfolding croots2_def Let_def by auto        
+        {
+          fix x
+          assume x: "x \<in> set (croots2 ?c2)" "x \<in> set rrts" 
+          from x(1)[unfolded croots2] have x1: "poly ?c2 x = 0" by auto
+          from x(2) have x2: "poly (?cr rts) x = 0" 
+            unfolding rrts_def rts_def complex_of_real_def[symmetric]
+            by (auto simp: poly_prod_list_zero_iff o_def) 
+          from square_free_multD(1)[OF sf[unfolded q_prod], of "[: -x, 1:]"]
+            x1 x2 have False unfolding poly_eq_0_iff_dvd by auto 
+        } note dist3 = this
+        show "distinct (complex_roots_of_int_poly3 p)" unfolding l distinct_append
+          by (intro conjI dist1 dist2, insert dist3, auto)
+      qed
     qed
   next
     case True
@@ -320,18 +370,21 @@ proof -
     finally have le: "card {x. poly ?q x = 0} \<le> card {x. poly ?q x = 0 \<and> x \<in> \<real>}" by auto
     have "{x. poly ?q x = 0 \<and> x \<in> \<real>} = {x. poly ?q x = 0}"
       by (rule card_seteq[OF _ _ le], insert poly_roots_finite[OF q], auto)
-    with True rrts show ?thesis unfolding r d by auto
+    with True rrts dist1 show ?thesis unfolding r d by auto
   qed
+  thus "square_free p \<Longrightarrow> distinct (complex_roots_of_int_poly3 p)" "?l = ?r" by auto
 qed
 
-lemma complex_roots_of_int_poly_all: assumes p: "p \<noteq> 0"
-  shows "set (complex_roots_of_int_poly_all p) = {x. ipoly p x = 0}" (is "?l = ?r")
+lemma complex_roots_of_int_poly_all:
+  shows "p \<noteq> 0 \<Longrightarrow> set (complex_roots_of_int_poly_all p) = {x. ipoly p x = 0}" (is "_ \<Longrightarrow> set ?l = ?r")
+    and "(degree p \<ge> 3 \<Longrightarrow> square_free p) \<Longrightarrow> distinct (complex_roots_of_int_poly_all p)" 
 proof -
   note d = complex_roots_of_int_poly_all_def Let_def
-  show ?thesis
+  have "(p \<noteq> 0 \<longrightarrow> set ?l = ?r) \<and> ((degree p \<ge> 3 \<longrightarrow> square_free p) \<longrightarrow> distinct (complex_roots_of_int_poly_all p))" 
   proof (cases "degree p \<ge> 3")
     case True
-    with complex_roots_of_int_poly3[OF p] show ?thesis unfolding d by auto
+    hence p: "p \<noteq> 0" by auto
+    from True complex_roots_of_int_poly3[OF p] show ?thesis unfolding d by auto
   next
     case False
     let ?p = "map_poly (of_int :: int \<Rightarrow> complex) p"
@@ -340,26 +393,27 @@ proof -
     show ?thesis
     proof (cases "degree p = 1")
       case True
-      hence l: "?l = {roots1 ?p}" unfolding d by auto
+      hence l: "?l = [roots1 ?p]" unfolding d by auto
       from True have "degree ?p = 1" unfolding deg by auto
-      from roots1[OF this] show ?thesis unfolding l by simp
+      from roots1[OF this] show ?thesis unfolding l roots1_def by auto
     next
       case False
       show ?thesis 
       proof (cases "degree p = 2")
         case True
-        hence l: "?l = set (croots2 ?p)" unfolding d by auto
+        hence l: "?l = croots2 ?p" unfolding d by auto
         from True have "degree ?p = 2" unfolding deg by auto
-        from croots2[OF this] show ?thesis unfolding l by simp
+        from croots2[OF this] show ?thesis unfolding l by (simp add: croots2_def Let_def)
       next
         case False
         with `degree p \<noteq> 1` `degree p \<noteq> 2` `\<not> (degree p \<ge> 3)` have True: "degree p = 0" by auto
-        hence l: "?l = {}" unfolding d by auto
+        hence l: "?l = []" unfolding d by auto
         from True have "degree ?p = 0" unfolding deg by auto
-        from roots0[OF _ this] p show ?thesis unfolding l by simp
+        from roots0[OF _ this] show ?thesis unfolding l by simp
       qed
     qed
   qed
+  thus "p \<noteq> 0 \<Longrightarrow> set ?l = ?r" "(degree p \<ge> 3 \<Longrightarrow> square_free p) \<Longrightarrow> distinct (complex_roots_of_int_poly_all p)" by auto
 qed
 
 text \<open>It now comes the preferred function to compute complex roots of a integer polynomial.\<close>
@@ -369,46 +423,109 @@ definition complex_roots_of_int_poly :: "int poly \<Rightarrow> complex list" wh
     in concat (map complex_roots_of_int_poly_all ps))"
 
 definition complex_roots_of_rat_poly :: "rat poly \<Rightarrow> complex list" where
-  "complex_roots_of_rat_poly p = complex_roots_of_int_poly (snd (rat_to_int_poly p))" 
+  "complex_roots_of_rat_poly p = complex_roots_of_int_poly (snd (rat_to_int_poly p))"
  
   
-lemma complex_roots_of_int_poly: assumes p: "p \<noteq> 0"
-  shows "set (complex_roots_of_int_poly p) = {x. ipoly p x = 0}" (is "?l = ?r")
-proof (cases "degree p \<ge> 3")
-  case False
-  hence "complex_roots_of_int_poly p = complex_roots_of_int_poly_all p"
-    unfolding complex_roots_of_int_poly_def Let_def by auto
-  with complex_roots_of_int_poly_all[OF p] show ?thesis by auto
-next
-  case True
-  {
-    fix q
-    assume "q \<in> set (factors_of_int_poly p)"
-    from factors_of_int_poly(1)[OF refl this] have "q \<noteq> 0" by auto
-    from complex_roots_of_int_poly_all[OF this]
-    have "set (complex_roots_of_int_poly_all q) = {x. ipoly q x = 0}" by auto
-  } note all = this
-  from True have 
-    "?l = (\<Union> ((\<lambda> p. set (complex_roots_of_int_poly_all p)) ` set (factors_of_int_poly p)))"
-    unfolding complex_roots_of_int_poly_def Let_def by auto    
-  also have "\<dots> = (\<Union> ((\<lambda> p. {x. ipoly p x = 0}) ` set (factors_of_int_poly p)))"
-    using all by blast
-  finally have l: "?l = (\<Union> ((\<lambda> p. {x. ipoly p x = 0}) ` set (factors_of_int_poly p)))" .
-  show ?thesis using l factors_of_int_poly(2)[OF refl p] by auto
+lemma complex_roots_of_int_poly:
+  shows "p \<noteq> 0 \<Longrightarrow> set (complex_roots_of_int_poly p) = {x. ipoly p x = 0}" (is "_ \<Longrightarrow> ?l = ?r")
+  and "distinct (complex_roots_of_int_poly p)" 
+proof -
+  have "(p \<noteq> 0 \<longrightarrow> ?l = ?r) \<and> (distinct (complex_roots_of_int_poly p))" 
+  proof (cases "degree p \<ge> 3")
+    case False
+    hence "complex_roots_of_int_poly p = complex_roots_of_int_poly_all p"
+      unfolding complex_roots_of_int_poly_def Let_def by auto
+    with complex_roots_of_int_poly_all[of p] False show ?thesis by auto
+  next
+    case True
+    {
+      fix q
+      assume "q \<in> set (factors_of_int_poly p)"
+      from factors_of_int_poly(1)[OF refl this] irreducible_imp_square_free[of q] 
+      have 0: "q \<noteq> 0" and sf: "square_free q" by auto
+      from complex_roots_of_int_poly_all(1)[OF 0] complex_roots_of_int_poly_all(2)[OF sf]
+      have "set (complex_roots_of_int_poly_all q) = {x. ipoly q x = 0}" 
+        "distinct (complex_roots_of_int_poly_all q)" by auto
+    } note all = this
+    from True have 
+      "?l = (\<Union> ((\<lambda> p. set (complex_roots_of_int_poly_all p)) ` set (factors_of_int_poly p)))"
+      unfolding complex_roots_of_int_poly_def Let_def by auto    
+    also have "\<dots> = (\<Union> ((\<lambda> p. {x. ipoly p x = 0}) ` set (factors_of_int_poly p)))"
+      using all by blast
+    finally have l: "?l = (\<Union> ((\<lambda> p. {x. ipoly p x = 0}) ` set (factors_of_int_poly p)))" .    
+    have lr: "p \<noteq> 0 \<longrightarrow> ?l = ?r" using l factors_of_int_poly(2)[OF refl, of p] by auto
+    show ?thesis 
+    proof (rule conjI[OF lr])
+      from True have id: "complex_roots_of_int_poly p = 
+          concat (map complex_roots_of_int_poly_all (factors_of_int_poly p))" 
+        unfolding complex_roots_of_int_poly_def Let_def by auto
+      show "distinct (complex_roots_of_int_poly p)" unfolding id distinct_conv_nth
+      proof (intro allI impI, goal_cases)
+        case (1 i j)
+        let ?fp = "factors_of_int_poly p" 
+        let ?rr = "complex_roots_of_int_poly_all" 
+        let ?cc = "concat (map ?rr (factors_of_int_poly p))" 
+        from nth_concat_diff[OF 1, unfolded length_map]
+        obtain j1 k1 j2 k2 where 
+          *: "(j1,k1) \<noteq> (j2,k2)"
+          "j1 < length ?fp" "j2 < length ?fp" and
+          "k1 < length (map ?rr ?fp ! j1)"
+          "k2 < length (map ?rr ?fp ! j2)"
+          "?cc ! i = map ?rr ?fp ! j1 ! k1" 
+          "?cc ! j = map ?rr ?fp ! j2 ! k2" by blast
+        hence **: "k1 < length (?rr (?fp ! j1))" 
+          "k2 < length (?rr (?fp ! j2))" 
+          "?cc ! i = ?rr (?fp ! j1) ! k1"
+          "?cc ! j = ?rr (?fp ! j2) ! k2"
+          by auto
+        from * have mem: "?fp ! j1 \<in> set ?fp" "?fp ! j2 \<in> set ?fp" by auto
+        show "?cc ! i \<noteq> ?cc ! j"
+        proof (cases "j1 = j2")
+          case True
+          with * have "k1 \<noteq> k2" by auto
+          with all(2)[OF mem(2)] **(1-2) show ?thesis unfolding **(3-4) unfolding True
+            distinct_conv_nth by auto
+        next
+          case False
+          from \<open>degree p \<ge> 3\<close> have p: "p \<noteq> 0" by auto
+          note fip = factors_of_int_poly(2-3)[OF refl this]       
+          show ?thesis unfolding **(3-4)
+          proof
+            define x where "x = ?rr (?fp ! j2) ! k2" 
+            assume id: "?rr (?fp ! j1) ! k1 = ?rr (?fp ! j2) ! k2" 
+            from ** have x1: "x \<in> set (?rr (?fp ! j1))" unfolding x_def id[symmetric] by auto
+            from ** have x2: "x \<in> set (?rr (?fp ! j2))" unfolding x_def by auto            
+            from all(1)[OF mem(1)] x1 have x1: "ipoly (?fp ! j1) x = 0" by auto
+            from all(1)[OF mem(2)] x2 have x2: "ipoly (?fp ! j2) x = 0" by auto
+            from False factors_of_int_poly(4)[OF refl, of p] have neq: "?fp ! j1 \<noteq> ?fp ! j2" 
+              using * unfolding distinct_conv_nth by auto
+            have "poly (complex_of_int_poly p) x = 0" by (meson fip(1) mem(2) x2)
+            from fip(2)[OF this] mem x1 x2 neq
+            show False by blast
+          qed
+        qed
+      qed
+    qed
+  qed
+  thus "p \<noteq> 0 \<Longrightarrow> ?l = ?r" "distinct (complex_roots_of_int_poly p)" by auto
 qed
 
-lemma complex_roots_of_rat_poly: assumes p: "p \<noteq> 0"
-  shows "set (complex_roots_of_rat_poly p) = {x. rpoly p x = 0}" (is "?l = ?r")
+lemma complex_roots_of_rat_poly: 
+  "p \<noteq> 0 \<Longrightarrow> set (complex_roots_of_rat_poly p) = {x. rpoly p x = 0}" (is "_ \<Longrightarrow> ?l = ?r")
+  "distinct (complex_roots_of_rat_poly p)" 
 proof -
   obtain c q where cq: "rat_to_int_poly p = (c,q)" by force
   from rat_to_int_poly[OF this]
   have pq: "p = smult (inverse (of_int c)) (of_int_poly q)" 
     and c: "c \<noteq> 0" by auto
-  with assms have q: "q \<noteq> 0" by auto
+  show "distinct (complex_roots_of_rat_poly p)" unfolding complex_roots_of_rat_poly_def
+    using complex_roots_of_int_poly(2) .
+  assume p: "p \<noteq> 0" 
+  with pq c have q: "q \<noteq> 0" by auto
   have id: "{x. rpoly p x = (0 :: complex)} = {x. ipoly q x = 0}" 
     unfolding pq by (simp add: c of_rat_of_int_poly map_poly_map_poly o_def)
-  show ?thesis unfolding complex_roots_of_rat_poly_def cq snd_conv id
-    complex_roots_of_int_poly[OF q] ..
+  show "?l = ?r" unfolding complex_roots_of_rat_poly_def cq snd_conv id
+    complex_roots_of_int_poly(1)[OF q] ..
 qed
 
 definition roots_of_complex_main :: "complex poly \<Rightarrow> complex list" where 
@@ -422,32 +539,33 @@ definition roots_of_complex_poly :: "complex poly \<Rightarrow> complex list opt
     Some (concat (map (roots_of_complex_main o fst) pis)) else None"
 
 lemma roots_of_complex_main: assumes p: "p \<noteq> 0" and deg: "degree p \<le> 2 \<or> set (coeffs p) \<subseteq> \<rat>"
-  shows "set (roots_of_complex_main p) = {x. poly p x = 0}" (is "?l = ?r")
+  shows "set (roots_of_complex_main p) = {x. poly p x = 0}" (is "set ?l = ?r")
+    and "distinct (roots_of_complex_main p)" 
 proof -
   note d = roots_of_complex_main_def Let_def
-  show ?thesis 
+  have "set ?l = ?r \<and> distinct (roots_of_complex_main p)" 
   proof (cases "degree p = 0")
     case True
-    hence "?l = {}" unfolding d by auto
+    hence "?l = []" unfolding d by auto
     with roots0[OF p True] show ?thesis by auto
   next
     case False note 0 = this
     show ?thesis
     proof (cases "degree p = 1")
       case True
-      hence "?l = {roots1 p}" unfolding d by auto
+      hence "?l = [roots1 p]" unfolding d by auto
       with roots1[OF True] show ?thesis by auto
     next
       case False note 1 = this
       show ?thesis
       proof (cases "degree p = 2")
         case True
-        hence "?l = set (croots2 p)" unfolding d by auto
-        with croots2[OF True] show ?thesis by auto
+        hence "?l = croots2 p" unfolding d by auto
+        with croots2[OF True] show ?thesis by (auto simp: croots2_def Let_def)
       next
         case False note 2 = this
         let ?q = "map_poly to_rat p"
-        from 0 1 2 have l: "?l = set (complex_roots_of_rat_poly ?q)" unfolding d by auto
+        from 0 1 2 have l: "?l = complex_roots_of_rat_poly ?q" unfolding d by auto
         from deg 0 1 2 have rat: "set (coeffs p) \<subseteq> \<rat>" by auto
         have "p = map_poly (of_rat o to_rat) p"
           by (rule sym, rule map_poly_idI, insert rat, auto)
@@ -455,11 +573,12 @@ proof -
           by (subst map_poly_map_poly, auto simp: to_rat)
         finally have id: "{x. poly p x = 0} = {x. poly (complex_of_rat_poly ?q) x = 0}" and q: "?q \<noteq> 0" 
           using p by auto
-        from complex_roots_of_rat_poly[OF q, folded id l] 
-        show ?thesis .
+        from complex_roots_of_rat_poly[of ?q, folded id l] q
+        show ?thesis by auto
       qed
     qed
   qed
+  thus "set ?l = ?r" "distinct ?l" by auto
 qed
  
 lemma roots_of_complex_poly: assumes rt: "roots_of_complex_poly p = Some xs"
@@ -467,7 +586,7 @@ lemma roots_of_complex_poly: assumes rt: "roots_of_complex_poly p = Some xs"
 proof -
   obtain c pis where yun: "yun_factorization gcd p = (c,pis)" by force
   from rt[unfolded roots_of_complex_poly_def yun split Let_def]
-  have c: "c \<noteq> 0" and pis: "\<And> p i. (p, i)\<in>set pis \<Longrightarrow> degree p \<le> 2 \<or> (\<forall>x\<in>set (coeffs p). x \<in> \<rat>)"
+  have c: "c \<noteq> 0" and pis: "\<And> p i. (p, i)\<in> set pis \<Longrightarrow> degree p \<le> 2 \<or> (\<forall>x\<in>set (coeffs p). x \<in> \<rat>)"
     and xs: "xs = concat (map (roots_of_complex_main \<circ> fst) pis)"
     by (auto split: if_splits)
   note yun = square_free_factorizationD(1,2,4)[OF yun_factorization(1)[OF yun]]
@@ -494,7 +613,7 @@ subsection \<open>Factorization of Complex Polynomials\<close>
 definition factorize_complex_main :: "complex poly \<Rightarrow> (complex \<times> (complex \<times> nat) list) option" where
   "factorize_complex_main p \<equiv> let (c,pis) = yun_factorization gcd p in
     if ((\<forall> (p,i) \<in> set pis. degree p \<le> 2 \<or> (\<forall> x \<in> set (coeffs p). x \<in> \<rat>))) then 
-    Some (c, concat (map (\<lambda> (p,i). map (\<lambda> r. (r,i)) (remdups (roots_of_complex_main p))) pis)) else None"
+    Some (c, concat (map (\<lambda> (p,i). map (\<lambda> r. (r,i)) (roots_of_complex_main p)) pis)) else None"
 
 definition factorize_complex_poly :: "complex poly \<Rightarrow> (complex \<times> (complex poly \<times> nat) list) option" where
   "factorize_complex_poly p \<equiv> map_option 
@@ -507,13 +626,13 @@ proof -
   obtain d pis where yun: "yun_factorization gcd p = (d,pis)" by force
   from rt[unfolded factorize_complex_main_def yun split Let_def]
   have pis: "\<And> p i. (p, i)\<in>set pis \<Longrightarrow> degree p \<le> 2 \<or> (\<forall>x\<in>set (coeffs p). x \<in> \<rat>)"
-    and xis: "xis = concat (map (\<lambda>(p, i). map (\<lambda>r. (r, i)) (remdups (roots_of_complex_main p))) pis)"
+    and xis: "xis = concat (map (\<lambda>(p, i). map (\<lambda>r. (r, i)) (roots_of_complex_main p)) pis)"
     and d: "d = c"
     by (auto split: if_splits)
   note yun = yun_factorization[OF yun[unfolded d]]
   note yun = square_free_factorizationD[OF yun(1)] yun(2)[unfolded snd_conv]
   let ?exp = "\<lambda> pis. \<Prod>(x, i)\<leftarrow>concat
-    (map (\<lambda>(p, i). map (\<lambda>r. (r, i)) (remdups (roots_of_complex_main p))) pis). [:- x, 1:] ^ Suc i"
+    (map (\<lambda>(p, i). map (\<lambda>r. (r, i)) (roots_of_complex_main p)) pis). [:- x, 1:] ^ Suc i"
   from yun(1) have p: "p = smult c (\<Prod>(a, i)\<in>set pis. a ^ Suc i)" .
   also have "(\<Prod>(a, i)\<in>set pis. a ^ Suc i) = (\<Prod>(a, i)\<leftarrow>pis. a ^ Suc i)"
     by (rule prod.distinct_set_conv_list[OF yun(5)])
@@ -521,7 +640,7 @@ proof -
   proof (induct pis)
     case (Cons pi pis)
     obtain p i where pi: "pi = (p,i)" by force
-    let ?rts = "remdups (roots_of_complex_main p)"
+    let ?rts = "roots_of_complex_main p"
     note Cons = Cons[unfolded pi]
     have IH: "(\<Prod>(a, i)\<leftarrow>pis. a ^ Suc i) = (?exp pis)"
       by (rule Cons(1)[OF Cons(2-4)], auto)
@@ -557,10 +676,10 @@ proof -
       qed
       also have "set as = {x. poly p x = 0}" unfolding as poly_prod_list 
         by (simp add: o_def, induct as, auto)
-      also have "\<dots> = set ?rts" unfolding set_remdups
-        by (rule roots_of_complex_main[symmetric], insert p deg, auto)
+      also have "\<dots> = set ?rts"
+        by (rule roots_of_complex_main(1)[symmetric], insert p deg, auto)
       also have "(\<Prod>a\<in>set ?rts. [:- a, 1:]) = (\<Prod>a\<leftarrow>?rts. [:- a, 1:])"
-        by (rule prod.distinct_set_conv_list, auto)
+        by (rule prod.distinct_set_conv_list[OF roots_of_complex_main(2)], insert deg p, auto)
       finally show ?thesis by simp
     qed
     finally have id2: "?exp (pi # pis) = p ^ Suc i * ?exp pis" by simp
@@ -583,7 +702,7 @@ proof -
     by (rule yun_factorization) simp
     
   have "map fst (snd fctrs) = 
-        concat (map (\<lambda>x. remdups (roots_of_complex_main (fst x))) (snd (yun_factorization gcd p)))" 
+        concat (map (\<lambda>x. (roots_of_complex_main (fst x))) (snd (yun_factorization gcd p)))" 
     using assms by (auto simp add: factorize_complex_main_def case_prod_unfold 
                            Let_def map_concat o_def split: if_splits)
   also have "distinct \<dots>"
@@ -592,8 +711,8 @@ proof -
     show ?case
     proof (subst distinct_map, safe)
       from square_free_factorizationD(5)[OF sqf]
-        show "distinct (snd (yun_factorization gcd p))" .
-      show "inj_on (\<lambda>x. remdups (roots_of_complex_main (fst x))) (set (snd (yun_factorization gcd p)))"
+      show "distinct (snd (yun_factorization gcd p))" .
+      show "inj_on (\<lambda>x. (roots_of_complex_main (fst x))) (set (snd (yun_factorization gcd p)))"
       proof (rule inj_onI, clarify, goal_cases)
         case (1 a1 b1 a2 b2)
         {
@@ -604,7 +723,7 @@ proof -
           from square_free_factorizationD(3)[OF sqf 1(1,2) neq]
             have "coprime a1 a2" by simp
           from solvable 1(1) have "{z. poly a1 z = 0} = set (roots_of_complex_main a1)"
-            by (intro roots_of_complex_main [symmetric]) auto
+            by (intro roots_of_complex_main(1) [symmetric]) auto
           also have "set (roots_of_complex_main a1) = set (roots_of_complex_main a2)"
             using 1(3) by (subst (1 2) set_remdups [symmetric]) (simp only: fst_conv)
           also from solvable 1(2) have "\<dots> = {z. poly a2 z = 0}"
@@ -618,14 +737,21 @@ proof -
         }
         thus ?case by blast
       qed
-    qed
-  
+    qed  
+  next
+    case (2 ys)
+    then obtain f b where fb: "(f, b) \<in> set (snd (yun_factorization gcd p))" 
+      and ys: "ys = roots_of_complex_main f" by auto
+    from square_free_factorizationD(2)[OF sqf fb] have 0: "f \<noteq> 0" by auto
+    from solvable[rule_format, OF fb] have f: "degree f \<le> 2 \<or> (set (coeffs f) \<subseteq> \<rat>)" by auto
+    show ?case unfolding ys 
+      by (rule roots_of_complex_main[OF 0 f])
   next
     case (3 ys zs)
     then obtain a1 b1 a2 b2 where ab:
       "(a1, b1) \<in> set (snd (yun_factorization gcd p))"
       "(a2, b2) \<in> set (snd (yun_factorization gcd p))"
-      "ys = remdups (roots_of_complex_main a1)" "zs = remdups (roots_of_complex_main a2)"
+      "ys = roots_of_complex_main a1" "zs = roots_of_complex_main a2"
       by auto
     with 3 have neq: "(a1,b1) \<noteq> (a2,b2)" by auto
     from ab(1,2)[THEN square_free_factorizationD(2)[OF sqf]] 
@@ -633,10 +759,10 @@ proof -
     
     from square_free_factorizationD(3)[OF sqf ab(1,2) neq] have "coprime a1 a2" by simp
     have "set ys = {z. poly a1 z = 0}" "set zs = {z. poly a2 z = 0}"
-      by (insert solvable ab(1,2), subst ab, subst set_remdups,
+      by (insert solvable ab(1,2), subst ab,
           rule roots_of_complex_main; (auto) [])+
     with coprime_imp_no_common_roots \<open>coprime a1 a2\<close> show ?case by auto
-  qed auto
+  qed 
   
   finally show ?thesis .
 qed
