@@ -538,25 +538,24 @@ lemma goodstein_step:
   assumes gi_gt_0: "goodstein i > 0"
   shows "encode (i + 2) 0 (goodstein i) > encode (i + 3) 0 (goodstein (i + 1))"
 proof -
-  let ?Gi = "encode (i + 2) 0 (goodstein i)"
+  let ?Ei = "encode (i + 2) 0 (goodstein i)"
   let ?reencode = "encode (i + 3) 0"
-  let ?decoded_Gi = "decode (i + 3) 0 ?Gi"
+  let ?decoded_Ei = "decode (i + 3) 0 ?Ei"
 
   have two_le: "2 \<le> i + 3"
     by simp
 
-  have "well_base\<^sub>h (i + 2) ?Gi"
+  have "well_base\<^sub>h (i + 2) ?Ei"
     by (rule well_base\<^sub>h_encode) simp
-  hence well\<^sub>h: "well_base\<^sub>h (i + 3) ?Gi"
+  hence well\<^sub>h: "well_base\<^sub>h (i + 3) ?Ei"
     by (rule well_base\<^sub>h_mono_base) simp_all
 
-  have decoded_Gi_gt_0: "?decoded_Gi > 0"
-    by (metis gi_gt_0 gr0I encode_0_iff le_add2 decode_0_iff[OF _ well\<^sub>h aligned\<^sub>d_0, THEN iffD1]
-      two_le)
+  have decoded_Ei_gt_0: "?decoded_Ei > 0"
+    by (metis gi_gt_0 gr0I encode_0_iff le_add2 decode_0_iff[OF _ well\<^sub>h aligned\<^sub>d_0] two_le)
 
-  have "?reencode (?decoded_Gi - 1) < ?reencode ?decoded_Gi"
-    by (rule less_imp_encode_less[OF two_le]) (use decoded_Gi_gt_0 in linarith)
-  also have "\<dots> = ?Gi"
+  have "?reencode (?decoded_Ei - 1) < ?reencode ?decoded_Ei"
+    by (rule less_imp_encode_less[OF two_le]) (use decoded_Ei_gt_0 in linarith)
+  also have "\<dots> = ?Ei"
     by (simp only: encode_decode_exp_0[OF two_le well\<^sub>h])
   finally show ?thesis
     by simp

@@ -14,7 +14,7 @@ theory Unary_PCF
     "../List-Index/List_Index"
 begin
 
-subsection \<open>Prelim\<close>
+subsection \<open>Preliminaries\<close>
 
 lemma prod_UNIV: "UNIV = UNIV \<times> UNIV"
   by auto
@@ -62,7 +62,6 @@ next
   case Fun
   show ?case by (rule assms) (insert Fun, simp_all)
 qed
-
 
 
 subsection \<open>Terms\<close>
@@ -252,7 +251,6 @@ lemma fold_eq_Fun_iff[simp]:
   by (induct Ts) auto
 
 
-
 subsection \<open>Substitution\<close>
 
 primrec subst where
@@ -343,7 +341,6 @@ proof (unfold body_def, elim conjE exE)
 qed
 
 
-
 subsection \<open>Typing\<close>
 
 inductive welltyped :: "expr \<Rightarrow> type \<Rightarrow> bool" (infix ":::" 60) where
@@ -409,7 +406,6 @@ proof (induct ts arbitrary: f)
   from Cons(1)[of "f \<cdot> t"] show ?case
     by (force simp: list_all2_Cons1)
 qed simp
-
 
 
 subsection \<open>Definition 10 and Lemma 11 from Schmidt-Schauß's paper\<close>

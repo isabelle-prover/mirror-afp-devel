@@ -74,12 +74,10 @@ lemma empty_times_left_hmset[simp]: "HMSet {#} * M = 0"
 lemma empty_times_right_hmset[simp]: "M * HMSet {#} = 0"
   by (metis mult_zero_right zero_hmultiset_def)
 
-lemma singleton_times_left_hmset[simp]:
-  "\<omega>^M * N = HMSet (image_mset ((op +) M) (hmsetmset N))"
+lemma singleton_times_left_hmset[simp]: "\<omega>^M * N = HMSet (image_mset ((op +) M) (hmsetmset N))"
   by (simp add: times_hmultiset_def Times_mset_single_left)
 
-lemma singleton_times_right_hmset[simp]:
-  "N * \<omega>^M = HMSet (image_mset ((op +) M) (hmsetmset N))"
+lemma singleton_times_right_hmset[simp]: "N * \<omega>^M = HMSet (image_mset ((op +) M) (hmsetmset N))"
   by (metis mult.commute singleton_times_left_hmset)
 
 
@@ -133,8 +131,7 @@ proof -
 qed
 
 lemma times_hmultiset_monoL:
-  fixes a b c :: hmultiset
-  shows "a < b \<Longrightarrow> 0 < c \<Longrightarrow> a * c < b * c"
+  "a < b \<Longrightarrow> 0 < c \<Longrightarrow> a * c < b * c" for a b c :: hmultiset
   by (cases a, cases b, cases c, hypsubst_thin,
     unfold times_hmultiset_def zero_hmultiset_def hmultiset.sel, transfer,
     auto simp: less_multiset_ext\<^sub>D\<^sub>M_less multiset.pred_set
