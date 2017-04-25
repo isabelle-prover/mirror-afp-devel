@@ -33,6 +33,11 @@ imports
   Unique_Factorization_Poly
 begin
 
+text \<open>For algebraic numbers, it turned out that @{const gcd_int_poly} is not
+  preferable to the default implementation of @{const gcd}, which just implements
+  Collin's primitive remainder sequence.\<close>
+declare gcd_int_poly_code[code_unfold del]
+  
 lemma content_free_imp_unit_iff:
   fixes p :: "'a :: {comm_semiring_1,semiring_no_zero_divisors} poly"
   assumes cf: "content_free p"
