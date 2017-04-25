@@ -39,7 +39,7 @@ text \<open>We now define @{const show_real}.\<close>
 overloading show_real \<equiv> show_real
 begin
   definition "show_real x \<equiv>
-    (if (\<exists> y. x = real_of y) then show_real_alg (THE y. x = real_of y) else [])"
+    (if (\<exists> y. x = real_of y) then show_real_alg (THE y. x = real_of y) else ''transcendental number'')"
 end
 
 lemma show_real_alg[code]: "show_real (real_of x) = show_real_alg x"
