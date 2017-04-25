@@ -569,8 +569,8 @@ proof -
       also have "zs = replicate n 0" unfolding zs_def n xx by (induct xx, auto)
       finally have ff: "coeffs f = replicate n 0 @ ys" by auto
       from f have "lead_coeff f \<noteq> 0" by auto
-      hence nz: "coeffs f \<noteq> []" "last (coeffs f) \<noteq> 0" 
-        unfolding leading_coeff_code_unfold leading_coeff_code Let_def by (cases "coeffs f", auto)+      
+      then have nz: "coeffs f \<noteq> []" "last (coeffs f) \<noteq> 0"
+        by (simp_all add: last_coeffs_eq_coeff_degree)
       have ys: "ys \<noteq> []" using nz[unfolded ff] by auto            
       with ys_def have hd: "hd ys \<noteq> 0" by (metis (full_types) hd_dropWhile)
       hence "coeff (poly_of_list ys) 0 \<noteq> 0" unfolding poly_of_list_def coeff_Poly using ys by (cases ys, auto)
