@@ -1,6 +1,6 @@
 chapter AFP
 
-session Trie (AFP) = HOL +
+session Trie (AFP) = "HOL-Library" +
   options [timeout = 600]
   theories
     Tries

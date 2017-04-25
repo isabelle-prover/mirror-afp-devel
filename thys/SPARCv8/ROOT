@@ -7,5 +7,7 @@ session "SPARCv8" (AFP) = "HOL-Word" +
     "lib/WordDecl"
   theories
     "SparcModel_MMU/Sparc_Properties"
+  theories [document = false]
+    "SparcModel_MMU/Sparc_Code_Gen"
   document_files
     "root.tex"

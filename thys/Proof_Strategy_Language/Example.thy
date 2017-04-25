@@ -6,7 +6,7 @@ The examples includes Example3 presented in the TACAS2017 draft.
 *)
 
 theory Example
-imports PSL "~~/src/HOL/Eisbach/Eisbach" 
+imports PSL "~~/src/HOL/Eisbach/Eisbach"
 begin
 
 (* The "Hammer" strategy invokes sledgehammer as a sub-tool. *)
@@ -123,7 +123,7 @@ shows 1:"ps_safe p s"
  and  2:"valid_trans p s s' x"
  and  3:"ps_safe p s'"
 try_hard1
-find_proof Hammers
+(* find_proof Hammers *)  (* FIXME very slow?? *)
 oops
 
 (* The "Cut" combinator restricts non-determinism by pruning branches. *)

@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Discrete_Summation" (AFP) = "HOL" +
+session "Discrete_Summation" (AFP) = "HOL-Library" +
   options [timeout = 600]
   theories
     Examples

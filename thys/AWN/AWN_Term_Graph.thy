@@ -15,7 +15,7 @@ datatype ('p, 'l) link =
   | ELink "('p, 'l) node" "('p, 'l) node"
 
 definition gseqp'_fails where "gseqp'_fails = []"
-code_abort gseqp'_fails
+declare [[code abort: gseqp'_fails]]
 
 fun gseqp'
   :: "('s, 'm, 'p, 'l) seqp_env \<Rightarrow> ('s, 'm, 'p, 'l) seqp \<Rightarrow> ('p, 'l) node list"
@@ -29,7 +29,7 @@ where
   | "gseqp' \<Gamma> ({l}deliver(_)._)        = [InternalNode l]"
   | "gseqp' \<Gamma> ({l}receive(_)._)        = [InternalNode l]"
   | "gseqp' \<Gamma> (p1 \<oplus> p2)                = gseqp' \<Gamma> p1 @ gseqp' \<Gamma> p2"
-  | "gseqp' \<Gamma> (call(pn))               = gseqp'_fails" 
+  | "gseqp' \<Gamma> (call(pn))               = gseqp'_fails"
 (*
 (* It would be better to define this function for all wellformed \<Gamma>, as shown
    below, but I can't get the code generator to work smoothly with the
@@ -116,14 +116,14 @@ definition graph_of_seqp :: "('s, 'm, 'p, 'l) seqp_env
                              \<Rightarrow> 'p list
                              \<Rightarrow> ('p, 'l) node list * ('p, 'l) link list"
 where
-  "graph_of_seqp \<Gamma> pns = map_pair (rev \<circ> remdups) remdups
+  "graph_of_seqp \<Gamma> pns = map_prod (rev \<circ> remdups) remdups
                            (foldl (graph_of_other \<Gamma>) (graph_of_root \<Gamma> ([], []) (hd pns)) (tl pns))"
 
 definition graph_of_seqps :: "('s, 'm, 'p, 'l) seqp_env
                               \<Rightarrow> 'p list
                               \<Rightarrow> ('p, 'l) node list * ('p, 'l) link list"
 where
-  "graph_of_seqps \<Gamma> pns = map_pair (rev \<circ> remdups) remdups (foldl (graph_of_root \<Gamma>) ([], [])
+  "graph_of_seqps \<Gamma> pns = map_prod (rev \<circ> remdups) remdups (foldl (graph_of_root \<Gamma>) ([], [])
                                    (List.rev pns))"
 
 end

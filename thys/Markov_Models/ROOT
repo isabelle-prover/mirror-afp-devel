@@ -22,6 +22,8 @@ session Markov_Models (AFP) = "HOL-Probability" +
     "ex/Zeroconf_Analysis"
     "ex/Gossip_Broadcast"
     "ex/MDP_RP_Certification"
+  theories [document = false]
+    "ex/MDP_RP"
   document_files
     "root.bib"
     "root.tex"

@@ -45,8 +45,8 @@ lemma fun_ord_refl: "reflp ord  \<Longrightarrow> reflp (fun_ord ord)"
 lemma fun_ord_trans: "transp ord  \<Longrightarrow> transp (fun_ord ord)"
   by (fastforce simp: fun_ord_def transp_def)
 
-lemma fun_ord_antisym: "antisymP ord  \<Longrightarrow> antisymP (fun_ord ord)"
-  by (fastforce simp: fun_ord_def antisym_def)
+lemma fun_ord_antisym: "antisymp ord  \<Longrightarrow> antisymp (fun_ord ord)"
+  by (fastforce simp: fun_ord_def antisymp_def)
 
 lemma fun_ord_combine:
   "fun_ord ord a b \<Longrightarrow> fun_ord ord c d \<Longrightarrow> (\<And>s. ord (a s) (b s) \<Longrightarrow> ord (c s) (d s) \<Longrightarrow> ord (e s) (f s)) \<Longrightarrow> fun_ord ord e f"
@@ -254,9 +254,9 @@ proof
   note ord =
     fun_ord_refl[where 'b="'s", OF reflp_ord_option[where 'a="'s pmf set"], of "op \<subseteq>"]
     fun_ord_trans[where 'b="'s", OF transp_ord_option[where 'a="'s pmf set"], of "op \<subseteq>"]
-    fun_ord_antisym[where 'b="'s", OF antisymP_ord_option[where 'a="'s pmf set"], of "op \<subseteq>"]
+    fun_ord_antisym[where 'b="'s", OF antisymp_ord_option[where 'a="'s pmf set"], of "op \<subseteq>"]
   show  "x \<le> x" "x \<le> y \<Longrightarrow> y \<le> z \<Longrightarrow> x \<le> z" "x \<le> y \<Longrightarrow> y \<le> x \<Longrightarrow> x = y"
-    by (transfer; insert ord; auto simp: transp_def antisym_def reflp_def)+
+    by (transfer; insert ord; auto simp: transp_def antisymp_def reflp_def)+
   show "x \<sqinter> y \<le> x" "x \<sqinter> y \<le> y"
     by (transfer; auto simp: fun_ord_def ord_option.simps lift_option_def split: Option.bind_split)+
   show "x \<le> y \<Longrightarrow> x \<le> z \<Longrightarrow> x \<le> y \<sqinter> z"
