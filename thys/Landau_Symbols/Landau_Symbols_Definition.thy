@@ -74,8 +74,9 @@ lemma eventually_nonzero_ln_at_top [eventually_nonzero_simps]:
 
 lemma eventually_nonzero_ln_const_at_top [eventually_nonzero_simps]:
   "b > 0 \<Longrightarrow> eventually_nonzero at_top (\<lambda>x. ln (b * x :: real))"
-  unfolding eventually_nonzero_def using eventually_gt_at_top[of "max 1 (inverse b)"]
-  by (auto elim!: eventually_mono simp: field_simps)
+  unfolding eventually_nonzero_def 
+    apply (rule eventually_mono [OF eventually_gt_at_top[of "max 1 (inverse b)"]])
+  by (metis exp_ln exp_minus exp_minus_inverse less_numeral_extra(3) ln_gt_zero max_less_iff_conj mult.commute mult_strict_right_mono)
 
 lemma eventually_nonzero_ln_const'_at_top [eventually_nonzero_simps]:
   "b > 0 \<Longrightarrow> eventually_nonzero at_top (\<lambda>x. ln (x * b :: real))"
@@ -1602,7 +1603,7 @@ lemma landau_symbol_if_at_top_eq [simp]:
   assumes "landau_symbol L L' Lr"
   shows   "L at_top (\<lambda>x::'a::linordered_semidom. if x = a then f x else g x) = L at_top (g)"
 apply (rule landau_symbol.cong[OF assms])
-using eventually_ge_at_top[of "a + 1"] less_add_one[of a] apply (auto elim!: eventually_mono)
+using less_add_one[of a] apply (auto intro: eventually_mono  eventually_ge_at_top[of "a + 1"])
 done
 
 lemmas landau_symbols_if_at_top_eq [simp] = landau_symbols[THEN landau_symbol_if_at_top_eq]
