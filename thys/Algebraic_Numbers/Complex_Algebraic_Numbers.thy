@@ -52,14 +52,6 @@ qed
 definition poly_inverse_2i :: "int poly" where
   "poly_inverse_2i \<equiv> [: 1, 0, 4:]"
   
-lemma poly_inverse_2i_irr: "irreducible poly_inverse_2i"
-proof -
-  have "factors_of_int_poly poly_inverse_2i = [poly_inverse_2i]" 
-    by eval (* takes a while *)
-  with factors_of_int_poly(1)[of poly_inverse_2i "[poly_inverse_2i]" poly_inverse_2i]
-  show ?thesis by simp
-qed
-
 lemma represents_inverse_2i: "poly_inverse_2i represents (inverse (2 * \<i>))"
   unfolding represents_def poly_inverse_2i_def by simp
 
@@ -108,9 +100,8 @@ proof -
   have "\<exists> qi \<in> set ?Imp. qi represents (inverse (2 * \<i>) * (x - cnj x))" 
   proof (cases "x - cnj x = 0")
     case False 
-    have "inverse (2 * \<i>) \<noteq> 0" by auto
-    note represents_irr_non_0[OF poly_inverse_2i_irr 12 this]
-    from represents_mult[OF 12 appi this False]
+    from represents_irr_non_0[OF irr_pi appi False] have "poly pi 0 \<noteq> 0" .
+    from represents_mult[OF 12 appi this]
       represents_irr_non_0[OF irr_pi appi False, unfolded poly_0_coeff_0] pi
     show ?thesis unfolding root_poly_Im_def Let_def by (auto intro: bexI[of _ "cf_pos_poly (poly_mult poly_inverse_2i pi)"])
   next

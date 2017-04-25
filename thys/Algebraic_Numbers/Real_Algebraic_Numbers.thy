@@ -2200,7 +2200,7 @@ proof -
   from x have ax: "p1 represents ?x" unfolding represents_def by (auto elim!:invariant_1E)
   from y have ay: "p2 represents ?y" unfolding represents_def by (auto elim!:invariant_1E)
   from ax ay pos[unfolded xt yt] have axy: "?p represents (?x * ?y)"
-    by (intro represents_mult represents_irr_non_0[OF irr1], auto)
+    by (intro represents_mult represents_irr_non_0[OF irr2], auto)
   from representsD[OF this] have p: "?p \<noteq> 0" and rt: "ipoly ?p (?x * ?y) = 0" .
   from x pos(1)[unfolded xt] have "?r r1 > 0" unfolding split by auto
   hence "sgn r1 = 1" unfolding sgn_rat_def by (auto split: if_splits)
