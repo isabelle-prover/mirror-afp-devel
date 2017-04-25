@@ -57,7 +57,7 @@ proof(cases "c > 0")
       where "ln (c * x) - ln (\<epsilon> * (x - 1)) < real M * ln x" by blast
     hence "exp (ln (c * x) - ln (\<epsilon> * (x - 1))) < exp (real M * ln x)" by(rule exp_less_mono)
     hence M: "c * (1 / x) ^ M / (1 - 1 / x) < \<epsilon>" using \<open>0 < \<epsilon>\<close> x c
-      by(simp add: exp_diff exp_real_of_nat_mult field_simps)
+      by (simp add: exp_diff exp_of_nat_mult field_simps del: ln_mult)
 
     { fix n m :: nat
       assume "n \<ge> M" "m \<ge> M"
@@ -242,8 +242,6 @@ by(auto simp add: order_on_defs trans_def antisym_def)
 
 lemma incseq_chain_range: "incseq f \<Longrightarrow> Complete_Partial_Order.chain op \<le> (range f)"
 apply(rule chainI; clarsimp)
-subgoal for x y using linear[of x y] by(auto dest: incseqD)
-done
-
+ using linear by (auto dest: incseqD)
 
 end
