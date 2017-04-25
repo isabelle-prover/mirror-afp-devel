@@ -1,6 +1,6 @@
 chapter AFP
 
-session Bertrands_Postulate (AFP) = "HOL-Number_Theory" +
+session Bertrands_Postulate (AFP) = "Pratt_Certificate" +
   options [timeout=600, document=pdf]
   theories [document = false]
     "~~/src/HOL/Decision_Procs/Approximation"
