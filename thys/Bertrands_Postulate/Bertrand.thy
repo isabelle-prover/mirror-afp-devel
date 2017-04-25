@@ -11,9 +11,27 @@ theory Bertrand
     "~~/src/HOL/Number_Theory/Number_Theory"
     "~~/src/HOL/Library/Discrete"
     "~~/src/HOL/Decision_Procs/Approximation"
+    "../Pratt_Certificate/Pratt_Certificate"
 begin
 
 subsection \<open>Auxiliary facts\<close>
+ 
+lemma ln_2_le: "ln 2 \<le> 355 / (512 :: real)"
+proof -
+  have "ln 2 \<le> real_of_float (ub_ln2 12)" by (rule ub_ln2)
+  also have "ub_ln2 12 = Float 5680 (- 13)" by code_simp
+  finally show ?thesis by simp
+qed
+
+lemma ln_2_ge: "ln 2 \<ge> (5677 / 8192 :: real)"
+proof -
+  have "ln 2 \<ge> real_of_float (lb_ln2 12)" by (rule lb_ln2)
+  also have "lb_ln2 12 = Float 5677 (-13)" by code_simp
+  finally show ?thesis by simp
+qed
+
+lemma ln_2_ge': "ln (2 :: real) \<ge> 2/3" and ln_2_le': "ln (2 :: real) \<le> 16/23"
+  using ln_2_le ln_2_ge by simp_all
 
 lemma of_nat_ge_1_iff: "(of_nat x :: 'a :: linordered_semidom) \<ge> 1 \<longleftrightarrow> x \<ge> 1"
   using of_nat_le_iff[of 1 x] by (subst (asm) of_nat_1)
@@ -608,7 +626,7 @@ next
       by simp
 
     from \<open>n > 1\<close> have "real n * (ln (real n - 1) - ln (real n)) \<le> 0"
-      by (simp add: algebra_simps mult_left_mono pos_prod_le)
+      by (simp add: algebra_simps mult_left_mono)
     moreover from \<open>n > 1\<close> have "ln (real (n div 2)) \<le> ln (real n)" by simp
     moreover {
       have "exp 1 \<le> (3::real)" by (rule exp_le)
@@ -650,8 +668,14 @@ next
       by (simp add: algebra_simps)
     also have "real n * (ln (real n) - ln (real n - 1)) \<le> 3 * (ln 3 - ln (3 - 1))"
       using mon[OF _ \<open>n \<ge> 3\<close>] by simp
-    also have "3 * (ln 3 - ln (3 - 1)) - 1 \<le> 3 * ln (2 :: real)"
-      by (approximation 3)
+    also {
+      have "Some (Float 3 (-1)) = ub_ln 1 3" by code_simp
+      from ub_ln(1)[OF this] have "ln 3 \<le> (1.6 :: real)" by simp
+      also have "1.6 - 1 / 3 \<le> 2 * (2/3 :: real)" by simp
+      also have "2/3 \<le> ln (2 :: real)" by (rule ln_2_ge')
+      finally have "ln 3 - 1 / 3 \<le> 2 * ln (2 :: real)" by simp
+    }
+    hence "3 * (ln 3 - ln (3 - 1)) - 1 \<le> 3 * ln (2 :: real)" by simp
     also note *
     finally have "- real n * (ln (real n - 1) - ln (real n)) + ln(real (n div 2)) - 1 \<le> 
                     3 * ln (real n) - 2 * ln (real (n div 2))" by simp
@@ -932,33 +956,6 @@ text \<open>
   approximation.
 \<close>  
 
-ML \<open>
-structure Bertrand = 
-struct
-
-local
-
-fun prime (ct, b) = Thm.mk_binop @{cterm "Pure.eq :: bool \<Rightarrow> bool \<Rightarrow> prop"}
-  ct (if b then @{cterm True} else @{cterm False});
-
-val (_, prime_oracle) = Context.>>> (Context.map_theory_result
-  (Thm.add_oracle (@{binding prime}, prime)));
-
-in
-
-val raw_prime_computation_conv =
-  @{computation_conv bool terms: "prime :: nat \<Rightarrow> bool"
-     "Ball :: nat set \<Rightarrow> _" "{0, 1, 2, 3} :: nat set"}
-  (fn _ => fn b => fn ct => prime_oracle (ct, b));
-
-fun prime_computation_conv ctxt =
-  HOLogic.Trueprop_conv (raw_prime_computation_conv ctxt);
-
-end
-
-end;
-\<close>
-  
 context
 begin
 
@@ -1012,20 +1009,49 @@ private lemma eval_psi_ineq_aux:
   assumes "psi n = x" "x \<le> 3 / 2 * ln 2 * n"
   shows   "psi n \<le> 3 / 2 * ln 2 * n"
   using assms by simp_all
+    
+private lemma eval_psi_ineq_aux2:
+  assumes "numeral m ^ 2 \<le> (2::nat) ^ (3 * n)"
+  shows   "ln (real (numeral m)) \<le> 3 / 2 * ln 2 * real n"
+proof -
+  have "ln (real (numeral m)) \<le> 3 / 2 * ln 2 * real n \<longleftrightarrow> 
+          2 * log 2 (real (numeral m)) \<le> 3 * real n"
+    by (simp add: field_simps log_def)
+  also have "2 * log 2 (real (numeral m)) = log 2 (real (numeral m ^ 2))"
+    by (subst of_nat_power, subst log_nat_power) simp_all
+  also have "\<dots> \<le> 3 * real n \<longleftrightarrow> real ((numeral m) ^ 2) \<le> 2 powr real (3 * n)"
+    by (subst Transcendental.log_le_iff) simp_all
+  also have "2 powr (3 * n) = real (2 ^ (3 * n))" 
+    by (simp add: powr_realpow [symmetric])
+  also have "real ((numeral m) ^ 2) \<le> \<dots> \<longleftrightarrow> numeral m ^ 2 \<le> (2::nat) ^ (3 * n)"
+    by (rule of_nat_le_iff)
+  finally show ?thesis using assms by blast
+qed
 
+private lemma eval_psi_ineq_aux_mono:
+  assumes "psi n = x" "psi m = x" "psi n \<le> 3 / 2 * ln 2 * n" "n \<le> m"
+  shows   "psi m \<le> 3 / 2 * ln 2 * m"
+proof -
+  from assms have "psi m = psi n" by simp
+  also have "\<dots> \<le> 3 / 2 * ln 2 * n" by fact
+  also from \<open>n \<le> m\<close> have "\<dots> \<le> 3 / 2 * ln 2 * m" by simp
+  finally show ?thesis .
+qed
+                 
 ML_file \<open>bertrand.ML\<close>
 
-(* This should not take more than a few seconds *)
+
+(* This should not take more than 1 minute *)
 local_setup \<open> fn ctxt =>
 let
   fun tac {context = ctxt, ...} =
     let
       val psi_cache = Bertrand.prove_psi ctxt 129
-      fun prove_psi_ineqs ctxt cache =
+      fun prove_psi_ineqs ctxt =
         let
           fun tac {context = ctxt, ...} = 
-            HEADGOAL (Approximation.approximation_tac 12 [] NONE ctxt)
-          fun prove (_, _, thm) =
+            HEADGOAL (resolve_tac ctxt @{thms eval_psi_ineq_aux2} THEN' Simplifier.simp_tac ctxt)
+          fun prove_by_approx n thm =
             let
               val thm = thm RS @{thm eval_psi_ineq_aux}
               val [prem] = Thm.prems_of thm
@@ -1033,9 +1059,32 @@ let
             in
               prem RS thm
             end
+          fun prove_by_mono last_thm last_thm' thm =
+            let
+              val thm = @{thm eval_psi_ineq_aux_mono} OF [last_thm, thm, last_thm']
+              val [prem] = Thm.prems_of thm
+              val prem = Goal.prove ctxt [] [] prem (K (HEADGOAL (Simplifier.simp_tac ctxt)))
+            in
+              prem RS thm
+            end
+          fun go _ acc [] = acc
+            | go last acc ((n, x, thm) :: xs) =
+                let
+                  val thm' =
+                    case last of
+                      NONE => prove_by_approx n thm
+                    | SOME (last_x, last_thm, last_thm') => 
+                        if last_x = x then 
+                          prove_by_mono last_thm last_thm' thm 
+                        else
+                          prove_by_approx n thm
+                in
+                  go (SOME (x, thm, thm')) (thm' :: acc) xs
+                end
         in
-          cache |> map prove
+          rev o go NONE []
         end
+            
       val psi_ineqs = prove_psi_ineqs ctxt psi_cache
       fun prove_ball ctxt (thm1 :: thm2 :: thms) =
             let
@@ -1078,7 +1127,7 @@ proof (rule DERIV_nonpos_imp_nonincreasing, clarify, goal_cases)
   from 1 assms(2) have "(f has_real_derivative f' t) (at t)" unfolding f_def f'_def
     by (auto intro!: derivative_eq_intros simp: field_simps power2_eq_square)
   moreover {
-    have "1/4 \<le> ln (2::real)" by (approximation 5)
+    from ln_2_ge have "1/4 \<le> ln (2::real)" by simp
     also from assms(2) 1 have "\<dots> \<le> ln t" by simp
     finally have "ln t \<ge> 1/4" .
   }
@@ -1140,12 +1189,24 @@ lemma psi_ubound_log_1024:
 proof -
   from psi_ubound_log_128 have "\<forall>n\<le>128. psi n \<le> 3 / 2 * ln 2 * real n" by simp
   hence "\<forall>n\<le>256. psi n \<le> 1025 / 512 * ln 2 * real n"
-    by (rule psi_ubound_log_double_cases) (approximation 10, simp_all)
+  proof (rule psi_ubound_log_double_cases, goal_cases)
+    case 1
+    have "Some (Float 624 (- 7)) = ub_ln 9 129" by code_simp
+    from ub_ln(1)[OF this] and ln_2_ge show ?case by (simp add: field_simps)
+  qed simp_all
   hence "\<forall>n\<le>512. psi n \<le> 549 / 256 * ln 2 * real n"
-    by (rule psi_ubound_log_double_cases) (approximation 10, simp_all)
+  proof (rule psi_ubound_log_double_cases, goal_cases)
+    case 1
+    have "Some (Float 180 (- 5)) = ub_ln 7 257" by code_simp
+    from ub_ln(1)[OF this] and ln_2_ge show ?case by (simp add: field_simps)
+  qed simp_all
   thus "\<forall>n\<le>1024. psi n \<le> 551 / 256 * ln 2 * real n"
-    by (rule psi_ubound_log_double_cases) (approximation 10, simp_all)
-qed  
+  proof (rule psi_ubound_log_double_cases, goal_cases)
+    case 1
+    have "Some (Float 203 (- 5)) = ub_ln 7 513" by code_simp
+    from ub_ln(1)[OF this] and ln_2_ge show ?case by (simp add: field_simps)
+  qed simp_all
+qed
   
 lemma psi_bounds_sustained_induct:
   assumes "4 * ln (1 + 2 ^ j) + 3 \<le> d * ln 2 * (1 + 2^j)"
@@ -1255,11 +1316,26 @@ proof (rule psi_bounds_sustained)
 next
   fix n :: nat assume "n \<le> 2 ^ 10"
   with psi_ubound_log_1024 show "psi n \<le> 551 / 256 * ln 2 * real n" by auto
-qed (approximation 5)+
+next
+  have "4 / (1 + 2 ^ 10) \<le> (551 / 256 / 2 - 1) * (2/3 :: real)"
+    by simp
+  also have "\<dots> \<le> (551 / 256 / 2 - 1) * ln 2"
+    by (intro mult_left_mono ln_2_ge') simp_all
+  finally show "4 / (1 + 2 ^ 10) \<le> (551 / 256 / 2 - 1) * ln (2 :: real)" .
+next
+  have "Some (Float 16 (-1)) = ub_ln 3 1025" by code_simp
+  from ub_ln(1)[OF this] and ln_2_ge 
+    have "2048 * ln 1025 + 1536 \<le> 39975 * (ln 2::real)" by simp
+  thus "4 * ln (1 + 2 ^ 10) + 3 \<le> (551 / 256 / 2 - 1) * ln 2 * (1 + 2 ^ 10 :: real)"
+    by simp
+qed
 
 lemma psi_ubound_3_2: "psi n \<le> 3/2 * n"
 proof -
-  have "551 / 256 * ln 2 \<le> 3/(2::real)" by (approximation 10)
+  have "(551 / 256) * ln 2 \<le> (551 / 256) * (16/23 :: real)" 
+    by (intro mult_left_mono ln_2_le') auto
+  also have "\<dots> \<le> 3 / 2" by simp
+  finally have "551 / 256 * ln 2 \<le> 3/(2::real)" .
   with of_nat_0_le_iff mult_right_mono have "551 / 256 * ln 2 * n \<le> 3/2 * n"
     by blast
   with psi_ubound_log[of "n"] show ?thesis
@@ -1664,6 +1740,12 @@ next
   finally show "ln (fact n) - 2 * ln (fact (n div 2)) \<le> psi n - psi (n div 2) + psi (n div 3)" .
 qed
 
+lemma ub_ln_1200: "ln 1200 \<le> 57 / (8 :: real)"
+proof -
+  have "Some (Float 57 (-3)) = ub_ln 8 (Float 1200 0)" by code_simp
+  from ub_ln(1)[OF this] show ?thesis by simp
+qed
+  
 lemma psi_double_lemma:
   assumes "n \<ge> 1200"
   shows "real n / 6 \<le> psi n - psi (n div 2)"
@@ -1677,7 +1759,7 @@ proof -
   moreover have "real n * ln 2 - 4 * ln (real n) - 3 \<ge> 2 / 3 * n"
   proof (rule overpower_lemma[of "\<lambda>n. 2/3 * n" 1200])
     show "2 / 3 * 1200 \<le> 1200 * ln 2 - 4 * ln 1200 - (3::real)"
-      by (approximation 12)
+        using ub_ln_1200 ln_2_ge by linarith
   next
     fix x::real
     assume "1200 \<le> x"
@@ -1689,14 +1771,10 @@ proof -
   next
     fix x::real
     assume "1200 \<le> x"
-    then have "12 / x \<le> 12 / 1200"
-      by simp
-    then have "0 \<le> 0.67 - 4 / x - 2 / 3"
-      by simp
-    also have "0.67 \<le> ln (2::real)"
-      by (approximation 6)
-    finally show "0 \<le> ln 2 - 4 / x - 2 / 3"
-      by simp
+    then have "12 / x \<le> 12 / 1200" by simp
+    then have "0 \<le> 0.67 - 4 / x - 2 / 3" by simp
+    also have "0.67 \<le> ln (2::real)" using ln_2_ge by simp
+    finally show "0 \<le> ln 2 - 4 / x - 2 / 3" by simp
   next
     from assms show "1200 \<le> real n"
       by simp
@@ -1765,7 +1843,8 @@ proof cases
     where "prime_constants = {2, 3, 5, 7, 13, 23, 43, 83, 163, 317, 631::nat}"
   from \<open>n > 1\<close> n_less have "\<exists>p \<in> prime_constants. n < p \<and> p < 2 * n"
     unfolding bex_simps greaterThanLessThan_iff prime_constants_def by presburger
-  moreover have "\<forall>p\<in>prime_constants. prime p" unfolding prime_constants_def by eval
+  moreover have "\<forall>p\<in>prime_constants. prime p" 
+    unfolding prime_constants_def ball_simps HOL.simp_thms by (intro conjI; pratt)
   ultimately show ?thesis
     unfolding greaterThanLessThan_def greaterThan_def lessThan_def by blast
 next

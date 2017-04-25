@@ -20,8 +20,6 @@ end
 structure Bertrand : BERTRAND = 
 struct
 
-open Bertrand;
-
 type cache = (int * thm) list
 
 datatype primepow_cert = Primepow of int * int | NotPrimepow of int * int
@@ -46,11 +44,9 @@ fun mk_primepow_cert n =
 fun prove_prime ctxt cache p =
   case get_cached_prime_thm cache (snd (HOLogic.dest_number p)) of
     SOME thm => thm
-  | NONE =>
-      @{term "prime :: nat \<Rightarrow> bool"} $ p
-      |> HOLogic.mk_Trueprop
-      |> Thm.cterm_of ctxt
-      |> prime_computation_conv ctxt
+  | NONE => 
+      Goal.prove ctxt [] [] (HOLogic.mk_Trueprop (@{term "prime :: nat => bool"} $ p))
+        (fn {context = ctxt, ...} => HEADGOAL (Pratt.pratt_tac false NONE ctxt))
 
 fun bool_thm_to_eq_thm thm =
   case HOLogic.dest_Trueprop (Thm.concl_of thm) of
@@ -76,19 +72,9 @@ end
 fun mk_prime_cache ctxt n =
   let
     val ps = prime_sieve n
-    val t = ps |> map mk_nat |> HOLogic.mk_set @{typ nat}
-    val prop = betapply (@{term "\<lambda>A. \<forall>p\<in>A. prime (p :: nat)"}, t)
-      |> HOLogic.mk_Trueprop |> Thm.cterm_of ctxt
-    val thm = prime_computation_conv ctxt prop
-    fun deconstruct_thm thm acc =
-      case Thm.concl_of thm of
-        Const (@{const_name HOL.Trueprop}, _) $
-          (Const (@{const_name Set.Ball}, _) $ (Const (@{const_name Set.insert}, _) $ n $ _) $ _)
-        => deconstruct_thm (thm RS @{thm Ball_insertD(2)})
-             ((snd (HOLogic.dest_number n), thm RS @{thm Ball_insertD(1)}) :: acc)
-      | _ => rev acc
+    val thms = ps |> map (prove_prime ctxt [] o mk_nat)
   in
-    deconstruct_thm (thm RS @{thm meta_eq_TrueE}) []
+    ps ~~ thms
   end
 
 fun prove_primepow ctxt cache t =
