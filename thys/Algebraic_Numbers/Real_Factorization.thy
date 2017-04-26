@@ -140,14 +140,14 @@ proof -
     from real_poly_factor[OF q'[unfolded this]] d0 d
     have q: "set (coeffs ?q) \<subseteq> \<real>" by auto 
     have "p = ?rp ?p"
-      by (rule sym, subst map_poly_map_poly, force, rule map_poly_eqI, auto)
+      by (rule sym, subst map_poly_map_poly, force, rule map_poly_idI, auto)
     also have "\<dots> = ?rp (smult d ?q)" unfolding p ..
     also have "?q = ?cp (?rp ?q)"
       by (rule sym, rule map_poly_of_real_Re, insert q, auto)
     also have "d = ?c c" unfolding d c ..
-    also have "smult (?c c) (?cp (?rp ?q)) = ?cp (smult c (?rp ?q))" by simp
+    also have "smult (?c c) (?cp (?rp ?q)) = ?cp (smult c (?rp ?q))" by (simp add: hom_distribs)
     also have "?rp \<dots> = smult c (?rp ?q)" 
-      by (subst map_poly_map_poly, force, rule map_poly_eqI, auto)
+      by (subst map_poly_map_poly, force, rule map_poly_idI, auto)
     finally have p: "p = smult c (?rp ?q)" .
     let ?fact = complex_roots_to_real_factorization
     have "?rp ?q = (\<Prod>(q, i)\<leftarrow>qis. q ^ i) \<and>
@@ -227,7 +227,7 @@ proof -
             {
               fix c :: complex
               assume rt: "poly (?cp xi) c = 0"
-              hence "poly (?cp q * ?cp p) c = 0" by (simp add: qp)
+              hence "poly (?cp q * ?cp p) c = 0" by (simp add: qp hom_distribs)
               hence "(poly (?cp q) c = 0 \<or> poly (?cp p) c = 0)" by auto
               hence "c = roots1 (?cp q) \<or> c = roots1 (?cp p)"
                 using roots1[of "?cp q"] roots1[of "?cp p"] dp dq by auto

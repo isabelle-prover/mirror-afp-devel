@@ -102,7 +102,7 @@ proof -
     using id[of "coeff p n"] f0 range_coeff by (cases "coeff p n = 0", auto)
   show "d > 0" by fact
   show "p = smult (inverse (of_int d)) (map_poly of_int q)"
-    unfolding q smult_map_poly using id f0
+    unfolding q smult_as_map_poly using id f0
     by (intro poly_eqI, auto simp: field_simps coeff_map_poly)
 qed
 
@@ -171,7 +171,7 @@ proof -
     also have "?cr / ?s = ?cr * inverse ?s" by (rule divide_inverse)
     also have "\<dots> = inverse ?s * ?cr" by simp
     also have "smult (inverse ?s * ?cr) ?q = smult (inverse ?s) (smult ?cr ?q)" by simp
-    also have "smult ?cr ?q = map_poly of_int (smult (content r) q)" by simp
+    also have "smult ?cr ?q = map_poly of_int (smult (content r) q)" by (simp add: hom_distribs)
     also have "\<dots> = map_poly of_int r" unfolding qr ..
     finally have pq: "p = smult d ?q" unfolding p by simp
     from p p0 have r0: "r \<noteq> 0" by auto
@@ -181,7 +181,7 @@ proof -
     from pq d0 cq show ?thesis by auto
   qed
   thus p: "p = smult d (map_poly of_int q)" and d: "d > 0" and "p \<noteq> 0 \<Longrightarrow> content q = 1" by auto
-  show "degree q = degree p" unfolding p smult_map_poly
+  show "degree q = degree p" unfolding p smult_as_map_poly
     by (rule sym, subst map_poly_map_poly, force+, rule degree_map_poly, insert d, auto)
 qed
 
@@ -219,9 +219,9 @@ next
   have "?cp = ?pn q * ?pn r" by fact
   also have "\<dots> = smult (c * d) (?n q * ?n r)" unfolding id [symmetric]
     by (metis content_mult content_times_primitive_part primitive_part_mult)
-  finally have id: "?cp = smult c (?n q * smult d (?n r))" by (simp add: mult.commute)      
-  have "p = ?n q * smult d (?n r)"
-    using map_poly_inj[OF id[unfolded smult_map_poly[of c]]] c by auto
+  finally have id: "?cp = smult c (?n q * smult d (?n r))" by (simp add: mult.commute)
+  interpret map_poly_inj_zero_hom "op * c" using c by (unfold_locales, auto)
+  have "p = ?n q * smult d (?n r)" using id[unfolded smult_as_map_poly[of c]] by auto
   thus dvd: "?n q dvd p" unfolding dvd_def by blast
 qed
 
@@ -280,7 +280,7 @@ proof -
   have s: "s > 0" "s \<noteq> 0" and h: "h = smult s (?rp sh)" and csh: "content sh = 1" by auto
   let ?irs = "inverse (r * s)"
   from r s have irs0: "?irs \<noteq> 0" by (auto simp: field_simps)
-  have "?rp (rg * sh) = ?rp rg * ?rp sh" by simp
+  have "?rp (rg * sh) = ?rp rg * ?rp sh" by (simp add: hom_distribs)
   also have "\<dots> = smult ?irs (?rp p)" unfolding pgh g h using r s
     by (simp add: field_simps)
   finally have id: "?rp (rg * sh) = smult ?irs (?rp p)" by auto
@@ -353,7 +353,7 @@ proof -
     from content_normalize_content_1[OF p, folded q_def] have cq: "content q = 1" by auto
     obtain s sh where h: "rat_to_normalized_int_poly (smult (inverse (?r a)) h) = (s,sh)" by force
     from arg_cong[OF pgh[unfolded pq], of "smult (inverse (?r a))"] ra
-    have "?rp q = g * smult (inverse (?r a)) h" by auto
+    have "?rp q = g * smult (inverse (?r a)) h" by (auto simp: hom_distribs)
     from rat_to_int_factor_content_1[OF cq this g h q0]
     have qrs: "q = rg * sh" .
     show ?thesis unfolding acp unfolding pq qrs 

@@ -71,7 +71,7 @@ proof (atomize(full), goal_cases)
       from a have A: "A \<noteq> 0" unfolding A_def by auto
       from *[unfolded id' deg, unfolded coeffs of_int_minus of_int_minus of_int_mult of_int_diff, simplified] 
       have r: "real_of_rat r = R" and sq: "sqrt (of_rat sq) = (if n = 1 then - sqrt ?sq else sqrt ?sq)" 
-        by (auto simp: A_def B_def C_def R_def real_sqrt_minus) 
+        by (auto simp: A_def B_def C_def R_def real_sqrt_minus hom_distribs) 
       note sq
       also have "?sq = D" using A by (auto simp: field_simps D_def)
       finally have sq: "sqrt (of_rat sq) = (if n = 1 then - sqrt D else sqrt D)" by simp

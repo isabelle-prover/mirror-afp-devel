@@ -1894,8 +1894,8 @@ qed
 
 lemma smult_exact_div_poly: assumes "\<And> c. c \<in> set (coeffs p) \<Longrightarrow> a dvd c"
   shows "smult a (divide_poly p a) = p" 
-  unfolding smult_map_poly divide_poly_def
-  by (subst map_poly_map_poly,simp,rule map_poly_eqI, insert assms, auto)
+  unfolding smult_as_map_poly divide_poly_def
+  by (subst map_poly_map_poly, insert assms, auto intro: map_poly_idI)
 
 typedef (overloaded) 'a common_divisor = "{f. \<forall> x y :: 'a :: idom_divide. f x y dvd x \<and> f x y dvd y}"
   by (rule exI[of _ "\<lambda> _ _. 1"], auto)

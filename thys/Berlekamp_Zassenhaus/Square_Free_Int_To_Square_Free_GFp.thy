@@ -35,7 +35,7 @@ proof -
     let ?s = "smult (content f) s" 
     from arg_cong[OF f, of ?r] c0 
     have "?r f = q * (smult (inverse c) (?r ?s))" 
-      by (simp add: field_simps q)
+      by (simp add: field_simps q hom_distribs)
     from arg_cong[OF this[unfolded rf], of "\<lambda> f. f div q"] q0 
     have "q * k = smult (inverse c) (?r ?s)" 
       by (metis nonzero_mult_div_cancel_left)
@@ -80,7 +80,7 @@ next
     have cr: "content r = 1" by auto
     with r(3) content_free_unit have dr: "degree r \<noteq> 0" by auto
     let ?r = "map_poly rat_of_int"
-    from r(1) have dvd: "?r r dvd ?r pp" unfolding dvd_def by auto
+    from r(1) have dvd: "?r r dvd ?r pp" unfolding dvd_def by (auto simp: hom_distribs)
     from r(2) have "?r r dvd ?r ?p'" apply (intro of_int_poly_hom.hom_dvd) by auto
     also have "?r ?p' = pderiv (?r pp)" unfolding of_int_hom.map_poly_pderiv ..
     finally have dvd': "?r r dvd pderiv (?r pp)" by auto
@@ -137,12 +137,7 @@ proof (intro conjI, rule notI)
   {
     fix g :: "int poly" 
     assume abs: "abs (lead_coeff g) < CARD('a)"
-    have "degree (?m g) = degree g"
-    proof (rule degree_map_poly, force)
-      assume "?i (coeff g (degree g)) = 0" 
-      from of_int_0[OF abs[unfolded] this]
-      show "g = 0" by auto
-    qed
+    have "degree (?m g) = degree g" by (rule degree_map_poly, insert of_int_0[OF abs], auto)
   } note deg = this
   note large = large[unfolded square_free_bound_def]
   from of_int_0[of "lead_coeff f"] large lf have "?i (lead_coeff f) \<noteq> 0" by auto
@@ -151,7 +146,7 @@ proof (intro conjI, rule notI)
   assume 0: "resultant ?f (pderiv ?f) = 0" 
   have "resultant ?f (pderiv ?f) = ?i (resultant f (pderiv f))"
     unfolding of_int_hom.map_poly_pderiv
-    by (subst of_int_hom.resultant_map_poly(1)[OF deg deg], insert large, auto)
+    by (subst of_int_hom.resultant_map_poly(1)[OF deg deg], insert large, auto simp: hom_distribs)
   from of_int_0[OF _ this[symmetric, unfolded 0]] non0
   show False using large by auto
 qed

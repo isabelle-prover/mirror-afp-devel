@@ -1665,7 +1665,8 @@ next
   note C = *(6,7)
   note sf = *(8)
   note inv = *(9)
-  let ?Mp = "poly_mod.Mp (p^n)" 
+  interpret pn: poly_mod_2 "p^n" apply (unfold_locales) using m1 n by auto
+  let ?Mp = "pn.Mp"
   define D where "D \<equiv> prod_mset (factors_of_factor_tree l)" 
   define H where "H \<equiv> prod_mset (factors_of_factor_tree r)" 
   let ?D = "Mp D" 
@@ -1699,13 +1700,16 @@ next
     factors_of_factor_tree l = mset (map Mp AD) \<and>
     (\<forall>G. G \<in> set AD \<longrightarrow> monic G \<and> ?Mp G = G)"
     by (rule IH1[OF AD(3) Fs AD'[symmetric] monA AD(2) sfA inv], auto)
-  have BH: "equivalent B ?H" "poly_mod.Mp (p ^ n) B = B" "equivalent B (prod_mset (factors_of_factor_tree r))"
+  have BH: "equivalent B ?H" "pn.Mp B = B" "equivalent B (prod_mset (factors_of_factor_tree r))"
       using step by (auto simp: equivalent_def H_def)
-  from step have "poly_mod.equivalent (p ^ n) C (A * B)" by simp
+  from step have "pn.equivalent C (A * B)" by simp
   hence "?Mp C = ?Mp (A * B)" by (simp add: poly_mod.equivalent_def)
-  with C monA AD(2) BH(2) have monB: "monic B"
-    by (metis (no_types, lifting) coeff_degree_mult degree_map_poly leading_coeff_neq_0  
-     mult.commute mult.right_neutral poly_mod.M_0 poly_mod.Mp_coeff poly_mod.Mp_def)
+  with C AD(2) have "pn.Mp C = pn.Mp (A * pn.Mp B)" by simp
+  from arg_cong[OF this, of lead_coeff] C
+  have "monic (pn.Mp (A * B))" by (simp add: pn.monic_degree_Mp)
+  then have "lead_coeff (pn.Mp A) * lead_coeff (pn.Mp B) = 1"
+    by (metis lead_coeff_mult leading_coeff_neq_0 local.step mult_cancel_right2 pn.degree_m_eq pn.degree_m_eq_lead_coeff pn.m1 poly_mod.M_def poly_mod.Mp_coeff)
+  with monA AD(2) BH(2) have monB: "monic B" by simp
   from square_free_m_cong[OF sf_fact(2)] BH have sfB: "square_free_m B" unfolding equivalent_def by auto 
   have IH2: "poly_mod.equivalent (p ^ n) B (prod_list BH) \<and>
       factors_of_factor_tree r = mset (map Mp BH) \<and>

@@ -2876,7 +2876,7 @@ proof -
         have "u = (\<Prod>c\<in>UNIV. gcd u (v - [:c:]))"
           using Berlekamp_gcd_step[OF vu mon_u sf_u] .
         also have "\<dots> = (\<Prod>i \<in> {0..< int CARD('a)}. ?g i)"
-          by (rule sym, rule prod.reindex_cong[OF inj_to_int_mod_ring range_to_int_mod_ring[symmetric]],
+          by (rule sym, rule prod.reindex_cong[OF to_int_mod_ring_hom.inj_f range_to_int_mod_ring[symmetric]],
           simp add: of_int_of_int_mod_ring)
         finally have u_prod: "u = (\<Prod>i \<in> {0..< int CARD('a)}. ?g i)" .
         let ?S = "{0..<int CARD('a)} - {i. ?g i = 1}"

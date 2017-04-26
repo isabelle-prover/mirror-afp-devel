@@ -50,22 +50,17 @@ notation equivalent (infixl "=m" 50)
 lemma coeffs_to_int_poly: "coeffs (to_int_poly (x :: 'a mod_ring poly)) = map to_int_mod_ring (coeffs x)" 
   by (rule coeffs_map_poly, auto)
 
-lemma coeffs_of_int_poly: "coeffs (of_int_poly (Mp x) :: 'a mod_ring poly) = map of_int (coeffs (Mp x))" 
-proof (rule coeffs_map_poly)
-  fix y
-  assume "y \<in> range (coeff (Mp x))" 
-  then obtain i where y: "y = coeff (Mp x) i" by auto
-  from this[unfolded Mp_coeff]
-  show "(of_int y = (0 :: 'a mod_ring)) = (y = 0)"
-    using M_0 M_def mod_mod_trivial of_int_mod_ring.rep_eq of_int_mod_ring_0 p by (metis of_int_of_int_mod_ring)
-qed
+lemma coeffs_of_int_poly: "coeffs (of_int_poly (Mp x) :: 'a mod_ring poly) = map of_int (coeffs (Mp x))"
+  apply (rule coeffs_map_poly)
+  by (metis M_0 M_M Mp_coeff leading_coeff_0_iff of_int_hom.hom_zero to_int_mod_ring_of_int_M)
 
 lemma to_int_poly_i: assumes "poly_rel f g" shows "to_int_poly_i ff_ops f = to_int_poly g"
 proof -
   have *: "map (arith_ops_record.to_int ff_ops) f = coeffs (to_int_poly g)"
     unfolding coeffs_to_int_poly 
     by (rule nth_equalityI, insert assms, auto simp: list_all2_conv_all_nth poly_rel_def to_int)
-  show ?thesis unfolding to_int_poly_i_def poly_of_list_def coeffs_eq_iff coeffs_Poly * by simp
+  show ?thesis unfolding coeffs_eq_iff to_int_poly_i_def poly_of_list_def coeffs_Poly *
+    strip_while_coeffs..
 qed
 
 lemma poly_rel_coeffs_Mp_of_int_poly: assumes id: "f' = of_int_poly_i ff_ops (Mp f)" "f'' = of_int_poly (Mp f)" 

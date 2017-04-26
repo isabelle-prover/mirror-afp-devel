@@ -215,7 +215,7 @@ proof -
     have *: "real_of_int c + x * real_of_int d = 0 \<Longrightarrow> x = - (real_of_int c / real_of_int d)" for x
       using d by (simp add: field_simps)
     show ?thesis unfolding rr using d * unfolding p using of_rat_1[of "Rat.Fract (- c) (d)"]
-      by (auto simp: Fract_of_int_quotient)
+      by (auto simp: Fract_of_int_quotient hom_distribs)
   next
     case False
     let ?r = real_of_rat
@@ -234,7 +234,7 @@ proof -
     from root_bound(2)
     have bnds: "\<And> l r. (l,r) \<in> set bnds \<Longrightarrow> l \<le> r" unfolding bnds_def by auto
     have "ipoly p x = 0 \<Longrightarrow> ?r (- root_bound p) \<le> x \<and> x \<le> ?r (root_bound p)" for x
-      using root_bound(1)[of x] by auto
+      using root_bound(1)[of x] by (auto simp: hom_distribs)
     hence rts: "{x. ipoly p x = 0} 
       = real_of_2 ` set empty \<union> {x. \<exists> l r. root_cond (p,l,r) x \<and> (l,r) \<in> set bnds}" 
       unfolding empty_def bnds_def by (force simp: root_cond_def)
@@ -362,7 +362,7 @@ proof -
             show ?thesis unfolding rts simp `?one` id
             proof (rule conjI[OF cong[OF cong]])
               have "\<And> x. root_cond (p,l,r) x = (root_cond (p,l,?m) x \<or> root_cond (p,?m,r) x)"
-                unfolding root_cond_def by auto
+                unfolding root_cond_def by (auto simp:hom_distribs)
               hence id: "Collect (root_cond (p,l,r)) = {x. (root_cond (p,l,?m) x \<or> root_cond (p,?m,r) x)}" 
                 by auto
               show "?rt [(?m,r),(l,?m)] = Collect (root_cond (p,l,r))" unfolding id list.simps by blast
@@ -549,7 +549,7 @@ proof -
     and c: "c \<noteq> 0" by auto
   with assms have q: "q \<noteq> 0" by auto
   have id: "{x. rpoly p x = (0 :: real)} = {x. ipoly q x = 0}" 
-    unfolding pq by (simp add: c of_rat_of_int_poly)
+    unfolding pq by (simp add: c of_rat_of_int_poly hom_distribs)
   show ?thesis unfolding id
     unfolding real_roots_of_rat_poly_def cq snd_conv using roots_of_real_alg[OF q]
     by auto
@@ -596,7 +596,7 @@ proof -
         from 0 1 2 have l: "?l = set (real_roots_of_rat_poly ?q)" unfolding d by auto
         from deg 0 1 2 have rat: "set (coeffs p) \<subseteq> \<rat>" by auto
         have "p = map_poly (of_rat o to_rat) p"
-          by (rule sym, rule map_poly_eqI, insert rat, auto)
+          by (rule sym, rule map_poly_idI, insert rat, auto)
         also have "\<dots> = real_of_rat_poly ?q"
           by (subst map_poly_map_poly, auto simp: to_rat)
         finally have id: "{x. poly p x = 0} = {x. poly (real_of_rat_poly ?q) x = 0}" and q: "?q \<noteq> 0" 

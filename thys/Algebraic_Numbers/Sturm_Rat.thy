@@ -150,10 +150,10 @@ lemma sturm_aux_rat: "sturm_aux (real_of_rat_poly p) (real_of_rat_poly q) =
 proof (induct p q rule: sturm_aux_rat.induct)
   case (1 p q)
   interpret map_poly_inj_idom_hom of_rat..
-  note deg = of_int_hom.degree_map_poly
+  note deg = of_int_hom.degree_map_poly_hom
   show ?case 
     unfolding sturm_aux.simps[of "real_of_rat_poly p"] sturm_aux_rat.simps[of p]
-    using 1 by (cases "degree q = 0", auto)
+    using 1 by (cases "degree q = 0"; simp add: hom_distribs)
 qed
 
 definition sturm_rat where "sturm_rat p = sturm_aux_rat p (pderiv p)"
@@ -171,12 +171,12 @@ definition poly_neg_number_rootat :: "rat poly \<Rightarrow> rat" where
                                        else -sgn (coeff p (degree p))"
 
 lemma poly_number_rootat: "poly_inf (real_of_rat_poly p) = real_of_rat (poly_number_rootat p)"
-  unfolding poly_inf_def poly_number_rootat_def of_int_hom.degree_map_poly of_rat_hom.coeff_map_poly_hom
+  unfolding poly_inf_def poly_number_rootat_def of_int_hom.degree_map_poly_hom of_rat_hom.coeff_map_poly_hom
     real_of_rat_sgn by simp
 
 lemma poly_neg_number_rootat: "poly_neg_inf (real_of_rat_poly p) = real_of_rat (poly_neg_number_rootat p)"
-  unfolding poly_neg_inf_def poly_neg_number_rootat_def of_int_hom.degree_map_poly of_rat_hom.coeff_map_poly_hom
-    real_of_rat_sgn by simp
+  unfolding poly_neg_inf_def poly_neg_number_rootat_def of_int_hom.degree_map_poly_hom of_rat_hom.coeff_map_poly_hom
+    real_of_rat_sgn by (simp add:hom_distribs)
 
 definition sign_changes_rat where
 "sign_changes_rat ps (x::rat) =

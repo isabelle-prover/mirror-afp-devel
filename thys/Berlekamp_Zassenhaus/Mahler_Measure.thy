@@ -49,17 +49,8 @@ proof - let "?P x y" = "f x = f y"
   show ?thesis using comm_monoid_mult_class.prod_list.induct_gen_abs[of _ ?P,OF assms] by auto
 qed
 
-context inj_comm_semiring_hom
-begin
-lemma map_poly_preservers:
-  "hom (lead_coeff p) = lead_coeff (map_poly hom p)"
-  "hom (coeff p n) = coeff (map_poly hom p) n"
-  unfolding poly_eq_iff by simp_all
-end
-
-abbreviation complex_of_int::"int => complex" where
+abbreviation complex_of_int::"int \<Rightarrow> complex" where
   "complex_of_int \<equiv> of_int"
-
 
 definition l2norm_list :: "int list \<Rightarrow> int" where
   "l2norm_list lst = \<lfloor>sqrt (sum_list (map (\<lambda> a. a * a) lst))\<rfloor>"
@@ -125,8 +116,10 @@ lemma mahler_measure_poly_via_monic :
   unfolding mahler_measure_poly_def mahler_measure_monic_def by simp
 
 lemma smult_inj[simp]: assumes "(a::'a::idom) \<noteq> 0" shows "inj (smult a)"
-using assms unfolding inj_on_def
-by (metis Ring_Hom_Poly.map_poly_inj mult_cancel_left mult_zero_right smult_map_poly)
+proof-
+  interpret map_poly_inj_zero_hom "op * a" using assms by (unfold_locales, auto)
+  show ?thesis unfolding smult_as_map_poly by fact
+qed
 
 definition reconstruct_poly::"'a::idom \<Rightarrow> 'a list \<Rightarrow> 'a poly" where
   "reconstruct_poly c roots = smult c (\<Prod>a\<leftarrow>roots. [:- a, 1:])"
@@ -700,7 +693,7 @@ lemma drop_half_map: "drop_half (map f xs) = map f (drop_half xs)"
 
 lemma (in inj_comm_ring_hom) map_poly_poly_square_subst: 
   "map_poly hom (poly_square_subst f) = poly_square_subst (map_poly hom f)" 
-  unfolding poly_square_subst_def coeffs_map_poly drop_half_map poly_of_list_def
+  unfolding poly_square_subst_def coeffs_map_poly_hom drop_half_map poly_of_list_def
   by (rule poly_eqI, auto simp: nth_default_map_eq)
 
 context inj_idom_hom
@@ -709,11 +702,11 @@ begin
 lemma graeffe_poly_impl_hom:
   "map_poly hom (graeffe_poly_impl f m) = graeffe_poly_impl (map_poly hom f) m"
 proof -
-  let ?h = "map_poly hom" 
+  interpret mh: map_poly_inj_idom_hom..
   obtain c where c: "(((- 1) ^ degree f) :: 'a) = c" by auto
-  have c': "(((- 1) ^ degree f) :: 'b) = hom c" unfolding c[symmetric] by simp
-  show ?thesis unfolding graeffe_poly_impl_def degree_map_poly c c'
-  by (induct m arbitrary: f, simp_all add: graeffe_one_step_def Suc[symmetric] map_poly_poly_square_subst map_poly_pcompose)
+  have c': "(((- 1) ^ degree f) :: 'b) = hom c" unfolding c[symmetric] by (simp add:hom_distribs)
+  show ?thesis unfolding graeffe_poly_impl_def degree_map_poly_hom c c'
+  by (induct m arbitrary: f; simp add: map_poly_poly_square_subst map_poly_pcompose graeffe_one_step_def hom_distribs)
 qed
 end
 
@@ -758,7 +751,7 @@ proof -
       obtain gs where gs: "coeffs g = gs" by auto
       have "(mahler_measure g)\<^sup>2 \<le> real_of_int \<bar>\<Sum>a\<leftarrow>coeffs g. a * a\<bar>" 
         using square_mono[OF mahler_measure_ge_0 Landau_inequality[of "of_int_poly g", folded mahler_measure_def]]
-        by (auto simp: power2_eq_square coeffs_map_poly o_def)
+        by (auto simp: power2_eq_square coeffs_map_poly o_def of_int_hom.hom_sum_list)
       also have "\<bar>\<Sum>a\<leftarrow>coeffs g. a * a\<bar> = (\<Sum>a\<leftarrow>coeffs g. a * a)" unfolding gs
         by (induct gs, auto)
       finally show "(mahler_measure g)\<^sup>2 \<le> real_of_int (\<Sum>a\<leftarrow>coeffs g. a * a)" .

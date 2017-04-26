@@ -134,7 +134,7 @@ proof -
       have cn: "cn = cd * content x" by auto
       from quotient_of_coprime[OF quot, unfolded cn] cd0 have "cd = 1" by auto
       with cx have cx: "cx = ?r cn" by auto
-      from xx[unfolded this] have x: "x = smult cn xx" by (fold hom_distribs, unfold hom_removes)
+      from xx[unfolded this] have x: "x = smult cn xx" by (fold hom_distribs, simp)
       from arg_cong[OF this, of content, unfolded content_smult_int c_x cxx] cn0 have "cn = 1" by auto
       with x have xx: "xx = x" by auto
       show "x dvd y" using y[unfolded xx] unfolding dvd_def by blast
@@ -246,7 +246,7 @@ proof -
     and dvd: "Q dvd P" unfolding deg by auto
   from dvd obtain R where PQR: "P = Q * R" unfolding dvd_def by auto
   from p[unfolded arg_cong[OF this, of ?rp]]
-  have "p = q * smult a (?rp R)" unfolding q by auto
+  have "p = q * smult a (?rp R)" unfolding q by (auto simp: hom_distribs)
   thus "q dvd p" unfolding dvd_def by blast
   from q dQ show "degree q \<ge> 1" "degree q \<le> bnd" by auto
 qed

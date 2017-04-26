@@ -1,11 +1,11 @@
 theory Unique_Factorization
   imports
-    "$AFP/Polynomial_Interpolation/Ring_Hom_Poly"
-    "$AFP/Polynomial_Factorization/Polynomial_Divisibility"
-    Permutations
-    Euclidean_Algorithm
-    Divisibility
-    "$AFP/Containers/Containers_Auxiliary" (* only for a lemma *)
+    "../Polynomial_Interpolation/Ring_Hom_Poly"
+    "../Polynomial_Factorization/Polynomial_Divisibility"
+    "~~/src/HOL/Library/Permutations"
+    "~~/src/HOL/Computational_Algebra/Euclidean_Algorithm"
+    "~~/src/HOL/Algebra/Divisibility"
+    "../Containers/Containers_Auxiliary" (* only for a lemma *)
 begin
 
 hide_const(open) prime
@@ -213,14 +213,14 @@ context comm_monoid_mult begin
 
 end
 
-context comm_semiring_isom begin
+context comm_monoid_mult_isom begin
   lemma coprime_hom[simp]: "coprime (hom x) y' \<longleftrightarrow> coprime x (Hilbert_Choice.inv hom y')"
   proof-
     show ?thesis by (unfold coprime_def, fold ball_UNIV, subst surj[symmetric], simp)
   qed
   lemma coprime_inv_hom[simp]: "coprime (Hilbert_Choice.inv hom x') y \<longleftrightarrow> coprime x' (hom y)"
   proof-
-    interpret inv: comm_semiring_isom "Hilbert_Choice.inv hom"..
+    interpret inv: comm_monoid_mult_isom "Hilbert_Choice.inv hom"..
     show ?thesis by simp
   qed
 end
@@ -753,11 +753,10 @@ begin
     assumes F: "mset_factors F p"
     shows "mset_factors (image_mset hom F) (hom p)"
   proof (unfold mset_factors_def, intro conjI allI impI)
-    note * = F[unfolded mset_factors_def]
-    then show "hom p = prod_mset (image_mset hom F)" "image_mset hom F \<noteq> {#}" by auto 
+    from F show "hom p = prod_mset (image_mset hom F)" "image_mset hom F \<noteq> {#}" by (auto simp: hom_distribs)
     fix f' assume "f' \<in># image_mset hom F"
     then obtain f where f: "f \<in># F" and f'f: "f' = hom f" by auto
-    with * irreducible_imp_irreducible_hom show "irreducible f'" unfolding f'f by auto
+    with F irreducible_imp_irreducible_hom show "irreducible f'" unfolding f'f by auto
   qed
 end
 
@@ -772,7 +771,7 @@ begin
     from irr show "a \<noteq> 0" by auto
     from irr show "\<not> a dvd 1" by (auto dest: irreducible_not_unit)
     fix b c assume "a = b * c"
-    then have "hom a = hom b * hom c" by simp
+    then have "hom a = hom b * hom c" by (simp add: hom_distribs)
     with irr have "hom b dvd 1 \<or> hom c dvd 1" by (auto dest: irreducibleD)
     then show "b dvd 1 \<or> c dvd 1" by simp
   qed
@@ -790,7 +789,7 @@ lemma factor_preserving_hom_comp:
 proof-
   interpret f: factor_preserving_hom f by (rule f)
   interpret g: factor_preserving_hom g by (rule g)
-  show ?thesis by (unfold_locales, auto)
+  show ?thesis by (unfold_locales, auto simp: hom_distribs)
 qed
 
 context comm_semiring_isom begin
@@ -1115,17 +1114,6 @@ next
   case (add f F) then show ?case by (cases "f = 0", auto)
 qed
 
-
-lemma(in unique_factorization) irreducible_dvd_prod_mset:
-  assumes ab: "a dvd b"
-      and a: "irreducible a"
-      and bG: "b = prod_mset G"
-      and b0: "b \<noteq> 0" and b1: "\<not> b dvd 1"
-  shows "\<exists>g \<in># G. a dvd g"
-proof-
-  from mset_factors_exist[OF b0 b1] obtain F where "mset_factors F b" by auto
-  oops
-
 lemma(in comm_monoid_mult_0) mset_factors_imp_dvd:
   assumes "mset_factors F x" and "f \<in># F" shows "f dvd x"
   using assms by (simp add: dvd_prod_mset mset_factors_def)
@@ -1223,8 +1211,8 @@ lemma prod_list_remove1: "(x :: 'b :: comm_monoid_mult) \<in> set xs \<Longright
 
 (* Isabelle 2015-style and generalized gcd-class without normalization and factors *)
 class comm_monoid_gcd = gcd + comm_monoid_mult_0 +
-  assumes gcd_dvd1[iff]: "gcd a b dvd a"
-      and gcd_dvd2[iff]: "gcd a b dvd b"
+  assumes gcd_dvd1[intro]: "gcd a b dvd a"
+      and gcd_dvd2[intro]: "gcd a b dvd b"
       and gcd_greatest: "c dvd a \<Longrightarrow> c dvd b \<Longrightarrow> c dvd gcd a b"
 begin
 
@@ -1418,8 +1406,8 @@ begin
       hence d1: "p dvd q' * q" by (rule dvd_mult_right)
       have d2: "p dvd q' * p" by auto
       from dvd_factor_mult_gcd[OF d1 d2 q p] have 1: "p dvd q' * ?gcd" .
-      from q p have 2: "?gcd dvd q" by simp
-      from q p have 3: "?gcd dvd p" by simp
+      from q p have 2: "?gcd dvd q" by auto
+      from q p have 3: "?gcd dvd p" by auto
       from cop[unfolded coprime_def, rule_format, OF 3 2] have "?gcd dvd 1" .
       from 1 dvd_mult_unit_iff[OF this] have "p dvd q'" by auto
     } note main = this

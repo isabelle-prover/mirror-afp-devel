@@ -66,7 +66,7 @@ qed
 
 context ring_hom begin
 lemma monic_degree_map_poly_hom: "monic p \<Longrightarrow> degree (map_poly hom p) = degree p"
-  by (metis Ring_Hom_Poly.degree_map_poly hom_one hom_zero one_neq_zero)
+  by (auto intro: degree_map_poly)
 
 lemma monic_map_poly_hom: "monic p \<Longrightarrow> monic (map_poly hom p)"
   by (simp add: monic_degree_map_poly_hom)
@@ -77,13 +77,6 @@ lemma of_nat_zero:
   assumes "CARD('a::nontriv) dvd n"
   shows "(of_nat n :: 'a mod_ring) = 0"
   apply (transfer fixing: n) using assms by (presburger)
-
-lemma coeff_to_int_poly[simp]:
- "coeff (to_int_poly (p :: 'a :: finite mod_ring poly)) i = to_int_mod_ring (coeff p i)"
-  by (auto intro: coeff_map_poly)
-
-lemma degree_to_int_poly[simp]: "degree (to_int_poly p) = degree p"
-  by (rule degree_map_poly, auto)
 
 abbreviation rebase :: "'a :: nontriv mod_ring \<Rightarrow> 'b :: nontriv mod_ring "("@_" [100]100)
   where "@x \<equiv> of_int (to_int_mod_ring x)"
@@ -115,8 +108,7 @@ lemma degree_rebase_poly_le: "degree (#p) \<le> degree p"
 
 lemma(in comm_ring_hom) degree_map_poly_unit: assumes "lead_coeff p dvd 1"
   shows "degree (map_poly hom p) = degree p"
-  apply(rule degree_map_poly[of hom, OF hom_zero])
-  using hom_dvd_1[OF assms] by auto
+  using hom_dvd_1[OF assms] by (auto intro: degree_map_poly)
 
 lemma rebase_poly_eq_0_iff:
   "(#p :: 'a :: nontriv mod_ring poly) = 0 \<longleftrightarrow> (\<forall>i. (@coeff p i :: 'a mod_ring) = 0)" (is "?l \<longleftrightarrow> ?r")
@@ -213,7 +205,7 @@ lemma poly_rebase[simp]: "@poly p x = poly (#(p :: 'a mod_ring poly) :: 'b mod_r
   by (fold map_poly_rebase poly_map_poly, rule)
 
 lemma rebase_poly_smult[simp]: "(#(smult a p :: 'a mod_ring poly) :: 'b mod_ring poly) = smult (@a) (#p)"
-  by(induct p, auto)
+  by(induct p, auto simp: hom_distribs)
 
 end
 
@@ -416,7 +408,7 @@ lemma u0: "u \<noteq> 0" using degu bv by auto
 
 lemma ex_f: "\<exists>f :: 'p mod_ring poly. u = #v * #w + smult (of_nat q) (#f)"
 proof-
-  from uvw have "(#(u - #v * #w) :: 'q mod_ring poly) = 0" by auto
+  from uvw have "(#(u - #v * #w) :: 'q mod_ring poly) = 0" by (auto simp:hom_distribs)
   from rebase_pq_to_q.rebase_poly_eq_0_imp_ex_smult[OF this]
   obtain f :: "'p mod_ring poly" where "u - #v * #w = smult (of_nat q) (#f)" by force
   then have "u = #v * #w + smult (of_nat q) (#f)" by (metis add_diff_cancel_left' add_diff_eq)
@@ -530,12 +522,12 @@ abbreviation "qw' \<equiv> smult (of_nat q) (#w') :: 'pq mod_ring poly"
 abbreviation "V \<equiv> #v + qv'"
 abbreviation "W \<equiv> #w + qw'"
 
-lemma vV: "v = #V" by (auto simp: v'_def)
+lemma vV: "v = #V" by (auto simp: v'_def hom_distribs)
 
-lemma wW: "w = #W" by (auto simp: w'_def)
+lemma wW: "w = #W" by (auto simp: w'_def hom_distribs)
 
 lemma uVW: "u = V * W"
-  by (subst u, fold f, simp add: ring_distribs add.left_cancel smult_add_right[symmetric])
+  by (subst u, fold f, simp add: ring_distribs add.left_cancel smult_add_right[symmetric] hom_distribs)
 
 lemma degV: "degree V = degree v"
   and lcV: "lead_coeff V = @lead_coeff v"
@@ -580,7 +572,7 @@ locale Knuth_ex_4_6_2_22_prime = Knuth_ex_4_6_2_22_main ty_p ty_q ty_pq a b u v 
 begin
 
 lemma coprime_preserves: "coprime (#V :: 'p mod_ring poly) (#W)"
-  apply (intro coprimeI,simp add: rebase_q_to_p.of_nat_CARD_eq_0[simplified])
+  apply (intro coprimeI,simp add: rebase_q_to_p.of_nat_CARD_eq_0[simplified] hom_distribs)
   using coprime
   by (metis semiring_gcd_class.gcd_greatest_iff)
 
@@ -612,7 +604,7 @@ lemma unique:
       and lc: "lead_coeff V2 = @lead_coeff v"
   shows "V2 = V" "W2 = W"
 proof-
-  from vV2 have "(#(V2 - #v) :: 'q mod_ring poly) = 0" by auto
+  from vV2 have "(#(V2 - #v) :: 'q mod_ring poly) = 0" by (auto simp: hom_distribs)
   from rebase_pq_to_q.rebase_poly_eq_0_imp_ex_smult[OF this]
   obtain v'' :: "'p mod_ring poly"
   where deg: "degree v'' \<le> degree (V2 - #v)"
@@ -628,7 +620,7 @@ proof-
   ultimately have degv'': "degree v'' < degree v"
     using bv eq_zero_or_degree_less by fastforce
 
-  from wW2 have "(#(W2 - #w) :: 'q mod_ring poly) = 0" by auto
+  from wW2 have "(#(W2 - #w) :: 'q mod_ring poly) = 0" by (auto simp: hom_distribs)
   from rebase_pq_to_q.rebase_poly_eq_0_imp_ex_smult[OF this] pq
   obtain w'' :: "'p mod_ring poly" where w'': "W2 - #w = smult (of_nat q) (#w'')" by force
   then have W2: "W2 = #w + ..." by (metis add_diff_cancel_left' diff_add_cancel)
@@ -638,7 +630,7 @@ proof-
   also have "smult (of_nat (q * q)) (#v'' * #w'' :: 'pq mod_ring poly) = 0" by simp
   finally have "u - #v * #w = smult (of_nat q) (#w'' * #v + #v'' * #w)" by auto
   also have "u - #v * #w = smult (of_nat q) (#f)" by (subst u, simp)
-  finally have "w'' * #v + v'' * #w = f" by simp
+  finally have "w'' * #v + v'' * #w = f" by (simp add: hom_distribs)
   from pre_unique[OF this degv'']
   have pre: "v'' = v'" "w'' = w'" by auto
   with V2 W2 show "V2 = V" "W2 = W" by auto

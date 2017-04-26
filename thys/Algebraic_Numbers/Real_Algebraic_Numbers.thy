@@ -473,7 +473,15 @@ proof -
   thus "?l \<le> ?r" by (simp add: of_rat_less_eq)
 qed
 
-lemma ipoly_roots_finite: "p \<noteq> 0 \<Longrightarrow> finite {x. ipoly p x = 0}" by (simp add: poly_roots_finite)
+locale map_poly_zero_hom_0 = base: zero_hom_0
+begin
+  sublocale zero_hom_0 "map_poly hom" by (unfold_locales,auto)
+end
+interpretation of_int_poly_hom:
+  map_poly_zero_hom_0 "of_int :: int \<Rightarrow> 'a :: {ring_1, ring_char_0}" ..
+
+lemma ipoly_roots_finite: "p \<noteq> 0 \<Longrightarrow> finite {x :: 'a :: {idom, ring_char_0}. ipoly p x = 0}"
+  by (rule poly_roots_finite, simp)
 
 
 lemma roots_below_the_unique_root:
@@ -611,7 +619,7 @@ next
   assume "degree p = 1"
   from degree1_coeffs[OF this]
   obtain a b where p: "p = [:a,b:]" and b: "b \<noteq> 0" by auto
-  from rt[unfolded p] have "of_int a + x * of_int b = 0" by auto
+  from rt[unfolded p hom_distribs] have "of_int a + x * of_int b = 0" by auto
   from arg_cong[OF this, of "\<lambda> x. (x - of_int a) / of_int b"]
   have "x = - of_rat (of_int a) / of_rat (of_int b)" using b by auto
   also have "\<dots> = of_rat (- of_int a / of_int b)" unfolding of_rat_minus of_rat_divide ..
@@ -911,7 +919,7 @@ proof -
           by (metis cancel_comm_monoid_add_class.diff_cancel diff_right_mono of_rat_less_eq of_rat_hom.hom_zero)
         have *: "r - l - (r - l) / 2 = (r - l) / 2" by (auto simp: field_simps)
         have "delta_gt delta ?diff ?DIFF = (abs (u - of_rat x) \<le> real_of_rat (r - l) * 1)"
-          unfolding delta_gt_def tighten(5) delta_def of_rat_diff[symmetric] * by simp
+          unfolding delta_gt_def tighten(5) delta_def of_rat_diff[symmetric] * by (simp add: hom_distribs)
         also have "real_of_rat (r - l) * 1 = ?r - ?l" 
           unfolding of_rat_divide of_rat_mult of_rat_diff by auto
         also have "abs (u - of_rat x) \<le> ?r - ?l" using x ur by (elim unique_rootE, auto simp: u)
@@ -1032,7 +1040,7 @@ proof -
   from roots1[of "map_poly real_of_int p"] assms
   have "ipoly p x = 0 \<longleftrightarrow> x \<in> {roots1 (real_of_int_poly p)}" by auto
   also have "\<dots> = (x = real_of_rat (Rat.Fract (- coeff p 0) (coeff p 1)))" 
-    unfolding Fract_of_int_quotient roots1_def
+    unfolding Fract_of_int_quotient roots1_def hom_distribs
     by auto
   finally show ?thesis .
 qed
@@ -1226,7 +1234,7 @@ fun uminus_2 :: "real_alg_2 \<Rightarrow> real_alg_2" where
 lemma uminus_2: assumes "invariant_2 x" 
   shows "real_of_2 (uminus_2 x) = uminus (real_of_2 x)"
   "invariant_2 (uminus_2 x)"
-  using assms real_alg_2 uminus_1 by (atomize(full), cases x, auto)
+  using assms real_alg_2 uminus_1 by (atomize(full), cases x, auto simp: hom_distribs)
 
 declare uminus_1.simps[simp del]
 
@@ -1317,9 +1325,9 @@ fun inverse_2 :: "real_alg_2 \<Rightarrow> real_alg_2" where
 lemma inverse_2: assumes "invariant_2 x"
   shows "real_of_2 (inverse_2 x) = inverse (real_of_2 x)"
   "invariant_2 (inverse_2 x)"
-  using assms
-  by (cases x, auto simp: real_alg_2 inverse_1)+
-    
+    using assms
+    by (atomize(full), cases x, auto simp: real_alg_2 inverse_1 hom_distribs)
+
 lift_definition inverse_3 :: "real_alg_3 \<Rightarrow> real_alg_3" is inverse_2 
   by (auto simp: inverse_2)
 
@@ -1735,10 +1743,13 @@ definition real_alg_2' :: "root_info \<Rightarrow> int poly \<Rightarrow> rat \<
               (l',r',sr') \<Rightarrow> (p, l', r')))"
 
 lemma poly_cond_degree_0_imp_no_root:
+  fixes x :: "'b :: {comm_ring_1,ring_char_0}"
   assumes pc: "poly_cond p" and deg: "degree p = 0" shows "ipoly p x \<noteq> 0"
-proof-
+proof
   from pc have "p \<noteq> 0" by auto
-  with deg poly_zero show "ipoly p x \<noteq> 0" by fastforce
+  moreover assume "ipoly p x = 0"
+    note poly_zero[OF this]
+  ultimately show False using deg by auto
 qed
 
 lemma real_alg_2':
@@ -1824,7 +1835,7 @@ end
 (* ********************* *)
 subsubsection\<open>Addition\<close>
 
-lemma ipoly_0_0[simp]: "ipoly f 0 = 0 \<longleftrightarrow> poly f 0 = 0"
+lemma ipoly_0_0[simp]: "ipoly f (0::'a::{comm_ring_1,ring_char_0}) = 0 \<longleftrightarrow> poly f 0 = 0"
   unfolding poly_0_coeff_0 by simp
 
 lemma add_rat_roots_below[simp]: "roots_below (poly_add_rat r p) x = (\<lambda>y. y + of_rat r) ` roots_below p (x - of_rat r)"
@@ -1832,8 +1843,9 @@ proof (unfold add_rat_roots image_def, intro Collect_eqI, goal_cases)
   case (1 y) then show ?case by (auto intro: exI[of _ "y - real_of_rat r"])
 qed
 
-lemma add_rat_root_cond: "root_cond (cf_pos_poly (poly_add_rat m p),l,r) x = root_cond (p, l - m, r - m) (x - of_rat m)"
-  by (unfold root_cond_def, auto simp add: add_rat_roots)
+lemma add_rat_root_cond:
+  shows "root_cond (cf_pos_poly (poly_add_rat m p),l,r) x = root_cond (p, l - m, r - m) (x - of_rat m)"
+  by (unfold root_cond_def, auto simp add: add_rat_roots hom_distribs)
 
 lemma add_rat_unique_root: "unique_root (cf_pos_poly (poly_add_rat m p), l, r) = unique_root (p, l-m, r-m)"
   by (auto simp: add_rat_root_cond)
@@ -2007,7 +2019,7 @@ proof -
       also have "?r (R (Suc n) - L (Suc n)) = (r (Suc n) - l (Suc n))"
         unfolding of_rat_diff r_def l_def by simp
       also have "?r (3 / 4 * (R n - L n)) = 3 / 4 * (r n - l n)" 
-        unfolding r_def l_def of_rat_diff[symmetric] by simp
+        unfolding r_def l_def by (simp add: hom_distribs)
       finally have "diff (Suc n) \<le> 3 / 4 * diff n" unfolding diff_def .
     } note * = this
     {
@@ -2080,7 +2092,7 @@ proof (cases x)
       show "converges_to
         (\<lambda>i. bnd ((tighten_poly_bounds_binary p1 p2 ^^ i)
         ((l1,r1,sgn (ipoly p1 r1)),(l2,r2, sgn (ipoly p2 r2))))) (?x + ?y)"
-        by (intro tighten_poly_bounds_binary ur1 ur2; force simp: bnd_def)
+        by (intro tighten_poly_bounds_binary ur1 ur2; force simp: bnd_def hom_distribs)
     qed
     thus ?thesis unfolding xt yt .
   qed
@@ -2269,7 +2281,7 @@ proof -
       basic l1_pos l2_pos, goal_cases)
       case (1 L1 R1 L2 R2 L R)
       hence "L = L1 * L2" "R = R1 * R2" unfolding bnd_def by auto
-      hence id: "?r L = ?r L1 * ?r L2" "?r R = ?r R1 * ?r R2" by auto
+      hence id: "?r L = ?r L1 * ?r L2" "?r R = ?r R1 * ?r R2" by (auto simp: hom_distribs)
       from 1(3-4) have le: "?r L1 \<le> ?x" "?x \<le> ?r R1" "?r L2 \<le> ?y" "?y \<le> ?r R2" 
         unfolding root_cond_def by auto
       from 1(1-2) have lt: "0 < ?r L1" "0 < ?r L2" by auto
@@ -2373,7 +2385,7 @@ proof (cases y)
     then have x: "- x > 0" by auto
     hence z: "z = uminus_2 ?myt" unfolding z by simp
     from mult_rat_1_pos[OF x y] have rc: "invariant_2 ?myt"
-      and rr: "real_of_2 ?myt = - ?x * ?y" by auto
+      and rr: "real_of_2 ?myt = - ?x * ?y" by (auto simp: hom_distribs)
     from uminus_2[OF rc] rr show ?thesis unfolding z[symmetric] unfolding yt[symmetric]
       by simp
   qed (auto simp: z)
@@ -2536,7 +2548,7 @@ proof (intro conjI impI allI)
       finally have size: "r' - (l' + r') / 2 \<le> (ir - il) / (2 * 2 ^ i)" by simp
       also have "r' - (l' + r') / 2 = (l' + r') / 2 - l'" by auto
       finally have size': "(l' + r') / 2 - l' \<le> (ir - il) / (2 * 2 ^ i)" by simp
-      have "root n (real_of_rat ?m) = root n ((real_of_rat ?m') ^ n)" by simp
+      have "root n (real_of_rat ?m) = root n ((real_of_rat ?m') ^ n)" by (simp add: hom_distribs)
       also have "\<dots> = real_of_rat ?m'" 
         by (rule root_exp_cancel', insert l'0 lr', auto)
       finally have root: "root n (of_rat ?m) = of_rat ?m'" .
@@ -2547,7 +2559,7 @@ proof (intro conjI impI allI)
           unfolding compare_real_def comparator_of_def by (auto split: if_splits)
         from arg_cong[OF this, of "root n"] have "?x = root n (of_rat ?m)" .
         also have "\<dots> = root n  (real_of_rat ?m') ^ n"
-          using n real_root_power by auto
+          using n real_root_power by (auto simp: hom_distribs)
         also have "\<dots> = of_rat ?m'" 
           by (rule root_exp_cancel, insert IH sgn(2) l'0 r'0, auto)
         finally have x: "?x = of_rat ?m'"  .
@@ -2560,9 +2572,9 @@ proof (intro conjI impI allI)
           using Lt id by (auto simp add: Let_def)
         from real_root_le_mono[OF n' lt] 
         have "of_rat ?m' \<le> ?x" unfolding root by simp
-        with lr'x lr'' have ineq': "real_of_rat l' + real_of_rat r' \<le> ?x * 2" by auto
+        with lr'x lr'' have ineq': "real_of_rat l' + real_of_rat r' \<le> ?x * 2" by (auto simp: hom_distribs)
         show ?thesis unfolding id'' 
-          by (auto simp: Let_def, insert size ineq' lr' ill' lr'x ir_il, auto)
+          by (auto simp: Let_def hom_distribs, insert size ineq' lr' ill' lr'x ir_il, auto)
       next
         case Gt
         from compare[unfolded Gt] have lt: "of_rat ?m \<ge> real_of_1 x" 
@@ -2571,9 +2583,9 @@ proof (intro conjI impI allI)
           using Gt id by (auto simp add: Let_def)
         from real_root_le_mono[OF n' lt] 
         have "?x \<le> of_rat ?m'" unfolding root by simp
-        with lr'x lr'' have ineq': "?x * 2 \<le> real_of_rat l' + real_of_rat r'" by auto
+        with lr'x lr'' have ineq': "?x * 2 \<le> real_of_rat l' + real_of_rat r'" by (auto simp: hom_distribs)
         show ?thesis unfolding id'' 
-          by (auto simp: Let_def, insert size' ineq' lr' ill' lr'x ir_il, auto)
+          by (auto simp: Let_def hom_distribs, insert size' ineq' lr' ill' lr'x ir_il, auto)
       qed
     qed
   } note main = this
@@ -2590,20 +2602,20 @@ proof (intro conjI impI allI)
   have iril: "real_of_rat (ir - il) \<ge> 0" using ir_il by (auto simp: of_rat_less_eq)
   show "\<exists>n la ra. ?f n = (la, ra) \<and> real_of_rat ra - real_of_rat la \<le> eps" 
   proof (intro conjI exI, rule fi)
-    have "real_of_rat r' - of_rat l' = real_of_rat (r' - l')" by auto
+    have "real_of_rat r' - of_rat l' = real_of_rat (r' - l')" by (auto simp: hom_distribs)
     also have "\<dots> \<le> real_of_rat ((ir - il) / 2 ^ i)" using le unfolding of_rat_less_eq .
-    also have "\<dots> = (real_of_rat (ir - il)) * ((1/2) ^ i)" by (simp add: field_simps)
+    also have "\<dots> = (real_of_rat (ir - il)) * ((1/2) ^ i)" by (simp add: field_simps hom_distribs)
     also have "\<dots> \<le> (real_of_rat (ir - il)) * c" 
       by (rule mult_left_mono[OF c iril])
     also have "\<dots> \<le> eps"
     proof (cases "real_of_rat (ir - il) \<le> 1")
       case True
-      hence "c = eps" unfolding c_def by auto
+      hence "c = eps" unfolding c_def by (auto simp: hom_distribs)
       thus ?thesis using eps True by auto
     next
       case False
       hence "max (real_of_rat (ir - il)) 1 = real_of_rat (ir - il)" "real_of_rat (ir - il) \<noteq> 0" 
-        by auto
+        by (auto simp: hom_distribs)
       hence "(real_of_rat (ir - il)) * c = eps" unfolding c_def by auto
       thus ?thesis by simp
     qed
@@ -2994,7 +3006,8 @@ proof -
               with False lt urx(2) dd(1) show False by auto
             qed              
           qed
-          hence dd': "delta_gt delta (?r d) (?r d')" unfolding delta_gt_def of_rat_diff[symmetric] delta_def dd by auto
+          hence dd': "delta_gt delta (?r d) (?r d')"
+             unfolding delta_gt_def delta_def using dd by (auto simp: hom_distribs)
           show ?thesis unfolding l
             by (rule IH[OF _ d' ur1 ur2 x y sr1 sr2], insert d'0 dd', auto)
         qed
@@ -3040,7 +3053,7 @@ lemma add_2: assumes x: "invariant_2 x" and y: "invariant_2 y"
   shows "invariant_2 (add_2 x y)" (is ?g1)
     and "real_of_2 (add_2 x y) = real_of_2 x + real_of_2 y" (is ?g2)
   using assms add_rat_1 add_1
-  by (atomize (full), (cases x; cases y), auto)
+  by (atomize (full), (cases x; cases y), auto simp: hom_distribs)
 
 fun mult_2 :: "real_alg_2 \<Rightarrow> real_alg_2 \<Rightarrow> real_alg_2" where
   "mult_2 (Rational r) (Rational q) = Rational (r * q)"
@@ -3052,7 +3065,7 @@ lemma mult_2: assumes "invariant_2 x" "invariant_2 y"
   shows "real_of_2 (mult_2 x y) = real_of_2 x * real_of_2 y"
   "invariant_2 (mult_2 x y)"
   using assms
-  by (cases x; cases y; auto simp: mult_rat_1 mult_1)+
+  by (atomize(full), (cases x; cases y; auto simp: mult_rat_1 mult_1 hom_distribs))
 
 fun to_rat_2 :: "real_alg_2 \<Rightarrow> rat option" where
   "to_rat_2 (Rational r) = Some r"
@@ -3433,14 +3446,14 @@ proof (cases "z \<ge> 0")
   define n where "n = nat z"
   from True have z: "z = int n" unfolding n_def by simp
   show ?thesis unfolding z
-    by (induct n, auto simp: zero_real_alg plus_real_alg[symmetric] one_real_alg)
+    by (induct n, auto simp: zero_real_alg plus_real_alg[symmetric] one_real_alg hom_distribs)
 next
   case False
   define n where "n = nat (-z)"
   from False have z: "z = - int n" unfolding n_def by simp
   show ?thesis unfolding z
     by (induct n, auto simp: zero_real_alg plus_real_alg[symmetric] one_real_alg uminus_real_alg[symmetric]
-      minus_real_alg[symmetric] of_rat_diff)
+      minus_real_alg[symmetric] hom_distribs)
 qed
 
 instance real_alg :: linordered_field
@@ -3463,8 +3476,8 @@ instance
 proof
   fix x :: real_alg
   show "of_int \<lfloor>x\<rfloor> \<le> x \<and> x < of_int (\<lfloor>x\<rfloor> + 1)" unfolding floor_real_alg[symmetric]
-    using floor_correct[of "real_of x"] unfolding less_eq_real_alg_def less_real_alg_def 
-    real_of_of_int[symmetric] by auto
+    using floor_correct[of "real_of x"] unfolding less_eq_real_alg_def less_real_alg_def
+    real_of_of_int[symmetric] by (auto simp: hom_distribs)
   hence "x \<le> of_int (\<lfloor>x\<rfloor> + 1)" by auto
   thus "\<exists>z. x \<le> of_int z" by blast
 qed

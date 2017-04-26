@@ -163,7 +163,7 @@ lemmas char_poly_defs = char_poly_def char_poly_matrix_def
 lemma (in comm_ring_hom) char_poly_matrix_hom: assumes A: "A \<in> carrier\<^sub>m n n"
   shows "char_poly_matrix (mat\<^sub>h A) = map\<^sub>m (map_poly hom) (char_poly_matrix A)"
   unfolding char_poly_defs
-  by (rule mat_eqI, insert A, auto simp: mat_scalar_mult_def)
+  by (rule mat_eqI, insert A, auto simp: mat_scalar_mult_def hom_distribs)
 
 lemma (in comm_ring_hom) char_poly_hom: assumes A: "A \<in> carrier\<^sub>m n n"
   shows "char_poly (map\<^sub>m hom A) = map_poly hom (char_poly A)"

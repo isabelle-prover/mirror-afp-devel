@@ -1421,7 +1421,7 @@ lemma (in field_hom_0') yun_factorization_hom:
   shows "yun_factorization gcd (hp f) = map_prod hom hpi (yun_factorization gcd f)"
   using yun_monic_factorization[of "smult (inverse (coeff f (degree f))) f"]
   unfolding yun_factorization_def Let_def hp hpi
-   by auto
+   by (auto simp: hom_distribs)
 
 lemma (in field_hom_0') square_free_map_poly: "square_free (map_poly hom f) = square_free f"
 proof -
