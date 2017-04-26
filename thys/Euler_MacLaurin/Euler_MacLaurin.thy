@@ -52,8 +52,7 @@ proof -
   have "filterlim (\<lambda>x. f (int (nat x))) F at_top"
     by (rule filterlim_compose[OF assms filterlim_nat_sequentially])
   also have "?this \<longleftrightarrow> filterlim f F at_top"
-    using eventually_ge_at_top[of "0::int"]
-    by (intro filterlim_cong refl) (auto elim!: eventually_mono)
+    by (intro filterlim_cong refl eventually_mono [OF eventually_ge_at_top[of "0::int"]]) auto
   finally show ?thesis .
 qed
 

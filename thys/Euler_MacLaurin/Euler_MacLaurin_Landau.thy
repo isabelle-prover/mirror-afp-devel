@@ -57,8 +57,8 @@ lemma harm_remainder_bigo:
   shows   "harm_remainder N \<in> O(\<lambda>n. 1 / real n ^ (2 * N + 1))"
 proof -
   from harm_remainder_bound[OF assms] guess C ..
-  thus ?thesis using eventually_ge_at_top[of 1]
-    by (intro bigoI[of _ C]) (auto elim: eventually_mono)
+  thus ?thesis
+    by (intro bigoI[of _ C] eventually_mono[OF eventually_ge_at_top[of 1]]) auto
 qed
 
 lemma harm_expansion_bigo:
@@ -69,9 +69,8 @@ lemma harm_expansion_bigo:
   shows "(\<lambda>n. harm n - T n) \<in> O(\<lambda>n. 1 / real n ^ (2 * N + 2))"
 proof -
   have "(\<lambda>n. harm n - T n) \<in> \<Theta>(\<lambda>n. -S n - harm_remainder (Suc N) n)"
-    using eventually_gt_at_top[of "0::nat"]
-    by (intro bigthetaI_cong) 
-       (auto elim!: eventually_mono simp: T_def harm_expansion[of _ "Suc N"] S_def)
+    by (intro bigthetaI_cong eventually_mono[OF eventually_gt_at_top[of "0::nat"]]) 
+       (auto simp: T_def harm_expansion[of _ "Suc N"] S_def)
   also have "(\<lambda>n. -S n - harm_remainder (Suc N) n) \<in> O(\<lambda>n. 1 / real n ^ (2 * N + 2))"
   proof (intro sum_in_bigo)
     show "(\<lambda>x. - S x) \<in> O(\<lambda>n. 1 / real n ^ (2 * N + 2))" unfolding S_def
@@ -127,8 +126,8 @@ lemma sum_inverse_squares_remainder_bigo:
   shows   "R N \<in> O(\<lambda>n. 1 / real n ^ (2 * N + 2))"
 proof -
   from sum_inverse_squares_remainder_bound[OF assms] guess C ..
-  thus ?thesis using eventually_ge_at_top[of 1]
-    by (intro bigoI[of _ C]) (auto elim: eventually_mono simp: R_def)
+  thus ?thesis
+    by (intro bigoI[of _ C] eventually_mono[OF eventually_ge_at_top[of 1]]) (auto simp: R_def)
 qed
 
 lemma sum_inverse_squares_expansion_bigo:
@@ -139,11 +138,10 @@ lemma sum_inverse_squares_expansion_bigo:
   shows "(\<lambda>n. (\<Sum>i=1..n. 1 / real i ^ 2) - T n) \<in> O(\<lambda>n. 1 / real n ^ (2 * N + 3))"
 proof -
   have 3: "3 = Suc (Suc (Suc 0))" by simp
-  have "(\<lambda>n. (\<Sum>i=1..n. 1 / real i ^ 2) - T n) \<in> \<Theta>(\<lambda>n. -S n - R (Suc N) n)"
-    using eventually_gt_at_top[of "0::nat"] unfolding R_def
-    by (intro bigthetaI_cong) 
+  have "(\<lambda>n. (\<Sum>i=1..n. 1 / real i ^ 2) - T n) \<in> \<Theta>(\<lambda>n. -S n - R (Suc N) n)" unfolding R_def
+    by (intro bigthetaI_cong eventually_mono[OF eventually_gt_at_top[of "0::nat"]])
        (auto simp: T_def sum_inverse_squares_expansion[of _ "Suc N"] S_def 3
-             simp del: One_nat_def elim!: eventually_mono )
+             simp del: One_nat_def)
   also have "(\<lambda>n. -S n - R (Suc N) n) \<in> O(\<lambda>n. 1 / real n ^ (2 * N + 3))"
   proof (intro sum_in_bigo)
     show "(\<lambda>x. - S x) \<in> O(\<lambda>n. 1 / real n ^ (2 * N + 3))" unfolding S_def

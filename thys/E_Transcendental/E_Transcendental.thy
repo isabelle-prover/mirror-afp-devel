@@ -659,9 +659,8 @@ proof
   have "(\<lambda>n. E * F * F ^ (n - 1) / fact (n - 1)) \<longlonglongrightarrow> 0" (is ?P)
     by (intro filterlim_compose[OF power_over_fact_tendsto_0' filterlim_minus_nat_at_top])
   also have "?P \<longleftrightarrow> (\<lambda>n. E * F ^ n / fact (n - 1)) \<longlonglongrightarrow> 0"
-    using eventually_gt_at_top[of "0::nat"]
-    by (intro filterlim_cong refl)
-       (auto elim!: eventually_mono simp: power_Suc [symmetric] simp del: power_Suc)
+    by (intro filterlim_cong refl eventually_mono[OF eventually_gt_at_top[of "0::nat"]])
+       (auto simp: power_Suc [symmetric] simp del: power_Suc)
   finally have "eventually (\<lambda>n. E * F ^ n / fact (n - 1) < 1) at_top"
     by (rule order_tendstoD) simp_all
   hence "eventually (\<lambda>n. E * F ^ n < fact (n - 1)) at_top" by eventually_elim simp

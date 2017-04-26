@@ -218,18 +218,21 @@ begin
 
 private lemma CLAMP_: 
   "landau_symbol L L' Lr \<Longrightarrow> L at_top (f::nat \<Rightarrow> real) \<equiv> L at_top (\<lambda>x. CLAMP f x)"
-  using eventually_ge_at_top[of "3::nat"] unfolding CLAMP_def[abs_def]
-  by (intro landau_symbol.cong eq_reflection) (auto elim!: eventually_mono)
+  unfolding CLAMP_def[abs_def]
+  by (intro landau_symbol.cong eq_reflection) 
+     (auto intro: eventually_mono[OF eventually_ge_at_top[of "3::nat"]])
 
 private lemma UNCLAMP'_: 
   "landau_symbol L L' Lr \<Longrightarrow> L at_top (CLAMP' (MASTER_BOUND a b c)) \<equiv> L at_top (MASTER_BOUND a b c)"
-  using eventually_ge_at_top[of "3::nat"] unfolding CLAMP'_def[abs_def] CLAMP_def[abs_def]
-  by (auto intro!: landau_symbol.cong eq_reflection elim!: eventually_mono) 
+  unfolding CLAMP'_def[abs_def] CLAMP_def[abs_def]
+  by (intro landau_symbol.cong eq_reflection) 
+     (auto intro: eventually_mono[OF eventually_ge_at_top[of "3::nat"]])
 
 private lemma UNCLAMP_: 
   "landau_symbol L L' Lr \<Longrightarrow> L at_top (CLAMP f) \<equiv> L at_top (f)"
   using eventually_ge_at_top[of "3::nat"] unfolding CLAMP'_def[abs_def] CLAMP_def[abs_def]
-  by (auto intro!: landau_symbol.cong eq_reflection elim!: eventually_mono) 
+  by (intro landau_symbol.cong eq_reflection) 
+     (auto intro: eventually_mono[OF eventually_ge_at_top[of "3::nat"]])
 
 lemmas CLAMP = landau_symbols[THEN CLAMP_]
 lemmas UNCLAMP' = landau_symbols[THEN UNCLAMP'_]
@@ -280,9 +283,8 @@ lemma master1_bigo_automation:
   shows   "f \<in> O(MASTER_BOUND p 0 0)"
 proof-
   have "MASTER_BOUND p 0 0 \<in> \<Theta>(\<lambda>x::nat. x powr p)" unfolding MASTER_BOUND_def[abs_def]
-    using eventually_ge_at_top[of "3::real"] 
-    by (intro landau_real_nat_transfer, intro bigthetaI_cong)
-       (auto elim!: eventually_mono dest!: ln_1_imp_less_3)
+    by (intro landau_real_nat_transfer bigthetaI_cong 
+          eventually_mono[OF eventually_ge_at_top[of "3::real"]]) (auto dest!: ln_1_imp_less_3)
   from landau_o.big.cong_bigtheta[OF this] master1_bigo[OF assms] show ?thesis by simp
 qed
 
@@ -292,9 +294,8 @@ lemma master1_automation:
   shows   "f \<in> \<Theta>(MASTER_BOUND p 0 0)"
 proof-
   have A: "MASTER_BOUND p 0 0 \<in> \<Theta>(\<lambda>x::nat. x powr p)" unfolding MASTER_BOUND_def[abs_def]
-    using eventually_ge_at_top[of "3::real"] 
-    by (intro landau_real_nat_transfer, intro bigthetaI_cong)
-       (auto elim!: eventually_mono dest!: ln_1_imp_less_3)
+    by (intro landau_real_nat_transfer bigthetaI_cong 
+      eventually_mono[OF eventually_ge_at_top[of "3::real"]]) (auto dest!: ln_1_imp_less_3)
   have B: "O(MASTER_BOUND'' p') = O(\<lambda>x::nat. real x powr p')"
     using eventually_ge_at_top[of "2::nat"]
     by (intro landau_o.big.cong) (auto elim!: eventually_mono simp: MASTER_BOUND''_def)
@@ -306,9 +307,8 @@ lemma master2_1_automation:
   shows   "f \<in> \<Theta>(MASTER_BOUND p 0 0)"
 proof-
   have A: "MASTER_BOUND p 0 0 \<in> \<Theta>(\<lambda>x::nat. x powr p)" unfolding MASTER_BOUND_def[abs_def]
-    using eventually_ge_at_top[of "3::real"] 
-    by (intro landau_real_nat_transfer, intro bigthetaI_cong)
-       (auto elim!: eventually_mono dest!: ln_1_imp_less_3)
+    by (intro landau_real_nat_transfer bigthetaI_cong 
+          eventually_mono[OF eventually_ge_at_top[of "3::real"]]) (auto dest!: ln_1_imp_less_3)
   have B: "\<Theta>(MASTER_BOUND' p p') = \<Theta>(\<lambda>x::nat. real x powr p * ln (real x) powr p')"
     by (subst CLAMP, (subst MASTER_BOUND_postproc MASTER_BOUND_UNCLAMP)+, simp only: UNCLAMP)
   from landau_theta.cong_bigtheta[OF A] B assms(1) master2_1[OF _ assms(2-)] show ?thesis by simp

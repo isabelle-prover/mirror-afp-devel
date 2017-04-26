@@ -248,7 +248,7 @@ proof -
   hence "(\<lambda>n. \<Sum>r<n. D (real r + x)) \<longlonglongrightarrow> P x" by (simp add: sums_def)
   moreover from eventually_gt_at_top[of 1]
     have "eventually (\<lambda>n. (\<Sum>r<n. D (real r + x)) = p n x) at_top"
-    by (auto elim!: eventually_mono simp: p_def)
+    by eventually_elim (auto simp: p_def)
   ultimately show ?thesis by (rule Lim_transform_eventually [rotated])
 qed
 
@@ -315,8 +315,8 @@ private lemma P_upper_bound:
   shows   "P x \<le> 1/(12*x^2)"
 proof (rule tendsto_upperbound)
   show "eventually (\<lambda>n. p n x \<le> 1 / (12 * x^2)) at_top"
-    using eventually_gt_at_top[of 0] p_upper_bound[of x] assms 
-    by (auto elim!: eventually_mono)
+    using eventually_gt_at_top[of 0] 
+    by eventually_elim (use p_upper_bound[of x] assms in auto)
   show "(\<lambda>n. p n x) \<longlonglongrightarrow> P x"
     by (simp add: assms p_LIMSEQ)
 qed auto
@@ -487,8 +487,8 @@ private lemma Gamma_asymp_equiv_aux:
 proof (rule asymp_equiv_sandwich)
   show "eventually (\<lambda>x. exp c * x powr (x - 1/2) / exp x \<le> Gamma x) at_top"
        "eventually (\<lambda>x. exp c * x powr (x - 1/2) / exp x * exp (1/(12*x)) \<ge> Gamma x) at_top"
-    using eventually_ge_at_top[of "1::real"] Gamma_bounds_aux
-    by (auto elim!: eventually_mono)
+    using eventually_ge_at_top[of "1::real"]
+    by (eventually_elim; use Gamma_bounds_aux in force)+
   have "((\<lambda>x::real. exp (1 / (12 * x))) \<longlongrightarrow> exp 0) at_top"
     by (rule tendsto_intros real_tendsto_divide_at_top filterlim_tendsto_pos_mult_at_top)+
        (simp_all add: filterlim_ident)
@@ -509,8 +509,9 @@ private lemma fact_asymp_equiv_aux:
 proof -
   have "fact \<sim> (\<lambda>n. Gamma (real (Suc n)))" by (simp add: Gamma_fact)
   also have "eventually (\<lambda>n. Gamma (real (Suc n)) = real n * Gamma (real n)) at_top"
-    using eventually_gt_at_top[of "0::nat"] Gamma_plus1[of "real n" for n] 
-    by (auto elim!: eventually_mono simp: add_ac of_nat_in_nonpos_Ints_iff)
+    using eventually_gt_at_top[of "0::nat"]
+    by eventually_elim (insert Gamma_plus1[of "real n" for n], 
+                        auto simp: add_ac of_nat_in_nonpos_Ints_iff)
   also have "(\<lambda>n. Gamma (real n)) \<sim> (\<lambda>n. exp c * real n powr (real n - 1/2) / exp (real n))"
     by (rule asymp_equiv_compose'[OF Gamma_asymp_equiv_aux] filterlim_real_sequentially)+
   also have "eventually (\<lambda>n. real n * (exp c * real n powr (real n - 1 / 2) / exp (real n)) =
@@ -582,7 +583,7 @@ proof -
     fix n :: nat assume n: "n > 0"
     have [simp]: "16^n = 4^n * (4^n :: real)" by (simp add: power_mult_distrib [symmetric])
     from n have "?f n = exp c ^ 2 * (n / (2*(2*n+1)))"
-      by (simp add: power_mult_distrib divide_simps powr_mult powr_divide real_sqrt_power_even)
+      by (simp add: power_mult_distrib divide_simps powr_mult real_sqrt_power_even)
          (simp add: field_simps power2_eq_square eval_nat_numeral powr_mult_2 
                     exp_mult_2 powr_realpow)
     also from n have "\<dots> = exp c ^ 2 / (4 + 2/n)" by (simp add: field_simps)

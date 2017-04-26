@@ -417,8 +417,8 @@ proof -
       by (subst LIMSEQ_Suc_iff [symmetric], intro tendsto_intros) 
          (insert euler_mascheroni_LIMSEQ, simp_all)
     also have "?this \<longleftrightarrow> (\<lambda>x. s * (harm (x - 1) - ln (of_nat (x - 1)) - euler_mascheroni)) \<longlonglongrightarrow> 0"
-      using eventually_gt_at_top[of "1::nat"]
-      by (intro filterlim_cong refl) (auto elim!: eventually_mono simp: Ln_of_nat of_real_harm)
+      by (intro filterlim_cong refl eventually_mono[OF eventually_gt_at_top[of "1::nat"]]) 
+         (auto simp: Ln_of_nat of_real_harm)
     finally show "(\<lambda>x. s * (harm (x - 1) - ln (of_nat (x - 1)) - euler_mascheroni)) \<longlonglongrightarrow> 0"  .
   next
     have "((\<lambda>x. ln (1 + (s + 1) / of_real x)) \<longlongrightarrow> ln (1 + 0)) at_top" (is ?P)
@@ -429,8 +429,8 @@ proof -
       using Ln_divide_of_real[of x "of_real (x + 1) + s", symmetric] neq[of "x+1"]
       by (simp add: field_simps Ln_of_real)
     hence "?P \<longleftrightarrow> ((\<lambda>x. ln (of_real (x + 1) + s) - ln (of_real x)) \<longlongrightarrow> 0) at_top"
-      using eventually_gt_at_top[of "1::real"]
-      by (intro filterlim_cong refl) (auto elim!: eventually_mono)
+      by (intro filterlim_cong refl) 
+         (auto intro: eventually_mono[OF eventually_gt_at_top[of "1::real"]])
     finally have "((\<lambda>n. ln (of_real (real n + 1) + s) - ln (of_real (real n))) \<longlongrightarrow> 0) at_top"
       by (rule filterlim_compose[OF _ filterlim_real_sequentially])
     hence "((\<lambda>n. ln (of_nat n + s) - ln (of_nat (n - 1))) \<longlongrightarrow> 0) at_top"
@@ -445,8 +445,8 @@ proof -
       using Ln_divide_of_real[of x "of_real x + s"] neq[of x] that
       by (auto simp: field_simps Ln_of_real)
     hence "?P \<longleftrightarrow> ((\<lambda>x. ln (of_real x + s) - ln (of_real x)) \<longlongrightarrow> 0) at_top"
-      using eventually_gt_at_top[of "1::real"] s
-      by (intro filterlim_cong refl) (auto elim!: eventually_mono)
+      using s by (intro filterlim_cong refl) 
+                 (auto intro: eventually_mono [OF eventually_gt_at_top[of "1::real"]])
     finally have "(\<lambda>x. (1/2) * (ln (of_real (real x) + s) - ln (of_real (real x)))) \<longlonglongrightarrow> 0"        
       by (rule tendsto_mult_right_zero[OF filterlim_compose[OF _ filterlim_real_sequentially]])
     thus "(\<lambda>x. (1/2) * (ln (of_nat x + s) - ln (of_nat x))) \<longlonglongrightarrow> 0" by simp
@@ -457,16 +457,17 @@ proof -
       using that s Ln_divide_of_real [of x "of_real x + s", symmetric] neq[of x]
       by (auto simp: Ln_of_real field_simps)
     hence "?P \<longleftrightarrow> ((\<lambda>x. of_real x * (ln (of_real x + s) - ln (of_real x))) \<longlongrightarrow> s) at_top"
-      using eventually_gt_at_top[of "1::real"]
-      by (intro filterlim_cong refl) (auto elim!: eventually_mono)
+      by (intro filterlim_cong refl) 
+         (auto intro: eventually_mono[OF eventually_gt_at_top[of "1::real"]])
     finally have "(\<lambda>n. of_real (real n) * (ln (of_real (real n) + s) - ln (of_real (real n)))) \<longlonglongrightarrow> s"
       by (rule filterlim_compose[OF _ filterlim_real_sequentially])
     thus "(\<lambda>n. of_nat n * (ln (of_nat n + s) - ln (of_nat n))) \<longlonglongrightarrow> s" by simp
   qed simp_all
   also have "?this \<longleftrightarrow> ((\<lambda>N. integral {0..real N} (\<lambda>x. -pbernpoly 1 x / (x + s))) \<longlongrightarrow>
                          ln_Gamma s + s - (s - 1/2) * ln s - ln (2 * pi) / 2) at_top"
-    using eventually_gt_at_top[of "0::nat"] integral_pbernpoly_1_aux
-    by (intro filterlim_cong refl) (auto elim!: eventually_mono)
+    using integral_pbernpoly_1_aux
+    by (intro filterlim_cong refl) 
+       (auto intro: eventually_mono[OF eventually_gt_at_top[of "0::nat"]])
   also have "(\<lambda>N. integral {0..real N} (\<lambda>x. -pbernpoly 1 x / (x + s))) =
                (\<lambda>N. -integral {0..real N} (\<lambda>x. pbernpoly 1 x / (x + s)))"
     by (simp add: fun_eq_iff)
@@ -1305,8 +1306,8 @@ proof -
   proof -
     have "(\<lambda>x. G j x - h x) \<in> 
             \<Theta>(\<lambda>x. (deriv ^^ j) ln_Gamma x - Polygamma_approx j m x)" (is "_ \<in> \<Theta>(?f)")
-      using eventually_gt_at_top[of "0::real"] that
-      by (intro bigthetaI_cong) (auto elim!: eventually_mono 
+      using that
+      by (intro bigthetaI_cong) (auto intro: eventually_mono[OF eventually_gt_at_top[of "0::real"]]
             simp del: funpow.simps simp: higher_deriv_ln_Gamma_real G_def)
     also have "?f \<in> O(\<lambda>x::real. 1 / x ^ (m + j))" using m
       by (rule higher_deriv_lnGamma_stirling)

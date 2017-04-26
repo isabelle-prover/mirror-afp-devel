@@ -1825,7 +1825,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
           by blast
       qed
       hence "(\<lambda>n. inverse ((2::real)^n)) \<longlonglongrightarrow> 0"
-        by (rule LIMSEQ_inverse_zero)
+        by (intro LIMSEQ_inverse_zero) auto
       with lim have "(\<lambda>n. u n t + inverse ((2::real)^n)) \<longlonglongrightarrow> c+0"
         by (rule tendsto_add)
       hence "(\<lambda>n. u n t + 1/(2::real)^n) \<longlonglongrightarrow> c"
