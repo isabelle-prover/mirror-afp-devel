@@ -1149,7 +1149,7 @@ lemma cf_pos_0[simp]: "\<not> cf_pos 0"
 subsubsection\<open>Negation\<close>
 
 fun uminus_1 :: "real_alg_1 \<Rightarrow> real_alg_1" where
-  "uminus_1 (p,l,r) = (let p' = cf_pos_poly (poly_uminus p); l' = -r; r' = -l in
+  "uminus_1 (p,l,r) = (let p' = abs_int_poly (poly_uminus p); l' = -r; r' = -l in
       (p', l', r'))"
 
 lemma uminus_1: assumes x: "invariant_1 x"
@@ -1161,7 +1161,7 @@ proof (cases x)
   note * = invariant_1D[OF this]
   from plr have x: "x = (p,l,r)" by simp
   let ?p = "poly_uminus p"
-  let ?mp = "cf_pos_poly ?p"
+  let ?mp = "abs_int_poly ?p"
   have y: "y = (?mp, -r , -l)" 
     unfolding y plr by (simp add: Let_def)
   {
@@ -1169,8 +1169,7 @@ proof (cases x)
     assume "root_cond (?mp, - r, - l) y"
     hence mpy: "ipoly ?mp y = 0" and bnd: "- of_rat r \<le> y" "y \<le> - of_rat l"
       unfolding root_cond_def by (auto simp: of_rat_minus)
-    from mpy have id: "ipoly p (- y) = 0" using ipoly_uminus[of p "-y"] 
-      by auto
+    from mpy have id: "ipoly p (- y) = 0" by auto
     from bnd have bnd: "of_rat l \<le> - y" "-y \<le> of_rat r" by auto
     from id bnd have "root_cond (p, l, r) (-y)" unfolding root_cond_def by auto
     with inv x have "real_of_1 x = -y" by (auto intro!: the_unique_root_eqI)
@@ -1181,14 +1180,13 @@ proof (cases x)
   from inj rc have ur': "unique_root (?mp, -r, -l)" by (auto intro: unique_rootI)
   with rc have the: "- real_of_1 x = the_unique_root (?mp, -r, -l)" by (auto intro: the_unique_root_eqI)
   have xp: "p represents (real_of_1 x)" using * unfolding root_cond_def split represents_def x by auto
-  from * have mon: "cf_pos ?mp" by (elim poly_condE, auto)
+  from * have mon: "lead_coeff ?mp > 0" by (unfold pos_poly_abs_poly, auto)
   from poly_uminus_irreducible * have mi: "irreducible ?mp" by auto
   from mi mon have pc': "poly_cond ?mp" by (auto simp: cf_pos_def)
   from poly_condD[OF pc'] have irr: "irreducible ?mp" by auto
-  from * pc'
-  show ?thesis by (intro invariant_1_realI, auto simp: y ur' rc)
+  show ?thesis unfolding y apply (intro invariant_1_realI ur' rc) using pc' inv by auto
 qed
-  
+
 lemma uminus_1_2:
   assumes x: "invariant_1_2 x"
   defines y: "y \<equiv> uminus_1 x"
@@ -1199,7 +1197,7 @@ proof -
     "invariant_1 y" unfolding y by auto
   obtain p l r where id: "x = (p,l,r)" by (cases x)
   from x[unfolded id] have "degree p > 1" by auto
-  moreover have "poly_real_alg_1 y = cf_pos_poly (poly_uminus p)"
+  moreover have "poly_real_alg_1 y = abs_int_poly (poly_uminus p)"
     unfolding y id uminus_1.simps split Let_def by auto
   ultimately have "degree (poly_real_alg_1 y) > 1" by simp
   with * show ?thesis by auto
@@ -1237,7 +1235,7 @@ lemma uminus_real_alg: "- (real_of x) = real_of (- x)"
 subsubsection\<open>Inverse\<close>
 
 fun inverse_1 :: "real_alg_1 \<Rightarrow> real_alg_2" where
-  "inverse_1 (p,l,r) = (let p' = abs_int_poly (poly_inverse p); l' = inverse r; r' = inverse l in
+  "inverse_1 (p,l,r) = (let p' = abs_int_poly (reflect_poly p); l' = inverse r; r' = inverse l in
     real_alg_2 (p', l', r'))"
 
 lemma invariant_1_2_of_rat: assumes rc: "invariant_1_2 rai" 
@@ -1259,7 +1257,7 @@ proof (cases x)
   from invariant_1_2_poly_cond2[OF rcx] have pc2: "poly_cond2 p" by simp
   have x0: "real_of_1 (p,l,r) \<noteq> 0" using invariant_1_2_of_rat[OF rcx, of 0] x by auto
   let ?x = "real_of_1 (p,l,r)"
-  let ?mp = "abs_int_poly (poly_inverse p)"
+  let ?mp = "abs_int_poly (reflect_poly p)"
   from x0 rcx have lr0: "l \<noteq> 0" and "r \<noteq> 0" by auto
   from x0 rcx have y: "y = real_alg_2 (?mp, inverse r, inverse l)"
     unfolding y x Let_def inverse_1.simps by auto
@@ -1276,7 +1274,7 @@ proof (cases x)
       unfolding sgn_inverse inverse_sgn
       by (auto simp add: real_of_rat_sgn intro: order_antisym)
     from sgn[simplified, unfolded real_of_rat_sgn] lr0 have "y \<noteq> 0" by (auto simp:sgn_0_0)
-    with mpy have id: "ipoly p (inverse y) = 0" by (auto simp: ipoly_inverse)
+    with mpy have id: "ipoly p (inverse y) = 0" by (auto simp: ipoly_reflect_poly)
     from inverse_le_sgn[OF sgn(1) bnd(1)] inverse_le_sgn[OF sgn(2) bnd(2)]
     have bnd: "of_rat l \<le> inverse y" "inverse y \<le> of_rat r" by auto
     from id bnd have "root_cond (p,l,r) (inverse y)" unfolding root_cond_def by auto
@@ -1285,11 +1283,11 @@ proof (cases x)
   } note inj = this
   have rc: "root_cond (?mp, inverse r, inverse l) (inverse ?x)"
     using rcx x0 apply (elim invariant_1_2E invariant_1E)
-    by (simp add: root_cond_def of_rat_inverse real_of_rat_sgn inverse_le_iff_sgn ipoly_inverse)
+    by (simp add: root_cond_def of_rat_inverse real_of_rat_sgn inverse_le_iff_sgn ipoly_reflect_poly)
   from inj rc have ur: "unique_root (?mp, inverse r, inverse l)" by (auto intro: unique_rootI)
   with rc have the: "the_unique_root (?mp, inverse r, inverse l) = inverse ?x" by (auto intro: the_unique_root_eqI)
   have xp: "p represents ?x" unfolding split represents_def using rcx by (auto elim!: invariant_1E)
-  from poly_inverse_irreducible[OF _ xp x0] poly_condD rcx
+  from reflect_poly_irreducible[OF _ xp x0] poly_condD rcx
   have mi: "irreducible ?mp" by auto
   from mi mon have un: "poly_cond ?mp" by (auto simp: poly_cond_def)
   show ?thesis using rcx rc ur unfolding y

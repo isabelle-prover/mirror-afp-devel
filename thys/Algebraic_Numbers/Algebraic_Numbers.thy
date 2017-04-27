@@ -570,7 +570,7 @@ lemma represents_div:
 
 subsection \<open>Multiplication of Algebraic Numbers\<close>
 
-definition poly_mult where "poly_mult p q \<equiv> poly_div p (poly_inverse q)"
+definition poly_mult where "poly_mult p q \<equiv> poly_div p (reflect_poly q)"
 
 lemma represents_mult:
   assumes px: "p represents x" and qy: "q represents y" and q_0: "poly q 0 \<noteq> 0" 
@@ -579,7 +579,7 @@ proof-
   from q_0 qy have y0: "y \<noteq> 0" by auto
   from represents_inverse[OF y0 qy] y0 px q_0
   have "poly_mult p q represents x / (inverse y)"
-    unfolding poly_mult_def by (intro represents_div, auto simp: poly_inverse_def)
+    unfolding poly_mult_def by (intro represents_div, auto)
   with y0 show ?thesis by (simp add: field_simps)
 qed
 
