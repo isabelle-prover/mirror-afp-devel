@@ -772,5 +772,5 @@ proof -
     by (rule arg_cong[of _ _ "\<lambda> p. smult c (prod_list p)"], auto)
   show "(q,i) \<in> set qis \<Longrightarrow> irreducible q \<and> i \<noteq> 0 \<and> monic q \<and> degree q = 1"
     using linear_irreducible_field[of q] unfolding qis by auto
-qed    
+qed
 end

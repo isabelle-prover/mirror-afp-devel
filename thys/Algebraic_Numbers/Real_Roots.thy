@@ -205,7 +205,7 @@ lemma roots_of_2_irr: assumes pc: "poly_cond p" and deg: "degree p \<noteq> 0"
     "distinct (map real_of_2 (roots_of_2_irr p))" (is ?three)
 proof -
   note d = roots_of_2_irr_def
-  from poly_condD[OF pc] have mon: "cf_pos p" and irr: "irreducible p" by auto
+  from poly_condD[OF pc] have mon: "lead_coeff p > 0" and irr: "irreducible p" by auto
   let ?norm = "real_alg_2'"
   have "?one \<and> ?two \<and> ?three"
   proof (cases "degree p = 1")
