@@ -86,7 +86,7 @@ lemma real_less_eq_code' [code]: "real_of_float x \<le> real_of_float y \<longle
     Code.abort (STR ''division not by 2'') (\<lambda>_. FloatR a b / FloatR c d))"
   and real_floor_code' [code]: "floor (real_of_float x) = int_floor_fl x"
   and real_abs_code' [code]: "abs (real_of_float x) = real_of_float (abs x)"
-  by (auto simp add: int_floor_fl.rep_eq powr_divide2[symmetric] powr_minus inverse_eq_divide)
+  by (auto simp add: int_floor_fl.rep_eq powr_diff powr_minus inverse_eq_divide)
 
 lemma compute_round_down[code]: "round_down prec (real_of_float f) = real_of_float (float_down prec f)"
   by simp

@@ -521,7 +521,7 @@ proof -
     fix n :: nat assume n: "n > 0"
     thus "real n * (exp c * real n powr (real n - 1 / 2) / exp (real n)) =
             exp c * sqrt (real n) * (real n / exp 1) powr real n"
-      by (subst powr_divide2 [symmetric]) (simp_all add: powr_divide powr_half_sqrt field_simps)
+      by (subst powr_diff) (simp_all add: powr_divide powr_half_sqrt field_simps)
   qed
   finally show ?thesis by - (simp_all add: asymp_equiv_mult)
 qed
@@ -617,7 +617,7 @@ theorem Gamma_bounds:
           "Gamma x \<le> sqrt (2*pi/x) * (x / exp 1) powr x * exp (1 / (12 * x))" (is ?th2)
 proof -
   from assms have "exp c * x powr (x - 1/2) / exp x = sqrt (2*pi/x) * (x / exp 1) powr x"
-    by (subst powr_divide2 [symmetric])
+    by (subst powr_diff)
        (simp add: exp_c real_sqrt_divide powr_divide powr_half_sqrt field_simps)
   with Gamma_bounds_aux[OF assms] show ?th1 ?th2 by simp_all
 qed
@@ -630,7 +630,7 @@ proof -
   from ln_Gamma_bounds_aux[OF assms] assms show ?th1 ?th2
     by (simp_all add: c field_simps ln_div)
   from assms have "exp c * x powr (x - 1/2) / exp x = sqrt (2*pi/x) * (x / exp 1) powr x"
-    by (subst powr_divide2 [symmetric])
+    by (subst powr_diff)
        (simp add: exp_c real_sqrt_divide powr_divide powr_half_sqrt field_simps)
 qed
 
@@ -700,7 +700,7 @@ proof -
   proof eventually_elim
     fix x :: real assume x: "x > 0"
     thus "exp c * x powr (x - 1/2) / exp x = sqrt (2*pi/x) * (x / exp 1) powr x"
-      by (subst powr_divide2 [symmetric]) 
+      by (subst powr_diff) 
          (simp add: exp_c powr_half_sqrt powr_divide field_simps real_sqrt_divide)
   qed
   finally show ?thesis .

@@ -272,11 +272,11 @@ proof-
     fix x assume x: "x \<ge> a"
     hence "integral {a..x} (\<lambda>u. u powr p' / u powr (p+1)) =
                integral {a..x} (\<lambda>u. u powr (p' - (p + 1)))"
-      by (intro Henstock_Kurzweil_Integration.integral_cong) (simp_all add: powr_divide2)
+      by (intro Henstock_Kurzweil_Integration.integral_cong) (simp_all add: powr_diff [symmetric] )
     also have "... = inverse (p' - p) * (x powr (p' - p) - a powr (p' - p))"
       using p x0_less_x1 a x by (simp add: integral_powr)
     also have "x powr p * (1 + ...) = d * x powr p + c * x powr p'"
-      using p unfolding c_def d_def by (simp add: algebra_simps powr_divide2[symmetric] e_def)
+      using p unfolding c_def d_def by (simp add: algebra_simps powr_diff e_def)
     finally show "x powr p * (1 + integral {a..x} (\<lambda>u. u powr p' / u powr (p+1))) =
                       d * x powr p + c * x powr p'" .
   qed
