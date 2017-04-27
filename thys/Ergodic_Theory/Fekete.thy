@@ -224,7 +224,7 @@ proof -
     define w where "w n = ln (u n)" for n
     have express_vn: "v n = exp(w n/n)" if "n>0" for n
     proof -
-      have "(exp(w n/n))^n = exp(n*(w n/n))" using exp_of_nat_mult by simp
+      have "(exp(w n/n))^n = exp(n*(w n/n))" by (metis exp_of_nat_mult)
       also have "... = exp(w n)" by (simp add: \<open>0 < n\<close>)
       also have "... = u n" by (simp add: \<open>\<And>n. 0 < u n\<close> w_def)
       finally have "exp(w n/n) = root n (u n)" by (metis \<open>0 < n\<close> exp_ge_zero real_root_power_cancel)

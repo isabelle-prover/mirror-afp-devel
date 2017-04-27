@@ -382,7 +382,7 @@ proof -
     apply (rule mult_mono, simp, rule convex_on_mean_ineq[OF convex_powr[of "1/p"]])
     using `p \<le> 1` `p > 0` by auto
   also have "... = 2 powr (1/p - 1) * ((\<integral>x. \<bar>f x\<bar> powr p \<partial>M) powr (1/p) + (\<integral>x. \<bar>g x\<bar> powr p \<partial>M) powr (1/p))"
-    by (simp add: powr_divide2[symmetric])
+    by (simp add: powr_diff)
   finally show "(\<integral>x. \<bar>f x + g x\<bar> powr p \<partial>M) powr (1/p)
       \<le> 2 powr (1/p-1) * (\<integral>x. \<bar>f x\<bar> powr p \<partial>M) powr (1/p) + 2 powr (1/p-1) * (\<integral>x. \<bar>g x\<bar> powr p \<partial>M) powr (1/p)"
     by (auto simp add: algebra_simps)
@@ -2008,7 +2008,7 @@ proof -
         also have "... = (Norm (\<LL> p2 M) f) powr p2 / (Norm (\<LL> p2 M) f) powr (p2 / q2)"
           by (subst Lp_Norm(2)[OF `p2 > 0`], auto)
         also have "... = (Norm (\<LL> p2 M) f) powr (p2 - p2/q2)"
-          by (simp add: powr_divide2)
+          by (simp add: powr_diff [symmetric] )
         also have "... = Norm (\<LL> p2 M) f"
           unfolding q2_def using conjugate_exponent_real(5)[OF `p2 > 1`] by auto
         finally have "Norm (\<LL> p M) f = (\<integral>x. f x * g x \<partial>M)"

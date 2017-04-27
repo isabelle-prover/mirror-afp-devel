@@ -30,7 +30,7 @@ proof (rule DERIV_nonneg_imp_mono[of _ _ "\<lambda>x. x / ln x powr e"])
   hence t'': "ln t > e" by simp
   show "((\<lambda>x. x / ln x powr e) has_real_derivative 
             (ln t - e) / ln t powr (e+1)) (at t)" using assms t t' t''
-    by (force intro!: derivative_eq_intros simp: powr_divide2[symmetric] field_simps powr_add)
+    by (force intro!: derivative_eq_intros simp: powr_diff field_simps powr_add)
   from t'' show "(ln t - e) / ln t powr (e + 1) \<ge> 0" by (intro divide_nonneg_nonneg) simp_all
 qed (simp_all add: assms)
 

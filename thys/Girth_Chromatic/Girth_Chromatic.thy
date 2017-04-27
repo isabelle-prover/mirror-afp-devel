@@ -605,7 +605,7 @@ proof -
     proof -
       have "mean_short_count / (n / 2) \<le> 2 * (k - 2) * (1 / n powr 1) * n powr (\<epsilon> * k)"
         using mean_short_count_le `1 \<le> n` by (simp add: field_simps)
-      then show ?thesis by (simp add: powr_divide2[symmetric] algebra_simps)
+      then show ?thesis by (simp add: powr_diff algebra_simps)
     qed
     finally show "?P n" .
   qed
@@ -637,7 +637,7 @@ proof -
       also have "\<dots> \<longleftrightarrow> (6*k) * ln n * ((n powr - 1) / (n powr (\<epsilon> - 1))) \<le> n powr (\<epsilon> - 1) / (n powr (\<epsilon> - 1))"
         using `1 \<le> n` by (auto simp: field_simps)
       also have "\<dots> \<longleftrightarrow> (6*k) * ln n * n powr - \<epsilon> \<le> 1"
-        by (simp add: powr_divide2)
+        by (simp add: powr_diff [symmetric] )
       finally show "(6*k) * ln n / n \<le> p n \<longleftrightarrow> (6*k) * ln n * n powr - \<epsilon> \<le> 1" .
     qed
     then have "(\<forall>\<^sup>\<infinity> n. (6 * k) * ln n / real n \<le> p n)

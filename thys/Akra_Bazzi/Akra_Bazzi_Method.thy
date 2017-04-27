@@ -261,7 +261,7 @@ lemma propagate_CLAMP:
 by (insert ln_1_imp_less_3')
    (rule ext, simp add: CLAMP_def CLAMP'_def MASTER_BOUND_def 
       powr_realpow powr_one[OF ln_ln_nonneg'] powr_realpow[OF ln_ln_pos] powr_add
-      powr_divide2[symmetric] powr_minus)+
+      powr_diff powr_minus)+
 
 lemma numeral_assoc_simps:
   "((a::real) + numeral b) + numeral c = a + numeral (b + c)"

@@ -705,7 +705,7 @@ next
                 also have "\<dots> = (n powr (2 * ?v - k) / n powr (2 * ?v)) * (p n powr (2 * ?e - max_density H * k) / (p n powr (2 * ?e)))"
                   by simp
                 also have "\<dots> = (n powr (real (2 * ?v - k) - 2 * ?v)) * p n powr ((2 * ?e - max_density H * k) - (2 * ?e))"
-                  by (simp add: powr_divide2)
+                  by (simp add: powr_diff [symmetric] )
                 also have "\<dots> = n powr -real k * p n powr ((2 * ?e - max_density H * k) - (2 * ?e))"
                   apply (rule arg_cong[where y = "- real k"])
                   using k by fastforce

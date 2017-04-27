@@ -1659,7 +1659,7 @@ proof (rule lhospital_at_top_at_top)
     using eventually_gt_at_top[of "0::real"] DERIV_powr by (elim eventually_mono) simp
   have "eventually (\<lambda>x. inverse a * x powr -a = inverse x / (a*x powr (a-1))) at_top"
     using eventually_gt_at_top[of "0::real"] 
-    by (elim eventually_mono) (simp add: field_simps powr_divide2[symmetric] powr_minus)
+    by (elim eventually_mono) (simp add: field_simps powr_diff powr_minus)
   moreover from assms have "((\<lambda>x. inverse a * x powr -a) \<longlongrightarrow> 0) at_top"
     by (intro tendsto_mult_right_zero tendsto_neg_powr filterlim_ident) simp_all
   ultimately show "((\<lambda>x. inverse x / (a * x powr (a - 1))) \<longlongrightarrow> 0) at_top"
@@ -1820,7 +1820,7 @@ proof-
   proof (cases p q rule: linorder_cases)
     assume "p < q"
     hence "(\<lambda>x. g x powr p) \<in> o[F](\<lambda>x. g x powr q)" using assms A
-      by (auto intro!: smalloI_tendsto tendsto_neg_powr simp: powr_divide2)
+      by (auto intro!: smalloI_tendsto tendsto_neg_powr simp: powr_diff [symmetric] )
     with `p < q` show ?thesis by auto
   next
     assume "p = q"
@@ -1829,7 +1829,7 @@ proof-
   next
     assume "p > q"
     hence "(\<lambda>x. g x powr q) \<in> O[F](\<lambda>x. g x powr p)" using assms A
-      by (auto intro!: smalloI_tendsto tendsto_neg_powr landau_o.small_imp_big simp: powr_divide2)
+      by (auto intro!: smalloI_tendsto tendsto_neg_powr landau_o.small_imp_big simp: powr_diff [symmetric] )
     with B `p > q` show ?thesis by auto
   qed
 qed
@@ -1851,7 +1851,7 @@ proof-
   proof (cases p q rule: linorder_cases)
     assume "p < q"
     hence "(\<lambda>x. g x powr p) \<in> o[F](\<lambda>x. g x powr q)" using assms A
-      by (auto intro!: smalloI_tendsto tendsto_neg_powr simp: powr_divide2)
+      by (auto intro!: smalloI_tendsto tendsto_neg_powr simp: powr_diff [symmetric] )
     with `p < q` show ?thesis by (auto intro: landau_o.small_imp_big)
   next
     assume "p = q"
@@ -1860,7 +1860,7 @@ proof-
   next
     assume "p > q"
     hence "(\<lambda>x. g x powr q) \<in> o[F](\<lambda>x. g x powr p)" using assms A
-      by (auto intro!: smalloI_tendsto tendsto_neg_powr simp: powr_divide2)
+      by (auto intro!: smalloI_tendsto tendsto_neg_powr simp: powr_diff [symmetric] )
     with B `p > q` show ?thesis by (auto intro: landau_o.small_imp_big)
   qed
 qed
