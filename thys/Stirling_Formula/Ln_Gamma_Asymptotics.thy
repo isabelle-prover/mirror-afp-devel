@@ -288,11 +288,10 @@ proof -
               (of_nat n + 1/2 + s) * (ln (of_nat (n + 1) + s) - ln (of_nat n + s)) - 1) 
             {of_nat n..of_nat (n + 1)}" by simp
              
-    show "\<forall>x\<in>{of_nat n..of_nat (n + 1)} - {of_nat (n + 1)}. 
-            -pbernpoly 1 x / (x + s) = (of_nat n + 1/2 + s) * (1 / (x + s)) - 1"
-    proof
-      fix x :: real assume "x \<in> {of_nat n..of_nat (n + 1)} - {of_nat (n + 1)}"
-      hence x: "x \<ge> real n" "x < real (n + 1)" by simp_all
+    show "-pbernpoly 1 x / (x + s) = (of_nat n + 1/2 + s) * (1 / (x + s)) - 1"
+         if "x \<in> {of_nat n..of_nat (n + 1)} - {of_nat (n + 1)}" for x
+    proof -
+      have x: "x \<ge> real n" "x < real (n + 1)" using that by simp_all
       hence "floor x = int n" by linarith
       moreover from s x have "complex_of_real x \<noteq> -s" 
         by (auto simp add: complex_eq_iff simp del: of_nat_Suc)
@@ -344,7 +343,7 @@ proof -
   hence "(\<Sum>n=1..<N. ln (of_nat n + s)) = (\<Sum>n=1..<N. ln (of_nat n) + ln (1 + s/n))"
     by (intro sum.cong refl, subst Ln_times_of_nat [symmetric]) (auto simp: divide_simps add_ac)
   also have "\<dots> = ln (fact (N - 1)) + (\<Sum>n=1..<N. ln (1 + s/n))"
-    by (induction N) (simp_all add: Ln_times_of_nat [symmetric] fact_reduce add_ac)
+    by (induction N) (simp_all add: Ln_times_of_nat fact_reduce add_ac)
   also have "(\<Sum>n=1..<N. ln (1 + s/n)) = -(\<Sum>n=1..<N. s / n - ln (1 + s/n)) + s * (\<Sum>n=1..<N. 1 / of_nat n)"
     by (simp add: sum_distrib_left sum_subtractf) 
   also from N have "ln (fact (N - 1)) = ln_Gamma (of_nat N :: complex)" 
