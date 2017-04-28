@@ -317,7 +317,9 @@ lemma gcd_impl_main_code[code]:
   unfolding gcd_impl_main_def Let_def primitive_part_def gcd_impl_start_def gcd_impl_primitive_def
     subresultant_prs_impl by simp
 
-text \<open>Note that we did not activate @{thm gcd_impl} as code-equation, since according to our experiments,
+corollary gcd_via_subresultant: "gcd f g = gcd_impl f g" by simp
+
+text \<open>Note that we did not activate @{thm gcd_via_subresultant} as code-equation, since according to our experiments,
   the subresultant-gcd algorithm is not always more efficient than the currently active equation.
   In particular, on @{typ "int poly"} @{const gcd_impl} performs worse, but on multi-variate polynomials,
   e.g., @{typ "int poly poly poly"}, @{const gcd_impl} is preferable.\<close>

@@ -30,22 +30,19 @@ partial_function(tailrec) subresultant_prs_main where
    n = degree g;
    lf = lead_coeff f;
    lg = lead_coeff g;
-   d1 = m - n;
-   hi = div_exp lg c d1;
-   pmod = pseudo_mod f g
-  in (if pmod = 0 then (g,hi) else 
-  let
-     g' = sdiv_poly pmod ((-1) ^ (d1 + 1) * lf * (c ^ d1))
-     in subresultant_prs_main g g' hi))" 
+   \<delta> = m - n;
+   d = div_exp lg c \<delta>;
+   h = pseudo_mod f g
+  in if h = 0 then (g,d)
+     else subresultant_prs_main g (sdiv_poly h ((-1) ^ (\<delta> + 1) * lf * (c ^ \<delta>))) d)" 
 
 definition subresultant_prs where
   [code del]: "subresultant_prs f g = (let
-    pmod = pseudo_mod f g;
+    h = pseudo_mod f g;
     \<delta> = (degree f - degree g);
-    h2 = lead_coeff g ^ \<delta>
-    in if pmod = 0 then (g,h2) else let
-      G_3 = (- 1) ^ (\<delta> + 1) * pmod
-    in subresultant_prs_main g G_3 h2)"
+    d = lead_coeff g ^ \<delta>
+    in if h = 0 then (g,d)
+       else subresultant_prs_main g ((- 1) ^ (\<delta> + 1) * h) d)"
 
 definition resultant_impl_main where
   [code del]: "resultant_impl_main G1 G2 = (if G2 = 0 then (if degree G1 = 0 then 1 else 0) else
