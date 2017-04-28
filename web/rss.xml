@@ -9,7 +9,24 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>19 Apr 2017 00:00:00 +0000</pubDate>
+    <pubDate>28 Apr 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>Local Lexing</title>
+              <link>https://www.isa-afp.org/entries/LocalLexing.shtml</link>
+       <guid>https://www.isa-afp.org/entries/LocalLexing.shtml</guid>
+       <dc:creator> Steven Obua       </dc:creator>
+       <pubDate>28 Apr 2017 00:00:00 +0000</pubDate>
+       <description>
+This formalisation accompanies the paper &lt;a
+href=&#34;https://arxiv.org/abs/1702.03277&#34;&gt;Local
+Lexing&lt;/a&gt; which introduces a novel parsing concept of the same
+name. The paper also gives a high-level algorithm for local lexing as
+an extension of Earley&#39;s algorithm. This formalisation proves the
+algorithm to be correct with respect to its local lexing semantics. As
+a special case, this formalisation thus also contains a proof of the
+correctness of Earley&#39;s algorithm. The paper contains a short
+outline of how this formalisation is organised.</description>
+    </item>
     <item>
        <title>Constructor Functions</title>
               <link>https://www.isa-afp.org/entries/Constructor_Funs.shtml</link>
@@ -513,15 +530,6 @@ separata.</description>
        <dc:creator> Heiko Becker, Jasmin Christian Blanchette, Uwe Waldmann, Daniel Wand       </dc:creator>
        <pubDate>12 Nov 2016 00:00:00 +0000</pubDate>
        <description>This Isabelle/HOL formalization defines Knuth–Bendix orders for higher-order terms without lambda-abstraction and proves many useful properties about them. The main order fully coincides with the standard transfinite KBO with subterm coefficients on first-order terms. It appears promising as the basis of a higher-order superposition calculus.</description>
-    </item>
-    <item>
-       <title>Expressiveness of Deep Learning</title>
-              <link>https://www.isa-afp.org/entries/Deep_Learning.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Deep_Learning.shtml</guid>
-       <dc:creator> Alexander Bentkamp       </dc:creator>
-       <pubDate>10 Nov 2016 00:00:00 +0000</pubDate>
-       <description>
-Deep learning has had a profound impact on computer science in recent years, with applications to search engines, image recognition and language processing, bioinformatics, and more. Recently, Cohen et al. provided theoretical evidence for the superiority of deep learning over shallow learning. This formalization of their work simplifies and generalizes the original proof, while working around the limitations of the Isabelle type system. To support the formalization, I developed reusable libraries of formalized mathematics, including results about the matrix rank, the Lebesgue measure, and multivariate polynomials, as well as a library for tensor analysis.</description>
     </item>
   </channel>
 </rss>

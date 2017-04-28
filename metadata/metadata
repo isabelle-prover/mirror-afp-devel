@@ -4,7 +4,7 @@ author = Lars Hupel <https://www21.in.tum.de/~hupel/>
 topic = Tools
 date = 2017-04-19
 notify = hupel@in.tum.de
-abstract = 
+abstract =
   Isabelle's code generator performs various adaptations for target
   languages. Among others, constructor applications have to be fully
   saturated. That means that for constructor calls occuring as arguments
@@ -18,7 +18,7 @@ author = Lars Hupel <https://www21.in.tum.de/~hupel/>
 topic = Tools
 date = 2017-04-18
 notify = hupel@in.tum.de
-abstract = 
+abstract =
   Isabelle's code generator performs various adaptations for target
   languages. Among others, case statements are printed as match
   expressions. Internally, this is a sophisticated procedure, because in
@@ -38,7 +38,7 @@ author = Sebastiaan Joosten <mailto:sebastiaan.joosten@uibk.ac.at>, René Thiema
 topic = Mathematics/Algebra
 date = 2017-04-06
 notify = rene.thiemann@uibk.ac.at
-abstract = 
+abstract =
   We formalize the theory of subresultants and the subresultant
   polynomial remainder sequence as described by Brown and Traub. As a
   result, we obtain efficient certified algorithms for computing the
@@ -50,7 +50,7 @@ author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
 topic = Computer Science/Algorithms
 date = 2017-03-15
 notify = eberlm@in.tum.de
-abstract = 
+abstract =
   <p>This article contains a formal proof of the well-known fact
   that number of comparisons that a comparison-based sorting algorithm
   needs to perform to sort a list of length <em>n</em> is at
@@ -70,7 +70,7 @@ author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
 topic = Computer Science/Algorithms
 date = 2017-03-15
 notify = eberlm@in.tum.de
-abstract = 
+abstract =
   <p>We give a formal proof of the well-known results about the
   number of comparisons performed by two variants of QuickSort: first,
   the expected number of comparisons of randomised QuickSort
@@ -87,7 +87,7 @@ author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
 topic = Computer Science/Data Structures
 date = 2017-04-04
 notify = eberlm@in.tum.de
-abstract = 
+abstract =
   <p>This entry contains proofs for the textbook results about the
   distributions of the height and internal path length of random binary
   search trees (BSTs), i.&thinsp;e. BSTs that are formed by taking
@@ -311,6 +311,23 @@ abstract =
 	matches the string). We also prove the correctness of an optimised
 	version of the POSIX matching algorithm.
 
+[LocalLexing]
+title = Local Lexing
+author = Steven Obua <mailto:steven@recursivemind.com>
+topic = Computer Science/Automata and Formal Languages
+date = 2017-04-28
+notify = steven@recursivemind.com
+abstract =
+  This formalisation accompanies the paper <a
+  href="https://arxiv.org/abs/1702.03277">Local
+  Lexing</a> which introduces a novel parsing concept of the same
+  name. The paper also gives a high-level algorithm for local lexing as
+  an extension of Earley's algorithm. This formalisation proves the
+  algorithm to be correct with respect to its local lexing semantics. As
+  a special case, this formalisation thus also contains a proof of the
+  correctness of Earley's algorithm. The paper contains a short
+  outline of how this formalisation is organised.
+
 [MFMC_Countable]
 title = A Formal Proof of the Max-Flow Min-Cut Theorem for Countable Networks
 author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
@@ -386,7 +403,7 @@ abstract =
 	In this work, we prove the lower bound <span class="nobr">ln(H_n) -
 	ln(5/3)</span> for the
 	partial sum of the Prime Harmonic series and, based on this, the divergence of
-	the Prime Harmonic Series 
+	the Prime Harmonic Series
 	<span class="nobr">∑[p&thinsp;prime]&thinsp;·&thinsp;1/p.</span>
 	</p><p>
 	The proof relies on the unique squarefree decomposition of natural numbers. This
