@@ -1208,9 +1208,20 @@ begin
   qed
 
   lemma coprime_mult_cross_dvd:
-    assumes coprime: "coprime p q" and eq: "p' * p = q' * q" and p: "p \<noteq> 0" and q: "q \<noteq> 0"
-    shows "p dvd q' \<and> q dvd p'"
-  proof -
+    assumes coprime: "coprime p q" and eq: "p' * p = q' * q"
+    shows "p dvd q'" (is ?g1) and "q dvd p'" (is ?g2)
+  proof (atomize(full), cases "p = 0 \<or> q = 0")
+    case True
+    then show "?g1 \<and> ?g2"
+    proof
+      assume p0: "p = 0" with coprime have "q dvd 1" by auto
+      with eq p0 show ?thesis by auto
+    next
+      assume q0: "q = 0" with coprime have "p dvd 1" by auto
+      with eq q0 show ?thesis by auto
+    qed
+  next
+    case False
     {
       fix p q r p' q' :: 'a
       assume cop: "coprime p q" and eq: "p' * p = q' * q" and p: "p \<noteq> 0" and q: "q \<noteq> 0"
@@ -1225,8 +1236,8 @@ begin
       from cop[unfolded coprime_def, rule_format, OF 3 2] have "?gcd dvd 1" .
       from 1 dvd_mult_unit_iff[OF this] have "p dvd q'" by auto
     } note main = this
-    from main[OF coprime eq p q,of 1] coprime coprime_commute main[OF _ eq[symmetric] q p, of 1]
-    show ?thesis by auto
+    from main[OF coprime eq,of 1] False coprime coprime_commute main[OF _ eq[symmetric], of 1]
+    show "?g1 \<and> ?g2" by auto
   qed
 
 end
