@@ -1273,16 +1273,15 @@ declare irreducible_const_poly_iff [simp]
 
 lemma poly_uminus_irreducible:
   assumes p: "irreducible (p :: int poly)" and deg: "degree p \<noteq> 0"
-  shows "irreducible (abs_int_poly (poly_uminus p))"
+  shows "irreducible (poly_uminus p)"
 proof-
   from deg_nonzero_represents[OF deg] obtain x :: complex where x: "p represents x" by auto
   from represents_uminus[OF x]
-  have y: "abs_int_poly (poly_uminus p) represents (- x)" by simp
+  have y: "poly_uminus p represents (- x)" .
   show ?thesis
   proof (rule irreducible_preservation[OF p x y], force)
     from deg irreducible_imp_content_free[OF p] have "content_free p" by auto
-    then show "content_free (abs_int_poly (poly_uminus p))"
-      by (unfold content_free_abs_int_poly, auto)
+    then show "content_free (poly_uminus p)" by simp
     fix q
     assume "q represents (- x)"
     from represents_uminus[OF this] have "(poly_uminus q) represents x" by simp
@@ -1293,16 +1292,15 @@ qed
 lemma reflect_poly_irreducible:
   fixes x :: "'a :: {field_char_0,euclidean_ring_gcd}"
   assumes p: "irreducible p" and x: "p represents x" and x0: "x \<noteq> 0"
-  shows "irreducible (abs_int_poly (reflect_poly p))"
+  shows "irreducible (reflect_poly p)"
 proof -
   from represents_inverse[OF x0 x]
-  have y: "abs_int_poly (reflect_poly p) represents (inverse x)" by simp
+  have y: "(reflect_poly p) represents (inverse x)" by simp
   from x0 have ix0: "inverse x \<noteq> 0" by auto
   show ?thesis
   proof (rule irreducible_preservation[OF p x y])
     from x irreducible_imp_content_free[OF p]
-    show "content_free (abs_int_poly (reflect_poly p))"
-      by (unfold content_free_abs_int_poly,auto simp: content_reflect_poly)
+    show "content_free (reflect_poly p)" by (auto simp: content_reflect_poly)
     fix q
     assume "q represents (inverse x)"
     from represents_inverse[OF ix0 this] have "(reflect_poly q) represents x" by simp
