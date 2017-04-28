@@ -1200,7 +1200,7 @@ qed
 lemma add_rat_roots: "ipoly (poly_add_rat r p) x = 0 \<longleftrightarrow> ipoly p (x - of_rat r) = 0"
   unfolding ipoly_add_rat using quotient_of_nonzero by auto
 
-lemma add_rat_represents:
+lemma represents_add_rat:
   assumes "p represents x" shows "(poly_add_rat r p) represents (of_rat r + x)"
   using assms unfolding represents_def ipoly_add_rat by simp
 
@@ -1314,13 +1314,13 @@ lemma poly_add_rat_irreducible:
   shows "irreducible (cf_pos_poly (poly_add_rat r p))"
 proof -
   from deg_nonzero_represents[OF deg] obtain x :: complex where x: "p represents x" by auto
-  from add_rat_represents[OF x]
+  from represents_add_rat[OF x]
   have y: "cf_pos_poly (poly_add_rat r p) represents (of_rat r + x)" by simp
   show ?thesis
   proof (rule irreducible_preservation[OF p x y], force)
     fix q
     assume "q represents (of_rat r + x)"
-    from add_rat_represents[OF this, of "- r"] have "(poly_add_rat (- r) q) represents x" by (simp add: of_rat_minus)
+    from represents_add_rat[OF this, of "- r"] have "(poly_add_rat (- r) q) represents x" by (simp add: of_rat_minus)
     thus "(poly_add_rat (- r) q) represents x \<and> degree (poly_add_rat (- r) q) \<le> degree q" by auto
   qed (insert p, auto)
 qed
