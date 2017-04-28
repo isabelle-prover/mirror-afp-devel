@@ -819,6 +819,19 @@ proof -
   then show ?thesis by (auto intro: exI[of _ ?p] simp: cf_pos_def)
 qed
 
+lemma gcd_of_int_poly: "gcd (of_int_poly f) (of_int_poly g :: 'a :: {field_char_0,euclidean_ring_gcd} poly) =
+  smult (inverse (of_int (lead_coeff (gcd f g)))) (of_int_poly (gcd f g))" 
+proof -
+  let ?ia = "of_int_poly :: _ \<Rightarrow> 'a poly" 
+  let ?ir = "of_int_poly :: _ \<Rightarrow> rat poly" 
+  let ?ra = "map_poly of_rat :: _ \<Rightarrow> 'a poly" 
+  have id: "?ia x = ?ra (?ir x)" for x by (subst map_poly_map_poly, auto)
+  show ?thesis 
+    unfolding id 
+    unfolding of_rat_hom.map_poly_gcd[symmetric]
+    unfolding gcd_rat_to_gcd_int by auto
+qed    
+                                             
 lemma algebraic_imp_represents_unique: 
   fixes x :: "'a :: {field_char_0,euclidean_ring_gcd}"
   assumes "algebraic x"
@@ -837,24 +850,18 @@ proof -
     have cfq: "cf_pos q" by (auto simp: cf_pos_def)
     show "q = p"
     proof (rule ccontr)
-      let ?rp = "map_poly of_int :: int poly \<Rightarrow> 'a poly"
-      let ?ri = "map_poly of_int :: int poly \<Rightarrow> rat poly" 
-      let ?rr = "map_poly of_rat :: rat poly \<Rightarrow> 'a poly" 
-      have rpi: "?rp p = ?rr (?ri p)" for p
-        by (subst map_poly_map_poly, auto simp: o_def)
+      let ?ia = "map_poly of_int :: int poly \<Rightarrow> 'a poly"
       assume "q \<noteq> p"
       with irreducible_pos_gcd_twice[of p q] p q cfp cfq have gcd: "gcd p q = 1" by auto
       from p q have rt: "ipoly p x = 0" "ipoly q x = 0" unfolding represents_def by auto
-      define c where "c = inverse (rat_of_int (lead_coeff (gcd p q)))" 
-      have rt: "poly (?rp p) x = 0" "poly (?rp q) x = 0" using rt by auto
-      hence "[:-x,1:] dvd ?rp p" "[:-x,1:] dvd ?rp q" 
+      define c :: 'a where "c = inverse (of_int (lead_coeff (gcd p q)))" 
+      have rt: "poly (?ia p) x = 0" "poly (?ia q) x = 0" using rt by auto
+      hence "[:-x,1:] dvd ?ia p" "[:-x,1:] dvd ?ia q" 
         unfolding poly_eq_0_iff_dvd by auto
-      hence "[:-x,1:] dvd gcd (?rp p) (?rp q)" by (rule gcd_greatest)
-      also have "\<dots> = ?rr (gcd (?ri p) (?ri q))" unfolding rpi
-        by (rule of_rat_hom.map_poly_gcd [symmetric])
-      also have "gcd (?ri p) (?ri q) = smult c (?ri (gcd p q))" unfolding gcd_rat_to_gcd_int c_def ..
-      also have "?ri (gcd p q) = 1" by (simp add: gcd)
-      also have "?rr (smult c 1) = [: of_rat c :]" by simp
+      hence "[:-x,1:] dvd gcd (?ia p) (?ia q)" by (rule gcd_greatest)
+      also have "\<dots> = smult c (?ia (gcd p q))" unfolding gcd_of_int_poly c_def ..
+      also have "?ia (gcd p q) = 1" by (simp add: gcd)
+      also have "smult c 1 = [: c :]" by simp
       finally show False using c_def gcd by (simp add: dvd_iff_poly_eq_0)
     qed
   qed
