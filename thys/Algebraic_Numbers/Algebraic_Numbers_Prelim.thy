@@ -241,6 +241,9 @@ lemma representsE_full[elim]:
 lemma represents_of_rat[simp]: "p represents (of_rat x) = p represents x" by (auto elim!:representsE)
 lemma represents_of_real[simp]: "p represents (of_real x) = p represents x" by (auto elim!:representsE)
 
+lemma algebraic_iff_represents: "algebraic x \<longleftrightarrow> (\<exists> p. p represents x)"     
+  unfolding algebraic_altdef_ipoly represents_def ..
+    
 lemma represents_irr_non_0:
   assumes irr: "irreducible p" and ap: "p represents x" and x0: "x \<noteq> 0"
   shows "poly p 0 \<noteq> 0"
