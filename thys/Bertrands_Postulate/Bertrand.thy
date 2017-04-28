@@ -10,7 +10,7 @@ theory Bertrand
     Complex_Main
     "~~/src/HOL/Number_Theory/Number_Theory"
     "~~/src/HOL/Library/Discrete"
-    "~~/src/HOL/Decision_Procs/Approximation"
+    "~~/src/HOL/Decision_Procs/Approximation_Bounds"
     "../Pratt_Certificate/Pratt_Certificate"
 begin
 
