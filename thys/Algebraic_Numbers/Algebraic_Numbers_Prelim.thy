@@ -866,6 +866,23 @@ proof -
     qed
   qed
 qed
+  
+corollary irreducible_implies_minimal_degree: 
+  fixes x :: "'a :: {field_char_0,euclidean_ring_gcd}"
+  assumes "irreducible f" and "f represents x" and "g represents x"
+  shows "degree f \<le> degree g"
+proof -
+  from factors_of_int_poly(1)[OF refl, of _ g] factors_of_int_poly(3)[OF refl, of g x] 
+     assms(3) obtain h where *: "h represents x" "degree h \<le> degree g" "irreducible h"
+    by blast
+  let ?af = "abs_int_poly f" 
+  let ?ah = "abs_int_poly h" 
+  from assms have af: "irreducible ?af" "?af represents x" "lead_coeff ?af > 0" by fastforce+
+  from * have ah: "irreducible ?ah" "?ah represents x" "lead_coeff ?ah > 0" by fastforce+
+  from algebraic_imp_represents_unique[of x] af ah have id: "?af = ?ah" 
+    unfolding algebraic_iff_represents by blast  
+  show ?thesis using arg_cong[OF id, of degree] \<open>degree h \<le> degree g\<close> by simp
+qed
 
 lemma ipoly_poly_compose: "ipoly (p \<circ>\<^sub>p q) x = ipoly p (ipoly q x)"
   by (simp add: of_int_hom.map_poly_pcompose poly_pcompose)
