@@ -868,15 +868,7 @@ proof -
 qed
 
 lemma ipoly_poly_compose: "ipoly (p \<circ>\<^sub>p q) x = ipoly p (ipoly q x)"
-proof (induct p)
-  case (pCons a p)
-  have "ipoly ((pCons a p) \<circ>\<^sub>p q) x = of_int a + ipoly (q * p \<circ>\<^sub>p q) x" by simp
-  also have "ipoly (q * p \<circ>\<^sub>p q) x = ipoly q x * ipoly (p \<circ>\<^sub>p q) x" by simp
-  also have "ipoly (p \<circ>\<^sub>p q) x = ipoly p (ipoly q x)" unfolding pCons(2) ..
-  also have "of_int a + ipoly q x * \<dots> = ipoly (pCons a p) (ipoly q x)"
-    unfolding map_poly_pCons[OF pCons(1)] by simp
-  finally show ?case .
-qed simp
+  by (simp add: of_int_hom.map_poly_pcompose poly_pcompose)
 
 text \<open>Polynomial for unary minus.\<close>
 
