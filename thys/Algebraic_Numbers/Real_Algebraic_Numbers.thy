@@ -998,14 +998,6 @@ definition real_alg_2_main :: "root_info \<Rightarrow> real_alg_1 \<Rightarrow> 
        else (case normalize_bounds_1 rai of (p',l,r) \<Rightarrow>
        Irrational (root_info.number_root ri r) (p',l,r)))"
 
-lemma real_alg_2_main_strict_code[code]:  
-  "real_alg_2_main ri rai = (let p = poly_real_alg_1 rai
-     in (if degree p = 1 then Rational (Rat.Fract (- coeff p 0) (coeff p 1))
-       else (case normalize_bounds_1 rai of (p',l,r) \<Rightarrow>
-         let n = root_info.number_root ri r in if n = n then (* enforce evaluation of n *)
-       Irrational n (p',l,r) else Rational 0)))"
-  unfolding real_alg_2_main_def Let_def by auto
-
 definition real_alg_2 :: "real_alg_1 \<Rightarrow> real_alg_2" where 
   "real_alg_2 rai \<equiv> let p = poly_real_alg_1 rai
      in (if degree p = 1 then Rational (Rat.Fract (- coeff p 0) (coeff p 1))
@@ -1149,8 +1141,7 @@ lemma cf_pos_0[simp]: "\<not> cf_pos 0"
 subsubsection\<open>Negation\<close>
 
 fun uminus_1 :: "real_alg_1 \<Rightarrow> real_alg_1" where
-  "uminus_1 (p,l,r) = (let p' = abs_int_poly (poly_uminus p); l' = -r; r' = -l in
-      (p', l', r'))"
+  "uminus_1 (p,l,r) = (abs_int_poly (poly_uminus p), -r, -l)"
 
 lemma uminus_1: assumes x: "invariant_1 x"
   defines y: "y \<equiv> uminus_1 x"
@@ -1235,8 +1226,7 @@ lemma uminus_real_alg: "- (real_of x) = real_of (- x)"
 subsubsection\<open>Inverse\<close>
 
 fun inverse_1 :: "real_alg_1 \<Rightarrow> real_alg_2" where
-  "inverse_1 (p,l,r) = (let p' = abs_int_poly (reflect_poly p); l' = inverse r; r' = inverse l in
-    real_alg_2 (p', l', r'))"
+  "inverse_1 (p,l,r) = real_alg_2 (abs_int_poly (reflect_poly p), inverse r, inverse l)"
 
 lemma invariant_1_2_of_rat: assumes rc: "invariant_1_2 rai" 
   shows "real_of_1 rai \<noteq> of_rat x" 
@@ -2061,7 +2051,6 @@ proof (cases x)
     let ?x = "real_of_1 (p1, l1, r1)"
     let ?y = "real_of_1 (p2, l2, r2)"
     let ?p = "poly_add p1 p2"
-    let ?lr = "root_info.l_r"
     note x = x[unfolded xt]
     note y = y[unfolded yt]
     from x have ax: "p1 represents ?x" unfolding represents_def by (auto elim!: invariant_1E)
@@ -2098,12 +2087,7 @@ subsubsection\<open>Multiplication\<close>
 context
 begin
 private fun mult_rat_1_pos :: "rat \<Rightarrow> real_alg_1 \<Rightarrow> real_alg_2" where
-  "mult_rat_1_pos r1 (p2,l2,r2) = (
-    let p = cf_pos_poly (poly_mult_rat r1 p2);
-      ri = root_info p;
-      cr = root_info.l_r ri;
-      (l,r) = (l2*r1,r2*r1)
-    in real_alg_2 (p, l, r))"
+  "mult_rat_1_pos r1 (p2,l2,r2) = real_alg_2 (cf_pos_poly (poly_mult_rat r1 p2), l2*r1, r2*r1)"
 
 private fun mult_1_pos :: "real_alg_1 \<Rightarrow> real_alg_1 \<Rightarrow> real_alg_2" where
   "mult_1_pos (p1,l1,r1) (p2,l2,r2) =
@@ -2135,8 +2119,6 @@ proof -
   let ?y = "real_of_1 (p2, l2, r2)"
   let ?p = "poly_mult_rat r1 p2"
   let ?mp = "cf_pos_poly ?p"
-  let ?ri = "root_info ?mp"
-  let ?lr = "root_info.l_r"
   note y = y[unfolded yt]
   note yD = invariant_1D[OF y]
   from yD r1 have p: "?p \<noteq> 0" and r10: "r1 \<noteq> 0" by auto
@@ -2149,7 +2131,6 @@ proof -
   from poly_mult_rat_irreducible[OF this _ r10] yD
   have irr: "irreducible ?mp" by simp
   from p have mon: "cf_pos ?mp" by auto
-  note ri = root_info[OF irr]
   obtain l r where lr: "l = l2 * r1" "r = r2 * r1" by force
   from bnd r1 have bnd: "of_rat l \<le> ?x * ?y" "?x * ?y \<le> of_rat r" unfolding lr of_rat_mult by auto
   with rt have rc: "root_cond (?mp,l,r) (?x * ?y)" unfolding root_cond_def by auto
@@ -2178,7 +2159,7 @@ proof -
   have yp2: "p2 represents ?y" using yD unfolding root_cond_def split represents_def by auto
   with irr mon have pc: "poly_cond ?mp" by (auto simp: poly_cond_def cf_pos_def)
   have rc: "invariant_1 (?mp, l, r)" unfolding z using yD(2) pc ur 
-    by (auto simp add: invariant_1_def ur ri mp sgnr sgnl)
+    by (auto simp add: invariant_1_def ur mp sgnr sgnl)
   show ?thesis unfolding z using real_alg_2[OF rc]
     unfolding yt xy unfolding z by simp
 qed
@@ -2194,7 +2175,6 @@ proof -
   let ?y = "real_of_1 (p2, l2, r2)"
   let ?r = "real_of_rat"
   let ?p = "poly_mult p1 p2"
-  let ?lr = "root_info.l_r"
   note x = x[unfolded xt]
   note y = y[unfolded yt]
   from x y have basic: "unique_root (p1, l1, r1)" "poly_cond2 p1" "unique_root (p2, l2, r2)" "poly_cond2 p2" by auto
@@ -2709,7 +2689,6 @@ proof (cases x)
   from * have "?x \<le> of_rat r" by auto
   note iu = initial_upper_bound[OF x0 this]
   let ?p = "poly_nth_root n p"
-  let ?lr = "root_info.l_r"
   from x0 have id: "root n ?x ^ n = ?x" using n real_root_pow_pos by blast
   have rc: "root_cond (?p, ?l, ?r) (root n ?x)"
     using il iu * by (intro root_condI, auto simp: ipoly_nth_root id)
