@@ -73,7 +73,7 @@ proof -
     also have "\<dots> = (\<Sum>f\<in>set(finals g) \<union> {f}. \<d> |vertices f| )"
       using f by simp
     also have "\<dots> \<le> (\<Sum>f\<in>set(finals g'). \<d> |vertices f| )"
-      using f subset by(fastforce intro!: sum_mono3)
+      using f subset by(fastforce intro!: sum_mono2)
     also have "\<dots> = (\<Sum>\<^bsub>f\<in>finals g'\<^esub> \<d> |vertices f| )"
       using dist' by(simp add:finals_def ListSum_conv_sum)
     finally show "(\<Sum>\<^bsub>f\<in>finals g\<^esub> \<d> |vertices f| ) + \<d> |vertices f|

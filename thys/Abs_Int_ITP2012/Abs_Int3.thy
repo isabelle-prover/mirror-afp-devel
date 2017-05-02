@@ -303,7 +303,7 @@ proof(auto simp: m_st_def)
   have "(\<Sum>x\<in>set(dom S). m_ivl (fun S x)) \<le> (\<Sum>x\<in>set(dom S). 2)" (is "?L \<le> _")
     by(rule sum_mono)(simp add:m_ivl_height)
   also have "\<dots> \<le> (\<Sum>x\<in>X. 2)"
-    by(rule sum_mono3[OF assms]) simp
+    by(rule sum_mono2[OF assms]) simp
   also have "\<dots> = 2 * card X" by(simp)
   finally show "?L \<le> \<dots>" .
 qed
@@ -325,7 +325,7 @@ proof(auto simp: m_st_def le_st_def lookup_def split: if_splits)
   also have "\<dots> \<le> (\<Sum>y\<in>?Y\<inter>?X. m_ivl(?f y))"
     by(rule sum_mono)(simp add: 1)
   also have "\<dots> \<le> (\<Sum>y\<in>?X. m_ivl(?f y))"
-    by(simp add: sum_mono3[of "?X" "?Y Int ?X", OF _ Int_lower2])
+    by(simp add: sum_mono2[of "?X" "?Y Int ?X", OF _ Int_lower2])
   finally show "(\<Sum>y\<in>?Y. m_ivl(?g y)) \<le> (\<Sum>x\<in>?X. m_ivl(?f x))" .
 qed
 
@@ -347,7 +347,7 @@ proof-
           using `x:?X` `x:?Y` `\<not> lookup S2 x \<sqsubseteq> ?f x`
           by (metis IntI m_ivl_widen lookup_def)
       qed
-      also have "\<dots> \<le> ?R" by(simp add: sum_mono3[OF _ Int_lower1])
+      also have "\<dots> \<le> ?R" by(simp add: sum_mono2[OF _ Int_lower1])
       finally show ?thesis .
     next
       assume "x ~: ?Y"
@@ -362,7 +362,7 @@ proof-
       also have "\<dots> = (\<Sum>y\<in>insert x (?X\<inter>?Y). m_ivl(?f y))"
         using `x ~: ?Y` by simp
       also have "\<dots> \<le> (\<Sum>x\<in>?X. m_ivl(?f x))"
-        by(rule sum_mono3)(insert `x:?X`, auto)
+        by(rule sum_mono2)(insert `x:?X`, auto)
       finally show ?thesis .
     qed
   } with assms show ?thesis

@@ -1817,7 +1817,7 @@ qed
 subsection \<open>Proof of the main result\<close>
 
 lemma theta_mono: "mono theta"
-  by (auto simp: theta_def [abs_def] intro!: monoI sum_mono3)
+  by (auto simp: theta_def [abs_def] intro!: monoI sum_mono2)
   
 lemma theta_lessE:
   assumes "theta m < theta n" "m \<ge> 1"
