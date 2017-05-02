@@ -3997,6 +3997,25 @@ abstract = Dana Scott's version of Gödel's proof of God's existence is formaliz
 	thus, the formalization is essentially a formalization in HOL.
 notify = lp15@cam.ac.uk, c.benzmueller@fu-berlin.de
 
+[Types_Tableaus_and_Goedels_God]
+title = Types, Tableaus and Gödel’s God in Isabelle/HOL
+author = David Fuenmayor <mailto:davfuenmayor@gmail.com>, Christoph Benzmüller <http://christoph-benzmueller.de>
+topic = Logic
+date = 2017-05-01
+notify = davfuenmayor@gmail.com, c.benzmueller@gmail.com
+abstract =
+  A computer-formalisation of the essential parts of Fitting's
+  textbook "Types, Tableaus and Gödel's God" in
+  Isabelle/HOL is presented. In particular, Fitting's (and
+  Anderson's) variant of the ontological argument is verified and
+  confirmed. This variant avoids the modal collapse, which has been
+  criticised as an undesirable side-effect of Kurt Gödel's (and
+  Dana Scott's) versions of the ontological argument.
+  Fitting's work is employing an intensional higher-order modal
+  logic, which we shallowly embed here in classical higher-order logic.
+  We then utilize the embedded logic for the formalisation of
+  Fitting's argument. (See also the earlier AFP entry ``Gödel's God in Isabelle/HOL''.)
+
 [Tail_Recursive_Functions]
 title = A General Method for the Proof of Theorems on Tail-recursive Functions
 author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>

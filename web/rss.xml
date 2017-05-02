@@ -9,7 +9,26 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>28 Apr 2017 00:00:00 +0000</pubDate>
+    <pubDate>01 May 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>Types, Tableaus and Gödel’s God in Isabelle/HOL</title>
+              <link>https://www.isa-afp.org/entries/Types_Tableaus_and_Goedels_God.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Types_Tableaus_and_Goedels_God.shtml</guid>
+       <dc:creator> David Fuenmayor, Christoph Benzmüller       </dc:creator>
+       <pubDate>01 May 2017 00:00:00 +0000</pubDate>
+       <description>
+A computer-formalisation of the essential parts of Fitting&#39;s
+textbook &#34;Types, Tableaus and Gödel&#39;s God&#34; in
+Isabelle/HOL is presented. In particular, Fitting&#39;s (and
+Anderson&#39;s) variant of the ontological argument is verified and
+confirmed. This variant avoids the modal collapse, which has been
+criticised as an undesirable side-effect of Kurt Gödel&#39;s (and
+Dana Scott&#39;s) versions of the ontological argument.
+Fitting&#39;s work is employing an intensional higher-order modal
+logic, which we shallowly embed here in classical higher-order logic.
+We then utilize the embedded logic for the formalisation of
+Fitting&#39;s argument. (See also the earlier AFP entry ``Gödel&#39;s God in Isabelle/HOL&#39;&#39;.)</description>
+    </item>
     <item>
        <title>Local Lexing</title>
               <link>https://www.isa-afp.org/entries/LocalLexing.shtml</link>
@@ -522,14 +541,6 @@ separata.</description>
        <dc:creator> Jasmin Christian Blanchette, Mathias Fleury, Dmitriy Traytel       </dc:creator>
        <pubDate>12 Nov 2016 00:00:00 +0000</pubDate>
        <description>This Isabelle/HOL formalization introduces a nested multiset datatype and defines Dershowitz and Manna&#39;s nested multiset order. The order is proved well founded and linear. By removing one constructor, we transform the nested multisets into hereditary multisets. These are isomorphic to the syntactic ordinals—the ordinals can be recursively expressed in Cantor normal form. Addition, subtraction, multiplication, and linear orders are provided on this type.</description>
-    </item>
-    <item>
-       <title>Formalization of Knuth–Bendix Orders for Lambda-Free Higher-Order Terms</title>
-              <link>https://www.isa-afp.org/entries/Lambda_Free_KBOs.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Lambda_Free_KBOs.shtml</guid>
-       <dc:creator> Heiko Becker, Jasmin Christian Blanchette, Uwe Waldmann, Daniel Wand       </dc:creator>
-       <pubDate>12 Nov 2016 00:00:00 +0000</pubDate>
-       <description>This Isabelle/HOL formalization defines Knuth–Bendix orders for higher-order terms without lambda-abstraction and proves many useful properties about them. The main order fully coincides with the standard transfinite KBO with subterm coefficients on first-order terms. It appears promising as the basis of a higher-order superposition calculus.</description>
     </item>
   </channel>
 </rss>
