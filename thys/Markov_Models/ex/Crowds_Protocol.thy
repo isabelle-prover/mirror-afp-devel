@@ -634,8 +634,9 @@ proof -
   finally have *: "\<P>(\<omega> in T Start. ?V \<omega>) =
       (p_f * (1 - p_H) * p_j * (card L) / (1 - p_H * p_f)) * (\<Sum>i\<in>I. p_i i) +
       (\<Sum>i\<in>I \<inter> L. p_i i) * (1 - p_H)"
+    using sum_nonneg [of "I \<inter> L" p_i]  sum_nonneg [of "I" p_i]
     by (simp add: mult_ac measure_def sum_distrib_right[symmetric] sum_distrib_left[symmetric]
-                  sum_divide_distrib[symmetric] IJ ennreal_mult[symmetric] sum_nonneg
+                  sum_divide_distrib[symmetric] IJ ennreal_mult[symmetric] 
                   mult_le_one ennreal_plus[symmetric]
              del: ennreal_plus)
   show ?thesis
