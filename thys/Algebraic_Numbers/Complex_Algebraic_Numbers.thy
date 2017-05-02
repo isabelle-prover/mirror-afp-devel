@@ -49,11 +49,11 @@ proof -
   with p show ?thesis by auto
 qed
 
-definition poly_inverse_2i :: "int poly" where
-  "poly_inverse_2i \<equiv> [: 1, 0, 4:]"
+definition poly_2i :: "int poly" where
+  "poly_2i \<equiv> [: 4, 0, 1:]"
   
-lemma represents_inverse_2i: "poly_inverse_2i represents (inverse (2 * \<i>))"
-  unfolding represents_def poly_inverse_2i_def by simp
+lemma represents_2i: "poly_2i represents (2 * \<i>)"
+  unfolding represents_def poly_2i_def by simp
 
 definition root_poly_Re :: "int poly \<Rightarrow> int poly" where
   "root_poly_Re p = cf_pos_poly (poly_mult_rat (inverse 2) (poly_add p p))"
@@ -70,8 +70,8 @@ definition root_poly_Im :: "int poly \<Rightarrow> int poly list" where
   "root_poly_Im p = (let fs = factors_of_int_poly 
     (poly_add p (poly_uminus p))
     in remdups ((if (\<exists> f \<in> set fs. coeff f 0 = 0) then [[:0,1:]] else [])) @ 
-      [ cf_pos_poly (poly_mult poly_inverse_2i f) . f \<leftarrow> fs, coeff f 0 \<noteq> 0])"
-    
+      [ cf_pos_poly (poly_div f poly_2i) . f \<leftarrow> fs, coeff f 0 \<noteq> 0])"
+                          
 lemma represents_root_poly:
   assumes "ipoly p x = 0" and p: "p \<noteq> 0"
   shows "(root_poly_Re p) represents (Re x)"
@@ -96,14 +96,14 @@ proof -
     and appi: "pi represents (x - cnj x)" and irr_pi: "irreducible pi" by auto
   have id: "inverse (2 * \<i>) * (x - cnj x) = of_real (Im x)"
     apply (cases x) by (simp add: complex_split imaginary_unit.ctr legacy_Complex_simps)
-  from represents_inverse_2i have 12: "poly_inverse_2i represents (inverse (2 * \<i>))" by simp
+  from represents_2i have 12: "poly_2i represents (2 * \<i>)" by simp
   have "\<exists> qi \<in> set ?Imp. qi represents (inverse (2 * \<i>) * (x - cnj x))" 
   proof (cases "x - cnj x = 0")
     case False 
-    from represents_irr_non_0[OF irr_pi appi False] have "poly pi 0 \<noteq> 0" .
-    from represents_mult[OF 12 appi this]
+    have "poly poly_2i 0 \<noteq> 0" unfolding poly_2i_def by auto
+    from represents_div[OF appi 12 this]
       represents_irr_non_0[OF irr_pi appi False, unfolded poly_0_coeff_0] pi
-    show ?thesis unfolding root_poly_Im_def Let_def by (auto intro: bexI[of _ "cf_pos_poly (poly_mult poly_inverse_2i pi)"])
+    show ?thesis unfolding root_poly_Im_def Let_def by (auto intro: bexI[of _ "cf_pos_poly (poly_div pi poly_2i)"])
   next
     case True
     hence id2: "Im x = 0" by (simp add: complex_eq_iff)
@@ -135,7 +135,7 @@ definition complex_roots_of_int_poly3 :: "int poly \<Rightarrow> complex list" w
     let
         rp = root_poly_Re p;
         ip = root_poly_Im p;
-        rxs = real_roots_of_int_poly rp; (* this includes factorization, so do not use real_roots_of_rat_poly3 *)
+        rxs = real_roots_of_int_poly rp; (* r_r_o_i_p includes factorization *)
         ixs = (* TODO: is a remdups at this point required to avoid duplicates? *) 
           remdups (filter (op < 0) (concat (map real_roots_of_int_poly ip)));
         rts = [Complex rx ix. rx <- rxs, ix <- ixs];
