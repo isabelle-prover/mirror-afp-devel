@@ -32,6 +32,9 @@ session AWN (AFP) = HOL +
     AWN_Main
     Toy
 
+  theories [document = false]
+    AWN_Term_Graph
+
   document_files
     "mathpartir.sty"
     "root.bib"

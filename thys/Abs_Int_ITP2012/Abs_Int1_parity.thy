@@ -104,7 +104,7 @@ next
 next
   case (4 _ a1 _ a2) thus ?case
   proof(cases a1 a2 rule: parity.exhaust[case_product parity.exhaust])
-  qed (auto simp add:mod_add_eq)
+  qed (auto, presburger)
 qed
 
 text{* Instantiating the abstract interpretation locale requires no more

@@ -690,7 +690,7 @@ proof (rule order_tendstoI)
     then obtain ys' where zs: "zs = ys @ ys'"
       by (auto simp: prefix_def less_eq_list_def)
     with `llist_of zs \<le> xs` have nonneg: "0 \<le> sum_list ys'"
-      using xs by (auto simp: lprefix_conv_lappend sum_list_sum_nth sum_nonneg)
+      using xs by (auto simp: lprefix_conv_lappend sum_list_sum_nth intro: sum_nonneg)
     note `a < sum_list ys`
     also have "sum_list ys \<le> sum_list zs"
       using zs ereal_add_mono[OF order_refl nonneg] by auto
@@ -719,8 +719,8 @@ end
 lemma esum_list_nonneg:
   "(\<And>x. x \<in> lset xs \<Longrightarrow> 0 \<le> x) \<Longrightarrow> 0 \<le> esum_list xs"
   by (rule tendsto_le[OF at'_bot tendsto_esum_list tendsto_const])
-     (auto intro!: eventually_at'_llistI
-           simp: lprefix_conv_lappend sum_list_sum_nth sum_nonneg lfinite_eq_range_llist_of)
+     (auto intro!: eventually_at'_llistI sum_nonneg
+           simp: lprefix_conv_lappend sum_list_sum_nth lfinite_eq_range_llist_of)
 
 lemma esum_list_LCons:
   assumes x: "0 \<le> x" "\<And>x. x \<in> lset xs \<Longrightarrow> 0 \<le> x" shows "esum_list (LCons x xs) = x + esum_list xs"

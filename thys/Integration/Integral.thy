@@ -1766,12 +1766,8 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
             
           also 
           { fix m
-            { fix i assume "i \<in> {..<(m*2^m)}-{0}"
-              hence  "0 \<le> real i / (2::real)^m * \<chi> (A m i) t"
-                by (simp add: characteristic_function_def zero_le_divide_iff)
-            } hence "\<forall>i\<in>{..<(m*2^m)}-{0}. 0 \<le> real i / (2::real)^m * \<chi> (A m i) t"
-              by fast
-            hence "0 \<le> u m t"  by (simp add: u_def sum_nonneg)
+            have "0 \<le> u m t"
+              by (simp add: u_def characteristic_function_def zero_le_divide_iff sum_nonneg)
           }
           hence "0 \<le> u (Suc n) t" .
 
@@ -1825,7 +1821,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
           by blast
       qed
       hence "(\<lambda>n. inverse ((2::real)^n)) \<longlonglongrightarrow> 0"
-        by (rule LIMSEQ_inverse_zero)
+        by (intro LIMSEQ_inverse_zero) auto
       with lim have "(\<lambda>n. u n t + inverse ((2::real)^n)) \<longlonglongrightarrow> c+0"
         by (rule tendsto_add)
       hence "(\<lambda>n. u n t + 1/(2::real)^n) \<longlonglongrightarrow> c"

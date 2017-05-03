@@ -86,7 +86,7 @@ object profile extends isabelle.CI_Profile
     }
 
     def entry_of_session(info: Sessions.Info): Option[String] =
-      if (info.dir.dir.implode == afp_thys.implode)
+      if (info.dir.dir.file == afp_thys.file)
         Some(info.dir.base.implode)
       else
         None

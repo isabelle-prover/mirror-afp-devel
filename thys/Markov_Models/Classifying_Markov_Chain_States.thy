@@ -1969,7 +1969,7 @@ proof -
   have "period C \<noteq> 0"
     unfolding period_eq [OF C' `x \<in> C`]
     using n by (auto simp: period_set_def)
-  moreover have "eventually (\<lambda>m. m * Gcd (period_set x) \<in> (period_set x)) sequentially"
+  have "eventually (\<lambda>m. m * Gcd (period_set x) \<in> (period_set x)) sequentially"
   proof (rule eventually_mult_Gcd)
     show "n \<noteq> 0" "n \<in> period_set x"
       using n by (auto simp add: period_set_def)
@@ -1981,10 +1981,9 @@ proof -
     ultimately show "k + l \<in> period_set x"
       using `0 < l` by (auto simp: period_set_def)
   qed
-  ultimately show "eventually (\<lambda>m. 0 < p x x (m * period C)) sequentially"
-    unfolding period_eq[OF C' `x \<in> C`, symmetric]
-    using eventually_ge_at_top[of 1]
-    by (auto simp add: period_set_def elim!: eventually_elim2)
+  with eventually_ge_at_top[of 1] show "eventually (\<lambda>m. 0 < p x x (m * period C)) sequentially"
+    by eventually_elim 
+       (insert \<open>period C \<noteq> 0\<close> period_eq[OF C' `x \<in> C`, symmetric], auto simp: period_set_def)
 qed
 
 

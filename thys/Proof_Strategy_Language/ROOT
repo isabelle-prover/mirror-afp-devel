@@ -4,6 +4,7 @@ session Proof_Strategy_Language (AFP) = "HOL" +
   options [document = pdf, timeout = 600]
   theories
     PSL
+    Example
   document_files
     "root.tex"
     "root.bib"

@@ -33,6 +33,11 @@ imports
   Unique_Factorization_Poly
 begin
 
+text \<open>For algebraic numbers, it turned out that @{const gcd_int_poly} is not
+  preferable to the default implementation of @{const gcd}, which just implements
+  Collin's primitive remainder sequence.\<close>
+declare gcd_int_poly_code[code_unfold del]
+  
 lemma content_free_imp_unit_iff:
   fixes p :: "'a :: {comm_semiring_1,semiring_no_zero_divisors} poly"
   assumes cf: "content_free p"
@@ -213,7 +218,7 @@ lemma representsI[intro]: "ipoly p x = 0 \<Longrightarrow> p \<noteq> 0 \<Longri
 lemma representsD:
   assumes "p represents x" shows "p \<noteq> 0" and "ipoly p x = 0" using assms unfolding represents_def by auto
 
-lemma representsE[elim]:
+lemma representsE:
   assumes "p represents x" and "p \<noteq> 0 \<Longrightarrow> ipoly p x = 0 \<Longrightarrow> thesis"
   shows thesis using assms unfolding represents_def by auto
 
@@ -221,15 +226,24 @@ lemma represents_imp_degree:
   fixes x :: "'a :: field_char_0"
   assumes "p represents x" shows "degree p \<noteq> 0"
 proof-
-  from assms have "p \<noteq> 0" and px: "ipoly p x = 0" by auto
+  from assms have "p \<noteq> 0" and px: "ipoly p x = 0" by (auto dest:representsD)
   then have "(of_int_poly p :: 'a poly) \<noteq> 0" by auto
   then have "degree (of_int_poly p :: 'a poly) \<noteq> 0" by (fold poly_zero[OF px])
   then show ?thesis by auto
 qed
 
+lemma representsE_full[elim]:
+  assumes rep: "p represents x"
+    and main: "p \<noteq> 0 \<Longrightarrow> ipoly p x = 0 \<Longrightarrow> degree p \<noteq> 0 \<Longrightarrow> thesis"
+  shows thesis
+  by (rule main, insert represents_imp_degree[OF rep] rep, auto elim: representsE)
+
 lemma represents_of_rat[simp]: "p represents (of_rat x) = p represents x" by (auto elim!:representsE)
 lemma represents_of_real[simp]: "p represents (of_real x) = p represents x" by (auto elim!:representsE)
 
+lemma algebraic_iff_represents: "algebraic x \<longleftrightarrow> (\<exists> p. p represents x)"     
+  unfolding algebraic_altdef_ipoly represents_def ..
+    
 lemma represents_irr_non_0:
   assumes irr: "irreducible p" and ap: "p represents x" and x0: "x \<noteq> 0"
   shows "poly p 0 \<noteq> 0"
@@ -249,6 +263,73 @@ text \<open>The polynomial encoding a rational number.\<close>
 
 definition poly_rat :: "rat \<Rightarrow> int poly" where
   "poly_rat x = (case quotient_of x of (n,d) \<Rightarrow> [:-n,d:])"
+
+definition abs_int_poly:: "int poly \<Rightarrow> int poly" where
+  "abs_int_poly p \<equiv> if lead_coeff p < 0 then -p else p"
+
+lemma pos_poly_abs_poly[simp]:
+  shows "lead_coeff (abs_int_poly p) > 0 \<longleftrightarrow> p \<noteq> 0"
+proof-
+  have "p \<noteq> 0 \<longleftrightarrow> lead_coeff p * sgn (lead_coeff p) > 0" by (fold abs_sgn, auto)
+  then show ?thesis by (auto simp: abs_int_poly_def mult.commute)
+qed
+
+lemma abs_int_poly_0[simp]: "abs_int_poly 0 = 0"
+  by (auto simp: abs_int_poly_def)
+
+lemma abs_int_poly_eq_0_iff[simp]: "abs_int_poly p = 0 \<longleftrightarrow> p = 0"
+  by (auto simp: abs_int_poly_def sgn_eq_0_iff)
+
+lemma degree_abs_int_poly[simp]: "degree (abs_int_poly p) = degree p"
+  by (auto simp: abs_int_poly_def sgn_eq_0_iff)
+
+lemma abs_int_poly_dvd[simp]: "abs_int_poly p dvd q \<longleftrightarrow> p dvd q"
+  by (unfold abs_int_poly_def, auto)
+
+(*TODO: move & generalize *)
+lemma (in idom) irreducible_uminus[simp]: "irreducible (-x) \<longleftrightarrow> irreducible x"
+proof-
+  have "-x = -1 * x" by simp
+  also have "irreducible ... \<longleftrightarrow> irreducible x" by (rule irreducible_mult_unit_left, auto)
+  finally show ?thesis.
+qed
+
+lemma irreducible_abs_int_poly[simp]:
+  "irreducible (abs_int_poly p) \<longleftrightarrow> irreducible p"
+  by (unfold abs_int_poly_def, auto)
+
+lemma coeff_abs_int_poly[simp]:
+  "coeff (abs_int_poly p) n = (if lead_coeff p < 0 then - coeff p n else coeff p n)"
+  by (simp add: abs_int_poly_def)
+
+lemma lead_coeff_abs_int_poly[simp]:
+  "lead_coeff (abs_int_poly p) = abs (lead_coeff p)"
+  by auto
+
+lemma ipoly_abs_int_poly_eq_zero_iff[simp]:
+  "ipoly (abs_int_poly p) x = 0 \<longleftrightarrow> ipoly p x = 0"
+  by (auto simp: abs_int_poly_def sgn_eq_0_iff)
+
+lemma abs_int_poly_represents[simp]:
+  "abs_int_poly p represents x \<longleftrightarrow> p represents x" by (auto elim!:representsE)
+
+
+(* TODO: Move *)
+lemma content_pCons[simp]: "content (pCons a p) = gcd a (content p)"
+  by (unfold content_def coeffs_pCons_eq_cCons cCons_def, auto)
+
+lemma content_uminus[simp]:
+  fixes p :: "'a :: ring_gcd poly" shows "content (-p) = content p"
+  by (induct p, auto)
+
+lemma content_free_abs_int_poly[simp]:
+  "content_free (abs_int_poly p) \<longleftrightarrow> content_free p"
+  by (auto simp: abs_int_poly_def)
+
+lemma abs_int_poly_inv[simp]: "smult (sgn (lead_coeff p)) (abs_int_poly p) = p"
+  by (cases "lead_coeff p > 0", auto simp: abs_int_poly_def)
+
+
 
 definition cf_pos :: "int poly \<Rightarrow> bool" where 
   "cf_pos p = (content p = 1 \<and> lead_coeff p > 0)" 
@@ -394,15 +475,15 @@ qed
 
 
 lemma irr_cf_root_free_poly_rat[simp]: "irreducible (poly_rat x)" 
-  "cf_pos (poly_rat x)" "root_free (poly_rat x)"
+  "lead_coeff (poly_rat x) > 0" "content_free (poly_rat x)" "root_free (poly_rat x)"
   "square_free (poly_rat x)"
 proof -
   obtain n d where x: "quotient_of x = (n,d)" by force
   hence id: "poly_rat x = [:-n,d:]" by (auto simp: poly_rat_def)
   from quotient_of_denom_pos[OF x] have d: "d > 0" by auto
   show "root_free (poly_rat x)" unfolding id root_free_def using d by auto
-  show "cf_pos (poly_rat x)" unfolding id cf_pos_def using d quotient_of_coprime[OF x]
-    by (auto simp: content_def)
+  show "lead_coeff (poly_rat x) > 0" "content_free (poly_rat x)"
+    unfolding id cf_pos_def using d quotient_of_coprime[OF x] by (auto simp: content_def)
   from this[unfolded cf_pos_def]
   show irr: "irreducible (poly_rat x)" unfolding id using d by (auto intro!: linear_irreducible_int)
   show "square_free (poly_rat x)"
@@ -442,9 +523,9 @@ lemma cf_pos_poly_represents[simp]: "(cf_pos_poly p) represents x \<longleftrigh
   unfolding represents_def by auto
 
 definition factors_of_int_poly :: "int poly \<Rightarrow> int poly list" where
-  "factors_of_int_poly p = map (cf_pos_poly o fst) (snd (factorize_int_poly p))"
+  "factors_of_int_poly p = map (abs_int_poly o fst) (snd (factorize_int_poly p))"
 
-lemma factors_of_int_poly_const: assumes "degree p = 0"    
+lemma factors_of_int_poly_const: assumes "degree p = 0"
   shows "factors_of_int_poly p = []"
 proof -
   from degree0_coeffs[OF assms] obtain a where p: "p = [: a :]" by auto
@@ -471,14 +552,6 @@ proof (cases "p=0")
     using assms by (simp add:coeffs_def)
 qed auto
 
-lemma degree_normalize[simp]: "degree (normalize (p :: int poly)) = degree p"
-proof(cases "p=0")
-  case False
-  show ?thesis
-    apply (unfold normalize_poly_eq_map_poly) apply (intro degree_map_poly_2)
-    by (metis False div_by_0 div_normalize div_unit_factor leading_coeff_neq_0 unit_factor_eq_0_iff)
-qed auto
-
 lemma degree_of_gcd: "degree (gcd q r) \<noteq> 0 \<longleftrightarrow>
  degree (gcd (of_int_poly q :: 'a :: {field_char_0,euclidean_ring_gcd} poly) (of_int_poly r)) \<noteq> 0"
 proof -
@@ -496,6 +569,7 @@ proof -
   show ?thesis unfolding id by (fold hom_distribs, simp add: gcd_rat_to_gcd_int)
 qed
 
+
 lemma irreducible_cf_pos_poly:
   assumes irr: "irreducible p" and deg: "degree p \<noteq> 0"
   shows "irreducible (cf_pos_poly p)" (is "irreducible ?p")
@@ -509,7 +583,6 @@ proof (unfold irreducible_altdef, intro conjI allI impI)
   with irr[unfolded irreducible_altdef] have "p dvd b \<or> b dvd 1" by auto
   then show "?p dvd b \<or> b dvd 1" by (auto dest: dvd_trans[OF cf_pos_poly_dvd])
 qed
-
 
 locale dvd_preserving_hom = comm_semiring_1_hom +
   assumes hom_eq_mult_hom_imp: "hom x = hom y * hz \<Longrightarrow> \<exists>z. hz = hom z \<and> x = y * z"
@@ -545,14 +618,14 @@ end
 lemma factors_of_int_poly:
   defines "rp \<equiv> ipoly :: int poly \<Rightarrow> 'a :: {euclidean_ring_gcd,field_char_0} \<Rightarrow> 'a"
   assumes "factors_of_int_poly p = qs"
-  shows "\<And> q. q \<in> set qs \<Longrightarrow> cf_pos q \<and> irreducible q \<and> degree q \<le> degree p \<and> degree q \<noteq> 0"
+  shows "\<And> q. q \<in> set qs \<Longrightarrow> irreducible q \<and> lead_coeff q > 0 \<and> degree q \<le> degree p \<and> degree q \<noteq> 0"
   "p \<noteq> 0 \<Longrightarrow> rp p x = 0 \<longleftrightarrow> (\<exists> q \<in> set qs. rp q x = 0)"
   "p \<noteq> 0 \<Longrightarrow> rp p x = 0 \<Longrightarrow> \<exists>! q \<in> set qs. rp q x = 0"
   "distinct qs"
 proof -
   obtain c qis where factt: "factorize_int_poly p = (c,qis)" by force
   from assms[unfolded factors_of_int_poly_def factt]
-  have qs: "qs = map (cf_pos_poly \<circ> fst) (snd (c, qis))"  by auto
+  have qs: "qs = map (abs_int_poly \<circ> fst) (snd (c, qis))" by auto
   note fact = factorize_int_poly(1)[OF factt]
   note fact_mem = factorize_int_poly(2,3)[OF factt]
   have sqf: "square_free_factorization p (c, qis)" by (rule fact(1))
@@ -562,7 +635,7 @@ proof -
   {
     fix q
     assume q: "q \<in> set qs"
-    then obtain r i where qi: "(r,i) \<in> set qis" and qr: "q = cf_pos_poly r" unfolding qs by auto
+    then obtain r i where qi: "(r,i) \<in> set qis" and qr: "q = abs_int_poly r" unfolding qs by auto
     from split_list[OF qi] obtain qis1 qis2 where qis: "qis = qis1 @ (r,i) # qis2" by auto
     have dvd: "r dvd p" unfolding sff' qis dvd_def 
       by (intro exI[of _ "smult c (r ^ i * (\<Prod>(a, i)\<leftarrow>qis1 @  qis2. a ^ Suc i))"], auto)
@@ -570,15 +643,15 @@ proof -
     from qi factt have p: "p \<noteq> 0" by (cases p, auto)
     with dvd have deg: "degree r \<le> degree p" by (metis dvd_imp_degree_le)
     with fact_mem[OF qi] r0
-    show "cf_pos q \<and> irreducible q \<and> degree q \<le> degree p \<and> degree q \<noteq> 0" unfolding qr
-      by (auto intro!:irreducible_cf_pos_poly)
+    show "irreducible q \<and> lead_coeff q > 0 \<and> degree q \<le> degree p \<and> degree q \<noteq> 0"
+      unfolding qr lead_coeff_abs_int_poly by auto
   } note * = this
   show "distinct qs" unfolding distinct_conv_nth 
   proof (intro allI impI)
     fix i j
     assume "i < length qs" "j < length qs" and diff: "i \<noteq> j" 
     hence ij: "i < length qis" "j < length qis" 
-      and id: "qs ! i = cf_pos_poly (fst (qis ! i))" "qs ! j = cf_pos_poly (fst (qis ! j))" unfolding qs by auto    
+      and id: "qs ! i = abs_int_poly (fst (qis ! i))" "qs ! j = abs_int_poly (fst (qis ! j))" unfolding qs by auto    
     obtain qi I where qi: "qis ! i = (qi, I)" by force
     obtain qj J where qj: "qis ! j = (qj, J)" by force    
     from sff(5)[unfolded distinct_conv_nth, rule_format, OF ij diff] qi qj 
@@ -591,7 +664,7 @@ proof -
     from cop(2) i have deg: "degree (qs ! i) \<noteq> 0" by (auto simp: id qi)
     have cop: "coprime (qs ! i) (qs ! j)"
       unfolding id qi qj fst_conv
-      apply (rule coprime_prod[of "[:sgn (lead_coeff qi) * content qi:]" "[:sgn (lead_coeff qj) * content qj:]"])
+      apply (rule coprime_prod[of "[:sgn (lead_coeff qi):]" "[:sgn (lead_coeff qj):]"])
       using cop
       unfolding i j by (auto simp: sgn_eq_0_iff)
     show "qs ! i \<noteq> qs ! j"
@@ -619,12 +692,12 @@ proof -
   finally show iff: "rp p x = 0 \<longleftrightarrow> (\<exists> q \<in> set qs. rp q x = 0)" by auto
   assume "rp p x = 0"
   with iff obtain q where q: "q \<in> set qs" and rtq: "rp q x = 0" by auto
-  then obtain i q' where qi: "(q',i) \<in> set qis" and qq': "q = cf_pos_poly q'" unfolding qs by auto  
+  then obtain i q' where qi: "(q',i) \<in> set qis" and qq': "q = abs_int_poly q'" unfolding qs by auto
   show "\<exists>! q \<in> set qs. rp q x = 0"
   proof (intro ex1I, intro conjI, rule q, rule rtq, clarify)
     fix r
     assume "r \<in> set qs" and rtr: "rp r x = 0"
-    then obtain j r' where rj: "(r',j) \<in> set qis" and rr': "r = cf_pos_poly r'" unfolding qs by auto
+    then obtain j r' where rj: "(r',j) \<in> set qis" and rr': "r = abs_int_poly r'" unfolding qs by auto
     from rtr rtq have rtr: "rp r' x = 0" and rtq: "rp q' x = 0" 
       unfolding rp rr' qq' by auto
     from rtr rtq have "[:-x,1:] dvd ?rp q'" "[:-x,1:] dvd ?rp r'" unfolding rp
@@ -643,8 +716,8 @@ qed
 lemma factors_int_poly_represents:
   fixes x :: "'a :: {field_char_0,euclidean_ring_gcd}"
   assumes p: "p represents x"
-shows "\<exists> q \<in> set (factors_of_int_poly p). q represents x \<and> cf_pos q \<and> irreducible q
-  \<and> degree q \<le> degree p"
+  shows "\<exists> q \<in> set (factors_of_int_poly p).
+    q represents x \<and> irreducible q \<and> lead_coeff q > 0  \<and> degree q \<le> degree p"
 proof -
   from representsD[OF p] have p: "p \<noteq> 0" and rt: "ipoly p x = 0" by auto
   note fact = factors_of_int_poly[OF refl]
@@ -671,71 +744,30 @@ proof-
   show ?thesis by (auto simp: p)
 qed
 
-lemma irreducible_cf_pos_gcd: 
-  assumes ir:"irreducible p" and pm:"cf_pos p"
-  shows "gcd p q \<in> {1,p}"
-proof (cases "degree p = 0")
-  case True
-  then obtain a where p: "p = [:a:]" by (auto dest: degree0_coeffs)
-  from ir pm[unfolded cf_pos_def True]
-  show ?thesis unfolding p by auto
-next
-  case deg: False
-  let ?c = "inverse (rat_of_int (lead_coeff p))"
-  let ?p = "smult ?c (of_int_poly p)"
-  let ?cg = "inverse (rat_of_int (lead_coeff (gcd p q)))"
-  have "yun_wrel q 1 (of_int_poly q)" by (auto simp:yun_wrel_def)
-  have p0: "p \<noteq> 0" using ir by (auto simp:irreducible_def)
-  hence c0:"?c \<noteq> 0" by auto
-  have yun:"yun_rel p (rat_of_int (lead_coeff p)) ?p"
-           "yun_wrel q 1 (of_int_poly q)" "1 \<noteq> (0::rat)"
-           using p0 pm by (auto simp:yun_wrel_def yun_rel_def cf_pos_def)
-  have "rat_of_int (lead_coeff (gcd p q)) \<noteq> 0" using p0 by auto
-  hence yun_gcd:"gcd ?p (of_int_poly q) = smult ?cg (of_int_poly (gcd p q))"
-           "content (gcd p q) = 1" "0 < lead_coeff (gcd p q)"
-  using yun_rel_gcd[OF yun refl,unfolded yun_rel_def yun_wrel_def] by auto
-  { fix q :: "rat poly"
-    assume deg:"degree q \<noteq> 0"
-    hence "q \<noteq> 0" by auto
-    then obtain c q' where q': "q = smult c (of_int_poly q')" "content q' = 1" "degree q' = degree q"
-      using rat_to_normalized_int_poly[of q] by(cases "rat_to_normalized_int_poly q",blast)
-    assume dvd:"q dvd of_int_poly p"
-    from smult_dvd_cancel[OF this[unfolded q']] q'(2-) dvd_poly_int_content_1[OF q'(2),of p]
-    have "\<exists> q'. degree q' = degree q \<and> q' dvd p"  by auto
-  }
-  with irreducible_connect_rev[OF ir deg]
-  have "irreducible\<^sub>d (of_int_poly p::rat poly)"
-    unfolding irreducible\<^sub>d_def by force
-  hence ir:"irreducible\<^sub>d ?p" by(subst irreducible\<^sub>d_smult,auto simp:p0)
-  have pm':"monic ?p" "content p = 1" using pm[unfolded cf_pos_def] by auto
-  note gcd_tangled = monic_irreducible\<^sub>d_gcd[OF pm'(1) ir,of "of_int_poly q"]
-  from gcd_tangled p0 have o0:"of_int_poly (gcd p q) \<noteq> (0::rat poly)" by auto
-  have c1:"gcd p q = [:lead_coeff (gcd p q):] \<Longrightarrow> coprime p q"
-    using content_const[of "lead_coeff (gcd p q)"] yun_gcd(2,3) by simp
-  consider (1) "Polynomial.smult ?cg (of_int_poly (gcd p q)) = 1"
-         | (p) "Polynomial.smult ?cg (of_int_poly (gcd p q)) = ?p"
-    using gcd_tangled[unfolded yun_gcd(1)] by auto
-  thus ?thesis proof(cases)
-    case 1
-    with c1 show ?thesis by (auto simp:smult_inverse_monom[OF o0] of_int_monom)
-  next
-    case p
-    have "yun_rel p (rat_of_int (lead_coeff p)) (gcd ?p (of_int_poly q))"
-      using yun(1)[unfolded] yun_gcd(1)[unfolded p] by auto
-    from yun_rel_same_right[OF yun_rel_gcd[OF yun(1,2) one_neq_zero refl] this]
-    show ?thesis by auto
-  qed
+lemma prime_elem_imp_gcd_eq:
+  fixes x::"'a:: ring_gcd"
+  shows "prime_elem x \<Longrightarrow> gcd x y = normalize x \<or> gcd x y = 1"
+  by (meson gcd_proj1_if_dvd prime_elem_imp_coprime)
+
+lemma irreducible_pos_gcd:
+  fixes p :: "int poly"
+  assumes ir: "irreducible p" and pos: "lead_coeff p > 0" shows "gcd p q \<in> {1,p}"
+proof-
+  from pos have "[:sgn (lead_coeff p):] = 1" by auto
+  with prime_elem_imp_gcd_eq[of p, unfolded prime_elem_iff_irreducible, OF ir, of q]
+  show ?thesis by (auto simp: normalize_poly_def)
 qed
 
-lemma irreducible_cf_pos_gcd_twice: 
-  assumes p: "irreducible p" "cf_pos p" 
-  and q: "irreducible q" "cf_pos q"
+lemma irreducible_pos_gcd_twice:
+  fixes p q :: "int poly"
+  assumes p: "irreducible p" "lead_coeff p > 0"
+  and q: "irreducible q" "lead_coeff q > 0"
   shows "gcd p q = 1 \<or> p = q"
 proof (cases "gcd p q = 1")
   case False note pq = this
   have id: "gcd p q = gcd q p" by (simp add: gcd.commute)
-  have "p = gcd p q" using irreducible_cf_pos_gcd[OF p] pq by force
-  also have "\<dots> = q" using irreducible_cf_pos_gcd[OF q] pq unfolding id by force
+  have "p = gcd p q" using irreducible_pos_gcd[OF p] pq by force
+  also have "\<dots> = q" using irreducible_pos_gcd[OF q] pq unfolding id by force
   finally show ?thesis by auto
 qed simp
 
@@ -776,77 +808,140 @@ qed
 
 lemma algebraic_imp_represents_irreducible_cf_pos:
   assumes "algebraic (x::'a::field_char_0)"
-  shows "\<exists>p. p represents x \<and> irreducible p \<and> cf_pos p"
+  shows "\<exists>p. p represents x \<and> irreducible p \<and> lead_coeff p > 0 \<and> content_free p"
 proof -
   from algebraic_imp_represents_irreducible[OF assms(1)]
   obtain p where px: "p represents x" and irr: "irreducible p" by auto
   let ?p = "cf_pos_poly p"
   from px irr represents_imp_degree
-  have 1: "?p represents x" and 2: "irreducible ?p" and 3: "cf_pos ?p" by (auto intro: irreducible_cf_pos_poly)
-  then show ?thesis by (auto intro: exI[of _ ?p])
+  have 1: "?p represents x" and 2: "irreducible ?p" and 3: "cf_pos ?p"
+    by (auto intro: irreducible_cf_pos_poly)
+  then show ?thesis by (auto intro: exI[of _ ?p] simp: cf_pos_def)
 qed
 
+lemma gcd_of_int_poly: "gcd (of_int_poly f) (of_int_poly g :: 'a :: {field_char_0,euclidean_ring_gcd} poly) =
+  smult (inverse (of_int (lead_coeff (gcd f g)))) (of_int_poly (gcd f g))" 
+proof -
+  let ?ia = "of_int_poly :: _ \<Rightarrow> 'a poly" 
+  let ?ir = "of_int_poly :: _ \<Rightarrow> rat poly" 
+  let ?ra = "map_poly of_rat :: _ \<Rightarrow> 'a poly" 
+  have id: "?ia x = ?ra (?ir x)" for x by (subst map_poly_map_poly, auto)
+  show ?thesis 
+    unfolding id 
+    unfolding of_rat_hom.map_poly_gcd[symmetric]
+    unfolding gcd_rat_to_gcd_int by auto
+qed    
+                                             
 lemma algebraic_imp_represents_unique: 
   fixes x :: "'a :: {field_char_0,euclidean_ring_gcd}"
   assumes "algebraic x"
-  shows "\<exists>! p. p represents x \<and> cf_pos p \<and> irreducible p" (is "Ex1 ?p")
+  shows "\<exists>! p. p represents x \<and> irreducible p \<and> lead_coeff p > 0" (is "Ex1 ?p")
 proof -
   from assms obtain p
-  where p: "?p p" by (auto dest: algebraic_imp_represents_irreducible_cf_pos)
+  where p: "?p p" and cfp: "cf_pos p"
+    by (auto simp: cf_pos_def dest: algebraic_imp_represents_irreducible_cf_pos)
   show ?thesis
   proof (rule ex1I)
     show "?p p" by fact
     fix q
     assume q: "?p q"
-    show "q = p" 
+    then have "q represents x" by auto
+    from represents_imp_degree[OF this] q irreducible_content[of q]
+    have cfq: "cf_pos q" by (auto simp: cf_pos_def)
+    show "q = p"
     proof (rule ccontr)
-      let ?rp = "map_poly of_int :: int poly \<Rightarrow> 'a poly"
-      let ?ri = "map_poly of_int :: int poly \<Rightarrow> rat poly" 
-      let ?rr = "map_poly of_rat :: rat poly \<Rightarrow> 'a poly" 
-      have rpi: "?rp p = ?rr (?ri p)" for p
-        by (subst map_poly_map_poly, auto simp: o_def)
+      let ?ia = "map_poly of_int :: int poly \<Rightarrow> 'a poly"
       assume "q \<noteq> p"
-      with irreducible_cf_pos_gcd_twice[of p q] p q have gcd: "gcd p q = 1" by auto
+      with irreducible_pos_gcd_twice[of p q] p q cfp cfq have gcd: "gcd p q = 1" by auto
       from p q have rt: "ipoly p x = 0" "ipoly q x = 0" unfolding represents_def by auto
-      define c where "c = inverse (rat_of_int (lead_coeff (gcd p q)))" 
-      have rt: "poly (?rp p) x = 0" "poly (?rp q) x = 0" using rt by auto
-      hence "[:-x,1:] dvd ?rp p" "[:-x,1:] dvd ?rp q" 
+      define c :: 'a where "c = inverse (of_int (lead_coeff (gcd p q)))" 
+      have rt: "poly (?ia p) x = 0" "poly (?ia q) x = 0" using rt by auto
+      hence "[:-x,1:] dvd ?ia p" "[:-x,1:] dvd ?ia q" 
         unfolding poly_eq_0_iff_dvd by auto
-      hence "[:-x,1:] dvd gcd (?rp p) (?rp q)" by (rule gcd_greatest)
-      also have "\<dots> = ?rr (gcd (?ri p) (?ri q))" unfolding rpi
-        by (rule of_rat_hom.map_poly_gcd [symmetric])
-      also have "gcd (?ri p) (?ri q) = smult c (?ri (gcd p q))" unfolding gcd_rat_to_gcd_int c_def ..
-      also have "?ri (gcd p q) = 1" by (simp add: gcd)
-      also have "?rr (smult c 1) = [: of_rat c :]" by simp
+      hence "[:-x,1:] dvd gcd (?ia p) (?ia q)" by (rule gcd_greatest)
+      also have "\<dots> = smult c (?ia (gcd p q))" unfolding gcd_of_int_poly c_def ..
+      also have "?ia (gcd p q) = 1" by (simp add: gcd)
+      also have "smult c 1 = [: c :]" by simp
       finally show False using c_def gcd by (simp add: dvd_iff_poly_eq_0)
     qed
   qed
 qed
+  
+corollary irreducible_implies_minimal_degree: 
+  fixes x :: "'a :: {field_char_0,euclidean_ring_gcd}"
+  assumes "irreducible f" and "f represents x" and "g represents x"
+  shows "degree f \<le> degree g"
+proof -
+  from factors_of_int_poly(1)[OF refl, of _ g] factors_of_int_poly(3)[OF refl, of g x] 
+     assms(3) obtain h where *: "h represents x" "degree h \<le> degree g" "irreducible h"
+    by blast
+  let ?af = "abs_int_poly f" 
+  let ?ah = "abs_int_poly h" 
+  from assms have af: "irreducible ?af" "?af represents x" "lead_coeff ?af > 0" by fastforce+
+  from * have ah: "irreducible ?ah" "?ah represents x" "lead_coeff ?ah > 0" by fastforce+
+  from algebraic_imp_represents_unique[of x] af ah have id: "?af = ?ah" 
+    unfolding algebraic_iff_represents by blast  
+  show ?thesis using arg_cong[OF id, of degree] \<open>degree h \<le> degree g\<close> by simp
+qed
 
 lemma ipoly_poly_compose: "ipoly (p \<circ>\<^sub>p q) x = ipoly p (ipoly q x)"
-proof (induct p)
-  case (pCons a p)
-  have "ipoly ((pCons a p) \<circ>\<^sub>p q) x = of_int a + ipoly (q * p \<circ>\<^sub>p q) x" by simp
-  also have "ipoly (q * p \<circ>\<^sub>p q) x = ipoly q x * ipoly (p \<circ>\<^sub>p q) x" by simp
-  also have "ipoly (p \<circ>\<^sub>p q) x = ipoly p (ipoly q x)" unfolding pCons(2) ..
-  also have "of_int a + ipoly q x * \<dots> = ipoly (pCons a p) (ipoly q x)"
-    unfolding map_poly_pCons[OF pCons(1)] by simp
-  finally show ?case .
-qed simp
+  by (simp add: of_int_hom.map_poly_pcompose poly_pcompose)
 
-text \<open>Polynomial for unary minus.\<close>  
-definition poly_uminus :: "'a :: {idom,ring_char_0} poly \<Rightarrow> 'a poly" where
-  "poly_uminus p = p \<circ>\<^sub>p [:0,-1:]"
+text \<open>Polynomial for unary minus.\<close>
 
-lemma degree_poly_uminus[simp]: "degree (poly_uminus p) = degree p"
-  unfolding poly_uminus_def by simp
+definition poly_uminus :: "'a :: ring_1 poly \<Rightarrow> 'a poly" where [code del]:
+  "poly_uminus p \<equiv> \<Sum>i\<le>degree p. monom ((-1)^i * coeff p i) i"
 
-lemma ipoly_uminus[simp]: "ipoly (poly_uminus p) x = ipoly p (-x)"
-  unfolding poly_uminus_def ipoly_poly_compose by simp
+lemma poly_uminus_pCons_pCons[simp]:
+  "poly_uminus (pCons a (pCons b p)) = pCons a (pCons (-b) (poly_uminus p))" (is "?l = ?r")
+proof(cases "p = 0")
+  case False
+  then have deg: "degree (pCons a (pCons b p)) = Suc (Suc (degree p))" by simp
+  show ?thesis
+  by (unfold poly_uminus_def deg sum_atMost_Suc_shift monom_Suc monom_0 sum_pCons_0_commute, simp)
+next
+  case True
+  then show ?thesis by (auto simp add: poly_uminus_def monom_0 monom_Suc)
+qed
 
-lemma poly_uminus_0[simp]: "poly_uminus p = 0 \<longleftrightarrow> p = 0"
-  unfolding poly_uminus_def 
-  by (rule pcompose_eq_0, auto)
+fun poly_uminus_inner :: "'a :: ring_1 list \<Rightarrow> 'a poly"
+where "poly_uminus_inner [] = 0"
+  |   "poly_uminus_inner [a] = [:a:]"
+  |   "poly_uminus_inner (a#b#cs) = pCons a (pCons (-b) (poly_uminus_inner cs))"
+
+lemma poly_uminus_code[code,simp]: "poly_uminus p = poly_uminus_inner (coeffs p)"
+proof-
+  have "poly_uminus (Poly as) = poly_uminus_inner as" for as :: "'a list"
+  proof (induct "length as" arbitrary:as rule: less_induct)
+    case less
+    show ?case
+    proof(cases as)
+      case Nil
+      then show ?thesis by (simp add: poly_uminus_def)
+    next
+      case [simp]: (Cons a bs)
+      show ?thesis
+      proof (cases bs)
+        case Nil
+        then show ?thesis by (simp add: poly_uminus_def monom_0)
+      next
+        case [simp]: (Cons b cs)
+        show ?thesis by (simp add: less)
+      qed
+    qed
+  qed
+  from this[of "coeffs p"]
+  show ?thesis by simp
+qed
+
+lemma poly_uminus_inner_0[simp]: "poly_uminus_inner as = 0 \<longleftrightarrow> Poly as = 0"
+  by (induct as rule: poly_uminus_inner.induct, auto)
+
+lemma degree_poly_uminus_inner[simp]: "degree (poly_uminus_inner as) = degree (Poly as)"
+  by (induct as rule: poly_uminus_inner.induct, auto)
+
+lemma ipoly_uminus_inner[simp]: "ipoly (poly_uminus_inner as) x = ipoly (Poly as) (-x)"
+  by (induct as rule: poly_uminus_inner.induct, auto simp: ring_distribs)
 
 lemma represents_uminus: assumes alg: "p represents x"
   shows "(poly_uminus p) represents (-x)"
@@ -858,92 +953,48 @@ proof -
 qed
 
 
-text \<open>Polynomial for multiplicative inverse.\<close>  
-definition poly_inverse :: "'a :: idom poly \<Rightarrow> 'a poly" where
-  [code del]: "poly_inverse p = (\<Sum> i \<le> degree p. monom (coeff p (degree p - i)) i)"
+lemma content_poly_uminus_inner[simp]:
+  fixes as :: "'a :: ring_gcd list"
+  shows "content (poly_uminus_inner as) = content (Poly as)"
+  by (induct as rule: poly_uminus_inner.induct, auto)
 
-lemma poly_inverse_rev_coeffs[code]: 
-  "poly_inverse p = poly_of_list (rev (coeffs p))"
-proof (cases "p = 0")
-  case True
-  thus ?thesis by (auto simp: poly_inverse_def)
-next
-  case False
-  show ?thesis unfolding poly_of_list_def poly_eq_iff
-  proof 
-    fix n
-    have "coeff (poly_inverse p) n = (if n \<le> degree p then coeff p (degree p - n) else 0)"
-      unfolding poly_inverse_def coeff_sum coeff_monom
-      by (cases "n \<le> degree p", auto, subst sum.remove[of _ n], auto)
-    also have "\<dots> = coeff (Poly (rev (coeffs p))) n"
-      unfolding poly_inverse_def coeff_sum coeff_monom coeff_Poly
-      by (cases "n < length (coeffs p)", 
-        auto simp: nth_default_def length_coeffs_degree[OF False], subst rev_nth,
-        auto simp: length_coeffs_degree[OF False] coeffs_nth[OF False])
-    finally show "coeff (poly_inverse p) n = coeff (Poly (rev (coeffs p))) n" .
-  qed
-qed  
 
-lemma degree_poly_inverse_le: "degree (poly_inverse p) \<le> degree p"
-  unfolding poly_inverse_def 
-  by (rule degree_sum_le, force, rule order_trans[OF degree_monom_le], auto)
+text \<open>Multiplicative inverse is represented by @{const reflect_poly}.\<close>
 
 lemma inverse_pow_minus: assumes "x \<noteq> (0 :: 'a :: field)"
   and "i \<le> n"
   shows "inverse x ^ n * x ^ i = inverse x ^ (n - i)" 
   using assms by (simp add: field_class.field_divide_inverse power_diff power_inverse)
 
-lemma poly_inverse: assumes x: "x \<noteq> (0 :: 'a :: field)"
-  shows "poly (poly_inverse p) x = x ^ (degree p) * poly p (inverse x)" (is "?l = ?r")
+lemma (in inj_idom_hom) reflect_poly_hom:
+  "reflect_poly (map_poly hom p) = map_poly hom (reflect_poly p)"
 proof -
-  from poly_as_sum_of_monoms[of p]
-  have id: "poly p (inverse x) = poly ((\<Sum>x\<le>degree p. monom (coeff p x) x)) (inverse x)" by simp
-  let ?f = "\<lambda> k. poly (monom (coeff p (degree p - k)) k) x"
-  have "?l = (\<Sum>k\<le>degree p. ?f k)"
-    unfolding poly_inverse_def poly_sum by simp 
-  also have "\<dots> = (\<Sum>k \<le> degree p. ?f (degree p - k))"
-    by (subst sum.reindex_cong[of "\<lambda> i. degree p - i" "{..degree p}"], auto simp: inj_on_def)
-     (metis (full_types) atMost_iff diff_diff_cancel diff_le_mono2 diff_zero image_iff le0)
-  also have "\<dots> = (\<Sum>k\<le>degree p. x ^ degree p * poly (monom (coeff p k) k) (inverse x))"
-    using inverse_pow_minus[OF nonzero_imp_inverse_nonzero[OF x]] by (intro sum.cong, auto simp: poly_monom)
-  also have "\<dots> = ?r"
-    unfolding id poly_sum sum_distrib_left by simp
-  finally show ?thesis .
+  obtain xs where xs: "rev (coeffs p) = xs" by auto
+  show ?thesis unfolding reflect_poly_def coeffs_map_poly rev_map
+    xs by (induct xs, auto)
 qed
 
-lemma (in inj_idom_hom) poly_inverse_hom:
-  "poly_inverse (map_poly hom p) = map_poly hom (poly_inverse p)"
-proof -
-  interpret mh: map_poly_inj_idom_hom hom..
-  show ?thesis unfolding poly_inverse_def degree_map_poly by auto
-qed
-
-
-lemma ipoly_inverse: assumes x: "(x :: 'a :: field_char_0) \<noteq> 0" 
-  shows "ipoly (poly_inverse p) x = x ^ (degree p) * ipoly p (inverse x)" (is "?l = ?r")
+lemma ipoly_reflect_poly: assumes x: "(x :: 'a :: field_char_0) \<noteq> 0" 
+  shows "ipoly (reflect_poly p) x = x ^ (degree p) * ipoly p (inverse x)" (is "?l = ?r")
 proof -
   let ?or = "of_int :: int \<Rightarrow> 'a"
   have hom: "inj_idom_hom ?or" ..
   show ?thesis
-    using poly_inverse[OF x, of "map_poly ?or p"] by (simp add: inj_idom_hom.poly_inverse_hom[OF hom])
+    using poly_reflect_poly_nz[OF x, of "map_poly ?or p"] by (simp add: inj_idom_hom.reflect_poly_hom[OF hom])
 qed
-
-lemma poly_inverse_0[simp]: "poly_inverse p = 0 \<longleftrightarrow> p = 0"
-  unfolding poly_inverse_def 
-  by (subst sum_monom_0_iff, force+)
 
 lemma represents_inverse: assumes x: "x \<noteq> 0"
   and alg: "p represents x"
-  shows "(poly_inverse p) represents (inverse x)"
+  shows "(reflect_poly p) represents (inverse x)"
 proof (intro representsI)
   from representsD[OF alg] have "p \<noteq> 0" and rp: "ipoly p x = 0" by auto
-  then show "poly_inverse p \<noteq> 0" by simp
-  show "ipoly (poly_inverse p) (inverse x) = 0" by (subst ipoly_inverse, insert x, auto simp:rp)
+  then show "reflect_poly p \<noteq> 0" by simp
+  show "ipoly (reflect_poly p) (inverse x) = 0" by (subst ipoly_reflect_poly, insert x, auto simp:rp)
 qed
 
 lemma inverse_roots: assumes x: "(x :: 'a :: field_char_0) \<noteq> 0"
-  shows "ipoly (poly_inverse p) x = 0 \<longleftrightarrow> ipoly p (inverse x) = 0"
-  using x by (auto simp: ipoly_inverse)
+  shows "ipoly (reflect_poly p) x = 0 \<longleftrightarrow> ipoly p (inverse x) = 0"
+  using x by (auto simp: ipoly_reflect_poly)
 
 context
   fixes n :: nat
@@ -1018,10 +1069,7 @@ proof
   show False by auto
 qed
 
-lemma poly_uminus_inv[simp]: "poly_uminus (poly_uminus p) = p"
-  unfolding poly_uminus_def
-  by (rule poly_ext, simp add: poly_pcompose)
- 
+
 text \<open>Polynomial for multiplying a rational number with an algebraic number.\<close>  
 
 definition poly_mult_rat_main where 
@@ -1171,7 +1219,7 @@ qed
 lemma add_rat_roots: "ipoly (poly_add_rat r p) x = 0 \<longleftrightarrow> ipoly p (x - of_rat r) = 0"
   unfolding ipoly_add_rat using quotient_of_nonzero by auto
 
-lemma add_rat_represents:
+lemma represents_add_rat:
   assumes "p represents x" shows "(poly_add_rat r p) represents (of_rat r + x)"
   using assms unfolding represents_def ipoly_add_rat by simp
 
@@ -1196,15 +1244,17 @@ lemma irreducible_preservation:
   and y: "q represents y"
   and deg: "degree p \<ge> degree q"
   and f: "\<And> q. q represents y \<Longrightarrow> (f q) represents x \<and> degree (f q) \<le> degree q"
-  and cf: "content q = 1"
+  and cf: "content_free q"
   shows "irreducible q"
 proof (rule ccontr)
-  define pp where "pp = cf_pos_poly p" 
+  define pp where "pp = abs_int_poly p" 
   have dp: "degree p \<noteq> 0" using x by (rule represents_degree)
   have dq: "degree q \<noteq> 0" using y by (rule represents_degree)
-  from cf_pos_poly_main[of p] x deg irreducible_cf_pos_poly[OF irr dp]
+  from dp have p0: "p \<noteq> 0" by auto
+  from x deg irr p0
   have irr: "irreducible pp" and x: "pp represents x" and 
-    deg: "degree pp \<ge> degree q" and cf_pos: "cf_pos pp" unfolding represents_def pp_def by auto
+    deg: "degree pp \<ge> degree q" and cf_pos: "lead_coeff pp > 0"
+    unfolding pp_def lead_coeff_abs_int_poly by (auto intro!: representsI)
   from x have ax: "algebraic x" unfolding algebraic_altdef_ipoly represents_def by blast
   assume "\<not> ?thesis"
   from this irreducible_connect_int[of q] cf have "\<not> irreducible\<^sub>d q" by auto
@@ -1220,7 +1270,7 @@ proof (rule ccontr)
   with r rr obtain r where r: "r represents y" "degree r < degree q" by blast
   from f[OF r(1)] deg r(2) obtain r where r: "r represents x" "degree r < degree pp" by auto
   from factors_int_poly_represents[OF r(1)] r(2) obtain r where 
-    r: "r represents x" "irreducible r" "cf_pos r" and deg: "degree r < degree pp" by force
+    r: "r represents x" "irreducible r" "lead_coeff r > 0" and deg: "degree r < degree pp" by force
   from algebraic_imp_represents_unique[OF ax] r irr cf_pos x have "r = pp" by auto
   with deg show False by auto
 qed
@@ -1242,36 +1292,40 @@ declare irreducible_const_poly_iff [simp]
 
 lemma poly_uminus_irreducible:
   assumes p: "irreducible (p :: int poly)" and deg: "degree p \<noteq> 0"
-  shows "irreducible (cf_pos_poly (poly_uminus p))"
+  shows "irreducible (poly_uminus p)"
 proof-
   from deg_nonzero_represents[OF deg] obtain x :: complex where x: "p represents x" by auto
   from represents_uminus[OF x]
-  have y: "cf_pos_poly (poly_uminus p) represents (- x)" by simp
+  have y: "poly_uminus p represents (- x)" .
   show ?thesis
   proof (rule irreducible_preservation[OF p x y], force)
+    from deg irreducible_imp_content_free[OF p] have "content_free p" by auto
+    then show "content_free (poly_uminus p)" by simp
     fix q
     assume "q represents (- x)"
     from represents_uminus[OF this] have "(poly_uminus q) represents x" by simp
     thus "(poly_uminus q) represents x \<and> degree (poly_uminus q) \<le> degree q" by auto
-  qed (insert p, auto)
+  qed
 qed
 
-lemma poly_inverse_irreducible:
+lemma reflect_poly_irreducible:
   fixes x :: "'a :: {field_char_0,euclidean_ring_gcd}"
   assumes p: "irreducible p" and x: "p represents x" and x0: "x \<noteq> 0"
-  shows "irreducible (cf_pos_poly (poly_inverse p))"
+  shows "irreducible (reflect_poly p)"
 proof -
   from represents_inverse[OF x0 x]
-  have y: "cf_pos_poly (poly_inverse p) represents (inverse x)" by simp
+  have y: "(reflect_poly p) represents (inverse x)" by simp
   from x0 have ix0: "inverse x \<noteq> 0" by auto
   show ?thesis
   proof (rule irreducible_preservation[OF p x y])
+    from x irreducible_imp_content_free[OF p]
+    show "content_free (reflect_poly p)" by (auto simp: content_reflect_poly)
     fix q
     assume "q represents (inverse x)"
-    from represents_inverse[OF ix0 this] have "(poly_inverse q) represents x" by simp
-    with degree_poly_inverse_le
-    show "(poly_inverse q) represents x \<and> degree (poly_inverse q) \<le> degree q" by auto
-  qed (insert p, auto simp: degree_poly_inverse_le)
+    from represents_inverse[OF ix0 this] have "(reflect_poly q) represents x" by simp
+    with degree_reflect_poly_le
+    show "(reflect_poly q) represents x \<and> degree (reflect_poly q) \<le> degree q" by auto
+  qed (insert p, auto simp: degree_reflect_poly_le)
 qed
 
 lemma poly_add_rat_irreducible:
@@ -1279,13 +1333,13 @@ lemma poly_add_rat_irreducible:
   shows "irreducible (cf_pos_poly (poly_add_rat r p))"
 proof -
   from deg_nonzero_represents[OF deg] obtain x :: complex where x: "p represents x" by auto
-  from add_rat_represents[OF x]
+  from represents_add_rat[OF x]
   have y: "cf_pos_poly (poly_add_rat r p) represents (of_rat r + x)" by simp
   show ?thesis
   proof (rule irreducible_preservation[OF p x y], force)
     fix q
     assume "q represents (of_rat r + x)"
-    from add_rat_represents[OF this, of "- r"] have "(poly_add_rat (- r) q) represents x" by (simp add: of_rat_minus)
+    from represents_add_rat[OF this, of "- r"] have "(poly_add_rat (- r) q) represents x" by (simp add: of_rat_minus)
     thus "(poly_add_rat (- r) q) represents x \<and> degree (poly_add_rat (- r) q) \<le> degree q" by auto
   qed (insert p, auto)
 qed

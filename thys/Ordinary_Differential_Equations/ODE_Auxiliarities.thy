@@ -2106,7 +2106,7 @@ lemma
 proof -
   from assms(1)[of t0 t0] assms(2) have "0 \<in> {l .. u}" by auto
   have "integral {t0 .. h} f = integral {t0 .. h} (\<lambda>t. if t \<in> {t0, h} then 0 else f t)"
-    by (rule integral_spike[where s="{t0, h}"]) auto
+    by (rule integral_spike[where S="{t0, h}"]) auto
   also
   {
     fix x
@@ -2122,7 +2122,7 @@ proof -
     apply (safe intro!: integral_eucl_le)
     using \<open>0 \<in> {l .. u}\<close>
     apply (auto intro!: assms
-      intro: integrable_continuous_real  integrable_spike[where s="{t0, h}", OF _ _ f_int]
+      intro: integrable_continuous_real  integrable_spike[where S="{t0, h}", OF _ _ f_int]
       simp: eucl_le[where 'a='a] divide_simps
       split: if_split_asm)
     done

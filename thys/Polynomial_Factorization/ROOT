@@ -1,6 +1,6 @@
 chapter AFP
 
-session Polynomial_Factorization (AFP) = Pre_Polynomial_Factorization + 
+session Polynomial_Factorization (AFP) = Pre_Polynomial_Factorization +
   description {* Algebraic Numbers *}
   options [timeout = 600]
   theories
@@ -8,16 +8,11 @@ session Polynomial_Factorization (AFP) = Pre_Polynomial_Factorization +
     "Missing_List"
     "Precomputation"
     "Order_Polynomial"
-  theories
     "Explicit_Roots"
     "Dvd_Int_Poly"
-  theories
     "Rational_Root_Test"
-  theories
     "Kronecker_Factorization"
-  theories
     "Square_Free_Factorization"
-  theories
     "Rational_Factorization"
   document_files
     "root.bib"

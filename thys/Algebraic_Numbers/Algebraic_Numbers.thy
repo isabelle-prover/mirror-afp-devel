@@ -423,9 +423,17 @@ qed
 
 lemmas poly_y_x_o_poly_lift = o_def[of poly_y_x poly_lift, unfolded poly_y_x_poly_lift]
 
+lemma irreducible_dvd_degree: assumes "(f::'a::field poly) dvd g"
+ "irreducible g"
+ "degree f > 0"
+ shows "degree f = degree g"
+  using assms
+ by (metis irreducible_altdef degree_0 dvd_refl is_unit_field_poly linorder_neqE_nat poly_divides_conv0)
+
 lemma coprime_poly_x_mult_y_poly_lift:
   fixes p q :: "'a :: field_char_0 poly"
-  assumes degp: "degree p > 0" and degq: "degree q > 0" and p_0: "poly p 0 \<noteq> 0"
+  assumes degp: "degree p > 0" and degq: "degree q > 0"
+    and nz: "poly p 0 \<noteq> 0 \<or> poly q 0 \<noteq> 0" 
   shows "coprime (poly_x_mult_y p) (poly_lift q)"
 proof(rule ccontr)
   from degp have p: "\<not> p dvd 1" by (auto simp: dvd_const)
@@ -463,24 +471,50 @@ proof(rule ccontr)
   note this[folded pF,simplified]
   from prime_elem_dvd_prod_mset[OF h[folded prime_elem_iff_irreducible] this]
   obtain f where f: "f \<in># F" and hf: "h dvd poly_y_x (poly_x_mult_y f)" by auto
-  from F f p_0 have f_0: "poly f 0 \<noteq> 0" by auto
-
-  from dvd_trans[OF hr rq] have "h dvd [:q:]" by (simp add: poly_y_x_poly_lift monom_0)
-  from irreducible_dvd_imp_factor[OF this h pG] q0
-  obtain g where g: "g \<in># G" and gh: "[:g:] dvd h" by auto
-  from dvd_trans[OF gh hf] have "[:g:] dvd poly_y_x (poly_x_mult_y f)" using dvd_trans by auto
-  from poly_hom.hom_dvd[OF this]
-  have *: "g dvd poly (poly_y_x (poly_x_mult_y f)) [:0:]" by simp
-  also have "... = [:poly f 0:]" by (intro poly_ext, fold poly2_def, simp add: poly2_poly_x_mult_y)
-  also have "... dvd 1" using f_0 by auto
-  finally have "g dvd 1".
-  with g G show False by (auto elim!: mset_factorsE dest!: irreducible_not_unit)
+  have irrF: "irreducible f" using f F by blast
+    from dvd_trans[OF hr rq] have "h dvd [:q:]" by (simp add: poly_y_x_poly_lift monom_0)
+    from irreducible_dvd_imp_factor[OF this h pG] q0
+    obtain g where g: "g \<in># G" and gh: "[:g:] dvd h" by auto
+    from dvd_trans[OF gh hf] have *: "[:g:] dvd poly_y_x (poly_x_mult_y f)" using dvd_trans by auto
+  show False
+  proof (cases "poly f 0 = 0")
+    case f_0: False
+    from poly_hom.hom_dvd[OF *]
+    have "g dvd poly (poly_y_x (poly_x_mult_y f)) [:0:]" by simp
+    also have "... = [:poly f 0:]" by (intro poly_ext, fold poly2_def, simp add: poly2_poly_x_mult_y)
+    also have "... dvd 1" using f_0 by auto
+    finally have "g dvd 1".
+    with g G show False by (auto elim!: mset_factorsE dest!: irreducible_not_unit)
+  next
+    case True
+    hence "[:0,1:] dvd f" by (simp add: dvd_iff_poly_eq_0)
+    from irreducible_dvd_degree[OF this irrF]
+    have "degree f = 1" by auto
+    from degree1_coeffs[OF this] True obtain c where c: "c \<noteq> 0" and f: "f = [:0,c:]" by auto
+    from g G have irrG: "irreducible g" by auto
+    from poly_hom.hom_dvd[OF *]
+    have "g dvd poly (poly_y_x (poly_x_mult_y f)) 1" by simp
+    also have "\<dots> = f" by (simp add: f poly_x_mult_y_code Let_def c poly_y_x_pCons map_poly_monom poly_monom)
+    also have "\<dots> dvd [:0,1:]" unfolding f dvd_def using c 
+      by (intro exI[of _ "[: inverse c :]"], auto)
+    finally have g01: "g dvd [:0,1:]" .
+    from divides_degree[OF this] irrG have "degree g = 1" by auto
+    from degree1_coeffs[OF this] obtain a b where g: "g = [:b,a:]" and a: "a \<noteq> 0" by auto
+    from g01[unfolded dvd_def] g obtain k where id: "[:0,1:] = g * k" by auto
+    from id have 0: "g \<noteq> 0" "k \<noteq> 0" by auto
+    from arg_cong[OF id, of degree] have "degree k = 0" unfolding degree_mult_eq[OF 0] 
+      unfolding g using a by auto
+    from degree0_coeffs[OF this] obtain kk where k: "k = [:kk:]" by auto
+    from id[unfolded g k] a have "b = 0" by auto
+    hence "poly g 0 = 0" by (auto simp: g)
+    from True this nz \<open>f \<in># F\<close> \<open>g \<in># G\<close> F G show False by auto
+  qed
 qed
 
 lemma poly_div_nonzero:
   fixes p q :: "'a :: field_char_0 poly"
   assumes p0: "p \<noteq> 0" and q0: "q \<noteq> 0" and x: "poly p x = 0" and y: "poly q y = 0"
-      and p_0: "poly p 0 \<noteq> 0"
+      and p_0: "poly p 0 \<noteq> 0 \<or> poly q 0 \<noteq> 0"
   shows "poly_div p q \<noteq> 0"
 proof
   have degp: "degree p > 0" using le_0_eq order_degree order_root p0 x by (metis gr0I)
@@ -519,7 +553,7 @@ lemma ipoly_poly_div:
 
 lemma ipoly_poly_div_nonzero:
   fixes x y :: "'a :: field_char_0"
-  assumes "p \<noteq> 0" and "q \<noteq> 0" and "ipoly p x = 0" and "ipoly q y = 0" and "poly p 0 \<noteq> 0"
+  assumes "p \<noteq> 0" and "q \<noteq> 0" and "ipoly p x = 0" and "ipoly q y = 0" and "poly p 0 \<noteq> 0 \<or> poly q 0 \<noteq> 0"
   shows "poly_div p q \<noteq> 0"
 proof-
   from assms have "(of_int_poly (poly_div p q) :: 'a poly) \<noteq> 0" using of_int_hom.poly_map_poly[of p]
@@ -529,22 +563,21 @@ qed
 
 lemma represents_div:
   fixes x y :: "'a :: field_char_0"
-  assumes "p represents x" and "q represents y" and "poly p 0 \<noteq> 0" and "y \<noteq> 0"
+  assumes "p represents x" and "q represents y" and "poly q 0 \<noteq> 0"
   shows "(poly_div p q) represents (x / y)"
   using assms by (intro representsI ipoly_poly_div ipoly_poly_div_nonzero, auto)
 
 
-
-
 subsection \<open>Multiplication of Algebraic Numbers\<close>
 
-definition poly_mult where "poly_mult p q \<equiv> poly_div p (poly_inverse q)"
+definition poly_mult where "poly_mult p q \<equiv> poly_div p (reflect_poly q)"
 
 lemma represents_mult:
-  assumes px: "p represents x" and qy: "q represents y" and p_0: "poly p 0 \<noteq> 0" and y0: "y \<noteq> 0"
+  assumes px: "p represents x" and qy: "q represents y" and q_0: "poly q 0 \<noteq> 0" 
   shows "(poly_mult p q) represents (x * y)"
 proof-
-  from represents_inverse[OF y0 qy] y0 px p_0
+  from q_0 qy have y0: "y \<noteq> 0" by auto
+  from represents_inverse[OF y0 qy] y0 px q_0
   have "poly_mult p q represents x / (inverse y)"
     unfolding poly_mult_def by (intro represents_div, auto)
   with y0 show ?thesis by (simp add: field_simps)
@@ -577,11 +610,11 @@ next
   case False
   then have x0: "x \<noteq> 0" and y0: "y \<noteq> 0" by auto
   from x y obtain p q
-  where px: "p represents x" and p: "irreducible p" and qy: "q represents y"
+  where px: "p represents x" and irr: "irreducible q" and qy: "q represents y"
     by (auto dest!: algebraic_imp_represents_irreducible)
   show ?thesis
-    using False px represents_irr_non_0[OF p px]
-    by (auto intro!: algebraic_representsI[OF represents_div[OF px qy]])
+    using False px represents_irr_non_0[OF irr qy]
+    by (auto intro!: algebraic_representsI[OF represents_div] qy)
 qed
 
 lemma algebraic_times: "algebraic x \<Longrightarrow> algebraic y \<Longrightarrow> algebraic (x * y)"

@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Abstract-Rewriting" (AFP) = HOL +
+session "Abstract-Rewriting" (AFP) = "HOL-Library" +
   options [timeout = 600]
   theories [document = false]
     "../Regular-Sets/Regexp_Method"

@@ -535,7 +535,7 @@ proof(intro healthy_parts bounded_byI nnegI le_funI, simp_all add:wp_eval)
   finally show "(\<Sum>a\<in>supp (p s). p s a * wp (f a) P s) \<le> b" .
 
   show "0 \<le> (\<Sum>a\<in>supp (p s). p s a * wp (f a) P s)"
-  proof(rule sum_nonneg, clarify, rule mult_nonneg_nonneg)
+  proof(rule sum_nonneg [OF mult_nonneg_nonneg])
     fix x
     from sound show "0 \<le> p s x" by(blast)
     assume "x \<in> supp (p s)" with sP and healthy
@@ -582,7 +582,7 @@ proof(intro nearly_healthyI unitaryI2 bounded_byI nnegI le_funI, simp_all only:w
   also note sub_dist
   finally show "(\<Sum>a\<in>supp (p s). p s a * wlp (f a) P s) \<le> 1" .
   show "0 \<le> (\<Sum>a\<in>supp (p s). p s a * wlp (f a) P s)"
-  proof(rule sum_nonneg, clarify, rule mult_nonneg_nonneg)
+  proof(rule sum_nonneg [OF mult_nonneg_nonneg])
     fix x
     from sound show "0 \<le> p s x" by(blast)
     assume "x \<in> supp (p s)" with uP healthy

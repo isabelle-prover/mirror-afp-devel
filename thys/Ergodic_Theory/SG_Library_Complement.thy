@@ -415,7 +415,7 @@ proof -
         by (auto simp add: algebra_simps divide_simps sgn_real_def)
       also have "... = sgn h * \<bar>h\<bar> powr (p-1)"
         using assms apply (cases "h = 0") apply (auto)
-        by (metis abs_ge_zero powr_divide2 powr_one_gt_zero_iff times_divide_eq_right)
+        by (metis abs_ge_zero powr_diff [symmetric]  powr_one_gt_zero_iff times_divide_eq_right)
       finally show ?thesis by simp
     qed
     ultimately have "(\<lambda>h. \<bar>h\<bar> powr p / h) \<midarrow>0\<rightarrow> 0" by auto

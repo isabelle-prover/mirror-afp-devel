@@ -478,7 +478,7 @@ next
 
     --{* Augmenting the index set as described above. *}
     also have "\<dots> \<le> (\<Sum>S \<in> ?I. \<Sum>T | T \<in> ?I \<and> S \<inter> T \<noteq> {}. prob (?A S \<inter> ?A T))"
-      by (rule sum_mono[OF sum_mono3]) (auto simp: indep measure_nonneg)
+      by (rule sum_mono[OF sum_mono2]) (auto simp: indep measure_nonneg)
 
     --{* So far, we are adding the intersection probabilities over pairs of sets which have a
          nonempty intersection. Since we know that these intersections have at least one element
@@ -705,7 +705,7 @@ next
                 also have "\<dots> = (n powr (2 * ?v - k) / n powr (2 * ?v)) * (p n powr (2 * ?e - max_density H * k) / (p n powr (2 * ?e)))"
                   by simp
                 also have "\<dots> = (n powr (real (2 * ?v - k) - 2 * ?v)) * p n powr ((2 * ?e - max_density H * k) - (2 * ?e))"
-                  by (simp add: powr_divide2)
+                  by (simp add: powr_diff [symmetric] )
                 also have "\<dots> = n powr -real k * p n powr ((2 * ?e - max_density H * k) - (2 * ?e))"
                   apply (rule arg_cong[where y = "- real k"])
                   using k by fastforce

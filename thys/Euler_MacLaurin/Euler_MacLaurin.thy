@@ -52,8 +52,7 @@ proof -
   have "filterlim (\<lambda>x. f (int (nat x))) F at_top"
     by (rule filterlim_compose[OF assms filterlim_nat_sequentially])
   also have "?this \<longleftrightarrow> filterlim f F at_top"
-    using eventually_ge_at_top[of "0::int"]
-    by (intro filterlim_cong refl) (auto elim!: eventually_mono)
+    by (intro filterlim_cong refl eventually_mono [OF eventually_ge_at_top[of "0::int"]]) auto
   finally show ?thesis .
 qed
 
@@ -234,7 +233,7 @@ proof -
       fix I assume "I \<in> ?A"
       then obtain i where i: "i \<in> {a..<b}" "I = {of_int i..of_int (i + 1)}" by auto
       show "(\<lambda>t. pbernpoly n t *\<^sub>R f t) integrable_on I"
-      proof (rule integrable_spike[OF _ ballI])
+      proof (rule integrable_spike)
         show "(\<lambda>t. (t - of_int i - 1/2) *\<^sub>R f t) integrable_on I"
           using i by (auto intro!: integrable_continuous_real continuous_intros)
       next
@@ -260,26 +259,24 @@ proof (cases "\<lceil>a\<rceil> \<le> \<lfloor>b\<rfloor>")
     by (intro integrable_EM_remainder'_int continuous_on_subset[OF assms]) auto
   have B: "(\<lambda>t. pbernpoly n t *\<^sub>R f t) integrable_on ({a..a'})"
   proof (rule integrable_spike)
-    show "\<forall>x\<in>{a..real_of_int a'} - {real_of_int a'}. 
-            pbernpoly n x *\<^sub>R f x = bernpoly n (x - of_int (floor a)) *\<^sub>R f x"
-    proof (intro ballI, goal_cases)
-      case (1 x)
-      hence "x \<ge> a" "x <real_of_int a'" by auto
+    show "pbernpoly n x *\<^sub>R f x = bernpoly n (x - of_int (floor a)) *\<^sub>R f x" 
+         if "x \<in> {a..real_of_int a'} - {real_of_int a'}"for x
+    proof -
+      have "x \<ge> a" "x <real_of_int a'" using that by auto
       with True have "floor x = floor a" unfolding a'_def
         using ceiling_diff_floor_le_1[of a] by (intro floor_unique; linarith) 
-      thus ?case by (simp add: pbernpoly_def frac_def)
+      thus ?thesis by (simp add: pbernpoly_def frac_def)
     qed
   qed (insert *, auto intro!: continuous_intros integrable_continuous_real 
          continuous_on_subset[OF assms])
   have C: "(\<lambda>t. pbernpoly n t *\<^sub>R f t) integrable_on ({b'..b})"
   proof (rule integrable_spike)
-    show "\<forall>x\<in>{real_of_int b'..b} - {real_of_int b'}. 
-            pbernpoly n x *\<^sub>R f x = bernpoly n (x - of_int b') *\<^sub>R f x"
-    proof (intro ballI, goal_cases)
-      case (1 x)
-      hence "x \<le> b" "x > real_of_int b'" by auto
+    show "pbernpoly n x *\<^sub>R f x = bernpoly n (x - of_int b') *\<^sub>R f x"
+         if "x \<in> {real_of_int b'..b} - {real_of_int b'}" for x
+    proof -
+      have "x \<le> b" "x > real_of_int b'" using that by auto
       with True have "floor x = b'" unfolding b'_def by (intro floor_unique; linarith) 
-      thus ?case by (simp add: pbernpoly_def frac_def)
+      thus ?thesis by (simp add: pbernpoly_def frac_def)
     qed
   qed (insert *, auto intro!: continuous_intros integrable_continuous_real 
          continuous_on_subset[OF assms])
@@ -295,14 +292,14 @@ next
     show "(\<lambda>t. bernpoly n (t - floor a) *\<^sub>R f t) integrable_on {a..b}" using *
       by (auto intro!: integrable_continuous_real continuous_intros assms)
   next
-    show "\<forall>x\<in>{a..b} - {}. pbernpoly n x *\<^sub>R f x = bernpoly n (x - floor a) *\<^sub>R f x"
-    proof (intro ballI, goal_cases)
-      case (1 x)
+    show "pbernpoly n x *\<^sub>R f x = bernpoly n (x - floor a) *\<^sub>R f x"
+         if "x \<in> {a..b} - {}" for x
+    proof -
       from * have **: "b < floor a + 1" 
         unfolding ceiling_altdef by (auto split: if_splits simp: le_floor_iff)
-      from 1 have x: "x \<ge> a" "x \<le> b" by simp_all
+      from that have x: "x \<ge> a" "x \<le> b" by simp_all
       with * ** have "floor x = floor a" by linarith
-      thus ?case by (simp add: pbernpoly_def frac_def)
+      thus ?thesis by (simp add: pbernpoly_def frac_def)
     qed
   qed simp_all
 qed
@@ -438,13 +435,12 @@ next
   have "((\<lambda>t. (frac t - 1/2) *\<^sub>R f' t) has_integral d i) {of_int i..of_int (i+1)}"
     if i: "i \<in> {a..<b}" for i
   proof (rule has_integral_spike)
-    show "\<forall>x\<in>{of_int i..of_int (i + 1)} - {of_int (i + 1)}. 
-            (frac x - 1 / 2) *\<^sub>R f' x = (x - of_int i - 1 / 2) *\<^sub>R f' x"
-    proof (intro ballI, goal_cases)
-      case (1 x)
-      hence "x \<ge> of_int i" "x < of_int (i + 1)" by auto
+    show "(frac x - 1 / 2) *\<^sub>R f' x = (x - of_int i - 1 / 2) *\<^sub>R f' x"
+         if "x \<in> {of_int i..of_int (i + 1)} - {of_int (i + 1)}" for x
+    proof -
+      have "x \<ge> of_int i" "x < of_int (i + 1)" using that by auto
       hence "floor x = of_int i" by (subst floor_unique) auto
-      thus ?case by (simp add: frac_def)
+      thus ?thesis by (simp add: frac_def)
     qed
   next
     define h where "h = (\<lambda>x::real. (x - of_int i - 1 / 2) *\<^sub>R f' x)"

@@ -434,22 +434,25 @@ theorem pratt_complete':
   shows "\<exists>c. Prime p \<in> set c \<and> valid_cert c \<and> length c \<le> 6*log 2 p - 4 \<and> (\<forall> x \<in> set c. size_pratt x \<le> 3 * log 2 p)" using assms
 proof (induction p rule: less_induct)
   case (less p)
-  { assume [simp]: "p = 2"
+  from \<open>prime p\<close> have "p > 1" by (rule prime_gt_1_nat)
+  then consider "p = 2" | " p = 3" | "p > 3" by force
+  thus ?case
+  proof cases
+    assume [simp]: "p = 2"
     have "Prime p \<in> set [Prime 2, Triple 2 1 1]" by simp
-    then have ?case by fastforce }
-  moreover
-  { assume [simp]: "p = 3"
+    thus ?case by fastforce
+  next
+    assume [simp]: "p = 3"
     let ?cert = "[Prime 3, Triple 3 2 2, Triple 3 2 1, Prime 2, Triple 2 1 1]"
 
-    have "length ?cert \<le> 6*log 2 p - 4
-          \<longleftrightarrow> 2 powr 9 \<le> 2 powr (log 2 p * 6)" by (simp del: numeral_powr_numeral)
-    also have "\<dots> \<longleftrightarrow> True"
-      by (simp add: powr_powr[symmetric])
-    finally have ?case
-      by (intro exI[where x="?cert"]) (simp add: cong_nat_def)
-  }
-  moreover
-  { assume "p > 3"
+    have "length ?cert \<le> 6*log 2 p - 4 \<longleftrightarrow> 3 \<le> 2 * log 2 3" by simp
+    also have "2 * log 2 3 = log 2 (3 ^ 2 :: real)" by (subst log_nat_power) simp_all
+    also have "\<dots> = log 2 9" by simp
+    also have "3 \<le> log 2 9 \<longleftrightarrow> True" by (subst le_log_iff) simp_all
+    finally show ?case
+      by (intro exI[where x = "?cert"]) (simp add: cong_nat_def)
+  next
+    assume "p > 3"
     have qlp: "\<forall>q \<in> prime_factors (p - 1) . q < p" using `prime p`
       by (metis One_nat_def Suc_pred le_imp_less_Suc lessI less_trans p_in_prime_factorsE prime_gt_1_nat zero_less_diff)
     hence factor_certs:"\<forall>q \<in> prime_factors (p - 1) . (\<exists>c . ((Prime q \<in> set c) \<and> (valid_cert c)
@@ -536,10 +539,8 @@ proof (induction p rule: less_induct)
     hence "Prime p \<in> set (Prime p # c)" "valid_cert (Prime p # c)"
          "(\<forall> x \<in> set (Prime p # c). size_pratt x \<le> 3 * log 2 p)"
     using a `prime p` by (auto simp: Primes.prime_gt_Suc_0_nat)
-    hence ?case using c by blast
-  }
-  moreover have "p\<ge>2" using less by (simp add: prime_ge_2_nat)
-  ultimately show ?case using less by fastforce
+    thus ?case using c by blast
+  qed
 qed
 
 text {*

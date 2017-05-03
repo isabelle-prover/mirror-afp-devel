@@ -98,8 +98,7 @@ lemma norm_pos:
   "\<parallel>v\<parallel> \<ge> 0"
 proof -
   have "\<forall>j. v\<^bsub>j\<^esub>^2 \<ge> 0" unfolding ith_def by auto
-  hence "\<forall>j\<in>{1..(vlen v)}. v\<^bsub>j\<^esub>^2 \<ge> 0" by simp
-  with sum_nonneg have "(\<Sum>j\<in>{1..(vlen v)}. v\<^bsub>j\<^esub>^2) \<ge> 0" .
+  have "(\<Sum>j\<in>{1..(vlen v)}. v\<^bsub>j\<^esub>^2) \<ge> 0" by (simp add: sum_nonneg)
   with real_sqrt_ge_zero have "sqrt (\<Sum>j\<in>{1..(vlen v)}. v\<^bsub>j\<^esub>^2) \<ge> 0" .
   thus ?thesis unfolding norm_def .
 qed
@@ -158,13 +157,11 @@ proof -
       with `vlen x = vlen y` have ny: "n = vlen y" by simp
       {
         txt {* Some preliminary simplification rules. *}
-        have "\<forall>j\<in>{1..n}. x\<^bsub>j\<^esub>^2 \<ge> 0" by simp
-        hence "(\<Sum>j\<in>{1..n}. x\<^bsub>j\<^esub>^2) \<ge> 0" by (rule sum_nonneg)
+        have "(\<Sum>j\<in>{1..n}. x\<^bsub>j\<^esub>^2) \<ge> 0" by (simp add: sum_nonneg)
         hence xp: "(sqrt (\<Sum>j\<in>{1..n}. x\<^bsub>j\<^esub>^2))^2 = (\<Sum>j\<in>{1..n}. x\<^bsub>j\<^esub>^2)"
           by (rule real_sqrt_pow2)
 
-        have "\<forall>j\<in>{1..n}. y\<^bsub>j\<^esub>^2 \<ge> 0" by simp
-        hence "(\<Sum>j\<in>{1..n}. y\<^bsub>j\<^esub>^2) \<ge> 0" by (rule sum_nonneg)
+        have "(\<Sum>j\<in>{1..n}. y\<^bsub>j\<^esub>^2) \<ge> 0" by (simp add: sum_nonneg)
         hence yp: "(sqrt (\<Sum>j\<in>{1..n}. y\<^bsub>j\<^esub>^2))^2 = (\<Sum>j\<in>{1..n}. y\<^bsub>j\<^esub>^2)"
           by (rule real_sqrt_pow2)
 
@@ -248,14 +245,8 @@ proof -
         by (simp only: power2_diff real_sq_exp, auto simp add: ac_simps)
       also have "\<dots> \<ge> 0"
       proof -
-        {
-          fix k::nat
-          have "\<forall>j\<in>{1..n}. (x\<^bsub>k\<^esub>*y\<^bsub>j\<^esub> - x\<^bsub>j\<^esub>*y\<^bsub>k\<^esub>)^2 \<ge> 0" by simp
-          hence "(\<Sum>j\<in>{1..n}. (x\<^bsub>k\<^esub>*y\<^bsub>j\<^esub> - x\<^bsub>j\<^esub>*y\<^bsub>k\<^esub>)^2) \<ge> 0" by (rule sum_nonneg)
-        }
-        hence "\<forall>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (x\<^bsub>k\<^esub>*y\<^bsub>j\<^esub> - x\<^bsub>j\<^esub>*y\<^bsub>k\<^esub>)^2) \<ge> 0" by simp
-        hence "(\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (x\<^bsub>k\<^esub>*y\<^bsub>j\<^esub> - x\<^bsub>j\<^esub>*y\<^bsub>k\<^esub>)^2)) \<ge> 0"
-          by (rule sum_nonneg)
+        have "(\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (x\<^bsub>k\<^esub>*y\<^bsub>j\<^esub> - x\<^bsub>j\<^esub>*y\<^bsub>k\<^esub>)^2)) \<ge> 0"
+          by (simp add: sum_nonneg)
         thus ?thesis by simp
       qed
       finally show "(\<parallel>x\<parallel>*\<parallel>y\<parallel>)^2 - \<bar>x\<cdot>y\<bar>^2 \<ge> 0" .

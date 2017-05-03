@@ -259,7 +259,7 @@ private definition I :: "nat \<Rightarrow> real" where
 
 private lemma has_integral_I0: "((\<lambda>x. x powr (-(1/2)) * sqrt (4 - x)) has_integral 2*pi) {0..4}"
 proof -
-  have "\<forall>x\<in>{0..4}-{}. x powr (-(1/2)) * sqrt (4 - x) = sqrt ((4 - x) / x)"
+  have "\<And>x. x\<in>{0..4}-{} \<Longrightarrow> x powr (-(1/2)) * sqrt (4 - x) = sqrt ((4 - x) / x)"
     by (auto simp: powr_minus field_simps powr_half_sqrt real_sqrt_divide)
   thus ?thesis by (rule has_integral_spike[OF negligible_empty _ catalan_aux_integral])
 qed

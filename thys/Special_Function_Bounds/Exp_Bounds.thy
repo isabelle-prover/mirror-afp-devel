@@ -45,7 +45,7 @@ proof -
         \<le> exp (x/3) ^ 3"
     by (metis power_mono_odd odd_numeral exp_lower_taylor_3)
  also have "... = exp x"
-   by (simp add: exp_real_of_nat_mult [symmetric])
+   by (simp add: exp_of_nat_mult [symmetric])
  finally show ?thesis .
 qed
 
@@ -106,7 +106,7 @@ proof -
     apply (sos "((R<1 + ((R<1 * ((R<1777/32 * [~539/3554*x + 1]^2) + (R<907/227456 * [x]^2))) + (((A<0 * R<1) * (R<25/1024 * [1]^2)) + ((A<=0 * R<1) * ((R<49/32 * [~2/49*x + 1]^2) + (R<45/1568 * [x]^2)))))))")
     done
   also have "... = inverse (exp x)"
-    by (simp add: exp_real_of_nat_mult [symmetric] exp_minus [symmetric])
+    by (simp add: exp_of_nat_mult [symmetric] exp_minus [symmetric])
   finally have 2: "(-(x^3) + 12*x^2 - 96*x + 384)^4 / 21743271936 \<le> inverse (exp x)" .
   have "12 * x\<^sup>2 - x ^ 3 - 96 * x + 384 \<noteq> 0" using assms
     by (sos "((R<1 + (([~25/32] * A=0) + ((R<1 * ((R<1777/32 * [~539/3554*x + 1]^2) + (R<907/227456 * [x]^2))) + ((A<=0 * R<1) * ((R<49/32 * [~2/49*x + 1]^2) + (R<45/1568 * [x]^2)))))))")

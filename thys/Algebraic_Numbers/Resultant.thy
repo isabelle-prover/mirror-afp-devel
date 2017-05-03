@@ -990,8 +990,6 @@ lemma resultant_zero_imp_common_factor:
   unfolding neq0_conv[symmetric]
 proof -
   { assume degp: "degree p > 0" and degq: "degree q > 0"
-    have p0: "p \<noteq> 0" using degp by auto
-    have q0: "q \<noteq> 0" using degq by auto
     assume cop: "coprime p q"
     obtain p' q' where "p' * p + q' * q = 0"
       and p': "degree p' < degree q" and q': "degree q' < degree p"
@@ -999,7 +997,7 @@ proof -
       using resultant_as_nonzero_poly[OF degp degq] r0 by auto
     hence "p' * p = - q' * q" by (simp add: eq_neg_iff_add_eq_0)
     
-    from some_gcd.coprime_mult_cross_dvd[OF cop this p0 q0]
+    from some_gcd.coprime_mult_cross_dvd[OF cop this]
     have "p dvd q'" by auto
     from dvd_imp_degree_le[OF this q'0]
     have "degree p \<le> degree q'" by auto
