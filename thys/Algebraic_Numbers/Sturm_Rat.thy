@@ -110,13 +110,13 @@ proof -
   qed
 qed
   
-lemma of_rat_of_int_poly: "real_of_rat_poly (of_int_poly p) = real_of_int_poly p" 
-    by (subst map_poly_map_poly, auto simp: o_def)
+lemma of_rat_of_int_poly: "map_poly of_rat (of_int_poly p) = of_int_poly p" 
+  by (subst map_poly_map_poly, auto simp: o_def)
   
-lemma square_free_real_of_int_poly: assumes "square_free p" 
-  shows "square_free (real_of_int_poly p)" 
+lemma square_free_of_int_poly: assumes "square_free p" 
+  shows "square_free (of_int_poly p :: 'a :: {euclidean_ring_gcd, field_char_0} poly)" 
 proof - 
-  have "square_free (real_of_rat_poly (of_int_poly p))"
+  have "square_free (map_poly of_rat (of_int_poly p) :: 'a poly)"
     unfolding of_rat_hom.square_free_map_poly by (rule square_free_int_rat[OF assms])
   thus ?thesis unfolding of_rat_of_int_poly .
 qed
@@ -124,7 +124,7 @@ qed
 lemma count_roots_interval_rat: assumes sf: "square_free p"
   shows "root_info_cond (count_roots_interval_rat p) p"
 proof -
-  from sf have sf: "square_free (real_of_int_poly p)" by (rule square_free_real_of_int_poly)
+  from sf have sf: "square_free (real_of_int_poly p)" by (rule square_free_of_int_poly)
   from sf have p: "p \<noteq> 0" unfolding square_free_def by auto
   show ?thesis
   using count_roots_interval_sf_rat[OF p]
@@ -234,14 +234,14 @@ lemma count_roots_interval_rat_code[code]:
     in Root_Info 
       (\<lambda> a b. sign_changes_rat ps a - sign_changes_rat ps b + (if poly rp a = 0 then 1 else 0))
       (\<lambda> a. sign_changes_neg_number_rootat ps - sign_changes_rat ps a))"
-  unfolding count_roots_interval_rat_def Let_def count_roots_interval_def split of_rat_of_int_poly[symmetric]
+  unfolding count_roots_interval_rat_def Let_def count_roots_interval_def split of_rat_of_int_poly[symmetric, where 'a = real]
     sturm_rat sign_changes_rat 
     by (simp add: sign_changes_neg_number_rootat)
 
 lemma count_roots_rat_code[code]:
   "count_roots_rat p = (let rp = map_poly rat_of_int p in if p = 0 then 0 else let ps = sturm_rat rp
     in sign_changes_neg_number_rootat ps - sign_changes_number_rootat ps)"
-  unfolding count_roots_rat_def Let_def sturm_rat count_roots_code of_rat_of_int_poly[symmetric]
+  unfolding count_roots_rat_def Let_def sturm_rat count_roots_code of_rat_of_int_poly[symmetric, where 'a = real]
     sign_changes_neg_number_rootat sign_changes_number_rootat
   by simp
 

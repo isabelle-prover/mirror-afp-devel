@@ -1,5 +1,6 @@
 (*  
-    Author:      René Thiemann 
+    Author:      Sebastiaan Joosten 
+                 René Thiemann
                  Akihisa Yamada
     License:     BSD
 *)
@@ -21,6 +22,7 @@ imports
   Compare_Complex
   "../Jordan_Normal_Form/Char_Poly"  
   "../Berlekamp_Zassenhaus/Code_Abort_Gcd"
+  Interval_Arithmetic
 begin
 
 subsection \<open>Complex Roots\<close>
@@ -118,9 +120,213 @@ proof -
   show "\<exists> qi \<in> set ?Imp. qi represents (Im x)" by auto 
 qed
 
+hide_const (open) eq
+
+primrec remdups_gen :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list" where
+  "remdups_gen eq [] = []"
+| "remdups_gen eq (x # xs) = (if (\<exists> y \<in> set xs. eq x y) then 
+     remdups_gen eq xs else x # remdups_gen eq xs)"
+
+  
+lemma real_of_3_remdups_equal_3[simp]: "real_of_3 ` set (remdups_gen equal_3 xs) = real_of_3 ` set xs" 
+  by (induct xs, auto simp: equal_3)
+  
+lemma distinct_remdups_equal_3: "distinct (map real_of_3 (remdups_gen equal_3 xs))"
+  by (induct xs, auto, auto simp: equal_3)
+  
 text \<open>Determine complex roots of a polynomial, 
    intended for polynomials of degree 3 or higher,
    for lower degree polynomials use @{const roots1} or @{const croots2}\<close>
+  
+lemma real_of_3_code [code]: "real_of_3 x = real_of (Real_Alg_Quotient x)" 
+  by (transfer, auto)
+    
+definition "real_parts_3 p = roots_of_3 (root_poly_Re p)" 
+  
+definition "pos_imaginary_parts_3 p = 
+  remdups_gen equal_3 (filter (\<lambda> x. sgn_3 x = 1) (concat (map roots_of_3 (root_poly_Im p))))" 
+
+lemma real_parts_3: assumes p: "p \<noteq> 0" and "ipoly p x = 0" 
+  shows "Re x \<in> real_of_3 ` set (real_parts_3 p)" 
+  unfolding real_parts_3_def using represents_root_poly(1)[OF assms(2,1)]
+    roots_of_3(1) unfolding represents_def by auto
+    
+lemma distinct_real_parts_3: "distinct (map real_of_3 (real_parts_3 p))" 
+  unfolding real_parts_3_def using roots_of_3(2) .
+
+lemma pos_imaginary_parts_3: assumes p: "p \<noteq> 0" and "ipoly p x = 0" and "Im x > 0" 
+  shows "Im x \<in> real_of_3 ` set (pos_imaginary_parts_3 p)" 
+proof -
+  from represents_root_poly(2)[OF assms(2,1)] obtain q where 
+    q: "q \<in> set (root_poly_Im p)" "q represents Im x" by auto
+  from roots_of_3(1)[of q] have "Im x \<in> real_of_3 ` set (roots_of_3 q)" using q
+    unfolding represents_def by auto
+  then obtain i3 where i3: "i3 \<in> set (roots_of_3 q)" and id: "Im x = real_of_3 i3" by auto
+  from \<open>Im x > 0\<close> have "sgn (Im x) = 1" by simp
+  hence sgn: "sgn_3 i3 = 1" unfolding id by (metis of_rat_eq_1_iff sgn_3)
+  show ?thesis unfolding pos_imaginary_parts_3_def real_of_3_remdups_equal_3 id
+    using sgn i3 q(1) by auto
+qed
+  
+lemma distinct_pos_imaginary_parts_3: "distinct (map real_of_3 (pos_imaginary_parts_3 p))" 
+  unfolding pos_imaginary_parts_3_def by (rule distinct_remdups_equal_3)
+
+lemma remdups_gen_subset: "set (remdups_gen eq xs) \<subseteq> set xs" 
+  by (induct xs, auto)
+    
+lemma positive_pos_imaginary_parts_3: assumes "x \<in> set (pos_imaginary_parts_3 p)"
+  shows "0 < real_of_3 x" 
+proof -
+  from set_mp[OF remdups_gen_subset assms[unfolded pos_imaginary_parts_3_def]]
+  have "sgn_3 x = 1" by auto
+  thus ?thesis using sgn_3[of x] by (simp add: sgn_1_pos)
+qed
+    
+definition "pair_to_complex ri \<equiv> case ri of (r,i) \<Rightarrow> Complex (real_of_3 r) (real_of_3 i)" 
+  
+fun get_bounds_2 :: "real_alg_2 \<Rightarrow> real_itvl" where
+  "get_bounds_2 (Irrational n (p,l,r)) = Interval l r" 
+| "get_bounds_2 (Rational r) = Interval r r" 
+
+lemma get_bounds_2: assumes "invariant_2 x" "get_bounds_2 x = Interval l r"
+  shows "of_rat l \<le> real_of_2 x \<and> real_of_2 x \<le> of_rat r" 
+proof (cases x)
+  case (Irrational n plr)
+  with assms obtain p where plr: "plr = (p,l,r)" by (cases plr, auto)
+  from assms Irrational plr have inv1: "invariant_1 (p,l,r)" 
+    and id: "real_of_2 x = real_of_1 (p,l,r)" by auto
+  show ?thesis unfolding id using invariant_1D(1)[OF inv1] by auto
+qed (insert assms, auto)
+  
+
+lift_definition get_bounds_3 :: "real_alg_3 \<Rightarrow> real_itvl" is get_bounds_2 .
+
+lemma get_bounds_3: assumes "get_bounds_3 x = Interval l r"
+  shows "of_rat l \<le> real_of_3 x" "real_of_3 x \<le> of_rat r" 
+  using assms by (atomize(full), transfer, insert get_bounds_2, auto)
+
+fun tighten_bounds_2 :: "real_alg_2 \<Rightarrow> real_alg_2" where
+  "tighten_bounds_2 (Irrational n (p,l,r)) = (case tighten_poly_bounds p l r (sgn (ipoly p r))
+    of (l',r',_) \<Rightarrow> Irrational n (p,l',r'))" 
+| "tighten_bounds_2 (Rational r) = Rational r" 
+
+lemma tighten_bounds_2: assumes inv: "invariant_2 x" 
+  shows "real_of_2 (tighten_bounds_2 x) = real_of_2 x" "invariant_2 (tighten_bounds_2 x)" 
+  "get_bounds_2 x = Interval l r \<Longrightarrow>
+   get_bounds_2 (tighten_bounds_2 x) = Interval l' r' \<Longrightarrow> r' - l' = (r-l) / 2" 
+proof (atomize(full), cases x)
+  case (Irrational n plr)
+  show "real_of_2 (tighten_bounds_2 x) = real_of_2 x \<and>
+       invariant_2 (tighten_bounds_2 x) \<and>
+       (get_bounds_2 x = Interval l r \<longrightarrow>
+        get_bounds_2 (tighten_bounds_2 x) = Interval l' r' \<longrightarrow> r' - l' = (r - l) / 2)"
+  proof -
+    obtain p l r where plr: "plr = (p,l,r)" by (cases plr, auto)
+    let ?tb = "tighten_poly_bounds p l r (sgn (ipoly p r))" 
+    obtain l' r' sr' where tb: "?tb = (l',r',sr')" by (cases ?tb, auto)
+    have id: "tighten_bounds_2 x = Irrational n (p,l',r')" unfolding Irrational plr
+      using tb by auto
+    from inv[unfolded Irrational plr] have inv: "invariant_1_2 (p, l, r)"
+      "n = card {y. y \<le> real_of_1 (p, l, r) \<and> ipoly p y = 0}" by auto
+    have rof: "real_of_2 x = real_of_1 (p, l, r)" 
+      "real_of_2 (tighten_bounds_2 x) = real_of_1 (p, l', r')" using Irrational plr id by auto
+    from inv have inv1: "invariant_1 (p, l, r)" and "poly_cond2 p" by auto
+    hence rc: "\<exists>!x. root_cond (p, l, r) x" "poly_cond2 p" by auto
+    note tb' = tighten_poly_bounds[OF tb rc refl]
+    have eq: "real_of_1 (p, l, r) = real_of_1 (p, l', r')" using tb' inv1
+      using invariant_1_sub_interval(2) by presburger
+    from inv1 tb' have "invariant_1 (p, l', r')" by (metis invariant_1_sub_interval(1))
+    hence inv2: "invariant_2 (tighten_bounds_2 x)" unfolding id using inv eq by auto
+    thus ?thesis unfolding rof eq unfolding id unfolding Irrational plr using tb' by auto
+  qed
+qed auto
+
+lift_definition tighten_bounds_3 :: "real_alg_3 \<Rightarrow> real_alg_3" is tighten_bounds_2
+  using tighten_bounds_2 by auto
+    
+lemma tighten_bounds_3:  
+  "real_of_3 (tighten_bounds_3 x) = real_of_3 x"  
+  "get_bounds_3 x = Interval l r \<Longrightarrow>
+   get_bounds_3 (tighten_bounds_3 x) = Interval l' r' \<Longrightarrow> r' - l' = (r-l) / 2" 
+  by (transfer, insert tighten_bounds_2, auto)+
+    
+partial_function (tailrec) filter_list_length 
+  :: "('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> 'a list \<Rightarrow> 'a list" where
+  [code]: "filter_list_length f p n xs = (let ys = filter p xs 
+     in if length ys = n then ys else
+     filter_list_length f p n (map f ys))"
+
+lemma filter_list_length: assumes "length (filter P xs) = n"
+  and "\<And> i x. x \<in> set xs \<Longrightarrow> P x \<Longrightarrow> p ((f ^^ i) x)" 
+  and "\<And> x. x \<in> set xs \<Longrightarrow> \<not> P x \<Longrightarrow> \<exists> i. \<not> p ((f ^^ i) x)" 
+  and g: "\<And> x. g (f x) = g x"
+  and P: "\<And> x. P (f x) = P x" 
+shows "map g (filter_list_length f p n xs) = map g (filter P xs)" 
+proof -
+  from assms(3) have "\<forall> x. \<exists> i. x \<in> set xs \<longrightarrow> \<not> P x \<longrightarrow> \<not> p ((f ^^ i) x)" 
+    by auto
+  from choice[OF this] obtain i where i: "\<And> x. x \<in> set xs \<Longrightarrow> \<not> P x \<Longrightarrow> \<not> p ((f ^^ (i x)) x)"  
+    by auto
+  define m where "m = max_list (map i xs)" 
+  have m: "\<And> x. x \<in> set xs \<Longrightarrow> \<not> P x \<Longrightarrow> \<exists> i \<le> m. \<not> p ((f ^^ i) x)"
+    using max_list[of _ "map i xs", folded m_def] i by auto
+  show ?thesis using assms(1-2) m
+  proof (induct m arbitrary: xs rule: less_induct)
+    case (less m xs)
+    define ys where "ys = filter p xs"       
+    have xs_ys: "filter P xs = filter P ys" unfolding ys_def filter_filter
+      by (rule filter_cong[OF refl], insert less(3)[of _ 0], auto)    
+    have "filter (P \<circ> f) ys = filter P ys" using P unfolding o_def by auto
+    hence id3: "filter P (map f ys) = map f (filter P ys)" unfolding filter_map by simp      
+    hence id2: "map g (filter P (map f ys)) = map g (filter P ys)" by (simp add: g)
+    show ?case 
+    proof (cases "length ys = n")
+      case True
+      hence id: "filter_list_length f p n xs = ys" unfolding ys_def 
+        filter_list_length.simps[of _ _ _ xs] Let_def by auto 
+      show ?thesis using True unfolding id xs_ys using less(2)
+        by (metis filter_id_conv length_filter_less less_le xs_ys) 
+    next
+      case False
+      {
+        assume "m = 0" 
+        from less(4)[unfolded this] have Pp: "x \<in> set xs \<Longrightarrow> \<not> P x \<Longrightarrow> \<not> p x" for x by auto
+        with xs_ys False[folded less(2)] have False
+          by (metis (mono_tags, lifting) filter_True mem_Collect_eq set_filter ys_def)
+      } note m0 = this
+      then obtain M where mM: "m = Suc M" by (cases m, auto)
+      hence m: "M < m" by simp
+      from False have id: "filter_list_length f p n xs = filter_list_length f p n (map f ys)" 
+        unfolding ys_def filter_list_length.simps[of _ _ _ xs] Let_def by auto
+      show ?thesis unfolding id xs_ys id2[symmetric]
+      proof (rule less(1)[OF m])
+        fix y
+        assume "y \<in> set (map f ys)" 
+        then obtain x where x: "x \<in> set xs" "p x" and y: "y = f x" unfolding ys_def by auto
+        {
+          assume "\<not> P y"
+          hence "\<not> P x" unfolding y P .
+          from less(4)[OF x(1) this] obtain i where i: "i \<le> m" and p: "\<not> p ((f ^^ i) x)" by auto
+          with x obtain j where ij: "i = Suc j" by (cases i, auto)
+          with i have j: "j \<le> M" unfolding mM by auto
+          have "\<not> p ((f ^^ j) y)" using p unfolding ij y funpow_Suc_right by simp
+          thus "\<exists>i\<le> M. \<not> p ((f ^^ i) y)" using j by auto
+        }
+        {
+          fix i
+          assume "P y" 
+          hence "P x" unfolding y P .
+          from less(3)[OF x(1) this, of "Suc i"]
+          show "p ((f ^^ i) y)" unfolding y funpow_Suc_right by simp
+        }
+      next
+        show "length (filter P (map f ys)) = n" unfolding id3 length_map using xs_ys less(2) by auto
+      qed
+    qed
+  qed
+qed
+
+
 definition complex_roots_of_int_poly3 :: "int poly \<Rightarrow> complex list" where
   "complex_roots_of_int_poly3 p \<equiv> let n = degree p; 
     rrts = real_roots_of_int_poly p;
@@ -128,18 +334,18 @@ definition complex_roots_of_int_poly3 :: "int poly \<Rightarrow> complex list" w
     crts = map (\<lambda> r. Complex r 0) rrts
     in 
     if n = nr then crts 
-    else if n - nr = 2 then 
+    else let nr_crts = n - nr in if nr_crts = 2 then 
     let pp = real_of_int_poly p div (prod_list (map (\<lambda> x. [:-x,1:]) rrts));
         cpp = map_poly (\<lambda> r. Complex r 0) pp
       in crts @ croots2 cpp else
     let
-        rp = root_poly_Re p;
-        ip = root_poly_Im p;
-        rxs = real_roots_of_int_poly rp; (* r_r_o_i_p includes factorization *)
-        ixs = (* TODO: is a remdups at this point required to avoid duplicates? *) 
-          remdups (filter (op < 0) (concat (map real_roots_of_int_poly ip)));
-        rts = [Complex rx ix. rx <- rxs, ix <- ixs];
-        crts' = filter (\<lambda> c. ipoly p c = 0) rts
+        nr_pos_crts = nr_crts div 2;
+        rxs = real_parts_3 p;
+        ixs = pos_imaginary_parts_3 p;
+        rts = [(rx, ix). rx <- rxs, ix <- ixs];
+        crts' = map pair_to_complex 
+           (filter_list_length (map_prod tighten_bounds_3 tighten_bounds_3) 
+              (\<lambda> (r, i). zero_in_complex_itvl (ipoly_complex_itvl p (Complex_Interval (get_bounds_3 r) (get_bounds_3 i)))) nr_pos_crts rts)
     in crts @ crts' @ map cnj crts'"
 
 definition complex_roots_of_int_poly_all :: "int poly \<Rightarrow> complex list" where
@@ -148,9 +354,86 @@ definition complex_roots_of_int_poly_all :: "int poly \<Rightarrow> complex list
     else if n = 1 then [roots1 (map_poly of_int p)] else if n = 2 then croots2 (map_poly of_int p)
     else [])"
 
-lemma complex_roots_of_int_poly3: assumes p: "p \<noteq> 0" 
+lemma in_real_itvl_get_bounds_tighten: "in_real_itvl (get_bounds_3 ((tighten_bounds_3 ^^ n) x)) (real_of_3 x)" 
+proof (induct n arbitrary: x)
+  case 0
+  thus ?case unfolding in_real_itvl_def using get_bounds_3[of x] by (cases "get_bounds_3 x", auto)
+next
+  case (Suc n x)
+  have id: "(tighten_bounds_3 ^^ (Suc n)) x = (tighten_bounds_3 ^^ n) (tighten_bounds_3 x)"
+    by (metis comp_apply funpow_Suc_right)
+  show ?case unfolding id tighten_bounds_3(1)[of x, symmetric] by (rule Suc)
+qed
+
+
+lemma sandwitch_real:
+ fixes l r :: "nat \<Rightarrow> real"
+ assumes la: "l \<longlonglongrightarrow> a" and ra: "r \<longlonglongrightarrow> a"
+ and lm: "\<And>i. l i \<le> m i" and mr: "\<And>i. m i \<le> r i"
+shows "m \<longlonglongrightarrow> a"
+proof (rule LIMSEQ_I)
+  fix e :: real
+  assume "0 < e"
+  hence e: "0 < e / 2" by simp  
+  from LIMSEQ_D[OF la e] obtain n1 where n1: "\<And> n. n \<ge> n1 \<Longrightarrow> norm (l n - a) < e/2" by auto
+  from LIMSEQ_D[OF ra e] obtain n2 where n2: "\<And> n. n \<ge> n2 \<Longrightarrow> norm (r n - a) < e/2" by auto
+  show "\<exists>no. \<forall>n\<ge>no. norm (m n - a) < e"
+  proof (rule exI[of _ "max n1 n2"], intro allI impI)  
+    fix n
+    assume "max n1 n2 \<le> n"     
+    with n1 n2 have *: "norm (l n - a) < e/2" "norm (r n - a) < e/2" by auto
+    from lm[of n] mr[of n] have "norm (m n - a) \<le> norm (l n - a) + norm (r n - a)" by simp
+    with * show "norm (m n - a) < e" by auto
+  qed
+qed
+
+lemma real_of_tighten_bounds_many[simp]: "real_of_3 ((tighten_bounds_3 ^^ i) x) = real_of_3 x"
+  apply (induct i) using tighten_bounds_3 by auto
+
+definition lower_3 where "lower_3 x i \<equiv> lower_itvl (get_bounds_3 ((tighten_bounds_3 ^^ i) x))"
+definition upper_3 where "upper_3 x i \<equiv> upper_itvl (get_bounds_3 ((tighten_bounds_3 ^^ i) x))"
+
+lemma interval_size_3: "upper_3 x i - lower_3 x i = (upper_3 x 0 - lower_3 x 0)/2^i"
+proof (induct i)
+  case (Suc i)
+  have "upper_3 x (Suc i) - lower_3 x (Suc i) = (upper_3 x i - lower_3 x i) / 2"
+     unfolding upper_3_def lower_3_def using tighten_bounds_3 get_bounds_3 by auto
+  with Suc show ?case by auto
+qed auto
+
+lemma interval_size_3_tendsto_0: "(\<lambda>i. real_of_rat (upper_3 x i - lower_3 x i)) \<longlonglongrightarrow> 0"
+  by (subst interval_size_3, auto intro: LIMSEQ_divide_realpow_zero)
+
+lemma dist_tendsto_0_imp_tendsto: "(\<lambda>i. \<bar>f i - a\<bar> :: real) \<longlonglongrightarrow> 0 \<Longrightarrow> f \<longlonglongrightarrow> a"
+  using LIM_zero_cancel tendsto_rabs_zero_iff by blast
+
+lemma upper_3_tendsto: "(real_of_rat \<circ> upper_3 x) \<longlonglongrightarrow> real_of_3 x"
+proof(rule dist_tendsto_0_imp_tendsto, rule sandwitch_real)
+  fix i
+  obtain l r where lr: "get_bounds_3 ((tighten_bounds_3 ^^ i) x) = Interval l r"
+    by (metis real_itvl.collapse)
+  with get_bounds_3[OF lr]
+  show "\<bar>(real_of_rat \<circ> upper_3 x) i - real_of_3 x\<bar> \<le> of_rat (upper_3 x i - lower_3 x i)"
+    unfolding upper_3_def lower_3_def by auto
+qed (insert interval_size_3_tendsto_0, auto)
+
+lemma lower_3_tendsto: "(real_of_rat \<circ> lower_3 x) \<longlonglongrightarrow> real_of_3 x"
+proof(rule dist_tendsto_0_imp_tendsto, rule sandwitch_real)
+  fix i
+  obtain l r where lr: "get_bounds_3 ((tighten_bounds_3 ^^ i) x) = Interval l r"
+    by (metis real_itvl.collapse)
+  with get_bounds_3[OF lr]
+  show "\<bar>(real_of_rat \<circ> lower_3 x) i - real_of_3 x\<bar> \<le> of_rat (upper_3 x i - lower_3 x i)"
+    unfolding upper_3_def lower_3_def by auto
+qed (insert interval_size_3_tendsto_0, auto)
+
+lemma tends_to_tight_bounds_3: "(\<lambda>x. get_bounds_3 ((tighten_bounds_3 ^^ x) y)) \<longlonglongrightarrow>\<^sub>r real_of_3 y" 
+  using lower_3_tendsto[of y] upper_3_tendsto[of y] unfolding lower_3_def upper_3_def
+    tends_to_real_itvl_def o_def by auto
+    
+lemma complex_roots_of_int_poly3: assumes p: "p \<noteq> 0" and sf: "square_free p" 
   shows "set (complex_roots_of_int_poly3 p) = {x. ipoly p x = 0}" (is "?l = ?r")
-    "square_free p \<Longrightarrow> distinct (complex_roots_of_int_poly3 p)" 
+    "distinct (complex_roots_of_int_poly3 p)" 
 proof -
   interpret map_poly_inj_idom_hom of_real..
   define q where "q = real_of_int_poly p"
@@ -179,21 +462,23 @@ proof -
   have conv: "\<And> x. ipoly p x = 0 \<longleftrightarrow> poly ?q x = 0"
     unfolding q_def by (subst map_poly_map_poly, auto simp: o_def)
   have r: "?r = {x. poly ?q x = 0}" unfolding conv ..
-  have "?l = {x. ipoly p x = 0} \<and> (square_free p \<longrightarrow> distinct (complex_roots_of_int_poly3 p))" 
+  have "?l = {x. ipoly p x = 0} \<and> distinct (complex_roots_of_int_poly3 p)" 
   proof (cases "degree p = length rr")
     case False note oFalse = this
     show ?thesis
     proof (cases "degree p - length rr = 2")
       case False
-      define cpxI where "cpxI = (filter (op < 0) (concat (map real_roots_of_int_poly (root_poly_Im p))))" 
-      define cpx where "cpx = [c\<leftarrow>concat (map (\<lambda>rx. map (Complex rx) (remdups cpxI))
-              (real_roots_of_int_poly (root_poly_Re p))). ipoly p c = 0]"
+      let ?nr = "(degree p - length rr) div 2" 
+      define cpxI where "cpxI = pos_imaginary_parts_3 p" 
+      define cpxR where "cpxR = real_parts_3 p" 
+      let ?rts = "[(rx,ix). rx <- cpxR, ix <- cpxI]" 
+      define cpx where "cpx = map pair_to_complex (filter (\<lambda> c. ipoly p (pair_to_complex c) = 0) 
+         ?rts)"
+      let ?ll = "rrts @ cpx @ map cnj cpx" 
       have cpx: "set cpx \<subseteq> ?r" unfolding cpx_def by auto
       have ccpx: "cnj ` set cpx \<subseteq> ?r" using cpx unfolding r 
         by (auto intro!: complex_conjugate_root[of ?q] simp: Reals_def) 
-      have l: "complex_roots_of_int_poly3 p = rrts @ cpx @ map cnj cpx" 
-        unfolding d cpx_def[symmetric] cpxI_def[symmetric] using False oFalse by auto
-      have "?l \<subseteq> ?r" using rrts cpx ccpx unfolding l r by auto
+      have "set ?ll \<subseteq> ?r" using rrts cpx ccpx unfolding r by auto
       moreover
       {
         fix x :: complex
@@ -202,19 +487,13 @@ proof -
           fix x 
           assume rt: "ipoly p x = 0"
             and gt: "Im x > 0"
-          let ?rp = "root_poly_Re p"
-          let ?ip = "root_poly_Im p"
-          let ?x = "Complex (Re x) (Im x)"
-          from represents_root_poly[OF rt p] obtain qi where 
-            "?rp \<noteq> 0" "ipoly ?rp (Re x) = 0" and qi: "qi \<in> set ?ip" and "qi \<noteq> 0" "ipoly qi (Im x) = 0" by auto
-          hence mem: "Re x \<in> set (real_roots_of_int_poly ?rp)" "Im x \<in> set (real_roots_of_int_poly qi)"
-            by (auto simp: real_roots_of_int_poly)    
-          have x: "x = ?x" by (cases x, auto)
-          with rt have rt: "ipoly p ?x = 0" by auto
-          have intro: "\<And> y Y. y \<in> Y \<Longrightarrow> complex_of_real (Re x) + \<i> * y \<in> Complex (Re x) ` Y"
-            by (simp add: legacy_Complex_simps)
-          from rt qi gt mem(2) have "?x \<in> set cpx" unfolding cpx_def cpxI_def
-            by (auto intro!: bexI[OF _ mem(1)] intro simp: complex_eq_iff)
+          define rx where "rx = Re x"
+          let ?x = "Complex rx (Im x)"
+          have x: "x = ?x" by (cases x, auto simp: rx_def)
+          from rt x have rt': "ipoly p ?x = 0" by auto
+          from real_parts_3[OF p rt, folded rx_def] pos_imaginary_parts_3[OF p rt gt] rt'
+          have "?x \<in> set cpx" unfolding cpx_def cpxI_def cpxR_def 
+            by (force simp: pair_to_complex_def[abs_def])
           hence "x \<in> set cpx" using x by simp
         } note gt = this
         have cases: "Im x = 0 \<or> Im x > 0 \<or> Im x < 0" by auto
@@ -222,45 +501,111 @@ proof -
           by (intro complex_conjugate_root[of ?q x], auto simp: Reals_def)
         {
           assume "Im x > 0"
-          from gt[OF rt this] have "x \<in> ?l" unfolding l by auto
+          from gt[OF rt this] have "x \<in> set ?ll" by auto
         }
         moreover
         {
           assume "Im x < 0"
           hence "Im (cnj x) > 0" by simp
-          from gt[OF rt' this] have "cnj (cnj x) \<in> ?l" unfolding l set_append set_map by blast
-          hence "x \<in> ?l" by simp
+          from gt[OF rt' this] have "cnj (cnj x) \<in> set ?ll" unfolding set_append set_map by blast
+          hence "x \<in> set ?ll" by simp
         }
         moreover
         {
           assume "Im x = 0"
           hence "x \<in> \<real>" using complex_is_Real_iff by blast
-          with rt rrts have "x \<in> ?l" unfolding l conv by auto
+          with rt rrts have "x \<in> set ?ll" unfolding conv by auto
         }
-        ultimately have "x \<in> ?l" using cases by blast
+        ultimately have "x \<in> set ?ll" using cases by blast
       }
-      ultimately have lr: "?l = {x. ipoly p x = 0}" by blast 
-      let ?rr = "real_roots_of_int_poly (root_poly_Re p)" 
-      have dist2: "distinct ?rr" by (rule real_roots_of_int_poly)
-      have dist3: "distinct (remdups cpxI)" by simp
-      have dist4: "distinct cpx" unfolding cpx_def
-      proof (rule distinct_filter, unfold distinct_conv_nth, intro allI impI, goal_cases) 
+      ultimately have lr: "set ?ll = {x. ipoly p x = 0}" by blast 
+      let ?rr = "map real_of_3 cpxR" 
+      let ?pi = "map real_of_3 cpxI" 
+      have dist2: "distinct ?rr" unfolding cpxR_def by (rule distinct_real_parts_3)
+      have dist3: "distinct ?pi" unfolding cpxI_def by (rule distinct_pos_imaginary_parts_3)
+      have idd: "concat (map (map pair_to_complex) (map (\<lambda>rx. map (Pair rx) cpxI) cpxR))
+        = concat (map (\<lambda>r. map (\<lambda> i. Complex (real_of_3 r) (real_of_3 i)) cpxI) cpxR)" 
+        unfolding pair_to_complex_def by (auto simp: o_def)
+      have dist4: "distinct cpx" unfolding cpx_def 
+      proof (rule distinct_map_filter, unfold map_concat idd, unfold distinct_conv_nth, intro allI impI, goal_cases) 
         case (1 i j)
-        from nth_concat_diff[OF 1, unfolded length_map] dist2[unfolded distinct_conv_nth] 
+        from nth_concat_diff[OF 1, unfolded length_map] dist2[unfolded distinct_conv_nth]
          dist3[unfolded distinct_conv_nth] show ?case by auto
       qed
       have dist5: "distinct (map cnj cpx)" using dist4 unfolding distinct_map by (auto simp: inj_on_def)
       {
         fix x :: complex
         have rrts: "x \<in> set rrts \<Longrightarrow> Im x = 0" unfolding rrts_def by auto
-        have cpx: "\<And> x. x \<in> set cpx \<Longrightarrow> 0 < Im x" unfolding cpx_def cpxI_def by auto
-        have cpx': "x \<in> cnj ` set cpx \<Longrightarrow> 0 > Im x" using cpx by auto
+        have cpx: "\<And> x. x \<in> set cpx \<Longrightarrow> Im x > 0" unfolding cpx_def cpxI_def
+          by (auto simp: pair_to_complex_def[abs_def] positive_pos_imaginary_parts_3)
+        have cpx': "x \<in> cnj ` set cpx \<Longrightarrow> sgn (Im x) = -1" using cpx by auto
         have "x \<notin> set rrts \<inter> set cpx \<union> set rrts \<inter> cnj ` set cpx \<union> set cpx \<inter> cnj ` set cpx" 
           using rrts cpx[of x] cpx' by auto
       } note dist6 = this
-      have dist: "distinct (complex_roots_of_int_poly3 p)"
-        unfolding l distinct_append using dist6 by (auto simp: dist1 dist4 dist5)
-      with lr show ?thesis by blast
+      have dist: "distinct ?ll" 
+        unfolding distinct_append using dist6 by (auto simp: dist1 dist4 dist5)
+      let ?p = "complex_of_int_poly p" 
+      have pp: "?p \<noteq> 0" using p by auto
+      from p square_free_of_int_poly[OF sf] square_free_rsquarefree
+      have rsf:"rsquarefree ?p" by auto
+      from dist lr have "length ?ll = card {x. poly ?p x = 0}"
+        by (metis distinct_card)
+      also have "\<dots> = degree p" 
+        using rsf unfolding rsquarefree_card_degree[OF pp] by simp
+      finally have deg_len: "degree p = length ?ll" by simp
+      let ?P = "\<lambda> c.  ipoly p (pair_to_complex c) = 0" 
+      let ?itvl = "\<lambda> r i. ipoly_complex_itvl p (Complex_Interval (get_bounds_3 r) (get_bounds_3 i))" 
+      let ?itv = "\<lambda> (r,i). ?itvl r i" 
+      let ?p = "(\<lambda> (r,i). zero_in_complex_itvl (?itvl r i))" 
+      let ?tb = tighten_bounds_3  
+      let ?f = "map_prod ?tb ?tb" 
+      have filter: "map pair_to_complex (filter_list_length ?f ?p ?nr ?rts) = map pair_to_complex (filter ?P ?rts)" 
+      proof (rule filter_list_length)
+        have "length (filter ?P ?rts) = length cpx" 
+          unfolding cpx_def by simp
+        also have "\<dots> = ?nr" unfolding deg_len by (simp add: rrts_def)
+        finally show "length (filter ?P ?rts) = ?nr" by auto
+      next
+        fix n x
+        assume x: "?P x" 
+        obtain r i where xri: "x = (r,i)" by force
+        have id: "(?f ^^ n) x = ((?tb ^^ n) r, (?tb ^^ n) i)" unfolding xri
+          by (induct n, auto)
+        have px: "pair_to_complex x = Complex (real_of_3 r) (real_of_3 i)" 
+          unfolding xri pair_to_complex_def by auto
+        show "?p ((?f ^^ n) x)"
+          unfolding zero_in_complex_itvl id split 
+          by (rule ipoly_complex_itvl[of _ "pair_to_complex x" p, unfolded x], unfold px,
+            auto simp: in_complex_itvl_def in_real_itvl_get_bounds_tighten)
+      next
+        fix x
+        assume x: "x \<in> set ?rts" "\<not> ?P x"
+        let ?x = "pair_to_complex x" 
+        obtain r i where xri: "x = (r,i)" by force
+        have id: "(?f ^^ n) x = ((?tb ^^ n) r, (?tb ^^ n) i)" for n unfolding xri
+          by (induct n, auto)
+        have px: "?x = Complex (real_of_3 r) (real_of_3 i)" 
+          unfolding xri pair_to_complex_def by auto
+        have cvg: "(\<lambda> n. ?itv ((?f ^^ n) x)) \<longlonglongrightarrow>\<^sub>c ipoly p ?x" 
+          unfolding id split px
+        proof (rule ipoly_complex_itvl_tendsto)
+          show "(\<lambda>ia. Complex_Interval (get_bounds_3 ((?tb ^^ ia) r)) (get_bounds_3 ((?tb ^^ ia) i))) \<longlonglongrightarrow>\<^sub>c
+            Complex (real_of_3 r) (real_of_3 i)" 
+            unfolding tendsto_complex_itvl_def by (simp add: tends_to_tight_bounds_3 o_def)
+        qed
+        from tends_to_complex_itvl_diff[OF this x(2)]
+        show "\<exists> i. \<not> ?p ((?f ^^ i) x)" unfolding id by auto
+      next
+        show "pair_to_complex (?f x) = pair_to_complex x" for x
+          by (cases x, auto simp: pair_to_complex_def tighten_bounds_3(1))
+      next
+        show "?P (?f x) = ?P x" for x 
+          by (cases x, auto simp: pair_to_complex_def tighten_bounds_3(1)) 
+      qed
+      have l: "complex_roots_of_int_poly3 p = ?ll" 
+        unfolding d filter cpx_def[symmetric] cpxI_def[symmetric] cpxR_def[symmetric] using False oFalse
+        by auto      
+      with lr dist show ?thesis by auto
     next
       case True
       let ?cr = "map_poly of_real :: real poly \<Rightarrow> complex poly"
@@ -329,9 +674,8 @@ proof -
       also have "set rr = {x. poly q x = 0}" unfolding rr q_def by simp
       finally have lr: "?l = ?r" unfolding l by simp
       show ?thesis 
-      proof (intro conjI[OF lr] impI)
-        assume "square_free p" 
-        hence sf: "square_free q" unfolding q_def by (rule square_free_real_of_int_poly)
+      proof (intro conjI[OF lr])
+        from sf have sf: "square_free q" unfolding q_def by (rule square_free_of_int_poly)
         {
           interpret field_hom_0' complex_of_real ..
           from sf have "square_free ?q" unfolding square_free_map_poly .
@@ -363,19 +707,19 @@ proof -
       by (rule card_seteq[OF _ _ le], insert poly_roots_finite[OF q], auto)
     with True rrts dist1 show ?thesis unfolding r d by auto
   qed
-  thus "square_free p \<Longrightarrow> distinct (complex_roots_of_int_poly3 p)" "?l = ?r" by auto
+  thus "distinct (complex_roots_of_int_poly3 p)" "?l = ?r" by auto
 qed
 
-lemma complex_roots_of_int_poly_all:
+lemma complex_roots_of_int_poly_all: assumes sf: "degree p \<ge> 3 \<Longrightarrow> square_free p" 
   shows "p \<noteq> 0 \<Longrightarrow> set (complex_roots_of_int_poly_all p) = {x. ipoly p x = 0}" (is "_ \<Longrightarrow> set ?l = ?r")
-    and "(degree p \<ge> 3 \<Longrightarrow> square_free p) \<Longrightarrow> distinct (complex_roots_of_int_poly_all p)" 
+    and "distinct (complex_roots_of_int_poly_all p)" 
 proof -
   note d = complex_roots_of_int_poly_all_def Let_def
-  have "(p \<noteq> 0 \<longrightarrow> set ?l = ?r) \<and> ((degree p \<ge> 3 \<longrightarrow> square_free p) \<longrightarrow> distinct (complex_roots_of_int_poly_all p))" 
+  have "(p \<noteq> 0 \<longrightarrow> set ?l = ?r) \<and> (distinct (complex_roots_of_int_poly_all p))" 
   proof (cases "degree p \<ge> 3")
     case True
     hence p: "p \<noteq> 0" by auto
-    from True complex_roots_of_int_poly3[OF p] show ?thesis unfolding d by auto
+    from True complex_roots_of_int_poly3[OF p] sf show ?thesis unfolding d by auto
   next
     case False
     let ?p = "map_poly (of_int :: int \<Rightarrow> complex) p"
@@ -404,7 +748,7 @@ proof -
       qed
     qed
   qed
-  thus "p \<noteq> 0 \<Longrightarrow> set ?l = ?r" "(degree p \<ge> 3 \<Longrightarrow> square_free p) \<Longrightarrow> distinct (complex_roots_of_int_poly_all p)" by auto
+  thus "p \<noteq> 0 \<Longrightarrow> set ?l = ?r" "distinct (complex_roots_of_int_poly_all p)" by auto
 qed
 
 text \<open>It now comes the preferred function to compute complex roots of a integer polynomial.\<close>
@@ -434,7 +778,7 @@ proof -
       assume "q \<in> set (factors_of_int_poly p)"
       from factors_of_int_poly(1)[OF refl this] irreducible_imp_square_free[of q] 
       have 0: "q \<noteq> 0" and sf: "square_free q" by auto
-      from complex_roots_of_int_poly_all(1)[OF 0] complex_roots_of_int_poly_all(2)[OF sf]
+      from complex_roots_of_int_poly_all(1)[OF sf 0] complex_roots_of_int_poly_all(2)[OF sf]
       have "set (complex_roots_of_int_poly_all q) = {x. ipoly q x = 0}" 
         "distinct (complex_roots_of_int_poly_all q)" by auto
     } note all = this
@@ -773,4 +1117,5 @@ proof -
   show "(q,i) \<in> set qis \<Longrightarrow> irreducible q \<and> i \<noteq> 0 \<and> monic q \<and> degree q = 1"
     using linear_irreducible_field[of q] unfolding qis by auto
 qed
+  
 end

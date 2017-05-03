@@ -650,7 +650,7 @@ proof (rule ccontr)
   from poly_cond2_no_rat_root p
   have ru:"ipoly p y \<noteq> 0" by auto
   from in_interval have in':"?r l \<le> ?r y" "?r y \<le> ?r r" unfolding of_rat_less_eq by auto
-  from p square_free_real_of_int_poly[of p] square_free_rsquarefree
+  from p square_free_of_int_poly[of p] square_free_rsquarefree
   have rsf:"rsquarefree ?p" by auto
   have ur3:"poly ?p ?ur = 0" using urD(3) by simp
   from ur have "?ur \<le> of_rat r" by (auto elim!: unique_rootE)
