@@ -184,23 +184,23 @@ qed
     
 definition "pair_to_complex ri \<equiv> case ri of (r,i) \<Rightarrow> Complex (real_of_3 r) (real_of_3 i)" 
   
-fun get_itvl_2 :: "real_alg_2 \<Rightarrow> real_itvl" where
+fun get_itvl_2 :: "real_alg_2 \<Rightarrow> real interval" where
   "get_itvl_2 (Irrational n (p,l,r)) = Interval (of_rat l) (of_rat r)" 
 | "get_itvl_2 (Rational r) = (let rr = of_rat r in Interval rr rr)" 
 
 lemma get_bounds_2: assumes "invariant_2 x"
-  shows "real_of_2 x \<in>\<^sub>r get_itvl_2 x" 
+  shows "real_of_2 x \<in>\<^sub>i get_itvl_2 x" 
 proof (cases x)
   case (Irrational n plr)
   with assms obtain p l r where plr: "plr = (p,l,r)" by (cases plr, auto)
   from assms Irrational plr have inv1: "invariant_1 (p,l,r)" 
     and id: "real_of_2 x = real_of_1 (p,l,r)" by auto
-  show ?thesis unfolding id using invariant_1D(1)[OF inv1] by (auto simp: plr in_real_itvl_def Irrational)
-qed (insert assms, auto simp: Let_def in_real_itvl_def)  
+  show ?thesis unfolding id using invariant_1D(1)[OF inv1] by (auto simp: plr Irrational)
+qed (insert assms, auto simp: Let_def)
 
-lift_definition get_itvl_3 :: "real_alg_3 \<Rightarrow> real_itvl" is get_itvl_2 .
+lift_definition get_itvl_3 :: "real_alg_3 \<Rightarrow> real interval" is get_itvl_2 .
 
-lemma get_itvl_3: "real_of_3 x \<in>\<^sub>r get_itvl_3 x" 
+lemma get_itvl_3: "real_of_3 x \<in>\<^sub>i get_itvl_3 x" 
   by (transfer, insert get_bounds_2, auto)
 
 fun tighten_bounds_2 :: "real_alg_2 \<Rightarrow> real_alg_2" where
@@ -344,7 +344,7 @@ definition complex_roots_of_int_poly3 :: "int poly \<Rightarrow> complex list" w
         rts = [(rx, ix). rx <- rxs, ix <- ixs];
         crts' = map pair_to_complex 
            (filter_list_length (map_prod tighten_bounds_3 tighten_bounds_3) 
-              (\<lambda> (r, i). 0 \<in>\<^sub>c ipoly_complex_itvl p (Complex_Interval (get_itvl_3 r) (get_itvl_3 i))) nr_pos_crts rts)
+              (\<lambda> (r, i). 0 \<in>\<^sub>c ipoly_complex_interval p (Complex_Interval (get_itvl_3 r) (get_itvl_3 i))) nr_pos_crts rts)
     in crts @ crts' @ map cnj crts'"
 
 definition complex_roots_of_int_poly_all :: "int poly \<Rightarrow> complex list" where
@@ -353,7 +353,7 @@ definition complex_roots_of_int_poly_all :: "int poly \<Rightarrow> complex list
     else if n = 1 then [roots1 (map_poly of_int p)] else if n = 2 then croots2 (map_poly of_int p)
     else [])"
 
-lemma in_real_itvl_get_bounds_tighten: "real_of_3 x \<in>\<^sub>r get_itvl_3 ((tighten_bounds_3 ^^ n) x)" 
+lemma in_real_itvl_get_bounds_tighten: "real_of_3 x \<in>\<^sub>i get_itvl_3 ((tighten_bounds_3 ^^ n) x)" 
 proof (induct n arbitrary: x)
   case 0
   thus ?case using get_itvl_3[of x] by simp
@@ -389,8 +389,8 @@ qed
 lemma real_of_tighten_bounds_many[simp]: "real_of_3 ((tighten_bounds_3 ^^ i) x) = real_of_3 x"
   apply (induct i) using tighten_bounds_3 by auto
 
-definition lower_3 where "lower_3 x i \<equiv> lower_itvl (get_itvl_3 ((tighten_bounds_3 ^^ i) x))"
-definition upper_3 where "upper_3 x i \<equiv> upper_itvl (get_itvl_3 ((tighten_bounds_3 ^^ i) x))"
+definition lower_3 where "lower_3 x i \<equiv> interval.lower (get_itvl_3 ((tighten_bounds_3 ^^ i) x))"
+definition upper_3 where "upper_3 x i \<equiv> interval.upper (get_itvl_3 ((tighten_bounds_3 ^^ i) x))"
 
 lemma interval_size_3: "upper_3 x i - lower_3 x i = (upper_3 x 0 - lower_3 x 0)/2^i"
 proof (induct i)
@@ -410,25 +410,25 @@ lemma upper_3_tendsto: "upper_3 x \<longlonglongrightarrow> real_of_3 x"
 proof(rule dist_tendsto_0_imp_tendsto, rule sandwitch_real)
   fix i
   obtain l r where lr: "get_itvl_3 ((tighten_bounds_3 ^^ i) x) = Interval l r"
-    by (metis real_itvl.collapse)
+    by (metis interval.collapse)
   with get_itvl_3[of "(tighten_bounds_3 ^^ i) x"]
   show "\<bar>(upper_3 x) i - real_of_3 x\<bar> \<le> (upper_3 x i - lower_3 x i)"
-    unfolding upper_3_def lower_3_def in_real_itvl_def by auto
+    unfolding upper_3_def lower_3_def by auto
 qed (insert interval_size_3_tendsto_0, auto)
 
 lemma lower_3_tendsto: "lower_3 x \<longlonglongrightarrow> real_of_3 x"
 proof(rule dist_tendsto_0_imp_tendsto, rule sandwitch_real)
   fix i
   obtain l r where lr: "get_itvl_3 ((tighten_bounds_3 ^^ i) x) = Interval l r"
-    by (metis real_itvl.collapse)
+    by (metis interval.collapse)
   with get_itvl_3[of "(tighten_bounds_3 ^^ i) x"]
   show "\<bar>lower_3 x i - real_of_3 x\<bar> \<le> (upper_3 x i - lower_3 x i)"
-    unfolding upper_3_def lower_3_def in_real_itvl_def by auto
+    unfolding upper_3_def lower_3_def by auto
 qed (insert interval_size_3_tendsto_0, auto)
 
 lemma tends_to_tight_bounds_3: "(\<lambda>x. get_itvl_3 ((tighten_bounds_3 ^^ x) y)) \<longlonglongrightarrow>\<^sub>r real_of_3 y" 
   using lower_3_tendsto[of y] upper_3_tendsto[of y] unfolding lower_3_def upper_3_def
-    tends_to_real_itvl_def o_def by auto
+    interval_tendsto_def o_def by auto
     
 lemma complex_roots_of_int_poly3: assumes p: "p \<noteq> 0" and sf: "square_free p" 
   shows "set (complex_roots_of_int_poly3 p) = {x. ipoly p x = 0}" (is "?l = ?r")
@@ -553,7 +553,7 @@ proof -
         using rsf unfolding rsquarefree_card_degree[OF pp] by simp
       finally have deg_len: "degree p = length ?ll" by simp
       let ?P = "\<lambda> c.  ipoly p (pair_to_complex c) = 0" 
-      let ?itvl = "\<lambda> r i. ipoly_complex_itvl p (Complex_Interval (get_itvl_3 r) (get_itvl_3 i))" 
+      let ?itvl = "\<lambda> r i. ipoly_complex_interval p (Complex_Interval (get_itvl_3 r) (get_itvl_3 i))" 
       let ?itv = "\<lambda> (r,i). ?itvl r i" 
       let ?p = "(\<lambda> (r,i). 0 \<in>\<^sub>c (?itvl r i))" 
       let ?tb = tighten_bounds_3  
@@ -574,8 +574,8 @@ proof -
           unfolding xri pair_to_complex_def by auto
         show "?p ((?f ^^ n) x)"
           unfolding id split 
-          by (rule ipoly_complex_itvl[of "pair_to_complex x" _ p, unfolded x], unfold px,
-            auto simp: in_complex_itvl_def in_real_itvl_get_bounds_tighten)
+          by (rule ipoly_complex_interval[of "pair_to_complex x" _ p, unfolded x], unfold px,
+            auto simp: in_complex_interval_def in_real_itvl_get_bounds_tighten)
       next
         fix x
         assume x: "x \<in> set ?rts" "\<not> ?P x"
@@ -587,12 +587,12 @@ proof -
           unfolding xri pair_to_complex_def by auto
         have cvg: "(\<lambda> n. ?itv ((?f ^^ n) x)) \<longlonglongrightarrow>\<^sub>c ipoly p ?x" 
           unfolding id split px
-        proof (rule ipoly_complex_itvl_tendsto)
+        proof (rule ipoly_complex_interval_tendsto)
           show "(\<lambda>ia. Complex_Interval (get_itvl_3 ((?tb ^^ ia) r)) (get_itvl_3 ((?tb ^^ ia) i))) \<longlonglongrightarrow>\<^sub>c
             Complex (real_of_3 r) (real_of_3 i)" 
-            unfolding tendsto_complex_itvl_def by (simp add: tends_to_tight_bounds_3 o_def)
+            unfolding complex_interval_tendsto_def by (simp add: tends_to_tight_bounds_3 o_def)
         qed
-        from tends_to_complex_itvl_diff[OF this x(2)]
+        from complex_interval_tendsto_neq[OF this x(2)]
         show "\<exists> i. \<not> ?p ((?f ^^ i) x)" unfolding id by auto
       next
         show "pair_to_complex (?f x) = pair_to_complex x" for x
