@@ -16,12 +16,12 @@ imports
   Algebraic_Numbers_Prelim (* for certain simp rules *)
 begin
 
-text \<open>Real Intervals with Rational Bounds\<close>
+text \<open>Real Intervals\<close>
   
-datatype real_itvl = Interval (lower_itvl: rat) (upper_itvl: rat)
+datatype real_itvl = Interval (lower_itvl: real) (upper_itvl: real)
  
 definition in_real_itvl :: "real \<Rightarrow> real_itvl \<Rightarrow> bool" ("(_/ \<in>\<^sub>r _)" [51, 51] 50) where
-  "y \<in>\<^sub>r x \<equiv> case x of Interval lx ux \<Rightarrow> of_rat lx \<le> y \<and> y \<le> of_rat ux" 
+  "y \<in>\<^sub>r x \<equiv> case x of Interval lx ux \<Rightarrow> lx \<le> y \<and> y \<le> ux" 
 
 definition of_int_real_itvl :: "int \<Rightarrow> real_itvl" where
   "of_int_real_itvl x \<equiv> let y = of_int x in Interval y y" 
@@ -85,40 +85,28 @@ lemma real_itvl_mult_0:
 lemma times_itvl_real: assumes "x \<in>\<^sub>r X" "y \<in>\<^sub>r Y"
   shows "x * y \<in>\<^sub>r X * Y"
 proof -
-  have real_or_rat_minmax:
-    "real_of_rat (max a b) = max (real_of_rat a) (real_of_rat b)"
-    "real_of_rat (min a b) = min (real_of_rat a) (real_of_rat b)" for a b
-    by (auto simp:max_def min_def of_rat_less_eq)
   obtain X1 X2 where X:"Interval X1 X2 = X" by (cases X,auto)
   obtain Y1 Y2 where Y:"Interval Y1 Y2 = Y" by (cases Y,auto)
-  let ?X1 = "real_of_rat X1" and ?X2 = "real_of_rat X2"
-  let ?Y1 = "real_of_rat Y1" and ?Y2 = "real_of_rat Y2"
   from assms X Y have assms:
-    "?X1 \<le> x" "x \<le> ?X2" "?Y1 \<le> y" "y \<le> ?Y2"
+    "X1 \<le> x" "x \<le> X2" "Y1 \<le> y" "y \<le> Y2"
     unfolding in_real_itvl_def by auto
-  have "?X1 * ?Y1 \<le> x * y \<or> ?X1 * ?Y2 \<le> x * y \<or> ?X2 * ?Y1 \<le> x * y \<or> ?X2 * ?Y2 \<le> x * y"
+  hence "X1 * Y1 \<le> x * y \<or> X1 * Y2 \<le> x * y \<or> X2 * Y1 \<le> x * y \<or> X2 * Y2 \<le> x * y"
+    using mult_le_cancel_left mult_le_cancel_right
+    by (metis (mono_tags, hide_lams) linear order_trans)
+  hence min:"min (X1 * Y1) (min (X1 * Y2) (min (X2 * Y1) (X2 * Y2))) \<le> x * y" by auto
+  have "X1 * Y1 \<ge> x * y \<or> X1 * Y2 \<ge> x * y \<or> X2 * Y1 \<ge> x * y \<or> X2 * Y2 \<ge> x * y"
     using assms mult_le_cancel_left mult_le_cancel_right
     by (metis (mono_tags, hide_lams) linear order_trans)
-  hence min:"min (?X1 * ?Y1) (min (?X1 * ?Y2) (min (?X2 * ?Y1) (?X2 * ?Y2))) \<le> x * y" by auto
-  have "?X1 * ?Y1 \<ge> x * y \<or> ?X1 * ?Y2 \<ge> x * y \<or> ?X2 * ?Y1 \<ge> x * y \<or> ?X2 * ?Y2 \<ge> x * y"
-    using assms mult_le_cancel_left mult_le_cancel_right
-    by (metis (mono_tags, hide_lams) linear order_trans)
-  hence max:"x * y \<le> max (?X1 * ?Y1) (max (?X1 * ?Y2) (max (?X2 * ?Y1) (?X2 * ?Y2)))" by auto
+  hence max:"x * y \<le> max (X1 * Y1) (max (X1 * Y2) (max (X2 * Y1) (X2 * Y2)))" by auto
   show ?thesis using min max X Y unfolding in_real_itvl_def
-    by (auto simp:real_or_rat_minmax Let_def)
+    by (auto simp: Let_def)
 qed
-
-definition zero_in_real_itvl :: "real_itvl \<Rightarrow> bool" where
-  "zero_in_real_itvl x = (case x of Interval lx ux \<Rightarrow> lx \<le> 0 \<and> 0 \<le> ux)" 
-  
-lemma zero_in_real_itvl[simp]: "zero_in_real_itvl x = (0 \<in>\<^sub>r x)" 
-  unfolding zero_in_real_itvl_def in_real_itvl_def by (cases x, auto)
   
 definition tends_to_real_itvl :: "(nat \<Rightarrow> real_itvl) \<Rightarrow> real \<Rightarrow> bool" (infixr "\<longlonglongrightarrow>\<^sub>r" 55) where
-  "(X \<longlonglongrightarrow>\<^sub>r x) \<equiv> ((of_rat \<circ> upper_itvl \<circ> X) \<longlonglongrightarrow> x) \<and> ((of_rat \<circ> lower_itvl \<circ> X) \<longlonglongrightarrow> x)"
+  "(X \<longlonglongrightarrow>\<^sub>r x) \<equiv> ((upper_itvl \<circ> X) \<longlonglongrightarrow> x) \<and> ((lower_itvl \<circ> X) \<longlonglongrightarrow> x)"
 
 lemma tendsto_real_itvlI[intro]:
-  assumes "(of_rat \<circ> upper_itvl \<circ> X) \<longlonglongrightarrow> x" and "(of_rat \<circ> lower_itvl \<circ> X) \<longlonglongrightarrow> x"
+  assumes "(upper_itvl \<circ> X) \<longlonglongrightarrow> x" and "(lower_itvl \<circ> X) \<longlonglongrightarrow> x"
   shows "X \<longlonglongrightarrow>\<^sub>r x"
   using assms by (auto simp:tends_to_real_itvl_def)
 
@@ -141,26 +129,21 @@ qed
 lemma tendsto_real_itvl_times: assumes "X \<longlonglongrightarrow>\<^sub>r x" "Y \<longlonglongrightarrow>\<^sub>r y"
   shows "(\<lambda> i. X i * Y i) \<longlonglongrightarrow>\<^sub>r x * y"
 proof -
-  let ?r = real_of_rat
-  have [simp]: "?r (min x y) = min (?r x) (?r y)" for x y
-    by (simp add: min_def of_rat_less_eq)
-  have [simp]: "?r (max x y) = max (?r x) (?r y)" for x y
-    by (simp add: max_def of_rat_less_eq)
-  have *: "?r (lower_itvl (X i * Y i)) = (
-    let lx = ?r (lower_itvl (X i)); ux = ?r (upper_itvl (X i));
-        ly = ?r (lower_itvl (Y i)); uy = ?r (upper_itvl (Y i)); 
+  have *: "(lower_itvl (X i * Y i)) = (
+    let lx = (lower_itvl (X i)); ux = (upper_itvl (X i));
+        ly = (lower_itvl (Y i)); uy = (upper_itvl (Y i)); 
         x1 = lx * ly; x2 = lx * uy; x3 = ux * ly; x4 = ux * uy in 
-      (min x1 (min x2 (min x3 x4))))" "?r (upper_itvl (X i * Y i)) = (
-    let lx = ?r (lower_itvl (X i)); ux = ?r (upper_itvl (X i));
-        ly = ?r (lower_itvl (Y i)); uy = ?r (upper_itvl (Y i)); 
+      (min x1 (min x2 (min x3 x4))))" "(upper_itvl (X i * Y i)) = (
+    let lx = (lower_itvl (X i)); ux = (upper_itvl (X i));
+        ly = (lower_itvl (Y i)); uy = (upper_itvl (Y i)); 
       x1 = lx * ly; x2 = lx * uy; x3 = ux * ly; x4 = ux * uy in 
       (max x1 (max x2 (max x3 x4))))" for i
     by (cases "X i"; cases "Y i", auto simp: Let_def)+
-  have "(\<lambda>i. real_of_rat (lower_itvl (X i * Y i))) \<longlonglongrightarrow> min (x * y) (min (x * y) (min (x * y) (x *y)))" 
+  have "(\<lambda>i. (lower_itvl (X i * Y i))) \<longlonglongrightarrow> min (x * y) (min (x * y) (min (x * y) (x *y)))" 
     using assms unfolding tends_to_real_itvl_def * Let_def o_def
     by (intro tendsto_min tendsto_intros, auto)
   moreover 
-  have "(\<lambda>i. real_of_rat (upper_itvl (X i * Y i))) \<longlonglongrightarrow> max (x * y) (max (x * y) (max (x * y) (x *y)))" 
+  have "(\<lambda>i. (upper_itvl (X i * Y i))) \<longlonglongrightarrow> max (x * y) (max (x * y) (max (x * y) (x *y)))" 
     using assms unfolding tends_to_real_itvl_def * Let_def o_def
     by (intro tendsto_max tendsto_intros, auto)
   ultimately show ?thesis unfolding tends_to_real_itvl_def o_def by auto
@@ -173,15 +156,15 @@ proof -
   let ?d = "abs (b - a) / 2" 
   from assms have d: "?d > 0" by auto
   from assms(1)[unfolded tends_to_real_itvl_def] 
-  have cvg: "(of_rat o lower_itvl o f) \<longlonglongrightarrow> a" "(of_rat o upper_itvl o f) \<longlonglongrightarrow> a" by auto
+  have cvg: "(lower_itvl o f) \<longlonglongrightarrow> a" "(upper_itvl o f) \<longlonglongrightarrow> a" by auto
   from LIMSEQ_D[OF cvg(1) d] obtain n1 where 
-    n1: "\<And> n. n \<ge> n1 \<Longrightarrow> norm ((real_of_rat \<circ> lower_itvl \<circ> f) n - a) < ?d " by auto
+    n1: "\<And> n. n \<ge> n1 \<Longrightarrow> norm ((lower_itvl \<circ> f) n - a) < ?d " by auto
   from LIMSEQ_D[OF cvg(2) d] obtain n2 where
-    n2: "\<And> n. n \<ge> n2 \<Longrightarrow> norm ((real_of_rat \<circ> upper_itvl \<circ> f) n - a) < ?d " by auto
+    n2: "\<And> n. n \<ge> n2 \<Longrightarrow> norm ((upper_itvl \<circ> f) n - a) < ?d " by auto
   define n where "n = max n1 n2"  
   from n1[of n] n2[of n] have bnd: 
-    "norm ((real_of_rat \<circ> lower_itvl \<circ> f) n - a) < ?d" 
-    "norm ((real_of_rat \<circ> upper_itvl \<circ> f) n - a) < ?d" 
+    "norm ((lower_itvl \<circ> f) n - a) < ?d" 
+    "norm ((upper_itvl \<circ> f) n - a) < ?d" 
     unfolding n_def by auto
   show ?thesis by (rule exI[of _ n], insert bnd, cases "f n", auto simp: in_real_itvl_def, argo) 
 qed
@@ -193,12 +176,6 @@ datatype complex_itvl = Complex_Interval (Re_itvl: real_itvl) (Im_itvl: real_itv
 definition in_complex_itvl :: "complex \<Rightarrow> complex_itvl \<Rightarrow> bool" ("(_/ \<in>\<^sub>c _)" [51, 51] 50) where
   "y \<in>\<^sub>c x \<equiv> (case x of Complex_Interval r i \<Rightarrow> Re y \<in>\<^sub>r r \<and> Im y \<in>\<^sub>r i)" 
       
-definition zero_in_complex_itvl :: "complex_itvl \<Rightarrow> bool" where
-  "zero_in_complex_itvl x = (case x of Complex_Interval r i \<Rightarrow> zero_in_real_itvl r \<and> zero_in_real_itvl i)" 
-
-lemma zero_in_complex_itvl[simp]: "zero_in_complex_itvl x = (0 \<in>\<^sub>c x)" 
-  unfolding zero_in_complex_itvl_def in_complex_itvl_def by (cases x, auto)
-
 instantiation complex_itvl :: comm_monoid_add begin
 
   definition "0 \<equiv> Complex_Interval 0 0"
