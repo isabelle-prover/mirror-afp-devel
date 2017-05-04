@@ -7,7 +7,7 @@
 section \<open>Interval Arithmetic\<close>
 
 text \<open>We provide basic interval arithmetic operations for real and complex intervals.
-  As application we prove that complex polynomial evaluation tends is continuous w.r.t.
+  As application we prove that complex polynomial evaluation is continuous w.r.t.
   interval arithmetic. To be more precise, if an interval sequence converges to some 
   element $x$, then the interval polynomial evaluation of $f$ tends to $f(x)$.\<close>
   
@@ -15,16 +15,18 @@ theory Interval_Arithmetic
 imports
   Algebraic_Numbers_Prelim (* for certain simp rules *)
 begin
+
+text \<open>Real Intervals with Rational Bounds\<close>
   
 datatype real_itvl = Interval (lower_itvl: rat) (upper_itvl: rat)
-
-definition in_real_itvl :: "real_itvl \<Rightarrow> real \<Rightarrow> bool" where
-  "in_real_itvl x y \<equiv> case x of Interval lx ux \<Rightarrow> of_rat lx \<le> y \<and> y \<le> of_rat ux" 
+ 
+definition in_real_itvl :: "real \<Rightarrow> real_itvl \<Rightarrow> bool" ("(_/ \<in>\<^sub>r _)" [51, 51] 50) where
+  "y \<in>\<^sub>r x \<equiv> case x of Interval lx ux \<Rightarrow> of_rat lx \<le> y \<and> y \<le> of_rat ux" 
 
 definition of_int_real_itvl :: "int \<Rightarrow> real_itvl" where
   "of_int_real_itvl x \<equiv> let y = of_int x in Interval y y" 
 
-lemma of_int_itvl_real: "in_real_itvl (of_int_real_itvl i) (of_int i)" 
+lemma of_int_itvl_real: "of_int i \<in>\<^sub>r of_int_real_itvl i" 
   unfolding in_real_itvl_def of_int_real_itvl_def by (auto simp: Let_def)
 
 instantiation real_itvl :: comm_monoid_add begin
@@ -35,7 +37,7 @@ instantiation real_itvl :: comm_monoid_add begin
     "Interval lx ux + Interval ly uy = Interval (lx + ly) (ux + uy)" 
 
   instance
-  proof (intro_classes)
+  proof 
     show "a + b + c = a + (b + c)" for a b c :: real_itvl by (cases a, cases b, cases c, auto)
     show "a + b = b + a" for a b :: real_itvl by (cases a, cases b, auto)
     show "0 + a = a" for a :: real_itvl by (cases a, auto simp: zero_real_itvl_def of_int_real_itvl_def)
@@ -44,7 +46,7 @@ end
 
 
 
-lemma plus_itvl_real: "in_real_itvl X x \<Longrightarrow> in_real_itvl Y y \<Longrightarrow> in_real_itvl (X + Y) (x + y)"
+lemma plus_itvl_real: "x \<in>\<^sub>r X \<Longrightarrow> y \<in>\<^sub>r Y \<Longrightarrow> x + y \<in>\<^sub>r X + Y"
   unfolding in_real_itvl_def by (cases X, cases Y, auto)
 
 instantiation real_itvl :: minus begin
@@ -60,7 +62,7 @@ lemma real_itvl_minus_0[simp]:
   fixes a :: real_itvl
   shows "a - 0 = a" by (cases a, simp add: zero_real_itvl_def)
 
-lemma minus_itvl_real: "in_real_itvl X x \<Longrightarrow> in_real_itvl Y y \<Longrightarrow> in_real_itvl (X - Y) (x - y)"
+lemma minus_itvl_real: "x \<in>\<^sub>r X \<Longrightarrow> y \<in>\<^sub>r Y \<Longrightarrow> x - y \<in>\<^sub>r X - Y"
   unfolding in_real_itvl_def by (cases X, cases Y, auto)
 
 instantiation real_itvl :: times begin
@@ -80,8 +82,8 @@ lemma real_itvl_mult_0:
   fixes a :: real_itvl
   shows [simp]: "a * 0 = 0" by (cases a, auto simp: zero_real_itvl_def)
 
-lemma times_itvl_real: assumes "in_real_itvl X x" "in_real_itvl Y y"
-  shows "in_real_itvl (X * Y) (x * y)"
+lemma times_itvl_real: assumes "x \<in>\<^sub>r X" "y \<in>\<^sub>r Y"
+  shows "x * y \<in>\<^sub>r X * Y"
 proof -
   have real_or_rat_minmax:
     "real_of_rat (max a b) = max (real_of_rat a) (real_of_rat b)"
@@ -106,114 +108,13 @@ proof -
     by (auto simp:real_or_rat_minmax Let_def)
 qed
 
-datatype complex_itvl = Complex_Interval (Re_itvl: real_itvl) (Im_itvl: real_itvl)
-
-definition in_complex_itvl :: "complex_itvl \<Rightarrow> complex \<Rightarrow> bool" where
-  "in_complex_itvl x y = (case x of Complex_Interval r i \<Rightarrow> in_real_itvl r (Re y) \<and> in_real_itvl i (Im y))" 
-
 definition zero_in_real_itvl :: "real_itvl \<Rightarrow> bool" where
   "zero_in_real_itvl x = (case x of Interval lx ux \<Rightarrow> lx \<le> 0 \<and> 0 \<le> ux)" 
   
-lemma zero_in_real_itvl[simp]: "zero_in_real_itvl x = (in_real_itvl x 0)" 
+lemma zero_in_real_itvl[simp]: "zero_in_real_itvl x = (0 \<in>\<^sub>r x)" 
   unfolding zero_in_real_itvl_def in_real_itvl_def by (cases x, auto)
-    
-definition zero_in_complex_itvl :: "complex_itvl \<Rightarrow> bool" where
-  "zero_in_complex_itvl x = (case x of Complex_Interval r i \<Rightarrow> zero_in_real_itvl r \<and> zero_in_real_itvl i)" 
-
-lemma zero_in_complex_itvl[simp]: "zero_in_complex_itvl x = (in_complex_itvl x 0)" 
-  unfolding zero_in_complex_itvl_def in_complex_itvl_def by (cases x, auto)
-
-instantiation complex_itvl :: comm_monoid_add begin
-
-  definition "0 \<equiv> Complex_Interval 0 0"
-
-  fun plus_complex_itvl :: "complex_itvl \<Rightarrow> complex_itvl \<Rightarrow> complex_itvl" where
-    "Complex_Interval rx ix + Complex_Interval ry iy = Complex_Interval (rx + ry) (ix + iy)" 
-
-  instance
-  proof
-    fix a b c :: complex_itvl
-    show "a + b + c = a + (b + c)" by (cases a, cases b, cases c, simp add: ac_simps)
-    show "a + b = b + a" by (cases a, cases b, simp add: ac_simps)
-    show "0 + a = a" by (cases a, simp add: ac_simps zero_complex_itvl_def)
-  qed
-end
-
-lemma plus_complex_itvl: "in_complex_itvl X x \<Longrightarrow> in_complex_itvl Y y 
-  \<Longrightarrow> in_complex_itvl (X + Y) (x + y)"
-  unfolding in_complex_itvl_def using plus_itvl_real by (cases X, cases Y, auto)
-
-definition of_int_complex_itvl :: "int \<Rightarrow> complex_itvl" where
-  "of_int_complex_itvl x = Complex_Interval (of_int_real_itvl x) 0" 
-
-lemma of_int_complex_itvl_0[simp]: "of_int_complex_itvl 0 = 0"
-  by (simp add: of_int_complex_itvl_def zero_complex_itvl_def of_int_real_itvl_def zero_real_itvl_def)
-
-lemma of_int_complex_itvl: "in_complex_itvl (of_int_complex_itvl i) (of_int i)" 
-  unfolding in_complex_itvl_def of_int_complex_itvl_def using of_int_itvl_real[of i] 
-  by (auto simp: in_real_itvl_def zero_complex_itvl_def zero_real_itvl_def)
-
-instantiation complex_itvl :: times begin
-
-  fun times_complex_itvl :: "complex_itvl \<Rightarrow> complex_itvl \<Rightarrow> complex_itvl" where
-    "Complex_Interval rx ix * Complex_Interval ry iy =
-     Complex_Interval (rx * ry - ix * iy) (rx * iy + ix * ry)"
-
-  instance ..
-
-end
-
-instantiation complex_itvl :: minus begin
-
-  fun minus_complex_itvl where
-    "Complex_Interval R I - Complex_Interval R' I' = Complex_Interval (R-R') (I-I')"
-
-  instance..
-
-end
-
-lemma complex_itvl_mult_0[simp]:
-  fixes a :: complex_itvl shows "a * 0 = 0" by (cases a, simp add: zero_complex_itvl_def)
-
-lemma times_complex_itvl: "in_complex_itvl X x \<Longrightarrow> in_complex_itvl Y y 
-  \<Longrightarrow> in_complex_itvl (X * Y) (x * y)"
-  unfolding in_complex_itvl_def
-  using times_itvl_real minus_itvl_real plus_itvl_real
-  by (cases X, cases Y, auto)
-
-definition ipoly_complex_itvl :: "int poly \<Rightarrow> complex_itvl \<Rightarrow> complex_itvl" where
-  "ipoly_complex_itvl p x = fold_coeffs (\<lambda>a b. of_int_complex_itvl a + x * b) p 0" 
-
-lemma ipoly_complex_itvl_0[simp]:
-  "ipoly_complex_itvl 0 x = 0"
-  by (auto simp: ipoly_complex_itvl_def)
-
-lemma ipoly_complex_itvl_pCons[simp]:
-  "ipoly_complex_itvl (pCons a p) x = of_int_complex_itvl a + x * (ipoly_complex_itvl p x)"
-proof (cases "p = 0")
-  case p0: True
-  show ?thesis by(cases "a = 0", auto simp add: p0 ipoly_complex_itvl_def)
-next
-  case False then show ?thesis by ( simp add: ipoly_complex_itvl_def)
-qed
-
-lemma ipoly_complex_itvl: assumes x: "in_complex_itvl X x" 
-  shows "in_complex_itvl (ipoly_complex_itvl p X) (ipoly p x)" 
-proof -
-  define xs where "xs = coeffs p"
-  have 0: "in_complex_itvl 0 0" (is "in_complex_itvl ?Z ?z")
-    unfolding in_complex_itvl_def in_real_itvl_def zero_complex_itvl_def zero_real_itvl_def by auto
-  define Z where "Z = ?Z" 
-  define z where "z = ?z" 
-  from 0 have 0: "in_complex_itvl Z z" unfolding Z_def z_def by auto
-  note x = times_complex_itvl[OF x]
-  show ?thesis 
-    unfolding poly_map_poly_code ipoly_complex_itvl_def fold_coeffs_def 
-      xs_def[symmetric] Z_def[symmetric] z_def[symmetric] using 0
-    by (induct xs arbitrary: Z z, auto intro!: plus_complex_itvl of_int_complex_itvl x)
-qed
   
-definition tends_to_real_itvl :: "(nat \<Rightarrow> real_itvl) \<Rightarrow> real \<Rightarrow> bool" (infixr "\<longlonglongrightarrow>\<^sub>r" 55)where
+definition tends_to_real_itvl :: "(nat \<Rightarrow> real_itvl) \<Rightarrow> real \<Rightarrow> bool" (infixr "\<longlonglongrightarrow>\<^sub>r" 55) where
   "(X \<longlonglongrightarrow>\<^sub>r x) \<equiv> ((of_rat \<circ> upper_itvl \<circ> X) \<longlonglongrightarrow> x) \<and> ((of_rat \<circ> lower_itvl \<circ> X) \<longlonglongrightarrow> x)"
 
 lemma tendsto_real_itvlI[intro]:
@@ -265,6 +166,122 @@ proof -
   ultimately show ?thesis unfolding tends_to_real_itvl_def o_def by auto
 qed
 
+lemma tends_to_real_itvl_diff: assumes "(\<lambda> i. f i) \<longlonglongrightarrow>\<^sub>r a" 
+  and "a \<noteq> b" 
+shows "\<exists> n. \<not> b \<in>\<^sub>r f n" 
+proof -
+  let ?d = "abs (b - a) / 2" 
+  from assms have d: "?d > 0" by auto
+  from assms(1)[unfolded tends_to_real_itvl_def] 
+  have cvg: "(of_rat o lower_itvl o f) \<longlonglongrightarrow> a" "(of_rat o upper_itvl o f) \<longlonglongrightarrow> a" by auto
+  from LIMSEQ_D[OF cvg(1) d] obtain n1 where 
+    n1: "\<And> n. n \<ge> n1 \<Longrightarrow> norm ((real_of_rat \<circ> lower_itvl \<circ> f) n - a) < ?d " by auto
+  from LIMSEQ_D[OF cvg(2) d] obtain n2 where
+    n2: "\<And> n. n \<ge> n2 \<Longrightarrow> norm ((real_of_rat \<circ> upper_itvl \<circ> f) n - a) < ?d " by auto
+  define n where "n = max n1 n2"  
+  from n1[of n] n2[of n] have bnd: 
+    "norm ((real_of_rat \<circ> lower_itvl \<circ> f) n - a) < ?d" 
+    "norm ((real_of_rat \<circ> upper_itvl \<circ> f) n - a) < ?d" 
+    unfolding n_def by auto
+  show ?thesis by (rule exI[of _ n], insert bnd, cases "f n", auto simp: in_real_itvl_def, argo) 
+qed
+  
+text \<open>Complex Intervals\<close>
+  
+datatype complex_itvl = Complex_Interval (Re_itvl: real_itvl) (Im_itvl: real_itvl)
+
+definition in_complex_itvl :: "complex \<Rightarrow> complex_itvl \<Rightarrow> bool" ("(_/ \<in>\<^sub>c _)" [51, 51] 50) where
+  "y \<in>\<^sub>c x \<equiv> (case x of Complex_Interval r i \<Rightarrow> Re y \<in>\<^sub>r r \<and> Im y \<in>\<^sub>r i)" 
+      
+definition zero_in_complex_itvl :: "complex_itvl \<Rightarrow> bool" where
+  "zero_in_complex_itvl x = (case x of Complex_Interval r i \<Rightarrow> zero_in_real_itvl r \<and> zero_in_real_itvl i)" 
+
+lemma zero_in_complex_itvl[simp]: "zero_in_complex_itvl x = (0 \<in>\<^sub>c x)" 
+  unfolding zero_in_complex_itvl_def in_complex_itvl_def by (cases x, auto)
+
+instantiation complex_itvl :: comm_monoid_add begin
+
+  definition "0 \<equiv> Complex_Interval 0 0"
+
+  fun plus_complex_itvl :: "complex_itvl \<Rightarrow> complex_itvl \<Rightarrow> complex_itvl" where
+    "Complex_Interval rx ix + Complex_Interval ry iy = Complex_Interval (rx + ry) (ix + iy)" 
+
+  instance
+  proof
+    fix a b c :: complex_itvl
+    show "a + b + c = a + (b + c)" by (cases a, cases b, cases c, simp add: ac_simps)
+    show "a + b = b + a" by (cases a, cases b, simp add: ac_simps)
+    show "0 + a = a" by (cases a, simp add: ac_simps zero_complex_itvl_def)
+  qed
+end
+
+lemma plus_complex_itvl: "x \<in>\<^sub>c X \<Longrightarrow> y \<in>\<^sub>c Y \<Longrightarrow> x + y \<in>\<^sub>c X + Y"
+  unfolding in_complex_itvl_def using plus_itvl_real by (cases X, cases Y, auto)
+
+definition of_int_complex_itvl :: "int \<Rightarrow> complex_itvl" where
+  "of_int_complex_itvl x = Complex_Interval (of_int_real_itvl x) 0" 
+
+lemma of_int_complex_itvl_0[simp]: "of_int_complex_itvl 0 = 0"
+  by (simp add: of_int_complex_itvl_def zero_complex_itvl_def of_int_real_itvl_def zero_real_itvl_def)
+
+lemma of_int_complex_itvl: "of_int i \<in>\<^sub>c of_int_complex_itvl i" 
+  unfolding in_complex_itvl_def of_int_complex_itvl_def using of_int_itvl_real[of i] 
+  by (auto simp: in_real_itvl_def zero_complex_itvl_def zero_real_itvl_def)
+
+instantiation complex_itvl :: times begin
+
+  fun times_complex_itvl :: "complex_itvl \<Rightarrow> complex_itvl \<Rightarrow> complex_itvl" where
+    "Complex_Interval rx ix * Complex_Interval ry iy =
+     Complex_Interval (rx * ry - ix * iy) (rx * iy + ix * ry)"
+
+  instance ..
+
+end
+
+instantiation complex_itvl :: minus begin
+
+  fun minus_complex_itvl where
+    "Complex_Interval R I - Complex_Interval R' I' = Complex_Interval (R-R') (I-I')"
+
+  instance..
+
+end
+
+lemma complex_itvl_mult_0[simp]:
+  fixes a :: complex_itvl shows "a * 0 = 0" by (cases a, simp add: zero_complex_itvl_def)
+
+lemma times_complex_itvl: "x \<in>\<^sub>c X \<Longrightarrow> y \<in>\<^sub>c Y \<Longrightarrow> x * y \<in>\<^sub>c X * Y"
+  unfolding in_complex_itvl_def
+  using times_itvl_real minus_itvl_real plus_itvl_real
+  by (cases X, cases Y, auto)
+
+definition ipoly_complex_itvl :: "int poly \<Rightarrow> complex_itvl \<Rightarrow> complex_itvl" where
+  "ipoly_complex_itvl p x = fold_coeffs (\<lambda>a b. of_int_complex_itvl a + x * b) p 0" 
+
+lemma ipoly_complex_itvl_0[simp]:
+  "ipoly_complex_itvl 0 x = 0"
+  by (auto simp: ipoly_complex_itvl_def)
+
+lemma ipoly_complex_itvl_pCons[simp]:
+  "ipoly_complex_itvl (pCons a p) x = of_int_complex_itvl a + x * (ipoly_complex_itvl p x)"
+  by (cases "p = 0"; cases "a = 0", auto simp: ipoly_complex_itvl_def)
+
+lemma ipoly_complex_itvl: assumes x: "x \<in>\<^sub>c X" 
+  shows "ipoly p x \<in>\<^sub>c ipoly_complex_itvl p X" 
+proof -
+  define xs where "xs = coeffs p"
+  have 0: "in_complex_itvl 0 0" (is "in_complex_itvl ?Z ?z")
+    unfolding in_complex_itvl_def in_real_itvl_def zero_complex_itvl_def zero_real_itvl_def by auto
+  define Z where "Z = ?Z" 
+  define z where "z = ?z" 
+  from 0 have 0: "in_complex_itvl Z z" unfolding Z_def z_def by auto
+  note x = times_complex_itvl[OF x]
+  show ?thesis 
+    unfolding poly_map_poly_code ipoly_complex_itvl_def fold_coeffs_def 
+      xs_def[symmetric] Z_def[symmetric] z_def[symmetric] using 0
+    by (induct xs arbitrary: Z z, auto intro!: plus_complex_itvl of_int_complex_itvl x)
+qed
+  
 definition tendsto_complex_itvl (infix "\<longlonglongrightarrow>\<^sub>c" 55) where
   "C \<longlonglongrightarrow>\<^sub>c c \<equiv> ((Re_itvl \<circ> C) \<longlonglongrightarrow>\<^sub>r Re c) \<and> ((Im_itvl \<circ> C) \<longlonglongrightarrow>\<^sub>r Im c)"
 
@@ -329,29 +346,9 @@ next
     done
 qed
 
-lemma tends_to_real_itvl_diff: assumes "(\<lambda> i. f i) \<longlonglongrightarrow>\<^sub>r a" 
-  and "a \<noteq> b" 
-shows "\<exists> n. \<not> in_real_itvl (f n) b" 
-proof -
-  let ?d = "abs (b - a) / 2" 
-  from assms have d: "?d > 0" by auto
-  from assms(1)[unfolded tends_to_real_itvl_def] 
-  have cvg: "(of_rat o lower_itvl o f) \<longlonglongrightarrow> a" "(of_rat o upper_itvl o f) \<longlonglongrightarrow> a" by auto
-  from LIMSEQ_D[OF cvg(1) d] obtain n1 where 
-    n1: "\<And> n. n \<ge> n1 \<Longrightarrow> norm ((real_of_rat \<circ> lower_itvl \<circ> f) n - a) < ?d " by auto
-  from LIMSEQ_D[OF cvg(2) d] obtain n2 where
-    n2: "\<And> n. n \<ge> n2 \<Longrightarrow> norm ((real_of_rat \<circ> upper_itvl \<circ> f) n - a) < ?d " by auto
-  define n where "n = max n1 n2"  
-  from n1[of n] n2[of n] have bnd: 
-    "norm ((real_of_rat \<circ> lower_itvl \<circ> f) n - a) < ?d" 
-    "norm ((real_of_rat \<circ> upper_itvl \<circ> f) n - a) < ?d" 
-    unfolding n_def by auto
-  show ?thesis by (rule exI[of _ n], insert bnd, cases "f n", auto simp: in_real_itvl_def, argo) 
-qed
-
 lemma tends_to_complex_itvl_diff: assumes "(\<lambda> i. f i) \<longlonglongrightarrow>\<^sub>c a" 
   and "a \<noteq> b" 
-shows "\<exists> n. \<not> in_complex_itvl (f n) b" 
+shows "\<exists> n. \<not> b \<in>\<^sub>c f n" 
 proof -
   from assms(1)[unfolded tendsto_complex_itvl_def o_def]
   have cvg: "(\<lambda>x. Re_itvl (f x)) \<longlonglongrightarrow>\<^sub>r Re a" "(\<lambda>x. Im_itvl (f x)) \<longlonglongrightarrow>\<^sub>r Im a" by auto

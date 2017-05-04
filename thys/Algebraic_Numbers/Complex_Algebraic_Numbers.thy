@@ -354,7 +354,7 @@ definition complex_roots_of_int_poly_all :: "int poly \<Rightarrow> complex list
     else if n = 1 then [roots1 (map_poly of_int p)] else if n = 2 then croots2 (map_poly of_int p)
     else [])"
 
-lemma in_real_itvl_get_bounds_tighten: "in_real_itvl (get_bounds_3 ((tighten_bounds_3 ^^ n) x)) (real_of_3 x)" 
+lemma in_real_itvl_get_bounds_tighten: "real_of_3 x \<in>\<^sub>r get_bounds_3 ((tighten_bounds_3 ^^ n) x)" 
 proof (induct n arbitrary: x)
   case 0
   thus ?case unfolding in_real_itvl_def using get_bounds_3[of x] by (cases "get_bounds_3 x", auto)
@@ -575,7 +575,7 @@ proof -
           unfolding xri pair_to_complex_def by auto
         show "?p ((?f ^^ n) x)"
           unfolding zero_in_complex_itvl id split 
-          by (rule ipoly_complex_itvl[of _ "pair_to_complex x" p, unfolded x], unfold px,
+          by (rule ipoly_complex_itvl[of "pair_to_complex x" _ p, unfolded x], unfold px,
             auto simp: in_complex_itvl_def in_real_itvl_get_bounds_tighten)
       next
         fix x
