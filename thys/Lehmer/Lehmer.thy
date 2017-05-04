@@ -32,7 +32,7 @@ lemma lehmers_weak_theorem:
   assumes min_cong1: "\<And>x. 0 < x \<Longrightarrow> x < p - 1 \<Longrightarrow> [a ^ x \<noteq> 1] (mod p)"
   assumes cong1: "[a ^ (p - 1) = 1] (mod p)"
   shows "prime p"
-using \<open>2 \<le> p\<close> proof (rule totient_prime)
+proof (rule totient_imp_prime)
   from `2 \<le> p` cong1 have "coprime a p"
     by (intro mod_1_coprime_nat[of "p - 1"]) auto
   then have "[a ^ totient p = 1] (mod p)"
@@ -41,9 +41,9 @@ using \<open>2 \<le> p\<close> proof (rule totient_prime)
     using min_cong1[of "totient p"] by fastforce
   moreover have "totient p > 0"
     using `2 \<le> p` by simp
-  ultimately show "totient p = p - 1"
-    by (simp add: order_antisym)
-qed
+  moreover from \<open>p \<ge> 2\<close> have "totient p < p" by (intro totient_less) auto
+  ultimately show "totient p = p - 1" by presburger
+qed (insert \<open>p \<ge> 2\<close>, auto)
 
 lemma prime_factors_elem:
   fixes n :: nat assumes "1 < n" shows "\<exists>p. p \<in> prime_factors n"
@@ -187,7 +187,7 @@ lemma converse_lehmer_weak:
     then have "[a ^ totient p = 1] (mod p)"
       by (rule euler_theorem)
     also from prime_p have "totient p = p - 1"
-      by (rule prime_totient)
+      by (rule totient_prime)
     finally have "[a ^ (p - 1) = 1] (mod p)" .
   }
   hence "[a^(p - 1) = 1] (mod p)" using a by fastforce
