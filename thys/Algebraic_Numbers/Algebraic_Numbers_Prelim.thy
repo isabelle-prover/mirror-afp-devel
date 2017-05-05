@@ -867,7 +867,7 @@ proof -
   qed
 qed
   
-corollary irreducible_implies_minimal_degree: 
+corollary irreducible_represents_imp_degree: 
   fixes x :: "'a :: {field_char_0,euclidean_ring_gcd}"
   assumes "irreducible f" and "f represents x" and "g represents x"
   shows "degree f \<le> degree g"
