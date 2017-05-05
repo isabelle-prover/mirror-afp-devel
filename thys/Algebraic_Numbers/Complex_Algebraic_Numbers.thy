@@ -426,7 +426,7 @@ proof(rule dist_tendsto_0_imp_tendsto, rule sandwitch_real)
     unfolding upper_3_def lower_3_def by auto
 qed (insert interval_size_3_tendsto_0, auto)
 
-lemma tends_to_tight_bounds_3: "(\<lambda>x. get_itvl_3 ((tighten_bounds_3 ^^ x) y)) \<longlonglongrightarrow>\<^sub>r real_of_3 y" 
+lemma tends_to_tight_bounds_3: "(\<lambda>x. get_itvl_3 ((tighten_bounds_3 ^^ x) y)) \<longlonglongrightarrow>\<^sub>i real_of_3 y" 
   using lower_3_tendsto[of y] upper_3_tendsto[of y] unfolding lower_3_def upper_3_def
     interval_tendsto_def o_def by auto
     

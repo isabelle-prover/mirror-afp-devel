@@ -13,7 +13,7 @@ text \<open>We provide basic interval arithmetic operations for real and complex
   
 theory Interval_Arithmetic
 imports
-  Algebraic_Numbers_Prelim (* for certain simp rules *)
+  Algebraic_Numbers_Prelim (* for ipoly *)
 begin
 
 text \<open>Intervals\<close>
@@ -243,24 +243,24 @@ qed
 subsection {* Convergence *}
 
 definition interval_tendsto :: "(nat \<Rightarrow> 'a :: topological_space interval) \<Rightarrow> 'a \<Rightarrow> bool"
-  (infixr "\<longlonglongrightarrow>\<^sub>r" 55) where
-  "(X \<longlonglongrightarrow>\<^sub>r x) \<equiv> ((interval.upper \<circ> X) \<longlonglongrightarrow> x) \<and> ((interval.lower \<circ> X) \<longlonglongrightarrow> x)"
+  (infixr "\<longlonglongrightarrow>\<^sub>i" 55) where
+  "(X \<longlonglongrightarrow>\<^sub>i x) \<equiv> ((interval.upper \<circ> X) \<longlonglongrightarrow> x) \<and> ((interval.lower \<circ> X) \<longlonglongrightarrow> x)"
 
 lemma interval_tendstoI[intro]:
   assumes "(interval.upper \<circ> X) \<longlonglongrightarrow> x" and "(interval.lower \<circ> X) \<longlonglongrightarrow> x"
-  shows "X \<longlonglongrightarrow>\<^sub>r x"
+  shows "X \<longlonglongrightarrow>\<^sub>i x"
   using assms by (auto simp:interval_tendsto_def)
 
-lemma const_interval_tendsto: "(\<lambda>i. to_interval a) \<longlonglongrightarrow>\<^sub>r a"
+lemma const_interval_tendsto: "(\<lambda>i. to_interval a) \<longlonglongrightarrow>\<^sub>i a"
   by (auto simp: o_def to_interval_def)
 
-lemma interval_tendsto_0: "(\<lambda>i. 0) \<longlonglongrightarrow>\<^sub>r 0"
+lemma interval_tendsto_0: "(\<lambda>i. 0) \<longlonglongrightarrow>\<^sub>i 0"
   by (auto simp: o_def zero_interval_def)
 
 lemma plus_interval_tendsto:
   fixes x y :: "'a :: topological_monoid_add"
-  assumes "X \<longlonglongrightarrow>\<^sub>r x" "Y \<longlonglongrightarrow>\<^sub>r y"
-  shows "(\<lambda> i. X i + Y i) \<longlonglongrightarrow>\<^sub>r x + y"
+  assumes "X \<longlonglongrightarrow>\<^sub>i x" "Y \<longlonglongrightarrow>\<^sub>i y"
+  shows "(\<lambda> i. X i + Y i) \<longlonglongrightarrow>\<^sub>i x + y"
 proof -
   have *: "X i + Y i = Interval (interval.lower (X i) + interval.lower (Y i)) (interval.upper (X i) + interval.upper (Y i))" for i
      by (cases "X i"; cases "Y i", auto)
@@ -269,8 +269,8 @@ qed
 
 lemma uminus_interval_tendsto:
   fixes x :: "'a :: topological_group_add"
-  assumes "X \<longlonglongrightarrow>\<^sub>r x"
-  shows "(\<lambda>i. - X i) \<longlonglongrightarrow>\<^sub>r -x"
+  assumes "X \<longlonglongrightarrow>\<^sub>i x"
+  shows "(\<lambda>i. - X i) \<longlonglongrightarrow>\<^sub>i -x"
 proof-
   have *: "- X i = Interval (- interval.upper (X i)) (- interval.lower (X i))" for i
     by (cases "X i", auto)
@@ -279,8 +279,8 @@ qed
 
 lemma minus_interval_tendsto:
   fixes x y :: "'a :: topological_group_add"
-  assumes "X \<longlonglongrightarrow>\<^sub>r x" "Y \<longlonglongrightarrow>\<^sub>r y"
-  shows "(\<lambda> i. X i - Y i) \<longlonglongrightarrow>\<^sub>r x - y"
+  assumes "X \<longlonglongrightarrow>\<^sub>i x" "Y \<longlonglongrightarrow>\<^sub>i y"
+  shows "(\<lambda> i. X i - Y i) \<longlonglongrightarrow>\<^sub>i x - y"
 proof -
   have *: "X i - Y i = Interval (interval.lower (X i) - interval.upper (Y i)) (interval.upper (X i) - interval.lower (Y i))" for i
     by (cases "X i"; cases "Y i", auto)
@@ -289,8 +289,8 @@ qed
 
 lemma times_interval_tendsto:
   fixes x y :: "'a :: {linorder_topology, real_normed_algebra}"
-  assumes "X \<longlonglongrightarrow>\<^sub>r x" "Y \<longlonglongrightarrow>\<^sub>r y"
-  shows "(\<lambda> i. X i * Y i) \<longlonglongrightarrow>\<^sub>r x * y"
+  assumes "X \<longlonglongrightarrow>\<^sub>i x" "Y \<longlonglongrightarrow>\<^sub>i y"
+  shows "(\<lambda> i. X i * Y i) \<longlonglongrightarrow>\<^sub>i x * y"
 proof -
   have *: "(interval.lower (X i * Y i)) = (
     let lx = (interval.lower (X i)); ux = (interval.upper (X i));
@@ -314,7 +314,7 @@ qed
 
 lemma interval_tendsto_neq:
   fixes a b :: "real"
-  assumes "(\<lambda> i. f i) \<longlonglongrightarrow>\<^sub>r a" and "a \<noteq> b" 
+  assumes "(\<lambda> i. f i) \<longlonglongrightarrow>\<^sub>i a" and "a \<noteq> b" 
   shows "\<exists> n. \<not> b \<in>\<^sub>i f n" 
 proof -
   let ?d = "norm (b - a) / 2" 
@@ -423,10 +423,10 @@ proof -
 qed
   
 definition complex_interval_tendsto (infix "\<longlonglongrightarrow>\<^sub>c" 55) where
-  "C \<longlonglongrightarrow>\<^sub>c c \<equiv> ((Re_interval \<circ> C) \<longlonglongrightarrow>\<^sub>r Re c) \<and> ((Im_interval \<circ> C) \<longlonglongrightarrow>\<^sub>r Im c)"
+  "C \<longlonglongrightarrow>\<^sub>c c \<equiv> ((Re_interval \<circ> C) \<longlonglongrightarrow>\<^sub>i Re c) \<and> ((Im_interval \<circ> C) \<longlonglongrightarrow>\<^sub>i Im c)"
 
 lemma complex_interval_tendstoI[intro!]:
-  "(Re_interval \<circ> C) \<longlonglongrightarrow>\<^sub>r Re c \<Longrightarrow> (Im_interval \<circ> C) \<longlonglongrightarrow>\<^sub>r Im c \<Longrightarrow> C \<longlonglongrightarrow>\<^sub>c c"
+  "(Re_interval \<circ> C) \<longlonglongrightarrow>\<^sub>i Re c \<Longrightarrow> (Im_interval \<circ> C) \<longlonglongrightarrow>\<^sub>i Im c \<Longrightarrow> C \<longlonglongrightarrow>\<^sub>c c"
   by (simp add: complex_interval_tendsto_def)
 
 lemma of_int_complex_interval_tendsto: "(\<lambda>i. of_int_complex_interval n) \<longlonglongrightarrow>\<^sub>c of_int n"
@@ -485,7 +485,7 @@ lemma complex_interval_tendsto_neq: assumes "(\<lambda> i. f i) \<longlonglongri
 shows "\<exists> n. \<not> b \<in>\<^sub>c f n" 
 proof -
   from assms(1)[unfolded complex_interval_tendsto_def o_def]
-  have cvg: "(\<lambda>x. Re_interval (f x)) \<longlonglongrightarrow>\<^sub>r Re a" "(\<lambda>x. Im_interval (f x)) \<longlonglongrightarrow>\<^sub>r Im a" by auto
+  have cvg: "(\<lambda>x. Re_interval (f x)) \<longlonglongrightarrow>\<^sub>i Re a" "(\<lambda>x. Im_interval (f x)) \<longlonglongrightarrow>\<^sub>i Im a" by auto
   from assms(2) have "Re a \<noteq> Re b \<or> Im a \<noteq> Im b"
     using complex.expand by blast
   thus ?thesis
