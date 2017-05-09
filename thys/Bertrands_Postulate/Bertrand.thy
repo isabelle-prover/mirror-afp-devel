@@ -1,6 +1,6 @@
 (*
   File:     Bertrand.thy
-  Authors:  Julian Biendarra, Manuel Eberl <eberlm@in.tum.de>
+  Authors:  Julian Biendarra, Manuel Eberl <eberlm@in.tum.de>, Larry Paulson
 
   A proof of Bertrand's postulate (based on John Harrison's HOL Light proof).
   Uses reflection and the approximation tactic.
@@ -375,6 +375,16 @@ proof -
     using prime_power_mult_nat[of p a b] by blast
   with \<open>prime p\<close> show "a = 1 \<or> primepow a" "b = 1 \<or> primepow b" by auto
 qed
+  
+lemma mangoldt_primepow:
+   "prime p \<Longrightarrow> mangoldt (p ^ k) = (if k > 0 then ln p else 0)"
+  by (simp add: mangoldt_def aprimedivisor_prime_power)
+    
+lemma mangoldt_primepow' [simp]: "prime p \<Longrightarrow> k > 0 \<Longrightarrow> mangoldt (p ^ k) = ln p"
+  by (subst mangoldt_primepow) auto
+
+lemma mangoldt_prime [simp]: "prime p \<Longrightarrow> mangoldt p = ln p"    
+  using mangoldt_primepow[of p 1] by simp
 
 lemma primepow_mult_aprimedivisorI:
   assumes "primepow n"
@@ -500,9 +510,9 @@ lemma primepow_cases:
      (\<not> primepow_even d \<and>   primepow_odd d \<and> \<not> prime d) \<or>
      (\<not> primepow_even d \<and> \<not> primepow_odd d \<and>   prime d)"
   by (auto simp: primepow_even_altdef primepow_odd_altdef multiplicity_aprimedivisor_Suc_0_iff
-           elim!: oddE intro!: Nat.gr0I)  
+           elim!: oddE intro!: Nat.gr0I)
 
-  
+
 subsection \<open>Deriving a recurrence for the psi function\<close>
   
 lemma ln_fact_bounds:
@@ -822,7 +832,7 @@ lemma mangoldt_pos: "0 \<le> mangoldt d"
   using aprimedivisor_gt_1[of d]
   by (auto simp: mangoldt_def of_nat_le_iff[of 1 x for x, unfolded of_nat_1] Suc_le_eq
            intro!: ln_ge_zero dest: primepow_gt_Suc_0)
-  
+
 context
 begin
 
@@ -1854,6 +1864,283 @@ next
   moreover from assms have "\<not>prime (2*n)" by (auto dest!: prime_product)
   with \<open>prime p\<close> have "p \<noteq> 2 * n" by auto
   ultimately show ?thesis by force
+qed
+  
+  
+subsection \<open>Proof of Mertens' first theorem\<close>
+
+text \<open>
+  The following proof of Mertens' first theorem was ported from John Harrison's HOL Light
+  proof by Larry Paulson:
+\<close>
+
+lemma sum_integral_ubound_decreasing':
+  fixes f :: "real \<Rightarrow> real"
+  assumes "m \<le> n"
+      and der: "\<And>x. x \<in> {of_nat m - 1..of_nat n} \<Longrightarrow> (g has_field_derivative f x) (at x)"
+      and le:  "\<And>x y. \<lbrakk>real m - 1 \<le> x; x \<le> y; y \<le> real n\<rbrakk> \<Longrightarrow> f y \<le> f x"
+    shows "(\<Sum>k = m..n. f (of_nat k)) \<le> g (of_nat n) - g (of_nat m - 1)"
+proof -
+  have "(\<Sum>k = m..n. f (of_nat k)) \<le> (\<Sum>k = m..n. g (of_nat(Suc k) - 1) - g (of_nat k - 1))"
+  proof (rule sum_mono, clarsimp)
+    fix r
+    assume r: "m \<le> r" "r \<le> n"
+    hence "\<exists>z>real r - 1. z < real r \<and> g (real r) - g (real r - 1) = (real r - (real r - 1)) * f z"
+      using assms by (intro MVT2) auto
+    hence "\<exists>z\<in>{of_nat r - 1..of_nat r}. g (real r) - g (real r - 1) = f z" by auto
+    then obtain u::real where u: "u \<in> {of_nat r - 1..of_nat r}"
+                        and eq: "g r - g (of_nat r - 1) = f u" by blast
+    have "real m \<le> u + 1"
+      using r u by auto
+    then have "f (of_nat r) \<le> f u"
+      using r(2) and u by (intro le) auto
+    then show "f (of_nat r) \<le> g r - g (of_nat r - 1)"
+      by (simp add: eq)
+  qed
+  also have "\<dots> \<le> g (of_nat n) - g (of_nat m - 1)"
+    using \<open>m \<le> n\<close> by (subst sum_Suc_diff) auto
+  finally show ?thesis .
+qed
+
+lemma Mertens_lemma:
+  assumes "n \<noteq> 0"
+    shows "\<bar>(\<Sum>d = 1..n. mangoldt d / real d) - ln n\<bar> \<le> 4"
+proof -
+  have *: "\<lbrakk>abs(s' - nl + n) \<le> a; abs(s' - s) \<le> (k - 1) * n - a\<rbrakk>
+        \<Longrightarrow> abs(s - nl) \<le> n * k" for s' s k nl a::real
+    by (auto simp: algebra_simps abs_if split: if_split_asm)
+  have le: "\<bar>(\<Sum>d=1..n. mangoldt d * floor (n / d)) - n * ln n + n\<bar> \<le> 1 + ln n"
+    using ln_fact_bounds ln_fact_conv_mangoldt assms by simp
+  have "\<bar>real n * ((\<Sum>d = 1..n. mangoldt d / real d) - ln n)\<bar> =
+        \<bar>((\<Sum>d = 1..n. real n * mangoldt d / real d) - n * ln n)\<bar>"
+    by (simp add: algebra_simps sum_distrib_left)
+  also have "\<dots> \<le> real n * 4"
+  proof (rule * [OF le])
+    have "\<bar>(\<Sum>d = 1..n. mangoldt d * \<lfloor>n / d\<rfloor>) - (\<Sum>d = 1..n. n * mangoldt d / d)\<bar>
+        = \<bar>\<Sum>d = 1..n. mangoldt d * (\<lfloor>n / d\<rfloor> - n / d)\<bar>"
+      by (simp add: sum_subtractf algebra_simps)
+    also have "\<dots> \<le> psi n" (is "\<bar>?sm\<bar> \<le> ?rhs")
+    proof -
+      have "-?sm = (\<Sum>d = 1..n. mangoldt d * (n/d - \<lfloor>n/d\<rfloor>))"
+        by (simp add: sum_subtractf algebra_simps)
+      also have "\<dots> \<le> (\<Sum>d = 1..n. mangoldt d * 1)"
+        by (intro sum_mono mult_left_mono mangoldt_pos) linarith
+      finally have "-?sm \<le> ?rhs" by (simp add: psi_def)
+      moreover
+      have "?sm \<le> 0"
+        using mangoldt_pos by (simp add: mult_le_0_iff sum_nonpos)
+      ultimately show ?thesis
+        by (simp add: abs_if)
+    qed
+    also have "\<dots> \<le> 3/2 * real n"
+      by (rule psi_ubound_3_2)
+    also have "\<dots>\<le> (4 - 1) * real n - (1 + ln n)"
+      using ln_le_minus_one [of n] assms by (simp add: divide_simps)
+    finally
+    show "\<bar>(\<Sum>d = 1..n. mangoldt d * real_of_int \<lfloor>real n / real d\<rfloor>) -
+           (\<Sum>d = 1..n. real n * mangoldt d / real d)\<bar>
+          \<le> (4 - 1) * real n - (1 + ln n)" .
+  qed
+  finally have "\<bar>real n * ((\<Sum>d = 1..n. mangoldt d / real d) - ln n)\<bar> \<le> real n * 4" .
+  then show ?thesis
+    using assms mult_le_cancel_left_pos by (simp add: abs_mult)
+qed
+
+lemma Mertens_mangoldt_versus_ln:
+  assumes "I \<subseteq> {1..n}"
+  shows "\<bar>(\<Sum>i\<in>I. mangoldt i / i) - (\<Sum>p | prime p \<and> p \<in> I. ln p / p)\<bar> \<le> 3"
+        (is "\<bar>?lhs\<bar> \<le> 3")
+proof (cases "n = 0")
+  case True
+  with assms show ?thesis by simp
+next
+  case False
+    have "finite I"
+      using assms finite_subset by blast
+    have "0 \<le> (\<Sum>i\<in>I. mangoldt i / i - (if prime i then ln i / i else 0))"
+      using mangoldt_pos by (simp add: sum_nonneg)
+    moreover have "\<dots> \<le> (\<Sum>i = 1..n. mangoldt i / i - (if prime i then ln i / i else 0))"
+      using assms by (intro sum_mono2) (auto simp: mangoldt_pos)
+    ultimately have *: "\<bar>\<Sum>i\<in>I. mangoldt i / i - (if prime i then ln i / i else 0)\<bar>
+                      \<le> \<bar>\<Sum>i = 1..n. mangoldt i / i - (if prime i then ln i / i else 0)\<bar>"
+      by linarith
+    moreover have "?lhs = (\<Sum>i\<in>I. mangoldt i / i - (if prime i then ln i / i else 0))"
+                  "(\<Sum>i = 1..n. mangoldt i / i - (if prime i then ln i / i else 0))
+                        = (\<Sum>d = 1..n. mangoldt d / d) - (\<Sum>p | prime p \<and> p \<in> {1..n}. ln p / p)"
+      using sum.inter_restrict [of _ "\<lambda>i. ln (real i) / i" "Collect prime", symmetric]  
+       by (force simp: sum_subtractf \<open>finite I\<close> intro: sum.cong)+
+    ultimately have "\<bar>?lhs\<bar> \<le> \<bar>(\<Sum>d = 1..n. mangoldt d / d) - 
+                          (\<Sum>p | prime p \<and> p \<in> {1..n}. ln p / p)\<bar>" by linarith
+    also have "\<dots> \<le> 3"
+    proof -
+      have eq_sm: "(\<Sum>i = 1..n. mangoldt i / i) = 
+                     (\<Sum>i \<in> {p^k |p k. prime p \<and> p^k \<le> n \<and> k \<ge> 1}. mangoldt i / i)"
+        by (intro sum.mono_neutral_right) 
+           (auto simp: mangoldt_def primepow_def dest: prime_ge_1_nat split: if_split_asm)
+      have "(\<Sum>i = 1..n. mangoldt i / i) - (\<Sum>p | prime p \<and> p \<in> {1..n}. ln p / p) =
+            (\<Sum>i \<in> {p^k |p k. prime p \<and> p^k \<le> n \<and> k \<ge> 2}. mangoldt i / i)"
+      proof -
+        have eq: "{p ^ k |p k. prime p \<and> p ^ k \<le> n \<and> 1 \<le> k} =
+                  {p ^ k |p k. prime p \<and> p ^ k \<le> n \<and> 2 \<le> k} \<union> {p. prime p \<and> p \<in> {1..n}}"
+          by (force simp: prime_ge_Suc_0_nat prime_power_iff)
+        have eqln: "(\<Sum>p | prime p \<and> p \<in> {1..n}. ln p / p) = 
+                      (\<Sum>p | prime p \<and> p \<in> {1..n}. mangoldt p / p)"
+          by (rule sum.cong) auto
+        have "(\<Sum>i \<in> {p^k |p k. prime p \<and> p^k \<le> n \<and> k \<ge> 1}. mangoldt i / i) = 
+                (\<Sum>i \<in> {p ^ k |p k. prime p \<and> p ^ k \<le> n \<and> 2 \<le> k} \<union> 
+                {p. prime p \<and> p \<in> {1..n}}. mangoldt i / i)" by (subst eq) simp_all
+        also have "\<dots> = (\<Sum>i \<in> {p^k |p k. prime p \<and> p^k \<le> n \<and> k \<ge> 2}. mangoldt i / i)
+                       + (\<Sum>p | prime p \<and> p \<in> {1..n}. mangoldt p / p)"
+          by (intro sum.union_disjoint) (auto simp: prime_power_iff finite_nat_set_iff_bounded_le)
+        also have "\<dots> = (\<Sum>i \<in> {p^k |p k. prime p \<and> p^k \<le> n \<and> k \<ge> 2}. mangoldt i / i)
+                       + (\<Sum>p | prime p \<and> p \<in> {1..n}. ln p / p)" by (simp only: eqln)
+        finally show ?thesis
+          using eq_sm by auto
+      qed
+      have "(\<Sum>p | prime p \<and> p \<in> {1..n}. ln p / p) \<le> (\<Sum>p | prime p \<and> p \<in> {1..n}. mangoldt p / p)"
+        using mangoldt_pos by (auto intro: sum_mono)
+      also have "\<dots> \<le> (\<Sum>i = Suc 0..n. mangoldt i / i)"
+        by (intro sum_mono2) (auto simp: mangoldt_pos)
+      finally have "0 \<le> (\<Sum>i = 1..n. mangoldt i / i) - (\<Sum>p | prime p \<and> p \<in> {1..n}. ln p / p)"
+        by simp
+      moreover have "(\<Sum>i = 1..n. mangoldt i / i) - (\<Sum>p | prime p \<and> p \<in> {1..n}. ln p / p) \<le> 3"
+                     (is "?M - ?L \<le> 3")
+      proof -
+        have *: "\<exists>q. \<exists>j\<in>{1..n}. prime q \<and> 1 \<le> q \<and> q \<le> n \<and>
+                  (q ^ j = p ^ k \<and> mangoldt (p ^ k) / real p ^ k \<le> ln (real q) / real q ^ j)"
+          if "prime p" "p ^ k \<le> n" "1 \<le> k" for p k
+        proof -
+          have "mangoldt (p ^ k) / real p ^ k \<le> ln p / p ^ k"
+            using that by (simp add: divide_simps)
+          moreover have "p \<le> n"
+            using that self_le_power[of p k] by (simp add: prime_ge_Suc_0_nat)
+          moreover have "k \<le> n"
+          proof -
+            have "k < 2^k"
+              using of_nat_less_two_power real_of_nat_less_numeral_power_cancel_iff by blast
+            also have "\<dots> \<le> p^k"
+              by (simp add: power_mono prime_ge_2_nat that)
+            also have "\<dots> \<le> n"
+              by (simp add: that)
+            finally show ?thesis by (simp add: that)
+          qed
+          ultimately show ?thesis
+            using prime_ge_1_nat that by force
+        qed
+        have finite: "finite {p ^ k |p k. prime p \<and> p ^ k \<le> n \<and> 1 \<le> k}"
+          by (rule finite_subset[of _ "{..n}"]) auto
+        have "?M \<le> (\<Sum>(x, k)\<in>{p. prime p \<and> p \<in> {1..n}} \<times> {1..n}. ln (real x) / real x ^ k)"
+          by (subst eq_sm, intro sum_le_included [where i = "\<lambda>(p,k). p^k"])
+             (insert * finite, auto)
+        also have "\<dots> = (\<Sum>p | prime p \<and> p \<in> {1..n}. (\<Sum>k = 1..n. ln p / p^k))"
+          by (subst sum.Sigma) auto
+        also have "\<dots> = ?L + (\<Sum>p | prime p \<and> p \<in> {1..n}. (\<Sum>k = 2..n. ln p / p^k))"
+          by (simp add: comm_monoid_add_class.sum.distrib sum_head_Suc numeral_2_eq_2)
+        finally have "?M - ?L \<le> (\<Sum>p | prime p \<and> p \<in> {1..n}. (\<Sum>k = 2..n. ln p / p^k))"
+          by (simp add: algebra_simps)
+        also have "\<dots> = (\<Sum>p | prime p \<and> p \<in> {1..n}. ln p * (\<Sum>k = 2..n. inverse p ^ k))"
+          by (simp add: field_simps sum_distrib_left)
+        also have "\<dots> = (\<Sum>p | prime p \<and> p \<in> {1..n}. 
+                          ln p * (((inverse p)\<^sup>2 - inverse p ^ Suc n) / (1 - inverse p)))"
+          by (intro sum.cong refl) (simp add: sum_gp)
+        also have "\<dots> \<le> (\<Sum>p | prime p \<and> p \<in> {1..n}. ln p * inverse (real (p * (p - 1))))"
+          by (intro sum_mono mult_left_mono)
+             (auto simp: divide_simps power2_eq_square of_nat_diff mult_less_0_iff)
+        also have "\<dots> \<le> (\<Sum>p = 2..n. ln p * inverse (real (p * (p - 1))))"
+          by (rule sum_mono2) (use prime_ge_2_nat in auto)
+        also have "\<dots> \<le> (\<Sum>i = 2..n. ln i / (i - 1)\<^sup>2)"
+          unfolding divide_inverse power2_eq_square mult.assoc
+          by (auto intro: sum_mono mult_left_mono mult_right_mono)
+        also have "\<dots> \<le> 3"
+        proof (cases "n \<ge> 3")
+          case False then show ?thesis
+          proof (cases "n \<ge> 2")
+            case False then show ?thesis by simp
+          next
+            case True
+            then have "n = 2" using False by linarith
+            with ln_le_minus_one [of 2] show ?thesis by simp
+          qed
+        next
+          case True
+          have "(\<Sum>i = 3..n. ln (real i) / (real (i - Suc 0))\<^sup>2)
+                \<le> (ln (of_nat n - 1)) - (ln (of_nat n)) - (ln (of_nat n) / (of_nat n - 1)) + 2 * ln 2"
+          proof -
+            have 1: "((\<lambda>z. ln (z - 1) - ln z - ln z / (z - 1)) has_field_derivative ln x / (x - 1)\<^sup>2) (at x)"
+              if x: "x \<in> {2..real n}" for x
+              by (rule derivative_eq_intros | rule refl | 
+                   (use x in \<open>force simp: power2_eq_square divide_simps\<close>))+
+            have 2: "ln y / (y - 1)\<^sup>2 \<le> ln x / (x - 1)\<^sup>2" if xy: "2 \<le> x" "x \<le> y" "y \<le> real n" for x y
+            proof (cases "x = y")
+              case False
+              define f' :: "real \<Rightarrow> real"
+                where "f' = (\<lambda>u. ((u - 1)\<^sup>2 / u - ln u * (2 * u - 2)) / (u - 1) ^ 4)"
+              have f'_altdef: "f' u = inverse u * inverse ((u - 1)\<^sup>2) - 2 * ln u / (u - 1) ^ 3" 
+                if u: "u \<in> {x..y}" for u::real unfolding f'_def using u (* TODO ugly *)
+                by (simp add: eval_nat_numeral divide_simps) (simp add: algebra_simps)?
+              have deriv: "((\<lambda>z. ln z / (z - 1)\<^sup>2) has_field_derivative f' u) (at u)"
+                if u: "u \<in> {x..y}" for u::real unfolding f'_def
+                by (rule derivative_eq_intros refl | (use u xy in \<open>force simp: divide_simps\<close>))+
+              hence "\<exists>z>x. z < y \<and> ln y / (y - 1)\<^sup>2 - ln x / (x - 1)\<^sup>2 = (y - x) * f' z"
+                using xy and \<open>x \<noteq> y\<close> by (intro MVT2) auto
+              then obtain \<xi>::real where "x < \<xi>" "\<xi> < y"
+                and \<xi>: "ln y / (y - 1)\<^sup>2 - ln x / (x - 1)\<^sup>2 = (y - x) * f' \<xi>" by blast
+              have "f' \<xi> \<le> 0"
+              proof -
+                have "2/3 \<le> ln (2::real)" by (fact ln_2_ge')
+                also have "\<dots> \<le> ln \<xi>"
+                  using \<open>x < \<xi>\<close> xy by auto
+                finally have "1 \<le> 2 * ln \<xi>" by simp
+                then have *: "\<xi> \<le> \<xi> * (2 * ln \<xi>)"
+                  using \<open>x < \<xi>\<close> xy by auto
+                hence "\<xi> - 1 \<le> ln \<xi> * 2 * \<xi>" by (simp add: algebra_simps)
+                hence "1 / (\<xi> * (\<xi> - 1)\<^sup>2) \<le> ln \<xi> * 2 / (\<xi> - 1) ^ 3"
+                  using xy \<open>x < \<xi>\<close> by (simp add: divide_simps power_eq_if)
+                thus ?thesis using xy \<open>x < \<xi>\<close> \<open>\<xi> < y\<close> by (subst f'_altdef) (auto simp: divide_simps)
+              qed
+              then have "(ln y / (y - 1)\<^sup>2 - ln x / (x - 1)\<^sup>2) \<le> 0"
+                using \<open>x \<le> y\<close> by (simp add: mult_le_0_iff \<xi>)
+              then show ?thesis by simp
+            qed simp_all
+            show ?thesis
+              using sum_integral_ubound_decreasing'
+                [OF \<open>3 \<le> n\<close>, of "\<lambda>z. ln(z-1) - ln z - ln z / (z - 1)" "\<lambda>z. ln z / (z-1)\<^sup>2"]
+                1 2 \<open>3 \<le> n\<close>
+              by (auto simp: in_Reals_norm of_nat_diff)
+          qed
+          also have "\<dots> \<le> 2"
+          proof -
+            have "ln (real n - 1) - ln n \<le> 0"  "0 \<le> ln n / (real n - 1)"
+              using \<open>3 \<le> n\<close> by auto
+            then have "ln (real n - 1) - ln n - ln n / (real n - 1) \<le> 0"
+              by linarith
+            with ln_2_less_1 show ?thesis by linarith
+          qed
+          also have "\<dots> \<le> 3 - ln 2"
+            using ln_2_less_1 by (simp add: algebra_simps)
+        finally show ?thesis
+          using True by (simp add: algebra_simps sum_head_Suc [of 2 n])
+      qed
+        finally show ?thesis .
+      qed
+      ultimately show ?thesis
+        by linarith
+    qed
+  finally show ?thesis .
+qed
+
+proposition Mertens:
+  assumes "n \<noteq> 0"
+  shows "\<bar>(\<Sum>p | prime p \<and> p \<le> n. ln p / of_nat p) - ln n\<bar> \<le> 7"
+proof -
+  have "\<bar>(\<Sum>d = 1..n. mangoldt d / real d) - (\<Sum>p | prime p \<and> p \<in> {1..n}. ln (real p) / real p)\<bar>
+             \<le> 7 - 4" using Mertens_mangoldt_versus_ln [of "{1..n}" n] by simp_all
+  also have "{p. prime p \<and> p \<in> {1..n}} = {p. prime p \<and> p \<le> n}"
+    using atLeastAtMost_iff prime_ge_1_nat by blast
+  finally have "\<bar>(\<Sum>d = 1..n. mangoldt d / real d) - (\<Sum>p\<in>\<dots>. ln (real p) / real p)\<bar> \<le> 7 - 4" .
+  moreover from assms have "\<bar>(\<Sum>d = 1..n. mangoldt d / real d) - ln n\<bar> \<le> 4"
+    by (rule Mertens_lemma)
+  ultimately show ?thesis by linarith
 qed
 
 end

@@ -4969,7 +4969,7 @@ abstract =
 
 [Bertrands_Postulate]
 title = Bertrand's postulate
-author = Julian Biendarra<>, Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Julian Biendarra<>, Manuel Eberl <https://www21.in.tum.de/~eberlm>, Lawrence C. Paulson <http://www.cl.cam.ac.uk/~lp15/>
 topic = Mathematics/Number Theory
 date = 2017-01-17
 notify = eberlm@in.tum.de
