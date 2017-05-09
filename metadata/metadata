@@ -853,6 +853,27 @@ abstract =
 	</p>
 notify = pasquale.noce.lavoro@gmail.com
 
+[Floyd_Warshall]
+title = The Floyd-Warshall Algorithm for Shortest Paths
+author = Simon Wimmer <http://in.tum.de/~wimmers>, Peter Lammich <http://www21.in.tum.de/~lammich/>
+topic = Computer Science/Algorithms
+date = 2017-05-08
+notify = wimmers@in.tum.de
+abstract = 
+  The Floyd-Warshall algorithm [Flo62, Roy59, War62] is a classic
+  dynamic programming algorithm to compute the length of all shortest
+  paths between any two vertices in a graph (i.e. to solve the all-pairs
+  shortest path problem, or APSP for short). Given a representation of
+  the graph as a matrix of weights M, it computes another matrix M'
+  which represents a graph with the same path lengths and contains the
+  length of the shortest path between any two vertices i and j. This is
+  only possible if the graph does not contain any negative cycles.
+  However, in this case the Floyd-Warshall algorithm will detect the
+  situation by calculating a negative diagonal entry. This entry
+  includes a formalization of the algorithm and of these key properties.
+  The algorithm is refined to an efficient imperative version using the
+  Imperative Refinement Framework.
+
 [Roy_Floyd_Warshall]
 title = Transitive closure according to Roy-Floyd-Warshall
 author = Makarius Wenzel <https://www.lri.fr/~wenzel>

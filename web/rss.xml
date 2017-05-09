@@ -9,7 +9,28 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>04 May 2017 00:00:00 +0000</pubDate>
+    <pubDate>08 May 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>The Floyd-Warshall Algorithm for Shortest Paths</title>
+              <link>https://www.isa-afp.org/entries/Floyd_Warshall.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Floyd_Warshall.shtml</guid>
+       <dc:creator> Simon Wimmer, Peter Lammich       </dc:creator>
+       <pubDate>08 May 2017 00:00:00 +0000</pubDate>
+       <description>
+The Floyd-Warshall algorithm [Flo62, Roy59, War62] is a classic
+dynamic programming algorithm to compute the length of all shortest
+paths between any two vertices in a graph (i.e. to solve the all-pairs
+shortest path problem, or APSP for short). Given a representation of
+the graph as a matrix of weights M, it computes another matrix M&#39;
+which represents a graph with the same path lengths and contains the
+length of the shortest path between any two vertices i and j. This is
+only possible if the graph does not contain any negative cycles.
+However, in this case the Floyd-Warshall algorithm will detect the
+situation by calculating a negative diagonal entry. This entry
+includes a formalization of the algorithm and of these key properties.
+The algorithm is refined to an efficient imperative version using the
+Imperative Refinement Framework.</description>
+    </item>
     <item>
        <title>Monoidal Categories</title>
               <link>https://www.isa-afp.org/entries/MonoidalCategory.shtml</link>
@@ -540,24 +561,6 @@ precision. This is motivated by the inclusion of the material in a
 theorem prover based course on semantics. A similar (but more
 polished) development is covered in the book
 &lt;a href=&#34;http://dx.doi.org/10.1007/978-3-319-10542-0&#34;&gt;Concrete Semantics&lt;/a&gt;.</description>
-    </item>
-    <item>
-       <title>Separata: Isabelle tactics for Separation Algebra</title>
-              <link>https://www.isa-afp.org/entries/Separata.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Separata.shtml</guid>
-       <dc:creator> Zhe Hou, David Sanan, Alwen Tiu, Rajeev Gore, Ranald Clouston       </dc:creator>
-       <pubDate>16 Nov 2016 00:00:00 +0000</pubDate>
-       <description>
-We bring the labelled sequent calculus $LS_{PASL}$ for propositional
-abstract separation logic to Isabelle. The tactics given here are
-directly applied on an extension of the Separation Algebra in the AFP.
-In addition to the cancellative separation algebra, we further
-consider some useful properties in the heap model of separation logic,
-such as indivisible unit, disjointness, and cross-split. The tactics
-are essentially a proof search procedure for the calculus $LS_{PASL}$.
-We wrap the tactics in an Isabelle method called separata, and give a
-few examples of separation logic formulae which are provable by
-separata.</description>
     </item>
   </channel>
 </rss>
