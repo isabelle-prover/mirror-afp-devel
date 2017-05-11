@@ -1,0 +1,10 @@
+chapter AFP
+
+session Game_Based_Crypto (AFP) = CryptHOL +
+  options [timeout = 600]
+  theories
+    Game_Based_Crypto
+
+  document_files
+    "root.tex"
+    "root.bib"
