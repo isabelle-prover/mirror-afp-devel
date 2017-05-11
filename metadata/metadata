@@ -1,10 +1,105 @@
+[Game_Based_Crypto]
+title = Game-based cryptography in HOL
+author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html>, S. Reza Sefidgar <>, Bhargav Bhatt <mailto:bhargav.bhatt@inf.ethz.ch>
+topic = Computer Science/Security
+date = 2017-05-05
+notify = andreas.lochbihler@inf.ethz.ch
+abstract = 
+  <p>In this AFP entry, we show how to specify game-based cryptographic
+  security notions and formally prove secure several cryptographic
+  constructions from the literature using the CryptHOL framework. Among
+  others, we formalise the notions of a random oracle, a pseudo-random
+  function, an unpredictable function, and of encryption schemes that are
+  indistinguishable under chosen plaintext and/or ciphertext attacks. We
+  prove the random-permutation/random-function switching lemma, security
+  of the Elgamal and hashed Elgamal public-key encryption scheme and
+  correctness and security of several constructions with pseudo-random
+  functions.  
+  </p><p>Our proofs follow the game-hopping style advocated by
+  Shoup and Bellare and Rogaway, from which most of the examples have
+  been taken. We generalise some of their results such that they can be
+  reused in other proofs. Thanks to CryptHOL's integration with
+  Isabelle's parametricity infrastructure, many simple hops are easily
+  justified using the theory of representation independence.</p>
+
+[CryptHOL]
+title = CryptHOL
+author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html>
+topic = Computer Science/Security, Computer Science/Functional Programming, Mathematics/Probability Theory
+date = 2017-05-05
+notify = andreas.lochbihler@inf.ethz.ch
+abstract = 
+  <p>CryptHOL provides a framework for formalising cryptographic arguments
+  in Isabelle/HOL. It shallowly embeds a probabilistic functional
+  programming language in higher order logic. The language features 
+  monadic sequencing, recursion, random sampling, failures and failure
+  handling, and black-box access to oracles. Oracles are probabilistic
+  functions which maintain hidden state between different invocations. 
+  All operators are defined in the new semantic domain of
+  generative probabilistic values, a codatatype. We derive proof rules for
+  the operators and establish a connection with the theory of relational
+  parametricity. Thus, the resuting proofs are trustworthy and
+  comprehensible, and the framework is extensible and widely applicable.  
+  </p><p>
+  The framework is used in the accompanying AFP entry "Game-based
+  Cryptography in HOL". There, we show-case our framework by formalizing
+  different game-based proofs from the literature. This formalisation
+  continues the work described in the author's ESOP 2016 paper.</p>
+  
+[Probabilistic_While]
+title = Probabilistic while loop
+author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html>
+topic = Computer Science/Functional Programming, Mathematics/Probability Theory, Computer Science/Algorithms
+date = 2017-05-05
+notify = andreas.lochbihler@inf.ethz.ch
+abstract = 
+  This AFP entry defines a probabilistic while operator based on 
+  sub-probability mass functions and formalises zero-one laws and variant
+  rules for probabilistic loop termination. As applications, we
+  implement probabilistic algorithms for the Bernoulli, geometric and
+  arbitrary uniform distributions that only use fair coin flips, and
+  prove them correct and terminating with probability 1.
+
+[Monad_Normalisation]
+title = Monad normalisation
+author = Joshua Schneider <>, Manuel Eberl <https://www21.in.tum.de/~eberlm>, Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html>
+topic = Tools, Computer Science/Functional Programming, Logic/Rewriting
+date = 2017-05-05
+notify = andreas.lochbihler@inf.ethz.ch
+abstract = 
+  The usual monad laws can directly be used as rewrite rules for Isabelle’s
+  simplifier to normalise monadic HOL terms and decide equivalences. 
+  In a commutative monad, however, the commutativity law is a
+  higher-order permutative rewrite rule that makes the simplifier loop.
+  This AFP entry implements a simproc that normalises monadic
+  expressions in commutative monads using ordered rewriting. The 
+  simproc can also permute computations across control operators like if
+  and case.
+  
+[Monomorphic_Monad]
+title = Effect polymorphism in higher-order logic
+author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html>
+topic = Computer Science/Functional Programming
+date = 2017-05-05
+notify = andreas.lochbihler@inf.ethz.ch
+abstract = 
+  The notion of a monad cannot be expressed within higher-order logic
+  (HOL) due to type system restrictions. We show that if a monad is used
+  with values of only one type, this notion can be formalised in HOL.
+  Based on this idea, we develop a library of effect specifications and
+  implementations of monads and monad transformers. Hence, we can
+  abstract over the concrete monad in HOL definitions and thus use the
+  same definition for different (combinations of) effects. We illustrate
+  the usefulness of effect polymorphism with a monadic interpreter for a
+  simple language.
+
 [Constructor_Funs]
 title = Constructor Functions
 author = Lars Hupel <https://www21.in.tum.de/~hupel/>
 topic = Tools
 date = 2017-04-19
 notify = hupel@in.tum.de
-abstract = 
+abstract =
   Isabelle's code generator performs various adaptations for target
   languages. Among others, constructor applications have to be fully
   saturated. That means that for constructor calls occuring as arguments
@@ -18,7 +113,7 @@ author = Lars Hupel <https://www21.in.tum.de/~hupel/>
 topic = Tools
 date = 2017-04-18
 notify = hupel@in.tum.de
-abstract = 
+abstract =
   Isabelle's code generator performs various adaptations for target
   languages. Among others, case statements are printed as match
   expressions. Internally, this is a sophisticated procedure, because in
@@ -38,7 +133,7 @@ author = Sebastiaan Joosten <mailto:sebastiaan.joosten@uibk.ac.at>, René Thiema
 topic = Mathematics/Algebra
 date = 2017-04-06
 notify = rene.thiemann@uibk.ac.at
-abstract = 
+abstract =
   We formalize the theory of subresultants and the subresultant
   polynomial remainder sequence as described by Brown and Traub. As a
   result, we obtain efficient certified algorithms for computing the
@@ -50,7 +145,7 @@ author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
 topic = Computer Science/Algorithms
 date = 2017-03-15
 notify = eberlm@in.tum.de
-abstract = 
+abstract =
   <p>This article contains a formal proof of the well-known fact
   that number of comparisons that a comparison-based sorting algorithm
   needs to perform to sort a list of length <em>n</em> is at
@@ -70,7 +165,7 @@ author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
 topic = Computer Science/Algorithms
 date = 2017-03-15
 notify = eberlm@in.tum.de
-abstract = 
+abstract =
   <p>We give a formal proof of the well-known results about the
   number of comparisons performed by two variants of QuickSort: first,
   the expected number of comparisons of randomised QuickSort
@@ -87,7 +182,7 @@ author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
 topic = Computer Science/Data Structures
 date = 2017-04-04
 notify = eberlm@in.tum.de
-abstract = 
+abstract =
   <p>This entry contains proofs for the textbook results about the
   distributions of the height and internal path length of random binary
   search trees (BSTs), i.&thinsp;e. BSTs that are formed by taking
@@ -269,6 +364,31 @@ abstract =
 	ultimately culminating in a proof that the Yoneda embedding preserves
 	limits.
 
+[MonoidalCategory]
+title = Monoidal Categories
+author = Eugene W. Stark <mailto:stark@cs.stonybrook.edu>
+topic = Mathematics/Category Theory
+date = 2017-05-04
+notify = stark@cs.stonybrook.edu
+abstract = 
+  Building on the formalization of basic category theory set out in the
+  author's previous AFP article, the present article formalizes
+  some basic aspects of the theory of monoidal categories. Among the
+  notions defined here are monoidal category, monoidal functor, and
+  equivalence of monoidal categories. The main theorems formalized are
+  MacLane's coherence theorem and the constructions of the free
+  monoidal category and free strict monoidal category generated by a
+  given category.  The coherence theorem is proved syntactically, using
+  a structurally recursive approach to reduction of terms that might
+  have some novel aspects. We also give proofs of some results given by
+  Etingof et al, which may prove useful in a formal setting. In
+  particular, we show that the left and right unitors need not be taken
+  as given data in the definition of monoidal category, nor does the
+  definition of monoidal functor need to take as given a specific
+  isomorphism expressing the preservation of the unit object. Our
+  definitions of monoidal category and monoidal functor are stated so as
+  to take advantage of the economy afforded by these facts.
+
 [Card_Multisets]
 title = Cardinality of Multisets
 author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
@@ -310,6 +430,23 @@ abstract =
 	always generates such a value (provided that the regular expression
 	matches the string). We also prove the correctness of an optimised
 	version of the POSIX matching algorithm.
+
+[LocalLexing]
+title = Local Lexing
+author = Steven Obua <mailto:steven@recursivemind.com>
+topic = Computer Science/Automata and Formal Languages
+date = 2017-04-28
+notify = steven@recursivemind.com
+abstract =
+  This formalisation accompanies the paper <a
+  href="https://arxiv.org/abs/1702.03277">Local
+  Lexing</a> which introduces a novel parsing concept of the same
+  name. The paper also gives a high-level algorithm for local lexing as
+  an extension of Earley's algorithm. This formalisation proves the
+  algorithm to be correct with respect to its local lexing semantics. As
+  a special case, this formalisation thus also contains a proof of the
+  correctness of Earley's algorithm. The paper contains a short
+  outline of how this formalisation is organised.
 
 [MFMC_Countable]
 title = A Formal Proof of the Max-Flow Min-Cut Theorem for Countable Networks
@@ -386,7 +523,7 @@ abstract =
 	In this work, we prove the lower bound <span class="nobr">ln(H_n) -
 	ln(5/3)</span> for the
 	partial sum of the Prime Harmonic series and, based on this, the divergence of
-	the Prime Harmonic Series 
+	the Prime Harmonic Series
 	<span class="nobr">∑[p&thinsp;prime]&thinsp;·&thinsp;1/p.</span>
 	</p><p>
 	The proof relies on the unique squarefree decomposition of natural numbers. This
@@ -810,6 +947,27 @@ abstract =
 	to nondeterministic systems.
 	</p>
 notify = pasquale.noce.lavoro@gmail.com
+
+[Floyd_Warshall]
+title = The Floyd-Warshall Algorithm for Shortest Paths
+author = Simon Wimmer <http://in.tum.de/~wimmers>, Peter Lammich <http://www21.in.tum.de/~lammich/>
+topic = Computer Science/Algorithms
+date = 2017-05-08
+notify = wimmers@in.tum.de
+abstract = 
+  The Floyd-Warshall algorithm [Flo62, Roy59, War62] is a classic
+  dynamic programming algorithm to compute the length of all shortest
+  paths between any two vertices in a graph (i.e. to solve the all-pairs
+  shortest path problem, or APSP for short). Given a representation of
+  the graph as a matrix of weights M, it computes another matrix M'
+  which represents a graph with the same path lengths and contains the
+  length of the shortest path between any two vertices i and j. This is
+  only possible if the graph does not contain any negative cycles.
+  However, in this case the Floyd-Warshall algorithm will detect the
+  situation by calculating a negative diagonal entry. This entry
+  includes a formalization of the algorithm and of these key properties.
+  The algorithm is refined to an efficient imperative version using the
+  Imperative Refinement Framework.
 
 [Roy_Floyd_Warshall]
 title = Transitive closure according to Roy-Floyd-Warshall
@@ -3979,6 +4137,25 @@ abstract = Dana Scott's version of Gödel's proof of God's existence is formaliz
 	QML KB is modeled as a fragment of classical higher-order logic (HOL);
 	thus, the formalization is essentially a formalization in HOL.
 notify = lp15@cam.ac.uk, c.benzmueller@fu-berlin.de
+
+[Types_Tableaus_and_Goedels_God]
+title = Types, Tableaus and Gödel’s God in Isabelle/HOL
+author = David Fuenmayor <mailto:davfuenmayor@gmail.com>, Christoph Benzmüller <http://christoph-benzmueller.de>
+topic = Logic
+date = 2017-05-01
+notify = davfuenmayor@gmail.com, c.benzmueller@gmail.com
+abstract =
+  A computer-formalisation of the essential parts of Fitting's
+  textbook "Types, Tableaus and Gödel's God" in
+  Isabelle/HOL is presented. In particular, Fitting's (and
+  Anderson's) variant of the ontological argument is verified and
+  confirmed. This variant avoids the modal collapse, which has been
+  criticised as an undesirable side-effect of Kurt Gödel's (and
+  Dana Scott's) versions of the ontological argument.
+  Fitting's work is employing an intensional higher-order modal
+  logic, which we shallowly embed here in classical higher-order logic.
+  We then utilize the embedded logic for the formalisation of
+  Fitting's argument. (See also the earlier AFP entry ``Gödel's God in Isabelle/HOL''.)
 
 [Tail_Recursive_Functions]
 title = A General Method for the Proof of Theorems on Tail-recursive Functions

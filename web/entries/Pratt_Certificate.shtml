@@ -123,7 +123,9 @@
                       <tr><td class="datahead">Depends on:</td>
           <td class="data"><a href="Lehmer.shtml">Lehmer</a>      </td></tr>
           
-                    
+                      <tr><td class="datahead">Used by:</td>
+          <td class="data"><a href="Bertrands_Postulate.shtml">Bertrands_Postulate</a>      </td></tr>
+          
 
         
   </tbody>

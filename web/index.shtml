@@ -90,6 +90,84 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
   </tr>
       <tr>
       <td class="entry">
+        2017-05-08: <a href="entries/Floyd_Warshall.shtml">The Floyd-Warshall Algorithm for Shortest Paths</a>
+        <br>
+                  Authors:
+                        <a href="http://in.tum.de/~wimmers">Simon Wimmer</a>
+          and     <a href="https://www21.in.tum.de/~lammich/">Peter Lammich</a>
+              </td>
+    </tr>
+      <tr>
+      <td class="entry">
+        2017-05-05: <a href="entries/Probabilistic_While.shtml">Probabilistic while loop</a>
+        <br>
+                  Author:
+                        <a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a>
+                        </td>
+    </tr>
+      <tr>
+      <td class="entry">
+        2017-05-05: <a href="entries/Monomorphic_Monad.shtml">Effect polymorphism in higher-order logic</a>
+        <br>
+                  Author:
+                        <a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a>
+                        </td>
+    </tr>
+      <tr>
+      <td class="entry">
+        2017-05-05: <a href="entries/Monad_Normalisation.shtml">Monad normalisation</a>
+        <br>
+                  Authors:
+                          Joshua Schneider,
+                        <a href="https://www21.in.tum.de/~eberlm">Manuel Eberl</a>
+          and     <a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a>
+              </td>
+    </tr>
+      <tr>
+      <td class="entry">
+        2017-05-05: <a href="entries/Game_Based_Crypto.shtml">Game-based cryptography in HOL</a>
+        <br>
+                  Authors:
+                          <a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a>,
+                        S. Reza Sefidgar
+          and     Bhargav Bhatt
+              </td>
+    </tr>
+      <tr>
+      <td class="entry">
+        2017-05-05: <a href="entries/CryptHOL.shtml">CryptHOL</a>
+        <br>
+                  Author:
+                        <a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a>
+                        </td>
+    </tr>
+      <tr>
+      <td class="entry">
+        2017-05-04: <a href="entries/MonoidalCategory.shtml">Monoidal Categories</a>
+        <br>
+                  Author:
+                        Eugene W. Stark
+                        </td>
+    </tr>
+      <tr>
+      <td class="entry">
+        2017-05-01: <a href="entries/Types_Tableaus_and_Goedels_God.shtml">Types, Tableaus and Gödel’s God in Isabelle/HOL</a>
+        <br>
+                  Authors:
+                        David Fuenmayor
+          and     <a href="http://christoph-benzmueller.de">Christoph Benzmüller</a>
+              </td>
+    </tr>
+      <tr>
+      <td class="entry">
+        2017-04-28: <a href="entries/LocalLexing.shtml">Local Lexing</a>
+        <br>
+                  Author:
+                        Steven Obua
+                        </td>
+    </tr>
+      <tr>
+      <td class="entry">
         2017-04-19: <a href="entries/Constructor_Funs.shtml">Constructor Functions</a>
         <br>
                   Author:
@@ -220,8 +298,9 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
         2017-01-17: <a href="entries/Bertrands_Postulate.shtml">Bertrand's postulate</a>
         <br>
                   Authors:
-                        Julian Biendarra
-          and     <a href="https://www21.in.tum.de/~eberlm">Manuel Eberl</a>
+                          Julian Biendarra,
+                        <a href="https://www21.in.tum.de/~eberlm">Manuel Eberl</a>
+          and     <a href="http://www.cl.cam.ac.uk/~lp15/">Lawrence C. Paulson</a>
               </td>
     </tr>
       <tr>
@@ -1901,7 +1980,7 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
         2013-11-12: <a href="entries/GoedelGod.shtml">Gödel's God in Isabelle/HOL</a>
         <br>
                   Authors:
-                        <a href="http://page.mi.fu-berlin.de/cbenzmueller/">Christoph Benzmüller</a>
+                        <a href="http://christoph-benzmueller.de">Christoph Benzmüller</a>
           and     <a href="http://www.logic.at/staff/bruno/">Bruno Woltzenlogel Paleo</a>
               </td>
     </tr>

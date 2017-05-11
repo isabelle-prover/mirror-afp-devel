@@ -80,8 +80,9 @@
           Authors:
       </td>
   <td class="data">
-                    Julian Biendarra and
-          <a href="https://www21.in.tum.de/~eberlm">Manuel Eberl</a>
+                      Julian Biendarra,
+                <a href="https://www21.in.tum.de/~eberlm">Manuel Eberl</a> and
+          <a href="http://www.cl.cam.ac.uk/~lp15/">Lawrence C. Paulson</a>
       </td>
 </tr>
 
@@ -109,7 +110,7 @@ holds for all n below 600 by case distinction. </p></td>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
         <pre>@article{Bertrands_Postulate-AFP,
-  author  = {Julian Biendarra and Manuel Eberl},
+  author  = {Julian Biendarra and Manuel Eberl and Lawrence C. Paulson},
   title   = {Bertrand's postulate},
   journal = {Archive of Formal Proofs},
   month   = jan,
@@ -125,7 +126,9 @@ holds for all n below 600 by case distinction. </p></td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                    
+                      <tr><td class="datahead">Depends on:</td>
+          <td class="data"><a href="Pratt_Certificate.shtml">Pratt_Certificate</a>      </td></tr>
+          
                     
 
         
