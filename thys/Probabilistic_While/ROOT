@@ -1,0 +1,17 @@
+chapter AFP
+
+session Probabilistic_While (AFP) = "HOL-Probability" +
+  options [timeout = 600]
+  theories [document=false]
+    "~~/src/HOL/Types_To_Sets/Types_To_Sets"
+    "../MFMC_Countable/Rel_PMF_Characterisation"
+
+  theories
+    While_SPMF
+    Bernoulli
+    Geometric
+    Fast_Dice_Roll
+
+  document_files
+    "root.bib"
+    "root.tex"
