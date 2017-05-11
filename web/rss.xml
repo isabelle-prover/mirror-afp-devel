@@ -32,6 +32,23 @@ The algorithm is refined to an efficient imperative version using the
 Imperative Refinement Framework.</description>
     </item>
     <item>
+       <title>Effect polymorphism in higher-order logic</title>
+              <link>https://www.isa-afp.org/entries/Monomorphic_Monad.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Monomorphic_Monad.shtml</guid>
+       <dc:creator> Andreas Lochbihler       </dc:creator>
+       <pubDate>05 May 2017 00:00:00 +0000</pubDate>
+       <description>
+The notion of a monad cannot be expressed within higher-order logic
+(HOL) due to type system restrictions. We show that if a monad is used
+with values of only one type, this notion can be formalised in HOL.
+Based on this idea, we develop a library of effect specifications and
+implementations of monads and monad transformers. Hence, we can
+abstract over the concrete monad in HOL definitions and thus use the
+same definition for different (combinations of) effects. We illustrate
+the usefulness of effect polymorphism with a monadic interpreter for a
+simple language.</description>
+    </item>
+    <item>
        <title>Monoidal Categories</title>
               <link>https://www.isa-afp.org/entries/MonoidalCategory.shtml</link>
        <guid>https://www.isa-afp.org/entries/MonoidalCategory.shtml</guid>
@@ -541,26 +558,6 @@ We illustrate our framework on an example that features exceptions,
 guards and function calls.  We aim to then target concurrent operating
 systems, such as the interruptible eChronos embedded operating system
 for which we already have a model-level OG proof using Hoare-Parallel.</description>
-    </item>
-    <item>
-       <title>Abstract Interpretation of Annotated Commands</title>
-              <link>https://www.isa-afp.org/entries/Abs_Int_ITP2012.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Abs_Int_ITP2012.shtml</guid>
-       <dc:creator> Tobias Nipkow       </dc:creator>
-       <pubDate>23 Nov 2016 00:00:00 +0000</pubDate>
-       <description>
-This is the Isabelle formalization of the material decribed in the
-eponymous &lt;a href=&#34;http://dx.doi.org/10.1007/978-3-642-32347-8_9&#34;&gt;ITP 2012 paper&lt;/a&gt;.
-It develops a generic abstract interpreter for a
-while-language, including widening and narrowing. The collecting
-semantics and the abstract interpreter operate on annotated commands:
-the program is represented as a syntax tree with the semantic
-information directly embedded, without auxiliary labels. The aim of
-the formalization is simplicity, not efficiency or
-precision. This is motivated by the inclusion of the material in a
-theorem prover based course on semantics. A similar (but more
-polished) development is covered in the book
-&lt;a href=&#34;http://dx.doi.org/10.1007/978-3-319-10542-0&#34;&gt;Concrete Semantics&lt;/a&gt;.</description>
     </item>
   </channel>
 </rss>

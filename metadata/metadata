@@ -1,3 +1,20 @@
+[Monomorphic_Monad]
+title = Effect polymorphism in higher-order logic
+author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html>
+topic = Computer Science/Functional Programming
+date = 2017-05-05
+notify = andreas.lochbihler@inf.ethz.ch
+abstract = 
+  The notion of a monad cannot be expressed within higher-order logic
+  (HOL) due to type system restrictions. We show that if a monad is used
+  with values of only one type, this notion can be formalised in HOL.
+  Based on this idea, we develop a library of effect specifications and
+  implementations of monads and monad transformers. Hence, we can
+  abstract over the concrete monad in HOL definitions and thus use the
+  same definition for different (combinations of) effects. We illustrate
+  the usefulness of effect polymorphism with a monadic interpreter for a
+  simple language.
+
 [Constructor_Funs]
 title = Constructor Functions
 author = Lars Hupel <https://www21.in.tum.de/~hupel/>

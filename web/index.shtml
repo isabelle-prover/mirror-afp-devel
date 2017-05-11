@@ -99,6 +99,14 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
     </tr>
       <tr>
       <td class="entry">
+        2017-05-05: <a href="entries/Monomorphic_Monad.shtml">Effect polymorphism in higher-order logic</a>
+        <br>
+                  Author:
+                        <a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a>
+                        </td>
+    </tr>
+      <tr>
+      <td class="entry">
         2017-05-04: <a href="entries/MonoidalCategory.shtml">Monoidal Categories</a>
         <br>
                   Author:
