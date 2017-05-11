@@ -104,6 +104,7 @@
                 </div>
       <h3>Algorithms</h3>
     <div class="list">
+          <a href="entries/Probabilistic_While.shtml">Probabilistic_While</a> &nbsp;
           <a href="entries/Comparison_Sort_Lower_Bound.shtml">Comparison_Sort_Lower_Bound</a> &nbsp;
           <a href="entries/Quick_Sort_Cost.shtml">Quick_Sort_Cost</a> &nbsp;
           <a href="entries/DFS_Framework.shtml">DFS_Framework</a> &nbsp;
@@ -201,6 +202,7 @@
                 </div>
       <h3>Functional Programming</h3>
     <div class="list">
+          <a href="entries/Probabilistic_While.shtml">Probabilistic_While</a> &nbsp;
           <a href="entries/Monad_Normalisation.shtml">Monad_Normalisation</a> &nbsp;
           <a href="entries/Monomorphic_Monad.shtml">Monomorphic_Monad</a> &nbsp;
           <a href="entries/Show.shtml">Show</a> &nbsp;
@@ -465,6 +467,7 @@
                 </div>
       <h3>Probability Theory</h3>
     <div class="list">
+          <a href="entries/Probabilistic_While.shtml">Probabilistic_While</a> &nbsp;
           <a href="entries/Markov_Models.shtml">Markov_Models</a> &nbsp;
           <a href="entries/Density_Compiler.shtml">Density_Compiler</a> &nbsp;
           <a href="entries/Random_Graph_Subgraph_Threshold.shtml">Random_Graph_Subgraph_Threshold</a> &nbsp;

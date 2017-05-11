@@ -1,3 +1,17 @@
+[Probabilistic_While]
+title = Probabilistic while loop
+author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html>
+topic = Computer Science/Functional Programming, Mathematics/Probability Theory, Computer Science/Algorithms
+date = 2017-05-05
+notify = andreas.lochbihler@inf.ethz.ch
+abstract = 
+  This AFP entry defines a probabilistic while operator based on 
+  sub-probability mass functions and formalises zero-one laws and variant
+  rules for probabilistic loop termination. As applications, we
+  implement probabilistic algorithms for the Bernoulli, geometric and
+  arbitrary uniform distributions that only use fair coin flips, and
+  prove them correct and terminating with probability 1.
+
 [Monad_Normalisation]
 title = Monad normalisation
 author = Joshua Schneider, Manuel Eberl <https://www21.in.tum.de/~eberlm>, Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html>

@@ -32,6 +32,20 @@ The algorithm is refined to an efficient imperative version using the
 Imperative Refinement Framework.</description>
     </item>
     <item>
+       <title>Probabilistic while loop</title>
+              <link>https://www.isa-afp.org/entries/Probabilistic_While.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Probabilistic_While.shtml</guid>
+       <dc:creator> Andreas Lochbihler       </dc:creator>
+       <pubDate>05 May 2017 00:00:00 +0000</pubDate>
+       <description>
+This AFP entry defines a probabilistic while operator based on
+sub-probability mass functions and formalises zero-one laws and variant
+rules for probabilistic loop termination. As applications, we
+implement probabilistic algorithms for the Bernoulli, geometric and
+arbitrary uniform distributions that only use fair coin flips, and
+prove them correct and terminating with probability 1.</description>
+    </item>
+    <item>
        <title>Effect polymorphism in higher-order logic</title>
               <link>https://www.isa-afp.org/entries/Monomorphic_Monad.shtml</link>
        <guid>https://www.isa-afp.org/entries/Monomorphic_Monad.shtml</guid>
@@ -528,29 +542,6 @@ preliminary evaluations show that PSL reduces the labour cost of
 interactive theorem proving. This submission contains the
 implementation of PSL and an example theory file, Example.thy, showing
 how to write poof strategies in PSL.</description>
-    </item>
-    <item>
-       <title>Paraconsistency</title>
-              <link>https://www.isa-afp.org/entries/Paraconsistency.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Paraconsistency.shtml</guid>
-       <dc:creator> Anders Schlichtkrull, Jørgen Villadsen       </dc:creator>
-       <pubDate>07 Dec 2016 00:00:00 +0000</pubDate>
-       <description>
-Paraconsistency is about handling inconsistency in a coherent way. In
-classical and intuitionistic logic everything follows from an
-inconsistent theory. A paraconsistent logic avoids the explosion.
-Quite a few applications in computer science and engineering are
-discussed in the Intelligent Systems Reference Library Volume 110:
-Towards Paraconsistent Engineering (Springer 2016). We formalize a
-paraconsistent many-valued logic that we motivated and described in a
-special issue on logical approaches to paraconsistency (Journal of
-Applied Non-Classical Logics 2005). We limit ourselves to the
-propositional fragment of the higher-order logic. The logic is based
-on so-called key equalities and has a countably infinite number of
-truth values. We prove theorems in the logic using the definition of
-validity. We verify truth tables and also counterexamples for
-non-theorems. We prove meta-theorems about the logic and finally we
-investigate a case study.</description>
     </item>
   </channel>
 </rss>

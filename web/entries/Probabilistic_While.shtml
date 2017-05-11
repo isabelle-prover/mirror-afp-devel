@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>A Formal Proof of the Max-Flow Min-Cut Theorem for Countable Networks - Archive of Formal Proofs
+<title>Probabilistic while loop - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,27 +61,11 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">A</font>
+  <h1>          <font class="first">P</font>robabilistic
   
-          <font class="first">F</font>ormal
+          while
   
-          <font class="first">P</font>roof
-  
-          of
-  
-          the
-  
-          <font class="first">M</font>ax-Flow
-  
-          <font class="first">M</font>in-Cut
-  
-          <font class="first">T</font>heorem
-  
-          for
-  
-          <font class="first">C</font>ountable
-  
-          <font class="first">N</font>etworks
+          loop
   
 </h1>
   <p>&nbsp;</p>
@@ -90,7 +74,7 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">A Formal Proof of the Max-Flow Min-Cut Theorem for Countable Networks</td>
+  <td class="data" width="80%">Probabilistic while loop</td>
 </tr>
 
 <tr>
@@ -106,41 +90,31 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2016-05-09</td>
+  <td class="data">2017-05-05</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-This article formalises a proof of the maximum-flow minimal-cut
-theorem for networks with countably many edges.  A network is a
-directed graph with non-negative real-valued edge labels and two
-dedicated vertices, the source and the sink.  A flow in a network
-assigns non-negative real numbers to the edges such that for all
-vertices except for the source and the sink, the sum of values on
-incoming edges equals the sum of values on outgoing edges.  A cut is a
-subset of the vertices which contains the source, but not the sink.
-Our theorem states that in every network, there is a flow and a cut
-such that the flow saturates all the edges going out of the cut and is
-zero on all the incoming edges.  The proof is based on the paper
-<emph>The Max-Flow Min-Cut theorem for countable networks</emph> by
-Aharoni et al.  As an application, we derive a characterisation of the
-lifting operation for relations on discrete probability distributions,
-which leads to a concise proof of its distributivity over relation
-composition.</td>
+This AFP entry defines a probabilistic while operator based on
+sub-probability mass functions and formalises zero-one laws and variant
+rules for probabilistic loop termination. As applications, we
+implement probabilistic algorithms for the Bernoulli, geometric and
+arbitrary uniform distributions that only use fair coin flips, and
+prove them correct and terminating with probability 1.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{MFMC_Countable-AFP,
+        <pre>@article{Probabilistic_While-AFP,
   author  = {Andreas Lochbihler},
-  title   = {A Formal Proof of the Max-Flow Min-Cut Theorem for Countable Networks},
+  title   = {Probabilistic while loop},
   journal = {Archive of Formal Proofs},
   month   = may,
-  year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/MFMC_Countable.shtml},
+  year    = 2017,
+  note    = {\url{http://isa-afp.org/entries/Probabilistic_While.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -151,10 +125,10 @@ composition.</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                    
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Probabilistic_While.shtml">Probabilistic_While</a>      </td></tr>
+                      <tr><td class="datahead">Depends on:</td>
+          <td class="data"><a href="MFMC_Countable.shtml">MFMC_Countable</a>      </td></tr>
           
+                    
 
         
   </tbody>
@@ -166,29 +140,23 @@ composition.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/MFMC_Countable/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/MFMC_Countable/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Probabilistic_While/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Probabilistic_While/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/MFMC_Countable/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Probabilistic_While/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-MFMC_Countable-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Probabilistic_While-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
     <tr><td class="links">Older releases:
-          <ul>
-                        <li>Isabelle 2016:
-          <a href="../release/afp-MFMC_Countable-2016-05-09.tar.gz">
-            afp-MFMC_Countable-2016-05-09.tar.gz
-          </a>
-          </li>
-                    </ul>
+        None
         </td></tr>
 
   </tbody>
