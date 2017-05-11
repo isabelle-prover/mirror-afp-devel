@@ -79,6 +79,30 @@ simproc can also permute computations across control operators like if
 and case.</description>
     </item>
     <item>
+       <title>CryptHOL</title>
+              <link>https://www.isa-afp.org/entries/CryptHOL.shtml</link>
+       <guid>https://www.isa-afp.org/entries/CryptHOL.shtml</guid>
+       <dc:creator> Andreas Lochbihler       </dc:creator>
+       <pubDate>05 May 2017 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;CryptHOL provides a framework for formalising cryptographic arguments
+in Isabelle/HOL. It shallowly embeds a probabilistic functional
+programming language in higher order logic. The language features
+monadic sequencing, recursion, random sampling, failures and failure
+handling, and black-box access to oracles. Oracles are probabilistic
+functions which maintain hidden state between different invocations.
+All operators are defined in the new semantic domain of
+generative probabilistic values, a codatatype. We derive proof rules for
+the operators and establish a connection with the theory of relational
+parametricity. Thus, the resuting proofs are trustworthy and
+comprehensible, and the framework is extensible and widely applicable.
+&lt;/p&gt;&lt;p&gt;
+The framework is used in the accompanying AFP entry &#34;Game-based
+Cryptography in HOL&#34;. There, we show-case our framework by formalizing
+different game-based proofs from the literature. This formalisation
+continues the work described in the author&#39;s ESOP 2016 paper.&lt;/p&gt;</description>
+    </item>
+    <item>
        <title>Monoidal Categories</title>
               <link>https://www.isa-afp.org/entries/MonoidalCategory.shtml</link>
        <guid>https://www.isa-afp.org/entries/MonoidalCategory.shtml</guid>
@@ -523,25 +547,6 @@ developments with cardinality theorems for those structures. It
 provides twelve bijections from the various structures to different
 equivalence classes on finite functions, and hence, proves cardinality
 formulae for these equivalence classes on finite functions.</description>
-    </item>
-    <item>
-       <title>Proof Strategy Language</title>
-              <link>https://www.isa-afp.org/entries/Proof_Strategy_Language.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Proof_Strategy_Language.shtml</guid>
-       <dc:creator> Yutaka Nagashima       </dc:creator>
-       <pubDate>20 Dec 2016 00:00:00 +0000</pubDate>
-       <description>
-Isabelle includes various automatic tools for finding proofs under
-certain conditions. However, for each conjecture, knowing which
-automation to use, and how to tweak its parameters, is currently
-labour intensive. We have developed a language, PSL, designed to
-capture high level proof strategies. PSL offloads the construction of
-human-readable fast-to-replay proof scripts to automatic search,
-making use of search-time information about each conjecture. Our
-preliminary evaluations show that PSL reduces the labour cost of
-interactive theorem proving. This submission contains the
-implementation of PSL and an example theory file, Example.thy, showing
-how to write poof strategies in PSL.</description>
     </item>
   </channel>
 </rss>

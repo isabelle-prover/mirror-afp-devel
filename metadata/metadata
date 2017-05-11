@@ -1,3 +1,27 @@
+[CryptHOL]
+title = CryptHOL
+author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html>
+topic = Computer Science/Security, Computer Science/Functional Programming, Mathematics/Probability Theory
+date = 2017-05-05
+notify = andreas.lochbihler@inf.ethz.ch
+abstract = 
+  <p>CryptHOL provides a framework for formalising cryptographic arguments
+  in Isabelle/HOL. It shallowly embeds a probabilistic functional
+  programming language in higher order logic. The language features 
+  monadic sequencing, recursion, random sampling, failures and failure
+  handling, and black-box access to oracles. Oracles are probabilistic
+  functions which maintain hidden state between different invocations. 
+  All operators are defined in the new semantic domain of
+  generative probabilistic values, a codatatype. We derive proof rules for
+  the operators and establish a connection with the theory of relational
+  parametricity. Thus, the resuting proofs are trustworthy and
+  comprehensible, and the framework is extensible and widely applicable.  
+  </p><p>
+  The framework is used in the accompanying AFP entry "Game-based
+  Cryptography in HOL". There, we show-case our framework by formalizing
+  different game-based proofs from the literature. This formalisation
+  continues the work described in the author's ESOP 2016 paper.</p>
+  
 [Probabilistic_While]
 title = Probabilistic while loop
 author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html>

@@ -128,7 +128,9 @@ prove them correct and terminating with probability 1.</td>
                       <tr><td class="datahead">Depends on:</td>
           <td class="data"><a href="MFMC_Countable.shtml">MFMC_Countable</a>      </td></tr>
           
-                    
+                      <tr><td class="datahead">Used by:</td>
+          <td class="data"><a href="CryptHOL.shtml">CryptHOL</a>      </td></tr>
+          
 
         
   </tbody>

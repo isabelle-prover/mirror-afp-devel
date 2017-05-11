@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Effect polymorphism in higher-order logic - Archive of Formal Proofs
+<title>CryptHOL - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,15 +61,7 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">E</font>ffect
-  
-          polymorphism
-  
-          in
-  
-          higher-order
-  
-          logic
+  <h1>          <font class="first">C</font>ryptHOL
   
 </h1>
   <p>&nbsp;</p>
@@ -78,7 +70,7 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Effect polymorphism in higher-order logic</td>
+  <td class="data" width="80%">CryptHOL</td>
 </tr>
 
 <tr>
@@ -100,28 +92,35 @@
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-The notion of a monad cannot be expressed within higher-order logic
-(HOL) due to type system restrictions. We show that if a monad is used
-with values of only one type, this notion can be formalised in HOL.
-Based on this idea, we develop a library of effect specifications and
-implementations of monads and monad transformers. Hence, we can
-abstract over the concrete monad in HOL definitions and thus use the
-same definition for different (combinations of) effects. We illustrate
-the usefulness of effect polymorphism with a monadic interpreter for a
-simple language.</td>
+<p>CryptHOL provides a framework for formalising cryptographic arguments
+in Isabelle/HOL. It shallowly embeds a probabilistic functional
+programming language in higher order logic. The language features
+monadic sequencing, recursion, random sampling, failures and failure
+handling, and black-box access to oracles. Oracles are probabilistic
+functions which maintain hidden state between different invocations.
+All operators are defined in the new semantic domain of
+generative probabilistic values, a codatatype. We derive proof rules for
+the operators and establish a connection with the theory of relational
+parametricity. Thus, the resuting proofs are trustworthy and
+comprehensible, and the framework is extensible and widely applicable.
+</p><p>
+The framework is used in the accompanying AFP entry "Game-based
+Cryptography in HOL". There, we show-case our framework by formalizing
+different game-based proofs from the literature. This formalisation
+continues the work described in the author's ESOP 2016 paper.</p></td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Monomorphic_Monad-AFP,
+        <pre>@article{CryptHOL-AFP,
   author  = {Andreas Lochbihler},
-  title   = {Effect polymorphism in higher-order logic},
+  title   = {CryptHOL},
   journal = {Archive of Formal Proofs},
   month   = may,
   year    = 2017,
-  note    = {\url{http://isa-afp.org/entries/Monomorphic_Monad.shtml},
+  note    = {\url{http://isa-afp.org/entries/CryptHOL.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -132,10 +131,10 @@ simple language.</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                    
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="CryptHOL.shtml">CryptHOL</a>      </td></tr>
+                      <tr><td class="datahead">Depends on:</td>
+          <td class="data"><a href="Applicative_Lifting.shtml">Applicative_Lifting</a>, <a href="Coinductive.shtml">Coinductive</a>, <a href="Landau_Symbols.shtml">Landau_Symbols</a>, <a href="Monad_Normalisation.shtml">Monad_Normalisation</a>, <a href="Monomorphic_Monad.shtml">Monomorphic_Monad</a>, <a href="Probabilistic_While.shtml">Probabilistic_While</a>      </td></tr>
           
+                    
 
         
   </tbody>
@@ -147,17 +146,17 @@ simple language.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Monomorphic_Monad/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Monomorphic_Monad/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/CryptHOL/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/CryptHOL/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Monomorphic_Monad/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/CryptHOL/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Monomorphic_Monad-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-CryptHOL-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 

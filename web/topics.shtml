@@ -202,6 +202,7 @@
                 </div>
       <h3>Functional Programming</h3>
     <div class="list">
+          <a href="entries/CryptHOL.shtml">CryptHOL</a> &nbsp;
           <a href="entries/Probabilistic_While.shtml">Probabilistic_While</a> &nbsp;
           <a href="entries/Monad_Normalisation.shtml">Monad_Normalisation</a> &nbsp;
           <a href="entries/Monomorphic_Monad.shtml">Monomorphic_Monad</a> &nbsp;
@@ -316,6 +317,7 @@
                 </div>
       <h3>Security</h3>
     <div class="list">
+          <a href="entries/CryptHOL.shtml">CryptHOL</a> &nbsp;
           <a href="entries/Noninterference_Generic_Unwinding.shtml">Noninterference_Generic_Unwinding</a> &nbsp;
           <a href="entries/Noninterference_Ipurge_Unwinding.shtml">Noninterference_Ipurge_Unwinding</a> &nbsp;
           <a href="entries/UPF.shtml">UPF</a> &nbsp;
@@ -467,6 +469,7 @@
                 </div>
       <h3>Probability Theory</h3>
     <div class="list">
+          <a href="entries/CryptHOL.shtml">CryptHOL</a> &nbsp;
           <a href="entries/Probabilistic_While.shtml">Probabilistic_While</a> &nbsp;
           <a href="entries/Markov_Models.shtml">Markov_Models</a> &nbsp;
           <a href="entries/Density_Compiler.shtml">Density_Compiler</a> &nbsp;
