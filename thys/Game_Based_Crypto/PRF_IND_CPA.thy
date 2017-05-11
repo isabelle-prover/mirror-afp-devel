@@ -472,7 +472,7 @@ proof(rule negligible_mono)
   hence "eventually (\<lambda>\<eta>. \<bar>ind_cpa.advantage \<eta> (\<A> \<eta>)\<bar> \<le> 1 * \<bar>prf.advantage \<eta> (prf_adversary \<eta> (\<A> \<eta>)) + q \<eta> / 2 ^ len \<eta>\<bar>) at_top"
     by(simp add: always_eventually ind_cpa.advantage_nonneg prf.advantage_nonneg)
   then show "(\<lambda>\<eta>. ind_cpa.advantage \<eta> (\<A> \<eta>)) \<in> O(\<lambda>\<eta>. prf.advantage \<eta> (prf_adversary \<eta> (\<A> \<eta>)) + q \<eta> / 2 ^ len \<eta>)"
-    by(rule bigoI)
+    by(intro bigoI[where c=1]) simp
 qed
 
 end

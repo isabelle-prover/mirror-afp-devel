@@ -144,4 +144,94 @@ proof -
   finally show ?thesis .
 qed
 
+(* lemma bigo_const_inverse [simp]:
+  "filterlim f at_top at_top \<Longrightarrow> (\<lambda>_ :: _ :: linorder. c) \<in> O(\<lambda>x. inverse (f x)) \<longleftrightarrow> c = 0"
+  for f :: "_ \<Rightarrow> real"
+by simp
+
+lemma smallo_const_inverse [simp]:
+  "filterlim f at_top at_top \<Longrightarrow> (\<lambda>_ :: _ :: linorder. c) \<in> o(\<lambda>x. inverse (f x)) \<longleftrightarrow> c = 0"
+  for f :: "_ \<Rightarrow> real"
+by(simp)
+ *)
+lemma bigo_abs_powr_iff [simp]:
+  "0 < p \<Longrightarrow> (\<lambda>x. \<bar>f x :: real\<bar> powr p) \<in> O[F](\<lambda>x. \<bar>g x\<bar> powr p) \<longleftrightarrow> f \<in> O[F](g)"
+  by(subst bigo_powr_iff; simp)
+
+lemma smallo_abs_powr_iff [simp]:
+  "0 < p \<Longrightarrow> (\<lambda>x. \<bar>f x :: real\<bar> powr p) \<in> o[F](\<lambda>x. \<bar>g x\<bar> powr p) \<longleftrightarrow> f \<in> o[F](g)"
+  by(subst smallo_powr_iff; simp)
+
+lemma const_smallo_inverse_powr:
+  assumes "filterlim f at_top at_top"
+  shows "(\<lambda>_ :: _ :: linorder. c :: real) \<in> o(\<lambda>x. inverse (f x powr p)) \<longleftrightarrow> (p \<ge> 0 \<longrightarrow> c = 0)"
+proof(cases p "0 :: real" rule: linorder_cases)
+  case p: greater
+  have "(\<lambda>_. c) \<in> o(\<lambda>x. inverse (f x powr p)) \<longleftrightarrow> (\<lambda>_. \<bar>c\<bar>) \<in> o(\<lambda>x. inverse (f x powr p))" by simp
+  also have "\<bar>c\<bar> = \<bar>(\<bar>c\<bar> powr (inverse p))\<bar> powr p" using p by(simp add: powr_powr)
+  also { have "eventually (\<lambda>x. f x \<ge> 0) at_top" using assms by(simp add: filterlim_at_top)
+    then have "o(\<lambda>x. inverse (f x powr p)) = o(\<lambda>x. \<bar>inverse (f x)\<bar> powr p)"
+      by(intro landau_o.small.cong)(auto elim!: eventually_rev_mp)
+    also have "(\<lambda>_. \<bar>(\<bar>c\<bar> powr inverse p)\<bar> powr p) \<in> \<dots> \<longleftrightarrow> (\<lambda>_. \<bar>c\<bar> powr (inverse p)) \<in> o(\<lambda>x. inverse (f x))"
+      using p by(rule smallo_abs_powr_iff)
+    also note calculation }
+  also have "(\<lambda>_. \<bar>c\<bar> powr (inverse p)) \<in> o(\<lambda>x. inverse (f x)) \<longleftrightarrow> c = 0" using assms by simp
+  finally show ?thesis using p by simp
+next
+  case equal
+  from assms have "eventually (\<lambda>x. f x \<ge> 1) at_top" using assms by(simp add: filterlim_at_top)
+  then have "o(\<lambda>x. inverse (f x powr p)) = o(\<lambda>x. 1)"
+    by(intro landau_o.small.cong)(auto simp add: equal elim!: eventually_rev_mp)
+  then show ?thesis using equal by simp
+next
+  case less
+  from assms have nonneg: "\<forall>\<^sub>F x in at_top. 0 \<le> f x" by(simp add: filterlim_at_top)
+  with assms have "\<forall>\<^sub>F x in at_top. \<bar>\<bar>c\<bar> powr (1 / - p)\<bar> / d \<le> \<bar>f x\<bar>" (is "\<forall>\<^sub>F x in _. ?c \<le> _") if "d > 0" for d
+    by(fastforce dest!: spec[where x="?c"] simp add: filterlim_at_top elim: eventually_rev_mp)
+  then have "(\<lambda>_. \<bar>c\<bar> powr (1 / - p)) \<in> o(f)" by(intro landau_o.smallI)(simp add: field_simps)
+  then have "(\<lambda>_. \<bar>\<bar>c\<bar> powr (1 / - p)\<bar> powr - p) \<in> o(\<lambda>x. \<bar>f x\<bar> powr - p)"
+    using less by(subst smallo_powr_iff) simp_all
+  also have "(\<lambda>_. \<bar>\<bar>c\<bar> powr (1 / - p)\<bar> powr - p) = (\<lambda>_. \<bar>c\<bar>)" using less by(simp add: powr_powr)
+  also have "o(\<lambda>x. \<bar>f x\<bar> powr - p) = o(\<lambda>x. f x powr - p)" using nonneg
+    by(auto intro!: landau_o.small.cong elim: eventually_rev_mp)
+  finally have "(\<lambda>_. c) \<in> o(\<lambda>x. f x powr - p)" by simp
+  with less show ?thesis by(simp add: powr_minus[symmetric])
+qed
+
+lemma bigo_const_inverse_powr:
+  assumes "filterlim f at_top at_top"
+  shows "(\<lambda>_ :: _ :: linorder. c :: real) \<in> O(\<lambda>x. inverse (f x powr p)) \<longleftrightarrow> c = 0 \<or> p \<le> 0"
+proof(cases p "0 :: real" rule: linorder_cases)
+  case p_pos: greater
+  have "(\<lambda>_. c) \<in> O(\<lambda>x. inverse (f x powr p)) \<longleftrightarrow> (\<lambda>_. \<bar>c\<bar>) \<in> O(\<lambda>x. inverse (f x powr p))" by simp
+  also have "\<bar>c\<bar> = \<bar>(\<bar>c\<bar> powr inverse p)\<bar> powr p" using p_pos by(simp add: powr_powr)
+  also { have "eventually (\<lambda>x. f x \<ge> 0) at_top" using assms by(simp add: filterlim_at_top)
+    then have "O(\<lambda>x. inverse (f x powr p)) = O(\<lambda>x. \<bar>inverse (f x)\<bar> powr p)"
+      by(intro landau_o.big.cong)(auto elim!: eventually_rev_mp)
+    also have "(\<lambda>_. \<bar>(\<bar>c\<bar> powr inverse p)\<bar> powr p) \<in> \<dots> \<longleftrightarrow> (\<lambda>_. \<bar>c\<bar> powr (inverse p)) \<in> O(\<lambda>x. inverse (f x))"
+      using p_pos by(rule bigo_abs_powr_iff)
+    also note calculation }
+  also have "(\<lambda>_. \<bar>c\<bar> powr (inverse p)) \<in> O(\<lambda>x. inverse (f x)) \<longleftrightarrow> c = 0" using assms by simp
+  finally show ?thesis using p_pos by simp
+next
+  case equal
+  from assms have "eventually (\<lambda>x. f x \<ge> 1) at_top" using assms by(simp add: filterlim_at_top)
+  then have "O(\<lambda>x. inverse (f x powr p)) = O(\<lambda>x. 1)"
+    by(intro landau_o.big.cong)(auto simp add: equal elim!: eventually_rev_mp)
+  then show ?thesis using equal by simp
+next
+  case less
+  from assms have *: "\<forall>\<^sub>F x in at_top. 1 \<le> f x" by(simp add: filterlim_at_top)
+  then have "(\<lambda>_. \<bar>c\<bar> powr (1 / - p)) \<in> O(f)" 
+    by(intro bigoI[where c="\<bar>c\<bar> powr (1 / - p)"])
+      (auto intro: order_trans[OF _ mult_left_mono, rotated] elim!: eventually_rev_mp[OF _ always_eventually])
+  then have "(\<lambda>_. \<bar>\<bar>c\<bar> powr (1 / - p)\<bar> powr - p) \<in> O(\<lambda>x. \<bar>f x\<bar> powr - p)"
+    using less by(subst bigo_powr_iff) simp_all
+  also have "(\<lambda>_. \<bar>\<bar>c\<bar> powr (1 / - p)\<bar> powr - p) = (\<lambda>_. \<bar>c\<bar>)" using less by(simp add: powr_powr)
+  also have "O(\<lambda>x. \<bar>f x\<bar> powr - p) = O(\<lambda>x. f x powr - p)" using *
+    by(auto intro!: landau_o.big.cong elim: eventually_rev_mp)
+  finally have "(\<lambda>_. c) \<in> O(\<lambda>x. f x powr - p)" by simp
+  thus ?thesis using less by(simp add: powr_minus[symmetric])
+qed
+
 end

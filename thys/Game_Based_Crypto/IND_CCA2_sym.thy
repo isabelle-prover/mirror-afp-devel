@@ -5,7 +5,7 @@
 subsection \<open>The IND-CCA2 security for symmetric encryption schemes\<close>
 
 theory IND_CCA2_sym imports
-  "../Crypt_HOL/Computational_Model"
+  "../CryptHOL/Computational_Model"
 begin
 
 locale ind_cca =

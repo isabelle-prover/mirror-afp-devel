@@ -5,7 +5,7 @@ section {* Negligibility *}
 
 theory Negligible imports
   Complex_Main
-  "Landau_More"
+  "../Landau_Symbols/Landau_More"
 begin
 
 named_theorems negligible_intros
@@ -141,7 +141,7 @@ next
     fix c :: real
     assume "0 < c"
     then have "(\<lambda>x. real x powr c) \<in> o(\<lambda>x. inverse k powr real x)" using assms False
-      by(intro poly_smallo_exp)(simp_all add: one_less_inverse_iff filterlim_real_sequentially)
+      by(intro powr_fast_growth_tendsto)(simp_all add: one_less_inverse_iff filterlim_real_sequentially)
     then have "(\<lambda>x. inverse (k powr - real x)) \<in> o(\<lambda>x. inverse (real x powr c))" using assms
       by(intro landau_o.small.inverse)(auto simp add: False eventually_sequentially powr_minus intro: exI[where x=1])
     also have "(\<lambda>x. inverse (k powr - real x)) = (\<lambda>x. k powr real x)" by(simp add: powr_minus)

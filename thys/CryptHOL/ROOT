@@ -8,7 +8,7 @@ session CryptHOL (AFP) = "Probabilistic_While" +
     "~~/src/HOL/Library/Rewrite"
     "~~/src/HOL/Library/Type_Length"
     "~~/src/HOL/Algebra/Coset"
-    "../Landau_Symbols/Landau_Symbols"
+    "../Landau_Symbols/Landau_More"
     "../Applicative_Lifting/Applicative_Functor"
     "../Coinductive/TLList"
     "../Monomorphic_Monad/Monomorphic_Monad"
@@ -18,7 +18,6 @@ session CryptHOL (AFP) = "Probabilistic_While" +
     SPMF_Applicative
     List_Bits
     Environment_Functor
-    Landau_More
     Partial_Function_Set
     Negligible
     CryptHOL
