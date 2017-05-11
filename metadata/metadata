@@ -1,3 +1,19 @@
+[Monad_Normalisation]
+title = Monad normalisation
+author = Joshua Schneider, Manuel Eberl <https://www21.in.tum.de/~eberlm>, Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html>
+topic = Tools, Computer Science/Functional Programming, Logic/Rewriting
+date = 2017-05-05
+notify = andreas.lochbihler@inf.ethz.ch
+abstract = 
+  The usual monad laws can directly be used as rewrite rules for Is-
+  abelle’s simplifier to normalise monadic HOL terms and decide equiv-
+  alences. In a commutative monad, however, the commutativity law is a
+  higher-order permutative rewrite rule that makes the simplifier loop.
+  This AFP entry implements a simproc that normalises monadic
+  expressions in commutative monads using ordered rewriting. The sim-
+  proc can also permute computations across control operators like if
+  and case.
+  
 [Monomorphic_Monad]
 title = Effect polymorphism in higher-order logic
 author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html>

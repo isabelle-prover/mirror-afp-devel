@@ -201,6 +201,7 @@
                 </div>
       <h3>Functional Programming</h3>
     <div class="list">
+          <a href="entries/Monad_Normalisation.shtml">Monad_Normalisation</a> &nbsp;
           <a href="entries/Monomorphic_Monad.shtml">Monomorphic_Monad</a> &nbsp;
           <a href="entries/Show.shtml">Show</a> &nbsp;
           <a href="entries/Certification_Monads.shtml">Certification_Monads</a> &nbsp;
@@ -383,6 +384,7 @@
     </div>
         <h3>Rewriting</h3>
     <div class="list">
+          <a href="entries/Monad_Normalisation.shtml">Monad_Normalisation</a> &nbsp;
           <a href="entries/Lambda_Free_RPOs.shtml">Lambda_Free_RPOs</a> &nbsp;
           <a href="entries/Lambda_Free_KBOs.shtml">Lambda_Free_KBOs</a> &nbsp;
           <a href="entries/Nested_Multisets_Ordinals.shtml">Nested_Multisets_Ordinals</a> &nbsp;
@@ -559,6 +561,7 @@
                 </div>
     <h2>Tools</h2>
   <div class="list">
+      <a href="entries/Monad_Normalisation.shtml">Monad_Normalisation</a> &nbsp;
       <a href="entries/Constructor_Funs.shtml">Constructor_Funs</a> &nbsp;
       <a href="entries/Lazy_Case.shtml">Lazy_Case</a> &nbsp;
       <a href="entries/Case_Labeling.shtml">Case_Labeling</a> &nbsp;
