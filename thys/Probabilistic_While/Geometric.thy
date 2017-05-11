@@ -8,6 +8,12 @@ theory Geometric imports
   While_SPMF
 begin
 
+text \<open>
+  We define the geometric distribution as a least fixpoint, which is more elegant than
+  as a loop. To prove probabilistic termination, we prove it equivalent to a loop and use
+  the proof rules for probabilistic termination.
+\<close>
+
 context notes [[function_internals]] begin
 partial_function (spmf) geometric_spmf :: "real \<Rightarrow> nat spmf" where
   "geometric_spmf p = do {
@@ -29,11 +35,19 @@ lemma spmf_geometric_nonpos: "p \<le> 0 \<Longrightarrow> geometric_spmf p = ret
 lemma spmf_geometric_ge_1: "1 \<le> p \<Longrightarrow> geometric_spmf p = return_spmf 0"
   by(simp add: geometric_spmf.simps)
 
-lemma lossless_geometric [simp]: "lossless_spmf (geometric_spmf p) \<longleftrightarrow> p > 0"
-proof(cases "0 < p \<and> p < 1")
-  case True
-  let ?body = "\<lambda>(b, x :: nat). map_spmf (\<lambda>b'. (\<not> b', x + (if b' then 0 else 1))) (bernoulli p)"
-  interpret loop_spmf fst ?body .
+context
+  fixes p :: real 
+  and body :: "bool \<times> nat \<Rightarrow> (bool \<times> nat) spmf"
+  defines [simp]: "body \<equiv> \<lambda>(b, x). map_spmf (\<lambda>b'. (\<not> b', x + (if b' then 0 else 1))) (bernoulli p)"
+begin
+
+interpretation loop_spmf fst body 
+  rewrites "body \<equiv> \<lambda>(b, x). map_spmf (\<lambda>b'. (\<not> b', x + (if b' then 0 else 1))) (bernoulli p)" 
+  by(fact body_def)
+
+lemma geometric_spmf_conv_while:
+  shows "geometric_spmf p = map_spmf snd (while (True, 0))"
+proof -
   have "map_spmf (op + x) (geometric_spmf p) = map_spmf snd (while (True, x))" (is "?lhs = ?rhs") for x
   proof(rule spmf.leq_antisym)
     show "ord_spmf op = ?lhs ?rhs"
@@ -62,16 +76,24 @@ proof(cases "0 < p \<and> p < 1")
     qed
     then show "ord_spmf op = ?rhs ?lhs" by -
   qed
-  from this[of 0] have "geometric_spmf p = map_spmf snd (while (True, 0))" by(simp cong: map_spmf_cong)
-  moreover have "lossless_spmf (while (True, 0))"
+  from this[of 0] show ?thesis by(simp cong: map_spmf_cong)
+qed
+
+lemma lossless_geometric [simp]: "lossless_spmf (geometric_spmf p) \<longleftrightarrow> p > 0"
+proof(cases "0 < p \<and> p < 1")
+  case True
+  let ?body = "\<lambda>(b, x :: nat). map_spmf (\<lambda>b'. (\<not> b', x + (if b' then 0 else 1))) (bernoulli p)"
+  have "lossless_spmf (while (True, 0))"
   proof(rule termination_0_1_immediate)
     have "{x. x} = {True}" by auto
     then show "p \<le> spmf (map_spmf fst (?body s)) False" for s :: "bool \<times> nat" using True
       by(cases s)(simp add: spmf.map_comp o_def spmf_map vimage_def spmf_conv_measure_spmf[symmetric])
     show "0 < p" using True by simp
   qed(clarsimp)
-  ultimately show ?thesis using True by simp
+  with True show ?thesis by(simp add: geometric_spmf_conv_while)
 qed(auto simp add: spmf_geometric_nonpos spmf_geometric_ge_1)
+
+end
 
 lemma spmf_geometric:
   assumes p: "0 < p" "p < 1"

@@ -16,6 +16,13 @@ lemma ennreal_mult_numeral: "ennreal x * numeral n = ennreal (x * numeral n)"
 lemma one_plus_ennreal: "0 \<le> x \<Longrightarrow> 1 + ennreal x = ennreal (1 + x)"
 by simp
 
+text \<open>
+  We define the Bernoulli distribution as a least fixpoint instead of a loop because this
+  avoids the need to add a condition flag to the distribution, which we would have to project
+  out at the end again.  As the direct termination proof is so simple, we do not bother to prove
+  it equivalent to a while loop.
+\<close>
+
 partial_function (spmf) bernoulli :: "real \<Rightarrow> bool spmf" where
   "bernoulli p = do {
      b \<leftarrow> coin_spmf;

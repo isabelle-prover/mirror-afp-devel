@@ -74,7 +74,13 @@ context fixes n :: nat notes [[function_internals]] begin
 text \<open>
   The check for @{term "v >= n"} should be done already at the start of the loop. 
   Otherwise we do not see why this algorithm should be optimal (when we start with @{term "v = n"}
-  and @{term "c = n - 1"}, then it can go round a few loops before it returns something).\<close>
+  and @{term "c = n - 1"}, then it can go round a few loops before it returns something).
+
+  We define the algorithm as a least fixpoint. To prove termination, we later show that it is
+  equivalent to a while loop which samples bitstrings of a given length, which could in turn 
+  be implemented as a loop.  The fixpoint formulation is more elegant because we do not need to
+  nest any loops.
+\<close>
 
 partial_function (spmf) fast_dice_roll :: "nat \<Rightarrow> nat \<Rightarrow> nat spmf"
 where
