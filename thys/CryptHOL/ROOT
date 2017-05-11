@@ -1,0 +1,27 @@
+chapter AFP
+
+session CryptHOL (AFP) = "Probabilistic_While" +
+  options [timeout = 600]
+  theories [document=false]
+    "~~/src/HOL/Eisbach/Eisbach"
+    "~~/src/HOL/Library/Countable_Set"
+    "~~/src/HOL/Library/Rewrite"
+    "~~/src/HOL/Library/Type_Length"
+    "~~/src/HOL/Algebra/Coset"
+    "../Landau_Symbols/Landau_Symbols"
+    "../Applicative_Lifting/Applicative_Functor"
+    "../Coinductive/TLList"
+    "../Monomorphic_Monad/Monomorphic_Monad"
+    "../Monad_Normalisation/Monad_Normalisation"
+  theories
+    Misc_CryptHOL
+    SPMF_Applicative
+    List_Bits
+    Environment_Functor
+    Landau_More
+    Partial_Function_Set
+    Negligible
+    CryptHOL
+  document_files
+    "root.tex"
+    "root.bib"
