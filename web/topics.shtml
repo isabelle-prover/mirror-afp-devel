@@ -317,6 +317,7 @@
                 </div>
       <h3>Security</h3>
     <div class="list">
+          <a href="entries/Game_Based_Crypto.shtml">Game_Based_Crypto</a> &nbsp;
           <a href="entries/CryptHOL.shtml">CryptHOL</a> &nbsp;
           <a href="entries/Noninterference_Generic_Unwinding.shtml">Noninterference_Generic_Unwinding</a> &nbsp;
           <a href="entries/Noninterference_Ipurge_Unwinding.shtml">Noninterference_Ipurge_Unwinding</a> &nbsp;

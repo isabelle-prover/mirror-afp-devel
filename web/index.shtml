@@ -125,6 +125,16 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
     </tr>
       <tr>
       <td class="entry">
+        2017-05-05: <a href="entries/Game_Based_Crypto.shtml">Game-based cryptography in HOL</a>
+        <br>
+                  Authors:
+                          <a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a>,
+                        S. Reza Sefidgar
+          and     Bhargav Bhatt
+              </td>
+    </tr>
+      <tr>
+      <td class="entry">
         2017-05-05: <a href="entries/CryptHOL.shtml">CryptHOL</a>
         <br>
                   Author:

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>CryptHOL - Archive of Formal Proofs
+<title>Game-based cryptography in HOL - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,7 +61,13 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">C</font>ryptHOL
+  <h1>          <font class="first">G</font>ame-based
+  
+          cryptography
+  
+          in
+  
+          <font class="first">H</font>OL
   
 </h1>
   <p>&nbsp;</p>
@@ -70,15 +76,17 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">CryptHOL</td>
+  <td class="data" width="80%">Game-based cryptography in HOL</td>
 </tr>
 
 <tr>
   <td class="datahead">
-          Author:
+          Authors:
       </td>
   <td class="data">
-              <a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a>
+                      <a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a>,
+                S. Reza Sefidgar and
+          Bhargav Bhatt (bhargav /dot/ bhatt /at/ inf /dot/ ethz /dot/ ch)
       </td>
 </tr>
 
@@ -92,35 +100,35 @@
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-<p>CryptHOL provides a framework for formalising cryptographic arguments
-in Isabelle/HOL. It shallowly embeds a probabilistic functional
-programming language in higher order logic. The language features
-monadic sequencing, recursion, random sampling, failures and failure
-handling, and black-box access to oracles. Oracles are probabilistic
-functions which maintain hidden state between different invocations.
-All operators are defined in the new semantic domain of
-generative probabilistic values, a codatatype. We derive proof rules for
-the operators and establish a connection with the theory of relational
-parametricity. Thus, the resuting proofs are trustworthy and
-comprehensible, and the framework is extensible and widely applicable.
-</p><p>
-The framework is used in the accompanying AFP entry "Game-based
-Cryptography in HOL". There, we show-case our framework by formalizing
-different game-based proofs from the literature. This formalisation
-continues the work described in the author's ESOP 2016 paper.</p></td>
+<p>In this AFP entry, we show how to specify game-based cryptographic
+security notions and formally prove secure several cryptographic
+constructions from the literature using the CryptHOL framework. Among
+others, we formalise the notions of a random oracle, a pseudo-random
+function, an unpredictable function, and of encryption schemes that are
+indistinguishable under chosen plaintext and/or ciphertext attacks. We
+prove the random-permutation/random-function switching lemma, security
+of the Elgamal and hashed Elgamal public-key encryption scheme and
+correctness and security of several constructions with pseudo-random
+functions.
+</p><p>Our proofs follow the game-hopping style advocated by
+Shoup and Bellare and Rogaway, from which most of the examples have
+been taken. We generalise some of their results such that they can be
+reused in other proofs. Thanks to CryptHOL's integration with
+Isabelle's parametricity infrastructure, many simple hops are easily
+justified using the theory of representation independence.</p></td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{CryptHOL-AFP,
-  author  = {Andreas Lochbihler},
-  title   = {CryptHOL},
+        <pre>@article{Game_Based_Crypto-AFP,
+  author  = {Andreas Lochbihler and S. Reza Sefidgar and Bhargav Bhatt},
+  title   = {Game-based cryptography in HOL},
   journal = {Archive of Formal Proofs},
   month   = may,
   year    = 2017,
-  note    = {\url{http://isa-afp.org/entries/CryptHOL.shtml},
+  note    = {\url{http://isa-afp.org/entries/Game_Based_Crypto.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -132,11 +140,9 @@ continues the work described in the author's ESOP 2016 paper.</p></td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Applicative_Lifting.shtml">Applicative_Lifting</a>, <a href="Coinductive.shtml">Coinductive</a>, <a href="Landau_Symbols.shtml">Landau_Symbols</a>, <a href="Monad_Normalisation.shtml">Monad_Normalisation</a>, <a href="Monomorphic_Monad.shtml">Monomorphic_Monad</a>, <a href="Probabilistic_While.shtml">Probabilistic_While</a>      </td></tr>
+          <td class="data"><a href="CryptHOL.shtml">CryptHOL</a>      </td></tr>
           
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Game_Based_Crypto.shtml">Game_Based_Crypto</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -148,17 +154,17 @@ continues the work described in the author's ESOP 2016 paper.</p></td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/CryptHOL/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/CryptHOL/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Game_Based_Crypto/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Game_Based_Crypto/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/CryptHOL/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Game_Based_Crypto/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-CryptHOL-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Game_Based_Crypto-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
