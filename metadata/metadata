@@ -14,7 +14,7 @@ abstract =
 
 [Monad_Normalisation]
 title = Monad normalisation
-author = Joshua Schneider, Manuel Eberl <https://www21.in.tum.de/~eberlm>, Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html>
+author = Joshua Schneider <>, Manuel Eberl <https://www21.in.tum.de/~eberlm>, Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html>
 topic = Tools, Computer Science/Functional Programming, Logic/Rewriting
 date = 2017-05-05
 notify = andreas.lochbihler@inf.ethz.ch
