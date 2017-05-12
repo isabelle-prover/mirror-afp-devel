@@ -543,7 +543,7 @@ proof(intro conjI strip iffI; (elim conjE exE)?)
   qed
 qed
 
-lemma rel_gpv''_Grp:
+lemma rel_gpv''_Grp: (* does not hold! *)
   "rel_gpv'' (BNF_Def.Grp A f) (BNF_Def.Grp B g) (BNF_Def.Grp UNIV h)\<inverse>\<inverse> = 
    BNF_Def.Grp {x. results'_gpv x \<subseteq> A \<and> outs'_gpv x \<subseteq> B} (map_gpv' f g h)"
    (is "?lhs = ?rhs")
@@ -572,7 +572,7 @@ proof(intro ext GrpI iffI CollectI conjI subsetI)
       prefer 2
       apply(erule Cont.IH)
       apply(simp add: Grp_def)
-      oops (* does not hold! *)
+      oops
 
 
 lemma the_gpv_parametric':
