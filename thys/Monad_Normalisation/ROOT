@@ -1,7 +1,7 @@
 chapter AFP
 
 session Monad_Normalisation (AFP) = "HOL-Probability" +
-  options [timeout = 120]
+  options [timeout = 300]
   theories
     Monad_Normalisation
     Monad_Normalisation_Test

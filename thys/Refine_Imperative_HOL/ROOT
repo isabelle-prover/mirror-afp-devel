@@ -6,7 +6,7 @@ session Sepref_Prereq (AFP) = Collections +
     "../Separation_Logic_Imperative_HOL/Sep_Examples"
 
 session Refine_Imperative_HOL (AFP) = Sepref_Prereq +
-  options [timeout = 600]
+  options [timeout = 1200]
   theories [document = false]
     "Lib/Concl_Pres_Clarification"
     "Lib/Named_Theorems_Rev"
@@ -58,7 +58,7 @@ session Refine_Imperative_HOL (AFP) = Sepref_Prereq +
 
 (* Smaller Sessions: *)
 session Sepref_Basic (AFP) = Sepref_Prereq +
-  options [document = false, timeout = 200]
+  options [document = false, timeout = 300]
   theories [document = false]
     Sepref
 

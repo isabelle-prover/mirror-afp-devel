@@ -12,7 +12,7 @@ session "Ordinary_Differential_Equations" (AFP) = "HOL-Analysis" +
     "root.tex"
 
 session "HOL-ODE" (AFP) = "Ordinary_Differential_Equations" +
-  options [timeout = 100, document = false]
+  options [timeout = 300, document = false]
   theories
     "ODE_Analysis"
 

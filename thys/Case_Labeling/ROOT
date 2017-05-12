@@ -1,7 +1,7 @@
 chapter AFP
 
 session "Case_Labeling" (AFP) = "HOL" +
-  options [timeout=120]
+  options [timeout = 300]
   theories [document = false]
     "~~/src/HOL/Eisbach/Eisbach"
     "~~/src/HOL/Hoare/Hoare_Logic"
