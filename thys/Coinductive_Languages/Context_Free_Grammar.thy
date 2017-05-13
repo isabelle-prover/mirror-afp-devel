@@ -70,8 +70,10 @@ inductive in_cfls where
 inductive_cases [elim!]: "in_cfls P []"
 inductive_cases [elim!]: "in_cfls P (a # w)"
 
-lemma in_cfls_subst: "in_cfls P w \<longleftrightarrow> in_language (subst P) w"
-  by (induct w arbitrary: P) (auto intro: in_cfls.intros)
+declare inj_eq[OF bij_is_inj[OF to_language_bij], simp]
+
+lemma subst_in_cfls: "subst P = to_language {w. in_cfls P w}"
+  by (coinduction arbitrary: P) (auto intro: in_cfls.intros)
 
 lemma \<oo>\<^sub>P_in_cfl: "\<oo>\<^sub>P \<alpha> \<Longrightarrow> in_cfl \<alpha> []"
   by (induct \<alpha> rule: \<oo>\<^sub>P.induct) (auto intro!: in_cfl.intros elim: fBexI[rotated])
@@ -129,13 +131,12 @@ qed (auto intro!: in_cfls.intros)
 abbreviation lang where
   "lang \<equiv> subst G {|[Inr (init G)]|}"
 
-lemma "lang = to_language (lang_trad G)"
+lemma lang_lang_trad: "lang = to_language (lang_trad G)"
 proof -
-  have *[unfolded in_cfls_subst, simp]:
-    "in_cfls G {|[Inr (init G)]|} w \<longleftrightarrow> in_cfl G [Inr (init G)] w" for w
+  have "in_cfls G {|[Inr (init G)]|} w \<longleftrightarrow> in_cfl G [Inr (init G)] w" for w
     by (auto dest: in_cfls_in_cfl in_cfl_in_cfls)
-  show ?thesis
-    by (rule box_equals[OF _ to_language_in_language to_language_in_language], unfold *, simp)
+  then show ?thesis
+    by (auto simp: subst_in_cfls)
 qed
 
 end
