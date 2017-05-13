@@ -46,7 +46,7 @@ lemma to_language_star[simp]: "to_language (star A) = Star (to_language A)"
 
 lemma to_language_shuffle[simp]: "to_language (A \<parallel> B) = Shuffle (to_language A) (to_language B)"
   by (coinduction arbitrary: A B rule: language_coinduct_upto_Plus)
-    (auto simp: Deriv_def[symmetric])
+    (force simp: Deriv_def[symmetric])
 
 (*<*)
 end
