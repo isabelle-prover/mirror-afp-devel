@@ -63,6 +63,6 @@ session Sepref_Basic (AFP) = Sepref_Prereq +
     Sepref
 
 session Sepref_IICF (AFP) = Sepref_Basic +
-  options [document = false, timeout = 300]
+  options [document = false, timeout = 600]
   theories [document = false]
     "IICF/IICF"

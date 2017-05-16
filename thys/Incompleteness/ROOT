@@ -2,7 +2,7 @@ chapter AFP
 
 session Incompleteness (AFP) = HereditarilyFinite +
   description {* The Incompleteness Theorems *}
-  options [timeout = 1200]
+  options [timeout = 2400]
   theories [document = false]
     "~~/src/HOL/Library/Nat_Bijection"
     "../HereditarilyFinite/OrdArith"

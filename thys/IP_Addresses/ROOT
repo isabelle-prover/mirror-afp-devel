@@ -1,8 +1,8 @@
 chapter AFP
 
 session "IP_Addresses" (AFP) = Word_Lib +
-  options [timeout = 1000]
-  theories[document=false]
+  options [timeout = 2400]
+  theories [document = false]
     "~~/src/HOL/Library/Code_Target_Nat"
     "~~/src/HOL/Library/Code_Target_Int"
     "~~/src/HOL/Library/Code_Char"
@@ -23,4 +23,3 @@ session "IP_Addresses" (AFP) = Word_Lib +
     IP_Address_toString
   document_files
     "root.tex"
-

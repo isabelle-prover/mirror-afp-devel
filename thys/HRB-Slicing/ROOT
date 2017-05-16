@@ -1,7 +1,7 @@
 chapter AFP
 
 session "HRB-Slicing" (AFP) = Jinja +
-  options [timeout = 1200]
+  options [timeout = 2400]
   theories
     HRBSlicing
   document_files

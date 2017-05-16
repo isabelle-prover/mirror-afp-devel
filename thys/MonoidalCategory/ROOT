@@ -1,7 +1,7 @@
 chapter AFP
 
 session MonoidalCategory (AFP) = Category3 +
-  options [timeout = 3000, names_unique = false]
+  options [timeout = 3600, names_unique = false]
   theories
     FreeMonoidalCategory
   document_files
