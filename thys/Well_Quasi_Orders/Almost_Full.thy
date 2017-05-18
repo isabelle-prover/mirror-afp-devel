@@ -84,9 +84,9 @@ lemma almost_full_on_imp_homogeneous_subseq:
     and "\<forall>i::nat. f i \<in> A"
   shows "\<exists>\<phi>::nat \<Rightarrow> nat. \<forall>i j. i < j \<longrightarrow> \<phi> i < \<phi> j \<and> P (f (\<phi> i)) (f (\<phi> j))"
 proof -
-  def X \<equiv> "{{i, j} | i j::nat. i < j \<and> P (f i) (f j)}"
-  def Y \<equiv> "- X"
-  def h \<equiv> "\<lambda>Z. if Z \<in> X then 0 else Suc 0"
+  define X where "X = {{i, j} | i j::nat. i < j \<and> P (f i) (f j)}"
+  define Y where "Y = - X"
+  define h where "h = (\<lambda>Z. if Z \<in> X then 0 else Suc 0)"
 
   have [iff]: "\<And>x y. h {x, y} = 0 \<longleftrightarrow> {x, y} \<in> X" by (auto simp: h_def)
   have [iff]: "\<And>x y. h {x, y} = Suc 0 \<longleftrightarrow> {x, y} \<in> Y" by (auto simp: h_def Y_def)
@@ -349,7 +349,7 @@ proof (rule ccontr)
     from choice [OF this] obtain h
       where "\<forall>k. h k > k"
       and **: "\<forall>k. (\<forall>j>h k. \<not> P (f j) (f (h k)))" by auto
-    def [simp]: \<phi> \<equiv> "\<lambda>i. (h ^^ Suc i) 0"
+    define \<phi> where [simp]: "\<phi> = (\<lambda>i. (h ^^ Suc i) 0)"
     have "\<And>i. \<phi> i < \<phi> (Suc i)"
       using \<open>\<forall>k. h k > k\<close> by (induct_tac i) auto
     then have mono: "\<And>i j. i < j \<Longrightarrow> \<phi> i < \<phi> j" by (metis lift_Suc_mono_less)
@@ -383,9 +383,9 @@ proof
     then have bad: "\<forall>i j. i < j \<longrightarrow> \<not> P (f i) (f j)" by (auto simp: good_def)
     then have *: "\<And>i j. P (f i) (f j) \<Longrightarrow> i \<ge> j" by (metis not_le_imp_less)
   
-    def [simp]: D \<equiv> "\<lambda>x y. \<exists>i. x = f (Suc i) \<and> y = f i"
-    def P' \<equiv> "restrict_to P A"
-    def [simp]: Q \<equiv> "(sup P' D)\<^sup>*\<^sup>*"
+    define D where [simp]: "D = (\<lambda>x y. \<exists>i. x = f (Suc i) \<and> y = f i)"
+    define P' where "P' = restrict_to P A"
+    define Q where [simp]: "Q = (sup P' D)\<^sup>*\<^sup>*"
 
     have **: "\<And>i j. (D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+ (f i) (f j) \<Longrightarrow> i > j"
     proof -

@@ -164,7 +164,7 @@ proof -
       by (auto simp add: SUBSEQ_def)
     
     from d e have "sublisteq y x'"
-      by (rule sublisteq_trans)
+      by (rule sublist_order.order_trans)
     then have "y \<in> SUBSEQ A" using f
       by (auto simp add: SUBSEQ_def)
     with c show "False" by simp
@@ -180,10 +180,10 @@ where
 lemma main_lemma:
   shows "\<exists>M. finite M \<and> SUPSEQ A = SUPSEQ M"
 proof -
-  def M \<equiv> "{x \<in> A. minimal x A}"
+  define M where "M = {x \<in> A. minimal x A}"
   have "finite M"
     unfolding M_def minimal_def
-    by (rule sublisteq_Higman_antichains) (auto simp add: sublisteq_antisym)
+    by (rule sublisteq_Higman_antichains) (auto simp add: sublist_order.antisym)
   moreover
   have "SUPSEQ A \<subseteq> SUPSEQ M"
   proof
@@ -195,7 +195,7 @@ proof -
       using wfE_min[OF sublisteq_wf a] by auto
     then have "z \<in> M"
       unfolding M_def minimal_def
-      by (auto intro: sublisteq_trans)
+      by (auto intro: sublist_order.order_trans)
     with b(2) show "x \<in> SUPSEQ M"
       by (auto simp add: SUPSEQ_def)
   qed

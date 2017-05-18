@@ -199,7 +199,7 @@ begin
   using assms proof induction
     case (liveSimple' n v)
     from liveSimple'.prems have "vs' = [v]"
-      by (metis append_Nil butlast.simps(2) suffixI suffix_antisym suffix_unsnoc)
+      by (metis append_Nil butlast.simps(2) suffixI suffix_order.antisym suffix_unsnoc)
     with liveSimple'.hyps show ?case by (auto intro: liveVal'.liveSimple')
   next
     case (livePhi' v vs v')

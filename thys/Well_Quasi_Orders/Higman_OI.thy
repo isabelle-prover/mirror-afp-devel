@@ -18,7 +18,7 @@ subsection \<open>Some facts about the suffix relation\<close>
 lemma wfp_on_strict_suffix:
   "wfp_on strict_suffix A"
 by (rule wfp_on_mono [OF subset_refl, of _ _ "measure_on length A"])
-   (auto simp: strict_suffix_def)
+   (auto simp: strict_suffix_def suffix_def)
 
 lemma po_on_strict_suffix:
   "po_on strict_suffix A"
