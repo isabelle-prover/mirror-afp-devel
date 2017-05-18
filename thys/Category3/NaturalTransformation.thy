@@ -48,6 +48,11 @@ begin
   and is_natural_2 [iff]: "A.arr f \<Longrightarrow> B (\<tau> (A.cod f)) (F f) = \<tau> f"
   begin
 
+    lemma naturality:
+    assumes "A.arr f"
+    shows "B (G f) (\<tau> (A.dom f)) = B (\<tau> (A.cod f)) (F f)"
+      using assms is_natural_1 is_natural_2 by simp
+
     lemma preserves_arr [simp]:
     assumes "A.arr f"
     shows "B.arr (\<tau> f)"
@@ -472,6 +477,34 @@ begin
   and G :: "'a \<Rightarrow> 'b"
   and \<tau> :: "'a \<Rightarrow> 'b" +
   assumes components_are_iso: "A.ide a \<Longrightarrow> B.iso (\<tau> a)"
+  begin
+
+    text {*
+      Natural isomorphisms preserve isomorphisms, in the sense that the sides of
+      of the naturality square determined by an isomorphism are all isomorphisms,
+      so the diagonal is, as well.
+    *}
+
+    lemma preserves_iso:
+    assumes "A.iso f"
+    shows "B.iso (\<tau> f)"
+      using assms G.preserves_iso components_are_iso B.isos_compose
+      by (metis A.arr_cod_iff_arr A.dom_cod A.ide_cod A.iso_is_arr F.preserves_dom F.preserves_iso
+          F.preserves_seq is_natural_2 preserves_arr preserves_dom)
+
+  end
+
+  text {*
+    Since the function that represents a functor is formally identical to the function
+    that represents the corresponding identity natural transformation, no additional locale
+    is needed for identity natural transformations.  However, an identity natural transformation
+    is also a natural isomorphism, so it is useful for @{locale functor} to inherit from the
+    @{locale natural_isomorphism} locale.
+  *}
+
+  sublocale "functor" \<subseteq> natural_isomorphism A B F F F
+    apply unfold_locales
+    using preserves_ide B.ide_is_iso by simp
 
   definition naturally_isomorphic
   where "naturally_isomorphic A B F G = (\<exists>\<tau>. natural_isomorphism A B F G \<tau>)"
@@ -576,12 +609,20 @@ begin
   lemma inverse_inverse_transformation [simp]:
   assumes "natural_isomorphism A B F G \<tau>"
   shows "inverse_transformation.map A B F (inverse_transformation.map A B G \<tau>) = \<tau>"
-    using assms
-          category.inverse_arrows_sym category.inverse_unique category.isoI eqI
-          inverse_transformation.intro inverse_transformation.inverts_components
-          inverse_transformation.is_natural_transformation natural_isomorphism.axioms(1)
-          natural_isomorphism.intro natural_isomorphism_axioms.intro natural_transformation_def
-    by metis
+  proof -
+    interpret \<tau>: natural_isomorphism A B F G \<tau>
+      using assms by auto
+    interpret \<tau>': inverse_transformation A B F G \<tau> ..
+    interpret \<tau>'': inverse_transformation A B G F \<tau>'.map ..
+    show "\<tau>''.map = \<tau>"
+    proof (intro eqI)
+      show "natural_transformation A B F G \<tau>" ..
+      show "natural_transformation A B F G \<tau>''.map" ..
+      show "\<And>a. \<tau>.A.ide a \<Longrightarrow> \<tau>''.map a = \<tau> a"
+        using \<tau>'.inverts_components \<tau>''.inverts_components
+        by (simp add: \<tau>.components_are_iso)
+    qed
+  qed
 
   locale inverse_transformations =
     A: category A +
@@ -822,9 +863,8 @@ begin
   shows "\<tau> o (identity_functor.map A) = \<tau>"
   proof -
     interpret \<tau>: natural_transformation A B F G \<tau> using assms by auto
-    interpret iA: identity_functor A ..
-    show "\<tau> o iA.map = \<tau>"
-      using iA.map_def \<tau>.is_extensional \<tau>.A.not_arr_null by fastforce
+    show "\<tau> o \<tau>.A.map = \<tau>"
+      using \<tau>.A.map_def \<tau>.is_extensional \<tau>.A.not_arr_null by fastforce
   qed
 
   lemma hcomp_ide_cod [simp]:
@@ -832,15 +872,14 @@ begin
   shows "(identity_functor.map B) o \<tau> = \<tau>"
   proof -
     interpret \<tau>: natural_transformation A B F G \<tau> using assms by auto
-    interpret iB: identity_functor B ..
-    show "iB.map o \<tau> = \<tau>"
+    show "\<tau>.B.map o \<tau> = \<tau>"
     proof
       fix f
-      have "\<not>\<tau>.A.arr f \<Longrightarrow> (iB.map o \<tau>) f = \<tau> f"
-        using iB.map_def \<tau>.is_extensional \<tau>.B.not_arr_null by fastforce
-      moreover have "\<tau>.A.arr f \<Longrightarrow> (iB.map o \<tau>) f = \<tau> f"
-        using iB.map_def by fastforce
-      ultimately show "(iB.map o \<tau>) f = \<tau> f" by blast
+      have "\<not>\<tau>.A.arr f \<Longrightarrow> (\<tau>.B.map o \<tau>) f = \<tau> f"
+        using \<tau>.B.map_def \<tau>.is_extensional \<tau>.B.not_arr_null by fastforce
+      moreover have "\<tau>.A.arr f \<Longrightarrow> (\<tau>.B.map o \<tau>) f = \<tau> f"
+        using \<tau>.B.map_def by fastforce
+      ultimately show "(\<tau>.B.map o \<tau>) f = \<tau> f" by blast
     qed
   qed
 

@@ -3,8 +3,7 @@ chapter AFP
 session "Category3" (AFP) = "HOL-Library" +
   options [timeout = 2800, names_unique = false]
   theories
-(*    Limit Subcategory *)
-    Limit
+    Limit Subcategory EquivalenceOfCategories
   document_files
     "root.bib"
     "root.tex"

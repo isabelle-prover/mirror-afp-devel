@@ -281,11 +281,9 @@ begin
     G: "functor" C D G +
     HomC: hom_functor C S \<phi>C +
     HomD: hom_functor D S \<phi>D +
-    idC: identity_functor C +
-    idDop: identity_functor Dop.comp +
     Fop: dual_functor Dop.comp Cop.comp F +
-    FopxC: product_functor Dop.comp C Cop.comp C Fop.map idC.map +
-    DopxG: product_functor Dop.comp C Dop.comp D idDop.map G +
+    FopxC: product_functor Dop.comp C Cop.comp C Fop.map C.map +
+    DopxG: product_functor Dop.comp C Dop.comp D Dop.map G +
     Hom_FopxC: composite_functor DopxC.comp CopxC.comp S FopxC.map HomC.map +
     Hom_DopxG: composite_functor DopxC.comp DopxD.comp S DopxG.map HomD.map +
     Hom_FopxC: set_valued_functor DopxC.comp S Hom_FopxC.map +
@@ -323,20 +321,18 @@ begin
   locale unit_counit_adjunction =
     C: category C +
     D: category D +
-    idC: identity_functor C +
-    idD: identity_functor D +
     F: "functor" D C F +
     G: "functor" C D G +
     GF: composite_functor D C D F G +
     FG: composite_functor C D C G F +
     FGF: composite_functor D C C F "F o G" +
     GFG: composite_functor C D D G "G o F" +
-    \<eta>: natural_transformation D D idD.map "G o F" \<eta> +
-    \<epsilon>: natural_transformation C C "F o G" idC.map \<epsilon> +
-    F\<eta>: horizontal_composite D D C idD.map "G o F" F F \<eta> F +
-    \<eta>G: horizontal_composite C D D G G idD.map "G o F" G \<eta> +
-    \<epsilon>F: horizontal_composite D C C F F "F o G" idC.map F \<epsilon> +
-    G\<epsilon>: horizontal_composite C C D "F o G" idC.map G G \<epsilon> G +
+    \<eta>: natural_transformation D D D.map "G o F" \<eta> +
+    \<epsilon>: natural_transformation C C "F o G" C.map \<epsilon> +
+    F\<eta>: horizontal_composite D D C D.map "G o F" F F \<eta> F +
+    \<eta>G: horizontal_composite C D D G G D.map "G o F" G \<eta> +
+    \<epsilon>F: horizontal_composite D C C F F "F o G" C.map F \<epsilon> +
+    G\<epsilon>: horizontal_composite C C D "F o G" C.map G G \<epsilon> G +
     \<epsilon>FoF\<eta>: vertical_composite D C F "F o G o F" F "F o \<eta>" "\<epsilon> o F" +
     G\<epsilon>o\<eta>G: vertical_composite C D G "G o F o G" G "\<eta> o G" "G o \<epsilon>"
     for C :: "'c comp"
@@ -363,8 +359,6 @@ begin
     CopxC: product_category Cop.comp C +
     DopxD: product_category Dop.comp D +
     DopxC: product_category Dop.comp C +
-    idC: identity_functor C +
-    idD: identity_functor D +
     idDop: identity_functor Dop.comp +
     HomC: hom_functor C S \<phi>C +
     HomD: hom_functor D S \<phi>D +
@@ -375,18 +369,18 @@ begin
     FGF: composite_functor D C C F FG.map +
     GFG: composite_functor C D D G GF.map +
     Fop: dual_functor Dop.comp Cop.comp F +
-    FopxC: product_functor Dop.comp C Cop.comp C Fop.map idC.map +
-    DopxG: product_functor Dop.comp C Dop.comp D idDop.map G +
+    FopxC: product_functor Dop.comp C Cop.comp C Fop.map C.map +
+    DopxG: product_functor Dop.comp C Dop.comp D Dop.map G +
     Hom_FopxC: composite_functor DopxC.comp CopxC.comp S FopxC.map HomC.map +
     Hom_DopxG: composite_functor DopxC.comp DopxD.comp S DopxG.map HomD.map +
     Hom_FopxC: set_valued_functor DopxC.comp S Hom_FopxC.map +
     Hom_DopxG: set_valued_functor DopxC.comp S Hom_DopxG.map +
-    \<eta>: natural_transformation D D idD.map GF.map \<eta> +
-    \<epsilon>: natural_transformation C C FG.map idC.map \<epsilon> +
-    F\<eta>: horizontal_composite D D C idD.map "G o F" F F \<eta> F +
-    \<eta>G: horizontal_composite C D D G G idD.map "G o F" G \<eta> +
-    \<epsilon>F: horizontal_composite D C C F F "F o G" idC.map F \<epsilon> +
-    G\<epsilon>: horizontal_composite C C D "F o G" idC.map G G \<epsilon> G +
+    \<eta>: natural_transformation D D D.map GF.map \<eta> +
+    \<epsilon>: natural_transformation C C FG.map C.map \<epsilon> +
+    F\<eta>: horizontal_composite D D C D.map "G o F" F F \<eta> F +
+    \<eta>G: horizontal_composite C D D G G D.map "G o F" G \<eta> +
+    \<epsilon>F: horizontal_composite D C C F F "F o G" C.map F \<epsilon> +
+    G\<epsilon>: horizontal_composite C C D "F o G" C.map G G \<epsilon> G +
     \<epsilon>FoF\<eta>: vertical_composite D C F FGF.map F F\<eta>.map \<epsilon>F.map +
     G\<epsilon>o\<eta>G: vertical_composite C D G GFG.map G \<eta>G.map G\<epsilon>.map +
     \<phi>\<psi>: meta_adjunction C D F G \<phi> \<psi> +
@@ -427,8 +421,6 @@ begin
   context meta_adjunction
   begin
 
-    interpretation idC: identity_functor C ..
-    interpretation idD: identity_functor D ..
     interpretation GF: composite_functor D C D F G ..
     interpretation FG: composite_functor C D C G F ..
     interpretation FGF: composite_functor D C C F FG.map ..
@@ -452,7 +444,7 @@ begin
     shows "\<phi> y' (F g) = D (\<eta>o y) g"
       using \<eta>o_def G naturality [of "F y" "F y" "F y" g y' y "F y"] \<phi>_mapsto by auto
 
-    interpretation \<eta>: transformation_by_components D D idD.map GF.map \<eta>o
+    interpretation \<eta>: transformation_by_components D D D.map GF.map \<eta>o
       apply unfold_locales
       (* 2 *) using \<eta>o_def \<phi>_mapsto F.preserves_ide apply simp
       (* 1 *) using \<phi>_F_char \<phi>_in_terms_of_\<eta>o by fastforce
@@ -484,7 +476,7 @@ begin
         using 0 assms naturality' [of f x x' "G x" "G x" "G x" "G x" ] \<psi>_mapsto by auto
     qed
 
-    interpretation \<epsilon>: transformation_by_components C C FG.map idC.map \<epsilon>o
+    interpretation \<epsilon>: transformation_by_components C C FG.map C.map \<epsilon>o
       apply unfold_locales
       (* 2 *) using \<epsilon>o_def \<psi>_mapsto G.preserves_ide apply simp
       (* 1 *) using \<psi>_G_char \<psi>_in_terms_of_\<epsilon>o by fastforce
@@ -494,24 +486,24 @@ begin
     shows "\<epsilon>.map x = \<psi> x (G x)"
       using assms \<epsilon>o_def by simp
 
-    interpretation FD: composite_functor D D C idD.map F ..
-    interpretation CF: composite_functor D C C F idC.map ..
-    interpretation GC: composite_functor C C D idC.map G ..
-    interpretation DG: composite_functor C D D G idD.map ..
+    interpretation FD: composite_functor D D C D.map F ..
+    interpretation CF: composite_functor D C C F C.map ..
+    interpretation GC: composite_functor C C D C.map G ..
+    interpretation DG: composite_functor C D D G D.map ..
 
-    interpretation F\<eta>: horizontal_composite D D C idD.map "G o F" F F \<eta>.map F ..
+    interpretation F\<eta>: horizontal_composite D D C D.map "G o F" F F \<eta>.map F ..
     interpretation F\<eta>: natural_transformation D C F "F o G o F" "F o \<eta>.map"
       apply unfold_locales using F\<eta>.is_extensional F\<eta>.is_natural_1 F\<eta>.is_natural_2 by auto
 
-    interpretation \<epsilon>F: horizontal_composite D C C F F "F o G" idC.map F \<epsilon>.map ..
+    interpretation \<epsilon>F: horizontal_composite D C C F F "F o G" C.map F \<epsilon>.map ..
     interpretation \<epsilon>F: natural_transformation D C "F o G o F" F "\<epsilon>.map o F"
       apply unfold_locales using \<epsilon>F.is_extensional \<epsilon>F.is_natural_1 \<epsilon>F.is_natural_2 by auto
 
-    interpretation \<eta>G: horizontal_composite C D D G G idD.map "G o F" G \<eta>.map ..
+    interpretation \<eta>G: horizontal_composite C D D G G D.map "G o F" G \<eta>.map ..
     interpretation \<eta>G: natural_transformation C D G "G o F o G" "\<eta>.map o G"
       apply unfold_locales using \<eta>G.is_extensional \<eta>G.is_natural_1 \<eta>G.is_natural_2 by auto
 
-    interpretation G\<epsilon>: horizontal_composite C C D "F o G" idC.map G G \<epsilon>.map G ..
+    interpretation G\<epsilon>: horizontal_composite C C D "F o G" C.map G G \<epsilon>.map G ..
     interpretation G\<epsilon>: natural_transformation C D "G o F o G" G "G o \<epsilon>.map"
       apply unfold_locales using G\<epsilon>.is_extensional G\<epsilon>.is_natural_1 G\<epsilon>.is_natural_2 by auto
 
@@ -569,10 +561,10 @@ begin
     abbreviation \<epsilon> :: "'c \<Rightarrow> 'c" where "\<epsilon> \<equiv> \<epsilon>.map"
 
     lemma \<eta>_is_natural_transformation:
-    shows "natural_transformation D D idD.map GF.map \<eta>" ..
+    shows "natural_transformation D D D.map GF.map \<eta>" ..
 
     lemma \<epsilon>_is_natural_transformation:
-    shows "natural_transformation C C FG.map idC.map \<epsilon>" ..
+    shows "natural_transformation C C FG.map C.map \<epsilon>" ..
 
   end
 
@@ -793,7 +785,7 @@ begin
 
     text{*
       The right adjoint @{term G} to @{term F} takes each arrow @{term f} of @{term C}
-      to the unique @{term D}-coextension of @{term "C (\<epsilon>o (C.dom f)) f"}
+      to the unique @{term D}-coextension of @{term "C f (\<epsilon>o (C.dom f))"}
       along @{term "\<epsilon>o (C.cod f)"}.
     *}
 
@@ -886,11 +878,11 @@ begin
     interpretation idC: identity_functor C ..
     interpretation GF: composite_functor C D C G F ..
 
-    interpretation \<epsilon>: transformation_by_components C C GF.map idC.map \<epsilon>o
+    interpretation \<epsilon>: transformation_by_components C C GF.map C.map \<epsilon>o
     proof
       fix x :: 'c
       assume x: "C.ide x"
-      show "\<epsilon>o x \<in> C.hom (GF.map x) (idC.map x)"
+      show "\<epsilon>o x \<in> C.hom (GF.map x) (C.map x)"
       proof -
         interpret terminal_arrow_from_functor D C F "Go x" x "\<epsilon>o x"
           using x Go_\<epsilon>o_terminal ex_terminal_arrow by simp
@@ -900,7 +892,7 @@ begin
       next
       fix f :: 'c
       assume f: "C.arr f"
-      show "C (\<epsilon>o (C.cod f)) (GF.map f) = C (idC.map f) (\<epsilon>o (C.dom f))"
+      show "C (\<epsilon>o (C.cod f)) (GF.map f) = C (C.map f) (\<epsilon>o (C.dom f))"
       proof -
         let ?x = "C.dom f"
         let ?x' = "C.cod f"
@@ -1039,7 +1031,7 @@ begin
 
     text{*
       The left adjoint @{term F} to @{term g} takes each arrow @{term g} of @{term D}
-      to the unique @{term C}-extension of @{term "D g (\<eta>o (D.cod g))"}
+      to the unique @{term C}-extension of @{term "D (\<eta>o (D.cod g)) g"}
       along @{term "\<eta>o (D.dom g)"}.
     *}
 
@@ -1131,14 +1123,13 @@ begin
                                                         (Fo (D.cod g)) (D (\<eta>o (D.cod g)) g)"
       using assms F_def by simp
 
-    interpretation idD: identity_functor D ..
     interpretation FG: composite_functor D C D F G ..
 
-    interpretation \<eta>: transformation_by_components D D idD.map FG.map \<eta>o
+    interpretation \<eta>: transformation_by_components D D D.map FG.map \<eta>o
     proof
       fix y :: 'd
       assume y: "D.ide y"
-      show "\<eta>o y \<in> D.hom (idD.map y) (FG.map y)"
+      show "\<eta>o y \<in> D.hom (D.map y) (FG.map y)"
       proof -
         interpret initial_arrow_to_functor C D G y "Fo y" "\<eta>o y"
           using y Fo_\<eta>o_initial initial_arrows_exist by simp
@@ -1148,7 +1139,7 @@ begin
       next
       fix g :: 'd
       assume g: "D.arr g"
-      show "D (\<eta>o (D.cod g)) (idD.map g) = D (FG.map g) (\<eta>o (D.dom g))"
+      show "D (\<eta>o (D.cod g)) (D.map g) = D (FG.map g) (\<eta>o (D.dom g))"
       proof -
         let ?y = "D.dom g"
         let ?y' = "D.cod g"
@@ -1290,11 +1281,9 @@ begin
       apply unfold_locales
       (* 2 *) unfolding inD_def using SetCat.UP_mapsto apply auto[1]
       (* 1 *) using SetCat.inj_UP by (metis (no_types, lifting) injD inj_Inr inj_comp inj_onI)
-    interpretation idC: identity_functor C ..
-    interpretation idDop: identity_functor Dop.comp ..
     interpretation Fop: dual_functor D C F ..
-    interpretation FopxC: product_functor Dop.comp C Cop.comp C Fop.map idC.map ..
-    interpretation DopxG: product_functor Dop.comp C Dop.comp D idDop.map G ..
+    interpretation FopxC: product_functor Dop.comp C Cop.comp C Fop.map C.map ..
+    interpretation DopxG: product_functor Dop.comp C Dop.comp D Dop.map G ..
     interpretation Hom_FopxC: composite_functor DopxC.comp CopxC.comp SetCat.comp
                                                 FopxC.map HomC.map ..
     interpretation Hom_DopxG: composite_functor DopxC.comp DopxD.comp SetCat.comp
@@ -2472,6 +2461,140 @@ begin
   definition adjoint_functors
   where "adjoint_functors C D F G = (\<exists>\<phi> \<psi>. meta_adjunction C D F G \<phi> \<psi>)"
 
+  section "Composition of Adjunctions"
+
+  locale composite_adjunction =
+    A: category A +
+    B: category B +
+    C: category C +
+    F: "functor" B A F +
+    G: "functor" A B G +
+    F': "functor" C B F' +
+    G': "functor" B C G' +
+    FG: meta_adjunction A B F G \<phi> \<psi> +
+    F'G': meta_adjunction B C F' G' \<phi>' \<psi>'
+  for A :: "'a comp"
+  and B :: "'b comp"
+  and C :: "'c comp"
+  and F :: "'b \<Rightarrow> 'a"
+  and G :: "'a \<Rightarrow> 'b"
+  and F' :: "'c \<Rightarrow> 'b"
+  and G' :: "'b \<Rightarrow> 'c"
+  and \<phi> :: "'b \<Rightarrow> 'a \<Rightarrow> 'b"
+  and \<psi> :: "'a \<Rightarrow> 'b \<Rightarrow> 'a"
+  and \<phi>' :: "'c \<Rightarrow> 'b \<Rightarrow> 'c"
+  and \<psi>' :: "'b \<Rightarrow> 'c \<Rightarrow> 'b"
+  begin
+
+    lemma is_meta_adjunction:
+    shows "meta_adjunction A C (F o F') (G' o G) (\<lambda>z. \<phi>' z o \<phi> (F' z)) (\<lambda>x. \<psi> x o \<psi>' (G x))"
+    proof -
+      interpret G'oG: composite_functor A B C G G' ..
+      interpret FoF': composite_functor C B A F' F ..
+      show ?thesis
+      proof
+        fix y f x
+        assume y: "C.ide y" and f: "f \<in> A.hom (FoF'.map y) x"
+        show "(\<phi>' y \<circ> \<phi> (F' y)) f \<in> C.hom y (G'oG.map x)"
+          using y f FG.\<phi>_mapsto F'G'.\<phi>_mapsto by simp
+        show "(\<psi> x \<circ> \<psi>' (G x)) ((\<phi>' y \<circ> \<phi> (F' y)) f) = f"
+          using y f FG.\<phi>_mapsto F'G'.\<phi>_mapsto FG.\<psi>_\<phi> F'G'.\<psi>_\<phi> by simp
+        next
+        fix x g y
+        assume x: "A.ide x" and g: "g \<in> C.hom y (G'oG.map x)"
+        show "(\<psi> x \<circ> \<psi>' (G x)) g \<in> A.hom (FoF'.map y) x"
+          using x g FG.\<psi>_mapsto F'G'.\<psi>_mapsto by auto
+        show "(\<phi>' y \<circ> \<phi> (F' y)) ((\<psi> x \<circ> \<psi>' (G x)) g) = g"
+          using x g FG.\<psi>_mapsto F'G'.\<psi>_mapsto FG.\<phi>_\<psi> F'G'.\<phi>_\<psi> by simp
+        next
+        fix f x x' g y' y h
+        assume f: "f \<in> A.hom x x'" and g: "g \<in> C.hom y' y"
+        and h: "h \<in> A.hom (FoF'.map y) x"
+        show "(\<phi>' y' \<circ> \<phi> (F' y')) (A f (A h (FoF'.map g))) = C (G'oG.map f) (C ((\<phi>' y \<circ> \<phi> (F' y)) h) g)"
+          using f g h FG.naturality F'G'.naturality
+                FG.\<phi>_mapsto F'G'.\<phi>_mapsto FG.\<psi>_mapsto F'G'.\<psi>_mapsto
+          by auto
+      qed
+    qed
+
+  end
+
+  sublocale composite_adjunction \<subseteq> meta_adjunction A C "F o F'" "G' o G"
+                                     "\<lambda>z. \<phi>' z o \<phi> (F' z)" "\<lambda>x. \<psi> x o \<psi>' (G x)"
+    using is_meta_adjunction by auto
+
+  context composite_adjunction
+  begin
+
+    interpretation K\<eta>H: natural_transformation C C "G' o F'" "G' o G o F o F'" "G' o FG.\<eta> o F'"
+    proof -
+      interpret \<eta>F': horizontal_composite C B B F' F' B.map "G o F" F' FG.\<eta> ..
+      interpret G'\<eta>F': horizontal_composite C B C "B.map o F'" "G o F o F'" G' G' \<eta>F'.map G' ..
+      have "natural_transformation C C (G' o (B.map o F')) (G' o (G o F o F')) (G' o (FG.\<eta> o F'))" ..
+      moreover have "G' o (B.map o F') = G' o F'"
+        using F'.functor_axioms by auto
+      moreover have "G' o (G o F o F') = G' o G o F o F'" by auto
+      moreover have "G' o (FG.\<eta> o F') = G' o FG.\<eta> o F'" by auto
+      ultimately show "natural_transformation C C (G' o F') (G' o G o F o F') (G' o FG.\<eta> o F')"
+        by auto
+    qed
+    interpretation G'\<eta>F'o\<eta>': vertical_composite C C C.map "G' o F'" "G' o G o F o F'"
+                             F'G'.\<eta> "G' o FG.\<eta> o F'" ..
+
+    interpretation F\<epsilon>G: natural_transformation A A "F o F' o G' o G" "F o G" "F o F'G'.\<epsilon> o G"
+    proof -
+      interpret F\<epsilon>': horizontal_composite B B A "F' o G'" B.map F F F'G'.\<epsilon> F ..
+      interpret F\<epsilon>'G: horizontal_composite A B A G G "F o (F' o G')" "F o B.map" G F\<epsilon>'.map ..
+      have "natural_transformation A A (F o (F' o G') o G) (F o B.map o G) F\<epsilon>'G.map" ..
+      moreover have "F o B.map o G = F o G"
+      proof -
+        (* Here F.functor_axioms does not refer to functor F, why? *)
+        have "functor B A F" ..
+        thus ?thesis using Functor.comp_ide_dom by auto
+      qed
+      moreover have "F o (F' o G') o G = F o F' o G' o G" by auto
+      ultimately show "natural_transformation A A (F o F' o G' o G) (F o G) (F o F'G'.\<epsilon> o G)"
+        by auto
+    qed
+    interpretation \<epsilon>oF\<epsilon>'G: vertical_composite A A "F \<circ> F' \<circ> G' \<circ> G" "F o G" A.map
+                             "F o F'G'.\<epsilon> o G" FG.\<epsilon> ..
+
+    lemma \<eta>_char:
+    shows "\<eta> = G'\<eta>F'o\<eta>'.map"
+    proof (intro NaturalTransformation.eqI)
+      show "natural_transformation C C C.map (G' o G o F o F') G'\<eta>F'o\<eta>'.map" ..
+      show "natural_transformation C C C.map (G' o G o F o F') \<eta>"
+      proof -
+        have "natural_transformation C C C.map ((G' \<circ> G) \<circ> (F \<circ> F')) \<eta>" ..
+        moreover have "(G' o G) o (F o F') = G' o G o F o F'" by auto
+        ultimately show ?thesis by metis
+      qed
+      fix a
+      assume a: "C.ide a"
+      show "\<eta> a = G'\<eta>F'o\<eta>'.map a"
+        using a \<eta>_map_simp [of a] FG.\<phi>_in_terms_of_\<eta> [of "F' a" "(F o F') a"]
+              F'G'.\<phi>_in_terms_of_\<eta> [of a "FG.\<eta> (F' a)"] G'\<eta>F'o\<eta>'.map_def
+        by fastforce
+    qed
+
+    lemma \<epsilon>_char:
+    shows "\<epsilon> = \<epsilon>oF\<epsilon>'G.map"
+    proof (intro NaturalTransformation.eqI)
+      show "natural_transformation A A (F o F' o G' o G) A.map \<epsilon>"
+      proof -
+        have "natural_transformation A A ((F \<circ> F') \<circ> (G' \<circ> G)) A.map \<epsilon>" ..
+        moreover have "(F o F') o (G' o G) = F o F' o G' o G" by auto
+        ultimately show ?thesis by metis
+      qed
+      show "natural_transformation A A (F \<circ> F' \<circ> G' \<circ> G) A.map \<epsilon>oF\<epsilon>'G.map" ..
+      fix a
+      assume a: "A.ide a"
+      show "\<epsilon> a = \<epsilon>oF\<epsilon>'G.map a"
+        using a \<epsilon>_map_simp FG.\<psi>_in_terms_of_\<epsilon> F'G'.\<psi>_in_terms_of_\<epsilon> \<epsilon>oF\<epsilon>'G.map_def by auto
+    qed
+
+  end
+
   section "Right Adjoints are Unique up to Natural Isomorphism"
 
   text{*
@@ -2539,7 +2662,7 @@ begin
         proof
           have 1: "\<tau>.map a = D (G' (Adj.\<epsilon> a)) (Adj'.\<eta> (G a))"
             using a Adj'.\<phi>_in_terms_of_\<eta> by simp
-          show antipar: "Adj.D.antipar (\<tau>.map a) (\<phi> (G' a) (Adj'.\<epsilon> a))"
+          have antipar: "Adj.D.antipar (\<tau>.map a) (\<phi> (G' a) (Adj'.\<epsilon> a))"
             using a 1 Adj.\<phi>_mapsto Adj'.\<phi>_mapsto by auto
           text{*
             The proof that the two composites are identities is a modest diagram chase.

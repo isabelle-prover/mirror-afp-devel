@@ -10,7 +10,7 @@ text_raw{*
 *}
 
 theory FreeMonoidalCategory
-imports MonoidalFunctor
+imports "../Category3/Subcategory" MonoidalFunctor
 begin
 
   text {*
@@ -1066,7 +1066,7 @@ begin
         by (simp add: Arr_implies_Ide_Dom Inv_preserves_Can(3))
       have 5: "COD f = Dom ?t"
         using assms can_def Can_red Arr_rep Arr_implies_Ide_Cod by simp
-      show 6: "antipar f (mkarr ?t)"
+      have 6: "antipar f (mkarr ?t)"
         using 3 4 5 dom_char cod_char arr_mkarr Can_implies_Arr
         by (metis assms can_def cod_mkarr dom_mkarr)
       show "ide (f \<cdot> mkarr ?t)"
@@ -1125,8 +1125,6 @@ begin
         by simp
       have "inverse_arrows (mkarr t) (mkarr (Inv t))"
       proof
-        show "antipar (mkarr t) (mkarr (Inv t))"
-          using t arr_mkarr Inv_preserves_Can Inv_in_Hom mkarr_in_hom by simp
         show "ide (mkarr t \<cdot> mkarr (Inv t))"
         proof -
           have "mkarr (Cod t) = mkarr (Comp t (Inv t))"
@@ -2451,7 +2449,7 @@ begin
             show "Arr t \<Longrightarrow> F (mkarr t) = E.map (mkarr t)"
               using Ide_case E.strictly_preserves_everything F.strictly_preserves_everything
                     Arr_implies_Ide_Dom Arr_implies_Ide_Cod
-              by (induct t) auto (* 30 sec *)
+              by (induct t) auto (* 80 sec *)
           qed
           ultimately show "F f = E.map f" by metis
         qed
