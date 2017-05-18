@@ -237,8 +237,8 @@ using a by (induct rule: star_induct) (blast)+
 subsection \<open>Left-Quotients of languages\<close>
 
 definition Deriv :: "'a \<Rightarrow> 'a lang \<Rightarrow> 'a lang"
-where "Deriv x A = { xs. x#xs \<in> A }"
-
+  where "Deriv x A = { xs. x#xs \<in> A }"
+    
 definition Derivs :: "'a list \<Rightarrow> 'a lang \<Rightarrow> 'a lang"
 where "Derivs xs A = { ys. xs @ ys \<in> A }"
 
@@ -294,9 +294,12 @@ unfolding Derivs_def Deriv_def by auto
 lemma in_fold_Deriv: "v \<in> fold Deriv w L \<longleftrightarrow> w @ v \<in> L"
   by (induct w arbitrary: L) (simp_all add: Deriv_def)
 
-lemma Derivs_alt_def: "Derivs w L = fold Deriv w L"
+lemma Derivs_alt_def [code]: "Derivs w L = fold Deriv w L"
   by (induct w arbitrary: L) simp_all
 
+lemma Deriv_code [code]: 
+  "Deriv x A = tl ` Set.filter (\<lambda>xs. case xs of x' # _ \<Rightarrow> x = x' | _ \<Rightarrow> False) A"
+  by (auto simp: Deriv_def Set.filter_def image_iff tl_def split: list.splits)
 
 subsection \<open>Shuffle product\<close>
 

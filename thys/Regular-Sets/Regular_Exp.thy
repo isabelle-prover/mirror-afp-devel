@@ -30,8 +30,22 @@ primrec nullable :: "'a rexp \<Rightarrow> bool" where
 "nullable (Times r1 r2) = (nullable r1 \<and> nullable r2)" |
 "nullable (Star r) = True"
 
-lemma nullable_iff: "nullable r \<longleftrightarrow> [] \<in> lang r"
-by (induct r) (auto simp add: conc_def split: if_splits)
+lemma nullable_iff [code_abbrev]: "nullable r \<longleftrightarrow> [] \<in> lang r"
+  by (induct r) (auto simp add: conc_def split: if_splits)
+
+primrec rexp_empty where
+  "rexp_empty Zero \<longleftrightarrow> True"
+| "rexp_empty One \<longleftrightarrow> False"
+| "rexp_empty (Atom a) \<longleftrightarrow> False"
+| "rexp_empty (Plus r s) \<longleftrightarrow> rexp_empty r \<and> rexp_empty s"
+| "rexp_empty (Times r s) \<longleftrightarrow> rexp_empty r \<or> rexp_empty s"
+| "rexp_empty (Star r) \<longleftrightarrow> False"
+
+(* TODO Fixme: This code_abbrev rule does not work. Why? *)
+lemma rexp_empty_iff [code_abbrev]: "rexp_empty r \<longleftrightarrow> lang r = {}"
+  by (induction r) auto
+
+
 
 text\<open>Composition on rhs usually complicates matters:\<close>
 lemma map_map_rexp:
