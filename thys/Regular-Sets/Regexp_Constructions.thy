@@ -10,7 +10,7 @@ theory Regexp_Constructions
 imports
   Main
   "~~/src/HOL/Library/Sublist"
-  "$AFP/Regular-Sets/Regular_Exp"
+  "Regular_Exp"
 begin
 
 subsection \<open>Reverse language\<close>
