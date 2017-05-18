@@ -1506,7 +1506,7 @@ extra-history =
 	[2011-08-26]: Christian Urban added a theory about derivatives and partial derivatives of regular expressions<br>
 	[2012-05-10]: Tobias Nipkow added extended regular expressions<br>
 	[2012-05-10]: Tobias Nipkow added equivalence checking with partial derivatives
-notify = nipkow@in.tum.de, krauss@in.tum.de, urbanc@in.tum.de
+notify = nipkow@in.tum.de, krauss@in.tum.de, christian.urban@kcl.ac.uk
 
 [Regex_Equivalence]
 title = Unified Decision Procedures for Regular Expression Equivalence
@@ -1581,7 +1581,7 @@ author = Chunhan Wu <>, Xingyuan Zhang <>, Christian Urban <http://www.inf.kcl.a
 topic = Computer Science/Automata and Formal Languages
 date = 2011-08-26
 abstract = There are many proofs of the Myhill-Nerode theorem using automata. In this library we give a proof entirely based on regular expressions, since regularity of languages can be conveniently defined using regular expressions (it is more painful in HOL to define regularity in terms of automata).  We prove the first direction of the Myhill-Nerode theorem by solving equational systems that involve regular expressions.  For the second direction we give two proofs: one using tagging-functions and another using partial derivatives. We also establish various closure properties of regular languages. Most details of the theories are described in our ITP 2011 paper.
-notify = urbanc@in.tum.de
+notify = christian.urban@kcl.ac.uk
 
 [CYK]
 title = A formalisation of the Cocke-Younger-Kasami algorithm
