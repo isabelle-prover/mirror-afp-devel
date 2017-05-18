@@ -60,9 +60,10 @@ begin
      where "inverse_arrows f g \<equiv> antipar f g \<and> ide (C g f) \<and> ide (C f g)"
 
      lemma section_retractionI [intro]:
-     assumes "antipar m e" and "ide (C e m)"
+     assumes "ide (C e m)"
      shows "section_retraction m e"
-       using assms section_retraction_def by auto
+       using assms section_retraction_def [of m e]
+       by (metis arr_compD(2) arr_compD(3) arr_dom_iff_arr cod_comp ideD(1) ideD(3) ide_comp_simp)
 
      lemma section_retractionD [dest]:
      assumes "section_retraction m e"
@@ -70,9 +71,9 @@ begin
        using assms section_retraction_def by simp_all
 
      lemma inverse_arrowsI [intro]:
-     assumes "antipar f g" and "ide (C g f)" and "ide (C f g)"
+     assumes "ide (C g f)" and "ide (C f g)"
      shows "inverse_arrows f g"
-       using assms inverse_arrows_def by auto
+       using assms inverse_arrows_def section_retraction_def by blast
 
      lemma inverse_arrowsD [dest]:
      assumes "inverse_arrows f g"
@@ -109,7 +110,7 @@ begin
      assumes "seq g f" and "inverse_arrows f f'" and "inverse_arrows g g'"
      shows "inverse_arrows (C g f) (C f' g')"
      proof
-       show 1: "antipar (C g f) (C f' g')" using assms by fastforce
+       have 1: "antipar (C g f) (C f' g')" using assms by fastforce
        hence 2: "seq g f \<and> seq f f' \<and> seq f' g' \<and> seq g g'"
          using assms by (simp add: inverse_arrowsD(1))
        show "ide (C (C g f) (C f' g'))"
@@ -208,9 +209,6 @@ begin
      assumes "section_retraction m e" and "section_retraction m' e'" and "seq m' m"
      shows "section_retraction (C m' m) (C e e')"
      proof
-       show "antipar (C m' m) (C e e')"
-         using assms
-         by (simp add: section_retractionD(2) section_retractionD(3) section_retractionD(4))
        show "ide (C (C e e') (C m' m))"
        proof -
          have 1: "seq e e' \<and> seq m' m \<and> seq e' m'"
@@ -284,7 +282,7 @@ begin
      lemma ide_is_iso [simp]:
      assumes "ide a"
      shows "iso a"
-       using assms by fastforce
+       using assms by (metis comp_arr_ide ideD(2) inverse_arrowsI iso_def)
 
      lemma iso_is_arr [simp]:
      assumes "iso f"
@@ -344,8 +342,6 @@ begin
        from assms(2) obtain g' where g': "inverse_arrows f' g'" by blast
        have "inverse_arrows (C f' f) (C g g')"
        proof
-         show "antipar (C f' f) (C g g')"
-           using assms g g' by (simp add: inverse_arrowsD(1))
          show "ide (C (C f' f) (C g g'))"
            using assms g g' by (simp add: inverse_arrowsD(3) inverse_arrows_compose)
          show "ide (C (C g g') (C f' f))"
@@ -409,6 +405,164 @@ begin
      assumes "iso f"
      shows "inv (inv f) = f"
        using assms inverse_arrows_sym inverse_unique by blast
+
+    lemma comp_arr_inv:
+    assumes "inverse_arrows f g"
+    shows "C f g = dom g"
+    proof -
+      have "ide (C f g)" using assms inverse_arrows_def by blast
+      thus "C f g = dom g" using assms inverse_arrows_def dom_comp [of g f] by auto
+    qed
+
+    lemma comp_inv_arr:
+    assumes "inverse_arrows f g"
+    shows "C g f = dom f"
+    proof -
+      have "ide (C g f)" using assms inverse_arrows_def by blast
+      thus "C g f = dom f" using assms inverse_arrows_def dom_comp [of f g] by auto
+    qed
+
+    lemma inv_in_hom [simp]:
+    assumes "iso f"
+    shows "inv f \<in> hom (cod f) (dom f)"
+    proof -
+      have "inverse_arrows f (inv f)"
+        using assms inv_is_inverse by blast
+      then show ?thesis
+        by (simp add: inverse_arrowsD(1))
+    qed
+
+    lemma inv_comp:
+    assumes "iso f" and "iso g" and "seq g f"
+    shows "inv (C g f) = C (inv f) (inv g)"
+    proof -
+      have f: "inverse_arrows f (inv f)"
+        using assms(1) inv_is_inverse by blast
+      have g: "inverse_arrows g (inv g)"
+        using assms(2) inv_is_inverse by blast
+      have "inverse_arrows (C g f) (C (inv f) (inv g))"
+      proof
+        show "ide (C (C g f) (C (inv f) (inv g)))"
+          using assms f g inv_in_hom comp_assoc [of "inv g" "inv f" f] comp_arr_inv by simp
+        show "ide (C (C (inv f) (inv g)) (C g f))"
+          using assms f g inv_in_hom comp_assoc [of f g "inv g"] comp_inv_arr by simp
+      qed
+      thus ?thesis using inverse_unique by auto
+    qed
+
+    text {*
+      A section or retraction of an isomorphism is in fact an inverse.
+    *}
+
+    lemma section_retraction_of_iso:
+    assumes "iso f"
+    shows "section_retraction f g \<Longrightarrow> inverse_arrows f g"
+    and "section_retraction g f \<Longrightarrow> inverse_arrows f g"
+    proof -
+      assume fg: "section_retraction f g"
+      show "inverse_arrows f g"
+      proof
+        have 1: "antipar f g" using fg by auto
+        show "ide (C g f)" using fg by auto
+        show "ide (C f g)"
+        proof -
+          have "C g f = dom f" using fg ide_comp_simp by auto
+          hence "inv f = C (C g f) (inv f)"
+            using assms 1 inv_in_hom by simp
+          also have "... = g"
+            using assms 1 inv_in_hom inv_is_inverse comp_arr_inv by force
+          finally have "g = inv f" by simp
+          thus ?thesis
+            using assms 1 inv_is_inverse comp_inv_arr by force
+        qed
+      qed
+      next
+      assume fg: "section_retraction g f"
+      show "inverse_arrows f g"
+      proof
+        have 1: "antipar f g" using fg by auto
+        show "ide (C f g)" using fg by auto
+        show "ide (C g f)"
+        proof -
+          have "inverse_arrows f (inv f)"
+            using assms inv_is_inverse by blast
+          have "C f g = dom g" using fg ide_comp_simp by auto
+          hence "inv f = C (inv f) (C f g)"
+            using assms 1 inv_in_hom by simp
+          also have "... = C (C (inv f) f) g"
+            using assms fg 1 inv_in_hom inv_is_inverse by simp
+          also have "... = g"
+            using assms fg 1 inv_in_hom inv_is_inverse comp_inv_arr by simp
+          finally have "g = inv f" by simp
+          thus ?thesis
+            using assms 1 inv_is_inverse comp_arr_inv by force
+        qed
+      qed
+    qed
+
+    text {*
+      A situation that occurs frequently is that we have a commuting triangle,
+      but we need the triangle obtained by inverting one side that is an isomorphism.
+      The following fact streamlines this derivation.
+    *}
+
+    lemma invert_side_of_triangle:
+    assumes "seq f g" and "C f g = h"
+    shows "iso f \<Longrightarrow> seq (inv f) h \<and> g = C (inv f) h"
+    and "iso g \<Longrightarrow> seq h (inv g) \<and> f = C h (inv g)"
+    proof -
+      assume f: "iso f"
+      have "seq (inv f) h"
+        using assms f inv_in_hom by auto
+      moreover have "g = C (inv f) h"
+      proof -
+        have "g = C (C (inv f) f) g"
+          using assms f comp_inv_arr inv_is_inverse by simp
+        also have "... = C (inv f) h"
+          using assms f inv_in_hom by simp
+        finally show ?thesis by blast
+      qed
+      ultimately show "seq (inv f) h \<and> g = C (inv f) h" by simp
+      next
+      assume g: "iso g"
+      have "seq h (inv g)"
+        using assms g inv_in_hom by auto
+      moreover have "f = C h (inv g)"
+      proof -
+        have "f = C f (C g (inv g))"
+          using assms g comp_arr_inv inv_is_inverse inv_in_hom by simp
+        also have "... = C h (inv g)"
+          using assms g inv_in_hom by auto
+        finally show ?thesis by blast
+      qed
+      ultimately show "seq h (inv g) \<and> f = C h (inv g)" by simp
+    qed
+
+    text {*
+      A similar situation is where we have a commuting square and we want to
+      invert two opposite sides.
+    *}
+
+    lemma invert_opposite_sides_of_square:
+    assumes "seq f g" and "seq h k" and "C f g = C h k"
+    shows "\<lbrakk> iso f; iso k \<rbrakk> \<Longrightarrow> seq g (inv k) \<and> seq (inv f) h \<and> C g (inv k) = C (inv f) h"
+    proof -
+      assume f: "iso f" and k: "iso k"
+      have "dom g = dom k \<and> cod f = cod h"
+        using assms by (metis cod_comp dom_comp)
+      hence 1: "seq g (inv k) \<and> seq (inv f) h"
+        using assms f k inv_in_hom by simp
+      moreover have "C g (inv k) = C (inv f) h"
+      proof -
+        have "g = C (inv f) (C h k)"
+          using assms f invert_side_of_triangle(1) [of g f "C h k"] by simp
+        hence "g = C (C (inv f) h) k"
+          using assms f 1 inv_in_hom inv_is_inverse by simp
+        thus ?thesis
+          using assms k 1 invert_side_of_triangle(2) [of k "C (inv f) h" g] by simp
+      qed
+      ultimately show ?thesis by blast
+    qed
 
   end
 

@@ -107,18 +107,39 @@ begin
 
     lemma is_category:
     shows "category comp"
+      using comp_def C.not_arr_null C.arr_comp C.dom_comp C.cod_comp comp_null(2) rep_abs
+      apply (unfold_locales)
+           apply (metis abstracted_category.domain_closed abstracted_category_axioms)
+          apply (metis abstracted_category.domain_closed abstracted_category_axioms)
+         apply (metis abstracted_category.domain_closed abstracted_category_axioms)
+        apply (metis abstracted_category.domain_closed abstracted_category_axioms)
     proof -
-      interpret category comp
-        using comp_def C.not_arr_null C.arr_comp C.dom_comp C.cod_comp comp_null(2) rep_abs
-        apply unfold_locales
-        (* 6 *) apply (metis abstracted_category.domain_closed abstracted_category_axioms)
-        (* 5 *) apply (metis abstracted_category.domain_closed abstracted_category_axioms)
-        (* 4 *) apply (metis abstracted_category.domain_closed abstracted_category_axioms)
-        (* 3 *) apply (metis abstracted_category.domain_closed abstracted_category_axioms)
-        using C.comp_assoc abstracted_category.domain_closed abstracted_category_axioms
-        (* 2 *) apply metis (* 20 sec *)
-        (* 1 *) using has_dom_char' has_cod_char' by (simp add: C.has_dom_iff_has_cod)
-      show "category comp" ..
+      show "\<And>f. has_dom f = has_cod f"
+        using has_dom_char' has_cod_char' by (simp add: C.has_dom_iff_has_cod)
+      show "\<And>f g h. \<lbrakk> comp g f \<noteq> null; comp h g \<noteq> null \<rbrakk> \<Longrightarrow>
+                    comp h (comp g f) = comp (comp h g) f"
+      proof -
+        fix f g h
+        assume gf: "comp g f \<noteq> null"
+        assume hg: "comp h g \<noteq> null"
+        have 1: "C.seq (R g) (R f) \<and> C.seq (R h) (R g)"
+          using gf hg by (metis comp_def null_char)
+        have 2: "C.seq (R h) (R (A (C (R g) (R f)))) \<and> C.seq (R (A (C (R h) (R g)))) (R f)"
+          using 1 rep_abs C.arr_comp C.dom_comp C.cod_comp
+          by (simp add: domain_closed)
+        have "comp h (comp g f) = A (C (R h) (R (A (C (R g) (R f)))))"
+          using 1 2 comp_def by simp
+        also have "... = A (C (R h) (C (R g) (R f)))"
+          using 1 rep_abs domain_closed by simp
+        also have "... = A (C (C (R h) (R g)) (R f))"
+          using 1 by simp
+        also have "... = A (C (R (A (C (R h) (R g)))) (R f))"
+          using 1 rep_abs domain_closed by simp
+        also have "... = comp (comp h g) f"
+          using 1 2 comp_def by simp
+        finally show "comp h (comp g f) = comp (comp h g) f"
+          by simp
+      qed
     qed
 
   end

@@ -66,7 +66,7 @@ begin
     proof
       show "B.inverse_arrows (F f) (F (A.inv f))"
       proof
-        show 1: "B.antipar (F f) (F (A.inv f))"
+        have 1: "B.antipar (F f) (F (A.inv f))"
           using assms
           by (metis (full_types) A.inverse_arrowsD(1) A.isoE A.inverse_unique preserves_arr
               preserves_cod preserves_dom)
@@ -96,6 +96,39 @@ begin
         qed
       qed
     qed
+
+    lemma preserves_section_retraction:
+    assumes "A.section_retraction m e"
+    shows "B.section_retraction (F m) (F e)"
+    proof
+      have "A.ide (A e m)" using assms by auto
+      hence "B.ide (F (A e m))" by simp
+      moreover have "F (A e m) = B (F e) (F m)"
+        using assms preserves_comp A.section_retractionD by simp
+      ultimately show "B.ide (B (F e) (F m))" by simp
+    qed
+
+    lemma preserves_section:
+    assumes "A.section m"
+    shows "B.section (F m)"
+      using assms preserves_section_retraction by blast
+
+    lemma preserves_retraction:
+    assumes "A.retraction e"
+    shows "B.retraction (F e)"
+      using assms preserves_section_retraction by blast
+
+    lemma preserves_inverse_arrows:
+    assumes "A.inverse_arrows f g"
+    shows "B.inverse_arrows (F f) (F g)"
+      using assms preserves_section_retraction by blast
+
+    lemma preserves_inv:
+    assumes "A.iso f"
+    shows "F (A.inv f) = B.inv (F f)"
+      using assms preserves_inverse_arrows A.inv_is_inverse B.inv_is_inverse
+            B.inverse_arrow_unique
+      by blast
 
   end
 
@@ -146,7 +179,7 @@ begin
         using assms(1) is_full by fastforce
       have "A.inverse_arrows f g"
       proof
-        show 2: "A.antipar f g" using assms(1) 1 g by simp
+        have 2: "A.antipar f g" using assms(1) 1 g by simp
         show "A.ide (A f g)"
         proof -
           have "B.ide (F (A f g))" using 2 g g' by auto
@@ -199,6 +232,10 @@ begin
   and B :: "'b comp"
   and F :: "'a \<Rightarrow> 'b"
 
+  locale essentially_surjective_functor =
+    "functor" +
+  assumes essentially_surjective: "\<forall>b. B.ide b \<longrightarrow> (\<exists>a. A.ide a \<and> B.isomorphic (F a) b)"
+
   locale constant_functor =
     A: category A +
     B: category B
@@ -249,6 +286,17 @@ begin
   sublocale identity_functor \<subseteq> "functor" C C map
     using is_functor by auto
 
+  text {*
+    It is convenient to have an easy way to obtain from a category the identity functor
+    on that category. The following declaration causes the definitions and facts from the
+    @{locale identity_functor} locale to be inherited by the @{locale category} locale,
+    including the function @{term map} on arrows that represents the identity functor.
+    This makes it generally unnecessary to give explicit interpretations of
+    @{locale identity_functor}.
+  *}
+
+  sublocale category \<subseteq> identity_functor C ..
+
   text{*
     Composition of functors coincides with function composition, thanks to the
     magic of @{text null}.
@@ -289,9 +337,8 @@ begin
   shows "F o identity_functor.map A = F"
   proof
     interpret "functor" A B F using assms by blast
-    interpret I: identity_functor A ..
-    show "\<And>x. (F o I.map) x = F x"
-      using I.map_def by (simp add: A.not_arr_null)
+    show "\<And>x. (F o A.map) x = F x"
+      using A.map_def by (simp add: A.not_arr_null)
   qed
 
   lemma comp_ide_cod [simp]:
@@ -299,9 +346,8 @@ begin
   shows "identity_functor.map B o F = F"
   proof
     interpret "functor" A B F using assms by blast
-    interpret I: identity_functor B ..
-    show "\<And>x. (I.map o F) x = F x"
-      using I.map_def by (metis comp_apply is_extensional preserves_arr)
+    show "\<And>x. (B.map o F) x = F x"
+      using B.map_def by (metis comp_apply is_extensional preserves_arr)
   qed
 
   locale inverse_functors =
@@ -338,6 +384,37 @@ begin
       apply (unfold_locales) using inv inv' by auto
   qed
   
+  lemma inverse_functor_unique:
+  assumes "inverse_functors C D F G" and "inverse_functors C D F G'"
+  shows "G = G'"
+  proof -
+    interpret FG: inverse_functors C D F G using assms(1) by auto
+    interpret FG': inverse_functors C D F G' using assms(2) by auto
+    show "G = G'"
+    proof
+      fix x
+      have "\<not>FG.B.arr x \<Longrightarrow> G x = G' x"
+        using FG.G.is_extensional FG'.G.is_extensional by presburger
+      moreover have "FG.B.arr x \<Longrightarrow> G x = G' x"
+      proof -
+        assume x: "FG.B.arr x"
+        have "G x = (G' o F) (G x)"
+          using x FG'.inv by fastforce
+        also have "... = G' ((F o G) x)"
+          by simp
+        also have "... = G' x"
+          using x FG.inv' by simp
+        finally show "G x = G' x" by auto
+      qed
+      ultimately show "G x = G' x" by blast
+    qed
+  qed
+
+  lemma inverse_functor_unique':
+  assumes "inverse_functors C D F G" and "inverse_functors C D F' G"
+  shows "F = F'"
+    using assms inverse_functors_sym inverse_functor_unique by blast
+
   locale invertible_functor =
     A: category A +
     B: category B +
@@ -347,6 +424,20 @@ begin
   and F :: "'a \<Rightarrow> 'b" +
   assumes invertible: "\<exists>G. inverse_functors A B F G"
   begin
+
+    lemma has_unique_inverse:
+    shows "\<exists>!G. inverse_functors A B F G"
+      using invertible inverse_functor_unique by blast
+
+    definition inv
+    where "inv \<equiv> THE G. inverse_functors A B F G"
+
+    interpretation inverse_functors A B F inv
+      using inv_def has_unique_inverse theI' [of "\<lambda>G. inverse_functors A B F G"]
+      by simp
+
+    lemma inv_is_inverse:
+    shows "inverse_functors A B F inv" ..
   
     lemma preserves_terminal:
     assumes "A.terminal a"
@@ -361,14 +452,12 @@ begin
         from invertible have G: "inverse_functors A B F ?G"
           using someI_ex [of "\<lambda>G. inverse_functors A B F G"] by fast
         interpret inverse_functors A B F ?G using G by auto
-        interpret IA: identity_functor A ..
-        interpret IB: identity_functor B ..
         let ?P = "\<lambda>f. f \<in> A.hom (?G b) a"
         have 1: "\<exists>!f. ?P f" using assms b A.terminal_def G.preserves_ide by simp
         hence 2: "?P (THE f. ?P f)" by (metis (no_types, lifting) theI')
         thus "F (THE f. ?P f) \<in> B.hom b (F a)"
           using b inv' B.ideD(1) F.preserves_hom
-          by (metis (mono_tags, lifting) IB.map_simp comp_def mem_Collect_eq)
+          by (metis (mono_tags, lifting) B.map_simp comp_def mem_Collect_eq)
         hence 3: "(THE f. ?P f) \<in> A.hom (?G b) a"
           using assms 2 b G by simp
         fix g :: 'b
@@ -378,17 +467,52 @@ begin
           have "A.arr a" using assms(1) A.ideD(1) A.terminal_def by blast
           moreover have "?G g \<in> A.hom (?G b) (?G (F a))"
             using g G.preserves_hom [of g b "F a"] by simp
-          ultimately show ?thesis using g IA.map_simp
+          ultimately show ?thesis using g A.map_simp
             by (metis (no_types, lifting) comp_apply inv mem_Collect_eq)
         qed
         hence "?G g = (THE f. ?P f)" using assms 1 3 A.terminal_def by blast
         thus "g = F (THE f. ?P f)"
-          using inv' CollectD g IB.map_simp mem_Collect_eq
+          using inv' CollectD g B.map_simp mem_Collect_eq
           by (metis (no_types, lifting) comp_apply)
       qed
     qed
   
   end
+
+  sublocale invertible_functor \<subseteq> inverse_functors A B F inv
+    using inv_is_inverse by simp
+
+  text {*
+    Inverse functors uniquely determine each other.
+  *}
+
+  lemma inverse_functor_eq:
+  assumes "inverse_functors C D F G" and "inverse_functors C D F G'"
+  shows "G = G'"
+  proof -
+    interpret FG: inverse_functors C D F G using assms(1) by auto
+    interpret FG': inverse_functors C D F G' using assms(2) by auto
+    show "G = G'"
+    proof
+      fix x
+      have "\<not>FG.B.arr x \<Longrightarrow> G x = G' x"
+        using FG.G.is_extensional FG'.G.is_extensional by presburger
+      moreover have "FG.B.arr x \<Longrightarrow> G x = G' x"
+      proof -
+        assume x: "FG.B.arr x"
+        have "G x = (G' o F) (G x)" using x FG'.inv by fastforce
+        also have "... = G' ((F o G) x)" by simp
+        also have "... = G' x" using x FG.inv' by simp
+        finally show "G x = G' x" by auto
+      qed
+      ultimately show "G x = G' x" by blast
+    qed
+  qed
+
+  lemma inverse_functor_eq':
+  assumes "inverse_functors C D F G" and "inverse_functors C D F' G"
+  shows "F = F'"
+    using assms inverse_functors_sym inverse_functor_eq by blast
 
   locale dual_functor =
     F: "functor" A B F +
@@ -412,7 +536,10 @@ begin
 
   end
 
-  sublocale dual_functor \<subseteq> "functor" Aop.comp Bop.comp map
+  sublocale invertible_functor \<subseteq> inverse_functors A B F inv
+    using inv_is_inverse by simp
+
+   sublocale dual_functor \<subseteq> "functor" Aop.comp Bop.comp map
     using is_functor by auto
 
 end

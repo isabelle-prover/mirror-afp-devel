@@ -15,7 +15,7 @@ text {*
 *}
     
 theory MonoidalCategory
-imports Category3Adapter
+imports "../Category3/EquivalenceOfCategories"
 begin
 
   section "Monoidal Category"
@@ -1375,7 +1375,7 @@ $$\xymatrix{
       qed
       hence "inverse_arrows (inv i) f"
         using iso_i section_retraction_of_iso(2) [of "inv i" f] iso_inv_iso
-        by (simp add: section_retractionI')
+        by (simp add: section_retractionI)
       moreover have "inverse_arrows (inv i) i"
         using iso_i inv_is_inverse [of i] iso_inv_iso inverse_arrows_sym by simp
       ultimately show "f = i"
@@ -3432,6 +3432,32 @@ $$\xymatrix{
 
   section "Coherence"
 
+  context category
+  begin
+
+    text {*
+      The next two results are sometimes useful for performing manipulations at the
+      head of a chain of composed arrows.  I have adopted the convention that such
+      chains are canonically represented in right-associated form.  This makes it
+      easy to perform manipulations at the ``tail'' of a chain, but more difficult
+      to perform them at the ``head''.  These results take care of the rote manipulations
+      using associativity that are needed to either permute or combine arrows at the
+      head of a chain.
+    *}
+
+    lemma comp_permute:
+    assumes "C f g = C k l" and "seq f g" and "seq g h"
+    shows "C f (C g h) = C k (C l h)"
+      using assms comp_assoc
+      by (metis (full_types) arr_comp arr_compD(1) arr_compD(2) arr_compD(3) dom_comp)
+
+    lemma comp_reduce:
+    assumes "C f g = k" and "seq f g" and "seq g h"
+    shows "C f (C g h) = C k h"
+      using assms by auto
+
+  end
+
   text{*
     If @{term D} is a monoidal category, then a functor @{text "V: C \<rightarrow> D"} extends
     in an evident way to an evaluation map that interprets each formal arrow of the
@@ -4153,7 +4179,7 @@ $$\xymatrix{
             Can_implies_coherent_iff_coherent_Inv [of "Runit a"] by simp
 
     text{*
-      To go further, we need the next result, which is in some the crux of coherence:
+      To go further, we need the next result, which is in some sense the crux of coherence:
       For diagonal identities @{term a}, @{term b}, and @{term c},
       the reduction @{term "((a \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> b) \<^bold>\<Down> c) \<^bold>\<cdot> ((a \<^bold>\<Down> b) \<^bold>\<otimes> c)"} from @{term "(a \<^bold>\<otimes> b) \<^bold>\<otimes> c"}
       that first reduces the subterm @{term "a \<^bold>\<otimes> b"} and then reduces the result,

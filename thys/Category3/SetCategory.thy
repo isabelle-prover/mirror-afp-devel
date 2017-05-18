@@ -1279,14 +1279,12 @@ begin
     shows "inverse_functors S S' \<Phi> \<Psi>"
     proof -
       interpret \<Phi>\<Psi>: composite_functor S S' S \<Phi> \<Psi> ..
-      interpret I: identity_functor S ..
-      have inv: "\<Psi> o \<Phi> = I.map"
-        using \<Phi>\<Psi> I.map_def \<Phi>\<Psi>.is_extensional by auto
+      have inv: "\<Psi> o \<Phi> = S.map"
+        using \<Phi>\<Psi> S.map_def \<Phi>\<Psi>.is_extensional by auto
     
       interpret \<Psi>\<Phi>: composite_functor S' S S' \<Psi> \<Phi> ..
-      interpret I': identity_functor S' ..
-      have inv': "\<Phi> o \<Psi> = I'.map"
-        using \<Psi>\<Phi> I'.map_def \<Psi>\<Phi>.is_extensional by auto
+      have inv': "\<Phi> o \<Psi> = S'.map"
+        using \<Psi>\<Phi> S'.map_def \<Psi>\<Phi>.is_extensional by auto
     
       show ?thesis
         apply (unfold_locales) using inv inv' apply auto done
@@ -2134,7 +2132,7 @@ begin
       qed
       show "section_retraction ?f g"
       proof
-        show 1: "antipar ?f g" using f assms by simp
+        have 1: "antipar ?f g" using f assms by simp
         show "ide (S g ?f)"
         proof -
           have "g = mkArr (Dom g) (Cod g) (Fun g)" using assms by auto
@@ -2231,7 +2229,7 @@ begin
       qed
       show "section_retraction f ?g"
       proof
-        show 1: "antipar f ?g" using assms g by simp
+        have 1: "antipar f ?g" using assms g by simp
         show "ide (S ?g f)"
         proof -
           have "f = mkArr (Dom f) (Cod f) (Fun f)" using assms by auto
@@ -2338,7 +2336,7 @@ begin
         assume fg: "antipar f g \<and> compose (Dom f) (Fun g) (Fun f) = (\<lambda>x \<in> Dom f. x)"
         show "section_retraction f g"
         proof
-          show 1: "antipar f g" using fg by auto
+          have 1: "antipar f g" using fg by auto
           show "ide (S g f)"
           proof -
             have "arr (S g f)" using 1 by simp

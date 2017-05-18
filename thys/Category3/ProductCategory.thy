@@ -6,7 +6,7 @@
 chapter ProductCategory
 
 theory ProductCategory
-imports Category
+imports Category EpiMonoIso
 begin
 
   text{*
@@ -242,6 +242,51 @@ begin
     assumes "seq g f"
     shows "comp g f = (C1 (fst g) (fst f), C2 (snd g) (snd f))"
       using assms comp_char by auto
+
+    lemma iso_char:
+    shows "iso f \<longleftrightarrow> C1.iso (fst f) \<and> C2.iso (snd f)"
+    proof
+      assume f: "iso f"
+      obtain g where g: "inverse_arrows f g" using f by auto
+      have "C1.inverse_arrows (fst f) (fst g)"
+      proof
+        have 1: "ide (comp f g) \<and> ide (comp g f)" using f g by blast
+        show "C1.ide (C1 (fst f) (fst g))" using 1 f g ide_char by auto
+        show "C1.ide (C1 (fst g) (fst f))" using 1 f g ide_char by auto
+      qed
+      moreover have "C2.inverse_arrows (snd f) (snd g)"
+      proof
+        have 1: "ide (comp f g) \<and> ide (comp g f)" using f g by blast
+        show "C2.ide (C2 (snd f) (snd g))" using 1 f g ide_char by auto
+        show "C2.ide (C2 (snd g) (snd f))" using 1 f g ide_char by auto
+      qed
+      ultimately show "C1.iso (fst f) \<and> C2.iso (snd f)" by auto
+      next
+      assume f: "C1.iso (fst f) \<and> C2.iso (snd f)"
+      obtain g1 where g1: "C1.inverse_arrows (fst f) g1" using f by blast
+      obtain g2 where g2: "C2.inverse_arrows (snd f) g2" using f by blast
+      have "inverse_arrows f (g1, g2)"
+        using f g1 g2 dom_char ide_char comp_char by (intro inverse_arrowsI; auto)
+      thus "iso f" by auto
+    qed
+
+    lemma inv_char:
+    assumes "iso f"
+    shows "inv f = (C1.inv (fst f), C2.inv (snd f))"
+    proof -
+      have "inverse_arrows f (C1.inv (fst f), C2.inv (snd f))"
+      proof
+        have 1: "C1.inverse_arrows (fst f) (C1.inv (fst f))"
+          using assms iso_char C1.inv_is_inverse by simp
+        have 2: "C2.inverse_arrows (snd f) (C2.inv (snd f))"
+          using assms iso_char C2.inv_is_inverse by simp
+        show "ide (comp (C1.inv (fst f), C2.inv (snd f)) f)"
+          using 1 2 ide_char comp_char C1.comp_inv_arr C2.comp_inv_arr by auto
+        show "ide (comp f (C1.inv (fst f), C2.inv (snd f)))"
+          using 1 2 ide_char comp_char C1.comp_arr_inv C2.comp_arr_inv by auto
+      qed
+      thus ?thesis using inverse_unique by auto
+    qed
 
   end
 
