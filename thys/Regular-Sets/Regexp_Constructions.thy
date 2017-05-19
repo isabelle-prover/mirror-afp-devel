@@ -3,7 +3,7 @@
   Author:   Manuel Eberl <eberlm@in.tum.de>
 
   Some simple constructions on regular expressions to illustrate closure properties of regular
-  languages: reversal, prefixes, suffixes, subwords ("fragments")
+  languages: reversal, substitution, prefixes, suffixes, subwords ("fragments")
 *)
 section \<open>Basic constructions on regular expressions\<close>
 theory Regexp_Constructions
@@ -24,7 +24,34 @@ lemma rev_compower [simp]: "rev ` (A ^^ n) = (rev ` A) ^^ n"
 lemma rev_star [simp]: "rev ` star A = star (rev ` A)"
   by (simp add: star_def image_UN)
 
+
+subsection \<open>Substituting characters in a language\<close>    
+
+definition subst_word :: "('a \<Rightarrow> 'b list) \<Rightarrow> 'a list \<Rightarrow> 'b list" where
+  "subst_word f xs = concat (map f xs)"
   
+lemma subst_word_Nil [simp]: "subst_word f [] = []"
+  by (simp add: subst_word_def)
+    
+lemma subst_word_singleton [simp]: "subst_word f [x] = f x"
+  by (simp add: subst_word_def)
+    
+lemma subst_word_append [simp]: "subst_word f (xs @ ys) = subst_word f xs @ subst_word f ys"
+  by (simp add: subst_word_def)
+    
+lemma subst_word_Cons [simp]: "subst_word f (x # xs) = f x @ subst_word f xs"
+  by (simp add: subst_word_def)
+    
+lemma subst_word_conc [simp]: "subst_word f ` (A @@ B) = subst_word f ` A @@ subst_word f ` B"
+  unfolding conc_def image_def by force 
+
+lemma subst_word_compower [simp]: "subst_word f ` (A ^^ n) = (subst_word f ` A) ^^ n"
+  by (induction n) simp_all
+    
+lemma subst_word_star [simp]: "subst_word f ` (star A) = star (subst_word f ` A)"
+  by (simp add: star_def image_UN)
+    
+
 text \<open>Suffix language\<close>
 
 definition Suffixes :: "'a list set \<Rightarrow> 'a list set" where
@@ -193,7 +220,9 @@ lemma Sublists_star [simp]: "Sublists (star A) = star (Sublists A)"
 
 
 subsection \<open>Various regular expression constructions\<close>
-  
+
+text \<open>A construction for language reversal of a regular expression:\<close>
+
 primrec rexp_rev where
   "rexp_rev Zero = Zero"
 | "rexp_rev One = One"
@@ -204,7 +233,37 @@ primrec rexp_rev where
 
 lemma lang_rexp_rev [simp]: "lang (rexp_rev r) = rev ` lang r"
   by (induction r) (simp_all add: image_Un)  
+    
 
+text \<open>The obvious construction for a singleton-language regular expression:\<close>
+
+fun rexp_of_word where
+  "rexp_of_word [] = One"
+| "rexp_of_word [x] = Atom x"
+| "rexp_of_word (x#xs) = Times (Atom x) (rexp_of_word xs)"
+  
+lemma lang_rexp_of_word [simp]: "lang (rexp_of_word xs) = {xs}"
+  by (induction xs rule: rexp_of_word.induct) (simp_all add: conc_def)
+
+lemma size_rexp_of_word [simp]: "size (rexp_of_word xs) = Suc (2 * (length xs - 1))"
+  by (induction xs rule: rexp_of_word.induct) auto
+
+
+text \<open>Character substitution in a regular expression:\<close>
+
+primrec rexp_subst where
+  "rexp_subst f Zero = Zero"
+| "rexp_subst f One = One"
+| "rexp_subst f (Atom x) = rexp_of_word (f x)"
+| "rexp_subst f (Plus r s) = Plus (rexp_subst f r) (rexp_subst f s)"
+| "rexp_subst f (Times r s) = Times (rexp_subst f r) (rexp_subst f s)"
+| "rexp_subst f (Star r) = Star (rexp_subst f r)"
+
+lemma lang_rexp_subst: "lang (rexp_subst f r) = subst_word f ` lang r"
+  by (induction r) (simp_all add: image_Un)
+
+
+text \<open>A construction for the suffix language of a regular expression:\<close>
 
 primrec suffix_rexp :: "'a rexp \<Rightarrow> 'a rexp" where
   "suffix_rexp Zero = Zero"
@@ -221,6 +280,8 @@ theorem lang_suffix_rexp [simp]:
   by (induction r) (auto simp: rexp_empty_iff)
 
 
+text \<open>A construction for the prefix language of a regular expression:\<close>
+
 primrec prefix_rexp :: "'a rexp \<Rightarrow> 'a rexp" where
   "prefix_rexp Zero = Zero"
 | "prefix_rexp One = One"
@@ -236,6 +297,8 @@ theorem lang_prefix_rexp [simp]:
   by (induction r) (auto simp: rexp_empty_iff)
 
 
+text \<open>A construction for the sub-word language of a regular expression:\<close>
+  
 primrec sublists_rexp :: "'a rexp \<Rightarrow> 'a rexp" where
   "sublists_rexp Zero = Zero"
 | "sublists_rexp One = One"
