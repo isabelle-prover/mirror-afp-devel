@@ -871,7 +871,7 @@ lemma rel2p_nres_RETURN[rel2p]: "rel2p (\<langle>A\<rangle>nres_rel) (RETURN x) 
       fun dest_prodrel @{mpat "?A \<times>\<^sub>r ?B"} = (A,B) | dest_prodrel t = raise TERM("dest_prodrel",[t])
   
       fun strip_prodrel_left @{mpat "?A \<times>\<^sub>r ?B"} = strip_prodrel_left A @ [B]
-        | strip_prodrel_left @{mpat "unit_rel"} = []
+        | strip_prodrel_left @{mpat (typs) "unit_rel"} = []
         | strip_prodrel_left R = [R]
   
       val list_prodrel_left = Refine_Util.list_binop_left @{term unit_rel} mk_prodrel
