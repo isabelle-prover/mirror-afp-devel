@@ -155,13 +155,13 @@ lemma extract_equi0:
     using wordinterval_to_set_ipcidr_tuple_to_wordinterval by fastforce
   qed(simp)
 
-lemma src_ipPart:
-  assumes "ipPartition (set (map wordinterval_to_set (extract_IPSets_generic0 src rs))) A"
-          "B \<in> A" "s1 \<in> B" "s2 \<in> B"
-  shows "simple_fw rs (p\<lparr>p_src:=s1\<rparr>) = simple_fw rs (p\<lparr>p_src:=s2\<rparr>)"
+lemma src_ipPart_motivation:
+fixes   rs
+defines "X \<equiv> (\<lambda>(base,len). ipset_from_cidr base len) ` src ` match_sel ` set rs"
+assumes "\<forall>A \<in> X. B \<subseteq> A \<or> B \<inter> A = {}" and "s1 \<in> B" and "s2 \<in> B"
+shows "simple_fw rs (p\<lparr>p_src:=s1\<rparr>) = simple_fw rs (p\<lparr>p_src:=s2\<rparr>)"
 proof -
-  have "\<forall>A \<in> (\<lambda>(base,len). ipset_from_cidr base len) ` src ` match_sel ` set rs. B \<subseteq> A \<or> B \<inter> A = {} \<Longrightarrow>
-      simple_fw rs (p\<lparr>p_src:=s1\<rparr>) = simple_fw rs (p\<lparr>p_src:=s2\<rparr>)"
+  have "\<forall>A \<in> (\<lambda>(base,len). ipset_from_cidr base len) ` src ` match_sel ` set rs. B \<subseteq> A \<or> B \<inter> A = {} \<Longrightarrow> ?thesis"
   proof(induction rs)
     case Nil thus ?case by simp
   next
@@ -177,18 +177,30 @@ proof -
       apply(simp add: simple_matches.simps)
       by blast
     } note helper=this
-    from Cons show ?case
+    from Cons[simplified] show ?case
      apply(cases r, rename_tac m a)
      apply(simp)
      apply(case_tac a)
       using helper apply force+
      done
   qed
+  with assms show ?thesis by blast
+qed
+
+    
+lemma src_ipPart:
+  assumes "ipPartition (set (map wordinterval_to_set (extract_IPSets_generic0 src rs))) A"
+          "B \<in> A" "s1 \<in> B" "s2 \<in> B"
+  shows "simple_fw rs (p\<lparr>p_src:=s1\<rparr>) = simple_fw rs (p\<lparr>p_src:=s2\<rparr>)"
+proof -
+  from src_ipPart_motivation[OF _ assms(3) assms(4)]
+  have "\<forall>A \<in> (\<lambda>(base,len). ipset_from_cidr base len) ` src ` match_sel ` set rs. B \<subseteq> A \<or> B \<inter> A = {} \<Longrightarrow>
+      simple_fw rs (p\<lparr>p_src:=s1\<rparr>) = simple_fw rs (p\<lparr>p_src:=s2\<rparr>)" by fast
   thus ?thesis using assms(1) assms(2)
     unfolding ipPartition_def
     by (metis (full_types) Int_commute extract_equi0)
 qed
-
+  
 (*basically a copy of src_ipPart*)
 lemma dst_ipPart:
   assumes "ipPartition (set (map wordinterval_to_set (extract_IPSets_generic0 dst rs))) A"
@@ -434,6 +446,43 @@ definition "runFw s d c rs = simple_fw rs \<lparr>p_iiface=pc_iiface c,p_oiface=
                           p_sport=pc_sport c,p_dport=pc_dport c,
                           p_tcp_flags={TCP_SYN},
                           p_payload=''''\<rparr>"
+
+text{*We use @{const runFw} for executable code, but in general, everything applies to generic packets*}
+definition runFw_scheme :: "'i::len word \<Rightarrow> 'i word \<Rightarrow> 'b parts_connection_scheme \<Rightarrow>
+                              ('i, 'a) simple_packet_scheme \<Rightarrow> 'i simple_rule list \<Rightarrow> state"
+  where
+"runFw_scheme s d c p rs = simple_fw rs
+                        (p\<lparr>p_iiface:=pc_iiface c,
+                          p_oiface:=pc_oiface c,
+                          p_src:=s,
+                          p_dst:=d,
+                          p_proto:=pc_proto c,
+                          p_sport:=pc_sport c,
+                          p_dport:=pc_dport c\<rparr>)"
+
+lemma runFw_scheme: "runFw s d c rs = runFw_scheme s d c p rs"
+  apply(simp add: runFw_def runFw_scheme_def)
+  apply(case_tac p)
+  apply(simp)
+  apply(thin_tac _, simp)
+proof(induction rs)
+  case Nil thus ?case by(simp; fail)
+next
+  case(Cons r rs)
+  obtain m a where r: "r = SimpleRule m a" by(cases r) simp
+  from simple_matches_extended_packet[symmetric, of _ "pc_iiface c" "pc_oiface c"
+                                      s d "pc_proto c" "pc_sport c" "pc_dport c" _ _ _ "{TCP_SYN}" "[]"]
+  have pext: "simple_matches m
+   \<lparr>p_iiface = pc_iiface c, p_oiface = pc_oiface c, p_src = s, p_dst = d, p_proto = pc_proto c, p_sport = pc_sport c, p_dport = pc_dport c,
+      p_tcp_flags = tcp_flags2, p_payload = payload2, \<dots> = aux\<rparr> =
+  simple_matches m
+   \<lparr>p_iiface = pc_iiface c, p_oiface = pc_oiface c, p_src = s, p_dst = d, p_proto = pc_proto c, p_sport = pc_sport c, p_dport = pc_dport c,
+      p_tcp_flags = {TCP_SYN}, p_payload = []\<rparr>" for tcp_flags2 payload2 and aux::'c by fast
+  show ?case
+   apply(simp add: r, cases a, simp)
+    using Cons.IH by(simp add: pext)+
+qed 
+
 
 lemma has_default_policy_runFw: "has_default_policy rs \<Longrightarrow> runFw s d c rs = Decision FinalAllow \<or> runFw s d c rs = Decision FinalDeny"
   by(simp add: runFw_def has_default_policy)
@@ -1138,6 +1187,23 @@ subsection\<open>Service Matrix over an IP Address Space Partition\<close>
 
 definition simple_firewall_without_interfaces :: "'i::len simple_rule list \<Rightarrow> bool" where
   "simple_firewall_without_interfaces rs \<equiv> \<forall>m \<in> match_sel ` set rs. iiface m = ifaceAny \<and> oiface m = ifaceAny"
+
+lemma simple_fw_no_interfaces:
+  assumes no_ifaces: "simple_firewall_without_interfaces rs"
+  shows "simple_fw rs p = simple_fw rs (p\<lparr> p_iiface:= x, p_oiface:= y\<rparr>)"
+proof -
+  from no_ifaces have "\<forall>r\<in>set rs. iiface (match_sel r) = ifaceAny \<and> oiface (match_sel r) = ifaceAny"
+    by(simp add: simple_firewall_without_interfaces_def)
+  thus ?thesis apply(induction rs p rule:simple_fw.induct)
+     by(simp_all add: simple_matches.simps match_ifaceAny)
+qed
+   
+lemma runFw_no_interfaces:
+  assumes no_ifaces: "simple_firewall_without_interfaces rs"
+  shows "runFw s d c rs = runFw s d (c\<lparr> pc_iiface:= x, pc_oiface:= y\<rparr>) rs"
+  apply(simp add: runFw_def)
+  apply(subst simple_fw_no_interfaces[OF no_ifaces])
+  by(simp)
 
 lemma[code_unfold]: "simple_firewall_without_interfaces rs \<equiv>
   \<forall>m \<in> set rs. iiface (match_sel m) = ifaceAny \<and> oiface (match_sel m) = ifaceAny"

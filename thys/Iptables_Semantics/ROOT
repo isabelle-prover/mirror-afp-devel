@@ -1,5 +1,6 @@
 chapter AFP
 
+
 session Iptables_Semantics (AFP) = Routing +
   options [timeout = 1200]
   theories[document=false]
@@ -16,6 +17,7 @@ session Iptables_Semantics (AFP) = Routing +
   theories
     Semantics
     "Examples/Example_Semantics"
+    Alternative_Semantics
     Semantics_Stateful
     Semantics_Goto
     Call_Return_Unfolding
@@ -35,6 +37,8 @@ session Iptables_Semantics (AFP) = Routing +
     "Primitive_Matchers/Parser"
     "Simple_Firewall/SimpleFw_Compliance"
     "Examples/Code_haskell"
+    Access_Matrix_Embeddings
+    No_Spoof_Embeddings
     Documentation
   document_files
     "root.tex"
@@ -62,6 +66,7 @@ session Iptables_Semantics_Examples (AFP slow very_slow) = Iptables_Semantics +
     "Examples/TUM_Net_Firewall/Analyze_TUM_Net_Firewall"
     "Examples/TUM_Net_Firewall/TUM_Spoofing_new3"
     "Examples/TUM_Net_Firewall/TUM_Simple_FW"
+    "Examples/containern/Analyze_Containern"
   document_files
     "root.tex"
     "root.bib"
