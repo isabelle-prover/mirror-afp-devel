@@ -90,6 +90,14 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
   </tr>
       <tr>
       <td class="entry">
+        2017-05-24: <a href="entries/Dict_Construction.shtml">Dictionary Construction</a>
+        <br>
+                  Author:
+                        <a href="https://www21.in.tum.de/~hupel/">Lars Hupel</a>
+                        </td>
+    </tr>
+      <tr>
+      <td class="entry">
         2017-05-08: <a href="entries/Floyd_Warshall.shtml">The Floyd-Warshall Algorithm for Shortest Paths</a>
         <br>
                   Authors:
@@ -298,9 +306,8 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
         2017-01-17: <a href="entries/Bertrands_Postulate.shtml">Bertrand's postulate</a>
         <br>
                   Authors:
-                          Julian Biendarra,
-                        <a href="https://www21.in.tum.de/~eberlm">Manuel Eberl</a>
-          and     <a href="http://www.cl.cam.ac.uk/~lp15/">Lawrence C. Paulson</a>
+                        Julian Biendarra
+          and     <a href="https://www21.in.tum.de/~eberlm">Manuel Eberl</a>
               </td>
     </tr>
       <tr>
