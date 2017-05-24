@@ -1,0 +1,16 @@
+chapter AFP
+
+session Dict_Construction (AFP) = HOL +
+  options [timeout = 120]
+  theories [document = false]
+    "~~/src/HOL/Library/ListVector"
+    "../Automatic_Refinement/Lib/Refine_Util"
+    "../Lazy_Case/Lazy_Case"
+  theories
+    Introduction
+    Impossibility
+    Dict_Construction
+    Test_Dict_Construction
+  document_files
+    "root.bib"
+    "root.tex"
