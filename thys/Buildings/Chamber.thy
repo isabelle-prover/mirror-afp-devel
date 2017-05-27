@@ -237,11 +237,11 @@ abbreviation "\<C> \<equiv> chamber_system"
 definition chamber_distance :: "'a set \<Rightarrow> 'a set \<Rightarrow> nat"
   where "chamber_distance C D =
           (if C=D then 0 else
-            Suc (length (LEAST Cs WRT length. gallery (C#Cs@[D]))))"
+            Suc (length (ARG_MIN length Cs. gallery (C#Cs@[D]))))"
 
 definition closest_supchamber :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set"
   where "closest_supchamber F D =
-          (LEAST C WRT (\<lambda>C. chamber_distance C D).
+          (ARG_MIN (\<lambda>C. chamber_distance C D) C.
             chamber C \<and> F\<subseteq>C)"
 
 definition "face_distance F D \<equiv> chamber_distance (closest_supchamber F D) D"
@@ -257,12 +257,12 @@ lemmas pgallery_chamber_system = gallery_chamber_system[OF pgallery]
 lemma chamber_distance_le:
   "gallery (C#Cs@[D]) \<Longrightarrow> chamber_distance C D \<le> Suc (length Cs)"
   using chamber_distance_def
-        LeastM_nat_le[of "\<lambda>Cs. gallery (C#Cs@[D])" _ length]
+        arg_min_nat_le[of "\<lambda>Cs. gallery (C#Cs@[D])" _ length]
   by    auto
 
 lemma min_gallery_betw_chamber_distance:
   "min_gallery (C#Cs@[D]) \<Longrightarrow> chamber_distance C D = Suc (length Cs)"
-  using chamber_distance_def[of C D] isLeastM_size[of length _ Cs] by auto
+  using chamber_distance_def[of C D] is_arg_min_size[of length _ Cs] by auto
 
 lemma min_galleryI_chamber_distance_betw:
   "gallery (C#Cs@[D]) \<Longrightarrow> Suc (length Cs) = chamber_distance C D \<Longrightarrow>
@@ -272,22 +272,22 @@ lemma min_galleryI_chamber_distance_betw:
 
 lemma gallery_least_length:
   assumes "chamber C" "chamber D" "C\<noteq>D"
-  defines "Cs \<equiv> LEAST Cs WRT length. gallery (C#Cs@[D])"
+  defines "Cs \<equiv> ARG_MIN length Cs. gallery (C#Cs@[D])"
   shows   "gallery (C#Cs@[D])"
-  using   assms maxsimp_connect[of C D] LeastM_natI
+  using   assms maxsimp_connect[of C D] arg_min_natI
   by      fast
   
 lemma min_gallery_least_length:
   assumes   "chamber C" "chamber D" "C\<noteq>D"
-  defines   "Cs \<equiv> LEAST Cs WRT length. gallery (C#Cs@[D])"
+  defines   "Cs \<equiv> ARG_MIN length Cs. gallery (C#Cs@[D])"
   shows     "min_gallery (C#Cs@[D])"
   unfolding Cs_def
   using     assms gallery_least_length
-  by        (blast intro: min_galleryI_betw LeastM_nat_le)
+  by        (blast intro: min_galleryI_betw arg_min_nat_le)
 
 lemma pgallery_least_length:
   assumes "chamber C" "chamber D" "C\<noteq>D"
-  defines "Cs \<equiv> LEAST Cs WRT length. gallery (C#Cs@[D])"
+  defines "Cs \<equiv> ARG_MIN length Cs. gallery (C#Cs@[D])"
   shows   "pgallery (C#Cs@[D])"
   using   assms min_gallery_least_length min_gallery_pgallery
   by      fast
@@ -295,27 +295,27 @@ lemma pgallery_least_length:
 lemma closest_supchamberD:
   assumes   "F\<in>X" "chamber D"
   shows     "chamber (closest_supchamber F D)" "F \<subseteq> closest_supchamber F D"
-  using     assms LeastM_natI[of "\<lambda>C. chamber C \<and> F\<subseteq>C" ] simplex_in_max[of F]
+  using     assms arg_min_natI[of "\<lambda>C. chamber C \<and> F\<subseteq>C" ] simplex_in_max[of F]
   unfolding closest_supchamber_def
   by        auto
 
 lemma closest_supchamber_closest:
   "chamber C \<Longrightarrow> F\<subseteq>C \<Longrightarrow>
     chamber_distance (closest_supchamber F D) D \<le> chamber_distance C D"
-  using LeastM_nat_le[of "\<lambda>C. chamber C \<and> F\<subseteq>C" C] closest_supchamber_def
-  by    simp
+  using arg_min_nat_le[of "\<lambda>C. chamber C \<and> F\<subseteq>C" C] closest_supchamber_def
+  by simp
 
 lemma face_distance_le:
   "chamber C \<Longrightarrow> F\<subseteq>C \<Longrightarrow> face_distance F D \<le> chamber_distance C D"
   unfolding face_distance_def closest_supchamber_def
-  by        (auto intro: LeastM_nat_le)
+  by (auto intro: arg_min_nat_le)
 
 lemma face_distance_eq_0: "chamber C \<Longrightarrow> F\<subseteq>C \<Longrightarrow> face_distance F C = 0"
   using chamber_distance_def closest_supchamber_def face_distance_def
-        LeastM_equality[
+        arg_min_equality[
           of "\<lambda>C. chamber C \<and> F\<subseteq>C" C "\<lambda>D. chamber_distance D C"
         ]
-  by    simp
+  by simp
 
 end (* context ChamberComplex *)
 
@@ -851,11 +851,11 @@ proof (cases "f`C=f`D")
     using domain.chamber_distance_def codomain.chamber_distance_def by simp
 next  
   case False
-  def Cs \<equiv> "LEAST Cs WRT length. domain.gallery (C#Cs@[D])"
-  and Ds \<equiv> "LEAST Ds WRT length. codomain.gallery (f`C # Ds @ [f`D])"
+  def Cs \<equiv> "ARG_MIN length Cs. domain.gallery (C#Cs@[D])"
+  and Ds \<equiv> "ARG_MIN length Ds. codomain.gallery (f`C # Ds @ [f`D])"
   from assms False Cs_def have "codomain.gallery (f`C # f\<Turnstile>Cs @ [f`D])"
     using gallery_map domain.maxsimp_connect[of C D]
-          LeastM_natI[of "\<lambda>Cs. domain.gallery (C#Cs@[D])"]
+          arg_min_natI[of "\<lambda>Cs. domain.gallery (C#Cs@[D])"]
     by    fastforce
   moreover from assms Cs_def
     have  "\<And>Es. codomain.gallery (f`C # Es @ [f`D]) \<Longrightarrow>
@@ -864,10 +864,10 @@ next
           the_inv_into_f_im_f_im[OF inj, of C] the_inv_into_f_im_f_im[OF inj, of D]
           domain.chamberD_simplex[of C] domain.chamberD_simplex[of D]
           domain.maxsimp_connect[of C D]
-          LeastM_nat_le[of "\<lambda>Cs. domain.gallery (C#Cs@[D])" _ length]
+          arg_min_nat_le[of "\<lambda>Cs. domain.gallery (C#Cs@[D])" _ length]
     by    force
   ultimately have "length Ds = length (f\<Turnstile>Cs)"
-    unfolding Ds_def by (fast intro: LeastM_equality)
+    unfolding Ds_def by (fast intro: arg_min_equality)
   with False Cs_def Ds_def show ?thesis
     using domain.chamber_distance_def codomain.chamber_distance_def by auto
 qed
@@ -895,7 +895,7 @@ proof-
               codomain.chamber_distance (f`D) (f`C)"
       using chambers(4) domain.closest_supchamberD(2)
             codomain.closest_supchamber_def
-      by    (fastforce intro: LeastM_nat_le)
+      by    (fastforce intro: arg_min_nat_le)
     with assms D_def D'_def show ?thesis
       using chambers(2) chamber_distance_map by simp
   qed
@@ -910,7 +910,7 @@ proof-
       have  "domain.chamber_distance D C \<le>
               domain.chamber_distance (invf ` D') C"
       using chambers(5) domain.closest_supchamber_def
-      by    (auto intro: LeastM_nat_le)
+      by    (auto intro: arg_min_nat_le)
     with assms(1) invf_def show ?thesis
       using chambers(3,5) surj_simplex_map codomain.chamberD_simplex
             f_im_the_inv_into_f_im[OF inj, of D']
@@ -1557,7 +1557,7 @@ lemma face_distance_eq_chamber_distance_compare_other_chamber:
   shows     "face_distance z E = chamber_distance C E"
   unfolding face_distance_def closest_supchamber_def
 proof (
-  rule LeastM_equality, rule conjI, rule assms(1), rule facetrel_subset,
+  rule arg_min_equality, rule conjI, rule assms(1), rule facetrel_subset,
   rule assms(3)
 )
   from assms
@@ -1737,7 +1737,7 @@ proof (rule fun_eq_onI)
   fix v assume "v \<in> \<Union>W"
   from this obtain D where "ChamberComplex.chamber W D" "v\<in>D"
     using ChamberComplex.simplex_in_max[OF W] by auto
-  moreover def Cs \<equiv> "LEAST Cs WRT length. ChamberComplex.gallery W (C#Cs@[D])"
+  moreover def Cs \<equiv> "ARG_MIN length Cs. ChamberComplex.gallery W (C#Cs@[D])"
   ultimately show "f v = g v"
     using chamber map_gals[of "Cs@[D]"]
           ChamberComplex.gallery_least_length[OF W]
@@ -1887,7 +1887,7 @@ proof
       using B' chamber_distance_def by auto
   next
     case False
-    def Ds \<equiv> "LEAST Ds WRT length. gallery (B#Ds@[D])"
+    def Ds \<equiv> "ARG_MIN length Ds. gallery (B#Ds@[D])"
     with B C D False closerToC_def show ?thesis
       using chamber_system_def folding.chamber_map gallery_least_length[of B D]
             chamber_image_closer[of D B Ds]
@@ -1903,9 +1903,9 @@ lemma gallery_double_cross_not_minimal_Cons1:
         adjacent_half_chamber_system_image[of B C]
         folding.gallery_map[of "B#C#Cs@[D]"]
         gallery_Cons_reduce[of B "B # f\<Turnstile>Cs @ [D]"]
-        not_isLeastMI[of "(\<lambda>Ds. maxsimpchain (B#Ds@[D]))" "f\<Turnstile>Cs" length]
+        is_arg_minD2[of length "(\<lambda>Ds. maxsimpchain (B#Ds@[D]))" _ "f\<Turnstile>Cs"]
         min_maxsimpchain.simps(3)[of B "C#Cs" D]
-  by    (auto simp add: folding.chamber_retraction2)
+  by(simp add: folding.chamber_retraction2)(meson impossible_Cons not_less)
 
 lemma gallery_double_cross_not_minimal1:
   "\<lbrakk> B\<in>f\<turnstile>\<C>; C\<in>\<C>-f\<turnstile>\<C>; D\<in>f\<turnstile>\<C>; gallery (B#Bs@C#Cs@[D]) \<rbrakk> \<Longrightarrow>
@@ -2147,7 +2147,7 @@ proof
       using chamber_distance_def by auto
   next
     case False
-    def Cs \<equiv> "LEAST Cs WRT length. gallery (B#Cs@[C])"
+    def Cs \<equiv> "ARG_MIN length Cs. gallery (B#Cs@[C])"
     with B C D False closerToD_def show ?thesis
       using chamber_system_def folding.chamber_map[of D]
             gallery_least_length[of B C] chamber_distance_le

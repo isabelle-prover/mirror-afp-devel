@@ -261,7 +261,7 @@ function min_maxsimpchain :: "'a set list \<Rightarrow> bool"
     "min_maxsimpchain [] = True"
   | "min_maxsimpchain [x] = maxsimp x"
   | "min_maxsimpchain (x#xs@[y]) =
-      (x\<noteq>y \<and> isLeastM length (\<lambda>zs. maxsimpchain (x#zs@[y])) xs)"
+      (x\<noteq>y \<and> is_arg_min length (\<lambda>zs. maxsimpchain (x#zs@[y])) xs)"
   by (auto, rule list_cases_Cons_snoc)
   termination by (relation "measure length") auto
 
@@ -360,20 +360,19 @@ proof (cases xs rule: list_cases_Cons_snoc)
 next
   case Single with assms show ?thesis using maxsimpchain_def by simp
 next
-  case Cons_snoc with assms show ?thesis using isLeastMD1 by fastforce
+  case Cons_snoc with assms show ?thesis using is_arg_minD1 by fastforce
 qed
 
 lemma min_maxsimpchainD_min_betw:
   "min_maxsimpchain (x#xs@[y]) \<Longrightarrow> maxsimpchain (x#ys@[y]) \<Longrightarrow>
     length ys \<ge> length xs"
-  using isLeastMD2 by fastforce
+  using is_arg_minD2 by fastforce
 
 lemma min_maxsimpchainI_betw:
   assumes "x\<noteq>y" "maxsimpchain (x#xs@[y])"
           "\<And>ys. maxsimpchain (x#ys@[y]) \<Longrightarrow> length xs \<le> length ys"
   shows   "min_maxsimpchain (x#xs@[y])"
-  using   assms isLeastMI[of _ xs length]
-  by      fastforce
+  using   assms by (simp add: is_arg_min_linorderI)
 
 lemma min_maxsimpchainI_betw_compare:
   assumes "x\<noteq>y" "maxsimpchain (x#xs@[y])"
@@ -493,7 +492,7 @@ lemma min_maxsimpchain_betw_uniform_length:
 lemma not_min_maxsimpchainI_betw:
   "\<lbrakk> maxsimpchain (x#ys@[y]); length ys < length xs \<rbrakk> \<Longrightarrow>
     \<not> min_maxsimpchain (x#xs@[y])"
-  using not_isLeastMI[of "\<lambda>zs. maxsimpchain (x#zs@[y])"] by auto
+  using min_maxsimpchainD_min_betw not_less by blast
 
 lemma maxsimpchain_in_subcomplex:
   "\<lbrakk> Subcomplex Y; set ys \<subseteq> Y; maxsimpchain ys \<rbrakk> \<Longrightarrow>

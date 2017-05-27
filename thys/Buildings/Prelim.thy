@@ -1145,69 +1145,43 @@ proof
   qed
 qed
 
-subsubsection {* Minimality with respect to some property via a size function *}
+subsubsection {* More @{const arg_min} *}
 
-text {* A boolean companion to @{const LeastM}. *}
+lemma is_arg_minI:
+  "\<lbrakk> P x; \<And>y. P y \<Longrightarrow> \<not> m y < m x \<rbrakk> \<Longrightarrow> is_arg_min m P x"
+by (simp add: is_arg_min_def)
 
-definition isLeastM :: "('a\<Rightarrow>'b::ord) \<Rightarrow> ('a\<Rightarrow>bool) \<Rightarrow> 'a \<Rightarrow> bool"
-  where "isLeastM m P x \<equiv> (P x \<and> (\<forall>y. P y \<longrightarrow> m x \<le> m y))"
+lemma is_arg_min_linorderI:
+  "\<lbrakk> P x; \<And>y. P y \<Longrightarrow> m x \<le> (m y::_::linorder) \<rbrakk> \<Longrightarrow> is_arg_min m P x"
+by (simp add: is_arg_min_linorder)
 
-lemma isLeastMI:
-  assumes   "P x" "\<And>y. P y \<Longrightarrow> m x \<le> m y"
-  shows     "isLeastM m P x"
-  using     assms 
-  unfolding isLeastM_def
-  by        simp
+lemma is_arg_min_eq:
+  "\<lbrakk> is_arg_min m P x; P z; m z = m x \<rbrakk> \<Longrightarrow> is_arg_min m P z"
+by (metis is_arg_min_def)
 
-lemma isLeastMI_compare:
-  assumes   "isLeastM m P x" "P z" "m z = m x"
-  shows     "isLeastM m P z"
-  using     assms
-  unfolding isLeastM_def
-  by        simp
+lemma is_arg_minD1: "is_arg_min m P x \<Longrightarrow> P x"
+unfolding is_arg_min_def by fast
 
-lemma isLeastMD1: "isLeastM m P x \<Longrightarrow> P x"
-  unfolding isLeastM_def by fast
+lemma is_arg_minD2: "is_arg_min m P x \<Longrightarrow> P y \<Longrightarrow> \<not> m y < m x"
+unfolding is_arg_min_def by fast
 
-lemma isLeastMD2: "isLeastM m P x \<Longrightarrow> P y \<Longrightarrow> m x \<le> m y"
-  unfolding isLeastM_def by fast
+lemma is_arg_min_size: fixes m :: "'a \<Rightarrow> 'b::linorder"
+shows "is_arg_min m P x \<Longrightarrow> m x = m (arg_min m P)"
+by (metis arg_min_equality is_arg_min_linorder)
 
-lemma not_isLeastMI:
-  fixes   m :: "'a\<Rightarrow>'b::preorder"
-  assumes "P y" "m y < m x"
-  shows   "\<not> isLeastM m P x"
-  using   assms less_le_not_le[of "m y"] isLeastMD2
-  by      force
-
-lemma LeastM_isLeastM_nat:
-  fixes     m :: "'a\<Rightarrow>nat"
-  assumes   "P x"
-  shows     "isLeastM m P (LEAST y WRT m. P y)"
-  using     assms LeastM_nat_lemma[of P]
-  unfolding isLeastM_def
-  by        auto
-
-lemma isLeastM_size:
-  fixes     m :: "'a\<Rightarrow>'b::order"
-  assumes   "isLeastM m P x"
-  shows     "m x = m (LeastM m P)"
-  using     assms LeastM_equality[THEN sym, of P x m]
-  unfolding isLeastM_def
-  by        fast
-
-lemma isLeastM_size_subprop:
-  fixes   m :: "'a\<Rightarrow>'b::order"
-  assumes "isLeastM m P x" "Q x" "\<And>y. Q y \<Longrightarrow> P y"
-  shows   "m (LeastM m Q) = m (LeastM m P)"
+lemma is_arg_min_size_subprop:
+  fixes   m :: "'a\<Rightarrow>'b::linorder"
+  assumes "is_arg_min m P x" "Q x" "\<And>y. Q y \<Longrightarrow> P y"
+  shows   "m (arg_min m Q) = m (arg_min m P)"
 proof-
-  have "\<not> isLeastM m Q x \<Longrightarrow> \<not> isLeastM m P x"
+  have "\<not> is_arg_min m Q x \<Longrightarrow> \<not> is_arg_min m P x"
   proof
-    assume x: "\<not> isLeastM m Q x"
+    assume x: "\<not> is_arg_min m Q x"
     from assms(2,3) show False
-      using contrapos_nn[OF x, OF isLeastMI] isLeastMD2[OF assms(1)] by auto
+      using contrapos_nn[OF x, OF is_arg_minI] is_arg_minD2[OF assms(1)] by auto
   qed
   with assms(1) show ?thesis
-    using isLeastM_size[of m] isLeastM_size[of m] by fastforce
+    using is_arg_min_size[of m] is_arg_min_size[of m] by fastforce
 qed
 
 subsubsection {* Bottom of a set *}
