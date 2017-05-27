@@ -73,7 +73,7 @@ PYTHON="$VENV_DIR/bin/python"
 PIP="$VENV_DIR/bin/pip"
 
 echo "Installing dependencies ..."
-"$PIP" install -r "$ROOT/admin/sitegen-req.txt"
+"$PIP" install -q -r "$ROOT/admin/sitegen-req.txt"
 
 echo "Running sitegen ..."
 "$PYTHON" admin/sitegen-lib/sitegen.py --dest=web --metadata=metadata thys $@
