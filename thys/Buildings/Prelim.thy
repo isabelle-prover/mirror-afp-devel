@@ -920,55 +920,55 @@ proof (induct xs arbitrary: x)
   case Cons with assms show ?case using binrelchain_Cons_reduce by auto
 qed (simp add: assms)
 
-subsubsection {* Set of sublists *}
+subsubsection {* Set of subseqs *}
 
-lemma sublists_Cons: "sublists (x#xs) = map (Cons x) (sublists xs) @ (sublists xs)"
-  using cong_let[of "sublists xs" "\<lambda>xss. map (Cons x) xss @ xss"] by simp
+lemma subseqs_Cons: "subseqs (x#xs) = map (Cons x) (subseqs xs) @ (subseqs xs)"
+  using cong_let[of "subseqs xs" "\<lambda>xss. map (Cons x) xss @ xss"] by simp
 
-abbreviation "ssublists xs \<equiv> set (sublists xs)"
+abbreviation "ssubseqs xs \<equiv> set (subseqs xs)"
 
-lemma nil_ssublists: "[] \<in> ssublists xs"
+lemma nil_ssubseqs: "[] \<in> ssubseqs xs"
 proof (induct xs)
-  case (Cons x xs) thus ?case using sublists_Cons[of x] by simp
+  case (Cons x xs) thus ?case using subseqs_Cons[of x] by simp
 qed simp
 
-lemma ssublists_Cons: "ssublists (x#xs) = (Cons x) ` (ssublists xs) \<union> ssublists xs"
-  using sublists_Cons[of x] by simp
+lemma ssubseqs_Cons: "ssubseqs (x#xs) = (Cons x) ` (ssubseqs xs) \<union> ssubseqs xs"
+  using subseqs_Cons[of x] by simp
 
-lemma ssublists_refl: "xs \<in> ssublists xs"
+lemma ssubseqs_refl: "xs \<in> ssubseqs xs"
 proof (induct xs)
-  case (Cons x xs) thus ?case using ssublists_Cons by fast
-qed (rule nil_ssublists)
+  case (Cons x xs) thus ?case using ssubseqs_Cons by fast
+qed (rule nil_ssubseqs)
 
-lemma ssublists_subset: "as \<in> ssublists bs \<Longrightarrow> ssublists as \<subseteq> ssublists bs"
+lemma ssubseqs_subset: "as \<in> ssubseqs bs \<Longrightarrow> ssubseqs as \<subseteq> ssubseqs bs"
 proof (induct bs arbitrary: as)
   case (Cons b bs) show ?case
-  proof (cases "as \<in> set (sublists bs)")
-    case True with Cons show ?thesis using ssublists_Cons by fastforce
+  proof (cases "as \<in> set (subseqs bs)")
+    case True with Cons show ?thesis using ssubseqs_Cons by fastforce
   next
     case False with Cons show ?thesis
-      using nil_ssublists[of "b#bs"] ssublists_Cons[of "hd as"] ssublists_Cons[of b]
+      using nil_ssubseqs[of "b#bs"] ssubseqs_Cons[of "hd as"] ssubseqs_Cons[of b]
       by    (cases as) auto
   qed
 qed simp
 
-lemma ssublists_lists:
-  "as \<in> lists A \<Longrightarrow> bs \<in> ssublists as \<Longrightarrow> bs \<in> lists A"
+lemma ssubseqs_lists:
+  "as \<in> lists A \<Longrightarrow> bs \<in> ssubseqs as \<Longrightarrow> bs \<in> lists A"
 proof (induct as arbitrary: bs)
-  case (Cons a as) thus ?case using ssublists_Cons[of a] by fastforce
+  case (Cons a as) thus ?case using ssubseqs_Cons[of a] by fastforce
 qed simp
 
-lemma delete1_ssublists:
-  "as@bs \<in> ssublists (as@[a]@bs)"
+lemma delete1_ssubseqs:
+  "as@bs \<in> ssubseqs (as@[a]@bs)"
 proof (induct as)
-  case Nil show ?case using ssublists_refl ssublists_Cons[of a bs] by auto
+  case Nil show ?case using ssubseqs_refl ssubseqs_Cons[of a bs] by auto
 next
-  case (Cons x xs) thus ?case using ssublists_Cons[of x] by simp
+  case (Cons x xs) thus ?case using ssubseqs_Cons[of x] by simp
 qed
 
-lemma delete2_ssublists:
-  "as@bs@cs \<in> ssublists (as@[a]@bs@[b]@cs)"
-  using delete1_ssublists[of "as@[a]@bs"] delete1_ssublists ssublists_subset
+lemma delete2_ssubseqs:
+  "as@bs@cs \<in> ssubseqs (as@[a]@bs@[b]@cs)"
+  using delete1_ssubseqs[of "as@[a]@bs"] delete1_ssubseqs ssubseqs_subset
   by    fastforce
 
 

@@ -21,7 +21,7 @@ definition
   "ltlc_to_rabin eager mode (\<phi>\<^sub>c :: String.literal ltlc) \<equiv>
     (let
       \<phi>\<^sub>n = ltlc_to_ltln \<phi>\<^sub>c;
-      \<Sigma> = map set (sublists (atoms_list \<phi>\<^sub>n));
+      \<Sigma> = map set (subseqs (atoms_list \<phi>\<^sub>n));
       \<phi> = ltln_to_ltl (simplify mode \<phi>\<^sub>n)
      in
       (if eager then ltl_to_generalized_rabin\<^sub>C_af\<^sub>\<UU> \<Sigma> \<phi> else ltl_to_generalized_rabin\<^sub>C_af \<Sigma> \<phi>))"
@@ -32,11 +32,11 @@ theorem ltlc_to_rabin_exec_correct:
   (is "?lhs = ?rhs")
 proof -
   let ?\<phi>\<^sub>n = "ltlc_to_ltln \<phi>\<^sub>c"
-  let ?\<Sigma> = "map set (sublists (atoms_list ?\<phi>\<^sub>n))"
+  let ?\<Sigma> = "map set (subseqs (atoms_list ?\<phi>\<^sub>n))"
   let ?\<phi> = "ltln_to_ltl (simplify mode ?\<phi>\<^sub>n)"
 
   have "set ?\<Sigma> = Pow (atoms_ltln ?\<phi>\<^sub>n)"
-    unfolding atoms_list_correct[symmetric] sublists_powset[symmetric] list.set_map ..  
+    unfolding atoms_list_correct[symmetric] subseqs_powset[symmetric] list.set_map ..  
   hence R: "range w \<subseteq> set ?\<Sigma>"
     using assms ltlc_to_ltln_atoms[symmetric] by metis
 

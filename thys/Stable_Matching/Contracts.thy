@@ -757,13 +757,13 @@ lemma X4_UNIV:
   shows "UNIV = set [Xd1, Xd1', Xd2, Xd2']"
 using X4.exhaust by auto
 
-lemmas X4_pow = subset_sublists[OF subset_trans[OF subset_UNIV Set.equalityD1[OF X4_UNIV]]]
+lemmas X4_pow = subset_subseqs[OF subset_trans[OF subset_UNIV Set.equalityD1[OF X4_UNIV]]]
 
 instance X4 :: finite
 by standard (simp add: X4_UNIV)
 
 lemma X4_ALL:
-  shows "(\<forall>X''. P X'') \<longleftrightarrow> (\<forall>X''\<in>set ` set (sublists [Xd1, Xd1', Xd2, Xd2']). P X'')"
+  shows "(\<forall>X''. P X'') \<longleftrightarrow> (\<forall>X''\<in>set ` set (subseqs [Xd1, Xd1', Xd2, Xd2']). P X'')"
 using X4_pow by blast
 
 (*>*)
@@ -2082,13 +2082,13 @@ lemma X3_UNIV:
   shows "UNIV = set [Xd1, Xd1', Xd2]"
 using X3.exhaust by auto
 
-lemmas X3_pow = subset_sublists[OF subset_trans[OF subset_UNIV Set.equalityD1[OF X3_UNIV]]]
+lemmas X3_pow = subset_subseqs[OF subset_trans[OF subset_UNIV Set.equalityD1[OF X3_UNIV]]]
 
 instance X3 :: finite
 by standard (simp add: X3_UNIV)
 
 lemma X3_all_pow:
-  shows "(\<forall>X''. P X'') \<longleftrightarrow> (\<forall>X''\<in>set ` set (sublists [Xd1, Xd1', Xd2]). P X'')"
+  shows "(\<forall>X''. P X'') \<longleftrightarrow> (\<forall>X''\<in>set ` set (subseqs [Xd1, Xd1', Xd2]). P X'')"
 using X3_pow by blast
 
 (*>*)

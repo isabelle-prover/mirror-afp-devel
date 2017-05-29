@@ -1480,6 +1480,13 @@ fun remdups A_ [] = []
   | remdups A_ (x :: xs) =
     (if membera A_ xs x then remdups A_ xs else x :: remdups A_ xs);
 
+fun subseqs [] = [[]]
+  | subseqs (x :: xs) = let
+                          val xss = subseqs xs;
+                        in
+                          map (fn a => x :: a) xss @ xss
+                        end;
+
 fun keys (Mapping xs) = Set (map fst xs);
 
 fun map_ran f = map (fn (k, v) => (k, f k v));
@@ -1491,13 +1498,6 @@ fun q_L B_ sigma delta q_0 =
     then gen_dfs (fn q => map (delta q) sigma) (insert B_) (member B_) bot_set
            [q_0]
     else bot_set);
-
-fun sublists [] = [[]]
-  | sublists (x :: xs) = let
-                           val xss = sublists xs;
-                         in
-                           map (fn a => x :: a) xss @ xss
-                         end;
 
 fun lookup A_ (Mapping xs) = map_of A_ xs;
 
@@ -2988,7 +2988,7 @@ fun ltl_to_generalized_rabin_C A_ delta delta_M q_0 q_0_M m_fin_C sigma phi =
         in
           Set (maps (mapping_generator_list (equal_ltl A_)
                       (fn x => upt zero_nat (the (max_rank x))))
-                (sublists gs))
+                (subseqs gs))
         end;
   in
     (delta_LTS,
@@ -3051,7 +3051,7 @@ fun ltl_to_generalized_rabin_C_af A_ =
 fun ltlc_to_rabin eager mode phi_c =
   let
     val phi_n = ltlc_to_ltln phi_c;
-    val sigma = map Set (sublists (atoms_list equal_literal phi_n));
+    val sigma = map Set (subseqs (atoms_list equal_literal phi_n));
     val phi = ltln_to_ltl equal_literal (simplify equal_literal mode phi_n);
   in
     (if eager then ltl_to_generalized_rabin_C_af_UU equal_literal sigma phi

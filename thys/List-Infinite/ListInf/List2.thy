@@ -676,101 +676,102 @@ lemma take_drop_eq_sublist_list_if: "
   m + n \<le> length xs \<Longrightarrow> xs \<up> m \<down> n = sublist_list_if xs [m..<m+n]"
 by (simp add: sublist_list_if_sublist_list_filter_conv take_drop_eq_sublist_list)
 
-lemma sublist_empty_conv: "(sublist xs I = []) = (\<forall>i\<in>I. length xs \<le> i)"
+lemma nths_empty_conv: "(nths xs I = []) = (\<forall>i\<in>I. length xs \<le> i)"
   using [[hypsubst_thin = true]]
-by (fastforce simp: set_empty[symmetric] set_sublist linorder_not_le[symmetric])
+by (fastforce simp: set_empty[symmetric] set_nths linorder_not_le[symmetric])
 
-lemma sublist_singleton2: "sublist xs {y} = (if y < length xs then [xs ! y] else [])"
-apply (unfold sublist_def)
+lemma nths_singleton2: "nths xs {y} = (if y < length xs then [xs ! y] else [])"
+apply (unfold nths_def)
 apply (induct xs rule: rev_induct, simp)
 apply (simp add: nth_append)
 done
 
-lemma sublist_take_eq: "
-  \<lbrakk> finite I; Max I < n \<rbrakk> \<Longrightarrow> sublist (xs \<down> n) I = sublist xs I"
+lemma nths_take_eq: "
+  \<lbrakk> finite I; Max I < n \<rbrakk> \<Longrightarrow> nths (xs \<down> n) I = nths xs I"
 apply (case_tac "I = {}", simp)
 apply (case_tac "n < length xs")
  prefer 2
  apply simp
 apply (rule_tac
-  t = "sublist xs I" and
-  s = "sublist (xs \<down> n @ xs \<up> n) I"
+  t = "nths xs I" and
+  s = "nths (xs \<down> n @ xs \<up> n) I"
   in subst)
  apply simp
-apply (subst sublist_append)
+apply (subst nths_append)
 apply (simp add: min_eqR)
 apply (rule_tac t="{j. j + n \<in> I}" and s="{}" in subst)
  apply blast
 apply simp
 done
 
-lemma sublist_drop_eq: "
-  n \<le> iMin I \<Longrightarrow> sublist (xs \<up> n) {j. j + n \<in> I} = sublist xs I"
+lemma nths_drop_eq: "
+  n \<le> iMin I \<Longrightarrow> nths (xs \<up> n) {j. j + n \<in> I} = nths xs I"
 apply (case_tac "I = {}", simp)
 apply (case_tac "n < length xs")
  prefer 2
- apply (simp add: sublist_def filter_empty_conv linorder_not_less)
+ apply (simp add: nths_def filter_empty_conv linorder_not_less)
  apply (clarsimp, rename_tac a b)
  apply (drule set_zip_rightD)
  apply fastforce
 apply (rule_tac
-  t = "sublist xs I" and
-  s = "sublist (xs \<down> n @ xs \<up> n) I"
+  t = "nths xs I" and
+  s = "nths (xs \<down> n @ xs \<up> n) I"
   in subst)
  apply simp
-apply (subst sublist_append)
-apply (fastforce simp: sublist_empty_conv min_eqR)
+apply (subst nths_append)
+apply (fastforce simp: nths_empty_conv min_eqR)
 done
 
-lemma sublist_cut_less_eq: "
-  length xs \<le> n \<Longrightarrow> sublist xs (I \<down>< n) = sublist xs I"
-apply (simp add: sublist_def cut_less_mem_iff)
+lemma nths_cut_less_eq: "
+  length xs \<le> n \<Longrightarrow> nths xs (I \<down>< n) = nths xs I"
+apply (simp add: nths_def cut_less_mem_iff)
 apply (rule_tac f="\<lambda>xs. map fst xs" in arg_cong)
 apply (rule filter_filter_eq)
 apply (simp add: list_all_conv)
 done
 
-lemma sublist_disjoint_Un: "
-  \<lbrakk> finite A; Max A < iMin B \<rbrakk> \<Longrightarrow> sublist xs (A \<union> B) = sublist xs A @ sublist xs B"
+lemma nths_disjoint_Un: "
+  \<lbrakk> finite A; Max A < iMin B \<rbrakk> \<Longrightarrow> nths xs (A \<union> B) = nths xs A @ nths xs B"
 apply (case_tac "A = {}", simp)
 apply (case_tac "B = {}", simp)
 apply (case_tac "length xs \<le> iMin B")
- apply (subst sublist_cut_less_eq[of xs "iMin B", symmetric], assumption)
+ apply (subst nths_cut_less_eq[of xs "iMin B", symmetric], assumption)
  apply (simp (no_asm_simp) add: cut_less_Un cut_less_Min_empty cut_less_Max_all)
- apply (simp add: sublist_empty_conv iMin_ge_iff)
+ apply (simp add: nths_empty_conv iMin_ge_iff)
 apply (simp add: linorder_not_le)
 apply (rule_tac
-  t = "sublist xs (A \<union> B)" and
-  s = "sublist (xs \<down> (iMin B) @ xs \<up> (iMin B)) (A \<union> B)"
+  t = "nths xs (A \<union> B)" and
+  s = "nths (xs \<down> (iMin B) @ xs \<up> (iMin B)) (A \<union> B)"
   in subst)
  apply simp
-apply (subst sublist_append)
+apply (subst nths_append)
 apply (simp add: min_eqR)
-apply (subst sublist_cut_less_eq[where xs="xs \<down> iMin B" and n="iMin B", symmetric], simp)
+apply (subst nths_cut_less_eq[where xs="xs \<down> iMin B" and n="iMin B", symmetric], simp)
 apply (simp add: cut_less_Un cut_less_Min_empty cut_less_Max_all)
-apply (simp add: sublist_take_eq)
+apply (simp add: nths_take_eq)
 apply (rule_tac
   t = "\<lambda>j. j + iMin B \<in> A \<or> j + iMin B \<in> B" and
   s = "\<lambda>j. j + iMin B \<in> B"
   in subst)
  apply (force simp: fun_eq_iff)
-apply (simp add: sublist_drop_eq)
+apply (simp add: nths_drop_eq)
 done
 
-corollary sublist_disjoint_insert_left: "
-  \<lbrakk> finite I; x < iMin I \<rbrakk> \<Longrightarrow> sublist xs (insert x I) = sublist xs {x} @ sublist xs I"
+corollary nths_disjoint_insert_left: "
+  \<lbrakk> finite I; x < iMin I \<rbrakk> \<Longrightarrow> nths xs (insert x I) = nths xs {x} @ nths xs I"
 apply (rule_tac t="insert x I" and s="{x} \<union> I" in subst, simp)
-apply (subst sublist_disjoint_Un)
-apply simp_all
-done
-corollary sublist_disjoint_insert_right: "
-  \<lbrakk> finite I; Max I < x \<rbrakk> \<Longrightarrow> sublist xs (insert x I) = sublist xs I @ sublist xs {x}"
-apply (rule_tac t="insert x I" and s="I \<union> {x}" in subst, simp)
-apply (subst sublist_disjoint_Un)
+apply (subst nths_disjoint_Un)
 apply simp_all
 done
 
-lemma sublist_all: "{..<length xs} \<subseteq> I \<Longrightarrow> sublist xs I = xs"
+corollary nths_disjoint_insert_right: "
+  \<lbrakk> finite I; Max I < x \<rbrakk> \<Longrightarrow> nths xs (insert x I) = nths xs I @ nths xs {x}"
+apply (rule_tac t="insert x I" and s="I \<union> {x}" in subst, simp)
+apply (subst nths_disjoint_Un)
+apply simp_all
+done
+
+lemma nths_all: "{..<length xs} \<subseteq> I \<Longrightarrow> nths xs I = xs"
 apply (case_tac "xs = []", simp)
 apply (rule_tac
   t = "I" and
@@ -783,35 +784,35 @@ apply (rule_tac
   in subst)
  apply blast
 apply (case_tac "I \<down>\<ge> (length xs) = {}", simp)
-apply (subst sublist_disjoint_Un[OF finite_lessThan])
+apply (subst nths_disjoint_Un[OF finite_lessThan])
  apply (rule less_imp_Max_less_iMin[OF finite_lessThan])
    apply blast
   apply blast
  apply (blast intro: less_le_trans)
-apply (fastforce simp: sublist_empty_conv)
+apply (fastforce simp: nths_empty_conv)
 done
 
-corollary sublist_UNIV: "sublist xs UNIV = xs"
-by (rule sublist_all[OF subset_UNIV])
+corollary nths_UNIV: "nths xs UNIV = xs"
+by (rule nths_all[OF subset_UNIV])
 
-lemma sublist_list_sublist_eq: "\<And>xs.
-  list_strict_asc ys \<Longrightarrow> sublist_list_if xs ys = sublist xs (set ys)"
+lemma sublist_list_nths_eq: "\<And>xs.
+  list_strict_asc ys \<Longrightarrow> sublist_list_if xs ys = nths xs (set ys)"
 apply (case_tac "xs = []")
  apply (simp add: sublist_list_if_Nil_left)
 apply (induct ys rule: rev_induct, simp)
 apply (rename_tac y ys xs)
 apply (case_tac "ys = []")
- apply (simp add: sublist_singleton2)
+ apply (simp add: nths_singleton2)
 apply (unfold list_strict_asc_def)
 apply (simp add: sublist_list_if_snoc split del: if_split)
 apply (frule list_ord_append[THEN iffD1])
 apply (clarsimp split del: if_split)
-apply (subst sublist_disjoint_insert_right)
+apply (subst nths_disjoint_insert_right)
   apply simp
  apply (clarsimp simp: in_set_conv_nth, rename_tac i)
  apply (drule_tac i=i and j="length ys" in list_strict_asc_trans[unfolded list_strict_asc_def, THEN iffD1, rule_format])
  apply (simp add: nth_append split del: if_split)+
-apply (simp add: sublist_singleton2)
+apply (simp add: nths_singleton2)
 done
 
 lemma set_sublist_list_if: "\<And>xs. set (sublist_list_if xs ys) = {xs ! i |i. i < length xs \<and> i \<in> set ys}"
@@ -824,12 +825,12 @@ lemma set_sublist_list: "
   set (sublist_list xs ys) = {xs ! i |i. i < length xs \<and> i \<in> set ys}"
 by (simp add: sublist_list_if_sublist_list_eq[symmetric] set_sublist_list_if)
 
-lemma set_sublist_list_if_eq_set_sublist: "set (sublist_list_if xs ys) = set (sublist xs (set ys))"
-by (simp add: set_sublist set_sublist_list_if)
+lemma set_sublist_list_if_eq_set_sublist: "set (sublist_list_if xs ys) = set (nths xs (set ys))"
+by (simp add: set_nths set_sublist_list_if)
 
 lemma set_sublist_list_eq_set_sublist: "
   list_all (\<lambda>i. i < length xs) ys \<Longrightarrow>
-  set (sublist_list xs ys) = set (sublist xs (set ys))"
+  set (sublist_list xs ys) = set (nths xs (set ys))"
 by (simp add: sublist_list_if_sublist_list_eq[symmetric] set_sublist_list_if_eq_set_sublist)
 
 
@@ -911,10 +912,10 @@ by (fastforce simp: in_set_conv_nth)
 lemma f_range_eq_set: "f_range xs = set xs"
 by (simp add: f_image_eq_set)
 
-lemma f_image_eq_set_sublist: "xs `\<^sup>f A = set (sublist xs A)"
-by (unfold set_sublist, blast)
+lemma f_image_eq_set_nths: "xs `\<^sup>f A = set (nths xs A)"
+by (unfold set_nths, blast)
 lemma f_image_eq_set_sublist_list_if: "xs `\<^sup>f (set ys) = set (sublist_list_if xs ys)"
-by (simp add: set_sublist_list_if_eq_set_sublist f_image_eq_set_sublist)
+by (simp add: set_sublist_list_if_eq_set_sublist f_image_eq_set_nths)
 lemma f_image_eq_set_sublist_list: "
   list_all (\<lambda>i. i < length xs) ys \<Longrightarrow> xs `\<^sup>f (set ys) = set (sublist_list xs ys)"
 by (simp add: sublist_list_if_sublist_list_eq f_image_eq_set_sublist_list_if)

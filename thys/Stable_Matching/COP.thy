@@ -395,13 +395,13 @@ lemma X5_UNIV:
   shows "UNIV = set [Xd1, Xd1', Xd2, Xd2', Xd2'']"
 using X5.exhaust by auto
 
-lemmas X5_pow = subset_sublists[OF subset_trans[OF subset_UNIV Set.equalityD1[OF X5_UNIV]]]
+lemmas X5_pow = subset_subseqs[OF subset_trans[OF subset_UNIV Set.equalityD1[OF X5_UNIV]]]
 
 instance X5 :: finite
 by standard (simp add: X5_UNIV)
 
 lemma X5_ALL:
-  shows "(\<forall>X''. P X'') \<longleftrightarrow> (\<forall>X''\<in>set ` set (sublists [Xd1, Xd1', Xd2, Xd2', Xd2'']). P X'')"
+  shows "(\<forall>X''. P X'') \<longleftrightarrow> (\<forall>X''\<in>set ` set (subseqs [Xd1, Xd1', Xd2, Xd2', Xd2'']). P X'')"
 using X5_pow by blast
 
 lemma PX5d_linear:

@@ -77,26 +77,26 @@ proof (induct xs rule: sorted.induct)
   qed simp
 qed simp
 
-lemma sublists_length_simple:
-  assumes "b \<in> set (sublists xs)" shows "length b \<le> length xs"
+lemma subseqs_length_simple:
+  assumes "b \<in> set (subseqs xs)" shows "length b \<le> length xs"
   using assms by(induct xs arbitrary:b;auto simp:Let_def Suc_leD)
 
-lemma sublists_length_simple_False:
-  assumes "b \<in> set (sublists xs)" " length xs < length b" shows False
-  using assms sublists_length_simple by fastforce
+lemma subseqs_length_simple_False:
+  assumes "b \<in> set (subseqs xs)" " length xs < length b" shows False
+  using assms subseqs_length_simple by fastforce
 
-lemma empty_sublists[simp]: "[] \<in> set (sublists xs)" by (induct xs, auto simp: Let_def)
+lemma empty_subseqs[simp]: "[] \<in> set (subseqs xs)" by (induct xs, auto simp: Let_def)
 
-lemma full_list_sublists: "{ys. ys \<in> set (sublists xs) \<and> length ys = length xs} = {xs}" 
+lemma full_list_subseqs: "{ys. ys \<in> set (subseqs xs) \<and> length ys = length xs} = {xs}" 
 proof (induct xs)
   case (Cons x xs)
-  have "?case = ({ys \<in> op # x ` set (sublists xs) \<union> set (sublists xs). 
+  have "?case = ({ys \<in> op # x ` set (subseqs xs) \<union> set (subseqs xs). 
     length ys = Suc (length xs)} = op # x ` {xs})" (is "_ = (?l = ?r)")
     by (auto simp: Let_def)
-  also have "?l = {ys \<in> op # x ` set (sublists xs). length ys = Suc (length xs)}" 
-    using length_sublists[of xs]
-    using sublists_length_simple_False by force
-  also have "\<dots> = op # x ` {ys \<in> set (sublists xs). length ys = length xs}"
+  also have "?l = {ys \<in> op # x ` set (subseqs xs). length ys = Suc (length xs)}" 
+    using length_subseqs[of xs]
+    using subseqs_length_simple_False by force
+  also have "\<dots> = op # x ` {ys \<in> set (subseqs xs). length ys = length xs}"
     by auto
   also have "\<dots> = op # x ` {xs}" unfolding Cons by auto
   finally show ?case by simp

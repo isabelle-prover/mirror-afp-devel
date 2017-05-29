@@ -50,7 +50,7 @@ fun prod_list_m :: "int poly list \<Rightarrow> int poly" where
 | "prod_list_m [] = 1" 
 
 context
-  fixes sl_impl :: "(int poly, int \<times> int poly list, 'state)sublists_foldr_impl" 
+  fixes sl_impl :: "(int poly, int \<times> int poly list, 'state)subseqs_foldr_impl" 
   and m2 :: "int" 
 begin
 definition inv_M2 :: "int \<Rightarrow> int" where
@@ -65,7 +65,7 @@ partial_function (tailrec) reconstruction :: "'state \<Rightarrow> int poly \<Ri
   "reconstruction state u luu lu d r vs res cands = (case cands of Nil
     \<Rightarrow> let d' = Suc d
       in if d' + d' > r then (u # res) else 
-      (case next_sublists_foldr sl_impl state of (cands,state') \<Rightarrow>
+      (case next_subseqs_foldr sl_impl state of (cands,state') \<Rightarrow>
         reconstruction state' u luu lu d' r vs res cands)
    | (lv',ws) # cands' \<Rightarrow> let
        lv = inv_M2 lv' (* lv is last coefficient of vb below *)
@@ -81,7 +81,7 @@ partial_function (tailrec) reconstruction :: "'state \<Rightarrow> int poly \<Ri
           else let 
               lu' = lead_coeff u';
               vs' = fold remove1 ws vs;
-              (cands'', state') = sublists_foldr sl_impl (lu',[]) vs' d
+              (cands'', state') = subseqs_foldr sl_impl (lu',[]) vs' d
             in reconstruction state' u' (smult lu' u') lu' d r' vs' res' cands''
      else reconstruction state u luu lu d r vs res cands'
      else reconstruction state u luu lu d r vs res cands')"
@@ -96,12 +96,12 @@ declare poly_mod.inv_M2_def[code]
 declare poly_mod.inv_Mp2_def[code_unfold]
 
 definition zassenhaus_reconstruction_generic :: 
-  "(int poly, int \<times> int poly list, 'state) sublists_foldr_impl
+  "(int poly, int \<times> int poly list, 'state) subseqs_foldr_impl
   \<Rightarrow> int poly list \<Rightarrow> int \<Rightarrow> nat \<Rightarrow> int poly \<Rightarrow> int poly list" where
   "zassenhaus_reconstruction_generic sl_impl vs p n f = (let
      lf = lead_coeff f;
      pn = p^n;
-     (_, state) = sublists_foldr sl_impl (lf,[]) vs 0
+     (_, state) = subseqs_foldr sl_impl (lf,[]) vs 0
    in 
      poly_mod.reconstruction pn sl_impl (pn div 2) state f (smult lf f) lf 0 (length vs) vs [] [])"
   
@@ -131,7 +131,7 @@ proof -
   qed
 qed
   
-lemma mset_sublists_size: "mset ` {ys. ys \<in> set (sublists xs) \<and> length ys = n} = 
+lemma mset_subseqs_size: "mset ` {ys. ys \<in> set (subseqs xs) \<and> length ys = n} = 
   {ws. ws \<subseteq># mset xs \<and> size ws = n}" 
 proof (induct xs arbitrary: n)
   case (Cons x xs n)
@@ -148,13 +148,13 @@ proof (induct xs arbitrary: n)
       \<union> ((\<lambda> ps. ps + {#x#}) ` {ps. ps \<subseteq># mset xs \<and> size ps = m})" unfolding Suc by auto
     finally have id: "?r =
       {ps. ps \<subseteq># mset xs \<and> size ps = n} \<union> (\<lambda>ps. ps + {#x#}) ` {ps. ps \<subseteq># mset xs \<and> size ps = m}" .
-    have "?l = mset ` {ys \<in> set (sublists xs). length ys = Suc m}
-      \<union> mset ` {ys \<in> op # x ` set (sublists xs). length ys = Suc m}"
+    have "?l = mset ` {ys \<in> set (subseqs xs). length ys = Suc m}
+      \<union> mset ` {ys \<in> op # x ` set (subseqs xs). length ys = Suc m}"
       unfolding Suc by (auto simp: Let_def)
-    also have "mset ` {ys \<in> op # x ` set (sublists xs). length ys = Suc m}
-      = (\<lambda>ps. ps + {#x#}) ` mset ` {ys \<in> set (sublists xs). length ys = m}" by force
-    finally have id': "?l = mset ` {ys \<in> set (sublists xs). length ys = Suc m} \<union>
-      (\<lambda>ps. ps + {#x#}) ` mset ` {ys \<in> set (sublists xs). length ys = m}" .
+    also have "mset ` {ys \<in> op # x ` set (subseqs xs). length ys = Suc m}
+      = (\<lambda>ps. ps + {#x#}) ` mset ` {ys \<in> set (subseqs xs). length ys = m}" by force
+    finally have id': "?l = mset ` {ys \<in> set (subseqs xs). length ys = Suc m} \<union>
+      (\<lambda>ps. ps + {#x#}) ` mset ` {ys \<in> set (subseqs xs). length ys = m}" .
     show ?thesis unfolding id id' Cons[symmetric] unfolding Suc by simp
   qed
 qed auto
@@ -202,12 +202,12 @@ lemma mul_const_commute_below: "mul_const x (mul_const y z) = mul_const y (mul_c
 
 context
   fixes p n 
-    and sl_impl :: "(int poly, int \<times> int poly list, 'state)sublists_foldr_impl" 
+    and sl_impl :: "(int poly, int \<times> int poly list, 'state)subseqs_foldr_impl" 
     and sli :: "int \<times> int poly list \<Rightarrow> int poly list \<Rightarrow> nat \<Rightarrow> 'state \<Rightarrow> bool" 
   assumes prime: "prime p" 
   and m: "m = p^n" 
   and n: "n \<noteq> 0" 
-  and sl_impl: "correct_sublists_foldr_impl (\<lambda>x. map_prod (mul_const x) (Cons x)) sl_impl sli"
+  and sl_impl: "correct_subseqs_foldr_impl (\<lambda>x. map_prod (mul_const x) (Cons x)) sl_impl sli"
 begin
 private definition "test_dvd_exec lu u ws = (\<not> inv_Mp (Mp (smult lu (prod_mset ws))) dvd smult lu u)" 
 
@@ -239,7 +239,7 @@ qed
 lemma coprime_exp_mod: "coprime lu p \<Longrightarrow> prime p \<Longrightarrow> n \<noteq> 0 \<Longrightarrow> lu mod p ^ n \<noteq> 0" 
   by (metis coprime_exp inverse_mod m m1 mod_0 mod_mult_eq mult_zero_right zero_neq_one)
 
-interpretation correct_sublists_foldr_impl "\<lambda>x. map_prod (mul_const x) (Cons x)" sl_impl sli by fact
+interpretation correct_subseqs_foldr_impl "\<lambda>x. map_prod (mul_const x) (Cons x)" sl_impl sli by fact
 
 lemma reconstruction: assumes
     res: "reconstruction sl_impl m2 state u (smult lu u) lu d r vs res cands = fs"
@@ -275,7 +275,7 @@ proof -
   have wf: "wf R" unfolding R_def by simp
   have mset_snd_S: "\<And> vs lu d. (mset \<circ> snd) ` S (lu,[]) vs d = 
     { ws. ws \<subseteq># mset vs \<and> size ws = d}"
-    by (fold mset_sublists_size image_comp, unfold S_def image_Collect, auto)
+    by (fold mset_subseqs_size image_comp, unfold S_def image_Collect, auto)
   have inv_M2[simp]: "inv_M2 m2 = inv_M" unfolding inv_M2_def m2 inv_M_def
     by (intro ext, auto)
   have inv_Mp2[simp]: "inv_Mp2 m2 = inv_Mp" unfolding inv_Mp2_def inv_Mp_def by simp
@@ -426,10 +426,10 @@ proof -
       next
         case False
         with dr have dr: "?d' + ?d' \<le> r" and dr': "?d' < r" by auto
-        obtain state' cands' where sln: "next_sublists_foldr sl_impl state = (cands',state')" by force
-        from next_sublists_foldr[OF sln state] have state': "sli (lu,[]) vs (Suc d) state'"
+        obtain state' cands' where sln: "next_subseqs_foldr sl_impl state = (cands',state')" by force
+        from next_subseqs_foldr[OF sln state] have state': "sli (lu,[]) vs (Suc d) state'"
           and cands': "set cands' = S (lu,[]) vs (Suc d)" by auto
-        let ?new = "sublists_length mul_const lu ?d' vs" 
+        let ?new = "subseqs_length mul_const lu ?d' vs" 
         have R: "((r - Suc d, cands'), meas) \<in> R" unfolding meas R_def using False by auto
         from res False sln
         have fact: "reconstruction sl_impl m2 state' u ?luu lu ?d' r vs res cands' = fs" by auto
@@ -454,10 +454,10 @@ proof -
       let ?lv = "inv_M lv'" 
       define vb where "vb \<equiv> inv_Mp (Mp (smult lu (prod_list ws)))" 
       note res = res[unfolded Cons c list.simps split]
-      from cands[unfolded Cons c S_def] have ws: "ws \<in> set (sublists vs)" "length ws = d" 
+      from cands[unfolded Cons c S_def] have ws: "ws \<in> set (subseqs vs)" "length ws = d" 
         and lv'': "lv' = foldr mul_const ws lu" by auto
-      from sublists_sub_mset[OF ws(1)] have ws_vs: "mset ws \<subseteq># mset vs" "set ws \<subseteq> set vs" 
-        using set_mset_mono sublists_length_simple_False by auto fastforce
+      from subseqs_sub_mset[OF ws(1)] have ws_vs: "mset ws \<subseteq># mset vs" "set ws \<subseteq> set vs" 
+        using set_mset_mono subseqs_length_simple_False by auto fastforce
       have mon_ws: "monic (prod_mset (mset ws))" 
         by (rule monic_prod_mset, insert ws_vs vs_mi, auto) 
       have l_ws: "lead_coeff (prod_mset (mset ws)) = 1" using mon_ws .
@@ -569,13 +569,13 @@ proof -
         define lu' where "lu' \<equiv> lead_coeff u'" 
         let ?luu' = "smult lu' u'" 
         define vs' where "vs' \<equiv> fold remove1 ws vs" 
-        obtain state' cands' where slc: "sublists_foldr sl_impl (lu',[]) vs' d = (cands', state')" by force
-        from sublists_foldr[OF slc] have state': "sli (lu',[]) vs' d state'"
+        obtain state' cands' where slc: "subseqs_foldr sl_impl (lu',[]) vs' d = (cands', state')" by force
+        from subseqs_foldr[OF slc] have state': "sli (lu',[]) vs' d state'"
           and cands': "set cands' = S (lu',[]) vs' d" by auto
         let ?res' = "pp_vb # res" 
         let ?r' = "r - length ws" 
         note defs = vb_def pp_vb_def u'_def lu'_def vs'_def slc
-        from fold_remove1_mset[OF sublists_sub_mset[OF ws(1)]]
+        from fold_remove1_mset[OF subseqs_sub_mset[OF ws(1)]]
         have vs_split: "mset vs = mset vs' + mset ws" unfolding vs'_def by auto
         hence vs'_diff: "mset vs' = mset vs - mset ws" and ws_sub: "mset ws \<subseteq># mset vs" by auto
         from arg_cong[OF vs_split, of size]
@@ -782,12 +782,12 @@ qed
 end
 end
 
-(* select implementation of sublists *)
+(* select implementation of subseqs *)
 definition zassenhaus_reconstruction :: 
   "int poly list \<Rightarrow> int \<Rightarrow> nat \<Rightarrow> int poly \<Rightarrow> int poly list" where
   "zassenhaus_reconstruction vs p n f = (let
      mul = poly_mod.mul_const (p^n);
-     sl_impl = my_sublists.impl (\<lambda>x. map_prod (mul x) (Cons x))
+     sl_impl = my_subseqs.impl (\<lambda>x. map_prod (mul x) (Cons x))
      in zassenhaus_reconstruction_generic sl_impl vs p n f)" 
 
 context
@@ -827,7 +827,7 @@ qed
   
   
 lemma zassenhaus_reconstruction_generic: 
-  assumes sl_impl: "correct_sublists_foldr_impl (\<lambda>v. map_prod (poly_mod.mul_const (p^n) v) (Cons v)) sl_impl sli"
+  assumes sl_impl: "correct_subseqs_foldr_impl (\<lambda>v. map_prod (poly_mod.mul_const (p^n) v) (Cons v)) sl_impl sli"
   and res: "zassenhaus_reconstruction_generic sl_impl hs p n f = fs" 
   shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. irreducible\<^sub>d fi)" 
 proof -
@@ -836,9 +836,9 @@ proof -
   let ?q = "p^n" 
   have p1: "p > 1" using prime unfolding prime_int_iff by simp
   interpret poly_mod_2 "p^n" using p1 n unfolding poly_mod_2_def by simp
-  obtain cands state where slc: "sublists_foldr sl_impl (lead_coeff f, []) hs 0 = (cands, state)" by force
-  interpret correct_sublists_foldr_impl "\<lambda>x. map_prod (mul_const x) (Cons x)" sl_impl sli by fact
-  from sublists_foldr[OF slc] have state: "sli (lead_coeff f, []) hs 0 state" by auto
+  obtain cands state where slc: "subseqs_foldr sl_impl (lead_coeff f, []) hs 0 = (cands, state)" by force
+  interpret correct_subseqs_foldr_impl "\<lambda>x. map_prod (mul_const x) (Cons x)" sl_impl sli by fact
+  from subseqs_foldr[OF slc] have state: "sli (lead_coeff f, []) hs 0 state" by auto
   from res[unfolded zassenhaus_reconstruction_generic_def bh split Let_def slc fst_conv]
   have res: "reconstruction sl_impl (?q div 2) state f ?ff ?lc 0 (length hs) hs [] [] = fs" by auto
   from berlekamp_hensel_unique[OF prime cop sf bh n]
@@ -878,7 +878,7 @@ proof -
   interpret poly_mod_prime by (unfold_locales, rule prime)
   from m1 n have pn: "p^n > 1" by simp
   show ?thesis
-    by (rule zassenhaus_reconstruction_generic[OF my_sublists.impl_correct 
+    by (rule zassenhaus_reconstruction_generic[OF my_subseqs.impl_correct 
         res[unfolded zassenhaus_reconstruction_def Let_def]])
 qed
 end

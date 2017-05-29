@@ -6,20 +6,20 @@ theory DL_Missing_Sublist
 imports Main
 begin
 
-lemma sublist_only_one:
+lemma nths_only_one:
 assumes "{i. i < length xs \<and> i\<in>I} = {j}"
-shows "sublist xs I = [xs!j]"
+shows "nths xs I = [xs!j]"
 proof -
-  have "set (sublist xs I) = {xs!j}"
-    unfolding set_sublist using subset_antisym assms by fastforce
-  moreover have "length (sublist xs I) = 1"
-    unfolding length_sublist assms by auto
+  have "set (nths xs I) = {xs!j}"
+    unfolding set_nths using subset_antisym assms by fastforce
+  moreover have "length (nths xs I) = 1"
+    unfolding length_nths assms by auto
   ultimately show ?thesis
     by (metis One_nat_def length_0_conv length_Suc_conv the_elem_eq the_elem_set)
 qed
 
-lemma sublist_replicate:
-"sublist (replicate n x) A = (replicate (card {i. i < n \<and> i \<in> A}) x)"
+lemma nths_replicate:
+"nths (replicate n x) A = (replicate (card {i. i < n \<and> i \<in> A}) x)"
 proof (induction n)
   case 0
   then show ?case by simp
@@ -34,20 +34,20 @@ next
       unfolding \<open>{i. i < Suc n \<and> i \<in> A} = insert n {i. i < n \<and> i \<in> A}\<close>
       using finite_Collect_conjI[THEN card_insert_if] finite_Collect_less_nat
        less_irrefl_nat mem_Collect_eq by simp
-    then show ?thesis unfolding replicate_Suc replicate_append_same[symmetric] sublist_append Suc sublist_singleton 0
+    then show ?thesis unfolding replicate_Suc replicate_append_same[symmetric] nths_append Suc nths_singleton 0
       unfolding replicate_append_same replicate_Suc[symmetric] by simp
   next
     case False
     then have 0:"(if 0 \<in> {j. j + length (replicate n x) \<in> A} then [x] else []) = []" by simp
     have "{i. i < Suc n \<and> i \<in> A} = {i. i < n \<and> i \<in> A}" using False using le_less less_Suc_eq_le by auto
-    then show ?thesis unfolding replicate_Suc replicate_append_same[symmetric] sublist_append Suc sublist_singleton 0
+    then show ?thesis unfolding replicate_Suc replicate_append_same[symmetric] nths_append Suc nths_singleton 0
       by simp
   qed
 qed
 
-lemma length_sublist_even:
+lemma length_nths_even:
 assumes "even (length xs)"
-shows "length (sublist xs (Collect even)) = length (sublist xs (Collect odd))"
+shows "length (nths xs (Collect even)) = length (nths xs (Collect odd))"
 using assms proof (induction "length xs div 2" arbitrary:xs)
   case 0
   then have "length xs = 0"
@@ -55,31 +55,31 @@ using assms proof (induction "length xs div 2" arbitrary:xs)
   then show ?case by simp
 next
   case (Suc l xs)
-  then have length_drop2: "length (sublist (drop 2 xs) (Collect even)) = length (sublist (drop 2 xs) {a. odd a})" by simp
+  then have length_drop2: "length (nths (drop 2 xs) (Collect even)) = length (nths (drop 2 xs) {a. odd a})" by simp
 
   have "length (take 2 xs) = 2" using Suc.hyps(2) by auto
   then have plus_odd: "{j. j + length (take 2 xs) \<in> Collect odd} = Collect odd" and
             plus_even: "{j. j + length (take 2 xs) \<in> Collect even} = Collect even" by simp_all
-  have sublist_take2: "sublist (take 2 xs) (Collect even) = [take 2 xs ! 0]" "sublist (take 2 xs) (Collect odd) = [take 2 xs ! 1]"
-    using `length (take 2 xs) = 2` less_2_cases sublist_only_one[of "take 2 xs" "Collect even" 0]
-    sublist_only_one[of "take 2 xs" "Collect odd" 1]
+  have nths_take2: "nths (take 2 xs) (Collect even) = [take 2 xs ! 0]" "nths (take 2 xs) (Collect odd) = [take 2 xs ! 1]"
+    using `length (take 2 xs) = 2` less_2_cases nths_only_one[of "take 2 xs" "Collect even" 0]
+    nths_only_one[of "take 2 xs" "Collect odd" 1]
     by fastforce+
-  then have "length (sublist (take 2 xs @ drop 2 xs) (Collect even))
-           = length (sublist (take 2 xs @ drop 2 xs) {a. odd a})"
-    unfolding sublist_append length_append plus_odd plus_even sublist_take2 length_drop2
+  then have "length (nths (take 2 xs @ drop 2 xs) (Collect even))
+           = length (nths (take 2 xs @ drop 2 xs) {a. odd a})"
+    unfolding nths_append length_append plus_odd plus_even nths_take2 length_drop2
     by auto
   then show ?case using append_take_drop_id[of 2 xs] by simp
 qed
 
-lemma sublist_map:
-"sublist (map f xs) A = map f (sublist xs A)"
+lemma nths_map:
+"nths (map f xs) A = map f (nths xs A)"
 proof (induction xs arbitrary:A)
   case Nil
   then show ?case by simp
 next
   case (Cons x xs)
   then show ?case
-  by (simp add: sublist_Cons)
+  by (simp add: nths_Cons)
 qed
 
 
@@ -271,10 +271,10 @@ lemma pick_card_in_set: "i\<in>I \<Longrightarrow> pick I (card {a\<in>I. a < i}
 
 section "Sublist"
 
-lemma nth_sublist_card:
+lemma nth_nths_card:
 assumes "j<length xs"
 and "j\<in>J"
-shows "sublist xs J ! card {j0. j0 < j \<and> j0 \<in> J} = xs!j"
+shows "nths xs J ! card {j0. j0 < j \<and> j0 \<in> J} = xs!j"
 using assms proof (induction xs rule:rev_induct)
   case Nil
   then show ?case using gr_implies_not0 list.size(3) by auto
@@ -285,14 +285,14 @@ next
     case True
     have "{j0. j0 < j \<and> j0 \<in> J} \<subset> {i. i < length xs \<and> i \<in> J}"
       using True snoc.prems(2) by auto
-    then have "card {j0. j0 < j \<and> j0 \<in> J} < length (sublist xs J)" unfolding length_sublist
+    then have "card {j0. j0 < j \<and> j0 \<in> J} < length (nths xs J)" unfolding length_nths
       using psubset_card_mono[of "{i. i < length xs \<and> i \<in> J}"] by simp
-    then show ?thesis unfolding sublist_append nth_append by (simp add: True snoc.IH snoc.prems(2))
+    then show ?thesis unfolding nths_append nth_append by (simp add: True snoc.IH snoc.prems(2))
   next
     case False
     then have "length xs = j"
       using length_append_singleton less_antisym snoc.prems(1) by auto
-    then show ?thesis unfolding sublist_append nth_append length_sublist `length xs = j`
+    then show ?thesis unfolding nths_append nth_append length_nths `length xs = j`
       by (simp add: snoc.prems(2))
   qed
 qed
@@ -320,17 +320,17 @@ next
     by (metis (no_types, lifting) Least_le \<open>?L \<in> {a. a < m \<and> a \<in> I}\<close> \<open>pick I i < ?L\<close> mem_Collect_eq not_le not_less_iff_gr_or_eq order.trans)
 qed
 
-lemma nth_sublist:
+lemma nth_nths:
 assumes "i<card {i. i<length xs \<and> i\<in>I}"
-shows "sublist xs I ! i = xs ! pick I i"
+shows "nths xs I ! i = xs ! pick I i"
 proof -
   have "{a \<in> {i. i < length xs \<and> i \<in> I}. a < pick {i. i < length xs \<and> i \<in> I} i}
         = {a.  a < pick {i. i < length xs \<and> i \<in> I} i \<and> a \<in> I}"
     using assms pick_in_set by fastforce
   then have "card {a. a < pick {i. i < length xs \<and> i \<in> I} i \<and> a \<in> I} = i"
     using card_pick_le[OF assms] by simp
-  then have "sublist xs I ! i = xs ! pick {i. i < length xs \<and> i \<in> I} i"
-    using nth_sublist_card[where j = "pick {i. i < length xs \<and> i \<in> I} i", of xs I]
+  then have "nths xs I ! i = xs ! pick {i. i < length xs \<and> i \<in> I} i"
+    using nth_nths_card[where j = "pick {i. i < length xs \<and> i \<in> I} i", of xs I]
     assms pick_in_set pick_in_set by auto
   then show ?thesis using pick_reduce_set using assms by auto
 qed
@@ -348,45 +348,45 @@ proof -
     assms not_less not_le by blast
 qed
 
-lemma prod_list_complementary_sublists:
+lemma prod_list_complementary_nthss:
 fixes f ::"'a \<Rightarrow> 'b::comm_monoid_mult"
-shows "prod_list (map f xs) = prod_list (map f (sublist xs A)) *  prod_list (map f (sublist xs (-A)))"
+shows "prod_list (map f xs) = prod_list (map f (nths xs A)) *  prod_list (map f (nths xs (-A)))"
 proof (induction xs rule:rev_induct)
   case Nil
   then show ?case by simp
 next
   case (snoc x xs)
-  show ?case unfolding map_append "prod_list.append" sublist_append sublist_singleton snoc
+  show ?case unfolding map_append "prod_list.append" nths_append nths_singleton snoc
     by (cases "(length xs)\<in>A"; simp;metis mult.assoc mult.commute)
 qed
 
-lemma sublist_zip: "sublist (zip xs ys) I = zip (sublist xs I) (sublist ys I)"
+lemma nths_zip: "nths (zip xs ys) I = zip (nths xs I) (nths ys I)"
 proof (rule nth_equalityI)
-  show "length (sublist (zip xs ys) I) = length (zip (sublist xs I) (sublist ys I))"
+  show "length (nths (zip xs ys) I) = length (zip (nths xs I) (nths ys I))"
   proof (cases "length xs \<le> length ys")
     case True
     then have "{i. i < length xs \<and> i \<in> I} \<subseteq> {i. i < length ys \<and> i \<in> I}" by (simp add: Collect_mono less_le_trans)
     then have "card {i. i < length xs \<and> i \<in> I} \<le> card {i. i < length ys \<and> i \<in> I}"
       by (metis (mono_tags, lifting) card_mono finite_nat_set_iff_bounded mem_Collect_eq)
-    then show ?thesis unfolding length_sublist length_zip using True using min_def by linarith
+    then show ?thesis unfolding length_nths length_zip using True using min_def by linarith
   next
     case False
     then have "{i. i < length ys \<and> i \<in> I} \<subseteq> {i. i < length xs \<and> i \<in> I}" by (simp add: Collect_mono less_le_trans)
     then have "card {i. i < length ys \<and> i \<in> I} \<le> card {i. i < length xs \<and> i \<in> I}"
       by (metis (mono_tags, lifting) card_mono finite_nat_set_iff_bounded mem_Collect_eq)
-    then show ?thesis unfolding length_sublist length_zip using False using min_def by linarith
+    then show ?thesis unfolding length_nths length_zip using False using min_def by linarith
   qed
-  show "\<forall>i<length (sublist (zip xs ys) I). sublist (zip xs ys) I ! i = zip (sublist xs I) (sublist ys I) ! i"
+  show "\<forall>i<length (nths (zip xs ys) I). nths (zip xs ys) I ! i = zip (nths xs I) (nths ys I) ! i"
   proof (rule allI; rule impI)
-   fix i assume "i < length (sublist (zip xs ys) I)"
-   then have "i < length (sublist xs I)" "i < length (sublist ys I)"
-     by (simp_all add: \<open>length (sublist (zip xs ys) I) = length (zip (sublist xs I) (sublist ys I))\<close>)
-   show "sublist (zip xs ys) I ! i = zip (sublist xs I) (sublist ys I) ! i"
-     unfolding nth_sublist[OF `i < length (sublist (zip xs ys) I)`[unfolded length_sublist]]
-     unfolding nth_zip[OF `i < length (sublist xs I)` `i < length (sublist ys I)`]
-     unfolding nth_zip[OF pick_le[OF `i < length (sublist xs I)`[unfolded length_sublist]]
-                          pick_le[OF `i < length (sublist ys I)`[unfolded length_sublist]]]
-     by (metis (full_types) \<open>i < length (sublist xs I)\<close> \<open>i < length (sublist ys I)\<close> length_sublist nth_sublist)
+   fix i assume "i < length (nths (zip xs ys) I)"
+   then have "i < length (nths xs I)" "i < length (nths ys I)"
+     by (simp_all add: \<open>length (nths (zip xs ys) I) = length (zip (nths xs I) (nths ys I))\<close>)
+   show "nths (zip xs ys) I ! i = zip (nths xs I) (nths ys I) ! i"
+     unfolding nth_nths[OF `i < length (nths (zip xs ys) I)`[unfolded length_nths]]
+     unfolding nth_zip[OF `i < length (nths xs I)` `i < length (nths ys I)`]
+     unfolding nth_zip[OF pick_le[OF `i < length (nths xs I)`[unfolded length_nths]]
+                          pick_le[OF `i < length (nths ys I)`[unfolded length_nths]]]
+     by (metis (full_types) \<open>i < length (nths xs I)\<close> \<open>i < length (nths ys I)\<close> length_nths nth_nths)
   qed
 qed
 
@@ -491,9 +491,9 @@ proof (rule nth_equalityI)
   qed
 qed
 
-lemma sublist_nth:
+lemma nths_nth:
 assumes "n\<in>A" "n<length xs"
-shows "sublist xs A ! (card {i. i<n \<and> i\<in>A}) = xs ! n"
+shows "nths xs A ! (card {i. i<n \<and> i\<in>A}) = xs ! n"
 using assms proof (induction xs rule:rev_induct)
   case Nil
   then show ?case by simp
@@ -502,24 +502,24 @@ next
   then show ?case
   proof (cases "n = length xs")
     case True
-    then show ?thesis unfolding sublist_append[of xs "[x]" A] nth_append
-      using length_sublist[of xs A] sublist_singleton snoc.prems(1) by auto
+    then show ?thesis unfolding nths_append[of xs "[x]" A] nth_append
+      using length_nths[of xs A] nths_singleton snoc.prems(1) by auto
   next
     case False
     then have "n < length xs" using snoc by auto
-    then have 0:"sublist xs A ! card {i. i < n \<and> i \<in> A} = xs ! n" using snoc by auto
+    then have 0:"nths xs A ! card {i. i < n \<and> i \<in> A} = xs ! n" using snoc by auto
 
     have "{i. i < n \<and> i \<in> A} \<subset> {i. i < length xs \<and> i \<in> A}" using `n < length xs` snoc by force
-    then have "card {i. i < n \<and> i \<in> A} < length (sublist xs A)" unfolding length_sublist
+    then have "card {i. i < n \<and> i \<in> A} < length (nths xs A)" unfolding length_nths
       by (simp add: psubset_card_mono)
-    then show ?thesis unfolding sublist_append[of xs "[x]" A] nth_append using 0
+    then show ?thesis unfolding nths_append[of xs "[x]" A] nth_append using 0
       by (simp add: \<open>n < length xs\<close>)
   qed
 qed
 
-lemma list_all2_sublist:
-assumes "list_all2 P (sublist xs A) (sublist ys A)"
-and     "list_all2 P (sublist xs (-A)) (sublist ys (-A))"
+lemma list_all2_nths:
+assumes "list_all2 P (nths xs A) (nths ys A)"
+and     "list_all2 P (nths xs (-A)) (nths ys (-A))"
 shows "list_all2 P xs ys"
 proof -
   have "length xs = length ys"
@@ -530,15 +530,15 @@ proof -
       case False
       have "{i. i < length xs \<and> i \<in> - A} \<subset> {i. i < length ys \<and> i \<in> - A}"
         using False `length xs < length ys` by force
-      then have "length (sublist ys (-A)) > length (sublist xs (-A))"
-        unfolding length_sublist by (simp add: psubset_card_mono)
+      then have "length (nths ys (-A)) > length (nths xs (-A))"
+        unfolding length_nths by (simp add: psubset_card_mono)
       then show False using assms(2) list_all2_lengthD not_less_iff_gr_or_eq by blast
     next
       case True
       have "{i. i < length xs \<and> i \<in> A} \<subset> {i. i < length ys \<and> i \<in> A}"
         using True `length xs < length ys` by force
-      then have "length (sublist ys A) > length (sublist xs A)"
-        unfolding length_sublist by (simp add: psubset_card_mono)
+      then have "length (nths ys A) > length (nths xs A)"
+        unfolding length_nths by (simp add: psubset_card_mono)
       then show False using assms(1) list_all2_lengthD not_less_iff_gr_or_eq by blast
     qed
   next
@@ -550,15 +550,15 @@ proof -
       case False
       have "{i. i < length ys \<and> i \<in> -A} \<subset> {i. i < length xs \<and> i \<in> -A}"
         using False `length xs > length ys`  by force
-      then have "length (sublist xs (-A)) > length (sublist ys (-A))"
-        unfolding length_sublist by (simp add: psubset_card_mono)
+      then have "length (nths xs (-A)) > length (nths ys (-A))"
+        unfolding length_nths by (simp add: psubset_card_mono)
       then show False using assms(2) list_all2_lengthD dual_order.strict_implies_not_eq by blast
     next
       case True
       have "{i. i < length ys \<and> i \<in> A} \<subset> {i. i < length xs \<and> i \<in> A}"
         using True `length xs > length ys` by force
-      then have "length (sublist xs A) > length (sublist ys A)"
-        unfolding length_sublist by (simp add: psubset_card_mono)
+      then have "length (nths xs A) > length (nths ys A)"
+        unfolding length_nths by (simp add: psubset_card_mono)
       then show False using assms(1) list_all2_lengthD dual_order.strict_implies_not_eq by blast
     qed
   qed
@@ -571,32 +571,32 @@ proof -
     proof (cases "n\<in>A")
       case True
       have "{i. i < n \<and> i \<in> A} \<subset> {i. i < length xs \<and> i \<in> A}" using `n < length xs` `n\<in>A` by force
-      then have "card {i. i < n \<and> i \<in> A} < length (sublist xs A)" unfolding length_sublist
+      then have "card {i. i < n \<and> i \<in> A} < length (nths xs A)" unfolding length_nths
         by (simp add: psubset_card_mono)
-      show ?thesis using sublist_nth[OF `n\<in>A` `n < length xs`] sublist_nth[OF `n\<in>A` `n < length ys`]
-        list_all2_nthD[OF assms(1), of "card {i. i < n \<and> i \<in> A}"] length_sublist
-        by (simp add: \<open>card {i. i < n \<and> i \<in> A} < length (sublist xs A)\<close>)
+      show ?thesis using nths_nth[OF `n\<in>A` `n < length xs`] nths_nth[OF `n\<in>A` `n < length ys`]
+        list_all2_nthD[OF assms(1), of "card {i. i < n \<and> i \<in> A}"] length_nths
+        by (simp add: \<open>card {i. i < n \<and> i \<in> A} < length (nths xs A)\<close>)
     next
       case False then have "n\<in>-A" by auto
       have "{i. i < n \<and> i \<in> -A} \<subset> {i. i < length xs \<and> i \<in> -A}" using `n < length xs` `n\<in>-A` by force
-      then have "card {i. i < n \<and> i \<in> -A} < length (sublist xs (-A))" unfolding length_sublist
+      then have "card {i. i < n \<and> i \<in> -A} < length (nths xs (-A))" unfolding length_nths
         by (simp add: psubset_card_mono)
-      show ?thesis using sublist_nth[OF `n\<in>-A` `n < length xs`] sublist_nth[OF `n\<in>-A` `n < length ys`]
-        list_all2_nthD[OF assms(2), of "card {i. i < n \<and> i \<in> -A}"] length_sublist
-        using \<open>card {i. i < n \<and> i \<in> - A} < length (sublist xs (- A))\<close> by auto   next
+      show ?thesis using nths_nth[OF `n\<in>-A` `n < length xs`] nths_nth[OF `n\<in>-A` `n < length ys`]
+        list_all2_nthD[OF assms(2), of "card {i. i < n \<and> i \<in> -A}"] length_nths
+        using \<open>card {i. i < n \<and> i \<in> - A} < length (nths xs (- A))\<close> by auto   next
     qed
   qed
   then show ?thesis using \<open>length xs = length ys\<close> list_all2_all_nthI by blast
 qed
 
-lemma sublist_weave:
+lemma nths_weave:
 assumes "length xs = card {a\<in>A. a < length xs + length ys}"
 assumes "length ys = card {a\<in>(-A). a < length xs + length ys}"
-shows "sublist (weave A xs ys) A = xs \<and> sublist (weave A xs ys) (-A) = ys"
+shows "nths (weave A xs ys) A = xs \<and> nths (weave A xs ys) (-A) = ys"
 using assms proof (induction "length xs + length ys" arbitrary: xs ys)
   case 0
   then show ?case
-    unfolding weave_def sublist_map by simp
+    unfolding weave_def nths_map by simp
 next
   case (Suc l)
   then show ?case
@@ -628,25 +628,25 @@ next
     qed
     have "length xs' + length ys \<in> A" using `l\<in>A` \<open>l = length xs' + length ys\<close> by blast
 
-    then have "sublist (weave A xs ys) A = sublist (weave A xs' ys @ [x]) A" unfolding
+    then have "nths (weave A xs ys) A = nths (weave A xs' ys @ [x]) A" unfolding
        `xs = xs' @ [x]` using weave_append1[OF `length xs' + length ys \<in> A` length_xs'] by metis
-    also have "... = sublist (weave A xs' ys) A @ sublist [x] {a. a + (length xs' + length ys) \<in> A}"
-      using sublist_append length_weave by metis
-    also have "... = sublist (weave A xs' ys) A @ [x]"
-      using sublist_singleton `length xs' + length ys \<in> A` by auto
+    also have "... = nths (weave A xs' ys) A @ nths [x] {a. a + (length xs' + length ys) \<in> A}"
+      using nths_append length_weave by metis
+    also have "... = nths (weave A xs' ys) A @ [x]"
+      using nths_singleton `length xs' + length ys \<in> A` by auto
     also have "... = xs" using Suc.hyps(1)[OF `l = length xs' + length ys` length_xs' length_ys]
      `xs = xs' @ [x]` by presburger
-    finally have "sublist (weave A xs ys) A = xs" by metis
+    finally have "nths (weave A xs ys) A = xs" by metis
 
-    have "sublist (weave A xs ys) (-A) = sublist (weave A xs' ys @ [x]) (-A)" unfolding
+    have "nths (weave A xs ys) (-A) = nths (weave A xs' ys @ [x]) (-A)" unfolding
        `xs = xs' @ [x]` using weave_append1[OF `length xs' + length ys \<in> A` length_xs'] by metis
-    also have "... = sublist (weave A xs' ys) (-A) @ sublist [x] {a. a + (length xs' + length ys) \<in> (-A)}"
-      using sublist_append length_weave by metis
-    also have "... = sublist (weave A xs' ys) (-A)"
-      using sublist_singleton `length xs' + length ys \<in> A` by auto
+    also have "... = nths (weave A xs' ys) (-A) @ nths [x] {a. a + (length xs' + length ys) \<in> (-A)}"
+      using nths_append length_weave by metis
+    also have "... = nths (weave A xs' ys) (-A)"
+      using nths_singleton `length xs' + length ys \<in> A` by auto
     also have "... = ys"
       using Suc.hyps(1)[OF `l = length xs' + length ys` length_xs' length_ys] by presburger
-    finally show ?thesis using `sublist (weave A xs ys) A = xs` by auto
+    finally show ?thesis using `nths (weave A xs ys) A = xs` by auto
   next
     case False
     then have "l\<notin>{a \<in> A. a < length xs + length ys}" using Suc.hyps mem_Collect_eq zero_less_Suc by auto
@@ -675,25 +675,25 @@ next
     qed
     have "length xs + length ys' \<notin> A" using `l\<notin>A` \<open>l = length xs + length ys'\<close> by blast
 
-    then have "sublist (weave A xs ys) A = sublist (weave A xs ys' @ [y]) A" unfolding
+    then have "nths (weave A xs ys) A = nths (weave A xs ys' @ [y]) A" unfolding
        `ys = ys' @ [y]` using weave_append2[OF `length xs + length ys' \<notin> A` length_ys'] by metis
-    also have "... = sublist (weave A xs ys') A @ sublist [y] {a. a + (length xs + length ys') \<in> A}"
-      using sublist_append length_weave by metis
-    also have "... = sublist (weave A xs ys') A"
-      using sublist_singleton `length xs + length ys' \<notin> A` by auto
+    also have "... = nths (weave A xs ys') A @ nths [y] {a. a + (length xs + length ys') \<in> A}"
+      using nths_append length_weave by metis
+    also have "... = nths (weave A xs ys') A"
+      using nths_singleton `length xs + length ys' \<notin> A` by auto
     also have "... = xs"
       using Suc.hyps(1)[OF `l = length xs + length ys'` length_xs length_ys'] by auto
-    finally have "sublist (weave A xs ys) A = xs" by auto
+    finally have "nths (weave A xs ys) A = xs" by auto
 
-    have "sublist (weave A xs ys) (-A) = sublist (weave A xs ys' @ [y]) (-A)" unfolding
+    have "nths (weave A xs ys) (-A) = nths (weave A xs ys' @ [y]) (-A)" unfolding
        `ys = ys' @ [y]` using weave_append2[OF `length xs + length ys' \<notin> A` length_ys'] by metis
-    also have "... = sublist (weave A xs ys') (-A) @ sublist [y] {a. a + (length xs + length ys') \<in> (-A)}"
-      using sublist_append length_weave by metis
-    also have "... = sublist (weave A xs ys') (-A) @ [y]"
-      using sublist_singleton `length xs + length ys' \<notin> A` by auto
+    also have "... = nths (weave A xs ys') (-A) @ nths [y] {a. a + (length xs + length ys') \<in> (-A)}"
+      using nths_append length_weave by metis
+    also have "... = nths (weave A xs ys') (-A) @ [y]"
+      using nths_singleton `length xs + length ys' \<notin> A` by auto
     also have "... = ys"
       using Suc.hyps(1)[OF `l = length xs + length ys'` length_xs length_ys'] `ys = ys' @ [y]` by simp
-    finally show ?thesis using `sublist (weave A xs ys) A = xs` by auto
+    finally show ?thesis using `nths (weave A xs ys) A = xs` by auto
   qed
 qed
 
@@ -732,45 +732,45 @@ proof
     qed
   qed
   show "set xs \<union> set ys \<subseteq> set (weave A xs ys)"
-    using sublist_weave[OF assms] by (metis Un_subset_iff set_sublist_subset)
+    using nths_weave[OF assms] by (metis Un_subset_iff set_nths_subset)
 qed
 
 
-lemma weave_complementary_sublists[simp]:
- "weave A (sublist xs A) (sublist xs (-A)) = xs"
+lemma weave_complementary_nthss[simp]:
+ "weave A (nths xs A) (nths xs (-A)) = xs"
 proof (induction xs rule:rev_induct)
   case Nil
-  then show ?case by (metis gen_length_def length_0_conv length_code length_weave sublist_nil)
+  then show ?case by (metis gen_length_def length_0_conv length_code length_weave nths_nil)
 next
   case (snoc x xs)
-  have length_xs:"length xs = length (sublist xs A) + length (sublist xs (-A))" by (metis length_weave snoc.IH)
+  have length_xs:"length xs = length (nths xs A) + length (nths xs (-A))" by (metis length_weave snoc.IH)
   show ?case
   proof (cases "(length xs)\<in>A")
     case True
-    have 0:"length (sublist xs A) + length (sublist xs (-A)) \<in> A" using length_xs True by metis
-    have 1:"length (sublist xs A) = card {a \<in> A. a < length (sublist xs A) + length (sublist xs (-A))}"
-      using length_sublist[of xs A] by (metis (no_types, lifting) Collect_cong length_xs)
-    have 2:"sublist (xs @ [x]) A = sublist xs A @ [x]"
-      unfolding sublist_append[of xs "[x]" A] using sublist_singleton True by auto
-    have 3:"sublist (xs @ [x]) (-A) = sublist xs (-A)"
-      unfolding sublist_append[of xs "[x]" "-A"] using True by auto
+    have 0:"length (nths xs A) + length (nths xs (-A)) \<in> A" using length_xs True by metis
+    have 1:"length (nths xs A) = card {a \<in> A. a < length (nths xs A) + length (nths xs (-A))}"
+      using length_nths[of xs A] by (metis (no_types, lifting) Collect_cong length_xs)
+    have 2:"nths (xs @ [x]) A = nths xs A @ [x]"
+      unfolding nths_append[of xs "[x]" A] using nths_singleton True by auto
+    have 3:"nths (xs @ [x]) (-A) = nths xs (-A)"
+      unfolding nths_append[of xs "[x]" "-A"] using True by auto
     show ?thesis unfolding 2 3 weave_append1[OF 0 1] snoc.IH by metis
   next
     case False
-    have 0:"length (sublist xs A) + length (sublist xs (-A)) \<notin> A" using length_xs False by metis
-    have 1:"length (sublist xs (-A)) = card {a \<in> -A. a < length (sublist xs A) + length (sublist xs (-A))}"
-      using length_sublist[of xs "-A"] by (metis (no_types, lifting) Collect_cong length_xs)
-    have 2:"sublist (xs @ [x]) A = sublist xs A"
-      unfolding sublist_append[of xs "[x]" A] using sublist_singleton False by auto
-    have 3:"sublist (xs @ [x]) (-A) = sublist xs (-A) @ [x]"
-      unfolding sublist_append[of xs "[x]" "-A"] using False by auto
+    have 0:"length (nths xs A) + length (nths xs (-A)) \<notin> A" using length_xs False by metis
+    have 1:"length (nths xs (-A)) = card {a \<in> -A. a < length (nths xs A) + length (nths xs (-A))}"
+      using length_nths[of xs "-A"] by (metis (no_types, lifting) Collect_cong length_xs)
+    have 2:"nths (xs @ [x]) A = nths xs A"
+      unfolding nths_append[of xs "[x]" A] using nths_singleton False by auto
+    have 3:"nths (xs @ [x]) (-A) = nths xs (-A) @ [x]"
+      unfolding nths_append[of xs "[x]" "-A"] using False by auto
     show ?thesis unfolding 2 3 weave_append2[OF 0 1] snoc.IH by metis
   qed
 qed
 
-lemma length_sublist':
-"length (sublist xs I) = card {i\<in>I. i < length xs}"
-unfolding length_sublist by meson
+lemma length_nths':
+"length (nths xs I) = card {i\<in>I. i < length xs}"
+unfolding length_nths by meson
 
 
 

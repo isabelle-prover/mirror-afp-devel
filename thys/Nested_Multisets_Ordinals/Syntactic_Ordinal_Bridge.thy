@@ -41,7 +41,7 @@ lemma from_cnf_0_iff[simp]: "from_cnf ks = 0 \<longleftrightarrow> ks = []"
 lemma from_cnf_append[simp]: "from_cnf (ks @ ls) = from_cnf ks + from_cnf ls"
   by (induct ks) (auto simp: ordinal_plus_assoc)
 
-lemma sublisteq_from_cnf_less_eq: "sublisteq ks ls \<Longrightarrow> from_cnf ks \<le> from_cnf ls"
+lemma subseq_from_cnf_less_eq: "Sublist.subseq ks ls \<Longrightarrow> from_cnf ks \<le> from_cnf ls"
   by (induct rule: list_emb.induct) (auto intro: ordinal_le_plusL order_trans)
 
 
@@ -240,8 +240,8 @@ proof (simp only: atomize_imp,
       qed
       also have "\<dots> \<le> ordinal_of_hmset l"
         unfolding l_eq_yLa
-        by (auto simp del: from_cnf.simps intro!: sublisteq_from_cnf_less_eq
-          simp: sublisteq_from_cnf_less_eq sorted_insort_is_snoc ord_y_max)
+        by (auto simp del: from_cnf.simps intro!: subseq_from_cnf_less_eq
+          simp: subseq_from_cnf_less_eq sorted_insort_is_snoc ord_y_max)
       ultimately have ?thesis
         by simp
     }

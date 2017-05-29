@@ -175,48 +175,107 @@ proof -
     by (subst Suffixes_star) (simp_all add: assms image_image Suffixes_rev)
   finally show ?thesis .
 qed
+  
 
+subsection \<open>Subword language\<close>
 
-subsection \<open>Sublists language\<close>
+text \<open>
+  The language of all sub-words, i.e. all words that are a contiguous sublist of a word in
+  the original language.
+\<close>
+definition Sublists :: "'a list set \<Rightarrow> 'a list set" where
+  "Sublists A = {w. \<exists>q\<in>A. sublist w q}"
 
-definition Sublists where "Sublists A = (\<Union>w\<in>A. set (sublists w))"
+lemma Sublists_altdef [code]: "Sublists A = (\<Union>w\<in>A. set (sublists w))"
+  by (auto simp: Sublists_def)
 
 lemma Sublists_empty [simp]: "Sublists {} = {}"
-  by (simp add: Sublists_def)
-
-lemma Sublists_insert [simp]: "Sublists (insert xs A) = set (sublists xs) \<union> Sublists A"
-  by (simp add: Sublists_def)
+  by (auto simp: Sublists_def)
     
-lemma Sublists_singleton [simp]: "Sublists {xs} = set (sublists xs)"
-  by simp
+lemma Sublists_singleton [simp]: "Sublists {w} = set (sublists w)"
+  by (auto simp: Sublists_altdef)
+
+lemma Sublists_insert: "Sublists (insert w A) = set (sublists w) \<union> Sublists A"
+  by (auto simp: Sublists_altdef)
     
 lemma Sublists_Un [simp]: "Sublists (A \<union> B) = Sublists A \<union> Sublists B"
-  by (simp add: Sublists_def)
+  by (auto simp: Sublists_altdef)
+
+lemma Sublists_UN [simp]: "Sublists (UNION A f) = UNION A (\<lambda>x. Sublists (f x))"
+  by (auto simp: Sublists_altdef)
+
+lemma Sublists_conv_Prefixes: "Sublists A = Prefixes (Suffixes A)"
+  by (auto simp: Sublists_def Prefixes_def Suffixes_def sublist_def)
     
-lemma Sublists_UNION [simp]: "Sublists (UNION A f) = UNION A (\<lambda>x. Sublists (f x))"
-  by (simp add: Sublists_def)
+lemma Sublists_conv_Suffixes: "Sublists A = Suffixes (Prefixes A)"
+  by (auto simp: Sublists_def Prefixes_def Suffixes_def sublist_def)
+
+lemma Sublists_conc [simp]: 
+  assumes "A \<noteq> {}" "B \<noteq> {}"
+  shows   "Sublists (A @@ B) = Sublists A \<union> Sublists B \<union> Suffixes A @@ Prefixes B"
+  using assms unfolding Sublists_conv_Suffixes by auto
+
+lemma star_not_empty [simp]: "star A \<noteq> {}"
+  by auto
+    
+lemma Sublists_star:
+  "A \<noteq> {} \<Longrightarrow> Sublists (star A) = Sublists A \<union> Suffixes A @@ star A @@ Prefixes A"
+  by (simp add: Sublists_conv_Prefixes)
+
+lemma Prefixes_subset_Sublists: "Prefixes A \<subseteq> Sublists A"
+  unfolding Prefixes_def Sublists_def by auto
+
+lemma Suffixes_subset_Sublists: "Suffixes A \<subseteq> Sublists A"
+  unfolding Suffixes_def Sublists_def by auto
+
+
+subsection \<open>Fragment language\<close>
   
-lemma Sublists_conc [simp]: "Sublists (A @@ B) = Sublists A @@ Sublists B"
+text \<open>
+  The following is the fragment language of a given language, i.e. the set of all words that
+  are (not necessarily contiguous) sub-sequences of a word in the original language.
+\<close>
+definition Subseqs where "Subseqs A = (\<Union>w\<in>A. set (subseqs w))"
+
+lemma Subseqs_empty [simp]: "Subseqs {} = {}"
+  by (simp add: Subseqs_def)
+
+lemma Subseqs_insert [simp]: "Subseqs (insert xs A) = set (subseqs xs) \<union> Subseqs A"
+  by (simp add: Subseqs_def)
+    
+lemma Subseqs_singleton [simp]: "Subseqs {xs} = set (subseqs xs)"
+  by simp
+    
+lemma Subseqs_Un [simp]: "Subseqs (A \<union> B) = Subseqs A \<union> Subseqs B"
+  by (simp add: Subseqs_def)
+    
+lemma Subseqs_UNION [simp]: "Subseqs (UNION A f) = UNION A (\<lambda>x. Subseqs (f x))"
+  by (simp add: Subseqs_def)
+  
+lemma Subseqs_conc [simp]: "Subseqs (A @@ B) = Subseqs A @@ Subseqs B"
 proof safe
-  fix xs assume "xs \<in> Sublists (A @@ B)"
-  then obtain ys zs where *: "ys \<in> A" "zs \<in> B" "sublisteq xs (ys @ zs)" 
-    by (auto simp: Sublists_def conc_def)
-  from *(3) obtain xs1 xs2 where "xs = xs1 @ xs2" "sublisteq xs1 ys" "sublisteq xs2 zs"
-    by (rule sublisteq_appendE)
-  with *(1,2) show "xs \<in> Sublists A @@ Sublists B" by (auto simp: Sublists_def set_sublists_eq)
+  fix xs assume "xs \<in> Subseqs (A @@ B)"
+  then obtain ys zs where *: "ys \<in> A" "zs \<in> B" "subseq xs (ys @ zs)" 
+    by (auto simp: Subseqs_def conc_def)
+  from *(3) obtain xs1 xs2 where "xs = xs1 @ xs2" "subseq xs1 ys" "subseq xs2 zs"
+    by (rule subseq_appendE)
+  with *(1,2) show "xs \<in> Subseqs A @@ Subseqs B" by (auto simp: Subseqs_def set_subseqs_eq)
 next
-  fix xs assume "xs \<in> Sublists A @@ Sublists B"
+  fix xs assume "xs \<in> Subseqs A @@ Subseqs B"
   then obtain xs1 xs2 ys zs 
-    where "xs = xs1 @ xs2" "sublisteq xs1 ys" "sublisteq xs2 zs" "ys \<in> A" "zs \<in> B"
-    by (auto simp: conc_def Sublists_def)
-  thus "xs \<in> Sublists (A @@ B)" by (force simp: Sublists_def conc_def intro: list_emb_append_mono)
+    where "xs = xs1 @ xs2" "subseq xs1 ys" "subseq xs2 zs" "ys \<in> A" "zs \<in> B"
+    by (auto simp: conc_def Subseqs_def)
+  thus "xs \<in> Subseqs (A @@ B)" by (force simp: Subseqs_def conc_def intro: list_emb_append_mono)
 qed
 
-lemma Sublists_compower [simp]: "Sublists (A ^^ n) = Sublists A ^^ n"
+lemma Subseqs_compower [simp]: "Subseqs (A ^^ n) = Subseqs A ^^ n"
   by (induction n) simp_all
     
-lemma Sublists_star [simp]: "Sublists (star A) = star (Sublists A)"
+lemma Subseqs_star [simp]: "Subseqs (star A) = star (Subseqs A)"
   by (simp add: star_def)
+    
+lemma Sublists_subset_Subseqs: "Sublists A \<subseteq> Subseqs A"
+  by (auto simp: Sublists_def Subseqs_def dest!: sublist_imp_subseq)
 
 
 subsection \<open>Various regular expression constructions\<close>
@@ -263,7 +322,7 @@ lemma lang_rexp_subst: "lang (rexp_subst f r) = subst_word f ` lang r"
   by (induction r) (simp_all add: image_Un)
 
 
-text \<open>A construction for the suffix language of a regular expression:\<close>
+text \<open>Suffix language of a regular expression:\<close>
 
 primrec suffix_rexp :: "'a rexp \<Rightarrow> 'a rexp" where
   "suffix_rexp Zero = Zero"
@@ -280,7 +339,7 @@ theorem lang_suffix_rexp [simp]:
   by (induction r) (auto simp: rexp_empty_iff)
 
 
-text \<open>A construction for the prefix language of a regular expression:\<close>
+text \<open>Prefix language of a regular expression:\<close>
 
 primrec prefix_rexp :: "'a rexp \<Rightarrow> 'a rexp" where
   "prefix_rexp Zero = Zero"
@@ -297,17 +356,40 @@ theorem lang_prefix_rexp [simp]:
   by (induction r) (auto simp: rexp_empty_iff)
 
 
-text \<open>A construction for the sub-word language of a regular expression:\<close>
-  
-primrec sublists_rexp :: "'a rexp \<Rightarrow> 'a rexp" where
-  "sublists_rexp Zero = Zero"
-| "sublists_rexp One = One"
-| "sublists_rexp (Atom x) = Plus (Atom x) One"
-| "sublists_rexp (Plus r s) = Plus (sublists_rexp r) (sublists_rexp s)"
-| "sublists_rexp (Times r s) = Times (sublists_rexp r) (sublists_rexp s)"
-| "sublists_rexp (Star r) = Star (sublists_rexp r)"
+text \<open>Sub-word language of a regular expression\<close>    
 
-lemma lang_sublists_rexp [simp]: "lang (sublists_rexp r) = Sublists (lang r)"
-  by (induction r) auto 
+primrec sublist_rexp :: "'a rexp \<Rightarrow> 'a rexp" where
+  "sublist_rexp Zero = Zero"
+| "sublist_rexp One = One"
+| "sublist_rexp (Atom a) = Plus (Atom a) One"
+| "sublist_rexp (Plus r s) = Plus (sublist_rexp r) (sublist_rexp s)"
+| "sublist_rexp (Times r s) =
+    (if rexp_empty r \<or> rexp_empty s then Zero else 
+       Plus (sublist_rexp r) (Plus (sublist_rexp s) (Times (suffix_rexp r) (prefix_rexp s))))"
+| "sublist_rexp (Star r) =
+    (if rexp_empty r then One else 
+       Plus (sublist_rexp r) (Times (suffix_rexp r) (Times (Star r) (prefix_rexp r))))"
+
+theorem lang_sublist_rexp [simp]:
+  "lang (sublist_rexp r) = Sublists (lang r)"
+  by (induction r) (auto simp: rexp_empty_iff Sublists_star)
+
+
+text \<open>Fragment language of a regular expression:\<close>
+  
+primrec subseqs_rexp :: "'a rexp \<Rightarrow> 'a rexp" where
+  "subseqs_rexp Zero = Zero"
+| "subseqs_rexp One = One"
+| "subseqs_rexp (Atom x) = Plus (Atom x) One"
+| "subseqs_rexp (Plus r s) = Plus (subseqs_rexp r) (subseqs_rexp s)"
+| "subseqs_rexp (Times r s) = Times (subseqs_rexp r) (subseqs_rexp s)"
+| "subseqs_rexp (Star r) = Star (subseqs_rexp r)"
+
+lemma lang_subseqs_rexp [simp]: "lang (subseqs_rexp r) = Subseqs (lang r)"
+  by (induction r) auto
+
+
+text \<open>Subword language of a regular expression\<close>
+
 
 end

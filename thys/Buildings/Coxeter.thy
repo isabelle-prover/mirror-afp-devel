@@ -880,53 +880,53 @@ context PreCoxeterSystemWithDeletion
 begin
 
 lemma deletion_reduce:
-  "ss \<in> lists S \<Longrightarrow> \<exists>ts. ts \<in> ssublists ss \<inter> reduced_words_for S (sum_list ss)"
+  "ss \<in> lists S \<Longrightarrow> \<exists>ts. ts \<in> ssubseqs ss \<inter> reduced_words_for S (sum_list ss)"
 proof (cases "S_reduced ss")
   case True
   thus  "ss \<in> lists S \<Longrightarrow>
-          \<exists>ts. ts \<in> ssublists ss \<inter> reduced_words_for S (sum_list ss)"
-    by  (force simp add: ssublists_refl)
+          \<exists>ts. ts \<in> ssubseqs ss \<inter> reduced_words_for S (sum_list ss)"
+    by  (force simp add: ssubseqs_refl)
 next
   case False
   have "ss \<in> lists S \<Longrightarrow> \<not> S_reduced ss \<Longrightarrow>
-        \<exists>ts. ts \<in> ssublists ss \<inter> reduced_words_for S (sum_list ss)"
+        \<exists>ts. ts \<in> ssubseqs ss \<inter> reduced_words_for S (sum_list ss)"
   proof (induct ss rule: length_induct)
     fix xs::"'w list"
     assume xs:
       "\<forall>ys. length ys < length xs \<longrightarrow> ys \<in> lists S \<longrightarrow> \<not> S_reduced ys
-        \<longrightarrow> (\<exists>ts. ts \<in> ssublists ys \<inter> reduced_words_for S (sum_list ys))"
+        \<longrightarrow> (\<exists>ts. ts \<in> ssubseqs ys \<inter> reduced_words_for S (sum_list ys))"
       "xs \<in> lists S" "\<not> S_reduced xs"
     from xs(2,3) obtain as a bs b cs
       where asbscs: "xs = as@[a]@bs@[b]@cs" "sum_list xs = sum_list (as@bs@cs)"
       using deletion[of xs]
       by    fast
-    show "\<exists>ts. ts \<in> ssublists xs \<inter> reduced_words_for S (sum_list xs)"
+    show "\<exists>ts. ts \<in> ssubseqs xs \<inter> reduced_words_for S (sum_list xs)"
     proof (cases "S_reduced (as@bs@cs)")
       case True with asbscs xs(2) show ?thesis
-        using delete2_ssublists by fastforce
+        using delete2_ssubseqs by fastforce
     next
       case False
       moreover from asbscs(1) xs(2)
         have  "length (as@bs@cs) < length xs" "as@bs@cs \<in> lists S"
         by    auto
       ultimately obtain ts
-        where ts: "ts \<in> ssublists (as@bs@cs) \<inter>
+        where ts: "ts \<in> ssubseqs (as@bs@cs) \<inter>
                     reduced_words_for S (sum_list (as@bs@cs))"
         using xs(1,2) asbscs(1)
         by    fast
       with asbscs show ?thesis
-        using delete2_ssublists[of as bs cs a b] ssublists_subset by auto
+        using delete2_ssubseqs[of as bs cs a b] ssubseqs_subset by auto
     qed
   qed
   with False
     show  "ss \<in> lists S \<Longrightarrow>
-            \<exists>ts. ts \<in> ssublists ss \<inter> reduced_words_for S (sum_list ss)"
+            \<exists>ts. ts \<in> ssubseqs ss \<inter> reduced_words_for S (sum_list ss)"
     by    fast
 qed
 
 lemma deletion_reduce':
   "ss \<in> lists S \<Longrightarrow> \<exists>ts\<in>reduced_words_for S (sum_list ss). set ts \<subseteq> set ss"
-  using deletion_reduce[of ss] sublists_powset[of ss] by auto
+  using deletion_reduce[of ss] subseqs_powset[of ss] by auto
 
 end (* context PreCoxeterSystemWithDeletion *)
 
@@ -1286,10 +1286,10 @@ lemma special_subgroup_word_length:
 proof-
   from assms obtain ts where ts: "ts \<in> lists T" "w = sum_list ts"
     using special_subgroup_eq_sum_list by auto
-  with assms(1) obtain us where "us \<in> ssublists ts" "S_reduced_for w us"
+  with assms(1) obtain us where "us \<in> ssubseqs ts" "S_reduced_for w us"
     using deletion_reduce[of ts] by fast
   with assms(1) ts(1) show ?thesis
-    using     ssublists_lists[of ts] reduced_word_for_sum_list
+    using     ssubseqs_lists[of ts] reduced_word_for_sum_list
               is_arg_min_size_subprop[of length "word_for S w" us "word_for T w"]
     unfolding reduced_word_for_def word_length_def
     by        fast

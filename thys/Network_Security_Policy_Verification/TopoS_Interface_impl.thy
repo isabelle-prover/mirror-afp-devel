@@ -108,7 +108,7 @@ subsection {*Helper lemmata*}
   Exponential time!
   *}
   definition Generic_offending_list:: "('v list_graph \<Rightarrow> ('v \<Rightarrow> 'a) \<Rightarrow> bool )\<Rightarrow> 'v list_graph \<Rightarrow> ('v \<Rightarrow> 'a) \<Rightarrow> ('v \<times> 'v) list list" where
-    "Generic_offending_list sinvar G nP = [f \<leftarrow> (sublists (edgesL G)). 
+    "Generic_offending_list sinvar G nP = [f \<leftarrow> (subseqs (edgesL G)). 
     (\<not> sinvar G nP \<and> sinvar (FiniteListGraph.delete_edges G f) nP) \<and> 
       (\<forall>(e1, e2)\<in>set f. \<not> sinvar (add_edge e1 e2 (FiniteListGraph.delete_edges G f)) nP)]"
   
@@ -120,12 +120,12 @@ subsection {*Helper lemmata*}
     shows "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar_spec (list_graph_to_graph G) nP = 
       set`set( Generic_offending_list sinvar_impl G nP )"
   proof -
-    have "\<And> P G. set ` {x \<in> set (sublists (edgesL G)). P G (set x)} = {x \<in> set ` set (sublists (edgesL G)). P G (x)}"
+    have "\<And> P G. set ` {x \<in> set (subseqs (edgesL G)). P G (set x)} = {x \<in> set ` set (subseqs (edgesL G)). P G (x)}"
       by fastforce
-    hence subset_sublists_filter: "\<And> G P. {f. f \<subseteq> edges (list_graph_to_graph G) \<and> P G f} 
-    = set ` set [f\<leftarrow>sublists (edgesL G) . P G (set f)]"
+    hence subset_subseqs_filter: "\<And> G P. {f. f \<subseteq> edges (list_graph_to_graph G) \<and> P G f} 
+    = set ` set [f\<leftarrow>subseqs (edgesL G) . P G (set f)]"
       unfolding list_graph_to_graph_def
-      by (auto simp: sublists_powset)
+      by (auto simp: subseqs_powset)
 
     from valid delete_edges_wf have "\<forall>f. wf_list_graph(FiniteListGraph.delete_edges G f)" by fast
     with spec_impl[symmetric] FiniteListGraph.delete_edges_correct[of "G"] have impl_spec_delete:
@@ -152,7 +152,7 @@ subsection {*Helper lemmata*}
         apply(subst impl_spec_not)
         apply(subst impl_spec_allE)
         apply(subst list_graph)
-        apply(rule subset_sublists_filter)
+        apply(rule subset_subseqs_filter)
         done
   qed
 

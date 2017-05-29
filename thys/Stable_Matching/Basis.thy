@@ -32,10 +32,10 @@ lemma Above_Linear_singleton:
   shows "x \<in> Above r {x}"
 using assms unfolding Above_def order_on_defs by (force dest: refl_onD)
 
-lemma sublists_set:
-  assumes "y \<in> set (sublists xs)"
+lemma subseqs_set:
+  assumes "y \<in> set (subseqs xs)"
   shows "set y \<subseteq> set xs"
-using assms by (metis Pow_iff image_eqI sublists_powset)
+using assms by (metis Pow_iff image_eqI subseqs_powset)
 
 primrec map_of_default :: "'v \<Rightarrow> ('k \<times> 'v) list \<Rightarrow> 'k \<Rightarrow> 'v" where
   "map_of_default v0 [] k = v0"
@@ -535,26 +535,26 @@ next
 qed
 
 lemma linord_of_listP_rev:
-  assumes "z # zs \<in> set (sublists xs)"
+  assumes "z # zs \<in> set (subseqs xs)"
   assumes "y \<in> set zs"
   shows "linord_of_listP z y (rev xs)"
-using assms by (induct xs) (auto simp: Let_def linord_of_listP_append dest: sublists_set)
+using assms by (induct xs) (auto simp: Let_def linord_of_listP_append dest: subseqs_set)
 
-lemma linord_of_list_sorted_on_sublists:
-  assumes "ys \<in> set (sublists xs)"
+lemma linord_of_list_sorted_on_subseqs:
+  assumes "ys \<in> set (subseqs xs)"
   assumes "distinct xs"
   shows "sorted_on (linord_of_list (rev xs)) ys"
 using assms
 proof(induct ys)
   case (Cons y ys) then show ?case
     using linord_of_list_Linear_order[where xs="rev xs" and ys="Field (linord_of_list (rev xs))"]
-    by (force simp: Cons_in_sublistsD sorted_on_Cons linord_of_list_linord_of_listP linord_of_listP_rev dest: sublists_set)
+    by (force simp: Cons_in_subseqsD sorted_on_Cons linord_of_list_linord_of_listP linord_of_listP_rev dest: subseqs_set)
 qed simp
 
 lemma linord_of_list_sorted_on:
   assumes "distinct xs"
   shows "sorted_on (linord_of_list (rev xs)) xs"
-by (rule linord_of_list_sorted_on_sublists[OF sublists_refl \<open>distinct xs\<close>])
+by (rule linord_of_list_sorted_on_subseqs[OF subseqs_refl \<open>distinct xs\<close>])
 
 (*>*)
 

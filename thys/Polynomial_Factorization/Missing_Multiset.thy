@@ -37,7 +37,7 @@ proof -
   thus ?thesis by auto
 qed
 
-lemma multiset_of_sublists: "mset ` set (sublists xs) = { ps. ps \<subseteq># mset xs}"
+lemma multiset_of_subseqs: "mset ` set (subseqs xs) = { ps. ps \<subseteq># mset xs}"
 proof (induct xs)
   case (Cons x xs)
   show ?case (is "?l = ?r")
@@ -62,7 +62,7 @@ proof (induct ws arbitrary: vs)
   show ?case unfolding vs by (simp add: ac_simps)
 qed simp
 
-lemma sublists_sub_mset: "ws \<in> set (sublists vs) \<Longrightarrow> mset ws \<subseteq># mset vs" 
+lemma subseqs_sub_mset: "ws \<in> set (subseqs vs) \<Longrightarrow> mset ws \<subseteq># mset vs" 
 proof (induct vs arbitrary: ws)
   case (Cons v vs Ws)
   note mem = Cons(2)
@@ -73,12 +73,12 @@ proof (induct vs arbitrary: ws)
     show ?thesis
     proof (cases "v = w")
       case True
-      from mem Cons have "ws \<in> set (sublists vs)" by (auto simp: Let_def Cons_in_sublistsD[of _ ws vs])
+      from mem Cons have "ws \<in> set (subseqs vs)" by (auto simp: Let_def Cons_in_subseqsD[of _ ws vs])
       from IH[OF this]
       show ?thesis unfolding Cons True by simp
     next
       case False
-      with mem Cons have "Ws \<in> set (sublists vs)" by (auto simp: Let_def Cons_in_sublistsD[of _ ws vs])      
+      with mem Cons have "Ws \<in> set (subseqs vs)" by (auto simp: Let_def Cons_in_subseqsD[of _ ws vs])      
       note IH = mset_subset_eq_count[OF IH[OF this]]
       with IH[of v] show ?thesis by (intro mset_subset_eqI, auto, linarith) 
     qed 
