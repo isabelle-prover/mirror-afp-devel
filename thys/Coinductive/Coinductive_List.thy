@@ -1091,8 +1091,8 @@ where "lconcat xss = (case xss of LNil \<Rightarrow> LNil | LCons xs xss' \<Righ
 
 end
 
-definition lsublist :: "'a llist \<Rightarrow> nat set \<Rightarrow> 'a llist"
-where "lsublist xs A = lmap fst (lfilter (\<lambda>(x, y). y \<in> A) (lzip xs (iterates Suc 0)))"
+definition lnths :: "'a llist \<Rightarrow> nat set \<Rightarrow> 'a llist"
+where "lnths xs A = lmap fst (lfilter (\<lambda>(x, y). y \<in> A) (lzip xs (iterates Suc 0)))"
 
 definition (in monoid_add) lsum_list :: "'a llist \<Rightarrow> 'a"
 where "lsum_list xs = (if lfinite xs then sum_list (list_of xs) else 0)"
@@ -4713,17 +4713,17 @@ apply(auto simp add: ldistinct_lappend fun_ord_def split: llist.split)
 apply(blast dest!: subsetD[OF lprefix_lsetD] subsetD[OF lset_lconcat_subset])
 done
 
-subsection {* Sublist view of a lazy list: @{term "lsublist"} *}
+subsection {* Sublist view of a lazy list: @{term "lnths"} *}
 
-lemma lsublist_empty [simp]: "lsublist xs {} = LNil"
-by(auto simp add: lsublist_def split_def lfilter_empty_conv)
+lemma lnths_empty [simp]: "lnths xs {} = LNil"
+by(auto simp add: lnths_def split_def lfilter_empty_conv)
 
-lemma lsublist_LNil [simp]: "lsublist LNil A = LNil"
-by(simp add: lsublist_def)
+lemma lnths_LNil [simp]: "lnths LNil A = LNil"
+by(simp add: lnths_def)
 
-lemma lsublist_LCons:
-  "lsublist (LCons x xs) A = 
-  (if 0 \<in> A then LCons x (lsublist xs {n. Suc n \<in> A}) else lsublist xs {n. Suc n \<in> A})"
+lemma lnths_LCons:
+  "lnths (LCons x xs) A = 
+  (if 0 \<in> A then LCons x (lnths xs {n. Suc n \<in> A}) else lnths xs {n. Suc n \<in> A})"
 proof -
   let ?it = "iterates Suc"
   let ?f = "\<lambda>(x, y). (x, Suc y)"
@@ -4734,57 +4734,57 @@ proof -
            lmap fst (lfilter (\<lambda>(x, y). Suc y \<in> A) (lzip xs (?it n)))"
       by(simp add: lfilter_lmap o_def split_def llist.map_comp) }
   thus ?thesis
-    by(auto simp add: lsublist_def)(subst iterates, simp)+
+    by(auto simp add: lnths_def)(subst iterates, simp)+
 qed
 
-lemma lset_lsublist:
-  "lset (lsublist xs I) = {lnth xs i|i. enat i<llength xs \<and> i \<in> I}"
-apply(auto simp add: lsublist_def lset_lzip)
+lemma lset_lnths:
+  "lset (lnths xs I) = {lnth xs i|i. enat i<llength xs \<and> i \<in> I}"
+apply(auto simp add: lnths_def lset_lzip)
 apply(rule_tac x="(lnth xs i, i)" in image_eqI)
 apply auto
 done
 
-lemma lset_lsublist_subset: "lset (lsublist xs I) \<subseteq> lset xs"
-by(auto simp add: lset_lsublist in_lset_conv_lnth)
+lemma lset_lnths_subset: "lset (lnths xs I) \<subseteq> lset xs"
+by(auto simp add: lset_lnths in_lset_conv_lnth)
 
-lemma lsublist_singleton [simp]:
-  "lsublist (LCons x LNil) A = (if 0 : A then LCons x LNil else LNil)"
-by (simp add: lsublist_LCons)
+lemma lnths_singleton [simp]:
+  "lnths (LCons x LNil) A = (if 0 : A then LCons x LNil else LNil)"
+by (simp add: lnths_LCons)
 
-lemma lsublist_upt_eq_ltake [simp]:
-  "lsublist xs {..<n} = ltake (enat n) xs"
+lemma lnths_upt_eq_ltake [simp]:
+  "lnths xs {..<n} = ltake (enat n) xs"
 apply(rule sym)
 proof(induct n arbitrary: xs)
   case 0 thus ?case by(simp add: zero_enat_def[symmetric])
 next
   case (Suc n)
   thus ?case 
-    by(cases xs)(simp_all add: eSuc_enat[symmetric] lsublist_LCons lessThan_def)
+    by(cases xs)(simp_all add: eSuc_enat[symmetric] lnths_LCons lessThan_def)
 qed
 
-lemma lsublist_llist_of [simp]:
-  "lsublist (llist_of xs) A = llist_of (sublist xs A)"
-by(induct xs arbitrary: A)(simp_all add: lsublist_LCons sublist_Cons)
+lemma lnths_llist_of [simp]:
+  "lnths (llist_of xs) A = llist_of (nths xs A)"
+by(induct xs arbitrary: A)(simp_all add: lnths_LCons nths_Cons)
 
-lemma llength_lsublist_ile: "llength (lsublist xs A) \<le> llength xs"
+lemma llength_lnths_ile: "llength (lnths xs A) \<le> llength xs"
 proof -
   have "llength (lfilter (\<lambda>(x, y). y \<in> A) (lzip xs (iterates Suc 0))) \<le>
         llength (lzip xs (iterates Suc 0))"
     by(rule llength_lfilter_ile)
-  thus ?thesis by(simp add: lsublist_def)
+  thus ?thesis by(simp add: lnths_def)
 qed
 
-lemma lsublist_lmap [simp]:
-  "lsublist (lmap f xs) A = lmap f (lsublist xs A)"
-by(simp add: lsublist_def lzip_lmap1 llist.map_comp lfilter_lmap o_def split_def)
+lemma lnths_lmap [simp]:
+  "lnths (lmap f xs) A = lmap f (lnths xs A)"
+by(simp add: lnths_def lzip_lmap1 llist.map_comp lfilter_lmap o_def split_def)
 
-lemma lfilter_conv_lsublist: 
-  "lfilter P xs = lsublist xs {n. enat n < llength xs \<and> P (lnth xs n)}"
+lemma lfilter_conv_lnths: 
+  "lfilter P xs = lnths xs {n. enat n < llength xs \<and> P (lnth xs n)}"
 proof -
-  have "lsublist xs {n. enat n < llength xs \<and> P (lnth xs n)} =
+  have "lnths xs {n. enat n < llength xs \<and> P (lnth xs n)} =
         lmap fst (lfilter (\<lambda>(x, y). enat y < llength xs \<and> P (lnth xs y)) 
                           (lzip xs (iterates Suc 0)))"
-    by(simp add: lsublist_def)
+    by(simp add: lnths_def)
   also have "\<forall>(x, y)\<in>lset (lzip xs (iterates Suc 0)). enat y < llength xs \<and> x = lnth xs y"
     by(auto simp add: lset_lzip)
   hence "lfilter (\<lambda>(x, y). enat y < llength xs \<and> P (lnth xs y)) (lzip xs (iterates Suc 0)) =
@@ -4814,16 +4814,16 @@ next
   finally show ?case .
 qed
 
-lemma lsublist_lappend_lfinite: 
+lemma lnths_lappend_lfinite: 
   assumes len: "llength xs = enat k"
-  shows "lsublist (lappend xs ys) A = 
-         lappend (lsublist xs A) (lsublist ys {n. n + k \<in> A})"
+  shows "lnths (lappend xs ys) A = 
+         lappend (lnths xs A) (lnths ys {n. n + k \<in> A})"
 proof -
   let ?it = "iterates Suc"
   from assms have fin: "lfinite xs" by(rule llength_eq_enat_lfiniteD)
-  have "lsublist (lappend xs ys) A = 
+  have "lnths (lappend xs ys) A = 
     lmap fst (lfilter (\<lambda>(x, y). y \<in> A) (lzip (lappend xs ys) (?it 0)))"
-    by(simp add: lsublist_def)
+    by(simp add: lnths_def)
   also have "?it 0 = lappend (ltake (enat k) (?it 0)) (ldrop (enat k) (?it 0))"
     by(simp only: lappend_ltake_ldrop)
   also note lzip_lappend
@@ -4831,7 +4831,7 @@ proof -
   also note lmap_lappend_distrib
   also have "lzip xs (ltake (enat k) (?it 0)) = lzip xs (?it 0)"
     using len by(subst (1 2) lzip_conv_lzip_ltake_min_llength) simp
-  also note lsublist_def[symmetric]
+  also note lnths_def[symmetric]
   also have "ldrop (enat k) (?it 0) = ?it k"
     by(simp add: ldrop_iterates)
   also { fix n m
@@ -4845,13 +4845,13 @@ proof -
     by(simp add: o_def split_def)
   also have "(\<lambda>(x, y). y \<in> A) \<circ> (\<lambda>(x, y). (x, y + k)) = (\<lambda>(x, y). y \<in> {n. n + k \<in> A})"
     by(simp add: fun_eq_iff)
-  also note lsublist_def[symmetric]
+  also note lnths_def[symmetric]
   finally show ?thesis using len by simp
 qed
 
-lemma lsublist_split:
-  "lsublist xs A = 
-   lappend (lsublist (ltake (enat n) xs) A) (lsublist (ldropn n xs) {m. n + m \<in> A})"
+lemma lnths_split:
+  "lnths xs A = 
+   lappend (lnths (ltake (enat n) xs) A) (lnths (ldropn n xs) {m. n + m \<in> A})"
 proof(cases "enat n \<le> llength xs")
   case False thus ?thesis by(auto simp add: ltake_all ldropn_all)
 next
@@ -4859,35 +4859,35 @@ next
   have "xs = lappend (ltake (enat n) xs) (ldrop (enat n) xs)"
     by(simp only: lappend_ltake_ldrop)
   hence "xs = lappend (ltake (enat n) xs) (ldropn n xs)" by simp
-  hence "lsublist xs A = lsublist (lappend (ltake (enat n) xs) (ldropn n xs)) A"
+  hence "lnths xs A = lnths (lappend (ltake (enat n) xs) (ldropn n xs)) A"
     by(simp)
-  also note lsublist_lappend_lfinite[where k=n]
+  also note lnths_lappend_lfinite[where k=n]
   finally show ?thesis using True by(simp add: min_def ac_simps)
 qed
 
-lemma lsublist_cong:
+lemma lnths_cong:
   assumes "xs = ys" and A: "\<And>n. enat n < llength ys \<Longrightarrow> n \<in> A \<longleftrightarrow> n \<in> B"
-  shows "lsublist xs A = lsublist ys B"
+  shows "lnths xs A = lnths ys B"
 proof -
   have "lfilter (\<lambda>(x, y). y \<in> A) (lzip ys (iterates Suc 0)) = 
         lfilter (\<lambda>(x, y). y \<in> B) (lzip ys (iterates Suc 0))"
     by(rule lfilter_cong[OF refl])(auto simp add: lset_lzip A)
-  thus ?thesis unfolding `xs = ys` lsublist_def by simp
+  thus ?thesis unfolding `xs = ys` lnths_def by simp
 qed
 
-lemma lsublist_insert:
+lemma lnths_insert:
   assumes n: "enat n < llength xs"
-  shows "lsublist xs (insert n A) = 
-         lappend (lsublist (ltake (enat n) xs) A) (LCons (lnth xs n) 
-                 (lsublist (ldropn (Suc n) xs) {m. Suc (n + m) \<in> A}))"
+  shows "lnths xs (insert n A) = 
+         lappend (lnths (ltake (enat n) xs) A) (LCons (lnth xs n) 
+                 (lnths (ldropn (Suc n) xs) {m. Suc (n + m) \<in> A}))"
 proof -
-  have "lsublist xs (insert n A) = 
-        lappend (lsublist (ltake (enat n) xs) (insert n A)) 
-                (lsublist (ldropn n xs) {m. n + m \<in> (insert n A)})"
-    by(rule lsublist_split)
-  also have "lsublist (ltake (enat n) xs) (insert n A) = 
-            lsublist (ltake (enat n) xs) A"
-    by(rule lsublist_cong[OF refl]) simp
+  have "lnths xs (insert n A) = 
+        lappend (lnths (ltake (enat n) xs) (insert n A)) 
+                (lnths (ldropn n xs) {m. n + m \<in> (insert n A)})"
+    by(rule lnths_split)
+  also have "lnths (ltake (enat n) xs) (insert n A) = 
+            lnths (ltake (enat n) xs) A"
+    by(rule lnths_cong[OF refl]) simp
   also { from n obtain X XS where "ldropn n xs = LCons X XS"
       by(cases "ldropn n xs")(auto simp add: ldropn_eq_LNil)
     moreover have "lnth (ldropn n xs) 0 = lnth xs n"
@@ -4895,19 +4895,19 @@ proof -
     moreover have "ltl (ldropn n xs) = ldropn (Suc n) xs"
       by(cases xs)(simp_all add: ltl_ldropn)
     ultimately have "ldropn n xs = LCons (lnth xs n) (ldropn (Suc n) xs)" by simp
-    hence "lsublist (ldropn n xs) {m. n + m \<in> insert n A} = 
-           LCons (lnth xs n) (lsublist (ldropn (Suc n) xs) {m. Suc (n + m) \<in> A})"
-      by(simp add: lsublist_LCons) }
+    hence "lnths (ldropn n xs) {m. n + m \<in> insert n A} = 
+           LCons (lnth xs n) (lnths (ldropn (Suc n) xs) {m. Suc (n + m) \<in> A})"
+      by(simp add: lnths_LCons) }
   finally show ?thesis .
 qed
 
-lemma lfinite_lsublist [simp]:
-  "lfinite (lsublist xs A) \<longleftrightarrow> lfinite xs \<or> finite A"
+lemma lfinite_lnths [simp]:
+  "lfinite (lnths xs A) \<longleftrightarrow> lfinite xs \<or> finite A"
 proof
-  assume "lfinite (lsublist xs A)"
+  assume "lfinite (lnths xs A)"
   hence "lfinite xs \<or> 
          finite {n. enat n < llength xs \<and> (\<lambda>(x, y). y \<in> A) (lnth (lzip xs (iterates Suc 0)) n)}"
-    by(simp add: lsublist_def lfinite_lfilter)
+    by(simp add: lnths_def lfinite_lfilter)
   also have "{n. enat n < llength xs \<and> (\<lambda>(x, y). y \<in> A) (lnth (lzip xs (iterates Suc 0)) n)} =
             {n. enat n < llength xs \<and> n \<in> A}" by(auto simp add: lnth_lzip)
   finally show "lfinite xs \<or> finite A"
@@ -4917,8 +4917,8 @@ next
   moreover
   have "{n. enat n < llength xs \<and> (\<lambda>(x, y). y \<in> A) (lnth (lzip xs (iterates Suc 0)) n)} =
         {n. enat n < llength xs \<and> n \<in> A}" by(auto simp add: lnth_lzip)
-  ultimately show "lfinite (lsublist xs A)"
-    by(auto simp add: lsublist_def lfinite_lfilter)
+  ultimately show "lfinite (lnths xs A)"
+    by(auto simp add: lnths_def lfinite_lfilter)
 qed
 
 subsection {* @{term "llist_sum"} *}
@@ -5234,9 +5234,9 @@ lemma lconcat_transfer [transfer_rule]:
   "(llist_all2 (llist_all2 A) ===> llist_all2 A) lconcat lconcat"
 by(auto intro: llist_all2_lconcatI)
 
-lemma lsublist_transfer [transfer_rule]:
-  "(llist_all2 A ===> op = ===> llist_all2 A) lsublist lsublist"
-unfolding lsublist_def[abs_def] by transfer_prover
+lemma lnths_transfer [transfer_rule]:
+  "(llist_all2 A ===> op = ===> llist_all2 A) lnths lnths"
+unfolding lnths_def[abs_def] by transfer_prover
 
 lemma llist_all_transfer [transfer_rule]:
   "((A ===> op =) ===> llist_all2 A ===> op =) llist_all llist_all"
