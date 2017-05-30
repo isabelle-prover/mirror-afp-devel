@@ -1366,14 +1366,16 @@ proof (rule ccontr)
     using trail_bound[OF `finite E`] unfolding exist_path_length_def 
     by auto
   hence bound:"\<forall>y. exist_path_length n y \<longrightarrow> y \<le> card E" by auto
-  ultimately have "exist_path_length n (GREATEST x. exist_path_length n x)" using GreatestI by auto
+  ultimately have "exist_path_length n (GREATEST x. exist_path_length n x)"
+    using GreatestI_nat by auto
   then obtain v max_path where 
     max_path:"is_trail v max_path n" "length max_path=(GREATEST x. exist_path_length n x)"
     by (metis exist_path_length_def)
   hence "\<exists> v' e. is_trail v' (e#max_path) n" using induct by metis
   hence "exist_path_length n (length max_path +1)" 
     by (metis One_nat_def exist_path_length_def list.size(4))
-  hence "length max_path + 1 \<le> (GREATEST x. exist_path_length n x)" by (metis Greatest_le bound)
+  hence "length max_path + 1 \<le> (GREATEST x. exist_path_length n x)"
+   by (metis Greatest_le_nat bound)
   hence "length max_path + 1 \<le> length max_path" using max_path by auto
   thus False by auto
 qed
