@@ -1365,7 +1365,7 @@ proof (rule ccontr)
   moreover have "\<forall>y. exist_path_length n y \<longrightarrow> y \<le> card E" 
     using trail_bound[OF `finite E`] unfolding exist_path_length_def 
     by auto
-  hence bound:"\<forall>y. exist_path_length n y \<longrightarrow> y < card E + 1" by auto
+  hence bound:"\<forall>y. exist_path_length n y \<longrightarrow> y \<le> card E" by auto
   ultimately have "exist_path_length n (GREATEST x. exist_path_length n x)" using GreatestI by auto
   then obtain v max_path where 
     max_path:"is_trail v max_path n" "length max_path=(GREATEST x. exist_path_length n x)"
