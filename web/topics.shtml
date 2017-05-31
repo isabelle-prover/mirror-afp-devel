@@ -202,6 +202,7 @@
                 </div>
       <h3>Functional Programming</h3>
     <div class="list">
+          <a href="entries/Optics.shtml">Optics</a> &nbsp;
           <a href="entries/CryptHOL.shtml">CryptHOL</a> &nbsp;
           <a href="entries/Probabilistic_While.shtml">Probabilistic_While</a> &nbsp;
           <a href="entries/Monad_Normalisation.shtml">Monad_Normalisation</a> &nbsp;
@@ -404,6 +405,7 @@
     </div>
         <h3>Algebra</h3>
     <div class="list">
+          <a href="entries/Optics.shtml">Optics</a> &nbsp;
           <a href="entries/Subresultants.shtml">Subresultants</a> &nbsp;
           <a href="entries/Buildings.shtml">Buildings</a> &nbsp;
           <a href="entries/Algebraic_VCs.shtml">Algebraic_VCs</a> &nbsp;
