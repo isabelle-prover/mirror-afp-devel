@@ -197,7 +197,6 @@ named_theorems alpha_splits
 
 text \<open>The alphabet command supports syntax illustrated in the following comments.\<close>
   
-(*
 alphabet mylens =
   x :: nat
   y :: string
@@ -213,7 +212,6 @@ alphabet mylens_2 = mylens +
 alphabet mylens_3 = mylens_2 +
   n :: real
   h :: nat
-*)
 
 subsection \<open>Lens Interpretation\<close>
 
