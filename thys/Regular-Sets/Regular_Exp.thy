@@ -22,6 +22,8 @@ primrec lang :: "'a rexp => 'a lang" where
 "lang (Times r s) = conc (lang r) (lang s)" |
 "lang (Star r) = star(lang r)"
 
+abbreviation (input) regular_lang where "regular_lang A \<equiv> (\<exists>r. lang r = A)"
+
 primrec nullable :: "'a rexp \<Rightarrow> bool" where
 "nullable Zero = False" |
 "nullable One = True" |
