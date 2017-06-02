@@ -611,19 +611,19 @@ fun shrink (aref, sz) = case aref of
 structure IsabelleMapping = struct
 type 'a ArrayType = 'a array;
 
-fun new_array (a:'a) (n:int) = array (n, a);
+fun new_array (a:'a) (n:IntInf.int) = array (IntInf.toInt n, a);
 
-fun array_length (a:'a ArrayType) = length a;
+fun array_length (a:'a ArrayType) = IntInf.fromInt (length a);
 
-fun array_get (a:'a ArrayType) (i:int) = sub (a, i);
+fun array_get (a:'a ArrayType) (i:IntInf.int) = sub (a, IntInf.toInt i);
 
-fun array_set (a:'a ArrayType) (i:int) (e:'a) = update (a, i, e);
+fun array_set (a:'a ArrayType) (i:IntInf.int) (e:'a) = update (a, IntInf.toInt i, e);
 
 fun array_of_list (xs:'a list) = fromList xs;
 
-fun array_grow (a:'a ArrayType) (i:int) (x:'a) = grow (a, i, x);
+fun array_grow (a:'a ArrayType) (i:IntInf.int) (x:'a) = grow (a, IntInf.toInt i, x);
 
-fun array_shrink (a:'a ArrayType) (sz:int) = shrink (a,sz);
+fun array_shrink (a:'a ArrayType) (sz:IntInf.int) = shrink (a,IntInf.toInt sz);
 
 end;
 
@@ -714,25 +714,25 @@ structure FArray = struct
 structure IsabelleMapping = struct
 type 'a ArrayType = 'a array;
 
-fun new_array (a:'a) (n:int) = array (n, a);
+fun new_array (a:'a) (n:IntInf.int) = array (IntInf.toInt n, a);
 
-fun array_length (a:'a ArrayType) = length a;
+fun array_length (a:'a ArrayType) = IntInf.fromInt (length a);
 
-fun array_get (a:'a ArrayType) (i:int) = sub (a, i);
+fun array_get (a:'a ArrayType) (i:IntInf.int) = sub (a, IntInf.toInt i);
 
-fun array_set (a:'a ArrayType) (i:int) (e:'a) = update (a, i, e);
+fun array_set (a:'a ArrayType) (i:IntInf.int) (e:'a) = update (a, IntInf.toInt i, e);
 
 fun array_of_list (xs:'a list) = fromList xs;
 
-fun array_grow (a:'a ArrayType) (i:int) (x:'a) = grow (a, i, x);
+fun array_grow (a:'a ArrayType) (i:IntInf.int) (x:'a) = grow (a, IntInf.toInt i, x);
 
-fun array_shrink (a:'a ArrayType) (sz:int) = shrink (a,sz);
+fun array_shrink (a:'a ArrayType) (sz:IntInf.int) = shrink (a,IntInf.toInt sz);
 
-fun array_get_oo (d:'a) (a:'a ArrayType) (i:int) =
-  sub (a,i) handle Subscript => d
+fun array_get_oo (d:'a) (a:'a ArrayType) (i:IntInf.int) =
+  sub (a,IntInf.toInt i) handle Subscript => d
 
-fun array_set_oo (d:(unit->'a ArrayType)) (a:'a ArrayType) (i:int) (e:'a) =
-  update (a, i, e) handle Subscript => d ()
+fun array_set_oo (d:(unit->'a ArrayType)) (a:'a ArrayType) (i:IntInf.int) (e:'a) =
+  update (a, IntInf.toInt i, e) handle Subscript => d ()
 
 end;
 end;
