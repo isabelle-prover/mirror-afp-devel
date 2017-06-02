@@ -1,0 +1,686 @@
+%
+\begin{isabellebody}%
+\setisabellecontext{Augmenting{\isacharunderscore}Flow}%
+%
+\isamarkupsection{Augmenting Flows%
+}
+\isamarkuptrue%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{theory}\isamarkupfalse%
+\ Augmenting{\isacharunderscore}Flow\isanewline
+\isakeyword{imports}\ Residual{\isacharunderscore}Graph\isanewline
+\isakeyword{begin}%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\begin{isamarkuptext}%
+In this theory, we define the concept of an augmenting flow,
+  augmentation with a flow, and show that augmentation of a flow 
+  with an augmenting flow yields a valid flow again.%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\begin{isamarkuptext}%
+We assume that there is a network with a flow \isa{f} on it%
+\end{isamarkuptext}\isamarkuptrue%
+\isacommand{context}\isamarkupfalse%
+\ NFlow\isanewline
+\isakeyword{begin}%
+\isamarkupsubsection{Augmentation of a Flow%
+}
+\isamarkuptrue%
+%
+\begin{isamarkuptext}%
+The flow can be augmented by another flow, by adding the flows 
+  of edges parallel to edges in the network, and subtracting the edges 
+  reverse to edges in the network.%
+\end{isamarkuptext}\isamarkuptrue%
+\isacommand{definition}\isamarkupfalse%
+\ augment\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}{\isacharprime}capacity\ flow\ {\isasymRightarrow}\ {\isacharprime}capacity\ flow{\isachardoublequoteclose}\isanewline
+\isakeyword{where}\ {\isachardoublequoteopen}augment\ f{\isacharprime}\ {\isasymequiv}\ {\isasymlambda}{\isacharparenleft}u{\isacharcomma}\ v{\isacharparenright}{\isachardot}\isanewline
+\ \ if\ {\isacharparenleft}u{\isacharcomma}\ v{\isacharparenright}\ {\isasymin}\ E\ then\isanewline
+\ \ \ \ f\ {\isacharparenleft}u{\isacharcomma}\ v{\isacharparenright}\ {\isacharplus}\ f{\isacharprime}\ {\isacharparenleft}u{\isacharcomma}\ v{\isacharparenright}\ {\isacharminus}\ f{\isacharprime}\ {\isacharparenleft}v{\isacharcomma}\ u{\isacharparenright}\isanewline
+\ \ else\isanewline
+\ \ \ \ {\isadigit{0}}{\isachardoublequoteclose}%
+\begin{isamarkuptext}%
+We define a syntax similar to Cormen et el.:%
+\end{isamarkuptext}\isamarkuptrue%
+\isacommand{abbreviation}\isamarkupfalse%
+\ {\isacharparenleft}input{\isacharparenright}\ augment{\isacharunderscore}syntax\ {\isacharparenleft}\isakeyword{infix}\ {\isachardoublequoteopen}{\isasymup}{\isachardoublequoteclose}\ {\isadigit{5}}{\isadigit{5}}{\isacharparenright}\ \isanewline
+\ \ \isakeyword{where}\ {\isachardoublequoteopen}{\isasymAnd}f\ f{\isacharprime}{\isachardot}\ f{\isasymup}f{\isacharprime}\ {\isasymequiv}\ NFlow{\isachardot}augment\ c\ f\ f{\isacharprime}{\isachardoublequoteclose}%
+\begin{isamarkuptext}%
+such that we can write \isa{{\isachardoublequote}f{\isasymup}f{\isacharprime}{\isachardoublequote}} for the flow \isa{f} 
+  augmented by \isa{f{\isacharprime}}.%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\isamarkupsubsection{Augmentation yields Valid Flow%
+}
+\isamarkuptrue%
+%
+\begin{isamarkuptext}%
+We show that, if we augment the flow with a valid flow of
+  the residual graph, the augmented flow is a valid flow again, i.e. 
+  it satisfies the capacity and conservation constraints:%
+\end{isamarkuptext}\isamarkuptrue%
+\isacommand{context}\isamarkupfalse%
+\ \isanewline
+\ \ %
+\isamarkupcmt{Let the \emph{residual flow} \isa{f{\isacharprime}} be a flow in the residual graph%
+}
+\isanewline
+\ \ \isakeyword{fixes}\ f{\isacharprime}\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}{\isacharprime}capacity\ flow{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{assumes}\ f{\isacharprime}{\isacharunderscore}flow{\isacharcolon}\ {\isachardoublequoteopen}Flow\ cf\ s\ t\ f{\isacharprime}{\isachardoublequoteclose}\isanewline
+\isakeyword{begin}\ \ \isanewline
+\isanewline
+\isacommand{interpretation}\isamarkupfalse%
+\ f{\isacharprime}{\isacharcolon}\ Flow\ cf\ s\ t\ f{\isacharprime}%
+\isadelimproof
+\ %
+\endisadelimproof
+%
+\isatagproof
+\isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}rule\ f{\isacharprime}{\isacharunderscore}flow{\isacharparenright}%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isamarkupsubsubsection{Capacity Constraint%
+}
+\isamarkuptrue%
+%
+\begin{isamarkuptext}%
+First, we have to show that the new flow satisfies the capacity constraint:%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\DefineSnippet{augment_flow_presv_cap}{
+\isacommand{lemma}\isamarkupfalse%
+\ augment{\isacharunderscore}flow{\isacharunderscore}presv{\isacharunderscore}cap{\isacharcolon}\ \isanewline
+\ \ \isakeyword{shows}\ {\isachardoublequoteopen}{\isadigit{0}}\ {\isasymle}\ {\isacharparenleft}f{\isasymup}f{\isacharprime}{\isacharparenright}{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}\ {\isasymand}\ {\isacharparenleft}f{\isasymup}f{\isacharprime}{\isacharparenright}{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}\ {\isasymle}\ c{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isatagproof
+\isacommand{proof}\isamarkupfalse%
+\ {\isacharparenleft}cases\ {\isachardoublequoteopen}{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isasymin}E{\isachardoublequoteclose}{\isacharsemicolon}\ rule\ conjI{\isacharparenright}\ \isanewline
+\ \ \isacommand{assume}\isamarkupfalse%
+\ {\isacharbrackleft}simp{\isacharbrackright}{\isacharcolon}\ {\isachardoublequoteopen}{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isasymin}E{\isachardoublequoteclose}\isanewline
+\ \ \isacommand{hence}\isamarkupfalse%
+\ {\isachardoublequoteopen}f{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}\ {\isacharequal}\ cf{\isacharparenleft}v{\isacharcomma}u{\isacharparenright}{\isachardoublequoteclose}\ \isanewline
+\ \ \ \ \isacommand{using}\isamarkupfalse%
+\ no{\isacharunderscore}parallel{\isacharunderscore}edge\ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}auto\ simp{\isacharcolon}\ residualGraph{\isacharunderscore}def{\isacharparenright}\isanewline
+\ \ \isacommand{also}\isamarkupfalse%
+\ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}cf{\isacharparenleft}v{\isacharcomma}u{\isacharparenright}\ {\isasymge}\ f{\isacharprime}{\isacharparenleft}v{\isacharcomma}u{\isacharparenright}{\isachardoublequoteclose}\ \isacommand{using}\isamarkupfalse%
+\ f{\isacharprime}{\isachardot}capacity{\isacharunderscore}const\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \isacommand{finally}\isamarkupfalse%
+\ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}f{\isacharprime}{\isacharparenleft}v{\isacharcomma}u{\isacharparenright}\ {\isasymle}\ f{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isachardoublequoteclose}\ \isacommand{{\isachardot}}\isamarkupfalse%
+\isanewline
+%
+\isanewline
+%
+\ \
+\isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isacharparenleft}f{\isasymup}f{\isacharprime}{\isacharparenright}{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}\ {\isacharequal}\ f{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}\ {\isacharplus}\ f{\isacharprime}{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}\ {\isacharminus}\ f{\isacharprime}{\isacharparenleft}v{\isacharcomma}u{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}auto\ simp{\isacharcolon}\ augment{\isacharunderscore}def{\isacharparenright}\isanewline
+\ \ \isacommand{also}\isamarkupfalse%
+\ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\ {\isasymge}\ f{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}\ {\isacharplus}\ f{\isacharprime}{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}\ {\isacharminus}\ f{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{using}\isamarkupfalse%
+\ {\isacartoucheopen}f{\isacharprime}{\isacharparenleft}v{\isacharcomma}u{\isacharparenright}\ {\isasymle}\ f{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isacartoucheclose}\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \isacommand{also}\isamarkupfalse%
+\ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\ {\isacharequal}\ f{\isacharprime}{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isachardoublequoteclose}\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \isacommand{also}\isamarkupfalse%
+\ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\ {\isasymge}\ {\isadigit{0}}{\isachardoublequoteclose}\ \isacommand{using}\isamarkupfalse%
+\ f{\isacharprime}{\isachardot}capacity{\isacharunderscore}const\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \isacommand{finally}\isamarkupfalse%
+\ \isacommand{show}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isacharparenleft}f{\isasymup}f{\isacharprime}{\isacharparenright}{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}\ {\isasymge}\ {\isadigit{0}}{\isachardoublequoteclose}\ \isacommand{{\isachardot}}\isamarkupfalse%
+\isanewline
+\ \ \ \ \ \ \isanewline
+\ \ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isacharparenleft}f{\isasymup}f{\isacharprime}{\isacharparenright}{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}\ {\isacharequal}\ f{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}\ {\isacharplus}\ f{\isacharprime}{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}\ {\isacharminus}\ f{\isacharprime}{\isacharparenleft}v{\isacharcomma}u{\isacharparenright}{\isachardoublequoteclose}\ \isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}auto\ simp{\isacharcolon}\ augment{\isacharunderscore}def{\isacharparenright}\isanewline
+\ \ \isacommand{also}\isamarkupfalse%
+\ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\ {\isasymle}\ f{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}\ {\isacharplus}\ f{\isacharprime}{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isachardoublequoteclose}\ \isacommand{using}\isamarkupfalse%
+\ f{\isacharprime}{\isachardot}capacity{\isacharunderscore}const\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \isacommand{also}\isamarkupfalse%
+\ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\ {\isasymle}\ f{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}\ {\isacharplus}\ cf{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isachardoublequoteclose}\ \isacommand{using}\isamarkupfalse%
+\ f{\isacharprime}{\isachardot}capacity{\isacharunderscore}const\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \isacommand{also}\isamarkupfalse%
+\ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\ {\isacharequal}\ f{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}\ {\isacharplus}\ c{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}\ {\isacharminus}\ f{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isachardoublequoteclose}\ \isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}auto\ simp{\isacharcolon}\ residualGraph{\isacharunderscore}def{\isacharparenright}\isanewline
+\ \ \isacommand{also}\isamarkupfalse%
+\ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\ {\isacharequal}\ c{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isachardoublequoteclose}\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \isacommand{finally}\isamarkupfalse%
+\ \isacommand{show}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isacharparenleft}f{\isasymup}f{\isacharprime}{\isacharparenright}{\isacharparenleft}u{\isacharcomma}\ v{\isacharparenright}\ {\isasymle}\ c{\isacharparenleft}u{\isacharcomma}\ v{\isacharparenright}{\isachardoublequoteclose}\ \isacommand{{\isachardot}}\isamarkupfalse%
+\isanewline
+\isacommand{qed}\isamarkupfalse%
+\ {\isacharparenleft}auto\ simp{\isacharcolon}\ augment{\isacharunderscore}def\ cap{\isacharunderscore}positive{\isacharparenright}%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+}%EndSnippet
+%
+\isamarkupsubsubsection{Conservation Constraint%
+}
+\isamarkuptrue%
+%
+\begin{isamarkuptext}%
+In order to show the conservation constraint, we need some 
+  auxiliary lemmas first.%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\begin{isamarkuptext}%
+As there are no parallel edges in the network, and all edges 
+  in the residual graph are either parallel or reverse to a network edge,
+  we can split summations of the residual flow over outgoing/incoming edges in the 
+  residual graph to summations over outgoing/incoming edges in the network.
+
+  Note that the term \isa{E\ {\isacharbackquote}{\isacharbackquote}\ {\isacharbraceleft}u{\isacharbraceright}} characterizes the successor nodes of \isa{u},
+  and \isa{E{\isasyminverse}\ {\isacharbackquote}{\isacharbackquote}\ {\isacharbraceleft}u{\isacharbraceright}} characterizes the predecessor nodes of \isa{u}.%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeyword{private}\ \isacommand{lemma}\isamarkupfalse%
+\ split{\isacharunderscore}rflow{\isacharunderscore}outgoing{\isacharcolon}\ \isanewline
+\ \ {\isachardoublequoteopen}{\isacharparenleft}{\isasymSum}v{\isasymin}cf{\isachardot}E{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}u{\isacharbraceright}{\isachardot}\ f{\isacharprime}\ {\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isacharparenright}\ {\isacharequal}\ {\isacharparenleft}{\isasymSum}v{\isasymin}E{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}u{\isacharbraceright}{\isachardot}\ f{\isacharprime}{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isacharparenright}\ {\isacharplus}\ {\isacharparenleft}{\isasymSum}v{\isasymin}E{\isasyminverse}{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}u{\isacharbraceright}{\isachardot}\ f{\isacharprime}{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ {\isacharparenleft}\isakeyword{is}\ {\isachardoublequoteopen}{\isacharquery}LHS\ {\isacharequal}\ {\isacharquery}RHS{\isachardoublequoteclose}{\isacharparenright}\isanewline
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isatagproof
+\isacommand{proof}\isamarkupfalse%
+\ {\isacharminus}\isanewline
+\ \ \isacommand{from}\isamarkupfalse%
+\ no{\isacharunderscore}parallel{\isacharunderscore}edge\ \isacommand{have}\isamarkupfalse%
+\ DJ{\isacharcolon}\ {\isachardoublequoteopen}E{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}u{\isacharbraceright}\ {\isasyminter}\ E{\isasyminverse}{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}u{\isacharbraceright}\ {\isacharequal}\ {\isacharbraceleft}{\isacharbraceright}{\isachardoublequoteclose}\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\isanewline
+\ \ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isacharquery}LHS\ {\isacharequal}\ {\isacharparenleft}{\isasymSum}v{\isasymin}E{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}u{\isacharbraceright}\ {\isasymunion}\ E{\isasyminverse}{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}u{\isacharbraceright}{\isachardot}\ f{\isacharprime}\ {\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{apply}\isamarkupfalse%
+\ {\isacharparenleft}rule\ sum{\isachardot}mono{\isacharunderscore}neutral{\isacharunderscore}left{\isacharparenright}\isanewline
+\ \ \ \ \isacommand{using}\isamarkupfalse%
+\ cfE{\isacharunderscore}ss{\isacharunderscore}invE\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}auto\ intro{\isacharcolon}\ finite{\isacharunderscore}Image{\isacharparenright}\isanewline
+\ \ \isacommand{also}\isamarkupfalse%
+\ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\ {\isacharequal}\ {\isacharquery}RHS{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{apply}\isamarkupfalse%
+\ {\isacharparenleft}subst\ sum{\isachardot}union{\isacharunderscore}disjoint{\isacharbrackleft}OF\ {\isacharunderscore}\ {\isacharunderscore}\ DJ{\isacharbrackright}{\isacharparenright}\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}auto\ intro{\isacharcolon}\ finite{\isacharunderscore}Image{\isacharparenright}\isanewline
+\ \ \isacommand{finally}\isamarkupfalse%
+\ \isacommand{show}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isacharquery}LHS\ {\isacharequal}\ {\isacharquery}RHS{\isachardoublequoteclose}\ \isacommand{{\isachardot}}\isamarkupfalse%
+\isanewline
+\isacommand{qed}\isamarkupfalse%
+\ \ \isanewline
+\isanewline
+\isakeyword{private}%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+\ \isacommand{lemma}\isamarkupfalse%
+\ split{\isacharunderscore}rflow{\isacharunderscore}incoming{\isacharcolon}\ \isanewline
+\ \ {\isachardoublequoteopen}{\isacharparenleft}{\isasymSum}v{\isasymin}cf{\isachardot}E{\isasyminverse}{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}u{\isacharbraceright}{\isachardot}\ f{\isacharprime}\ {\isacharparenleft}v{\isacharcomma}u{\isacharparenright}{\isacharparenright}\ {\isacharequal}\ {\isacharparenleft}{\isasymSum}v{\isasymin}E{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}u{\isacharbraceright}{\isachardot}\ f{\isacharprime}{\isacharparenleft}v{\isacharcomma}u{\isacharparenright}{\isacharparenright}\ {\isacharplus}\ {\isacharparenleft}{\isasymSum}v{\isasymin}E{\isasyminverse}{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}u{\isacharbraceright}{\isachardot}\ f{\isacharprime}{\isacharparenleft}v{\isacharcomma}u{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ {\isacharparenleft}\isakeyword{is}\ {\isachardoublequoteopen}{\isacharquery}LHS\ {\isacharequal}\ {\isacharquery}RHS{\isachardoublequoteclose}{\isacharparenright}\isanewline
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isatagproof
+\isacommand{proof}\isamarkupfalse%
+\ {\isacharminus}\isanewline
+\ \ \isacommand{from}\isamarkupfalse%
+\ no{\isacharunderscore}parallel{\isacharunderscore}edge\ \isacommand{have}\isamarkupfalse%
+\ DJ{\isacharcolon}\ {\isachardoublequoteopen}E{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}u{\isacharbraceright}\ {\isasyminter}\ E{\isasyminverse}{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}u{\isacharbraceright}\ {\isacharequal}\ {\isacharbraceleft}{\isacharbraceright}{\isachardoublequoteclose}\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\isanewline
+\ \ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isacharquery}LHS\ {\isacharequal}\ {\isacharparenleft}{\isasymSum}v{\isasymin}E{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}u{\isacharbraceright}\ {\isasymunion}\ E{\isasyminverse}{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}u{\isacharbraceright}{\isachardot}\ f{\isacharprime}\ {\isacharparenleft}v{\isacharcomma}u{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{apply}\isamarkupfalse%
+\ {\isacharparenleft}rule\ sum{\isachardot}mono{\isacharunderscore}neutral{\isacharunderscore}left{\isacharparenright}\isanewline
+\ \ \ \ \isacommand{using}\isamarkupfalse%
+\ cfE{\isacharunderscore}ss{\isacharunderscore}invE\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}auto\ intro{\isacharcolon}\ finite{\isacharunderscore}Image{\isacharparenright}\isanewline
+\ \ \isacommand{also}\isamarkupfalse%
+\ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\ {\isacharequal}\ {\isacharquery}RHS{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{apply}\isamarkupfalse%
+\ {\isacharparenleft}subst\ sum{\isachardot}union{\isacharunderscore}disjoint{\isacharbrackleft}OF\ {\isacharunderscore}\ {\isacharunderscore}\ DJ{\isacharbrackright}{\isacharparenright}\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}auto\ intro{\isacharcolon}\ finite{\isacharunderscore}Image{\isacharparenright}\isanewline
+\ \ \isacommand{finally}\isamarkupfalse%
+\ \isacommand{show}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isacharquery}LHS\ {\isacharequal}\ {\isacharquery}RHS{\isachardoublequoteclose}\ \isacommand{{\isachardot}}\isamarkupfalse%
+\isanewline
+\isacommand{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\begin{isamarkuptext}%
+For proving the conservation constraint, let's fix a node \isa{u}, which
+  is neither the source nor the sink:%
+\end{isamarkuptext}\isamarkuptrue%
+\isacommand{context}\isamarkupfalse%
+\ \isanewline
+\ \ \isakeyword{fixes}\ u\ {\isacharcolon}{\isacharcolon}\ node\isanewline
+\ \ \isakeyword{assumes}\ U{\isacharunderscore}ASM{\isacharcolon}\ {\isachardoublequoteopen}u{\isasymin}V\ {\isacharminus}\ {\isacharbraceleft}s{\isacharcomma}t{\isacharbraceright}{\isachardoublequoteclose}\isanewline
+\isakeyword{begin}%
+\begin{isamarkuptext}%
+We first show an auxiliary lemma to compare the 
+  effective residual flow on incoming network edges to
+  the effective residual flow on outgoing network edges.
+  
+  Intuitively, this lemma shows that the effective residual flow added to the 
+  network edges satisfies the conservation constraint.%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeyword{private}\ \isacommand{lemma}\isamarkupfalse%
+\ flow{\isacharunderscore}summation{\isacharunderscore}aux{\isacharcolon}\isanewline
+\ \ \isakeyword{shows}\ {\isachardoublequoteopen}{\isacharparenleft}{\isasymSum}v{\isasymin}E{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}u{\isacharbraceright}{\isachardot}\ f{\isacharprime}\ {\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isacharparenright}\ \ {\isacharminus}\ {\isacharparenleft}{\isasymSum}v{\isasymin}E{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}u{\isacharbraceright}{\isachardot}\ f{\isacharprime}\ {\isacharparenleft}v{\isacharcomma}u{\isacharparenright}{\isacharparenright}\isanewline
+\ \ \ \ \ \ \ {\isacharequal}\ {\isacharparenleft}{\isasymSum}v{\isasymin}E{\isasyminverse}{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}u{\isacharbraceright}{\isachardot}\ f{\isacharprime}\ {\isacharparenleft}v{\isacharcomma}u{\isacharparenright}{\isacharparenright}\ {\isacharminus}\ {\isacharparenleft}{\isasymSum}v{\isasymin}E{\isasyminverse}{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}u{\isacharbraceright}{\isachardot}\ f{\isacharprime}\ {\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \ {\isacharparenleft}\isakeyword{is}\ {\isachardoublequoteopen}{\isacharquery}LHS\ {\isacharequal}\ {\isacharquery}RHS{\isachardoublequoteclose}\ \isakeyword{is}\ {\isachardoublequoteopen}{\isacharquery}A\ {\isacharminus}\ {\isacharquery}B\ {\isacharequal}\ {\isacharquery}RHS{\isachardoublequoteclose}{\isacharparenright}\isanewline
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isatagproof
+\isacommand{proof}\isamarkupfalse%
+\ {\isacharminus}%
+\begin{isamarkuptext}%
+The proof is by splitting the flows, and careful 
+    cancellation of the summands.%
+\end{isamarkuptext}\isamarkuptrue%
+\ \ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isacharquery}A\ {\isacharequal}\ {\isacharparenleft}{\isasymSum}v{\isasymin}cf{\isachardot}E{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}u{\isacharbraceright}{\isachardot}\ f{\isacharprime}\ {\isacharparenleft}u{\isacharcomma}\ v{\isacharparenright}{\isacharparenright}\ {\isacharminus}\ {\isacharparenleft}{\isasymSum}v{\isasymin}E{\isasyminverse}{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}u{\isacharbraceright}{\isachardot}\ f{\isacharprime}\ {\isacharparenleft}u{\isacharcomma}\ v{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}simp\ add{\isacharcolon}\ split{\isacharunderscore}rflow{\isacharunderscore}outgoing{\isacharparenright}\isanewline
+\ \ \isacommand{also}\isamarkupfalse%
+\ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isacharparenleft}{\isasymSum}v{\isasymin}cf{\isachardot}E{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}u{\isacharbraceright}{\isachardot}\ f{\isacharprime}\ {\isacharparenleft}u{\isacharcomma}\ v{\isacharparenright}{\isacharparenright}\ {\isacharequal}\ {\isacharparenleft}{\isasymSum}v{\isasymin}cf{\isachardot}E{\isasyminverse}{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}u{\isacharbraceright}{\isachardot}\ f{\isacharprime}\ {\isacharparenleft}v{\isacharcomma}\ u{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\ \ \isanewline
+\ \ \ \ \isacommand{using}\isamarkupfalse%
+\ U{\isacharunderscore}ASM\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}simp\ add{\isacharcolon}\ f{\isacharprime}{\isachardot}conservation{\isacharunderscore}const{\isacharunderscore}pointwise{\isacharparenright}\isanewline
+\ \ \isacommand{finally}\isamarkupfalse%
+\ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isacharquery}A\ {\isacharequal}\ {\isacharparenleft}{\isasymSum}v{\isasymin}cf{\isachardot}E{\isasyminverse}{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}u{\isacharbraceright}{\isachardot}\ f{\isacharprime}\ {\isacharparenleft}v{\isacharcomma}\ u{\isacharparenright}{\isacharparenright}\ {\isacharminus}\ {\isacharparenleft}{\isasymSum}v{\isasymin}E{\isasyminverse}{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}u{\isacharbraceright}{\isachardot}\ f{\isacharprime}\ {\isacharparenleft}u{\isacharcomma}\ v{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\ \isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isacommand{moreover}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isacharquery}B\ {\isacharequal}\ {\isacharparenleft}{\isasymSum}v{\isasymin}cf{\isachardot}E{\isasyminverse}{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}u{\isacharbraceright}{\isachardot}\ f{\isacharprime}\ {\isacharparenleft}v{\isacharcomma}\ u{\isacharparenright}{\isacharparenright}\ {\isacharminus}\ {\isacharparenleft}{\isasymSum}v{\isasymin}E{\isasyminverse}{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}u{\isacharbraceright}{\isachardot}\ f{\isacharprime}\ {\isacharparenleft}v{\isacharcomma}\ u{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}simp\ add{\isacharcolon}\ split{\isacharunderscore}rflow{\isacharunderscore}incoming{\isacharparenright}\isanewline
+\ \ \isacommand{ultimately}\isamarkupfalse%
+\ \isacommand{show}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isacharquery}A\ {\isacharminus}\ {\isacharquery}B\ {\isacharequal}\ {\isacharquery}RHS{\isachardoublequoteclose}\ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\isacommand{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\begin{isamarkuptext}%
+Finally, we are ready to prove that the augmented flow satisfies the 
+  conservation constraint:%
+\end{isamarkuptext}\isamarkuptrue%
+\isacommand{lemma}\isamarkupfalse%
+\ augment{\isacharunderscore}flow{\isacharunderscore}presv{\isacharunderscore}con{\isacharcolon}\ \isanewline
+\ \ \isakeyword{shows}\ {\isachardoublequoteopen}{\isacharparenleft}{\isasymSum}e\ {\isasymin}\ outgoing\ u{\isachardot}\ augment\ f{\isacharprime}\ e{\isacharparenright}\ {\isacharequal}\ {\isacharparenleft}{\isasymSum}e\ {\isasymin}\ incoming\ u{\isachardot}\ augment\ f{\isacharprime}\ e{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \ \ {\isacharparenleft}\isakeyword{is}\ {\isachardoublequoteopen}{\isacharquery}LHS\ {\isacharequal}\ {\isacharquery}RHS{\isachardoublequoteclose}{\isacharparenright}\isanewline
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isatagproof
+\isacommand{proof}\isamarkupfalse%
+\ {\isacharminus}%
+\begin{isamarkuptext}%
+We define shortcuts for the successor and predecessor nodes of \isa{u} 
+    in the network:%
+\end{isamarkuptext}\isamarkuptrue%
+\ \ \isacommand{let}\isamarkupfalse%
+\ {\isacharquery}Vo\ {\isacharequal}\ {\isachardoublequoteopen}E{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}u{\isacharbraceright}{\isachardoublequoteclose}\ \isacommand{let}\isamarkupfalse%
+\ {\isacharquery}Vi\ {\isacharequal}\ {\isachardoublequoteopen}E{\isasyminverse}{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}u{\isacharbraceright}{\isachardoublequoteclose}%
+\begin{isamarkuptext}%
+Using the auxiliary lemma for the effective residual flow,
+    the proof is straightforward:%
+\end{isamarkuptext}\isamarkuptrue%
+\ \ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isacharquery}LHS\ {\isacharequal}\ {\isacharparenleft}{\isasymSum}v{\isasymin}{\isacharquery}Vo{\isachardot}\ augment\ f{\isacharprime}\ {\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}auto\ simp{\isacharcolon}\ sum{\isacharunderscore}outgoing{\isacharunderscore}pointwise{\isacharparenright}\isanewline
+\ \ \isacommand{also}\isamarkupfalse%
+\ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\ \isanewline
+\ \ \ \ {\isacharequal}\ {\isacharparenleft}{\isasymSum}v{\isasymin}{\isacharquery}Vo{\isachardot}\ f\ {\isacharparenleft}u{\isacharcomma}v{\isacharparenright}\ {\isacharplus}\ f{\isacharprime}{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}\ {\isacharminus}\ f{\isacharprime}{\isacharparenleft}v{\isacharcomma}u{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\ \ \isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}auto\ simp{\isacharcolon}\ augment{\isacharunderscore}def{\isacharparenright}\isanewline
+\ \ \isacommand{also}\isamarkupfalse%
+\ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\ \isanewline
+\ \ \ \ {\isacharequal}\ {\isacharparenleft}{\isasymSum}v{\isasymin}{\isacharquery}Vo{\isachardot}\ f\ {\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isacharparenright}\ {\isacharplus}\ {\isacharparenleft}{\isasymSum}v{\isasymin}{\isacharquery}Vo{\isachardot}\ f{\isacharprime}\ {\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isacharparenright}\ {\isacharminus}\ {\isacharparenleft}{\isasymSum}v{\isasymin}{\isacharquery}Vo{\isachardot}\ f{\isacharprime}\ {\isacharparenleft}v{\isacharcomma}u{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}auto\ simp{\isacharcolon}\ sum{\isacharunderscore}subtractf\ sum{\isachardot}distrib{\isacharparenright}\isanewline
+\ \ \isacommand{also}\isamarkupfalse%
+\ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\ \isanewline
+\ \ \ \ {\isacharequal}\ {\isacharparenleft}{\isasymSum}v{\isasymin}{\isacharquery}Vi{\isachardot}\ f\ {\isacharparenleft}v{\isacharcomma}u{\isacharparenright}{\isacharparenright}\ {\isacharplus}\ {\isacharparenleft}{\isasymSum}v{\isasymin}{\isacharquery}Vi{\isachardot}\ f{\isacharprime}\ {\isacharparenleft}v{\isacharcomma}u{\isacharparenright}{\isacharparenright}\ {\isacharminus}\ {\isacharparenleft}{\isasymSum}v{\isasymin}{\isacharquery}Vi{\isachardot}\ f{\isacharprime}\ {\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\ \isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}auto\ simp{\isacharcolon}\ conservation{\isacharunderscore}const{\isacharunderscore}pointwise{\isacharbrackleft}OF\ U{\isacharunderscore}ASM{\isacharbrackright}\ flow{\isacharunderscore}summation{\isacharunderscore}aux{\isacharparenright}\isanewline
+\ \ \isacommand{also}\isamarkupfalse%
+\ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\ \isanewline
+\ \ \ \ {\isacharequal}\ {\isacharparenleft}{\isasymSum}v{\isasymin}{\isacharquery}Vi{\isachardot}\ f\ {\isacharparenleft}v{\isacharcomma}u{\isacharparenright}\ {\isacharplus}\ f{\isacharprime}\ {\isacharparenleft}v{\isacharcomma}u{\isacharparenright}\ {\isacharminus}\ f{\isacharprime}\ {\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\ \isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}auto\ simp{\isacharcolon}\ sum{\isacharunderscore}subtractf\ sum{\isachardot}distrib{\isacharparenright}\isanewline
+\ \ \isacommand{also}\isamarkupfalse%
+\ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\ \isanewline
+\ \ \ \ {\isacharequal}\ {\isacharparenleft}{\isasymSum}v{\isasymin}{\isacharquery}Vi{\isachardot}\ augment\ f{\isacharprime}\ {\isacharparenleft}v{\isacharcomma}u{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\ \ \isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}auto\ simp{\isacharcolon}\ augment{\isacharunderscore}def{\isacharparenright}\isanewline
+\ \ \isacommand{also}\isamarkupfalse%
+\ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\ \isanewline
+\ \ \ \ {\isacharequal}\ {\isacharquery}RHS{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}auto\ simp{\isacharcolon}\ sum{\isacharunderscore}incoming{\isacharunderscore}pointwise{\isacharparenright}\isanewline
+\ \ \isacommand{finally}\isamarkupfalse%
+\ \isacommand{show}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isacharquery}LHS\ {\isacharequal}\ {\isacharquery}RHS{\isachardoublequoteclose}\ \isacommand{{\isachardot}}\isamarkupfalse%
+\isanewline
+\isacommand{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\begin{isamarkuptext}%
+Note that we tried to follow the proof presented by Cormen et al.~\cite{CLRS09} 
+  as closely as possible. Unfortunately, this proof generalizes the summation to all 
+  nodes immediately, rendering the first equation invalid.
+  Trying to fix this error, we encountered that the step that uses the conservation 
+  constraints on the augmenting flow is more subtle as indicated in the original proof.
+  Thus, we moved this argument to an auxiliary lemma.%
+\end{isamarkuptext}\isamarkuptrue%
+\isacommand{end}\isamarkupfalse%
+\ %
+\isamarkupcmt{\isa{u} is node%
+}
+%
+\begin{isamarkuptext}%
+As main result, we get that the augmented flow is again a valid flow.%
+\end{isamarkuptext}\isamarkuptrue%
+\isacommand{corollary}\isamarkupfalse%
+\ augment{\isacharunderscore}flow{\isacharunderscore}presv{\isacharcolon}\ {\isachardoublequoteopen}Flow\ c\ s\ t\ {\isacharparenleft}f{\isasymup}f{\isacharprime}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isacommand{using}\isamarkupfalse%
+\ augment{\isacharunderscore}flow{\isacharunderscore}presv{\isacharunderscore}cap\ augment{\isacharunderscore}flow{\isacharunderscore}presv{\isacharunderscore}con\ \isanewline
+\ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}rule{\isacharunderscore}tac\ intro{\isacharunderscore}Flow{\isacharparenright}\ auto%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isamarkupsubsection{Value of the Augmented Flow%
+}
+\isamarkuptrue%
+%
+\begin{isamarkuptext}%
+Next, we show that the value of the augmented flow is the sum of the values
+  of the original flow and the augmenting flow.%
+\end{isamarkuptext}\isamarkuptrue%
+\isacommand{lemma}\isamarkupfalse%
+\ augment{\isacharunderscore}flow{\isacharunderscore}value{\isacharcolon}\ {\isachardoublequoteopen}Flow{\isachardot}val\ c\ s\ {\isacharparenleft}f{\isasymup}f{\isacharprime}{\isacharparenright}\ {\isacharequal}\ val\ {\isacharplus}\ Flow{\isachardot}val\ cf\ s\ f{\isacharprime}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isatagproof
+\isacommand{proof}\isamarkupfalse%
+\ {\isacharminus}\isanewline
+\ \ \isacommand{interpret}\isamarkupfalse%
+\ f{\isacharprime}{\isacharprime}{\isacharcolon}\ Flow\ c\ s\ t\ {\isachardoublequoteopen}f{\isasymup}f{\isacharprime}{\isachardoublequoteclose}\ \isacommand{using}\isamarkupfalse%
+\ augment{\isacharunderscore}flow{\isacharunderscore}presv\ \isacommand{{\isachardot}}\isamarkupfalse%
+%
+\begin{isamarkuptxt}%
+For this proof, we set up Isabelle's rewriting engine for rewriting of sums.
+    In particular, we add lemmas to convert sums over incoming or outgoing 
+    edges to sums over all vertices. This allows us to write the summations
+    from Cormen et al.~a bit more concise, leaving some of the tedious 
+    calculation work to the computer.%
+\end{isamarkuptxt}\isamarkuptrue%
+\ \ \isacommand{note}\isamarkupfalse%
+\ sum{\isacharunderscore}simp{\isacharunderscore}setup{\isacharbrackleft}simp{\isacharbrackright}\ {\isacharequal}\ \isanewline
+\ \ \ \ sum{\isacharunderscore}outgoing{\isacharunderscore}alt{\isacharbrackleft}OF\ capacity{\isacharunderscore}const{\isacharbrackright}\ s{\isacharunderscore}node\isanewline
+\ \ \ \ sum{\isacharunderscore}incoming{\isacharunderscore}alt{\isacharbrackleft}OF\ capacity{\isacharunderscore}const{\isacharbrackright}\isanewline
+\ \ \ \ cf{\isachardot}sum{\isacharunderscore}outgoing{\isacharunderscore}alt{\isacharbrackleft}OF\ f{\isacharprime}{\isachardot}capacity{\isacharunderscore}const{\isacharbrackright}\isanewline
+\ \ \ \ cf{\isachardot}sum{\isacharunderscore}incoming{\isacharunderscore}alt{\isacharbrackleft}OF\ f{\isacharprime}{\isachardot}capacity{\isacharunderscore}const{\isacharbrackright}\isanewline
+\ \ \ \ sum{\isacharunderscore}outgoing{\isacharunderscore}alt{\isacharbrackleft}OF\ f{\isacharprime}{\isacharprime}{\isachardot}capacity{\isacharunderscore}const{\isacharbrackright}\isanewline
+\ \ \ \ sum{\isacharunderscore}incoming{\isacharunderscore}alt{\isacharbrackleft}OF\ f{\isacharprime}{\isacharprime}{\isachardot}capacity{\isacharunderscore}const{\isacharbrackright}\isanewline
+\ \ \ \ sum{\isacharunderscore}subtractf\ sum{\isachardot}distrib%
+\begin{isamarkuptxt}%
+Note that, if neither an edge nor its reverse is in the graph,
+    there is also no edge in the residual graph, and thus the flow value
+    is zero.%
+\end{isamarkuptxt}\isamarkuptrue%
+\ \ \isacommand{have}\isamarkupfalse%
+\ aux{\isadigit{1}}{\isacharcolon}\ {\isachardoublequoteopen}f{\isacharprime}{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}\ {\isacharequal}\ {\isadigit{0}}{\isachardoublequoteclose}\ \isakeyword{if}\ {\isachardoublequoteopen}{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isasymnotin}E{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isacharparenleft}v{\isacharcomma}u{\isacharparenright}{\isasymnotin}E{\isachardoublequoteclose}\ \isakeyword{for}\ u\ v\isanewline
+\ \ \isacommand{proof}\isamarkupfalse%
+\ {\isacharminus}\isanewline
+\ \ \ \ \isacommand{from}\isamarkupfalse%
+\ that\ cfE{\isacharunderscore}ss{\isacharunderscore}invE\ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isasymnotin}cf{\isachardot}E{\isachardoublequoteclose}\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \ \ \isacommand{thus}\isamarkupfalse%
+\ {\isachardoublequoteopen}f{\isacharprime}{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}\ {\isacharequal}\ {\isadigit{0}}{\isachardoublequoteclose}\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \isacommand{qed}\isamarkupfalse%
+%
+\begin{isamarkuptxt}%
+Now, the proposition follows by straightforward rewriting of 
+    the summations:%
+\end{isamarkuptxt}\isamarkuptrue%
+\ \ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}f{\isacharprime}{\isacharprime}{\isachardot}val\ {\isacharequal}\ {\isacharparenleft}{\isasymSum}u{\isasymin}V{\isachardot}\ augment\ f{\isacharprime}\ {\isacharparenleft}s{\isacharcomma}\ u{\isacharparenright}\ {\isacharminus}\ augment\ f{\isacharprime}\ {\isacharparenleft}u{\isacharcomma}\ s{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\ \isanewline
+\ \ \ \ \isacommand{unfolding}\isamarkupfalse%
+\ f{\isacharprime}{\isacharprime}{\isachardot}val{\isacharunderscore}def\ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isacommand{also}\isamarkupfalse%
+\ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\ {\isacharequal}\ {\isacharparenleft}{\isasymSum}u{\isasymin}V{\isachardot}\ f\ {\isacharparenleft}s{\isacharcomma}\ u{\isacharparenright}\ {\isacharminus}\ f\ {\isacharparenleft}u{\isacharcomma}\ s{\isacharparenright}\ {\isacharplus}\ {\isacharparenleft}f{\isacharprime}\ {\isacharparenleft}s{\isacharcomma}\ u{\isacharparenright}\ {\isacharminus}\ f{\isacharprime}\ {\isacharparenleft}u{\isacharcomma}\ s{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \ \ %
+\isamarkupcmt{Note that this is the crucial step of the proof, which Cormen et al. leave as an exercise.%
+}
+\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}rule\ sum{\isachardot}cong{\isacharparenright}\ {\isacharparenleft}auto\ simp{\isacharcolon}\ augment{\isacharunderscore}def\ no{\isacharunderscore}parallel{\isacharunderscore}edge\ aux{\isadigit{1}}{\isacharparenright}\isanewline
+\ \ \isacommand{also}\isamarkupfalse%
+\ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\ {\isacharequal}\ val\ {\isacharplus}\ Flow{\isachardot}val\ cf\ s\ f{\isacharprime}{\isachardoublequoteclose}\ \ \isanewline
+\ \ \ \ \isacommand{unfolding}\isamarkupfalse%
+\ val{\isacharunderscore}def\ f{\isacharprime}{\isachardot}val{\isacharunderscore}def\ \isacommand{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isacommand{finally}\isamarkupfalse%
+\ \isacommand{show}\isamarkupfalse%
+\ {\isachardoublequoteopen}f{\isacharprime}{\isacharprime}{\isachardot}val\ {\isacharequal}\ val\ {\isacharplus}\ f{\isacharprime}{\isachardot}val{\isachardoublequoteclose}\ \isacommand{{\isachardot}}\isamarkupfalse%
+\ \ \isanewline
+\isacommand{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\begin{isamarkuptxt}%
+Note, there is also an automatic proof. When creating the above 
+    explicit proof, this automatic one has been used to extract meaningful
+    subgoals, abusing Isabelle as a term rewriter.%
+\end{isamarkuptxt}\isamarkuptrue%
+\isacommand{lemma}\isamarkupfalse%
+\ {\isachardoublequoteopen}Flow{\isachardot}val\ c\ s\ {\isacharparenleft}f{\isasymup}f{\isacharprime}{\isacharparenright}\ {\isacharequal}\ val\ {\isacharplus}\ Flow{\isachardot}val\ cf\ s\ f{\isacharprime}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isatagproof
+\isacommand{proof}\isamarkupfalse%
+\ {\isacharminus}\isanewline
+\ \ \isacommand{interpret}\isamarkupfalse%
+\ f{\isacharprime}{\isacharprime}{\isacharcolon}\ Flow\ c\ s\ t\ {\isachardoublequoteopen}f{\isasymup}f{\isacharprime}{\isachardoublequoteclose}\ \isacommand{using}\isamarkupfalse%
+\ augment{\isacharunderscore}flow{\isacharunderscore}presv\ \isacommand{{\isachardot}}\isamarkupfalse%
+\ \isanewline
+\isanewline
+\ \ \isacommand{have}\isamarkupfalse%
+\ aux{\isadigit{1}}{\isacharcolon}\ {\isachardoublequoteopen}f{\isacharprime}{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}\ {\isacharequal}\ {\isadigit{0}}{\isachardoublequoteclose}\ \isakeyword{if}\ A{\isacharcolon}\ {\isachardoublequoteopen}{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isasymnotin}E{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isacharparenleft}v{\isacharcomma}u{\isacharparenright}{\isasymnotin}E{\isachardoublequoteclose}\ \isakeyword{for}\ u\ v\isanewline
+\ \ \isacommand{proof}\isamarkupfalse%
+\ {\isacharminus}\isanewline
+\ \ \ \ \isacommand{from}\isamarkupfalse%
+\ A\ cfE{\isacharunderscore}ss{\isacharunderscore}invE\ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isasymnotin}cf{\isachardot}E{\isachardoublequoteclose}\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \ \ \isacommand{thus}\isamarkupfalse%
+\ {\isachardoublequoteopen}f{\isacharprime}{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}\ {\isacharequal}\ {\isadigit{0}}{\isachardoublequoteclose}\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \isacommand{qed}\isamarkupfalse%
+\ \ \isanewline
+\isanewline
+\ \ \isacommand{show}\isamarkupfalse%
+\ {\isacharquery}thesis\isanewline
+\ \ \ \ \isacommand{unfolding}\isamarkupfalse%
+\ val{\isacharunderscore}def\ f{\isacharprime}{\isachardot}val{\isacharunderscore}def\ f{\isacharprime}{\isacharprime}{\isachardot}val{\isacharunderscore}def\isanewline
+\ \ \ \ \isacommand{apply}\isamarkupfalse%
+\ {\isacharparenleft}simp\ del{\isacharcolon}\isanewline
+\ \ \ \ \ \ add{\isacharcolon}\ \isanewline
+\ \ \ \ \ \ sum{\isacharunderscore}outgoing{\isacharunderscore}alt{\isacharbrackleft}OF\ capacity{\isacharunderscore}const{\isacharbrackright}\ s{\isacharunderscore}node\isanewline
+\ \ \ \ \ \ sum{\isacharunderscore}incoming{\isacharunderscore}alt{\isacharbrackleft}OF\ capacity{\isacharunderscore}const{\isacharbrackright}\isanewline
+\ \ \ \ \ \ sum{\isacharunderscore}outgoing{\isacharunderscore}alt{\isacharbrackleft}OF\ f{\isacharprime}{\isacharprime}{\isachardot}capacity{\isacharunderscore}const{\isacharbrackright}\isanewline
+\ \ \ \ \ \ sum{\isacharunderscore}incoming{\isacharunderscore}alt{\isacharbrackleft}OF\ f{\isacharprime}{\isacharprime}{\isachardot}capacity{\isacharunderscore}const{\isacharbrackright}\isanewline
+\ \ \ \ \ \ cf{\isachardot}sum{\isacharunderscore}outgoing{\isacharunderscore}alt{\isacharbrackleft}OF\ f{\isacharprime}{\isachardot}capacity{\isacharunderscore}const{\isacharbrackright}\isanewline
+\ \ \ \ \ \ cf{\isachardot}sum{\isacharunderscore}incoming{\isacharunderscore}alt{\isacharbrackleft}OF\ f{\isacharprime}{\isachardot}capacity{\isacharunderscore}const{\isacharbrackright}\isanewline
+\ \ \ \ \ \ sum{\isacharunderscore}subtractf{\isacharbrackleft}symmetric{\isacharbrackright}\ sum{\isachardot}distrib{\isacharbrackleft}symmetric{\isacharbrackright}\isanewline
+\ \ \ \ \ \ {\isacharparenright}\isanewline
+\ \ \ \ \isacommand{apply}\isamarkupfalse%
+\ {\isacharparenleft}rule\ sum{\isachardot}cong{\isacharparenright}\isanewline
+\ \ \ \ \isacommand{apply}\isamarkupfalse%
+\ {\isacharparenleft}auto\ simp{\isacharcolon}\ augment{\isacharunderscore}def\ no{\isacharunderscore}parallel{\isacharunderscore}edge\ aux{\isadigit{1}}{\isacharparenright}\isanewline
+\ \ \ \ \isacommand{done}\isamarkupfalse%
+\isanewline
+\isacommand{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isanewline
+\isacommand{end}\isamarkupfalse%
+\ %
+\isamarkupcmt{Augmenting flow%
+}
+\isanewline
+\isacommand{end}\isamarkupfalse%
+\ %
+\isamarkupcmt{Network flow%
+}
+\isanewline
+%
+\isadelimtheory
+\isanewline
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{end}\isamarkupfalse%
+\ %
+\isamarkupcmt{Theory%
+}
+%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\end{isabellebody}%
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "root"
+%%% End:

@@ -1,0 +1,26 @@
+\begin{thebibliography}{1}
+
+\bibitem{CLRS09}
+T.~H. Cormen, C.~E. Leiserson, R.~L. Rivest, and C.~Stein.
+\newblock {\em Introduction to Algorithms, Third Edition}.
+\newblock The MIT Press, 3rd edition, 2009.
+
+\bibitem{EFS56}
+P.~Elias, A.~Feinstein, and C.~Shannon.
+\newblock A note on the maximum flow through a network.
+\newblock {\em {IEEE} Transactions on Information Theory}, 2(4):117--119, dec
+  1956.
+
+\bibitem{FF56}
+L.~R. Ford and D.~R. Fulkerson.
+\newblock Maximal flow through a network.
+\newblock {\em Canadian journal of Mathematics}, 8(3):399--404, 1956.
+
+\bibitem{Wenzel99}
+M.~Wenzel.
+\newblock Isar - {A} generic interpretative approach to readable formal proof
+  documents.
+\newblock In {\em TPHOLs'99}, volume 1690 of {\em LNCS}, pages 167--184.
+  Springer, 1999.
+
+\end{thebibliography}
