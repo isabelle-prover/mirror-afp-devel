@@ -262,6 +262,24 @@ abstract =
   and is accessible even without being an expert in Isabelle/HOL--- the
   interactive theorem prover used for the formalization.
 
+[Prpu_Maxflow]
+title = Formalizing Push-Relabel Algorithms
+author = Peter Lammich <http://www21.in.tum.de/~lammich/>, S. Reza Sefidgar
+topic = Computer Science/Algorithms, Mathematics/Graph Theory
+date = 2017-06-01
+notify = lammich@in.tum.de
+abstract =
+  We present a formalization of push-relabel algorithms for computing
+  the maximum flow in a network. We start with Goldberg's et
+  al.~generic push-relabel algorithm, for which we show correctness and
+  the time complexity bound of O(V^2E). We then derive the
+  relabel-to-front and FIFO implementation. Using stepwise refinement
+  techniques, we derive an efficient verified implementation.  Our
+  formal proof of the abstract algorithms closely follows a standard
+  textbook proof. It is accessible even without being an expert in
+  Isabelle/HOL, the interactive theorem prover used for the
+  formalization.
+
 [Buildings]
 title = Chamber Complexes, Coxeter Systems, and Buildings
 author = Jeremy Sylvestre <http://ualberta.ca/~jsylvest/>

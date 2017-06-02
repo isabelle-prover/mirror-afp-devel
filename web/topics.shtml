@@ -108,6 +108,7 @@
           <a href="entries/Comparison_Sort_Lower_Bound.shtml">Comparison_Sort_Lower_Bound</a> &nbsp;
           <a href="entries/Quick_Sort_Cost.shtml">Quick_Sort_Cost</a> &nbsp;
           <a href="entries/DFS_Framework.shtml">DFS_Framework</a> &nbsp;
+          <a href="entries/Prpu_Maxflow.shtml">Prpu_Maxflow</a> &nbsp;
           <a href="entries/TortoiseHare.shtml">TortoiseHare</a> &nbsp;
           <a href="entries/Floyd_Warshall.shtml">Floyd_Warshall</a> &nbsp;
           <a href="entries/Roy_Floyd_Warshall.shtml">Roy_Floyd_Warshall</a> &nbsp;
@@ -522,6 +523,7 @@
       <h3>Graph Theory</h3>
     <div class="list">
           <a href="entries/Flow_Networks.shtml">Flow_Networks</a> &nbsp;
+          <a href="entries/Prpu_Maxflow.shtml">Prpu_Maxflow</a> &nbsp;
           <a href="entries/MFMC_Countable.shtml">MFMC_Countable</a> &nbsp;
           <a href="entries/ShortestPath.shtml">ShortestPath</a> &nbsp;
           <a href="entries/Gabow_SCC.shtml">Gabow_SCC</a> &nbsp;
