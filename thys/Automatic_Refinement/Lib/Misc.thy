@@ -1375,7 +1375,7 @@ subsubsection {* Map *}
 lemma map_eq_consE: "\<lbrakk>map f ls = fa#fl; !!a l. \<lbrakk> ls=a#l; f a=fa; map f l = fl \<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
   by auto
 
-lemma map_eq_concE: "\<lbrakk>map f ls = fl@fl'; !!l l'. \<lbrakk> ls=l@l'; map f l=fl; map f l' = fl' \<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
+lemma map_eq_appendE: "\<lbrakk>map f ls = fl@fl'; !!l l'. \<lbrakk> ls=l@l'; map f l=fl; map f l' = fl' \<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
 proof (induction fl arbitrary: ls P)
   case (Cons x xs)
     then obtain l ls' where [simp]: "ls = l#ls'" "f l = x" by force
@@ -1384,6 +1384,9 @@ proof (induction fl arbitrary: ls P)
     with Cons.prems(2)[of "l#ll" ll'] show P by simp
 qed simp
 
+lemma map_eq_append_conv: "map f ls = fl@fl' \<longleftrightarrow> (\<exists>l l'. ls = l@l' \<and> map f l = fl \<and> map f l' = fl')"
+  by (auto elim!: map_eq_appendE)
+  
 lemma map_fst_mk_snd[simp]: "map fst (map (\<lambda>x. (x,k)) l) = l" by (induct l) auto
 lemma map_snd_mk_fst[simp]: "map snd (map (\<lambda>x. (k,x)) l) = l" by (induct l) auto
 lemma map_fst_mk_fst[simp]: "map fst (map (\<lambda>x. (k,x)) l) = replicate (length l) k" by (induct l) auto
@@ -1392,23 +1395,6 @@ lemma map_snd_mk_snd[simp]: "map snd (map (\<lambda>x. (x,k)) l) = replicate (le
 lemma map_zip1: "map (\<lambda>x. (x,k)) l = zip l (replicate (length l) k)" by (induct l) auto
 lemma map_zip2: "map (\<lambda>x. (k,x)) l = zip (replicate (length l) k) l" by (induct l) auto
 lemmas map_zip=map_zip1 map_zip2
-
-lemma map_append_res: "\<lbrakk> map f l = m1@m2; !!l1 l2. \<lbrakk> l=l1@l2; map f l1 = m1; map f l2 = m2 \<rbrakk> \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
-proof (induction m1 arbitrary: l m2 P)
-  case (Cons x xs)
-    then obtain l' ls' where [simp]: "l = l'#ls'"
-        "f l' = x" by force
-    with Cons.prems(1) have "map f ls' = xs @ m2" by simp
-    from Cons.IH[OF this] guess ll ll' .
-    with Cons.prems(2)[of "l'#ll" ll'] show P by simp
-qed simp
-
-lemma map_id[simp]:
-  "map id l = l" by (induct l, auto)
-
-lemma map_id'[simp]:
-  "map id = id"
-  by (rule ext) simp
 
 (* TODO/FIXME: hope nobody changes nth to be underdefined! *)
 lemma map_eq_nth_eq:

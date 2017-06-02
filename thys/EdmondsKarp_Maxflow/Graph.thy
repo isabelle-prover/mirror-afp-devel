@@ -522,7 +522,7 @@ proof -
       )  
 
       apply (clarsimp simp: append_eq_append_conv2; 
-        auto elim!: map_eq_concE map_eq_consE list_append_eq_Cons_cases
+        auto elim!: map_eq_appendE map_eq_consE list_append_eq_Cons_cases
             simp: isPath_append)
 
         apply (rename_tac l)
