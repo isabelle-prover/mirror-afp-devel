@@ -24,7 +24,7 @@ author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html>, S.
 topic = Computer Science/Security
 date = 2017-05-05
 notify = andreas.lochbihler@inf.ethz.ch
-abstract = 
+abstract =
   <p>In this AFP entry, we show how to specify game-based cryptographic
   security notions and formally prove secure several cryptographic
   constructions from the literature using the CryptHOL framework. Among
@@ -34,7 +34,7 @@ abstract =
   prove the random-permutation/random-function switching lemma, security
   of the Elgamal and hashed Elgamal public-key encryption scheme and
   correctness and security of several constructions with pseudo-random
-  functions.  
+  functions.
   </p><p>Our proofs follow the game-hopping style advocated by
   Shoup and Bellare and Rogaway, from which most of the examples have
   been taken. We generalise some of their results such that they can be
@@ -48,32 +48,32 @@ author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html>
 topic = Computer Science/Security, Computer Science/Functional Programming, Mathematics/Probability Theory
 date = 2017-05-05
 notify = andreas.lochbihler@inf.ethz.ch
-abstract = 
+abstract =
   <p>CryptHOL provides a framework for formalising cryptographic arguments
   in Isabelle/HOL. It shallowly embeds a probabilistic functional
-  programming language in higher order logic. The language features 
+  programming language in higher order logic. The language features
   monadic sequencing, recursion, random sampling, failures and failure
   handling, and black-box access to oracles. Oracles are probabilistic
-  functions which maintain hidden state between different invocations. 
+  functions which maintain hidden state between different invocations.
   All operators are defined in the new semantic domain of
   generative probabilistic values, a codatatype. We derive proof rules for
   the operators and establish a connection with the theory of relational
   parametricity. Thus, the resuting proofs are trustworthy and
-  comprehensible, and the framework is extensible and widely applicable.  
+  comprehensible, and the framework is extensible and widely applicable.
   </p><p>
   The framework is used in the accompanying AFP entry "Game-based
   Cryptography in HOL". There, we show-case our framework by formalizing
   different game-based proofs from the literature. This formalisation
   continues the work described in the author's ESOP 2016 paper.</p>
-  
+
 [Probabilistic_While]
 title = Probabilistic while loop
 author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html>
 topic = Computer Science/Functional Programming, Mathematics/Probability Theory, Computer Science/Algorithms
 date = 2017-05-05
 notify = andreas.lochbihler@inf.ethz.ch
-abstract = 
-  This AFP entry defines a probabilistic while operator based on 
+abstract =
+  This AFP entry defines a probabilistic while operator based on
   sub-probability mass functions and formalises zero-one laws and variant
   rules for probabilistic loop termination. As applications, we
   implement probabilistic algorithms for the Bernoulli, geometric and
@@ -86,23 +86,23 @@ author = Joshua Schneider <>, Manuel Eberl <https://www21.in.tum.de/~eberlm>, An
 topic = Tools, Computer Science/Functional Programming, Logic/Rewriting
 date = 2017-05-05
 notify = andreas.lochbihler@inf.ethz.ch
-abstract = 
+abstract =
   The usual monad laws can directly be used as rewrite rules for Isabelle’s
-  simplifier to normalise monadic HOL terms and decide equivalences. 
+  simplifier to normalise monadic HOL terms and decide equivalences.
   In a commutative monad, however, the commutativity law is a
   higher-order permutative rewrite rule that makes the simplifier loop.
   This AFP entry implements a simproc that normalises monadic
-  expressions in commutative monads using ordered rewriting. The 
+  expressions in commutative monads using ordered rewriting. The
   simproc can also permute computations across control operators like if
   and case.
-  
+
 [Monomorphic_Monad]
 title = Effect polymorphism in higher-order logic
 author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html>
 topic = Computer Science/Functional Programming
 date = 2017-05-05
 notify = andreas.lochbihler@inf.ethz.ch
-abstract = 
+abstract =
   The notion of a monad cannot be expressed within higher-order logic
   (HOL) due to type system restrictions. We show that if a monad is used
   with values of only one type, this notion can be formalised in HOL.
@@ -250,6 +250,18 @@ abstract =
 	[CPP-2015] Peter Lammich, René Neumann: A Framework for Verifying
 	Depth-First Search Algorithms. CPP 2015: 137-146</p>
 
+[Flow_Networks]
+title = Flow Networks and the Min-Cut-Max-Flow Theorem
+author = Peter Lammich <http://www21.in.tum.de/~lammich/>, S. Reza Sefidgar
+topic = Mathematics/Graph Theory
+date = 2017-06-01
+notify = lammich@in.tum.de
+abstract =
+  We present a formalization of flow networks and the Min-Cut-Max-Flow
+  theorem. Our formal proof closely follows a standard textbook proof,
+  and is accessible even without being an expert in Isabelle/HOL--- the
+  interactive theorem prover used for the formalization.
+
 [Buildings]
 title = Chamber Complexes, Coxeter Systems, and Buildings
 author = Jeremy Sylvestre <http://ualberta.ca/~jsylvest/>
@@ -390,7 +402,7 @@ author = Eugene W. Stark <mailto:stark@cs.stonybrook.edu>
 topic = Mathematics/Category Theory
 date = 2017-05-04
 notify = stark@cs.stonybrook.edu
-abstract = 
+abstract =
   Building on the formalization of basic category theory set out in the
   author's previous AFP article, the present article formalizes
   some basic aspects of the theory of monoidal categories. Among the
@@ -974,7 +986,7 @@ author = Simon Wimmer <http://in.tum.de/~wimmers>, Peter Lammich <http://www21.i
 topic = Computer Science/Algorithms
 date = 2017-05-08
 notify = wimmers@in.tum.de
-abstract = 
+abstract =
   The Floyd-Warshall algorithm [Flo62, Roy59, War62] is a classic
   dynamic programming algorithm to compute the length of all shortest
   paths between any two vertices in a graph (i.e. to solve the all-pairs
@@ -1932,7 +1944,7 @@ topic = Computer Science/Security
 license = LGPL
 date = 2017-05-24
 notify = sprenger@inf.ethz.ch
-abstract = 
+abstract =
   We propose a development method for security protocols based on
   stepwise refinement. Our refinement strategy transforms abstract
   security goals into protocols that are secure when operating over an

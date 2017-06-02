@@ -9,7 +9,19 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>25 May 2017 00:00:00 +0000</pubDate>
+    <pubDate>01 Jun 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>Flow Networks and the Min-Cut-Max-Flow Theorem</title>
+              <link>https://www.isa-afp.org/entries/Flow_Networks.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Flow_Networks.shtml</guid>
+       <dc:creator> Peter Lammich, S. Reza Sefidgar       </dc:creator>
+       <pubDate>01 Jun 2017 00:00:00 +0000</pubDate>
+       <description>
+We present a formalization of flow networks and the Min-Cut-Max-Flow
+theorem. Our formal proof closely follows a standard textbook proof,
+and is accessible even without being an expert in Isabelle/HOL--- the
+interactive theorem prover used for the formalization.</description>
+    </item>
     <item>
        <title>Optics</title>
               <link>https://www.isa-afp.org/entries/Optics.shtml</link>
@@ -538,27 +550,6 @@ developed with for generating test cases for testing the security
 configuration actual firewall and router (middle-boxes) using
 HOL-TestGen. Our work focuses on modeling application level protocols
 on top of tcp/ip.</description>
-    </item>
-    <item>
-       <title>Verification of a Diffie-Hellman Password-based Authentication Protocol by Extending the Inductive Method</title>
-              <link>https://www.isa-afp.org/entries/Password_Authentication_Protocol.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Password_Authentication_Protocol.shtml</guid>
-       <dc:creator> Pasquale Noce       </dc:creator>
-       <pubDate>03 Jan 2017 00:00:00 +0000</pubDate>
-       <description>
-This paper constructs a formal model of a Diffie-Hellman
-password-based authentication protocol between a user and a smart
-card, and proves its security. The protocol provides for the dispatch
-of the user&#39;s password to the smart card on a secure messaging
-channel established by means of Password Authenticated Connection
-Establishment (PACE), where the mapping method being used is Chip
-Authentication Mapping. By applying and suitably extending
-Paulson&#39;s Inductive Method, this paper proves that the protocol
-establishes trustworthy secure messaging channels, preserves the
-secrecy of users&#39; passwords, and provides an effective mutual
-authentication service. What is more, these security properties turn
-out to hold independently of the secrecy of the PACE authentication
-key.</description>
     </item>
   </channel>
 </rss>
