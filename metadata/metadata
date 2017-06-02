@@ -1,3 +1,23 @@
+[Optics]
+title = Optics
+author = Simon Foster <mailto:simon.foster@york.ac.uk>, Frank Zeyda <mailto:frank.zeyda@york.ac.uk>
+topic = Computer Science/Functional Programming, Mathematics/Algebra
+date = 2017-05-25
+notify = simon.foster@york.ac.uk
+abstract =
+  Lenses provide an abstract interface for manipulating data types
+  through spatially-separated views. They are defined abstractly in
+  terms of two functions, <em>get</em>, the return a value
+  from the source type, and <em>put</em> that updates the
+  value. We mechanise the underlying theory of lenses, in terms of an
+  algebraic hierarchy of lenses, including well-behaved and very
+  well-behaved lenses, each lens class being characterised by a set of
+  lens laws. We also mechanise a lens algebra in Isabelle that enables
+  their composition and comparison, so as to allow construction of
+  complex lenses. This is accompanied by a large library of algebraic
+  laws. Moreover we also show how the lens classes can be applied by
+  instantiating them with a number of Isabelle data types.
+
 [Game_Based_Crypto]
 title = Game-based cryptography in HOL
 author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html>, S. Reza Sefidgar <>, Bhargav Bhatt <mailto:bhargav.bhatt@inf.ethz.ch>
@@ -1921,6 +1941,32 @@ abstract =
   equationally defined cryptographic operators. We use these extensions
   to develop key agreement protocols including signed Diffie-Hellman and
   the core of IKEv1 and SKEME.
+
+[Security_Protocol_Refinement]
+title = Developing Security Protocols by Refinement
+author = Christoph Sprenger <mailto:sprenger@inf.ethz.ch>, Ivano Somaini<>
+topic = Computer Science/Security
+license = LGPL
+date = 2017-05-24
+notify = sprenger@inf.ethz.ch
+abstract = 
+  We propose a development method for security protocols based on
+  stepwise refinement. Our refinement strategy transforms abstract
+  security goals into protocols that are secure when operating over an
+  insecure channel controlled by a Dolev-Yao-style intruder. As
+  intermediate levels of abstraction, we employ messageless guard
+  protocols and channel protocols communicating over channels with
+  security properties. These abstractions provide insights on why
+  protocols are secure and foster the development of families of
+  protocols sharing common structure and properties. We have implemented
+  our method in Isabelle/HOL and used it to develop different entity
+  authentication and key establishment protocols, including realistic
+  features such as key confirmation, replay caches, and encrypted
+  tickets. Our development highlights that guard protocols and channel
+  protocols provide fundamental abstractions for bridging the gap
+  between security properties and standard protocol descriptions based
+  on cryptographic messages. It also shows that our refinement approach
+  scales to protocols of nontrivial size and complexity.
 
 [Abortable_Linearizable_Modules]
 title = Abortable Linearizable Modules
