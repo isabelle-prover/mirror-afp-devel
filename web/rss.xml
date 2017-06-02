@@ -9,7 +9,52 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>24 May 2017 00:00:00 +0000</pubDate>
+    <pubDate>25 May 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>Optics</title>
+              <link>https://www.isa-afp.org/entries/Optics.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Optics.shtml</guid>
+       <dc:creator> Simon Foster, Frank Zeyda       </dc:creator>
+       <pubDate>25 May 2017 00:00:00 +0000</pubDate>
+       <description>
+Lenses provide an abstract interface for manipulating data types
+through spatially-separated views. They are defined abstractly in
+terms of two functions, &lt;em&gt;get&lt;/em&gt;, the return a value
+from the source type, and &lt;em&gt;put&lt;/em&gt; that updates the
+value. We mechanise the underlying theory of lenses, in terms of an
+algebraic hierarchy of lenses, including well-behaved and very
+well-behaved lenses, each lens class being characterised by a set of
+lens laws. We also mechanise a lens algebra in Isabelle that enables
+their composition and comparison, so as to allow construction of
+complex lenses. This is accompanied by a large library of algebraic
+laws. Moreover we also show how the lens classes can be applied by
+instantiating them with a number of Isabelle data types.</description>
+    </item>
+    <item>
+       <title>Developing Security Protocols by Refinement</title>
+              <link>https://www.isa-afp.org/entries/Security_Protocol_Refinement.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Security_Protocol_Refinement.shtml</guid>
+       <dc:creator> Christoph Sprenger, Ivano Somaini       </dc:creator>
+       <pubDate>24 May 2017 00:00:00 +0000</pubDate>
+       <description>
+We propose a development method for security protocols based on
+stepwise refinement. Our refinement strategy transforms abstract
+security goals into protocols that are secure when operating over an
+insecure channel controlled by a Dolev-Yao-style intruder. As
+intermediate levels of abstraction, we employ messageless guard
+protocols and channel protocols communicating over channels with
+security properties. These abstractions provide insights on why
+protocols are secure and foster the development of families of
+protocols sharing common structure and properties. We have implemented
+our method in Isabelle/HOL and used it to develop different entity
+authentication and key establishment protocols, including realistic
+features such as key confirmation, replay caches, and encrypted
+tickets. Our development highlights that guard protocols and channel
+protocols provide fundamental abstractions for bridging the gap
+between security properties and standard protocol descriptions based
+on cryptographic messages. It also shows that our refinement approach
+scales to protocols of nontrivial size and complexity.</description>
+    </item>
     <item>
        <title>Dictionary Construction</title>
               <link>https://www.isa-afp.org/entries/Dict_Construction.shtml</link>
@@ -508,41 +553,6 @@ developed with for generating test cases for testing the security
 configuration actual firewall and router (middle-boxes) using
 HOL-TestGen. Our work focuses on modeling application level protocols
 on top of tcp/ip.</description>
-    </item>
-    <item>
-       <title>Verification of a Diffie-Hellman Password-based Authentication Protocol by Extending the Inductive Method</title>
-              <link>https://www.isa-afp.org/entries/Password_Authentication_Protocol.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Password_Authentication_Protocol.shtml</guid>
-       <dc:creator> Pasquale Noce       </dc:creator>
-       <pubDate>03 Jan 2017 00:00:00 +0000</pubDate>
-       <description>
-This paper constructs a formal model of a Diffie-Hellman
-password-based authentication protocol between a user and a smart
-card, and proves its security. The protocol provides for the dispatch
-of the user&#39;s password to the smart card on a secure messaging
-channel established by means of Password Authenticated Connection
-Establishment (PACE), where the mapping method being used is Chip
-Authentication Mapping. By applying and suitably extending
-Paulson&#39;s Inductive Method, this paper proves that the protocol
-establishes trustworthy secure messaging channels, preserves the
-secrecy of users&#39; passwords, and provides an effective mutual
-authentication service. What is more, these security properties turn
-out to hold independently of the secrecy of the PACE authentication
-key.</description>
-    </item>
-    <item>
-       <title>First-Order Logic According to Harrison</title>
-              <link>https://www.isa-afp.org/entries/FOL_Harrison.shtml</link>
-       <guid>https://www.isa-afp.org/entries/FOL_Harrison.shtml</guid>
-       <dc:creator> Alexander Birch Jensen, Anders Schlichtkrull, Jørgen Villadsen       </dc:creator>
-       <pubDate>01 Jan 2017 00:00:00 +0000</pubDate>
-       <description>
-We present a certified declarative first-order prover with equality
-based on John Harrison&#39;s Handbook of Practical Logic and
-Automated Reasoning, Cambridge University Press, 2009. ML code
-reflection is used such that the entire prover can be executed within
-Isabelle as a very simple interactive proof assistant. As examples we
-consider Pelletier&#39;s problems 1-46.</description>
     </item>
   </channel>
 </rss>

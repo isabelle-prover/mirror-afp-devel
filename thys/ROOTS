@@ -225,6 +225,7 @@ Noninterference_Sequential_Composition
 NormByEval
 No_FTL_observers
 Open_Induction
+Optics
 Ordinal
 Ordinals_and_Cardinals
 Ordinary_Differential_Equations
@@ -292,6 +293,7 @@ SDS_Impossibility
 SIFPL
 SIFUM_Type_Systems
 Secondary_Sylow
+Security_Protocol_Refinement
 Selection_Heap_Sort
 SenSocialChoice
 Separata
