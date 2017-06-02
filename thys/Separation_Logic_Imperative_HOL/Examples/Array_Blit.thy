@@ -7,6 +7,11 @@ begin
 
 subsection "Definition"
 
+  (* TODO/FIXME: Does not work with same arrays and overlapping ranges.
+    Currently, the generated code will throw an exception if the arrays are the same.
+
+    If only used with blit_rule, separation logic guarantees that arrays will be disjoint.
+  *)
   primrec blit :: "_ array \<Rightarrow> nat \<Rightarrow> _ array \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> unit Heap" where
     "blit _ _ _ _ 0 = return ()"
   | "blit src si dst di (Suc l) = do {
@@ -63,15 +68,16 @@ ML_val Array.update
 subsection "Code Generator Setup"
   code_printing code_module "array_blit" \<rightharpoonup> (SML)
     {*
-    fun array_blit src si dst di len = 
+   fun array_blit src si dst di len = (
+      src=dst andalso raise Fail ("array_blit: Same arrays");
       ArraySlice.copy {
-        di=di,
-        src = ArraySlice.slice (src,si,SOME len),
-        dst=dst}
+        di = IntInf.toInt di,
+        src = ArraySlice.slice (src,IntInf.toInt si,SOME (IntInf.toInt len)),
+        dst = dst})
 
-    fun array_nth_oo v a i () = Array.sub(a,i) handle Subscript => v
+    fun array_nth_oo v a i () = Array.sub(a,IntInf.toInt i) handle Subscript => v | Overflow => v
     fun array_upd_oo f i x a () = 
-      (Array.update(a,i,x); a) handle Subscript => f ()
+      (Array.update(a,IntInf.toInt i,x); a) handle Subscript => f () | Overflow => f ()
 
     *}
 
@@ -85,10 +91,18 @@ subsection "Code Generator Setup"
       = blit' src (integer_of_nat si) dst (integer_of_nat di) 
           (integer_of_nat len)" by (simp add: blit'_def)
 
-  (* TODO: Export to other languages: OCaml, Haskell, Scala *)
+  (* TODO: Export to other languages: OCaml, Haskell *)
   code_printing constant blit' \<rightharpoonup>
     (SML) "(fn/ ()/ => /array'_blit _ _ _ _ _)"
-    and (Scala) "('_: Unit)/=>/ System.arraycopy((_).array,(_).as'_Int,(_).array,(_).as'_Int,(_).as'_Int)"
+    and (Scala) "{ ('_: Unit)/=>/
+      def safecopy(src: Array['_], srci: Int, dst: Array['_], dsti: Int, len: Int) = {
+        if (src eq dst)
+          sys.error(\"array'_blit: Same arrays\")
+        else
+          System.arraycopy(src, srci, dst, dsti, len)
+      }
+      safecopy(_.array,_.toInt,_.array,_.toInt,_.toInt)
+    }"
   
   definition [code del]: "nth_oo' v a == nth_oo v a o nat_of_integer"
   definition [code del]: "upd_oo' f == upd_oo f o nat_of_integer"
@@ -148,5 +162,7 @@ subsection {* Derived Functions *}
     unfolding array_grow_def
     by sep_auto
 
+      
+  export_code array_grow checking SML Scala    
 
 end

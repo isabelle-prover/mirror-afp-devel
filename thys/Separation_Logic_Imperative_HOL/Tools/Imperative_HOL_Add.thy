@@ -6,16 +6,6 @@ begin
 text {* This theory loads the Imperative HOL framework and provides 
         some additional lemmas needed for the separation logic framework. *} 
 
-text {* Arrays and references can also be stored on the heap *}
-instance array :: (type) heap ..
-instance ref :: (type) heap ..
-
-text {* Characters can be stored on the heap *}
-instantiation char :: heap begin
-  instance ..
-end
-
-
 text {* A stronger elimination rule for @{text ref} *}
 
 lemma effect_ref[effect_elims]:

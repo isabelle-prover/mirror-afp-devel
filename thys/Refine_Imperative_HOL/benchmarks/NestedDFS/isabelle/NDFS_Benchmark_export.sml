@@ -110,19 +110,19 @@ fun shrink (aref, sz) = case aref of
 structure IsabelleMapping = struct
 type 'a ArrayType = 'a array;
 
-fun new_array (a:'a) (n:int) = array (n, a);
+fun new_array (a:'a) (n:IntInf.int) = array (IntInf.toInt n, a);
 
-fun array_length (a:'a ArrayType) = length a;
+fun array_length (a:'a ArrayType) = IntInf.fromInt (length a);
 
-fun array_get (a:'a ArrayType) (i:int) = sub (a, i);
+fun array_get (a:'a ArrayType) (i:IntInf.int) = sub (a, IntInf.toInt i);
 
-fun array_set (a:'a ArrayType) (i:int) (e:'a) = update (a, i, e);
+fun array_set (a:'a ArrayType) (i:IntInf.int) (e:'a) = update (a, IntInf.toInt i, e);
 
 fun array_of_list (xs:'a list) = fromList xs;
 
-fun array_grow (a:'a ArrayType) (i:int) (x:'a) = grow (a, i, x);
+fun array_grow (a:'a ArrayType) (i:IntInf.int) (x:'a) = grow (a, IntInf.toInt i, x);
 
-fun array_shrink (a:'a ArrayType) (sz:int) = shrink (a,sz);
+fun array_shrink (a:'a ArrayType) (sz:IntInf.int) = shrink (a,IntInf.toInt sz);
 
 end;
 
@@ -213,25 +213,25 @@ structure FArray = struct
 structure IsabelleMapping = struct
 type 'a ArrayType = 'a array;
 
-fun new_array (a:'a) (n:int) = array (n, a);
+fun new_array (a:'a) (n:IntInf.int) = array (IntInf.toInt n, a);
 
-fun array_length (a:'a ArrayType) = length a;
+fun array_length (a:'a ArrayType) = IntInf.fromInt (length a);
 
-fun array_get (a:'a ArrayType) (i:int) = sub (a, i);
+fun array_get (a:'a ArrayType) (i:IntInf.int) = sub (a, IntInf.toInt i);
 
-fun array_set (a:'a ArrayType) (i:int) (e:'a) = update (a, i, e);
+fun array_set (a:'a ArrayType) (i:IntInf.int) (e:'a) = update (a, IntInf.toInt i, e);
 
 fun array_of_list (xs:'a list) = fromList xs;
 
-fun array_grow (a:'a ArrayType) (i:int) (x:'a) = grow (a, i, x);
+fun array_grow (a:'a ArrayType) (i:IntInf.int) (x:'a) = grow (a, IntInf.toInt i, x);
 
-fun array_shrink (a:'a ArrayType) (sz:int) = shrink (a,sz);
+fun array_shrink (a:'a ArrayType) (sz:IntInf.int) = shrink (a,IntInf.toInt sz);
 
-fun array_get_oo (d:'a) (a:'a ArrayType) (i:int) =
-  sub (a,i) handle Subscript => d
+fun array_get_oo (d:'a) (a:'a ArrayType) (i:IntInf.int) =
+  sub (a,IntInf.toInt i) handle Subscript => d
 
-fun array_set_oo (d:(unit->'a ArrayType)) (a:'a ArrayType) (i:int) (e:'a) =
-  update (a, i, e) handle Subscript => d ()
+fun array_set_oo (d:(unit->'a ArrayType)) (a:'a ArrayType) (i:IntInf.int) (e:'a) =
+  update (a, IntInf.toInt i, e) handle Subscript => d ()
 
 end;
 end;
@@ -240,15 +240,16 @@ end;
 
 
 
-    fun array_blit src si dst di len = 
+   fun array_blit src si dst di len = (
+      src=dst andalso raise Fail ("array_blit: Same arrays");
       ArraySlice.copy {
-        di=di,
-        src = ArraySlice.slice (src,si,SOME len),
-        dst=dst}
+        di = IntInf.toInt di,
+        src = ArraySlice.slice (src,IntInf.toInt si,SOME (IntInf.toInt len)),
+        dst = dst})
 
-    fun array_nth_oo v a i () = Array.sub(a,i) handle Subscript => v
+    fun array_nth_oo v a i () = Array.sub(a,IntInf.toInt i) handle Subscript => v | Overflow => v
     fun array_upd_oo f i x a () = 
-      (Array.update(a,i,x); a) handle Subscript => f ()
+      (Array.update(a,IntInf.toInt i,x); a) handle Subscript => f () | Overflow => f ()
 
     
 
@@ -400,22 +401,26 @@ fun max A_ a b = (if less_eq A_ a b then b else a);
 
 fun nat_of_integer k = Nat (max ord_integer (0 : IntInf.int) k);
 
-fun len A_ a = (fn () => let
-                           val i = (fn () => Array.length a) ();
-                         in
-                           nat_of_integer i
-                         end);
+fun len A_ a =
+  (fn () => let
+              val i = (fn () => IntInf.fromInt (Array.length a)) ();
+            in
+              nat_of_integer i
+            end);
 
-fun new A_ = (fn a => fn b => (fn () => Array.array (a, b))) o integer_of_nat;
+fun new A_ =
+  (fn a => fn b => (fn () => Array.array (IntInf.toInt a, b))) o integer_of_nat;
 
-fun nth A_ a n = (fn () => Array.sub (a, integer_of_nat n));
+fun nth A_ a n = (fn () => Array.sub (a, IntInf.toInt (integer_of_nat n)));
 
 fun upd A_ i x a =
-  (fn () => let
-              val _ = (fn () => Array.update (a, integer_of_nat i, x)) ();
-            in
-              a
-            end);
+  (fn () =>
+    let
+      val _ =
+        (fn () => Array.update (a, IntInf.toInt (integer_of_nat i), x)) ();
+    in
+      a
+    end);
 
 fun fold f (x :: xs) s = fold f xs (f x s)
   | fold f [] s = s;
