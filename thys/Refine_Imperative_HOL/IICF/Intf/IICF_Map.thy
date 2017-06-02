@@ -154,7 +154,7 @@ lemma pat_map_lookup[pat_rules]: "m$k \<equiv> op_map_lookup$'k$'m"
 lemma op_map_delete_pat[pat_rules]: 
   "op |` $ m $ (uminus $ (insert $ k $ {})) \<equiv> op_map_delete$'k$'m"
   "fun_upd$m$k$None \<equiv> op_map_delete$'k$'m"
-  by simp_all
+  by (simp_all add: map_upd_eq_restrict)
 
 lemma op_map_contains_key[pat_rules]: 
   "op \<in> $ k $ (dom$m) \<equiv> op_map_contains_key$'k$'m"

@@ -177,7 +177,7 @@ lemma cs_pop_rule:
 
 lemma cs_pop_impl: "imp_list_pop cs_list cs_pop"
   apply unfold_locales 
-  apply (sep_auto heap: cs_pop_rule elim!: list_not_emptyE)
+  apply (sep_auto heap: cs_pop_rule elim!: neq_NilE)
   done
 interpretation cs: imp_list_pop cs_list cs_pop by (rule cs_pop_impl)
 

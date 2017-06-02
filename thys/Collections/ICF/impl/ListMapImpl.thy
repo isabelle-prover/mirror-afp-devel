@@ -37,7 +37,7 @@ interpretation lm_basic: StdBasicMapDefs lm_basic_ops .
 interpretation lm_basic: StdBasicMap lm_basic_ops
   apply unfold_locales
   apply (simp_all add: icf_rec_unf 
-    Assoc_List.lookup_empty' Assoc_List.iteratei_correct)
+    Assoc_List.lookup_empty' Assoc_List.iteratei_correct map_upd_eq_restrict)
   done
 setup Locale_Code.close_block
 

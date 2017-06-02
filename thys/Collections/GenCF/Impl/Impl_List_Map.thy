@@ -403,9 +403,10 @@ next
     proof (cases "(fst x) =  k")
       case True
         with Cons.prems(3) have "map_of xs (fst x) = None" 
-            by (induction xs, simp_all)
+          by (induction xs, simp_all)
         with fun_upd_triv[of "map_of xs" "fst x"]
-            have "map_of xs |` (- {fst x}) = map_of xs" by simp
+        have "map_of xs |` (- {fst x}) = map_of xs" 
+          by (simp add: map_upd_eq_restrict)
         with True have"(xs @ accu, accu' ++ op_map_delete k' m')
                            \<in> br map_of list_map_invar"
             using K Cons.prems unfolding br_def

@@ -2426,7 +2426,7 @@ locale robdd_locale =
         case True note rv_eq [simp] = this
 
         from invars_greater(2) have r_simp :
-           "\<And>a. robdd_\<alpha> r (\<lambda>x. x \<noteq> v \<and> (x \<noteq> v \<longrightarrow> a x)) = robdd_\<alpha> r a"      
+           "\<And>a. robdd_\<alpha> r (\<lambda>x. x \<noteq> v \<and> a x) = robdd_\<alpha> r a"      
           apply (rule_tac robdd_\<alpha>_invar_greater[of "Suc v"])
           apply (simp_all)
         done
@@ -2440,6 +2440,7 @@ locale robdd_locale =
         from b_invar robdd_invar_ext_weaken_var[of bs "Suc v" _ n]
         have "robdd_invar_ext bs n l" "robdd_invar_ext bs n r" by simp_all
         thus ?thesis using b_invar b_sub
+          supply map_upd_eq_restrict[simp]  
           apply (rule_tac exI[where x = bs]) 
           apply (simp add: invar_rev_map invar_res_map robdd_restrict.simps)
           apply (simp add: l_simp r_simp subset_iff)

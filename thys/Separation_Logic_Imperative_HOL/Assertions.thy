@@ -1,7 +1,10 @@
 section "Assertions"
 
 theory Assertions
-imports "Tools/Imperative_HOL_Add" "Tools/Syntax_Match" "Tools/Sep_Misc"
+imports 
+  "Tools/Imperative_HOL_Add" 
+  "Tools/Syntax_Match" 
+  "../Automatic_Refinement/Lib/Misc"
 begin
 
 subsection {* Partial Heaps *}

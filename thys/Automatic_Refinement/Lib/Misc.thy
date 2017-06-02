@@ -121,6 +121,9 @@ by metis
 lemma bex2I[intro?]: "\<lbrakk> (a,b)\<in>S; (a,b)\<in>S \<Longrightarrow> P a b \<rbrakk> \<Longrightarrow> \<exists>a b. (a,b)\<in>S \<and> P a b"
   by blast
 
+lemma imp_mp_iff[simp]: "a \<and> (a \<longrightarrow> b) \<longleftrightarrow> a \<and> b" 
+  by metis
+    
 
 subsection {* Sets *}
 
@@ -896,6 +899,16 @@ lemma length_dropWhile_takeWhile:
   using assms
   by (induct xs) auto
 
+text {* Elim-version of @{thm neq_Nil_conv}. *}  
+lemma neq_NilE: 
+  assumes "l\<noteq>[]"
+  obtains x xs where "l=x#xs" 
+  using assms by (metis list.exhaust)
+
+(* TODO: Move, analogous to List.length_greater_0_conv *) 
+lemma length_ge_1_conv[iff]: "Suc 0 \<le> length l \<longleftrightarrow> l\<noteq>[]"
+  by (cases l) auto
+    
 
 subsubsection {* List Destructors *}
 lemma not_hd_in_tl:
@@ -948,6 +961,11 @@ lemma butlast_upd_last_eq[simp]: "length l \<ge> 2 \<Longrightarrow>
   apply simp
   done
 
+lemma distinct_butlast_swap[simp]: 
+  "distinct pq \<Longrightarrow> distinct (butlast (pq[i := last pq]))"
+  apply (cases pq rule: rev_cases)
+  apply (auto simp: list_update_append distinct_list_update split: nat.split)
+  done
 
 subsubsection {* @{text "list_all2"} *}
 lemma list_all2_induct[consumes 1, case_names Nil Cons]:
@@ -962,30 +980,40 @@ lemma list_all2_induct[consumes 1, case_names Nil Cons]:
   done
 
 
-subsubsection {* Reverse lists *}
-  lemma list_rev_decomp[rule_format]: "l~=[] \<longrightarrow> (EX ll e . l = ll@[e])"
-    apply(induct_tac l)
-    apply(auto)
+subsubsection \<open>Indexing\<close>    
+
+lemma ran_nth_set_encoding_conv[simp]: 
+  "ran (\<lambda>i. if i<length l then Some (l!i) else None) = set l"
+  apply safe
+  apply (auto simp: ran_def split: if_split_asm) []
+  apply (auto simp: in_set_conv_nth intro: ranI) []
   done
 
-  (* Was already there as rev_induct
-  lemma list_rev_induct: "\<lbrakk>P []; !! l e . P l \<Longrightarrow> P (l@[e]) \<rbrakk> \<Longrightarrow> P l"
-    by (blast intro: rev_induct)
-  proof (induct l rule: measure_induct[of length])
-    fix x :: "'a list"
-    assume A: "\<forall>y. length y < length x \<longrightarrow> P [] \<longrightarrow> (\<forall>x xa. P (x::'a list) \<longrightarrow> P (x @ [xa])) \<longrightarrow> P y" "P []" and IS: "\<And>l e. P l \<Longrightarrow> P (l @ [e])"
-    show "P x" proof (cases "x=[]")
-      assume "x=[]" with A show ?thesis by simp
-    next
-      assume CASE: "x~=[]"
-      then obtain xx e where DECOMP: "x=xx@[e]" by (blast dest: list_rev_decomp)
-      hence LEN: "length xx < length x" by auto
-      with A IS have "P xx" by auto
-      with IS have "P (xx@[e])" by auto
-      with DECOMP show ?thesis by auto
-    qed
-  qed
-  *)
+lemma nth_image_indices[simp]: "op ! l ` {0..<length l} = set l"
+  by (auto simp: in_set_conv_nth)
+
+lemma nth_update_invalid[simp]:"\<not>i<length l \<Longrightarrow> l[j:=x]!i = l!i"  
+  apply (induction l arbitrary: i j)
+  apply (auto split: nat.splits)
+  done
+
+lemma nth_list_update': "l[i:=x]!j = (if i=j \<and> i<length l then x else l!j)"  
+  by auto
+
+lemma last_take_nth_conv: "n \<le> length l \<Longrightarrow> n\<noteq>0 \<Longrightarrow> last (take n l) = l!(n - 1)"
+  apply (induction l arbitrary: n)
+  apply (auto simp: take_Cons split: nat.split)
+  done
+
+    
+subsubsection {* Reverse lists *}
+  lemma neq_Nil_revE: 
+    assumes "l\<noteq>[]" 
+    obtains ll e  where "l = ll@[e]"
+    using assms by (cases l rule: rev_cases) auto
+      
+  lemma neq_Nil_rev_conv: "l\<noteq>[] \<longleftrightarrow> (\<exists>xs x. l = xs@[x])"
+    by (cases l rule: rev_cases) auto
 
   text {* Caution: Same order of case variables in snoc-case as @{thm [source] rev_exhaust}, the other way round than @{thm [source] rev_induct} ! *}
   lemma length_compl_rev_induct[case_names Nil snoc]: "\<lbrakk>P []; !! l e . \<lbrakk>!! ll . length ll <= length l \<Longrightarrow> P ll\<rbrakk> \<Longrightarrow> P (l@[e])\<rbrakk> \<Longrightarrow> P l"
@@ -1026,9 +1054,6 @@ lemma revg_fun[simp]: "revg a b = rev a @ b"
 lemma rev_split_conv[simp]:
   "l \<noteq> [] \<Longrightarrow> rev (tl l) @ [hd l] = rev l"
 by (induct l) simp_all
-
-lemma neq_Nil_rev_conv: "l\<noteq>[] \<longleftrightarrow> (\<exists>xs x. l = xs@[x])"
-  by (cases l rule: rev_cases) auto
 
 lemma rev_butlast_is_tl_rev: "rev (butlast l) = tl (rev l)"
   by (induct l) auto
@@ -1453,8 +1478,7 @@ lemma restrict_map_inv[simp]: "f |` (- dom f) = Map.empty"
 lemma restrict_map_upd: "(f |` S)(k \<mapsto> v) = f(k\<mapsto>v) |` (insert k S)"
   by (auto simp add: restrict_map_def intro: ext)
 
-    (* TODO: Should we, instead, add the symmetric version to the simpset *)
-lemma map_upd_eq_restrict[simp]: "m (x:=None) = m |` (-{x})"
+lemma map_upd_eq_restrict: "m (x:=None) = m |` (-{x})"
   by (auto intro: ext)
 
 declare Map.finite_dom_map_of [simp, intro!]
@@ -1476,7 +1500,7 @@ lemma rel_of_empty[simp]: "rel_of Map.empty P = {}"
 lemma remove1_tl: "xs \<noteq> [] \<Longrightarrow> remove1 (hd xs) xs = tl xs"
   by (cases xs) auto
 
-subsubsection "Filter an Revert"
+subsubsection "Filter and Revert"
 primrec filter_rev_aux where
   "filter_rev_aux a P [] = a"
 | "filter_rev_aux a P (x#xs) = (
@@ -3157,8 +3181,28 @@ lemma sndE:
   "x = (a,b) \<Longrightarrow> P (snd x) \<Longrightarrow> P b"
 by (metis snd_conv)
 
+subsubsection \<open>Uncurrying\<close>
 
+(* TODO: Move to HOL/Product_Type? *)
+definition uncurry :: "('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> 'a \<times> 'b \<Rightarrow> 'c" where
+  "uncurry f \<equiv> \<lambda>(a,b). f a b"
 
+lemma uncurry_apply[simp]: "uncurry f (a,b) = f a b"
+  unfolding uncurry_def
+  by simp
+
+lemma curry_uncurry_id[simp]: "curry (uncurry f) = f"
+  unfolding uncurry_def
+  by simp
+
+lemma uncurry_curry_id[simp]: "uncurry (curry f) = f"
+  unfolding uncurry_def
+  by simp
+
+lemma do_curry: "f (a,b) = curry f a b" by simp
+lemma do_uncurry: "f a b = uncurry f (a,b)" by simp
+  
+  
 subsection {* Directed Graphs and Relations *}
 
   subsubsection "Reflexive-Transitive Closure"
@@ -4009,11 +4053,7 @@ lemma map_of_distinct_upd4:
   assumes "x \<notin> set(map fst xs)"
   "x \<notin> set (map fst ys)"
   shows "map_of (xs @ ys) = (map_of (xs @ (x,y) # ys))(x := None)"
-  apply(insert assms)
-  apply(induct xs)
-  apply (auto simp add: map_of_eq_None_iff
-    intro: ext)
-  by (metis fun_upd_triv map_of_eq_None_iff restrict_complement_singleton_eq)
+  using assms by (induct xs) (auto simp: map_of_eq_None_iff)
 
 lemma map_of_distinct_lookup:
   assumes "x \<notin> set(map fst xs)"
@@ -4288,6 +4328,11 @@ lemma min_simps[simp]:
   "b<(a::'a::order) \<Longrightarrow> min a b = b"
   by (auto simp add: min_def dest: less_imp_le)
 
+lemma (in -) min_less_self_conv[simp]: 
+  "min a b < a \<longleftrightarrow> b < (a::_::linorder)" 
+  "min a b < b \<longleftrightarrow> a < (b::_::linorder)" 
+  by (auto simp: min_def)
+    
 lemma ord_eq_le_eq_trans: "\<lbrakk> a=b; b\<le>c; c=d \<rbrakk> \<Longrightarrow> a\<le>d" by auto
 
 

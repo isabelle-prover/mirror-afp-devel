@@ -261,30 +261,34 @@ begin
     val mk_compN = mk_compN1 []    
   \<close>
 
-  (***************************************)  
-  (* Move to Sep_Misc, near uncurry2  *)
-  lemma fold_partial_uncurry: "uncurry (\<lambda>(ps, cf). f ps cf) = uncurry2 f" by auto
 
+  text \<open>Uncurry0\<close>  
   definition "uncurry0 c \<equiv> \<lambda>_::unit. c"
   definition curry0 :: "(unit \<Rightarrow> 'a) \<Rightarrow> 'a" where "curry0 f = f ()"
-
   lemma uncurry0_apply[simp]: "uncurry0 c x = c" by (simp add: uncurry0_def)
 
   lemma curry_uncurry0_id[simp]: "curry0 (uncurry0 f) = f" by (simp add: curry0_def)
   lemma uncurry_curry0_id[simp]: "uncurry0 (curry0 g) = g" by (auto simp: curry0_def)
-
-  (* TODO: Move *)  
-  lemma param_uncurry[param]: "(uncurry,uncurry) \<in> (A\<rightarrow>B\<rightarrow>C) \<rightarrow> A\<times>\<^sub>rB\<rightarrow>C"
-    unfolding uncurry_def[abs_def] by parametricity
   lemma param_uncurry0[param]: "(uncurry0,uncurry0) \<in> A \<rightarrow> (unit_rel\<rightarrow>A)" by auto
-
-
+    
+  text \<open>Abbreviations for higher-order uncurries\<close>    
+  abbreviation "uncurry2 f \<equiv> uncurry (uncurry f)"
+  abbreviation "curry2 f \<equiv> curry (curry f)"
   abbreviation "uncurry3 f \<equiv> uncurry (uncurry2 f)"
   abbreviation "curry3 f \<equiv> curry (curry2 f)"
   abbreviation "uncurry4 f \<equiv> uncurry (uncurry3 f)"
   abbreviation "curry4 f \<equiv> curry (curry3 f)"
   abbreviation "uncurry5 f \<equiv> uncurry (uncurry4 f)"
   abbreviation "curry5 f \<equiv> curry (curry4 f)"
+
+  lemma fold_partial_uncurry: "uncurry (\<lambda>(ps, cf). f ps cf) = uncurry2 f" by auto
+
+
+  (* TODO: Move *)  
+  lemma param_uncurry[param]: "(uncurry,uncurry) \<in> (A\<rightarrow>B\<rightarrow>C) \<rightarrow> A\<times>\<^sub>rB\<rightarrow>C"
+    unfolding uncurry_def[abs_def] by parametricity
+
+
   
 
   (* TODO: Move *)  

@@ -8,7 +8,6 @@ session "Separation_Logic_Imperative_HOL" (AFP) = "HOL-Library" +
     "../Collections/Lib/HashCode"
     "../Collections/Lib/Code_Target_ICF"
     "../Automatic_Refinement/Lib/Misc"
-    "Tools/Sep_Misc"
   theories
     Sep_Main
     "Examples/Imp_List_Spec"
