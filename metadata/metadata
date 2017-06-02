@@ -259,7 +259,7 @@ notify = lammich@in.tum.de
 abstract =
   We present a formalization of flow networks and the Min-Cut-Max-Flow
   theorem. Our formal proof closely follows a standard textbook proof,
-  and is accessible even without being an expert in Isabelle/HOL--- the
+  and is accessible even without being an expert in Isabelle/HOL, the
   interactive theorem prover used for the formalization.
 
 [Prpu_Maxflow]
