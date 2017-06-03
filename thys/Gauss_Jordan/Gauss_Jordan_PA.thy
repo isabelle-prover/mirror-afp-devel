@@ -299,7 +299,7 @@ case False note Suc_n_not_i=False
 case True
 show "fst (row_add_iterate_PA (P, A) (Suc n) i j) $ a $ b = row_add P a i (- A $ a $ j) $ a $ b"
 unfolding row_add_iterate_PA.simps if_not_P[OF False]
-by (metis Suc_le_lessD True dual_order.order_refl less_imp_le fst_row_add_iterate_PA_preserves_greater_than_n Suc.prems(2) to_nat_from_nat nrows_def)
+by (metis Suc_le_lessD True order_refl less_imp_le fst_row_add_iterate_PA_preserves_greater_than_n Suc.prems(2) to_nat_from_nat nrows_def)
 next
 case False
 def A'\<equiv>"(row_add A (from_nat (Suc n)) i (- A $ from_nat (Suc n) $ j))"

@@ -38,7 +38,7 @@ subsection{*Code equations*}
 
 text{*Code equations to make more efficient the computations.*}
 lemma basis_null_space_code[code]: "basis_null_space A = (let GJ = Gauss_Jordan_PA (transpose A); 
-                                                               rank_A = (if A = 0 then 0 else to_nat (GREATEST' a. row a (snd GJ) \<noteq> 0) + 1) 
+                                                               rank_A = (if A = 0 then 0 else to_nat (GREATEST a. row a (snd GJ) \<noteq> 0) + 1) 
                                                                in {row i (fst GJ) | i. to_nat i \<ge> rank_A})"
 unfolding basis_null_space_def Let_def P_Gauss_Jordan_def
 unfolding Gauss_Jordan_PA_eq
@@ -54,7 +54,7 @@ lemma basis_col_space_code[code]: "basis_col_space A = (let A' = Gauss_Jordan (t
 unfolding basis_col_space_def Let_def ..
 
 lemma basis_left_null_space_code[code]: "basis_left_null_space A = (let GJ = Gauss_Jordan_PA A; 
-                                                               rank_A = (if A = 0 then 0 else to_nat (GREATEST' a. row a (snd GJ) \<noteq> 0) + 1)
+                                                               rank_A = (if A = 0 then 0 else to_nat (GREATEST a. row a (snd GJ) \<noteq> 0) + 1)
                                                                in {row i (fst GJ) | i. to_nat i \<ge> rank_A})"
 unfolding basis_left_null_space_def Let_def P_Gauss_Jordan_def
 unfolding Gauss_Jordan_PA_eq
