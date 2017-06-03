@@ -1838,7 +1838,7 @@ proof (auto simp add: Let_def, metis invertible_def matrix_mul_lid)
     finally show "?Ain div ass (?Ain) * (ass (?Ain) div ?Ain) = 1" .
   qed
   obtain Q where inv_Q: "invertible Q" and H_QM: "Hermite_reduce_above ?M (to_nat i) i ?n res = Q ** ?M" 
-    using invertible_Hermite_reduce_above by blast
+    using invertible_Hermite_reduce_above by fast
   have inv_QP: "invertible (Q**?P)"
     by (metis inv_P inv_Q invertible_mult)
   have "Hermite_reduce_above ?M (to_nat i) i ?n res = Q ** ?M" by (rule H_QM)
