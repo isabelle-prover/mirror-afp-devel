@@ -1,11 +1,10 @@
 chapter AFP
 
-
 session Iptables_Semantics (AFP) = Routing +
   options [timeout = 1200]
-  theories[document=false]
+  theories [document = false]
     "~~/src/HOL/Library/LaTeXsugar"
-    (*The Native_Word things destory the latex document! Does not compile, ...*)
+    (*The Native_Word things destroy the LaTeX document! Does not compile, ...*)
     "../Native_Word/More_Bits_Int"
     "../Native_Word/Code_Target_Bits_Int"
     "~~/src/HOL/Library/Code_Target_Nat"
@@ -44,7 +43,6 @@ session Iptables_Semantics (AFP) = Routing +
     "root.tex"
     "root.bib"
     "mathpartir.sty"
-
 
 session Iptables_Semantics_Examples (AFP slow very_slow) = Iptables_Semantics +
   options [timeout = 60000]
