@@ -70,17 +70,17 @@ definition
                           \<lfloor>y\<rfloor> \<Rightarrow> \<lfloor>allow (y)\<rfloor>
                          |\<bottom> \<Rightarrow> \<bottom>)"
 
-syntax (xsymbols)
+syntax
   "_allow_pfun"  :: "('\<alpha> \<rightharpoonup>'\<beta>) \<Rightarrow> ('\<alpha> \<mapsto> '\<beta>)" ("A\<^sub>p")
 translations
   "A\<^sub>p f" \<rightleftharpoons> "AllA f"
 
-syntax (xsymbols)
+syntax
   "_deny_pfun"  :: "('\<alpha> \<rightharpoonup>'\<beta>) \<Rightarrow> ('\<alpha> \<mapsto> '\<beta>)" ("D\<^sub>p")
 translations
   "D\<^sub>p f" \<rightleftharpoons> "AllD f"
 
-notation (xsymbols)
+notation
    "deny_pfun"  (binder "\<forall>D" 10) and
    "allow_pfun" (binder "\<forall>A" 10)
 

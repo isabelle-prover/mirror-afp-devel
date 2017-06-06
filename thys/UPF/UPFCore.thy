@@ -84,7 +84,7 @@ text{*In the following, we introduce a number of shortcuts and alternative notat
 The type of policies is represented as: *}
 
 translations (type)        "'\<alpha> |-> '\<beta>" <= (type) "'\<alpha>  \<rightharpoonup> '\<beta> decision"
-type_notation (xsymbols)   "policy" (infixr "\<mapsto>" 0) 
+type_notation "policy" (infixr "\<mapsto>" 0) 
 
 text{* ... allowing the notation @{typ "'\<alpha> \<mapsto> '\<beta>"}  for the policy type and the
 alternative notations for @{term None} and @{term Some} of the \HOL library 
@@ -123,16 +123,12 @@ text{*
 nonterminal policylets and policylet
 
 syntax
-  "_policylet1"  :: "['a, 'a] => policylet"                 ("_ /+=/ _")
-  "_policylet2"  :: "['a, 'a] => policylet"                 ("_ /-=/ _")
+  "_policylet1"  :: "['a, 'a] => policylet"                 ("_ /\<mapsto>\<^sub>+/ _")
+  "_policylet2"  :: "['a, 'a] => policylet"                 ("_ /\<mapsto>\<^sub>-/ _")
   ""             :: "policylet => policylets"               ("_")
   "_Maplets"     :: "[policylet, policylets] => policylets" ("_,/ _")
   "_Maplets"     :: "[policylet, policylets] => policylets" ("_,/ _")
    "_MapUpd"      :: "['a |-> 'b, policylets] => 'a |-> 'b"  ("_/'(_')" [900,0]900)
-
-syntax (xsymbols)
-  "_policylet1"  :: "['a, 'a] => policylet"                 ("_ /\<mapsto>\<^sub>+/ _")
-  "_policylet2"  :: "['a, 'a] => policylet"                 ("_ /\<mapsto>\<^sub>-/ _")
   "_emptypolicy" :: "'a |-> 'b"                             ("\<emptyset>")
 
 translations
@@ -142,7 +138,7 @@ translations
   "\<emptyset>"                            \<rightleftharpoons> "CONST empty" 
 
 text{* Here are some lemmas essentially showing syntactic equivalences: *}
-lemma test: "empty(x+=a, y-= b) = \<emptyset>(x \<mapsto>\<^sub>+ a, y \<mapsto>\<^sub>- b)"   by simp
+lemma test: "empty(x\<mapsto>\<^sub>+a, y\<mapsto>\<^sub>-b) = \<emptyset>(x \<mapsto>\<^sub>+ a, y \<mapsto>\<^sub>- b)"   by simp
 
 lemma test2: "p(x\<mapsto>\<^sub>+a,x\<mapsto>\<^sub>-b) = p(x\<mapsto>\<^sub>-b)"   by simp
 
@@ -181,12 +177,8 @@ text{*
   theory (which does it in reverse order).
 *}
 
-syntax 
-  "_policyoverride"  :: "['a \<mapsto> 'b, 'a \<mapsto> 'b] \<Rightarrow> 'a \<mapsto> 'b" (infixl "(+p/)" 100)
-
-syntax (xsymbols)
+syntax
   "_policyoverride"  :: "['a \<mapsto> 'b, 'a \<mapsto> 'b] \<Rightarrow> 'a \<mapsto> 'b" (infixl "\<Oplus>" 100)
-
 translations
   "p \<Oplus> q" \<rightleftharpoons> "q ++ p" 
 
@@ -218,9 +210,8 @@ where  "m2 ++_A m1 =
                | \<bottom> \<Rightarrow> m2 x)
            )"
 
-syntax (xsymbols)
+syntax
   "_policyoverride_A"  :: "['a \<mapsto> 'b, 'a \<mapsto> 'b] \<Rightarrow> 'a \<mapsto> 'b" (infixl "\<Oplus>\<^sub>A" 100)
-
 translations
   "p \<Oplus>\<^sub>A q" \<rightleftharpoons> "p ++_A q"
 
@@ -253,7 +244,7 @@ where "m1 ++_D m2 =
               | \<bottom> \<Rightarrow> m1 x 
            )"
  
-syntax (xsymbols)
+syntax
   "_policyoverride_D"  :: "['a \<mapsto> 'b, 'a \<mapsto> 'b] \<Rightarrow> 'a \<mapsto> 'b" (infixl "\<Oplus>\<^sub>D" 100)
 translations
   "p \<Oplus>\<^sub>D q" \<rightleftharpoons> "p ++_D q"
@@ -294,9 +285,8 @@ where
                    | \<lfloor>deny y\<rfloor> \<Rightarrow> \<lfloor>deny (f y)\<rfloor>
                    | \<bottom> \<Rightarrow> \<bottom>)"
 
-syntax (xsymbols)
+syntax
   "_policy_range_comp" :: "['\<beta>\<Rightarrow>'\<gamma>, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha> \<mapsto>'\<gamma>" (infixl "o\<^sub>f" 55)
-
 translations
   "p o\<^sub>f q" \<rightleftharpoons> "p o_f q"
 
