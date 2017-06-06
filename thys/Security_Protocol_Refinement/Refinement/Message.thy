@@ -1,4 +1,4 @@
-(*******************************************************************************  
+(*******************************************************************************
 
   Title:      HOL/Auth/Message
   Author:     Lawrence C Paulson, Cambridge University Computer Laboratory
@@ -35,24 +35,20 @@ datatype
          | Crypt  key msg   --{*Encryption, public- or shared-key*}
 
 
-text{*Concrete syntax: messages appear as {|A,B,NA|}, etc...*}
+text{*Concrete syntax: messages appear as \<open>\<lbrace>A,B,NA\<rbrace>\<close>, etc...*}
 
 syntax
-  "_MTuple"      :: "['a, args] => 'a * 'b"       ("(2{|_,/ _|})")
-
-syntax (xsymbols)
   "_MTuple"      :: "['a, args] => 'a * 'b"       ("(2\<lbrace>_,/ _\<rbrace>)")
-
 translations
-  "{|x, y, z|}"   == "{|x, {|y, z|}|}"
-  "{|x, y|}"      == "CONST MPair x y"
+  "\<lbrace>x, y, z\<rbrace>"   == "\<lbrace>x, \<lbrace>y, z\<rbrace>\<rbrace>"
+  "\<lbrace>x, y\<rbrace>"      == "CONST MPair x y"
 
 
 definition
   HPair :: "[msg,msg] \<Rightarrow> msg"                       ("(4Hash[_] /_)" [0, 1000])
 where
   --{*Message Y paired with a MAC computed with the help of X*}
-  "Hash[X] Y \<equiv> {| Hash{|X,Y|}, Y|}"
+  "Hash[X] Y \<equiv> \<lbrace>Hash\<lbrace>X,Y\<rbrace>, Y\<rbrace>"
 
 definition
   keysFor :: "msg set \<Rightarrow> key set"
@@ -68,15 +64,15 @@ inductive_set
   for H :: "msg set"
   where
     Inj [intro]:               "X \<in> H ==> X \<in> parts H"
-  | Fst:         "{|X,Y|}   \<in> parts H ==> X \<in> parts H"
-  | Snd:         "{|X,Y|}   \<in> parts H ==> Y \<in> parts H"
+  | Fst:         "\<lbrace>X,Y\<rbrace>   \<in> parts H ==> X \<in> parts H"
+  | Snd:         "\<lbrace>X,Y\<rbrace>   \<in> parts H ==> Y \<in> parts H"
   | Body:        "Crypt K X \<in> parts H ==> X \<in> parts H"
 
 
 text{*Monotonicity*}
 lemma parts_mono: "G \<subseteq> H ==> parts(G) \<subseteq> parts(H)"
 apply auto
-apply (erule parts.induct) 
+apply (erule parts.induct)
 apply (blast dest: parts.Fst parts.Snd parts.Body)+
 done
 
@@ -123,10 +119,10 @@ by (unfold keysFor_def, auto)
 lemma keysFor_insert_Hash [simp]: "keysFor (insert (Hash X) H) = keysFor H"
 by (unfold keysFor_def, auto)
 
-lemma keysFor_insert_MPair [simp]: "keysFor (insert {|X,Y|} H) = keysFor H"
+lemma keysFor_insert_MPair [simp]: "keysFor (insert \<lbrace>X,Y\<rbrace> H) = keysFor H"
 by (unfold keysFor_def, auto)
 
-lemma keysFor_insert_Crypt [simp]: 
+lemma keysFor_insert_Crypt [simp]:
     "keysFor (insert (Crypt K X) H) = insert (invKey K) (keysFor H)"
 by (unfold keysFor_def, auto)
 
@@ -140,13 +136,13 @@ by (unfold keysFor_def, blast)
 subsection{*Inductive relation "parts"*}
 
 lemma MPair_parts:
-     "[| {|X,Y|} \<in> parts H;        
+     "[| \<lbrace>X,Y\<rbrace> \<in> parts H;
          [| X \<in> parts H; Y \<in> parts H |] ==> P |] ==> P"
-by (blast dest: parts.Fst parts.Snd) 
+by (blast dest: parts.Fst parts.Snd)
 
 declare MPair_parts [elim!]  parts.Body [dest!]
 text{*NB These two rules are UNSAFE in the formal sense, as they discard the
-     compound message.  They work well on THIS FILE.  
+     compound message.  They work well on THIS FILE.
   @{text MPair_parts} is left as SAFE because it speeds up proofs.
   The Crypt rule is normally kept UNSAFE to avoid breaking up certificates.*}
 
@@ -209,9 +205,9 @@ text{*Added to simplify arguments to parts, analz and synth.
   NOTE: the UN versions are no longer used!*}
 
 
-text{*This allows @{text blast} to simplify occurrences of 
+text{*This allows @{text blast} to simplify occurrences of
   @{term "parts(G\<union>H)"} in the assumption.*}
-lemmas in_parts_UnE = parts_Un [THEN equalityD1, THEN subsetD, THEN UnE] 
+lemmas in_parts_UnE = parts_Un [THEN equalityD1, THEN subsetD, THEN UnE]
 declare in_parts_UnE [elim!]
 
 
@@ -228,8 +224,8 @@ by blast
 
 lemma parts_subset_iff [simp]: "(parts G \<subseteq> parts H) = (G \<subseteq> parts H)"
 apply (rule iffI)
-apply (iprover intro: subset_trans parts_increasing)  
-apply (frule parts_mono, simp) 
+apply (iprover intro: subset_trans parts_increasing)
+apply (frule parts_mono, simp)
 done
 
 lemma parts_trans: "[| X\<in> parts G;  G \<subseteq> parts H |] ==> X\<in> parts H"
@@ -237,8 +233,8 @@ by (drule parts_mono, blast)
 
 text{*Cut*}
 lemma parts_cut:
-     "[| Y\<in> parts (insert X G);  X\<in> parts H |] ==> Y\<in> parts (G \<union> H)" 
-by (blast intro: parts_trans) 
+     "[| Y\<in> parts (insert X G);  X\<in> parts H |] ==> Y\<in> parts (G \<union> H)"
+by (blast intro: parts_trans)
 
 
 lemma parts_cut_eq [simp]: "X\<in> parts H ==> parts (insert X H) = parts H"
@@ -252,32 +248,32 @@ lemmas parts_insert_eq_I = equalityI [OF subsetI parts_insert_subset]
 
 lemma parts_insert_Agent [simp]:
      "parts (insert (Agent agt) H) = insert (Agent agt) (parts H)"
-apply (rule parts_insert_eq_I) 
-apply (erule parts.induct, auto) 
+apply (rule parts_insert_eq_I)
+apply (erule parts.induct, auto)
 done
 
 lemma parts_insert_Nonce [simp]:
      "parts (insert (Nonce N) H) = insert (Nonce N) (parts H)"
-apply (rule parts_insert_eq_I) 
-apply (erule parts.induct, auto) 
+apply (rule parts_insert_eq_I)
+apply (erule parts.induct, auto)
 done
 
 lemma parts_insert_Number [simp]:
      "parts (insert (Number N) H) = insert (Number N) (parts H)"
-apply (rule parts_insert_eq_I) 
-apply (erule parts.induct, auto) 
+apply (rule parts_insert_eq_I)
+apply (erule parts.induct, auto)
 done
 
 lemma parts_insert_Key [simp]:
      "parts (insert (Key K) H) = insert (Key K) (parts H)"
-apply (rule parts_insert_eq_I) 
-apply (erule parts.induct, auto) 
+apply (rule parts_insert_eq_I)
+apply (erule parts.induct, auto)
 done
 
 lemma parts_insert_Hash [simp]:
      "parts (insert (Hash X) H) = insert (Hash X) (parts H)"
-apply (rule parts_insert_eq_I) 
-apply (erule parts.induct, auto) 
+apply (rule parts_insert_eq_I)
+apply (erule parts.induct, auto)
 done
 
 lemma parts_insert_Crypt [simp]:
@@ -289,8 +285,8 @@ apply (blast intro: parts.Body)
 done
 
 lemma parts_insert_MPair [simp]:
-     "parts (insert {|X,Y|} H) =  
-          insert {|X,Y|} (parts (insert X (insert Y H)))"
+     "parts (insert \<lbrace>X,Y\<rbrace> H) =
+          insert \<lbrace>X,Y\<rbrace> (parts (insert X (insert Y H)))"
 apply (rule equalityI)
 apply (rule subsetI)
 apply (erule parts.induct, auto)
@@ -311,7 +307,7 @@ apply (simp_all (no_asm_simp) add: exI parts_insert2)
  txt{*MPair case: blast works out the necessary sum itself!*}
  prefer 2 apply auto apply (blast elim!: add_leE)
 txt{*Nonce case*}
-apply (rule_tac x = "N + Suc nat" in exI, auto) 
+apply (rule_tac x = "N + Suc nat" in exI, auto)
 done
 *)
 
@@ -327,25 +323,25 @@ inductive_set
   for H :: "msg set"
   where
     Inj [intro,simp] :    "X \<in> H ==> X \<in> analz H"
-  | Fst:     "{|X,Y|} \<in> analz H ==> X \<in> analz H"
-  | Snd:     "{|X,Y|} \<in> analz H ==> Y \<in> analz H"
-  | Decrypt [dest]: 
+  | Fst:     "\<lbrace>X,Y\<rbrace> \<in> analz H ==> X \<in> analz H"
+  | Snd:     "\<lbrace>X,Y\<rbrace> \<in> analz H ==> Y \<in> analz H"
+  | Decrypt [dest]:
              "[|Crypt K X \<in> analz H; Key(invKey K): analz H|] ==> X \<in> analz H"
 
 
 text{*Monotonicity; Lemma 1 of Lowe's paper*}
 lemma analz_mono: "G\<subseteq>H ==> analz(G) \<subseteq> analz(H)"
 apply auto
-apply (erule analz.induct) 
-apply (auto dest: analz.Fst analz.Snd) 
+apply (erule analz.induct)
+apply (auto dest: analz.Fst analz.Snd)
 done
 
 lemmas analz_monotonic = analz_mono [THEN [2] rev_subsetD]
 
 text{*Making it safe speeds up proofs*}
 lemma MPair_analz [elim!]:
-     "[| {|X,Y|} \<in> analz H;        
-             [| X \<in> analz H; Y \<in> analz H |] ==> P   
+     "[| \<lbrace>X,Y\<rbrace> \<in> analz H;
+             [| X \<in> analz H; Y \<in> analz H |] ==> P
           |] ==> P"
 by (blast dest: analz.Fst analz.Snd)
 
@@ -382,7 +378,7 @@ apply safe
 apply (erule analz.induct, blast+)
 done
 
-text{*Converse fails: we can analz more from the union than from the 
+text{*Converse fails: we can analz more from the union than from the
   separate parts, as a key in one might decrypt a message in the other*}
 lemma analz_Un: "analz(G) \<union> analz(H) \<subseteq> analz(G \<union> H)"
 by (intro Un_least analz_mono Un_upper1 Un_upper2)
@@ -396,40 +392,40 @@ lemmas analz_insert_eq_I = equalityI [OF subsetI analz_insert]
 
 lemma analz_insert_Agent [simp]:
      "analz (insert (Agent agt) H) = insert (Agent agt) (analz H)"
-apply (rule analz_insert_eq_I) 
-apply (erule analz.induct, auto) 
+apply (rule analz_insert_eq_I)
+apply (erule analz.induct, auto)
 done
 
 lemma analz_insert_Nonce [simp]:
      "analz (insert (Nonce N) H) = insert (Nonce N) (analz H)"
-apply (rule analz_insert_eq_I) 
-apply (erule analz.induct, auto) 
+apply (rule analz_insert_eq_I)
+apply (erule analz.induct, auto)
 done
 
 lemma analz_insert_Number [simp]:
      "analz (insert (Number N) H) = insert (Number N) (analz H)"
-apply (rule analz_insert_eq_I) 
-apply (erule analz.induct, auto) 
+apply (rule analz_insert_eq_I)
+apply (erule analz.induct, auto)
 done
 
 lemma analz_insert_Hash [simp]:
      "analz (insert (Hash X) H) = insert (Hash X) (analz H)"
-apply (rule analz_insert_eq_I) 
-apply (erule analz.induct, auto) 
+apply (rule analz_insert_eq_I)
+apply (erule analz.induct, auto)
 done
 
 text{*Can only pull out Keys if they are not needed to decrypt the rest*}
-lemma analz_insert_Key [simp]: 
-    "K \<notin> keysFor (analz H) ==>   
+lemma analz_insert_Key [simp]:
+    "K \<notin> keysFor (analz H) ==>
           analz (insert (Key K) H) = insert (Key K) (analz H)"
 apply (unfold keysFor_def)
-apply (rule analz_insert_eq_I) 
-apply (erule analz.induct, auto) 
+apply (rule analz_insert_eq_I)
+apply (erule analz.induct, auto)
 done
 
 lemma analz_insert_MPair [simp]:
-     "analz (insert {|X,Y|} H) =  
-          insert {|X,Y|} (analz (insert X (insert Y H)))"
+     "analz (insert \<lbrace>X,Y\<rbrace> H) =
+          insert \<lbrace>X,Y\<rbrace> (analz (insert X (insert Y H)))"
 apply (rule equalityI)
 apply (rule subsetI)
 apply (erule analz.induct, auto)
@@ -439,22 +435,22 @@ done
 
 text{*Can pull out enCrypted message if the Key is not known*}
 lemma analz_insert_Crypt:
-     "Key (invKey K) \<notin> analz H 
+     "Key (invKey K) \<notin> analz H
       ==> analz (insert (Crypt K X) H) = insert (Crypt K X) (analz H)"
-apply (rule analz_insert_eq_I) 
-apply (erule analz.induct, auto) 
+apply (rule analz_insert_eq_I)
+apply (erule analz.induct, auto)
 
 done
 
-lemma lemma1: "Key (invKey K) \<in> analz H ==>   
-               analz (insert (Crypt K X) H) \<subseteq>  
+lemma lemma1: "Key (invKey K) \<in> analz H ==>
+               analz (insert (Crypt K X) H) \<subseteq>
                insert (Crypt K X) (analz (insert X H))"
 apply (rule subsetI)
 apply (erule_tac x = x in analz.induct, auto)
 done
 
-lemma lemma2: "Key (invKey K) \<in> analz H ==>   
-               insert (Crypt K X) (analz (insert X H)) \<subseteq>  
+lemma lemma2: "Key (invKey K) \<in> analz H ==>
+               insert (Crypt K X) (analz (insert X H)) \<subseteq>
                analz (insert (Crypt K X) H)"
 apply auto
 apply (erule_tac x = x in analz.induct, auto)
@@ -462,26 +458,26 @@ apply (blast intro: analz_insertI analz.Decrypt)
 done
 
 lemma analz_insert_Decrypt:
-     "Key (invKey K) \<in> analz H ==>   
-               analz (insert (Crypt K X) H) =  
+     "Key (invKey K) \<in> analz H ==>
+               analz (insert (Crypt K X) H) =
                insert (Crypt K X) (analz (insert X H))"
 by (intro equalityI lemma1 lemma2)
 
 text{*Case analysis: either the message is secure, or it is not! Effective,
 but can cause subgoals to blow up! Use with @{text "split_if"}; apparently
 @{text "split_tac"} does not cope with patterns such as @{term"analz (insert
-(Crypt K X) H)"} *} 
+(Crypt K X) H)"} *}
 lemma analz_Crypt_if [simp]:
-     "analz (insert (Crypt K X) H) =                 
-          (if (Key (invKey K) \<in> analz H)                 
-           then insert (Crypt K X) (analz (insert X H))  
+     "analz (insert (Crypt K X) H) =
+          (if (Key (invKey K) \<in> analz H)
+           then insert (Crypt K X) (analz (insert X H))
            else insert (Crypt K X) (analz H))"
 by (simp add: analz_insert_Crypt analz_insert_Decrypt)
 
 
 text{*This rule supposes "for the sake of argument" that we have the key.*}
 lemma analz_insert_Crypt_subset:
-     "analz (insert (Crypt K X) H) \<subseteq>   
+     "analz (insert (Crypt K X) H) \<subseteq>
            insert (Crypt K X) (analz (insert X H))"
 apply (rule subsetI)
 apply (erule analz.induct, auto)
@@ -504,8 +500,8 @@ by blast
 
 lemma analz_subset_iff [simp]: "(analz G \<subseteq> analz H) = (G \<subseteq> analz H)"
 apply (rule iffI)
-apply (iprover intro: subset_trans analz_increasing)  
-apply (frule analz_mono, simp) 
+apply (iprover intro: subset_trans analz_increasing)
+apply (frule analz_mono, simp)
 done
 
 lemma analz_trans: "[| X\<in> analz G;  G \<subseteq> analz H |] ==> X\<in> analz H"
@@ -529,16 +525,16 @@ by (blast intro: analz_cut analz_insertI)
 text{*A congruence rule for "analz" *}
 
 lemma analz_subset_cong:
-     "[| analz G \<subseteq> analz G'; analz H \<subseteq> analz H' |] 
+     "[| analz G \<subseteq> analz G'; analz H \<subseteq> analz H' |]
       ==> analz (G \<union> H) \<subseteq> analz (G' \<union> H')"
 apply simp
-apply (iprover intro: conjI subset_trans analz_mono Un_upper1 Un_upper2) 
+apply (iprover intro: conjI subset_trans analz_mono Un_upper1 Un_upper2)
 done
 
 lemma analz_cong:
-     "[| analz G = analz G'; analz H = analz H' |] 
+     "[| analz G = analz G'; analz H = analz H' |]
       ==> analz (G \<union> H) = analz (G' \<union> H')"
-by (intro equalityI analz_subset_cong, simp_all) 
+by (intro equalityI analz_subset_cong, simp_all)
 
 lemma analz_insert_cong:
      "analz H = analz H' ==> analz(insert X H) = analz(insert X H')"
@@ -546,7 +542,7 @@ by (force simp only: insert_def intro!: analz_cong)
 
 text{*If there are no pairs or encryptions then analz does nothing*}
 lemma analz_trivial:
-     "[| \<forall>X Y. {|X,Y|} \<notin> H;  \<forall>X K. Crypt K X \<notin> H |] ==> analz H = H"
+     "[| \<forall>X Y. \<lbrace>X,Y\<rbrace> \<notin> H;  \<forall>X K. Crypt K X \<notin> H |] ==> analz H = H"
 apply safe
 apply (erule analz.induct, blast+)
 done
@@ -577,19 +573,19 @@ inductive_set
   | Agent  [intro]:   "Agent agt \<in> synth H"
   | Number [intro]:   "Number n  \<in> synth H"
   | Hash   [intro]:   "X \<in> synth H ==> Hash X \<in> synth H"
-  | MPair  [intro]:   "[|X \<in> synth H;  Y \<in> synth H|] ==> {|X,Y|} \<in> synth H"
+  | MPair  [intro]:   "[|X \<in> synth H;  Y \<in> synth H|] ==> \<lbrace>X,Y\<rbrace> \<in> synth H"
   | Crypt  [intro]:   "[|X \<in> synth H;  Key(K) \<in> H|] ==> Crypt K X \<in> synth H"
 
 text{*Monotonicity*}
 lemma synth_mono: "G\<subseteq>H ==> synth(G) \<subseteq> synth(H)"
-  by (auto, erule synth.induct, auto)  
+  by (auto, erule synth.induct, auto)
 
-text{*NO @{text Agent_synth}, as any Agent name can be synthesized.  
+text{*NO @{text Agent_synth}, as any Agent name can be synthesized.
   The same holds for @{term Number}*}
 inductive_cases Nonce_synth [elim!]: "Nonce n \<in> synth H"
 inductive_cases Key_synth   [elim!]: "Key K \<in> synth H"
 inductive_cases Hash_synth  [elim!]: "Hash X \<in> synth H"
-inductive_cases MPair_synth [elim!]: "{|X,Y|} \<in> synth H"
+inductive_cases MPair_synth [elim!]: "\<lbrace>X,Y\<rbrace> \<in> synth H"
 inductive_cases Crypt_synth [elim!]: "Crypt K X \<in> synth H"
 
 
@@ -598,7 +594,7 @@ by blast
 
 subsubsection{*Unions *}
 
-text{*Converse fails: we can synth more from the union than from the 
+text{*Converse fails: we can synth more from the union than from the
   separate parts, building a compound message using elements of each.*}
 lemma synth_Un: "synth(G) \<union> synth(H) \<subseteq> synth(G \<union> H)"
 by (intro Un_least synth_mono Un_upper1 Un_upper2)
@@ -616,8 +612,8 @@ by blast
 
 lemma synth_subset_iff [simp]: "(synth G \<subseteq> synth H) = (G \<subseteq> synth H)"
 apply (rule iffI)
-apply (iprover intro: subset_trans synth_increasing)  
-apply (frule synth_mono, simp add: synth_idem) 
+apply (iprover intro: subset_trans synth_increasing)
+apply (frule synth_mono, simp add: synth_idem)
 done
 
 lemma synth_trans: "[| X\<in> synth G;  G \<subseteq> synth H |] ==> X\<in> synth H"
@@ -644,7 +640,7 @@ lemma Crypt_synth_eq [simp]:
 by blast
 
 
-lemma keysFor_synth [simp]: 
+lemma keysFor_synth [simp]:
     "keysFor (synth H) = keysFor H \<union> invKey`{K. Key K \<in> H}"
 by (unfold keysFor_def, blast)
 
@@ -655,7 +651,7 @@ lemma parts_synth [simp]: "parts (synth H) = parts H \<union> synth H"
 apply (rule equalityI)
 apply (rule subsetI)
 apply (erule parts.induct)
-apply (blast intro: synth_increasing [THEN parts_mono, THEN subsetD] 
+apply (blast intro: synth_increasing [THEN parts_mono, THEN subsetD]
                     parts.Fst parts.Snd parts.Body)+
 done
 
@@ -694,7 +690,7 @@ by (rule subset_trans [OF parts_mono parts_Un_subset2], blast)
 text{*More specifically for Fake.  Very occasionally we could do with a version
   of the form  @{term"parts{X} \<subseteq> synth (analz H) \<union> parts H"} *}
 lemma Fake_parts_insert:
-     "X \<in> synth (analz H) ==>  
+     "X \<in> synth (analz H) ==>
       parts (insert X H) \<subseteq> synth (analz H) \<union> parts H"
 apply (drule parts_insert_subset_Un)
 apply (simp (no_asm_use))
@@ -702,19 +698,19 @@ apply blast
 done
 
 lemma Fake_parts_insert_in_Un:
-     "[|Z \<in> parts (insert X H);  X \<in> synth (analz H)|] 
+     "[|Z \<in> parts (insert X H);  X \<in> synth (analz H)|]
       ==> Z \<in>  synth (analz H) \<union> parts H"
 by (blast dest: Fake_parts_insert  [THEN subsetD, dest])
 
-text{*@{term H} is sometimes @{term"Key ` KK \<union> spies evs"}, so can't put 
+text{*@{term H} is sometimes @{term"Key ` KK \<union> spies evs"}, so can't put
   @{term "G=H"}.*}
 lemma Fake_analz_insert:
-     "X\<in> synth (analz G) ==>  
+     "X\<in> synth (analz G) ==>
       analz (insert X H) \<subseteq> synth (analz G) \<union> analz (G \<union> H)"
 apply (rule subsetI)
 apply (subgoal_tac "x \<in> analz (synth (analz G) \<union> H) ")
-prefer 2 
-  apply (blast intro: analz_mono [THEN [2] rev_subsetD] 
+prefer 2
+  apply (blast intro: analz_mono [THEN [2] rev_subsetD]
                       analz_mono [THEN synth_mono, THEN [2] rev_subsetD])
 apply (simp (no_asm_use))
 apply blast
@@ -731,19 +727,19 @@ by (blast intro: analz_subset_parts [THEN subsetD])
 text{*Without this equation, other rules for synth and analz would yield
   redundant cases*}
 lemma MPair_synth_analz [iff]:
-     "({|X,Y|} \<in> synth (analz H)) =  
+     "(\<lbrace>X,Y\<rbrace> \<in> synth (analz H)) =
       (X \<in> synth (analz H) & Y \<in> synth (analz H))"
 by blast
 
 lemma Crypt_synth_analz:
-     "[| Key K \<in> analz H;  Key (invKey K) \<in> analz H |]  
+     "[| Key K \<in> analz H;  Key (invKey K) \<in> analz H |]
        ==> (Crypt K X \<in> synth (analz H)) = (X \<in> synth (analz H))"
 by blast
 
 
 lemma Hash_synth_analz [simp]:
-     "X \<notin> synth (analz H)  
-      ==> (Hash{|X,Y|} \<in> synth (analz H)) = (Hash{|X,Y|} \<in> analz H)"
+     "X \<notin> synth (analz H)
+      ==> (Hash\<lbrace>X,Y\<rbrace> \<in> synth (analz H)) = (Hash\<lbrace>X,Y\<rbrace> \<in> analz H)"
 by blast
 
 
@@ -769,7 +765,7 @@ by (unfold HPair_def, simp)
 lemma Crypt_neq_HPair: "Crypt K X' ~= Hash[X] Y"
 by (unfold HPair_def, simp)
 
-lemmas HPair_neqs = Agent_neq_HPair Nonce_neq_HPair Number_neq_HPair 
+lemmas HPair_neqs = Agent_neq_HPair Nonce_neq_HPair Number_neq_HPair
                     Key_neq_HPair Hash_neq_HPair Crypt_neq_HPair
 
 declare HPair_neqs [iff]
@@ -779,11 +775,11 @@ lemma HPair_eq [iff]: "(Hash[X'] Y' = Hash[X] Y) = (X' = X & Y'=Y)"
 by (simp add: HPair_def)
 
 lemma MPair_eq_HPair [iff]:
-     "({|X',Y'|} = Hash[X] Y) = (X' = Hash{|X,Y|} & Y'=Y)"
+     "(\<lbrace>X',Y'\<rbrace> = Hash[X] Y) = (X' = Hash\<lbrace>X,Y\<rbrace> & Y'=Y)"
 by (simp add: HPair_def)
 
 lemma HPair_eq_MPair [iff]:
-     "(Hash[X] Y = {|X',Y'|}) = (X' = Hash{|X,Y|} & Y'=Y)"
+     "(Hash[X] Y = \<lbrace>X',Y'\<rbrace>) = (X' = Hash\<lbrace>X,Y\<rbrace> & Y'=Y)"
 by (auto simp add: HPair_def)
 
 
@@ -792,20 +788,20 @@ subsubsection{*Specialized laws, proved in terms of those for Hash and MPair *}
 lemma keysFor_insert_HPair [simp]: "keysFor (insert (Hash[X] Y) H) = keysFor H"
 by (simp add: HPair_def)
 
-lemma parts_insert_HPair [simp]: 
-    "parts (insert (Hash[X] Y) H) =  
-     insert (Hash[X] Y) (insert (Hash{|X,Y|}) (parts (insert Y H)))"
+lemma parts_insert_HPair [simp]:
+    "parts (insert (Hash[X] Y) H) =
+     insert (Hash[X] Y) (insert (Hash\<lbrace>X,Y\<rbrace>) (parts (insert Y H)))"
 by (simp add: HPair_def)
 
-lemma analz_insert_HPair [simp]: 
-    "analz (insert (Hash[X] Y) H) =  
-     insert (Hash[X] Y) (insert (Hash{|X,Y|}) (analz (insert Y H)))"
+lemma analz_insert_HPair [simp]:
+    "analz (insert (Hash[X] Y) H) =
+     insert (Hash[X] Y) (insert (Hash\<lbrace>X,Y\<rbrace>) (analz (insert Y H)))"
 by (simp add: HPair_def)
 
 lemma HPair_synth_analz [simp]:
-     "X \<notin> synth (analz H)  
-    ==> (Hash[X] Y \<in> synth (analz H)) =  
-        (Hash {|X, Y|} \<in> analz H & Y \<in> synth (analz H))"
+     "X \<notin> synth (analz H)
+    ==> (Hash[X] Y \<in> synth (analz H)) =
+        (Hash\<lbrace>X, Y\<rbrace> \<in> analz H & Y \<in> synth (analz H))"
 by (simp add: HPair_def)
 
 
@@ -850,7 +846,7 @@ lemma Hash_notin_image_Key [simp] :"Hash X \<notin> Key ` A"
 by auto
 
 lemma synth_analz_mono: "G\<subseteq>H ==> synth (analz(G)) \<subseteq> synth (analz(H))"
-by (iprover intro: synth_mono analz_mono) 
+by (iprover intro: synth_mono analz_mono)
 
 lemma Fake_analz_eq [simp]:
      "X \<in> synth(analz H) ==> synth (analz (insert X H)) = synth (analz H)"
@@ -860,7 +856,7 @@ apply (drule synth_mono)
 apply (simp add: synth_idem)
 apply (rule equalityI)
 apply (simp add: )
-apply (rule synth_analz_mono, blast)   
+apply (rule synth_analz_mono, blast)
 done
 
 text{*Two generalizations of @{text analz_insert_eq}*}
@@ -869,15 +865,15 @@ lemma gen_analz_insert_eq [rule_format]:
 by (blast intro: analz_cut analz_insertI analz_mono [THEN [2] rev_subsetD])
 
 lemma synth_analz_insert_eq [rule_format]:
-     "X \<in> synth (analz H) 
+     "X \<in> synth (analz H)
       ==> ALL G. H \<subseteq> G --> (Key K \<in> analz (insert X G)) = (Key K \<in> analz G)"
-apply (erule synth.induct) 
-apply (simp_all add: gen_analz_insert_eq subset_trans [OF _ subset_insertI]) 
+apply (erule synth.induct)
+apply (simp_all add: gen_analz_insert_eq subset_trans [OF _ subset_insertI])
 done
 
 lemma Fake_parts_sing:
      "X \<in> synth (analz H) ==> parts{X} \<subseteq> synth (analz H) \<union> parts H"
-apply (rule subset_trans) 
+apply (rule subset_trans)
  apply (erule_tac [2] Fake_parts_insert)
 apply (rule parts_mono, blast)
 done

@@ -20,7 +20,7 @@ section {* Core Kerberos 5 (L3) *}
 theory m3_kerberos5 imports m2_kerberos "../Refinement/Message"
 begin
 
-text {* 
+text {*
 We model the core Kerberos 5 protocol:
 \[
 \begin{array}{lll}
@@ -35,7 +35,7 @@ We model the core Kerberos 5 protocol:
 text {* Proof tool configuration. Avoid annoying automatic unfolding of
 @{text "dom"}. *}
 
-declare domIff [simp, iff del] 
+declare domIff [simp, iff del]
 
 
 (******************************************************************************)
@@ -56,27 +56,27 @@ by (auto simp add: keySetup_def ltkeySetup_def corrKey_def)
 subsection {* State *}
 (******************************************************************************)
 
-text {* The secure channels are star-shaped to/from the server.  Therefore, 
+text {* The secure channels are star-shaped to/from the server.  Therefore,
 we have only one agent in the relation. *}
 
 record m3_state = "m1_state" +
   IK :: "msg set"                                -- {* intruder knowledge *}
 
 
-text {* Observable state: 
+text {* Observable state:
 @{term "runs"}, @{term "leak"}, @{term "clk"}, and @{term "cache"}. *}
 
-type_synonym 
+type_synonym
   m3_obs = "m2_obs"
 
-definition 
+definition
   m3_obs :: "m3_state \<Rightarrow> m3_obs" where
   "m3_obs s \<equiv> \<lparr> runs = runs s, leak = leak s, clk = clk s, cache = cache s \<rparr>"
 
-type_synonym 
+type_synonym
   m3_pred = "m3_state set"
 
-type_synonym 
+type_synonym
   m3_trans = "(m3_state \<times> m3_state) set"
 
 
@@ -97,7 +97,7 @@ where
     (* actions: *)
     s1 = s\<lparr>
       runs := (runs s)(Ra \<mapsto> (Init, [A, B], [])),
-      IK := insert {| Agent A, Agent B, Nonce Na |} (IK s)   (* send M1 *)
+      IK := insert \<lbrace>Agent A, Agent B, Nonce Na\<rbrace> (IK s)   (* send M1 *)
     \<rparr>
   }"
 
@@ -114,16 +114,16 @@ where
     Rs \<notin> dom (runs s) \<and>                          (* fresh server run *)
     Kab = sesK (Rs$sk) \<and>                          (* fresh session key *)
 
-    {| Agent A, Agent B, Nonce Na |} \<in> IK s \<and>    (* recv M1 *)
-    Ts = clk s \<and>                                 (* fresh timestamp *) 
-   
+    \<lbrace>Agent A, Agent B, Nonce Na\<rbrace> \<in> IK s \<and>    (* recv M1 *)
+    Ts = clk s \<and>                                 (* fresh timestamp *)
+
     (* actions: *)
     (* record session key and send M2 *)
     s1 = s\<lparr>
-      runs := (runs s)(Rs \<mapsto> (Serv, [A, B], [aNon Na, aNum Ts])),  
-      IK := insert {| Crypt (shrK A) {| Key Kab, Agent B, Number Ts, Nonce Na |},
-                      Crypt (shrK B) {| Key Kab, Agent A, Number Ts |} |}
-               (IK s) 
+      runs := (runs s)(Rs \<mapsto> (Serv, [A, B], [aNon Na, aNum Ts])),
+      IK := insert \<lbrace>Crypt (shrK A) \<lbrace>Key Kab, Agent B, Number Ts, Nonce Na\<rbrace>,
+                      Crypt (shrK B) \<lbrace>Key Kab, Agent A, Number Ts\<rbrace>\<rbrace>
+               (IK s)
     \<rparr>
   }"
 
@@ -133,11 +133,11 @@ where
   "m3_step4 Ra A B Na Kab Ts Ta X \<equiv> {(s, s1).
 
      (* guards: *)
-     runs s Ra = Some (Init, [A, B], []) \<and>           (* key not yet recv'd *) 
+     runs s Ra = Some (Init, [A, B], []) \<and>           (* key not yet recv'd *)
      Na = Ra$na \<and>                                    (* generated nonce *)
 
-     {| Crypt (shrK A)                               (* recv M2 *)
-          {| Key Kab, Agent B, Number Ts, Nonce Na |}, X |} \<in> IK s \<and> 
+     \<lbrace>Crypt (shrK A)                               (* recv M2 *)
+          \<lbrace>Key Kab, Agent B, Number Ts, Nonce Na\<rbrace>, X\<rbrace> \<in> IK s \<and>
 
      (* read current time *)
      Ta = clk s \<and>
@@ -148,27 +148,27 @@ where
      (* actions: *)
      (* record session key and send M3 *)
      s1 = s\<lparr>
-       runs := (runs s)(Ra \<mapsto> (Init, [A, B], [aKey Kab, aNum Ts, aNum Ta])),  
-       IK := insert {| Crypt Kab {| Agent A, Number Ta |}, X |} (IK s)  (* M3 *)
+       runs := (runs s)(Ra \<mapsto> (Init, [A, B], [aKey Kab, aNum Ts, aNum Ta])),
+       IK := insert \<lbrace>Crypt Kab \<lbrace>Agent A, Number Ta\<rbrace>, X\<rbrace> (IK s)  (* M3 *)
      \<rparr>
   }"
 
 definition     -- {* by @{term "B"}, refines @{term m2_step5} *}
   m3_step5 :: "[rid_t, agent, agent, key, time, time] \<Rightarrow> m3_trans"
 where
-  "m3_step5 Rb A B Kab Ts Ta \<equiv> {(s, s1). 
+  "m3_step5 Rb A B Kab Ts Ta \<equiv> {(s, s1).
      (* guards: *)
      runs s Rb = Some (Resp, [A, B], []) \<and>             (* key not yet recv'd *)
 
-     {| Crypt Kab {| Agent A, Number Ta |},            (* recv M3 *)
-        Crypt (shrK B) {| Key Kab, Agent A, Number Ts |} |} \<in> IK s \<and> 
+     \<lbrace>Crypt Kab \<lbrace>Agent A, Number Ta\<rbrace>,            (* recv M3 *)
+        Crypt (shrK B) \<lbrace>Key Kab, Agent A, Number Ts\<rbrace>\<rbrace> \<in> IK s \<and>
 
      (* ensure freshness of session key *)
      clk s < Ts + Ls \<and>
 
      (* check authenticator's validity and replay; 'replays' with fresh authenticator ok! *)
-     clk s < Ta + La \<and> 
-     (B, Kab, Ta) \<notin> cache s \<and> 
+     clk s < Ta + La \<and>
+     (B, Kab, Ta) \<notin> cache s \<and>
 
      (* actions: *)
      (* record session key *)
@@ -182,7 +182,7 @@ where
 definition     -- {* by @{term "A"}, refines @{term m2_step6} *}
   m3_step6 :: "[rid_t, agent, agent, nonce, key, time, time] \<Rightarrow> m3_trans"
 where
-  "m3_step6 Ra A B Na Kab Ts Ta \<equiv> {(s, s'). 
+  "m3_step6 Ra A B Na Kab Ts Ta \<equiv> {(s, s').
      (* guards: *)
      runs s Ra = Some (Init, [A, B], [aKey Kab, aNum Ts, aNum Ta]) \<and>  (* knows key *)
      Na = Ra$na \<and>                                    (* generated nonce *)
@@ -199,7 +199,7 @@ where
 text {* Clock tick event *}
 
 definition   -- {* refines @{term "m2_tick"} *}
-  m3_tick :: "time \<Rightarrow> m3_trans" 
+  m3_tick :: "time \<Rightarrow> m3_trans"
 where
   "m3_tick \<equiv> m1_tick"
 
@@ -207,35 +207,35 @@ where
 text {* Purge event: purge cache of expired timestamps *}
 
 definition     -- {* refines @{term "m2_purge"} *}
-  m3_purge :: "agent \<Rightarrow> m3_trans" 
+  m3_purge :: "agent \<Rightarrow> m3_trans"
 where
   "m3_purge \<equiv> m1_purge"
 
 
 text {* Session key compromise. *}
 
-definition     -- {* refines @{term m2_leak} *} 
+definition     -- {* refines @{term m2_leak} *}
   m3_leak :: "[rid_t, agent, agent, nonce, time] \<Rightarrow> m3_trans"
 where
   "m3_leak Rs A B Na Ts \<equiv> {(s, s1).
-    (* guards: *) 
-    runs s Rs = Some (Serv, [A, B], [aNon Na, aNum Ts]) \<and> 
+    (* guards: *)
+    runs s Rs = Some (Serv, [A, B], [aNon Na, aNum Ts]) \<and>
     (clk s \<ge> Ts + Ls) \<and>             (* only compromise 'old' session keys *)
 
     (* actions: *)
     (* record session key as leaked and add it to intruder knowledge *)
-    s1 = s\<lparr> leak := insert (sesK (Rs$sk), A, B, Na, Ts) (leak s), 
-            IK := insert (Key (sesK (Rs$sk))) (IK s) \<rparr> 
+    s1 = s\<lparr> leak := insert (sesK (Rs$sk), A, B, Na, Ts) (leak s),
+            IK := insert (Key (sesK (Rs$sk))) (IK s) \<rparr>
   }"
 
-text {* Intruder fake event. The following "Dolev-Yao" event generates all 
+text {* Intruder fake event. The following "Dolev-Yao" event generates all
 intruder-derivable messages. *}
 
 definition     -- {* refines @{term "m2_fake"} *}
   m3_DY_fake :: "m3_trans"
 where
   "m3_DY_fake \<equiv> {(s, s1).
-     
+
      (* actions: *)
      s1 = s(| IK := synth (analz (IK s)) |)       (* take DY closure *)
   }"
@@ -245,18 +245,18 @@ where
 subsection {* Transition system *}
 (******************************************************************************)
 
-definition 
+definition
   m3_init :: "m3_pred"
 where
-  "m3_init \<equiv> { \<lparr> 
-     runs = empty, 
-     leak = shrK`bad \<times> {undefined}, 
-     clk = 0, 
-     cache = {}, 
-     IK = Key`shrK`bad 
+  "m3_init \<equiv> { \<lparr>
+     runs = empty,
+     leak = shrK`bad \<times> {undefined},
+     clk = 0,
+     cache = {},
+     IK = Key`shrK`bad
   \<rparr> }"
 
-definition 
+definition
   m3_trans :: "m3_trans" where
   "m3_trans \<equiv> (\<Union>A B Ra Rb Rs Na Kab Ts Ta T X.
      m3_step1 Ra A B Na \<union>
@@ -266,13 +266,13 @@ definition
      m3_step5 Rb A B Kab Ts Ta \<union>
      m3_step6 Ra A B Na Kab Ts Ta \<union>
      m3_tick T \<union>
-     m3_purge A \<union> 
+     m3_purge A \<union>
      m3_leak Rs A B Na Ts \<union>
      m3_DY_fake \<union>
      Id
   )"
 
-definition 
+definition
   m3 :: "(m3_state, m3_obs) spec" where
   "m3 \<equiv> \<lparr>
     init = m3_init,
@@ -280,9 +280,9 @@ definition
     obs = m3_obs
   \<rparr>"
 
-lemmas m3_loc_defs = 
+lemmas m3_loc_defs =
   m3_def m3_init_def m3_trans_def m3_obs_def
-  m3_step1_def m3_step2_def m3_step3_def m3_step4_def m3_step5_def 
+  m3_step1_def m3_step2_def m3_step3_def m3_step4_def m3_step5_def
   m3_step6_def m3_tick_def m3_purge_def m3_leak_def m3_DY_fake_def
 
 lemmas m3_defs = m3_loc_defs m2_defs
@@ -294,8 +294,8 @@ subsection {* Invariants *}
 
 text {* Specialized injection that we can apply more aggressively. *}
 
-lemmas analz_Inj_IK = analz.Inj [where H="IK s" for s] 
-lemmas parts_Inj_IK = parts.Inj [where H="IK s" for s] 
+lemmas analz_Inj_IK = analz.Inj [where H="IK s" for s]
+lemmas parts_Inj_IK = parts.Inj [where H="IK s" for s]
 
 declare parts_Inj_IK [dest!]
 
@@ -305,8 +305,8 @@ declare analz_into_parts [dest]
 subsubsection {* inv1: Secrecy of pre-distributed shared keys *}
 (*inv*************************************************************************)
 
-definition 
-  m3_inv1_lkeysec :: "m3_pred" 
+definition
+  m3_inv1_lkeysec :: "m3_pred"
 where
   "m3_inv1_lkeysec \<equiv> {s. \<forall>C.
      (Key (shrK C) \<in> parts (IK s) \<longrightarrow> C \<in> bad) \<and>
@@ -347,18 +347,18 @@ subsubsection {* inv2: Session keys not used to encrypt other session keys *}
 (*invh*************************************************************************)
 
 text {* Session keys are not used to encrypt other keys. Proof requires
-generalization to sets of session keys.  
+generalization to sets of session keys.
 
 NOTE: This invariant will be inherted from the corresponding L2 invariant
 using the simulation relation.
 *}
 
-definition 
+definition
   m3_inv2_sesK_compr :: "m3_pred"
 where
   "m3_inv2_sesK_compr \<equiv> {s. \<forall>K KK.
      KK \<subseteq> range sesK \<longrightarrow>
-     (Key K \<in> analz (Key`KK \<union> (IK s))) = (K \<in> KK \<or> Key K \<in> analz (IK s)) 
+     (Key K \<in> analz (Key`KK \<union> (IK s))) = (K \<in> KK \<or> Key K \<in> analz (IK s))
   }"
 
 lemmas m3_inv2_sesK_comprI = m3_inv2_sesK_compr_def [THEN setc_def_to_intro, rule_format]
@@ -366,10 +366,10 @@ lemmas m3_inv2_sesK_comprE = m3_inv2_sesK_compr_def [THEN setc_def_to_elim, rule
 lemmas m3_inv2_sesK_comprD = m3_inv2_sesK_compr_def [THEN setc_def_to_dest, rule_format]
 
 text {* Additional lemma *}
-lemmas insert_commute_Key = insert_commute [where x="Key K" for K] 
+lemmas insert_commute_Key = insert_commute [where x="Key K" for K]
 
-lemmas m3_inv2_sesK_compr_simps = 
-  m3_inv2_sesK_comprD 
+lemmas m3_inv2_sesK_compr_simps =
+  m3_inv2_sesK_comprD
   m3_inv2_sesK_comprD [where KK="insert Kab KK" for Kab KK, simplified]
   m3_inv2_sesK_comprD [where KK="{Kab}" for Kab, simplified]
   insert_commute_Key
@@ -384,28 +384,28 @@ subsubsection {* Message abstraction and simulation relation *}
 
 text {* Abstraction function on sets of messages. *}
 
-inductive_set 
+inductive_set
   abs_msg :: "msg set \<Rightarrow> chmsg set"
   for H :: "msg set"
-where 
-  am_M1: 
-    "{| Agent A, Agent B, Nonce N |} \<in> H
+where
+  am_M1:
+    "\<lbrace>Agent A, Agent B, Nonce N\<rbrace> \<in> H
   \<Longrightarrow> Insec A B (Msg [aNon N]) \<in> abs_msg H"
 | am_M2a:
-    "Crypt (shrK C) {| Key K, Agent B, Number T, Nonce N |} \<in> H 
+    "Crypt (shrK C) \<lbrace>Key K, Agent B, Number T, Nonce N\<rbrace> \<in> H
   \<Longrightarrow> Secure Sv C (Msg [aKey K, aAgt B, aNum T, aNon N]) \<in> abs_msg H"
-| am_M2b: 
-    "Crypt (shrK C) {| Key K,  Agent A, Number T |} \<in> H 
+| am_M2b:
+    "Crypt (shrK C) \<lbrace>Key K,  Agent A, Number T\<rbrace> \<in> H
   \<Longrightarrow> Secure Sv C (Msg [aKey K, aAgt A, aNum T]) \<in> abs_msg H"
-| am_M3: 
-    "Crypt K {| Agent A, Number T |} \<in> H 
+| am_M3:
+    "Crypt K \<lbrace>Agent A, Number T\<rbrace> \<in> H
   \<Longrightarrow> dAuth K (Msg [aAgt A, aNum T]) \<in> abs_msg H"
-| am_M4: 
-    "Crypt K (Number T) \<in> H 
+| am_M4:
+    "Crypt K (Number T) \<in> H
   \<Longrightarrow> dAuth K (Msg [aNum T]) \<in> abs_msg H"
 
 
-text {* R23: The simulation relation. This is a data refinement of 
+text {* R23: The simulation relation. This is a data refinement of
 the insecure and secure channels of refinement 2. *}
 
 definition
@@ -414,17 +414,17 @@ definition
 
 definition
   R23_keys :: "(m2_state \<times> m3_state) set" where
-  "R23_keys \<equiv> {(s, t). \<forall>KK K. KK \<subseteq> range sesK \<longrightarrow> 
+  "R23_keys \<equiv> {(s, t). \<forall>KK K. KK \<subseteq> range sesK \<longrightarrow>
      Key K \<in> analz (Key`KK \<union> (IK t)) \<longleftrightarrow> aKey K \<in> extr (aKey`KK \<union> ik0) (chan s)
-  }" 
+  }"
 
-definition 
+definition
   R23_non :: "(m2_state \<times> m3_state) set" where
-  "R23_non \<equiv> {(s, t). \<forall>KK N. KK \<subseteq> range sesK \<longrightarrow> 
+  "R23_non \<equiv> {(s, t). \<forall>KK N. KK \<subseteq> range sesK \<longrightarrow>
      Nonce N \<in> analz (Key`KK \<union> (IK t)) \<longleftrightarrow> aNon N \<in> extr (aKey`KK \<union> ik0) (chan s)
   }"
 
-definition 
+definition
   R23_pres :: "(m2_state \<times> m3_state) set" where
   "R23_pres \<equiv> {(s, t). runs s = runs t \<and> leak s = leak t \<and> clk s = clk t \<and> cache s = cache t}"
 
@@ -432,13 +432,13 @@ definition
   R23 :: "(m2_state \<times> m3_state) set" where
   "R23 \<equiv> R23_msgs \<inter> R23_keys \<inter> R23_non \<inter> R23_pres"
 
-lemmas R23_defs = 
+lemmas R23_defs =
   R23_def R23_msgs_def R23_keys_def R23_non_def R23_pres_def
 
 
 text {* The mediator function is the identity here. *}
 
-definition 
+definition
   med32 :: "m3_obs \<Rightarrow> m2_obs" where
   "med32 \<equiv> id"
 
@@ -462,20 +462,20 @@ lemmas R23_intros = R23_msgsI R23_keysI R23_nonI R23_presI
 text {* Simplifier lemmas for various instantiations (keys and nonces). *}
 
 lemmas R23_keys_simp = R23_keys_def [THEN rel_def_to_dest, simplified, rule_format]
-lemmas R23_keys_simps = 
+lemmas R23_keys_simps =
   R23_keys_simp
   R23_keys_simp [where KK="{}", simplified]
   R23_keys_simp [where KK="{K'}" for K', simplified]
   R23_keys_simp [where KK="insert K' KK" for K' KK, simplified, OF _ conjI]
 
 lemmas R23_non_simp = R23_non_def [THEN rel_def_to_dest, simplified, rule_format]
-lemmas R23_non_simps = 
+lemmas R23_non_simps =
   R23_non_simp
   R23_non_simp [where KK="{}", simplified]
   R23_non_simp [where KK="{K}" for K, simplified]
   R23_non_simp [where KK="insert K KK" for K KK, simplified, OF _ conjI]
 
-lemmas R23_simps = R23_keys_simps R23_non_simps 
+lemmas R23_simps = R23_keys_simps R23_non_simps
 
 
 subsubsection {* General lemmas *}
@@ -483,26 +483,26 @@ subsubsection {* General lemmas *}
 
 text {* General facts about @{term "abs_msg"} *}
 
-declare abs_msg.intros [intro!] 
+declare abs_msg.intros [intro!]
 declare abs_msg.cases [elim!]
 
 lemma abs_msg_empty: "abs_msg {} = {}"
 by (auto)
 
-lemma abs_msg_Un [simp]: 
+lemma abs_msg_Un [simp]:
   "abs_msg (G \<union> H) = abs_msg G \<union> abs_msg H"
 by (auto)
 
-lemma abs_msg_mono [elim]: 
+lemma abs_msg_mono [elim]:
   "\<lbrakk> m \<in> abs_msg G; G \<subseteq> H \<rbrakk> \<Longrightarrow> m \<in> abs_msg H"
 by (auto)
 
-lemma abs_msg_insert_mono [intro]: 
+lemma abs_msg_insert_mono [intro]:
   "\<lbrakk> m \<in> abs_msg H \<rbrakk> \<Longrightarrow> m \<in> abs_msg (insert m' H)"
 by (auto)
 
 
-text {* Facts about @{term "abs_msg"} concerning abstraction of fakeable 
+text {* Facts about @{term "abs_msg"} concerning abstraction of fakeable
 messages. This is crucial for proving the refinement of the intruder event. *}
 
 lemma abs_msg_DY_subset_fakeable:
@@ -510,7 +510,7 @@ lemma abs_msg_DY_subset_fakeable:
   \<Longrightarrow> abs_msg (synth (analz (IK t))) \<subseteq> fake ik0 (dom (runs s)) (chan s)"
 apply (auto)
 -- {* 9 subgoals, deal with replays first *}
-prefer 2 apply (blast) 
+prefer 2 apply (blast)
 prefer 3 apply (blast)
 prefer 4 apply (blast)
 prefer 5 apply (blast)
@@ -523,28 +523,28 @@ subsubsection {* Refinement proof *}
 (******************************************************************************)
 
 text {* Pair decomposition. These were set to \texttt{elim!}, which is too
-agressive here. *} 
+agressive here. *}
 
 declare MPair_analz [rule del, elim]
-declare MPair_parts [rule del, elim] 
+declare MPair_parts [rule del, elim]
 
 
 text {* Protocol events. *}
 
 lemma PO_m3_step1_refines_m2_step1:
-  "{R23} 
-     (m2_step1 Ra A B Na), (m3_step1 Ra A B Na) 
+  "{R23}
+     (m2_step1 Ra A B Na), (m3_step1 Ra A B Na)
    {> R23}"
 by (auto simp add: PO_rhoare_defs R23_def m3_defs intro!: R23_intros) (auto)
 
 lemma PO_m3_step2_refines_m2_step2:
-  "{R23} 
+  "{R23}
      (m2_step2 Rb A B), (m3_step2 Rb A B)
    {> R23}"
 by (auto simp add: PO_rhoare_defs R23_def m3_defs intro!: R23_intros)
 
 lemma PO_m3_step3_refines_m2_step3:
-  "{R23 \<inter> (m2_inv3a_sesK_compr) \<times> (m3_inv2_sesK_compr \<inter> m3_inv1_lkeysec)} 
+  "{R23 \<inter> (m2_inv3a_sesK_compr) \<times> (m3_inv2_sesK_compr \<inter> m3_inv1_lkeysec)}
      (m2_step3 Rs A B Kab Na Ts), (m3_step3 Rs A B Kab Na Ts)
    {> R23}"
 proof -
@@ -552,92 +552,92 @@ proof -
     assume H:
       "(s, t) \<in> R23_msgs" "(s, t) \<in> R23_keys" "(s, t) \<in> R23_non"
       "(s, t) \<in> R23_pres"
-      "s \<in> m2_inv3a_sesK_compr" 
+      "s \<in> m2_inv3a_sesK_compr"
       "t \<in> m3_inv2_sesK_compr" "t \<in> m3_inv1_lkeysec"
       "Kab = sesK (Rs$sk)" "Rs \<notin> dom (runs t)"
       "\<lbrace> Agent A, Agent B, Nonce Na \<rbrace> \<in> parts (IK t)"
     let ?s'=
       "s\<lparr> runs := runs s(Rs \<mapsto> (Serv, [A, B], [aNon Na, aNum (clk t)])),
-          chan := insert (Secure Sv A (Msg [aKey Kab, aAgt B, aNum (clk t), aNon Na])) 
+          chan := insert (Secure Sv A (Msg [aKey Kab, aAgt B, aNum (clk t), aNon Na]))
                  (insert (Secure Sv B (Msg [aKey Kab, aAgt A, aNum (clk t)])) (chan s)) \<rparr>"
     let ?t'=
       "t\<lparr> runs := runs t(Rs \<mapsto> (Serv, [A, B], [aNon Na, aNum (clk t)])),
-          IK := insert  
+          IK := insert
                   \<lbrace> Crypt (shrK A) \<lbrace> Key Kab, Agent B, Number (clk t), Nonce Na \<rbrace>,
-                    Crypt (shrK B) \<lbrace> Key Kab, Agent A, Number (clk t) \<rbrace> \<rbrace> 
+                    Crypt (shrK B) \<lbrace> Key Kab, Agent A, Number (clk t) \<rbrace> \<rbrace>
                   (IK t) \<rparr>"
   -- {* here we go *}
     have "(?s', ?t') \<in> R23_msgs" using H
-    by (-) (rule R23_intros, auto)  
+    by (-) (rule R23_intros, auto)
   moreover
     have "(?s', ?t') \<in> R23_keys" using H
-    by (-) (rule R23_intros, 
+    by (-) (rule R23_intros,
             auto simp add: m2_inv3a_sesK_compr_simps m3_inv2_sesK_compr_simps,
             auto simp add: R23_keys_simps)
   moreover
     have "(?s', ?t') \<in> R23_non" using H
-    by (-) 
-       (rule R23_intros, 
+    by (-)
+       (rule R23_intros,
         auto simp add: m2_inv3a_sesK_compr_simps m3_inv2_sesK_compr_simps R23_non_simps)
   moreover
     have "(?s', ?t') \<in> R23_pres" using H
-    by (-) (rule R23_intros, auto)  
+    by (-) (rule R23_intros, auto)
   moreover
     note calculation
   }
-  thus ?thesis 
+  thus ?thesis
   by (auto simp add: PO_rhoare_defs R23_def m3_defs)
 qed
 
 lemma PO_m3_step4_refines_m2_step4:
-  "{R23 \<inter> UNIV \<times> m3_inv1_lkeysec} 
-     (m2_step4 Ra A B Na Kab Ts Ta), (m3_step4 Ra A B Na Kab Ts Ta X)  
+  "{R23 \<inter> UNIV \<times> m3_inv1_lkeysec}
+     (m2_step4 Ra A B Na Kab Ts Ta), (m3_step4 Ra A B Na Kab Ts Ta X)
    {> R23}"
 proof -
-  { fix s t 
+  { fix s t
     assume H:
-      "(s, t) \<in> R23_msgs" "(s, t) \<in> R23_keys" "(s, t) \<in> R23_non" 
+      "(s, t) \<in> R23_msgs" "(s, t) \<in> R23_keys" "(s, t) \<in> R23_non"
       "(s, t) \<in> R23_pres"  "t \<in> m3_inv1_lkeysec"
       "runs t Ra = Some (Init, [A, B], [])" "Na = Ra$na"
-      "\<lbrace> Crypt (shrK A) \<lbrace>Key Kab, Agent B, Number Ts, Nonce Na\<rbrace>, X\<rbrace>  \<in> analz (IK t)"  
+      "\<lbrace> Crypt (shrK A) \<lbrace>Key Kab, Agent B, Number Ts, Nonce Na\<rbrace>, X\<rbrace>  \<in> analz (IK t)"
     let ?s' = "s\<lparr> runs := runs s(Ra \<mapsto> (Init, [A, B], [aKey Kab, aNum Ts, aNum (clk t)])),
-                 chan := insert (dAuth Kab (Msg [aAgt A, aNum (clk t)])) (chan s) \<rparr>" 
+                 chan := insert (dAuth Kab (Msg [aAgt A, aNum (clk t)])) (chan s) \<rparr>"
     and ?t' = "t\<lparr> runs := runs t(Ra \<mapsto> (Init, [A, B], [aKey Kab, aNum Ts, aNum (clk t)])),
-                 IK := insert \<lbrace>Crypt Kab \<lbrace>Agent A, Number (clk t)\<rbrace>, X\<rbrace> (IK t) \<rparr>" 
+                 IK := insert \<lbrace>Crypt Kab \<lbrace>Agent A, Number (clk t)\<rbrace>, X\<rbrace> (IK t) \<rparr>"
     from H have
-      "Secure Sv A (Msg [aKey Kab, aAgt B, aNum Ts, aNon Na]) \<in> chan s" 
-    by (auto dest!: analz_into_parts elim!: MPair_parts)  
+      "Secure Sv A (Msg [aKey Kab, aAgt B, aNum Ts, aNon Na]) \<in> chan s"
+    by (auto dest!: analz_into_parts elim!: MPair_parts)
   moreover
     from H have "X \<in> parts (IK t)" by (auto)
     with H have "(?s', ?t') \<in> R23_msgs" by (auto intro!: R23_intros) (auto)
   moreover
     from H have "X \<in> analz (IK t)" by (auto)
     with H have "(?s', ?t') \<in> R23_keys"
-    by (auto intro!: R23_intros) (auto dest!: analz_cut intro: analz_monotonic) 
+    by (auto intro!: R23_intros) (auto dest!: analz_cut intro: analz_monotonic)
   moreover
     from H have "X \<in> analz (IK t)" by (auto)
     with H have "(?s', ?t') \<in> R23_non"
-    by (auto intro!: R23_intros) (auto dest!: analz_cut intro: analz_monotonic) 
+    by (auto intro!: R23_intros) (auto dest!: analz_cut intro: analz_monotonic)
   moreover
     have "(?s', ?t') \<in> R23_pres" using H
     by (auto intro!: R23_intros)
   moreover
     note calculation
   }
-  thus ?thesis 
-  by (auto simp add: PO_rhoare_defs R23_def m3_defs dest!: analz_Inj_IK) 
+  thus ?thesis
+  by (auto simp add: PO_rhoare_defs R23_def m3_defs dest!: analz_Inj_IK)
 qed
 
 lemma PO_m3_step5_refines_m2_step5:
-  "{R23} 
-     (m2_step5 Rb A B Kab Ts Ta), (m3_step5 Rb A B Kab Ts Ta) 
+  "{R23}
+     (m2_step5 Rb A B Kab Ts Ta), (m3_step5 Rb A B Kab Ts Ta)
    {> R23}"
 by (auto simp add: PO_rhoare_defs R23_def m3_defs intro!: R23_intros)
    (auto)
 
 lemma PO_m3_step6_refines_m2_step6:
-  "{R23} 
-     (m2_step6 Ra A B Na Kab Ts Ta), (m3_step6 Ra A B Na Kab Ts Ta) 
+  "{R23}
+     (m2_step6 Ra A B Na Kab Ts Ta), (m3_step6 Ra A B Na Kab Ts Ta)
    {> R23}"
 by (auto simp add: PO_rhoare_defs R23_def m3_defs intro!: R23_intros)
 
@@ -663,10 +663,10 @@ lemma PO_m3_leak_refines_m2_leak:
 by (auto simp add: PO_rhoare_defs R23_def m3_defs R23_simps intro!: R23_intros)
 
 lemma PO_m3_DY_fake_refines_m2_fake:
-  "{R23 \<inter> m2_inv3a_sesK_compr \<times> (m3_inv2_sesK_compr \<inter> m3_inv1_lkeysec)} 
+  "{R23 \<inter> m2_inv3a_sesK_compr \<times> (m3_inv2_sesK_compr \<inter> m3_inv1_lkeysec)}
      m2_fake, m3_DY_fake
    {> R23}"
-apply (auto simp add: PO_rhoare_defs R23_def m3_defs intro!: R23_intros 
+apply (auto simp add: PO_rhoare_defs R23_def m3_defs intro!: R23_intros
             del: abs_msg.cases)
 apply (auto intro: abs_msg_DY_subset_fakeable [THEN subsetD]
             del: abs_msg.cases)
@@ -676,10 +676,10 @@ done
 
 text {* All together now... *}
 
-lemmas PO_m3_trans_refines_m2_trans = 
+lemmas PO_m3_trans_refines_m2_trans =
   PO_m3_step1_refines_m2_step1 PO_m3_step2_refines_m2_step2
   PO_m3_step3_refines_m2_step3 PO_m3_step4_refines_m2_step4
-  PO_m3_step5_refines_m2_step5 PO_m3_step6_refines_m2_step6 
+  PO_m3_step5_refines_m2_step5 PO_m3_step6_refines_m2_step6
   PO_m3_tick_refines_m2_tick PO_m3_purge_refines_m2_purge
   PO_m3_leak_refines_m2_leak PO_m3_DY_fake_refines_m2_fake
 
@@ -689,8 +689,8 @@ lemma PO_m3_refines_init_m2 [iff]:
 by (auto simp add: R23_def m3_defs intro!: R23_intros)
 
 lemma PO_m3_refines_trans_m2 [iff]:
-  "{R23 \<inter> (m2_inv3a_sesK_compr) \<times> (m3_inv2_sesK_compr \<inter> m3_inv1_lkeysec)} 
-     (trans m2), (trans m3) 
+  "{R23 \<inter> (m2_inv3a_sesK_compr) \<times> (m3_inv2_sesK_compr \<inter> m3_inv1_lkeysec)}
+     (trans m2), (trans m3)
    {> R23}"
 by (auto simp add: m3_def m3_trans_def m2_def m2_trans_def)
    (blast intro!: PO_m3_trans_refines_m2_trans)+
@@ -703,8 +703,8 @@ by (auto simp add: obs_consistent_def R23_def med32_def m3_defs)
 text {* Refinement result. *}
 
 lemma m3_refines_m2 [iff]:
-  "refines 
-     (R23 \<inter> (m2_inv3a_sesK_compr) \<times> (m3_inv1_lkeysec)) 
+  "refines
+     (R23 \<inter> (m2_inv3a_sesK_compr) \<times> (m3_inv1_lkeysec))
      med32 m2 m3"
 proof -
   have "R23 \<inter> m2_inv3a_sesK_compr \<times> UNIV \<subseteq> UNIV \<times> m3_inv2_sesK_compr"
@@ -724,11 +724,11 @@ subsection {* Inherited invariants *}
 subsubsection {* inv3 (derived): Key secrecy for initiator *}
 (*invh*************************************************************************)
 
-definition 
+definition
   m3_inv3_ikk_init :: "m3_state set"
 where
   "m3_inv3_ikk_init \<equiv> {s. \<forall>A B Ra K Ts nl.
-     runs s Ra = Some (Init, [A, B], aKey K # aNum Ts # nl) \<longrightarrow> A \<in> good \<longrightarrow> B \<in> good \<longrightarrow> 
+     runs s Ra = Some (Init, [A, B], aKey K # aNum Ts # nl) \<longrightarrow> A \<in> good \<longrightarrow> B \<in> good \<longrightarrow>
      Key K \<in> analz (IK s) \<longrightarrow>
        (K, A, B, Ra$na, Ts) \<in> leak s
   }"
@@ -739,20 +739,20 @@ lemmas m3_inv3_ikk_initD = m3_inv3_ikk_init_def [THEN setc_def_to_dest, rule_for
 
 lemma PO_m3_inv3_ikk_init: "reach m3 \<subseteq> m3_inv3_ikk_init"
 proof (rule INV_from_Refinement_using_invariants [OF m3_refines_m2])
-  show "Range (R23 \<inter> m2_inv3a_sesK_compr \<times> m3_inv1_lkeysec \<inter> m2_inv6_ikk_init \<times> UNIV) 
+  show "Range (R23 \<inter> m2_inv3a_sesK_compr \<times> m3_inv1_lkeysec \<inter> m2_inv6_ikk_init \<times> UNIV)
       \<subseteq> m3_inv3_ikk_init"
     by (fastforce simp add: R23_def R23_keys_simps intro!: m3_inv3_ikk_initI)
-qed auto    
+qed auto
 
 
 subsubsection {* inv4 (derived): Key secrecy for responder *}
 (*invh*************************************************************************)
 
-definition 
+definition
   m3_inv4_ikk_resp :: "m3_state set"
 where
   "m3_inv4_ikk_resp \<equiv> {s. \<forall>A B Rb K Ts nl.
-     runs s Rb = Some (Resp, [A, B], aKey K # aNum Ts # nl) \<longrightarrow> A \<in> good \<longrightarrow> B \<in> good \<longrightarrow> 
+     runs s Rb = Some (Resp, [A, B], aKey K # aNum Ts # nl) \<longrightarrow> A \<in> good \<longrightarrow> B \<in> good \<longrightarrow>
      Key K \<in> analz (IK s) \<longrightarrow>
        (\<exists>Na. (K, A, B, Na, Ts) \<in> leak s)
   }"
@@ -763,11 +763,11 @@ lemmas m3_inv4_ikk_respD = m3_inv4_ikk_resp_def [THEN setc_def_to_dest, rule_for
 
 lemma PO_m3_inv4_ikk_resp: "reach m3 \<subseteq> m3_inv4_ikk_resp"
 proof (rule INV_from_Refinement_using_invariants [OF m3_refines_m2])
-  show "Range (R23 \<inter> m2_inv3a_sesK_compr \<times> m3_inv1_lkeysec \<inter> m2_inv7_ikk_resp \<times> UNIV) 
+  show "Range (R23 \<inter> m2_inv3a_sesK_compr \<times> m3_inv1_lkeysec \<inter> m2_inv7_ikk_resp \<times> UNIV)
       \<subseteq> m3_inv4_ikk_resp"
     by (auto simp add: R23_def R23_keys_simps intro!: m3_inv4_ikk_respI)
        (elim m2_inv7_ikk_respE, auto)
-qed auto 
+qed auto
 
 
 end
