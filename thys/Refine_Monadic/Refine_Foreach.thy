@@ -233,7 +233,7 @@ lemma FOREACHoci_refine_genR:
 
   apply simp apply (rule conjI)
   using INJ apply clarsimp
-  apply (erule map_eq_concE)
+  apply (erule map_eq_appendE)
   apply clarsimp
   apply (rule_tac x=l in exI)
   apply simp

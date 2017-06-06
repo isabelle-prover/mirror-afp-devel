@@ -109,6 +109,9 @@ ML {*
     val subsume_sort_gen: ('a -> term) -> Context.generic 
       -> 'a list -> 'a list
 
+    val mk_compN1: typ list -> int -> term -> term -> term
+    val mk_compN: int -> term -> term -> term
+
     (* Rules *)
     val abs_def: Proof.context -> thm -> thm
 
@@ -474,6 +477,24 @@ ML {*
 
     fun subsume_sort_gen f = subsume_sort f o Context.theory_of
 
+    fun mk_comp1 env (f, g) =
+      let
+        val fT = fastype_of1 (env, f);
+        val gT = fastype_of1 (env, g);
+        val compT = fT --> gT --> domain_type gT --> range_type fT;
+      in Const ("Fun.comp", compT) $ f $ g end;
+
+    fun mk_compN1 _   0 f g = f$g
+      | mk_compN1 env 1 f g = mk_comp1 env (f, g)
+      | mk_compN1 env n f g = let
+          val T = fastype_of1 (env, g) |> domain_type
+          val g = incr_boundvars 1 g $ Bound 0
+          val env = T::env
+        in
+          Abs ("x"^string_of_int n,T,mk_compN1 env (n-1) f g)
+        end
+
+    val mk_compN = mk_compN1 []    
 
     fun abs_def ctxt = Local_Defs.meta_rewrite_rule ctxt #> Drule.abs_def
 

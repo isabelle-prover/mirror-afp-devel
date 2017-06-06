@@ -130,6 +130,9 @@ lemma param_curry[param]:
   "(curry,curry) \<in> (\<langle>Ra,Rb\<rangle>prod_rel \<rightarrow> Rc) \<rightarrow> Ra \<rightarrow> Rb \<rightarrow> Rc"
   unfolding curry_def by parametricity
 
+lemma param_uncurry[param]: "(uncurry,uncurry) \<in> (A\<rightarrow>B\<rightarrow>C) \<rightarrow> A\<times>\<^sub>rB\<rightarrow>C"
+  unfolding uncurry_def[abs_def] by parametricity
+    
 context partial_function_definitions begin
   lemma 
     assumes M: "monotone le_fun le_fun F" 

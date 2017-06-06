@@ -20,6 +20,7 @@ imports Main
   "~~/src/HOL/ex/Quicksort"
   "~~/src/HOL/Library/Option_ord"
   "~~/src/HOL/Library/Infinite_Set"
+  "~~/src/HOL/Eisbach/Eisbach"
 begin
 text_raw {*\label{thy:Misc}*}
 
@@ -31,6 +32,14 @@ text {* This stuff is used in this theory itself, and thus occurs in first place
 
 lemma IdD: "(a,b)\<in>Id \<Longrightarrow> a=b" by simp
 
+    
+text \<open>Conversion Tag\<close>    
+definition [simp]: "CNV x y \<equiv> x=y"
+lemma CNV_I: "CNV x x" by simp
+lemma CNV_eqD: "CNV x y \<Longrightarrow> x=y" by simp
+lemma CNV_meqD: "CNV x y \<Longrightarrow> x\<equiv>y" by simp
+   
+    
 subsubsection "AC-operators"
 
 text {* Locale to declare AC-laws as simplification rules *}
@@ -124,8 +133,23 @@ lemma bex2I[intro?]: "\<lbrakk> (a,b)\<in>S; (a,b)\<in>S \<Longrightarrow> P a b
 lemma imp_mp_iff[simp]: "a \<and> (a \<longrightarrow> b) \<longleftrightarrow> a \<and> b" 
   by metis
     
+(* TODO: Move lemma to HOL! *)  
+lemma cnv_conj_to_meta: "(P \<and> Q \<Longrightarrow> PROP X) \<equiv> (\<lbrakk>P;Q\<rbrakk> \<Longrightarrow> PROP X)"
+  by (rule BNF_Fixpoint_Base.conj_imp_eq_imp_imp)
+    
+lemma atomize_Trueprop_eq[atomize]: "(Trueprop x \<equiv> Trueprop y) \<equiv> Trueprop (x=y)"
+  apply rule
+  apply (rule)
+  apply (erule equal_elim_rule1)
+  apply assumption
+  apply (erule equal_elim_rule2)
+  apply assumption
+  apply simp
+  done
+    
 
 subsection {* Sets *}
+  lemma remove_subset: "x\<in>S \<Longrightarrow> S-{x} \<subset> S" by auto
 
   lemma subset_minus_empty: "A\<subseteq>B \<Longrightarrow> A-B = {}" by auto
 
@@ -217,6 +241,24 @@ proof -
     by (simp only: Union_plus)
 qed
 
+  
+
+(* TODO: Move to HOL/Finite_set *)  
+lemma card_inverse[simp]: "card (R\<inverse>) = card R"
+proof -
+  have "finite (R\<inverse>) \<longleftrightarrow> finite R" by auto
+  have [simp]: "\<And>R. prod.swap`R = R\<inverse>" by auto
+  {
+    assume "\<not>finite R"
+    hence ?thesis
+      by auto
+  } moreover {
+    assume "finite R"
+    with card_image_le[of R prod.swap] card_image_le[of "R\<inverse>" prod.swap]
+    have ?thesis by auto
+  } ultimately show ?thesis by blast
+qed  
+  
 
   subsubsection {* Finite Sets *}
 
@@ -410,6 +452,8 @@ qed
 
 subsection {* Functions *}
 
+lemma fun_neq_ext_iff: "m\<noteq>m' \<longleftrightarrow> (\<exists>x. m x \<noteq> m' x)" by auto  
+
 definition "inv_on f A x == SOME y. y\<in>A \<and> f y = x"
 
 lemma inv_on_f_f[simp]: "\<lbrakk>inj_on f A; x\<in>A\<rbrakk> \<Longrightarrow> inv_on f A (f x) = x"
@@ -440,6 +484,8 @@ notation
   comp2  (infixl "\<circ>\<circ>" 55) and
   comp3  (infixl "\<circ>\<circ>\<circ>" 55)
 
+definition [code_unfold, simp]: "swap_args2 f x y \<equiv> f y x"
+  
 
 subsection {* Multisets *}
 
@@ -909,7 +955,10 @@ lemma neq_NilE:
 lemma length_ge_1_conv[iff]: "Suc 0 \<le> length l \<longleftrightarrow> l\<noteq>[]"
   by (cases l) auto
     
+lemma length_Suc_rev_conv: "length xs = Suc n \<longleftrightarrow> (\<exists>ys y. xs=ys@[y] \<and> length ys = n)"
+  by (cases xs rule: rev_cases) auto
 
+    
 subsubsection {* List Destructors *}
 lemma not_hd_in_tl:
   "x \<noteq> hd xs \<Longrightarrow> x \<in> set xs \<Longrightarrow> x \<in> set (tl xs)"
@@ -967,6 +1016,35 @@ lemma distinct_butlast_swap[simp]:
   apply (auto simp: list_update_append distinct_list_update split: nat.split)
   done
 
+subsubsection \<open>Splitting list according to structure of other list\<close>
+context begin
+private definition "SPLIT_ACCORDING m l \<equiv> length l = length m"
+
+private lemma SPLIT_ACCORDINGE: 
+  assumes "length m = length l"
+  obtains "SPLIT_ACCORDING m l"
+  unfolding SPLIT_ACCORDING_def using assms by auto
+
+private lemma SPLIT_ACCORDING_simp:
+  "SPLIT_ACCORDING m (l1@l2) \<longleftrightarrow> (\<exists>m1 m2. m=m1@m2 \<and> SPLIT_ACCORDING m1 l1 \<and> SPLIT_ACCORDING m2 l2)"
+  "SPLIT_ACCORDING m (x#l') \<longleftrightarrow> (\<exists>y m'. m=y#m' \<and> SPLIT_ACCORDING m' l')"
+  apply (fastforce simp: SPLIT_ACCORDING_def intro: exI[where x = "take (length l1) m"] exI[where x = "drop (length l1) m"])
+  apply (cases m;auto simp: SPLIT_ACCORDING_def)
+  done
+
+text \<open>Split structure of list @{term m} according to structure of list @{term l}.\<close>
+method split_list_according for m :: "'a list" and l :: "'b list" =
+  (rule SPLIT_ACCORDINGE[of m l],
+    (simp; fail),
+    ( simp only: SPLIT_ACCORDING_simp,
+      elim exE conjE, 
+      simp only: SPLIT_ACCORDING_def
+    )
+  ) 
+end
+  
+    
+    
 subsubsection {* @{text "list_all2"} *}
 lemma list_all2_induct[consumes 1, case_names Nil Cons]:
   assumes "list_all2 P l l'"
@@ -1375,13 +1453,16 @@ subsubsection {* Map *}
 lemma map_eq_consE: "\<lbrakk>map f ls = fa#fl; !!a l. \<lbrakk> ls=a#l; f a=fa; map f l = fl \<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
   by auto
 
-lemma map_eq_appendE: "\<lbrakk>map f ls = fl@fl'; !!l l'. \<lbrakk> ls=l@l'; map f l=fl; map f l' = fl' \<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
-proof (induction fl arbitrary: ls P)
+lemma map_eq_appendE: 
+  assumes "map f ls = fl@fl'"
+  obtains l l' where "ls=l@l'" and "map f l=fl" and  "map f l' = fl'"
+  using assms  
+proof (induction fl arbitrary: ls thesis)
   case (Cons x xs)
     then obtain l ls' where [simp]: "ls = l#ls'" "f l = x" by force
-    with Cons.prems(1) have "map f ls' = xs @ fl'" by simp
-    from Cons.IH[OF this] guess ll ll' .
-    with Cons.prems(2)[of "l#ll" ll'] show P by simp
+    with Cons.prems(2) have "map f ls' = xs @ fl'" by simp
+    from Cons.IH[OF _ this] guess ll ll' .
+    with Cons.prems(1)[of "l#ll" ll'] show thesis by simp
 qed simp
 
 lemma map_eq_append_conv: "map f ls = fl@fl' \<longleftrightarrow> (\<exists>l l'. ls = l@l' \<and> map f l = fl \<and> map f l' = fl')"
@@ -1435,8 +1516,15 @@ lemma inj_on_map_the: "\<lbrakk>D \<subseteq> dom m; inj_on m D\<rbrakk> \<Longr
   apply auto
   done
 
-lemma distinct_mapI: "distinct (List.map f l) \<Longrightarrow> distinct l"
+lemma distinct_mapI: "distinct (map f l) \<Longrightarrow> distinct l"
   by (induct l) auto
+    
+lemma map_distinct_upd_conv: 
+  "\<lbrakk>i<length l; distinct l\<rbrakk> \<Longrightarrow> map f l [i := x] = map (f(l!i := x)) l"
+  -- \<open>Updating a mapped distinct list is equal to updating the 
+    mapping function\<close>
+  by (simp add: nth_eq_iff_index_eq nth_equalityI)  
+    
 
 lemma map_consI:
   "w=map f ww \<Longrightarrow> f a#w = map f (a#ww)"
@@ -1743,7 +1831,578 @@ lemma (in linorder) sorted_by_rel_map_rev_linord [simp] :
   \<longleftrightarrow> sorted (rev (map fst l))"
   by (induct l) (auto simp add: sorted_Cons sorted_append)
 
+    
+subsubsection {* Take and Drop *}
+  lemma drop_all_conc: "drop (length a) (a@b) = b"
+    by (simp)
 
+  lemma take_update[simp]: "take n (l[i:=x]) = (take n l)[i:=x]"
+    apply (induct l arbitrary: n i)
+    apply (auto split: nat.split)
+    apply (case_tac n)
+    apply simp_all
+    apply (case_tac n)
+    apply simp_all
+    done
+
+  lemma take_update_last: "length list>n \<Longrightarrow> take (Suc n) list [n:=x] = take n list @ [x]"
+    by (induct list arbitrary: n)
+       (auto split: nat.split)
+
+  lemma drop_upd_irrelevant: "m < n \<Longrightarrow> drop n (l[m:=x]) = drop n l"
+    apply (induct n arbitrary: l m)
+    apply simp
+    apply (case_tac l)
+    apply (auto split: nat.split)
+    done
+
+lemma set_drop_conv:
+  "set (drop n l) =  { l!i | i. n\<le>i \<and> i < length l }" (is "?L=?R")
+proof (intro equalityI subsetI)
+  fix x
+  assume "x\<in>?L"
+  then obtain i where L: "i<length l - n" and X: "x = drop n l!i"
+    by (auto simp add: in_set_conv_nth)
+  note X
+  also have "\<dots> = l!(n+i)" using L by simp
+  finally show "x\<in>?R" using L by auto
+next
+  fix x
+  assume "x\<in>?R"
+  then obtain i where L: "n\<le>i" "i<length l" and X: "x=l!i" by blast
+  note X
+  moreover have "l!i = drop n l ! (i - n)" and "(i-n) < length l - n" using L
+    by (auto)
+  ultimately show "x\<in>?L"
+    by (auto simp add: in_set_conv_nth)
+qed
+
+lemma filter_upt_take_conv:
+  "[i\<leftarrow>[n..<m]. P (take m l ! i) ] = [i\<leftarrow>[n..<m]. P (l ! i) ]"
+  by (rule filter_cong) (simp_all)
+
+lemma in_set_drop_conv_nth: "x\<in>set (drop n l) \<longleftrightarrow> (\<exists>i. n\<le>i \<and> i<length l \<and> x = l!i)"
+  apply (clarsimp simp: in_set_conv_nth)
+  apply safe
+  apply simp
+  apply (metis le_add2 less_diff_conv add.commute)
+  apply (rule_tac x="i-n" in exI)
+  apply auto []
+  done
+
+lemma Union_take_drop_id: "\<Union>set (drop n l) \<union> \<Union>set (take n l) = \<Union>set l"
+  by (metis Union_Un_distrib append_take_drop_id set_union_code sup_commute)
+
+
+lemma Un_set_drop_extend: "\<lbrakk>j\<ge>Suc 0; j < length l\<rbrakk>
+  \<Longrightarrow> l ! (j - Suc 0) \<union> \<Union>set (drop j l) = \<Union>set (drop (j - Suc 0) l)"
+  apply safe
+  apply simp_all
+  apply (metis diff_Suc_Suc diff_zero gr0_implies_Suc in_set_drop_conv_nth
+    le_refl less_eq_Suc_le order.strict_iff_order)
+  apply (metis Nat.diff_le_self set_drop_subset_set_drop subset_code(1))
+  by (metis diff_Suc_Suc gr0_implies_Suc in_set_drop_conv_nth
+    less_eq_Suc_le order.strict_iff_order minus_nat.diff_0)
+
+lemma drop_take_drop_unsplit:
+  "i\<le>j \<Longrightarrow> drop i (take j l) @ drop j l = drop i l"
+proof -
+  assume "i \<le> j"
+  then obtain skf where "i + skf = j"
+    by (metis le_iff_add)
+  thus "drop i (take j l) @ drop j l = drop i l"
+    by (metis append_take_drop_id diff_add_inverse drop_drop drop_take
+      add.commute)
+qed
+
+lemma drop_last_conv[simp]: "l\<noteq>[] \<Longrightarrow> drop (length l - Suc 0) l = [last l]"
+  by (cases l rule: rev_cases) auto
+
+lemma take_butlast_conv[simp]: "take (length l - Suc 0) l = butlast l"
+  by (cases l rule: rev_cases) auto
+
+subsubsection \<open>Up-to\<close>
+lemma upt_merge[simp]: "i\<le>j \<and> j\<le>k \<Longrightarrow> [i..<j]@[j..<k] = [i..<k]"
+  by (metis le_Suc_ex upt_add_eq_append)
+
+lemma upt_eq_append_conv: "i\<le>j \<Longrightarrow> [i..<j] = xs@ys \<longleftrightarrow> (\<exists>k. i\<le>k \<and> k\<le>j \<and> [i..<k] = xs \<and> [k..<j] = ys)"
+proof (rule iffI)
+  assume "[i..<j] = xs @ ys"  
+  and "i\<le>j"
+  thus "\<exists>k\<ge>i. k \<le> j \<and> [i..<k] = xs \<and> [k..<j] = ys"
+    apply (induction xs arbitrary: i)
+    apply (auto; fail)
+    apply (clarsimp simp: upt_eq_Cons_conv)
+    by (meson Suc_le_eq less_imp_le_nat)
+qed auto
+  
+    
+subsubsection {* Last and butlast *}
+(* Maybe this should go into List.thy, next to snoc_eq_iff_butlast *)
+lemma snoc_eq_iff_butlast':
+  "(ys = xs @ [x]) \<longleftrightarrow> (ys \<noteq> [] \<and> butlast ys = xs \<and> last ys = x)"
+  by auto
+
+lemma butlast_upt: "butlast [m..<n] = [m..<n - 1]"
+  apply (cases "m<n")
+    apply (cases n)
+      apply simp
+    apply simp
+  apply simp
+  done
+
+(*lemma butlast_upt: "n<m \<Longrightarrow> butlast [n..<m] = [n..<m - 1]"
+  apply (cases "[n..<m]" rule: rev_cases)
+  apply simp
+  apply (cases m)
+  apply simp
+  apply simp
+  done*)
+
+lemma butlast_update': "butlast l [i:=x] = butlast (l[i:=x])"
+  by (metis butlast_conv_take butlast_list_update length_butlast take_update)
+
+
+lemma take_minus_one_conv_butlast:
+  "n\<le>length l \<Longrightarrow> take (n - Suc 0) l = butlast (take n l)"
+  by (simp add: butlast_take)
+
+lemma butlast_eq_cons_conv: "butlast l = x#xs \<longleftrightarrow> (\<exists>xl. l=x#xs@[xl])"
+  by (metis Cons_eq_appendI append_butlast_last_id butlast.simps
+    butlast_snoc eq_Nil_appendI)
+
+lemma butlast_eq_consE:
+  assumes "butlast l = x#xs"
+  obtains xl where "l=x#xs@[xl]"
+  using assms
+  by (auto simp: butlast_eq_cons_conv)
+
+lemma drop_eq_ConsD: "drop n xs = x # xs' \<Longrightarrow> drop (Suc n) xs = xs'"
+by(induct xs arbitrary: n)(simp_all add: drop_Cons split: nat.split_asm)
+
+subsubsection {* Miscellaneous *}
+  lemma length_compl_induct[case_names Nil Cons]: "\<lbrakk>P []; !! e l . \<lbrakk>!! ll . length ll <= length l \<Longrightarrow> P ll\<rbrakk> \<Longrightarrow> P (e#l)\<rbrakk> \<Longrightarrow> P l"
+    apply(induct_tac l rule: length_induct)
+    apply(case_tac "xs")
+    apply(auto)
+  done
+
+  lemma list_size_conc[simp]: "size_list f (a@b) = size_list f a + size_list f b"
+    by (induct a) auto
+
+
+  lemma in_set_list_format: "\<lbrakk> e\<in>set l; !!l1 l2. l=l1@e#l2 \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
+  proof (induct l arbitrary: P)
+    case Nil thus ?case by auto
+  next
+    case (Cons a l) show ?case proof (cases "a=e")
+      case True with Cons show ?thesis by force
+    next
+      case False with Cons.prems(1) have "e\<in>set l" by auto
+      with Cons.hyps obtain l1 l2 where "l=l1@e#l2" by blast
+      hence "a#l = (a#l1)@e#l2" by simp
+      with Cons.prems(2) show P by blast
+    qed
+  qed
+
+lemma in_set_upd_cases:
+  assumes "x\<in>set (l[i:=y])"
+  obtains "i<length l" and "x=y" | "x\<in>set l"
+  by (metis assms in_set_conv_nth length_list_update nth_list_update_eq
+    nth_list_update_neq)
+
+lemma in_set_upd_eq_aux:
+  assumes "i<length l"
+  shows "x\<in>set (l[i:=y]) \<longleftrightarrow> x=y \<or> (\<forall>y. x\<in>set (l[i:=y]))"
+  by (metis in_set_upd_cases assms list_update_overwrite
+    set_update_memI)
+
+lemma in_set_upd_eq:
+  assumes "i<length l"
+  shows "x\<in>set (l[i:=y]) \<longleftrightarrow> x=y \<or> (x\<in>set l \<and> (\<forall>y. x\<in>set (l[i:=y])))"
+  by (metis in_set_upd_cases in_set_upd_eq_aux assms)
+
+
+  text {* Simultaneous induction over two lists, prepending an element to one of the lists in each step *}
+  lemma list_2pre_induct[case_names base left right]: assumes BASE: "P [] []" and LEFT: "!!e w1' w2. P w1' w2 \<Longrightarrow> P (e#w1') w2" and RIGHT: "!!e w1 w2'. P w1 w2' \<Longrightarrow> P w1 (e#w2')" shows "P w1 w2"
+  proof -
+    { -- "The proof is done by induction over the sum of the lengths of the lists"
+      fix n
+      have "!!w1 w2. \<lbrakk>length w1 + length w2 = n; P [] []; !!e w1' w2. P w1' w2 \<Longrightarrow> P (e#w1') w2; !!e w1 w2'. P w1 w2' \<Longrightarrow> P w1 (e#w2') \<rbrakk> \<Longrightarrow> P w1 w2 "
+        apply (induct n)
+        apply simp
+        apply (case_tac w1)
+        apply auto
+        apply (case_tac w2)
+        apply auto
+        done
+    } from this[OF _ BASE LEFT RIGHT] show ?thesis by blast
+  qed
+
+
+  lemma list_decomp_1: "length l=1 \<Longrightarrow> EX a . l=[a]"
+    by (case_tac l, auto)
+
+  lemma list_decomp_2: "length l=2 \<Longrightarrow> EX a b . l=[a,b]"
+    by (case_tac l, auto simp add: list_decomp_1)
+
+
+
+  lemma list_rest_coinc: "\<lbrakk>length s2 <= length s1; s1@r1 = s2@r2\<rbrakk> \<Longrightarrow> EX r1p . r2=r1p@r1"
+  proof -
+    assume A: "length s2 <= length s1" "s1@r1 = s2@r2"
+    hence "r1 = drop (length s1) (s2@r2)" by (auto simp only:drop_all_conc dest: sym)
+    moreover from A have "length s1 = length s1 - length s2 + length s2" by arith
+    ultimately have "r1 = drop ((length s1 - length s2)) r2" by (auto)
+    hence "r2 = take ((length s1 - length s2)) r2 @ r1" by auto
+    thus ?thesis by auto
+  qed
+
+  lemma list_tail_coinc: "n1#r1 = n2#r2 \<Longrightarrow> n1=n2 & r1=r2"
+    by (auto)
+
+
+  lemma last_in_set[intro]: "\<lbrakk>l\<noteq>[]\<rbrakk> \<Longrightarrow> last l \<in> set l"
+    by (induct l) auto
+
+  lemma map_ident_id[simp]: "map id = id" "map id x = x"
+    by (unfold id_def) auto
+
+  lemma op_conc_empty_img_id[simp]: "(op @ [] ` L) = L" by auto
+
+
+  lemma distinct_match: "\<lbrakk> distinct (al@e#bl) \<rbrakk> \<Longrightarrow> (al@e#bl = al'@e#bl') \<longleftrightarrow> (al=al' \<and> bl=bl')"
+  proof (rule iffI, induct al arbitrary: al')
+    case Nil thus ?case by (cases al') auto
+  next
+    case (Cons a al) note Cprems=Cons.prems note Chyps=Cons.hyps
+    show ?case proof (cases al')
+      case Nil with Cprems have False by auto
+      thus ?thesis ..
+    next
+      case [simp]: (Cons a' all')
+      with Cprems have [simp]: "a=a'" and P: "al@e#bl = all'@e#bl'" by auto
+      from Cprems(1) have D: "distinct (al@e#bl)" by auto
+      from Chyps[OF D P] have [simp]: "al=all'" "bl=bl'" by auto
+      show ?thesis by simp
+    qed
+  qed simp
+
+
+  lemma prop_match: "\<lbrakk> list_all P al; \<not>P e; \<not>P e'; list_all P bl \<rbrakk> \<Longrightarrow> (al@e#bl = al'@e'#bl') \<longleftrightarrow> (al=al' \<and> e=e' \<and> bl=bl')"
+    apply (rule iffI, induct al arbitrary: al')
+    apply (case_tac al', fastforce, fastforce)+
+    done
+
+  lemmas prop_matchD = rev_iffD1[OF _ prop_match[where P=P]] for P
+
+  lemma list_match_lel_lel: "\<lbrakk>
+    c1 @ qs # c2 = c1' @ qs' # c2';
+    \<And>c21'. \<lbrakk>c1 = c1' @ qs' # c21'; c2' = c21' @ qs # c2\<rbrakk> \<Longrightarrow> P;
+    \<lbrakk>c1' = c1; qs' = qs; c2' = c2\<rbrakk> \<Longrightarrow> P;
+    \<And>c21. \<lbrakk>c1' = c1 @ qs # c21; c2 = c21 @ qs' # c2'\<rbrakk> \<Longrightarrow> P
+    \<rbrakk> \<Longrightarrow> P"
+    apply (auto simp add: append_eq_append_conv2)
+    apply (case_tac us)
+    apply auto
+    apply (case_tac us)
+    apply auto
+    done
+
+  lemma distinct_tl[simp]: "l\<noteq>[] \<Longrightarrow> distinct l \<Longrightarrow> distinct (tl l)"
+    by (cases l) auto
+
+lemma list_e_eq_lel[simp]:
+  "[e] = l1@e'#l2 \<longleftrightarrow> l1=[] \<and> e'=e \<and> l2=[]"
+  "l1@e'#l2 = [e] \<longleftrightarrow> l1=[] \<and> e'=e \<and> l2=[]"
+  apply (cases l1, auto) []
+  apply (cases l1, auto) []
+  done
+
+lemma list_ee_eq_leel[simp]:
+  "([e1,e2] = l1@e1'#e2'#l2) \<longleftrightarrow> (l1=[] \<and> e1=e1' \<and> e2=e2' \<and> l2=[])"
+  "(l1@e1'#e2'#l2 = [e1,e2]) \<longleftrightarrow> (l1=[] \<and> e1=e1' \<and> e2=e2' \<and> l2=[])"
+  apply (cases l1, auto) []
+  apply (cases l1, auto) []
+  done
+
+lemma list_se_match[simp]:
+  "l1 \<noteq> [] \<Longrightarrow> l1@l2 = [a] \<longleftrightarrow> l1 = [a] \<and> l2 = []"
+  "l2 \<noteq> [] \<Longrightarrow> l1@l2 = [a] \<longleftrightarrow> l1 = [] \<and> l2 = [a]"
+  "l1 \<noteq> [] \<Longrightarrow> [a] = l1@l2 \<longleftrightarrow> l1 = [a] \<and> l2 = []"
+  "l2 \<noteq> [] \<Longrightarrow> [a] = l1@l2 \<longleftrightarrow> l1 = [] \<and> l2 = [a]"
+  apply (cases l1, simp_all)
+  apply (cases l1, simp_all)
+  apply (cases l1, auto) []
+  apply (cases l1, auto) []
+  done
+
+
+
+lemma xy_in_set_cases[consumes 2, case_names EQ XY YX]:
+  assumes A: "x\<in>set l" "y\<in>set l"
+  and C:
+  "!!l1 l2. \<lbrakk> x=y; l=l1@y#l2 \<rbrakk> \<Longrightarrow> P"
+  "!!l1 l2 l3. \<lbrakk> x\<noteq>y; l=l1@x#l2@y#l3 \<rbrakk> \<Longrightarrow> P"
+  "!!l1 l2 l3. \<lbrakk> x\<noteq>y; l=l1@y#l2@x#l3 \<rbrakk> \<Longrightarrow> P"
+  shows P
+proof (cases "x=y")
+  case True with A(1) obtain l1 l2 where "l=l1@y#l2" by (blast dest: split_list)
+  with C(1) True show ?thesis by blast
+next
+  case False
+  from A(1) obtain l1 l2 where S1: "l=l1@x#l2" by (blast dest: split_list)
+  from A(2) obtain l1' l2' where S2: "l=l1'@y#l2'" by (blast dest: split_list)
+  from S1 S2 have M: "l1@x#l2 = l1'@y#l2'" by simp
+  thus P proof (cases rule: list_match_lel_lel[consumes 1, case_names 1 2 3])
+    case (1 c) with S1 have "l=l1'@y#c@x#l2" by simp
+    with C(3) False show ?thesis by blast
+  next
+    case 2 with False have False by blast
+    thus ?thesis ..
+  next
+    case (3 c) with S1 have "l=l1@x#c@y#l2'" by simp
+    with C(2) False show ?thesis by blast
+  qed
+qed
+
+
+    (* Placed here because it depends on xy_in_set_cases *)
+lemma distinct_map_eq: "\<lbrakk> distinct (List.map f l); f x = f y; x\<in>set l; y\<in>set l \<rbrakk> \<Longrightarrow> x=y"
+  by (erule (2) xy_in_set_cases) auto
+
+
+
+lemma upt_append:
+  assumes "i<j"
+  shows "[0..<i]@[i..<j] = [0..<j]"
+  using assms
+  apply (induct j)
+  apply simp
+  apply (case_tac "i=j")
+  apply auto
+  done
+
+
+
+lemma upt_filter_extend:
+  assumes LE: "u\<le>u'"
+  assumes NP: "\<forall>i. u\<le>i \<and> i<u' \<longrightarrow> \<not>P i"
+  shows "[i\<leftarrow>[0..<u]. P i] = [i\<leftarrow>[0..<u']. P i]"
+proof (cases "u=u'")
+  case True thus ?thesis by simp
+next
+  case False hence "u<u'" using LE by simp
+  hence "[0..<u'] = [0..<u]@[u ..<u']"
+    by (simp add: upt_append)
+  hence "[i\<leftarrow>[0..<u']. P i] = [i\<leftarrow>[0..<u]. P i] @ [i\<leftarrow>[u..<u']. P i]"
+    by simp
+  also have "[i\<leftarrow>[u..<u']. P i] = []" using NP
+    by (auto simp: filter_empty_conv)
+  finally show ?thesis by simp
+qed
+
+
+lemma filter_upt_last:
+  assumes E: "[k\<leftarrow>[0..<length l] . P (l!k)] = js @ [j]"
+  assumes "j<i" and "i<length l"
+  shows "\<not> P (l!i)"
+proof
+  assume A: "P (l!i)"
+  have "[0..<length l] = [0..<i]@[i..<length l]" using `i<length l`
+    by (simp add: upt_append)
+  also have "[i..<length l] = i#[Suc i..<length l]" using `i<length l`
+    by (auto simp: upt_conv_Cons)
+  finally
+  have "[k\<leftarrow>[0..<i] . P (l!k)]@i#[k\<leftarrow>[Suc i..<length l] . P (l!k)] = js@[j]"
+    unfolding E[symmetric]
+    using `P (l!i)` by simp
+  hence "j = last (i#[k\<leftarrow>[Suc i..<length l] . P (l!k)])"
+    by (metis last_appendR last_snoc list.distinct(1))
+  also have "\<dots> \<ge> i"
+  proof -
+    have "sorted (i#[k\<leftarrow>[Suc i..<length l] . P (l!k)])" (is "sorted ?l")
+      by (simp add: sorted_Cons sorted_filter[where f=id, simplified])
+    hence "hd ?l \<le> last ?l"
+      by (rule sorted_hd_last) simp
+    thus ?thesis by simp
+  qed
+  finally have "i\<le>j" . thus False using `j<i` by simp
+qed
+
+lemma all_set_conv_nth: "(\<forall>x\<in>set l. P x) \<longleftrightarrow> (\<forall>i<length l. P (l!i))"
+  by (auto intro: all_nth_imp_all_set)
+
+lemma upt_0_eq_Nil_conv[simp]: "[0..<j] = [] \<longleftrightarrow> j=0"
+  by auto
+
+lemma filter_eq_snocD: "filter P l = l'@[x] \<Longrightarrow> x\<in>set l \<and> P x"
+proof -
+  assume A: "filter P l = l'@[x]"
+  hence "x\<in>set (filter P l)" by simp
+  thus ?thesis by simp
+qed
+
+
+
+-- {* Congruence rules for @{const list_all} and @{const list_ex} *}
+lemma list_all_cong[fundef_cong]: "\<lbrakk> xs=ys; !!x. x\<in>set ys \<Longrightarrow> f x \<longleftrightarrow> g x \<rbrakk> \<Longrightarrow> list_all f xs = list_all g ys"
+  apply (induct xs arbitrary: ys)
+  apply auto
+  done
+
+lemma list_ex_cong[fundef_cong]: "\<lbrakk> xs=ys; !!x. x\<in>set ys \<Longrightarrow> f x \<longleftrightarrow> g x \<rbrakk> \<Longrightarrow> list_ex f xs = list_ex g ys"
+  apply (induct xs arbitrary: ys)
+  apply auto
+  done
+
+
+lemma lists_image_witness:
+  assumes A: "x\<in>lists (f`Q)"
+  obtains xo where "xo\<in>lists Q" "x=map f xo"
+proof -
+  have "\<lbrakk> x\<in>lists (f`Q) \<rbrakk> \<Longrightarrow> \<exists>xo\<in>lists Q. x=map f xo"
+  proof (induct x)
+    case Nil thus ?case by auto
+  next
+    case (Cons x xs)
+    then obtain xos where "xos\<in>lists Q" "xs=map f xos" by force
+    moreover from Cons.prems have "x\<in>f`Q" by auto
+    then obtain xo where "xo\<in>Q" "x=f xo" by auto
+    ultimately show ?case
+      by (rule_tac x="xo#xos" in bexI) auto
+  qed
+  thus ?thesis
+    apply (simp_all add: A)
+    apply (erule_tac bexE)
+    apply (rule_tac that)
+    apply assumption+
+    done
+qed
+
+lemma map_of_eq_empty_iff [simp]:
+  "map_of xs = Map.empty \<longleftrightarrow> xs=[]"
+proof
+  assume "map_of xs = Map.empty"
+  thus "xs = []" by (induct xs) simp_all
+qed auto
+
+lemma map_of_None_filterD:
+  "map_of xs x = None \<Longrightarrow> map_of (filter P xs) x = None"
+by(induct xs) auto
+
+lemma map_of_concat: "map_of (concat xss) = foldr (\<lambda>xs f. f ++ map_of xs) xss empty"
+by(induct xss) simp_all
+
+lemma map_of_Some_split:
+  "map_of xs k = Some v \<Longrightarrow> \<exists>ys zs. xs = ys @ (k, v) # zs \<and> map_of ys k = None"
+proof(induct xs)
+  case (Cons x xs)
+  obtain k' v' where x: "x = (k', v')" by(cases x)
+  show ?case
+  proof(cases "k' = k")
+    case True
+    with `map_of (x # xs) k = Some v` x have "x # xs = [] @ (k, v) # xs" "map_of [] k = None" by simp_all
+    thus ?thesis by blast
+  next
+    case False
+    with `map_of (x # xs) k = Some v` x
+    have "map_of xs k = Some v" by simp
+    from `map_of xs k = Some v \<Longrightarrow> \<exists>ys zs. xs = ys @ (k, v) # zs \<and> map_of ys k = None`[OF this]
+    obtain ys zs where "xs = ys @ (k, v) # zs" "map_of ys k = None" by blast
+    with False x have "x # xs = (x # ys) @ (k, v) # zs" "map_of (x # ys) k = None" by simp_all
+    thus ?thesis by blast
+  qed
+qed simp
+
+lemma map_add_find_left:
+  "g k = None \<Longrightarrow> (f ++ g) k = f k"
+by(simp add: map_add_def)
+
+lemma map_add_left_None:
+  "f k = None \<Longrightarrow> (f ++ g) k = g k"
+by(simp add: map_add_def split: option.split)
+
+lemma map_of_Some_filter_not_in:
+  "\<lbrakk> map_of xs k = Some v; \<not> P (k, v); distinct (map fst xs) \<rbrakk> \<Longrightarrow> map_of (filter P xs) k = None"
+apply(induct xs)
+apply(auto)
+apply(auto simp add: map_of_eq_None_iff)
+done
+
+lemma distinct_map_fst_filterI: "distinct (map fst xs) \<Longrightarrow> distinct (map fst (filter P xs))"
+by(induct xs) auto
+
+lemma distinct_map_fstD: "\<lbrakk> distinct (map fst xs); (x, y) \<in> set xs; (x, z) \<in> set xs \<rbrakk> \<Longrightarrow> y = z"
+by(induct xs)(fastforce elim: notE rev_image_eqI)+
+
+
+
+lemma concat_filter_neq_Nil:
+  "concat [ys\<leftarrow>xs. ys \<noteq> Nil] = concat xs"
+by(induct xs) simp_all
+
+lemma distinct_concat':
+  "\<lbrakk>distinct [ys\<leftarrow>xs. ys \<noteq> Nil]; \<And>ys. ys \<in> set xs \<Longrightarrow> distinct ys;
+   \<And>ys zs. \<lbrakk>ys \<in> set xs; zs \<in> set xs; ys \<noteq> zs\<rbrakk> \<Longrightarrow> set ys \<inter> set zs = {}\<rbrakk>
+  \<Longrightarrow> distinct (concat xs)"
+by(erule distinct_concat[of "[ys\<leftarrow>xs. ys \<noteq> Nil]", unfolded concat_filter_neq_Nil]) auto
+
+lemma distinct_idx:
+  assumes "distinct (map f l)"
+  assumes "i<length l"
+  assumes "j<length l"
+  assumes "f (l!i) = f (l!j)"
+  shows "i=j"
+  by (metis assms distinct_conv_nth length_map nth_map)
+
+lemma replicate_Suc_conv_snoc:
+  "replicate (Suc n) x = replicate n x @ [x]"
+by (metis replicate_Suc replicate_append_same)
+
+
+lemma filter_nth_ex_nth:
+  assumes "n < length (filter P xs)"
+  shows "\<exists>m. n \<le> m \<and> m < length xs \<and> filter P xs ! n = xs ! m \<and> filter P (take m xs) = take n (filter P xs)"
+using assms
+proof(induct xs rule: rev_induct)
+  case Nil thus ?case by simp
+next
+  case (snoc x xs)
+  show ?case
+  proof(cases "P x")
+    case [simp]: False
+    from `n < length (filter P (xs @ [x]))` have "n < length (filter P xs)" by simp
+    hence "\<exists>m\<ge>n. m < length xs \<and> filter P xs ! n = xs ! m \<and> filter P (take m xs) = take n (filter P xs)" by(rule snoc)
+    thus ?thesis by(auto simp add: nth_append)
+  next
+    case [simp]: True
+    show ?thesis
+    proof(cases "n = length (filter P xs)")
+      case False
+      with `n < length (filter P (xs @ [x]))` have "n < length (filter P xs)" by simp
+      moreover hence "\<exists>m\<ge>n. m < length xs \<and> filter P xs ! n = xs ! m \<and> filter P (take m xs) = take n (filter P xs)"
+        by(rule snoc)
+      ultimately show ?thesis by(auto simp add: nth_append)
+    next
+      case [simp]: True
+      hence "filter P (xs @ [x]) ! n = (xs @ [x]) ! length xs" by simp
+      moreover have "length xs < length (xs @ [x])" by simp
+      moreover have "length xs \<ge> n" by simp
+      moreover have "filter P (take (length xs) (xs @ [x])) = take n (filter P (xs @ [x]))" by simp
+      ultimately show ?thesis by blast
+    qed
+  qed
+qed
+
+lemma set_map_filter:
+  "set (List.map_filter g xs) = {y. \<exists>x. x \<in> set xs \<and> g x = Some y}"
+  by (induct xs) (auto simp add: List.map_filter_def set_eq_iff)
+
+    
+    
+    
+    
 
 subsection {* Quicksort by Relation *}
 
@@ -2253,558 +2912,6 @@ proof
     by (auto intro!: ex1_eqI[OF finite_sorted_distinct_unique[OF finite_set]])
 qed
 
-subsubsection {* Take and Drop *}
-  lemma drop_all_conc: "drop (length a) (a@b) = b"
-    by (simp)
-
-  lemma take_update[simp]: "take n (l[i:=x]) = (take n l)[i:=x]"
-    apply (induct l arbitrary: n i)
-    apply (auto split: nat.split)
-    apply (case_tac n)
-    apply simp_all
-    apply (case_tac n)
-    apply simp_all
-    done
-
-  lemma take_update_last: "length list>n \<Longrightarrow> take (Suc n) list [n:=x] = take n list @ [x]"
-    by (induct list arbitrary: n)
-       (auto split: nat.split)
-
-  lemma drop_upd_irrelevant: "m < n \<Longrightarrow> drop n (l[m:=x]) = drop n l"
-    apply (induct n arbitrary: l m)
-    apply simp
-    apply (case_tac l)
-    apply (auto split: nat.split)
-    done
-
-lemma set_drop_conv:
-  "set (drop n l) =  { l!i | i. n\<le>i \<and> i < length l }" (is "?L=?R")
-proof (intro equalityI subsetI)
-  fix x
-  assume "x\<in>?L"
-  then obtain i where L: "i<length l - n" and X: "x = drop n l!i"
-    by (auto simp add: in_set_conv_nth)
-  note X
-  also have "\<dots> = l!(n+i)" using L by simp
-  finally show "x\<in>?R" using L by auto
-next
-  fix x
-  assume "x\<in>?R"
-  then obtain i where L: "n\<le>i" "i<length l" and X: "x=l!i" by blast
-  note X
-  moreover have "l!i = drop n l ! (i - n)" and "(i-n) < length l - n" using L
-    by (auto)
-  ultimately show "x\<in>?L"
-    by (auto simp add: in_set_conv_nth)
-qed
-
-lemma filter_upt_take_conv:
-  "[i\<leftarrow>[n..<m]. P (take m l ! i) ] = [i\<leftarrow>[n..<m]. P (l ! i) ]"
-  by (rule filter_cong) (simp_all)
-
-lemma in_set_drop_conv_nth: "x\<in>set (drop n l) \<longleftrightarrow> (\<exists>i. n\<le>i \<and> i<length l \<and> x = l!i)"
-  apply (clarsimp simp: in_set_conv_nth)
-  apply safe
-  apply simp
-  apply (metis le_add2 less_diff_conv add.commute)
-  apply (rule_tac x="i-n" in exI)
-  apply auto []
-  done
-
-lemma Union_take_drop_id: "\<Union>set (drop n l) \<union> \<Union>set (take n l) = \<Union>set l"
-  by (metis Union_Un_distrib append_take_drop_id set_union_code sup_commute)
-
-
-lemma Un_set_drop_extend: "\<lbrakk>j\<ge>Suc 0; j < length l\<rbrakk>
-  \<Longrightarrow> l ! (j - Suc 0) \<union> \<Union>set (drop j l) = \<Union>set (drop (j - Suc 0) l)"
-  apply safe
-  apply simp_all
-  apply (metis diff_Suc_Suc diff_zero gr0_implies_Suc in_set_drop_conv_nth
-    le_refl less_eq_Suc_le order.strict_iff_order)
-  apply (metis Nat.diff_le_self set_drop_subset_set_drop subset_code(1))
-  by (metis diff_Suc_Suc gr0_implies_Suc in_set_drop_conv_nth
-    less_eq_Suc_le order.strict_iff_order minus_nat.diff_0)
-
-lemma drop_take_drop_unsplit:
-  "i\<le>j \<Longrightarrow> drop i (take j l) @ drop j l = drop i l"
-proof -
-  assume "i \<le> j"
-  then obtain skf where "i + skf = j"
-    by (metis le_iff_add)
-  thus "drop i (take j l) @ drop j l = drop i l"
-    by (metis append_take_drop_id diff_add_inverse drop_drop drop_take
-      add.commute)
-qed
-
-lemma drop_last_conv[simp]: "l\<noteq>[] \<Longrightarrow> drop (length l - Suc 0) l = [last l]"
-  by (cases l rule: rev_cases) auto
-
-lemma take_butlast_conv[simp]: "take (length l - Suc 0) l = butlast l"
-  by (cases l rule: rev_cases) auto
-
-
-subsubsection {* Last and butlast *}
-(* Maybe this should go into List.thy, next to snoc_eq_iff_butlast *)
-lemma snoc_eq_iff_butlast':
-  "(ys = xs @ [x]) \<longleftrightarrow> (ys \<noteq> [] \<and> butlast ys = xs \<and> last ys = x)"
-  by auto
-
-lemma butlast_upt: "butlast [m..<n] = [m..<n - 1]"
-  apply (cases "m<n")
-    apply (cases n)
-      apply simp
-    apply simp
-  apply simp
-  done
-
-(*lemma butlast_upt: "n<m \<Longrightarrow> butlast [n..<m] = [n..<m - 1]"
-  apply (cases "[n..<m]" rule: rev_cases)
-  apply simp
-  apply (cases m)
-  apply simp
-  apply simp
-  done*)
-
-lemma butlast_update': "butlast l [i:=x] = butlast (l[i:=x])"
-  by (metis butlast_conv_take butlast_list_update length_butlast take_update)
-
-
-lemma take_minus_one_conv_butlast:
-  "n\<le>length l \<Longrightarrow> take (n - Suc 0) l = butlast (take n l)"
-  by (simp add: butlast_take)
-
-lemma butlast_eq_cons_conv: "butlast l = x#xs \<longleftrightarrow> (\<exists>xl. l=x#xs@[xl])"
-  by (metis Cons_eq_appendI append_butlast_last_id butlast.simps
-    butlast_snoc eq_Nil_appendI)
-
-lemma butlast_eq_consE:
-  assumes "butlast l = x#xs"
-  obtains xl where "l=x#xs@[xl]"
-  using assms
-  by (auto simp: butlast_eq_cons_conv)
-
-lemma drop_eq_ConsD: "drop n xs = x # xs' \<Longrightarrow> drop (Suc n) xs = xs'"
-by(induct xs arbitrary: n)(simp_all add: drop_Cons split: nat.split_asm)
-
-subsubsection {* Miscellaneous *}
-  lemma length_compl_induct[case_names Nil Cons]: "\<lbrakk>P []; !! e l . \<lbrakk>!! ll . length ll <= length l \<Longrightarrow> P ll\<rbrakk> \<Longrightarrow> P (e#l)\<rbrakk> \<Longrightarrow> P l"
-    apply(induct_tac l rule: length_induct)
-    apply(case_tac "xs")
-    apply(auto)
-  done
-
-  lemma list_size_conc[simp]: "size_list f (a@b) = size_list f a + size_list f b"
-    by (induct a) auto
-
-
-  lemma in_set_list_format: "\<lbrakk> e\<in>set l; !!l1 l2. l=l1@e#l2 \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
-  proof (induct l arbitrary: P)
-    case Nil thus ?case by auto
-  next
-    case (Cons a l) show ?case proof (cases "a=e")
-      case True with Cons show ?thesis by force
-    next
-      case False with Cons.prems(1) have "e\<in>set l" by auto
-      with Cons.hyps obtain l1 l2 where "l=l1@e#l2" by blast
-      hence "a#l = (a#l1)@e#l2" by simp
-      with Cons.prems(2) show P by blast
-    qed
-  qed
-
-lemma in_set_upd_cases:
-  assumes "x\<in>set (l[i:=y])"
-  obtains "i<length l" and "x=y" | "x\<in>set l"
-  by (metis assms in_set_conv_nth length_list_update nth_list_update_eq
-    nth_list_update_neq)
-
-lemma in_set_upd_eq_aux:
-  assumes "i<length l"
-  shows "x\<in>set (l[i:=y]) \<longleftrightarrow> x=y \<or> (\<forall>y. x\<in>set (l[i:=y]))"
-  by (metis in_set_upd_cases assms list_update_overwrite
-    set_update_memI)
-
-lemma in_set_upd_eq:
-  assumes "i<length l"
-  shows "x\<in>set (l[i:=y]) \<longleftrightarrow> x=y \<or> (x\<in>set l \<and> (\<forall>y. x\<in>set (l[i:=y])))"
-  by (metis in_set_upd_cases in_set_upd_eq_aux assms)
-
-
-  text {* Simultaneous induction over two lists, prepending an element to one of the lists in each step *}
-  lemma list_2pre_induct[case_names base left right]: assumes BASE: "P [] []" and LEFT: "!!e w1' w2. P w1' w2 \<Longrightarrow> P (e#w1') w2" and RIGHT: "!!e w1 w2'. P w1 w2' \<Longrightarrow> P w1 (e#w2')" shows "P w1 w2"
-  proof -
-    { -- "The proof is done by induction over the sum of the lengths of the lists"
-      fix n
-      have "!!w1 w2. \<lbrakk>length w1 + length w2 = n; P [] []; !!e w1' w2. P w1' w2 \<Longrightarrow> P (e#w1') w2; !!e w1 w2'. P w1 w2' \<Longrightarrow> P w1 (e#w2') \<rbrakk> \<Longrightarrow> P w1 w2 "
-        apply (induct n)
-        apply simp
-        apply (case_tac w1)
-        apply auto
-        apply (case_tac w2)
-        apply auto
-        done
-    } from this[OF _ BASE LEFT RIGHT] show ?thesis by blast
-  qed
-
-
-  lemma list_decomp_1: "length l=1 \<Longrightarrow> EX a . l=[a]"
-    by (case_tac l, auto)
-
-  lemma list_decomp_2: "length l=2 \<Longrightarrow> EX a b . l=[a,b]"
-    by (case_tac l, auto simp add: list_decomp_1)
-
-
-
-  lemma list_rest_coinc: "\<lbrakk>length s2 <= length s1; s1@r1 = s2@r2\<rbrakk> \<Longrightarrow> EX r1p . r2=r1p@r1"
-  proof -
-    assume A: "length s2 <= length s1" "s1@r1 = s2@r2"
-    hence "r1 = drop (length s1) (s2@r2)" by (auto simp only:drop_all_conc dest: sym)
-    moreover from A have "length s1 = length s1 - length s2 + length s2" by arith
-    ultimately have "r1 = drop ((length s1 - length s2)) r2" by (auto)
-    hence "r2 = take ((length s1 - length s2)) r2 @ r1" by auto
-    thus ?thesis by auto
-  qed
-
-  lemma list_tail_coinc: "n1#r1 = n2#r2 \<Longrightarrow> n1=n2 & r1=r2"
-    by (auto)
-
-
-  lemma last_in_set[intro]: "\<lbrakk>l\<noteq>[]\<rbrakk> \<Longrightarrow> last l \<in> set l"
-    by (induct l) auto
-
-  lemma map_ident_id[simp]: "map id = id" "map id x = x"
-    by (unfold id_def) auto
-
-  lemma op_conc_empty_img_id[simp]: "(op @ [] ` L) = L" by auto
-
-
-  lemma distinct_match: "\<lbrakk> distinct (al@e#bl) \<rbrakk> \<Longrightarrow> (al@e#bl = al'@e#bl') \<longleftrightarrow> (al=al' \<and> bl=bl')"
-  proof (rule iffI, induct al arbitrary: al')
-    case Nil thus ?case by (cases al') auto
-  next
-    case (Cons a al) note Cprems=Cons.prems note Chyps=Cons.hyps
-    show ?case proof (cases al')
-      case Nil with Cprems have False by auto
-      thus ?thesis ..
-    next
-      case [simp]: (Cons a' all')
-      with Cprems have [simp]: "a=a'" and P: "al@e#bl = all'@e#bl'" by auto
-      from Cprems(1) have D: "distinct (al@e#bl)" by auto
-      from Chyps[OF D P] have [simp]: "al=all'" "bl=bl'" by auto
-      show ?thesis by simp
-    qed
-  qed simp
-
-
-  lemma prop_match: "\<lbrakk> list_all P al; \<not>P e; \<not>P e'; list_all P bl \<rbrakk> \<Longrightarrow> (al@e#bl = al'@e'#bl') \<longleftrightarrow> (al=al' \<and> e=e' \<and> bl=bl')"
-    apply (rule iffI, induct al arbitrary: al')
-    apply (case_tac al', fastforce, fastforce)+
-    done
-
-  lemmas prop_matchD = rev_iffD1[OF _ prop_match[where P=P]] for P
-
-  lemma list_match_lel_lel: "\<lbrakk>
-    c1 @ qs # c2 = c1' @ qs' # c2';
-    \<And>c21'. \<lbrakk>c1 = c1' @ qs' # c21'; c2' = c21' @ qs # c2\<rbrakk> \<Longrightarrow> P;
-    \<lbrakk>c1' = c1; qs' = qs; c2' = c2\<rbrakk> \<Longrightarrow> P;
-    \<And>c21. \<lbrakk>c1' = c1 @ qs # c21; c2 = c21 @ qs' # c2'\<rbrakk> \<Longrightarrow> P
-    \<rbrakk> \<Longrightarrow> P"
-    apply (auto simp add: append_eq_append_conv2)
-    apply (case_tac us)
-    apply auto
-    apply (case_tac us)
-    apply auto
-    done
-
-  lemma distinct_tl[simp]: "l\<noteq>[] \<Longrightarrow> distinct l \<Longrightarrow> distinct (tl l)"
-    by (cases l) auto
-
-lemma list_e_eq_lel[simp]:
-  "[e] = l1@e'#l2 \<longleftrightarrow> l1=[] \<and> e'=e \<and> l2=[]"
-  "l1@e'#l2 = [e] \<longleftrightarrow> l1=[] \<and> e'=e \<and> l2=[]"
-  apply (cases l1, auto) []
-  apply (cases l1, auto) []
-  done
-
-lemma list_ee_eq_leel[simp]:
-  "([e1,e2] = l1@e1'#e2'#l2) \<longleftrightarrow> (l1=[] \<and> e1=e1' \<and> e2=e2' \<and> l2=[])"
-  "(l1@e1'#e2'#l2 = [e1,e2]) \<longleftrightarrow> (l1=[] \<and> e1=e1' \<and> e2=e2' \<and> l2=[])"
-  apply (cases l1, auto) []
-  apply (cases l1, auto) []
-  done
-
-lemma list_se_match[simp]:
-  "l1 \<noteq> [] \<Longrightarrow> l1@l2 = [a] \<longleftrightarrow> l1 = [a] \<and> l2 = []"
-  "l2 \<noteq> [] \<Longrightarrow> l1@l2 = [a] \<longleftrightarrow> l1 = [] \<and> l2 = [a]"
-  "l1 \<noteq> [] \<Longrightarrow> [a] = l1@l2 \<longleftrightarrow> l1 = [a] \<and> l2 = []"
-  "l2 \<noteq> [] \<Longrightarrow> [a] = l1@l2 \<longleftrightarrow> l1 = [] \<and> l2 = [a]"
-  apply (cases l1, simp_all)
-  apply (cases l1, simp_all)
-  apply (cases l1, auto) []
-  apply (cases l1, auto) []
-  done
-
-
-
-lemma xy_in_set_cases[consumes 2, case_names EQ XY YX]:
-  assumes A: "x\<in>set l" "y\<in>set l"
-  and C:
-  "!!l1 l2. \<lbrakk> x=y; l=l1@y#l2 \<rbrakk> \<Longrightarrow> P"
-  "!!l1 l2 l3. \<lbrakk> x\<noteq>y; l=l1@x#l2@y#l3 \<rbrakk> \<Longrightarrow> P"
-  "!!l1 l2 l3. \<lbrakk> x\<noteq>y; l=l1@y#l2@x#l3 \<rbrakk> \<Longrightarrow> P"
-  shows P
-proof (cases "x=y")
-  case True with A(1) obtain l1 l2 where "l=l1@y#l2" by (blast dest: split_list)
-  with C(1) True show ?thesis by blast
-next
-  case False
-  from A(1) obtain l1 l2 where S1: "l=l1@x#l2" by (blast dest: split_list)
-  from A(2) obtain l1' l2' where S2: "l=l1'@y#l2'" by (blast dest: split_list)
-  from S1 S2 have M: "l1@x#l2 = l1'@y#l2'" by simp
-  thus P proof (cases rule: list_match_lel_lel[consumes 1, case_names 1 2 3])
-    case (1 c) with S1 have "l=l1'@y#c@x#l2" by simp
-    with C(3) False show ?thesis by blast
-  next
-    case 2 with False have False by blast
-    thus ?thesis ..
-  next
-    case (3 c) with S1 have "l=l1@x#c@y#l2'" by simp
-    with C(2) False show ?thesis by blast
-  qed
-qed
-
-
-    (* Placed here because it depends on xy_in_set_cases *)
-lemma distinct_map_eq: "\<lbrakk> distinct (List.map f l); f x = f y; x\<in>set l; y\<in>set l \<rbrakk> \<Longrightarrow> x=y"
-  by (erule (2) xy_in_set_cases) auto
-
-
-
-lemma upt_append:
-  assumes "i<j"
-  shows "[0..<i]@[i..<j] = [0..<j]"
-  using assms
-  apply (induct j)
-  apply simp
-  apply (case_tac "i=j")
-  apply auto
-  done
-
-
-
-lemma upt_filter_extend:
-  assumes LE: "u\<le>u'"
-  assumes NP: "\<forall>i. u\<le>i \<and> i<u' \<longrightarrow> \<not>P i"
-  shows "[i\<leftarrow>[0..<u]. P i] = [i\<leftarrow>[0..<u']. P i]"
-proof (cases "u=u'")
-  case True thus ?thesis by simp
-next
-  case False hence "u<u'" using LE by simp
-  hence "[0..<u'] = [0..<u]@[u ..<u']"
-    by (simp add: upt_append)
-  hence "[i\<leftarrow>[0..<u']. P i] = [i\<leftarrow>[0..<u]. P i] @ [i\<leftarrow>[u..<u']. P i]"
-    by simp
-  also have "[i\<leftarrow>[u..<u']. P i] = []" using NP
-    by (auto simp: filter_empty_conv)
-  finally show ?thesis by simp
-qed
-
-
-lemma filter_upt_last:
-  assumes E: "[k\<leftarrow>[0..<length l] . P (l!k)] = js @ [j]"
-  assumes "j<i" and "i<length l"
-  shows "\<not> P (l!i)"
-proof
-  assume A: "P (l!i)"
-  have "[0..<length l] = [0..<i]@[i..<length l]" using `i<length l`
-    by (simp add: upt_append)
-  also have "[i..<length l] = i#[Suc i..<length l]" using `i<length l`
-    by (auto simp: upt_conv_Cons)
-  finally
-  have "[k\<leftarrow>[0..<i] . P (l!k)]@i#[k\<leftarrow>[Suc i..<length l] . P (l!k)] = js@[j]"
-    unfolding E[symmetric]
-    using `P (l!i)` by simp
-  hence "j = last (i#[k\<leftarrow>[Suc i..<length l] . P (l!k)])"
-    by (metis last_appendR last_snoc list.distinct(1))
-  also have "\<dots> \<ge> i"
-  proof -
-    have "sorted (i#[k\<leftarrow>[Suc i..<length l] . P (l!k)])" (is "sorted ?l")
-      by (simp add: sorted_Cons sorted_filter[where f=id, simplified])
-    hence "hd ?l \<le> last ?l"
-      by (rule sorted_hd_last) simp
-    thus ?thesis by simp
-  qed
-  finally have "i\<le>j" . thus False using `j<i` by simp
-qed
-
-lemma all_set_conv_nth: "(\<forall>x\<in>set l. P x) \<longleftrightarrow> (\<forall>i<length l. P (l!i))"
-  by (auto intro: all_nth_imp_all_set)
-
-lemma upt_0_eq_Nil_conv[simp]: "[0..<j] = [] \<longleftrightarrow> j=0"
-  by auto
-
-lemma filter_eq_snocD: "filter P l = l'@[x] \<Longrightarrow> x\<in>set l \<and> P x"
-proof -
-  assume A: "filter P l = l'@[x]"
-  hence "x\<in>set (filter P l)" by simp
-  thus ?thesis by simp
-qed
-
-
-
--- {* Congruence rules for @{const list_all} and @{const list_ex} *}
-lemma list_all_cong[fundef_cong]: "\<lbrakk> xs=ys; !!x. x\<in>set ys \<Longrightarrow> f x \<longleftrightarrow> g x \<rbrakk> \<Longrightarrow> list_all f xs = list_all g ys"
-  apply (induct xs arbitrary: ys)
-  apply auto
-  done
-
-lemma list_ex_cong[fundef_cong]: "\<lbrakk> xs=ys; !!x. x\<in>set ys \<Longrightarrow> f x \<longleftrightarrow> g x \<rbrakk> \<Longrightarrow> list_ex f xs = list_ex g ys"
-  apply (induct xs arbitrary: ys)
-  apply auto
-  done
-
-
-lemma lists_image_witness:
-  assumes A: "x\<in>lists (f`Q)"
-  obtains xo where "xo\<in>lists Q" "x=map f xo"
-proof -
-  have "\<lbrakk> x\<in>lists (f`Q) \<rbrakk> \<Longrightarrow> \<exists>xo\<in>lists Q. x=map f xo"
-  proof (induct x)
-    case Nil thus ?case by auto
-  next
-    case (Cons x xs)
-    then obtain xos where "xos\<in>lists Q" "xs=map f xos" by force
-    moreover from Cons.prems have "x\<in>f`Q" by auto
-    then obtain xo where "xo\<in>Q" "x=f xo" by auto
-    ultimately show ?case
-      by (rule_tac x="xo#xos" in bexI) auto
-  qed
-  thus ?thesis
-    apply (simp_all add: A)
-    apply (erule_tac bexE)
-    apply (rule_tac that)
-    apply assumption+
-    done
-qed
-
-lemma map_of_eq_empty_iff [simp]:
-  "map_of xs = Map.empty \<longleftrightarrow> xs=[]"
-proof
-  assume "map_of xs = Map.empty"
-  thus "xs = []" by (induct xs) simp_all
-qed auto
-
-lemma map_of_None_filterD:
-  "map_of xs x = None \<Longrightarrow> map_of (filter P xs) x = None"
-by(induct xs) auto
-
-lemma map_of_concat: "map_of (concat xss) = foldr (\<lambda>xs f. f ++ map_of xs) xss empty"
-by(induct xss) simp_all
-
-lemma map_of_Some_split:
-  "map_of xs k = Some v \<Longrightarrow> \<exists>ys zs. xs = ys @ (k, v) # zs \<and> map_of ys k = None"
-proof(induct xs)
-  case (Cons x xs)
-  obtain k' v' where x: "x = (k', v')" by(cases x)
-  show ?case
-  proof(cases "k' = k")
-    case True
-    with `map_of (x # xs) k = Some v` x have "x # xs = [] @ (k, v) # xs" "map_of [] k = None" by simp_all
-    thus ?thesis by blast
-  next
-    case False
-    with `map_of (x # xs) k = Some v` x
-    have "map_of xs k = Some v" by simp
-    from `map_of xs k = Some v \<Longrightarrow> \<exists>ys zs. xs = ys @ (k, v) # zs \<and> map_of ys k = None`[OF this]
-    obtain ys zs where "xs = ys @ (k, v) # zs" "map_of ys k = None" by blast
-    with False x have "x # xs = (x # ys) @ (k, v) # zs" "map_of (x # ys) k = None" by simp_all
-    thus ?thesis by blast
-  qed
-qed simp
-
-lemma map_add_find_left:
-  "g k = None \<Longrightarrow> (f ++ g) k = f k"
-by(simp add: map_add_def)
-
-lemma map_add_left_None:
-  "f k = None \<Longrightarrow> (f ++ g) k = g k"
-by(simp add: map_add_def split: option.split)
-
-lemma map_of_Some_filter_not_in:
-  "\<lbrakk> map_of xs k = Some v; \<not> P (k, v); distinct (map fst xs) \<rbrakk> \<Longrightarrow> map_of (filter P xs) k = None"
-apply(induct xs)
-apply(auto)
-apply(auto simp add: map_of_eq_None_iff)
-done
-
-lemma distinct_map_fst_filterI: "distinct (map fst xs) \<Longrightarrow> distinct (map fst (filter P xs))"
-by(induct xs) auto
-
-lemma distinct_map_fstD: "\<lbrakk> distinct (map fst xs); (x, y) \<in> set xs; (x, z) \<in> set xs \<rbrakk> \<Longrightarrow> y = z"
-by(induct xs)(fastforce elim: notE rev_image_eqI)+
-
-
-
-lemma concat_filter_neq_Nil:
-  "concat [ys\<leftarrow>xs. ys \<noteq> Nil] = concat xs"
-by(induct xs) simp_all
-
-lemma distinct_concat':
-  "\<lbrakk>distinct [ys\<leftarrow>xs. ys \<noteq> Nil]; \<And>ys. ys \<in> set xs \<Longrightarrow> distinct ys;
-   \<And>ys zs. \<lbrakk>ys \<in> set xs; zs \<in> set xs; ys \<noteq> zs\<rbrakk> \<Longrightarrow> set ys \<inter> set zs = {}\<rbrakk>
-  \<Longrightarrow> distinct (concat xs)"
-by(erule distinct_concat[of "[ys\<leftarrow>xs. ys \<noteq> Nil]", unfolded concat_filter_neq_Nil]) auto
-
-lemma distinct_idx:
-  assumes "distinct (map f l)"
-  assumes "i<length l"
-  assumes "j<length l"
-  assumes "f (l!i) = f (l!j)"
-  shows "i=j"
-  by (metis assms distinct_conv_nth length_map nth_map)
-
-lemma replicate_Suc_conv_snoc:
-  "replicate (Suc n) x = replicate n x @ [x]"
-by (metis replicate_Suc replicate_append_same)
-
-
-lemma filter_nth_ex_nth:
-  assumes "n < length (filter P xs)"
-  shows "\<exists>m. n \<le> m \<and> m < length xs \<and> filter P xs ! n = xs ! m \<and> filter P (take m xs) = take n (filter P xs)"
-using assms
-proof(induct xs rule: rev_induct)
-  case Nil thus ?case by simp
-next
-  case (snoc x xs)
-  show ?case
-  proof(cases "P x")
-    case [simp]: False
-    from `n < length (filter P (xs @ [x]))` have "n < length (filter P xs)" by simp
-    hence "\<exists>m\<ge>n. m < length xs \<and> filter P xs ! n = xs ! m \<and> filter P (take m xs) = take n (filter P xs)" by(rule snoc)
-    thus ?thesis by(auto simp add: nth_append)
-  next
-    case [simp]: True
-    show ?thesis
-    proof(cases "n = length (filter P xs)")
-      case False
-      with `n < length (filter P (xs @ [x]))` have "n < length (filter P xs)" by simp
-      moreover hence "\<exists>m\<ge>n. m < length xs \<and> filter P xs ! n = xs ! m \<and> filter P (take m xs) = take n (filter P xs)"
-        by(rule snoc)
-      ultimately show ?thesis by(auto simp add: nth_append)
-    next
-      case [simp]: True
-      hence "filter P (xs @ [x]) ! n = (xs @ [x]) ! length xs" by simp
-      moreover have "length xs < length (xs @ [x])" by simp
-      moreover have "length xs \<ge> n" by simp
-      moreover have "filter P (take (length xs) (xs @ [x])) = take n (filter P (xs @ [x]))" by simp
-      ultimately show ?thesis by blast
-    qed
-  qed
-qed
-
-lemma set_map_filter:
-  "set (List.map_filter g xs) = {y. \<exists>x. x \<in> set xs \<and> g x = Some y}"
-  by (induct xs) (auto simp add: List.map_filter_def set_eq_iff)
-
 subsection "Natural Numbers"
 text {*
   The standard library contains theorem @{text less_iff_Suc_add}
@@ -2853,6 +2960,15 @@ subsubsection {* Induction on nat *}
     apply(auto)
   done
 
+  lemma nz_le_conv_less: "0<k \<Longrightarrow> k \<le> m \<Longrightarrow> k - Suc 0 < m"
+    by auto
+      
+  lemma min_Suc_gt[simp]: 
+    "a<b \<Longrightarrow> min (Suc a) b = Suc a"  
+    "a<b \<Longrightarrow> min b (Suc a) = Suc a"  
+    by auto
+    
+    
 subsection {* Mod *}
 text {*
   An ``induction'' law for modulus arithmetic: if $P$ holds for some
@@ -3188,6 +3304,7 @@ lemma uncurry_curry_id[simp]: "uncurry (curry f) = f"
 lemma do_curry: "f (a,b) = curry f a b" by simp
 lemma do_uncurry: "f a b = uncurry f (a,b)" by simp
   
+    
   
 subsection {* Directed Graphs and Relations *}
 
@@ -3495,9 +3612,12 @@ lemma Restr_trancl_mono:
 
   lemmas converse_add_simps = Sigma_converse trancl_converse[symmetric] converse_Un converse_Int
 
-lemma dom_ran_disj_comp[simp]: "Domain R \<inter> Range R = {} \<Longrightarrow> R O R = {}"
-  by auto
+  lemma dom_ran_disj_comp[simp]: "Domain R \<inter> Range R = {} \<Longrightarrow> R O R = {}"
+    by auto
 
+  lemma below_Id_inv[simp]: "R\<inverse>\<subseteq>Id \<longleftrightarrow> R\<subseteq>Id" by (auto)
+    
+    
   subsubsection "Cyclicity"
   lemma acyclic_union:
     "acyclic (A\<union>B) \<Longrightarrow> acyclic A"
@@ -3834,7 +3954,16 @@ lemma rel_restrict_tranclI:
   qed
 
 
+subsubsection \<open>Single-Valued Relations\<close>
+lemma single_valued_inter1: "single_valued R \<Longrightarrow> single_valued (R\<inter>S)"
+  by (auto intro: single_valuedI dest: single_valuedD)
 
+lemma single_valued_inter2: "single_valued R \<Longrightarrow> single_valued (S\<inter>R)"
+  by (auto intro: single_valuedI dest: single_valuedD)
+
+lemma single_valued_below_Id: "R\<subseteq>Id \<Longrightarrow> single_valued R"
+  by (auto intro: single_valuedI)
+  
 
 subsubsection {* Bijective Relations *}
 definition "bijective R \<equiv>
@@ -4099,6 +4228,33 @@ lemma map_update_eta_repair[simp]:
   apply (force simp: ran_def)
   done
 
+  subsubsection \<open>Simultaneous Map Update\<close>
+  definition "map_mmupd m K v k \<equiv> if k\<in>K then Some v else m k"
+  lemma map_mmupd_empty[simp]: "map_mmupd m {} v = m"
+    by (auto simp: map_mmupd_def)
+
+  lemma mmupd_in_upd[simp]: "k\<in>K \<Longrightarrow> map_mmupd m K v k = Some v"
+    by (auto simp: map_mmupd_def)
+
+  lemma mmupd_notin_upd[simp]: "k\<notin>K \<Longrightarrow> map_mmupd m K v k = m k"
+    by (auto simp: map_mmupd_def)
+
+  lemma map_mmupdE:
+    assumes "map_mmupd m K v k = Some x"
+    obtains "k\<notin>K" "m k = Some x"
+          | "k\<in>K" "x=v"
+    using assms by (auto simp: map_mmupd_def split: if_split_asm)      
+
+  lemma dom_mmupd[simp]: "dom (map_mmupd m K v) = dom m \<union> K"  
+    by (auto simp: map_mmupd_def split: if_split_asm)      
+
+  lemma le_map_mmupd_not_dom[simp, intro!]: "m \<subseteq>\<^sub>m map_mmupd m (K-dom m) v" 
+    by (auto simp: map_le_def)
+
+  lemma map_mmupd_update_less: "K\<subseteq>K' \<Longrightarrow> map_mmupd m (K - dom m) v \<subseteq>\<^sub>m map_mmupd m (K'-dom m) v"
+    by (auto simp: map_le_def map_mmupd_def)
+
+    
 
 subsection{* Connection between Maps and Sets of Key-Value Pairs *}
 
@@ -4321,6 +4477,11 @@ lemma (in -) min_less_self_conv[simp]:
     
 lemma ord_eq_le_eq_trans: "\<lbrakk> a=b; b\<le>c; c=d \<rbrakk> \<Longrightarrow> a\<le>d" by auto
 
+lemma zero_comp_diff_simps[simp]: 
+  "(0::'a::linordered_idom) \<le> a - b \<longleftrightarrow> b \<le> a" 
+  "(0::'a::linordered_idom) < a - b \<longleftrightarrow> b < a" 
+  by auto
+    
 
 subsection {* CCPOs *}
 
@@ -4400,4 +4561,11 @@ qed
 
 end
 
+  
+subsection \<open>Code\<close>  
+text \<open>Constant for code-abort. If that gets executed, an abort-exception is raised.\<close>  
+definition [simp]: "CODE_ABORT f = f ()"
+declare [[code abort: CODE_ABORT]]
+  
+  
 end

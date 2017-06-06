@@ -11,71 +11,6 @@ begin
 
   hide_const (open) CONSTRAINT
 
-
-
-
-
-  (* Misc: General *)
-  lemma fun_neq_ext_iff: "m\<noteq>m' \<longleftrightarrow> (\<exists>x. m x \<noteq> m' x)" by auto  
-
-  definition [simp]: "CODE_ABORT f = f ()"
-  declare [[code abort: CODE_ABORT]]
-
-  (* TODO: Move *)  
-  lemma atomize_Trueprop_eq[atomize]: "(Trueprop x \<equiv> Trueprop y) \<equiv> Trueprop (x=y)"
-    apply rule
-    apply (rule)
-    apply (erule equal_elim_rule1)
-    apply assumption
-    apply (erule equal_elim_rule2)
-    apply assumption
-    apply simp
-    done
-     
-  (* TODO: Move lemma to HOL! *)  
-  lemma cnv_conj_to_meta: "(P \<and> Q \<Longrightarrow> PROP X) \<equiv> (\<lbrakk>P;Q\<rbrakk> \<Longrightarrow> PROP X)"
-    by (rule BNF_Fixpoint_Base.conj_imp_eq_imp_imp)
-
-  (* TODO: Move, and merge with other such tags! *)  
-  definition [simp]: "CNV x y \<equiv> x=y"
-  lemma CNV_I: "CNV x x" by simp
-  lemma CNV_eqD: "CNV x y \<Longrightarrow> x=y" by simp
-  lemma CNV_meqD: "CNV x y \<Longrightarrow> x\<equiv>y" by simp
-  
-  (*  TODO: Move *)
-  definition [code_unfold, simp]: "swap_args2 f x y \<equiv> f y x"
-
-
-
-  (* Misc: nat *)
-  (* TODO: Move to Misc *)  
-  lemma nz_le_conv_less: "0<k \<Longrightarrow> k \<le> m \<Longrightarrow> k - Suc 0 < m"
-    by auto
-  (* TODO: Move to Misc *)
-  lemma min_Suc_gt[simp]: 
-    "a<b \<Longrightarrow> min (Suc a) b = Suc a"  
-    "a<b \<Longrightarrow> min b (Suc a) = Suc a"  
-    by auto
-
-  (* Misc: Ordering *)  
-  lemma zero_comp_diff_simps[simp]: 
-    "(0::'a::linordered_idom) \<le> a - b \<longleftrightarrow> b \<le> a" 
-    "(0::'a::linordered_idom) < a - b \<longleftrightarrow> b < a" 
-    by auto
-
-
-  (* Misc: List/map *)
-  lemma map_distinct_upd_conv: 
-    "\<lbrakk>i<length l; distinct l\<rbrakk> \<Longrightarrow> map f l [i := x] = map (f(l!i := x)) l"
-    -- \<open>Updating a mapped distinct list is equal to updating the 
-      mapping function\<close>
-    by (simp add: nth_eq_iff_index_eq nth_equalityI)  
-
-  (* Misc: List *)  
-  lemma length_Suc_rev_conv: "length xs = Suc n \<longleftrightarrow> (\<exists>ys y. xs=ys@[y] \<and> length ys = n)"
-    by (cases xs rule: rev_cases) auto
-
-
   (* Additions for List_Index *)  
   lemma index_of_last_distinct[simp]: 
     "distinct l \<Longrightarrow> index l (last l) = length l - 1"  
@@ -85,63 +20,6 @@ begin
 
   lemma index_eqlen_conv[simp]: "index l x = length l \<longleftrightarrow> x\<notin>set l"
     by (auto simp: index_size_conv)
-
-  (* TODO: Move *)
-  context begin
-  private definition "SPLIT_ACCORDING m l \<equiv> length l = length m"
-  
-  private lemma SPLIT_ACCORDINGE: 
-    assumes "length m = length l"
-    obtains "SPLIT_ACCORDING m l"
-    unfolding SPLIT_ACCORDING_def using assms by auto
-  
-  private lemma SPLIT_ACCORDING_simp:
-    "SPLIT_ACCORDING m (l1@l2) \<longleftrightarrow> (\<exists>m1 m2. m=m1@m2 \<and> SPLIT_ACCORDING m1 l1 \<and> SPLIT_ACCORDING m2 l2)"
-    "SPLIT_ACCORDING m (x#l') \<longleftrightarrow> (\<exists>y m'. m=y#m' \<and> SPLIT_ACCORDING m' l')"
-    apply (fastforce simp: SPLIT_ACCORDING_def intro: exI[where x = "take (length l1) m"] exI[where x = "drop (length l1) m"])
-    apply (cases m;auto simp: SPLIT_ACCORDING_def)
-    done
-  
-  text \<open>Split structure of list @{term m} according to structure of list @{term l}.\<close>
-  method split_list_according for m :: "'a list" and l :: "'b list" =
-    (rule SPLIT_ACCORDINGE[of m l],
-      (simp; fail),
-      ( simp only: SPLIT_ACCORDING_simp,
-        elim exE conjE, 
-        simp only: SPLIT_ACCORDING_def
-      )
-    ) 
-  end
-
-  lemma upt_merge[simp]: "i\<le>j \<and> j\<le>k \<Longrightarrow> [i..<j]@[j..<k] = [i..<k]"
-    by (metis le_Suc_ex upt_add_eq_append)
-  
-  lemma upt_eq_append_conv: "i\<le>j \<Longrightarrow> [i..<j] = xs@ys \<longleftrightarrow> (\<exists>k. i\<le>k \<and> k\<le>j \<and> [i..<k] = xs \<and> [k..<j] = ys)"
-  proof (rule iffI)
-    assume "[i..<j] = xs @ ys"  
-    and "i\<le>j"
-    thus "\<exists>k\<ge>i. k \<le> j \<and> [i..<k] = xs \<and> [k..<j] = ys"
-      apply (induction xs arbitrary: i)
-      apply (auto; fail)
-      apply (clarsimp simp: upt_eq_Cons_conv)
-      by (meson Suc_le_eq less_imp_le_nat)
-  qed auto
-  
-
-  (* Misc: Relations *)  
-  (* TODO: Move to Misc *)
-  lemma single_valued_inter1: "single_valued R \<Longrightarrow> single_valued (R\<inter>S)"
-    by (auto intro: single_valuedI dest: single_valuedD)
-  
-  lemma single_valued_inter2: "single_valued R \<Longrightarrow> single_valued (S\<inter>R)"
-    by (auto intro: single_valuedI dest: single_valuedD)
-
-  (* TODO: Move *)
-  lemma single_valued_below_Id: "R\<subseteq>Id \<Longrightarrow> single_valued R"
-    by (auto intro: single_valuedI)
-  
-  lemma below_Id_inv[simp]: "R\<inverse>\<subseteq>Id \<longleftrightarrow> R\<subseteq>Id" by (auto)
-
 
   (* TODO: Move *)
   text \<open>Lexicographic measure, assuming upper bound for second component\<close>
@@ -184,7 +62,7 @@ begin
     using mlex_fst_decrI by fastforce
 
 
-  (* TODO: Move to Misc, close to finite_psupset, theme: termination orderings *)
+  (* TODO: Move to Refine_Misc, close to finite_psupset, theme: termination orderings *)
   definition "less_than_bool \<equiv> {(a,b). a<(b::bool)}"
   lemma wf_less_than_bool[simp, intro!]: "wf (less_than_bool)"
     unfolding less_than_bool_def
@@ -200,66 +78,6 @@ begin
     by (auto simp: greater_bounded_def)
 
 
-  (* Misc: Set *)  
-  lemma remove_subset: "x\<in>S \<Longrightarrow> S-{x} \<subset> S" by auto
-
-  (* TODO: Move to HOL/Finite_set *)  
-  lemma card_inverse[simp]: "card (R\<inverse>) = card R"
-  proof -
-    have "finite (R\<inverse>) \<longleftrightarrow> finite R" by auto
-    have [simp]: "\<And>R. prod.swap`R = R\<inverse>" by auto
-    {
-      assume "\<not>finite R"
-      hence ?thesis
-        by auto
-    } moreover {
-      assume "finite R"
-      with card_image_le[of R prod.swap] card_image_le[of "R\<inverse>" prod.swap]
-      have ?thesis by auto
-    } ultimately show ?thesis by blast
-  qed  
-
-  (* Misc: Map *)
-
-  subsubsection \<open>Simultaneous Map Update\<close>
-  definition "map_mmupd m K v k \<equiv> if k\<in>K then Some v else m k"
-  lemma map_mmupd_empty[simp]: "map_mmupd m {} v = m"
-    by (auto simp: map_mmupd_def)
-
-  lemma mmupd_in_upd[simp]: "k\<in>K \<Longrightarrow> map_mmupd m K v k = Some v"
-    by (auto simp: map_mmupd_def)
-
-  lemma mmupd_notin_upd[simp]: "k\<notin>K \<Longrightarrow> map_mmupd m K v k = m k"
-    by (auto simp: map_mmupd_def)
-
-  lemma map_mmupdE:
-    assumes "map_mmupd m K v k = Some x"
-    obtains "k\<notin>K" "m k = Some x"
-          | "k\<in>K" "x=v"
-    using assms by (auto simp: map_mmupd_def split: if_split_asm)      
-
-  lemma dom_mmupd[simp]: "dom (map_mmupd m K v) = dom m \<union> K"  
-    by (auto simp: map_mmupd_def split: if_split_asm)      
-
-  lemma le_map_mmupd_not_dom[simp, intro!]: "m \<subseteq>\<^sub>m map_mmupd m (K-dom m) v" 
-    by (auto simp: map_le_def)
-
-  lemma map_mmupd_update_less: "K\<subseteq>K' \<Longrightarrow> map_mmupd m (K - dom m) v \<subseteq>\<^sub>m map_mmupd m (K'-dom m) v"
-    by (auto simp: map_le_def map_mmupd_def)
-
-  (* Misc: Fun. Or Refine_Util *)  
-  ML \<open>
-    fun mk_compN1 _   0 f g = f$g
-      | mk_compN1 env 1 f g = @{mk_term env: "?f o ?g"}
-      | mk_compN1 env n f g = let
-          val T = fastype_of1 (env, g) |> domain_type
-          val g = incr_boundvars 1 g $ Bound 0
-          val env = T::env
-        in
-          Abs ("x"^string_of_int n,T,mk_compN1 env (n-1) f g)
-        end
-    val mk_compN = mk_compN1 []    
-  \<close>
 
 
   text \<open>Uncurry0\<close>  
@@ -283,29 +101,22 @@ begin
 
   lemma fold_partial_uncurry: "uncurry (\<lambda>(ps, cf). f ps cf) = uncurry2 f" by auto
 
-
-  (* TODO: Move *)  
-  lemma param_uncurry[param]: "(uncurry,uncurry) \<in> (A\<rightarrow>B\<rightarrow>C) \<rightarrow> A\<times>\<^sub>rB\<rightarrow>C"
-    unfolding uncurry_def[abs_def] by parametricity
-
-
-  
-
-  (* TODO: Move *)  
   lemma curry_shl: 
     "\<And>g f. (g \<equiv> curry f) \<equiv> (uncurry g \<equiv> f)"
     "\<And>g f. (g \<equiv> curry0 f) \<equiv> (uncurry0 g \<equiv> f)"
     by (atomize (full); auto)+
-
+  
   lemma curry_shr: 
     "\<And>f g. (curry f \<equiv> g) \<equiv> (f \<equiv> uncurry g)"
     "\<And>f g. (curry0 f \<equiv> g) \<equiv> (f \<equiv> uncurry0 g)"
     by (atomize (full); auto)+
-
+  
   lemmas uncurry_shl = curry_shr[symmetric]  
   lemmas uncurry_shr = curry_shl[symmetric]  
-
+  
   lemma shift_lambda_left: "(f \<equiv> \<lambda>x. g x) \<Longrightarrow> (\<And>x. f x \<equiv> g x)" by simp
+      
+
 
 
   (***************************************)

@@ -24,7 +24,8 @@ O - Obsolete
 2011-12-30:
   * n:m refinement of loops
   * n:1 refinement for total correctness.
-  * Heap memory + separation logic ... target ImperativeHOL
+  D* Heap memory + separation logic ... target ImperativeHOL
+    (see Refine_Imperative_HOL)
   * Complete PartialFunction package integration. 
   O* More automatic concretization. Combine concretization and determinization
      to get semiautomatic procedure.

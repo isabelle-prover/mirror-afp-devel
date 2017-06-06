@@ -1364,7 +1364,7 @@ begin
               val T = funpow num_args range_type (fastype_of (fst ahead))
               val tRETURN = Const (@{const_name RETURN}, T --> Type(@{type_name nres},[T]))
             in
-              mk_compN num_args tRETURN t
+              Refine_Util.mk_compN num_args tRETURN t
             end  
           else t
     
@@ -1373,7 +1373,7 @@ begin
               val T = funpow num_args range_type (fastype_of (fst chead))
               val tRETURN = Const (@{const_name return}, T --> Type(@{type_name Heap},[T]))
             in
-              mk_compN num_args tRETURN t
+              Refine_Util.mk_compN num_args tRETURN t
             end  
           else t
           
