@@ -3,7 +3,8 @@ chapter AFP
 session Security_Protocol_Refinement (AFP) = HOL +
   description {* Developing Security Protocols by Stepwise Refinement *}
   options [timeout = 600]
-  theories (* Infrastructure *)
+  theories
+    (* Infrastructure *)
     "Refinement/Infra"
     "Refinement/Refinement"
     "Refinement/Agents"
@@ -15,13 +16,13 @@ session Security_Protocol_Refinement (AFP) = HOL +
     "Refinement/s0g_secrecy"
     "Refinement/a0n_agree"
     "Refinement/a0i_agree"
-  theories (* Authentication protocols *)
+    (* Authentication protocols *)
     "Auth_simple/m1_auth"
     "Auth_simple/m2_auth_chan"
     "Auth_simple/m2_confid_chan"
     "Auth_simple/m3_sig"
     "Auth_simple/m3_enc"
-  theories (* Key establishment protocols *)
+    (* Key establishment protocols *)
     "Key_establish/m1_keydist"
     "Key_establish/m1_keydist_iirn"
     "Key_establish/m1_keydist_inrn"
