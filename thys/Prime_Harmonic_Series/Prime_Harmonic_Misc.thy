@@ -8,7 +8,7 @@ section {* Auxiliary lemmas *}
 theory Prime_Harmonic_Misc
 imports
   Complex_Main
-  "~~/src/HOL/Number_Theory/Number_Theory" 
+  "HOL-Number_Theory.Number_Theory" 
 begin
 
 lemma sum_list_nonneg: "\<forall>x\<in>set xs. x \<ge> 0 \<Longrightarrow> sum_list xs \<ge> (0 :: 'a :: ordered_ab_group_add)"
