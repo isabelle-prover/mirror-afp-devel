@@ -9,7 +9,7 @@
 section {* The Prime Harmonic Series *}
 theory Prime_Harmonic
 imports
-  "~~/src/HOL/Analysis/Analysis"
+  "HOL-Analysis.Analysis"
   "HOL-Number_Theory.Number_Theory"
   Prime_Harmonic_Misc
   Squarefree_Nat
