@@ -1,9 +1,7 @@
 chapter AFP
 
 session Stone_Relation_Algebras (AFP) = Stone_Algebras +
-
   options [timeout = 600]
-
   theories
     Fixpoints
     Semirings
@@ -12,8 +10,6 @@ session Stone_Relation_Algebras (AFP) = Stone_Algebras +
     Matrix_Relation_Algebras
     Extended_Reals
     Extended_Real_Matrices
-
   document_files
     "root.tex"
     "root.bib"
-
