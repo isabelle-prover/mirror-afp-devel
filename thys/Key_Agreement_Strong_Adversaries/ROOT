@@ -1,3 +1,17 @@
+(*******************************************************************************
+
+  Project: Refining Authenticated Key Agreement with Strong Adversaries
+  Author:  Christoph Sprenger, ETH Zurich <sprenger@inf.ethz.ch>
+
+  build command example:
+    isabelle build -v -b -d . <session-name>
+    isabelle build -v -D .
+
+  Copyright (c) 2013-2016 Christoph Sprenger
+  Licence: LGPL
+
+*******************************************************************************)
+
 chapter AFP
 
 session Key_Agreement_Strong_Adversaries (AFP) = HOL +
