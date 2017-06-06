@@ -9,7 +9,26 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>01 Jun 2017 00:00:00 +0000</pubDate>
+    <pubDate>06 Jun 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>Buffon's Needle Problem</title>
+              <link>https://www.isa-afp.org/entries/Buffons_Needle.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Buffons_Needle.shtml</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>06 Jun 2017 00:00:00 +0000</pubDate>
+       <description>
+In the 18th century, Georges-Louis Leclerc, Comte de Buffon posed and
+later solved the following problem, which is often called the first
+problem ever solved in geometric probability: Given a floor divided
+into vertical strips of the same width, what is the probability that a
+needle thrown onto the floor randomly will cross two strips?  This
+entry formally defines the problem in the case where the needle&#39;s
+position is chosen uniformly at random in a single strip around the
+origin (which is equivalent to larger arrangements due to symmetry).
+It then provides proofs of the simple solution in the case where the
+needle&#39;s length is no greater than the width of the strips and
+the more complicated solution in the opposite case.</description>
+    </item>
     <item>
        <title>Formalizing Push-Relabel Algorithms</title>
               <link>https://www.isa-afp.org/entries/Prpu_Maxflow.shtml</link>
@@ -540,19 +559,6 @@ The proof is ported from John Harrison&#39;s formalisation
 in HOL Light. It proceeds by first showing that the property is true
 for all n greater than or equal to 600 and then showing that it also
 holds for all n below 600 by case distinction. &lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>The Transcendence of e</title>
-              <link>https://www.isa-afp.org/entries/E_Transcendental.shtml</link>
-       <guid>https://www.isa-afp.org/entries/E_Transcendental.shtml</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>12 Jan 2017 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This work contains a proof that Euler&#39;s number e is transcendental. The
-proof follows the standard approach of assuming that e is algebraic and
-then using a specific integer polynomial to derive two inconsistent bounds,
-leading to a contradiction.&lt;/p&gt; &lt;p&gt;This kind of approach can be found in
-many different sources; this formalisation mostly follows a &lt;a  href=&#34;http://planetmath.org/proofoflindemannweierstrasstheoremandthateandpiaretranscendental&#34;&gt;PlanetMath article&lt;/a&gt; by Roger Lipsett.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
