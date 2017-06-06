@@ -6,7 +6,7 @@
 section "Correctness proof for RSA"
 
 theory Cryptinverts
-imports  Crypt Productdivides  "~~/src/HOL/Number_Theory/Residues" 
+imports  Crypt Productdivides  "HOL-Number_Theory.Residues" 
 begin
 
 text {* 
