@@ -469,13 +469,6 @@ text{* Concrete syntax: messages appear as <A,B,NA>, etc... *}
 
 syntax
   "_MTuple"      :: "['a, args] \<Rightarrow> 'a * 'b"       ("(2\<langle>_,/ _\<rangle>)")
-
-syntax (xsymbols)
-  "_MTuple"      :: "['a, args] \<Rightarrow> 'a * 'b"       ("(2\<langle>_,/ _\<rangle>)")
-
-syntax (latex)
-  "_MTuple"      :: "['a, args] \<Rightarrow> 'a * 'b"       ("(2\<langle>_,/ _\<rangle>)")
-
 translations
   "\<langle>x, y, z\<rangle>" \<rightleftharpoons> "\<langle>x, \<langle>y, z\<rangle>\<rangle>"
   "\<langle>x, y\<rangle>"    \<rightleftharpoons> "CONST Pair x y"
