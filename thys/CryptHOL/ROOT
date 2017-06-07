@@ -1,8 +1,10 @@
 chapter AFP
 
-session CryptHOL (AFP) = "Probabilistic_While" +
+session CryptHOL (AFP) = Probabilistic_While +
   options [timeout = 600]
-  theories [document=false]
+  sessions
+    "HOL-Eisbach"
+  theories [document = false]
     "~~/src/HOL/Eisbach/Eisbach"
     "~~/src/HOL/Library/Countable_Set"
     "~~/src/HOL/Library/Rewrite"

@@ -7,6 +7,8 @@ session Sepref_Prereq (AFP) = Collections +
 
 session Refine_Imperative_HOL (AFP) = Sepref_Prereq +
   options [timeout = 1200]
+  sessions
+    "HOL-Eisbach"
   theories [document = false]
     "Lib/Concl_Pres_Clarification"
     "Lib/Named_Theorems_Rev"
@@ -53,12 +55,15 @@ session Refine_Imperative_HOL (AFP) = Sepref_Prereq +
       "benchmarks/Dijkstra/isabelle/Dijkstra_Benchmark"
       "benchmarks/NestedDFS/isabelle/NDFS_Benchmark"
 
-  document_files "root.tex"
+  document_files
+    "root.tex"
 
 
 (* Smaller Sessions: *)
 session Sepref_Basic (AFP) = Sepref_Prereq +
   options [document = false, timeout = 300]
+  sessions
+    "HOL-Eisbach"
   theories [document = false]
     Sepref
 

@@ -1,7 +1,9 @@
 chapter AFP
 
-session "Separata" (AFP) = "HOL-Library" +
+session Separata (AFP) = "HOL-Library" +
   options [timeout = 250]
+  sessions
+    "HOL-Eisbach"
   theories [document = false]
     "~~/src/HOL/Eisbach/Eisbach_Tools"
     "~~/src/HOL/Library/Multiset"
