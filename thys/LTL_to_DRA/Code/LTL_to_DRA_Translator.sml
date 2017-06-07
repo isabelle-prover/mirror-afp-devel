@@ -1508,11 +1508,6 @@ and apply f Empty = Empty
   | apply f (Insert (x, p)) = Join (f x, Join (bind p f, Empty))
   | apply f (Join (p, xq)) = Join (bind p f, apply f xq);
 
-fun eval A_ (Seq f) = memberb A_ (f ())
-and memberb A_ Empty x = false
-  | memberb A_ (Insert (y, p)) x = eq A_ x y orelse eval A_ p x
-  | memberb A_ (Join (p, xq)) x = eval A_ p x orelse memberb A_ xq x;
-
 fun unf_G (LTLFinal phi) = LTLOr (LTLFinal phi, unf_G phi)
   | unf_G (LTLGlobal phi) = LTLGlobal phi
   | unf_G (LTLUntil (phi, psi)) =
@@ -1566,6 +1561,11 @@ fun mk_ora x y =
     | LTLOr (_, _) => LTLOr (x, y) | LTLNext _ => LTLOr (x, y)
     | LTLGlobal _ => LTLOr (x, y) | LTLFinal _ => LTLOr (x, y)
     | LTLUntil (_, _) => LTLOr (x, y));
+
+fun eval A_ (Seq f) = memberb A_ (f ())
+and memberb A_ Empty x = false
+  | memberb A_ (Insert (y, p)) x = eq A_ x y orelse eval A_ p x
+  | memberb A_ (Join (p, xq)) x = eval A_ p x orelse memberb A_ xq x;
 
 fun holds p = eval equal_unit p ();
 
