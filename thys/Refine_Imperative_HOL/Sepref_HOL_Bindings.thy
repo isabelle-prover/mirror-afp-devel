@@ -243,18 +243,13 @@ lemma param_distinct[param]: "\<lbrakk>IS_LEFT_UNIQUE A; IS_RIGHT_UNIQUE A\<rbra
   apply (simp add: p2prop)
   done
 
-lemma param_Image[param]: "\<lbrakk>IS_LEFT_UNIQUE A; IS_RIGHT_UNIQUE A\<rbrakk> 
-  \<Longrightarrow> (op``, op``) \<in> \<langle>A\<times>\<^sub>rB\<rangle>set_rel \<rightarrow> \<langle>A\<rangle>set_rel \<rightarrow> \<langle>B\<rangle>set_rel"
-  apply (clarsimp simp: set_rel_def IS_LEFT_UNIQUE_def)
-  apply safe
-  apply (auto dest: single_valuedD) []
-  apply (force dest: single_valuedD)
-  apply (auto dest: single_valuedD) []
+lemma param_Image[param]: 
+  assumes "IS_LEFT_UNIQUE A" "IS_RIGHT_UNIQUE A"
+  shows "(op``, op``) \<in> \<langle>A\<times>\<^sub>rB\<rangle>set_rel \<rightarrow> \<langle>A\<rangle>set_rel \<rightarrow> \<langle>B\<rangle>set_rel"
+  apply (clarsimp simp: set_rel_def; intro conjI)  
+  apply (fastforce dest: IS_RIGHT_UNIQUED[OF assms(2)])
+  apply (fastforce dest: IS_LEFT_UNIQUED[OF assms(1)])
   done
-
-    
-
-
 
 lemma pres_eq_iff_svb: "(op=,op=)\<in>K\<rightarrow>K\<rightarrow>bool_rel \<longleftrightarrow> (single_valued K \<and> single_valued (K\<inverse>))"
   apply (safe intro!: single_valuedI)

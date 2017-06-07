@@ -12,6 +12,11 @@ definition [to_relAPP]: "map_rel K V \<equiv> (K \<rightarrow> \<langle>V\<rangl
       \<and> ran mi \<subseteq> Domain V \<and> ran m \<subseteq> Range V }"
 *)
 
+lemma bi_total_map_rel_eq:
+  "\<lbrakk>IS_RIGHT_TOTAL K; IS_LEFT_TOTAL K\<rbrakk> \<Longrightarrow> \<langle>K,V\<rangle>map_rel = K \<rightarrow> \<langle>V\<rangle>option_rel"
+  unfolding map_rel_def IS_RIGHT_TOTAL_def IS_LEFT_TOTAL_def
+  by (auto dest: fun_relD)
+  
 lemma map_rel_Id[simp]: "\<langle>Id,Id\<rangle>map_rel = Id" 
   unfolding map_rel_def by auto
 
@@ -54,22 +59,10 @@ proof clarsimp
 qed
 
 lemma param_dom[param]: "(dom,dom)\<in>\<langle>K,V\<rangle>map_rel \<rightarrow> \<langle>K\<rangle>set_rel"
-  apply (rule fun_relI)
-  unfolding map_rel_def set_rel_def dom_def
-  apply (clarsimp; safe)
-  subgoal proof -
-    fix a :: "'a \<Rightarrow> 'b option" and a' :: "'c \<Rightarrow> 'd option" and x :: 'c and y :: 'd
-    assume a1: "{a. \<exists>y. a' a = Some y} \<subseteq> Range K"
-    assume a2: "a' x = Some y"
-    assume a3: "(a, a') \<in> K \<rightarrow> \<langle>V\<rangle>option_rel"
-    have "\<And>c. \<not> (\<exists>d. a' c = Some d) \<or> c \<in> Range K"
-      using a1 by blast
-    then have "\<exists>aa. (\<exists>b. a aa = Some b) \<and> (aa, x) \<in> K"
-      using a3 a2 by (metis (no_types) RangeE fun_relD2 not_None_eq option_rel_simp(1))
-    then show "x \<in> K `` {aa. \<exists>b. a aa = Some b}"
-      by blast
-  qed
-  by (metis (no_types, hide_lams) fun_relD1 not_None_eq option_rel_simp(2))
+  apply (clarsimp simp: set_rel_def; safe)
+  apply (erule (1) map_rel_obtain2; auto)
+  apply (erule (1) map_rel_obtain1; auto)
+  done
 
 subsection \<open>Interface Type\<close>
 

@@ -154,6 +154,22 @@ definition "finite_psupset S \<equiv> { (Q',Q). Q\<subset>Q' \<and> Q' \<subsete
 lemma finite_psupset_wf[simp, intro]: "finite S \<Longrightarrow> wf (finite_psupset S)"
   unfolding finite_psupset_def by (blast intro: wf_bounded_supset)
 
+definition "less_than_bool \<equiv> {(a,b). a<(b::bool)}"
+lemma wf_less_than_bool[simp, intro!]: "wf (less_than_bool)"
+  unfolding less_than_bool_def
+  by (auto simp: wf_def)
+lemma less_than_bool_iff[simp]:
+  "(x,y)\<in>less_than_bool \<longleftrightarrow> x=False \<and> y=True"  
+  by (auto simp: less_than_bool_def)
+
+definition "greater_bounded N \<equiv> inv_image less_than (\<lambda>x. N-x)" 
+lemma wf_greater_bounded[simp, intro!]: "wf (greater_bounded N)" by (auto simp: greater_bounded_def)
+
+lemma greater_bounded_Suc_iff[simp]: "(Suc x,x)\<in>greater_bounded N \<longleftrightarrow> Suc x \<le> N"
+  by (auto simp: greater_bounded_def)
+
+    
+    
 subsection {* Monotonicity and Orderings *}
 
 lemma mono_const[simp, intro!]: "mono (\<lambda>_. c)" by (auto intro: monoI)

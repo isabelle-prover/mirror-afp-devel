@@ -103,7 +103,7 @@ end (* End of sepref setup *)
 end (* End of n *)
 
 
-export_code fw_impl in SML_imp
+export_code fw_impl checking SML_imp
 
 text \<open>
   A compact specification for the characteristic property of the \fw.

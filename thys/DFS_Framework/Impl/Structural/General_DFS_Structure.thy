@@ -443,7 +443,7 @@ begin
            \<le> \<Down> V (SPEC (\<lambda>v0. v0 \<in> V0 \<and> \<not> gds_is_discovered gds v0 s))"
     apply (rule RES_refine)
     apply (simp add: Bex_def[symmetric], elim conjE)
-    apply (drule set_relD[OF V0_param], elim bexE)
+    apply (drule set_relD1[OF V0_param], elim bexE)
     apply (erule bexI[rotated])
     using is_discovered_param[param_fo, OF _ s_param]
     apply auto

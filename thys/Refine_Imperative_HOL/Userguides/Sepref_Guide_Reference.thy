@@ -780,10 +780,6 @@ text \<open>For pure refinements, it is sometimes simpler to specify a parametri
   Currently, we only support the Autoref style, but provide a few lemmas that 
   ease manual conversion from the Lifting/Transfer style.
 
-  Warning: Currently, Autoref's @{const set_rel} and Lifting/Transfer's 
-  @{const rel_set} do not match. Probably, Lifting/Transfer's definition is the 
-  better one, and we will change Autoref's definition in the future.
-    
   Given a parametricity theorem, the attribute @{attribute sepref_param}
   converts it to a hfref theorem, the attribute 
   @{attribute sepref_import_param} does the conversion and registers the result

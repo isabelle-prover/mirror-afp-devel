@@ -1,29 +1,20 @@
 section "General Utilities"
 theory Refine_Util
-imports Main
+imports Refine_Util_Bootstrap1 Mpat_Antiquot Mk_Term_Antiquot
 begin
 definition conv_tag where "conv_tag n x == x" 
   -- {* Used internally for @{text "pat_conv"}-conversion *}
 
+lemma shift_lambda_left: "(f \<equiv> \<lambda>x. g x) \<Longrightarrow> (\<And>x. f x \<equiv> g x)" by simp
+  
 ML {*
   infix 0 THEN_ELSE' THEN_ELSE_COMB'
   infix 1 THEN_ALL_NEW_FWD THEN_INTERVAL
   infix 2 ORELSE_INTERVAL
   infix 3 ->>
-  infix 1 ##
 
   signature BASIC_REFINE_UTIL = sig
-    val map_option: ('a -> 'b) -> 'a option -> 'b option
-
-    val map_fold: ('a -> 'b -> 'c * 'b) -> 'a list -> 'b -> 'c list * 'b
-
-    val yield_singleton2: ('a list -> 'b -> ('c * 'd list) * 'e) -> 'a -> 'b ->
-      ('c * 'd) * 'e
-
-    val ## : ('a -> 'c) * ('b -> 'd) -> ('a * 'b) -> ('c * 'd)
-
-    val seq_is_empty: 'a Seq.seq -> bool * 'a Seq.seq
-
+    include BASIC_REFINE_UTIL
     (* Resolution with matching *)
     val RSm: Proof.context -> thm -> thm -> thm
 
@@ -64,6 +55,23 @@ ML {*
     val CAN': tactic' -> tactic'
 
     val NTIMES': tactic' -> int -> tactic'
+
+    (* Only consider results that solve subgoal. If none, return all results unchanged. *)
+    val TRY_SOLVED': tactic' -> tactic'
+
+    (* Case distinction with tactics. Generalization of THEN_ELSE to lists. *)
+    val CASES': (tactic' * tactic) list -> tactic'
+
+    (* Tactic that depends on subgoal term structure *)
+    val WITH_subgoal: (term -> tactic') -> tactic'
+    (* Tactic that depends on subgoal's conclusion term structure *)
+    val WITH_concl: (term -> tactic') -> tactic'
+
+    (* Tactic version of Variable.trade. Import, apply tactic, and export results.
+      One effect is that schematic variables in the goal are fixed, and thus cannot 
+      be instantiated by the tactic.
+    *)
+    val TRADE: (Proof.context -> tactic') -> Proof.context -> tactic'
 
 
     (* Tactics *)
@@ -112,8 +120,59 @@ ML {*
     val mk_compN1: typ list -> int -> term -> term -> term
     val mk_compN: int -> term -> term -> term
 
+    val dest_itselfT: typ -> typ
+    val dummify_tvars: term -> term
+
+    (* a\<equiv>\<lambda>x. f x  \<mapsto>  a ?x \<equiv> f ?x *)
+    val shift_lambda_left: thm -> thm
+    val shift_lambda_leftN: int -> thm -> thm
+
+    (* Left-Bracketed Structures *)
+
+    (* Map [] to z, and [x1,...,xN] to f(...f(f(x1,x2),x3)...) *)
+    val list_binop_left: 'a -> ('a * 'a -> 'a) -> 'a list -> 'a
+    (* Map [] to z, [x] to i x, [x1,...,xN] to f(...f(f(x1,x2),x3)...), thread state *)
+    val fold_binop_left: ('c -> 'b * 'c) -> ('a -> 'c -> 'b * 'c) -> ('b * 'b -> 'b) 
+          -> 'a list -> 'c -> 'b * 'c
+
+    (* Tuples, handling () as empty tuple *)      
+    val strip_prodT_left: typ -> typ list
+    val list_prodT_left: typ list -> typ
+    val mk_ltuple: term list -> term
+    (* Fix a tuple of new frees *)
+    val fix_left_tuple_from_Ts: string -> typ list -> Proof.context -> term * Proof.context
+
+    (* HO-Patterns with tuples *)
+    (* Lambda-abstraction over list of terms, recognizing tuples *)
+    val lambda_tuple: term list -> term -> term
+    (* Instantiate tuple-types in specified variables *)
+    val instantiate_tuples: Proof.context -> (indexname*typ) list -> thm -> thm
+    (* Instantiate tuple-types in variables from given term *)
+    val instantiate_tuples_from_term_tac: Proof.context -> term -> tactic
+    (* Instantiate tuple types in variables of subgoal *)
+    val instantiate_tuples_subgoal_tac: Proof.context -> tactic'
+
+
+
+
     (* Rules *)
     val abs_def: Proof.context -> thm -> thm
+
+    (* Rule combinators *)
+    
+    (* Iterate rule on theorem until it fails *)  
+    val repeat_rule: (thm -> thm) -> thm -> thm
+    (* Apply rule on theorem and assert that theorem was changed *)
+    val changed_rule: (thm -> thm) -> thm -> thm
+    (* Try rule on theorem, return theorem unchanged if rule fails *)
+    val try_rule: (thm -> thm) -> thm -> thm
+    (* Singleton version of Variable.trade *)
+    val trade_rule: (Proof.context -> thm -> thm) -> Proof.context -> thm -> thm
+    (* Combine with first matching theorem *)
+    val RS_fst: thm -> thm list -> thm
+    (* Instantiate first matching theorem *)
+    val OF_fst: thm list -> thm list -> thm
+
 
     (* Conversion *)
     val trace_conv: conv
@@ -138,36 +197,34 @@ ML {*
     val cfg_trace_f_tac_conv: bool Config.T
     val f_tac_conv: Proof.context -> (term -> term) -> tactic -> conv
 
+    (* Conversion combinators to choose first matching position *)
+    (* Try argument, then function *)
+    val fcomb_conv: conv -> conv
+    (* Descend over function or abstraction *)
+    val fsub_conv: (Proof.context -> conv) -> Proof.context -> conv 
+    (* Apply to topmost matching position *)
+    val ftop_conv: (Proof.context -> conv) -> Proof.context -> conv
+
+
     (* Parsing *)
     val parse_bool_config: string -> bool Config.T -> bool context_parser
     val parse_paren_list: 'a context_parser -> 'a list context_parser
     val parse_paren_lists: 'a context_parser -> 'a list list context_parser
+
+    (* 2-step configuration parser *)
+    (* Parse boolean config, name or no_name. *)
+    val parse_bool_config': string -> bool Config.T -> Token.T list -> (bool Config.T * bool) * Token.T list
+    (* Parse optional (p1,...,pn). Empty list if nothing parsed. *)
+    val parse_paren_list': 'a parser -> Token.T list -> 'a list * Token.T list
+    (* Apply list of (config,value) pairs *)
+    val apply_configs: ('a Config.T * 'a) list -> Proof.context -> Proof.context
+
+
   end
 
 
   structure Refine_Util: REFINE_UTIL = struct
-
-    fun map_option _ NONE = NONE
-      | map_option f (SOME x) = SOME (f x)
-
-    fun map_fold _ [] s = ([],s)
-      | map_fold f (x::xs) s = 
-        let 
-          val (x',s') = f x s
-          val (xs',s') = map_fold f xs s'
-        in
-          (x'::xs',s')
-        end
-
-    fun yield_singleton2 f x y = case f [x] y of
-      ((r1,[r2]),r3) => ((r1,r2),r3)
-    | _ => error "INTERNAL: yield_singleton2"
-
-    fun (f ## g) (a,b) = (f a, g b)
-  
-    fun seq_is_empty seq = case Seq.pull seq of
-      NONE => (true, seq)
-    | SOME (a,seq) => (false, Seq.cons a seq)
+    open Basic_Refine_Util
 
     fun RSm ctxt thA thB = let
       val (thA, ctxt') = ctxt
@@ -665,6 +722,233 @@ ML {*
            Method.sections Clasimp.clasimp_modifiers >> K (fn ctxt => SIMPLE_METHOD (
              CHANGED_PROP (ALLGOALS (Clasimp.clarsimp_tac ctxt))))
          ) "simplify and clarify all subgoals")
+
+
+
+    
+
+
+      (* Filter alternatives that solve a subgoal. 
+        If no alternative solves goal, return result sequence unchanged *)
+      fun TRY_SOLVED' tac i st = let
+        val res = tac i st
+        val solved = Seq.filter (fn st' => Thm.nprems_of st' < Thm.nprems_of st) res
+      in 
+        case Seq.pull solved of
+          SOME _ => solved
+        | NONE => res  
+      end
+    
+      local
+        fun CASES_aux [] = no_tac
+          | CASES_aux ((tac1, tac2)::cs) = tac1 1 THEN_ELSE (tac2, CASES_aux cs)    
+      in
+        (* 
+          Accepts a list of pairs of (pattern_tac', worker_tac), and applies
+          worker_tac to results of first successful pattern_tac'.
+        *)
+        val CASES' = SELECT_GOAL o CASES_aux
+      end    
+
+      (* TODO/FIXME: There seem to be no guarantees when eta-long forms are introduced by unification.
+        So, we have to expect eta-long forms everywhere, which may be a problem when matching terms
+        syntactically.
+      *)
+      fun WITH_subgoal tac = 
+        CONVERSION Thm.eta_conversion THEN' 
+        IF_EXGOAL (fn i => fn st => tac (nth (Thm.prems_of st) (i - 1)) i st)
+  
+      fun WITH_concl tac = 
+        CONVERSION Thm.eta_conversion THEN' 
+        IF_EXGOAL (fn i => fn st => 
+          tac (Logic.concl_of_goal (Thm.prop_of st) i) i st
+        )
+
+      fun TRADE tac ctxt i st = let
+        val orig_ctxt = ctxt
+        val (st,ctxt) = yield_singleton (apfst snd oo Variable.import true) st ctxt
+        val seq = tac ctxt i st
+          |> Seq.map (singleton (Variable.export ctxt orig_ctxt))
+      in
+        seq
+      end
+
+      (* Try argument, then function *)
+      fun fcomb_conv conv = let open Conv in
+        arg_conv conv else_conv fun_conv conv
+      end
+  
+      (* Descend over function or abstraction *)
+      fun fsub_conv conv ctxt = let 
+        open Conv 
+      in
+        fcomb_conv (conv ctxt) else_conv
+        abs_conv (conv o snd) ctxt else_conv
+        no_conv
+      end
+  
+      (* Apply to topmost matching position *)
+      fun ftop_conv conv ctxt ct = 
+        (conv ctxt else_conv fsub_conv (ftop_conv conv) ctxt) ct
+  
+      (* Iterate rule on theorem until it fails *)  
+      fun repeat_rule n thm = case try n thm of
+        SOME thm => repeat_rule n thm
+      | NONE => thm
+  
+      (* Apply rule on theorem and assert that theorem was changed *)
+      fun changed_rule n thm = let
+        val thm' = n thm
+      in
+        if Thm.eq_thm_prop (thm, thm') then raise THM ("Same",~1,[thm,thm'])
+        else thm'
+      end
+
+      (* Try rule on theorem *)
+      fun try_rule n thm = case try n thm of
+        SOME thm => thm | NONE => thm
+
+      fun trade_rule f ctxt thm = 
+        singleton (Variable.trade (map o f) ctxt) thm
+
+      fun RS_fst thm thms = let
+        fun r [] = raise THM ("RS_fst, no matches",~1,thm::thms)
+          | r (thm'::thms) = case try (op RS) (thm,thm') of
+              NONE => r thms | SOME thm => thm
+  
+      in
+        r thms
+      end
+
+      fun OF_fst thms insts = let
+        fun r [] = raise THM ("OF_fst, no matches",length thms,thms@insts)
+          | r (thm::thms) = case try (op OF) (thm,insts) of
+              NONE => r thms | SOME thm => thm
+      in
+        r thms
+      end
+
+      (* Map [] to z, and [x1,...,xN] to f(...f(f(x1,x2),x3)...) *)
+      fun list_binop_left z f = let
+        fun r [] = z
+          | r [T] = T
+          | r (T::Ts) = f (r Ts,T)
+      in
+        fn l => r (rev l)
+      end    
+
+      (* Map [] to z, [x] to i x, [x1,...,xN] to f(...f(f(x1,x2),x3)...), thread state *)
+      fun fold_binop_left z i f = let
+        fun r [] ctxt = z ctxt
+          | r [T] ctxt = i T ctxt
+          | r (T::Ts) ctxt = let 
+              val (Ti,ctxt) = i T ctxt
+              val (Tsi,ctxt) = r Ts ctxt
+            in
+              (f (Tsi,Ti),ctxt)
+            end
+      in
+        fn l => fn ctxt => r (rev l) ctxt
+      end    
+
+  
+  
+      fun strip_prodT_left (Type (@{type_name Product_Type.prod},[A,B])) = strip_prodT_left A @ [B]
+        | strip_prodT_left (Type (@{type_name Product_Type.unit},[])) = []
+        | strip_prodT_left T = [T]
+  
+      val list_prodT_left = list_binop_left HOLogic.unitT HOLogic.mk_prodT
+
+      (* Make tuple with left-bracket structure *)
+      val mk_ltuple = list_binop_left HOLogic.unit HOLogic.mk_prod
+
+
+  
+      (* Fix a tuple of new frees *)
+      fun fix_left_tuple_from_Ts name = fold_binop_left
+        (fn ctxt => (@{term "()"},ctxt))
+        (fn T => fn ctxt => let 
+            val (x,ctxt) = yield_singleton Variable.variant_fixes name ctxt
+            val x = Free (x,T)
+          in 
+            (x,ctxt)
+          end)
+        HOLogic.mk_prod  
+
+      (* Replace all type-vars by dummyT *)
+      val dummify_tvars = map_types (map_type_tvar (K dummyT))
+
+      fun dest_itselfT (Type (@{type_name itself},[A])) = A
+        | dest_itselfT T = raise TYPE("dest_itselfT",[T],[])
+
+
+      fun shift_lambda_left thm = thm RS @{thm shift_lambda_left}
+      fun shift_lambda_leftN i = funpow i shift_lambda_left
+  
+
+      (* TODO: Naming should be without ' for basic parse, and with ' for context_parser! *)
+      fun parse_bool_config' name cfg =
+           (Args.$$$ name #>> K (cfg,true))
+        || (Args.$$$ ("no_"^name) #>> K (cfg,false))  
+  
+      fun parse_paren_list' p = Scan.optional (Args.parens (Parse.enum1 "," p)) []
+  
+      fun apply_configs l ctxt = fold (fn (cfg,v) => fn ctxt => Config.put cfg v ctxt) l ctxt
+      
+      fun lambda_tuple [] t = t
+        | lambda_tuple (@{mpat "(?a,?b)"}::l) t = let
+            val body = lambda_tuple (a::b::l) t
+          in
+            @{mk_term "case_prod ?body"}
+          end
+        | lambda_tuple (x::l) t = lambda x (lambda_tuple l t)
+  
+      fun get_tuple_inst ctxt (iname,T) = let
+        val (argTs,T) = strip_type T
+  
+        fun cr (Type (@{type_name prod},[T1,T2])) ctxt = let
+              val (x1,ctxt) = cr T1 ctxt
+              val (x2,ctxt) = cr T2 ctxt
+            in
+              (HOLogic.mk_prod (x1,x2), ctxt)
+            end
+          | cr T ctxt = let
+              val (name, ctxt) = yield_singleton Variable.variant_fixes "x" ctxt
+            in
+              (Free (name,T),ctxt)
+            end
+  
+        val ctxt = Variable.set_body false ctxt (* Prevent generation of skolem-names *)
+
+        val (args,ctxt) = fold_map cr argTs ctxt
+        fun fl (@{mpat "(?x,?y)"}) = fl x @ fl y
+          | fl t = [t]
+  
+        val fargs = flat (map fl args)
+        val fTs = map fastype_of fargs
+  
+        val v = Var (iname,fTs ---> T)
+        val v = list_comb (v,fargs)
+        val v = lambda_tuple args v
+      in 
+        Thm.cterm_of ctxt v
+      end
+  
+      fun instantiate_tuples ctxt inTs = let
+        val inst = inTs ~~ map (get_tuple_inst ctxt) inTs
+      in
+        Thm.instantiate ([],inst)
+      end
+  
+      val _ = COND'
+  
+      fun instantiate_tuples_from_term_tac ctxt t st = let
+        val vars = Term.add_vars t []
+      in
+        PRIMITIVE (instantiate_tuples ctxt vars) st
+      end
+  
+      fun instantiate_tuples_subgoal_tac ctxt = WITH_subgoal (fn t => K (instantiate_tuples_from_term_tac ctxt t))
 
   end
 

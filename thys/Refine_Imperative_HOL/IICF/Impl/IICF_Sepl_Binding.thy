@@ -356,7 +356,7 @@ begin
       by solve_sepl_binding
 
     interpretation bind_set_setup by standard  
-    lemmas hnr_op_member[sepref_fr_rules] = hnr_member_aux[THEN APAlu,FCOMP op_set_member.fref[where A="the_pure A"]] 
+    lemmas hnr_op_member[sepref_fr_rules] = hnr_member_aux[THEN APAbu,FCOMP op_set_member.fref[where A="the_pure A"]] 
     lemmas hnr_mop_member[sepref_fr_rules] = hnr_op_member[FCOMP mk_mop_rl2_np[OF mop_set_member_alt]]
   end  
 
@@ -418,24 +418,44 @@ begin
     case (Cons x l) 
     obtain s' y where "s=insert y s'" "(x,y)\<in>A" "(set l,s')\<in>\<langle>A\<rangle>set_rel"
     proof -
-      from Cons.prems(2) show thesis 
-      proof (clarsimp simp: set_rel_def)
-        fix y
-        assume "(x,y)\<in>A" "set l \<subseteq> Domain A" "s=A `` insert x (set l)"
-        hence "s = insert y (A``{x} - {y} \<union> A``(set l))" by auto
-        also have "A``{x} - {y} = {}" using SV \<open>(x,y)\<in>A\<close> by (auto dest: single_valuedD)
-        finally have "s=insert y (A``(set l))" by simp
-        moreover note \<open>(x,y)\<in>A\<close>
-        moreover from \<open>set l \<subseteq> Domain A\<close> have "(set l,A``(set l)) \<in> \<langle>A\<rangle>set_rel" by (auto simp: set_rel_def)
-        ultimately show ?thesis by (rule that)
-      qed  
-    qed  
+      from Cons.prems(2) obtain y where X0: "y\<in>s" "(x,y)\<in>A"
+        unfolding set_rel_def by auto
+      from Cons.prems(2) have 
+        X1: "\<forall>a\<in>set l. \<exists>b\<in>s. (a,b)\<in>A" and
+        X2: "\<forall>b\<in>s. \<exists>a\<in>insert x (set l). (a,b)\<in>A"
+        unfolding set_rel_def by auto
+      show ?thesis proof (cases "\<exists>a\<in>set l. (a,y)\<in>A")
+        case True 
+        show ?thesis
+          apply (rule that[of y s])
+          subgoal using X0 by auto
+          subgoal by fact
+          subgoal 
+            apply (rule set_relI)    
+            subgoal using X1 by blast  
+            subgoal by (metis IS_RIGHT_UNIQUED SV True X0(2) X2 insert_iff)  
+            done
+          done
+      next
+        case False
+        show ?thesis
+          apply (rule that[of y "s-{y}"])
+          subgoal using X0 by auto
+          subgoal by fact
+          subgoal 
+            apply (rule set_relI)    
+            subgoal using False X1 by fastforce  
+            subgoal using IS_RIGHT_UNIQUED SV X0(2) X2 by fastforce
+            done
+          done
+      qed
+    qed    
     moreover from Cons.IH[OF _ \<open>(set l,s')\<in>\<langle>A\<rangle>set_rel\<close>] obtain m where "s'=set m" "(l,m)\<in>\<langle>A\<rangle>list_rel" .
     ultimately show thesis
       apply -
       apply (rule Cons.prems(1)[of "y#m"])
       by auto
-  qed    
+  qed      
     
   lemma param_it_to_sorted_list[param]: "\<lbrakk>IS_LEFT_UNIQUE A; IS_RIGHT_UNIQUE A\<rbrakk> \<Longrightarrow> (it_to_sorted_list, it_to_sorted_list) \<in> (A \<rightarrow> A \<rightarrow> bool_rel) \<rightarrow> \<langle>A\<rangle>set_rel \<rightarrow> \<langle>\<langle>A\<rangle>list_rel\<rangle>nres_rel"
     unfolding it_to_sorted_list_def[abs_def]
