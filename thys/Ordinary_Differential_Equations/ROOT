@@ -18,6 +18,8 @@ session "HOL-ODE" (AFP) = "Ordinary_Differential_Equations" +
 
 session "HOL-ODE-Refinement" (AFP) = "HOL-ODE" +
   options [timeout = 600, document = false]
+  sessions
+    "HOL-Word"
   theories
     "Refinement/Refine_Dflt_No_Comp"
 

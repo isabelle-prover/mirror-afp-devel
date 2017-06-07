@@ -4,6 +4,7 @@ session "Pre_Perron_Frobenius" (AFP) = "Jordan_Normal_Form" +
   options [document = false, timeout = 2400]
   sessions
     "HOL-Eisbach"
+    "HOL-Analysis"
   theories
     "~~/src/HOL/Analysis/Brouwer_Fixpoint"
     "~~/src/HOL/Analysis/Determinants"

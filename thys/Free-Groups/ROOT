@@ -2,6 +2,10 @@ chapter AFP
 
 session "Free-Groups" (AFP) = HOL +
   options [timeout = 600]
+  sessions
+    "HOL-Computational_Algebra"
+    "HOL-Algebra"
+    "HOL-Cardinals"
   theories [document = false]
     "~~/src/HOL/Algebra/Group"
     "~~/src/HOL/Algebra/IntRing"

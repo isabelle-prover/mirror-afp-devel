@@ -2,6 +2,8 @@ chapter AFP
 
 session Real_Impl (AFP) = Sqrt_Babylonian +
   options [timeout = 300]
+  sessions
+    "HOL-Computational_Algebra"
   theories [document = false]
     "../Show/Show_Instances"
     "~~/src/HOL/Computational_Algebra/Primes"

@@ -4,6 +4,7 @@ session CryptHOL (AFP) = Probabilistic_While +
   options [timeout = 600]
   sessions
     "HOL-Eisbach"
+    "HOL-Algebra"
   theories [document = false]
     "~~/src/HOL/Eisbach/Eisbach"
     "~~/src/HOL/Library/Countable_Set"
