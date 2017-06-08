@@ -17,6 +17,20 @@ imports
   "../Open_Induction/Restricted_Predicates"
 begin
 
+(*TODO: move*)
+lemma le_Suc_eq':
+  "x \<le> Suc y \<longleftrightarrow> x = 0 \<or> (\<exists>x'. x = Suc x' \<and> x' \<le> y)"
+  by (cases x) auto
+
+lemma ex_leq_Suc:
+  "(\<exists>i\<le>Suc j. P i) \<longleftrightarrow> P 0 \<or> (\<exists>i\<le>j. P (Suc i))"
+  by (auto simp: le_Suc_eq')
+
+lemma ex_less_Suc:
+  "(\<exists>i<Suc j. P i) \<longleftrightarrow> P 0 \<or> (\<exists>i<j. P (Suc i))"
+  by (auto simp: less_Suc_eq_0_disj)
+
+
 subsection \<open>Basic Definitions and Facts\<close>
 
 text \<open>
@@ -47,19 +61,121 @@ definition almost_full_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightar
 where
   "almost_full_on P A \<longleftrightarrow> (\<forall>f \<in> SEQ A. good P f)"
 
-lemma almost_full_on_UNIV:
-  "almost_full_on (\<lambda>_ _. True) UNIV"
-by (auto simp: almost_full_on_def good_def)
+lemma almost_full_onI [Pure.intro]:
+  "(\<And>f. \<forall>i. f i \<in> A \<Longrightarrow> good P f) \<Longrightarrow> almost_full_on P A"
+  unfolding almost_full_on_def by blast
 
 lemma almost_full_onD:
   fixes f :: "nat \<Rightarrow> 'a" and A :: "'a set"
   assumes "almost_full_on P A" and "\<And>i. f i \<in> A"
   obtains i j where "i < j" and "P (f i) (f j)"
-using assms unfolding almost_full_on_def by blast
+  using assms unfolding almost_full_on_def by blast
 
-lemma almost_full_onI [Pure.intro]:
-  "(\<And>f. \<forall>i. f i \<in> A \<Longrightarrow> good P f) \<Longrightarrow> almost_full_on P A"
-unfolding almost_full_on_def by blast
+
+subsection \<open>An equivalent inductive definition\<close>
+
+inductive af for A
+  where
+    now: "(\<And>x y. x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> P x y) \<Longrightarrow> af A P"
+  | later: "(\<And>x. x \<in> A \<Longrightarrow> af A (\<lambda>y z. P y z \<or> P x y)) \<Longrightarrow> af A P"
+
+lemma af_imp_almost_full_on:
+  assumes "af A P"
+  shows "almost_full_on P A"
+proof
+  fix f :: "nat \<Rightarrow> 'a" assume "\<forall>i. f i \<in> A"
+  with assms obtain i and j where "i < j" and "P (f i) (f j)"
+  proof (induct arbitrary: f thesis)
+    case (later P)
+    define g where [simp]: "g i = f (Suc i)" for i
+    have "f 0 \<in> A" and "\<forall>i. g i \<in> A" using later by auto
+    then obtain i and j where "i < j" and "P (g i) (g j) \<or> P (f 0) (g i)" using later by blast
+    then consider "P (g i) (g j)" | "P (f 0) (g i)" by blast
+    then show ?case using \<open>i < j\<close> by (cases) (auto intro: later)
+  qed blast
+  then show "good P f" by (auto simp: good_def)
+qed
+
+lemma af_mono:
+  assumes "af A P"
+    and "\<forall>x y. x \<in> A \<and> y \<in> A \<and> P x y \<longrightarrow> Q x y"
+  shows "af A Q"
+  using assms
+proof (induct arbitrary: Q)
+  case (now P)
+  then have "\<And>x y. x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> Q x y" by blast
+  then show ?case by (rule af.now)
+next
+  case (later P)
+  show ?case
+  proof (intro af.later [of A Q])
+    fix x assume "x \<in> A"
+    then show "af A (\<lambda>y z. Q y z \<or> Q x y)"
+      using later(3) by (intro later(2) [of x]) auto
+  qed
+qed
+
+lemma accessible_on_imp_af:
+  assumes "accessible_on P A x"
+  shows "af A (\<lambda>u v. \<not> P v u \<or> \<not> P u x)"
+  using assms
+proof (induct)
+  case (1 x)
+  then have "af A (\<lambda>u v. (\<not> P v u \<or> \<not> P u x) \<or> \<not> P u y \<or> \<not> P y x)" if "y \<in> A" for y
+    using that by (cases "P y x") (auto intro: af.now af_mono)
+  then show ?case by (rule af.later)
+qed
+
+lemma wfp_on_imp_af:
+  assumes "wfp_on P A"
+  shows "af A (\<lambda>x y. \<not> P y x)"
+  using assms by (auto simp: wfp_on_accessible_on_iff intro: accessible_on_imp_af af.later)
+
+lemma af_leq:
+  "af UNIV (op \<le> :: nat \<Rightarrow> nat \<Rightarrow> bool)"
+  using wf_less [folded wfP_def wfp_on_UNIV, THEN wfp_on_imp_af] by (simp add: not_less)
+
+definition "NOTAF A P = (SOME x. x \<in> A \<and> \<not> af A (\<lambda>y z. P y z \<or> P x y))"
+
+lemma not_af:
+  "\<not> af A P \<Longrightarrow> (\<exists>x y. x \<in> A \<and> y \<in> A \<and> \<not> P x y) \<and> (\<exists>x\<in>A. \<not> af A (\<lambda>y z. P y z \<or> P x y))"
+  unfolding af.simps [of A P] by blast
+
+fun F
+  where
+    "F A P 0 = NOTAF A P"
+  | "F A P (Suc i) = (let x = NOTAF A P in F A (\<lambda>y z. P y z \<or> P x y) i)"
+
+lemma almost_full_on_imp_af:
+  assumes af: "almost_full_on P A"
+  shows "af A P"
+proof (rule ccontr)
+  assume "\<not> af A P"
+  then have *: "F A P n \<in> A \<and>
+    \<not> af A (\<lambda>y z. P y z \<or> (\<exists>i\<le>n. P (F A P i) y) \<or> (\<exists>j\<le>n. \<exists>i. i < j \<and> P (F A P i) (F A P j)))" for n
+  proof (induct n arbitrary: P)
+    case 0
+    from \<open>\<not> af A P\<close> have "\<exists>x. x \<in> A \<and> \<not> af A (\<lambda>y z. P y z \<or> P x y)" by (auto intro: af.intros)
+    then have "NOTAF A P \<in> A \<and> \<not> af A (\<lambda>y z. P y z \<or> P (NOTAF A P) y)" unfolding NOTAF_def by (rule someI_ex)
+    with 0 show ?case by simp
+  next
+    case (Suc n)
+    from \<open>\<not> af A P\<close> have "\<exists>x. x \<in> A \<and> \<not> af A (\<lambda>y z. P y z \<or> P x y)" by (auto intro: af.intros)
+    then have "NOTAF A P \<in> A \<and> \<not> af A (\<lambda>y z. P y z \<or> P (NOTAF A P) y)" unfolding NOTAF_def by (rule someI_ex)
+    from Suc(1) [OF this [THEN conjunct2]]
+    show ?case
+      by (fastforce simp: ex_leq_Suc ex_less_Suc elim!: back_subst [where P = "\<lambda>x. \<not> af A x"])
+  qed
+  then have "F A P \<in> SEQ A" by auto
+  from af [unfolded almost_full_on_def, THEN bspec, OF this] and not_af [OF * [THEN conjunct2]]
+  show False unfolding good_def by blast
+qed
+
+hide_const NOTAF F
+
+lemma almost_full_on_UNIV:
+  "almost_full_on (\<lambda>_ _. True) UNIV"
+by (auto simp: almost_full_on_def good_def)
 
 lemma almost_full_on_imp_reflp_on:
   assumes "almost_full_on P A"
@@ -382,7 +498,7 @@ proof
     assume "\<not> ?thesis"
     then have bad: "\<forall>i j. i < j \<longrightarrow> \<not> P (f i) (f j)" by (auto simp: good_def)
     then have *: "\<And>i j. P (f i) (f j) \<Longrightarrow> i \<ge> j" by (metis not_le_imp_less)
-  
+
     define D where [simp]: "D = (\<lambda>x y. \<exists>i. x = f (Suc i) \<and> y = f i)"
     define P' where "P' = restrict_to P A"
     define Q where [simp]: "Q = (sup P' D)\<^sup>*\<^sup>*"
@@ -423,7 +539,7 @@ proof
       qed
       with A [of i] show "f i \<in> A \<and> strict Q (f (Suc i)) (f i)" by auto
     qed
-    ultimately show False unfolding wfp_on_def by blast  
+    ultimately show False unfolding wfp_on_def by blast
   qed
 qed
 

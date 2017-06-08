@@ -144,7 +144,7 @@ proof (rule ccontr)
 qed
 
 lemma minimal_imp_inductive_on:
-  assumes "\<forall>Q x. x \<in> Q \<and> Q \<subseteq> A \<longrightarrow> (\<exists>z\<in>Q. \<forall>y. P y z \<longrightarrow> y \<notin> Q)" 
+  assumes "\<forall>Q x. x \<in> Q \<and> Q \<subseteq> A \<longrightarrow> (\<exists>z\<in>Q. \<forall>y. P y z \<longrightarrow> y \<notin> Q)"
   shows "inductive_on P A"
 proof (rule ccontr)
   assume "\<not> ?thesis"
@@ -542,6 +542,10 @@ lemma inductive_on_accessible_on_conv:
 
 lemmas wfp_on_imp_accessible_on =
   wfp_on_imp_inductive_on [THEN inductive_on_imp_accessible_on]
+
+lemma wfp_on_accessible_on_iff:
+  "wfp_on P A \<longleftrightarrow> (\<forall>x\<in>A. accessible_on P A x)"
+  by (blast dest: wfp_on_imp_accessible_on accessible_on_imp_wfp_on)
 
 lemma accessible_on_tranclp:
   assumes "accessible_on P A x"
