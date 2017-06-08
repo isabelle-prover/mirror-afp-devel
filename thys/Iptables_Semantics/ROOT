@@ -68,7 +68,7 @@ session Iptables_Semantics_Examples (AFP slow) = Iptables_Semantics +
     "mathpartir.sty"
 
 session Iptables_Semantics_Examples_Big (AFP slow very_slow) = Iptables_Semantics +
-  options [timeout = 60000]
+  options [timeout = 60000, theory_qualifier = "Iptables_Semantics_Examples"]
   theories
     "Examples/TUM_Net_Firewall/TUM_Spoofing_new3"
     "Examples/TUM_Net_Firewall/TUM_Simple_FW"
