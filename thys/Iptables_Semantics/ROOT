@@ -2,6 +2,8 @@ chapter AFP
 
 session Iptables_Semantics (AFP) = Routing +
   options [timeout = 1200]
+  sessions
+    Native_Word
   theories [document = false]
     "~~/src/HOL/Library/LaTeXsugar"
     (*The Native_Word things destroy the LaTeX document! Does not compile, ...*)
@@ -67,7 +69,7 @@ session Iptables_Semantics_Examples (AFP slow) = Iptables_Semantics +
     "root.bib"
     "mathpartir.sty"
 
-session Iptables_Semantics_Examples_Big (AFP slow very_slow) = Iptables_Semantics +
+session Iptables_Semantics_Examples_Big (AFP slow very_slow) = Iptables_Semantics_Examples +
   options [timeout = 60000, theory_qualifier = "Iptables_Semantics_Examples"]
   theories
     "Examples/TUM_Net_Firewall/TUM_Spoofing_new3"
