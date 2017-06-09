@@ -101,6 +101,11 @@ end
 
 notation plus_oracle (infix "\<oplus>\<^sub>O" 500)
 
+context
+  fixes left :: "('s, 'a, 'b) oracle'"
+  and right :: "('s,'c, 'd) oracle'"
+begin
+
 lemma WT_plus_oracleI [intro!]:
   "\<lbrakk> \<I>l \<turnstile>c left s \<surd>; \<I>r \<turnstile>c right s \<surd> \<rbrakk> \<Longrightarrow> \<I>l \<oplus>\<^sub>\<I> \<I>r \<turnstile>c (left \<oplus>\<^sub>O right) s \<surd>"
 by(rule WT_calleeI)(auto elim!: WT_calleeD simp add: inj_image_mem_iff)
@@ -210,6 +215,8 @@ apply(erule meta_allE)+
 apply(erule meta_impE, rule refl)+
 subgoal premises [transfer_rule] by transfer_prover
 done
+
+end
 
 subsection \<open>Shared state with aborts\<close>
 
@@ -402,7 +409,8 @@ lemma plus_intercept_parametric [transfer_rule]:
 unfolding plus_intercept_def[abs_def] by transfer_prover
 
 lemma interaction_bounded_by_plus_intercept [interaction_bound]:
-  "\<lbrakk> \<And>x'. x = Inl x' \<Longrightarrow> interaction_bounded_by P (left s x') (n x');
+  fixes left right
+  shows "\<lbrakk> \<And>x'. x = Inl x' \<Longrightarrow> interaction_bounded_by P (left s x') (n x');
     \<And>y. x = Inr y \<Longrightarrow> interaction_bounded_by P (right s y) (m y) \<rbrakk>
   \<Longrightarrow> interaction_bounded_by P (plus_intercept left right s x) (case x of Inl x \<Rightarrow> n x | Inr y \<Rightarrow> m y)"
 by(simp split!: sum.split add: interaction_bounded_by_map_gpv_id)
