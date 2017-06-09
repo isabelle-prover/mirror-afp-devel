@@ -15,12 +15,6 @@ begin
 
 (* TODO: Hide this in the proper place *)
 hide_const (open) Tree_Set.insert
-hide_const (open) Tree_Space.set_tree
-hide_const (open) Tree_Space.Leaf
-hide_const (open) Tree_Space.Node
-hide_const (open) Tree_Space.left
-hide_const (open) Tree_Space.right
-hide_type (open) Tree_Space.tree
 
 subsection \<open>Auxiliary lemmas\<close>
 
