@@ -811,6 +811,7 @@ definition run_red_dfs_impl
     \<Longrightarrow> se_back_edge_impl accpt ui vi si \<le>\<Down>bdfs_erel (se_back_edge accpt u v s)"
     unfolding se_back_edge_impl_def se_back_edge_def
     apply refine_rcg
+    apply refine_dref_type  
     apply simp_all
     apply (simp_all add: bdfs_erel_def simple_state_rel_def)
     apply (cases si, cases s, (auto) [])

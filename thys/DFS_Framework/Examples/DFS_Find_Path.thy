@@ -579,6 +579,7 @@ proof (rule refine_ASSERT_defI2[OF find_path0_restr_def])
   show ?thesis
    unfolding find_path0_restr_impl_def find_path0_restr_def
    apply (refine_rcg impl.tailrec_refine)
+   apply refine_dref_type  
    apply (auto simp: restr_simple_state_rel_def)
    done
 qed

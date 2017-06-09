@@ -1357,7 +1357,11 @@ proof goal_cases
   case hyps: (1 b c a)
   then obtain k where "(b, k) \<in> R" using hyps
     by (auto simp: list_wset_rel_def br_def set_rel_def)
-  from hyps have "a = R `` insert b (set c)" by (auto simp: list_wset_rel_def br_def set_rel_def)
+      
+  from assms old_set_rel_sv_eq have [simp]: "\<langle>R\<rangle>set_rel = \<langle>R\<rangle>old_set_rel" by auto
+      
+  from hyps have "a = R `` insert b (set c)" 
+    by (auto simp: list_wset_rel_def br_def old_set_rel_def)
   also have "\<dots> = insert k (R `` (set c))" using assms
     by (simp add: Image_insert \<open>(b, k) \<in> R\<close>)
   finally show ?case
@@ -1435,11 +1439,11 @@ proof -
             by (drule set_relD[where x="Some c"])
               (auto simp add: coll_rel_def default_rel_def list_wset_rel_def br_def dest!: list_wset_relD)
           subgoal for x y
-            by (auto simp: list_wset_rel_def coll_rel_def set_rel_def default_rel_def br_def split: option.splits)
+            by (fastforce simp: list_wset_rel_def coll_rel_def set_rel_def default_rel_def br_def split: option.splits)
           done
         moreover have "\<Union>a' \<subseteq> Collect safe"
           using a unfolding a_eq
-          by (force simp: list_wset_rel_def coll_rel_def set_rel_def default_rel_def split: option.splits)
+          by (fastforce simp: list_wset_rel_def coll_rel_def set_rel_def default_rel_def split: option.splits)
         ultimately
         have "(concat xs, \<Union>a') \<in> \<langle>Id\<rangle>list_wset_rel O {(x, y). \<Union>x = y \<and> y \<subseteq> Collect safe}"
           by (intro relcompI[where b="\<Union>(set ` set xs)"]) (auto simp: list_wset_rel_def br_def)
@@ -1518,7 +1522,7 @@ lemma split_spec_with_stepsize_autoref[autoref_rules]:
       proof -
         have a'_subset: "a' \<subseteq> (\<Union>(_, x) \<in> set(y#ys). set_of_appr x)"
           using a xs y
-          by (auto simp: coll_rel_def default_rel_def with_stepsize_rel_def appr_rel_def
+          by (fastforce simp: coll_rel_def default_rel_def with_stepsize_rel_def appr_rel_def
                 list_wset_rel_def br_def snd_rel_def set_rel_def
               split: option.splits
               intro!: )
@@ -1581,11 +1585,24 @@ sublocale autoref_op_pat_def with_half_stepsize .
 lemma with_half_stepsize_autoref[autoref_rules]:
   "(map_option (map (\<lambda>(h, x). (h/2, x))), with_half_stepsizes) \<in>
     \<langle>eucl_rel\<rangle>coll_rel (\<langle>eucl_rel\<rangle>with_stepsize_rel) \<rightarrow> \<langle>eucl_rel\<rangle>coll_rel (\<langle>eucl_rel\<rangle>with_stepsize_rel)"
-  by (subst (2) coll_rel_def)
-    (fastforce
-      simp: with_stepsize_rel_def br_def default_rel_def Some_mem_coll_rel_iff set_rel_def
+proof -
+  have "single_valued (\<langle>eucl_rel\<rangle>with_stepsize_rel)"
+    unfolding with_stepsize_rel_def
+    by (auto intro!: single_valued_relcomp single_valued_appr_rel simp: snd_rel_def)  
+  note [simp] = old_set_rel_sv_eq[OF this, symmetric]  
+  
+  have [simp]: "\<langle>{(x, z). z = set_of_appr (snd x)}\<rangle>set_rel = \<langle>{(x, z). z = set_of_appr (snd x)}\<rangle>old_set_rel"  
+    apply (rule old_set_rel_sv_eq[symmetric])
+    by (auto intro!: single_valuedI)  
+    
+  show ?thesis  
+  apply (subst (2) coll_rel_def)
+  apply(fastforce
+      simp: with_stepsize_rel_def br_def default_rel_def Some_mem_coll_rel_iff old_set_rel_def
         snd_rel_def br_def relcomp_unfold appr_rel_def list_wset_rel_def
       split: option.splits)
+  done
+qed    
 
 lemma with_stepsize_coll_autoref[autoref_rules]:
   "(\<lambda>h. map_option (map (Pair h)), with_stepsize) \<in> eucl_rel \<rightarrow> \<langle>eucl_rel\<rangle>coll_rel(\<langle>eucl_rel\<rangle>appr_rel) \<rightarrow> \<langle>eucl_rel\<rangle>coll_rel (\<langle>eucl_rel\<rangle>with_stepsize_rel)"
@@ -1603,7 +1620,7 @@ proof goal_cases
     subgoal
       apply (rule relcompI[where b="Pair a' ` set xa"])
       subgoal by force
-      subgoal by (auto simp: appr_rel_def coll_rel_def with_stepsize_rel_def snd_rel_def br_def list_wset_rel_def set_rel_def
+      subgoal by (force simp: appr_rel_def coll_rel_def with_stepsize_rel_def snd_rel_def br_def list_wset_rel_def set_rel_def
           relcomp_Image)
       done
     subgoal by force
@@ -1823,7 +1840,7 @@ lemma op_set_isEmpty_coll_rel[autoref_rules]:
     "(\<lambda>xs. xs = Some [], op_set_isEmpty) \<in> \<langle>eucl_rel\<rangle>coll_rel (\<langle>eucl_rel\<rangle>appr_rel) \<rightarrow> bool_rel"
     "(\<lambda>xs. xs = Some [], op_set_isEmpty) \<in> \<langle>eucl_rel\<rangle>coll_rel (\<langle>eucl_rel\<rangle>with_stepsize_rel) \<rightarrow> bool_rel"
   using safe_nonempty
-  by (fastforce simp: default_rel_def relcomp_Image coll_rel_def list_wset_rel_def br_def set_rel_def appr_rel_def with_stepsize_rel_def snd_rel_def
+  by (force simp: default_rel_def relcomp_Image coll_rel_def list_wset_rel_def br_def set_rel_def appr_rel_def with_stepsize_rel_def snd_rel_def
     split: option.splits)+
 
 lemma single_valued_snd_rel[relator_props]: "single_valued snd_rel"
@@ -1855,7 +1872,7 @@ lemma coll_rel_safe: "(xs, X) \<in> \<langle>eucl_rel\<rangle>coll_rel (\<langle
 
 lemma CHECK_ALLSAFE_coll_autoref[autoref_rules]:
   "(\<lambda>x. RETURN (), CHECK_ALLSAFE) \<in> \<langle>\<langle>eucl_rel\<rangle>coll_rel (\<langle>eucl_rel\<rangle>appr_rel)\<rangle>list_wset_rel \<rightarrow> \<langle>unit_rel\<rangle>nres_rel"
-  by (auto simp: CHECK_ALLSAFE_def nres_rel_def list_wset_rel_def set_rel_def br_def
+  by (force simp: CHECK_ALLSAFE_def nres_rel_def list_wset_rel_def set_rel_def br_def
     dest!: coll_rel_safe)
 
 schematic_goal resolve_sctn_impl:
@@ -2091,7 +2108,8 @@ proof (cases Xi)
   assume s: "Xi = Some Xi'"
   from assms s have "ivl_of_sets $ set (map set_of_appr Xi') \<le> ivl_of_set $ X"
     unfolding autoref_tag_defs
-    by refine_vcg (auto simp: ivl_of_set_def coll_rel_def list_wset_rel_def set_rel_def br_def appr_rel_def default_rel_def)
+    apply refine_vcg 
+    by (force simp: ivl_of_set_def coll_rel_def list_wset_rel_def set_rel_def br_def appr_rel_def default_rel_def)
   moreover
   have rel: "(Xi', set (map set_of_appr Xi')) \<in> \<langle>\<langle>eucl_rel\<rangle>appr_rel\<rangle>list_wset_rel"
     by (auto simp: list_wset_rel_def coll_rel_def set_rel_def appr_rel_def br_def)
@@ -2305,6 +2323,8 @@ lemma sets_of_coll_autoref[autoref_rules]:
   assumes [unfolded autoref_tag_defs, simp]: "PREFER single_valued R"
   shows "(\<lambda>x. case x of None \<Rightarrow> SUCCEED | Some x \<Rightarrow> RETURN x, sets_of_coll) \<in> \<langle>eucl_rel\<rangle> coll_rel R \<rightarrow> \<langle>\<langle>R\<rangle>list_wset_rel\<rangle>nres_rel"
 proof -
+  have [simp]: "\<langle>R\<rangle>set_rel = \<langle>R\<rangle>old_set_rel" by (simp add: old_set_rel_sv_eq)
+  
   have "\<exists>x'. (y, x') \<in> {(c, a). a = set c} O {(S, S'). S' = R `` S \<and> S \<subseteq> Domain R} \<and> \<Union>(R `` set y) = \<Union>x'"
     "\<Union>(R `` set y) = Collect safe \<Longrightarrow>
       \<exists>x'. (y, x') \<in> {(c, a). a = set c} O {(S, S'). S' = R `` S \<and> S \<subseteq> Domain R} \<and> Collect safe = \<Union>x'"
@@ -2314,7 +2334,7 @@ proof -
     subgoal using that by (intro exI[where x="set (map ((\<lambda>x. SOME y. (x, y) \<in> R)) y)"]) auto
     done
   then show ?thesis
-    by (auto simp: sets_of_coll_def coll_rel_def list_wset_rel_def br_def set_rel_def default_rel_def
+    by (auto simp: sets_of_coll_def coll_rel_def list_wset_rel_def br_def old_set_rel_def default_rel_def
         nres_rel_def intro!: RETURN_SPEC_refine split: option.splits)
 qed
 
@@ -2619,6 +2639,11 @@ sublocale autoref_op_pat_def next_sections_collection .
 lemma op_set_isEmpty_appr_above_rel_coll_rel[autoref_rules]:
   "(\<lambda>xs. xs = Some [], op_set_isEmpty) \<in> \<langle>eucl_rel\<rangle>coll_rel (\<langle>eucl_rel\<rangle>appr_above_rel) \<rightarrow> bool_rel"
 proof -
+  have "single_valued (\<langle>eucl_rel\<rangle>appr_above_rel)"
+    by (auto simp: appr_above_rel_def)
+  hence [simp]: "\<langle>\<langle>eucl_rel\<rangle>appr_above_rel\<rangle>set_rel = \<langle>\<langle>eucl_rel\<rangle>appr_above_rel\<rangle>old_set_rel"
+    by (auto simp: old_set_rel_sv_eq)
+  
   have "x = []"
     if "safe k" "\<forall>x\<in>\<langle>eucl_rel\<rangle>appr_above_rel `` set x. x = {}" "set x \<subseteq> Domain (\<langle>eucl_rel\<rangle>appr_above_rel)"
     for k x
@@ -2635,7 +2660,7 @@ proof -
   qed
   then show ?thesis
     using safe_nonempty
-    by (auto simp: relcomp_Image coll_rel_def list_wset_rel_def br_def set_rel_def
+    by (auto simp: relcomp_Image coll_rel_def list_wset_rel_def br_def old_set_rel_def
         with_stepsize_rel_def snd_rel_def Image_UN split_beta' default_rel_def split: option.splits)
 qed
 
@@ -3049,7 +3074,8 @@ lemma coll_rel_appr_rel_br: "\<langle>eucl_rel\<rangle>coll_rel (\<langle>eucl_r
   br (set_of_coll set_of_appr) (\<lambda>x. set_of_coll set_of_appr x \<subseteq> Collect safe)"
   by (auto simp: mem_coll_rel_iff set_of_coll_def default_rel_def list_wset_rel_def
     set_rel_def br_def appr_rel_def
-    split: option.splits)+
+    split: option.splits; blast)
+  
 
 definition "set_of_plane_coll soa XSi =
   (case XSi of None \<Rightarrow> Collect safe | Some xs \<Rightarrow> ((\<Union>(r, sctn)\<in>set xs. soa r \<inter> plane_of sctn)))"
@@ -3072,12 +3098,12 @@ proof -
     using assms
     by (auto simp: set_of_coll_def coll_rel_def default_rel_def list_wset_rel_def
       set_rel_def br_def appr_rel_def
-      split: option.splits)
+      split: option.splits; blast)
   moreover have "(CXSi, set_of_coll set_of_appr CXSi) \<in> \<langle>eucl_rel\<rangle>coll_rel (\<langle>eucl_rel\<rangle>appr_rel)"
     using safe
     by (auto simp: set_of_coll_def coll_rel_def default_rel_def list_wset_rel_def
       set_rel_def br_def appr_rel_def
-      split: option.splits)
+      split: option.splits; blast)
   ultimately have 1:
     "(nres_of (poincare_irects_impl ISi CXSi), poincare_irects $ set_of_coll set_of_appr ISi $ set_of_coll set_of_appr CXSi)
       \<in> \<langle>\<langle>eucl_rel\<rangle>coll_rel (\<langle>eucl_rel\<rangle>plane_rel (set_of_irect(irect_mod optns))) \<times>\<^sub>r \<langle>eucl_rel\<rangle>coll_rel (\<langle>eucl_rel\<rangle>appr_rel)\<rangle>nres_rel"
@@ -3210,7 +3236,7 @@ lemma one_step_until_time_ivl_spec:
 
 lemma coll_rel_br: "\<langle>eucl_rel\<rangle> coll_rel (\<langle>eucl_rel\<rangle>appr_rel) = br (\<lambda>x. case x of None \<Rightarrow> Collect safe | Some x \<Rightarrow> \<Union>(set_of_appr ` set x))
   (\<lambda>x. case x of None \<Rightarrow> True | Some x \<Rightarrow> \<Union>(set_of_appr ` set x) \<subseteq> Collect safe)"
-  by (fastforce simp: coll_rel_def br_def default_rel_def list_wset_rel_def set_rel_def appr_rel_def
+  by (safe; auto simp: coll_rel_def br_def default_rel_def list_wset_rel_def set_rel_def appr_rel_def
     relcomp_unfold
     split: option.splits)
 

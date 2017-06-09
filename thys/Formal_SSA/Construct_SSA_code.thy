@@ -597,13 +597,18 @@ begin
     apply transfer
     apply (simp add: phis'_def uses'_phis'_def Let_def split_def)
     apply (auto simp: lookup_map_keys a intro!: ext)
-       apply (auto simp: vimage_def)[1]
+    subgoal by (auto simp: vimage_def)[1]
+    subgoal
+      apply (subst foldr_aux_2(3)[OF _ _ surjective_pairing, symmetric])
+      by (auto simp: phiDefNodes_def vimage_def elim!: fold_union_elem intro!: \<alpha>n_distinct split: if_split_asm)
+
+    subgoal
       apply (subst(asm) foldr_aux_2(3)[OF _ _ surjective_pairing, symmetric])
-        apply (auto simp: phiDefNodes_def vimage_def elim!: fold_union_elem intro!: \<alpha>n_distinct split: if_split_asm)[4]
-     apply (subst(asm) foldr_aux_2(3)[OF _ _ surjective_pairing, symmetric])
-       apply (auto simp: phiDefNodes_def vimage_def elim!: fold_union_elem intro!: \<alpha>n_distinct split: if_split_asm)[3]
-    apply (subst(asm) foldr_aux_2(3)[OF _ _ surjective_pairing, symmetric])
-      apply (auto simp: phiDefNodes_def vimage_def elim!: fold_union_elem intro!: \<alpha>n_distinct fold_union_elemI split: if_split_asm)
+      by (auto simp: phiDefNodes_def vimage_def elim!: fold_union_elem intro!: \<alpha>n_distinct split: if_split_asm)
+        
+    subgoal
+      apply (subst(asm) foldr_aux_2(3)[OF _ _ surjective_pairing, symmetric])
+      by (auto simp: phiDefNodes_def vimage_def elim!: fold_union_elem intro!: \<alpha>n_distinct fold_union_elemI split: if_split_asm)
     done
   qed
 end
