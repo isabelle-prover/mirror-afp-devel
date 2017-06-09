@@ -691,6 +691,31 @@ lemma hn_ASSERT_bind[sepref_comb_rules]:
   apply auto
   done
 
+definition [simp]: "op_ASSUME_bind I m \<equiv> Refine_Basic.bind (ASSUME I) (\<lambda>_. m)"
+lemma pat_ASSUME_bind[def_pat_rules]:
+  "Refine_Basic.bind$(ASSUME$I)$(\<lambda>\<^sub>2_. m) \<equiv> UNPROTECT (op_ASSUME_bind I)$m"
+  by simp
+
+lemma id_op_ASSUME_bind[id_rules]: 
+  "PR_CONST (op_ASSUME_bind I) ::\<^sub>i TYPE('a nres \<Rightarrow> 'a nres)"
+  by simp
+
+lemma arity_ASSUME_bind[sepref_monadify_arity]:
+  "PR_CONST (op_ASSUME_bind I) \<equiv> \<lambda>\<^sub>2m. SP (PR_CONST (op_ASSUME_bind I))$m"
+  apply (rule eq_reflection)
+  by auto
+
+lemma hn_ASSUME_bind[sepref_comb_rules]: 
+  assumes "vassn_tag \<Gamma> \<Longrightarrow> I"
+  assumes "I \<Longrightarrow> hn_refine \<Gamma> c \<Gamma>' R m"
+  shows "hn_refine \<Gamma> c \<Gamma>' R (PR_CONST (op_ASSUME_bind I)$m)"
+  apply (rule hn_refine_preI)
+  using assms
+  apply (cases I)
+  apply (auto simp: vassn_tag_def)
+  done
+    
+    
 subsection "Import of Parametricity Theorems"
 lemma pure_hn_refineI:
   assumes "Q \<longrightarrow> (c,a)\<in>R"

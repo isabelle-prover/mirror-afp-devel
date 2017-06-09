@@ -7,103 +7,6 @@ imports Main
   "Generic/RefineG_Assert"
 begin
 
-subsection {* Setup *}
-  ML {*
-    structure Refine = struct
-
-    structure vcg = Named_Thms
-      ( val name = @{binding refine_vcg}
-        val description = "Refinement Framework: " ^ 
-          "Verification condition generation rules (intro)" )
-
-    structure refine0 = Named_Thms
-      ( val name = @{binding refine0}
-        val description = "Refinement Framework: " ^
-          "Refinement rules applied first (intro)" )
-
-    structure refine = Named_Thms
-      ( val name = @{binding refine}
-        val description = "Refinement Framework: Refinement rules (intro)" )
-
-    structure refine2 = Named_Thms
-      ( val name = @{binding refine2}
-        val description = "Refinement Framework: " ^
-          "Refinement rules 2nd stage (intro)" )
-
-    structure refine_pw_simps = Named_Thms
-      ( val name = @{binding refine_pw_simps}
-        val description = "Refinement Framework: " ^
-          "Simplifier rules for pointwise reasoning" )
-
-    (* Replaced by respective solvers in tagged solver
-    structure refine_post = Named_Thms
-      ( val name = @{binding refine_post}
-        val description = "Refinement Framework: " ^
-          "Postprocessing rules" )
-    *)
-
-
-
-    (* If set to true, the product splitter of refine_rcg is disabled. *)
-    val no_prod_split = 
-      Attrib.setup_config_bool @{binding refine_no_prod_split} (K false);
-
-    fun rcg_tac add_thms ctxt = 
-      let 
-        val ref_thms = (refine0.get ctxt 
-          @ add_thms @ refine.get ctxt @ refine2.get ctxt);
-        val prod_ss = (Splitter.add_split @{thm prod.split} 
-          (put_simpset HOL_basic_ss ctxt));
-        val prod_simp_tac = 
-          if Config.get ctxt no_prod_split then 
-            K no_tac
-          else
-            (simp_tac prod_ss THEN' 
-              REPEAT_ALL_NEW (resolve_tac ctxt @{thms impI allI}));
-      in
-        REPEAT_ALL_NEW (DETERM o (resolve_tac ctxt ref_thms ORELSE' prod_simp_tac))
-      end;
-
-      fun post_tac ctxt = let
-        (*val thms = refine_post.get ctxt;*)
-      in
-        REPEAT_ALL_NEW (FIRST' [
-          eq_assume_tac,
-          (*match_tac ctxt thms,*)
-          SOLVED' (Tagged_Solver.solve_tac ctxt)]) 
-           (* TODO: Get rid of refine_post! Use tagged_solver instead *)
-      end;
-
-    end;
-  *}
-  setup {* Refine.vcg.setup *}
-  setup {* Refine.refine0.setup *}
-  setup {* Refine.refine.setup *}
-  setup {* Refine.refine2.setup *}
-  (*setup {* Refine.refine_post.setup *}*)
-  setup {* Refine.refine_pw_simps.setup *}
-
-  method_setup refine_rcg = 
-    {* Attrib.thms >> (fn add_thms => fn ctxt => SIMPLE_METHOD' (
-      Refine.rcg_tac add_thms ctxt THEN_ALL_NEW (TRY o Refine.post_tac ctxt)
-    )) *} 
-    "Refinement framework: Generate refinement conditions"
-
-  method_setup refine_vcg = 
-    {* Attrib.thms >> (fn add_thms => fn ctxt => SIMPLE_METHOD' (
-      Refine.rcg_tac (add_thms @ Refine.vcg.get ctxt) ctxt THEN_ALL_NEW (TRY o Refine.post_tac ctxt)
-    )) *} 
-    "Refinement framework: Generate refinement and verification conditions"
-
-
-  (* Use tagged-solver instead!
-  method_setup refine_post = 
-    {* Scan.succeed (fn ctxt => SIMPLE_METHOD' (
-      Refine.post_tac ctxt
-    )) *} 
-    "Refinement framework: Postprocessing of refinement goals"
-    *)
-
 
 subsection {* Nondeterministic Result Lattice and Monad *}
 text {*
@@ -267,6 +170,14 @@ declare nres_simp_internals[simp]
 
 subsubsection {* Pointwise Reasoning *}
 
+ML \<open>
+  structure refine_pw_simps = Named_Thms
+    ( val name = @{binding refine_pw_simps}
+      val description = "Refinement Framework: " ^
+        "Simplifier rules for pointwise reasoning" )
+\<close>    
+setup {* refine_pw_simps.setup *}
+  
 definition "nofail S \<equiv> S\<noteq>FAIL"
 definition "inres S x \<equiv> RETURN x \<le> S"
 
@@ -454,9 +365,6 @@ primrec the_RES where "the_RES (RES X) = X"
 lemma the_RES_inv[simp]: "nofail m \<Longrightarrow> RES (the_RES m) = m"
   by (cases m) auto
 
-lemma le_SPEC_UNIV_rule [refine_vcg]: 
-  "m \<le> SPEC (\<lambda>_. True) \<Longrightarrow> m \<le> RES UNIV" by auto
-
 definition [refine_pw_simps]: "nf_inres m x \<equiv> nofail m \<and> inres m x"
 
 lemma nf_inres_RES[simp]: "nf_inres (RES X) x \<longleftrightarrow> x\<in>X" 
@@ -465,6 +373,8 @@ lemma nf_inres_RES[simp]: "nf_inres (RES X) x \<longleftrightarrow> x\<in>X"
 lemma nf_inres_SPEC[simp]: "nf_inres (SPEC \<Phi>) x \<longleftrightarrow> \<Phi> x" 
   by (simp add: refine_pw_simps)
 
+lemma nofail_antimono_fun: "f \<le> g \<Longrightarrow> (nofail (g x) \<longrightarrow> nofail (f x))"
+  by (auto simp: pw_le_iff dest: le_funD)
 
 
 subsubsection {* Monad Operators *}
@@ -565,6 +475,108 @@ lemma bind_distrib_Sup2: "F\<noteq>{} \<Longrightarrow> bind m (Sup F) = (SUP f:
 lemma RES_Sup_RETURN: "Sup (RETURN`X) = RES X"
   by (rule pw_eqI) (auto simp add: refine_pw_simps)
 
+    
+subsection {* VCG Setup *}
+  
+lemma SPEC_cons_rule:
+  assumes "m \<le> SPEC \<Phi>"
+  assumes "\<And>x. \<Phi> x \<Longrightarrow> \<Psi> x"
+  shows "m \<le> SPEC \<Psi>"
+  using assms by (auto simp: pw_le_iff)
+  
+lemmas SPEC_trans = order_trans[where z="SPEC Postcond" for Postcond, zero_var_indexes]
+  
+ML {*
+structure Refine = struct
+
+  structure vcg = Named_Thms
+    ( val name = @{binding refine_vcg}
+      val description = "Refinement Framework: " ^ 
+        "Verification condition generation rules (intro)" )
+
+  structure vcg_cons = Named_Thms
+    ( val name = @{binding refine_vcg_cons}
+      val description = "Refinement Framework: " ^
+        "Consequence rules tried by VCG" )
+
+  structure refine0 = Named_Thms
+    ( val name = @{binding refine0}
+      val description = "Refinement Framework: " ^
+        "Refinement rules applied first (intro)" )
+
+  structure refine = Named_Thms
+    ( val name = @{binding refine}
+      val description = "Refinement Framework: Refinement rules (intro)" )
+
+  structure refine2 = Named_Thms
+    ( val name = @{binding refine2}
+      val description = "Refinement Framework: " ^
+        "Refinement rules 2nd stage (intro)" )
+
+  (* If set to true, the product splitter of refine_rcg is disabled. *)
+  val no_prod_split = 
+    Attrib.setup_config_bool @{binding refine_no_prod_split} (K false);
+
+  fun rcg_tac add_thms ctxt = 
+    let 
+      val cons_thms = vcg_cons.get ctxt
+      val ref_thms = (refine0.get ctxt 
+        @ add_thms @ refine.get ctxt @ refine2.get ctxt);
+      val prod_ss = (Splitter.add_split @{thm prod.split} 
+        (put_simpset HOL_basic_ss ctxt));
+      val prod_simp_tac = 
+        if Config.get ctxt no_prod_split then 
+          K no_tac
+        else
+          (simp_tac prod_ss THEN' 
+            REPEAT_ALL_NEW (resolve_tac ctxt @{thms impI allI}));
+    in
+      REPEAT_ALL_NEW_FWD (DETERM o FIRST' [
+        resolve_tac ctxt ref_thms,
+        resolve_tac ctxt cons_thms THEN' resolve_tac ctxt ref_thms,
+        prod_simp_tac
+      ])
+    end;
+
+  fun post_tac ctxt = REPEAT_ALL_NEW_FWD (FIRST' [
+    eq_assume_tac,
+    (*match_tac ctxt thms,*)
+    SOLVED' (Tagged_Solver.solve_tac ctxt)]) 
+         
+
+end;
+*}
+setup {* Refine.vcg.setup *}
+setup {* Refine.vcg_cons.setup *}
+setup {* Refine.refine0.setup *}
+setup {* Refine.refine.setup *}
+setup {* Refine.refine2.setup *}
+(*setup {* Refine.refine_post.setup *}*)
+
+method_setup refine_rcg = 
+  {* Attrib.thms >> (fn add_thms => fn ctxt => SIMPLE_METHOD' (
+    Refine.rcg_tac add_thms ctxt THEN_ALL_NEW_FWD (TRY o Refine.post_tac ctxt)
+  )) *} 
+  "Refinement framework: Generate refinement conditions"
+
+method_setup refine_vcg = 
+  {* Attrib.thms >> (fn add_thms => fn ctxt => SIMPLE_METHOD' (
+    Refine.rcg_tac (add_thms @ Refine.vcg.get ctxt) ctxt THEN_ALL_NEW_FWD (TRY o Refine.post_tac ctxt)
+  )) *} 
+  "Refinement framework: Generate refinement and verification conditions"
+
+
+  (* Use tagged-solver instead!
+  method_setup refine_post = 
+    {* Scan.succeed (fn ctxt => SIMPLE_METHOD' (
+      Refine.post_tac ctxt
+    )) *} 
+    "Refinement framework: Postprocessing of refinement goals"
+    *)
+
+declare SPEC_cons_rule[refine_vcg_cons]    
+    
+    
 subsection {* Data Refinement *}
 text {*
   In this section we establish a notion of pointwise data refinement, by
@@ -657,6 +669,12 @@ lemma conc_fun_mono[simp, intro!]: "mono (\<Down>R)"
 lemma abs_fun_mono[simp, intro!]: "mono (\<Up>R)"
   by rule (auto simp: pw_le_iff refine_pw_simps)
 
+lemma conc_fun_R_mono:
+  assumes "R \<subseteq> R'"
+  shows "\<Down>R M \<le> \<Down>R' M"
+  using assms
+  by (auto simp: pw_le_iff refine_pw_simps)
+    
 lemma conc_fun_chain: "\<Down>R (\<Down>S M) = \<Down>(R O S) M"
   unfolding conc_fun_def
   by (auto split: nres.split)
@@ -724,6 +742,13 @@ interpretation assert?: generic_Assert bind RETURN ASSERT ASSUME
   apply unfold_locales
   by (simp_all add: ASSERT_def ASSUME_def)
 
+text \<open>Order matters! \<close>
+lemmas [refine_vcg] = ASSERT_leI 
+lemmas [refine_vcg] = le_ASSUMEI 
+lemmas [refine_vcg] = le_ASSERTI 
+lemmas [refine_vcg] = ASSUME_leI
+    
+    
 lemma pw_ASSERT[refine_pw_simps]:
   "nofail (ASSERT \<Phi>) \<longleftrightarrow> \<Phi>"
   "inres (ASSERT \<Phi>) x"
@@ -794,6 +819,8 @@ qed
   
 lemmas pw_RECT = pw_RECT_inres pw_RECT_nofail
 
+  
+  
 subsection {* Proof Rules *}
 
 subsubsection {* Proving Correctness *}
@@ -801,7 +828,9 @@ text {*
   In this section, we establish Hoare-like rules to prove that a program
   meets its specification.
 *}
-
+lemma le_SPEC_UNIV_rule [refine_vcg]: 
+  "m \<le> SPEC (\<lambda>_. True) \<Longrightarrow> m \<le> RES UNIV" by auto
+  
 lemma RETURN_rule[refine_vcg]: "\<Phi> x \<Longrightarrow> RETURN x \<le> SPEC \<Phi>"
   by (auto simp: RETURN_def)
 lemma RES_rule[refine_vcg]: "\<lbrakk>\<And>x. x\<in>S \<Longrightarrow> \<Phi> x\<rbrakk> \<Longrightarrow> RES S \<le> SPEC \<Phi>"
@@ -976,6 +1005,13 @@ lemma RETURN_SPEC_refine:
 lemma FAIL_refine[refine]: "X \<le> \<Down>R FAIL" by auto
 lemma SUCCEED_refine[refine]: "SUCCEED \<le> \<Down>R X'" by auto
 
+lemma sup_refine[refine]:
+  assumes "ai \<le>\<Down>R a"
+  assumes "bi \<le>\<Down>R b"
+  shows "sup ai bi \<le>\<Down>R (sup a b)"
+  using assms by (auto simp: pw_le_iff refine_pw_simps)
+    
+    
 text {* The next two rules are incomplete, but a good approximation for refining
   structurally similar programs. *}
 lemma bind_refine':
@@ -1170,13 +1206,15 @@ lemma Let_refine':
   shows "Let m f \<le> \<Down>S (Let m' f')"
   using assms by simp
 
+    
 lemma case_option_refine[refine]:
-  assumes "(x,x')\<in>Id"
-  assumes "x=None \<Longrightarrow> fn \<le> \<Down>R fn'"
-  assumes "\<And>v v'. \<lbrakk>x=Some v; (v,v')\<in>Id\<rbrakk> \<Longrightarrow> fs v \<le> \<Down>R (fs' v')"
-  shows "case_option fn (\<lambda>v. fs v) x \<le> \<Down>R (case_option fn' (\<lambda>v'. fs' v') x')"
-  using assms by (auto split: option.split)
-
+  assumes "(v,v')\<in>\<langle>Ra\<rangle>option_rel"
+  assumes "\<lbrakk>v=None; v'=None\<rbrakk> \<Longrightarrow> n \<le> \<Down> Rb n'"
+  assumes "\<And>x x'. \<lbrakk> v=Some x; v'=Some x'; (x, x') \<in> Ra \<rbrakk> 
+    \<Longrightarrow> f x \<le> \<Down> Rb (f' x')"
+  shows "case_option n f v \<le>\<Down>Rb (case_option n' f' v')"
+  using assms
+  by (auto split: option.split simp: option_rel_def)
 
 text {* It is safe to split conjunctions in refinement goals.*}
 declare conjI[refine]
@@ -1344,11 +1382,17 @@ lemma pw_RES_bind_choose:
   "inres (RES X \<bind> f) y \<longleftrightarrow> (\<exists>x\<in>X. inres (f x) y)"
   by (auto simp: refine_pw_simps)
 
+lemma prod_case_refine:  
+  assumes "(p',p)\<in>R1\<times>\<^sub>rR2"
+  assumes "\<And>x1' x2' x1 x2. \<lbrakk> p'=(x1',x2'); p=(x1,x2); (x1',x1)\<in>R1; (x2',x2)\<in>R2\<rbrakk> \<Longrightarrow> f' x1' x2' \<le> \<Down>R (f x1 x2)"
+  shows "(case p' of (x1',x2') \<Rightarrow> f' x1' x2') \<le>\<Down>R (case p of (x1,x2) \<Rightarrow> f x1 x2)"
+  using assms by (auto split: prod.split)
 
 
 
 subsection {* Relators *}
-
+declare fun_relI[refine]
+  
 definition nres_rel where 
   nres_rel_def_internal: "nres_rel R \<equiv> {(c,a). c \<le> \<Down>R a}"
 
@@ -1356,8 +1400,15 @@ lemma nres_rel_def: "\<langle>R\<rangle>nres_rel \<equiv> {(c,a). c \<le> \<Down
   by (simp add: nres_rel_def_internal relAPP_def)
 
 lemma nres_relD: "(c,a)\<in>\<langle>R\<rangle>nres_rel \<Longrightarrow> c \<le>\<Down>R a" by (simp add: nres_rel_def)
-lemma nres_relI: "c \<le>\<Down>R a \<Longrightarrow> (c,a)\<in>\<langle>R\<rangle>nres_rel" by (simp add: nres_rel_def)
+lemma nres_relI[refine]: "c \<le>\<Down>R a \<Longrightarrow> (c,a)\<in>\<langle>R\<rangle>nres_rel" by (simp add: nres_rel_def)
 
+lemma nres_rel_comp: "\<langle>A\<rangle>nres_rel O \<langle>B\<rangle>nres_rel = \<langle>A O B\<rangle>nres_rel"
+  by (auto simp: nres_rel_def conc_fun_chain[symmetric] conc_trans)
+
+lemma pw_nres_rel_iff: "(a,b)\<in>\<langle>A\<rangle>nres_rel \<longleftrightarrow> nofail (\<Down> A b) \<longrightarrow> nofail a \<and> (\<forall>x. inres a x \<longrightarrow> inres (\<Down> A b) x)"
+  by (simp add: pw_le_iff nres_rel_def)
+    
+    
 lemma param_SUCCEED[param]: "(SUCCEED,SUCCEED) \<in> \<langle>R\<rangle>nres_rel"
   by (auto simp: nres_rel_def)
 
@@ -1377,6 +1428,11 @@ lemma param_bind[param]:
   "(bind,bind) \<in> \<langle>Ra\<rangle>nres_rel \<rightarrow> (Ra\<rightarrow>\<langle>Rb\<rangle>nres_rel) \<rightarrow> \<langle>Rb\<rangle>nres_rel"
   by (auto simp: nres_rel_def intro: bind_refine dest: fun_relD)
 
+lemma param_ASSERT_bind[param]: "\<lbrakk> 
+    (\<Phi>,\<Psi>) \<in> bool_rel; 
+    \<lbrakk> \<Phi>; \<Psi> \<rbrakk> \<Longrightarrow> (f,g)\<in>\<langle>R\<rangle>nres_rel
+  \<rbrakk> \<Longrightarrow> (ASSERT \<Phi> \<then> f, ASSERT \<Psi> \<then> g) \<in> \<langle>R\<rangle>nres_rel"
+  by (auto intro: nres_relI)
 
 subsection {* Autoref Setup *}
 
@@ -1520,6 +1576,8 @@ lemma introR: "(a,a')\<in>R \<Longrightarrow> (a,a')\<in>R" .
 
 lemma intro_prgR: "c \<le> \<Down>R a \<Longrightarrow> c \<le> \<Down>R a" by auto
 
+lemma refine_IdI: "m \<le> m' \<Longrightarrow> m \<le> \<Down>Id m'" by simp
+    
 
 lemma le_ASSERTI_pres:
   assumes "\<Phi> \<Longrightarrow> S \<le> do {ASSERT \<Phi>; S'}"
@@ -1539,6 +1597,22 @@ lemma RETURN_ref_RETURND:
   apply (auto simp: pw_le_iff refine_pw_simps)
   done
 
+lemma return_refine_prop_return:
+  assumes "nofail m"
+  assumes "RETURN x \<le> \<Down>R m"
+  obtains x' where "(x,x')\<in>R" "RETURN x' \<le> m"
+  using assms
+  by (auto simp: refine_pw_simps pw_le_iff)
+    
+lemma ignore_snd_refine_conv: 
+  "(m \<le> \<Down>(R\<times>\<^sub>rUNIV) m') \<longleftrightarrow> m\<bind>(RETURN o fst) \<le>\<Down>R (m'\<bind>(RETURN o fst))"
+  by (auto simp: pw_le_iff refine_pw_simps)
+    
+    
+lemma ret_le_down_conv: 
+  "nofail m \<Longrightarrow> RETURN c \<le> \<Down>R m \<longleftrightarrow> (\<exists>a. (c,a)\<in>R \<and> RETURN a \<le> m)"
+  by (auto simp: pw_le_iff refine_pw_simps)
+    
 lemma SPEC_eq_is_RETURN:
   "SPEC (op = x) = RETURN x"
   "SPEC (\<lambda>x. x=y) = RETURN y"
@@ -1551,8 +1625,35 @@ lemma build_rel_SPEC:
   "M \<le> SPEC ( \<lambda>x. \<Phi> (\<alpha> x) \<and> I x) \<Longrightarrow> M \<le> \<Down>(build_rel \<alpha> I) (SPEC \<Phi>)"
   by (auto simp: pw_le_iff refine_pw_simps build_rel_def)
 
+lemma build_rel_SPEC_conv: "\<Down>(br \<alpha> I) (SPEC \<Phi>) = SPEC (\<lambda>x. I x \<and> \<Phi> (\<alpha> x))"  
+  by (auto simp: br_def pw_eq_iff refine_pw_simps)
+    
 lemma refine_IdD: "c \<le> \<Down>Id a \<Longrightarrow> c \<le> a" by simp
 
+lemma bind_sim_select_rule:
+  assumes "m\<bind>f' \<le> SPEC \<Psi>"
+  assumes "\<And>x. \<lbrakk>nofail m; inres m x; f' x\<le>SPEC \<Psi>\<rbrakk> \<Longrightarrow> f x\<le>SPEC \<Phi>"
+  shows "m\<bind>f \<le> SPEC \<Phi>"
+  -- \<open>Simultaneously select a result from assumption and verification goal.
+    Useful to work with assumptions that restrict the current program to 
+    be verified.\<close>
+  using assms 
+  by (auto simp: pw_le_iff refine_pw_simps)
+
+lemma assert_bind_spec_conv: "ASSERT \<Phi> \<then> m \<le> SPEC \<Psi> \<longleftrightarrow> (\<Phi> \<and> m \<le> SPEC \<Psi>)"  
+  -- \<open>Simplify a bind-assert verification condition. 
+    Useful if this occurs in the assumptions, and considerably faster than 
+    using pointwise reasoning, which may causes a blowup for many chained 
+    assertions.\<close>
+  by (auto simp: pw_le_iff refine_pw_simps)
+
+lemma summarize_ASSERT_conv: "do {ASSERT \<Phi>; ASSERT \<Psi>; m} = do {ASSERT (\<Phi> \<and> \<Psi>); m}"
+  by (auto simp: pw_eq_iff refine_pw_simps)
+
+lemma bind_ASSERT_eq_if: "do { ASSERT \<Phi>; m } = (if \<Phi> then m else FAIL)"
+  by auto
+    
+    
 lemma le_RES_nofailI:
   assumes "a\<le>RES x"
   shows "nofail a"
@@ -1597,6 +1698,12 @@ lemma RETURN_refine_iff[simp]: "RETURN x \<le>\<Down>R (RETURN y) \<longleftrigh
 
 lemma RETURN_RES_refine_iff: 
   "RETURN x \<le>\<Down>R (RES Y) \<longleftrightarrow> (\<exists>y\<in>Y. (x,y)\<in>R)"
+  by (auto simp: pw_le_iff refine_pw_simps)
+
+lemma RETURN_RES_refine:
+  assumes "\<exists>x'. (x,x')\<in>R \<and> x'\<in>X"
+  shows "RETURN x \<le> \<Down>R (RES X)"
+  using assms 
   by (auto simp: pw_le_iff refine_pw_simps)
 
 lemma in_nres_rel_iff: "(a,b)\<in>\<langle>R\<rangle>nres_rel \<longleftrightarrow> a \<le>\<Down>R b"
@@ -1657,6 +1764,17 @@ lemma bind_le_shift:
   \<longleftrightarrow> m \<le> (if nofail m' then SPEC (\<lambda>x. f x \<le> m') else FAIL)"
   by (auto simp: pw_le_iff refine_pw_simps)
 
+lemma If_bind_distrib[simp]:
+  fixes t e :: "'a nres"
+  shows "(If b t e \<bind> (\<lambda>x. f x)) = (If b (t\<bind>(\<lambda>x. f x)) (e\<bind>(\<lambda>x. f x)))"  
+  by simp
+    
+(* TODO: Can we make this a simproc, using NO_MATCH? *)  
+lemma unused_bind_conv: 
+  assumes "NO_MATCH (ASSERT \<Phi>) m"
+  assumes "NO_MATCH (ASSUME \<Phi>) m"
+  shows "(m\<bind>(\<lambda>x. c))  = (ASSERT (nofail m) \<bind> (\<lambda>_. ASSUME (\<exists>x. inres m x) \<bind> (\<lambda>x. c)))" 
+  by (auto simp: pw_eq_iff refine_pw_simps)
 
 text {* The following rules are useful for massaging programs before the 
   refinement takes place *}
@@ -1696,6 +1814,12 @@ lemma ife_FAIL_to_ASSERT_cnv:
   "(if \<Phi> then m else FAIL) = op_nres_ASSERT_bnd \<Phi> m"
   by (cases \<Phi>, auto)
 
+lemma nres_bind_let_law: "(do { x \<leftarrow> do { let y=v; f y }; g x } :: _ nres)
+  = do { let y=v; x\<leftarrow> f y; g x }" by auto
+
+lemma unused_bind_RES_ne[simp]: "X\<noteq>{} \<Longrightarrow> do { _ \<leftarrow> RES X; m} = m"
+  by (auto simp: pw_eq_iff refine_pw_simps)
+
 
 lemma le_ASSERT_defI1:
   assumes "c \<equiv> do {ASSERT \<Phi>; m}"
@@ -1732,8 +1856,19 @@ lemma ASSERT_le_defI:
   shows "c \<le> m"
   using assms by (auto)
 
+lemma ASSERT_same_eq_conv: "(ASSERT \<Phi> \<then> m) = (ASSERT \<Phi> \<then> n) \<longleftrightarrow> (\<Phi> \<longrightarrow> m=n)"  
+  by auto
 
-
+lemma case_prod_bind_simp[simp]: "
+  (\<lambda>x. (case x of (a, b) \<Rightarrow> f a b) \<le> SPEC \<Phi>) = (\<lambda>(a,b). f a b \<le> SPEC \<Phi>)"
+  by auto
+    
+lemma RECT_eq_REC': "nofail (RECT B x) \<Longrightarrow> RECT B x = REC B x"
+  by (subst RECT_eq_REC; simp_all add: nofail_def)
+    
+    
+lemma rel2p_nres_RETURN[rel2p]: "rel2p (\<langle>A\<rangle>nres_rel) (RETURN x) (RETURN y) = rel2p A x y"   
+  by (auto simp: rel2p_def dest: nres_relD intro: nres_relI)
 
 
 subsubsection {* Boolean Operations on Specifications *}

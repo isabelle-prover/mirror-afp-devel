@@ -41,6 +41,10 @@ lemma pure_eq_conv[simp]: "pure R = pure R' \<longleftrightarrow> R=R'"
   apply (meson pure_assn_eq_conv)
   done
 
+lemma pure_rel_eq_false_iff: "pure R x y = false \<longleftrightarrow> (y,x)\<notin>R"
+  by (auto simp: pure_def)
+    
+    
 definition "is_pure P \<equiv> \<exists>P'. \<forall>x x'. P x x'=\<up>(P' x x')"
 lemma is_pureI[intro?]: 
   assumes "\<And>x x'. P x x' = \<up>(P' x x')"
@@ -312,6 +316,8 @@ definition prod_assn :: "('a1\<Rightarrow>'c1\<Rightarrow>assn) \<Rightarrow> ('
   "prod_assn P1 P2 a c \<equiv> case (a,c) of ((a1,a2),(c1,c2)) \<Rightarrow>
   P1 a1 c1 * P2 a2 c2"
 
+notation prod_assn (infixr "\<times>\<^sub>a" 70)
+  
 lemma prod_assn_pure_conv[simp]: "prod_assn (pure R1) (pure R2) = pure (R1 \<times>\<^sub>r R2)"
   by (auto simp: pure_def prod_assn_def intro!: ext)
 

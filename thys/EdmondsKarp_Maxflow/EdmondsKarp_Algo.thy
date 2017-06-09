@@ -17,7 +17,7 @@ begin
 
 text \<open>First, we specify the refined procedure for finding augmenting paths\<close>
 definition "find_shortest_augmenting_spec f \<equiv> assert (NFlow c s t f) \<then> 
-  (selectp p. Graph.isShortestPath (residualGraph c f) s p t)"
+  (select p. Graph.isShortestPath (residualGraph c f) s p t)"
 
 text \<open>Note, if there is an augmenting path, there is always a shortest one\<close>
 lemma (in NFlow) augmenting_path_imp_shortest: 
@@ -31,12 +31,13 @@ lemma (in NFlow) shortest_is_augmenting:
   by (fastforce)
 
 text \<open>We show that our refined procedure is actually a refinement\<close>  
+thm SELECT_refine  
 lemma find_shortest_augmenting_refine[refine]: 
-  "(f',f)\<in>Id \<Longrightarrow> find_shortest_augmenting_spec f' \<le> \<Down>Id (find_augmenting_spec f)"  
+  "(f',f)\<in>Id \<Longrightarrow> find_shortest_augmenting_spec f' \<le> \<Down>(\<langle>Id\<rangle>option_rel) (find_augmenting_spec f)"  
   unfolding find_shortest_augmenting_spec_def find_augmenting_spec_def
   apply (refine_vcg)
   apply (auto 
-    simp: NFlow.shortest_is_augmenting 
+    simp: NFlow.shortest_is_augmenting RELATESI
     dest: NFlow.augmenting_path_imp_shortest)
   done
 
@@ -758,9 +759,8 @@ proof -
     apply (refine_rcg)
     apply (refine_dref_type)
     apply (vc_solve simp: edkac_rel_def "NFlow.augment_with_path_def")
-    using ekMeasure_upper_bound apply auto []
-    apply auto []
-    apply (drule (1) NFlow.shortest_path_decr_ek_measure; auto)
+    using ekMeasure_upper_bound applyS auto []
+    applyS (drule (1) NFlow.shortest_path_decr_ek_measure; auto)
     done
 qed    
 

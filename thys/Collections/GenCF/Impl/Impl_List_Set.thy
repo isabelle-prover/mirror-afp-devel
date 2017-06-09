@@ -80,8 +80,6 @@ begin
       rev_append_def
     by (parametricity)
 
-  definition 
-    list_set_rel_internal_def: "list_set_rel R \<equiv> \<langle>R\<rangle>list_rel O br set distinct"
 
 lemma list_rel_Range:
     "\<forall>x'\<in>set l'. x' \<in> Range R \<Longrightarrow> l' \<in> Range (\<langle>R\<rangle>list_rel)"
@@ -94,9 +92,6 @@ next
     ultimately have "(x#xs, x'#xs') \<in> \<langle>R\<rangle> list_rel" by simp
     thus ?case ..
 qed
-
-  lemma list_set_rel_def: "\<langle>R\<rangle>list_set_rel = \<langle>R\<rangle>list_rel O br set distinct"
-    unfolding list_set_rel_internal_def[abs_def] by (simp add: relAPP_def)
 
   text {* All finite sets can be represented *}
   lemma list_set_rel_range:

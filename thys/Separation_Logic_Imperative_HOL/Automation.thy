@@ -288,6 +288,7 @@ lemmas heap_rules =
   lookup_rule
   update_rule
   new_rule
+  make_rule
   of_list_rule
   length_rule
   nth_rule
@@ -496,6 +497,7 @@ struct
      {lhss =
       [@{term "h \<Turnstile> P"},
        @{term "P \<Longrightarrow>\<^sub>A Q"},
+       @{term "P \<Longrightarrow>\<^sub>t Q"},
        @{term "Hoare_Triple.hoare_triple P c Q"},
        @{term "(P::assn) = Q"}],
       proc = K assn_simproc_fun};
@@ -702,7 +704,8 @@ struct
 end;
 *}
 
-simproc_setup assn_simproc ("h\<Turnstile>P" | "P\<Longrightarrow>\<^sub>AQ" | "<P> c <R>" | "(P::assn) = Q") 
+simproc_setup assn_simproc 
+  ("h\<Turnstile>P" | "P\<Longrightarrow>\<^sub>AQ" | "P\<Longrightarrow>\<^sub>tQ" | "<P> c <R>" | "(P::assn) = Q") 
   = {*K Seplogic_Auto.assn_simproc_fun*}
 
 method_setup assn_simp ={* Scan.succeed (fn ctxt => (SIMPLE_METHOD' (
@@ -837,6 +840,21 @@ lemma fr_rot: "(A*B \<Longrightarrow>\<^sub>A C) \<Longrightarrow> (B*A \<Longri
 lemma fr_rot_rhs: "(A \<Longrightarrow>\<^sub>A B*C) \<Longrightarrow> (A \<Longrightarrow>\<^sub>A C*B)" 
   by (simp add: assn_aci)
 
+lemma ent_star_mono_true: 
+  assumes "A \<Longrightarrow>\<^sub>A A' * true"
+  assumes "B \<Longrightarrow>\<^sub>A B' * true"
+  shows "A*B*true \<Longrightarrow>\<^sub>A A'*B'*true"
+  using ent_star_mono[OF assms] apply simp
+  using ent_true_drop(1) by blast
+
+lemma ent_refl_true: "A \<Longrightarrow>\<^sub>A A * true"
+  by (simp add: ent_true_drop(2)) 
+    
+lemma entt_fr_refl: "F\<Longrightarrow>\<^sub>tF' \<Longrightarrow> F*A \<Longrightarrow>\<^sub>t F'*A" by (rule entt_star_mono) auto
+lemma entt_fr_drop: "F\<Longrightarrow>\<^sub>tF' \<Longrightarrow> F*A \<Longrightarrow>\<^sub>t F'"
+  using ent_true_drop(1) enttD enttI by blast 
+    
+    
 method_setup fr_rot = {* 
   let
     fun rot_tac ctxt = 

@@ -186,8 +186,8 @@ lemma sum_rel_simp[simp]:
   unfolding sum_rel_def by auto
 
 lemma sum_relI: 
-  "(a,a')\<in>Rl \<Longrightarrow> (Inl a, Inl a') \<in> \<langle>Rl,Rr\<rangle>sum_rel"
-  "(a,a')\<in>Rr \<Longrightarrow> (Inr a, Inr a') \<in> \<langle>Rl,Rr\<rangle>sum_rel"
+  "(l,l')\<in>Rl \<Longrightarrow> (Inl l, Inl l') \<in> \<langle>Rl,Rr\<rangle>sum_rel"
+  "(r,r')\<in>Rr \<Longrightarrow> (Inr r, Inr r') \<in> \<langle>Rl,Rr\<rangle>sum_rel"
   by simp_all
   
 lemma sum_relE:
@@ -854,6 +854,8 @@ lemma sv_add_invar:
   "single_valued R \<Longrightarrow> single_valued {(c, a). (c, a) \<in> R \<and> I c}"
   by (auto dest: single_valuedD intro: single_valuedI)
 
+lemma br_Image_conv[simp]: "br \<alpha> I `` S = {\<alpha> x | x. x\<in>S \<and> I x}"
+  by (auto simp: br_def)
 
 
 subsection {* Miscellanneous *}
@@ -954,5 +956,24 @@ lemma set_rel_compp: "\<langle>A O B\<rangle>set_rel = \<langle>A\<rangle>set_re
   using rel_set_OO[of "rel2p A" "rel2p B"]
   by (auto simp: rel2p(2-)[symmetric] rel2p_comp) (* TODO: Not very systematic proof *)
     
+    
+lemma map_in_list_rel_conv: 
+  shows "(l, map \<alpha> l) \<in> \<langle>br \<alpha> I\<rangle>list_rel \<longleftrightarrow> (\<forall>x\<in>set l. I x)"
+  by (induction l) (auto simp: in_br_conv)
+    
+lemma br_set_rel_alt: "(s',s)\<in>\<langle>br \<alpha> I\<rangle>set_rel \<longleftrightarrow> (s=\<alpha>`s' \<and> (\<forall>x\<in>s'. I x))"  
+  by (auto simp: set_rel_def br_def)
+    
+(* TODO: Find proof that does not depend on br, and move to Misc *)    
+lemma finite_Image_sv: "single_valued R \<Longrightarrow> finite s \<Longrightarrow> finite (R``s)" 
+  by (erule single_valued_as_brE) simp  
+    
+lemma finite_set_rel_transfer: "\<lbrakk>(s,s')\<in>\<langle>R\<rangle>set_rel; single_valued R; finite s\<rbrakk> \<Longrightarrow> finite s'"
+  unfolding set_rel_alt
+  by (blast intro: finite_subset[OF _ finite_Image_sv])  
+    
+lemma finite_set_rel_transfer_back: "\<lbrakk>(s,s')\<in>\<langle>R\<rangle>set_rel; single_valued (R\<inverse>); finite s'\<rbrakk> \<Longrightarrow> finite s"
+  unfolding set_rel_alt
+  by (blast intro: finite_subset[OF _ finite_Image_sv])
     
 end

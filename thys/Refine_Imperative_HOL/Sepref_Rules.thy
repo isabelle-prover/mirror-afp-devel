@@ -1565,7 +1565,7 @@ begin
       
           val ctxt = Context_Position.set_visible false ctxt  
           val ctxt = ctxt addsimps (
-              Refine.refine_pw_simps.get ctxt 
+              refine_pw_simps.get ctxt 
             @ Named_Theorems.get ctxt @{named_theorems fcomp_prenorm_simps}
             @ @{thms split_tupled_all cnv_conj_to_meta}  
             )

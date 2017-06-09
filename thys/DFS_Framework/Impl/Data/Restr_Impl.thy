@@ -352,7 +352,7 @@ begin
         apply (simp add: a.c.gen_step_def del: graph_restrict_simps cong: option.case_cong if_cong)
         apply (rule bind_refine'[OF conc_fun_mono[THEN monoD]], simp)
         apply (clarsimp simp: refine_pw_simps)
-        apply (refine_rcg, simp_all add: pred_rel_simps) []
+        apply (refine_rcg, refine_dref_type, simp_all add: pred_rel_simps) []
 
         (* Spurious node *)
         apply (rule le_supI2)

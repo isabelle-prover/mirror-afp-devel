@@ -31,8 +31,9 @@ signature REFINE_AUTOMATION = sig
 
   val define_concrete_fun: extraction list option -> binding -> 
     Token.src list -> indexname list -> thm ->
-    cterm list -> local_theory -> local_theory
+    cterm list -> local_theory -> (thm * thm) * local_theory
   
+  val mk_qualified: string -> bstring -> binding
 
   val prepare_cd_pattern: Proof.context -> cterm -> cterm
   val add_cd_pattern: cterm -> Context.generic -> Context.generic
@@ -236,7 +237,7 @@ in
   lthy
 end;
 
-(* Recognize pattern of conclusion and extract term to make definition of *)
+
 fun extract_concrete_fun _ [] concl = 
   raise TERM ("Conclusion does not match any extraction pattern",[concl])
   | extract_concrete_fun thy (pat::pats) concl = (
@@ -253,7 +254,6 @@ fun extract_concrete_fun _ [] concl =
     )
 
 
-
 (* Define concrete function from refinement lemma *)
 fun define_concrete_fun gen_code fun_name attribs_raw param_names thm pats
   (orig_lthy:local_theory) = 
@@ -268,7 +268,7 @@ let
   val concl = Term_Subst.instantiate (typ_subst,term_subst) concl;
   *)
 
-  val term_subst = #2 inst |> map (apsnd Thm.term_of);
+  val term_subst = #2 inst |> map (apsnd Thm.term_of) 
 
   val param_terms = map (fn name =>
     case AList.lookup (fn (n,v) => n = #1 v) term_subst name of
@@ -288,7 +288,7 @@ let
   val attribs = map (Attrib.check_src lthy) attribs_raw;
 
   val ((_,(_,def_thm)),lthy) = Specification.definition 
-    (SOME (fun_name,NONE,NoSyn)) [] [] ((Binding.empty,attribs),def_term) lthy;
+    (SOME (fun_name,NONE,Mixfix.NoSyn)) [] [] ((Binding.empty,attribs),def_term) lthy;
 
   val folded_thm = Local_Defs.fold lthy [def_thm] thm';
 
@@ -303,8 +303,10 @@ let
       extract_recursion_eqs modes (Binding.name_of fun_name) def_thm lthy
 
 in
-  lthy
+  ((def_thm,folded_thm),lthy)
 end;
+
+
 
   val cd_pat_eq = apply2 (Thm.term_of #> Refine_Util.anorm_term) #> op aconv
 
@@ -437,6 +439,7 @@ ML {* Outer_Syntax.local_theory
   in 
     Refine_Automation.define_concrete_fun 
       NONE name attribs params thm pats lthy 
+    |> snd
   end))
 *}
 

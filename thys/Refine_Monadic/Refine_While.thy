@@ -525,7 +525,7 @@ context begin
     apply (rule REC_rule, refine_mono)
     apply (rule TrueI)
     apply auto
-      apply (subst (asm) (3) REC_unfold, refine_mono)
+      apply (subst (asm) (4) REC_unfold, refine_mono)
       apply (rule order_trans[OF bind_mono(1)[OF order_refl]])
       apply rprems
       apply (subst (3) REC_unfold, refine_mono)
@@ -723,7 +723,7 @@ text {* Reachable states in a while loop, ignoring failing states *}
 
     show ?thesis 
       apply simp
-      apply (refine_rcg refine_vcg)
+      apply refine_vcg
       apply (rule WHILE_rule[where I="\<lambda>s. I s \<and> rwof m0 cond step s"])
     proof -
       fix s assume "s\<in>M0" thus "I s \<and> rwof m0 cond step s"
@@ -851,7 +851,7 @@ subsubsection {* Bounded while-loop *}
       apply (simp cong: if_cong)
       apply (subst aux1)
       apply (subst Suc.IH)
-      apply simp
+      apply (simp add: pw_eq_iff refine_pw_simps)
       done
   qed
 

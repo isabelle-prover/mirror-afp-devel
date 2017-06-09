@@ -210,11 +210,12 @@ lemma REC_rule:
   fixes x::"'x"
   assumes M: "trimono body"
   assumes I0: "pre x"
-  assumes IS: "\<And>f x. \<lbrakk> \<And>x. pre x \<Longrightarrow> f x \<le> M x; pre x \<rbrakk> 
+  assumes IS: "\<And>f x. \<lbrakk> \<And>x. pre x \<Longrightarrow> f x \<le> M x; pre x; f \<le> REC body \<rbrakk> 
     \<Longrightarrow> body f x \<le> M x"
   shows "REC body x \<le> M x"
   by (rule REC_rule_arb[where pre="\<lambda>_. pre" and M="\<lambda>_. M", OF assms])
-
+    
+    
 lemma RECT_rule:
   assumes M: "trimono body"
   assumes WF: "wf (V::('x\<times>'x) set)"
@@ -342,19 +343,24 @@ qed
 lemma RECT_eq_REC: 
   -- "Partial and total correct recursion are equal if total 
     recursion does not fail."
-  assumes M: "trimono body"
   assumes NT: "RECT body x \<noteq> top"
   shows "RECT body x = REC body x"
-  using NT M
-  unfolding RECT_def REC_def
-proof clarsimp
-  from lfp_unfold[OF trimonoD_mono[OF M], symmetric]
-  have "flatf_ge (body (lfp body)) (lfp body)" by simp
-  note flatf_ord.fixp_lowerbound[
-    OF trimonoD_flatf_ge[OF M], of "lfp body", OF this]
-  moreover assume "flatf_gfp body x \<noteq> top"
-  ultimately show "flatf_gfp body x = lfp body x"
-    by (auto simp add: fun_ord_def flat_ord_def)
+proof (cases "trimono body")
+  case M: True 
+  show ?thesis
+    using NT M
+    unfolding RECT_def REC_def
+  proof clarsimp
+    from lfp_unfold[OF trimonoD_mono[OF M], symmetric]
+    have "flatf_ge (body (lfp body)) (lfp body)" by simp
+    note flatf_ord.fixp_lowerbound[
+      OF trimonoD_flatf_ge[OF M], of "lfp body", OF this]
+    moreover assume "flatf_gfp body x \<noteq> top"
+    ultimately show "flatf_gfp body x = lfp body x"
+      by (auto simp add: fun_ord_def flat_ord_def)
+  qed
+next
+  case False thus ?thesis unfolding RECT_def REC_def by auto
 qed
 
 lemma RECT_eq_REC_tproof:
@@ -375,7 +381,7 @@ proof
     by (rule RECT_rule_arb[OF M WF, where pre=pre, OF I0 IS])
   
   with NT have "RECT body x \<noteq> top" by (metis top.extremum_unique)
-  thus "RECT body x = REC body x" by (rule RECT_eq_REC[OF M])
+  thus "RECT body x = REC body x" by (rule RECT_eq_REC)
 qed
 
 
@@ -429,6 +435,31 @@ lemma (in dist_transfer) transfer_REC[refine_transfer]:
   apply blast
   done
 
+(* TODO: Could we base the whole refine_transfer-stuff on arbitrary relations *)
+(* TODO: For enres-breakdown, we had to do antisymmetry, in order to get TR_top.
+  What is the general shape of tr-relations for that, such that we could show equality directly?
+*)
+lemma RECT_transfer_rel:
+  assumes [simp]: "trimono F" "trimono F'"
+  assumes TR_top[simp]: "\<And>x. tr x top"
+  assumes P_start[simp]: "P x x'"
+  assumes IS: "\<And>D D' x x'. \<lbrakk> \<And>x x'. P x x' \<Longrightarrow> tr (D x) (D' x'); P x x'; RECT F = D \<rbrakk> \<Longrightarrow> tr (F D x) (F' D' x')"
+  shows "tr (RECT F x) (RECT F' x')"
+  unfolding RECT_def 
+  apply auto
+  apply (rule flatf_gfp_transfer[where tr=tr and P=P])
+  apply (auto simp: trimonoD_flatf_ge)  
+  apply (rule IS)
+  apply (auto simp: RECT_def)
+  done
+  
+lemma RECT_transfer_rel':
+  assumes [simp]: "trimono F" "trimono F'"
+  assumes TR_top[simp]: "\<And>x. tr x top"
+  assumes P_start[simp]: "P x x'"
+  assumes IS: "\<And>D D' x x'. \<lbrakk> \<And>x x'. P x x' \<Longrightarrow> tr (D x) (D' x'); P x x' \<rbrakk> \<Longrightarrow> tr (F D x) (F' D' x')"
+  shows "tr (RECT F x) (RECT F' x')"
+  using RECT_transfer_rel[where tr=tr and P=P,OF assms(1,2,3,4)] IS by blast
 
 end
 

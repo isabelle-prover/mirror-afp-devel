@@ -215,7 +215,7 @@ begin
       apply refine_vcg
       apply (auto simp: heapmap_\<alpha>_def hmr_invar_def hm_index_def index_nth_id)
       done
-    lemmas [refine_vcg] = hm_index_op_correct[THEN order_trans]  
+    lemmas [refine_vcg] = hm_index_op_correct  
       
 
     subsubsection \<open>Update\<close>  

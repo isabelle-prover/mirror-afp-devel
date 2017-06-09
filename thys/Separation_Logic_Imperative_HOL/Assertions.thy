@@ -163,7 +163,7 @@ abbreviation models :: "pheap \<Rightarrow> assn \<Rightarrow> bool" (infix "\<T
 lemma models_in_range: "h\<Turnstile>P \<Longrightarrow> in_range h"
   apply (cases h)
   by (metis mem_Collect_eq Rep_assn properD1)
-
+    
 subsubsection {* Empty Partial Heap*}
 text {* The empty partial heap satisfies some special properties.
   We set up a simplification that tries to rewrite it to the standard
@@ -180,7 +180,7 @@ lemma mod_h_bot_normalize[simp]:
 text {* Properness, lifted to the assertion type. *}
 lemma mod_relH: "relH as h h' \<Longrightarrow> (h,as)\<Turnstile>P \<longleftrightarrow> (h',as)\<Turnstile>P"
   by (metis mem_Collect_eq Rep_assn proper_iff relH_in_rangeI(2))
-
+    
 subsection {* Connectives *}
 text {*
   We define several operations on assertions, and instantiate some type classes.
@@ -230,6 +230,9 @@ lemma mod_star_conv: "h\<Turnstile>A*B
   apply (cases h)
   by (auto simp: Abs_assn_inverse)
 
+lemma mod_starD: "h\<Turnstile>A*B \<Longrightarrow> \<exists>h1 h2. h1\<Turnstile>A \<and> h2\<Turnstile>B"
+  by (auto simp: mod_star_conv)
+
 lemma star_assnI:
   assumes "(h,as)\<Turnstile>P" and "(h,as')\<Turnstile>Q" and "as\<inter>as'={}"
   shows "(h,as\<union>as')\<Turnstile>P*Q"
@@ -270,7 +273,7 @@ instantiation assn :: comm_monoid_mult begin
     done
 
 end
-
+  
 subsubsection {* Magic Wand *}
 fun wand_raw :: "assn_raw \<Rightarrow> assn_raw \<Rightarrow> assn_raw" where
   "wand_raw P Q (h,as) \<longleftrightarrow> in_range (h,as) 
@@ -383,7 +386,32 @@ lemma star_false_right[simp]: "P * false = false"
   using star_false_left by (simp add: assn_times_comm)
 
 lemmas star_false = star_false_left star_false_right 
-
+  
+lemma assn_basic_inequalities[simp, intro!]:
+  "true \<noteq> emp" "emp \<noteq> true"
+  "false \<noteq> emp" "emp \<noteq> false"
+  "true \<noteq> false" "false \<noteq> true"
+  subgoal 
+    unfolding one_assn_def top_assn_def
+    proof (subst Abs_assn_inject; simp?) 
+      have "in_range (\<lparr>arrays = (\<lambda>_ _. []), refs = (\<lambda>_ _. 0), lim = 1\<rparr>,{0})" (is "in_range ?h")
+        by (auto simp: in_range.simps)
+      moreover have "\<not>one_assn_raw ?h" by auto
+      ultimately show "in_range \<noteq> one_assn_raw" by auto
+    qed      
+  subgoal
+    by (simp add: \<open>true \<noteq> emp\<close>)
+  subgoal
+  using star_false_left \<open>true \<noteq> emp\<close> by force
+  subgoal
+    by (simp add: \<open>false \<noteq> emp\<close>)
+  subgoal
+    by (metis inf_bot_right inf_top.right_neutral \<open>true \<noteq> emp\<close>)
+  subgoal
+    using \<open>true \<noteq> false\<close> by auto
+  done
+  
+  
 subsubsection {* Existential Quantification *}
 definition ex_assn :: "('a \<Rightarrow> assn) \<Rightarrow> assn" (binder "\<exists>\<^sub>A" 11)
   where "(\<exists>\<^sub>Ax. P x) \<equiv> Abs_assn (\<lambda>h. \<exists>x. h\<Turnstile>P x)"
@@ -436,6 +464,8 @@ definition pure_assn :: "bool \<Rightarrow> assn" ("\<up>") where
 lemma pure_assn_proper[simp, intro!]: "proper (pure_assn_raw b)"
   by (auto intro!: properI intro: relH_in_rangeI)
 
+
+    
 lemma pure_true[simp]: "\<up>True = emp"
   unfolding pure_assn_def one_assn_def 
   apply rule
@@ -449,6 +479,10 @@ lemma pure_false[simp]: "\<up>False = false"
   apply (auto simp: Abs_assn_inverse)
   done
 
+lemma pure_assn_eq_false_iff[simp]: "\<up>P = false \<longleftrightarrow> \<not>P" by auto
+  
+lemma pure_assn_eq_emp_iff[simp]: "\<up>P = emp \<longleftrightarrow> P" by (cases P) auto
+    
 lemma merge_pure_star[simp]: 
   "\<up>a * \<up>b = \<up>(a\<and>b)"
   unfolding times_assn_def
@@ -483,6 +517,32 @@ lemma merge_pure_or[simp]:
   apply fastforce
   done
 
+    
+lemma pure_assn_eq_conv[simp]: "\<up>P = \<up>Q \<longleftrightarrow> P=Q" by auto
+    
+definition "is_pure_assn a \<equiv> \<exists>P. a=\<up>P"
+lemma is_pure_assnE: assumes "is_pure_assn a" obtains P where "a=\<up>P"
+  using assms
+  by (auto simp: is_pure_assn_def)
+
+lemma is_pure_assn_pure[simp, intro!]: "is_pure_assn (\<up>P)" 
+  by (auto simp add: is_pure_assn_def)
+
+lemma is_pure_assn_basic_simps[simp]:
+  "is_pure_assn false"
+  "is_pure_assn emp"
+proof -
+  have "is_pure_assn (\<up>False)" by rule thus "is_pure_assn false" by simp
+  have "is_pure_assn (\<up>True)" by rule thus "is_pure_assn emp" by simp
+qed  
+
+lemma is_pure_assn_starI[simp,intro!]: 
+  "\<lbrakk>is_pure_assn a; is_pure_assn b\<rbrakk> \<Longrightarrow> is_pure_assn (a*b)"
+  by (auto elim!: is_pure_assnE)
+    
+    
+    
+    
 subsubsection {* Pointers *}
 text {* In Imperative HOL, we have to distinguish between pointers to single
   values and pointers to arrays. For both, we define assertions that 
@@ -613,36 +673,6 @@ lemma mod_h_bot_iff[simp]:
   apply (simp add: ex_assn_def Abs_assn_inverse)
   done
 
-(* FIXME: The next two lemmas should be proven earlier, but the current proof
-  depends on the models-predicate *)
-lemma assn_basic_inequalities[simp, intro!]:
-  "true \<noteq> emp" "emp \<noteq> true"
-  "false \<noteq> emp" "emp \<noteq> false"
-  "true \<noteq> false" "false \<noteq> true"
-proof -
-  def neh \<equiv> "(\<lparr> arrays = undefined, refs=undefined, lim = 1 \<rparr>, {0::nat})"
-  have [simp]: "in_range neh" unfolding neh_def 
-    by (simp add: in_range.simps)
-
-  have "neh \<Turnstile> true" by simp
-  moreover have "\<not>(neh \<Turnstile> false)" by simp
-  moreover have "\<not>(neh \<Turnstile> emp)" by (simp add: mod_emp neh_def)
-  moreover have "h\<^sub>\<bottom> \<Turnstile> emp" by simp
-  moreover have "\<not>(h\<^sub>\<bottom> \<Turnstile> false)" by simp
-  ultimately show 
-    "true \<noteq> emp" "emp \<noteq> true"
-    "false \<noteq> emp" "emp \<noteq> false"
-    "true \<noteq> false" "false \<noteq> true"
-    by metis+
-qed
-
-lemma pure_assn_eq_conv[simp]: "\<up>P = \<up>Q \<longleftrightarrow> P=Q"
-  apply (cases P, simp_all)
-  apply (cases Q, simp_all)
-  apply (cases Q, simp_all)
-  done
-
-
 subsection {* Entailment *}
 definition entails :: "assn \<Rightarrow> assn \<Rightarrow> bool" (infix "\<Longrightarrow>\<^sub>A" 10)
   where "P \<Longrightarrow>\<^sub>A Q \<equiv> \<forall>h. h\<Turnstile>P \<longrightarrow> h\<Turnstile>Q"
@@ -760,6 +790,12 @@ lemma ent_disjI2:
   assumes "P \<or>\<^sub>A Q \<Longrightarrow>\<^sub>A R" 
   shows "Q \<Longrightarrow>\<^sub>A R" using assms unfolding entails_def by simp
 
+lemma ent_disjI1_direct[simp]: "A \<Longrightarrow>\<^sub>A A \<or>\<^sub>A B"
+  by (simp add: entails_def)
+
+lemma ent_disjI2_direct[simp]: "B \<Longrightarrow>\<^sub>A A \<or>\<^sub>A B"
+  by (simp add: entails_def)
+    
 lemma ent_disjE: "\<lbrakk> A\<Longrightarrow>\<^sub>AC; B\<Longrightarrow>\<^sub>AC \<rbrakk> \<Longrightarrow> A\<or>\<^sub>AB \<Longrightarrow>\<^sub>AC"
   unfolding entails_def by auto
 
@@ -771,6 +807,121 @@ lemma ent_conjE1: "\<lbrakk>A\<Longrightarrow>\<^sub>AC\<rbrakk> \<Longrightarro
 lemma ent_conjE2: "\<lbrakk>B\<Longrightarrow>\<^sub>AC\<rbrakk> \<Longrightarrow> A\<and>\<^sub>AB\<Longrightarrow>\<^sub>AC"
   unfolding entails_def by (auto simp: mod_and_dist)
 
+
+
+lemma star_or_dist1: 
+  "(A \<or>\<^sub>A B)*C = (A*C \<or>\<^sub>A B*C)"  
+  apply (rule ent_iffI) 
+  unfolding entails_def
+  by (auto simp add: mod_star_conv) 
+  
+lemma star_or_dist2: 
+  "C*(A \<or>\<^sub>A B) = (C*A \<or>\<^sub>A C*B)"  
+  apply (rule ent_iffI) 
+  unfolding entails_def
+  by (auto simp add: mod_star_conv) 
+
+lemmas star_or_dist = star_or_dist1 star_or_dist2  
+    
+lemma ent_disjI1': "A\<Longrightarrow>\<^sub>AB \<Longrightarrow> A\<Longrightarrow>\<^sub>AB\<or>\<^sub>AC"
+  by (auto simp: entails_def star_or_dist)
+
+lemma ent_disjI2': "A\<Longrightarrow>\<^sub>AC \<Longrightarrow> A\<Longrightarrow>\<^sub>AB\<or>\<^sub>AC"
+  by (auto simp: entails_def star_or_dist)
+
+    
+subsubsection \<open>Weak Entails\<close>    
+text \<open>Weakening of entails to allow arbitrary unspecified memory in conclusion\<close>
+definition entailst :: "assn \<Rightarrow> assn \<Rightarrow> bool" (infix "\<Longrightarrow>\<^sub>t" 10)
+  where "entailst A B \<equiv> A \<Longrightarrow>\<^sub>A B * true"
+
+lemma enttI: "A\<Longrightarrow>\<^sub>AB*true \<Longrightarrow> A\<Longrightarrow>\<^sub>tB" unfolding entailst_def .
+lemma enttD: "A\<Longrightarrow>\<^sub>tB \<Longrightarrow> A\<Longrightarrow>\<^sub>AB*true" unfolding entailst_def .
+    
+lemma entt_trans:
+  "entailst A B \<Longrightarrow> entailst B C \<Longrightarrow> entailst A C"
+  unfolding entailst_def
+  apply (erule ent_trans)
+  by (metis assn_times_assoc ent_star_mono ent_true merge_true_star)  
+
+lemma entt_refl[simp, intro!]: "entailst A A"
+  unfolding entailst_def
+  by (simp add: entailsI mod_star_trueI)
+
+lemma entt_true[simp, intro!]:
+  "entailst A true"
+  unfolding entailst_def by simp
+
+lemma entt_emp[simp, intro!]:
+  "entailst A emp"
+  unfolding entailst_def by simp
+
+lemma entt_star_true_simp[simp]:
+  "entailst A (B*true) \<longleftrightarrow> entailst A B"
+  "entailst (A*true) B \<longleftrightarrow> entailst A B"
+  unfolding entailst_def 
+  subgoal by (auto simp: assn_times_assoc)
+  subgoal
+    apply (intro iffI)
+    subgoal using entails_def mod_star_trueI by blast  
+    subgoal by (metis assn_times_assoc ent_refl ent_star_mono merge_true_star)  
+    done
+  done
+
+lemma entt_star_mono: "\<lbrakk>entailst A B; entailst C D\<rbrakk> \<Longrightarrow> entailst (A*C) (B*D)"
+  unfolding entailst_def
+proof -
+  assume a1: "A \<Longrightarrow>\<^sub>A B * true"
+  assume "C \<Longrightarrow>\<^sub>A D * true"
+  then have "A * C \<Longrightarrow>\<^sub>A true * B * (true * D)"
+    using a1 assn_times_comm ent_star_mono by force
+  then show "A * C \<Longrightarrow>\<^sub>A B * D * true"
+    by (simp add: ab_semigroup_mult_class.mult.left_commute assn_times_comm)
+qed  
+    
+lemma entt_frame_fwd:
+  assumes "entailst P Q"
+  assumes "entailst A (P*F)"
+  assumes "entailst (Q*F) B"
+  shows "entailst A B"
+  using assms
+  by (metis entt_refl entt_star_mono entt_trans)
+
+lemma enttI_true: "P*true \<Longrightarrow>\<^sub>A Q*true \<Longrightarrow> P\<Longrightarrow>\<^sub>tQ"
+  by (drule enttI) simp
+
+lemma entt_def_true: "(P\<Longrightarrow>\<^sub>tQ) \<equiv> (P*true \<Longrightarrow>\<^sub>A Q*true)"
+  unfolding entailst_def
+  apply (rule eq_reflection)
+  using entailst_def entt_star_true_simp(2) by auto  
+
+lemma ent_imp_entt: "P\<Longrightarrow>\<^sub>AQ \<Longrightarrow> P\<Longrightarrow>\<^sub>tQ" 
+  apply (rule enttI)
+  apply (erule ent_trans)
+  by (simp add: entailsI mod_star_trueI)  
+
+lemma entt_disjI1_direct[simp]: "A \<Longrightarrow>\<^sub>t A \<or>\<^sub>A B"
+  by (rule ent_imp_entt[OF ent_disjI1_direct])
+
+lemma entt_disjI2_direct[simp]: "B \<Longrightarrow>\<^sub>t A \<or>\<^sub>A B"
+  by (rule ent_imp_entt[OF ent_disjI2_direct])
+
+lemma entt_disjI1': "A\<Longrightarrow>\<^sub>tB \<Longrightarrow> A\<Longrightarrow>\<^sub>tB\<or>\<^sub>AC"
+  by (auto simp: entailst_def entails_def star_or_dist)
+
+lemma entt_disjI2': "A\<Longrightarrow>\<^sub>tC \<Longrightarrow> A\<Longrightarrow>\<^sub>tB\<or>\<^sub>AC"
+  by (auto simp: entailst_def entails_def star_or_dist)
+
+lemma entt_disjE: "\<lbrakk> A\<Longrightarrow>\<^sub>tM; B\<Longrightarrow>\<^sub>tM \<rbrakk> \<Longrightarrow> A\<or>\<^sub>AB \<Longrightarrow>\<^sub>t M"
+  using ent_disjE enttD enttI by blast  
+    
+lemma entt_disjD1: "A\<or>\<^sub>AB\<Longrightarrow>\<^sub>tC \<Longrightarrow> A\<Longrightarrow>\<^sub>tC"
+  using entt_disjI1_direct entt_trans by blast
+
+lemma entt_disjD2: "A\<or>\<^sub>AB\<Longrightarrow>\<^sub>tC \<Longrightarrow> B\<Longrightarrow>\<^sub>tC"
+  using entt_disjI2_direct entt_trans by blast
+    
+    
 subsection {* Precision *}
 text {*
   Precision rules describe that parts of an assertion may depend only on the

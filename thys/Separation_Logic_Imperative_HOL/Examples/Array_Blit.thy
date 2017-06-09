@@ -165,4 +165,29 @@ subsection {* Derived Functions *}
       
   export_code array_grow checking SML Scala    
 
+    
+  (* TODO: Are there system-calls for array-copy? *)
+  definition "array_copy a \<equiv> do {
+    l\<leftarrow>Array.len a;
+    if l=0 then 
+      Array.of_list []
+    else do {
+      s \<leftarrow> Array.nth a 0;
+      a'\<leftarrow>Array.new l s;
+      blit a 0 a' 0 l;
+      return a'
+    }
+  }"
+  
+  lemma array_copy_rule[sep_heap_rules]:
+    "
+      < a\<mapsto>\<^sub>al> 
+        array_copy a 
+      <\<lambda>a'. a\<mapsto>\<^sub>al * a'\<mapsto>\<^sub>a l>"
+    unfolding array_copy_def
+    by sep_auto
+    
+  export_code array_copy checking SML Scala    
+    
+    
 end

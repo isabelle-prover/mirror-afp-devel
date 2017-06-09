@@ -4,6 +4,7 @@ imports
   Refine_While 
   Refine_Pfun 
   Refine_Transfer 
+  Refine_Heuristics
   (*"../Collections/Lib/SetIterator"
   "../Collections/Lib/Proper_Iterator"*)
 begin
@@ -952,7 +953,7 @@ lemma FOREACHi_emp [simp] :
   "FOREACHi \<Phi> {} f \<sigma> = do {ASSERT (\<Phi> {} \<sigma>); RETURN \<sigma>}"
 by (simp add: FOREACHi_def)
 
-subsubsection "Monotonicity"
+subsection "Monotonicity"
 
 (* TODO: Move to RefineG_Domain *)
 definition "lift_refl P c f g == \<forall>x. P c (f x) (g x)"
@@ -993,7 +994,7 @@ lemma FOREACHoci_mono[unfolded trimono_spec_defs,refine_mono]:
 
 end
 
-subsubsection {* Transfer to fold *}
+subsection {* Nres-Fold with Interruption (nfoldli) *}
 text {*
   A foreach-loop can be conveniently expressed as an operation that converts
   the set to a list, followed by folding over the list.
@@ -1158,6 +1159,107 @@ lemma nfoldli_rule:
   using FNC apply auto []
   done
 
+lemma nfoldli_leof_rule:
+  assumes I0: "I [] l0 \<sigma>0"
+  assumes IS: "\<And>x l1 l2 \<sigma>. \<lbrakk> l0=l1@x#l2; I l1 (x#l2) \<sigma>; c \<sigma> \<rbrakk> \<Longrightarrow> f x \<sigma> \<le>\<^sub>n SPEC (I (l1@[x]) l2)"
+  assumes FNC: "\<And>l1 l2 \<sigma>. \<lbrakk> l0=l1@l2; I l1 l2 \<sigma>; \<not>c \<sigma> \<rbrakk> \<Longrightarrow> P \<sigma>"
+  assumes FC: "\<And>\<sigma>. \<lbrakk> I l0 [] \<sigma>; c \<sigma> \<rbrakk> \<Longrightarrow> P \<sigma>"
+  shows "nfoldli l0 c f \<sigma>0 \<le>\<^sub>n SPEC P"
+proof -
+  {
+    fix l1 l2 \<sigma>
+    assume "l0=l1@l2" "I l1 l2 \<sigma>"
+    hence "nfoldli l2 c f \<sigma> \<le>\<^sub>n SPEC P"
+    proof (induction l2 arbitrary: l1 \<sigma>)
+      case Nil thus ?case
+        apply simp
+        apply (cases "c \<sigma>")
+        apply (rule FC; auto; fail)
+        apply (rule FNC[of l1 "[]"]; auto; fail) 
+        done
+    next
+      case (Cons x l2) 
+      note [refine_vcg] = Cons.IH[of "l1@[x]",THEN leof_trans] IS[of l1 x l2 \<sigma>,THEN leof_trans]
+
+      show ?case
+        apply (simp split del: if_split)
+        apply refine_vcg
+        using Cons.prems FNC by auto
+    qed
+  } from this[of "[]" l0 \<sigma>0] I0 show ?thesis by auto
+qed  
+    
+    
+lemma nfoldli_refine[refine]:
+  assumes "(li, l) \<in> \<langle>S\<rangle>list_rel"
+    and "(si, s) \<in> R"
+    and CR: "(ci, c) \<in> R \<rightarrow> bool_rel"
+    and [refine]: "\<And>xi x si s. \<lbrakk> (xi,x)\<in>S; (si,s)\<in>R; c s \<rbrakk> \<Longrightarrow> fi xi si \<le> \<Down>R (f x s)"
+  shows "nfoldli li ci fi si \<le> \<Down> R (nfoldli l c f s)"
+  using assms(1,2)
+proof (induction arbitrary: si s rule: list_rel_induct)
+  case Nil thus ?case by simp
+next
+  case (Cons xi x li l) 
+  note [refine] = Cons
+
+  show ?case
+    apply (simp split del: if_split)
+    apply refine_rcg
+    using CR Cons.prems by (auto dest: fun_relD)
+qed    
+
+(* Refine, establishing additional invariant *)
+lemma nfoldli_invar_refine:
+  assumes "(li,l)\<in>\<langle>S\<rangle>list_rel"
+  assumes "(si,s)\<in>R"
+  assumes "I [] li si"
+  assumes COND: "\<And>l1i l2i l1 l2 si s. \<lbrakk>
+    li=l1i@l2i; l=l1@l2; (l1i,l1)\<in>\<langle>S\<rangle>list_rel; (l2i,l2)\<in>\<langle>S\<rangle>list_rel; 
+    I l1i l2i si; (si,s)\<in>R\<rbrakk> \<Longrightarrow> (ci si, c s)\<in>bool_rel"
+  assumes INV: "\<And>l1i xi l2i si. \<lbrakk>li=l1i@xi#l2i; I l1i (xi#l2i) si\<rbrakk> \<Longrightarrow> fi xi si \<le>\<^sub>n SPEC (I (l1i@[xi]) l2i)"
+  assumes STEP: "\<And>l1i xi l2i l1 x l2 si s. \<lbrakk>
+    li=l1i@xi#l2i; l=l1@x#l2; (l1i,l1)\<in>\<langle>S\<rangle>list_rel; (xi,x)\<in>S; (l2i,l2)\<in>\<langle>S\<rangle>list_rel; 
+    I l1i (xi#l2i) si; (si,s)\<in>R\<rbrakk> \<Longrightarrow> fi xi si \<le> \<Down>R (f x s)"
+  shows "nfoldli li ci fi si \<le> \<Down>R (nfoldli l c f s)"
+proof -
+  {
+    have [refine_dref_RELATES]: "RELATES R" "RELATES S" by (auto simp: RELATES_def)
+
+    note [refine del] = nfoldli_refine
+
+    fix l1i l2i l1 l2 si s
+    assume "(l2i,l2) \<in> \<langle>S\<rangle>list_rel" "(l1i,l1) \<in> \<langle>S\<rangle>list_rel"
+    and "li=l1i@l2i" "l=l1@l2"
+    and "(si,s)\<in>R" "I l1i l2i si"
+    hence "nfoldli l2i ci fi si \<le> \<Down>R (nfoldli l2 c f s)"
+    proof (induction arbitrary: si s l1i l1 rule: list_rel_induct)
+      case Nil thus ?case by auto
+    next  
+      case (Cons xi x l2i l2)
+
+      show ?case
+        apply (simp split del: if_split)
+        apply (refine_rcg bind_refine')
+        apply (refine_dref_type)
+        subgoal using COND[of l1i "xi#l2i" l1 "x#l2" si s] Cons.prems Cons.hyps by auto
+        subgoal apply (rule STEP) using Cons.prems Cons.hyps by auto
+        subgoal for si' s'
+          thm Cons.IH
+          apply (rule Cons.IH[of "l1i@[xi]" "l1@[x]"])
+          using Cons.prems Cons.hyps
+          apply (auto simp: list_rel_append1) apply force
+          using INV[of l1i xi l2i si]
+          by (auto simp: pw_leof_iff)
+        subgoal using Cons.prems by simp
+        done
+    qed
+  }
+  from this[of li l "[]" "[]" si s] assms(1,2,3) show ?thesis by auto
+qed
+    
+    
+    
 lemma foldli_mono_dres_aux1:
   fixes \<sigma> :: "'a :: {order_bot, order_top}"
   assumes COND: "\<And>\<sigma> \<sigma>'. \<sigma>\<le>\<sigma>' \<Longrightarrow> c \<sigma> \<noteq> c \<sigma>' \<Longrightarrow> \<sigma>=bot \<or> \<sigma>'=top "
@@ -1264,7 +1366,7 @@ lemma dres_foldli_ne_bot[refine_transfer]:
   apply (simp add: dres_ne_bot_basic)
   done
 
-subsection {* Autoref Setup *}
+subsection {* LIST FOREACH combinator *}
 text {*
   Foreach-loops are mapped to the combinator @{text "LIST_FOREACH"}, that
   takes as first argument an explicit @{text "to_list"} operation. 
@@ -1274,6 +1376,11 @@ text {*
   @{text "set_to_list"}, @{text "map_to_list"}, @{text "nodes_to_list"}, etc.
 *}
 
+  
+text \<open>We define a relation between distinct lists and sets.\<close>  
+definition [to_relAPP]: "list_set_rel R \<equiv> \<langle>R\<rangle>list_rel O br set distinct"
+  
+  
 lemma autoref_nfoldli[autoref_rules]:
   shows "(nfoldli, nfoldli)
   \<in> \<langle>Ra\<rangle>list_rel \<rightarrow> (Rb \<rightarrow> bool_rel) \<rightarrow> (Ra \<rightarrow> Rb \<rightarrow> \<langle>Rb\<rangle>nres_rel) \<rightarrow> Rb \<rightarrow> \<langle>Rb\<rangle>nres_rel"
@@ -1425,6 +1532,189 @@ lemma [refine_transfer_post_simp]:
   "(let xs = tsl in foldli xs c f \<sigma>) = foldli tsl c f \<sigma>" 
   by simp
 
+    
+lemma LFO_pre_refine: (* TODO: Generalize! *)
+  assumes "(li,l)\<in>\<langle>A\<rangle>list_set_rel"
+  assumes "(ci,c)\<in>R \<rightarrow> bool_rel"
+  assumes "(fi,f)\<in>A\<rightarrow>R\<rightarrow>\<langle>R\<rangle>nres_rel"
+  assumes "(s0i,s0)\<in>R"
+  shows "LIST_FOREACH' (RETURN li) ci fi s0i \<le> \<Down>R (FOREACHci I l c f s0)"
+proof -
+  from assms(1) have [simp]: "finite l" by (auto simp: list_set_rel_def br_def)
+  show ?thesis
+    unfolding FOREACHc_def FOREACHci_def FOREACHoci_by_LIST_FOREACH
+    apply simp
+    apply (rule LIST_FOREACH_autoref[param_fo, THEN nres_relD])
+    using assms
+    apply auto
+    apply (auto simp: it_to_sorted_list_def nres_rel_def pw_le_iff refine_pw_simps
+      list_set_rel_def br_def)
+    done
+qed    
+    
+
+lemma LFOci_refine: (* TODO: Generalize! *)
+  assumes "(li,l)\<in>\<langle>A\<rangle>list_set_rel"
+  assumes "\<And>s si. (si,s)\<in>R \<Longrightarrow> ci si \<longleftrightarrow> c s"
+  assumes "\<And>x xi s si. \<lbrakk>(xi,x)\<in>A; (si,s)\<in>R\<rbrakk> \<Longrightarrow> fi xi si \<le> \<Down>R (f x s)"
+  assumes "(s0i,s0)\<in>R"
+  shows "nfoldli li ci fi s0i \<le> \<Down>R (FOREACHci I l c f s0)"
+proof -
+  from assms LFO_pre_refine[of li l A ci c R fi f s0i s0] show ?thesis
+    unfolding fun_rel_def nres_rel_def LIST_FOREACH'_def
+    apply (simp add: pw_le_iff refine_pw_simps)
+    apply blast+
+    done
+qed    
+
+lemma LFOc_refine: (* TODO: Generalize! *)
+  assumes "(li,l)\<in>\<langle>A\<rangle>list_set_rel"
+  assumes "\<And>s si. (si,s)\<in>R \<Longrightarrow> ci si \<longleftrightarrow> c s"
+  assumes "\<And>x xi s si. \<lbrakk>(xi,x)\<in>A; (si,s)\<in>R\<rbrakk> \<Longrightarrow> fi xi si \<le> \<Down>R (f x s)"
+  assumes "(s0i,s0)\<in>R"
+  shows "nfoldli li ci fi s0i \<le> \<Down>R (FOREACHc l c f s0)"
+  unfolding FOREACHc_def
+  by (rule LFOci_refine[OF assms])
+
+  
+lemma LFO_refine: (* TODO: Generalize! *)
+  assumes "(li,l)\<in>\<langle>A\<rangle>list_set_rel"
+  assumes "\<And>x xi s si. \<lbrakk>(xi,x)\<in>A; (si,s)\<in>R\<rbrakk> \<Longrightarrow> fi xi si \<le> \<Down>R (f x s)"
+  assumes "(s0i,s0)\<in>R"
+  shows "nfoldli li (\<lambda>_. True) fi s0i \<le> \<Down>R (FOREACH l f s0)"
+  unfolding FOREACH_def
+  apply (rule LFOc_refine)
+  apply (rule assms | simp)+
+  done
+
+lemma LFOi_refine: (* TODO: Generalize! *)
+  assumes "(li,l)\<in>\<langle>A\<rangle>list_set_rel"
+  assumes "\<And>x xi s si. \<lbrakk>(xi,x)\<in>A; (si,s)\<in>R\<rbrakk> \<Longrightarrow> fi xi si \<le> \<Down>R (f x s)"
+  assumes "(s0i,s0)\<in>R"
+  shows "nfoldli li (\<lambda>_. True) fi s0i \<le> \<Down>R (FOREACHi I l f s0)"
+  unfolding FOREACHi_def
+  apply (rule LFOci_refine)
+  apply (rule assms | simp)+
+  done
+    
+lemma LIST_FOREACH'_refine: "LIST_FOREACH' tsl' c' f' \<sigma>' \<le> LIST_FOREACH \<Phi> tsl' c' f' \<sigma>'"
+  apply (rule refine_IdD)
+  unfolding LIST_FOREACH_def LIST_FOREACH'_def
+  apply refine_rcg
+  apply simp
+  apply (rule nfoldli_while)
+  done
+
+lemma LIST_FOREACH'_eq: "LIST_FOREACH (\<lambda>_ _. True) tsl' c' f' \<sigma>' = (LIST_FOREACH' tsl' c' f' \<sigma>')"
+  apply (rule antisym)
+  subgoal
+    apply (rule refine_IdD)
+    unfolding LIST_FOREACH_def LIST_FOREACH'_def while_eq_nfoldli[symmetric] 
+    apply (refine_rcg WHILEIT_refine_new_invar)
+    unfolding WHILET_def
+    apply (rule WHILEIT_refine_new_invar)
+
+    apply refine_dref_type
+    apply clarsimp_all
+    unfolding FOREACH_body_def FOREACH_cond_def
+    apply refine_vcg
+    apply (auto simp: refine_pw_simps pw_le_iff neq_Nil_conv)
+    done
+  subgoal by (rule LIST_FOREACH'_refine)
+  done
+    
+    
+subsection \<open>FOREACH with duplicates\<close>
+
+definition "FOREACHcd S c f \<sigma> \<equiv> do {
+  ASSERT (finite S);
+  l \<leftarrow> SPEC (\<lambda>l. set l = S);
+  nfoldli l c f \<sigma>
+}"
+
+lemma FOREACHcd_rule:
+  assumes "finite S\<^sub>0"
+  assumes I0: "I {} S\<^sub>0 \<sigma>\<^sub>0"
+  assumes STEP: "\<And>S1 S2 x \<sigma>. \<lbrakk> S\<^sub>0 = insert x (S1\<union>S2); I S1 (insert x S2) \<sigma>; c \<sigma> \<rbrakk> \<Longrightarrow> f x \<sigma> \<le> SPEC (I (insert x S1) S2)"
+  assumes INTR: "\<And>S1 S2 \<sigma>. \<lbrakk> S\<^sub>0 = S1\<union>S2; I S1 S2 \<sigma>; \<not>c \<sigma> \<rbrakk> \<Longrightarrow> \<Phi> \<sigma>"
+  assumes COMPL: "\<And>\<sigma>. \<lbrakk> I S\<^sub>0 {} \<sigma>; c \<sigma> \<rbrakk> \<Longrightarrow> \<Phi> \<sigma>"
+  shows "FOREACHcd S\<^sub>0 c f \<sigma>\<^sub>0 \<le> SPEC \<Phi>"
+  unfolding FOREACHcd_def
+  apply refine_vcg
+  apply fact
+  apply (rule nfoldli_rule[where I = "\<lambda>l1 l2 \<sigma>. I (set l1) (set l2) \<sigma>"])
+  subgoal using I0 by auto
+  subgoal using STEP by auto
+  subgoal using INTR by auto
+  subgoal using COMPL by auto
+  done
+
+definition FOREACHcdi 
+  :: "('a set \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> bool) 
+    \<Rightarrow> 'a set \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> 'b nres) \<Rightarrow> 'b \<Rightarrow> 'b nres"
+  where
+  "FOREACHcdi I \<equiv> FOREACHcd"  
+
+lemma FOREACHcdi_rule[refine_vcg]:
+  assumes "finite S\<^sub>0"
+  assumes I0: "I {} S\<^sub>0 \<sigma>\<^sub>0"
+  assumes STEP: "\<And>S1 S2 x \<sigma>. \<lbrakk> S\<^sub>0 = insert x (S1\<union>S2); I S1 (insert x S2) \<sigma>; c \<sigma> \<rbrakk> \<Longrightarrow> f x \<sigma> \<le> SPEC (I (insert x S1) S2)"
+  assumes INTR: "\<And>S1 S2 \<sigma>. \<lbrakk> S\<^sub>0 = S1\<union>S2; I S1 S2 \<sigma>; \<not>c \<sigma> \<rbrakk> \<Longrightarrow> \<Phi> \<sigma>"
+  assumes COMPL: "\<And>\<sigma>. \<lbrakk> I S\<^sub>0 {} \<sigma>; c \<sigma> \<rbrakk> \<Longrightarrow> \<Phi> \<sigma>"
+  shows "FOREACHcdi I S\<^sub>0 c f \<sigma>\<^sub>0 \<le> SPEC \<Phi>"
+  unfolding FOREACHcdi_def
+  using assms
+  by (rule FOREACHcd_rule)
+
+lemma FOREACHcd_refine[refine]:
+  assumes [simp]: "finite s'"
+  assumes S: "(s',s)\<in>\<langle>S\<rangle>set_rel"
+  assumes SV: "single_valued S"
+  assumes R0: "(\<sigma>',\<sigma>)\<in>R"
+  assumes C: "\<And>\<sigma>' \<sigma>. (\<sigma>',\<sigma>)\<in>R \<Longrightarrow> (c' \<sigma>', c \<sigma>)\<in>bool_rel"
+  assumes F: "\<And>x' x \<sigma>' \<sigma>. \<lbrakk>(x', x) \<in> S; (\<sigma>', \<sigma>) \<in> R\<rbrakk>
+     \<Longrightarrow> f' x' \<sigma>' \<le> \<Down> R (f x \<sigma>)"
+  shows "FOREACHcd s' c' f' \<sigma>' \<le> \<Down>R (FOREACHcdi I s c f \<sigma>)"
+proof -
+  have [refine_dref_RELATES]: "RELATES S" by (simp add: RELATES_def)
+
+  from SV obtain \<alpha> I where [simp]: "S=br \<alpha> I" by (rule single_valued_as_brE)
+  with S have [simp]: "s=\<alpha>`s'" and [simp]: "\<forall>x\<in>s'. I x" 
+    by (auto simp: br_set_rel_alt)
+  
+  show ?thesis
+    unfolding FOREACHcd_def FOREACHcdi_def
+    apply refine_rcg
+    apply refine_dref_type
+    subgoal by simp
+    subgoal
+      apply (auto simp: pw_le_iff refine_pw_simps)
+      using S
+      apply (rule_tac x="map \<alpha> x" in exI)
+      apply (auto simp: map_in_list_rel_conv)
+      done
+    subgoal using R0 by auto
+    subgoal using C by auto  
+    subgoal using F by auto
+    done
+qed    
+    
+
+  
+lemma FOREACHc_refines_FOREACHcd_aux:
+  shows "FOREACHc s c f \<sigma> \<le> FOREACHcd s c f \<sigma>"
+  unfolding FOREACHc_def FOREACHci_def FOREACHoci_by_LIST_FOREACH LIST_FOREACH'_eq
+    LIST_FOREACH'_def FOREACHcd_def it_to_sorted_list_def
+  apply (rule refine_IdD)  
+  apply (refine_rcg)
+  apply refine_dref_type
+  apply auto
+  done
+    
+lemmas FOREACHc_refines_FOREACHcd[refine]
+  = order_trans[OF FOREACHc_refines_FOREACHcd_aux FOREACHcd_refine]
+    
+    
 subsection {* Miscellanneous Utility Lemmas *}
 
 (* TODO: Can we make this somewhat more general ? *)
@@ -1499,6 +1789,89 @@ lemma bij_set_rel_for_inj:
   apply (metis DomainE contra_subsetD tfl_some)
   done
 
+lemma nfoldli_by_idx_gen:
+  shows "nfoldli (drop k l) c f s = nfoldli [k..<length l] c (\<lambda>i s. do {
+      ASSERT (i<length l);
+      let x = l!i;
+      f x s
+    }) s"
+proof (cases "k\<le>length l")
+  case False thus ?thesis by auto
+next
+  case True thus ?thesis 
+  proof (induction arbitrary: s rule: inc_induct)
+    case base thus ?case
+      by auto
+  next    
+    case (step k) 
+    from step.hyps have 1: "drop k l = l!k # drop (Suc k) l" 
+      by (auto simp: Cons_nth_drop_Suc)
+    from step.hyps have 2: "[k..<length l] = k#[Suc k..<length l]" 
+      by (auto simp: upt_conv_Cons)
 
+    show ?case
+      unfolding 1 2
+      by (auto simp: step.IH[abs_def] step.hyps) 
+  qed
+qed
+  
+
+
+lemma nfoldli_by_idx: 
+  "nfoldli l c f s = nfoldli [0..<length l] c (\<lambda>i s. do {
+    ASSERT (i<length l);
+    let x = l!i;
+    f x s
+  }) s"
+  using nfoldli_by_idx_gen[of 0] by auto
+
+lemma nfoldli_map_inv:
+  assumes "inj g"
+  shows "nfoldli l c f = nfoldli (map g l) c (\<lambda>x s. f (the_inv g x) s)"
+  using assms
+  apply (induction l)
+  subgoal by auto
+  subgoal by (auto simp: the_inv_f_f)
+  done
+    
+lemma nfoldli_shift:
+  fixes ofs :: nat 
+  shows "nfoldli l c f = nfoldli (map (\<lambda>i. i+ofs) l) c (\<lambda>x s. do {ASSERT (x\<ge>ofs); f (x - ofs) s})" 
+  by (induction l) auto
+  
+lemma nfoldli_foreach_shift: 
+  shows "nfoldli [a..<b] c f = nfoldli [a+ofs..<b+ofs] c (\<lambda>x s. do{ASSERT(x\<ge>ofs); f (x - ofs) s})"
+  using nfoldli_shift[of "[a..<b]" c f ofs] 
+  by (auto simp: map_add_upt')
+
+
+(* TODO: Move. Probably we have this already with FOREACH, or iterator! *)
+lemma member_by_nfoldli: "nfoldli l (\<lambda>f. \<not>f) (\<lambda>y _. RETURN (y=x)) False \<le> SPEC (\<lambda>r. r \<longleftrightarrow> x\<in>set l)"
+proof -
+  have "nfoldli l (\<lambda>f. \<not>f) (\<lambda>y _. RETURN (y=x)) s \<le> SPEC (\<lambda>r. r \<longleftrightarrow> s \<or> x\<in>set l)" for s
+    apply (induction l arbitrary: s)
+    subgoal by auto
+    subgoal for a l s
+      apply clarsimp
+      apply (rule order_trans)
+      apply rprems
+      by auto
+    done
+  from this[of False] show ?thesis by auto
+qed  
+
+  
+definition sum_impl :: "('a \<Rightarrow> 'b::comm_monoid_add nres) \<Rightarrow> 'a set \<Rightarrow> 'b nres" where
+  "sum_impl g S \<equiv> FOREACH S (\<lambda>x a. do { b \<leftarrow> g x; RETURN (a+b)}) 0"
+
+lemma sum_impl_correct: 
+  assumes [simp]: "finite S"
+  assumes [refine_vcg]: "\<And>x. x\<in>S \<Longrightarrow> gi x \<le> SPEC (\<lambda>r. r=g x)"
+  shows "sum_impl gi S \<le> SPEC (\<lambda>r. r=sum g S)"
+  unfolding sum_impl_def
+  apply (refine_vcg FOREACH_rule[where I="\<lambda>it a. a = sum g (S - it)"])
+  apply (auto simp: it_step_insert_iff algebra_simps)
+  done
+  
 
 end

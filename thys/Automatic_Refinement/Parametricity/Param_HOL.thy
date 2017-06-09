@@ -75,6 +75,11 @@ lemma param_Collect[param]:
   subgoal using fun_relD2 by fastforce  
   done  
   
+lemma param_finite[param]: "\<lbrakk>
+    single_valued R; single_valued (R\<inverse>)
+  \<rbrakk> \<Longrightarrow> (finite,finite) \<in> \<langle>R\<rangle>set_rel \<rightarrow> bool_rel"
+  using finite_set_rel_transfer finite_set_rel_transfer_back by blast
+    
   
 subsection \<open>Standard HOL Constructs\<close>  
   

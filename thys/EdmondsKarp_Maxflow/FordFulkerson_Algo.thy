@@ -3,7 +3,6 @@ theory FordFulkerson_Algo
 imports 
   Ford_Fulkerson
   Refine_Add_Fofu
-  Refine_Monadic_Syntax_Sugar
 begin
 text \<open>In this theory, we formalize the abstract Ford-Fulkerson
   method, which is independent of how an augmenting path is chosen\<close>
@@ -19,7 +18,7 @@ text \<open>
   \<close>
 definition "find_augmenting_spec f \<equiv> do {
     assert (NFlow c s t f);
-    selectp p. NFlow.isAugmentingPath c s t f p
+    select p. NFlow.isAugmentingPath c s t f p
   }"
 
 text \<open>Moreover, we specify augmentation of a flow along a path\<close>
@@ -117,7 +116,7 @@ definition "ford_fulkerson_method \<equiv> do {
 
   (f,brk) \<leftarrow> while (\<lambda>(f,brk). \<not>brk) 
     (\<lambda>(f,brk). do {
-      p \<leftarrow> selectp p. is_augmenting_path f p;
+      p \<leftarrow> select p. is_augmenting_path f p;
       case p of 
         None \<Rightarrow> return (f,True)
       | Some p \<Rightarrow> return (augment c f p, False)
@@ -144,7 +143,7 @@ proof -
     apply (rule refine_IdD)
     apply (refine_vcg)
     apply (refine_dref_type)
-    apply (vc_solve simp: NFlow.augment_with_path_def)
+    apply (auto simp: NFlow.augment_with_path_def)
     done
   also note fofu_partial_correct  
   finally show ?thesis .
