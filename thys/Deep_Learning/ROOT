@@ -1,16 +1,9 @@
 chapter AFP
 
-session "Deep_Learning" (AFP) = "Deep_Learning_Lib" +
-  options [timeout = 600]
-  theories
-    DL_Fundamental_Theorem_Network_Capacity
-  document_files
-    "root.bib"
-    "root.tex"
-
 session "Deep_Learning_Lib" (AFP) = "HOL-Probability" +
   description {* Theories that are not part of HOL-Probability but are used by this entry *}
   options [timeout = 600, document = false]
+  sessions "HOL-Algebra"
   theories
     "~~/src/HOL/Library/More_List"
     "~~/src/HOL/Computational_Algebra/Polynomial"
@@ -41,3 +34,12 @@ session "Deep_Learning_Lib" (AFP) = "HOL-Probability" +
     "~~/src/HOL/Library/Groups_Big_Fun"
     "~~/src/HOL/Library/Fun_Lexorder"
 
+session "Deep_Learning" (AFP) = "Deep_Learning_Lib" +
+  options [timeout = 600]
+  sessions
+    "HOL-Algebra"
+  theories
+    DL_Fundamental_Theorem_Network_Capacity
+  document_files
+    "root.bib"
+    "root.tex"

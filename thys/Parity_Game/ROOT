@@ -2,6 +2,8 @@ chapter AFP
 
 session Parity_Game (AFP) = HOL +
   options [timeout = 600]
+  sessions
+    "HOL-Library"
   theories [document = false]
     "../Coinductive/Coinductive_List"
     "../Graph_Theory/Digraph_Isomorphism"

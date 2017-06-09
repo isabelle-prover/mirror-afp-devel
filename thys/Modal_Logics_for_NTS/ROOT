@@ -2,6 +2,8 @@ chapter AFP
 
 session "Modal_Logics_for_NTS" (AFP) = Nominal2 +
   options [timeout = 600]
+  sessions
+    "HOL-Cardinals"
   theories [document = false]
     "~~/src/HOL/Cardinals/Bounded_Set"
   theories

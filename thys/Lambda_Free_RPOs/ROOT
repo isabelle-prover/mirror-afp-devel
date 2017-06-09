@@ -1,7 +1,9 @@
 chapter AFP
 
 session Lambda_Free_RPOs (AFP) = "HOL-Library" +
-  options [timeout=600]
+  options [timeout = 600]
+  sessions
+    "HOL-Cardinals"
   theories [document = false]
     "~~/src/HOL/Cardinals/Wellorder_Extension"
     "~~/src/HOL/Library/Extended_Nat"

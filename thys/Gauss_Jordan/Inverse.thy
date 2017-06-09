@@ -94,8 +94,8 @@ proof (unfold id_upt_k_def, auto)
 fix j::'n
 assume j_less_suc: "to_nat j < Suc k"
 --"First of all we prove a property which will be useful later"
-have greatest_prop: "j \<noteq> 0 \<Longrightarrow> to_nat j = k \<Longrightarrow> (GREATEST' m. \<not> is_zero_row_upt_k m k (Gauss_Jordan A)) = j - 1"
-proof (rule Greatest'_equality)
+have greatest_prop: "j \<noteq> 0 \<Longrightarrow> to_nat j = k \<Longrightarrow> (GREATEST m. \<not> is_zero_row_upt_k m k (Gauss_Jordan A)) = j - 1"
+proof (rule Greatest_equality)
 assume j_not_zero: "j \<noteq> 0" and j_eq_k: "to_nat j = k"
  have j_minus_1: "to_nat (j - 1) < k" by (metis (full_types) Suc_le' diff_add_cancel j_eq_k j_not_zero to_nat_mono)
           show "\<not> is_zero_row_upt_k (j - 1) k (Gauss_Jordan A)"
@@ -118,7 +118,7 @@ assume j_not_zero: "j \<noteq> 0" and j_eq_k: "to_nat j = k"
                       proof (rule Least_equality)
                         show "Gauss_Jordan A $ b $ b \<noteq> 0" by (metis a id_k id_upt_k_def zero_neq_one)
                         show "\<And>y. Gauss_Jordan A $ b $ y \<noteq> 0 \<Longrightarrow> b \<le> y"
-                          by (metis (hide_lams, no_types) a dual_linorder.not_less_iff_gr_or_eq id_k id_upt_k_def less_trans not_less to_nat_mono)
+                          by (metis (hide_lams, no_types) a not_less_iff_gr_or_eq id_k id_upt_k_def less_trans not_less to_nat_mono)
                       qed
                     moreover have "\<not> is_zero_row_upt_k b k (Gauss_Jordan A)"
                       unfolding is_zero_row_upt_k_def apply auto apply (rule exI[of _ b]) using a id_k unfolding id_upt_k_def by simp
@@ -152,7 +152,7 @@ proof (cases "to_nat j < k")
   case False
   hence j_eq_k: "to_nat j = k" using j_less_suc by auto
   have j_minus_1: "to_nat (j - 1) < k" by (metis (full_types) Suc_le' diff_add_cancel j_eq_k j_not_zero to_nat_mono)
-  have "(GREATEST' m. \<not> is_zero_row_upt_k m k (Gauss_Jordan A)) = j - 1" by (rule greatest_prop[OF j_not_zero j_eq_k])
+  have "(GREATEST m. \<not> is_zero_row_upt_k m k (Gauss_Jordan A)) = j - 1" by (rule greatest_prop[OF j_not_zero j_eq_k])
         hence zero_j_k: "is_zero_row_upt_k j k (Gauss_Jordan A)"
                 by (metis not_le greatest_ge_nonzero_row j_eq_k j_minus_1 to_nat_mono')
               show ?thesis
@@ -241,14 +241,14 @@ proof (cases "to_nat j < k")
                           hence j_eq_k: "to_nat j = k" using i_or_j_ge_k j_less_suc by simp
                           have j_noteq_0: "j \<noteq> 0" by (metis True j_eq_k less_nat_zero_code to_nat_0)
                           have j_minus_1: "to_nat (j - 1) < k" by (metis (full_types) Suc_le' diff_add_cancel j_eq_k j_noteq_0 to_nat_mono)
-                          have "(GREATEST' m. \<not> is_zero_row_upt_k m k (Gauss_Jordan A)) = j - 1" by (rule greatest_prop[OF j_noteq_0 j_eq_k])
+                          have "(GREATEST m. \<not> is_zero_row_upt_k m k (Gauss_Jordan A)) = j - 1" by (rule greatest_prop[OF j_noteq_0 j_eq_k])
                           hence zero_j_k: "is_zero_row_upt_k j k (Gauss_Jordan A)" 
-                            by (metis (lifting, mono_tags) dual_linorder.less_linear dual_order.less_asym j_eq_k j_minus_1 not_greater_Greatest' to_nat_mono)
+                            by (metis (lifting, mono_tags) less_linear less_asym j_eq_k j_minus_1 not_greater_Greatest to_nat_mono)
                           have Least_eq_j: "(LEAST n. Gauss_Jordan A $ j $ n \<noteq> 0) = j"
                             proof (rule Least_equality)
                                show "Gauss_Jordan A $ j $ j \<noteq> 0" using Gauss_jj_1 by simp
                                show "\<And>y. Gauss_Jordan A $ j $ y \<noteq> 0 \<Longrightarrow> j \<le> y" 
-                               by (metis True dual_linorder.le_cases from_nat_to_nat_id i_or_j_ge_k is_zero_row_upt_k_def j_less_suc less_Suc_eq_le less_le to_nat_le zero_j_k)
+                               by (metis True le_cases from_nat_to_nat_id i_or_j_ge_k is_zero_row_upt_k_def j_less_suc less_Suc_eq_le less_le to_nat_le zero_j_k)
                             qed
                           moreover have "\<not> is_zero_row_upt_k j (Suc k) (Gauss_Jordan A)" unfolding is_zero_row_upt_k_def by (metis Gauss_jj_1 j_less_suc zero_neq_one)                          
                           ultimately show ?thesis using rref_upt_condition4[OF rref_suc_k] i_not_j by fastforce
@@ -260,7 +260,7 @@ proof (cases "to_nat j < k")
                             proof (rule Least_equality)
                                show "Gauss_Jordan A $ j $ j \<noteq> 0" by (metis Gauss_jj_1 zero_neq_one)
                                show "\<And>y. Gauss_Jordan A $ j $ y \<noteq> 0 \<Longrightarrow> j \<le> y"
-                                  by (metis dual_linorder.le_cases id_k id_upt_k_def j_less_k less_trans not_less to_nat_mono)
+                                  by (metis le_cases id_k id_upt_k_def j_less_k less_trans not_less to_nat_mono)
                             qed
                           moreover have "\<not> is_zero_row_upt_k j k (Gauss_Jordan A)" by (metis (full_types) Gauss_jj_1 is_zero_row_upt_k_def j_less_k zero_neq_one)
                           ultimately show ?thesis  using rref_upt_condition4[OF rref_k] i_not_j by fastforce
@@ -317,7 +317,7 @@ shows "inverse_matrix A = (if invertible A then Some (P_Gauss_Jordan A) else Non
 lemma inverse_matrix_code[code_unfold]:
 fixes A::"'a::{field}^'n::{mod_type}^'n::{mod_type}"
 shows "inverse_matrix A = (let GJ = Gauss_Jordan_PA A;
-                                rank_A = (if A = 0 then 0 else to_nat (GREATEST' a. row a (snd GJ) \<noteq> 0) + 1) in 
+                                rank_A = (if A = 0 then 0 else to_nat (GREATEST a. row a (snd GJ) \<noteq> 0) + 1) in 
                                 if nrows A = rank_A then Some (fst(GJ)) else None)"
 unfolding inverse_matrix
 unfolding invertible_eq_full_rank

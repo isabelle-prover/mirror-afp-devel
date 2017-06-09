@@ -322,7 +322,7 @@ lemma Gram_Schmidt_upt_k_efficient:
   using k
 proof (induct k)
   case 0
-  have " {column i A |i. i < 0} = {}" using least_mod_type using dual_linorder.leD by auto
+  have " {column i A |i. i < 0} = {}" using least_mod_type using leD by auto
   thus ?case 
     by (simp, auto simp add: Gram_Schmidt_column_k_efficient_def 
       Gram_Schmidt_upt_k_def Gram_Schmidt_column_k_def 

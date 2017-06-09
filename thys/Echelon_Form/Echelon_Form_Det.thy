@@ -130,7 +130,7 @@ proof -
       assume i_least: "from_nat i = (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> from_nat i \<le> n)"
       have "A $ from_nat i $ from_nat k \<noteq> 0"
         by (metis (poly_guards_query, lifting) Amk LeastI_ex 
-          dual_linorder.linear i i_least leD)
+          linear i i_least leD)
       thus "False" using Aik by contradiction
     qed    
     finally show "- det A = det ?B" by simp
@@ -140,7 +140,7 @@ proof -
     have "det ?B = det ?interchange"
     proof (rule det_bezout_iterate[OF ib])
       show "?interchange $ from_nat i $ from_nat k \<noteq> 0"
-        by (metis (mono_tags, lifting) Aik LeastI dual_order.order_refl interchange_rows_i)    
+        by (metis (mono_tags, lifting) Aik LeastI order_refl interchange_rows_i)    
       show "nrows A - Suc 0 < ncols ?interchange"  unfolding nrows_def ncols_def by simp
     qed
     also have "... = det A"

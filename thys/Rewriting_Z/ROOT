@@ -1,7 +1,9 @@
 chapter AFP
 
-session Rewriting_Z (AFP) = "Nominal2" +
+session Rewriting_Z (AFP) = Nominal2 +
   options [timeout = 600]
+  sessions
+    "HOL-Eisbach"
   theories [document = false]
     "~~/src/HOL/Eisbach/Eisbach"
     "../Abstract-Rewriting/Abstract_Rewriting"
@@ -12,4 +14,3 @@ session Rewriting_Z (AFP) = "Nominal2" +
   document_files
     "root.tex"
     "root.bib"
-

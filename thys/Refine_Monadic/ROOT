@@ -2,6 +2,8 @@ chapter AFP
 
 session Refine_Monadic (AFP) = Automatic_Refinement +
   options [timeout = 1200, document_variants = "document:outline=/proof,/ML"]
+  sessions
+    "HOL-Word"
   theories [document = false]
     "~~/src/HOL/Library/While_Combinator"
     "~~/src/HOL/Library/Lattice_Syntax"

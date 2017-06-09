@@ -178,7 +178,7 @@ definition
   comp_orA :: "['\<beta>\<mapsto>'\<gamma>, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha>\<mapsto>'\<gamma>"  (infixl "o'_orA" 55) where
   "p2 o_orA p1 \<equiv> (map_option flat_orA) o (lift p2 \<circ>\<^sub>m p1)"
 
-notation (xsymbols)
+notation
   comp_orA  (infixl "\<circ>\<^sub>\<or>\<^sub>A" 55)
 
 lemma comp_orA_mt[simp]:"p \<circ>\<^sub>\<or>\<^sub>A \<emptyset> = \<emptyset>"
@@ -191,7 +191,7 @@ definition
   comp_orD :: "['\<beta>\<mapsto>'\<gamma>, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha>\<mapsto>'\<gamma>"  (infixl "o'_orD" 55) where
   "p2 o_orD p1 \<equiv> (map_option flat_orD) o (lift p2 \<circ>\<^sub>m p1)"
 
-notation (xsymbols)
+notation
   comp_orD  (infixl "\<circ>\<^sub>orD" 55)
 
 lemma comp_orD_mt[simp]:"p o_orD \<emptyset> = \<emptyset>"
@@ -204,7 +204,7 @@ definition
   comp_1 :: "['\<beta>\<mapsto>'\<gamma>, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha>\<mapsto>'\<gamma>"  (infixl "o'_1" 55) where
   "p2 o_1 p1 \<equiv> (map_option flat_1) o (lift p2 \<circ>\<^sub>m p1)"
 
-notation (xsymbols)
+notation
   comp_1  (infixl "\<circ>\<^sub>1" 55)
 
 lemma comp_1_mt[simp]:"p \<circ>\<^sub>1 \<emptyset> = \<emptyset>"
@@ -217,7 +217,7 @@ definition
   comp_2 :: "['\<beta>\<mapsto>'\<gamma>, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha>\<mapsto>'\<gamma>"  (infixl "o'_2" 55) where
   "p2 o_2 p1 \<equiv> (map_option flat_2) o (lift p2 \<circ>\<^sub>m p1)"
 
-notation (xsymbols)
+notation
   comp_2  (infixl "\<circ>\<^sub>2" 55)
 
 lemma comp_2_mt[simp]:"p \<circ>\<^sub>2 \<emptyset> = \<emptyset>"

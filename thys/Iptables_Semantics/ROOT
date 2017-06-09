@@ -1,11 +1,12 @@
 chapter AFP
 
-
 session Iptables_Semantics (AFP) = Routing +
   options [timeout = 1200]
-  theories[document=false]
+  sessions
+    Native_Word
+  theories [document = false]
     "~~/src/HOL/Library/LaTeXsugar"
-    (*The Native_Word things destory the latex document! Does not compile, ...*)
+    (*The Native_Word things destroy the LaTeX document! Does not compile, ...*)
     "../Native_Word/More_Bits_Int"
     "../Native_Word/Code_Target_Bits_Int"
     "~~/src/HOL/Library/Code_Target_Nat"
@@ -45,9 +46,8 @@ session Iptables_Semantics (AFP) = Routing +
     "root.bib"
     "mathpartir.sty"
 
-
-session Iptables_Semantics_Examples (AFP slow very_slow) = Iptables_Semantics +
-  options [timeout = 60000]
+session Iptables_Semantics_Examples (AFP slow) = Iptables_Semantics +
+  options [timeout = 10800]
   theories
     "Examples/Parser_Test/Parser_Test"
     "Examples/Parser_Test/Parser6_Test"
@@ -62,11 +62,19 @@ session Iptables_Semantics_Examples (AFP slow very_slow) = Iptables_Semantics +
     "Examples/medium-sized-company/Analyze_medium_sized_company"
     "Examples/topoS_generated/Analyze_topos_generated"
     "Examples/IPPartEval/IP_Address_Space_Examples_All_Small"
-    "Examples/IPPartEval/IP_Address_Space_Examples_All_Large"
     "Examples/TUM_Net_Firewall/Analyze_TUM_Net_Firewall"
+    "Examples/containern/Analyze_Containern"
+  document_files
+    "root.tex"
+    "root.bib"
+    "mathpartir.sty"
+
+session Iptables_Semantics_Examples_Big (AFP slow very_slow) = Iptables_Semantics_Examples +
+  options [timeout = 60000, theory_qualifier = "Iptables_Semantics_Examples"]
+  theories
     "Examples/TUM_Net_Firewall/TUM_Spoofing_new3"
     "Examples/TUM_Net_Firewall/TUM_Simple_FW"
-    "Examples/containern/Analyze_Containern"
+    "Examples/IPPartEval/IP_Address_Space_Examples_All_Large"
   document_files
     "root.tex"
     "root.bib"

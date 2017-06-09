@@ -2,6 +2,8 @@ chapter AFP
 
 session Nested_Multisets_Ordinals (AFP) = Ordinal +
   options [timeout = 600]
+  sessions
+    "HOL-Library"
   theories [document = false]
     "~~/src/HOL/Library/Extended_Nat"
     "~~/src/HOL/Library/Multiset_Order"

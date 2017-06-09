@@ -127,13 +127,13 @@ datatype parsed_match_action = ParsedMatch of term
 
 local (*iptables-save parsers*)
   val is_whitespace = Scan.many (fn x => x = " ");
-  
+
   local (*parser for matches*)
     local
       fun extract_int ss = case ss |> implode |> Int.fromString
                                                     of SOME i => i
                                                     |  NONE   => raise Fail "unparsable int";
-    
+
       fun is_iface_char x = Symbol.is_ascii x andalso
             (Symbol.is_ascii_letter x orelse Symbol.is_ascii_digit x orelse x = "+"
              orelse x = "*" orelse x = "." orelse x = "-")
@@ -142,17 +142,17 @@ local (*iptables-save parsers*)
                 then
                   raise Fail("nat ("^Int.toString i^") must be between 0 and "^Int.toString maxval)
                 else (HOLogic.mk_number HOLogic.natT i);
-     
+
       fun ipNetmask_to_hol (ip,len) = @{const IpAddrNetmask (128)} $ mk_ipv6addr ip $ mk_nat 128 len;
       fun ipRange_to_hol (ip1,ip2) = @{const IpAddrRange (128)} $ mk_ipv6addr ip1 $ mk_ipv6addr ip2;
-    
-      
+
+
       val parser_ip_cidr = parser_ipv6 --| ($$ "/") -- (Scan.many1 Symbol.is_ascii_digit >> extract_int) >> ipNetmask_to_hol;
 
       val parser_ip_range = parser_ipv6 --| ($$ "-") -- parser_ipv6 >> ipRange_to_hol;
 
       val parser_ip_addr = parser_ipv6 >> (fn ip => @{const IpAddr (128)} $ mk_ipv6addr ip);
-    
+
       val parser_interface = Scan.many1 is_iface_char >> (implode #> (fn x => @{const Iface} $ HOLogic.mk_string x));
 
        (*TODO: it would be cool to check for a word boundary after all these strings*)
@@ -184,7 +184,7 @@ local (*iptables-save parsers*)
       local
         val mk_port_single = mk_nat 65535 #> (fn n => @{const nat_to_16word} $ n)
         val parse_port_raw = Scan.many1 Symbol.is_ascii_digit >> extract_int
-        fun port_tuple_warn (p1,p2) = 
+        fun port_tuple_warn (p1,p2) =
                 if p1 >= p2
                 then
                   let val _= writeln ("WARNING (in ports): "^Int.toString p1^" >= "^Int.toString p2)
@@ -217,7 +217,7 @@ local (*iptables-save parsers*)
     end;
     val eoo = Scan.ahead ($$ " " || Scan.one Symbol.is_eof); (*end of option; word boundary or eof look-ahead*)
 
-    fun parse_cmd_option_generic (d: term -> parsed_match_action) s t (parser: string list -> (term * string list)) = 
+    fun parse_cmd_option_generic (d: term -> parsed_match_action) s t (parser: string list -> (term * string list)) =
         Scan.finite Symbol.stopper (is_whitespace |-- Scan.this_string s |-- (parser >> (fn r => d (t $ r))) --| eoo)
 
     fun parse_cmd_option (s: string) (t: term) (parser: string list -> (term * string list)) =
@@ -238,11 +238,11 @@ local (*iptables-save parsers*)
     val parse_ips = parse_cmd_option_negated_singleton "-s " @{const Src (128)} (parser_ip_cidr || parser_ip_addr)
                  || parse_cmd_option_negated_singleton "-d " @{const Dst (128)} (parser_ip_cidr || parser_ip_addr);
 
-                            
+
     val parse_iprange = parse_with_module_prefix "-m iprange "
                             (   parse_cmd_option_negated "--src-range " @{const Src (128)} parser_ip_range
-                             || parse_cmd_option_negated "--dst-range " @{const Dst (128)} parser_ip_range); 
-    
+                             || parse_cmd_option_negated "--dst-range " @{const Dst (128)} parser_ip_range);
+
     val parse_iface = parse_cmd_option_negated_singleton "-i " @{const IIface (128)} parser_interface
                    || parse_cmd_option_negated_singleton "-o " @{const OIface (128)} parser_interface;
 
@@ -269,12 +269,12 @@ local (*iptables-save parsers*)
                   (parse_cmd_option_negated "--state " @{const CT_State (128)} parser_ctstate_set)
               || parse_with_module_prefix "-m conntrack "
                   (parse_cmd_option_negated "--ctstate " @{const CT_State (128)} parser_ctstate_set);
-    
+
      (*TODO: it would be good to fail if there is a "!" in the extra; it might be an unparsed negation*)
     val parse_unknown = (parse_cmd_option "" @{const Extra (128)} parser_extra) >> (fn x => [x]);
   end;
-  
-  
+
+
   local (*parser for target/action*)
     fun is_target_char x = Symbol.is_ascii x andalso
         (Symbol.is_ascii_letter x orelse Symbol.is_ascii_digit x orelse x = "-" orelse x = "_" orelse x = "~")
@@ -284,7 +284,7 @@ local (*iptables-save parsers*)
     val is_icmp_type = fn x => Symbol.is_ascii_letter x orelse x = "-" orelse x = "6"
   in
     val parser_target = Scan.many1 is_target_char >> implode;
-  
+
     (*parses: -j MY_CUSTOM_CHAIN*)
     (*The -j may not be the end of the line. example: -j LOG --log-prefix "[IPT_DROP]:"*)
     val parse_target_generic : (string list -> parsed_match_action * string list) =  parse_finite_skipwhite
@@ -308,17 +308,17 @@ in
   (*parses: -s 0.31.123.213/88 --foo_bar -j chain --foobar
    First tries to parse a known field, afterwards, it parses something unknown until a blank space appears
   *)
-  val option_parser : (string list -> (parsed_match_action list) * string list) = 
+  val option_parser : (string list -> (parsed_match_action list) * string list) =
       Scan.recover (parse_ips || parse_iprange
                  || parse_iface
                  || parse_protocol
                  || parse_tcp_options || parse_udp_options || parse_multiports
                  || parse_ctstate
                  || parse_target >> (fn x => [x])) (K parse_unknown);
-  
-  
+
+
   (*parse_table_append should be called before option_parser, otherwise -A will simply be an unknown for option_parser*)
-  
+
   local
     (*:DOS_PROTECT - [0:0]*)
     val custom_chain_decl_parser = ($$ ":") |-- parser_target --| Scan.this_string " - " #> fst;
@@ -420,7 +420,7 @@ in
       end
    fun get_chain_decls_policy (ls: ((string * string option) list * (string * (parsed_action_type * string) option * term) list)) = fst ls
    fun get_parsed_rules (ls: ((string * string option) list * (string * (parsed_action_type * string) option * term) list)) = snd ls
-   val filter_chain_decls_names_only : 
+   val filter_chain_decls_names_only :
          ((string * string option) list * (string * (parsed_action_type * string) option * term) list) ->
            (string list * (string * (parsed_action_type * string) option * term) list) = (fn (a,b) => (map fst a, b))
 end;
@@ -435,12 +435,12 @@ local
   (* Initialize the table. Create a key for every declared chain. *)
   fun FirewallTable_init chain_decls : firewall_table = FirewallTable.empty
             |> fold (fn entry => fn accu => FirewallTable.update_new (entry, []) accu) chain_decls;
-  
+
   (* this takes like forever! *)
   (* apply compress_parsed_extra here?*)
   fun hacky_hack t = (*Code_Evaluation.dynamic_value_strict @{context} (@{const compress_extra} $ t)*)
     @{const alist_and' ("128 common_primitive")} $ (@{const fill_l4_protocol (128)} $ (@{const compress_parsed_extra (128)} $ t))
-  
+
   fun mk_MatchExpr t = if fastype_of t <> @{typ "128 common_primitive negation_type list"}
                        then
                          raise Fail "Type Error"
@@ -449,11 +449,11 @@ local
   fun mk_Rule_help t a = let val r = @{const Rule ("128 common_primitive")} $ (mk_MatchExpr t) $ a in
       if fastype_of r <> @{typ "128 common_primitive rule"} then raise Fail "Type error in mk_Rule_help"
       else r end;
-  
+
   fun append table chain rule = case FirewallTable.lookup table chain
       of NONE => raise Fail ("uninitialized cahin: "^chain)
       |  SOME rules => FirewallTable.update (chain, rules@[rule]) table
-  
+
   fun mk_Rule (tbl: firewall_table) (chain: string, target : (parsed_action_type * string) option, t : term) =
     if not (FirewallTable.defined tbl chain)
     then
@@ -480,7 +480,7 @@ local
                                     raise Fail ("unknown action: "^custom)
                                   else
                                     mk_Rule_help t (@{const action.Goto} $ HOLogic.mk_string custom);
-  
+
   (*val init = FirewallTable_init parsed_chain_decls;*)
   (*map type_of (map (mk_Rule init) parsed_rules);*)
 
@@ -488,7 +488,7 @@ in
   local
     fun append_rule (tbl: firewall_table) (chain: string, target : (parsed_action_type * string) option, t : term) = append tbl chain (mk_Rule tbl (chain, target, t))
   in
-    fun make_firewall_table (parsed_chain_decls : string list, parsed_rules : (string * (parsed_action_type * string) option * term) list) = 
+    fun make_firewall_table (parsed_chain_decls : string list, parsed_rules : (string * (parsed_action_type * string) option * term) list) =
       fold (fn rule => fn accu => append_rule accu rule) parsed_rules (FirewallTable_init parsed_chain_decls);
   end
 end
@@ -527,16 +527,16 @@ fun trace_timing (printstr : string) (f : 'a -> 'b) (a : 'a) : 'b =
       result
     end end end end;
 
-fun simplify_code (ctx: Proof.context) = let val _ = writeln "unfolding (this may take a while) ..." in 
-      trace_timing "Simplified term" (Code_Evaluation.dynamic_value_strict ctx)
+fun simplify_code ctxt = let val _ = writeln "unfolding (this may take a while) ..." in
+      trace_timing "Simplified term" (Code_Evaluation.dynamic_value_strict ctxt)
     end
 
-fun certify_term (ctx: Proof.context) (t: term) = trace_timing "Certified term" (Thm.cterm_of ctx) t
+fun certify_term ctxt t = trace_timing "Certified term" (Thm.cterm_of ctxt) t
 \<close>
 
 
 ML_val\<open>(*Example: putting it all together*)
-fun parse_iptables_save_global thy (file: string list) : term = 
+fun parse_iptables_save_global thy (file: string list) : term =
     load_filter_table thy file
     |> rule_type_partition
     |> filter_chain_decls_names_only
@@ -572,8 +572,8 @@ local
               else ())
       in ps end;
 
-  fun sanity_check_ruleset (ctx: Proof.context) t = let
-      val check = Code_Evaluation.dynamic_value_strict ctx (@{const sanity_wf_ruleset ("128 common_primitive")} $ t)
+  fun sanity_check_ruleset ctxt t = let
+      val check = Code_Evaluation.dynamic_value_strict ctxt (@{const sanity_wf_ruleset ("128 common_primitive")} $ t)
     in
       if check <> @{term "True"} then raise ERROR "sanity_wf_ruleset failed" else t
     end;

@@ -1,7 +1,7 @@
 chapter AFP
 
 session SIFUM_Type_Systems (AFP) = HOL +
-    description {*
+  description {*
     An Isabelle/HOL formalization of Assumptions and Guarantees for Compositional Noninterference
 
     Author: Sylvia Grewe, TU Darmstadt
@@ -9,6 +9,8 @@ session SIFUM_Type_Systems (AFP) = HOL +
     Author: Daniel Schoepe
   *}
   options [timeout = 600]
+  sessions
+    "HOL-Library"
   theories
     Preliminaries 
     Security 

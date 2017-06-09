@@ -7,7 +7,7 @@
 section "Extensions to the Word theory required for PSS"
 
 theory Wordarith
-imports WordOperations "~~/src/HOL/Computational_Algebra/Primes"
+imports WordOperations "HOL-Computational_Algebra.Primes"
 begin
 
 definition

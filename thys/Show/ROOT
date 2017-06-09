@@ -2,6 +2,8 @@ chapter AFP
 
 session Show (AFP) = Deriving +
   options [timeout = 600]
+  sessions
+    "HOL-Computational_Algebra"
   theories
     Show_Instances
     Show_Poly

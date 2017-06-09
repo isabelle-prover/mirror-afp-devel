@@ -27,4 +27,5 @@ session Key_Agreement_Strong_Adversaries (AFP) = HOL +
     dhlvl1 dhlvl2 dhlvl3 dhlvl3_asymmetric dhlvl3_symmetric
     sklvl1 sklvl2 sklvl3 sklvl3_asymmetric sklvl3_symmetric
   document_files
-    "root.tex" "session_graph.tex"
+    "root.tex"
+    "session_graph.tex"

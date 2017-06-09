@@ -2,6 +2,8 @@ chapter AFP
 
 session Coinductive (AFP) = "HOL-Computational_Algebra" +
   options [timeout = 600]
+  sessions
+    "HOL-Analysis"
   theories [document = false]
     "~~/src/HOL/Library/Stream"
     "~~/src/HOL/Library/Extended_Nat"

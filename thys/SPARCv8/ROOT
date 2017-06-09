@@ -1,7 +1,9 @@
 chapter AFP
 
-session "SPARCv8" (AFP) = "HOL-Word" +
+session SPARCv8 (AFP) = "HOL-Word" +
   options [timeout = 1200]
+  sessions
+    "HOL-Eisbach"
   theories [document = false]
     "~~/src/Tools/Adhoc_Overloading"
     "lib/WordDecl"

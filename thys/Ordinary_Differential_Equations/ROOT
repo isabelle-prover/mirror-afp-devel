@@ -18,11 +18,13 @@ session "HOL-ODE" (AFP) = "Ordinary_Differential_Equations" +
 
 session "HOL-ODE-Refinement" (AFP) = "HOL-ODE" +
   options [timeout = 600, document = false]
+  sessions
+    "HOL-Word"
   theories
     "Refinement/Refine_Dflt_No_Comp"
 
 session "HOL-ODE-Numerics" (AFP) = "HOL-ODE-Refinement" +
-  options [timeout = 2400, document = false]
+  options [timeout = 3600, document = false]
   theories
     "~~/src/HOL/Library/Lattice_Algebras"
     "~~/src/HOL/Library/Monad_Syntax"

@@ -2,6 +2,9 @@ chapter AFP
 
 session "Separation_Logic_Imperative_HOL" (AFP) = "HOL-Library" +
   options [timeout = 600]
+  sessions
+    "HOL-Word"
+    "HOL-Imperative_HOL"
   theories [document = false]
     "Tools/Imperative_HOL_Add"
     "Tools/Syntax_Match"

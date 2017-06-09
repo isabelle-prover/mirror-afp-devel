@@ -9,7 +9,7 @@ section {* Squarefree decomposition of natural numbers *}
 theory Squarefree_Nat
 imports
   Main
-  "~~/src/HOL/Number_Theory/Number_Theory"
+  "HOL-Number_Theory.Number_Theory"
   Prime_Harmonic_Misc
 begin
 

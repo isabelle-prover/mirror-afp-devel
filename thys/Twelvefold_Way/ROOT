@@ -2,6 +2,8 @@ chapter AFP
 
 session Twelvefold_Way (AFP) = "HOL-Library" +
   options [timeout = 300]
+  sessions
+    "HOL-Eisbach"
   theories [document = false]
     "~~/src/HOL/Library/Multiset"
     "~~/src/HOL/Library/FuncSet"

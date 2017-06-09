@@ -17,45 +17,48 @@
 chapter AFP
 
 session Security_Protocol_Refinement (AFP) = HOL +
-description {* Developing Security Protocols by Stepwise Refinement *}
-options [timeout = 600]
-theories (* Infrastructure *)
-  "Refinement/Infra" 
-  "Refinement/Refinement"
-  "Refinement/Agents" 
-  "Refinement/Keys" 
-  "Refinement/Atoms" 
-  "Refinement/Runs" 
-  "Refinement/Channels" 
-  "Refinement/Message" 
-  "Refinement/s0g_secrecy" 
-  "Refinement/a0n_agree" 
-  "Refinement/a0i_agree"
-theories (* Authentication protocols *)
-  "Auth_simple/m1_auth"
-  "Auth_simple/m2_auth_chan" 
-  "Auth_simple/m2_confid_chan"
-  "Auth_simple/m3_sig" 
-  "Auth_simple/m3_enc"
-theories (* Key establishment protocols *)
-  "Key_establish/m1_keydist"
-  "Key_establish/m1_keydist_iirn" 
-  "Key_establish/m1_keydist_inrn"
-  "Key_establish/m1_kerberos" 
-  "Key_establish/m2_kerberos" 
-  "Key_establish/m3_kerberos_par" 
-  "Key_establish/m3_kerberos5" 
-  "Key_establish/m3_kerberos4"
-  "Key_establish/m1_nssk" 
-  "Key_establish/m2_nssk" 
-  "Key_establish/m3_nssk_par" 
-  "Key_establish/m3_nssk"
-  "Key_establish/m1_ds" 
-  "Key_establish/m2_ds" 
-  "Key_establish/m3_ds_par" 
-  "Key_establish/m3_ds"
-document_files
-  "root.tex" "isapreamble.tex" "session_graph.tex"
+  description {* Developing Security Protocols by Stepwise Refinement *}
+  options [timeout = 600]
+  theories
+    (* Infrastructure *)
+    "Refinement/Infra"
+    "Refinement/Refinement"
+    "Refinement/Agents"
+    "Refinement/Keys"
+    "Refinement/Atoms"
+    "Refinement/Runs"
+    "Refinement/Channels"
+    "Refinement/Message"
+    "Refinement/s0g_secrecy"
+    "Refinement/a0n_agree"
+    "Refinement/a0i_agree"
+    (* Authentication protocols *)
+    "Auth_simple/m1_auth"
+    "Auth_simple/m2_auth_chan"
+    "Auth_simple/m2_confid_chan"
+    "Auth_simple/m3_sig"
+    "Auth_simple/m3_enc"
+    (* Key establishment protocols *)
+    "Key_establish/m1_keydist"
+    "Key_establish/m1_keydist_iirn"
+    "Key_establish/m1_keydist_inrn"
+    "Key_establish/m1_kerberos"
+    "Key_establish/m2_kerberos"
+    "Key_establish/m3_kerberos_par"
+    "Key_establish/m3_kerberos5"
+    "Key_establish/m3_kerberos4"
+    "Key_establish/m1_nssk"
+    "Key_establish/m2_nssk"
+    "Key_establish/m3_nssk_par"
+    "Key_establish/m3_nssk"
+    "Key_establish/m1_ds"
+    "Key_establish/m2_ds"
+    "Key_establish/m3_ds_par"
+    "Key_establish/m3_ds"
+  document_files
+    "root.tex"
+    "isapreamble.tex"
+    "session_graph.tex"
 
 (* 
    The following sessions were used for producing the statistics for
