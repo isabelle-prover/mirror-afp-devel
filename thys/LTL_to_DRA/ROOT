@@ -1,7 +1,9 @@
 chapter AFP
 
-session LTL_to_DRA (AFP) = "LTL" + 
+session LTL_to_DRA (AFP) = LTL + 
   options [timeout = 600]
+  sessions
+    "List-Index"
   theories 
     [document = false]
     "../Boolean_Expression_Checkers/Boolean_Expression_Checkers"

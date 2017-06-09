@@ -2,6 +2,8 @@ chapter AFP
 
 session MSO_Regex_Equivalence (AFP) = "HOL-Library" +
   options [timeout = 1600]
+  sessions
+    "List-Index"
   theories [document = false]
     "../Deriving/Comparator_Generator/Compare_Instances"
     "../List-Index/List_Index"

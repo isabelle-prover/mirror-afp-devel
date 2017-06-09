@@ -2,6 +2,8 @@ chapter AFP
 
 session Jinja (AFP) = "HOL-Library" +
   options [timeout = 1200]
+  sessions
+    "List-Index"
   theories [document = false]
     "~~/src/HOL/Library/Sublist"
     "~~/src/HOL/Library/While_Combinator"

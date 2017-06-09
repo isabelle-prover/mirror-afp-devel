@@ -2,6 +2,8 @@ chapter AFP
 
 session Regex_Equivalence (AFP) = "HOL-Library" +
   options [timeout = 600]
+  sessions
+    "Regular-Sets"
   theories [document = false]
     "../Efficient-Mergesort/Efficient_Sort"
     "../Regular-Sets/Derivatives"

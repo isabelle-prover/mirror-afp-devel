@@ -6,6 +6,7 @@ session ROBDD (AFP) = HOL +
     "HOL-Library"
     "HOL-Word"
     "HOL-Imperative_HOL"
+    Native_Word
   theories [document = false]
     "../Automatic_Refinement/Lib/Refine_Lib"
     "../Separation_Logic_Imperative_HOL/Examples/Array_Blit"

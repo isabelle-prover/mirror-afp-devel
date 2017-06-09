@@ -2,6 +2,9 @@ chapter AFP
 
 session JinjaThreads (AFP slow) = "HOL-Word" +
   options [timeout = 28800]
+  sessions
+    Trie
+    Native_Word
   theories [document = false]
     "Basic/Basic_Main"
   theories
