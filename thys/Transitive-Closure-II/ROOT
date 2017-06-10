@@ -4,6 +4,7 @@ session "Transitive-Closure-II" (AFP) = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"
+    "Regular-Sets"
   theories [document = false]
     "../Regular-Sets/Regexp_Method"
   theories

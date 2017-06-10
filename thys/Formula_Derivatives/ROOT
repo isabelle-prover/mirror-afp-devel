@@ -2,6 +2,8 @@ chapter AFP
 
 session "Formula_Derivatives" (AFP) = "HOL-Library" +
   options [timeout = 3600]
+  sessions
+    "List-Index"
   theories [document = false]
     While_Default
     FSet_More

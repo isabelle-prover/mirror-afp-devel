@@ -702,7 +702,7 @@ next
   then have minus_a: "-?a \<le> ?b - 2 * ?b1 - ?b2 - (?a2 - 2 * ?a1)"
     by simp
   from abs_a have a: "?a \<le> ?b - 2 * ?b1 - ?b2 + ?a2 - 2 * ?a1"
-    by simp
+    by (simp add: abs_if split: if_splits)
   from ln_fact_bounds[of "n div 2"] False have abs_l1: "abs(?l1 - ?a1) \<le> ?b1"
     by (simp add: algebra_simps)
   then have minus_l1: "?a1 - ?l1 \<le> ?b1"

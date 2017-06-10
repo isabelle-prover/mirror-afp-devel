@@ -11,6 +11,7 @@ session Refine_Imperative_HOL (AFP) = Sepref_Prereq +
   options [timeout = 1200]
   sessions
     "HOL-Eisbach"
+    "List-Index"
   theories [document = false]
     "Lib/Concl_Pres_Clarification"
     "Lib/Named_Theorems_Rev"
@@ -66,6 +67,7 @@ session Sepref_Basic (AFP) = Sepref_Prereq +
   options [document = false, timeout = 300]
   sessions
     "HOL-Eisbach"
+    "List-Index"
   theories [document = false]
     Sepref
 

@@ -21,6 +21,7 @@ session "JNF-HOL-Lib" (AFP) = "HOL-Algebra" +
   options [document = false, timeout = 600]
   sessions
     "HOL-Cardinals"
+    "Containers"
   theories
     "~~/src/HOL/Library/AList"
     "~~/src/HOL/Library/Cardinality"

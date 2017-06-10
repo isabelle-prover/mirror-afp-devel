@@ -4,6 +4,7 @@ session Rewriting_Z (AFP) = Nominal2 +
   options [timeout = 600]
   sessions
     "HOL-Eisbach"
+    "Abstract-Rewriting"
   theories [document = false]
     "~~/src/HOL/Eisbach/Eisbach"
     "../Abstract-Rewriting/Abstract_Rewriting"
