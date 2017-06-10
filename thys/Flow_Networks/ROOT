@@ -1,0 +1,36 @@
+chapter AFP
+
+session Maxflow_Lib (AFP) = Sepref_IICF +
+  options [document = false, timeout = 600]
+  theories
+    "../DFS_Framework/DFS_Framework"
+    "../DFS_Framework/Examples/Reachable_Nodes"
+
+    "Lib/Fofu_Abs_Base"
+    "Lib/Fofu_Impl_Base"
+    "Lib/Refine_Add_Fofu"
+    "Lib/DRAT_Misc"
+    "Lib/Refine_Monadic_Syntax_Sugar"
+
+session Flow_Networks (AFP) = Maxflow_Lib +
+  options [document = pdf, timeout = 240,
+    document_variants = "document:outline=/proof,/ML"]
+
+  theories [document = false]
+    Graph
+
+  theories
+    Network
+    Residual_Graph
+    Augmenting_Flow
+    Augmenting_Path
+    Ford_Fulkerson
+
+  theories [document = false]
+    Graph_Impl
+    Network_Impl
+    NetCheck
+
+  document_files
+    "root.tex" "root.bib"
+
