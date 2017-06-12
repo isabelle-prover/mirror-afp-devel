@@ -28,6 +28,7 @@ Binomial-Queues
 Bondy
 Boolean_Expression_Checkers
 Bounded_Deducibility_Security
+Buffons_Needle
 Buildings
 BytecodeLogicJmlTypes
 Card_Number_Partitions
@@ -112,6 +113,7 @@ FinFun
 Finite_Automata_HF
 Finger-Trees
 Fisher_Yates
+Flow_Networks
 Floyd_Warshall
 Flyspeck-Tame
 FocusStreamsCaseStudies
@@ -258,6 +260,7 @@ Program-Conflict-Analysis
 Promela
 Proof_Strategy_Language
 PropResPI
+Prpu_Maxflow
 PseudoHoops
 Psi_Calculi
 Ptolemys_Theorem

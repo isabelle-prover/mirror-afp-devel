@@ -1,0 +1,8 @@
+chapter AFP
+
+session Buffons_Needle (AFP) = "HOL-Probability" +
+  theories
+    Buffons_Needle
+  document_files
+    "root.tex"
+    "root.bib"

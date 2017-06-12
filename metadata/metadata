@@ -265,6 +265,36 @@ abstract =
 	[CPP-2015] Peter Lammich, René Neumann: A Framework for Verifying
 	Depth-First Search Algorithms. CPP 2015: 137-146</p>
 
+[Flow_Networks]
+title = Flow Networks and the Min-Cut-Max-Flow Theorem
+author = Peter Lammich <http://www21.in.tum.de/~lammich/>, S. Reza Sefidgar <>
+topic = Mathematics/Graph Theory
+date = 2017-06-01
+notify = lammich@in.tum.de
+abstract =
+  We present a formalization of flow networks and the Min-Cut-Max-Flow
+  theorem. Our formal proof closely follows a standard textbook proof,
+  and is accessible even without being an expert in Isabelle/HOL, the
+  interactive theorem prover used for the formalization.
+
+[Prpu_Maxflow]
+title = Formalizing Push-Relabel Algorithms
+author = Peter Lammich <http://www21.in.tum.de/~lammich/>, S. Reza Sefidgar <>
+topic = Computer Science/Algorithms, Mathematics/Graph Theory
+date = 2017-06-01
+notify = lammich@in.tum.de
+abstract =
+  We present a formalization of push-relabel algorithms for computing
+  the maximum flow in a network. We start with Goldberg's et
+  al.~generic push-relabel algorithm, for which we show correctness and
+  the time complexity bound of O(V^2E). We then derive the
+  relabel-to-front and FIFO implementation. Using stepwise refinement
+  techniques, we derive an efficient verified implementation.  Our
+  formal proof of the abstract algorithms closely follows a standard
+  textbook proof. It is accessible even without being an expert in
+  Isabelle/HOL, the interactive theorem prover used for the
+  formalization.
+
 [Buildings]
 title = Chamber Complexes, Coxeter Systems, and Buildings
 author = Jeremy Sylvestre <http://ualberta.ca/~jsylvest/>
@@ -1949,7 +1979,7 @@ topic = Computer Science/Security
 license = LGPL
 date = 2017-05-24
 notify = sprenger@inf.ethz.ch
-abstract = 
+abstract =
   We propose a development method for security protocols based on
   stepwise refinement. Our refinement strategy transforms abstract
   security goals into protocols that are secure when operating over an
@@ -5412,6 +5442,25 @@ abstract =
   rate of a source code, namely that this code rate is bounded by the
   entropy of the source. This represents one half of Shannon's source
   coding theorem, which is itself an equivalence.
+
+[Buffons_Needle]
+title = Buffon's Needle Problem
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Probability Theory, Mathematics/Geometry
+date = 2017-06-06
+notify = eberlm@in.tum.de
+abstract = 
+  In the 18th century, Georges-Louis Leclerc, Comte de Buffon posed and
+  later solved the following problem, which is often called the first
+  problem ever solved in geometric probability: Given a floor divided
+  into vertical strips of the same width, what is the probability that a
+  needle thrown onto the floor randomly will cross two strips?  This
+  entry formally defines the problem in the case where the needle's
+  position is chosen uniformly at random in a single strip around the
+  origin (which is equivalent to larger arrangements due to symmetry).
+  It then provides proofs of the simple solution in the case where the
+  needle's length is no greater than the width of the strips and
+  the more complicated solution in the opposite case.
 
 [SPARCv8]
 title = A formal model for the SPARCv8 ISA and a proof of non-interference for the LEON3 processor

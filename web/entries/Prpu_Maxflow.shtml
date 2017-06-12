@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>A Framework for Verifying Depth-First Search Algorithms - Archive of Formal Proofs
+<title>Formalizing Push-Relabel Algorithms - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,17 +61,9 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">A</font>
+  <h1>          <font class="first">F</font>ormalizing
   
-          <font class="first">F</font>ramework
-  
-          for
-  
-          <font class="first">V</font>erifying
-  
-          <font class="first">D</font>epth-First
-  
-          <font class="first">S</font>earch
+          <font class="first">P</font>ush-Relabel
   
           <font class="first">A</font>lgorithms
   
@@ -82,7 +74,7 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">A Framework for Verifying Depth-First Search Algorithms</td>
+  <td class="data" width="80%">Formalizing Push-Relabel Algorithms</td>
 </tr>
 
 <tr>
@@ -91,7 +83,7 @@
       </td>
   <td class="data">
                     <a href="https://www21.in.tum.de/~lammich/">Peter Lammich</a> and
-          René Neumann (rene /dot/ neumann /at/ in /dot/ tum /dot/ de)
+          S. Reza Sefidgar
       </td>
 </tr>
 
@@ -99,41 +91,35 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2016-07-05</td>
+  <td class="data">2017-06-01</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-<p>
-This entry presents a framework for the modular verification of
-DFS-based algorithms, which is described in our [CPP-2015] paper. It
-provides a generic DFS algorithm framework, that can be parameterized
-with user-defined actions on certain events (e.g. discovery of new
-node).  It comes with an extensible library of invariants, which can
-be used to derive invariants of a specific parameterization.  Using
-refinement techniques, efficient implementations of the algorithms can
-easily be derived. Here, the framework comes with templates for a
-recursive and a tail-recursive implementation, and also with several
-templates for implementing the data structures required by the DFS
-algorithm.  Finally, this entry contains a set of re-usable DFS-based
-algorithms, which illustrate the application of the framework.
-</p><p>
-[CPP-2015] Peter Lammich, René Neumann: A Framework for Verifying
-Depth-First Search Algorithms. CPP 2015: 137-146</p></td>
+We present a formalization of push-relabel algorithms for computing
+the maximum flow in a network. We start with Goldberg's et
+al.~generic push-relabel algorithm, for which we show correctness and
+the time complexity bound of O(V^2E). We then derive the
+relabel-to-front and FIFO implementation. Using stepwise refinement
+techniques, we derive an efficient verified implementation.  Our
+formal proof of the abstract algorithms closely follows a standard
+textbook proof. It is accessible even without being an expert in
+Isabelle/HOL, the interactive theorem prover used for the
+formalization.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{DFS_Framework-AFP,
-  author  = {Peter Lammich and René Neumann},
-  title   = {A Framework for Verifying Depth-First Search Algorithms},
+        <pre>@article{Prpu_Maxflow-AFP,
+  author  = {Peter Lammich and S. Reza Sefidgar},
+  title   = {Formalizing Push-Relabel Algorithms},
   journal = {Archive of Formal Proofs},
-  month   = jul,
-  year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/DFS_Framework.shtml},
+  month   = jun,
+  year    = 2017,
+  note    = {\url{http://isa-afp.org/entries/Prpu_Maxflow.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -145,11 +131,9 @@ Depth-First Search Algorithms. CPP 2015: 137-146</p></td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Automatic_Refinement.shtml">Automatic_Refinement</a>, <a href="CAVA_Automata.shtml">CAVA_Automata</a>, <a href="Collections.shtml">Collections</a>, <a href="Refine_Monadic.shtml">Refine_Monadic</a>      </td></tr>
+          <td class="data"><a href="Flow_Networks.shtml">Flow_Networks</a>      </td></tr>
           
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="EdmondsKarp_Maxflow.shtml">EdmondsKarp_Maxflow</a>, <a href="Flow_Networks.shtml">Flow_Networks</a>, <a href="Refine_Imperative_HOL.shtml">Refine_Imperative_HOL</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -161,29 +145,23 @@ Depth-First Search Algorithms. CPP 2015: 137-146</p></td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/DFS_Framework/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/DFS_Framework/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Prpu_Maxflow/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Prpu_Maxflow/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/DFS_Framework/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Prpu_Maxflow/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-DFS_Framework-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Prpu_Maxflow-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
     <tr><td class="links">Older releases:
-          <ul>
-                        <li>Isabelle 2016:
-          <a href="../release/afp-DFS_Framework-2016-07-05.tar.gz">
-            afp-DFS_Framework-2016-07-05.tar.gz
-          </a>
-          </li>
-                    </ul>
+        None
         </td></tr>
 
   </tbody>
