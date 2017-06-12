@@ -1032,6 +1032,29 @@ proof goal_cases
     done
 qed
 
+lemma nfoldli_no_ctd[simp]: "\<not>ctd s \<Longrightarrow> nfoldli l ctd f s = RETURN s"
+  by (cases l) auto
+
+lemma nfoldli_append[simp]: "nfoldli (l1@l2) ctd f s = nfoldli l1 ctd f s \<bind> nfoldli l2 ctd f"
+  by (induction l1 arbitrary: s) (auto simp: pw_eq_iff refine_pw_simps)
+
+lemma nfoldli_map: "nfoldli (map f l) ctd g s = nfoldli l ctd (g o f) s"  
+  apply (induction l arbitrary: s) 
+  by (auto simp: pw_eq_iff refine_pw_simps)
+
+lemma nfoldli_nfoldli_prod_conv: 
+  "nfoldli l2 ctd (\<lambda>i. nfoldli l1 ctd (f i)) s = nfoldli (List.product l2 l1) ctd (\<lambda>(i,j). f i j) s"
+proof -
+  have [simp]: "nfoldli (map (Pair a) l) ctd (\<lambda>(x, y). f x y) s = nfoldli l ctd (f a) s"
+    for a l s
+    apply (induction l arbitrary: s) 
+    by (auto simp: pw_eq_iff refine_pw_simps)
+
+  show ?thesis  
+    by (induction l2 arbitrary: l1 s) auto
+qed  
+  
+  
 text {* The fold-function over the nres-monad is transfered to a plain 
   foldli function *}
 lemma nfoldli_transfer_plain[refine_transfer]:

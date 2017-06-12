@@ -829,6 +829,8 @@ lemma ent_disjI1': "A\<Longrightarrow>\<^sub>AB \<Longrightarrow> A\<Longrightar
 lemma ent_disjI2': "A\<Longrightarrow>\<^sub>AC \<Longrightarrow> A\<Longrightarrow>\<^sub>AB\<or>\<^sub>AC"
   by (auto simp: entails_def star_or_dist)
 
+lemma triv_exI[simp, intro!]: "Q x \<Longrightarrow>\<^sub>A \<exists>\<^sub>Ax. Q x"
+  by (meson ent_ex_postI ent_refl)
     
 subsubsection \<open>Weak Entails\<close>    
 text \<open>Weakening of entails to allow arbitrary unspecified memory in conclusion\<close>

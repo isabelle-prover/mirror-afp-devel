@@ -1216,6 +1216,13 @@ lemma case_option_refine[refine]:
   using assms
   by (auto split: option.split simp: option_rel_def)
 
+lemma list_case_refine[refine]: 
+  assumes "(li,l)\<in>\<langle>S\<rangle>list_rel"
+  assumes "fni \<le>\<Down>R fn"  
+  assumes "\<And>xi x xsi xs. \<lbrakk> (xi,x)\<in>S; (xsi,xs)\<in>\<langle>S\<rangle>list_rel; li=xi#xsi; l=x#xs \<rbrakk> \<Longrightarrow> fci xi xsi \<le>\<Down>R (fc x xs)"  
+  shows "(case li of [] \<Rightarrow> fni | xi#xsi \<Rightarrow> fci xi xsi) \<le> \<Down>R (case l of [] \<Rightarrow> fn | x#xs \<Rightarrow> fc x xs)"  
+  using assms by (auto split: list.split)  
+    
 text {* It is safe to split conjunctions in refinement goals.*}
 declare conjI[refine]
 
@@ -1621,6 +1628,21 @@ lemma SPEC_eq_is_RETURN:
 lemma RETURN_SPEC_conv: "RETURN r = SPEC (\<lambda>x. x=r)"
   by (simp add: RETURN_def)
 
+lemma refine2spec_aux:
+  "a \<le> \<Down>R b \<longleftrightarrow> ( (nofail b \<longrightarrow> a \<le> SPEC ( \<lambda>r. (\<exists>x. inres b x \<and> (r,x)\<in>R) )) )"
+  by (auto simp: pw_le_iff refine_pw_simps)
+  
+lemma refine2specI:
+  assumes "nofail b \<Longrightarrow> a \<le> SPEC (\<lambda>r. (\<exists>x. inres b x \<and> (r,x)\<in>R) )"
+  shows "a \<le> \<Down>R b"  
+  using assms by (simp add: refine2spec_aux)  
+    
+lemma specify_left:
+  assumes "m \<le> SPEC \<Phi>"
+  assumes "\<And>x. \<Phi> x \<Longrightarrow> f x \<le> M"  
+  shows "do { x \<leftarrow> m; f x } \<le> M"
+  using assms by (auto simp: pw_le_iff refine_pw_simps)  
+    
 lemma build_rel_SPEC: 
   "M \<le> SPEC ( \<lambda>x. \<Phi> (\<alpha> x) \<and> I x) \<Longrightarrow> M \<le> \<Down>(build_rel \<alpha> I) (SPEC \<Phi>)"
   by (auto simp: pw_le_iff refine_pw_simps build_rel_def)
@@ -1744,7 +1766,7 @@ lemma use_spec_rule:
   using assms
   by (auto simp: pw_le_iff refine_pw_simps)
 
-lemma strengthen_SPEC: "m \<le> SPEC \<Phi> \<Longrightarrow> m \<le> SPEC(\<lambda>s. inres m s \<and> \<Phi> s)"
+lemma strengthen_SPEC: "m \<le> SPEC \<Phi> \<Longrightarrow> m \<le> SPEC(\<lambda>s. inres m s \<and> nofail m \<and> \<Phi> s)"
   -- "Strengthen SPEC by adding trivial upper bound for result"
   by (auto simp: pw_le_iff refine_pw_simps)
 

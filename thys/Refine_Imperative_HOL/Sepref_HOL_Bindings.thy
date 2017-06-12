@@ -577,7 +577,8 @@ lemma param_max_nat[param,sepref_import_param]: "(max,max)\<in>nat_rel \<rightar
 lemma param_min_int[param,sepref_import_param]: "(min,min)\<in>int_rel \<rightarrow> int_rel \<rightarrow> int_rel" by auto
 lemma param_max_int[param,sepref_import_param]: "(max,max)\<in>int_rel \<rightarrow> int_rel \<rightarrow> int_rel" by auto
 
-
+lemma uminus_hnr[sepref_import_param]: "(uminus,uminus)\<in>int_rel \<rightarrow> int_rel" by auto
+    
 lemma nat_param[param,sepref_import_param]: "(nat,nat) \<in> int_rel \<rightarrow> nat_rel" by auto
 lemma int_param[param,sepref_import_param]: "(int,int) \<in> nat_rel \<rightarrow> int_rel" by auto
       
@@ -1267,7 +1268,7 @@ lemma list_assn_aux_append_conv2:
 lemmas list_assn_aux_append_conv = list_assn_aux_append_conv1 list_assn_aux_append_conv2  
 
 declare param_upt[sepref_import_param]
-
+  
   
 subsection \<open>Sum-Type\<close>    
 

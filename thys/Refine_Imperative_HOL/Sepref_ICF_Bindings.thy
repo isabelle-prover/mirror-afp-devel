@@ -3,7 +3,11 @@ imports Sepref_Tool
   "../Collections/Refine_Dflt_ICF"
   "IICF/IICF"
 begin
-
+  subsection \<open>Miscellaneous\<close>
+  lemma (in -) rev_append_hnr[param,sepref_import_param]:
+    "(rev_append, rev_append) \<in> \<langle>A\<rangle>list_rel \<rightarrow> \<langle>A\<rangle>list_rel \<rightarrow> \<langle>A\<rangle>list_rel"
+    unfolding rev_append_def by parametricity
+  
   subsection \<open>Sets by List\<close>
 
   (* TODO: Move to Collections *)

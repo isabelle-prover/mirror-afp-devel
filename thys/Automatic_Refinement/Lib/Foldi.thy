@@ -53,6 +53,24 @@ by (induct xs arbitrary: \<sigma>, simp_all)
 lemma foldli_snoc_id[simp]: "foldli l (\<lambda>_. True) (\<lambda>x l. l@[x]) l0 = l0@l"
   by (induct l arbitrary: l0) (auto)
 
+    
+lemma foldli_foldli_prod_conv: 
+  "foldli l2 ctd (\<lambda>i. foldli l1 ctd (f i)) s = foldli (List.product l2 l1) ctd (\<lambda>(i,j). f i j) s"
+  (is "?lhs=?rhs")
+proof -
+  have [simp]: "foldli (map (Pair a) l) ctd (\<lambda>(x, y). f x y) s = foldli l ctd (f a) s"
+    for a l s
+    apply (induction l arbitrary: s) 
+    by (auto simp:)
+
+  show ?thesis  
+    by (induction l2 arbitrary: l1 s) (auto simp: foldli_append)
+qed  
+
+lemma fold_fold_prod_conv: "fold (\<lambda>i. fold (f i) l1) l2 s = fold (\<lambda>(i,j). f i j) (List.product l2 l1) s"
+  using foldli_foldli_prod_conv[of l2 "\<lambda>_. True" l1 f s]
+  by (simp add: foldli_foldl foldl_conv_fold)
+    
 subsection {* Right folding *}
 
 definition foldri :: "'x list \<Rightarrow> ('\<sigma> \<Rightarrow> bool) \<Rightarrow> ('x \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>) \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>"  where
