@@ -109,7 +109,7 @@ lemma discharge_structure_refine_aux:
   } ) \<le> \<Down>R (
 
   do {
-    v \<leftarrow> selectp v. v\<in>n u;
+    v \<leftarrow> select v. v\<in>n u;
     case v of
       None \<Rightarrow> fN
     | Some v \<Rightarrow> fS v

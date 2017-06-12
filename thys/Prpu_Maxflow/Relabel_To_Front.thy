@@ -271,7 +271,7 @@ text \<open>The discharge operation performs push and relabel operations on a
 definition "discharge f l n u \<equiv> do {  
   assert (u \<in> V - {s,t});
   while\<^sub>T (\<lambda>(f,l,n). excess f u \<noteq> 0) (\<lambda>(f,l,n). do {
-    v \<leftarrow> selectp v. v\<in>n u;
+    v \<leftarrow> select v. v\<in>n u;
     case v of
       None \<Rightarrow> do {
         l \<leftarrow> relabel f l u;

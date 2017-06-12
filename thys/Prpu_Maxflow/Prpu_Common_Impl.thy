@@ -337,6 +337,7 @@ proof -
     apply (simp only: nres_monad_laws)  
     supply LFO_refine[OF fun_relD[OF AM IdI] _ IdI, refine]
     apply (refine_rcg)
+    apply refine_dref_type  
     by auto  
   also note min_adj_label_aux_spec[OF PRE]    
   finally show ?thesis by simp  

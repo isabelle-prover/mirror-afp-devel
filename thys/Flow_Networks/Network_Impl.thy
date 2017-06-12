@@ -276,7 +276,7 @@ begin
   
 definition "compute_flow_val_aux am cf \<equiv> do {
     succs \<leftarrow> am_get am s;
-    setsum_impl (\<lambda>v. cf_get cf (v,s)) (set succs)
+    sum_impl (\<lambda>v. cf_get cf (v,s)) (set succs)
   }"
 
 lemma (in RGraph_Impl) compute_flow_val_aux_correct:
@@ -284,7 +284,7 @@ lemma (in RGraph_Impl) compute_flow_val_aux_correct:
   shows "compute_flow_val_aux am cf \<le> (spec v. v = f.val)"
   unfolding val_by_adj_map[OF assms]
   unfolding compute_flow_val_aux_def cf_get_def am_get_def
-  apply (refine_vcg setsum_imp_correct)
+  apply (refine_vcg sum_impl_correct)
   apply (vc_solve simp: s_node)
   subgoal using assms unfolding is_adj_map_def by auto  
   done
@@ -307,7 +307,7 @@ proof -
     by (simp add: RELATES_def)
   show ?thesis
     apply (rule order_trans[OF _ compute_flow_val_aux_correct[OF assms]])
-    unfolding compute_flow_val_def compute_flow_val_aux_def setsum_impl_def
+    unfolding compute_flow_val_def compute_flow_val_aux_def sum_impl_def
     apply (rule refine_IdD)
     apply (refine_rcg LFO_refine bind_refine')
     apply refine_dref_type
