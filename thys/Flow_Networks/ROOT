@@ -9,8 +9,6 @@ session Maxflow_Lib (AFP) = Sepref_IICF +
     "Lib/Fofu_Abs_Base"
     "Lib/Fofu_Impl_Base"
     "Lib/Refine_Add_Fofu"
-    "Lib/DRAT_Misc"
-    "Lib/Refine_Monadic_Syntax_Sugar"
 
 session Flow_Networks (AFP) = Maxflow_Lib +
   options [document = pdf, timeout = 240,
