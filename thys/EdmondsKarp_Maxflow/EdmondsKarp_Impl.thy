@@ -18,110 +18,7 @@ begin
       to work directly on residual graphs. For this, we first have to 
       establish a relation between flows in a network and residual graphs.
       \<close>
-
-  definition (in Network) "flow_of_cf cf e \<equiv> (if (e\<in>E) then c e - cf e else 0)"
-
-  (* TODO: We have proved/used this fact already for Edka-Analysis! (uE) *)  
-  lemma (in NFlow) E_ss_cfinvE: "E \<subseteq> Graph.E cf \<union> (Graph.E cf)\<inverse>"
-    unfolding residualGraph_def Graph.E_def
-    apply (clarsimp)
-    using no_parallel_edge (* Speed optimization: Adding this directly takes very long *)
-    unfolding E_def
-    apply (simp add: )
-    done
-
-
-
-
-  locale RGraph -- \<open>Locale that characterizes a residual graph of a network\<close>
-  = Network +
-    fixes cf
-    assumes EX_RG: "\<exists>f. NFlow c s t f \<and> cf = residualGraph c f"
-  begin  
-
-    lemma this_loc: "RGraph c s t cf"
-      by unfold_locales
-
-    definition "f \<equiv> flow_of_cf cf"
-
-    lemma f_unique:
-      assumes "NFlow c s t f'"
-      assumes A: "cf = residualGraph c f'"
-      shows "f' = f"
-    proof -
-      interpret f': NFlow c s t f' by fact
-      
-      show ?thesis
-        unfolding f_def[abs_def] flow_of_cf_def[abs_def]
-        unfolding A residualGraph_def
-        apply (rule ext)
-        using f'.capacity_const unfolding E_def
-        apply (auto split: prod.split)
-        by (metis antisym)
-    qed
-
-    lemma is_NFlow: "NFlow c s t (flow_of_cf cf)"
-      apply (fold f_def)
-      using EX_RG f_unique by metis
-      
-    sublocale f: NFlow c s t f unfolding f_def by (rule is_NFlow)
-
-    lemma rg_is_cf[simp]: "residualGraph c f = cf"
-      using EX_RG f_unique by auto
-
-    lemma rg_fo_inv[simp]: "residualGraph c (flow_of_cf cf) = cf"  
-      using rg_is_cf
-      unfolding f_def
-      .
-      
-
-    sublocale cf: Graph cf .
-
-    lemma resV_netV[simp]: "cf.V = V"
-      using f.resV_netV by simp
-
-    sublocale cf: Finite_Graph cf 
-      apply unfold_locales
-      apply simp
-      done
-
-    (*lemma finite_cf: "finite (cf.V)" by simp*)
-
-    lemma E_ss_cfinvE: "E \<subseteq> cf.E \<union> cf.E\<inverse>"  
-      using f.E_ss_cfinvE by simp
-
-    lemma cfE_ss_invE: "cf.E \<subseteq> E \<union> E\<inverse>"
-      using f.cfE_ss_invE by simp
-      
-    lemma resE_nonNegative: "cf e \<ge> 0"  
-      using f.resE_nonNegative by auto
-
-  end
-
-  context NFlow begin
-    lemma is_RGraph: "RGraph c s t cf"
-      apply unfold_locales
-      apply (rule exI[where x=f])
-      apply (safe; unfold_locales)
-      done
-
-    lemma fo_rg_inv: "flow_of_cf cf = f"  
-      unfolding flow_of_cf_def[abs_def]
-      unfolding residualGraph_def
-      apply (rule ext)
-      using capacity_const unfolding E_def
-      apply (clarsimp split: prod.split)
-      by (metis antisym)
-
-  end    
-
-  (* For snippet*)
-  lemma (in NFlow)
-    "flow_of_cf (residualGraph c f) = f"
-    by (rule fo_rg_inv)
-
-
-
+    
   subsubsection \<open>Refinement of Operations\<close>
   context Network 
   begin
@@ -132,7 +29,10 @@ begin
       mapping flows to residual graphs:\<close>
     lemma cfi_rel_alt: "cfi_rel = {(cf,f). cf = residualGraph c f \<and> NFlow c s t f}"
       unfolding cfi_rel_def br_def
-      by (auto simp: NFlow.is_RGraph RGraph.is_NFlow RGraph.rg_fo_inv NFlow.fo_rg_inv)
+      by (auto 
+          simp: NFlow.is_RGraph RGraph.is_NFlow 
+          simp: RPreGraph.rg_fo_inv[OF RGraph.this_loc_rpg]
+          simp: NPreflow.fo_rg_inv[OF NFlow.axioms(1)])
 
     
     text \<open>Initially, the residual graph for the zero flow equals the original network\<close>
@@ -159,7 +59,7 @@ begin
 
     lemma augment_cf_refine:
       assumes R: "(cf,f)\<in>cfi_rel"
-      assumes AUG: "NFlow.isAugmentingPath c s t f p"
+      assumes AUG: "NPreflow.isAugmentingPath c s t f p"
       shows "(Graph.augment_cf cf (set p) (resCap_cf cf p), 
           NFlow.augment_with_path c f p) \<in> cfi_rel"
     proof -    
@@ -247,7 +147,7 @@ begin
         apply (auto simp: cfi_rel_def br_def; fail)
         using RGraph.find_shortest_augmenting_spec_cf_refine
         apply (auto simp: cfi_rel_def br_def; fail)
-        apply (auto simp: cfi_rel_def br_def simp: RGraph.rg_fo_inv; fail)
+        apply (auto simp: cfi_rel_def br_def simp: RPreGraph.rg_fo_inv[OF RGraph.this_loc_rpg]; fail)
         apply (drule (1) augment_cf_refine; simp add: cfi_rel_def br_def; fail)
         apply (simp add: augment_cf_refine; fail)
         apply (auto simp: cfi_rel_def br_def; fail)
@@ -500,8 +400,8 @@ begin
       apply (rule le_ASSERTI)
       apply (rule order_trans)
       apply (rule Graph.bfs_correct)
-      apply (simp add: RGraph.resV_netV s_node)
-      apply (simp add: RGraph.resV_netV)
+      apply (simp add: RPreGraph.resV_netV[OF RGraph.this_loc_rpg] s_node)
+      apply (simp add: RPreGraph.resV_netV[OF RGraph.this_loc_rpg])
       apply (simp)
       done
 
@@ -680,7 +580,7 @@ begin
       apply (vc_solve simp: )
       apply (rule refine_IdD)
       apply (rule Graph.bfs2_refine)
-      apply (simp add: RGraph.resV_netV)
+      apply (simp add: RPreGraph.resV_netV[OF RGraph.this_loc_rpg])
       apply (simp add: RGraph.rg_succ_ref)
       done
 
