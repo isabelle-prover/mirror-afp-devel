@@ -1012,16 +1012,28 @@ begin
 
     {
       fix i
-      assume "Suc i < length (p @ [{v}])"
-      hence "(p @ [{v}]) ! i \<times> (p @ [{v}]) ! Suc i 
+      assume SILL: "Suc i < length (p @ [{v}])"
+      have "(p @ [{v}]) ! i \<times> (p @ [{v}]) ! Suc i 
              \<inter> (E - (pE - {(u, v)} \<union> E \<inter> {v} \<times> UNIV)) \<noteq> {}"
-        apply (cases "i = length p - 1")
-        using E pE_E_from_p UIL VNE
-        apply (simp add: nth_append last_conv_nth) apply fast []
-        using p_connected VNE
-        apply (simp add: nth_append)
-        apply fastforce []
-        done
+      proof (cases "i = length p - 1")
+        case True thus ?thesis using SILL E pE_E_from_p UIL VNE
+          by (simp add: nth_append last_conv_nth) fast
+      next
+        case False
+        with SILL have SILL': "Suc i < length p" by simp
+            
+        with SILL' VNE have X1: "v\<notin>p!i" "v\<notin>p!Suc i" by auto
+            
+        from p_connected[OF SILL'] obtain a b where 
+          "a\<in>p!i" "b\<in>p!Suc i" "(a,b)\<in>E" "(a,b)\<notin>pE" 
+          by auto
+        with X1 have "a\<noteq>v" "b\<noteq>v" by auto
+        with \<open>(a,b)\<in>E\<close> \<open>(a,b)\<notin>pE\<close> have "(a,b)\<in>(E - (pE - {(u, v)} \<union> E \<inter> {v} \<times> UNIV))"
+          by auto
+        with \<open>a\<in>p!i\<close> \<open>b\<in>p!Suc i\<close>
+        show ?thesis using  SILL'
+          by (simp add: nth_append; blast) 
+      qed
     } note AUX_p_connected = this
 
     {
