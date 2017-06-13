@@ -1,0 +1,12 @@
+session PSemigroupsConvolution = HOL +
+  options [timeout=600]
+  theories
+   Partial_Semigroups
+   Partial_Semigroup_Models
+   Quantales
+   Binary_Modalities
+   Unary_Modalities
+   Partial_Semigroup_Lifting
+  document_files
+    "root.tex"
+    "root.bib"

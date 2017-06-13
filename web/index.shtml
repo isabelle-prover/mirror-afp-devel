@@ -90,6 +90,17 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
   </tr>
       <tr>
       <td class="entry">
+        2017-06-13: <a href="entries/PSemigroupsConvolution.shtml">Partial Semigroups and Convolution Algebras</a>
+        <br>
+                  Authors:
+                          Brijesh Dongol,
+                          Victor B. F. Gomes,
+                        Ian J. Hayes
+          and     Georg Struth
+              </td>
+    </tr>
+      <tr>
+      <td class="entry">
         2017-06-06: <a href="entries/Buffons_Needle.shtml">Buffon's Needle Problem</a>
         <br>
                   Author:
@@ -791,8 +802,8 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
         2016-06-18: <a href="entries/Algebraic_VCs.shtml">Program Construction and Verification Components Based on Kleene Algebra</a>
         <br>
                   Authors:
-                        <a href="http://www.dcs.shef.ac.uk/~victor">Victor B. F. Gomes</a>
-          and     <a href="http://staffwww.dcs.shef.ac.uk/people/G.Struth/">Georg Struth</a>
+                        Victor B. F. Gomes
+          and     Georg Struth
               </td>
     </tr>
       <tr>
@@ -963,10 +974,10 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
         2016-04-12: <a href="entries/KAD.shtml">Kleene Algebras with Domain</a>
         <br>
                   Authors:
-                          <a href="http://www.dcs.shef.ac.uk/~victor">Victor B. F. Gomes</a>,
+                          Victor B. F. Gomes,
                           <a href="http://www.cosc.canterbury.ac.nz/walter.guttmann/">Walter Guttmann</a>,
                           <a href="http://www.hoefner-online.de/">Peter Höfner</a>,
-                        <a href="http://staffwww.dcs.shef.ac.uk/people/G.Struth/">Georg Struth</a>
+                        Georg Struth
           and     Tjark Weber
               </td>
     </tr>
@@ -1308,7 +1319,7 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
         <br>
                   Authors:
                         <a href="http://www.sci.kagoshima-u.ac.jp/~furusawa/">Hitoshi Furusawa</a>
-          and     <a href="http://staffwww.dcs.shef.ac.uk/people/G.Struth/">Georg Struth</a>
+          and     Georg Struth
               </td>
     </tr>
       <tr>
@@ -1361,8 +1372,8 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
         2015-04-15: <a href="entries/Residuated_Lattices.shtml">Residuated Lattices</a>
         <br>
                   Authors:
-                        <a href="http://www.dcs.shef.ac.uk/~victor">Victor B. F. Gomes</a>
-          and     <a href="http://staffwww.dcs.shef.ac.uk/people/G.Struth/">Georg Struth</a>
+                        Victor B. F. Gomes
+          and     Georg Struth
               </td>
     </tr>
       <tr>
@@ -1759,7 +1770,7 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
         <br>
                   Authors:
                         Simon Foster
-          and     <a href="http://staffwww.dcs.shef.ac.uk/people/G.Struth/">Georg Struth</a>
+          and     Georg Struth
               </td>
     </tr>
       <tr>
@@ -1928,7 +1939,7 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
                   Authors:
                           <a href="http://staffwww.dcs.shef.ac.uk/people/A.Armstrong/">Alasdair Armstrong</a>,
                           Simon Foster,
-                        <a href="http://staffwww.dcs.shef.ac.uk/people/G.Struth/">Georg Struth</a>
+                        Georg Struth
           and     Tjark Weber
               </td>
     </tr>
@@ -1938,8 +1949,8 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
         <br>
                   Authors:
                           <a href="http://staffwww.dcs.shef.ac.uk/people/A.Armstrong/">Alasdair Armstrong</a>,
-                        <a href="http://www.dcs.shef.ac.uk/~victor">Victor B. F. Gomes</a>
-          and     <a href="http://staffwww.dcs.shef.ac.uk/people/G.Struth/">Georg Struth</a>
+                        Victor B. F. Gomes
+          and     Georg Struth
               </td>
     </tr>
       <tr>
@@ -2158,7 +2169,7 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
         <br>
                   Authors:
                           <a href="http://staffwww.dcs.shef.ac.uk/people/A.Armstrong/">Alasdair Armstrong</a>,
-                        <a href="http://staffwww.dcs.shef.ac.uk/people/G.Struth/">Georg Struth</a>
+                        Georg Struth
           and     Tjark Weber
               </td>
     </tr>

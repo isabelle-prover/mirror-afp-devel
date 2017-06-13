@@ -4313,6 +4313,29 @@ abstract = Tarski's algebra of binary relations is formalised along the lines of
 	relations and Boolean matrices.
 notify = g.struth@sheffield.ac.uk, tjark.weber@it.uu.se
 
+[PSemigroupsConvolution]
+title = Partial Semigroups and Convolution Algebras
+author = Brijesh Dongol <mailto:brijesh.dongol@brunel.ac.uk>, Victor B. F. Gomes <mailto:victor.gomes@cl.cam.ac.uk>, Ian J. Hayes <mailto:ian.hayes@itee.uq.edu.au>, Georg Struth <mailto:g.struth@sheffield.ac.uk>
+topic = Mathematics/Algebra
+date = 2017-06-13
+notify = g.struth@sheffield.ac.uk, victor.gomes@cl.cam.ac.uk
+abstract = 
+   Partial Semigroups are relevant to the foundations of quantum
+  mechanics and combinatorics as well as to interval and separation
+  logics. Convolution algebras can be understood either as algebras of
+  generalised binary modalities over ternary Kripke frames, in
+  particular over partial semigroups, or as algebras of quantale-valued
+  functions which are equipped with a convolution-style operation of
+  multiplication that is parametrised by a ternary relation. Convolution
+  algebras provide algebraic semantics for various substructural logics,
+  including categorial, relevance and linear logics, for separation
+  logic and for interval logics; they cover quantitative and qualitative
+  applications. These mathematical components for partial semigroups and
+  convolution algebras provide uniform foundations from which models of
+  computation based on relations, program traces or pomsets, and
+  verification components for separation or interval temporal logics can
+  be built with little effort.
+
 [Secondary_Sylow]
 title = Secondary Sylow Theorems
 author = Jakob von Raumer <mailto:psxjv4@nottingham.ac.uk>

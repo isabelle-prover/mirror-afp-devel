@@ -9,7 +9,30 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>06 Jun 2017 00:00:00 +0000</pubDate>
+    <pubDate>13 Jun 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>Partial Semigroups and Convolution Algebras</title>
+              <link>https://www.isa-afp.org/entries/PSemigroupsConvolution.shtml</link>
+       <guid>https://www.isa-afp.org/entries/PSemigroupsConvolution.shtml</guid>
+       <dc:creator> Brijesh Dongol, Victor B. F. Gomes, Ian J. Hayes, Georg Struth       </dc:creator>
+       <pubDate>13 Jun 2017 00:00:00 +0000</pubDate>
+       <description>
+Partial Semigroups are relevant to the foundations of quantum
+mechanics and combinatorics as well as to interval and separation
+logics. Convolution algebras can be understood either as algebras of
+generalised binary modalities over ternary Kripke frames, in
+particular over partial semigroups, or as algebras of quantale-valued
+functions which are equipped with a convolution-style operation of
+multiplication that is parametrised by a ternary relation. Convolution
+algebras provide algebraic semantics for various substructural logics,
+including categorial, relevance and linear logics, for separation
+logic and for interval logics; they cover quantitative and qualitative
+applications. These mathematical components for partial semigroups and
+convolution algebras provide uniform foundations from which models of
+computation based on relations, program traces or pomsets, and
+verification components for separation or interval temporal logics can
+be built with little effort.</description>
+    </item>
     <item>
        <title>Buffon's Needle Problem</title>
               <link>https://www.isa-afp.org/entries/Buffons_Needle.shtml</link>
@@ -544,21 +567,6 @@ aims for removing so-called redundant strongly connected components of
 phi functions, we show that this suffices to guarantee minimality
 according to &lt;a href=&#34;http://dx.doi.org/10.1145/115372.115320&#34;&gt;Cytron et
 al.&lt;/a&gt;.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Bertrand's postulate</title>
-              <link>https://www.isa-afp.org/entries/Bertrands_Postulate.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Bertrands_Postulate.shtml</guid>
-       <dc:creator> Julian Biendarra, Manuel Eberl       </dc:creator>
-       <pubDate>17 Jan 2017 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;Bertrand&#39;s postulate is an early result on the
-distribution of prime numbers: For every positive integer n, there
-exists a prime number that lies strictly between n and 2n.
-The proof is ported from John Harrison&#39;s formalisation
-in HOL Light. It proceeds by first showing that the property is true
-for all n greater than or equal to 600 and then showing that it also
-holds for all n below 600 by case distinction. &lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Kleene Algebras with Domain - Archive of Formal Proofs
+<title>Partial Semigroups and Convolution Algebras - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,13 +61,15 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">K</font>leene
+  <h1>          <font class="first">P</font>artial
+  
+          <font class="first">S</font>emigroups
+  
+          and
+  
+          <font class="first">C</font>onvolution
   
           <font class="first">A</font>lgebras
-  
-          with
-  
-          <font class="first">D</font>omain
   
 </h1>
   <p>&nbsp;</p>
@@ -76,7 +78,7 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Kleene Algebras with Domain</td>
+  <td class="data" width="80%">Partial Semigroups and Convolution Algebras</td>
 </tr>
 
 <tr>
@@ -84,11 +86,10 @@
           Authors:
       </td>
   <td class="data">
-                      Victor B. F. Gomes (victor /dot/ gomes /at/ cl /dot/ cam /dot/ ac /dot/ uk),
-                  <a href="http://www.cosc.canterbury.ac.nz/walter.guttmann/">Walter Guttmann</a>,
-                  <a href="http://www.hoefner-online.de/">Peter Höfner</a>,
-                Georg Struth (g /dot/ struth /at/ sheffield /dot/ ac /dot/ uk) and
-          Tjark Weber (tjark /dot/ weber /at/ it /dot/ uu /dot/ se)
+                      Brijesh Dongol (brijesh /dot/ dongol /at/ brunel /dot/ ac /dot/ uk),
+                  Victor B. F. Gomes (victor /dot/ gomes /at/ cl /dot/ cam /dot/ ac /dot/ uk),
+                Ian J. Hayes (ian /dot/ hayes /at/ itee /dot/ uq /dot/ edu /dot/ au) and
+          Georg Struth (g /dot/ struth /at/ sheffield /dot/ ac /dot/ uk)
       </td>
 </tr>
 
@@ -96,36 +97,40 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2016-04-12</td>
+  <td class="data">2017-06-13</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-Kleene algebras with domain are Kleene algebras endowed with an
-operation that maps each element of the algebra to its domain of
-definition (or its complement) in abstract fashion. They form a simple
-algebraic basis for Hoare logics, dynamic logics or predicate
-transformer semantics. We formalise a modular hierarchy of algebras
-with domain and antidomain (domain complement) operations in
-Isabelle/HOL that ranges from domain and antidomain semigroups to
-modal Kleene algebras and divergence Kleene algebras. We link these
-algebras with models of binary relations and program traces. We
-include some examples from modal logics, termination and program
-analysis.</td>
+Partial Semigroups are relevant to the foundations of quantum
+mechanics and combinatorics as well as to interval and separation
+logics. Convolution algebras can be understood either as algebras of
+generalised binary modalities over ternary Kripke frames, in
+particular over partial semigroups, or as algebras of quantale-valued
+functions which are equipped with a convolution-style operation of
+multiplication that is parametrised by a ternary relation. Convolution
+algebras provide algebraic semantics for various substructural logics,
+including categorial, relevance and linear logics, for separation
+logic and for interval logics; they cover quantitative and qualitative
+applications. These mathematical components for partial semigroups and
+convolution algebras provide uniform foundations from which models of
+computation based on relations, program traces or pomsets, and
+verification components for separation or interval temporal logics can
+be built with little effort.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{KAD-AFP,
-  author  = {Victor B. F. Gomes and Walter Guttmann and Peter Höfner and Georg Struth and Tjark Weber},
-  title   = {Kleene Algebras with Domain},
+        <pre>@article{PSemigroupsConvolution-AFP,
+  author  = {Brijesh Dongol and Victor B. F. Gomes and Ian J. Hayes and Georg Struth},
+  title   = {Partial Semigroups and Convolution Algebras},
   journal = {Archive of Formal Proofs},
-  month   = apr,
-  year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/KAD.shtml},
+  month   = jun,
+  year    = 2017,
+  note    = {\url{http://isa-afp.org/entries/PSemigroupsConvolution.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -136,12 +141,8 @@ analysis.</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                      <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Kleene_Algebra.shtml">Kleene_Algebra</a>      </td></tr>
-          
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Algebraic_VCs.shtml">Algebraic_VCs</a>      </td></tr>
-          
+                    
+                    
 
         
   </tbody>
@@ -153,29 +154,23 @@ analysis.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/KAD/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/KAD/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/PSemigroupsConvolution/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/PSemigroupsConvolution/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/KAD/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/PSemigroupsConvolution/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-KAD-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-PSemigroupsConvolution-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
     <tr><td class="links">Older releases:
-          <ul>
-                        <li>Isabelle 2016:
-          <a href="../release/afp-KAD-2016-04-12.tar.gz">
-            afp-KAD-2016-04-12.tar.gz
-          </a>
-          </li>
-                    </ul>
+        None
         </td></tr>
 
   </tbody>
