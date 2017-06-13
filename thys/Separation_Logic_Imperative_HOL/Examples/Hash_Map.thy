@@ -434,7 +434,7 @@ lemma ls_insls_map_of:
       abs_update_map_of[OF prems(2-4)] 
     show ?thesis
       apply simp
-      apply (rule map_add_upd2)
+      apply (rule map_add_upd_left)
       apply (metis dom_map_of_conv_image_fst)
       done
   qed

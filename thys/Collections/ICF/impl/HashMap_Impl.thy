@@ -139,7 +139,7 @@ next
   assume "dom m \<subseteq> {k}"
   hence "dom m - {k} = {}" by auto
   hence "dom (m |` (-{k})) = {}" by auto
-  thus "m |` (-{k}) = Map.empty" by (simp only: dom_empty_simp)
+  thus "m |` (-{k}) = Map.empty" by blast
 qed
   
 lemma ahm_delete_correct: 

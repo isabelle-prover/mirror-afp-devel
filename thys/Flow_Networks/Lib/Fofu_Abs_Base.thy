@@ -2,7 +2,7 @@ theory Fofu_Abs_Base
 imports 
   Complex_Main 
   "~~/src/HOL/Library/Rewrite"
-  Misc 
+  "../../Automatic_Refinement/Lib/Misc"
   "../../Refine_Imperative_HOL/Lib/Sepref_Misc"
   "../../Program-Conflict-Analysis/LTS"
 begin  

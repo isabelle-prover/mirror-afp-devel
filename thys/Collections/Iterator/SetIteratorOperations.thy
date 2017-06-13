@@ -461,12 +461,11 @@ lemma set_iterator_genord_filter_correct :
   shows "set_iterator_genord (set_iterator_filter P it) {x. x \<in> S \<and> P x} R"
 proof -
   let ?g = "\<lambda>x. if P x then Some x else None"
-  have set_eq: "\<And>S. {y |x y. x \<in> S \<and> ?g x = Some y} = {x. x \<in> S \<and> P x}"  by auto
   have in_dom_g: "\<And>x. x \<in> dom ?g \<longleftrightarrow> P x" unfolding dom_def by auto
 
   from set_iterator_genord_image_filter_correct [OF it_OK, of ?g R, folded set_iterator_filter_def]
   show ?thesis
-    by (simp add: if_split_eq1 set_eq[symmetric] inj_on_def Ball_def in_dom_g)
+    by (simp add: if_split_eq1 inj_on_def Ball_def in_dom_g)
 qed
 
 lemma set_iterator_filter_correct :
