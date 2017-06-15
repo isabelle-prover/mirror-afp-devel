@@ -529,10 +529,9 @@ begin
         by auto  
           
       have "sum f' (outgoing u) 
-        = sum f (outgoing u) + (\<Sum>x\<in>outgoing u. if x = (u, v) then \<Delta> else 0)"     
-        by (auto 
-              simp: f'_alt augment_edge_def sum.distrib[symmetric] 
-              intro: sum.cong)
+        = sum f (outgoing u) + (\<Sum>x\<in>outgoing u. if x = (u, v) then \<Delta> else 0)"
+        unfolding f'_alt augment_edge_def sum.distrib[symmetric] 
+          by (rule sum.cong) auto
       also have "\<dots> = sum f (outgoing u) + \<Delta>" 
         using UV_ONI by (auto simp: sum.delta)
       finally show ?thesis using 1 unfolding excess_def by simp 
@@ -547,9 +546,8 @@ begin
         by (auto)
       have "sum f' (incoming u) 
         = sum f (incoming u) + (\<Sum>x\<in>incoming u. if x = (v, u) then - \<Delta> else 0)"
-        by (auto 
-              simp: f'_alt sum.distrib[symmetric] augment_edge_def 
-              intro: sum.cong)
+        unfolding f'_alt augment_edge_def sum.distrib[symmetric] 
+          by (rule sum.cong) auto
       also have "\<dots> = sum f (incoming u) - \<Delta>"  
         using UV_INO by (auto simp: sum.delta)
       finally show ?thesis using 1 unfolding excess_def by auto
@@ -570,8 +568,9 @@ begin
           
       have "sum f' (incoming v) 
         = sum f (incoming v) + (\<Sum>x\<in>incoming v. if x=(u,v) then \<Delta> else 0)"    
-        using UV_INO unfolding f'_alt
-        by (auto simp: augment_edge_def sum.distrib[symmetric] intro: sum.cong)
+        unfolding f'_alt augment_edge_def sum.distrib[symmetric] 
+        apply (rule sum.cong)
+        using UV_INO unfolding f'_alt by auto
       also have "\<dots> = sum f (incoming v) + \<Delta>" 
         using UV_INO by (auto simp: sum.delta)
       finally show ?thesis using 1 by (auto simp: excess_def)
@@ -586,8 +585,9 @@ begin
           
       have "sum f' (outgoing v) 
         = sum f (outgoing v) + (\<Sum>x\<in>outgoing v. if x=(v,u) then - \<Delta> else 0)"    
-        using UV_INO unfolding f'_alt
-        by (auto simp: augment_edge_def sum.distrib[symmetric] intro: sum.cong)
+        unfolding f'_alt augment_edge_def sum.distrib[symmetric] 
+        apply (rule sum.cong)
+        using UV_INO unfolding f'_alt by auto
       also have "\<dots> = sum f (outgoing v) - \<Delta>" 
         using UV_INO by (auto simp: sum.delta)
       finally show ?thesis using 1 by (auto simp: excess_def)
