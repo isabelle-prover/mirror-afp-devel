@@ -1161,7 +1161,7 @@ proof (rule notI, erule exE, (erule conjE)+)
   ultimately have
    "next_dom_events P\<^sub>c id a\<^sub>c [a\<^sub>c, b\<^sub>c, c\<^sub>c] = next_dom_events P\<^sub>c id a\<^sub>c [b\<^sub>c, a\<^sub>c, c\<^sub>c]" ..
   thus False
-   by (simp add: next_dom_events_def counterexample_next_events_2 T\<^sub>c_def, blast)
+   by (simp add: next_dom_events_def counterexample_next_events_2 T\<^sub>c_def)
 qed
 
 theorem not_secure_implies_gu_condition:

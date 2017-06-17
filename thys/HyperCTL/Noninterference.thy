@@ -902,7 +902,7 @@ next
     hence sl'NE: "sl' \<noteq> []" by (metis wffp_NE)
     have "wffp (ss' # sl')" using wsl' hsl' unfolding s'_def st'_def by (cases ss') auto
     moreover
-    {have "f s s'" using u unfolding s'_def st'_def s f_def by simp
+    {have "f s s'" using u unfolding s'_def st'_def s f_def by blast
      hence "list_all2 f sl sl'" using slsl' hsl hsl' slNE sl'NE
      by (metis list.sel(1,3) list_all2_Cons neq_Nil_conv)
     }

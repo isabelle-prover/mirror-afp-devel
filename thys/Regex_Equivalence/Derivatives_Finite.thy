@@ -379,7 +379,6 @@ proof (induct xs1 arbitrary: xs2 rule: list_singleton_induct)
   case (single x1)
   thus ?case
     apply (auto intro!: trans[OF ACI_nPlus_singleton_PLUS] simp del: sorted_list_of_set_insert)
-    apply fastforce
     apply (simp only: insert_absorb)
     apply (metis List.finite_set finite_sorted_distinct_unique sorted_list_of_set)
     apply (rule arg_cong[of _ _ PLUS])

@@ -326,7 +326,7 @@ lemma [simp]:
   apply safe
   apply simp
   apply (drule_tac x = loop in spec)
-  by (simp add: ClassicMark_def QQ1_a_def QQ2_a_def demonic_def, auto)
+  by (simp add: ClassicMark_def QQ1_a_def QQ2_a_def demonic_def)
 
 lemma [simp]: "grd \<top> = \<bottom>"
   by (simp add: grd_def top_fun_def)

@@ -1973,7 +1973,6 @@ theorem extend_hintikka:
   apply simp
   apply (drule sym)
   apply simp
-  apply fast
   apply (rule allI impI)+
   apply (erule_tac x=P in allE)
   apply (simp only: Extend_def)

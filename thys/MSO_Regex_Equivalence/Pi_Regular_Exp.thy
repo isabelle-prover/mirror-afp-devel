@@ -190,7 +190,6 @@ lemma ACI_nPlus_PLUS:
 proof (induct xs1 arbitrary: xs2 rule: list_singleton_induct)
   case (single x1) thus ?case
     apply (auto intro!: trans[OF ACI_nPlus_singleton_PLUS] simp: insert_absorb simp del: sorted_list_of_set_insert)
-      apply fastforce
      apply (metis finite_set finite_sorted_distinct_unique sorted_list_of_set)
     apply (metis remdups_id_iff_distinct sorted_list_of_set_sort_remdups sorted_sort_id)
     done

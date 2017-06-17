@@ -388,7 +388,7 @@ lemma hpair_in_nonrestrict_iff [simp]: "\<langle>a,b\<rangle> \<^bold>\<in> nonr
   by (auto simp: nonrestrict_def)
 
 lemma app_nonrestrict_Seq: "Seq s k \<Longrightarrow> z \<^bold>\<notin> X \<Longrightarrow> app (nonrestrict s X) z = app s z"
-  by (auto simp: Seq_def nonrestrict_def app_def)
+  by (auto simp: Seq_def nonrestrict_def app_def HBall_def) (metis)
 
 lemma app_insf_Seq: "Seq s k \<Longrightarrow> app (insf s k y) k = y"
   by (metis Seq_def hfunction_insf app_equality hmem_hinsert insf_def)

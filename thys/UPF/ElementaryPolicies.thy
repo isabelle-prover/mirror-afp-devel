@@ -196,9 +196,6 @@ lemma sub_ran : "ran p  \<subseteq> Allow \<union> Deny"
   subgoal for x a
     apply (case_tac "x")
      apply (simp_all)
-    apply (rename_tac \<alpha>)
-    apply (erule_tac x="\<alpha>" in allE)
-    apply (simp)
     done
   done 
     
