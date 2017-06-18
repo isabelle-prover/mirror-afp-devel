@@ -908,12 +908,9 @@ apply(simp split: if_split_asm split del: if_split add: is_vals_conv)
  apply(clarsimp split del: if_split)
  apply(rule if_intro)
   apply(clarsimp split: if_split_asm simp add: is_vals_conv)
-   apply(erule disjE)
-    apply clarsimp
-    apply(rule exI conjI)+
-     apply(erule Call_\<tau>red0r_param)
-    apply(fastforce intro: CallParams)
-   apply(fastforce simp add: \<tau>reds0r_map_Val)
+   apply(rule exI conjI)+
+    apply(erule Call_\<tau>red0r_param)
+   apply(fastforce intro: CallParams)
   apply(rule exI conjI)+
    apply(erule Call_\<tau>red0r_param)
   apply(fastforce intro!: CallParams)
