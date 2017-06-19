@@ -18,13 +18,18 @@ structure Data = Generic_Data
   val extend = I
 )
 
+fun lenient_unvarify t =
+  (* type variables in records are not schematic *)
+  Logic.unvarify_global t
+    handle TERM _ => t
+
 fun mk_funs {T, ctrs, ...} lthy =
   let
     val typ_name = fst (dest_Type T)
 
     fun mk_fun ctr lthy =
       let
-        val (name, typ) = dest_Const (Logic.unvarify_global ctr)
+        val (name, typ) = dest_Const (lenient_unvarify ctr)
         val (typs, _) = strip_type typ
         val len = length typs
       in

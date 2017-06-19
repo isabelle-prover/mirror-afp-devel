@@ -22,6 +22,12 @@ constructor_funs tree
 
 end
 
+text \<open>Records are supported.\<close>
+
+record 'a meep =
+  field1 :: 'a
+  field2 :: nat
+
 text \<open>Nested and mutual recursion are supported.\<close>
 
 datatype
