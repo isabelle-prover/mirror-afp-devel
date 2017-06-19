@@ -53,6 +53,8 @@ text \<open>
   functions are defined in eta-long form.
 \<close>
 
+declare [["constructor_funs"]]
+
 export_code app bla plus_nat_inst.plus_nat in SML
 
 export_code app bla plus_nat_inst.plus_nat checking SML Scala
