@@ -49,7 +49,7 @@ where
 lemma nsqn_sqn_def:
   "\<And>rt dip. nsqn rt dip = (if flag rt dip = Some val \<or> sqn rt dip = 0
                             then sqn rt dip else sqn rt dip - 1)"
-  unfolding nsqn_def sqn_def by (clarsimp split: option.split) auto
+  unfolding nsqn_def sqn_def by (clarsimp split: option.split)
 
 lemma not_in_kD_nsqn [simp]:
   assumes "dip \<notin> kD(rt)"
