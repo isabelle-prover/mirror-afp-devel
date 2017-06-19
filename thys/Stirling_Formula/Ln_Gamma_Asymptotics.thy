@@ -280,7 +280,7 @@ proof -
               (of_nat n + 1/2 + s) * (ln (of_real (real (n + 1)) + s) - ln (of_real (real n) + s)) - 1) 
             {of_nat n..of_nat (n + 1)}" 
       using s has_integral_const_real[of 1 "of_nat n" "of_nat (n + 1)"]
-      by (intro has_integral_sub has_integral_mult_right fundamental_theorem_of_calculus)
+      by (intro has_integral_diff has_integral_mult_right fundamental_theorem_of_calculus)
          (auto intro!: derivative_eq_intros has_vector_derivative_real_complex
                simp: has_field_derivative_iff_has_vector_derivative [symmetric] field_simps
                      complex_nonpos_Reals_iff)

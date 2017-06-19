@@ -523,7 +523,7 @@ next
     by (simp add: algebra_simps power2_eq_square divide_simps)
   have integral: "(op - (t + h) has_integral h\<^sup>2 / 2) (cbox t (t + h))"
     unfolding *
-    apply (rule has_integral_sub)
+    apply (rule has_integral_diff)
     unfolding cbox_interval
     apply (rule has_integral_const_real)
     apply (rule has_integral_id)
@@ -799,7 +799,7 @@ next
     using \<open>h > 0\<close>
     by (simp add: algebra_simps diff_divide_distrib power2_eq_square power3_eq_cube)
   have integral_minus: "(op - 1 has_integral 1/2) (cbox 0 (1::real))"
-    by (auto intro!: has_integral_eq_rhs[OF has_integral_sub] has_integral_id)
+    by (auto intro!: has_integral_eq_rhs[OF has_integral_diff] has_integral_id)
 
   have bounded_f: "bounded ((\<lambda>xa. f (h * xa + t, x (h * xa + t))) ` {0..1})"
     using \<open>0 \<le> h\<close>
