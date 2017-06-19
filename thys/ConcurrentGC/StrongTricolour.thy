@@ -871,7 +871,6 @@ apply (rule iffI)
  apply (drule mp)
   apply (metis (lifting, full_types) filter_set member_filter)
  apply clarsimp
- apply (erule disjE, blast)
  apply (subst eq_impD[OF obj_at_eq_imp])
   prefer 2
   apply (fastforce cong: option.case_cong)
@@ -883,7 +882,6 @@ apply (drule_tac x="mw_Mutate ref field option" in spec)
 apply (drule mp)
  apply (metis (lifting, full_types) filter_set member_filter)
 apply clarsimp
-apply (erule disjE, blast)
 apply (subst eq_impD[OF obj_at_eq_imp])
  prefer 2
  apply (fastforce cong: option.case_cong)
@@ -904,7 +902,6 @@ apply (clarsimp simp: marked_deletions_def split: mem_write_action.splits)
 apply (rename_tac ref field option)
 apply (drule_tac x="mw_Mutate ref field option" in spec)
 apply clarsimp
-apply (erule disjE, blast)
 apply (case_tac "ref = r'")
  apply (auto simp: obj_at_field_on_heap_def split: option.splits)
 done
@@ -972,7 +969,6 @@ proof(rule, clarsimp)
     case (tso_root x) with t show ?case
       apply (clarsimp simp: filter_empty_conv tso_write_refs_def)
       apply (case_tac xa, auto)
-      apply blast+
       done
   next
     case (reaches x y)
@@ -2202,7 +2198,6 @@ apply (clarsimp simp: mut_m.marked_deletions_def split: mem_write_action.splits)
 apply (rename_tac ref field option)
 apply (drule_tac x="mw_Mutate ref field option" in spec)
 apply clarsimp
-apply (erule disjE, blast)
 apply (clarsimp simp: obj_at_field_on_heap_def split: option.splits)
  apply (rule conjI)
   apply (clarsimp simp: mut_m.reachable_snapshot_inv_def)
