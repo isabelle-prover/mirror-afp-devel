@@ -86,6 +86,7 @@ fun mk_funs_cmd s lthy =
 val code_functrans = Code_Preproc.simple_functrans (fn ctxt => fn thms =>
   let
     val (consts, unfolds, _) = Data.get (Context.Proof ctxt)
+    val unfolds = map (Thm.transfer (Proof_Context.theory_of ctxt)) unfolds
 
     val conv =
       Conv.top_conv (K (Conv.try_conv (Conv.rewrs_conv unfolds))) ctxt
