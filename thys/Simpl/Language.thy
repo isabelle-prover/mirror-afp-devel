@@ -929,59 +929,51 @@ abbreviation
   where "c \<inter>\<^sub>g d == inter_guards (c,d)" 
 
 recdef inter_guards "inv_image com_rel fst" 
-"(Skip \<inter>\<^sub>g Skip) = Some Skip"
-
-"(Basic f1 \<inter>\<^sub>g Basic f2) = (if (f1=f2) then Some (Basic f1) else None)"
-"(Spec r1 \<inter>\<^sub>g Spec r2) = (if (r1=r2) then Some (Spec r1) else None)"
-"(Seq a1 a2 \<inter>\<^sub>g Seq b1 b2) = 
-   (case (a1 \<inter>\<^sub>g b1) of
-      None \<Rightarrow> None
-    | Some c1 \<Rightarrow> (case (a2 \<inter>\<^sub>g b2) of
-                    None \<Rightarrow> None
-                  | Some c2 \<Rightarrow> Some (Seq c1 c2)))"
-
-"(Cond cnd1 t1 e1 \<inter>\<^sub>g Cond cnd2 t2 e2) = 
-   (if (cnd1=cnd2) 
-    then (case (t1 \<inter>\<^sub>g t2) of 
+  "(Skip \<inter>\<^sub>g Skip) = Some Skip"
+  "(Basic f1 \<inter>\<^sub>g Basic f2) = (if f1 = f2 then Some (Basic f1) else None)"
+  "(Spec r1 \<inter>\<^sub>g Spec r2) = (if r1 = r2 then Some (Spec r1) else None)"
+  "(Seq a1 a2 \<inter>\<^sub>g Seq b1 b2) = 
+     (case a1 \<inter>\<^sub>g b1 of
+        None \<Rightarrow> None
+      | Some c1 \<Rightarrow> (case a2 \<inter>\<^sub>g b2 of
+          None \<Rightarrow> None
+        | Some c2 \<Rightarrow> Some (Seq c1 c2)))"
+  "(Cond cnd1 t1 e1 \<inter>\<^sub>g Cond cnd2 t2 e2) = 
+     (if cnd1 = cnd2
+      then (case t1 \<inter>\<^sub>g t2 of 
             None \<Rightarrow> None
-          | Some t \<Rightarrow> (case (e1 \<inter>\<^sub>g e2) of
-                         None \<Rightarrow> None
-                       | Some e \<Rightarrow> Some (Cond cnd1 t e)))
-    else None)"
-
-"(While cnd1 c1 \<inter>\<^sub>g While cnd2 c2) = 
-    (if (cnd1=cnd2 )
-     then (case (c1 \<inter>\<^sub>g c2) of
-             None \<Rightarrow> None
-           | Some c \<Rightarrow> Some (While cnd1 c))
+          | Some t \<Rightarrow> (case e1 \<inter>\<^sub>g e2 of
+              None \<Rightarrow> None
+            | Some e \<Rightarrow> Some (Cond cnd1 t e)))
+      else None)"
+  "(While cnd1 c1 \<inter>\<^sub>g While cnd2 c2) = 
+      (if cnd1 = cnd2
+       then (case c1 \<inter>\<^sub>g c2 of
+           None \<Rightarrow> None
+         | Some c \<Rightarrow> Some (While cnd1 c))
+       else None)"
+  "(Call p1 \<inter>\<^sub>g Call p2) = 
+     (if p1 = p2
+      then Some (Call p1)
+      else None)"
+  "(DynCom P1 \<inter>\<^sub>g DynCom P2) = 
+     (if (\<forall>s. (P1 s \<inter>\<^sub>g P2 s) \<noteq> None)
+     then Some (DynCom (\<lambda>s. the (P1 s \<inter>\<^sub>g P2 s)))
      else None)"
-
-"(Call p1 \<inter>\<^sub>g Call p2) = 
-   (if p1 = p2
-    then Some (Call p1)
-    else None)"
-
-"(DynCom P1 \<inter>\<^sub>g DynCom P2) = 
-   (if (\<forall>s. ((P1 s) \<inter>\<^sub>g (P2 s)) \<noteq> None)
-   then Some (DynCom (\<lambda>s.  the ((P1 s) \<inter>\<^sub>g (P2 s))))
-   else None)"
-
-"(Guard m1 g1 c1 \<inter>\<^sub>g Guard m2 g2 c2) = 
-   (if m1=m2 then
-       (case (c1 \<inter>\<^sub>g c2) of
+  "(Guard m1 g1 c1 \<inter>\<^sub>g Guard m2 g2 c2) = 
+     (if m1 = m2 then
+       (case c1 \<inter>\<^sub>g c2 of
           None \<Rightarrow> None
         | Some c \<Rightarrow> Some (Guard m1 (g1 \<inter> g2) c))
-    else None)"
-
-"(Throw \<inter>\<^sub>g Throw) = Some Throw"
-"(Catch a1 a2 \<inter>\<^sub>g Catch b1 b2) = 
-   (case (a1 \<inter>\<^sub>g b1) of
-      None \<Rightarrow> None
-    | Some c1 \<Rightarrow> (case (a2 \<inter>\<^sub>g b2) of
-                    None \<Rightarrow> None
-                  | Some c2 \<Rightarrow> Some (Catch c1 c2)))" 
-"(c \<inter>\<^sub>g d) = None"
-
+      else None)"
+  "(Throw \<inter>\<^sub>g Throw) = Some Throw"
+  "(Catch a1 a2 \<inter>\<^sub>g Catch b1 b2) = 
+     (case a1 \<inter>\<^sub>g b1 of
+        None \<Rightarrow> None
+      | Some c1 \<Rightarrow> (case a2 \<inter>\<^sub>g b2 of
+          None \<Rightarrow> None
+        | Some c2 \<Rightarrow> Some (Catch c1 c2)))" 
+  "(c \<inter>\<^sub>g d) = None"
 (hints cong add: option.case_cong if_cong  
        recdef_wf: wf_com_rel simp: com_rel.intros)
 
@@ -1079,8 +1071,8 @@ lemmas inter_guards_simps = inter_guards_Skip inter_guards_Basic inter_guards_Sp
   inter_guards_DynCom inter_guards_Guard inter_guards_Throw 
   inter_guards_Catch
 
-subsubsection \<open>Subset on Guards: \<open>c\<^sub>1 \<subseteq>\<^sub>g c\<^sub>2\<close>\<close> 
 
+subsubsection \<open>Subset on Guards: \<open>c\<^sub>1 \<subseteq>\<^sub>g c\<^sub>2\<close>\<close> 
 
 consts subseteq_guards:: "('s,'p,'f) com \<times> ('s,'p,'f) com \<Rightarrow> bool"
 
@@ -1089,24 +1081,21 @@ abbreviation
            ("_ \<subseteq>\<^sub>g _" [20,20] 19)
   where "c \<subseteq>\<^sub>g d == subseteq_guards (c,d)"
 
-
-recdef subseteq_guards "inv_image com_rel snd" 
-"(Skip \<subseteq>\<^sub>g Skip) = True"
-"(Basic f1 \<subseteq>\<^sub>g Basic f2) = (f1=f2)"
-"(Spec r1 \<subseteq>\<^sub>g Spec r2) = (r1=r2)"
-"(Seq a1 a2 \<subseteq>\<^sub>g Seq b1 b2) = ((a1 \<subseteq>\<^sub>g b1) \<and> (a2 \<subseteq>\<^sub>g b2))"
-"(Cond cnd1 t1 e1 \<subseteq>\<^sub>g Cond cnd2 t2 e2) = ((cnd1=cnd2) \<and> (t1 \<subseteq>\<^sub>g t2) \<and> (e1 \<subseteq>\<^sub>g e2))"
-"(While cnd1 c1 \<subseteq>\<^sub>g While cnd2 c2) = ((cnd1=cnd2) \<and> (c1 \<subseteq>\<^sub>g c2))"
-"(Call p1 \<subseteq>\<^sub>g Call p2) = (p1 = p2)"
-"(DynCom P1 \<subseteq>\<^sub>g DynCom P2) = (\<forall>s. ((P1 s) \<subseteq>\<^sub>g (P2 s)))"
-"(Guard m1 g1 c1 \<subseteq>\<^sub>g Guard m2 g2 c2) = 
-    ((m1=m2 \<and> g1=g2 \<and> (c1 \<subseteq>\<^sub>g c2)) \<or> (Guard m1 g1 c1 \<subseteq>\<^sub>g c2))"
-"(c1 \<subseteq>\<^sub>g Guard m2 g2 c2) = (c1 \<subseteq>\<^sub>g c2)"
-
-"(Throw \<subseteq>\<^sub>g Throw) = True"
-"(Catch a1 a2 \<subseteq>\<^sub>g Catch b1 b2) = ((a1 \<subseteq>\<^sub>g b1) \<and> (a2 \<subseteq>\<^sub>g b2))" 
-"(c \<subseteq>\<^sub>g d) = False"
-
+recdef subseteq_guards "inv_image com_rel snd"
+  "(Skip \<subseteq>\<^sub>g Skip) \<longleftrightarrow> True"
+  "(Basic f1 \<subseteq>\<^sub>g Basic f2) \<longleftrightarrow> f1 = f2"
+  "(Spec r1 \<subseteq>\<^sub>g Spec r2) \<longleftrightarrow> r1 = r2"
+  "(Seq a1 a2 \<subseteq>\<^sub>g Seq b1 b2) \<longleftrightarrow> (a1 \<subseteq>\<^sub>g b1) \<and> (a2 \<subseteq>\<^sub>g b2)"
+  "(Cond cnd1 t1 e1 \<subseteq>\<^sub>g Cond cnd2 t2 e2) \<longleftrightarrow> cnd1 = cnd2 \<and> (t1 \<subseteq>\<^sub>g t2) \<and> (e1 \<subseteq>\<^sub>g e2)"
+  "(While cnd1 c1 \<subseteq>\<^sub>g While cnd2 c2) \<longleftrightarrow> cnd1 = cnd2 \<and> (c1 \<subseteq>\<^sub>g c2)"
+  "(Call p1 \<subseteq>\<^sub>g Call p2) \<longleftrightarrow> p1 = p2"
+  "(DynCom P1 \<subseteq>\<^sub>g DynCom P2) \<longleftrightarrow> (\<forall>s. P1 s \<subseteq>\<^sub>g P2 s)"
+  "(Guard m1 g1 c1 \<subseteq>\<^sub>g Guard m2 g2 c2) \<longleftrightarrow> 
+    m1 = m2 \<and> g1 = g2 \<and> (c1 \<subseteq>\<^sub>g c2) \<or> (Guard m1 g1 c1 \<subseteq>\<^sub>g c2)"
+  "(c1 \<subseteq>\<^sub>g Guard m2 g2 c2) \<longleftrightarrow> (c1 \<subseteq>\<^sub>g c2)"
+  "(Throw \<subseteq>\<^sub>g Throw) \<longleftrightarrow> True"
+  "(Catch a1 a2 \<subseteq>\<^sub>g Catch b1 b2) \<longleftrightarrow> (a1 \<subseteq>\<^sub>g b1) \<and> (a2 \<subseteq>\<^sub>g b2)"
+  "(c \<subseteq>\<^sub>g d) \<longleftrightarrow> False"
 (hints cong add: if_cong  
        recdef_wf: wf_com_rel simp: com_rel.intros)
 
