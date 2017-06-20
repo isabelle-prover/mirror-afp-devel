@@ -5,6 +5,7 @@ session "Separation_Logic_Imperative_HOL" (AFP) = "HOL-Library" +
   sessions
     "HOL-Word"
     "HOL-Imperative_HOL"
+    Automatic_Refinement
     Native_Word
   theories [document = false]
     "Tools/Imperative_HOL_Add"

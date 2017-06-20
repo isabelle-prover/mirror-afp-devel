@@ -20,6 +20,7 @@ session "HOL-ODE-Refinement" (AFP) = "HOL-ODE" +
   options [timeout = 600, document = false]
   sessions
     "HOL-Word"
+    Automatic_Refinement
     Native_Word
   theories
     "Refinement/Refine_Dflt_No_Comp"
