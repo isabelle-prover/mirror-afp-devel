@@ -364,6 +364,7 @@ next
   qed
 qed
 
-hide_const (open) member empty insert remove bulkload union keys fold fold_rev filter all ex product Id_on init
+hide_const (open) member empty insert remove bulkload union minus
+  keys fold fold_rev filter all ex product Id_on init
 
 end
