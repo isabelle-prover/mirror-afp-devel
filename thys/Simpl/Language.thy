@@ -1074,75 +1074,64 @@ lemmas inter_guards_simps = inter_guards_Skip inter_guards_Basic inter_guards_Sp
 
 subsubsection \<open>Subset on Guards: \<open>c\<^sub>1 \<subseteq>\<^sub>g c\<^sub>2\<close>\<close> 
 
-consts subseteq_guards:: "('s,'p,'f) com \<times> ('s,'p,'f) com \<Rightarrow> bool"
-
-abbreviation
-  subseteq_guards_syntax :: "('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com \<Rightarrow> bool"
-           ("_ \<subseteq>\<^sub>g _" [20,20] 19)
-  where "c \<subseteq>\<^sub>g d == subseteq_guards (c,d)"
-
-recdef subseteq_guards "inv_image com_rel snd"
-  "(Skip \<subseteq>\<^sub>g Skip) \<longleftrightarrow> True"
-  "(Basic f1 \<subseteq>\<^sub>g Basic f2) \<longleftrightarrow> f1 = f2"
-  "(Spec r1 \<subseteq>\<^sub>g Spec r2) \<longleftrightarrow> r1 = r2"
-  "(Seq a1 a2 \<subseteq>\<^sub>g Seq b1 b2) \<longleftrightarrow> (a1 \<subseteq>\<^sub>g b1) \<and> (a2 \<subseteq>\<^sub>g b2)"
-  "(Cond cnd1 t1 e1 \<subseteq>\<^sub>g Cond cnd2 t2 e2) \<longleftrightarrow> cnd1 = cnd2 \<and> (t1 \<subseteq>\<^sub>g t2) \<and> (e1 \<subseteq>\<^sub>g e2)"
-  "(While cnd1 c1 \<subseteq>\<^sub>g While cnd2 c2) \<longleftrightarrow> cnd1 = cnd2 \<and> (c1 \<subseteq>\<^sub>g c2)"
-  "(Call p1 \<subseteq>\<^sub>g Call p2) \<longleftrightarrow> p1 = p2"
-  "(DynCom P1 \<subseteq>\<^sub>g DynCom P2) \<longleftrightarrow> (\<forall>s. P1 s \<subseteq>\<^sub>g P2 s)"
-  "(Guard m1 g1 c1 \<subseteq>\<^sub>g Guard m2 g2 c2) \<longleftrightarrow> 
-    m1 = m2 \<and> g1 = g2 \<and> (c1 \<subseteq>\<^sub>g c2) \<or> (Guard m1 g1 c1 \<subseteq>\<^sub>g c2)"
-  "(c1 \<subseteq>\<^sub>g Guard m2 g2 c2) \<longleftrightarrow> (c1 \<subseteq>\<^sub>g c2)"
-  "(Throw \<subseteq>\<^sub>g Throw) \<longleftrightarrow> True"
-  "(Catch a1 a2 \<subseteq>\<^sub>g Catch b1 b2) \<longleftrightarrow> (a1 \<subseteq>\<^sub>g b1) \<and> (a2 \<subseteq>\<^sub>g b2)"
-  "(c \<subseteq>\<^sub>g d) \<longleftrightarrow> False"
-(hints cong add: if_cong  
-       recdef_wf: wf_com_rel simp: com_rel.intros)
+inductive subseteq_guards :: "('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com \<Rightarrow> bool"
+  ("_ \<subseteq>\<^sub>g _" [20,20] 19) where
+  "Skip \<subseteq>\<^sub>g Skip"
+| "f1 = f2 \<Longrightarrow> Basic f1 \<subseteq>\<^sub>g Basic f2"
+| "r1 = r2 \<Longrightarrow> Spec r1 \<subseteq>\<^sub>g Spec r2"
+| "a1 \<subseteq>\<^sub>g b1 \<Longrightarrow> a2 \<subseteq>\<^sub>g b2 \<Longrightarrow> Seq a1 a2 \<subseteq>\<^sub>g Seq b1 b2"
+| "cnd1 = cnd2 \<Longrightarrow> t1 \<subseteq>\<^sub>g t2 \<Longrightarrow> e1 \<subseteq>\<^sub>g e2 \<Longrightarrow> Cond cnd1 t1 e1 \<subseteq>\<^sub>g Cond cnd2 t2 e2"
+| "cnd1 = cnd2 \<Longrightarrow> c1 \<subseteq>\<^sub>g c2 \<Longrightarrow> While cnd1 c1 \<subseteq>\<^sub>g While cnd2 c2"
+| "p1 = p2 \<Longrightarrow> Call p1 \<subseteq>\<^sub>g Call p2"
+| "(\<And>s. P1 s \<subseteq>\<^sub>g P2 s) \<Longrightarrow> DynCom P1 \<subseteq>\<^sub>g DynCom P2"
+| "m1 = m2 \<Longrightarrow> g1 = g2 \<Longrightarrow> c1 \<subseteq>\<^sub>g c2 \<Longrightarrow> Guard m1 g1 c1 \<subseteq>\<^sub>g Guard m2 g2 c2"
+| "c1 \<subseteq>\<^sub>g c2 \<Longrightarrow> c1 \<subseteq>\<^sub>g Guard m2 g2 c2"
+| "Throw \<subseteq>\<^sub>g Throw"
+| "a1 \<subseteq>\<^sub>g b1 \<Longrightarrow> a2 \<subseteq>\<^sub>g b2 \<Longrightarrow> Catch a1 a2 \<subseteq>\<^sub>g Catch b1 b2"
 
 lemma subseteq_guards_Skip:
- "c \<subseteq>\<^sub>g Skip \<Longrightarrow> c = Skip"
-  by (cases c) (auto)
+  "c = Skip" if "c \<subseteq>\<^sub>g Skip"
+  using that by cases
 
 lemma subseteq_guards_Basic:
- "c \<subseteq>\<^sub>g Basic f \<Longrightarrow> c = Basic f"
-  by (cases c) (auto)
+  "c = Basic f" if "c \<subseteq>\<^sub>g Basic f"
+  using that by cases simp
 
 lemma subseteq_guards_Spec:
- "c \<subseteq>\<^sub>g Spec r \<Longrightarrow> c = Spec r"
-  by (cases c) (auto)
+  "c = Spec r" if "c \<subseteq>\<^sub>g Spec r"
+  using that by cases simp
 
 lemma subseteq_guards_Seq:
-  "c \<subseteq>\<^sub>g Seq c1 c2 \<Longrightarrow> \<exists>c1' c2'. c=Seq c1' c2' \<and> (c1' \<subseteq>\<^sub>g c1) \<and> (c2' \<subseteq>\<^sub>g c2)"
-  by (cases c) (auto)
+  "\<exists>c1' c2'. c = Seq c1' c2' \<and> (c1' \<subseteq>\<^sub>g c1) \<and> (c2' \<subseteq>\<^sub>g c2)" if "c \<subseteq>\<^sub>g Seq c1 c2"
+  using that by cases simp
 
 lemma subseteq_guards_Cond:
-  "c \<subseteq>\<^sub>g Cond b c1 c2 \<Longrightarrow> \<exists>c1' c2'. c=Cond b c1' c2' \<and> (c1' \<subseteq>\<^sub>g c1) \<and> (c2' \<subseteq>\<^sub>g c2)"
-  by (cases c) (auto)
+  "\<exists>c1' c2'. c=Cond b c1' c2' \<and> (c1' \<subseteq>\<^sub>g c1) \<and> (c2' \<subseteq>\<^sub>g c2)" if "c \<subseteq>\<^sub>g Cond b c1 c2"
+  using that by cases simp
 
 lemma subseteq_guards_While:
-  "c \<subseteq>\<^sub>g While b c' \<Longrightarrow> \<exists>c''. c=While b c'' \<and> (c'' \<subseteq>\<^sub>g c')"
-  by (cases c) (auto)
+  "\<exists>c''. c=While b c'' \<and> (c'' \<subseteq>\<^sub>g c')" if "c \<subseteq>\<^sub>g While b c'"
+  using that by cases simp
 
 lemma subseteq_guards_Call:
- "c \<subseteq>\<^sub>g Call p \<Longrightarrow> c = Call p"
-  by (cases c) (auto)
+ "c = Call p" if "c \<subseteq>\<^sub>g Call p"
+  using that by cases simp
 
 lemma subseteq_guards_DynCom:
-  "c \<subseteq>\<^sub>g DynCom C \<Longrightarrow> \<exists>C'. c=DynCom C' \<and> (\<forall>s. C' s \<subseteq>\<^sub>g C s)"
-  by (cases c) (auto)
+  "\<exists>C'. c=DynCom C' \<and> (\<forall>s. C' s \<subseteq>\<^sub>g C s)" if "c \<subseteq>\<^sub>g DynCom C"
+  using that by cases simp
 
 lemma subseteq_guards_Guard:
-  "c \<subseteq>\<^sub>g Guard f g c'  \<Longrightarrow> 
-     (c \<subseteq>\<^sub>g c') \<or> (\<exists>c''. c=Guard f g c'' \<and> (c'' \<subseteq>\<^sub>g c'))"
-  by (cases c) (auto split: if_split_asm)
+  "(c \<subseteq>\<^sub>g c') \<or> (\<exists>c''. c = Guard f g c'' \<and> (c'' \<subseteq>\<^sub>g c'))" if "c \<subseteq>\<^sub>g Guard f g c'"
+  using that by cases simp_all
 
 lemma subseteq_guards_Throw:
- "c \<subseteq>\<^sub>g Throw \<Longrightarrow> c = Throw"
-  by (cases c) (auto)
+  "c = Throw" if "c \<subseteq>\<^sub>g Throw"
+  using that by cases
 
 lemma subseteq_guards_Catch:
-  "c \<subseteq>\<^sub>g Catch c1 c2 \<Longrightarrow> \<exists>c1' c2'. c=Catch c1' c2' \<and> (c1' \<subseteq>\<^sub>g c1) \<and> (c2' \<subseteq>\<^sub>g c2)"
-  by (cases c) (auto)
+  "\<exists>c1' c2'. c = Catch c1' c2' \<and> (c1' \<subseteq>\<^sub>g c1) \<and> (c2' \<subseteq>\<^sub>g c2)" if "c \<subseteq>\<^sub>g Catch c1 c2"
+  using that by cases simp
 
 lemmas subseteq_guardsD = subseteq_guards_Skip subseteq_guards_Basic
  subseteq_guards_Spec subseteq_guards_Seq subseteq_guards_Cond subseteq_guards_While
@@ -1150,13 +1139,11 @@ lemmas subseteq_guardsD = subseteq_guards_Skip subseteq_guards_Basic
  subseteq_guards_Throw subseteq_guards_Catch 
 
 lemma subseteq_guards_Guard': 
-  "Guard f b c \<subseteq>\<^sub>g d \<Longrightarrow> \<exists>f' b' c'. d=Guard f' b' c'"
-apply (cases d)
-apply auto
-done
+  "\<exists>f' b' c'. d = Guard f' b' c'" if "Guard f b c \<subseteq>\<^sub>g d"
+  using that by cases auto
 
 lemma subseteq_guards_refl: "c \<subseteq>\<^sub>g c"
-  by (induct c) auto
+  by (induct c) (auto intro: subseteq_guards.intros)
 
 (* Antisymmetry and transitivity should hold as well\<dots> *)
 
