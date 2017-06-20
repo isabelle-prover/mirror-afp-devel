@@ -12,21 +12,6 @@ imports
   "../Gauss_Jordan/Code_Real_Approx_By_Float_Haskell"
 begin
 
-(*TODO: Check this after Isabelle2014*)
-text{*The following equations must be removed from the code generator. If we don't delete them, the 
-exported code will not work.*}
-
-lemma real_code_unfold_dels: 
-  "of_rat \<equiv> Ratreal" 
-  "of_int a \<equiv> (of_rat (of_int a) :: real)" 
-  "0 \<equiv> (of_rat 0 :: real)"
-  "1 \<equiv> (of_rat 1 :: real)"
-  "numeral k \<equiv> (of_rat (numeral k) :: real)"
-  "- numeral k \<equiv> (of_rat (- numeral k) :: real)"
-  by simp_all
-
-lemmas real_code_unfold_dels[code_unfold del]
-
 subsubsection{*Examples*}
 
 definition "example1 = (let A = list_of_list_to_matrix [[1,2,4],[9,4,5],[0,0,0]]::real^3^3 in 

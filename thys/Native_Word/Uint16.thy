@@ -231,7 +231,7 @@ lemma Abs_uint16'_code [code]:
   "Abs_uint16' x = Uint16 (integer_of_int (uint x))"
 including integer.lifting by transfer simp
 
-lemma [code, code del]: "term_of_class.term_of = (term_of_class.term_of :: uint16 \<Rightarrow> _)" ..
+declare [[code drop: "term_of_class.term_of :: uint16 \<Rightarrow> _"]]
 
 lemma term_of_uint16_code [code]:
   defines "TR \<equiv> typerep.Typerep" and "bit0 \<equiv> STR ''Numeral_Type.bit0''" shows

@@ -13,12 +13,6 @@ imports
   "~~/src/HOL/Library/Code_Char"
 begin
 
-(*TODO: Check this after Isabelle2014*)
-text{*When we import the Multivariate Analysis library, execution doesn't work. 
-But it can be worked out deleting the following lemma from the code generator:*}
-
-lemmas real_code_unfold_dels(1)[code_unfold del]
-
 subsection{*Execution of the QR decomposition using symbolic computation and iarrays*}
 
 definition "show_vec_real_iarrays v = IArray.of_fun (\<lambda>i. show_real (v !! i)) (IArray.length v)"

@@ -252,8 +252,7 @@ lemma case_val'_cert:
 by(simp_all add: assms)
 setup {* Code.add_case @{thm case_val'_cert} *}
 
-lemma [code, code del]: "case_val = case_val" ..
-lemma [code, code del]: "Word = Word" ..
+declare [[code drop: case_val Word]]
 
 subsection {* Make functions use functions on machine words *}
 

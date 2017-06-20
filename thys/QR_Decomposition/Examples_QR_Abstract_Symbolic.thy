@@ -13,13 +13,11 @@ imports
  "~~/src/HOL/Library/Code_Char"
 begin
 
+lemma [code]: -- \<open>FIXME a little bit ad-hoc\<close>
+  "Ratreal = real_of_u \<circ> mau_of_rat"
+  by (simp add: fun_eq_iff) (transfer, transfer, simp)
+
 subsection{*Execution of the QR decomposition using symbolic computation*}
-
-(*TODO: Check this after Isabelle2014*)
-text{*When we import the Multivariate Analysis library, execution doesn't work. But it can be
-worked out deleting the following lemma from the code generator:*}
-
-lemmas real_code_unfold_dels(1)[code_unfold del]
 
 subsubsection{*Some previous definitions and lemmas*}
 

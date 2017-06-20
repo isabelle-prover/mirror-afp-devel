@@ -41,9 +41,7 @@ code_printing
   constant "abs :: real => real" \<rightharpoonup>
     (SML) "Real.abs"
 
-lemma [code, code del]:
-  "(abs :: real => real) = abs"
-  ..
+declare [[code drop: "abs :: real \<Rightarrow> real"]]
   
 text{*There are several ways to serialize div and mod. The following ones are four examples of it:*}
 

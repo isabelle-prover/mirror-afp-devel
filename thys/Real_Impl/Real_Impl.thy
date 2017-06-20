@@ -58,24 +58,14 @@ proof (cases "q = 0")
   with sqrt_irrat show ?thesis unfolding sqrt_irrat_def by blast
 qed
 
-text {* Collect existing code equations for reals, so that they can be deleted. *}
-(* deregister setup for using Rat as implementation of Reals *)
-lemmas real_code_dels =
-  refl[of "op + :: real \<Rightarrow> real \<Rightarrow> real"]
-  refl[of "uminus :: real \<Rightarrow> real"]
-  refl[of "op - :: real \<Rightarrow> real \<Rightarrow> real"]
-  refl[of "op * :: real \<Rightarrow> real \<Rightarrow> real"]
-  refl[of "inverse :: real \<Rightarrow> real"]
-  refl[of "op / :: real \<Rightarrow> real \<Rightarrow> real"]
-  refl[of "floor :: real \<Rightarrow> int"]
-  refl[of "sqrt"]
-  refl[of "HOL.equal :: real \<Rightarrow> real \<Rightarrow> bool"]
-  refl[of "op \<le> :: real \<Rightarrow> real \<Rightarrow> bool"]
-  refl[of "op < :: real \<Rightarrow> real \<Rightarrow> bool"]
-  refl[of "0 :: real"]
-  refl[of "1 :: real"]
+text \<open>Deregister setup for using @{typ rat} as implementation of @{typ real}\<close>
 
-lemma real_code_unfold_dels:
+lemma code_real_standard:
+  "(x :: real) / (y :: real) = x * inverse y"
+  "(x :: real) - (y :: real) = x + (- y)"
+  by (simp_all add: divide_inverse)
+
+lemma code_real_unfolds:
   "of_rat \<equiv> Ratreal"
   "of_int a \<equiv> (of_rat (of_int a) :: real)"
   "0 \<equiv> (of_rat 0 :: real)"
@@ -84,10 +74,24 @@ lemma real_code_unfold_dels:
   "- numeral k \<equiv> (of_rat (- numeral k) :: real)"
   by simp_all
 
-lemma real_standard_impls:
-  "(x :: real) / (y :: real) = x * inverse y"
-  "(x :: real) - (y :: real) = x + (- y)"
-  by (simp_all add: divide_inverse)
+bundle code_real_default_reset = [[code drop:
+  "plus :: real \<Rightarrow> real \<Rightarrow> real"
+  "uminus :: real \<Rightarrow> real"
+  "minus :: real \<Rightarrow> real \<Rightarrow> real"
+  "times :: real \<Rightarrow> real \<Rightarrow> real"
+  "inverse :: real \<Rightarrow> real"
+  "divide :: real \<Rightarrow> real \<Rightarrow> real"
+  "floor :: real \<Rightarrow> int"
+  sqrt
+  "HOL.equal :: real \<Rightarrow> real \<Rightarrow> bool"
+  "less_eq :: real \<Rightarrow> real \<Rightarrow> bool"
+  "less :: real \<Rightarrow> real \<Rightarrow> bool"
+  "0 :: real"
+  "1 :: real"]]
+  code_real_standard [code equation]
+  code_real_unfolds [code_unfold del]
+
+unbundle code_real_default_reset
 
 text {* To represent  numbers of the form $p + q \cdot \sqrt{b}$, use mini algebraic numbers, i.e.,
   triples $(p,q,b)$ with irrational $\sqrt{b}$. *}
@@ -501,10 +505,7 @@ lemmas ma_code_eqns = ma_ge_0 ma_floor ma_0 ma_1 ma_uminus ma_inverse ma_sqrt ma
 
 code_datatype real_of
 
-declare real_code_dels[code, code del]
-declare real_code_unfold_dels[code_unfold del]
-declare real_standard_impls[code]
-declare ma_code_eqns[code]
+declare ma_code_eqns [code equation]
 
 text {* Some tests with small numbers. To work on larger number, one should
   additionally import the theories for efficient calculation on numbers *}

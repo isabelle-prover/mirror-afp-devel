@@ -52,9 +52,7 @@ code_printing
   constant "abs :: real => real" \<rightharpoonup>
     (SML) "Real.abs"
 
-lemma [code, code del]:
-  "(abs :: real => real) = abs"
-  ..
+declare [[code drop: "abs :: real \<Rightarrow> real"]]
   
 code_printing
 constant "divmod_integer :: integer => _ => _" \<rightharpoonup> (SML) "(IntInf.divMod ((_),(_)))"
