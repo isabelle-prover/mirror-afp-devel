@@ -274,17 +274,14 @@ instantiation dual :: (complete_lattice) complete_lattice
 begin
 
 definition
-  "Sup A \<equiv> dual (INFIMUM A undual)"
+  "Sup A = dual (INFIMUM A undual)"
 
 definition
-  "Inf A \<equiv> dual (SUPREMUM A undual)"
+  "Inf A = dual (SUPREMUM A undual)"
 
 instance
-apply intro_classes
-apply (auto simp: less_eq_dual_def less_dual_def Sup_dual_def Inf_dual_def
-                  INF_lower SUP_upper
-           intro: INF_greatest SUP_least)
-done
+  by standard (auto simp: less_eq_dual_def less_dual_def Sup_dual_def Inf_dual_def
+    INF_lower SUP_upper intro: INF_greatest SUP_least)
 
 end
 
@@ -301,19 +298,19 @@ text {*
   other.
 *}
 
-theorem dual_Inf [intro?]: "dual (Inf A) = Sup (dual ` A)"
-  unfolding Inf_dual_def Sup_dual_def by (simp add: image_image)
+theorem dual_Inf [intro?]: "dual (Inf A) = SUPREMUM A dual"
+  by (simp add: Inf_dual_def Sup_dual_def)
 (* BH: Why not [simp]? *)
 
-theorem dual_Sup [intro?]: "dual (Sup A) = Inf (dual ` A)"
-  unfolding Inf_dual_def Sup_dual_def by (simp add: image_image)
+theorem dual_Sup [intro?]: "dual (Sup A) = INFIMUM A dual"
+  by (simp add: Inf_dual_def Sup_dual_def)
 (* BH: Why not [simp]? *)
 
-lemma undual_Inf: "undual (Inf A) = Sup (undual ` A)"
-  unfolding Inf_dual_def by simp
+lemma undual_Inf: "undual (Inf A) = SUPREMUM A undual"
+  by (simp add: Inf_dual_def)
 
-lemma undual_Sup: "undual (Sup A) = Inf (undual ` A)"
-  unfolding Sup_dual_def by simp
+lemma undual_Sup: "undual (Sup A) = INFIMUM A undual"
+  by (simp add: Sup_dual_def)
 
 theorem dual_Inf' [iff?]:
     "(Inf (dual ` A) = dual s) = (Sup A = s)"
