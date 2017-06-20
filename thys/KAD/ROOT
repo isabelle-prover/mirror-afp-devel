@@ -1,7 +1,9 @@
 chapter AFP
 
-session "KAD" (AFP) = "HOL" +
+session KAD (AFP) = HOL +
   options [timeout = 600]
+  sessions
+    Kleene_Algebra
   theories [document = false]
     "../Kleene_Algebra/Kleene_Algebra"
     "../Kleene_Algebra/Kleene_Algebra_Models"

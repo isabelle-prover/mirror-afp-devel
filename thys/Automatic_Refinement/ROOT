@@ -4,7 +4,8 @@ session Automatic_Refinement (AFP) = HOL +
   options [timeout = 1000]
   sessions
     "HOL-Library"
-  theories [document = false]
+    "HOL-Eisbach"
+theories [document = false]
     "Lib/Refine_Lib"
   theories
     "Parametricity/Param_Chapter"

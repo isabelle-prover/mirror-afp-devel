@@ -3,7 +3,10 @@ chapter AFP
 session Containers (AFP) = "Deriving" +
   options [timeout = 600]
   sessions
+    "Finger-Trees"
     "Regular-Sets"
+    Automatic_Refinement
+    Collections
   theories [document = false]
     "../Regular-Sets/Regexp_Method"
   theories

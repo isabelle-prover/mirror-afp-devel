@@ -4,6 +4,7 @@ session "Certification_Monads" (AFP) = "HOL" +
   options [timeout = 600]
   sessions
     "HOL-Library"
+    Show
   theories [document = false]
     "~~/src/Tools/Adhoc_Overloading"
     "~~/src/HOL/Library/Monad_Syntax"

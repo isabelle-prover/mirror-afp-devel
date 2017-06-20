@@ -5,6 +5,9 @@ session Planarity_Certificates (AFP) = Simpl +
   sessions
     "HOL-Eisbach"
     "List-Index"
+    "Transitive-Closure"
+    Case_Labeling
+    Graph_Theory
   theories [document = false]
     "~~/src/HOL/Eisbach/Eisbach"
     "~~/src/HOL/Library/FuncSet"

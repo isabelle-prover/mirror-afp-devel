@@ -4,6 +4,7 @@ session Dict_Construction (AFP) = HOL +
   options [timeout = 120]
   sessions
     "HOL-Library"
+    Automatic_Refinement
   theories [document = false]
     "~~/src/HOL/Library/ListVector"
     "../Automatic_Refinement/Lib/Refine_Util"
