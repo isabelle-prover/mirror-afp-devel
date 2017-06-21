@@ -456,9 +456,7 @@ lemma ma_of_rat: "real_of_rat r = real_of (ma_of_rat r)"
   by (transfer, auto)
 
 definition is_rat :: "real \<Rightarrow> bool" where
-  [code del]: "is_rat x = (x \<in> \<rat>)"
-
-lemma [code_unfold]: "x \<in> \<rat> \<longleftrightarrow> is_rat x" unfolding is_rat_def by auto
+  [code_abbrev]: "is_rat x \<longleftrightarrow> x \<in> \<rat>"
 
 lemma ma_is_rat: "is_rat (real_of x) = ma_is_rat x"
 proof (transfer, unfold is_rat_def, clarsimp)
