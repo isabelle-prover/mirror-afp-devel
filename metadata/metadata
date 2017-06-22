@@ -1,3 +1,17 @@
+[Propositional_Proof_Systems]
+title = Propositional Proof Systems
+author = Julius Michaelis <http://liftm.de>, Tobias Nipkow <http://www21.in.tum.de/~nipkow/>
+topic = Logic
+date = 2017-06-21
+notify = maintainafpppt@liftm.de
+abstract = 
+  We formalize a range of proof systems for classical propositional
+  logic (sequent calculus, natural deduction, Hilbert systems,
+  resolution) and prove the most important meta-theoretic results about
+  semantics and proofs: compactness, soundness, completeness,
+  translations between proof systems, cut-elimination, interpolation and
+  model existence.
+
 [Optics]
 title = Optics
 author = Simon Foster <mailto:simon.foster@york.ac.uk>, Frank Zeyda <mailto:frank.zeyda@york.ac.uk>
