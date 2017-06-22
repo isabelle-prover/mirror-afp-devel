@@ -69,7 +69,7 @@ session Refine_Imperative_HOL (AFP) = Sepref_Prereq +
 
 (* Smaller Sessions: *)
 session Sepref_Basic (AFP) = Sepref_Prereq +
-  options [document = false, timeout = 300]
+  options [document = false, timeout = 300, theory_qualifier = Refine_Imperative_HOL]
   sessions
     "HOL-Eisbach"
     "List-Index"
@@ -77,6 +77,6 @@ session Sepref_Basic (AFP) = Sepref_Prereq +
     Sepref
 
 session Sepref_IICF (AFP) = Sepref_Basic +
-  options [document = false, timeout = 600]
+  options [document = false, timeout = 600, theory_qualifier = Refine_Imperative_HOL]
   theories [document = false]
     "IICF/IICF"
