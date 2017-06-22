@@ -356,6 +356,7 @@
                 </div>
     <h2>Logic</h2>
   <div class="list">
+      <a href="entries/Propositional_Proof_Systems.shtml">Propositional_Proof_Systems</a> &nbsp;
       <a href="entries/MSO_Regex_Equivalence.shtml">MSO_Regex_Equivalence</a> &nbsp;
       <a href="entries/Formula_Derivatives.shtml">Formula_Derivatives</a> &nbsp;
       <a href="entries/Boolean_Expression_Checkers.shtml">Boolean_Expression_Checkers</a> &nbsp;
@@ -430,6 +431,7 @@
           <a href="entries/Rank_Nullity_Theorem.shtml">Rank_Nullity_Theorem</a> &nbsp;
           <a href="entries/Polynomials.shtml">Polynomials</a> &nbsp;
           <a href="entries/Relation_Algebra.shtml">Relation_Algebra</a> &nbsp;
+          <a href="entries/PSemigroupsConvolution.shtml">PSemigroupsConvolution</a> &nbsp;
           <a href="entries/Secondary_Sylow.shtml">Secondary_Sylow</a> &nbsp;
           <a href="entries/Jordan_Hoelder.shtml">Jordan_Hoelder</a> &nbsp;
           <a href="entries/Cayley_Hamilton.shtml">Cayley_Hamilton</a> &nbsp;
