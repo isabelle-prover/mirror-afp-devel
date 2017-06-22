@@ -4,6 +4,7 @@ session Heard_Of (AFP) = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"
+    Stuttering_Equivalence
   theories [document = false]
     "../Stuttering_Equivalence/StutterEquivalence"
   theories

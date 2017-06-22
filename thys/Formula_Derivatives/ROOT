@@ -4,6 +4,8 @@ session "Formula_Derivatives" (AFP) = "HOL-Library" +
   options [timeout = 3600]
   sessions
     "List-Index"
+    Coinductive_Languages
+    Deriving
   theories [document = false]
     While_Default
     FSet_More

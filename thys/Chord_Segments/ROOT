@@ -2,6 +2,8 @@ chapter AFP
 
 session Chord_Segments (AFP) = "HOL-Analysis" +
   options [timeout = 300]
+  sessions
+    Triangle
   theories [document = false]
     "../Triangle/Triangle"
   theories

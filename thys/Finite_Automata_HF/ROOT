@@ -6,6 +6,7 @@ session Finite_Automata_HF (AFP) = HOL +
   sessions
     "HOL-Library"
     "Regular-Sets"
+    HereditarilyFinite
   theories [document = false]
     "../HereditarilyFinite/Ordinal"
     "../Regular-Sets/Regular_Exp"

@@ -5,6 +5,8 @@ session "Pre_Perron_Frobenius" (AFP) = "Jordan_Normal_Form" +
   sessions
     "HOL-Eisbach"
     "HOL-Analysis"
+    Polynomial_Factorization
+    Pre_BZ
   theories
     "~~/src/HOL/Analysis/Brouwer_Fixpoint"
     "~~/src/HOL/Analysis/Determinants"

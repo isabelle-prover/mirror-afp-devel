@@ -4,6 +4,7 @@ session "Certification_Monads" (AFP) = "HOL" +
   options [timeout = 600]
   sessions
     "HOL-Library"
+    Partial_Function_MR
     Show
   theories [document = false]
     "~~/src/Tools/Adhoc_Overloading"

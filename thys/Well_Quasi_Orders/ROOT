@@ -4,7 +4,8 @@ session Well_Quasi_Orders (AFP) = "HOL-Library" +
   options [timeout = 600]
   sessions
     "Abstract-Rewriting"
-theories [document = false]
+    Open_Induction
+  theories [document = false]
     "../Abstract-Rewriting/Seq"
     "../Regular-Sets/Regexp_Method"
     "../Open_Induction/Restricted_Predicates"

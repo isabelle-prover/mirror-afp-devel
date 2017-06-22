@@ -4,6 +4,7 @@ session Sepref_Prereq (AFP) = Collections +
   options [document = false, timeout = 300]
   sessions
     "HOL-Imperative_HOL"
+    Separation_Logic_Imperative_HOL
   theories [document = false]
     "../Separation_Logic_Imperative_HOL/Sep_Examples"
 
@@ -12,6 +13,10 @@ session Refine_Imperative_HOL (AFP) = Sepref_Prereq +
   sessions
     "HOL-Eisbach"
     "List-Index"
+    Collections_Examples
+    DFS_Framework
+    Dijkstra_Shortest_Path
+    Sepref_IICF
   theories [document = false]
     "Lib/Concl_Pres_Clarification"
     "Lib/Named_Theorems_Rev"

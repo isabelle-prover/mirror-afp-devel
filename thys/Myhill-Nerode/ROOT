@@ -3,7 +3,10 @@ chapter AFP
 session "Myhill-Nerode" (AFP) = "HOL-Library" +
   options [timeout = 600]
   sessions
+    "Abstract-Rewriting"
     "Regular-Sets"
+    Open_Induction
+    Well_Quasi_Orders
   theories [document = false]
     "../Regular-Sets/Regular_Set"
     "../Regular-Sets/Regular_Exp"

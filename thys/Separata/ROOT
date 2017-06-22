@@ -4,6 +4,7 @@ session Separata (AFP) = "HOL-Library" +
   options [timeout = 250]
   sessions
     "HOL-Eisbach"
+    Separation_Algebra
   theories [document = false]
     "~~/src/HOL/Eisbach/Eisbach_Tools"
     "~~/src/HOL/Library/Multiset"

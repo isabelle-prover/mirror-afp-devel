@@ -2,6 +2,8 @@ chapter AFP
 
 session Polynomials (AFP) = "Abstract-Rewriting" +
   options [timeout = 600]
+  sessions
+    Matrix
   theories [document = false]
     "../Abstract-Rewriting/SN_Orders"
     "../Abstract-Rewriting/SN_Order_Carrier"

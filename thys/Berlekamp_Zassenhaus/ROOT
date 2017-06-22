@@ -5,6 +5,10 @@ session Pre_BZ (AFP) = "Subresultants" +
   sessions
     "HOL-Number_Theory"
     "HOL-Word"
+    Polynomial_Factorization
+    Polynomial_Interpolation
+    "Efficient-Mergesort"
+    Show
   theories
     "../Jordan_Normal_Form/Matrix_Kernel"
     "../Jordan_Normal_Form/Gauss_Jordan_IArray_Impl"

@@ -19,6 +19,7 @@ session "Probabilistic_System_Zoo-BNFs" (AFP) = "HOL-Analysis" +
   sessions
     "HOL-Cardinals"
     "HOL-Probability"
+    Probabilistic_System_Zoo
   theories [document = false]
     "~~/src/HOL/Probability/Giry_Monad"
     "~~/src/HOL/Library/Multiset"
@@ -36,6 +37,7 @@ session "Probabilistic_System_Zoo-Non_BNFs" (AFP) = "HOL-Probability" +
   sessions
     "HOL-Eisbach"
     "HOL-Cardinals"
+    Probabilistic_System_Zoo
   theories [document = false]
     Nonempty_Bounded_Set
     "~~/src/HOL/Eisbach/Eisbach"

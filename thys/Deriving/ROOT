@@ -5,6 +5,7 @@ session Deriving (AFP) = "HOL-Library" +
   sessions
     "HOL-Word"
     Native_Word
+    Collections
   theories [document = false]
     "../Collections/Lib/HashCode"
     "~~/src/HOL/Library/Char_ord"

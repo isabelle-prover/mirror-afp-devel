@@ -2,6 +2,10 @@ chapter AFP
 
 session "Echelon_Form" (AFP)= "HOL-Analysis" +
   options [timeout = 1200]
+  sessions
+    Cayley_Hamilton
+    Gauss_Jordan
+    Rank_Nullity_Theorem
   theories [document = false]
     "~~/src/HOL/Library/Code_Target_Numeral"
     "../Gauss_Jordan/Examples_Gauss_Jordan_Abstract"

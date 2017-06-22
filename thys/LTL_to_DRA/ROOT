@@ -4,6 +4,8 @@ session LTL_to_DRA (AFP) = LTL +
   options [timeout = 600]
   sessions
     "List-Index"
+    Boolean_Expression_Checkers
+    KBPs
   theories 
     [document = false]
     "../Boolean_Expression_Checkers/Boolean_Expression_Checkers"

@@ -5,6 +5,7 @@ session Dict_Construction (AFP) = HOL +
   sessions
     "HOL-Library"
     Automatic_Refinement
+    Lazy_Case
   theories [document = false]
     "~~/src/HOL/Library/ListVector"
     "../Automatic_Refinement/Lib/Refine_Util"

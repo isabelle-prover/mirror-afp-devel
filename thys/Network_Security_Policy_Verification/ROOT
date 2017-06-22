@@ -4,6 +4,7 @@ session "Network_Security_Policy_Verification" (AFP) = HOL +
   options [timeout = 1200]
   sessions
     "HOL-Library"
+    "Transitive-Closure"
     Automatic_Refinement
   theories [document = false]
     "Lib/ML_GraphViz_Disable"

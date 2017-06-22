@@ -1,7 +1,10 @@
 chapter AFP
 
 session XML (AFP) = "HOL-Library" +
-  options [timeout=600]
+  options [timeout = 600]
+  sessions
+    Certification_Monads
+    Show
   theories [document = false]
     "~~/src/Tools/Adhoc_Overloading"
     "~~/src/HOL/Library/Monad_Syntax"

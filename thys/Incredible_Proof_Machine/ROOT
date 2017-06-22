@@ -5,6 +5,7 @@ session Incredible_Proof_Machine (AFP) = "HOL-Library" +
   options [timeout = 600]
   sessions
     "HOL-Eisbach"
+    Abstract_Completeness
   theories [document = false]
     "~~/src/HOL/Library/FSet"
     "~~/src/HOL/Library/Stream"

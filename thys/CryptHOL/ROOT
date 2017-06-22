@@ -3,8 +3,13 @@ chapter AFP
 session CryptHOL (AFP) = Probabilistic_While +
   options [timeout = 600]
   sessions
-    "HOL-Eisbach"
     "HOL-Algebra"
+    "HOL-Eisbach"
+    Applicative_Lifting
+    Coinductive Landau_Analysis
+    Landau_Symbols
+    Monad_Normalisation
+    Monomorphic_Monad
   theories [document = false]
     "~~/src/HOL/Eisbach/Eisbach"
     "~~/src/HOL/Library/Countable_Set"

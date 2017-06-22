@@ -21,12 +21,19 @@ session "HOL-ODE-Refinement" (AFP) = "HOL-ODE" +
   sessions
     "HOL-Word"
     Automatic_Refinement
+    Collections
     Native_Word
+    Refine_Monadic
   theories
     "Refinement/Refine_Dflt_No_Comp"
 
 session "HOL-ODE-Numerics" (AFP) = "HOL-ODE-Refinement" +
   options [timeout = 3600, document = false]
+  sessions
+    Affine_Arithmetic
+    Collections
+    Deriving
+    Show
   theories
     "~~/src/HOL/Library/Lattice_Algebras"
     "~~/src/HOL/Library/Monad_Syntax"

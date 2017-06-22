@@ -4,6 +4,8 @@ session Bell_Numbers_Spivey (AFP) = "HOL-Library" +
   options [timeout = 600]
   sessions
     "HOL-Eisbach"
+    Card_Number_Partitions
+    Card_Partitions
   theories [document = false]
     "../Card_Number_Partitions/Additions_to_Main"
   theories

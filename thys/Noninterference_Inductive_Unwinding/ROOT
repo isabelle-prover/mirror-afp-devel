@@ -2,6 +2,8 @@ chapter AFP
 
 session "Noninterference_Inductive_Unwinding" (AFP) = "HOL" +
   options [timeout = 600]
+  sessions
+    Noninterference_Ipurge_Unwinding
   theories [document = false]
     "../Noninterference_Ipurge_Unwinding/DeterministicProcesses"
   theories

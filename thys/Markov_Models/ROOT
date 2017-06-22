@@ -4,6 +4,7 @@ session Markov_Models (AFP) = "HOL-Probability" +
   options [timeout = 600]
   sessions
     Coinductive
+    "Gauss-Jordan-Elim-Fun"
   theories [document = false]
     "../Gauss-Jordan-Elim-Fun/Gauss_Jordan_Elim_Fun"
     "~~/src/HOL/Library/While_Combinator"
@@ -15,7 +16,6 @@ session Markov_Models (AFP) = "HOL-Probability" +
     "../Coinductive/Coinductive"
   theories
     "Markov_Models"
-
     "ex/Example_A"
     "ex/Example_B"
     "ex/PCTL"
