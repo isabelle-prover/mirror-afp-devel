@@ -15,8 +15,7 @@ named_theorems integrable_on_simps
 
 lemma integrable_on_refl_ivl[intro, simp]: "g integrable_on {b .. (b::'b::ordered_euclidean_space)}"
   and integrable_on_refl_closed_segment[intro, simp]: "h integrable_on closed_segment a a"
-  using integrable_on_refl[of g b]
-  by (auto simp: cbox_sing)
+  using integrable_on_refl by auto
 
 lemma integrable_const_ivl_closed_segment[intro, simp]: "(\<lambda>x. c) integrable_on closed_segment a (b::real)"
   by (auto simp: closed_segment_real)
@@ -1674,7 +1673,7 @@ proof(safe)
         "s \<le> x \<Longrightarrow> x \<le> 0 \<Longrightarrow> x \<in> F.existence_ivl 0 x0"
         "s \<le> x \<Longrightarrow> x \<le> 0 \<Longrightarrow> x \<in> G.existence_ivl 0 x0" for x
         using t0_s_in_existence
-        by (auto simp: )
+        by auto
       have "XX s - Y s = - integral {s..0} (\<lambda>s. F s (XX s) - G s (Y s))"
         using t0_s_in_existence \<open>s \<le> 0\<close>
         by (simp add: XX_def Y_def ivl_integral_def
