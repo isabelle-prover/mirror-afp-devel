@@ -114,7 +114,7 @@ proof (rule dense_eq0_I, cases)
   have "finite p" .
 
   from \<open>d fine p\<close> have "d1 fine p" "d3 fine p"
-    by (auto simp: d_def [abs_def] fine_inter)
+    by (auto simp: d_def [abs_def] fine_Int)
   have f_less: "norm ((\<Sum>(x, k)\<in>p. content k *\<^sub>R f x) - I) < e"
     (is "norm (?f - I) < _")
     by (rule d1(2)[OF p(1)]) fact

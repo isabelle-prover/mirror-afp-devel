@@ -571,7 +571,7 @@ proof -
         simp del: atLeastAtMost_iff
         intro: continuous_on_subset assms *
         intro!: add_integral_ivl_bound
-        integrable_continuous_real continuous_intros indefinite_integral_continuous)
+        integrable_continuous_real continuous_intros indefinite_integral_continuous_1)
 qed
 
 lemma
