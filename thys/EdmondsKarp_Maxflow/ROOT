@@ -4,6 +4,7 @@ session EdmondsKarp_Maxflow (AFP) = "Flow_Networks" +
   options [timeout = 600]
   theories
     FordFulkerson_Algo
+    EdmondsKarp_Termination_Abstract
     EdmondsKarp_Algo
 
     Augmenting_Path_BFS

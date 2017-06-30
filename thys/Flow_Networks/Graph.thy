@@ -1,11 +1,20 @@
 section \<open>Directed Graphs\<close>
 theory Graph
-imports "Lib/Fofu_Abs_Base"
+imports Main
 begin
 text \<open>
   We define a specialized graph library for graphs that are induced by 
   capacity matrices.
 \<close>
+
+lemma finite_Image: fixes R shows "\<lbrakk> finite R \<rbrakk> \<Longrightarrow> finite (R `` A)"
+  by (meson Image_iff finite_Range Range.intros finite_subset subsetI)
+
+lemma map_eq_appendE: 
+  assumes "map f ls = fl@fl'"
+  obtains l l' where "ls=l@l'" and "map f l=fl" and  "map f l' = fl'"
+using that[of "take (length fl) ls" "drop (length fl) ls"] assms 
+by(simp add: take_map[symmetric] drop_map[symmetric])
 
 subsection \<open>Definitions\<close>
 
@@ -176,7 +185,7 @@ proof -
   have "(\<Sum>e\<in>outgoing u. g e) = (\<Sum>e\<in>(\<lambda>v. (u,v))`(E``{u}). g e)"  
     by (rule sum.cong) (auto simp: outgoing_def)
   also have "\<dots> = (\<Sum>v\<in>E``{u}. g (u,v))"  
-    by (subst sum.reindex) auto
+    by (subst sum.reindex)(auto simp add: inj_on_def)
   finally show ?thesis .
 qed  
 
@@ -185,7 +194,7 @@ proof -
   have "(\<Sum>e\<in>incoming u. g e) = (\<Sum>e\<in>(\<lambda>v. (v,u))`(E\<inverse>``{u}). g e)"  
     by (rule sum.cong) (auto simp: incoming_def)
   also have "\<dots> = (\<Sum>v\<in>E\<inverse>``{u}. g (v,u))"  
-    by (subst sum.reindex) auto
+    by (subst sum.reindex)(auto simp add: inj_on_def)
   finally show ?thesis .
 qed  
 
@@ -442,42 +451,43 @@ proof -
     show thesis
     using assms(1) PV
     apply (cases p rule: rev_cases; clarsimp simp: pathVertices_alt)
-      apply (rule that[of "[]" "[]"]; simp)
+      apply (rule that[of "[]" "[]"]; simp add: Cons_eq_append_conv)
 
       apply (cases pv2; clarsimp)
       apply (rule that[of p "[]"]; 
         auto simp add: isPath_append pathVertices_alt
       )  
-
-      apply (clarsimp simp: append_eq_append_conv2; 
-        auto elim!: map_eq_appendE map_eq_consE list_append_eq_Cons_cases
+      apply (clarsimp simp: append_eq_append_conv2;
+        auto elim!: map_eq_appendE append_eq_Cons_conv[THEN iffD1, elim_format]
             simp: isPath_append)
-
-        apply (rename_tac l)
+      subgoal for \<dots> l
         apply (erule that) 
         apply auto [4]
         apply (case_tac l rule: rev_cases; 
           auto simp add: pathVertices_alt isPath_append)
+        done
 
-        apply (rename_tac l)
+      subgoal for \<dots> l
         apply (erule that) 
         apply auto [4]
         apply (case_tac l rule: rev_cases; 
           auto simp add: pathVertices_alt isPath_append)
+        done
 
-        apply (rename_tac l u1 u2 u3)
+      subgoal for \<dots> l u1 u2 u3
         apply (erule that)  
         apply auto [4]
         apply (case_tac l rule: rev_cases; 
           auto simp add: pathVertices_alt isPath_append)
         apply (auto simp: isPath_append) []
         apply (auto simp: pathVertices_alt) []
+        done
         
-        apply (rename_tac l)
-        apply (erule that) apply auto [4]
-        apply (case_tac l rule: rev_cases; 
-          auto simp add: pathVertices_alt isPath_append)
-    done
+        apply (erule that) apply(auto simp add: Cons_eq_append_conv) [4]
+        subgoal for \<dots> l
+          by (case_tac l rule: rev_cases; 
+            auto simp add: pathVertices_alt isPath_append)
+      done
   qed
   thus ?thesis apply - unfolding pathVertices_fwd using that .
 qed
@@ -657,16 +667,14 @@ lemma isSPath_no_selfloop: "isSimplePath u p v \<Longrightarrow> (u1, u1) \<noti
 
 lemma isSPath_sg_outgoing: "\<lbrakk>isSimplePath u p v; (u1, v1) \<in> set p; v1 \<noteq> v2\<rbrakk> 
   \<Longrightarrow> (u1, v2) \<notin> set p"
-  by (auto 
-    simp: in_set_conv_decomp isSimplePath_def pathVertices_alt
-    elim!: Misc.list_match_lel_lel)
+  by (auto simp: in_set_conv_decomp isSimplePath_def pathVertices_alt 
+      append_eq_append_conv2 Cons_eq_append_conv append_eq_Cons_conv)
 
 lemma isSPath_sg_incoming: 
   "\<lbrakk>isSimplePath u p v; (u1, v1) \<in> set p; u1 \<noteq> u2\<rbrakk> \<Longrightarrow> (u2, v1) \<notin> set p"
-  by (auto 
-    simp: in_set_conv_decomp isSimplePath_fwd pathVertices_fwd_def
-    elim!: Misc.list_match_lel_lel)
-      
+  by (auto simp: in_set_conv_decomp isSimplePath_fwd pathVertices_fwd_def
+      append_eq_append_conv2 append_eq_Cons_conv Cons_eq_append_conv)
+
 lemma isSPath_nt_parallel:
   assumes SP: "isSimplePath s p t"
   assumes EIP: "e\<in>set p"
@@ -677,9 +685,7 @@ proof -
 
   show "prod.swap e \<notin> set p"  
     apply (cases e) using D EIP
-    by (auto 
-      dest!: pathVertices_edge[OF P] 
-      elim!: list_match_lel_lel list_Cons_eq_append_cases)
+    by(auto dest!: pathVertices_edge[OF P] simp add: append_eq_append_conv2 Cons_eq_append_conv append_eq_Cons_conv)
 
 qed
 
@@ -791,9 +797,8 @@ lemma dist_cases[case_names dist_z dist_suc, consumes 1, cases pred]:
   obtains "v=v'" "d=0"
    | vh dd where "d=Suc dd" "dist v dd vh" "(vh,v')\<in>E"
   using assms 
-  apply (cases d)
-  apply (auto simp: dist_def length_Suc_rev_conv isPath_append) 
-  apply force
+  apply (cases d; clarsimp simp add: dist_def)
+  subgoal for \<dots> p by(cases p rule: rev_cases)(fastforce simp add: isPath_append)+
   done
 
 
