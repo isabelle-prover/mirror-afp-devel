@@ -441,7 +441,7 @@ subsection {* Sets *}
 
 
   (* TODO: Groups_Big.comm_monoid_add_class.sum.subset_diff*)
-  lemma sum_subset_split: assumes P: "finite A" "B\<subseteq>A" shows T: "sum f A = sum f (A-B) + sum f B" proof -
+  lemma sum_subset_split: assumes P: "finite A" "B\<subseteq>A" shows "sum f A = sum f (A-B) + sum f B" proof -
     from P have 1: "A = (A-B) \<union> B" by auto
     have 2: "(A-B) \<inter> B = {}" by auto
     from P have 3: "finite B" by (blast intro: finite_subset)
