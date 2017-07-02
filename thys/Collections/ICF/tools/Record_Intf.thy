@@ -104,7 +104,7 @@ structure Record_Intf: RECORD_INTF = struct
       val unf_thms = unf_thms_of def_thm context;
   
       val context = add_unf_thms unf_thms context
-        |> Context.mapping (Code.del_eqn def_thm) I;
+        |> Context.mapping (Code.del_eqn_global def_thm) I;
     in
       context
     end;

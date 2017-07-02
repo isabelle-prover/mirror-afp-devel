@@ -249,10 +249,12 @@ lemma case_val'_cert:
   fixes bool word' b w
   assumes "CASE \<equiv> case_val' bool word'"
   shows "(CASE (Bool b) \<equiv> bool b) &&& (CASE (Word' w) \<equiv> word' w)"
-by(simp_all add: assms)
-setup {* Code.add_case @{thm case_val'_cert} *}
+  by (simp_all add: assms)
+
+setup \<open>Code.declare_case_global @{thm case_val'_cert}\<close>
 
 declare [[code drop: case_val Word]]
+
 
 subsection {* Make functions use functions on machine words *}
 

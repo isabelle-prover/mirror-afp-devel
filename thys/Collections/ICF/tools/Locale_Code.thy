@@ -213,11 +213,7 @@ structure Locale_Code :LOCALE_CODE = struct
     #> (fn ((def_thm,thms'),thy) => let
       val thy = thy 
         |> add_unf_thms [def_thm]
-        |> fold Code.del_eqn thms  (* Code generator may get confused by invalid
-                                      code equations that some tools (definition)
-                                      seem to produce here *)
-        |> fold (Code.add_eqn (Code.Equation, false)) thms';
-          (*FIXME default code equation!?*)
+        |> Code.declare_default_eqns_global (map (rpair true) thms');
     in thy end)
   end
 
