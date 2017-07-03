@@ -923,8 +923,8 @@ lemma mcont_enat_le_lprefix_case [cont_intro, simp]:
 using llist_ccpo assms by(rule mcont_enat_le_case) simp
 
 lemma compact_LConsI:
-  assumes "compact lSup op \<sqsubseteq> xs"
-  shows "compact lSup op \<sqsubseteq> (LCons x xs)"
+  assumes "ccpo.compact lSup op \<sqsubseteq> xs"
+  shows "ccpo.compact lSup op \<sqsubseteq> (LCons x xs)"
 using llist_ccpo
 proof(rule ccpo.compactI)
   from assms have "ccpo.admissible lSup op \<sqsubseteq> (\<lambda>ys. \<not> xs \<sqsubseteq> ys)" by cases
@@ -946,8 +946,8 @@ proof(rule ccpo.compactI)
 qed
 
 lemma compact_LConsD:
-  assumes "compact lSup op \<sqsubseteq> (LCons x xs)"
-  shows "compact lSup op \<sqsubseteq> xs"
+  assumes "ccpo.compact lSup op \<sqsubseteq> (LCons x xs)"
+  shows "ccpo.compact lSup op \<sqsubseteq> xs"
 using llist_ccpo
 proof(rule ccpo.compactI)
   from assms have "ccpo.admissible lSup op \<sqsubseteq> (\<lambda>ys. \<not> LCons x xs \<sqsubseteq> ys)" by cases
@@ -957,15 +957,15 @@ proof(rule ccpo.compactI)
 qed
 
 lemma compact_LCons_iff [simp]:
-  "compact lSup op \<sqsubseteq> (LCons x xs) \<longleftrightarrow> compact lSup op \<sqsubseteq> xs"
+  "ccpo.compact lSup op \<sqsubseteq> (LCons x xs) \<longleftrightarrow> ccpo.compact lSup op \<sqsubseteq> xs"
 by(blast intro: compact_LConsI compact_LConsD)
 
 lemma compact_lfiniteI:
-  "lfinite xs \<Longrightarrow> compact lSup op \<sqsubseteq> xs"
+  "lfinite xs \<Longrightarrow> ccpo.compact lSup op \<sqsubseteq> xs"
 by(induction rule: lfinite.induct) simp_all
 
 lemma compact_lfiniteD:
-  assumes "compact lSup op \<sqsubseteq> xs"
+  assumes "ccpo.compact lSup op \<sqsubseteq> xs"
   shows "lfinite xs"
 proof(rule ccontr)
   assume inf: "\<not> lfinite xs"
@@ -981,7 +981,7 @@ proof(rule ccontr)
   finally show False by simp
 qed
 
-lemma compact_eq_lfinite [simp]: "compact lSup op \<sqsubseteq> = lfinite"
+lemma compact_eq_lfinite [simp]: "ccpo.compact lSup op \<sqsubseteq> = lfinite"
 by(blast intro: compact_lfiniteI compact_lfiniteD)
 
 subsection {* More function definitions *}

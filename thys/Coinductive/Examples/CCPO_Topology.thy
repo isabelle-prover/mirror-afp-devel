@@ -59,7 +59,7 @@ lemma tendsto_LimI: "(f \<longlongrightarrow> y) F \<Longrightarrow> (f \<longlo
 
 subsection {* The filter @{text at'} *}
 
-abbreviation (in ccpo) "compact_element \<equiv> Complete_Partial_Order2.compact Sup op \<le>"
+abbreviation (in ccpo) "compact_element \<equiv> ccpo.compact Sup op \<le>"
 
 lemma tendsto_unique_eventually:
   fixes x x' :: "'a :: t2_space"
