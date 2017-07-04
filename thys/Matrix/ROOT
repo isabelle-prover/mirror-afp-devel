@@ -8,7 +8,7 @@ session Matrix (AFP) = "Abstract-Rewriting" +
     "../Abstract-Rewriting/SN_Orders"
     "~~/src/HOL/Algebra/Ring"
   theories
-    Matrix
+    Matrix_Legacy
   document_files
     "root.bib"
     "root.tex"

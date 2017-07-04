@@ -25,11 +25,16 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 
 section {* Basic Operations on Matrices *}
 
-theory Matrix_Arith
+theory Matrix_Legacy
 imports
   Utility
   Ordered_Semiring
 begin
+
+text {* This theory is marked as legacy, since there is a better
+  implementation of matrices available in @{file "../Jordan_Normal_Form/Matrix.thy"}.
+  That formalization is more abstract, more complete in terms of operations,
+  and it still provides an efficient implementation. *}
 
 text {*
   This theory provides the operations of matrix addition, multiplication,
