@@ -211,6 +211,9 @@ definition conjugate :: "('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> '
 
 end
 
+class dense_lattice = bounded_lattice +
+  assumes bot_meet_irreducible: "x \<sqinter> y = bot \<longrightarrow> x = bot \<or> y = bot"
+
 context distrib_lattice
 begin
 
@@ -263,6 +266,106 @@ qed
 end
 
 text {*
+We next consider lattices with a linear order structure.
+In such lattices, join and meet are selective operations, which give the maximum and the minimum of two elements, respectively.
+Moreover, the lattice is automatically distributive.
+*}
+
+class bounded_linorder = linorder + order_bot + order_top
+
+class linear_lattice = lattice + linorder
+begin
+
+lemma max_sup:
+  "max x y = x \<squnion> y"
+  by (metis max.boundedI max.cobounded1 max.cobounded2 sup_unique)
+
+lemma min_inf:
+  "min x y = x \<sqinter> y"
+  by (simp add: inf.absorb1 inf.absorb2 min_def)
+
+lemma sup_inf_selective:
+  "(x \<squnion> y = x \<and> x \<sqinter> y = y) \<or> (x \<squnion> y = y \<and> x \<sqinter> y = x)"
+  by (meson inf.absorb1 inf.absorb2 le_cases sup.absorb1 sup.absorb2)
+
+lemma sup_selective:
+  "x \<squnion> y = x \<or> x \<squnion> y = y"
+  using sup_inf_selective by blast
+
+lemma inf_selective:
+  "x \<sqinter> y = x \<or> x \<sqinter> y = y"
+  using sup_inf_selective by blast
+
+subclass distrib_lattice
+  apply unfold_locales
+  by (metis inf_selective antisym distrib_sup_le inf.commute inf_le2)
+
+lemma sup_less_eq:
+  "x \<le> y \<squnion> z \<longleftrightarrow> x \<le> y \<or> x \<le> z"
+  by (metis le_supI1 le_supI2 sup_selective)
+
+lemma inf_less_eq:
+  "x \<sqinter> y \<le> z \<longleftrightarrow> x \<le> z \<or> y \<le> z"
+  by (metis inf.coboundedI1 inf.coboundedI2 inf_selective)
+
+lemma sup_inf_sup:
+  "x \<squnion> y = (x \<squnion> y) \<squnion> (x \<sqinter> y)"
+  by (metis sup_commute sup_inf_absorb sup_left_commute)
+
+end
+
+text {*
+The following class derives additional properties if the linear order of the lattice has a least and a greatest element.
+*}
+
+class linear_bounded_lattice = bounded_lattice + linorder
+begin
+
+subclass linear_lattice ..
+
+subclass bounded_linorder ..
+
+subclass bounded_distrib_lattice ..
+
+lemma sup_dense:
+  "x \<noteq> top \<Longrightarrow> y \<noteq> top \<Longrightarrow> x \<squnion> y \<noteq> top"
+  by (metis sup_selective)
+
+lemma inf_dense:
+  "x \<noteq> bot \<Longrightarrow> y \<noteq> bot \<Longrightarrow> x \<sqinter> y \<noteq> bot"
+  by (metis inf_selective)
+
+lemma sup_not_bot:
+  "x \<noteq> bot \<Longrightarrow> x \<squnion> y \<noteq> bot"
+  by simp
+
+lemma inf_not_top:
+  "x \<noteq> top \<Longrightarrow> x \<sqinter> y \<noteq> top"
+  by simp
+
+subclass dense_lattice
+  apply unfold_locales
+  using inf_dense by blast
+
+end
+
+text {*
+Every bounded linear order can be expanded to a bounded lattice.
+Join and meet are maximum and minimum, respectively.
+*}
+
+class linorder_lattice_expansion = bounded_linorder + sup + inf +
+  assumes sup_def [simp]: "x \<squnion> y = max x y"
+  assumes inf_def [simp]: "x \<sqinter> y = min x y"
+begin
+
+subclass linear_bounded_lattice
+  apply unfold_locales
+  by auto
+
+end
+
+text {*
 Some results, such as the existence of certain filters, require that the algebras are not trivial.
 This is not an assumption of the order and lattice classes that come with Isabelle/HOL; for example, @{text "bot = top"} may hold in bounded lattices.
 *}
@@ -286,6 +389,8 @@ proof -
     by (metis bot_less top.extremum_strict)
 qed
 
+end
+
 text {*
 The following results extend basic Isabelle/HOL facts.
 *}
@@ -303,8 +408,6 @@ lemma invertible_bij:
       and "\<forall>y . f (g y) = y"
     shows "bij f"
   by (metis assms bijI')
-
-end
 
 end
 

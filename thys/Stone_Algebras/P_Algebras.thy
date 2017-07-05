@@ -435,6 +435,18 @@ lemma conjugate_char_1_isotone:
   "conjugate f g \<Longrightarrow> isotone f \<Longrightarrow> isotone g \<Longrightarrow> f(x \<sqinter> -(g y)) \<le> f x \<sqinter> -y \<and> g(y \<sqinter> -(f x)) \<le> g y \<sqinter> -x"
   by (simp add: conjugate_char_1_pp ord.isotone_def)
 
+lemma dense_lattice_char_1:
+  "(\<forall>x y . x \<sqinter> y = bot \<longrightarrow> x = bot \<or> y = bot) \<longleftrightarrow> (\<forall>x . x \<noteq> bot \<longrightarrow> dense x)"
+  by (metis inf_top.left_neutral p_bot p_inf pp_inf_bot_iff)
+
+lemma dense_lattice_char_2:
+  "(\<forall>x y . x \<sqinter> y = bot \<longrightarrow> x = bot \<or> y = bot) \<longleftrightarrow> (\<forall>x . regular x \<longrightarrow> x = bot \<or> x = top)"
+  by (metis dense_lattice_char_1 inf_top.left_neutral p_inf regular_closed_p regular_closed_top)
+
+lemma restrict_below_Rep_eq:
+  "x \<sqinter> --y \<le> z \<Longrightarrow> x \<sqinter> y = x \<sqinter> z \<sqinter> y"
+  by (metis inf.absorb2 inf.commute inf.left_commute pp_increasing)
+
 (*
 lemma p_inf_sup_below: "-x \<sqinter> (x \<squnion> y) \<le> y" nitpick [expect=genuine] oops
 lemma complement_p: "x \<sqinter> y = bot \<and> x \<squnion> y = top \<longrightarrow> -x = y" nitpick [expect=genuine] oops
@@ -762,6 +774,34 @@ lemma sup_compl_top: "x \<squnion> -x = top" nitpick [expect=genuine] oops
 lemma selection_closed_p: "selection s x \<longrightarrow> selection (-s) x" nitpick [expect=genuine] oops
 lemma selection_closed_pp: "selection s x \<longrightarrow> selection (--s) x" nitpick [expect=genuine] oops
 *)
+
+end
+
+text {*
+Every bounded linear order can be expanded to a Stone algebra.
+The pseudocomplement takes @{text bot} to the @{text top} and every other element to @{text bot}.
+*}
+
+class linorder_stone_algebra_expansion = linorder_lattice_expansion + uminus +
+  assumes uminus_def [simp]: "-x = (if x = bot then top else bot)"
+begin
+
+subclass stone_algebra
+  apply unfold_locales
+  using bot_unique min_def top_le by auto
+
+text {*
+The regular elements are the least and greatest elements.
+All elements except the least element are dense.
+*}
+
+lemma regular_bot_top:
+  "regular x \<longleftrightarrow> x = bot \<or> x = top"
+  by simp
+
+lemma not_bot_dense:
+  "x \<noteq> bot \<Longrightarrow> --x = top"
+  by simp
 
 end
 

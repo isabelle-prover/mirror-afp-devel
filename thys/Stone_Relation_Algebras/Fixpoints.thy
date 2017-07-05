@@ -73,7 +73,7 @@ definition the_least_prefixpoint     :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a"
 definition the_greatest_postfixpoint :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a" ("p\<nu> _" [201] 200) where "p\<nu> f = (THE x . is_greatest_postfixpoint f x)"
 
 text {*
-We start with basic consequences of the above definitions. 
+We start with basic consequences of the above definitions.
 *}
 
 lemma least_fixpoint_unique:
@@ -141,7 +141,7 @@ lemma greatest_postfixpoint_char:
   using greatest_postfixpoint_same has_greatest_postfixpoint_def by auto
 
 text {*
-Next come the unfold rules for least/greatest (pre/post)fixpoints. 
+Next come the unfold rules for least/greatest (pre/post)fixpoints.
 *}
 
 lemma mu_unfold:
@@ -161,7 +161,7 @@ lemma pnu_unfold:
   using greatest_postfixpoint is_greatest_postfixpoint_def by auto
 
 text {*
-Pre-/postfixpoints of isotone functions are fixpoints. 
+Pre-/postfixpoints of isotone functions are fixpoints.
 *}
 
 lemma least_prefixpoint_fixpoint:
@@ -181,7 +181,7 @@ lemma pnu_nu:
   by (simp add: greatest_fixpoint_same greatest_postfixpoint_fixpoint)
 
 text {*
-The fixpoint operators preserve isotonicity. 
+The fixpoint operators preserve isotonicity.
 *}
 
 lemma pmu_isotone:
