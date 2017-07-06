@@ -20,7 +20,7 @@ begin
 
 subsection {* Conjugates of Vectors *}
 
-definition vec_conjugate::"'a :: conjugatable_field vec \<Rightarrow> 'a vec" ("conjugate\<^sub>v")
+definition vec_conjugate::"'a :: conjugate vec \<Rightarrow> 'a vec" ("conjugate\<^sub>v")
   where "conjugate\<^sub>v v = vec (dim\<^sub>v v) (\<lambda>i. conjugate (v $ i))"
 
 lemma vec_conjugate_index[simp]:
@@ -32,14 +32,18 @@ lemma vec_conjugate_closed[simp]: "v : carrier\<^sub>v n \<Longrightarrow> conju
   unfolding vec_conjugate_def by auto
 
 lemma vec_conjugate_dist_add:
+  fixes v w :: "'a :: conjugatable_ring vec"
   assumes dim: "v : carrier\<^sub>v n" "w : carrier\<^sub>v n"
   shows "conjugate\<^sub>v (v \<oplus>\<^sub>v w) = conjugate\<^sub>v v \<oplus>\<^sub>v conjugate\<^sub>v w"
   by (rule, insert dim, auto simp: conjugate_dist_add)
 
-lemma vec_conjugate_uminus: "\<ominus>\<^sub>v (conjugate\<^sub>v v) = conjugate\<^sub>v (\<ominus>\<^sub>v v)"
+lemma vec_conjugate_uminus:
+  fixes v w :: "'a :: conjugatable_ring vec"
+  shows "\<ominus>\<^sub>v (conjugate\<^sub>v v) = conjugate\<^sub>v (\<ominus>\<^sub>v v)"
   by (rule, auto simp:conjugate_neg)
 
-lemma vec_conjugate_zero[simp]: "conjugate\<^sub>v (\<zero>\<^sub>v n) = \<zero>\<^sub>v n" by auto
+lemma vec_conjugate_zero[simp]:
+  "conjugate\<^sub>v (\<zero>\<^sub>v n :: 'a :: conjugatable_ring vec) = \<zero>\<^sub>v n" by auto
 
 lemma vec_conjugate_id[simp]: "conjugate\<^sub>v (conjugate\<^sub>v v) = v"
   unfolding vec_conjugate_def by auto
@@ -58,14 +62,19 @@ proof(rule iffI)
   qed
 qed auto
 
-lemma vec_conjugate_zero_iff[simp]: "conjugate\<^sub>v v = \<zero>\<^sub>v n \<longleftrightarrow> v = \<zero>\<^sub>v n"
-  using vec_conjugate_cancel_iff[of _ "\<zero>\<^sub>v n"] by auto
+lemma vec_conjugate_zero_iff[simp]:
+  fixes v :: "'a :: conjugatable_ring vec"
+  shows "conjugate\<^sub>v v = \<zero>\<^sub>v n \<longleftrightarrow> v = \<zero>\<^sub>v n"
+  using vec_conjugate_cancel_iff[of _ "\<zero>\<^sub>v n :: 'a vec"] by auto
 
-lemma vec_conjugate_dist_smult: "conjugate\<^sub>v (k \<odot>\<^sub>v v) = conjugate k \<odot>\<^sub>v conjugate\<^sub>v v"
+lemma vec_conjugate_dist_smult:
+  fixes k :: "'a :: conjugatable_ring"
+  shows "conjugate\<^sub>v (k \<odot>\<^sub>v v) = conjugate k \<odot>\<^sub>v conjugate\<^sub>v v"
   unfolding vec_conjugate_def
   apply(rule) using conjugate_dist_mul by auto
 
 lemma vec_conjugate_dist_sprod:
+  fixes v w :: "'a :: conjugatable_ring vec"
   assumes v[simp]: "v : carrier\<^sub>v n" and w[simp]: "w : carrier\<^sub>v n"
   shows "conjugate (v \<bullet> w) = conjugate\<^sub>v v \<bullet> conjugate\<^sub>v w"
   unfolding scalar_prod_def
@@ -378,7 +387,6 @@ proof -
   hence carrier: "finsum V ?g (set us) : carrier\<^sub>v n" by simp
   let ?f = "\<lambda>u'. ?g u' \<bullet>c u"
   let ?U = "set us - {u}"
-  have fU': "?f : ?U \<rightarrow> UNIV" by auto
   { fix u' assume u': "(u'::'a vec) : carrier\<^sub>v n"
     have [simp]: "dim\<^sub>v u = n" by auto
     have "?f u' = (- (w \<bullet>c u') / (u' \<bullet>c u')) * (u' \<bullet>c u)"
@@ -400,7 +408,7 @@ proof -
   qed
   hence "restrict ?f ?U = restrict (\<lambda>u. 0) ?U" by force
   hence "sum ?f ?U = sum (\<lambda>u. 0) ?U"
-    using R.finsum_restrict[OF fU'] by auto
+    by (intro R.finsum_restrict, auto)
   hence fU'0: "sum ?f ?U = 0" by auto
   have uU': "u \<notin> ?U" by auto
   have "set us = insert u ?U"

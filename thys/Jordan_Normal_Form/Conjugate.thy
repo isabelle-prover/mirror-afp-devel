@@ -45,7 +45,7 @@ lemma conjugate_square_0:
 
 subsection {* Instantiations *}
 
-instantiation complex :: conjugatable_ordered_ring
+instantiation complex :: conjugatable_ordered_field
 begin
   definition [simp]: "conjugate \<equiv> cnj"
   definition [simp]: "x < y \<equiv> Im x = Im y \<and> Re x < Re y"
@@ -54,13 +54,13 @@ begin
   instance by (intro_classes, auto simp: complex.expand)
 end
 
-instantiation real :: conjugatable_ordered_ring
+instantiation real :: conjugatable_ordered_field
 begin
   definition [simp]: "conjugate (x::real) \<equiv> x"
   instance by (intro_classes, auto)
 end
 
-instantiation rat :: conjugatable_ordered_ring
+instantiation rat :: conjugatable_ordered_field
 begin
   definition [simp]: "conjugate (x::rat) \<equiv> x"
   instance by (intro_classes, auto)

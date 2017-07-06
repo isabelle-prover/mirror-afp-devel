@@ -17,19 +17,19 @@ begin
 
 named_theorems class_ring_simps
 
-abbreviation class_ring :: "'a :: {times,plus,one,zero} itself \<Rightarrow> 'a ring" where
-  "class_ring _ \<equiv> \<lparr> carrier = UNIV, mult = op *, one = 1, zero = 0, add = op + \<rparr>"
+abbreviation class_ring :: "'a :: {times,plus,one,zero} ring" where
+  "class_ring \<equiv> \<lparr> carrier = UNIV, mult = op *, one = 1, zero = 0, add = op + \<rparr>"
 
-interpretation class_semiring: semiring "class_ring TYPE('a :: semiring_1)"
-  rewrites [class_ring_simps]: "carrier (class_ring TYPE('a)) = UNIV"
-    and [class_ring_simps]: "mult (class_ring TYPE('a)) = op *"
-    and [class_ring_simps]: "add (class_ring TYPE('a)) = op +"
-    and [class_ring_simps]: "one (class_ring TYPE('a)) = 1"
-    and [class_ring_simps]: "zero (class_ring TYPE('a)) = 0"
-    and [class_ring_simps]: "pow (class_ring TYPE('a)) = op ^"
-    and [class_ring_simps]: "finsum (class_ring TYPE('a)) = sum"
+interpretation class_semiring: semiring "class_ring :: 'a :: semiring_1 ring"
+  rewrites [class_ring_simps]: "carrier class_ring = UNIV"
+    and [class_ring_simps]: "mult class_ring = op *"
+    and [class_ring_simps]: "add class_ring = op +"
+    and [class_ring_simps]: "one class_ring = 1"
+    and [class_ring_simps]: "zero class_ring = 0"
+    and [class_ring_simps]: "pow (class_ring :: 'a ring) = op ^"
+    and [class_ring_simps]: "finsum (class_ring :: 'a ring) = sum"
 proof -
-  let ?r = "class_ring TYPE('a :: semiring_1)"
+  let ?r = "class_ring :: 'a ring"
   show "semiring ?r"
     by (unfold_locales, auto simp: field_simps)
   then interpret semiring ?r .
@@ -47,19 +47,20 @@ proof -
   thus "finsum ?r = sum" by (intro ext)
 qed auto 
 
-interpretation class_ring: ring "class_ring TYPE('a :: ring_1)"
-  rewrites "carrier (class_ring TYPE('a)) = UNIV"
-    and "mult (class_ring TYPE('a)) = op *"
-    and "add (class_ring TYPE('a)) = op +"
-    and "one (class_ring TYPE('a)) = 1"
-    and "zero (class_ring TYPE('a)) = 0"
-    and [class_ring_simps]: "a_inv (class_ring TYPE('a)) = uminus"
-    and [class_ring_simps]: "a_minus (class_ring TYPE('a)) = minus"
-    and "pow (class_ring TYPE('a)) = op ^"
-    and "finsum (class_ring TYPE('a)) = sum"
+interpretation class_ring: ring "class_ring :: 'a :: ring_1 ring"
+  rewrites "carrier class_ring = UNIV"
+    and "mult class_ring = op *"
+    and "add class_ring = op +"
+    and "one class_ring = 1"
+    and "zero class_ring = 0"
+    and [class_ring_simps]: "a_inv (class_ring :: 'a ring) = uminus"
+    and [class_ring_simps]: "a_minus (class_ring :: 'a ring) = minus"
+    and "pow (class_ring :: 'a ring) = op ^"
+    and "finsum (class_ring :: 'a ring) = sum"
 proof -
-  let ?r = "class_ring TYPE('a)"
+  let ?r = "class_ring :: 'a ring"
   interpret semiring ?r ..
+  show "finsum ?r = sum" "pow ?r = op ^" by (simp_all add: class_ring_simps)
   {
     fix x :: 'a
     have "\<exists>y. x + y = 0" by (rule exI[of _ "-x"], auto)
@@ -81,23 +82,27 @@ proof -
   thus "op \<ominus>\<^bsub>?r\<^esub> = minus" by (intro ext)
 qed (auto simp: class_ring_simps)
 
-interpretation class_cring: cring "class_ring TYPE('a :: comm_ring_1)"
-  rewrites "carrier (class_ring TYPE('a)) = UNIV"
-    and "mult (class_ring TYPE('a)) = op *"
-    and "add (class_ring TYPE('a)) = op +"
-    and "one (class_ring TYPE('a)) = 1"
-    and "zero (class_ring TYPE('a)) = 0"
-    and "a_inv (class_ring TYPE('a)) = uminus"
-    and "a_minus (class_ring TYPE('a)) = minus"
-    and "pow (class_ring TYPE('a)) = op ^"
-    and "finsum (class_ring TYPE('a)) = sum"
-    and [class_ring_simps]: "finprod (class_ring TYPE('a)) = prod"
+interpretation class_cring: cring "class_ring :: 'a :: comm_ring_1 ring"
+  rewrites "carrier class_ring = UNIV"
+    and "mult class_ring = op *"
+    and "add class_ring = op +"
+    and "one class_ring = 1"
+    and "zero class_ring = 0"
+    and "a_inv (class_ring :: 'a ring) = uminus"
+    and "a_minus (class_ring :: 'a ring) = minus"
+    and "pow (class_ring :: 'a ring) = op ^"
+    and "finsum (class_ring :: 'a ring) = sum"
+    and [class_ring_simps]: "finprod class_ring = prod"
 proof -
-  let ?r = "class_ring TYPE('a)"
+  let ?r = "class_ring :: 'a ring"
   interpret ring ?r ..
   show "cring ?r"
     by (unfold_locales, auto)
-  then interpret cring ?r . 
+  then interpret cring ?r .
+  show "a_inv (class_ring :: 'a ring) = uminus"
+    and "a_minus (class_ring :: 'a ring) = minus"
+    and "pow (class_ring :: 'a ring) = op ^"
+    and "finsum (class_ring :: 'a ring) = sum" by (simp_all add: class_ring_simps)
   {
     fix f and A :: "'b set"
     have "finprod ?r f A = prod f A"
@@ -107,9 +112,9 @@ proof -
 qed (auto simp: class_ring_simps)
 
 definition div0 :: "'a :: {one,plus,times,zero}" where
-  "div0 \<equiv> m_inv (class_ring TYPE('a)) 0"
+  "div0 \<equiv> m_inv (class_ring :: 'a ring) 0"
 
-lemma class_field: "field (class_ring TYPE('a :: field))" (is "field ?r")
+lemma class_field: "field (class_ring :: 'a :: field ring)" (is "field ?r")
 proof -
   interpret cring ?r ..
   {
@@ -121,23 +126,29 @@ proof -
     by (unfold_locales, auto simp: Units_def)
 qed
 
-interpretation class_field: field "class_ring TYPE('a :: field)"
-  rewrites "carrier (class_ring TYPE('a)) = UNIV"
-    and "mult (class_ring TYPE('a)) = op *"
-    and "add (class_ring TYPE('a)) = op +"
-    and "one (class_ring TYPE('a)) = 1"
-    and "zero (class_ring TYPE('a)) = 0"
-    and "a_inv (class_ring TYPE('a)) = uminus"
-    and "a_minus (class_ring TYPE('a)) = minus"
-    and "pow (class_ring TYPE('a)) = op ^"
-    and "finsum (class_ring TYPE('a)) = sum"
-    and "finprod (class_ring TYPE('a)) = prod"
-    and [class_ring_simps]: "m_inv (class_ring TYPE('a)) x = 
+interpretation class_field: field "class_ring :: 'a :: field ring"
+  rewrites "carrier class_ring = UNIV"
+    and "mult class_ring = op *"
+    and "add class_ring = op +"
+    and "one class_ring = 1"
+    and "zero class_ring = 0"
+    and "a_inv class_ring = uminus"
+    and "a_minus class_ring = minus"
+    and "pow class_ring = op ^"
+    and "finsum class_ring = sum"
+    and "finprod class_ring = prod"
+    and [class_ring_simps]: "m_inv (class_ring :: 'a ring) x = 
       (if x = 0 then div0 else inverse x)" 
     (* problem that m_inv ?r 0 = inverse 0 is not guaranteed  *)
 proof -
-  let ?r = "class_ring TYPE('a)"
+  let ?r = "class_ring :: 'a ring"
   show "field ?r" using class_field.
+  then interpret field ?r.
+  show "a_inv ?r = uminus"
+    and "a_minus ?r = minus"
+    and "pow ?r = op ^"
+    and "finsum ?r = sum"
+    and "finprod ?r = prod" by (fact class_ring_simps)+
   show "inv\<^bsub>?r\<^esub> x = (if x = 0 then div0 else inverse x)"
   proof (cases "x = 0")
     case True
@@ -151,7 +162,7 @@ qed (auto simp: class_ring_simps)
 
 lemmas matrix_vs_simps = mat_module_simps class_ring_simps
 
-definition class_field :: "'a :: field itself \<Rightarrow> 'a ring"
+definition class_field :: "'a :: field ring"
   where [class_ring_simps]: "class_field \<equiv> class_ring"
 
 
@@ -172,7 +183,7 @@ sublocale ring R
 
 end
 
-lemma matrix_vs: "vectorspace (class_field TYPE('a :: field)) (module\<^sub>m TYPE('a) nr nc)"
+lemma matrix_vs: "vectorspace (class_ring :: 'a :: field ring) (module\<^sub>m TYPE('a) nr nc)"
 proof -
   interpret abelian_group "module\<^sub>m TYPE('a) nr nc"
     by (rule mat_module_abelian_group)
@@ -181,37 +192,71 @@ proof -
       auto simp: mat_add_scalar_distrib_left mat_add_scalar_distrib_right)
 qed
 
+
+locale vec_module =
+  fixes f_ty::"'a::comm_ring_1 itself"
+  and n::"nat"
+begin
+
+abbreviation V where "V \<equiv> module\<^sub>v TYPE('a) n"
+
+sublocale module "class_ring :: 'a ring" V
+  rewrites "carrier V = carrier\<^sub>v n"
+    and "add V = op \<oplus>\<^sub>v"
+    and "zero V = \<zero>\<^sub>v n"
+    and "module.smult V = op \<odot>\<^sub>v"
+    and "carrier class_ring = UNIV"
+    and "monoid.mult class_ring = op *"
+    and "add class_ring = op +"
+    and "one class_ring = 1"
+    and "zero class_ring = 0"
+    and "a_inv (class_ring :: 'a ring) = uminus"
+    and "a_minus (class_ring :: 'a ring) = op -"
+    and "pow (class_ring :: 'a ring) = op ^"
+    and "finsum (class_ring :: 'a ring) = sum"
+    and "finprod (class_ring :: 'a ring) = prod"
+    and "\<And>X. X \<subseteq> UNIV = True" (* These rewrite rules will clean lemmas *)
+    and "\<And>x. x \<in> UNIV = True"
+    and "\<And>a A. a \<in> A \<rightarrow> UNIV \<equiv> True"
+    and "\<And>P. P \<and> True \<equiv> P"
+    and "\<And>P. (True \<Longrightarrow> P) \<equiv> Trueprop P"
+  apply unfold_locales
+  apply (auto simp: vec_module_simps class_ring_simps Units_def vec_smult_l_distr vec_smult_r_distr intro!:bexI[of _ "\<ominus>\<^sub>v _"])
+  done
+
+end
+
 locale matrix_vs = 
   fixes nr :: nat
     and nc :: nat
     and field_type :: "'a :: field itself"
 begin
-abbreviation F where "F \<equiv> class_field TYPE('a)"
+
 abbreviation V where "V \<equiv> module\<^sub>m TYPE('a) nr nc"
 sublocale  
-  vectorspace F V
+  vectorspace class_ring V
   rewrites "carrier V = carrier\<^sub>m nr nc"
     and "add V = op \<oplus>\<^sub>m"
     and "mult V = op \<otimes>\<^sub>m"
     and "one V = \<one>\<^sub>m nr"
     and "zero V = \<zero>\<^sub>m nr nc"
     and "smult V = op \<odot>\<^sub>m"
-    and "carrier F = UNIV"
-    and "mult F = op *"
-    and "add F = op +"
-    and "one F = 1"
-    and "zero F = 0"
-    and "a_inv F = uminus"
-    and "a_minus F = minus"
-    and "pow F = op ^"
-    and "finsum F = sum"
-    and "finprod F = prod"
-    and "m_inv F x = 
+    and "carrier class_ring = UNIV"
+    and "mult class_ring = op *"
+    and "add class_ring = op +"
+    and "one class_ring = 1"
+    and "zero class_ring = 0"
+    and "a_inv (class_ring :: 'a ring) = uminus"
+    and "a_minus (class_ring :: 'a ring) = minus"
+    and "pow (class_ring :: 'a ring) = op ^"
+    and "finsum (class_ring :: 'a ring) = sum"
+    and "finprod (class_ring :: 'a ring) = prod"
+    and "m_inv (class_ring :: 'a ring) x = 
       (if x = 0 then div0 else inverse x)"
   by (rule matrix_vs, auto simp: matrix_vs_simps class_field_def)
 end
 
-lemma vec_module: "module (class_field TYPE('a :: field)) (module\<^sub>v TYPE('a) n)"
+lemma vec_module: "module (class_ring :: 'a :: field ring) (module\<^sub>v TYPE('a) n)"
 proof -
   interpret abelian_group "module\<^sub>v TYPE('a) n"
     apply (unfold_locales)
@@ -226,7 +271,7 @@ proof -
     by (auto simp:  vec_smult_r_distr)
 qed
 
-lemma vec_vs: "vectorspace (class_field TYPE('a :: field)) (module\<^sub>v TYPE('a) n)"
+lemma vec_vs: "vectorspace (class_ring :: 'a :: field ring) (module\<^sub>v TYPE('a) n)"
   unfolding vectorspace_def
   using vec_module class_field 
   by (auto simp: class_field_def)
@@ -235,24 +280,25 @@ locale vec_space =
   fixes f_ty::"'a::field itself"
   and n::"nat"
 begin
-  abbreviation F where "F \<equiv> class_field TYPE('a)"
-  abbreviation V where "V \<equiv> module\<^sub>v TYPE('a) n"
-  sublocale vectorspace F V 
+
+  sublocale vec_module f_ty n.
+
+  sublocale vectorspace class_ring V 
   rewrites cV[simp]: "carrier V = carrier\<^sub>v n"
     and [simp]: "add V = op \<oplus>\<^sub>v"
     and [simp]: "zero V = \<zero>\<^sub>v n"
     and [simp]: "smult V = op \<odot>\<^sub>v"
-    and cF: "carrier F = UNIV"
-    and "mult F = op *"
-    and "add F = op +"
-    and "one F = 1"
-    and "zero F = 0"
-    and "a_inv F = uminus"
-    and "a_minus F = minus"
-    and "pow F = op ^"
-    and "finsum F = sum"
-    and "finprod F = prod"
-    and "m_inv F x = (if x = 0 then div0 else inverse x)"
+    and "carrier class_ring = UNIV"
+    and "mult class_ring = op *"
+    and "add class_ring = op +"
+    and "one class_ring = 1"
+    and "zero class_ring = 0"
+    and "a_inv (class_ring :: 'a ring) = uminus"
+    and "a_minus (class_ring :: 'a ring) = minus"
+    and "pow (class_ring :: 'a ring) = op ^"
+    and "finsum (class_ring :: 'a ring) = sum"
+    and "finprod (class_ring :: 'a ring) = prod"
+    and "m_inv (class_ring :: 'a ring) x = (if x = 0 then div0 else inverse x)"
   using vec_vs
   unfolding class_field_def
   by (auto simp: vec_module_simps class_ring_simps)

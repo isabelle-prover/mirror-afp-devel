@@ -96,25 +96,39 @@ locale kernel =
     and A :: "'a :: field mat"
   assumes A: "A \<in> carrier\<^sub>m nr nc"
 begin
+
 sublocale NC: vec_space "TYPE('a)" nc .
 
-abbreviation F where "F \<equiv> class_field TYPE('a)"
-abbreviation V where "V \<equiv> module\<^sub>v TYPE('a) nc"
+abbreviation "VK \<equiv> NC.V\<lparr>carrier := mat_kernel A\<rparr>"
 
-abbreviation "VK \<equiv> V\<lparr>carrier := mat_kernel A\<rparr>"
-
-sublocale VKMod: module F VK
+sublocale Ker: vectorspace class_ring VK 
   rewrites "carrier VK = mat_kernel A"
-  by (rule NC.submodule_is_module, unfold_locales,
-    insert A mat_mult_vec_right_distrib[OF A] mat_mult_vec[OF A] mat_kernel[OF A], auto)
+    and [simp]: "add VK = op \<oplus>\<^sub>v"
+    and [simp]: "zero VK = \<zero>\<^sub>v nc"
+    and [simp]: "module.smult VK = op \<odot>\<^sub>v"
+    and "carrier class_ring = UNIV"
+    and "monoid.mult class_ring = op *"
+    and "add class_ring = op +"
+    and "one class_ring = 1"
+    and "zero class_ring = 0"
+    and "a_inv (class_ring :: 'a ring) = uminus"
+    and "a_minus (class_ring :: 'a ring) = minus"
+    and "pow (class_ring :: 'a ring) = op ^"
+    and "finsum (class_ring :: 'a ring) = sum"
+    and "finprod (class_ring :: 'a ring) = prod"
+    and "m_inv (class_ring :: 'a ring) x = (if x = 0 then div0 else inverse x)"
+  apply (intro vectorspace.intro)
+  apply (rule NC.submodule_is_module)
+  apply (unfold_locales)
+  by (insert A mat_mult_vec_right_distrib[OF A] mat_mult_vec[OF A] mat_kernel[OF A], auto simp: class_ring_simps)
 
-sublocale Ker: vectorspace F VK 
-  rewrites "carrier VK = mat_kernel A" 
-  by (unfold_locales, auto)
-
-abbreviation dim where "dim \<equiv> Ker.dim"
-abbreviation basis where "basis \<equiv> Ker.basis"
-abbreviation gen_set where "gen_set \<equiv> VKMod.gen_set"
+abbreviation "basis \<equiv> Ker.basis"
+abbreviation "span \<equiv> Ker.span"
+abbreviation "lincomb \<equiv> Ker.lincomb"
+abbreviation "dim \<equiv> Ker.dim"
+abbreviation "lin_dep \<equiv> Ker.lin_dep"
+abbreviation "lin_indpt \<equiv> Ker.lin_indpt"
+abbreviation "gen_set \<equiv> Ker.gen_set"
 
 lemma finsum_same:
   assumes "f : S \<rightarrow> mat_kernel A"
@@ -127,77 +141,74 @@ proof (induct S rule: infinite_finite_induct)
     hence f_NC: "f : S \<rightarrow> carrier\<^sub>v nc" "f s : carrier\<^sub>v nc" using mat_kernel[OF A] by auto
     have IH: "finsum VK f S = finsum NC.V f S" using insert f_VK by auto
     thus ?case
-      unfolding NC.module.M.finsum_insert[OF base f_NC]
-      unfolding VKMod.M.finsum_insert[OF base f_VK]
+      unfolding NC.M.finsum_insert[OF base f_NC]
+      unfolding Ker.finsum_insert[OF base f_VK]
       by simp
 qed auto
 
 lemma lincomb_same:
   assumes S_kernel: "S \<subseteq> mat_kernel A"
-  shows "VKMod.lincomb a S = NC.module.lincomb a S"
-  unfolding VKMod.lincomb_def
-  unfolding NC.module.lincomb_def
+  shows "lincomb a S = NC.lincomb a S"
+  unfolding Ker.lincomb_def
+  unfolding NC.lincomb_def
   apply(subst finsum_same)
-  using S_kernel VKMod.smult_closed[unfolded vec_module_simps class_ring_simps] by auto
+  using S_kernel Ker.smult_closed[unfolded vec_module_simps class_ring_simps] by auto
 
 lemma span_same:
   assumes S_kernel: "S \<subseteq> mat_kernel A"
-  shows "VKMod.span S = NC.module.span S"
+  shows "span S = NC.span S"
 proof (rule;rule)
-  fix v assume L: "v : VKMod.span S" show "v : NC.module.span S"
+  fix v assume L: "v : span S" show "v : NC.span S"
   proof -
-    obtain a U where know: "finite U" "U \<subseteq> S" "a : U \<rightarrow> UNIV" "v = VKMod.lincomb a U"
-      using L unfolding VKMod.span_def by auto
-    hence v: "v = NC.module.lincomb a U" using lincomb_same S_kernel by auto
+    obtain a U where know: "finite U" "U \<subseteq> S" "a : U \<rightarrow> UNIV" "v = lincomb a U"
+      using L unfolding Ker.span_def by auto
+    hence v: "v = NC.lincomb a U" using lincomb_same S_kernel by auto
     show ?thesis
-      unfolding NC.module.span_def by (rule,intro exI conjI;fact)
+      unfolding NC.span_def by (rule,intro exI conjI;fact)
   qed
-  next fix v assume R: "v : NC.module.span S" show "v : VKMod.span S"
+  next fix v assume R: "v : NC.span S" show "v : span S"
   proof -
-    obtain a U where know: "finite U" "U \<subseteq> S" "v = NC.module.lincomb a U"
-      using R unfolding NC.module.span_def by auto
-    hence v: "v = VKMod.lincomb a U" using lincomb_same S_kernel by auto
-    have a: "a : U \<rightarrow> carrier F" by (simp add: vec_module_simps class_ring_simps)
-    show ?thesis unfolding VKMod.span_def by (rule, intro exI conjI; fact)
+    obtain a U where know: "finite U" "U \<subseteq> S" "v = NC.lincomb a U"
+      using R unfolding NC.span_def by auto
+    hence v: "v = lincomb a U" using lincomb_same S_kernel by auto
+    show ?thesis unfolding Ker.span_def by (rule, intro exI conjI, insert v know, auto)
   qed
 qed
 
 lemma lindep_same:
   assumes S_kernel: "S \<subseteq> mat_kernel A"
-  shows "VKMod.lin_dep S = NC.module.lin_dep S"
+  shows "Ker.lin_dep S = NC.lin_dep S"
 proof
   note [simp] = vec_module_simps class_ring_simps
-  { assume L: "VKMod.lin_dep S"
+  { assume L: "Ker.lin_dep S"
     then obtain v a U
     where finU: "finite U" and US: "U \<subseteq> S"
-      and lc: "VKMod.lincomb a U = \<zero>\<^sub>v nc"
+      and lc: "lincomb a U = \<zero>\<^sub>v nc"
       and vU: "v \<in> U"
       and av0: "a v \<noteq> 0"
-      unfolding VKMod.lin_dep_def by auto
-    have lc': "NC.module.lincomb a U = \<zero>\<^sub>v nc"
+      unfolding Ker.lin_dep_def by auto
+    have lc': "NC.lincomb a U = \<zero>\<^sub>v nc"
       using lc lincomb_same US S_kernel by auto
-    have aU: "a : U \<rightarrow> UNIV" by auto
-    show "NC.module.lin_dep S" unfolding NC.module.lin_dep_def
-      by (intro exI conjI,(fact finU US aU lc' vU av0)+)
+    show "NC.lin_dep S" unfolding NC.lin_dep_def
+      by (intro exI conjI, insert finU US lc' vU av0, auto)
   }
-  assume R: "NC.module.lin_dep S"
+  assume R: "NC.lin_dep S"
   then obtain v a U
   where finU: "finite U" and US: "U \<subseteq> S"
-    and lc: "NC.module.lincomb a U = \<zero>\<^sub>v nc"
+    and lc: "NC.lincomb a U = \<zero>\<^sub>v nc"
     and vU: "v : U"
-    and av0: "a v \<noteq> zero F"
-    unfolding NC.module.lin_dep_def by auto
-  have lc': "VKMod.lincomb a U = zero VK"
+    and av0: "a v \<noteq> 0"
+    unfolding NC.lin_dep_def by auto
+  have lc': "lincomb a U = zero VK"
     using lc lincomb_same US S_kernel by auto
-  have aU: "a : U \<rightarrow> carrier F" by auto
-  show "VKMod.lin_dep S" unfolding VKMod.lin_dep_def
-    by (intro exI conjI,(fact finU US aU lc' vU av0)+)
+  show "Ker.lin_dep S" unfolding Ker.lin_dep_def
+    by (intro exI conjI,insert finU US lc' vU av0, auto)
 qed
 
 lemma lincomb_index:
   assumes i: "i < nc"
     and Xk: "X \<subseteq> mat_kernel A"
-  shows "VKMod.lincomb a X $ i = sum (\<lambda>x. a x * x $ i) X"
+  shows "lincomb a X $ i = sum (\<lambda>x. a x * x $ i) X"
 proof -
   have X: "X \<subseteq> carrier\<^sub>v nc" using Xk mat_kernel_def A by auto
   show ?thesis
@@ -264,11 +275,11 @@ proof -
   show basis: "basis ?B"
     unfolding Ker.basis_def
   proof (intro conjI)
-    show "VKMod.span ?B = mat_kernel A"
+    show "span ?B = mat_kernel A"
     proof
-      show "VKMod.span ?B \<subseteq> mat_kernel A"
-        using sub by (rule VKMod.span_is_subset2)
-      show "mat_kernel A \<subseteq> VKMod.span ?B"
+      show "span ?B \<subseteq> mat_kernel A"
+        using sub by (rule Ker.span_is_subset2)
+      show "mat_kernel A \<subseteq> Ker.span ?B"
       proof
         fix v
         assume "v \<in> mat_kernel A" 
@@ -287,14 +298,13 @@ proof -
           from inj_onD[OF inj id I j] have "I (?bi j) = j" .
         } note I = this        
         define a where "a = (\<lambda> b. v $ (I b))"
-        have a: "a \<in> ?B \<rightarrow> carrier F" by (auto simp: class_field_def)
-        from VKMod.lincomb_closed[OF sub a] have diml: "dim\<^sub>v (VKMod.lincomb a ?B) = nc"
+        from Ker.lincomb_closed[OF sub] have diml: "dim\<^sub>v (lincomb a ?B) = nc"
           unfolding mat_kernel_def using dim lincomb_same by auto
-        have "v = VKMod.lincomb a ?B"
+        have "v = lincomb a ?B"
         proof (rule vec_eqI; unfold diml dimv)
           fix j
           assume j: "j < nc"
-          have "VKMod.lincomb a ?B $ j = (\<Sum>b\<in> ?B. a b * b $ j)" by (rule lincomb_index[OF j sub])
+          have "Ker.lincomb a ?B $ j = (\<Sum>b\<in> ?B. a b * b $ j)" by (rule lincomb_index[OF j sub])
           also have "\<dots> = (\<Sum> i\<in> ?ran. v $ i * ?bi i $ j)"
           proof (subst sum.reindex_cong[OF inj])
             show "?B = ?bi ` ?ran"  unfolding find_base_vectors_def Let_def dim by auto
@@ -358,20 +368,20 @@ proof -
               thus "v $ j' * ?bi j' $ j = v $ j' * - A $$ (i,j')" by simp
             qed
           qed
-          finally show "v $ j = VKMod.lincomb a ?B $ j" ..
+          finally show "v $ j = lincomb a ?B $ j" ..
         qed auto
-        thus "v \<in> VKMod.span ?B" using a unfolding VKMod.span_def by auto
+        thus "v \<in> span ?B" unfolding Ker.span_def by auto
       qed
     qed
     show "?B \<subseteq> mat_kernel A" by (rule sub)
     {
       fix a v
-      assume lc: "VKMod.lincomb a ?B = \<zero>\<^sub>v nc" and vB: "v \<in> ?B"
+      assume lc: "lincomb a ?B = \<zero>\<^sub>v nc" and vB: "v \<in> ?B"
       from vB[unfolded find_base_vectors_def Let_def dim]
         obtain j where j: "j < nc" "j \<notin> snd ` ?pp" and v: "v = non_pivot_base A (pivot_positions A) j"
         by auto         
       from arg_cong[OF lc, of "\<lambda> v. v $ j"] j
-      have "0 = VKMod.lincomb a ?B $ j" by auto
+      have "0 = lincomb a ?B $ j" by auto
       also have "\<dots> = (\<Sum>v\<in>?B. a v * v $ j)" 
         by (subst lincomb_index[OF j(1) sub], simp)
       also have "\<dots> = a v * v $ j + (\<Sum>w\<in>?B - {v}. a w * w $ j)"
@@ -390,8 +400,8 @@ proof -
       qed
       finally have "a v = 0" by simp
     }
-    thus "\<not> VKMod.lin_dep ?B"     
-      by (intro VKMod.finite_lin_indpt2[OF finite_set sub], auto simp: class_field_def)
+    thus "\<not> lin_dep ?B"
+      by (intro Ker.finite_lin_indpt2[OF finite_set sub], auto simp: class_field_def)
   qed
   show "dim = nc - card { i. i < nr \<and> row A i \<noteq> \<zero>\<^sub>v nc}"
     using Ker.dim_basis[OF finite_set basis] card by simp
@@ -505,7 +515,7 @@ proof -
     from 0 w have "w \<in> mat_kernel A" unfolding mat_kernel[OF A] by auto
   } 
   thus genn: "?gen \<subseteq> mat_kernel A" by auto
-  hence one_dir: "A.VKMod.span ?gen \<subseteq> mat_kernel A" by fastforce
+  hence one_dir: "A.span ?gen \<subseteq> mat_kernel A" by fastforce
   {
     fix v v'
     assume v: "v \<in> gen" and v': "v' \<in> gen" and id: "B \<otimes>\<^sub>m\<^sub>v v = B \<otimes>\<^sub>m\<^sub>v v'"
@@ -529,27 +539,27 @@ proof -
     also have "\<dots> = \<zero>\<^sub>v nr" unfolding inv using 0 A v by simp
     finally have 0: "?AB \<otimes>\<^sub>m\<^sub>v ?Cv = \<zero>\<^sub>v nr" and Cv: "?Cv \<in> carrier\<^sub>v nc" using C v by auto
     hence "?Cv \<in> mat_kernel ?AB" unfolding mat_kernel[OF AB] by auto
-    with gen_set have "?Cv \<in> AB.VKMod.span gen" by auto
-    from this[unfolded AB.VKMod.span_def] obtain a gen' where 
-      Cv: "?Cv = AB.VKMod.lincomb a gen'" and sub: "gen' \<subseteq> gen" and fin: "finite gen'" by auto
+    with gen_set have "?Cv \<in> AB.span gen" by auto
+    from this[unfolded AB.Ker.span_def] obtain a gen' where 
+      Cv: "?Cv = AB.lincomb a gen'" and sub: "gen' \<subseteq> gen" and fin: "finite gen'" by auto
     let ?gen' = "(op \<otimes>\<^sub>m\<^sub>v B) ` gen'"
     from sub gen have gen': "gen' \<subseteq> mat_kernel ?AB" by auto
-    have lin1: "AB.VKMod.lincomb a gen' \<in> carrier\<^sub>v nc"
-      using AB.VKMod.lincomb_closed[OF gen', of a]
+    have lin1: "AB.lincomb a gen' \<in> carrier\<^sub>v nc"
+      using AB.Ker.lincomb_closed[OF gen', of a]
       unfolding mat_kernel[OF AB] by (auto simp: class_field_def)
-    hence dim1: "dim\<^sub>v (AB.VKMod.lincomb a gen') = nc" by auto
-    hence dim1b: "dim\<^sub>v (B \<otimes>\<^sub>m\<^sub>v (AB.VKMod.lincomb a gen')) = nc" using B by auto
+    hence dim1: "dim\<^sub>v (AB.lincomb a gen') = nc" by auto
+    hence dim1b: "dim\<^sub>v (B \<otimes>\<^sub>m\<^sub>v (AB.Ker.lincomb a gen')) = nc" using B by auto
     from genn sub have genn': "?gen' \<subseteq> mat_kernel A" by auto
     from gen sub have gen'nc: "gen' \<subseteq> carrier\<^sub>v nc" unfolding mat_kernel[OF AB] by auto
     define a' where "a' = (\<lambda> b. a (C \<otimes>\<^sub>m\<^sub>v b))"
-    from A.VKMod.lincomb_closed[OF genn']
-    have lin2: "A.VKMod.lincomb a' ?gen' \<in> carrier\<^sub>v nc"
+    from A.Ker.lincomb_closed[OF genn']
+    have lin2: "A.Ker.lincomb a' ?gen' \<in> carrier\<^sub>v nc"
       unfolding mat_kernel[OF A] by (auto simp: class_field_def)
-    hence dim2: "dim\<^sub>v (A.VKMod.lincomb a' ?gen') = nc" by auto
+    hence dim2: "dim\<^sub>v (A.Ker.lincomb a' ?gen') = nc" by auto
     have "v = B \<otimes>\<^sub>m\<^sub>v ?Cv" 
       by (unfold mat_vec_mult_assoc[symmetric, OF B C v] inv, insert v, simp)
-    hence "v = B \<otimes>\<^sub>m\<^sub>v AB.VKMod.lincomb a gen'" unfolding Cv by simp
-    also have "\<dots> = A.VKMod.lincomb a' ?gen'"
+    hence "v = B \<otimes>\<^sub>m\<^sub>v AB.Ker.lincomb a gen'" unfolding Cv by simp
+    also have "\<dots> = A.Ker.lincomb a' ?gen'"
     proof (rule vec_eqI; unfold dim1 dim1b dim2)
       fix i
       assume i: "i < nc"
@@ -561,7 +571,7 @@ proof -
         with gen'nc have v: "v \<in> carrier\<^sub>v nc" by auto
         hence "a' (B \<otimes>\<^sub>m\<^sub>v v) = a v" unfolding a'_def mat_vec_mult_assoc[symmetric, OF C B v] CB by auto
       } note a' = this
-      have "A.VKMod.lincomb a' ?gen' $ i = (\<Sum>v\<in>op \<otimes>\<^sub>m\<^sub>v B ` gen'. a' v * v $ i)"
+      have "A.Ker.lincomb a' ?gen' $ i = (\<Sum>v\<in>op \<otimes>\<^sub>m\<^sub>v B ` gen'. a' v * v $ i)"
         unfolding A.lincomb_index[OF i genn']  by simp
       also have "\<dots> = (\<Sum>v\<in>gen'. a v * ((B \<otimes>\<^sub>m\<^sub>v v) $ i))"
         by (rule sum.reindex_cong[OF inj refl], auto simp: a')
@@ -572,16 +582,16 @@ proof -
         by (rule sum.commute)
       also have "\<dots> = (\<Sum>j = 0..<nc. row B i $ j * (\<Sum>v\<in>gen'. a v * v $ j))"
         by (rule sum.cong, auto simp: sum_distrib_left ac_simps)
-      also have "\<dots> = (B \<otimes>\<^sub>m\<^sub>v AB.VKMod.lincomb a gen') $ i"
+      also have "\<dots> = (B \<otimes>\<^sub>m\<^sub>v AB.Ker.lincomb a gen') $ i"
         unfolding index_mat_mult_vec[OF ii]
         unfolding scalar_prod_def dim1
         by (rule sum.cong[OF refl], subst AB.lincomb_index[OF _ gen'], auto)
-      finally show "(B \<otimes>\<^sub>m\<^sub>v AB.VKMod.lincomb a gen') $ i = A.VKMod.lincomb a' ?gen' $ i" ..
+      finally show "(B \<otimes>\<^sub>m\<^sub>v AB.Ker.lincomb a gen') $ i = A.Ker.lincomb a' ?gen' $ i" ..
     qed auto
-    finally have "v \<in> A.VKMod.span ?gen" using sub fin
-      unfolding A.VKMod.span_def by (auto simp: class_field_def intro!: exI[of _ a'] exI[of _ ?gen'])
+    finally have "v \<in> A.Ker.span ?gen" using sub fin
+      unfolding A.Ker.span_def by (auto simp: class_field_def intro!: exI[of _ a'] exI[of _ ?gen'])
   }
-  hence other_dir: "A.VKMod.span ?gen \<supseteq> mat_kernel A" by fastforce
+  hence other_dir: "A.Ker.span ?gen \<supseteq> mat_kernel A" by fastforce
   from one_dir other_dir show "kernel.gen_set nc A ((op \<otimes>\<^sub>m\<^sub>v B) ` gen)" by auto
 qed
 
@@ -608,13 +618,13 @@ proof -
   have gen: "A.gen_set ?gen" and sub: "?gen \<subseteq> mat_kernel A" and card: "card ?gen = card gen" .
   from card show "card ?gen = card gen" .
   from fin have fing: "finite ?gen" by auto
-  from gen have gen: "A.VKMod.span ?gen = mat_kernel A" by auto
+  from gen have gen: "A.Ker.span ?gen = mat_kernel A" by auto
   have ABC: "A \<otimes>\<^sub>m B \<otimes>\<^sub>m C = A" using A B C inv by simp
   from kernel_basis_exists[OF A] obtain bas where finb: "finite bas" and bas: "A.basis bas" by auto
   from bas have bas': "A.gen_set bas" "bas \<subseteq> mat_kernel A" unfolding A.Ker.basis_def by auto
   let ?bas = "op \<otimes>\<^sub>m\<^sub>v C ` bas"
   from mat_kernel_mult_right_gen_set[OF AB C B CB, unfolded ABC, OF bas']
-  have bas': "?bas \<subseteq> mat_kernel ?AB" "AB.VKMod.span ?bas = mat_kernel ?AB" "card ?bas = card bas" by auto
+  have bas': "?bas \<subseteq> mat_kernel ?AB" "AB.Ker.span ?bas = mat_kernel ?AB" "card ?bas = card bas" by auto
   from finb bas have cardb: "A.dim = card bas" by (rule A.Ker.dim_basis)
   from fin basis have cardg: "AB.dim = card gen" by (rule AB.Ker.dim_basis)
   from AB.Ker.gen_ge_dim[OF _ bas'(1-2)] finb bas'(3) cardb cardg
@@ -648,12 +658,11 @@ locale vardim =
   fixes f_ty :: "'a :: field itself"
 begin
 
-abbreviation "K == class_field TYPE('a::field)"
 abbreviation "M == \<lambda>k. module\<^sub>v TYPE('a) k"
 
-abbreviation "span == \<lambda>k. module.span K (M k)"
+abbreviation "span == \<lambda>k. module.span class_ring (M k)"
 abbreviation "lincomb == \<lambda>k. module.lincomb (M k)"
-abbreviation "lin_dep == \<lambda>k. module.lin_dep K (M k)"
+abbreviation "lin_dep == \<lambda>k. module.lin_dep class_ring (M k)"
 abbreviation "padr m v == v @\<^sub>v \<zero>\<^sub>v m"
 definition "unpadr m v == vec (dim\<^sub>v v - m) (\<lambda>i. v $ i)"
 abbreviation "padl m v == \<zero>\<^sub>v m @\<^sub>v v"
@@ -703,8 +712,8 @@ lemma lincomb_pad:
   defines "goal pad unpad W == pad m (lincomb n a W) = lincomb (n+m) (a o unpad m) (pad m ` W)"
   shows "goal padr unpadr U" (is ?R) and "goal padl unpadl U" (is "?L")
 proof -
-  interpret N: vectorspace K "M n" using vec_vs.
-  interpret NM: vectorspace "K" "M (n+m)" using vec_vs.
+  interpret N: vectorspace class_ring "M n" using vec_vs.
+  interpret NM: vectorspace class_ring "M (n+m)" using vec_vs.
   note [simp] = vec_module_simps class_ring_simps
   have "?R \<and> ?L" using finU U
   proof (induct set:finite)
@@ -775,8 +784,8 @@ lemma span_pad:
   defines "goal pad m == pad m ` span n U = span (n+m) (pad m ` U)"
   shows "goal padr m" "goal padl m"
 proof -
-  interpret N: vectorspace K "M n" using vec_vs.
-  interpret NM: vectorspace "K" "M (n+m)" using vec_vs.
+  interpret N: vectorspace class_ring "M n" using vec_vs.
+  interpret NM: vectorspace class_ring "M (n+m)" using vec_vs.
   { fix pad :: "'a vec \<Rightarrow> 'a vec" and unpad :: "'a vec \<Rightarrow> 'a vec"
     assume main: "\<And>A a. A \<subseteq> U \<Longrightarrow> finite A \<Longrightarrow>
       pad (lincomb n a A) = lincomb (n+m) (a o unpad) (pad ` A)"
@@ -977,9 +986,9 @@ lemma padr_padl_lindep:
       and B: "B \<subseteq> carrier\<^sub>v m" and liB: "~ lin_dep m B"
   shows "~ lin_dep (n+m) (padr m ` A \<union> padl n ` B)" (is "~ lin_dep _ (?A \<union> ?B)")
 proof -
-  interpret N: vectorspace K "M n" using vec_vs.
-  interpret M: vectorspace K "M m" using vec_vs.
-  interpret NM: vectorspace "K" "M (n+m)" using vec_vs.
+  interpret N: vectorspace class_ring "M n" using vec_vs.
+  interpret M: vectorspace class_ring "M m" using vec_vs.
+  interpret NM: vectorspace class_ring "M (n+m)" using vec_vs.
   note [simp] = vec_module_simps class_ring_simps
   have AB: "?A \<union> ?B \<subseteq> carrier\<^sub>v (n+m)"
     using padr_image[OF A] padl_image[OF B] by auto
@@ -990,7 +999,7 @@ proof -
     fix U f u
     assume finU: "finite U"
        and UAB: "U \<subseteq> ?A \<union> ?B"
-       and f: "f : U \<rightarrow> carrier K"
+       and f: "f : U \<rightarrow> carrier class_ring"
        and 0: "lincomb (n+m) f U = \<zero>\<^bsub>M (n+m)\<^esub>"
        and uU: "u : U"
     let ?UA = "U \<inter> ?A" and ?UB = "U \<inter> ?B"
@@ -1010,20 +1019,17 @@ proof -
       show "finite B'"
         apply (rule finite_imageD) using subset_inj_on[OF padl_inj B'] pre by auto
     qed
-    have "\<zero>\<^sub>v n \<notin> A" using N.zero_nin_lin_indpt[OF _ liA] A N.one_zeroI by auto
+    have "\<zero>\<^sub>v n \<notin> A" using N.zero_nin_lin_indpt[OF _ liA] A class_semiring.one_zeroI by auto
     hence "?A \<inter> ?B = {}" using pad_disjoint A B by auto
     hence disj: "?UA \<inter> ?UB = {}" by auto
     have split: "U = padr m ` A' \<union> padl n ` B'"
       unfolding UAA'[symmetric] UBB'[symmetric] using UAB by auto
-    show "f u = \<zero>\<^bsub>K\<^esub>"
+    show "f u = \<zero>\<^bsub>(class_ring::'a ring)\<^esub>"
     proof -
       let ?a = "f \<circ> padr m"
       let ?b = "f \<circ> padl n"
-  
-      have a': "?a : A' \<rightarrow> carrier K" by auto
-      hence lcA': "lincomb n ?a A' : carrier\<^sub>v n" using N.lincomb_closed A' by auto
-      have b': "?b : B' \<rightarrow> carrier K" by auto
-      hence lcB': "lincomb m ?b B' : carrier\<^sub>v m" using M.lincomb_closed B' by auto
+      have lcA': "lincomb n ?a A' : carrier\<^sub>v n" using N.lincomb_closed A' by auto
+      have lcB': "lincomb m ?b B' : carrier\<^sub>v m" using M.lincomb_closed B' by auto
   
       have "\<zero>\<^sub>v n @\<^sub>v \<zero>\<^sub>v m = \<zero>\<^sub>v (n+m)" by auto
       also have "... = lincomb (n+m) f U" using 0 by auto
@@ -1060,8 +1066,8 @@ proof -
         apply(subst vec_append_eq[symmetric]) using lcA' lcB' by auto
       from conjunct1[OF this] conjunct2[OF this]
       have "?a : A' \<rightarrow> {0}" "?b : B' \<rightarrow> {0}"
-        using N.not_lindepD[OF liA finA' A'A a']
-        using M.not_lindepD[OF liB finB' B'B b'] by auto
+        using N.not_lindepD[OF liA finA' A'A]
+        using M.not_lindepD[OF liB finB' B'B] by auto
       hence "f : padr m ` A' \<rightarrow> {0}" "f : padl n ` B' \<rightarrow> {0}" by auto
       hence "f : padr m ` A' \<union> padl n ` B' \<rightarrow> {0}" by auto
       hence "f : U \<rightarrow> {0}" using split by auto
@@ -1083,7 +1089,7 @@ proof -
   have A: "A \<in> carrier\<^sub>m (n+m) (n+m)"
     using Adef four_block_mat_carrier[OF B D] by auto
   interpret vardim "TYPE('a)".
-  interpret MN: vectorspace "K" "M (n+m)" using vec_vs.
+  interpret MN: vectorspace class_ring "M (n+m)" using vec_vs.
   interpret KA: kernel "n+m" "n+m" A by (unfold_locales, rule A)
   interpret KB: kernel n n B by (unfold_locales, rule B)
   interpret KD: kernel m m D by (unfold_locales, rule D)
@@ -1127,7 +1133,7 @@ proof -
     show BDk: "?BD \<subseteq> mat_kernel A" using bBkA bDkA by auto
     also have "mat_kernel A \<subseteq> carrier\<^sub>v (m+n)" using mat_kernel_carrier A by auto
     finally have BD: "?BD \<subseteq> carrier (M (n + m))" by auto
-    show "mat_kernel A \<subseteq> KA.VKMod.span ?BD"
+    show "mat_kernel A \<subseteq> KA.Ker.span ?BD"
       unfolding KA.span_same[OF BDk]
     proof
       have BD: "?BD \<subseteq> carrier\<^sub>v (n+m)" (is "_ \<subseteq> ?R")
@@ -1174,13 +1180,13 @@ proof -
         using MN.span_add1[OF _ 2 3] BD by auto
       thus "a \<in> span (n+m) ?BD" using 1 by auto
     qed
-    show "KA.VKMod.span ?BD \<subseteq> mat_kernel A" using KA.Ker.span_closed[OF BDk] by auto
+    show "KA.Ker.span ?BD \<subseteq> mat_kernel A" using KA.Ker.span_closed[OF BDk] by auto
     have li: "~ lin_dep n baseB" "~ lin_dep m baseD"
       using bB[unfolded KB.Ker.basis_def]
       unfolding KB.lindep_same[OF bBkB]
       using bD[unfolded KD.Ker.basis_def]
       unfolding KD.lindep_same[OF bDkD] by auto
-    show "~ KA.VKMod.lin_dep ?BD"
+    show "~ KA.Ker.lin_dep ?BD"
       unfolding KA.lindep_same[OF BDk]
       apply(rule padr_padl_lindep) using bBc bDc li by auto
   qed

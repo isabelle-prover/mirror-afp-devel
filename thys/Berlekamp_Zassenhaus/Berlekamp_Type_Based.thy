@@ -1709,31 +1709,23 @@ proof -
 qed
 
 
-(*We have to interpret mod_ring as field in HOL-Algebra*)
-
-interpretation mod_ring: field "class_field (TYPE('a mod_ring))"
-  using matrix_vs vectorspace.axioms(2) by auto
-
 (* Also polynomials over a field as a vector space in HOL-Algebra.*)
 
 definition "poly_abelian_monoid
   = \<lparr>carrier = UNIV::'a mod_ring poly set, monoid.mult = (op *), one = 1, zero = 0, add = (op +), module.smult = smult\<rparr>"
 
-interpretation vector_space_poly: vectorspace "class_field TYPE('a mod_ring)" poly_abelian_monoid
+interpretation vector_space_poly: vectorspace class_ring poly_abelian_monoid
+  rewrites [simp]: "\<zero>\<^bsub>poly_abelian_monoid\<^esub> = 0"
+       and [simp]: "\<one>\<^bsub>poly_abelian_monoid\<^esub> = 1"
+       and [simp]: "op \<oplus>\<^bsub>poly_abelian_monoid\<^esub> = (op +)"
+       and [simp]: "op \<otimes>\<^bsub>poly_abelian_monoid\<^esub> = (op *)"
+       and [simp]: "carrier poly_abelian_monoid = UNIV"
+       and [simp]: "op \<odot>\<^bsub>poly_abelian_monoid\<^esub> = smult"
   by (unfold_locales, auto simp add: poly_abelian_monoid_def class_field_def smult_add_left smult_add_right)
-
-lemma[simp]: "\<zero>\<^bsub>poly_abelian_monoid\<^esub> = 0"
-"\<one>\<^bsub>poly_abelian_monoid\<^esub> = 1"
-"op \<oplus>\<^bsub>poly_abelian_monoid\<^esub> = (op +)"
-"op \<otimes>\<^bsub>poly_abelian_monoid\<^esub> = (op *)"
-"carrier poly_abelian_monoid = UNIV"
-"op \<odot>\<^bsub>poly_abelian_monoid\<^esub> = smult"
-unfolding poly_abelian_monoid_def by auto
-
 
 lemma subspace_Berlekamp:
 assumes f: "degree f \<noteq> 0"
-shows "subspace (class_field TYPE('a mod_ring)) 
+shows "subspace (class_ring :: 'a mod_ring ring) 
   {v. [v^(CARD('a)) = v] (mod f) \<and> (degree v < degree f)} poly_abelian_monoid"
 proof -
   { fix v :: "'a mod_ring poly" and w :: "'a mod_ring poly"
@@ -1744,8 +1736,8 @@ proof -
     then have "(v + w) ^ card (UNIV::'a set) mod f = (v + w) mod f"
       by (simp add: add_power_poly_mod_ring)
   } note r=this
-  thus ?thesis using f by (intro_locales, unfold_locales, 
-    auto simp: zero_power mod_smult_left smult_power cong_poly_def degree_add_less)
+  thus ?thesis using f
+   by (unfold_locales, auto simp: zero_power mod_smult_left smult_power cong_poly_def degree_add_less)
 qed
 
 
@@ -1839,20 +1831,19 @@ proof -
   thus ?thesis by (auto simp add: mat_kernel_def x_dim)
 qed
 
-private abbreviation "R \<equiv> class_field TYPE('a mod_ring)"
 private abbreviation "V \<equiv> kernel.VK (degree u) (berlekamp_resulting_mat u)"
 private abbreviation "W \<equiv> vector_space_poly.vs 
   {v. [v^(CARD('a)) = v] (mod u) \<and> (degree v < degree u)}"
 
-interpretation V: vectorspace R V
+interpretation V: vectorspace class_ring V
 proof -
   interpret k: kernel "(degree u)" "(degree u)" "(berlekamp_resulting_mat u)"
     by (unfold_locales; auto)
-  show "vectorspace R V" by intro_locales
+  show "vectorspace class_ring V" by intro_locales
 qed
 
 lemma linear_Poly_list_of_vec:
-shows "(Poly \<circ> list_of_vec) \<in> module_hom R V (vector_space_poly.vs {v. [v^(CARD('a)) = v] (mod u)})"
+shows "(Poly \<circ> list_of_vec) \<in> module_hom class_ring V (vector_space_poly.vs {v. [v^(CARD('a)) = v] (mod u)})"
 proof (auto simp add: module_hom_def Matrix.vec_module_def)
   fix m1 m2::" 'a mod_ring vec"
   assume m1: "m1 \<in> mat_kernel (berlekamp_resulting_mat u)"
@@ -2104,18 +2095,18 @@ context
   assumes deg_u0[simp]: "degree u \<noteq> 0"
 begin
 
-interpretation Berlekamp_subspace: vectorspace R W
+interpretation Berlekamp_subspace: vectorspace class_ring W
   by (rule vector_space_poly.subspace_is_vs[OF subspace_Berlekamp], simp)
 
-lemma linear_map_Poly_list_of_vec': "linear_map R V W (Poly \<circ> list_of_vec)"
+lemma linear_map_Poly_list_of_vec': "linear_map class_ring V W (Poly \<circ> list_of_vec)"
 proof (auto simp add: linear_map_def)
-  show "vectorspace R V" by intro_locales
-  show "vectorspace R W" by (rule Berlekamp_subspace.vectorspace_axioms)
-  show "mod_hom R V W (Poly \<circ> list_of_vec)"
+  show "vectorspace class_ring V" by intro_locales
+  show "vectorspace class_ring W" by (rule Berlekamp_subspace.vectorspace_axioms)
+  show "mod_hom class_ring V W (Poly \<circ> list_of_vec)"
   proof (rule mod_hom.intro, unfold mod_hom_axioms_def)
-    show "module R V" by intro_locales
-    show "module R W" using Berlekamp_subspace.vectorspace_axioms by intro_locales
-    show "Poly \<circ> list_of_vec \<in> module_hom R V W"
+    show "module class_ring V" by intro_locales
+    show "module class_ring W" using Berlekamp_subspace.vectorspace_axioms by intro_locales
+    show "Poly \<circ> list_of_vec \<in> module_hom class_ring V W"
       by (rule linear_Poly_list_of_vec'[OF deg_u0])
   qed
 qed
@@ -2123,7 +2114,7 @@ qed
 lemma berlekamp_basis_basis:
   "Berlekamp_subspace.basis (set (berlekamp_basis u))"
 proof (unfold set_berlekamp_basis_eq, rule linear_map.linear_inj_image_is_basis)
-  show "linear_map R V W (Poly \<circ> list_of_vec)"
+  show "linear_map class_ring V W (Poly \<circ> list_of_vec)"
     by (rule linear_map_Poly_list_of_vec')
   show "inj_on (Poly \<circ> list_of_vec) (carrier V)"
   proof (rule subset_inj_on[OF inj_Poly_list_of_vec])
@@ -2173,14 +2164,14 @@ proof (induct B)
         fix v assume v: "v\<in>V"
         show "a v \<odot>\<^bsub>W\<^esub> v \<in> carrier W"
         proof (rule Berlekamp_subspace.smult_closed)
-          show "a v \<in> carrier R" using insert.prems v unfolding Pi_def
+          show "a v \<in> carrier class_ring" using insert.prems v unfolding Pi_def
             by (simp add: class_field_def)
           show "v \<in> carrier W" using v insert.prems by auto
         qed
       qed
     show "a x \<odot>\<^bsub>W\<^esub> x \<in> carrier W"
     proof (rule Berlekamp_subspace.smult_closed)
-      show "a x \<in> carrier R" using insert.prems unfolding Pi_def
+      show "a x \<in> carrier class_ring" using insert.prems unfolding Pi_def
         by (simp add: class_field_def)
       show "x \<in> carrier W" using insert.prems by auto
     qed
@@ -2337,16 +2328,16 @@ proof (rule ccontr, auto)
       using exists_vector_in_Berlekamp_subspace_dvd[OF _ _ _ pi pj _ _ _ _ w_dvd_f monic_w pi_dvd_w]
       assms by meson
   have x_in: "x \<in> carrier W" using x by auto
-  hence "(\<exists>!a. a \<in> B \<rightarrow>\<^sub>E carrier R \<and> Berlekamp_subspace.lincomb a B = x)"
+  hence "(\<exists>!a. a \<in> B \<rightarrow>\<^sub>E carrier class_ring \<and> Berlekamp_subspace.lincomb a B = x)"
     using Berlekamp_subspace.basis_criterion[OF finite_V V_in_carrier] using basis_V
     by (simp add: class_field_def)
-  from this obtain a where a_Pi: "a \<in> B \<rightarrow>\<^sub>E carrier R"
+  from this obtain a where a_Pi: "a \<in> B \<rightarrow>\<^sub>E carrier class_ring"
     and lincomb_x: "Berlekamp_subspace.lincomb a B = x"
     by blast
   have fs_ss: "(\<Oplus>\<^bsub>W\<^esub>v\<in>B. a v \<odot>\<^bsub>W\<^esub> v) = sum (\<lambda>v. smult (a v) v) B"
   proof (rule finsum_sum)
     show "finite B" by fact
-    show "a \<in> B \<rightarrow> carrier R" using a_Pi by auto
+    show "a \<in> B \<rightarrow> carrier class_ring" using a_Pi by auto
     show "B \<subseteq> carrier W" by (rule V_in_carrier)
   qed
   have "x mod p_i = Berlekamp_subspace.lincomb a B mod p_i" using lincomb_x by simp
@@ -2433,7 +2424,7 @@ lemma exists_bijective_linear_map_W_vec:
   assumes finite_P: "finite P"
       and u_desc_square_free: "u = (\<Prod>a\<in>P. a)"
       and P: "P \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
-  shows "\<exists>f. linear_map R W (module\<^sub>v TYPE('a mod_ring) (card P)) f
+  shows "\<exists>f. linear_map class_ring W (module\<^sub>v TYPE('a mod_ring) (card P)) f
   \<and> bij_betw f (carrier W) (carrier\<^sub>v (card P)::'a mod_ring vec set)"
 proof -
   let ?B="carrier\<^sub>v (card P)::'a mod_ring vec set"
@@ -2459,12 +2450,12 @@ proof -
     qed
   qed
   let ?f = "\<lambda>v. vec n (\<lambda>i. coeff (v mod (m i)) 0)"
-  interpret vec_VS: vectorspace R "(module\<^sub>v TYPE('a mod_ring) n)"
+  interpret vec_VS: vectorspace class_ring "(module\<^sub>v TYPE('a mod_ring) n)"
     by (rule VS_Connect.vec_vs)
-  interpret linear_map R W "(module\<^sub>v TYPE('a mod_ring) n)" ?f
+  interpret linear_map class_ring W "(module\<^sub>v TYPE('a mod_ring) n)" ?f
     by (intro_locales, unfold mod_hom_axioms_def module_hom_def,
         auto simp add: vec_eq_iff vec_module_def mod_smult_left poly_mod_add_left)
-  have "linear_map R W (module\<^sub>v TYPE('a mod_ring) n) ?f"
+  have "linear_map class_ring W (module\<^sub>v TYPE('a mod_ring) n) ?f"
     by (intro_locales)
   moreover have inj_f: "inj_on ?f (carrier W)"
   proof (rule Ke0_imp_inj, auto simp add: mod_hom.ker_def)
@@ -2585,7 +2576,7 @@ interpretation RV: vec_space "TYPE('a mod_ring)" "card P" .
 
 lemma Berlekamp_subspace_eq_dim_vec: "Berlekamp_subspace.dim = RV.dim"
 proof -
-  obtain f where lm_f: "linear_map R W (module\<^sub>v TYPE('a mod_ring) (card P)) f"
+  obtain f where lm_f: "linear_map class_ring W (module\<^sub>v TYPE('a mod_ring) (card P)) f"
   and bij_f: "bij_betw f (carrier W) (carrier\<^sub>v (card P)::'a mod_ring vec set)"
     using exists_bijective_linear_map_W_vec[OF finite_P u_desc_square_free P] by blast
   show ?thesis
