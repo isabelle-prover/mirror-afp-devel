@@ -203,11 +203,11 @@ instantiation set :: (cenum) cenum begin
 definition
   "CENUM('a set) =
   (case ID CENUM('a) of None \<Rightarrow> None | Some (enum_a, enum_all_a, enum_ex_a) \<Rightarrow> Some 
-    (map set (sublists enum_a),
-     \<lambda>P. list_all P (map set (sublists enum_a)),
-     \<lambda>P. list_ex P (map set (sublists enum_a))))"
+    (map set (subseqs enum_a),
+     \<lambda>P. list_all P (map set (subseqs enum_a)),
+     \<lambda>P. list_ex P (map set (subseqs enum_a))))"
 instance 
-  by(intro_classes)(auto simp add: cEnum_set_def sublists_powset list_ex_iff list_all_iff split: option.split_asm dest!: ID_cEnum)
+  by(intro_classes)(auto simp add: cEnum_set_def subseqs_powset list_ex_iff list_all_iff split: option.split_asm dest!: ID_cEnum)
 end
 
 instantiation unit :: cenum begin

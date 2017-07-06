@@ -16,8 +16,7 @@ text {*
 declare [[show_sorts]]
 
 text {* Remove existing notation for quotient as it interferes with the rely quotient *}
-no_notation (xsymbols) Equiv_Relations.quotient  (infixl "'/'/" 90)
-no_notation (HTML) Equiv_Relations.quotient  (infixl "'/'/" 90)
+no_notation Equiv_Relations.quotient  (infixl "'/'/" 90)
 
 class refinement_lattice = complete_distrib_lattice
 begin

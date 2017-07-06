@@ -3,11 +3,15 @@ signature CONSTRUCTOR_FUNS = sig
   val mk_funs_typ: typ -> local_theory -> local_theory
   val mk_funs_cmd: string -> local_theory -> local_theory
 
+  val enabled: bool Config.T
+
   val constructor_funs_plugin: string
   val setup: theory -> theory
 end
 
 structure Constructor_Funs : CONSTRUCTOR_FUNS = struct
+
+val enabled = Attrib.setup_config_bool @{binding "constructor_funs"} (K false)
 
 structure Data = Generic_Data
 (
@@ -18,13 +22,18 @@ structure Data = Generic_Data
   val extend = I
 )
 
+fun lenient_unvarify t =
+  (* type variables in records are not schematic *)
+  Logic.unvarify_global t
+    handle TERM _ => t
+
 fun mk_funs {T, ctrs, ...} lthy =
   let
     val typ_name = fst (dest_Type T)
 
     fun mk_fun ctr lthy =
       let
-        val (name, typ) = dest_Const (Logic.unvarify_global ctr)
+        val (name, typ) = dest_Const (lenient_unvarify ctr)
         val (typs, _) = strip_type typ
         val len = length typs
       in
@@ -78,9 +87,10 @@ fun mk_funs_typ typ lthy =
 fun mk_funs_cmd s lthy =
   mk_funs_typ (Proof_Context.read_type_name {proper = true, strict = false} lthy s) lthy
 
-val code_functrans = Code_Preproc.simple_functrans (fn ctxt => fn thms =>
+fun functrans ctxt thms =
   let
     val (consts, unfolds, _) = Data.get (Context.Proof ctxt)
+    val unfolds = map (Thm.transfer (Proof_Context.theory_of ctxt)) unfolds
 
     val conv =
       Conv.top_conv (K (Conv.try_conv (Conv.rewrs_conv unfolds))) ctxt
@@ -107,7 +117,13 @@ val code_functrans = Code_Preproc.simple_functrans (fn ctxt => fn thms =>
       SOME thms'
     else
       NONE
-  end)
+  end
+
+val code_functrans = Code_Preproc.simple_functrans (fn ctxt =>
+  if Config.get ctxt enabled then
+    functrans ctxt
+  else
+    K NONE)
 
 val constructor_funs_plugin =
   Plugin_Name.declare_setup @{binding constructor_funs}

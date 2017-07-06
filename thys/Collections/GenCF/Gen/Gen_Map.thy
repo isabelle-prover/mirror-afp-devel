@@ -8,7 +8,7 @@ begin
     apply (rule ccontr)
     apply (drule not_distinct_decomp)
     using assms
-    apply (clarsimp elim!: map_eq_concE)
+    apply (clarsimp elim!: map_eq_appendE)
     by (metis (hide_lams, no_types) insert_iff map_to_set_inj)
 
 

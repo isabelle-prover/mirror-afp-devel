@@ -621,7 +621,7 @@ proof -
   next
     case WakeUp thus ?thesis using assms
       by(auto simp add: ws.lookup_correct ws.update_correct split: wait_set_status.split)
-  qed(simp_all add: ws.update_correct ws.delete_correct)
+  qed(simp_all add: ws.update_correct ws.delete_correct map_upd_eq_restrict)
   thus ?thesis1 ?thesis2 by simp_all
 qed
 

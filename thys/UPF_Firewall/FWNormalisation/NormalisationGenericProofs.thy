@@ -78,7 +78,7 @@ lemma aux0_6: "\<lbrakk>singleCombinators xs; \<not> (\<exists> a b. x = a \<opl
                singleCombinators(x#xs)"
   apply (rule aux0_1,simp_all)
   apply (case_tac "x",simp_all)
-  by auto
+  done
     
 lemma aux0_5: " \<not> (\<exists> a b. (a\<oplus>b) \<in> set x) \<Longrightarrow> singleCombinators x"
   apply (induct "x")   

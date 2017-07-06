@@ -440,8 +440,8 @@ proof (cases "C=D")
     using apartment_chamber_distance_def chamber_distance_def by simp
 next
   case False
-  def Cs \<equiv> "LEAST Cs WRT length. ChamberComplex.gallery A (C#Cs@[D])"
-  and Ds \<equiv> "LEAST Ds WRT length. gallery (C#Ds@[D])"
+  def Cs \<equiv> "ARG_MIN length Cs. ChamberComplex.gallery A (C#Cs@[D])"
+  and Ds \<equiv> "ARG_MIN length Ds. gallery (C#Ds@[D])"
   and f \<equiv> "canonical_retraction A C"
 
   from assms(2,3) False Ds_def have 1: "gallery (C#Ds@[D])"
@@ -796,7 +796,7 @@ proof-
       have  Achamber_F: "ChamberComplex.chamber A F"
       using complexes ChamberComplex.chamber_system_def
       by    fast
-    def Fs \<equiv> "LEAST Fs WRT length. ChamberComplex.gallery A (C#Fs@[F])"
+    def Fs \<equiv> "ARG_MIN length Fs. ChamberComplex.gallery A (C#Fs@[F])"
     show ?thesis
     proof (rule apartment_standard_uniqueness_pgallery_betw, rule apartments(1))
       show "ChamberComplexMorphism A A fold_A"
@@ -1003,7 +1003,7 @@ proof
       using apartment_trivial_morphism by fast
     show "fixespointwise opp_fold_A F"
       using F' opp_fold_A_chamber_system_image_fixespointwise by fast
-    def Fs \<equiv> "LEAST Fs WRT length. ChamberComplex.gallery A (F#Fs@[C])"
+    def Fs \<equiv> "ARG_MIN length Fs. ChamberComplex.gallery A (F#Fs@[C])"
     with apartments(1)
       have  mingal: "ChamberComplex.min_gallery A (F#Fs@[C])"
       using A_chambers(1) Achamber_F F_ne_C
@@ -1130,7 +1130,7 @@ next
     rule ChamberComplex.min_galleryI_betw_compare, rule complexes,
     rule apartments(1)
   )
-    def Gs \<equiv> "LEAST Gs WRT length. ChamberComplex.gallery A (C#Gs@[F])"
+    def Gs \<equiv> "ARG_MIN length Gs. ChamberComplex.gallery A (C#Gs@[F])"
     from assms snoc show "C\<noteq>F"
       using ChamberComplex.min_gallery_pgallery
             ChamberComplex.pgalleryD_distinct

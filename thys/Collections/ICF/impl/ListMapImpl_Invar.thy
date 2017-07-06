@@ -46,7 +46,7 @@ interpretation lmi_basic: StdBasicMap lmi_basic_ops
   apply (simp_all 
     add: icf_rec_unf lmi_\<alpha>_def lmi_invar_def 
     add: AList.update_conv' AList.distinct_update AList.map_of_delete_aux'
-      map_iterator_foldli_correct dom_map_of_conv_image_fst
+      map_iterator_foldli_correct dom_map_of_conv_image_fst map_upd_eq_restrict
   )
   done
 setup Locale_Code.close_block

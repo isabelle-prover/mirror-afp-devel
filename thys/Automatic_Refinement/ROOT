@@ -1,8 +1,11 @@
 chapter AFP
 
 session Automatic_Refinement (AFP) = HOL +
-  options [timeout = 600]
-  theories [document = false]
+  options [timeout = 1000]
+  sessions
+    "HOL-Library"
+    "HOL-Eisbach"
+theories [document = false]
     "Lib/Refine_Lib"
   theories
     "Parametricity/Param_Chapter"

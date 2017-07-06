@@ -22,6 +22,12 @@ constructor_funs tree
 
 end
 
+text \<open>Records are supported.\<close>
+
+record 'a meep =
+  field1 :: 'a
+  field2 :: nat
+
 text \<open>Nested and mutual recursion are supported.\<close>
 
 datatype
@@ -46,6 +52,8 @@ text \<open>
   The generated code never calls constructors directly, but only through regular functions. These
   functions are defined in eta-long form.
 \<close>
+
+declare [["constructor_funs"]]
 
 export_code app bla plus_nat_inst.plus_nat in SML
 

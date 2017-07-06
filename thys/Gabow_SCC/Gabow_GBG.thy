@@ -821,7 +821,8 @@ begin
         dest!: sym[of "collapse a b" for a b]
         simp: collapse_ne
         simp: pE_fin'[OF invar_from_fgl_invarI] finite_V0
-        solve: invar_preserve
+        solve: invar_preserve 
+        solve: asm_rl[of "_ \<inter> _ = {}"]
         solve: fgl_invar_preserve)
       done
   qed
@@ -1068,7 +1069,7 @@ begin
       fglr_aux1 last_acc_impl oinitial_b_refine
       inj_on_id
     )
-
+    apply refine_dref_type
     apply (simp_all add: ginitial_refine)
     apply (vc_solve (nopre) 
       solve: asm_rl 
@@ -1800,6 +1801,8 @@ begin
         FOREACHci_refine_rcg'[where R=goGS_rel, OF inj_on_id]
       )
 
+      apply refine_dref_type
+    
       apply (simp_all add: go_is_no_brk_refine go_is_done_impl_refine)
       apply (auto simp: goGS_rel_def br_def) []
       apply (auto simp: goGS_rel_def br_def goGS_\<alpha>_def gGS_\<alpha>_def gGS_rel_def 

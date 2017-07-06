@@ -53,8 +53,8 @@ lemma S_sym: "T \<subseteq> S \<Longrightarrow> uminus ` T \<subseteq> T"
 
 lemmas special_subgroup_eq_sum_list =
   genby_sym_eq_sum_lists[OF S_sym]
-lemmas genby_S_reduced_word_for_LeastM =
-  reduced_word_for_genby_sym_LeastM[OF S_sym]
+lemmas genby_S_reduced_word_for_arg_min =
+  reduced_word_for_genby_sym_arg_min[OF S_sym]
 lemmas in_genby_S_reduced_letter_set =
   in_genby_sym_imp_in_reduced_letter_set[OF S_sym]
 
@@ -880,53 +880,53 @@ context PreCoxeterSystemWithDeletion
 begin
 
 lemma deletion_reduce:
-  "ss \<in> lists S \<Longrightarrow> \<exists>ts. ts \<in> ssublists ss \<inter> reduced_words_for S (sum_list ss)"
+  "ss \<in> lists S \<Longrightarrow> \<exists>ts. ts \<in> ssubseqs ss \<inter> reduced_words_for S (sum_list ss)"
 proof (cases "S_reduced ss")
   case True
   thus  "ss \<in> lists S \<Longrightarrow>
-          \<exists>ts. ts \<in> ssublists ss \<inter> reduced_words_for S (sum_list ss)"
-    by  (force simp add: ssublists_refl)
+          \<exists>ts. ts \<in> ssubseqs ss \<inter> reduced_words_for S (sum_list ss)"
+    by  (force simp add: ssubseqs_refl)
 next
   case False
   have "ss \<in> lists S \<Longrightarrow> \<not> S_reduced ss \<Longrightarrow>
-        \<exists>ts. ts \<in> ssublists ss \<inter> reduced_words_for S (sum_list ss)"
+        \<exists>ts. ts \<in> ssubseqs ss \<inter> reduced_words_for S (sum_list ss)"
   proof (induct ss rule: length_induct)
     fix xs::"'w list"
     assume xs:
       "\<forall>ys. length ys < length xs \<longrightarrow> ys \<in> lists S \<longrightarrow> \<not> S_reduced ys
-        \<longrightarrow> (\<exists>ts. ts \<in> ssublists ys \<inter> reduced_words_for S (sum_list ys))"
+        \<longrightarrow> (\<exists>ts. ts \<in> ssubseqs ys \<inter> reduced_words_for S (sum_list ys))"
       "xs \<in> lists S" "\<not> S_reduced xs"
     from xs(2,3) obtain as a bs b cs
       where asbscs: "xs = as@[a]@bs@[b]@cs" "sum_list xs = sum_list (as@bs@cs)"
       using deletion[of xs]
       by    fast
-    show "\<exists>ts. ts \<in> ssublists xs \<inter> reduced_words_for S (sum_list xs)"
+    show "\<exists>ts. ts \<in> ssubseqs xs \<inter> reduced_words_for S (sum_list xs)"
     proof (cases "S_reduced (as@bs@cs)")
       case True with asbscs xs(2) show ?thesis
-        using delete2_ssublists by fastforce
+        using delete2_ssubseqs by fastforce
     next
       case False
       moreover from asbscs(1) xs(2)
         have  "length (as@bs@cs) < length xs" "as@bs@cs \<in> lists S"
         by    auto
       ultimately obtain ts
-        where ts: "ts \<in> ssublists (as@bs@cs) \<inter>
+        where ts: "ts \<in> ssubseqs (as@bs@cs) \<inter>
                     reduced_words_for S (sum_list (as@bs@cs))"
         using xs(1,2) asbscs(1)
         by    fast
       with asbscs show ?thesis
-        using delete2_ssublists[of as bs cs a b] ssublists_subset by auto
+        using delete2_ssubseqs[of as bs cs a b] ssubseqs_subset by auto
     qed
   qed
   with False
     show  "ss \<in> lists S \<Longrightarrow>
-            \<exists>ts. ts \<in> ssublists ss \<inter> reduced_words_for S (sum_list ss)"
+            \<exists>ts. ts \<in> ssubseqs ss \<inter> reduced_words_for S (sum_list ss)"
     by    fast
 qed
 
 lemma deletion_reduce':
   "ss \<in> lists S \<Longrightarrow> \<exists>ts\<in>reduced_words_for S (sum_list ss). set ts \<subseteq> set ss"
-  using deletion_reduce[of ss] sublists_powset[of ss] by auto
+  using deletion_reduce[of ss] subseqs_powset[of ss] by auto
 
 end (* context PreCoxeterSystemWithDeletion *)
 
@@ -1286,11 +1286,11 @@ lemma special_subgroup_word_length:
 proof-
   from assms obtain ts where ts: "ts \<in> lists T" "w = sum_list ts"
     using special_subgroup_eq_sum_list by auto
-  with assms(1) obtain us where "us \<in> ssublists ts" "S_reduced_for w us"
+  with assms(1) obtain us where "us \<in> ssubseqs ts" "S_reduced_for w us"
     using deletion_reduce[of ts] by fast
   with assms(1) ts(1) show ?thesis
-    using     ssublists_lists[of ts] reduced_word_for_sum_list
-              isLeastM_size_subprop[of length "word_for S w" us "word_for T w"]
+    using     ssubseqs_lists[of ts] reduced_word_for_sum_list
+              is_arg_min_size_subprop[of length "word_for S w" us "word_for T w"]
     unfolding reduced_word_for_def word_length_def
     by        fast
 qed
@@ -1303,9 +1303,9 @@ lemma S_subset_reduced_imp_S_reduced:
   by    (fastforce intro: reduced_word_forI_length)
 
 lemma smallest_genby: "T\<in>Pow S \<Longrightarrow> w\<in>\<langle>T\<rangle> \<Longrightarrow> reduced_letter_set S w \<subseteq> T"
-  using genby_S_reduced_word_for_LeastM[of T]
+  using genby_S_reduced_word_for_arg_min[of T]
         reduced_word_for_imp_reduced_word[of T w]
-        S_subset_reduced_imp_S_reduced[of T "LeastM length (word_for T w)"]
+        S_subset_reduced_imp_S_reduced[of T "arg_min length (word_for T w)"]
         reduced_word_for_sum_list[of T] reduced_word_for_lists reduced_word_letter_set
   by    fastforce
 
@@ -1701,9 +1701,9 @@ lemma card_flipped_reflections:
   assumes "w\<in>W"
   shows "card (flipped_reflections w) = S_length w"
 proof-
-  def ss: ss \<equiv> "LeastM length (word_for S w)"
+  def ss: ss \<equiv> "arg_min length (word_for S w)"
   with assms have "S_reduced_for w ss"
-    using genby_S_reduced_word_for_LeastM by simp
+    using genby_S_reduced_word_for_arg_min by simp
   thus ?thesis
     using reduced_word_for_sum_list flipped_reflections_reduced_eq_lconjseq
           S_reduced_imp_distinct_lconjseq distinct_card length_lconjseq[of ss]
@@ -1897,9 +1897,9 @@ next
     have  C0_ms_ss_C0: "map (\<lambda>w. w`\<rightarrow>C0) (sums ss) =
                           C0 # Ms @ [sum_list ss `\<rightarrow> C0]"
     by    (simp add: sums_snoc zero_permutation.rep_eq)
-  def rs \<equiv> "LEAST rs WRT length. word_for S (sum_list ss) rs"
+  def rs \<equiv> "arg_min length (word_for S (sum_list ss))"
   with assms(1) have rs: "rs \<in> lists S" "sum_list rs = sum_list ss"
-    using LeastM_natI[of "\<lambda>rs. word_for S (sum_list ss) rs" ss length] by auto
+    using arg_min_natI[of "\<lambda>rs. word_for S (sum_list ss) rs" ss length] by auto
   show ?thesis
   proof (cases rs rule: list_cases_Cons_snoc)
     case Nil
@@ -1921,7 +1921,7 @@ next
     def Ns \<equiv> "map (\<lambda>w. w`\<rightarrow>C0) (map (op + p) (sums qs))"
     from assms rs_def have "length rs < length ss"
       using word_length_lt[of ss S]
-            reduced_word_for_length reduced_word_for_LeastM[of ss S]
+            reduced_word_for_length reduced_word_for_arg_min[of ss S]
       by    force
     with Cons_snoc ss Ms_def Ns_def have "length Ns < length Ms"
       by (simp add: length_sums)
@@ -2579,7 +2579,7 @@ lemma fundchamber_vertex_stabilizer1:
   shows   "w \<in> \<langle>S-{t}\<rangle>"
 proof-
   from v tw(1) have v_C0: "v\<in>C0" using fundantivertex by simp
-  def ss \<equiv> "LEAST ss WRT length. word_for S w ss"
+  def ss \<equiv> "arg_min length (word_for S w)"
   moreover
     have "reduced_word S ss \<Longrightarrow> sum_list ss \<rightarrow> v = v \<Longrightarrow> sum_list ss \<in> \<langle>S-{t}\<rangle>"
   proof (induct ss)
@@ -2633,7 +2633,7 @@ proof-
     ultimately show ?case using genby_add_closed by simp
   qed (simp add: genby_0_closed)
   ultimately show ?thesis
-    using tw(2,3) reduced_word_for_genby_sym_LeastM[OF S_sym]
+    using tw(2,3) reduced_word_for_genby_sym_arg_min[OF S_sym]
           reduced_word_for_sum_list
     by    fastforce
 qed

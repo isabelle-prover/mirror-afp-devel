@@ -956,7 +956,7 @@ proof(induct E A ST e and E A ST es arbitrary: T and Ts rule: compT_compTs_induc
       by (fastforce simp add: ty\<^sub>i'_def hyperset_defs intro!: ty\<^sub>l_antimono)
     moreover { fix \<tau>
       assume \<tau>: "\<tau> \<in> set (compT E A ST e\<^sub>1)"
-      hence "\<forall>ST' LT'. \<tau> = \<lfloor>(ST', LT')\<rfloor> \<longrightarrow> ST' \<bind> ST" by(auto intro: compT_ST_prefix[OF suffix_refl])
+      hence "\<forall>ST' LT'. \<tau> = \<lfloor>(ST', LT')\<rfloor> \<longrightarrow> ST' \<bind> ST" by(auto intro: compT_ST_prefix[OF suffix_order.order_refl])
       with \<tau> have "?Q \<tau>" unfolding postfix_conv_eq_length_drop using `\<B> (try e\<^sub>1 catch(C i) e\<^sub>2) (length E)`
         by(fastforce dest!: compT_LT_prefix simp add: ty\<^sub>i'_def) }
     ultimately
@@ -1027,7 +1027,7 @@ next
       show "length ST \<le> length ST' \<and> P \<turnstile> \<lfloor>(drop (length ST' - length ST) ST',  LT')\<rfloor> \<le>' ty\<^sub>i' ST (E @ [Class Object]) ?A2"
       proof(cases "\<lfloor>(ST', LT')\<rfloor> \<in> set ?\<tau>s2")
         case True
-        from compT_ST_prefix[OF suffix_refl this] compT_LT_prefix[OF this B2]
+        from compT_ST_prefix[OF suffix_order.order_refl this] compT_LT_prefix[OF this B2]
         show ?thesis unfolding postfix_conv_eq_length_drop by(simp add: ty\<^sub>i'_def)
       next
         case False

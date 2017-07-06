@@ -41,32 +41,32 @@ shows "mrank (matricize I A) \<le> 1"
 proof -
   obtain Bs a where "\<And>B. B \<in> set Bs \<Longrightarrow> Tensor.order B = 1" "a \<cdot> prod_list Bs = A"
     using cprank_max1_prod_listE assms by metis
-  def row_factor == "\<lambda>ris. a * (prod_list (map (\<lambda>(i,B). lookup B [i]) (zip ris (sublist Bs I))))"
-  def col_factor == "\<lambda>cis. (prod_list (map (\<lambda>(i,B). lookup B [i]) (zip cis (sublist Bs (-I)))))"
-  have "\<And>is. is \<lhd> dims A \<Longrightarrow> lookup A is = row_factor (sublist is I) * col_factor (sublist is (-I))"
+  def row_factor == "\<lambda>ris. a * (prod_list (map (\<lambda>(i,B). lookup B [i]) (zip ris (nths Bs I))))"
+  def col_factor == "\<lambda>cis. (prod_list (map (\<lambda>(i,B). lookup B [i]) (zip cis (nths Bs (-I)))))"
+  have "\<And>is. is \<lhd> dims A \<Longrightarrow> lookup A is = row_factor (nths is I) * col_factor (nths is (-I))"
   proof -
     fix "is" assume "is \<lhd> dims A"
     then have "lookup A is = a * (prod_list (map (\<lambda>(i,B). lookup B [i]) (zip is Bs)))"
       using lookup_order1_prod[OF `\<And>B. B \<in> set Bs \<Longrightarrow> Tensor.order B = 1`] lookup_smult
       using \<open>a \<cdot> prod_list Bs = A\<close> dims_smult by fastforce
-    also have "... = a * (prod_list (map (\<lambda>(i,B). lookup B [i]) (sublist (zip is Bs) I))) *
-                         (prod_list (map (\<lambda>(i,B). lookup B [i]) (sublist (zip is Bs) (-I))))"
-      using prod_list_complementary_sublists by auto
-    also have "... = row_factor (sublist is I) * col_factor (sublist is (-I))"
-      using sublist_zip row_factor_def col_factor_def by metis
-    finally show "lookup A is = row_factor (sublist is I) * col_factor (sublist is (-I))" .
+    also have "... = a * (prod_list (map (\<lambda>(i,B). lookup B [i]) (nths (zip is Bs) I))) *
+                         (prod_list (map (\<lambda>(i,B). lookup B [i]) (nths (zip is Bs) (-I))))"
+      using prod_list_complementary_nthss by auto
+    also have "... = row_factor (nths is I) * col_factor (nths is (-I))"
+      using nths_zip row_factor_def col_factor_def by metis
+    finally show "lookup A is = row_factor (nths is I) * col_factor (nths is (-I))" .
   qed
-  def row_factor' == "\<lambda>r. row_factor (digit_encode (sublist (Tensor.dims A) I) r)"
-  def col_factor' == "\<lambda>c. col_factor (digit_encode (sublist (Tensor.dims A) (-I)) c)"
+  def row_factor' == "\<lambda>r. row_factor (digit_encode (nths (Tensor.dims A) I) r)"
+  def col_factor' == "\<lambda>c. col_factor (digit_encode (nths (Tensor.dims A) (-I)) c)"
   have "\<And>r c. r<dim\<^sub>r (matricize I A) \<Longrightarrow> c<dim\<^sub>c (matricize I A) \<Longrightarrow> matricize I A $$ (r,c) = row_factor' r * col_factor' c"
   proof -
     fix r c assume "r<dim\<^sub>r (matricize I A)" "c<dim\<^sub>c (matricize I A)"
     then have "matricize I A $$ (r,c) = Tensor.lookup A (weave I
-      (digit_encode (sublist (Tensor.dims A) I) r)
-      (digit_encode (sublist (Tensor.dims A) (-I)) c)
+      (digit_encode (nths (Tensor.dims A) I) r)
+      (digit_encode (nths (Tensor.dims A) (-I)) c)
     )" unfolding dims_matricize unfolding matricize_def by simp
     also have "... = row_factor' r * col_factor' c"
-      using  \<open>\<And>is. is \<lhd> dims A \<Longrightarrow> lookup A is = row_factor (sublist is I) * col_factor (sublist is (- I))\<close>
+      using  \<open>\<And>is. is \<lhd> dims A \<Longrightarrow> lookup A is = row_factor (nths is I) * col_factor (nths is (- I))\<close>
       valid_index_weave[OF
       digit_encode_valid_index[OF \<open>r < dim\<^sub>r (matricize I A)\<close>[unfolded dims_matricize]]
       digit_encode_valid_index[OF \<open>c < dim\<^sub>c (matricize I A)\<close>[unfolded dims_matricize]]]

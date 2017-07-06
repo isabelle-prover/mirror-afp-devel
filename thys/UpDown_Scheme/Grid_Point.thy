@@ -1,7 +1,7 @@
 section \<open> Grid Points \<close>
 
 theory Grid_Point
-imports Complex_Main
+imports Probability
 begin
 
 type_synonym grid_point = "(nat \<times> int) list"

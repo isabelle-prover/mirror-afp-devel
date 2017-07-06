@@ -259,4 +259,91 @@ export_code
 in Scala
 
 
+
+
+
+
+(*dockermynet4*)
+
+
+definition dockermynet4policy :: "string list_graph" where
+    "dockermynet4policy \<equiv> \<lparr> nodesL = [''WebFrnt'', ''DB'', ''Log'', ''WebApp'', ''INET''],
+                edgesL = [(''INET'',''INET''),
+                          (''INET'',''WebFrnt''),
+                          (''WebApp'',''INET''),
+                          (''WebApp'',''WebApp''),
+                          (''WebApp'',''DB''),
+                          (''WebApp'',''Log''),
+                          (''WebApp'',''WebFrnt''),
+                          (''DB'',''WebApp''),
+                          (''DB'',''DB''),
+                          (''DB'',''Log''),
+                          (''Log'',''Log''),
+                          (''Log'',''WebFrnt''),
+                          (''WebFrnt'',''WebApp''),
+                          (''WebFrnt'',''Log''),
+                          (''WebFrnt'',''WebFrnt'')] \<rparr>"
+
+lemma "wf_list_graph dockermynet4policy" by eval
+
+ML{*
+visualize_graph @{context} @{term "security_invariants"} @{term "dockermynet4policy"};
+*}
+
+ML_val{*
+writeln ("*filter"^"\n"^
+         ":INPUT ACCEPT [0:0]"^"\n"^
+         ":FORWARD DROP [0:0]"^"\n"^
+         ":OUTPUT ACCEPT [0:0]"^"\n");
+
+fun mkiface s = if s = "INET" then "INET_iface" else "br-b74b417b331f";
+
+iterate_edges_ML @{context}  @{term "flows_fixL (generate_valid_stateful_policy_IFSACS max_policy security_invariants)"}
+  (fn (v1,v2) => writeln ("-A FORWARD -i "^mkiface v1^" -s $"^v1^"_ipv4 -o "^mkiface v2^" -d $"^v2^"_ipv4 -j ACCEPT") )
+  (fn _ => () )
+  (fn _ => () );
+
+iterate_edges_ML @{context} @{term "flows_stateL (generate_valid_stateful_policy_IFSACS max_policy security_invariants)"}
+  (fn (v1,v2) => writeln ("-I FORWARD -m state --state ESTABLISHED -i "^mkiface v2^" -s $"^v2^"_ipv4 -o "^mkiface v1^" -d $"^v1^"_ipv4 -j ACCEPT") )
+  (fn _ => () )
+  (fn _ => () );
+
+writeln ("COMMIT"^"\n");
+*}
+
+
+ML_val{*
+visualize_edges @{context} @{term "flows_fixL (generate_valid_stateful_policy_IFSACS max_policy security_invariants)"} 
+    [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]", @{term "flows_stateL (generate_valid_stateful_policy_IFSACS max_policy security_invariants)"})] ""; 
+*}
+
+(*dfwfw (docker firewall) rules: https://github.com/irsl/dfwfw*)
+
+ML_val{*
+writeln ("{"^"\n"^
+         "\"container_to_container\": {"^"\n"^
+         "\"rules\": ["^"\n"^
+         "\n");
+
+fun mkdfwfwrule filter v1 v2 = "{"^"\n"^
+             "  \"network\": \"mynet\","^"\n"^
+             "  \"src_container\": \"Name =~ ^"^ String.map Char.toLower v1 ^"-?\\\\d*$\","^"\n"^
+             "  \"dst_container\": \"Name =~ ^"^ String.map Char.toLower v2 ^"-?\\\\d*$\","^"\n"^
+             "  \"filter\": \""^filter^"\","^"\n"^
+             "  \"action\": \"ACCEPT\""^"\n"^
+          "},";
+
+iterate_edges_ML @{context}  @{term "flows_fixL (generate_valid_stateful_policy_IFSACS max_policy security_invariants)"}
+  (fn (v1,v2) => writeln (mkdfwfwrule "" v1 v2) )
+  (fn _ => () )
+  (fn _ => () );
+
+iterate_edges_ML @{context} @{term "flows_stateL (generate_valid_stateful_policy_IFSACS max_policy security_invariants)"}
+  (fn (v1,v2) => writeln (mkdfwfwrule "-m state --state ESTABLISHED" v2 v1))
+  (fn _ => () )
+  (fn _ => () );
+
+writeln ("]}}"^"\n");
+*}
+
 end

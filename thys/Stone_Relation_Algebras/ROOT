@@ -10,8 +10,7 @@ session Stone_Relation_Algebras (AFP) = Stone_Algebras +
     Relation_Algebras
     Relation_Subalgebras
     Matrix_Relation_Algebras
-    Extended_Reals
-    Extended_Real_Matrices
+    Linear_Order_Matrices
 
   document_files
     "root.tex"

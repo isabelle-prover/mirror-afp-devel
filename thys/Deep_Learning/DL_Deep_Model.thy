@@ -484,13 +484,13 @@ lemma order_A:
 shows "order (A ws) = 2 * N_half" using dims_A length_replicate by auto
 
 lemma dims_A':
-shows "dim\<^sub>r (A' ws) = prod_list (sublist (Tensor.dims (A ws)) {n. even n})"
-and "dim\<^sub>c (A' ws) = prod_list (sublist (Tensor.dims (A ws)) {n. odd n})"
+shows "dim\<^sub>r (A' ws) = prod_list (nths (Tensor.dims (A ws)) {n. even n})"
+and "dim\<^sub>c (A' ws) = prod_list (nths (Tensor.dims (A ws)) {n. odd n})"
   unfolding A'_def matricize_def by (simp_all add: A_def Collect_neg_eq)
 
 lemma dims_A'_pow:
 shows "dim\<^sub>r (A' ws) = (last rs) ^ N_half" "dim\<^sub>c (A' ws) = (last rs) ^ N_half"
-  unfolding dims_A' dims_A sublist_replicate set_le_in card_even card_odd prod_list_replicate
+  unfolding dims_A' dims_A nths_replicate set_le_in card_even card_odd prod_list_replicate
   by simp_all
 
 
@@ -519,8 +519,8 @@ lemma order_Aw: "order Aw = 2 * N_half"
   unfolding Aw_def' using order_A by auto
 
 lemma dims_Aw':
-"dim\<^sub>r Aw' = prod_list (sublist (Tensor.dims Aw) {n. even n})"
-"dim\<^sub>c Aw' = prod_list (sublist (Tensor.dims Aw) {n. odd n})"
+"dim\<^sub>r Aw' = prod_list (nths (Tensor.dims Aw) {n. even n})"
+"dim\<^sub>c Aw' = prod_list (nths (Tensor.dims Aw) {n. odd n})"
   unfolding Aw'_def' Aw_def' using dims_A' by auto
 
 lemma dims_Aw'_pow: "dim\<^sub>r Aw' = (last rs) ^ N_half" "dim\<^sub>c Aw' = (last rs) ^ N_half"
@@ -529,7 +529,7 @@ lemma dims_Aw'_pow: "dim\<^sub>r Aw' = (last rs) ^ N_half" "dim\<^sub>c Aw' = (l
 lemma witness_tensor:
 assumes "is \<lhd> Tensor.dims Aw"
 shows "Tensor.lookup Aw is
-   = (if sublist is {n. even n} = sublist is {n. odd n} \<and> (\<forall>i\<in>set is. i < last (butlast rs)) then 1 else 0)"
+   = (if nths is {n. even n} = nths is {n. odd n} \<and> (\<forall>i\<in>set is. i < last (butlast rs)) then 1 else 0)"
 using assms deep no_zeros y_valid unfolding Aw_def proof (induction "butlast (butlast (butlast rs))" arbitrary:rs "is" y)
   case Nil
   have "length rs = 3"
@@ -548,23 +548,23 @@ using assms deep no_zeros y_valid unfolding Aw_def proof (induction "butlast (bu
     = (if is ! 0 = is ! 1 \<and> is ! 0 < rs ! 1 then 1 else 0)"
     using Nil.prems(4) \<open>rs = [rs ! 0, rs ! 1, rs ! 2]\<close> by (metis list.sel(3) lookup_tensors_ht_l1)
   have "is ! 0 = is ! 1 \<and> is ! 0 < rs ! 1
-    \<longleftrightarrow> sublist is {n. even n} = sublist is {n. odd n} \<and> (\<forall>i\<in>set is. i < last (butlast rs))"
+    \<longleftrightarrow> nths is {n. even n} = nths is {n. odd n} \<and> (\<forall>i\<in>set is. i < last (butlast rs))"
   proof -
     have "length is = 2" by (metis One_nat_def Suc_eq_plus1 \<open>is \<lhd> [rs ! 2, rs ! 2]\<close> list.size(3) list.size(4) numeral_2_eq_2 valid_index_length)
-    have "sublist is {n. even n} = [is!0]"
-      apply (rule sublist_only_one)
+    have "nths is {n. even n} = [is!0]"
+      apply (rule nths_only_one)
       using subset_antisym less_2_cases `length is = 2` by fastforce
-    have "sublist is {n. odd n} = [is!1]"
-      apply (rule sublist_only_one)
+    have "nths is {n. odd n} = [is!1]"
+      apply (rule nths_only_one)
       using subset_antisym less_2_cases `length is = 2` by fastforce
     have "last (butlast rs) = rs!1" by (metis One_nat_def Suc_eq_plus1 \<open>rs = [rs ! 0, rs ! 1, rs ! 2]\<close>
       append_butlast_last_id last_conv_nth length_butlast length_tl lessI list.sel(3) list.simps(3)
       list.size(3) list.size(4) nat.simps(3) nth_append)
     show ?thesis unfolding `last (butlast rs) = rs!1`
       apply (rule iffI; rule conjI)
-         apply (simp add: \<open>sublist is (Collect even) = [is ! 0]\<close> \<open>sublist is {n. odd n} = [is ! 1]\<close>)
+         apply (simp add: \<open>nths is (Collect even) = [is ! 0]\<close> \<open>nths is {n. odd n} = [is ! 1]\<close>)
         apply (metis `length is = 2` One_nat_def in_set_conv_nth less_2_cases)
-      apply (simp add: \<open>sublist is (Collect even) = [is ! 0]\<close> \<open>sublist is {n. odd n} = [is ! 1]\<close>)
+      apply (simp add: \<open>nths is (Collect even) = [is ! 0]\<close> \<open>nths is {n. odd n} = [is ! 1]\<close>)
      apply (simp add: \<open>length is = 2\<close>)
     done
   qed
@@ -584,7 +584,7 @@ next
   have 4:"0 < (tl rs) ! 0" using "2" "3" by auto
   have IH: "\<And>is'. is' \<lhd> Tensor.dims (tensors_from_net (witness_l (tl rs)) $ 0)
     \<Longrightarrow> Tensor.lookup (tensors_from_net (witness_l (tl rs)) $ 0) is' =
-    (if sublist is' (Collect even) = sublist is' {n. odd n} \<and> (\<forall>i\<in>set is'. i < last (butlast (tl rs))) then 1 else 0)"
+    (if nths is' (Collect even) = nths is' {n. odd n} \<and> (\<forall>i\<in>set is'. i < last (butlast (tl rs))) then 1 else 0)"
       using "1" "2" "3" 4 Cons.hyps(1) by blast
 
   text \<open>The list "is" can be split in two parts:\<close>
@@ -610,7 +610,7 @@ next
   qed
 
   text \<open>A shorthand for the condition to find a "1" in the tensor:\<close>
-  let ?cond = "\<lambda>is rs. sublist is {n. even n} = sublist is {n. odd n} \<and> (\<forall>i\<in>set is. i < last (butlast rs))"
+  let ?cond = "\<lambda>is rs. nths is {n. even n} = nths is {n. odd n} \<and> (\<forall>i\<in>set is. i < last (butlast rs))"
 
   text \<open>We can use the IH on our newly created is1 and is2:\<close>
   have IH_is12:
@@ -634,13 +634,13 @@ next
       length_butlast length_tl list.size(4) one_add_one zero_less_Suc)+
     then have "{j. j + length is1 \<in> {n. even n}} = {n. even n}"
               "{j. j + length is1 \<in> {n. odd n}} = {n. odd n}" by simp_all
-    have "length (sublist is2 (Collect even)) = length (sublist is2 (Collect odd))"
-      using length_sublist_even \<open>even (length is2)\<close> by blast
-    have cond1_iff: "(sublist is1 (Collect even) = sublist is1 {n. odd n} \<and> sublist is2 (Collect even) = sublist is2 {n. odd n})
-          = (sublist is (Collect even) = sublist is {n. odd n})"
-        unfolding `is = is1 @ is2` sublist_append
+    have "length (nths is2 (Collect even)) = length (nths is2 (Collect odd))"
+      using length_nths_even \<open>even (length is2)\<close> by blast
+    have cond1_iff: "(nths is1 (Collect even) = nths is1 {n. odd n} \<and> nths is2 (Collect even) = nths is2 {n. odd n})
+          = (nths is (Collect even) = nths is {n. odd n})"
+        unfolding `is = is1 @ is2` nths_append
         `{j. j + length is1 \<in> {n. odd n}} = {n. odd n}` `{j. j + length is1 \<in> {n. even n}} = {n. even n}`
-        by (simp add: \<open>length (sublist is2 (Collect even)) = length (sublist is2 (Collect odd))\<close>)
+        by (simp add: \<open>length (nths is2 (Collect even)) = length (nths is2 (Collect odd))\<close>)
     have "last (butlast (tl rs)) = last (butlast rs)" using Nitpick.size_list_simp(2) \<open>even (length is1)\<close>
       \<open>length is1 = 2 ^ (length (tl rs) - 2)\<close> butlast_tl last_tl length_butlast length_tl not_less_eq zero_less_diff
       by (metis (full_types) Cons.hyps(2) length_Cons less_nat_zero_code)
@@ -703,11 +703,11 @@ qed
 lemma witness_matricization:
 assumes "i < dim\<^sub>r Aw'" and "j < dim\<^sub>c Aw'"
 shows "Aw' $$ (i, j)
- = (if i=j \<and> (\<forall>i0\<in>set (digit_encode (sublist (Tensor.dims Aw) {n. even n}) i). i0 < last (butlast rs)) then 1 else 0)"
+ = (if i=j \<and> (\<forall>i0\<in>set (digit_encode (nths (Tensor.dims Aw) {n. even n}) i). i0 < last (butlast rs)) then 1 else 0)"
 proof -
   def "is" == "weave {n. even n}
-    (digit_encode (sublist (Tensor.dims Aw) {n. even n}) i)
-    (digit_encode (sublist (Tensor.dims Aw) {n. odd n}) j)"
+    (digit_encode (nths (Tensor.dims Aw) {n. even n}) i)
+    (digit_encode (nths (Tensor.dims Aw) {n. odd n}) j)"
   have lookup_eq: "Aw' $$ (i, j) = Tensor.lookup Aw is"
     using Aw'_def matricize_def dims_Aw'(1)[symmetric, unfolded A_def] dims_Aw'(2)[symmetric, unfolded A_def Collect_neg_eq]
     mat_index_mat(1)[OF `i < dim\<^sub>r Aw'` `j < dim\<^sub>c Aw'`] is_def Collect_neg_eq case_prod_conv
@@ -719,45 +719,45 @@ proof -
   have "even (order Aw)"
     unfolding Aw_def using assms dims_output_witness even_numeral le_eq_less_or_eq numeral_2_eq_2 numeral_3_eq_3 deep no_zeros y_valid by fastforce
 
-  have sublist_dimsAw: "sublist (Tensor.dims Aw) (Collect even) = sublist (Tensor.dims Aw) {n. odd n}"
+  have nths_dimsAw: "nths (Tensor.dims Aw) (Collect even) = nths (Tensor.dims Aw) {n. odd n}"
   proof -
     have 0:"Tensor.dims (tensors_from_net (witness_l rs) $ y) = replicate (2 ^ (length rs - 2)) (last rs)"
       using dims_output_witness[OF _ no_zeros y_valid] using deep by linarith
     show ?thesis unfolding A_def
-      using sublist_replicate
-      by (metis (no_types, lifting) "0" Aw_def \<open>even (order Aw)\<close> length_replicate length_sublist_even)
+      using nths_replicate
+      by (metis (no_types, lifting) "0" Aw_def \<open>even (order Aw)\<close> length_replicate length_nths_even)
   qed
 
-  have "i = j \<longleftrightarrow> sublist is (Collect even) = sublist is {n. odd n}"
+  have "i = j \<longleftrightarrow> nths is (Collect even) = nths is {n. odd n}"
   proof
-    have eq_lengths: "length (digit_encode (sublist (Tensor.dims Aw) (Collect even)) i)
-        = length (digit_encode (sublist (Tensor.dims Aw) {n. odd n}) j)"
-      unfolding length_digit_encode by (metis \<open>even (order Aw)\<close> length_sublist_even)
+    have eq_lengths: "length (digit_encode (nths (Tensor.dims Aw) (Collect even)) i)
+        = length (digit_encode (nths (Tensor.dims Aw) {n. odd n}) j)"
+      unfolding length_digit_encode by (metis \<open>even (order Aw)\<close> length_nths_even)
 
-    then show "i = j \<Longrightarrow> sublist is (Collect even) = sublist is {n. odd n}" unfolding is_def
-      using sublist_weave[of "digit_encode (sublist (Tensor.dims Aw) (Collect even)) i"
-      "Collect even" "digit_encode (sublist (Tensor.dims Aw) {n. odd n}) j", unfolded eq_lengths, unfolded Collect_neg_eq[symmetric] card_even mult_2[symmetric] card_odd]
-      sublist_dimsAw by simp
-    show "sublist is (Collect even) = sublist is {n. odd n} \<Longrightarrow> i = j" unfolding is_def
-      using sublist_weave[of "digit_encode (sublist (Tensor.dims Aw) (Collect even)) i"
-      "Collect even" "digit_encode (sublist (Tensor.dims Aw) {n. odd n}) j", unfolded eq_lengths, unfolded Collect_neg_eq[symmetric] card_even mult_2[symmetric] card_odd]
-      using Divides.mod_less \<open>sublist (Tensor.dims Aw) (Collect even) = sublist (Tensor.dims Aw) {n. odd n}\<close>
+    then show "i = j \<Longrightarrow> nths is (Collect even) = nths is {n. odd n}" unfolding is_def
+      using nths_weave[of "digit_encode (nths (Tensor.dims Aw) (Collect even)) i"
+      "Collect even" "digit_encode (nths (Tensor.dims Aw) {n. odd n}) j", unfolded eq_lengths, unfolded Collect_neg_eq[symmetric] card_even mult_2[symmetric] card_odd]
+      nths_dimsAw by simp
+    show "nths is (Collect even) = nths is {n. odd n} \<Longrightarrow> i = j" unfolding is_def
+      using nths_weave[of "digit_encode (nths (Tensor.dims Aw) (Collect even)) i"
+      "Collect even" "digit_encode (nths (Tensor.dims Aw) {n. odd n}) j", unfolded eq_lengths, unfolded Collect_neg_eq[symmetric] card_even mult_2[symmetric] card_odd]
+      using Divides.mod_less \<open>nths (Tensor.dims Aw) (Collect even) = nths (Tensor.dims Aw) {n. odd n}\<close>
         deep no_zeros y_valid assms digit_decode_encode dims_Aw' by metis
   qed
 
-  have "i=j \<Longrightarrow> set (digit_encode (sublist (Tensor.dims Aw) {n. even n}) i) = set is"
-    unfolding is_def sublist_dimsAw
-    using set_weave[of "(digit_encode (sublist (Tensor.dims Aw) {n. odd n}) j)" "Collect even"
-                       "(digit_encode (sublist (Tensor.dims Aw) {n. odd n}) j)",
+  have "i=j \<Longrightarrow> set (digit_encode (nths (Tensor.dims Aw) {n. even n}) i) = set is"
+    unfolding is_def nths_dimsAw
+    using set_weave[of "(digit_encode (nths (Tensor.dims Aw) {n. odd n}) j)" "Collect even"
+                       "(digit_encode (nths (Tensor.dims Aw) {n. odd n}) j)",
                     unfolded mult_2[symmetric] card_even Collect_neg_eq[symmetric] card_odd]
     Un_absorb card_even card_odd mult_2 by blast
   then show ?thesis unfolding lookup_eq
     using witness_tensor[OF `is \<lhd> Tensor.dims Aw`]
-    by (simp add: A_def \<open>(i = j) = (sublist is (Collect even) = sublist is {n. odd n})\<close>)
+    by (simp add: A_def \<open>(i = j) = (nths is (Collect even) = nths is {n. odd n})\<close>)
 qed
 
 
-definition "rows_with_1 = {i. (\<forall>i0\<in>set (digit_encode (sublist (Tensor.dims Aw) {n. even n}) i). i0 < last (butlast rs))}"
+definition "rows_with_1 = {i. (\<forall>i0\<in>set (digit_encode (nths (Tensor.dims Aw) {n. even n}) i). i0 < last (butlast rs))}"
 
 lemma card_low_digits:
 assumes "m>0" "\<And>d. d\<in>set ds \<Longrightarrow> m \<le> d"
@@ -822,62 +822,62 @@ qed
 
 lemma card_rows_with_1: "card {i\<in>rows_with_1. i<dim\<^sub>r Aw'} = r ^ N_half"
 proof -
-  have 1:"{i\<in>rows_with_1. i<dim\<^sub>r Aw'} = {i. i < prod_list (sublist (Tensor.dims Aw) (Collect even)) \<and>
-             (\<forall>i0\<in>set (digit_encode (sublist (Tensor.dims Aw) (Collect even)) i). i0 < r)}" (is "?A = ?B")
+  have 1:"{i\<in>rows_with_1. i<dim\<^sub>r Aw'} = {i. i < prod_list (nths (Tensor.dims Aw) (Collect even)) \<and>
+             (\<forall>i0\<in>set (digit_encode (nths (Tensor.dims Aw) (Collect even)) i). i0 < r)}" (is "?A = ?B")
   proof (rule subset_antisym; rule subsetI)
     fix i assume "i \<in> ?A"
-    then have "i < dim\<^sub>r Aw'" "\<forall>i0\<in>set (digit_encode (sublist (Tensor.dims Aw) {n. even n}) i). i0 < last (butlast rs)"
+    then have "i < dim\<^sub>r Aw'" "\<forall>i0\<in>set (digit_encode (nths (Tensor.dims Aw) {n. even n}) i). i0 < last (butlast rs)"
       using rows_with_1_def by auto
-    then have "i < prod_list (sublist (dims Aw) (Collect even))" using dims_Aw' by linarith
-    then have "digit_encode (sublist (dims Aw) (Collect even)) i \<lhd> sublist (dims Aw) (Collect even)"
+    then have "i < prod_list (nths (dims Aw) (Collect even))" using dims_Aw' by linarith
+    then have "digit_encode (nths (dims Aw) (Collect even)) i \<lhd> nths (dims Aw) (Collect even)"
       using digit_encode_valid_index by auto
-    have "\<forall>i0\<in>set (digit_encode (sublist (Tensor.dims Aw) {n. even n}) i). i0 < r"
+    have "\<forall>i0\<in>set (digit_encode (nths (Tensor.dims Aw) {n. even n}) i). i0 < r"
     proof
-      fix i0 assume 1:"i0 \<in> set (digit_encode (sublist (dims Aw) (Collect even)) i)"
-      then obtain k where "k < length (digit_encode (sublist (dims Aw) (Collect even)) i)"
-              "digit_encode (sublist (dims Aw) (Collect even)) i ! k = i0" by (meson in_set_conv_nth)
+      fix i0 assume 1:"i0 \<in> set (digit_encode (nths (dims Aw) (Collect even)) i)"
+      then obtain k where "k < length (digit_encode (nths (dims Aw) (Collect even)) i)"
+              "digit_encode (nths (dims Aw) (Collect even)) i ! k = i0" by (meson in_set_conv_nth)
       have "i0 < last (butlast rs)"
-        using \<open>\<forall>i0\<in>set (digit_encode (sublist (dims Aw) (Collect even)) i). i0 < last (butlast rs)\<close> 1 by blast
-      have "set (sublist (dims Aw) (Collect even)) \<subseteq> {last rs}" unfolding dims_Aw using subset_eq by fastforce
-      then have "sublist (dims Aw) (Collect even) ! k = last rs"
-        using \<open>digit_encode (sublist (dims Aw) (Collect even)) i \<lhd> sublist (dims Aw) (Collect even)\<close>
-        \<open>k < length (digit_encode (sublist (dims Aw) (Collect even)) i)\<close>
+        using \<open>\<forall>i0\<in>set (digit_encode (nths (dims Aw) (Collect even)) i). i0 < last (butlast rs)\<close> 1 by blast
+      have "set (nths (dims Aw) (Collect even)) \<subseteq> {last rs}" unfolding dims_Aw using subset_eq by fastforce
+      then have "nths (dims Aw) (Collect even) ! k = last rs"
+        using \<open>digit_encode (nths (dims Aw) (Collect even)) i \<lhd> nths (dims Aw) (Collect even)\<close>
+        \<open>k < length (digit_encode (nths (dims Aw) (Collect even)) i)\<close>
         nth_mem valid_index_length by auto
       then have "i0 < last rs"
-        using valid_index_lt \<open>digit_encode (sublist (dims Aw) (Collect even)) i ! k = i0\<close>
-        \<open>digit_encode (sublist (dims Aw) (Collect even)) i \<lhd> sublist (dims Aw) (Collect even)\<close>
-        \<open>k < length (digit_encode (sublist (dims Aw) (Collect even)) i)\<close> valid_index_length by fastforce
+        using valid_index_lt \<open>digit_encode (nths (dims Aw) (Collect even)) i ! k = i0\<close>
+        \<open>digit_encode (nths (dims Aw) (Collect even)) i \<lhd> nths (dims Aw) (Collect even)\<close>
+        \<open>k < length (digit_encode (nths (dims Aw) (Collect even)) i)\<close> valid_index_length by fastforce
       then show "i0 < r" unfolding r_def by (simp add: \<open>i0 < last (butlast rs)\<close>)
     qed
-    then show "i \<in> ?B" using \<open>i < prod_list (sublist (dims Aw) (Collect even))\<close> by blast
+    then show "i \<in> ?B" using \<open>i < prod_list (nths (dims Aw) (Collect even))\<close> by blast
   next
     fix i assume "i\<in>?B"
     then show "i\<in>?A" by (simp add: dims_Aw' r_def rows_with_1_def)
   qed
-  have 2:"\<And>d. d \<in> set (sublist (Tensor.dims Aw) (Collect even)) \<Longrightarrow> r \<le> d"
+  have 2:"\<And>d. d \<in> set (nths (Tensor.dims Aw) (Collect even)) \<Longrightarrow> r \<le> d"
   proof -
-    fix d assume "d \<in> set (sublist (Tensor.dims Aw) (Collect even))"
-    then have "d \<in> set (Tensor.dims Aw)" using in_set_sublistD by fast
+    fix d assume "d \<in> set (nths (Tensor.dims Aw) (Collect even))"
+    then have "d \<in> set (Tensor.dims Aw)" using in_set_nthsD by fast
     then have "d = last rs" using dims_Aw by simp
     then show "r \<le> d" by (simp add: r_def)
   qed
   have 3:"0 < r" unfolding r_def by (metis deep diff_diff_cancel diff_zero dual_order.trans in_set_butlastD last_in_set length_butlast list.size(3) min_def nat_le_linear no_zeros not_numeral_le_zero numeral_le_one_iff rel_simps(3))
-  have 4: "length (sublist (Tensor.dims Aw) (Collect even)) = N_half"
-    unfolding length_sublist order_Aw using card_even[of N_half]
+  have 4: "length (nths (Tensor.dims Aw) (Collect even)) = N_half"
+    unfolding length_nths order_Aw using card_even[of N_half]
     by (metis (mono_tags, lifting) Collect_cong)
-  then show ?thesis using card_low_digits[of "r" "sublist (Tensor.dims Aw) (Collect even)"] 1 2 3 4 by metis
+  then show ?thesis using card_low_digits[of "r" "nths (Tensor.dims Aw) (Collect even)"] 1 2 3 4 by metis
 qed
 
 
 lemma infinite_rows_with_1: "infinite rows_with_1"
 proof -
-  def listpr == "prod_list (sublist (Tensor.dims Aw) {n. even n})"
+  def listpr == "prod_list (nths (Tensor.dims Aw) {n. even n})"
   have "\<And>i. listpr dvd i \<Longrightarrow> i \<in> rows_with_1"
   proof -
     fix i assume dvd_i: "listpr dvd i"
     {
       fix i0::nat
-      assume "i0\<in>set (digit_encode (sublist (Tensor.dims Aw) {n. even n}) i)"
+      assume "i0\<in>set (digit_encode (nths (Tensor.dims Aw) {n. even n}) i)"
       then have "i0=0" using digit_encode_0 dvd_i listpr_def by auto
       then have "i0 < last (butlast rs)" using deep no_zeros
       by (metis Nitpick.size_list_simp(2) One_nat_def Suc_le_lessD in_set_butlastD last_in_set length_butlast length_tl not_numeral_less_zero numeral_2_eq_2 numeral_3_eq_3 numeral_le_one_iff semiring_norm(70))
@@ -911,7 +911,7 @@ proof
     then have "pick rows_with_1 i < dim\<^sub>r Aw'" "pick rows_with_1 j < dim\<^sub>c Aw'"
       using card_le_pick_inf[OF infinite_rows_with_1, of "dim\<^sub>r Aw'" i]
       using card_le_pick_inf[OF infinite_rows_with_1, of "dim\<^sub>c Aw'" j] by force+
-    have "\<forall>i0\<in>set (digit_encode (sublist (dims Aw) (Collect even)) (pick rows_with_1 i)). i0 < last (butlast rs)"
+    have "\<forall>i0\<in>set (digit_encode (nths (dims Aw) (Collect even)) (pick rows_with_1 i)). i0 < last (butlast rs)"
       using infinite_rows_with_1 pick_in_set_inf rows_with_1_def by auto
     then have "Aw' $$ (pick rows_with_1 i, pick rows_with_1 j) = (if pick rows_with_1 i = pick rows_with_1 j then 1 else 0)"
       using witness_matricization[OF `pick rows_with_1 i < dim\<^sub>r Aw'` `pick rows_with_1 j < dim\<^sub>c Aw'`] by simp

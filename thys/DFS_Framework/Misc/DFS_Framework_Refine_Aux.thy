@@ -22,25 +22,6 @@ lemma "WHILEI I b f s \<le>
   apply (auto simp: pw_le_iff refine_pw_simps)  
   done
 
-(* TODO: Modify proof in RefineG_Recursion. Remove trimono assumption! *)
-lemma RECT_eq_REC: 
-  -- "Partial and total correct recursion are equal if total 
-    recursion does not fail."
-  assumes NT: "RECT body x \<noteq> top"
-  shows "RECT body x = REC body x"
-  using NT
-  unfolding RECT_def REC_def
-proof clarsimp
-  assume M: "trimono body"
-  from lfp_unfold[OF trimonoD_mono[OF M], symmetric]
-  have "flatf_ge (body (lfp body)) (lfp body)" by simp
-  note flatf_ord.fixp_lowerbound[
-    OF trimonoD_flatf_ge[OF M], of "lfp body", OF this]
-  moreover assume "flatf_gfp body x \<noteq> top"
-  ultimately show "flatf_gfp body x = lfp body x"
-    by (auto simp add: fun_ord_def flat_ord_def)
-qed
-
 (* TODO: Move to RefineG_While *)
 lemma WHILET_eq_WHILE:
   assumes "WHILET b f s0 \<noteq> top"

@@ -77,61 +77,61 @@ next
 qed
   
 lemma valid_index_weave:
-assumes "is1 \<lhd> (sublist ds A)"
-and     "is2 \<lhd> (sublist ds (-A))"
+assumes "is1 \<lhd> (nths ds A)"
+and     "is2 \<lhd> (nths ds (-A))"
 shows "weave A is1 is2 \<lhd> ds"
-and "sublist (weave A is1 is2) A = is1"
-and "sublist (weave A is1 is2) (-A) = is2"
+and "nths (weave A is1 is2) A = is1"
+and "nths (weave A is1 is2) (-A) = is2"
 proof -
   have length_ds: "length is1 + length is2 = length ds"
     using valid_index_length[OF assms(1)] valid_index_length[OF assms(2)]
-    length_weave  weave_complementary_sublists by metis
+    length_weave  weave_complementary_nthss by metis
   have 1:"length is1 = card {i \<in> A. i < length is1 + length is2}" unfolding length_ds
-    using length_sublist' assms(1) valid_index_length by auto
+    using length_nths' assms(1) valid_index_length by auto
   have 2:"length is2 = card {i \<in> -A. i < length is1 + length is2}" unfolding length_ds
-    using length_sublist'[of ds "-A"] assms(2) valid_index_length by auto
-  show "sublist (weave A is1 is2) A = is1" "sublist (weave A is1 is2) (-A) = is2" using sublist_weave[OF 1 2] by blast+
-  then have "sublist (weave A is1 is2) A \<lhd> (sublist ds A)"
-       "sublist (weave A is1 is2) (-A) \<lhd> (sublist ds (-A))" using assms by auto
-  then show "weave A is1 is2 \<lhd> ds" using list_all2_sublist valid_index_list_all2_iff by blast
+    using length_nths'[of ds "-A"] assms(2) valid_index_length by auto
+  show "nths (weave A is1 is2) A = is1" "nths (weave A is1 is2) (-A) = is2" using nths_weave[OF 1 2] by blast+
+  then have "nths (weave A is1 is2) A \<lhd> (nths ds A)"
+       "nths (weave A is1 is2) (-A) \<lhd> (nths ds (-A))" using assms by auto
+  then show "weave A is1 is2 \<lhd> ds" using list_all2_nths valid_index_list_all2_iff by blast
 qed
 
 definition matricize :: "nat set \<Rightarrow> 'a tensor \<Rightarrow> 'a mat" where
 "matricize rmodes T = mat
-  (prod_list (sublist (Tensor.dims T) rmodes))
-  (prod_list (sublist (Tensor.dims T) (-rmodes)))
+  (prod_list (nths (Tensor.dims T) rmodes))
+  (prod_list (nths (Tensor.dims T) (-rmodes)))
   (\<lambda>(r, c). Tensor.lookup T (weave rmodes
-    (digit_encode (sublist (Tensor.dims T) rmodes) r)
-    (digit_encode (sublist (Tensor.dims T) (-rmodes)) c)
+    (digit_encode (nths (Tensor.dims T) rmodes) r)
+    (digit_encode (nths (Tensor.dims T) (-rmodes)) c)
   ))
 "
 
 definition dematricize::"nat set \<Rightarrow> 'a mat \<Rightarrow> nat list \<Rightarrow> 'a tensor" where
 "dematricize rmodes A ds  = tensor_from_lookup ds
-  (\<lambda>is. A $$ (digit_decode (sublist ds rmodes) (sublist is rmodes),
-              digit_decode (sublist ds (-rmodes)) (sublist is (-rmodes)))
+  (\<lambda>is. A $$ (digit_decode (nths ds rmodes) (nths is rmodes),
+              digit_decode (nths ds (-rmodes)) (nths is (-rmodes)))
  )
 "
 
 lemma dims_matricize:
-"dim\<^sub>r (matricize rmodes T) = prod_list (sublist (Tensor.dims T) rmodes)"
-"dim\<^sub>c (matricize rmodes T) = prod_list (sublist (Tensor.dims T) (-rmodes))"
+"dim\<^sub>r (matricize rmodes T) = prod_list (nths (Tensor.dims T) rmodes)"
+"dim\<^sub>c (matricize rmodes T) = prod_list (nths (Tensor.dims T) (-rmodes))"
   unfolding matricize_def using mat_dim_row_mat by simp_all
 
 lemma dims_dematricize: "Tensor.dims (dematricize rmodes A ds) = ds"
   by (simp add: dematricize_def dims_tensor_from_lookup)
 
-lemma valid_index_sublist:
+lemma valid_index_nths:
 assumes "is \<lhd> ds"
-shows "sublist is A \<lhd> sublist ds A"
+shows "nths is A \<lhd> nths ds A"
 using assms proof (induction arbitrary:A rule:valid_index.induct)
   case Nil
-  then show ?case using sublist_nil valid_index.simps by blast
+  then show ?case using nths_nil valid_index.simps by blast
 next
   case (Cons "is" ds i d)
-  then have " sublist is {j. Suc j \<in> A} \<lhd> sublist ds {j. Suc j \<in> A}"
+  then have " nths is {j. Suc j \<in> A} \<lhd> nths ds {j. Suc j \<in> A}"
     by simp
-  then show ?case unfolding sublist_Cons
+  then show ?case unfolding nths_Cons
     by (cases "0\<in>A"; simp_all add: Cons.hyps(2) valid_index.Cons)
 qed
 
@@ -142,25 +142,25 @@ proof (rule tensor_lookup_eqI)
     by (simp add: dematricize_def dims_tensor_from_lookup)
   fix "is" assume "is \<lhd> Tensor.dims (dematricize rmodes (matricize rmodes T) (Tensor.dims T))"
   then have "is \<lhd> Tensor.dims T" using 1 by auto
-  let ?rds = "(sublist (Tensor.dims T) rmodes)"
-  let ?cds = "(sublist (Tensor.dims T) (-rmodes))"
-  have decode_r: "digit_decode ?rds (sublist is rmodes) < prod_list ?rds"
-    by (simp add: \<open>is \<lhd> Tensor.dims T\<close> valid_index_sublist digit_decode_lt)
-  have decode_c: "digit_decode ?cds (sublist is (-rmodes)) < prod_list ?cds"
-    by (simp add: \<open>is \<lhd> Tensor.dims T\<close> valid_index_sublist digit_decode_lt)
+  let ?rds = "(nths (Tensor.dims T) rmodes)"
+  let ?cds = "(nths (Tensor.dims T) (-rmodes))"
+  have decode_r: "digit_decode ?rds (nths is rmodes) < prod_list ?rds"
+    by (simp add: \<open>is \<lhd> Tensor.dims T\<close> valid_index_nths digit_decode_lt)
+  have decode_c: "digit_decode ?cds (nths is (-rmodes)) < prod_list ?cds"
+    by (simp add: \<open>is \<lhd> Tensor.dims T\<close> valid_index_nths digit_decode_lt)
   have "(matricize rmodes T) $$
-     (digit_decode ?rds (sublist is rmodes),
-      digit_decode ?cds (sublist is (- rmodes))) =
+     (digit_decode ?rds (nths is rmodes),
+      digit_decode ?cds (nths is (- rmodes))) =
     Tensor.lookup T is"
     unfolding matricize_def
-    by (simp add: decode_r decode_c \<open>is \<lhd> Tensor.dims T\<close> valid_index_sublist)
+    by (simp add: decode_r decode_c \<open>is \<lhd> Tensor.dims T\<close> valid_index_nths)
   then show "Tensor.lookup (dematricize rmodes (matricize rmodes T) (Tensor.dims T)) is = Tensor.lookup T is"
     by (simp add: dematricize_def dims_tensor_from_lookup lookup_tensor_from_lookup[OF `is \<lhd> Tensor.dims T`])
 qed
 
 lemma matricize_dematricize:
-assumes " dim\<^sub>r A = prod_list (sublist ds rmodes)"
-and " dim\<^sub>c A = prod_list (sublist ds (-rmodes))"
+assumes " dim\<^sub>r A = prod_list (nths ds rmodes)"
+and " dim\<^sub>c A = prod_list (nths ds (-rmodes))"
 shows "matricize rmodes (dematricize rmodes A ds) = A"
 proof (rule mat_eqI)
   show "dim\<^sub>r (matricize rmodes (dematricize rmodes A ds)) = dim\<^sub>r A"
@@ -168,13 +168,13 @@ proof (rule mat_eqI)
   show "dim\<^sub>c (matricize rmodes (dematricize rmodes A ds)) = dim\<^sub>c A"
     unfolding assms(2) dematricize_def dims_tensor_from_lookup matricize_def mat_dim_col_mat by metis
   fix r c assume "r < dim\<^sub>r A" "c < dim\<^sub>c A"
-  have valid1:"digit_encode (sublist ds rmodes) r \<lhd> sublist ds rmodes" and
-       valid2:"digit_encode (sublist ds (- rmodes)) c \<lhd> sublist ds (- rmodes)"
+  have valid1:"digit_encode (nths ds rmodes) r \<lhd> nths ds rmodes" and
+       valid2:"digit_encode (nths ds (- rmodes)) c \<lhd> nths ds (- rmodes)"
     using \<open>r < dim\<^sub>r A\<close> assms(1) \<open>c < dim\<^sub>c A\<close> assms(2) digit_encode_valid_index by auto
   have 0:"Tensor.lookup (dematricize rmodes A ds)
      (weave rmodes
-       (digit_encode (sublist (Tensor.dims (dematricize rmodes A ds)) rmodes) r)
-       (digit_encode (sublist (Tensor.dims (dematricize rmodes A ds)) (- rmodes)) c)
+       (digit_encode (nths (Tensor.dims (dematricize rmodes A ds)) rmodes) r)
+       (digit_encode (nths (Tensor.dims (dematricize rmodes A ds)) (- rmodes)) c)
      ) =  A $$ (r, c)"
       unfolding dematricize_def unfolding dims_tensor_from_lookup
       unfolding lookup_tensor_from_lookup[OF valid_index_weave(1)[OF valid1 valid2]]
@@ -182,9 +182,9 @@ proof (rule mat_eqI)
       digit_decode_encode_lt[OF \<open>r < dim\<^sub>r A\<close>[unfolded assms(1)]]
       valid_index_weave(2)[OF valid1 valid2] valid_index_weave(3)[OF valid1 valid2]
       by presburger
-  from `r < dim\<^sub>r A` have r_le: "r < prod_list (sublist (Tensor.dims (dematricize rmodes A ds)) rmodes)"
+  from `r < dim\<^sub>r A` have r_le: "r < prod_list (nths (Tensor.dims (dematricize rmodes A ds)) rmodes)"
     by (metis \<open>dim\<^sub>r (matricize rmodes (dematricize rmodes A ds)) = dim\<^sub>r A\<close> matricize_def mat_dim_row_mat(1))
-  from `c < dim\<^sub>c A `have c_le: "c < prod_list (sublist (Tensor.dims (dematricize rmodes A ds)) (- rmodes))"
+  from `c < dim\<^sub>c A `have c_le: "c < prod_list (nths (Tensor.dims (dematricize rmodes A ds)) (- rmodes))"
     by (metis \<open>dim\<^sub>c (matricize rmodes (dematricize rmodes A ds)) = dim\<^sub>c A\<close> matricize_def mat_dim_col_mat(1))
   then show "(matricize rmodes (dematricize rmodes A ds)) $$ (r, c) = A $$ (r, c)"
     unfolding matricize_def using r_le c_le 0 by simp
@@ -198,9 +198,9 @@ proof (rule mat_eqI)
   show "dim\<^sub>c (matricize I A \<oplus>\<^sub>m matricize I B) = dim\<^sub>c (matricize I (A + B))" by (simp add: assms dims_matricize(2))
   fix i j assume ij_le1:"i < dim\<^sub>r (matricize I (A + B))" "j < dim\<^sub>c (matricize I (A + B))"
   then have
-    ij_le2:"i < prod_list (sublist (Tensor.dims A) I)"  "j < prod_list (sublist (Tensor.dims A) (-I))" and
-    ij_le3:"i < prod_list (sublist (Tensor.dims B) I)"  "j < prod_list (sublist (Tensor.dims B) (-I))" and
-    ij_le4:"i < prod_list (sublist (Tensor.dims (A + B)) I)"  "j < prod_list (sublist (Tensor.dims (A + B)) (-I))"
+    ij_le2:"i < prod_list (nths (Tensor.dims A) I)"  "j < prod_list (nths (Tensor.dims A) (-I))" and
+    ij_le3:"i < prod_list (nths (Tensor.dims B) I)"  "j < prod_list (nths (Tensor.dims B) (-I))" and
+    ij_le4:"i < prod_list (nths (Tensor.dims (A + B)) I)"  "j < prod_list (nths (Tensor.dims (A + B)) (-I))"
     by (simp_all add: assms dims_matricize)
   then have ij_le5:"i < dim\<^sub>r (matricize I B)" "j < dim\<^sub>c (matricize I B)"
     by (simp_all add: assms dims_matricize)

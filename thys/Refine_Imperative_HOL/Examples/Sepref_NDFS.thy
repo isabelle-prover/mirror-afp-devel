@@ -117,9 +117,8 @@ definition "blue_dfs_spec E A v0 \<equiv> SPEC (\<lambda>r. case r of None \<Rig
 
 lemma blue_dfs_correct': "(uncurry2 blue_dfs, uncurry2 blue_dfs_spec) \<in> [\<lambda>((E,A),v0). finite (E\<^sup>*``{v0})]\<^sub>f ((Id\<times>\<^sub>rId)\<times>\<^sub>rId) \<rightarrow> \<langle>Id\<rangle>nres_rel"
   apply (intro frefI nres_relI) 
-  apply clarsimp
-  apply (refine_vcg blue_dfs_correct[THEN order_trans])
-  apply (auto simp: blue_dfs_spec_def)
+  unfolding blue_dfs_spec_def apply clarsimp 
+  apply (refine_vcg blue_dfs_correct)
   done
 
 lemmas blue_dfs_impl_correct' = blue_dfs_impl.refine[FCOMP blue_dfs_correct']
@@ -183,4 +182,3 @@ theorem blue_dfs_impl_sz_correct:
   by (sep_auto simp: blue_dfs_spec_def pure_def)+
 
 end
-

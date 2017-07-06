@@ -27,10 +27,22 @@ begin
     by (meson not_less)
 
 
-  definition "mtx_new N M c \<equiv> do {
+  (*definition "mtx_new N M c \<equiv> do {
     Array.make (N*M) (\<lambda>i. c (i div M, i mod M))
-  }"
+  }"*)
   
+  definition "mtx_tabulate N M c \<equiv> do {
+    m \<leftarrow> Array.new (N*M) 0;
+    (_,_,m) \<leftarrow> imp_for' 0 (N*M) (\<lambda>k (i,j,m). do {
+      Array.upd k (c (i,j)) m;
+      let j=j+1;
+      if j<M then return (i,j,m)
+      else return (i+1,0,m)
+    }) (0,0,m);
+    return m
+  }"
+      
+      
   definition "amtx_copy \<equiv> array_copy"
 
   definition "amtx_dflt N M v \<equiv> Array.make (N*M) (\<lambda>i. v)"
@@ -41,11 +53,48 @@ begin
   lemma mtx_idx_valid[simp]: "\<lbrakk>i < (N::nat); j < M\<rbrakk> \<Longrightarrow> i * M + j < N * M"
     by (rule mlex_bound)
 
-  lemma mtx_index_unique[simp]: "\<lbrakk>i<(N::nat); j<M; i'<N; j'<M\<rbrakk> \<Longrightarrow> i*M+j = i'*M+j' \<longleftrightarrow> i=i' \<and> j=j'"
-    by (metis ab_semigroup_add_class.add.commute add_diff_cancel_right' div_if div_mult_self3 gr0I not_less0)
+  lemma mtx_idx_unique_conv[simp]: 
+    fixes M :: nat
+    assumes "j<M" "j'<M"
+    shows "(i * M + j = i' * M + j') \<longleftrightarrow> (i=i' \<and> j=j')"
+    using assms  
+    apply auto  
+    subgoal
+      by (metis add_right_cancel div_if div_mult_self3 linorder_neqE_nat not_less0)
+    subgoal
+      using \<open>\<lbrakk>j < M; j' < M; i * M + j = i' * M + j'\<rbrakk> \<Longrightarrow> i = i'\<close> by auto  
+    done
+      
+  (*lemma mtx_index_unique[simp]: "\<lbrakk>i<(N::nat); j<M; i'<N; j'<M\<rbrakk> \<Longrightarrow> i*M+j = i'*M+j' \<longleftrightarrow> i=i' \<and> j=j'"
+    by (metis ab_semigroup_add_class.add.commute add_diff_cancel_right' div_if div_mult_self3 gr0I not_less0)*)
 
-  lemma mtx_new_rl[sep_heap_rules]: "mtx_nonzero c \<subseteq> {0..<N}\<times>{0..<M} \<Longrightarrow> <emp> mtx_new N M c <is_amtx N M c>"
-    by (sep_auto simp: mtx_new_def is_amtx_def mtx_nonzero_def)
+  lemma mtx_tabulate_rl[sep_heap_rules]:
+    assumes NONZ: "mtx_nonzero c \<subseteq> {0..<N}\<times>{0..<M}"
+    shows "<emp> mtx_tabulate N M c <IICF_Array_Matrix.is_amtx N M c>"
+  proof (cases "M=0")
+    case True thus ?thesis
+      unfolding mtx_tabulate_def  
+      using mtx_nonzeroD[OF _ NONZ]  
+      by (sep_auto simp: is_amtx_def)
+  next
+    case False hence M_POS: "0<M" by auto
+    show ?thesis
+      unfolding mtx_tabulate_def  
+      apply (sep_auto 
+        decon: 
+          imp_for'_rule[where 
+            I="\<lambda>k (i,j,mi). \<exists>\<^sub>Am. mi \<mapsto>\<^sub>a m 
+            * \<up>( k=i*M+j \<and> j<M \<and> k\<le>N*M \<and> length m = N*M )
+            * \<up>( \<forall>i'<i. \<forall>j<M. m!(i'*M+j) = c (i',j) )
+            * \<up>( \<forall>j'<j. m!(i*M+j') = c (i,j') )
+          "]
+        simp: nth_list_update M_POS dest: Suc_lessI
+      )
+      unfolding is_amtx_def
+      using mtx_nonzeroD[OF _ NONZ] 
+      apply sep_auto  
+      by (metis add.right_neutral M_POS mtx_idx_unique_conv)  
+  qed
 
   lemma mtx_copy_rl[sep_heap_rules]:
     "<is_amtx N M c mtx> amtx_copy mtx <\<lambda>r. is_amtx N M c mtx * is_amtx N M c r>"
@@ -102,13 +151,11 @@ begin
     using assms
     by (fastforce simp: IS_PURE_def is_pure_conv mtx_rel_pres_zero[symmetric] mtx_nonzero_def)
 
+  lemma mtx_tabulate_aref: 
+    "(mtx_tabulate N M, RETURN o op_mtx_new) 
+      \<in> [\<lambda>c. mtx_nonzero c \<subseteq> {0..<N}\<times>{0..<M}]\<^sub>a id_assn\<^sup>k \<rightarrow> IICF_Array_Matrix.is_amtx N M"  
+    by sepref_to_hoare sep_auto
         
-  lemma mtx_new_aref: 
-    "(mtx_new N M, RETURN o op_mtx_new) \<in> [\<lambda>c. mtx_nonzero c \<subseteq> {0..<N}\<times>{0..<M}]\<^sub>a id_assn\<^sup>k \<rightarrow> is_amtx N M"  
-    apply rule apply rule
-    apply (sep_auto simp: pure_def)
-    done
-
   lemma mtx_copy_aref: 
     "(amtx_copy, RETURN o op_mtx_copy) \<in> (is_amtx N M)\<^sup>k \<rightarrow>\<^sub>a is_amtx N M"  
     apply rule apply rule
@@ -138,8 +185,7 @@ begin
     by (rule op_mtx_new.fref)
     
 
-  (* TODO: the "\<rightarrow> the_pure A" does not match, e.g., int_assn! Need smarter matching! *)
-  sepref_decl_impl (no_register) amtx_new: mtx_new_aref uses op_mtx_new_fref'
+  sepref_decl_impl (no_register) amtx_new_by_tab: mtx_tabulate_aref uses op_mtx_new_fref'
     by (auto simp: mtx_nonzero_zu_eq)
 
   sepref_decl_impl amtx_copy: mtx_copy_aref .
@@ -154,10 +200,12 @@ begin
     sepref_register "PR_CONST (op_amtx_new N M)" :: "(nat \<times> nat \<Rightarrow> 'a) \<Rightarrow> 'a i_mtx"
   end
 
-  lemma amtx_new_hnr'[sepref_fr_rules]: "CONSTRAINT (IS_PURE PRES_ZERO_UNIQUE) A \<Longrightarrow>
-    (mtx_new N M, (RETURN \<circ> PR_CONST (op_amtx_new N M)))
+  lemma amtx_new_hnr[sepref_fr_rules]: 
+    fixes A :: "'a::zero \<Rightarrow> 'b::{zero,heap} \<Rightarrow> assn"
+    shows "CONSTRAINT (IS_PURE PRES_ZERO_UNIQUE) A \<Longrightarrow>
+    (mtx_tabulate N M, (RETURN \<circ> PR_CONST (op_amtx_new N M)))
     \<in> [\<lambda>x. mtx_nonzero x \<subseteq> {0..<N} \<times> {0..<M}]\<^sub>a (pure (nat_rel \<times>\<^sub>r nat_rel \<rightarrow> the_pure A))\<^sup>k \<rightarrow> amtx_assn N M A"
-    using amtx_new_hnr[of A N M] by simp
+    using amtx_new_by_tab_hnr[of A N M] by simp
 
   lemma [def_pat_rules]: "op_amtx_new$N$M \<equiv> UNPROTECT (op_amtx_new N M)" by simp
 

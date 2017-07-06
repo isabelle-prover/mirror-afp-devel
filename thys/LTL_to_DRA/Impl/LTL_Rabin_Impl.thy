@@ -78,24 +78,24 @@ lemma mappings\<^sub>C_code:
       Gs = G_list \<phi>; 
       max_rank = Mapping.lookup (Mapping.tabulate Gs (max_rank_of\<^sub>C \<Sigma>))
     in 
-      set (concat (map (mapping_generator_list (\<lambda>x. [0 ..< the (max_rank x)])) (sublists Gs))))"
+      set (concat (map (mapping_generator_list (\<lambda>x. [0 ..< the (max_rank x)])) (subseqs Gs))))"
   (is "?lhs = ?rhs")
 proof -
   {
     fix xs :: "'a ltl list"
-    have subset_G: "\<And>x. x \<in> set (sublists (xs)) \<Longrightarrow> set x \<subseteq> set xs"
+    have subset_G: "\<And>x. x \<in> set (subseqs (xs)) \<Longrightarrow> set x \<subseteq> set xs"
       apply (induction xs)
       apply (simp)
-      by (insert sublists_powset; blast)
+      by (insert subseqs_powset; blast)
   }
-  hence subset_G: "\<And>x. x \<in> set (sublists (G_list \<phi>)) \<Longrightarrow> set x \<subseteq> \<^bold>G \<phi>"
+  hence subset_G: "\<And>x. x \<in> set (subseqs (G_list \<phi>)) \<Longrightarrow> set x \<subseteq> \<^bold>G \<phi>"
     unfolding G_eq_G_list by auto
 
-  have "?lhs = \<Union>{{\<pi>. Mapping.keys \<pi> = xs \<and> (\<forall>\<chi>\<in>Mapping.keys \<pi>. the (Mapping.lookup \<pi> \<chi>) < max_rank_of\<^sub>C \<Sigma> \<chi>)} | xs. xs \<in> set ` (set (sublists (G_list \<phi>)))}"
-    unfolding mappings\<^sub>C_def G_eq_G_list sublists_powset by auto
+  have "?lhs = \<Union>{{\<pi>. Mapping.keys \<pi> = xs \<and> (\<forall>\<chi>\<in>Mapping.keys \<pi>. the (Mapping.lookup \<pi> \<chi>) < max_rank_of\<^sub>C \<Sigma> \<chi>)} | xs. xs \<in> set ` (set (subseqs (G_list \<phi>)))}"
+    unfolding mappings\<^sub>C_def G_eq_G_list subseqs_powset by auto
   also
   have "\<dots> = \<Union>{{\<pi>. Mapping.keys \<pi> = set xs \<and> (\<forall>\<chi> \<in> set xs. the (Mapping.lookup \<pi> \<chi>) < max_rank_of\<^sub>C \<Sigma> \<chi>)} |
-       xs. xs \<in> set (sublists (G_list \<phi>))}"
+       xs. xs \<in> set (subseqs (G_list \<phi>))}"
     by auto
   also
   have "\<dots> = ?rhs"

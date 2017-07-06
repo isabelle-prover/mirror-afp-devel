@@ -32,7 +32,9 @@ definition [icf_rec_def]: "tm_basic_ops \<equiv> \<lparr>
 setup Locale_Code.open_block
 interpretation tm_basic: StdBasicMap tm_basic_ops
   apply unfold_locales
-  apply (simp_all add: icf_rec_unf Trie2.finite_dom_lookup Trie2.iteratei_correct)
+  apply (simp_all 
+      add: icf_rec_unf Trie2.finite_dom_lookup Trie2.iteratei_correct 
+      add: map_upd_eq_restrict)
   done
 setup Locale_Code.close_block
 

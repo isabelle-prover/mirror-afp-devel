@@ -193,9 +193,7 @@ using assms by simp_all
 
 code_datatype Terminal Linear Branch
 
-setup {*
-  Code.add_case @{thm case_resumption_cert}
-*}
+setup \<open>Code.declare_case_global @{thm case_resumption_cert}\<close>
 
 setup {*
   Nitpick.register_codatatype @{typ "('a,'b,'c,'d) resumption"} @{const_name case_resumption}

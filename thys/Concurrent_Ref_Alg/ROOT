@@ -1,13 +1,13 @@
 chapter AFP
 
-session "Concurrent_Ref_Alg" (AFP) = "HOL" +
+session Concurrent_Ref_Alg (AFP) = HOL +
   description {* Concurrent refinement algebra and rely quotient *}
   options [timeout = 600]
-  (*options [document = pdf, document_output = "output", quick_and_dirty]*)
-  (*options [document = pdf, document_output = "output", document_variants="document:outline=/proof", quick_and_dirty]*)
+  sessions
+    "HOL-Library"
   theories [document = false]
     "~~/src/HOL/Library/Lattice_Syntax"
-  theories 
+  theories
     "Refinement_Lattice"
     "Sequential"
     "Parallel"

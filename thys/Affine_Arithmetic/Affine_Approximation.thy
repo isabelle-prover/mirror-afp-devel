@@ -1,4 +1,4 @@
-section \<open>Approximation with Affine Forms\<close>
+ section \<open>Approximation with Affine Forms\<close>
 theory Affine_Approximation
 imports
   "~~/src/HOL/Library/Code_Target_Numeral"
@@ -1663,9 +1663,11 @@ fun approximate_affine (name, term) lthy =
       approx
     val ((approx, (_, def_raw)), lthy') =
       Local_Theory.define ((name, NoSyn), (Binding.empty_atts, approx_raw)) lthy
-    val (_, lthy'') = Local_Theory.notes
-      [((Thm.def_binding name, [Code.add_default_eqn_attrib Code.Equation]), [([def_raw], [])])] lthy'
-
+    val lthy'' =
+      lthy'
+      |> Local_Theory.notes
+          [((Thm.def_binding name, []), [([def_raw], [])])]
+      |-> (fn [(_, [defn])] => Code.declare_default_eqns [(defn, true)])
     (* correctness theorem *)
     (* shows "(vs, interpret_euclarith ea vs) \<in> Joints2 VS X" *)
     val (prec::thres::R::qs::QS::args, lthy3) =

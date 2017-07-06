@@ -1,8 +1,10 @@
 chapter AFP
 
 session Stirling_Formula (AFP) = "Landau_Analysis" +
-  options [timeout=600]
-  theories [document=false]
+  options [timeout = 600]
+  sessions
+    Bernoulli
+  theories [document = false]
     "../Landau_Symbols/Landau_Symbols"
   theories
     Stirling_Formula

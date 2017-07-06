@@ -57,7 +57,8 @@ proof goal_cases
     unfolding i_def Dg_def [abs_def] line_def
     by (rule taylor_has_integral) auto
   then show c: ?case using \<open>n > 0\<close> by (auto simp: g_def line_def Dg_def)
-  case 2 show ?case using c integral_unique by force
+  case 2 show ?case using c
+    by (simp add: integral_unique add.commute)
   case 3 show ?case using c by force
 qed
 

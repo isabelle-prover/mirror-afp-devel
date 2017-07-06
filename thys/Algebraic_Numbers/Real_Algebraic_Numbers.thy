@@ -3486,6 +3486,34 @@ lemma to_rat_real_alg: "to_rat (real_of x) = (to_rat_real_alg x)"
 
 subsection \<open>Real Algebraic Numbers as Implementation for Real Numbers\<close>
 
+lemma code_real_unfolds: 
+  "of_rat \<equiv> Ratreal" 
+  "of_int a \<equiv> (of_rat (of_int a) :: real)" 
+  "0 \<equiv> (of_rat 0 :: real)"
+  "1 \<equiv> (of_rat 1 :: real)"
+  "numeral k \<equiv> (of_rat (numeral k) :: real)"
+  "- numeral k \<equiv> (of_rat (- numeral k) :: real)"
+  by simp_all
+
+bundle code_real_default_reset = [[code drop:
+  "plus :: real \<Rightarrow> real \<Rightarrow> real"
+  "uminus :: real \<Rightarrow> real"
+  "minus :: real \<Rightarrow> real \<Rightarrow> real"
+  "times :: real \<Rightarrow> real \<Rightarrow> real"
+  "inverse :: real \<Rightarrow> real"
+  "divide :: real \<Rightarrow> real \<Rightarrow> real"
+  "floor :: real \<Rightarrow> int"
+  "HOL.equal :: real \<Rightarrow> real \<Rightarrow> bool"
+  "compare :: real \<Rightarrow> real \<Rightarrow> order"
+  "less_eq :: real \<Rightarrow> real \<Rightarrow> bool"
+  "less :: real \<Rightarrow> real \<Rightarrow> bool"
+  "0 :: real"
+  "1 :: real"
+  "sgn :: real \<Rightarrow> real"
+  "abs :: real \<Rightarrow> real"
+  root]]
+  code_real_unfolds [code_unfold del]
+  
 lemmas real_alg_code_eqns =  
   one_real_alg
   zero_real_alg
@@ -3505,40 +3533,11 @@ lemmas real_alg_code_eqns =
   floor_real_alg
   is_rat_real_alg
   to_rat_real_alg
-  
 
 code_datatype real_of
 
-lemmas real_code_dels = 
-  refl[of "op + :: real \<Rightarrow> real \<Rightarrow> real"]
-  refl[of "uminus :: real \<Rightarrow> real"]
-  refl[of "op - :: real \<Rightarrow> real \<Rightarrow> real"]
-  refl[of "op * :: real \<Rightarrow> real \<Rightarrow> real"]
-  refl[of "inverse :: real \<Rightarrow> real"]
-  refl[of "op / :: real \<Rightarrow> real \<Rightarrow> real"]
-  refl[of "floor :: real \<Rightarrow> int"]
-  refl[of "HOL.equal :: real \<Rightarrow> real \<Rightarrow> bool"]
-  refl[of "compare :: real \<Rightarrow> real \<Rightarrow> order"]
-  refl[of "op \<le> :: real \<Rightarrow> real \<Rightarrow> bool"]
-  refl[of "op < :: real \<Rightarrow> real \<Rightarrow> bool"]
-  refl[of "0 :: real"]
-  refl[of "1 :: real"]
-  refl[of "sgn :: real \<Rightarrow> real"]
-  refl[of "abs :: real \<Rightarrow> real"]
-  refl[of root]
+unbundle code_real_default_reset
 
-lemma real_code_unfold_dels: 
-  "of_rat \<equiv> Ratreal" 
-  "of_int a \<equiv> (of_rat (of_int a) :: real)" 
-  "0 \<equiv> (of_rat 0 :: real)"
-  "1 \<equiv> (of_rat 1 :: real)"
-  "numeral k \<equiv> (of_rat (numeral k) :: real)"
-  "- numeral k \<equiv> (of_rat (- numeral k) :: real)"
-  by simp_all
-
-
-declare real_code_dels[code, code del]
-declare real_code_unfold_dels[code_unfold del]
-declare real_alg_code_eqns[code]
+declare real_alg_code_eqns [code equation]
 
 end

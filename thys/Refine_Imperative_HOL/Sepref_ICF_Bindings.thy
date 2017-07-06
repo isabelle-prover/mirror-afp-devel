@@ -3,7 +3,11 @@ imports Sepref_Tool
   "../Collections/Refine_Dflt_ICF"
   "IICF/IICF"
 begin
-
+  subsection \<open>Miscellaneous\<close>
+  lemma (in -) rev_append_hnr[param,sepref_import_param]:
+    "(rev_append, rev_append) \<in> \<langle>A\<rangle>list_rel \<rightarrow> \<langle>A\<rangle>list_rel \<rightarrow> \<langle>A\<rangle>list_rel"
+    unfolding rev_append_def by parametricity
+  
   subsection \<open>Sets by List\<close>
 
   (* TODO: Move to Collections *)
@@ -27,47 +31,33 @@ begin
   lemma list_set_rel_compp:
     assumes "IS_LEFT_UNIQUE A" "IS_RIGHT_UNIQUE A"  
     shows "\<langle>Id\<rangle>list_set_rel O \<langle>A\<rangle>set_rel = \<langle>A\<rangle>list_set_rel"
-  proof
-    show "\<langle>Id\<rangle>list_set_rel O \<langle>A\<rangle>set_rel \<subseteq> \<langle>A\<rangle>list_set_rel"
-    proof (clarsimp simp: list_set_rel_def in_br_conv set_rel_def)
-      fix l
-      assume "distinct l" "set l \<subseteq> Domain A"
-      thus "(l, A `` set l) \<in> \<langle>A\<rangle>list_rel O br set distinct"
-      proof (induction l)
-        case (Cons x l)
-        hence IH: "(l, A `` set l) \<in> \<langle>A\<rangle>list_rel O br set distinct" by simp
-        then obtain m where LMR: "(l,m)\<in>\<langle>A\<rangle>list_rel" and MD: "(m,A``set l)\<in>br set distinct" by auto
-        from Cons.prems obtain y where "(x,y)\<in>A" by auto
-    
-        have [simp]: "y\<notin>set m" 
-        proof
-          assume "y\<in>set m"
-          with LMR obtain x' where "x'\<in>set l" "(x',y)\<in>A"
-            by (fastforce simp: in_set_conv_decomp list_rel_append2 list_rel_split_left_iff)
-          from \<open>(x',y)\<in>A\<close> \<open>(x,y)\<in>A\<close> have "x'=x" by (auto simp: IS_LEFT_UNIQUED[OF assms(1)])
-          with \<open>x'\<in>set l\<close> \<open>distinct (x#l)\<close> show False by simp
-        qed  
-    
-        from \<open>(x,y)\<in>A\<close> LMR have 1: "(x#l,y#m)\<in>\<langle>A\<rangle>list_rel" by simp
-        also from MD Cons.prems \<open>(x,y)\<in>A\<close> have 2: "(y#m,A``set (x#l))\<in>br set distinct"
-          by (auto simp: in_br_conv IS_RIGHT_UNIQUED[OF assms(2)]) 
-        finally (relcompI) show ?case .
-      qed (auto simp: in_br_conv)
-    qed  
-  next
-    {
-      fix x y
-      have "(x,y) \<in> br set distinct O \<langle>A\<rangle>set_rel \<longleftrightarrow> distinct x \<and> (set x, y)\<in>\<langle>A\<rangle>set_rel"
-        by (auto simp: in_br_conv)
-    } note [simp] = this
-  
-    show "\<langle>Id\<rangle>list_set_rel O \<langle>A\<rangle>set_rel \<supseteq> \<langle>A\<rangle>list_set_rel"
-      apply (clarsimp simp: list_set_rel_def in_br_conv; safe)
-      using param_distinct[OF assms, param_fo] apply auto []
-      using assms apply parametricity
-      done
-  qed
+    unfolding list_set_rel_def
+  proof (safe; clarsimp simp: in_br_conv)  
+    fix x z
+    assume "(set x,z)\<in>\<langle>A\<rangle>set_rel" "distinct x"
+    from obtain_list_from_setrel[OF \<open>IS_RIGHT_UNIQUE A\<close> this(1)] obtain zl where
+      [simp]: "z = set zl" and X_ZL: "(x, zl) \<in> \<langle>A\<rangle>list_rel" .
+        
+    have "distinct zl" 
+      using param_distinct[OF assms, THEN fun_relD, OF X_ZL] \<open>distinct x\<close>
+      by auto  
+    show "(x,z) \<in> \<langle>A\<rangle>list_rel O br set distinct"  
+      apply (rule relcompI[OF X_ZL])
+      by (auto simp: in_br_conv \<open>distinct zl\<close>)  
+  next    
+    fix x y
+    assume XY: "(x, y) \<in> \<langle>A\<rangle>list_rel" and "distinct y"  
 
+    have "distinct x" 
+      using param_distinct[OF assms, THEN fun_relD, OF XY] \<open>distinct y\<close>
+      by auto  
+      
+    show "(x, set y) \<in> br set distinct O \<langle>A\<rangle>set_rel"  
+      apply (rule relcompI[where b="set x"])
+      subgoal by (auto simp: in_br_conv \<open>distinct x\<close>)
+      subgoal by (rule param_set[OF \<open>IS_RIGHT_UNIQUE A\<close>, THEN fun_relD, OF XY])
+      done  
+  qed
 
   lemma GEN_OP_EQ_Id: "GEN_OP op= op= (Id\<rightarrow>Id\<rightarrow>bool_rel)" by simp
 

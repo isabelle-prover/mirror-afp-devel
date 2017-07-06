@@ -2,6 +2,9 @@ chapter AFP
 
 session Formal_SSA (AFP) = Collections +
   options [timeout = 1200]
+  sessions
+    Dijkstra_Shortest_Path
+    Slicing
   theories [document = false]
     "~~/src/HOL/Library/While_Combinator"
     "~~/src/HOL/Library/Product_Lexorder"

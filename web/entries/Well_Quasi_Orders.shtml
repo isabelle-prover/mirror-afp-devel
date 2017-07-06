@@ -115,7 +115,11 @@ variadic terms, i.e., trees), plus finite version of the tree theorem as
 corollary.<br>
 [2013-05-16]: Simplified construction of minimal bad sequences.<br>
 [2014-07-09]: Simplified proofs of Higman's lemma and Kruskal's tree theorem,
-based on homogeneous sequences.</td>
+based on homogeneous sequences.<br>
+[2016-01-03]: An alternative proof of Higman's lemma by open induction.<br>
+[2017-06-08]: Proved (classical) equivalence to inductive definition of
+almost-full relations according to the ITP 2012 paper "Stop When You Are
+Almost-Full" by Vytiniotis, Coquand, and Wahlstedt.</td>
   </tr>
 
 <tr>

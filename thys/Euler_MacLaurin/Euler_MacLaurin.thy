@@ -454,7 +454,7 @@ next
     hence "(h has_integral g (of_int (i + 1)) - g (of_int i)) {of_int i..of_int (i+1)}"
       unfolding g_def h_def using that 
       by (intro fundamental_theorem_of_calculus_interior_strong[OF fin])
-         (auto intro!: derivative_eq_intros continuous_intros indefinite_integral_continuous
+         (auto intro!: derivative_eq_intros continuous_intros indefinite_integral_continuous_1
              integrable_continuous_real)
     also have "g (of_int (i + 1)) - g (of_int i) = d i"
       by (simp add: g_def scaleR_add_right [symmetric] d_def)

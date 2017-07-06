@@ -250,7 +250,7 @@ lemma os_iterate_impl:
     apply simp
 
   unfolding os_it_has_next_def
-  apply (sep_auto elim!: list_not_emptyE)
+  apply (sep_auto elim!: neq_NilE)
 
   apply solve_entails
   apply (rule ent_frame_fwd[OF lseg_conc])

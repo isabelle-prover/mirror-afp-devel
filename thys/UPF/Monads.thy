@@ -77,7 +77,7 @@ where     "bind_SE f g = (\<lambda>\<sigma>. case f \<sigma> of None \<Rightarro
                                         | Some (out, \<sigma>') \<Rightarrow> g out \<sigma>')"
 
 notation bind_SE ("bind\<^sub>S\<^sub>E")
-syntax    (xsymbols)
+syntax
           "_bind_SE" :: "[pttrn,('o,'\<sigma>)MON\<^sub>S\<^sub>E,('o','\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> ('o','\<sigma>)MON\<^sub>S\<^sub>E"  
                                                                           ("(2 _ \<leftarrow> _; _)" [5,8,8]8)
 translations 
@@ -298,7 +298,7 @@ definition unit_SB   :: "'o \<Rightarrow> ('o, '\<sigma>)MON\<^sub>S\<^sub>B" ("
 where     "unit_SB e = (\<lambda>\<sigma>. {(e,\<sigma>)})"
 notation   unit_SB ("unit\<^sub>S\<^sub>B")
 
-syntax    (xsymbols) "_bind_SB" :: "[pttrn,('o,'\<sigma>)MON\<^sub>S\<^sub>B,('o','\<sigma>)MON\<^sub>S\<^sub>B] \<Rightarrow> ('o','\<sigma>)MON\<^sub>S\<^sub>B" 
+syntax "_bind_SB" :: "[pttrn,('o,'\<sigma>)MON\<^sub>S\<^sub>B,('o','\<sigma>)MON\<^sub>S\<^sub>B] \<Rightarrow> ('o','\<sigma>)MON\<^sub>S\<^sub>B" 
                                                                          ("(2 _ := _; _)" [5,8,8]8)
 translations 
           "x := f; g" \<rightleftharpoons> "CONST bind_SB f (% x . g)"
@@ -333,7 +333,7 @@ where     "bind_SBE f g = (\<lambda>\<sigma>. case f \<sigma> of None \<Rightarr
                                                       in  if None \<in> S' then None
                                                           else Some(\<Union> (the ` S'))))"
 
-syntax    (xsymbols) "_bind_SBE" :: "[pttrn,('o,'\<sigma>)MON\<^sub>S\<^sub>B\<^sub>E,('o','\<sigma>)MON\<^sub>S\<^sub>B\<^sub>E] \<Rightarrow> ('o','\<sigma>)MON\<^sub>S\<^sub>B\<^sub>E" 
+syntax "_bind_SBE" :: "[pttrn,('o,'\<sigma>)MON\<^sub>S\<^sub>B\<^sub>E,('o','\<sigma>)MON\<^sub>S\<^sub>B\<^sub>E] \<Rightarrow> ('o','\<sigma>)MON\<^sub>S\<^sub>B\<^sub>E" 
                                                                          ("(2 _ :\<equiv> _; _)" [5,8,8]8)
 translations 
           "x :\<equiv> f; g" \<rightleftharpoons> "CONST bind_SBE f (% x . g)"

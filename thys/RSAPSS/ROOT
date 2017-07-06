@@ -1,10 +1,8 @@
 chapter AFP
 
-session RSAPSS (AFP) = "HOL-Computational_Algebra" +
+session RSAPSS (AFP) = "HOL-Number_Theory" +
   options [timeout = 600]
   theories [document = false]
-    "~~/src/HOL/Library/Code_Target_Numeral"
-    "~~/src/HOL/Computational_Algebra/Primes"
     Word  (* local, not HOL-Word! *)
   theories
     RSAPSS

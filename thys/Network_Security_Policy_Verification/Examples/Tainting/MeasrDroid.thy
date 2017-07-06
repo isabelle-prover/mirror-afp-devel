@@ -218,23 +218,23 @@ Therefore, we generate a policy only from the security invariants and compare it
 
 We find the following flows which are allowed but which we did not consider in our policy 
  \<^item> All reflexive flows, i.e. every component can interact with itself. This is fine.
- \<^item> Within each smartphone, internally, arbitrary communication is possible. We cannot prevent this at a user's smartphone
+ \<^item> Within each smartphone, internally, arbitrary communication is possible. We cannot prevent this at a user's smartphone.
  \<^item> Every smartphone could send data to the adversary.
    It is important that this is generally allowed since we don't to put any restrictions on the
-   Internet connectivity of a smarthone. 
+   Internet connectivity of a smartphone. 
    For example, this allows the smartphone user to surf facebook, which is not a trusted component in our system.
    The collected data is encrypted once it leaves the smartphone (via MeasrDroid), therefore, sensor data is not leaked.
  \<^item> @{term "''C3PO_in''"} could send data to the adversary. At this point, the data is still encrypted.
    It would be possible to add an additional security invariant to make sure that @{term "''C3PO_in''"}
    only connects to @{term "''UploadDroid''"}.
- \<^item> An adversary could send data to UploadDroid.
+ \<^item> An adversary could send data to @{term "''UploadDroid''"}.
    Since the system shall be accessible to any smartphone connected to the Internet, without authentication,
    we cannot prevent that a malicious user might send fake data.
  \<^item> The Upload Droid could send data to the adversary.
    This does not undermine the security concept because upload droid only stores encrypted data. 
-   In fact, the security assumptions were from the very beginning that Upload Droid can get compromised.
- \<^item> C3PO could directly save and data in its database without decrypting.
-   This is fine and might potentially used in a future version for backups.
+   In fact, the security assumptions were from the very beginning that @{term "''UploadDroid''"} can get compromised.
+ \<^item> C3PO could directly save data in its database without decrypting.
+   This is fine and might potentially be used in a future version for backups.
 \<close>
 lemma "set [e \<leftarrow> edgesL (make_policy invariants (nodesL policy)). e \<notin> set (edgesL policy)] =
  set [(v,v). v \<leftarrow> (nodesL policy)] \<union>

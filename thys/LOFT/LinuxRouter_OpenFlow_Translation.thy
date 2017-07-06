@@ -7,7 +7,9 @@ imports "../IP_Addresses/CIDR_Split"
 	"OpenFlow_Action"
 	"../Routing/Linux_Router"
 begin
-
+hide_const Misc.uncurry
+hide_fact Misc.uncurry_def
+  
 (* For reference:
 iiface :: "iface" --"in-interface"
 oiface :: "iface" --"out-interface"

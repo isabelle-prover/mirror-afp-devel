@@ -55,7 +55,7 @@ assumes bisim: "is_bisimulation as ps"
 assumes "(r, s) \<in> ps"
 shows "lang r = lang s"
 proof -
-  def ps' \<equiv> "insert (Zero, Zero) ps"
+  define ps' where "ps' = insert (Zero, Zero) ps"
   from bisim have bisim': "is_bisimulation as ps'"
     by (auto simp: ps'_def is_bisimulation_def)
   let ?R = "\<lambda>K L. (\<exists>(r,s)\<in>ps'. K = lang r \<and> L = lang s)"

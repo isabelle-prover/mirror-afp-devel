@@ -1,7 +1,9 @@
 chapter AFP
 
 session Bertrands_Postulate (AFP) = "Pratt_Certificate" +
-  options [timeout=600, document=pdf]
+  options [timeout = 600]
+  sessions
+    Ordinary_Differential_Equations
   theories [document = false]
     "~~/src/HOL/Decision_Procs/Approximation_Bounds"
     "~~/src/HOL/Library/Discrete"

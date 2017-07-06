@@ -2,6 +2,9 @@ chapter AFP
 
 session "Nominal2" (AFP) = HOL +
   options [timeout = 600]
+  sessions
+    "HOL-Library"
+    FinFun
   theories [document = false]
     "~~/src/HOL/Library/Old_Datatype"
     "~~/src/HOL/Library/Cardinality"

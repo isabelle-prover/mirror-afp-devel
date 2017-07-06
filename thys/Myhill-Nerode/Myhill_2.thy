@@ -344,7 +344,7 @@ lemma star_spartitions_elim2:
   and     b: "x \<noteq> []"
   shows "\<exists>(u, v) \<in> Partitions x. \<exists> (u', v') \<in> Partitions z. strict_prefix u x \<and> u \<in> A\<star> \<and> v @ u' \<in> A \<and> v' \<in> A\<star>"
 proof -
-  def S \<equiv> "{u | u v. (u, v) \<in> Partitions x \<and> strict_prefix u x \<and> u \<in> A\<star> \<and> v @ z \<in> A\<star>}"
+  define S where "S = {u | u v. (u, v) \<in> Partitions x \<and> strict_prefix u x \<and> u \<in> A\<star> \<and> v @ z \<in> A\<star>}"
   have "finite {u. strict_prefix u x}" by (rule finite_strict_prefix_set)
   then have "finite S" unfolding S_def
     by (rule rev_finite_subset) (auto)

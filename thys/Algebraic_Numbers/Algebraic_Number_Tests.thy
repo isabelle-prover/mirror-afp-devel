@@ -24,9 +24,8 @@ begin
 subsection \<open>Stand-Alone Examples\<close>
 
 text \<open>Ensure that the correct code equations are used\<close>
-declare real_code_dels[code, code del]
-declare real_code_unfold_dels[code_unfold del]
-declare real_alg_code_eqns[code]
+unbundle code_real_default_reset
+declare real_alg_code_eqns [code]
 
 abbreviation (input) "show_lines x \<equiv> shows_lines x Nil"
 

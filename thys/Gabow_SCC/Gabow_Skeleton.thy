@@ -283,7 +283,7 @@ begin
     where
     "select_edge PDPE \<equiv> do {
       let (p,D,pE) = PDPE;
-      e \<leftarrow> select (pE \<inter> last p \<times> UNIV);
+      e \<leftarrow> SELECT (\<lambda>e. e \<in> pE \<inter> last p \<times> UNIV);
       case e of
         None \<Rightarrow> RETURN (None,(p,D,pE))
       | Some (u,v) \<Rightarrow> RETURN (Some v, (p,D,pE - {(u,v)}))
@@ -308,7 +308,7 @@ begin
 
   text {* The following lemmas match the definitions presented in the paper: *}
   lemma "select_edge (p,D,pE) \<equiv> do {
-      e \<leftarrow> select (pE \<inter> last p \<times> UNIV);
+      e \<leftarrow> SELECT (\<lambda>e. e \<in> pE \<inter> last p \<times> UNIV);
       case e of
         None \<Rightarrow> RETURN (None,(p,D,pE))
       | Some (u,v) \<Rightarrow> RETURN (Some v, (p,D,pE - {(u,v)}))
@@ -1012,16 +1012,28 @@ begin
 
     {
       fix i
-      assume "Suc i < length (p @ [{v}])"
-      hence "(p @ [{v}]) ! i \<times> (p @ [{v}]) ! Suc i 
+      assume SILL: "Suc i < length (p @ [{v}])"
+      have "(p @ [{v}]) ! i \<times> (p @ [{v}]) ! Suc i 
              \<inter> (E - (pE - {(u, v)} \<union> E \<inter> {v} \<times> UNIV)) \<noteq> {}"
-        apply (cases "i = length p - 1")
-        using E pE_E_from_p UIL VNE
-        apply (simp add: nth_append last_conv_nth) apply fast []
-        using p_connected VNE
-        apply (simp add: nth_append)
-        apply fastforce []
-        done
+      proof (cases "i = length p - 1")
+        case True thus ?thesis using SILL E pE_E_from_p UIL VNE
+          by (simp add: nth_append last_conv_nth) fast
+      next
+        case False
+        with SILL have SILL': "Suc i < length p" by simp
+            
+        with SILL' VNE have X1: "v\<notin>p!i" "v\<notin>p!Suc i" by auto
+            
+        from p_connected[OF SILL'] obtain a b where 
+          "a\<in>p!i" "b\<in>p!Suc i" "(a,b)\<in>E" "(a,b)\<notin>pE" 
+          by auto
+        with X1 have "a\<noteq>v" "b\<noteq>v" by auto
+        with \<open>(a,b)\<in>E\<close> \<open>(a,b)\<notin>pE\<close> have "(a,b)\<in>(E - (pE - {(u, v)} \<union> E \<inter> {v} \<times> UNIV))"
+          by auto
+        with \<open>a\<in>p!i\<close> \<open>b\<in>p!Suc i\<close>
+        show ?thesis using  SILL'
+          by (simp add: nth_append; blast) 
+      qed
     } note AUX_p_connected = this
 
     {
@@ -1351,10 +1363,9 @@ begin
 
     show ?thesis
       unfolding skeleton_def select_edge_def select_def
-      apply (refine_rcg 
-        WHILEIT_rule[where R="abs_wf_rel v0" for v0] refine_vcg)
-
+      apply (refine_vcg WHILEIT_rule[OF abs_wf_rel_wf])
       apply (vc_solve solve: invar_preserve simp: pE_fin' finite_V0)
+      apply auto
       done
   qed
 
@@ -1364,8 +1375,8 @@ begin
   begin
     theorem "skeleton \<le> SPEC (\<lambda>D. outer_invar {} D)"
       unfolding skeleton_def select_edge_def select_def
-      by (refine_rcg WHILEIT_rule[where R="abs_wf_rel v0" for v0])
-         (vc_solve solve: invar_preserve simp: pE_fin' finite_V0)
+      by (refine_vcg WHILEIT_rule[OF abs_wf_rel_wf])
+         (auto intro: invar_preserve simp: pE_fin' finite_V0)
   end
 
 end
@@ -2181,43 +2192,37 @@ begin
         done
     } note SPEC_NE=this
 
+    thm INVAR  
+      
+    have SPEC: "sel_rem_last \<le> SPEC (\<lambda>r. case r of 
+        (None, SBIP') \<Rightarrow> SBIP' = SBIP \<and> pE_\<alpha> \<inter> last p_\<alpha> \<times> UNIV = {} \<and> GS_invar SBIP
+      | (Some v, SBIP') \<Rightarrow> \<exists>u. (u, v) \<in> pE_\<alpha> \<inter> last p_\<alpha> \<times> UNIV 
+                        \<and> GS.\<alpha> SBIP' = (p_\<alpha>, D_\<alpha>, pE_\<alpha> - {(u, v)})
+                        \<and> GS_invar SBIP'
+    )"  
+      using INVAR
+      apply (cases "pE_\<alpha> \<inter> last p_\<alpha> \<times> UNIV = {}") 
+      apply (frule SPEC_E)
+      apply (auto split: option.splits simp: pw_le_iff; blast; fail)
+      apply (frule SPEC_NE)
+      apply (auto split: option.splits simp: pw_le_iff; blast; fail)
+      done    
+      
+      
+    have X1: "(\<exists>y. (y=None \<longrightarrow> \<Phi> y) \<and> (\<forall>a b. y=Some (a,b) \<longrightarrow> \<Psi> y a b)) \<longleftrightarrow>
+      (\<Phi> None \<or> (\<exists>a b. \<Psi> (Some (a,b)) a b))" for \<Phi> \<Psi>
+      by auto
+      
 
     show ?thesis
+      apply (rule order_trans[OF SPEC])
       unfolding select_edge_def select_def 
       apply (simp 
         add: pw_le_iff refine_pw_simps prod_rel_sv 
+        del: SELECT_pw
         split: option.splits prod.splits)
-      apply (clarsimp simp: br_def GS_rel_def GS.\<alpha>_def)
-      apply (intro impI allI conjI)
-
-      using INVAR apply (simp add: pw_le_iff refine_pw_simps)
-
-      apply (drule SPEC_E)
-      apply (drule (1) inres_SPEC)
-      apply (auto simp: GS.\<alpha>_def split: option.splits) []
-
-      apply (drule SPEC_E)
-      apply (drule (1) inres_SPEC)
-      apply (auto simp: GS.\<alpha>_def split: option.splits) []
-
-      apply (drule SPEC_E)
-      apply (drule (1) inres_SPEC)
-      apply (auto simp: GS.\<alpha>_def split: option.splits) []
-
-      using INVAR apply (simp add: pw_le_iff refine_pw_simps)
-
-      apply (drule SPEC_E)
-      apply (drule (1) inres_SPEC)
-      apply (auto simp: GS.\<alpha>_def split: option.splits) []
-
-      using INVAR apply (simp add: pw_le_iff refine_pw_simps)
-
-      using INVAR apply (simp add: pw_le_iff refine_pw_simps)
-      
-      apply (drule SPEC_NE)
-      apply (drule (1) inres_SPEC)
-      apply (auto simp: GS.\<alpha>_def split: option.splits prod.splits) []
-      done
+      apply (fastforce simp: br_def GS_rel_def GS.\<alpha>_def)
+      done  
   qed
 
   lemma find_seg_idx_of_correct:
@@ -2619,6 +2624,7 @@ context fr_graph begin
       inj_on_id
     )
     using [[goals_limit = 5]]
+    apply refine_dref_type  
 
     apply (vc_solve (nopre) solve: asm_rl I_to_outer
       simp: GS_rel_def br_def GS.\<alpha>_def oGS_rel_def oGS_\<alpha>_def 
@@ -2641,8 +2647,8 @@ context fr_graph begin
   begin
   lemma "skeleton_impl \<le> \<Down>oGS_rel skeleton"
     unfolding skeleton_impl_def skeleton_def
-    by (refine_rcg skeleton_refines) 
-       (vc_solve (nopre) solve: asm_rl I_to_outer simp: skeleton_refine_simps)
+    by (refine_rcg skeleton_refines, refine_dref_type)
+       (vc_solve (nopre) solve: asm_rl I_to_outer simp: skeleton_refine_simps)  
 
   end
 

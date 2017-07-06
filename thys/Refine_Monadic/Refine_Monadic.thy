@@ -5,6 +5,7 @@ imports
   Refine_Basic 
   Refine_Leof
   Refine_Heuristics 
+  Refine_More_Comb
   Refine_While 
   Refine_Foreach 
   Refine_Transfer
@@ -51,5 +52,24 @@ begin
       done
   qed
   
+  subsection \<open>Syntax Sugar\<close>
+  locale Refine_Monadic_Syntax begin
+  
+    notation SPEC (binder "spec " 10)
+    notation ASSERT ("assert")
+    notation RETURN ("return")
+    notation FOREACH ("foreach")
+    notation WHILE ("while")
+    notation WHILET ("while\<^sub>T")
+    notation WHILEI ("while\<^bsup>_\<^esup>")
+    notation WHILET ("while\<^sub>T")
+    notation WHILEIT ("while\<^sub>T\<^bsup>_\<^esup>")
 
+    notation RECT (binder "rec\<^sub>T " 10)
+    notation REC (binder "rec " 10)
+
+    notation SELECT (binder "select " 10)
+      
+  end
+    
 end

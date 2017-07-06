@@ -3633,33 +3633,33 @@ lemma indexToVertexList_last[simp]:
 apply (subgoal_tac "indexToVertexList f v es = natToVertexList v f es") apply simp
 apply (rule indexToVertexList_natToVertexList_eq) by auto
 
-lemma sublist_take: "\<And> n iset. \<forall> i \<in> iset. i < n \<Longrightarrow> sublist (take n xs) iset = sublist xs iset"
+lemma nths_take: "\<And> n iset. \<forall> i \<in> iset. i < n \<Longrightarrow> nths (take n xs) iset = nths xs iset"
 proof (induct xs)
   case Nil then show ?case by simp
 next
-  case (Cons x xs) then show ?case apply (simp add: sublist_Cons) apply (cases n) apply simp apply (simp add: sublist_Cons) apply (rule Cons) by auto
+  case (Cons x xs) then show ?case apply (simp add: nths_Cons) apply (cases n) apply simp apply (simp add: nths_Cons) apply (rule Cons) by auto
 qed
 
 
-lemma sublist_reduceIndices: "\<And> iset. sublist xs iset = sublist xs {i. i < length xs \<and> i \<in> iset}"
+lemma nths_reduceIndices: "\<And> iset. nths xs iset = nths xs {i. i < length xs \<and> i \<in> iset}"
 proof (induct xs)
   case Nil then show ?case by simp
 next
   case (Cons x xs) then
-  have "sublist xs {j. Suc j \<in> iset} = sublist xs {i. i < length xs \<and> i \<in> {j. Suc j \<in> iset}}" by (rule_tac Cons)
-  then show ?case by (simp add: sublist_Cons)
+  have "nths xs {j. Suc j \<in> iset} = nths xs {i. i < length xs \<and> i \<in> {j. Suc j \<in> iset}}" by (rule_tac Cons)
+  then show ?case by (simp add: nths_Cons)
 qed
 
-lemma natToVertexList_sublist1: "distinct (vertices f) \<Longrightarrow>
+lemma natToVertexList_nths1: "distinct (vertices f) \<Longrightarrow>
   v \<in> \<V> f \<Longrightarrow> vs = verticesFrom f v \<Longrightarrow>
   incrIndexList es (length es) (length vs) \<Longrightarrow> n \<le>  length es \<Longrightarrow>
-  sublist (take (Suc (es!(n - 1))) vs) (set (take n es))
+  nths (take (Suc (es!(n - 1))) vs) (set (take n es))
   = removeNones (take n (natToVertexList v f es))"
 proof (induct n)
   case 0 then show ?case by simp
 next
   case (Suc n)
-  then have "sublist (take (Suc (es ! (n - Suc 0))) (verticesFrom f v)) (set (take n es)) = removeNones (take n (natToVertexList v f es))"
+  then have "nths (take (Suc (es ! (n - Suc 0))) (verticesFrom f v)) (set (take n es)) = removeNones (take n (natToVertexList v f es))"
     "distinct (vertices f)" "v \<in> \<V> f" "vs = verticesFrom f v" "incrIndexList es (length es) (length (verticesFrom f v))" "Suc n \<le> length es" by auto  (* does this improve the performance? *)
   note suc1 = this
   then have lvs: "length vs = length (vertices f)" by (auto intro: verticesFrom_length)
@@ -3703,16 +3703,16 @@ next
         with suc1 have "increasing (take (Suc n) es @ es!(Suc n) # drop (Suc (Suc n)) es)" by auto
         then have "\<forall> i \<in> (set (take (Suc n) es)). i \<le>  es ! (Suc n)" by (auto intro: increasing2)
         with suc1 have  "\<forall> i \<in> (set (take n es)). i \<le>  es ! (Suc n)" by (simp add: take_Suc_conv_app_nth)
-        then have seq: "sublist (take (Suc (es ! Suc n)) (verticesFrom f v)) (set (take n es))
-          = sublist (verticesFrom f v) (set (take n es))"
-          apply (rule_tac sublist_take) by auto
+        then have seq: "nths (take (Suc (es ! Suc n)) (verticesFrom f v)) (set (take n es))
+          = nths (verticesFrom f v) (set (take n es))"
+          apply (rule_tac nths_take) by auto
         from suc1 have "es = take n es @ es!n # drop (Suc n) es" by (auto intro: id_take_nth_drop)
         with suc1 have "increasing (take n es @ es!n # drop (Suc n) es)" by auto
         then have "\<forall> i \<in> (set (take n es)). i \<le>  es ! n" by (auto intro: increasing2)
         with suc1 esn have  "\<forall> i \<in> (set (take n es)). i \<le>  es ! n'" by (simp add: take_Suc_conv_app_nth)
-        with Suc have seq2: "sublist (take (Suc (es ! n')) (verticesFrom f v)) (set (take n es))
-         = sublist  (verticesFrom f v) (set (take n es))"
-          apply (rule_tac sublist_take) by auto
+        with Suc have seq2: "nths (take (Suc (es ! n')) (verticesFrom f v)) (set (take n es))
+         = nths  (verticesFrom f v) (set (take n es))"
+          apply (rule_tac nths_take) by auto
         from Suc suc1 have "(insert (es ! n') (set (take n es))) = set (take n es)"
         apply auto by (simp add: take_Suc_conv_app_nth)
         with esn None suc1 seq seq2 n' show ?thesis by (simp add: take_Suc_conv_app_nth)
@@ -3726,11 +3726,11 @@ next
       then have "verticesFrom f v = hd (verticesFrom f v) # tl (verticesFrom f v)" by auto
       then have "verticesFrom f v = v # tl (verticesFrom f v)" by (simp add: verticesFrom_hd)
       then obtain z where "verticesFrom f v = v # z" by auto
-      then have sub: "sublist (verticesFrom f v) {0} = [v]" by (auto simp: sublist_Cons)
+      then have sub: "nths (verticesFrom f v) {0} = [v]" by (auto simp: nths_Cons)
       from 0 suc1 have "es!0 = 0" by (cases es)  auto
       with 0 Some suc1 lvs sub vsne show ?thesis
         by (simp add: take_Suc_conv_app_nth natToVertexList_nth_0 nextVertices_def take_Suc
-        sublist_Cons verticesFrom_hd del:verticesFrom_empty)
+        nths_Cons verticesFrom_hd del:verticesFrom_empty)
     next
       case (Suc n')
       with Some suc1 lvs have esn: "es!n \<noteq> es!n'" by (simp add: natToVertexList_nth_Suc split: if_split_asm)
@@ -3749,7 +3749,7 @@ next
       from suc1 lvs have smaller: "(es!n) < length vs" by auto
       from suc1 smaller lvs have "(verticesFrom f v)!(es!n) =  f\<^bsup>(es!n)\<^esup> \<bullet> v" by (auto intro: verticesFrom_nth)
       with v' have "(verticesFrom f v)!(es!n) = v'" by auto
-      then have sub1: "sublist ([((verticesFrom f v)!(es!n))])
+      then have sub1: "nths ([((verticesFrom f v)!(es!n))])
           {j. j + (es!n) : (insert (es ! n) (set (take n es)))} = [v']" by auto
 
       from suc1 smaller lvs have len: "length (take (es ! n) (verticesFrom f v)) = es!n" by auto
@@ -3767,14 +3767,14 @@ next
       then have "{i. i < es ! n \<and> i \<in> set (take n es)} = (set (take n es))" by auto
       then have elim_insert: "{i. i < es ! n \<and> i \<in> insert (es ! n) (set (take n es))} = (set (take n es))" by auto
 
-      have "sublist (take (es ! n) (verticesFrom f v)) (insert (es ! n) (set (take n es))) =
-        sublist (take (es ! n) (verticesFrom f v)) {i. i < length (take (es ! n) (verticesFrom f v))
-         \<and> i \<in> (insert (es ! n) (set (take n es)))}" by (rule sublist_reduceIndices)
-      with len have "sublist (take (es ! n) (verticesFrom f v)) (insert (es ! n) (set (take n es))) =
-        sublist (take (es ! n) (verticesFrom f v)) {i. i < (es ! n) \<and> i \<in> (insert (es ! n) (set (take n es)))}"
+      have "nths (take (es ! n) (verticesFrom f v)) (insert (es ! n) (set (take n es))) =
+        nths (take (es ! n) (verticesFrom f v)) {i. i < length (take (es ! n) (verticesFrom f v))
+         \<and> i \<in> (insert (es ! n) (set (take n es)))}" by (rule nths_reduceIndices)
+      with len have "nths (take (es ! n) (verticesFrom f v)) (insert (es ! n) (set (take n es))) =
+        nths (take (es ! n) (verticesFrom f v)) {i. i < (es ! n) \<and> i \<in> (insert (es ! n) (set (take n es)))}"
         by simp
-      with elim_insert have sub2: "sublist (take (es ! n) (verticesFrom f v)) (insert (es ! n) (set (take n es))) =
-        sublist (take (es ! n) (verticesFrom f v)) (set (take n es))" by simp
+      with elim_insert have sub2: "nths (take (es ! n) (verticesFrom f v)) (insert (es ! n) (set (take n es))) =
+        nths (take (es ! n) (verticesFrom f v)) (set (take n es))" by simp
 
       def m \<equiv> "es!n - es!n'"
       with smaller_n have mgz: "0 < m" by auto
@@ -3803,35 +3803,35 @@ next
 
       with smaller have "(take (Suc_es_n' + m') vs) = take (Suc_es_n') vs @ take m' (drop (Suc_es_n') vs)"
         by (auto intro: take_add)
-      with esn' have "sublist (take (es ! n) vs) (set (take n es))
-         = sublist (take (Suc_es_n') vs @ take m' (drop (Suc_es_n') vs)) (set (take n es))" by auto
-      then have "sublist (take (es ! n) vs) (set (take n es)) =
-        sublist (take (Suc_es_n') vs) (set (take n es)) @
-        sublist (take m' (drop (Suc_es_n') vs)) {j. j + length (take (Suc_es_n') vs) : (set (take n es))}"
-        by (simp add: sublist_append)
-      with empty Suc_es_n'_def have "sublist (take (es ! n) vs) (set (take n es)) =
-        sublist (take (Suc (es!n')) vs) (set (take n es))" by simp
-      with suc1 sub2 have sub3: "sublist (take (es ! n) (verticesFrom f v)) (insert (es ! n) (set (take n es))) =
-        sublist (take (Suc (es!n')) (verticesFrom f v)) (set (take n es))" by simp
+      with esn' have "nths (take (es ! n) vs) (set (take n es))
+         = nths (take (Suc_es_n') vs @ take m' (drop (Suc_es_n') vs)) (set (take n es))" by auto
+      then have "nths (take (es ! n) vs) (set (take n es)) =
+        nths (take (Suc_es_n') vs) (set (take n es)) @
+        nths (take m' (drop (Suc_es_n') vs)) {j. j + length (take (Suc_es_n') vs) : (set (take n es))}"
+        by (simp add: nths_append)
+      with empty Suc_es_n'_def have "nths (take (es ! n) vs) (set (take n es)) =
+        nths (take (Suc (es!n')) vs) (set (take n es))" by simp
+      with suc1 sub2 have sub3: "nths (take (es ! n) (verticesFrom f v)) (insert (es ! n) (set (take n es))) =
+        nths (take (Suc (es!n')) (verticesFrom f v)) (set (take n es))" by simp
         
       from smaller suc1 have "take (Suc (es ! n)) (verticesFrom f v)
        = take (es ! n) (verticesFrom f v) @ [((verticesFrom f v)!(es!n))]"
        by (auto simp: take_Suc_conv_app_nth)
       with suc1 smaller have
-        "sublist (take (Suc (es ! n)) (verticesFrom f v)) (insert (es ! n) (set (take n es))) =
-         sublist (take (es ! n) (verticesFrom f v)) (insert (es ! n) (set (take n es)))
-         @ sublist ([((verticesFrom f v)!(es!n))])  {j. j + (es!n) : (insert (es ! n) (set (take n es)))}"
-        by (auto simp: sublist_append)
-      with sub1 sub3 have "sublist (take (Suc (es ! n)) (verticesFrom f v)) (insert (es ! n) (set (take n es)))
-       = sublist (take (Suc (es ! n')) (verticesFrom f v)) (set (take n es)) @ [v']" by auto
+        "nths (take (Suc (es ! n)) (verticesFrom f v)) (insert (es ! n) (set (take n es))) =
+         nths (take (es ! n) (verticesFrom f v)) (insert (es ! n) (set (take n es)))
+         @ nths ([((verticesFrom f v)!(es!n))])  {j. j + (es!n) : (insert (es ! n) (set (take n es)))}"
+        by (auto simp: nths_append)
+      with sub1 sub3 have "nths (take (Suc (es ! n)) (verticesFrom f v)) (insert (es ! n) (set (take n es)))
+       = nths (take (Suc (es ! n')) (verticesFrom f v)) (set (take n es)) @ [v']" by auto
       with Some suc1 lvs n' show ?thesis by (simp add: take_Suc_conv_app_nth)
     qed
   qed
 qed
 
-lemma natToVertexList_sublist: "distinct (vertices f) \<Longrightarrow> v \<in> \<V> f \<Longrightarrow>
+lemma natToVertexList_nths: "distinct (vertices f) \<Longrightarrow> v \<in> \<V> f \<Longrightarrow>
   incrIndexList es (length es) (length (vertices f)) \<Longrightarrow>
-  sublist (verticesFrom f v) (set es) = removeNones (natToVertexList v f es)"
+  nths (verticesFrom f v) (set es) = removeNones (natToVertexList v f es)"
 proof -
   assume vors1: "distinct (vertices f)" "v \<in> \<V> f"
      "incrIndexList es (length es) (length (vertices f))"
@@ -3863,8 +3863,8 @@ proof -
   from n_def have take_es: "take n es = es" by auto
 
   from n_def have "n \<le> length es" by auto
-  with vors   have "sublist (take (Suc (es!(n - 1))) vs) (set (take n es))
-    = removeNones (take n (natToVertexList v f es))" by (rule natToVertexList_sublist1)
+  with vors   have "nths (take (Suc (es!(n - 1))) vs) (set (take n es))
+    = removeNones (take n (natToVertexList v f es))" by (rule natToVertexList_nths1)
   with take_vs take_nTVL take_es vs_def show ?thesis by simp
 qed
 
@@ -3882,11 +3882,11 @@ proof -
   assume vors: "distinct (vertices f)" "v \<in> \<V> f"
     "incrIndexList es (length es) (length (vertices f))"
   then have dist: "distinct (verticesFrom f v)" by auto
-  from vors have sub_eq: "sublist (verticesFrom f v) (set es)
-    = removeNones (natToVertexList v f es)" by (rule natToVertexList_sublist)
+  from vors have sub_eq: "nths (verticesFrom f v) (set es)
+    = removeNones (natToVertexList v f es)" by (rule natToVertexList_nths)
   from dist have "[x \<leftarrow> verticesFrom f v.
-    x \<in> set (sublist (verticesFrom f v) (set es))] = removeNones (natToVertexList v f es)"
-  apply (simp add: filter_in_sublist)
+    x \<in> set (nths (verticesFrom f v) (set es))] = removeNones (natToVertexList v f es)"
+  apply (simp add: filter_in_nths)
     by (simp add: sub_eq)
   with sub_eq show ?thesis by simp
 qed

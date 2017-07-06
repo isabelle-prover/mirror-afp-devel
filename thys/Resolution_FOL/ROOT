@@ -1,7 +1,9 @@
 chapter AFP
 
-session "Resolution_FOL" (AFP) = HOL +
+session Resolution_FOL (AFP) = HOL +
   options [timeout = 300]
+  sessions
+    "HOL-Library"
   theories [document = false]
      "~~/src/HOL/Library/Countable_Set" 
   theories

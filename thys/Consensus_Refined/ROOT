@@ -1,7 +1,11 @@
 chapter AFP
 
-session Consensus_Refined (AFP) = "HOL" +
+session Consensus_Refined (AFP) = HOL +
   options [show_question_marks = false, timeout = 600]
+  sessions
+    "HOL-Library"
+    Heard_Of
+    Stuttering_Equivalence
   theories [document = false]
     "../Stuttering_Equivalence/StutterEquivalence"
     "../Heard_Of/HOModel"

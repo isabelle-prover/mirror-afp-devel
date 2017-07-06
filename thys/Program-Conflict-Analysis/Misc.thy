@@ -6,7 +6,7 @@
 section {* Miscellanneous Definitions and Lemmas *}
 
 theory Misc
-imports Main "~~/src/HOL/Library/Multiset" "~~/src/HOL/Library/Sublist_Order"
+imports Main "~~/src/HOL/Library/Multiset" "~~/src/HOL/Library/Subseq_Order"
 begin
 text_raw {*\label{thy:Misc}*}
 

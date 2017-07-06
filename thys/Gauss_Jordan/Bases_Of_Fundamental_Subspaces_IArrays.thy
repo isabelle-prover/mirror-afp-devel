@@ -141,8 +141,8 @@ have not_zero_i: "\<not> is_zero_row (from_nat i) (Gauss_Jordan A)"
  show "reduced_row_echelon_form_upt_k (Gauss_Jordan A) (ncols (Gauss_Jordan A))" by (metis rref_Gauss_Jordan rref_implies_rref_upt)
  have A_not_0: "A \<noteq> 0" using i_less_rank by (metis less_nat_zero_code rank_0)
  hence Gauss_not_0: "Gauss_Jordan A \<noteq> 0" by (metis Gauss_Jordan_not_0)
-have "i \<le> to_nat (GREATEST' a. \<not> is_zero_row a (Gauss_Jordan A))" using i_less_rank unfolding rank_eq_suc_to_nat_greatest[OF A_not_0] by auto
-thus "from_nat i \<le> (GREATEST' m. \<not> is_zero_row_upt_k m (ncols (Gauss_Jordan A)) (Gauss_Jordan A))" unfolding is_zero_row_def[symmetric] by (metis leD not_le_imp_less to_nat_le)
+have "i \<le> to_nat (GREATEST a. \<not> is_zero_row a (Gauss_Jordan A))" using i_less_rank unfolding rank_eq_suc_to_nat_greatest[OF A_not_0] by auto
+thus "from_nat i \<le> (GREATEST m. \<not> is_zero_row_upt_k m (ncols (Gauss_Jordan A)) (Gauss_Jordan A))" unfolding is_zero_row_def[symmetric] by (metis leD not_le_imp_less to_nat_le)
  show "\<not> (\<forall>a. is_zero_row_upt_k a (ncols (Gauss_Jordan A)) (Gauss_Jordan A))" using Gauss_not_0 unfolding is_zero_row_def[symmetric] is_zero_row_def' by (metis vec_eq_iff zero_index)
 qed 
 have i_less_card: "i<CARD('rows)" using i_less_rank rank_le_nrows[of A] unfolding nrows_def by simp

@@ -349,6 +349,7 @@ begin
         dest!: sym[of "pop A" for A]
         simp: pE_fin'[OF invar_from_cscc_invarI] finite_V0
       )
+      apply auto
       done
   qed
 
@@ -366,7 +367,7 @@ begin
         rec: cscc_invarI cscc_outer_invarI solve: cscc_invar_preserve cscc_finI
         intro: invar_from_cscc_invarI outer_invar_from_cscc_invarI
         dest!: sym[of "pop A" for A]
-        simp: pE_fin'[OF invar_from_cscc_invarI] finite_V0)
+        simp: pE_fin'[OF invar_from_cscc_invarI] finite_V0, auto)
   end
 
 end
@@ -534,6 +535,7 @@ begin
         inj_on_id
       )
 
+      apply refine_dref_type
       apply (vc_solve (nopre) solve: asm_rl I_to_outer
         simp: GS_rel_def br_def GS.\<alpha>_def oGS_rel_def oGS_\<alpha>_def 
         is_on_stack_refine path_is_empty_refine is_done_refine is_done_orefine

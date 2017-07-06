@@ -46,7 +46,7 @@ definition rm_basic_ops :: "('k::linorder,'v,('k,'v) rm) omap_basic_ops"
 setup Locale_Code.open_block
 interpretation rm_basic: StdBasicOMap rm_basic_ops
   apply unfold_locales
-  apply (simp_all add: rm_basic_ops_def)
+  apply (simp_all add: rm_basic_ops_def map_upd_eq_restrict)
   apply (rule map_iterator_linord_is_it)
   apply dup_subgoals
   unfolding RBT.lookup_def

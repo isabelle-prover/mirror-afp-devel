@@ -55,7 +55,7 @@ definition kronecker_factorization_rat :: "rat poly \<Rightarrow> rat poly optio
 
 subsection \<open>Code setup for divisors\<close>
 
-definition "divisors_nat_copy n \<equiv> if n = 0 then [] else remdups_adj (sort (map prod_list (sublists (prime_factorization_nat n))))"
+definition "divisors_nat_copy n \<equiv> if n = 0 then [] else remdups_adj (sort (map prod_list (subseqs (prime_factorization_nat n))))"
 
 lemma divisors_nat_copy[simp]: "divisors_nat_copy = divisors_nat" 
   unfolding divisors_nat_def[abs_def] divisors_nat_copy_def[abs_def] ..

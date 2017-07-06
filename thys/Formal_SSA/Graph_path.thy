@@ -566,7 +566,7 @@ begin
     proof (rule that[OF _ _ _ 2(1) 1(2) 4 3(2)])
       show "ns = ns\<^sub>1 @ (ns\<^sub>3 @ [x]) @ ns\<^sub>2" using 1(1) 3(1) by simp
       show "prefix (ns\<^sub>1@[x]) ns" using 1 by auto
-      show "suffix (x#ns\<^sub>2) ns" using 1 3 by (metis Sublist.suffix_def suffix_trans)
+      show "suffix (x#ns\<^sub>2) ns" using 1 3 by (metis Sublist.suffix_def suffix_order.order_trans)
     qed
   qed
 

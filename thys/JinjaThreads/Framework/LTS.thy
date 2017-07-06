@@ -503,14 +503,14 @@ qed
 
 lemma inf_step_into_\<tau>inf_step:
   assumes "s -tls\<rightarrow>* \<infinity>"
-  shows "\<exists>A. s -\<tau>-lsublist tls A\<rightarrow>* \<infinity>"
+  shows "\<exists>A. s -\<tau>-lnths tls A\<rightarrow>* \<infinity>"
 proof -
   from inf_step_imp_inf_step_table[OF assms]
   obtain stls where "s -stls\<rightarrow>*t \<infinity>" and tls: "tls = lmap (fst \<circ> snd) stls" by blast
   from `s -stls\<rightarrow>*t \<infinity>` have "s -\<tau>-lmap (fst \<circ> snd) (lfilter (\<lambda>(s, tl, s'). \<not> \<tau>move s tl s') stls)\<rightarrow>* \<infinity>"
     by(rule inf_step_table_into_\<tau>inf_step)
-  hence "s -\<tau>-lsublist tls {n. enat n < llength stls \<and> (\<lambda>(s, tl, s'). \<not> \<tau>move s tl s') (lnth stls n)}\<rightarrow>* \<infinity>"
-    unfolding lfilter_conv_lsublist tls by simp
+  hence "s -\<tau>-lnths tls {n. enat n < llength stls \<and> (\<lambda>(s, tl, s'). \<not> \<tau>move s tl s') (lnth stls n)}\<rightarrow>* \<infinity>"
+    unfolding lfilter_conv_lnths tls by simp
   thus ?thesis by blast
 qed
 

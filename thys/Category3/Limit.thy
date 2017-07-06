@@ -130,10 +130,6 @@ begin
             by (metis Cop.ideD(1) S.inverse_arrows_def \<Phi>'.preserves_cod \<Phi>.preserves_cod
                       \<Psi>'.is_natural_transformation category.inverse_arrows_compose
                       natural_transformation_def)
-          show "S.antipar (\<Phi>\<Psi>'.map x) (\<Phi>'\<Psi>.map x)"
-            using X 1 2
-            by (metis Cop.ideD \<Phi>'\<Psi>.preserves_cod
-                      \<Phi>'\<Psi>.preserves_dom \<Phi>\<Psi>'.preserves_cod \<Phi>\<Psi>'.preserves_dom)
         qed
       qed
 
@@ -147,7 +143,7 @@ begin
         show ?thesis
         proof (intro Cop_S.inverse_arrowsI)
           have 0: "inverse_transformations Cop.comp S (Y a) (Y a') \<Phi>\<Psi>'.map \<Phi>'\<Psi>.map" ..
-          show 1: "Cop_S.antipar (Cop_S.mkArr (Y a) (Y a') \<Phi>\<Psi>'.map)
+          have 1: "Cop_S.antipar (Cop_S.mkArr (Y a) (Y a') \<Phi>\<Psi>'.map)
                                  (Cop_S.mkArr (Y a') (Y a) \<Phi>'\<Psi>.map)"
             using Ya Ya' \<Phi>\<Psi>' \<Phi>'\<Psi> Cop_S.dom_simp Cop_S.cod_simp by auto
           show "Cop_S.ide (Cop_S.comp (Cop_S.mkArr (Y a) (Y a') \<Phi>\<Psi>'.map)
@@ -1389,13 +1385,11 @@ begin
         using assms(2) isomorphic_categories_def isomorphic_categories_axioms_def by auto
       interpret J': category J'
         using assms(2) isomorphic_categories_def isomorphic_categories_axioms_def by auto
-      interpret iJ: identity_functor J ..
-      interpret iJ': identity_functor J' ..
       from assms(2) obtain \<phi> \<psi> where IF: "inverse_functors J J' \<phi> \<psi>"
         using isomorphic_categories_def isomorphic_categories_axioms_def by blast
       interpret IF: inverse_functors J J' \<phi> \<psi> using IF by auto
-      have \<psi>\<phi>: "\<psi> o \<phi> = iJ.map" using IF.inv by metis
-      have \<phi>\<psi>: "\<phi> o \<psi> = iJ'.map" using IF.inv' by metis
+      have \<psi>\<phi>: "\<psi> o \<phi> = J.map" using IF.inv by metis
+      have \<phi>\<psi>: "\<phi> o \<psi> = J'.map" using IF.inv' by metis
       have "\<And>D'. diagram J' C D' \<Longrightarrow> \<exists>a \<chi>. limit_cone J' C D' a \<chi>"
       proof -
         fix D'
@@ -1446,7 +1440,7 @@ begin
                 also have "... = (\<chi>' o \<phi>) (\<psi> j')"
                   using j' f \<chi> by metis
                 also have "... = \<chi>' j'"
-                  using j' \<phi>\<psi> by (metis Fun.comp_def iJ'.map_simp)
+                  using j' \<phi>\<psi> by (metis Fun.comp_def J'.map_simp)
                 finally show "D'.cones_map ?f (\<chi> o \<psi>) j' = \<chi>' j'" by auto
               qed
               ultimately show "D'.cones_map ?f (\<chi> o \<psi>) j' = \<chi>' j'" by blast
@@ -1465,7 +1459,7 @@ begin
                 have "D.cones_map f' \<chi> j = C (\<chi> j) f'"
                   using j f' \<chi>.cone_\<chi> by auto
                 also have "... = C ((\<chi> o \<psi>) (\<phi> j)) f'"
-                  using j f' \<psi>\<phi> by (metis comp_apply iJ.map_simp)
+                  using j f' \<psi>\<phi> by (metis comp_apply J.map_simp)
                 also have "... = D'.cones_map f' (\<chi> o \<psi>) (\<phi> j)"
                   using j f' \<chi>o\<psi> by simp
                 also have "... = (\<chi>' o \<phi>) j"
@@ -1610,7 +1604,7 @@ begin
     proof -
       interpret \<delta>: natural_transformation J C "J_C.Fun d" "J_C.Fun d" "J_C.Fun d"
         using assms J_C.ide_char [of d] J_C.arr_mkArr [of "J_C.Fun d" "J_C.Fun d" "J_C.Fun d"]
-              J_C.Dom_ide J_C.mkArr_def
+              J_C.mkArr_def
         by fastforce
       interpret D: "functor" J C "J_C.Fun d" ..
       show "diagram J C (J_C.Fun d)" ..
@@ -2461,16 +2455,16 @@ begin
     J: category J +
     C: category C +
     D: discrete_diagram J C D +
-    limit_cone J C D a "D.mkCone P"
+    limit_cone J C D a \<pi>
   for J :: "'j comp"
   and C :: "'c comp"
   and D :: "'j \<Rightarrow> 'c"
   and a :: 'c
-  and P :: "'j \<Rightarrow> 'c"
+  and \<pi> :: "'j \<Rightarrow> 'c"
   begin
 
     lemma is_cone:
-    shows "D.cone a (D.mkCone P)" ..
+    shows "D.cone a \<pi>" ..
 
     text{*
       The following versions of @{prop is_universal} and @{prop induced_arrowI}
@@ -2480,7 +2474,7 @@ begin
 
     lemma is_universal':
     assumes "C.ide b" and "\<And>j. J.arr j \<Longrightarrow> F j \<in> C.hom b (D j)"
-    shows "\<exists>!f. f \<in> C.hom b a \<and> (\<forall>j. J.arr j \<longrightarrow> C (D.mkCone P j) f = F j)"
+    shows "\<exists>!f. f \<in> C.hom b a \<and> (\<forall>j. J.arr j \<longrightarrow> C (\<pi> j) f = F j)"
     proof -
       let ?\<chi> = "D.mkCone F"
       interpret B: constant_functor J C b
@@ -2490,64 +2484,66 @@ begin
         apply unfold_locales
         using assms(1) D.is_discrete by auto
       interpret \<chi>: cone J C D b ?\<chi> using cone_\<chi> by auto
-      have "\<exists>!f. f \<in> C.hom b a \<and> D.cones_map f (D.mkCone P) = ?\<chi>"
+      have "\<exists>!f. f \<in> C.hom b a \<and> D.cones_map f \<pi> = ?\<chi>"
         using cone_\<chi> is_universal by presburger
       moreover have
            "\<And>f. f \<in> C.hom b a \<Longrightarrow>
-                  D.cones_map f (D.mkCone P) = ?\<chi> \<longleftrightarrow>
-                    (\<forall>j. J.arr j \<longrightarrow> C (D.mkCone P j) f = F j)"
+                  D.cones_map f \<pi> = ?\<chi> \<longleftrightarrow>
+                    (\<forall>j. J.arr j \<longrightarrow> C (\<pi> j) f = F j)"
       proof -
         fix f
         assume f: "f \<in> C.hom b a"
-        show "D.cones_map f (D.mkCone P) = ?\<chi> \<longleftrightarrow> 
-                (\<forall>j. J.arr j \<longrightarrow> C (D.mkCone P j) f = F j)"
+        show "D.cones_map f \<pi> = ?\<chi> \<longleftrightarrow> 
+                (\<forall>j. J.arr j \<longrightarrow> C (\<pi> j) f = F j)"
         proof
-          assume 1: "D.cones_map f (D.mkCone P) = ?\<chi>"
-          show "\<forall>j. J.arr j \<longrightarrow> C (D.mkCone P j) f = F j"
+          assume 1: "D.cones_map f \<pi> = ?\<chi>"
+          show "\<forall>j. J.arr j \<longrightarrow> C (\<pi> j) f = F j"
          proof -
-            have "\<And>j. J.arr j \<Longrightarrow> C (D.mkCone P j) f = F j"
+            have "\<And>j. J.arr j \<Longrightarrow> C (\<pi> j) f = F j"
             proof -
               fix j
               assume j: "J.arr j"
-              have "C (D.mkCone P j) f = D.cones_map f (D.mkCone P) j"
+              have "C (\<pi> j) f = D.cones_map f \<pi> j"
                 using j f cone_axioms by simp
               also have "... = ?\<chi> j" using 1 by presburger
               also have "... = F j" using j by simp
-              finally show "C (D.mkCone P j) f = F j" by auto
+              finally show "C (\<pi> j) f = F j" by auto
             qed
             thus ?thesis by auto
           qed
           next
-          assume 1: "\<forall>j. J.arr j \<longrightarrow> C (D.mkCone P j) f = F j"
-          show "D.cones_map f (D.mkCone P) = ?\<chi>"
+          assume 1: "\<forall>j. J.arr j \<longrightarrow> C (\<pi> j) f = F j"
+          show "D.cones_map f \<pi> = ?\<chi>"
             using 1 f is_cone \<chi>.is_extensional D.is_discrete is_cone cone_\<chi> by auto
         qed
       qed
       ultimately show ?thesis by blast
     qed
 
+    abbreviation induced_arrow' :: "'c \<Rightarrow> ('j \<Rightarrow> 'c) \<Rightarrow> 'c"
+    where "induced_arrow' b F \<equiv> induced_arrow b (D.mkCone F)"
+
     lemma induced_arrowI':
     assumes "C.ide b" and "\<And>j. J.arr j \<Longrightarrow> F j \<in> C.hom b (D j)"
-    shows "\<And>j. J.arr j \<Longrightarrow> C (D.mkCone P j) (induced_arrow b (D.mkCone F)) = F j"
+    shows "\<And>j. J.arr j \<Longrightarrow> C (\<pi> j) (induced_arrow' b F) = F j"
     proof -
       interpret B: constant_functor J C b
         apply unfold_locales using assms(1) by auto
       interpret \<chi>: cone J C D b "D.mkCone F"
         using assms D.cone_mkCone by blast
       have cone_\<chi>: "D.cone b (D.mkCone F)" ..
-      hence 1: "D.cones_map (induced_arrow b (D.mkCone F)) (D.mkCone P) = D.mkCone F"
+      hence 1: "D.cones_map (induced_arrow' b F) \<pi> = D.mkCone F"
         using induced_arrowI by blast
       fix j
       assume j: "J.arr j"
-      have "C (D.mkCone P j) (induced_arrow b (D.mkCone F))
-              = D.cones_map (induced_arrow b (D.mkCone F)) (D.mkCone P) j"
+      have "C (\<pi> j) (induced_arrow b (D.mkCone F)) = D.cones_map (induced_arrow' b F) \<pi> j"
         using assms(1) j cone_\<chi> is_cone induced_arrowI [of "D.mkCone F" b] restrict_apply
         by simp
       also have "... = D.mkCone F j"
         using 1 by simp
       also have "... = F j"
         using j by auto
-      finally show "C (D.mkCone P j) (induced_arrow b (D.mkCone F)) = F j"
+      finally show "C (\<pi> j) (induced_arrow' b F) = F j"
         by auto
     qed
 
@@ -2562,10 +2558,7 @@ begin
     proof -
       interpret L: limit_cone J C D a \<pi>
         using assms by auto
-      have 1: "cone a \<pi>" ..
-      show "product_cone J C D a \<pi>"
-        apply unfold_locales
-        using 1 L.is_natural_2 L.ide_apex L.is_universal mkCone_cone by auto
+      show "product_cone J C D a \<pi>" ..
     qed
 
   end
@@ -2574,7 +2567,7 @@ begin
   begin
 
     definition has_as_product
-    where "has_as_product J D a \<equiv> (\<exists>P. product_cone J C D a P)"
+    where "has_as_product J D a \<equiv> (\<exists>\<pi>. product_cone J C D a \<pi>)"
 
     text{*
       A category has @{term I}-indexed products for an @{typ 'i}-set @{term I}
@@ -2594,7 +2587,7 @@ begin
 
     lemma ex_productE:
     assumes "\<exists>a. has_as_product J D a"
-    obtains a P where "product_cone J C D a P"
+    obtains a \<pi> where "product_cone J C D a \<pi>"
       using assms has_as_product_def someI_ex [of "\<lambda>a. has_as_product J D a"] by metis
 
     lemma has_products_if_has_limits:
@@ -2610,11 +2603,11 @@ begin
         interpret D: diagram J.comp C D using D by auto
         interpret D: discrete_diagram J.comp C D
           apply unfold_locales using J.is_discrete by auto
-        obtain a \<chi> where \<chi>: "D.limit_cone a \<chi>"
+        obtain a \<pi> where \<pi>: "D.limit_cone a \<pi>"
           using assms(1) has_limits_def has_limits_of_shape_def [of J.comp] D J.is_category
           by metis
-        have "product_cone J.comp C D a \<chi>"
-          using \<chi> D.product_coneI by auto
+        have "product_cone J.comp C D a \<pi>"
+          using \<pi> D.product_coneI by auto
         hence "has_as_product J.comp D a"
           using has_as_product_def by blast
         thus "\<exists>a. has_as_product J.comp D a"
@@ -2981,12 +2974,11 @@ begin
           apply unfold_locales using D.preserves_ide by auto
         have "\<exists>p. has_as_product Obj.comp \<Delta>o.map p"
           using assms(2) \<Delta>o.diagram_axioms has_products_def [of "Collect J.ide"] by metis
-        from this obtain \<Pi>o Po where Po: "product_cone Obj.comp C \<Delta>o.map \<Pi>o Po"
+        from this obtain \<Pi>o \<pi>o where \<pi>o: "product_cone Obj.comp C \<Delta>o.map \<Pi>o \<pi>o"
            using ex_productE [of Obj.comp \<Delta>o.map] by auto
-        interpret Po: product_cone Obj.comp C \<Delta>o.map \<Pi>o Po using Po by auto
-        let ?\<pi>o = "\<Delta>o.mkCone Po"
-        have \<pi>o: "\<And>j. Obj.arr j \<Longrightarrow> ?\<pi>o j \<in> hom \<Pi>o (D j)"
-          using Po.preserves_arr Po.preserves_cod Po.preserves_dom \<Delta>o.map_def by auto
+        interpret \<pi>o: product_cone Obj.comp C \<Delta>o.map \<Pi>o \<pi>o using \<pi>o by auto
+        have \<pi>o_in_hom: "\<And>j. Obj.arr j \<Longrightarrow> \<pi>o j \<in> hom \<Pi>o (D j)"
+          using \<pi>o.preserves_arr \<pi>o.preserves_dom \<pi>o.preserves_cod \<Delta>o.map_def by auto
 
         interpret Arr: DiscreteCategory.discrete_category "Collect J.arr"
           apply unfold_locales using J.not_arr_null by auto
@@ -2996,61 +2988,56 @@ begin
         hence "\<exists>p. has_as_product Arr.comp \<Delta>a.map p"
           using assms(3) has_products_def [of "Collect J.arr"]
           by (simp add: discrete_diagram_def subsetI)
-        from this obtain \<Pi>a Pa where Pa: "product_cone Arr.comp C \<Delta>a.map \<Pi>a Pa"
+        from this obtain \<Pi>a \<pi>a where \<pi>a: "product_cone Arr.comp C \<Delta>a.map \<Pi>a \<pi>a"
           using ex_productE [of Arr.comp \<Delta>a.map] by auto
-        interpret Pa: product_cone Arr.comp C \<Delta>a.map \<Pi>a Pa using Pa by auto
-        let ?\<pi>a = "\<Delta>a.mkCone Pa"
-        have \<pi>a: "\<And>j. Arr.arr j \<Longrightarrow> ?\<pi>a j \<in> hom \<Pi>a (D (J.cod j))"
-          using Pa.preserves_arr Pa.preserves_cod Pa.preserves_dom \<Delta>a.map_def by auto
+        interpret \<pi>a: product_cone Arr.comp C \<Delta>a.map \<Pi>a \<pi>a using \<pi>a by auto
+        have \<pi>a_in_hom: "\<And>j. Arr.arr j \<Longrightarrow> \<pi>a j \<in> hom \<Pi>a (D (J.cod j))"
+          using \<pi>a.preserves_arr \<pi>a.preserves_cod \<pi>a.preserves_dom \<Delta>a.map_def by auto
 
         text{*
            Next, construct a parallel pair of arrows @{text "f, g: \<Pi>o \<rightarrow> \<Pi>a"}
            that expresses the commutativity constraints imposed by the diagram.
         *}
         interpret \<Pi>o: constant_functor Arr.comp C \<Pi>o
-          apply unfold_locales using Po.ide_apex by auto
-        let ?\<chi> = "\<lambda>j. if Arr.arr j then ?\<pi>o (J.cod j) else null"
+          apply unfold_locales using \<pi>o.ide_apex by auto
+        let ?\<chi> = "\<lambda>j. if Arr.arr j then \<pi>o (J.cod j) else null"
         interpret \<chi>: cone Arr.comp C \<Delta>a.map \<Pi>o ?\<chi>
           apply unfold_locales
-          using Po.ide_apex Po.preserves_dom Po.preserves_cod \<Delta>a.map_def \<Delta>o.map_def
-                \<Delta>o.is_discrete
-          by auto
-        let ?f = "Pa.induced_arrow \<Pi>o ?\<chi>"
-        have f: "?f \<in> hom \<Pi>o \<Pi>a \<and> \<Delta>a.cones_map ?f ?\<pi>a = ?\<chi>"
-          using \<chi>.cone_axioms Pa.induced_arrowI by blast
-        have ff: "\<And>j. J.arr j \<Longrightarrow> C (?\<pi>a j) ?f = ?\<pi>o (J.cod j)"
+          using \<pi>o.ide_apex \<pi>o_in_hom \<Delta>a.map_def \<Delta>o.map_def \<Delta>o.is_discrete by auto
+        let ?f = "\<pi>a.induced_arrow \<Pi>o ?\<chi>"
+        have f: "?f \<in> hom \<Pi>o \<Pi>a \<and> \<Delta>a.cones_map ?f \<pi>a = ?\<chi>"
+          using \<chi>.cone_axioms \<pi>a.induced_arrowI by blast
+        have ff: "\<And>j. J.arr j \<Longrightarrow> C (\<pi>a j) ?f = \<pi>o (J.cod j)"
         proof -
           fix j
           assume j: "J.arr j"
-          have "C (?\<pi>a j) ?f = \<Delta>a.cones_map ?f ?\<pi>a j"
-            using f j Pa.cone_axioms by simp
+          have "C (\<pi>a j) ?f = \<Delta>a.cones_map ?f \<pi>a j"
+            using f j \<pi>a.cone_axioms by simp
           also have "... = ?\<chi> j"
             using f j by presburger
-          also have "... = ?\<pi>o (J.cod j)"
+          also have "... = \<pi>o (J.cod j)"
             using j by fastforce
-          finally show "C (?\<pi>a j) ?f = ?\<pi>o (J.cod j)" by auto
+          finally show "C (\<pi>a j) ?f = \<pi>o (J.cod j)" by auto
         qed
 
-        let ?\<chi>' = "\<lambda>j. if Arr.arr j then C (D j) (?\<pi>o (J.dom j)) else null"
+        let ?\<chi>' = "\<lambda>j. if Arr.arr j then C (D j) (\<pi>o (J.dom j)) else null"
         interpret \<chi>': cone Arr.comp C \<Delta>a.map \<Pi>o ?\<chi>'
           apply unfold_locales
-          using Po.ide_apex Po.preserves_arr Po.preserves_cod Po.preserves_dom \<Delta>o.map_def
-                \<Delta>a.map_def
-          by auto
-        let ?g = "Pa.induced_arrow \<Pi>o ?\<chi>'"
-        have g: "?g \<in> hom \<Pi>o \<Pi>a \<and> \<Delta>a.cones_map ?g ?\<pi>a = ?\<chi>'"
-          using \<chi>'.cone_axioms Pa.induced_arrowI by blast
-        have gg: "\<And>j. J.arr j \<Longrightarrow> C (?\<pi>a j) ?g = C (D j) (?\<pi>o (J.dom j))"
+          using \<pi>o.ide_apex \<pi>o_in_hom \<Delta>o.map_def \<Delta>a.map_def by auto
+        let ?g = "\<pi>a.induced_arrow \<Pi>o ?\<chi>'"
+        have g: "?g \<in> hom \<Pi>o \<Pi>a \<and> \<Delta>a.cones_map ?g \<pi>a = ?\<chi>'"
+          using \<chi>'.cone_axioms \<pi>a.induced_arrowI by blast
+        have gg: "\<And>j. J.arr j \<Longrightarrow> C (\<pi>a j) ?g = C (D j) (\<pi>o (J.dom j))"
         proof -
           fix j
           assume j: "J.arr j"
-          have "C (?\<pi>a j) ?g = \<Delta>a.cones_map ?g ?\<pi>a j"
-            using g j Pa.cone_axioms by simp
+          have "C (\<pi>a j) ?g = \<Delta>a.cones_map ?g \<pi>a j"
+            using g j \<pi>a.cone_axioms by simp
           also have "... = ?\<chi>' j"
             using g j by presburger
-          also have "... = C (D j) (?\<pi>o (J.dom j))"
+          also have "... = C (D j) (\<pi>o (J.dom j))"
             using j by fastforce
-          finally show "C (?\<pi>a j) ?g = C (D j) (?\<pi>o (J.dom j))" by auto
+          finally show "C (\<pi>a j) ?g = C (D j) (\<pi>o (J.dom j))" by auto
         qed
 
         interpret PP: parallel_pair_diagram C ?f ?g
@@ -3083,16 +3070,16 @@ begin
             proof -
               fix j
               assume j: "J.arr j"
-              have "C (?\<chi> j) h = C (\<Delta>a.cones_map ?f ?\<pi>a j) h"
+              have "C (?\<chi> j) h = C (\<Delta>a.cones_map ?f \<pi>a j) h"
                 using j f by presburger
-              also have "... = C (?\<pi>a j) (C ?f h)"
-                using j f h \<pi>a Pa.cone_axioms \<Delta>a.map_def \<Delta>a.preserves_ide Pa.cone_\<chi> ideD(1)
+              also have "... = C (\<pi>a j) (C ?f h)"
+                using j f h \<pi>a \<pi>a.cone_axioms \<Delta>a.map_def \<Delta>a.preserves_ide \<pi>a.cone_\<chi> ideD(1)
                       mem_Collect_eq not_arr_null restrict_apply
                 by auto
-              also have "... = C (?\<pi>a j) (C ?g h)"
+              also have "... = C (\<pi>a j) (C ?g h)"
                 using j E by simp
-              also have "... = C (\<Delta>a.cones_map ?g ?\<pi>a j) h"
-                using j g h \<pi>a Pa.cone_axioms \<Delta>a.map_def \<Delta>a.preserves_ide Pa.cone_\<chi> ideD(1)
+              also have "... = C (\<Delta>a.cones_map ?g \<pi>a j) h"
+                using j g h \<pi>a \<pi>a.cone_axioms \<Delta>a.map_def \<Delta>a.preserves_ide \<pi>a.cone_\<chi> ideD(1)
                       mem_Collect_eq not_arr_null restrict_apply
                 by auto
               also have "... = C (?\<chi>' j) h"
@@ -3104,46 +3091,46 @@ begin
           show "\<forall>j. J.arr j \<longrightarrow> C (?\<chi> j) h = C (?\<chi>' j) h \<Longrightarrow> C ?f h = C ?g h"
           proof -
             assume 1: "\<forall>j. J.arr j \<longrightarrow> C (?\<chi> j) h = C (?\<chi>' j) h"
-            have 2: "\<And>j. j \<in> Collect J.arr \<Longrightarrow> C (?\<pi>a j) (C ?f h) = C (?\<pi>a j) (C ?g h)"
+            have 2: "\<And>j. j \<in> Collect J.arr \<Longrightarrow> C (\<pi>a j) (C ?f h) = C (\<pi>a j) (C ?g h)"
             proof -
               fix j
               assume j: "j \<in> Collect J.arr"
-              have "C (?\<pi>a j) (C ?f h) = C (C (?\<pi>a j) ?f) h"
+              have "C (\<pi>a j) (C ?f h) = C (C (\<pi>a j) ?f) h"
                 using j f h \<pi>a by simp
               also have "... = C (?\<chi> j) h"
               proof -
-                have "C (?\<pi>a j) ?f = \<Delta>a.cones_map ?f ?\<pi>a j"
-                  using j f Pa.cone_axioms \<Delta>a.map_def \<Delta>a.preserves_ide Pa.cone_\<chi> ideD(1)
+                have "C (\<pi>a j) ?f = \<Delta>a.cones_map ?f \<pi>a j"
+                  using j f \<pi>a.cone_axioms \<Delta>a.map_def \<Delta>a.preserves_ide \<pi>a.cone_\<chi> ideD(1)
                         mem_Collect_eq not_arr_null restrict_apply
                   by auto
                 thus ?thesis using f by presburger
               qed
               also have "... = C (?\<chi>' j) h"
                 using 1 j by auto
-              also have "... = C (C (?\<pi>a j) ?g) h"
+              also have "... = C (C (\<pi>a j) ?g) h"
               proof -
-                have "C (?\<pi>a j) ?g = \<Delta>a.cones_map ?g ?\<pi>a j"
-                  using j g Pa.cone_axioms \<Delta>a.map_def \<Delta>a.preserves_ide Pa.cone_\<chi> ideD(1)
+                have "C (\<pi>a j) ?g = \<Delta>a.cones_map ?g \<pi>a j"
+                  using j g \<pi>a.cone_axioms \<Delta>a.map_def \<Delta>a.preserves_ide \<pi>a.cone_\<chi> ideD(1)
                         mem_Collect_eq not_arr_null restrict_apply
                   by auto
                 thus ?thesis using g by presburger
               qed
-              also have "... = C (?\<pi>a j) (C ?g h)"
+              also have "... = C (\<pi>a j) (C ?g h)"
                 using j g h \<pi>a by simp
-              finally show "C (?\<pi>a j) (C ?f h) = C (?\<pi>a j) (C ?g h)"
+              finally show "C (\<pi>a j) (C ?f h) = C (\<pi>a j) (C ?g h)"
                 by auto
             qed
             show "C ?f h = C ?g h"
             proof -
-              have "\<And>j. j \<in> Collect J.arr \<Longrightarrow> C (?\<pi>a j) (C ?f h) \<in> hom (dom h) ((D o J.cod) j)"
-                using f h \<pi>a by simp
+              have "\<And>j. j \<in> Collect J.arr \<Longrightarrow> C (\<pi>a j) (C ?f h) \<in> hom (dom h) ((D o J.cod) j)"
+                using f h \<pi>a_in_hom by simp
               hence 3: "\<exists>!k. k \<in> hom (dom h) \<Pi>a \<and>
-                             (\<forall>j. j \<in> Collect J.arr \<longrightarrow> C (?\<pi>a j) k = C (?\<pi>a j) (C ?f h))"
-                using h \<pi>a Pa.is_universal' [of "dom h" "\<lambda>j. C (?\<pi>a j) (C ?f h)"] \<Delta>a.map_def
+                             (\<forall>j. j \<in> Collect J.arr \<longrightarrow> C (\<pi>a j) k = C (\<pi>a j) (C ?f h))"
+                using h \<pi>a \<pi>a.is_universal' [of "dom h" "\<lambda>j. C (\<pi>a j) (C ?f h)"] \<Delta>a.map_def
                 by simp
               have 4: "\<And>P x x'. \<exists>!k. P k x \<Longrightarrow> P x x \<Longrightarrow> P x' x \<Longrightarrow> x' = x" by auto
               let ?P = "\<lambda> k x. k \<in> hom (dom h) \<Pi>a \<and>
-                                   (\<forall>j. j \<in> Collect J.arr \<longrightarrow> C (?\<pi>a j) k = C (?\<pi>a j) x)"
+                                   (\<forall>j. j \<in> Collect J.arr \<longrightarrow> C (\<pi>a j) k = C (\<pi>a j) x)"
               have "?P (C ?g h) (C ?g h)" using g h by force
               moreover have "?P (C ?f h) (C ?g h)" using 2 f g h by force
               ultimately show ?thesis using 3 4 [of ?P "C ?f h" "C ?g h"] by presburger
@@ -3153,20 +3140,20 @@ begin
         have E': "\<And>e. e \<in> hom (dom e) \<Pi>o \<Longrightarrow>
                    C ?f e = C ?g e \<longleftrightarrow>
                      (\<forall>j. J.arr j \<longrightarrow>
-                           C (C (D (J.cod j)) (C (?\<pi>o (J.cod j)) e)) (dom e)
-                              = C (D j) (C (?\<pi>o (J.dom j)) e))"
+                           C (C (D (J.cod j)) (C (\<pi>o (J.cod j)) e)) (dom e)
+                              = C (D j) (C (\<pi>o (J.dom j)) e))"
         proof -
           have 1: "\<And>e j. e \<in> hom (dom e) \<Pi>o \<Longrightarrow> J.arr j \<Longrightarrow>
-                           C (?\<chi> j) e = C (C (D (J.cod j)) (C (?\<pi>o (J.cod j)) e)) (dom e)"
-              using f D.preserves_ide \<pi>o by auto
+                           C (?\<chi> j) e = C (C (D (J.cod j)) (C (\<pi>o (J.cod j)) e)) (dom e)"
+              using f D.preserves_ide \<pi>o_in_hom by auto
           have 2: "\<And>e j. e \<in> hom (dom e) \<Pi>o \<Longrightarrow> J.arr j \<Longrightarrow>
-                           C (?\<chi>' j) e = C (D j) (C (?\<pi>o (J.dom j)) e)"
-              using g \<pi>o by simp
+                           C (?\<chi>' j) e = C (D j) (C (\<pi>o (J.dom j)) e)"
+              using g \<pi>o_in_hom by simp
           show "\<And>e. e \<in> hom (dom e) \<Pi>o \<Longrightarrow>
                    C ?f e = C ?g e \<longleftrightarrow>
                      (\<forall>j. J.arr j \<longrightarrow>
-                           C (C (D (J.cod j)) (C (?\<pi>o (J.cod j)) e)) (dom e)
-                              = C (D j) (C (?\<pi>o (J.dom j)) e))"
+                           C (C (D (J.cod j)) (C (\<pi>o (J.cod j)) e)) (dom e)
+                              = C (D j) (C (\<pi>o (J.dom j)) e))"
             using 1 2 E by presburger
         qed
         text{*
@@ -3180,9 +3167,9 @@ begin
           using f EQU.equalizes by simp
         interpret domE: constant_functor J C "dom e"
           apply unfold_locales using e by simp
-        let ?\<mu> = "\<lambda>j. if J.arr j then C (D j) (C (?\<pi>o (J.dom j)) e) else null"
+        let ?\<mu> = "\<lambda>j. if J.arr j then C (D j) (C (\<pi>o (J.dom j)) e) else null"
         have \<mu>: "\<And>j. J.arr j \<Longrightarrow> ?\<mu> j \<in> hom (dom e) (D (J.cod j))"
-          using e \<pi>o by simp
+          using e \<pi>o_in_hom by simp
         interpret \<mu>: cone J C D "dom e" ?\<mu>
           apply unfold_locales
           (* 5 *) apply simp
@@ -3191,7 +3178,7 @@ begin
           assume j: "J.arr j"
           show "dom (?\<mu> j) = domE.map (J.dom j)" using j \<mu> domE.map_simp by force
           show "cod (?\<mu> j) = D (J.cod j)" using j \<mu> D.preserves_cod by simp
-          show "C (D j) (?\<mu> (J.dom j)) = ?\<mu> j" using j e \<pi>o D.preserves_hom by fastforce
+          show "C (D j) (?\<mu> (J.dom j)) = ?\<mu> j" using j e \<pi>o_in_hom D.preserves_hom by fastforce
           show "C (?\<mu> (J.cod j)) (domE.map j) = ?\<mu> j" using j e E' by auto
         qed
         text{*
@@ -3200,19 +3187,19 @@ begin
         *}
         have R: "\<And>a \<tau>. cone J C D a \<tau> \<Longrightarrow>
                         cone Obj.comp C \<Delta>o.map a (\<Delta>o.mkCone \<tau>) \<and>
-                        C ?f (Po.induced_arrow a (\<Delta>o.mkCone \<tau>))
-                           = C ?g (Po.induced_arrow a (\<Delta>o.mkCone \<tau>))"
+                        C ?f (\<pi>o.induced_arrow a (\<Delta>o.mkCone \<tau>))
+                           = C ?g (\<pi>o.induced_arrow a (\<Delta>o.mkCone \<tau>))"
         proof -
           fix a \<tau>
           assume cone_\<tau>: "cone J C D a \<tau>"
           interpret \<tau>: cone J C D a \<tau> using cone_\<tau> by auto
-          interpret constant_functor Obj.comp C a
+          interpret A: constant_functor Obj.comp C a
             apply unfold_locales using \<tau>.ide_apex by auto
           interpret \<tau>o: cone Obj.comp C \<Delta>o.map a "\<Delta>o.mkCone \<tau>"
             apply unfold_locales
-            (* 5 *) using value_is_ide apply simp_all
+            (* 5 *) using A.value_is_ide apply simp_all
             (* 2 *) using \<Delta>o.map_def by auto
-          let ?e = "Po.induced_arrow a (\<Delta>o.mkCone \<tau>)"
+          let ?e = "\<pi>o.induced_arrow a (\<Delta>o.mkCone \<tau>)"
           have mkCone_\<tau>: "\<Delta>o.mkCone \<tau> \<in> \<Delta>o.cones a"
           proof -
             have "\<And>j. Obj.arr j \<Longrightarrow> \<tau> j \<in> hom a (\<Delta>o.map j)"
@@ -3222,45 +3209,45 @@ begin
               using \<tau>.ide_apex \<Delta>o.cone_mkCone [of a \<tau>] by simp
           qed
           have e: "?e \<in> hom a \<Pi>o"
-            using mkCone_\<tau> Po.induced_arrowI [of "\<Delta>o.mkCone \<tau>" a] by simp
-          have ee: "\<And>j. J.ide j \<Longrightarrow> C (?\<pi>o j) ?e = \<tau> j"
+            using mkCone_\<tau> \<pi>o.induced_arrowI [of "\<Delta>o.mkCone \<tau>" a] by simp
+          have ee: "\<And>j. J.ide j \<Longrightarrow> C (\<pi>o j) ?e = \<tau> j"
           proof -
             fix j
             assume j: "J.ide j"
-            have "C (?\<pi>o j) ?e = \<Delta>o.cones_map ?e (\<Delta>o.mkCone Po) j"
-              using j e Po.cone_axioms by simp
+            have "C (\<pi>o j) ?e = \<Delta>o.cones_map ?e \<pi>o j"
+              using j e \<pi>o.cone_axioms by simp
             also have "... = \<Delta>o.mkCone \<tau> j"
-              using j mkCone_\<tau> Po.induced_arrowI [of "\<Delta>o.mkCone \<tau>" a] by fastforce
+              using j mkCone_\<tau> \<pi>o.induced_arrowI [of "\<Delta>o.mkCone \<tau>" a] by fastforce
             also have "... = \<tau> j"
               using j by simp
-            finally show "C (?\<pi>o j) ?e = \<tau> j" by auto
+            finally show "C (\<pi>o j) ?e = \<tau> j" by auto
           qed
-          have "\<And>j. J.arr j \<Longrightarrow> C (C (D (J.cod j)) (C (?\<pi>o (J.cod j)) ?e)) (dom ?e)
-                                   = C (D j) (C (?\<pi>o (J.dom j)) ?e)"
+          have "\<And>j. J.arr j \<Longrightarrow> C (C (D (J.cod j)) (C (\<pi>o (J.cod j)) ?e)) (dom ?e)
+                                   = C (D j) (C (\<pi>o (J.dom j)) ?e)"
           proof -
             fix j
             assume j: "J.arr j"
-            have 1: "?\<pi>o (J.cod j) \<in> hom \<Pi>o (D (J.cod j))" using j \<pi>o by simp
-            have "C (C (D (J.cod j)) (C (?\<pi>o (J.cod j)) ?e)) (dom ?e)
-                    = C (D (J.cod j)) (C (?\<pi>o (J.cod j)) ?e)"
+            have 1: "\<pi>o (J.cod j) \<in> hom \<Pi>o (D (J.cod j))" using j \<pi>o_in_hom by simp
+            have "C (C (D (J.cod j)) (C (\<pi>o (J.cod j)) ?e)) (dom ?e)
+                    = C (D (J.cod j)) (C (\<pi>o (J.cod j)) ?e)"
             proof -
               have "arr ?e" using e by blast
-              moreover have "seq (D (J.cod j)) (?\<pi>o (J.cod j))" using j e 1 by simp
-              moreover have "seq (?\<pi>o (J.cod j)) ?e" using j e 1 by blast
+              moreover have "seq (D (J.cod j)) (\<pi>o (J.cod j))" using j e 1 by simp
+              moreover have "seq (\<pi>o (J.cod j)) ?e" using j e 1 by blast
               ultimately show ?thesis by auto
             qed
-            also have "... = C (?\<pi>o (J.cod j)) ?e"
+            also have "... = C (\<pi>o (J.cod j)) ?e"
               using j e 1 D.preserves_ide [of "J.cod j"] by simp
-            also have "... = C (D j) (C (?\<pi>o (J.dom j)) ?e)"
+            also have "... = C (D j) (C (\<pi>o (J.dom j)) ?e)"
               using j ee \<tau>.is_natural_1 [of j] \<tau>.is_natural_2 [of j] \<tau>.A.map_simp [of j]
                     \<tau>.ide_apex
               by simp
-            finally show "C (C (D (J.cod j)) (C (?\<pi>o (J.cod j)) ?e)) (dom ?e)
-                            = C (D j) (C (?\<pi>o (J.dom j)) ?e)"
+            finally show "C (C (D (J.cod j)) (C (\<pi>o (J.cod j)) ?e)) (dom ?e)
+                            = C (D j) (C (\<pi>o (J.dom j)) ?e)"
               by auto
           qed
           hence "C ?f ?e = C ?g ?e"
-            using E' Po.induced_arrowI \<tau>o.cone_axioms mem_Collect_eq by blast
+            using E' \<pi>o.induced_arrowI \<tau>o.cone_axioms mem_Collect_eq by blast
           thus "cone Obj.comp C \<Delta>o.map a (\<Delta>o.mkCone \<tau>) \<and> C ?f ?e = C ?g ?e"
             using \<tau>o.cone_axioms by auto
         qed
@@ -3272,18 +3259,18 @@ begin
           fix a \<tau>
           assume cone_\<tau>: "cone J C D a \<tau>"
           interpret \<tau>: cone J C D a \<tau> using cone_\<tau> by auto
-          interpret constant_functor Obj.comp C a
+          interpret A: constant_functor Obj.comp C a
             apply unfold_locales using \<tau>.ide_apex by auto
           have cone_\<tau>o: "cone Obj.comp C \<Delta>o.map a (\<Delta>o.mkCone \<tau>)"
             apply unfold_locales
-            (* 5 *) using value_is_ide apply simp_all
+            (* 5 *) using A.value_is_ide apply simp_all
             (* 2 *) using \<Delta>o.map_def by auto
           show "\<exists>!h. h \<in> hom a (dom e) \<and> D.cones_map h ?\<mu> = \<tau>"
           proof
-            let ?e' = "Po.induced_arrow a (\<Delta>o.mkCone \<tau>)"
+            let ?e' = "\<pi>o.induced_arrow a (\<Delta>o.mkCone \<tau>)"
             have e': "?e' \<in> hom a \<Pi>o \<and> C ?f ?e' = C ?g ?e' \<and>
-                     \<Delta>o.cones_map ?e' ?\<pi>o = \<Delta>o.mkCone \<tau>"
-              using cone_\<tau> R Po.induced_arrowI [of "\<Delta>o.mkCone \<tau>" a] by auto
+                     \<Delta>o.cones_map ?e' \<pi>o = \<Delta>o.mkCone \<tau>"
+              using cone_\<tau> R \<pi>o.induced_arrowI [of "\<Delta>o.mkCone \<tau>" a] by auto
             have equ: "PP.is_equalized_by ?e'" using e' f by simp
             let ?h = "EQU.induced_arrow a (PP.mkCone ?e')"
             have h: "?h \<in> hom a (dom e) \<and> PP.cones_map ?h (PP.mkCone e) = PP.mkCone ?e'"
@@ -3300,20 +3287,20 @@ begin
                 assume j: "J.arr j"
                 have "D.cones_map ?h ?\<mu> j = C (?\<mu> j) ?h"
                   using h j \<mu>.cone_axioms by simp
-                also have "... = C (C (D j) (C (?\<pi>o (J.dom j)) e)) ?h"
+                also have "... = C (C (D j) (C (\<pi>o (J.dom j)) e)) ?h"
                   by simp
-                also have "... = C (D j) (C (C (?\<pi>o (J.dom j)) e) ?h)"
-                  using j e h \<pi>o by simp
+                also have "... = C (D j) (C (C (\<pi>o (J.dom j)) e) ?h)"
+                  using j e h \<pi>o_in_hom by simp
                 also have "... = C (D j) (\<tau> (J.dom j))"
                 proof -
-                  have "C (C (?\<pi>o (J.dom j)) e) ?h = \<tau> (J.dom j)"
+                  have "C (C (\<pi>o (J.dom j)) e) ?h = \<tau> (J.dom j)"
                   proof -
-                    have "C (C (?\<pi>o (J.dom j)) e) ?h = C (?\<pi>o (J.dom j)) (C e ?h)"
+                    have "C (C (\<pi>o (J.dom j)) e) ?h = C (\<pi>o (J.dom j)) (C e ?h)"
                       using j e h \<pi>o by auto
-                    also have "... = C (?\<pi>o (J.dom j)) ?e'"
+                    also have "... = C (\<pi>o (J.dom j)) ?e'"
                       using e e' h EQU.induced_arrowI' [of ?e'] EQU.equalizes by simp
-                    also have "... = \<Delta>o.cones_map ?e' ?\<pi>o (J.dom j)"
-                      using j e' Po.cone_axioms by simp
+                    also have "... = \<Delta>o.cones_map ?e' \<pi>o (J.dom j)"
+                      using j e' \<pi>o.cone_axioms by simp
                     also have "... = \<Delta>o.mkCone \<tau> (J.dom j)"
                       using j e' by presburger
                     also have "... = \<tau> (J.dom j)"
@@ -3337,7 +3324,7 @@ begin
               show "h' = ?h"
               proof -
                 have 1: "C e h' \<in> hom a \<Pi>o \<and> C ?f (C e h') = C ?g (C e h') \<and>
-                         \<Delta>o.cones_map (C e h') ?\<pi>o = \<Delta>o.mkCone \<tau>"
+                         \<Delta>o.cones_map (C e h') \<pi>o = \<Delta>o.mkCone \<tau>"
                 proof -
                   have 2: "C e h' \<in> hom a \<Pi>o" using h' e by simp
                   moreover have "C ?f (C e h') = C ?g (C e h')"
@@ -3351,33 +3338,32 @@ begin
                       using 1 comp_assoc [of e h' ?g] by blast
                     finally show ?thesis by auto
                   qed
-                  moreover have "\<Delta>o.cones_map (C e h') ?\<pi>o = \<Delta>o.mkCone \<tau>"
+                  moreover have "\<Delta>o.cones_map (C e h') \<pi>o = \<Delta>o.mkCone \<tau>"
                   proof
-                    have "\<Delta>o.cones_map (C e h') ?\<pi>o =
-                            \<Delta>o.cones_map h' (\<Delta>o.cones_map e ?\<pi>o)"
-                      using 2 Po.cone_axioms e h' \<Delta>o.cones_map_comp [of h' e] by simp
+                    have "\<Delta>o.cones_map (C e h') \<pi>o = \<Delta>o.cones_map h' (\<Delta>o.cones_map e \<pi>o)"
+                      using 2 \<pi>o.cone_axioms e h' \<Delta>o.cones_map_comp [of h' e] by simp
                     fix j
-                    have "\<not>Obj.arr j \<Longrightarrow> \<Delta>o.cones_map (C e h') ?\<pi>o j = \<Delta>o.mkCone \<tau> j"
-                      using 2 e h' Po.cone_axioms by simp
-                    moreover have "Obj.arr j \<Longrightarrow> \<Delta>o.cones_map (C e h') ?\<pi>o j = \<Delta>o.mkCone \<tau> j"
+                    have "\<not>Obj.arr j \<Longrightarrow> \<Delta>o.cones_map (C e h') \<pi>o j = \<Delta>o.mkCone \<tau> j"
+                      using 2 e h' \<pi>o.cone_axioms by simp
+                    moreover have "Obj.arr j \<Longrightarrow> \<Delta>o.cones_map (C e h') \<pi>o j = \<Delta>o.mkCone \<tau> j"
                     proof -
                       assume j: "Obj.arr j"
-                      have "\<Delta>o.cones_map (C e h') ?\<pi>o j = C (?\<pi>o j) (C e h')"
-                        using 2 j e h' Po.cone_axioms by auto
-                      also have "... = C (C (?\<pi>o j) e) h'"
+                      have "\<Delta>o.cones_map (C e h') \<pi>o j = C (\<pi>o j) (C e h')"
+                        using 2 j e h' \<pi>o.cone_axioms by auto
+                      also have "... = C (C (\<pi>o j) e) h'"
                         using j e h' \<pi>o by simp
                       also have "... = C (\<Delta>o.mkCone ?\<mu> j) h'"
-                        using j e h' \<pi>o by auto
+                        using j e h' \<pi>o_in_hom by auto
                       also have "... = \<Delta>o.mkCone \<tau> j"
                         using j h' J.ideD(1) \<mu>.cone_axioms mem_Collect_eq by auto
-                      finally show "\<Delta>o.cones_map (C e h') ?\<pi>o j = \<Delta>o.mkCone \<tau> j" by auto
+                      finally show "\<Delta>o.cones_map (C e h') \<pi>o j = \<Delta>o.mkCone \<tau> j" by auto
                     qed
-                    ultimately show "\<Delta>o.cones_map (C e h') ?\<pi>o j = \<Delta>o.mkCone \<tau> j" by auto
+                    ultimately show "\<Delta>o.cones_map (C e h') \<pi>o j = \<Delta>o.mkCone \<tau> j" by auto
                   qed
                   ultimately show ?thesis by auto
                 qed
                 hence "C e h' = ?e'"
-                  using cone_\<tau>o e' Po.is_universal [of a "\<Delta>o.mkCone \<tau>"] \<pi>o by blast
+                  using cone_\<tau>o e' \<pi>o.is_universal [of a "\<Delta>o.mkCone \<tau>"] \<pi>o by blast
                 thus "h' = ?h"
                   using 1 h' EQU.is_universal' [of "C e h'"] EQU.induced_arrowI' [of ?e'] equ
                   by auto
@@ -4129,13 +4115,13 @@ begin
         apply unfold_locales by auto
       interpret D: discrete_diagram_in_set_category J.comp S D.map ..
       have "discrete_diagram J.comp S D.map" ..
-      from this obtain \<Pi>D P where P: "product_cone J.comp S D.map \<Pi>D P"
+      from this obtain \<Pi>D \<chi> where \<chi>: "product_cone J.comp S D.map \<Pi>D \<chi>"
         using has_products has_products_def [of I] ex_productE [of "J.comp" D.map]
               D.diagram_axioms
         by auto
-      interpret P: product_cone J.comp S D.map \<Pi>D P
-        using P by auto
-      have "limit_cone J.comp S D.map \<Pi>D (D.mkCone P)" ..
+      interpret \<chi>: product_cone J.comp S D.map \<Pi>D \<chi>
+        using \<chi> by auto
+      have "limit_cone J.comp S D.map \<Pi>D \<chi>" ..
       hence "D.has_as_limit \<Pi>D" by auto
       hence \<Pi>D: "ide \<Pi>D \<and> (\<exists>\<phi>. bij_betw \<phi> (hom unity \<Pi>D) (D.cones unity))"
         using D.limits_are_sets_of_cones by simp
@@ -4640,7 +4626,6 @@ begin
   begin
 
     interpretation JxA: product_category J A ..
-    interpretation A: identity_functor A ..
     interpretation A_BxA: product_category A_B.comp A ..
     interpretation E: evaluation_functor A B ..
     interpretation Curry: currying J A B ..

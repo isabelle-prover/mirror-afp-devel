@@ -1,6 +1,6 @@
 section {* Matching-Pattern Antiquotation *}
 theory Mpat_Antiquot
-imports Main Refine_Util
+imports Refine_Util_Bootstrap1
 begin
 
 typedecl term_struct

@@ -283,7 +283,7 @@ proof(induction E n e xs stk loc pc xcp and Es n es xs stk loc pc xcp
     have "\<tau>Exec_mover_a P t (obj\<bullet>M'(ps)) h ([Addr a], loc, length (compE2 obj), None) (rev vs @ [Addr a], loc, length (compE2 obj) + length (compEs2 ps), None)" by simp
     also (rtranclp_trans) from bisim1 have "pc \<le> length (compE2 obj)" by(rule bisim1_pc_length_compE2)
     hence "no_call2 (obj\<bullet>M'(ps)) pc \<or> pc = length (compE2 obj) + length (compEs2 ps)"
-      using bisim1 by(auto simp add: no_call2_def neq_Nil_conv dest: bisim_Val_pc_not_Invoke)
+      using bisim1 by(fastforce simp add: no_call2_def neq_Nil_conv dest: bisim_Val_pc_not_Invoke)
     moreover { 
       assume "pc = length (compE2 obj) + length (compEs2 ps)"
       with `\<tau>Exec_mover_a P t obj h (stk, loc, pc, xcp) ([Addr a], loc, length (compE2 obj), None)`

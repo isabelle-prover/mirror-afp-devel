@@ -100,11 +100,6 @@ fun nominal_check_defs ctxt fixes eqs =
 
 
 
-val simp_attribs = map (Attrib.internal o K)
-  [Simplifier.simp_add,
-   Code.add_default_eqn_attribute Code.Equation,
-   Named_Theorems.add @{named_theorems nitpick_simp}]
-
 val psimp_attribs = map (Attrib.internal o K)
   [Named_Theorems.add @{named_theorems nitpick_psimp}]
 

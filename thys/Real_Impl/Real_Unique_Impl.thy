@@ -286,7 +286,7 @@ definition real_lt :: "real \<Rightarrow> real \<Rightarrow> bool" where "real_l
 
 text{* The following code equation terminates if it is started on two
   different inputs. *}
-lemma real_lt[code]: "real_lt x y = (let fx = floor x; fy = floor y in 
+lemma real_lt [code equation]: "real_lt x y = (let fx = floor x; fy = floor y in 
   (if fx < fy then True else if fx > fy then False else real_lt (x * 1024) (y * 1024)))"
 proof (cases "floor x < floor y")
   case True
@@ -347,11 +347,12 @@ lemmas mau_code_eqns = mau_floor mau_0 mau_1 mau_uminus mau_inverse mau_sqrt mau
   mau_show_real comparison_impl
 
 code_datatype real_of_u
-declare real_code_dels[code, code del]
-declare ma_code_eqns[code del]
-declare real_code_unfold_dels[code_unfold del]
-declare real_standard_impls[code]
-declare mau_code_eqns[code]
+
+declare ma_code_eqns [code del]
+  
+unbundle code_real_default_reset
+
+declare mau_code_eqns [code equation]
 
 text {* Some tests with small numbers. To work on larger number, one should
   additionally import the theories for efficient calculation on numbers *}

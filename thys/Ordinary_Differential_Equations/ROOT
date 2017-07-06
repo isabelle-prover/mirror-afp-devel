@@ -12,17 +12,28 @@ session "Ordinary_Differential_Equations" (AFP) = "HOL-Analysis" +
     "root.tex"
 
 session "HOL-ODE" (AFP) = "Ordinary_Differential_Equations" +
-  options [timeout = 100, document = false]
+  options [timeout = 300, document = false]
   theories
     "ODE_Analysis"
 
 session "HOL-ODE-Refinement" (AFP) = "HOL-ODE" +
   options [timeout = 600, document = false]
+  sessions
+    "HOL-Word"
+    Automatic_Refinement
+    Collections
+    Native_Word
+    Refine_Monadic
   theories
     "Refinement/Refine_Dflt_No_Comp"
 
 session "HOL-ODE-Numerics" (AFP) = "HOL-ODE-Refinement" +
-  options [timeout = 2400, document = false]
+  options [timeout = 3600, document = false]
+  sessions
+    Affine_Arithmetic
+    Collections
+    Deriving
+    Show
   theories
     "~~/src/HOL/Library/Lattice_Algebras"
     "~~/src/HOL/Library/Monad_Syntax"

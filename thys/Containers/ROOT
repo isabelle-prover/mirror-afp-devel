@@ -2,6 +2,11 @@ chapter AFP
 
 session Containers (AFP) = "Deriving" +
   options [timeout = 600]
+  sessions
+    "Finger-Trees"
+    "Regular-Sets"
+    Automatic_Refinement
+    Collections
   theories [document = false]
     "../Regular-Sets/Regexp_Method"
   theories
@@ -21,7 +26,9 @@ session Containers (AFP) = "Deriving" +
     "root.bib"
 
 session "Containers-Benchmarks" (AFP) = Containers +
-  options [timeout = 600, document = false]
+  options [timeout = 1200, document = false]
+  sessions
+    Trie
   theories
     "ITP-2013/Benchmark_Bool"
     "ITP-2013/Benchmark_LC"

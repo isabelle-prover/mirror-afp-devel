@@ -1,24 +1,11 @@
 chapter AFP
 
-session "Jordan_Normal_Form" (AFP) = "JNF-AFP-Lib" +
-  options [timeout = 600]
-  theories
-    Missing_Ring
-    Missing_Permutations
-  theories
-    Matrix_Impl
-    Strassen_Algorithm_Code
-    Matrix_Complexity
-    Jordan_Normal_Form_Existence
-    Jordan_Normal_Form_Uniqueness
-    Spectral_Radius
-  document_files
-    "root.bib"
-    "root.tex"
-
 session "JNF-HOL-Lib" (AFP) = "HOL-Algebra" +
   description {* Theories that are not part of HOL but are used by this entry *}
   options [document = false, timeout = 600]
+  sessions
+    "HOL-Cardinals"
+    "Containers"
   theories
     "~~/src/HOL/Library/AList"
     "~~/src/HOL/Library/Cardinality"
@@ -53,6 +40,12 @@ session "JNF-HOL-Lib" (AFP) = "HOL-Algebra" +
 session "JNF-AFP-Lib" (AFP) = "JNF-HOL-Lib" +
   description {* Theories from the Archive of Formal Proofs that are used by this entry *}
   options [document = false, timeout = 600]
+  sessions
+    "Abstract-Rewriting"
+    Gauss_Jordan Matrix
+    Polynomial_Interpolation
+    Show
+    VectorSpace
   theories
     "../Containers/Set_Impl"
     "../Gauss_Jordan/IArray_Haskell"
@@ -63,3 +56,21 @@ session "JNF-AFP-Lib" (AFP) = "JNF-HOL-Lib" +
     "../Show/Show_Instances"
     "../VectorSpace/VectorSpace"
     "../Polynomial_Interpolation/Missing_Polynomial"
+
+session "Jordan_Normal_Form" (AFP) = "JNF-AFP-Lib" +
+  options [timeout = 1200]
+  sessions
+    Polynomial_Factorization
+  theories
+    Missing_Ring
+    Missing_Permutations
+  theories
+    Matrix_Impl
+    Strassen_Algorithm_Code
+    Matrix_Complexity
+    Jordan_Normal_Form_Existence
+    Jordan_Normal_Form_Uniqueness
+    Spectral_Radius
+  document_files
+    "root.bib"
+    "root.tex"

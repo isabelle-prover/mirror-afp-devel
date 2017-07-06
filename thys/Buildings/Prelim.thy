@@ -920,55 +920,55 @@ proof (induct xs arbitrary: x)
   case Cons with assms show ?case using binrelchain_Cons_reduce by auto
 qed (simp add: assms)
 
-subsubsection {* Set of sublists *}
+subsubsection {* Set of subseqs *}
 
-lemma sublists_Cons: "sublists (x#xs) = map (Cons x) (sublists xs) @ (sublists xs)"
-  using cong_let[of "sublists xs" "\<lambda>xss. map (Cons x) xss @ xss"] by simp
+lemma subseqs_Cons: "subseqs (x#xs) = map (Cons x) (subseqs xs) @ (subseqs xs)"
+  using cong_let[of "subseqs xs" "\<lambda>xss. map (Cons x) xss @ xss"] by simp
 
-abbreviation "ssublists xs \<equiv> set (sublists xs)"
+abbreviation "ssubseqs xs \<equiv> set (subseqs xs)"
 
-lemma nil_ssublists: "[] \<in> ssublists xs"
+lemma nil_ssubseqs: "[] \<in> ssubseqs xs"
 proof (induct xs)
-  case (Cons x xs) thus ?case using sublists_Cons[of x] by simp
+  case (Cons x xs) thus ?case using subseqs_Cons[of x] by simp
 qed simp
 
-lemma ssublists_Cons: "ssublists (x#xs) = (Cons x) ` (ssublists xs) \<union> ssublists xs"
-  using sublists_Cons[of x] by simp
+lemma ssubseqs_Cons: "ssubseqs (x#xs) = (Cons x) ` (ssubseqs xs) \<union> ssubseqs xs"
+  using subseqs_Cons[of x] by simp
 
-lemma ssublists_refl: "xs \<in> ssublists xs"
+lemma ssubseqs_refl: "xs \<in> ssubseqs xs"
 proof (induct xs)
-  case (Cons x xs) thus ?case using ssublists_Cons by fast
-qed (rule nil_ssublists)
+  case (Cons x xs) thus ?case using ssubseqs_Cons by fast
+qed (rule nil_ssubseqs)
 
-lemma ssublists_subset: "as \<in> ssublists bs \<Longrightarrow> ssublists as \<subseteq> ssublists bs"
+lemma ssubseqs_subset: "as \<in> ssubseqs bs \<Longrightarrow> ssubseqs as \<subseteq> ssubseqs bs"
 proof (induct bs arbitrary: as)
   case (Cons b bs) show ?case
-  proof (cases "as \<in> set (sublists bs)")
-    case True with Cons show ?thesis using ssublists_Cons by fastforce
+  proof (cases "as \<in> set (subseqs bs)")
+    case True with Cons show ?thesis using ssubseqs_Cons by fastforce
   next
     case False with Cons show ?thesis
-      using nil_ssublists[of "b#bs"] ssublists_Cons[of "hd as"] ssublists_Cons[of b]
+      using nil_ssubseqs[of "b#bs"] ssubseqs_Cons[of "hd as"] ssubseqs_Cons[of b]
       by    (cases as) auto
   qed
 qed simp
 
-lemma ssublists_lists:
-  "as \<in> lists A \<Longrightarrow> bs \<in> ssublists as \<Longrightarrow> bs \<in> lists A"
+lemma ssubseqs_lists:
+  "as \<in> lists A \<Longrightarrow> bs \<in> ssubseqs as \<Longrightarrow> bs \<in> lists A"
 proof (induct as arbitrary: bs)
-  case (Cons a as) thus ?case using ssublists_Cons[of a] by fastforce
+  case (Cons a as) thus ?case using ssubseqs_Cons[of a] by fastforce
 qed simp
 
-lemma delete1_ssublists:
-  "as@bs \<in> ssublists (as@[a]@bs)"
+lemma delete1_ssubseqs:
+  "as@bs \<in> ssubseqs (as@[a]@bs)"
 proof (induct as)
-  case Nil show ?case using ssublists_refl ssublists_Cons[of a bs] by auto
+  case Nil show ?case using ssubseqs_refl ssubseqs_Cons[of a bs] by auto
 next
-  case (Cons x xs) thus ?case using ssublists_Cons[of x] by simp
+  case (Cons x xs) thus ?case using ssubseqs_Cons[of x] by simp
 qed
 
-lemma delete2_ssublists:
-  "as@bs@cs \<in> ssublists (as@[a]@bs@[b]@cs)"
-  using delete1_ssublists[of "as@[a]@bs"] delete1_ssublists ssublists_subset
+lemma delete2_ssubseqs:
+  "as@bs@cs \<in> ssubseqs (as@[a]@bs@[b]@cs)"
+  using delete1_ssubseqs[of "as@[a]@bs"] delete1_ssubseqs ssubseqs_subset
   by    fastforce
 
 
@@ -1145,69 +1145,43 @@ proof
   qed
 qed
 
-subsubsection {* Minimality with respect to some property via a size function *}
+subsubsection {* More @{const arg_min} *}
 
-text {* A boolean companion to @{const LeastM}. *}
+lemma is_arg_minI:
+  "\<lbrakk> P x; \<And>y. P y \<Longrightarrow> \<not> m y < m x \<rbrakk> \<Longrightarrow> is_arg_min m P x"
+by (simp add: is_arg_min_def)
 
-definition isLeastM :: "('a\<Rightarrow>'b::ord) \<Rightarrow> ('a\<Rightarrow>bool) \<Rightarrow> 'a \<Rightarrow> bool"
-  where "isLeastM m P x \<equiv> (P x \<and> (\<forall>y. P y \<longrightarrow> m x \<le> m y))"
+lemma is_arg_min_linorderI:
+  "\<lbrakk> P x; \<And>y. P y \<Longrightarrow> m x \<le> (m y::_::linorder) \<rbrakk> \<Longrightarrow> is_arg_min m P x"
+by (simp add: is_arg_min_linorder)
 
-lemma isLeastMI:
-  assumes   "P x" "\<And>y. P y \<Longrightarrow> m x \<le> m y"
-  shows     "isLeastM m P x"
-  using     assms 
-  unfolding isLeastM_def
-  by        simp
+lemma is_arg_min_eq:
+  "\<lbrakk> is_arg_min m P x; P z; m z = m x \<rbrakk> \<Longrightarrow> is_arg_min m P z"
+by (metis is_arg_min_def)
 
-lemma isLeastMI_compare:
-  assumes   "isLeastM m P x" "P z" "m z = m x"
-  shows     "isLeastM m P z"
-  using     assms
-  unfolding isLeastM_def
-  by        simp
+lemma is_arg_minD1: "is_arg_min m P x \<Longrightarrow> P x"
+unfolding is_arg_min_def by fast
 
-lemma isLeastMD1: "isLeastM m P x \<Longrightarrow> P x"
-  unfolding isLeastM_def by fast
+lemma is_arg_minD2: "is_arg_min m P x \<Longrightarrow> P y \<Longrightarrow> \<not> m y < m x"
+unfolding is_arg_min_def by fast
 
-lemma isLeastMD2: "isLeastM m P x \<Longrightarrow> P y \<Longrightarrow> m x \<le> m y"
-  unfolding isLeastM_def by fast
+lemma is_arg_min_size: fixes m :: "'a \<Rightarrow> 'b::linorder"
+shows "is_arg_min m P x \<Longrightarrow> m x = m (arg_min m P)"
+by (metis arg_min_equality is_arg_min_linorder)
 
-lemma not_isLeastMI:
-  fixes   m :: "'a\<Rightarrow>'b::preorder"
-  assumes "P y" "m y < m x"
-  shows   "\<not> isLeastM m P x"
-  using   assms less_le_not_le[of "m y"] isLeastMD2
-  by      force
-
-lemma LeastM_isLeastM_nat:
-  fixes     m :: "'a\<Rightarrow>nat"
-  assumes   "P x"
-  shows     "isLeastM m P (LEAST y WRT m. P y)"
-  using     assms LeastM_nat_lemma[of P]
-  unfolding isLeastM_def
-  by        auto
-
-lemma isLeastM_size:
-  fixes     m :: "'a\<Rightarrow>'b::order"
-  assumes   "isLeastM m P x"
-  shows     "m x = m (LeastM m P)"
-  using     assms LeastM_equality[THEN sym, of P x m]
-  unfolding isLeastM_def
-  by        fast
-
-lemma isLeastM_size_subprop:
-  fixes   m :: "'a\<Rightarrow>'b::order"
-  assumes "isLeastM m P x" "Q x" "\<And>y. Q y \<Longrightarrow> P y"
-  shows   "m (LeastM m Q) = m (LeastM m P)"
+lemma is_arg_min_size_subprop:
+  fixes   m :: "'a\<Rightarrow>'b::linorder"
+  assumes "is_arg_min m P x" "Q x" "\<And>y. Q y \<Longrightarrow> P y"
+  shows   "m (arg_min m Q) = m (arg_min m P)"
 proof-
-  have "\<not> isLeastM m Q x \<Longrightarrow> \<not> isLeastM m P x"
+  have "\<not> is_arg_min m Q x \<Longrightarrow> \<not> is_arg_min m P x"
   proof
-    assume x: "\<not> isLeastM m Q x"
+    assume x: "\<not> is_arg_min m Q x"
     from assms(2,3) show False
-      using contrapos_nn[OF x, OF isLeastMI] isLeastMD2[OF assms(1)] by auto
+      using contrapos_nn[OF x, OF is_arg_minI] is_arg_minD2[OF assms(1)] by auto
   qed
   with assms(1) show ?thesis
-    using isLeastM_size[of m] isLeastM_size[of m] by fastforce
+    using is_arg_min_size[of m] is_arg_min_size[of m] by fastforce
 qed
 
 subsubsection {* Bottom of a set *}

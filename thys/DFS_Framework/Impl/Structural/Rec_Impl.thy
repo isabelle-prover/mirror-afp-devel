@@ -19,7 +19,7 @@ begin
       gds_new_root gds v0 s
     } else do {
       let u = hd (stack s);
-      Vs \<leftarrow> select (pending s `` {u});
+      Vs \<leftarrow> SELECT (\<lambda>v. (u,v)\<in>pending s);
       s \<leftarrow> choose_pending u Vs s;
       case Vs of 
         None \<Rightarrow> gds_finish gds u s
@@ -153,7 +153,7 @@ locale rec_impl =
   assumes get_pending_fmt: "\<lbrakk> pre_get_pending s \<rbrakk> \<Longrightarrow> 
     do {
       let u = hd (stack s);
-      vo \<leftarrow> select (pending s `` {u});
+      vo \<leftarrow> SELECT (\<lambda>v. (u,v)\<in>pending s);
       s \<leftarrow> choose_pending u vo s;
       RETURN (u,vo,s)
     } 
@@ -234,61 +234,81 @@ begin
     apply (subst gen_step'_def)
     apply (refine_rcg refine_vcg
       leof_trans[OF new_root_spec]
-      leof_trans[OF select_correct[THEN leof_lift]]
+      SELECT_rule[THEN leof_lift]
       leof_trans[OF choose_pending_spec[THEN leof_strengthen_SPEC]]
       leof_trans[OF finish_spec]
       leof_trans[OF cross_edge_spec]
       leof_trans[OF back_edge_spec]
       leof_trans[OF discover_spec]
       )
+    
 
     apply simp_all
-    apply (simp add: pre_defs, simp add: gen_cond_def)
-    apply auto [3]
-    apply (simp add: pre_defs, simp add: gen_cond_def)
-    apply (unfold pre_defs, intro conjI, assumption) []
-      apply (clarsimp_all simp: gen_cond_def) [2]
-      apply (rule pwD2[OF get_pending_fmt])
-        apply (simp add: pre_defs gen_cond_def)
-        apply (clarsimp simp: refine_pw_simps select_def)
-      
-    apply (force simp: neq_Nil_conv) []
-    apply (clarsimp simp: neq_Nil_conv gen_cond_def, blast) [] 
-    apply (clarsimp simp: neq_Nil_conv gen_cond_def, blast) [] 
+    subgoal by (simp add: pre_defs, simp add: gen_cond_def)
+    subgoal by auto    
+    subgoal by auto    
+    subgoal by auto    
+    subgoal by (simp add: pre_defs, simp add: gen_cond_def)
+        
+        
+    apply ((unfold pre_defs, intro conjI); assumption?) []
+      subgoal by (clarsimp simp: gen_cond_def)
+      subgoal by (clarsimp simp: gen_cond_def)
+      subgoal    
+        apply (rule pwD2[OF get_pending_fmt])
+          subgoal by (simp add: pre_defs gen_cond_def)
+          subgoal by (clarsimp simp: refine_pw_simps; blast)
+        done      
+      subgoal by (force simp: neq_Nil_conv) []
+          
+          
+    subgoal by (clarsimp simp: neq_Nil_conv gen_cond_def, blast) [] 
+    subgoal by (clarsimp simp: neq_Nil_conv gen_cond_def; auto)
 
     apply (unfold pre_defs, intro conjI, assumption) []
-      apply (clarsimp_all simp: gen_cond_def) [2]
+      subgoal by (clarsimp_all simp: gen_cond_def)
+      subgoal by (clarsimp_all simp: gen_cond_def)
       apply (rule pwD2[OF get_pending_fmt])
-        apply (simp add: pre_defs gen_cond_def)
-        apply (clarsimp simp: refine_pw_simps select_def, blast)
-        apply (simp_all) [2]
+        apply (simp add: pre_defs gen_cond_def; fail)
+        apply (clarsimp simp: refine_pw_simps select_def, blast; fail)
+        apply (simp; fail)
+        apply (simp; fail)
 
-    apply auto []
-    apply (fast) []
+    subgoal by auto
+    subgoal by fast
 
     apply (unfold pre_defs, intro conjI, assumption) []
-      apply (clarsimp_all simp: gen_cond_def) [2]
+      apply (clarsimp simp: gen_cond_def; fail)
+      apply (clarsimp simp: gen_cond_def; fail)
       apply (rule pwD2[OF get_pending_fmt])
-        apply (simp add: pre_defs gen_cond_def)
-        apply (clarsimp simp: refine_pw_simps select_def, blast)
-        apply (simp_all) [2]
+        apply (simp add: pre_defs gen_cond_def; fail)
+        apply (clarsimp simp: refine_pw_simps select_def, blast; fail)
+        apply (simp; fail)
 
-    apply auto []
+    subgoal  
+      apply clarsimp  
+      by (meson ImageI SigmaD1 rtrancl_image_unfold_right subset_eq)  
+
+    subgoal  
+      apply clarsimp  
+      by blast  
+        
+    apply force
+    apply force
+    apply fast
+    apply (auto simp: pre_defs gen_cond_def; fail)
     apply fast
 
-    apply (unfold pre_defs, intro conjI, assumption) []
-      apply (clarsimp_all simp: gen_cond_def) [2]
+    apply ((unfold pre_defs, intro conjI); assumption?)
+      apply (clarsimp simp: gen_cond_def; fail)
+      apply (clarsimp simp: gen_cond_def; fail)
       apply (rule pwD2[OF get_pending_fmt])
-        apply (simp add: pre_defs gen_cond_def)
-        apply (clarsimp simp: refine_pw_simps select_def, blast)
-        apply (simp_all) []
+        apply (simp add: pre_defs gen_cond_def; fail)
+        apply (clarsimp simp: refine_pw_simps; fail)
 
-    apply (metis mem_Sigma_iff rtrancl_image_advance subset_eq subset_iff)
-
-    apply auto []
-    apply fast
-    apply fast
-    apply fast
+    apply (auto simp: neq_Nil_conv; fail)
+    apply (auto simp: neq_Nil_conv; fail)
+    apply (clarsimp simp: neq_Nil_conv; blast) 
     done
 
   lemma mk_spec_aux: 
@@ -372,9 +392,7 @@ begin
       apply (rule mk_spec_aux[OF finish_spec], assumption)
       apply (rule order_trans[OF _ rwof_step[OF nofail, where s=s0]])
       unfolding gen_step'_def pre_defs gen_cond_def post_choose_pending_def
-      apply (simp add: pw_le_iff refine_pw_simps select_def split: option.split, blast) 
-      apply simp
-      apply blast
+      apply (auto simp: pw_le_iff refine_pw_simps split: option.split)  
       done      
 
     schematic_goal gds_cross_edge_refine: 

@@ -12,7 +12,7 @@ Our motivation is to generalise relation-algebraic methods from unweighted graph
 Unlike unweighted graphs, weighted graphs do not form a Boolean algebra because there is no complement operation on the edge weights.
 However, edge weights form a Stone algebra, and matrices over edge weights (that is, weighted graphs) form a Stone relation algebra.
 
-The development in this theory is described in our papers \cite{Guttmann2016c,Guttmann2017}.
+The development in this theory is described in our papers \cite{Guttmann2016c,Guttmann2017b}.
 Our main application there is the verification of Prim's minimum spanning tree algorithm.
 Related work about fuzzy relations \cite{Goguen1967,Winter2001b}, Dedekind categories \cite{KawaharaFurusawa2001} and rough relations \cite{Comer1993,Pawlak1996} is also discussed in these papers.
 In particular, Stone relation algebras do not assume that the underlying lattice is complete or a Heyting algebra, and they do not assume that composition has residuals.
@@ -524,7 +524,7 @@ lemma transitive_conv_closed:
   using conv_order conv_dist_comp by fastforce
 
 lemma dense_conv_closed:
-  "dense x \<Longrightarrow> dense (x\<^sup>T)"
+  "dense_rel x \<Longrightarrow> dense_rel (x\<^sup>T)"
   using conv_order conv_dist_comp by fastforce
 
 lemma idempotent_conv_closed:
@@ -1121,6 +1121,31 @@ proof (unfold_locales, goal_cases)
   show ?case by (simp add: inf_commute)
 qed (auto simp: inf.assoc inf_sup_distrib2 inf_left_commute)
 
+text {*
+Every bounded linear order can be expanded to a Stone algebra, which can be expanded to a Stone relation algebra by reusing some of the operations.
+In particular, composition is meet, its identity is @{text top} and converse is the identity function.
+*}
+
+class linorder_stone_relation_algebra_expansion = linorder_stone_algebra_expansion + times + conv + one +
+  assumes times_def [simp]: "x * y = min x y"
+  assumes conv_def [simp]: "x\<^sup>T = x"
+  assumes one_def [simp]: "1 = top"
+begin
+
+lemma times_inf [simp]:
+  "x * y = x \<sqinter> y"
+  by simp
+
+subclass stone_relation_algebra
+  apply unfold_locales
+  using comp_inf.mult_right_dist_sup inf_commute inf_assoc inf_left_commute pp_dist_inf min_def by simp_all
+
+lemma times_dense:
+  "x \<noteq> bot \<Longrightarrow> y \<noteq> bot \<Longrightarrow> x * y \<noteq> bot"
+  using inf_dense min_inf times_def by presburger
+
+end
+
 subsection {* Relation Algebras *}
 
 text {*
@@ -1269,7 +1294,7 @@ lemma atom_not_bot:
 
 end
 
-class relation_algebra_consistent = relation_algebra + stone_relation_algebra_consistent 
+class relation_algebra_consistent = relation_algebra + stone_relation_algebra_consistent
 
 end
 

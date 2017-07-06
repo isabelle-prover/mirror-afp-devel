@@ -290,7 +290,7 @@ show "A $ i $ j = 0"
       next
       case False
       have zero_i_k: "is_zero_row_upt_k i k A" unfolding is_zero_row_upt_k_def
-      by (metis (hide_lams, mono_tags) Suc.hyps dual_linorder.leD dual_linorder.le_less_linear dual_order.less_imp_le j_eq_k j_less_i le_trans to_nat_mono' upper_triangular_upt_k_def)
+      by (metis (hide_lams, mono_tags) Suc.hyps leD le_less_linear less_imp_le j_eq_k j_less_i le_trans to_nat_mono' upper_triangular_upt_k_def)
       have not_zero_i_suc_k: "\<not> is_zero_row_upt_k i (Suc k) A" unfolding is_zero_row_upt_k_def using False by (metis j_eq_k lessI to_nat_from_nat)      
       have Least_eq: "(LEAST n. A $ i $ n \<noteq> 0) = from_nat k"
         proof (rule Least_equality)
@@ -301,7 +301,7 @@ show "A $ i $ j = 0"
       show ?thesis using rref_upt_condition4_explicit[OF rref_suc not_zero_i_suc_k i_not_k] unfolding Least_eq 
       using rref_upt_condition1_explicit[OF rref_suc]
       using Suc.hyps unfolding upper_triangular_upt_k_def 
-      by (metis (mono_tags) leD dual_linorder.not_le_imp_less is_zero_row_upt_k_def is_zero_row_upt_k_suc j_eq_k j_less_i not_zero_i_suc_k to_nat_from_nat to_nat_mono')  
+      by (metis (mono_tags) leD not_le_imp_less is_zero_row_upt_k_def is_zero_row_upt_k_suc j_eq_k j_less_i not_zero_i_suc_k to_nat_from_nat to_nat_mono')  
 qed
 qed
 qed

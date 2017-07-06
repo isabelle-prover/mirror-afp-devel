@@ -304,7 +304,6 @@ proof (rule_tac X = "SetMarkInvTerm" in hoare_diagram3)
     apply (drule_tac x="I.loop" in spec)
     apply (simp add: SetMark_def)
     apply (simp add: Q1_a_def Q2_a_def)
-    apply auto[1]
     apply (frule_tac x="I.loop" in spec)
     apply (drule_tac x="I.final" in spec)
     apply (simp add: SetMark_def)
@@ -321,7 +320,7 @@ theorem (in graph) SetMark_correct1 [simp]:
   apply simp
   apply safe
   apply (simp_all add: SetMark_def SUP_L_P_def
-       less_pair_def less_I_def hoare_choice  uminus_apply)
+       less_pair_def less_I_def hoare_choice)
   apply (simp_all add: fun_eq_iff)
   apply safe
   apply (unfold SetMarkInv_def)

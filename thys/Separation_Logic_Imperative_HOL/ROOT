@@ -2,13 +2,18 @@ chapter AFP
 
 session "Separation_Logic_Imperative_HOL" (AFP) = "HOL-Library" +
   options [timeout = 600]
+  sessions
+    "HOL-Imperative_HOL"
+    "HOL-Word"
+    Automatic_Refinement
+    Collections
+    Native_Word
   theories [document = false]
     "Tools/Imperative_HOL_Add"
     "Tools/Syntax_Match"
     "../Collections/Lib/HashCode"
     "../Collections/Lib/Code_Target_ICF"
     "../Automatic_Refinement/Lib/Misc"
-    "Tools/Sep_Misc"
   theories
     Sep_Main
     "Examples/Imp_List_Spec"

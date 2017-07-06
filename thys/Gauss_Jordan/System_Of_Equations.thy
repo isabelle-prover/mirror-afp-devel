@@ -90,7 +90,7 @@ unfolding solve_consistent_rref_def by auto
 lemma rank_ge_imp_is_solution:
 fixes A::"'a::{field}^'cols::{mod_type}^'rows::{mod_type}"
 assumes con: "rank A \<ge> (if (\<exists>a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) 
-                                            then (to_nat (GREATEST' a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) + 1) else 0)"
+                                            then (to_nat (GREATEST a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) + 1) else 0)"
 shows "is_solution (solve_consistent_rref (Gauss_Jordan A) (P_Gauss_Jordan A *v b)) A b"
 proof -
 have "is_solution (solve_consistent_rref (Gauss_Jordan A) (P_Gauss_Jordan A *v b)) (Gauss_Jordan A) (P_Gauss_Jordan A *v b)"
@@ -136,7 +136,7 @@ also have "... = (P_Gauss_Jordan A *v b) $ a"
       next
       case True
       have rank_not_0: "rank A \<noteq> 0" by (metis A_not_zero less_not_refl3 rank_Gauss_Jordan rank_greater_zero)
-      have greatest_less_a: "(GREATEST' a. \<not> is_zero_row a (Gauss_Jordan A)) < a"
+      have greatest_less_a: "(GREATEST a. \<not> is_zero_row a (Gauss_Jordan A)) < a"
         proof (unfold is_zero_row_def, rule greatest_less_zero_row)
         show " reduced_row_echelon_form_upt_k (Gauss_Jordan A) (ncols (Gauss_Jordan A))"
           using rref_Gauss_Jordan unfolding reduced_row_echelon_form_def .
@@ -145,12 +145,12 @@ also have "... = (P_Gauss_Jordan A *v b) $ a"
         show "\<not> (\<forall>a. is_zero_row_upt_k a (ncols (Gauss_Jordan A)) (Gauss_Jordan A))"
           by (metis False Gauss_Jordan_not_0 is_zero_row_upt_ncols vec_eq_iff zero_index)
         qed
-    hence "to_nat (GREATEST' a. \<not> is_zero_row a (Gauss_Jordan A)) < to_nat a" using to_nat_mono by fast
+    hence "to_nat (GREATEST a. \<not> is_zero_row a (Gauss_Jordan A)) < to_nat a" using to_nat_mono by fast
     hence rank_le_to_nat_a: "rank A \<le> to_nat a" unfolding rank_eq_suc_to_nat_greatest[OF A_not_zero] by simp
-    have "to_nat (GREATEST' a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) < to_nat a" 
+    have "to_nat (GREATEST a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) < to_nat a" 
       using con unfolding consistent_def unfolding if_P[OF True] using rank_le_to_nat_a by simp 
-    hence "(GREATEST' a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) < a" by (metis not_le to_nat_mono')
-    hence "(P_Gauss_Jordan A *v b) $ a = 0" using not_greater_Greatest' by blast
+    hence "(GREATEST a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) < a" by (metis not_le to_nat_mono')
+    hence "(P_Gauss_Jordan A *v b) $ a = 0" using not_greater_Greatest by blast
     thus ?thesis unfolding zero_row_a by simp
     qed    
     next
@@ -193,7 +193,7 @@ qed
 
 corollary rank_ge_imp_consistent:
 fixes A::"'a::{field}^'cols::{mod_type}^'rows::{mod_type}"
-assumes "rank A \<ge> (if (\<exists>a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) then (to_nat (GREATEST' a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) + 1) else 0)"
+assumes "rank A \<ge> (if (\<exists>a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) then (to_nat (GREATEST a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) + 1) else 0)"
 shows "consistent A b"
 using rank_ge_imp_is_solution assms unfolding consistent_def by auto
 
@@ -201,10 +201,10 @@ using rank_ge_imp_is_solution assms unfolding consistent_def by auto
 lemma inconsistent_imp_rank_less:
 fixes A::"'a::{field}^'cols::{mod_type}^'rows::{mod_type}"
 assumes inc: "inconsistent A b"
-shows "rank A < (if (\<exists>a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) then (to_nat (GREATEST' a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) + 1) else 0)"
+shows "rank A < (if (\<exists>a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) then (to_nat (GREATEST a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) + 1) else 0)"
 proof (rule ccontr)
-assume "\<not> rank A < (if \<exists>a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0 then to_nat (GREATEST' a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) + 1 else 0)"
-hence "(if \<exists>a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0 then to_nat (GREATEST' a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) + 1 else 0) \<le> rank A" by simp
+assume "\<not> rank A < (if \<exists>a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0 then to_nat (GREATEST a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) + 1 else 0)"
+hence "(if \<exists>a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0 then to_nat (GREATEST a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) + 1 else 0) \<le> rank A" by simp
 hence "consistent A b" using rank_ge_imp_consistent by auto
 thus False using inc unfolding inconsistent_def by contradiction
 qed
@@ -212,11 +212,11 @@ qed
 
 lemma rank_less_imp_inconsistent:
 fixes A::"'a::{field}^'cols::{mod_type}^'rows::{mod_type}"
-assumes inc: "rank A < (if (\<exists>a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) then (to_nat (GREATEST' a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) + 1) else 0)"
+assumes inc: "rank A < (if (\<exists>a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) then (to_nat (GREATEST a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) + 1) else 0)"
 shows "inconsistent A b"
 proof (rule ccontr)
-def i\<equiv>"(GREATEST' a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0)"
-def j\<equiv>"(GREATEST' a. \<not> is_zero_row a (Gauss_Jordan A))"
+def i\<equiv>"(GREATEST a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0)"
+def j\<equiv>"(GREATEST a. \<not> is_zero_row a (Gauss_Jordan A))"
 assume "\<not> inconsistent A b"
 hence ex_solution: "\<exists>x. is_solution x A b" unfolding inconsistent_def consistent_def by auto
 from this obtain x where "is_solution x A b"  by auto
@@ -229,7 +229,7 @@ show False
   hence rank_eq_0: "rank A = 0" using rank_0 by simp
   hence exists_not_0:"(\<exists>a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0)" 
   using inc unfolding inconsistent
-  using to_nat_plus_1_set[of "(GREATEST' a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0)"]
+  using to_nat_plus_1_set[of "(GREATEST a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0)"]
   by presburger
   show False 
     by (metis True exists_not_0 is_solution_def A_0_imp_Gauss_Jordan_0 transpose_vector 
@@ -245,7 +245,7 @@ ultimately have "to_nat j + 1 < to_nat i + 1" by simp
 hence "to_nat j < to_nat i" by auto
 thus "j<i" by (metis (full_types) not_le to_nat_mono')
 qed
-have is_zero_i: "is_zero_row i (Gauss_Jordan A)" by (metis (full_types) j_def j_less_i not_greater_Greatest')
+have is_zero_i: "is_zero_row i (Gauss_Jordan A)" by (metis (full_types) j_def j_less_i not_greater_Greatest)
 have "(Gauss_Jordan A *v x) $ i = 0" 
   proof (unfold matrix_vector_mult_def, auto, rule sum.neutral,clarify)
     fix a::'cols
@@ -256,7 +256,7 @@ moreover have "(Gauss_Jordan A *v x) $ i \<noteq> 0"
     have "Gauss_Jordan A *v x = P_Gauss_Jordan A *v b" using is_solution_def is_solution_solve by blast
     also have "... $ i \<noteq> 0"
     unfolding i_def
-      proof (rule Greatest'I_ex)
+      proof (rule GreatestI_ex)
         show "\<exists>x. (P_Gauss_Jordan A *v b) $ x \<noteq> 0" using inc unfolding i_def inconsistent by presburger
        qed
      finally show ?thesis .
@@ -269,19 +269,19 @@ qed
 corollary consistent_imp_rank_ge:
 fixes A::"'a::{field}^'cols::{mod_type}^'rows::{mod_type}"
 assumes "consistent A b"
-shows "rank A \<ge> (if (\<exists>a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) then (to_nat (GREATEST' a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) + 1) else 0)"
+shows "rank A \<ge> (if (\<exists>a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) then (to_nat (GREATEST a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) + 1) else 0)"
 using rank_less_imp_inconsistent by (metis assms inconsistent_def not_less)
 
 lemma inconsistent_eq_rank_less:
 fixes A::"'a::{field}^'cols::{mod_type}^'rows::{mod_type}"
 shows "inconsistent A b = (rank A < (if (\<exists>a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) 
-                                            then (to_nat (GREATEST' a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) + 1) else 0))"
+                                            then (to_nat (GREATEST a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) + 1) else 0))"
 using inconsistent_imp_rank_less rank_less_imp_inconsistent by blast
 
 lemma consistent_eq_rank_ge:
 fixes A::"'a::{field}^'cols::{mod_type}^'rows::{mod_type}"
 shows "consistent A b = (rank A \<ge> (if (\<exists>a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) 
-                                            then (to_nat (GREATEST' a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) + 1) else 0))"
+                                            then (to_nat (GREATEST a. (P_Gauss_Jordan A *v b) $ a \<noteq> 0) + 1) else 0))"
 using consistent_imp_rank_ge rank_ge_imp_consistent by blast
 
 corollary consistent_imp_is_solution:
@@ -305,8 +305,8 @@ lemma inconsistent_eq_rank_less_code[code]:
 fixes A::"'a::{field}^'cols::{mod_type}^'rows::{mod_type}"
 shows "inconsistent A b = (let GJ_P=Gauss_Jordan_PA A; 
                                 P_mult_b = (fst(GJ_P) *v b);
-                                rank_A = (if A = 0 then 0 else to_nat (GREATEST' a. row a (snd GJ_P) \<noteq> 0) + 1)  in (rank_A < (if (\<exists>a. P_mult_b $ a \<noteq> 0) 
-                                            then (to_nat (GREATEST' a. P_mult_b $ a \<noteq> 0) + 1) else 0)))"
+                                rank_A = (if A = 0 then 0 else to_nat (GREATEST a. row a (snd GJ_P) \<noteq> 0) + 1)  in (rank_A < (if (\<exists>a. P_mult_b $ a \<noteq> 0) 
+                                            then (to_nat (GREATEST a. P_mult_b $ a \<noteq> 0) + 1) else 0)))"
 unfolding inconsistent_eq_rank_less Let_def rank_Gauss_Jordan_code
 unfolding Gauss_Jordan_PA_eq P_Gauss_Jordan_def ..
 
@@ -315,8 +315,8 @@ lemma consistent_eq_rank_ge_code[code]:
 fixes A::"'a::{field}^'cols::{mod_type}^'rows::{mod_type}"
 shows "consistent A b = (let GJ_P=Gauss_Jordan_PA A; 
                               P_mult_b = (fst(GJ_P) *v b);
-                              rank_A = (if A = 0 then 0 else to_nat (GREATEST' a. row a (snd GJ_P) \<noteq> 0) + 1) in (rank_A \<ge> (if (\<exists>a. P_mult_b $ a \<noteq> 0) 
-                                            then (to_nat (GREATEST' a. P_mult_b $ a \<noteq> 0) + 1) else 0)))"
+                              rank_A = (if A = 0 then 0 else to_nat (GREATEST a. row a (snd GJ_P) \<noteq> 0) + 1) in (rank_A \<ge> (if (\<exists>a. P_mult_b $ a \<noteq> 0) 
+                                            then (to_nat (GREATEST a. P_mult_b $ a \<noteq> 0) + 1) else 0)))"
 unfolding consistent_eq_rank_ge Let_def rank_Gauss_Jordan_code
 unfolding Gauss_Jordan_PA_eq P_Gauss_Jordan_def ..
 
@@ -573,8 +573,8 @@ definition "solve A b = (if consistent A b then
 lemma solve_code[code]:
 shows "solve A b = (let GJ_P=Gauss_Jordan_PA A; 
                         P_times_b=fst(GJ_P) *v b;
-                        rank_A = (if A = 0 then 0 else to_nat (GREATEST' a. row a (snd GJ_P) \<noteq> 0) + 1);
-                        consistent_Ab = (rank_A \<ge> (if (\<exists>a. (P_times_b) $ a \<noteq> 0) then (to_nat (GREATEST' a. (P_times_b) $ a \<noteq> 0) + 1) else 0));
+                        rank_A = (if A = 0 then 0 else to_nat (GREATEST a. row a (snd GJ_P) \<noteq> 0) + 1);
+                        consistent_Ab = (rank_A \<ge> (if (\<exists>a. (P_times_b) $ a \<noteq> 0) then (to_nat (GREATEST a. (P_times_b) $ a \<noteq> 0) + 1) else 0));
                         GJ_transpose = Gauss_Jordan_PA (transpose A); 
                         basis = {row i (fst GJ_transpose) | i. to_nat i \<ge> rank_A}
                         in (if consistent_Ab then Some (solve_consistent_rref (snd GJ_P) P_times_b,basis) else None))"

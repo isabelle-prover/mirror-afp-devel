@@ -1,7 +1,12 @@
 chapter AFP
 
 session "QR_Decomposition" (AFP) = "HOL-Analysis" +
-  options [timeout = 600]
+  options [timeout = 1200]
+  sessions
+    Gauss_Jordan
+    Rank_Nullity_Theorem
+    Real_Impl
+    Sqrt_Babylonian
   theories [document = false]
     "~~/src/HOL/Library/Code_Target_Numeral"
     "~~/src/HOL/Library/Code_Char"

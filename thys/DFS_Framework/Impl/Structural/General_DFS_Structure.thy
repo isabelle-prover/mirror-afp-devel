@@ -157,54 +157,65 @@ begin
   lemma gen_step_eq_assert: "\<lbrakk>gen_cond s; gen_rwof s\<rbrakk>
        \<Longrightarrow> gen_step s = gen_step_assert s"
     apply (rule antisym)
-    apply (unfold gen_step_def[abs_def] gen_step_assert_def[abs_def]) []
-    apply (unfold GHOST_elim_Let) []
-    apply (rule refine_IdD)
-    apply (refine_rcg, simp_all) []
-       
-    apply (simp (no_asm) only: gen_step_def[abs_def] gen_step_assert_def[abs_def]) []
-    apply (unfold GHOST_elim_Let) []
-    apply (rule refine_IdD)
-    apply (refine_rcg bind_refine')
-    apply (auto simp: pre_defs gen_cond_def)
+    subgoal  
+      apply (unfold gen_step_def[abs_def] gen_step_assert_def[abs_def]) []
+      apply (unfold GHOST_elim_Let) []
+      apply (rule refine_IdD)
+      apply refine_rcg  
+      apply refine_dref_type
+      by simp_all  
+    
+    subgoal    
+      apply (simp (no_asm) only: gen_step_def[abs_def] gen_step_assert_def[abs_def]) []
+      apply (unfold GHOST_elim_Let) []
+      apply (rule refine_IdD)
+      apply (refine_rcg bind_refine')
+      apply refine_dref_type
+      by (auto simp: pre_defs gen_cond_def) 
     done
-
+        
   lemma gen_dfs_eq_assert: "gen_dfs = gen_dfs_assert"
     unfolding gen_dfs_def gen_dfs_assert_def
     apply (rule antisym)
-    apply (unfold gen_step_def[abs_def] gen_step_assert_def[abs_def]) []
-    apply (unfold GHOST_elim_Let) []
-    apply (rule refine_IdD)
-    apply (refine_rcg, refine_dref_type, simp_all) []
+      
+    subgoal  
+      apply (unfold gen_step_def[abs_def] gen_step_assert_def[abs_def]) []
+      apply (unfold GHOST_elim_Let) []
+      apply (rule refine_IdD)
+      by (refine_rcg, refine_dref_type, simp_all) []
 
-    apply (subst (2) WHILE_eq_I_rwof)
-    apply (rule refine_IdD)
-    apply (refine_rcg, simp_all)
+    subgoal    
+      apply (subst (2) WHILE_eq_I_rwof)
+      apply (rule refine_IdD)
+      apply (refine_rcg, simp_all)
 
-    apply (simp (no_asm) only: gen_step_def[abs_def] gen_step_assert_def[abs_def]) []
-    apply (unfold GHOST_elim_Let) []
-    apply (rule refine_IdD)
-    apply (refine_rcg bind_refine')
-    apply (auto simp: pre_defs gen_cond_def)
+      apply (simp (no_asm) only: gen_step_def[abs_def] gen_step_assert_def[abs_def]) []
+      apply (unfold GHOST_elim_Let) []
+      apply (rule refine_IdD)
+      apply (refine_rcg bind_refine')
+      apply refine_dref_type  
+      by (auto simp: pre_defs gen_cond_def)
     done
 
   lemma gen_dfsT_eq_assert: "gen_dfsT = gen_dfsT_assert"
     unfolding gen_dfsT_def gen_dfsT_assert_def
     apply (rule antisym)
-    apply (unfold gen_step_def[abs_def] gen_step_assert_def[abs_def]) []
-    apply (unfold GHOST_elim_Let) []
-    apply (rule refine_IdD)
-    apply (refine_rcg, refine_dref_type, simp_all) []
+    subgoal  
+      apply (unfold gen_step_def[abs_def] gen_step_assert_def[abs_def]) []
+      apply (unfold GHOST_elim_Let) []
+      apply (rule refine_IdD)
+      by (refine_rcg, refine_dref_type, simp_all) []
 
-    apply (subst (2) WHILET_eq_I_rwof)
-    apply (rule refine_IdD)
-    apply (refine_rcg, simp_all)
-
-    apply (simp (no_asm) only: gen_step_def[abs_def] gen_step_assert_def[abs_def]) []
-    apply (unfold GHOST_elim_Let) []
-    apply (rule refine_IdD)
-    apply (refine_rcg bind_refine')
-    apply (auto simp: pre_defs gen_cond_def)
+    subgoal  
+      apply (subst (2) WHILET_eq_I_rwof)
+      apply (rule refine_IdD)
+      apply (refine_rcg, simp_all)
+  
+      apply (simp (no_asm) only: gen_step_def[abs_def] gen_step_assert_def[abs_def]) []
+      apply (unfold GHOST_elim_Let) []
+      apply (rule refine_IdD)
+      apply (refine_rcg bind_refine', refine_dref_type)
+      by (auto simp: pre_defs gen_cond_def)
     done
 
 
@@ -214,27 +225,29 @@ begin
     apply (rule ext)
     apply (rule iffI)
 
-    apply (rule rwof_step_refine)
-    apply (fold gen_dfs_assert_def gen_dfs_eq_assert, rule NF)
-    apply assumption
+    subgoal  
+      apply (rule rwof_step_refine)
+      apply (fold gen_dfs_assert_def gen_dfs_eq_assert, rule NF)
+      apply assumption
 
-    apply (simp (no_asm) only: gen_step_def[abs_def] gen_step_assert_def[abs_def]) []
-    apply (unfold GHOST_elim_Let) []
-    apply (rule leofI)
-    apply (rule refine_IdD)
-    apply (refine_rcg bind_refine',
-            auto simp: pre_defs gen_cond_def) []
+      apply (simp (no_asm) only: gen_step_def[abs_def] gen_step_assert_def[abs_def]) []
+      apply (unfold GHOST_elim_Let) []
+      apply (rule leofI)
+      apply (rule refine_IdD)
+      by (refine_rcg bind_refine', refine_dref_type,
+              auto simp: pre_defs gen_cond_def) []
 
-    apply (rule rwof_step_refine)
-    apply (fold gen_dfs_def, rule NF)
-    apply assumption
-
-    apply (simp (no_asm) only: gen_step_def[abs_def] gen_step_assert_def[abs_def]) []
-    apply (unfold GHOST_elim_Let) []
-    apply (rule leofI)
-    apply (rule refine_IdD)
-    apply (refine_rcg bind_refine',
-            auto simp: pre_defs gen_cond_def) []
+    subgoal  
+      apply (rule rwof_step_refine)
+      apply (fold gen_dfs_def, rule NF)
+      apply assumption
+  
+      apply (simp (no_asm) only: gen_step_def[abs_def] gen_step_assert_def[abs_def]) []
+      apply (unfold GHOST_elim_Let) []
+      apply (rule leofI)
+      apply (rule refine_IdD)
+      by (refine_rcg bind_refine', refine_dref_type,
+              auto simp: pre_defs gen_cond_def) []
     done
 
   lemma gen_dfs_le_gen_dfsT: "gen_dfs \<le> gen_dfsT" 
@@ -443,7 +456,7 @@ begin
            \<le> \<Down> V (SPEC (\<lambda>v0. v0 \<in> V0 \<and> \<not> gds_is_discovered gds v0 s))"
     apply (rule RES_refine)
     apply (simp add: Bex_def[symmetric], elim conjE)
-    apply (drule set_relD[OF V0_param], elim bexE)
+    apply (drule set_relD1[OF V0_param], elim bexE)
     apply (erule bexI[rotated])
     using is_discovered_param[param_fo, OF _ s_param]
     apply auto

@@ -1,6 +1,6 @@
 section \<open>Combination with Network Checker\<close>
 theory Edka_Checked_Impl
-imports NetCheck EdmondsKarp_Impl
+imports "../Flow_Networks/NetCheck" EdmondsKarp_Impl
 begin
 text \<open>
   In this theory, we combine the Edmonds-Karp implementation with the 
@@ -141,7 +141,7 @@ begin
     shows "compute_flow_val am cf \<le> (spec v. v = f.val)"
     unfolding val_by_adj_map[OF assms]
     unfolding compute_flow_val_def cf_get_def get_cap_def get_am_def
-    apply (refine_vcg sum_imp_correct)
+    apply (refine_vcg sum_impl_correct)
     apply (vc_solve simp: s_node)
     unfolding am_s_is_incoming[symmetric, OF assms] 
     by (auto simp: V_def)

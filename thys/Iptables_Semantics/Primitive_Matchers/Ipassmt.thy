@@ -5,7 +5,9 @@ imports Common_Primitive_Syntax
         "../../Simple_Firewall/Common/IP_Addr_WordInterval_toString" (*for debug pretty-printing*)
         "../../Automatic_Refinement/Lib/Misc" (*dependnecy!*)
 begin
-
+  hide_const Misc.uncurry
+  hide_fact Misc.uncurry_def
+    
   text\<open>A mapping from an interface to its assigned ip addresses in CIDR notation\<close>
   type_synonym 'i ipassignment="iface \<rightharpoonup> ('i word \<times> nat) list" (*technically, a set*)
 

@@ -11,7 +11,7 @@ begin
 
 hide_const (open) CollectionsV1.ahs_rel
 
-
+(*
 (* Select-function that selects element from set *)
 (* TODO: Move! Is select properly integrated into autoref? *)
   definition select where
@@ -22,7 +22,8 @@ lemma select_correct:
   unfolding select_def
   apply (refine_rcg refine_vcg)
   by auto
-
+*)
+  
   text {* Cleaning up the namespace a bit *}
   
   hide_type (open) Word.word

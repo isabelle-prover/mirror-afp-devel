@@ -2,6 +2,8 @@ chapter AFP
 
 session Allen_Calculus (AFP) = HOL +
   options [timeout = 600]
+  sessions
+    "HOL-Eisbach"
   theories
     xor_cal
     axioms

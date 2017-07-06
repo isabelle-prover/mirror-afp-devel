@@ -158,7 +158,45 @@ lemma monadic_nfoldli_rec:
   apply (simp add: br_def)
   done
 
+lemma monadic_nfoldli_arities[sepref_monadify_arity]:
+  "monadic_nfoldli \<equiv> \<lambda>\<^sub>2s c f \<sigma>. SP (monadic_nfoldli)$s$(\<lambda>\<^sub>2x. c$x)$(\<lambda>\<^sub>2x \<sigma>. f$x$\<sigma>)$\<sigma>"
+  by (simp_all)
 
+lemma monadic_nfoldli_comb[sepref_monadify_comb]:
+  "\<And>s c f \<sigma>. (monadic_nfoldli)$s$c$f$\<sigma> \<equiv> 
+    Refine_Basic.bind$(EVAL$s)$(\<lambda>\<^sub>2s. Refine_Basic.bind$(EVAL$\<sigma>)$(\<lambda>\<^sub>2\<sigma>. 
+      SP (monadic_nfoldli)$s$c$f$\<sigma>
+    ))"
+  by (simp_all)
+
+lemma list_rel_congD: 
+  assumes A: "(li,l)\<in>\<langle>S\<rangle>list_rel" 
+  shows "(li,l)\<in>\<langle>S\<inter>(set li\<times>set l)\<rangle>list_rel"
+proof -
+  {
+    fix Si0 S0
+    assume "set li \<subseteq> Si0" "set l \<subseteq> S0"
+    with A have "(li,l)\<in>\<langle>S\<inter>(Si0\<times>S0)\<rangle>list_rel"
+      by (induction rule: list_rel_induct) auto  
+  } from this[OF order_refl order_refl] show ?thesis .
+qed      
+    
+lemma monadic_nfoldli_refine[refine]:
+  assumes L: "(li, l) \<in> \<langle>S\<rangle>list_rel"
+    and  [simp]: "(si, s) \<in> R"
+    and CR[refine]: "\<And>si s. (si,s)\<in>R \<Longrightarrow> ci si \<le>\<Down>bool_rel (c s)"
+    and [refine]: "\<And>xi x si s. \<lbrakk> (xi,x)\<in>S; x\<in>set l; (si,s)\<in>R; inres (c s) True \<rbrakk> \<Longrightarrow> fi xi si \<le> \<Down>R (f x s)"
+  shows "monadic_nfoldli li ci fi si \<le> \<Down> R (monadic_nfoldli l c f s)"
+    
+  supply RELATESI[of "S\<inter>(set li\<times>set l)", refine_dref_RELATES]
+  supply RELATESI[of R, refine_dref_RELATES]
+  unfolding monadic_nfoldli_def  
+  apply (refine_rcg bind_refine')
+  apply refine_dref_type  
+  apply (vc_solve simp: list_rel_congD[OF L]) 
+  done
+    
+    
 lemma monadic_FOREACH_itsl:
   fixes R I tsl
   shows 
@@ -682,7 +720,69 @@ lemma monadify_plain_foldli[sepref_monadify_comb]:
       (\<lambda>\<^sub>2s. nfoldli$l$c$(\<lambda>\<^sub>2x s. (EVAL$(f x s)))$s))"
 by (simp add: foldli_eq_nfoldli)
 
+subsubsection \<open>Deforestation\<close>
+lemma nfoldli_filter_deforestation: 
+  "nfoldli (filter P xs) c f s = nfoldli xs c (\<lambda>x s. if P x then f x s else RETURN s) s"
+  apply (induction xs arbitrary: s)
+  by (auto simp: pw_eq_iff refine_pw_simps) 
+    
+lemma extend_list_of_filtered_set:
+  assumes [simp, intro!]: "finite S" 
+    and A: "distinct xs'" "set xs' = {x \<in> S. P x}"
+  obtains xs where "xs' = filter P xs" "distinct xs" "set xs = S"
+proof -
+  obtain xs2 where "{x\<in>S. \<not>P x} = set xs2" "distinct xs2"
+    using finite_distinct_list[where A="{x\<in>S. \<not>P x}"] by auto
+  with A have "xs' = filter P (xs'@xs2)" "distinct (xs'@xs2)" "set (xs'@xs2) = S"  
+    by (auto simp: filter_empty_conv)
+  from that[OF this] show ?thesis .
+qed    
 
+    
+lemma FOREACHc_filter_deforestation:
+  assumes FIN[simp, intro!]: "finite S"
+  shows "(FOREACHc {x\<in>S. P x} c f s) 
+    = FOREACHc S c (\<lambda>x s. if P x then f x s else RETURN s) s"
+  unfolding FOREACHc_def FOREACHci_def FOREACHoci_by_LIST_FOREACH LIST_FOREACH'_eq
+      LIST_FOREACH'_def it_to_sorted_list_def
+  subgoal       
+  proof (induction rule: antisym[consumes 0, case_names 1 2])
+    case 1
+    then show ?case
+      apply (rule le_ASSERTI)  
+      apply (rule ASSERT_leI, simp)  
+      apply (rule intro_spec_refine[where R=Id, simplified]; clarsimp)
+      apply (rule extend_list_of_filtered_set[OF FIN _ sym], assumption, assumption)
+      subgoal for xs' xs
+        apply (rule rhs_step_bind_SPEC[where R=Id and x'="xs", simplified])
+        applyS simp  
+        applyS (simp add: nfoldli_filter_deforestation)
+        done
+      done
+  next
+    case 2
+    then show ?case
+    apply (rule le_ASSERTI)  
+    apply (rule ASSERT_leI, (simp; fail))  
+    apply (rule intro_spec_refine[where R=Id, simplified]; clarsimp)
+    subgoal for xs  
+      apply (rule rhs_step_bind_SPEC[where R=Id and x'="filter P xs", simplified])
+      apply simp  
+      apply (simp add: nfoldli_filter_deforestation)
+      done
+    done  
+  qed
+  done    
+
+lemma FOREACHc_filter_deforestation2:
+  assumes [simp]: "distinct xs"
+  shows "(FOREACHc (set (filter P xs)) c f s) 
+    = FOREACHc (set xs) c (\<lambda>x s. if P x then f x s else RETURN s) s"
+  using FOREACHc_filter_deforestation[of "set xs", simplified, folded set_filter]
+  .  
+  
+  
+  
 subsection \<open>For Loops\<close>
 
 partial_function (heap) imp_for :: "nat \<Rightarrow> nat \<Rightarrow> ('a \<Rightarrow> bool Heap) \<Rightarrow> (nat \<Rightarrow> 'a \<Rightarrow> 'a Heap) \<Rightarrow> 'a \<Rightarrow> 'a Heap" where
@@ -799,6 +899,23 @@ lemma imp_for_down_no_cond[sepref_opt_simps]:
   
 end
 
+(* TODO: Move. Add rule for imp_for! *)    
+lemma imp_for'_rule:
+  assumes LESS: "l\<le>u"
+  assumes PRE: "P \<Longrightarrow>\<^sub>A I l s"
+  assumes STEP: "\<And>i s. \<lbrakk> l\<le>i; i<u \<rbrakk> \<Longrightarrow> <I i s> f i s <I (i+1)>"
+  shows "<P> imp_for' l u f s <I u>"
+  apply (rule Hoare_Triple.cons_pre_rule[OF PRE])  
+  using LESS 
+proof (induction arbitrary: s rule: inc_induct)  
+  case base thus ?case by sep_auto  
+next
+  case (step k)
+  show ?case using step.hyps 
+    by (sep_auto heap: STEP step.IH)  
+qed 
+  
+  
 text \<open>This lemma is used to manually convert a fold to a loop over indices. \<close>
 lemma fold_idx_conv: "fold f l s = fold (\<lambda>i. f (l!i)) [0..<length l] s"
 proof (induction l arbitrary: s rule: rev_induct)

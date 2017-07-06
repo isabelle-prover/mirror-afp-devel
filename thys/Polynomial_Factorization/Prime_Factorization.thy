@@ -71,7 +71,7 @@ definition prime_factorization_nat :: "nat \<Rightarrow> nat list" where
 
 definition divisors_nat :: "nat \<Rightarrow> nat list" where 
   "divisors_nat n \<equiv> if n = 0 then [] else 
-     remdups_adj (sort (map prod_list (sublists (prime_factorization_nat n))))"
+     remdups_adj (sort (map prod_list (subseqs (prime_factorization_nat n))))"
 
 definition divisors_int_pos :: "int \<Rightarrow> int list" where
   "divisors_int_pos x \<equiv> map int (divisors_nat (nat (abs x)))"
@@ -688,13 +688,13 @@ proof -
   } note dvd = this
   let ?dn = "set (divisors_nat n)"
   let ?mf = "\<lambda> (n :: nat). prime_factorization n"
-  have "?dn = prod_list ` set (sublists (prime_factorization_nat n))" unfolding divisors_nat_def
+  have "?dn = prod_list ` set (subseqs (prime_factorization_nat n))" unfolding divisors_nat_def
     using n by auto
-  also have "\<dots> = prod_mset ` mset ` set (sublists (prime_factorization_nat n))"
+  also have "\<dots> = prod_mset ` mset ` set (subseqs (prime_factorization_nat n))"
     by (force simp: prod_mset_prod_list)
-  also have "mset ` set (sublists (prime_factorization_nat n))
+  also have "mset ` set (subseqs (prime_factorization_nat n))
     = { ps. ps \<subseteq># mset (prime_factorization_nat n)}" 
-    unfolding multiset_of_sublists by simp
+    unfolding multiset_of_subseqs by simp
   also have "\<dots> = { ps. ps \<subseteq># ?mf n}"
     thm multiset_prime_factorization_code[symmetric]
     unfolding multiset_prime_factorization_nat_correct[symmetric] by auto

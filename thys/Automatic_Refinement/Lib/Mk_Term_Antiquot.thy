@@ -1,6 +1,6 @@
 section {* Antiquotation to Build Terms *}
 theory Mk_Term_Antiquot
-imports Refine_Util
+imports Refine_Util_Bootstrap1
 begin
 
 ML {*
@@ -17,6 +17,8 @@ ML {*
   Limitations:
     * The type-inference is not complete, i.e., it may fail to detect some type-errors,
       resulting in untypable terms to be created.
+
+    * Does not work if inserted terms contain loose bound variables (FIXME)
 
   TODO:
     * We could also provide explicit type variables

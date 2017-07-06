@@ -2,6 +2,10 @@ chapter AFP
 
 session UpDown_Scheme (AFP) = "HOL-Probability" +
   options [timeout = 600]
+  sessions
+    "HOL-Imperative_HOL"
+    Automatic_Refinement
+    Separation_Logic_Imperative_HOL
   theories [document = false]
     "../Separation_Logic_Imperative_HOL/Sep_Main"
   theories

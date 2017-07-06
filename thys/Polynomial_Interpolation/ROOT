@@ -2,6 +2,8 @@ chapter AFP
 
 session "Polynomial_Interpolation" (AFP) = "HOL-Computational_Algebra" +
   options [timeout = 600]
+  sessions
+    Sqrt_Babylonian
   theories [document = false]
     "~~/src/HOL/Computational_Algebra/Polynomial"
     "~~/src/HOL/Library/Monad_Syntax"

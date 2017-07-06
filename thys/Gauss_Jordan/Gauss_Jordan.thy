@@ -80,18 +80,18 @@ subsection{*Properties about rref and the greatest nonzero row.*}
 
 lemma greatest_plus_one_eq_0:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}" and k::nat
-  assumes "Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A)) = nrows A"
-  shows "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 = 0"
+  assumes "Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A)) = nrows A"
+  shows "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 = 0"
 proof -
-  have "to_nat (GREATEST' R. \<not> is_zero_row_upt_k R k A) + 1 = card (UNIV::'rows set)"
+  have "to_nat (GREATEST R. \<not> is_zero_row_upt_k R k A) + 1 = card (UNIV::'rows set)"
     using assms unfolding nrows_def by fastforce
-  thus "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + (1::'rows) = (0::'rows)"
+  thus "(GREATEST n. \<not> is_zero_row_upt_k n k A) + (1::'rows) = (0::'rows)"
     using to_nat_plus_one_less_card by fastforce
 qed
 
 lemma from_nat_to_nat_greatest:
   fixes A::"'a::{zero}^'columns::{mod_type}^'rows::{mod_type}"
-  shows "from_nat (Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A))) = (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1"
+  shows "from_nat (Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A))) = (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1"
   unfolding Suc_eq_plus1
   unfolding to_nat_1[where ?'a='rows, symmetric]
   unfolding add_to_nat_def ..
@@ -101,27 +101,27 @@ lemma greatest_less_zero_row:
   assumes r: "reduced_row_echelon_form_upt_k A k"
   and zero_i: "is_zero_row_upt_k i k A"
   and not_all_zero: "\<not> (\<forall>a. is_zero_row_upt_k a k A)"
-  shows "(GREATEST' m. \<not> is_zero_row_upt_k m k A) < i"
+  shows "(GREATEST m. \<not> is_zero_row_upt_k m k A) < i"
 proof (rule ccontr)
-  assume not_less_i: "\<not> (GREATEST' m. \<not> is_zero_row_upt_k m k A) < i"
-  have i_less_greatest: "i < (GREATEST' m. \<not> is_zero_row_upt_k m k A)"
-    by (metis not_less_i dual_linorder.neq_iff Greatest'I not_all_zero zero_i)
-  have "is_zero_row_upt_k (GREATEST' m. \<not> is_zero_row_upt_k m k A) k A"
+  assume not_less_i: "\<not> (GREATEST m. \<not> is_zero_row_upt_k m k A) < i"
+  have i_less_greatest: "i < (GREATEST m. \<not> is_zero_row_upt_k m k A)"
+    by (metis (mono_tags, lifting) GreatestI neqE not_all_zero not_less_i zero_i) 
+  have "is_zero_row_upt_k (GREATEST m. \<not> is_zero_row_upt_k m k A) k A"
     using r zero_i i_less_greatest unfolding reduced_row_echelon_form_upt_k_def by blast
-  thus False using Greatest'I_ex not_all_zero by fast
+  thus False using GreatestI_ex not_all_zero by fast
 qed
 
 lemma rref_suc_if_zero_below_greatest:
   fixes A::"'a::{one, zero}^'n::{mod_type}^'m::{finite,one,plus,linorder}"
   assumes r: "reduced_row_echelon_form_upt_k A k"
   and not_all_zero: "\<not> (\<forall>a. is_zero_row_upt_k a k A)" (*This premisse is necessary to assure the existence of the Greatest*)
-  and all_zero_below_greatest: "\<forall>a. a>(GREATEST' m. \<not> is_zero_row_upt_k m k A) \<longrightarrow> is_zero_row_upt_k a (Suc k) A"
+  and all_zero_below_greatest: "\<forall>a. a>(GREATEST m. \<not> is_zero_row_upt_k m k A) \<longrightarrow> is_zero_row_upt_k a (Suc k) A"
   shows "reduced_row_echelon_form_upt_k A (Suc k)"
 proof (rule reduced_row_echelon_form_upt_k_intro, auto)
   fix i j assume zero_i_suc: "is_zero_row_upt_k i (Suc k) A" and i_le_j: "i < j"
   have zero_i: "is_zero_row_upt_k i k A" using zero_i_suc unfolding is_zero_row_upt_k_def by simp
-  have "i>(GREATEST' m. \<not> is_zero_row_upt_k m k A)" by (rule greatest_less_zero_row[OF r zero_i not_all_zero])
-  hence "j>(GREATEST' m. \<not> is_zero_row_upt_k m k A)" using i_le_j by simp
+  have "i>(GREATEST m. \<not> is_zero_row_upt_k m k A)" by (rule greatest_less_zero_row[OF r zero_i not_all_zero])
+  hence "j>(GREATEST m. \<not> is_zero_row_upt_k m k A)" using i_le_j by simp
   thus "is_zero_row_upt_k j (Suc k) A" using all_zero_below_greatest by fast
 next
   fix i assume not_zero_i: "\<not> is_zero_row_upt_k i (Suc k) A"
@@ -153,27 +153,27 @@ lemma rref_suc_if_all_rows_not_zero:
 proof (rule rref_suc_if_zero_below_greatest)
   show "reduced_row_echelon_form_upt_k A k" using r .
   show "\<not> (\<forall>a. is_zero_row_upt_k a k A)" using all_not_zero by auto
-  show "\<forall>a>GREATEST' m. \<not> is_zero_row_upt_k m k A. is_zero_row_upt_k a (Suc k) A"
-    using all_not_zero not_greater_Greatest' by blast
+  show "\<forall>a>GREATEST m. \<not> is_zero_row_upt_k m k A. is_zero_row_upt_k a (Suc k) A"
+    using all_not_zero not_greater_Greatest by blast
 qed
 
 
 lemma greatest_ge_nonzero_row:
   fixes A::"'a::{zero}^'n::{mod_type}^'m::{finite,linorder}"
   assumes "\<not> is_zero_row_upt_k i k A"
-  shows "i \<le> (GREATEST' m. \<not> is_zero_row_upt_k m k A)" using Greatest'_ge[of "(\<lambda>m. \<not> is_zero_row_upt_k m k A)", OF assms] .
+  shows "i \<le> (GREATEST m. \<not> is_zero_row_upt_k m k A)" using Greatest_ge[of "(\<lambda>m. \<not> is_zero_row_upt_k m k A)", OF assms] .
 
 lemma greatest_ge_nonzero_row':
   fixes A::"'a::{zero, one}^'n::{mod_type}^'m::{finite, linorder, one, plus}"
   assumes r: "reduced_row_echelon_form_upt_k A k"
-  and i: "i \<le> (GREATEST' m. \<not> is_zero_row_upt_k m k A)"
+  and i: "i \<le> (GREATEST m. \<not> is_zero_row_upt_k m k A)"
   and not_all_zero: "\<not> (\<forall>a. is_zero_row_upt_k a k A)"
   shows "\<not> is_zero_row_upt_k i k A"
   using greatest_less_zero_row[OF r] i not_all_zero by fastforce
 
 corollary row_greater_greatest_is_zero:
   fixes A::"'a::{zero}^'n::{mod_type}^'m::{finite,linorder}"
-  assumes "(GREATEST' m. \<not> is_zero_row_upt_k m k A) < i"
+  assumes "(GREATEST m. \<not> is_zero_row_upt_k m k A) < i"
   shows "is_zero_row_upt_k i k A" using greatest_ge_nonzero_row assms by fastforce
 
 subsection{*The proof of its correctness*}
@@ -204,37 +204,37 @@ lemma Gauss_Jordan_in_ij_preserves_previous_elements:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}"
   assumes r: "reduced_row_echelon_form_upt_k A k"
   and not_zero_a: "\<not> is_zero_row_upt_k a k A"
-  and exists_m: "\<exists>m. A $ m $ (from_nat k) \<noteq> 0 \<and> (GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1 \<le> m"
-  and Greatest_plus_1: "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<noteq> 0"
+  and exists_m: "\<exists>m. A $ m $ (from_nat k) \<noteq> 0 \<and> (GREATEST m. \<not> is_zero_row_upt_k m k A) + 1 \<le> m"
+  and Greatest_plus_1: "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<noteq> 0"
   and j_le_k: "to_nat j < k"
-  shows "Gauss_Jordan_in_ij A ((GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1) (from_nat k) $ i $ j = A $ i $ j"
+  shows "Gauss_Jordan_in_ij A ((GREATEST m. \<not> is_zero_row_upt_k m k A) + 1) (from_nat k) $ i $ j = A $ i $ j"
 proof (unfold Gauss_Jordan_in_ij_def Let_def interchange_rows_def mult_row_def row_add_def, auto)
-  def last_nonzero_row == "(GREATEST' m. \<not> is_zero_row_upt_k m k A)"
+  def last_nonzero_row == "(GREATEST m. \<not> is_zero_row_upt_k m k A)"
   have "last_nonzero_row < (last_nonzero_row + 1)" by (rule  Suc_le'[of last_nonzero_row], auto simp add: last_nonzero_row_def Greatest_plus_1)  
   hence zero_row: "is_zero_row_upt_k (last_nonzero_row + 1) k A"
     using not_le greatest_ge_nonzero_row last_nonzero_row_def by fastforce
   hence A_greatest_0: "A $ (last_nonzero_row + 1) $ j = 0" unfolding is_zero_row_upt_k_def last_nonzero_row_def using j_le_k by auto
   then show "A $ (last_nonzero_row + 1) $ j / A $ (last_nonzero_row + 1) $ from_nat k = A $ (last_nonzero_row + 1) $ j"
     by simp
-  show zero: "A $ (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n) $ j = 0"
+  show zero: "A $ (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n) $ j = 0"
   proof -
-    def least_n \<equiv> "(LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n)"
-    have "\<exists>n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n" by (metis exists_m)
-    from this obtain n where n1: "A $ n $ from_nat k \<noteq> 0"  and n2: "(GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n" by blast
-    have "(GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1 \<le> least_n"
+    def least_n \<equiv> "(LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n)"
+    have "\<exists>n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n" by (metis exists_m)
+    from this obtain n where n1: "A $ n $ from_nat k \<noteq> 0"  and n2: "(GREATEST m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n" by blast
+    have "(GREATEST m. \<not> is_zero_row_upt_k m k A) + 1 \<le> least_n"
       by (metis (lifting, full_types) LeastI_ex least_n_def n1 n2)
     hence "is_zero_row_upt_k least_n k A" using last_nonzero_row_def less_le rref_upt_condition1[OF r] zero_row by metis
     thus "A $ least_n $ j = 0" unfolding is_zero_row_upt_k_def using j_le_k by simp
   qed
-  show "A $ ((GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1) $ j -
-    A $ ((GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1) $ from_nat k *
-    A $ (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n) $ j /
-    A $ (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n) $ from_nat k =
-    A $ (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n) $ j"
+  show "A $ ((GREATEST m. \<not> is_zero_row_upt_k m k A) + 1) $ j -
+    A $ ((GREATEST m. \<not> is_zero_row_upt_k m k A) + 1) $ from_nat k *
+    A $ (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n) $ j /
+    A $ (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n) $ from_nat k =
+    A $ (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n) $ j"
     unfolding last_nonzero_row_def[symmetric] unfolding A_greatest_0 unfolding last_nonzero_row_def unfolding zero by fastforce
-  show "A $ (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n) $ j /
-    A $ (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n) $ from_nat k =
-    A $ ((GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1) $ j" unfolding zero using A_greatest_0 unfolding last_nonzero_row_def by simp
+  show "A $ (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n) $ j /
+    A $ (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n) $ from_nat k =
+    A $ ((GREATEST m. \<not> is_zero_row_upt_k m k A) + 1) $ j" unfolding zero using A_greatest_0 unfolding last_nonzero_row_def by simp
 qed
 
 
@@ -262,30 +262,30 @@ lemma is_zero_after_Gauss:
   assumes zero_a: "is_zero_row_upt_k a k A"
   and not_zero_m: "\<not> is_zero_row_upt_k m k A"
   and r: "reduced_row_echelon_form_upt_k A k"
-  and greatest_less_ma: "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<le> ma"
+  and greatest_less_ma: "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<le> ma"
   and A_ma_k_not_zero: "A $ ma $ from_nat k \<noteq> 0"
-  shows "is_zero_row_upt_k a k (Gauss_Jordan_in_ij A ((GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1) (from_nat k))"
+  shows "is_zero_row_upt_k a k (Gauss_Jordan_in_ij A ((GREATEST m. \<not> is_zero_row_upt_k m k A) + 1) (from_nat k))"
 proof (subst is_zero_row_upt_k_def, clarify)
   fix j::'n assume j_less_k: "to_nat j < k"
-  have not_zero_g: "(GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1 \<noteq> 0"
+  have not_zero_g: "(GREATEST m. \<not> is_zero_row_upt_k m k A) + 1 \<noteq> 0"
   proof (rule ccontr, simp)
-    assume "(GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1 = 0"
-    hence "(GREATEST' m. \<not> is_zero_row_upt_k m k A) = -1" using a_eq_minus_1 by blast
-    hence "a\<le>(GREATEST' m. \<not> is_zero_row_upt_k m k A)" using Greatest_is_minus_1 by auto
+    assume "(GREATEST m. \<not> is_zero_row_upt_k m k A) + 1 = 0"
+    hence "(GREATEST m. \<not> is_zero_row_upt_k m k A) = -1" using a_eq_minus_1 by blast
+    hence "a\<le>(GREATEST m. \<not> is_zero_row_upt_k m k A)" using Greatest_is_minus_1 by auto
     hence "\<not> is_zero_row_upt_k a k A" using greatest_less_zero_row[OF r] not_zero_m by fastforce
     thus False using zero_a by contradiction
   qed
-  have "Gauss_Jordan_in_ij A ((GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1) (from_nat k) $ a $ j = A $ a $ j"
+  have "Gauss_Jordan_in_ij A ((GREATEST m. \<not> is_zero_row_upt_k m k A) + 1) (from_nat k) $ a $ j = A $ a $ j"
     by (rule Gauss_Jordan_in_ij_preserves_previous_elements[OF r not_zero_m _ not_zero_g j_less_k], auto intro!: A_ma_k_not_zero greatest_less_ma)
   also have "... = 0" 
     using zero_a j_less_k unfolding is_zero_row_upt_k_def by blast
-  finally show "Gauss_Jordan_in_ij A ((GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1) (from_nat k) $ a $ j = 0" .
+  finally show "Gauss_Jordan_in_ij A ((GREATEST m. \<not> is_zero_row_upt_k m k A) + 1) (from_nat k) $ a $ j = 0" .
 qed
 
 
 lemma all_zero_imp_Gauss_Jordan_column_not_zero_in_row_0:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}" and k::nat
-  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)"
+  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)"
   defines B:"B\<equiv>(snd (Gauss_Jordan_column_k (ia,A) k))"
   assumes all_zero: "\<forall>n. is_zero_row_upt_k n k A"
   and not_zero_i: "\<not> is_zero_row_upt_k i (Suc k) B"
@@ -361,18 +361,18 @@ qed
 
 lemma condition_1_part_3:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}" and k::nat
-  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)"
+  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)"
   defines B:"B \<equiv>(snd (Gauss_Jordan_column_k (ia,A) k))"
   assumes rref: "reduced_row_echelon_form_upt_k A k"
   and i_less_j: "i<j"
   and not_zero_m: "\<not> is_zero_row_upt_k m k A"
-  and zero_below_greatest: "\<forall>m\<ge>(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1. A $ m $ from_nat k = 0"
+  and zero_below_greatest: "\<forall>m\<ge>(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1. A $ m $ from_nat k = 0"
   and zero_i_suc_k: "is_zero_row_upt_k i (Suc k) B"
   shows "is_zero_row_upt_k j (Suc k) A"
 proof (unfold is_zero_row_upt_k_def, auto)
   fix ja::'columns
   assume ja_less_suc_k: "to_nat ja < Suc k"
-  have ia2: "ia=to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1" unfolding ia using not_zero_m by presburger
+  have ia2: "ia=to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1" unfolding ia using not_zero_m by presburger
   have B_eq_A: "B=A"
     unfolding B Gauss_Jordan_column_k_def Let_def fst_conv snd_conv ia2
     apply simp
@@ -386,8 +386,8 @@ proof (unfold is_zero_row_upt_k_def, auto)
   next
     case False
     hence k_eq_ja:"k = to_nat ja" using ja_less_suc_k by auto
-    have "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<le> j"
-    proof (rule le_Suc, rule Greatest'I2)
+    have "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<le> j"
+    proof (rule le_Suc, rule GreatestI2)
       show "\<not> is_zero_row_upt_k m k A" using not_zero_m .
       fix x assume not_zero_xkA: "\<not> is_zero_row_upt_k x k A" show "x < j"
         using rref_upt_condition1[OF rref] not_zero_xkA zero_jkA neq_iff by blast
@@ -398,22 +398,22 @@ qed
 
 lemma condition_1_part_4:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}" and k::nat
-  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)"
+  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)"
   defines B:"B \<equiv>(snd (Gauss_Jordan_column_k (ia,A) k))"
   assumes rref: "reduced_row_echelon_form_upt_k A k"
   and zero_i_suc_k: "is_zero_row_upt_k i (Suc k) B" 
   and i_less_j: "i<j"
   and not_zero_m: "\<not> is_zero_row_upt_k m k A"
-  and greatest_eq_card: "Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A)) = nrows A"
+  and greatest_eq_card: "Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A)) = nrows A"
   shows "is_zero_row_upt_k j (Suc k) A"
 proof -
-  have ia2: "ia=to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1" unfolding ia using not_zero_m by presburger
+  have ia2: "ia=to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1" unfolding ia using not_zero_m by presburger
   have B_eq_A: "B=A"
     unfolding B Gauss_Jordan_column_k_def Let_def fst_conv snd_conv ia2
     unfolding from_nat_to_nat_greatest using greatest_eq_card nrows_def by force
   have rref_Suc: "reduced_row_echelon_form_upt_k A (Suc k)" 
   proof (rule rref_suc_if_zero_below_greatest[OF rref])
-    show "\<forall>a>GREATEST' m. \<not> is_zero_row_upt_k m k A. is_zero_row_upt_k a (Suc k) A"
+    show "\<forall>a>GREATEST m. \<not> is_zero_row_upt_k m k A. is_zero_row_upt_k a (Suc k) A"
       using greatest_eq_card not_less_eq to_nat_less_card to_nat_mono nrows_def by metis
     show "\<not> (\<forall>a. is_zero_row_upt_k a k A)" using not_zero_m by fast
   qed
@@ -423,20 +423,20 @@ qed
 
 lemma condition_1_part_5:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}" and k::nat
-  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)"
+  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)"
   defines B:"B \<equiv>(snd (Gauss_Jordan_column_k (ia,A) k))"
   assumes rref: "reduced_row_echelon_form_upt_k A k"
   and zero_i_suc_k: "is_zero_row_upt_k i (Suc k) B" 
   and i_less_j: "i<j"
   and not_zero_m: "\<not> is_zero_row_upt_k m k A"
-  and greatest_not_card: "Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A)) \<noteq> nrows A"
-  and greatest_less_ma: "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<le> ma"
+  and greatest_not_card: "Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A)) \<noteq> nrows A"
+  and greatest_less_ma: "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<le> ma"
   and A_ma_k_not_zero: "A $ ma $ from_nat k \<noteq> 0"
-  shows "is_zero_row_upt_k j (Suc k) (Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k))"
+  shows "is_zero_row_upt_k j (Suc k) (Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k))"
 proof (subst (1) is_zero_row_upt_k_def, clarify)
   fix ja::'columns assume ja_less_suc_k: "to_nat ja < Suc k"
-  have ia2: "ia=to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1" unfolding ia using not_zero_m by presburger
-  have B_eq_Gauss_ij: "B = Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k)"
+  have ia2: "ia=to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1" unfolding ia using not_zero_m by presburger
+  have B_eq_Gauss_ij: "B = Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k)"
     unfolding B Gauss_Jordan_column_k_def 
     unfolding ia2 Let_def fst_conv snd_conv
     using greatest_not_card greatest_less_ma A_ma_k_not_zero
@@ -445,27 +445,27 @@ proof (subst (1) is_zero_row_upt_k_def, clarify)
   proof (unfold is_zero_row_upt_k_def, clarify)
     fix a::'columns
     assume a_less_k: "to_nat a < k"
-    have "A $ i $ a = Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ a" 
+    have "A $ i $ a = Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ a" 
     proof (rule Gauss_Jordan_in_ij_preserves_previous_elements[symmetric])
       show "reduced_row_echelon_form_upt_k A k" using rref .
       show "\<not> is_zero_row_upt_k m k A" using not_zero_m .
-      show "\<exists>n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<le> n" using A_ma_k_not_zero greatest_less_ma by blast
-      show "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<noteq> 0" using suc_not_zero greatest_not_card unfolding nrows_def by simp
+      show "\<exists>n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<le> n" using A_ma_k_not_zero greatest_less_ma by blast
+      show "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<noteq> 0" using suc_not_zero greatest_not_card unfolding nrows_def by simp
       show "to_nat a < k" using a_less_k .
     qed
     also have "... = 0" unfolding B_eq_Gauss_ij[symmetric] using zero_i_suc_k a_less_k unfolding is_zero_row_upt_k_def by simp
     finally show "A $ i $ a = 0" .
   qed
   hence zero_jkA: "is_zero_row_upt_k j k A" using rref_upt_condition1[OF rref] i_less_j by blast
-  show "Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ j $ ja = 0"
+  show "Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ j $ ja = 0"
   proof (cases "to_nat ja < k")
     case True
-    have "Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ j $ ja = A $ j $ ja" 
+    have "Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ j $ ja = A $ j $ ja" 
     proof (rule Gauss_Jordan_in_ij_preserves_previous_elements)
       show "reduced_row_echelon_form_upt_k A k" using rref .
       show "\<not> is_zero_row_upt_k m k A" using not_zero_m .
-      show "\<exists>n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<le> n" using A_ma_k_not_zero greatest_less_ma by blast
-      show "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<noteq> 0" using suc_not_zero greatest_not_card unfolding nrows_def by simp       
+      show "\<exists>n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<le> n" using A_ma_k_not_zero greatest_less_ma by blast
+      show "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<noteq> 0" using suc_not_zero greatest_not_card unfolding nrows_def by simp       
       show "to_nat ja < k" using True .
     qed
     also have "... = 0" using zero_jkA True unfolding is_zero_row_upt_k_def by fast
@@ -474,14 +474,14 @@ proof (subst (1) is_zero_row_upt_k_def, clarify)
     case False hence k_eq_ja: "k = to_nat ja" using ja_less_suc_k by simp
     show ?thesis 
     proof (unfold k_eq_ja from_nat_to_nat_id, rule Gauss_Jordan_in_ij_0)
-      show "\<exists>n. A $ n $ ja \<noteq> 0 \<and> (GREATEST' n. \<not> is_zero_row_upt_k n (to_nat ja) A) + 1 \<le> n"
+      show "\<exists>n. A $ n $ ja \<noteq> 0 \<and> (GREATEST n. \<not> is_zero_row_upt_k n (to_nat ja) A) + 1 \<le> n"
         using A_ma_k_not_zero greatest_less_ma k_eq_ja to_nat_from_nat by auto
-      show "j \<noteq> (GREATEST' n. \<not> is_zero_row_upt_k n (to_nat ja) A) + 1" 
+      show "j \<noteq> (GREATEST n. \<not> is_zero_row_upt_k n (to_nat ja) A) + 1" 
       proof (unfold k_eq_ja[symmetric], rule ccontr)
-        assume "\<not> j \<noteq> (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1"
-        hence j_eq: "j = (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1" by fast
-        hence "i < (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1" using i_less_j by force
-        hence i_le_greatest: "i \<le> (GREATEST' n. \<not> is_zero_row_upt_k n k A)" using le_Suc dual_linorder.not_less by auto
+        assume "\<not> j \<noteq> (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1"
+        hence j_eq: "j = (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1" by fast
+        hence "i < (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1" using i_less_j by force
+        hence i_le_greatest: "i \<le> (GREATEST n. \<not> is_zero_row_upt_k n k A)" using le_Suc not_less by auto
         hence "\<not> is_zero_row_upt_k i k A" using greatest_ge_nonzero_row'[OF rref] not_zero_m by fast
         thus "False" using zero_ikA by contradiction
       qed
@@ -492,7 +492,7 @@ qed
 
 lemma condition_1:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}" and k::nat
-  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)"
+  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)"
   defines B:"B\<equiv>(snd (Gauss_Jordan_column_k (ia,A) k))"
   assumes rref: "reduced_row_echelon_form_upt_k A k"
   and zero_i_suc_k: "is_zero_row_upt_k i (Suc k) B" and i_less_j: "i < j"
@@ -509,21 +509,21 @@ next
     using condition_1_part_2[OF j_not_0 all_zero Amk_not_zero] .
 next
   fix m assume not_zero_mkA: "\<not> is_zero_row_upt_k m k A"
-    and zero_below_greatest: "\<forall>m\<ge>(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1. A $ m $ from_nat k = 0"
+    and zero_below_greatest: "\<forall>m\<ge>(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1. A $ m $ from_nat k = 0"
   show "is_zero_row_upt_k j (Suc k) A" using condition_1_part_3[OF rref i_less_j not_zero_mkA zero_below_greatest] zero_i_suc_k
     unfolding B ia .
 next
   fix m assume not_zero_m: "\<not> is_zero_row_upt_k m k A"
-    and greatest_eq_card: "Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A)) =  nrows A"
+    and greatest_eq_card: "Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A)) =  nrows A"
   show "is_zero_row_upt_k j (Suc k) A"
     using condition_1_part_4[OF rref _ i_less_j not_zero_m greatest_eq_card] zero_i_suc_k unfolding B ia nrows_def .
 next
   fix m ma
   assume not_zero_m: "\<not> is_zero_row_upt_k m k A"
-    and greatest_not_card: "Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A)) \<noteq> nrows A"
-and greatest_less_ma: "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<le> ma"
+    and greatest_not_card: "Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A)) \<noteq> nrows A"
+and greatest_less_ma: "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<le> ma"
     and A_ma_k_not_zero: "A $ ma $ from_nat k \<noteq> 0"
-  show "is_zero_row_upt_k j (Suc k) (Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k))"
+  show "is_zero_row_upt_k j (Suc k) (Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k))"
     using condition_1_part_5[OF rref _ i_less_j not_zero_m greatest_not_card greatest_less_ma A_ma_k_not_zero]
     using zero_i_suc_k
     unfolding B ia .
@@ -533,7 +533,7 @@ qed
 
 lemma condition_2_part_1:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}" and k::nat
-  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)"
+  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)"
   defines B:"B\<equiv>(snd (Gauss_Jordan_column_k (ia,A) k))"
   assumes not_zero_i_suc_k: "\<not> is_zero_row_upt_k i (Suc k) B"
   and all_zero: "\<forall>m. is_zero_row_upt_k m k A"
@@ -548,7 +548,7 @@ qed
 
 lemma condition_2_part_2:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}" and k::nat
-  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)"
+  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)"
   defines B:"B\<equiv>(snd (Gauss_Jordan_column_k (ia,A) k))"
   assumes not_zero_i_suc_k: "\<not> is_zero_row_upt_k i (Suc k) B"
   and all_zero: "\<forall>m. is_zero_row_upt_k m k A"
@@ -581,30 +581,30 @@ qed
 
 lemma condition_2_part_3:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}" and k::nat
-  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)"
+  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)"
   defines B:"B\<equiv>(snd (Gauss_Jordan_column_k (ia,A) k))"
   assumes rref: "reduced_row_echelon_form_upt_k A k"
   and not_zero_i_suc_k: "\<not> is_zero_row_upt_k i (Suc k) B"
   and not_zero_m: "\<not> is_zero_row_upt_k m k A"
-  and zero_below_greatest: "\<forall>m\<ge>(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1. A $ m $ from_nat k = 0"
+  and zero_below_greatest: "\<forall>m\<ge>(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1. A $ m $ from_nat k = 0"
   shows "A $ i $ (LEAST k. A $ i $ k \<noteq> 0) = 1"
 proof -
-  have ia2: "ia=to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1" unfolding ia using not_zero_m by presburger
+  have ia2: "ia=to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1" unfolding ia using not_zero_m by presburger
   have B_eq_A: "B=A"
     unfolding B Gauss_Jordan_column_k_def Let_def fst_conv snd_conv ia2
     apply simp
     unfolding from_nat_to_nat_greatest using zero_below_greatest by blast
   show ?thesis
-  proof (cases "to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 < CARD('rows)")
+  proof (cases "to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 < CARD('rows)")
     case True
     have "\<not> is_zero_row_upt_k i k A"
     proof -
-      have "i<(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1"
+      have "i<(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1"
       proof (rule ccontr)
-        assume "\<not> i < (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1"
-        hence i: "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<le> i" by simp
-        hence "(GREATEST' n. \<not> is_zero_row_upt_k n k A) < i" using le_Suc' True by simp
-        hence zero_i: "is_zero_row_upt_k i k A" using not_greater_Greatest' by blast
+        assume "\<not> i < (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1"
+        hence i: "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<le> i" by simp
+        hence "(GREATEST n. \<not> is_zero_row_upt_k n k A) < i" using le_Suc' True by simp
+        hence zero_i: "is_zero_row_upt_k i k A" using not_greater_Greatest by blast
         hence "is_zero_row_upt_k i (Suc k) A" 
         proof (unfold is_zero_row_upt_k_def, clarify)
           fix j::'columns 
@@ -615,13 +615,13 @@ proof -
         qed        
         thus False using not_zero_i_suc_k unfolding B_eq_A by contradiction
       qed
-      hence "i\<le>(GREATEST' n. \<not> is_zero_row_upt_k n k A)" using dual_linorder.not_le le_Suc by metis
+      hence "i\<le>(GREATEST n. \<not> is_zero_row_upt_k n k A)" using not_le le_Suc by metis
       thus ?thesis using greatest_ge_nonzero_row'[OF rref] not_zero_m by fast
     qed
     thus ?thesis using rref_upt_condition2[OF rref] by blast
   next
     case False
-    have greatest_plus_one_eq_0: "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 = 0"
+    have greatest_plus_one_eq_0: "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 = 0"
       using to_nat_plus_one_less_card False by blast
     have "\<not> is_zero_row_upt_k i k A"
     proof (rule not_is_zero_row_upt_suc)
@@ -638,7 +638,7 @@ lemma condition_2_part_4:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}" and k::nat
   assumes rref: "reduced_row_echelon_form_upt_k A k"
   and not_zero_m: "\<not> is_zero_row_upt_k m k A"
-  and greatest_eq_card: "Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A)) = nrows A"
+  and greatest_eq_card: "Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A)) = nrows A"
   shows "A $ i $ (LEAST k. A $ i $ k \<noteq> 0) = 1"
 proof -
   have "\<not> is_zero_row_upt_k i k A"
@@ -647,9 +647,9 @@ proof -
     hence zero_minus_1: "is_zero_row_upt_k (-1) k A"
       using rref_upt_condition1[OF rref]
       using Greatest_is_minus_1 neq_le_trans by metis 
-    have "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 = 0" using greatest_plus_one_eq_0[OF greatest_eq_card] .
-    hence greatest_eq_minus_1: "(GREATEST' n. \<not> is_zero_row_upt_k n k A) = -1" using a_eq_minus_1 by fast
-    have "\<not> is_zero_row_upt_k (GREATEST' n. \<not> is_zero_row_upt_k n k A) k A"
+    have "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 = 0" using greatest_plus_one_eq_0[OF greatest_eq_card] .
+    hence greatest_eq_minus_1: "(GREATEST n. \<not> is_zero_row_upt_k n k A) = -1" using a_eq_minus_1 by fast
+    have "\<not> is_zero_row_upt_k (GREATEST n. \<not> is_zero_row_upt_k n k A) k A"
       by (rule greatest_ge_nonzero_row'[OF rref _ ], auto intro!: not_zero_m)
     thus "False" using zero_minus_1 unfolding greatest_eq_minus_1 by contradiction
   qed
@@ -659,23 +659,23 @@ qed
 
 lemma condition_2_part_5:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}" and k::nat
-  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)"
+  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)"
   defines B:"B\<equiv>(snd (Gauss_Jordan_column_k (ia,A) k))"
   assumes rref: "reduced_row_echelon_form_upt_k A k"
   and not_zero_i_suc_k: "\<not> is_zero_row_upt_k i (Suc k) B"
   and not_zero_m: "\<not> is_zero_row_upt_k m k A"
-  and greatest_noteq_card: "Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A)) \<noteq> nrows A"
-  and greatest_less_ma: "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<le> ma"
+  and greatest_noteq_card: "Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A)) \<noteq> nrows A"
+  and greatest_less_ma: "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<le> ma"
   and A_ma_k_not_zero: "A $ ma $ from_nat k \<noteq> 0"
-  shows "Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $
-  (LEAST ka. Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ ka \<noteq> 0) = 1"
+  shows "Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $
+  (LEAST ka. Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ ka \<noteq> 0) = 1"
 proof -
-  have ia2: "ia=to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1" unfolding ia using not_zero_m by presburger
-  have B_eq_Gauss: "B=Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k)"
+  have ia2: "ia=to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1" unfolding ia using not_zero_m by presburger
+  have B_eq_Gauss: "B=Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k)"
     unfolding B Gauss_Jordan_column_k_def Let_def fst_conv snd_conv ia2
     apply simp
     unfolding from_nat_to_nat_greatest using greatest_noteq_card A_ma_k_not_zero greatest_less_ma by blast
-  have greatest_plus_one_not_zero: "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<noteq> 0"
+  have greatest_plus_one_not_zero: "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<noteq> 0"
     using suc_not_zero greatest_noteq_card unfolding nrows_def by auto
   show ?thesis
   proof (cases "is_zero_row_upt_k i k A")
@@ -683,24 +683,24 @@ proof -
     hence not_zero_iB: "is_zero_row_upt_k i k B" unfolding is_zero_row_upt_k_def unfolding B_eq_Gauss
       using Gauss_Jordan_in_ij_preserves_previous_elements[OF rref not_zero_m _ greatest_plus_one_not_zero]
       using A_ma_k_not_zero greatest_less_ma by fastforce
-    hence Gauss_Jordan_i_not_0: "Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ (from_nat k) \<noteq> 0"
+    hence Gauss_Jordan_i_not_0: "Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ (from_nat k) \<noteq> 0"
       using not_zero_i_suc_k unfolding B_eq_Gauss unfolding is_zero_row_upt_k_def using from_nat_to_nat_id less_Suc_eq by (metis (lifting, no_types))
-    have "i = ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)"
+    have "i = ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)"
     proof (rule ccontr)
-      assume i_not_greatest: "i \<noteq> (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1"
-      have "Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ (from_nat k) = 0"
+      assume i_not_greatest: "i \<noteq> (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1"
+      have "Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ (from_nat k) = 0"
       proof (rule Gauss_Jordan_in_ij_0)
-        show "\<exists>n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<le> n" using A_ma_k_not_zero greatest_less_ma by blast
-        show "i \<noteq> (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1" using i_not_greatest .
+        show "\<exists>n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<le> n" using A_ma_k_not_zero greatest_less_ma by blast
+        show "i \<noteq> (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1" using i_not_greatest .
       qed
       thus False using Gauss_Jordan_i_not_0 by contradiction
     qed
-    hence Gauss_Jordan_i_1: "Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ (from_nat k) = 1"
+    hence Gauss_Jordan_i_1: "Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ (from_nat k) = 1"
       using Gauss_Jordan_in_ij_1 using A_ma_k_not_zero greatest_less_ma by blast
-    have Least_eq_k: "(LEAST ka. Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ ka \<noteq> 0) = from_nat k"
+    have Least_eq_k: "(LEAST ka. Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ ka \<noteq> 0) = from_nat k"
     proof (rule Least_equality)
-      show "Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ from_nat k \<noteq> 0" using Gauss_Jordan_i_not_0 .
-      show  "\<And>y. Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ y \<noteq> 0 \<Longrightarrow> from_nat k \<le> y"
+      show "Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ from_nat k \<noteq> 0" using Gauss_Jordan_i_not_0 .
+      show  "\<And>y. Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ y \<noteq> 0 \<Longrightarrow> from_nat k \<le> y"
         using B_eq_Gauss is_zero_row_upt_k_def not_less not_zero_iB to_nat_le by fast
     qed
     show ?thesis using Gauss_Jordan_i_1 unfolding Least_eq_k .
@@ -709,16 +709,16 @@ proof -
     obtain j where Aij_not_0: "A $ i $ j \<noteq> 0" and j_le_k: "to_nat j < k" using False unfolding is_zero_row_upt_k_def by auto
     have least_le_k: "to_nat (LEAST ka. A $ i $ ka \<noteq> 0) < k"
       by (metis (lifting, mono_tags) Aij_not_0 j_le_k less_trans linorder_cases not_less_Least to_nat_mono)
-    have least_le_j: "(LEAST ka. Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ ka \<noteq> 0) \<le> j"
+    have least_le_j: "(LEAST ka. Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ ka \<noteq> 0) \<le> j"
       using Gauss_Jordan_in_ij_preserves_previous_elements[OF rref not_zero_m _ greatest_plus_one_not_zero j_le_k] using A_ma_k_not_zero greatest_less_ma
-      using Aij_not_0 False dual_linorder.not_le_imp_less not_less_Least by (metis (mono_tags))
-    have Least_eq: "(LEAST ka. Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ ka \<noteq> 0) 
+      using Aij_not_0 False not_le_imp_less not_less_Least by (metis (mono_tags))
+    have Least_eq: "(LEAST ka. Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ ka \<noteq> 0) 
       = (LEAST ka. A $ i $ ka \<noteq> 0)"
     proof (rule Least_equality)
-      show "Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ (LEAST ka. A $ i $ ka \<noteq> 0) \<noteq> 0" 
+      show "Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ (LEAST ka. A $ i $ ka \<noteq> 0) \<noteq> 0" 
         using Gauss_Jordan_in_ij_preserves_previous_elements[OF rref False _ greatest_plus_one_not_zero] least_le_k False rref_upt_condition2[OF rref]
         using  A_ma_k_not_zero B_eq_Gauss greatest_less_ma zero_neq_one by fastforce
-      fix y assume Gauss_Jordan_y:"Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ y \<noteq> 0"
+      fix y assume Gauss_Jordan_y:"Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ y \<noteq> 0"
       show "(LEAST ka. A $ i $ ka \<noteq> 0) \<le> y"
       proof (cases "to_nat y < k")
         case False 
@@ -731,7 +731,7 @@ proof -
         thus ?thesis using Least_le by fastforce
       qed
     qed
-    have "A $ i $ (LEAST ka. Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ ka \<noteq> 0) = 1"
+    have "A $ i $ (LEAST ka. Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ ka \<noteq> 0) = 1"
       using False using rref_upt_condition2[OF rref] unfolding Least_eq by blast   
     thus ?thesis unfolding Least_eq using Gauss_Jordan_in_ij_preserves_previous_elements[OF rref False _ greatest_plus_one_not_zero]
       using least_le_k A_ma_k_not_zero greatest_less_ma by fastforce
@@ -741,7 +741,7 @@ qed
 
 lemma condition_2:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}" and k::nat
-  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)"
+  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)"
   defines B:"B\<equiv>(snd (Gauss_Jordan_column_k (ia,A) k))"
   assumes rref: "reduced_row_echelon_form_upt_k A k"
   and not_zero_i_suc_k: "\<not> is_zero_row_upt_k i (Suc k) B"
@@ -758,28 +758,28 @@ next
 next
   fix m
   assume not_zero_m: "\<not> is_zero_row_upt_k m k A"
-    and zero_below_greatest: "\<forall>m\<ge>(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1. A $ m $ from_nat k = 0" 
+    and zero_below_greatest: "\<forall>m\<ge>(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1. A $ m $ from_nat k = 0" 
   show "A $ i $ (LEAST k. A $ i $ k \<noteq> 0) = 1" using condition_2_part_3[OF rref _ not_zero_m zero_below_greatest] not_zero_i_suc_k unfolding B ia .
 next
   fix m 
   assume not_zero_m: "\<not> is_zero_row_upt_k m k A"
-    and greatest_eq_card: "Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A)) = nrows A"
+    and greatest_eq_card: "Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A)) = nrows A"
   show "A $ i $ (LEAST k. A $ i $ k \<noteq> 0) = 1" using condition_2_part_4[OF rref not_zero_m greatest_eq_card] .
 next
   fix m ma
   assume not_zero_m: "\<not> is_zero_row_upt_k m k A"
-    and greatest_noteq_card: "Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A)) \<noteq> nrows A"
-    and greatest_less_ma: "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<le> ma"
+    and greatest_noteq_card: "Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A)) \<noteq> nrows A"
+    and greatest_less_ma: "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<le> ma"
     and A_ma_k_not_zero: "A $ ma $ from_nat k \<noteq> 0"
-  show "Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i 
-    $ (LEAST ka. Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ ka \<noteq> 0) = 1"
+  show "Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i 
+    $ (LEAST ka. Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ ka \<noteq> 0) = 1"
     using condition_2_part_5[OF rref _ not_zero_m greatest_noteq_card greatest_less_ma A_ma_k_not_zero] not_zero_i_suc_k unfolding B ia .
 qed
 
 
 lemma condition_3_part_1:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}" and k::nat
-  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)"
+  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)"
   defines B:"B\<equiv>(snd (Gauss_Jordan_column_k (ia,A) k))"
   assumes not_zero_i_suc_k: "\<not> is_zero_row_upt_k i (Suc k) B"
   and all_zero: "\<forall>m. is_zero_row_upt_k m k A"
@@ -796,7 +796,7 @@ qed
 
 lemma condition_3_part_2:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}" and k::nat
-  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)"
+  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)"
   defines B:"B\<equiv>(snd (Gauss_Jordan_column_k (ia,A) k))"
   assumes i_le: "i < i + 1"
   and not_zero_i_suc_k: "\<not> is_zero_row_upt_k i (Suc k) B"
@@ -818,17 +818,17 @@ qed
 
 lemma condition_3_part_3:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}" and k::nat
-  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)"
+  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)"
   defines B:"B\<equiv>(snd (Gauss_Jordan_column_k (ia,A) k))"
   assumes rref: "reduced_row_echelon_form_upt_k A k"
   and i_le: "i < i + 1"
   and not_zero_i_suc_k: "\<not> is_zero_row_upt_k i (Suc k) B"
   and not_zero_suc_i_suc_k: "\<not> is_zero_row_upt_k (i + 1) (Suc k) B"
   and not_zero_m: "\<not> is_zero_row_upt_k m k A"
-  and zero_below_greatest: "\<forall>m\<ge>(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1. A $ m $ from_nat k = 0"
+  and zero_below_greatest: "\<forall>m\<ge>(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1. A $ m $ from_nat k = 0"
   shows "(LEAST n. A $ i $ n \<noteq> 0) < (LEAST n. A $ (i + 1) $ n \<noteq> 0)"
 proof -
-  have ia2: "ia=to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1" unfolding ia using not_zero_m by presburger
+  have ia2: "ia=to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1" unfolding ia using not_zero_m by presburger
   have B_eq_A: "B=A"
     unfolding B Gauss_Jordan_column_k_def Let_def fst_conv snd_conv ia2
     apply simp
@@ -837,9 +837,9 @@ proof -
   proof (rule rref_suc_if_zero_below_greatest)
     show "reduced_row_echelon_form_upt_k A k" using rref .
     show "\<not> (\<forall>a. is_zero_row_upt_k a k A)" using not_zero_m by fast
-    show "\<forall>a>GREATEST' m. \<not> is_zero_row_upt_k m k A. is_zero_row_upt_k a (Suc k) A"
+    show "\<forall>a>GREATEST m. \<not> is_zero_row_upt_k m k A. is_zero_row_upt_k a (Suc k) A"
     proof (clarify)
-      fix a::'rows assume greatest_less_a:  "(GREATEST' m. \<not> is_zero_row_upt_k m k A) < a"
+      fix a::'rows assume greatest_less_a:  "(GREATEST m. \<not> is_zero_row_upt_k m k A) < a"
       show "is_zero_row_upt_k a (Suc k) A"
       proof (rule is_zero_row_upt_k_suc)
         show "is_zero_row_upt_k a k A" using greatest_less_a row_greater_greatest_is_zero by fast
@@ -854,20 +854,20 @@ qed
 
 lemma condition_3_part_4:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}" and k::nat
-  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)"
+  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)"
   defines B:"B\<equiv>(snd (Gauss_Jordan_column_k (ia,A) k))"
   assumes rref: "reduced_row_echelon_form_upt_k A k" and i_le: "i < i + 1"
   and not_zero_i_suc_k: "\<not> is_zero_row_upt_k i (Suc k) B"
   and not_zero_suc_i_suc_k: "\<not> is_zero_row_upt_k (i + 1) (Suc k) B"
   and not_zero_m: "\<not> is_zero_row_upt_k m k A"
-  and greatest_eq_card: "Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A)) = nrows A"
+  and greatest_eq_card: "Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A)) = nrows A"
   shows "(LEAST n. A $ i $ n \<noteq> 0) < (LEAST n. A $ (i + 1) $ n \<noteq> 0)"
 proof -
-  have ia2: "ia=to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1" unfolding ia using not_zero_m by presburger
+  have ia2: "ia=to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1" unfolding ia using not_zero_m by presburger
   have B_eq_A: "B=A"
     unfolding B Gauss_Jordan_column_k_def Let_def fst_conv snd_conv ia2
     unfolding from_nat_to_nat_greatest using greatest_eq_card by simp
-  have greatest_eq_minus_1: "(GREATEST' n. \<not> is_zero_row_upt_k n k A) = -1"
+  have greatest_eq_minus_1: "(GREATEST n. \<not> is_zero_row_upt_k n k A) = -1"
     using a_eq_minus_1 greatest_eq_card to_nat_plus_one_less_card unfolding nrows_def by fastforce
   have rref_suc: "reduced_row_echelon_form_upt_k A (Suc k)"
   proof (rule rref_suc_if_all_rows_not_zero)
@@ -879,65 +879,65 @@ qed
 
 lemma condition_3_part_5:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}" and k::nat
-  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)"
+  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)"
   defines B:"B\<equiv>(snd (Gauss_Jordan_column_k (ia,A) k))"
   assumes rref: "reduced_row_echelon_form_upt_k A k"
   and i_le: "i < i + 1"
   and not_zero_i_suc_k: "\<not> is_zero_row_upt_k i (Suc k) B"
   and not_zero_suc_i_suc_k: "\<not> is_zero_row_upt_k (i + 1) (Suc k) B"
   and not_zero_m: "\<not> is_zero_row_upt_k m k A"
-  and greatest_not_card: "Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A)) \<noteq> nrows A"
-  and greatest_less_ma: "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<le> ma"
+  and greatest_not_card: "Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A)) \<noteq> nrows A"
+  and greatest_less_ma: "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<le> ma"
   and A_ma_k_not_zero: "A $ ma $ from_nat k \<noteq> 0"
-  shows "(LEAST n. Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ n \<noteq> 0)
-  < (LEAST n. Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ (i + 1) $ n \<noteq> 0)"
+  shows "(LEAST n. Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ n \<noteq> 0)
+  < (LEAST n. Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ (i + 1) $ n \<noteq> 0)"
 proof -
-  have ia2: "ia=to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1" unfolding ia using not_zero_m by presburger
-  have B_eq_Gauss: "B = Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k)"
+  have ia2: "ia=to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1" unfolding ia using not_zero_m by presburger
+  have B_eq_Gauss: "B = Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k)"
     unfolding B Gauss_Jordan_column_k_def 
     unfolding ia2 Let_def fst_conv snd_conv
     using greatest_not_card greatest_less_ma A_ma_k_not_zero
     by (auto simp add: from_nat_to_nat_greatest)
-  have suc_greatest_not_zero: "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<noteq> 0"
+  have suc_greatest_not_zero: "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<noteq> 0"
     using Suc_eq_plus1 suc_not_zero greatest_not_card unfolding nrows_def by auto
   show ?thesis
   proof (cases "is_zero_row_upt_k (i + 1) k A")
     case True
     have zero_i_plus_one_k_B: "is_zero_row_upt_k (i+1) k B" 
       by (unfold B_eq_Gauss, rule is_zero_after_Gauss[OF True not_zero_m rref greatest_less_ma A_ma_k_not_zero])
-    hence Gauss_Jordan_i_not_0: "Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ (i+1) $ (from_nat k) \<noteq> 0"
+    hence Gauss_Jordan_i_not_0: "Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ (i+1) $ (from_nat k) \<noteq> 0"
       using not_zero_suc_i_suc_k unfolding B_eq_Gauss using is_zero_row_upt_k_suc by blast
-    have i_plus_one_eq: "i + 1 = ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)"
+    have i_plus_one_eq: "i + 1 = ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)"
     proof (rule ccontr)
-      assume i_not_greatest: "i + 1 \<noteq> (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1"
-      have "Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ (i + 1) $ (from_nat k) = 0"
+      assume i_not_greatest: "i + 1 \<noteq> (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1"
+      have "Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ (i + 1) $ (from_nat k) = 0"
       proof (rule Gauss_Jordan_in_ij_0)
-        show "\<exists>n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<le> n" using greatest_less_ma A_ma_k_not_zero by blast
-        show "i + 1 \<noteq> (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1" using i_not_greatest .
+        show "\<exists>n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<le> n" using greatest_less_ma A_ma_k_not_zero by blast
+        show "i + 1 \<noteq> (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1" using i_not_greatest .
       qed
       thus False using Gauss_Jordan_i_not_0 by contradiction
     qed
-    hence i_eq_greatest: "i=(GREATEST' n. \<not> is_zero_row_upt_k n k A)" using add_right_cancel by simp
-    have Least_eq_k: "(LEAST ka. Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ (i+1) $ ka \<noteq> 0) = from_nat k"
+    hence i_eq_greatest: "i=(GREATEST n. \<not> is_zero_row_upt_k n k A)" using add_right_cancel by simp
+    have Least_eq_k: "(LEAST ka. Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ (i+1) $ ka \<noteq> 0) = from_nat k"
     proof (rule Least_equality)
-      show "Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ (i+1) $ from_nat k \<noteq> 0" by (metis Gauss_Jordan_i_not_0)
-      fix y assume "Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ (i+1) $ y \<noteq> 0"
+      show "Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ (i+1) $ from_nat k \<noteq> 0" by (metis Gauss_Jordan_i_not_0)
+      fix y assume "Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ (i+1) $ y \<noteq> 0"
       thus "from_nat k \<le> y" using zero_i_plus_one_k_B  unfolding i_eq_greatest B_eq_Gauss by (metis is_zero_row_upt_k_def not_less to_nat_le)   
     qed
     have not_zero_i_A: "\<not> is_zero_row_upt_k i k A" using greatest_less_zero_row[OF rref] not_zero_m unfolding i_eq_greatest by fast
     from this obtain j where Aij_not_0: "A $ i $ j \<noteq> 0" and j_le_k: "to_nat j < k" unfolding is_zero_row_upt_k_def by blast
     have least_le_k: "to_nat (LEAST ka. A $ i $ ka \<noteq> 0) < k"
       by (metis (lifting, mono_tags) Aij_not_0 j_le_k less_trans linorder_cases not_less_Least to_nat_mono)
-    have Least_eq: " (LEAST n. Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ n \<noteq> 0) = 
+    have Least_eq: " (LEAST n. Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ n \<noteq> 0) = 
       (LEAST n. A $ i $ n \<noteq> 0)"
     proof (rule Least_equality)
-      show "Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ (LEAST ka. A $ i $ ka \<noteq> 0) \<noteq> 0" 
+      show "Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ (LEAST ka. A $ i $ ka \<noteq> 0) \<noteq> 0" 
         using Gauss_Jordan_in_ij_preserves_previous_elements[OF rref not_zero_i_A _ suc_greatest_not_zero least_le_k] greatest_less_ma A_ma_k_not_zero
         using rref_upt_condition2[OF rref] not_zero_i_A by fastforce        
-      fix y assume Gauss_Jordan_y:"Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ y \<noteq> 0"
+      fix y assume Gauss_Jordan_y:"Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ y \<noteq> 0"
       show "(LEAST ka. A $ i $ ka \<noteq> 0) \<le> y"
       proof (cases "to_nat y < k")
-        case False thus ?thesis by (metis dual_linorder.not_le least_le_k less_trans to_nat_mono)
+        case False thus ?thesis by (metis not_le least_le_k less_trans to_nat_mono)
       next
         case True
         have "A $ i $ y \<noteq> 0" using Gauss_Jordan_y using Gauss_Jordan_in_ij_preserves_previous_elements[OF rref not_zero_m _ suc_greatest_not_zero True]
@@ -953,16 +953,16 @@ proof -
     from this obtain j where Aij_not_0: "A $ i $ j \<noteq> 0" and j_le_k: "to_nat j < k" unfolding is_zero_row_upt_k_def by blast
     have least_le_k: "to_nat (LEAST ka. A $ i $ ka \<noteq> 0) < k"
       by (metis (lifting, mono_tags) Aij_not_0 j_le_k less_trans linorder_cases not_less_Least to_nat_mono)
-    have Least_i_eq: "(LEAST n. Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ n \<noteq> 0)
+    have Least_i_eq: "(LEAST n. Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ n \<noteq> 0)
       = (LEAST n. A $ i $ n \<noteq> 0)"
     proof (rule Least_equality)
-      show "Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ (LEAST ka. A $ i $ ka \<noteq> 0) \<noteq> 0" 
+      show "Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ (LEAST ka. A $ i $ ka \<noteq> 0) \<noteq> 0" 
         using Gauss_Jordan_in_ij_preserves_previous_elements[OF rref not_zero_i_A _ suc_greatest_not_zero least_le_k] greatest_less_ma A_ma_k_not_zero
         using rref_upt_condition2[OF rref] not_zero_i_A by fastforce
-      fix y assume Gauss_Jordan_y:"Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ y \<noteq> 0"
+      fix y assume Gauss_Jordan_y:"Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ y \<noteq> 0"
       show "(LEAST ka. A $ i $ ka \<noteq> 0) \<le> y"
       proof (cases "to_nat y < k")
-        case False thus ?thesis by (metis dual_linorder.not_le dual_linorder.not_less_iff_gr_or_eq le_less_trans least_le_k to_nat_mono)
+        case False thus ?thesis by (metis not_le not_less_iff_gr_or_eq le_less_trans least_le_k to_nat_mono)
       next
         case True
         have "A $ i $ y \<noteq> 0" using Gauss_Jordan_y using Gauss_Jordan_in_ij_preserves_previous_elements[OF rref not_zero_m _ suc_greatest_not_zero True]
@@ -972,17 +972,17 @@ proof -
     qed
     from False obtain s where Ais_not_0: "A $ (i+1) $ s \<noteq> 0" and s_le_k: "to_nat s < k" unfolding is_zero_row_upt_k_def by blast
     have least_le_k: "to_nat (LEAST ka. A $ (i+1) $ ka \<noteq> 0) < k" 
-      by (metis (lifting, mono_tags) Ais_not_0 s_le_k dual_linorder.neq_iff less_trans not_less_Least to_nat_mono) 
-    have Least_i_plus_one_eq: "(LEAST n. Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ (i+1) $ n \<noteq> 0)
+      by (metis (lifting, mono_tags) Ais_not_0 s_le_k neq_iff less_trans not_less_Least to_nat_mono) 
+    have Least_i_plus_one_eq: "(LEAST n. Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ (i+1) $ n \<noteq> 0)
       = (LEAST n. A $ (i+1) $ n \<noteq> 0)"
     proof (rule Least_equality)
-      show "Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ (i+1) $ (LEAST ka. A $ (i+1) $ ka \<noteq> 0) \<noteq> 0" 
+      show "Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ (i+1) $ (LEAST ka. A $ (i+1) $ ka \<noteq> 0) \<noteq> 0" 
         using Gauss_Jordan_in_ij_preserves_previous_elements[OF rref not_zero_i_A _ suc_greatest_not_zero least_le_k] greatest_less_ma A_ma_k_not_zero
         using rref_upt_condition2[OF rref] False by fastforce
-      fix y assume Gauss_Jordan_y:"Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ (i+1) $ y \<noteq> 0"
+      fix y assume Gauss_Jordan_y:"Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ (i+1) $ y \<noteq> 0"
       show "(LEAST ka. A $ (i+1) $ ka \<noteq> 0) \<le> y"
       proof (cases "to_nat y < k")
-        case False thus ?thesis by (metis (mono_tags) dual_linorder.le_less_linear least_le_k less_trans to_nat_mono)
+        case False thus ?thesis by (metis (mono_tags) le_less_linear least_le_k less_trans to_nat_mono)
       next
         case True
         have "A $ (i+1) $ y \<noteq> 0" using Gauss_Jordan_y using Gauss_Jordan_in_ij_preserves_previous_elements[OF rref not_zero_m _ suc_greatest_not_zero True]
@@ -996,7 +996,7 @@ qed
 
 lemma condition_3:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}" and k::nat
-  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)"
+  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)"
   defines B:"B\<equiv>(snd (Gauss_Jordan_column_k (ia,A) k))"
   assumes rref: "reduced_row_echelon_form_upt_k A k"
   and i_le: "i < i + 1"
@@ -1016,23 +1016,23 @@ next
 next
   fix m
   assume not_zero_m: "\<not> is_zero_row_upt_k m k A"
-    and zero_below_greatest: "\<forall>m\<ge>(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1. A $ m $ from_nat k = 0"
+    and zero_below_greatest: "\<forall>m\<ge>(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1. A $ m $ from_nat k = 0"
   show "(LEAST n. A $ i $ n \<noteq> 0) < (LEAST n. A $ (i + 1) $ n \<noteq> 0)"
     using condition_3_part_3[OF rref i_le _ _ not_zero_m zero_below_greatest] using not_zero_i_suc_k not_zero_suc_i_suc_k unfolding B ia .
 next
   fix m
   assume not_zero_m: "\<not> is_zero_row_upt_k m k A"
-    and greatest_eq_card: "Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A)) = nrows A"
+    and greatest_eq_card: "Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A)) = nrows A"
   show "(LEAST n. A $ i $ n \<noteq> 0) < (LEAST n. A $ (i + 1) $ n \<noteq> 0)"
     using condition_3_part_4[OF rref i_le _ _ not_zero_m greatest_eq_card] using not_zero_i_suc_k not_zero_suc_i_suc_k unfolding B ia .
 next
   fix m ma
   assume not_zero_m: "\<not> is_zero_row_upt_k m k A"
-    and greatest_not_card: "Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A)) \<noteq> nrows A"
-    and greatest_less_ma: "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<le> ma"
+    and greatest_not_card: "Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A)) \<noteq> nrows A"
+    and greatest_less_ma: "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<le> ma"
     and A_ma_k_not_zero: "A $ ma $ from_nat k \<noteq> 0"
-  show "(LEAST n. Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ n \<noteq> 0) 
-    < (LEAST n. Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ (i + 1) $ n \<noteq> 0)"
+  show "(LEAST n. Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ n \<noteq> 0) 
+    < (LEAST n. Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ (i + 1) $ n \<noteq> 0)"
     using condition_3_part_5[OF rref i_le _ _ not_zero_m greatest_not_card greatest_less_ma A_ma_k_not_zero]
     using not_zero_i_suc_k not_zero_suc_i_suc_k unfolding B ia .
 qed
@@ -1040,7 +1040,7 @@ qed
 
 lemma condition_4_part_1:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}" and k::nat
-  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)"
+  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)"
   defines B:"B\<equiv>(snd (Gauss_Jordan_column_k (ia,A) k))"
   assumes not_zero_i_suc_k:  "\<not> is_zero_row_upt_k i (Suc k) B"
   and all_zero: "\<forall>m. is_zero_row_upt_k m k A"
@@ -1055,7 +1055,7 @@ qed
 
 lemma condition_4_part_2:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}" and k::nat
-  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)"
+  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)"
   defines B:"B\<equiv>(snd (Gauss_Jordan_column_k (ia,A) k))"
   assumes not_zero_i_suc_k: "\<not> is_zero_row_upt_k i (Suc k) B"
   and i_not_j: "i \<noteq> j"
@@ -1085,16 +1085,16 @@ qed
 
 lemma condition_4_part_3:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}" and k::nat
-  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)"
+  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)"
   defines B:"B\<equiv>(snd (Gauss_Jordan_column_k (ia,A) k))"
   assumes rref: "reduced_row_echelon_form_upt_k A k"
   and not_zero_i_suc_k:  "\<not> is_zero_row_upt_k i (Suc k) B"
   and i_not_j: "i \<noteq> j"
   and not_zero_m: " \<not> is_zero_row_upt_k m k A"
-  and zero_below_greatest: "\<forall>m\<ge>(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1. A $ m $ from_nat k = 0" 
+  and zero_below_greatest: "\<forall>m\<ge>(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1. A $ m $ from_nat k = 0" 
   shows "A $ j $ (LEAST n. A $ i $ n \<noteq> 0) = 0"
 proof -
-  have ia2: "ia=to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1" unfolding ia using not_zero_m by presburger
+  have ia2: "ia=to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1" unfolding ia using not_zero_m by presburger
   have B_eq_A: "B=A"
     unfolding B Gauss_Jordan_column_k_def Let_def fst_conv snd_conv ia2
     apply simp
@@ -1102,7 +1102,7 @@ proof -
   have rref_suc: "reduced_row_echelon_form_upt_k A (Suc k)"
   proof (rule rref_suc_if_zero_below_greatest[OF rref], auto intro!: not_zero_m)
     fix a
-    assume greatest_less_a: "(GREATEST' m. \<not> is_zero_row_upt_k m k A) < a"
+    assume greatest_less_a: "(GREATEST m. \<not> is_zero_row_upt_k m k A) < a"
     show "is_zero_row_upt_k a (Suc k) A"
     proof (rule is_zero_row_upt_k_suc)  
       show "is_zero_row_upt_k a k A" using row_greater_greatest_is_zero[OF greatest_less_a] .
@@ -1114,20 +1114,20 @@ qed
 
 lemma condition_4_part_4:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}" and k::nat
-  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)"
+  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)"
   defines B:"B\<equiv>(snd (Gauss_Jordan_column_k (ia,A) k))"
   assumes rref: "reduced_row_echelon_form_upt_k A k"
   and not_zero_i_suc_k:  "\<not> is_zero_row_upt_k i (Suc k) B"
   and i_not_j: "i \<noteq> j"
   and not_zero_m: "\<not> is_zero_row_upt_k m k A"
-  and greatest_eq_card: "Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A)) = nrows A"
+  and greatest_eq_card: "Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A)) = nrows A"
   shows "A $ j $ (LEAST n. A $ i $ n \<noteq> 0) = 0"
 proof -
-  have ia2: "ia=to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1" unfolding ia using not_zero_m by presburger
+  have ia2: "ia=to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1" unfolding ia using not_zero_m by presburger
   have B_eq_A: "B=A"
     unfolding B Gauss_Jordan_column_k_def Let_def fst_conv snd_conv ia2
     unfolding from_nat_to_nat_greatest using greatest_eq_card by simp
-  have greatest_eq_minus_1: "(GREATEST' n. \<not> is_zero_row_upt_k n k A) = -1"
+  have greatest_eq_minus_1: "(GREATEST n. \<not> is_zero_row_upt_k n k A) = -1"
     using a_eq_minus_1 greatest_eq_card to_nat_plus_one_less_card unfolding nrows_def by fastforce
   have rref_suc: "reduced_row_echelon_form_upt_k A (Suc k)"
   proof (rule rref_suc_if_all_rows_not_zero)
@@ -1139,48 +1139,48 @@ qed
 
 lemma condition_4_part_5:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}" and k::nat
-  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)"
+  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)"
   defines B:"B\<equiv>(snd (Gauss_Jordan_column_k (ia,A) k))"
   assumes rref: "reduced_row_echelon_form_upt_k A k"
   and not_zero_i_suc_k:  "\<not> is_zero_row_upt_k i (Suc k) B"
   and i_not_j: "i \<noteq> j"
   and not_zero_m: "\<not> is_zero_row_upt_k m k A"
-  and greatest_not_card: "Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A)) \<noteq> nrows A"
-  and greatest_less_ma: "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<le> ma"
+  and greatest_not_card: "Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A)) \<noteq> nrows A"
+  and greatest_less_ma: "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<le> ma"
   and A_ma_k_not_zero: "A $ ma $ from_nat k \<noteq> 0"
-  shows "Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ j $ 
-  (LEAST n. Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ n \<noteq> 0) = 0"
+  shows "Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ j $ 
+  (LEAST n. Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ n \<noteq> 0) = 0"
 proof -
-  have ia2: "ia=to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1" unfolding ia using not_zero_m by presburger
-  have B_eq_Gauss: "B = Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k)"
+  have ia2: "ia=to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1" unfolding ia using not_zero_m by presburger
+  have B_eq_Gauss: "B = Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k)"
     unfolding B Gauss_Jordan_column_k_def 
     unfolding ia2 Let_def fst_conv snd_conv
     using greatest_not_card greatest_less_ma A_ma_k_not_zero
     by (auto simp add: from_nat_to_nat_greatest)
-  have suc_greatest_not_zero: "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<noteq> 0"
+  have suc_greatest_not_zero: "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<noteq> 0"
     using Suc_eq_plus1 suc_not_zero greatest_not_card unfolding nrows_def by auto
   show ?thesis
   proof (cases "is_zero_row_upt_k i k A")
     case True
     have zero_i_k_B: "is_zero_row_upt_k i k B" unfolding B_eq_Gauss by (rule is_zero_after_Gauss[OF True not_zero_m rref greatest_less_ma A_ma_k_not_zero])
-    hence Gauss_Jordan_i_not_0: "Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ (i) $ (from_nat k) \<noteq> 0"
+    hence Gauss_Jordan_i_not_0: "Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ (i) $ (from_nat k) \<noteq> 0"
       using not_zero_i_suc_k unfolding B_eq_Gauss using is_zero_row_upt_k_suc by blast
-    have i_eq_greatest: "i = ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)"
+    have i_eq_greatest: "i = ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)"
     proof (rule ccontr)
-      assume i_not_greatest: "i \<noteq> (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1"
-      have "Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ (from_nat k) = 0"
+      assume i_not_greatest: "i \<noteq> (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1"
+      have "Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ (from_nat k) = 0"
       proof (rule Gauss_Jordan_in_ij_0)
-        show "\<exists>n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<le> n" using greatest_less_ma A_ma_k_not_zero by blast
-        show "i \<noteq> (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1" using i_not_greatest .
+        show "\<exists>n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<le> n" using greatest_less_ma A_ma_k_not_zero by blast
+        show "i \<noteq> (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1" using i_not_greatest .
       qed
       thus False using Gauss_Jordan_i_not_0 by contradiction
     qed    
-    have Gauss_Jordan_i_1: "Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ (from_nat k) = 1"
+    have Gauss_Jordan_i_1: "Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ (from_nat k) = 1"
       unfolding i_eq_greatest using Gauss_Jordan_in_ij_1 greatest_less_ma A_ma_k_not_zero by blast
-    have Least_eq_k: "(LEAST ka. Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ ka \<noteq> 0) = from_nat k"
+    have Least_eq_k: "(LEAST ka. Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ ka \<noteq> 0) = from_nat k"
     proof (rule Least_equality)
-      show "Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ from_nat k \<noteq> 0" using Gauss_Jordan_i_not_0 .
-      fix y assume "Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ y \<noteq> 0"
+      show "Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ from_nat k \<noteq> 0" using Gauss_Jordan_i_not_0 .
+      fix y assume "Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ y \<noteq> 0"
       thus "from_nat k \<le> y" using zero_i_k_B  unfolding i_eq_greatest B_eq_Gauss by (metis is_zero_row_upt_k_def not_less to_nat_le)   
     qed
     show ?thesis using A_ma_k_not_zero Gauss_Jordan_in_ij_0' Least_eq_k greatest_less_ma i_eq_greatest i_not_j by force
@@ -1188,14 +1188,14 @@ proof -
     case False
     obtain n where Ain_not_0: "A $ i $ n \<noteq> 0" and j_le_k: "to_nat n < k" using False unfolding is_zero_row_upt_k_def by auto
     have least_le_k: "to_nat (LEAST ka. A $ i $ ka \<noteq> 0) < k" 
-      by (metis (lifting, mono_tags) Ain_not_0 dual_linorder.neq_iff j_le_k less_trans not_less_Least to_nat_mono)
-    have Least_eq: "(LEAST ka. Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ ka \<noteq> 0) 
+      by (metis (lifting, mono_tags) Ain_not_0 neq_iff j_le_k less_trans not_less_Least to_nat_mono)
+    have Least_eq: "(LEAST ka. Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ ka \<noteq> 0) 
       = (LEAST ka. A $ i $ ka \<noteq> 0)"
     proof (rule Least_equality)
-      show "Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ (LEAST ka. A $ i $ ka \<noteq> 0) \<noteq> 0" 
+      show "Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ (LEAST ka. A $ i $ ka \<noteq> 0) \<noteq> 0" 
         using Gauss_Jordan_in_ij_preserves_previous_elements[OF rref False _ suc_greatest_not_zero least_le_k] using greatest_less_ma A_ma_k_not_zero 
         using rref_upt_condition2[OF rref] False by fastforce
-      fix y assume Gauss_Jordan_y:"Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ y \<noteq> 0"
+      fix y assume Gauss_Jordan_y:"Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ y \<noteq> 0"
       show "(LEAST ka. A $ i $ ka \<noteq> 0) \<le> y"
       proof (cases "to_nat y < k")
         case False show ?thesis by (metis (mono_tags) False least_le_k less_trans not_le_imp_less to_nat_from_nat to_nat_le)
@@ -1207,7 +1207,7 @@ proof -
         thus ?thesis by (rule Least_le)
       qed
     qed
-    have Gauss_Jordan_eq_A: "Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ j $ (LEAST n. A $ i $ n \<noteq> 0) =
+    have Gauss_Jordan_eq_A: "Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ j $ (LEAST n. A $ i $ n \<noteq> 0) =
       A $ j $ (LEAST n. A $ i $ n \<noteq> 0)"
       using Gauss_Jordan_in_ij_preserves_previous_elements[OF rref not_zero_m _ suc_greatest_not_zero least_le_k]
       using A_ma_k_not_zero greatest_less_ma by fastforce    
@@ -1219,7 +1219,7 @@ qed
 
 lemma condition_4:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}" and k::nat
-  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)"
+  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)"
   defines B:"B\<equiv>(snd (Gauss_Jordan_column_k (ia,A) k))"
   assumes rref: "reduced_row_echelon_form_upt_k A k"
   and not_zero_i_suc_k:  "\<not> is_zero_row_upt_k i (Suc k) B"
@@ -1237,30 +1237,30 @@ next
     using condition_4_part_2[OF _ i_not_j all_zero Amk_not_zero] using  not_zero_i_suc_k unfolding B ia .
 next
   fix m assume not_zero_m: "\<not> is_zero_row_upt_k m k A"
-    and zero_below_greatest: "\<forall>m\<ge>(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1. A $ m $ from_nat k = 0"
+    and zero_below_greatest: "\<forall>m\<ge>(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1. A $ m $ from_nat k = 0"
   show "A $ j $ (LEAST n. A $ i $ n \<noteq> 0) = 0"
     using condition_4_part_3[OF rref _ i_not_j not_zero_m zero_below_greatest] using not_zero_i_suc_k unfolding B ia .
 next
   fix m
   assume not_zero_m: "\<not> is_zero_row_upt_k m k A"
-    and greatest_eq_card: "Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A)) = nrows A"
+    and greatest_eq_card: "Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A)) = nrows A"
   show "A $ j $ (LEAST n. A $ i $ n \<noteq> 0) = 0"
     using  condition_4_part_4[OF rref _ i_not_j not_zero_m greatest_eq_card] using not_zero_i_suc_k unfolding B ia .
 next
   fix m ma
   assume not_zero_m: "\<not> is_zero_row_upt_k m k A"
-    and greatest_not_card: "Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A)) \<noteq> nrows A"
-    and greatest_less_ma: "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<le> ma"
+    and greatest_not_card: "Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A)) \<noteq> nrows A"
+    and greatest_less_ma: "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<le> ma"
     and A_ma_k_not_zero: "A $ ma $ from_nat k \<noteq> 0"
-  show "Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ j $ 
-    (LEAST n. Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ n \<noteq> 0) = 0"
+  show "Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ j $ 
+    (LEAST n. Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ n \<noteq> 0) = 0"
     using  condition_4_part_5[OF rref _ i_not_j not_zero_m greatest_not_card greatest_less_ma A_ma_k_not_zero] using not_zero_i_suc_k unfolding B ia .
 qed
 
 
 lemma reduced_row_echelon_form_upt_k_Gauss_Jordan_column_k:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}" and k::nat
-  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)"
+  defines ia:"ia\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)"
   defines B:"B\<equiv>(snd (Gauss_Jordan_column_k (ia,A) k))"
   assumes rref: "reduced_row_echelon_form_upt_k A k"
   shows "reduced_row_echelon_form_upt_k B (Suc k)"
@@ -1303,8 +1303,8 @@ lemma foldl_Gauss_condition_3:
   and all_zero: "\<forall>m. is_zero_row_upt_k m k A"           
   and Amk_not_zero: "A $ m $ from_nat k \<noteq> 0"
   and "\<not> is_zero_row_upt_k ma (Suc k) (Gauss_Jordan_in_ij A 0 (from_nat k))"
-  shows "to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) (Gauss_Jordan_in_ij A 0 (from_nat k))) = 0"
-proof (unfold to_nat_eq_0, rule Greatest'_equality)
+  shows "to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc k) (Gauss_Jordan_in_ij A 0 (from_nat k))) = 0"
+proof (unfold to_nat_eq_0, rule Greatest_equality)
   have to_nat_from_nat_k_suc: "to_nat (from_nat k::'columns) < Suc (k)"  using to_nat_from_nat_id[OF k[unfolded ncols_def]] by simp
   have A0k_eq_1: "(Gauss_Jordan_in_ij A 0 (from_nat k)) $ 0 $ (from_nat k) = 1"
     by (rule Gauss_Jordan_in_ij_1, auto intro!: Amk_not_zero least_mod_type)
@@ -1339,8 +1339,8 @@ lemma foldl_Gauss_condition_5:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}" and k::nat
   assumes rref_A: "reduced_row_echelon_form_upt_k A k"
   and not_zero_a:"\<not> is_zero_row_upt_k a k A"
-  and all_zero_below_greatest: "\<forall>m\<ge>(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1. A $ m $ from_nat k = 0"
-  shows "(GREATEST' n. \<not> is_zero_row_upt_k n k A) = (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) A)"
+  and all_zero_below_greatest: "\<forall>m\<ge>(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1. A $ m $ from_nat k = 0"
+  shows "(GREATEST n. \<not> is_zero_row_upt_k n k A) = (GREATEST n. \<not> is_zero_row_upt_k n (Suc k) A)"
 proof -
   have "\<And>n. (is_zero_row_upt_k n (Suc k) A) = (is_zero_row_upt_k n k A)"
   proof 
@@ -1348,30 +1348,30 @@ proof -
     thus "is_zero_row_upt_k n k A" using is_zero_row_upt_k_le by fast
   next
     fix n assume zero_n_k: "is_zero_row_upt_k n k A"
-    have "n>(GREATEST' n. \<not> is_zero_row_upt_k n k A)" by (rule greatest_less_zero_row[OF rref_A zero_n_k], auto intro!: not_zero_a)
-    hence n_ge_gratest: "n \<ge> (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1" using le_Suc by blast
+    have "n>(GREATEST n. \<not> is_zero_row_upt_k n k A)" by (rule greatest_less_zero_row[OF rref_A zero_n_k], auto intro!: not_zero_a)
+    hence n_ge_gratest: "n \<ge> (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1" using le_Suc by blast
     hence A_nk_zero: "A $ n $ (from_nat k) = 0" using all_zero_below_greatest by fast
     show "is_zero_row_upt_k n (Suc k) A" by (rule is_zero_row_upt_k_suc[OF zero_n_k A_nk_zero])
   qed
-  thus "(GREATEST' n. \<not> is_zero_row_upt_k n k A) = (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) A)" by simp
+  thus "(GREATEST n. \<not> is_zero_row_upt_k n k A) = (GREATEST n. \<not> is_zero_row_upt_k n (Suc k) A)" by simp
 qed
 
 
 lemma foldl_Gauss_condition_6:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}" and k::nat
   assumes not_zero_m: "\<not> is_zero_row_upt_k m k A"
-  and eq_card: "Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A)) = nrows A"
-  shows "nrows A = Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) A))"
+  and eq_card: "Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A)) = nrows A"
+  shows "nrows A = Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc k) A))"
 proof -
-  have "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 = 0" using greatest_plus_one_eq_0[OF eq_card] .
-  hence greatest_k_eq_minus_1: "(GREATEST' n. \<not> is_zero_row_upt_k n k A) = -1" using a_eq_minus_1 by blast
-  have "(GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) A) = -1"
-  proof (rule Greatest'_equality)
+  have "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 = 0" using greatest_plus_one_eq_0[OF eq_card] .
+  hence greatest_k_eq_minus_1: "(GREATEST n. \<not> is_zero_row_upt_k n k A) = -1" using a_eq_minus_1 by blast
+  have "(GREATEST n. \<not> is_zero_row_upt_k n (Suc k) A) = -1"
+  proof (rule Greatest_equality)
     show "\<not> is_zero_row_upt_k (- 1) (Suc k) A" 
-      using Greatest'I_ex greatest_k_eq_minus_1 is_zero_row_upt_k_le not_zero_m by force
+      using GreatestI_ex greatest_k_eq_minus_1 is_zero_row_upt_k_le not_zero_m by force
     show "\<And>y. \<not> is_zero_row_upt_k y (Suc k) A \<Longrightarrow> y \<le> -1" using Greatest_is_minus_1 by fast
   qed
-  thus "nrows A = Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) A))" using eq_card greatest_k_eq_minus_1 by fastforce
+  thus "nrows A = Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc k) A))" using eq_card greatest_k_eq_minus_1 by fastforce
 qed
 
 
@@ -1381,10 +1381,10 @@ lemma foldl_Gauss_condition_8:
   assumes k: "k < ncols A"
   and not_zero_m: " \<not> is_zero_row_upt_k m k A" 
   and A_ma_k: " A $ ma $ from_nat k \<noteq> 0" 
-  and ma: "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<le> ma"
-  shows "\<exists>m. \<not> is_zero_row_upt_k m (Suc k) (Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k))"
+  and ma: "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<le> ma"
+  shows "\<exists>m. \<not> is_zero_row_upt_k m (Suc k) (Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k))"
 proof -
-  def Greatest_plus_one\<equiv>"((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)"
+  def Greatest_plus_one\<equiv>"((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)"
   have to_nat_from_nat_k_suc: "to_nat (from_nat k::'columns) < (Suc k)"  using to_nat_from_nat_id[OF k[unfolded ncols_def]] by simp
   have Gauss_eq_1: "(Gauss_Jordan_in_ij A Greatest_plus_one (from_nat k)) $ Greatest_plus_one $ (from_nat k) = 1" 
     by (unfold Greatest_plus_one_def, rule Gauss_Jordan_in_ij_1, auto intro!: A_ma_k ma)
@@ -1397,22 +1397,22 @@ lemma foldl_Gauss_condition_9:
   assumes k: "k < ncols A"
   and rref_A: "reduced_row_echelon_form_upt_k A k"
   assumes not_zero_m: "\<not> is_zero_row_upt_k m k A"
-  and suc_greatest_not_card: "Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A)) \<noteq> nrows A"
-  and greatest_less_ma: "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<le> ma"
+  and suc_greatest_not_card: "Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A)) \<noteq> nrows A"
+  and greatest_less_ma: "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<le> ma"
   and A_ma_k: "A $ ma $ from_nat k \<noteq> 0"
-  shows "Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A)) =
-  to_nat(GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) (Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k)))"
+  shows "Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A)) =
+  to_nat(GREATEST n. \<not> is_zero_row_upt_k n (Suc k) (Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k)))"
 proof -
-  def Greatest_plus_one=="((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)"
+  def Greatest_plus_one=="((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)"
   have to_nat_from_nat_k_suc: "to_nat (from_nat k::'columns) < (Suc k)"  using to_nat_from_nat_id[OF k[unfolded ncols_def]] by simp
   have greatest_plus_one_not_zero: "Greatest_plus_one \<noteq> 0"
   proof -
-    have "to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) < nrows A" using to_nat_less_card unfolding nrows_def by blast
-    hence "to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 < nrows A" using suc_greatest_not_card by linarith
+    have "to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) < nrows A" using to_nat_less_card unfolding nrows_def by blast
+    hence "to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 < nrows A" using suc_greatest_not_card by linarith
     show ?thesis unfolding Greatest_plus_one_def by (rule suc_not_zero[OF suc_greatest_not_card[unfolded Suc_eq_plus1 nrows_def]])
   qed
-  have greatest_eq: "Greatest_plus_one = (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) (Gauss_Jordan_in_ij A Greatest_plus_one (from_nat k)))"
-  proof (rule Greatest'_equality[symmetric])
+  have greatest_eq: "Greatest_plus_one = (GREATEST n. \<not> is_zero_row_upt_k n (Suc k) (Gauss_Jordan_in_ij A Greatest_plus_one (from_nat k)))"
+  proof (rule Greatest_equality[symmetric])
     have "(Gauss_Jordan_in_ij A Greatest_plus_one (from_nat k)) $ (Greatest_plus_one) $ (from_nat k) = 1"
       by (unfold Greatest_plus_one_def, rule Gauss_Jordan_in_ij_1, auto intro!: greatest_less_ma A_ma_k)
     thus "\<not> is_zero_row_upt_k Greatest_plus_one (Suc k) (Gauss_Jordan_in_ij A Greatest_plus_one (from_nat k))"
@@ -1428,9 +1428,9 @@ proof -
       have "y=Greatest_plus_one"
       proof (rule ccontr)
         assume y_not_greatest: "y \<noteq> Greatest_plus_one" 
-        have "(GREATEST' n. \<not> is_zero_row_upt_k n k A) < y" using greatest_plus_one_not_zero 
+        have "(GREATEST n. \<not> is_zero_row_upt_k n k A) < y" using greatest_plus_one_not_zero 
           using Suc_le' less_le_trans y_ge_greatest unfolding Greatest_plus_one_def by auto
-        hence zero_row_y_upt_k: "is_zero_row_upt_k y k A" using not_greater_Greatest'[of "\<lambda>n. \<not> is_zero_row_upt_k n k A" y] unfolding Greatest_plus_one_def by fast
+        hence zero_row_y_upt_k: "is_zero_row_upt_k y k A" using not_greater_Greatest[of "\<lambda>n. \<not> is_zero_row_upt_k n k A" y] unfolding Greatest_plus_one_def by fast
         have "is_zero_row_upt_k y (Suc k) (Gauss_Jordan_in_ij A Greatest_plus_one (from_nat k))" unfolding is_zero_row_upt_k_def
         proof (clarify)
           fix j::'columns assume j: "to_nat j < Suc k"
@@ -1448,8 +1448,8 @@ proof -
             proof (rule Gauss_Jordan_in_ij_preserves_previous_elements)
               show "reduced_row_echelon_form_upt_k A k" using rref_A .
               show "\<not> is_zero_row_upt_k m k A" using not_zero_m .
-              show "\<exists>n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<le> n" using A_ma_k greatest_less_ma by blast
-              show "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<noteq> 0" using greatest_plus_one_not_zero unfolding Greatest_plus_one_def .
+              show "\<exists>n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<le> n" using A_ma_k greatest_less_ma by blast
+              show "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<noteq> 0" using greatest_plus_one_not_zero unfolding Greatest_plus_one_def .
               show "to_nat j < k" using False from_nat_to_nat_id j_le_suc_k less_antisym by fastforce
             qed
             also have "... = 0" using zero_row_y_upt_k unfolding is_zero_row_upt_k_def
@@ -1462,8 +1462,8 @@ proof -
       thus "y \<le> Greatest_plus_one" using y_ge_greatest by blast
     qed
   qed
-  show "Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A)) =
-    to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) (Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k)))"
+  show "Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A)) =
+    to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc k) (Gauss_Jordan_in_ij A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k)))"
     unfolding greatest_eq[unfolded Greatest_plus_one_def, symmetric]
     unfolding add_to_nat_def
     unfolding to_nat_1
@@ -1485,7 +1485,7 @@ lemma rref_and_index_Gauss_Jordan_upt_k:
   and snd_Gauss_Jordan_upt_k: 
   "foldl Gauss_Jordan_column_k (0, A) [0..<Suc k] =
   (if \<forall>m. is_zero_row_upt_k m (Suc k) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc k])) then 0
-  else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc k]))) + 1,
+  else to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc k) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc k]))) + 1,
   snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc k]))"
   using assms
 proof (induct k)
@@ -1498,7 +1498,7 @@ proof (induct k)
   have rw_upt: "[0..<Suc 0] = [0]" by simp
   show "foldl Gauss_Jordan_column_k (0, A) [0..<Suc 0] =
     (if \<forall>m. is_zero_row_upt_k m (Suc 0) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc 0])) then 0
-    else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc 0) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc 0]))) + 1,
+    else to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc 0) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc 0]))) + 1,
     snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc 0]))"
     unfolding rw_upt
     unfolding foldl.simps
@@ -1506,7 +1506,7 @@ proof (induct k)
     unfolding is_zero_row_upt_k_def
     apply (auto simp add: least_mod_type to_nat_eq_0)
     apply (metis Gauss_Jordan_in_ij_1 least_mod_type zero_neq_one)
-    by (metis (lifting, mono_tags) Gauss_Jordan_in_ij_0 Greatest'I_ex least_mod_type)
+    by (metis (lifting, mono_tags) Gauss_Jordan_in_ij_0 GreatestI_ex least_mod_type)
 next
     -- "Now we begin with the proof of the induction step of the first show. We will make use the induction hypothesis of the second show"
   fix k
@@ -1514,18 +1514,18 @@ next
     and "(k < ncols A \<Longrightarrow>
     foldl Gauss_Jordan_column_k (0, A) [0..<Suc k] =
     (if \<forall>m. is_zero_row_upt_k m (Suc k) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc k])) then 0
-    else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc k]))) + 1,
+    else to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc k) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc k]))) + 1,
     snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc k])))"
     and k: "Suc k < ncols A" 
   hence hyp_rref: "reduced_row_echelon_form_upt_k (Gauss_Jordan_upt_k A k) (Suc k)"
     and hyp_foldl: "foldl Gauss_Jordan_column_k (0, A) [0..<Suc k] =
     (if \<forall>m. is_zero_row_upt_k m (Suc k) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc k])) then 0
-    else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc k]))) + 1,
+    else to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc k) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc k]))) + 1,
     snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc k]))"
     by simp+
   have rw: "[0..<Suc (Suc k)]= [0..<(Suc k)] @ [(Suc k)]" by auto
   have rw2: "(foldl Gauss_Jordan_column_k (0, A) [0..<Suc k]) = 
-    (if \<forall>m. is_zero_row_upt_k m (Suc k) (Gauss_Jordan_upt_k A k) then 0 else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) (Gauss_Jordan_upt_k A k)) + 1,
+    (if \<forall>m. is_zero_row_upt_k m (Suc k) (Gauss_Jordan_upt_k A k) then 0 else to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc k) (Gauss_Jordan_upt_k A k)) + 1,
     Gauss_Jordan_upt_k A k)" unfolding Gauss_Jordan_upt_k_def using hyp_foldl by fast
   show "reduced_row_echelon_form_upt_k (Gauss_Jordan_upt_k A (Suc k)) (Suc (Suc k))"
     unfolding Gauss_Jordan_upt_k_def unfolding rw unfolding foldl_append unfolding foldl.simps unfolding rw2
@@ -1533,16 +1533,16 @@ next
       -- "Making use of the same hypotheses of above proof, we begin with the proof of the induction step of the second show."
   have fst_foldl: "fst (foldl Gauss_Jordan_column_k (0, A) [0..<Suc k]) =
     fst (if \<forall>m. is_zero_row_upt_k m (Suc k) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc k])) then 0
-    else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc k]))) + 1,
+    else to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc k) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc k]))) + 1,
     snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc k]))" using hyp_foldl by simp
   show "foldl Gauss_Jordan_column_k (0, A) [0..<Suc (Suc k)] =
     (if \<forall>m. is_zero_row_upt_k m (Suc (Suc k)) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc (Suc k)])) then 0
-    else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k)) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc (Suc k)]))) + 1,
+    else to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc (Suc k)) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc (Suc k)]))) + 1,
     snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc (Suc k)]))" 
   proof (rule prod_eqI)
     show "snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc (Suc k)]) =
       snd (if \<forall>m. is_zero_row_upt_k m (Suc (Suc k)) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc (Suc k)])) then 0
-      else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k)) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc (Suc k)]))) + 1,
+      else to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc (Suc k)) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc (Suc k)]))) + 1,
       snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc (Suc k)]))"
       unfolding Gauss_Jordan_upt_k_def by force
     def A'\<equiv>"(snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc k]))"
@@ -1550,7 +1550,7 @@ next
     have rref_A': "reduced_row_echelon_form_upt_k A' (Suc k)"  using hyp_rref unfolding A'_def Gauss_Jordan_upt_k_def .
     show "fst (foldl Gauss_Jordan_column_k (0, A) [0..<Suc (Suc k)]) =
       fst (if \<forall>m. is_zero_row_upt_k m (Suc (Suc k)) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc (Suc k)])) then 0
-      else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k)) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc (Suc k)]))) + 1,
+      else to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc (Suc k)) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc (Suc k)]))) + 1,
       snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc (Suc k)]))"
       apply (simp only: rw)
       apply (simp only: foldl_append)
@@ -1573,7 +1573,7 @@ next
       assume "\<forall>m. is_zero_row_upt_k m (Suc k) A'"
         and "A' $ m $ from_nat (Suc k) \<noteq> 0"
         and "\<not> is_zero_row_upt_k ma (Suc (Suc k)) (Gauss_Jordan_in_ij A' 0 (from_nat (Suc k)))"
-      thus "to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k)) (Gauss_Jordan_in_ij A' 0 (from_nat (Suc k)))) = 0"
+      thus "to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc (Suc k)) (Gauss_Jordan_in_ij A' 0 (from_nat (Suc k)))) = 0"
         using foldl_Gauss_condition_3  k ncols_eq by simp
     next
       fix m assume "\<not> is_zero_row_upt_k m (Suc k) A' "
@@ -1581,29 +1581,29 @@ next
     next
       fix m
       assume not_zero_m: "\<not> is_zero_row_upt_k m (Suc k) A'"
-        and zero_below_greatest: "\<forall>m\<ge>(GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) A') + 1. A' $ m $ from_nat (Suc k) = 0"
-      show "(GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) A') = (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k)) A')"
+        and zero_below_greatest: "\<forall>m\<ge>(GREATEST n. \<not> is_zero_row_upt_k n (Suc k) A') + 1. A' $ m $ from_nat (Suc k) = 0"
+      show "(GREATEST n. \<not> is_zero_row_upt_k n (Suc k) A') = (GREATEST n. \<not> is_zero_row_upt_k n (Suc (Suc k)) A')"
         by (rule foldl_Gauss_condition_5[OF rref_A' not_zero_m zero_below_greatest])
     next
-      fix m assume "\<not> is_zero_row_upt_k m (Suc k) A'" and "Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) A')) = nrows A'"
-      thus "nrows A' = Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k)) A'))"
+      fix m assume "\<not> is_zero_row_upt_k m (Suc k) A'" and "Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc k) A')) = nrows A'"
+      thus "nrows A' = Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc (Suc k)) A'))"
         using foldl_Gauss_condition_6 by blast
     next
       fix m ma
       assume "\<not> is_zero_row_upt_k m (Suc k) A'"
-        and "(GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) A') + 1 \<le> ma"
+        and "(GREATEST n. \<not> is_zero_row_upt_k n (Suc k) A') + 1 \<le> ma"
         and "A' $ ma $ from_nat (Suc k) \<noteq> 0"
-      thus "\<exists>m. \<not> is_zero_row_upt_k m (Suc (Suc k)) (Gauss_Jordan_in_ij A' ((GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) A') + 1) (from_nat (Suc k)))"
+      thus "\<exists>m. \<not> is_zero_row_upt_k m (Suc (Suc k)) (Gauss_Jordan_in_ij A' ((GREATEST n. \<not> is_zero_row_upt_k n (Suc k) A') + 1) (from_nat (Suc k)))"
         using foldl_Gauss_condition_8 using k ncols_eq by simp
     next
       fix m ma mb
       assume "\<not> is_zero_row_upt_k m (Suc k) A'" and
-        "Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) A')) \<noteq> nrows A'"
-        and "(GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) A') + 1 \<le> ma"
+        "Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc k) A')) \<noteq> nrows A'"
+        and "(GREATEST n. \<not> is_zero_row_upt_k n (Suc k) A') + 1 \<le> ma"
         and "A' $ ma $ from_nat (Suc k) \<noteq> 0"
-        and "\<not> is_zero_row_upt_k mb (Suc (Suc k)) (Gauss_Jordan_in_ij A' ((GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) A') + 1) (from_nat (Suc k)))"
-      thus "Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) A')) =
-        to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k)) (Gauss_Jordan_in_ij A' ((GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) A') + 1) (from_nat (Suc k))))"
+        and "\<not> is_zero_row_upt_k mb (Suc (Suc k)) (Gauss_Jordan_in_ij A' ((GREATEST n. \<not> is_zero_row_upt_k n (Suc k) A') + 1) (from_nat (Suc k)))"
+      thus "Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc k) A')) =
+        to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc (Suc k)) (Gauss_Jordan_in_ij A' ((GREATEST n. \<not> is_zero_row_upt_k n (Suc k) A') + 1) (from_nat (Suc k))))"
         using foldl_Gauss_condition_9[OF k[unfolded ncols_eq] rref_A'] unfolding nrows_def by blast
     qed
   qed
@@ -1809,7 +1809,7 @@ next
     show ?thesis unfolding row_add_iterate.simps if_not_P[OF False]
     proof (cases "to_nat a = Suc n") case True
       show "row_add_iterate (row_add A (from_nat (Suc n)) i (- A $ from_nat (Suc n) $ j)) n i j $ a $ b = row_add A a i (- A $ a $ j) $ a $ b"
-        by (metis Suc_le_lessD True dual_order.order_refl less_imp_le row_add_iterate_preserves_greater_than_n suc_n_less_card to_nat_from_nat nrows_def)
+        by (metis Suc_le_lessD True order_refl less_imp_le row_add_iterate_preserves_greater_than_n suc_n_less_card to_nat_from_nat nrows_def)
     next
       case False
       def A'\<equiv>"(row_add A (from_nat (Suc n)) i (- A $ from_nat (Suc n) $ j))"
@@ -2294,7 +2294,7 @@ by (metis assms less_not_refl3 rank_0 rank_Gauss_Jordan rank_greater_zero)
 
 lemma rank_eq_suc_to_nat_greatest:
 assumes A_not_0: "A \<noteq> 0"
-shows "rank A = to_nat (GREATEST' a. \<not> is_zero_row a (Gauss_Jordan A)) + 1"
+shows "rank A = to_nat (GREATEST a. \<not> is_zero_row a (Gauss_Jordan A)) + 1"
 proof -
 have rref: "reduced_row_echelon_form_upt_k (Gauss_Jordan A) (ncols (Gauss_Jordan A))"
   using rref_Gauss_Jordan unfolding reduced_row_echelon_form_def
@@ -2303,12 +2303,12 @@ have not_all_zero: "\<not> (\<forall>a. is_zero_row_upt_k a (ncols (Gauss_Jordan
 unfolding is_zero_row_def[symmetric] using Gauss_Jordan_not_0[OF A_not_0] unfolding is_zero_row_def' by (metis vec_eq_iff zero_index)
 have "rank A = card {row i (Gauss_Jordan A) |i. row i (Gauss_Jordan A) \<noteq> 0}"
 unfolding rank_Gauss_Jordan[of A] unfolding rref_rank[OF rref_Gauss_Jordan] ..
-also have "... = card {i. i\<le>(GREATEST' a. \<not> is_zero_row a (Gauss_Jordan A))}"
+also have "... = card {i. i\<le>(GREATEST a. \<not> is_zero_row a (Gauss_Jordan A))}"
   proof (rule bij_betw_same_card[symmetric, of "\<lambda>i. row i (Gauss_Jordan A)"], unfold bij_betw_def, rule conjI)
-    show "inj_on (\<lambda>i. row i (Gauss_Jordan A)) {i. i \<le> (GREATEST' a. \<not> is_zero_row a (Gauss_Jordan A))}"
+    show "inj_on (\<lambda>i. row i (Gauss_Jordan A)) {i. i \<le> (GREATEST a. \<not> is_zero_row a (Gauss_Jordan A))}"
         proof (unfold inj_on_def, auto, rule ccontr)
          fix x y
-         assume x: "x \<le> (GREATEST' a. \<not> is_zero_row a (Gauss_Jordan A))" and y: "y \<le> (GREATEST' a. \<not> is_zero_row a (Gauss_Jordan A))"
+         assume x: "x \<le> (GREATEST a. \<not> is_zero_row a (Gauss_Jordan A))" and y: "y \<le> (GREATEST a. \<not> is_zero_row a (Gauss_Jordan A))"
          and xy_eq_row: "row x (Gauss_Jordan A) = row y (Gauss_Jordan A)" and x_not_y: "x \<noteq> y"
          show False
           proof (cases "x<y")
@@ -2330,13 +2330,13 @@ also have "... = card {i. i\<le>(GREATEST' a. \<not> is_zero_row a (Gauss_Jordan
                   by (unfold is_zero_row_def, rule greatest_ge_nonzero_row'[OF rref x[unfolded is_zero_row_def] not_all_zero])
                   show "\<not> is_zero_row y (Gauss_Jordan A)" by (unfold is_zero_row_def, rule greatest_ge_nonzero_row'[OF rref y[unfolded is_zero_row_def] not_all_zero])
                qed
-            thus ?thesis by (metis dual_order.less_irrefl row_def vec_nth_inverse xy_eq_row)
+            thus ?thesis by (metis less_irrefl row_def vec_nth_inverse xy_eq_row)
       qed
       qed
-    show "(\<lambda>i. row i (Gauss_Jordan A)) ` {i. i \<le> (GREATEST' a. \<not> is_zero_row a (Gauss_Jordan A))} = {row i (Gauss_Jordan A) |i. row i (Gauss_Jordan A) \<noteq> 0}"
+    show "(\<lambda>i. row i (Gauss_Jordan A)) ` {i. i \<le> (GREATEST a. \<not> is_zero_row a (Gauss_Jordan A))} = {row i (Gauss_Jordan A) |i. row i (Gauss_Jordan A) \<noteq> 0}"
     proof (unfold image_def, auto)
       fix xa
-      assume  xa: "xa \<le> (GREATEST' a. \<not> is_zero_row a (Gauss_Jordan A))"
+      assume  xa: "xa \<le> (GREATEST a. \<not> is_zero_row a (Gauss_Jordan A))"
       show "\<exists>i. row xa (Gauss_Jordan A) = row i (Gauss_Jordan A) \<and> row i (Gauss_Jordan A) \<noteq> 0"
           proof (rule exI[of _ xa], simp)
               have "\<not> is_zero_row xa (Gauss_Jordan A)" 
@@ -2347,25 +2347,25 @@ next
   fix i
   assume  "row i (Gauss_Jordan A) \<noteq> 0"
   hence "\<not> is_zero_row i (Gauss_Jordan A)" unfolding row_def is_zero_row_def' by (metis vec_eq_iff vec_nth_inverse zero_index)
-  hence "i \<le> (GREATEST' a. \<not> is_zero_row a (Gauss_Jordan A))" using Greatest'_ge by fast
-  thus "\<exists>x\<le>GREATEST' a. \<not> is_zero_row a (Gauss_Jordan A). row i (Gauss_Jordan A) = row x (Gauss_Jordan A)"
+  hence "i \<le> (GREATEST a. \<not> is_zero_row a (Gauss_Jordan A))" using Greatest_ge by fast
+  thus "\<exists>x\<le>GREATEST a. \<not> is_zero_row a (Gauss_Jordan A). row i (Gauss_Jordan A) = row x (Gauss_Jordan A)"
     by blast
 qed
 qed
-also have "... = card {i. i \<le> to_nat (GREATEST' a. \<not> is_zero_row a (Gauss_Jordan A))}"
+also have "... = card {i. i \<le> to_nat (GREATEST a. \<not> is_zero_row a (Gauss_Jordan A))}"
 proof (rule bij_betw_same_card[of "\<lambda>i. to_nat i"], unfold bij_betw_def, rule conjI)
-  show "inj_on to_nat {i. i \<le> (GREATEST' a. \<not> is_zero_row a (Gauss_Jordan A))}" using bij_to_nat by (metis bij_betw_imp_inj_on subset_inj_on top_greatest)
-  show "to_nat ` {i. i \<le> (GREATEST' a. \<not> is_zero_row a (Gauss_Jordan A))} = {i. i \<le> to_nat (GREATEST' a. \<not> is_zero_row a (Gauss_Jordan A))}"    
+  show "inj_on to_nat {i. i \<le> (GREATEST a. \<not> is_zero_row a (Gauss_Jordan A))}" using bij_to_nat by (metis bij_betw_imp_inj_on subset_inj_on top_greatest)
+  show "to_nat ` {i. i \<le> (GREATEST a. \<not> is_zero_row a (Gauss_Jordan A))} = {i. i \<le> to_nat (GREATEST a. \<not> is_zero_row a (Gauss_Jordan A))}"    
     proof (unfold image_def, auto simp add: to_nat_mono')
     fix x
-    assume x: "x \<le> to_nat (GREATEST' a. \<not> is_zero_row a (Gauss_Jordan A))"
-    hence "from_nat x \<le> (GREATEST' a. \<not> is_zero_row a (Gauss_Jordan A))"
+    assume x: "x \<le> to_nat (GREATEST a. \<not> is_zero_row a (Gauss_Jordan A))"
+    hence "from_nat x \<le> (GREATEST a. \<not> is_zero_row a (Gauss_Jordan A))"
     by (metis (full_types) leD not_le_imp_less to_nat_le)
     moreover have "x < CARD('c)" using x bij_to_nat[where ?'a='b] unfolding bij_betw_def  by (metis less_le_trans not_le to_nat_less_card)
-    ultimately show "\<exists>xa\<le>GREATEST' a. \<not> is_zero_row a (Gauss_Jordan A). x = to_nat xa" using to_nat_from_nat_id by fastforce
+    ultimately show "\<exists>xa\<le>GREATEST a. \<not> is_zero_row a (Gauss_Jordan A). x = to_nat xa" using to_nat_from_nat_id by fastforce
     qed
     qed
-    also have "... = to_nat (GREATEST' a. \<not> is_zero_row a (Gauss_Jordan A)) + 1" unfolding card_Collect_le_nat by simp
+    also have "... = to_nat (GREATEST a. \<not> is_zero_row a (Gauss_Jordan A)) + 1" unfolding card_Collect_le_nat by simp
     finally show ?thesis .
 qed
 
@@ -2377,11 +2377,11 @@ proof (cases "A=0")
 case True thus ?thesis by (metis A_0_imp_Gauss_Jordan_0 zero_index)
 next
 case False
-have "to_nat i \<ge> to_nat (GREATEST' a. \<not> is_zero_row a (Gauss_Jordan A)) + 1" using rank_less_i unfolding rank_eq_suc_to_nat_greatest[OF False] .
-hence "i>(GREATEST' a. \<not> is_zero_row a (Gauss_Jordan A))"
+have "to_nat i \<ge> to_nat (GREATEST a. \<not> is_zero_row a (Gauss_Jordan A)) + 1" using rank_less_i unfolding rank_eq_suc_to_nat_greatest[OF False] .
+hence "i>(GREATEST a. \<not> is_zero_row a (Gauss_Jordan A))"
   by (metis One_nat_def add.commute add_strict_increasing 
     add_strict_increasing2 le0 lessI neq_iff not_le to_nat_mono)
-hence "is_zero_row i (Gauss_Jordan A)" using not_greater_Greatest' by auto
+hence "is_zero_row i (Gauss_Jordan A)" using not_greater_Greatest by auto
 thus ?thesis unfolding is_zero_row_def' vec_eq_iff by auto
 qed
 
@@ -2401,7 +2401,7 @@ shows "vec_nth (Gauss_Jordan_in_ij A i j) = (let n = (LEAST n. A $ n $ j \<noteq
 
 lemma rank_Gauss_Jordan_code[code]:
   fixes A::"'a::{field}^'n::{mod_type}^'m::{mod_type}"
-  shows "rank A = (if A = 0 then 0 else (let A'=(Gauss_Jordan A) in to_nat (GREATEST' a. row a A' \<noteq> 0) + 1))"
+  shows "rank A = (if A = 0 then 0 else (let A'=(Gauss_Jordan A) in to_nat (GREATEST a. row a A' \<noteq> 0) + 1))"
   proof (cases "A = 0")
     case True show ?thesis unfolding if_P[OF True] unfolding True  rank_0 ..
     next

@@ -1480,6 +1480,13 @@ fun remdups A_ [] = []
   | remdups A_ (x :: xs) =
     (if membera A_ xs x then remdups A_ xs else x :: remdups A_ xs);
 
+fun subseqs [] = [[]]
+  | subseqs (x :: xs) = let
+                          val xss = subseqs xs;
+                        in
+                          map (fn a => x :: a) xss @ xss
+                        end;
+
 fun keys (Mapping xs) = Set (map fst xs);
 
 fun map_ran f = map (fn (k, v) => (k, f k v));
@@ -1492,13 +1499,6 @@ fun q_L B_ sigma delta q_0 =
            [q_0]
     else bot_set);
 
-fun sublists [] = [[]]
-  | sublists (x :: xs) = let
-                           val xss = sublists xs;
-                         in
-                           map (fn a => x :: a) xss @ xss
-                         end;
-
 fun lookup A_ (Mapping xs) = map_of A_ xs;
 
 fun updatea A_ k v (Mapping xs) = Mapping (update A_ k v xs);
@@ -1507,11 +1507,6 @@ fun bind (Seq g) f = Seq (fn _ => apply f (g ()))
 and apply f Empty = Empty
   | apply f (Insert (x, p)) = Join (f x, Join (bind p f, Empty))
   | apply f (Join (p, xq)) = Join (bind p f, apply f xq);
-
-fun eval A_ (Seq f) = memberb A_ (f ())
-and memberb A_ Empty x = false
-  | memberb A_ (Insert (y, p)) x = eq A_ x y orelse eval A_ p x
-  | memberb A_ (Join (p, xq)) x = eval A_ p x orelse memberb A_ xq x;
 
 fun unf_G (LTLFinal phi) = LTLOr (LTLFinal phi, unf_G phi)
   | unf_G (LTLGlobal phi) = LTLGlobal phi
@@ -1566,6 +1561,11 @@ fun mk_ora x y =
     | LTLOr (_, _) => LTLOr (x, y) | LTLNext _ => LTLOr (x, y)
     | LTLGlobal _ => LTLOr (x, y) | LTLFinal _ => LTLOr (x, y)
     | LTLUntil (_, _) => LTLOr (x, y));
+
+fun eval A_ (Seq f) = memberb A_ (f ())
+and memberb A_ Empty x = false
+  | memberb A_ (Insert (y, p)) x = eq A_ x y orelse eval A_ p x
+  | memberb A_ (Join (p, xq)) x = eval A_ p x orelse memberb A_ xq x;
 
 fun holds p = eval equal_unit p ();
 
@@ -2988,7 +2988,7 @@ fun ltl_to_generalized_rabin_C A_ delta delta_M q_0 q_0_M m_fin_C sigma phi =
         in
           Set (maps (mapping_generator_list (equal_ltl A_)
                       (fn x => upt zero_nat (the (max_rank x))))
-                (sublists gs))
+                (subseqs gs))
         end;
   in
     (delta_LTS,
@@ -3051,7 +3051,7 @@ fun ltl_to_generalized_rabin_C_af A_ =
 fun ltlc_to_rabin eager mode phi_c =
   let
     val phi_n = ltlc_to_ltln phi_c;
-    val sigma = map Set (sublists (atoms_list equal_literal phi_n));
+    val sigma = map Set (subseqs (atoms_list equal_literal phi_n));
     val phi = ltln_to_ltl equal_literal (simplify equal_literal mode phi_n);
   in
     (if eager then ltl_to_generalized_rabin_C_af_UU equal_literal sigma phi

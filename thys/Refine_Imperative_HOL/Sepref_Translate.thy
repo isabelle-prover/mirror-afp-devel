@@ -668,6 +668,52 @@ lemma hn_monadic_WHILE_lin[sepref_comb_rules]:
   unfolding APP_def PROTECT2_def CONSTRAINT_def PR_CONST_def
   by (rule hn_monadic_WHILE_aux)
 
+lemma monadic_WHILEIT_refine[refine]:  
+  assumes [refine]: "(s',s) \<in> R"
+  assumes [refine]: "\<And>s' s. \<lbrakk> (s',s)\<in>R; I s \<rbrakk> \<Longrightarrow> I' s'"  
+  assumes [refine]: "\<And>s' s. \<lbrakk> (s',s)\<in>R; I s; I' s' \<rbrakk> \<Longrightarrow> b' s' \<le>\<Down>bool_rel (b s)"
+  assumes [refine]: "\<And>s' s. \<lbrakk> (s',s)\<in>R; I s; I' s'; nofail (b s); inres (b s) True \<rbrakk> \<Longrightarrow> f' s' \<le>\<Down>R (f s)"
+  shows "monadic_WHILEIT I' b' f' s' \<le>\<Down>R (monadic_WHILEIT I b f s)"
+  unfolding monadic_WHILEIT_def
+  by (refine_rcg bind_refine'; assumption?; auto)
+  
+lemma monadic_WHILEIT_refine_WHILEIT[refine]:  
+  assumes [refine]: "(s',s) \<in> R"
+  assumes [refine]: "\<And>s' s. \<lbrakk> (s',s)\<in>R; I s \<rbrakk> \<Longrightarrow> I' s'"  
+  assumes [THEN order_trans,refine_vcg]: "\<And>s' s. \<lbrakk> (s',s)\<in>R; I s; I' s' \<rbrakk> \<Longrightarrow> b' s' \<le> SPEC (\<lambda>r. r = b s)"
+  assumes [refine]: "\<And>s' s. \<lbrakk> (s',s)\<in>R; I s; I' s'; b s \<rbrakk> \<Longrightarrow> f' s' \<le>\<Down>R (f s)"
+  shows "monadic_WHILEIT I' b' f' s' \<le>\<Down>R (WHILEIT I b f s)"
+  unfolding WHILEIT_to_monadic
+  by (refine_vcg; assumption?; auto)
+  
+lemma monadic_WHILEIT_refine_WHILET[refine]:  
+  assumes [refine]: "(s',s) \<in> R"
+  assumes [THEN order_trans,refine_vcg]: "\<And>s' s. \<lbrakk> (s',s)\<in>R \<rbrakk> \<Longrightarrow> b' s' \<le> SPEC (\<lambda>r. r = b s)"
+  assumes [refine]: "\<And>s' s. \<lbrakk> (s',s)\<in>R; b s \<rbrakk> \<Longrightarrow> f' s' \<le>\<Down>R (f s)"
+  shows "monadic_WHILEIT (\<lambda>_. True) b' f' s' \<le>\<Down>R (WHILET b f s)"
+  unfolding WHILET_def
+  by (refine_vcg; assumption?)  
+
+lemma monadic_WHILEIT_pat[def_pat_rules]:
+  "monadic_WHILEIT$I \<equiv> UNPROTECT (monadic_WHILEIT I)"
+  by auto  
+    
+lemma id_monadic_WHILEIT[id_rules]: 
+  "PR_CONST (monadic_WHILEIT I) ::\<^sub>i TYPE(('a \<Rightarrow> bool nres) \<Rightarrow> ('a \<Rightarrow> 'a nres) \<Rightarrow> 'a \<Rightarrow> 'a nres)"
+  by simp
+    
+lemma monadic_WHILEIT_arities[sepref_monadify_arity]:
+  "PR_CONST (monadic_WHILEIT I) \<equiv> \<lambda>\<^sub>2b f s. SP (PR_CONST (monadic_WHILEIT I))$(\<lambda>\<^sub>2s. b$s)$(\<lambda>\<^sub>2s. f$s)$s"
+  by (simp)
+
+lemma monadic_WHILEIT_comb[sepref_monadify_comb]:
+  "PR_CONST (monadic_WHILEIT I)$b$f$s \<equiv> 
+    Refine_Basic.bind$(EVAL$s)$(\<lambda>\<^sub>2s. 
+      SP (PR_CONST (monadic_WHILEIT I))$b$f$s
+    )"
+  by (simp)
+    
+    
 definition [simp]: "op_ASSERT_bind I m \<equiv> Refine_Basic.bind (ASSERT I) (\<lambda>_. m)"
 lemma pat_ASSERT_bind[def_pat_rules]:
   "Refine_Basic.bind$(ASSERT$I)$(\<lambda>\<^sub>2_. m) \<equiv> UNPROTECT (op_ASSERT_bind I)$m"
@@ -691,6 +737,31 @@ lemma hn_ASSERT_bind[sepref_comb_rules]:
   apply auto
   done
 
+definition [simp]: "op_ASSUME_bind I m \<equiv> Refine_Basic.bind (ASSUME I) (\<lambda>_. m)"
+lemma pat_ASSUME_bind[def_pat_rules]:
+  "Refine_Basic.bind$(ASSUME$I)$(\<lambda>\<^sub>2_. m) \<equiv> UNPROTECT (op_ASSUME_bind I)$m"
+  by simp
+
+lemma id_op_ASSUME_bind[id_rules]: 
+  "PR_CONST (op_ASSUME_bind I) ::\<^sub>i TYPE('a nres \<Rightarrow> 'a nres)"
+  by simp
+
+lemma arity_ASSUME_bind[sepref_monadify_arity]:
+  "PR_CONST (op_ASSUME_bind I) \<equiv> \<lambda>\<^sub>2m. SP (PR_CONST (op_ASSUME_bind I))$m"
+  apply (rule eq_reflection)
+  by auto
+
+lemma hn_ASSUME_bind[sepref_comb_rules]: 
+  assumes "vassn_tag \<Gamma> \<Longrightarrow> I"
+  assumes "I \<Longrightarrow> hn_refine \<Gamma> c \<Gamma>' R m"
+  shows "hn_refine \<Gamma> c \<Gamma>' R (PR_CONST (op_ASSUME_bind I)$m)"
+  apply (rule hn_refine_preI)
+  using assms
+  apply (cases I)
+  apply (auto simp: vassn_tag_def)
+  done
+    
+    
 subsection "Import of Parametricity Theorems"
 lemma pure_hn_refineI:
   assumes "Q \<longrightarrow> (c,a)\<in>R"

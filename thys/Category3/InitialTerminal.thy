@@ -73,7 +73,6 @@ begin
     assumes "antipar f f'" and "terminal (dom f)"
     shows "section_retraction f f'"
     proof
-      show "antipar f f'" using assms(1) by auto
       have "C f' f \<in> hom (dom f) (dom f) \<and> dom f \<in> hom (dom f) (dom f)"
         using assms(1) assms(2) by auto
       thus "ide (C f' f)"
@@ -98,7 +97,6 @@ begin
     assumes "antipar f f'" and "initial (dom f)"
     shows "section_retraction f f'"
     proof
-      show "antipar f f'" using assms(1) by auto
       have "C f' f \<in> hom (dom f) (dom f) \<and> dom f \<in> hom (dom f) (dom f)"
         using assms(1) assms(2) by auto
       thus "ide (C f' f)" using assms initial_def by metis

@@ -2,6 +2,8 @@ chapter AFP
 
 session "CAVA_Base" (AFP) = "Collections" +
   options [document = false, timeout = 600]
+  sessions
+    Deriving
   theories
     "../Deriving/Derive"
     "CAVA_Base/CAVA_Base"

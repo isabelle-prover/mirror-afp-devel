@@ -21,7 +21,7 @@ node constitutes a word inside or outside of the language.
 
 codatatype 'a language = Lang (\<oo>: bool) (\<dd>: "'a \<Rightarrow> 'a language")
 
-text {* 
+text {*
 This codatatype is isormorphic to the set of lists representation of languages,
 but caters for definitions by corecursion and proofs by coinduction.
 
@@ -97,7 +97,7 @@ text {*
 
 primcorec TimesLR :: "'a language \<Rightarrow> 'a language \<Rightarrow> ('a \<times> bool) language" where
   "\<oo> (TimesLR r s) = (\<oo> r \<and> \<oo> s)"
-| "\<dd> (TimesLR r s) = (\<lambda>(a, b). 
+| "\<dd> (TimesLR r s) = (\<lambda>(a, b).
    if b then TimesLR (\<dd> r a) s else if \<oo> r then TimesLR (\<dd> s a) One else Zero)"
 
 primcorec Times_Plus :: "('a \<times> bool) language \<Rightarrow> 'a language" where
@@ -123,7 +123,7 @@ lemma Times_Plus_Plus[simp]: "Times_Plus (Plus r s) = Plus (Times_Plus r) (Times
 proof (coinduction arbitrary: r s)
   case (Lang r s)
   then show ?case unfolding Times_Plus.sel Plus.sel
-    by (intro conjI[OF refl]) (metis Plus_comm Plus_rotate) 
+    by (intro conjI[OF refl]) (metis Plus_comm Plus_rotate)
 qed
 
 lemma Times_Plus_TimesLR_One[simp]: "Times_Plus (TimesLR r One) = r"
@@ -174,7 +174,7 @@ inductive Plus_cong for R where
 | Trans[intro]: "Plus_cong R x y \<Longrightarrow> Plus_cong R y z \<Longrightarrow> Plus_cong R x z"
 | Plus[intro]: "\<lbrakk>Plus_cong R x y; Plus_cong R x' y'\<rbrakk> \<Longrightarrow> Plus_cong R (Plus x x') (Plus y y')"
 
-lemma language_coinduct_upto_Plus[unfolded rel_fun_def, simplified, case_names Lang, consumes 1]: 
+lemma language_coinduct_upto_Plus[unfolded rel_fun_def, simplified, case_names Lang, consumes 1]:
   assumes R: "R L K" and hyp:
     "(\<And>L K. R L K \<Longrightarrow> \<oo> L = \<oo> K \<and> rel_fun op = (Plus_cong R) (\<dd> L) (\<dd> K))"
   shows "L = K"
@@ -322,6 +322,10 @@ theorem Shuffle_PlusR[simp]: "Shuffle r (Plus s t) = Plus (Shuffle r s) (Shuffle
 theorem Shuffle_assoc[simp]: "Shuffle (Shuffle r s) t = Shuffle r (Shuffle s t)"
   by (coinduction arbitrary: r s t rule: language_coinduct_upto_Plus) fastforce
 
+theorem Shuffle_comm[simp]: "Shuffle r s = Shuffle s r"
+  by (coinduction arbitrary: r s rule: language_coinduct_upto_Plus)
+    (auto intro!: Trans[OF Plus[OF Base Base] Refl])
+
 text {*
   We generalize coinduction up-to @{term Plus} to coinduction up-to all previously defined concepts.
 *}
@@ -344,7 +348,7 @@ inductive regular_cong for R where
 | Shuffle[intro, simp]: "\<lbrakk>regular_cong R x y; regular_cong R x' y'\<rbrakk> \<Longrightarrow>
     regular_cong R (Shuffle x x') (Shuffle y y')"
 
-lemma language_coinduct_upto_regular[unfolded rel_fun_def, simplified, case_names Lang, consumes 1]: 
+lemma language_coinduct_upto_regular[unfolded rel_fun_def, simplified, case_names Lang, consumes 1]:
   assumes R: "R L K" and hyp:
     "(\<And>L K. R L K \<Longrightarrow> \<oo> L = \<oo> K \<and> rel_fun op = (regular_cong R) (\<dd> L) (\<dd> K))"
   shows "L = K"
@@ -357,7 +361,7 @@ qed (intro Base R)
 lemma Star_unfoldR: "Star r = Plus One (Times (Star r) r)"
 proof (coinduction arbitrary: r rule: language_coinduct_upto_regular)
   case Lang
-  { fix a have "Plus (Times (\<dd> r a) (Times (Star r) r)) (\<dd> r a) = 
+  { fix a have "Plus (Times (\<dd> r a) (Times (Star r) r)) (\<dd> r a) =
       Times (\<dd> r a) (Plus One (Times (Star r) r))" by simp
   }
   then show ?case by (auto simp del: Times_PlusR)
@@ -399,7 +403,7 @@ next
 qed (auto simp: language_defs)
 
 end
-  
+
 lemma \<oo>_mono[dest]: "r \<le> s \<Longrightarrow> \<oo> r \<Longrightarrow> \<oo> s"
   unfolding less_eq_language_def by (auto dest: arg_cong[of _ _ \<oo>])
 
@@ -432,7 +436,7 @@ inductive Plus_Times_pre_cong for R where
     Plus_Times_pre_cong R (Plus x x') (Plus y y')"
 | pre_Times[intro!, simp]: "\<lbrakk>Plus_Times_pre_cong R x y; Plus_Times_pre_cong R x' y'\<rbrakk> \<Longrightarrow>
     Plus_Times_pre_cong R (Times x x') (Times y y')"
-  
+
 theorem language_simulation_coinduction_upto_Plus_Times[consumes 1, case_names Lang, coinduct pred]:
   assumes R: "R L K"
       and hyp: "(\<And>L K. R L K \<Longrightarrow> \<oo> L \<le> \<oo> K \<and> (\<forall>x. Plus_Times_pre_cong R (\<dd> L x) (\<dd> K x)))"
@@ -479,7 +483,7 @@ lemma Plus_le_iff: "Plus r s \<le> t \<longleftrightarrow> r \<le> t \<and> s \<
   unfolding less_eq_language_def
   by (metis Plus_assoc Plus_idem_assoc Plus_rotate)
 
-lemma Plus_Times_pre_cong_mono: 
+lemma Plus_Times_pre_cong_mono:
   "L' \<le> L \<Longrightarrow> K \<le> K' \<Longrightarrow> Plus_Times_pre_cong R L K \<Longrightarrow> Plus_Times_pre_cong R L' K'"
   by (metis pre_Trans pre_Less)
 

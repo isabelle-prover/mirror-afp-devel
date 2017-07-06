@@ -1,9 +1,11 @@
 chapter AFP
 
 session Amortized_Complexity (AFP) = "HOL-Library" +
-
   options [timeout = 600]
-
+  sessions
+    Pairing_Heap
+    Skew_Heap
+    Splay_Tree
   theories [document = false]
     "../Splay_Tree/Splay_Tree"
     "../Splay_Tree/Splay_Heap"
@@ -11,7 +13,6 @@ session Amortized_Complexity (AFP) = "HOL-Library" +
     "../Pairing_Heap/Pairing_Heap_Tree"
     "../Pairing_Heap/Pairing_Heap_List1"
     "../Pairing_Heap/Pairing_Heap_List2"
-
   theories
     Amortized_Framework0
     Amortized_Examples
@@ -23,7 +24,6 @@ session Amortized_Complexity (AFP) = "HOL-Library" +
     Pairing_Heap_List1_Analysis
     Pairing_Heap_List1_Analysis2
     Pairing_Heap_List2_Analysis
-
   document_files
     "root.tex"
     "root.bib"

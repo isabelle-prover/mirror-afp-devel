@@ -281,7 +281,7 @@ export_code
   lemma maxbi_set: fixes s::int shows "s>0 \<Longrightarrow> s!!maxbi s"
     unfolding maxbi_def
     apply (rule int_obtain_bit_pos, assumption)
-    apply (rule GreatestI, assumption)
+    apply (rule GreatestI_nat, assumption)
     apply (intro allI impI)
     apply (rule int_bit_bound'[rotated], assumption)
     by auto

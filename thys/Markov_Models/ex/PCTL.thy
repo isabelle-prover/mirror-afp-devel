@@ -32,12 +32,7 @@ sublocale R?: MC_with_rewards K \<iota> \<rho>
 lemma single_l:
   fixes s and x :: real assumes "s \<in> S"
   shows "(\<Sum>s'\<in>S. (if s' = s then 1 else 0) * l s') = x \<longleftrightarrow> l s = x"
-proof -
-  have "(\<Sum>s'\<in>S. (if s' = s then 1 else 0) * l s') = (\<Sum>s'\<in>S. (if s' = s then l s' else 0))"
-    using `s \<in> S` by (auto intro!: sum.cong)
-  with `s \<in> S` show ?thesis
-    using finite_S by (auto simp add: sum.If_cases)
-qed
+  by (simp add: assms if_distrib [of "\<lambda>x. x * a" for a] cong: if_cong)
 
 definition "order = (SOME f. bij_betw f {..< card S} S)"
 

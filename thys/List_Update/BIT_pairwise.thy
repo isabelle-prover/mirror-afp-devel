@@ -4,41 +4,41 @@ section "BIT is pairwise"
 theory BIT_pairwise
 imports List_Factoring BIT
 begin
-  
-lemma L_sublist: "S \<subseteq> {..<length init}
-  \<Longrightarrow> map_pmf (\<lambda>l. sublist l S) (Prob_Theory.bv (length init))
-      = (Prob_Theory.bv (length (sublist init S)))"
+
+lemma L_nths: "S \<subseteq> {..<length init}
+  \<Longrightarrow> map_pmf (\<lambda>l. nths l S) (Prob_Theory.bv (length init))
+      = (Prob_Theory.bv (length (nths init S)))"
 proof(induct init arbitrary: S)
   case (Cons a as)
   then have passt: "{j. Suc j \<in> S} \<subseteq> {..<length as}" by auto
 
-  have " map_pmf (\<lambda>l. sublist l S) (Prob_Theory.bv (length (a # as))) = 
+  have " map_pmf (\<lambda>l. nths l S) (Prob_Theory.bv (length (a # as))) = 
     Prob_Theory.bv (length as) \<bind>
     (\<lambda>x. bernoulli_pmf (1 / 2) \<bind>
           (\<lambda>xa. return_pmf
-                  ((if 0 \<in> S then [xa] else []) @ sublist x {j. Suc j \<in> S})))"
-      by(simp add: map_pmf_def bind_return_pmf bind_assoc_pmf sublist_Cons) 
+                  ((if 0 \<in> S then [xa] else []) @ nths x {j. Suc j \<in> S})))"
+      by(simp add: map_pmf_def bind_return_pmf bind_assoc_pmf nths_Cons) 
   also have "\<dots> = (bernoulli_pmf (1 / 2)) \<bind> 
           (\<lambda>xa. (Prob_Theory.bv (length as) \<bind>
-    (\<lambda>x. return_pmf ((if 0 \<in> S then [xa] else []) @ sublist x {j. Suc j \<in> S}))))"
+    (\<lambda>x. return_pmf ((if 0 \<in> S then [xa] else []) @ nths x {j. Suc j \<in> S}))))"
         by(rule bind_commute_pmf)
    also have "\<dots> = (bernoulli_pmf (1 / 2)) \<bind> 
-          (\<lambda>xa. (map_pmf (\<lambda>x. (sublist x {j. Suc j \<in> S})) (Prob_Theory.bv (length as)))
+          (\<lambda>xa. (map_pmf (\<lambda>x. (nths x {j. Suc j \<in> S})) (Prob_Theory.bv (length as)))
               \<bind>  (\<lambda>xs. return_pmf ((if 0 \<in> S then [xa] else []) @ xs)))"
       by(simp add: bind_return_pmf bind_assoc_pmf map_pmf_def)
    also have "\<dots> = (bernoulli_pmf (1 / 2)) \<bind> 
-          (\<lambda>xa. Prob_Theory.bv (length (sublist as {j. Suc j \<in> S}))
+          (\<lambda>xa. Prob_Theory.bv (length (nths as {j. Suc j \<in> S}))
               \<bind>  (\<lambda>xs. return_pmf ((if 0 \<in> S then [xa] else []) @ xs)))"
         using Cons(1)[OF passt] by auto
-   also have "\<dots> = Prob_Theory.bv (length (sublist (a # as) S))"
-      apply(auto simp add: sublist_Cons bind_return_pmf')
+   also have "\<dots> = Prob_Theory.bv (length (nths (a # as) S))"
+      apply(auto simp add: nths_Cons bind_return_pmf')
       by(rule bind_commute_pmf)
    finally show ?case .
 qed (simp)
 
-lemma L_sublist_Lxy:
+lemma L_nths_Lxy:
   assumes "x\<in>set init" "y\<in>set init" "x\<noteq>y" "distinct init" 
-  shows "map_pmf (\<lambda>l. sublist l {index init x,index init y}) (Prob_Theory.bv (length init))
+  shows "map_pmf (\<lambda>l. nths l {index init x,index init y}) (Prob_Theory.bv (length init))
       = (Prob_Theory.bv (length (Lxy init {x,y})))"
 proof -
   from assms(4) have setinit: "(index init) ` set init = {0..<length init}" 
@@ -53,45 +53,45 @@ proof -
   qed simp
 
   have xy_le: "index init x<length init" "index init y<length init" using assms by auto
-  have "map_pmf (\<lambda>l. sublist l {index init x,index init y}) (Prob_Theory.bv (length init))
-      = (Prob_Theory.bv (length (sublist init {index init x,index init y})))"
-        apply(rule L_sublist)
+  have "map_pmf (\<lambda>l. nths l {index init x,index init y}) (Prob_Theory.bv (length init))
+      = (Prob_Theory.bv (length (nths init {index init x,index init y})))"
+        apply(rule L_nths)
         using assms(1,2) by auto
-  moreover have "length (Lxy init {x,y}) = length (sublist init {index init x,index init y})"
+  moreover have "length (Lxy init {x,y}) = length (nths init {index init x,index init y})"
   proof -
     have "set (Lxy init {x,y}) = {x,y}" 
       using assms(1,2) by(simp add: Lxy_set_filter)
     moreover have "card {x,y} = 2" using assms(3) by auto
     moreover have "distinct (Lxy init {x,y})" using assms(4) by(simp add: Lxy_distinct)
     ultimately have 1: "length (Lxy init {x,y}) = 2" by(simp add: distinct_card[symmetric])
-    have "set (sublist init {index init x,index init y}) = {(init ! i) | i.  i < length init \<and> i \<in> {index init x,index init y}}" 
-      using assms(1,2) by(simp add: set_sublist)
+    have "set (nths init {index init x,index init y}) = {(init ! i) | i.  i < length init \<and> i \<in> {index init x,index init y}}" 
+      using assms(1,2) by(simp add: set_nths)
     moreover have "card {(init ! i) | i.  i < length init \<and> i \<in> {index init x,index init y}} = 2"
     proof -
       have 1: "{(init ! i) | i.  i < length init \<and> i \<in> {index init x,index init y}} = {init ! index init x, init ! index init y}" using xy_le by blast
       also have "\<dots> = {x,y}" using nth_index assms(1,2) by auto 
       finally show ?thesis using assms(3) by auto
     qed
-    moreover have "distinct (sublist init {index init x,index init y})" using assms(4) by(simp)
-    ultimately have 2: "length (sublist init {index init x,index init y}) = 2" by(simp add: distinct_card[symmetric])
+    moreover have "distinct (nths init {index init x,index init y})" using assms(4) by(simp)
+    ultimately have 2: "length (nths init {index init x,index init y}) = 2" by(simp add: distinct_card[symmetric])
     show ?thesis using 1 2 by simp
   qed
   ultimately show ?thesis by simp
 qed
   
-lemma sublist_map: "map f (sublist xs S) = sublist (map f xs) S"
-apply(induct xs arbitrary: S) by(simp_all  add: sublist_Cons)
+lemma nths_map: "map f (nths xs S) = nths (map f xs) S"
+apply(induct xs arbitrary: S) by(simp_all  add: nths_Cons)
 
-lemma sublist_empty: "(\<forall>i\<in>S. i\<ge>length xs) \<Longrightarrow> sublist xs S = []"
+lemma nths_empty: "(\<forall>i\<in>S. i\<ge>length xs) \<Longrightarrow> nths xs S = []"
 proof -
   assume "(\<forall>i\<in>S. i\<ge>length xs)"
-  then have "set (sublist xs S) = {}" apply(simp add: set_sublist) by force
-  then show "sublist xs S = []" by simp
+  then have "set (nths xs S) = {}" apply(simp add: set_nths) by force
+  then show "nths xs S = []" by simp
 qed
 
 
-lemma sublist_project': "i < length xs \<Longrightarrow> j < length xs \<Longrightarrow> i<j
-   \<Longrightarrow> sublist xs {i,j} = [xs!i, xs!j]"
+lemma nths_project': "i < length xs \<Longrightarrow> j < length xs \<Longrightarrow> i<j
+   \<Longrightarrow> nths xs {i,j} = [xs!i, xs!j]"
 proof -
   assume il: "i < length xs" and jl: "j < length xs" and ij: "i<j"
 
@@ -112,21 +112,21 @@ proof -
   have s3: "{k. (k  + length [xs ! i] \<in> {0, j-i})} = {j-i-1}"  using ij by force
   have s4: "{k. (k  + length b \<in> {j-i-1})} = {0}"  using length_b by force
   have s5: "{k. (k  + length [xs!j] \<in> {0})} = {}" by force
-  have l1: "sublist a {i,j} = []"
-    apply(rule sublist_empty) using length_a ij by fastforce
-  have l2: "sublist b {j - Suc i} = []"
-    apply(rule sublist_empty) using length_b ij by fastforce
-  have "sublist ( a @ [xs!i] @ b @ [xs!j] @ c) {i,j} = [xs!i, xs!j]"
-      apply(simp only: sublist_append length_a s2 s3 s4 s5)
+  have l1: "nths a {i,j} = []"
+    apply(rule nths_empty) using length_a ij by fastforce
+  have l2: "nths b {j - Suc i} = []"
+    apply(rule nths_empty) using length_b ij by fastforce
+  have "nths ( a @ [xs!i] @ b @ [xs!j] @ c) {i,j} = [xs!i, xs!j]"
+      apply(simp only: nths_append length_a s2 s3 s4 s5)
       by(simp add: l1 l2)
-  then show "sublist xs {i,j} = [xs!i, xs!j]" unfolding xs_dec .
+  then show "nths xs {i,j} = [xs!i, xs!j]" unfolding xs_dec .
 qed
 
-lemma sublist_project:
+lemma nths_project:
   assumes  "i < length xs" "j < length xs" "i<j"
-   shows "sublist xs {i,j} ! 0 = xs ! i \<and> sublist xs {i,j} ! 1 = xs ! j"
+   shows "nths xs {i,j} ! 0 = xs ! i \<and> nths xs {i,j} ! 1 = xs ! j"
 proof -
-  from assms have "sublist xs {i,j} = [xs!i, xs!j]" by(rule sublist_project')
+  from assms have "nths xs {i,j} = [xs!i, xs!j]" by(rule nths_project')
   then show ?thesis by simp
 qed
 
@@ -145,16 +145,16 @@ proof -
 
     { fix n
     have strong: "set qs \<subseteq> set init \<Longrightarrow>
-      map_pmf (\<lambda>(l,(w,i)). (Lxy l {x,y},(sublist w {index init x,index init y},Lxy init {x,y}))) (config_rand BIT init qs) =
+      map_pmf (\<lambda>(l,(w,i)). (Lxy l {x,y},(nths w {index init x,index init y},Lxy init {x,y}))) (config_rand BIT init qs) =
       config_rand BIT (Lxy init {x, y}) (Lxy qs {x, y}) " (is "?inv \<Longrightarrow> ?L qs = ?R qs")
     proof (induct qs rule: rev_induct)
       case Nil 
 
-      have " map_pmf (\<lambda>(l,(w,i)). (Lxy l {x,y},(sublist w {index init x,index init y},Lxy init {x,y}))) (config_rand BIT init [])
-          =  map_pmf (\<lambda>w. (Lxy init {x,y}, (w, Lxy init {x,y}))) (map_pmf (\<lambda>l. sublist l {index init x,index init y}) (Prob_Theory.bv (length init)))"
+      have " map_pmf (\<lambda>(l,(w,i)). (Lxy l {x,y},(nths w {index init x,index init y},Lxy init {x,y}))) (config_rand BIT init [])
+          =  map_pmf (\<lambda>w. (Lxy init {x,y}, (w, Lxy init {x,y}))) (map_pmf (\<lambda>l. nths l {index init x,index init y}) (Prob_Theory.bv (length init)))"
               by(simp add: bind_return_pmf map_pmf_def bind_assoc_pmf split_def BIT_init_def)
       also have "\<dots> = map_pmf (\<lambda>w. (Lxy init {x,y}, (w, Lxy init {x,y}))) (Prob_Theory.bv (length (Lxy init {x, y})))" 
-          using L_sublist_Lxy[OF a xny dinit] by simp
+          using L_nths_Lxy[OF a xny dinit] by simp
       also have "\<dots> = config_rand BIT  (Lxy init {x, y}) (Lxy [] {x, y})"
           by(simp add: BIT_init_def bind_return_pmf bind_assoc_pmf map_pmf_def)
       finally show ?case . 
@@ -171,11 +171,11 @@ proof -
         note whatisq=this
  
         have "?L (qs@[q]) =
-         map_pmf (\<lambda>(l,(w,i)). (Lxy l {x,y},(sublist w {index init x,index init y},Lxy init {x,y}))) (config_rand BIT init qs \<bind>
+         map_pmf (\<lambda>(l,(w,i)). (Lxy l {x,y},(nths w {index init x,index init y},Lxy init {x,y}))) (config_rand BIT init qs \<bind>
               (\<lambda>s. BIT_step s q \<bind> (\<lambda>(a, nis). return_pmf (step (fst s) q a, nis))))"
              by(simp add: split_def config'_rand_snoc) 
         also have "\<dots> =
-        map_pmf (\<lambda>(l,(w,i)). (Lxy l {x,y}, (sublist w {index init x,index init y},Lxy init {x,y}))) (config_rand BIT init qs) \<bind>
+        map_pmf (\<lambda>(l,(w,i)). (Lxy l {x,y}, (nths w {index init x,index init y},Lxy init {x,y}))) (config_rand BIT init qs) \<bind>
         (\<lambda>s.
             BIT_step s q \<bind>
             (\<lambda>(a, nis). return_pmf (step (fst s) q a, nis))) "
@@ -214,8 +214,8 @@ proof -
           have 33: "index (Lxy init {x, y}) x \<noteq> index (Lxy init {x,y}) y"
             using xny xLxy by auto
  
-          have a1: "sublist (flip (index init (q)) (fst (snd z))) {index init x,index init y}
-                = flip (index (Lxy init {x,y}) (q)) (sublist (fst (snd z)) {index init x,index init y})" (is "?A=?B")
+          have a1: "nths (flip (index init (q)) (fst (snd z))) {index init x,index init y}
+                = flip (index (Lxy init {x,y}) (q)) (nths (fst (snd z)) {index init x,index init y})" (is "?A=?B")
           proof (simp only: list_eq_iff_nth_eq, goal_cases)
             case 1
 
@@ -226,18 +226,18 @@ proof -
                       and iy: "index (Lxy init {x,y}) y = 1" by auto
 
 
-             have g1: "(sublist (fst (snd z)) {index init x,index init y}) 
+             have g1: "(nths (fst (snd z)) {index init x,index init y}) 
                         = [(fst (snd z)) ! index init x, (fst (snd z)) ! index init y]"
-                        apply(rule sublist_project')
+                        apply(rule nths_project')
                           using xyininit apply(simp)
                           using xyininit apply(simp)
                           by fact
 
 
-            have "sublist (flip (index init (q)) (fst (snd z))) {index init x,index init y}
+            have "nths (flip (index init (q)) (fst (snd z))) {index init x,index init y}
                   = [flip (index init (q)) (fst (snd z))!index init x,
                         flip (index init (q)) (fst (snd z))!index init y]"
-                        apply(rule sublist_project')
+                        apply(rule nths_project')
                           using xyininit apply(simp)
                           using xyininit apply(simp)
                           by fact
@@ -245,8 +245,8 @@ proof -
               apply(cases "q=x")
                 apply(simp add: ix) using flip_other[OF f2 f1 3] flip_itself[OF f1] apply(simp)
                 using whatisq apply(simp add: iy) using flip_other[OF f1 f2 3[symmetric]] flip_itself[OF f2] by(simp)
-            finally have "sublist (flip (index init (q)) (fst (snd z))) {index init x,index init y}
-                    = flip (index (Lxy init {x,y}) (q)) (sublist (fst (snd z)) {index init x,index init y})" 
+            finally have "nths (flip (index init (q)) (fst (snd z))) {index init x,index init y}
+                    = flip (index (Lxy init {x,y}) (q)) (nths (fst (snd z)) {index init x,index init y})" 
                     by(simp add: g1)
                           
             }note cas1=this
@@ -259,18 +259,18 @@ proof -
                       and iy: "index (Lxy init {x,y}) y = 0" by auto
 
 
-             have g1: "(sublist (fst (snd z)) {index init y,index init x}) 
+             have g1: "(nths (fst (snd z)) {index init y,index init x}) 
                         = [(fst (snd z)) ! index init y, (fst (snd z)) ! index init x]"
-                        apply(rule sublist_project')
+                        apply(rule nths_project')
                           using xyininit apply(simp)
                           using xyininit apply(simp)
                           by fact
 
             have man2: "{index init x,index init y} = {index init y,index init x}" by auto
-            have "sublist (flip (index init (q)) (fst (snd z))) {index init y,index init x}
+            have "nths (flip (index init (q)) (fst (snd z))) {index init y,index init x}
                   = [flip (index init (q)) (fst (snd z))!index init y,
                         flip (index init (q)) (fst (snd z))!index init x]"
-                        apply(rule sublist_project')
+                        apply(rule nths_project')
                           using xyininit apply(simp)
                           using xyininit apply(simp)
                           by fact
@@ -278,18 +278,18 @@ proof -
               apply(cases "q=x")
                 apply(simp add: ix) using flip_other[OF f2 f1 3] flip_itself[OF f1] apply(simp)
                 using whatisq apply(simp add: iy) using flip_other[OF f1 f2 3[symmetric]] flip_itself[OF f2] by(simp)
-            finally have "sublist (flip (index init (q)) (fst (snd z))) {index init y,index init x}
-                    = flip (index (Lxy init {x,y}) (q)) (sublist (fst (snd z)) {index init y,index init x})" 
+            finally have "nths (flip (index init (q)) (fst (snd z))) {index init y,index init x}
+                    = flip (index (Lxy init {x,y}) (q)) (nths (fst (snd z)) {index init y,index init x})" 
                     by(simp add: g1)
-            then have "sublist (flip (index init (q)) (fst (snd z))) {index init x,index init y}
-                    = flip (index (Lxy init {x,y}) (q)) (sublist (fst (snd z)) {index init x,index init y})" 
+            then have "nths (flip (index init (q)) (fst (snd z))) {index init x,index init y}
+                    = flip (index (Lxy init {x,y}) (q)) (nths (fst (snd z)) {index init x,index init y})" 
                     using man2 by auto                          
             } note cas2=this
 
             from cas1 cas2 3 show ?case by metis 
           qed
 
-          have a: "sublist (fst (snd z)) {index init x, index init y} ! (index (Lxy init {x,y}) (q))
+          have a: "nths (fst (snd z)) {index init x, index init y} ! (index (Lxy init {x,y}) (q))
                     = fst (snd z) ! (index init (q))"
           proof -
             from 31 32  33have ca: "(index (Lxy init {x,y}) x = 0 \<and> index (Lxy init {x,y}) y = 1)
@@ -306,10 +306,10 @@ proof -
 
               have 4: " {index init y, index init x} =  {index init x, index init y}" by auto
 
-              have "sublist (fst (snd z)) {index init x, index init y} ! index (Lxy init {x,y}) x = (fst (snd z)) ! index init x"
-                       "sublist (fst (snd z)) {index init x, index init y} ! index (Lxy init {x,y}) y = (fst (snd z)) ! index init y"
+              have "nths (fst (snd z)) {index init x, index init y} ! index (Lxy init {x,y}) x = (fst (snd z)) ! index init x"
+                       "nths (fst (snd z)) {index init x, index init y} ! index (Lxy init {x,y}) y = (fst (snd z)) ! index init y"
                        unfolding True y1 
-                          by (simp_all only: sublist_project[OF f1 f2 xy])  
+                          by (simp_all only: nths_project[OF f1 f2 xy])  
               with whatisq show ?thesis by auto
            next
               case False
@@ -324,10 +324,10 @@ proof -
 
               have 4: " {index init y, index init x} =  {index init x, index init y}" by auto
  
-              have "sublist (?b) {index init x, index init y} ! index (Lxy init {x,y}) x = (?b) ! index init x"
-                       "sublist (?b) {index init x, index init y} ! index (Lxy init {x,y}) y = (?b) ! index init y"
+              have "nths (?b) {index init x, index init y} ! index (Lxy init {x,y}) x = (?b) ! index init x"
+                       "nths (?b) {index init x, index init y} ! index (Lxy init {x,y}) y = (?b) ! index init y"
                        unfolding x1 y1 
-                        using 4 sublist_project[OF  f2 f1 xy]
+                        using 4 nths_project[OF  f2 f1 xy]
                           by simp_all  
               with whatisq show ?thesis by auto
            qed
@@ -436,7 +436,7 @@ proof -
            qed 
           
           have a2: " Lxy (step (?s) (q) (if ?b ! (index init (q)) then 0 else length (?s), [])) {x, y}
-              = step (Lxy (?s) {x, y}) (q) (if sublist (?b) {index init x, index init y} ! (index (Lxy init {x,y}) (q)) 
+              = step (Lxy (?s) {x, y}) (q) (if nths (?b) {index init x, index init y} ! (index (Lxy init {x,y}) (q)) 
                               then 0 
                               else length (Lxy (?s) {x, y}), [])"
                apply(auto simp add: a step_def) by(simp add: b)
@@ -452,7 +452,7 @@ proof -
         case False
         then have qnx: "(q) \<noteq> x" and qny: "(q) \<noteq> y" by auto
 
-        let ?proj="(\<lambda>a. (Lxy (fst a) {x, y}, (sublist (fst (snd a)) {index init x, index init y}, Lxy init {x, y})))"
+        let ?proj="(\<lambda>a. (Lxy (fst a) {x, y}, (nths (fst (snd a)) {index init x, index init y}, Lxy init {x, y})))"
              
         have "map_pmf ?proj (config_rand BIT init (qs@[q]))
              = map_pmf ?proj (config_rand (BIT_init, BIT_step) init qs
@@ -484,31 +484,31 @@ proof -
               have s_qin: "q \<in> set (?s)" using qininit by simp
 
 
-              have fstfst: "sublist (flip (index ?m (q)) (?b))
+              have fstfst: "nths (flip (index ?m (q)) (?b))
               {index init x, index init y}
-                  = sublist (?b) {index init x, index init y}" (is "sublist ?A ?I = sublist ?B ?I")
+                  = nths (?b) {index init x, index init y}" (is "nths ?A ?I = nths ?B ?I")
               proof (cases "index init x < index init y")
                 case True
-                have "sublist ?A ?I = [?A!index init x, ?A!index init y]"
-                      apply(rule sublist_project')
+                have "nths ?A ?I = [?A!index init x, ?A!index init y]"
+                      apply(rule nths_project')
                         by(simp_all add: ff_ix ff_iy True)
                 also have "\<dots> = [?B!index init x, ?B!index init y]"
                   unfolding sf_init using flip_other ff_ix ff_iy ff_q iq_ix iq_iy by auto
-                also have "\<dots> = sublist ?B ?I"
-                      apply(rule sublist_project'[symmetric])
+                also have "\<dots> = nths ?B ?I"
+                      apply(rule nths_project'[symmetric])
                         by(simp_all add: ff_ix ff_iy True)
                 finally show ?thesis .
               next
                 case False
                 then have yx: "index init y < index init x" using ix_iy by auto
                 have man: "?I =  {index init y, index init x}" by auto
-                have "sublist ?A {index init y, index init x}  = [?A!index init y, ?A!index init x]"
-                      apply(rule sublist_project')
+                have "nths ?A {index init y, index init x}  = [?A!index init y, ?A!index init x]"
+                      apply(rule nths_project')
                         by(simp_all add: ff_ix ff_iy yx)
                 also have "\<dots> = [?B!index init y, ?B!index init x]"
                   unfolding sf_init using flip_other ff_ix ff_iy ff_q iq_ix iq_iy by auto
-                also have "\<dots> = sublist ?B {index init y, index init x}"
-                      apply(rule sublist_project'[symmetric])
+                also have "\<dots> = nths ?B {index init y, index init x}"
+                      apply(rule nths_project'[symmetric])
                         by(simp_all add: ff_ix ff_iy yx)
                 finally show ?thesis by(simp add: man)
               qed
@@ -562,7 +562,7 @@ proof -
     fix n::nat 
     have "Pbefore_in x y BIT qs init = 
         map_pmf (\<lambda>p. x < y in fst p)
-            (map_pmf (\<lambda>(l, (w, i)). (Lxy l {x, y}, (sublist w {index init x, index init y}, Lxy init {x, y})))
+            (map_pmf (\<lambda>(l, (w, i)). (Lxy l {x, y}, (nths w {index init x, index init y}, Lxy init {x, y})))
                   (config_rand BIT init qs))" 
                   unfolding Pbefore_in_def apply(simp add: map_pmf_def bind_return_pmf bind_assoc_pmf split_def)
                   apply(rule bind_pmf_cong)

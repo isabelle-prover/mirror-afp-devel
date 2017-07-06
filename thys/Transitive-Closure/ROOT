@@ -2,6 +2,8 @@ chapter AFP
 
 session "Transitive-Closure" (AFP) = Collections +
   options [timeout = 600]
+  sessions
+    Matrix
   theories [document = false]
     "../Collections/ICF/impl/RBTMapImpl"
     "../Collections/ICF/impl/RBTSetImpl"

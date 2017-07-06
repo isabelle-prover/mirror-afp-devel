@@ -1,7 +1,9 @@
 chapter AFP
 
-session Proof_Strategy_Language (AFP) = "HOL" +
-  options [document = pdf, timeout = 600]
+session Proof_Strategy_Language (AFP) = HOL +
+  options [timeout = 600]
+  sessions
+    "HOL-Eisbach"
   theories
     PSL
     Example

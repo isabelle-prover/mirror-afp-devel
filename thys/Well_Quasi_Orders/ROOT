@@ -2,6 +2,9 @@ chapter AFP
 
 session Well_Quasi_Orders (AFP) = "HOL-Library" +
   options [timeout = 600]
+  sessions
+    "Abstract-Rewriting"
+    Open_Induction
   theories [document = false]
     "../Abstract-Rewriting/Seq"
     "../Regular-Sets/Regexp_Method"

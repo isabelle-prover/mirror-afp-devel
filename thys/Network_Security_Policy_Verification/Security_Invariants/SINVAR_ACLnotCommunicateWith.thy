@@ -18,7 +18,8 @@ definition receiver_violation :: "bool" where
   "receiver_violation \<equiv> False"
 
 text{*It is the inverse of @{const SINVAR_ACLcommunicateWith.sinvar}*}
-lemma "\<forall>v. UNIV - nP' v = set (nP v) \<Longrightarrow> SINVAR_ACLcommunicateWith.sinvar G nP \<longleftrightarrow> sinvar G nP'"
+lemma ACLcommunicateNotWith_inverse_ACLcommunicateWith:
+  "\<forall>v. UNIV - nP' v = set (nP v) \<Longrightarrow> SINVAR_ACLcommunicateWith.sinvar G nP \<longleftrightarrow> sinvar G nP'"
   by auto
 
 

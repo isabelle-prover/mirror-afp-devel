@@ -316,7 +316,7 @@ proof -
     next
       have "((\<lambda>x. c * (4 * i n x - i (Suc n) x)) has_integral c * (4 * I n - I (Suc n))) {0..4}"
         unfolding i_def I_def 
-        by (intro has_integral_mult_right has_integral_sub integrable_integral integrable_I)
+        by (intro has_integral_mult_right has_integral_diff integrable_integral integrable_I)
       thus "((\<lambda>x. c * (4 * i n x - i (Suc n) x)) has_integral  u 4 * v 4 - u 0 * v 0 - -
                c * (4 * I n - I (Suc n))) {0..4}" by (simp add: u_def v_def)
     qed simp_all

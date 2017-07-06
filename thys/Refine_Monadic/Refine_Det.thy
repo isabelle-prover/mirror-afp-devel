@@ -44,11 +44,13 @@ begin
 
   lemma inf_dres_addsimps[simp]:
     "inf x dSUCCEEDi = dSUCCEEDi"
+    "inf dSUCCEEDi x = dSUCCEEDi"
     "inf x dFAILi = x"
+    "inf (dRETURN v) x \<noteq> dFAILi"
     apply (case_tac [!] x)
     apply simp_all
     done
-
+      
   definition "Sup_dres S \<equiv> 
     if S\<subseteq>{dSUCCEEDi} then dSUCCEEDi 
     else if dFAILi\<in>S then dFAILi
@@ -69,76 +71,78 @@ begin
 
   definition less_dres where "less_dres (a::'a dres) b \<longleftrightarrow> a\<le>b \<and> \<not> b\<le>a"
 
+  lemma less_eq_dres_split_conv: 
+    "a\<le>b \<longleftrightarrow> (case (a,b) of 
+        (dSUCCEEDi,_) \<Rightarrow> True 
+      | (_,dFAILi) \<Rightarrow> True
+      | (dRETURN (a::'a), dRETURN b) \<Rightarrow> a=b
+      | _ \<Rightarrow> False
+    )"  
+    by (auto split: dres.split)
+    
+  lemma inf_dres_split_conv: 
+    "inf a b = (case (a,b) of 
+      (dFAILi,x) \<Rightarrow> x
+    | (x,dFAILi) \<Rightarrow> x
+    | (dRETURN a, dRETURN b) \<Rightarrow> (if a=b then dRETURN b else dSUCCEEDi)
+    | _ \<Rightarrow> dSUCCEEDi)"
+    by (auto split: dres.split)
+      
+  lemma sup_dres_split_conv: 
+    "sup a b = (case (a,b) of 
+      (dSUCCEEDi,x) \<Rightarrow> x
+    | (x,dSUCCEEDi) \<Rightarrow> x
+    | (dRETURN a, dRETURN b) \<Rightarrow> (if a=b then dRETURN b else dFAILi)
+    | _ \<Rightarrow> dFAILi)"
+    by (auto split: dres.split)
+      
   instance
     apply intro_classes
-    apply (simp add: less_dres_def)
-    apply (case_tac x, simp_all) []
-
-    apply (case_tac x, simp_all, case_tac [!] y, 
-      simp_all, case_tac [!] z, simp_all) []
-
-    apply (case_tac x, simp_all, case_tac [!] y, simp_all) []
-
-    apply (case_tac x, simp_all, case_tac [!] y, simp_all) []
-
-    apply (case_tac x, simp_all, case_tac [!] y, simp_all) []
-
-    apply (case_tac x, simp_all, case_tac [!] y, 
-      simp_all, case_tac [!] z, simp_all) []
-
-    apply (case_tac x, simp_all, case_tac [!] y, simp_all) []
-
-    apply (case_tac x, simp_all, case_tac [!] y, simp_all) []
-
-    apply (case_tac x, simp_all, case_tac [!] y, 
-      simp_all, case_tac [!] z, simp_all) []
-
-    apply (case_tac x, auto simp: Inf_dres_def) []
-
-    apply (case_tac z, simp_all add: Inf_dres_def) []
-      apply (auto) [] 
-        apply (case_tac x, fastforce+) []
-        apply (case_tac x, fastforce+) []
-        
-      apply auto []
-        apply (case_tac x) 
-          apply force 
-          apply force
-          apply (metis less_eq_dres.simps(4))
-        apply force
-
-        apply (case_tac x) [] 
-          apply force
-          apply force
-          apply auto []
-          apply (rename_tac aa)
-          apply (subgoal_tac "(THE x. dRETURN x \<in> A) = aa")
-          apply force
-          apply force
-
-    apply (case_tac x)
-    apply (auto simp add: Sup_dres_def) [3]
-    apply (case_tac xa, simp_all) [] 
-    apply (rename_tac aa)
-    apply (subgoal_tac "(THE x. dRETURN x \<in> A) = aa")
-    apply force
-    apply force
-
-    apply (case_tac z, auto simp add: Sup_dres_def) []
+    supply less_eq_dres_split_conv[simp] less_dres_def[simp] dres.splits[split]
+    supply inf_dres_split_conv[simp] sup_dres_split_conv[simp] if_splits[split]
+    subgoal by auto  
+    subgoal by auto  
+    subgoal by auto  
+    subgoal by auto  
+    subgoal by auto  
+    subgoal by auto  
+    subgoal by auto  
+    subgoal by auto  
+    subgoal by auto  
+    subgoal by auto  
+    subgoal by (auto simp: Inf_dres_def)
+    subgoal for A z
+      apply (clarsimp simp: Inf_dres_def; safe)
+      subgoal by force  
+      subgoal by force  
+      subgoal premises prems  
+        using prems(2-) apply (drule_tac prems(1)) apply (drule_tac prems(1))
+        apply (auto)
+        done  
+      subgoal premises prems  
+        using prems(2-) apply (frule_tac prems(1))
+        by (auto; metis the_equality) 
+      done    
+    subgoal by (auto simp: Sup_dres_def; metis the_equality)
+    subgoal 
+      apply (clarsimp simp: Sup_dres_def; safe)
       apply force
-      apply (case_tac x, force+) []
-
-      apply (case_tac x, force, force) []
-      apply (metis Refine_Det.less_eq_dres.simps(4))
-
       apply force
-
-      apply (case_tac x, force+)[]
-
-      apply (auto simp: top_dres_def Inf_dres_def)
-
-      apply (auto simp: bot_dres_def Sup_dres_def)
-  done
+      subgoal premises prems  
+        using prems(2-) 
+        apply (drule_tac prems(1))
+        apply (drule_tac prems(1))
+        apply (drule_tac prems(1)) 
+        apply (auto)
+        done  
+      apply force  
+      subgoal premises prems  
+        using prems(2-) apply (frule_tac prems(1))
+        by (auto; metis the_equality) 
+      done
+    subgoal by (auto simp: Inf_dres_def top_dres_def)    
+    subgoal by (auto simp: Sup_dres_def bot_dres_def)    
+    done
 
 end
 

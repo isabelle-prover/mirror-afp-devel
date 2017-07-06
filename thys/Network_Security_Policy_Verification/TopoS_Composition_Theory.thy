@@ -456,7 +456,42 @@ definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Right
           case False thus ?thesis by(auto simp add: offending_formaldef graph_ops enf)
         qed
       } thus ?thesis by simp
-      qed
+    qed
+      
+      
+lemma enf_not_fulfilled_if_in_offending:
+  assumes validRs: "valid_reqs M"
+    and   wfG:     "wf_graph G"
+    and   enf:     "\<forall>m \<in> set M. \<exists>P. \<forall>G. c_sinvar m G = (\<forall>e \<in> edges G. P e)"
+    shows "\<forall>x \<in> (\<Union>m\<in>set M. \<Union>c_offending_flows m (fully_connected G)).
+                \<not> all_security_requirements_fulfilled M \<lparr> nodes = V, edges = insert x E\<rparr>"
+   unfolding all_security_requirements_fulfilled_def
+   proof(simp, clarify, rename_tac m F a b)
+     let ?G="(fully_connected G)"
+     fix m F v1 v2
+     assume "m \<in> set M" and "F \<in> c_offending_flows m ?G" and "(v1, v2) \<in> F"
+       
+    from validRs have valid_mD:"\<And>m. m \<in> set M \<Longrightarrow> configured_SecurityInvariant m " 
+      by(simp add: valid_reqs_def)
+    
+     from `m \<in> set M` valid_mD have "configured_SecurityInvariant m" by simp
+
+     from enf `m \<in> set M` obtain P where enf_m: "\<forall>G. c_sinvar m G = (\<forall>e\<in>edges G. P e)" by blast
+     
+     from `(v1, v2) \<in> F` have "F \<noteq> {}" by auto
+
+     from enf_offending_flows[OF `configured_SecurityInvariant m` `\<forall>G. c_sinvar m G = (\<forall>e\<in>edges G. P e)`] have
+      offending: "\<And>G. c_offending_flows m G = (if c_sinvar m G then {} else {{e \<in> edges G. \<not> P e}})" by simp
+     from `F \<in> c_offending_flows m ?G` `F \<noteq> {}` have "F = {e \<in> edges ?G. \<not> P e}"
+       by(simp split: if_split_asm add: offending)
+     from this `(v1, v2) \<in> F`  have "\<not> P (v1, v2)" by simp
+
+     from this enf_m have "\<not> c_sinvar m \<lparr>nodes = V, edges = insert (v1, v2) E\<rparr>" by(simp)
+     thus "\<exists>m\<in>set M. \<not> c_sinvar m \<lparr>nodes = V, edges = insert (v1, v2) E\<rparr>" using `m \<in> set M`
+      apply(rule_tac x="m" in bexI)
+       by simp_all
+qed
+        
 
  theorem generate_valid_topology_max_topo: "\<lbrakk> valid_reqs M; wf_graph G;
       \<forall>m \<in> set M. \<exists>P. \<forall>G. c_sinvar m G = (\<forall>e \<in> edges G. P e)\<rbrakk> \<Longrightarrow> 
@@ -493,32 +528,12 @@ definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Right
       apply(simp add: fully_connected_def V_prop)
       using valid_reqs_def by blast
     have "\<And>A B. A - (A - B) = B \<inter> A" by fast 
-    from this[of "V \<times> V"] E_prop hlp1 have "V \<times> V - E = (\<Union>m\<in>set M. \<Union>c_offending_flows m ?G)" by force
+    from E_prop hlp1 have "V \<times> V - E = (\<Union>m\<in>set M. \<Union>c_offending_flows m ?G)" by force
 
 
+    from enf_not_fulfilled_if_in_offending[OF validRs wfG enf]
     have "\<forall>(v1, v2) \<in> (\<Union>m\<in>set M. \<Union>c_offending_flows m ?G).
-       \<not> all_security_requirements_fulfilled M \<lparr> nodes = V, edges = E \<union> {(v1, v2)}\<rparr>"
-       unfolding all_security_requirements_fulfilled_def
-       proof(simp, clarify, rename_tac m F a b)
-         fix m F v1 v2
-         assume "m \<in> set M" and "F \<in> c_offending_flows m ?G" and "(v1, v2) \<in> F"
-         from `m \<in> set M` valid_mD have "configured_SecurityInvariant m" by simp
-
-         from enf `m \<in> set M` obtain P where enf_m: "\<forall>G. c_sinvar m G = (\<forall>e\<in>edges G. P e)" by blast
-         
-         from `(v1, v2) \<in> F` have "F \<noteq> {}" by auto
-
-         from enf_offending_flows[OF `configured_SecurityInvariant m` `\<forall>G. c_sinvar m G = (\<forall>e\<in>edges G. P e)`] have
-          offending: "\<And>G. c_offending_flows m G = (if c_sinvar m G then {} else {{e \<in> edges G. \<not> P e}})" by simp
-         from `F \<in> c_offending_flows m ?G` `F \<noteq> {}` have "F = {e \<in> edges ?G. \<not> P e}"
-           by(simp split: if_split_asm add: offending)
-         from this `(v1, v2) \<in> F`  have "\<not> P (v1, v2)" by simp
-
-         from this enf_m have "\<not> c_sinvar m \<lparr>nodes = V, edges = insert (v1, v2) E\<rparr>" by(simp)
-         thus "\<exists>m\<in>set M. \<not> c_sinvar m \<lparr>nodes = V, edges = insert (v1, v2) E\<rparr>" using `m \<in> set M`
-          apply(rule_tac x="m" in bexI)
-           by simp_all
-         qed
+       \<not> all_security_requirements_fulfilled M \<lparr> nodes = V, edges = E \<union> {(v1, v2)}\<rparr>" by simp
           
     from this `V \<times> V - E = (\<Union>m\<in>set M. \<Union>c_offending_flows m ?G)` have "\<forall>(v1, v2) \<in> V \<times> V - E.
          \<not> all_security_requirements_fulfilled M \<lparr> nodes = V, edges = E \<union> {(v1, v2)}\<rparr>" by simp
@@ -545,6 +560,74 @@ definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Right
       unfolding max_topo_def by presburger
   qed
 
+  lemma enf_all_valid_policy_subset_of_max:
+    assumes validRs: "valid_reqs M"
+    and     wfG:     "wf_graph G"
+    and     enf:     "\<forall>m \<in> set M. \<exists>P. \<forall>G. c_sinvar m G = (\<forall>e \<in> edges G. P e)"
+    and     nodesG': "nodes G = nodes G'"
+    shows "\<lbrakk> wf_graph G';
+        all_security_requirements_fulfilled M G'\<rbrakk> \<Longrightarrow> 
+        edges G' \<subseteq> edges (generate_valid_topology M (fully_connected G))"
+    using nodesG' apply(cases "generate_valid_topology M (fully_connected G)", rename_tac V E, simp)
+    apply(cases "G'", rename_tac V' E', simp)
+    apply(subgoal_tac "nodes G = V")
+     prefer 2
+     apply (metis fully_connected_def generate_valid_topology_nodes graph.select_convs(1))
+    apply(simp)
+  proof(rule ccontr)
+    fix V E V' E'
+    assume a5: "all_security_requirements_fulfilled M \<lparr>nodes = V, edges = E'\<rparr>" and
+           a6: "generate_valid_topology M (fully_connected G) = \<lparr>nodes = V, edges = E\<rparr>" and
+           a10: "wf_graph \<lparr>nodes = V, edges = E'\<rparr>" and
+           contr: "\<not> E' \<subseteq> E"
+    
+    from wfG a6 have "wf_graph \<lparr>nodes = V, edges = E\<rparr>"
+      by (metis fully_connected_wf wf_graph_generate_valid_topology)
+    with a10 have EE'subsets: "fst ` E \<subseteq> V \<and> snd ` E \<subseteq> V \<and> fst ` E' \<subseteq> V \<and> snd ` E' \<subseteq> V"
+      by(simp add: wf_graph_def)
+    hence EE'subsets': "E \<subseteq> V \<times> V \<and> E' \<subseteq> V \<times> V" by auto
+    
+    from generate_valid_topology_max_topo[OF validRs wfG enf]
+      have m1: "all_security_requirements_fulfilled M \<lparr>nodes = V, edges = E\<rparr>" and
+           m2: "(\<forall>x\<in>V \<times> V - E. case x of (v1, v2) \<Rightarrow> \<not> all_security_requirements_fulfilled M (add_edge v1 v2 \<lparr>nodes = V, edges = E\<rparr>))"
+      by(simp add: max_topo_def a6)+
+        
+    from m2 have m2': "\<forall>x\<in>V \<times> V - E. \<not> all_security_requirements_fulfilled M \<lparr>nodes = V, edges = insert x E\<rparr>"
+      apply(simp add: add_edge_def)
+      apply(rule ballI, rename_tac x)
+      apply(erule_tac x=x in ballE, simp_all)
+      apply(case_tac x, simp)
+      by (simp add: insert_absorb)
+    
+     show False
+       proof(cases "V = {}")
+         case True
+         with EE'subsets a10 have "E = {}" and "E' = {}"
+           by(simp add: wf_graph_def)+
+         with True contr show ?thesis by simp
+       next
+         case False
+         with EE'subsets' contr obtain x where x: "x \<in> E' \<and> x \<notin> E \<and> x \<in> V \<times> V"
+           by blast
+         from m2' x have "\<not> all_security_requirements_fulfilled M \<lparr>nodes = V, edges = insert x E\<rparr>"
+           by (simp)
+         
+         from a6 x have x_offedning: "x \<in> (\<Union>m\<in>set M. \<Union>c_offending_flows m (fully_connected G))"
+           apply(simp add: generate_valid_topology_as_set delete_edges_simp2 fully_connected_def)
+           by blast
+  
+         from enf_not_fulfilled_if_in_offending[OF validRs wfG enf] x_offedning have
+           1: "\<not> all_security_requirements_fulfilled M \<lparr>nodes = V, edges = insert x myE\<rparr>" for myE by blast
+         
+         from x have insertxE': "insert x E' = E'" by blast
+         with a5 have
+           "all_security_requirements_fulfilled M \<lparr>nodes = V, edges = insert x E'\<rparr>" by simp
+         with insertxE' all_security_requirements_fulfilled_mono[OF validRs _ a10 a5] have 
+           2: "all_security_requirements_fulfilled M \<lparr>nodes = V, edges = insert x {}\<rparr>" by blast
+         from 1 2 show ?thesis by blast
+       qed
+  qed
+    
 
 
    subsection{* More Lemmata *}
@@ -644,15 +727,13 @@ definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Right
  
 
 
-
-
  (*ENF has uniquely defined offending flows*)
- lemma "valid_reqs M \<Longrightarrow> wf_graph G \<Longrightarrow> 
+ lemma ENF_uniquely_defined_offedning: "valid_reqs M \<Longrightarrow> wf_graph G \<Longrightarrow> 
       \<forall>m \<in> set M. \<exists>P. \<forall>G. c_sinvar m G = (\<forall>e \<in> edges G. P e) \<Longrightarrow> 
       \<forall>m \<in> set M. \<forall>G. \<not> c_sinvar m G \<longrightarrow>  (\<exists>OFF. c_offending_flows m G = {OFF})"
  apply -
  apply(induction M)
-  apply(simp)
+  apply(simp; fail)
  apply(rename_tac m M)
  apply(frule valid_reqs1)
  apply(drule valid_reqs2)
@@ -949,5 +1030,7 @@ definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Right
         subgoal using goal_fulfilled_M not_sinvar_off by(simp add: all_security_requirements_fulfilled_def)
         done
      qed
+
+
 
 end

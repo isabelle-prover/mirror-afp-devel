@@ -524,9 +524,9 @@ lemma word_upto_Cons_eq:
 lemma distinct_enum_upto:
   "distinct [(0 :: 'a::len word) .e. b]"
 proof -
-  have "\<And>(b::'a word). [0 .e. b] = sublist enum {..< Suc (fromEnum b)}"
+  have "\<And>(b::'a word). [0 .e. b] = nths enum {..< Suc (fromEnum b)}"
     apply (subst upto_enum_red)
-    apply (subst sublist_upt_eq_take)
+    apply (subst nths_upt_eq_take)
     apply (subst enum_word_def)
     apply (subst take_map)
     apply (subst take_upt)
@@ -540,7 +540,7 @@ proof -
     done
 
   then show ?thesis
-    by (rule ssubst) (rule distinct_sublistI, simp)
+    by (rule ssubst) (rule distinct_nthsI, simp)
 qed
 
 lemma upto_enum_set_conv [simp]:

@@ -2,6 +2,12 @@ chapter AFP
 
 session Twelvefold_Way (AFP) = "HOL-Library" +
   options [timeout = 300]
+  sessions
+    "HOL-Eisbach"
+    Bell_Numbers_Spivey
+    Card_Multisets
+    Card_Number_Partitions
+    Card_Partitions
   theories [document = false]
     "~~/src/HOL/Library/Multiset"
     "~~/src/HOL/Library/FuncSet"

@@ -569,7 +569,6 @@ begin
           apply(simp)
           apply(case_tac "(length i) = length x")
            apply(erule_tac x=x in allE, simp)
-           apply(blast)
           apply(erule_tac x="take (length i) x" in allE)
           apply(simp add: min_def)
           by (metis append_take_drop_id)

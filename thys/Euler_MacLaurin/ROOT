@@ -1,8 +1,10 @@
 chapter AFP
 
 session Euler_MacLaurin (AFP) = Landau_Analysis +
-  options [timeout=300]
-  theories [document=false]
+  options [timeout = 300]
+  sessions
+    Bernoulli
+  theories [document = false]
     "~~/src/HOL/Analysis/Analysis"
     "../Bernoulli/Periodic_Bernpoly"
     "../Bernoulli/Bernoulli_FPS"

@@ -10,6 +10,8 @@ session WHATandWHERE_Security (AFP) = HOL +
     Author: Jens Sauer, TU Darmstadt
   *}
   options [timeout = 600]
+  sessions
+    Strong_Security
   theories 
     Language_Composition 
     MWLs 

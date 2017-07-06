@@ -193,7 +193,8 @@ lemma Rep_plus_one_le_card:
   shows "(Rep a) + 1 < CARD ('a)"
 proof (rule ccontr)
   assume "\<not> Rep a + 1 < CARD('a)" hence to_nat_eq_card: "Rep a + 1 = CARD('a)"
-    by (metis (hide_lams, mono_tags) Rep_less_n add1_zle_eq dual_order.le_less)
+    using Rep_less_n
+    by (simp add: add1_zle_eq order_class.less_le)
   have "a+1 = Abs' (Rep a + Rep (1::'a))" using add_def' by auto
   also have "... = Abs' ((Rep a) + 1)" using Rep_1 by simp
   also have "... = Abs' (CARD('a))" unfolding to_nat_eq_card ..
@@ -404,8 +405,7 @@ proof (clarify)
   also have "...  \<le> Abs' (int (CARD('a) - 1))"
   proof (rule from_nat_mono'[unfolded from_nat_def o_def, of "nat (Rep a)" "CARD('a) - 1"])
     show "nat (Rep a) \<le> CARD('a) - 1" using Rep_less_n
-      by (metis (hide_lams, mono_tags) Rep_1 Rep_le_n dual_linorder.leD dual_linorder.le_less_linear
-          of_nat_1 of_nat_diff zle_diff1_eq of_nat_le_iff zless_nat_eq_int_zless)
+      using int_card nat_le_iff by auto
     show "CARD('a) - 1 < CARD('a)" using finite_UNIV_card_ge_0 finite_mod_type by fastforce
   qed
   also have "... = - 1"

@@ -1,5 +1,21 @@
 chapter AFP
 
+session Pre_Polynomial_Factorization (AFP) = "JNF-AFP-Lib" +
+  description {* Theories from other AFP-entries and Extended Theories for Matrices *}
+  options [timeout = 600, document = false]
+  sessions
+    Partial_Function_MR
+    Polynomial_Interpolation
+    Show
+    Sqrt_Babylonian
+  theories
+    "../Partial_Function_MR/Partial_Function_MR"
+    "../Polynomial_Interpolation/Polynomial_Interpolation"
+    "../Sqrt_Babylonian/Sqrt_Babylonian"
+    "../Show/Show_Poly"
+    "~~/src/HOL/Library/RBT_Mapping"
+    "~~/src/HOL/Computational_Algebra/Polynomial"
+
 session Polynomial_Factorization (AFP) = Pre_Polynomial_Factorization +
   description {* Algebraic Numbers *}
   options [timeout = 600]
@@ -17,14 +33,3 @@ session Polynomial_Factorization (AFP) = Pre_Polynomial_Factorization +
   document_files
     "root.bib"
     "root.tex"
-
-session Pre_Polynomial_Factorization (AFP) = "JNF-AFP-Lib" +
-  description {* Theories from other AFP-entries and Extended Theories for Matrices *}
-  options [timeout = 600, document = false]
-  theories
-    "../Partial_Function_MR/Partial_Function_MR"
-    "../Polynomial_Interpolation/Polynomial_Interpolation"
-    "../Sqrt_Babylonian/Sqrt_Babylonian"
-    "../Show/Show_Poly"
-    "~~/src/HOL/Library/RBT_Mapping"
-    "~~/src/HOL/Computational_Algebra/Polynomial"

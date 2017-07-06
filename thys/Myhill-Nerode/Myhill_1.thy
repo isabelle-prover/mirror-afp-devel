@@ -26,6 +26,10 @@ abbreviation
 where
   "x \<approx>A y \<equiv> (x, y) \<in> \<approx>A"
 
+lemma str_eq_conv_Derivs:
+  "str_eq A = {(u,v). Derivs u A = Derivs v A}"
+  by (auto simp: str_eq_def Derivs_def)  
+
 definition 
   finals :: "'a lang \<Rightarrow> 'a lang set"
 where

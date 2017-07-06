@@ -25,7 +25,6 @@ open Nominal_Function_Common
 
 val simp_attribs = map (Attrib.internal o K)
   [Simplifier.simp_add,
-   Code.add_default_eqn_attribute Code.Equation,
    Named_Theorems.add @{named_theorems nitpick_simp}]
 
 val eqvt_attrib =  Attrib.internal (K Nominal_ThmDecls.eqvt_add)
@@ -70,11 +69,12 @@ fun prepare_termination_proof prep_term is_eqvt raw_term_opt lthy =
               case_names=case_names, fs=fs, R=R, psimps=psimps, pinducts=pinducts,
               simps=SOME simps, inducts=SOME inducts, termination=termination, eqvts=teqvts }
             in
-              (info',
-               lthy 
-               |> Local_Theory.declaration {syntax = false, pervasive = false}
-                    (add_function_data o morph_function_data info')
-               |> Spec_Rules.add Spec_Rules.Equational (fs, tsimps))
+              lthy 
+              |> Local_Theory.declaration {syntax = false, pervasive = false}
+                   (add_function_data o morph_function_data info')
+              |> Spec_Rules.add Spec_Rules.Equational (fs, tsimps)
+              |> Code.declare_default_eqns (map (rpair true) tsimps)
+              |> pair info'
             end)
         end
   in

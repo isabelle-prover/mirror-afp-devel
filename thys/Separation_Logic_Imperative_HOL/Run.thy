@@ -221,6 +221,17 @@ lemma run_new_array[run_elims]:
   qed
   done
 
+lemma run_make[run_elims]:
+  assumes "run (Array.make n f) \<sigma> \<sigma>' r"
+          "\<not>is_exn \<sigma>"
+  obtains "\<sigma>' = Some (snd (Array.alloc (map f [0 ..< n]) (the_state \<sigma>)))"
+          "r = fst (Array.alloc (map f [0 ..< n]) (the_state \<sigma>))"
+          "Array.get (the_state \<sigma>') r = (map f [0 ..< n])"
+  using assms
+  apply (cases \<sigma>)
+  subgoal by simp
+  subgoal by (simp add: run.simps execute_simps Array.get_alloc; fastforce)
+  done    
 
 lemma run_upd[run_elims]:
   assumes "run (Array.upd i x a) \<sigma> \<sigma>' res"

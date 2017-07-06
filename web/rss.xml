@@ -9,7 +9,347 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>19 Apr 2017 00:00:00 +0000</pubDate>
+    <pubDate>06 Jul 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>Stone-Kleene Relation Algebras</title>
+              <link>https://www.isa-afp.org/entries/Stone_Kleene_Relation_Algebras.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Stone_Kleene_Relation_Algebras.shtml</guid>
+       <dc:creator> Walter Guttmann       </dc:creator>
+       <pubDate>06 Jul 2017 00:00:00 +0000</pubDate>
+       <description>
+We develop Stone-Kleene relation algebras, which expand Stone relation
+algebras with a Kleene star operation to describe reachability in
+weighted graphs. Many properties of the Kleene star arise as a special
+case of a more general theory of iteration based on Conway semirings
+extended by simulation axioms. This includes several theorems
+representing complex program transformations. We formally prove the
+correctness of Conway&#39;s automata-based construction of the Kleene
+star of a matrix. We prove numerous results useful for reasoning about
+weighted graphs.</description>
+    </item>
+    <item>
+       <title>Propositional Proof Systems</title>
+              <link>https://www.isa-afp.org/entries/Propositional_Proof_Systems.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Propositional_Proof_Systems.shtml</guid>
+       <dc:creator> Julius Michaelis, Tobias Nipkow       </dc:creator>
+       <pubDate>21 Jun 2017 00:00:00 +0000</pubDate>
+       <description>
+We formalize a range of proof systems for classical propositional
+logic (sequent calculus, natural deduction, Hilbert systems,
+resolution) and prove the most important meta-theoretic results about
+semantics and proofs: compactness, soundness, completeness,
+translations between proof systems, cut-elimination, interpolation and
+model existence.</description>
+    </item>
+    <item>
+       <title>Partial Semigroups and Convolution Algebras</title>
+              <link>https://www.isa-afp.org/entries/PSemigroupsConvolution.shtml</link>
+       <guid>https://www.isa-afp.org/entries/PSemigroupsConvolution.shtml</guid>
+       <dc:creator> Brijesh Dongol, Victor B. F. Gomes, Ian J. Hayes, Georg Struth       </dc:creator>
+       <pubDate>13 Jun 2017 00:00:00 +0000</pubDate>
+       <description>
+Partial Semigroups are relevant to the foundations of quantum
+mechanics and combinatorics as well as to interval and separation
+logics. Convolution algebras can be understood either as algebras of
+generalised binary modalities over ternary Kripke frames, in
+particular over partial semigroups, or as algebras of quantale-valued
+functions which are equipped with a convolution-style operation of
+multiplication that is parametrised by a ternary relation. Convolution
+algebras provide algebraic semantics for various substructural logics,
+including categorial, relevance and linear logics, for separation
+logic and for interval logics; they cover quantitative and qualitative
+applications. These mathematical components for partial semigroups and
+convolution algebras provide uniform foundations from which models of
+computation based on relations, program traces or pomsets, and
+verification components for separation or interval temporal logics can
+be built with little effort.</description>
+    </item>
+    <item>
+       <title>Buffon's Needle Problem</title>
+              <link>https://www.isa-afp.org/entries/Buffons_Needle.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Buffons_Needle.shtml</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>06 Jun 2017 00:00:00 +0000</pubDate>
+       <description>
+In the 18th century, Georges-Louis Leclerc, Comte de Buffon posed and
+later solved the following problem, which is often called the first
+problem ever solved in geometric probability: Given a floor divided
+into vertical strips of the same width, what is the probability that a
+needle thrown onto the floor randomly will cross two strips?  This
+entry formally defines the problem in the case where the needle&#39;s
+position is chosen uniformly at random in a single strip around the
+origin (which is equivalent to larger arrangements due to symmetry).
+It then provides proofs of the simple solution in the case where the
+needle&#39;s length is no greater than the width of the strips and
+the more complicated solution in the opposite case.</description>
+    </item>
+    <item>
+       <title>Formalizing Push-Relabel Algorithms</title>
+              <link>https://www.isa-afp.org/entries/Prpu_Maxflow.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Prpu_Maxflow.shtml</guid>
+       <dc:creator> Peter Lammich, S. Reza Sefidgar       </dc:creator>
+       <pubDate>01 Jun 2017 00:00:00 +0000</pubDate>
+       <description>
+We present a formalization of push-relabel algorithms for computing
+the maximum flow in a network. We start with Goldberg&#39;s et
+al.~generic push-relabel algorithm, for which we show correctness and
+the time complexity bound of O(V^2E). We then derive the
+relabel-to-front and FIFO implementation. Using stepwise refinement
+techniques, we derive an efficient verified implementation.  Our
+formal proof of the abstract algorithms closely follows a standard
+textbook proof. It is accessible even without being an expert in
+Isabelle/HOL, the interactive theorem prover used for the
+formalization.</description>
+    </item>
+    <item>
+       <title>Flow Networks and the Min-Cut-Max-Flow Theorem</title>
+              <link>https://www.isa-afp.org/entries/Flow_Networks.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Flow_Networks.shtml</guid>
+       <dc:creator> Peter Lammich, S. Reza Sefidgar       </dc:creator>
+       <pubDate>01 Jun 2017 00:00:00 +0000</pubDate>
+       <description>
+We present a formalization of flow networks and the Min-Cut-Max-Flow
+theorem. Our formal proof closely follows a standard textbook proof,
+and is accessible even without being an expert in Isabelle/HOL, the
+interactive theorem prover used for the formalization.</description>
+    </item>
+    <item>
+       <title>Optics</title>
+              <link>https://www.isa-afp.org/entries/Optics.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Optics.shtml</guid>
+       <dc:creator> Simon Foster, Frank Zeyda       </dc:creator>
+       <pubDate>25 May 2017 00:00:00 +0000</pubDate>
+       <description>
+Lenses provide an abstract interface for manipulating data types
+through spatially-separated views. They are defined abstractly in
+terms of two functions, &lt;em&gt;get&lt;/em&gt;, the return a value
+from the source type, and &lt;em&gt;put&lt;/em&gt; that updates the
+value. We mechanise the underlying theory of lenses, in terms of an
+algebraic hierarchy of lenses, including well-behaved and very
+well-behaved lenses, each lens class being characterised by a set of
+lens laws. We also mechanise a lens algebra in Isabelle that enables
+their composition and comparison, so as to allow construction of
+complex lenses. This is accompanied by a large library of algebraic
+laws. Moreover we also show how the lens classes can be applied by
+instantiating them with a number of Isabelle data types.</description>
+    </item>
+    <item>
+       <title>Developing Security Protocols by Refinement</title>
+              <link>https://www.isa-afp.org/entries/Security_Protocol_Refinement.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Security_Protocol_Refinement.shtml</guid>
+       <dc:creator> Christoph Sprenger, Ivano Somaini       </dc:creator>
+       <pubDate>24 May 2017 00:00:00 +0000</pubDate>
+       <description>
+We propose a development method for security protocols based on
+stepwise refinement. Our refinement strategy transforms abstract
+security goals into protocols that are secure when operating over an
+insecure channel controlled by a Dolev-Yao-style intruder. As
+intermediate levels of abstraction, we employ messageless guard
+protocols and channel protocols communicating over channels with
+security properties. These abstractions provide insights on why
+protocols are secure and foster the development of families of
+protocols sharing common structure and properties. We have implemented
+our method in Isabelle/HOL and used it to develop different entity
+authentication and key establishment protocols, including realistic
+features such as key confirmation, replay caches, and encrypted
+tickets. Our development highlights that guard protocols and channel
+protocols provide fundamental abstractions for bridging the gap
+between security properties and standard protocol descriptions based
+on cryptographic messages. It also shows that our refinement approach
+scales to protocols of nontrivial size and complexity.</description>
+    </item>
+    <item>
+       <title>Dictionary Construction</title>
+              <link>https://www.isa-afp.org/entries/Dict_Construction.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Dict_Construction.shtml</guid>
+       <dc:creator> Lars Hupel       </dc:creator>
+       <pubDate>24 May 2017 00:00:00 +0000</pubDate>
+       <description>
+Isabelle&#39;s code generator natively supports type classes. For
+targets that do not have language support for classes and instances,
+it performs the well-known dictionary translation, as described by
+Haftmann and Nipkow. This translation happens outside the logic, i.e.,
+there is no guarantee that it is correct, besides the pen-and-paper
+proof. This work implements a certified dictionary translation that
+produces new class-free constants and derives equality theorems.</description>
+    </item>
+    <item>
+       <title>The Floyd-Warshall Algorithm for Shortest Paths</title>
+              <link>https://www.isa-afp.org/entries/Floyd_Warshall.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Floyd_Warshall.shtml</guid>
+       <dc:creator> Simon Wimmer, Peter Lammich       </dc:creator>
+       <pubDate>08 May 2017 00:00:00 +0000</pubDate>
+       <description>
+The Floyd-Warshall algorithm [Flo62, Roy59, War62] is a classic
+dynamic programming algorithm to compute the length of all shortest
+paths between any two vertices in a graph (i.e. to solve the all-pairs
+shortest path problem, or APSP for short). Given a representation of
+the graph as a matrix of weights M, it computes another matrix M&#39;
+which represents a graph with the same path lengths and contains the
+length of the shortest path between any two vertices i and j. This is
+only possible if the graph does not contain any negative cycles.
+However, in this case the Floyd-Warshall algorithm will detect the
+situation by calculating a negative diagonal entry. This entry
+includes a formalization of the algorithm and of these key properties.
+The algorithm is refined to an efficient imperative version using the
+Imperative Refinement Framework.</description>
+    </item>
+    <item>
+       <title>Probabilistic while loop</title>
+              <link>https://www.isa-afp.org/entries/Probabilistic_While.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Probabilistic_While.shtml</guid>
+       <dc:creator> Andreas Lochbihler       </dc:creator>
+       <pubDate>05 May 2017 00:00:00 +0000</pubDate>
+       <description>
+This AFP entry defines a probabilistic while operator based on
+sub-probability mass functions and formalises zero-one laws and variant
+rules for probabilistic loop termination. As applications, we
+implement probabilistic algorithms for the Bernoulli, geometric and
+arbitrary uniform distributions that only use fair coin flips, and
+prove them correct and terminating with probability 1.</description>
+    </item>
+    <item>
+       <title>Effect polymorphism in higher-order logic</title>
+              <link>https://www.isa-afp.org/entries/Monomorphic_Monad.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Monomorphic_Monad.shtml</guid>
+       <dc:creator> Andreas Lochbihler       </dc:creator>
+       <pubDate>05 May 2017 00:00:00 +0000</pubDate>
+       <description>
+The notion of a monad cannot be expressed within higher-order logic
+(HOL) due to type system restrictions. We show that if a monad is used
+with values of only one type, this notion can be formalised in HOL.
+Based on this idea, we develop a library of effect specifications and
+implementations of monads and monad transformers. Hence, we can
+abstract over the concrete monad in HOL definitions and thus use the
+same definition for different (combinations of) effects. We illustrate
+the usefulness of effect polymorphism with a monadic interpreter for a
+simple language.</description>
+    </item>
+    <item>
+       <title>Monad normalisation</title>
+              <link>https://www.isa-afp.org/entries/Monad_Normalisation.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Monad_Normalisation.shtml</guid>
+       <dc:creator> Joshua Schneider, Manuel Eberl, Andreas Lochbihler       </dc:creator>
+       <pubDate>05 May 2017 00:00:00 +0000</pubDate>
+       <description>
+The usual monad laws can directly be used as rewrite rules for Isabelle’s
+simplifier to normalise monadic HOL terms and decide equivalences.
+In a commutative monad, however, the commutativity law is a
+higher-order permutative rewrite rule that makes the simplifier loop.
+This AFP entry implements a simproc that normalises monadic
+expressions in commutative monads using ordered rewriting. The
+simproc can also permute computations across control operators like if
+and case.</description>
+    </item>
+    <item>
+       <title>Game-based cryptography in HOL</title>
+              <link>https://www.isa-afp.org/entries/Game_Based_Crypto.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Game_Based_Crypto.shtml</guid>
+       <dc:creator> Andreas Lochbihler, S. Reza Sefidgar, Bhargav Bhatt       </dc:creator>
+       <pubDate>05 May 2017 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;In this AFP entry, we show how to specify game-based cryptographic
+security notions and formally prove secure several cryptographic
+constructions from the literature using the CryptHOL framework. Among
+others, we formalise the notions of a random oracle, a pseudo-random
+function, an unpredictable function, and of encryption schemes that are
+indistinguishable under chosen plaintext and/or ciphertext attacks. We
+prove the random-permutation/random-function switching lemma, security
+of the Elgamal and hashed Elgamal public-key encryption scheme and
+correctness and security of several constructions with pseudo-random
+functions.
+&lt;/p&gt;&lt;p&gt;Our proofs follow the game-hopping style advocated by
+Shoup and Bellare and Rogaway, from which most of the examples have
+been taken. We generalise some of their results such that they can be
+reused in other proofs. Thanks to CryptHOL&#39;s integration with
+Isabelle&#39;s parametricity infrastructure, many simple hops are easily
+justified using the theory of representation independence.&lt;/p&gt;</description>
+    </item>
+    <item>
+       <title>CryptHOL</title>
+              <link>https://www.isa-afp.org/entries/CryptHOL.shtml</link>
+       <guid>https://www.isa-afp.org/entries/CryptHOL.shtml</guid>
+       <dc:creator> Andreas Lochbihler       </dc:creator>
+       <pubDate>05 May 2017 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;CryptHOL provides a framework for formalising cryptographic arguments
+in Isabelle/HOL. It shallowly embeds a probabilistic functional
+programming language in higher order logic. The language features
+monadic sequencing, recursion, random sampling, failures and failure
+handling, and black-box access to oracles. Oracles are probabilistic
+functions which maintain hidden state between different invocations.
+All operators are defined in the new semantic domain of
+generative probabilistic values, a codatatype. We derive proof rules for
+the operators and establish a connection with the theory of relational
+parametricity. Thus, the resuting proofs are trustworthy and
+comprehensible, and the framework is extensible and widely applicable.
+&lt;/p&gt;&lt;p&gt;
+The framework is used in the accompanying AFP entry &#34;Game-based
+Cryptography in HOL&#34;. There, we show-case our framework by formalizing
+different game-based proofs from the literature. This formalisation
+continues the work described in the author&#39;s ESOP 2016 paper.&lt;/p&gt;</description>
+    </item>
+    <item>
+       <title>Monoidal Categories</title>
+              <link>https://www.isa-afp.org/entries/MonoidalCategory.shtml</link>
+       <guid>https://www.isa-afp.org/entries/MonoidalCategory.shtml</guid>
+       <dc:creator> Eugene W. Stark       </dc:creator>
+       <pubDate>04 May 2017 00:00:00 +0000</pubDate>
+       <description>
+Building on the formalization of basic category theory set out in the
+author&#39;s previous AFP article, the present article formalizes
+some basic aspects of the theory of monoidal categories. Among the
+notions defined here are monoidal category, monoidal functor, and
+equivalence of monoidal categories. The main theorems formalized are
+MacLane&#39;s coherence theorem and the constructions of the free
+monoidal category and free strict monoidal category generated by a
+given category.  The coherence theorem is proved syntactically, using
+a structurally recursive approach to reduction of terms that might
+have some novel aspects. We also give proofs of some results given by
+Etingof et al, which may prove useful in a formal setting. In
+particular, we show that the left and right unitors need not be taken
+as given data in the definition of monoidal category, nor does the
+definition of monoidal functor need to take as given a specific
+isomorphism expressing the preservation of the unit object. Our
+definitions of monoidal category and monoidal functor are stated so as
+to take advantage of the economy afforded by these facts.</description>
+    </item>
+    <item>
+       <title>Types, Tableaus and Gödel’s God in Isabelle/HOL</title>
+              <link>https://www.isa-afp.org/entries/Types_Tableaus_and_Goedels_God.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Types_Tableaus_and_Goedels_God.shtml</guid>
+       <dc:creator> David Fuenmayor, Christoph Benzmüller       </dc:creator>
+       <pubDate>01 May 2017 00:00:00 +0000</pubDate>
+       <description>
+A computer-formalisation of the essential parts of Fitting&#39;s
+textbook &#34;Types, Tableaus and Gödel&#39;s God&#34; in
+Isabelle/HOL is presented. In particular, Fitting&#39;s (and
+Anderson&#39;s) variant of the ontological argument is verified and
+confirmed. This variant avoids the modal collapse, which has been
+criticised as an undesirable side-effect of Kurt Gödel&#39;s (and
+Dana Scott&#39;s) versions of the ontological argument.
+Fitting&#39;s work is employing an intensional higher-order modal
+logic, which we shallowly embed here in classical higher-order logic.
+We then utilize the embedded logic for the formalisation of
+Fitting&#39;s argument. (See also the earlier AFP entry ``Gödel&#39;s God in Isabelle/HOL&#39;&#39;.)</description>
+    </item>
+    <item>
+       <title>Local Lexing</title>
+              <link>https://www.isa-afp.org/entries/LocalLexing.shtml</link>
+       <guid>https://www.isa-afp.org/entries/LocalLexing.shtml</guid>
+       <dc:creator> Steven Obua       </dc:creator>
+       <pubDate>28 Apr 2017 00:00:00 +0000</pubDate>
+       <description>
+This formalisation accompanies the paper &lt;a
+href=&#34;https://arxiv.org/abs/1702.03277&#34;&gt;Local
+Lexing&lt;/a&gt; which introduces a novel parsing concept of the same
+name. The paper also gives a high-level algorithm for local lexing as
+an extension of Earley&#39;s algorithm. This formalisation proves the
+algorithm to be correct with respect to its local lexing semantics. As
+a special case, this formalisation thus also contains a proof of the
+correctness of Earley&#39;s algorithm. The paper contains a short
+outline of how this formalisation is organised.</description>
+    </item>
     <item>
        <title>Constructor Functions</title>
               <link>https://www.isa-afp.org/entries/Constructor_Funs.shtml</link>
@@ -207,321 +547,6 @@ an instance. As a consequence, relation-algebraic concepts and methods
 can be used for reasoning about weighted graphs. We also develop a
 fixpoint calculus and apply it to compare different definitions of
 reflexive-transitive closures in semirings.</description>
-    </item>
-    <item>
-       <title>Refining Authenticated Key Agreement with Strong Adversaries</title>
-              <link>https://www.isa-afp.org/entries/Key_Agreement_Strong_Adversaries.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Key_Agreement_Strong_Adversaries.shtml</guid>
-       <dc:creator> Joseph Lallemand, Christoph Sprenger       </dc:creator>
-       <pubDate>31 Jan 2017 00:00:00 +0000</pubDate>
-       <description>
-We develop a family of key agreement protocols that are correct by
-construction. Our work substantially extends prior work on developing
-security protocols by refinement. First, we strengthen the adversary
-by allowing him to compromise different resources of protocol
-participants, such as their long-term keys or their session keys. This
-enables the systematic development of protocols that ensure strong
-properties such as perfect forward secrecy. Second, we broaden the
-class of protocols supported to include those with non-atomic keys and
-equationally defined cryptographic operators. We use these extensions
-to develop key agreement protocols including signed Diffie-Hellman and
-the core of IKEv1 and SKEME.</description>
-    </item>
-    <item>
-       <title>Bernoulli Numbers</title>
-              <link>https://www.isa-afp.org/entries/Bernoulli.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Bernoulli.shtml</guid>
-       <dc:creator> Lukas Bulwahn, Manuel Eberl       </dc:creator>
-       <pubDate>24 Jan 2017 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;Bernoulli numbers were first discovered in the closed-form
-expansion of the sum 1&lt;sup&gt;m&lt;/sup&gt; +
-2&lt;sup&gt;m&lt;/sup&gt; + &amp;hellip; + n&lt;sup&gt;m&lt;/sup&gt;
-for a fixed m and appear in many other places. This entry provides
-three different definitions for them: a recursive one, an explicit
-one, and one through their exponential generating function.&lt;/p&gt;
-&lt;p&gt;In addition, we prove some basic facts, e.g. their relation
-to sums of powers of integers and that all odd Bernoulli numbers
-except the first are zero. We also prove the correctness of the
-Akiyama&amp;ndash;Tanigawa algorithm for computing Bernoulli numbers
-with reasonable efficiency, and we define the periodic Bernoulli
-polynomials (which appear e.g. in the Euler&amp;ndash;MacLaurin
-summation formula and the expansion of the log-Gamma function) and
-prove their basic properties.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Minimal Static Single Assignment Form</title>
-              <link>https://www.isa-afp.org/entries/Minimal_SSA.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Minimal_SSA.shtml</guid>
-       <dc:creator> Max Wagner, Denis Lohner       </dc:creator>
-       <pubDate>17 Jan 2017 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This formalization is an extension to &lt;a
-href=&#34;https://www.isa-afp.org/entries/Formal_SSA.shtml&#34;&gt;&#34;Verified
-Construction of Static Single Assignment Form&#34;&lt;/a&gt;. In
-their work, the authors have shown that &lt;a
-href=&#34;http://dx.doi.org/10.1007/978-3-642-37051-9_6&#34;&gt;Braun
-et al.&#39;s static single assignment (SSA) construction
-algorithm&lt;/a&gt; produces minimal SSA form for input programs with
-a reducible control flow graph (CFG). However Braun et al. also
-proposed an extension to their algorithm that they claim produces
-minimal SSA form even for irreducible CFGs.&lt;br&gt; In this
-formalization we support that claim by giving a mechanized proof.
-&lt;/p&gt;
-&lt;p&gt;As the extension of Braun et al.&#39;s algorithm
-aims for removing so-called redundant strongly connected components of
-phi functions, we show that this suffices to guarantee minimality
-according to &lt;a href=&#34;http://dx.doi.org/10.1145/115372.115320&#34;&gt;Cytron et
-al.&lt;/a&gt;.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Bertrand's postulate</title>
-              <link>https://www.isa-afp.org/entries/Bertrands_Postulate.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Bertrands_Postulate.shtml</guid>
-       <dc:creator> Julian Biendarra, Manuel Eberl       </dc:creator>
-       <pubDate>17 Jan 2017 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;Bertrand&#39;s postulate is an early result on the
-distribution of prime numbers: For every positive integer n, there
-exists a prime number that lies strictly between n and 2n.
-The proof is ported from John Harrison&#39;s formalisation
-in HOL Light. It proceeds by first showing that the property is true
-for all n greater than or equal to 600 and then showing that it also
-holds for all n below 600 by case distinction. &lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>The Transcendence of e</title>
-              <link>https://www.isa-afp.org/entries/E_Transcendental.shtml</link>
-       <guid>https://www.isa-afp.org/entries/E_Transcendental.shtml</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>12 Jan 2017 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This work contains a proof that Euler&#39;s number e is transcendental. The
-proof follows the standard approach of assuming that e is algebraic and
-then using a specific integer polynomial to derive two inconsistent bounds,
-leading to a contradiction.&lt;/p&gt; &lt;p&gt;This kind of approach can be found in
-many different sources; this formalisation mostly follows a &lt;a  href=&#34;http://planetmath.org/proofoflindemannweierstrasstheoremandthateandpiaretranscendental&#34;&gt;PlanetMath article&lt;/a&gt; by Roger Lipsett.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Formal Network Models and Their Application to Firewall Policies</title>
-              <link>https://www.isa-afp.org/entries/UPF_Firewall.shtml</link>
-       <guid>https://www.isa-afp.org/entries/UPF_Firewall.shtml</guid>
-       <dc:creator> Achim D. Brucker, Lukas Brügger, Burkhart Wolff       </dc:creator>
-       <pubDate>08 Jan 2017 00:00:00 +0000</pubDate>
-       <description>
-We present a formal model of network protocols and their application
-to modeling firewall policies. The formalization is based on the
-Unified Policy Framework (UPF). The formalization was originally
-developed with for generating test cases for testing the security
-configuration actual firewall and router (middle-boxes) using
-HOL-TestGen. Our work focuses on modeling application level protocols
-on top of tcp/ip.</description>
-    </item>
-    <item>
-       <title>Verification of a Diffie-Hellman Password-based Authentication Protocol by Extending the Inductive Method</title>
-              <link>https://www.isa-afp.org/entries/Password_Authentication_Protocol.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Password_Authentication_Protocol.shtml</guid>
-       <dc:creator> Pasquale Noce       </dc:creator>
-       <pubDate>03 Jan 2017 00:00:00 +0000</pubDate>
-       <description>
-This paper constructs a formal model of a Diffie-Hellman
-password-based authentication protocol between a user and a smart
-card, and proves its security. The protocol provides for the dispatch
-of the user&#39;s password to the smart card on a secure messaging
-channel established by means of Password Authenticated Connection
-Establishment (PACE), where the mapping method being used is Chip
-Authentication Mapping. By applying and suitably extending
-Paulson&#39;s Inductive Method, this paper proves that the protocol
-establishes trustworthy secure messaging channels, preserves the
-secrecy of users&#39; passwords, and provides an effective mutual
-authentication service. What is more, these security properties turn
-out to hold independently of the secrecy of the PACE authentication
-key.</description>
-    </item>
-    <item>
-       <title>First-Order Logic According to Harrison</title>
-              <link>https://www.isa-afp.org/entries/FOL_Harrison.shtml</link>
-       <guid>https://www.isa-afp.org/entries/FOL_Harrison.shtml</guid>
-       <dc:creator> Alexander Birch Jensen, Anders Schlichtkrull, Jørgen Villadsen       </dc:creator>
-       <pubDate>01 Jan 2017 00:00:00 +0000</pubDate>
-       <description>
-We present a certified declarative first-order prover with equality
-based on John Harrison&#39;s Handbook of Practical Logic and
-Automated Reasoning, Cambridge University Press, 2009. ML code
-reflection is used such that the entire prover can be executed within
-Isabelle as a very simple interactive proof assistant. As examples we
-consider Pelletier&#39;s problems 1-46.</description>
-    </item>
-    <item>
-       <title>Concurrent Refinement Algebra and Rely Quotients</title>
-              <link>https://www.isa-afp.org/entries/Concurrent_Ref_Alg.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Concurrent_Ref_Alg.shtml</guid>
-       <dc:creator> Julian Fell, Ian Hayes, Andrius Velykis       </dc:creator>
-       <pubDate>30 Dec 2016 00:00:00 +0000</pubDate>
-       <description>
-The concurrent refinement algebra developed here is designed to
-provide a foundation for rely/guarantee reasoning about concurrent
-programs. The algebra builds on a complete lattice of commands by
-providing sequential composition, parallel composition and a novel
-weak conjunction operator. The weak conjunction operator coincides
-with the lattice supremum providing its arguments are non-aborting,
-but aborts if either of its arguments do. Weak conjunction provides an
-abstract version of a guarantee condition as a guarantee process. We
-distinguish between models that distribute sequential composition over
-non-deterministic choice from the left (referred to as being
-conjunctive in the refinement calculus literature) and those that
-don&#39;t. Least and greatest fixed points of monotone functions are
-provided to allow recursion and iteration operators to be added to the
-language. Additional iteration laws are available for conjunctive
-models. The rely quotient of processes &lt;i&gt;c&lt;/i&gt; and
-&lt;i&gt;i&lt;/i&gt; is the process that, if executed in parallel with
-&lt;i&gt;i&lt;/i&gt; implements &lt;i&gt;c&lt;/i&gt;. It represents an
-abstract version of a rely condition generalised to a process.</description>
-    </item>
-    <item>
-       <title>The Twelvefold Way</title>
-              <link>https://www.isa-afp.org/entries/Twelvefold_Way.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Twelvefold_Way.shtml</guid>
-       <dc:creator> Lukas Bulwahn       </dc:creator>
-       <pubDate>29 Dec 2016 00:00:00 +0000</pubDate>
-       <description>
-This entry provides all cardinality theorems of the Twelvefold Way.
-The Twelvefold Way systematically classifies twelve related
-combinatorial problems concerning two finite sets, which include
-counting permutations, combinations, multisets, set partitions and
-number partitions. This development builds upon the existing formal
-developments with cardinality theorems for those structures. It
-provides twelve bijections from the various structures to different
-equivalence classes on finite functions, and hence, proves cardinality
-formulae for these equivalence classes on finite functions.</description>
-    </item>
-    <item>
-       <title>Proof Strategy Language</title>
-              <link>https://www.isa-afp.org/entries/Proof_Strategy_Language.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Proof_Strategy_Language.shtml</guid>
-       <dc:creator> Yutaka Nagashima       </dc:creator>
-       <pubDate>20 Dec 2016 00:00:00 +0000</pubDate>
-       <description>
-Isabelle includes various automatic tools for finding proofs under
-certain conditions. However, for each conjecture, knowing which
-automation to use, and how to tweak its parameters, is currently
-labour intensive. We have developed a language, PSL, designed to
-capture high level proof strategies. PSL offloads the construction of
-human-readable fast-to-replay proof scripts to automatic search,
-making use of search-time information about each conjecture. Our
-preliminary evaluations show that PSL reduces the labour cost of
-interactive theorem proving. This submission contains the
-implementation of PSL and an example theory file, Example.thy, showing
-how to write poof strategies in PSL.</description>
-    </item>
-    <item>
-       <title>Paraconsistency</title>
-              <link>https://www.isa-afp.org/entries/Paraconsistency.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Paraconsistency.shtml</guid>
-       <dc:creator> Anders Schlichtkrull, Jørgen Villadsen       </dc:creator>
-       <pubDate>07 Dec 2016 00:00:00 +0000</pubDate>
-       <description>
-Paraconsistency is about handling inconsistency in a coherent way. In
-classical and intuitionistic logic everything follows from an
-inconsistent theory. A paraconsistent logic avoids the explosion.
-Quite a few applications in computer science and engineering are
-discussed in the Intelligent Systems Reference Library Volume 110:
-Towards Paraconsistent Engineering (Springer 2016). We formalize a
-paraconsistent many-valued logic that we motivated and described in a
-special issue on logical approaches to paraconsistency (Journal of
-Applied Non-Classical Logics 2005). We limit ourselves to the
-propositional fragment of the higher-order logic. The logic is based
-on so-called key equalities and has a countably infinite number of
-truth values. We prove theorems in the logic using the definition of
-validity. We verify truth tables and also counterexamples for
-non-theorems. We prove meta-theorems about the logic and finally we
-investigate a case study.</description>
-    </item>
-    <item>
-       <title>COMPLX: A Verification Framework for Concurrent Imperative Programs</title>
-              <link>https://www.isa-afp.org/entries/Complx.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Complx.shtml</guid>
-       <dc:creator> Sidney Amani, June Andronick, Maksym Bortin, Corey Lewis, Christine Rizkallah, Joseph Tuong       </dc:creator>
-       <pubDate>29 Nov 2016 00:00:00 +0000</pubDate>
-       <description>
-We propose a concurrency reasoning framework for imperative programs,
-based on the Owicki-Gries (OG) foundational shared-variable
-concurrency method. Our framework combines the approaches of
-Hoare-Parallel, a formalisation of OG in Isabelle/HOL for a simple
-while-language, and Simpl, a generic imperative language embedded in
-Isabelle/HOL, allowing formal reasoning on C programs. We define the
-Complx language, extending the syntax and semantics of Simpl with
-support for parallel composition and synchronisation. We additionally
-define an OG logic, which we prove sound w.r.t. the  semantics, and a
-verification condition generator, both supporting involved low-level
-imperative constructs such as function calls and abrupt termination.
-We illustrate our framework on an example that features exceptions,
-guards and function calls.  We aim to then target concurrent operating
-systems, such as the interruptible eChronos embedded operating system
-for which we already have a model-level OG proof using Hoare-Parallel.</description>
-    </item>
-    <item>
-       <title>Abstract Interpretation of Annotated Commands</title>
-              <link>https://www.isa-afp.org/entries/Abs_Int_ITP2012.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Abs_Int_ITP2012.shtml</guid>
-       <dc:creator> Tobias Nipkow       </dc:creator>
-       <pubDate>23 Nov 2016 00:00:00 +0000</pubDate>
-       <description>
-This is the Isabelle formalization of the material decribed in the
-eponymous &lt;a href=&#34;http://dx.doi.org/10.1007/978-3-642-32347-8_9&#34;&gt;ITP 2012 paper&lt;/a&gt;.
-It develops a generic abstract interpreter for a
-while-language, including widening and narrowing. The collecting
-semantics and the abstract interpreter operate on annotated commands:
-the program is represented as a syntax tree with the semantic
-information directly embedded, without auxiliary labels. The aim of
-the formalization is simplicity, not efficiency or
-precision. This is motivated by the inclusion of the material in a
-theorem prover based course on semantics. A similar (but more
-polished) development is covered in the book
-&lt;a href=&#34;http://dx.doi.org/10.1007/978-3-319-10542-0&#34;&gt;Concrete Semantics&lt;/a&gt;.</description>
-    </item>
-    <item>
-       <title>Separata: Isabelle tactics for Separation Algebra</title>
-              <link>https://www.isa-afp.org/entries/Separata.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Separata.shtml</guid>
-       <dc:creator> Zhe Hou, David Sanan, Alwen Tiu, Rajeev Gore, Ranald Clouston       </dc:creator>
-       <pubDate>16 Nov 2016 00:00:00 +0000</pubDate>
-       <description>
-We bring the labelled sequent calculus $LS_{PASL}$ for propositional
-abstract separation logic to Isabelle. The tactics given here are
-directly applied on an extension of the Separation Algebra in the AFP.
-In addition to the cancellative separation algebra, we further
-consider some useful properties in the heap model of separation logic,
-such as indivisible unit, disjointness, and cross-split. The tactics
-are essentially a proof search procedure for the calculus $LS_{PASL}$.
-We wrap the tactics in an Isabelle method called separata, and give a
-few examples of separation logic formulae which are provable by
-separata.</description>
-    </item>
-    <item>
-       <title>Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals</title>
-              <link>https://www.isa-afp.org/entries/Nested_Multisets_Ordinals.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Nested_Multisets_Ordinals.shtml</guid>
-       <dc:creator> Jasmin Christian Blanchette, Mathias Fleury, Dmitriy Traytel       </dc:creator>
-       <pubDate>12 Nov 2016 00:00:00 +0000</pubDate>
-       <description>This Isabelle/HOL formalization introduces a nested multiset datatype and defines Dershowitz and Manna&#39;s nested multiset order. The order is proved well founded and linear. By removing one constructor, we transform the nested multisets into hereditary multisets. These are isomorphic to the syntactic ordinals—the ordinals can be recursively expressed in Cantor normal form. Addition, subtraction, multiplication, and linear orders are provided on this type.</description>
-    </item>
-    <item>
-       <title>Formalization of Knuth–Bendix Orders for Lambda-Free Higher-Order Terms</title>
-              <link>https://www.isa-afp.org/entries/Lambda_Free_KBOs.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Lambda_Free_KBOs.shtml</guid>
-       <dc:creator> Heiko Becker, Jasmin Christian Blanchette, Uwe Waldmann, Daniel Wand       </dc:creator>
-       <pubDate>12 Nov 2016 00:00:00 +0000</pubDate>
-       <description>This Isabelle/HOL formalization defines Knuth–Bendix orders for higher-order terms without lambda-abstraction and proves many useful properties about them. The main order fully coincides with the standard transfinite KBO with subterm coefficients on first-order terms. It appears promising as the basis of a higher-order superposition calculus.</description>
-    </item>
-    <item>
-       <title>Expressiveness of Deep Learning</title>
-              <link>https://www.isa-afp.org/entries/Deep_Learning.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Deep_Learning.shtml</guid>
-       <dc:creator> Alexander Bentkamp       </dc:creator>
-       <pubDate>10 Nov 2016 00:00:00 +0000</pubDate>
-       <description>
-Deep learning has had a profound impact on computer science in recent years, with applications to search engines, image recognition and language processing, bioinformatics, and more. Recently, Cohen et al. provided theoretical evidence for the superiority of deep learning over shallow learning. This formalization of their work simplifies and generalizes the original proof, while working around the limitations of the Isabelle type system. To support the formalization, I developed reusable libraries of formalized mathematics, including results about the matrix rank, the Lebesgue measure, and multivariate polynomials, as well as a library for tensor analysis.</description>
     </item>
   </channel>
 </rss>

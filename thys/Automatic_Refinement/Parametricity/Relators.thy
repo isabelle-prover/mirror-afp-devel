@@ -131,6 +131,14 @@ lemma prod_rel_simp[simp]:
   "((a,b),(a',b'))\<in>\<langle>R1,R2\<rangle>prod_rel \<longleftrightarrow> (a,a')\<in>R1 \<and> (b,b')\<in>R2"
   by (auto intro: prod_relI elim: prod_relE)
 
+lemma in_Domain_prod_rel_iff[iff]: "(a,b)\<in>Domain (A\<times>\<^sub>rB) \<longleftrightarrow> a\<in>Domain A \<and> b\<in>Domain B"
+  by (auto simp: prod_rel_def)
+
+lemma prod_rel_comp: "(A \<times>\<^sub>r B) O (C \<times>\<^sub>r D) = (A O C) \<times>\<^sub>r (B O D)"
+  unfolding prod_rel_def
+  by auto
+    
+    
 subsubsection {*Option*}
 definition option_rel where
   option_rel_def_internal:
@@ -178,8 +186,8 @@ lemma sum_rel_simp[simp]:
   unfolding sum_rel_def by auto
 
 lemma sum_relI: 
-  "(a,a')\<in>Rl \<Longrightarrow> (Inl a, Inl a') \<in> \<langle>Rl,Rr\<rangle>sum_rel"
-  "(a,a')\<in>Rr \<Longrightarrow> (Inr a, Inr a') \<in> \<langle>Rl,Rr\<rangle>sum_rel"
+  "(l,l')\<in>Rl \<Longrightarrow> (Inl l, Inl l') \<in> \<langle>Rl,Rr\<rangle>sum_rel"
+  "(r,r')\<in>Rr \<Longrightarrow> (Inr r, Inr r') \<in> \<langle>Rl,Rr\<rangle>sum_rel"
   by simp_all
   
 lemma sum_relE:
@@ -266,29 +274,83 @@ lemma list_rel_imp_same_length:
   unfolding list_rel_eq_listrel relAPP_def
   by (rule listrel_eq_len)
 
+lemma list_rel_split_right_iff: 
+  "(x#xs,l)\<in>\<langle>R\<rangle>list_rel \<longleftrightarrow> (\<exists>y ys. l=y#ys \<and> (x,y)\<in>R \<and> (xs,ys)\<in>\<langle>R\<rangle>list_rel)"
+  by (cases l) auto
+lemma list_rel_split_left_iff: 
+  "(l,y#ys)\<in>\<langle>R\<rangle>list_rel \<longleftrightarrow> (\<exists>x xs. l=x#xs \<and> (x,y)\<in>R \<and> (xs,ys)\<in>\<langle>R\<rangle>list_rel)"
+  by (cases l) auto
+    
 subsubsection {* Sets *}
 text {* Pointwise refinement: The abstract set is the image of
   the concrete set, and the concrete set only contains elements that
   have an abstract counterpart *}
-definition set_rel where set_rel_def_internal: 
-  "set_rel R \<equiv> {(S,S'). S'=R``S \<and> S\<subseteq>Domain R}"
-
+  
+definition set_rel where
+  set_rel_def_internal: 
+    "set_rel R \<equiv> {(A,B). (\<forall>x\<in>A. \<exists>y\<in>B. (x,y)\<in>R) \<and> (\<forall>y\<in>B. \<exists>x\<in>A. (x,y)\<in>R)}"
+  
+term set_rel    
+    
 lemma set_rel_def[refine_rel_defs]: 
-  "\<langle>R\<rangle>set_rel \<equiv> {(S,S'). S'=R``S \<and> S\<subseteq>Domain R}"
+  "\<langle>R\<rangle>set_rel \<equiv> {(A,B). (\<forall>x\<in>A. \<exists>y\<in>B. (x,y)\<in>R) \<and> (\<forall>y\<in>B. \<exists>x\<in>A. (x,y)\<in>R)}"
   by (simp add: set_rel_def_internal relAPP_def)
+    
+lemma set_rel_alt: "\<langle>R\<rangle>set_rel = {(A,B). A \<subseteq> R\<inverse>``B \<and> B \<subseteq> R``A}"
+  unfolding set_rel_def by auto
+
+    
+    
+lemma set_relI[intro?]:
+  assumes "\<And>x. x\<in>A \<Longrightarrow> \<exists>y\<in>B. (x,y)\<in>R"
+  assumes "\<And>y. y\<in>B \<Longrightarrow> \<exists>x\<in>A. (x,y)\<in>R"
+  shows "(A,B)\<in>\<langle>R\<rangle>set_rel"  
+  using assms unfolding set_rel_def by blast
+    
+    
+text \<open>Original definition of \<open>set_rel\<close> in refinement framework. 
+  Abandoned in favour of more symmetric definition above: \<close>    
+definition old_set_rel where old_set_rel_def_internal: 
+  "old_set_rel R \<equiv> {(S,S'). S'=R``S \<and> S\<subseteq>Domain R}"
+
+lemma old_set_rel_def[refine_rel_defs]: 
+  "\<langle>R\<rangle>old_set_rel \<equiv> {(S,S'). S'=R``S \<and> S\<subseteq>Domain R}"
+  by (simp add: old_set_rel_def_internal relAPP_def)
+
+text \<open>Old definition coincides with new definition for single-valued 
+  element relations. This is probably the reason why the old definition worked 
+  for most applications.\<close>
+lemma old_set_rel_sv_eq: "single_valued R \<Longrightarrow> \<langle>R\<rangle>old_set_rel = \<langle>R\<rangle>set_rel"
+  unfolding set_rel_def old_set_rel_def single_valued_def
+  by blast  
+  
 
 lemma set_rel_simp[simp]: 
   "({},{})\<in>\<langle>R\<rangle>set_rel" 
   by (auto simp: set_rel_def)
 
-lemma set_relD: "(s,s')\<in>\<langle>R\<rangle>set_rel \<Longrightarrow> x\<in>s \<Longrightarrow> \<exists>x'\<in>s'. (x,x')\<in>R"
+lemma set_rel_empty_iff[simp]: 
+  "({},y)\<in>\<langle>A\<rangle>set_rel \<longleftrightarrow> y={}" 
+  "(x,{})\<in>\<langle>A\<rangle>set_rel \<longleftrightarrow> x={}" 
+  by (auto simp: set_rel_def; fastforce)+
+    
+    
+lemma set_relD1: "(s,s')\<in>\<langle>R\<rangle>set_rel \<Longrightarrow> x\<in>s \<Longrightarrow> \<exists>x'\<in>s'. (x,x')\<in>R"
   unfolding set_rel_def by blast
 
-lemma set_relE[consumes 2]: 
+lemma set_relD2: "(s,s')\<in>\<langle>R\<rangle>set_rel \<Longrightarrow> x'\<in>s' \<Longrightarrow> \<exists>x\<in>s. (x,x')\<in>R"
+  unfolding set_rel_def by blast
+
+lemma set_relE1[consumes 2]: 
   assumes "(s,s')\<in>\<langle>R\<rangle>set_rel" "x\<in>s"
   obtains x' where "x'\<in>s'" "(x,x')\<in>R"
-  using set_relD[OF assms] ..
+  using set_relD1[OF assms] ..
 
+lemma set_relE2[consumes 2]: 
+  assumes "(s,s')\<in>\<langle>R\<rangle>set_rel" "x'\<in>s'"
+  obtains x where "x\<in>s" "(x,x')\<in>R"
+  using set_relD2[OF assms] ..
+    
 subsection {* Automation *} 
 subsubsection {* A solver for relator properties *}
 lemma relprop_triggers: 
@@ -356,6 +418,20 @@ ML {*
     val mk_relAPP: term -> term -> term
     val list_relAPP: term list -> term -> term
     val strip_relAPP: term -> term list * term 
+    val mk_fun_rel: term -> term -> term
+
+    val list_rel: term list -> term -> term
+
+    val rel_absT: term -> typ
+    val rel_concT: term -> typ
+
+    val mk_prodrel: term * term -> term
+    val is_prodrel: term -> bool
+    val dest_prodrel: term -> term * term
+
+    val strip_prodrel_left: term -> term list
+    val list_prodrel_left: term list -> term
+
 
     val declare_natural_relator: 
       (string*string) -> Context.generic -> Context.generic
@@ -363,7 +439,6 @@ ML {*
     val natural_relator_of: Proof.context -> string -> string option
 
     val mk_natural_relator: Proof.context -> term list -> string -> term option
-    val mk_fun_rel: term -> term -> term
 
     val setup: theory -> theory
   end
@@ -389,6 +464,31 @@ ML {*
       fun aux @{mpat "\<langle>?R\<rangle>?S"} l = aux S (R::l)
         | aux R l = (l,R)
     in aux R [] end
+
+    val rel_absT = fastype_of #> HOLogic.dest_setT #> HOLogic.dest_prodT #> snd
+    val rel_concT = fastype_of #> HOLogic.dest_setT #> HOLogic.dest_prodT #> fst
+
+    fun mk_fun_rel r1 r2 = let
+      val (r1T,r2T) = (fastype_of r1,fastype_of r2)
+      val (c1T,a1T) = dest_relT r1T
+      val (c2T,a2T) = dest_relT r2T
+      val (cT,aT) = (c1T --> c2T, a1T --> a2T)
+      val rT = mk_relT (cT,aT)
+    in 
+      list_relAPP [r1,r2] (Const (@{const_name fun_rel},r1T-->r2T-->rT))
+    end
+
+    val list_rel = fold_rev mk_fun_rel
+
+    fun mk_prodrel (A,B) = @{mk_term "?A \<times>\<^sub>r ?B"}
+    fun is_prodrel @{mpat "_ \<times>\<^sub>r _"} = true | is_prodrel _ = false
+    fun dest_prodrel @{mpat "?A \<times>\<^sub>r ?B"} = (A,B) | dest_prodrel t = raise TERM("dest_prodrel",[t])
+
+    fun strip_prodrel_left @{mpat "?A \<times>\<^sub>r ?B"} = strip_prodrel_left A @ [B]
+      | strip_prodrel_left @{mpat (typs) "unit_rel"} = []
+      | strip_prodrel_left R = [R]
+
+    val list_prodrel_left = Refine_Util.list_binop_left @{term unit_rel} mk_prodrel
 
     structure natural_relators = Generic_Data (
       type T = string Symtab.table
@@ -467,15 +567,6 @@ ML {*
       )
     end
   
-    fun mk_fun_rel r1 r2 = let
-      val (r1T,r2T) = (fastype_of r1,fastype_of r2)
-      val (c1T,a1T) = dest_relT r1T
-      val (c2T,a2T) = dest_relT r2T
-      val (cT,aT) = (c1T --> c2T, a1T --> a2T)
-      val rT = mk_relT (cT,aT)
-    in 
-      list_relAPP [r1,r2] (Const (@{const_name fun_rel},r1T-->r2T-->rT))
-    end
 
     val setup = I
       #> Attrib.setup 
@@ -591,6 +682,14 @@ lemma option_rel_range: "Range R = UNIV \<Longrightarrow> Range (\<langle>R\<ran
   apply (auto simp: option_rel_def Range_iff)
   by (metis Range_iff UNIV_I option.exhaust)
 
+lemma option_rel_inter[simp]: "\<langle>R1 \<inter> R2\<rangle>option_rel = \<langle>R1\<rangle>option_rel \<inter> \<langle>R2\<rangle>option_rel"
+  by (auto simp: option_rel_def)
+
+lemma option_rel_constraint[simp]: 
+  "(x,x)\<in>\<langle>UNIV\<times>C\<rangle>option_rel \<longleftrightarrow> (\<forall>v. x=Some v \<longrightarrow> v\<in>C)"
+  by (auto simp: option_rel_def)
+    
+    
 lemma sum_rel_sv[relator_props]: 
   "\<lbrakk>single_valued Rl; single_valued Rr\<rbrakk> \<Longrightarrow> single_valued (\<langle>Rl,Rr\<rangle>sum_rel)"
   by (auto intro: single_valuedI dest: single_valuedD simp: sum_rel_def)
@@ -669,7 +768,6 @@ proof (clarsimp simp: eq_UNIV_iff)
     by (auto simp: Range_iff intro: list_relI)
 qed
 
-
 lemma bijective_imp_sv:  
   "bijective R \<Longrightarrow> single_valued R"
   "bijective R \<Longrightarrow> single_valued (R\<inverse>)"
@@ -680,9 +778,12 @@ declare bijective_Id[relator_props]
 declare bijective_Empty[relator_props]
 
 text {* Pointwise refinement for set types: *}
+  
+  
+  
 lemma set_rel_sv[relator_props]: 
-  "single_valued (\<langle>R\<rangle>set_rel)"
-  by (auto intro: single_valuedI dest: single_valuedD simp: set_rel_def) []
+  "single_valued R \<Longrightarrow> single_valued (\<langle>R\<rangle>set_rel)"
+  unfolding single_valued_def set_rel_def by blast
 
 lemma set_rel_id[relator_props]: "R=Id \<Longrightarrow> \<langle>R\<rangle>set_rel = Id"
   by (auto simp add: set_rel_def)
@@ -692,14 +793,8 @@ lemma set_rel_id_simp[simp]: "\<langle>Id\<rangle>set_rel = Id" by tagged_solver
 lemma set_rel_csv[relator_props]:
   "\<lbrakk> single_valued (R\<inverse>) \<rbrakk> 
   \<Longrightarrow> single_valued ((\<langle>R\<rangle>set_rel)\<inverse>)"
-  apply (rule single_valuedI)
-  apply (simp only: converse_iff)
-
-  apply (simp add: single_valued_def Image_def set_rel_def)
-  apply (intro allI impI equalityI)
-    apply (clarsimp, blast) []
-    apply (clarsimp, drule (1) set_mp, blast) []
-  done
+  unfolding single_valued_def set_rel_def converse_iff
+  by fast 
 
 subsection {* Invariant and Abstraction *}
 
@@ -714,6 +809,9 @@ definition build_rel where
 abbreviation "br\<equiv>build_rel"
 lemmas br_def[refine_rel_defs] = build_rel_def
 
+lemma in_br_conv: "(c,a)\<in>br \<alpha> I \<longleftrightarrow> a=\<alpha> c \<and> I c"  
+  by (auto simp: br_def)
+  
 lemma brI[intro?]: "\<lbrakk> a=\<alpha> c; I c \<rbrakk> \<Longrightarrow> (c,a)\<in>br \<alpha> I"
   by (simp add: br_def)
 
@@ -756,6 +854,8 @@ lemma sv_add_invar:
   "single_valued R \<Longrightarrow> single_valued {(c, a). (c, a) \<in> R \<and> I c}"
   by (auto dest: single_valuedD intro: single_valuedI)
 
+lemma br_Image_conv[simp]: "br \<alpha> I `` S = {\<alpha> x | x. x\<in>S \<and> I x}"
+  by (auto simp: br_def)
 
 
 subsection {* Miscellanneous *}
@@ -763,4 +863,117 @@ lemma rel_cong: "(f,g)\<in>Id \<Longrightarrow> (x,y)\<in>Id \<Longrightarrow> (
 lemma rel_fun_cong: "(f,g)\<in>Id \<Longrightarrow> (f x, g x)\<in>Id" by simp
 lemma rel_arg_cong: "(x,y)\<in>Id \<Longrightarrow> (f x, f y)\<in>Id" by simp
 
+subsection \<open>Conversion between Predicate and Set Based Relators\<close>    
+text \<open>
+  Autoref uses set-based relators of type @{typ \<open>('a\<times>'b) set\<close>}, while the 
+  transfer and lifting package of Isabelle/HOL uses predicate based relators
+  of type @{typ \<open>'a \<Rightarrow> 'b \<Rightarrow> bool\<close>}. This section defines some utilities 
+  to convert between the two.
+\<close>  
+  
+definition "rel2p R x y \<equiv> (x,y)\<in>R"
+definition "p2rel P \<equiv> {(x,y). P x y}"
+
+lemma rel2pD: "\<lbrakk>rel2p R a b\<rbrakk> \<Longrightarrow> (a,b)\<in>R" by (auto simp: rel2p_def)
+lemma p2relD: "\<lbrakk>(a,b) \<in> p2rel R\<rbrakk> \<Longrightarrow> R a b" by (auto simp: p2rel_def)
+
+lemma rel2p_inv[simp]:
+  "rel2p (p2rel P) = P"
+  "p2rel (rel2p R) = R"
+  by (auto simp: rel2p_def[abs_def] p2rel_def)
+
+named_theorems rel2p
+named_theorems p2rel
+  
+lemma rel2p_dflt[rel2p]:
+  "rel2p Id = op ="
+  "rel2p (A\<rightarrow>B) = rel_fun (rel2p A) (rel2p B)"
+  "rel2p (A\<times>\<^sub>rB) = rel_prod (rel2p A) (rel2p B)"
+  "rel2p (\<langle>A,B\<rangle>sum_rel) = rel_sum (rel2p A) (rel2p B)"
+  "rel2p (\<langle>A\<rangle>option_rel) = rel_option (rel2p A)"
+  "rel2p (\<langle>A\<rangle>list_rel) = list_all2 (rel2p A)"
+  by (auto 
+    simp: rel2p_def[abs_def] 
+    intro!: ext
+    simp: fun_rel_def rel_fun_def 
+    simp: sum_rel_def elim: rel_sum.cases
+    simp: option_rel_def elim: option.rel_cases
+    simp: list_rel_def
+    simp: set_rel_def rel_set_def Image_def
+    )
+
+ 
+  
+lemma p2rel_dflt[p2rel]: 
+  "p2rel op= = Id"
+  "p2rel (rel_fun A B) = p2rel A \<rightarrow> p2rel B"
+  "p2rel (rel_prod A B) = p2rel A \<times>\<^sub>r p2rel B"
+  "p2rel (rel_sum A B) = \<langle>p2rel A, p2rel B\<rangle>sum_rel"
+  "p2rel (rel_option A) = \<langle>p2rel A\<rangle>option_rel"
+  "p2rel (list_all2 A) = \<langle>p2rel A\<rangle>list_rel"
+  by (auto 
+    simp: p2rel_def[abs_def] 
+    simp: fun_rel_def rel_fun_def 
+    simp: sum_rel_def elim: rel_sum.cases
+    simp: option_rel_def elim: option.rel_cases
+    simp: list_rel_def
+    )
+
+lemma [rel2p]: "rel2p (\<langle>A\<rangle>set_rel) = rel_set (rel2p A)"
+  unfolding set_rel_def rel_set_def rel2p_def[abs_def] 
+  by blast
+    
+lemma [p2rel]: "left_unique A \<Longrightarrow> p2rel (rel_set A) = (\<langle>p2rel A\<rangle>set_rel)"
+  unfolding set_rel_def rel_set_def p2rel_def[abs_def]
+  by blast  
+
+lemma rel2p_comp: "rel2p A OO rel2p B = rel2p (A O B)"  
+  by (auto simp: rel2p_def[abs_def] intro!: ext)
+
+lemma rel2p_inj[simp]: "rel2p A = rel2p B \<longleftrightarrow> A=B"  
+  by (auto simp: rel2p_def[abs_def]; meson)
+    
+
+subsection \<open>More Properties\<close>    
+(* TODO: Do compp-lemmas for other standard relations *)
+lemma list_rel_compp: "\<langle>A O B\<rangle>list_rel = \<langle>A\<rangle>list_rel O \<langle>B\<rangle>list_rel"
+  using list.rel_compp[of "rel2p A" "rel2p B"]
+  by (auto simp: rel2p(2-)[symmetric] rel2p_comp) (* TODO: Not very systematic proof *)
+
+lemma option_rel_compp: "\<langle>A O B\<rangle>option_rel = \<langle>A\<rangle>option_rel O \<langle>B\<rangle>option_rel"
+  using option.rel_compp[of "rel2p A" "rel2p B"]
+  by (auto simp: rel2p(2-)[symmetric] rel2p_comp) (* TODO: Not very systematic proof *)
+    
+lemma prod_rel_compp: "\<langle>A O B, C O D\<rangle>prod_rel = \<langle>A,C\<rangle>prod_rel O \<langle>B,D\<rangle>prod_rel"
+  using prod.rel_compp[of "rel2p A" "rel2p B" "rel2p C" "rel2p D"]
+  by (auto simp: rel2p(2-)[symmetric] rel2p_comp) (* TODO: Not very systematic proof *)
+    
+lemma sum_rel_compp: "\<langle>A O B, C O D\<rangle>sum_rel = \<langle>A,C\<rangle>sum_rel O \<langle>B,D\<rangle>sum_rel"
+  using sum.rel_compp[of "rel2p A" "rel2p B" "rel2p C" "rel2p D"]
+  by (auto simp: rel2p(2-)[symmetric] rel2p_comp) (* TODO: Not very systematic proof *)
+    
+lemma set_rel_compp: "\<langle>A O B\<rangle>set_rel = \<langle>A\<rangle>set_rel O \<langle>B\<rangle>set_rel"
+  using rel_set_OO[of "rel2p A" "rel2p B"]
+  by (auto simp: rel2p(2-)[symmetric] rel2p_comp) (* TODO: Not very systematic proof *)
+    
+    
+lemma map_in_list_rel_conv: 
+  shows "(l, map \<alpha> l) \<in> \<langle>br \<alpha> I\<rangle>list_rel \<longleftrightarrow> (\<forall>x\<in>set l. I x)"
+  by (induction l) (auto simp: in_br_conv)
+    
+lemma br_set_rel_alt: "(s',s)\<in>\<langle>br \<alpha> I\<rangle>set_rel \<longleftrightarrow> (s=\<alpha>`s' \<and> (\<forall>x\<in>s'. I x))"  
+  by (auto simp: set_rel_def br_def)
+    
+(* TODO: Find proof that does not depend on br, and move to Misc *)    
+lemma finite_Image_sv: "single_valued R \<Longrightarrow> finite s \<Longrightarrow> finite (R``s)" 
+  by (erule single_valued_as_brE) simp  
+    
+lemma finite_set_rel_transfer: "\<lbrakk>(s,s')\<in>\<langle>R\<rangle>set_rel; single_valued R; finite s\<rbrakk> \<Longrightarrow> finite s'"
+  unfolding set_rel_alt
+  by (blast intro: finite_subset[OF _ finite_Image_sv])  
+    
+lemma finite_set_rel_transfer_back: "\<lbrakk>(s,s')\<in>\<langle>R\<rangle>set_rel; single_valued (R\<inverse>); finite s'\<rbrakk> \<Longrightarrow> finite s"
+  unfolding set_rel_alt
+  by (blast intro: finite_subset[OF _ finite_Image_sv])
+    
 end

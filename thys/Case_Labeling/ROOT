@@ -1,7 +1,10 @@
 chapter AFP
 
-session "Case_Labeling" (AFP) = "HOL" +
-  options [timeout=120]
+session Case_Labeling (AFP) = HOL +
+  options [timeout = 300]
+  sessions
+    "HOL-Eisbach"
+    "HOL-Hoare"
   theories [document = false]
     "~~/src/HOL/Eisbach/Eisbach"
     "~~/src/HOL/Hoare/Hoare_Logic"

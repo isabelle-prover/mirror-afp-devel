@@ -33,6 +33,7 @@ text {*
 text {* The heuristics works by proving goals of the form 
   @{text "RELATES ?R"}, thereby instantiating @{text "?R"}. *}
 definition RELATES :: "('a\<times>'b) set \<Rightarrow> bool" where "RELATES R \<equiv> True"
+lemma RELATESI: "RELATES R" by (simp add: RELATES_def)
 
 
 ML {*
@@ -132,6 +133,10 @@ lemma RELATESI_memb[refine_dref_pattern]:
 lemma RELATESI_refspec[refine_dref_pattern]: 
   "RELATES R \<Longrightarrow> S \<le>\<Down>R S' \<Longrightarrow> S \<le>\<Down>R S'" .
 
+text \<open>Allows refine-rules to add \<open>RELATES\<close> goals if they introduce hidden relations\<close>
+lemma RELATES_pattern[refine_dref_pattern]: "RELATES R \<Longrightarrow> RELATES R" .
+lemmas [refine_hsimp] = RELATES_def 
+    
 subsection {* Refinement Relations *}
 text {*
   In this section, we define some general purpose refinement relations, e.g.,
@@ -157,18 +162,7 @@ lemma option_rel_RELATES[refine_dref_RELATES]:
 
 declare option_rel_sv[refine_hsimp]
 
-declare case_option_refine[refine del]
-lemma case_option_refine_ext[refine]:
-  assumes "(v,v')\<in>\<langle>Ra\<rangle>option_rel"
-  assumes "n \<le> \<Down> Rb n'"
-  assumes "\<And>x x'. \<lbrakk> v=Some x; v'=Some x'; (x, x') \<in> Ra \<rbrakk> 
-    \<Longrightarrow> f x \<le> \<Down> Rb (f' x')"
-  shows "case_option n f v \<le>\<Down>Rb (case_option n' f' v')"
-  using assms
-  by (auto split: option.split simp: option_rel_def)
-
 lemmas [refine_hsimp] = option_rel_id_simp
-
 
 lemmas [refine_hsimp] = set_rel_sv set_rel_csv
 
@@ -205,4 +199,7 @@ lemma list_rel_RELATES[refine_dref_RELATES]:
 
 lemmas [refine_hsimp] = list_rel_sv_iff list_rel_simp
 
+lemma RELATES_nres_rel[refine_dref_RELATES]: "RELATES R \<Longrightarrow> RELATES (\<langle>R\<rangle>nres_rel)"
+  by (simp add: RELATES_def)
+  
 end

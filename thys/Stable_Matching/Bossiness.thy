@@ -214,7 +214,7 @@ proof (rule iffI)
 
     (* Enumerate all possible contracts *)
     apply (frule Bossy_CH_range[OF Set.equalityD2])
-    apply (drule subset_sublists)
+    apply (drule subset_subseqs)
 
     apply clarsimp
     apply (elim disjE)
@@ -240,7 +240,7 @@ next
         using Bossy_CH_range[unfolded Bossy.CH_def] by blast
       from \<open>?rhs\<close> XXX h X'' Xh_xs hs xs show False
         apply -
-        apply (drule subset_sublists)
+        apply (drule subset_subseqs)
         apply clarsimp
         apply (elim disjE)
         apply (simp_all add: BCh_simps)
@@ -300,7 +300,7 @@ proof (rule iffI)
 
     (* Enumerate all possible contracts *)
     apply (frule Bossy_CH_range[OF Set.equalityD2])
-    apply (drule subset_sublists)
+    apply (drule subset_subseqs)
 
     apply clarsimp
     apply (elim disjE)
@@ -325,7 +325,7 @@ next
         using Bossy_CH_range[unfolded Bossy.CH_def] by blast
       from \<open>?rhs\<close> XXX h X'' Xh_xs ds hs xs show False
         apply -
-        apply (drule subset_sublists)
+        apply (drule subset_subseqs)
         apply clarsimp
         apply (elim disjE)
         apply (simp_all add: BCh_simps)
@@ -391,7 +391,7 @@ proof(rule iffI)
 
     (* Enumerate all possible contracts *)
     apply (frule Bossy''_CD_on_range[OF Set.equalityD2])
-    apply (drule subset_sublists)
+    apply (drule subset_subseqs)
 
     apply clarsimp
     apply (elim disjE)
@@ -418,7 +418,7 @@ next
         using Bossy''_CD_on_range by blast
       from \<open>?rhs\<close> XXX h X'' Xh_xs ds hs xs show False
         apply -
-        apply (drule subset_sublists)
+        apply (drule subset_subseqs)
         apply clarsimp
         apply (elim disjE)
         apply (simp_all add: BCh'_simps)

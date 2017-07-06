@@ -243,18 +243,13 @@ lemma param_distinct[param]: "\<lbrakk>IS_LEFT_UNIQUE A; IS_RIGHT_UNIQUE A\<rbra
   apply (simp add: p2prop)
   done
 
-lemma param_Image[param]: "\<lbrakk>IS_LEFT_UNIQUE A; IS_RIGHT_UNIQUE A\<rbrakk> 
-  \<Longrightarrow> (op``, op``) \<in> \<langle>A\<times>\<^sub>rB\<rangle>set_rel \<rightarrow> \<langle>A\<rangle>set_rel \<rightarrow> \<langle>B\<rangle>set_rel"
-  apply (clarsimp simp: set_rel_def IS_LEFT_UNIQUE_def)
-  apply safe
-  apply (auto dest: single_valuedD) []
-  apply (force dest: single_valuedD)
-  apply (auto dest: single_valuedD) []
+lemma param_Image[param]: 
+  assumes "IS_LEFT_UNIQUE A" "IS_RIGHT_UNIQUE A"
+  shows "(op``, op``) \<in> \<langle>A\<times>\<^sub>rB\<rangle>set_rel \<rightarrow> \<langle>A\<rangle>set_rel \<rightarrow> \<langle>B\<rangle>set_rel"
+  apply (clarsimp simp: set_rel_def; intro conjI)  
+  apply (fastforce dest: IS_RIGHT_UNIQUED[OF assms(2)])
+  apply (fastforce dest: IS_LEFT_UNIQUED[OF assms(1)])
   done
-
-    
-
-
 
 lemma pres_eq_iff_svb: "(op=,op=)\<in>K\<rightarrow>K\<rightarrow>bool_rel \<longleftrightarrow> (single_valued K \<and> single_valued (K\<inverse>))"
   apply (safe intro!: single_valuedI)
@@ -558,6 +553,8 @@ subsection \<open>Basic HOL types\<close>
 
 lemma hnr_default[sepref_import_param]: "(default,default)\<in>Id" by simp
 
+lemma unit_hnr[sepref_import_param]: "((),())\<in>unit_rel" by auto
+    
 lemmas [sepref_import_param] = 
   param_bool
   param_nat1
@@ -574,13 +571,19 @@ lemmas [id_rules] =
   itype_self[of num.Bit0]
   itype_self[of num.Bit1]
 
-  lemma param_min_nat[param,sepref_import_param]: "(min,min)\<in>nat_rel \<rightarrow> nat_rel \<rightarrow> nat_rel" by auto
-  lemma param_max_nat[param,sepref_import_param]: "(max,max)\<in>nat_rel \<rightarrow> nat_rel \<rightarrow> nat_rel" by auto
+lemma param_min_nat[param,sepref_import_param]: "(min,min)\<in>nat_rel \<rightarrow> nat_rel \<rightarrow> nat_rel" by auto
+lemma param_max_nat[param,sepref_import_param]: "(max,max)\<in>nat_rel \<rightarrow> nat_rel \<rightarrow> nat_rel" by auto
 
-  lemma param_min_int[param,sepref_import_param]: "(min,min)\<in>int_rel \<rightarrow> int_rel \<rightarrow> int_rel" by auto
-  lemma param_max_int[param,sepref_import_param]: "(max,max)\<in>int_rel \<rightarrow> int_rel \<rightarrow> int_rel" by auto
+lemma param_min_int[param,sepref_import_param]: "(min,min)\<in>int_rel \<rightarrow> int_rel \<rightarrow> int_rel" by auto
+lemma param_max_int[param,sepref_import_param]: "(max,max)\<in>int_rel \<rightarrow> int_rel \<rightarrow> int_rel" by auto
 
-(* TODO: Add Sum-Type *)
+lemma uminus_hnr[sepref_import_param]: "(uminus,uminus)\<in>int_rel \<rightarrow> int_rel" by auto
+    
+lemma nat_param[param,sepref_import_param]: "(nat,nat) \<in> int_rel \<rightarrow> nat_rel" by auto
+lemma int_param[param,sepref_import_param]: "(int,int) \<in> nat_rel \<rightarrow> int_rel" by auto
+      
+      
+      
 subsection "Product"
 
 
@@ -1265,5 +1268,161 @@ lemma list_assn_aux_append_conv2:
 lemmas list_assn_aux_append_conv = list_assn_aux_append_conv1 list_assn_aux_append_conv2  
 
 declare param_upt[sepref_import_param]
+  
+  
+subsection \<open>Sum-Type\<close>    
 
+fun sum_assn :: "('ai \<Rightarrow> 'a \<Rightarrow> assn) \<Rightarrow> ('bi \<Rightarrow> 'b \<Rightarrow> assn) \<Rightarrow> ('ai+'bi) \<Rightarrow> ('a+'b) \<Rightarrow> assn" where
+  "sum_assn A B (Inl ai) (Inl a) = A ai a"
+| "sum_assn A B (Inr bi) (Inr b) = B bi b"
+| "sum_assn A B _ _ = false"  
+
+notation sum_assn (infixr "+\<^sub>a" 67)
+  
+lemma sum_assn_pure[safe_constraint_rules]: "\<lbrakk>is_pure A; is_pure B\<rbrakk> \<Longrightarrow> is_pure (sum_assn A B)"
+  apply (auto simp: is_pure_iff_pure_assn)
+  apply (rename_tac x x')
+  apply (case_tac x; case_tac x'; simp add: pure_def)
+  done
+  
+lemma sum_assn_id[simp]: "sum_assn id_assn id_assn = id_assn"
+  apply (intro ext)
+  subgoal for x y by (cases x; cases y; simp add: pure_def)
+  done
+
+lemma sum_assn_pure_conv[simp]: "sum_assn (pure A) (pure B) = pure (\<langle>A,B\<rangle>sum_rel)"
+  apply (intro ext)
+  subgoal for a b by (cases a; cases b; auto simp: pure_def)
+  done
+    
+    
+lemma sum_match_cong[sepref_frame_match_rules]: 
+  "\<lbrakk>
+    \<And>x y. \<lbrakk>e = Inl x; e'=Inl y\<rbrakk> \<Longrightarrow> hn_ctxt A x y \<Longrightarrow>\<^sub>t hn_ctxt A' x y;
+    \<And>x y. \<lbrakk>e = Inr x; e'=Inr y\<rbrakk> \<Longrightarrow> hn_ctxt B x y \<Longrightarrow>\<^sub>t hn_ctxt B' x y
+  \<rbrakk> \<Longrightarrow> hn_ctxt (sum_assn A B) e e' \<Longrightarrow>\<^sub>t hn_ctxt (sum_assn A' B') e e'"
+  by (cases e; cases e'; simp add: hn_ctxt_def entt_star_mono)
+
+lemma enum_merge_cong[sepref_frame_merge_rules]:
+  assumes "\<And>x y. \<lbrakk>e=Inl x; e'=Inl y\<rbrakk> \<Longrightarrow> hn_ctxt A x y \<or>\<^sub>A hn_ctxt A' x y \<Longrightarrow>\<^sub>t hn_ctxt Am x y"
+  assumes "\<And>x y. \<lbrakk>e=Inr x; e'=Inr y\<rbrakk> \<Longrightarrow> hn_ctxt B x y \<or>\<^sub>A hn_ctxt B' x y \<Longrightarrow>\<^sub>t hn_ctxt Bm x y"
+  shows "hn_ctxt (sum_assn A B) e e' \<or>\<^sub>A hn_ctxt (sum_assn A' B') e e' \<Longrightarrow>\<^sub>t hn_ctxt (sum_assn Am Bm) e e'"
+  apply (rule entt_disjE)
+  apply (rule sum_match_cong)
+  apply (rule entt_disjD1[OF assms(1)]; simp)
+  apply (rule entt_disjD1[OF assms(2)]; simp)
+
+  apply (rule sum_match_cong)
+  apply (rule entt_disjD2[OF assms(1)]; simp)
+  apply (rule entt_disjD2[OF assms(2)]; simp)
+  done
+
+lemma entt_invalid_sum: "hn_invalid (sum_assn A B) e e' \<Longrightarrow>\<^sub>t hn_ctxt (sum_assn (invalid_assn A) (invalid_assn B)) e e'"
+  apply (simp add: hn_ctxt_def invalid_assn_def[abs_def])
+  apply (rule enttI)
+  apply clarsimp
+  apply (cases e; cases e'; auto simp: mod_star_conv pure_def) 
+  done
+
+lemmas invalid_sum_merge[sepref_frame_merge_rules] = gen_merge_cons[OF entt_invalid_sum]
+
+sepref_register Inr Inl  
+
+lemma [sepref_fr_rules]: "(return o Inl,RETURN o Inl) \<in> A\<^sup>d \<rightarrow>\<^sub>a sum_assn A B"
+  by sepref_to_hoare sep_auto
+lemma [sepref_fr_rules]: "(return o Inr,RETURN o Inr) \<in> B\<^sup>d \<rightarrow>\<^sub>a sum_assn A B"
+  by sepref_to_hoare sep_auto
+
+sepref_register case_sum
+
+text \<open>In the monadify phase, this eta-expands to make visible all required arguments\<close>
+lemma [sepref_monadify_arity]: "case_sum \<equiv> \<lambda>\<^sub>2f1 f2 x. SP case_sum$(\<lambda>\<^sub>2x. f1$x)$(\<lambda>\<^sub>2x. f2$x)$x"
+  by simp
+
+text \<open>This determines an evaluation order for the first-order operands\<close>  
+lemma [sepref_monadify_comb]: "case_sum$f1$f2$x \<equiv> op \<bind>$(EVAL$x)$(\<lambda>\<^sub>2x. SP case_sum$f1$f2$x)" by simp
+
+text \<open>This enables translation of the case-distinction in a non-monadic context.\<close>  
+lemma [sepref_monadify_comb]: "EVAL$(case_sum$(\<lambda>\<^sub>2x. f1 x)$(\<lambda>\<^sub>2x. f2 x)$x) 
+  \<equiv> op \<bind>$(EVAL$x)$(\<lambda>\<^sub>2x. SP case_sum$(\<lambda>\<^sub>2x. EVAL $ f1 x)$(\<lambda>\<^sub>2x. EVAL $ f2 x)$x)"
+  apply (rule eq_reflection)
+  by (simp split: sum.splits)
+
+text \<open>Auxiliary lemma, to lift simp-rule over \<open>hn_ctxt\<close>\<close>  
+lemma sum_assn_ctxt: "sum_assn A B x y = z \<Longrightarrow> hn_ctxt (sum_assn A B) x y = z"
+  by (simp add: hn_ctxt_def)
+
+text \<open>The cases lemma first extracts the refinement for the datatype from the precondition.
+  Next, it generate proof obligations to refine the functions for every case. 
+  Finally the postconditions of the refinement are merged. 
+
+  Note that we handle the
+  destructed values separately, to allow reconstruction of the original datatype after the case-expression.
+
+  Moreover, we provide (invalidated) versions of the original compound value to the cases,
+  which allows access to pure compound values from inside the case.
+  \<close>  
+lemma sum_cases_hnr:
+  fixes A B e e'
+  defines [simp]: "INVe \<equiv> hn_invalid (sum_assn A B) e e'"
+  assumes FR: "\<Gamma> \<Longrightarrow>\<^sub>t hn_ctxt (sum_assn A B) e e' * F"
+  assumes E1: "\<And>x1 x1a. \<lbrakk>e = Inl x1; e' = Inl x1a\<rbrakk> \<Longrightarrow> hn_refine (hn_ctxt A x1 x1a * INVe * F) (f1' x1a) (hn_ctxt A' x1 x1a * hn_ctxt XX1 e e' * \<Gamma>1') R (f1 x1)"
+  assumes E2: "\<And>x2 x2a. \<lbrakk>e = Inr x2; e' = Inr x2a\<rbrakk> \<Longrightarrow> hn_refine (hn_ctxt B x2 x2a * INVe * F) (f2' x2a) (hn_ctxt B' x2 x2a * hn_ctxt XX2 e e' * \<Gamma>2') R (f2 x2)"
+  assumes MERGE[unfolded hn_ctxt_def]: "\<Gamma>1' \<or>\<^sub>A \<Gamma>2' \<Longrightarrow>\<^sub>t \<Gamma>'"
+  shows "hn_refine \<Gamma> (case_sum f1' f2' e') (hn_ctxt (sum_assn A' B') e e' * \<Gamma>') R (case_sum$(\<lambda>\<^sub>2x. f1 x)$(\<lambda>\<^sub>2x. f2 x)$e)"
+  apply (rule hn_refine_cons_pre[OF FR])
+  apply1 extract_hnr_invalids
+  apply (cases e; cases e'; simp add: sum_assn.simps[THEN sum_assn_ctxt])
+  subgoal
+    apply (rule hn_refine_cons[OF _ E1 _ entt_refl]; assumption?)
+    applyS (simp add: hn_ctxt_def) -- \<open>Match precondition for case, get \<open>enum_assn\<close> from assumption generated by \<open>extract_hnr_invalids\<close>\<close>
+    apply (rule entt_star_mono) -- \<open>Split postcondition into pairs for compounds and frame, drop \<open>hn_ctxt XX\<close>\<close>
+    apply1 (rule entt_fr_drop)
+    applyS (simp add: hn_ctxt_def entt_disjI1' entt_disjI2')
+    apply1 (rule entt_trans[OF _ MERGE])
+    applyS (simp add: entt_disjI1' entt_disjI2')
+  done
+  subgoal 
+    apply (rule hn_refine_cons[OF _ E2 _ entt_refl]; assumption?)
+    applyS (simp add: hn_ctxt_def)
+    apply (rule entt_star_mono)
+    apply1 (rule entt_fr_drop)
+    applyS (simp add: hn_ctxt_def entt_disjI1' entt_disjI2')
+    apply1 (rule entt_trans[OF _ MERGE])
+    applyS (simp add: entt_disjI1' entt_disjI2')
+  done    
+done  
+
+text \<open>After some more preprocessing (adding extra frame-rules for non-atomic postconditions, 
+  and splitting the merge-terms into binary merges), this rule can be registered\<close>
+lemmas [sepref_comb_rules] = sum_cases_hnr[sepref_prep_comb_rule]
+
+sepref_register isl projl projr
+lemma isl_hnr[sepref_fr_rules]: "(return o isl,RETURN o isl) \<in> (sum_assn A B)\<^sup>k \<rightarrow>\<^sub>a bool_assn"
+  apply sepref_to_hoare
+  subgoal for a b by (cases a; cases b; sep_auto)
+  done
+
+lemma projl_hnr[sepref_fr_rules]: "(return o projl,RETURN o projl) \<in> [isl]\<^sub>a (sum_assn A B)\<^sup>d \<rightarrow> A"
+  apply sepref_to_hoare
+  subgoal for a b by (cases a; cases b; sep_auto)
+  done
+
+lemma projr_hnr[sepref_fr_rules]: "(return o projr,RETURN o projr) \<in> [Not o isl]\<^sub>a (sum_assn A B)\<^sup>d \<rightarrow> B"
+  apply sepref_to_hoare
+  subgoal for a b by (cases a; cases b; sep_auto)
+  done
+  
+subsection \<open>String Literals\<close>  
+  
+context fixes x :: "char list" begin
+  sepref_register "PR_CONST (STR x)"
+
+  lemma STR_hnr[sepref_import_param]: "(STR x,PR_CONST (STR x))\<in>Id" by simp
+
+end
+
+lemma STR_pat[def_pat_rules]: "STR$x \<equiv> UNPROTECT (STR$x)" by simp
+  
+  
 end

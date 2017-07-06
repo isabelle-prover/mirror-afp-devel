@@ -139,7 +139,7 @@ next
   assume "dom m \<subseteq> {k}"
   hence "dom m - {k} = {}" by auto
   hence "dom (m |` (-{k})) = {}" by auto
-  thus "m |` (-{k}) = Map.empty" by (simp only: dom_empty_simp)
+  thus "m |` (-{k}) = Map.empty" by blast
 qed
   
 lemma ahm_delete_correct: 
@@ -314,9 +314,8 @@ definition "invar m == ahm_invar (hm_\<alpha>' m)"
 lemma rm_map_entry_correct:
   "rm.\<alpha> (rm_map_entry k f m) = (rm.\<alpha> m)(k := f (rm.\<alpha> m k))"
   apply (auto 
-    simp add: rm_map_entry_def rm.delete_correct rm.lookup_correct rm.update_correct
+    simp add: rm_map_entry_def rm.delete_correct rm.lookup_correct rm.update_correct 
     split: option.split)
-  apply (auto simp add: Map.restrict_map_def fun_upd_def intro: ext)
   done
 
 lemma empty_correct': 

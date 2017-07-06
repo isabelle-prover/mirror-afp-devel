@@ -14,9 +14,7 @@ lemma nres_rel_trans2: "a \<le> b \<Longrightarrow> (i, a) \<in> \<langle>R\<ran
   using nres_relD ref_two_step by blast
 
 lemma param_Union[param]: "(Union, Union) \<in> \<langle>\<langle>R\<rangle>set_rel\<rangle>set_rel \<rightarrow> \<langle>R\<rangle>set_rel"
-  apply (auto simp: set_rel_def)
-  using ImageI by blast
-
+  by (fastforce simp: set_rel_def)
 
 subsection \<open>relation\<close>
 
@@ -73,7 +71,8 @@ proof -
 qed
 
 lemma list_rel_comp_list_wset_rel:
-  "single_valued R \<Longrightarrow> \<langle>R\<rangle>list_rel O \<langle>S\<rangle>list_wset_rel = \<langle>R O S\<rangle>list_wset_rel"
+  assumes "single_valued R"
+  shows "\<langle>R\<rangle>list_rel O \<langle>S\<rangle>list_wset_rel = \<langle>R O S\<rangle>list_wset_rel"
 proof (safe, goal_cases)
   case hyps: (1 a b x y z)
   show ?case
@@ -81,22 +80,9 @@ proof (safe, goal_cases)
   proof (rule relcompI[where b = "set x"])
     show "(set x, z) \<in> \<langle>R O S\<rangle>set_rel"
       unfolding set_rel_def
-    proof safe
-      show "a \<in> (R O S) `` set x" if "a \<in> z" for a
-        using hyps that
-        by (auto simp: list_wset_rel_def br_def set_rel_def relcomp_Image
-            intro!: ImageI elim!: mem_set_list_relE2)
-    next
-      show "b \<in> z" if "c \<in> set x" "(c, a) \<in> R" "(a, b) \<in> S" for c b a
-        using hyps single_valuedD that
-        by (fastforce simp: list_wset_rel_def br_def set_rel_def
-            elim!: mem_set_list_relE1)
-    next
-      show "a \<in> Domain (R O S)" if "a \<in> set x" for a
-        using hyps that
-        by (auto simp: list_wset_rel_def br_def set_rel_def)
-          (meson Domain.DomainI Domain.cases mem_set_list_relE1 relcomp.relcompI rev_subsetD)
-    qed
+      using hyps 
+      apply (clarsimp simp: list_wset_rel_def br_def set_rel_def)  
+      by (meson mem_set_list_relE1 mem_set_list_relE2 relcomp.relcompI)    
   qed (simp add: br_def)
 next
   case hyps: (2 xs zs)
@@ -106,37 +92,11 @@ next
   obtain ys where ys: "(xs, ys) \<in> \<langle>R\<rangle>list_rel" .
   have set_rel: "(set ys, zs) \<in> \<langle>S\<rangle>set_rel"
     unfolding list_wset_rel_def set_rel_def
-  proof safe
-    show "x \<in> S `` set ys" if "x \<in> zs" for x using that
-      using hyps ys single_valuedD
-      unfolding list_wset_rel_def br_def set_rel_def
-      by (fastforce intro!: ImageI elim!: mem_set_list_relE1)
-    show "x \<in> zs" if "(xa, x) \<in> S" "xa \<in> set ys" for x xa
-      using hyps ys that
-      by (auto simp: list_wset_rel_def br_def set_rel_def)
-        (meson Image_iff mem_set_list_relE2 relcomp.relcompI)
-    show "x \<in> Domain S" if "x \<in> set ys" for x
-      using hyps ys that
-      unfolding list_wset_rel_def set_rel_def br_def
-    proof safe
-      assume a1: "single_valued R"
-      assume a2: "set xs \<subseteq> Domain (R O S)"
-      assume a3: "(xs, ys) \<in> \<langle>R\<rangle>list_rel"
-      assume a4: "x \<in> set ys"
-      obtain aa :: "'b \<Rightarrow> ('a \<times> 'b) set \<Rightarrow> 'a list \<Rightarrow> 'a" where
-        f5: "\<forall>x0 x1 x3. (\<exists>v4. v4 \<in> set x3 \<and> (v4, x0) \<in> x1) = (aa x0 x1 x3 \<in> set x3 \<and> (aa x0 x1 x3, x0) \<in> x1)"
-        by moura
-      then have f6: "aa x R xs \<in> Domain (R O S)"
-        using a4 a3 a2 by (meson mem_set_list_relE2 set_rev_mp)
-      obtain aaa :: "('a \<times> 'c) set \<Rightarrow> 'a \<Rightarrow> 'a" and cc :: "('a \<times> 'c) set \<Rightarrow> 'a \<Rightarrow> 'c" where
-        f7: "\<forall>x0 x1. (\<exists>v2 v3. x1 = v2 \<and> (v2, v3) \<in> x0) = (x1 = aaa x0 x1 \<and> (aaa x0 x1, cc x0 x1) \<in> x0)"
-        by moura
-      then have "(aaa (R O S) (aa x R xs), x) \<in> R"
-        using f6 f5 a4 a3 by (metis Domain.simps mem_set_list_relE2)
-      then show ?thesis
-        using f7 f6 a1 by (metis (full_types) Domain.simps relcomp.simps single_valuedD)
-    qed
-  qed
+    using hyps 
+    apply (clarsimp simp: list_wset_rel_def br_def set_rel_def)  
+    apply safe
+    apply (metis (full_types) assms mem_set_list_relE2 relcomp.cases single_valued_def ys)  
+    by (metis mem_set_list_relE1 relcompEpair single_valuedD ys assms)
   from ys show ?case
     by (rule relcompI)
       (auto simp: list_wset_rel_def br_def intro!: relcompI[where b="set ys"] set_rel)
@@ -184,9 +144,13 @@ next
   then have r: "set (remove1 x u) = set xs - {x}"
     using in_set_remove1[of _ x xs]
     by (auto simp del: in_set_remove1 simp add: br_def)
+      
+  from assms old_set_rel_sv_eq[of R] have [simp]: "\<langle>R\<rangle>set_rel = \<langle>R\<rangle>old_set_rel" by simp    
+      
   show ?case
     using 2 \<open>(x, y) \<in> R\<close> assms
-    by (auto simp: relcomp_unfold r set_rel_def single_valued_def br_def list_wset_rel_def)
+    by (auto simp: relcomp_unfold r old_set_rel_def single_valued_def br_def list_wset_rel_def)
+    
 qed
 
 
@@ -253,7 +217,7 @@ subsection \<open>union\<close>
 
 lemma union_wset_refine[autoref_rules]:
   "(append, op \<union>) \<in> \<langle>R\<rangle>list_wset_rel \<rightarrow> \<langle>R\<rangle>list_wset_rel \<rightarrow> \<langle>R\<rangle>list_wset_rel"
-  by (auto simp: list_wset_rel_def set_rel_def relcomp_unfold br_def)
+  by (auto 0 3 simp: list_wset_rel_def set_rel_def relcomp_unfold br_def)
 
 
 subsection \<open>of list\<close>
@@ -275,9 +239,7 @@ lemma bCollect_param: "((\<lambda>y a. {x \<in> y. a x}), (\<lambda>z a'. {x \<i
   unfolding set_rel_def
   apply safe
   subgoal using tagged_fun_relD_both by fastforce
-  subgoal by fastforce
   subgoal using tagged_fun_relD_both by fastforce
-  subgoal by force
   done
 
 lemma op_set_filter_list_wset_refine[autoref_rules]:
@@ -293,7 +255,9 @@ lemma op_set_wcard_refine[autoref_rules]: "PREFER single_valued R \<Longrightarr
 proof (auto simp: list_wset_rel_def nres_rel_def br_def op_set_wcard_def, goal_cases)
   case (1 x z)
   thus ?case
-    by (induction x arbitrary: z) (auto simp: set_rel_def Image_insert intro!: card_insert_le_m1)
+    apply (induction x arbitrary: z) 
+    apply (auto simp: old_set_rel_sv_eq[symmetric] old_set_rel_def Image_insert intro!: card_insert_le_m1)  
+    done  
 qed
 
 lemmas op_set_wcard_spec[refine_vcg] = op_set_wcard_def[THEN eq_refl, THEN order_trans]
@@ -307,7 +271,7 @@ proof -
   have "(concat, concat) \<in> \<langle>\<langle>A\<rangle>list_rel\<rangle>list_rel \<rightarrow> \<langle>A\<rangle>list_rel" (is "_ \<in> ?A")
     by parametricity
   moreover have "(concat, Union) \<in> \<langle>\<langle>Id\<rangle>list_wset_rel\<rangle>list_wset_rel \<rightarrow> \<langle>Id\<rangle>list_wset_rel" (is "_ \<in> ?B")
-    by (force simp: list_wset_rel_def br_def relcomp_unfold set_rel_def)
+    by (auto simp: list_wset_rel_def br_def relcomp_unfold set_rel_def; meson)
   ultimately have "(concat, Union) \<in> ?A O ?B"
     by auto
   also note fun_rel_comp_dist
@@ -331,11 +295,10 @@ proof safe
     subgoal
       unfolding set_rel_def
       apply safe
-      subgoal by (auto simp: fun_rel_def split: prod.split)
+      subgoal by (fastforce simp: fun_rel_def split: prod.split)
       subgoal using assms
         by (auto simp: fun_rel_def br_def)
           (metis (no_types, lifting) Domain.cases ImageI image_eqI single_valuedD old.prod.case subsetCE)
-      subgoal by (meson Domain.DomainI DomainE subsetCE tagged_fun_relD_none)
       done
     done
 qed
@@ -489,9 +452,9 @@ lemma FORWEAK_WHILE_casesI:
     apply clarsimp
     apply (erule disjE)
     subgoal
-      by (refine_vcg assms(2)[THEN order_trans]) (simp add: split_beta')
+      by (refine_vcg assms(2))
     subgoal
-      by (refine_vcg assms(3)[THEN order_trans]) (simp add: split_beta')
+      by (refine_vcg assms(3))
     done
   done
 

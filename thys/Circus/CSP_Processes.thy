@@ -191,10 +191,9 @@ proof -
   moreover
   have "(R P ;; R Q) is R healthy"
     apply (auto simp add: design_defs rp_defs prefix_def fun_eq_iff split: cond_splits)
-    apply (erule_tac x="zs @ zsa" in allE, auto split: cond_splits)+
-    apply (rule_tac b=a in comp_intro, auto split: cond_splits)
-    apply (rule_tac x="zs" in exI, auto split: cond_splits)
-    apply (rule_tac b="ba\<lparr>tr := tr a @ tr ba\<rparr>" in comp_intro, auto split: cond_splits)+
+           apply (rule_tac b=a in comp_intro, auto split: cond_splits)
+       apply (rule_tac x="zs" in exI, auto split: cond_splits)
+      apply (rule_tac b="ba\<lparr>tr := tr a @ tr ba\<rparr>" in comp_intro, auto split: cond_splits)+
     done
   ultimately show ?thesis by simp
 qed

@@ -10,7 +10,7 @@ property(distributivity) of the tensor product.*}
 section{*Tensor Product of Matrices*}
 
 theory Matrix_Tensor
-imports "../Matrix/Utility" "../Matrix/Matrix_Arith"
+imports "../Matrix/Utility" "../Matrix/Matrix_Legacy"
 begin
 
 

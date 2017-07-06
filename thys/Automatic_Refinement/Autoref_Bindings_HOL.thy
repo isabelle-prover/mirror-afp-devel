@@ -334,9 +334,11 @@ context begin interpretation autoref_syn .
       "a=None \<equiv> (OP is_None :::\<^sub>i \<langle>I\<rangle>\<^sub>ii_option \<rightarrow>\<^sub>i i_bool)$a"
       "None=a \<equiv> (OP is_None :::\<^sub>i \<langle>I\<rangle>\<^sub>ii_option \<rightarrow>\<^sub>i i_bool)$a"
       by (auto intro!: eq_reflection split: option.splits)
-    lemma autoref_is_None[autoref_rules]: 
+    lemma autoref_is_None[param,autoref_rules]: 
       "(is_None,is_None)\<in>\<langle>R\<rangle>option_rel \<rightarrow> Id"
       by (auto split: option.splits)
+
+    lemma fold_is_None: "x=None \<longleftrightarrow> is_None x" by (cases x) auto
 
     definition "option_eq eq v1 v2 \<equiv> 
       case (v1,v2) of 

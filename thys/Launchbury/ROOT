@@ -11,7 +11,10 @@ session "HOLCF-HOL-Library" (AFP) = HOLCF +
     "~~/src/HOL/Library/Infinite_Set"
 
 session "HOLCF-Nominal2" (AFP) = "HOLCF-HOL-Library" +
-  options [document = false, timeout=300]
+  options [document = false, timeout = 300]
+  sessions
+    FinFun
+    Nominal2
   theories
     "../Nominal2/Nominal2"
     "../Nominal2/Atoms"

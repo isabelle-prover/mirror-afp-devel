@@ -344,19 +344,16 @@ nonterminal
   dobinds and dobind and nobind
 
 syntax
-  "_dobind"    :: "[pttrn, 'a] => dobind"             ("(_ <-/ _)" 10)
+  "_dobind"    :: "[pttrn, 'a] => dobind"             ("(_ \<leftarrow>/ _)" 10)
   ""           :: "dobind => dobinds"                 ("_")
   "_nobind"    :: "'a => dobind"                      ("_")
   "_dobinds"   :: "[dobind, dobinds] => dobinds"      ("(_);//(_)")
 
   "_do"        :: "[dobinds, 'a] => 'a"               ("(do ((_);//(_))//od)" 100)
-syntax (xsymbols)
-  "_dobind"    :: "[pttrn, 'a] => dobind"             ("(_ \<leftarrow>/ _)" 10)
-
 translations
   "_do (_dobinds b bs) e"  == "_do b (_do bs e)"
   "_do (_nobind b) e"      == "b >>= (CONST K_bind e)"
-  "do x <- a; e od"        == "a >>= (\<lambda>x. e)"  
+  "do x \<leftarrow> a; e od"        == "a >>= (\<lambda>x. e)"  
 
 text {* Syntax examples: *}
 lemma "do x \<leftarrow> return 1; 
@@ -390,7 +387,7 @@ syntax
 translations
   "_doE (_dobinds b bs) e"  == "_doE b (_doE bs e)"
   "_doE (_nobind b) e"      == "b >>=E (CONST K_bind e)"
-  "doE x <- a; e odE"       == "a >>=E (\<lambda>x. e)"
+  "doE x \<leftarrow> a; e odE"       == "a >>=E (\<lambda>x. e)"
 
 text {* Syntax examples: *}
 lemma "doE x \<leftarrow> returnOk 1; 
@@ -482,7 +479,7 @@ with and without lists of return value *}
 definition
   sequenceE_x :: "('s, 'e+'a) det_monad list \<Rightarrow> ('s, 'e+unit) det_monad" 
 where
-  "sequenceE_x xs \<equiv> foldr (\<lambda>x y. doE _ <- x; y odE) xs (returnOk ())"
+  "sequenceE_x xs \<equiv> foldr (\<lambda>x y. doE _ \<leftarrow> x; y odE) xs (returnOk ())"
 
 definition
   mapME_x :: "('a \<Rightarrow> ('s,'e+'b) det_monad) \<Rightarrow> 'a list \<Rightarrow> 
@@ -509,8 +506,8 @@ primrec
 where
   "filterM P []       = return []"
 | "filterM P (x # xs) = do
-     b  <- P x;
-     ys <- filterM P xs; 
+     b  \<leftarrow> P x;
+     ys \<leftarrow> filterM P xs; 
      return (if b then (x # ys) else ys)
    od"
 

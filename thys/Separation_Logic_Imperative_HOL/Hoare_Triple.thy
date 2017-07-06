@@ -141,6 +141,19 @@ lemma cons_rule:
 lemmas cons_pre_rule = cons_rule[OF _ ent_refl]
 lemmas cons_post_rule = cons_rule[OF ent_refl, rotated]
 
+lemma cons_rulet: "\<lbrakk>P\<Longrightarrow>\<^sub>tP'; \<And>x. Q x \<Longrightarrow>\<^sub>t Q' x; <P'> c <Q>\<^sub>t \<rbrakk> \<Longrightarrow> <P> c <Q'>\<^sub>t"
+  unfolding entailst_def
+  apply (rule cons_pre_rule)
+  apply assumption
+  apply (rule cons_post_rule)
+  apply (erule frame_rule)
+  by (simp add: enttD enttI)  
+
+lemmas cons_pre_rulet = cons_rulet[OF _ entt_refl]
+lemmas cons_post_rulet = cons_rulet[OF entt_refl, rotated]
+
+  
+  
 lemma norm_pre_ex_rule:
   assumes A: "\<And>x. <P x> f <Q>"
   shows "<\<exists>\<^sub>Ax. P x> f <Q>"
@@ -219,6 +232,16 @@ lemma new_rule:
   )
   done
 
+lemma make_rule: "<emp> Array.make n f <\<lambda>r. r \<mapsto>\<^sub>a (map f [0 ..< n])>"
+  unfolding hoare_triple_def snga_assn_def one_assn_def
+  apply (simp add: Let_def Abs_assn_inverse)
+  apply (auto 
+    elim!: run_elims
+    simp: Let_def new_addrs_def Array.get_def Array.set_def Array.alloc_def
+      relH_def in_range.simps
+  )
+  done
+    
 lemma of_list_rule: "<emp> Array.of_list xs <\<lambda>r. r \<mapsto>\<^sub>a xs>"
   unfolding hoare_triple_def snga_assn_def one_assn_def
   apply (simp add: Let_def Abs_assn_inverse)

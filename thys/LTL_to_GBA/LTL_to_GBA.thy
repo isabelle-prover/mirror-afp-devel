@@ -1145,7 +1145,6 @@ lemma expand_eq_expand\<^sub>T:
   shows "expand\<^sub>T n_ns = expand n_ns"
   unfolding expand\<^sub>T_def expand_def
   apply (rule RECT_eq_REC)
-  apply refine_mono
   unfolding expand\<^sub>T_def[symmetric]
   using expand_term_prop[OF inv] apply auto
   done
@@ -1586,10 +1585,9 @@ abbreviation
 
 lemma L4_5: "create_graph \<phi> \<le> SPEC (create_graph_rslt_all \<xi>)"
   unfolding create_graph_def
-  by (intro refine_vcg,
-    rule_tac order_trans,
-    rule_tac expand_prop_all) (auto simp add:expand_new_name_expand_init)
-
+  apply (refine_vcg expand_prop_all)
+  apply (auto simp add:expand_new_name_expand_init)  
+  done  
 
 subsection \<open>Creation of GBA\<close>
 
@@ -1989,10 +1987,10 @@ qed
 lemma next_propag_on_create_graph:
   "create_graph \<phi> \<le> SPEC (\<lambda>nds. \<forall>n\<in>nds. \<forall>n'\<in>nds. X\<^sub>n \<mu>\<in>old n \<and> name n\<in>incoming n' \<longrightarrow> \<mu>\<in>old n')"
   unfolding create_graph_def
-  by (intro refine_vcg,
-    rule_tac order_trans,
-    rule_tac expand_next_propag) (auto simp add:expand_new_name_expand_init)
-
+  apply (refine_vcg expand_next_propag)  
+  apply (auto simp add:expand_new_name_expand_init)
+  done
+    
 
 abbreviation
   "release_propag__assm \<mu> \<eta> n_ns \<equiv>
@@ -2204,9 +2202,8 @@ lemma release_propag_on_create_graph:
      \<le> SPEC (\<lambda>nds. \<forall>n\<in>nds. \<forall>n'\<in>nds. \<mu> V\<^sub>n \<eta>\<in>old n \<and> name n\<in>incoming n'
                                       \<longrightarrow> ({\<mu>, \<eta>}\<subseteq>old n \<or> \<eta>\<in>old n \<and> \<mu> V\<^sub>n \<eta>\<in>old n'))"
   unfolding create_graph_def
-  by (intro refine_vcg,
-    rule_tac order_trans,
-    rule_tac expand_release_propag) (auto simp add:expand_new_name_expand_init)
+  apply (refine_vcg expand_release_propag)  
+  by (auto simp add:expand_new_name_expand_init)
 
 
 abbreviation
@@ -2405,10 +2402,8 @@ lemma until_propag_on_create_graph:
   "create_graph \<phi> \<le> SPEC (\<lambda>nds. \<forall>n\<in>nds. \<forall>n'\<in>nds. \<mu> U\<^sub>n \<eta>\<in>old n \<and> name n\<in>incoming n'
     \<longrightarrow> (\<eta>\<in>old n \<or> \<mu>\<in>old n \<and> \<mu> U\<^sub>n \<eta>\<in>old n'))"
   unfolding create_graph_def
-  by (intro refine_vcg,
-    rule_tac order_trans,
-    rule_tac expand_until_propag) (auto simp add:expand_new_name_expand_init)
-
+  apply (refine_vcg expand_until_propag)  
+  by (auto simp add:expand_new_name_expand_init)
 
 definition all_subfrmls :: "'a node \<Rightarrow> 'a frml set"
   where "all_subfrmls n \<equiv> \<Union>(subfrmlsn ` (new n \<union> old n \<union> next n))"
@@ -3056,10 +3051,8 @@ end
 
 lemma create_graph__name_ident: "create_graph \<phi> \<le> SPEC (\<lambda>nds. \<forall>q\<in>nds. \<exists>!q'\<in>nds. name q = name q')"
   unfolding create_graph_def
-  by (intro refine_vcg,
-    rule_tac order_trans,
-    rule_tac expand_name_propag__name_ident)
-    (auto simp add:expand_new_name_expand_init)
+  apply (refine_vcg expand_name_propag__name_ident)  
+  by (auto simp add:expand_new_name_expand_init)
 
 corollary create_graph__name_inj: "create_graph \<phi> \<le> SPEC (\<lambda>nds. inj_on name nds)"
   by (rule order_trans[OF create_graph__name_ident]) (auto intro: inj_onI)

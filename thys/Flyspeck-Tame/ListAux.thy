@@ -18,9 +18,7 @@ by auto
 lemmas conj_aci = conj_comms conj_assoc conj_absorb conj_left_absorb
 
 definition enum :: "nat \<Rightarrow> nat set" where
-  [code del]: "enum n = {..<n}"
-
-declare enum_def [symmetric, code_unfold]
+  [code_abbrev]: "enum n = {..<n}"
 
 lemma [code]:
   "enum 0 = {}"

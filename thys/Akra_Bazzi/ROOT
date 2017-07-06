@@ -1,7 +1,9 @@
 chapter AFP
 
 session Akra_Bazzi (AFP) = "Landau_Analysis" +
-  options [timeout=600]
+  options [timeout = 600]
+  sessions
+    Ordinary_Differential_Equations
   theories [document = false]
     "~~/src/HOL/Decision_Procs/Approximation"
     "../Landau_Symbols/Landau_Symbols"

@@ -348,8 +348,9 @@ begin
     apply (rule le_ASSERTI)
     apply (unfold c.pre_defs, clarify) []
     apply (frule reachable_invar)
-    apply (simp add: pw_leof_iff refine_pw_simps pw_le_iff select_def neq_Nil_conv
-      split: prod.split) [] apply fastforce
+      
+    apply (fastforce simp add: pw_leof_iff refine_pw_simps pw_le_iff neq_Nil_conv
+      split: prod.split option.split) []  
 
     apply (unfold c.pre_defs, clarify) []
     apply (frule reachable_invar)

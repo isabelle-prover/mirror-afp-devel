@@ -665,7 +665,6 @@ proof -
            apply (clarsimp simp del: find_handler_for.simps)
            apply (erule_tac x="list" in allE)
            apply (clarsimp simp del: find_handler_for.simps)
-           apply fastforce
           apply (subgoal_tac 
             "finite (
               (\<lambda>(Cx,Mx,pc',h,cs'',pcx).  (_ (C, M, pc) # cs',\<lfloor>((Cx, Mx, pc') # h, True)\<rfloor> _)) `

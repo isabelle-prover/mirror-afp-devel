@@ -368,7 +368,7 @@ proof -
     show "\<exists>ia. column i (Gram_Schmidt_column_k (Gram_Schmidt_upt_k A k) (Suc k)) 
       = column ia (Gram_Schmidt_upt_k A k) \<and> to_nat ia \<le> k"
     proof (rule exI[of _ i], rule conjI, unfold Gram_Schmidt_upt_k_suc[symmetric], rule column_Gram_Schmidt_upt_k_preserves)
-      show "to_nat i < Suc k" using i i_not_suc_k by (metis dual_order.le_imp_less_or_eq from_nat_to_nat_id)
+      show "to_nat i < Suc k" using i i_not_suc_k by (metis le_imp_less_or_eq from_nat_to_nat_id)
       thus "to_nat i \<le> k" using less_Suc_eq_le by simp
       show "Suc k < CARD('cols)" using k .
     qed
@@ -452,7 +452,7 @@ proof (unfold cols_upt_k_def, auto)
   hence i_not_suc_k: "i \<noteq> from_nat (Suc k)" by auto
   have i_le:  "i \<le> from_nat k"
   proof -
-    have "i < from_nat (Suc k)" by (metis dual_order.le_imp_less_or_eq i i_not_suc_k)
+    have "i < from_nat (Suc k)" by (metis le_imp_less_or_eq i i_not_suc_k)
     thus ?thesis by (metis Suc_eq_plus1 from_nat_suc le_Suc not_less)
   qed
   thus "\<exists>ia. column i A = column ia A \<and> ia \<le> from_nat k" by auto
@@ -478,7 +478,7 @@ proof (unfold cols_upt_k_def columns_def, auto)
     hence "to_nat i \<le> to_nat (from_nat (ncols A - 1)::'cols)"
       using to_nat_from_nat_id[of "ncols A - 1", where ?'a='cols] unfolding ncols_def by simp
     thus "i \<le> from_nat (ncols A - Suc 0)" 
-      by (metis One_nat_def dual_order.less_le_not_le linear to_nat_mono)
+      by (metis One_nat_def less_le_not_le linear to_nat_mono)
   qed
 qed
 
@@ -682,7 +682,7 @@ next
   proof (rule column_Gram_Schmidt_column_k'
       [of "from_nat i" "from_nat (Suc k)" " (Gram_Schmidt_upt_k A k)", unfolded to_nat_from_nat_suc_k])
     show "from_nat i \<noteq> (from_nat (Suc k)::'n)" 
-      by (metis Suc.prems dual_linorder.not_less_iff_gr_or_eq
+      by (metis Suc.prems not_less_iff_gr_or_eq
         from_nat_not_eq i ncols_def to_nat_from_nat_suc_k)
   qed
   finally show ?case unfolding hyp .

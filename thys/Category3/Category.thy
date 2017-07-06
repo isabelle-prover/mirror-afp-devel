@@ -234,6 +234,19 @@ begin
       thus ?thesis using assms cod_unique by blast
     qed
 
+    text {*
+      It is occasionally useful to have available the facts that the functions @{term dom}
+      and @{term cod} preserve @{term null}.
+    *}
+
+    lemma dom_null:
+    shows "dom null = null"
+      using has_domD(1) dom_def not_arr_null by auto
+
+    lemma cod_null:
+    shows "cod null = null"
+      using has_codD(1) cod_def not_arr_null by auto
+
     text{*
       An \emph{identity} is an arrow @{text a} that is its own domain and codomain.
       We will also refer to identities as \emph{objects}.
@@ -481,6 +494,11 @@ begin
 
     abbreviation hom
     where "hom a b \<equiv> {f. arr f \<and> dom f = a \<and> cod f = b}"
+
+    lemma comp_in_hom:
+    assumes "arr f" and "arr g" and "cod f = dom g"
+      shows "C g f \<in> hom (dom f) (cod g)"
+        using assms by simp
 
     text{*
       The intention below was to develop the basic results above without having

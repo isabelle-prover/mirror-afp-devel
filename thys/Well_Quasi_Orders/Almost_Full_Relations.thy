@@ -211,9 +211,7 @@ proof (rule ccontr)
   then have lists: "\<And>i. m i \<in> lists A"
     and ne: "\<And>i. m i \<noteq> []" by auto
 
-  def h \<equiv> "\<lambda>i. hd (m i)"
-  def t \<equiv> "\<lambda>i. tl (m i)"
-
+  define h t where "h = (\<lambda>i. hd (m i))" and "t = (\<lambda>i. tl (m i))"
   have m: "\<And>i. m i = h i # t i" using ne by (simp add: h_def t_def)
   
   have "\<forall>i. h i \<in> A" using ne_lists [OF ne] and lists by (auto simp add: h_def)
@@ -232,7 +230,7 @@ proof (rule ccontr)
     with bad show False by blast
   qed
   
-  def m' \<equiv> "\<lambda>i. if i < \<phi> 0 then m i else t (\<phi> (i - \<phi> 0))"
+  define m' where "m' = (\<lambda>i. if i < \<phi> 0 then m i else t (\<phi> (i - \<phi> 0)))"
 
   have m'_less: "\<And>i. i < \<phi> 0 \<Longrightarrow> m' i = m i" by (simp add: m'_def)
   have m'_geq: "\<And>i. i \<ge> \<phi> 0 \<Longrightarrow> m' i = t (\<phi> (i - \<phi> 0))" by (simp add: m'_def)
@@ -273,7 +271,7 @@ subsection \<open>Natural Numbers\<close>
 lemma almost_full_on_UNIV_nat:
   "almost_full_on (op \<le>) (UNIV :: nat set)"
 proof -
-  let ?P = "sublisteq :: bool list \<Rightarrow> bool list \<Rightarrow> bool"
+  let ?P = "subseq :: bool list \<Rightarrow> bool list \<Rightarrow> bool"
   have *: "length ` (UNIV :: bool list set) = (UNIV :: nat set)"
     by (metis Ex_list_of_length surj_def)
   have "almost_full_on (op \<le>) (length ` (UNIV :: bool list set))"

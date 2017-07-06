@@ -1,7 +1,22 @@
 chapter AFP
 
+session "Pre_Perron_Frobenius" (AFP) = "Jordan_Normal_Form" +
+  options [document = false, timeout = 2400]
+  sessions
+    "HOL-Eisbach"
+    "HOL-Analysis"
+    Polynomial_Factorization
+    Pre_BZ
+  theories
+    "~~/src/HOL/Analysis/Brouwer_Fixpoint"
+    "~~/src/HOL/Analysis/Determinants"
+    "~~/src/HOL/Eisbach/Eisbach"
+    "~~/src/HOL/Types_To_Sets/Types_To_Sets"
+    "../Jordan_Normal_Form/Spectral_Radius"
+    "../Polynomial_Factorization/Square_Free_Factorization"
+
 session "Perron_Frobenius" (AFP) = "Pre_Perron_Frobenius" +
-  options [timeout = 600]
+  options [timeout = 1800]
   theories
     Cancel_Card_Constraint
     HMA_Connect
@@ -10,13 +25,3 @@ session "Perron_Frobenius" (AFP) = "Pre_Perron_Frobenius" +
   document_files
     "root.bib"
     "root.tex"
-
-session "Pre_Perron_Frobenius" (AFP) = "Jordan_Normal_Form" +
-  options [document = false, timeout = 2400]
-  theories
-    "~~/src/HOL/Analysis/Brouwer_Fixpoint"
-    "~~/src/HOL/Analysis/Determinants"
-    "~~/src/HOL/Eisbach/Eisbach"
-    "~~/src/HOL/Types_To_Sets/Types_To_Sets"
-    "../Jordan_Normal_Form/Spectral_Radius"
-    "../Polynomial_Factorization/Square_Free_Factorization"

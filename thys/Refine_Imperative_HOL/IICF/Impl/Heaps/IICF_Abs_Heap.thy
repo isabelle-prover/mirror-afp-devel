@@ -171,14 +171,14 @@ text \<open>
     abbreviation (input) "val_of_pre l i \<equiv> valid l i"
     definition val_of_op :: "'a heap \<Rightarrow> nat \<Rightarrow> 'a nres" 
       where "val_of_op l i \<equiv> ASSERT (i>0) \<then> mop_list_get l (i-1)"
-    lemma val_of_correct[THEN order_trans, refine_vcg]: 
+    lemma val_of_correct[refine_vcg]: 
       "val_of_pre l i \<Longrightarrow> val_of_op l i \<le> SPEC (\<lambda>r. r = val_of l i)"
       unfolding val_of_op_def val_of_def valid_def
       by refine_vcg auto
     
     abbreviation (input) "prio_of_pre \<equiv> val_of_pre"  
     definition "prio_of_op l i \<equiv> do {v \<leftarrow> val_of_op l i; RETURN (prio v)}"
-    lemma prio_of_op_correct[THEN order_trans, refine_vcg]: 
+    lemma prio_of_op_correct[refine_vcg]: 
       "prio_of_pre l i \<Longrightarrow> prio_of_op l i \<le> SPEC (\<lambda>r. r = prio_of l i)"
       unfolding prio_of_op_def
       apply refine_vcg by simp
@@ -189,7 +189,7 @@ text \<open>
       where "update h i v \<equiv> h[i - 1 := v]"
     definition update_op :: "'a heap \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a heap nres" 
       where "update_op h i v \<equiv> ASSERT (i>0) \<then> mop_list_set h (i-1) v"
-    lemma update_correct[THEN order_trans, refine_vcg]:
+    lemma update_correct[refine_vcg]:
       "update_pre h i v \<Longrightarrow> update_op h i v \<le> SPEC(\<lambda>r. r = update h i v)"
       unfolding update_op_def update_def valid_def by refine_vcg auto
 
@@ -227,7 +227,7 @@ text \<open>
       by (auto simp: exch_op_def swap_def val_of_op_def update_op_def 
         pw_eq_iff refine_pw_simps)
 
-    lemma exch_op_correct[THEN order_trans, refine_vcg]: 
+    lemma exch_op_correct[refine_vcg]: 
       "exch_pre l i j \<Longrightarrow> exch_op l i j \<le> SPEC (\<lambda>r. r = exch l i j)"
       unfolding exch_op_def 
       apply refine_vcg
@@ -263,7 +263,7 @@ text \<open>
     abbreviation "butlast_pre l \<equiv> l\<noteq>[]"
     definition butlast_op :: "'a heap \<Rightarrow> 'a heap nres"
       where "butlast_op l \<equiv> mop_list_butlast l"
-    lemma butlast_op_correct[THEN order_trans, refine_vcg]: 
+    lemma butlast_op_correct[refine_vcg]: 
       "butlast_pre l \<Longrightarrow> butlast_op l \<le> SPEC (\<lambda>r. r = butlast l)"
       unfolding butlast_op_def by (refine_vcg; auto)
 
@@ -296,7 +296,7 @@ text \<open>
     subsubsection \<open>Append\<close>  
     definition append_op :: "'a heap \<Rightarrow> 'a \<Rightarrow> 'a heap nres"
       where "append_op l v \<equiv> mop_list_append l v"
-    lemma append_op_correct[THEN order_trans, refine_vcg]: 
+    lemma append_op_correct[refine_vcg]: 
       "append_op l v \<le> SPEC (\<lambda>r. r = l@[v])"
       unfolding append_op_def by (refine_vcg; auto)
     
@@ -382,7 +382,7 @@ text \<open>
       apply (auto simp: swim_invar_def heap_invar_def intro: dual_order.trans)
       done
 
-    lemma swim_op_correct[THEN order_trans, refine_vcg]: 
+    lemma swim_op_correct[refine_vcg]: 
     "\<lbrakk>swim_invar h i\<rbrakk> \<Longrightarrow>
       swim_op h i \<le> SPEC (\<lambda>h'. \<alpha> h' = \<alpha> h \<and> heap_invar h' \<and> length h' = length h)"  
       unfolding swim_op_def
@@ -552,7 +552,7 @@ text \<open>
       done
 
 
-    lemma sink_op_correct[THEN order_trans, refine_vcg]: 
+    lemma sink_op_correct[refine_vcg]: 
     "\<lbrakk>sink_invar h i\<rbrakk> \<Longrightarrow>
       sink_op h i \<le> SPEC (\<lambda>h'. \<alpha> h' = \<alpha> h \<and> heap_invar h' \<and> length h' = length h)"  
       unfolding sink_op_def heap_eq_heap'
@@ -607,7 +607,7 @@ text \<open>
       apply (auto) []
       done
 
-    lemma sink_op_swim_rule[THEN order_trans]: 
+    lemma sink_op_swim_rule: 
       "swim_invar h i \<Longrightarrow> sink_op h i \<le> SPEC (\<lambda>h'. h'=h)"  
       apply (frule swim_invar_valid)
       unfolding sink_op_def
@@ -688,7 +688,7 @@ text \<open>
       by (auto intro: order_trans)
 
 
-    lemma repair_correct[THEN order_trans, refine_vcg]:
+    lemma repair_correct[refine_vcg]:
       assumes "heap_invar h" and "valid h i"
       shows "repair_op (update h i v) i \<le> SPEC (\<lambda>h'.
         heap_invar h' \<and> \<alpha> h' = \<alpha> (update h i v) \<and> length h' = length h)"
@@ -708,7 +708,7 @@ text \<open>
     subsubsection \<open>Length\<close>
     definition length_op :: "'a heap \<Rightarrow> nat nres" where "length_op \<equiv> lst_op_length"
 
-    lemma [THEN order_trans, refine_vcg]: "length_op l \<le> SPEC (\<lambda>r. r = length l)"
+    lemma [refine_vcg]: "length_op l \<le> SPEC (\<lambda>r. r = length l)"
       unfolding length_op_def
       by refine_vcg
     *)  
@@ -718,14 +718,14 @@ text \<open>
       where "empty \<equiv> []"
     definition empty_op :: "'a heap nres" 
       where "empty_op \<equiv> mop_list_empty"
-    lemma empty_op_correct[THEN order_trans, refine_vcg]:
+    lemma empty_op_correct[refine_vcg]:
       "empty_op \<le> SPEC (\<lambda>r. \<alpha> r = {#} \<and> heap_invar r)"
       unfolding empty_op_def apply refine_vcg by auto
 
     subsubsection \<open>Emptiness check\<close>  
     definition is_empty_op :: "'a heap \<Rightarrow> bool nres" -- \<open>Check for emptiness\<close>
       where "is_empty_op h \<equiv> do {ASSERT (heap_invar h); let l=length h; RETURN (l=0)}"
-    lemma is_empty_op_correct[THEN order_trans, refine_vcg]: 
+    lemma is_empty_op_correct[refine_vcg]: 
       "heap_invar h \<Longrightarrow> is_empty_op h \<le> SPEC (\<lambda>r. r\<longleftrightarrow>\<alpha> h = {#})"  
       unfolding is_empty_op_def
       apply refine_vcg by auto
@@ -753,7 +753,7 @@ text \<open>
       "heap_invar h \<Longrightarrow> insert_op v h \<le> SPEC (\<lambda>h'. heap_invar h' \<and> \<alpha> h' = \<alpha> h + {#v#})"
       unfolding insert_op_def
       by (refine_vcg) (auto simp: swim_invar_insert)
-    lemmas [refine_vcg] = insert_op_correct[THEN order_trans]  
+    lemmas [refine_vcg] = insert_op_correct  
 
     subsubsection \<open>Pop minimum element\<close>  
 
@@ -832,7 +832,7 @@ text \<open>
         done
     qed    
 
-    lemmas [refine_vcg] = pop_min_op_correct[THEN order_trans]
+    lemmas [refine_vcg] = pop_min_op_correct
 
     subsubsection \<open>Peek minimum element\<close>
 
@@ -856,25 +856,27 @@ text \<open>
       apply (auto simp: in_set_conv_val simp: heap_min_prop) []
       done
       
-    lemmas peek_min_op_correct'[refine_vcg] = peek_min_op_correct[THEN order_trans]
+    lemmas peek_min_op_correct'[refine_vcg] = peek_min_op_correct
 
 
     subsection \<open>Operations as Relator-Style Refinement\<close>
 
     lemma empty_op_refine: "(empty_op,RETURN op_mset_empty)\<in>\<langle>heap_rel1\<rangle>nres_rel"
       apply (rule nres_relI)
+      apply (rule order_trans)  
       apply (rule empty_op_correct)
       apply (auto simp: heap_rel1_def br_def pw_le_iff refine_pw_simps)
       done
 
     lemma is_empty_op_refine: "(is_empty_op,RETURN o op_mset_is_empty) \<in> heap_rel1 \<rightarrow> \<langle>bool_rel\<rangle>nres_rel"
-      apply (intro nres_relI fun_relI)
-      apply (auto simp: heap_rel1_def br_def intro!: is_empty_op_correct)
+      apply (intro nres_relI fun_relI; simp)
+      apply refine_vcg  
+      apply (auto simp: heap_rel1_def br_def)
       done  
 
     lemma insert_op_refine: "(insert_op,RETURN oo op_mset_insert) \<in> Id \<rightarrow> heap_rel1 \<rightarrow> \<langle>heap_rel1\<rangle>nres_rel"
-      apply (intro nres_relI fun_relI)
-      apply refine_vcg
+      apply (intro nres_relI fun_relI; simp)
+      apply (refine_vcg RETURN_as_SPEC_refine)
       apply (auto simp: heap_rel1_def br_def pw_le_iff refine_pw_simps)
       done  
 

@@ -74,6 +74,7 @@
         <h3>Automata and Formal Languages</h3>
     <div class="list">
           <a href="entries/Posix-Lexing.shtml">Posix-Lexing</a> &nbsp;
+          <a href="entries/LocalLexing.shtml">LocalLexing</a> &nbsp;
           <a href="entries/KBPs.shtml">KBPs</a> &nbsp;
           <a href="entries/Regular-Sets.shtml">Regular-Sets</a> &nbsp;
           <a href="entries/Regex_Equivalence.shtml">Regex_Equivalence</a> &nbsp;
@@ -103,10 +104,13 @@
                 </div>
       <h3>Algorithms</h3>
     <div class="list">
+          <a href="entries/Probabilistic_While.shtml">Probabilistic_While</a> &nbsp;
           <a href="entries/Comparison_Sort_Lower_Bound.shtml">Comparison_Sort_Lower_Bound</a> &nbsp;
           <a href="entries/Quick_Sort_Cost.shtml">Quick_Sort_Cost</a> &nbsp;
           <a href="entries/DFS_Framework.shtml">DFS_Framework</a> &nbsp;
+          <a href="entries/Prpu_Maxflow.shtml">Prpu_Maxflow</a> &nbsp;
           <a href="entries/TortoiseHare.shtml">TortoiseHare</a> &nbsp;
+          <a href="entries/Floyd_Warshall.shtml">Floyd_Warshall</a> &nbsp;
           <a href="entries/Roy_Floyd_Warshall.shtml">Roy_Floyd_Warshall</a> &nbsp;
           <a href="entries/Selection_Heap_Sort.shtml">Selection_Heap_Sort</a> &nbsp;
           <a href="entries/Dijkstra_Shortest_Path.shtml">Dijkstra_Shortest_Path</a> &nbsp;
@@ -199,6 +203,11 @@
                 </div>
       <h3>Functional Programming</h3>
     <div class="list">
+          <a href="entries/Optics.shtml">Optics</a> &nbsp;
+          <a href="entries/CryptHOL.shtml">CryptHOL</a> &nbsp;
+          <a href="entries/Probabilistic_While.shtml">Probabilistic_While</a> &nbsp;
+          <a href="entries/Monad_Normalisation.shtml">Monad_Normalisation</a> &nbsp;
+          <a href="entries/Monomorphic_Monad.shtml">Monomorphic_Monad</a> &nbsp;
           <a href="entries/Show.shtml">Show</a> &nbsp;
           <a href="entries/Certification_Monads.shtml">Certification_Monads</a> &nbsp;
           <a href="entries/Partial_Function_MR.shtml">Partial_Function_MR</a> &nbsp;
@@ -310,6 +319,8 @@
                 </div>
       <h3>Security</h3>
     <div class="list">
+          <a href="entries/Game_Based_Crypto.shtml">Game_Based_Crypto</a> &nbsp;
+          <a href="entries/CryptHOL.shtml">CryptHOL</a> &nbsp;
           <a href="entries/Noninterference_Generic_Unwinding.shtml">Noninterference_Generic_Unwinding</a> &nbsp;
           <a href="entries/Noninterference_Ipurge_Unwinding.shtml">Noninterference_Ipurge_Unwinding</a> &nbsp;
           <a href="entries/UPF.shtml">UPF</a> &nbsp;
@@ -317,6 +328,7 @@
           <a href="entries/CISC-Kernel.shtml">CISC-Kernel</a> &nbsp;
           <a href="entries/Noninterference_CSP.shtml">Noninterference_CSP</a> &nbsp;
           <a href="entries/Key_Agreement_Strong_Adversaries.shtml">Key_Agreement_Strong_Adversaries</a> &nbsp;
+          <a href="entries/Security_Protocol_Refinement.shtml">Security_Protocol_Refinement</a> &nbsp;
           <a href="entries/Inductive_Confidentiality.shtml">Inductive_Confidentiality</a> &nbsp;
           <a href="entries/Possibilistic_Noninterference.shtml">Possibilistic_Noninterference</a> &nbsp;
           <a href="entries/SIFUM_Type_Systems.shtml">SIFUM_Type_Systems</a> &nbsp;
@@ -344,6 +356,7 @@
                 </div>
     <h2>Logic</h2>
   <div class="list">
+      <a href="entries/Propositional_Proof_Systems.shtml">Propositional_Proof_Systems</a> &nbsp;
       <a href="entries/MSO_Regex_Equivalence.shtml">MSO_Regex_Equivalence</a> &nbsp;
       <a href="entries/Formula_Derivatives.shtml">Formula_Derivatives</a> &nbsp;
       <a href="entries/Boolean_Expression_Checkers.shtml">Boolean_Expression_Checkers</a> &nbsp;
@@ -363,6 +376,7 @@
       <a href="entries/HereditarilyFinite.shtml">HereditarilyFinite</a> &nbsp;
       <a href="entries/Incompleteness.shtml">Incompleteness</a> &nbsp;
       <a href="entries/GoedelGod.shtml">GoedelGod</a> &nbsp;
+      <a href="entries/Types_Tableaus_and_Goedels_God.shtml">Types_Tableaus_and_Goedels_God</a> &nbsp;
       <a href="entries/HyperCTL.shtml">HyperCTL</a> &nbsp;
       <a href="entries/Abstract_Completeness.shtml">Abstract_Completeness</a> &nbsp;
       <a href="entries/PropResPI.shtml">PropResPI</a> &nbsp;
@@ -379,6 +393,7 @@
     </div>
         <h3>Rewriting</h3>
     <div class="list">
+          <a href="entries/Monad_Normalisation.shtml">Monad_Normalisation</a> &nbsp;
           <a href="entries/Lambda_Free_RPOs.shtml">Lambda_Free_RPOs</a> &nbsp;
           <a href="entries/Lambda_Free_KBOs.shtml">Lambda_Free_KBOs</a> &nbsp;
           <a href="entries/Nested_Multisets_Ordinals.shtml">Nested_Multisets_Ordinals</a> &nbsp;
@@ -392,6 +407,7 @@
     </div>
         <h3>Algebra</h3>
     <div class="list">
+          <a href="entries/Optics.shtml">Optics</a> &nbsp;
           <a href="entries/Subresultants.shtml">Subresultants</a> &nbsp;
           <a href="entries/Buildings.shtml">Buildings</a> &nbsp;
           <a href="entries/Algebraic_VCs.shtml">Algebraic_VCs</a> &nbsp;
@@ -415,6 +431,7 @@
           <a href="entries/Rank_Nullity_Theorem.shtml">Rank_Nullity_Theorem</a> &nbsp;
           <a href="entries/Polynomials.shtml">Polynomials</a> &nbsp;
           <a href="entries/Relation_Algebra.shtml">Relation_Algebra</a> &nbsp;
+          <a href="entries/PSemigroupsConvolution.shtml">PSemigroupsConvolution</a> &nbsp;
           <a href="entries/Secondary_Sylow.shtml">Secondary_Sylow</a> &nbsp;
           <a href="entries/Jordan_Hoelder.shtml">Jordan_Hoelder</a> &nbsp;
           <a href="entries/Cayley_Hamilton.shtml">Cayley_Hamilton</a> &nbsp;
@@ -432,6 +449,7 @@
           <a href="entries/Berlekamp_Zassenhaus.shtml">Berlekamp_Zassenhaus</a> &nbsp;
           <a href="entries/Allen_Calculus.shtml">Allen_Calculus</a> &nbsp;
           <a href="entries/Stone_Relation_Algebras.shtml">Stone_Relation_Algebras</a> &nbsp;
+          <a href="entries/Stone_Kleene_Relation_Algebras.shtml">Stone_Kleene_Relation_Algebras</a> &nbsp;
                 </div>
       <h3>Analysis</h3>
     <div class="list">
@@ -459,11 +477,14 @@
                 </div>
       <h3>Probability Theory</h3>
     <div class="list">
+          <a href="entries/CryptHOL.shtml">CryptHOL</a> &nbsp;
+          <a href="entries/Probabilistic_While.shtml">Probabilistic_While</a> &nbsp;
           <a href="entries/Markov_Models.shtml">Markov_Models</a> &nbsp;
           <a href="entries/Density_Compiler.shtml">Density_Compiler</a> &nbsp;
           <a href="entries/Random_Graph_Subgraph_Threshold.shtml">Random_Graph_Subgraph_Threshold</a> &nbsp;
           <a href="entries/Ergodic_Theory.shtml">Ergodic_Theory</a> &nbsp;
           <a href="entries/Source_Coding_Theorem.shtml">Source_Coding_Theorem</a> &nbsp;
+          <a href="entries/Buffons_Needle.shtml">Buffons_Needle</a> &nbsp;
                 </div>
       <h3>Number Theory</h3>
     <div class="list">
@@ -497,6 +518,7 @@
           <a href="entries/Tarskis_Geometry.shtml">Tarskis_Geometry</a> &nbsp;
           <a href="entries/General-Triangle.shtml">General-Triangle</a> &nbsp;
           <a href="entries/Ptolemys_Theorem.shtml">Ptolemys_Theorem</a> &nbsp;
+          <a href="entries/Buffons_Needle.shtml">Buffons_Needle</a> &nbsp;
                 </div>
       <h3>Topology</h3>
     <div class="list">
@@ -505,6 +527,8 @@
                 </div>
       <h3>Graph Theory</h3>
     <div class="list">
+          <a href="entries/Flow_Networks.shtml">Flow_Networks</a> &nbsp;
+          <a href="entries/Prpu_Maxflow.shtml">Prpu_Maxflow</a> &nbsp;
           <a href="entries/MFMC_Countable.shtml">MFMC_Countable</a> &nbsp;
           <a href="entries/ShortestPath.shtml">ShortestPath</a> &nbsp;
           <a href="entries/Gabow_SCC.shtml">Gabow_SCC</a> &nbsp;
@@ -540,6 +564,7 @@
       <h3>Category Theory</h3>
     <div class="list">
           <a href="entries/Category3.shtml">Category3</a> &nbsp;
+          <a href="entries/MonoidalCategory.shtml">MonoidalCategory</a> &nbsp;
           <a href="entries/Category.shtml">Category</a> &nbsp;
           <a href="entries/Category2.shtml">Category2</a> &nbsp;
                 </div>
@@ -554,8 +579,10 @@
                 </div>
     <h2>Tools</h2>
   <div class="list">
+      <a href="entries/Monad_Normalisation.shtml">Monad_Normalisation</a> &nbsp;
       <a href="entries/Constructor_Funs.shtml">Constructor_Funs</a> &nbsp;
       <a href="entries/Lazy_Case.shtml">Lazy_Case</a> &nbsp;
+      <a href="entries/Dict_Construction.shtml">Dict_Construction</a> &nbsp;
       <a href="entries/Case_Labeling.shtml">Case_Labeling</a> &nbsp;
       <a href="entries/DPT-SAT-Solver.shtml">DPT-SAT-Solver</a> &nbsp;
       <a href="entries/Nominal2.shtml">Nominal2</a> &nbsp;

@@ -390,7 +390,7 @@ definition Rep_uint' where [simp]: "Rep_uint' = Rep_uint"
 lemma Rep_uint'_code [code]: "Rep_uint' x = (BITS n. x !! n)"
 unfolding Rep_uint'_def by transfer simp
 
-lemma [code, code del]: "term_of_class.term_of = (term_of_class.term_of :: uint \<Rightarrow> _)" ..
+declare [[code drop: "term_of_class.term_of :: uint \<Rightarrow> _"]]
 
 lemma term_of_uint_code [code]:
   defines "TR \<equiv> typerep.Typerep" and "bit0 \<equiv> STR ''Numeral_Type.bit0''" 

@@ -20,70 +20,72 @@ definition
 "is_maxsplitter P f =
  (!xs ps qs. f xs = (ps,qs) = (xs=ps@qs & is_maxpref P ps xs))"
 
-primrec maxsplit :: "('a list => bool) => 'a list * 'a list => 'a list => 'a splitter" where
+fun maxsplit :: "('a list => bool) => 'a list * 'a list => 'a list => 'a splitter" where
 "maxsplit P res ps []     = (if P ps then (ps,[]) else res)" |
 "maxsplit P res ps (q#qs) = maxsplit P (if P ps then (ps,q#qs) else res)
                                      (ps@[q]) qs"
 
 declare if_split[split del]
 
-lemma maxsplit_lemma: "!!(ps::'a list) res.
-  (maxsplit P res ps qs = (xs,ys)) =
-  (if EX us. prefix us qs & P(ps@us) then xs@ys=ps@qs & is_maxpref P xs (ps@qs)
+lemma maxsplit_lemma: "(maxsplit P res ps qs = (xs,ys)) =
+  (if \<exists>us. prefix us qs \<and> P(ps@us) then xs@ys=ps@qs \<and> is_maxpref P xs (ps@qs)
    else (xs,ys)=res)"
-apply(unfold is_maxpref_def)
-apply (induct "qs")
- apply (simp split: if_split)
- apply blast
-apply simp
-apply (erule thin_rl)
-apply clarify
-apply (case_tac "EX us. prefix us qs & P (ps @ a # us)")
- apply (subgoal_tac "EX us. prefix us (a # qs) & P (ps @ us)")
-  apply simp
- apply (blast intro: prefix_Cons[THEN iffD2])
-apply (subgoal_tac "~P(ps@[a])")
- prefer 2 apply blast
-apply (simp (no_asm_simp))
-apply (case_tac "EX us. prefix us (a#qs) & P (ps @ us)")
- apply simp
- apply clarify
- apply (case_tac "us")
-  apply (rule iffI)
-   apply (simp add: prefix_Cons prefix_append)
-   apply blast
-  apply (simp add: prefix_Cons prefix_append)
-  apply clarify
-  apply (erule disjE)
-   apply (fast dest: prefix_order.antisym)
-  apply clarify
-  apply (erule disjE)
-   apply clarify
-   apply simp
-  apply (erule disjE)
-   apply clarify
-   apply simp
-  apply blast
- apply simp
-apply (subgoal_tac "~P(ps)")
-apply (simp (no_asm_simp))
-apply fastforce
-done
+proof (induction P res ps qs rule: maxsplit.induct)
+  case 1
+  thus ?case by (auto simp: is_maxpref_def split: if_splits)
+next
+  case (2 P res ps q qs)
+  show ?case
+  proof (cases "\<exists>us. prefix us qs & P ((ps @ [q]) @ us)")
+    case True
+    note ex1 = this
+    then guess us by (elim exE conjE) note us = this
+    hence ex2: "\<exists>us. prefix us (q # qs) & P (ps @ us)"
+      by (intro exI[of _ "q#us"]) auto
+    with ex1 and 2 show ?thesis by simp
+  next
+    case False
+    note ex1 = this
+    show ?thesis
+    proof (cases "\<exists>us. prefix us (q#qs) & P (ps @ us)")
+      case False
+      from 2 show ?thesis
+        by (simp only: ex1 False) (insert ex1 False, auto simp: prefix_Cons)
+    next
+      case True
+      note ex2 = this
+      show ?thesis
+      proof (cases "P ps")
+        case True
+        with 2 have "(maxsplit P (ps, q # qs) (ps @ [q]) qs = (xs, ys)) \<longleftrightarrow> (xs = ps \<and> ys = q # qs)"
+          by (simp only: ex1 ex2) simp_all
+        also have "\<dots> \<longleftrightarrow> (xs @ ys = ps @ q # qs \<and> is_maxpref P xs (ps @ q # qs))"
+          using ex1 True
+          by (auto simp: is_maxpref_def prefix_append prefix_Cons append_eq_append_conv2)
+        finally show ?thesis using True by (simp only: ex1 ex2) simp_all
+      next
+        case False
+        with 2 have "(maxsplit P res (ps @ [q]) qs = (xs, ys)) \<longleftrightarrow> ((xs, ys) = res)"
+          by (simp only: ex1 ex2) simp
+        also have "\<dots> \<longleftrightarrow> (xs @ ys = ps @ q # qs \<and> is_maxpref P xs (ps @ q # qs))"
+          using ex1 ex2 False
+          by (auto simp: append_eq_append_conv2 is_maxpref_def prefix_Cons)
+        finally show ?thesis
+          using False by (simp only: ex1 ex2) simp
+      qed
+    qed
+  qed
+qed
 
 declare if_split[split]
 
 lemma is_maxpref_Nil[simp]:
- "~(? us. prefix us xs & P us) ==> is_maxpref P ps xs = (ps = [])"
-apply(unfold is_maxpref_def)
-apply blast
-done
+ "\<not>(\<exists>us. prefix us xs \<and> P us) \<Longrightarrow> is_maxpref P ps xs = (ps = [])"
+  by (auto simp: is_maxpref_def)
 
 lemma is_maxsplitter_maxsplit:
  "is_maxsplitter P (%xs. maxsplit P ([],xs) [] xs)"
-apply(unfold is_maxsplitter_def)
-apply (simp add: maxsplit_lemma)
-apply (fastforce)
-done
+  by (auto simp: maxsplit_lemma is_maxsplitter_def)
 
 lemmas maxsplit_eq = is_maxsplitter_maxsplit[simplified is_maxsplitter_def]
 

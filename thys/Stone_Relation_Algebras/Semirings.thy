@@ -42,7 +42,7 @@ begin
 abbreviation reflexive   :: "'a \<Rightarrow> bool" where "reflexive x   \<equiv> 1 \<le> x"
 abbreviation coreflexive :: "'a \<Rightarrow> bool" where "coreflexive x \<equiv> x \<le> 1"
 abbreviation transitive  :: "'a \<Rightarrow> bool" where "transitive x  \<equiv> x * x \<le> x"
-abbreviation dense       :: "'a \<Rightarrow> bool" where "dense x       \<equiv> x \<le> x * x"
+abbreviation dense_rel   :: "'a \<Rightarrow> bool" where "dense_rel x   \<equiv> x \<le> x * x"
 abbreviation idempotent  :: "'a \<Rightarrow> bool" where "idempotent x  \<equiv> x * x = x"
 
 abbreviation "coreflexives \<equiv> { x . coreflexive x }"
@@ -156,15 +156,15 @@ lemma transitive_one_closed:
   by simp
 
 lemma dense_bot_closed:
-  "dense bot"
+  "dense_rel bot"
   by simp
 
 lemma dense_one_closed:
-  "dense 1"
+  "dense_rel 1"
   by simp
 
 lemma dense_sup_closed:
-  "dense x \<Longrightarrow> dense y \<Longrightarrow> dense (x \<squnion> y)"
+  "dense_rel x \<Longrightarrow> dense_rel y \<Longrightarrow> dense_rel (x \<squnion> y)"
   by (metis mult_right_dist_sup order_lesseq_imp sup.mono mult_left_sub_dist_sup_left mult_left_sub_dist_sup_right)
 
 lemma idempotent_bot_closed:
@@ -402,7 +402,7 @@ The point here is that only very few properties of tests are needed to show the 
 *}
 
 lemma test_preserves_equation:
-  assumes "dense p"
+  assumes "dense_rel p"
       and "coreflexive p"
     shows "p * x \<le> x * p \<longleftrightarrow> p * x = p * x * p"
 proof
@@ -511,7 +511,7 @@ lemma sup_left_top [simp]:
   "top \<squnion> x = top"
   using sup_right_top sup.commute by fastforce
 
-lemma top_greatest:
+lemma top_greatest [simp]:
   "x \<le> top"
   by (simp add: le_iff_sup)
 
@@ -525,7 +525,7 @@ lemma top_right_mult_increasing:
 
 lemma top_mult_top [simp]:
   "top * top = top"
-  by (simp add: antisym top_greatest top_left_mult_increasing)
+  by (simp add: antisym top_left_mult_increasing)
 
 text {*
 Closure of the above properties under the semiring operations is considered next.
@@ -561,7 +561,7 @@ lemma total_sup_closed:
 
 lemma surjective_one_closed:
   "surjective 1"
-  by (simp add: antisym mult_sub_right_one top_greatest)
+  by (simp add: antisym mult_sub_right_one)
 
 lemma surjective_top_closed:
   "surjective top"
@@ -573,14 +573,14 @@ lemma surjective_sup_closed:
 
 lemma reflexive_top_closed:
   "reflexive top"
-  by (simp add: top_greatest)
+  by simp
 
 lemma transitive_top_closed:
   "transitive top"
   by simp
 
 lemma dense_top_closed:
-  "dense top"
+  "dense_rel top"
   by simp
 
 lemma idempotent_top_closed:

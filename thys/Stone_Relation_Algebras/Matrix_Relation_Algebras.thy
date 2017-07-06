@@ -34,10 +34,9 @@ We mostly use the first of the following notations, which denotes the supremum o
 For finite types, this is implemented in Isabelle/HOL as the repeated application of binary suprema.
 *}
 
-syntax (xsymbols)
+syntax
   "_sum_sup_monoid" :: "idt \<Rightarrow> 'a::bounded_semilattice_sup_bot \<Rightarrow> 'a" ("(\<Squnion>\<^sub>_ _)" [0,10] 10)
   "_sum_sup_monoid_bounded" :: "idt \<Rightarrow> 'b set \<Rightarrow> 'a::bounded_semilattice_sup_bot \<Rightarrow> 'a" ("(\<Squnion>\<^bsub>_\<in>_\<^esub> _)" [0,51,10] 10)
-
 translations
   "\<Squnion>\<^sub>x t" => "XCONST sup_monoid.sum (\<lambda>x . t) { x . CONST True }"
   "\<Squnion>\<^bsub>x\<in>X\<^esub> t" => "XCONST sup_monoid.sum (\<lambda>x . t) X"

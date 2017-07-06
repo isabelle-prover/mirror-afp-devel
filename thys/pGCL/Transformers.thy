@@ -923,7 +923,7 @@ proof -
   also {
     have rw1: "(\<lambda>x. \<Sum>y\<in>UNIV. P y * \<guillemotleft>\<lambda>z. z = y\<guillemotright> x) =
                (\<lambda>x. \<Sum>y\<in>UNIV. if y = x then P y else 0)"
-      by(auto intro!:sum.cong)
+      by (rule ext [OF sum.cong]) auto
     also from sP have "... \<tturnstile> P"
       by(cases "finite (UNIV::'s set)", auto simp:sum.delta)
     finally have leP: "\<lambda>x. \<Sum>y\<in>UNIV. P y * \<guillemotleft> \<lambda>z. z = y \<guillemotright> x \<tturnstile> P" .
@@ -1216,7 +1216,7 @@ lemma additive_delta_split:
 proof -
   have "\<And>x. (\<Sum>y\<in>UNIV. P y * \<guillemotleft>\<lambda>z. z = y\<guillemotright> x) =
             (\<Sum>y\<in>UNIV. if y = x then P y else 0)"
-    by(auto intro:sum.cong)
+    by (rule sum.cong) auto
   also have "\<And>x. ... x = P x"
     by(simp add:sum.delta)
   finally
@@ -1414,7 +1414,7 @@ proof(rule entailsI)
   next
     case False
     moreover from uQ have "Q s \<le> 1" by(auto)
-    ultimately show ?thesis using assms by(simp, blast)
+    ultimately show ?thesis using assms by auto
   qed
 qed
 

@@ -15,7 +15,6 @@ definition ipassmt_iface_replace_dstip_mexpr
           None \<Rightarrow> Match (OIface ifce)
         | Some ips \<Rightarrow> (match_list_to_match_expr (map (Match \<circ> Dst) (map (uncurry IpAddrNetmask) ips)))"
 
-
 lemma matches_ipassmt_iface_replace_dstip_mexpr: 
     "matches (common_matcher, \<alpha>) (ipassmt_iface_replace_dstip_mexpr ipassmt ifce) a p \<longleftrightarrow> (case ipassmt ifce of
             None \<Rightarrow> match_iface ifce (p_oiface p)

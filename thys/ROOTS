@@ -28,6 +28,7 @@ Binomial-Queues
 Bondy
 Boolean_Expression_Checkers
 Bounded_Deducibility_Security
+Buffons_Needle
 Buildings
 BytecodeLogicJmlTypes
 Card_Number_Partitions
@@ -68,6 +69,7 @@ Constructor_Funs
 Containers
 CoreC++
 CryptoBasedCompositionalProperties
+CryptHOL
 CYK
 DPT-SAT-Solver
 DataRefinementIBP
@@ -83,6 +85,7 @@ Derangements
 Deriving
 Descartes_Sign_Rule
 DFS_Framework
+Dict_Construction
 Differential_Dynamic_Logic
 Dijkstra_Shortest_Path
 Discrete_Summation
@@ -110,6 +113,8 @@ FinFun
 Finite_Automata_HF
 Finger-Trees
 Fisher_Yates
+Flow_Networks
+Floyd_Warshall
 Flyspeck-Tame
 FocusStreamsCaseStudies
 Formal_SSA
@@ -120,6 +125,7 @@ FunWithFunctions
 FunWithTilings
 Functional-Automata
 Gabow_SCC
+Game_Based_Crypto
 Gauss_Jordan
 Gauss-Jordan-Elim-Fun
 GenClock
@@ -181,6 +187,7 @@ List-Infinite
 List_Interleaving
 List_Update
 Lifting_Definition_Option
+LocalLexing
 Locally-Nameless-Sigma
 LOFT
 Lower_Semicontinuous
@@ -198,7 +205,10 @@ MFMC_Countable
 MiniML
 Minimal_SSA
 Modal_Logics_for_NTS
+Monad_Normalisation
 MonoBoolTranAlgebra
+MonoidalCategory
+Monomorphic_Monad
 MSO_Regex_Equivalence
 MuchAdoAboutTwo
 Multirelations
@@ -217,6 +227,7 @@ Noninterference_Sequential_Composition
 NormByEval
 No_FTL_observers
 Open_Induction
+Optics
 Ordinal
 Ordinals_and_Cardinals
 Ordinary_Differential_Equations
@@ -244,10 +255,14 @@ Prime_Harmonic_Series
 Priority_Queue_Braun
 Probabilistic_Noninterference
 Probabilistic_System_Zoo
+Probabilistic_While
 Program-Conflict-Analysis
 Promela
 Proof_Strategy_Language
+Propositional_Proof_Systems
 PropResPI
+Prpu_Maxflow
+PSemigroupsConvolution
 PseudoHoops
 Psi_Calculi
 Ptolemys_Theorem
@@ -283,6 +298,7 @@ SDS_Impossibility
 SIFPL
 SIFUM_Type_Systems
 Secondary_Sylow
+Security_Protocol_Refinement
 Selection_Heap_Sort
 SenSocialChoice
 Separata
@@ -307,6 +323,7 @@ Stable_Matching
 Stern_Brocot
 Stirling_Formula
 Stone_Algebras
+Stone_Kleene_Relation_Algebras
 Stone_Relation_Algebras
 Stream_Fusion_Code
 Stream-Fusion
@@ -332,6 +349,7 @@ Triangle
 Trie
 Twelvefold_Way
 Tycon
+Types_Tableaus_and_Goedels_God
 UpDown_Scheme
 UPF
 UPF_Firewall

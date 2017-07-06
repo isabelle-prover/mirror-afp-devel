@@ -349,20 +349,20 @@ lemma greatest_less_zero_row:
   assumes r: "echelon_form_upt_k A k"
   and zero_i: "is_zero_row_upt_k i k A"
   and not_all_zero: "\<not> (\<forall>a. is_zero_row_upt_k a k A)"
-  shows "(GREATEST' m. \<not> is_zero_row_upt_k m k A) < i"
+  shows "(GREATEST m. \<not> is_zero_row_upt_k m k A) < i"
 proof (rule ccontr)
-  assume not_less_i: "\<not> (GREATEST' m. \<not> is_zero_row_upt_k m k A) < i"
-  have i_less_greatest: "i < (GREATEST' m. \<not> is_zero_row_upt_k m k A)"
-    by (metis not_less_i dual_linorder.neq_iff Greatest'I not_all_zero zero_i)
-  have "is_zero_row_upt_k (GREATEST' m. \<not> is_zero_row_upt_k m k A) k A"
+  assume not_less_i: "\<not> (GREATEST m. \<not> is_zero_row_upt_k m k A) < i"
+  have i_less_greatest: "i < (GREATEST m. \<not> is_zero_row_upt_k m k A)"
+    by (metis not_less_i neq_iff GreatestI not_all_zero zero_i)
+  have "is_zero_row_upt_k (GREATEST m. \<not> is_zero_row_upt_k m k A) k A"
     using r zero_i i_less_greatest unfolding echelon_form_upt_k_def by blast
-  thus False using Greatest'I_ex not_all_zero by fast
+  thus False using GreatestI_ex not_all_zero by fast
 qed
 
 lemma greatest_ge_nonzero_row':
   fixes A::"'a::{bezout_ring}^'cols::{mod_type}^'rows::{mod_type}"
   assumes r: "echelon_form_upt_k A k"
-  and i: "i \<le> (GREATEST' m. \<not> is_zero_row_upt_k m k A)"
+  and i: "i \<le> (GREATEST m. \<not> is_zero_row_upt_k m k A)"
   and not_all_zero: "\<not> (\<forall>a. is_zero_row_upt_k a k A)"
   shows "\<not> is_zero_row_upt_k i k A"
   using greatest_less_zero_row[OF r] i not_all_zero by fastforce
@@ -1128,7 +1128,7 @@ next
     have i_not_fn:" i \<noteq> from_nat (Suc n)"
       by (metis False Suc.prems(2) nrows_def to_nat_from_nat_id)
     let ?B="(bezout_matrix A i (from_nat (Suc n)) (from_nat k) bezout ** A)"
-    have i_le_n: "to_nat i < Suc n" by (metis False Suc.prems(3) dual_order.le_imp_less_or_eq)
+    have i_le_n: "to_nat i < Suc n" by (metis False Suc.prems(3) le_imp_less_or_eq)
     have "bezout_iterate A (Suc n) i (from_nat k) bezout $ a $ b 
       = bezout_iterate ?B n i (from_nat k) bezout $ a $ b"
       unfolding bezout_iterate.simps using i_le_n by auto
@@ -1211,7 +1211,7 @@ next
     have i_not_fn:" i \<noteq> from_nat (Suc n)"
       by (metis False Suc.prems(2) nrows_def to_nat_from_nat_id)
     let ?B="(bezout_matrix A i (from_nat (Suc n)) (from_nat k) bezout ** A)"
-    have i_le_n: "to_nat i < Suc n" by (metis False Suc.prems(3) dual_order.le_imp_less_or_eq)
+    have i_le_n: "to_nat i < Suc n" by (metis False Suc.prems(3) le_imp_less_or_eq)
     have zero_ikB: "is_zero_row_upt_k i k ?B"
     proof (unfold is_zero_row_upt_k_def, clarify)
       fix j::'b assume j_k: "to_nat j < k"
@@ -1355,7 +1355,7 @@ subsubsection{*Proving the correctness*}
 lemma condition1_index_le_zero_row: 
   fixes A k
   defines i:"i\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0
-    else to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A)) + 1)"
+    else to_nat ((GREATEST n. \<not> is_zero_row_upt_k n k A)) + 1)"
   assumes e: "echelon_form_upt_k A k"
   and "is_zero_row_upt_k a (Suc k) A"
   shows "from_nat i\<le>a"
@@ -1372,12 +1372,12 @@ proof (rule ccontr)
     hence "i = (i - 1) + 1" by simp
     also have "from_nat \<dots> = from_nat (i - 1) + 1" by (rule from_nat_suc)
     finally have ai2: "a \<le> from_nat (i - 1)" by simp
-    have "i = to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A)) + 1" using i False
+    have "i = to_nat ((GREATEST n. \<not> is_zero_row_upt_k n k A)) + 1" using i False
       by (metis from_nat_0)
-    hence "i - 1 = to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A)" by simp
-    hence "from_nat (i - 1) = (GREATEST' n. \<not> is_zero_row_upt_k n k A)"
+    hence "i - 1 = to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A)" by simp
+    hence "from_nat (i - 1) = (GREATEST n. \<not> is_zero_row_upt_k n k A)"
       using from_nat_to_nat_id by auto
-    hence "\<not> is_zero_row_upt_k (from_nat (i - 1)) k A" using False Greatest'I_ex i
+    hence "\<not> is_zero_row_upt_k (from_nat (i - 1)) k A" using False GreatestI_ex i
       by (metis from_nat_to_nat_id to_nat_0)
     moreover have "is_zero_row_upt_k (from_nat (i - 1)) k A" 
       using echelon_form_upt_k_condition1[OF e zero_ik]
@@ -1391,7 +1391,7 @@ qed
 lemma condition1_part1: 
   fixes A k
   defines i:"i\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 
-    else to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A)) + 1)"
+    else to_nat ((GREATEST n. \<not> is_zero_row_upt_k n k A)) + 1)"
   assumes e: "echelon_form_upt_k A k"
   and a: "is_zero_row_upt_k a (Suc k) A"
   and ab: "a < b"
@@ -1411,7 +1411,7 @@ qed
 lemma condition1_part2: 
   fixes A k
   defines i:"i\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 
-  else to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A)) + 1)"
+  else to_nat ((GREATEST n. \<not> is_zero_row_upt_k n k A)) + 1)"
   assumes e: "echelon_form_upt_k A k"
   and a: "is_zero_row_upt_k a (Suc k) A"
   and ab: "a < b"
@@ -1430,7 +1430,7 @@ qed
 lemma condition1_part3:
   fixes A k bezout
   defines i:"i\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 
-  else to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A)) + 1)"
+  else to_nat ((GREATEST n. \<not> is_zero_row_upt_k n k A)) + 1)"
   defines B: "B \<equiv> fst ((echelon_form_of_column_k bezout) (A,i) k)"
   assumes e: "echelon_form_upt_k A k" and ib: "is_bezout_ext bezout"
   and a: "is_zero_row_upt_k a (Suc k) B"
@@ -1453,14 +1453,14 @@ qed
 lemma condition1_part4:
   fixes A k bezout i
   defines i:"i\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 
-  else to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A)) + 1)"
+  else to_nat ((GREATEST n. \<not> is_zero_row_upt_k n k A)) + 1)"
   defines B: "B\<equiv> fst ((echelon_form_of_column_k bezout) (A,i) k)"
   assumes e: "echelon_form_upt_k A k"
   assumes a: "is_zero_row_upt_k a (Suc k) A"
   and i_nrows: "i = nrows A"
   shows "is_zero_row_upt_k b (Suc k) A"
 proof -
-  have eq_G: "from_nat (i - 1) = (GREATEST' n. \<not> is_zero_row_upt_k n k A)"
+  have eq_G: "from_nat (i - 1) = (GREATEST n. \<not> is_zero_row_upt_k n k A)"
     by (metis One_nat_def Suc_eq_plus1 i_nrows diff_Suc_Suc 
         diff_zero from_nat_to_nat_id i nrows_not_0)
   hence a_le: "a\<le>from_nat (i - 1)"
@@ -1468,7 +1468,7 @@ proof -
       to_nat_from_nat_id to_nat_less_card to_nat_mono zero_less_card_finite)
   have not_zero_G: "\<not> is_zero_row_upt_k (from_nat(i - 1)) k A"
     unfolding eq_G 
-    by (metis (mono_tags) Greatest'I_ex i_nrows i nrows_not_0)
+    by (metis (mono_tags) GreatestI_ex i_nrows i nrows_not_0)
   hence "\<not> is_zero_row_upt_k a k A" 
     by (metis a_le dual_order.strict_iff_order e echelon_form_upt_k_condition1)
   hence "\<not> is_zero_row_upt_k a (Suc k) A" 
@@ -1481,7 +1481,7 @@ lemma condition1_part5:
   fixes A::"'a::bezout_domain^'cols::{mod_type}^'rows::{mod_type}"
   and k bezout
   defines i:"i\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 
-    else to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A)) + 1)"
+    else to_nat ((GREATEST n. \<not> is_zero_row_upt_k n k A)) + 1)"
   defines B: "B \<equiv> fst((echelon_form_of_column_k bezout) (A,i) k)"
   assumes ib: "is_bezout_ext bezout" and e: "echelon_form_upt_k A k"
   assumes zero_a_B: "is_zero_row_upt_k a (Suc k) B"
@@ -1506,15 +1506,15 @@ proof (rule is_zero_row_upt_k_suc)
     thus ?thesis by simp
   next
     case False
-    hence i_eq: "i=to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A)) + 1" unfolding i by auto
+    hence i_eq: "i=to_nat ((GREATEST n. \<not> is_zero_row_upt_k n k A)) + 1" unfolding i by auto
     show ?thesis
     proof (rule row_greater_greatest_is_zero, simp add: i_eq from_nat_to_nat_greatest,rule Suc_le')
-      show " (GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1 \<noteq> 0"
+      show " (GREATEST m. \<not> is_zero_row_upt_k m k A) + 1 \<noteq> 0"
       proof -
-        have "\<And>x\<^sub>1. \<not> x\<^sub>1 < i \<or> \<not> to_nat (GREATEST' R. \<not> is_zero_row_upt_k R k A) < x\<^sub>1" 
+        have "\<And>x\<^sub>1. \<not> x\<^sub>1 < i \<or> \<not> to_nat (GREATEST R. \<not> is_zero_row_upt_k R k A) < x\<^sub>1" 
           using i_eq by linarith
-        thus "(GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1 \<noteq> 0"
-          by (metis One_nat_def add_Suc_right dual_linorder.neq_iff 
+        thus "(GREATEST m. \<not> is_zero_row_upt_k m k A) + 1 \<noteq> 0"
+          by (metis One_nat_def add_Suc_right neq_iff 
             from_nat_to_nat_greatest i_eq monoid_add_class.add.right_neutral 
             nat.distinct(1) not_last_row nrows_def to_nat_0 to_nat_from_nat_id to_nat_less_card)
       qed
@@ -1524,7 +1524,7 @@ proof (rule is_zero_row_upt_k_suc)
   proof (unfold is_zero_row_upt_k_def, clarify)
     fix j::'cols assume j_less_k: "to_nat j < k"
     have i_le_least: "from_nat i\<le>?least" 
-      by (metis (mono_tags, lifting) Amk_not_0 LeastI2_wellorder dual_order.less_imp_le im)
+      by (metis (mono_tags, lifting) Amk_not_0 LeastI2_wellorder less_imp_le im)
     hence zero_least_kA: "is_zero_row_upt_k ?least k A" 
       using echelon_form_upt_k_condition1[OF e zero_ikA] 
       by (metis (poly_guards_query) dual_order.strict_iff_order zero_ikA)
@@ -1581,10 +1581,10 @@ proof (rule is_zero_row_upt_k_suc)
   proof (auto simp add: from_nat_to_nat_greatest from_nat_0)
     show "0 \<le> a" by (metis least_mod_type)
     fix m assume m: "\<not> is_zero_row_upt_k m k A"
-    have "(GREATEST' n. \<not> is_zero_row_upt_k n k A) < a" 
-      by (metis (no_types, lifting) Greatest'I_ex dual_linorder.neq_iff 
+    have "(GREATEST n. \<not> is_zero_row_upt_k n k A) < a" 
+      by (metis (no_types, lifting) GreatestI_ex neq_iff 
         e echelon_form_upt_k_condition1 m zero_a_k)
-    thus "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<le> a" by (metis le_Suc)
+    thus "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<le> a" by (metis le_Suc)
   qed 
   have i_not_b: "from_nat i \<noteq> b" using i_le_a ab by simp
   show "is_zero_row_upt_k b k ?bezout_iterate"
@@ -1645,7 +1645,7 @@ qed
 lemma condition2_part1:
   fixes A::"'a::{bezout_ring}^'cols::{mod_type}^'rows::{mod_type}" and k bezout i
   defines i:"i\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 
-    else to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A)) + 1)"
+    else to_nat ((GREATEST n. \<not> is_zero_row_upt_k n k A)) + 1)"
   defines B:"B \<equiv> fst ((echelon_form_of_column_k bezout) (A,i) k)"
   assumes e: "echelon_form_upt_k A k"
   and ab: "a < b" and not_zero_aB: "\<not> is_zero_row_upt_k a (Suc k) B" 
@@ -1667,14 +1667,14 @@ proof -
     thus ?thesis using not_zero_aB by contradiction
   next
     case False note not_all_zero=False
-    have i2: "i = to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A)) + 1" 
+    have i2: "i = to_nat ((GREATEST n. \<not> is_zero_row_upt_k n k A)) + 1" 
       unfolding i using False by auto
     have not_zero_aA: "\<not> is_zero_row_upt_k a k A"
-      by (metis (erased, lifting) B_eq_A Greatest'I_ex add_to_nat_def all_zero neq_iff e 
+      by (metis (erased, lifting) B_eq_A GreatestI_ex add_to_nat_def all_zero neq_iff e 
         echelon_form_upt_k_condition1 i2 is_zero_row_upt_k_suc le_Suc 
         not_all_zero not_zero_aB to_nat_1)
     moreover have not_zero_bA: "\<not> is_zero_row_upt_k b k A"
-      by (metis (erased, lifting) B_eq_A Greatest'I_ex add_to_nat_def all_zero neq_iff e 
+      by (metis (erased, lifting) B_eq_A GreatestI_ex add_to_nat_def all_zero neq_iff e 
         echelon_form_upt_k_condition1 i2 is_zero_row_upt_k_suc le_Suc 
         not_all_zero not_zero_bB to_nat_1)
     ultimately show ?thesis using echelon_form_upt_k_condition2[OF e ab] by simp
@@ -1684,7 +1684,7 @@ qed
 lemma condition2_part2: 
   fixes A::"'a::{bezout_ring}^'cols::{mod_type}^'rows::{mod_type}" and k bezout i
   defines i:"i\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 else 
-  to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A)) + 1)"
+  to_nat ((GREATEST n. \<not> is_zero_row_upt_k n k A)) + 1)"
   assumes e: "echelon_form_upt_k A k"
   and ab: "a < b"
   and all_zero: "\<forall>m>from_nat (nrows A). A $ m $ from_nat k = 0" 
@@ -1693,18 +1693,18 @@ lemma condition2_part2:
 proof -
   have not_all_zero: "\<not> (\<forall>m. is_zero_row_upt_k m k A)" 
     by (metis i i_nrows nrows_not_0)
-  have "(GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1 = 0"
+  have "(GREATEST m. \<not> is_zero_row_upt_k m k A) + 1 = 0"
     by (metis (mono_tags, lifting) add_0_right One_nat_def Suc_le' add_Suc_right i i_nrows 
       less_not_refl less_trans_Suc nrows_def to_nat_less_card to_nat_mono zero_less_card_finite)
-  hence g_minus_1: "(GREATEST' m. \<not> is_zero_row_upt_k m k A) = - 1" by (simp add: a_eq_minus_1)
+  hence g_minus_1: "(GREATEST m. \<not> is_zero_row_upt_k m k A) = - 1" by (simp add: a_eq_minus_1)
   have "\<not> is_zero_row_upt_k a k A" 
   proof (rule greatest_ge_nonzero_row'[OF e _ not_all_zero])    
-    show "a \<le> (GREATEST' m. \<not> is_zero_row_upt_k m k A)"
+    show "a \<le> (GREATEST m. \<not> is_zero_row_upt_k m k A)"
       by (simp add: Greatest_is_minus_1 g_minus_1)
   qed
   moreover have "\<not> is_zero_row_upt_k b k A" 
   proof (rule greatest_ge_nonzero_row'[OF e _ not_all_zero])    
-    show "b \<le> (GREATEST' m. \<not> is_zero_row_upt_k m k A)"
+    show "b \<le> (GREATEST m. \<not> is_zero_row_upt_k m k A)"
       by (simp add: Greatest_is_minus_1 g_minus_1)
   qed
   ultimately show ?thesis using echelon_form_upt_k_condition2[OF e ab] by simp
@@ -1713,7 +1713,7 @@ qed
 lemma condition2_part3:
   fixes A::"'a::{bezout_ring}^'cols::{mod_type}^'rows::{mod_type}" and k bezout i
   defines i:"i\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 
-    else to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A)) + 1)"
+    else to_nat ((GREATEST n. \<not> is_zero_row_upt_k n k A)) + 1)"
   defines B:"B \<equiv> fst ((echelon_form_of_column_k bezout) (A,i) k)"
   assumes e: "echelon_form_upt_k A k" and k: "k<ncols A"
   and ab: "a < b" and not_zero_aB: "\<not> is_zero_row_upt_k a (Suc k) B" 
@@ -1728,7 +1728,7 @@ proof -
   have not_all_zero: "\<not> (\<forall>m. is_zero_row_upt_k m k A)"
     by (metis B_eq_A ab all_zero from_nat_0 i is_zero_row_upt_k_suc 
       le_less_trans least_mod_type not_zero_bB)
-  have i2: "i = to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A)) + 1" 
+  have i2: "i = to_nat ((GREATEST n. \<not> is_zero_row_upt_k n k A)) + 1" 
     unfolding i using not_all_zero by auto
   have not_zero_aA: "\<not> is_zero_row_upt_k a k A"  
   proof -
@@ -1738,7 +1738,7 @@ proof -
     { assume "\<not> is_zero_row_upt_k b k A"
       hence "\<not> is_zero_row_upt_k a k A" using ab e echelon_form_upt_k_condition1 by blast }
     ultimately show "\<not> is_zero_row_upt_k a k A" 
-      by (metis B_eq_A greatest_less_zero_row ab all_zero dual_order.le_imp_less_or_eq e i2 
+      by (metis B_eq_A greatest_less_zero_row ab all_zero le_imp_less_or_eq e i2 
         is_zero_row_upt_k_suc not_all_zero not_zero_aB not_zero_bB)
   qed   
   show ?thesis
@@ -1751,7 +1751,7 @@ proof -
       using not_zero_aA unfolding is_zero_row_upt_k_def 
       by (metis from_nat_mono from_nat_to_nat_id k ncols_def)
     have least_v: "(LEAST n. A $ a $ n \<noteq> 0) \<le> v" by (rule Least_le, simp add: Aav)
-    have b_ge_greatest: "b>(GREATEST' n. \<not> is_zero_row_upt_k n k A)" 
+    have b_ge_greatest: "b>(GREATEST n. \<not> is_zero_row_upt_k n k A)" 
       using False by (simp add: greatest_less_zero_row e not_all_zero)
     have i_eq_b: "from_nat i = b"
     proof (rule ccontr, cases "from_nat i < b")
@@ -1786,27 +1786,27 @@ qed
 lemma condition2_part4:
   fixes A::"'a::{bezout_ring}^'cols::{mod_type}^'rows::{mod_type}" and k bezout i
   defines i:"i\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 
-  else to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A)) + 1)"
+  else to_nat ((GREATEST n. \<not> is_zero_row_upt_k n k A)) + 1)"
   assumes  e: "echelon_form_upt_k A k"
   and ab: "a < b" 
   and i_nrows: "i = nrows A"
   shows "(LEAST n. A $ a $ n \<noteq> 0) < (LEAST n. A $ b $ n \<noteq> 0)"
 proof -
   have not_all_zero: "\<not> (\<forall>m. is_zero_row_upt_k m k A)" by (metis i_nrows i nrows_not_0)
-  then have "i = to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A)) + 1" by (simp add: i)
-  then have "nrows A = to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A)) + 1" by (simp add: i_nrows)
-  then have "CARD('rows) = mod_type_class.to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1"
+  then have "i = to_nat ((GREATEST n. \<not> is_zero_row_upt_k n k A)) + 1" by (simp add: i)
+  then have "nrows A = to_nat ((GREATEST n. \<not> is_zero_row_upt_k n k A)) + 1" by (simp add: i_nrows)
+  then have "CARD('rows) = mod_type_class.to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1"
     unfolding nrows_def .
-  then have "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 = 0"
+  then have "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 = 0"
     using to_nat_plus_one_less_card by auto
-  hence g: "(GREATEST' n. \<not> is_zero_row_upt_k n k A) = -1" by (simp add: a_eq_minus_1)
+  hence g: "(GREATEST n. \<not> is_zero_row_upt_k n k A) = -1" by (simp add: a_eq_minus_1)
   have "\<not> is_zero_row_upt_k a k A" 
   proof (rule greatest_ge_nonzero_row'[OF e _ not_all_zero])
-    show "a \<le> (GREATEST' m. \<not> is_zero_row_upt_k m k A)" by (simp add: Greatest_is_minus_1 g)
+    show "a \<le> (GREATEST m. \<not> is_zero_row_upt_k m k A)" by (simp add: Greatest_is_minus_1 g)
   qed
   moreover have "\<not> is_zero_row_upt_k b k A" 
   proof (rule greatest_ge_nonzero_row'[OF e _ not_all_zero])
-    show "b \<le> (GREATEST' m. \<not> is_zero_row_upt_k m k A)" by (simp add: Greatest_is_minus_1 g)
+    show "b \<le> (GREATEST m. \<not> is_zero_row_upt_k m k A)" by (simp add: Greatest_is_minus_1 g)
   qed
   ultimately show ?thesis using echelon_form_upt_k_condition2[OF e ab] by simp
 qed
@@ -1814,7 +1814,7 @@ qed
 lemma condition2_part5:
   fixes A::"'a::{bezout_domain}^'cols::{mod_type}^'rows::{mod_type}" and k bezout i
   defines i:"i\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 
-  else to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A)) + 1)"
+  else to_nat ((GREATEST n. \<not> is_zero_row_upt_k n k A)) + 1)"
   defines B:"B \<equiv> fst ((echelon_form_of_column_k bezout) (A,i) k)"
   assumes ib: "is_bezout_ext bezout" and e: "echelon_form_upt_k A k" and k: "k<ncols A"
   and ab: "a < b" and not_zero_aB: "\<not> is_zero_row_upt_k a (Suc k) B" 
@@ -1831,7 +1831,7 @@ proof -
     using i_m A_mk i_not_nrows by auto
   let ?least="(LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> from_nat i \<le> n)"
   let ?interchange="interchange_rows A (from_nat i) ?least"
-  let ?greatest="(GREATEST' n. \<not> is_zero_row_upt_k n k A)"
+  let ?greatest="(GREATEST n. \<not> is_zero_row_upt_k n k A)"
   have nrows_less: "nrows A - Suc 0 < nrows ?interchange" unfolding nrows_def by auto
   have interchange_ik_not_zero: "?interchange $ from_nat i $ from_nat k \<noteq> 0" 
     by (metis (mono_tags, lifting) A_mk LeastI_ex dual_order.strict_iff_order 
@@ -1868,14 +1868,14 @@ proof -
       finally show "B $ b $ j = 0" .
     qed
     have i_not_b: "from_nat i \<noteq> b" 
-      using i all_zero ab least_mod_type by (metis dual_linorder.leD from_nat_0)
+      using i all_zero ab least_mod_type by (metis leD from_nat_0)
     have "B $ b $ from_nat k \<noteq> 0"  by (metis is_zero_row_upt_k_suc not_zero_bB zero_bB)
     moreover have "B $ b $ from_nat k = 0"
     proof (unfold B_eq, rule bezout_iterate_zero_column_k
         [OF echelon_interchange ib interchange_ik_not_zero nrows_less 
           _ k2 to_nat_b zero_i_interchange])
       show "from_nat i < b" 
-        by (metis all_zero dual_linorder.antisym_conv1 from_nat_0 i i_not_b least_mod_type)
+        by (metis all_zero antisym_conv1 from_nat_0 i i_not_b least_mod_type)
     qed   
     ultimately show False by contradiction
   qed
@@ -1886,7 +1886,7 @@ proof -
   have zero_least_kA: "is_zero_row_upt_k ?least k A" 
   proof (rule row_greater_greatest_is_zero)
     have "?greatest < from_nat i"
-      by (metis Suc_eq_plus1 Suc_le' add_to_nat_def dual_linorder.neq_iff from_nat_0 from_nat_mono 
+      by (metis Suc_eq_plus1 Suc_le' add_to_nat_def neq_iff from_nat_0 from_nat_mono 
         i2 i_not_nrows not_less_eq nrows_def to_nat_1 to_nat_less_card zero_less_Suc)
     also have "... \<le> ?least"
       by (metis (mono_tags, lifting) A_mk LeastI_ex dual_order.strict_iff_order i_m)
@@ -1931,7 +1931,7 @@ proof -
   hence a_less_i: "a < from_nat i" using ab by simp
   have not_zero_aA: "\<not> is_zero_row_upt_k a k A"
   proof (rule greatest_ge_nonzero_row'[OF e _ not_all_zero])
-    show " a \<le> (GREATEST' m. \<not> is_zero_row_upt_k m k A)"
+    show " a \<le> (GREATEST m. \<not> is_zero_row_upt_k m k A)"
       using a_less_i unfolding i2 g_rw
       by (metis le_Suc not_le)
   qed
@@ -2010,7 +2010,7 @@ proof -
     hence b_less_i: "b < from_nat i" using b_le_i by simp
     have not_zero_bA: "\<not> is_zero_row_upt_k b k A"  
     proof (rule greatest_ge_nonzero_row'[OF e _ not_all_zero])
-      show " b \<le> (GREATEST' m. \<not> is_zero_row_upt_k m k A)"
+      show " b \<le> (GREATEST m. \<not> is_zero_row_upt_k m k A)"
         using b_less_i unfolding i2 g_rw
         by (metis le_Suc not_le)
     qed
@@ -2062,7 +2062,7 @@ qed
 lemma echelon_echelon_form_column_k:
   fixes A::"'a::{bezout_domain}^'cols::{mod_type}^'rows::{mod_type}" and k bezout
   defines i:"i \<equiv> (if \<forall>m. is_zero_row_upt_k m k A then 0 
-  else to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A)) + 1)"
+  else to_nat ((GREATEST n. \<not> is_zero_row_upt_k n k A)) + 1)"
   defines B: "B \<equiv> fst ((echelon_form_of_column_k bezout) (A,i) k)"
   assumes ib: "is_bezout_ext bezout" and e: "echelon_form_upt_k A k" and k: "k<ncols A"
   shows "echelon_form_upt_k B (Suc k)"
@@ -2184,16 +2184,16 @@ qed
 lemma echelon_foldl_condition2:
   fixes A::"'a::{bezout_ring}^'cols::{mod_type}^'rows::{mod_type}"
   assumes n: "\<not> is_zero_row_upt_k ma k A"
-  and all_zero: "\<forall>m\<ge> (GREATEST' n. \<not> is_zero_row_upt_k n k A)+1. A $ m $ from_nat k = 0"
-  shows "(GREATEST' n. \<not> is_zero_row_upt_k n k A) = (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) A)"
-proof (rule Greatest'_equality[symmetric])
-  show "\<not> is_zero_row_upt_k (GREATEST' n. \<not> is_zero_row_upt_k n k A) (Suc k) A"
-    by (metis Greatest'I_ex n is_zero_row_upt_k_le)
+  and all_zero: "\<forall>m\<ge> (GREATEST n. \<not> is_zero_row_upt_k n k A)+1. A $ m $ from_nat k = 0"
+  shows "(GREATEST n. \<not> is_zero_row_upt_k n k A) = (GREATEST n. \<not> is_zero_row_upt_k n (Suc k) A)"
+proof (rule Greatest_equality[symmetric])
+  show "\<not> is_zero_row_upt_k (GREATEST n. \<not> is_zero_row_upt_k n k A) (Suc k) A"
+    by (metis GreatestI_ex n is_zero_row_upt_k_le)
   fix y assume y: "\<not> is_zero_row_upt_k y (Suc k) A"
-  show "y \<le> (GREATEST' n. \<not> is_zero_row_upt_k n k A)"
+  show "y \<le> (GREATEST n. \<not> is_zero_row_upt_k n k A)"
   proof (rule ccontr)
-    assume " \<not> y \<le> (GREATEST' n. \<not> is_zero_row_upt_k n k A)" 
-    hence y2: "y > (GREATEST' n. \<not> is_zero_row_upt_k n k A)" by simp
+    assume " \<not> y \<le> (GREATEST n. \<not> is_zero_row_upt_k n k A)" 
+    hence y2: "y > (GREATEST n. \<not> is_zero_row_upt_k n k A)" by simp
     hence "is_zero_row_upt_k y k A" by (metis row_greater_greatest_is_zero)
     moreover have "A $ y $ from_nat k = 0" 
       by (metis (no_types, lifting)  all_zero le_Suc y2) 
@@ -2209,10 +2209,10 @@ lemma echelon_foldl_condition3:
   and all_zero: "\<forall>m. is_zero_row_upt_k m k A"
   and e: "echelon_form_upt_k A k"
   and k: "k < ncols A"
-  shows "to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k)
+  shows "to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc k)
   (bezout_iterate (interchange_rows A 0 (LEAST n. A $ n $ from_nat k \<noteq> 0)) 
   (nrows A - (Suc 0)) 0 (from_nat k) bezout)) = 0"
-proof (unfold to_nat_eq_0, rule Greatest'_equality)
+proof (unfold to_nat_eq_0, rule Greatest_equality)
   let ?interchange="(interchange_rows A 0 (LEAST n. A $ n $ from_nat k \<noteq> 0))"
   let ?b="(bezout_iterate ?interchange (nrows A - (Suc 0)) 0 (from_nat k) bezout)"
   have b0k: "?b $ 0 $ from_nat k \<noteq> 0"
@@ -2298,20 +2298,20 @@ qed
 
 lemma echelon_foldl_condition4:
   fixes A::"'a::{bezout_ring}^'cols::{mod_type}^'rows::{mod_type}"
-  assumes all_zero: "\<forall>m>(GREATEST' n. \<not> is_zero_row_upt_k n k A)+1.
+  assumes all_zero: "\<forall>m>(GREATEST n. \<not> is_zero_row_upt_k n k A)+1.
   A $ m $ from_nat k = 0"
-  and greatest_nrows: "Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A)) \<noteq> nrows A"
-  and le_mb: "(GREATEST' n. \<not> is_zero_row_upt_k n k A)+1 \<le> mb"
+  and greatest_nrows: "Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A)) \<noteq> nrows A"
+  and le_mb: "(GREATEST n. \<not> is_zero_row_upt_k n k A)+1 \<le> mb"
   and A_mb_k: "A $ mb $ from_nat k \<noteq> 0"
-  shows "Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A)) =
-  to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) A)"
+  shows "Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A)) =
+  to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc k) A)"
 proof -
-  let ?greatest = "(GREATEST' n. \<not> is_zero_row_upt_k n k A)"
-  have mb_eq: "mb=(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1" 
-    by (metis all_zero le_mb A_mb_k dual_order.le_less )
-  have "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 
-    = (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) A)"
-  proof (rule Greatest'_equality[symmetric])
+  let ?greatest = "(GREATEST n. \<not> is_zero_row_upt_k n k A)"
+  have mb_eq: "mb=(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1" 
+    by (metis all_zero le_mb A_mb_k le_less )
+  have "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 
+    = (GREATEST n. \<not> is_zero_row_upt_k n (Suc k) A)"
+  proof (rule Greatest_equality[symmetric])
     show "\<not> is_zero_row_upt_k (?greatest + 1) (Suc k) A"
       by (metis (no_types, lifting) A_mb_k is_zero_row_upt_k_def less_Suc_eq less_trans 
         mb_eq not_less_eq to_nat_from_nat_id to_nat_less_card)
@@ -2319,7 +2319,7 @@ proof -
     assume y: "\<not> is_zero_row_upt_k y (Suc k) A"
     show "y \<le> ?greatest + 1"
     proof (rule ccontr)
-      assume "\<not> y \<le> (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1"
+      assume "\<not> y \<le> (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1"
       hence y_greatest: "y >  ?greatest + 1" by simp
       have "is_zero_row_upt_k y (Suc k) A"
       proof (rule is_zero_row_upt_k_suc)
@@ -2345,23 +2345,23 @@ qed
 lemma echelon_foldl_condition5:
   fixes A::"'a::{bezout_ring}^'cols::{mod_type}^'rows::{mod_type}"        
   assumes mb: "\<not> is_zero_row_upt_k mb k A"
-  and nrows: "Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A)) = nrows A"
-  shows "nrows A = Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) A))"
-  by (metis (no_types, lifting) Greatest'I Suc_lessI Suc_less_eq mb nrows from_nat_mono 
-    from_nat_to_nat_id is_zero_row_upt_k_le not_greater_Greatest' nrows_def to_nat_less_card) 
+  and nrows: "Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A)) = nrows A"
+  shows "nrows A = Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc k) A))"
+  by (metis (no_types, lifting) GreatestI Suc_lessI Suc_less_eq mb nrows from_nat_mono 
+    from_nat_to_nat_id is_zero_row_upt_k_le not_greater_Greatest nrows_def to_nat_less_card) 
 
 
 lemma echelon_foldl_condition6:
   fixes A::"'a::{bezout_ring}^'cols::{mod_type}^'rows::{mod_type}"
   assumes ib: "is_bezout_ext bezout"
-  and g_mc: "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<le> mc"
+  and g_mc: "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<le> mc"
   and A_mc_k: "A $ mc $ from_nat k \<noteq> 0"
   shows "\<exists>m. \<not> is_zero_row_upt_k m (Suc k)
-  (bezout_iterate (interchange_rows A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)
-  (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<le> n))
-  (nrows A - Suc 0) ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) bezout)"
+  (bezout_iterate (interchange_rows A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)
+  (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<le> n))
+  (nrows A - Suc 0) ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) bezout)"
 proof -
-  let ?greatest="(GREATEST' n. \<not> is_zero_row_upt_k n k A)"
+  let ?greatest="(GREATEST n. \<not> is_zero_row_upt_k n k A)"
   let ?interchange="interchange_rows A (?greatest + 1) 
     (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> ?greatest + 1 \<le> n)"
   let ?B="(bezout_iterate ?interchange (nrows A - Suc 0) (?greatest + 1) (from_nat k) bezout)"
@@ -2385,33 +2385,33 @@ lemma echelon_foldl_condition7:
   and e: "echelon_form_upt_k A k"
   and k: "k<ncols A"
   and mb: "\<not> is_zero_row_upt_k mb k A"
-  and not_nrows: "Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A)) \<noteq> nrows A"
-  and g_mc: "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<le> mc"
+  and not_nrows: "Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A)) \<noteq> nrows A"
+  and g_mc: "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<le> mc"
   and A_mc_k: "A $ mc $ from_nat k \<noteq> 0"
-  shows "Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A)) =
-  to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) (bezout_iterate
-  (interchange_rows A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)
-  (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 \<le> n))
-  (nrows A - Suc 0) ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) bezout))"
+  shows "Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n k A)) =
+  to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc k) (bezout_iterate
+  (interchange_rows A ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)
+  (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 \<le> n))
+  (nrows A - Suc 0) ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) bezout))"
 proof -
-  let ?greatest="(GREATEST' n. \<not> is_zero_row_upt_k n k A)"
+  let ?greatest="(GREATEST n. \<not> is_zero_row_upt_k n k A)"
   let ?interchange="interchange_rows A (?greatest + 1) 
     (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> ?greatest + 1 \<le> n)"
   let ?B="(bezout_iterate ?interchange (nrows A - Suc 0) (?greatest + 1) (from_nat k) bezout)"
-  have g_rw: "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 
-    = from_nat (to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1))"
+  have g_rw: "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1 
+    = from_nat (to_nat ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1))"
     unfolding from_nat_to_nat_id ..
   have B_gk:"?B $ (?greatest + 1) $ from_nat k \<noteq> 0"
   proof (rule bezout_iterate_not_zero[OF _ _ _ ib])
-    show "?interchange $ ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) $ from_nat k \<noteq> 0"
+    show "?interchange $ ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) $ from_nat k \<noteq> 0"
       by (metis (mono_tags, lifting) LeastI_ex g_mc A_mc_k interchange_rows_i)      
     show "nrows A - Suc 0 < nrows (?interchange)" unfolding nrows_def by simp
     show "to_nat (?greatest + 1) \<le> nrows A - Suc 0"
       by (metis Suc_pred less_Suc_eq_le nrows_def to_nat_less_card 
         zero_less_card_finite)
   qed
-  have "(GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) ?B) = ?greatest + 1"
-  proof (rule Greatest'_equality)
+  have "(GREATEST n. \<not> is_zero_row_upt_k n (Suc k) ?B) = ?greatest + 1"
+  proof (rule Greatest_equality)
     show "\<not> is_zero_row_upt_k (?greatest + 1) (Suc k) ?B"
       by (metis (no_types, lifting) B_gk from_nat_mono from_nat_to_nat_id 
         is_zero_row_upt_k_def less_irrefl not_less_eq to_nat_less_card)
@@ -2419,20 +2419,20 @@ proof -
     assume y: "\<not> is_zero_row_upt_k y (Suc k) ?B"
     show "y \<le> ?greatest + 1"
     proof (rule ccontr)
-      assume " \<not> y \<le> (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1"
-      hence y_gr: " y > (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1" by simp
-      hence y_gr2: "y > (GREATEST' n. \<not> is_zero_row_upt_k n k A)"
-        by (metis (erased, lifting) Suc_eq_plus1 dual_linorder.leI le_Suc' less_irrefl less_trans 
+      assume " \<not> y \<le> (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1"
+      hence y_gr: " y > (GREATEST n. \<not> is_zero_row_upt_k n k A) + 1" by simp
+      hence y_gr2: "y > (GREATEST n. \<not> is_zero_row_upt_k n k A)"
+        by (metis (erased, lifting) Suc_eq_plus1 leI le_Suc' less_irrefl less_trans 
           not_nrows nrows_def suc_not_zero to_nat_plus_one_less_card') 
       have echelon_interchange: "echelon_form_upt_k ?interchange k"
       proof (subst (1 2) from_nat_to_nat_id
-          [of "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1", symmetric], 
+          [of "(GREATEST n. \<not> is_zero_row_upt_k n k A) + 1", symmetric], 
             rule echelon_form_upt_k_interchange[OF e _ A_mc_k _ k])
         show "is_zero_row_upt_k 
-          (from_nat (to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1))) k A"
+          (from_nat (to_nat ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1))) k A"
           by (metis Suc_eq_plus1 Suc_le' g_rw not_nrows nrows_def 
             row_greater_greatest_is_zero suc_not_zero)
-        show "from_nat (to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1)) \<le> mc"
+        show "from_nat (to_nat ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1)) \<le> mc"
           by (metis g_mc g_rw)
       qed        
       have i: "?interchange $ (?greatest + 1) $ from_nat k \<noteq> 0" 
@@ -2473,7 +2473,7 @@ proof -
             show "nrows A - Suc 0 < nrows ?interchange" unfolding nrows_def by simp
             show "j < from_nat k" using j 
               by (metis (poly_guards_query) from_nat_mono from_nat_to_nat_id k ncols_def)
-            show "to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) \<le> nrows A - Suc 0"
+            show "to_nat ((GREATEST n. \<not> is_zero_row_upt_k n k A) + 1) \<le> nrows A - Suc 0"
               by (metis Suc_pred less_Suc_eq_le nrows_def to_nat_less_card zero_less_card_finite)
             show "k < ncols ?interchange" using k unfolding ncols_def .
           qed
@@ -2499,13 +2499,13 @@ lemma
   (fst (foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc k]), 
   if \<forall>m. is_zero_row_upt_k m (Suc k) 
   (fst (foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc k])) then 0
-  else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) 
+  else to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc k) 
   (fst (foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc k]))) + 1)"
 using k
 proof (induct k)
   let ?interchange="interchange_rows A 0 (LEAST n. A $ n $ 0 \<noteq> 0)"
   have i_rw: "(if \<forall>m. is_zero_row_upt_k m 0 A then 0 
-    else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n 0 A) + 1) = 0"
+    else to_nat (GREATEST n. \<not> is_zero_row_upt_k n 0 A) + 1) = 0"
     unfolding is_zero_row_upt_k_def by auto
   show "echelon_form_upt_k (echelon_form_of_upt_k A 0 bezout) (Suc 0)"
     unfolding echelon_form_of_upt_k_def 
@@ -2515,7 +2515,7 @@ proof (induct k)
   show "foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc 0] =
     (fst (foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc 0]),
     if \<forall>m. is_zero_row_upt_k m (Suc 0) (fst (foldl (echelon_form_of_column_k bezout) 
-    (A, 0) [0..<Suc 0])) then 0 else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc 0) 
+    (A, 0) [0..<Suc 0])) then 0 else to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc 0) 
     (fst (foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc 0]))) + 1)"
     unfolding rw_upt
     unfolding foldl.simps
@@ -2525,7 +2525,7 @@ proof (induct k)
     unfolding from_nat_0 fst_conv snd_conv
     unfolding is_zero_row_upt_k_def
     apply (auto simp add: least_mod_type to_nat_eq_0)
-    apply (metis (mono_tags, lifting) Greatest'I least_mod_type less_le)
+    apply (metis (mono_tags, lifting) GreatestI least_mod_type less_le)
   proof -
     fix m mb assume"A $ m $ 0 \<noteq> 0"
       and all_zero: "\<forall>m. bezout_iterate ?interchange (nrows A - Suc 0) 0 0 bezout $ m $ 0 = 0"
@@ -2542,8 +2542,8 @@ proof (induct k)
     thus "A $ mb $ 0 = 0" using all_zero by auto
   next
     fix m assume Am0: "A $ m $ 0 \<noteq> 0"
-      and all_zero: "\<forall>m>0. A $ m $ 0 = 0" thus "(GREATEST' n. A $ n $ 0 \<noteq> 0) = 0"
-      by (metis (mono_tags, lifting) Greatest'I neq_iff not_less0 to_nat_0 to_nat_mono)
+      and all_zero: "\<forall>m>0. A $ m $ 0 = 0" thus "(GREATEST n. A $ n $ 0 \<noteq> 0) = 0"
+      by (metis (mono_tags, lifting) GreatestI neq_iff not_less0 to_nat_0 to_nat_mono)
   next
     fix m ma mb
     assume "A $ m $ 0 \<noteq> 0" and "bezout_iterate (interchange_rows A 0 (LEAST n. A $ n $ 0 \<noteq> 0)) 
@@ -2581,9 +2581,9 @@ proof (induct k)
       finally show "bezout_iterate (interchange_rows A 0 (LEAST n. A $ n $ 0 \<noteq> 0)) 
         (nrows A - Suc 0) 0 0 bezout $ b $ 0 = 0" .      
     qed
-    show "(GREATEST' n. bezout_iterate (interchange_rows A 0 (LEAST n. A $ n $ 0 \<noteq> 0)) 
+    show "(GREATEST n. bezout_iterate (interchange_rows A 0 (LEAST n. A $ n $ 0 \<noteq> 0)) 
       (nrows A - Suc 0) 0 0 bezout $ n $ 0 \<noteq> 0) = 0" 
-      apply (rule Greatest'_equality, simp add: 1)
+      apply (rule Greatest_equality, simp add: 1)
       using 2 by force
   qed
 next
@@ -2593,16 +2593,16 @@ next
   assume "(k < ncols A \<Longrightarrow> echelon_form_upt_k (echelon_form_of_upt_k A k bezout) (Suc k))" and
     "(k < ncols A \<Longrightarrow> foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc k] =
     (fst ?fold2, if \<forall>m. is_zero_row_upt_k m (Suc k) (fst ?fold2) then 0
-    else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) (fst ?fold2)) + 1))"
+    else to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc k) (fst ?fold2)) + 1))"
     and Suc_k: "Suc k < ncols A"
   hence hyp_foldl: "foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc k] =
     (fst ?fold2, if \<forall>m. is_zero_row_upt_k m (Suc k) (fst ?fold2) then 0
-    else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) (fst ?fold2)) + 1)" 
+    else to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc k) (fst ?fold2)) + 1)" 
     and hyp_echelon: "echelon_form_upt_k (echelon_form_of_upt_k A k bezout) (Suc k)" by auto
   have rw: "[0..<Suc (Suc k)]= [0..<(Suc k)] @ [(Suc k)]" by auto
   have rw2: "?fold2 = (echelon_form_of_upt_k A k bezout, if \<forall>m. is_zero_row_upt_k m (Suc k) 
     (echelon_form_of_upt_k A k bezout) then 0 else
-    to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) (echelon_form_of_upt_k A k bezout)) + 1)" 
+    to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc k) (echelon_form_of_upt_k A k bezout)) + 1)" 
       unfolding echelon_form_of_upt_k_def using hyp_foldl by fast
   show "echelon_form_upt_k (echelon_form_of_upt_k A (Suc k) bezout) (Suc (Suc k))"
     unfolding echelon_form_of_upt_k_def 
@@ -2615,22 +2615,22 @@ next
     if \<forall>m. is_zero_row_upt_k m (Suc (Suc k)) 
     (fst ?fold) then 0
     else to_nat
-    (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k)) 
+    (GREATEST n. \<not> is_zero_row_upt_k n (Suc (Suc k)) 
     (fst ?fold)) + 1)"
   proof (rule prod_eqI, metis fst_conv)
     def A'\<equiv>"(fst ?fold2)"
-    let ?greatest="(GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) A')"
+    let ?greatest="(GREATEST n. \<not> is_zero_row_upt_k n (Suc k) A')"
     have k: "k < ncols A'" using Suc_k unfolding ncols_def by auto
     have k2: "Suc k < ncols A'" using Suc_k unfolding ncols_def by auto
     have fst_snd_foldl: "snd ?fold2 = snd (fst ?fold2,
       if \<forall>m. is_zero_row_upt_k m (Suc k) (fst ?fold2) then 0
-      else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) (fst ?fold2)) + 1)"
+      else to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc k) (fst ?fold2)) + 1)"
       using hyp_foldl by simp
     have ncols_eq: "ncols A = ncols A'" unfolding A'_def ncols_def ..
     have rref_A': "echelon_form_upt_k A' (Suc k)"
       using hyp_echelon unfolding A'_def echelon_form_of_upt_k_def .
     show "snd ?fold = snd (fst ?fold, if \<forall>m. is_zero_row_upt_k m (Suc (Suc k)) (fst ?fold) then 0
-      else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k)) (fst ?fold)) + 1)"
+      else to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc (Suc k)) (fst ?fold)) + 1)"
         using [[unfold_abs_def = false]]
         unfolding fst_conv snd_conv unfolding rw 
         unfolding foldl_append unfolding foldl.simps
@@ -2665,9 +2665,9 @@ next
         assume "\<forall>m>0. A' $ m $ from_nat (Suc k) = 0"
           and "\<forall>m. is_zero_row_upt_k m (Suc k) A'"
           and "\<not> is_zero_row_upt_k ma (Suc (Suc k)) A'" 
-        thus "to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k)) A') = 0" 
-          and "to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k)) A') = 0"
-          by (metis (erased, lifting) Greatest'I_ex dual_order.le_less
+        thus "to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc (Suc k)) A') = 0" 
+          and "to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc (Suc k)) A') = 0"
+          by (metis (erased, lifting) GreatestI_ex le_less
             is_zero_row_upt_k_suc least_mod_type to_nat_0)+
       next
         fix m
@@ -2675,7 +2675,7 @@ next
           and "\<not> is_zero_row_upt_k m (Suc k) A'"
           and "\<forall>m\<ge>?greatest+1. A' $ m $ from_nat (Suc k) = 0"
         thus "?greatest 
-          = (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k)) A')"
+          = (GREATEST n. \<not> is_zero_row_upt_k n (Suc (Suc k)) A')"
           by (metis (mono_tags, lifting) echelon_form_upt_k_condition1 from_nat_0 
             is_zero_row_upt_k_le is_zero_row_upt_k_suc less_nat_zero_code neq_iff rref_A' to_nat_le)
       next
@@ -2686,8 +2686,8 @@ next
           and"Suc (to_nat ?greatest) \<noteq> nrows A'"
           and "?greatest + 1 \<le> ma"
           and "A' $ ma $ from_nat (Suc k) \<noteq> 0"
-        thus "Suc (to_nat ?greatest) = to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k)) A')"
-          by (metis (mono_tags) Suc_eq_plus1 dual_linorder.less_linear 
+        thus "Suc (to_nat ?greatest) = to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc (Suc k)) A')"
+          by (metis (mono_tags) Suc_eq_plus1 less_linear 
             leD least_mod_type nrows_def suc_not_zero)
       next
         fix m ma
@@ -2696,7 +2696,7 @@ next
           and "\<not> is_zero_row_upt_k m (Suc k) A'"
           and "Suc (to_nat ?greatest) = nrows A'"
           and "\<not> is_zero_row_upt_k ma (Suc (Suc k)) A'"
-        thus "nrows A' = Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k)) A'))"
+        thus "nrows A' = Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc (Suc k)) A'))"
           by (metis echelon_foldl_condition5)
       next
         fix ma assume 1: "A' $ ma $ from_nat (Suc k) \<noteq> 0"
@@ -2712,16 +2712,16 @@ next
         assume 1: "\<not> is_zero_row_upt_k ma (Suc k) A'"
           and 2:"\<forall>m\<ge>?greatest + 1. A' $ m $ from_nat (Suc k) = 0"
         show "?greatest 
-          = (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k)) A')"
+          = (GREATEST n. \<not> is_zero_row_upt_k n (Suc (Suc k)) A')"
           by (rule echelon_foldl_condition2[OF 1 2])
       next
         fix m 
         assume 1: "A' $ m $ from_nat (Suc k) \<noteq> 0"
           and 2: "\<forall>m. is_zero_row_upt_k m (Suc k) A'"
-        show "to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k))
+        show "to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc (Suc k))
           (bezout_iterate (interchange_rows A' 0 (LEAST n. A' $ n $ from_nat (Suc k) \<noteq> 0)) 
           (nrows A' - Suc 0) 0 (from_nat (Suc k)) bezout)) = 0" 
-          and "to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k))
+          and "to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc (Suc k))
           (bezout_iterate (interchange_rows A' 0 (LEAST n. A' $ n $ from_nat (Suc k) \<noteq> 0)) 
           (nrows A' - Suc 0) 0 (from_nat (Suc k)) bezout)) = 0" 
           by (rule echelon_foldl_condition3[OF ib 1 2 rref_A'], metis ncols_def Suc_k)+
@@ -2731,7 +2731,7 @@ next
           and "0 < m"
           and "A' $ m $ from_nat (Suc k) \<noteq> 0"
           and "Suc (to_nat ?greatest) = nrows A'"
-        thus "nrows A' = Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k)) A'))" 
+        thus "nrows A' = Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc (Suc k)) A'))" 
           by (metis (mono_tags) Suc_eq_plus1 Suc_le' from_nat_suc 
             from_nat_to_nat_id not_less_eq nrows_def to_nat_less_card to_nat_mono)
       next
@@ -2742,14 +2742,14 @@ next
           and 3: "?greatest+1 \<le> mb"
           and 4: "A' $ mb $ from_nat (Suc k) \<noteq> 0"
         show "Suc (to_nat ?greatest) =
-          to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k)) A')"
+          to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc (Suc k)) A')"
           by (rule echelon_foldl_condition4[OF 1 2 3 4])
       next
         fix m
         assume "?greatest + 1 < m"
           and "A' $ m $ from_nat (Suc k) \<noteq> 0"
           and "\<forall>m>0. A' $ m $ from_nat (Suc k) = 0 "
-        thus "nrows A' = Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k)) A'))"
+        thus "nrows A' = Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc (Suc k)) A'))"
           by (metis le_less_trans least_mod_type)
       next
         fix m
@@ -2764,15 +2764,15 @@ next
         fix mb
         assume "\<not> is_zero_row_upt_k mb (Suc k) A'"
           and "Suc (to_nat ?greatest) = nrows A'"
-        thus " nrows A' = Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k)) A'))"
+        thus " nrows A' = Suc (to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc (Suc k)) A'))"
           by (rule echelon_foldl_condition5)
       next
         fix m
-        assume "(GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) A') + 1 < m"
+        assume "(GREATEST n. \<not> is_zero_row_upt_k n (Suc k) A') + 1 < m"
           and "A' $ m $ from_nat (Suc k) \<noteq> 0"
           and "\<forall>m>0. A' $ m $ from_nat (Suc k) = 0"
         thus "Suc (to_nat ?greatest) =
-          to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k))
+          to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc (Suc k))
           (bezout_iterate (interchange_rows A' (?greatest + 1)
           (LEAST n. A' $ n $ from_nat (Suc k) \<noteq> 0 \<and> ?greatest + 1 \<le> n))
           (nrows A' - Suc 0) (?greatest + 1) (from_nat (Suc k)) bezout))"
@@ -2792,7 +2792,7 @@ next
           and 2: "Suc (to_nat ?greatest) \<noteq> nrows A'"
           and 3: "?greatest + 1 \<le> mc"
           and 4:"A' $ mc $ from_nat (Suc k) \<noteq> 0"
-        show " Suc (to_nat ?greatest) = to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k))
+        show " Suc (to_nat ?greatest) = to_nat (GREATEST n. \<not> is_zero_row_upt_k n (Suc (Suc k))
           (bezout_iterate (interchange_rows A' (?greatest + 1)
           (LEAST n. A' $ n $ from_nat (Suc k) \<noteq> 0 \<and> ?greatest + 1 \<le> n))
           (nrows A' - Suc 0) (?greatest + 1) (from_nat (Suc k)) bezout))"

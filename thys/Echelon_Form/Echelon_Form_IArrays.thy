@@ -218,7 +218,7 @@ lemma matrix_to_iarray_echelon_form_of_column_k:
   = fst (echelon_form_of_column_k_iarrays (matrix_to_iarray A, i, bezout) k)"
 proof (cases "i<nrows A")
   case False
-  have i_eq: "i=nrows A" by (metis False dual_order.le_imp_less_or_eq i)
+  have i_eq: "i=nrows A" by (metis False le_imp_less_or_eq i)
   show "matrix_to_iarray (fst ((echelon_form_of_column_k bezout) (A,i) k)) 
     = fst (echelon_form_of_column_k_iarrays (matrix_to_iarray A, i, bezout) k)"
     unfolding echelon_form_of_column_k_efficient echelon_form_of_column_k_def Let_def
@@ -265,7 +265,7 @@ lemma snd_matrix_to_iarray_echelon_form_of_column_k:
   = fst (snd (echelon_form_of_column_k_iarrays (matrix_to_iarray A, i, bezout) k))"
 proof (cases "i<nrows A")
   case False
-  have i_eq: "i=nrows A" by (metis False dual_order.le_imp_less_or_eq i)
+  have i_eq: "i=nrows A" by (metis False le_imp_less_or_eq i)
   show "snd ((echelon_form_of_column_k bezout) (A,i) k) 
     = fst (snd (echelon_form_of_column_k_iarrays (matrix_to_iarray A, i, bezout) k))"
     unfolding echelon_form_of_column_k_efficient echelon_form_of_column_k_def Let_def

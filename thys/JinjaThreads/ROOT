@@ -1,7 +1,17 @@
 chapter AFP
 
 session JinjaThreads (AFP slow) = "HOL-Word" +
-  options [timeout = 14400]
+  options [timeout = 28800]
+  sessions
+    "Binomial-Heaps"
+    "Finger-Trees"
+    Automatic_Refinement
+    Coinductive
+    Collections
+    FinFun
+    Native_Word
+    Refine_Monadic
+    Trie
   theories [document = false]
     "Basic/Basic_Main"
   theories

@@ -33,9 +33,9 @@ instance Arity :: chfin
 proof
   fix S  :: "nat \<Rightarrow> Arity"
   assume "chain S"
-  have "LeastM Rep_Arity (\<lambda>x. x \<in> range S) \<in> range S"
-    by (rule LeastM_natI) auto
-  then obtain n where n: "S n = LeastM Rep_Arity (\<lambda>x. x \<in> range S)" by auto
+  have "(ARG_MIN Rep_Arity x. x \<in> range S) \<in> range S"
+    by (rule arg_min_natI) auto
+  then obtain n where n: "S n = (ARG_MIN Rep_Arity x. x \<in> range S)" by auto
   have "max_in_chain n S"
   proof(rule max_in_chainI)
     fix j
@@ -43,7 +43,7 @@ proof
     also
     have "Rep_Arity (S n) \<le> Rep_Arity (S j)"
       unfolding n image_def
-      by (metis (lifting, full_types) LeastM_nat_lemma UNIV_I mem_Collect_eq)
+      by (metis (lifting, full_types) arg_min_nat_lemma UNIV_I mem_Collect_eq)
     hence "S j \<sqsubseteq> S n" by transfer
     finally  
     show "S n = S j".

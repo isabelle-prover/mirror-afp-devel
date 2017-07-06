@@ -481,8 +481,8 @@ lemma Non_Strict_stable_matches:
      \<or> \<mu> = {(M1, W3), (M2, W2), (M3, W1)}" (is "?lhs \<longleftrightarrow> ?rhs")
 proof(rule iffI)
   assume ?lhs
-  have "\<mu> \<in> set ` set (sublists (List.product [M1, M2, M3] [W1, W2, W3]))"
-    by (subst sublists_powset; clarsimp; metis M.exhaust W.exhaust)
+  have "\<mu> \<in> set ` set (subseqs (List.product [M1, M2, M3] [W1, W2, W3]))"
+    by (subst subseqs_powset; clarsimp; metis M.exhaust W.exhaust)
   with \<open>?lhs\<close> show ?rhs
     unfolding Non_Strict.stable_def Non_Strict.match_def
     apply simp

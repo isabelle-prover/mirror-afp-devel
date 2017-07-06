@@ -251,8 +251,8 @@ assumes "j < nc"
 shows "polyfun N (\<lambda>x. matricize I (T x) $$ (i,j))"
 proof -
   let ?weave = "\<lambda> x. (weave I
-    (digit_encode (sublist ds I ) i)
-    (digit_encode (sublist ds (-I )) j))"
+    (digit_encode (nths ds I ) i)
+    (digit_encode (nths ds (-I )) j))"
   have 1:"\<And>x. matricize I (T x) $$ (i,j) = Tensor.lookup (T x) (?weave x)" unfolding matricize_def
     by (metis (no_types, lifting) assms(1) assms(3) assms(4) assms(5) assms(6) case_prod_conv
     mat_dim_col_mat(1) mat_dim_row_mat(1) mat_index_mat(1) matricize_def)

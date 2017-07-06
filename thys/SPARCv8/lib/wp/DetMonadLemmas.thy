@@ -75,8 +75,8 @@ lemma unlessE_apply_cong[fundef_cong]:
 subsection "Simplifying Monads"
 
 lemma nested_bind [simp]:
-  "do x <- do y <- f; return (g y) od; h x od =
-   do y <- f; h (g y) od"
+  "do x \<leftarrow> do y \<leftarrow> f; return (g y) od; h x od =
+   do y \<leftarrow> f; h (g y) od"
   apply (clarsimp simp add: bind_def h1_def h2_def)
   apply (rule ext)
   apply (clarsimp simp add: Let_def split_def return_def)

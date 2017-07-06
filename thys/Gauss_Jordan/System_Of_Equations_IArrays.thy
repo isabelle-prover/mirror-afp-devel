@@ -37,7 +37,7 @@ by (metis (full_types) is_zero_iarray_eq_iff vec_eq_iff zero_index)
 
 lemma vec_to_iarray_greatest_not_zero:
 assumes ex_b: "(\<exists>b. A $ b \<noteq> 0)"
-shows "greatest_not_zero (vec_to_iarray A) = to_nat (GREATEST' b. A $ b \<noteq> 0)"
+shows "greatest_not_zero (vec_to_iarray A) = to_nat (GREATEST b. A $ b \<noteq> 0)"
 proof -
 let ?P="(\<lambda>n. (vec_to_iarray A) !! n \<noteq> 0)"
 let ?xs="(rev [0..<IArray.length (vec_to_iarray A)])"
@@ -56,8 +56,8 @@ have ia_less_length': "ia < length ([0..<IArray.length (vec_to_iarray A)])" usin
 have a_less_card: "a < CARD('a)" unfolding a_eq unfolding rev_nth[OF ia_less_length']
   using nth_upt[of 0 "(length [0..<IArray.length (vec_to_iarray A)] - Suc ia)" "(length [0..<IArray.length (vec_to_iarray A)])" ]
   by (metis diff_less length_upt length_vec_to_iarray minus_nat.diff_0 plus_nat.add_0 zero_less_Suc zero_less_card_finite)
-have "(GREATEST' b. A $ b \<noteq> 0) = from_nat a"
-  proof (rule Greatest'_equality)
+have "(GREATEST b. A $ b \<noteq> 0) = from_nat a"
+  proof (rule Greatest_equality)
     have "A $ from_nat a = (vec_to_iarray A) !! a" by (rule vec_to_iarray_nth[symmetric,OF a_less_card])
     also have "... \<noteq> 0"  using P_xs_ia unfolding a_eq[symmetric] .
     finally show "A $ from_nat a \<noteq> 0" .

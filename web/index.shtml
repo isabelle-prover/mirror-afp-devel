@@ -90,6 +90,164 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
   </tr>
       <tr>
       <td class="entry">
+        2017-07-06: <a href="entries/Stone_Kleene_Relation_Algebras.shtml">Stone-Kleene Relation Algebras</a>
+        <br>
+                  Author:
+                        <a href="http://www.cosc.canterbury.ac.nz/walter.guttmann/">Walter Guttmann</a>
+                        </td>
+    </tr>
+      <tr>
+      <td class="entry">
+        2017-06-21: <a href="entries/Propositional_Proof_Systems.shtml">Propositional Proof Systems</a>
+        <br>
+                  Authors:
+                        <a href="http://liftm.de/">Julius Michaelis</a>
+          and     <a href="http://www.in.tum.de/~nipkow">Tobias Nipkow</a>
+              </td>
+    </tr>
+      <tr>
+      <td class="entry">
+        2017-06-13: <a href="entries/PSemigroupsConvolution.shtml">Partial Semigroups and Convolution Algebras</a>
+        <br>
+                  Authors:
+                          Brijesh Dongol,
+                          Victor B. F. Gomes,
+                        Ian J. Hayes
+          and     Georg Struth
+              </td>
+    </tr>
+      <tr>
+      <td class="entry">
+        2017-06-06: <a href="entries/Buffons_Needle.shtml">Buffon's Needle Problem</a>
+        <br>
+                  Author:
+                        <a href="https://www21.in.tum.de/~eberlm">Manuel Eberl</a>
+                        </td>
+    </tr>
+      <tr>
+      <td class="entry">
+        2017-06-01: <a href="entries/Prpu_Maxflow.shtml">Formalizing Push-Relabel Algorithms</a>
+        <br>
+                  Authors:
+                        <a href="https://www21.in.tum.de/~lammich/">Peter Lammich</a>
+          and     S. Reza Sefidgar
+              </td>
+    </tr>
+      <tr>
+      <td class="entry">
+        2017-06-01: <a href="entries/Flow_Networks.shtml">Flow Networks and the Min-Cut-Max-Flow Theorem</a>
+        <br>
+                  Authors:
+                        <a href="https://www21.in.tum.de/~lammich/">Peter Lammich</a>
+          and     S. Reza Sefidgar
+              </td>
+    </tr>
+      <tr>
+      <td class="entry">
+        2017-05-25: <a href="entries/Optics.shtml">Optics</a>
+        <br>
+                  Authors:
+                        Simon Foster
+          and     Frank Zeyda
+              </td>
+    </tr>
+      <tr>
+      <td class="entry">
+        2017-05-24: <a href="entries/Security_Protocol_Refinement.shtml">Developing Security Protocols by Refinement</a>
+        <br>
+                  Authors:
+                        Christoph Sprenger
+          and     Ivano Somaini
+              </td>
+    </tr>
+      <tr>
+      <td class="entry">
+        2017-05-24: <a href="entries/Dict_Construction.shtml">Dictionary Construction</a>
+        <br>
+                  Author:
+                        <a href="https://www21.in.tum.de/~hupel/">Lars Hupel</a>
+                        </td>
+    </tr>
+      <tr>
+      <td class="entry">
+        2017-05-08: <a href="entries/Floyd_Warshall.shtml">The Floyd-Warshall Algorithm for Shortest Paths</a>
+        <br>
+                  Authors:
+                        <a href="http://in.tum.de/~wimmers">Simon Wimmer</a>
+          and     <a href="https://www21.in.tum.de/~lammich/">Peter Lammich</a>
+              </td>
+    </tr>
+      <tr>
+      <td class="entry">
+        2017-05-05: <a href="entries/Probabilistic_While.shtml">Probabilistic while loop</a>
+        <br>
+                  Author:
+                        <a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a>
+                        </td>
+    </tr>
+      <tr>
+      <td class="entry">
+        2017-05-05: <a href="entries/Monomorphic_Monad.shtml">Effect polymorphism in higher-order logic</a>
+        <br>
+                  Author:
+                        <a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a>
+                        </td>
+    </tr>
+      <tr>
+      <td class="entry">
+        2017-05-05: <a href="entries/Monad_Normalisation.shtml">Monad normalisation</a>
+        <br>
+                  Authors:
+                          Joshua Schneider,
+                        <a href="https://www21.in.tum.de/~eberlm">Manuel Eberl</a>
+          and     <a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a>
+              </td>
+    </tr>
+      <tr>
+      <td class="entry">
+        2017-05-05: <a href="entries/Game_Based_Crypto.shtml">Game-based cryptography in HOL</a>
+        <br>
+                  Authors:
+                          <a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a>,
+                        S. Reza Sefidgar
+          and     Bhargav Bhatt
+              </td>
+    </tr>
+      <tr>
+      <td class="entry">
+        2017-05-05: <a href="entries/CryptHOL.shtml">CryptHOL</a>
+        <br>
+                  Author:
+                        <a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a>
+                        </td>
+    </tr>
+      <tr>
+      <td class="entry">
+        2017-05-04: <a href="entries/MonoidalCategory.shtml">Monoidal Categories</a>
+        <br>
+                  Author:
+                        Eugene W. Stark
+                        </td>
+    </tr>
+      <tr>
+      <td class="entry">
+        2017-05-01: <a href="entries/Types_Tableaus_and_Goedels_God.shtml">Types, Tableaus and Gödel’s God in Isabelle/HOL</a>
+        <br>
+                  Authors:
+                        David Fuenmayor
+          and     <a href="http://christoph-benzmueller.de">Christoph Benzmüller</a>
+              </td>
+    </tr>
+      <tr>
+      <td class="entry">
+        2017-04-28: <a href="entries/LocalLexing.shtml">Local Lexing</a>
+        <br>
+                  Author:
+                        Steven Obua
+                        </td>
+    </tr>
+      <tr>
+      <td class="entry">
         2017-04-19: <a href="entries/Constructor_Funs.shtml">Constructor Functions</a>
         <br>
                   Author:
@@ -669,8 +827,8 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
         2016-06-18: <a href="entries/Algebraic_VCs.shtml">Program Construction and Verification Components Based on Kleene Algebra</a>
         <br>
                   Authors:
-                        <a href="http://www.dcs.shef.ac.uk/~victor">Victor B. F. Gomes</a>
-          and     <a href="http://staffwww.dcs.shef.ac.uk/people/G.Struth/">Georg Struth</a>
+                        Victor B. F. Gomes
+          and     Georg Struth
               </td>
     </tr>
       <tr>
@@ -841,10 +999,10 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
         2016-04-12: <a href="entries/KAD.shtml">Kleene Algebras with Domain</a>
         <br>
                   Authors:
-                          <a href="http://www.dcs.shef.ac.uk/~victor">Victor B. F. Gomes</a>,
+                          Victor B. F. Gomes,
                           <a href="http://www.cosc.canterbury.ac.nz/walter.guttmann/">Walter Guttmann</a>,
                           <a href="http://www.hoefner-online.de/">Peter Höfner</a>,
-                        <a href="http://staffwww.dcs.shef.ac.uk/people/G.Struth/">Georg Struth</a>
+                        Georg Struth
           and     Tjark Weber
               </td>
     </tr>
@@ -1187,7 +1345,7 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
         <br>
                   Authors:
                         <a href="http://www.sci.kagoshima-u.ac.jp/~furusawa/">Hitoshi Furusawa</a>
-          and     <a href="http://staffwww.dcs.shef.ac.uk/people/G.Struth/">Georg Struth</a>
+          and     Georg Struth
               </td>
     </tr>
       <tr>
@@ -1240,8 +1398,8 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
         2015-04-15: <a href="entries/Residuated_Lattices.shtml">Residuated Lattices</a>
         <br>
                   Authors:
-                        <a href="http://www.dcs.shef.ac.uk/~victor">Victor B. F. Gomes</a>
-          and     <a href="http://staffwww.dcs.shef.ac.uk/people/G.Struth/">Georg Struth</a>
+                        Victor B. F. Gomes
+          and     Georg Struth
               </td>
     </tr>
       <tr>
@@ -1638,7 +1796,7 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
         <br>
                   Authors:
                         Simon Foster
-          and     <a href="http://staffwww.dcs.shef.ac.uk/people/G.Struth/">Georg Struth</a>
+          and     Georg Struth
               </td>
     </tr>
       <tr>
@@ -1807,7 +1965,7 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
                   Authors:
                           <a href="http://staffwww.dcs.shef.ac.uk/people/A.Armstrong/">Alasdair Armstrong</a>,
                           Simon Foster,
-                        <a href="http://staffwww.dcs.shef.ac.uk/people/G.Struth/">Georg Struth</a>
+                        Georg Struth
           and     Tjark Weber
               </td>
     </tr>
@@ -1817,8 +1975,8 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
         <br>
                   Authors:
                           <a href="http://staffwww.dcs.shef.ac.uk/people/A.Armstrong/">Alasdair Armstrong</a>,
-                        <a href="http://www.dcs.shef.ac.uk/~victor">Victor B. F. Gomes</a>
-          and     <a href="http://staffwww.dcs.shef.ac.uk/people/G.Struth/">Georg Struth</a>
+                        Victor B. F. Gomes
+          and     Georg Struth
               </td>
     </tr>
       <tr>
@@ -1901,7 +2059,7 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
         2013-11-12: <a href="entries/GoedelGod.shtml">Gödel's God in Isabelle/HOL</a>
         <br>
                   Authors:
-                        <a href="http://page.mi.fu-berlin.de/cbenzmueller/">Christoph Benzmüller</a>
+                        <a href="http://christoph-benzmueller.de">Christoph Benzmüller</a>
           and     <a href="http://www.logic.at/staff/bruno/">Bruno Woltzenlogel Paleo</a>
               </td>
     </tr>
@@ -2037,7 +2195,7 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
         <br>
                   Authors:
                           <a href="http://staffwww.dcs.shef.ac.uk/people/A.Armstrong/">Alasdair Armstrong</a>,
-                        <a href="http://staffwww.dcs.shef.ac.uk/people/G.Struth/">Georg Struth</a>
+                        Georg Struth
           and     Tjark Weber
               </td>
     </tr>

@@ -2,6 +2,9 @@ chapter AFP
 
 session "Coinductive_Languages" (AFP) = HOL +
   options [timeout = 300]
+  sessions
+    "HOL-Library"
+    "Regular-Sets"
   theories [document = false]
     "../Regular-Sets/Regular_Set"
   theories

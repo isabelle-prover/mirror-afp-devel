@@ -34,15 +34,14 @@ lift_definition one_regular :: "'a regular" is 1
 
 instance
   apply intro_classes
-   apply (metis (mono_tags, lifting) times_regular.rep_eq Rep_regular_inject comp_associative)
-   apply (metis (mono_tags, lifting) times_regular.rep_eq Rep_regular_inject mult_right_dist_sup sup_regular.rep_eq)
-   apply (metis (mono_tags, lifting) times_regular.rep_eq Rep_regular_inject bot_regular.rep_eq semiring.mult_zero_left)
-   apply (simp add: one_regular.rep_eq times_regular.rep_eq Rep_regular_inject[THEN sym])
-   using Rep_regular_inject conv_regular.rep_eq apply force
-   apply (metis (mono_tags, lifting) Rep_regular_inject conv_dist_sup conv_regular.rep_eq sup_regular.rep_eq)
-   apply (metis (mono_tags, lifting) conv_regular.rep_eq times_regular.rep_eq Rep_regular_inject conv_dist_comp)
-   apply (auto simp add: conv_regular.rep_eq dedekind_1 inf_regular.rep_eq less_eq_regular.rep_eq times_regular.rep_eq)
-  done
+  apply (metis (mono_tags, lifting) times_regular.rep_eq Rep_regular_inject comp_associative)
+  apply (metis (mono_tags, lifting) times_regular.rep_eq Rep_regular_inject mult_right_dist_sup sup_regular.rep_eq)
+  apply (metis (mono_tags, lifting) times_regular.rep_eq Rep_regular_inject bot_regular.rep_eq semiring.mult_zero_left)
+  apply (simp add: one_regular.rep_eq times_regular.rep_eq Rep_regular_inject[THEN sym])
+  using Rep_regular_inject conv_regular.rep_eq apply force
+  apply (metis (mono_tags, lifting) Rep_regular_inject conv_dist_sup conv_regular.rep_eq sup_regular.rep_eq)
+  apply (metis (mono_tags, lifting) conv_regular.rep_eq times_regular.rep_eq Rep_regular_inject conv_dist_comp)
+  by (auto simp add: conv_regular.rep_eq dedekind_1 inf_regular.rep_eq less_eq_regular.rep_eq times_regular.rep_eq)
 
 end
 
@@ -83,21 +82,20 @@ lift_definition less_coreflexive :: "'a coreflexive \<Rightarrow> 'a coreflexive
 
 instance
   apply intro_classes
-   apply (simp_all add: less_coreflexive.rep_eq less_eq_coreflexive.rep_eq less_le_not_le)[2]
-   apply (meson less_eq_coreflexive.rep_eq order_trans)
-   apply (simp_all add: Rep_coreflexive_inject bot_coreflexive.rep_eq 
-      less_eq_coreflexive.rep_eq sup_coreflexive.rep_eq)[5]
-   apply (simp add: semiring.distrib_left less_eq_coreflexive.rep_eq sup_coreflexive.rep_eq times_coreflexive.rep_eq)
-   apply (metis (mono_tags, lifting) sup_coreflexive.rep_eq times_coreflexive.rep_eq Rep_coreflexive_inject mult_right_dist_sup)
-   apply (simp add: times_coreflexive.rep_eq bot_coreflexive.rep_eq Rep_coreflexive_inject[THEN sym])
-   apply (simp add: one_coreflexive.rep_eq times_coreflexive.rep_eq Rep_coreflexive_inject[THEN sym])
-   apply (simp add: one_coreflexive.rep_eq less_eq_coreflexive.rep_eq times_coreflexive.rep_eq)
-   apply (simp only: sup_coreflexive.rep_eq top_coreflexive.rep_eq Rep_coreflexive_inject[THEN sym], metis Abs_coreflexive_cases Abs_coreflexive_inverse mem_Collect_eq sup.absorb2)
-   apply (simp add: less_eq_coreflexive.rep_eq mult.assoc times_coreflexive.rep_eq)
-   apply (metis (mono_tags, lifting) times_coreflexive.rep_eq Rep_coreflexive_inject mult.assoc)
-   using Rep_coreflexive_inject one_coreflexive.rep_eq times_coreflexive.rep_eq apply fastforce
-   apply (metis (mono_tags, lifting) sup_coreflexive.rep_eq times_coreflexive.rep_eq Rep_coreflexive_inject mult_left_dist_sup)
-   by (simp add: times_coreflexive.rep_eq bot_coreflexive.rep_eq Rep_coreflexive_inject[THEN sym])
+  apply (simp_all add: less_coreflexive.rep_eq less_eq_coreflexive.rep_eq less_le_not_le)[2]
+  apply (meson less_eq_coreflexive.rep_eq order_trans)
+  apply (simp_all add: Rep_coreflexive_inject bot_coreflexive.rep_eq less_eq_coreflexive.rep_eq sup_coreflexive.rep_eq)[5]
+  apply (simp add: semiring.distrib_left less_eq_coreflexive.rep_eq sup_coreflexive.rep_eq times_coreflexive.rep_eq)
+  apply (metis (mono_tags, lifting) sup_coreflexive.rep_eq times_coreflexive.rep_eq Rep_coreflexive_inject mult_right_dist_sup)
+  apply (simp add: times_coreflexive.rep_eq bot_coreflexive.rep_eq Rep_coreflexive_inject[THEN sym])
+  apply (simp add: one_coreflexive.rep_eq times_coreflexive.rep_eq Rep_coreflexive_inject[THEN sym])
+  apply (simp add: one_coreflexive.rep_eq less_eq_coreflexive.rep_eq times_coreflexive.rep_eq)
+  apply (simp only: sup_coreflexive.rep_eq top_coreflexive.rep_eq Rep_coreflexive_inject[THEN sym], metis Abs_coreflexive_cases Abs_coreflexive_inverse mem_Collect_eq sup.absorb2)
+  apply (simp add: less_eq_coreflexive.rep_eq mult.assoc times_coreflexive.rep_eq)
+  apply (metis (mono_tags, lifting) times_coreflexive.rep_eq Rep_coreflexive_inject mult.assoc)
+  using Rep_coreflexive_inject one_coreflexive.rep_eq times_coreflexive.rep_eq apply fastforce
+  apply (metis (mono_tags, lifting) sup_coreflexive.rep_eq times_coreflexive.rep_eq Rep_coreflexive_inject mult_left_dist_sup)
+  by (simp add: times_coreflexive.rep_eq bot_coreflexive.rep_eq Rep_coreflexive_inject[THEN sym])
 
 end
 
@@ -122,8 +120,8 @@ lift_definition conv_coreflexive :: "'a coreflexive \<Rightarrow> 'a coreflexive
 
 instance
   apply intro_classes
-  apply (auto simp: top_greatest inf_coreflexive.rep_eq less_eq_coreflexive.rep_eq)[3]
-  apply (simp add: top_greatest)
+  apply (auto simp: inf_coreflexive.rep_eq less_eq_coreflexive.rep_eq)[3]
+  apply simp
   apply (metis (mono_tags, lifting) Rep_coreflexive_inject inf_coreflexive.rep_eq sup_coreflexive.rep_eq sup_inf_distrib1)
   apply (metis (mono_tags, lifting) Rep_coreflexive_inject bot_coreflexive.rep_eq top_greatest coreflexive_pseudo_complement inf_coreflexive.rep_eq less_eq_coreflexive.rep_eq one_coreflexive.rep_eq one_coreflexive_def top_coreflexive_def uminus_coreflexive.rep_eq)
   apply (metis (mono_tags, lifting) Rep_coreflexive_inject maddux_3_21_pp one_coreflexive.rep_eq one_coreflexive_def pp_dist_inf pp_one regular_closed_p sup_coreflexive.rep_eq sup_right_top top_coreflexive_def uminus_coreflexive.rep_eq)
@@ -174,12 +172,11 @@ lift_definition less_vector :: "'a vector \<Rightarrow> 'a vector \<Rightarrow> 
 
 instance
   apply intro_classes
-   apply (auto simp: Rep_vector_inject top_vector.rep_eq bot_vector.rep_eq less_le_not_le
-    inf_vector.rep_eq sup_vector.rep_eq less_eq_vector.rep_eq less_vector.rep_eq)[12]
-   apply (metis (mono_tags, lifting) Rep_vector_inject inf_vector.rep_eq sup_inf_distrib1 sup_vector.rep_eq)
-   apply (metis (mono_tags, lifting) Rep_vector_inject bot_vector_def bot_vector.rep_eq pseudo_complement inf_vector.rep_eq less_eq_vector.rep_eq uminus_vector.rep_eq)
-   apply (metis (mono_tags, lifting) sup_vector.rep_eq uminus_vector.rep_eq Rep_vector_inverse stone top_vector.abs_eq)
-  done
+  apply (auto simp: Rep_vector_inject top_vector.rep_eq bot_vector.rep_eq less_le_not_le inf_vector.rep_eq sup_vector.rep_eq less_eq_vector.rep_eq less_vector.rep_eq)[12]
+  apply (metis (mono_tags, lifting) Rep_vector_inject inf_vector.rep_eq sup_inf_distrib1 sup_vector.rep_eq)
+  apply (metis (mono_tags, lifting) Rep_vector_inject bot_vector_def bot_vector.rep_eq pseudo_complement inf_vector.rep_eq less_eq_vector.rep_eq uminus_vector.rep_eq)
+  by (metis (mono_tags, lifting) sup_vector.rep_eq uminus_vector.rep_eq Rep_vector_inverse stone top_vector.abs_eq)
+
 end
 
 text {*
@@ -219,13 +216,11 @@ lift_definition less_covector :: "'a covector \<Rightarrow> 'a covector \<Righta
 
 instance
   apply intro_classes
-   apply (auto simp: Rep_covector_inject less_eq_covector.rep_eq inf_covector.rep_eq 
-     bot_covector.rep_eq top_covector.rep_eq sup_covector.rep_eq less_le_not_le 
-     less_covector.rep_eq)[12]
-   apply (metis (mono_tags, lifting) Rep_covector_inject inf_covector.rep_eq sup_inf_distrib1 sup_covector.rep_eq)
-   apply (metis (mono_tags, lifting) Rep_covector_inject bot_covector_def bot_covector.rep_eq pseudo_complement inf_covector.rep_eq less_eq_covector.rep_eq uminus_covector.rep_eq)
-   apply (metis (mono_tags, lifting) sup_covector.rep_eq uminus_covector.rep_eq Rep_covector_inverse stone top_covector.abs_eq)
-  done
+  apply (auto simp: Rep_covector_inject less_eq_covector.rep_eq inf_covector.rep_eq bot_covector.rep_eq top_covector.rep_eq sup_covector.rep_eq less_le_not_le less_covector.rep_eq)[12]
+  apply (metis (mono_tags, lifting) Rep_covector_inject inf_covector.rep_eq sup_inf_distrib1 sup_covector.rep_eq)
+  apply (metis (mono_tags, lifting) Rep_covector_inject bot_covector_def bot_covector.rep_eq pseudo_complement inf_covector.rep_eq less_eq_covector.rep_eq uminus_covector.rep_eq)
+  by (metis (mono_tags, lifting) sup_covector.rep_eq uminus_covector.rep_eq Rep_covector_inverse stone top_covector.abs_eq)
+
 end
 
 end

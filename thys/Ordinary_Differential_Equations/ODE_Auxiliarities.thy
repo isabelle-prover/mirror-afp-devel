@@ -2061,7 +2061,7 @@ proof -
     by (simp add: algebra_simps)
   show ?thesis
     by (subst continuous_on_cong[OF refl *])
-      (auto intro!: continuous_intros indefinite_integral_continuous assms)
+      (auto intro!: continuous_intros indefinite_integral_continuous_1 assms)
 qed
 
 theorem integral2_has_vector_derivative:
@@ -2076,7 +2076,7 @@ proof -
   show ?thesis
     using \<open>x \<in> _\<close>
     by (subst has_vector_derivative_cong[OF _ * refl refl refl])
-      (auto intro!: derivative_eq_intros indefinite_integral_continuous assms
+      (auto intro!: derivative_eq_intros indefinite_integral_continuous_1 assms
         integral_has_vector_derivative)
 qed
 
@@ -2179,7 +2179,7 @@ lemma
     "continuous_on (closed_segment b a) (\<lambda>x. ivl_integral a x f)"
   using assms
   by (auto simp: ivl_integral_def closed_segment_real split: if_split_asm
-    intro!: indefinite_integral_continuous indefinite_integral2_continuous
+    intro!: indefinite_integral_continuous_1 indefinite_integral2_continuous
       continuous_intros intro: continuous_on_eq)
 
 lemma

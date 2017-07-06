@@ -217,7 +217,7 @@ lemma continuation_lemma:
   and     inf: "infinite B"
   shows "\<exists>x \<in> B. \<exists>y \<in> B. x \<noteq> y \<and> x \<approx>A y"
 proof -
-  def eqfun \<equiv> "\<lambda>A x::('a::finite list). (\<approx>A) `` {x}"
+  define eqfun where "eqfun = (\<lambda>A x::('a::finite list). (\<approx>A) `` {x})"
   have "finite (UNIV // \<approx>A)" using reg by (simp add: Myhill_Nerode)
   moreover
   have "(eqfun A) ` B \<subseteq> UNIV // (\<approx>A)"
@@ -253,10 +253,9 @@ where
 lemma an_bn_not_regular:
   shows "\<not> regular (\<Union>n. {CHR ''a'' ^^^ n @ CHR ''b'' ^^^ n})"
 proof
-  def A\<equiv>"\<Union>n. {CHR ''a'' ^^^ n @ CHR ''b'' ^^^ n}"
-  def B\<equiv>"\<Union>n. {CHR ''a'' ^^^ n}"
+  define A where "A = (\<Union>n. {CHR ''a'' ^^^ n @ CHR ''b'' ^^^ n})"
   assume as: "regular A"
-  def B\<equiv>"\<Union>n. {CHR ''a'' ^^^ n}"
+  define B where "B = (\<Union>n. {CHR ''a'' ^^^ n})"
 
   have sameness: "\<And>i j. CHR ''a'' ^^^ i @ CHR ''b'' ^^^ j \<in> A \<longleftrightarrow> i = j"
     unfolding A_def 

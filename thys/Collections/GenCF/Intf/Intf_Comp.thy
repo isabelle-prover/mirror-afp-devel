@@ -190,8 +190,8 @@ lemma univ_linorder[intro?]: "linorder univ_cmp"
     preorder_on_def
   apply (auto simp add: antisym_def) []
   apply (unfold total_on_def, fast) []
+  apply (unfold trans_def, fast) []
   apply (auto simp add: antisym_def) []
-  apply (unfold trans_def, fast)
   done
 
 text {* Extend any linear order to a universal order *}
