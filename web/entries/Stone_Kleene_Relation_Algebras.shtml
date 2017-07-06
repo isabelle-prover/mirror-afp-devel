@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Stone Relation Algebras - Archive of Formal Proofs
+<title>Stone-Kleene Relation Algebras - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,7 +61,7 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">S</font>tone
+  <h1>          <font class="first">S</font>tone-Kleene
   
           <font class="first">R</font>elation
   
@@ -74,7 +74,7 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Stone Relation Algebras</td>
+  <td class="data" width="80%">Stone-Kleene Relation Algebras</td>
 </tr>
 
 <tr>
@@ -90,32 +90,34 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2017-02-07</td>
+  <td class="data">2017-07-06</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-We develop Stone relation algebras, which generalise relation algebras
-by replacing the underlying Boolean algebra structure with a Stone
-algebra. We show that finite matrices over extended real numbers form
-an instance. As a consequence, relation-algebraic concepts and methods
-can be used for reasoning about weighted graphs. We also develop a
-fixpoint calculus and apply it to compare different definitions of
-reflexive-transitive closures in semirings.</td>
+We develop Stone-Kleene relation algebras, which expand Stone relation
+algebras with a Kleene star operation to describe reachability in
+weighted graphs. Many properties of the Kleene star arise as a special
+case of a more general theory of iteration based on Conway semirings
+extended by simulation axioms. This includes several theorems
+representing complex program transformations. We formally prove the
+correctness of Conway's automata-based construction of the Kleene
+star of a matrix. We prove numerous results useful for reasoning about
+weighted graphs.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Stone_Relation_Algebras-AFP,
+        <pre>@article{Stone_Kleene_Relation_Algebras-AFP,
   author  = {Walter Guttmann},
-  title   = {Stone Relation Algebras},
+  title   = {Stone-Kleene Relation Algebras},
   journal = {Archive of Formal Proofs},
-  month   = feb,
+  month   = jul,
   year    = 2017,
-  note    = {\url{http://isa-afp.org/entries/Stone_Relation_Algebras.shtml},
+  note    = {\url{http://isa-afp.org/entries/Stone_Kleene_Relation_Algebras.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -127,11 +129,9 @@ reflexive-transitive closures in semirings.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Stone_Algebras.shtml">Stone_Algebras</a>      </td></tr>
+          <td class="data"><a href="Stone_Relation_Algebras.shtml">Stone_Relation_Algebras</a>      </td></tr>
           
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Stone_Kleene_Relation_Algebras.shtml">Stone_Kleene_Relation_Algebras</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -143,17 +143,17 @@ reflexive-transitive closures in semirings.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Stone_Relation_Algebras/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Stone_Relation_Algebras/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Stone_Kleene_Relation_Algebras/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Stone_Kleene_Relation_Algebras/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Stone_Relation_Algebras/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Stone_Kleene_Relation_Algebras/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Stone_Relation_Algebras-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Stone_Kleene_Relation_Algebras-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 

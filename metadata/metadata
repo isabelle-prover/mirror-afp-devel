@@ -5750,6 +5750,23 @@ abstract =
   fixpoint calculus and apply it to compare different definitions of
   reflexive-transitive closures in semirings.
 
+[Stone_Kleene_Relation_Algebras]
+title = Stone-Kleene Relation Algebras
+author = Walter Guttmann <http://www.cosc.canterbury.ac.nz/walter.guttmann/>
+topic = Mathematics/Algebra
+date = 2017-07-06
+notify = walter.guttmann@canterbury.ac.nz
+abstract = 
+  We develop Stone-Kleene relation algebras, which expand Stone relation
+  algebras with a Kleene star operation to describe reachability in
+  weighted graphs. Many properties of the Kleene star arise as a special
+  case of a more general theory of iteration based on Conway semirings
+  extended by simulation axioms. This includes several theorems
+  representing complex program transformations. We formally prove the
+  correctness of Conway's automata-based construction of the Kleene
+  star of a matrix. We prove numerous results useful for reasoning about
+  weighted graphs.
+
 [Abstract_Soundness]
 title = Abstract Soundness
 author = Jasmin Christian Blanchette <mailto:jasmin.blanchette@gmail.com>, Andrei Popescu <mailto:uuomul@yahoo.com>, Dmitriy Traytel <mailto:traytel@inf.ethz.ch>
