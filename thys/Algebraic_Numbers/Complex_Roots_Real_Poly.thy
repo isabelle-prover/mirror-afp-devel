@@ -21,6 +21,8 @@ imports
   "../Polynomial_Interpolation/Ring_Hom_Poly"
 begin
 
+interpretation of_real_poly_hom: map_poly_idom_hom complex_of_real..
+
 lemma real_poly_real_coeff: assumes "set (coeffs p) \<subseteq> \<real>"
   shows "coeff p x \<in> \<real>"
 proof -
@@ -63,20 +65,18 @@ begin
 lemma map_poly_Re_poly: fixes x :: real 
   shows "poly (map_poly Re p) x = poly p (of_real x)"
 proof -
-  interpret cr: field_hom' complex_of_real by (unfold_locales, auto)
   have id: "map_poly (of_real o Re) p = p"
     by (rule map_poly_idI, insert coeffs, auto)
   show ?thesis unfolding arg_cong[OF id, of poly, symmetric]
     by (subst map_poly_map_poly[symmetric], auto)
 qed
 
-lemma map_poly_Re_coeffs:  
+lemma map_poly_Re_coeffs:
   "coeffs (map_poly Re p) = map Re (coeffs p)"
 proof (rule coeffs_map_poly)
-  fix x
-  assume "x \<in> range (coeff p)"
-  hence x: "x \<in> \<real>" using coeffs by (auto simp: range_coeff)
-  show "(Re x = 0) = (x = 0)"
+  have "lead_coeff p \<in> range (coeff p)" by auto
+  hence x: "lead_coeff p \<in> \<real>" using coeffs by (auto simp: range_coeff)
+  show "(Re (lead_coeff p) = 0) = (p = 0)"
     using of_real_Re[OF x] by auto
 qed
 
@@ -301,10 +301,9 @@ lemma map_poly_Re_mult: assumes p: "set (coeffs p) \<subseteq> \<real>"
 proof -
   let ?r = "map_poly Re"
   let ?c = "map_poly complex_of_real"
-  interpret c: field_hom' complex_of_real by (unfold_locales, auto)
   have "?r (p * q) = ?r (?c (?r p) * ?c (?r q))" 
     unfolding map_poly_of_real_Re[OF p] map_poly_of_real_Re[OF q] by simp
-  also have "?c (?r p) * ?c (?r q) = ?c (?r p * ?r q)" by simp
+  also have "?c (?r p) * ?c (?r q) = ?c (?r p * ?r q)" by (simp add: hom_distribs)
   also have "?r \<dots> = ?r p * ?r q" unfolding map_poly_Re_of_real ..
   finally show ?thesis .
 qed
@@ -388,7 +387,7 @@ proof -
   let ?cp = "map_poly complex_of_real"
   let ?rp = "map_poly Re"
   let ?p = "?cp p"
-  have "set (coeffs ?p) \<subseteq> \<real>" unfolding of_real_hom.coeffs_map_poly by auto
+  have "set (coeffs ?p) \<subseteq> \<real>" by auto
   from real_degree_2_factorization_exists_complex[OF this]
   obtain qs where p: "?p = prod_list qs" and 
     qs: "\<And> q. q \<in> set qs \<Longrightarrow> set (coeffs q) \<subseteq> \<real> \<and> degree q \<le> 2" by auto
@@ -397,7 +396,7 @@ proof -
   from qs have "\<exists> rs. prod_list qs = ?cp (prod_list rs) \<and> (\<forall> r \<in> set rs. degree r \<le> 2)"
   proof (induct qs)
     case Nil
-    show ?case by (auto intro!: exI[of _ Nil] simp: one_poly_def)
+    show ?case by (auto intro!: exI[of _ Nil])
   next
     case (Cons q qs)
     then obtain rs where qs: "prod_list qs = ?cp (prod_list rs)"
@@ -408,7 +407,7 @@ proof -
       by (subst map_poly_map_poly, force, rule sym, rule map_poly_idI, insert q, auto)
     have dr: "degree r \<le> 2" using dq unfolding q by (simp add: degree_map_poly)
     show ?case
-      by (rule exI[of _ "r # rs"], unfold prod_list.Cons qs q, insert dr rs, auto)
+      by (rule exI[of _ "r # rs"], unfold prod_list.Cons qs q, insert dr rs, auto simp: hom_distribs)
   qed
   then obtain rs where id: "prod_list qs = ?cp (prod_list rs)" and deg: "\<forall> r \<in> set rs. degree r \<le> 2" by auto
   show ?thesis unfolding p id

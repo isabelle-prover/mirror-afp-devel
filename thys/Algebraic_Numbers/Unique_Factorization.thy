@@ -113,14 +113,14 @@ context comm_monoid_mult begin
 
 end
 
-context comm_semiring_isom begin
+context comm_monoid_mult_isom begin
   lemma coprime_hom[simp]: "coprime (hom x) y' \<longleftrightarrow> coprime x (Hilbert_Choice.inv hom y')"
   proof-
     show ?thesis by (unfold coprime_def, fold ball_UNIV, subst surj[symmetric], simp)
   qed
   lemma coprime_inv_hom[simp]: "coprime (Hilbert_Choice.inv hom x') y \<longleftrightarrow> coprime x' (hom y)"
   proof-
-    interpret inv: comm_semiring_isom "Hilbert_Choice.inv hom"..
+    interpret inv: comm_monoid_mult_isom "Hilbert_Choice.inv hom"..
     show ?thesis by simp
   qed
 end
@@ -572,11 +572,10 @@ begin
     assumes F: "mset_factors F p"
     shows "mset_factors (image_mset hom F) (hom p)"
   proof (unfold mset_factors_def, intro conjI allI impI)
-    note * = F[unfolded mset_factors_def]
-    then show "hom p = prod_mset (image_mset hom F)" "image_mset hom F \<noteq> {#}" by auto 
+    from F show "hom p = prod_mset (image_mset hom F)" "image_mset hom F \<noteq> {#}" by (auto simp: hom_distribs)
     fix f' assume "f' \<in># image_mset hom F"
     then obtain f where f: "f \<in># F" and f'f: "f' = hom f" by auto
-    with * irreducible_imp_irreducible_hom show "irreducible f'" unfolding f'f by auto
+    with F irreducible_imp_irreducible_hom show "irreducible f'" unfolding f'f by auto
   qed
 end
 
@@ -591,7 +590,7 @@ begin
     from irr show "a \<noteq> 0" by auto
     from irr show "\<not> a dvd 1" by (auto dest: irreducible_not_unit)
     fix b c assume "a = b * c"
-    then have "hom a = hom b * hom c" by simp
+    then have "hom a = hom b * hom c" by (simp add: hom_distribs)
     with irr have "hom b dvd 1 \<or> hom c dvd 1" by (auto dest: irreducibleD)
     then show "b dvd 1 \<or> c dvd 1" by simp
   qed
@@ -609,7 +608,7 @@ lemma factor_preserving_hom_comp:
 proof-
   interpret f: factor_preserving_hom f by (rule f)
   interpret g: factor_preserving_hom g by (rule g)
-  show ?thesis by (unfold_locales, auto)
+  show ?thesis by (unfold_locales, auto simp: hom_distribs)
 qed
 
 context comm_semiring_isom begin
@@ -1231,8 +1230,8 @@ begin
       hence d1: "p dvd q' * q" by (rule dvd_mult_right)
       have d2: "p dvd q' * p" by auto
       from dvd_factor_mult_gcd[OF d1 d2 q p] have 1: "p dvd q' * ?gcd" .
-      from q p have 2: "?gcd dvd q" by simp
-      from q p have 3: "?gcd dvd p" by simp
+      from q p have 2: "?gcd dvd q" by auto
+      from q p have 3: "?gcd dvd p" by auto
       from cop[unfolded coprime_def, rule_format, OF 3 2] have "?gcd dvd 1" .
       from 1 dvd_mult_unit_iff[OF this] have "p dvd q'" by auto
     } note main = this

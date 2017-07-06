@@ -80,13 +80,13 @@ proof -
             ?ri (coeff (pCons b c2) (degree q)) / ?ri (coeff q (degree q))" using coeffs by auto
   have id2:"?ident1" unfolding id1
     by (simp, fold of_int_hom.coeff_map_poly_hom of_int_hom.map_poly_pCons_hom, simp)
-  hence id3:"?ident2" using id2 by auto
+  hence id3:"?ident2" using id2 by (auto simp: hom_distribs)
 
   have c1:"((rp (pCons (coeff (pCons b c2) (degree q) div coeff q (degree q)) c1)
             ,rp (pCons b c2 - smult (coeff (pCons b c2) (degree q) div coeff q (degree q)) q))
            = div_rat_poly_step (rp q) (?ri b) (rp c1,rp c2)) \<longleftrightarrow> (?ident1 \<and> ?ident2)"
     unfolding div_rat_poly_step_def simps
-    by simp
+    by (simp add: hom_distribs)
   have "((rp a1, rp a2) = (div_rat_poly_step (rp q) \<circ> rat_of_int) b (rp c1, rp c2)) \<longleftrightarrow>
              (rp a1 = ?withSls1 \<and> rp a2 = ?withSls2)"
     unfolding div_rat_poly_step_def simps by simp
@@ -216,11 +216,11 @@ proof -
   moreover obtain p21' p21q where "p21 = pCons p21' p21q"
     by (rule pCons_cases)
   ultimately obtain p2 where "b2 = rp p2 "
-    by auto
+    by (auto simp: hom_distribs)
   moreover obtain a1' a1q where "a1 = pCons a1' a1q"
     by (rule pCons_cases)
   with a1 obtain p1 where "b1 = rp p1"
-    by auto
+    by (auto simp: hom_distribs)
   ultimately have "pair = (rp p1, rp p2)" using pair by simp
   then show ?thesis by auto
 qed
@@ -262,7 +262,7 @@ proof -
       div_mod_fold_coeffs [of ?p ?q]
     unfolding div_rat_poly_step_def by auto
   hence "Some (r,m) = foldr (?div_int_step) (coeffs p) (Some (0,0))"
-    using equal_foldr by (simp add: of_int_hom.coeffs_map_poly)
+    using equal_foldr by simp
   thus ?thesis using q0 unfolding div_mod_int_poly_def by (simp add: fold_coeffs_def)
 qed
 
@@ -281,9 +281,9 @@ proof -
   have "?p div ?q = ?r \<and> ?p mod ?q = 0" by simp
   with div_mult_mod_eq[of ?p ?q]
   have "?p = ?r * ?q" by auto
-  also have "\<dots> = rp (r * q)" by simp
+  also have "\<dots> = rp (r * q)" by (simp add: hom_distribs)
   finally have "?p = rp (r * q)".
-  thus "r * q = p" by (simp del: hom_distribs)
+  thus "r * q = p" by simp
   show "q \<noteq> 0" using assms unfolding div_int_poly_def div_mod_int_poly_def
     by (auto split: option.splits prod.splits if_splits)
 qed 
@@ -297,7 +297,7 @@ proof -
   let ?p = "rp p"
   let ?q = "rp q"
   let ?r = "rp r"
-  have "?p = ?r * ?q" using assms(1) by auto
+  have "?p = ?r * ?q" using assms(1) by (auto simp: hom_distribs)
   hence "?p div ?q = ?r" and "?p mod ?q = 0"
     using q0 by simp_all
   hence "(rp p div rp q, rp p mod rp q) = (rp r, 0)" by (auto split: prod.splits)

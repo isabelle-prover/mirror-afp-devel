@@ -135,8 +135,7 @@ qed
 
 subsection \<open>Polynomial Evaluation of Integer and Rational Polynomials in Fields.\<close>
 
-abbreviation ipoly :: "int poly \<Rightarrow> 'a :: field_char_0 \<Rightarrow> 'a"
-where "ipoly f x \<equiv> poly (of_int_poly f) x"
+abbreviation ipoly where "ipoly f x \<equiv> poly (of_int_poly f) x"
 
 lemma poly_map_poly_code[code_unfold]: "poly (map_poly h p) x = fold_coeffs (\<lambda> a b. h a + x * b) p 0"
   by (induct p, auto)
@@ -155,7 +154,8 @@ proof-
   show ?thesis by (subst id, subst map_poly_map_poly[symmetric], auto)
 qed
 
-lemma ipoly_of_real[simp]: "ipoly p (of_real x) = of_real (ipoly p x)"
+lemma ipoly_of_real[simp]:
+  "ipoly p (of_real x :: 'a :: {field,real_algebra_1}) = of_real (ipoly p x)"
 proof -
   have id: "of_int = of_real o of_int" unfolding comp_def by auto
   show ?thesis by (subst id, subst map_poly_map_poly[symmetric], auto)
@@ -177,8 +177,7 @@ text \<open>A number @{term "x :: 'a :: field"} is algebraic iff it is the root 
   of type @{type int} and then use @{const ipoly} for evaluating the polynomial at
   a real or complex point.\<close>  
   
-lemma algebraic_altdef_ipoly: 
-  fixes x :: "'a :: field_char_0"
+lemma algebraic_altdef_ipoly:
   shows "algebraic x \<longleftrightarrow> (\<exists>p. ipoly p x = 0 \<and> p \<noteq> 0)"
 unfolding algebraic_def
 proof (safe, goal_cases)
@@ -255,7 +254,7 @@ proof
   from irreducibleD[OF irr this] nu have "q dvd 1" by auto
   from this obtain r where "q = [:r:]" "r dvd 1" by (auto simp add: poly_dvd_1 dest: degree0_coeffs)
   with pq have "p = [:0,r:]" by auto
-  with ap have "x = 0" by auto
+  with ap have "x = 0" by (auto simp: of_int_hom.map_poly_pCons_hom)
   with x0 show False by auto
 qed
 
@@ -307,8 +306,8 @@ lemma lead_coeff_abs_int_poly[simp]:
   by auto
 
 lemma ipoly_abs_int_poly_eq_zero_iff[simp]:
-  "ipoly (abs_int_poly p) x = 0 \<longleftrightarrow> ipoly p x = 0"
-  by (auto simp: abs_int_poly_def sgn_eq_0_iff)
+  "ipoly (abs_int_poly p) (x :: 'a :: comm_ring_1) = 0 \<longleftrightarrow> ipoly p x = 0"
+  by (auto simp: abs_int_poly_def sgn_eq_0_iff of_int_poly_hom.hom_uminus)
 
 lemma abs_int_poly_represents[simp]:
   "abs_int_poly p represents x \<longleftrightarrow> p represents x" by (auto elim!:representsE)
@@ -441,6 +440,7 @@ proof(intro irreducibleI)
 qed
 
 lemma
+  fixes x :: "'a :: {idom,ring_char_0}"
   shows ipoly_cf_pos_poly_eq_0[simp]: "ipoly (cf_pos_poly p) x = 0 \<longleftrightarrow> ipoly p x = 0"
     and degree_cf_pos_poly[simp]: "degree (cf_pos_poly p) = degree p"
     and cf_pos_cf_pos_poly[intro]: "p \<noteq> 0 \<Longrightarrow> cf_pos (cf_pos_poly p)"
@@ -451,7 +451,7 @@ proof-
     assume p: "p \<noteq> 0"
     show "cf_pos (cf_pos_poly p)" using cf_pos_poly_main p by (auto simp: cf_pos_def)
     have "(ipoly (cf_pos_poly p) x = 0) = (ipoly p x = 0)"
-      apply (subst(3) cf_pos_poly_main[symmetric]) by (auto simp: sgn_eq_0_iff)
+      apply (subst(3) cf_pos_poly_main[symmetric]) by (auto simp: sgn_eq_0_iff hom_distribs)
   }
   then show "(ipoly (cf_pos_poly p) x = 0) = (ipoly p x = 0)" by (cases "p = 0", auto)
 qed
@@ -509,7 +509,7 @@ lemma poly_rat_represents_of_rat: "(poly_rat x) represents (of_rat x)" by auto
 
 lemma ipoly_smult_0_iff: assumes c: "c \<noteq> 0" 
   shows "(ipoly (smult c p) x = (0 :: real)) = (ipoly p x = 0)"
-  using c by simp
+  using c by (simp add: hom_distribs)
 
 
 (* TODO *)
@@ -681,7 +681,7 @@ proof -
   let ?rp = "map_poly ?r"
   have rp: "\<And> x p. rp p x = 0 \<longleftrightarrow> poly (?rp p) x = 0" unfolding rp_def ..
   have "rp p x = 0 \<longleftrightarrow> rp (\<Prod>(x, y)\<leftarrow>qis. x ^ Suc y) x = 0" unfolding sff'(1)
-    unfolding rp using c by simp 
+    unfolding rp hom_distribs using c by simp 
   also have "\<dots> = (\<exists> (q,i) \<in>set qis. poly (?rp (q ^ Suc i)) x = 0)" 
     unfolding qs rp of_int_poly_hom.hom_prod_list poly_prod_list_zero_iff set_map by fastforce
   also have "\<dots> = (\<exists> (q,i) \<in>set qis. poly (?rp q) x = 0)"
@@ -829,7 +829,7 @@ proof -
   show ?thesis 
     unfolding id 
     unfolding of_rat_hom.map_poly_gcd[symmetric]
-    unfolding gcd_rat_to_gcd_int by auto
+    unfolding gcd_rat_to_gcd_int by (auto simp: hom_distribs)
 qed    
                                              
 lemma algebraic_imp_represents_unique: 
@@ -884,8 +884,18 @@ proof -
   show ?thesis using arg_cong[OF id, of degree] \<open>degree h \<le> degree g\<close> by simp
 qed
 
-lemma ipoly_poly_compose: "ipoly (p \<circ>\<^sub>p q) x = ipoly p (ipoly q x)"
-  by (simp add: of_int_hom.map_poly_pcompose poly_pcompose)
+lemma ipoly_poly_compose:
+  fixes x :: "'a :: idom"
+  shows "ipoly (p \<circ>\<^sub>p q) x = ipoly p (ipoly q x)"
+proof (induct p)
+  case (pCons a p)
+  have "ipoly ((pCons a p) \<circ>\<^sub>p q) x = of_int a + ipoly (q * p \<circ>\<^sub>p q) x" by (simp add: hom_distribs)
+  also have "ipoly (q * p \<circ>\<^sub>p q) x = ipoly q x * ipoly (p \<circ>\<^sub>p q) x" by (simp add: hom_distribs)
+  also have "ipoly (p \<circ>\<^sub>p q) x = ipoly p (ipoly q x)" unfolding pCons(2) ..
+  also have "of_int a + ipoly q x * \<dots> = ipoly (pCons a p) (ipoly q x)"
+    unfolding map_poly_pCons[OF pCons(1)] by simp
+  finally show ?case .
+qed simp
 
 text \<open>Polynomial for unary minus.\<close>
 
@@ -940,8 +950,9 @@ lemma poly_uminus_inner_0[simp]: "poly_uminus_inner as = 0 \<longleftrightarrow>
 lemma degree_poly_uminus_inner[simp]: "degree (poly_uminus_inner as) = degree (Poly as)"
   by (induct as rule: poly_uminus_inner.induct, auto)
 
-lemma ipoly_uminus_inner[simp]: "ipoly (poly_uminus_inner as) x = ipoly (Poly as) (-x)"
-  by (induct as rule: poly_uminus_inner.induct, auto simp: ring_distribs)
+lemma ipoly_uminus_inner[simp]:
+  "ipoly (poly_uminus_inner as) (x::'a::comm_ring_1) = ipoly (Poly as) (-x)"
+  by (induct as rule: poly_uminus_inner.induct, auto simp: hom_distribs ring_distribs)
 
 lemma represents_uminus: assumes alg: "p represents x"
   shows "(poly_uminus p) represents (-x)"
@@ -970,8 +981,8 @@ lemma (in inj_idom_hom) reflect_poly_hom:
   "reflect_poly (map_poly hom p) = map_poly hom (reflect_poly p)"
 proof -
   obtain xs where xs: "rev (coeffs p) = xs" by auto
-  show ?thesis unfolding reflect_poly_def coeffs_map_poly rev_map
-    xs by (induct xs, auto)
+  show ?thesis unfolding reflect_poly_def coeffs_map_poly_hom rev_map
+    xs by (induct xs, auto simp: hom_distribs)
 qed
 
 lemma ipoly_reflect_poly: assumes x: "(x :: 'a :: field_char_0) \<noteq> 0" 
@@ -1004,7 +1015,9 @@ text \<open>Polynomial for n-th root.\<close>
 definition poly_nth_root :: "'a :: idom poly \<Rightarrow> 'a poly" where
   "poly_nth_root p = p \<circ>\<^sub>p monom 1 n"
 
-lemma ipoly_nth_root:  "ipoly (poly_nth_root p) x = ipoly p (x ^ n)"
+lemma ipoly_nth_root:
+  fixes x :: "'a :: idom"
+  shows "ipoly (poly_nth_root p) x = ipoly p (x ^ n)"
   unfolding poly_nth_root_def ipoly_poly_compose by (simp add: map_poly_monom poly_monom)
 
 context
@@ -1100,6 +1113,7 @@ next
 qed
 
 lemma ipoly_mult_rat_main:
+  fixes x :: "'a :: {field,ring_char_0}"
   assumes "d \<noteq> 0" and "n \<noteq> 0" 
   shows "ipoly (poly_mult_rat_main n d p) x = of_int n ^ degree p * ipoly p (x * of_int d / of_int n)" 
 proof -
@@ -1107,7 +1121,7 @@ proof -
   show ?thesis
     unfolding poly_altdef of_int_hom.coeff_map_poly_hom mult.assoc[symmetric] of_int_mult[symmetric] 
       sum_distrib_left 
-    unfolding of_int_hom.degree_map_poly degree_poly_mult_rat_main[OF assms(2)] d
+    unfolding of_int_hom.degree_map_poly_hom degree_poly_mult_rat_main[OF assms(2)] d
   proof (rule sum.cong[OF refl])
     fix i
     assume "i \<in> {..degree p}" 
@@ -1264,7 +1278,7 @@ proof (rule ccontr)
   have "degree q = degree r + degree rr" using dq unfolding q
     by (subst degree_mult_eq, auto)
   with r have rr: "degree rr \<noteq> 0" "degree rr < degree q" by auto
-  from representsD(2)[OF y, unfolded q] 
+  from representsD(2)[OF y, unfolded q hom_distribs] 
   have "ipoly r y = 0 \<or> ipoly rr y = 0" by auto
   with r rr have "r represents y \<or> rr represents y" unfolding represents_def by auto
   with r rr obtain r where r: "r represents y" "degree r < degree q" by blast

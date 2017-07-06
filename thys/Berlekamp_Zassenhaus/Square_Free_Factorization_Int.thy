@@ -70,7 +70,7 @@ lemma yun_erel_1[simp]: "yun_erel 1 1" unfolding yun_erel_def using yun_rel_1 by
 
 lemma yun_rel_mult: "yun_rel F c f \<Longrightarrow> yun_rel G d g \<Longrightarrow> yun_rel (F * G) (c * d) (f * g)" 
   unfolding yun_rel_def yun_wrel_def content_mult lead_coeff_mult 
-  by (auto simp: monic_mult)
+  by (auto simp: monic_mult hom_distribs)
 
 lemma yun_erel_mult: "yun_erel F f \<Longrightarrow> yun_erel G g \<Longrightarrow> yun_erel (F * G) (f * g)" 
   unfolding yun_erel_def using yun_rel_mult[of F _ f G _ g] by blast
@@ -84,11 +84,11 @@ lemma yun_erel_pow: "yun_erel F f \<Longrightarrow> yun_erel (F^n) (f^n)"
 
 lemma yun_wrel_pderiv: assumes "yun_wrel F c f"
   shows "yun_wrel (pderiv F) c (pderiv f)" 
-  by (unfold yun_wrel_def, simp add: yun_wrelD[OF assms] pderiv_smult)
+  by (unfold yun_wrel_def, simp add: yun_wrelD[OF assms] pderiv_smult hom_distribs)
 
 lemma yun_wrel_minus: assumes "yun_wrel F c f" "yun_wrel G c g" 
   shows "yun_wrel (F - G) c (f - g)" 
-  using assms unfolding yun_wrel_def by (auto simp: smult_diff_right)
+  using assms unfolding yun_wrel_def by (auto simp: smult_diff_right hom_distribs)
 
 lemma gcd_smult_left: assumes "c \<noteq> 0"
   shows "gcd (smult c f) g = gcd f (g :: 'b :: {field, factorial_ring_gcd} poly)"
@@ -119,12 +119,12 @@ next
     case 1
     have "gcd f g dvd f" by auto
     then obtain h where f: "f = gcd f g * h" unfolding dvd_def by auto    
-    show ?case by (rule smult_dvd[OF _ inv], insert arg_cong[OF f, of ?rp], simp add: dvd_def) 
+    show ?case by (rule smult_dvd[OF _ inv], insert arg_cong[OF f, of ?rp], simp add: hom_distribs) 
   next
     case 2
     have "gcd f g dvd g" by auto
     then obtain h where g: "g = gcd f g * h" unfolding dvd_def by auto    
-    show ?case by (rule smult_dvd[OF _ inv], insert arg_cong[OF g, of ?rp], simp add: dvd_def) 
+    show ?case by (rule smult_dvd[OF _ inv], insert arg_cong[OF g, of ?rp], simp add: hom_distribs) 
   next
     case (3 h)    
     show ?case 
@@ -158,7 +158,7 @@ proof -
   from dvd obtain H h where fgh: "F = G * H" "f = g * h" unfolding dvd_def by auto
   from G0 yun_wrelD[OF g] have g0: "g \<noteq> 0" and d0: "d \<noteq> 0" by auto
   from arg_cong[OF fgh(1), of "\<lambda> x. x div G"] have H: "H = F div G" using G0 by simp
-  from arg_cong[OF fgh(1), of ?rp] have "?rp F = ?rp G * ?rp H" by auto
+  from arg_cong[OF fgh(1), of ?rp] have "?rp F = ?rp G * ?rp H" by (auto simp: hom_distribs)
   from arg_cong[OF this, of "\<lambda> x. x div ?rp G"] G0 have id: "?rp H = ?rp F div ?rp G" by auto
   have "?rp (F div G) = ?rp F div ?rp G" unfolding H[symmetric] id by simp
   also have "\<dots> = smult c f div smult d g" using f g unfolding yun_wrel_def by auto
@@ -339,8 +339,8 @@ proof -
   with cd d have a: "a \<noteq> 0" by auto
   from arg_cong[OF fg, of "\<lambda> x. smult (?r b) x"]
   have "smult (?r b) (?rp f) = smult (?r a) (?rp g)" using b by auto
-  hence "?rp (smult b f) = ?rp (smult a g)" by auto
-  from map_poly_inj[OF this] have fg: "[:b:] * f = [:a:] * g" by auto
+  hence "?rp (smult b f) = ?rp (smult a g)" by (auto simp: hom_distribs)
+  then have fg: "[:b:] * f = [:a:] * g" by auto
   from arg_cong[OF this, of content, unfolded content_mult f(8) g(8)] 
   have "content [: b :] = content [: a :]" by simp
   hence abs: "abs a = abs b" unfolding content_def using b a by auto
@@ -404,7 +404,7 @@ proof (cases "square_free_heuristic f")
       from aa have c0: "c \<noteq> 0" by auto
       from b' aa(3) show "degree a \<noteq> 0" by simp
       from square_free_smult[OF c0 b'(1), folded aa(2)]
-      show "square_free a" unfolding square_free_def by (force simp: dvd_def)
+      show "square_free a" unfolding square_free_def by (force simp: dvd_def hom_distribs)
       show cnt: "content a = 1" and lc: "lead_coeff a > 0" using aa by auto
       fix A I
       assume A: "(A,I) \<in> set fs" and diff: "(a,i) \<noteq> (A,I)" 

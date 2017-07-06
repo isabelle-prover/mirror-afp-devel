@@ -139,18 +139,18 @@ lemma degree_MP_Rel [transfer_rule]: "(MP_Rel ===> op =) degree_m degree"
   by (auto intro!: degree_map_poly)
 
 lemma eq_M_Rel[transfer_rule]: "(M_Rel ===> M_Rel ===> op =) (\<lambda> x y. M x = M y) (op =)"
-  unfolding M_Rel_def rel_fun_def
-  by (auto simp: inj_to_int_mod_ring_point)
+  unfolding M_Rel_def rel_fun_def by auto
+
+interpretation to_int_mod_ring_hom: map_poly_inj_zero_hom to_int_mod_ring..
 
 lemma eq_MP_Rel[transfer_rule]: "(MP_Rel ===> MP_Rel ===> op =) (op =m) (op =)"
-  unfolding MP_Rel_def rel_fun_def equivalent_def
-  by (auto, intro map_poly_inj[of to_int_mod_ring], auto simp: inj_to_int_mod_ring_point)
+  unfolding MP_Rel_def rel_fun_def equivalent_def by auto
 
 lemma eq_Mf_Rel[transfer_rule]: "(MF_Rel ===> MF_Rel ===> op =) (\<lambda> x y. Mf x = Mf y) (op =)"
 proof (intro rel_funI, goal_cases)
   case (1 cfs Cfs dgs Dgs)
   have [transfer_rule]: "(MP_Rel ===> MP_Rel ===> op =) (\<lambda> x y. Mp x = Mp y) (op =)" 
-    using eq_MP_Rel unfolding equivalent_def[abs_def] .    
+    using eq_MP_Rel unfolding equivalent_def[abs_def] .
   obtain c fs where cfs: "cfs = (c,fs)" by force
   obtain C Fs where Cfs: "Cfs = (C,Fs)" by force
   obtain d gs where dgs: "dgs = (d,gs)" by force
@@ -216,7 +216,7 @@ proof (intro rel_funI, goal_cases)
     by (simp add: eq1 eq2)
 qed
 
-lemmas coeff_map_poly_to_int_mod_ring = coeff_map_poly[of to_int_mod_ring, OF to_int_mod_ring_0]
+
 lemmas coeff_map_poly_of_int = coeff_map_poly[of of_int, OF of_int_0]
 
 lemma plus_MP_Rel[transfer_rule]: "(MP_Rel ===> MP_Rel ===> MP_Rel) (op +) (op +)"
@@ -226,7 +226,7 @@ proof (intro rel_funI, goal_cases)
   have "Mp (x + y) = Mp (Mp x + Mp y)" by simp
   also have "\<dots> = Mp (map_poly to_int_mod_ring f + map_poly to_int_mod_ring g)" unfolding 1 ..
   also have "\<dots> = map_poly to_int_mod_ring (f + g)" unfolding poly_eq_iff Mp_coeff 
-    coeff_add coeff_map_poly_to_int_mod_ring to_int_mod_ring_plus by auto
+       by (auto simp: to_int_mod_ring_plus)
   finally show ?case .
 qed
 
@@ -236,29 +236,30 @@ proof (intro rel_funI, goal_cases)
   case (1 x f y g)
   have "Mp (x * y) = Mp (Mp x * Mp y)" by simp
   also have "\<dots> = Mp (map_poly to_int_mod_ring f * map_poly to_int_mod_ring g)" unfolding 1 ..
-  also have "\<dots> = map_poly to_int_mod_ring (f * g)" unfolding poly_eq_iff Mp_coeff 
-    coeff_mult coeff_map_poly_to_int_mod_ring
-  proof 
-    fix n :: nat
-    define A where "A = {.. n}" 
-    have "finite A" unfolding A_def by auto
-    thus "M (\<Sum>i\<le>n. to_int_mod_ring (coeff f i) * to_int_mod_ring (coeff g (n - i))) =
-         to_int_mod_ring (\<Sum>i\<le>n. coeff f i * coeff g (n - i))"
-      unfolding A_def[symmetric]
-    proof (induct A)
-      case (insert a A)
-      have "?case = ?case" (is "(?l = ?r) = _") by simp
-      have "?r = to_int_mod_ring (coeff f a * coeff g (n - a) + (\<Sum>i\<in> A. coeff f i * coeff g (n - i)))" 
-        using insert(1-2) by auto
-      note r = this[unfolded to_int_mod_ring_plus to_int_mod_ring_times]
-      from insert(1-2) have "?l = M (to_int_mod_ring (coeff f a) * to_int_mod_ring (coeff g (n - a)) 
-        + M (\<Sum>i\<in>A. to_int_mod_ring (coeff f i) * to_int_mod_ring (coeff g (n - i))))" 
-        by simp
-      also have "M (\<Sum>i\<in>A. to_int_mod_ring (coeff f i) * to_int_mod_ring (coeff g (n - i))) = to_int_mod_ring (\<Sum>i\<in>A. coeff f i * coeff g (n - i))"
-        unfolding insert ..
-      finally
-      show ?case unfolding r by simp
-    qed auto
+  also have "\<dots> = map_poly to_int_mod_ring (f * g)"
+  proof -
+    { fix n :: nat
+      define A where "A = {.. n}" 
+      have "finite A" unfolding A_def by auto
+      then have "M (\<Sum>i\<le>n. to_int_mod_ring (coeff f i) * to_int_mod_ring (coeff g (n - i))) =
+           to_int_mod_ring (\<Sum>i\<le>n. coeff f i * coeff g (n - i))"
+        unfolding A_def[symmetric]
+      proof (induct A)
+        case (insert a A)
+        have "?case = ?case" (is "(?l = ?r) = _") by simp
+        have "?r = to_int_mod_ring (coeff f a * coeff g (n - a) + (\<Sum>i\<in> A. coeff f i * coeff g (n - i)))" 
+          using insert(1-2) by auto
+        note r = this[unfolded to_int_mod_ring_plus to_int_mod_ring_times]
+        from insert(1-2) have "?l = M (to_int_mod_ring (coeff f a) * to_int_mod_ring (coeff g (n - a)) 
+          + M (\<Sum>i\<in>A. to_int_mod_ring (coeff f i) * to_int_mod_ring (coeff g (n - i))))" 
+          by simp
+        also have "M (\<Sum>i\<in>A. to_int_mod_ring (coeff f i) * to_int_mod_ring (coeff g (n - i))) = to_int_mod_ring (\<Sum>i\<in>A. coeff f i * coeff g (n - i))"
+          unfolding insert ..
+        finally
+        show ?case unfolding r by simp
+      qed auto
+    }
+    then show ?thesis by (auto intro!:poly_eqI simp: coeff_mult  Mp_coeff)
   qed
   finally show ?case .
 qed
@@ -267,7 +268,7 @@ lemma smult_MP_Rel[transfer_rule]: "(M_Rel ===> MP_Rel ===> MP_Rel) smult smult"
   unfolding MP_Rel_def M_Rel_def
 proof (intro rel_funI, goal_cases)
   case (1 x x' f f')
-  thus ?case unfolding poly_eq_iff coeff coeff_map_poly_to_int_mod_ring Mp_coeff
+  thus ?case unfolding poly_eq_iff coeff Mp_coeff
     coeff_smult M_def
   proof (intro allI, goal_cases)
     case (1 n)
@@ -277,20 +278,20 @@ proof (intro rel_funI, goal_cases)
       using 1 by auto
     also have " \<dots> = to_int_mod_ring (x' * coeff f' n)" 
       unfolding to_int_mod_ring_times M_def by simp
-    finally show ?case .
+    finally show ?case by auto
   qed
 qed
 
 lemma one_M_Rel[transfer_rule]: "M_Rel 1 1"
-  unfolding M_Rel_def poly_eq_iff Mp_coeff M_def coeff_map_poly_to_int_mod_ring 
+  unfolding M_Rel_def poly_eq_iff Mp_coeff M_def 
   unfolding m by auto
 
 lemma one_MP_Rel[transfer_rule]: "MP_Rel 1 1"
-  unfolding MP_Rel_def poly_eq_iff Mp_coeff M_def coeff_map_poly_to_int_mod_ring 
+  unfolding MP_Rel_def poly_eq_iff Mp_coeff M_def 
   unfolding m by auto
 
 lemma zero_MP_Rel[transfer_rule]: "MP_Rel 0 0" 
-  unfolding MP_Rel_def poly_eq_iff Mp_coeff M_def coeff_map_poly_to_int_mod_ring 
+  unfolding MP_Rel_def poly_eq_iff Mp_coeff M_def 
   unfolding m by auto
 
 lemma listprod_MP_Rel[transfer_rule]: "(list_all2 MP_Rel ===> MP_Rel) prod_list prod_list"
@@ -317,15 +318,13 @@ proof (intro rel_funI, goal_cases)
 qed
 
 lemma right_unique_MP_Rel[transfer_rule]: "right_unique MP_Rel"
-  unfolding right_unique_def MP_Rel_def
-  by (auto intro!: map_poly_inj[of to_int_mod_ring] inj_to_int_mod_ring_point)
+  unfolding right_unique_def MP_Rel_def by auto
 
 lemma M_to_int_mod_ring: "M (to_int_mod_ring (x :: 'a mod_ring)) = to_int_mod_ring x"
   unfolding M_def unfolding m by (transfer, auto)
 
 lemma Mp_to_int_poly: "Mp (to_int_poly (f :: 'a mod_ring poly)) = to_int_poly f"
-  unfolding poly_eq_iff Mp_coeff coeff_map_poly_to_int_mod_ring M_to_int_mod_ring
-  by auto
+  by (auto simp: poly_eq_iff Mp_coeff M_to_int_mod_ring)
 
 lemma right_total_M_Rel[transfer_rule]: "right_total M_Rel"
   unfolding right_total_def M_Rel_def using M_to_int_mod_ring by blast
@@ -353,8 +352,7 @@ lemma to_int_mod_ring_of_int_M: "to_int_mod_ring (of_int x :: 'a mod_ring) = M x
   unfolding m by transfer auto
 
 lemma Mp_f_representative: "Mp f = to_int_poly (map_poly of_int f :: 'a mod_ring poly)"
-  unfolding Mp_def poly_eq_iff coeff_map_poly_to_int_mod_ring
-  by (subst coeff_map_poly[of M], force, subst coeff_map_poly, auto simp: to_int_mod_ring_of_int_M)
+  unfolding Mp_def by (auto intro: poly_eqI simp: coeff_map_poly to_int_mod_ring_of_int_M)
 
 lemma left_total_MP_Rel[transfer_rule]: "left_total MP_Rel"
   unfolding left_total_def MP_Rel_def[abs_def] using Mp_f_representative by blast
@@ -392,8 +390,7 @@ lemma UNIV_M_Rel[transfer_rule]: "rel_set M_Rel {0..<m} UNIV"
   by (auto simp: M_def m, goal_cases, metis to_int_mod_ring_of_int_mod_ring, (transfer, auto)+)
 
 lemma coeff_MP_Rel [transfer_rule]: "(MP_Rel ===> op = ===> M_Rel) coeff coeff" 
-  unfolding rel_fun_def M_Rel_def MP_Rel_def
-  by (metis coeff_map_poly_to_int_mod_ring poly_mod.Mp_coeff)
+  unfolding rel_fun_def M_Rel_def MP_Rel_def Mp_coeff[symmetric] by auto
 
 lemma M_1_1[simp]: "M 1 = 1" unfolding M_def unfolding m by simp
 

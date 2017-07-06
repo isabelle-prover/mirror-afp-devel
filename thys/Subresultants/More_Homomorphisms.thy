@@ -4,11 +4,14 @@ text \<open>We register two homomorphism, namely lifting constants to polynomial
   and lifting elements of some domain into their fraction field.\<close>
   
 theory More_Homomorphisms
-  imports "../Polynomial_Interpolation/Ring_Hom_Poly" 
+  imports "../Polynomial_Interpolation/Ring_Hom_Poly"
+   "../Jordan_Normal_Form/Determinant" (* Only to obtain lemmas stated there after interpretation *)
 begin
 
 abbreviation (input) "coeff_lift == \<lambda>a. [: a :]"
-  
+
+interpretation coeff_lift_hom: inj_comm_monoid_add_hom coeff_lift by (unfold_locales, auto)
+interpretation coeff_lift_hom: inj_ab_group_add_hom coeff_lift..
 interpretation coeff_lift_hom: inj_comm_semiring_hom coeff_lift
   by standard (simp_all add: ac_simps)
 interpretation coeff_lift_hom: inj_comm_ring_hom coeff_lift..

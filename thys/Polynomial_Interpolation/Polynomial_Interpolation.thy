@@ -150,7 +150,7 @@ proof -
     from this[unfolded id of_int_hom.poly_map_poly] show "poly p x = y" by auto
   }
   show "degree p \<le> length xs_ys - 1" using degree_interpolation_poly[of alg rxs_ys, folded rp]
-    unfolding id rxs_ys_def of_int_hom.degree_map_poly by simp
+    unfolding id rxs_ys_def by simp
 qed  
   
 
@@ -168,13 +168,13 @@ proof -
   note degrp = degree_interpolation_poly[of alg rxs_ys, folded rp]
   from q have q': "\<And> x y. (x,y) \<in> set rxs_ys \<Longrightarrow> poly (?rp q) x = y" unfolding rxs_ys_def 
     by auto
-  have [simp]: "degree (?rp q) = degree q" by (rule of_int_hom.degree_map_poly)
+  have [simp]: "degree (?rp q) = degree q" by simp
   have id: "rp = ?rp q"
     by (rule uniqueness_of_interpolation_point_list[OF dist' interpolation_poly[OF dist' rp]],
     insert q' dq degrp, auto simp: rxs_ys_def)
   from p[unfolded interpolation_poly_int_def[OF dist] Let_def, folded rxs_ys_def rp]
   have "\<exists> c \<in> set (coeffs rp). c \<notin> \<int>" by (auto split: if_splits)
-  from this[unfolded id of_int_hom.coeffs_map_poly] show False by auto
+  from this[unfolded id] show False by auto
 qed
 
 lemmas newton_interpolation_poly_int_Some = 

@@ -73,7 +73,7 @@ proof -
       with c have d: "d \<noteq> 0" by auto
       from pm[unfolded cd M] FH[of "Suc i"]
       have "ffp (smult d (H (Suc i))) = ffp M" by auto
-      hence pm: "smult d (H (Suc i)) = M" by (unfold hom_removes)
+      hence pm: "smult d (H (Suc i)) = M" by (rule map_poly_hom.injectivity)
       from ik F0[of i] i2 FH[of i] have Hi0: "H i \<noteq> 0" by auto
       from pseudo_mod[OF this, of "H (i - 1)", folded M_def]
       obtain c Q where c: "c \<noteq> 0" and "smult c (H (i - 1)) = H i * Q + M" by auto

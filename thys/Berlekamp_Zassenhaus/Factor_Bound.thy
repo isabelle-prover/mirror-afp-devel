@@ -145,7 +145,7 @@ qed
 
 lemma cmod_through_lead_coeff[simp]:
   "cmod (lead_coeff (of_int_poly h)) = abs (lead_coeff h)"
-  by (auto simp: of_int_hom.map_poly_preservers(1)[symmetric])
+  by simp
 
 lemma mignotte_coeff_helper:
   "abs (coeff h i) \<le> 
@@ -199,7 +199,7 @@ proof-
       using mahler_measure_poly_ge_1 nz(1) by force
     thus "mahler_measure g \<le> mahler_measure f"
       using measure_eq_prod[of "of_int_poly g" "of_int_poly h"]
-      unfolding mahler_measure_def gh[symmetric] by auto
+      unfolding mahler_measure_def gh[symmetric] by (auto simp: hom_distribs)
     have *: "lead_coeff f = lead_coeff g * lead_coeff h" 
       unfolding arg_cong[OF gh, of lead_coeff, symmetric] by (rule lead_coeff_mult)
     have "\<bar>lead_coeff h\<bar> \<noteq> 0" using nz(2) by auto

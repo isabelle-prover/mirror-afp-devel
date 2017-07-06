@@ -27,10 +27,10 @@ definition det:: "'a mat \<Rightarrow> 'a :: comm_ring_1" where
      signof p * (\<Prod> i = 0 ..< dim\<^sub>r A. A $$ (i, p i))) else 0)"
 
 lemma(in ring_hom) hom_signof[simp]: "hom (signof p) = signof p"
-  unfolding signof_def by auto
+  unfolding signof_def by (auto simp: hom_distribs)
 
 lemma(in comm_ring_hom) hom_det[simp]: "det (map\<^sub>m hom A) = hom (det A)"
-  unfolding det_def by auto
+  unfolding det_def by (auto simp: hom_distribs)
 
 lemma det_def': "A \<in> carrier\<^sub>m n n \<Longrightarrow> 
   det A = (\<Sum> p \<in> {p. p permutes {0 ..< n}}. 

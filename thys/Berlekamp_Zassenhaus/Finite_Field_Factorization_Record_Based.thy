@@ -540,7 +540,7 @@ proof -
     thus "to_int_poly_i ff_ops (fs' ! i) = to_int_poly (fs'' ! i)" unfolding id .
   qed
   have f: "f'' = of_int_poly f" unfolding poly_eq_iff f''_def
-    by (simp add: inj_to_int_mod_ring_point to_int_mod_ring_of_int_M Mp_coeff)
+    by (simp add: to_int_mod_ring_hom.injectivity to_int_mod_ring_of_int_M Mp_coeff)
   have *: "unique_factorization_m f (c, mset fs)" 
     using finite_field_factorization_modulo_ring[OF f sq berl cc' fs'] by auto
   have fs': "(\<forall>fi\<in>set fs. set (coeffs fi) \<subseteq> {0..<p})" unfolding fs' 

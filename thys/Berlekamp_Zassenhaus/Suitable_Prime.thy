@@ -164,7 +164,7 @@ proof -
     from arg_cong[OF this, of Mp] have "dvdm (g * g) f" unfolding dvdm_def equivalent_def by auto
     with ndvd[of g] have deg0: "degree_m g = 0" by auto
     hence g0: "M (lead_coeff g) = 0" unfolding Mp_def using deg
-      by (metis M_0 Mp_def Ring_Hom_Poly.degree_map_poly degree_m_def)
+      by (metis p poly_mod.M_def poly_mod.degree_m_eq prime_gt_1_int)
     from p have p0: "p \<noteq> 0" by auto
     from arg_cong[OF f, of lead_coeff] have "lead_coeff f = lead_coeff g * lead_coeff g * lead_coeff h" 
       by (auto simp: lead_coeff_mult)

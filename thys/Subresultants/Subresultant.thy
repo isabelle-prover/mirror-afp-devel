@@ -72,13 +72,9 @@ definition resultant_impl :: "'a poly \<Rightarrow> 'a poly \<Rightarrow> 'a :: 
 
 subsection \<open>Soundness Proof for @{term "resultant_impl = resultant"}\<close>
 
-declare comm_ring_hom.hom_det[OF coeff_lift_hom.comm_ring_hom_axioms,simp]
-declare coeff_lift_hom.hom_minus[simp del]
-declare coeff_lift_hom.hom_power[simp del]
-
 lemma basic_div_exp: assumes "(to_fract x)^n / (to_fract y)^(n-1) \<in> range to_fract"
   shows "to_fract (basic_div_exp x y n) = (to_fract x)^n / (to_fract y)^(n-1)"
-  unfolding basic_div_exp_def by (rule sym, rule div_divide_to_fract[OF assms refl refl], auto)
+  unfolding basic_div_exp_def by (rule sym, rule div_divide_to_fract[OF assms refl refl], auto simp: hom_distribs)
     
 abbreviation pdivmod :: "'a::field poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly \<times> 'a poly"
 where
@@ -624,10 +620,8 @@ proof -
       case (1 i j)
       hence ij: "i < degree f - J + (degree g - J)" "j < degree f - J + (degree g - J)"
         unfolding d degree_map_poly by auto
-      show ?case unfolding d degree_map_poly mat_dim_row_mat mat_dim_col_mat mat_map_def
-        mat_index_mat(1)[OF ij] split if_distrib[of "map_poly hom"] p.hom_mult monom_hom[symmetric] hom_one
-        by (rule if_cong[OF refl if_cong[OF refl refl] if_cong[OF refl refl]],
-        auto simp: coeff_int_def)
+      show ?case
+        by (auto simp add: coeff_int_def d mat_map_def mat_index_mat(1)[OF ij] hom_distribs)
     qed (auto simp: d)
   qed
 qed
@@ -1975,7 +1969,7 @@ proof (induct i rule: less_induct)
         (is "_ = ?h + 2 * ?f")
         unfolding DL by (simp add: ring_distribs)
       finally have "even e = even (?g + ?i + ?h + 2 * ?f)" by presburger
-      also have "\<dots> = even (?g + ?i + ?h)" by simp
+      also have "\<dots> = even (?g + ?i + ?h)" by presburger
       also have "?g + ?i + ?h =
          i3 * (m2 - m1 + m1 * m1 + m2 * m2)
          + (m2 - m1 + m1 + m2) * (m0 + m2)
@@ -2198,7 +2192,7 @@ proof -
     have "\<beta> (Suc i) = (- 1) ^ (\<delta> (i - 1) + 1) * f (i - 1) * h (i - 1) ^ \<delta> (i - 1)"
       using \<beta>i[of "Suc i"] i by auto
     also have "\<dots> = ff ((- 1) ^ (\<delta> (i - 1) + 1) * lead_coeff Gi_1 * hi_1 ^ \<delta> (i - 1))"
-      unfolding id f by simp
+      unfolding id f by (simp add: hom_distribs)
     also have "\<dots> \<in> range ff" by blast
     finally have beta: "\<beta> (Suc i) \<in> range ff" .
     have pm: "pseudo_mod (F (i - 1)) (F i) = ffp ?pmod"
@@ -2234,7 +2228,7 @@ proof -
           from i ii have iv: "4 \<le> Suc i" "Suc i \<le> Suc k" by auto
           have *: "Suc i - 2 = i - 1" by auto
           show "\<beta> (Suc i) = ff divisor" unfolding \<beta>i[OF iv] div d1 * fi1
-            using id by simp
+            using id by (simp add: hom_distribs)
         qed
       qed
     qed
@@ -2256,7 +2250,7 @@ proof -
   finally have eq: "?pmod = 0 \<longleftrightarrow> k = 2" using k2 by linarith
   note res = res[unfolded subresultant_prs_def Let_def eq, folded d1, folded h2]
   have idh2: "h 2 = ff h2" unfolding h2 d1 h.simps[of 2] \<delta> n F1
-    using F2 by (simp add: numeral_2_eq_2 f)
+    using F2 by (simp add: numeral_2_eq_2 f hom_distribs)
   have main: "F k = ffp Gk \<and> h k = ff hk \<and> (i \<ge> 3 \<longrightarrow> i \<le> k \<longrightarrow> F i \<in> range ffp \<and> \<beta> (Suc i) \<in> range ff)" for i
   proof (cases "k = 2")
     case True
@@ -2286,7 +2280,7 @@ proof -
       from arg_cong[OF this, of "\<lambda> i. (- 1) ^ (\<delta> 1 + 1) * i"]
       have "F 3 = (- 1) ^ (\<delta> 1 + 1) * ffp (pseudo_mod G1 G2)" by simp
       also have "\<delta> 1 = d1" unfolding \<delta> n d1 using F1 F2 by (simp add: numeral_2_eq_2)
-      finally show F3: "F 3 = ffp ((- 1) ^ (d1 + 1) * pseudo_mod G1 G2)" by simp
+      finally show F3: "F 3 = ffp ((- 1) ^ (d1 + 1) * pseudo_mod G1 G2)" by (simp add: hom_distribs)
     qed
     thus ?thesis by auto
   qed
@@ -2312,7 +2306,7 @@ proof -
     thus "\<beta> i \<in> range ff"
     proof (cases)
       case 3
-      have "\<beta> i = ff ((- 1) ^ (\<delta> 1 + 1))" unfolding 3 \<beta>3 by auto
+      have "\<beta> i = ff ((- 1) ^ (\<delta> 1 + 1))" unfolding 3 \<beta>3 by (auto simp: hom_distribs)
       thus ?thesis by blast
     next
       case 4

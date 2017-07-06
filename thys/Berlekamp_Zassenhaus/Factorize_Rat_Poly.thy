@@ -80,17 +80,17 @@ next
     {
       fix n f 
       have "?rp (f ^ n) = (?rp f) ^ n"
-        by (induct n, auto)
+        by (induct n, auto simp: hom_distribs)
     } note exp = this
     show dist: "distinct fs" using sff'(5) unfolding fs distinct_map inj_on_def by auto
     interpret mh: map_poly_inj_idom_hom rat_of_int..
     have "f = smult d (?rp g)" using rat_to_normalized_int_poly[OF ri] by auto
     also have "\<dots> = smult d (?rp (smult e (\<Prod>(a, i)\<in>set gs. a ^ Suc i)))" using sff'(1) by simp
-    also have "\<dots> = smult c (?rp (\<Prod>(a, i)\<in>set gs. a ^ Suc i))" unfolding c by simp
+    also have "\<dots> = smult c (?rp (\<Prod>(a, i)\<in>set gs. a ^ Suc i))" unfolding c by (simp add: hom_distribs)
     also have "?rp (\<Prod>(a, i)\<in>set gs. a ^ Suc i) = (\<Prod>(a, i)\<in>set fs. a ^ Suc i)"
       unfolding prod.distinct_set_conv_list[OF sff'(5)] prod.distinct_set_conv_list[OF dist]
       unfolding fs
-      by (insert exp, auto intro!: arg_cong[of _ _ "\<lambda>x. prod_list (map x gs)"])
+      by (insert exp, auto intro!: arg_cong[of _ _ "\<lambda>x. prod_list (map x gs)"] simp: hom_distribs of_int_poly_hom.hom_prod_list)
     finally show f: "f = smult c (\<Prod>(a, i)\<in>set fs. a ^ Suc i)" by auto
     {
       fix a i

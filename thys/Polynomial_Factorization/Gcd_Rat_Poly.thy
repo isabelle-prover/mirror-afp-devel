@@ -39,12 +39,12 @@ proof (intro ext)
   show "gcd_rat_poly f g = gcd f g" unfolding id
   proof (rule gcdI)
     have "h dvd f'" unfolding h_def by auto
-    hence "?h dvd ?ri f'" unfolding dvd_def by auto
+    hence "?h dvd ?ri f'" unfolding dvd_def by (auto simp: hom_distribs)
     hence "?h dvd f" unfolding f by (rule dvd_smult)
     thus dvd_f: "?gcd dvd f"
       by (metis dvdE inverse_zero_imp_zero lc_def leading_coeff_neq_0 mult_eq_0_iff smult_dvd_iff)
     have "h dvd g'" unfolding h_def by auto
-    hence "?h dvd ?ri g'" unfolding dvd_def by auto
+    hence "?h dvd ?ri g'" unfolding dvd_def by (auto simp: hom_distribs)
     hence "?h dvd g" unfolding g by (rule dvd_smult)
     thus dvd_g: "?gcd dvd g"
       by (metis dvdE inverse_zero_imp_zero lc_def leading_coeff_neq_0 mult_eq_0_iff smult_dvd_iff)
@@ -61,7 +61,7 @@ proof (intro ext)
     from rat_to_int_factor_explicit[OF kf kck] have kf: "k' dvd f'" unfolding dvd_def by blast
     from rat_to_int_factor_explicit[OF kg kck] have kg: "k' dvd g'" unfolding dvd_def by blast
     from kf kg have "k' dvd h" unfolding h_def by simp
-    hence "?ri k' dvd ?ri h" unfolding dvd_def by auto
+    hence "?ri k' dvd ?ri h" unfolding dvd_def by (auto simp: hom_distribs)
     hence "k dvd ?ri h" unfolding k using c by (rule smult_dvd)
     thus "k dvd ?gcd" by (rule dvd_smult)
   qed

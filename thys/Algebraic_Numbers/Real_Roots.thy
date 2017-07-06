@@ -217,7 +217,7 @@ proof -
     have *: "real_of_int c + x * real_of_int d = 0 \<Longrightarrow> x = - (real_of_int c / real_of_int d)" for x
       using d by (simp add: field_simps)
     show ?thesis unfolding rr using d * unfolding p using of_rat_1[of "Rat.Fract (- c) (d)"]
-      by (auto simp: Fract_of_int_quotient)
+      by (auto simp: Fract_of_int_quotient hom_distribs)
   next
     case False
     let ?r = real_of_rat
@@ -237,7 +237,7 @@ proof -
     from root_bound(2)
     have bnds: "\<And> l r. (l,r) \<in> set bnds \<Longrightarrow> l \<le> r" unfolding bnds_def by auto
     have "ipoly p x = 0 \<Longrightarrow> ?r (- root_bound p) \<le> x \<and> x \<le> ?r (root_bound p)" for x
-      using root_bound(1)[of x] by auto
+      using root_bound(1)[of x] by (auto simp: hom_distribs)
     hence rts: "{x. ipoly p x = 0} 
       = real_of_2 ` set empty \<union> {x. \<exists> l r. root_cond (p,l,r) x \<and> (l,r) \<in> set bnds}" 
       unfolding empty_def bnds_def by (force simp: root_cond_def)
@@ -362,7 +362,8 @@ proof -
             have disj1: "?r ?m \<notin> rts lr" for lr unfolding rts_def root_cond_def by auto
             have disj2: "rts (?m, r) \<inter> rts (l, ?m) = {}" using disj1[of "(l,?m)"] disj1[of "(?m,r)"] 
               unfolding rts_def root_cond_def by auto
-            have disj3: "(rts (l,?m) \<union> rts (?m,r)) = rts (l,r)" unfolding rts_def root_cond_def by auto
+            have disj3: "(rts (l,?m) \<union> rts (?m,r)) = rts (l,r)"
+              unfolding rts_def root_cond_def by (auto simp: hom_distribs)
             have disj4: "real_of_2 ` set rais \<inter> rts (l,r) = {}" using disj unfolding Cons lr' by auto
             have disj: "pairwise_disjoint (real_of_2 ` set rais # map rts ([(?m, r), (l, ?m)] @ lrs))" 
               using disj disj2 disj3 disj4 by (auto simp: Cons lr')
@@ -390,7 +391,7 @@ proof -
             show ?thesis unfolding rts simp `?one` id
             proof (rule conjI[OF cong[OF cong] conjI])
               have "\<And> x. root_cond (p,l,r) x = (root_cond (p,l,?m) x \<or> root_cond (p,?m,r) x)"
-                unfolding root_cond_def by auto
+                unfolding root_cond_def by (auto simp:hom_distribs)
               hence id: "Collect (root_cond (p,l,r)) = {x. (root_cond (p,l,?m) x \<or> root_cond (p,?m,r) x)}" 
                 by auto
               show "?rt [(?m,r),(l,?m)] = Collect (root_cond (p,l,r))" unfolding id list.simps by blast
@@ -650,7 +651,7 @@ proof -
   have pq: "p = smult (inverse (of_int c)) (of_int_poly q)" 
     and c: "c \<noteq> 0" by auto
   have id: "{x. rpoly p x = (0 :: real)} = {x. ipoly q x = 0}" 
-    unfolding pq by (simp add: c of_rat_of_int_poly)
+    unfolding pq by (simp add: c of_rat_of_int_poly hom_distribs)
   show "distinct (real_roots_of_rat_poly p)" unfolding real_roots_of_rat_poly_def cq snd_conv 
     using roots_of_real_alg(2)[of q] .
   assume "p \<noteq> 0" 

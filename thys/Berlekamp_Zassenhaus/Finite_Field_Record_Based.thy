@@ -192,9 +192,6 @@ lemma nat_p: "nat p = CARD('a)" unfolding p by simp
 definition mod_ring_rel :: "int \<Rightarrow> 'a mod_ring \<Rightarrow> bool" where
   "mod_ring_rel x x' = (x = to_int_mod_ring x')"
 
-lemma to_int_mod_ring_inj: "to_int_mod_ring x = to_int_mod_ring y \<Longrightarrow> x = y"
-  using injD[OF inj_to_int_mod_ring] .
-
 (* domain transfer rules *)
 lemma Domainp_mod_ring_rel [transfer_domain_rule]:
   "Domainp (mod_ring_rel) = (\<lambda> v. v \<in> {0 ..< p})"
@@ -215,7 +212,7 @@ qed
 lemma bi_unique_mod_ring_rel [transfer_rule]:
   "bi_unique mod_ring_rel" "left_unique mod_ring_rel" "right_unique mod_ring_rel"
   unfolding mod_ring_rel_def bi_unique_def left_unique_def right_unique_def
-  using to_int_mod_ring_inj by auto
+  by auto
 
 (* left/right-total *)
 lemma right_total_mod_ring_rel [transfer_rule]: "right_total mod_ring_rel"
@@ -303,7 +300,7 @@ qed
 
 (* equality *)
 lemma mod_ring_eq[transfer_rule]: "(mod_ring_rel ===> mod_ring_rel ===> op =) (op =) (op =)"
-  by (intro rel_funI, auto simp: mod_ring_rel_def to_int_mod_ring_inj)
+  by (intro rel_funI, auto simp: mod_ring_rel_def)
 
 (* power *)
 lemma mod_ring_power[transfer_rule]: "(mod_ring_rel ===> op = ===> mod_ring_rel) (power_p p) (op ^)"
@@ -412,7 +409,7 @@ proof -
   proof (auto simp add: assms of_int_of_int_mod_ring)
     assume "0 < x" with assms
     have "of_int_mod_ring (int x) \<noteq> (0 :: 'a mod_ring)"
-      by (metis (no_types) less_imp_of_nat_less less_irrefl of_nat_0_le_iff of_nat_0_less_iff to_int_mod_ring_0 to_int_mod_ring_of_int_mod_ring)
+      by (metis (no_types) less_imp_of_nat_less less_irrefl of_nat_0_le_iff of_nat_0_less_iff to_int_mod_ring_hom.hom_zero to_int_mod_ring_of_int_mod_ring)
     thus "of_int_mod_ring (int x) = (0 :: 'a mod_ring) \<Longrightarrow> False" by blast
   qed
 qed

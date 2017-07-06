@@ -92,7 +92,7 @@ lemma minus_Mp[simp]: "Mp (Mp f - g) = Mp (f - g)" "Mp (f - Mp g) = Mp (f - g)"
   unfolding poly_eq_iff Mp_coeff unfolding coeff_mult Mp_coeff by (auto simp add: Mp_coeff)    
 
 lemma Mp_smult[simp]: "Mp (smult (M a) f) = Mp (smult a f)" "Mp (smult a (Mp f)) = Mp (smult a f)" 
-  unfolding Mp_def smult_map_poly
+  unfolding Mp_def smult_as_map_poly
   by (rule poly_eqI, auto simp: coeff_map_poly)+
 
 lemma Mp_Mp[simp]: "Mp (Mp f) = Mp f" unfolding Mp_def
@@ -172,9 +172,8 @@ qed
 lemma degree_m_le: "degree_m f \<le> degree f" unfolding degree_m_def Mp_def by (rule degree_map_poly_le)
 
 lemma degree_m_eq: "coeff f (degree f) mod m \<noteq> 0 \<Longrightarrow> m > 1 \<Longrightarrow> degree_m f = degree f" 
-  using degree_m_le[of f] unfolding degree_m_def
-  by (metis mod_0 Mp_def degree_map_poly poly_mod.M_def)
-  
+  using degree_m_le[of f] unfolding degree_m_def Mp_def
+  by (auto intro: degree_map_poly simp: Mp_def poly_mod.M_def)
 
 lemma degree_m_mult_le:  
   assumes eq: "f =m g * h" 

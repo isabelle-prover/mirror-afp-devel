@@ -16,6 +16,7 @@ imports
   "~~/src/HOL/Number_Theory/Residues"
   "../Containers/Set_Impl"
   "../Subresultants/Binary_Exponentiation"
+  "../Polynomial_Interpolation/Ring_Hom_Poly"
 begin
 
 typedef ('a::finite) mod_ring = "{0..<int CARD('a)}" by auto
@@ -91,9 +92,13 @@ lift_definition to_int_mod_ring :: "'a::finite mod_ring \<Rightarrow> int" is "\
 lift_definition of_int_mod_ring :: "int \<Rightarrow> 'a::finite mod_ring" is
   "\<lambda> x. x mod int (CARD('a))" by simp
 
-lemma to_int_mod_ring_0[simp]: "to_int_mod_ring 0 = 0" by (transfer, simp)
+interpretation to_int_mod_ring_hom: inj_zero_hom to_int_mod_ring
+  by (unfold_locales; transfer, auto)
+
 lemma int_nat_card[simp]: "int (nat CARD('a::finite)) = CARD('a)" by auto
-lemma of_int_mod_ring_0[simp]: "of_int_mod_ring 0 = 0" by (transfer, auto)
+
+interpretation of_int_mod_ring_hom: zero_hom of_int_mod_ring
+  by (unfold_locales, transfer, auto)
 
 lemma of_int_mod_ring_to_int_mod_ring[simp]:
   "of_int_mod_ring (to_int_mod_ring x) = x" by (transfer, auto)
@@ -101,9 +106,6 @@ lemma of_int_mod_ring_to_int_mod_ring[simp]:
 lemma to_int_mod_ring_of_int_mod_ring[simp]: "0 \<le> x \<Longrightarrow> x < int CARD('a :: finite) \<Longrightarrow>
   to_int_mod_ring (of_int_mod_ring x :: 'a mod_ring) = x"
   by (transfer, auto)
-
-lemma inj_to_int_mod_ring[simp]: "inj to_int_mod_ring" unfolding inj_on_def
-  by transfer auto
 
 lemma range_to_int_mod_ring:
   "range (to_int_mod_ring :: ('a :: finite mod_ring \<Rightarrow> int)) = {0 ..< CARD('a)}"
@@ -126,6 +128,9 @@ instance by (intro_classes; transfer, simp)
 
 end
 
+interpretation to_int_mod_ring_hom: inj_one_hom to_int_mod_ring
+  by (unfold_locales, transfer, simp)
+
 lemma of_nat_of_int_mod_ring [code_unfold]:
   "of_nat = of_int_mod_ring o int"
 proof (rule ext, unfold o_def)
@@ -136,8 +141,6 @@ proof (rule ext, unfold o_def)
       by (simp only: of_nat_Suc Suc, transfer) (simp add: mod_simps)
   qed simp
 qed
-
-lemma to_int_mod_ring_1[simp]: "to_int_mod_ring 1 = 1" by (transfer, simp)
 
 lemma of_nat_card_eq_0[simp]: "(of_nat (CARD('a::nontriv)) :: 'a mod_ring) = 0"
   by (unfold of_nat_of_int_mod_ring, transfer, auto)
@@ -309,12 +312,6 @@ end
 lemma surj_of_nat_mod_ring: "\<exists> i. i < CARD('a :: prime_card) \<and> (x :: 'a mod_ring) = of_nat i" 
   by (rule exI[of _ "nat (to_int_mod_ring x)"], unfold of_nat_of_int_mod_ring o_def,
   subst nat_0_le, transfer, simp, simp, transfer, auto) 
-  
-lemma inj_to_int_mod_ring_point: "to_int_mod_ring x = to_int_mod_ring y \<Longrightarrow> x = y" by (transfer, auto)
-
-lemma to_int_mod_ring_zero[simp]: "(to_int_mod_ring x = 0) = (x = 0)" by (transfer, auto)
-
-lemma to_int_mod_ring_one[simp]: "(to_int_mod_ring x = 1) = (x = 1)" by (transfer, auto)
 
 lemma of_nat_0_mod_ring_dvd: assumes x: "of_nat x = (0 :: 'a ::prime_card mod_ring)"
   shows "CARD('a) dvd x" 

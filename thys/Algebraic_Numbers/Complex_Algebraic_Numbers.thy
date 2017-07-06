@@ -84,7 +84,8 @@ proof -
   from assms have ap: "p represents x" by auto
   from represents_cnj[OF this] have apc: "p represents (cnj x)" .
   from represents_mult_rat[OF _ represents_add[OF ap apc], of "inverse 2"]
-  have "?Rep represents (1 / 2 * (x + cnj x))" unfolding root_poly_Re_def Let_def by auto
+  have "?Rep represents (1 / 2 * (x + cnj x))" unfolding root_poly_Re_def Let_def
+    by (auto simp: hom_distribs)
   also have "1 / 2 * (x + cnj x) = of_real (Re x)"
     by (simp add: complex_add_cnj)
   finally have Rep: "?Rep \<noteq> 0" and rt: "ipoly ?Rep (complex_of_real (Re x)) = 0" unfolding represents_def by auto
@@ -236,7 +237,7 @@ proof (atomize(full), cases x)
     from inv1 tb' have "invariant_1 (p, l', r')" by (metis invariant_1_sub_interval(1))
     hence inv2: "invariant_2 (tighten_bounds_2 x)" unfolding id using inv eq by auto
     thus ?thesis unfolding rof eq unfolding id unfolding Irrational plr 
-      using tb'(1-4) arg_cong[OF tb'(5), of real_of_rat] by auto
+      using tb'(1-4) arg_cong[OF tb'(5), of real_of_rat] by (auto simp: hom_distribs)
   qed
 qed (auto simp: Let_def)
 
@@ -658,16 +659,16 @@ proof -
         using q_div by simp
       also have "degree rts = length rr" unfolding rts_def by (rule degree_linear_factors)
       also have "\<dots> = card {x. poly q x = 0}" unfolding len_rr by simp
-      finally have deg2: "degree ?c2 = 2" using 2 unfolding hom_removes by simp
+      finally have deg2: "degree ?c2 = 2" using 2 by simp
       note croots2 = croots2[OF deg2, symmetric]
       have "?q = ?cr (q div rts * rts)" using q_div by simp
-      also have "\<dots> = ?cr rts * ?c2" by simp
+      also have "\<dots> = ?cr rts * ?c2" unfolding hom_distribs by simp
       finally have q_prod: "?q = ?cr rts * ?c2" .
       from croots2 l
       have l: "?l = of_real ` {x. poly q x = 0} \<union> {x. poly ?c2 x = 0}" by simp
       from r[unfolded q_prod]
       have r: "?r = {x. poly (?cr rts) x = 0} \<union> {x. poly ?c2 x = 0}" by auto
-      also have "?cr rts = (\<Prod>x\<leftarrow>rr. ?cr [:- x, 1:])" by (simp add: rts_def o_def)
+      also have "?cr rts = (\<Prod>x\<leftarrow>rr. ?cr [:- x, 1:])" by (simp add: rts_def o_def of_real_poly_hom.hom_prod_list)
       also have "{x. poly \<dots> x = 0} = of_real ` set rr" 
         unfolding poly_prod_list_zero_iff by auto
       also have "set rr = {x. poly q x = 0}" unfolding rr q_def by simp
@@ -856,8 +857,8 @@ proof -
     using complex_roots_of_int_poly(2) .
   assume p: "p \<noteq> 0" 
   with pq c have q: "q \<noteq> 0" by auto
-  have id: "{x. rpoly p x = (0 :: complex)} = {x. ipoly q x = 0}" 
-    unfolding pq by (simp add: c of_rat_of_int_poly map_poly_map_poly o_def)
+  have id: "{x. rpoly p x = (0 :: complex)} = {x. ipoly q x = 0}"
+    unfolding pq by (simp add: c of_rat_of_int_poly map_poly_map_poly o_def hom_distribs)
   show "?l = ?r" unfolding complex_roots_of_rat_poly_def cq snd_conv id
     complex_roots_of_int_poly(1)[OF q] ..
 qed

@@ -14,8 +14,12 @@ imports
   "../Subresultants/More_Homomorphisms" 
 begin
 
+hide_const (open) module.smult
 hide_const (open) Divisibility.irreducible
-  
+
+lemma is_unit_field_poly[simp]: "(p::'a::field poly) dvd 1 \<longleftrightarrow> p \<noteq> 0 \<and> degree p = 0"
+  by (auto dest!: degree0_coeffs simp: is_unit_poly_iff dvd_field_iff)
+
 instantiation fract :: (idom) euclidean_ring
 begin
 
@@ -59,14 +63,13 @@ proof (induct X)
     by (intro exI[of _ "(x,y) # xs"], auto)
 qed auto
 
-lemma divides_dvd_to_fract[simp]: "divides_ff (to_fract x) (to_fract y) = (x dvd y)"
+lemma divides_ff_to_fract[simp]: "divides_ff (to_fract x) (to_fract y) \<longleftrightarrow> x dvd y"
   unfolding divides_ff_def dvd_def
   by (simp add: to_fract_def eq_fract(1) mult.commute)
 
-lemma divides_ff_mult: "divides_ff x y \<Longrightarrow> divides_ff (z * x) (z * y)"
-  unfolding divides_ff_def by auto
-
-lemma divides_ff_mult_inv: "divides_ff (z * x) (z * y) \<Longrightarrow> z \<noteq> 0 \<Longrightarrow> divides_ff x y"
+lemma
+  shows divides_ff_mult_cancel_left[simp]: "divides_ff (z * x) (z * y) \<longleftrightarrow> z = 0 \<or> divides_ff x y"
+    and divides_ff_mult_cancel_right[simp]: "divides_ff (x * z) (y * z) \<longleftrightarrow> z = 0 \<or> divides_ff x y"
   unfolding divides_ff_def by auto
 
 definition gcd_ff_list :: "'a::ufd fract list \<Rightarrow> 'a fract \<Rightarrow> bool" where
@@ -123,9 +126,7 @@ proof -
   next
     fix d
     assume "Ball (set X) (divides_ff d)"
-    hence "Ball ((\<lambda> x. to_fract r * x) ` set X) (divides_ff (to_fract r * d))"
-      using divides_ff_mult[of _ _ "to_fract r"]
-      by (induct X, auto)
+    hence "Ball ((\<lambda> x. to_fract r * x) ` set X) (divides_ff (to_fract r * d))" by simp
     also have "(\<lambda> x. to_fract r * x) ` set X = to_fract ` set ys"
       unfolding set_conv_nth using ys len by force
     finally have dvd: "Ball (set ys) (\<lambda> y. divides_ff (to_fract r * d) (to_fract y))" by auto
@@ -144,8 +145,7 @@ proof -
       G_def divides_ff_def by (auto simp add: eq_fract dd dvd_def)
     also have "to_fract G = to_fract r * g" unfolding g_def using r
       by (auto simp: to_fract_def eq_fract)
-    finally show "divides_ff d g" 
-      by (rule divides_ff_mult_inv, insert r, auto simp: to_fract_def Zero_fract_def eq_fract)
+    finally show "divides_ff d g" using r by simp
   qed
 qed
 
@@ -188,11 +188,11 @@ lemma eq_dff_sym: "x =dff y \<Longrightarrow> y =dff x" unfolding eq_dff_def by 
 lemma eq_dff_trans[trans]: "x =dff y \<Longrightarrow> y =dff z \<Longrightarrow> x =dff z"
   unfolding eq_dff_def using divides_ff_trans by auto
 
-lemma eq_dff_mult_right_cong: "y =dff z \<Longrightarrow> x * y =dff x * z" 
-  unfolding eq_dff_def using divides_ff_mult[of y z x] divides_ff_mult[of z y x] by auto
+lemma eq_dff_cancel_right[simp]: "x * y =dff x * z \<longleftrightarrow> x = 0 \<or> y =dff z" 
+  unfolding eq_dff_def by auto
 
 lemma eq_dff_mult_right_trans[trans]: "x =dff y * z \<Longrightarrow> z =dff u \<Longrightarrow> x =dff y * u"
-  using eq_dff_mult_right_cong eq_dff_trans by blast
+  using eq_dff_trans by force
 
 lemma some_gcd_ff_list_smult: "a \<noteq> 0 \<Longrightarrow> some_gcd_ff_list (map (op * a) xs) =dff a * some_gcd_ff_list xs"
 proof 
@@ -206,8 +206,7 @@ proof
     assume x: "x \<in> set xs"
     have "divides_ff (?g * inverse a) x = divides_ff (inverse a * ?g) (inverse a * (a * x))"
       using a by (simp add: field_simps)
-    also have "\<dots>"
-      by (rule divides_ff_mult, rule some_gcd_ff_list_divides, insert x, auto)
+    also have "\<dots>" using a x by (auto intro: some_gcd_ff_list_divides)
     finally show "divides_ff (?g * inverse a) x" .
   qed
 qed
@@ -292,7 +291,7 @@ lemma divides_ff_coeff: assumes "set (coeffs p) \<subseteq> range to_fract" and 
   shows "\<exists> m. coeff p i = to_fract n * to_fract m"
 proof -
   from range_coeffs_to_fract[OF assms(1)]  obtain k where pi: "coeff p i = to_fract k" by auto
-  from assms(2)[unfolded this divides_dvd_to_fract] have "n dvd k" .
+  from assms(2)[unfolded this] have "n dvd k" by simp
   then obtain j where k: "k = n * j" unfolding Rings.dvd_def by auto
   show ?thesis unfolding pi k by auto
 qed
@@ -316,17 +315,13 @@ proof -
   finally show ?thesis .
 qed
 
-context begin
-
-declare to_fract_hom.hom_mult [simp del] to_fract_hom.hom_mult[symmetric, simp]
-
 lemma content_ff_to_fract_coeffs_to_fract: assumes "content_ff p \<in> range to_fract"
   shows "set (coeffs p) \<subseteq> range to_fract"
 proof 
   fix x
   assume "x \<in> set (coeffs p)"
   from content_ff_divides_ff[OF this] assms[unfolded eq_dff_def] show "x \<in> range to_fract"
-    unfolding divides_ff_def by auto
+    unfolding divides_ff_def by (auto simp del: to_fract_hom.hom_mult simp: to_fract_hom.hom_mult[symmetric])
 qed
 
 lemma content_ff_1_coeffs_to_fract: assumes "content_ff p =dff 1"
@@ -335,7 +330,7 @@ proof
   fix x
   assume "x \<in> set (coeffs p)"
   from content_ff_divides_ff[OF this] assms[unfolded eq_dff_def] show "x \<in> range to_fract"
-    unfolding divides_ff_def by auto
+    unfolding divides_ff_def by (auto simp del: to_fract_hom.hom_mult simp: to_fract_hom.hom_mult[symmetric])
 qed
 
 lemma gauss_lemma:
@@ -360,7 +355,7 @@ proof (cases "p = 0 \<or> q = 0")
     have cpq0: "?c (p * q) \<noteq> 0"
       unfolding content_ff_0_iff using cp1 cq1 content_ff_eq_dff_nonzero[of _ 1] by auto
     have cpq: "set (coeffs (p * q)) \<subseteq> range to_fract" unfolding ip iq
-    unfolding map_poly_hom.hom_mult[symmetric] to_fract_hom.coeffs_map_poly by auto
+    unfolding map_poly_hom.hom_mult[symmetric] to_fract_hom.coeffs_map_poly_hom by auto
     have ctnt: "?c (p * q) \<in> range to_fract" using content_ff_to_fract[OF cpq] .
     then obtain cpq where id: "?c (p * q) = to_fract cpq" by auto
     have dvd: "divides_ff 1 (?c (p * q))" using ctnt unfolding divides_ff_def by auto
@@ -398,7 +393,7 @@ proof (cases "p = 0 \<or> q = 0")
           hence n: "divides_ff ?f (?c p)" unfolding content_ff_iff by auto
           from divides_ff_trans[OF this] cp[unfolded eq_dff_def] have "divides_ff ?f 1" by auto
           also have "1 = to_fract 1" by simp
-          finally have "f dvd 1" unfolding divides_dvd_to_fract .
+          finally have "f dvd 1" by (unfold divides_ff_to_fract)
           hence False using no_unit unfolding dvd_def by (auto simp: ac_simps)
         }
         then obtain cp where cp: "cp \<in> set (coeffs p)" and ncp: "\<not> divides_ff ?f cp" by auto
@@ -445,10 +440,10 @@ proof (cases "p = 0 \<or> q = 0")
       }
       from this[of "r + s", unfolded cpq] have "divides_ff ?f (to_fract (f * (a + b) + pi r * qi s))" 
         unfolding pi qi by simp
-      from this[unfolded divides_dvd_to_fract] have "f dvd pi r * qi s"
+      from this[unfolded divides_ff_to_fract] have "f dvd pi r * qi s"
         by (metis dvd_add_times_triv_left_iff mult.commute)
       from prime[OF this] have "f dvd pi r \<or> f dvd qi s" by auto
-      with r s show False unfolding pi qi divides_dvd_to_fract by auto
+      with r s show False unfolding pi qi by auto
     qed
   } note main = this
   define n where "n \<equiv> normalize_content_ff :: 'a fract poly \<Rightarrow> 'a fract poly"
@@ -460,8 +455,6 @@ proof (cases "p = 0 \<or> q = 0")
     by (rule main, insert p q, auto simp: content_ff_normalize_content_ff_1)
   finally show ?thesis by simp
 qed auto
-
-end
 
 abbreviation (input) "content_ff_ff p \<equiv> content_ff (map_poly to_fract p)"
 
@@ -495,7 +488,7 @@ proof -
   have cr: "cr = map_poly to_fract r'" unfolding r'_def
     by (rule range_to_fract_embed_poly[OF cr_ff])
   from factor[unfolded cq cr]
-  have p: "p = q' * r'" by (fold hom_distribs, unfold hom_removes)
+  have p: "p = q' * r'" by (simp add: injectivity)
   from c_cq have ctnt: "content_ff_ff q' =dff 1" using cq q'_def by force
   from cqs have idq: "q = smult (?c q) (map_poly to_fract q')" unfolding cq .
   with q have cq: "?c q \<noteq> 0" by auto
@@ -562,8 +555,9 @@ proof-
       qed
       from irr[OF this] have "q' dvd 1" .
       from divides_degree[OF this] have "degree q' = 0" by auto
-      from degree0_coeffs[OF this] obtain a where "q' = [:a:]" by auto
-      from *(2)[unfolded this] obtain a where q: "q = [:a:]" by simp
+      from degree0_coeffs[OF this] obtain a' where "q' = [:a':]" by auto
+      from *(2)[unfolded this] obtain a where q: "q = [:a:]"
+        by (simp add: to_fract_hom.map_poly_pCons_hom)
       with q0 have a: "a \<noteq> 0" by auto
       have "q dvd 1" unfolding q const_poly_dvd_1 using a unfolding dvd_def
         by (intro exI[of _ "inverse a"], auto)
@@ -571,7 +565,7 @@ proof-
     ultimately have irr_p': "irreducible ?p" unfolding irreducible_altdef by auto
     let ?c = "content_ff"
     have "?c ?p \<in> range to_fract"
-      by (rule content_ff_to_fract, unfold to_fract_hom.coeffs_map_poly, auto)
+      by (rule content_ff_to_fract, unfold to_fract_hom.coeffs_map_poly_hom, auto)
     then obtain c where cp: "?c ?p = to_fract c" by auto
     from p' cp have c: "c \<noteq> 0" by auto
     have "?c ?p =dff 1" unfolding cp
@@ -580,13 +574,13 @@ proof-
       from smult_normalize_content_ff[of ?p] have cps: "?p = smult (to_fract c) cp" unfolding cp_def cp ..
       from content_ff_normalize_content_ff_1[OF p'] have c_cp: "content_ff cp =dff 1" unfolding cp_def .
       from range_to_fract_embed_poly[OF content_ff_1_coeffs_to_fract[OF c_cp]] obtain cp' where "cp = ?E cp'" by auto
-      from cps[unfolded this] have "p = smult c cp'" by (fold hom_distribs, unfold hom_removes)
+      from cps[unfolded this] have "p = smult c cp'" by (simp add: injectivity)
       hence dvd: "[: c :] dvd p" unfolding dvd_def by auto
       have "\<not> p dvd [: c :]" using divides_degree[of p "[: c :]"] c False by auto
       from irr(2)[OF dvd this] have "c dvd 1" by simp
       assume "\<not> to_fract c =dff 1"
       from this[unfolded eq_dff_def One_fract_def to_fract_def[symmetric] divides_ff_def to_fract_mult]
-      have c1: "\<And> r. 1 \<noteq> c * r" by (auto simp: ac_simps)
+      have c1: "\<And> r. 1 \<noteq> c * r" by (auto simp: ac_simps simp del: to_fract_hom.hom_mult simp: to_fract_hom.hom_mult[symmetric])
       with `c dvd 1` show False unfolding dvd_def by blast
     qed
     with False irr_p' show ?thesis by auto
@@ -654,7 +648,7 @@ proof -
     from content_ff_map_poly_to_fract obtain cr where cr: "content_ff (?E r) = to_fract cr" by auto
     note ct[unfolded cq cr to_fract_mult eq_dff_def divides_ff_def]
     from this[folded hom_distribs]
-    obtain c where c: "cq * cr * c = 1" by auto
+    obtain c where c: "cq * cr * c = 1" by (auto simp del: to_fract_hom.hom_mult simp: to_fract_hom.hom_mult[symmetric])
     hence one: "1 = cq * (c * cr)" "1 = cr * (c * cq)" by (auto simp: ac_simps)
     {
       assume *: "degree q \<noteq> 0 \<and> degree r \<noteq> 0"
@@ -673,7 +667,7 @@ proof -
       hence id: "set (coeffs (?E q)) = {to_fract a}" by auto
       have "divides_ff (to_fract a) (content_ff (?E q))" unfolding content_ff_iff id by auto
       from this[unfolded cq divides_ff_def, folded hom_distribs]
-      obtain rr where cq: "cq = a * rr" by auto
+      obtain rr where cq: "cq = a * rr" by (auto simp del: to_fract_hom.hom_mult simp: to_fract_hom.hom_mult[symmetric])
       with one(1) have "1 = a * (rr * c * cr)" by (auto simp: ac_simps)
       hence "a dvd 1" ..
       thus ?thesis by (simp add: q)
@@ -684,7 +678,7 @@ proof -
       have "divides_ff (to_fract a) (content_ff (?E r))" unfolding content_ff_iff id by auto
       note this[unfolded cr divides_ff_def to_fract_mult]
       note this[folded hom_distribs]
-      then obtain rr where cr: "cr = a * rr" by auto
+      then obtain rr where cr: "cr = a * rr" by (auto simp del: to_fract_hom.hom_mult simp: to_fract_hom.hom_mult[symmetric])
       with one(2) have one: "1 = a * (rr * c * cq)" by (auto simp: ac_simps)
       from arg_cong[OF pqr[unfolded r], of "\<lambda> p. p * [:rr * c * cq:]"]
       have "p * [:rr * c * cq:] = q * [:a * (rr * c * cq):]" by (simp add: ac_simps)
@@ -743,8 +737,8 @@ proof -
           divides_ff_trans mult.commute mult_right_cancel range_eqI)
       from range_to_fract_embed_poly[OF content_ff_to_fract_coeffs_to_fract[OF this]] obtain r
         where rr: "rr = ?E r" by auto
-      from qpr[unfolded rr, folded hom_distribs, unfolded hom_removes]
-      have "q = p * r" by auto
+      from qpr[unfolded rr, folded hom_distribs]
+      have "q = p * r" by (rule injectivity)
       thus "p dvd q" ..
     qed
   qed
@@ -859,7 +853,7 @@ proof (fold factorial_condition_one, intro conjI)
         have "divides_ff (to_fract a) (content_ff_ff p)" unfolding p content_ff_iff using a by auto
         from divides_ff_trans[OF this[unfolded cp] dvd_ct[unfolded cp cq cr]]
         have "divides_ff (to_fract a) (to_fract (cq * cr))" by simp
-        hence dvd: "a dvd cq * cr" by (auto simp add: divides_ff_def)
+        hence dvd: "a dvd cq * cr" by (auto simp add: divides_ff_def simp del: to_fract_hom.hom_mult simp: to_fract_hom.hom_mult[symmetric])
         from content_ff_divides_ff[of "to_fract a" "?E p"] have "divides_ff (to_fract cp) (to_fract a)"
           using cp a p by auto
         hence cpa: "cp dvd a" by simp

@@ -2242,6 +2242,6 @@ proof -
 qed
 
 lemma (in semiring_hom) vec_hom_scalar_mult: "vec\<^sub>h (ev \<odot>\<^sub>v v) = hom ev \<odot>\<^sub>v vec\<^sub>h v"
-  by (rule vec_eqI, auto)
+  by (rule vec_eqI, auto simp: hom_distribs)
 
 end
