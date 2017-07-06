@@ -159,10 +159,8 @@ next
     qed
   next
     case [simp]: Meld
-    obtain h1 h2 where [simp]: "ss = [h1,h2]" using 4(2) by (auto simp: numeral_eq_Suc)
-    have [arith]: "log 2 (2 + (real (size h1) + real (size h2))) \<le>
-                   log 2 (4 + (real (size h1) + real (size h2)))" by simp
-      show ?thesis using a_meld_ub[of h1 h2] by (simp add: size1_def)
+    obtain h1 h2 where "ss = [h1,h2]" using 4(2) by (auto simp: numeral_eq_Suc)
+    thus ?thesis using a_meld_ub[of h1 h2] by (simp)
   qed
 qed
 
