@@ -68,7 +68,7 @@ proof -
 qed
 
 definition (in vec_space) rank ::"'a mat \<Rightarrow> nat"
-where "rank A = vectorspace.dim F (span_vs (set (cols A)))"
+where "rank A = vectorspace.dim class_ring (span_vs (set (cols A)))"
 
 lemma (in vec_space) rank_card_indpt:
 assumes "A \<in> carrier\<^sub>m n nc"
@@ -155,7 +155,7 @@ proof -
   have 2:"finite (set (cols A))" by simp
   have "card (set (cols A)) = nc"
     using assms(1) assms(3) distinct_card by fastforce
-  have 3:"vectorspace.dim F (span_vs (set (cols A))) = card (set (cols A))"
+  have 3:"vectorspace.dim class_ring (span_vs (set (cols A))) = card (set (cols A))"
     using `rank A = nc`[unfolded rank_def]
     using assms(1) assms(3) distinct_card by fastforce
   show ?thesis using full_dim_span[OF 1 2 3] .
@@ -224,7 +224,7 @@ proof -
     assms(1) by auto
   have 6:"lincomb (\<lambda>a. v $ find_first a (cols A)) (set (cols A)) = \<zero>\<^sub>v n"
     using assms(1) assms(2) assms(4) assms(5) lincomb_eq_mat_mult by auto
-  show ?thesis using lin_dep_crit[OF 1 2 3 4 5 6] by metis
+  show ?thesis using lin_dep_crit[OF 1 2 _ 4 5 6] by metis
 qed
 
 lemma (in vec_space) lin_depE:
@@ -526,23 +526,24 @@ proof -
     then show "x \<in> subspace_sum W1 W2"
       unfolding W1_def W2_def `x = col A i \<oplus>\<^sub>v col B i` submodule_sum_def by blast
   qed
-  have "subspace F (subspace_sum W1 W2) V"
+  have "subspace class_ring (subspace_sum W1 W2) V"
     by (metis W1_def W2_def assms(1) assms(2) cols_dim mat_carrierD(1) span_is_submodule subspace_def sum_is_submodule vec_vs)
   then have "span (set (cols (A \<oplus>\<^sub>m B))) \<subseteq> subspace_sum W1 W2"
     by (simp add: \<open>set (cols (A \<oplus>\<^sub>m B)) \<subseteq> subspace_sum W1 W2\<close> span_is_subset)
-  have "subspace F (span (set (cols (A \<oplus>\<^sub>m B)))) V" by (metis assms(2) cols_dim mat_add_closed mat_carrierD(1) span_is_subspace)
-  have subspace:"subspace F (span (set (cols (A \<oplus>\<^sub>m B)))) (vs (subspace_sum W1 W2))"
-    using nested_subspaces[OF `subspace F (subspace_sum W1 W2) V` `subspace F (span (set (cols (A \<oplus>\<^sub>m B)))) V`
+  have "subspace class_ring (span (set (cols (A \<oplus>\<^sub>m B)))) V" by (metis assms(2) cols_dim mat_add_closed mat_carrierD(1) span_is_subspace)
+  have subspace:"subspace class_ring (span (set (cols (A \<oplus>\<^sub>m B)))) (vs (subspace_sum W1 W2))"
+    using nested_subspaces[OF `subspace class_ring (subspace_sum W1 W2) V` `subspace class_ring (span (set (cols (A \<oplus>\<^sub>m B)))) V`
     `span (set (cols (A \<oplus>\<^sub>m B))) \<subseteq> subspace_sum W1 W2`] .
-  have "vectorspace.fin_dim F (vs W1)"  "vectorspace.fin_dim F (vs W2)" "subspace F W1 V" "subspace F W2 V"
+  have "vectorspace.fin_dim class_ring (vs W1)" "vectorspace.fin_dim class_ring (vs W2)"
+       "subspace class_ring W1 V" "subspace class_ring W2 V"
     using span_is_subspace W1_def W2_def assms(1) assms(2) cols_dim mat_carrierD fin_dim_span_cols by auto
-  then have fin_dim: "vectorspace.fin_dim F (vs (subspace_sum W1 W2))" using fin_dim_subspace_sum by auto
-  have "vectorspace.fin_dim F (span_vs (set (cols (A \<oplus>\<^sub>m B))))" using assms(2) mat_add_closed vec_space.fin_dim_span_cols by blast
-  then have "rank (A \<oplus>\<^sub>m B) \<le> vectorspace.dim F (vs (subspace_sum W1 W2))" unfolding rank_def
-    using vectorspace.subspace_dim[OF subspace_is_vs[OF `subspace F (subspace_sum W1 W2) V`] subspace fin_dim] by auto
-  also have "vectorspace.dim F (vs (subspace_sum W1 W2)) \<le> rank A + rank B" unfolding rank_def
-    using W1_def W2_def \<open>subspace F W1 V\<close> \<open>subspace F W2 V\<close> \<open>vectorspace.fin_dim F (vs W1)\<close>
-    \<open>vectorspace.fin_dim F (vs W2)\<close> subspace_def vectorspace.dim_subadditive by blast
+  then have fin_dim: "vectorspace.fin_dim class_ring (vs (subspace_sum W1 W2))" using fin_dim_subspace_sum by auto
+  have "vectorspace.fin_dim class_ring (span_vs (set (cols (A \<oplus>\<^sub>m B))))" using assms(2) mat_add_closed vec_space.fin_dim_span_cols by blast
+  then have "rank (A \<oplus>\<^sub>m B) \<le> vectorspace.dim class_ring (vs (subspace_sum W1 W2))" unfolding rank_def
+    using vectorspace.subspace_dim[OF subspace_is_vs[OF `subspace class_ring (subspace_sum W1 W2) V`] subspace fin_dim] by auto
+  also have "vectorspace.dim class_ring (vs (subspace_sum W1 W2)) \<le> rank A + rank B" unfolding rank_def
+    using W1_def W2_def \<open>subspace class_ring W1 V\<close> \<open>subspace class_ring W2 V\<close> \<open>vectorspace.fin_dim class_ring (vs W1)\<close>
+    \<open>vectorspace.fin_dim class_ring (vs W2)\<close> subspace_def vectorspace.dim_subadditive by blast
   finally show ?thesis by auto
 qed
 
@@ -550,14 +551,14 @@ lemma (in vec_space) span_zero: "span {zero V} = {zero V}"
   by (metis (no_types, lifting) empty_subsetI in_own_span span_is_submodule span_is_subset
   span_is_subset2 subset_antisym vectorspace.span_empty vectorspace_axioms)
 
-lemma (in vec_space) dim_zero_vs: "vectorspace.dim F (span_vs {}) = 0"
+lemma (in vec_space) dim_zero_vs: "vectorspace.dim class_ring (span_vs {}) = 0"
 proof -
-  have "vectorspace F (span_vs {})" using field.field_axioms span_is_submodule submodule_is_module vectorspace_def by auto
+  have "vectorspace class_ring (span_vs {})" using field.field_axioms span_is_submodule submodule_is_module vectorspace_def by auto
   have "{} \<subseteq> carrier\<^sub>v n \<and> lin_indpt {}"
     by (metis (no_types) empty_subsetI fin_dim finite_basis_exists subset_li_is_li vec_vs vectorspace.basis_def)
-  then have "vectorspace.basis F (span_vs {}) {}" using vectorspace.basis_def
-    by (simp add: \<open>vectorspace F (vs (span {}))\<close> span_is_submodule span_li_not_depend(1) span_li_not_depend(2) vectorspace.basis_def)
-  then show ?thesis using \<open>vectorspace F (vs (span {}))\<close> vectorspace.dim_basis by fastforce
+  then have "vectorspace.basis class_ring (span_vs {}) {}" using vectorspace.basis_def
+    by (simp add: \<open>vectorspace class_ring (vs (span {}))\<close> span_is_submodule span_li_not_depend(1) span_li_not_depend(2) vectorspace.basis_def)
+  then show ?thesis using \<open>vectorspace class_ring (vs (span {}))\<close> vectorspace.dim_basis by fastforce
 qed
 
 lemma (in vec_space) rank_0I: "rank (\<zero>\<^sub>m n nc) = 0"
@@ -593,23 +594,23 @@ proof -
         unfolding \<open>v = col A c\<close> col_def vec_index_scalar_mult(1)[OF `r < dim\<^sub>v (Matrix.vec n f)`]
         vec_index_vec[OF `r < n`] vec_index_vec[OF `r < dim\<^sub>r A`] by (simp add: \<open>c < dim\<^sub>c A\<close> \<open>r < dim\<^sub>r A\<close> assms(2))
     qed
-    then show "v \<in> span {vec n f}" using submodule.smult_closed[OF span_is_submodule] cF
+    then show "v \<in> span {vec n f}" using submodule.smult_closed[OF span_is_submodule]
       using UNIV_I empty_subsetI insert_subset span_self vec_dim vec_module_simps(4) by auto
   qed
-  have "vectorspace F (vs (span {Matrix.vec n f}))" using span_is_subspace[THEN subspace_is_vs, of "{vec n f}"] by auto
-  have "submodule F (span {Matrix.vec n f}) V" by (simp add: span_is_submodule)
-  have "subspace F (span (set (cols A))) (vs (span {Matrix.vec n f}))"
-    using vectorspace.span_is_subspace[OF `vectorspace F (vs (span {Matrix.vec n f}))`, of "set (cols A)", unfolded
-    span_li_not_depend(1)[OF `set (cols A) \<subseteq> span {vec n f}` `submodule F (span {Matrix.vec n f}) V`]]
+  have "vectorspace class_ring (vs (span {Matrix.vec n f}))" using span_is_subspace[THEN subspace_is_vs, of "{vec n f}"] by auto
+  have "submodule class_ring (span {Matrix.vec n f}) V" by (simp add: span_is_submodule)
+  have "subspace class_ring(span (set (cols A))) (vs (span {Matrix.vec n f}))"
+    using vectorspace.span_is_subspace[OF `vectorspace class_ring (vs (span {Matrix.vec n f}))`, of "set (cols A)", unfolded
+    span_li_not_depend(1)[OF `set (cols A) \<subseteq> span {vec n f}` `submodule class_ring (span {Matrix.vec n f}) V`]]
     `set (cols A) \<subseteq> span {vec n f}` by auto
-  have fin_dim:"vectorspace.fin_dim F (vs (span {Matrix.vec n f}))"
-       "vectorspace.fin_dim F (vs (span {Matrix.vec n f})\<lparr>carrier := span (set (cols A))\<rparr>)"
+  have fin_dim:"vectorspace.fin_dim class_ring (vs (span {Matrix.vec n f}))"
+       "vectorspace.fin_dim class_ring (vs (span {Matrix.vec n f})\<lparr>carrier := span (set (cols A))\<rparr>)"
     using fin_dim_span fin_dim_span_cols `A \<in> carrier\<^sub>m n nc` by auto
-  have "vectorspace.dim F (vs (span {Matrix.vec n f})) \<le> 1"
-    using vectorspace.dim_le1I[OF `vectorspace F (vs (span {Matrix.vec n f}))`]
-    span_mem span_li_not_depend(1)[OF _ `submodule F (span {Matrix.vec n f}) V`] by simp
+  have "vectorspace.dim class_ring (vs (span {Matrix.vec n f})) \<le> 1"
+    using vectorspace.dim_le1I[OF `vectorspace class_ring (vs (span {Matrix.vec n f}))`]
+    span_mem span_li_not_depend(1)[OF _ `submodule class_ring (span {Matrix.vec n f}) V`] by simp
   then show ?thesis unfolding rank_def using  "vectorspace.subspace_dim"[OF
-    `vectorspace F (vs (span {Matrix.vec n f}))` `subspace F (span (set (cols A))) (vs (span {Matrix.vec n f}))`
+    `vectorspace class_ring (vs (span {Matrix.vec n f}))` `subspace class_ring (span (set (cols A))) (vs (span {Matrix.vec n f}))`
     fin_dim(1) fin_dim(2)] by simp
 qed
 

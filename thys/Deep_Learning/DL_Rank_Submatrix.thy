@@ -84,8 +84,8 @@ lemma (in vec_space) lin_dep_submatrix_UNIV:
 assumes "A \<in> carrier\<^sub>m n nc"
 assumes "lin_dep (set (cols A))"
 assumes "distinct (cols (submatrix A I UNIV))"
-shows "LinearCombinations.module.lin_dep F (module\<^sub>v TYPE('a) (card {i. i < n \<and> i \<in> I})) (set (cols (submatrix A I UNIV)))"
-  (is "LinearCombinations.module.lin_dep F ?M (set ?S')")
+shows "LinearCombinations.module.lin_dep class_ring (module\<^sub>v TYPE('a) (card {i. i < n \<and> i \<in> I})) (set (cols (submatrix A I UNIV)))"
+  (is "LinearCombinations.module.lin_dep class_ring ?M (set ?S')")
 proof -
   obtain v where 2:"v \<in> carrier\<^sub>v nc" and 3:"v \<noteq> \<zero>\<^sub>v nc" and "A \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v n"
     using vec_space.lin_depE[OF assms(1) assms(2) distinct_cols_submatrix_UNIV[OF assms(3)]] by auto
@@ -118,11 +118,11 @@ proof -
    using vec_space.low_rank_det_zero assms(2) mat_carrierI by auto
   then have distinct:"distinct (cols (submatrix A I J))" using vec_space.non_distinct_low_rank
    using square less_irrefl mat_carrierI by fastforce
-  then have indpt:"LinearCombinations.module.lin_indpt F (module\<^sub>v TYPE('a) (dim\<^sub>r (submatrix A I J))) (set (cols (submatrix A I J)))"
+  then have indpt:"LinearCombinations.module.lin_indpt class_ring (module\<^sub>v TYPE('a) (dim\<^sub>r (submatrix A I J))) (set (cols (submatrix A I J)))"
      using vec_space.full_rank_lin_indpt[OF _ full_rank distinct] square by fastforce
 
   have distinct2: "distinct (cols (submatrix (submatrix A UNIV J) I UNIV))" using submatrix_split distinct by metis
-  have indpt2:"LinearCombinations.module.lin_indpt F (module\<^sub>v TYPE('a) (card {i. i < n \<and> i \<in> I})) (set (cols (submatrix (submatrix A UNIV J) I UNIV)))"
+  have indpt2:"LinearCombinations.module.lin_indpt class_ring (module\<^sub>v TYPE('a) (card {i. i < n \<and> i \<in> I})) (set (cols (submatrix (submatrix A UNIV J) I UNIV)))"
     using submatrix_split dim_submatrix(1) indpt by (metis (full_types) assms(1) mat_carrierD(1))
 
   have "submatrix A UNIV J \<in> carrier\<^sub>m n (dim\<^sub>c (submatrix A UNIV J))"
