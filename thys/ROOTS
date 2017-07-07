@@ -68,6 +68,7 @@ Consensus_Refined
 Constructor_Funs
 Containers
 CoreC++
+CRDT
 CryptoBasedCompositionalProperties
 CryptHOL
 CYK

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Program Construction and Verification Components Based on Kleene Algebra - Archive of Formal Proofs
+<title>A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,23 +61,27 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">P</font>rogram
+  <h1>          <font class="first">A</font>
   
-          <font class="first">C</font>onstruction
+          framework
   
-          and
+          for
   
-          <font class="first">V</font>erification
+          establishing
   
-          <font class="first">C</font>omponents
+          <font class="first">S</font>trong
   
-          <font class="first">B</font>ased
+          <font class="first">E</font>ventual
   
-          on
+          <font class="first">C</font>onsistency
   
-          <font class="first">K</font>leene
+          for
   
-          <font class="first">A</font>lgebra
+          <font class="first">C</font>onflict-free
+  
+          <font class="first">R</font>eplicated
+  
+          <font class="first">D</font>atatypes
   
 </h1>
   <p>&nbsp;</p>
@@ -86,7 +90,7 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Program Construction and Verification Components Based on Kleene Algebra</td>
+  <td class="data" width="80%">A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes</td>
 </tr>
 
 <tr>
@@ -94,8 +98,10 @@
           Authors:
       </td>
   <td class="data">
-                    Victor B. F. Gomes (vb358 /at/ cam /dot/ ac /dot/ uk) and
-          Georg Struth (g /dot/ struth /at/ sheffield /dot/ ac /dot/ uk)
+                      Victor B. F. Gomes (vb358 /at/ cam /dot/ ac /dot/ uk),
+                  Martin Kleppmann (martin /dot/ kleppmann /at/ cl /dot/ cam /dot/ ac /dot/ uk),
+                Dominic P. Mulligan (dominic /dot/ p /dot/ mulligan /at/ googlemail /dot/ com) and
+          Alastair R. Beresford (arb33 /at/ cam /dot/ ac /dot/ uk)
       </td>
 </tr>
 
@@ -103,37 +109,39 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2016-06-18</td>
+  <td class="data">2017-07-07</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-Variants of Kleene algebra support program construction and
-verification by algebraic reasoning. This entry provides a
-verification component for Hoare logic based on Kleene algebra with
-tests, verification components for weakest preconditions and strongest
-postconditions based on Kleene algebra with domain and a component for
-step-wise refinement based on refinement Kleene algebra with tests. In
-addition to these components for the partial correctness of while
-programs, a verification component for total correctness based on
-divergence Kleene algebras and one for (partial correctness) of
-recursive programs based on domain quantales are provided. Finally we
-have integrated memory models for programs with pointers and a program
-trace semantics into the weakest precondition component.</td>
+In this work, we focus on the correctness of Conflict-free Replicated
+Data Types (CRDTs), a class of algorithm that provides strong eventual
+consistency guarantees for replicated data. We develop a modular and
+reusable framework for verifying the correctness of CRDT algorithms.
+We avoid correctness issues that have dogged previous mechanised
+proofs in this area by including a network model in our formalisation,
+and proving that our theorems hold in all possible network behaviours.
+Our axiomatic network model is a standard abstraction that accurately
+reflects the behaviour of real-world computer networks. Moreover, we
+identify an abstract convergence theorem, a property of order
+relations, which provides a formal definition of strong eventual
+consistency. We then obtain the first machine-checked correctness
+theorems for three concrete CRDTs: the Replicated Growable Array, the
+Observed-Remove Set, and an Increment-Decrement Counter.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Algebraic_VCs-AFP,
-  author  = {Victor B. F. Gomes and Georg Struth},
-  title   = {Program Construction and Verification Components Based on Kleene Algebra},
+        <pre>@article{CRDT-AFP,
+  author  = {Victor B. F. Gomes and Martin Kleppmann and Dominic P. Mulligan and Alastair R. Beresford},
+  title   = {A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes},
   journal = {Archive of Formal Proofs},
-  month   = jun,
-  year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Algebraic_VCs.shtml},
+  month   = jul,
+  year    = 2017,
+  note    = {\url{http://isa-afp.org/entries/CRDT.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -144,9 +152,7 @@ trace semantics into the weakest precondition component.</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                      <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="KAD.shtml">KAD</a>, <a href="KAT_and_DRA.shtml">KAT_and_DRA</a>      </td></tr>
-          
+                    
                     
 
         
@@ -159,29 +165,23 @@ trace semantics into the weakest precondition component.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Algebraic_VCs/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Algebraic_VCs/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/CRDT/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/CRDT/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Algebraic_VCs/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/CRDT/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Algebraic_VCs-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-CRDT-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
     <tr><td class="links">Older releases:
-          <ul>
-                        <li>Isabelle 2016:
-          <a href="../release/afp-Algebraic_VCs-2016-06-18.tar.gz">
-            afp-Algebraic_VCs-2016-06-18.tar.gz
-          </a>
-          </li>
-                    </ul>
+        None
         </td></tr>
 
   </tbody>

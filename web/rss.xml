@@ -9,7 +9,29 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>21 Jun 2017 00:00:00 +0000</pubDate>
+    <pubDate>07 Jul 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes</title>
+              <link>https://www.isa-afp.org/entries/CRDT.shtml</link>
+       <guid>https://www.isa-afp.org/entries/CRDT.shtml</guid>
+       <dc:creator> Victor B. F. Gomes, Martin Kleppmann, Dominic P. Mulligan, Alastair R. Beresford       </dc:creator>
+       <pubDate>07 Jul 2017 00:00:00 +0000</pubDate>
+       <description>
+In this work, we focus on the correctness of Conflict-free Replicated
+Data Types (CRDTs), a class of algorithm that provides strong eventual
+consistency guarantees for replicated data. We develop a modular and
+reusable framework for verifying the correctness of CRDT algorithms.
+We avoid correctness issues that have dogged previous mechanised
+proofs in this area by including a network model in our formalisation,
+and proving that our theorems hold in all possible network behaviours.
+Our axiomatic network model is a standard abstraction that accurately
+reflects the behaviour of real-world computer networks. Moreover, we
+identify an abstract convergence theorem, a property of order
+relations, which provides a formal definition of strong eventual
+consistency. We then obtain the first machine-checked correctness
+theorems for three concrete CRDTs: the Replicated Growable Array, the
+Observed-Remove Set, and an Increment-Decrement Counter.</description>
+    </item>
     <item>
        <title>Propositional Proof Systems</title>
               <link>https://www.isa-afp.org/entries/Propositional_Proof_Systems.shtml</link>
@@ -534,28 +556,6 @@ class of protocols supported to include those with non-atomic keys and
 equationally defined cryptographic operators. We use these extensions
 to develop key agreement protocols including signed Diffie-Hellman and
 the core of IKEv1 and SKEME.</description>
-    </item>
-    <item>
-       <title>Bernoulli Numbers</title>
-              <link>https://www.isa-afp.org/entries/Bernoulli.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Bernoulli.shtml</guid>
-       <dc:creator> Lukas Bulwahn, Manuel Eberl       </dc:creator>
-       <pubDate>24 Jan 2017 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;Bernoulli numbers were first discovered in the closed-form
-expansion of the sum 1&lt;sup&gt;m&lt;/sup&gt; +
-2&lt;sup&gt;m&lt;/sup&gt; + &amp;hellip; + n&lt;sup&gt;m&lt;/sup&gt;
-for a fixed m and appear in many other places. This entry provides
-three different definitions for them: a recursive one, an explicit
-one, and one through their exponential generating function.&lt;/p&gt;
-&lt;p&gt;In addition, we prove some basic facts, e.g. their relation
-to sums of powers of integers and that all odd Bernoulli numbers
-except the first are zero. We also prove the correctness of the
-Akiyama&amp;ndash;Tanigawa algorithm for computing Bernoulli numbers
-with reasonable efficiency, and we define the periodic Bernoulli
-polynomials (which appear e.g. in the Euler&amp;ndash;MacLaurin
-summation formula and the expansion of the log-Gamma function) and
-prove their basic properties.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
