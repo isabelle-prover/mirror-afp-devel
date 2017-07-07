@@ -317,10 +317,10 @@ lemma  bmod_oner: "\<otimes> \<rho> \<delta> f x = f x"
   apply (metis bot.extremum)
   by (metis (mono_tags, lifting) Sup_upper mem_Collect_eq unitl_ex)
 
-lemma [simp]: "\<delta> \<star> f = f"
+lemma pid_unitl [simp]: "\<delta> \<star> f = f"
   by (simp add: fun_eq_iff times_rel_fun_def bmod_oner)
 
-lemma [simp]: "f \<star> (\<delta>::'a \<Rightarrow> 'b::unital_quantale) = f"
+lemma pid_unitr [simp]: "f \<star> (\<delta>::'a \<Rightarrow> 'b::unital_quantale) = f"
   by (simp add: fun_eq_iff times_rel_fun_def bmod_onel)
     
 lemma bmod_assoc_weak_aux: 

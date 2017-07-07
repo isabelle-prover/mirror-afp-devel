@@ -170,7 +170,7 @@ lemma times_fun_prod_canc: "(f * g) (x, y) = \<Squnion>{f (x, z) * g (x, rquot y
 text \<open>The following statement shows, in a generalised setting, that the magic wand operator of separation
 logic can be lifted from the heap subtraction operation generalised to a cancellative PAM.\<close>
 
-lemma "(fres f g) (x::'b::cancellative_pam) = \<Sqinter>{(f y) \<leftarrow> (g z) | y z . z \<preceq>\<^sub>R y \<and> x = rquot y z}"
+lemma fres_lift: "(fres f g) (x::'b::cancellative_pam) = \<Sqinter>{(f y) \<leftarrow> (g z) | y z . z \<preceq>\<^sub>R y \<and> x = rquot y z}"
 proof (rule antisym)
   { fix h y z 
     assume assms: "h \<cdot> g \<le> f" "z \<preceq>\<^sub>R y" "x = rquot y z"
