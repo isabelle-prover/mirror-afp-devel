@@ -9,7 +9,29 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>06 Jul 2017 00:00:00 +0000</pubDate>
+    <pubDate>07 Jul 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes</title>
+              <link>https://www.isa-afp.org/entries/CRDT.shtml</link>
+       <guid>https://www.isa-afp.org/entries/CRDT.shtml</guid>
+       <dc:creator> Victor B. F. Gomes, Martin Kleppmann, Dominic P. Mulligan, Alastair R. Beresford       </dc:creator>
+       <pubDate>07 Jul 2017 00:00:00 +0000</pubDate>
+       <description>
+In this work, we focus on the correctness of Conflict-free Replicated
+Data Types (CRDTs), a class of algorithm that provides strong eventual
+consistency guarantees for replicated data. We develop a modular and
+reusable framework for verifying the correctness of CRDT algorithms.
+We avoid correctness issues that have dogged previous mechanised
+proofs in this area by including a network model in our formalisation,
+and proving that our theorems hold in all possible network behaviours.
+Our axiomatic network model is a standard abstraction that accurately
+reflects the behaviour of real-world computer networks. Moreover, we
+identify an abstract convergence theorem, a property of order
+relations, which provides a formal definition of strong eventual
+consistency. We then obtain the first machine-checked correctness
+theorems for three concrete CRDTs: the Replicated Growable Array, the
+Observed-Remove Set, and an Increment-Decrement Counter.</description>
+    </item>
     <item>
        <title>Stone-Kleene Relation Algebras</title>
               <link>https://www.isa-afp.org/entries/Stone_Kleene_Relation_Algebras.shtml</link>
@@ -532,21 +554,6 @@ authors, published in 2017 in the &lt;em&gt;Journal of Automated
 Reasoning&lt;/em&gt;. The abstract proof can be instantiated for
 various formalisms, including first-order logic with inductive
 predicates.</description>
-    </item>
-    <item>
-       <title>Stone Relation Algebras</title>
-              <link>https://www.isa-afp.org/entries/Stone_Relation_Algebras.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Stone_Relation_Algebras.shtml</guid>
-       <dc:creator> Walter Guttmann       </dc:creator>
-       <pubDate>07 Feb 2017 00:00:00 +0000</pubDate>
-       <description>
-We develop Stone relation algebras, which generalise relation algebras
-by replacing the underlying Boolean algebra structure with a Stone
-algebra. We show that finite matrices over extended real numbers form
-an instance. As a consequence, relation-algebraic concepts and methods
-can be used for reasoning about weighted graphs. We also develop a
-fixpoint calculus and apply it to compare different definitions of
-reflexive-transitive closures in semirings.</description>
     </item>
   </channel>
 </rss>
