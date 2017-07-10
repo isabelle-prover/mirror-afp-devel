@@ -89,7 +89,7 @@ proof (rule sum.cong[OF refl])
     using conjugate_dist_mul vec_conjugate_index by auto
 qed
 
-abbreviation cscalar_prod :: "'a vec \<Rightarrow> 'a vec \<Rightarrow> 'a :: conjugatable_field" (infix "\<bullet>c" 70)
+abbreviation cscalar_prod :: "'a vec \<Rightarrow> 'a vec \<Rightarrow> 'a :: conjugatable_ring" (infix "\<bullet>c" 70)
   where "op \<bullet>c == \<lambda>v w. v \<bullet> conjugate\<^sub>v w"
 
 lemma vec_conjugate_conjugate_sprod[simp]:
@@ -98,12 +98,13 @@ lemma vec_conjugate_conjugate_sprod[simp]:
   apply (subst vec_conjugate_dist_sprod[of _ n]) by auto
 
 lemma vec_conjugate_sprod_comm:
+  fixes v w :: "'a :: {conjugatable_ring, comm_ring} vec"
   assumes "v : carrier\<^sub>v n" and "w : carrier\<^sub>v n"
   shows "v \<bullet>c w = (conjugate\<^sub>v w \<bullet> v)"
-  unfolding scalar_prod_def using assms by(subst sum_ivl_cong, auto)
+  unfolding scalar_prod_def using assms by(subst sum_ivl_cong, auto simp: ac_simps)
 
 lemma vec_conjugate_square_zero:
-  fixes v :: "'a :: conjugatable_ordered_field vec"
+  fixes v :: "'a :: {conjugatable_ordered_ring,semiring_no_zero_divisors} vec"
   assumes v[simp]: "v : carrier\<^sub>v n"
   shows "v \<bullet>c v = 0 \<longleftrightarrow> v = \<zero>\<^sub>v n"
 proof
