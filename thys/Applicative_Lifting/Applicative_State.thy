@@ -1,25 +1,17 @@
-(* Author: Joshua Schneider, ETH Zurich *)
+(* Author: Lars Hupel, TU München *)
 
 subsection \<open>State monad\<close>
 
-theory Applicative_State imports
+theory Applicative_State
+imports
   Applicative
-  "~~/src/Tools/Adhoc_Overloading"
+  "~~/src/HOL/Library/State_Monad"
 begin
 
-type_synonym ('a, 's) state = "'s \<Rightarrow> 'a \<times> 's"
-
-definition "ap_state f x = (\<lambda>s. case f s of (g, s') \<Rightarrow> case x s' of (y, s'') \<Rightarrow> (g y, s''))"
-
-abbreviation (input) "pure_state \<equiv> Pair"
-
-adhoc_overloading Applicative.ap ap_state
-
-applicative state
-for
-  pure: pure_state
-  ap: "ap_state :: ('a \<Rightarrow> 'b, 's) state \<Rightarrow> ('a, 's) state \<Rightarrow> ('b, 's) state"
-unfolding ap_state_def
-by (auto split: prod.split)
+applicative state for
+  pure: State_Monad.return
+  ap: State_Monad.ap
+unfolding State_Monad.return_def State_Monad.ap_def
+by (auto split: prod.splits)
 
 end

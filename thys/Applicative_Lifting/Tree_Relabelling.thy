@@ -3,7 +3,7 @@
 subsection \<open>Tree relabelling\<close>
 
 theory Tree_Relabelling imports
-  Applicative_State
+  Applicative_Open_State
   Applicative_Option
   Applicative_PMF
   "~~/src/HOL/Library/Stream"
@@ -22,7 +22,7 @@ text \<open> Hutton and Fulger \cite{HuttonFulger2008TFP} suggested the followin
   the implementation of the state monad operations.  Gibbons and Hinze \cite{GibbonsHinze2011ICFP}
   suggest to state the correctness in an effectful way using an exception-state monad.  Thereby, they
   lose the applicative structure and have to resort to a full monad.
-  
+
   Here, we model the tree relabelling function three times. First, we state correctness in pure
   terms following Hutton and Fulger.  Second, we take Gibbons' and Bird's approach of considering
   traversals. Third, we state correctness effectfully, but only using the applicative functors.
@@ -388,7 +388,7 @@ end
 subsubsection \<open>Probabilistic tree relabelling\<close>
 
 primrec mirror :: "'a tree \<Rightarrow> 'a tree"
-where 
+where
   "mirror (Leaf x) = Leaf x"
 | "mirror (Node l r) = Node (mirror r) (mirror l)"
 

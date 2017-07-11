@@ -11,6 +11,7 @@ theory Applicative_Functor imports
   Applicative_Monoid
   Applicative_State
   Applicative_Stream
+  Applicative_Open_State
   Applicative_PMF
   Applicative_Probability_List
   Applicative_Star

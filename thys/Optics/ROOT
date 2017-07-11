@@ -22,6 +22,9 @@ session "Optics" (AFP) = "HOL-Eisbach" +
     Prisms
   theories [document=false]
     Lens_Record_Example
+    "~~/src/HOL/Library/State_Monad"
+  theories
+    Lens_State
   document_files
     "root.bib"
     "root.tex"
