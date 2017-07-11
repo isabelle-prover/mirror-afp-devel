@@ -10,9 +10,6 @@ unbundle fmap.lifting
 
 type_notation fmap (infix "\<rightharpoonup>\<^sub>f" 9)
 
-subsection {* Union *}
-
-notation fmadd (infixl "\<oplus>" 100)
 
 subsection {* Difference *}
 
@@ -22,14 +19,9 @@ where
   "map_diff f ks = restrict_map f (- fset ks)"
 
 lift_definition
-  fmap_diff :: "('k \<rightharpoonup>\<^sub>f 'v) \<Rightarrow> 'k fset \<Rightarrow> ('k \<rightharpoonup>\<^sub>f 'v)"
+  fmap_diff :: "('k \<rightharpoonup>\<^sub>f 'v) \<Rightarrow> 'k fset \<Rightarrow> ('k \<rightharpoonup>\<^sub>f 'v)" (infix "\<ominus>" 110)
 is "map_diff"
 by (auto simp add: map_diff_def)
-
-abbreviation
-  FMAP_DIFF :: "('k \<rightharpoonup>\<^sub>f 'v) \<Rightarrow> 'k fset \<Rightarrow> ('k \<rightharpoonup>\<^sub>f 'v)" (infix "\<ominus>" 110)
-where
-  "xs \<ominus> ys \<equiv> fmap_diff xs ys"
 
 subsection {* Comprehension *}
 
@@ -47,36 +39,21 @@ lemma dom_make_map:
 by (metis domIff make_map_def not_Some_eq set_eqI)
 
 lift_definition
-  make_fmap :: "'k fset \<Rightarrow> 'v \<Rightarrow> ('k \<rightharpoonup>\<^sub>f 'v)"
+  make_fmap :: "'k fset \<Rightarrow> 'v \<Rightarrow> ('k \<rightharpoonup>\<^sub>f 'v)" ("[ _ |=> _ ]")
 is "make_map" parametric make_map_transfer
 by (unfold make_map_def dom_def, auto)
 
-abbreviation
-  MAKE_FMAP :: "'k fset \<Rightarrow> 'v \<Rightarrow> ('k \<rightharpoonup>\<^sub>f 'v)" ("[ _ |=> _ ]")
-where
-  "[ ks |=> v ] \<equiv> make_fmap ks v"
+lemma make_fmap_empty[simp]: "[ {||} |=> f ] = fmempty"
+by transfer (simp add: make_map_def)
 
-subsection {* The empty finite partial function *}
 
-abbreviation "fmap_empty \<equiv> fmempty"
 
 subsection {* Domain *}
 
-abbreviation "fdom \<equiv> fmdom"
-
-lemma inv_fset:
-  assumes "finite X"
-  shows "\<exists>!x. fset x = X"
-using assms
-apply (induct rule: finite_induct)
-apply (intro ex1I[of _ "{||}"])
-apply (metis bot_fset.rep_eq)
-apply (metis fset_cong bot_fset.rep_eq)
-by (metis finsert.rep_eq fset_inject)
 
 lemma fmap_add_commute:
-  assumes "fdom A |\<inter>| fdom B = {||}"
-  shows "A \<oplus> B = B \<oplus> A"
+  assumes "fmdom A |\<inter>| fmdom B = {||}"
+  shows "A ++\<^sub>f B = B ++\<^sub>f A"
 using assms including fset.lifting
 apply (transfer)
 apply (rule ext)
@@ -84,11 +61,10 @@ apply (auto simp: dom_def map_add_def split: option.splits)
 done
 
 lemma make_fmap_union:
-  "[ xs |=> v ] \<oplus> [ ys |=> v] = [ xs |\<union>| ys |=> v ]"
+  "[ xs |=> v ] ++\<^sub>f [ ys |=> v] = [ xs |\<union>| ys |=> v ]"
 by (transfer, auto simp add: make_map_def map_add_def)
 
-lemma fdom_make_fmap:
-  "fdom [ ks |=> v ] = ks"
+lemma fdom_make_fmap: "fmdom [ ks |=> v ] = ks"
 (* FIXME proper transfer proof *)
 apply (subst fmdom_def)
 apply transfer
@@ -111,20 +87,20 @@ lemma lookup_make_fmap1:
 by (metis finsert.rep_eq insert_iff lookup_make_fmap)
 
 lemma lookup_union1:
-  assumes "k |\<in>| fdom ys"
-  shows "lookup (xs \<oplus> ys) k = lookup ys k"
+  assumes "k |\<in>| fmdom ys"
+  shows "lookup (xs ++\<^sub>f ys) k = lookup ys k"
 using assms including fset.lifting
 by transfer auto
 
 lemma lookup_union2:
-  assumes "k |\<notin>| fdom ys"
-  shows "lookup (xs \<oplus> ys) k = lookup xs k"
+  assumes "k |\<notin>| fmdom ys"
+  shows "lookup (xs ++\<^sub>f ys) k = lookup xs k"
 using assms including fset.lifting
 by transfer (auto simp: map_add_def split: option.splits)
 
 lemma lookup_union3:
-  assumes "k |\<notin>| fdom xs"
-  shows "lookup (xs \<oplus> ys) k = lookup ys k"
+  assumes "k |\<notin>| fmdom xs"
+  shows "lookup (xs ++\<^sub>f ys) k = lookup ys k"
 using assms including fset.lifting
 by transfer (auto simp: map_add_def split: option.splits)
 

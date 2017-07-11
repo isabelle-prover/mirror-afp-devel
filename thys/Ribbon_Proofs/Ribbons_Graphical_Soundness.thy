@@ -48,8 +48,8 @@ text {* The @{term "next_ps \<sigma>"} function processes one node or one edge i
 
 fun next_ps :: "proofstate \<Rightarrow> node + edge \<Rightarrow> proofstate"
 where
-  "next_ps \<sigma> (Inl v) = \<sigma> \<ominus> {|v|} \<oplus> [{|v|} |=> Bot]"
-| "next_ps \<sigma> (Inr e) = \<sigma> \<ominus> fst3 e \<oplus> [thd3 e |=> Top]"
+  "next_ps \<sigma> (Inl v) = \<sigma> \<ominus> {|v|} ++\<^sub>f [{|v|} |=> Bot]"
+| "next_ps \<sigma> (Inr e) = \<sigma> \<ominus> fst3 e ++\<^sub>f [thd3 e |=> Top]"
 
 text {* The function @{term "mk_ps_chain \<Pi> \<pi>"} generates from @{term \<pi>}, which
   is a list of nodes and edges, a proofstate chain, by interspersing the
@@ -191,14 +191,14 @@ text {* The first proofstate for the partially-processed diagram @{term G} is
 definition
   initial_ps2 :: "[node fset, diagram] \<Rightarrow> proofstate"
 where
-  "initial_ps2 S G \<equiv> [ initials G - S |=> Top ] \<oplus> [ S |=> Bot ]"
+  "initial_ps2 S G \<equiv> [ initials G - S |=> Top ] ++\<^sub>f [ S |=> Bot ]"
 
 text {* When @{term S} is empty, the above two definitions coincide. *}
 lemma initial_ps_is_initial_ps2_with_empty_S:
   "initial_ps = initial_ps2 {||}"
 apply (unfold fun_eq_iff, intro allI)
 apply (unfold initial_ps_def initial_ps2_def)
-apply (transfer, simp add: make_map_def)
+apply simp
 done
 
 text {* The following function extracts the set of proofstate chains from
@@ -227,12 +227,12 @@ apply auto
 done
 
 text {* We now wish to describe proofstates chain that are well-formed. First,
-  let us say that @{term "f \<oplus>disjoint g"} is defined, when @{term f} and
-  @{term g} have disjoint domains, as @{term "f \<oplus> g"}. Then, a well-formed
-  proofstate chain consists of triples of the form @{term "(\<sigma> \<oplus>disjoint
-  [{| v |} |=> Top], Inl v, \<sigma> \<oplus>disjoint [{| v |} |=> Bot])"}, where @{term v}
-  is a node, or of the form @{term "(\<sigma> \<oplus>disjoint [{| vs |} |=> Bot], Inr e,
-  \<sigma> \<oplus>disjoint [{| ws |} |=> Top])"}, where @{term e} is an edge with source
+  let us say that @{term "f ++\<^sub>fdisjoint g"} is defined, when @{term f} and
+  @{term g} have disjoint domains, as @{term "f ++\<^sub>f g"}. Then, a well-formed
+  proofstate chain consists of triples of the form @{term "(\<sigma> ++\<^sub>fdisjoint
+  [{| v |} |=> Top], Inl v, \<sigma> ++\<^sub>fdisjoint [{| v |} |=> Bot])"}, where @{term v}
+  is a node, or of the form @{term "(\<sigma> ++\<^sub>fdisjoint [{| vs |} |=> Bot], Inr e,
+  \<sigma> ++\<^sub>fdisjoint [{| ws |} |=> Top])"}, where @{term e} is an edge with source
   and target nodes @{term vs} and @{term ws} respectively.
 
   The definition below describes a well-formed triple; we then lift this
@@ -242,25 +242,25 @@ definition
   wf_ps_triple :: "proofstate \<times> (node + edge) \<times> proofstate \<Rightarrow> bool"
 where
   "wf_ps_triple T = (case snd3 T of
-    Inl v \<Rightarrow> (\<exists>\<sigma>. v |\<notin>| fdom \<sigma>
-      \<and> fst3 T = [ {|v|} |=> Top ] \<oplus> \<sigma>
-      \<and> thd3 T = [ {|v|} |=> Bot ] \<oplus> \<sigma>)
-  | Inr e \<Rightarrow> (\<exists>\<sigma>. (fst3 e |\<union>| thd3 e) |\<inter>| fdom \<sigma> = {||}
-      \<and> fst3 T = [ fst3 e |=> Bot ] \<oplus> \<sigma>
-      \<and> thd3 T = [ thd3 e |=> Top ] \<oplus> \<sigma>))"
+    Inl v \<Rightarrow> (\<exists>\<sigma>. v |\<notin>| fmdom \<sigma>
+      \<and> fst3 T = [ {|v|} |=> Top ] ++\<^sub>f \<sigma>
+      \<and> thd3 T = [ {|v|} |=> Bot ] ++\<^sub>f \<sigma>)
+  | Inr e \<Rightarrow> (\<exists>\<sigma>. (fst3 e |\<union>| thd3 e) |\<inter>| fmdom \<sigma> = {||}
+      \<and> fst3 T = [ fst3 e |=> Bot ] ++\<^sub>f \<sigma>
+      \<and> thd3 T = [ thd3 e |=> Top ] ++\<^sub>f \<sigma>))"
 
 lemma wf_ps_triple_nodeI:
-  assumes "\<exists>\<sigma>. v |\<notin>| fdom \<sigma>  \<and>
-    \<sigma>1 = [ {|v|} |=> Top ] \<oplus> \<sigma> \<and>
-    \<sigma>2 = [ {|v|} |=> Bot ] \<oplus> \<sigma>"
+  assumes "\<exists>\<sigma>. v |\<notin>| fmdom \<sigma>  \<and>
+    \<sigma>1 = [ {|v|} |=> Top ] ++\<^sub>f \<sigma> \<and>
+    \<sigma>2 = [ {|v|} |=> Bot ] ++\<^sub>f \<sigma>"
   shows "wf_ps_triple (\<sigma>1, Inl v, \<sigma>2)"
 using assms unfolding wf_ps_triple_def
 by (auto simp add: fst3_simp snd3_simp thd3_simp)
 
 lemma wf_ps_triple_edgeI:
-  assumes "\<exists>\<sigma>. (fst3 e |\<union>| thd3 e) |\<inter>| fdom \<sigma> = {||}
-      \<and> \<sigma>1 = [ fst3 e |=> Bot ] \<oplus> \<sigma>
-      \<and> \<sigma>2 = [ thd3 e |=> Top ] \<oplus> \<sigma>"
+  assumes "\<exists>\<sigma>. (fst3 e |\<union>| thd3 e) |\<inter>| fmdom \<sigma> = {||}
+      \<and> \<sigma>1 = [ fst3 e |=> Bot ] ++\<^sub>f \<sigma>
+      \<and> \<sigma>2 = [ thd3 e |=> Top ] ++\<^sub>f \<sigma>"
   shows "wf_ps_triple (\<sigma>1, Inr e, \<sigma>2)"
 using assms unfolding wf_ps_triple_def
 by (auto simp add: fst3_simp snd3_simp thd3_simp)
@@ -272,7 +272,7 @@ where
 
 lemma next_initial_ps2_vertex:
   "initial_ps2 ({|v|} |\<union>| S) G
-  = initial_ps2 S G \<ominus> {|v|} \<oplus> [ {|v|} |=> Bot ]"
+  = initial_ps2 S G \<ominus> {|v|} ++\<^sub>f [ {|v|} |=> Bot ]"
 apply (unfold initial_ps2_def)
 apply transfer
 apply (auto simp add: make_map_def map_diff_def map_add_def restrict_map_def)
@@ -283,7 +283,7 @@ lemma next_initial_ps2_edge:
     "V' = V - fst3 e" and "E' = removeAll e E" and "e \<in> set E" and
     "fst3 e |\<subseteq>| S" and "S |\<subseteq>| initials G" and "wf_dia G"
   shows "initial_ps2 (S - fst3 e) G' =
-  initial_ps2 S G \<ominus> fst3 e \<oplus> [ thd3 e |=> Top ]"
+  initial_ps2 S G \<ominus> fst3 e ++\<^sub>f [ thd3 e |=> Top ]"
 proof (insert assms, unfold initial_ps2_def, transfer)
   fix G V \<Lambda> E G' V' E' e S
   assume G_def: "G = Graph V \<Lambda> E" and G'_def: "G' = Graph V' \<Lambda> E'" and
@@ -494,9 +494,8 @@ proof (induct k arbitrary: S G \<Pi>)
   apply (unfold \<Pi>_def wf_ps_chain_def, auto)
   apply (unfold post.simps initial_ps2_def `initials G = V` `terminals G = V`)
   apply (unfold `S=V`)
-  apply (subgoal_tac "V - V = {||}", simp)
-  apply (transfer, simp add: make_map_def)
-  by auto
+  apply (subgoal_tac "V - V = {||}", simp_all)
+  done
 next
   case (Suc k)
   obtain V \<Lambda> E where G_def: "G = Graph V \<Lambda> E" by (metis diagram.exhaust)
@@ -565,7 +564,7 @@ next
       hence pre_\<Pi>': "pre \<Pi>' = initial_ps2 S' G"
       by (metis pre.simps(1) pre_mk_ps_chain)
 
-      def \<sigma> \<equiv> "[ initials G - ({|v|} |\<union>| S) |=> Top ] \<oplus> [ S |=> Bot ]"
+      def \<sigma> \<equiv> "[ initials G - ({|v|} |\<union>| S) |=> Top ] ++\<^sub>f [ S |=> Bot ]"
 
       have "wf_ps_chain \<Pi>' \<and> (post \<Pi>' = [terminals G |=> Bot])"
       proof (intro Suc.hyps[of "S'"])
@@ -596,8 +595,8 @@ next
 
       show ?thesis
       proof (intro conjI)
-        have 1: "fdom [ {|v|} |=> Bot ]
-        |\<inter>| fdom ([ initials G - ({|v|} |\<union>| S) |=> Top ] \<oplus>
+        have 1: "fmdom [ {|v|} |=> Bot ]
+        |\<inter>| fmdom ([ initials G - ({|v|} |\<union>| S) |=> Top ] ++\<^sub>f
      [ S |=> Bot ]) = {||}"
         by (metis (no_types) fdom_make_fmap fmdom_add
           bot_least funion_iff finter_finsert_left le_iff_inf
@@ -695,10 +694,10 @@ next
       hence pre_\<Pi>': "pre \<Pi>' = initial_ps2 S' G'"
       by (metis pre.simps(1) pre_mk_ps_chain)
 
-      def \<sigma> \<equiv> "[ initials G - S |=> Top ] \<oplus> [ S - vs |=> Bot ]"
+      def \<sigma> \<equiv> "[ initials G - S |=> Top ] ++\<^sub>f [ S - vs |=> Bot ]"
 
       have next_initial_ps2: "initial_ps2 S' G'
-        = initial_ps2 S G \<ominus> vs \<oplus> [ws |=> Top]"
+        = initial_ps2 S G \<ominus> vs ++\<^sub>f [ws |=> Top]"
       using next_initial_ps2_edge[OF G_def _ _ _ e_in_E _ Suc.prems(1)
         Suc.prems(2)] G'_def E'_def vs_def ws_def V'_def vs_in_S S'_def
       by auto
@@ -765,9 +764,9 @@ next
       apply (fold fset_cong, auto simp add: e_in_E vs_def)
       done
 
-      have 1: "fdom [ fst3 e |=> Bot ] |\<inter>|
-        fdom([ ffilter (\<lambda>v. \<forall>e\<in>set E. v |\<notin>| thd3 e) V - S |=> Top ]
-        \<oplus> [ S - fst3 e |=> Bot ]) = {||}"
+      have 1: "fmdom [ fst3 e |=> Bot ] |\<inter>|
+        fmdom([ ffilter (\<lambda>v. \<forall>e\<in>set E. v |\<notin>| thd3 e) V - S |=> Top ]
+        ++\<^sub>f [ S - fst3 e |=> Bot ]) = {||}"
       apply (unfold fmdom_add fdom_make_fmap)
       apply (fold fset_cong)
       apply auto
@@ -806,7 +805,7 @@ next
         apply (unfold make_fmap_union)
         apply (metis (lifting) funion_absorb2 vs_def vs_in_S)
         apply (intro arg_cong2[of _ _ "[ S - fst3 e |=> Bot ]"
-            "[ S - fst3 e |=> Bot ]" "op \<oplus>"])
+            "[ S - fst3 e |=> Bot ]" "op ++\<^sub>f"])
         apply (intro arg_cong2[of _ _ "Top" "Top" "make_fmap"])
         defer 1
         apply (simp, simp)
@@ -871,7 +870,7 @@ definition
   ps_to_int :: "[diagram, proofstate] \<Rightarrow> interface"
 where
   "ps_to_int G \<sigma> \<equiv>
-    \<Otimes>v |\<in>| fdom \<sigma>. case_topbot top_ass bot_ass (lookup \<sigma> v) (G^\<Lambda> v)"
+    \<Otimes>v |\<in>| fmdom \<sigma>. case_topbot top_ass bot_ass (lookup \<sigma> v) (G^\<Lambda> v)"
 
 definition
   ps_chain_to_int_chain :: "[diagram, ps_chain] \<Rightarrow> int_chain"
@@ -1033,9 +1032,9 @@ next
         done
 
         with wf_\<Pi>i wf_ps_triple_def obtain \<sigma> where
-          v_notin_\<sigma>: "v |\<notin>| fdom \<sigma>" and
-          fst_\<Pi>i: "fst3 (nthtriple \<Pi> i) = [ {|v|} |=> Top ] \<oplus> \<sigma>" and
-          thd_\<Pi>i: "thd3 (nthtriple \<Pi> i) = [ {|v|} |=> Bot ] \<oplus> \<sigma>" by auto
+          v_notin_\<sigma>: "v |\<notin>| fmdom \<sigma>" and
+          fst_\<Pi>i: "fst3 (nthtriple \<Pi> i) = [ {|v|} |=> Top ] ++\<^sub>f \<sigma>" and
+          thd_\<Pi>i: "thd3 (nthtriple \<Pi> i) = [ {|v|} |=> Bot ] ++\<^sub>f \<sigma>" by auto
 
         show "prov_triple (asn (ps_to_int G (fst3 (nthtriple \<Pi> i))),
                    cs ! i, asn (ps_to_int G (thd3 (nthtriple \<Pi> i))))"
@@ -1051,9 +1050,9 @@ next
         apply (unfold iter_hcomp_insert)
         apply (unfold lookup_union2 lookup_make_fmap1)
         apply (unfold G_def labelling.simps)
-        apply (subgoal_tac "\<forall>va \<in> fset (fdom \<sigma>). case_topbot top_ass bot_ass
-          (lookup ([ {|v|} |=> Top ] \<oplus> \<sigma>) va) (\<Lambda> va) =
-          case_topbot top_ass bot_ass (lookup ([{|v|} |=> Bot] \<oplus> \<sigma>) va)(\<Lambda> va)")
+        apply (subgoal_tac "\<forall>va \<in> fset (fmdom \<sigma>). case_topbot top_ass bot_ass
+          (lookup ([ {|v|} |=> Top ] ++\<^sub>f \<sigma>) va) (\<Lambda> va) =
+          case_topbot top_ass bot_ass (lookup ([{|v|} |=> Bot] ++\<^sub>f \<sigma>) va)(\<Lambda> va)")
         apply (unfold iter_hcomp_cong, simp)
         apply (metis fmember.rep_eq lookup_union1, simp)
         done
@@ -1065,10 +1064,10 @@ next
         done
 
         with wf_\<Pi>i wf_ps_triple_def obtain \<sigma> where
-          fst_e_disjoint_\<sigma>: "fst3 e |\<inter>| fdom \<sigma> = {||}" and
-          thd_e_disjoint_\<sigma>: "thd3 e |\<inter>| fdom \<sigma> = {||}" and
-          fst_\<Pi>i: "fst3 (nthtriple \<Pi> i) = [ fst3 e |=> Bot ] \<oplus> \<sigma>" and
-          thd_\<Pi>i: "thd3 (nthtriple \<Pi> i) = [ thd3 e |=> Top ] \<oplus> \<sigma>"
+          fst_e_disjoint_\<sigma>: "fst3 e |\<inter>| fmdom \<sigma> = {||}" and
+          thd_e_disjoint_\<sigma>: "thd3 e |\<inter>| fmdom \<sigma> = {||}" and
+          fst_\<Pi>i: "fst3 (nthtriple \<Pi> i) = [ fst3 e |=> Bot ] ++\<^sub>f \<sigma>" and
+          thd_\<Pi>i: "thd3 (nthtriple \<Pi> i) = [ thd3 e |=> Top ] ++\<^sub>f \<sigma>"
         by (auto simp add: inf_sup_distrib2)
 
         show "prov_triple (asn (ps_to_int G (fst3 (nthtriple \<Pi> i))),
@@ -1085,28 +1084,28 @@ next
         apply (insert fst_e_disjoint_\<sigma>)
         apply (unfold iter_hcomp_union)
         apply (subgoal_tac "\<forall>v \<in> fset (fst3 e). case_topbot top_ass bot_ass
-          (lookup ([ fst3 e |=> Bot ] \<oplus> \<sigma>) v) (\<Lambda> v) = bot_ass (\<Lambda> v)")
+          (lookup ([ fst3 e |=> Bot ] ++\<^sub>f \<sigma>) v) (\<Lambda> v) = bot_ass (\<Lambda> v)")
         apply (unfold iter_hcomp_cong)
         apply (simp)
         apply (intro ballI)
-        apply (subgoal_tac "v |\<notin>| fdom \<sigma>")
+        apply (subgoal_tac "v |\<notin>| fmdom \<sigma>")
         apply (unfold lookup_union2)
         apply (metis lookup_make_fmap topbot.simps(4))
         apply (metis fempty_iff finterI fmember.rep_eq)
         apply (insert thd_e_disjoint_\<sigma>)
         apply (unfold iter_hcomp_union)
         apply (subgoal_tac "\<forall>v \<in> fset (thd3 e). case_topbot top_ass bot_ass
-          (lookup ([ thd3 e |=> Top ] \<oplus> \<sigma>) v) (\<Lambda> v) = top_ass (\<Lambda> v)")
+          (lookup ([ thd3 e |=> Top ] ++\<^sub>f \<sigma>) v) (\<Lambda> v) = top_ass (\<Lambda> v)")
         apply (unfold iter_hcomp_cong)
-        apply (subgoal_tac "\<forall>v \<in> fset (fdom \<sigma>). case_topbot top_ass bot_ass
-          (lookup ([ thd3 e |=> Top ] \<oplus> \<sigma>) v) (\<Lambda> v) =
-          case_topbot top_ass bot_ass (lookup ([fst3 e |=> Bot] \<oplus> \<sigma>) v) (\<Lambda> v)")
+        apply (subgoal_tac "\<forall>v \<in> fset (fmdom \<sigma>). case_topbot top_ass bot_ass
+          (lookup ([ thd3 e |=> Top ] ++\<^sub>f \<sigma>) v) (\<Lambda> v) =
+          case_topbot top_ass bot_ass (lookup ([fst3 e |=> Bot] ++\<^sub>f \<sigma>) v) (\<Lambda> v)")
         apply (unfold iter_hcomp_cong)
         apply simp
         apply (intro ballI)
-        apply (subgoal_tac "v |\<in>| fdom \<sigma>")
+        apply (subgoal_tac "v |\<in>| fmdom \<sigma>")
         apply (unfold lookup_union1, auto)
-        apply (subgoal_tac "v |\<notin>| fdom \<sigma>")
+        apply (subgoal_tac "v |\<notin>| fmdom \<sigma>")
         apply (unfold lookup_union2)
         apply (metis lookup_make_fmap topbot.simps(3))
         by (metis fempty_iff finterI fmember.rep_eq)
