@@ -3,7 +3,7 @@ chapter AFP
 session "Ribbon_Proofs" (AFP) = "HOL-Library" +
   options [timeout = 600]
   theories
-    Finite_Map2
+    More_Finite_Map
     JHelper
     Proofchain
     Ribbons_Basic

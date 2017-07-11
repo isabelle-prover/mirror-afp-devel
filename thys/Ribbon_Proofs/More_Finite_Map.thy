@@ -1,7 +1,6 @@
 section {* Finite partial functions *}
 
-theory Finite_Map2 imports
-  Main
+theory More_Finite_Map imports
   "~~/src/HOL/Library/Finite_Map"
 begin
 

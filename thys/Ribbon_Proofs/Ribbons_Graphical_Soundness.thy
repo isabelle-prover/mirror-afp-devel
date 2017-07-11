@@ -2,7 +2,7 @@ section {* Soundness for graphical diagrams *}
 
 theory Ribbons_Graphical_Soundness imports
   Ribbons_Graphical
-  Finite_Map2
+  More_Finite_Map
 begin
 
 text {* We prove that the proof rules for graphical ribbon proofs are sound
