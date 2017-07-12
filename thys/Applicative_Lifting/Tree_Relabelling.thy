@@ -3,15 +3,38 @@
 subsection \<open>Tree relabelling\<close>
 
 theory Tree_Relabelling imports
-  Applicative_Open_State
+  Applicative_State
   Applicative_Option
   Applicative_PMF
   "~~/src/HOL/Library/Stream"
 begin
 
+lemma run_state_return [simp]: "run_state (State_Monad.return x) s = (x, s)"
+  by(simp add: State_Monad.return_def)
+
+lemma set_update_state [simp]: "State_Monad.bind (State_Monad.set s) (\<lambda>_. State_Monad.update f) = State_Monad.set (f s)"
+  by(simp add: State_Monad.set_def State_Monad.update_def State_Monad.bind_def State_Monad.get_def split_beta)
+
+lemma set_bind_update_state [simp]: 
+  "State_Monad.bind (State_Monad.set s) (\<lambda>_. State_Monad.bind (State_Monad.update f) g) = 
+  State_Monad.bind (State_Monad.set (f s)) g"
+  by(simp add: State_Monad.set_def State_Monad.update_def State_Monad.bind_def State_Monad.get_def split_beta)
+
+lemma get_set_state [simp]: "State_Monad.bind State_Monad.get (\<lambda>s. State_Monad.set s) = State_Monad.return ()"
+  by(simp add: State_Monad.set_def State_Monad.bind_def State_Monad.get_def State_Monad.return_def)
+
+lemma get_bind_set_state [simp]: 
+  "State_Monad.bind State_Monad.get (\<lambda>s. State_Monad.bind (State_Monad.set s) (f s)) =
+   State_Monad.bind State_Monad.get (\<lambda>s. f s ())"
+  by(simp add: State_Monad.set_def State_Monad.bind_def State_Monad.get_def)
+
+lemma get_const_state [simp]: "State_Monad.bind State_Monad.get (\<lambda>_. m) = m"
+  by(simp add: State_Monad.bind_def State_Monad.get_def)
+
 unbundle applicative_syntax
-adhoc_overloading Applicative.pure pure_state
 adhoc_overloading Applicative.pure pure_option
+adhoc_overloading Applicative.pure State_Monad.return
+adhoc_overloading Applicative.ap State_Monad.ap
 
 text \<open> Hutton and Fulger \cite{HuttonFulger2008TFP} suggested the following tree relabelling problem
   as an example for reasoning about effects. Given a binary tree with labels at the leaves, the
@@ -55,10 +78,12 @@ lemma labels_simps [simp]:
 by(simp_all add: labels_def)
 
 locale labelling =
-  fixes fresh :: "('x, 's) state"
+  fixes fresh :: "('s, 'x) state"
 begin
 
-definition label_tree :: "'a tree \<Rightarrow> ('x tree, 's) state"
+declare [[show_variants]]
+
+definition label_tree :: "'a tree \<Rightarrow> ('s, 'x tree) state"
 where "label_tree = fold_tree (\<lambda>_ :: 'a. pure Leaf \<diamondop> fresh) (\<lambda>l r. pure Node \<diamondop> l \<diamondop> r)"
 
 lemma label_tree_simps [simp]:
@@ -66,7 +91,7 @@ lemma label_tree_simps [simp]:
   "label_tree (Node l r) = pure Node \<diamondop> label_tree l \<diamondop> label_tree r"
 by(simp_all add: label_tree_def)
 
-primrec label_list :: "'a list \<Rightarrow> ('x list, 's) state"
+primrec label_list :: "'a list \<Rightarrow> ('s, 'x list) state"
 where
     "label_list [] = pure []"
   | "label_list (x # xs) = pure (op #) \<diamondop> fresh \<diamondop> label_list xs"
@@ -98,10 +123,10 @@ text \<open>We directly show correctness without going via streams like Hutton a
 
 lemma correctness_pure:
   fixes t :: "'a tree"
-  assumes distinct: "\<And>xs :: 'a list. distinct (fst (label_list xs s))"
-  shows "distinct (labels (fst (label_tree t s)))"
-using label_tree_list[of t, THEN fun_cong, of s] assms[of "labels t"]
-by(cases "label_list (labels t) s")(simp add: ap_state_def split_beta)
+  assumes distinct: "\<And>xs :: 'a list. distinct (fst (run_state (label_list xs) s))"
+  shows "distinct (labels (fst (run_state (label_tree t) s)))"
+using label_tree_list[of t, THEN arg_cong, of "\<lambda>f. run_state f s"] assms[of "labels t"]
+by(cases "run_state (label_list (labels t)) s")(simp add: State_Monad.ap_def split_beta)
 
 end
 
@@ -118,13 +143,13 @@ is "\<lambda>pure. pure" .
 lift_definition ap_dual :: "(('a \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'b) \<Rightarrow> 'af1) \<Rightarrow> ('af1 \<Rightarrow> 'af3 \<Rightarrow> 'af13) \<Rightarrow> ('af13 \<Rightarrow> 'af2 \<Rightarrow> 'af) \<Rightarrow> 'af2 dual \<Rightarrow> 'af3 dual \<Rightarrow> 'af dual"
 is "\<lambda>pure ap1 ap2 f x. ap2 (ap1 (pure (\<lambda>x f. f x)) x) f" .
 
-type_synonym ('a, 's) state_rev = "('a, 's) state dual"
+type_synonym ('s, 'a) state_rev = "('s, 'a) state dual"
 
-definition pure_state_rev :: "'a \<Rightarrow> ('a, 's) state_rev"
-where "pure_state_rev = pure_dual pure_state"
+definition pure_state_rev :: "'a \<Rightarrow> ('s, 'a) state_rev"
+where "pure_state_rev = pure_dual State_Monad.return"
 
-definition ap_state_rev :: "('a \<Rightarrow> 'b, 's) state_rev \<Rightarrow> ('a, 's) state_rev \<Rightarrow> ('b, 's) state_rev"
-where "ap_state_rev = ap_dual pure_state ap_state ap_state"
+definition ap_state_rev :: "('s, 'a \<Rightarrow> 'b) state_rev \<Rightarrow> ('s, 'a) state_rev \<Rightarrow> ('s, 'b) state_rev"
+where "ap_state_rev = ap_dual State_Monad.return State_Monad.ap State_Monad.ap"
 
 adhoc_overloading Applicative.pure pure_state_rev
 adhoc_overloading Applicative.ap ap_state_rev
@@ -136,12 +161,12 @@ for
 unfolding pure_state_rev_def ap_state_rev_def by(transfer, applicative_nf, rule refl)+
 
 
-type_synonym ('a, 's) state_rev_rev = "('a, 's) state_rev dual"
+type_synonym ('s, 'a) state_rev_rev = "('s, 'a) state_rev dual"
 
-definition pure_state_rev_rev :: "'a \<Rightarrow> ('a, 's) state_rev_rev"
+definition pure_state_rev_rev :: "'a \<Rightarrow> ('s, 'a) state_rev_rev"
 where "pure_state_rev_rev = pure_dual pure_state_rev"
 
-definition ap_state_rev_rev :: "('a \<Rightarrow> 'b, 's) state_rev_rev \<Rightarrow> ('a, 's) state_rev_rev \<Rightarrow> ('b, 's) state_rev_rev"
+definition ap_state_rev_rev :: "('s, 'a \<Rightarrow> 'b) state_rev_rev \<Rightarrow> ('s, 'a) state_rev_rev \<Rightarrow> ('s, 'b) state_rev_rev"
 where "ap_state_rev_rev = ap_dual pure_state_rev ap_state_rev ap_state_rev"
 
 adhoc_overloading Applicative.pure pure_state_rev_rev
@@ -153,10 +178,10 @@ for
   ap: ap_state_rev_rev
 unfolding pure_state_rev_rev_def ap_state_rev_rev_def by(transfer, applicative_nf, rule refl)+
 
-lemma ap_state_rev_B: "B f \<diamondop> B x = B (pure_state (\<lambda>x f. f x) \<diamondop> x \<diamondop> f)"
+lemma ap_state_rev_B: "B f \<diamondop> B x = B (State_Monad.return (\<lambda>x f. f x) \<diamondop> x \<diamondop> f)"
 unfolding ap_state_rev_def by(fact ap_dual.abs_eq)
 
-lemma ap_state_rev_pure_B: "pure f \<diamondop> B x = B (pure_state f \<diamondop> x)"
+lemma ap_state_rev_pure_B: "pure f \<diamondop> B x = B (State_Monad.return f \<diamondop> x)"
 unfolding ap_state_rev_def pure_state_rev_def
 by transfer(applicative_nf, rule refl)
 
@@ -171,28 +196,20 @@ text \<open>
   The formulation by Gibbons and Bird \cite{backwards} crucially depends on Kleisli composition,
   so we need the state monad rather than the applicative functor only.
 \<close>
-definition bind_state :: "('s \<Rightarrow> 'a \<times> 's) \<Rightarrow> ('a \<Rightarrow> 's \<Rightarrow> 'b \<times> 's) \<Rightarrow> 's \<Rightarrow> 'b \<times> 's"
-where "bind_state x f s = (let (a, s') = x s in f a s')"
 
-lemma bind_state_assoc: "bind_state (bind_state x f) g = bind_state x (\<lambda>x. bind_state (f x) g)"
-by(simp add: fun_eq_iff bind_state_def split_def Let_def)
+lemma ap_conv_bind_state: "State_Monad.ap f x = State_Monad.bind f (\<lambda>f. State_Monad.bind x (State_Monad.return \<circ> f))"
+by(simp add: State_Monad.ap_def State_Monad.bind_def Let_def split_def o_def fun_eq_iff)
 
-lemma bind_state_return1: "bind_state (Pair x) f = f x"
-by(simp add: bind_state_def fun_eq_iff)
+lemma ap_pure_bind_state: "pure x \<diamondop> State_Monad.bind y f = State_Monad.bind y (op \<diamondop> (pure x) \<circ> f)"
+by(simp add: ap_conv_bind_state o_def)
 
-lemma ap_conv_bind_state: "ap_state f x = bind_state f (\<lambda>f. bind_state x (Pair \<circ> f))"
-by(simp add: ap_state_def bind_state_def Let_def split_def o_def fun_eq_iff)
+definition kleisli_state :: "('b \<Rightarrow> ('s, 'c) state) \<Rightarrow> ('a \<Rightarrow> ('s, 'b) state) \<Rightarrow> 'a \<Rightarrow> ('s, 'c) state" (infixl "\<bullet>" 55)
+where [simp]: "kleisli_state g f a = State_Monad.bind (f a) g"
 
-lemma ap_pure_bind_state: "pure x \<diamondop> bind_state y f = bind_state y (op \<diamondop> (pure x) \<circ> f)"
-by(simp add: ap_conv_bind_state bind_state_return1 bind_state_assoc o_def)
+definition fetch :: "('a stream, 'a) state"
+where "fetch = State_Monad.bind State_Monad.get (\<lambda>s. State_Monad.bind (State_Monad.set (stl s)) (\<lambda>_. State_Monad.return (shd s)))"
 
-definition kleisli_state :: "('b \<Rightarrow> ('c, 's) state) \<Rightarrow> ('a \<Rightarrow> ('b, 's) state) \<Rightarrow> 'a \<Rightarrow> ('c, 's) state" (infixl "\<bullet>" 55)
-where [simp]: "kleisli_state g f a = bind_state (f a) g"
-
-definition fetch :: "('a, 'a stream) state"
-where "fetch s = (shd s, stl s)"
-
-primrec traverse :: "('a \<Rightarrow> ('b, 's) state) \<Rightarrow> 'a tree \<Rightarrow> ('b tree, 's) state"
+primrec traverse :: "('a \<Rightarrow> ('s, 'b) state) \<Rightarrow> 'a tree \<Rightarrow> ('s, 'b tree) state"
 where
   "traverse f (Leaf x) = pure Leaf \<diamondop> f x"
 | "traverse f (Node l r) = pure Node \<diamondop> traverse f l \<diamondop> traverse f r"
@@ -200,12 +217,12 @@ where
 text \<open>As we cannot abstract over the applicative functor in definitions, we define
   traversal on the transformed applicative function once again.\<close>
 
-primrec traverse_rev :: "('a \<Rightarrow> ('b, 's) state_rev) \<Rightarrow> 'a tree \<Rightarrow> ('b tree, 's) state_rev"
+primrec traverse_rev :: "('a \<Rightarrow> ('s, 'b) state_rev) \<Rightarrow> 'a tree \<Rightarrow> ('s, 'b tree) state_rev"
 where
   "traverse_rev f (Leaf x) = pure Leaf \<diamondop> f x"
 | "traverse_rev f (Node l r) = pure Node \<diamondop> traverse_rev f l \<diamondop> traverse_rev f r"
 
-definition recurse :: "('a \<Rightarrow> ('b, 's) state) \<Rightarrow> 'a tree \<Rightarrow> ('b tree, 's) state"
+definition recurse :: "('a \<Rightarrow> ('s, 'b) state) \<Rightarrow> 'a tree \<Rightarrow> ('s, 'b tree) state"
 where "recurse f = un_B \<circ> traverse_rev (B \<circ> f)"
 
 lemma recurse_Leaf: "recurse f (Leaf x) = pure Leaf \<diamondop> f x"
@@ -236,7 +253,7 @@ qed
 
 text \<open>@{term "B \<circ> B"} is an idiom morphism\<close>
 
-lemma B_pure: "pure x = B (pure_state x)"
+lemma B_pure: "pure x = B (State_Monad.return x)"
 unfolding pure_state_rev_def by transfer simp
 
 lemma BB_pure: "pure x = B (B (pure x))"
@@ -252,12 +269,12 @@ proof -
   finally show ?thesis .
 qed
 
-primrec traverse_rev_rev :: "('a \<Rightarrow> ('b, 's) state_rev_rev) \<Rightarrow> 'a tree \<Rightarrow> ('b tree, 's) state_rev_rev"
+primrec traverse_rev_rev :: "('a \<Rightarrow> ('s, 'b) state_rev_rev) \<Rightarrow> 'a tree \<Rightarrow> ('s, 'b tree) state_rev_rev"
 where
   "traverse_rev_rev f (Leaf x) = pure Leaf \<diamondop> f x"
 | "traverse_rev_rev f (Node l r) = pure Node \<diamondop> traverse_rev_rev f l \<diamondop> traverse_rev_rev f r"
 
-definition recurse_rev :: "('a \<Rightarrow> ('b, 's) state_rev) \<Rightarrow> 'a tree \<Rightarrow> ('b tree, 's) state_rev"
+definition recurse_rev :: "('a \<Rightarrow> ('s, 'b) state_rev) \<Rightarrow> 'a tree \<Rightarrow> ('s, 'b tree) state_rev"
 where "recurse_rev f = un_B \<circ> traverse_rev_rev (B \<circ> f)"
 
 lemma traverse_B_B: "traverse_rev_rev (B \<circ> B \<circ> f) = B \<circ> B \<circ> traverse f" (is "?lhs = ?rhs")
@@ -281,38 +298,37 @@ lemma recurse_traverse:
   that they have not found a way to derive this fact from other axioms. So we prove it directly.\<close>
 proof
   fix t
-  from assms have *: "\<And>x. bind_state (g x) f = Pair x" by(simp add: fun_eq_iff)
-  hence **: "\<And>x h. bind_state (g x) (\<lambda>x. bind_state (f x) h) = h x"
-    by(fold bind_state_assoc)(simp add: bind_state_return1)
+  from assms have *: "\<And>x. State_Monad.bind (g x) f = State_Monad.return x" by(simp add: fun_eq_iff)
+  hence **: "\<And>x h. State_Monad.bind (g x) (\<lambda>x. State_Monad.bind (f x) h) = h x"
+    by(fold State_Monad.bind_assoc)(simp)
   show "(recurse f \<bullet> traverse g) t = pure t" unfolding kleisli_state_def
   proof(induction t)
     case (Leaf x)
     show ?case
-      by(simp add: ap_conv_bind_state bind_state_assoc bind_state_return1 recurse_Leaf **)
+      by(simp add: ap_conv_bind_state recurse_Leaf **)
   next
     case (Node l r)
     show ?case
-      by(simp add: ap_conv_bind_state bind_state_assoc bind_state_return1 recurse_Node)
-        (simp add: bind_state_assoc[symmetric] Node.IH bind_state_return1)
+      by(simp add: ap_conv_bind_state recurse_Node)(simp add: State_Monad.bind_assoc[symmetric] Node.IH)
   qed
 qed
 
 text \<open>Apply traversals to labelling\<close>
 
-definition strip :: "'a \<times> 'b \<Rightarrow> ('a, 'b stream) state"
-where "strip = (\<lambda>(a, b) s. (a, SCons b s))"
+definition strip :: "'a \<times> 'b \<Rightarrow> ('b stream, 'a) state"
+where "strip = (\<lambda>(a, b). State_Monad.bind (State_Monad.update (SCons b)) (\<lambda>_. State_Monad.return a))"
 
-definition adorn :: "'a \<Rightarrow> ('a \<times> 'b, 'b stream) state"
+definition adorn :: "'a \<Rightarrow> ('b stream, 'a \<times> 'b) state"
 where "adorn a = pure (Pair a) \<diamondop> fetch"
 
-abbreviation label :: "'a tree \<Rightarrow> (('a \<times> 'b) tree, 'b stream) state"
+abbreviation label :: "'a tree \<Rightarrow> ('b stream, ('a \<times> 'b) tree) state"
 where "label \<equiv> traverse adorn"
 
-abbreviation unlabel :: "('a \<times> 'b) tree \<Rightarrow> ('a tree, 'b stream) state"
+abbreviation unlabel :: "('a \<times> 'b) tree \<Rightarrow> ('b stream, 'a tree) state"
 where "unlabel \<equiv> recurse strip"
 
 lemma strip_adorn: "strip \<bullet> adorn = pure"
-by(simp add: strip_def adorn_def fun_eq_iff fetch_def[abs_def] bind_state_def ap_conv_bind_state)
+by(simp add: strip_def adorn_def fun_eq_iff fetch_def[abs_def] ap_conv_bind_state)
 
 lemma correctness_monadic: "unlabel \<bullet> label = pure"
 by(rule recurse_traverse)(rule strip_adorn)
@@ -322,9 +338,9 @@ subsubsection \<open>Applicative correctness statement\<close>
 
 text \<open>Repeating an effect\<close>
 
-primrec repeatM :: "nat \<Rightarrow> ('x, 's) state \<Rightarrow> ('x list, 's) state"
+primrec repeatM :: "nat \<Rightarrow> ('s, 'x) state \<Rightarrow> ('s, 'x list) state"
 where
-  "repeatM 0 f = pure_state []"
+  "repeatM 0 f = State_Monad.return []"
 | "repeatM (Suc n) f = pure op # \<diamondop> f \<diamondop> repeatM n f"
 
 lemma repeatM_plus: "repeatM (n + m) f = pure append \<diamondop> repeatM n f \<diamondop> repeatM m f"
@@ -333,10 +349,10 @@ by(induction n)(simp; applicative_nf; simp)+
 abbreviation (input) fail :: "'a option" where "fail \<equiv> None"
 
 
-definition lift_state :: "('a, 's) state \<Rightarrow> ('a option, 's) state"
+definition lift_state :: "('s, 'a) state \<Rightarrow> ('s, 'a option) state"
 where [applicative_unfold]: "lift_state x = pure pure \<diamondop> x"
 
-definition lift_option :: "'a option \<Rightarrow> ('a option, 's) state"
+definition lift_option :: "'a option \<Rightarrow> ('s, 'a option) state"
 where [applicative_unfold]: "lift_option x = pure x"
 
 fun assert :: "('a \<Rightarrow> bool) \<Rightarrow> 'a option \<Rightarrow> 'a option"
@@ -346,7 +362,7 @@ where
 
 context labelling begin
 
-abbreviation symbols :: "nat \<Rightarrow> ('x list option, 's) state"
+abbreviation symbols :: "nat \<Rightarrow> ('s, 'x list option) state"
 where "symbols n \<equiv> lift_state (repeatM n fresh)"
 
 abbreviation (input) disjoint :: "'x list \<Rightarrow> 'x list \<Rightarrow> bool"
@@ -363,7 +379,7 @@ by(simp_all add: dlabels_def)
 
 lemma correctness_applicative:
   assumes distinct: "\<And>n. pure (assert distinct) \<diamondop> symbols n = symbols n"
-  shows "pure_state dlabels \<diamondop> label_tree t = symbols (leaves t)"
+  shows "State_Monad.return dlabels \<diamondop> label_tree t = symbols (leaves t)"
 proof(induction t)
   show "pure dlabels \<diamondop> label_tree (Leaf x) = symbols (leaves (Leaf x))" for x :: 'a
     unfolding label_tree_simps leaves_simps repeatM.simps by applicative_nf simp
@@ -372,7 +388,7 @@ next
   assume IH: "pure dlabels \<diamondop> label_tree l = symbols (leaves l)" "pure dlabels \<diamondop> label_tree r = symbols (leaves r)"
   let ?cat = "case_prod append" and ?disj = "case_prod disjoint"
   let ?f = "\<lambda>l r. pure ?cat \<diamondop> (assert ?disj (pure Pair \<diamondop> l \<diamondop> r))"
-  have "pure_state dlabels \<diamondop> label_tree (Node l r) =
+  have "State_Monad.return dlabels \<diamondop> label_tree (Node l r) =
         pure ?f \<diamondop> (pure dlabels \<diamondop> label_tree l) \<diamondop> (pure dlabels \<diamondop> label_tree r)"
     unfolding label_tree_simps by applicative_nf simp
   also have "\<dots> = pure ?f \<diamondop> (pure (assert distinct) \<diamondop> symbols (leaves l)) \<diamondop> (pure (assert distinct) \<diamondop> symbols (leaves r))"
