@@ -344,18 +344,18 @@ where
   }"
 
 fun intercept_prf :: 
-  "'upf_key \<Rightarrow> bool \<Rightarrow> (bitstring, bitstring) PRF.dict \<Rightarrow> (bitstring \<times> bitstring) + 'hash cipher_text
-  \<Rightarrow> (('hash cipher_text option + bitstring option) \<times> (bitstring, bitstring) PRF.dict, bitstring, bitstring) gpv" 
+  "'upf_key \<Rightarrow> bool \<Rightarrow> unit \<Rightarrow> (bitstring \<times> bitstring) + 'hash cipher_text
+  \<Rightarrow> (('hash cipher_text option + bitstring option) \<times> unit, bitstring, bitstring) gpv" 
 where
-  "intercept_prf _ _ D (Inr _) = Done (Inr None, D)"
-| "intercept_prf k b D (Inl (m1, m0)) = (case (length m1) = prf_clen \<and> (length m0) = prf_clen of
-      False \<Rightarrow> Done (Inl None, D)
+  "intercept_prf _ _ _ (Inr _) = Done (Inr None, ())"
+| "intercept_prf k b _ (Inl (m1, m0)) = (case (length m1) = prf_clen \<and> (length m0) = prf_clen of
+      False \<Rightarrow> Done (Inl None, ())
     | True \<Rightarrow> do {
         x \<leftarrow> lift_spmf (spmf_of_set prf_domain);
         p \<leftarrow> Pause x Done;
         let c = p [\<oplus>] (if b then m1 else m0);
         let t = upf_fun k (x @ c);
-        Done (Inl (Some (x, c, t)), D(x \<mapsto> p))
+        Done (Inl (Some (x, c, t)), ())
       })"
 
 definition reduction_prf
@@ -364,31 +364,31 @@ where
  "reduction_prf \<A> = do {
    k \<leftarrow> lift_spmf upf_key_gen;
    b \<leftarrow> lift_spmf coin_spmf;
-   (b', D) \<leftarrow> inline (intercept_prf k b) \<A> Map_empty;
+   (b', _) \<leftarrow> inline (intercept_prf k b) \<A> ();
    Done (b' = b)
  }"
 
 lemma round_2: "\<bar>spmf (ind_cca'.game \<A>) True - spmf (game2 \<A>) True\<bar> = PRF.advantage (reduction_prf \<A>)" 
 proof -
-  def oracle_encrypt1'' \<equiv> "(\<lambda>(k_prf, k_upf) b D (msg1, msg0). 
+  def oracle_encrypt1'' \<equiv> "(\<lambda>(k_prf, k_upf) b (_ :: unit) (msg1, msg0). 
     case length msg1 = prf_clen \<and> length msg0 = prf_clen of
-      False \<Rightarrow> return_spmf (None, D)
+      False \<Rightarrow> return_spmf (None, ())
     | True \<Rightarrow> do {
         x \<leftarrow> spmf_of_set prf_domain;
         let p = prf_fun k_prf x;
         let c = p [\<oplus>] (if b then msg1 else msg0);
         let t = upf_fun k_upf (x @ c);
-        return_spmf (Some (x, c, t), D(x \<mapsto> p))})"
+        return_spmf (Some (x, c, t), ())})"
   def game1''\<equiv> "do {
     key \<leftarrow> key_gen;
     b \<leftarrow> coin_spmf;
-    (b', D) \<leftarrow> exec_gpv (oracle_encrypt1'' key b \<oplus>\<^sub>O oracle_decrypt2 key) \<A> Map_empty;
+    (b', D) \<leftarrow> exec_gpv (oracle_encrypt1'' key b \<oplus>\<^sub>O oracle_decrypt2 key) \<A> ();
     return_spmf (b = b')}"
 
   have "ind_cca'.game \<A> = game1''"
   proof -
-    def S \<equiv> "\<lambda>(L :: 'hash cipher_text set) (D :: (bitstring, bitstring) PRF.dict). True"
-    have [transfer_rule]: "S {} Map_empty" by (simp add: S_def)
+    def S \<equiv> "\<lambda>(L :: 'hash cipher_text set) (D :: unit). True"
+    have [transfer_rule]: "S {} ()" by (simp add: S_def)
     have [transfer_rule]: 
       "(op = ===> op = ===> S ===> op = ===> rel_spmf (rel_prod op = S))
        ind_cca'.oracle_encrypt oracle_encrypt1''"
@@ -407,14 +407,14 @@ proof -
     { fix k_prf k_upf b
       def oracle_normal \<equiv> "oracle_encrypt1'' (k_prf, k_upf) b \<oplus>\<^sub>O oracle_decrypt2 (k_prf, k_upf)"
       def oracle_intercept \<equiv> "\<lambda>(s', s :: unit) y. map_spmf (\<lambda>((x, s'), s). (x, s', s)) (exec_gpv (PRF.prf_oracle k_prf) (intercept_prf k_upf b s' y) ())"
-
-      def S \<equiv> "\<lambda>(s2, _ :: unit) (s1 :: (bitstring, bitstring) PRF.dict). s1 = s2"
-      have [transfer_rule]: "S (Map.empty, ()) Map_empty" by(simp add: S_def)
+      def initial \<equiv> "()"
+      def S \<equiv> "\<lambda>(s2 :: unit, _ :: unit) (s1 :: unit). True"
+      have [transfer_rule]: "S ((), ()) initial" by(simp add: S_def initial_def)
       have [transfer_rule]: "(S ===> op = ===> rel_spmf (rel_prod op = S)) oracle_intercept oracle_normal"
         unfolding oracle_normal_def oracle_intercept_def
         by(auto split: bool.split plus_oracle_split simp add: S_def rel_fun_def exec_gpv_bind PRF.prf_oracle_def oracle_encrypt1''_def Let_def map_spmf_conv_bind_spmf oracle_decrypt2_def intro!: rel_spmf_bind_reflI rel_spmf_reflI)
-      have "map_spmf (\<lambda>x. b = fst x) (exec_gpv oracle_normal \<A> Map_empty) =
-        map_spmf (\<lambda>x. b = fst (fst x)) (exec_gpv (PRF.prf_oracle k_prf) (inline (intercept_prf k_upf b) \<A> Map.empty) ())"
+      have "map_spmf (\<lambda>x. b = fst x) (exec_gpv oracle_normal \<A> initial) =
+        map_spmf (\<lambda>x. b = fst (fst x)) (exec_gpv (PRF.prf_oracle k_prf) (inline (intercept_prf k_upf b) \<A> ()) ())"
         by(transfer fixing: b \<A> prf_fun k_prf prf_domain prf_clen upf_fun k_upf)
           (auto simp add: map_spmf_eq_map_spmf_iff exec_gpv_inline spmf_rel_map oracle_intercept_def split_def intro: rel_spmf_reflI) }
     then show ?thesis unfolding game1''_def PRF.game_0_def key_gen_def reduction_prf_def
@@ -426,14 +426,14 @@ proof -
     { fix k_upf b k_prf
       def oracle2 \<equiv> "oracle_encrypt2 (k_prf, k_upf) b \<oplus>\<^sub>O oracle_decrypt2 (k_prf, k_upf)"
       def oracle_intercept \<equiv> "(\<lambda>(s', s) y. map_spmf (\<lambda>((x, s'), s). (x, s', s)) (exec_gpv PRF.random_oracle (intercept_prf k_upf b s' y) s))"
-      def S \<equiv> "\<lambda>(s2, s2') (s1 :: (bitstring, bitstring) PRF.dict). s2 = s1 \<and> s2' = s2"
+      def S \<equiv> "\<lambda>(s2 :: unit, s2') (s1 :: (bitstring, bitstring) PRF.dict). s2' = s1"
 
-      have [transfer_rule]: "S (Map_empty, Map_empty) Map_empty" by(simp add: S_def)
+      have [transfer_rule]: "S ((), Map_empty) Map_empty" by(simp add: S_def)
       have [transfer_rule]: "(S ===> op = ===> rel_spmf (rel_prod op = S)) oracle_intercept oracle2"
         unfolding oracle2_def oracle_intercept_def
         by(auto split: bool.split plus_oracle_split option.split simp add: S_def rel_fun_def exec_gpv_bind PRF.random_oracle_def oracle_encrypt2_def Let_def map_spmf_conv_bind_spmf oracle_decrypt2_def rel_spmf_return_spmf1 fun_upd_idem intro!: rel_spmf_bind_reflI rel_spmf_reflI)
 
-      have [symmetric]: "map_spmf (\<lambda>x. b = fst (fst x)) (exec_gpv (PRF.random_oracle) (inline (intercept_prf k_upf b) \<A> Map.empty) Map.empty) = 
+      have [symmetric]: "map_spmf (\<lambda>x. b = fst (fst x)) (exec_gpv (PRF.random_oracle) (inline (intercept_prf k_upf b) \<A> ()) Map.empty) = 
         map_spmf (\<lambda>x. b = fst x) (exec_gpv oracle2 \<A> Map_empty)"
         by(transfer fixing: b prf_clen prf_domain upf_fun k_upf \<A> k_prf)
           (simp add: exec_gpv_inline map_spmf_conv_bind_spmf[symmetric] spmf.map_comp o_def split_def oracle_intercept_def) }
