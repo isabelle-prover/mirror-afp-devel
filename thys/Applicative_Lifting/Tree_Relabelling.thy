@@ -9,28 +9,6 @@ theory Tree_Relabelling imports
   "~~/src/HOL/Library/Stream"
 begin
 
-lemma run_state_return [simp]: "run_state (State_Monad.return x) s = (x, s)"
-  by(simp add: State_Monad.return_def)
-
-lemma set_update_state [simp]: "State_Monad.bind (State_Monad.set s) (\<lambda>_. State_Monad.update f) = State_Monad.set (f s)"
-  by(simp add: State_Monad.set_def State_Monad.update_def State_Monad.bind_def State_Monad.get_def split_beta)
-
-lemma set_bind_update_state [simp]: 
-  "State_Monad.bind (State_Monad.set s) (\<lambda>_. State_Monad.bind (State_Monad.update f) g) = 
-  State_Monad.bind (State_Monad.set (f s)) g"
-  by(simp add: State_Monad.set_def State_Monad.update_def State_Monad.bind_def State_Monad.get_def split_beta)
-
-lemma get_set_state [simp]: "State_Monad.bind State_Monad.get (\<lambda>s. State_Monad.set s) = State_Monad.return ()"
-  by(simp add: State_Monad.set_def State_Monad.bind_def State_Monad.get_def State_Monad.return_def)
-
-lemma get_bind_set_state [simp]: 
-  "State_Monad.bind State_Monad.get (\<lambda>s. State_Monad.bind (State_Monad.set s) (f s)) =
-   State_Monad.bind State_Monad.get (\<lambda>s. f s ())"
-  by(simp add: State_Monad.set_def State_Monad.bind_def State_Monad.get_def)
-
-lemma get_const_state [simp]: "State_Monad.bind State_Monad.get (\<lambda>_. m) = m"
-  by(simp add: State_Monad.bind_def State_Monad.get_def)
-
 unbundle applicative_syntax
 adhoc_overloading Applicative.pure pure_option
 adhoc_overloading Applicative.pure State_Monad.return
