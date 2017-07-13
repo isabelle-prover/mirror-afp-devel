@@ -257,7 +257,7 @@ We found that this coincides with the invariant's security strategy.
 I.e.\ the sender does not have the appropriate rights to initiate the connection.
 
 \item[IFS] If the violation happens at the receiver, we have an information flow security strategy (\emph{IFS})
-I.e.\ the receiver lacks the appropriate security clearance to retrieve the (confidential) information. 
+I.e.\ the receiver lacks the appropriate security level to retrieve the (confidential) information. 
 The violations happens only when the receiver reads the data.
 \end{description}
 

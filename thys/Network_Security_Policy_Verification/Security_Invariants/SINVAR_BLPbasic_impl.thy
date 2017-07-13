@@ -7,10 +7,10 @@ subsubsection {* SecurityInvariant BLPbasic List Implementation *}
 
 code_identifier code_module SINVAR_BLPbasic_impl => (Scala) SINVAR_BLPbasic
 
-fun sinvar :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> privacy_level) \<Rightarrow> bool" where
+fun sinvar :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> security_level) \<Rightarrow> bool" where
   "sinvar G nP = (\<forall> (e1,e2) \<in> set (edgesL G). (nP e1) \<le> (nP e2))"
 
-definition BLP_offending_list:: "'v list_graph \<Rightarrow> ('v \<Rightarrow> privacy_level) \<Rightarrow> ('v \<times> 'v) list list" where
+definition BLP_offending_list:: "'v list_graph \<Rightarrow> ('v \<Rightarrow> security_level) \<Rightarrow> ('v \<times> 'v) list list" where
   "BLP_offending_list G nP = (if sinvar G nP then
     []
    else 
@@ -53,7 +53,7 @@ interpretation BLPbasic_impl:TopoS_List_Impl
 
 
 subsubsection {* BLPbasic packing *}
-  definition SINVAR_LIB_BLPbasic :: "('v::vertex, privacy_level) TopoS_packed" where
+  definition SINVAR_LIB_BLPbasic :: "('v::vertex, security_level) TopoS_packed" where
     "SINVAR_LIB_BLPbasic \<equiv> 
     \<lparr> nm_name = ''BLPbasic'', 
       nm_receiver_violation = SINVAR_BLPbasic.receiver_violation,
@@ -84,25 +84,25 @@ subsubsection{* Example *}
   value "wf_list_graph fabNet"
 
 
-  definition sensorProps_try1 :: "string \<Rightarrow> privacy_level" where
+  definition sensorProps_try1 :: "string \<Rightarrow> security_level" where
     "sensorProps_try1 \<equiv> (\<lambda> n. SINVAR_BLPbasic.default_node_properties)(''PresenceSensor'' := 2, ''Webcam'' := 3)"
   value "BLP_offending_list fabNet sensorProps_try1"
   value "sinvar fabNet sensorProps_try1"
 
-  definition sensorProps_try2 :: "string \<Rightarrow> privacy_level" where
+  definition sensorProps_try2 :: "string \<Rightarrow> security_level" where
     "sensorProps_try2 \<equiv> (\<lambda> n. SINVAR_BLPbasic.default_node_properties)(''PresenceSensor'' := 2, ''Webcam'' := 3, 
                                                        ''SensorSink'' := 3)"
   value "BLP_offending_list fabNet sensorProps_try2"
   value "sinvar fabNet sensorProps_try2"
 
-  definition sensorProps_try3 :: "string \<Rightarrow> privacy_level" where
+  definition sensorProps_try3 :: "string \<Rightarrow> security_level" where
     "sensorProps_try3 \<equiv> (\<lambda> n. SINVAR_BLPbasic.default_node_properties)(''PresenceSensor'' := 2, ''Webcam'' := 3, 
                                                        ''SensorSink'' := 3, ''Statistics'' := 3)"
   value "BLP_offending_list fabNet sensorProps_try3"
   value "sinvar fabNet sensorProps_try3"
 
   text {* Another parameter set for confidential controlling information*}
-  definition sensorProps_conf :: "string \<Rightarrow> privacy_level" where
+  definition sensorProps_conf :: "string \<Rightarrow> security_level" where
     "sensorProps_conf \<equiv> (\<lambda> n. SINVAR_BLPbasic.default_node_properties)(''MissionControl1'' := 1, ''MissionControl2'' := 2,
       ''Bot1'' := 1, ''Bot2'' := 2 )"
   value "BLP_offending_list fabNet sensorProps_conf"

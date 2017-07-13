@@ -19,17 +19,17 @@ subsection {* Network Graph and Security Requirements *}
   "NMParams_secgw_1 \<equiv> \<lparr> node_properties = [1 \<mapsto> DomainMember, 
                                      2 \<mapsto> DomainMember, 
                                      3 \<mapsto> DomainMember,
-                                     8 \<mapsto> SecurityGateway] \<rparr>"
+                                     8 \<mapsto> PolEnforcePoint] \<rparr>"
 
 
   definition NMParams_blptrusted_1 :: "(nat, SINVAR_BLPtrusted.node_config) TopoS_Params" where
-  "NMParams_blptrusted_1 \<equiv> \<lparr> node_properties = [1 \<mapsto> \<lparr> privacy_level = 1, trusted = False \<rparr>, 
-                                     2 \<mapsto> \<lparr> privacy_level = 1, trusted = False \<rparr>, 
-                                     3 \<mapsto> \<lparr> privacy_level = 1, trusted = False \<rparr>,
-                                     8 \<mapsto> \<lparr> privacy_level = 0, trusted = True \<rparr>] \<rparr>"
+  "NMParams_blptrusted_1 \<equiv> \<lparr> node_properties = [1 \<mapsto> \<lparr> security_level = 1, trusted = False \<rparr>, 
+                                     2 \<mapsto> \<lparr> security_level = 1, trusted = False \<rparr>, 
+                                     3 \<mapsto> \<lparr> security_level = 1, trusted = False \<rparr>,
+                                     8 \<mapsto> \<lparr> security_level = 0, trusted = True \<rparr>] \<rparr>"
 
   text{*Both security requirements fulfilled?*}
-  value "SecurityGateway_eval example_net_secgw NMParams_secgw_1"
+  value "PolEnforcePoint_eval example_net_secgw NMParams_secgw_1"
   value "SINVAR_BLPtrusted_impl.BLP_eval example_net_secgw NMParams_blptrusted_1"
 
 
@@ -38,9 +38,9 @@ text{*Add violations!*}
   "example_net_secgw_invalid \<equiv> example_net_secgw\<lparr>edgesL := (1,11)#(11,1)#(11,8)#(1,2)#(edgesL example_net_secgw)\<rparr>"
 
   text{*Security Requirement still fulfilled?*}
-  value "SecurityGateway_eval example_net_secgw_invalid NMParams_secgw_1"
+  value "PolEnforcePoint_eval example_net_secgw_invalid NMParams_secgw_1"
   text{*Whom to blame?*}
-  value "SecurityGatewayExtended_offending_list example_net_secgw_invalid
+  value "PolEnforcePointExtended_offending_list example_net_secgw_invalid
           (SINVAR_SecGwExt_impl.NetModel_node_props NMParams_secgw_1)"
 
   text{*Security Requirement still fulfilled?*}

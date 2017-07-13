@@ -8,12 +8,12 @@ text{* All unclassified data sources must be labeled, default assumption: all is
 Warning: This is considered here an access control strategy.
 By default, everything is secret and one explicitly prohibits sending to non-secret hosts.*}
 
-datatype security_clearance = Unclassified | Confidential | Secret
+datatype security_level = Unclassified | Confidential | Secret
 
 (*total order*)
-instantiation security_clearance :: linorder
+instantiation security_level :: linorder
   begin
-  fun less_eq_security_clearance :: "security_clearance \<Rightarrow> security_clearance \<Rightarrow> bool" where
+  fun less_eq_security_level :: "security_level \<Rightarrow> security_level \<Rightarrow> bool" where
     "(Unclassified \<le> Unclassified) = True" |
     "(Confidential \<le> Confidential) = True" |
     "(Secret \<le> Secret) = True" |
@@ -24,7 +24,7 @@ instantiation security_clearance :: linorder
     "(Confidential \<le> Unclassified) = False"  |
     "(Secret \<le> Unclassified) = False"
 
-  fun less_security_clearance :: "security_clearance \<Rightarrow> security_clearance \<Rightarrow> bool" where
+  fun less_security_level :: "security_level \<Rightarrow> security_level \<Rightarrow> bool" where
     "(Unclassified < Unclassified) = False" |
     "(Confidential < Confidential) = False" |
     "(Secret < Secret) = False" |
@@ -47,12 +47,12 @@ instantiation security_clearance :: linorder
   
 
 
-definition default_node_properties :: "security_clearance"
+definition default_node_properties :: "security_level"
   where  "default_node_properties \<equiv> Secret"
 
 
 
-fun sinvar :: "'v graph \<Rightarrow> ('v \<Rightarrow> security_clearance) \<Rightarrow> bool" where
+fun sinvar :: "'v graph \<Rightarrow> ('v \<Rightarrow> security_level) \<Rightarrow> bool" where
   "sinvar G nP = (\<forall> (e1,e2) \<in> edges G. (nP e1) \<le> (nP e2))"
 
 definition receiver_violation :: "bool" where "receiver_violation \<equiv> False"
@@ -79,7 +79,7 @@ where sinvar = sinvar
 
 
 subsection {*ENF*}
-  lemma secret_default_candidate: "\<And> (nP::('v \<Rightarrow> security_clearance)) e1 e2. \<not> (nP e1) \<le> (nP e2) \<Longrightarrow> \<not> Secret \<le> (nP e2)"
+  lemma secret_default_candidate: "\<And> (nP::('v \<Rightarrow> security_level)) e1 e2. \<not> (nP e1) \<le> (nP e2) \<Longrightarrow> \<not> Secret \<le> (nP e2)"
     apply(case_tac "nP e1")
     apply(simp_all)
     apply(case_tac [!] "nP e2")
@@ -95,7 +95,7 @@ subsection {*ENF*}
     apply(simp)
   done
 
-  definition BLP_offending_set:: "'v graph \<Rightarrow> ('v \<Rightarrow> security_clearance) \<Rightarrow> ('v \<times> 'v) set set" where
+  definition BLP_offending_set:: "'v graph \<Rightarrow> ('v \<Rightarrow> security_level) \<Rightarrow> ('v \<times> 'v) set set" where
   "BLP_offending_set G nP = (if sinvar G nP then
       {}
      else 

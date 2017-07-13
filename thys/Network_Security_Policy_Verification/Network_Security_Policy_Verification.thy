@@ -37,12 +37,12 @@ lemma "length (edgesL policy) = 3" by eval
 subsection{*Security Invariants*}
 text{*We construct a security invariant. Node @{term "2::nat"} has confidential data*}
 
-definition BLP_security_clearances :: "nat \<rightharpoonup> SINVAR_BLPtrusted.node_config"where
-  "BLP_security_clearances \<equiv> [2 \<mapsto> \<lparr> privacy_level = 1, trusted = False \<rparr>]"
+definition BLP_security_levels :: "nat \<rightharpoonup> SINVAR_BLPtrusted.node_config"where
+  "BLP_security_levels \<equiv> [2 \<mapsto> \<lparr> security_level = 1, trusted = False \<rparr>]"
 
 definition BLP_m::"(nat SecurityInvariant)" where
     "BLP_m \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_BLPtrusted \<lparr> 
-          node_properties = BLP_security_clearances
+          node_properties = BLP_security_levels
           \<rparr> ''Two has confidential information''"
 
 
@@ -53,10 +53,10 @@ definition BLP_m::"(nat SecurityInvariant)" where
         SINVAR_BLPtrusted.default_node_properties,
         SINVAR_BLPtrusted.receiver_violation,
         SecurityInvariant.node_props SINVAR_BLPtrusted.default_node_properties \<lparr> 
-          node_properties = BLP_security_clearances
+          node_properties = BLP_security_levels
         \<rparr>)"
   text{*Fist, we need to show that the formal definition obeys all requirements, @{const new_configured_SecurityInvariant} verifies this. To double check, we manually give the configuration.*}
-  lemma BLP_m_spec: assumes "nP = (\<lambda> v. (case BLP_security_clearances v of Some c \<Rightarrow> c | None \<Rightarrow> SINVAR_BLPtrusted.default_node_properties))"
+  lemma BLP_m_spec: assumes "nP = (\<lambda> v. (case BLP_security_levels v of Some c \<Rightarrow> c | None \<Rightarrow> SINVAR_BLPtrusted.default_node_properties))"
       shows "BLP_m_spec = Some \<lparr> 
               c_sinvar = (\<lambda>G. SINVAR_BLPtrusted.sinvar G nP),
               c_offending_flows = (\<lambda>G. SecurityInvariant_withOffendingFlows.set_offending_flows SINVAR_BLPtrusted.sinvar G nP),
@@ -66,7 +66,7 @@ definition BLP_m::"(nat SecurityInvariant)" where
     have NetModelLib: "TopoS_modelLibrary SINVAR_LIB_BLPtrusted SINVAR_BLPtrusted.sinvar"
     by(unfold_locales)
     from assms have nP: "nP = nm_node_props SINVAR_LIB_BLPtrusted \<lparr> 
-              node_properties = BLP_security_clearances
+              node_properties = BLP_security_levels
             \<rparr>" by(simp add: fun_eq_iff SINVAR_LIB_BLPtrusted_def SINVAR_BLPtrusted_impl.NetModel_node_props_def)
   
     have "BLP_m_spec = new_configured_SecurityInvariant (SINVAR_BLPtrusted.sinvar, SINVAR_BLPtrusted.default_node_properties, SINVAR_BLPtrusted.receiver_violation, nP)"
@@ -116,7 +116,7 @@ visualize_graph @{context} @{term "security_invariants"} @{term "policy"};
 
 text{*Experimental: the config (only one) can be added to the end.*}
 ML_val{*
-visualize_graph_header @{context} @{term "security_invariants"} @{term "policy"} @{term "BLP_security_clearances"};
+visualize_graph_header @{context} @{term "security_invariants"} @{term "policy"} @{term "BLP_security_levels"};
 *}
 
 

@@ -23,7 +23,7 @@ export_code
       SINVAR_LIB_DomainHierarchyNG
       SINVAR_LIB_Subnets
       SINVAR_LIB_BLPtrusted 
-      SINVAR_LIB_SecurityGatewayExtended
+      SINVAR_LIB_PolEnforcePointExtended
       SINVAR_LIB_Sink
       SINVAR_LIB_NonInterference
       SINVAR_LIB_SubnetsInGW

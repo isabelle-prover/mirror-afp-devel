@@ -57,9 +57,9 @@ definition DomainHierarchy_m::"(string SecurityInvariant)" where
               Department ''crew'' []
             ])" by eval
 
-definition SecurityGateway_m::"(string SecurityInvariant)" where
-  "SecurityGateway_m \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_SecurityGatewayExtended \<lparr> 
-          node_properties = [''IFEsrv'' \<mapsto> SINVAR_SecGwExt.SecurityGatewayIN,
+definition PolEnforcePoint_m::"(string SecurityInvariant)" where
+  "PolEnforcePoint_m \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_PolEnforcePointExtended \<lparr> 
+          node_properties = [''IFEsrv'' \<mapsto> SINVAR_SecGwExt.PolEnforcePointIN,
                              ''IFE1'' \<mapsto> SINVAR_SecGwExt.DomainMember,
                              ''IFE2'' \<mapsto> SINVAR_SecGwExt.DomainMember]
           \<rparr> ''IFEsrc mediates access of its thin clients''"
@@ -73,15 +73,15 @@ definition SecurityGateway_m::"(string SecurityInvariant)" where
 *)
 definition BLP_m::"(string SecurityInvariant)" where
     "BLP_m \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_BLPtrusted \<lparr> 
-          node_properties = [''CC'' \<mapsto> \<lparr> privacy_level = 2, trusted = False \<rparr>,
-                             ''C1'' \<mapsto> \<lparr> privacy_level = 2, trusted = False \<rparr>,
-                             ''C2'' \<mapsto> \<lparr> privacy_level = 2, trusted = False \<rparr>,
-                             ''IFE1'' \<mapsto> \<lparr> privacy_level = 1, trusted = False \<rparr>,
-                             ''IFE2'' \<mapsto> \<lparr> privacy_level = 1, trusted = False \<rparr>,
-                             ''IFEsrv'' \<mapsto> \<lparr> privacy_level = 0, trusted = True \<rparr>]
+          node_properties = [''CC'' \<mapsto> \<lparr> security_level = 2, trusted = False \<rparr>,
+                             ''C1'' \<mapsto> \<lparr> security_level = 2, trusted = False \<rparr>,
+                             ''C2'' \<mapsto> \<lparr> security_level = 2, trusted = False \<rparr>,
+                             ''IFE1'' \<mapsto> \<lparr> security_level = 1, trusted = False \<rparr>,
+                             ''IFE2'' \<mapsto> \<lparr> security_level = 1, trusted = False \<rparr>,
+                             ''IFEsrv'' \<mapsto> \<lparr> security_level = 0, trusted = True \<rparr>]
           \<rparr> ''Confidential data''"
 
-definition "security_invariants = [ DomainHierarchy_m, SecurityGateway_m, BLP_m]"
+definition "security_invariants = [ DomainHierarchy_m, PolEnforcePoint_m, BLP_m]"
 
 lemma "all_security_requirements_fulfilled security_invariants policy" by eval
 

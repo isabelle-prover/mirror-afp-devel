@@ -20,8 +20,8 @@ subsection{*Our security requirements*}
   subsubsection{*We have a server with confidential data*}
     definition ConfidentialChairData::"(string SecurityInvariant)" where
       "ConfidentialChairData \<equiv> new_configured_list_SecurityInvariant SINVAR_BLPtrusted_impl.SINVAR_LIB_BLPtrusted \<lparr> 
-          node_properties = [''FilesSrv'' \<mapsto> \<lparr> privacy_level = 1, trusted = False \<rparr>,
-                             ''Employees'' \<mapsto> \<lparr> privacy_level = 0, trusted = True \<rparr>]
+          node_properties = [''FilesSrv'' \<mapsto> \<lparr> security_level = 1, trusted = False \<rparr>,
+                             ''Employees'' \<mapsto> \<lparr> security_level = 0, trusted = True \<rparr>]
           \<rparr> ''confidential data''"
 
 

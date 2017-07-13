@@ -21,10 +21,10 @@ fun system_components_to_subnets :: "system_components \<Rightarrow> subnets" wh
   "system_components_to_subnets SystemBoundaryInputOutput = InboundGateway"
 
 fun system_components_to_blp :: "system_components \<Rightarrow> SINVAR_BLPtrusted.node_config" where
-  "system_components_to_blp SystemComponent = \<lparr> privacy_level = 1, trusted = False \<rparr>" |
-  "system_components_to_blp SystemBoundaryInput = \<lparr> privacy_level = 1, trusted = False \<rparr>" |
-  "system_components_to_blp SystemBoundaryOutput = \<lparr> privacy_level = 0, trusted = True \<rparr>" |
-  "system_components_to_blp SystemBoundaryInputOutput = \<lparr> privacy_level = 0, trusted = True \<rparr>"
+  "system_components_to_blp SystemComponent = \<lparr> security_level = 1, trusted = False \<rparr>" |
+  "system_components_to_blp SystemBoundaryInput = \<lparr> security_level = 1, trusted = False \<rparr>" |
+  "system_components_to_blp SystemBoundaryOutput = \<lparr> security_level = 0, trusted = True \<rparr>" |
+  "system_components_to_blp SystemBoundaryInputOutput = \<lparr> security_level = 0, trusted = True \<rparr>"
 
 definition new_meta_system_boundary :: "('v::vertex \<times> system_components) list \<Rightarrow> string \<Rightarrow> ('v SecurityInvariant) list" where 
   "new_meta_system_boundary C description = [
@@ -47,7 +47,7 @@ by(cases c)(simp_all add: SINVAR_SubnetsInGW.default_node_properties_def)
 
 lemma system_components_to_blp:
       "(\<not> trusted SINVAR_BLPtrusted.default_node_properties \<longrightarrow>
-       privacy_level (system_components_to_blp c) \<le> privacy_level SINVAR_BLPtrusted.default_node_properties)
+       security_level (system_components_to_blp c) \<le> security_level SINVAR_BLPtrusted.default_node_properties)
        \<longleftrightarrow>
        c = SystemBoundaryOutput \<or> c = SystemBoundaryInputOutput"
 by(cases c)(simp_all add: SINVAR_BLPtrusted.default_node_properties_def)

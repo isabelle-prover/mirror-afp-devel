@@ -13,8 +13,8 @@ definition testGraph :: "string list_graph" where
 lemma "wf_list_graph testGraph" by eval
 
 definition req1 ::"(string SecurityInvariant)" where
-  "req1 \<equiv> new_configured_list_SecurityInvariant SINVAR_SecGwExt_impl.SINVAR_LIB_SecurityGatewayExtended \<lparr> 
-      node_properties = [''Master'' \<mapsto> SecurityGateway,
+  "req1 \<equiv> new_configured_list_SecurityInvariant SINVAR_SecGwExt_impl.SINVAR_LIB_PolEnforcePointExtended \<lparr> 
+      node_properties = [''Master'' \<mapsto> PolEnforcePoint,
                          ''Slave1'' \<mapsto> DomainMember,
                          ''Slave2'' \<mapsto> DomainMember]
       \<rparr> ''req1''"

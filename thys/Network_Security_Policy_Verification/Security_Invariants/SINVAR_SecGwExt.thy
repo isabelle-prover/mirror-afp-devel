@@ -2,24 +2,34 @@ theory SINVAR_SecGwExt
 imports "../TopoS_Helper"
 begin
 
-subsection {* SecurityInvariant SecurityGatewayExtended*}
-text {* Like SecurityGateway but SecurityGatewayIN and AccessibleMember are accessible from outside world *}
+subsection {* SecurityInvariant PolEnforcePointExtended*}
+text {* A PolEnforcePoint is an application-level central policy enforcement point.
+Legacy note: The old verions called it a SecurityGateway.
 
-datatype secgw_member = SecurityGateway | SecurityGatewayIN | DomainMember  | AccessibleMember | Unassigned
+Hosts may belong to a certain domain. 
+Sometimes, a pattern where intra-domain communication between domain members must be approved by a central instance is required. 
+
+We call such a central instance PolEnforcePoint and present a template for this architecture. 
+Five host roles are distinguished:. 
+A PolEnforcePoint, aPolEnforcePointIN which accessible from the outside, a DomainMember,
+a less-restricted AccessibleMember which is accessible from the outside world, 
+and a default value Unassigned that reflects none of these roles. *}
+
+datatype secgw_member = PolEnforcePoint | PolEnforcePointIN | DomainMember  | AccessibleMember | Unassigned
 
 definition default_node_properties :: "secgw_member"
   where  "default_node_properties \<equiv> Unassigned"
 
 
 fun allowed_secgw_flow :: "secgw_member \<Rightarrow> secgw_member \<Rightarrow> bool" where
-  "allowed_secgw_flow SecurityGateway _ = True" |
-  "allowed_secgw_flow SecurityGatewayIN _ = True" |
+  "allowed_secgw_flow PolEnforcePoint _ = True" |
+  "allowed_secgw_flow PolEnforcePointIN _ = True" |
   "allowed_secgw_flow DomainMember DomainMember = False" |
   "allowed_secgw_flow DomainMember _ = True" |
   "allowed_secgw_flow AccessibleMember DomainMember = False" |
   "allowed_secgw_flow AccessibleMember _ = True" |
   "allowed_secgw_flow Unassigned Unassigned = True" |
-  "allowed_secgw_flow Unassigned SecurityGatewayIN = True" |
+  "allowed_secgw_flow Unassigned PolEnforcePointIN = True" |
   "allowed_secgw_flow Unassigned AccessibleMember = True" |
   "allowed_secgw_flow Unassigned _ = False" 
 
@@ -48,7 +58,7 @@ subsubsection {*Preliminaries*}
    done
 
 subsubsection{*ENF*}
-  lemma SecurityGateway_ENFnr: "SecurityInvariant_withOffendingFlows.sinvar_all_edges_normal_form_not_refl sinvar allowed_secgw_flow"
+  lemma PolEnforcePoint_ENFnr: "SecurityInvariant_withOffendingFlows.sinvar_all_edges_normal_form_not_refl sinvar allowed_secgw_flow"
     by(simp add: SecurityInvariant_withOffendingFlows.sinvar_all_edges_normal_form_not_refl_def)
   lemma Unassigned_botdefault: "\<forall> e1 e2. e2 \<noteq> Unassigned \<longrightarrow> \<not> allowed_secgw_flow e1 e2 \<longrightarrow> \<not> allowed_secgw_flow Unassigned e2"
     apply(rule allI)+
@@ -64,26 +74,26 @@ subsubsection{*ENF*}
   lemma All_to_Unassigned: "\<forall> e1. allowed_secgw_flow e1 Unassigned"
     by (rule allI, case_tac e1, simp_all)
 
-  definition SecurityGatewayExtended_offending_set:: "'v graph \<Rightarrow> ('v \<Rightarrow> secgw_member) \<Rightarrow> ('v \<times> 'v) set set" where
-  "SecurityGatewayExtended_offending_set G nP = (if sinvar G nP then
+  definition PolEnforcePointExtended_offending_set:: "'v graph \<Rightarrow> ('v \<Rightarrow> secgw_member) \<Rightarrow> ('v \<times> 'v) set set" where
+  "PolEnforcePointExtended_offending_set G nP = (if sinvar G nP then
       {}
      else 
       { {e \<in> edges G. case e of (e1,e2) \<Rightarrow> e1 \<noteq> e2 \<and> \<not> allowed_secgw_flow (nP e1) (nP e2)} })"
-  lemma SecurityGatewayExtended_offending_set: "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar = SecurityGatewayExtended_offending_set"
-    apply(simp only: fun_eq_iff ENFnr_offending_set[OF SecurityGateway_ENFnr] SecurityGatewayExtended_offending_set_def)
+  lemma PolEnforcePointExtended_offending_set: "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar = PolEnforcePointExtended_offending_set"
+    apply(simp only: fun_eq_iff ENFnr_offending_set[OF PolEnforcePoint_ENFnr] PolEnforcePointExtended_offending_set_def)
     apply(rule allI)+
     apply(rename_tac G nP)
     apply(auto)
   done
 
-interpretation SecurityGatewayExtended: SecurityInvariant_ACS
+interpretation PolEnforcePointExtended: SecurityInvariant_ACS
 where default_node_properties = default_node_properties
 and sinvar = sinvar
-rewrites "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar = SecurityGatewayExtended_offending_set"
+rewrites "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar = PolEnforcePointExtended_offending_set"
   unfolding default_node_properties_def
   apply unfold_locales
     apply(rule ballI)
-    apply (rule SecurityInvariant_withOffendingFlows.ENFnr_fsts_weakrefl_instance[OF SecurityGateway_ENFnr Unassigned_botdefault All_to_Unassigned])[1]
+    apply (rule SecurityInvariant_withOffendingFlows.ENFnr_fsts_weakrefl_instance[OF PolEnforcePoint_ENFnr Unassigned_botdefault All_to_Unassigned])[1]
      apply(simp)
     apply(simp)
    apply(erule default_uniqueness_by_counterexample_ACS)
@@ -104,19 +114,19 @@ rewrites "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar = Secu
      apply(rule_tac x="vertex_1" in exI, simp)
      apply(rule_tac x="{(vertex_1,vertex_2)}" in exI, simp)
     apply(rename_tac membercase)
-    apply(rule_tac x="(\<lambda> x. Unassigned)(vertex_1 := Unassigned, vertex_2 := SecurityGateway)" in exI, simp)
+    apply(rule_tac x="(\<lambda> x. Unassigned)(vertex_1 := Unassigned, vertex_2 := PolEnforcePoint)" in exI, simp)
     apply(rule_tac x="vertex_1" in exI, simp)
     apply(rule_tac x="{(vertex_1,vertex_2)}" in exI, simp)
-   apply(rule_tac x="(\<lambda> x. Unassigned)(vertex_1 := Unassigned, vertex_2 := SecurityGateway)" in exI, simp)
+   apply(rule_tac x="(\<lambda> x. Unassigned)(vertex_1 := Unassigned, vertex_2 := PolEnforcePoint)" in exI, simp)
    apply(rule_tac x="vertex_1" in exI, simp)
    apply(rule_tac x="{(vertex_1,vertex_2)}" in exI, simp)
 
-  apply(fact SecurityGatewayExtended_offending_set)
+  apply(fact PolEnforcePointExtended_offending_set)
  done
 
 
 
-  lemma TopoS_SecurityGatewayExtended: "SecurityInvariant sinvar default_node_properties receiver_violation"
+  lemma TopoS_PolEnforcePointExtended: "SecurityInvariant sinvar default_node_properties receiver_violation"
   unfolding receiver_violation_def by unfold_locales  
 
 hide_const (open) sinvar receiver_violation

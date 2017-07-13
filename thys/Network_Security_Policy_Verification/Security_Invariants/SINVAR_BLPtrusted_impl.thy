@@ -7,7 +7,7 @@ subsubsection {* SecurityInvariant List Implementation *}
 code_identifier code_module SINVAR_BLPtrusted_impl => (Scala) SINVAR_BLPtrusted
 
 fun sinvar :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> SINVAR_BLPtrusted.node_config) \<Rightarrow> bool" where
-  "sinvar G nP = (\<forall> (e1,e2) \<in> set (edgesL G). (if trusted (nP e2) then True else privacy_level (nP e1) \<le> privacy_level (nP e2) ))"
+  "sinvar G nP = (\<forall> (e1,e2) \<in> set (edgesL G). (if trusted (nP e2) then True else security_level (nP e1) \<le> security_level (nP e2) ))"
 
 
 definition BLP_offending_list:: "'v list_graph \<Rightarrow> ('v \<Rightarrow> SINVAR_BLPtrusted.node_config) \<Rightarrow> ('v \<times> 'v) list list" where

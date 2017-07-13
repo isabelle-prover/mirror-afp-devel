@@ -15,8 +15,8 @@ text{* generates a valid high-level topology. Now we discuss how to turn this in
 
 text{*
 Example:
-  SensorNode produces data and has no security clearance.
-  SensorSink has high security clearance
+  SensorNode produces data and has no security level.
+  SensorSink has high security level
   SensorNode -> SensorSink, but not the other way round.
   Implementation: UDP in one direction
 

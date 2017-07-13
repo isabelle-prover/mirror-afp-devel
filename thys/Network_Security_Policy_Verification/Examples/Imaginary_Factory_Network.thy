@@ -36,10 +36,10 @@ The following hosts are responsible for the production line.
 
   \<^item> MissionControl1: An automation device which drives and controls the robots. 
   \<^item> MissionControl2: An automation device which drives and controls the robots. 
-                     It contains the logic for a secret production step, carried out only by Bot2.
+                     It contains the logic for a secret production step, carried out only by Robot2.
   \<^item> Watchdog: Regularly checks the health and technical readings of the robots. 
-  \<^item> Bot1: Production robot unit 1. 
-  \<^item> Bot2: Production robot unit 2. Does a secret production step. 
+  \<^item> Robot1: Production robot unit 1. 
+  \<^item> Robot2: Production robot unit 2. Does a secret production step. 
   \<^item> AdminPc: A human administrator can log into this machine to supervise or troubleshoot the production. 
 
 We model one additional special host. 
@@ -60,8 +60,8 @@ definition policy :: "string list_graph" where
                         ''MissionControl1'',
                         ''MissionControl2'',
                         ''Watchdog'',
-                        ''Bot1'',
-                        ''Bot2'',
+                        ''Robot1'',
+                        ''Robot2'',
                         ''AdminPc'',
                         ''INET''],
               edgesL = [(''PresenceSensor'', ''SensorSink''),
@@ -69,13 +69,13 @@ definition policy :: "string list_graph" where
                         (''TempSensor'', ''SensorSink''),
                         (''FireSensor'', ''SensorSink''),
                         (''SensorSink'', ''Statistics''),
-                        (''MissionControl1'', ''Bot1''),
-                        (''MissionControl1'', ''Bot2''),
-                        (''MissionControl2'', ''Bot2''),
+                        (''MissionControl1'', ''Robot1''),
+                        (''MissionControl1'', ''Robot2''),
+                        (''MissionControl2'', ''Robot2''),
                         (''AdminPc'', ''MissionControl2''),
                         (''AdminPc'', ''MissionControl1''),
-                        (''Watchdog'', ''Bot1''),
-                        (''Watchdog'', ''Bot2'')
+                        (''Watchdog'', ''Robot1''),
+                        (''Watchdog'', ''Robot2'')
                         ] \<rparr>"
 
 lemma "wf_list_graph policy" by eval
@@ -104,8 +104,8 @@ text{*Several security invariants are specified.*}
 
 text{*Privacy for employees.
   The sensors in the building may record any employee. 
-	Due to privacy requirements, the sensor readings, processing, and storage of the data is treated with high security clearances. 
-	The presence sensor does not allow do identify an individual employee, hence produces less critical data, hence has a lower clearance.
+	Due to privacy requirements, the sensor readings, processing, and storage of the data is treated with high security levels. 
+	The presence sensor does not allow do identify an individual employee, hence produces less critical data, hence has a lower level.
 *}
 context begin
   private definition "BLP_privacy_host_attributes \<equiv> [''Statistics'' \<mapsto> 3,
@@ -128,8 +128,8 @@ text{*Secret corporate knowledge and intellectual property:
 context begin
   private definition "BLP_tradesecrets_host_attributes \<equiv> [''MissionControl1'' \<mapsto> 1,
                            ''MissionControl2'' \<mapsto> 2,
-                           ''Bot1'' \<mapsto> 1,
-                           ''Bot2'' \<mapsto> 2
+                           ''Robot1'' \<mapsto> 1,
+                           ''Robot2'' \<mapsto> 2
                            ]"
   private lemma "dom (BLP_tradesecrets_host_attributes) \<subseteq> set (nodesL policy)"
     by(simp add: BLP_tradesecrets_host_attributes_def policy_def)
@@ -138,8 +138,8 @@ context begin
 end
 text{*Note that Invariant 1 and Invariant 2 are two distinct specifications. 
 	They specify individual security goals independent of each other. 
-	For example, in Invariant 1,@{term "''MissionControl2''"} has the security clearance 
-	@{term \<bottom>} and in Invariant 2, @{term "''PresenceSensor''"} has security clearance @{term \<bottom>}. 
+	For example, in Invariant 1,@{term "''MissionControl2''"} has the security level 
+	@{term \<bottom>} and in Invariant 2, @{term "''PresenceSensor''"} has security level @{term \<bottom>}. 
 	Consequently, both cannot interact.
 *}
 
@@ -151,7 +151,7 @@ text{*Privacy for employees, exporting aggregated data:
 	While the presence sensor only collects the single-bit information whether a human is present, the 
   webcam allows to identify individual employees. 
 	The data collected by the presence sensor is classified as secret while the data produced by the webcam is top secret. 
-	The sensor sink only has the secret security clearance, hence it is not allowed to process the 
+	The sensor sink only has the secret security level, hence it is not allowed to process the 
   data generated by the webcam. 
 	However, the sensor sink aggregates all data and only distributes a statistical average which does 
   not allow to identify individual employees. 
@@ -161,27 +161,27 @@ text{*Privacy for employees, exporting aggregated data:
 *}
 context begin
   private definition "BLP_employee_export_host_attributes \<equiv>
-                          [''Statistics'' \<mapsto> \<lparr> privacy_level = 3, trusted = False \<rparr>,
-                           ''SensorSink'' \<mapsto> \<lparr> privacy_level = 2, trusted = True \<rparr>,
-                           ''PresenceSensor'' \<mapsto> \<lparr> privacy_level = 2, trusted = False \<rparr>,
-                           ''Webcam'' \<mapsto> \<lparr> privacy_level = 3, trusted = False \<rparr>
+                          [''Statistics'' \<mapsto> \<lparr> security_level = 3, trusted = False \<rparr>,
+                           ''SensorSink'' \<mapsto> \<lparr> security_level = 2, trusted = True \<rparr>,
+                           ''PresenceSensor'' \<mapsto> \<lparr> security_level = 2, trusted = False \<rparr>,
+                           ''Webcam'' \<mapsto> \<lparr> security_level = 3, trusted = False \<rparr>
                            ]"
   private lemma "dom (BLP_employee_export_host_attributes) \<subseteq> set (nodesL policy)"
     by(simp add: BLP_employee_export_host_attributes_def policy_def)
   definition "BLP_employee_export_m \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_BLPtrusted \<lparr> 
         node_properties = BLP_employee_export_host_attributes \<rparr> ''employee data (privacy)''"
-  (*TODO: what if Sensor sink were not trusted or had lower or higher clearance?*)
+  (*TODO: what if Sensor sink were not trusted or had lower or higher level?*)
 end
 
 
 
 text{*Who can access bot2?
-  Bot2 carries out a mission-critical production step. 
-	It must be made sure that Bot2 only receives packets from Bot1, the two mission control devices and the watchdog.
+  Robot2 carries out a mission-critical production step. 
+	It must be made sure that Robot2 only receives packets from Robot1, the two mission control devices and the watchdog.
 *}
 context begin
   private definition "ACL_bot2_host_attributues \<equiv>
-                          [''Bot2'' \<mapsto> Master [''Bot1'',
+                          [''Robot2'' \<mapsto> Master [''Robot1'',
                                                  ''MissionControl1'',
                                                  ''MissionControl2'',
                                                  ''Watchdog''],
@@ -192,26 +192,26 @@ context begin
   private lemma "dom (ACL_bot2_host_attributues) \<subseteq> set (nodesL policy)"
     by(simp add: ACL_bot2_host_attributues_def policy_def)
   definition "ACL_bot2_m \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_CommunicationPartners
-                             \<lparr>node_properties = ACL_bot2_host_attributues \<rparr> ''Bot2 ACL''"
+                             \<lparr>node_properties = ACL_bot2_host_attributues \<rparr> ''Robot2 ACL''"
   text{*
-  Note that Bot1 is in the access list of Bot2 but it does not have the @{const Care} attribute. 
-	This means, Bot1 can never access Bot2. 
+  Note that Robot1 is in the access list of Robot2 but it does not have the @{const Care} attribute. 
+	This means, Robot1 can never access Robot2. 
 	A tool could automatically detect such inconsistencies and emit a warning. 
 	However, a tool should only emit a warning (not an error) because this setting can be desirable. 
 	
 	In our factory, this setting is currently desirable: 
-	Three months ago, Bot1 had an irreparable hardware error and needed to be removed from the production line. 
-	When removing Bot1 physically, all its host attributes were also deleted. 
-	The access list of Bot2 was not changed. 
-	It was planned that Bot1 will be replaced and later will have the same access rights again. 
-	A few weeks later, a replacement for Bot1 arrived. 
-	The replacement is also called Bot1. 
+	Three months ago, Robot1 had an irreparable hardware error and needed to be removed from the production line. 
+	When removing Robot1 physically, all its host attributes were also deleted. 
+	The access list of Robot2 was not changed. 
+	It was planned that Robot1 will be replaced and later will have the same access rights again. 
+	A few weeks later, a replacement for Robot1 arrived. 
+	The replacement is also called Robot1. 
 	The new robot arrived neither configured nor tested for the production. 
-	After carefully testing Bot1, Bot1 has been given back the host attributes for the other security invariants. 
-	Despite the ACL entry of Bot2, when Bot1 was added to the network, because of its missing @{const Care} attribute, 
-	it was not given automatically access to Bot2. 
-	This prevented that Bot1 would accidentally impact Bot2 without being fully configured. 
-	In our scenario, once Bot1 will be fully configured, tested, and verified, it will be given the @{const Care} attribute back. 
+	After carefully testing Robot1, Robot1 has been given back the host attributes for the other security invariants. 
+	Despite the ACL entry of Robot2, when Robot1 was added to the network, because of its missing @{const Care} attribute, 
+	it was not given automatically access to Robot2. 
+	This prevented that Robot1 would accidentally impact Robot2 without being fully configured. 
+	In our scenario, once Robot1 will be fully configured, tested, and verified, it will be given the @{const Care} attribute back. 
 	
 	In general, this design choice of the invariant template prevents that a newly added host may 
 	inherit access rights due to stale entries in access lists. 
@@ -252,9 +252,9 @@ context begin
                     DN (''ControlTerminal''--''ControlDevices''--Leaf, 0)),
                  (''Watchdog'',
                     DN (''ControlTerminal''--''Supervision''--Leaf, 1)),
-                 (''Bot1'',
+                 (''Robot1'',
                     DN (''ControlTerminal''--''ControlDevices''--''Robots''--Leaf, 0)),
-                 (''Bot2'',
+                 (''Robot2'',
                     DN (''ControlTerminal''--''ControlDevices''--''Robots''--Leaf, 0)),
                  (''AdminPc'',
                     DN (''ControlTerminal''--Leaf, 0))
@@ -287,18 +287,18 @@ end
 text{*Sensor Gateway: 
   The sensors should not communicate among each other; all accesses must be mediated by the sensor sink. *}
 context begin
-  private definition "SecurityGateway_host_attributes \<equiv>
-                [''SensorSink'' \<mapsto> SecurityGateway,
+  private definition "PolEnforcePoint_host_attributes \<equiv>
+                [''SensorSink'' \<mapsto> PolEnforcePoint,
                  ''PresenceSensor'' \<mapsto> DomainMember,
                  ''Webcam'' \<mapsto> DomainMember,
                  ''TempSensor'' \<mapsto> DomainMember,
                  ''FireSensor'' \<mapsto> DomainMember
                  ]"
-  private lemma "dom SecurityGateway_host_attributes \<subseteq> set (nodesL policy)"
-    by(simp add: SecurityGateway_host_attributes_def policy_def)
-  definition "SecurityGateway_m \<equiv> new_configured_list_SecurityInvariant
-                                  SINVAR_LIB_SecurityGatewayExtended
-                                    \<lparr> node_properties = SecurityGateway_host_attributes \<rparr>
+  private lemma "dom PolEnforcePoint_host_attributes \<subseteq> set (nodesL policy)"
+    by(simp add: PolEnforcePoint_host_attributes_def policy_def)
+  definition "PolEnforcePoint_m \<equiv> new_configured_list_SecurityInvariant
+                                  SINVAR_LIB_PolEnforcePointExtended
+                                    \<lparr> node_properties = PolEnforcePoint_host_attributes \<rparr>
                                   ''sensor slaves''"
 end
 
@@ -314,8 +314,8 @@ context begin
   private definition "SinkRobots_host_attributes \<equiv>
                 [''MissionControl1'' \<mapsto> SinkPool,
                  ''MissionControl2'' \<mapsto> SinkPool,
-                 ''Bot1'' \<mapsto> Sink,
-                 ''Bot2'' \<mapsto> Sink
+                 ''Robot1'' \<mapsto> Sink,
+                 ''Robot2'' \<mapsto> Sink
                  ]"
   private lemma "dom SinkRobots_host_attributes \<subseteq> set (nodesL policy)"
     by(simp add: SinkRobots_host_attributes_def policy_def)
@@ -383,8 +383,8 @@ context begin
                  ''MissionControl1'' \<mapsto> Unrelated,
                  ''MissionControl2'' \<mapsto> Unrelated,
                  ''Watchdog'' \<mapsto> Unrelated,
-                 ''Bot1'' \<mapsto> Unrelated,
-                 ''Bot2'' \<mapsto> Unrelated,
+                 ''Robot1'' \<mapsto> Unrelated,
+                 ''Robot2'' \<mapsto> Unrelated,
                  ''AdminPc'' \<mapsto> Interfering, (*!*)
                  ''INET'' \<mapsto> Unrelated
                  ]"
@@ -403,7 +403,7 @@ text{*As discussed, this invariant is very strict and rather theoretical.
 
 definition "invariants \<equiv> [BLP_privacy_m, BLP_tradesecrets_m, BLP_employee_export_m,
                           ACL_bot2_m, Control_hierarchy_m,
-                          SecurityGateway_m, SinkRobots_m, Subnets_m, SubnetsInGW_m]"
+                          PolEnforcePoint_m, SinkRobots_m, Subnets_m, SubnetsInGW_m]"
 text{*We have excluded @{const NonInterference_m} because of its infeasible runtime.*}
 
 lemma "length invariants = 9" by eval
@@ -448,8 +448,8 @@ value[code] "make_policy invariants (nodesL policy)" (*15s without NonInterferen
 lemma "make_policy invariants (nodesL policy) = 
    \<lparr>nodesL =
     [''Statistics'', ''SensorSink'', ''PresenceSensor'', ''Webcam'', ''TempSensor'',
-     ''FireSensor'', ''MissionControl1'', ''MissionControl2'', ''Watchdog'', ''Bot1'',
-     ''Bot2'', ''AdminPc'', ''INET''],
+     ''FireSensor'', ''MissionControl1'', ''MissionControl2'', ''Watchdog'', ''Robot1'',
+     ''Robot2'', ''AdminPc'', ''INET''],
     edgesL =
       [(''Statistics'', ''Statistics''), (''SensorSink'', ''Statistics''),
        (''SensorSink'', ''SensorSink''), (''SensorSink'', ''Webcam''),
@@ -459,14 +459,14 @@ lemma "make_policy invariants (nodesL policy) =
        (''TempSensor'', ''INET''), (''FireSensor'', ''SensorSink''),
        (''FireSensor'', ''FireSensor''), (''FireSensor'', ''INET''),
        (''MissionControl1'', ''MissionControl1''),
-       (''MissionControl1'', ''MissionControl2''), (''MissionControl1'', ''Bot1''),
-       (''MissionControl1'', ''Bot2''), (''MissionControl2'', ''MissionControl2''),
-       (''MissionControl2'', ''Bot2''), (''Watchdog'', ''MissionControl1''),
+       (''MissionControl1'', ''MissionControl2''), (''MissionControl1'', ''Robot1''),
+       (''MissionControl1'', ''Robot2''), (''MissionControl2'', ''MissionControl2''),
+       (''MissionControl2'', ''Robot2''), (''Watchdog'', ''MissionControl1''),
        (''Watchdog'', ''MissionControl2''), (''Watchdog'', ''Watchdog''),
-       (''Watchdog'', ''Bot1''), (''Watchdog'', ''Bot2''), (''Watchdog'', ''INET''),
-       (''Bot1'', ''Bot1''), (''Bot2'', ''Bot2''), (''AdminPc'', ''MissionControl1''),
+       (''Watchdog'', ''Robot1''), (''Watchdog'', ''Robot2''), (''Watchdog'', ''INET''),
+       (''Robot1'', ''Robot1''), (''Robot2'', ''Robot2''), (''AdminPc'', ''MissionControl1''),
        (''AdminPc'', ''MissionControl2''), (''AdminPc'', ''Watchdog''),
-       (''AdminPc'', ''Bot1''), (''AdminPc'', ''AdminPc''), (''AdminPc'', ''INET''),
+       (''AdminPc'', ''Robot1''), (''AdminPc'', ''AdminPc''), (''AdminPc'', ''INET''),
        (''INET'', ''INET'')]\<rparr>" by eval
 
 text{*Additional flows which would be allowed but which are not in the policy*}
@@ -480,7 +480,7 @@ lemma  "set [e \<leftarrow> edgesL (make_policy invariants (nodesL policy)). e \
              (''Watchdog'', ''MissionControl2''),
              (''Watchdog'', ''INET''),
              (''AdminPc'', ''Watchdog''),
-             (''AdminPc'', ''Bot1''),
+             (''AdminPc'', ''Robot1''),
              (''AdminPc'', ''INET'')]" by eval
 text{*
 We visualize this comparison below. 
@@ -503,11 +503,11 @@ we probably forgot to specify an additional security goal.
     Since each host in the policy corresponds to one physical entity, there is no need to explicitly 
     prohibit or allow in-host communication. 
   \<^item> The @{term "''SensorSink''"} may access the @{term "''Webcam''"}. 
-    Both share the same security clearance, there is no problem with this possible information flow. 
+    Both share the same security level, there is no problem with this possible information flow. 
     Technically, a bi-directional connection may even be desirable, since this allows the sensor 
     sink to influence the video stream, e.g. request a lower bit rate if it is overloaded. 
   \<^item> Both the @{term "''TempSensor''"} and the @{term "''FireSensor''"} may access the Internet. 
-    No security clearances or other privacy concerns are specified for them. 
+    No security levels or other privacy concerns are specified for them. 
     This may raise the question whether this data is indeed public. 
     It is up to the company to decide that this data should also be considered confidential. 
   \<^item> @{term "''MissionControl1''"} can send to @{term "''MissionControl2''"}. 
@@ -528,7 +528,7 @@ we probably forgot to specify an additional security goal.
     ``the watchdog connects to the robots and the robots send back their data over the established connection'' 
     will not work because of this possible information leak. 
   \<^item> The @{term "''AdminPc''"} is allowed to access the @{term "''Watchdog''"}, 
-    @{term "''Bot1''"}, and the @{term "''INET''"}. 
+    @{term "''Robot1''"}, and the @{term "''INET''"}. 
     Since this machine is trusted anyway, the company does not see a problem with this. 
 *}
 
@@ -544,7 +544,7 @@ visualize_edges @{context} @{term "edgesL (make_policy invariants (nodesL policy
     [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]",
      @{term "[e \<leftarrow> edgesL (make_policy [BLP_privacy_m, BLP_tradesecrets_m, BLP_employee_export_m,
                            ACL_bot2_m, Control_hierarchy_m,
-                           SecurityGateway_m, SinkRobots_m, (*Subnets_m, *)SubnetsInGW_m]  (nodesL policy)).
+                           PolEnforcePoint_m, SinkRobots_m, (*Subnets_m, *)SubnetsInGW_m]  (nodesL policy)).
                 e \<notin> set (edgesL (make_policy invariants (nodesL policy)))]"})] ""; 
 *}
 
@@ -606,7 +606,7 @@ text{*This is what it wants to be gone.*} (*may take some minutes*)
 lemma "[e \<leftarrow> edgesL (make_policy invariants (nodesL policy)).
                 e \<notin> set (edgesL (make_policy_efficient (NonInterference_m#invariants) (nodesL policy)))] =
        [(''AdminPc'', ''MissionControl1''), (''AdminPc'', ''MissionControl2''),
-        (''AdminPc'', ''Watchdog''), (''AdminPc'', ''Bot1''), (''AdminPc'', ''INET'')]"
+        (''AdminPc'', ''Watchdog''), (''AdminPc'', ''Robot1''), (''AdminPc'', ''INET'')]"
   by eval
 
 lemma "[e \<leftarrow> edgesL (make_policy invariants (nodesL policy)).
@@ -687,19 +687,19 @@ The result visualized is below. *}
 lemma "generate_valid_stateful_policy_IFSACS policy
       [BLP_privacy_m, BLP_employee_export_m,
        ACL_bot2_m, Control_hierarchy_m, 
-       SecurityGateway_m,  Subnets_m, SubnetsInGW_m] =
+       PolEnforcePoint_m,  Subnets_m, SubnetsInGW_m] =
  \<lparr>hostsL = nodesL policy,
     flows_fixL = edgesL policy,
     flows_stateL =
       [(''Webcam'', ''SensorSink''),
        (''SensorSink'', ''Statistics''),
-       (''MissionControl1'', ''Bot1''),
-       (''MissionControl1'', ''Bot2''),
-       (''MissionControl2'', ''Bot2''),
+       (''MissionControl1'', ''Robot1''),
+       (''MissionControl1'', ''Robot2''),
+       (''MissionControl2'', ''Robot2''),
        (''AdminPc'', ''MissionControl2''),
        (''AdminPc'', ''MissionControl1''),
-       (''Watchdog'', ''Bot1''),
-       (''Watchdog'', ''Bot2'')]\<rparr>" by eval
+       (''Watchdog'', ''Robot1''),
+       (''Watchdog'', ''Robot2'')]\<rparr>" by eval
 
 text{*This stateful policy could be transformed into a fully functional implementation. 
 However, there would be no security invariants specified which protect the trade secrets. 
@@ -712,7 +712,7 @@ MissionControl1 can exfiltrate information from robot 2, once it establishes a s
 text{*Without the two invariants, the security goals are way too permissive!*}
 lemma "set [e \<leftarrow> edgesL (make_policy [BLP_privacy_m, BLP_employee_export_m,
        ACL_bot2_m, Control_hierarchy_m, 
-       SecurityGateway_m,  Subnets_m, SubnetsInGW_m] (nodesL policy)). e \<notin> set (edgesL policy)] =
+       PolEnforcePoint_m,  Subnets_m, SubnetsInGW_m] (nodesL policy)). e \<notin> set (edgesL policy)] =
         set [(v,v). v \<leftarrow> (nodesL policy)] \<union>
         set [(''SensorSink'', ''Webcam''),
              (''TempSensor'', ''INET''),
@@ -722,25 +722,25 @@ lemma "set [e \<leftarrow> edgesL (make_policy [BLP_privacy_m, BLP_employee_expo
              (''Watchdog'', ''MissionControl2''),
              (''Watchdog'', ''INET''),
              (''AdminPc'', ''Watchdog''),
-             (''AdminPc'', ''Bot1''),
+             (''AdminPc'', ''Robot1''),
              (''AdminPc'', ''INET'')] \<union>
         set [(''MissionControl1'', ''INET''),
              (''MissionControl2'', ''MissionControl1''),
-             (''MissionControl2'', ''Bot1''),
+             (''MissionControl2'', ''Robot1''),
              (''MissionControl2'', ''INET''),
-             (''Bot1'', ''INET''),
-             (''Bot2'', ''Bot1''),
-             (''Bot2'', ''INET'')]" by eval
+             (''Robot1'', ''INET''),
+             (''Robot2'', ''Robot1''),
+             (''Robot2'', ''INET'')]" by eval
 
 
 ML_val{*
 visualize_edges @{context} @{term "flows_fixL (generate_valid_stateful_policy_IFSACS policy [BLP_privacy_m,  BLP_employee_export_m,
                           ACL_bot2_m, Control_hierarchy_m, 
-                          SecurityGateway_m,  Subnets_m, SubnetsInGW_m])"} 
+                          PolEnforcePoint_m,  Subnets_m, SubnetsInGW_m])"} 
     [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]",
       @{term "flows_stateL (generate_valid_stateful_policy_IFSACS policy [BLP_privacy_m,  BLP_employee_export_m,
                           ACL_bot2_m, Control_hierarchy_m, 
-                          SecurityGateway_m,  Subnets_m, SubnetsInGW_m])"})] "";
+                          PolEnforcePoint_m,  Subnets_m, SubnetsInGW_m])"})] "";
 *}
 
 
@@ -750,18 +750,18 @@ Therefore, the two invariants are not removed but repaired.
 The goal is to allow the watchdog, administrator's pc, and the mission control devices to set up stateful connections without leaking corporate trade secrets to the outside. 
 
 First, we repair @{const BLP_tradesecrets_m}.
-On the one hand, the watchdog should be able to send packets both @{term "''Bot1''"} and @{term "''Bot2''"}. 
-@{term "''Bot1''"} has a security clearance of @{term "1::privacy_level"} and 
-@{term "''Bot2''"} has a security clearance of @{term "2::privacy_level"}. 
+On the one hand, the watchdog should be able to send packets both @{term "''Robot1''"} and @{term "''Robot2''"}. 
+@{term "''Robot1''"} has a security level of @{term "1::security_level"} and 
+@{term "''Robot2''"} has a security level of @{term "2::security_level"}. 
 Consequently, in order to be allowed to send packets to both, @{term "''Watchdog''"} must 
-have a security clearance not higher than @{term "1::privacy_level"}. 
+have a security level not higher than @{term "1::security_level"}. 
 On the other hand, the @{term "''Watchdog''"} should be able to receive packets from both. 
-By the same argument, it must have a security clearance of at least @{term "2::privacy_level"}. 
+By the same argument, it must have a security level of at least @{term "2::security_level"}. 
 Consequently, it is impossible to express the desired meaning in the BLP basic template. 
 There are only two solutions to the problem: Either the company installs one watchdog 
-for each security clearance, or the watchdog must be trusted. 
+for each security level, or the watchdog must be trusted. 
 We decide for the latter option and upgrade the template to the Bell LaPadula model with trust. 
-We define the watchdog as trusted with a security clearance of @{term "1::privacy_level"}. 
+We define the watchdog as trusted with a security level of @{term "1::security_level"}. 
 This means, it can receive packets from and send packets to both robots but it cannot leak information to the outside world. 
 We do the same for the @{term "''AdminPc''"}.
 
@@ -776,24 +776,24 @@ Therefore, all those devices are configured to be in the same @{const SinkPool}.
 
 definition "invariants_tuned \<equiv> [BLP_privacy_m, BLP_employee_export_m,
                ACL_bot2_m, Control_hierarchy_m, 
-               SecurityGateway_m, Subnets_m, SubnetsInGW_m,
+               PolEnforcePoint_m, Subnets_m, SubnetsInGW_m,
                new_configured_list_SecurityInvariant SINVAR_LIB_Sink
                  \<lparr> node_properties = [''MissionControl1'' \<mapsto> SinkPool,
                                       ''MissionControl2'' \<mapsto> SinkPool,
-                                      ''Bot1'' \<mapsto> SinkPool,
-                                      ''Bot2'' \<mapsto> SinkPool,
+                                      ''Robot1'' \<mapsto> SinkPool,
+                                      ''Robot2'' \<mapsto> SinkPool,
                                       ''Watchdog'' \<mapsto> SinkPool,
                                       ''AdminPc'' \<mapsto> SinkPool
                                       ] \<rparr>
                  ''non-leaking production units'',
                new_configured_list_SecurityInvariant SINVAR_LIB_BLPtrusted
-                 \<lparr> node_properties = [''MissionControl1'' \<mapsto> \<lparr> privacy_level = 1, trusted = False \<rparr>,
-                                      ''MissionControl2'' \<mapsto> \<lparr> privacy_level = 2, trusted = False \<rparr>,
-                                      ''Bot1'' \<mapsto> \<lparr> privacy_level = 1, trusted = False \<rparr>,
-                                      ''Bot2'' \<mapsto> \<lparr> privacy_level = 2, trusted = False \<rparr>,
-                                      ''Watchdog'' \<mapsto> \<lparr> privacy_level = 1, trusted = True \<rparr>,
-                                        (*trust because bot2 must send to it. privacy_level 1 to interact with bot 1*)
-                                      ''AdminPc'' \<mapsto> \<lparr> privacy_level = 1, trusted = True \<rparr>
+                 \<lparr> node_properties = [''MissionControl1'' \<mapsto> \<lparr> security_level = 1, trusted = False \<rparr>,
+                                      ''MissionControl2'' \<mapsto> \<lparr> security_level = 2, trusted = False \<rparr>,
+                                      ''Robot1'' \<mapsto> \<lparr> security_level = 1, trusted = False \<rparr>,
+                                      ''Robot2'' \<mapsto> \<lparr> security_level = 2, trusted = False \<rparr>,
+                                      ''Watchdog'' \<mapsto> \<lparr> security_level = 1, trusted = True \<rparr>,
+                                        (*trust because bot2 must send to it. security_level 1 to interact with bot 1*)
+                                      ''AdminPc'' \<mapsto> \<lparr> security_level = 1, trusted = True \<rparr>
                                       ] \<rparr>
                  ''trade secrets''
               ]"
@@ -813,12 +813,12 @@ lemma "stateful_policy_tuned
     flows_stateL =
       [(''Webcam'', ''SensorSink''),
        (''SensorSink'', ''Statistics''),
-       (''MissionControl1'', ''Bot1''),
-       (''MissionControl2'', ''Bot2''),
+       (''MissionControl1'', ''Robot1''),
+       (''MissionControl2'', ''Robot2''),
        (''AdminPc'', ''MissionControl2''),
        (''AdminPc'', ''MissionControl1''),
-       (''Watchdog'', ''Bot1''),
-       (''Watchdog'', ''Bot2'')]\<rparr>" by eval
+       (''Watchdog'', ''Robot1''),
+       (''Watchdog'', ''Robot2'')]\<rparr>" by eval
 
 text{*We even get a better (i.e. stricter) maximum policy*}
 lemma "set (edgesL (make_policy invariants_tuned (nodesL policy))) \<subset>
@@ -832,13 +832,13 @@ lemma "set [e \<leftarrow> edgesL (make_policy invariants_tuned (nodesL policy))
              (''Watchdog'', ''MissionControl1''),
              (''Watchdog'', ''MissionControl2''),
              (''AdminPc'', ''Watchdog''),
-             (''AdminPc'', ''Bot1'')]" by eval
+             (''AdminPc'', ''Robot1'')]" by eval
 
 text{*
 It can be seen that all connections which should be stateful are now indeed stateful. 
 In addition, it can be seen that MissionControl1 cannot set up a stateful connection to Bot2. 
 This is because MissionControl1 was never declared a trusted device and the confidential information 
-in MissionControl2 and Bot2 must not leak. 
+in MissionControl2 and Robot2 must not leak. 
 
 The improved invariant definition even produces a better (i.e. stricter) maximum policy. *}
 

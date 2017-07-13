@@ -50,7 +50,7 @@ interpretation NoRefl_impl:TopoS_List_Impl
 done
 
 
-subsubsection {* SecurityGateway packing *}
+subsubsection {* PolEnforcePoint packing *}
   definition SINVAR_LIB_NoRefl :: "('v::vertex, node_config) TopoS_packed" where
     "SINVAR_LIB_NoRefl \<equiv> 
     \<lparr> nm_name = ''NoRefl'', 

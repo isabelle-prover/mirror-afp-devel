@@ -4,21 +4,22 @@ begin
 
 subsection {* SecurityInvariant Basic Bell LaPadula  *}
 
-type_synonym privacy_level = nat
+type_synonym security_level = nat
 
-definition default_node_properties :: "privacy_level"
+definition default_node_properties :: "security_level"
   where  "default_node_properties \<equiv> 0"
 
-fun sinvar :: "'v graph \<Rightarrow> ('v \<Rightarrow> privacy_level) \<Rightarrow> bool" where
+fun sinvar :: "'v graph \<Rightarrow> ('v \<Rightarrow> security_level) \<Rightarrow> bool" where
   "sinvar G nP = (\<forall> (e1,e2) \<in> edges G. (nP e1) \<le> (nP e2))"
 
-text{* What we call a @{typ privacy_level} is often referred to as security clearance in the literature. 
-The lowest security clearance is @{term "0::nat"}, which can be understood as unclassified.
+text{* What we call a @{typ security_level} is also referred to as security label
+(or security clearance of subjects and classification of objects) in the literature. 
+The lowest security level is @{term "0::nat"}, which can be understood as unclassified.
 Consequently, 1 = confidential, 2 = secret, 3 = topSecret, .... 
-The total order of the security clearances corresponds to the total order of the natural numbers @{text \<le>}. 
-It is important that there is smallest security clearance (i.e. @{const default_node_properties}), 
+The total order of the security levels corresponds to the total order of the natural numbers @{text \<le>}. 
+It is important that there is smallest security level (i.e. @{const default_node_properties}), 
 otherwise, a unique and secure default parameter could not exist. 
-Hence, it is not possible to extend the security clearances to @{typ int} to model unlimited ``un-confidentialness''. 
+Hence, it is not possible to extend the security levels to @{typ int} to model unlimited ``un-confidentialness''. 
 *}
 
 definition receiver_violation :: "bool" where "receiver_violation \<equiv> True"
@@ -86,11 +87,11 @@ done
  
 
 subsubsection {*ENF*}
-  lemma zero_default_candidate: "\<And> nP e1 e2. \<not> (op \<le>::privacy_level \<Rightarrow> privacy_level \<Rightarrow> bool) (nP e1) (nP e2) \<Longrightarrow> \<not> (op \<le>) (nP e1) 0"
+  lemma zero_default_candidate: "\<And> nP e1 e2. \<not> (op \<le>::security_level \<Rightarrow> security_level \<Rightarrow> bool) (nP e1) (nP e2) \<Longrightarrow> \<not> (op \<le>) (nP e1) 0"
     by simp_all
-  lemma zero_default_candidate_rule: "\<And> (nP::('v \<Rightarrow> privacy_level)) e1 e2. \<not> (nP e1) \<le> (nP e2) \<Longrightarrow> \<not> (nP e1) \<le> 0"
+  lemma zero_default_candidate_rule: "\<And> (nP::('v \<Rightarrow> security_level)) e1 e2. \<not> (nP e1) \<le> (nP e2) \<Longrightarrow> \<not> (nP e1) \<le> 0"
     by simp_all
-  lemma privacylevel_refl: "(op \<le>::privacy_level \<Rightarrow> privacy_level \<Rightarrow> bool) e e"
+  lemma privacylevel_refl: "(op \<le>::security_level \<Rightarrow> security_level \<Rightarrow> bool) e e"
     by(simp_all)
   lemma BLP_ENF: "SecurityInvariant_withOffendingFlows.sinvar_all_edges_normal_form sinvar (op \<le>)"
     unfolding SecurityInvariant_withOffendingFlows.sinvar_all_edges_normal_form_def
@@ -102,7 +103,7 @@ subsubsection {*ENF*}
     apply(simp add: privacylevel_refl)
   done
 
-  definition BLP_offending_set:: "'v graph \<Rightarrow> ('v \<Rightarrow> privacy_level) \<Rightarrow> ('v \<times> 'v) set set" where
+  definition BLP_offending_set:: "'v graph \<Rightarrow> ('v \<Rightarrow> security_level) \<Rightarrow> ('v \<times> 'v) set set" where
   "BLP_offending_set G nP = (if sinvar G nP then
       {}
      else 
@@ -134,7 +135,7 @@ subsubsection {*ENF*}
 
 
 text{*Alternate definition of the @{const sinvar}:
-      For all reachable nodes, the security clearance is higher*}
+      For all reachable nodes, the security level is higher*}
 lemma sinvar_BLPbasic_tancl:
   "wf_graph G \<Longrightarrow> sinvar G nP = (\<forall> v \<in> nodes G. \<forall>v' \<in> succ_tran G v. (nP v) \<le> (nP v'))"
   proof(unfold sinvar.simps, rule iffI, goal_cases)

@@ -28,12 +28,12 @@ text{*
 0 - unclassified
 1 - confidential
 *}
---"trusted: can access any security clearance, privacy-level 0: can reveal to anyone. I.e. can declassify"
+--"trusted: can access any security level, privacy-level 0: can reveal to anyone. I.e. can declassify"
 definition BLP_m::"(string SecurityInvariant)" where
     "BLP_m \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_BLPtrusted \<lparr> 
-          node_properties = [''DB'' \<mapsto> \<lparr> privacy_level = 1, trusted = False \<rparr>,
-                             ''Log'' \<mapsto> \<lparr> privacy_level = 1, trusted = False \<rparr>,
-                             ''WebApp'' \<mapsto> \<lparr> privacy_level = 0, trusted = True \<rparr> 
+          node_properties = [''DB'' \<mapsto> \<lparr> security_level = 1, trusted = False \<rparr>,
+                             ''Log'' \<mapsto> \<lparr> security_level = 1, trusted = False \<rparr>,
+                             ''WebApp'' \<mapsto> \<lparr> security_level = 0, trusted = True \<rparr> 
                              ]
           \<rparr> ''The database and the logging server have confidential information''"
 

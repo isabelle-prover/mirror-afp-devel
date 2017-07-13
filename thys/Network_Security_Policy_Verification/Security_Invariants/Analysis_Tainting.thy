@@ -54,7 +54,7 @@ done
 text\<open>One tainting invariant is equal to many BLP invariants. 
      The BLP invariants are the projection of the tainting mapping for exactly one label\<close>
 lemma tainting_iff_blp:
-  defines "extract \<equiv> \<lambda>a ts. if a \<in> ts then 1::privacy_level else 0::privacy_level"
+  defines "extract \<equiv> \<lambda>a ts. if a \<in> ts then 1::security_level else 0::security_level"
   shows "SINVAR_Tainting.sinvar G nP \<longleftrightarrow> (\<forall>a. SINVAR_BLPbasic.sinvar G (extract a \<circ> nP))"
 proof
   show"SINVAR_Tainting.sinvar G nP \<Longrightarrow> \<forall>a. SINVAR_BLPbasic.sinvar G (extract a \<circ> nP)"
@@ -68,7 +68,7 @@ proof
     { fix v1 v2
       assume *: "(v1,v2)\<in>edges G"
       { fix a
-        from blp * have "(if a \<in> nP v1 then 1::privacy_level else 0) \<le> (if a \<in> nP v2 then 1 else 0)"
+        from blp * have "(if a \<in> nP v1 then 1::security_level else 0) \<le> (if a \<in> nP v2 then 1 else 0)"
           unfolding extract_def
           apply(simp)
           apply(erule_tac x=a in allE)
@@ -120,12 +120,12 @@ qed
 
 text\<open>
   Translated to the Bell LaPadula model with trust:
-  security clearance is the number of tainted minus the untainted things
+  security level is the number of tainted minus the untainted things
   We set the Trusted flag if a machine untaints things.
 \<close>
 lemma "\<forall>ts v. nP v = ts \<longrightarrow> finite (taints ts) \<Longrightarrow>
   SINVAR_TaintingTrusted.sinvar G nP \<Longrightarrow>
-    SINVAR_BLPtrusted.sinvar G ((\<lambda> ts. \<lparr>privacy_level = card (taints ts - untaints ts), trusted = (untaints ts \<noteq> {})\<rparr> ) \<circ> nP)"
+    SINVAR_BLPtrusted.sinvar G ((\<lambda> ts. \<lparr>security_level = card (taints ts - untaints ts), trusted = (untaints ts \<noteq> {})\<rparr> ) \<circ> nP)"
 apply(simp add: SINVAR_TaintingTrusted.sinvar_def)
 apply(clarify, rename_tac a b)
 apply(erule_tac x="(a,b)" in ballE)
@@ -137,13 +137,13 @@ apply(rule card_mono)
 
 lemma tainting_iff_blp_trusted:
   defines "project \<equiv> \<lambda>a ts. \<lparr>
-      privacy_level =
+      security_level =
         if
           a \<in> (taints ts - untaints ts)
         then
-          1::privacy_level
+          1::security_level
         else
-          0::privacy_level
+          0::security_level
       , trusted = a \<in> untaints ts\<rparr>"
   shows "SINVAR_TaintingTrusted.sinvar G nP \<longleftrightarrow> (\<forall>a. SINVAR_BLPtrusted.sinvar G (project a \<circ> nP))"
 unfolding project_def
@@ -170,7 +170,7 @@ text\<open>If the labels are finite, the above can be generalized to arbitrary s
 lemma tainting_iff_blp_trusted_extended:
   defines "project \<equiv> \<lambda>A ts.
       \<lparr>
-          privacy_level = card (A \<inter> (taints ts - untaints ts))
+          security_level = card (A \<inter> (taints ts - untaints ts))
         , trusted = (A \<inter> untaints ts) \<noteq> {}
       \<rparr>"
   assumes finite: "\<forall>ts v. nP v = ts \<longrightarrow> finite (taints ts)"

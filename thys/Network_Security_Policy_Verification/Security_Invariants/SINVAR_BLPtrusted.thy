@@ -4,27 +4,27 @@ begin
 
 subsection {* SecurityInvariant Basic Bell LaPadula with trusted entities *}
 
-type_synonym privacy_level = nat
+type_synonym security_level = nat
 
 record node_config = 
-    privacy_level::privacy_level
+    security_level::security_level
     trusted::bool
 
 definition default_node_properties :: "node_config"
-  where  "default_node_properties \<equiv> \<lparr> privacy_level = 0, trusted = False \<rparr>"
+  where  "default_node_properties \<equiv> \<lparr> security_level = 0, trusted = False \<rparr>"
 
 fun sinvar :: "'v graph \<Rightarrow> ('v \<Rightarrow> node_config) \<Rightarrow>  bool" where
-  "sinvar G nP = (\<forall> (e1,e2) \<in> edges G. (if trusted (nP e2) then True else privacy_level (nP e1) \<le> privacy_level (nP e2) ))"
+  "sinvar G nP = (\<forall> (e1,e2) \<in> edges G. (if trusted (nP e2) then True else security_level (nP e1) \<le> security_level (nP e2) ))"
 
 
 text{*A simplified version of the Bell LaPadula model was presented in @{file "SINVAR_BLPbasic.thy"}. 
 In this theory, we extend this template with a notion of trust by adding a Boolean flag @{const trusted} to the host attributes. 
 This is a refinement to represent real-world scenarios more accurately and analogously happened to the 
 original Bell LaPadula model (see publication ``Looking Back at the Bell-La Padula Model''
-A trusted host can receive information of any security clearance and may declassify it, 
-i.e. distribute the information with its own security clearance. 
+A trusted host can receive information of any security level and may declassify it, 
+i.e. distribute the information with its own security level. 
 For example, a @{term "trusted (sc::node_config) = True"} host is allowed to receive any information 
-and with the @{term "0::privacy_level"} clearance, it is allowed to reveal it to anyone. 
+and with the @{term "0::security_level"} level, it is allowed to reveal it to anyone. 
 *}
 
 
@@ -67,7 +67,7 @@ lemma BLP_def_unique: "otherbot \<noteq> default_node_properties \<Longrightarro
   apply(rule_tac x="\<lparr> nodes={vertex_1, vertex_2}, edges = {(vertex_1,vertex_2)} \<rparr>" in exI, simp)
   apply(rule conjI)
    apply(simp add: wf_graph_def)
-  apply(rule_tac x="(\<lambda> x. default_node_properties)(vertex_1 := \<lparr>privacy_level = 1, trusted = False \<rparr>, vertex_2 := \<lparr>privacy_level = 0, trusted = False \<rparr>)" in exI, simp add:default_node_properties_def)
+  apply(rule_tac x="(\<lambda> x. default_node_properties)(vertex_1 := \<lparr>security_level = 1, trusted = False \<rparr>, vertex_2 := \<lparr>security_level = 0, trusted = False \<rparr>)" in exI, simp add:default_node_properties_def)
   apply(rule_tac x="vertex_2" in exI, simp)
   apply(rule_tac x="{(vertex_1,vertex_2)}" in exI, simp)
   apply(case_tac otherbot)
@@ -79,7 +79,7 @@ lemma BLP_def_unique: "otherbot \<noteq> default_node_properties \<Longrightarro
 
 
 subsubsection {*ENF*}
-  definition BLP_P where "BLP_P \<equiv> (\<lambda>n1 n2.(if trusted n2 then True else privacy_level n1 \<le> privacy_level n2 ))"
+  definition BLP_P where "BLP_P \<equiv> (\<lambda>n1 n2.(if trusted n2 then True else security_level n1 \<le> security_level n2 ))"
   lemma zero_default_candidate: "\<forall>nP e1 e2. \<not> BLP_P (nP e1) (nP e2) \<longrightarrow> \<not> BLP_P (nP e1) default_node_properties"
     apply(rule allI)+
     apply(case_tac "nP e1")
