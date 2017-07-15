@@ -9,7 +9,28 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>09 Jul 2017 00:00:00 +0000</pubDate>
+    <pubDate>13 Jul 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>Minkowski's Theorem</title>
+              <link>https://www.isa-afp.org/entries/Minkowskis_Theorem.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Minkowskis_Theorem.shtml</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>13 Jul 2017 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;Minkowski&#39;s theorem relates a subset of
+&amp;#8477;&lt;sup&gt;n&lt;/sup&gt;, the Lebesgue measure, and the
+integer lattice &amp;#8484;&lt;sup&gt;n&lt;/sup&gt;: It states that
+any convex subset of &amp;#8477;&lt;sup&gt;n&lt;/sup&gt; with volume
+greater than 2&lt;sup&gt;n&lt;/sup&gt; contains at least one lattice
+point from &amp;#8484;&lt;sup&gt;n&lt;/sup&gt;\{0}, i.&amp;thinsp;e. a
+non-zero point with integer coefficients.&lt;/p&gt;  &lt;p&gt;A
+related theorem which directly implies this is Blichfeldt&#39;s
+theorem, which states that any subset of
+&amp;#8477;&lt;sup&gt;n&lt;/sup&gt; with a volume greater than 1
+contains two different points whose difference vector has integer
+components.&lt;/p&gt;  &lt;p&gt;The entry contains a proof of both
+theorems.&lt;/p&gt;</description>
+    </item>
     <item>
        <title>Verified Metatheory and Type Inference for a Name-Carrying Simply-Typed Lambda Calculus</title>
               <link>https://www.isa-afp.org/entries/Name_Carrying_Type_Inference.shtml</link>
@@ -540,21 +561,6 @@ authors, published in 2017 in the &lt;em&gt;Journal of Automated
 Reasoning&lt;/em&gt;. The abstract proof can be instantiated for
 various formalisms, including first-order logic with inductive
 predicates.</description>
-    </item>
-    <item>
-       <title>Stone Relation Algebras</title>
-              <link>https://www.isa-afp.org/entries/Stone_Relation_Algebras.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Stone_Relation_Algebras.shtml</guid>
-       <dc:creator> Walter Guttmann       </dc:creator>
-       <pubDate>07 Feb 2017 00:00:00 +0000</pubDate>
-       <description>
-We develop Stone relation algebras, which generalise relation algebras
-by replacing the underlying Boolean algebra structure with a Stone
-algebra. We show that finite matrices over extended real numbers form
-an instance. As a consequence, relation-algebraic concepts and methods
-can be used for reasoning about weighted graphs. We also develop a
-fixpoint calculus and apply it to compare different definitions of
-reflexive-transitive closures in semirings.</description>
     </item>
   </channel>
 </rss>

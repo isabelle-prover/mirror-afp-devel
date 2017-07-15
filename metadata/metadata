@@ -1,3 +1,24 @@
+[Minkowskis_Theorem]
+title = Minkowski's Theorem
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Geometry, Mathematics/Number Theory
+date = 2017-07-13
+notify = eberlm@in.tum.de
+abstract = 
+  <p>Minkowski's theorem relates a subset of
+  &#8477;<sup>n</sup>, the Lebesgue measure, and the
+  integer lattice &#8484;<sup>n</sup>: It states that
+  any convex subset of &#8477;<sup>n</sup> with volume
+  greater than 2<sup>n</sup> contains at least one lattice
+  point from &#8484;<sup>n</sup>\{0}, i.&thinsp;e. a
+  non-zero point with integer coefficients.</p>  <p>A
+  related theorem which directly implies this is Blichfeldt's
+  theorem, which states that any subset of
+  &#8477;<sup>n</sup> with a volume greater than 1
+  contains two different points whose difference vector has integer
+  components.</p>  <p>The entry contains a proof of both
+  theorems.</p>
+
 [Name_Carrying_Type_Inference]
 title = Verified Metatheory and Type Inference for a Name-Carrying Simply-Typed Lambda Calculus
 author = Michael Rawson <mailto:michaelrawson76@gmail.com>

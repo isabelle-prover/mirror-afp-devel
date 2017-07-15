@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Minkowski's Theorem - Archive of Formal Proofs
+</title>
+<link rel="stylesheet" type="text/css" href="../front.css">
+<link rel="icon" href="../images/favicon.ico" type="image/icon">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+</head>
+
+<body>
+
+<table width="100%">
+<tbody>
+<tr>
+
+<!-- Navigation -->
+<td width="20%" align="center" valign="top">
+  <p>&nbsp;</p>
+  <a href="http://isabelle.in.tum.de">
+    <img src="../images/isabelle.png" width="100" height="86" border=0>
+  </a>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+  <table class="nav" width="80%">
+    <tr>
+      <td class="nav" width="100%"><a href="../index.shtml">Home</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../about.shtml">About</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../submitting.shtml">Submission</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../updating.shtml">Updating Entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../using.shtml">Using Entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../search.shtml">Search</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../statistics.shtml">Statistics</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../topics.shtml">Index</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../download.shtml">Download</a></td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+</td>
+
+
+<!-- Content -->
+<td width="80%" valign="top">
+<div align="center">
+  <p>&nbsp;</p>
+  <h1>          <font class="first">M</font>inkowski's
+  
+          <font class="first">T</font>heorem
+  
+</h1>
+  <p>&nbsp;</p>
+
+<table width="80%" class="data">
+<tbody>
+<tr>
+  <td class="datahead" width="20%">Title:</td>
+  <td class="data" width="80%">Minkowski's Theorem</td>
+</tr>
+
+<tr>
+  <td class="datahead">
+          Author:
+      </td>
+  <td class="data">
+              <a href="https://www21.in.tum.de/~eberlm">Manuel Eberl</a>
+      </td>
+</tr>
+
+
+
+<tr>
+  <td class="datahead">Submission date:</td>
+  <td class="data">2017-07-13</td>
+</tr>
+
+<tr>
+  <td class="datahead" valign="top">Abstract:</td>
+  <td class="abstract">
+<p>Minkowski's theorem relates a subset of
+&#8477;<sup>n</sup>, the Lebesgue measure, and the
+integer lattice &#8484;<sup>n</sup>: It states that
+any convex subset of &#8477;<sup>n</sup> with volume
+greater than 2<sup>n</sup> contains at least one lattice
+point from &#8484;<sup>n</sup>\{0}, i.&thinsp;e. a
+non-zero point with integer coefficients.</p>  <p>A
+related theorem which directly implies this is Blichfeldt's
+theorem, which states that any subset of
+&#8477;<sup>n</sup> with a volume greater than 1
+contains two different points whose difference vector has integer
+components.</p>  <p>The entry contains a proof of both
+theorems.</p></td>
+</tr>
+
+
+<tr>
+  <td class="datahead" valign="top">BibTeX:</td>
+  <td class="formatted">
+        <pre>@article{Minkowskis_Theorem-AFP,
+  author  = {Manuel Eberl},
+  title   = {Minkowski's Theorem},
+  journal = {Archive of Formal Proofs},
+  month   = jul,
+  year    = 2017,
+  note    = {\url{http://isa-afp.org/entries/Minkowskis_Theorem.shtml},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+  </td>
+</tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
+
+    
+                    
+                    
+
+        
+  </tbody>
+</table>
+
+<p></p>
+
+<table class="links">
+  <tbody>
+    <tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/Minkowskis_Theorem/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Minkowskis_Theorem/document.pdf">Proof document</a>
+    </td>
+    </tr>
+    <tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/Minkowskis_Theorem/index.html">Browse theories</a>
+      </td></tr>
+    <tr>
+    <td class="links">
+      <a href="../release/afp-Minkowskis_Theorem-current.tar.gz">Download this entry</a>
+    </td>
+    </tr>
+
+
+    <tr><td class="links">Older releases:
+        None
+        </td></tr>
+
+  </tbody>
+</table>
+
+</div>
+</td>
+
+</tr>
+</tbody>
+</table>
+
+<script src="../jquery.min.js"></script>
+<script src="../script.js"></script>
+
+</body>
+</html>
