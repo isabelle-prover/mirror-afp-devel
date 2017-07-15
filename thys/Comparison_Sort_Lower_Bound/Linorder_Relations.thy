@@ -23,7 +23,7 @@ proof -
   {
     fix x have "count (mset xs) x = (if x \<in> set xs then 1 else 0) \<longleftrightarrow> count (mset xs) x \<le> 1"
       using count_eq_zero_iff[of "mset xs" x]
-      by (cases "count (mset xs) x") auto
+      by (cases "count (mset xs) x") (auto simp del: count_mset_0_iff) 
   }
   thus ?thesis unfolding distinct_count_atmost_1 by blast
 qed
