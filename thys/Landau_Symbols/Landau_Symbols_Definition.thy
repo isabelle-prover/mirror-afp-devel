@@ -217,6 +217,8 @@ locale landau_symbol =
   assumes filter_mono': "F1 \<le> F2 \<Longrightarrow> L F2 f \<subseteq> L F1 f"
   assumes in_filtermap_iff: 
     "f' \<in> L (filtermap h' F') g' \<longleftrightarrow> (\<lambda>x. f' (h' x)) \<in> L' F' (\<lambda>x. g' (h' x))"
+  assumes filtercomap: 
+    "f' \<in> L F'' g' \<Longrightarrow> (\<lambda>x. f' (h' x)) \<in> L' (filtercomap h' F'') (\<lambda>x. g' (h' x))"
   assumes sup: "f \<in> L F1 g \<Longrightarrow> f \<in> L F2 g \<Longrightarrow> f \<in> L (sup F1 F2) g"
   assumes in_cong: "eventually (\<lambda>x. f x = g x) F \<Longrightarrow> f \<in> L F (h) \<longleftrightarrow> g \<in> L F (h)"
   assumes cong: "eventually (\<lambda>x. f x = g x) F \<Longrightarrow> L F (f) = L F (g)"
@@ -800,6 +802,12 @@ proof
       by (force elim: eventually_mono intro: R_trans[OF _ R_mult_right_mono])+
     with c show "f \<in> L (sup F G) g" by (auto simp: L_def eventually_sup)
   }
+  {
+    fix f g :: "'a \<Rightarrow> 'b" and h :: "'c \<Rightarrow> 'a" and F G :: "'a filter"
+    assume "(f \<in> L F g)"
+    thus "((\<lambda>x. f (h x)) \<in> L' (filtercomap h F) (\<lambda>x. g (h x)))"
+      unfolding L_def L'_def by auto
+  }
 qed (auto simp: L_def Lr_def eventually_filtermap L'_def
           intro: filter_leD exI[of _ "1::real"])
 
@@ -875,6 +883,12 @@ proof
     assume "f \<in> l F g" and "filterlim h F G"
     thus "(\<lambda>x. f (h x)) \<in> l' G (\<lambda>x. g (h x))"
       by (auto simp: l_def l'_def filterlim_iff)
+  }
+  {
+    fix f g :: "'a \<Rightarrow> 'b" and h :: "'c \<Rightarrow> 'a" and F G :: "'a filter"
+    assume "(f \<in> l F g)"
+    thus "((\<lambda>x. f (h x)) \<in> l' (filtercomap h F) (\<lambda>x. g (h x)))"
+      unfolding l_def l'_def by auto
   }
 qed (auto simp: l_def lr_def eventually_filtermap l'_def eventually_sup intro: filter_leD)
 
@@ -996,6 +1010,7 @@ qed (auto simp: bigtheta_def landau_o.big.norm_iff
                 landau_o.big.bot' landau_omega.big.bot'
                 landau_o.big.in_filtermap_iff landau_omega.big.in_filtermap_iff
                 landau_o.big.sup landau_omega.big.sup
+                landau_o.big.filtercomap landau_omega.big.filtercomap
           dest: landau_o.big.cong landau_omega.big.cong)
 
 lemmas landau_symbols = 
