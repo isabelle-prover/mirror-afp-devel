@@ -9,7 +9,46 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>07 Jul 2017 00:00:00 +0000</pubDate>
+    <pubDate>13 Jul 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>Minkowski's Theorem</title>
+              <link>https://www.isa-afp.org/entries/Minkowskis_Theorem.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Minkowskis_Theorem.shtml</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>13 Jul 2017 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;Minkowski&#39;s theorem relates a subset of
+&amp;#8477;&lt;sup&gt;n&lt;/sup&gt;, the Lebesgue measure, and the
+integer lattice &amp;#8484;&lt;sup&gt;n&lt;/sup&gt;: It states that
+any convex subset of &amp;#8477;&lt;sup&gt;n&lt;/sup&gt; with volume
+greater than 2&lt;sup&gt;n&lt;/sup&gt; contains at least one lattice
+point from &amp;#8484;&lt;sup&gt;n&lt;/sup&gt;\{0}, i.&amp;thinsp;e. a
+non-zero point with integer coefficients.&lt;/p&gt;  &lt;p&gt;A
+related theorem which directly implies this is Blichfeldt&#39;s
+theorem, which states that any subset of
+&amp;#8477;&lt;sup&gt;n&lt;/sup&gt; with a volume greater than 1
+contains two different points whose difference vector has integer
+components.&lt;/p&gt;  &lt;p&gt;The entry contains a proof of both
+theorems.&lt;/p&gt;</description>
+    </item>
+    <item>
+       <title>Verified Metatheory and Type Inference for a Name-Carrying Simply-Typed Lambda Calculus</title>
+              <link>https://www.isa-afp.org/entries/Name_Carrying_Type_Inference.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Name_Carrying_Type_Inference.shtml</guid>
+       <dc:creator> Michael Rawson       </dc:creator>
+       <pubDate>09 Jul 2017 00:00:00 +0000</pubDate>
+       <description>
+I formalise a Church-style simply-typed
+\(\lambda\)-calculus, extended with pairs, a unit value, and
+projection functions, and show some metatheory of the calculus, such
+as the subject reduction property. Particular attention is paid to the
+treatment of names in the calculus. A nominal style of binding is
+used, but I use a manual approach over Nominal Isabelle in order to
+extract an executable type inference algorithm. More information can
+be found in my &lt;a
+href=&#34;http://www.openthesis.org/documents/Verified-Metatheory-Type-Inference-Simply-603182.html&#34;&gt;undergraduate
+dissertation&lt;/a&gt;.</description>
+    </item>
     <item>
        <title>A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes</title>
               <link>https://www.isa-afp.org/entries/CRDT.shtml</link>
@@ -521,39 +560,6 @@ separator smaller than n, then there exist n internally
 vertex-disjoint paths from u to v.  The version for undirected graphs
 follows immediately because undirected graphs are a special case of
 directed graphs.</description>
-    </item>
-    <item>
-       <title>Differential Dynamic Logic</title>
-              <link>https://www.isa-afp.org/entries/Differential_Dynamic_Logic.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Differential_Dynamic_Logic.shtml</guid>
-       <dc:creator> Brandon Bohrer       </dc:creator>
-       <pubDate>13 Feb 2017 00:00:00 +0000</pubDate>
-       <description>
-We formalize differential dynamic logic, a logic for proving
-properties of hybrid systems. The proof calculus in this formalization
-is based on the uniform substitution principle. We show it is sound
-with respect to our denotational semantics, which provides increased
-confidence in the correctness of the KeYmaera X theorem prover based
-on this calculus. As an application, we include a proof term checker
-embedded in Isabelle/HOL with several example proofs.  Published in:
-Brandon Bohrer, Vincent Rahli, Ivana Vukotic, Marcus Völp, André
-Platzer: Formally verified differential dynamic logic. CPP 2017.</description>
-    </item>
-    <item>
-       <title>Abstract Soundness</title>
-              <link>https://www.isa-afp.org/entries/Abstract_Soundness.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Abstract_Soundness.shtml</guid>
-       <dc:creator> Jasmin Christian Blanchette, Andrei Popescu, Dmitriy Traytel       </dc:creator>
-       <pubDate>10 Feb 2017 00:00:00 +0000</pubDate>
-       <description>
-A formalized coinductive account of the abstract development of
-Brotherston, Gorogiannis, and Petersen [APLAS 2012], in a slightly
-more general form since we work with arbitrary infinite proofs, which
-may be acyclic. This work is described in detail in an article by the
-authors, published in 2017 in the &lt;em&gt;Journal of Automated
-Reasoning&lt;/em&gt;. The abstract proof can be instantiated for
-various formalisms, including first-order logic with inductive
-predicates.</description>
     </item>
   </channel>
 </rss>

@@ -261,6 +261,7 @@
               <a href="entries/POPLmark-deBruijn.shtml">POPLmark-deBruijn</a> &nbsp;
               <a href="entries/Lam-ml-Normalization.shtml">Lam-ml-Normalization</a> &nbsp;
                 <strong>Type Systems:</strong>
+              <a href="entries/Name_Carrying_Type_Inference.shtml">Name_Carrying_Type_Inference</a> &nbsp;
               <a href="entries/MiniML.shtml">MiniML</a> &nbsp;
               <a href="entries/Possibilistic_Noninterference.shtml">Possibilistic_Noninterference</a> &nbsp;
               <a href="entries/SIFUM_Type_Systems.shtml">SIFUM_Type_Systems</a> &nbsp;
@@ -490,6 +491,7 @@
                 </div>
       <h3>Number Theory</h3>
     <div class="list">
+          <a href="entries/Minkowskis_Theorem.shtml">Minkowskis_Theorem</a> &nbsp;
           <a href="entries/E_Transcendental.shtml">E_Transcendental</a> &nbsp;
           <a href="entries/Liouville_Numbers.shtml">Liouville_Numbers</a> &nbsp;
           <a href="entries/Prime_Harmonic_Series.shtml">Prime_Harmonic_Series</a> &nbsp;
@@ -513,6 +515,7 @@
                 </div>
       <h3>Geometry</h3>
     <div class="list">
+          <a href="entries/Minkowskis_Theorem.shtml">Minkowskis_Theorem</a> &nbsp;
           <a href="entries/Buildings.shtml">Buildings</a> &nbsp;
           <a href="entries/Chord_Segments.shtml">Chord_Segments</a> &nbsp;
           <a href="entries/Triangle.shtml">Triangle</a> &nbsp;

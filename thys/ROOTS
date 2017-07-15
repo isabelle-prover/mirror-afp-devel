@@ -205,6 +205,7 @@ Menger
 MFMC_Countable
 MiniML
 Minimal_SSA
+Minkowskis_Theorem
 Modal_Logics_for_NTS
 Monad_Normalisation
 MonoBoolTranAlgebra
@@ -214,6 +215,7 @@ MSO_Regex_Equivalence
 MuchAdoAboutTwo
 Multirelations
 Myhill-Nerode
+Name_Carrying_Type_Inference
 Nat-Interval-Logic
 Native_Word
 Nested_Multisets_Ordinals

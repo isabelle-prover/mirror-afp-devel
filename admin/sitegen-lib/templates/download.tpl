@@ -11,8 +11,8 @@
 <tr><td class="head">
   <b>Current stable version</b> (for current Isabelle release):
 </td></tr>
-<tr></tr><td class="entry">[{{ today }}]:
-    <a href="release/afp-{{ today }}.tar.gz">afp-{{ today }}.tar.gz</a>
+<tr></tr><td class="entry">
+    <a href="release/afp-current.tar.gz">afp-current.tar.gz</a>
 </td></tr>
 {% endif %}
 
