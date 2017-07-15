@@ -26,9 +26,10 @@ class Options(object):
         self.dest_dir = None
         self.do_check = False
         self.metadata_dir = None
+        self.thys_dir = None
+        self.templates_dir = None
         self.status_file = None
         self.build_download = False
-    def is_devel(self):
-        return self.status_file is not None
+        self.is_devel = False
 
 options = Options()
