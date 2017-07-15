@@ -90,6 +90,17 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
   </tr>
       <tr>
       <td class="entry">
+        2017-07-15: <a href="entries/HOLCF-Prelude.shtml">HOLCF-Prelude</a>
+        <br>
+                  Authors:
+                          Joachim Breitner,
+                          Brian Huffman,
+                        Neil Mitchell
+          and     Christian Sternagel
+              </td>
+    </tr>
+      <tr>
+      <td class="entry">
         2017-07-13: <a href="entries/Minkowskis_Theorem.shtml">Minkowski's Theorem</a>
         <br>
                   Author:
@@ -729,7 +740,7 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
         2016-07-17: <a href="entries/Surprise_Paradox.shtml">Surprise Paradox</a>
         <br>
                   Author:
-                        <a href="http://pp.ipd.kit.edu/~breitner/">Joachim Breitner</a>
+                        Joachim Breitner
                         </td>
     </tr>
       <tr>
@@ -908,7 +919,7 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
         2016-05-20: <a href="entries/Incredible_Proof_Machine.shtml">The meta theory of the Incredible Proof Machine</a>
         <br>
                   Authors:
-                        <a href="http://pp.ipd.kit.edu/~breitner/">Joachim Breitner</a>
+                        Joachim Breitner
           and     <a href="http://pp.ipd.kit.edu/person.php?id=88">Denis Lohner</a>
               </td>
     </tr>
@@ -1462,7 +1473,7 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
         2015-02-20: <a href="entries/Call_Arity.shtml">The Safety of Call Arity</a>
         <br>
                   Author:
-                        <a href="http://pp.ipd.kit.edu/~breitner/">Joachim Breitner</a>
+                        Joachim Breitner
                         </td>
     </tr>
       <tr>
@@ -2179,7 +2190,7 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
         2013-01-31: <a href="entries/Launchbury.shtml">The Correctness of Launchbury's Natural Semantics for Lazy Evaluation</a>
         <br>
                   Author:
-                        <a href="http://pp.ipd.kit.edu/~breitner/">Joachim Breitner</a>
+                        Joachim Breitner
                         </td>
     </tr>
       <tr>
@@ -2309,7 +2320,7 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
         2012-06-26: <a href="entries/Tycon.shtml">Type Constructor Classes and Monad Transformers</a>
         <br>
                   Author:
-                        <a href="http://web.cecs.pdx.edu/~brianh/">Brian Huffman</a>
+                        Brian Huffman
                         </td>
     </tr>
       <tr>
@@ -2532,7 +2543,7 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
         2011-04-01: <a href="entries/General-Triangle.shtml">The General Triangle Is Unique</a>
         <br>
                   Author:
-                        <a href="http://pp.ipd.kit.edu/~breitner/">Joachim Breitner</a>
+                        Joachim Breitner
                         </td>
     </tr>
       <tr>
@@ -2616,7 +2627,7 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
         2010-11-16: <a href="entries/Shivers-CFA.shtml">Shivers' Control Flow Analysis</a>
         <br>
                   Author:
-                        <a href="http://pp.ipd.kit.edu/~breitner/">Joachim Breitner</a>
+                        Joachim Breitner
                         </td>
     </tr>
       <tr>
@@ -2680,7 +2691,7 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
         2010-06-24: <a href="entries/Free-Groups.shtml">Free Groups</a>
         <br>
                   Author:
-                        <a href="http://pp.ipd.kit.edu/~breitner/">Joachim Breitner</a>
+                        Joachim Breitner
                         </td>
     </tr>
       <tr>
@@ -2760,7 +2771,7 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
         2010-03-29: <a href="entries/Free-Boolean-Algebra.shtml">Free Boolean Algebra</a>
         <br>
                   Author:
-                        <a href="http://web.cecs.pdx.edu/~brianh/">Brian Huffman</a>
+                        Brian Huffman
                         </td>
     </tr>
       <tr>
@@ -2898,7 +2909,7 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
         2009-04-29: <a href="entries/Stream-Fusion.shtml">Stream Fusion</a>
         <br>
                   Author:
-                        <a href="http://web.cecs.pdx.edu/~brianh/">Brian Huffman</a>
+                        Brian Huffman
                         </td>
     </tr>
   </tbody>
@@ -3191,7 +3202,7 @@ of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/jour
         2005-11-11: <a href="entries/Ordinal.shtml">Countable Ordinals</a>
         <br>
                   Author:
-                        <a href="http://web.cecs.pdx.edu/~brianh/">Brian Huffman</a>
+                        Brian Huffman
                         </td>
     </tr>
       <tr>

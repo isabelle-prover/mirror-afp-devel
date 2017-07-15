@@ -5828,3 +5828,17 @@ abstract =
   theorems for three concrete CRDTs: the Replicated Growable Array, the
   Observed-Remove Set, and an Increment-Decrement Counter.
 
+[HOLCF-Prelude]
+title = HOLCF-Prelude
+author = Joachim Breitner<mailto:joachim@cis.upenn.edu>, Brian Huffman<>, Neil Mitchell<>, Christian Sternagel<mailto:c.sternagel@gmail.com>
+topic = Computer Science/Functional Programming
+date = 2017-07-15
+notify = c.sternagel@gmail.com, joachim@cis.upenn.edu, hupel@in.tum.de
+abstract = 
+  The Isabelle/HOLCF-Prelude is a formalization of a large part of
+  Haskell's standard prelude in Isabelle/HOLCF. We use it to prove
+  the correctness of the Eratosthenes' Sieve, in its
+  self-referential implementation commonly used to showcase
+  Haskell's laziness; prove correctness of GHC's
+  "fold/build" rule and related rewrite rules; and certify a
+  number of hints suggested by HLint.

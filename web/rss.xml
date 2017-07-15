@@ -9,7 +9,22 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>13 Jul 2017 00:00:00 +0000</pubDate>
+    <pubDate>15 Jul 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>HOLCF-Prelude</title>
+              <link>https://www.isa-afp.org/entries/HOLCF-Prelude.shtml</link>
+       <guid>https://www.isa-afp.org/entries/HOLCF-Prelude.shtml</guid>
+       <dc:creator> Joachim Breitner, Brian Huffman, Neil Mitchell, Christian Sternagel       </dc:creator>
+       <pubDate>15 Jul 2017 00:00:00 +0000</pubDate>
+       <description>
+The Isabelle/HOLCF-Prelude is a formalization of a large part of
+Haskell&#39;s standard prelude in Isabelle/HOLCF. We use it to prove
+the correctness of the Eratosthenes&#39; Sieve, in its
+self-referential implementation commonly used to showcase
+Haskell&#39;s laziness; prove correctness of GHC&#39;s
+&#34;fold/build&#34; rule and related rewrite rules; and certify a
+number of hints suggested by HLint.</description>
+    </item>
     <item>
        <title>Minkowski's Theorem</title>
               <link>https://www.isa-afp.org/entries/Minkowskis_Theorem.shtml</link>
@@ -545,22 +560,6 @@ on this calculus. As an application, we include a proof term checker
 embedded in Isabelle/HOL with several example proofs.  Published in:
 Brandon Bohrer, Vincent Rahli, Ivana Vukotic, Marcus Völp, André
 Platzer: Formally verified differential dynamic logic. CPP 2017.</description>
-    </item>
-    <item>
-       <title>Abstract Soundness</title>
-              <link>https://www.isa-afp.org/entries/Abstract_Soundness.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Abstract_Soundness.shtml</guid>
-       <dc:creator> Jasmin Christian Blanchette, Andrei Popescu, Dmitriy Traytel       </dc:creator>
-       <pubDate>10 Feb 2017 00:00:00 +0000</pubDate>
-       <description>
-A formalized coinductive account of the abstract development of
-Brotherston, Gorogiannis, and Petersen [APLAS 2012], in a slightly
-more general form since we work with arbitrary infinite proofs, which
-may be acyclic. This work is described in detail in an article by the
-authors, published in 2017 in the &lt;em&gt;Journal of Automated
-Reasoning&lt;/em&gt;. The abstract proof can be instantiated for
-various formalisms, including first-order logic with inductive
-predicates.</description>
     </item>
   </channel>
 </rss>
