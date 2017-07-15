@@ -1,3 +1,21 @@
+[Name_Carrying_Type_Inference]
+title = Verified Metatheory and Type Inference for a Name-Carrying Simply-Typed Lambda Calculus
+author = Michael Rawson <mailto:michaelrawson76@gmail.com>
+topic = Computer Science/Programming Languages/Type Systems
+date = 2017-07-09
+notify = mr644@cam.ac.uk, michaelrawson76@gmail.com
+abstract = 
+  I formalise a Church-style simply-typed
+  \(\lambda\)-calculus, extended with pairs, a unit value, and
+  projection functions, and show some metatheory of the calculus, such
+  as the subject reduction property. Particular attention is paid to the
+  treatment of names in the calculus. A nominal style of binding is
+  used, but I use a manual approach over Nominal Isabelle in order to
+  extract an executable type inference algorithm. More information can
+  be found in my <a
+  href="http://www.openthesis.org/documents/Verified-Metatheory-Type-Inference-Simply-603182.html">undergraduate
+  dissertation</a>.
+
 [Propositional_Proof_Systems]
 title = Propositional Proof Systems
 author = Julius Michaelis <http://liftm.de>, Tobias Nipkow <http://www21.in.tum.de/~nipkow/>

@@ -9,7 +9,25 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>07 Jul 2017 00:00:00 +0000</pubDate>
+    <pubDate>09 Jul 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>Verified Metatheory and Type Inference for a Name-Carrying Simply-Typed Lambda Calculus</title>
+              <link>https://www.isa-afp.org/entries/Name_Carrying_Type_Inference.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Name_Carrying_Type_Inference.shtml</guid>
+       <dc:creator> Michael Rawson       </dc:creator>
+       <pubDate>09 Jul 2017 00:00:00 +0000</pubDate>
+       <description>
+I formalise a Church-style simply-typed
+\(\lambda\)-calculus, extended with pairs, a unit value, and
+projection functions, and show some metatheory of the calculus, such
+as the subject reduction property. Particular attention is paid to the
+treatment of names in the calculus. A nominal style of binding is
+used, but I use a manual approach over Nominal Isabelle in order to
+extract an executable type inference algorithm. More information can
+be found in my &lt;a
+href=&#34;http://www.openthesis.org/documents/Verified-Metatheory-Type-Inference-Simply-603182.html&#34;&gt;undergraduate
+dissertation&lt;/a&gt;.</description>
+    </item>
     <item>
        <title>A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes</title>
               <link>https://www.isa-afp.org/entries/CRDT.shtml</link>
@@ -537,25 +555,6 @@ an instance. As a consequence, relation-algebraic concepts and methods
 can be used for reasoning about weighted graphs. We also develop a
 fixpoint calculus and apply it to compare different definitions of
 reflexive-transitive closures in semirings.</description>
-    </item>
-    <item>
-       <title>Refining Authenticated Key Agreement with Strong Adversaries</title>
-              <link>https://www.isa-afp.org/entries/Key_Agreement_Strong_Adversaries.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Key_Agreement_Strong_Adversaries.shtml</guid>
-       <dc:creator> Joseph Lallemand, Christoph Sprenger       </dc:creator>
-       <pubDate>31 Jan 2017 00:00:00 +0000</pubDate>
-       <description>
-We develop a family of key agreement protocols that are correct by
-construction. Our work substantially extends prior work on developing
-security protocols by refinement. First, we strengthen the adversary
-by allowing him to compromise different resources of protocol
-participants, such as their long-term keys or their session keys. This
-enables the systematic development of protocols that ensure strong
-properties such as perfect forward secrecy. Second, we broaden the
-class of protocols supported to include those with non-atomic keys and
-equationally defined cryptographic operators. We use these extensions
-to develop key agreement protocols including signed Diffie-Hellman and
-the core of IKEv1 and SKEME.</description>
     </item>
   </channel>
 </rss>
