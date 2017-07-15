@@ -1,5 +1,5 @@
 theory PreSimplyTyped
-imports Main Fresh Permutation
+imports Fresh Permutation
 begin
 
 type_synonym tvar = nat

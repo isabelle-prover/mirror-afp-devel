@@ -1,5 +1,5 @@
 theory SimplyTyped
-imports Main Permutation Fresh PreSimplyTyped
+imports PreSimplyTyped
 begin
 
 quotient_type 'a trm = "'a ptrm" / ptrm_alpha_equiv
