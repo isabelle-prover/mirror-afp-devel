@@ -19,7 +19,7 @@
   <h2>{{ topic_name }}</h2>
   <div class="list">
   {% for e in topic.entries %}
-    <a href="entries/{{ e }}.shtml">{{ e }}</a> &nbsp;
+    <a href="entries/{{ e }}.html">{{ e }}</a> &nbsp;
   {% endfor %}
   </div>
   {# TOPIC LEVEL 2 #}
@@ -27,13 +27,13 @@
     <h3>{{ topic_name }}</h3>
     <div class="list">
     {% for e in topic.entries %}
-      <a href="entries/{{ e }}.shtml">{{ e }}</a> &nbsp;
+      <a href="entries/{{ e }}.html">{{ e }}</a> &nbsp;
     {% endfor %}
     {# TOPIC LEVEL 3 #}
     {% for topic_name, topic in topic.subtopics.items() %}
       <strong>{{ topic_name }}:</strong>
       {% for e in topic.entries %}
-        <a href="entries/{{ e }}.shtml">{{ e }}</a> &nbsp;
+        <a href="entries/{{ e }}.html">{{ e }}</a> &nbsp;
       {% endfor %}
     {% endfor %}
     </div>

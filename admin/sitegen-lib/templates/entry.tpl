@@ -125,7 +125,7 @@
   journal = {Archive of Formal Proofs},
   month   = {{ entry.publish_date.month|short_month }},
   year    = {{ entry.publish_date.year }},
-  note    = {\url{http://isa-afp.org/entries/{{ entry.name }}.shtml},
+  note    = {\url{http://isa-afp.org/entries/{{ entry.name }}.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -141,7 +141,7 @@
       <tr><td class="datahead">{{title}}:</td>
           <td class="data">
       {%- for article in entries|sort(attribute='name') %}
-      {{- comma() }}<a href="{{ article.name }}.shtml">{{ article.name }}</a>
+      {{- comma() }}<a href="{{ article.name }}.html">{{ article.name }}</a>
       {%- endfor %}
       </td></tr>
       {% endif %}

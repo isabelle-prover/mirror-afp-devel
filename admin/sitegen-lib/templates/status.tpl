@@ -51,7 +51,7 @@
 <tr>
   <td class="status-{{entry.status}}">[{{entry.status}}]</td>
   <td class="entry">
-    <a href="entries/{{entry.name}}.shtml">{{entry.name}}</a>
+    <a href="entries/{{entry.name}}.html">{{entry.name}}</a>
   </td>
 </tr>
 {% endfor %}

@@ -29,7 +29,7 @@
   {% set td_joiner = joiner('<td></td>') %}
   {% for article in articles %}
     {{ td_joiner() }}
-    <td><a href="entries/{{ article.name }}.shtml">{{ article.name }}</a></td>
+    <td><a href="entries/{{ article.name }}.html">{{ article.name }}</a></td>
     <td>{{ no_of_imports }}</td>
     </tr>
   {% endfor %}

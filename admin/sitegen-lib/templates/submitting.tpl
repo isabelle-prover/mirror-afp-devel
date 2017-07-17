@@ -46,7 +46,7 @@
 
 <p>It is possible and encouraged to build on other archive entries
    in your submission. There is a standardised way to 
-   <a href="using.shtml">refer to other AFP entries</a> in your
+   <a href="using.html">refer to other AFP entries</a> in your
    theories.</p>
 
 <p>Your submission will be refereed and you will receive notification

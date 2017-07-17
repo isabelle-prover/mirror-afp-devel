@@ -16,7 +16,7 @@ entries in the AFP:</p>
 <div class="cite">
 M. Jaskelioff and S. Merz, Proving the Correctness of Disk
 Paxos. <em>Archive of Formal Proofs</em>, June 2005, <a
-href="http://isa-afp.org/entries/DiskPaxos.shtml"><tt>http://isa-afp.org/entries/DiskPaxos.shtml</tt></a>, Formal proof development.
+href="http://isa-afp.org/entries/DiskPaxos.html"><tt>http://isa-afp.org/entries/DiskPaxos.html</tt></a>, Formal proof development.
 </div>
 
 <p>
@@ -30,7 +30,7 @@ The bibtext entry for this would be:
   journal =  {Archive of Formal Proofs},
   month =    Jun,
   year =     2005,
-  note =     {\url{http://isa-afp.org/entries/DiskPaxos.shtml}, Formal proof development},
+  note =     {\url{http://isa-afp.org/entries/DiskPaxos.html}, Formal proof development},
   ISSN =     {2150-914x}
 }
 </pre>
