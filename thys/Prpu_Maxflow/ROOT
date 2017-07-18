@@ -1,8 +1,7 @@
 chapter AFP
 
 session Prpu_Maxflow (AFP) = Flow_Networks +
-  options [document = pdf, timeout = 500,
-    document_variants = "document:outline=/proof,/ML"]
+  options [document = pdf, timeout = 500]
 
   theories [document = false]
     "../Net_Check/NetCheck"
