@@ -79,7 +79,7 @@ struct
                      NONE => Seq.empty
                    | SOME n => 
                        (* FIXME fragile term as string composition *)
-                       let val n' = (if ty = @{typ nat} then "" else "%_. ") ^ Int.toString (HOLogic.dest_nat n)
+                       let val n' = (if ty = @{typ nat} then "" else "%_. ") ^ Int.toString (snd (HOLogic.dest_number n))
                        in  Seq.single (Rule_Insts.read_instantiate ctxt [((idxname, Position.none), n')] [] thm)
                        end
                   end
