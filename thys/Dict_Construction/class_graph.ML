@@ -50,7 +50,13 @@ struct
 open Dict_Construction_Util
 
 val mangle =
-  translate_string (fn x => if x = "." then "_" else x)
+  translate_string (fn x =>
+    if x = "." then
+      "_"
+    else if x = "_" then
+      "__"
+    else
+      x)
 
 fun param_sorts tyco class thy =
   let val algebra = Sign.classes_of thy in

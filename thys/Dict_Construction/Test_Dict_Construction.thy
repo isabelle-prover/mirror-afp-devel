@@ -69,7 +69,7 @@ experiment begin
 (* FIXME problem with smart_tac *)
 declassify valid: h
 thm valid
-lemma "Test_Dict_Construction_h = h" by (fact valid)
+lemma "Test__Dict__Construction_h = h" by (fact valid)
 
 ML\<open>Dict_Construction.the_info @{context} @{const_name plus_natt_inst.plus_natt}\<close>
 
@@ -177,7 +177,7 @@ experiment begin
 
 declassify valid5: c
 thm valid5
-lemma "Test_Dict_Construction_c = c" by (fact valid5)
+lemma "Test__Dict__Construction_c = c" by (fact valid5)
 
 end
 
@@ -201,8 +201,8 @@ experiment begin
 declassify valid6: j k
 thm valid6
 lemma
-  "Test_Dict_Construction_j a = j a"
-  "Test_Dict_Construction_k a = k a"
+  "Test__Dict__Construction_j a = j a"
+  "Test__Dict__Construction_k a = k a"
 by (fact valid6)+
 
 end
@@ -232,6 +232,6 @@ end
 subsection \<open>Interaction with the code generator\<close>
 
 declassify h
-export_code Test_Dict_Construction_h in SML
+export_code Test__Dict__Construction_h in SML
 
 end
