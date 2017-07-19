@@ -40,13 +40,13 @@ fun del_min :: "'a :: linorder tree \<Rightarrow> 'a tree" where
   "del_min Leaf = Leaf"
 | "del_min (Node l _ Leaf) = pass\<^sub>2 (pass\<^sub>1 l)"
 
-fun meld :: "'a :: linorder tree \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
-  "meld Leaf h = h"
-| "meld h Leaf = h"
-| "meld (Node lx x Leaf) (Node ly y Leaf) = link (Node lx x (Node ly y Leaf))"
+fun merge :: "'a :: linorder tree \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
+  "merge Leaf h = h"
+| "merge h Leaf = h"
+| "merge (Node lx x Leaf) (Node ly y Leaf) = link (Node lx x (Node ly y Leaf))"
 
 fun insert :: "'a \<Rightarrow> 'a :: linorder tree \<Rightarrow> 'a tree" where
-  "insert x h = meld (Node Leaf x Leaf) h"
+  "insert x h = merge (Node Leaf x Leaf) h"
 
 text \<open>The invariant is the conjunction of \<open>is_root\<close> and \<open>pheap\<close>:\<close>
 
@@ -80,8 +80,8 @@ lemma pass\<^sub>2_struct: "\<exists>la a. pass\<^sub>2 (Node lx x rx) = Node la
   by (induction rx arbitrary: x lx rule: pass\<^sub>2.induct) 
   (simp, metis pass\<^sub>2.simps(2) link_struct)
 
-lemma is_root_meld:
-  "is_root h1 \<Longrightarrow> is_root h2 \<Longrightarrow> is_root (meld h1 h2)"
+lemma is_root_merge:
+  "is_root h1 \<Longrightarrow> is_root h2 \<Longrightarrow> is_root (merge h1 h2)"
 by (simp split: tree.splits)
 
 lemma is_root_insert: "is_root h \<Longrightarrow> is_root (insert x h)"
@@ -103,8 +103,8 @@ proof (cases h)
   qed simp
 qed simp
 
-lemma pheap_meld:
-  "\<lbrakk> is_root h1; is_root h2; pheap h1; pheap h2 \<rbrakk> \<Longrightarrow> pheap (meld h1 h2)"
+lemma pheap_merge:
+  "\<lbrakk> is_root h1; is_root h2; pheap h1; pheap h2 \<rbrakk> \<Longrightarrow> pheap (merge h1 h2)"
 by (auto split: tree.splits)
 
 lemma pheap_insert: "is_root h \<Longrightarrow> pheap h \<Longrightarrow> pheap (insert x h)"
@@ -136,13 +136,13 @@ by(auto split: tree.splits)
 lemma mset_link: "mset_tree (link t) = mset_tree t"
 by(induction t rule: link.induct)(auto simp: add_ac)
 
-lemma mset_meld: "\<lbrakk> is_root h1; is_root h2 \<rbrakk>
- \<Longrightarrow>  mset_tree (meld h1 h2) = mset_tree h1 + mset_tree h2"
-by (induction h1 h2 rule: meld.induct) (auto simp add: ac_simps)
+lemma mset_merge: "\<lbrakk> is_root h1; is_root h2 \<rbrakk>
+ \<Longrightarrow>  mset_tree (merge h1 h2) = mset_tree h1 + mset_tree h2"
+by (induction h1 h2 rule: merge.induct) (auto simp add: ac_simps)
 
 lemma mset_insert:
   "is_root h \<Longrightarrow> mset_tree (insert a h) = {#a#} + mset_tree h"
-by (simp add: mset_meld insert_def)
+by (simp add: mset_merge insert_def)
 
 lemma mset_pass1: "mset_tree (pass\<^sub>1 h) = mset_tree h"
 by(induction h rule: pass\<^sub>1.induct)(auto simp: add_ac)

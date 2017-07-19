@@ -8,7 +8,7 @@ theory Pairing_Heap_Tree_Analysis
 imports  
   "../Pairing_Heap/Pairing_Heap_Tree"
   Amortized_Framework
-  Priority_Queue_ops_meld
+  Priority_Queue_ops_merge
   Lemmas_log
 begin
 
@@ -33,25 +33,25 @@ lemma size_pass\<^sub>1: "size (pass\<^sub>1 h) = size h"
 lemma size_pass\<^sub>2: "size (pass\<^sub>2 h) = size h" 
   by (induct h rule: pass\<^sub>2.induct) simp_all
 
-lemma size_meld: 
-  "is_root h1 \<Longrightarrow> is_root h2 \<Longrightarrow> size (meld h1 h2) = size h1 + size h2"
+lemma size_merge: 
+  "is_root h1 \<Longrightarrow> is_root h2 \<Longrightarrow> size (merge h1 h2) = size h1 + size h2"
   by (simp split: tree.splits)
 
 lemma \<Delta>\<Phi>_insert: "is_root h \<Longrightarrow> \<Phi> (insert x h) - \<Phi> h \<le> log 2  (size h + 1)"
   by (simp split: tree.splits)
 
-lemma \<Delta>\<Phi>_meld:
+lemma \<Delta>\<Phi>_merge:
   assumes "h1 = Node lx x Leaf" "h2 = Node ly y Leaf" 
-  shows "\<Phi> (meld h1 h2) - \<Phi> h1 - \<Phi> h2 \<le> log 2 (size h1 + size h2) + 1" 
+  shows "\<Phi> (merge h1 h2) - \<Phi> h1 - \<Phi> h2 \<le> log 2 (size h1 + size h2) + 1" 
 proof -
   let ?hs = "Node lx x (Node ly y Leaf)"
-  have "\<Phi> (meld h1 h2) = \<Phi> (link ?hs)" using assms by simp
+  have "\<Phi> (merge h1 h2) = \<Phi> (link ?hs)" using assms by simp
   also have "\<dots> = \<Phi> lx + \<Phi> ly + log 2 (size lx + size ly + 1) + log 2 (size lx + size ly + 2)"
     by (simp add: algebra_simps)
   also have "\<dots> = \<Phi> lx + \<Phi> ly + log 2 (size lx + size ly + 1) + log 2 (size h1 + size h2)"
      using assms by simp
-  finally have "\<Phi> (meld h1 h2) = \<dots>" .
-  have "\<Phi> (meld h1 h2) - \<Phi> h1 - \<Phi> h2 =
+  finally have "\<Phi> (merge h1 h2) = \<dots>" .
+  have "\<Phi> (merge h1 h2) - \<Phi> h1 - \<Phi> h2 =
    log 2 (size lx + size ly + 1) + log 2 (size h1 + size h2)
    - log 2 (size lx + 1) - log 2 (size ly + 1)"
      using assms by (simp add: algebra_simps)
@@ -145,8 +145,8 @@ proof -
   ultimately show ?thesis using assms by linarith
 qed
 
-lemma is_root_meld:
-  "is_root h1 \<Longrightarrow> is_root h2 \<Longrightarrow> is_root (meld h1 h2)"
+lemma is_root_merge:
+  "is_root h1 \<Longrightarrow> is_root h2 \<Longrightarrow> is_root (merge h1 h2)"
 by (simp split: tree.splits)
 
 lemma is_root_insert: "is_root h \<Longrightarrow> is_root (insert x h)"
@@ -175,7 +175,7 @@ fun exec :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a tree list \<Righ
 "exec Empty [] = Leaf" | 
 "exec Del_min [h] = del_min h" |
 "exec (Insert x) [h] = insert x h" |
-"exec Meld [h1,h2] = meld h1 h2"
+"exec Merge [h1,h2] = merge h1 h2"
 
 fun t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 :: "'a tree \<Rightarrow> nat" where
   "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 Leaf = 1"
@@ -191,19 +191,19 @@ fun cost :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a tree list \<Righ
 | "cost Del_min [Leaf] = 1"
 | "cost Del_min [Node lx _  _] = t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (pass\<^sub>1 lx) + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 lx"
 | "cost (Insert a) _ = 1"
-| "cost Meld _ = 1"
+| "cost Merge _ = 1"
 
 fun U :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a tree list \<Rightarrow> real" where
   "U Empty [] = 1"
 | "U (Insert a) [h] = log 2 (size h + 1) + 1"
 | "U Del_min [h] = 3*log 2 (size h + 1) + 4"
-| "U Meld [h1,h2] = log 2 (size h1 + size h2 + 1) + 2"
+| "U Merge [h1,h2] = log 2 (size h1 + size h2 + 1) + 2"
 
 interpretation Amortized
 where arity = arity and exec = exec and cost = cost and inv = is_root 
 and \<Phi> = \<Phi> and U = U
 proof (standard, goal_cases)
-  case (1 _ f) thus ?case using is_root_insert is_root_del_min is_root_meld
+  case (1 _ f) thus ?case using is_root_insert is_root_del_min is_root_merge
     by (cases f) (auto simp: numeral_eq_Suc)
 next
   case (2 s) show ?case by (induct s) simp_all
@@ -237,7 +237,7 @@ next
       ultimately show ?thesis by auto
     qed simp
   next
-    case [simp]: Meld
+    case [simp]: Merge
     then obtain h1 h2 where [simp]: "ss = [h1,h2]" and 1: "is_root h1" "is_root h2"
       using 4 by (auto simp: numeral_eq_Suc)
     show ?thesis
@@ -250,8 +250,8 @@ next
         case Leaf thus ?thesis using h1 by simp
       next
         case h2: Node
-        have "\<Phi> (meld h1 h2) - \<Phi> h1 - \<Phi> h2 \<le> log 2 (real (size h1 + size h2)) + 1"
-          apply(rule \<Delta>\<Phi>_meld) using h1 h2 1 by auto
+        have "\<Phi> (merge h1 h2) - \<Phi> h1 - \<Phi> h2 \<le> log 2 (real (size h1 + size h2)) + 1"
+          apply(rule \<Delta>\<Phi>_merge) using h1 h2 1 by auto
         also have "\<dots> \<le> log 2 (size h1 + size h2 + 1) + 1" by (simp add: h1)
         finally show ?thesis by(simp add: algebra_simps)
       qed

@@ -14,7 +14,7 @@ pairing heaps to Okasaki's pairing heaps.\<close>
 abbreviation "is_root' == Pairing_Heap_List1_Analysis.is_root"
 abbreviation "del_min' == Pairing_Heap_List1.del_min"
 abbreviation "insert' == Pairing_Heap_List1.insert"
-abbreviation "meld' == Pairing_Heap_List1.meld"
+abbreviation "merge' == Pairing_Heap_List1.merge"
 abbreviation "pass\<^sub>1' == Pairing_Heap_List1.pass\<^sub>1"
 abbreviation "pass\<^sub>2' == Pairing_Heap_List1.pass\<^sub>2"
 abbreviation "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1' == Pairing_Heap_List1_Analysis.t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1"
@@ -43,12 +43,12 @@ apply(case_tac h2)
 done
 done
 
-lemma hom_meld': "\<lbrakk> no_Emptys lhs; Pairing_Heap_List1_Analysis.is_root h\<rbrakk>
-       \<Longrightarrow> hom (meld' (Hp x lhs) h) = link \<langle>homs lhs, x, hom h\<rangle>"
+lemma hom_merge': "\<lbrakk> no_Emptys lhs; Pairing_Heap_List1_Analysis.is_root h\<rbrakk>
+       \<Longrightarrow> hom (merge' (Hp x lhs) h) = link \<langle>homs lhs, x, hom h\<rangle>"
 by(cases h) auto
 
 lemma hom_pass2': "no_Emptys hs \<Longrightarrow> hom(pass\<^sub>2' hs) = pass\<^sub>2 (homs hs)"
-by(induction hs rule: homs.induct) (auto simp: hom_meld' is_root_pass2)
+by(induction hs rule: homs.induct) (auto simp: hom_merge' is_root_pass2)
 
 lemma del_min': "is_root' h \<Longrightarrow> hom(del_min' h) = del_min (hom h)"
 by(cases h)
@@ -57,8 +57,8 @@ by(cases h)
 lemma insert': "is_root' h \<Longrightarrow> hom(insert' x h) = insert x (hom h)"
 by(cases h)(auto)
 
-lemma meld':
-  "\<lbrakk> is_root' h1; is_root' h2 \<rbrakk> \<Longrightarrow> hom(meld' h1 h2) = meld (hom h1) (hom h2)"
+lemma merge':
+  "\<lbrakk> is_root' h1; is_root' h2 \<rbrakk> \<Longrightarrow> hom(merge' h1 h2) = merge (hom h1) (hom h2)"
 apply(cases h1)
  apply(simp)
 apply(cases h2)
@@ -81,7 +81,7 @@ done
 done
 
 lemma t_pass2': "no_Emptys hs \<Longrightarrow> t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2' hs = t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2(homs hs)"
-by(induction hs rule: homs.induct) (auto simp: hom_meld' is_root_pass2)
+by(induction hs rule: homs.induct) (auto simp: hom_merge' is_root_pass2)
 
 lemma size_hp: "is_root' h \<Longrightarrow> size_hp h = size (hom h)"
 proof(induction h)
@@ -102,7 +102,7 @@ and cost' = Pairing_Heap_List1_Analysis.cost and inv' = "is_root'"
 and U' = Pairing_Heap_List1_Analysis.U
 proof (standard, goal_cases)
   case (1 _ f) thus ?case
-    by (cases f)(auto simp: meld' del_min' numeral_eq_Suc)
+    by (cases f)(auto simp: merge' del_min' numeral_eq_Suc)
 next
   case (2 ts f)
   show ?case
@@ -112,7 +112,7 @@ next
     show ?thesis using 2
       by(cases h) (auto simp: is_root_pass2 no_Emptys_pass1)
   qed (insert 2,
-      auto simp: Pairing_Heap_List1_Analysis.is_root_meld numeral_eq_Suc)
+      auto simp: Pairing_Heap_List1_Analysis.is_root_merge numeral_eq_Suc)
 next
   case (3 t) thus ?case by (cases t) (auto)
 next

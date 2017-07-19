@@ -6,7 +6,7 @@ theory Pairing_Heap_List2_Analysis
 imports
   "../Pairing_Heap/Pairing_Heap_List2"
   Amortized_Framework
-  Priority_Queue_ops_meld
+  Priority_Queue_ops_merge
   Lemmas_log
 begin
 
@@ -162,7 +162,7 @@ fun exec :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap list \<Righ
 "exec Empty [] = None" | 
 "exec Del_min [h] = del_min h" |
 "exec (Insert x) [h] = Pairing_Heap_List2.insert x h" |
-"exec Meld [h1,h2] = meld h1 h2"
+"exec Merge [h1,h2] = merge h1 h2"
 
 fun t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 :: "'a hp list \<Rightarrow> nat" where
   "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 [] = 1"
@@ -178,13 +178,13 @@ fun cost :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap list \<Righ
 "cost Del_min [None] = 1" |
 "cost Del_min [Some(Hp x hs)] = 1 + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (pass\<^sub>1 hs) + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 hs" |
 "cost (Insert a) _ = 1" |
-"cost Meld _ = 1"
+"cost Merge _ = 1"
 
 fun U :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap list \<Rightarrow> real" where
 "U Empty _ = 1" |
 "U (Insert a) [h] = log 2 (size_heap h + 1) + 1" |
 "U Del_min [h] = 3*log 2 (size_heap h + 1) + 5" |
-"U Meld [h1,h2] = 2*log 2 (size_heap h1 + size_heap h2 + 1) + 1"
+"U Merge [h1,h2] = 2*log 2 (size_heap h1 + size_heap h2 + 1) + 1"
 
 interpretation pairing: Amortized
 where arity = arity and exec = exec and cost = cost and inv = "\<lambda>_. True"
@@ -225,7 +225,7 @@ next
       qed
     qed simp
   next
-    case [simp]: Meld
+    case [simp]: Merge
     then obtain ho1 ho2 where [simp]: "ss = [ho1, ho2]"
       using goal4 by(auto simp: numeral_eq_Suc)
     show ?thesis
@@ -234,7 +234,7 @@ next
     next
       case False
       then obtain h1 h2 where [simp]: "ho1 = Some h1" "ho2 = Some h2" by auto
-      have "\<Phi> (meld ho1 ho2) - \<Phi> ho1 - \<Phi> ho2 \<le> 2 * log 2 (size_heap ho1 + size_heap ho2)"
+      have "\<Phi> (merge ho1 ho2) - \<Phi> ho1 - \<Phi> ho2 \<le> 2 * log 2 (size_heap ho1 + size_heap ho2)"
         using \<Delta>\<Phi>_link[of h1 h2] by simp
       also have "\<dots> \<le> 2 * log 2 (size_hp h1 + size_hp h2 + 1)" by (simp)
       finally show ?thesis by(simp)

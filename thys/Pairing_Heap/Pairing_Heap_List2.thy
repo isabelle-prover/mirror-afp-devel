@@ -22,12 +22,12 @@ fun link :: "'a :: linorder hp \<Rightarrow> 'a hp \<Rightarrow> 'a hp" where
 "link (Hp x lx) (Hp y ly) = 
     (if x < y then Hp x (Hp y ly # lx) else Hp y (Hp x lx # ly))"
 
-fun meld :: "'a :: linorder heap \<Rightarrow> 'a heap \<Rightarrow> 'a heap" where
-"meld h None = h" |
-"meld None h = h" |
-"meld (Some h1) (Some h2) = Some(link h1 h2)"
+fun merge :: "'a :: linorder heap \<Rightarrow> 'a heap \<Rightarrow> 'a heap" where
+"merge h None = h" |
+"merge None h = h" |
+"merge (Some h1) (Some h2) = Some(link h1 h2)"
 
-lemma meld_None[simp]: "meld None h = h"
+lemma merge_None[simp]: "merge None h = h"
 by(cases h)auto
 
 hide_const (open) insert
@@ -78,8 +78,8 @@ definition invar :: "'a :: linorder heap \<Rightarrow> bool" where
 lemma php_link: "php h1 \<Longrightarrow> php h2 \<Longrightarrow> php (link h1 h2)"
 by (induction h1 h2 rule: link.induct) fastforce+
 
-lemma invar_meld:
-  "\<lbrakk> invar h1; invar h2 \<rbrakk> \<Longrightarrow> invar (meld h1 h2)"
+lemma invar_merge:
+  "\<lbrakk> invar h1; invar h2 \<rbrakk> \<Longrightarrow> invar (merge h1 h2)"
 by (auto simp: php_link invar_def split: option.splits)
 
 lemma invar_insert: "invar h \<Longrightarrow> invar (insert x h)"
@@ -121,8 +121,8 @@ by(induction h rule: get_min.induct)(auto simp: invar_def)
 lemma mset_link: "mset_hp (link h1 h2) = mset_hp h1 + mset_hp h2"
 by(induction h1 h2 rule: link.induct)(auto simp: add_ac)
 
-lemma mset_meld: "mset_heap (meld h1 h2) = mset_heap h1 + mset_heap h2"
-by (induction h1 h2 rule: meld.induct)
+lemma mset_merge: "mset_heap (merge h1 h2) = mset_heap h1 + mset_heap h2"
+by (induction h1 h2 rule: merge.induct)
    (auto simp add: mset_heap_def mset_link ac_simps)
 
 lemma mset_insert: "mset_heap (insert a h) = {#a#} + mset_heap h"

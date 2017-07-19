@@ -6,7 +6,7 @@ theory Pairing_Heap_List1_Analysis
 imports
   "../Pairing_Heap/Pairing_Heap_List1"
   Amortized_Framework
-  Priority_Queue_ops_meld
+  Priority_Queue_ops_merge
   Lemmas_log
 begin
 
@@ -16,10 +16,10 @@ text
 fun hps where
 "hps (Hp _ hs) = hs"
 
-lemma meld_Empty[simp]: "meld heap.Empty h = h"
+lemma merge_Empty[simp]: "merge heap.Empty h = h"
 by(cases h) auto
 
-lemma meld2: "meld (Hp x lx) h = (case h of heap.Empty \<Rightarrow> Hp x lx | (Hp y ly) \<Rightarrow> 
+lemma merge2: "merge (Hp x lx) h = (case h of heap.Empty \<Rightarrow> Hp x lx | (Hp y ly) \<Rightarrow> 
     (if x < y then Hp x (Hp y ly # lx) else Hp y (Hp x lx # ly)))"
 by(auto split: heap.split)
 
@@ -47,15 +47,15 @@ by(cases h) auto
 lemma no_Emptys_hps: "no_Empty h \<Longrightarrow> no_Emptys(hps h)"
 by(induction h) auto
 
-lemma no_Empty_meld: "\<lbrakk> no_Empty h1; no_Empty h2\<rbrakk> \<Longrightarrow> no_Empty (meld h1 h2)"
-by (cases "(h1,h2)" rule: meld.cases) auto
+lemma no_Empty_merge: "\<lbrakk> no_Empty h1; no_Empty h2\<rbrakk> \<Longrightarrow> no_Empty (merge h1 h2)"
+by (cases "(h1,h2)" rule: merge.cases) auto
 
-lemma is_root_meld: "\<lbrakk> is_root h1; is_root h2\<rbrakk> \<Longrightarrow> is_root (meld h1 h2)"
-by (cases "(h1,h2)" rule: meld.cases) auto
+lemma is_root_merge: "\<lbrakk> is_root h1; is_root h2\<rbrakk> \<Longrightarrow> is_root (merge h1 h2)"
+by (cases "(h1,h2)" rule: merge.cases) auto
 
 lemma no_Emptys_pass1:
   "no_Emptys hs \<Longrightarrow> no_Emptys (pass\<^sub>1 hs)"
-by(induction hs rule: pass\<^sub>1.induct)(auto simp: no_Empty_meld)
+by(induction hs rule: pass\<^sub>1.induct)(auto simp: no_Empty_merge)
 
 lemma is_root_pass2: "no_Emptys hs \<Longrightarrow> is_root(pass\<^sub>2 hs)"
 proof(induction hs)
@@ -64,7 +64,7 @@ proof(induction hs)
   proof cases
     assume "hs = []" thus ?thesis using Cons by (auto simp: is_root_if_no_Empty)
   next
-    assume "hs \<noteq> []" thus ?thesis using Cons by(auto simp: is_root_meld is_root_if_no_Empty)
+    assume "hs \<noteq> []" thus ?thesis using Cons by(auto simp: is_root_merge is_root_if_no_Empty)
   qed
 qed simp
 
@@ -99,20 +99,20 @@ declare algebra_simps[simp]
 lemma \<Phi>_hps1: "\<Phi>_hps [h] = \<Phi> h"
 by(cases h) auto
 
-lemma size_hp_meld: "size_hp(meld h1 h2) = size_hp h1 + size_hp h2" 
-by (induction h1 h2 rule: meld.induct) simp_all
+lemma size_hp_merge: "size_hp(merge h1 h2) = size_hp h1 + size_hp h2" 
+by (induction h1 h2 rule: merge.induct) simp_all
 
 lemma pass\<^sub>1_size[simp]: "size_hps (pass\<^sub>1 hs) = size_hps hs" 
-by (induct hs rule: pass\<^sub>1.induct) (simp_all add: size_hp_meld)
+by (induct hs rule: pass\<^sub>1.induct) (simp_all add: size_hp_merge)
 
 lemma \<Delta>\<Phi>_insert:
   "\<Phi> (Pairing_Heap_List1.insert x h) - \<Phi> h \<le> log 2 (size_hp h + 1)"
-by(cases h)(auto simp: size_hp_meld)
+by(cases h)(auto simp: size_hp_merge)
 
-lemma \<Delta>\<Phi>_meld:
-  "\<Phi> (meld h1 h2) - \<Phi> h1 - \<Phi> h2
+lemma \<Delta>\<Phi>_merge:
+  "\<Phi> (merge h1 h2) - \<Phi> h1 - \<Phi> h2
   \<le> log 2 (size_hp h1 + size_hp h2 + 1) + 1"
-proof(induction h1 h2 rule: meld.induct)
+proof(induction h1 h2 rule: merge.induct)
   case (3 x lx y ly)
   thus ?case
     using ld_le_2ld[of "size_hps lx" "size_hps ly"]
@@ -183,7 +183,7 @@ qed
 lemma size_hps_pass2: "hs \<noteq> [] \<Longrightarrow> no_Emptys hs \<Longrightarrow>
   no_Empty(pass\<^sub>2 hs) & size_hps hs = size_hps(hps(pass\<^sub>2 hs))+1"
 apply(induction hs rule: \<Phi>_hps.induct)
-  apply (fastforce simp: meld2 split: heap.split)+
+  apply (fastforce simp: merge2 split: heap.split)+
 done
 
 lemma \<Delta>\<Phi>_pass2: "hs \<noteq> [] \<Longrightarrow> no_Emptys hs \<Longrightarrow>
@@ -232,7 +232,7 @@ fun exec :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap list \<Righ
 "exec Empty [] = heap.Empty" | 
 "exec Del_min [h] = del_min h" |
 "exec (Insert x) [h] = Pairing_Heap_List1.insert x h" |
-"exec Meld [h1,h2] = meld h1 h2"
+"exec Merge [h1,h2] = merge h1 h2"
 
 fun t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 :: "'a heap list \<Rightarrow> nat" where
   "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 [] = 1"
@@ -248,13 +248,13 @@ fun cost :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap list \<Righ
 "cost Del_min [heap.Empty] = 1" |
 "cost Del_min [Hp x hs] = t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (pass\<^sub>1 hs) + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 hs" |
 "cost (Insert a) _ = 1" |
-"cost Meld _ = 1"
+"cost Merge _ = 1"
 
 fun U :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap list \<Rightarrow> real" where
 "U Empty _ = 1" |
 "U (Insert a) [h] = log 2 (size_hp h + 1) + 1" |
 "U Del_min [h] = 3*log 2 (size_hp h + 1) + 4" |
-"U Meld [h1,h2] = log 2 (size_hp h1 + size_hp h2 + 1) + 2"
+"U Merge [h1,h2] = log 2 (size_hp h1 + size_hp h2 + 1) + 2"
 
 interpretation pairing: Amortized
 where arity = arity and exec = exec and cost = cost and inv = "is_root"
@@ -264,10 +264,10 @@ proof (standard, goal_cases)
   proof (cases f)
     case Empty with 1 show ?thesis by simp
   next
-    case Insert thus ?thesis using 1 by(auto simp: is_root_meld)
+    case Insert thus ?thesis using 1 by(auto simp: is_root_merge)
   next
-    case Meld
-    thus ?thesis using 1 by(auto simp: is_root_meld numeral_eq_Suc)
+    case Merge
+    thus ?thesis using 1 by(auto simp: is_root_merge numeral_eq_Suc)
   next
     case [simp]: Del_min
     then obtain h where [simp]: "ss = [h]" using 1 by auto
@@ -314,18 +314,18 @@ next
       ultimately show ?thesis by simp
     qed simp
   next
-    case [simp]: Meld
+    case [simp]: Merge
     then obtain h1 h2 where [simp]: "ss = [h1, h2]"
       using 4 by(auto simp: numeral_eq_Suc)
     show ?thesis
     proof (cases "h1 = heap.Empty \<or> h2 = heap.Empty")
       case True thus ?thesis by auto
-    next
+    next                  
       case False
       then obtain x1 x2 hs1 hs2 where [simp]: "h1 = Hp x1 hs1" "h2 = Hp x2 hs2"
         by (meson hps.cases) 
-      have "\<Phi> (meld h1 h2) - \<Phi> h1 - \<Phi> h2 \<le> log 2 (size_hp h1 + size_hp h2 + 1) + 1"
-        using \<Delta>\<Phi>_meld[of h1 h2] by simp
+      have "\<Phi> (merge h1 h2) - \<Phi> h1 - \<Phi> h2 \<le> log 2 (size_hp h1 + size_hp h2 + 1) + 1"
+        using \<Delta>\<Phi>_merge[of h1 h2] by simp
       thus ?thesis by(simp)
     qed
   qed

@@ -4,8 +4,8 @@ theory Skew_Heap_Analysis
 imports
   "../Skew_Heap/Skew_Heap"
   Amortized_Framework
-  Priority_Queue_ops_meld
-   Lemmas_log
+  Priority_Queue_ops_merge
+  Lemmas_log
 begin
 
 text{* The following proof is a simplified version of the one by Kaldewaij and
@@ -40,21 +40,21 @@ by (induction h) auto
 corollary Dlog: "D h \<le> log 2 (size1 h)"
 by (metis Dexp le_log2_of_power size1_def)
 
-function t\<^sub>m\<^sub>e\<^sub>l\<^sub>d :: "'a::linorder heap \<Rightarrow> 'a heap \<Rightarrow> nat" where
-"t\<^sub>m\<^sub>e\<^sub>l\<^sub>d Leaf h = 1" |
-"t\<^sub>m\<^sub>e\<^sub>l\<^sub>d h Leaf = 1" |
-"t\<^sub>m\<^sub>e\<^sub>l\<^sub>d (Node l1 a1 r1) (Node l2 a2 r2) =
-   (if a1 \<le> a2 then t\<^sub>m\<^sub>e\<^sub>l\<^sub>d (Node l2 a2 r2) r1 else t\<^sub>m\<^sub>e\<^sub>l\<^sub>d (Node l1 a1 r1) r2) + 1"
+function t\<^sub>m\<^sub>e\<^sub>r\<^sub>g\<^sub>e :: "'a::linorder heap \<Rightarrow> 'a heap \<Rightarrow> nat" where
+"t\<^sub>m\<^sub>e\<^sub>r\<^sub>g\<^sub>e Leaf h = 1" |
+"t\<^sub>m\<^sub>e\<^sub>r\<^sub>g\<^sub>e h Leaf = 1" |
+"t\<^sub>m\<^sub>e\<^sub>r\<^sub>g\<^sub>e (Node l1 a1 r1) (Node l2 a2 r2) =
+   (if a1 \<le> a2 then t\<^sub>m\<^sub>e\<^sub>r\<^sub>g\<^sub>e (Node l2 a2 r2) r1 else t\<^sub>m\<^sub>e\<^sub>r\<^sub>g\<^sub>e (Node l1 a1 r1) r2) + 1"
 by pat_completeness auto
 termination
 by (relation "measure (\<lambda>(x, y). size x + size y)") auto
 
-function t\<^sub>m\<^sub>e\<^sub>l\<^sub>d2 :: "'a::linorder heap \<Rightarrow> 'a heap \<Rightarrow> nat" where
-"t\<^sub>m\<^sub>e\<^sub>l\<^sub>d2 Leaf Leaf = 1" |
-"t\<^sub>m\<^sub>e\<^sub>l\<^sub>d2 Leaf (Node l2 a2 r2) = t\<^sub>m\<^sub>e\<^sub>l\<^sub>d2 r2 Leaf + 1" |
-"t\<^sub>m\<^sub>e\<^sub>l\<^sub>d2 (Node l1 a1 r1) Leaf = t\<^sub>m\<^sub>e\<^sub>l\<^sub>d2 r1 Leaf + 1" |
-"t\<^sub>m\<^sub>e\<^sub>l\<^sub>d2 (Node l1 a1 r1) (Node l2 a2 r2) =
-  (if a1\<le>a2 then t\<^sub>m\<^sub>e\<^sub>l\<^sub>d2 (Node l2 a2 r2) r1 else t\<^sub>m\<^sub>e\<^sub>l\<^sub>d2 (Node l1 a1 r1) r2) + 1"
+function t\<^sub>m\<^sub>e\<^sub>r\<^sub>g\<^sub>e2 :: "'a::linorder heap \<Rightarrow> 'a heap \<Rightarrow> nat" where
+"t\<^sub>m\<^sub>e\<^sub>r\<^sub>g\<^sub>e2 Leaf Leaf = 1" |
+"t\<^sub>m\<^sub>e\<^sub>r\<^sub>g\<^sub>e2 Leaf (Node l2 a2 r2) = t\<^sub>m\<^sub>e\<^sub>r\<^sub>g\<^sub>e2 r2 Leaf + 1" |
+"t\<^sub>m\<^sub>e\<^sub>r\<^sub>g\<^sub>e2 (Node l1 a1 r1) Leaf = t\<^sub>m\<^sub>e\<^sub>r\<^sub>g\<^sub>e2 r1 Leaf + 1" |
+"t\<^sub>m\<^sub>e\<^sub>r\<^sub>g\<^sub>e2 (Node l1 a1 r1) (Node l2 a2 r2) =
+  (if a1\<le>a2 then t\<^sub>m\<^sub>e\<^sub>r\<^sub>g\<^sub>e2 (Node l2 a2 r2) r1 else t\<^sub>m\<^sub>e\<^sub>r\<^sub>g\<^sub>e2 (Node l1 a1 r1) r2) + 1"
 by pat_completeness auto
 termination
 by (relation "measure (\<lambda>(x, y). size x + size y)") auto
@@ -64,9 +64,9 @@ fun \<Phi> :: "'a heap \<Rightarrow> nat" where
 "\<Phi> Leaf = 0" |
 "\<Phi> (Node l _ r) = \<Phi> l + \<Phi> r + (if size l < size r then 1 else 0)"
 
-corollary amor_eq: "t\<^sub>m\<^sub>e\<^sub>l\<^sub>d2 t1 t2 + \<Phi>(meld2 t1 t2) - \<Phi> t1 - \<Phi> t2 =
-  G(meld2 t1 t2) + D t1 + D t2 + 1"
-apply(induction t1 t2 rule: meld2.induct)
+corollary amor_eq: "t\<^sub>m\<^sub>e\<^sub>r\<^sub>g\<^sub>e2 t1 t2 + \<Phi>(merge2 t1 t2) - \<Phi> t1 - \<Phi> t2 =
+  G(merge2 t1 t2) + D t1 + D t2 + 1"
+apply(induction t1 t2 rule: merge2.induct)
 apply(auto simp: max_def)  (*slow*)
 done
 
@@ -84,23 +84,23 @@ qed
 *)
 
 lemma amor_le:
-  "t\<^sub>m\<^sub>e\<^sub>l\<^sub>d t1 t2 + \<Phi> (meld t1 t2) - \<Phi> t1 - \<Phi> t2 \<le>
-   G(meld t1 t2) + D t1 + D t2 + 1"
-apply(induction t1 t2 rule: meld.induct)
+  "t\<^sub>m\<^sub>e\<^sub>r\<^sub>g\<^sub>e t1 t2 + \<Phi> (merge t1 t2) - \<Phi> t1 - \<Phi> t2 \<le>
+   G(merge t1 t2) + D t1 + D t2 + 1"
+apply(induction t1 t2 rule: merge.induct)
 apply(auto split: if_splits)
 done
 
-lemma a_meld_ub:
-  "t\<^sub>m\<^sub>e\<^sub>l\<^sub>d t1 t2 + \<Phi>(meld t1 t2) - \<Phi> t1 - \<Phi> t2 \<le>
+lemma a_merge_ub:
+  "t\<^sub>m\<^sub>e\<^sub>r\<^sub>g\<^sub>e t1 t2 + \<Phi>(merge t1 t2) - \<Phi> t1 - \<Phi> t2 \<le>
    3 * log 2 (size1 t1 + size1 t2) + 1" (is "?l \<le> _")
 proof -
-  have "?l \<le> G(meld t1 t2) + D t1 + D t2 + 1" using amor_le[of t1 t2] by arith
-  also have "\<dots> = real(G(meld t1 t2)) + D t1 + D t2 + 1" by simp
-  also have "\<dots> = real(G(meld t1 t2)) + (real(D t1) + D t2) + 1" by simp
+  have "?l \<le> G(merge t1 t2) + D t1 + D t2 + 1" using amor_le[of t1 t2] by arith
+  also have "\<dots> = real(G(merge t1 t2)) + D t1 + D t2 + 1" by simp
+  also have "\<dots> = real(G(merge t1 t2)) + (real(D t1) + D t2) + 1" by simp
   also have "D t1 \<le> log 2 (size1 t1)" by(rule Dlog)
   also have "D t2 \<le> log 2 (size1 t2)" by(rule Dlog)
-  also have "G (meld t1 t2) \<le> log 2 (size1(meld t1 t2))" by(rule Glog)
-  also have "size1(meld t1 t2) = size1 t1 + size1 t2 - 1" by(simp add: size1_def)
+  also have "G (merge t1 t2) \<le> log 2 (size1(merge t1 t2))" by(rule Glog)
+  also have "size1(merge t1 t2) = size1 t1 + size1 t2 - 1" by(simp add: size1_def)
   also have "log 2 (size1 t1 + size1 t2 - 1) \<le> log 2 (size1 t1 + size1 t2)" by(simp add: size1_def)
   also have "log 2 (size1 t1) + log 2 (size1 t2) \<le> 2 * log 2 (real(size1 t1) + (size1 t2))"
     by(rule plus_log_le_2log_plus) (auto simp: size1_def)
@@ -111,19 +111,19 @@ fun exec :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap list \<Righta
 "exec Empty [] = Leaf" |
 "exec (Insert a) [h] = Skew_Heap.insert a h" |
 "exec Del_min [h] = del_min h" |
-"exec Meld [h1,h2] = meld h1 h2"
+"exec Merge [h1,h2] = merge h1 h2"
 
 fun cost :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap list \<Rightarrow> nat" where
 "cost Empty [] = 1" |
-"cost (Insert a) [h] = t\<^sub>m\<^sub>e\<^sub>l\<^sub>d (Node Leaf a Leaf) h" |
-"cost Del_min [h] = (case h of Leaf \<Rightarrow> 1 | Node t1 a t2 \<Rightarrow> t\<^sub>m\<^sub>e\<^sub>l\<^sub>d t1 t2)" |
-"cost Meld [h1,h2] = t\<^sub>m\<^sub>e\<^sub>l\<^sub>d h1 h2"
+"cost (Insert a) [h] = t\<^sub>m\<^sub>e\<^sub>r\<^sub>g\<^sub>e (Node Leaf a Leaf) h" |
+"cost Del_min [h] = (case h of Leaf \<Rightarrow> 1 | Node t1 a t2 \<Rightarrow> t\<^sub>m\<^sub>e\<^sub>r\<^sub>g\<^sub>e t1 t2)" |
+"cost Merge [h1,h2] = t\<^sub>m\<^sub>e\<^sub>r\<^sub>g\<^sub>e h1 h2"
 
 fun U where
 "U Empty [] = 1" |
 "U (Insert _) [h] = 3 * log 2 (size1 h + 2) + 1" |
 "U Del_min [h] = 3 * log 2 (size1 h + 2) + 3" |
-"U Meld [h1,h2] = 3 * log 2 (size1 h1 + size1 h2) + 1"
+"U Merge [h1,h2] = 3 * log 2 (size1 h1 + size1 h2) + 1"
 
 interpretation Amortized
 where arity = arity and exec = exec and inv = "\<lambda>_. True"
@@ -142,7 +142,7 @@ next
   next
     case [simp]: (Insert a)
     obtain h where [simp]: "ss = [h]" using 4(2) by (auto)
-    thus ?thesis using a_meld_ub[of "Node Leaf a Leaf" "h"]
+    thus ?thesis using a_merge_ub[of "Node Leaf a Leaf" "h"]
       by (simp add: numeral_eq_Suc insert_def)
   next
     case [simp]: Del_min
@@ -154,13 +154,13 @@ next
       case (Node t1 _ t2)
       have [arith]: "log 2 (2 + (real (size t1) + real (size t2))) \<le>
                log 2 (4 + (real (size t1) + real (size t2)))" by simp
-      from Del_min Node show ?thesis using a_meld_ub[of t1 t2]
+      from Del_min Node show ?thesis using a_merge_ub[of t1 t2]
         by (simp add: size1_def)
     qed
   next
-    case [simp]: Meld
+    case [simp]: Merge
     obtain h1 h2 where "ss = [h1,h2]" using 4(2) by (auto simp: numeral_eq_Suc)
-    thus ?thesis using a_meld_ub[of h1 h2] by (simp)
+    thus ?thesis using a_merge_ub[of h1 h2] by (simp)
   qed
 qed
 
