@@ -5,6 +5,8 @@ signature CONSTRUCTOR_FUNS = sig
 
   val enabled: bool Config.T
 
+  val conv: Proof.context -> conv
+
   val constructor_funs_plugin: string
   val setup: theory -> theory
 end
@@ -15,10 +17,10 @@ val enabled = Attrib.setup_config_bool @{binding "constructor_funs"} (K false)
 
 structure Data = Generic_Data
 (
-  type T = term list * thm list * Symtab.set
+  type T = term list * (int * thm) list * Symtab.set
   val empty = ([], [], Symtab.empty)
-  fun merge ((ts1, thms1, s1), (ts2, thms2, s2)) =
-    (ts1 @ ts2, thms1 @ thms2, Symtab.merge op = (s1, s2))
+  fun merge ((ts1, unfolds1, s1), (ts2, unfolds2, s2)) =
+    (ts1 @ ts2, unfolds1 @ unfolds2, Symtab.merge op = (s1, s2))
   val extend = I
 )
 
@@ -49,18 +51,20 @@ fun mk_funs {T, ctrs, ...} lthy =
               Specification.definition NONE [] [] ((binding, []), def) lthy
             val unfold_thm = @{thm Pure.symmetric} OF [Local_Defs.abs_def_rule lthy' def_thm]
           in
-            (SOME (term, unfold_thm), lthy')
+            (SOME (term, (len, unfold_thm)), lthy')
           end
         else
           (NONE, lthy)
       end
 
-    fun upd (ts', thms') =
+    fun morph_unfold phi (len, thm) = (len, Morphism.thm phi thm)
+
+    fun upd (ts', unfolds') =
       Local_Theory.declaration {syntax = false, pervasive = true}
         (fn phi =>
-          Data.map (fn (ts, thms, s) =>
+          Data.map (fn (ts, unfolds, s) =>
             (map (Morphism.term phi) ts' @ ts,
-             map (Morphism.thm phi) thms' @ thms,
+             map (morph_unfold phi) unfolds' @ unfolds,
              Symtab.update_new (typ_name, ()) s)))
 
     val exists = Symtab.defined (#3 (Data.get (Context.Proof lthy))) typ_name
@@ -87,14 +91,52 @@ fun mk_funs_typ typ lthy =
 fun mk_funs_cmd s lthy =
   mk_funs_typ (Proof_Context.read_type_name {proper = true, strict = false} lthy s) lthy
 
+fun comb_conv ctxt cv1 cv2 ct =
+  let
+    val (f, xs) = strip_comb (Thm.term_of ct)
+    val f = Thm.cterm_of ctxt f
+    val xs = map (Thm.cterm_of ctxt) xs
+    val f' = cv1 f
+    val xs' = map cv2 xs
+  in
+    fold (fn x => fn f => Thm.combination f x) xs' f'
+  end
+
+fun conv ctxt =
+  let
+    val (_, unfolds, _) = Data.get (Context.Proof ctxt)
+    val transfer = Thm.transfer (Proof_Context.theory_of ctxt)
+    val unfolds = map (apsnd transfer) unfolds
+
+    fun full_conv ct =
+      let
+        val (_, xs) = strip_comb (Thm.term_of ct)
+        val actual_len = length xs
+
+        fun head_conv ct =
+          let
+            fun can_rewrite (len, thm) = Option.map (pair len) (try (Conv.rewr_conv thm) ct)
+            val _ = get_first can_rewrite unfolds
+          in
+            case get_first can_rewrite unfolds of
+              NONE => Conv.all_conv ct
+            | SOME (target_len, thm) =>
+                if target_len = actual_len then
+                  Conv.all_conv ct
+                else
+                  thm
+          end
+      in
+        comb_conv ctxt head_conv full_conv ct
+      end
+  in
+    full_conv
+  end
+
 fun functrans ctxt thms =
   let
-    val (consts, unfolds, _) = Data.get (Context.Proof ctxt)
-    val unfolds = map (Thm.transfer (Proof_Context.theory_of ctxt)) unfolds
-
-    val conv =
-      Conv.top_conv (K (Conv.try_conv (Conv.rewrs_conv unfolds))) ctxt
-      |> Conv.arg_conv
+    val (consts, _, _) = Data.get (Context.Proof ctxt)
+    val conv = Conv.arg_conv (conv ctxt)
 
     fun apply_conv thm =
       let
