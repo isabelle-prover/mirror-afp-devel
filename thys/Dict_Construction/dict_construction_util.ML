@@ -150,6 +150,46 @@ fun (tac CONTINUE_WITH_FW tacs) i st =
 
 fun SOLVED tac = tac THEN ALLGOALS (K no_tac)
 
+(* theorem manipulation *)
+
+fun contract ctxt thm =
+  let
+    val (((_, frees), [thm']), ctxt') = Variable.import true [thm] ctxt
+
+    val prop = Thm.prop_of thm'
+    val prems = Logic.strip_imp_prems prop
+    val (lhs, rhs) =
+      Logic.strip_imp_concl prop
+      |> HOLogic.dest_Trueprop
+      |> HOLogic.dest_eq
+
+    fun used x =
+      exists (exists_subterm (fn t => t = x)) prems
+
+    val (f, xs) = strip_comb lhs
+    val (g, ys) = strip_comb rhs
+
+    fun loop [] ys = (0, (f, list_comb (g, rev ys)))
+      | loop xs [] = (0, (list_comb (f, rev xs), g))
+      | loop (x :: xs) (y :: ys) =
+          if x = y andalso is_Free x andalso not (used x) then
+            loop xs ys |> apfst (fn x => x + 1)
+          else
+            (0, (list_comb (f, rev (x :: xs)), list_comb (g, rev (y :: ys))))
+
+    val (count, (lhs', rhs')) = loop (rev xs) (rev ys)
+
+    val concl' = HOLogic.mk_Trueprop (HOLogic.mk_eq (lhs', rhs'))
+
+    fun tac ctxt 0 = resolve_tac ctxt [thm] THEN_ALL_NEW (Method.assm_tac ctxt)
+      | tac ctxt n = resolve_tac ctxt @{thms ext} THEN' tac ctxt (n - 1)
+
+    val prop = prems ===> concl'
+  in
+    Goal.prove_future ctxt' [] [] prop (fn {context, ...} => HEADGOAL (tac context count))
+    |> singleton (Variable.export ctxt' ctxt)
+  end
+
 (* theory *)
 
 fun define_params_nosyn term =

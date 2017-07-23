@@ -180,9 +180,6 @@ fun dict_cert_tac class def_thm base_thms =
       val smash_sels =
         CONVERSION (lhs_conv (Conv.rewrs_conv sels))
 
-      val ext =
-        REPEAT_DETERM o resolve_tac ctxt @{thms HOL.ext}
-
       val solve =
         resolve_tac ctxt (@{thm HOL.refl} :: base_thms)
 
@@ -190,7 +187,7 @@ fun dict_cert_tac class def_thm base_thms =
         resolve_tac ctxt prems
 
       val tacs =
-        [apply_intro, unfold_dict, normalize, smash_sels, ext, solve, finally]
+        [apply_intro, unfold_dict, normalize, smash_sels, solve, finally]
     in
       EVERY (map PARALLEL_ALLGOALS tacs)
     end)
@@ -281,10 +278,16 @@ fun prove_fun_cert targets {inducts, base_thms, base_certs, simps, code_thms, ..
        as "not changing" *)
     val (argss, props) = prepare_fun_goal targets lthy
     val frees = flat argss |> map (fst o dest_Free)
+
+    (* we first prove the extensional variant (easier to prove), and then derive the
+       contracted variant
+       abs_def can't deal with premises, so we use our own version here *)
+    val long_thms =
+      Goal.prove_common lthy NONE frees [] props (fn {context, ...} =>
+        maybe_induct_tac inducts argss [] context THEN
+          ALLGOALS (fun_cert_tac base_thms base_certs simps code_thms context))
   in
-    Goal.prove_common lthy (SOME ~1) frees [] props (fn {context, ...} =>
-      maybe_induct_tac inducts argss [] context THEN
-        PARALLEL_ALLGOALS (fun_cert_tac base_thms base_certs simps code_thms context))
+    map (contract lthy) long_thms
   end
 
 fun prove_dict_cert target {base_thms, def_thm} lthy =

@@ -5,6 +5,7 @@ imports
   Dict_Construction
   "~~/src/HOL/Library/ListVector"
   "../Lazy_Case/Lazy_Case"
+  "../Show/Show_Instances"
 begin
 
 subsection \<open>Code equations with different number of explicit arguments\<close>
@@ -16,7 +17,7 @@ experiment begin
 
   declassify valid: fold
   thm valid
-  lemma "List_fold a b c = fold a b c" by (rule valid)
+  lemma "List_fold = fold" by (rule valid)
 
 end
 
@@ -201,8 +202,8 @@ experiment begin
 declassify valid6: j k
 thm valid6
 lemma
-  "Test__Dict__Construction_j a = j a"
-  "Test__Dict__Construction_k a = k a"
+  "Test__Dict__Construction_j = j"
+  "Test__Dict__Construction_k = k"
 by (fact valid6)+
 
 end
@@ -229,9 +230,25 @@ thm valid7
 end
 
 
+subsection \<open>Application: deriving @{class show} instances\<close>
+
+definition i :: "(bool list \<times> string) \<Rightarrow> string" where
+"i x = show x"
+
+experiment begin
+
+declassify valid8: i
+thm valid8
+
+lemma "Test__Dict__Construction_i = i" by (fact valid8)
+
+end
+
+
 subsection \<open>Interaction with the code generator\<close>
 
 declassify h
 export_code Test__Dict__Construction_h in SML
+
 
 end
