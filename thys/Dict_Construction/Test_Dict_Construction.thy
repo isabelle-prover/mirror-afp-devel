@@ -232,8 +232,8 @@ end
 
 subsection \<open>Application: deriving @{class show} instances\<close>
 
-definition i :: "(bool list \<times> string) \<Rightarrow> string" where
-"i x = show x"
+definition i :: "(unit \<times> (bool list \<times> string \<times> nat option) list) option \<Rightarrow> string" where
+"i = show"
 
 experiment begin
 

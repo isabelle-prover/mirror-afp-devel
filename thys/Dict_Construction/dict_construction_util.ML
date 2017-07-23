@@ -107,6 +107,17 @@ fun rewr_rhs_head_conv thm =
 fun conv_result cv ct =
   Thm.prop_of (cv ct) |> Logic.dest_equals |> snd
 
+fun changed_conv cv = fn ct =>
+  let
+    val res = cv ct
+    val (lhs, rhs) = Thm.prop_of res |> Logic.dest_equals
+  in
+    if lhs aconv rhs then
+      raise CTERM ("no conversion", [])
+    else
+      res
+  end
+
 fun multi_induct_tac rules insts arbitrary ctxt =
   let
     val insts' = map (map (SOME o pair NONE o rpair false)) insts

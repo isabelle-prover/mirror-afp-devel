@@ -125,13 +125,17 @@ fun fun_cert_tac base_thms base_certs simps code_thms =
 
       val (ihs, certs) = partition is_ih prems
       val super_certs = all_edges ctxt |> Symreltab.dest |> map (#subclass o snd)
-      val simp_context = (clear_simpset ctxt) addsimps (certs @ super_certs @ base_certs)
       val param_dests = all_nodes ctxt |> Symtab.dest |> maps (#3 o #cert_thms o snd)
       val congs = Function_Context_Tree.get_function_congs ctxt @ map safe_mk_meta_eq @{thms cong}
 
+      val simp_context = (clear_simpset ctxt) addsimps (certs @ super_certs @ base_certs @ base_thms @ param_dests)
+        addloop ("overload", CONVERSION o changed_conv o Axclass.overload_conv)
+
+      val ihs = map (Simplifier.asm_full_simplify simp_context) ihs
+
       val ih_tac =
         resolve_tac ctxt ihs THEN_ALL_NEW
-          (TRY' (SOLVED' (Simplifier.simp_tac simp_context)))
+          (TRY' (SOLVED' (Simplifier.asm_full_simp_tac simp_context)))
 
       val unfold_new =
         ANY' (map (CONVERSION o rewr_lhs_head_conv) simps)
@@ -142,21 +146,19 @@ fun fun_cert_tac base_thms base_certs simps code_thms =
       val unfold_old =
         ANY' (map (CONVERSION o rewr_rhs_head_conv) code_thms)
 
-      val oldnew_base_rewr =
-        CONVERSION (lhs_conv (Simplifier.rewrite (simp_context addsimps base_thms)))
-
-      val subst_params =
-        CONVERSION (lhs_conv (Simplifier.rewrite (simp_context addsimps param_dests)))
+      val simp =
+        CONVERSION (lhs_conv (Simplifier.asm_full_rewrite simp_context))
 
       fun walk_congs i = i |>
-        ((resolve_tac ctxt [@{thm refl}] ORELSE'
+        ((resolve_tac ctxt @{thms refl} ORELSE'
+          SOLVED' (Simplifier.asm_full_simp_tac simp_context) ORELSE'
           ih_tac ORELSE'
           Method.assm_tac ctxt ORELSE'
           (resolve_tac ctxt @{thms meta_eq_to_obj_eq} THEN'
             fo_resolve_tac congs ctxt)) THEN_ALL_NEW walk_congs)
 
       val tacs =
-        [unfold_new, normalize, unfold_old, oldnew_base_rewr, subst_params, walk_congs]
+        [unfold_new, normalize, unfold_old, simp, walk_congs]
     in
       EVERY' tacs 1
     end)
@@ -283,7 +285,7 @@ fun prove_fun_cert targets {inducts, base_thms, base_certs, simps, code_thms, ..
        contracted variant
        abs_def can't deal with premises, so we use our own version here *)
     val long_thms =
-      Goal.prove_common lthy NONE frees [] props (fn {context, ...} =>
+      Goal.prove_common lthy (SOME ~1) frees [] props (fn {context, ...} =>
         maybe_induct_tac inducts argss [] context THEN
           ALLGOALS (fun_cert_tac base_thms base_certs simps code_thms context))
   in
@@ -347,6 +349,8 @@ fun add_constant name name' (cert, info) lthy =
         (qname, (Option.map (Morphism.thm phi) cert, morph_const_info phi info))))
   in
     Local_Theory.declaration {pervasive = false, syntax = false} upd lthy
+    |> Local_Theory.note ((Binding.empty, @{attributes [dict_construction_specs]}), #simps info)
+    |> snd
   end
 
 (** classes **)
@@ -750,9 +754,13 @@ fun consts consts group lthy =
 
     fun prove_termination {R = new_R, ...} ctxt =
       let
+        val termination_ctxt =
+          ctxt addsimps (@{thms equal} @ base_thms)
+            addloop ("overload", CONVERSION o changed_conv o Axclass.overload_conv)
+
         fun fallback_tac warn st =
           (if warn then warning "Falling back to automatic termination proof ..." else ();
-           Function_Common.termination_prover_tac true ctxt st)
+           Function_Common.termination_prover_tac true termination_ctxt st)
 
         (*copied from BNF_Comp, in turn copied from Envir.expand_term_free*)
         fun expand_term_const defs =
@@ -925,10 +933,16 @@ fun consts consts group lthy =
         val (info, lthy') =
           Function.add_function bindings specs fun_config pat_completeness_auto lthy
           |-> prove_termination
+        val (_, lthy'') =
+          (* [simp del] is required because otherwise non-matching function definitions
+             (e.g. divmod_nat) make the simplifier loop
+             separate step because otherwise we'll get tons of warnings because the psimp rules
+             are not added to the simpset *)
+          Local_Theory.note ((Binding.empty, @{attributes [simp del]}), the (#simps info)) lthy'
         fun prove_eq phi =
           prove_eq_fun (Function_Common.transform_function_data phi info)
       in
-        (prove_eq, lthy')
+        (prove_eq, lthy'')
       end
 
     fun mk_def lthy =

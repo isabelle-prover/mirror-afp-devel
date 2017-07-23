@@ -32,6 +32,8 @@ apply (rule allI)
 apply (rule accp_wfPD)
 apply (rule wf_set_of_implies_wfP) .
 
+named_theorems dict_construction_specs
+
 ML_file "dict_construction_util.ML"
 ML_file "class_graph.ML"
 ML_file "dict_construction.ML"
