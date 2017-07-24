@@ -9,7 +9,34 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>15 Jul 2017 00:00:00 +0000</pubDate>
+    <pubDate>21 Jul 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>Declarative Semantics for Functional Languages</title>
+              <link>https://www.isa-afp.org/entries/Decl_Sem_Fun_PL.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Decl_Sem_Fun_PL.shtml</guid>
+       <dc:creator> Jeremy Siek       </dc:creator>
+       <pubDate>21 Jul 2017 00:00:00 +0000</pubDate>
+       <description>
+We present a semantics for an applied call-by-value lambda-calculus
+that is compositional, extensional, and elementary. We present four
+different views of the semantics: 1) as a relational (big-step)
+semantics that is not operational but instead declarative, 2) as a
+denotational semantics that does not use domain theory, 3) as a
+non-deterministic interpreter, and 4) as a variant of the intersection
+type systems of the Torino group.  We prove that the semantics is
+correct by showing that it is sound and complete with respect to
+operational semantics on programs and that is sound with respect to
+contextual equivalence. We have not yet investigated whether it is
+fully abstract. We demonstrate that this approach to semantics is
+useful with three case studies. First, we use the semantics to prove
+correctness of a compiler optimization that inlines function
+application. Second, we adapt the semantics to the polymorphic
+lambda-calculus extended with general recursion and prove semantic
+type soundness.  Third, we adapt the semantics to the call-by-value
+lambda-calculus with mutable references.
+&lt;br&gt;
+The paper that accompanies these Isabelle theories is &lt;a href=&#34;https://arxiv.org/abs/1707.03762&#34;&gt;available on arXiv&lt;/a&gt;.</description>
+    </item>
     <item>
        <title>HOLCF-Prelude</title>
               <link>https://www.isa-afp.org/entries/HOLCF-Prelude.shtml</link>
@@ -543,23 +570,6 @@ separator smaller than n, then there exist n internally
 vertex-disjoint paths from u to v.  The version for undirected graphs
 follows immediately because undirected graphs are a special case of
 directed graphs.</description>
-    </item>
-    <item>
-       <title>Differential Dynamic Logic</title>
-              <link>https://www.isa-afp.org/entries/Differential_Dynamic_Logic.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Differential_Dynamic_Logic.shtml</guid>
-       <dc:creator> Brandon Bohrer       </dc:creator>
-       <pubDate>13 Feb 2017 00:00:00 +0000</pubDate>
-       <description>
-We formalize differential dynamic logic, a logic for proving
-properties of hybrid systems. The proof calculus in this formalization
-is based on the uniform substitution principle. We show it is sound
-with respect to our denotational semantics, which provides increased
-confidence in the correctness of the KeYmaera X theorem prover based
-on this calculus. As an application, we include a proof term checker
-embedded in Isabelle/HOL with several example proofs.  Published in:
-Brandon Bohrer, Vincent Rahli, Ivana Vukotic, Marcus Völp, André
-Platzer: Formally verified differential dynamic logic. CPP 2017.</description>
     </item>
   </channel>
 </rss>

@@ -242,6 +242,7 @@
                 </div>
       <h3>Programming Languages</h3>
     <div class="list">
+          <a href="entries/Decl_Sem_Fun_PL.shtml">Decl_Sem_Fun_PL</a> &nbsp;
                   <strong>Language Definitions:</strong>
               <a href="entries/pGCL.shtml">pGCL</a> &nbsp;
               <a href="entries/GPU_Kernel_PL.shtml">GPU_Kernel_PL</a> &nbsp;
