@@ -9,7 +9,37 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>21 Jul 2017 00:00:00 +0000</pubDate>
+    <pubDate>28 Jul 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>Dynamic Architectures</title>
+              <link>https://www.isa-afp.org/entries/DynamicArchitectures.shtml</link>
+       <guid>https://www.isa-afp.org/entries/DynamicArchitectures.shtml</guid>
+       <dc:creator> Diego Marmsoler       </dc:creator>
+       <pubDate>28 Jul 2017 00:00:00 +0000</pubDate>
+       <description>
+The architecture of a system describes the system&#39;s overall
+organization into components and connections between those components.
+With the emergence of mobile computing, dynamic architectures have
+become increasingly important. In such architectures, components may
+appear or disappear, and connections may change over time. In the
+following we mechanize a theory of dynamic architectures and verify
+the soundness of a corresponding calculus. Therefore, we first
+formalize the notion of configuration traces as a model for dynamic
+architectures. Then, the behavior of single components is formalized
+in terms of behavior traces and an operator is introduced and studied
+to extract the behavior of a single component out of a given
+configuration trace. Then, behavior trace assertions are introduced as
+a temporal specification technique to specify behavior of components.
+Reasoning about component behavior in a dynamic context is formalized
+in terms of a calculus for dynamic architectures. Finally, the
+soundness of the calculus is verified by introducing an alternative
+interpretation for behavior trace assertions over configuration traces
+and proving the rules of the calculus. Since projection may lead to
+finite as well as infinite behavior traces, they are formalized in
+terms of coinductive lists. Thus, our theory is based on
+Lochbihler&#39;s formalization of coinductive lists. The theory may
+be applied to verify properties for dynamic architectures.</description>
+    </item>
     <item>
        <title>Declarative Semantics for Functional Languages</title>
               <link>https://www.isa-afp.org/entries/Decl_Sem_Fun_PL.shtml</link>
@@ -555,21 +585,6 @@ coordinates, we also formalize projective coordinates, which allow for
 more efficient computations. By specializing the abstract
 formalization to prime fields, we can apply the curve operations to
 parameters used in standard security protocols.</description>
-    </item>
-    <item>
-       <title>Menger's Theorem</title>
-              <link>https://www.isa-afp.org/entries/Menger.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Menger.shtml</guid>
-       <dc:creator> Christoph Dittmann       </dc:creator>
-       <pubDate>26 Feb 2017 00:00:00 +0000</pubDate>
-       <description>
-We present a formalization of Menger&#39;s Theorem for directed and
-undirected graphs in Isabelle/HOL.  This well-known result shows that
-if two non-adjacent distinct vertices u, v in a directed graph have no
-separator smaller than n, then there exist n internally
-vertex-disjoint paths from u to v.  The version for undirected graphs
-follows immediately because undirected graphs are a special case of
-directed graphs.</description>
     </item>
   </channel>
 </rss>

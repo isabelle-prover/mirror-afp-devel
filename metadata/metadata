@@ -5870,3 +5870,33 @@ abstract =
   <br>
   The paper that accompanies these Isabelle theories is <a href="https://arxiv.org/abs/1707.03762">available on arXiv</a>.
 
+[DynamicArchitectures]
+title = Dynamic Architectures
+author = Diego Marmsoler<>
+topic = Computer Science/System Description Languages
+date = 2017-07-28
+notify = diego.marmsoler@tum.de
+abstract = 
+  The architecture of a system describes the system's overall
+  organization into components and connections between those components.
+  With the emergence of mobile computing, dynamic architectures have
+  become increasingly important. In such architectures, components may
+  appear or disappear, and connections may change over time. In the
+  following we mechanize a theory of dynamic architectures and verify
+  the soundness of a corresponding calculus. Therefore, we first
+  formalize the notion of configuration traces as a model for dynamic
+  architectures. Then, the behavior of single components is formalized
+  in terms of behavior traces and an operator is introduced and studied
+  to extract the behavior of a single component out of a given
+  configuration trace. Then, behavior trace assertions are introduced as
+  a temporal specification technique to specify behavior of components.
+  Reasoning about component behavior in a dynamic context is formalized
+  in terms of a calculus for dynamic architectures. Finally, the
+  soundness of the calculus is verified by introducing an alternative
+  interpretation for behavior trace assertions over configuration traces
+  and proving the rules of the calculus. Since projection may lead to
+  finite as well as infinite behavior traces, they are formalized in
+  terms of coinductive lists. Thus, our theory is based on
+  Lochbihler's formalization of coinductive lists. The theory may
+  be applied to verify properties for dynamic architectures.
+
