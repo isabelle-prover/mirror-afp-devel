@@ -162,7 +162,7 @@ added examples
     
                     
                       <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="CryptHOL.shtml">CryptHOL</a>, <a href="JinjaThreads.shtml">JinjaThreads</a>, <a href="Lazy-Lists-II.shtml">Lazy-Lists-II</a>, <a href="Markov_Models.shtml">Markov_Models</a>, <a href="Parity_Game.shtml">Parity_Game</a>, <a href="Stream_Fusion_Code.shtml">Stream_Fusion_Code</a>      </td></tr>
+          <td class="data"><a href="CryptHOL.shtml">CryptHOL</a>, <a href="DynamicArchitectures.shtml">DynamicArchitectures</a>, <a href="JinjaThreads.shtml">JinjaThreads</a>, <a href="Lazy-Lists-II.shtml">Lazy-Lists-II</a>, <a href="Markov_Models.shtml">Markov_Models</a>, <a href="Parity_Game.shtml">Parity_Game</a>, <a href="Stream_Fusion_Code.shtml">Stream_Fusion_Code</a>      </td></tr>
           
 
         

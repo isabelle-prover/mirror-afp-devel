@@ -5887,3 +5887,92 @@ abstract =
   theorems for three concrete CRDTs: the Replicated Growable Array, the
   Observed-Remove Set, and an Increment-Decrement Counter.
 
+[HOLCF-Prelude]
+title = HOLCF-Prelude
+author = Joachim Breitner<mailto:joachim@cis.upenn.edu>, Brian Huffman<>, Neil Mitchell<>, Christian Sternagel<mailto:c.sternagel@gmail.com>
+topic = Computer Science/Functional Programming
+date = 2017-07-15
+notify = c.sternagel@gmail.com, joachim@cis.upenn.edu, hupel@in.tum.de
+abstract = 
+  The Isabelle/HOLCF-Prelude is a formalization of a large part of
+  Haskell's standard prelude in Isabelle/HOLCF. We use it to prove
+  the correctness of the Eratosthenes' Sieve, in its
+  self-referential implementation commonly used to showcase
+  Haskell's laziness; prove correctness of GHC's
+  "fold/build" rule and related rewrite rules; and certify a
+  number of hints suggested by HLint.
+
+[Decl_Sem_Fun_PL]
+title = Declarative Semantics for Functional Languages
+author = Jeremy Siek <http://homes.soic.indiana.edu/jsiek/>
+topic = Computer Science/Programming Languages
+date = 2017-07-21
+notify = jsiek@indiana.edu
+abstract = 
+  We present a semantics for an applied call-by-value lambda-calculus
+  that is compositional, extensional, and elementary. We present four
+  different views of the semantics: 1) as a relational (big-step)
+  semantics that is not operational but instead declarative, 2) as a
+  denotational semantics that does not use domain theory, 3) as a
+  non-deterministic interpreter, and 4) as a variant of the intersection
+  type systems of the Torino group.  We prove that the semantics is
+  correct by showing that it is sound and complete with respect to
+  operational semantics on programs and that is sound with respect to
+  contextual equivalence. We have not yet investigated whether it is
+  fully abstract. We demonstrate that this approach to semantics is
+  useful with three case studies. First, we use the semantics to prove
+  correctness of a compiler optimization that inlines function
+  application. Second, we adapt the semantics to the polymorphic
+  lambda-calculus extended with general recursion and prove semantic
+  type soundness.  Third, we adapt the semantics to the call-by-value
+  lambda-calculus with mutable references.
+  <br>
+  The paper that accompanies these Isabelle theories is <a href="https://arxiv.org/abs/1707.03762">available on arXiv</a>.
+
+[DynamicArchitectures]
+title = Dynamic Architectures
+author = Diego Marmsoler<>
+topic = Computer Science/System Description Languages
+date = 2017-07-28
+notify = diego.marmsoler@tum.de
+abstract = 
+  The architecture of a system describes the system's overall
+  organization into components and connections between those components.
+  With the emergence of mobile computing, dynamic architectures have
+  become increasingly important. In such architectures, components may
+  appear or disappear, and connections may change over time. In the
+  following we mechanize a theory of dynamic architectures and verify
+  the soundness of a corresponding calculus. Therefore, we first
+  formalize the notion of configuration traces as a model for dynamic
+  architectures. Then, the behavior of single components is formalized
+  in terms of behavior traces and an operator is introduced and studied
+  to extract the behavior of a single component out of a given
+  configuration trace. Then, behavior trace assertions are introduced as
+  a temporal specification technique to specify behavior of components.
+  Reasoning about component behavior in a dynamic context is formalized
+  in terms of a calculus for dynamic architectures. Finally, the
+  soundness of the calculus is verified by introducing an alternative
+  interpretation for behavior trace assertions over configuration traces
+  and proving the rules of the calculus. Since projection may lead to
+  finite as well as infinite behavior traces, they are formalized in
+  terms of coinductive lists. Thus, our theory is based on
+  Lochbihler's formalization of coinductive lists. The theory may
+  be applied to verify properties for dynamic architectures.
+
+[Stewart_Apollonius]
+title = Stewart's Theorem and Apollonius' Theorem
+author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
+topic = Mathematics/Geometry
+date = 2017-07-31
+notify = lukas.bulwahn@gmail.com
+abstract = 
+  This entry formalizes the two geometric theorems, Stewart's and
+  Apollonius' theorem. Stewart's Theorem relates the length of
+  a triangle's cevian to the lengths of the triangle's two
+  sides. Apollonius' Theorem is a specialisation of Stewart's
+  theorem, restricting the cevian to be the median. The proof applies
+  the law of cosines, some basic geometric facts about triangles and
+  then simply transforms the terms algebraically to yield the
+  conjectured relation. The formalization in Isabelle can closely follow
+  the informal proofs described in the Wikipedia articles of those two
+  theorems.

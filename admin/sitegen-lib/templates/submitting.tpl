@@ -21,8 +21,8 @@
     <li>No use of the commands <code>sorry</code> or <code>back</code>.</li>
 
     <li>Instantiations must not use Isabelle-generated names such as
-    <code>xa</code> &mdash; use Isar or <code>rename_tac</code> to avoid
-    such names.</li>
+    <code>xa</code> &mdash; use Isar, the <code>subgoal</code> command
+    or <code>rename_tac</code> to avoid such names.</li>
 
     <li>No use of the command <code>smt</code>. The result of this
     command depends on external tools that are not under our control and

@@ -9,7 +9,97 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>13 Jul 2017 00:00:00 +0000</pubDate>
+    <pubDate>31 Jul 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>Stewart's Theorem and Apollonius' Theorem</title>
+              <link>https://www.isa-afp.org/entries/Stewart_Apollonius.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Stewart_Apollonius.shtml</guid>
+       <dc:creator> Lukas Bulwahn       </dc:creator>
+       <pubDate>31 Jul 2017 00:00:00 +0000</pubDate>
+       <description>
+This entry formalizes the two geometric theorems, Stewart&#39;s and
+Apollonius&#39; theorem. Stewart&#39;s Theorem relates the length of
+a triangle&#39;s cevian to the lengths of the triangle&#39;s two
+sides. Apollonius&#39; Theorem is a specialisation of Stewart&#39;s
+theorem, restricting the cevian to be the median. The proof applies
+the law of cosines, some basic geometric facts about triangles and
+then simply transforms the terms algebraically to yield the
+conjectured relation. The formalization in Isabelle can closely follow
+the informal proofs described in the Wikipedia articles of those two
+theorems.</description>
+    </item>
+    <item>
+       <title>Dynamic Architectures</title>
+              <link>https://www.isa-afp.org/entries/DynamicArchitectures.shtml</link>
+       <guid>https://www.isa-afp.org/entries/DynamicArchitectures.shtml</guid>
+       <dc:creator> Diego Marmsoler       </dc:creator>
+       <pubDate>28 Jul 2017 00:00:00 +0000</pubDate>
+       <description>
+The architecture of a system describes the system&#39;s overall
+organization into components and connections between those components.
+With the emergence of mobile computing, dynamic architectures have
+become increasingly important. In such architectures, components may
+appear or disappear, and connections may change over time. In the
+following we mechanize a theory of dynamic architectures and verify
+the soundness of a corresponding calculus. Therefore, we first
+formalize the notion of configuration traces as a model for dynamic
+architectures. Then, the behavior of single components is formalized
+in terms of behavior traces and an operator is introduced and studied
+to extract the behavior of a single component out of a given
+configuration trace. Then, behavior trace assertions are introduced as
+a temporal specification technique to specify behavior of components.
+Reasoning about component behavior in a dynamic context is formalized
+in terms of a calculus for dynamic architectures. Finally, the
+soundness of the calculus is verified by introducing an alternative
+interpretation for behavior trace assertions over configuration traces
+and proving the rules of the calculus. Since projection may lead to
+finite as well as infinite behavior traces, they are formalized in
+terms of coinductive lists. Thus, our theory is based on
+Lochbihler&#39;s formalization of coinductive lists. The theory may
+be applied to verify properties for dynamic architectures.</description>
+    </item>
+    <item>
+       <title>Declarative Semantics for Functional Languages</title>
+              <link>https://www.isa-afp.org/entries/Decl_Sem_Fun_PL.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Decl_Sem_Fun_PL.shtml</guid>
+       <dc:creator> Jeremy Siek       </dc:creator>
+       <pubDate>21 Jul 2017 00:00:00 +0000</pubDate>
+       <description>
+We present a semantics for an applied call-by-value lambda-calculus
+that is compositional, extensional, and elementary. We present four
+different views of the semantics: 1) as a relational (big-step)
+semantics that is not operational but instead declarative, 2) as a
+denotational semantics that does not use domain theory, 3) as a
+non-deterministic interpreter, and 4) as a variant of the intersection
+type systems of the Torino group.  We prove that the semantics is
+correct by showing that it is sound and complete with respect to
+operational semantics on programs and that is sound with respect to
+contextual equivalence. We have not yet investigated whether it is
+fully abstract. We demonstrate that this approach to semantics is
+useful with three case studies. First, we use the semantics to prove
+correctness of a compiler optimization that inlines function
+application. Second, we adapt the semantics to the polymorphic
+lambda-calculus extended with general recursion and prove semantic
+type soundness.  Third, we adapt the semantics to the call-by-value
+lambda-calculus with mutable references.
+&lt;br&gt;
+The paper that accompanies these Isabelle theories is &lt;a href=&#34;https://arxiv.org/abs/1707.03762&#34;&gt;available on arXiv&lt;/a&gt;.</description>
+    </item>
+    <item>
+       <title>HOLCF-Prelude</title>
+              <link>https://www.isa-afp.org/entries/HOLCF-Prelude.shtml</link>
+       <guid>https://www.isa-afp.org/entries/HOLCF-Prelude.shtml</guid>
+       <dc:creator> Joachim Breitner, Brian Huffman, Neil Mitchell, Christian Sternagel       </dc:creator>
+       <pubDate>15 Jul 2017 00:00:00 +0000</pubDate>
+       <description>
+The Isabelle/HOLCF-Prelude is a formalization of a large part of
+Haskell&#39;s standard prelude in Isabelle/HOLCF. We use it to prove
+the correctness of the Eratosthenes&#39; Sieve, in its
+self-referential implementation commonly used to showcase
+Haskell&#39;s laziness; prove correctness of GHC&#39;s
+&#34;fold/build&#34; rule and related rewrite rules; and certify a
+number of hints suggested by HLint.</description>
+    </item>
     <item>
        <title>Minkowski's Theorem</title>
               <link>https://www.isa-afp.org/entries/Minkowskis_Theorem.shtml</link>
@@ -490,76 +580,6 @@ the expected number of comparisons of randomised QuickSort
 &lt;em&gt;2&amp;thinsp;n ln n&lt;/em&gt;; second, the number of
 comparisons performed by the classic non-randomised QuickSort has the
 same distribution in the average case as the randomised one.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Lower bound on comparison-based sorting algorithms</title>
-              <link>https://www.isa-afp.org/entries/Comparison_Sort_Lower_Bound.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Comparison_Sort_Lower_Bound.shtml</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>15 Mar 2017 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This article contains a formal proof of the well-known fact
-that number of comparisons that a comparison-based sorting algorithm
-needs to perform to sort a list of length &lt;em&gt;n&lt;/em&gt; is at
-least &lt;em&gt;log&lt;sub&gt;2&lt;/sub&gt;&amp;nbsp;(n!)&lt;/em&gt;
-in the worst case, i.&amp;thinsp;e.&amp;nbsp;&lt;em&gt;Ω(n log
-n)&lt;/em&gt;.&lt;/p&gt;  &lt;p&gt;For this purpose, a shallow
-embedding for comparison-based sorting algorithms is defined: a
-sorting algorithm is a recursive datatype containing either a HOL
-function or a query of a comparison oracle with a continuation
-containing the remaining computation. This makes it possible to force
-the algorithm to use only comparisons and to track the number of
-comparisons made.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>The Euler–MacLaurin Formula</title>
-              <link>https://www.isa-afp.org/entries/Euler_MacLaurin.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Euler_MacLaurin.shtml</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>10 Mar 2017 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;The Euler-MacLaurin formula relates the value of a
-discrete sum to that of the corresponding integral in terms of the
-derivatives at the borders of the summation and a remainder term.
-Since the remainder term is often very small as the summation bounds
-grow, this can be used to compute asymptotic expansions for
-sums.&lt;/p&gt;  &lt;p&gt;This entry contains a proof of this formula
-for functions from the reals to an arbitrary Banach space. Two
-variants of the formula are given: the standard textbook version and a
-variant outlined in &lt;em&gt;Concrete Mathematics&lt;/em&gt; that is
-more useful for deriving asymptotic estimates.&lt;/p&gt;  &lt;p&gt;As
-example applications, we use that formula to derive the full
-asymptotic expansion of the harmonic numbers and the sum of inverse
-squares.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>The Group Law for Elliptic Curves</title>
-              <link>https://www.isa-afp.org/entries/Elliptic_Curves_Group_Law.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Elliptic_Curves_Group_Law.shtml</guid>
-       <dc:creator> Stefan Berghofer       </dc:creator>
-       <pubDate>28 Feb 2017 00:00:00 +0000</pubDate>
-       <description>
-We prove the group law for elliptic curves in Weierstrass form over
-fields of characteristic greater than 2. In addition to affine
-coordinates, we also formalize projective coordinates, which allow for
-more efficient computations. By specializing the abstract
-formalization to prime fields, we can apply the curve operations to
-parameters used in standard security protocols.</description>
-    </item>
-    <item>
-       <title>Menger's Theorem</title>
-              <link>https://www.isa-afp.org/entries/Menger.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Menger.shtml</guid>
-       <dc:creator> Christoph Dittmann       </dc:creator>
-       <pubDate>26 Feb 2017 00:00:00 +0000</pubDate>
-       <description>
-We present a formalization of Menger&#39;s Theorem for directed and
-undirected graphs in Isabelle/HOL.  This well-known result shows that
-if two non-adjacent distinct vertices u, v in a directed graph have no
-separator smaller than n, then there exist n internally
-vertex-disjoint paths from u to v.  The version for undirected graphs
-follows immediately because undirected graphs are a special case of
-directed graphs.</description>
     </item>
   </channel>
 </rss>

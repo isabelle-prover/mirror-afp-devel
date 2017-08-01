@@ -75,6 +75,7 @@ CYK
 DPT-SAT-Solver
 DataRefinementIBP
 Datatype_Order_Generator
+Decl_Sem_Fun_PL
 Decreasing-Diagrams
 Decreasing-Diagrams-II
 Deep_Learning
@@ -91,6 +92,7 @@ Differential_Dynamic_Logic
 Dijkstra_Shortest_Path
 Discrete_Summation
 DiskPaxos
+DynamicArchitectures
 Dynamic_Tables
 Echelon_Form
 EdmondsKarp_Maxflow
@@ -142,6 +144,7 @@ HRB-Slicing
 Heard_Of
 HereditarilyFinite
 Hermite
+HOLCF-Prelude
 HotelKeyCards
 Huffman
 HyperCTL
@@ -324,6 +327,7 @@ Sqrt_Babylonian
 Statecharts
 Stable_Matching
 Stern_Brocot
+Stewart_Apollonius
 Stirling_Formula
 Stone_Algebras
 Stone_Kleene_Relation_Algebras
