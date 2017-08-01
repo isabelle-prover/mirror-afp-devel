@@ -23,6 +23,8 @@ definition zero :: "'a M" where
   "zero \<equiv> {}"
 declare zero_def[simp]
 
+no_notation "binomial" (infixl "choose" 65)
+
 definition choose :: "'a set \<Rightarrow> 'a M" where
   "choose S \<equiv> S"
 declare choose_def[simp]
