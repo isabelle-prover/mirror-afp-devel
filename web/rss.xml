@@ -9,7 +9,25 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>28 Jul 2017 00:00:00 +0000</pubDate>
+    <pubDate>31 Jul 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>Stewart's Theorem and Apollonius' Theorem</title>
+              <link>https://www.isa-afp.org/entries/Stewart_Apollonius.shtml</link>
+       <guid>https://www.isa-afp.org/entries/Stewart_Apollonius.shtml</guid>
+       <dc:creator> Lukas Bulwahn       </dc:creator>
+       <pubDate>31 Jul 2017 00:00:00 +0000</pubDate>
+       <description>
+This entry formalizes the two geometric theorems, Stewart&#39;s and
+Apollonius&#39; theorem. Stewart&#39;s Theorem relates the length of
+a triangle&#39;s cevian to the lengths of the triangle&#39;s two
+sides. Apollonius&#39; Theorem is a specialisation of Stewart&#39;s
+theorem, restricting the cevian to be the median. The proof applies
+the law of cosines, some basic geometric facts about triangles and
+then simply transforms the terms algebraically to yield the
+conjectured relation. The formalization in Isabelle can closely follow
+the informal proofs described in the Wikipedia articles of those two
+theorems.</description>
+    </item>
     <item>
        <title>Dynamic Architectures</title>
               <link>https://www.isa-afp.org/entries/DynamicArchitectures.shtml</link>
@@ -571,20 +589,6 @@ more useful for deriving asymptotic estimates.&lt;/p&gt;  &lt;p&gt;As
 example applications, we use that formula to derive the full
 asymptotic expansion of the harmonic numbers and the sum of inverse
 squares.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>The Group Law for Elliptic Curves</title>
-              <link>https://www.isa-afp.org/entries/Elliptic_Curves_Group_Law.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Elliptic_Curves_Group_Law.shtml</guid>
-       <dc:creator> Stefan Berghofer       </dc:creator>
-       <pubDate>28 Feb 2017 00:00:00 +0000</pubDate>
-       <description>
-We prove the group law for elliptic curves in Weierstrass form over
-fields of characteristic greater than 2. In addition to affine
-coordinates, we also formalize projective coordinates, which allow for
-more efficient computations. By specializing the abstract
-formalization to prime fields, we can apply the curve operations to
-parameters used in standard security protocols.</description>
     </item>
   </channel>
 </rss>
