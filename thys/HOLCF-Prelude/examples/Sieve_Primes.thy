@@ -1,6 +1,6 @@
 theory Sieve_Primes
   imports
-    "~~/src/HOL/Number_Theory/Primes"
+    "~~/src/HOL/Computational_Algebra/Primes"
     "../Num_Class"
     "../HOLCF_Prelude"
 (*FIXME: import order matters, if HOLCF_Prelude is not imported last,

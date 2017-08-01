@@ -4,7 +4,7 @@ session "HOLCF-Prelude" (AFP) = HOLCF +
   options [show_question_marks = "false", timeout=3600]
   theories [document = false]
     "~~/src/Tools/Adhoc_Overloading"
-    "~~/src/HOL/Number_Theory/Primes"
+    "~~/src/HOL/Computational_Algebra/Primes"
   theories
     HOLCF_Main
     Type_Classes
