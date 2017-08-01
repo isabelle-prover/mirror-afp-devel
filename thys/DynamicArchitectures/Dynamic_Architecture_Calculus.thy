@@ -116,7 +116,8 @@ proof -
   from assms obtain i' where "\<parallel>c\<parallel>\<^bsub>t i'\<^esub>" and "(\<forall>y. \<parallel>c\<parallel>\<^bsub>t y\<^esub> \<longrightarrow> y \<le> i')"
     using boundedGreatest[of "\<lambda>i'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>" i n] by blast
   hence "\<parallel>c\<parallel>\<^bsub>t i'\<^esub>" and "(\<forall>y. \<parallel>c\<parallel>\<^bsub>t y\<^esub> \<longrightarrow> y < (Suc i'))" by auto
-  thus ?thesis using lActive_def GreatestI[of "\<lambda>i'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>" i'] by simp
+  thus ?thesis using lActive_def GreatestI_nat[of "\<lambda>i'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>" i']
+    \<open>\<forall>y. \<parallel>c\<parallel>\<^bsub>t y\<^esub> \<longrightarrow> y \<le> i'\<close> by auto
 qed
 
 lemma lActive_less:
@@ -138,7 +139,8 @@ proof -
   from assms obtain i' where "\<parallel>c\<parallel>\<^bsub>t i'\<^esub>" and "(\<forall>y. \<parallel>c\<parallel>\<^bsub>t y\<^esub> \<longrightarrow> y \<le> i')"
     using boundedGreatest[of "\<lambda>i'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>" i n] by blast
   hence "(\<forall>y. \<parallel>c\<parallel>\<^bsub>t y\<^esub> \<longrightarrow> y < (Suc i'))" by auto
-  with assms show ?thesis using lActive_def Greatest_le[of "\<lambda>i'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>" i] by simp
+  with assms show ?thesis using lActive_def Greatest_le_nat[of "\<lambda>i'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>" i]
+    by (metis \<open>\<And>thesis. (\<And>i'. \<lbrakk>\<parallel>c\<parallel>\<^bsub>t i'\<^esub>; \<forall>y. \<parallel>c\<parallel>\<^bsub>t y\<^esub> \<longrightarrow> y \<le> i'\<rbrakk> \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close>)
 qed
   
 lemma lActive_greater_active:
