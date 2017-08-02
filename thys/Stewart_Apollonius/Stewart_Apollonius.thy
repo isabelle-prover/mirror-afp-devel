@@ -4,7 +4,7 @@ section \<open>Stewart's Theorem and Apollonius' Theorem\<close>
 
 theory Stewart_Apollonius
 imports
-  "../Chord_Segments/Chord_Segments"
+  "../Triangle/Triangle"
 begin
 
 subsection \<open>Stewart's Theorem\<close>

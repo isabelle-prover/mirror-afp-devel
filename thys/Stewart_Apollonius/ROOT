@@ -3,7 +3,7 @@ chapter AFP
 session Stewart_Apollonius (AFP) = "HOL-Analysis" +
   options [timeout=100, document = pdf]
   theories [document = false]
-    "../Chord_Segments/Chord_Segments"
+    "../Triangle/Triangle"
   theories
     Stewart_Apollonius
   document_files
