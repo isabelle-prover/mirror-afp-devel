@@ -284,9 +284,9 @@ lemma map_index_map[simp]: "map_index f (map g xs) = map_index (\<lambda>n x. f 
 lemma set_map_index[simp]: "x \<in> set (map_index f xs) = (\<exists>i < length xs. f i (xs ! i) = x)"
   unfolding map_index by (auto simp: set_zip intro!: image_eqI[of _ "case_prod f"])
 
-lemma set_map_index'[simp]: "x\<in>set (map_index' n f xs) 
+lemma set_map_index'[simp]: "x\<in>set (map_index' n f xs)
   \<longleftrightarrow> (\<exists>i<length xs. f (n+i) (xs!i) = x) "
-  unfolding map_index'_map_zip 
+  unfolding map_index'_map_zip
   by (auto simp: set_zip intro!: image_eqI[of _ "case_prod f"])
 
 lemma nth_map_index[simp]: "p < length xs \<Longrightarrow> map_index f xs ! p = f p (xs ! p)"
@@ -325,11 +325,11 @@ lemmas map_index_eq_imp_length_eq = map_index'_eq_imp_length_eq[of 0]
 lemma map_index'_comp[simp]: "map_index' n f (map_index' n g xs) = map_index' n (\<lambda>n. f n o g n) xs"
   by (induct xs arbitrary: n) auto
 
-lemma map_index'_append[simp]: "map_index' n f (a @ b) 
+lemma map_index'_append[simp]: "map_index' n f (a @ b)
   = map_index' n f a @ map_index' (n + length a) f b"
   by (induct a arbitrary: n) auto
 
-lemma map_index_append[simp]: "map_index f (a @ b) 
+lemma map_index_append[simp]: "map_index f (a @ b)
   = map_index f a @ map_index' (length a) f b"
   using map_index'_append[where n=0]
   by (simp del: map_index'_append)
@@ -400,7 +400,7 @@ proof -
     using assms(1,2,5) by (metis dual_order.trans nat_le_linear)
 qed
 
-text {* Insert several elements at given (ascending) positions *}
+text \<open>Insert several elements at given (ascending) positions\<close>
 
 lemma length_fold_insert_nth:
   "length (fold (\<lambda>(p, b). insert_nth p b) pxs xs) = length xs + length pxs"
