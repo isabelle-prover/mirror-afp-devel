@@ -2630,7 +2630,7 @@ proof (cases "degree f = 0")
       fix p assume p: "p \<in> set us"
       show "p \<noteq> 0" using d[OF p] degree_0 by auto
     qed
-    also have " ... \<ge> degree u" by (simp add: member_le_sum_list_nat u)
+    also have " ... \<ge> degree u" by (simp add: member_le_sum_list u)
     finally have "degree f \<noteq> 0" using deg_u by auto
     thus False using True by contradiction
   qed
