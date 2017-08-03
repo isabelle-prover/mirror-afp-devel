@@ -24,7 +24,7 @@
 The Archive of Formal Proofs is a collection of proof libraries, examples, and larger scientific developments,
 mechanically checked in the theorem prover <a href="http://isabelle.in.tum.de/">Isabelle</a>. It is organized in the way
 of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/journals/afp/">dblp</a> and has an ISSN:
-2150-914x. Submissions are refereed. The preferred citation style is available <a href="citing.shtml">[here]</a>.
+2150-914x. Submissions are refereed. The preferred citation style is available <a href="citing.html">[here]</a>.
 <br><br>
 {%- if not is_devel %}
 A <a href="http://devel.isa-afp.org">development version</a> of the archive is available as well.
@@ -32,7 +32,7 @@ A <a href="http://devel.isa-afp.org">development version</a> of the archive is a
 <strong>
   This is the development version of the archive, referring to a recent
   Isabelle development version. Some entries may not be in a working state, see
-  the <a href="status.shtml">status page</a> for more information.
+  the <a href="status.html">status page</a> for more information.
   The main archive is available from the <a href="http://www.isa-afp.org">front page</a>.
 </strong>
 {%- endif %}
@@ -54,7 +54,7 @@ A <a href="http://devel.isa-afp.org">development version</a> of the archive is a
   {% for e in entries %}
     <tr>
       <td class="entry">
-        {{ e.publish_date|datetimeformat }}: <a href="entries/{{ e.name }}.shtml">{{ e.title }}</a>
+        {{ e.publish_date|datetimeformat }}: <a href="entries/{{ e.name }}.html">{{ e.title }}</a>
         <br>
         {% if e.authors|length > 1 %}
           Authors:

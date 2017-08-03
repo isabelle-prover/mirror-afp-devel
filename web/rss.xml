@@ -12,8 +12,8 @@
     <pubDate>31 Jul 2017 00:00:00 +0000</pubDate>
     <item>
        <title>Stewart's Theorem and Apollonius' Theorem</title>
-              <link>https://www.isa-afp.org/entries/Stewart_Apollonius.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Stewart_Apollonius.shtml</guid>
+              <link>https://www.isa-afp.org/entries/Stewart_Apollonius.html</link>
+       <guid>https://www.isa-afp.org/entries/Stewart_Apollonius.html</guid>
        <dc:creator> Lukas Bulwahn       </dc:creator>
        <pubDate>31 Jul 2017 00:00:00 +0000</pubDate>
        <description>
@@ -30,8 +30,8 @@ theorems.</description>
     </item>
     <item>
        <title>Dynamic Architectures</title>
-              <link>https://www.isa-afp.org/entries/DynamicArchitectures.shtml</link>
-       <guid>https://www.isa-afp.org/entries/DynamicArchitectures.shtml</guid>
+              <link>https://www.isa-afp.org/entries/DynamicArchitectures.html</link>
+       <guid>https://www.isa-afp.org/entries/DynamicArchitectures.html</guid>
        <dc:creator> Diego Marmsoler       </dc:creator>
        <pubDate>28 Jul 2017 00:00:00 +0000</pubDate>
        <description>
@@ -60,8 +60,8 @@ be applied to verify properties for dynamic architectures.</description>
     </item>
     <item>
        <title>Declarative Semantics for Functional Languages</title>
-              <link>https://www.isa-afp.org/entries/Decl_Sem_Fun_PL.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Decl_Sem_Fun_PL.shtml</guid>
+              <link>https://www.isa-afp.org/entries/Decl_Sem_Fun_PL.html</link>
+       <guid>https://www.isa-afp.org/entries/Decl_Sem_Fun_PL.html</guid>
        <dc:creator> Jeremy Siek       </dc:creator>
        <pubDate>21 Jul 2017 00:00:00 +0000</pubDate>
        <description>
@@ -87,8 +87,8 @@ The paper that accompanies these Isabelle theories is &lt;a href=&#34;https://ar
     </item>
     <item>
        <title>HOLCF-Prelude</title>
-              <link>https://www.isa-afp.org/entries/HOLCF-Prelude.shtml</link>
-       <guid>https://www.isa-afp.org/entries/HOLCF-Prelude.shtml</guid>
+              <link>https://www.isa-afp.org/entries/HOLCF-Prelude.html</link>
+       <guid>https://www.isa-afp.org/entries/HOLCF-Prelude.html</guid>
        <dc:creator> Joachim Breitner, Brian Huffman, Neil Mitchell, Christian Sternagel       </dc:creator>
        <pubDate>15 Jul 2017 00:00:00 +0000</pubDate>
        <description>
@@ -102,8 +102,8 @@ number of hints suggested by HLint.</description>
     </item>
     <item>
        <title>Minkowski's Theorem</title>
-              <link>https://www.isa-afp.org/entries/Minkowskis_Theorem.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Minkowskis_Theorem.shtml</guid>
+              <link>https://www.isa-afp.org/entries/Minkowskis_Theorem.html</link>
+       <guid>https://www.isa-afp.org/entries/Minkowskis_Theorem.html</guid>
        <dc:creator> Manuel Eberl       </dc:creator>
        <pubDate>13 Jul 2017 00:00:00 +0000</pubDate>
        <description>
@@ -123,8 +123,8 @@ theorems.&lt;/p&gt;</description>
     </item>
     <item>
        <title>Verified Metatheory and Type Inference for a Name-Carrying Simply-Typed Lambda Calculus</title>
-              <link>https://www.isa-afp.org/entries/Name_Carrying_Type_Inference.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Name_Carrying_Type_Inference.shtml</guid>
+              <link>https://www.isa-afp.org/entries/Name_Carrying_Type_Inference.html</link>
+       <guid>https://www.isa-afp.org/entries/Name_Carrying_Type_Inference.html</guid>
        <dc:creator> Michael Rawson       </dc:creator>
        <pubDate>09 Jul 2017 00:00:00 +0000</pubDate>
        <description>
@@ -141,8 +141,8 @@ dissertation&lt;/a&gt;.</description>
     </item>
     <item>
        <title>A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes</title>
-              <link>https://www.isa-afp.org/entries/CRDT.shtml</link>
-       <guid>https://www.isa-afp.org/entries/CRDT.shtml</guid>
+              <link>https://www.isa-afp.org/entries/CRDT.html</link>
+       <guid>https://www.isa-afp.org/entries/CRDT.html</guid>
        <dc:creator> Victor B. F. Gomes, Martin Kleppmann, Dominic P. Mulligan, Alastair R. Beresford       </dc:creator>
        <pubDate>07 Jul 2017 00:00:00 +0000</pubDate>
        <description>
@@ -163,8 +163,8 @@ Observed-Remove Set, and an Increment-Decrement Counter.</description>
     </item>
     <item>
        <title>Propositional Proof Systems</title>
-              <link>https://www.isa-afp.org/entries/Propositional_Proof_Systems.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Propositional_Proof_Systems.shtml</guid>
+              <link>https://www.isa-afp.org/entries/Propositional_Proof_Systems.html</link>
+       <guid>https://www.isa-afp.org/entries/Propositional_Proof_Systems.html</guid>
        <dc:creator> Julius Michaelis, Tobias Nipkow       </dc:creator>
        <pubDate>21 Jun 2017 00:00:00 +0000</pubDate>
        <description>
@@ -177,8 +177,8 @@ model existence.</description>
     </item>
     <item>
        <title>Partial Semigroups and Convolution Algebras</title>
-              <link>https://www.isa-afp.org/entries/PSemigroupsConvolution.shtml</link>
-       <guid>https://www.isa-afp.org/entries/PSemigroupsConvolution.shtml</guid>
+              <link>https://www.isa-afp.org/entries/PSemigroupsConvolution.html</link>
+       <guid>https://www.isa-afp.org/entries/PSemigroupsConvolution.html</guid>
        <dc:creator> Brijesh Dongol, Victor B. F. Gomes, Ian J. Hayes, Georg Struth       </dc:creator>
        <pubDate>13 Jun 2017 00:00:00 +0000</pubDate>
        <description>
@@ -200,8 +200,8 @@ be built with little effort.</description>
     </item>
     <item>
        <title>Buffon's Needle Problem</title>
-              <link>https://www.isa-afp.org/entries/Buffons_Needle.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Buffons_Needle.shtml</guid>
+              <link>https://www.isa-afp.org/entries/Buffons_Needle.html</link>
+       <guid>https://www.isa-afp.org/entries/Buffons_Needle.html</guid>
        <dc:creator> Manuel Eberl       </dc:creator>
        <pubDate>06 Jun 2017 00:00:00 +0000</pubDate>
        <description>
@@ -219,8 +219,8 @@ the more complicated solution in the opposite case.</description>
     </item>
     <item>
        <title>Formalizing Push-Relabel Algorithms</title>
-              <link>https://www.isa-afp.org/entries/Prpu_Maxflow.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Prpu_Maxflow.shtml</guid>
+              <link>https://www.isa-afp.org/entries/Prpu_Maxflow.html</link>
+       <guid>https://www.isa-afp.org/entries/Prpu_Maxflow.html</guid>
        <dc:creator> Peter Lammich, S. Reza Sefidgar       </dc:creator>
        <pubDate>01 Jun 2017 00:00:00 +0000</pubDate>
        <description>
@@ -237,8 +237,8 @@ formalization.</description>
     </item>
     <item>
        <title>Flow Networks and the Min-Cut-Max-Flow Theorem</title>
-              <link>https://www.isa-afp.org/entries/Flow_Networks.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Flow_Networks.shtml</guid>
+              <link>https://www.isa-afp.org/entries/Flow_Networks.html</link>
+       <guid>https://www.isa-afp.org/entries/Flow_Networks.html</guid>
        <dc:creator> Peter Lammich, S. Reza Sefidgar       </dc:creator>
        <pubDate>01 Jun 2017 00:00:00 +0000</pubDate>
        <description>
@@ -249,8 +249,8 @@ interactive theorem prover used for the formalization.</description>
     </item>
     <item>
        <title>Optics</title>
-              <link>https://www.isa-afp.org/entries/Optics.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Optics.shtml</guid>
+              <link>https://www.isa-afp.org/entries/Optics.html</link>
+       <guid>https://www.isa-afp.org/entries/Optics.html</guid>
        <dc:creator> Simon Foster, Frank Zeyda       </dc:creator>
        <pubDate>25 May 2017 00:00:00 +0000</pubDate>
        <description>
@@ -269,8 +269,8 @@ instantiating them with a number of Isabelle data types.</description>
     </item>
     <item>
        <title>Developing Security Protocols by Refinement</title>
-              <link>https://www.isa-afp.org/entries/Security_Protocol_Refinement.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Security_Protocol_Refinement.shtml</guid>
+              <link>https://www.isa-afp.org/entries/Security_Protocol_Refinement.html</link>
+       <guid>https://www.isa-afp.org/entries/Security_Protocol_Refinement.html</guid>
        <dc:creator> Christoph Sprenger, Ivano Somaini       </dc:creator>
        <pubDate>24 May 2017 00:00:00 +0000</pubDate>
        <description>
@@ -294,8 +294,8 @@ scales to protocols of nontrivial size and complexity.</description>
     </item>
     <item>
        <title>The Floyd-Warshall Algorithm for Shortest Paths</title>
-              <link>https://www.isa-afp.org/entries/Floyd_Warshall.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Floyd_Warshall.shtml</guid>
+              <link>https://www.isa-afp.org/entries/Floyd_Warshall.html</link>
+       <guid>https://www.isa-afp.org/entries/Floyd_Warshall.html</guid>
        <dc:creator> Simon Wimmer, Peter Lammich       </dc:creator>
        <pubDate>08 May 2017 00:00:00 +0000</pubDate>
        <description>
@@ -315,8 +315,8 @@ Imperative Refinement Framework.</description>
     </item>
     <item>
        <title>Probabilistic while loop</title>
-              <link>https://www.isa-afp.org/entries/Probabilistic_While.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Probabilistic_While.shtml</guid>
+              <link>https://www.isa-afp.org/entries/Probabilistic_While.html</link>
+       <guid>https://www.isa-afp.org/entries/Probabilistic_While.html</guid>
        <dc:creator> Andreas Lochbihler       </dc:creator>
        <pubDate>05 May 2017 00:00:00 +0000</pubDate>
        <description>
@@ -329,8 +329,8 @@ prove them correct and terminating with probability 1.</description>
     </item>
     <item>
        <title>Effect polymorphism in higher-order logic</title>
-              <link>https://www.isa-afp.org/entries/Monomorphic_Monad.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Monomorphic_Monad.shtml</guid>
+              <link>https://www.isa-afp.org/entries/Monomorphic_Monad.html</link>
+       <guid>https://www.isa-afp.org/entries/Monomorphic_Monad.html</guid>
        <dc:creator> Andreas Lochbihler       </dc:creator>
        <pubDate>05 May 2017 00:00:00 +0000</pubDate>
        <description>
@@ -346,8 +346,8 @@ simple language.</description>
     </item>
     <item>
        <title>Monad normalisation</title>
-              <link>https://www.isa-afp.org/entries/Monad_Normalisation.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Monad_Normalisation.shtml</guid>
+              <link>https://www.isa-afp.org/entries/Monad_Normalisation.html</link>
+       <guid>https://www.isa-afp.org/entries/Monad_Normalisation.html</guid>
        <dc:creator> Joshua Schneider, Manuel Eberl, Andreas Lochbihler       </dc:creator>
        <pubDate>05 May 2017 00:00:00 +0000</pubDate>
        <description>
@@ -362,8 +362,8 @@ and case.</description>
     </item>
     <item>
        <title>Game-based cryptography in HOL</title>
-              <link>https://www.isa-afp.org/entries/Game_Based_Crypto.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Game_Based_Crypto.shtml</guid>
+              <link>https://www.isa-afp.org/entries/Game_Based_Crypto.html</link>
+       <guid>https://www.isa-afp.org/entries/Game_Based_Crypto.html</guid>
        <dc:creator> Andreas Lochbihler, S. Reza Sefidgar, Bhargav Bhatt       </dc:creator>
        <pubDate>05 May 2017 00:00:00 +0000</pubDate>
        <description>
@@ -386,8 +386,8 @@ justified using the theory of representation independence.&lt;/p&gt;</descriptio
     </item>
     <item>
        <title>CryptHOL</title>
-              <link>https://www.isa-afp.org/entries/CryptHOL.shtml</link>
-       <guid>https://www.isa-afp.org/entries/CryptHOL.shtml</guid>
+              <link>https://www.isa-afp.org/entries/CryptHOL.html</link>
+       <guid>https://www.isa-afp.org/entries/CryptHOL.html</guid>
        <dc:creator> Andreas Lochbihler       </dc:creator>
        <pubDate>05 May 2017 00:00:00 +0000</pubDate>
        <description>
@@ -410,8 +410,8 @@ continues the work described in the author&#39;s ESOP 2016 paper.&lt;/p&gt;</des
     </item>
     <item>
        <title>Monoidal Categories</title>
-              <link>https://www.isa-afp.org/entries/MonoidalCategory.shtml</link>
-       <guid>https://www.isa-afp.org/entries/MonoidalCategory.shtml</guid>
+              <link>https://www.isa-afp.org/entries/MonoidalCategory.html</link>
+       <guid>https://www.isa-afp.org/entries/MonoidalCategory.html</guid>
        <dc:creator> Eugene W. Stark       </dc:creator>
        <pubDate>04 May 2017 00:00:00 +0000</pubDate>
        <description>
@@ -435,8 +435,8 @@ to take advantage of the economy afforded by these facts.</description>
     </item>
     <item>
        <title>Types, Tableaus and Gödel’s God in Isabelle/HOL</title>
-              <link>https://www.isa-afp.org/entries/Types_Tableaus_and_Goedels_God.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Types_Tableaus_and_Goedels_God.shtml</guid>
+              <link>https://www.isa-afp.org/entries/Types_Tableaus_and_Goedels_God.html</link>
+       <guid>https://www.isa-afp.org/entries/Types_Tableaus_and_Goedels_God.html</guid>
        <dc:creator> David Fuenmayor, Christoph Benzmüller       </dc:creator>
        <pubDate>01 May 2017 00:00:00 +0000</pubDate>
        <description>
@@ -454,8 +454,8 @@ Fitting&#39;s argument. (See also the earlier AFP entry ``Gödel&#39;s God in Is
     </item>
     <item>
        <title>Local Lexing</title>
-              <link>https://www.isa-afp.org/entries/LocalLexing.shtml</link>
-       <guid>https://www.isa-afp.org/entries/LocalLexing.shtml</guid>
+              <link>https://www.isa-afp.org/entries/LocalLexing.html</link>
+       <guid>https://www.isa-afp.org/entries/LocalLexing.html</guid>
        <dc:creator> Steven Obua       </dc:creator>
        <pubDate>28 Apr 2017 00:00:00 +0000</pubDate>
        <description>
@@ -471,8 +471,8 @@ outline of how this formalisation is organised.</description>
     </item>
     <item>
        <title>Constructor Functions</title>
-              <link>https://www.isa-afp.org/entries/Constructor_Funs.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Constructor_Funs.shtml</guid>
+              <link>https://www.isa-afp.org/entries/Constructor_Funs.html</link>
+       <guid>https://www.isa-afp.org/entries/Constructor_Funs.html</guid>
        <dc:creator> Lars Hupel       </dc:creator>
        <pubDate>19 Apr 2017 00:00:00 +0000</pubDate>
        <description>
@@ -485,8 +485,8 @@ introducing constructor functions.</description>
     </item>
     <item>
        <title>Lazifying case constants</title>
-              <link>https://www.isa-afp.org/entries/Lazy_Case.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Lazy_Case.shtml</guid>
+              <link>https://www.isa-afp.org/entries/Lazy_Case.html</link>
+       <guid>https://www.isa-afp.org/entries/Lazy_Case.html</guid>
        <dc:creator> Lars Hupel       </dc:creator>
        <pubDate>18 Apr 2017 00:00:00 +0000</pubDate>
        <description>
@@ -505,8 +505,8 @@ case expressions and &lt;tt&gt;if-then-else&lt;/tt&gt; as functions.</descriptio
     </item>
     <item>
        <title>Subresultants</title>
-              <link>https://www.isa-afp.org/entries/Subresultants.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Subresultants.shtml</guid>
+              <link>https://www.isa-afp.org/entries/Subresultants.html</link>
+       <guid>https://www.isa-afp.org/entries/Subresultants.html</guid>
        <dc:creator> Sebastiaan Joosten, René Thiemann, Akihisa Yamada       </dc:creator>
        <pubDate>06 Apr 2017 00:00:00 +0000</pubDate>
        <description>
@@ -517,8 +517,8 @@ resultant and the greatest common divisor of polynomials.</description>
     </item>
     <item>
        <title>Expected Shape of Random Binary Search Trees</title>
-              <link>https://www.isa-afp.org/entries/Random_BSTs.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Random_BSTs.shtml</guid>
+              <link>https://www.isa-afp.org/entries/Random_BSTs.html</link>
+       <guid>https://www.isa-afp.org/entries/Random_BSTs.html</guid>
        <dc:creator> Manuel Eberl       </dc:creator>
        <pubDate>04 Apr 2017 00:00:00 +0000</pubDate>
        <description>
@@ -534,8 +534,8 @@ relates to the average-case cost of a lookup in a BST.&lt;/p&gt;</description>
     </item>
     <item>
        <title>The number of comparisons in QuickSort</title>
-              <link>https://www.isa-afp.org/entries/Quick_Sort_Cost.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Quick_Sort_Cost.shtml</guid>
+              <link>https://www.isa-afp.org/entries/Quick_Sort_Cost.html</link>
+       <guid>https://www.isa-afp.org/entries/Quick_Sort_Cost.html</guid>
        <dc:creator> Manuel Eberl       </dc:creator>
        <pubDate>15 Mar 2017 00:00:00 +0000</pubDate>
        <description>
@@ -551,8 +551,8 @@ same distribution in the average case as the randomised one.&lt;/p&gt;</descript
     </item>
     <item>
        <title>Lower bound on comparison-based sorting algorithms</title>
-              <link>https://www.isa-afp.org/entries/Comparison_Sort_Lower_Bound.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Comparison_Sort_Lower_Bound.shtml</guid>
+              <link>https://www.isa-afp.org/entries/Comparison_Sort_Lower_Bound.html</link>
+       <guid>https://www.isa-afp.org/entries/Comparison_Sort_Lower_Bound.html</guid>
        <dc:creator> Manuel Eberl       </dc:creator>
        <pubDate>15 Mar 2017 00:00:00 +0000</pubDate>
        <description>
@@ -571,8 +571,8 @@ comparisons made.&lt;/p&gt;</description>
     </item>
     <item>
        <title>The Euler–MacLaurin Formula</title>
-              <link>https://www.isa-afp.org/entries/Euler_MacLaurin.shtml</link>
-       <guid>https://www.isa-afp.org/entries/Euler_MacLaurin.shtml</guid>
+              <link>https://www.isa-afp.org/entries/Euler_MacLaurin.html</link>
+       <guid>https://www.isa-afp.org/entries/Euler_MacLaurin.html</guid>
        <dc:creator> Manuel Eberl       </dc:creator>
        <pubDate>10 Mar 2017 00:00:00 +0000</pubDate>
        <description>

@@ -14,8 +14,8 @@
     <item>
        <title>{{ entry.title }}</title>
        {#TODO: put base link in config #}
-       <link>https://www.isa-afp.org/entries/{{ entry.name }}.shtml</link>
-       <guid>https://www.isa-afp.org/entries/{{ entry.name }}.shtml</guid>
+       <link>https://www.isa-afp.org/entries/{{ entry.name }}.html</link>
+       <guid>https://www.isa-afp.org/entries/{{ entry.name }}.html</guid>
        <dc:creator>
        {%- set comma = joiner(",") %}
        {%- for author in entry.authors %}{{ comma() }} {{ author.name }}{%- endfor %}

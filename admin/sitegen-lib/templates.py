@@ -118,8 +118,8 @@ class Builder():
     def generate_topics(self):
         tree = collect_topics(self.entries, self.options.metadata_dir)
         template = self.j2_env.get_template("topics.tpl")
-        self.write_file("topics.shtml", template, {'tree': tree})
-        terminal.success("Generated topics.shtml")
+        self.write_file("topics.html", template, {'tree': tree})
+        terminal.success("Generated topics.html")
 
     def generate_index(self):
         data = {'is_devel': self.options.is_devel}
@@ -129,27 +129,27 @@ class Builder():
                           key=lambda e: e.publish_date.year)
         data['by_year'] = [(year, list(entries)) for year, entries in by_year]
         template = self.j2_env.get_template("index.tpl")
-        self.write_file("index.shtml", template, data)
-        terminal.success("Generated index.shtml")
+        self.write_file("index.html", template, data)
+        terminal.success("Generated index.html")
 
     def generate_entries(self):
         counter = 0
         template = self.j2_env.get_template("entry.tpl")
         for name, entry in self.afp_entries.items():
-            self.write_file(os.path.join("entries", name + ".shtml"), template,
+            self.write_file(os.path.join("entries", name + ".html"), template,
                             {'entry': entry, 'is_devel': self.options.is_devel})
             counter += 1
         for name, entry in self.afp_entries.no_index.items():
-            self.write_file(os.path.join("entries", name + ".shtml"), template,
+            self.write_file(os.path.join("entries", name + ".html"), template,
                             {'entry': entry, 'is_devel': self.options.is_devel})
             counter += 1
-        terminal.success("Generated shtml files for {:d} entries".format(counter))
+        terminal.success("Generated html files for {:d} entries".format(counter))
 
     def generate_download(self):
         template = self.j2_env.get_template("download.tpl")
-        self.write_file("download.shtml", template,
+        self.write_file("download.html", template,
                         {'is_devel': self.options.is_devel})
-        terminal.success("Generated download.shtml")
+        terminal.success("Generated download.html")
 
     def generate_statistics(self):
         #TODO: simplify with itertools
@@ -207,16 +207,16 @@ class Builder():
                                      in groupby(data['articles_by_time'],
                                                 key=lambda x: x.publish_date.year)]
         template = self.j2_env.get_template("statistics.tpl")
-        self.write_file("statistics.shtml", template, data)
-        terminal.success("Generated statistics.shtml")
+        self.write_file("statistics.html", template, data)
+        terminal.success("Generated statistics.html")
 
     def generate_status(self, build_data):
         template = self.j2_env.get_template("status.tpl")
-        self.write_file("status.shtml", template,
+        self.write_file("status.html", template,
                         {'entries': [self.afp_entries[e] for e
                                      in sorted(self.afp_entries)],
                          'build_data': build_data})
-        terminal.success("Generated status.shtml")
+        terminal.success("Generated status.html")
 
     def generate_rss(self, num_entries):
         entries = sorted(self.afp_entries.values(),

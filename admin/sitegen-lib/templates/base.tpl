@@ -26,31 +26,31 @@
   <p>&nbsp;</p>
   <table class="nav" width="80%">
     <tr>
-      <td class="nav" width="100%"><a href="{{ ROOT_PATH }}index.shtml">Home</a></td>
+      <td class="nav" width="100%"><a href="{{ ROOT_PATH }}index.html">Home</a></td>
     </tr>
     <tr>
-      <td class="nav"><a href="{{ ROOT_PATH }}about.shtml">About</a></td>
+      <td class="nav"><a href="{{ ROOT_PATH }}about.html">About</a></td>
     </tr>
     <tr>
-      <td class="nav"><a href="{{ ROOT_PATH }}submitting.shtml">Submission</a></td>
+      <td class="nav"><a href="{{ ROOT_PATH }}submitting.html">Submission</a></td>
     </tr>
     <tr>
-      <td class="nav"><a href="{{ ROOT_PATH }}updating.shtml">Updating Entries</a></td>
+      <td class="nav"><a href="{{ ROOT_PATH }}updating.html">Updating Entries</a></td>
     </tr>
     <tr>
-      <td class="nav"><a href="{{ ROOT_PATH }}using.shtml">Using Entries</a></td>
+      <td class="nav"><a href="{{ ROOT_PATH }}using.html">Using Entries</a></td>
     </tr>
     <tr>
-      <td class="nav"><a href="{{ ROOT_PATH }}search.shtml">Search</a></td>
+      <td class="nav"><a href="{{ ROOT_PATH }}search.html">Search</a></td>
     </tr>
     <tr>
-      <td class="nav"><a href="{{ ROOT_PATH }}statistics.shtml">Statistics</a></td>
+      <td class="nav"><a href="{{ ROOT_PATH }}statistics.html">Statistics</a></td>
     </tr>
     <tr>
-      <td class="nav"><a href="{{ ROOT_PATH }}topics.shtml">Index</a></td>
+      <td class="nav"><a href="{{ ROOT_PATH }}topics.html">Index</a></td>
     </tr>
     <tr>
-      <td class="nav"><a href="{{ ROOT_PATH }}download.shtml">Download</a></td>
+      <td class="nav"><a href="{{ ROOT_PATH }}download.html">Download</a></td>
     </tr>
   </table>
   <p>&nbsp;</p>

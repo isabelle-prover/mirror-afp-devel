@@ -1502,7 +1502,7 @@ abstract =
 	We present a big step semantics of the filtering behavior of the
 	Linux/netfilter iptables firewall. We provide algorithms to simplify
 	complex iptables rulests to a simple firewall model (c.f. AFP entry <a
-	href="https://www.isa-afp.org/entries/Simple_Firewall.shtml">Simple_Firewall</a>)
+	href="https://www.isa-afp.org/entries/Simple_Firewall.html">Simple_Firewall</a>)
 	and to verify spoofing protection of a ruleset.
 	Internally, we embed our semantics into ternary logic, ultimately
 	supporting every iptables match condition by abstracting over
@@ -1928,7 +1928,7 @@ title = Instances of Schneider's generalized protocol of clock synchronization
 author = Damián Barsotti <http://www.cs.famaf.unc.edu.ar/~damian/>
 date = 2006-03-15
 topic = Computer Science/Algorithms/Distributed
-abstract = F. B. Schneider ("Understanding protocols for Byzantine clock synchronization") generalizes a number of protocols for Byzantine fault-tolerant clock synchronization and presents a uniform proof for their correctness. In Schneider's schema, each processor maintains a local clock by periodically adjusting each value to one computed by a convergence function applied to the readings of all the clocks. Then, correctness of an algorithm, i.e. that the readings of two clocks at any time are within a fixed bound of each other, is based upon some conditions on the convergence function. To prove that a particular clock synchronization algorithm is correct it suffices to show that the convergence function used by the algorithm meets Schneider's conditions. Using the theorem prover Isabelle, we formalize the proofs that the convergence functions of two algorithms, namely, the Interactive Convergence Algorithm (ICA) of Lamport and Melliar-Smith and the Fault-tolerant Midpoint algorithm of Lundelius-Lynch, meet Schneider's conditions. Furthermore, we experiment on handling some parts of the proofs with fully automatic tools like ICS and CVC-lite. These theories are part of a joint work with Alwen Tiu and Leonor P. Nieto <a href="http://users.rsise.anu.edu.au/~tiu/clocksync.pdf">"Verification of Clock Synchronization Algorithms: Experiments on a combination of deductive tools"</a> in proceedings of AVOCS 2005. In this work the correctness of Schneider schema was also verified using Isabelle (entry <a href="GenClock.shtml">GenClock</a> in AFP).
+abstract = F. B. Schneider ("Understanding protocols for Byzantine clock synchronization") generalizes a number of protocols for Byzantine fault-tolerant clock synchronization and presents a uniform proof for their correctness. In Schneider's schema, each processor maintains a local clock by periodically adjusting each value to one computed by a convergence function applied to the readings of all the clocks. Then, correctness of an algorithm, i.e. that the readings of two clocks at any time are within a fixed bound of each other, is based upon some conditions on the convergence function. To prove that a particular clock synchronization algorithm is correct it suffices to show that the convergence function used by the algorithm meets Schneider's conditions. Using the theorem prover Isabelle, we formalize the proofs that the convergence functions of two algorithms, namely, the Interactive Convergence Algorithm (ICA) of Lamport and Melliar-Smith and the Fault-tolerant Midpoint algorithm of Lundelius-Lynch, meet Schneider's conditions. Furthermore, we experiment on handling some parts of the proofs with fully automatic tools like ICS and CVC-lite. These theories are part of a joint work with Alwen Tiu and Leonor P. Nieto <a href="http://users.rsise.anu.edu.au/~tiu/clocksync.pdf">"Verification of Clock Synchronization Algorithms: Experiments on a combination of deductive tools"</a> in proceedings of AVOCS 2005. In this work the correctness of Schneider schema was also verified using Isabelle (entry <a href="GenClock.html">GenClock</a> in AFP).
 notify = kleing@cse.unsw.edu.au
 
 [Heard_Of]
@@ -2129,7 +2129,7 @@ abstract =
 	as well as the related splay heaps (due to Okasaki).
 	<p>
 	The amortized complexity of splay trees and heaps is analyzed in the AFP entry
-	<a href="http://isa-afp.org/entries/Amortized_Complexity.shtml">Amortized Complexity</a>.
+	<a href="http://isa-afp.org/entries/Amortized_Complexity.html">Amortized Complexity</a>.
 extra-history =
 	Change history:
 	[2016-07-12]: Moved splay heaps here from Amortized_Complexity
@@ -2146,7 +2146,7 @@ abstract =
 	and verified functional skew heaps.
 	<p>
 	The amortized complexity of skew heaps is analyzed in the AFP entry
-	<a href="http://isa-afp.org/entries/Amortized_Complexity.shtml">Amortized Complexity</a>.
+	<a href="http://isa-afp.org/entries/Amortized_Complexity.html">Amortized Complexity</a>.
 notify = nipkow@in.tum.de
 
 [Pairing_Heap]
@@ -2161,7 +2161,7 @@ abstract =
 	a modified version of the latter that is free of structural invariants.
 	<p>
 	The amortized complexity of pairing heaps is analyzed in the AFP article
-	<a href="http://isa-afp.org/entries/Amortized_Complexity.shtml">Amortized Complexity</a>.
+	<a href="http://isa-afp.org/entries/Amortized_Complexity.html">Amortized Complexity</a>.
 extra-0 = Origin: This library was extracted from Amortized Complexity and extended.
 notify = nipkow@in.tum.de
 
@@ -2654,7 +2654,7 @@ abstract =
 	as infrastructure for Isar-setups.
 	<p>
 	This theory is drawn from the
-	<a href="http://isa-afp.org/entries/Featherweight_OCL.shtml">Featherweight OCL</a>
+	<a href="http://isa-afp.org/entries/Featherweight_OCL.html">Featherweight OCL</a>
 	project where
 	it is used to construct a package for object-oriented data-type theories
 	generated from UML class diagrams. The Featherweight OCL, for example, allows for
@@ -3144,7 +3144,7 @@ title = Backing up Slicing: Verifying the Interprocedural Two-Phase Horwitz-Reps
 author = Daniel Wasserrab <http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php>
 date = 2009-11-13
 topic = Computer Science/Programming Languages/Static Analysis
-abstract = After verifying <a href="Slicing.shtml">dynamic and static interprocedural slicing</a>, we present a modular framework for static interprocedural slicing. To this end, we formalized the standard two-phase slicer from Horwitz, Reps and Binkley (see their TOPLAS 12(1) 1990 paper) together with summary edges as presented by Reps et al. (see FSE 1994). The framework is again modular in the programming language by using an abstract CFG, defined via structural and well-formedness properties. Using a weak simulation between the original and sliced graph, we were able to prove the correctness of static interprocedural slicing. We also instantiate our framework with a simple While language with procedures. This shows that the chosen abstractions are indeed valid.
+abstract = After verifying <a href="Slicing.html">dynamic and static interprocedural slicing</a>, we present a modular framework for static interprocedural slicing. To this end, we formalized the standard two-phase slicer from Horwitz, Reps and Binkley (see their TOPLAS 12(1) 1990 paper) together with summary edges as presented by Reps et al. (see FSE 1994). The framework is again modular in the programming language by using an abstract CFG, defined via structural and well-formedness properties. Using a weak simulation between the original and sliced graph, we were able to prove the correctness of static interprocedural slicing. We also instantiate our framework with a simple While language with procedures. This shows that the chosen abstractions are indeed valid.
 notify = nipkow@in.tum.de, daniel.wasserrab@kit.edu
 
 [WorkerWrapper]
@@ -3188,8 +3188,8 @@ topic = Computer Science/Security
 abstract =
 	<p>
 	In this contribution, we show how correctness proofs for <a
-	href="Slicing.shtml">intra-</a> and <a
-	href="HRB-Slicing.shtml">interprocedural slicing</a> can be used to prove
+	href="Slicing.html">intra-</a> and <a
+	href="HRB-Slicing.html">interprocedural slicing</a> can be used to prove
 	that slicing is able to guarantee information flow noninterference.
 	Moreover, we also illustrate how to lift the control flow graphs of the
 	respective frameworks such that they fulfil the additional assumptions
@@ -3199,15 +3199,15 @@ abstract =
 	</p>
 	<p>
 	This entry contains the part for intra-procedural slicing. See entry
-	<a href="InformationFlowSlicing_Inter.shtml">InformationFlowSlicing_Inter</a>
+	<a href="InformationFlowSlicing_Inter.html">InformationFlowSlicing_Inter</a>
 	for the inter-procedural part.
 	</p>
 extra-history =
 	Change history:
 	[2016-06-10]: The original entry <a
-	href="InformationFlowSlicing.shtml">InformationFlowSlicing</a> contained both
-	the <a href="InformationFlowSlicing_Inter.shtml">inter-</a> and <a
-	href="InformationFlowSlicing.shtml">intra-procedural</a> case was split into
+	href="InformationFlowSlicing.html">InformationFlowSlicing</a> contained both
+	the <a href="InformationFlowSlicing_Inter.html">inter-</a> and <a
+	href="InformationFlowSlicing.html">intra-procedural</a> case was split into
 	two for easier maintenance.
 notify = daniel.wasserrab@kit.edu
 
@@ -3219,8 +3219,8 @@ topic = Computer Science/Security
 abstract =
 	<p>
 	In this contribution, we show how correctness proofs for <a
-	href="Slicing.shtml">intra-</a> and <a
-	href="HRB-Slicing.shtml">interprocedural slicing</a> can be used to prove
+	href="Slicing.html">intra-</a> and <a
+	href="HRB-Slicing.html">interprocedural slicing</a> can be used to prove
 	that slicing is able to guarantee information flow noninterference.
 	Moreover, we also illustrate how to lift the control flow graphs of the
 	respective frameworks such that they fulfil the additional assumptions
@@ -3230,15 +3230,15 @@ abstract =
 	</p>
 	<p>
 	This entry contains the part for inter-procedural slicing. See entry
-	<a href="InformationFlowSlicing.shtml">InformationFlowSlicing</a>
+	<a href="InformationFlowSlicing.html">InformationFlowSlicing</a>
 	for the intra-procedural part.
 	</p>
 extra-history =
 	Change history:
 	[2016-06-10]: The original entry <a
-	href="InformationFlowSlicing.shtml">InformationFlowSlicing</a> contained both
-	the <a href="InformationFlowSlicing_Inter.shtml">inter-</a> and <a
-	href="InformationFlowSlicing.shtml">intra-procedural</a> case was split into
+	href="InformationFlowSlicing.html">InformationFlowSlicing</a> contained both
+	the <a href="InformationFlowSlicing_Inter.html">inter-</a> and <a
+	href="InformationFlowSlicing.html">intra-procedural</a> case was split into
 	two for easier maintenance.
 notify = daniel.wasserrab@kit.edu
 
@@ -4209,7 +4209,7 @@ abstract = The theory of hereditarily finite sets is formalised, following
 	functions) without using infinite sets are possible here.
 	The definition of addition for the HF sets follows Kirby.
 	This development forms the foundation for the Isabelle proof of Gödel's incompleteness theorems,
-	which has been <a href="Incompleteness.shtml">formalised separately</a>.
+	which has been <a href="Incompleteness.html">formalised separately</a>.
 extra-history =
 	Change history:
 	[2015-02-23]: Added the theory "Finitary" defining the class of types that can be embedded in hf, including int, char, option, list, etc.
@@ -4220,7 +4220,7 @@ title = Gödel's Incompleteness Theorems
 author = Lawrence C. Paulson <http://www.cl.cam.ac.uk/~lp15/>
 date = 2013-11-17
 topic = Logic
-abstract = Gödel's two incompleteness theorems are formalised, following a careful  <a href="http://journals.impan.gov.pl/dm/Inf/422-0-1.html">presentation</a> by Swierczkowski, in the theory of <a href="HereditarilyFinite.shtml">hereditarily finite sets</a>. This represents the first ever machine-assisted proof of the second incompleteness theorem. Compared with traditional formalisations using Peano arithmetic (see e.g. Boolos), coding is simpler, with no need to formalise the notion
+abstract = Gödel's two incompleteness theorems are formalised, following a careful  <a href="http://journals.impan.gov.pl/dm/Inf/422-0-1.html">presentation</a> by Swierczkowski, in the theory of <a href="HereditarilyFinite.html">hereditarily finite sets</a>. This represents the first ever machine-assisted proof of the second incompleteness theorem. Compared with traditional formalisations using Peano arithmetic (see e.g. Boolos), coding is simpler, with no need to formalise the notion
 	of multiplication (let alone that of a prime number)
 	in the formalised calculus upon which the theorem is based.
 	However, other technical problems had to be solved in order to complete the argument.
@@ -4627,7 +4627,7 @@ title = Stream Fusion in HOL with Code Generation
 author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>, Alexandra Maximova <mailto:amaximov@student.ethz.ch>
 date = 2014-10-10
 topic = Computer Science/Functional Programming
-abstract = Stream Fusion is a system for removing intermediate list data structures from functional programs, in particular Haskell. This entry adapts stream fusion to Isabelle/HOL and its code generator. We define stream types for finite and possibly infinite lists and stream versions for most of the fusible list functions in the theories List and Coinductive_List, and prove them correct with respect to the conversion functions between lists and streams. The Stream Fusion transformation itself is implemented as a simproc in the preprocessor of the code generator. [Brian Huffman's <a href="http://isa-afp.org/entries/Stream-Fusion.shtml">AFP entry</a> formalises stream fusion in HOLCF for the domain of lazy lists to prove the GHC compiler rewrite rules correct. In contrast, this work enables Isabelle's code generator to perform stream fusion itself. To that end, it covers both finite and coinductive lists from the HOL library and the Coinductive entry. The fusible list functions require specification and proof principles different from Huffman's.]
+abstract = Stream Fusion is a system for removing intermediate list data structures from functional programs, in particular Haskell. This entry adapts stream fusion to Isabelle/HOL and its code generator. We define stream types for finite and possibly infinite lists and stream versions for most of the fusible list functions in the theories List and Coinductive_List, and prove them correct with respect to the conversion functions between lists and streams. The Stream Fusion transformation itself is implemented as a simproc in the preprocessor of the code generator. [Brian Huffman's <a href="http://isa-afp.org/entries/Stream-Fusion.html">AFP entry</a> formalises stream fusion in HOLCF for the domain of lazy lists to prove the GHC compiler rewrite rules correct. In contrast, this work enables Isabelle's code generator to perform stream fusion itself. To that end, it covers both finite and coinductive lists from the HOL library and the Coinductive entry. The fusible list functions require specification and proof principles different from Huffman's.]
 notify = andreas.lochbihler@inf.ethz.ch
 
 [Case_Labeling]
@@ -4946,7 +4946,7 @@ date = 2017-01-17
 notify = denis.lohner@kit.edu
 abstract =
   <p>This formalization is an extension to <a
-  href="https://www.isa-afp.org/entries/Formal_SSA.shtml">"Verified
+  href="https://www.isa-afp.org/entries/Formal_SSA.html">"Verified
   Construction of Static Single Assignment Form"</a>. In
   their work, the authors have shown that <a
   href="http://dx.doi.org/10.1007/978-3-642-37051-9_6">Braun
