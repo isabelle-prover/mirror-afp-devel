@@ -349,6 +349,57 @@ qed simp
 lemma length_insert_nth: "length (insert_nth n x xs) = Suc (length xs)"
   by (induct xs) auto
 
+lemma set_insert_nth:
+  "set (insert_nth i x xs) = insert x (set xs)"
+by (simp add: set_append[symmetric])
+
+lemma distinct_insert_nth:
+  assumes "distinct xs"
+  assumes "x \<notin> set xs"
+  shows "distinct (insert_nth i x xs)"
+using assms proof (induct xs arbitrary: i)
+  case Nil
+  then show ?case by (cases i) auto
+next
+  case (Cons a xs)
+  then show ?case
+    by (cases i) (auto simp add: set_insert_nth simp del: insert_nth_take_drop)
+qed
+
+lemma nth_insert_nth_front:
+  assumes "i < j" "j \<le> length xs"
+  shows "insert_nth j x xs ! i = xs ! i"
+using assms by (simp add: nth_append)
+
+lemma nth_insert_nth_index_eq:
+  assumes "i \<le> length xs"
+  shows "insert_nth i x xs ! i = x"
+using assms by (simp add: nth_append)
+
+lemma nth_insert_nth_back:
+  assumes "j < i" "i \<le> length xs"
+  shows "insert_nth j x xs ! i = xs ! (i - 1)"
+using assms by (cases i) (auto simp add: nth_append min_def)
+
+lemma nth_insert_nth:
+  assumes "i \<le> length xs" "j \<le> length xs"
+  shows "insert_nth j x xs ! i = (if i = j then x else if i < j then xs ! i else xs ! (i - 1))"
+using assms by (simp add: nth_insert_nth_front nth_insert_nth_index_eq nth_insert_nth_back del: insert_nth_take_drop)
+
+lemma insert_nth_inverse:
+  assumes "j \<le> length xs" "j' \<le> length xs'"
+  assumes "x \<notin> set xs" "x \<notin> set xs'"
+  assumes "insert_nth j x xs = insert_nth j' x xs'"
+  shows "j = j'"
+proof -
+  from assms(1,3) have "\<forall>i\<le>length xs. insert_nth j x xs ! i = x \<longleftrightarrow> i = j"
+    by (auto simp add: nth_insert_nth simp del: insert_nth_take_drop)
+  moreover from assms(2,4) have "\<forall>i\<le>length xs'. insert_nth j' x xs' ! i = x \<longleftrightarrow> i = j'"
+    by (auto simp add: nth_insert_nth simp del: insert_nth_take_drop)
+  ultimately show "j = j'"
+    using assms(1,2,5) by (metis dual_order.trans nat_le_linear)
+qed
+
 text {* Insert several elements at given (ascending) positions *}
 
 lemma length_fold_insert_nth:
