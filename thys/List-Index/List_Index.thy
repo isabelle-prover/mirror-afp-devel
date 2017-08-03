@@ -1,4 +1,4 @@
-(* Author: Tobias Nipkow *)
+(* Author: Tobias Nipkow, with contributions from Dmitriy Traytel and Lukas Bulwahn *)
 
 theory List_Index imports Main begin
 
