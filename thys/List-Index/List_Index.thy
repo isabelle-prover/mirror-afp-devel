@@ -2,13 +2,13 @@
 
 theory List_Index imports Main begin
 
-text {* \noindent
+text \<open>\noindent
 This theory collects functions for index-based manipulation of lists.
-*}
+\<close>
 
-subsection {* Finding an index *}
+subsection \<open>Finding an index\<close>
 
-text{*
+text \<open>
 This subsection defines three functions for finding the index of items in a list:
 \begin{description}
 \item[@{text "find_index P xs"}] finds the index of the first element in
@@ -25,7 +25,7 @@ The argument order of @{text find_index} follows the function of the same
 name in the Haskell standard library. For @{text index} (and @{text
 last_index}) the order is intentionally reversed: @{text index} maps
 lists to a mapping from elements to their indices, almost the inverse of
-function @{text nth}. *}
+function @{text nth}.\<close>
 
 primrec find_index :: "('a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> nat" where
 "find_index _ [] = 0" |
@@ -247,7 +247,7 @@ by (induct xs) (auto simp: inj_on_eq_iff)
 lemma index_map_inj: "inj f \<Longrightarrow> index (map f xs) (f y) = index xs y"
 by (simp add: index_map_inj_on[where S=UNIV])
 
-subsection {* Map with index *}
+subsection \<open>Map with index\<close>
 
 primrec map_index' :: "nat \<Rightarrow> (nat \<Rightarrow> 'a \<Rightarrow> 'b) \<Rightarrow> 'a list \<Rightarrow> 'b list" where
   "map_index' n f [] = []"
@@ -288,7 +288,6 @@ lemma set_map_index'[simp]: "x\<in>set (map_index' n f xs)
   \<longleftrightarrow> (\<exists>i<length xs. f (n+i) (xs!i) = x) "
   unfolding map_index'_map_zip 
   by (auto simp: set_zip intro!: image_eqI[of _ "case_prod f"])
-
 
 lemma nth_map_index[simp]: "p < length xs \<Longrightarrow> map_index f xs ! p = f p (xs ! p)"
   unfolding map_index by auto
@@ -336,7 +335,7 @@ lemma map_index_append[simp]: "map_index f (a @ b)
   by (simp del: map_index'_append)
 
 
-subsection {* Insert at position *}
+subsection \<open>Insert at position\<close>
 
 primrec insert_nth :: "nat \<Rightarrow> 'a \<Rightarrow> 'a list \<Rightarrow> 'a list" where
   "insert_nth 0 x xs = x # xs"
