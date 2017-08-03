@@ -436,4 +436,82 @@ proof (induct pxs arbitrary: xs i p b)
   qed
 qed simp
 
+subsection \<open>Remove at position\<close>
+
+fun remove_nth :: "nat \<Rightarrow> 'a list \<Rightarrow> 'a list"
+where
+  "remove_nth i [] = []"
+| "remove_nth 0 (x # xs) = xs"
+| "remove_nth (Suc i) (x # xs) = x # remove_nth i xs"
+
+lemma remove_nth_take_drop:
+  "remove_nth i xs = take i xs @ drop (Suc i) xs"
+proof (induct xs arbitrary: i)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons a xs)
+  then show ?case by (cases i) auto
+qed
+
+lemma remove_nth_insert_nth:
+  assumes "i \<le> length xs"
+  shows "remove_nth i (insert_nth i x xs) = xs"
+using assms proof (induct xs arbitrary: i)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons a xs)
+  then show ?case by (cases i) auto
+qed
+
+lemma insert_nth_remove_nth:
+  assumes "i < length xs"
+  shows "insert_nth i (xs ! i) (remove_nth i xs) = xs"
+using assms proof (induct xs arbitrary: i)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons a xs)
+  then show ?case by (cases i) auto
+qed
+
+lemma length_remove_nth:
+  assumes "i < length xs"
+  shows "length (remove_nth i xs) = length xs - 1"
+using assms unfolding remove_nth_take_drop by simp
+
+lemma set_remove_nth_subset:
+  "set (remove_nth j xs) \<subseteq> set xs"
+proof (induct xs arbitrary: j)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons a xs)
+  then show ?case by (cases j) auto
+qed
+
+lemma set_remove_nth:
+  assumes "distinct xs" "j < length xs"
+  shows "set (remove_nth j xs) = set xs - {xs ! j}"
+using assms proof (induct xs arbitrary: j)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons a xs)
+  then show ?case by (cases j) auto
+qed
+
+lemma distinct_remove_nth:
+  assumes "distinct xs"
+  shows "distinct (remove_nth i xs)"
+using assms proof (induct xs arbitrary: i)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons a xs)
+  then show ?case
+    by (cases i) (auto simp add: set_remove_nth_subset set_rev_mp)
+qed
+
 end
