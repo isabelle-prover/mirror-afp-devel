@@ -353,7 +353,7 @@ proof -
   have "(map length (l[i := fst (ls_update k v (l ! i))]))
     = map length l[i := length (fst (ls_update k v (l ! i)))]"
     by (simp add: map_update) also
-  from sum_list_update_nat[of i "map length l", simplified, OF i,
+  from sum_list_update[of i "map length l", simplified, OF i,
     of "length (fst (ls_update k v (l ! i)))"]
     ls_update_length_snd_True[OF snd]
   have
@@ -371,7 +371,7 @@ proof -
   have "(map length (l[i := fst (ls_update k v (l ! i))]))
     = map length l[i := length (fst (ls_update k v (l ! i)))]"
     by (simp add: map_update) also
-  from sum_list_update_nat[of i "map length l", simplified, OF i,
+  from sum_list_update[of i "map length l", simplified, OF i,
     of "length (fst (ls_update k v (l ! i)))"]
     ls_update_length_snd_False[OF snd]
   have
@@ -577,7 +577,7 @@ proof -
   have "(map length (l[i := fst (ls_delete k (l ! i))]))
     = map length l[i := length (fst (ls_delete k (l ! i)))]"
     by (simp add: map_update) also
-  from sum_list_update_nat[of i "map length l", simplified, OF i,
+  from sum_list_update[of i "map length l", simplified, OF i,
     of "length (fst (ls_delete k (l ! i)))"]
     ls_delete_length_snd_True[OF snd] snd
   have "sum_list (map length l[i := length (fst (ls_delete k (l ! i)))])
@@ -595,7 +595,7 @@ proof -
   have "(map length (l[i := fst (ls_delete k (l ! i))]))
     = map length l[i := length (fst (ls_delete k (l ! i)))]"
     by (simp add: map_update) also
-  from sum_list_update_nat[of i "map length l", simplified, OF i,
+  from sum_list_update[of i "map length l", simplified, OF i,
     of "length (fst (ls_delete k (l ! i)))"]
     ls_delete_length_snd_False[OF snd]
   have "sum_list (map length l[i := length (fst (ls_delete k (l ! i)))])

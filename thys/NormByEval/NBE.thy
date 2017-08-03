@@ -1904,7 +1904,7 @@ next
     by simp (metis `length ns = length ts` gr0_implies_Suc in_set_conv_nth)
   let ?ns = "ns[k := l]"
   have "n = sum_list ?ns" using `Suc n = sum_list ns` `k<size ts` `size ns = size ts`
-    by (simp add:sum_list_update_nat)
+    by (simp add:sum_list_update)
   obtain t' where "ts!k \<Rightarrow> t'" "(t', ts'!k) : Red_term^^l"
     using Suc(3) `k<size ts` `size ns = size ts` `ns!k = Suc l`
     by (metis relpow_Suc_E2)
