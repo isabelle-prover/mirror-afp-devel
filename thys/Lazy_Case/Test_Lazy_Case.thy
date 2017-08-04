@@ -28,6 +28,12 @@ datatype
   'a mlist1 = MNil1 | MCons1 'a "'a mlist2" and
   'a mlist2 = MNil2 | MCons2 'a "'a mlist1"
 
+text \<open>Records are supported.\<close>
+
+record meep =
+  x1 :: nat
+  x2 :: int
+
 section \<open>Examples\<close>
 
 definition test where

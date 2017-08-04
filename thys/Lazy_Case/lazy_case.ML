@@ -30,23 +30,27 @@ fun lazify {T, casex, ctrs, case_thms, case_cong, ...} lthy =
 
     val (name, typ) = dest_Const casex ||> Logic.unvarifyT_global
     val (typs, _) = strip_type typ
-    val arg_typs = init typs
-    fun apply_to_unit typ idx =
-      if is_fun typ then
-        (typ, Bound idx)
-      else
-        (@{typ unit} --> typ, Bound idx $ @{term "()"})
-    val (arg_typs', args) = split_list (map2 apply_to_unit arg_typs (rev idxs))
 
     val exists = Symtab.defined (Data.get (Context.Proof lthy)) typ_name
     val warn = Pretty.separate "" [Syntax.pretty_typ lthy T, Pretty.str "already lazified"]
       |> Pretty.block
     val _ = if exists then warning (Pretty.string_of warn) else ()
   in
-    if forall is_fun arg_typs orelse exists then
+    (* for records, casex is the dummy pattern *)
+    if Term.is_dummy_pattern casex orelse forall is_fun (init typs) orelse exists then
       lthy
     else
       let
+        val arg_typs = init typs
+
+        fun apply_to_unit typ idx =
+          if is_fun typ then
+            (typ, Bound idx)
+          else
+            (@{typ unit} --> typ, Bound idx $ @{term "()"})
+
+        val (arg_typs', args) = split_list (map2 apply_to_unit arg_typs (rev idxs))
+
         val def = list_comb (Const (name, typ), args)
           |> fold_rev Term.abs (map (pair "c") arg_typs')
         val binding = Binding.name "case_lazy"
