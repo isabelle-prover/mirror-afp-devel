@@ -515,7 +515,7 @@ proof -
     moreover have "card S_verts = n" by (simp add: S_verts_def)
     ultimately have "card (C k) = fact n div fact (n - k)"
       using `k < n`
-      by (simp add: card_image[OF inj_last_Cons] card_lists_distinct_length_eq fact_div_fact)
+      by (simp add: card_image[OF inj_last_Cons] card_lists_distinct_length_eq' fact_div_fact)
     then show ?thesis by simp
   qed
   finally show ?thesis by simp

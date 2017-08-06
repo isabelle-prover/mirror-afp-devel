@@ -131,7 +131,7 @@ qed
 subsection \<open>Cardinality\<close>
 
 lemma
-  assumes "finite A" "card A < card B"
+  assumes "finite A" "finite B" "card A \<le> card B"
   shows "card {f \<in> A \<rightarrow>\<^sub>E B. inj_on f A} = \<Prod>{card B - card A + 1..card B}"
 proof -
   obtain enum where "bij_betw enum {0..<card A} A"
@@ -143,7 +143,7 @@ proof -
   also have "card {xs. set xs \<subseteq> B \<and> length xs = card A \<and> distinct xs} = card {xs. length xs = card A \<and> distinct xs \<and> set xs \<subseteq> B}"
     by meson
   also have "card {xs. length xs = card A \<and> distinct xs \<and> set xs \<subseteq> B} = \<Prod>{card B - card A + 1..card B}"
-    using \<open>card A < card B\<close> by (rule List.card_lists_distinct_length_eq)
+    using \<open>finite B\<close> \<open>card A \<le> card B\<close> by (rule List.card_lists_distinct_length_eq)
   finally show ?thesis .
 qed
 
