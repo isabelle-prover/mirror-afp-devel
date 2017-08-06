@@ -58,41 +58,6 @@ proof (cases "q = 0")
   with sqrt_irrat show ?thesis unfolding sqrt_irrat_def by blast
 qed
 
-text \<open>Deregister setup for using @{typ rat} as implementation of @{typ real}\<close>
-
-lemma code_real_standard:
-  "(x :: real) / (y :: real) = x * inverse y"
-  "(x :: real) - (y :: real) = x + (- y)"
-  by (simp_all add: divide_inverse)
-
-lemma code_real_unfolds:
-  "of_rat \<equiv> Ratreal"
-  "of_int a \<equiv> (of_rat (of_int a) :: real)"
-  "0 \<equiv> (of_rat 0 :: real)"
-  "1 \<equiv> (of_rat 1 :: real)"
-  "numeral k \<equiv> (of_rat (numeral k) :: real)"
-  "- numeral k \<equiv> (of_rat (- numeral k) :: real)"
-  by simp_all
-
-bundle code_real_default_reset = [[code drop:
-  "plus :: real \<Rightarrow> real \<Rightarrow> real"
-  "uminus :: real \<Rightarrow> real"
-  "minus :: real \<Rightarrow> real \<Rightarrow> real"
-  "times :: real \<Rightarrow> real \<Rightarrow> real"
-  "inverse :: real \<Rightarrow> real"
-  "divide :: real \<Rightarrow> real \<Rightarrow> real"
-  "floor :: real \<Rightarrow> int"
-  sqrt
-  "HOL.equal :: real \<Rightarrow> real \<Rightarrow> bool"
-  "less_eq :: real \<Rightarrow> real \<Rightarrow> bool"
-  "less :: real \<Rightarrow> real \<Rightarrow> bool"
-  "0 :: real"
-  "1 :: real"]]
-  code_real_standard [code equation]
-  code_real_unfolds [code_unfold del]
-
-unbundle code_real_default_reset
-
 text {* To represent  numbers of the form $p + q \cdot \sqrt{b}$, use mini algebraic numbers, i.e.,
   triples $(p,q,b)$ with irrational $\sqrt{b}$. *}
 typedef mini_alg =
@@ -498,12 +463,29 @@ next
     by (cases "x = 0", auto simp: Let_def sqrt_real_def)
 qed
 
-lemmas ma_code_eqns = ma_ge_0 ma_floor ma_0 ma_1 ma_uminus ma_inverse ma_sqrt ma_plus ma_times ma_equal ma_is_rat
-  comparison_impl
-
 code_datatype real_of
 
-declare ma_code_eqns [code equation]
+declare [[code drop:
+  "plus :: real \<Rightarrow> real \<Rightarrow> real"
+  "uminus :: real \<Rightarrow> real"
+  "times :: real \<Rightarrow> real \<Rightarrow> real"
+  "inverse :: real \<Rightarrow> real"
+  "floor :: real \<Rightarrow> int"
+  sqrt
+  "HOL.equal :: real \<Rightarrow> real \<Rightarrow> bool"
+]]
+
+lemma [code]:
+  "Ratreal = real_of \<circ> ma_of_rat"
+  by (simp add: fun_eq_iff) (transfer, simp)
+
+lemmas ma_code_eqns [code equation] = ma_ge_0 ma_floor ma_0 ma_1 ma_uminus ma_inverse ma_sqrt ma_plus ma_times ma_equal ma_is_rat
+  comparison_impl
+
+lemma [code equation]:
+  "(x :: real) / (y :: real) = x * inverse y"
+  "(x :: real) - (y :: real) = x + (- y)"
+  by (simp_all add: divide_inverse)
 
 text {* Some tests with small numbers. To work on larger number, one should
   additionally import the theories for efficient calculation on numbers *}

@@ -13,10 +13,6 @@ imports
  "~~/src/HOL/Library/Code_Char"
 begin
 
-lemma [code]: -- \<open>FIXME a little bit ad-hoc\<close>
-  "Ratreal = real_of_u \<circ> mau_of_rat"
-  by (simp add: fun_eq_iff) (transfer, transfer, simp)
-
 subsection{*Execution of the QR decomposition using symbolic computation*}
 
 subsubsection{*Some previous definitions and lemmas*}

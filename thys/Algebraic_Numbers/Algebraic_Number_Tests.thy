@@ -23,10 +23,6 @@ begin
 
 subsection \<open>Stand-Alone Examples\<close>
 
-text \<open>Ensure that the correct code equations are used\<close>
-unbundle code_real_default_reset
-declare real_alg_code_eqns [code]
-
 abbreviation (input) "show_lines x \<equiv> shows_lines x Nil"
 
 fun show_factorization :: "'a :: {semiring_1,show} \<times> (('a poly \<times> nat)list) \<Rightarrow> string" where

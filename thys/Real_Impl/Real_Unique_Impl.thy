@@ -62,6 +62,10 @@ lift_definition ma_identity :: "mini_alg \<Rightarrow> mini_alg \<Rightarrow> bo
 lift_definition mau_equal :: "mini_alg_unique \<Rightarrow> mini_alg_unique \<Rightarrow> bool" is ma_identity .
 lift_definition mau_is_rat :: "mini_alg_unique \<Rightarrow> bool" is ma_is_rat .
 
+lemma [code]:
+  "Ratreal = real_of_u \<circ> mau_of_rat"
+  by (simp add: fun_eq_iff) (transfer, transfer, simp)
+
 lemma mau_floor: "floor (real_of_u r) = mau_floor r" 
   using ma_floor by (transfer, auto)
 lemma mau_inverse: "inverse (real_of_u r) = real_of_u (mau_inverse r)" 
@@ -343,16 +347,22 @@ end
 lemma mau_show_real: "show_real (real_of_u x) = mau_show_real x"
   unfolding show_real_def by simp
 
-lemmas mau_code_eqns = mau_floor mau_0 mau_1 mau_uminus mau_inverse mau_sqrt mau_plus mau_times mau_equal mau_ge_0 mau_is_rat
-  mau_show_real comparison_impl
-
 code_datatype real_of_u
 
-declare ma_code_eqns [code del]
-  
-unbundle code_real_default_reset
+declare [[code drop:
+  "plus :: real \<Rightarrow> real \<Rightarrow> real"
+  "uminus :: real \<Rightarrow> real"
+  "times :: real \<Rightarrow> real \<Rightarrow> real"
+  "inverse :: real \<Rightarrow> real"
+  "floor :: real \<Rightarrow> int"
+  sqrt
+  "HOL.equal :: real \<Rightarrow> real \<Rightarrow> bool"
+  ge_0
+  is_rat
+]]
 
-declare mau_code_eqns [code equation]
+lemmas mau_code_eqns [code] = mau_floor mau_0 mau_1 mau_uminus mau_inverse mau_sqrt mau_plus mau_times mau_equal mau_ge_0 mau_is_rat
+  mau_show_real comparison_impl
 
 text {* Some tests with small numbers. To work on larger number, one should
   additionally import the theories for efficient calculation on numbers *}
