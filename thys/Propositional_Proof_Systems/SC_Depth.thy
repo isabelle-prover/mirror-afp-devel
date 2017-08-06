@@ -544,13 +544,13 @@ value "map (cbnd (0::int)) [0,1,2,3,4]"
 value "map (cbnd (1::int)) [0,1,2,3,4]" (* int, because that's easier to read\<dots> *)
 value "map (cbnd (2::int)) [0,1,2,3,4]"
 value "map (cbnd (3::int)) [0,1,2,3,4]"
-value "map (int \<circ> (\<lambda>n. n div 3) \<circ> cut_bound 3 3 \<circ> (\<lambda>n. ((\<lambda>F. And F F) ^^ n) (Atom 0))) [0,1,2,3,4,5,6,7]"
-value "map (int \<circ> (\<lambda>n. n div 3) \<circ> cut_bound' 3 \<circ> (\<lambda>n. ((\<lambda>F. And F F) ^^ n) (Atom 0))) [0,1,2,3,4]"
+value [nbe] "map (int \<circ> (\<lambda>n. n div 3) \<circ> cut_bound 3 3 \<circ> (\<lambda>n. ((\<lambda>F. And F F) ^^ n) (Atom 0))) [0,1,2,3,4,5,6,7]"
+value [nbe] "map (int \<circ> (\<lambda>n. n div 3) \<circ> cut_bound' 3 \<circ> (\<lambda>n. ((\<lambda>F. And F F) ^^ n) (Atom 0))) [0,1,2,3,4]"
 (* TODO: hm *)
-value "map (int \<circ> (\<lambda>n. n div 3) \<circ> cut_bound 3 3 \<circ> (\<lambda>n. ((\<lambda>F. Imp (Or F F) (And F F)) ^^ n) (Atom 0))) [0,1,2]"
-value "map (int \<circ> (\<lambda>n. n div 3) \<circ> cut_bound' 3 \<circ> (\<lambda>n. ((\<lambda>F. Imp (Or F F) (And F F)) ^^ n) (Atom 0))) [0,1,2]"
+value [nbe] "map (int \<circ> (\<lambda>n. n div 3) \<circ> cut_bound 3 3 \<circ> (\<lambda>n. ((\<lambda>F. Imp (Or F F) (And F F)) ^^ n) (Atom 0))) [0,1,2]"
+value [nbe] "map (int \<circ> (\<lambda>n. n div 3) \<circ> cut_bound' 3 \<circ> (\<lambda>n. ((\<lambda>F. Imp (Or F F) (And F F)) ^^ n) (Atom 0))) [0,1,2]"
 (* Hmhm *)
-value "(\<lambda>F. And (Or F F) (Or F F)) ^^ 2"
+value [nbe] "(\<lambda>F. And (Or F F) (Or F F)) ^^ 2"
 
 lemma "n + ((n + m) * 2 ^ (size F - Suc 0) + 
       (n + (n + m + (n + m) * 2 ^ (size F - Suc 0))) * 2 ^ (size G - Suc 0))

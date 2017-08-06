@@ -95,7 +95,7 @@ by (autoref_monadic (trace))
 
 concrete_definition array_set_test uses array_set_test_code
 print_theorems
-value array_set_test
+value [nbe] array_set_test
 
 schematic_goal
   "(?f::?'c, RETURN (({1} :::\<^sub>r \<langle>nat_rel\<rangle>dflt_rs_rel) = {}))\<in>?R" 

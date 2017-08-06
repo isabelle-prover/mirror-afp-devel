@@ -22,7 +22,7 @@ begin
                          p_payload :: string
 
 
-  value "\<lparr> 
+  value [nbe] "\<lparr> 
           p_iiface = ''eth1'', p_oiface = '''', 
           p_src = 0, p_dst = 0, 
           p_proto = TCP, p_sport = 0, p_dport = 0, 

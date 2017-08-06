@@ -25,7 +25,7 @@ FEA: "\<lbrakk>\<Gamma> \<Rightarrow> \<AA>#\<Theta>; \<BB>#\<Delta> \<Rightarro
 NES: "\<AA>#\<Gamma> \<Rightarrow> \<Theta> \<Longrightarrow> \<Gamma> \<Rightarrow> \<^bold>\<not>\<AA>#\<Theta>" |
 NEA: "\<Gamma> \<Rightarrow> \<AA>#\<Theta> \<Longrightarrow> \<^bold>\<not>\<AA>#\<Gamma> \<Rightarrow> \<Theta>"
 text\<open>Nota bene: E here stands for ``Einführung'', which is introduction and not elemination.\<close>
-text\<open>The rule for @{value \<bottom>} is not part of the original calculus. Its addition is necessary to show equivalence to our @{const SCp}.\<close>
+text\<open>The rule for @{term \<bottom>} is not part of the original calculus. Its addition is necessary to show equivalence to our @{const SCp}.\<close>
 
 text\<open>Note that we purposefully did not recreate the fact that Gentzen sometimes puts his principal formulas on end and sometimes on the beginning of the list.\<close>
 

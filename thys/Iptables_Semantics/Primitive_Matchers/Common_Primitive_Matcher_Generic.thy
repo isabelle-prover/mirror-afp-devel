@@ -135,9 +135,9 @@ subsection\<open>Basic optimisations\<close>
   
   thm compress_extra.simps
   
-  value "compress_extra (MatchAnd (Match (Extra ''foo'')) (Match (Extra ''bar'')))"
-  value "compress_extra (MatchAnd (Match (Extra ''foo'')) (MatchNot (Match (Extra ''bar''))))"
-  value "compress_extra (MatchAnd (Match (Extra ''-m'')) (MatchAnd (Match (Extra ''addrtype'')) (MatchAnd (Match (Extra ''--dst-type'')) (MatchAnd (Match (Extra ''BROADCAST'')) MatchAny))))"
+  value [nbe] "compress_extra (MatchAnd (Match (Extra ''foo'')) (Match (Extra ''bar'')))"
+  value [nbe] "compress_extra (MatchAnd (Match (Extra ''foo'')) (MatchNot (Match (Extra ''bar''))))"
+  value [nbe] "compress_extra (MatchAnd (Match (Extra ''-m'')) (MatchAnd (Match (Extra ''addrtype'')) (MatchAnd (Match (Extra ''--dst-type'')) (MatchAnd (Match (Extra ''BROADCAST'')) MatchAny))))"
   
   lemma compress_extra_correct_matchexpr:
     fixes \<beta>::"('i::len common_primitive, ('i::len, 'a) tagged_packet_scheme) exact_match_tac"

@@ -580,7 +580,7 @@ where
 
 value "sublist_list [0::int,10::int,20,30,40,50] [1::nat,2,3]"
 value "sublist_list [0::int,10::int,20,30,40,50] [1::nat,1,2,3]"
-value "sublist_list [0::int,10::int,20,30,40,50] [1::nat,1,2,3,10]"
+value [nbe] "sublist_list [0::int,10::int,20,30,40,50] [1::nat,1,2,3,10]"
 
 lemma sublist_list_length: "length (sublist_list xs ys) = length ys"
 by (induct ys, simp_all)

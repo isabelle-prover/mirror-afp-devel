@@ -35,7 +35,7 @@ corollary mini_mini[simp]: "to_mini_formula (to_mini_formula F) = to_mini_formul
 
 text\<open>We could have used an arbitrary other combination,
   e.g. @{const Atom}, @{const Not}, and @{const And}.
-The choice for @{const Atom}, @{value \<bottom>}, and @{const Imp} was made because it is
+The choice for @{const Atom}, @{term \<bottom>}, and @{const Imp} was made because it is
  (to the best of my knowledge) the only combination that only requires three elements and verifies:\<close>
 lemma mini_formula_atoms: "atoms (to_mini_formula F) = atoms F"
  by(induction F; simp)

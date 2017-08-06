@@ -45,9 +45,9 @@ definition "b1 = {((1::integer, {11::integer, 12}), 2::nat),
 definition "vcga1 = vcgaAlg N1 \<Omega>1 (b1 Elsee 0) r1"
 
 value "vcga1"
-value "vcgpAlg N1 \<Omega>1 (b1 Elsee 0) r1 1 vcga1"
-value "vcgpAlg N1 \<Omega>1 (b1 Elsee 0) r1 2 vcga1"
-value "vcgpAlg N1 \<Omega>1 (b1 Elsee 0) r1 3 vcga1"
+value [nbe] "vcgpAlg N1 \<Omega>1 (b1 Elsee 0) r1 1 vcga1"
+value [nbe] "vcgpAlg N1 \<Omega>1 (b1 Elsee 0) r1 2 vcga1"
+value [nbe] "vcgpAlg N1 \<Omega>1 (b1 Elsee 0) r1 3 vcga1"
 
 (* Test example 2 for evaluation of vcga and vcgp in Isabelle *)
 definition "r2 = 1" (* r1 in {0, 1, 2, ... 23 *)
@@ -61,9 +61,9 @@ definition "b2 = {((1::integer, {11::integer, 12}), 5::nat),
 definition "vcga2 = vcgaAlg N2 \<Omega>2 (b2 Elsee 0) r2"
 
 value "vcga2"
-value "vcgpAlg N2 \<Omega>2 (b2 Elsee 0) r2 1 vcga2"
-value "vcgpAlg N2 \<Omega>2 (b2 Elsee 0) r2 2 vcga2"
-value "vcgpAlg N2 \<Omega>2 (b2 Elsee 0) r2 3 vcga2"
+value [nbe] "vcgpAlg N2 \<Omega>2 (b2 Elsee 0) r2 1 vcga2"
+value [nbe] "vcgpAlg N2 \<Omega>2 (b2 Elsee 0) r2 2 vcga2"
+value [nbe] "vcgpAlg N2 \<Omega>2 (b2 Elsee 0) r2 3 vcga2"
 
 
 (* Test example 3 for evaluation of vcga and vcgp in Isabelle *)
@@ -84,9 +84,8 @@ definition "b3 = {((1::integer, {11::integer, 12, 13}), 20::nat),
 definition "vcga3 = vcgaAlg N3 \<Omega>3 (b3 Elsee 0) r3"
 
 value "vcga3"
-value "vcgpAlg N3 \<Omega>3 (b3 Elsee 0) r3 1 vcga3"
-value "vcgpAlg N3 \<Omega>3 (b3 Elsee 0) r3 2 vcga3"
-value "vcgpAlg N3 \<Omega>3 (b3 Elsee 0) r3 3 vcga3"
+value [nbe] "vcgpAlg N3 \<Omega>3 (b3 Elsee 0) r3 1 vcga3"
+value [nbe] "vcgpAlg N3 \<Omega>3 (b3 Elsee 0) r3 2 vcga3"
+value [nbe] "vcgpAlg N3 \<Omega>3 (b3 Elsee 0) r3 3 vcga3"
 
 end
-
