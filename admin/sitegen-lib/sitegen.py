@@ -3,8 +3,8 @@
 ##
 ## Dependencies: Python 2.7 or Python 3.5
 ##
-## This script reads a metadata file and generates the topics.shtml,
-## index.shtml and the entry pages on isa-afp.org.
+## This script reads a metadata file and generates the topics.html,
+## index.html and the entry pages on isa-afp.org.
 ##
 ## For meta data documentation see `metadata/README`
 ## For adding new entries see `doc/editors/new-entry-checkin.html`
@@ -280,7 +280,7 @@ def main():
         builder.generate_download()
         for s in ["about", "citing", "updating", "search", "submitting",
                   "using"]:
-            builder.generate_standard(s + ".shtml", s + ".tpl")
+            builder.generate_standard(s + ".html", s + ".tpl")
         builder.generate_rss(30)
         #TODO: look over it one more time
         if options.is_devel:

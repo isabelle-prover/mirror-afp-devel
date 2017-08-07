@@ -31,7 +31,7 @@
 
 <tr><td class="head">How to refer to AFP entries:</td></tr>
 <tr><td class="entry">
-  You can refer to AFP entries by using the <a href="using.shtml">AFP as an Isabelle component</a>.</td></tr>
+  You can refer to AFP entries by using the <a href="using.html">AFP as an Isabelle component</a>.</td></tr>
 
 </tbody></table>
 {% endblock %}

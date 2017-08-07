@@ -15,7 +15,7 @@
 <p>The Archive of Formal Proofs is a collection of proof libraries, examples,
 and larger scientific developments, mechanically checked in the theorem prover
 <a href="http://isabelle.in.tum.de/">Isabelle</a>. It is organized in the way
-of a scientific journal. <a href="submitting.shtml">Submissions</a> are
+of a scientific journal. <a href="submitting.html">Submissions</a> are
 refereed.</p>
 
 <p>The archive repository is hosted on <a href="https://bitbucket.org">Bitbucket</a> to

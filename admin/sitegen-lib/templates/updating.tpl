@@ -38,7 +38,7 @@ be up to date with the current Isabelle development
 version. Authors can contribute changes to this version which is
 available as a <a
 href="https://bitbucket.org/isa-afp/afp-devel/">bitbucket
-mercurial repository</a> or as tar.gz package on the <a href="download.shtml">
+mercurial repository</a> or as tar.gz package on the <a href="download.html">
 download page</a>.
 </li>
 <li>
@@ -67,7 +67,7 @@ version</a>.
 <p>
 If you would like to get write access to your entry in the 
 mercurial repository or if you need
-assistance, please contact the <a href="about.shtml#editors">editors</a>.
+assistance, please contact the <a href="about.html#editors">editors</a>.
 </p>
 
     </td></tr>
