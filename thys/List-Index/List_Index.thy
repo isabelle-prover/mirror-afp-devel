@@ -1,5 +1,7 @@
 (* Author: Tobias Nipkow, with contributions from Dmitriy Traytel and Lukas Bulwahn *)
 
+section \<open>Index-based manipulation of lists\<close>
+
 theory List_Index imports Main begin
 
 text \<open>\noindent
