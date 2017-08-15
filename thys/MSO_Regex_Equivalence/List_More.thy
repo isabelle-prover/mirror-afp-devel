@@ -26,7 +26,7 @@ lemma insort_snoc[simp]: "\<forall>z \<in> set xs. y > z \<Longrightarrow>
   insort x (xs @ [y]) = (if x < y then insort x xs @ [y] else xs @ [y, x])"
   by (induct xs) auto
 
-declare set_insort[simp]
+declare set_insort_key[simp]
 
 lemma insort_remdups[simp]: "\<lbrakk>sorted xs; a \<notin> set xs\<rbrakk> \<Longrightarrow> insort a (remdups xs) = remdups (insort a xs)"
 proof (induct xs)

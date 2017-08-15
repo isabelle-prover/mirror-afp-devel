@@ -192,17 +192,17 @@ lemma alist_of_push [simp, code abstract]:
   "alist_of (push k p q) =
     (if k \<notin> set (values q) then insort_key snd (k, p) (alist_of q) else alist_of q)"
   using distinct_fst_alist_of [of q]
-    by (auto simp add: distinct_map set_insort distinct_insort not_in_first_image
+    by (auto simp add: distinct_map set_insort_key distinct_insort not_in_first_image
       push_def values_def sorted_insort_key intro: alist_of_Abs_pq)
 
 lemma push_values [simp]:
   "set |push k p q| = set |q| \<union> {k}"
-  by (auto simp add: values_def set_insort)
+  by (auto simp add: values_def set_insort_key)
 
 lemma push_priorities [simp]:
   "k \<notin> set |q| \<Longrightarrow> set \<parallel>push k p q\<parallel> = set \<parallel>q\<parallel> \<union> {p}"
   "k \<in> set |q| \<Longrightarrow> set \<parallel>push k p q\<parallel> = set \<parallel>q\<parallel>"
-  by (auto simp add: priorities_def set_insort)
+  by (auto simp add: priorities_def set_insort_key)
 
 lemma not_is_empty_push [simp]:
   "\<not> is_empty (push k p q)"

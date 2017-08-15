@@ -364,7 +364,7 @@ lemma bt_augment_alist_subset:
   "set (PQ.alist_of q) \<subseteq> set (PQ.alist_of (bts_augment ts q))"
 proof (induct t and ts arbitrary: q and q rule: bt_augment.induct bts_augment.induct)
   case (Node a v rs)
-  show ?case using Node[of q] by (auto simp add: bt_augment_simp set_insort)
+  show ?case using Node[of q] by (auto simp add: bt_augment_simp set_insort_key)
 qed auto
 
 lemma bt_augment_alist_in:
@@ -399,7 +399,7 @@ next
   moreover
   from * have "v \<notin> set |bts_augment rs q|" by simp
 
-  ultimately show ?case by (simp add: set_insort)
+  ultimately show ?case by (simp add: set_insort_key)
 next
   case (Cons_bintree x xs) then
   have -- "FIXME: ugly... and slow"
@@ -429,7 +429,7 @@ next
   case (Node a v rs)
   hence "v \<notin> set |bts_augment rs q|"
     unfolding bt_val_augment[symmetric] by simp
-  with Node show ?case by (simp add: set_insort)
+  with Node show ?case by (simp add: set_insort_key)
 next
   case (Cons_bintree r rs) then
   have "set (PQ.alist_of (bts_augment (r # rs) q)) =
@@ -502,7 +502,7 @@ lemma insert_push:
   "distinct (vals xs) \<Longrightarrow>
    v \<notin> set (vals xs) \<Longrightarrow>
    set (dfs alist (insert a v xs)) = set (PQ.alist_of (PQ.push v a (pqueue xs)))"
-  by (simp add: alist_pqueue vals_pqueue set_insort)
+  by (simp add: alist_pqueue vals_pqueue set_insort_key)
 
 lemma insert_p_push:
   assumes "distinct (vals xs)"
