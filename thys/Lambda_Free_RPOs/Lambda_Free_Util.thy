@@ -590,11 +590,11 @@ lemma count_image_mset_le_imp_lt:
   shows "\<exists>b. f b = f a \<and> count M b < count N b"
   using assms by (auto intro: count_image_mset_le_imp_lt_raw[of "set_mset M \<union> set_mset N"])
 
-lemma Max_in_mset: "M \<noteq> {#} \<Longrightarrow> Max (set_mset M) \<in># M"
+lemma Max_in_mset: "M \<noteq> {#} \<Longrightarrow> Max_mset M \<in># M"
   by simp
 
 lemma Max_lt_imp_lt_mset:
-  assumes n_nemp: "N \<noteq> {#}" and max: "Max (set_mset M) < Max (set_mset N)" (is "?max_M < ?max_N")
+  assumes n_nemp: "N \<noteq> {#}" and max: "Max_mset M < Max_mset N" (is "?max_M < ?max_N")
   shows "M < N"
 proof (cases "M = {#}")
   case m_nemp: False

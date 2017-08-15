@@ -101,7 +101,7 @@ lemmas arity_var\<^sub>h_lt_\<omega>_if_\<delta>\<^sub>h_gt_0 = arity_var_ne_inf
   [folded of_nat_less_hmset hmset_of_enat_lt_iff_ne_infinity, unfolded of_nat_0]
 lemmas arity\<^sub>h_lt_\<omega>_if_\<delta>\<^sub>h_gt_0 = arity_ne_infinity_if_\<delta>_gt_0
   [folded of_nat_less_hmset hmset_of_enat_lt_iff_ne_infinity, unfolded of_nat_0]
-lemmas wary_subst\<^sub>h_conv = wary_subst_def[folded hmset_of_enat_le]
+lemmas warywary_subst_subst\<^sub>h_conv = wary_subst_def[folded hmset_of_enat_le]
 lemmas extf_singleton_nil_if_\<delta>\<^sub>h_eq_\<epsilon>\<^sub>h = extf_singleton_nil_if_\<delta>_eq_\<epsilon>[folded of_nat_inject_hmset]
 
 lemma arity_sym\<^sub>h_if_\<delta>\<^sub>h_gt_0_E:
