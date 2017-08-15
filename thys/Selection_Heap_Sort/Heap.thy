@@ -47,7 +47,7 @@ by (induct t rule: is_heap.induct)  (auto split: if_split_asm)
 
 lemma heap_top_max:
   assumes "t \<noteq> E" "is_heap t"
-  shows "val t = Max (set_mset (multiset t))"
+  shows "val t = Max_mset (multiset t)"
 proof (rule Max_eqI[symmetric])
   fix y
   assume "y \<in> set_mset (multiset t)"
