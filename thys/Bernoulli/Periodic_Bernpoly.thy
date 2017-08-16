@@ -210,6 +210,12 @@ next
   thus ?thesis by (rule continuous_on_subset) simp_all
 qed
 
+lemma continuous_on_pbernpoly' [continuous_intros]:
+  assumes "n \<noteq> 1" "continuous_on A f"
+  shows   "continuous_on A (\<lambda>x. pbernpoly n (f x))"
+  using continuous_on_compose[OF assms(2) continuous_on_pbernpoly[OF assms(1)]]
+  by (simp add: o_def)
+
 lemma isCont_pbernpoly [continuous_intros]: "n \<noteq> 1 \<Longrightarrow> isCont (pbernpoly n) x"
   using continuous_on_pbernpoly[of n UNIV] by (simp add: continuous_on_eq_continuous_at)   
 
