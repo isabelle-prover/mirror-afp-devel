@@ -11,6 +11,7 @@ session Sepref_Prereq (AFP) = Collections +
 session Refine_Imperative_HOL (AFP) = Sepref_Prereq +
   options [timeout = 1200]
   sessions
+    Isar_Ref
     "HOL-Eisbach"
     "List-Index"
     Collections_Examples

@@ -3,6 +3,7 @@ chapter AFP
 session Twelvefold_Way (AFP) = "HOL-Library" +
   options [timeout = 300]
   sessions
+    "HOL-ex"
     "HOL-Eisbach"
     Bell_Numbers_Spivey
     Card_Multisets

@@ -5,6 +5,7 @@ session Pre_BZ (AFP) = "Subresultants" +
   sessions
     "HOL-Number_Theory"
     "HOL-Word"
+    "HOL-Types_To_Sets"
     Polynomial_Factorization
     Polynomial_Interpolation
     "Efficient-Mergesort"

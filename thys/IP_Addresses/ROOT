@@ -4,6 +4,7 @@ session "IP_Addresses" (AFP) = Word_Lib +
   options [timeout = 2400]
   sessions
     Automatic_Refinement
+    "HOL-ex"
   theories [document = false]
     "~~/src/HOL/Library/Code_Target_Nat"
     "~~/src/HOL/Library/Code_Target_Int"

@@ -18,6 +18,8 @@ session Regex_Equivalence (AFP) = "HOL-Library" +
 
 session Regex_Equivalence_Examples (AFP) = Regex_Equivalence +
   options [document = false, timeout = 600]
+  sessions
+    Spec_Check
   theories
     Examples
     Benchmark
