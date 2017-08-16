@@ -146,6 +146,83 @@ proof -
     have "\<forall>\<^sub>F x in at_infinity. norm a < norm (x::'a)" by (auto simp: filterlim_at_top_dense)
   thus ?thesis by eventually_elim auto
 qed
+
+lemma uniformly_convergent_improper_integral:
+  fixes f :: "'b \<Rightarrow> real \<Rightarrow> 'a :: {banach}"
+  assumes deriv: "\<And>x. x \<ge> a \<Longrightarrow> (G has_field_derivative g x) (at x within {a..})"
+  assumes integrable: "\<And>a' b x. x \<in> A \<Longrightarrow> a' \<ge> a \<Longrightarrow> b \<ge> a' \<Longrightarrow> f x integrable_on {a'..b}"
+  assumes G: "convergent G"
+  assumes le: "\<And>y x. y \<in> A \<Longrightarrow> x \<ge> a \<Longrightarrow> norm (f y x) \<le> g x"
+  shows   "uniformly_convergent_on A (\<lambda>b x. integral {a..b} (f x))"
+proof (intro Cauchy_uniformly_convergent uniformly_Cauchy_onI', goal_cases)
+  case (1 \<epsilon>)
+  from G have "Cauchy G"
+    by (auto intro!: convergent_Cauchy)
+  with 1 obtain M where M: "dist (G (real m)) (G (real n)) < \<epsilon>" if "m \<ge> M" "n \<ge> M" for m n
+    by (force simp: Cauchy_def)
+  define M' where "M' = max (nat \<lceil>a\<rceil>) M"
+
+  show ?case
+  proof (rule exI[of _ M'], safe, goal_cases)
+    case (1 x m n)
+    have M': "M' \<ge> a" "M' \<ge> M" unfolding M'_def by linarith+
+    have int_g: "(g has_integral (G (real n) - G (real m))) {real m..real n}"
+      using 1 M' by (intro fundamental_theorem_of_calculus) 
+                    (auto simp: has_field_derivative_iff_has_vector_derivative [symmetric] 
+                          intro!: DERIV_subset[OF deriv])
+    have int_f: "f x integrable_on {a'..real n}" if "a' \<ge> a" for a'
+      using that 1 by (cases "a' \<le> real n") (auto intro: integrable)
+
+    have "dist (integral {a..real m} (f x)) (integral {a..real n} (f x)) =
+            norm (integral {a..real n} (f x) - integral {a..real m} (f x))"
+      by (simp add: dist_norm norm_minus_commute)
+    also have "integral {a..real m} (f x) + integral {real m..real n} (f x) = 
+                 integral {a..real n} (f x)"
+      using M' and 1 by (intro integral_combine int_f) auto
+    hence "integral {a..real n} (f x) - integral {a..real m} (f x) = 
+             integral {real m..real n} (f x)"
+      by (simp add: algebra_simps)
+    also have "norm \<dots> \<le> integral {real m..real n} g"
+      using le 1 M' int_f int_g by (intro integral_norm_bound_integral) auto 
+    also from int_g have "integral {real m..real n} g = G (real n) - G (real m)"
+      by (simp add: has_integral_iff)
+    also have "\<dots> \<le> dist (G m) (G n)" 
+      by (simp add: dist_norm)
+    also from 1 and M' have "\<dots> < \<epsilon>"
+      by (intro M) auto
+    finally show ?case .
+  qed
+qed
+
+lemma (in bounded_linear) uniformly_convergent_on:
+  assumes "uniformly_convergent_on A g"
+  shows   "uniformly_convergent_on A (\<lambda>x y. f (g x y))"
+proof -
+  from assms obtain l where "uniform_limit A g l sequentially"
+    unfolding uniformly_convergent_on_def by blast
+  hence "uniform_limit A (\<lambda>x y. f (g x y)) (\<lambda>x. f (l x)) sequentially"
+    by (rule uniform_limit)
+  thus ?thesis unfolding uniformly_convergent_on_def by blast
+qed
+
+lemma leibniz_rule_field_differentiable:
+  fixes f::"'a::{real_normed_field, banach} \<Rightarrow> 'b::euclidean_space \<Rightarrow> 'a"
+  assumes "\<And>x t. x \<in> U \<Longrightarrow> t \<in> cbox a b \<Longrightarrow> ((\<lambda>x. f x t) has_field_derivative fx x t) (at x within U)"
+  assumes "\<And>x. x \<in> U \<Longrightarrow> (f x) integrable_on cbox a b"
+  assumes "continuous_on (U \<times> (cbox a b)) (\<lambda>(x, t). fx x t)"
+  assumes "x0 \<in> U" "convex U"
+  shows "(\<lambda>x. integral (cbox a b) (f x)) field_differentiable at x0 within U"
+  using leibniz_rule_field_derivative[OF assms] by (auto simp: field_differentiable_def)
+
+lemma leibniz_rule_holomorphic:
+  fixes f::"complex \<Rightarrow> 'b::euclidean_space \<Rightarrow> complex"
+  assumes "\<And>x t. x \<in> U \<Longrightarrow> t \<in> cbox a b \<Longrightarrow> ((\<lambda>x. f x t) has_field_derivative fx x t) (at x within U)"
+  assumes "\<And>x. x \<in> U \<Longrightarrow> (f x) integrable_on cbox a b"
+  assumes "continuous_on (U \<times> (cbox a b)) (\<lambda>(x, t). fx x t)"
+  assumes "convex U"
+  shows "(\<lambda>x. integral (cbox a b) (f x)) holomorphic_on U"
+  using leibniz_rule_field_differentiable[OF assms(1-3) _ assms(4)]
+  by (auto simp: holomorphic_on_def)
 (* END TODO *)
 
 lemma negligible_atLeastAtMostI: "b \<le> a \<Longrightarrow> negligible {a..(b::real)}"
@@ -385,6 +462,82 @@ proof -
   qed
 qed
 
+lemma EM_remainder'_cong:
+  assumes "\<And>x. x \<in> {a..b} \<Longrightarrow> f x = g x" "n = n'" "a = a'" "b = b'"
+  shows   "EM_remainder' n f a b = EM_remainder' n' g a' b'"
+proof -
+  have "integral {a..b} (\<lambda>t. pbernpoly n t *\<^sub>R f t) = integral {a'..b'} (\<lambda>t. pbernpoly n' t *\<^sub>R g t)"
+    unfolding assms using assms by (intro integral_cong) auto
+  with assms show ?thesis by (simp add: EM_remainder'_def)
+qed
+
+lemma EM_remainder_converges_cong:
+  assumes "\<And>x. x \<ge> of_int a \<Longrightarrow> f x = g x" "n = n'" "a = a'"
+  shows   "EM_remainder_converges n f a = EM_remainder_converges n' g a'"
+  unfolding EM_remainder_converges_def
+  by (subst EM_remainder'_cong[OF _ refl refl refl, of _ _ f g]) (use assms in auto)
+
+lemma EM_remainder_cong:
+  assumes "\<And>x. x \<ge> of_int a \<Longrightarrow> f x = g x" "n = n'" "a = a'"
+  shows   "EM_remainder n f a = EM_remainder n' g a'"
+proof -
+  have *: "EM_remainder_converges n f a = EM_remainder_converges n' g a'"
+    using assms by (intro EM_remainder_converges_cong) auto
+  show ?thesis unfolding EM_remainder_def
+    by (subst EM_remainder'_cong[OF _ refl refl refl, of _ _ f g]) (use assms * in auto)
+qed
+
+lemma EM_remainder_converges_cnj: 
+  assumes "continuous_on {a..} f" and "EM_remainder_converges n f a"
+  shows   "EM_remainder_converges n (\<lambda>x. cnj (f x)) a"
+proof -
+  interpret bounded_linear cnj by (rule bounded_linear_cnj)
+  obtain L where L: "((\<lambda>x. EM_remainder' n f (real_of_int a) (real_of_int x)) \<longlongrightarrow> L) at_top"
+    using assms unfolding EM_remainder_converges_def by blast
+  note tendsto_cnj [OF this]
+  also have "(\<lambda>x. cnj (EM_remainder' n f (real_of_int a) (real_of_int x))) =
+               (\<lambda>x. EM_remainder' n (\<lambda>x. cnj (f x)) (real_of_int a) (real_of_int x))"
+    by (subst EM_remainder'_bounded_linear [OF bounded_linear_cnj])
+       (rule continuous_on_subset [OF assms(1)], auto)
+  finally have L': "(\<dots> \<longlongrightarrow> cnj L) at_top" .
+  thus "EM_remainder_converges n (\<lambda>x. cnj (f x)) a"
+    by (auto simp: EM_remainder_converges_def)
+qed
+
+lemma EM_remainder_converges_cnj_iff:
+  assumes "continuous_on {of_int a..} f"
+  shows   "EM_remainder_converges n (\<lambda>x. cnj (f x)) a \<longleftrightarrow> EM_remainder_converges n f a"
+proof
+  assume "EM_remainder_converges n (\<lambda>x. cnj (f x)) a"
+  hence "EM_remainder_converges n (\<lambda>x. cnj (cnj (f x))) a"
+    by (rule EM_remainder_converges_cnj [rotated]) (auto intro: continuous_intros assms)
+  thus "EM_remainder_converges n f a" by simp
+qed (intro EM_remainder_converges_cnj assms)
+
+lemma EM_remainder_cnj: 
+  assumes "continuous_on {a..} f"
+  shows   "EM_remainder n (\<lambda>x. cnj (f x)) a = cnj (EM_remainder n f a)"
+proof (cases "EM_remainder_converges n f a")
+  case False
+  hence "\<not>EM_remainder_converges n (\<lambda>x. cnj (f x)) a"
+    by (subst EM_remainder_converges_cnj_iff [OF assms])
+  with False show ?thesis by (simp add: EM_remainder_def)
+next
+  case True
+  then obtain L where L: "((\<lambda>x. EM_remainder' n f (real_of_int a) (real_of_int x)) \<longlongrightarrow> L) at_top"
+    unfolding EM_remainder_converges_def by blast
+  note tendsto_cnj [OF this]
+  also have "(\<lambda>x. cnj (EM_remainder' n f (real_of_int a) (real_of_int x))) =
+               (\<lambda>x. EM_remainder' n (\<lambda>x. cnj (f x)) (real_of_int a) (real_of_int x))"
+    by (subst EM_remainder'_bounded_linear [OF bounded_linear_cnj])
+       (rule continuous_on_subset [OF assms(1)], auto)
+  finally have L': "(\<dots> \<longlongrightarrow> cnj L) at_top" .
+  moreover from assms and L have "EM_remainder n f a = L"
+    by (intro EM_remainder_eqI)
+  ultimately show "EM_remainder n (\<lambda>x. cnj (f x)) a = cnj (EM_remainder n f a)"
+    using L' by (intro EM_remainder_eqI) simp_all
+qed
+
 lemma EM_remainder'_combine:
   fixes f :: "real \<Rightarrow> 'a :: banach"
   assumes [continuous_intros]: "continuous_on {a..c} f"
@@ -396,6 +549,165 @@ proof -
     by (intro integral_combine assms integrable_EM_remainder')
   from this [symmetric] show ?thesis by (simp add: EM_remainder'_def algebra_simps) 
 qed
+
+lemma uniformly_convergent_EM_remainder':
+  fixes f :: "'a \<Rightarrow> real \<Rightarrow> 'b :: {banach}"
+  assumes deriv: "\<And>y. a \<le> y \<Longrightarrow> (G has_real_derivative g y) (at y within {a..})"
+  assumes integrable: "\<And>a' b y. y \<in> A \<Longrightarrow>  a \<le> a' \<Longrightarrow> a' \<le> b \<Longrightarrow> 
+                         (\<lambda>t. pbernpoly n t *\<^sub>R f y t) integrable_on {a'..b}"
+  assumes conv: "convergent (\<lambda>y. G (real y))"
+  assumes bound: "\<And>x y. y \<in> A \<Longrightarrow> x \<ge> a \<Longrightarrow> norm (f y x) \<le> g x"
+  shows   "uniformly_convergent_on A (\<lambda>b s. EM_remainder' n (f s) a b)"
+proof -
+  interpret bounded_linear "\<lambda>x::'b. ((- 1) ^ Suc n / fact n) *\<^sub>R x"
+    by (rule bounded_linear_scaleR_right)
+
+  from bounded_pbernpoly[of n] guess C . note C = this
+  from C[of 0] have [simp]: "C \<ge> 0" by simp
+
+  show ?thesis unfolding EM_remainder'_def
+  proof (intro uniformly_convergent_on uniformly_convergent_improper_integral)
+    fix x assume "x \<ge> a"
+    thus "((\<lambda>x. C * G x) has_real_derivative C * g x) (at x within {a..})"
+      by (intro DERIV_cmult deriv)
+  next
+    fix y a' b assume "y \<in> A" "a \<le> a'" "a' \<le> b"
+    thus "(\<lambda>t. pbernpoly n t *\<^sub>R f y t) integrable_on {a'..b}"
+      by (rule integrable)
+  next
+    from conv obtain L where "(\<lambda>y. G (real y)) \<longlonglongrightarrow> L"
+      by (auto simp: convergent_def)
+    from tendsto_mult[OF tendsto_const[of C] this]
+      show "convergent (\<lambda>y. C * G (real y))"
+        by (auto simp: convergent_def)
+  next
+    fix y x assume "y \<in> A" "x \<ge> a"
+    thus "norm (pbernpoly n x *\<^sub>R f y x) \<le> C * g x"
+      using C unfolding norm_scaleR by (intro mult_mono bound) auto
+  qed
+qed
+
+lemma uniform_limit_EM_remainder:
+  fixes f :: "'a \<Rightarrow> real \<Rightarrow> 'b :: {banach}"
+  assumes deriv: "\<And>y. a \<le> y \<Longrightarrow> (G has_real_derivative g y) (at y within {a..})"
+  assumes integrable: "\<And>a' b y. y \<in> A \<Longrightarrow>  a \<le> a' \<Longrightarrow> a' \<le> b \<Longrightarrow> 
+                         (\<lambda>t. pbernpoly n t *\<^sub>R f y t) integrable_on {a'..b}"
+  assumes conv: "convergent (\<lambda>y. G (real y))"
+  assumes bound: "\<And>x y. y \<in> A \<Longrightarrow> x \<ge> a \<Longrightarrow> norm (f y x) \<le> g x"
+  shows   "uniform_limit A (\<lambda>b s. EM_remainder' n (f s) a b) 
+             (\<lambda>s. EM_remainder n (f s) a) sequentially"
+proof -
+  have *: "uniformly_convergent_on A (\<lambda>b s. EM_remainder' n (f s) a b)"
+    by (rule uniformly_convergent_EM_remainder'[OF assms])
+  also have "?this \<longleftrightarrow> ?thesis"
+    unfolding uniformly_convergent_uniform_limit_iff
+  proof (intro uniform_limit_cong refl always_eventually allI ballI)
+    fix s assume "s \<in> A"
+    with * have **: "convergent (\<lambda>b. EM_remainder' n (f s) a b)"
+      by (rule uniformly_convergent_imp_convergent)
+    show "lim (\<lambda>b. EM_remainder' n (f s) a b) = EM_remainder n (f s) a"
+    proof (rule sym, rule EM_remainder_eqI)
+      have "((\<lambda>x. EM_remainder' n (f s) (real_of_int a) (real x)) \<longlongrightarrow>
+               lim (\<lambda>x. EM_remainder' n (f s) (real_of_int a) (real x))) at_top"
+        (is "(_ \<longlongrightarrow> ?L) _") using ** unfolding convergent_LIMSEQ_iff by blast
+      hence "((\<lambda>x. EM_remainder' n (f s) (real_of_int a) (real (nat x))) \<longlongrightarrow> ?L) at_top"
+        by (rule filterlim_compose) (fact filterlim_nat_sequentially)
+      thus "((\<lambda>x. EM_remainder' n (f s) (real_of_int a) (real_of_int x)) \<longlongrightarrow> ?L) at_top"
+        by (rule Lim_transform_eventually [rotated])
+           (auto intro: eventually_mono[OF eventually_ge_at_top[of 0]])
+    qed
+  qed
+  finally show \<dots> .
+qed
+
+lemma EM_remainder_0 [simp]: "EM_remainder n (\<lambda>x. 0) a = 0"
+  by (rule EM_remainder_eqI) (simp add: EM_remainder'_def)
+
+lemma holomorphic_EM_remainder':
+  assumes deriv: 
+    "\<And>z t. z \<in> U \<Longrightarrow> t \<in> {a..x} \<Longrightarrow> 
+       ((\<lambda>z. f z t) has_field_derivative f' z t) (at z within U)"
+  assumes int: "\<And>z. z \<in> U \<Longrightarrow> (\<lambda>t. pbernpoly n t *\<^sub>R f z t) integrable_on {a..x}"
+  assumes cont: "continuous_on (U \<times> {a..x}) (\<lambda>(z, t). f' z t)"
+  assumes "convex U" "n \<noteq> 1"
+  shows "(\<lambda>s. EM_remainder' n (f s) a x) holomorphic_on U"
+  unfolding EM_remainder'_def scaleR_conv_of_real
+proof (intro holomorphic_intros)
+  have "(\<lambda>z. integral (cbox a x) (\<lambda>t. of_real (pbernpoly n t) * f z t)) holomorphic_on U"
+  proof (rule leibniz_rule_holomorphic)
+    fix z t assume "z \<in> U" "t \<in> cbox a x"
+    thus "((\<lambda>z. complex_of_real (pbernpoly n t) * f z t) has_field_derivative
+             complex_of_real (pbernpoly n t) * f' z t) (at z within U)"
+      by (intro DERIV_cmult deriv) auto
+  next
+    fix z assume "z \<in> U"
+    thus "(\<lambda>t. complex_of_real (pbernpoly n t) * f z t) integrable_on cbox a x"
+      using int by (simp add: scaleR_conv_of_real)
+  next
+    show "continuous_on (U \<times> cbox a x) (\<lambda>(z, t).
+            complex_of_real (pbernpoly n t) * f' z t)"
+      using cont and \<open>n \<noteq> 1\<close> by (auto simp: case_prod_unfold intro!: continuous_intros)
+  qed fact+
+  thus "(\<lambda>z. integral {a..x} (\<lambda>t. of_real (pbernpoly n t) * f z t)) holomorphic_on U"
+    by simp
+qed
+
+lemma
+  assumes deriv: "\<And>y. a \<le> y \<Longrightarrow> (G has_real_derivative g y) (at y within {a..})"
+  assumes deriv': 
+    "\<And>z t x. z \<in> U \<Longrightarrow> x \<ge> a \<Longrightarrow> t \<in> {a..x} \<Longrightarrow> 
+       ((\<lambda>z. f z t) has_field_derivative f' z t) (at z within U)"
+  assumes cont: "continuous_on (U \<times> {of_int a..}) (\<lambda>(z, t). f' z t)"
+  assumes int: "\<And>a' x y. y \<in> U \<Longrightarrow> a \<le> a' \<Longrightarrow> a' \<le> x \<Longrightarrow>
+                  (\<lambda>t. pbernpoly n t *\<^sub>R f y t) integrable_on {a'..x}"
+  assumes conv: "convergent (\<lambda>y. G (real y))"
+  assumes bound: "\<And>x y. y \<in> U \<Longrightarrow> a \<le> x \<Longrightarrow> norm (f y x) \<le> g x"
+  assumes "n \<noteq> 1" "open U" 
+  shows analytic_EM_remainder: "(\<lambda>s::complex. EM_remainder n (f s) a) analytic_on U"
+    and holomorphic_EM_remainder: "(\<lambda>s::complex. EM_remainder n (f s) a) holomorphic_on U"
+proof -
+  show "(\<lambda>s::complex. EM_remainder n (f s) a) analytic_on U"
+  unfolding analytic_on_def
+  proof
+    fix z assume "z \<in> U"
+    from \<open>z \<in> U\<close> and \<open>open U\<close> obtain \<epsilon> where \<epsilon>: "\<epsilon> > 0" "ball z \<epsilon> \<subseteq> U"
+      by (auto simp: open_contains_ball)
+    have "(\<lambda>s. EM_remainder n (f s) a) holomorphic_on ball z \<epsilon>"
+    proof (rule holomorphic_uniform_sequence)
+      fix x :: nat
+      show "(\<lambda>s. EM_remainder' n (f s) a x) holomorphic_on ball z \<epsilon>"
+      proof (rule holomorphic_EM_remainder')
+        fix s t assume "s \<in> ball z \<epsilon>" "t \<in> {real_of_int a..real x}"
+        thus "((\<lambda>z. f z t) has_field_derivative f' s t) (at s within ball z \<epsilon>)"
+          using \<epsilon> by (intro DERIV_subset[OF deriv'[of _ x]]) auto
+      next
+        fix s assume "s \<in> ball z \<epsilon>"
+        with \<epsilon> have "s \<in> U" by blast
+        thus "(\<lambda>t. pbernpoly n t *\<^sub>R f s t) integrable_on {real_of_int a..real x}"
+          by (cases "a \<le> x") (auto intro: int)
+      next
+        from cont show "continuous_on (ball z \<epsilon> \<times> {real_of_int a..real x}) (\<lambda>(z, t). f' z t)"
+          by (rule continuous_on_subset) (insert \<epsilon>, auto)
+      qed (insert \<open>n \<noteq> 1\<close>, auto)
+    next
+      fix s assume s: "s \<in> ball z \<epsilon>"
+      have "open (ball z \<epsilon>)" by simp
+      with s obtain \<delta> where \<delta>: "\<delta> > 0" "cball s \<delta> \<subseteq> ball z \<epsilon>" 
+        unfolding open_contains_cball by blast
+      moreover have "uniform_limit (cball s \<delta>) (\<lambda>x s. EM_remainder' n (f s) (real_of_int a) (real x))
+                        (\<lambda>s. EM_remainder n (f s) a) sequentially"
+        by (rule uniform_limit_EM_remainder[OF deriv int conv bound]) (insert \<delta> \<epsilon> s, auto)
+      ultimately show "\<exists>\<delta>>0. cball s \<delta> \<subseteq> ball z \<epsilon> \<and> uniform_limit (cball s \<delta>)
+                          (\<lambda>x s. EM_remainder' n (f s) (real_of_int a) (real x))
+                          (\<lambda>s. EM_remainder n (f s) a) sequentially" by blast
+    qed auto
+    with \<epsilon> show "\<exists>\<epsilon>>0. (\<lambda>s. EM_remainder n (f s) a) holomorphic_on ball z \<epsilon>"
+      by blast
+  qed
+  thus "(\<lambda>s::complex. EM_remainder n (f s) a) holomorphic_on U"
+    by (rule analytic_imp_holomorphic)
+qed
+
 
 
 text \<open>
