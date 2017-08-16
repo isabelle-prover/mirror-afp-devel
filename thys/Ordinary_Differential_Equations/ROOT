@@ -2,6 +2,8 @@ chapter AFP
 
 session "Ordinary_Differential_Equations" (AFP) = "HOL-Analysis" +
   options [timeout = 600]
+  sessions
+    "HOL-Decision_Procs"
   theories [document = false]
     "~~/src/HOL/Decision_Procs/Approximation"
     "~~/src/HOL/Library/Diagonal_Subsequence"

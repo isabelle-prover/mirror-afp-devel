@@ -2,7 +2,10 @@ chapter AFP
 
 session Applicative_Lifting (AFP) = "HOL-Probability" +
   options [timeout = 600]
-  theories [document=false]
+  sessions
+    "HOL-Nonstandard_Analysis"
+    "HOL-Proofs-Lambda"
+  theories [document = false]
     "~~/src/HOL/Library/Function_Division"
     "~~/src/HOL/Proofs/Lambda/Eta"
     "~~/src/HOL/Nonstandard_Analysis/StarDef"
@@ -11,7 +14,7 @@ session Applicative_Lifting (AFP) = "HOL-Probability" +
     Applicative_Functor
     Applicative_Examples
     Idiomatic_Terms
-  theories [document=false]
+  theories [document = false]
     Applicative_Test
   document_files
     "root.tex"

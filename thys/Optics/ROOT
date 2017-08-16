@@ -1,16 +1,9 @@
-(******************************************************************************)
-(* Project: The Optics Library                                                *)
-(* File: ROOT                                                                 *)
-(* Authors: Simon Foster (University of York, UK)                             *)
-(* Emails: simon.foster@york.ac.uk                                            *)
-(******************************************************************************)
-
-(* Optics Library *)
-
 chapter AFP
 
 session "Optics" (AFP) = "HOL-Eisbach" +
   options [timeout = 600]
+  sessions
+    "HOL-Library"
   theories
     Interp
     Two
@@ -20,7 +13,7 @@ session "Optics" (AFP) = "HOL-Eisbach" +
     Lens_Instances
     Lenses
     Prisms
-  theories [document=false]
+  theories [document = false]
     Lens_Record_Example
     "~~/src/HOL/Library/State_Monad"
   theories

@@ -1,7 +1,9 @@
 chapter AFP
 
 session Stewart_Apollonius (AFP) = "HOL-Analysis" +
-  options [timeout=100, document = pdf]
+  options [timeout = 600]
+  sessions
+    Triangle
   theories [document = false]
     "../Triangle/Triangle"
   theories
