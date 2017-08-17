@@ -15,7 +15,7 @@ session "Probabilistic_System_Zoo" (AFP) = "HOL-Probability" +
     "root.tex"
 
 session "Probabilistic_System_Zoo-BNFs" (AFP) = "HOL-Analysis" +
-  options [timeout = 600]
+  options [timeout = 600, theory_qualifier = Probabilistic_System_Zoo]
   sessions
     "HOL-Cardinals"
     "HOL-Probability"
@@ -33,7 +33,7 @@ session "Probabilistic_System_Zoo-BNFs" (AFP) = "HOL-Analysis" +
     "root.tex"
 
 session "Probabilistic_System_Zoo-Non_BNFs" (AFP) = "HOL-Probability" +
-  options [timeout = 600]
+  options [timeout = 600, theory_qualifier = Probabilistic_System_Zoo]
   sessions
     "HOL-Eisbach"
     "HOL-Cardinals"
