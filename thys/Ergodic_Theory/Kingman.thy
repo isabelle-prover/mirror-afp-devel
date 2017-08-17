@@ -918,9 +918,9 @@ proof -
     qed
     ultimately have *: "(\<lambda>n. (\<integral>x. norm(real_cond_exp M Invariants (I n K e) x) \<partial>M)) \<longlonglongrightarrow> 0" by simp
 
-    have "\<exists>r. Topological_Spaces.subseq r \<and> (AE x in M. (\<lambda>n. real_cond_exp M Invariants (I (r n) K e) x) \<longlonglongrightarrow> 0)"
+    have "\<exists>r. strict_mono r \<and> (AE x in M. (\<lambda>n. real_cond_exp M Invariants (I (r n) K e) x) \<longlonglongrightarrow> 0)"
       apply (rule tendsto_L1_AE_subseq) using * real_cond_exp_int[OF I_int] by auto
-    then obtain r where "Topological_Spaces.subseq r" "AE x in M. (\<lambda>n. real_cond_exp M Invariants (I (r n) K e) x) \<longlonglongrightarrow> 0"
+    then obtain r where "strict_mono r" "AE x in M. (\<lambda>n. real_cond_exp M Invariants (I (r n) K e) x) \<longlonglongrightarrow> 0"
       by auto
     moreover have "AE x in M. \<forall>N \<in> {1<..}. limsup (\<lambda>n. u n x / n) \<le> F K e x + abs(F K e x) * ereal(real_cond_exp M Invariants (I N K e) x)"
       apply (rule AE_ball_countable') using main[OF _ \<open>K>0\<close> \<open>e>0\<close>] by auto
@@ -929,7 +929,8 @@ proof -
       fix x assume H: "(\<lambda>n. real_cond_exp M Invariants (I (r n) K e) x) \<longlonglongrightarrow> 0"
                       "\<And>N. N > 1 \<Longrightarrow> limsup (\<lambda>n. u n x / n) \<le> F K e x + abs(F K e x) * ereal(real_cond_exp M Invariants (I N K e) x)"
       have 1: "eventually (\<lambda>N. limsup (\<lambda>n. u n x / n) \<le> F K e x + abs(F K e x) * ereal(real_cond_exp M Invariants (I (r N) K e) x)) sequentially"
-        apply (rule eventually_mono[OF eventually_gt_at_top[of 1] H(2)]) using \<open>Topological_Spaces.subseq r\<close> less_le_trans seq_suble by blast
+        apply (rule eventually_mono[OF eventually_gt_at_top[of 1] H(2)]) 
+        using \<open>strict_mono r\<close> less_le_trans seq_suble by blast
       have 2: "(\<lambda>N. F K e x + (abs(F K e x) * ereal(real_cond_exp M Invariants (I (r N) K e) x))) \<longlonglongrightarrow> ereal(F K e x) + (abs(F K e x) * ereal 0)"
         by (intro tendsto_intros) (auto simp add: H(1))
       have "limsup (\<lambda>n. u n x / n) \<le> F K e x"

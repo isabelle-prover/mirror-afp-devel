@@ -72,7 +72,7 @@ proof-
   from this obtain x where x_def: "(ALL n. x n : X) & x \<longlonglongrightarrow> x0"
      using islimpt_sequential[of x0 X] by auto
   hence not: "~(f o x) \<longlonglongrightarrow> (f x0)" unfolding tendsto_explicit using X_def S_def by auto
-  from compact_complete_linorder[of "f o x"] obtain l r where r_def: "subseq r & ((f o x) o r) \<longlonglongrightarrow> l" by auto
+  from compact_complete_linorder[of "f o x"] obtain l r where r_def: "strict_mono r & ((f o x) o r) \<longlonglongrightarrow> l" by auto
   { assume "l : S" hence "EX N. ALL n>=N. f(x(r n)) : S"
        using r_def tendsto_explicit[of "f o x o r" l] S_def by auto
     hence False using x_def X_def by auto

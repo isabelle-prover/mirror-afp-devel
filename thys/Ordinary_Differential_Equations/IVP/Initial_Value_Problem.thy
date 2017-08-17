@@ -463,13 +463,13 @@ proof -
       and t: "\<And>n. t n \<in> T"
       and d: "\<And>n. dist (f (t n) (y n)) (f (t n) (x n)) > n * dist (y n) (x n)"
       by metis
-    from xy assms obtain lx rx where lx': "lx \<in> X" "subseq rx" "(x o rx) \<longlonglongrightarrow> lx"
+    from xy assms obtain lx rx where lx': "lx \<in> X" "strict_mono (rx :: nat \<Rightarrow> nat)" "(x o rx) \<longlonglongrightarrow> lx"
       by (metis compact_def)
     with xy have "\<And>n. (y o rx) n \<in> X" by auto
-    with assms obtain ly ry where ly': "ly \<in> X" "subseq ry" "((y o rx) o ry) \<longlonglongrightarrow> ly"
+    with assms obtain ly ry where ly': "ly \<in> X" "strict_mono (ry :: nat \<Rightarrow> nat)" "((y o rx) o ry) \<longlonglongrightarrow> ly"
       by (metis compact_def)
     with t have "\<And>n. ((t o rx) o ry) n \<in> T" by simp
-    with assms obtain lt rt where lt': "lt \<in> T" "subseq rt" "(((t o rx) o ry) o rt) \<longlonglongrightarrow> lt"
+    with assms obtain lt rt where lt': "lt \<in> T" "strict_mono (rt :: nat \<Rightarrow> nat)" "(((t o rx) o ry) o rt) \<longlonglongrightarrow> lt"
       by (metis compact_def)
     from lx' ly'
     have lx: "(x o (rx o ry o rt)) \<longlonglongrightarrow> lx" (is "?x \<longlonglongrightarrow> _")
@@ -498,9 +498,9 @@ proof -
       from this elim d[of "rx (ry (rt n))"]
       have "\<dots> < dist (f (?t n) (?y n)) (f (?t n) (?x n)) / rx (ry (rt (n)))"
         using lx'(2) ly'(2) lt'(2) \<open>0 < rx _\<close>
-        by (auto simp add: divide_simps algebra_simps subseq_def)
+        by (auto simp add: divide_simps algebra_simps strict_mono_def)
       also have "\<dots> \<le> diameter ?S / n"
-        by (force intro!: \<open>0 < n\<close> subseq_def xy diameter_bounded_bound frac_le
+        by (force intro!: \<open>0 < n\<close> strict_mono_def xy diameter_bounded_bound frac_le
           compact_imp_bounded compact t
           intro: le_trans[OF seq_suble[OF lt'(2)]]
             le_trans[OF seq_suble[OF ly'(2)]]

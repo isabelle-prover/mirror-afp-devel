@@ -1177,7 +1177,7 @@ qed
 lemma cauchy_tendsto_in_subseq:
   assumes "\<And>n. u n \<in> space\<^sub>N N"
           "cauchy_in\<^sub>N N u"
-          "Topological_Spaces.subseq r"
+          "strict_mono r"
           "tendsto_in\<^sub>N N (u o r) x"
   shows "tendsto_in\<^sub>N N u x"
 proof -
@@ -1197,7 +1197,7 @@ proof -
         apply (rule Norm_triangular_ineq) using `\<And>n. u n \<in> space\<^sub>N N` by simp
       also have "... < defect N * f + defect N * f"
         apply (auto intro!: add_strict_mono mult_mono simp only:)
-        using defect_ge_1[of N] `n \<ge> M` seq_suble[OF `Topological_Spaces.subseq r`, of M] M1 M2 o_def unfolding M_def by auto
+        using defect_ge_1[of N] `n \<ge> M` seq_suble[OF `strict_mono r`, of M] M1 M2 o_def unfolding M_def by auto
       finally show ?thesis
         unfolding f_def using `e > 0` defect_ge_1[of N] by (auto simp add: divide_simps)
     qed
@@ -1222,13 +1222,13 @@ proof (rule complete\<^sub>N_I)
   qed
   have "\<exists>r. \<forall>n. (\<forall>m\<ge>r n. \<forall>p\<ge>r n. Norm N (v m - v p) < c n) \<and> r n < r (Suc n)"
     apply (intro dependent_nat_choice) using `cauchy_in\<^sub>N N v` `\<And>n. c n > 0` * unfolding cauchy_in\<^sub>N_def by auto
-  then obtain r where r: "Topological_Spaces.subseq r" "\<And>n. \<forall>m\<ge>r n. \<forall>p\<ge>r n. Norm N (v m - v p) < c n"
-    by (auto simp: subseq_Suc_iff)
+  then obtain r where r: "strict_mono r" "\<And>n. \<forall>m\<ge>r n. \<forall>p\<ge>r n. Norm N (v m - v p) < c n"
+    by (auto simp: strict_mono_Suc_iff)
   define u where "u = (\<lambda>n. v (r (Suc n)) - v (r n))"
   have "u n \<in> space\<^sub>N N" for n
     unfolding u_def using `\<forall>n. v n \<in> space\<^sub>N N` by simp
   moreover have "Norm N (u n) \<le> c n" for n
-    unfolding u_def using r by (simp add: less_imp_le subseq_def)
+    unfolding u_def using r by (simp add: less_imp_le strict_mono_def)
   ultimately obtain y where y: "y \<in> space\<^sub>N N" "tendsto_in\<^sub>N N (\<lambda>n. (\<Sum>i\<in>{0..<n}. u i)) y"
     using assms(2) by blast
   define x where "x = y + v (r 0)"
@@ -1245,7 +1245,8 @@ proof (rule complete\<^sub>N_I)
   then have "tendsto_in\<^sub>N N (v o r) x"
     unfolding tendsto_in\<^sub>N_def comp_def by force
   then have "tendsto_in\<^sub>N N v x"
-    using `\<forall>n. v n \<in> space\<^sub>N N` by (intro cauchy_tendsto_in_subseq[OF _ `cauchy_in\<^sub>N N v` `Topological_Spaces.subseq r`], auto)
+    using `\<forall>n. v n \<in> space\<^sub>N N` 
+    by (intro cauchy_tendsto_in_subseq[OF _ `cauchy_in\<^sub>N N v` `strict_mono r`], auto)
   then show "\<exists>x\<in>space\<^sub>N N. tendsto_in\<^sub>N N v x"
     using `x \<in> space\<^sub>N N` by blast
 qed

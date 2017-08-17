@@ -36,7 +36,7 @@ proof -
   from assms have [simp]: "Gamma (-z) \<noteq> 0"
     by (simp_all add: Gamma_eq_zero_iff uminus_in_nonpos_Ints_iff)
   have "filterlim (\<lambda>n. n + k) at_top at_top"
-    by (intro filterlim_subseq subseq_add)
+    by (intro filterlim_subseq strict_mono_add)
   from asymp_equivI'_const[OF gbinomial_asymptotic[of z]] assms
     have "(\<lambda>n. z gchoose n) \<sim> (\<lambda>n. (-1)^n / (Gamma (-z) * exp ((z+1) * ln (real n))))"
     by (simp add: Gamma_eq_zero_iff uminus_in_nonpos_Ints_iff field_simps)
@@ -44,7 +44,7 @@ proof -
     using eventually_gt_at_top[of 0] by eventually_elim (simp add: powr_def)
   finally have "(\<lambda>x. z gchoose (x + k)) \<sim>
                   (\<lambda>x. (- 1) ^ (x + k) / (Gamma (- z) * real (x + k) powr (z + 1)))"
-    by (rule asymp_equiv_compose') (simp add: filterlim_subseq subseq_add)
+    by (rule asymp_equiv_compose') (simp add: filterlim_subseq strict_mono_add)
   also have "(\<lambda>x. real (x + k) powr (z + 1)) \<sim> (\<lambda>x. real x powr (z + 1))"
     by (rule asymp_equiv_powr_real) (simp_all add: asymp_equiv_plus_const_right)
   finally show ?thesis by - (simp_all add: asymp_equiv_intros)

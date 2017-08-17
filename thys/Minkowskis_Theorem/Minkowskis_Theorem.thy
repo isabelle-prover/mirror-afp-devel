@@ -43,7 +43,7 @@ qed
 
 lemma compactD:
   assumes "compact (A :: 'a :: metric_space set)" "range f \<subseteq> A"
-  shows   "\<exists>h l. subseq h \<and> (f \<circ> h) \<longlonglongrightarrow> l"
+  shows   "\<exists>h l. strict_mono (h::nat\<Rightarrow>nat) \<and> (f \<circ> h) \<longlonglongrightarrow> l"
   using assms unfolding compact_def by blast
 
 lemma closed_lattice:
@@ -486,13 +486,13 @@ next
     by blast
 
   -- \<open>By the Bolzano--Weierstraß theorem, there exists a convergent subsequence of @{term v}.\<close>
-  have "\<exists>h l. subseq h \<and> (v \<circ> h) \<longlonglongrightarrow> l"
+  have "\<exists>h l. strict_mono (h::nat\<Rightarrow>nat) \<and> (v \<circ> h) \<longlonglongrightarrow> l"
   proof (rule compactD)
     show "compact (B' 1)" by (rule compact')
     show "range v \<subseteq> B' 1"
       using B'_subset[of "1/Suc n" 1 for n] and v by auto
   qed
-  then obtain h l where h: "subseq h" and l: "(v \<circ> h) \<longlonglongrightarrow> l"
+  then obtain h l where h: "strict_mono h" and l: "(v \<circ> h) \<longlonglongrightarrow> l"
     by blast
 
   -- \<open>Since the convergent subsequence tends to @{term l}, the distance of the
