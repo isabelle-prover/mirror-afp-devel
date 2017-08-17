@@ -1,3 +1,12 @@
+(******************************************************************************)
+(* Project: The Optics Library                                                *)
+(* File: ROOT                                                                 *)
+(* Authors: Simon Foster (University of York, UK)                             *)
+(* Emails: simon.foster@york.ac.uk                                            *)
+(******************************************************************************)
+
+(* Optics Library *)
+
 chapter AFP
 
 session "Optics" (AFP) = "HOL-Eisbach" +
