@@ -2,7 +2,7 @@ section \<open>Examples for WS1S (Singleton Semantics)\<close>
 
 (*<*)
 theory WS1S_Alt_Examples
-imports WS1S_Alt_Formula
+imports Formula_Derivatives.WS1S_Alt_Formula
 begin
 (*>*)
 

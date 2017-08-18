@@ -3,8 +3,8 @@ section \<open>Miscellaneous Tests\<close>
 theory Sepref_Minitests
 imports 
   "../IICF/IICF"
-  "Sepref_Graph"
-  "~~/src/HOL/Library/Code_Target_Numeral"
+  Sepref_Graph
+  "HOL-Library.Code_Target_Numeral"
 begin
 
 

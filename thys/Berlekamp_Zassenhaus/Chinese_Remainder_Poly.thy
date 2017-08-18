@@ -10,9 +10,9 @@ text \<open>We prove the Chinese Remainder Theorem, and strengthen it by showing
 
 theory Chinese_Remainder_Poly
 imports
-  "~~/src/HOL/Number_Theory/Residues"  
-  "../Polynomial_Factorization/Polynomial_Divisibility"
-  "../Polynomial_Interpolation/Missing_Polynomial"
+  "HOL-Number_Theory.Residues"  
+  Polynomial_Factorization.Polynomial_Divisibility
+  Polynomial_Interpolation.Missing_Polynomial
 begin
 
 instantiation poly :: (field) cong

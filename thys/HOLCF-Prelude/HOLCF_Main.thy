@@ -3,7 +3,7 @@ section \<open>Initial Setup for HOLCF-Prelude\<close>
 theory HOLCF_Main
   imports
     HOLCF
-    "~~/src/HOL/HOLCF/Library/Int_Discrete"
+    "HOLCF-Library.Int_Discrete"
 begin
 
 text \<open>

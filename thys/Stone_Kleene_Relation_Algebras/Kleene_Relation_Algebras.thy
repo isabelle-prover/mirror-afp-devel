@@ -16,7 +16,7 @@ In particular, they are concerned with the exchange property, preservation of pa
 
 theory Kleene_Relation_Algebras
 
-imports "../Stone_Relation_Algebras/Relation_Algebras" Kleene_Algebras
+imports Stone_Relation_Algebras.Relation_Algebras Kleene_Algebras
 
 begin
 

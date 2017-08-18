@@ -1,7 +1,7 @@
 section {* Deterministic Monad *}
 theory Refine_Det
 imports 
-  "~~/src/HOL/Library/Monad_Syntax"
+  "HOL-Library.Monad_Syntax"
   "Generic/RefineG_Assert"
   "Generic/RefineG_While"
 begin

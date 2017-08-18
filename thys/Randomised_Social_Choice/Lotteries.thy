@@ -8,7 +8,7 @@
 section \<open>Auxiliary facts about PMFs\<close>
 
 theory Lotteries
-  imports Complex_Main "~~/src/HOL/Probability/Probability"
+  imports Complex_Main Probability
 begin
 
 text \<open>The type of lotteries (a probability mass function)\<close>

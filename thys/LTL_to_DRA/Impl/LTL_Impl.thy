@@ -8,8 +8,8 @@ section \<open>LTL Code Equations\<close>
 theory LTL_Impl
   imports Main 
     "../LTL_FGXU" 
-    "../../Boolean_Expression_Checkers/Boolean_Expression_Checkers" 
-    "../../Boolean_Expression_Checkers/Boolean_Expression_Checkers_AList_Mapping"
+    Boolean_Expression_Checkers.Boolean_Expression_Checkers 
+    Boolean_Expression_Checkers.Boolean_Expression_Checkers_AList_Mapping
 begin
 
 subsection \<open>Subformulae\<close>

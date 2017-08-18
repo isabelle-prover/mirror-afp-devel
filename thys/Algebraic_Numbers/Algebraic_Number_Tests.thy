@@ -10,13 +10,13 @@ text \<open>We provide a sequence of examples which demonstrate what can be done
 
 theory Algebraic_Number_Tests
 imports
-  "../Jordan_Normal_Form/Char_Poly"
-  "../Jordan_Normal_Form/Determinant_Impl"
-  "../Show/Show_Complex"
-  "~~/src/HOL/Library/Code_Char"
-  "~~/src/HOL/Library/Code_Target_Nat"
-  "~~/src/HOL/Library/Code_Target_Int"
-  "../Berlekamp_Zassenhaus/Factorize_Rat_Poly" 
+  Jordan_Normal_Form.Char_Poly
+  Jordan_Normal_Form.Determinant_Impl
+  Show.Show_Complex
+  "HOL-Library.Code_Char"
+  "HOL-Library.Code_Target_Nat"
+  "HOL-Library.Code_Target_Int"
+  Berlekamp_Zassenhaus.Factorize_Rat_Poly 
   Real_Factorization
   Show_Real_Precise  
 begin

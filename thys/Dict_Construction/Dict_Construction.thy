@@ -1,7 +1,7 @@
 section \<open>Setup\<close>
 
 theory Dict_Construction
-imports "../Automatic_Refinement/Lib/Refine_Util"
+imports Automatic_Refinement.Refine_Util
 keywords "declassify" :: thy_decl
 begin
 

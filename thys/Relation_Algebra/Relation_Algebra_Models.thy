@@ -7,7 +7,7 @@
 section {* Models of Relation Algebra *}
 
 theory Relation_Algebra_Models
-  imports Relation_Algebra "../Kleene_Algebra/Inf_Matrix"
+  imports Relation_Algebra Kleene_Algebra.Inf_Matrix
 begin
 
 text {* We formalise two models. First we show the obvious: binary relations

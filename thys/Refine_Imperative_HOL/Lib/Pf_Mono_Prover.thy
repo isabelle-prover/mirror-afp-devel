@@ -1,6 +1,6 @@
 section {* Interfacing Partial-Function's Monotonicity Prover *}
 theory Pf_Mono_Prover
-imports "../../Separation_Logic_Imperative_HOL/Sep_Main"
+imports Sepref_Prereq.Sep_Main
 begin
   (* TODO: Adjust mono-prover accordingly  *)
   (* Wraps mono-prover of partial-function to erase premises. 

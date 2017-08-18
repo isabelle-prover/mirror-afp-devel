@@ -1,8 +1,8 @@
 section \<open>General DFS with Hooks\<close>
 theory Param_DFS
 imports 
-  "../CAVA_Automata/CAVA_Base/CAVA_Base"
-  "../CAVA_Automata/Digraph"
+  CAVA_Base.CAVA_Base
+  CAVA_Automata.Digraph
   "Misc/DFS_Framework_Refine_Aux"
 begin
 

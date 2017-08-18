@@ -4,7 +4,7 @@
 theory WordInterval
 imports Main
   Word_Next
-  "~~/src/HOL/Word/Word"
+  "HOL-Word.Word"
 begin
 
 section\<open>WordInterval: Executable datatype for Machine Word Sets\<close>

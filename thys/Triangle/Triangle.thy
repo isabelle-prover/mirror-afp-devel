@@ -10,7 +10,7 @@ section \<open>Basic Properties of Triangles\<close>
 theory Triangle
 imports
   Complex_Main
-  "~~/src/HOL/Analysis/Topology_Euclidean_Space"
+  "HOL-Analysis.Topology_Euclidean_Space"
   Angles
 begin
 

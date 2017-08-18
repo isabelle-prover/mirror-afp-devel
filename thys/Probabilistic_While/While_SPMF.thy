@@ -2,9 +2,9 @@
    Author: Andreas Lochbihler, ETH Zurich *)
 
 theory While_SPMF imports
-  "../MFMC_Countable/Rel_PMF_Characterisation"
-  "~~/src/HOL/Types_To_Sets/Types_To_Sets"
-  "~~/src/HOL/Library/Complete_Partial_Order2"
+  MFMC_Countable.Rel_PMF_Characterisation
+  "HOL-Types_To_Sets.Types_To_Sets"
+  "HOL-Library.Complete_Partial_Order2"
 begin
 
 text \<open>

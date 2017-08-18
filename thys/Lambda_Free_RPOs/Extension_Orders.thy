@@ -8,7 +8,7 @@
 section \<open>Extension Orders\<close>
 
 theory Extension_Orders
-imports Lambda_Free_Util Infinite_Chain "~~/src/HOL/Cardinals/Wellorder_Extension"
+imports Lambda_Free_Util Infinite_Chain "HOL-Cardinals.Wellorder_Extension"
 begin
 
 text \<open>

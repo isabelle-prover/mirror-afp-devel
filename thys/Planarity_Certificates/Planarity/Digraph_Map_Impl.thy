@@ -2,7 +2,7 @@ theory Digraph_Map_Impl
 imports
   Graph_Genus
   Executable_Permutations
-  "../../Transitive-Closure/Transitive_Closure_Impl"
+  "Transitive-Closure.Transitive_Closure_Impl"
 begin
 
 section \<open>Enumerating Maps\<close>

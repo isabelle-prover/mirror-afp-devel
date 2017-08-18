@@ -6,8 +6,8 @@ text \<open>This theory contains precomputation functions, which take another fu
 
 theory Precomputation
 imports 
-  "../Containers/RBT_Set2"
-  "~~/src/HOL/Library/RBT_Mapping"
+  Containers.RBT_Set2
+  "HOL-Library.RBT_Mapping"
 begin
   
 lemma lookup_tabulate: "x \<in> set xs \<Longrightarrow> Mapping.lookup (Mapping.tabulate xs f) x = Some (f x)"

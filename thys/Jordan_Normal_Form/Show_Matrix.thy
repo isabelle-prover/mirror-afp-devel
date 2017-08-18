@@ -9,7 +9,7 @@ text \<open>We just instantiate matrices in the show-class by printing them as l
 
 theory Show_Matrix
 imports
-  "../Show/Show"
+  Show.Show
   Matrix
 begin
 

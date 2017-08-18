@@ -5,7 +5,7 @@ session Featherweight_OCL (AFP) = HOL +
   options [document_variants = "annex-a=annexa,-theory,-afp,-proof,-ML:document=afp,-annexa:outline=-annexa,afp,/proof,/ML",
            show_question_marks = false, timeout = 600]
   theories
-    "UML_Main"
+    UML_Main
     "examples/Employee_Model/Analysis/Analysis_OCL"
     "examples/Employee_Model/Design/Design_OCL"
   document_files

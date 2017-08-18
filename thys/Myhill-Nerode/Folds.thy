@@ -1,6 +1,6 @@
 (* Author: Xingyuan Zhang, Chunhan Wu, Christian Urban *)
 theory Folds
-imports "../Regular-Sets/Regular_Exp"
+imports "Regular-Sets.Regular_Exp"
 begin
 
 section {* ``Summation'' for regular expressions *}

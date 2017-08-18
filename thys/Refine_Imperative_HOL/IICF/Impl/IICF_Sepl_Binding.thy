@@ -1,25 +1,25 @@
 section \<open>Sepref Bindings for Imp/HOL Collections\<close>
 theory IICF_Sepl_Binding
 imports 
-  "../../../Separation_Logic_Imperative_HOL/Examples/Imp_Map_Spec"
-  "../../../Separation_Logic_Imperative_HOL/Examples/Imp_Set_Spec"
-  "../../../Separation_Logic_Imperative_HOL/Examples/Imp_List_Spec"
+  Sepref_Prereq.Imp_Map_Spec
+  Sepref_Prereq.Imp_Set_Spec
+  Sepref_Prereq.Imp_List_Spec
 
-  "../../../Separation_Logic_Imperative_HOL/Examples/Hash_Map_Impl"
-  "../../../Separation_Logic_Imperative_HOL/Examples/Array_Map_Impl"
+  Sepref_Prereq.Hash_Map_Impl
+  Sepref_Prereq.Array_Map_Impl
 
-  "../../../Separation_Logic_Imperative_HOL/Examples/To_List_GA"
-  "../../../Separation_Logic_Imperative_HOL/Examples/Hash_Set_Impl"
-  "../../../Separation_Logic_Imperative_HOL/Examples/Array_Set_Impl"
+  Sepref_Prereq.To_List_GA
+  Sepref_Prereq.Hash_Set_Impl
+  Sepref_Prereq.Array_Set_Impl
 
-  "../../../Separation_Logic_Imperative_HOL/Examples/Open_List"
-  "../../../Separation_Logic_Imperative_HOL/Examples/Circ_List"
+  Sepref_Prereq.Open_List
+  Sepref_Prereq.Circ_List
 
   "../Intf/IICF_Map"
   "../Intf/IICF_Set"
   "../Intf/IICF_List"
 
-  "../../../Collections/ICF/tools/Locale_Code"
+  Collections.Locale_Code
 begin
   text \<open>This theory binds collection data structures from the 
     basic collection framework established in 

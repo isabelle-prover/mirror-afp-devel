@@ -2,8 +2,8 @@
     Author:     Andreas Lochbihler, ETH Zurich *)
 
 theory Monomorphic_Monad imports
-  "~~/src/HOL/Probability/Probability"
-  "~~/src/HOL/Library/Multiset"
+  Probability
+  "HOL-Library.Multiset"
 begin
 
 lemma (in comp_fun_idem) fold_set_union:

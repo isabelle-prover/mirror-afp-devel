@@ -9,10 +9,10 @@ section \<open>Reconstructing Factors of Integer Polynomials\<close>
 subsection \<open>Square-Free Polynomials over Finite Fields and Integers\<close>
 theory Square_Free_Int_To_Square_Free_GFp
 imports   
-  "../Subresultants/Subresultant_Gcd" 
-  "../Polynomial_Factorization/Rational_Factorization"
+  Subresultants.Subresultant_Gcd 
+  Polynomial_Factorization.Rational_Factorization
   Finite_Field
-  "../Polynomial_Factorization/Square_Free_Factorization"
+  Polynomial_Factorization.Square_Free_Factorization
 begin
 
 lemma square_free_int_rat: assumes sf: "square_free f"

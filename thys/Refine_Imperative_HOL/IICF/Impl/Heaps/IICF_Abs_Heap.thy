@@ -1,9 +1,9 @@
 section \<open>Heap Implementation On Lists\<close>
 theory IICF_Abs_Heap
 imports 
-  "~~/src/HOL/Library/Multiset"
+  "HOL-Library.Multiset"
   "../../../Sepref" 
-  "../../../../List-Index/List_Index"
+  "List-Index.List_Index"
   "../../Intf/IICF_List"
   "../../Intf/IICF_Prio_Bag"
 begin

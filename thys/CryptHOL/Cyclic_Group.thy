@@ -4,7 +4,7 @@
 section {* Cyclic groups *}
 
 theory Cyclic_Group imports
-  "~~/src/HOL/Algebra/Coset"
+  "HOL-Algebra.Coset"
 begin
 
 record 'a cyclic_group = "'a monoid" + 

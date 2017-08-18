@@ -6,7 +6,7 @@
 
 section {* Syntax of Hierarchical Automata *}
 theory HA
-imports "SA"
+imports SA
 begin
 
 subsection {* Definitions *}

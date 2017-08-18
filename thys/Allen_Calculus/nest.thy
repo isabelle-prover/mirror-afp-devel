@@ -9,7 +9,7 @@ theory nest
 
 imports 
     Main  jointly_exhaustive examples
-    "$ISABELLE_HOME/src/HOL/Eisbach/Eisbach_Tools"
+    "HOL-Eisbach.Eisbach_Tools"
 
 begin
 

@@ -482,7 +482,7 @@ subsection {* SDG without summary edges *}
 inductive cdep_edge :: "'node SDG_node \<Rightarrow> 'node SDG_node \<Rightarrow> bool" 
     ("_ \<longrightarrow>\<^bsub>cd\<^esub> _" [51,0] 80)
   and ddep_edge :: "'node SDG_node \<Rightarrow> 'var \<Rightarrow> 'node SDG_node \<Rightarrow> bool"
-    ("_ -_\<rightarrow>\<^bsub>dd\<^esub> _" [51,0,0] 80)
+    ("_ -_\<rightarrow>\<^sub>d\<^sub>d _" [51,0,0] 80)
   and call_edge :: "'node SDG_node \<Rightarrow> 'pname \<Rightarrow> 'node SDG_node \<Rightarrow> bool" 
     ("_ -_\<rightarrow>\<^bsub>call\<^esub> _" [51,0,0] 80)
   and return_edge :: "'node SDG_node \<Rightarrow> 'pname \<Rightarrow> 'node SDG_node \<Rightarrow> bool" 
@@ -497,7 +497,7 @@ inductive cdep_edge :: "'node SDG_node \<Rightarrow> 'node SDG_node \<Rightarrow
 where
     (* Syntax *)
   "n \<longrightarrow>\<^bsub>cd\<^esub> n' == SDG_edge n None None n'"
-  | "n -V\<rightarrow>\<^bsub>dd\<^esub> n' == SDG_edge n (Some V) None n'"
+  | "n -V\<rightarrow>\<^sub>d\<^sub>d n' == SDG_edge n (Some V) None n'"
   | "n -p\<rightarrow>\<^bsub>call\<^esub> n' == SDG_edge n None (Some(p,True)) n'"
   | "n -p\<rightarrow>\<^bsub>ret\<^esub> n' == SDG_edge n None (Some(p,False)) n'"
   | "n -p:V\<rightarrow>\<^bsub>in\<^esub> n' == SDG_edge n (Some V) (Some(p,True)) n'"
@@ -512,7 +512,7 @@ where
   | SDG_parent_cdep_edge:
     "\<lbrakk>valid_SDG_node n'; m = parent_node n'; n = CFG_node m; n \<noteq> n'\<rbrakk> 
       \<Longrightarrow> n \<longrightarrow>\<^bsub>cd\<^esub> n'"
-  | SDG_ddep_edge:"n influences V in n' \<Longrightarrow> n -V\<rightarrow>\<^bsub>dd\<^esub> n'"
+  | SDG_ddep_edge:"n influences V in n' \<Longrightarrow> n -V\<rightarrow>\<^sub>d\<^sub>d n'"
   | SDG_call_edge:
     "\<lbrakk>valid_edge a; kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs; n = CFG_node (sourcenode a); 
       n' = CFG_node (targetnode a)\<rbrakk> \<Longrightarrow> n -p\<rightarrow>\<^bsub>call\<^esub> n'"
@@ -733,7 +733,7 @@ where iSp_Nil:
   "\<lbrakk>n i-ns\<rightarrow>\<^sub>d* n''; n'' \<longrightarrow>\<^bsub>cd\<^esub> n'\<rbrakk> \<Longrightarrow> n i-ns@[n'']\<rightarrow>\<^sub>d* n'"
 
   | iSp_Append_ddep:
-  "\<lbrakk>n i-ns\<rightarrow>\<^sub>d* n''; n'' -V\<rightarrow>\<^bsub>dd\<^esub> n'; n'' \<noteq> n'\<rbrakk> \<Longrightarrow> n i-ns@[n'']\<rightarrow>\<^sub>d* n'"
+  "\<lbrakk>n i-ns\<rightarrow>\<^sub>d* n''; n'' -V\<rightarrow>\<^sub>d\<^sub>d n'; n'' \<noteq> n'\<rbrakk> \<Longrightarrow> n i-ns@[n'']\<rightarrow>\<^sub>d* n'"
 
 
 lemma intra_SDG_path_Append:
@@ -797,7 +797,7 @@ proof(atomize_elim)
     case (iSp_Append_ddep n ns n'' V n')
     from `\<exists>as. parent_node n -as\<rightarrow>\<^sub>\<iota>* parent_node n''`
     obtain as where "parent_node n -as\<rightarrow>\<^sub>\<iota>* parent_node n''" by blast 
-    from `n'' -V\<rightarrow>\<^bsub>dd\<^esub> n'` have "n'' influences V in n'"
+    from `n'' -V\<rightarrow>\<^sub>d\<^sub>d n'` have "n'' influences V in n'"
       by(fastforce elim:SDG_edge.cases)
     then obtain as' where "parent_node n'' -as'\<rightarrow>\<^sub>\<iota>* parent_node n'"
       by(auto simp:data_dependence_def)
@@ -1989,7 +1989,7 @@ subsection {* SDG with summary edges *}
 inductive sum_cdep_edge :: "'node SDG_node \<Rightarrow> 'node SDG_node \<Rightarrow> bool" 
     ("_ s\<longrightarrow>\<^bsub>cd\<^esub> _" [51,0] 80)
   and sum_ddep_edge :: "'node SDG_node \<Rightarrow> 'var \<Rightarrow> 'node SDG_node \<Rightarrow> bool"
-    ("_ s-_\<rightarrow>\<^bsub>dd\<^esub> _" [51,0,0] 80)
+    ("_ s-_\<rightarrow>\<^sub>d\<^sub>d _" [51,0,0] 80)
   and sum_call_edge :: "'node SDG_node \<Rightarrow> 'pname \<Rightarrow> 'node SDG_node \<Rightarrow> bool" 
     ("_ s-_\<rightarrow>\<^bsub>call\<^esub> _" [51,0,0] 80)
   and sum_return_edge :: "'node SDG_node \<Rightarrow> 'pname \<Rightarrow> 'node SDG_node \<Rightarrow> bool" 
@@ -2006,7 +2006,7 @@ inductive sum_cdep_edge :: "'node SDG_node \<Rightarrow> 'node SDG_node \<Righta
 where
     (* Syntax *)
   "n s\<longrightarrow>\<^bsub>cd\<^esub> n' == sum_SDG_edge n None None False n'"
-  | "n s-V\<rightarrow>\<^bsub>dd\<^esub> n' == sum_SDG_edge n (Some V) None False n'"
+  | "n s-V\<rightarrow>\<^sub>d\<^sub>d n' == sum_SDG_edge n (Some V) None False n'"
   | "n s-p\<rightarrow>\<^bsub>call\<^esub> n' == sum_SDG_edge n None (Some(p,True)) False n'"
   | "n s-p\<rightarrow>\<^bsub>ret\<^esub> n' == sum_SDG_edge n None (Some(p,False)) False n'"
   | "n s-p:V\<rightarrow>\<^bsub>in\<^esub> n' == sum_SDG_edge n (Some V) (Some(p,True)) False n'"
@@ -2022,7 +2022,7 @@ where
   | sum_SDG_parent_cdep_edge:
     "\<lbrakk>valid_SDG_node n'; m = parent_node n'; n = CFG_node m; n \<noteq> n'\<rbrakk> 
       \<Longrightarrow> n s\<longrightarrow>\<^bsub>cd\<^esub> n'"
-  | sum_SDG_ddep_edge:"n influences V in n' \<Longrightarrow> n s-V\<rightarrow>\<^bsub>dd\<^esub> n'"
+  | sum_SDG_ddep_edge:"n influences V in n' \<Longrightarrow> n s-V\<rightarrow>\<^sub>d\<^sub>d n'"
   | sum_SDG_call_edge:
     "\<lbrakk>valid_edge a; kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs; n = CFG_node (sourcenode a); 
       n' = CFG_node (targetnode a)\<rbrakk> \<Longrightarrow> n s-p\<rightarrow>\<^bsub>call\<^esub> n'"
@@ -2302,7 +2302,7 @@ where isSp_Nil:
   "\<lbrakk>n is-ns\<rightarrow>\<^sub>d* n''; n'' s\<longrightarrow>\<^bsub>cd\<^esub> n'\<rbrakk> \<Longrightarrow> n is-ns@[n'']\<rightarrow>\<^sub>d* n'"
 
   | isSp_Append_ddep:
-  "\<lbrakk>n is-ns\<rightarrow>\<^sub>d* n''; n'' s-V\<rightarrow>\<^bsub>dd\<^esub> n'; n'' \<noteq> n'\<rbrakk> \<Longrightarrow> n is-ns@[n'']\<rightarrow>\<^sub>d* n'"
+  "\<lbrakk>n is-ns\<rightarrow>\<^sub>d* n''; n'' s-V\<rightarrow>\<^sub>d\<^sub>d n'; n'' \<noteq> n'\<rbrakk> \<Longrightarrow> n is-ns@[n'']\<rightarrow>\<^sub>d* n'"
 
   | isSp_Append_sum:
   "\<lbrakk>n is-ns\<rightarrow>\<^sub>d* n''; n'' s-p\<rightarrow>\<^bsub>sum\<^esub> n'\<rbrakk> \<Longrightarrow> n is-ns@[n'']\<rightarrow>\<^sub>d* n'"
@@ -2339,7 +2339,7 @@ lemma intra_sum_SDG_path_rev_induct [consumes 1, case_names "isSp_Nil"
   and refl:"\<And>n. valid_SDG_node n \<Longrightarrow> P n [] n"
   and step_cdep:"\<And>n ns n' n''. \<lbrakk>n s\<longrightarrow>\<^bsub>cd\<^esub> n''; n'' is-ns\<rightarrow>\<^sub>d* n'; P n'' ns n'\<rbrakk> 
                  \<Longrightarrow> P n (n#ns) n'"
-  and step_ddep:"\<And>n ns n' V n''. \<lbrakk>n s-V\<rightarrow>\<^bsub>dd\<^esub> n''; n \<noteq> n''; n'' is-ns\<rightarrow>\<^sub>d* n'; 
+  and step_ddep:"\<And>n ns n' V n''. \<lbrakk>n s-V\<rightarrow>\<^sub>d\<^sub>d n''; n \<noteq> n''; n'' is-ns\<rightarrow>\<^sub>d* n'; 
                                   P n'' ns n'\<rbrakk> \<Longrightarrow> P n (n#ns) n'"
   and step_sum:"\<And>n ns n' p n''. \<lbrakk>n s-p\<rightarrow>\<^bsub>sum\<^esub> n''; n'' is-ns\<rightarrow>\<^sub>d* n'; P n'' ns n'\<rbrakk> 
                  \<Longrightarrow> P n (n#ns) n'"
@@ -2353,12 +2353,12 @@ next
   from `n is-nx#nsx\<rightarrow>\<^sub>d* n'` have [simp]:"n = nx" 
     by(fastforce dest:is_SDG_path_hd)
   from `n is-nx#nsx\<rightarrow>\<^sub>d* n'`  have "((\<exists>n''. n s\<longrightarrow>\<^bsub>cd\<^esub> n'' \<and> n'' is-nsx\<rightarrow>\<^sub>d* n') \<or>
-    (\<exists>n'' V. n s-V\<rightarrow>\<^bsub>dd\<^esub> n'' \<and> n \<noteq> n'' \<and> n'' is-nsx\<rightarrow>\<^sub>d* n')) \<or>
+    (\<exists>n'' V. n s-V\<rightarrow>\<^sub>d\<^sub>d n'' \<and> n \<noteq> n'' \<and> n'' is-nsx\<rightarrow>\<^sub>d* n')) \<or>
     (\<exists>n'' p. n s-p\<rightarrow>\<^bsub>sum\<^esub> n'' \<and> n'' is-nsx\<rightarrow>\<^sub>d* n')"
   proof(induct nsx arbitrary:n' rule:rev_induct)
     case Nil
     from `n is-[nx]\<rightarrow>\<^sub>d* n'` have "n is-[]\<rightarrow>\<^sub>d* nx" 
-      and disj:"nx s\<longrightarrow>\<^bsub>cd\<^esub> n' \<or> (\<exists>V. nx s-V\<rightarrow>\<^bsub>dd\<^esub> n' \<and> nx \<noteq> n') \<or> (\<exists>p. nx s-p\<rightarrow>\<^bsub>sum\<^esub> n')"
+      and disj:"nx s\<longrightarrow>\<^bsub>cd\<^esub> n' \<or> (\<exists>V. nx s-V\<rightarrow>\<^sub>d\<^sub>d n' \<and> nx \<noteq> n') \<or> (\<exists>p. nx s-p\<rightarrow>\<^bsub>sum\<^esub> n')"
       by(induct n ns\<equiv>"[nx]" n' rule:intra_sum_SDG_path.induct,auto)
     from `n is-[]\<rightarrow>\<^sub>d* nx` have [simp]:"n = nx"
       by(fastforce elim:intra_sum_SDG_path.cases)
@@ -2369,56 +2369,56 @@ next
     case (snoc x xs)
     note `\<And>n'. n is-nx # xs\<rightarrow>\<^sub>d* n' \<Longrightarrow>
       ((\<exists>n''. n s\<longrightarrow>\<^bsub>cd\<^esub> n'' \<and> n'' is-xs\<rightarrow>\<^sub>d* n') \<or>
-      (\<exists>n'' V. n s-V\<rightarrow>\<^bsub>dd\<^esub> n'' \<and> n \<noteq> n'' \<and> n'' is-xs\<rightarrow>\<^sub>d* n')) \<or>
+      (\<exists>n'' V. n s-V\<rightarrow>\<^sub>d\<^sub>d n'' \<and> n \<noteq> n'' \<and> n'' is-xs\<rightarrow>\<^sub>d* n')) \<or>
       (\<exists>n'' p. n s-p\<rightarrow>\<^bsub>sum\<^esub> n'' \<and> n'' is-xs\<rightarrow>\<^sub>d* n')`
     with `n is-nx#xs@[x]\<rightarrow>\<^sub>d* n'` show ?case
     proof(induct n "nx#xs@[x]" n' rule:intra_sum_SDG_path.induct)
       case (isSp_Append_cdep m ms m'' n')
       note IH = `\<And>n'. m is-nx # xs\<rightarrow>\<^sub>d* n' \<Longrightarrow>
         ((\<exists>n''. m s\<longrightarrow>\<^bsub>cd\<^esub> n'' \<and> n'' is-xs\<rightarrow>\<^sub>d* n') \<or>
-        (\<exists>n'' V. m s-V\<rightarrow>\<^bsub>dd\<^esub> n'' \<and> m \<noteq> n'' \<and> n'' is-xs\<rightarrow>\<^sub>d* n')) \<or>
+        (\<exists>n'' V. m s-V\<rightarrow>\<^sub>d\<^sub>d n'' \<and> m \<noteq> n'' \<and> n'' is-xs\<rightarrow>\<^sub>d* n')) \<or>
         (\<exists>n'' p. m s-p\<rightarrow>\<^bsub>sum\<^esub> n'' \<and> n'' is-xs\<rightarrow>\<^sub>d* n')`
       from `ms @ [m''] = nx#xs@[x]` have [simp]:"ms = nx#xs"
         and [simp]:"m'' = x" by simp_all
       from `m is-ms\<rightarrow>\<^sub>d* m''` have "m is-nx#xs\<rightarrow>\<^sub>d* m''" by simp
       from IH[OF this] obtain n'' where "n'' is-xs\<rightarrow>\<^sub>d* m''"
-        and "(m s\<longrightarrow>\<^bsub>cd\<^esub> n'' \<or> (\<exists>V. m s-V\<rightarrow>\<^bsub>dd\<^esub> n'' \<and> m \<noteq> n'')) \<or> (\<exists>p. m s-p\<rightarrow>\<^bsub>sum\<^esub> n'')"
+        and "(m s\<longrightarrow>\<^bsub>cd\<^esub> n'' \<or> (\<exists>V. m s-V\<rightarrow>\<^sub>d\<^sub>d n'' \<and> m \<noteq> n'')) \<or> (\<exists>p. m s-p\<rightarrow>\<^bsub>sum\<^esub> n'')"
         by fastforce
       from `n'' is-xs\<rightarrow>\<^sub>d* m''` `m'' s\<longrightarrow>\<^bsub>cd\<^esub> n'`
       have "n'' is-xs@[m'']\<rightarrow>\<^sub>d* n'" by(rule intra_sum_SDG_path.intros)
-      with `(m s\<longrightarrow>\<^bsub>cd\<^esub> n'' \<or> (\<exists>V. m s-V\<rightarrow>\<^bsub>dd\<^esub> n'' \<and> m \<noteq> n'')) \<or> (\<exists>p. m s-p\<rightarrow>\<^bsub>sum\<^esub> n'')`
+      with `(m s\<longrightarrow>\<^bsub>cd\<^esub> n'' \<or> (\<exists>V. m s-V\<rightarrow>\<^sub>d\<^sub>d n'' \<and> m \<noteq> n'')) \<or> (\<exists>p. m s-p\<rightarrow>\<^bsub>sum\<^esub> n'')`
       show ?case by fastforce
     next
       case (isSp_Append_ddep m ms m'' V n')
       note IH = `\<And>n'. m is-nx # xs\<rightarrow>\<^sub>d* n' \<Longrightarrow>
         ((\<exists>n''. m s\<longrightarrow>\<^bsub>cd\<^esub> n'' \<and> n'' is-xs\<rightarrow>\<^sub>d* n') \<or>
-        (\<exists>n'' V. m s-V\<rightarrow>\<^bsub>dd\<^esub> n'' \<and> m \<noteq> n'' \<and> n'' is-xs\<rightarrow>\<^sub>d* n')) \<or>
+        (\<exists>n'' V. m s-V\<rightarrow>\<^sub>d\<^sub>d n'' \<and> m \<noteq> n'' \<and> n'' is-xs\<rightarrow>\<^sub>d* n')) \<or>
         (\<exists>n'' p. m s-p\<rightarrow>\<^bsub>sum\<^esub> n'' \<and> n'' is-xs\<rightarrow>\<^sub>d* n')`
       from `ms @ [m''] = nx#xs@[x]` have [simp]:"ms = nx#xs"
         and [simp]:"m'' = x" by simp_all
       from `m is-ms\<rightarrow>\<^sub>d* m''` have "m is-nx#xs\<rightarrow>\<^sub>d* m''" by simp
       from IH[OF this] obtain n'' where "n'' is-xs\<rightarrow>\<^sub>d* m''"
-        and "(m s\<longrightarrow>\<^bsub>cd\<^esub> n'' \<or> (\<exists>V. m s-V\<rightarrow>\<^bsub>dd\<^esub> n'' \<and> m \<noteq> n'')) \<or> (\<exists>p. m s-p\<rightarrow>\<^bsub>sum\<^esub> n'')"
+        and "(m s\<longrightarrow>\<^bsub>cd\<^esub> n'' \<or> (\<exists>V. m s-V\<rightarrow>\<^sub>d\<^sub>d n'' \<and> m \<noteq> n'')) \<or> (\<exists>p. m s-p\<rightarrow>\<^bsub>sum\<^esub> n'')"
         by fastforce
-      from `n'' is-xs\<rightarrow>\<^sub>d* m''` `m'' s-V\<rightarrow>\<^bsub>dd\<^esub> n'` `m'' \<noteq> n'`
+      from `n'' is-xs\<rightarrow>\<^sub>d* m''` `m'' s-V\<rightarrow>\<^sub>d\<^sub>d n'` `m'' \<noteq> n'`
       have "n'' is-xs@[m'']\<rightarrow>\<^sub>d* n'" by(rule intra_sum_SDG_path.intros)
-      with `(m s\<longrightarrow>\<^bsub>cd\<^esub> n'' \<or> (\<exists>V. m s-V\<rightarrow>\<^bsub>dd\<^esub> n'' \<and> m \<noteq> n'')) \<or> (\<exists>p. m s-p\<rightarrow>\<^bsub>sum\<^esub> n'')`
+      with `(m s\<longrightarrow>\<^bsub>cd\<^esub> n'' \<or> (\<exists>V. m s-V\<rightarrow>\<^sub>d\<^sub>d n'' \<and> m \<noteq> n'')) \<or> (\<exists>p. m s-p\<rightarrow>\<^bsub>sum\<^esub> n'')`
       show ?case by fastforce
     next
       case (isSp_Append_sum m ms m'' p n')
       note IH = `\<And>n'. m is-nx # xs\<rightarrow>\<^sub>d* n' \<Longrightarrow>
         ((\<exists>n''. m s\<longrightarrow>\<^bsub>cd\<^esub> n'' \<and> n'' is-xs\<rightarrow>\<^sub>d* n') \<or>
-        (\<exists>n'' V. m s-V\<rightarrow>\<^bsub>dd\<^esub> n'' \<and> m \<noteq> n'' \<and> n'' is-xs\<rightarrow>\<^sub>d* n')) \<or>
+        (\<exists>n'' V. m s-V\<rightarrow>\<^sub>d\<^sub>d n'' \<and> m \<noteq> n'' \<and> n'' is-xs\<rightarrow>\<^sub>d* n')) \<or>
         (\<exists>n'' p. m s-p\<rightarrow>\<^bsub>sum\<^esub> n'' \<and> n'' is-xs\<rightarrow>\<^sub>d* n')`
       from `ms @ [m''] = nx#xs@[x]` have [simp]:"ms = nx#xs"
         and [simp]:"m'' = x" by simp_all
       from `m is-ms\<rightarrow>\<^sub>d* m''` have "m is-nx#xs\<rightarrow>\<^sub>d* m''" by simp
       from IH[OF this] obtain n'' where "n'' is-xs\<rightarrow>\<^sub>d* m''"
-        and "(m s\<longrightarrow>\<^bsub>cd\<^esub> n'' \<or> (\<exists>V. m s-V\<rightarrow>\<^bsub>dd\<^esub> n'' \<and> m \<noteq> n'')) \<or> (\<exists>p. m s-p\<rightarrow>\<^bsub>sum\<^esub> n'')"
+        and "(m s\<longrightarrow>\<^bsub>cd\<^esub> n'' \<or> (\<exists>V. m s-V\<rightarrow>\<^sub>d\<^sub>d n'' \<and> m \<noteq> n'')) \<or> (\<exists>p. m s-p\<rightarrow>\<^bsub>sum\<^esub> n'')"
         by fastforce
       from `n'' is-xs\<rightarrow>\<^sub>d* m''` `m'' s-p\<rightarrow>\<^bsub>sum\<^esub> n'`
       have "n'' is-xs@[m'']\<rightarrow>\<^sub>d* n'" by(rule intra_sum_SDG_path.intros)
-      with `(m s\<longrightarrow>\<^bsub>cd\<^esub> n'' \<or> (\<exists>V. m s-V\<rightarrow>\<^bsub>dd\<^esub> n'' \<and> m \<noteq> n'')) \<or> (\<exists>p. m s-p\<rightarrow>\<^bsub>sum\<^esub> n'')`
+      with `(m s\<longrightarrow>\<^bsub>cd\<^esub> n'' \<or> (\<exists>V. m s-V\<rightarrow>\<^sub>d\<^sub>d n'' \<and> m \<noteq> n'')) \<or> (\<exists>p. m s-p\<rightarrow>\<^bsub>sum\<^esub> n'')`
       show ?case by fastforce
     qed
   qed
@@ -2429,11 +2429,11 @@ next
     from IH[OF `n'' is-nsx\<rightarrow>\<^sub>d* n'`] have "P n'' nsx n'" .
     from step_cdep[OF `n s\<longrightarrow>\<^bsub>cd\<^esub> n''` `n'' is-nsx\<rightarrow>\<^sub>d* n'` this] show ?thesis by simp
   next
-    assume "\<exists>n'' V. n s-V\<rightarrow>\<^bsub>dd\<^esub> n'' \<and> n \<noteq> n'' \<and> n'' is-nsx\<rightarrow>\<^sub>d* n'"
-    then obtain n'' V where "n s-V\<rightarrow>\<^bsub>dd\<^esub> n''" and "n \<noteq> n''" and "n'' is-nsx\<rightarrow>\<^sub>d* n'" 
+    assume "\<exists>n'' V. n s-V\<rightarrow>\<^sub>d\<^sub>d n'' \<and> n \<noteq> n'' \<and> n'' is-nsx\<rightarrow>\<^sub>d* n'"
+    then obtain n'' V where "n s-V\<rightarrow>\<^sub>d\<^sub>d n''" and "n \<noteq> n''" and "n'' is-nsx\<rightarrow>\<^sub>d* n'" 
       by blast
     from IH[OF `n'' is-nsx\<rightarrow>\<^sub>d* n'`] have "P n'' nsx n'" .
-    from step_ddep[OF `n s-V\<rightarrow>\<^bsub>dd\<^esub> n''` `n \<noteq> n''` `n'' is-nsx\<rightarrow>\<^sub>d* n'` this] 
+    from step_ddep[OF `n s-V\<rightarrow>\<^sub>d\<^sub>d n''` `n \<noteq> n''` `n'' is-nsx\<rightarrow>\<^sub>d* n'` this] 
     show ?thesis by simp
   next
     assume "\<exists>n'' p. n s-p\<rightarrow>\<^bsub>sum\<^esub> n'' \<and> n'' is-nsx\<rightarrow>\<^sub>d* n'"
@@ -2493,7 +2493,7 @@ proof(atomize_elim)
     case (isSp_Append_ddep n ns n'' V n')
     from `\<exists>as. parent_node n -as\<rightarrow>\<^sub>\<iota>* parent_node n''`
     obtain as where "parent_node n -as\<rightarrow>\<^sub>\<iota>* parent_node n''" by blast 
-    from `n'' s-V\<rightarrow>\<^bsub>dd\<^esub> n'` have "n'' influences V in n'"
+    from `n'' s-V\<rightarrow>\<^sub>d\<^sub>d n'` have "n'' influences V in n'"
       by(fastforce elim:sum_SDG_edge.cases)
     then obtain as' where "parent_node n'' -as'\<rightarrow>\<^sub>\<iota>* parent_node n'"
       by(auto simp:data_dependence_def)
@@ -2672,7 +2672,7 @@ proof(atomize_elim)
     case (isSp_Append_ddep n ns n'' V n')
     from `\<exists>ns'. matched n ns' n'' \<and> set ns \<subseteq> set ns'`
     obtain ns' where "matched n ns' n''" and "set ns \<subseteq> set ns'" by blast
-    from `n'' s-V\<rightarrow>\<^bsub>dd\<^esub> n'` `n'' \<noteq> n'` have "n'' i-[]@[n'']\<rightarrow>\<^sub>d* n'"
+    from `n'' s-V\<rightarrow>\<^sub>d\<^sub>d n'` `n'' \<noteq> n'` have "n'' i-[]@[n'']\<rightarrow>\<^sub>d* n'"
       by(fastforce intro:intra_SDG_path.intros sum_SDG_edge_valid_SDG_node 
                         sum_SDG_edge_SDG_edge)
     with `matched n ns' n''` have "matched n (ns'@[n'']) n'"
@@ -2738,7 +2738,7 @@ proof(atomize_elim)
     case (isSp_Append_ddep n ns n'' V n')
     from `\<exists>as. parent_node n -as\<rightarrow>\<^sub>\<iota>* parent_node n''`
     obtain as where "parent_node n -as\<rightarrow>\<^sub>\<iota>* parent_node n''"  by blast
-    from `n'' s-V\<rightarrow>\<^bsub>dd\<^esub> n'` have "n'' influences V in n'"
+    from `n'' s-V\<rightarrow>\<^sub>d\<^sub>d n'` have "n'' influences V in n'"
       by(fastforce elim:sum_SDG_edge.cases)
     then obtain as' where "parent_node n'' -as'\<rightarrow>\<^sub>\<iota>* parent_node n'"
       by(auto simp:data_dependence_def)
@@ -2773,7 +2773,7 @@ where icsSp_Nil:
   "\<lbrakk>n ics-ns\<rightarrow>\<^sub>d* n''; n'' s\<longrightarrow>\<^bsub>cd\<^esub> n'\<rbrakk> \<Longrightarrow> n ics-ns@[n'']\<rightarrow>\<^sub>d* n'"
 
   | icsSp_Append_ddep:
-  "\<lbrakk>n ics-ns\<rightarrow>\<^sub>d* n''; n'' s-V\<rightarrow>\<^bsub>dd\<^esub> n'; n'' \<noteq> n'\<rbrakk> \<Longrightarrow> n ics-ns@[n'']\<rightarrow>\<^sub>d* n'"
+  "\<lbrakk>n ics-ns\<rightarrow>\<^sub>d* n''; n'' s-V\<rightarrow>\<^sub>d\<^sub>d n'; n'' \<noteq> n'\<rbrakk> \<Longrightarrow> n ics-ns@[n'']\<rightarrow>\<^sub>d* n'"
 
   | icsSp_Append_sum:
   "\<lbrakk>n ics-ns\<rightarrow>\<^sub>d* n''; n'' s-p\<rightarrow>\<^bsub>sum\<^esub> n'\<rbrakk> \<Longrightarrow> n ics-ns@[n'']\<rightarrow>\<^sub>d* n'"
@@ -2851,15 +2851,15 @@ proof(atomize_elim)
       assume "n'' \<in> set ns"
       from IH[OF this] obtain ns' ns'' where "ns = ns' @ ns''"
         and "n ics-ns'\<rightarrow>\<^sub>d* n''" and "n'' ics-ns''\<rightarrow>\<^sub>d* nx" by blast
-      from `n'' ics-ns''\<rightarrow>\<^sub>d* nx` `nx s-V\<rightarrow>\<^bsub>dd\<^esub> n'` `nx \<noteq> n'`
+      from `n'' ics-ns''\<rightarrow>\<^sub>d* nx` `nx s-V\<rightarrow>\<^sub>d\<^sub>d n'` `nx \<noteq> n'`
       have "n'' ics-ns''@[nx]\<rightarrow>\<^sub>d* n'"
         by(rule intra_call_sum_SDG_path.icsSp_Append_ddep)
       with `ns = ns'@ns''` `n ics-ns'\<rightarrow>\<^sub>d* n''` show ?thesis by fastforce
     next
       assume "n'' = nx"
-      from `nx s-V\<rightarrow>\<^bsub>dd\<^esub> n'` have "nx ics-[]\<rightarrow>\<^sub>d* nx"
+      from `nx s-V\<rightarrow>\<^sub>d\<^sub>d n'` have "nx ics-[]\<rightarrow>\<^sub>d* nx"
         by(fastforce intro:icsSp_Nil SDG_edge_valid_SDG_node sum_SDG_edge_SDG_edge)
-      with `nx s-V\<rightarrow>\<^bsub>dd\<^esub> n'` `nx \<noteq> n'` have "nx ics-[]@[nx]\<rightarrow>\<^sub>d* n'"
+      with `nx s-V\<rightarrow>\<^sub>d\<^sub>d n'` `nx \<noteq> n'` have "nx ics-[]@[nx]\<rightarrow>\<^sub>d* n'"
         by -(rule intra_call_sum_SDG_path.icsSp_Append_ddep)
       with `n ics-ns\<rightarrow>\<^sub>d* nx` `n'' = nx` show ?thesis by fastforce
     qed
@@ -2983,10 +2983,10 @@ proof(atomize_elim)
     case (icsSp_Append_ddep n ns n'' V n')
     from `\<exists>ns'. realizable n ns' n'' \<and> set ns \<subseteq> set ns'`
     obtain ns' where "realizable n ns' n''" and "set ns \<subseteq> set ns'" by blast
-    from `n'' s-V\<rightarrow>\<^bsub>dd\<^esub> n'` have "valid_SDG_node n''"
+    from `n'' s-V\<rightarrow>\<^sub>d\<^sub>d n'` have "valid_SDG_node n''"
       by(rule sum_SDG_edge_valid_SDG_node)
     hence "n'' i-[]\<rightarrow>\<^sub>d* n''" by(rule iSp_Nil)
-    with `n'' s-V\<rightarrow>\<^bsub>dd\<^esub> n'` `n'' \<noteq> n'` have "n'' i-[]@[n'']\<rightarrow>\<^sub>d* n'"
+    with `n'' s-V\<rightarrow>\<^sub>d\<^sub>d n'` `n'' \<noteq> n'` have "n'' i-[]@[n'']\<rightarrow>\<^sub>d* n'"
       by(fastforce elim:iSp_Append_ddep sum_SDG_edge_SDG_edge)
     hence "matched n'' [n''] n'" by(fastforce intro:intra_SDG_path_matched)
     with `realizable n ns' n''` have "realizable n (ns'@[n'']) n'"
@@ -3113,9 +3113,9 @@ proof(atomize_elim)
   next
     case (icsSp_Append_ddep n'' ns' nx V n')
     then obtain ns'' where "realizable n (ns@ns'') nx" by fastforce
-    from `nx s-V\<rightarrow>\<^bsub>dd\<^esub> n'` have "valid_SDG_node nx" by(rule sum_SDG_edge_valid_SDG_node)
+    from `nx s-V\<rightarrow>\<^sub>d\<^sub>d n'` have "valid_SDG_node nx" by(rule sum_SDG_edge_valid_SDG_node)
     hence "matched nx [] nx" by(rule matched_Nil)
-    from `nx s-V\<rightarrow>\<^bsub>dd\<^esub> n'` `nx \<noteq> n'` `valid_SDG_node nx`
+    from `nx s-V\<rightarrow>\<^sub>d\<^sub>d n'` `nx \<noteq> n'` `valid_SDG_node nx`
     have "nx i-[]@[nx]\<rightarrow>\<^sub>d* n'" 
       by(fastforce intro:iSp_Append_ddep iSp_Nil sum_SDG_edge_SDG_edge)
     with `matched nx [] nx` have "matched nx ([]@[nx]) n'"
@@ -3166,7 +3166,7 @@ where irsSp_Nil:
   "\<lbrakk>n'' irs-ns\<rightarrow>\<^sub>d* n'; n s\<longrightarrow>\<^bsub>cd\<^esub> n''\<rbrakk> \<Longrightarrow> n irs-n#ns\<rightarrow>\<^sub>d* n'"
 
   | irsSp_Cons_ddep:
-  "\<lbrakk>n'' irs-ns\<rightarrow>\<^sub>d* n'; n s-V\<rightarrow>\<^bsub>dd\<^esub> n''; n \<noteq> n''\<rbrakk> \<Longrightarrow> n irs-n#ns\<rightarrow>\<^sub>d* n'"
+  "\<lbrakk>n'' irs-ns\<rightarrow>\<^sub>d* n'; n s-V\<rightarrow>\<^sub>d\<^sub>d n''; n \<noteq> n''\<rbrakk> \<Longrightarrow> n irs-n#ns\<rightarrow>\<^sub>d* n'"
 
   | irsSp_Cons_sum:
   "\<lbrakk>n'' irs-ns\<rightarrow>\<^sub>d* n'; n s-p\<rightarrow>\<^bsub>sum\<^esub> n''\<rbrakk> \<Longrightarrow> n irs-n#ns\<rightarrow>\<^sub>d* n'"
@@ -3197,7 +3197,7 @@ next
   with `n irs-ns\<rightarrow>\<^sub>d* n''` show ?case by(rule irs_SDG_path_Append)
 next
   case (isSp_Append_ddep n ns n'' V n')
-  from `n'' s-V\<rightarrow>\<^bsub>dd\<^esub> n'` `n'' \<noteq> n'` have "n'' irs-[n'']\<rightarrow>\<^sub>d* n'"
+  from `n'' s-V\<rightarrow>\<^sub>d\<^sub>d n'` `n'' \<noteq> n'` have "n'' irs-[n'']\<rightarrow>\<^sub>d* n'"
     by(fastforce intro:irsSp_Cons_ddep irsSp_Nil sum_SDG_edge_valid_SDG_node)
   with `n irs-ns\<rightarrow>\<^sub>d* n''` show ?case by(rule irs_SDG_path_Append)
 next
@@ -3253,7 +3253,7 @@ proof(atomize_elim)
     show ?case
     proof
       assume "n'' is-ns\<rightarrow>\<^sub>d* n'"
-      from `n s-V\<rightarrow>\<^bsub>dd\<^esub> n''` `n \<noteq> n''` have "n is-[]@[n]\<rightarrow>\<^sub>d* n''"
+      from `n s-V\<rightarrow>\<^sub>d\<^sub>d n''` `n \<noteq> n''` have "n is-[]@[n]\<rightarrow>\<^sub>d* n''"
         by(fastforce intro:isSp_Append_ddep isSp_Nil sum_SDG_edge_valid_SDG_node)
       with `n'' is-ns\<rightarrow>\<^sub>d* n'` have "n is-[n]@ns\<rightarrow>\<^sub>d* n'"
         by(fastforce intro:is_SDG_path_Append)
@@ -3263,7 +3263,7 @@ proof(atomize_elim)
                         (nx s-p\<rightarrow>\<^bsub>ret\<^esub> nx' \<or> (\<exists>V. nx s-p:V\<rightarrow>\<^bsub>out\<^esub> nx')) \<and> nx' is-nsx'\<rightarrow>\<^sub>d* n'"
       then obtain nsx nsx' nx nx' p where "ns = nsx@nx#nsx'" and "n'' irs-nsx\<rightarrow>\<^sub>d* nx"
         and "nx s-p\<rightarrow>\<^bsub>ret\<^esub> nx' \<or> (\<exists>V. nx s-p:V\<rightarrow>\<^bsub>out\<^esub> nx')" and "nx' is-nsx'\<rightarrow>\<^sub>d* n'" by blast
-      from `n'' irs-nsx\<rightarrow>\<^sub>d* nx` `n s-V\<rightarrow>\<^bsub>dd\<^esub> n''` `n \<noteq> n''` have "n irs-n#nsx\<rightarrow>\<^sub>d* nx"
+      from `n'' irs-nsx\<rightarrow>\<^sub>d* nx` `n s-V\<rightarrow>\<^sub>d\<^sub>d n''` `n \<noteq> n''` have "n irs-n#nsx\<rightarrow>\<^sub>d* nx"
         by(rule intra_return_sum_SDG_path.irsSp_Cons_ddep)
       with `ns = nsx@nx#nsx'` `nx s-p\<rightarrow>\<^bsub>ret\<^esub> nx' \<or> (\<exists>V. nx s-p:V\<rightarrow>\<^bsub>out\<^esub> nx')`
         `nx' is-nsx'\<rightarrow>\<^sub>d* n'`

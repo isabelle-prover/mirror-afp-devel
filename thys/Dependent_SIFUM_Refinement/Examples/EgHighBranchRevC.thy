@@ -1,7 +1,7 @@
 theory EgHighBranchRevC
-imports "../../Dependent_SIFUM_Type_Systems/Compositionality"
-        "../../Dependent_SIFUM_Type_Systems/Language"
-        "~~/src/HOL/Eisbach/Eisbach_Tools"
+imports Dependent_SIFUM_Type_Systems.Compositionality
+        Dependent_SIFUM_Type_Systems.Language
+        "HOL-Eisbach.Eisbach_Tools"
         "../CompositionalRefinement"
 begin
 

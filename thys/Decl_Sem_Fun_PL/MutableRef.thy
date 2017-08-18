@@ -1,7 +1,7 @@
 section "Semantics of mutable references"
 
 theory MutableRef
-  imports Main "~~/src/HOL/Library/FSet" 
+  imports Main "HOL-Library.FSet" 
 begin
 
 datatype ty = TNat | TFun ty ty (infix "\<rightarrow>" 60) | TPair ty ty | TRef ty

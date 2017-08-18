@@ -9,8 +9,8 @@ text \<open>In the following theory we provide a method which modifies theorems
 
 theory Cancel_Card_Constraint
 imports 
-  "~~/src/HOL/Types_To_Sets/Types_To_Sets"
-  "~~/src/HOL/Library/Cardinality"
+  "HOL-Types_To_Sets.Types_To_Sets"
+  "HOL-Library.Cardinality"
 begin
 
 lemma n_zero_nonempty: "n \<noteq> 0 \<Longrightarrow> {0 ..< n :: nat} \<noteq> {}" by auto

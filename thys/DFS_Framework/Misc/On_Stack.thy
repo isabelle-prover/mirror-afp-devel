@@ -1,6 +1,6 @@
 (* Currently not used, but may be of general use. Keep in Aux! *)
 theory On_Stack
-imports "../../Collections/Refine_Dflt"
+imports Collections.Refine_Dflt
 begin
 subsection {* Implementation of a stack with efficient on-stack operation *}
 text {* This generic implementation combines a stack implementation and

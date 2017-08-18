@@ -18,7 +18,7 @@ text \<open>We use matrices over ordered semirings to again define ordered semir
 theory Matrix_Comparison
 imports 
   Matrix
-  "../Matrix/Ordered_Semiring"
+  Matrix.Ordered_Semiring
 begin
 
 context ord

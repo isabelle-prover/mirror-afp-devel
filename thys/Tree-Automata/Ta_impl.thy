@@ -6,9 +6,9 @@ section "Executable Implementation of Tree Automata"
 theory Ta_impl
 imports 
   Main
-  "../Collections/ICF/CollectionsV1" 
+  Collections.CollectionsV1 
   Ta AbsAlgo
-  "~~/src/HOL/Library/Code_Target_Numeral" 
+  "HOL-Library.Code_Target_Numeral" 
 begin
 
 

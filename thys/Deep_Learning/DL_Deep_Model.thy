@@ -4,7 +4,7 @@ section \<open>Deep Network Model\<close>
 
 theory DL_Deep_Model
 imports DL_Network Tensor_Matricization DL_Submatrix DL_Concrete_Matrices
-DL_Missing_Finite_Set DL_Missing_Sublist "../Jordan_Normal_Form/Determinant"
+DL_Missing_Finite_Set DL_Missing_Sublist Jordan_Normal_Form.Determinant
 begin
 
 hide_const(open) Polynomial.order

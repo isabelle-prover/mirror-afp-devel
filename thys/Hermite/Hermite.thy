@@ -8,9 +8,9 @@ section{*Hermite Normal Form*}
 
 theory Hermite
   imports 
-  "../Echelon_Form/Echelon_Form_Inverse"
-  "../Echelon_Form/Examples_Echelon_Form_Abstract"
-  "~~/src/HOL/Computational_Algebra/Euclidean_Algorithm"
+  Echelon_Form.Echelon_Form_Inverse
+  Echelon_Form.Examples_Echelon_Form_Abstract
+  "HOL-Computational_Algebra.Euclidean_Algorithm"
 begin
 
 subsection{*Some previous properties*}

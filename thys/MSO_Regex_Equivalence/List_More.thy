@@ -1,7 +1,7 @@
 (* Author: Dmitry Traytel *)
 
 theory List_More
-imports Main "../List-Index/List_Index" "~~/src/HOL/Library/Multiset"
+imports Main "List-Index.List_Index" "HOL-Library.Multiset"
 begin
 
 subsection {* Library Functions *}

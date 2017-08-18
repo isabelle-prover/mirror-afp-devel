@@ -7,14 +7,14 @@ session Incredible_Proof_Machine (AFP) = "HOL-Library" +
     "HOL-Eisbach"
     Abstract_Completeness
   theories [document = false]
-    "~~/src/HOL/Library/FSet"
-    "~~/src/HOL/Library/Stream"
-    "~~/src/HOL/Library/Sublist"
-    "~~/src/HOL/Library/Countable"
+    "HOL-Library.FSet"
+    "HOL-Library.Stream"
+    "HOL-Library.Sublist"
+    "HOL-Library.Countable"
   theories
-    "Incredible_Everything"
-    "Incredible_Propositional_Tasks"
-    "Incredible_Predicate_Tasks"
+    Incredible_Everything
+    Incredible_Propositional_Tasks
+    Incredible_Predicate_Tasks
   document_files
     "root.bib"
     "root.tex"

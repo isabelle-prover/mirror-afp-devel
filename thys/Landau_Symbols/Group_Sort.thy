@@ -8,7 +8,7 @@
 section {* Sorting and grouping factors *}
 
 theory Group_Sort
-imports Main "~~/src/HOL/Library/Multiset"
+imports Main "HOL-Library.Multiset"
 begin
 
 text {*

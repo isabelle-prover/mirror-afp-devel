@@ -1,8 +1,8 @@
 theory Abstract_Rules_To_Incredible
 imports
   Main 
-  "~~/src/HOL/Library/FSet"
-  "~~/src/HOL/Library/Stream"
+  "HOL-Library.FSet"
+  "HOL-Library.Stream"
   Incredible_Deduction
   Abstract_Rules
 begin

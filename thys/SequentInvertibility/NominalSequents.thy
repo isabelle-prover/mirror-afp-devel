@@ -3,7 +3,7 @@
 (* License: LGPL *)
 section "First Order Sequents" 
 theory NominalSequents
-imports "~~/src/HOL/Library/Multiset" Nominal
+imports "HOL-Library.Multiset" "HOL-Nominal.Nominal"
 begin
 
 atom_decl var

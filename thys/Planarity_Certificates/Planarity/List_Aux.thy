@@ -1,6 +1,6 @@
 theory List_Aux
 imports
-  "../../List-Index/List_Index"
+  "List-Index.List_Index"
 begin
 
 section \<open>Auxiliary List Lemmas\<close>

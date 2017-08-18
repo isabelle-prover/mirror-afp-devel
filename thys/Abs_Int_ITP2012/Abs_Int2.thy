@@ -3,7 +3,7 @@
 section "Backward Analysis of Expressions"
 
 theory Abs_Int2
-imports Abs_Int1 "~~/src/HOL/IMP/Vars"
+imports Abs_Int1 "HOL-IMP.Vars"
 begin
 
 instantiation prod :: (preord,preord) preord

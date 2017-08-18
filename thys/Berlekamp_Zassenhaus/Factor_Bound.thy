@@ -8,8 +8,8 @@ subsection \<open>The Mignotte Bound\<close>
 theory Factor_Bound
 imports 
   Mahler_Measure
-  "../Polynomial_Factorization/Gauss_Lemma"
-  "../Subresultants/Coeff_Int" 
+  Polynomial_Factorization.Gauss_Lemma
+  Subresultants.Coeff_Int 
 begin
 
 lemma binomial_mono_left: "n \<le> N \<Longrightarrow> n choose k \<le> N choose k" 

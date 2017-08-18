@@ -12,7 +12,7 @@ theory Algebraic_Numbers
 imports
   Algebraic_Numbers_Prelim
   Resultant
-  "../Polynomial_Factorization/Polynomial_Divisibility"
+  Polynomial_Factorization.Polynomial_Divisibility
 begin
 
 interpretation coeff_hom: monoid_add_hom "\<lambda>p. coeff p i" by (unfold_locales, auto)

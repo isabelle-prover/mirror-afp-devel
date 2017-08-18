@@ -1,7 +1,7 @@
 chapter{*Syntax of Terms and Formulas using Nominal Logic*}
 
 theory SyntaxN
-imports "../Nominal2/Nominal2" "../HereditarilyFinite/OrdArith"
+imports Nominal2.Nominal2 HereditarilyFinite.OrdArith
 begin
 
 section{*Terms and Formulas*}

@@ -27,8 +27,8 @@ section {* Polynomials *}
 
 theory Polynomials
 imports 
-  "../Abstract-Rewriting/SN_Orders"
-  "../Matrix/Utility" 
+  "Abstract-Rewriting.SN_Orders"
+  Matrix.Utility 
 begin
 
 subsection {*

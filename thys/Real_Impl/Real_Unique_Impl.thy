@@ -26,8 +26,8 @@ theory Real_Unique_Impl
 imports 
   Prime_Product
   Real_Impl
-  "../Show/Show_Instances"
-  "../Show/Show_Real"
+  Show.Show_Instances
+  Show.Show_Real
 begin
 
 text {* We implement the real numbers again using triples, but now we require an additional

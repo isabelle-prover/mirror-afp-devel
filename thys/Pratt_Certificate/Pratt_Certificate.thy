@@ -1,8 +1,8 @@
 theory Pratt_Certificate
 imports
   Complex_Main
-  "../Lehmer/Lehmer"
-  "~~/src/HOL/Library/Code_Target_Numeral"
+  Lehmer.Lehmer
+  "HOL-Library.Code_Target_Numeral"
 begin
 
 (* TODO: Move? *)

@@ -7,7 +7,7 @@
 section{*Code Generation for Bits*}
 
 theory Code_Bit
-imports "$ISABELLE_HOME/src/HOL/Library/Bit"
+imports "HOL-Library.Bit"
 begin
 
 text{*Implementation for the field of integer numbers module 2.

@@ -4,8 +4,8 @@ section {* Derangements *}
 
 theory Derangements
 imports
-  "~~/src/HOL/Library/Permutations"
-  "~~/src/HOL/Decision_Procs/Approximation"
+  "HOL-Library.Permutations"
+  "HOL-Decision_Procs.Approximation"
 begin
 
 subsection {* Preliminaries *}

@@ -1,7 +1,7 @@
 section {* Chandra-Toueg $\diamond S$ Algorithm *}
 
 theory CT_Defs
-imports "../../Heard_Of/HOModel" "../Consensus_Types" "../Consensus_Misc" Three_Steps
+imports Heard_Of.HOModel "../Consensus_Types" "../Consensus_Misc" Three_Steps
 begin
 
 text {*

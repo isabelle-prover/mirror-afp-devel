@@ -4,11 +4,11 @@
 subsection \<open>Hashed Elgamal in the Random Oracle Model\<close>
 
 theory Hashed_Elgamal imports
-  "../CryptHOL/GPV_Bisim"
-  "../CryptHOL/Cyclic_Group_SPMF"
-  "../CryptHOL/List_Bits"
-  "IND_CPA_PK"
-  "Diffie_Hellman"
+  CryptHOL.GPV_Bisim
+  CryptHOL.Cyclic_Group_SPMF
+  CryptHOL.List_Bits
+  IND_CPA_PK
+  Diffie_Hellman
 begin
 
 type_synonym bitstring = "bool list"

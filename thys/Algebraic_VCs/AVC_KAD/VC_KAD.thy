@@ -8,7 +8,7 @@ section {* Components Based on Kleene Algebra with Domain *}
 
 theory VC_KAD
 
-imports "../../KAD/Modal_Kleene_Algebra_Models" "../P2S2R"      
+imports KAD.Modal_Kleene_Algebra_Models "../P2S2R"      
 
 begin
 

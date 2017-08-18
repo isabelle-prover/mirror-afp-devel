@@ -1,7 +1,7 @@
 (* Author: Tobias Nipkow *)
 
 theory Abs_Int1_const
-imports Abs_Int1 "~~/src/HOL/IMP/Abs_Int_Tests"
+imports Abs_Int1 "HOL-IMP.Abs_Int_Tests"
 begin
 
 subsection "Constant Propagation"

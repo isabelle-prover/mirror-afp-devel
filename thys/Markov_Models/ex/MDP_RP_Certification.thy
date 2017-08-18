@@ -3,8 +3,8 @@ section \<open>Certification of Reachability Problems on MDPs\<close>
 theory MDP_RP_Certification
 imports
   "../MDP_Reachability_Problem"
-  "~~/src/HOL/Library/IArray"
-  "~~/src/HOL/Library/Code_Target_Numeral"
+  "HOL-Library.IArray"
+  "HOL-Library.Code_Target_Numeral"
 begin
 
 context Reachability_Problem

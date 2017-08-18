@@ -1,6 +1,6 @@
 (*<*)
 theory BenOr_Proofs
-imports "../../Heard_Of/Reduction"
+imports Heard_Of.Reduction
   Two_Step_Observing "../HO_Transition_System" BenOr_Defs
 begin
 (*>*)

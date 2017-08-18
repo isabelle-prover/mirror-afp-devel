@@ -1,7 +1,7 @@
 theory Access_Matrix_Embeddings
-imports "Semantics_Embeddings"
+imports Semantics_Embeddings
         "Primitive_Matchers/No_Spoof"
-        "../Simple_Firewall/Service_Matrix"
+        Simple_Firewall.Service_Matrix
 begin
 
 section{*Applying the Access Matrix to the Bigstep Semantics*}

@@ -1,7 +1,7 @@
 section \<open>Euclidean Space: Executability\<close>
 theory Executable_Euclidean_Space
 imports
-  "~~/src/HOL/Analysis/Analysis"
+  "HOL-Analysis.Analysis"
   Float_Real
 begin
 

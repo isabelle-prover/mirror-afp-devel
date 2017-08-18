@@ -1,7 +1,7 @@
 section {* \isaheader{Simple DFS Algorithm} *}
 theory Simple_DFS
 imports 
-  "../../Refine_Dflt" 
+  Collections.Refine_Dflt 
 begin
 
 

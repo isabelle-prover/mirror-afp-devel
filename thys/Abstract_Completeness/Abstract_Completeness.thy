@@ -2,11 +2,11 @@
 (* An abstract completeness theorem *)
 theory Abstract_Completeness
 imports
-  "../Collections/ICF/tools/Locale_Code"
-  "~~/src/HOL/Library/Countable_Set"
-  "~~/src/HOL/Library/FSet"
-  "~~/src/HOL/Library/Code_Target_Nat"
-  "~~/src/HOL/Library/Linear_Temporal_Logic_on_Streams"
+  Collections.Locale_Code
+  "HOL-Library.Countable_Set"
+  "HOL-Library.FSet"
+  "HOL-Library.Code_Target_Nat"
+  "HOL-Library.Linear_Temporal_Logic_on_Streams"
 begin
 (*>*)
 

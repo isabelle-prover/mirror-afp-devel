@@ -6,7 +6,7 @@
 section "Invariant proofs on individual processes"
 
 theory Seq_Invariants
-imports "../AWN/Invariants" Aodv Aodv_Data Aodv_Predicates Fresher
+imports AWN.Invariants Aodv Aodv_Data Aodv_Predicates Fresher
 
 begin
 

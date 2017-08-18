@@ -9,8 +9,8 @@ section \<open>Basic constructions on regular expressions\<close>
 theory Regexp_Constructions
 imports
   Main
-  "~~/src/HOL/Library/Sublist"
-  "Regular_Exp"
+  "HOL-Library.Sublist"
+  Regular_Exp
 begin
 
 subsection \<open>Reverse language\<close>

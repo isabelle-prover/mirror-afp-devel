@@ -1,6 +1,6 @@
 section {* Basic Parametricity Reasoning *}
 theory Param_Tool
-imports "Relators"
+imports Relators
 begin
 
   subsection {* Auxiliary Lemmas *}

@@ -7,10 +7,10 @@ section \<open>Code Generation\<close>
 
 theory Export_Code
   imports Main LTL_Compat LTL_Rabin_Impl 
-    "~~/src/HOL/Library/AList_Mapping" (* Future, Performance: Replace by LC *) 
-    "../../LTL/LTL_Rewrite"
-    "~~/src/HOL/Library/Code_Target_Numeral" 
-    "~~/src/HOL/Library/Code_Char"
+    "HOL-Library.AList_Mapping" (* Future, Performance: Replace by LC *) 
+    LTL.LTL_Rewrite
+    "HOL-Library.Code_Target_Numeral" 
+    "HOL-Library.Code_Char"
 begin
 
 subsection \<open>External Interface\<close>

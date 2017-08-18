@@ -5,7 +5,7 @@ session Stirling_Formula (AFP) = "Landau_Analysis" +
   sessions
     Bernoulli
   theories [document = false]
-    "../Landau_Symbols/Landau_Symbols"
+    Landau_Symbols.Landau_Symbols
   theories
     Stirling_Formula
     Ln_Gamma_Asymptotics

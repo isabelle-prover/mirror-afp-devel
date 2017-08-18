@@ -10,7 +10,7 @@ section \<open>Periodic Bernoulli polynomials\<close>
 theory Periodic_Bernpoly
 imports 
   Bernoulli
-  "~~/src/HOL/Library/Periodic_Fun"
+  "HOL-Library.Periodic_Fun"
 begin
   
 text \<open>

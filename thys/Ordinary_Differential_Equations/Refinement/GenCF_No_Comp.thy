@@ -1,22 +1,22 @@
 section \<open>Generic Collection Framework (Internal)\<close>
 theory GenCF_No_Comp
 imports
-  "../../Collections/GenCF/Impl/Impl_List_Set"
-  "../../Collections/GenCF/Impl/Impl_List_Map"
-  "../../Collections/GenCF/Impl/Impl_RBT_Map"
-  "../../Collections/GenCF/Impl/Impl_Array_Map"
-  "../../Collections/GenCF/Impl/Impl_Array_Hash_Map"
-  "../../Collections/GenCF/Impl/Impl_Array_Stack"
-  "../../Collections/GenCF/Impl/Impl_Cfun_Set"
-  "../../Collections/GenCF/Impl/Impl_Bit_Set"
-  "../../Collections/GenCF/Impl/Impl_Uv_Set"
-  "../../Collections/GenCF/Gen/Gen_Set"
-  "../../Collections/GenCF/Gen/Gen_Map"
-  "../../Collections/GenCF/Gen/Gen_Map2Set"
-  "../../Collections/GenCF/Gen/Gen_Hash"
-  "../../Collections/Lib/Code_Target_ICF"
-  "../../Automatic_Refinement/Lib/Refine_Lib"
-  "~~/src/HOL/Analysis/Analysis"
+  Collections.Impl_List_Set
+  Collections.Impl_List_Map
+  Collections.Impl_RBT_Map
+  Collections.Impl_Array_Map
+  Collections.Impl_Array_Hash_Map
+  Collections.Impl_Array_Stack
+  Collections.Impl_Cfun_Set
+  Collections.Impl_Bit_Set
+  Collections.Impl_Uv_Set
+  Collections.Gen_Set
+  Collections.Gen_Map
+  Collections.Gen_Map2Set
+  Collections.Gen_Hash
+  Collections.Code_Target_ICF
+  Automatic_Refinement.Refine_Lib
+  "HOL-Analysis.Analysis"
 begin
 
   text \<open>TODO: need to keep in sync with \<open>../../Collections/GenCF/CenCF\<close> ...\<close>

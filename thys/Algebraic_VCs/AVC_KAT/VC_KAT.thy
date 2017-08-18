@@ -13,8 +13,8 @@ in a partial correctness setting. *}
 
 theory VC_KAT
 imports "../P2S2R"
-        "../../KAT_and_DRA/SingleSorted/PHL_KAT" 
-        "../../KAT_and_DRA/SingleSorted/KAT_Models"
+        KAT_and_DRA.PHL_KAT 
+        KAT_and_DRA.KAT_Models
 
 begin
 

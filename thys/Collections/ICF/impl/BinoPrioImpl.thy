@@ -2,7 +2,7 @@ section {*\isaheader{Implementation of Priority Queues by Binomial Heap}*}
 
 theory BinoPrioImpl
 imports 
-  "../../../Binomial-Heaps/BinomialHeap" 
+  "Binomial-Heaps.BinomialHeap" 
   "../spec/PrioSpec"
   "../tools/Record_Intf"
   "../tools/Locale_Code"

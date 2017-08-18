@@ -8,7 +8,7 @@ theory JVMListExample
 imports
   "../Common/SystemClasses"
   JVMExec
-  "~~/src/HOL/Library/Code_Target_Numeral"
+  "HOL-Library.Code_Target_Numeral"
 begin
 
 definition list_name :: string

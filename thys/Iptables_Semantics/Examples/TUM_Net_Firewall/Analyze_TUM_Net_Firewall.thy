@@ -1,6 +1,6 @@
 theory Analyze_TUM_Net_Firewall
-imports "../../Primitive_Matchers/Code_Interface"
-  "../../Primitive_Matchers/Parser"
+imports Iptables_Semantics.Code_Interface
+  Iptables_Semantics.Parser
 begin
 
 

@@ -9,7 +9,7 @@ section{*Miscellaneous*}
 theory Miscellaneous
 imports 
   Generalizations
-  "$ISABELLE_HOME/src/HOL/Library/Bit"
+  "HOL-Library.Bit"
   Mod_Type
 begin
 

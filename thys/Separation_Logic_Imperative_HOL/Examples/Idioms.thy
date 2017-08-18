@@ -1,6 +1,6 @@
 section {* Common Proof Methods and Idioms *} 
 theory Idioms 
-imports "../Sep_Main" "Open_List" Circ_List Hash_Set_Impl
+imports "../Sep_Main" Open_List Circ_List Hash_Set_Impl
 begin 
 text_raw{*\label{thy:ex:idioms}*}
 

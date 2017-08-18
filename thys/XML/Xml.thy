@@ -7,8 +7,8 @@ section \<open>Parsing and Printing XML Documents\<close>
 
 theory Xml
 imports
-  "../Certification_Monads/Parser_Monad"
-  "~~/src/HOL/Library/Char_ord"
+  Certification_Monads.Parser_Monad
+  "HOL-Library.Char_ord"
 begin
 
 datatype xml =

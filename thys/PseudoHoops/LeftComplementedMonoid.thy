@@ -1,7 +1,7 @@
 section{* Left Complemented Monoid *}
 
 theory LeftComplementedMonoid
-  imports Operations "../LatticeProperties/Lattice_Prop"
+  imports Operations LatticeProperties.Lattice_Prop
 begin
 
 class right_pordered_monoid_mult = order + monoid_mult +

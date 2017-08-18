@@ -9,7 +9,7 @@ section {* The discrete Akra-Bazzi theorem *}
 theory Akra_Bazzi
 imports
   Complex_Main
-  "../Landau_Symbols/Landau_Symbols"
+  Landau_Symbols.Landau_Symbols
   Akra_Bazzi_Real
 begin
 

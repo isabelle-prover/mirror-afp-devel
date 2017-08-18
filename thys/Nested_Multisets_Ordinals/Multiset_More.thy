@@ -8,7 +8,7 @@
 section \<open>More about Multisets\<close>
 
 theory Multiset_More
-imports "~~/src/HOL/Library/Multiset_Order"
+imports "HOL-Library.Multiset_Order"
 begin
 
 text \<open>

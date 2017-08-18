@@ -3,7 +3,7 @@ Title: WHATandWHERE-Security
 Authors: Sylvia Grewe, Alexander Lux, Heiko Mantel, Jens Sauer
 *)
 theory Up_To_Technique
-imports "WHATWHERE_Security"
+imports WHATWHERE_Security
 begin
 
 context WHATWHERE

@@ -3,8 +3,8 @@
 subsection \<open>Ultrafilter\<close>
 
 theory Applicative_Star imports
-  "Applicative"
-  "~~/src/HOL/Nonstandard_Analysis/StarDef"
+  Applicative
+  "HOL-Nonstandard_Analysis.StarDef"
 begin
 
 applicative star (C, K, W)

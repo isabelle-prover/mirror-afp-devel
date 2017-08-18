@@ -4,7 +4,7 @@
 section "Single Succedent"
 
 theory SingleSuccedent
-imports "~~/src/HOL/Library/Multiset"
+imports "HOL-Library.Multiset"
 begin
 
 (* Has the empty formula O, which will mean we can have empty right-hand sides *)

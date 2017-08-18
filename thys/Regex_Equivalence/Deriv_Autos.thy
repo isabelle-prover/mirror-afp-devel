@@ -6,7 +6,7 @@ section "Framework Instantiations using (Partial) Derivatives"
 theory Deriv_Autos
 imports
   Automaton
-  "../Regular-Sets/NDerivative"
+  "Regular-Sets.NDerivative"
   Deriv_PDeriv
 begin
 (*>*)

@@ -1,9 +1,9 @@
 theory Example_Variational_Equation
 imports
-  "../Library/Linear_ODE"
+  Ordinary_Differential_Equations.Linear_ODE
 (*   "Example_van_der_Pol"
  *)
-  "Example_Utilities"
+  Example_Utilities
 begin
 
 subsection \<open>Variational equation for the van der Pol system\<close>

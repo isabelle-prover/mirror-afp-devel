@@ -4,8 +4,8 @@
 section \<open>Specifying security using games\<close>
 
 theory Diffie_Hellman imports
-  "../CryptHOL/Cyclic_Group_SPMF"
-  "../CryptHOL/Computational_Model"
+  CryptHOL.Cyclic_Group_SPMF
+  CryptHOL.Computational_Model
 begin
 
 subsection {* The DDH game *}

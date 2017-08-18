@@ -8,8 +8,8 @@
 section \<open>Stirling's Formula\<close>
 theory Stirling_Formula
 imports
-  Analysis
-  "../Landau_Symbols/Landau_Symbols"
+  "HOL-Analysis.Analysis"
+  Landau_Symbols.Landau_Symbols
 begin
 
 context

@@ -8,7 +8,7 @@ section "The AODV protocol"
 
 theory E_Aodv
 imports E_Aodv_Data E_Aodv_Message
-        "../../../AWN/AWN_SOS_Labels" "../../../AWN/AWN_Invariants"
+        AWN.AWN_SOS_Labels AWN.AWN_Invariants
 begin
 
 subsection "Data state"

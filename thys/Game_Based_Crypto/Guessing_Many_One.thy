@@ -5,8 +5,8 @@
 subsection \<open>Reducing games with many adversary guesses to games with single guesses\<close>
 
 theory Guessing_Many_One imports
-  "../CryptHOL/Computational_Model"
-  "../CryptHOL/GPV_Bisim"
+  CryptHOL.Computational_Model
+  CryptHOL.GPV_Bisim
 begin
 
 locale guessing_many_one =

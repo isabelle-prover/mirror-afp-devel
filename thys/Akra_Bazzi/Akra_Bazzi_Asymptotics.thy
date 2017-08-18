@@ -10,7 +10,7 @@ theory Akra_Bazzi_Asymptotics
 imports
   Complex_Main
   Akra_Bazzi_Library
-  "../Landau_Symbols/Landau_Symbols"
+  Landau_Symbols.Landau_Symbols
 begin
 
 locale akra_bazzi_asymptotics_bep =

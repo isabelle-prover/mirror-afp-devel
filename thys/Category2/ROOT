@@ -5,7 +5,7 @@ session Category2 (AFP) = "HOL-Library" +
   sessions
     "HOL-ZF"
   theories [document = false]
-    "~~/src/HOL/ZF/MainZF"
+    "HOL-ZF.MainZF"
   theories
     MonadicEquationalTheory
     Yoneda

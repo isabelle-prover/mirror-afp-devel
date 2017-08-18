@@ -1,5 +1,5 @@
 theory Tagged_Packet
-imports "../../Simple_Firewall/Simple_Packet" Conntrack_State
+imports Simple_Firewall.Simple_Packet Conntrack_State
 begin
 
 section\<open>Tagged Simple Packet\<close>

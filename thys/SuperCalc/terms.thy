@@ -2,7 +2,7 @@ theory terms
 
 (* N. Peltier - http://membres-lig.imag.fr/peltier/ *)
 
-imports "~~/src/HOL/ex/Unification"
+imports "HOL-ex.Unification"
 
 begin
 

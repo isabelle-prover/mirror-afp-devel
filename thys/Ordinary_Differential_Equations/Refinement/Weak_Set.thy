@@ -1,6 +1,6 @@
 theory Weak_Set
 imports
-  "Autoref_Misc"
+  Autoref_Misc
 begin
 
 subsection \<open>generic things\<close>

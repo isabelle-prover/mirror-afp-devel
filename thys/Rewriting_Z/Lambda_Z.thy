@@ -14,8 +14,8 @@ section \<open>Lambda Calculus has the Church-Rosser property\<close>
 
 theory Lambda_Z
 imports
-  "../Nominal2/Nominal2"
-  "~~/src/HOL/Eisbach/Eisbach"
+  Nominal2.Nominal2
+  "HOL-Eisbach.Eisbach"
   Z
 begin
 

@@ -3,7 +3,7 @@ Title: WHATandWHERE-Security
 Authors: Sylvia Grewe, Alexander Lux, Heiko Mantel, Jens Sauer
 *)
 theory Type_System_example
-imports Type_System "../Strong_Security/Expr" "../Strong_Security/Domain_example"
+imports Type_System Strong_Security.Expr Strong_Security.Domain_example
 begin
 
 --"When interpreting, we have to instantiate the type for domains. As an example, we take a type containing 'low' and 'high' as domains."

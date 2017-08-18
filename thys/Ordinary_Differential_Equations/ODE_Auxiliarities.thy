@@ -1,8 +1,8 @@
 section \<open>Auxiliary Lemmas\<close>
 theory ODE_Auxiliarities
 imports
-  "~~/src/HOL/Analysis/Analysis"
-  "~~/src/HOL/Library/Float"
+  "HOL-Analysis.Analysis"
+  "HOL-Library.Float"
 begin
 
 sledgehammer_params [fact_filter=mepo]

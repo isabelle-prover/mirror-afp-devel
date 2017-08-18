@@ -6,7 +6,7 @@ section {* The intermediate language J1 *}
 
 theory J1State imports
   "../J/State"
-  "CallExpr"
+  CallExpr
 begin
 
 type_synonym

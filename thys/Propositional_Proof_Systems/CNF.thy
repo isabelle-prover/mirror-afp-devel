@@ -1,6 +1,6 @@
 subsection\<open>Conjunctive Normal Forms\<close>
 theory CNF
-imports Main "~~/src/HOL/Library/Simps_Case_Conv"
+imports Main "HOL-Library.Simps_Case_Conv"
 begin
 
 datatype 'a literal = Pos 'a ("(_\<^sup>+)" [1000] 999) | Neg 'a ("(_\<inverse>)" [1000] 999)

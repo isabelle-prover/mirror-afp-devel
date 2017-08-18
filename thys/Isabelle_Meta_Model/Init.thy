@@ -36,7 +36,7 @@
  ******************************************************************************)
 
 theory Init
-imports "~~/src/HOL/Library/Code_Char"
+imports "HOL-Library.Code_Char"
         "isabelle_home/src/HOL/Isabelle_Main0"
 
 begin

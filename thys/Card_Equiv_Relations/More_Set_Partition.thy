@@ -4,7 +4,7 @@ section {* More on Set Partitions *}
 
 theory More_Set_Partition
 imports
-  "../Bell_Numbers_Spivey/Set_Partition"
+  Bell_Numbers_Spivey.Set_Partition
 begin
 
 lemma the_unique_part_alternative_def:

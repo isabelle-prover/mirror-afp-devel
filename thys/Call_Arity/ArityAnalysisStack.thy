@@ -1,5 +1,5 @@
 theory ArityAnalysisStack
-imports "SestoftConf" "ArityAnalysisSig"
+imports SestoftConf ArityAnalysisSig
 begin
 
 context ArityAnalysis

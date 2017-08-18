@@ -3,7 +3,7 @@ section {* Refinement Lattice \label{S:lattice} *}
 theory Refinement_Lattice
 imports
   Main
-  "~~/src/HOL/Library/Lattice_Syntax"
+  "HOL-Library.Lattice_Syntax"
 begin
 
 text {* 

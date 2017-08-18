@@ -11,7 +11,7 @@ section {* Decision procedure for real functions *}
 
 theory Landau_Real_Products
 imports
-  Main Group_Sort Landau_Symbols_Definition "~~/src/HOL/Library/Function_Algebras"
+  Main Group_Sort Landau_Symbols_Definition "HOL-Library.Function_Algebras"
 begin
 
 text {*

@@ -1,7 +1,7 @@
 section {* Finite partial functions *}
 
 theory More_Finite_Map imports
-  "~~/src/HOL/Library/Finite_Map"
+  "HOL-Library.Finite_Map"
 begin
 
 unbundle lifting_syntax

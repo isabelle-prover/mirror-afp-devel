@@ -20,10 +20,10 @@ section {* Toolbox of various definitions and theorems about sets, relations and
 theory MiscTools 
 
 imports 
-"~~/src/HOL/Library/Discrete"
+"HOL-Library.Discrete"
 RelationProperties
-"~~/src/HOL/Library/Code_Target_Nat"
-"~~/src/HOL/Library/Indicator_Function"
+"HOL-Library.Code_Target_Nat"
+"HOL-Library.Indicator_Function"
 Argmax
 
 begin

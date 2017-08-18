@@ -3,8 +3,8 @@
 section \<open>Distinct, non-empty list\<close>
 
 theory Applicative_DNEList imports
-  "Applicative_List"
-  "~~/src/HOL/Library/Dlist"
+  Applicative_List
+  "HOL-Library.Dlist"
 begin
 
 lemma bind_eq_Nil_iff [simp]: "List.bind xs f = [] \<longleftrightarrow> (\<forall>x\<in>set xs. f x = [])"

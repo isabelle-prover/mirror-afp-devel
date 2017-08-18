@@ -6,13 +6,13 @@ session XML (AFP) = "HOL-Library" +
     Certification_Monads
     Show
   theories [document = false]
-    "~~/src/Tools/Adhoc_Overloading"
-    "~~/src/HOL/Library/Monad_Syntax"
-    "~~/src/HOL/Library/Char_ord"
-    "../Show/Show"
-    "../Partial_Function_MR/Partial_Function_MR"
-    "../Certification_Monads/Strict_Sum"
-    "../Certification_Monads/Parser_Monad"
+    "HOL-Library.Adhoc_Overloading"
+    "HOL-Library.Monad_Syntax"
+    "HOL-Library.Char_ord"
+    Show.Show
+    Partial_Function_MR.Partial_Function_MR
+    Certification_Monads.Strict_Sum
+    Certification_Monads.Parser_Monad
   theories
     Xmlt
   document_files

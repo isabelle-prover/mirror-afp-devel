@@ -1,6 +1,6 @@
 theory "Uniform_Renaming" 
 imports
-  "../Ordinary_Differential_Equations/ODE_Analysis"
+  Ordinary_Differential_Equations.ODE_Analysis
   "./Ids"
   "./Lib"
   "./Syntax"

@@ -8,7 +8,7 @@ section{*Exporting code to SML*}
 
 theory Code_Generation_IArrays_SML
 imports
-  "~~/src/HOL/Library/Code_Real_Approx_By_Float"
+  "HOL-Library.Code_Real_Approx_By_Float"
   Code_Generation_IArrays
 begin
 

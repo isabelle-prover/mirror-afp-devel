@@ -23,8 +23,8 @@ session Automatic_Refinement (AFP) = HOL +
   theories
     "Tool/Autoref_Chapter"
     "Tool/Autoref_Tool"
-    "Autoref_Bindings_HOL"
-    "Automatic_Refinement"
+    Autoref_Bindings_HOL
+    Automatic_Refinement
   document_files
     "root.tex"
 

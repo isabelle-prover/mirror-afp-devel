@@ -5,7 +5,7 @@ session Decl_Sem_Fun_PL = "HOL" +
   sessions
     "HOL-Library"
   theories [document = false]
-    "~~/src/HOL/Library/FSet"
+    "HOL-Library.FSet"
   theories
     Lambda
     SmallStepLam

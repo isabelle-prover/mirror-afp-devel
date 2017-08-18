@@ -5,34 +5,34 @@ session "Modal_Logics_for_NTS" (AFP) = Nominal2 +
   sessions
     "HOL-Cardinals"
   theories [document = false]
-    "~~/src/HOL/Cardinals/Bounded_Set"
+    "HOL-Cardinals.Bounded_Set"
   theories
     (* Strong Bisimilarity *)
-    "Nominal_Bounded_Set"
-    "Nominal_Wellfounded"
-    "Residual"
-    "Transition_System"
-    "Formula"
-    "Validity"
-    "Logical_Equivalence"
-    "Bisimilarity_Implies_Equivalence"
-    "Equivalence_Implies_Bisimilarity"
+    Nominal_Bounded_Set
+    Nominal_Wellfounded
+    Residual
+    Transition_System
+    Formula
+    Validity
+    Logical_Equivalence
+    Bisimilarity_Implies_Equivalence
+    Equivalence_Implies_Bisimilarity
     (* Generalization to F/L-Bisimilarity *)
-    "FS_Set"
-    "FL_Transition_System"
-    "FL_Formula"
-    "FL_Validity"
-    "FL_Logical_Equivalence"
-    "FL_Bisimilarity_Implies_Equivalence"
-    "FL_Equivalence_Implies_Bisimilarity"
-    "L_Transform"
+    FS_Set
+    FL_Transition_System
+    FL_Formula
+    FL_Validity
+    FL_Logical_Equivalence
+    FL_Bisimilarity_Implies_Equivalence
+    FL_Equivalence_Implies_Bisimilarity
+    L_Transform
     (* Weak Bisimilarity *)
-    "Weak_Transition_System"
-    "Weak_Formula"
-    "Weak_Validity"
-    "Weak_Logical_Equivalence"
-    "Weak_Bisimilarity_Implies_Equivalence"
-    "Weak_Equivalence_Implies_Bisimilarity"
+    Weak_Transition_System
+    Weak_Formula
+    Weak_Validity
+    Weak_Logical_Equivalence
+    Weak_Bisimilarity_Implies_Equivalence
+    Weak_Equivalence_Implies_Bisimilarity
   document_files
     "root.bib"
     "root.tex"

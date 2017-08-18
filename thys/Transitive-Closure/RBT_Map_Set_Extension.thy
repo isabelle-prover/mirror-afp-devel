@@ -9,9 +9,9 @@ section \<open>Accessing Values via Keys\<close>
 
 theory RBT_Map_Set_Extension
 imports
-  "../Collections/ICF/impl/RBTMapImpl" 
-  "../Collections/ICF/impl/RBTSetImpl"
-  "../Matrix/Utility"
+  Collections.RBTMapImpl 
+  Collections.RBTSetImpl
+  Matrix.Utility
 begin
 
 text \<open>

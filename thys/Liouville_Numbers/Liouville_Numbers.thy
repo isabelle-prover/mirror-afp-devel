@@ -9,7 +9,7 @@
 theory Liouville_Numbers
 imports 
   Complex_Main
-  "~~/src/HOL/Computational_Algebra/Polynomial"
+  "HOL-Computational_Algebra.Polynomial"
   Liouville_Numbers_Misc
 begin
 

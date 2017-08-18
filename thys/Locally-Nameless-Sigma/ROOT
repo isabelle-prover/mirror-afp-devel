@@ -5,7 +5,7 @@ session "Locally-Nameless-Sigma" (AFP) = HOL +
   sessions
     Applicative_Lifting
   theories [document = false]
-    "~~/src/HOL/Proofs/Lambda/Commutation"
+    "HOL-Proofs-Lambda.Commutation"
   theories
     Locally_Nameless_Sigma
   document_files

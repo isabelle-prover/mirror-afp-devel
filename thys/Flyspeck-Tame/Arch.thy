@@ -3,7 +3,7 @@
 section {* Archive *}
 
 theory Arch
-imports Main "~~/src/HOL/Library/Code_Target_Numeral"
+imports Main "HOL-Library.Code_Target_Numeral"
 begin
 
 setup {* fn thy =>

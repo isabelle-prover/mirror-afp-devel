@@ -1,5 +1,5 @@
 theory SestoftCorrect
-imports BalancedTraces "../Launchbury/Launchbury" Sestoft
+imports BalancedTraces Launchbury.Launchbury Sestoft
 begin
 
 

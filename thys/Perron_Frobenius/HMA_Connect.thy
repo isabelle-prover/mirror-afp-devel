@@ -6,11 +6,11 @@ subsection \<open>Transfer rules to convert theorems from JNF to HMA and vice-ve
 
 theory HMA_Connect
 imports 
-  "../Jordan_Normal_Form/Spectral_Radius" 
-  "~~/src/HOL/Analysis/Determinants"
+  Jordan_Normal_Form.Spectral_Radius 
+  "HOL-Analysis.Determinants"
   Bij_Nat
   Cancel_Card_Constraint
-  "~~/src/HOL/Eisbach/Eisbach" 
+  "HOL-Eisbach.Eisbach" 
 begin
 
 text \<open>Prefer certain constants and lemmas without prefix.\<close>

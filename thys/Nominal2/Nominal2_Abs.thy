@@ -1,8 +1,8 @@
 theory Nominal2_Abs
-imports "Nominal2_Base" 
-        "~~/src/HOL/Quotient" 
-        "~~/src/HOL/Library/Quotient_List"
-        "~~/src/HOL/Library/Quotient_Product" 
+imports Nominal2_Base 
+        HOL.Quotient 
+        "HOL-Library.Quotient_List"
+        "HOL-Library.Quotient_Product" 
 begin
 
 

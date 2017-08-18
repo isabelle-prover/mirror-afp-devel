@@ -4,7 +4,7 @@
 subsection {* Random permutation *}
 
 theory Pseudo_Random_Permutation imports
-  "../CryptHOL/Computational_Model"
+  CryptHOL.Computational_Model
 begin
 
 locale random_permutation =

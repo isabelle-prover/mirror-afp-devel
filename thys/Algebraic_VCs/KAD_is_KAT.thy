@@ -7,8 +7,8 @@
 section {* Bringing KAT Components into Scope of KAD *}
 
 theory KAD_is_KAT
-imports "../KAD/Antidomain_Semiring" 
-        "../KAT_and_DRA/SingleSorted/KAT"
+imports KAD.Antidomain_Semiring 
+        KAT_and_DRA.KAT
         "AVC_KAD/VC_KAD"
         "AVC_KAT/VC_KAT"
 

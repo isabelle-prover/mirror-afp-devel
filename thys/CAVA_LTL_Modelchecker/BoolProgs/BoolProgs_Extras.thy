@@ -1,7 +1,7 @@
 theory BoolProgs_Extras
 imports
   BoolProgs
-  "~~/src/HOL/Library/Mapping"
+  "HOL-Library.Mapping"
 begin
 
 context begin interpretation BoolProg_Syntax .

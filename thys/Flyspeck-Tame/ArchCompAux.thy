@@ -3,7 +3,7 @@
 section {* Comparing Enumeration and Archive *}
 
 theory ArchCompAux
-imports TameEnum "../Trie/Tries" Maps Arch Worklist
+imports TameEnum Trie.Tries Maps Arch Worklist
 begin
 
 function qsort :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list" where

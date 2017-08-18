@@ -8,7 +8,7 @@ to be given. *}
 
 theory Propositional_Resolution
 
-imports Main Finite_Set
+imports Main HOL.Finite_Set
 
 begin
 

@@ -22,8 +22,8 @@ imports
 CombinatorialAuction
 
 (* The following theories are needed for the extraction of Scala code *)
-"~~/src/HOL/Library/Code_Target_Nat" 
-"~~/src/HOL/Library/Code_Target_Int"
+"HOL-Library.Code_Target_Nat" 
+"HOL-Library.Code_Target_Int"
 
 begin
 

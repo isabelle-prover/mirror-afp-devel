@@ -3,7 +3,7 @@ section {* Basic lemmas about functions *}
 theory FunctionLemmas
 
 imports Main
-  "~~/src/HOL/Library/FuncSet"
+  "HOL-Library.FuncSet"
 begin
 
 text {*These are used in simplification. Note that the difference from Pi-mem is that the statement

@@ -12,7 +12,7 @@
 theory Proofs_basis
 imports
   Tactics
-  "~~/src/HOL/Library/Simps_Case_Conv"
+  "HOL-Library.Simps_Case_Conv"
 begin
 
 (*>*)

@@ -1,7 +1,7 @@
 section {* \isaheader{Entry Point with genCF and original ICF} *}
 theory Refine_Dflt_ICF
 imports 
-  "../Refine_Monadic/Refine_Monadic"
+  Refine_Monadic.Refine_Monadic
   "GenCF/GenCF"
   "ICF/Collections"
   "Lib/Code_Target_ICF"

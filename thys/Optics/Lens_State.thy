@@ -2,7 +2,7 @@ section \<open>State and Lens integration\<close>
 
 theory Lens_State
 imports
-  "~~/src/HOL/Library/State_Monad"
+  "HOL-Library.State_Monad"
   Lens_Algebra
 begin
 text \<open>Inspired by Haskell's lens package\<close>

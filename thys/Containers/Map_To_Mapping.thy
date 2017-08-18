@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, ETH Zurich *)
 
 theory Map_To_Mapping imports
-  "Mapping_Impl"
+  Mapping_Impl
 begin
 
 section {* Infrastructure for operation identification *}

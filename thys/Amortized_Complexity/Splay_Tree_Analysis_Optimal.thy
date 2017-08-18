@@ -4,7 +4,7 @@ theory Splay_Tree_Analysis_Optimal
 imports
   Splay_Tree_Analysis_Base
   Amortized_Framework
-  "~~/src/HOL/Library/Sum_of_Squares"
+  "HOL-Library.Sum_of_Squares"
 begin
 
 text{* This analysis follows Schoenmakers~\cite{Schoenmakers-IPL93}. *}

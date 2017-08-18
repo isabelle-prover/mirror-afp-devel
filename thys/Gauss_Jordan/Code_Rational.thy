@@ -18,8 +18,8 @@ imports
   IArray_Haskell
     
   (*These theories are necessary for the serialisation:*)
-  Rat
-  "~~/src/HOL/Library/Code_Target_Int"
+  HOL.Rat
+  "HOL-Library.Code_Target_Int"
 begin
 
 subsection{*Serializations*}

@@ -7,10 +7,10 @@ section \<open>Connecting Polynomials with Homomorphism Locales\<close>
 
 theory Ring_Hom_Poly
 imports 
-  "~~/src/HOL/Computational_Algebra/Euclidean_Algorithm"
+  "HOL-Computational_Algebra.Euclidean_Algorithm"
   Ring_Hom
   Missing_Polynomial
-  Rat
+  HOL.Rat
 begin
 
 text{* @{term poly} as a homomorphism. Note that types differ. *}

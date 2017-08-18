@@ -28,7 +28,7 @@ We have applied results from this theory in \cite{Guttmann2012c} and subsequent 
 
 theory Fixpoints
 
-imports "../Stone_Algebras/Lattice_Basics"
+imports Stone_Algebras.Lattice_Basics
 
 begin
 

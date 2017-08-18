@@ -2,8 +2,8 @@ section {* Union-Find Data-Structure *}
 theory Union_Find
 imports 
   "../Sep_Main" 
-  "../../Collections/Lib/Partial_Equivalence_Relation"
-  "~~/src/HOL/Library/Code_Target_Numeral"
+  Collections.Partial_Equivalence_Relation
+  "HOL-Library.Code_Target_Numeral"
 begin
 text {*
   We implement a simple union-find data-structure based on an array.

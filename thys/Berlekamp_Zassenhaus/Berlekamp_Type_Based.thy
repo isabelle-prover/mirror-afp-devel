@@ -8,11 +8,11 @@ section \<open>The Berlekamp Algorithm\<close>
 
 theory Berlekamp_Type_Based
 imports
-  "../Jordan_Normal_Form/Matrix_Kernel"
-  "../Jordan_Normal_Form/Gauss_Jordan_Elimination"
-  "../Jordan_Normal_Form/Missing_VectorSpace"
-  "../Polynomial_Factorization/Square_Free_Factorization"
-  "../Polynomial_Factorization/Missing_Multiset"
+  Jordan_Normal_Form.Matrix_Kernel
+  Jordan_Normal_Form.Gauss_Jordan_Elimination
+  Jordan_Normal_Form.Missing_VectorSpace
+  Polynomial_Factorization.Square_Free_Factorization
+  Polynomial_Factorization.Missing_Multiset
   Finite_Field
   Chinese_Remainder_Poly
   Poly_Mod_Finite_Field

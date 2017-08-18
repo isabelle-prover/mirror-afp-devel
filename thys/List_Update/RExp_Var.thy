@@ -5,7 +5,7 @@
 section {* Equivalence of Regular Expression with Variables  *}
 
 theory RExp_Var
-imports "../Regular-Sets/Equivalence_Checking"
+imports "Regular-Sets.Equivalence_Checking"
 begin
 
 (* even Atoms \<rightarrow> normal Atoms

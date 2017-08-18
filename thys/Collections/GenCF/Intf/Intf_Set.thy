@@ -1,6 +1,6 @@
 section {* \isaheader{Set Interface} *}
 theory Intf_Set
-imports "../../../Refine_Monadic/Refine_Monadic"
+imports Refine_Monadic.Refine_Monadic
 begin
 consts i_set :: "interface \<Rightarrow> interface"
 lemmas [autoref_rel_intf] = REL_INTFI[of set_rel i_set]

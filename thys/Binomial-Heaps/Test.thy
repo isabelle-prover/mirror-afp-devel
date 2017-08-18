@@ -1,5 +1,5 @@
 theory Test
-imports "~~/src/HOL/Library/Code_Target_Numeral" BinomialHeap SkewBinomialHeap
+imports "HOL-Library.Code_Target_Numeral" BinomialHeap SkewBinomialHeap
 begin
   text {*
     This theory is included into teh session, in order to

@@ -20,7 +20,7 @@ text \<open>We implement Schur decomposition as an algorithm which, given a squa
 
 theory Schur_Decomposition
 imports 
-  "../Polynomial_Interpolation/Missing_Polynomial"
+  Polynomial_Interpolation.Missing_Polynomial
   Gram_Schmidt 
   Char_Poly
 begin

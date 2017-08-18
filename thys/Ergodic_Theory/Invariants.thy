@@ -3,7 +3,7 @@
 *)
 
 theory Invariants
-imports Recurrence Conditional_Expectation
+imports Recurrence "HOL-Probability.Conditional_Expectation"
 begin
 
 

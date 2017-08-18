@@ -1,8 +1,8 @@
 theory Propositional_Formulas
 imports
   Abstract_Formula
-  "~~/src/HOL/Library/Countable"
-  "~~/src/HOL/Library/Infinite_Set"
+  "HOL-Library.Countable"
+  "HOL-Library.Infinite_Set"
 begin
 
 class infinite =

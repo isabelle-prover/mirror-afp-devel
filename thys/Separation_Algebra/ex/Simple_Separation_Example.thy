@@ -7,7 +7,7 @@
 section "Example from HOL/Hoare/Separation"
 
 theory Simple_Separation_Example
-  imports "~~/src/HOL/Hoare/Hoare_Logic_Abort" "../Sep_Heap_Instance"
+  imports "HOL-Hoare.Hoare_Logic_Abort" "../Sep_Heap_Instance"
           "../Sep_Tactics"
 begin
 

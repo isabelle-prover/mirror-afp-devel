@@ -11,8 +11,8 @@ text \<open>We provide algorithms which use the explicit formulas to
 
 theory Explicit_Roots
 imports   
-  "../Polynomial_Interpolation/Missing_Polynomial"
-  "../Sqrt_Babylonian/Sqrt_Babylonian"
+  Polynomial_Interpolation.Missing_Polynomial
+  Sqrt_Babylonian.Sqrt_Babylonian
 begin
 
 lemma roots0: assumes p: "p \<noteq> 0" and p0: "degree p = 0" 

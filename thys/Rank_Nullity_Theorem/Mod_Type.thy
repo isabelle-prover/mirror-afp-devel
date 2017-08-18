@@ -8,8 +8,8 @@ section{*Class for modular arithmetic*}
 
 theory Mod_Type
 imports
-  "$ISABELLE_HOME/src/HOL/Library/Numeral_Type"
-  "$ISABELLE_HOME/src/HOL/Analysis/Cartesian_Euclidean_Space"
+  "HOL-Library.Numeral_Type"
+  "HOL-Analysis.Cartesian_Euclidean_Space"
   Dual_Order
 begin
 

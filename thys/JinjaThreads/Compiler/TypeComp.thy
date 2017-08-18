@@ -7,10 +7,10 @@ section {* Preservation of Well-Typedness in Stage 2 *}
 theory TypeComp
 imports 
   Exception_Tables
-  "J1WellForm"
+  J1WellForm
   "../BV/BVSpec"
-  "~~/src/HOL/Library/Prefix_Order"
-  "~~/src/HOL/Library/Sublist"
+  "HOL-Library.Prefix_Order"
+  "HOL-Library.Sublist"
 begin
 
 (*<*)

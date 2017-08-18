@@ -9,34 +9,34 @@ session "Deep_Learning_Lib" (AFP) = "HOL-Probability" +
     Polynomial_Interpolation
     VectorSpace
   theories
-    "~~/src/HOL/Library/More_List"
-    "~~/src/HOL/Computational_Algebra/Polynomial"
-    "~~/src/HOL/Algebra/Congruence"
-    "~~/src/HOL/Algebra/Lattice"
-    "~~/src/HOL/Algebra/Group"
-    "~~/src/HOL/Algebra/FiniteProduct"
-    "~~/src/HOL/Algebra/Ring"
-    "../Jordan_Normal_Form/Missing_Ring"
-    "~~/src/HOL/Algebra/Module"
-    "../Polynomial_Interpolation/Ring_Hom"
-    "../Jordan_Normal_Form/Matrix"
-    "~~/src/HOL/Algebra/Coset"
-    "../VectorSpace/RingModuleFacts"
-    "../VectorSpace/FunctionLemmas"
-    "../VectorSpace/MonoidSums"
-    "../VectorSpace/LinearCombinations"
-    "../VectorSpace/SumSpaces"
-    "../VectorSpace/VectorSpace"
-    "../Jordan_Normal_Form/VS_Connect"
-    "../Jordan_Normal_Form/Missing_VectorSpace"
-    "../Jordan_Normal_Form/Missing_Permutations"
-    "~~/src/HOL/Computational_Algebra/Fraction_Field"
-    "../Jordan_Normal_Form/Gauss_Jordan_Elimination"
-    "../Jordan_Normal_Form/Column_Operations"
-    "../Polynomial_Interpolation/Missing_Unsorted"
-    "../Jordan_Normal_Form/Determinant"
-    "~~/src/HOL/Library/Groups_Big_Fun"
-    "~~/src/HOL/Library/Fun_Lexorder"
+    "HOL-Library.More_List"
+    "HOL-Computational_Algebra.Polynomial"
+    "HOL-Algebra.Congruence"
+    "HOL-Algebra.Lattice"
+    "HOL-Algebra.Group"
+    "HOL-Algebra.FiniteProduct"
+    "HOL-Algebra.Ring"
+    Jordan_Normal_Form.Missing_Ring
+    "HOL-Algebra.Module"
+    Polynomial_Interpolation.Ring_Hom
+    Jordan_Normal_Form.Matrix
+    "HOL-Algebra.Coset"
+    VectorSpace.RingModuleFacts
+    VectorSpace.FunctionLemmas
+    VectorSpace.MonoidSums
+    VectorSpace.LinearCombinations
+    VectorSpace.SumSpaces
+    VectorSpace.VectorSpace
+    Jordan_Normal_Form.VS_Connect
+    Jordan_Normal_Form.Missing_VectorSpace
+    Jordan_Normal_Form.Missing_Permutations
+    "HOL-Computational_Algebra.Fraction_Field"
+    Jordan_Normal_Form.Gauss_Jordan_Elimination
+    Jordan_Normal_Form.Column_Operations
+    Polynomial_Interpolation.Missing_Unsorted
+    Jordan_Normal_Form.Determinant
+    "HOL-Library.Groups_Big_Fun"
+    "HOL-Library.Fun_Lexorder"
 
 session "Deep_Learning" (AFP) = "Deep_Learning_Lib" +
   options [timeout = 600]

@@ -5,8 +5,8 @@ session "Transitive-Closure" (AFP) = Collections +
   sessions
     Matrix
   theories [document = false]
-    "../Collections/ICF/impl/RBTMapImpl"
-    "../Collections/ICF/impl/RBTSetImpl"
+    Collections.RBTMapImpl
+    Collections.RBTSetImpl
   theories
     Transitive_Closure_Impl
     Transitive_Closure_List_Impl

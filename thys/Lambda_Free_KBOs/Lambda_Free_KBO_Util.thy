@@ -6,8 +6,8 @@
 section \<open>Utilities for Knuth--Bendix Orders for Lambda-Free Higher-Order Terms\<close>
 
 theory Lambda_Free_KBO_Util
-imports "../Lambda_Free_RPOs/Lambda_Free_Term" "../Lambda_Free_RPOs/Extension_Orders"
-  "../Polynomials/Polynomials"
+imports Lambda_Free_RPOs.Lambda_Free_Term Lambda_Free_RPOs.Extension_Orders
+  Polynomials.Polynomials
 begin
 
 declare

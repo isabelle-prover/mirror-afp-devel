@@ -5,7 +5,7 @@ theory RBT_Mapping2
 imports
   Collection_Order
   RBT_ext
-  "../Deriving/Comparator_Generator/RBT_Comparator_Impl"
+  Deriving.RBT_Comparator_Impl
 begin
 
 section {* Mappings implemented by red-black trees *}

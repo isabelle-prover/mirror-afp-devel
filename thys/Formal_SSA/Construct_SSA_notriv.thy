@@ -5,7 +5,7 @@
 subsection {* Inductive Removal of Trivial Phi Functions *}
 
 theory Construct_SSA_notriv
-imports SSA_CFG Minimality "~~/src/HOL/Library/While_Combinator"
+imports SSA_CFG Minimality "HOL-Library.While_Combinator"
 begin
 
 locale CFG_SSA_Transformed_notriv_base = CFG_SSA_Transformed_base \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" "uses" phis var

@@ -1,5 +1,5 @@
 theory HeapSemantics
-  imports "EvalHeap" "AList-Utils-Nominal" "HasESem" Iterative "Env-Nominal"
+  imports EvalHeap "AList-Utils-Nominal" HasESem Iterative "Env-Nominal"
 begin
 
 subsubsection {* A locale for heap semantics, abstract in the expression semantics *}

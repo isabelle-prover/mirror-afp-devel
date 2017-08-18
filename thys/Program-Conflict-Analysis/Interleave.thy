@@ -4,7 +4,7 @@
 *)
 section "List Interleaving Operator"
 theory Interleave
-imports Main "~~/src/HOL/Library/Permutation" Misc
+imports Main "HOL-Library.Permutation" Misc
 begin
 text_raw {*\label{thy:Interleave}*}
 

@@ -1,9 +1,9 @@
 theory Rep_Fin_Groups
 
 imports
-  "~~/src/HOL/Library/Function_Algebras"
-  "~~/src/HOL/Library/Set_Algebras"
-  "~~/src/HOL/Computational_Algebra/Polynomial"
+  "HOL-Library.Function_Algebras"
+  "HOL-Library.Set_Algebras"
+  "HOL-Computational_Algebra.Polynomial"
 
 begin
 

@@ -1,10 +1,10 @@
 theory Incredible_Deduction
 imports
   Main 
-  "~~/src/HOL/Library/FSet"
-  "~~/src/HOL/Library/Stream"
+  "HOL-Library.FSet"
+  "HOL-Library.Stream"
   Incredible_Signatures
-  "~~/src/HOL/Eisbach/Eisbach"
+  "HOL-Eisbach.Eisbach"
 begin
 
 text \<open>This theory contains the definition for actual proof graphs, and their various possible

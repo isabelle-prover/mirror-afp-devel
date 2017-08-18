@@ -1,5 +1,5 @@
 theory Arity
-imports "../Launchbury/HOLCF-Join-Classes" Lifting
+imports "Launchbury.HOLCF-Join-Classes" HOL.Lifting
 begin
 
 typedef Arity = "UNIV :: nat set"

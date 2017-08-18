@@ -14,8 +14,8 @@ text \<open>This theory contains
 
 theory Resultant
 imports
-  "../Polynomial_Factorization/Rational_Factorization"
-  "../Subresultants/Subresultant_Gcd" 
+  Polynomial_Factorization.Rational_Factorization
+  Subresultants.Subresultant_Gcd 
   Unique_Factorization_Poly
   Bivariate_Polynomials
 begin

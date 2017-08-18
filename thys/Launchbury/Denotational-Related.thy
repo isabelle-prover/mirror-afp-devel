@@ -1,5 +1,5 @@
 theory "Denotational-Related"
-imports "Denotational" "ResourcedDenotational" ValueSimilarity
+imports Denotational ResourcedDenotational ValueSimilarity
 begin
 
 text {*

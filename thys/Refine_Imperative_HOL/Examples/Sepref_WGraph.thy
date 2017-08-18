@@ -2,7 +2,7 @@ section \<open>Imperative Weighted Graphs\<close>
 theory Sepref_WGraph
 imports 
   "../Sepref_ICF_Bindings"
-  "../../Dijkstra_Shortest_Path/Graph"
+  Dijkstra_Shortest_Path.Graph
 begin
   
   type_synonym 'w graph_impl = "(('w\<times>nat) list) Heap.array"

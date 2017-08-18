@@ -1,7 +1,7 @@
 section {* The abstract semantics is correct *}
 
 theory AbsCFCorrect
-  imports AbsCF ExCF "~~/src/Tools/Adhoc_Overloading"
+  imports AbsCF ExCF "HOL-Library.Adhoc_Overloading"
 begin
 
 default_sort type

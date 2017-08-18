@@ -1,7 +1,7 @@
 section "Graph Interface"
 theory GraphSpec
 imports Main Graph 
-  "../Collections/ICF/Collections" 
+  Collections.Collections 
   (*"../Collections/Lib/Proper_Iterator"*)
   (*"../Refine_Monadic/Refine_Autodet"*)
 begin

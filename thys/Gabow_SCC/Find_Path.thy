@@ -1,8 +1,8 @@
 section {* Safety-Property Model-Checker\label{sec:find_path} *}
 theory Find_Path
 imports
-  "../CAVA_Automata/Digraph"
-  "../CAVA_Automata/CAVA_Base/CAVA_Code_Target"
+  CAVA_Automata.Digraph
+  CAVA_Base.CAVA_Code_Target
 begin
   section {* Finding Path to Error *}
   text {*

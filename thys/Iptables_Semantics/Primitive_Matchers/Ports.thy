@@ -1,6 +1,6 @@
 theory Ports
-imports String 
-  "~~/src/HOL/Word/Word"
+imports HOL.String 
+  "HOL-Word.Word"
   "../Common/WordInterval_Lists"
   L4_Protocol_Flags
 begin

@@ -6,16 +6,16 @@ session Concurrent_Ref_Alg (AFP) = HOL +
   sessions
     "HOL-Library"
   theories [document = false]
-    "~~/src/HOL/Library/Lattice_Syntax"
+    "HOL-Library.Lattice_Syntax"
   theories
-    "Refinement_Lattice"
-    "Sequential"
-    "Parallel"
-    "Conjunction"
-    "CRA"
-    "Galois_Connections"
-    "Iteration"
-    "Rely_Quotient"
+    Refinement_Lattice
+    Sequential
+    Parallel
+    Conjunction
+    CRA
+    Galois_Connections
+    Iteration
+    Rely_Quotient
  document_files
     "root.tex"
     "root.bib"

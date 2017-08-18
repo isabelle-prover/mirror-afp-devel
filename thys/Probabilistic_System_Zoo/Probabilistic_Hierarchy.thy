@@ -2,9 +2,9 @@
 (*<*)
 theory Probabilistic_Hierarchy
 imports
-  "~~/src/HOL/Probability/Probability"
+  Probability
   Nonempty_Bounded_Set
-  "~~/src/HOL/Eisbach/Eisbach"
+  "HOL-Eisbach.Eisbach"
 begin
 (*>*)
 

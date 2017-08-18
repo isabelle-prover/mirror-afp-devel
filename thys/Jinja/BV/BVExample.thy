@@ -7,7 +7,7 @@ section {* Example Welltypings \label{sec:BVExample} *}
 
 theory BVExample
 imports "../JVM/JVMListExample" BVSpecTypeSafe BVExec
-  "~~/src/HOL/Library/Code_Target_Numeral"
+  "HOL-Library.Code_Target_Numeral"
 begin
 
 text {*

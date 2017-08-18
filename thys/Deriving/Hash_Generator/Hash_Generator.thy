@@ -9,7 +9,7 @@ theory Hash_Generator
 imports
   "../Generator_Aux"
   "../Derive_Manager"
-  "../../Collections/Lib/HashCode"
+  Collections.HashCode
 begin
 
 text \<open>As usual, in the generator we use a dedicated function to combine the results

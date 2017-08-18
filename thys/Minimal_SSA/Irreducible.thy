@@ -22,7 +22,7 @@ Finally putting those results together, we conclude that the extension to Braun~
 \<close>
 
 theory Irreducible
-  imports "../Formal_SSA/Minimality"
+  imports Formal_SSA.Minimality
 begin
 
 context CFG_SSA_Transformed

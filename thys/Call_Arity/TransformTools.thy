@@ -1,5 +1,5 @@
 theory TransformTools
-imports "../Launchbury/Nominal-HOLCF" "../Launchbury/Terms" "../Launchbury/Substitution" "../Launchbury/Env"
+imports "Launchbury.Nominal-HOLCF" Launchbury.Terms Launchbury.Substitution Launchbury.Env
 begin
 
 default_sort type

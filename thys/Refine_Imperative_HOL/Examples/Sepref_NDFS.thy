@@ -2,9 +2,9 @@ section \<open>Imperative Implementation of of Nested DFS (HPY-Improvement)\<clo
 theory Sepref_NDFS
 imports 
   "../Sepref"
-  "../../Collections/Examples/Autoref/Nested_DFS"
-  "Sepref_Graph"
-  "~~/src/HOL/Library/Code_Target_Numeral"
+  Collections_Examples.Nested_DFS
+  Sepref_Graph
+  "HOL-Library.Code_Target_Numeral"
 begin
 
 sepref_decl_intf 'v i_red_witness is "'v list * 'v"

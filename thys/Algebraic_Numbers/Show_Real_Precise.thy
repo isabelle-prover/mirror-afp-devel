@@ -12,7 +12,7 @@ text \<open>We implement the show-function for real (algebraic) numbers by print
 theory Show_Real_Precise
 imports
   Show_Real_Alg
-  "../Show/Show_Instances"
+  Show.Show_Instances
 begin
   
 datatype real_alg_show_info = Rat_Info rat | Sqrt_Info rat rat | Real_Alg_Info "int poly" nat

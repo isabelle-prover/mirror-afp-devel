@@ -6,7 +6,7 @@
 section "Basic data types and constants"
 
 theory Aodv_Basic
-imports Main "../AWN/AWN_SOS"
+imports Main AWN.AWN_SOS
 begin
 
 text \<open>These definitions are shared with all variants.\<close>

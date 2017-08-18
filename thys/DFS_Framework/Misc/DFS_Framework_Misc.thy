@@ -1,5 +1,5 @@
 theory DFS_Framework_Misc
-imports "../../Automatic_Refinement/Lib/Misc"
+imports Automatic_Refinement.Misc
 begin
 
 (* General *)

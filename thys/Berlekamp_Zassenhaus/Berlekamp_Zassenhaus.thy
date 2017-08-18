@@ -15,8 +15,8 @@ text \<open>We combine all previous results, i.e., Berlekamp's algorithm, Hensel
 theory Berlekamp_Zassenhaus
 imports 
   Berlekamp_Hensel
-  "../Polynomial_Factorization/Gauss_Lemma"
-  "../Polynomial_Factorization/Dvd_Int_Poly"
+  Polynomial_Factorization.Gauss_Lemma
+  Polynomial_Factorization.Dvd_Int_Poly
   Reconstruction
   Suitable_Prime
   Degree_Bound

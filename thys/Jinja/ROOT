@@ -5,9 +5,9 @@ session Jinja (AFP) = "HOL-Library" +
   sessions
     "List-Index"
   theories [document = false]
-    "~~/src/HOL/Library/Sublist"
-    "~~/src/HOL/Library/While_Combinator"
-    "~~/src/HOL/Library/Code_Target_Numeral"
+    "HOL-Library.Sublist"
+    "HOL-Library.While_Combinator"
+    "HOL-Library.Code_Target_Numeral"
   theories
     Jinja
   document_files

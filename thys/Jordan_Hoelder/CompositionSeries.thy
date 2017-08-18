@@ -5,8 +5,8 @@
 
 theory CompositionSeries
 imports
-  "SimpleGroups"
-  "MaximalNormalSubgroups"
+  SimpleGroups
+  MaximalNormalSubgroups
 begin
 
 section {* Normal series and Composition series *}

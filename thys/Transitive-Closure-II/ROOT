@@ -6,7 +6,7 @@ session "Transitive-Closure-II" (AFP) = HOL +
     "HOL-Library"
     "Regular-Sets"
   theories [document = false]
-    "../Regular-Sets/Regexp_Method"
+    "Regular-Sets.Regexp_Method"
   theories
     RTrancl
   document_files

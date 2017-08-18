@@ -8,7 +8,7 @@ section{*Code Cayley Hamilton*}
 
 theory Code_Cayley_Hamilton_IArrays
   imports 
-  "../Cayley_Hamilton/Cayley_Hamilton"
+  Cayley_Hamilton.Cayley_Hamilton
   Echelon_Form_Det_IArrays
 begin
 

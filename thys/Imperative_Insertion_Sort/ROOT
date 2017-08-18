@@ -3,7 +3,7 @@ chapter AFP
 session Imperative_Insertion_Sort (AFP) = "HOL-Imperative_HOL" +
   options [timeout = 300]
   theories [document = false]
-    "~~/src/HOL/Library/Multiset"
+    "HOL-Library.Multiset"
   theories
     Imperative_Loops
     Imperative_Insertion_Sort

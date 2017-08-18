@@ -1,5 +1,5 @@
 theory "Set-Cpo"
-imports "~~/src/HOL/HOLCF/HOLCF"
+imports HOLCF
 begin
 
 default_sort type

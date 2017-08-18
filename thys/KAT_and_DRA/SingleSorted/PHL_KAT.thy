@@ -6,7 +6,7 @@
 section {* Propositional Hoare Logic *}
 
 theory PHL_KAT
-  imports KAT "../../Kleene_Algebra/PHL_KA"
+  imports KAT Kleene_Algebra.PHL_KA
 begin
 
 text {* We define a class of pre-dioids with notions of assertions, tests and iteration. The above rules of PHL are derivable in that class. *}

@@ -23,7 +23,7 @@ They are still powerful enough to prove the correctness of complex results such 
 
 theory Iterings
 
-imports "../Stone_Relation_Algebras/Semirings"
+imports Stone_Relation_Algebras.Semirings
 
 begin
 

@@ -1,5 +1,5 @@
 theory Worklist
-imports "~~/src/HOL/Library/While_Combinator" RTranCl Quasi_Order
+imports "HOL-Library.While_Combinator" RTranCl Quasi_Order
 begin
 
 definition

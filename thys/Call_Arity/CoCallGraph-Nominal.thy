@@ -1,5 +1,5 @@
 theory "CoCallGraph-Nominal"
-imports CoCallGraph "../Launchbury/Nominal-HOLCF"
+imports CoCallGraph "Launchbury.Nominal-HOLCF"
 begin
 
 instantiation CoCalls :: pt

@@ -1,7 +1,7 @@
 theory Bidirected_Digraph
 imports
   Digraph
-  "~~/src/HOL/Library/Permutations"
+  "HOL-Library.Permutations"
 begin
 
 section \<open>Bidirected Graphs\<close>

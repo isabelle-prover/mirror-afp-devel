@@ -18,10 +18,10 @@ text \<open>We define a function which computes an upper bound on the degree of
   Soundness of the bound is proven, as well as a monotonicity property.\<close>
   
 theory Degree_Bound
-  imports "../Containers/Set_Impl" (* for sort_append_Cons_swap *)
-  "~~/src/HOL/Library/Multiset"
-  "../Polynomial_Interpolation/Missing_Polynomial"
-  "../Efficient-Mergesort/Efficient_Sort"
+  imports Containers.Set_Impl (* for sort_append_Cons_swap *)
+  "HOL-Library.Multiset"
+  Polynomial_Interpolation.Missing_Polynomial
+  "Efficient-Mergesort.Efficient_Sort"
 begin
 
 definition max_factor_degree :: "nat list \<Rightarrow> nat" where 

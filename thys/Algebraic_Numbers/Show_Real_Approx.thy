@@ -10,7 +10,7 @@ text \<open>We implement the show-function for real (algebraic) numbers by calcu
 theory Show_Real_Approx
 imports
   Show_Real_Alg
-  "../Show/Show_Instances"
+  Show.Show_Instances
 begin
 
 overloading show_real_alg \<equiv> show_real_alg

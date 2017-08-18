@@ -10,7 +10,7 @@ section "Miscellaneous results"
 
 theory Miscellany
 imports
-  "~~/src/HOL/Analysis/Cartesian_Euclidean_Space"
+  "HOL-Analysis.Cartesian_Euclidean_Space"
   Metric
 begin
 

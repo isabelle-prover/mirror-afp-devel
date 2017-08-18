@@ -1,7 +1,7 @@
 theory Word_Next
 imports Main
-  "~~/src/HOL/Word/Word"
-  "../Word_Lib/Word_Lemmas"
+  "HOL-Word.Word"
+  Word_Lib.Word_Lemmas
 begin
 
 section\<open>Increment and Decrement Machine Words Without Wrap-Around\<close>

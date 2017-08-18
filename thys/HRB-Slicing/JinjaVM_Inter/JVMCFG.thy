@@ -2,7 +2,7 @@ chapter {* A Control Flow Graph for Jinja Byte Code *}
 
 section {* Formalizing the CFG *}
 
-theory JVMCFG imports "../StaticInter/BasicDefs" "../../Jinja/BV/BVExample" begin
+theory JVMCFG imports "../StaticInter/BasicDefs" Jinja.BVExample begin
 
 declare lesub_list_impl_same_size [simp del]
 declare listE_length [simp del]

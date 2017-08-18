@@ -4,12 +4,12 @@ section {* Bell Numbers and Spivey's Generalized Recurrence *}
 
 theory Bell_Numbers
 imports
-  "~~/src/HOL/Library/FuncSet"
-  "~~/src/HOL/Library/Monad_Syntax"
-  "~~/src/HOL/Library/Stirling"
-  "../Card_Number_Partitions/Additions_to_Main"
-  "Set_Partition"
-  "~~/src/HOL/Eisbach/Eisbach"
+  "HOL-Library.FuncSet"
+  "HOL-Library.Monad_Syntax"
+  "HOL-Library.Stirling"
+  Card_Number_Partitions.Additions_to_Main
+  Set_Partition
+  "HOL-Eisbach.Eisbach"
 begin
 
 subsection {* Preliminaries *}

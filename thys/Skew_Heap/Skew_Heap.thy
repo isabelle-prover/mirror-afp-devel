@@ -1,6 +1,6 @@
 theory Skew_Heap
 imports
-  "~~/src/HOL/Library/Tree_Multiset"
+  "HOL-Library.Tree_Multiset"
 begin
 
 section "Skew Heap"

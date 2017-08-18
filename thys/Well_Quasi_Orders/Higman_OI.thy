@@ -8,7 +8,7 @@ section \<open>A Proof of Higman's Lemma via Open Induction\<close>
 
 theory Higman_OI
 imports
-  "../Open_Induction/Open_Induction"
+  Open_Induction.Open_Induction
   Minimal_Elements
   Almost_Full
 begin

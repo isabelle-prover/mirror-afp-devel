@@ -15,7 +15,7 @@ imports
   Determinant_Impl
   Show_Matrix
   Jordan_Normal_Form_Existence
-  "../Show/Show_Instances"
+  Show.Show_Instances
 begin
 
 text \<open>For determinants we require class @{class idom_divide}, so integers, rationals, etc. can be used.\<close>

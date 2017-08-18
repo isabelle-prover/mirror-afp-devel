@@ -5,7 +5,7 @@
 section \<open>Looping Constructs for Imperative HOL\<close>
 
 theory Imperative_Loops
-imports "~~/src/HOL/Imperative_HOL/Imperative_HOL"
+imports "HOL-Imperative_HOL.Imperative_HOL"
 begin
 
 subsection \<open>While Loops\<close>

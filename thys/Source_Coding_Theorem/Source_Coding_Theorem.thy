@@ -4,7 +4,7 @@
 *)
 
 theory Source_Coding_Theorem
-imports Information
+imports "HOL-Probability.Information"
 begin
 section{* Basic types *}
 

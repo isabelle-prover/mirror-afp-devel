@@ -9,9 +9,9 @@ imports
   Position_Autos
   After2
   Before2
-  "~~/src/HOL/Library/Code_Char"
-  "~~/src/HOL/Library/Code_Target_Nat"
-  "../Efficient-Mergesort/Efficient_Sort"
+  "HOL-Library.Code_Char"
+  "HOL-Library.Code_Target_Nat"
+  "Efficient-Mergesort.Efficient_Sort"
 begin
 (*>*)
 

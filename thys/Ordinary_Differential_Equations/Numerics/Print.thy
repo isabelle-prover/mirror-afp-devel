@@ -1,12 +1,12 @@
 section \<open>Target Language debug messages\<close>
 theory Print
 imports
-  "~~/src/HOL/Decision_Procs/Approximation"
-  "../../Affine_Arithmetic/Affine_Arithmetic"
-  "../../Show/Show_Instances"
-  "~~/src/HOL/Library/Monad_Syntax"
-  "Optimize_Integer"
-  "~~/src/HOL/Library/Code_Char"
+  "HOL-Decision_Procs.Approximation"
+  Affine_Arithmetic.Affine_Arithmetic
+  Show.Show_Instances
+  "HOL-Library.Monad_Syntax"
+  Optimize_Integer
+  "HOL-Library.Code_Char"
 begin
 
 subsection \<open>Printing\<close>

@@ -1,7 +1,7 @@
 theory Funpow
 imports
-  "~~/src/HOL/Library/FuncSet"
-  "~~/src/HOL/Library/Permutations"
+  "HOL-Library.FuncSet"
+  "HOL-Library.Permutations"
 begin
 
 section \<open>Auxiliary Lemmas about @{term "op ^^"}\<close>

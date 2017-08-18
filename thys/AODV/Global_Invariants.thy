@@ -10,8 +10,8 @@ imports Seq_Invariants
         Aodv_Predicates
         Fresher
         Quality_Increases
-        "../AWN/OAWN_Convert"
-        "OAodv"
+        AWN.OAWN_Convert
+        OAodv
 begin
 
 lemma other_quality_increases [elim]:

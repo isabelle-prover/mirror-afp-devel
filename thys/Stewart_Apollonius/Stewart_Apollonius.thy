@@ -4,7 +4,7 @@ section \<open>Stewart's Theorem and Apollonius' Theorem\<close>
 
 theory Stewart_Apollonius
 imports
-  "../Triangle/Triangle"
+  Triangle.Triangle
 begin
 
 subsection \<open>Stewart's Theorem\<close>

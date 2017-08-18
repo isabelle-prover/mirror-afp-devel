@@ -6,14 +6,14 @@ session Nested_Multisets_Ordinals (AFP) = Ordinal +
     "HOL-Library"
     "List-Index"
   theories [document = false]
-    "~~/src/HOL/Library/Extended_Nat"
-    "~~/src/HOL/Library/Multiset_Order"
-    "~~/src/HOL/Library/Product_Order"
-    "~~/src/HOL/Library/Sublist"
-    "~~/src/HOL/Library/FSet"
-    "~~/src/HOL/Library/Countable_Set_Type"
-    "~~/src/HOL/Library/Nat_Bijection"
-    "../List-Index/List_Index"
+    "HOL-Library.Extended_Nat"
+    "HOL-Library.Multiset_Order"
+    "HOL-Library.Product_Order"
+    "HOL-Library.Sublist"
+    "HOL-Library.FSet"
+    "HOL-Library.Countable_Set_Type"
+    "HOL-Library.Nat_Bijection"
+    "List-Index.List_Index"
   theories
     Signed_Syntactic_Ordinal
     Syntactic_Ordinal_Bridge

@@ -4,7 +4,7 @@ text \<open>This theory contains Lazard's optimization in the computation of
   the subresultant PRS as described by Ducos \cite[Section 2]{Ducos}.\<close>
 theory Dichotomous_Lazard
 imports 
-  "~~/src/HOL/Computational_Algebra/Polynomial_Factorial" (* to_fract *)
+  "HOL-Computational_Algebra.Polynomial_Factorial" (* to_fract *)
 begin
   
 lemma power_fract[simp]: "(Fract a b)^n = Fract (a^n) (b^n)" 

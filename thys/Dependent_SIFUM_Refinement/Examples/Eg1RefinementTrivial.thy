@@ -1,7 +1,7 @@
 theory Eg1RefinementTrivial
 imports Eg1
         "../CompositionalRefinement"
-        "../../Dependent_SIFUM_Type_Systems/TypeSystem"
+        Dependent_SIFUM_Type_Systems.TypeSystem
 begin
 
 sublocale sifum_example \<subseteq>

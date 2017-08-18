@@ -4,7 +4,7 @@ subsection \<open>Monoid\<close>
 
 theory Applicative_Monoid imports
   Applicative 
-  "~~/src/Tools/Adhoc_Overloading"
+  "HOL-Library.Adhoc_Overloading"
 begin
 
 datatype ('a, 'b) monoid_ap = Monoid_ap 'a 'b

@@ -1,5 +1,5 @@
 theory "AList-Utils"
-imports Main "~~/src/HOL/Library/AList"
+imports Main "HOL-Library.AList"
 begin
 declare implies_True_equals [simp] False_implies_equals[simp]
 text {* We want to have @{text delete} and @{text update} back in the namespace. *}

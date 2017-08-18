@@ -20,7 +20,7 @@ section {* Generating Show-Functions for Data Types *}
 
 theory Old_Show_Generator
 imports
-  "../../Datatype_Order_Generator/Derive_Aux"
+  Datatype_Order_Generator.Derive_Aux
   Old_Show
 begin
 

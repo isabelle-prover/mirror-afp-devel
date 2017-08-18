@@ -1,5 +1,5 @@
 theory AnalBinds
-imports "../Launchbury/Terms" "../Launchbury/HOLCF-Utils" "../Launchbury/Env"
+imports Launchbury.Terms "Launchbury.HOLCF-Utils" Launchbury.Env
 begin
 
 locale ExpAnalysis =

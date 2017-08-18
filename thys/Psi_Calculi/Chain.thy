@@ -3,7 +3,7 @@
    Author/Maintainer: Jesper Bengtson (jebe@itu.dk), 2012
 *)
 theory Chain
-  imports Nominal
+  imports "HOL-Nominal.Nominal"
 begin
 
 lemma pt_set_nil: 

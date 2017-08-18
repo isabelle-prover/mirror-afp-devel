@@ -1,6 +1,6 @@
 section{* Terms and Literals *}
 
-theory TermsAndLiterals imports Main "~~/src/HOL/Library/Countable_Set" begin
+theory TermsAndLiterals imports Main "HOL-Library.Countable_Set" begin
 
 type_synonym var_sym  = string
 type_synonym fun_sym  = string

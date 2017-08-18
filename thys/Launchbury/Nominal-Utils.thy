@@ -1,5 +1,5 @@
 theory "Nominal-Utils"
-imports "../Nominal2/Nominal2" "~~/src/HOL/Library/AList"
+imports Nominal2.Nominal2 "HOL-Library.AList"
 begin
 
 subsubsection {* Lemmas helping with equivariance proofs *}

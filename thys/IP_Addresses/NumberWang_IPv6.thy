@@ -1,6 +1,6 @@
 theory NumberWang_IPv6
 imports 
-  "../Word_Lib/Word_Lemmas"
+  Word_Lib.Word_Lemmas
 begin
 
 section\<open>Helper Lemmas for Low-Level Operations on Machine Words\<close>

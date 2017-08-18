@@ -6,7 +6,7 @@ theory Tree_Relabelling imports
   Applicative_State
   Applicative_Option
   Applicative_PMF
-  "~~/src/HOL/Library/Stream"
+  "HOL-Library.Stream"
 begin
 
 unbundle applicative_syntax

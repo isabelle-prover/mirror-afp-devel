@@ -3,7 +3,7 @@ theory Impl_Bit_Set
 imports 
   "../../Iterator/Iterator" 
   "../Intf/Intf_Set" 
-  "../../../Native_Word/Bits_Integer"
+  Native_Word.Bits_Integer
 begin
   text {*
     Based on the Native-Word library, using bit-operations on arbitrary

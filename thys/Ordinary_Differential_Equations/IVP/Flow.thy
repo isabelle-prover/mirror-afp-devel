@@ -2,7 +2,7 @@ section \<open>Flow\<close>
 theory Flow
 imports
   Picard_Lindeloef_Qualitative
-  "~~/src/HOL/Library/Diagonal_Subsequence"
+  "HOL-Library.Diagonal_Subsequence"
   "../Library/Bounded_Linear_Operator"
   "../Library/Multivariate_Taylor"
 begin

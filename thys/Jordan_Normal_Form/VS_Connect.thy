@@ -12,7 +12,7 @@ text \<open>This theory connects the Matrix theory with the VectorSpace theory o
 theory VS_Connect
 imports 
   Matrix
-  "../VectorSpace/VectorSpace"
+  VectorSpace.VectorSpace
 begin
 
 named_theorems class_ring_simps

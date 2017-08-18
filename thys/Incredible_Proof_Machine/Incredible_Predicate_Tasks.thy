@@ -2,7 +2,7 @@ theory Incredible_Predicate_Tasks
 imports
   Incredible_Completeness
   Incredible_Predicate
-  "~~/src/HOL/Eisbach/Eisbach"
+  "HOL-Eisbach.Eisbach"
 begin
 
 declare One_nat_def [simp del]

@@ -2,9 +2,9 @@ section {* The Free Group *}
 
 theory "FreeGroups"
 imports
-   "~~/src/HOL/Algebra/Group"
-   "Cancelation"
-   "Generators"
+   "HOL-Algebra.Group"
+   Cancelation
+   Generators
 begin
 
 text {*

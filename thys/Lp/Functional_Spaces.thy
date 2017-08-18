@@ -3,7 +3,7 @@
 *)
 
 theory Functional_Spaces
-imports "~~/src/HOL/Analysis/Analysis" "../Ergodic_Theory/SG_Library_Complement"
+imports "HOL-Analysis.Analysis" Ergodic_Theory.SG_Library_Complement
 begin
 
 

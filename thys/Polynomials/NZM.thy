@@ -26,7 +26,7 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 section {* Monotonicity criteria of Neurauter, Zankl, and Middeldorp *}
 
 theory NZM
-imports "../Abstract-Rewriting/SN_Order_Carrier" Polynomials
+imports "Abstract-Rewriting.SN_Order_Carrier" Polynomials
 begin
 
 text {* 

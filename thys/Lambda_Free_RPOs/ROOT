@@ -5,9 +5,9 @@ session Lambda_Free_RPOs (AFP) = "HOL-Library" +
   sessions
     "HOL-Cardinals"
   theories [document = false]
-    "~~/src/HOL/Cardinals/Wellorder_Extension"
-    "~~/src/HOL/Library/Extended_Nat"
-    "~~/src/HOL/Library/Multiset_Order"
+    "HOL-Cardinals.Wellorder_Extension"
+    "HOL-Library.Extended_Nat"
+    "HOL-Library.Multiset_Order"
   theories
     Lambda_Free_RPOs
   document_files

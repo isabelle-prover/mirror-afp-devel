@@ -8,7 +8,7 @@
 section "The Ipurge Unwinding Theorem in its general form"
 
 theory IpurgeUnwinding
-imports "../Noninterference_CSP/CSPNoninterference" "../List_Interleaving/ListInterleaving"
+imports Noninterference_CSP.CSPNoninterference List_Interleaving.ListInterleaving
 begin
 
 text {*

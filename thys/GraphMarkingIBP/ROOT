@@ -5,7 +5,7 @@ session GraphMarkingIBP (AFP) = HOL +
   sessions
     DataRefinementIBP
   theories [document = false]
-    "../DataRefinementIBP/DataRefinement"
+    DataRefinementIBP.DataRefinement
   theories
     DSWMark
   document_files

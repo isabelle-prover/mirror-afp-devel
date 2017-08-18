@@ -6,7 +6,7 @@ imports
   Sepref_Foreach
   Sepref_Intf_Util
   "../Separation_Logic_Imperative_HOL/Examples/Default_Insts"
-  "Sepref_Improper"
+  Sepref_Improper
 begin
 
 end

@@ -1,5 +1,5 @@
 theory Set_Applicative imports
-  "../Applicative_Lifting/Applicative_Set"
+  Applicative_Lifting.Applicative_Set
 begin
 
 subsection \<open>Applicative instance for @{typ "'a set"}\<close>

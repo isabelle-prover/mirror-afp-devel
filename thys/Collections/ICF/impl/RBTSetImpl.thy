@@ -13,7 +13,7 @@ section {* \isaheader{Set Implementation by Red-Black-Tree} *}
 theory RBTSetImpl
 imports 
   "../spec/SetSpec"
-  "RBTMapImpl"
+  RBTMapImpl
   "../gen_algo/SetByMap"
   "../gen_algo/SetGA"
 begin

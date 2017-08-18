@@ -12,7 +12,7 @@
 theory Tactics
 imports
   Model
-  "~~/src/HOL/Library/Sublist"
+  "HOL-Library.Sublist"
 begin
 
 (*>*)

@@ -5,7 +5,7 @@ section {* Finiteness of Derivatives Modulo ACI *}
 (*<*)
 (* split into Norm and Fin theories *)
 theory Derivatives_Finite
-imports "../Regular-Sets/Derivatives"
+imports "Regular-Sets.Derivatives"
 begin
 (*>*)
 

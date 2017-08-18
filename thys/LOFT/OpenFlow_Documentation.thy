@@ -20,7 +20,7 @@ theory OpenFlow_Documentation
 imports 
   LinuxRouter_OpenFlow_Translation 
   Featherweight_OpenFlow_Comparison
-  "~~/src/HOL/Library/LaTeXsugar"
+  "HOL-Library.LaTeXsugar"
 begin
 (*>*)
 

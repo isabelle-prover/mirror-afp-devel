@@ -8,7 +8,7 @@
 section {* Models of Modal Kleene Algebras *}
 
 theory Modal_Kleene_Algebra_Models
-imports "../Kleene_Algebra/Kleene_Algebra_Models"
+imports Kleene_Algebra.Kleene_Algebra_Models
   Modal_Kleene_Algebra
 
 begin

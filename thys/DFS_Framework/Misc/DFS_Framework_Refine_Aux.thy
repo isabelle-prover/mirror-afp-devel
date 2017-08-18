@@ -1,5 +1,5 @@
 theory DFS_Framework_Refine_Aux
-imports DFS_Framework_Misc "../../Refine_Monadic/Refine_Monadic"
+imports DFS_Framework_Misc Refine_Monadic.Refine_Monadic
 begin
 
 

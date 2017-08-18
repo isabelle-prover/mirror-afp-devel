@@ -3,7 +3,7 @@ chapter AFP
 session "HyperCTL" (AFP) = "HOL-Library" +
   options [timeout = 600]
   theories [document = false]
-    "~~/src/HOL/Library/Stream"
+    "HOL-Library.Stream"
   theories
     HyperCTL
   document_files 

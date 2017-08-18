@@ -1,6 +1,6 @@
 section {* The UniformVoting Algorithm *}
 theory Uv_Defs
-imports "../../Heard_Of/HOModel" "../Consensus_Types" "../Quorums"
+imports Heard_Of.HOModel "../Consensus_Types" "../Quorums"
 begin
 
 text {* The contents of this file have been taken almost verbatim from the

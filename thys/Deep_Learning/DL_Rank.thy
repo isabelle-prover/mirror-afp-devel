@@ -4,9 +4,9 @@ section \<open>Matrix Rank\<close>
 
 theory DL_Rank
 imports DL_Missing_VS_Connect DL_Missing_List
- "../Jordan_Normal_Form/Determinant"
-"../Jordan_Normal_Form/Missing_VectorSpace"
-"../Jordan_Normal_Form/Matrix"
+ Jordan_Normal_Form.Determinant
+Jordan_Normal_Form.Missing_VectorSpace
+Jordan_Normal_Form.Matrix
 begin
 
 lemma (in vectorspace) full_dim_span:

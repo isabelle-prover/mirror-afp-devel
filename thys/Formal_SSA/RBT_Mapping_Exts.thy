@@ -5,8 +5,8 @@
 theory RBT_Mapping_Exts
 imports
   Mapping_Exts
-  "~~/src/HOL/Library/RBT_Mapping"
-  "~~/src/HOL/Library/RBT_Set"
+  "HOL-Library.RBT_Mapping"
+  "HOL-Library.RBT_Set"
 begin
 
 lemma restrict_mapping_code [code]:

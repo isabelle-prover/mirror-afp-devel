@@ -2,9 +2,9 @@ section "Linux Router"
 theory Linux_Router
 imports 
 	Routing_Table
-	"../Simple_Firewall/SimpleFw_Semantics"
-	"../Simple_Firewall/Simple_Packet"
-	"~~/src/HOL/Library/Monad_Syntax"
+	Simple_Firewall.SimpleFw_Semantics
+	Simple_Firewall.Simple_Packet
+	"HOL-Library.Monad_Syntax"
 begin
 
 definition "fromMaybe a m = (case m of Some a \<Rightarrow> a | None \<Rightarrow> a)" (* mehr Haskell wagen *)

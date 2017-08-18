@@ -1,7 +1,7 @@
 theory Word_More
 imports Main
-  "~~/src/HOL/Word/Word"
-  "../Word_Lib/Word_Lemmas"
+  "HOL-Word.Word"
+  Word_Lib.Word_Lemmas
 begin
 
 section\<open>Helper Lemmas about Machine Words\<close>

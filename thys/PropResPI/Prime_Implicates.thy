@@ -9,7 +9,7 @@ to generate all (prime) implicates of any given clause set. *}
 
 theory Prime_Implicates
 
-imports Main Finite_Set Propositional_Resolution
+imports Main HOL.Finite_Set Propositional_Resolution
 
 begin
 

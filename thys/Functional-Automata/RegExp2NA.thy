@@ -5,7 +5,7 @@
 section "From regular expressions directly to nondeterministic automata"
 
 theory RegExp2NA
-imports "../Regular-Sets/Regular_Exp" NA
+imports "Regular-Sets.Regular_Exp" NA
 begin
 
 type_synonym 'a bitsNA = "('a,bool list)na"

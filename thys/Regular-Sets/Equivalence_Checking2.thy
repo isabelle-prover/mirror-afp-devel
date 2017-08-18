@@ -1,7 +1,7 @@
 section \<open>Deciding Equivalence of Extended Regular Expressions\<close>
 
 theory Equivalence_Checking2
-imports Regular_Exp2 "~~/src/HOL/Library/While_Combinator"
+imports Regular_Exp2 "HOL-Library.While_Combinator"
 begin
 
 subsection \<open>Term ordering\<close>

@@ -1,9 +1,9 @@
 section {* \isaheader{Red-Black Tree based Maps} *}
 theory Impl_RBT_Map
 imports 
-  "~~/src/HOL/Library/RBT_Impl"
+  "HOL-Library.RBT_Impl"
   "../../Lib/RBT_add"
-  "../../../Automatic_Refinement/Automatic_Refinement"
+  Automatic_Refinement.Automatic_Refinement
   "../../Iterator/Iterator"
   "../Intf/Intf_Comp"
   "../Intf/Intf_Map"

@@ -3,7 +3,7 @@
 section{* Linear real arithmetic *}
 
 theory LinArith
-imports QE "~~/src/HOL/Library/ListVector" Complex_Main
+imports QE "HOL-Library.ListVector" Complex_Main
 begin
 
 declare iprod_assoc[simp]

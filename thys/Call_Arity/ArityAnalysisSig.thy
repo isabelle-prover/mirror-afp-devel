@@ -1,5 +1,5 @@
 theory ArityAnalysisSig
-imports "../Launchbury/Terms" AEnv "Arity-Nominal" "../Launchbury/Nominal-HOLCF"  "../Launchbury/Substitution"
+imports Launchbury.Terms AEnv "Arity-Nominal" "Launchbury.Nominal-HOLCF"  Launchbury.Substitution
 begin
 
 locale ArityAnalysis =

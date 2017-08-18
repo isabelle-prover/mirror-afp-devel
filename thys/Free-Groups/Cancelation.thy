@@ -2,7 +2,7 @@ section {* Cancelation of words of generators and their inverses *}
 
 theory Cancelation
 imports
-  "~~/src/HOL/Proofs/Lambda/Commutation"
+  "HOL-Proofs-Lambda.Commutation"
 begin
 
 text {*

@@ -5,7 +5,7 @@ session SPARCv8 (AFP) = "HOL-Word" +
   sessions
     "HOL-Eisbach"
   theories [document = false]
-    "~~/src/Tools/Adhoc_Overloading"
+    "HOL-Library.Adhoc_Overloading"
     "lib/WordDecl"
   theories
     "SparcModel_MMU/Sparc_Properties"

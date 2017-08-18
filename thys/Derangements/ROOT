@@ -5,8 +5,8 @@ session Derangements (AFP) = "HOL-Library" +
   sessions
     Ordinary_Differential_Equations
   theories [document = false]
-    "~~/src/HOL/Decision_Procs/Approximation"
-    "~~/src/HOL/Library/Permutations"
+    "HOL-Decision_Procs.Approximation"
+    "HOL-Library.Permutations"
   theories
     Derangements
   document_files

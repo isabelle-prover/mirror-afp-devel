@@ -2,7 +2,7 @@ section "Skew Heap"
 
 theory Skew_Heap_Analysis
 imports
-  "../Skew_Heap/Skew_Heap"
+  Skew_Heap.Skew_Heap
   Amortized_Framework
   Priority_Queue_ops_merge
   Lemmas_log

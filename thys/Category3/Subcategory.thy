@@ -13,7 +13,7 @@ chapter "Subcategory"
   *}
 
 theory Subcategory
-imports "Functor"
+imports Functor
 begin
 
   locale subcategory =

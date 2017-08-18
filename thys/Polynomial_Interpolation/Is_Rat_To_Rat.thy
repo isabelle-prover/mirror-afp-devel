@@ -14,8 +14,8 @@ text \<open>We define a class which provides tests whether a number is rational,
 
 theory Is_Rat_To_Rat
 imports 
-  Complex
-  "../Sqrt_Babylonian/Sqrt_Babylonian_Auxiliary"
+  HOL.Complex
+  Sqrt_Babylonian.Sqrt_Babylonian_Auxiliary
 begin
 
 class is_rat = field_char_0 +

@@ -1,5 +1,5 @@
 theory Tables_real
-imports "../Amortized_Complexity/Amortized_Framework0"
+imports Amortized_Complexity.Amortized_Framework0
 begin
 
 (* Final version with l :: real *)

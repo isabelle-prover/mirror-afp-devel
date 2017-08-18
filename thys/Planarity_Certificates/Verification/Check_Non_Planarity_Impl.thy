@@ -2,9 +2,9 @@ section \<open>Implementation of a Non-Planarity Checker\<close>
 
 theory Check_Non_Planarity_Impl
 imports
-  Vcg
-  "Simpl_Anno"
-  "../../Graph_Theory/Graph_Theory"
+  Simpl.Vcg
+  Simpl_Anno
+  Graph_Theory.Graph_Theory
 begin
 
 subsection {* An abstract graph datatype *}

@@ -13,7 +13,7 @@ text \<open>Via the existing formulation of the fundamental theorem of algebra,
 theory Fundamental_Theorem_Algebra_Factorized
 imports 
   Order_Polynomial
-  "~~/src/HOL/Computational_Algebra/Fundamental_Theorem_Algebra"
+  "HOL-Computational_Algebra.Fundamental_Theorem_Algebra"
 begin
 
 lemma fundamental_theorem_algebra_factorized: fixes p :: "complex poly"

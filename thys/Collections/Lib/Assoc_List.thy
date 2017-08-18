@@ -1,7 +1,7 @@
 section {* \isaheader{The type of associative lists} *}
 theory Assoc_List 
   imports 
-  "~~/src/HOL/Library/AList" 
+  "HOL-Library.AList" 
   "../Iterator/SetIteratorOperations"
 begin
 

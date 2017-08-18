@@ -5,9 +5,9 @@
 
 theory SimpleGroups
 imports
-  "SubgroupsAndNormalSubgroups"
-  "../Secondary_Sylow/SndSylow"
-  "SndIsomorphismGrp"
+  SubgroupsAndNormalSubgroups
+  Secondary_Sylow.SndSylow
+  SndIsomorphismGrp
 begin
 
 section {*Simple Groups*}

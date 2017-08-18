@@ -6,7 +6,7 @@
 section {* Prefices on finite and infinite lists *}
 
 theory ListInf_Prefix
-imports "~~/src/HOL/Library/Sublist" ListInf
+imports "HOL-Library.Sublist" ListInf
 begin
 
 subsection {* Additional list prefix results *}

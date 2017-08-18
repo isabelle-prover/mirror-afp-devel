@@ -7,7 +7,7 @@ section {* Countable Datatypes *}
 
 theory Countable_Generator
 imports 
-  "~~/src/HOL/Library/Countable"
+  "HOL-Library.Countable"
   "../Derive_Manager"
 begin
 

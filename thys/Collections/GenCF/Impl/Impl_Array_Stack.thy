@@ -1,7 +1,7 @@
 section {* Stack by Array *}
 theory Impl_Array_Stack
 imports   
-  "../../../Automatic_Refinement/Automatic_Refinement"
+  Automatic_Refinement.Automatic_Refinement
   "../../Lib/Diff_Array"
 begin
 

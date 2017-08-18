@@ -6,7 +6,7 @@
 
 section {* Label Expressions *}
 theory Expr
-imports "Update"
+imports Update
 begin
 
 datatype ('s,'e)expr = true

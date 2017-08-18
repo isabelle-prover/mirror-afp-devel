@@ -1,6 +1,6 @@
 section {* \isaheader{Iterators} *}
 theory Gen_Iterator
-imports "../../Refine_Monadic/Refine_Monadic" "Proper_Iterator"
+imports Refine_Monadic.Refine_Monadic Proper_Iterator
 begin
   text {*
     Iterators are realized by to-list functions followed by folding.

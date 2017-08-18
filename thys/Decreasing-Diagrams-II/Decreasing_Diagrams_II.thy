@@ -9,8 +9,8 @@ section \<open>Decreasing Diagrams\<close>
 theory Decreasing_Diagrams_II
 imports
   Decreasing_Diagrams_II_Aux
-  "~~/src/HOL/Cardinals/Wellorder_Extension"
-  "../Abstract-Rewriting/Abstract_Rewriting"
+  "HOL-Cardinals.Wellorder_Extension"
+  "Abstract-Rewriting.Abstract_Rewriting"
 begin
 
 subsection \<open>Greek accents\<close>

@@ -1,5 +1,5 @@
 theory Splay_Tree
-imports "~~/src/HOL/Library/Tree"
+imports "HOL-Library.Tree"
 begin
 
 section "Splay Tree"
