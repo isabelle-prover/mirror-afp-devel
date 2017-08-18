@@ -4,7 +4,7 @@ subsection \<open>Option\<close>
 
 theory Applicative_Option imports
   Applicative
-  "~~/src/Tools/Adhoc_Overloading"
+  "HOL-Library.Adhoc_Overloading"
 begin
 
 fun ap_option :: "('a \<Rightarrow> 'b) option \<Rightarrow> 'a option \<Rightarrow> 'b option"

@@ -6,7 +6,7 @@ subsection \<open>Environment functor\<close>
 
 theory Applicative_Environment imports 
   Applicative
-  "~~/src/Tools/Adhoc_Overloading"
+  "HOL-Library.Adhoc_Overloading"
 begin
 
 definition "const x = (\<lambda>_. x)"

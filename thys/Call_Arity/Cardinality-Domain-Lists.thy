@@ -1,5 +1,5 @@
 theory "Cardinality-Domain-Lists"
-imports "../Launchbury/Vars" "../Launchbury/Nominal-HOLCF" "../Launchbury/Env" "Cardinality-Domain" "Set-Cpo" "Env-Set-Cpo"
+imports Launchbury.Vars "Launchbury.Nominal-HOLCF" Launchbury.Env "Cardinality-Domain" "Set-Cpo" "Env-Set-Cpo"
 begin
 
 fun no_call_in_path where

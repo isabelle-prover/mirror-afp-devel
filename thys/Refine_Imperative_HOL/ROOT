@@ -29,17 +29,17 @@ session Refine_Imperative_HOL (AFP) = Sepref_Prereq +
     "Lib/Term_Synth"
     "Lib/User_Smashing"
 
-    "~~/src/HOL/Library/Code_Target_Numeral"
-    "../DFS_Framework/Misc/DFS_Framework_Refine_Aux"
+    "HOL-Library.Code_Target_Numeral"
+    DFS_Framework.DFS_Framework_Refine_Aux
 
-    "~~/src/Doc/Isar_Ref/Base"
+    Isar_Ref.Base
 
   theories
-    "Sepref_Chapter_Tool"
-      "Sepref_Tool"
+    Sepref_Chapter_Tool
+      Sepref_Tool
 
-    "Sepref_Chapter_Setup"
-      "Sepref"
+    Sepref_Chapter_Setup
+      Sepref
 
     "IICF/Sepref_Chapter_IICF"
       "IICF/IICF"
@@ -50,9 +50,9 @@ session Refine_Imperative_HOL (AFP) = Sepref_Prereq +
       "Userguides/Sepref_Guide_General_Util"
 
   theories [document = false]
-      "../Dijkstra_Shortest_Path/Dijkstra"
-      "../Dijkstra_Shortest_Path/Test"
-      "../Collections/Examples/Autoref/Nested_DFS"
+      Dijkstra_Shortest_Path.Dijkstra
+      Dijkstra_Shortest_Path.Test
+      Collections_Examples.Nested_DFS
       "Examples/Sepref_WGraph"
 
   theories

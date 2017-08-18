@@ -6,7 +6,7 @@
 section {* Additional definitions and results for lists *}
 
 theory ListSlice
-imports "../List-Infinite/ListInf/ListInf"
+imports "List-Infinite.ListInf"
 begin
 
 subsection {* Slicing lists into lists of lists *}

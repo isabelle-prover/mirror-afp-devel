@@ -2,8 +2,8 @@
   Author: Andreas Lochbihler, ETH Zurich *)
 
 theory IND_CPA_PK imports
-  "../CryptHOL/Computational_Model"
-  "../CryptHOL/Negligible"
+  CryptHOL.Computational_Model
+  CryptHOL.Negligible
 begin
 
 subsection {* The IND-CPA game for public-key encryption with oracle access *}

@@ -1,5 +1,5 @@
 theory Eg2
-imports "../../Dependent_SIFUM_Type_Systems/Language"
+imports Dependent_SIFUM_Type_Systems.Language
 begin
 
 datatype var\<^sub>C = control_var\<^sub>C | buffer\<^sub>C | high_var\<^sub>C | low_var\<^sub>C | temp\<^sub>C | reg\<^sub>C

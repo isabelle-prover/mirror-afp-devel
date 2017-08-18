@@ -7,7 +7,7 @@ section \<open>Try-Catch and Error-Update Notation for Arbitrary Types\<close>
 theory Error_Syntax
 imports
   Main
-  "~~/src/Tools/Adhoc_Overloading"
+  "HOL-Library.Adhoc_Overloading"
 begin
 
 consts

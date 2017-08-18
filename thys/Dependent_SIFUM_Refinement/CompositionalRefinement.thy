@@ -3,7 +3,7 @@ Title: Value-Dependent SIFUM Refinement
 Authors: Toby Murray, Robert Sison
 *)
 theory CompositionalRefinement
-imports "../Dependent_SIFUM_Type_Systems/Compositionality"
+imports Dependent_SIFUM_Type_Systems.Compositionality
 begin
 
 

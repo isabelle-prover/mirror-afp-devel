@@ -4,7 +4,7 @@ section "Abstract Interpretation Abstractly"
 
 theory Abs_Int0
 imports
-  "~~/src/HOL/Library/While_Combinator"
+  "HOL-Library.While_Combinator"
   Collecting
 begin
 

@@ -2,8 +2,8 @@ theory Girth_Chromatic
 imports
   Ugraphs
   Girth_Chromatic_Misc
-  "~~/src/HOL/Probability/Probability"
-  "~~/src/HOL/Decision_Procs/Approximation"
+  Probability
+  "HOL-Decision_Procs.Approximation"
 begin
 
 section {* Probability Space on Sets of Edges *}

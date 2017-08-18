@@ -1,6 +1,6 @@
 theory Example_Utilities
 imports
-  "../ODE_Numerics"
+  "HOL-ODE-Numerics.ODE_Numerics"
 begin
 
 method_setup guess_rhs = \<open>

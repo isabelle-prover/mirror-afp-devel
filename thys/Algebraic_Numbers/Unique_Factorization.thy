@@ -1,11 +1,11 @@
 theory Unique_Factorization
   imports
-    "../Polynomial_Interpolation/Ring_Hom_Poly"
-    "../Polynomial_Factorization/Polynomial_Divisibility"
-    "~~/src/HOL/Library/Permutations" 
-    "~~/src/HOL/Computational_Algebra/Euclidean_Algorithm"
-    "~~/src/HOL/Algebra/Divisibility"
-    "../Containers/Containers_Auxiliary" (* only for a lemma *)
+    Polynomial_Interpolation.Ring_Hom_Poly
+    Polynomial_Factorization.Polynomial_Divisibility
+    "HOL-Library.Permutations" 
+    "HOL-Computational_Algebra.Euclidean_Algorithm"
+    "HOL-Algebra.Divisibility"
+    Containers.Containers_Auxiliary (* only for a lemma *)
 begin
 hide_const(open) prime
 hide_fact(open) Divisibility.irreducibleI

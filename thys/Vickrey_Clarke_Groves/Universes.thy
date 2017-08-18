@@ -20,9 +20,9 @@ section {* Sets of injections, partitions, allocations expressed as suitable sub
 theory Universes
 
 imports 
-"~~/src/HOL/Library/Code_Target_Nat"
+"HOL-Library.Code_Target_Nat"
 StrictCombinatorialAuction 
-"~~/src/HOL/Library/Indicator_Function"
+"HOL-Library.Indicator_Function"
 
 begin
 

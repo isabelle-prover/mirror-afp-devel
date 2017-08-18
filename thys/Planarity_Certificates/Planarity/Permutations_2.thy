@@ -1,8 +1,8 @@
 theory Permutations_2
 imports
-  "~~/src/HOL/Library/Permutations"
+  "HOL-Library.Permutations"
   Executable_Permutations
-  "../../Graph_Theory/Funpow"
+  Graph_Theory.Funpow
 begin
 
 section \<open>Modifying Permutations\<close>

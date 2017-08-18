@@ -5,10 +5,10 @@ session Refine_Monadic (AFP) = Automatic_Refinement +
   sessions
     "HOL-Word"
   theories [document = false]
-    "~~/src/HOL/Library/While_Combinator"
-    "~~/src/HOL/Library/Lattice_Syntax"
-    "~~/src/HOL/Library/Monad_Syntax"
-    "~~/src/HOL/Word/Word"
+    "HOL-Library.While_Combinator"
+    "HOL-Library.Lattice_Syntax"
+    "HOL-Library.Monad_Syntax"
+    "HOL-Word.Word"
   theories
     Refine_Monadic
     "examples/Examples"

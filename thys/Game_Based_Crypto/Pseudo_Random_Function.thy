@@ -2,7 +2,7 @@
   Author: Andreas Lochbihler, ETH Zurich *)
 
 theory Pseudo_Random_Function imports
-  "../CryptHOL/Computational_Model"
+  CryptHOL.Computational_Model
 begin
 
 subsection {* Pseudo-random function *}

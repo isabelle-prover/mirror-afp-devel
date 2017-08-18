@@ -6,7 +6,7 @@
 *)
 theory Code_Abort_Gcd
 imports   
-  "~~/src/HOL/Computational_Algebra/Polynomial_Factorial"
+  "HOL-Computational_Algebra.Polynomial_Factorial"
 begin
 
 text \<open>Dummy code-setup for @{const Gcd} and @{const Lcm} in the presence of 

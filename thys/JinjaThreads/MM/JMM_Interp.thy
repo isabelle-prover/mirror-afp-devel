@@ -5,12 +5,12 @@
 *)
 
 theory JMM_Interp imports
-  "JMM_Compiler"
+  JMM_Compiler
   "../J/Deadlocked"
   "../BV/JVMDeadlocked"
-  "JMM_Type2"
-  "DRF_J"
-  "DRF_JVM"
+  JMM_Type2
+  DRF_J
+  DRF_JVM
 begin
 
 lemma jmm'_J_typesafe:

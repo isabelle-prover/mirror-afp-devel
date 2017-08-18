@@ -2,8 +2,8 @@ section {* Linear Combinations *}
 
 theory LinearCombinations
 imports Main
-  "~~/src/HOL/Algebra/Module"
-  "~~/src/HOL/Algebra/Coset"
+  "HOL-Algebra.Module"
+  "HOL-Algebra.Coset"
   RingModuleFacts
   MonoidSums
   FunctionLemmas

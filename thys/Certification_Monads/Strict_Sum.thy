@@ -7,9 +7,9 @@ section \<open>A Sum Type with Bottom Element\<close>
 
 theory Strict_Sum
 imports
-  "~~/src/HOL/Library/Monad_Syntax"
+  "HOL-Library.Monad_Syntax"
   Error_Syntax
-  "../Partial_Function_MR/Partial_Function_MR"
+  Partial_Function_MR.Partial_Function_MR
 begin
 
 datatype (dead 'e, 'a) sum_bot (infixr "+\<^sub>\<bottom>" 10) = Bottom | Left 'e | Right 'a for map: sum_bot_map

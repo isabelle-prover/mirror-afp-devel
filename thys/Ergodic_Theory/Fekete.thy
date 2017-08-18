@@ -3,7 +3,7 @@
 *)
 
 theory Fekete
-  imports "~~/src/HOL/Analysis/Analysis"
+  imports "HOL-Analysis.Analysis"
 begin
 
 section \<open>Subadditive and submultiplicative sequences\<close>

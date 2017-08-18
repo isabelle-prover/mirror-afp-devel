@@ -4,7 +4,7 @@ subsection \<open>Set with Cartesian product\<close>
 
 theory Applicative_Set imports
   Applicative
-  "~~/src/Tools/Adhoc_Overloading"
+  "HOL-Library.Adhoc_Overloading"
 begin
 
 definition ap_set :: "('a \<Rightarrow> 'b) set \<Rightarrow> 'a set \<Rightarrow> 'b set"

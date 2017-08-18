@@ -6,7 +6,7 @@
 section{* MoreList *}
 
 theory MoreList
-imports Main "~~/src/HOL/Library/Multiset"
+imports Main "HOL-Library.Multiset"
 begin
 
 text{* Theory contains some additional lemmas and functions for the

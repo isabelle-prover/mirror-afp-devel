@@ -1,8 +1,8 @@
 theory Incredible_Signatures
 imports
   Main 
-  "~~/src/HOL/Library/FSet"
-  "~~/src/HOL/Library/Stream"
+  "HOL-Library.FSet"
+  "HOL-Library.Stream"
   Abstract_Formula
 begin
 

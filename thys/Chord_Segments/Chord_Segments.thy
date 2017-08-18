@@ -4,8 +4,8 @@ section \<open>Intersecting Chord Theorem\<close>
 
 theory Chord_Segments
 imports
-  "~~/src/HOL/Analysis/Analysis"
-  "../Triangle/Triangle"
+  "HOL-Analysis.Analysis"
+  Triangle.Triangle
 begin
 
 subsection \<open>Preliminaries\<close>

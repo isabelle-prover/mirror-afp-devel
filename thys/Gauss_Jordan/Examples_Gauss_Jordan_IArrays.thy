@@ -12,7 +12,7 @@ imports
   Determinants_IArrays
   Inverse_IArrays
   Code_Bit
-  "~~/src/HOL/Library/Code_Target_Numeral"
+  "HOL-Library.Code_Target_Numeral"
 (*"~~/src/HOL/Library/Code_Real_Approx_By_Float"*)
 begin
 

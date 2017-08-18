@@ -2,13 +2,13 @@ theory FiniteListGraph_Impl
 imports 
   FiniteListGraph
   (*"../../Collections/ICF/impl/RBTSetImpl" (*red black trees*)*)
-    "~~/src/HOL/Library/RBT_Impl"
-    "~~/src/HOL/Library/RBT"
-  "~~/src/HOL/Library/Product_Lexorder"
+    "HOL-Library.RBT_Impl"
+    "HOL-Library.RBT"
+  "HOL-Library.Product_Lexorder"
   (*maybe import the following only at the end*)
-  "Efficient_Distinct"
-  "~~/src/HOL/Library/Code_Char"
-  "~~/src/HOL/Library/Code_Target_Nat"
+  Efficient_Distinct
+  "HOL-Library.Code_Char"
+  "HOL-Library.Code_Target_Nat"
 begin
 
 

@@ -24,7 +24,7 @@ See, for example, \cite{BirdMoor1997,HirschHodkinson2002,Maddux1996,Maddux2006,S
 
 theory Relation_Algebras
 
-imports "../Stone_Algebras/P_Algebras" Semirings
+imports Stone_Algebras.P_Algebras Semirings
 
 begin
 

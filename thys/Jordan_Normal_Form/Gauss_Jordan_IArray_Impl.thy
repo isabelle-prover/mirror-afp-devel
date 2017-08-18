@@ -12,7 +12,7 @@ text \<open>In this theory we provide efficient implementations
 
 theory Gauss_Jordan_IArray_Impl
 imports 
-  "../Polynomial_Interpolation/Missing_Unsorted"
+  Polynomial_Interpolation.Missing_Unsorted
   Matrix_IArray_Impl
   Gauss_Jordan_Elimination
 begin

@@ -1,6 +1,6 @@
 theory Dijkstra_Benchmark
 imports "../../../Examples/Sepref_Dijkstra"
-  "../../../../Dijkstra_Shortest_Path/Test"
+  Dijkstra_Shortest_Path.Test
 begin
 
 definition nat_cr_graph_imp 

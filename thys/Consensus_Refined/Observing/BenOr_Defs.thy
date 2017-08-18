@@ -1,7 +1,7 @@
 section {* The Ben-Or Algorithm *}
 
 theory BenOr_Defs
-imports "../../Heard_Of/HOModel" "../Consensus_Types" "../Quorums" "../Two_Steps"
+imports Heard_Of.HOModel "../Consensus_Types" "../Quorums" "../Two_Steps"
 begin
 
 consts coin :: "round \<Rightarrow> process \<Rightarrow> val"

@@ -2,7 +2,7 @@ section "Priority Queues Based on Braun Trees"
 
 theory Priority_Queue_Braun
 imports
-  "~~/src/HOL/Library/Tree_Multiset"
+  "HOL-Library.Tree_Multiset"
 begin
 
 

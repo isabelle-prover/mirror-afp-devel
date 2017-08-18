@@ -1,7 +1,7 @@
 section "Binomial Heaps"
 
 theory BinomialHeap
-imports Main "~~/src/HOL/Library/Multiset"
+imports Main "HOL-Library.Multiset"
 begin
 
 locale BinomialHeapStruc_loc

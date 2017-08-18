@@ -1,7 +1,7 @@
 section{*Sum of divisors function*}
 
 theory Sigma
-imports PerfectBasics "~~/src/HOL/Library/Infinite_Set"
+imports PerfectBasics "HOL-Library.Infinite_Set"
 begin
 
 definition divisors :: "nat => nat set" where

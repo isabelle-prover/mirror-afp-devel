@@ -12,7 +12,7 @@
 
 section \<open>Combinatory Logic has the Church-Rosser property\<close>
 
-theory CL_Z imports "Z"
+theory CL_Z imports Z
 begin
 
 datatype CL = S | K | I | App CL CL ("` _ _" [999, 999] 999)

@@ -4,7 +4,7 @@ theory Monadic_Language
 imports
   Complex_Main
   "../Case_Labeling"
-  "~~/src/HOL/Eisbach/Eisbach"
+  "HOL-Eisbach.Eisbach"
 begin
 
 ML_file "../util.ML"

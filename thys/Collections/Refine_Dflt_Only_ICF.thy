@@ -1,7 +1,7 @@
 section {* \isaheader{Entry Point with only the ICF} *}
 theory Refine_Dflt_Only_ICF
 imports
-  "../Refine_Monadic/Refine_Monadic"
+  Refine_Monadic.Refine_Monadic
   "ICF/Collections"
   "Lib/Code_Target_ICF"
 begin

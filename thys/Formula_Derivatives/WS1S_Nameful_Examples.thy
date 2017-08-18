@@ -2,7 +2,7 @@ section \<open>Examples for Nameful WS1S Formulas\<close>
 
 (*<*)
 theory WS1S_Nameful_Examples
-imports WS1S_Nameful "../Show/Show_Instances"
+imports Formula_Derivatives.WS1S_Nameful Show.Show_Instances
 begin
 (*>*)
 

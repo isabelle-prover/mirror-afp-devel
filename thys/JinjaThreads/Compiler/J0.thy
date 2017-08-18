@@ -9,7 +9,7 @@ theory J0 imports
   "../J/WellType"
   "../J/Threaded" 
   "../Framework/FWBisimulation" 
-  "CallExpr"
+  CallExpr
 begin
 
 declare widen_refT [elim]

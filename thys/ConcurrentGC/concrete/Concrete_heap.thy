@@ -1,6 +1,6 @@
 theory Concrete_heap
 imports
-  "~~/src/HOL/Library/Saturated"
+  "HOL-Library.Saturated"
   "../Proofs"
 begin
 

@@ -7,10 +7,10 @@ session "Certification_Monads" (AFP) = "HOL" +
     Partial_Function_MR
     Show
   theories [document = false]
-    "~~/src/Tools/Adhoc_Overloading"
-    "~~/src/HOL/Library/Monad_Syntax"
-    "../Show/Show"
-    "../Partial_Function_MR/Partial_Function_MR"
+    "HOL-Library.Adhoc_Overloading"
+    "HOL-Library.Monad_Syntax"
+    Show.Show
+    Partial_Function_MR.Partial_Function_MR
   theories
     Check_Monad
     Strict_Sum

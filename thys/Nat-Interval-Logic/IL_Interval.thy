@@ -7,8 +7,8 @@ section {* Intervals and operations for temporal logic declarations *}
 
 theory IL_Interval
 imports 
-  "../List-Infinite/CommonSet/InfiniteSet2"
-  "../List-Infinite/CommonSet/SetIntervalStep"
+  "List-Infinite.InfiniteSet2"
+  "List-Infinite.SetIntervalStep"
 begin
 
 subsection {* Time intervals -- definitions and basic lemmata *}

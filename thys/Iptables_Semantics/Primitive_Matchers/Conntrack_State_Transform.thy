@@ -1,5 +1,5 @@
 theory Conntrack_State_Transform
-imports "Common_Primitive_Matcher"
+imports Common_Primitive_Matcher
         "../Semantics_Ternary/Semantics_Ternary"
 begin
 

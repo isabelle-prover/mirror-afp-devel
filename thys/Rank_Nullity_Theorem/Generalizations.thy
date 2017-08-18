@@ -8,7 +8,7 @@ section{*Generalizations*}
 
 theory Generalizations
 imports
-  "~~/src/HOL/Analysis/Determinants"
+  "HOL-Analysis.Determinants"
 begin
 
 subsection{*Generalization of parts of the HMA library*}

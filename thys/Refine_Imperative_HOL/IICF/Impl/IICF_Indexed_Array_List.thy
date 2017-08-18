@@ -1,10 +1,10 @@
 theory IICF_Indexed_Array_List
 imports 
-  "~~/src/HOL/Library/Rewrite"
+  "HOL-Library.Rewrite"
   "../Intf/IICF_List"
-  "../../../List-Index/List_Index"
-  "IICF_Array"
-  "IICF_MS_Array_List"
+  "List-Index.List_Index"
+  IICF_Array
+  IICF_MS_Array_List
 begin
 
   text \<open>We implement distinct lists of natural numbers in the range @{text "{0..<N}"}

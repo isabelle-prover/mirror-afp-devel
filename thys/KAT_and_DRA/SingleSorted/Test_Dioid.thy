@@ -6,7 +6,7 @@
 section {* Test Dioids *}
 
 theory Test_Dioid
-  imports "../../Kleene_Algebra/Dioid"
+  imports Kleene_Algebra.Dioid
 begin
 
 text {*

@@ -3,7 +3,7 @@ Title: MoreGraph.thy
 Author:Wenda Li
 *)
 
-theory MoreGraph imports Complex_Main "../Dijkstra_Shortest_Path/Graph"
+theory MoreGraph imports Complex_Main Dijkstra_Shortest_Path.Graph
 begin
 section {*Undirected Multigraph and undirected trails*}
 

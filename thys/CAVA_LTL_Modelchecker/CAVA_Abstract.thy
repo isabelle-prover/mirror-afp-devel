@@ -1,9 +1,9 @@
 section {* Abstract Model-Checker *}
 theory CAVA_Abstract
 imports 
-  "../CAVA_Automata/CAVA_Base/CAVA_Base"
-  "../CAVA_Automata/Automata"
-  "../LTL/LTL"
+  CAVA_Base.CAVA_Base
+  CAVA_Automata.Automata
+  LTL.LTL
 begin
 text {*
   This theory defines the abstract version of the cava model checker, 

@@ -1,7 +1,7 @@
 section{* Preliminaries *}
 theory Preliminaries
-imports "~~/src/HOL/Cardinals/Cardinals"
-        "~~/src/HOL/Library/Countable_Set_Type"
+imports "HOL-Cardinals.Cardinals"
+        "HOL-Library.Countable_Set_Type"
 begin
 
 

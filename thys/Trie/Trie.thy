@@ -3,7 +3,7 @@
 section "Trie"
 
 theory Trie
-imports "~~/src/HOL/Library/AList"
+imports "HOL-Library.AList"
 begin
 
 (* A truly generic Trie would be parameterized by the data type for mappings

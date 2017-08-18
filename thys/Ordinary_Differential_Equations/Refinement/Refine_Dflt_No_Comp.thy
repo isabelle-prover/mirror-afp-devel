@@ -1,9 +1,9 @@
 section \<open>Default Setup\<close>
 theory Refine_Dflt_No_Comp
 imports
-  "../../Refine_Monadic/Refine_Monadic"
-  "GenCF_No_Comp"
-  "../../Collections/Lib/Code_Target_ICF"
+  Refine_Monadic.Refine_Monadic
+  GenCF_No_Comp
+  Collections.Code_Target_ICF
 begin
 
 text \<open>TODO: need to keep in sync with \<open>../../Collections/Refine_Dflt\<close> ...\<close>

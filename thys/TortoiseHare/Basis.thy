@@ -1,7 +1,7 @@
 (*<*)
 theory Basis
 imports
-  "~~/src/HOL/Library/While_Combinator"
+  "HOL-Library.While_Combinator"
 begin
 
 (*>*)

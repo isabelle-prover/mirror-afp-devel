@@ -9,7 +9,7 @@ imports
   JMM_Common
   JMM_J
   "../J/ProgressThreaded"
-  "SC_Legal"
+  SC_Legal
 begin
 
 primrec ka :: "'addr expr \<Rightarrow> 'addr set"

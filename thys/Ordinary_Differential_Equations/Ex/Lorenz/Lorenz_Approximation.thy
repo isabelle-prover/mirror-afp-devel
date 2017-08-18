@@ -2,7 +2,7 @@ section"Example: Lorenz attractor"
 theory Lorenz_Approximation
 imports
   Initials
-  "~~/src/HOL/Library/Parallel"
+  "HOL-Library.Parallel"
   "../Example_Utilities"
 begin
 text \<open>\label{sec:lorenz}\<close>

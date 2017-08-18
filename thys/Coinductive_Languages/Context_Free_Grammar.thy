@@ -1,7 +1,7 @@
 section {* Word Problem for Context-Free Grammars  *}
 (*<*)
 theory Context_Free_Grammar
-imports Coinductive_Language "~~/src/HOL/Library/FSet"
+imports Coinductive_Language "HOL-Library.FSet"
 begin
 
 lemma fBex_mono[mono]: "P \<le> Q \<Longrightarrow> fBex S P \<le> fBex S Q"

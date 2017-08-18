@@ -5,7 +5,7 @@
 subsection \<open>Unpredictable function\<close>
 
 theory Unpredictable_Function imports
-  "Guessing_Many_One"
+  Guessing_Many_One
 begin
 
 locale upf =

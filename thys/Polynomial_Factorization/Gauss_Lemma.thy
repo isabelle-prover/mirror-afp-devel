@@ -19,8 +19,8 @@ text \<open>We formalized Gauss Lemma, that the content of a product of two poly
 
 theory Gauss_Lemma
 imports 
-  "~~/src/HOL/Computational_Algebra/Primes"
-  "../Polynomial_Interpolation/Ring_Hom_Poly"
+  "HOL-Computational_Algebra.Primes"
+  Polynomial_Interpolation.Ring_Hom_Poly
   Missing_Polynomial_Factorial
 begin
 

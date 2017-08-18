@@ -8,9 +8,9 @@ section \<open>Expected shape of random Binary Search Trees\<close>
 theory Random_BSTs
   imports
     Complex_Main
-    "~~/src/HOL/Probability/Random_Permutations"
-    "~~/src/HOL/Data_Structures/Tree_Set"
-    "../Quick_Sort_Cost/Quick_Sort_Average_Case"
+    "HOL-Probability.Random_Permutations"
+    "HOL-Data_Structures.Tree_Set"
+    Quick_Sort_Cost.Quick_Sort_Average_Case
 begin
 
 (* TODO: Hide this in the proper place *)

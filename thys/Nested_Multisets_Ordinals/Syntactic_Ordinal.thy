@@ -8,7 +8,7 @@
 section \<open>Syntactic Ordinals in Cantor Normal Form\<close>
 
 theory Syntactic_Ordinal
-imports Hereditary_Multiset "~~/src/HOL/Library/Product_Order" "~~/src/HOL/Library/Extended_Nat"
+imports Hereditary_Multiset "HOL-Library.Product_Order" "HOL-Library.Extended_Nat"
 begin
 
 

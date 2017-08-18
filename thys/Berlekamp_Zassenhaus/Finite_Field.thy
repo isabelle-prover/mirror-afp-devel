@@ -12,11 +12,11 @@ subsection {* Finite Rings *}
 
 theory Finite_Field
 imports 
-  "~~/src/HOL/Computational_Algebra/Primes"
-  "~~/src/HOL/Number_Theory/Residues"
-  "../Containers/Set_Impl"
-  "../Subresultants/Binary_Exponentiation"
-  "../Polynomial_Interpolation/Ring_Hom_Poly"
+  "HOL-Computational_Algebra.Primes"
+  "HOL-Number_Theory.Residues"
+  Containers.Set_Impl
+  Subresultants.Binary_Exponentiation
+  Polynomial_Interpolation.Ring_Hom_Poly
 begin
 
 typedef ('a::finite) mod_ring = "{0..<int CARD('a)}" by auto

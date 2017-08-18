@@ -1,7 +1,7 @@
 section {*  Marking Using a Stack  *}
 
 theory StackMark
-imports SetMark "../DataRefinementIBP/DataRefinement"
+imports SetMark DataRefinementIBP.DataRefinement
 begin
 
 text{*

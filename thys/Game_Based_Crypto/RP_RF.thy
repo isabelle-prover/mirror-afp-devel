@@ -4,9 +4,9 @@
 subsection \<open>The random-permutation random-function switching lemma\<close>
 
 theory RP_RF imports
-  "Pseudo_Random_Function"
-  "Pseudo_Random_Permutation"
-  "../CryptHOL/GPV_Bisim"
+  Pseudo_Random_Function
+  Pseudo_Random_Permutation
+  CryptHOL.GPV_Bisim
 begin
 
 lemma rp_resample:

@@ -9,7 +9,7 @@ section{*Rank of a matrix*}
 
 theory Rank
 imports 
-      "../Rank_Nullity_Theorem/Dim_Formula"
+      Rank_Nullity_Theorem.Dim_Formula
 begin
 
 subsection{*Row rank, column rank and rank*}

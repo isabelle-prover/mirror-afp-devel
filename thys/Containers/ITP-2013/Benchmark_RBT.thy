@@ -1,8 +1,8 @@
 theory Benchmark_RBT 
 imports 
   Benchmark_Comparison
-  "~~/src/HOL/Library/RBT_Impl"
-  "~~/src/HOL/Library/Code_Target_Nat"
+  "HOL-Library.RBT_Impl"
+  "HOL-Library.Code_Target_Nat"
 begin
 
 fun gen_build :: "natural \<Rightarrow> nat \<Rightarrow> ((natural, unit) rbt \<times> Random.seed) \<Rightarrow> ((natural, unit) rbt \<times> Random.seed)"

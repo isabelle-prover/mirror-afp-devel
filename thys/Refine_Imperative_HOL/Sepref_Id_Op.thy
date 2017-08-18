@@ -2,8 +2,8 @@ section \<open>Operation Identification Phase\<close>
 theory Sepref_Id_Op
 imports 
   Main 
-  "../Automatic_Refinement/Lib/Refine_Lib"
-  "../Automatic_Refinement/Tool/Autoref_Tagging"
+  Automatic_Refinement.Refine_Lib
+  Automatic_Refinement.Autoref_Tagging
   "Lib/Named_Theorems_Rev"
 begin
 

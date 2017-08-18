@@ -1,7 +1,7 @@
 section\<open>Abstract ITE Implementation\<close>
 theory Abstract_Impl
 imports BDT
-        "../Automatic_Refinement/Lib/Refine_Lib"
+        Automatic_Refinement.Refine_Lib
         Option_Helpers
 begin
 

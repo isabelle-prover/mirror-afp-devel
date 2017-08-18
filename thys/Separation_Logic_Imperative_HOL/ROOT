@@ -12,9 +12,9 @@ session "Separation_Logic_Imperative_HOL" (AFP) = "HOL-Library" +
   theories [document = false]
     "Tools/Imperative_HOL_Add"
     "Tools/Syntax_Match"
-    "../Collections/Lib/HashCode"
-    "../Collections/Lib/Code_Target_ICF"
-    "../Automatic_Refinement/Lib/Misc"
+    Collections.HashCode
+    Collections.Code_Target_ICF
+    Automatic_Refinement.Misc
   theories
     Sep_Main
     "Examples/Imp_List_Spec"

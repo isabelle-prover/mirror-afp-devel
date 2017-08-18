@@ -1,6 +1,6 @@
 theory NDFS_SI_Statistics
 imports 
-  "../../CAVA_Automata/CAVA_Base/CAVA_Base"
+  CAVA_Base.CAVA_Base
 begin
 
 code_printing

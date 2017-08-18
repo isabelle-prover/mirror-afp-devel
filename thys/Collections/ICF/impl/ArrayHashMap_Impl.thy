@@ -8,7 +8,7 @@ theory ArrayHashMap_Impl imports
   "../../Lib/Code_Target_ICF"
   "../../Lib/Diff_Array"
   "../gen_algo/ListGA"
-  "ListMapImpl"
+  ListMapImpl
   "../../Iterator/Array_Iterator"
 begin
 

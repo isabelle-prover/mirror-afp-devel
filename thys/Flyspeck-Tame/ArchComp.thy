@@ -3,7 +3,7 @@
 section "Comparing Enumeration and Archive"
 
 theory ArchComp
-imports ArchCompProps "~~/src/HOL/Library/Code_Target_Numeral"
+imports ArchCompProps "HOL-Library.Code_Target_Numeral"
 begin
 
 subsection {* Proofs by evaluation using generated code *}

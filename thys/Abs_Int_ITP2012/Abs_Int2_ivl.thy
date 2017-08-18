@@ -3,7 +3,7 @@
 section "Interval Analysis"
 
 theory Abs_Int2_ivl
-imports Abs_Int2 "~~/src/HOL/IMP/Abs_Int_Tests"
+imports Abs_Int2 "HOL-IMP.Abs_Int_Tests"
 begin
 
 datatype ivl = I "int option" "int option"

@@ -2,7 +2,7 @@ section \<open>Finding a Path between Nodes\<close>
 theory DFS_Find_Path
 imports 
   "../DFS_Framework"
-  "../../CAVA_Automata/Digraph_Impl"
+  CAVA_Automata.Digraph_Impl
   "../Misc/Impl_Rev_Array_Stack"
 begin
 text \<open>

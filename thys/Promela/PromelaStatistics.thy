@@ -1,6 +1,6 @@
 theory PromelaStatistics
 imports 
-  "../CAVA_Automata/CAVA_Base/CAVA_Base"
+  CAVA_Base.CAVA_Base
 begin
 
 code_printing

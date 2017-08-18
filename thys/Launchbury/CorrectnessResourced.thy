@@ -1,5 +1,5 @@
 theory CorrectnessResourced
-  imports "ResourcedDenotational" Launchbury
+  imports ResourcedDenotational Launchbury
 begin
 
 theorem correctness:

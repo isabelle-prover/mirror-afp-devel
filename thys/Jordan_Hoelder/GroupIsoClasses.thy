@@ -5,9 +5,9 @@
 
 theory GroupIsoClasses
 imports
-  "Groups"
-  "List"
-  "Coset"
+  HOL.Groups
+  HOL.List
+  "HOL-Algebra.Coset"
 begin
 
 section {* Isomorphism Classes of Groups *}

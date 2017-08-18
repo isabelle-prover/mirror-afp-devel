@@ -1,6 +1,6 @@
 theory Benchmark_Default imports 
   Benchmark_Comparison 
-  "~~/src/HOL/Library/Code_Target_Nat"
+  "HOL-Library.Code_Target_Nat"
 begin
 
 lemma [code]: "test (set xs) P = length (remdups (filter P xs))"

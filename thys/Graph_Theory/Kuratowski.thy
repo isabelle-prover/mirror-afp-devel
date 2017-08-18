@@ -7,7 +7,7 @@ imports
   Arc_Walk
   Digraph_Component
   Subdivision
-  "~~/src/HOL/Library/Rewrite"
+  "HOL-Library.Rewrite"
 begin
 
 section {* Kuratowski Subgraphs *}

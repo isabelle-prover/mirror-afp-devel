@@ -3,8 +3,8 @@ imports
   "../Refinement/Autoref_Misc" (* TODO: what is still needed there? *)
   "../Refinement/Weak_Set"
   "../Numerics/Runge_Kutta"
-  "../IVP/Reachability_Analysis"
-  "../../Affine_Arithmetic/Affine_Arithmetic"
+  Ordinary_Differential_Equations.Reachability_Analysis
+  Affine_Arithmetic.Affine_Arithmetic
 begin
 
 section \<open>interfaces\<close>

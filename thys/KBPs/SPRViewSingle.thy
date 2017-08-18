@@ -12,7 +12,7 @@ imports
   List_local
   ODList
   Trie2
-  "~~/src/HOL/Library/Mapping"
+  "HOL-Library.Mapping"
 begin
 (*>*)
 

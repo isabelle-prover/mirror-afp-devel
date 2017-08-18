@@ -12,8 +12,8 @@ theory Preference_Profiles
 imports
   Main 
   Order_Predicates 
-  "~~/src/HOL/Library/Multiset"
-  "~~/src/HOL/Library/Disjoint_Sets"
+  "HOL-Library.Multiset"
+  "HOL-Library.Disjoint_Sets"
 begin
 
 text \<open>The type of preference profiles\<close>

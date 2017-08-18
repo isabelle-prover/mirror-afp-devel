@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, KIT *)
 
 theory AssocList imports
-  "~~/src/HOL/Library/DAList" 
+  "HOL-Library.DAList" 
 begin
 
 section {* Additional operations for associative lists *}

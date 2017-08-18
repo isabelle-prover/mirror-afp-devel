@@ -8,9 +8,9 @@ subsection \<open>Defining Compare-Order-Instances for Common Types\<close>
 theory Compare_Order_Instances
 imports
   Compare_Instances
-  "~~/src/HOL/Library/List_lexord"
-  "~~/src/HOL/Library/Product_Lexorder"
-  "~~/src/HOL/Library/Option_ord"
+  "HOL-Library.List_lexord"
+  "HOL-Library.Product_Lexorder"
+  "HOL-Library.Option_ord"
 begin
 
 text \<open>We now also instantiate class @{class compare_order} and not only @{class compare}.

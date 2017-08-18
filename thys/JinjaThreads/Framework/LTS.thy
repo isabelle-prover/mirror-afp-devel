@@ -7,7 +7,7 @@ section {* Labelled transition systems *}
 theory LTS
 imports
   "../Basic/Auxiliary"
-  "../../Coinductive/TLList"
+  Coinductive.TLList
 begin
 
 no_notation floor ("\<lfloor>_\<rfloor>")

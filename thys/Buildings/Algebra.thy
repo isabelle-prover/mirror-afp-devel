@@ -7,7 +7,7 @@ text {*
 *}
 
 theory Algebra
-imports Prelim "~~/src/HOL/Library/Set_Algebras"
+imports Prelim "HOL-Library.Set_Algebras"
 
 begin
 

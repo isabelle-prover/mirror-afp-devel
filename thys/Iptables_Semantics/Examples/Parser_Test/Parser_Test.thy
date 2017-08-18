@@ -1,5 +1,5 @@
 theory Parser_Test
-imports "../../Primitive_Matchers/Parser"
+imports Iptables_Semantics.Parser
 begin
 
 

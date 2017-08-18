@@ -7,7 +7,7 @@
 section "Invariant proofs on individual processes"
 
 theory D_Seq_Invariants
-imports "../../../AWN/Invariants" D_Aodv D_Aodv_Data D_Aodv_Predicates D_Fresher
+imports AWN.Invariants D_Aodv D_Aodv_Data D_Aodv_Predicates D_Fresher
 begin
 
 text \<open>

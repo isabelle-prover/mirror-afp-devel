@@ -4,7 +4,7 @@
 section "Rule Set Transformations"
  
 theory SRCTransforms
-imports "~~/src/HOL/Library/Multiset"
+imports "HOL-Library.Multiset"
 begin
 
 datatype 'a form = At "nat"

@@ -5,7 +5,7 @@ session "Tarskis_Geometry" (AFP) = "HOL-Analysis" +
   sessions
     "HOL-Algebra"
   theories [document = false]
-    "~~/src/HOL/Algebra/Group"
+    "HOL-Algebra.Group"
   theories
     Hyperbolic_Tarski
   document_files

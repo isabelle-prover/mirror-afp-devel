@@ -15,8 +15,8 @@ text \<open>
 theory Show
 imports
   Main
-  "../Deriving/Generator_Aux"
-  "../Deriving/Derive_Manager"
+  Deriving.Generator_Aux
+  Deriving.Derive_Manager
 begin
 
 type_synonym

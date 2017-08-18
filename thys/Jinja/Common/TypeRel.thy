@@ -6,7 +6,7 @@
 section {* Relations between Jinja Types *}
 
 theory TypeRel imports 
-  "~~/src/HOL/Library/Transitive_Closure_Table"
+  "HOL-Library.Transitive_Closure_Table"
   Decl 
 begin
 

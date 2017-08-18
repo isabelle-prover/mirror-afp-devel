@@ -6,7 +6,7 @@ chapter {* Test cases *}
 
 theory Native_Word_Test imports
   Uint32 Uint16 Uint8 Uint Native_Cast
-  "~~/src/HOL/Library/Code_Test"
+  "HOL-Library.Code_Test"
 begin
 
 section {* Tests for @{typ uint32} *}

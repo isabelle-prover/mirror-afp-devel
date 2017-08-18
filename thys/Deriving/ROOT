@@ -7,9 +7,9 @@ session Deriving (AFP) = "HOL-Library" +
     Native_Word
     Collections
   theories [document = false]
-    "../Collections/Lib/HashCode"
-    "~~/src/HOL/Library/Char_ord"
-    "~~/src/HOL/Library/Countable"
+    Collections.HashCode
+    "HOL-Library.Char_ord"
+    "HOL-Library.Countable"
   theories
     Derive_Manager
     Generator_Aux

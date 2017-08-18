@@ -1,7 +1,7 @@
 (*<*)
 theory New_Algorithm_Proofs
 imports Three_Step_MRU New_Algorithm_Defs "../HO_Transition_System"
-  "../../Heard_Of/Majorities" "../Quorums"
+  Heard_Of.Majorities "../Quorums"
 begin
 (*>*)
 

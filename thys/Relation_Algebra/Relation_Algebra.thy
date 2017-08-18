@@ -7,7 +7,7 @@
 section {* Relation Algebra *}
 
 theory Relation_Algebra
-  imports More_Boolean_Algebra "../Kleene_Algebra/Kleene_Algebra"
+  imports More_Boolean_Algebra Kleene_Algebra.Kleene_Algebra
 begin
 
 text {* We follow Tarski's original article and Maddux's book, in particular we

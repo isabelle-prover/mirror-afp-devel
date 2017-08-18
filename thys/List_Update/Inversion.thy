@@ -1,7 +1,7 @@
 section "List Inversion"
 
 theory Inversion
-imports "../List-Index/List_Index"
+imports "List-Index.List_Index"
 begin
 
 abbreviation "dist_perm xs ys \<equiv> distinct xs \<and> distinct ys \<and> set xs = set ys"

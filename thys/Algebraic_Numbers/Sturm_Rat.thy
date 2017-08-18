@@ -8,7 +8,7 @@ text \<open>We adapt the existing theory on Sturm's theorem to work on rational 
 
 theory Sturm_Rat
 imports 
-  "../Sturm_Sequences/Sturm_Theorem"
+  Sturm_Sequences.Sturm_Theorem
   Algebraic_Numbers_Prelim
 begin
 

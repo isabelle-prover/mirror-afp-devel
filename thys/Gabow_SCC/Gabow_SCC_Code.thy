@@ -3,7 +3,7 @@ theory Gabow_SCC_Code
 imports 
   Gabow_SCC 
   Gabow_Skeleton_Code
-  "../CAVA_Automata/CAVA_Base/CAVA_Code_Target"
+  CAVA_Base.CAVA_Code_Target
 begin
 
 section {* Automatic Refinement to Efficient Data Structures *}

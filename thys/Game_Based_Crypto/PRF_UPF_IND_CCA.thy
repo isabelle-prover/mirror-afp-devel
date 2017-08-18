@@ -6,11 +6,11 @@ subsection \<open>IND-CCA from a PRF and an unpredictable function\<close>
 
 theory PRF_UPF_IND_CCA
 imports
-  "Pseudo_Random_Function"
-  "../CryptHOL/List_Bits"
-  "Unpredictable_Function"
-  "IND_CCA2_sym"
-  "../CryptHOL/Negligible"
+  Pseudo_Random_Function
+  CryptHOL.List_Bits
+  Unpredictable_Function
+  IND_CCA2_sym
+  CryptHOL.Negligible
 begin
 
 text \<open>Formalisation of Shoup's construction of an IND-CCA secure cipher from a PRF and an unpredictable function \cite[\S 7]{Shoup2004IACR}.\<close>

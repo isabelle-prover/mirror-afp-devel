@@ -5,7 +5,7 @@ session Stewart_Apollonius (AFP) = "HOL-Analysis" +
   sessions
     Triangle
   theories [document = false]
-    "../Triangle/Triangle"
+    Triangle.Triangle
   theories
     Stewart_Apollonius
   document_files

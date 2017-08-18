@@ -7,8 +7,8 @@ section {* Code generation for Semantics and Type System *}
 
 theory Execute
 imports BigStep WellType
-  "~~/src/HOL/Library/AList_Mapping"
-  "~~/src/HOL/Library/Code_Target_Numeral"
+  "HOL-Library.AList_Mapping"
+  "HOL-Library.Code_Target_Numeral"
 begin
 
 subsection{* General redefinitions *}

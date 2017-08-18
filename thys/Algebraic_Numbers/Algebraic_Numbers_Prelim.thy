@@ -27,9 +27,9 @@ text \<open>Many results are taken from the textbook \cite[pages 317ff]{AlgNumbe
 
 theory Algebraic_Numbers_Prelim
 imports
-  "~~/src/HOL/Computational_Algebra/Fundamental_Theorem_Algebra"
-  "../Polynomial_Factorization/Rational_Factorization"
-  "../Berlekamp_Zassenhaus/Factorize_Int_Poly"
+  "HOL-Computational_Algebra.Fundamental_Theorem_Algebra"
+  Polynomial_Factorization.Rational_Factorization
+  Berlekamp_Zassenhaus.Factorize_Int_Poly
   Unique_Factorization_Poly
 begin
 

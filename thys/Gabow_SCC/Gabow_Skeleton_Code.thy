@@ -2,8 +2,8 @@ section {* Code Generation for the Skeleton Algorithm \label{sec:skel_code}*}
 theory Gabow_Skeleton_Code
 imports 
   Gabow_Skeleton
-  "../CAVA_Automata/Digraph_Impl"
-  "../CAVA_Automata/CAVA_Base/CAVA_Code_Target"
+  CAVA_Automata.Digraph_Impl
+  CAVA_Base.CAVA_Code_Target
 begin
 
 section {* Statistics *}

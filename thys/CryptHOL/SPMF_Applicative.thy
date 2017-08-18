@@ -1,7 +1,7 @@
 theory SPMF_Applicative imports
-  "../Applicative_Lifting/Applicative_PMF"
+  Applicative_Lifting.Applicative_PMF
   Set_Applicative
-  SPMF
+  "HOL-Probability.SPMF"
 begin
 
 subsection \<open>Applicative instance for @{typ "'a spmf"}\<close>

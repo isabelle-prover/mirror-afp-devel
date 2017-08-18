@@ -1,23 +1,23 @@
 section {* Actual Implementation of the CAVA Model Checker *}
 theory CAVA_Impl
 imports
-  "CAVA_Abstract"
-  "../CAVA_Automata/Automata_Impl"
+  CAVA_Abstract
+  CAVA_Automata.Automata_Impl
   
-  "../LTL_to_GBA/LTL_to_GBA_impl" (* LTL to BA *)
+  LTL_to_GBA.LTL_to_GBA_impl (* LTL to BA *)
 
-  "../Gabow_SCC/Gabow_GBG_Code" (* Gabow's Algorithm *)
+  Gabow_SCC.Gabow_GBG_Code (* Gabow's Algorithm *)
   "Nested_DFS/NDFS_SI" (* Nested-DFS, standard-invars formalization *)
 
   "BoolProgs/BoolProgs"                   (* Boolean Programs *)
   "BoolProgs/Programs/BoolProgs_Programs" (* the actual programs *)
   "BoolProgs/BoolProgs_LTL_Conv"          (* LTL parsing setup *)
 
-  "../Promela/PromelaLTL"     (* Promela *)
-  "../Promela/PromelaLTLConv" (* LTL parsing setup *)
+  Promela.PromelaLTL     (* Promela *)
+  Promela.PromelaLTLConv (* LTL parsing setup *)
 
-  "~~/src/HOL/Library/AList_Mapping"
-  "../CAVA_Automata/CAVA_Base/CAVA_Code_Target"
+  "HOL-Library.AList_Mapping"
+  CAVA_Base.CAVA_Code_Target
 begin
 
 (*<*)

@@ -10,13 +10,13 @@ session Twelvefold_Way (AFP) = "HOL-Library" +
     Card_Number_Partitions
     Card_Partitions
   theories [document = false]
-    "~~/src/HOL/Library/Multiset"
-    "~~/src/HOL/Library/FuncSet"
-    "~~/src/HOL/ex/Birthday_Paradox"
-    "~~/src/HOL/Library/Permutations"
-    "../Card_Multisets/Card_Multisets"
-    "../Bell_Numbers_Spivey/Bell_Numbers"
-    "../Card_Number_Partitions/Card_Number_Partitions"
+    "HOL-Library.Multiset"
+    "HOL-Library.FuncSet"
+    "HOL-ex.Birthday_Paradox"
+    "HOL-Library.Permutations"
+    Card_Multisets.Card_Multisets
+    Bell_Numbers_Spivey.Bell_Numbers
+    Card_Number_Partitions.Card_Number_Partitions
   theories
     Twelvefold_Way
   document_files

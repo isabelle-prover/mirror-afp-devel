@@ -11,16 +11,16 @@ session CryptHOL (AFP) = Probabilistic_While +
     Monad_Normalisation
     Monomorphic_Monad
   theories [document = false]
-    "~~/src/HOL/Eisbach/Eisbach"
-    "~~/src/HOL/Library/Countable_Set"
-    "~~/src/HOL/Library/Rewrite"
-    "~~/src/HOL/Library/Type_Length"
-    "~~/src/HOL/Algebra/Coset"
-    "../Landau_Symbols/Landau_More"
-    "../Applicative_Lifting/Applicative_Functor"
-    "../Coinductive/TLList"
-    "../Monomorphic_Monad/Monomorphic_Monad"
-    "../Monad_Normalisation/Monad_Normalisation"
+    "HOL-Eisbach.Eisbach"
+    "HOL-Library.Countable_Set"
+    "HOL-Library.Rewrite"
+    "HOL-Library.Type_Length"
+    "HOL-Algebra.Coset"
+    Landau_Symbols.Landau_More
+    Applicative_Lifting.Applicative_Functor
+    Coinductive.TLList
+    Monomorphic_Monad.Monomorphic_Monad
+    Monad_Normalisation.Monad_Normalisation
   theories
     Misc_CryptHOL
     SPMF_Applicative

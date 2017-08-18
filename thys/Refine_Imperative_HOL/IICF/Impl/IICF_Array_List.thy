@@ -1,7 +1,7 @@
 theory IICF_Array_List
 imports 
   "../Intf/IICF_List" 
-  "../../../Separation_Logic_Imperative_HOL/Examples/Array_Blit"
+  Sepref_Prereq.Array_Blit
 begin
 
   type_synonym 'a array_list = "'a Heap.array \<times> nat"

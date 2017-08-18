@@ -1,5 +1,5 @@
 theory "TTree-HOLCF"
-imports TTree "../Launchbury/HOLCF-Utils" "Set-Cpo" "../Launchbury/HOLCF-Join-Classes"
+imports TTree "Launchbury.HOLCF-Utils" "Set-Cpo" "Launchbury.HOLCF-Join-Classes"
 begin
 
 instantiation ttree :: (type) below

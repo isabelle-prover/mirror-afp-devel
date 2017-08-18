@@ -1,7 +1,7 @@
 section \<open>Euclidean Space: Explicit Representation\<close>
 theory Euclidean_Space_Explicit
 imports
-  "~~/src/HOL/Analysis/Analysis"
+  "HOL-Analysis.Analysis"
 begin
 
 subsection \<open>Explicit Sum for Composition of Components\<close>

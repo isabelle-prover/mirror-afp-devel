@@ -16,8 +16,8 @@ text \<open>This theory defines the Sylvester matrix and the resultant and conta
 
 theory Resultant_Prelim
 imports
-  "../Jordan_Normal_Form/Determinant" 
-  "../Polynomial_Interpolation/Ring_Hom_Poly" 
+  Jordan_Normal_Form.Determinant 
+  Polynomial_Interpolation.Ring_Hom_Poly 
 begin
   
 text \<open>Sylvester matrix\<close>

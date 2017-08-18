@@ -8,7 +8,7 @@
 section {* Domain Semirings *}
 
 theory Domain_Semiring
-imports "../Kleene_Algebra/Kleene_Algebra"
+imports Kleene_Algebra.Kleene_Algebra
 
 begin
 

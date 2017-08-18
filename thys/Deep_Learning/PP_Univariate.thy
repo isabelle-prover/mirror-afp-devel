@@ -1,7 +1,7 @@
 (* Author: Alexander Bentkamp, Universität des Saarlandes
 *)
 theory PP_Univariate
-imports PP_MPoly PP_More_MPoly "~~/src/HOL/Computational_Algebra/Polynomial"
+imports PP_MPoly PP_More_MPoly "HOL-Computational_Algebra.Polynomial"
 begin
 
 text \<open>This file connects univariate MPolys to the theory of univariate polynomials from

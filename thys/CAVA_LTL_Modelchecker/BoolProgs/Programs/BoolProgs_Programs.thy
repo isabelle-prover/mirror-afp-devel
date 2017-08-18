@@ -1,10 +1,10 @@
 theory BoolProgs_Programs
 imports
-  "BoolProgs_Philosophers"
-  "BoolProgs_ReaderWriter"
-  "BoolProgs_Simple"
-  "BoolProgs_LeaderFilters"
-  "../../../CAVA_Automata/CAVA_Base/Code_String"
+  BoolProgs_Philosophers
+  BoolProgs_ReaderWriter
+  BoolProgs_Simple
+  BoolProgs_LeaderFilters
+  CAVA_Base.Code_String
   (*"~~/src/HOL/Library/List_lexord"*)
 begin
 

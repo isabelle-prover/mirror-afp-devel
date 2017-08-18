@@ -4,14 +4,14 @@
 section \<open>Miscellaneous library additions\<close>
 
 theory Misc_CryptHOL imports 
-  "../Probabilistic_While/While_SPMF"
-  "~~/src/HOL/Library/Rewrite"
-  "~~/src/HOL/Library/Simps_Case_Conv"
-  "~~/src/HOL/Library/Type_Length"
-  "~~/src/HOL/Eisbach/Eisbach"
-  "../Coinductive/TLList"
-  "../Monad_Normalisation/Monad_Normalisation"
-  "../Monomorphic_Monad/Monomorphic_Monad"
+  Probabilistic_While.While_SPMF
+  "HOL-Library.Rewrite"
+  "HOL-Library.Simps_Case_Conv"
+  "HOL-Library.Type_Length"
+  "HOL-Eisbach.Eisbach"
+  Coinductive.TLList
+  Monad_Normalisation.Monad_Normalisation
+  Monomorphic_Monad.Monomorphic_Monad
 begin
 
 hide_const (open) Henstock_Kurzweil_Integration.negligible Max_Flow_Min_Cut_Countable.terminal

@@ -1,7 +1,7 @@
 section\<open>One-Step Methods\<close>
 theory One_Step_Method
 imports
-  "../IVP/Initial_Value_Problem"
+  Ordinary_Differential_Equations.Initial_Value_Problem
 begin
 
 subsection \<open>Grids \label{sec:osm-grid}\<close>

@@ -1,6 +1,6 @@
 section \<open>Recursive DFS Implementation\<close>
 theory Rec_Impl
-imports "General_DFS_Structure"
+imports General_DFS_Structure
 begin
 
 locale rec_impl_defs =

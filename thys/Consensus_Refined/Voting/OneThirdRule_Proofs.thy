@@ -1,6 +1,6 @@
 (*<*)
 theory OneThirdRule_Proofs
-imports "../../Heard_Of/Majorities" 
+imports Heard_Of.Majorities 
   "../HO_Transition_System" "../Voting_Opt" OneThirdRule_Defs
 begin
 (*>*)

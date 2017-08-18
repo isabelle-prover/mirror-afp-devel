@@ -12,7 +12,7 @@ imports
   Inverse
   System_Of_Equations
   Code_Bit
-  "~~/src/HOL/Library/Code_Target_Numeral"
+  "HOL-Library.Code_Target_Numeral"
 begin
 subsection{*Transforming a list of lists to an abstract matrix*}
 

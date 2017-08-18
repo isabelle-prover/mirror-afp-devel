@@ -8,7 +8,7 @@ section{*Code generation for vectors and matrices*}
 
 theory Code_Matrix
 imports 
-  "../Rank_Nullity_Theorem/Miscellaneous"
+  Rank_Nullity_Theorem.Miscellaneous
   Code_Set
 begin
 

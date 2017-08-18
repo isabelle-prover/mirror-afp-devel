@@ -1,7 +1,7 @@
 section {* The Paxos Algorithm *}
 
 theory Paxos_Defs
-imports "../../Heard_Of/HOModel" "../Consensus_Types" "../Consensus_Misc" Three_Steps
+imports Heard_Of.HOModel "../Consensus_Types" "../Consensus_Misc" Three_Steps
 begin
 
 text {* 

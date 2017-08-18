@@ -11,9 +11,9 @@ text \<open>This theory contains an algorithm to efficiently compute
 
 theory Dvd_Int_Poly
 imports
-  "../Polynomial_Interpolation/Ring_Hom_Poly"
-  "../Polynomial_Interpolation/Divmod_Int"
-  "../Polynomial_Interpolation/Is_Rat_To_Rat"
+  Polynomial_Interpolation.Ring_Hom_Poly
+  Polynomial_Interpolation.Divmod_Int
+  Polynomial_Interpolation.Is_Rat_To_Rat
 begin
 
 definition div_int_poly_step :: "int poly \<Rightarrow> int \<Rightarrow> (int poly \<times> int poly) option \<Rightarrow> (int poly \<times> int poly) option" where

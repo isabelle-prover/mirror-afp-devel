@@ -1,6 +1,6 @@
 (*<*)
 theory Finite_Proof_Soundness
-imports "../Abstract_Completeness/Abstract_Completeness"
+imports Abstract_Completeness.Abstract_Completeness
 begin
 (*>*)
 

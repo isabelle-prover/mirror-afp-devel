@@ -2,7 +2,7 @@ theory IP_Address_Parser
 imports IP_Address
         IPv4
         IPv6
-        "~~/src/HOL/Library/Code_Target_Nat" (*!!*)
+        "HOL-Library.Code_Target_Nat" (*!!*)
 begin
 
 section\<open>Parsing IP Addresses\<close>

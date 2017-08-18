@@ -1,5 +1,5 @@
 theory Test
-imports "~~/src/HOL/Library/Code_Target_Numeral" FingerTree
+imports "HOL-Library.Code_Target_Numeral" FingerTree
 begin
   text {*
     Test code generation, to early detect problems with code generator.

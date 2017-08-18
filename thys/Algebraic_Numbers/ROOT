@@ -6,15 +6,15 @@ session Pre_Algebraic_Numbers (AFP) = "Berlekamp_Zassenhaus" +
   sessions
     Sturm_Sequences
   theories
-    "../Deriving/Comparator_Generator/Compare_Rat"
-    "../Deriving/Comparator_Generator/Compare_Real"
-    "../Jordan_Normal_Form/Determinant_Impl"
-    "../Jordan_Normal_Form/Matrix_IArray_Impl"
-    "../Jordan_Normal_Form/Char_Poly"
-    "../Jordan_Normal_Form/Show_Matrix"
-    "../Sturm_Sequences/Sturm_Theorem"
-    "../Show/Show_Real"
-    "../Show/Show_Complex"
+    Deriving.Compare_Rat
+    Deriving.Compare_Real
+    Jordan_Normal_Form.Determinant_Impl
+    Jordan_Normal_Form.Matrix_IArray_Impl
+    Jordan_Normal_Form.Char_Poly
+    Jordan_Normal_Form.Show_Matrix
+    Sturm_Sequences.Sturm_Theorem
+    Show.Show_Real
+    Show.Show_Complex
 
 session Algebraic_Numbers_Lib (AFP) = Pre_Algebraic_Numbers +
   description {* Algebraic numbers, without tests *}
@@ -24,19 +24,19 @@ session Algebraic_Numbers_Lib (AFP) = Pre_Algebraic_Numbers +
     Sturm_Sequences
     Algebraic_Numbers
   theories
-    "Real_Factorization"
-    "Show_Real_Approx"
-    "Show_Real_Precise"
+    Real_Factorization
+    Show_Real_Approx
+    Show_Real_Precise
 
 session Algebraic_Numbers (AFP) = Pre_Algebraic_Numbers +
   description {* Algebraic Numbers *}
   options [timeout = 1200]
   theories
-    "Real_Factorization"
-    "Show_Real_Approx"
-    "Show_Real_Precise"
+    Real_Factorization
+    Show_Real_Approx
+    Show_Real_Precise
   theories
-    "Algebraic_Number_Tests"
+    Algebraic_Number_Tests
   document_files
     "root.bib"
     "root.tex"

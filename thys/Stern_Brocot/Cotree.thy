@@ -5,9 +5,9 @@ section {* A codatatype of infinite binary trees *}
 
 theory Cotree imports 
   Main
-  "../Applicative_Lifting/Applicative"
-  "~~/src/HOL/Library/BNF_Corec"
-  "~~/src/Tools/Adhoc_Overloading"
+  Applicative_Lifting.Applicative
+  "HOL-Library.BNF_Corec"
+  "HOL-Library.Adhoc_Overloading"
 begin
 
 context notes [[bnf_internals]]

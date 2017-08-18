@@ -11,7 +11,7 @@ polynomial.\<close>
 
 theory Order_Polynomial
 imports 
-  "../Polynomial_Interpolation/Missing_Polynomial"
+  Polynomial_Interpolation.Missing_Polynomial
 begin
 
 lemma order_linear[simp]: "order a [:- a, 1:] = Suc 0" unfolding order_def

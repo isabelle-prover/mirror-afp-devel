@@ -1,7 +1,7 @@
 theory Labeled_Hoare
 imports
   "../../Case_Labeling"
-  "~~/src/HOL/Hoare/Hoare_Logic"
+  "HOL-Hoare.Hoare_Logic"
 begin
 
 subsection \<open>A labeling VCG for HOL/Hoare\<close>

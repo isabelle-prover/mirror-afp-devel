@@ -18,8 +18,8 @@ etc. We connect these operations to HOL-Algebra with its explicit carrier sets.\
 theory Matrix
 imports
   Missing_Ring
-  "~~/src/HOL/Algebra/Module"
-  "../Polynomial_Interpolation/Ring_Hom"
+  "HOL-Algebra.Module"
+  Polynomial_Interpolation.Ring_Hom
 begin
 
 subsection\<open>Vectors\<close>

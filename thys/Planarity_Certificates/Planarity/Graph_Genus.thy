@@ -1,7 +1,7 @@
 theory Graph_Genus
 imports
-  "../../Graph_Theory/Graph_Theory"
-  "~~/src/HOL/Library/Permutations"
+  Graph_Theory.Graph_Theory
+  "HOL-Library.Permutations"
 begin
 
 lemma nat_diff_mod_right:

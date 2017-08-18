@@ -10,7 +10,7 @@ text_raw{*
 *}
 
 theory FreeMonoidalCategory
-imports "../Category3/Subcategory" MonoidalFunctor
+imports Category3.Subcategory MonoidalFunctor
 begin
 
   text {*

@@ -7,11 +7,11 @@
 section {* The bisimulation relation betwenn source and intermediate language *}
 
 theory J0J1Bisim imports
-  "J1"
-  "J1WellForm"
-  "Compiler1"
+  J1
+  J1WellForm
+  Compiler1
   "../J/JWellForm"
-  "J0"
+  J0
 begin
 
 subsection{*Correctness of program compilation *}

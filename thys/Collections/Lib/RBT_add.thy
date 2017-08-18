@@ -5,7 +5,7 @@
 section {* \isaheader{Additions to RB-Trees} *}
 theory RBT_add
 imports 
-  "~~/src/HOL/Library/RBT_Impl" 
+  "HOL-Library.RBT_Impl" 
   "../Iterator/Iterator"
 begin
 text_raw {*\label{thy:RBT_add}*}

@@ -2,8 +2,8 @@ theory Planar_Subgraph
 imports
   Graph_Genus
   Permutations_2
-  "~~/src/HOL/Library/FuncSet"
-  "~~/src/HOL/Library/Simps_Case_Conv"
+  "HOL-Library.FuncSet"
+  "HOL-Library.Simps_Case_Conv"
 begin
 
 section \<open>Combinatorial Planarity and Subgraphs\<close>

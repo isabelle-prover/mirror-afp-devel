@@ -7,9 +7,9 @@
 subsection \<open>Iteration of Subsets of Factors\<close>
 theory Sublist_Iteration
 imports 
-  "../Polynomial_Factorization/Missing_Multiset"
-  "../Polynomial_Factorization/Missing_List"
-  "~~/src/HOL/Library/IArray"
+  Polynomial_Factorization.Missing_Multiset
+  Polynomial_Factorization.Missing_List
+  "HOL-Library.IArray"
 begin
 
 paragraph \<open>Misc lemmas\<close>

@@ -6,7 +6,7 @@ subsection \<open>Binary Tree Representation\<close>
 
 theory Pairing_Heap_Tree_Analysis
 imports  
-  "../Pairing_Heap/Pairing_Heap_Tree"
+  Pairing_Heap.Pairing_Heap_Tree
   Amortized_Framework
   Priority_Queue_ops_merge
   Lemmas_log

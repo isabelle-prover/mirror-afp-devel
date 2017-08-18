@@ -7,7 +7,7 @@
 section {* Action Algebras *}
 
 theory Action_Algebra
-imports "../Residuated_Lattices/Residuated_Lattices" "../Kleene_Algebra/Kleene_Algebra"
+imports "../Residuated_Lattices/Residuated_Lattices" Kleene_Algebra.Kleene_Algebra
 begin
 
 text {* Action algebras have been defined and discussed in œ

@@ -5,7 +5,7 @@ Author: Alexander Katovsky
 section "Category"
 
 theory Category
-imports "~~/src/HOL/Library/FuncSet"
+imports "HOL-Library.FuncSet"
 begin
 
 record ('o,'m) Category = 

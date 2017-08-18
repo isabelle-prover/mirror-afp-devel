@@ -9,7 +9,7 @@
 
 theory ODList
 imports
-  "~~/src/HOL/Library/Multiset"
+  "HOL-Library.Multiset"
   List_local
 begin
 (*>*)

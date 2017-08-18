@@ -1,6 +1,6 @@
 theory SQRL_2015_nospoof
 imports 
-  "../../Primitive_Matchers/Parser"
+  Iptables_Semantics.Parser
 begin
 
 

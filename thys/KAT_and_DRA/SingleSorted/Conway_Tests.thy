@@ -6,7 +6,7 @@
 section {* Pre-Conway Algebra with Tests*}
 
 theory Conway_Tests
-  imports "../../Kleene_Algebra/Conway" Test_Dioid
+  imports Kleene_Algebra.Conway Test_Dioid
 
 begin
 

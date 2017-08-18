@@ -1,5 +1,5 @@
 theory CoCallGraph
-imports "../Launchbury/Vars" "../Launchbury/HOLCF-Join-Classes" "../Launchbury/HOLCF-Utils" "Set-Cpo"
+imports Launchbury.Vars "Launchbury.HOLCF-Join-Classes" "Launchbury.HOLCF-Utils" "Set-Cpo"
 begin
 
 default_sort type

@@ -2,7 +2,7 @@ section {* Preliminaries *}
 
 (*<*)
 theory Prelim
-imports "~~/src/HOL/Library/Stream"
+imports "HOL-Library.Stream"
 begin
 (*>*)
 

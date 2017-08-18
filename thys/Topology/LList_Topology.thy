@@ -7,7 +7,7 @@
 section {* The topology of llists *}
 
 theory LList_Topology
-imports Topology "../Lazy-Lists-II/LList2"
+imports Topology "Lazy-Lists-II.LList2"
 begin
 
 subsection{*The topology of all llists*}

@@ -8,7 +8,7 @@ section \<open>Rewrite Rules for LTL Simplification\<close>
 
 theory LTL_Rewrite
 imports
-  LTL "~~/src/HOL/Library/Extended_Nat"
+  LTL "HOL-Library.Extended_Nat"
 begin
 
 text \<open>This theory provides rewrite rules for the simplification of LTL formulas. It supports:

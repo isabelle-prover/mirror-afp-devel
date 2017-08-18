@@ -3,9 +3,9 @@ section \<open>Test cases for dictionary construction\<close>
 theory Test_Dict_Construction
 imports
   Dict_Construction
-  "~~/src/HOL/Library/ListVector"
-  "../Lazy_Case/Lazy_Case"
-  "../Show/Show_Instances"
+  "HOL-Library.ListVector"
+  Lazy_Case.Lazy_Case
+  Show.Show_Instances
 begin
 
 subsection \<open>Code equations with different number of explicit arguments\<close>

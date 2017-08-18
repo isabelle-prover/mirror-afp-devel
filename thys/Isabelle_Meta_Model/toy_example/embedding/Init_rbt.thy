@@ -39,9 +39,9 @@ section\<open>Basic Extension of the Standard Library (Depending on RBT)\<close>
 
 theory Init_rbt
 imports "../../Init"
-        "~~/src/HOL/Library/RBT"
-        "~~/src/HOL/Library/Char_ord"
-        "~~/src/HOL/Library/List_lexord"
+        "HOL-Library.RBT"
+        "HOL-Library.Char_ord"
+        "HOL-Library.List_lexord"
 begin
 
 locale RBT

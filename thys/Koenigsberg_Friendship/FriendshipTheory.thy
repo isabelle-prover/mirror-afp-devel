@@ -4,7 +4,7 @@ Author:Wenda Li
 *)
 
 theory FriendshipTheory 
-  imports MoreGraph  "~~/src/HOL/Number_Theory/Number_Theory"
+  imports MoreGraph  "HOL-Number_Theory.Number_Theory"
 begin
 
 (*Proofs in this section are the common steps for both combinatorial and algebraic proofs for the

@@ -8,7 +8,7 @@ section {* Code Generation For BigStep *}
 theory execute_Bigstep
 imports
   BigStep Examples
-  "~~/src/HOL/Library/Code_Target_Numeral"
+  "HOL-Library.Code_Target_Numeral"
 begin
 
 inductive map_val :: "expr list \<Rightarrow> val list \<Rightarrow> bool"

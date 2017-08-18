@@ -1,5 +1,5 @@
 theory AbstractDenotational
-imports "HeapSemantics" Terms
+imports HeapSemantics Terms
 begin
 
 subsubsection {* The denotational semantics for expressions *}

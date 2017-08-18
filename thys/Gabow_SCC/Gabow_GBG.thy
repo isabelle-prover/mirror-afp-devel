@@ -2,7 +2,7 @@ section {* Lasso Finding Algorithm for Generalized B\"uchi Graphs \label{sec:gbg
 theory Gabow_GBG
 imports 
   Gabow_Skeleton 
-  "../CAVA_Automata/Lasso"
+  CAVA_Automata.Lasso
   Find_Path
 begin
 

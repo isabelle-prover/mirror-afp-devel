@@ -1,7 +1,7 @@
 theory Example3
 imports
-  "~~/src/HOL/Decision_Procs/Approximation"
-  "../IVP/Upper_Lower_Solution"
+  "HOL-Decision_Procs.Approximation"
+  Ordinary_Differential_Equations.Upper_Lower_Solution
   Example_Utilities
 begin
 

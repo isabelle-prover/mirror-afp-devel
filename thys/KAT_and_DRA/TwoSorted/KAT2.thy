@@ -6,7 +6,7 @@
 section {* Two sorted Kleene Algebra with Tests *}
 
 theory KAT2
-  imports "../../Kleene_Algebra/Kleene_Algebra"
+  imports Kleene_Algebra.Kleene_Algebra
 begin
 
 text {*

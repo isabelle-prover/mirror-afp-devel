@@ -1,6 +1,6 @@
 (*<*)
 theory Ate_Proofs
-imports "../Voting_Opt" Ate_Defs "../../Heard_Of/Majorities" 
+imports "../Voting_Opt" Ate_Defs Heard_Of.Majorities 
   "../HO_Transition_System"
 begin
 (*>*)

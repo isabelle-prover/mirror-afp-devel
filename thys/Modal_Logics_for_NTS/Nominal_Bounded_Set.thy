@@ -1,7 +1,7 @@
 theory Nominal_Bounded_Set
 imports
-  "../Nominal2/Nominal2"
-  "~~/src/HOL/Cardinals/Bounded_Set"
+  Nominal2.Nominal2
+  "HOL-Cardinals.Bounded_Set"
 begin
 
 section \<open>Bounded Sets Equipped With a Permutation Action\<close>

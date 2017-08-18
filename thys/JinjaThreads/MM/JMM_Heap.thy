@@ -7,8 +7,8 @@ section {* Locales for heap operations with set of allocated addresses *}
 theory JMM_Heap 
 imports
   "../Common/WellForm"
-  "SC_Completion"
-  "HB_Completion"
+  SC_Completion
+  HB_Completion
 begin
 
 definition w_addrs :: "('addr \<times> addr_loc \<Rightarrow> 'addr val set) \<Rightarrow> 'addr set"

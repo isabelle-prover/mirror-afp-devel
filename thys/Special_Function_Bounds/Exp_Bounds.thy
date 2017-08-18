@@ -2,8 +2,8 @@ chapter {* Exp Upper and Lower Bounds *}
 
 theory Exp_Bounds
 imports Bounds_Lemmas
-        "~~/src/HOL/Library/Sum_of_Squares"
-        "../Sturm_Sequences/Sturm"
+        "HOL-Library.Sum_of_Squares"
+        Sturm_Sequences.Sturm
 
 begin
 

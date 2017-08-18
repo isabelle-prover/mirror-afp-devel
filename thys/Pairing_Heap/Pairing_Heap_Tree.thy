@@ -4,7 +4,7 @@ section \<open>Pairing Heap in Binary Tree Representation\<close>
 
 theory Pairing_Heap_Tree
 imports  
-  "~~/src/HOL/Library/Tree_Multiset"
+  "HOL-Library.Tree_Multiset"
 begin
 
 subsection \<open>Definitions\<close>

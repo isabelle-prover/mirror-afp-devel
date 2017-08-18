@@ -1,7 +1,7 @@
 section\<open>Network Interfaces\<close>
 theory Iface
-imports String
-        "~~/src/HOL/Library/Char_ord" (*WARNING: importing char ord*)
+imports HOL.String
+        "HOL-Library.Char_ord" (*WARNING: importing char ord*)
 begin
 
 text\<open>Network interfaces, e.g. \texttt{eth0}, \texttt{wlan1}, ...

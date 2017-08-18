@@ -6,7 +6,7 @@ subsection \<open>Algebraic operations for the environment functor\<close>
 
 theory Applicative_Environment_Algebra imports
   Applicative_Environment
-  "~~/src/HOL/Library/Function_Division"
+  "HOL-Library.Function_Division"
 begin
 
 text \<open> Link between applicative instance of the environment functor with the pointwise operations

@@ -3,10 +3,10 @@
 section \<open>Preliminaries\<close>
 
 theory MFMC_Misc imports
-  "~~/src/HOL/Probability/Probability"
-  "~~/src/HOL/Library/Transitive_Closure_Table"
-  "~~/src/HOL/Library/Complete_Partial_Order2"
-  "~~/src/HOL/Library/Bourbaki_Witt_Fixpoint"
+  Probability
+  "HOL-Library.Transitive_Closure_Table"
+  "HOL-Library.Complete_Partial_Order2"
+  "HOL-Library.Bourbaki_Witt_Fixpoint"
 begin
 
 hide_const (open) cycle

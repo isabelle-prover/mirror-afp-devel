@@ -10,11 +10,11 @@ imports
   Finite_Field_Factorization 
   Matrix_Record_Based
   Poly_Mod_Finite_Field_Record_Based
-  "~~/src/HOL/Types_To_Sets/Types_To_Sets"
-  "../Jordan_Normal_Form/Matrix_IArray_Impl"
-  "../Jordan_Normal_Form/Gauss_Jordan_IArray_Impl"  
-  "../Polynomial_Interpolation/Improved_Code_Equations"
-  "../Polynomial_Factorization/Missing_List"
+  "HOL-Types_To_Sets.Types_To_Sets"
+  Jordan_Normal_Form.Matrix_IArray_Impl
+  Jordan_Normal_Form.Gauss_Jordan_IArray_Impl  
+  Polynomial_Interpolation.Improved_Code_Equations
+  Polynomial_Factorization.Missing_List
 begin
 
 hide_const(open) monom coeff

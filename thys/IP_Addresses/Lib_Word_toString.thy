@@ -1,6 +1,6 @@
 theory Lib_Word_toString
 imports Lib_Numbers_toString
-        "../Word_Lib/Word_Lemmas"
+        Word_Lib.Word_Lemmas
 begin
 
 section\<open>Printing Machine Words\<close>

@@ -5,8 +5,8 @@ session FOL_Harrison (AFP) = HOL +
   sessions
     "HOL-Library"
   theories [document = false]
-     "~~/src/HOL/Library/Char_ord"
-     "~~/src/HOL/Library/Code_Char"
+     "HOL-Library.Char_ord"
+     "HOL-Library.Code_Char"
   theories
     FOL_Harrison
   document_files

@@ -6,8 +6,8 @@ section {* SSA Construction *}
 subsection {* CFG to SSA CFG *}
 
 theory Construct_SSA imports SSA_CFG
-  "~~/src/HOL/Library/While_Combinator"
-  "~~/src/HOL/Library/Product_Lexorder"
+  "HOL-Library.While_Combinator"
+  "HOL-Library.Product_Lexorder"
 begin
 
 datatype Def = SimpleDef | PhiDef

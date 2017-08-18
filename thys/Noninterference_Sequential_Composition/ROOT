@@ -5,7 +5,7 @@ session "Noninterference_Sequential_Composition" (AFP) = "HOL" +
   sessions
     Noninterference_Ipurge_Unwinding
   theories [document = false]
-    "../Noninterference_Ipurge_Unwinding/DeterministicProcesses"
+    Noninterference_Ipurge_Unwinding.DeterministicProcesses
   theories
     Propaedeutics
     SequentialComposition

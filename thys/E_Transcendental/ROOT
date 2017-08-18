@@ -5,9 +5,9 @@ session E_Transcendental (AFP) = "HOL-Analysis" +
   sessions
     "HOL-Number_Theory"
   theories [document = false]
-    "~~/src/HOL/Analysis/Analysis"
-    "~~/src/HOL/Computational_Algebra/Polynomial"
-    "~~/src/HOL/Number_Theory/Number_Theory"
+    "HOL-Analysis.Analysis"
+    "HOL-Computational_Algebra.Polynomial"
+    "HOL-Number_Theory.Number_Theory"
   theories
     E_Transcendental
   document_files

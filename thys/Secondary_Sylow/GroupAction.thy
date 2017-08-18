@@ -5,8 +5,8 @@
 
 theory GroupAction
 imports
-  "~~/src/HOL/Algebra/Bij"
-  "~~/src/HOL/Algebra/Sylow"
+  "HOL-Algebra.Bij"
+  "HOL-Algebra.Sylow"
 begin
 
 section {* Group Actions *}

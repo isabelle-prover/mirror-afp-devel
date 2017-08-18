@@ -1,8 +1,8 @@
 chapter {*Finite Automata using the Hereditarily Finite Sets*}
 
 theory Finite_Automata_HF imports
-  "../HereditarilyFinite/Ordinal"
-  "../Regular-Sets/Regular_Exp"
+  HereditarilyFinite.Ordinal
+  "Regular-Sets.Regular_Exp"
 begin
 
 text{*Finite Automata, both deterministic and non-deterministic, for regular languages.

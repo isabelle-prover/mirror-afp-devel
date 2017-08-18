@@ -5,8 +5,8 @@ session "Elliptic_Curves_Group_Law" (AFP) = "HOL-Number_Theory" +
   sessions
     "HOL-Decision_Procs"
   theories [document = false]
-    "~~/src/HOL/Decision_Procs/Reflective_Field"
-    "~~/src/HOL/Number_Theory/Residues"
+    "HOL-Decision_Procs.Reflective_Field"
+    "HOL-Number_Theory.Residues"
   theories
     Elliptic_Axclass
     Elliptic_Test

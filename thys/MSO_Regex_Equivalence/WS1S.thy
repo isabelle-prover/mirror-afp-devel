@@ -4,7 +4,7 @@ section {* WS1S *}
 
 (*<*)
 theory WS1S
-imports Formula Pi_Regular_Operators "~~/src/HOL/Library/Stream"
+imports Formula Pi_Regular_Operators "HOL-Library.Stream"
 begin
 (*>*)
 

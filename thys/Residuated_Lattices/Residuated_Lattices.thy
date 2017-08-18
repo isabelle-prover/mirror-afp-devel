@@ -4,7 +4,7 @@
 *)
 
 theory Residuated_Lattices
-  imports "../Kleene_Algebra/Signatures"
+  imports Kleene_Algebra.Signatures
 begin
 
 notation

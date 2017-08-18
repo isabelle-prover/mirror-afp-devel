@@ -1,6 +1,6 @@
 section\<open>Parser for iptables-save\<close>
 theory Parser6
-imports Code_Interface
+imports Iptables_Semantics.Code_Interface
   keywords "parse_ip6tables_save"::thy_decl
 begin
 

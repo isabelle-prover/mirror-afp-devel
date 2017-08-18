@@ -5,7 +5,7 @@
 section {* Happens-before consistent completion of executions in the JMM *}
 
 theory HB_Completion imports
-  "Non_Speculative"
+  Non_Speculative
 begin
 
 coinductive ta_hb_consistent :: "'m prog \<Rightarrow> ('thread_id \<times> ('addr, 'thread_id) obs_event action) list \<Rightarrow> ('thread_id \<times> ('addr, 'thread_id) obs_event action) llist \<Rightarrow> bool"

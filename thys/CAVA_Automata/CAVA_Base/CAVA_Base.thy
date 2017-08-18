@@ -1,12 +1,12 @@
 section "Setup of Environment for CAVA Model Checker"
 theory CAVA_Base
   imports 
-  "../../Collections/ICF/CollectionsV1"  (*-- {* Compatibility with ICF 1.0 *}*)
-  "../../Collections/Refine_Dflt"      
+  Collections.CollectionsV1  (*-- {* Compatibility with ICF 1.0 *}*)
+  Collections.Refine_Dflt      
 
-  "Statistics" (*-- {* Collecting statistics by instrumenting the formalization *}*)
+  Statistics (*-- {* Collecting statistics by instrumenting the formalization *}*)
 
-  "CAVA_Code_Target" (*-- {* Code Generator Setup *}*)
+  CAVA_Code_Target (*-- {* Code Generator Setup *}*)
 begin
 
 hide_const (open) CollectionsV1.ahs_rel

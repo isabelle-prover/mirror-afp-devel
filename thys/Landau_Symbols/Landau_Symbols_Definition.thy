@@ -9,8 +9,8 @@ section {* Definition of Landau symbols *}
 theory Landau_Symbols_Definition
 imports 
   Complex_Main
-  "~~/src/HOL/Library/Function_Algebras" 
-  "~~/src/HOL/Library/Set_Algebras"
+  "HOL-Library.Function_Algebras" 
+  "HOL-Library.Set_Algebras"
   Landau_Library
 begin
 

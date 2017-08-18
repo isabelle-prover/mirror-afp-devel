@@ -5,8 +5,8 @@ text \<open>This theory contains Kronecker's factorization algorithm to factor
 
 theory Kronecker_Factorization
 imports 
-  "../Polynomial_Interpolation/Polynomial_Interpolation"
-  "../Sqrt_Babylonian/Sqrt_Babylonian_Auxiliary"
+  Polynomial_Interpolation.Polynomial_Interpolation
+  Sqrt_Babylonian.Sqrt_Babylonian_Auxiliary
   Missing_List
   Prime_Factorization
   Precomputation

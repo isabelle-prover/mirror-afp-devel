@@ -4,7 +4,7 @@ imports
   IICF_Abs_Heap 
   "../IICF_HOL_List" 
   "../IICF_Array_List" 
-  "~~/src/HOL/Library/Rewrite"
+  "HOL-Library.Rewrite"
 begin
   text \<open>We implement the heap data structure by an array.
     The implementation is automatically synthesized by the Sepref-tool.

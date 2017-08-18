@@ -1,6 +1,6 @@
 theory It_to_It
 imports 
-  "Proper_Iterator"
+  Proper_Iterator
 begin
 
   lemma proper_it_fold: 

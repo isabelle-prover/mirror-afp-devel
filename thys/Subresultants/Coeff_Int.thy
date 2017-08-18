@@ -8,8 +8,8 @@ text \<open>We provide a function to access the coefficients of a polynomial
   
 theory Coeff_Int
 imports 
-  "../Polynomial_Interpolation/Missing_Polynomial" 
-  "../Jordan_Normal_Form/Missing_Permutations"
+  Polynomial_Interpolation.Missing_Polynomial 
+  Jordan_Normal_Form.Missing_Permutations
 begin
   
 definition coeff_int :: "'a :: zero poly \<Rightarrow> int \<Rightarrow> 'a" where

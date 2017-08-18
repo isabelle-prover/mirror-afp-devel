@@ -4,7 +4,7 @@ imports
   "../Refinement/Weak_Set"
   "../Refinement/Refine_String"
   "../Refinement/Refine_Folds"
-  "../IVP/Flow"
+  Ordinary_Differential_Equations.Flow
   Refine_Rigorous_Numerics
 begin
 

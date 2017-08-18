@@ -2,7 +2,7 @@ theory superposition
 
 (* N. Peltier - http://membres-lig.imag.fr/peltier/ *)
 
-imports Main terms equational_clausal_logic well_founded_continued "~~/src/HOL/Library/Multiset"
+imports Main terms equational_clausal_logic well_founded_continued "HOL-Library.Multiset"
  multisets_continued 
 
 begin

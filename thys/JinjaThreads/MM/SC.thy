@@ -9,7 +9,7 @@ section {* Sequential consistency *}
 theory SC
 imports 
   "../Common/Conform"
-  "MM"
+  MM
 begin
 
 subsection{* Objects and Arrays *}

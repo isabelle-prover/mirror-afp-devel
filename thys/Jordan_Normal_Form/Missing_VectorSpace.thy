@@ -10,7 +10,7 @@ text \<open>This theory provides some lemmas which we required when working with
 
 theory Missing_VectorSpace
 imports
-  "../VectorSpace/VectorSpace"
+  VectorSpace.VectorSpace
 begin
 
 lemma Diff_not_in: "a \<notin> A - {a}" by auto

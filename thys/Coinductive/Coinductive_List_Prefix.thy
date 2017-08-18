@@ -6,7 +6,7 @@
 section {* Instantiation of the order type classes for lazy lists *}
 theory Coinductive_List_Prefix imports
   Coinductive_List
-  "~~/src/HOL/Library/Prefix_Order"
+  "HOL-Library.Prefix_Order"
 begin
 
 subsection {* Instantiation of the order type class *}

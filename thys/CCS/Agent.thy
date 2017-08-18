@@ -3,7 +3,7 @@
    Author/Maintainer: Jesper Bengtson (jebe@itu.dk), 2012
 *)
 theory Agent
-  imports Nominal
+  imports "HOL-Nominal.Nominal"
 begin
 
 atom_decl name

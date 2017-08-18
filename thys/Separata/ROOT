@@ -6,10 +6,10 @@ session Separata (AFP) = "HOL-Library" +
     "HOL-Eisbach"
     Separation_Algebra
   theories [document = false]
-    "~~/src/HOL/Eisbach/Eisbach_Tools"
-    "~~/src/HOL/Library/Multiset"
-    "../Separation_Algebra/Separation_Algebra"
+    "HOL-Eisbach.Eisbach_Tools"
+    "HOL-Library.Multiset"
+    Separation_Algebra.Separation_Algebra
   theories
-    "Separata"
+    Separata
   document_files
     "root.tex"

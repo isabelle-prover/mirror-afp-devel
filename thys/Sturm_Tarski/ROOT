@@ -3,7 +3,7 @@ chapter AFP
 session Sturm_Tarski (AFP) = "HOL-Computational_Algebra" +
   options [timeout = 600]
   theories [document = false]
-    "~~/src/HOL/Computational_Algebra/Polynomial_Factorial"
+    "HOL-Computational_Algebra.Polynomial_Factorial"
   theories
     Sturm_Tarski
   document_files

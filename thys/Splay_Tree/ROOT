@@ -3,7 +3,7 @@ chapter AFP
 session Splay_Tree (AFP) = "HOL-Library" +
   options [timeout = 600]
   theories [document = false]
-    "~~/src/HOL/Library/Tree_Multiset"
+    "HOL-Library.Tree_Multiset"
   theories
     Splay_Tree
     Splay_Heap

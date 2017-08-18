@@ -5,7 +5,7 @@
 section {* \isaheader {The hashable Typeclass} *}
 theory HashCode
 imports 
-  "../../Native_Word/Uint32" 
+  Native_Word.Uint32 
 begin
 
 text_raw {*\label{thy:HashCode}*}

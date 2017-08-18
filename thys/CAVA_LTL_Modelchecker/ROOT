@@ -5,7 +5,7 @@ session CAVA_buildchain1 (AFP) = "LTL_to_GBA" +
   sessions
     Gabow_SCC
   theories
-    "../Gabow_SCC/All_Of_Gabow_SCC"
+    Gabow_SCC.All_Of_Gabow_SCC
 
 (*session CAVA_buildchain2 (AFP) = CAVA_buildchain1 +
   options [document = false]
@@ -16,7 +16,7 @@ session CAVA_buildchain3 (AFP) = CAVA_buildchain1 +
   sessions
     Promela
   theories
-    "../Promela/All_Of_Promela"
+    Promela.All_Of_Promela
 
 session CAVA_LTL_Modelchecker (AFP) = CAVA_buildchain3 +
   options [timeout = 1200]
@@ -27,7 +27,7 @@ session CAVA_LTL_Modelchecker (AFP) = CAVA_buildchain3 +
   theories
     CAVA_Abstract
   theories [document = false]
-    "~~/src/HOL/Library/AList_Mapping"
+    "HOL-Library.AList_Mapping"
   theories
     "BoolProgs/BoolProgs"
   theories [document = false]

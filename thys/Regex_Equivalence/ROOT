@@ -6,10 +6,10 @@ session Regex_Equivalence (AFP) = "HOL-Library" +
     "Regular-Sets"
     "Efficient-Mergesort"
   theories [document = false]
-    "../Efficient-Mergesort/Efficient_Sort"
-    "../Regular-Sets/Derivatives"
-    "../Regular-Sets/Regular_Exp"
-    "../Regular-Sets/NDerivative"
+    "Efficient-Mergesort.Efficient_Sort"
+    "Regular-Sets.Derivatives"
+    "Regular-Sets.Regular_Exp"
+    "Regular-Sets.NDerivative"
   theories
     Regex_Equivalence
   document_files

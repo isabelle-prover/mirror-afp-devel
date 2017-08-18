@@ -1,7 +1,7 @@
 (* Author: Xingyuan Zhang, Chunhan Wu, Christian Urban *)
 theory Myhill_1
-imports "Folds"
-        "~~/src/HOL/Library/While_Combinator" 
+imports Folds
+        "HOL-Library.While_Combinator" 
 begin
 
 section {* First direction of MN: @{text "finite partition \<Rightarrow> regular language"} *}

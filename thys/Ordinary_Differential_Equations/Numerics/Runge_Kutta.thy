@@ -1,11 +1,11 @@
 section\<open>Runge-Kutta methods\<close>
 theory Runge_Kutta
 imports
-  "~~/src/HOL/Analysis/Analysis"
+  "HOL-Analysis.Analysis"
   One_Step_Method
-  "~~/src/HOL/Library/Float"
-  "../../Affine_Arithmetic/Executable_Euclidean_Space"
-  "../Library/Multivariate_Taylor"
+  "HOL-Library.Float"
+  Affine_Arithmetic.Executable_Euclidean_Space
+  Ordinary_Differential_Equations.Multivariate_Taylor
 begin
 
 subsection \<open>aux\<close>

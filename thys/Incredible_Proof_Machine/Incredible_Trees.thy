@@ -1,7 +1,7 @@
 theory Incredible_Trees
 imports
-  "~~/src/HOL/Library/Sublist" 
-  "~~/src/HOL/Library/Countable"
+  "HOL-Library.Sublist" 
+  "HOL-Library.Countable"
   Entailment
   Rose_Tree
   Abstract_Rules_To_Incredible

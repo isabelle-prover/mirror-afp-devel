@@ -5,7 +5,7 @@ section {* Compatibility with Regular-Sets *}
 
 theory Compatibility_Containers_Regular_Sets imports
   Containers
-  "../Regular-Sets/Regexp_Method"
+  "Regular-Sets.Regexp_Method"
 begin
 
 text {*

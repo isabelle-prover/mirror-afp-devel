@@ -5,7 +5,7 @@
 
 section{* Functional implementation of a SAT solver with Two Watch literal propagation. *}
 theory SatSolverCode
-imports SatSolverVerification "~~/src/HOL/Library/Code_Target_Numeral"
+imports SatSolverVerification "HOL-Library.Code_Target_Numeral"
 begin
 
 (******************************************************************************)

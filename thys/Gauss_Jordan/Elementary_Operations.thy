@@ -8,7 +8,7 @@ section{*Elementary Operations over matrices*}
 
 theory Elementary_Operations
 imports 
-  "../Rank_Nullity_Theorem/Fundamental_Subspaces"
+  Rank_Nullity_Theorem.Fundamental_Subspaces
   Code_Matrix
 begin
 

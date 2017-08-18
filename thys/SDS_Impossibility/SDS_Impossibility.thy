@@ -11,8 +11,8 @@ section \<open>Incompatibility of SD-Efficiency and SD-Strategy-Proofness\<close
 
 theory SDS_Impossibility
 imports
-  "../Randomised_Social_Choice/Automation/SDS_Automation"
-  "../Randomised_Social_Choice/Randomised_Social_Choice"
+  Randomised_Social_Choice.SDS_Automation
+  Randomised_Social_Choice.Randomised_Social_Choice
 begin
 
 subsection \<open>Preliminary Definitions\<close>

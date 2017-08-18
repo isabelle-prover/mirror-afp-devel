@@ -1,6 +1,6 @@
 theory NumberWang_IPv4
 imports Main
-  "~~/src/HOL/Word/Word"
+  "HOL-Word.Word"
 begin
 
 section\<open>Helper Lemmas for Low-Level Operations on Machine Words\<close>

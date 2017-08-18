@@ -2,7 +2,7 @@ section \<open>$n$-step reachability\<close>
 
 theory Reachablen
 imports
-  "../../Graph_Theory/Graph_Theory"
+  Graph_Theory.Graph_Theory
 begin
 
 inductive

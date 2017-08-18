@@ -4,8 +4,8 @@ section {* Set Partitions *}
 
 theory Set_Partition
 imports
-  "~~/src/HOL/Library/FuncSet"
-  "../Card_Partitions/Card_Partitions"
+  "HOL-Library.FuncSet"
+  Card_Partitions.Card_Partitions
 begin
 
 subsection {* Useful Additions to Main Theories *}

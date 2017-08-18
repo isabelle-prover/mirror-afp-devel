@@ -5,8 +5,8 @@ section "Equivalence Framework"
 (*<*)
 theory Automaton
 imports
-  "~~/src/HOL/Library/While_Combinator"
-  "../Coinductive_Languages/Coinductive_Language"
+  "HOL-Library.While_Combinator"
+  Coinductive_Languages.Coinductive_Language
 begin
 (*>*)
 

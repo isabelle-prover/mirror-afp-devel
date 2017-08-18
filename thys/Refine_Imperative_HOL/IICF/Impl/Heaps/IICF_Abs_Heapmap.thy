@@ -1,6 +1,6 @@
 section \<open>Priority Maps implemented with List and Map\<close>
 theory IICF_Abs_Heapmap
-imports IICF_Abs_Heap "~~/src/HOL/Library/Rewrite" "../../Intf/IICF_Prio_Map"
+imports IICF_Abs_Heap "HOL-Library.Rewrite" "../../Intf/IICF_Prio_Map"
 begin
 
   type_synonym ('k,'v) ahm = "'k list \<times> ('k \<rightharpoonup> 'v)"

@@ -10,7 +10,7 @@ theory Examples_QR_IArrays_Symbolic
 imports
   Examples_QR_Abstract_Symbolic
   QR_Decomposition_IArrays
-  "~~/src/HOL/Library/Code_Char"
+  "HOL-Library.Code_Char"
 begin
 
 subsection{*Execution of the QR decomposition using symbolic computation and iarrays*}

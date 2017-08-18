@@ -29,7 +29,7 @@ USA
 section {* BDD Abstractions *}
 
 theory BinDag
-imports "../Simpl/Simpl_Heap"
+imports Simpl.Simpl_Heap
 begin
 
 datatype dag = Tip | Node dag ref dag

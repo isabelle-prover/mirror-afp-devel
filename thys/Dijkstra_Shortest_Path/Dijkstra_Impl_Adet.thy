@@ -4,8 +4,8 @@ imports
   Dijkstra 
   GraphSpec 
   HashGraphImpl 
-  "../Collections/Refine_Dflt_ICF"
-  "~~/src/HOL/Library/Code_Target_Numeral"
+  Collections.Refine_Dflt_ICF
+  "HOL-Library.Code_Target_Numeral"
 begin 
 
 

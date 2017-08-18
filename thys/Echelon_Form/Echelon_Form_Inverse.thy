@@ -9,7 +9,7 @@ section{*Inverse matrix over principal ideal rings*}
 theory Echelon_Form_Inverse
   imports 
     Echelon_Form_Det
-    "../Gauss_Jordan/Inverse"
+    Gauss_Jordan.Inverse
 begin
 
 subsection{*Computing the inverse of matrix over rings*}

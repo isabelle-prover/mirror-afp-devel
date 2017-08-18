@@ -6,7 +6,7 @@ session Heard_Of (AFP) = HOL +
     "HOL-Library"
     Stuttering_Equivalence
   theories [document = false]
-    "../Stuttering_Equivalence/StutterEquivalence"
+    Stuttering_Equivalence.StutterEquivalence
   theories
     (* generic model and reduction theorem *)
     HOModel

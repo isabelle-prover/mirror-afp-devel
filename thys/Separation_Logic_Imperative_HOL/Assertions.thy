@@ -4,7 +4,7 @@ theory Assertions
 imports 
   "Tools/Imperative_HOL_Add" 
   "Tools/Syntax_Match" 
-  "../Automatic_Refinement/Lib/Misc"
+  Automatic_Refinement.Misc
 begin
 
 subsection {* Partial Heaps *}

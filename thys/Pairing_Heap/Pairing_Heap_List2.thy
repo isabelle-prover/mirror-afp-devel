@@ -3,7 +3,7 @@
 section \<open>Pairing Heap According to Oksaki (Modified)\<close>
 
 theory Pairing_Heap_List2
-imports "~~/src/HOL/Library/Multiset"
+imports "HOL-Library.Multiset"
 begin
 
 subsection \<open>Definitions\<close>

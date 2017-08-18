@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, KIT *)
 
 theory Containers_Auxiliary imports
-  "~~/src/HOL/Library/Monad_Syntax"
+  "HOL-Library.Monad_Syntax"
 begin
 
 chapter {* An executable linear order on sets *}

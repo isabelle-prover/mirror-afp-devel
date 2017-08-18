@@ -5,9 +5,9 @@ session "Polynomial_Interpolation" (AFP) = "HOL-Computational_Algebra" +
   sessions
     Sqrt_Babylonian
   theories [document = false]
-    "~~/src/HOL/Computational_Algebra/Polynomial"
-    "~~/src/HOL/Library/Monad_Syntax"
-    "../Sqrt_Babylonian/Sqrt_Babylonian_Auxiliary"
+    "HOL-Computational_Algebra.Polynomial"
+    "HOL-Library.Monad_Syntax"
+    Sqrt_Babylonian.Sqrt_Babylonian_Auxiliary
   theories
     Is_Rat_To_Rat
     Divmod_Int

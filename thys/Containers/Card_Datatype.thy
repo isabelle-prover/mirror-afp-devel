@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, ETH Zurich *)
 
 theory Card_Datatype
-imports "~~/src/HOL/Library/Cardinality"
+imports "HOL-Library.Cardinality"
 begin
 
 section {* Definitions to prove equations about the cardinality of data types *}

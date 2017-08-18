@@ -2,8 +2,8 @@ section \<open>Find a Feedback Arc Set\<close>
 theory Feedback_Arcs
 imports   
   "../DFS_Framework"
-  "../../CAVA_Automata/Digraph_Impl"
-  "Reachable_Nodes"
+  CAVA_Automata.Digraph_Impl
+  Reachable_Nodes
 begin
 text \<open>A feedback arc set is a set of edges that breaks all reachable cycles.
   In this theory, we define an algorithm to find a feedback arc set.\<close>

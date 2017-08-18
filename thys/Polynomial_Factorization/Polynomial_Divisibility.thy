@@ -10,7 +10,7 @@ text \<open>We make a connection between irreducibility of Missing-Polynomial an
 
 theory Polynomial_Divisibility
 imports
-  "../Polynomial_Interpolation/Missing_Polynomial"
+  Polynomial_Interpolation.Missing_Polynomial
 begin
 
 lemma dvd_gcd_mult: fixes p :: "'a :: semiring_gcd"

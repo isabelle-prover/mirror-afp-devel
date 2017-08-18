@@ -4,7 +4,7 @@ subsection \<open>Probability mass functions implemented as lists with duplicate
 
 theory Applicative_Probability_List imports
   Applicative_List
-  "~~/src/HOL/Complex_Main"
+  Complex_Main
 begin
 
 lemma sum_list_concat_map: "sum_list (concat (map f xs)) = sum_list (map (\<lambda>x. sum_list (f x)) xs)"

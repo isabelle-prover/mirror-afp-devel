@@ -4,7 +4,7 @@ section {* $\Pi$-Extended Dual Regular Expressions *}
 
 (*<*)
 theory Pi_Regular_Exp_Dual
-imports Pi_Derivatives "~~/src/HOL/Library/List_lexord" "~~/src/HOL/Library/Code_Target_Nat"
+imports Pi_Derivatives "HOL-Library.List_lexord" "HOL-Library.Code_Target_Nat"
 begin
 (*>*)
 subsection {* Syntax of regular expressions *}

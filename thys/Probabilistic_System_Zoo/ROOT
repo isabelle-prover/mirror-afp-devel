@@ -7,7 +7,7 @@ session "Probabilistic_System_Zoo" (AFP) = "HOL-Probability" +
     "HOL-Cardinals"
   theories [document = false]
     Nonempty_Bounded_Set
-    "~~/src/HOL/Eisbach/Eisbach"
+    "HOL-Eisbach.Eisbach"
   theories
     Probabilistic_Hierarchy
     Vardi
@@ -21,12 +21,12 @@ session "Probabilistic_System_Zoo-BNFs" (AFP) = "HOL-Analysis" +
     "HOL-Probability"
     Probabilistic_System_Zoo
   theories [document = false]
-    "~~/src/HOL/Probability/Giry_Monad"
-    "~~/src/HOL/Library/Multiset"
-    "~~/src/HOL/Cardinals/Cardinals"
+    "HOL-Probability.Giry_Monad"
+    "HOL-Library.Multiset"
+    "HOL-Cardinals.Cardinals"
   theories
-    "~~/src/HOL/Probability/Probability_Mass_Function"
-    "~~/src/HOL/Cardinals/Bounded_Set"
+    "HOL-Probability.Probability_Mass_Function"
+    "HOL-Cardinals.Bounded_Set"
     Nonempty_Bounded_Set
     Bool_Bounded_Set
   document_files (in "document/BNFs")
@@ -40,7 +40,7 @@ session "Probabilistic_System_Zoo-Non_BNFs" (AFP) = "HOL-Probability" +
     Probabilistic_System_Zoo
   theories [document = false]
     Nonempty_Bounded_Set
-    "~~/src/HOL/Eisbach/Eisbach"
+    "HOL-Eisbach.Eisbach"
     Probabilistic_Hierarchy
     Vardi
   theories

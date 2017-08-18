@@ -8,9 +8,9 @@
 theory Extra
 imports
   Main
-  Equiv_Relations
-  "~~/src/HOL/Library/Option_ord"
-  "~~/src/HOL/Library/Product_Lexorder"
+  HOL.Equiv_Relations
+  "HOL-Library.Option_ord"
+  "HOL-Library.Product_Lexorder"
 begin
 
 (* Extra lemmas that are not noteworthy. *)

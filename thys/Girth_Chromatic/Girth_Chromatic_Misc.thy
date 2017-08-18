@@ -1,7 +1,7 @@
 theory Girth_Chromatic_Misc
 imports
   Main
-  "~~/src/HOL/Library/Extended_Real"
+  "HOL-Library.Extended_Real"
 begin
 
 section {* Auxilliary lemmas and setup *}

@@ -8,8 +8,8 @@ section{*Examples of execution over matrices represented as functions*}
 
 theory Examples_Echelon_Form_Abstract
 imports
-  "Code_Cayley_Hamilton"
-  "../Gauss_Jordan/Examples_Gauss_Jordan_Abstract"
+  Code_Cayley_Hamilton
+  Gauss_Jordan.Examples_Gauss_Jordan_Abstract
   Echelon_Form_Inverse
 begin
 

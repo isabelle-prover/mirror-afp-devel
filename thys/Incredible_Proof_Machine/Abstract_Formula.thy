@@ -1,8 +1,8 @@
 theory Abstract_Formula
 imports
   Main
-  "~~/src/HOL/Library/FSet"
-  "~~/src/HOL/Library/Stream"
+  "HOL-Library.FSet"
+  "HOL-Library.Stream"
   Indexed_FSet
 begin
 

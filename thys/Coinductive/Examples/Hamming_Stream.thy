@@ -6,7 +6,7 @@ section {* The Hamming stream defined as a least fixpoint *}
 
 theory Hamming_Stream imports
   "../Coinductive_List"
-  "~~/src/HOL/Computational_Algebra/Primes"
+  "HOL-Computational_Algebra.Primes"
 begin
 
 lemma infinity_inf_enat [simp]:

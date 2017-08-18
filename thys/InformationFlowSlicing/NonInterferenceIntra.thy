@@ -1,8 +1,8 @@
 section {* Slicing guarantees IFC Noninterference *}
 
 theory NonInterferenceIntra imports 
-  "../Slicing/StaticIntra/Slice" 
-  "../Slicing/Basic/CFGExit_wf"
+  Slicing.Slice 
+  Slicing.CFGExit_wf
 begin
 
 subsection {* Assumptions of this Approach *}

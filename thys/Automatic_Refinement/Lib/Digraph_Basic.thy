@@ -1,9 +1,9 @@
 section {* Relations interpreted as Directed Graphs *}
 theory Digraph_Basic
 imports   
-  "Misc"
-  "Refine_Util"
-  "~~/src/HOL/Library/Omega_Words_Fun"
+  Misc
+  Refine_Util
+  "HOL-Library.Omega_Words_Fun"
 begin
 
 text \<open>

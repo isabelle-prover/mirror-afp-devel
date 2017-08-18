@@ -4,7 +4,7 @@
 *)
 
 theory Boolean_Expression_Checkers
-  imports Main "~~/src/HOL/Library/Mapping"
+  imports Main "HOL-Library.Mapping"
 begin
 
 section \<open>Tautology (etc) Checking via Binary Decision Trees\<close>

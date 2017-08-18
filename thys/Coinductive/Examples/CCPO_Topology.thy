@@ -6,7 +6,7 @@ section {* CCPO topologies *}
 
 theory CCPO_Topology
 imports
-  "~~/src/HOL/Analysis/Extended_Real_Limits"
+  "HOL-Analysis.Extended_Real_Limits"
   "../Coinductive_Nat"
 begin
 

@@ -1,5 +1,5 @@
 theory Benchmark
-imports Regex_Equivalence "~~/src/Tools/Spec_Check/Spec_Check"
+imports Regex_Equivalence.Regex_Equivalence Spec_Check.Spec_Check
 begin
 
 definition bool_checkers :: "(string * (bool rexp \<Rightarrow> bool rexp \<Rightarrow> bool)) list" where

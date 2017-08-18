@@ -4,10 +4,10 @@
 subsection \<open>IND-CPA from PRF\<close>
 
 theory PRF_IND_CPA imports
-  "../CryptHOL/GPV_Bisim"
-  "../CryptHOL/List_Bits"
-  "Pseudo_Random_Function"
-  "IND_CPA"
+  CryptHOL.GPV_Bisim
+  CryptHOL.List_Bits
+  Pseudo_Random_Function
+  IND_CPA
 begin
 
 text {*

@@ -1,7 +1,7 @@
 section {* The OneThirdRule Algorithm *}
 
 theory OneThirdRule_Defs
-imports "../../Heard_Of/HOModel" "../Consensus_Types"
+imports Heard_Of.HOModel "../Consensus_Types"
 begin
 
 text {* The contents of this file have been taken almost verbatim from the

@@ -3,8 +3,8 @@ chapter AFP
 session Skew_Heap (AFP) = "HOL-Library" +
   options [timeout = 600]
   theories [document = false]
-    "~~/src/HOL/Library/Multiset"
-    "~~/src/HOL/Library/Tree"
+    "HOL-Library.Multiset"
+    "HOL-Library.Tree"
   theories
     Skew_Heap
   document_files

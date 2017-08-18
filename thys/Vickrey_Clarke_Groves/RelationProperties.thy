@@ -20,7 +20,7 @@ section {* Additional properties of relations, and operators on relations,
 theory RelationProperties
 imports
   RelationOperators
-  Conditionally_Complete_Lattices (*cSup_singleton*)
+  HOL.Conditionally_Complete_Lattices (*cSup_singleton*)
 
 begin
 

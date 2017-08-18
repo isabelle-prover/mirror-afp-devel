@@ -5,7 +5,7 @@
 theory Shortest_Path imports
   Arc_Walk
   Weighted_Graph
-  "~~/src/HOL/Library/Extended_Real"
+  "HOL-Library.Extended_Real"
 begin
 
 section {* Shortest Paths *}

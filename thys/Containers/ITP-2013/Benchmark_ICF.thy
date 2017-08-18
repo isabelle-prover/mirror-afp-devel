@@ -1,8 +1,8 @@
 theory Benchmark_ICF 
 imports 
   Benchmark_Comparison
-  "../../Collections/ICF/CollectionsV1"
-  "~~/src/HOL/Library/Code_Target_Nat"
+  Collections.CollectionsV1
+  "HOL-Library.Code_Target_Nat"
 begin
 
 locale benchmark_base = 

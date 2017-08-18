@@ -2,8 +2,8 @@
     Author:     Andreas Lochbihler, KIT *)
 
 theory DList_Set imports 
-  "Collection_Eq"
-  "Equal"
+  Collection_Eq
+  Equal
 begin
 
 section {* Sets implemented by distinct lists *}

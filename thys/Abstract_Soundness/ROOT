@@ -3,7 +3,7 @@ chapter AFP
 session Abstract_Soundness (AFP) = Abstract_Completeness +
   options [timeout = 300]
   theories [document = false]
-    "~~/src/HOL/Library/BNF_Corec"
+    "HOL-Library.BNF_Corec"
   theories
     Infinite_Proof_Soundness
   document_files

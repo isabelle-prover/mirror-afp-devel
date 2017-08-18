@@ -9,7 +9,7 @@ text \<open>This theory contains several lemmas which might be of interest to th
 
 theory Missing_Ring
 imports
-  "~~/src/HOL/Algebra/Ring"
+  "HOL-Algebra.Ring"
 begin
 
 context comm_monoid

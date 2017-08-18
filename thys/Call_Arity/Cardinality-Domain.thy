@@ -1,5 +1,5 @@
 theory "Cardinality-Domain"
-imports "../Launchbury/HOLCF-Utils"
+imports "Launchbury.HOLCF-Utils"
 begin
 
 type_synonym oneShot = "one"

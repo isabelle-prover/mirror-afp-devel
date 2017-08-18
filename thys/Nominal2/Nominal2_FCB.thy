@@ -1,5 +1,5 @@
 theory Nominal2_FCB
-imports "Nominal2_Abs" 
+imports Nominal2_Abs 
 begin
 
 

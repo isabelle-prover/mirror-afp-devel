@@ -6,11 +6,11 @@ text \<open>Parts of it should be moved to the Isabelle repository\<close>
 
 theory Markov_Models_Auxiliary
 imports
-  "~~/src/HOL/Probability/Probability"
-  "~~/src/HOL/Library/Rewrite"
-  "~~/src/HOL/Library/Linear_Temporal_Logic_on_Streams"
-  "../Coinductive/Coinductive_Stream"
-  "../Coinductive/Coinductive_Nat"
+  Probability
+  "HOL-Library.Rewrite"
+  "HOL-Library.Linear_Temporal_Logic_on_Streams"
+  Coinductive.Coinductive_Stream
+  Coinductive.Coinductive_Nat
 begin
 
 lemma lfp_upperbound: "(\<And>y. x \<le> f y) \<Longrightarrow> x \<le> lfp f"

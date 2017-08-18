@@ -1,7 +1,7 @@
 section \<open>Catalan numbers\<close>
 
 theory Catalan_Auxiliary_Integral
-imports "~~/src/HOL/Analysis/Analysis"
+imports "HOL-Analysis.Analysis"
 begin
 
 subsection \<open>Auxiliary integral\<close>

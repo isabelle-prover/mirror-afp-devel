@@ -1,7 +1,7 @@
 subsection {* Theorems on lists *}
 
 theory List_Theorems
-  imports List 
+  imports HOL.List 
 begin
 
 (* Returns the last n elements of list x *)

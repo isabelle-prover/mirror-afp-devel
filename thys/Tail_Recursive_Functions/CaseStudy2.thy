@@ -8,7 +8,7 @@
 section "Case study 2"
 
 theory CaseStudy2
-imports Main "~~/src/HOL/Library/Multiset"
+imports Main "HOL-Library.Multiset"
 begin
 
 text {*

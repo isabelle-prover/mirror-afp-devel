@@ -3,7 +3,7 @@ Title:KoenigsbergBridge.thy
 Author:Wenda Li
 *)
 
-theory KoenigsbergBridge imports MoreGraph Map Enum
+theory KoenigsbergBridge imports MoreGraph HOL.Map HOL.Enum
 begin
 
 section{*Definition of Eulerian trails and circuits*}

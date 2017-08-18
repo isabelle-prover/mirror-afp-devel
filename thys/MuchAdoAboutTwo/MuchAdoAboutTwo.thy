@@ -8,7 +8,7 @@ section {* Much Ado about Two *}
 
 (*<*)
 theory MuchAdoAboutTwo
-imports "~~/src/HOL/Library/Permutation"
+imports "HOL-Library.Permutation"
 begin
 (*>*)
 

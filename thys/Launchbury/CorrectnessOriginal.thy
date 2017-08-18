@@ -1,5 +1,5 @@
 theory CorrectnessOriginal
-imports "Denotational" "Launchbury"
+imports Denotational Launchbury
 begin
 
 text {*

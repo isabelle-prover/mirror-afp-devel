@@ -8,7 +8,7 @@ section{*Generalization of the Second Part of the Fundamental Theorem of Linear 
 
 theory Generalizations2
 imports   
-  "../Rank_Nullity_Theorem/Fundamental_Subspaces"
+  Rank_Nullity_Theorem.Fundamental_Subspaces
 begin
 
 subsection{*Conjugate class*}

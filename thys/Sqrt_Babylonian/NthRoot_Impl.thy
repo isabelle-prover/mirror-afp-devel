@@ -26,7 +26,7 @@ section {* Executable algorithms for $p$-th roots *}
 theory NthRoot_Impl
 imports
   Log_Impl
-  "../Cauchy/CauchysMeanTheorem"
+  Cauchy.CauchysMeanTheorem
 begin
 
 text {*

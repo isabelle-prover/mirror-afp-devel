@@ -1,7 +1,7 @@
 section{* Examples of Pseudo-Hoops *}
 
 theory Examples
-imports SpecialPseudoHoops "../LatticeProperties/Lattice_Ordered_Group"
+imports SpecialPseudoHoops LatticeProperties.Lattice_Ordered_Group
 begin
 
 declare add_uminus_conv_diff [simp del] right_minus [simp]

@@ -3,11 +3,11 @@ theory Sepref_Dijkstra
 imports 
   "../IICF/IICF"
   "../Sepref_ICF_Bindings"
-  "../../Dijkstra_Shortest_Path/Dijkstra"
-  "../../Dijkstra_Shortest_Path/Test"
-  "~~/src/HOL/Library/Code_Target_Numeral"
+  Dijkstra_Shortest_Path.Dijkstra
+  Dijkstra_Shortest_Path.Test
+  "HOL-Library.Code_Target_Numeral"
   (*"../../../DFS_Framework/Misc/DFS_Framework_Refine_Aux"*)
-  "Sepref_WGraph"
+  Sepref_WGraph
 begin
 
 

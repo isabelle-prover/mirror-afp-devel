@@ -2,9 +2,9 @@
   Author: Andreas Lochbihler, ETH Zurich *)
 
 theory IND_CCA2 imports
-  "../CryptHOL/Computational_Model"
-  "../CryptHOL/Negligible"
-  "../CryptHOL/Environment_Functor"
+  CryptHOL.Computational_Model
+  CryptHOL.Negligible
+  CryptHOL.Environment_Functor
 begin
 
 locale pk_enc = 

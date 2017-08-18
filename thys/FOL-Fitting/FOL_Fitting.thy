@@ -2,7 +2,7 @@
 *)
 
 theory FOL_Fitting
-imports Main "~~/src/HOL/Library/Infinite_Set"
+imports Main "HOL-Library.Infinite_Set"
 begin
 
 

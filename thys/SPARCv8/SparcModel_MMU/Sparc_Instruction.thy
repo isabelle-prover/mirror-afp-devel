@@ -10,7 +10,7 @@
 
 section {* SPARC instruction model *}
 theory Sparc_Instruction
-imports Main Sparc_Types Sparc_State "~~/src/HOL/Eisbach/Eisbach_Tools"
+imports Main Sparc_Types Sparc_State "HOL-Eisbach.Eisbach_Tools"
 begin
 text{*
 This theory provides a formal model for assembly instruction to be executed in the model.

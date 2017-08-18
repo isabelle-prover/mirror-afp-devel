@@ -11,7 +11,7 @@ imports C_Seq_Invariants
         C_Aodv_Predicates
         C_Fresher
         C_Quality_Increases
-        "../../../AWN/OAWN_Convert"
+        AWN.OAWN_Convert
         C_OAodv
 begin
 

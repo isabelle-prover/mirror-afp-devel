@@ -5,7 +5,7 @@ text {* Some lemmas to allow better reasoning with coinductive lists. *}
 theory MoreCoinductiveList
 imports
   Main
-  "../Coinductive/Coinductive_List"
+  Coinductive.Coinductive_List
 begin
 
 subsection {* @{term "lset"} *}

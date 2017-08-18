@@ -2,8 +2,8 @@ section {* Basic facts about rings and modules *}
 
 theory RingModuleFacts
 imports Main
-  "~~/src/HOL/Algebra/Module"
-  "~~/src/HOL/Algebra/Coset"
+  "HOL-Algebra.Module"
+  "HOL-Algebra.Coset"
   (*MonoidSums*)
 begin
 

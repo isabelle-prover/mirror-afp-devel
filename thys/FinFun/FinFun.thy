@@ -3,7 +3,7 @@
 section \<open>Almost everywhere constant functions\<close>
 
 theory FinFun
-imports "~~/src/HOL/Library/Cardinality"
+imports "HOL-Library.Cardinality"
 begin
 
 text \<open>

@@ -2,7 +2,7 @@
 section "Ramsey's Theorem"
 
 theory Ramsey
-imports Main "~~/src/HOL/Library/Infinite_Set"
+imports Main "HOL-Library.Infinite_Set"
 begin
 
 

@@ -11,9 +11,9 @@ theory Catalan_Numbers
 imports
   Complex_Main
   Catalan_Auxiliary_Integral
-  "~~/src/HOL/Analysis/Analysis"
-  "~~/src/HOL/Computational_Algebra/Formal_Power_Series"
-  "../Landau_Symbols/Landau_Symbols"
+  "HOL-Analysis.Analysis"
+  "HOL-Computational_Algebra.Formal_Power_Series"
+  Landau_Symbols.Landau_Symbols
 begin
 
 subsection \<open> Other auxiliary lemmas\<close>

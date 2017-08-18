@@ -10,8 +10,8 @@ text \<open>In this theory we prove that the polynomials over a unique factoriza
 theory Unique_Factorization_Poly
 imports
   Unique_Factorization
-  "../Polynomial_Factorization/Missing_Polynomial_Factorial" 
-  "../Subresultants/More_Homomorphisms" 
+  Polynomial_Factorization.Missing_Polynomial_Factorial 
+  Subresultants.More_Homomorphisms 
 begin
 
 hide_const (open) module.smult

@@ -7,7 +7,7 @@
 section {* Example Specification for a Car Audio System *}
 
 theory CarAudioSystem
-imports "HAKripke" "HAOps"
+imports HAKripke HAOps
 begin
 
 subsection {* Definitions *}

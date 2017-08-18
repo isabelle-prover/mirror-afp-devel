@@ -2,7 +2,7 @@ theory Akra_Bazzi_Approximation
 imports
   Complex_Main
   Akra_Bazzi_Method
-  "~~/src/HOL/Decision_Procs/Approximation"
+  "HOL-Decision_Procs.Approximation"
 begin
 
 (* 

@@ -4,9 +4,9 @@ session Circus (AFP) = HOLCF +
   description {* Circus Denotational Semantics and Refinements *}
   options [timeout = 600]
   theories [document = false]
-    "~~/src/HOL/Library/Sublist"
+    "HOL-Library.Sublist"
   theories
-    "Refinement_Example"
+    Refinement_Example
   document_files
     "acronym.sty"
     "bigfoot.sty"

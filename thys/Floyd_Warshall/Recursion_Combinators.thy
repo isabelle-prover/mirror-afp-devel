@@ -1,6 +1,6 @@
 (* Authors: Lammich, Wimmer *)
 theory Recursion_Combinators
-  imports "../Refine_Imperative_HOL/IICF/IICF"
+  imports Refine_Imperative_HOL.IICF
 begin
 
 context

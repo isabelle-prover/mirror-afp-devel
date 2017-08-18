@@ -1,5 +1,5 @@
 theory TopoS_Library
-imports String 
+imports HOL.String 
   "Lib/FiniteListGraph_Impl"
   "Security_Invariants/SINVAR_BLPbasic_impl"
   "Security_Invariants/SINVAR_Subnets_impl"
@@ -19,7 +19,7 @@ imports String
   "Security_Invariants/SINVAR_ACLcommunicateWith_impl"
   "Security_Invariants/SINVAR_Dependability_norefl_impl"
   "Lib/Efficient_Distinct"
-  "~~/src/HOL/Library/Code_Target_Nat"
+  "HOL-Library.Code_Target_Nat"
 begin
 
 (*<*)

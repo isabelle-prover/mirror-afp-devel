@@ -5,7 +5,7 @@ session "Abstract-Rewriting" (AFP) = "HOL-Library" +
   sessions
     "Regular-Sets"
   theories [document = false]
-    "../Regular-Sets/Regexp_Method"
+    "Regular-Sets.Regexp_Method"
   theories
     Seq
     Abstract_Rewriting

@@ -9,7 +9,7 @@ section \<open>Linear Temporal Logic\<close>
 
 theory LTL
 imports 
-  Main "~~/src/HOL/Library/Omega_Words_Fun"
+  Main "HOL-Library.Omega_Words_Fun"
 begin
 
 -- \<open>This theory provides a formalisation of linear temporal logic. It provides three variants:

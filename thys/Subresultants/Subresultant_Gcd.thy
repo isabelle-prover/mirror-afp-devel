@@ -7,7 +7,7 @@ text \<open>This theory now formalizes how the subresultant PRS can be used to c
 theory Subresultant_Gcd
 imports
   Subresultant
-  "../Polynomial_Factorization/Missing_Polynomial_Factorial"
+  Polynomial_Factorization.Missing_Polynomial_Factorial
 begin
 
 subsection \<open>Algorithm\<close>

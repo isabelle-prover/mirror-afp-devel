@@ -6,7 +6,7 @@
 theory Trie2 imports
   MapOps
   ODList
-  "../Trie/Trie"
+  Trie.Trie
 begin
 (*>*)
 

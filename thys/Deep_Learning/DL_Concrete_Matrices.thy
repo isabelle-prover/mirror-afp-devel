@@ -3,7 +3,7 @@
 section \<open>Concrete Matrices\<close>
 
 theory DL_Concrete_Matrices
-imports Real "../Jordan_Normal_Form/Matrix" DL_Missing_Matrix
+imports HOL.Real Jordan_Normal_Form.Matrix DL_Missing_Matrix
 begin
 
 text \<open>The following definition allows non-square-matrices, mat\_one (mat\_one n) only allows square matrices.\<close>

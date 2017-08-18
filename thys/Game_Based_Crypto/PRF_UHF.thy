@@ -7,8 +7,8 @@ subsection \<open>Extending the input length of a PRF using a universal hash fun
 text \<open> This example is taken from \cite[\S 4.2]{Shoup2004IACR}.\<close>
 
 theory PRF_UHF imports
-  "../CryptHOL/GPV_Bisim"
-  "Pseudo_Random_Function"
+  CryptHOL.GPV_Bisim
+  Pseudo_Random_Function
 begin
 
 locale "hash" =
