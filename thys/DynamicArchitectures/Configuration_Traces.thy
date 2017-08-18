@@ -1,5 +1,6 @@
-(*  Title:      Configuration_Traces.thy
-    Author:     Diego Marmsoler
+(*
+  Title:      Configuration_Traces.thy
+  Author:     Diego Marmsoler
 *)
 section "A Theory of Dynamic Architectures"
 text {*
@@ -10,9 +11,55 @@ theory Configuration_Traces
   imports "../Coinductive/Coinductive_List"
 begin
 text {*
-  In the following we first provide some preliminary results for extended natural numbers and lazy lists.
-  Then, we formalize the notion of configuration traces and provide some basic properties thereof.
+  In the following we first provide some preliminary results for natural numbers, extended natural numbers, and lazy lists.
+  Then, we introduce a locale @text{dynamic\_architectures} which introduces basic definitions and corresponding properties for dynamic architectures.
 *}
+  
+subsection "Natural Numbers"
+text {*
+  We provide one additional property for natural numbers.
+*}
+lemma boundedGreatest:
+  assumes "P (i::nat)"
+    and "\<forall>n' > n. \<not> P n'"
+  shows "\<exists>i'\<le>n. P i' \<and> (\<forall>n'. P n' \<longrightarrow> n'\<le>i')"
+proof -
+  have "P (i::nat) \<Longrightarrow> n\<ge>i \<Longrightarrow> \<forall>n' > n. \<not> P n' \<Longrightarrow> (\<exists>i'\<le>n. P i' \<and> (\<forall>n'\<le>n. P n' \<longrightarrow> n'\<le>i'))"
+  proof (induction n)
+    case 0
+    then show ?case by auto
+  next
+    case (Suc n)
+    then show ?case
+    proof cases
+      assume "i = Suc n"
+      then show ?thesis using Suc.prems by auto
+    next
+      assume "\<not>(i = Suc n)"
+      thus ?thesis
+      proof cases
+        assume "P (Suc n)"
+        thus ?thesis by auto
+      next
+        assume "\<not> P (Suc n)"
+        with Suc.prems have "\<forall>n' > n. \<not> P n'" using Suc_lessI by blast
+        moreover from `\<not>(i = Suc n)` have "i \<le> n" and "P i" using Suc.prems by auto
+        ultimately obtain i' where "i'\<le>n \<and> P i' \<and> (\<forall>n'\<le>n. P n' \<longrightarrow> n' \<le> i')" using Suc.IH by blast
+        hence "i' \<le> n" and "P i'" and "(\<forall>n'\<le>n. P n' \<longrightarrow> n' \<le> i')" by auto
+        thus ?thesis by (metis le_SucI le_Suc_eq)
+      qed
+    qed
+  qed
+  moreover have "n\<ge>i"
+  proof (rule ccontr)
+    assume "\<not> (n \<ge> i)"
+    hence "n < i" by arith
+    thus False using assms by blast
+  qed
+  ultimately obtain i' where "i'\<le>n" and "P i'" and "\<forall>n'\<le>n. P n' \<longrightarrow> n' \<le> i'" using assms by blast
+  with assms have "\<forall>n'. P n' \<longrightarrow> n' \<le> i'" using not_le_imp_less by blast
+  with `i' \<le> n` and `P i'` show ?thesis by auto
+qed
 
 subsection "Extended Natural Numbers"
 text {*
@@ -108,97 +155,66 @@ proof -
     with sset show False by auto
   qed
 qed
-  
+
 subsection "A Model of Dynamic Architectures"
 text {*
-  In the following we formalize dynamic architectures in terms of configuration traces.
-  Moreover, we formalize component behavior in terms of behavior traces.
+  In the following we formalize dynamic architectures in terms of configuration traces, i.e., sequences of architecture configurations.
 *}
 
 text {*
-  In our model, each component has an abstract notion of state and is identified by means of an identifier.
+  Our model is provided in terms of a locale over three type parameters:
+  \begin{itemize}
+    \item id: a type for component identifiers
+    \item cmp: a type for components
+    \item cnf: a type for architecture configurations
+  \end{itemize}
 *}
-typedecl state
-typedecl cid
+locale dynamic_architectures =
+  fixes tCMP :: "'id \<Rightarrow> 'cnf \<Rightarrow> 'cmp" ("\<sigma>\<^bsub>_\<^esub>(_)" [0,110]60)
+    and active :: "'id \<Rightarrow> 'cnf \<Rightarrow> bool" ("\<parallel>_\<parallel>\<^bsub>_\<^esub>" [0,110]60)
+begin
+  
 text {*
-  Note that @{type state} and @{type cid} act as parameters for our theory.
+  The locale requires two parameters:
+  \begin{itemize}
+    \item @{term tCMP} is an operator to obtain a component with a certain identifier from an architecture configuration.
+    \item @{term active} is a predicate to assert whether a certain component is activated within an architecture configuration.
+  \end{itemize}
 *}
 
-record cmp =
-  name :: cid
-  state :: state
-
 text {*
-  A set of components is called healthy if each component is uniquely identified by its name.
+  The locale provides some general properties about its parameters and introduces six important operators over configuration traces:
+  \begin{itemize}
+    \item An operator to extract the behavior of a certain component out of a given configuration trace.
+    \item An operator to obtain the number of activations of a certain component within a given configuration trace.
+    \item An operator to obtain the least point in time (before a certain point in time) from which on a certain component is not activated anymore.
+    \item An operator to obtain the latest point in time where a certain component was activated.
+    \item Two operators to map time-points between configuration traces and behavior traces.
+  \end{itemize}
+  Moreover, the locale provides several properties about the operators and their relationships.
 *}
-definition healthy :: "cmp set \<Rightarrow> bool"
-  where "healthy C \<equiv> \<forall>c\<in>C.\<forall>d\<in>C. name c=name d \<longrightarrow> c=d"
 
-text {*
-  In the following we introduce a function to obtain a component from a set of components, based on its identifier.
-*}
-definition tCMP :: "cid \<Rightarrow> cmp set \<Rightarrow> cmp"
-  where "tCMP i C \<equiv> (THE c. c\<in>C \<and> name(c)=i)"
+lemma nact_active:
+  fixes t::"nat \<Rightarrow> 'cnf"
+    and n::nat
+    and n''
+    and id
+  assumes "\<parallel>id\<parallel>\<^bsub>t n\<^esub>"
+    and "n'' \<ge> n"    
+    and "\<not> (\<exists>n'\<ge>n. n' < n'' \<and> \<parallel>id\<parallel>\<^bsub>t n'\<^esub>)"    
+  shows "n=n''"
+  using assms le_eq_less_or_eq by auto
 
-text {*
-  For healthy sets of components @{text C}, which contain a component with name @{text i}, @{term "tCMP i C"} is well-defined.
-*}
-lemma healtyCMP1:
-  fixes C::"cmp set"
-  assumes hC: "healthy C"
-    and "c\<in>C"
-    and "name c=i"
-  shows "tCMP i C = c"
+lemma nact_exists:
+  fixes t::"nat \<Rightarrow> 'cnf"
+  assumes "\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
+  shows "\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub> \<and> (\<nexists>k. n\<le>k \<and> k<i \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)"
 proof -
-  have "tCMP i C = (THE c. c\<in>C \<and> name(c)=i)" unfolding tCMP_def ..
-  moreover have "(THE c. c\<in>C \<and> name(c)=i) = c"
-  proof (rule the_equality)
-    from assms show "c \<in> C \<and> name c = i" by simp
-    fix c' show "c' \<in> C \<and> name c' = i \<Longrightarrow> c' = c"
-    proof -
-      assume "c' \<in> C \<and> name c' = i"
-      with `c \<in> C \<and> name c = i` show "c' = c" using hC healthy_def by simp
-    qed
-  qed
-  ultimately show ?thesis by simp
+  let ?L = "LEAST i. (i\<ge>n \<and> \<parallel>c\<parallel>\<^bsub>t i\<^esub>)"
+  from assms have "?L\<ge>n \<and> \<parallel>c\<parallel>\<^bsub>t ?L\<^esub>" using LeastI[of "\<lambda>x::nat. (x\<ge>n \<and> \<parallel>c\<parallel>\<^bsub>t x\<^esub>)"] by auto
+  moreover have "\<nexists>k. n\<le>k \<and> k<?L \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>" using not_less_Least by auto
+  ultimately show ?thesis by blast
 qed
-
-lemma healtyCMP2:
-  fixes C::"cmp set"
-  assumes "healthy C"
-    and "\<exists>c\<in>C. name c = i"
-  shows "name (tCMP i C)=i"
-    and "(tCMP i C)\<in>C" using assms healtyCMP1 by auto
-  
-text {*
-  An architecture configuration is then modeled by a set of currently active components.
-  Note that for the purpose of this theory, connections between components are not considered.
-  A theory of a concrete architecture would model it as equalities between component ports.
-*}
-type_synonym conf = "cmp set"
-
-subsubsection "Behavior Traces"
-text {*
-  A component's behavior is modeled in terms of behavior traces, i.e., a (finite or infinite) sequence of component states.
-*}
-type_synonym BTrace = "state llist"
-type_synonym BTraceINF = "nat \<Rightarrow> state"
-
-subsubsection "Configuration Traces"
-text {*
-  A dynamic architecture is then modeled in terms of configuration traces, i.e., a (finite or infinite) sequence of architecture configurations.
-*}
-type_synonym CTrace = "conf llist"
-type_synonym CTraceINF = "nat \<Rightarrow> conf"
-
-consts arch :: "CTrace set"
-  
-subsubsection "Active Components"
-text {*
-  In the following, we introduce a predicate to check whether a certain component is active in an architecture configuration.
-*}
-definition active :: "cid \<Rightarrow> conf \<Rightarrow> bool" ("\<parallel>_\<parallel>\<^bsub>_\<^esub>" [0,110]60)
-  where "\<parallel>i\<parallel>\<^bsub>k\<^esub> \<equiv> {c\<in>k. name(c)=i} \<noteq> {}"
 
 lemma lActive_least:
   assumes "\<exists>i\<ge>n. i < llength t \<and> \<parallel>c\<parallel>\<^bsub>lnth t i\<^esub>"
@@ -210,15 +226,15 @@ proof -
   moreover have "\<nexists>k. n\<le>k \<and> k<llength t \<and> k<?L \<and> \<parallel>c\<parallel>\<^bsub>lnth t k\<^esub>" using not_less_Least by auto
   ultimately show ?thesis by blast
 qed
-  
+
 subsection "Projection"
 text {*
   In the following we introduce an operator which extracts the behavior of a certain component out of a given configuration trace.
 *}
 
-definition proj:: "cid \<Rightarrow> CTrace \<Rightarrow> BTrace" ("\<pi>\<^bsub>_\<^esub>(_)" [0,110]60) 
-  where "proj c = lmap (\<lambda>cnf. state (tCMP c cnf)) \<circ> (lfilter (active c))"
-    
+definition proj:: "'id \<Rightarrow> ('cnf llist) \<Rightarrow> ('cmp llist)" ("\<pi>\<^bsub>_\<^esub>(_)" [0,110]60) 
+  where "proj c = lmap (\<lambda>cnf. (\<sigma>\<^bsub>c\<^esub>(cnf))) \<circ> (lfilter (active c))"
+
 lemma proj_lnil [simp,intro]:
   "\<pi>\<^bsub>c\<^esub>([]\<^sub>l) = []\<^sub>l" using proj_def by simp
 
@@ -235,13 +251,13 @@ next
 qed
   
 lemma proj_LCons [simp]:
-  "\<pi>\<^bsub>i\<^esub>(x #\<^sub>l xs) = (if \<parallel>i\<parallel>\<^bsub>x\<^esub> then (state (tCMP i x)) #\<^sub>l (\<pi>\<^bsub>i\<^esub>(xs)) else \<pi>\<^bsub>i\<^esub>(xs))"
+  "\<pi>\<^bsub>i\<^esub>(x #\<^sub>l xs) = (if \<parallel>i\<parallel>\<^bsub>x\<^esub> then (\<sigma>\<^bsub>i\<^esub>(x)) #\<^sub>l (\<pi>\<^bsub>i\<^esub>(xs)) else \<pi>\<^bsub>i\<^esub>(xs))"
   using proj_def by simp
     
 lemma proj_llength[simp]:
   "llength (\<pi>\<^bsub>c\<^esub>(t)) \<le> llength t"
   using llength_lfilter_ile proj_def by simp
-    
+
 lemma proj_ltake:
   assumes "\<forall>(n'::nat)\<le>llength t. n'\<ge>n \<longrightarrow> (\<not> \<parallel>c\<parallel>\<^bsub>lnth t n'\<^esub>)"
   shows "\<pi>\<^bsub>c\<^esub>(t) = \<pi>\<^bsub>c\<^esub>(ltake n t)" using lfilter_ltake proj_def assms by (metis comp_apply)
@@ -256,10 +272,10 @@ subsubsection "Monotonicity and Continuity"
 lemma proj_mcont:
   shows "mcont lSup lprefix lSup lprefix (proj c)"
 proof -
-  have "mcont lSup lprefix lSup lprefix (\<lambda>x. lmap (\<lambda>cnf. state (tCMP c cnf)) (lfilter (active c) x))"
+  have "mcont lSup lprefix lSup lprefix (\<lambda>x. lmap (\<lambda>cnf. \<sigma>\<^bsub>c\<^esub>(cnf)) (lfilter (active c) x))"
     by simp
-  moreover have "(\<lambda>x. lmap (\<lambda>cnf. state (tCMP c cnf)) (lfilter (active c) x)) =
-    lmap (\<lambda>cnf. state (tCMP c cnf)) \<circ> lfilter (active c)" by auto
+  moreover have "(\<lambda>x. lmap (\<lambda>cnf. \<sigma>\<^bsub>c\<^esub>(cnf)) (lfilter (active c) x)) =
+    lmap (\<lambda>cnf. \<sigma>\<^bsub>c\<^esub>(cnf)) \<circ> lfilter (active c)" by auto
   ultimately show ?thesis using proj_def by simp
 qed
 
@@ -276,8 +292,8 @@ lemma proj_mono_prefix[simp]:
   shows "lprefix (\<pi>\<^bsub>c\<^esub>(t)) (\<pi>\<^bsub>c\<^esub>(t'))"
 proof -
   from assms have "lprefix (lfilter (active c) t) (lfilter (active c) t')" using lprefix_lfilterI by simp
-  hence "lprefix (lmap (\<lambda>cnf. state (tCMP c cnf)) (lfilter (active c) t))
-    (lmap (\<lambda>cnf. state (tCMP c cnf)) (lfilter (active c) t'))" using lmap_lprefix by simp
+  hence "lprefix (lmap (\<lambda>cnf. \<sigma>\<^bsub>c\<^esub>(cnf)) (lfilter (active c) t))
+    (lmap (\<lambda>cnf. \<sigma>\<^bsub>c\<^esub>(cnf)) (lfilter (active c) t'))" using lmap_lprefix by simp
   thus ?thesis using proj_def by simp
 qed
  
@@ -297,12 +313,12 @@ lemma proj_append_lfinite[simp]:
   assumes "lfinite t"
   shows "\<pi>\<^bsub>c\<^esub>(t @\<^sub>l t') = (\<pi>\<^bsub>c\<^esub>(t)) @\<^sub>l (\<pi>\<^bsub>c\<^esub>(t'))" (is "?lhs=?rhs")
 proof -
-  have "?lhs = (lmap (\<lambda>cnf. state (tCMP c cnf)) \<circ> (lfilter (active c))) (t @\<^sub>l t')" using proj_def by simp
-  also have "\<dots> = lmap (\<lambda>cnf. state (tCMP c cnf)) (lfilter (active c) (t @\<^sub>l t'))" by simp
-  also from assms have "\<dots> = lmap (\<lambda>cnf. state (tCMP c cnf))
+  have "?lhs = (lmap (\<lambda>cnf. \<sigma>\<^bsub>c\<^esub>(cnf)) \<circ> (lfilter (active c))) (t @\<^sub>l t')" using proj_def by simp
+  also have "\<dots> = lmap (\<lambda>cnf. \<sigma>\<^bsub>c\<^esub>(cnf)) (lfilter (active c) (t @\<^sub>l t'))" by simp
+  also from assms have "\<dots> = lmap (\<lambda>cnf. \<sigma>\<^bsub>c\<^esub>(cnf))
     ((lfilter (active c) t) @\<^sub>l (lfilter (active c) t'))" by simp
-  also have "\<dots> = op @\<^sub>l (lmap (\<lambda>cnf. state (tCMP c cnf)) (lfilter (active c) t))
-    (lmap (\<lambda>cnf. state (tCMP c cnf)) (lfilter (active c) t'))" using lmap_lappend_distrib by simp
+  also have "\<dots> = op @\<^sub>l (lmap (\<lambda>cnf. \<sigma>\<^bsub>c\<^esub>(cnf)) (lfilter (active c) t))
+    (lmap (\<lambda>cnf. \<sigma>\<^bsub>c\<^esub>(cnf)) (lfilter (active c) t'))" using lmap_lappend_distrib by simp
   also have "\<dots> = ?rhs" using proj_def by simp
   finally show ?thesis .
 qed
@@ -317,7 +333,7 @@ proof -
   thus ?thesis by (simp add: ileI1 lnull_def one_eSuc)
 qed
 
-subsubsection "Projection Not Active"
+subsubsection "Projection not Active"
   
 lemma proj_not_active[simp]:
   assumes "enat n < llength t"
@@ -395,13 +411,13 @@ subsubsection "Projection Active"
 
 lemma proj_active[simp]:
   assumes "enat i < llength t" "\<parallel>c\<parallel>\<^bsub>lnth t i\<^esub>"
-  shows "\<pi>\<^bsub>c\<^esub>(ltake (Suc i) t) = (\<pi>\<^bsub>c\<^esub>(ltake i t)) @\<^sub>l ((state (tCMP c (lnth t i))) #\<^sub>l []\<^sub>l)" (is "?lhs = ?rhs")
+  shows "\<pi>\<^bsub>c\<^esub>(ltake (Suc i) t) = (\<pi>\<^bsub>c\<^esub>(ltake i t)) @\<^sub>l ((\<sigma>\<^bsub>c\<^esub>(lnth t i)) #\<^sub>l []\<^sub>l)" (is "?lhs = ?rhs")
 proof -
   from assms have "ltake (enat (Suc i)) t = (ltake (enat i) t) @\<^sub>l ((lnth t i) #\<^sub>l []\<^sub>l)"
     using ltake_Suc_conv_snoc_lnth by blast
   hence "?lhs = \<pi>\<^bsub>c\<^esub>((ltake (enat i) t) @\<^sub>l ((lnth t i) #\<^sub>l []\<^sub>l))" by simp
   moreover have "\<dots> = (\<pi>\<^bsub>c\<^esub>(ltake (enat i) t)) @\<^sub>l (\<pi>\<^bsub>c\<^esub>((lnth t i) #\<^sub>l []\<^sub>l))" by simp
-  moreover from assms have "\<pi>\<^bsub>c\<^esub>((lnth t i) #\<^sub>l []\<^sub>l) = (state (tCMP c (lnth t i))) #\<^sub>l []\<^sub>l" by simp
+  moreover from assms have "\<pi>\<^bsub>c\<^esub>((lnth t i) #\<^sub>l []\<^sub>l) = (\<sigma>\<^bsub>c\<^esub>(lnth t i)) #\<^sub>l []\<^sub>l" by simp
   ultimately show ?thesis by simp
 qed
   
@@ -411,7 +427,7 @@ lemma proj_active_append:
       and a3: "\<not> lfinite t \<or> n'-1 < llength t"
       and a4: "\<parallel>c\<parallel>\<^bsub>lnth t i\<^esub>"
       and "\<forall>i'. (n \<le> i' \<and> enat i'<n' \<and> i' < llength t \<and> \<parallel>c\<parallel>\<^bsub>lnth t i'\<^esub>) \<longrightarrow> (i' = i)"
-    shows "\<pi>\<^bsub>c\<^esub>(ltake n' t) = (\<pi>\<^bsub>c\<^esub>(ltake n t)) @\<^sub>l ((state (tCMP c (lnth t i))) #\<^sub>l []\<^sub>l)" (is "?lhs = ?rhs")
+    shows "\<pi>\<^bsub>c\<^esub>(ltake n' t) = (\<pi>\<^bsub>c\<^esub>(ltake n t)) @\<^sub>l ((\<sigma>\<^bsub>c\<^esub>(lnth t i)) #\<^sub>l []\<^sub>l)" (is "?lhs = ?rhs")
 proof -
   have "?lhs = \<pi>\<^bsub>c\<^esub>(ltake (Suc i) t)"
   proof -
@@ -428,7 +444,7 @@ proof -
     qed
     ultimately show ?thesis using proj_not_active_same[of "Suc i" n' t c] by simp
   qed
-  also have "\<dots> = (\<pi>\<^bsub>c\<^esub>(ltake i t)) @\<^sub>l ((state (tCMP c (lnth t i))) #\<^sub>l []\<^sub>l)"
+  also have "\<dots> = (\<pi>\<^bsub>c\<^esub>(ltake i t)) @\<^sub>l ((\<sigma>\<^bsub>c\<^esub>(lnth t i)) #\<^sub>l []\<^sub>l)"
   proof -
     have "i < llength t"
     proof cases
@@ -460,8 +476,7 @@ proof -
   finally show ?thesis by simp
 qed
   
-
-subsubsection "Same and Not Same"
+subsubsection "Same and not Same"
 
 lemma proj_same_not_active:
   assumes "n \<le> n'"
@@ -474,7 +489,7 @@ proof
   moreover from `enat (n'-1)<llength t` and `i<n'` have "i<llength t"
     by (metis diff_Suc_1 dual_order.strict_trans enat_ord_simps(2) lessE)
   ultimately have "\<pi>\<^bsub>c\<^esub>(ltake (Suc i) t) =
-    (\<pi>\<^bsub>c\<^esub>(ltake i t)) @\<^sub>l ((state (tCMP c (lnth t i))) #\<^sub>l []\<^sub>l)" by simp
+    (\<pi>\<^bsub>c\<^esub>(ltake i t)) @\<^sub>l ((\<sigma>\<^bsub>c\<^esub>(lnth t i)) #\<^sub>l []\<^sub>l)" by simp
   moreover from `i<n'` have "Suc i \<le> n'" by simp
     hence "lprefix(\<pi>\<^bsub>c\<^esub>(ltake (Suc i) t)) (\<pi>\<^bsub>c\<^esub>(ltake n' t))" by simp
     then obtain "tl" where "\<pi>\<^bsub>c\<^esub>(ltake n' t) = (\<pi>\<^bsub>c\<^esub>(ltake (Suc i) t)) @\<^sub>l tl"
@@ -484,19 +499,19 @@ proof
     then obtain "hd" where "\<pi>\<^bsub>c\<^esub>(ltake i t) = (\<pi>\<^bsub>c\<^esub>(ltake n t)) @\<^sub>l hd"
       using lprefix_conv_lappend by auto
   ultimately have "\<pi>\<^bsub>c\<^esub>(ltake n' t) =
-    (((\<pi>\<^bsub>c\<^esub>(ltake n t)) @\<^sub>l hd) @\<^sub>l ((state (tCMP c (lnth t i))) #\<^sub>l []\<^sub>l)) @\<^sub>l tl" by simp
-  also have "\<dots> = ((\<pi>\<^bsub>c\<^esub>(ltake n t)) @\<^sub>l hd) @\<^sub>l ((state (tCMP c (lnth t i))) #\<^sub>l tl)"
-    using lappend_snocL1_conv_LCons2[of "(\<pi>\<^bsub>c\<^esub>(ltake n t)) @\<^sub>l hd" "state (tCMP c (lnth t i))"] by simp
-  also have "\<dots> = (\<pi>\<^bsub>c\<^esub>(ltake n t)) @\<^sub>l (hd @\<^sub>l ((state (tCMP c (lnth t i))) #\<^sub>l tl))"
+    (((\<pi>\<^bsub>c\<^esub>(ltake n t)) @\<^sub>l hd) @\<^sub>l ((\<sigma>\<^bsub>c\<^esub>(lnth t i)) #\<^sub>l []\<^sub>l)) @\<^sub>l tl" by simp
+  also have "\<dots> = ((\<pi>\<^bsub>c\<^esub>(ltake n t)) @\<^sub>l hd) @\<^sub>l ((\<sigma>\<^bsub>c\<^esub>(lnth t i)) #\<^sub>l tl)"
+    using lappend_snocL1_conv_LCons2[of "(\<pi>\<^bsub>c\<^esub>(ltake n t)) @\<^sub>l hd" "\<sigma>\<^bsub>c\<^esub>(lnth t i)"] by simp
+  also have "\<dots> = (\<pi>\<^bsub>c\<^esub>(ltake n t)) @\<^sub>l (hd @\<^sub>l ((\<sigma>\<^bsub>c\<^esub>(lnth t i)) #\<^sub>l tl))"
     using lappend_assoc by auto
   also have "\<pi>\<^bsub>c\<^esub>(ltake n' t) = (\<pi>\<^bsub>c\<^esub>(ltake n' t)) @\<^sub>l []\<^sub>l" by simp
-  finally have "(\<pi>\<^bsub>c\<^esub>(ltake n' t)) @\<^sub>l []\<^sub>l = (\<pi>\<^bsub>c\<^esub>(ltake n t)) @\<^sub>l (hd @\<^sub>l ((state (tCMP c (lnth t i))) #\<^sub>l tl))" .
+  finally have "(\<pi>\<^bsub>c\<^esub>(ltake n' t)) @\<^sub>l []\<^sub>l = (\<pi>\<^bsub>c\<^esub>(ltake n t)) @\<^sub>l (hd @\<^sub>l ((\<sigma>\<^bsub>c\<^esub>(lnth t i)) #\<^sub>l tl))" .
   moreover from assms(3) have "llength (\<pi>\<^bsub>c\<^esub>(ltake n' t)) = llength (\<pi>\<^bsub>c\<^esub>(ltake n t))" by simp
-  ultimately have "lfinite (\<pi>\<^bsub>c\<^esub>(ltake n' t)) \<longrightarrow> []\<^sub>l = hd @\<^sub>l ((state (tCMP c (lnth t i))) #\<^sub>l tl)"
+  ultimately have "lfinite (\<pi>\<^bsub>c\<^esub>(ltake n' t)) \<longrightarrow> []\<^sub>l = hd @\<^sub>l ((\<sigma>\<^bsub>c\<^esub>(lnth t i)) #\<^sub>l tl)"
     using assms(3) lappend_eq_lappend_conv[of "\<pi>\<^bsub>c\<^esub>(ltake n' t)" "\<pi>\<^bsub>c\<^esub>(ltake n t)" "[]\<^sub>l"] by simp
   moreover have "lfinite (\<pi>\<^bsub>c\<^esub>(ltake n' t))" by simp
-  ultimately have "[]\<^sub>l = hd @\<^sub>l ((state (tCMP c (lnth t i))) #\<^sub>l tl)" by simp
-  hence "(state (tCMP c (lnth t i))) #\<^sub>l tl = []\<^sub>l" using LNil_eq_lappend_iff by auto
+  ultimately have "[]\<^sub>l = hd @\<^sub>l ((\<sigma>\<^bsub>c\<^esub>(lnth t i)) #\<^sub>l tl)" by simp
+  hence "(\<sigma>\<^bsub>c\<^esub>(lnth t i)) #\<^sub>l tl = []\<^sub>l" using LNil_eq_lappend_iff by auto
   thus False by simp
 qed
 
@@ -524,10 +539,10 @@ qed
 
 subsection "Activations"
 text {*
-  Finally, we introduce an operator to obtain the number of activations of a certain component within a given configuration trace.
+  We also introduce an operator to obtain the number of activations of a certain component within a given configuration trace.
 *}
 
-definition nAct :: "cid \<Rightarrow> enat \<Rightarrow> CTrace \<Rightarrow> enat" ("\<langle>_ #\<^bsub>_\<^esub>_\<rangle>") where
+definition nAct :: "'id \<Rightarrow> enat \<Rightarrow> ('cnf llist) \<Rightarrow> enat" ("\<langle>_ #\<^bsub>_\<^esub>_\<rangle>") where
 "\<langle>c #\<^bsub>n\<^esub> t\<rangle> \<equiv> llength (\<pi>\<^bsub>c\<^esub>(ltake n t))"
 
 lemma nAct_0[simp]:
@@ -616,7 +631,7 @@ proof -
   thus ?thesis using nAct_def by simp
 qed
   
-lemma nAct_mono_back:
+lemma nAct_strict_mono_back:
   assumes "\<langle>c #\<^bsub>n\<^esub> t\<rangle> < \<langle>c #\<^bsub>n'\<^esub> t\<rangle>"
     shows "n < n'"
 proof (rule ccontr)
@@ -631,8 +646,8 @@ subsubsection "Not Active"
 lemma nAct_not_active[simp]:
   fixes n::nat
     and n'::nat
-    and t::CTrace
-    and c::cid
+    and t::"('cnf llist)"
+    and c::'id
   assumes "enat i < llength t"
     and "\<not> \<parallel>c\<parallel>\<^bsub>lnth t i\<^esub>"
   shows "\<langle>c #\<^bsub>Suc i\<^esub> t\<rangle> = \<langle>c #\<^bsub>i\<^esub> t\<rangle>"
@@ -658,14 +673,14 @@ subsubsection "Active"
 lemma nAct_active[simp]:
   fixes n::nat
     and n'::nat
-    and t::CTrace
-    and c::cid
+    and t::"('cnf llist)"
+    and c::'id
   assumes "enat i < llength t"
     and "\<parallel>c\<parallel>\<^bsub>lnth t i\<^esub>"
   shows "\<langle>c #\<^bsub>Suc i\<^esub> t\<rangle> = eSuc (\<langle>c #\<^bsub>i\<^esub> t\<rangle>)"
 proof -
   from assms have "\<pi>\<^bsub>c\<^esub>(ltake (Suc i) t) =
-    (\<pi>\<^bsub>c\<^esub>(ltake i t)) @\<^sub>l ((state (tCMP c (lnth t i))) #\<^sub>l []\<^sub>l)" by simp
+    (\<pi>\<^bsub>c\<^esub>(ltake i t)) @\<^sub>l ((\<sigma>\<^bsub>c\<^esub>(lnth t i)) #\<^sub>l []\<^sub>l)" by simp
   hence "llength (\<pi>\<^bsub>c\<^esub>(ltake (enat (Suc i)) t)) = eSuc (llength (\<pi>\<^bsub>c\<^esub>(ltake i t)))"
     using plus_1_eSuc one_eSuc by simp
   moreover have "llength (\<pi>\<^bsub>c\<^esub>(ltake i t)) \<noteq> \<infinity>"
@@ -678,8 +693,8 @@ qed
 lemma nAct_active_suc:
   fixes n::nat
     and n'::enat
-    and t::CTrace
-    and c::cid
+    and t::"('cnf llist)"
+    and c::'id
   assumes "\<not> lfinite t \<or> n'-1 < llength t"
     and "n \<le> i"
     and "enat i < n'"
@@ -687,9 +702,9 @@ lemma nAct_active_suc:
     and "\<forall>i'. (n \<le> i' \<and> enat i'<n' \<and> i' < llength t \<and> \<parallel>c\<parallel>\<^bsub>lnth t i'\<^esub>) \<longrightarrow> (i' = i)"
   shows "\<langle>c #\<^bsub>n'\<^esub> t\<rangle> = eSuc (\<langle>c #\<^bsub>n\<^esub> t\<rangle>)"
 proof -
-  from assms have "\<pi>\<^bsub>c\<^esub>(ltake n' t) = (\<pi>\<^bsub>c\<^esub>(ltake (enat n) t)) @\<^sub>l ((state (tCMP c (lnth t i))) #\<^sub>l []\<^sub>l)"
+  from assms have "\<pi>\<^bsub>c\<^esub>(ltake n' t) = (\<pi>\<^bsub>c\<^esub>(ltake (enat n) t)) @\<^sub>l ((\<sigma>\<^bsub>c\<^esub>(lnth t i)) #\<^sub>l []\<^sub>l)"
     using proj_active_append[of n i n' t c] by blast
-  moreover have "llength ((\<pi>\<^bsub>c\<^esub>(ltake (enat n) t)) @\<^sub>l ((state (tCMP c (lnth t i))) #\<^sub>l []\<^sub>l)) =
+  moreover have "llength ((\<pi>\<^bsub>c\<^esub>(ltake (enat n) t)) @\<^sub>l ((\<sigma>\<^bsub>c\<^esub>(lnth t i)) #\<^sub>l []\<^sub>l)) =
     eSuc (llength (\<pi>\<^bsub>c\<^esub>(ltake (enat n) t)))" using one_eSuc eSuc_plus_1 by simp
   ultimately show ?thesis using nAct_def by simp
 qed
@@ -727,7 +742,7 @@ lemma nAct_less_active:
   shows "\<exists>i\<ge>n. i<n' \<and> \<parallel>c\<parallel>\<^bsub>lnth t i\<^esub>"
 proof (rule ccontr)
   assume "\<not> (\<exists>i\<ge>n. i<n' \<and> \<parallel>c\<parallel>\<^bsub>lnth t i\<^esub>)"
-  moreover have "enat n \<le> n'" using assms(2) less_imp_le nAct_mono_back by blast
+  moreover have "enat n \<le> n'" using assms(2) less_imp_le nAct_strict_mono_back by blast
   ultimately have "\<langle>c #\<^bsub>n\<^esub> t\<rangle> = \<langle>c #\<^bsub>n'\<^esub> t\<rangle>" using `n' - 1 < llength t` nAct_not_active_same by simp
   thus False using assms by simp
 qed
@@ -756,7 +771,7 @@ lemma nAct_not_same_active:
 proof -
   from assms have "llength(\<pi>\<^bsub>c\<^esub>(ltake n t)) < llength (\<pi>\<^bsub>c\<^esub>(ltake n' t))" using nAct_def by simp
   hence "\<pi>\<^bsub>c\<^esub>(ltake n' t) \<noteq> \<pi>\<^bsub>c\<^esub>(ltake n t)" by auto
-  moreover from assms have "enat n < n'" using nAct_mono_back[of c "enat n" t n'] by simp
+  moreover from assms have "enat n < n'" using nAct_strict_mono_back[of c "enat n" t n'] by simp
   ultimately show ?thesis using proj_not_same_active[of n n' t c] assms by simp
 qed
   
@@ -853,22 +868,22 @@ qed
 
 lemma proj_active_nth:
   assumes "enat (Suc i) < llength t" "\<parallel>c\<parallel>\<^bsub>lnth t i\<^esub>"
-  shows "lnth (\<pi>\<^bsub>c\<^esub>(t)) (the_enat (\<langle>c #\<^bsub>i\<^esub> t\<rangle>)) = state (tCMP c (lnth t i))"
+  shows "lnth (\<pi>\<^bsub>c\<^esub>(t)) (the_enat (\<langle>c #\<^bsub>i\<^esub> t\<rangle>)) = \<sigma>\<^bsub>c\<^esub>(lnth t i)"
 proof -
   from assms have "enat i < llength t" using Suc_ile_eq[of i "llength t"] by auto
-  with assms have "\<pi>\<^bsub>c\<^esub>(ltake (Suc i) t) = (\<pi>\<^bsub>c\<^esub>(ltake i t)) @\<^sub>l ((state (tCMP c (lnth t i))) #\<^sub>l []\<^sub>l)" by simp
-  moreover have "lnth ((\<pi>\<^bsub>c\<^esub>(ltake i t)) @\<^sub>l ((state (tCMP c (lnth t i))) #\<^sub>l []\<^sub>l))
-    (the_enat (llength (\<pi>\<^bsub>c\<^esub>(ltake i t)))) = state (tCMP c (lnth t i))"
+  with assms have "\<pi>\<^bsub>c\<^esub>(ltake (Suc i) t) = (\<pi>\<^bsub>c\<^esub>(ltake i t)) @\<^sub>l ((\<sigma>\<^bsub>c\<^esub>(lnth t i)) #\<^sub>l []\<^sub>l)" by simp
+  moreover have "lnth ((\<pi>\<^bsub>c\<^esub>(ltake i t)) @\<^sub>l ((\<sigma>\<^bsub>c\<^esub>(lnth t i)) #\<^sub>l []\<^sub>l))
+    (the_enat (llength (\<pi>\<^bsub>c\<^esub>(ltake i t)))) = \<sigma>\<^bsub>c\<^esub>(lnth t i)"
   proof -
-    have "\<not> lnull ((state (tCMP c (lnth t i))) #\<^sub>l []\<^sub>l)" by simp
+    have "\<not> lnull ((\<sigma>\<^bsub>c\<^esub>(lnth t i)) #\<^sub>l []\<^sub>l)" by simp
     moreover have "lfinite (\<pi>\<^bsub>c\<^esub>(ltake i t))" by simp
-    ultimately have "lnth ((\<pi>\<^bsub>c\<^esub>(ltake i t)) @\<^sub>l ((state (tCMP c (lnth t i))) #\<^sub>l []\<^sub>l))
-      (the_enat (llength (\<pi>\<^bsub>c\<^esub>(ltake i t)))) = lhd ((state (tCMP c (lnth t i))) #\<^sub>l []\<^sub>l)" by simp
-    also have "\<dots> = state (tCMP c (lnth t i))" by simp
-    finally show "lnth ((\<pi>\<^bsub>c\<^esub>(ltake i t)) @\<^sub>l ((state (tCMP c (lnth t i))) #\<^sub>l []\<^sub>l))
-      (the_enat (llength (\<pi>\<^bsub>c\<^esub>(ltake i t)))) = state (tCMP c (lnth t i))" by simp
+    ultimately have "lnth ((\<pi>\<^bsub>c\<^esub>(ltake i t)) @\<^sub>l ((\<sigma>\<^bsub>c\<^esub>(lnth t i)) #\<^sub>l []\<^sub>l))
+      (the_enat (llength (\<pi>\<^bsub>c\<^esub>(ltake i t)))) = lhd ((\<sigma>\<^bsub>c\<^esub>(lnth t i)) #\<^sub>l []\<^sub>l)" by simp
+    also have "\<dots> = \<sigma>\<^bsub>c\<^esub>(lnth t i)" by simp
+    finally show "lnth ((\<pi>\<^bsub>c\<^esub>(ltake i t)) @\<^sub>l ((\<sigma>\<^bsub>c\<^esub>(lnth t i)) #\<^sub>l []\<^sub>l))
+      (the_enat (llength (\<pi>\<^bsub>c\<^esub>(ltake i t)))) = \<sigma>\<^bsub>c\<^esub>(lnth t i)" by simp
   qed
-  ultimately have "state (tCMP c (lnth t i)) = lnth (\<pi>\<^bsub>c\<^esub>(ltake (Suc i) t))
+  ultimately have "\<sigma>\<^bsub>c\<^esub>(lnth t i) = lnth (\<pi>\<^bsub>c\<^esub>(ltake (Suc i) t))
     (the_enat (llength (\<pi>\<^bsub>c\<^esub>(ltake i t))))" by simp
   also have "\<dots> = lnth (\<pi>\<^bsub>c\<^esub>(ltake (Suc i) t)) (the_enat (\<langle>c #\<^bsub>i\<^esub> t\<rangle>))" using nAct_def by simp
   also have "\<dots> = lnth (ltake (\<langle>c #\<^bsub>Suc i\<^esub> t\<rangle>) (\<pi>\<^bsub>c\<^esub>(t))) (the_enat (\<langle>c #\<^bsub>i\<^esub> t\<rangle>))"
@@ -912,5 +927,339 @@ proof -
   qed
   ultimately show ?thesis by simp
 qed
+  
+subsection "Least not Active"
+text {*
+  In the following, we introduce an operator to obtain the least point in time before a certain point in time where a component was deactivated.
+*}
+  
+definition lNAct :: "'id \<Rightarrow> (nat \<Rightarrow> 'cnf) \<Rightarrow> nat \<Rightarrow> nat" ("\<langle>_ \<or> _\<rangle>\<^bsub>_\<^esub>")
+  where "\<langle>c \<or> t\<rangle>\<^bsub>n\<^esub> \<equiv> (LEAST n'. n=n' \<or> (n'<n \<and> (\<nexists>k. k\<ge>n' \<and> k<n \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)))"
+
+lemma lNAct_ex: "\<langle>c \<or> t\<rangle>\<^bsub>n\<^esub>=n \<or> \<langle>c \<or> t\<rangle>\<^bsub>n\<^esub><n \<and> (\<nexists>k. k\<ge>\<langle>c \<or> t\<rangle>\<^bsub>n\<^esub> \<and> k<n \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)"
+proof -
+  let ?P="\<lambda>n'. n=n' \<or> n'<n \<and> (\<nexists>k. k\<ge>n' \<and> k<n \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)"
+  from lNAct_def have "\<langle>c \<or> t\<rangle>\<^bsub>n\<^esub> = (LEAST n'. ?P n')" by simp
+  moreover have "?P n" by simp
+  with LeastI have "?P (LEAST n'. ?P n')" .
+  ultimately show ?thesis by auto
+qed
+    
+lemma lNact_notActive:
+  fixes c t n k
+  assumes "k\<ge>\<langle>c \<or> t\<rangle>\<^bsub>n\<^esub>"
+    and "k<n"
+  shows "\<not>\<parallel>c\<parallel>\<^bsub>t k\<^esub>"
+  by (metis assms lNAct_ex leD)
+    
+lemma lNactGe:
+  fixes c t n n'
+  assumes "n' \<ge> \<langle>c \<or> t\<rangle>\<^bsub>n\<^esub>" 
+    and "\<parallel>c\<parallel>\<^bsub>t n'\<^esub>"
+  shows "n' \<ge> n"
+  using assms lNact_notActive leI by blast
+    
+lemma lNactLe:
+  fixes n n'
+  assumes "n'=n \<or> (n'<n \<and> (\<nexists>k. k\<ge>n' \<and> k<n \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>))"
+  shows "\<langle>c \<or> t\<rangle>\<^bsub>n\<^esub> \<le> n'"
+  using assms lNAct_def Least_le[of "\<lambda>n'. n=n' \<or> (n'<n \<and> (\<nexists>k. k\<ge>n' \<and> k<n \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>))"] by auto
+    
+lemma lNact_active:
+  fixes cid t n
+  assumes "\<forall>k<n. \<parallel>cid\<parallel>\<^bsub>t k\<^esub>"
+  shows "\<langle>cid \<or> t\<rangle>\<^bsub>n\<^esub> = n"
+  using assms lNAct_ex by blast
+    
+lemma nAct_mono_back:
+  fixes c t and n and n'
+  assumes "\<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle> \<ge> \<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>"
+  shows "n'\<ge>\<langle>c \<or> t\<rangle>\<^bsub>n\<^esub>"
+proof cases
+  assume "\<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle> = \<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>"
+  thus ?thesis
+  proof cases
+    assume "n'\<ge>n"
+    thus ?thesis using lNactLe by (metis HOL.no_atp(11))
+  next
+    assume "\<not> n'\<ge>n"
+    hence "n'<n" by simp
+    with `\<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle> = \<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>` have "\<nexists>k. k\<ge>n' \<and> k<n \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>"
+      by (metis enat_ord_simps(1) enat_ord_simps(2) nAct_same_not_active)
+    thus ?thesis using lNactLe by (simp add: \<open>n' < n\<close>)
+  qed
+next
+  assume "\<not>\<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle> = \<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>"
+  with assms have "\<langle>c #\<^bsub>enat n'\<^esub> inf_llist t\<rangle> > \<langle>c #\<^bsub>enat n\<^esub> inf_llist t\<rangle>" by simp
+  hence "n' > n" using nAct_strict_mono_back[of c "enat n" "inf_llist t" "enat n'"] by simp
+  thus ?thesis by (meson dual_order.strict_implies_order lNactLe le_trans)
+qed
+
+subsection "Last Activation"
+text {*
+  In the following we introduce an operator to obtain the latest point in time where a certain component was activated within a certain configuration trace.
+*}
+
+definition lActive :: "'id \<Rightarrow> (nat \<Rightarrow> 'cnf) \<Rightarrow> nat" ("\<langle>_ \<and> _\<rangle>")
+  where "\<langle>c \<and> t\<rangle> \<equiv> (GREATEST i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)"
+
+lemma lActive_active:
+  assumes "\<parallel>c\<parallel>\<^bsub>t i\<^esub>"
+    and "\<forall>n' > n. \<not> (\<parallel>c\<parallel>\<^bsub>t n'\<^esub>)"
+  shows "\<parallel>c\<parallel>\<^bsub>t (\<langle>c \<and> t\<rangle>)\<^esub>"
+proof -
+  from assms obtain i' where "\<parallel>c\<parallel>\<^bsub>t i'\<^esub>" and "(\<forall>y. \<parallel>c\<parallel>\<^bsub>t y\<^esub> \<longrightarrow> y \<le> i')"
+    using boundedGreatest[of "\<lambda>i'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>" i n] by blast
+  thus ?thesis using lActive_def Nat.GreatestI_nat[of "\<lambda>i'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>"] by simp
+qed
+
+lemma lActive_less:
+  assumes "\<parallel>c\<parallel>\<^bsub>t i\<^esub>"
+    and "\<forall>n' > n. \<not> (\<parallel>c\<parallel>\<^bsub>t n'\<^esub>)"
+  shows "\<langle>c \<and> t\<rangle> \<le> n"
+proof (rule ccontr)
+  assume "\<not> \<langle>c \<and> t\<rangle> \<le> n"
+  hence "\<langle>c \<and> t\<rangle> > n" by simp
+  moreover from assms have "\<parallel>c\<parallel>\<^bsub>t (\<langle>c \<and> t\<rangle>)\<^esub>" using lActive_active by simp
+  ultimately show False using assms by simp
+qed
+
+lemma lActive_greatest:
+  assumes "\<parallel>c\<parallel>\<^bsub>t i\<^esub>"
+    and "\<forall>n' > n. \<not> (\<parallel>c\<parallel>\<^bsub>t n'\<^esub>)"
+  shows "i \<le> \<langle>c \<and> t\<rangle>"
+proof -
+  from assms obtain i' where "\<parallel>c\<parallel>\<^bsub>t i'\<^esub>" and "(\<forall>y. \<parallel>c\<parallel>\<^bsub>t y\<^esub> \<longrightarrow> y \<le> i')"
+    using boundedGreatest[of "\<lambda>i'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>" i n] by blast
+  with assms show ?thesis using lActive_def Nat.Greatest_le_nat[of "\<lambda>i'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>" i] by simp
+qed
+  
+lemma lActive_greater_active:
+  assumes "n > \<langle>c \<and> t\<rangle>"
+    and "\<forall>n'' > n'. \<not> \<parallel>c\<parallel>\<^bsub>t n''\<^esub>"
+  shows "\<not> \<parallel>c\<parallel>\<^bsub>t n\<^esub>"
+proof (rule ccontr)
+  assume "\<not> \<not> \<parallel>c\<parallel>\<^bsub>t n\<^esub>"
+  with `\<forall>n'' > n'. \<not> \<parallel>c\<parallel>\<^bsub>t n''\<^esub>` have "n \<le> \<langle>c \<and> t\<rangle>" using lActive_greatest by simp
+  thus False using assms by simp
+qed
+  
+lemma lActive_greater_active_all:
+  assumes "\<forall>n'' > n'. \<not> \<parallel>c\<parallel>\<^bsub>t n''\<^esub>"
+  shows "\<not>(\<exists>n > \<langle>c \<and> t\<rangle>. \<parallel>c\<parallel>\<^bsub>t n\<^esub>)" 
+proof (rule ccontr)
+  assume "\<not>\<not>(\<exists>n > \<langle>c \<and> t\<rangle>. \<parallel>c\<parallel>\<^bsub>t n\<^esub>)"
+  then obtain "n" where "n>\<langle>c \<and> t\<rangle>" and "\<parallel>c\<parallel>\<^bsub>t n\<^esub>" by blast
+  with `\<forall>n'' > n'. \<not> (\<parallel>c\<parallel>\<^bsub>t n''\<^esub>)` have "\<not> \<parallel>c\<parallel>\<^bsub>t n\<^esub>" using lActive_greater_active by simp
+  with `\<parallel>c\<parallel>\<^bsub>t n\<^esub>` show False by simp
+qed
+
+lemma lActive_equality:
+  assumes "\<parallel>c\<parallel>\<^bsub>t i\<^esub>"
+    and "(\<And>x. \<parallel>c\<parallel>\<^bsub>t x\<^esub> \<Longrightarrow> x \<le> i)"
+  shows "\<langle>c \<and> t\<rangle> = i" unfolding lActive_def using assms Greatest_equality[of "\<lambda>i'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>"] by simp
+
+subsection "Mapping Time Points"
+text {*
+  In the following we introduce two operators to map time-points between configuration traces and behavior traces.
+*}
+
+subsubsection "Configuration Trace to Behavior Trace"
+text {*
+  First we provide an operator which maps a point in time of a configuration trace to the corresponding point in time of a behavior trace.
+*}
+  
+definition cnf2bhv :: "'id \<Rightarrow> (nat \<Rightarrow> 'cnf) \<Rightarrow> nat \<Rightarrow> nat" ("\<^bsub>_\<^esub>\<up>\<^bsub>_\<^esub>(_)" [150,150,150] 110)
+  where "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n) \<equiv> the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1 + (n - \<langle>c \<and> t\<rangle>)"
+
+lemma cnf2bhv_mono:
+  assumes "n'\<ge>n"
+  shows "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n') \<ge> \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n)"
+  by (simp add: assms cnf2bhv_def diff_le_mono)
+
+lemma cnf2bhv_mono_strict:
+  assumes "n\<ge>\<langle>c \<and> t\<rangle>" and "n'>n"
+  shows "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n') > \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n)"
+  using assms cnf2bhv_def by auto
+
+text "Note that the functions are nat, that means that also in the case the difference is negative they will return a 0!"
+lemma cnf2bhv_ge_llength[simp]:
+  assumes "n\<ge>\<langle>c \<and> t\<rangle>"
+  shows "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n) \<ge> the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1"
+  using assms cnf2bhv_def by simp
+
+lemma cnf2bhv_greater_llength[simp]:
+  assumes "n>\<langle>c \<and> t\<rangle>"
+  shows "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n) > the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1"
+  using assms cnf2bhv_def by simp
+
+lemma cnf2bhv_suc[simp]:
+  assumes "n\<ge>\<langle>c \<and> t\<rangle>"
+  shows "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(Suc n) = Suc (\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n))"
+  using assms cnf2bhv_def by simp
+
+lemma cnf2bhv_lActive[simp]:
+  shows "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(\<langle>c \<and> t\<rangle>) = the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1"
+  using cnf2bhv_def by simp
+    
+lemma cnf2bhv_lnth_lappend:
+  assumes act: "\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
+    and nAct: "\<nexists>i. i\<ge>n \<and> \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
+  shows "lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t')) (\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n)) = lnth (inf_llist t') (n - \<langle>c \<and> t\<rangle> - 1)"
+    (is "?lhs = ?rhs")
+proof -
+  from nAct have "lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))" using proj_finite2 by auto
+  then obtain k where k_def: "llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)) = enat k" using lfinite_llength_enat by blast
+  moreover have "k \<le> \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n)"
+  proof -
+    from nAct have "\<nexists>i. i>n-1 \<and> \<parallel>c\<parallel>\<^bsub>t i\<^esub>" by simp
+    with act have "\<langle>c \<and> t\<rangle> \<le> n-1" using lActive_less by auto
+    moreover have "n>0" using act nAct by auto
+    ultimately have "\<langle>c \<and> t\<rangle> < n" by simp
+    hence "the_enat (llength (\<pi>\<^bsub>c\<^esub>inf_llist t)) - 1 < \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n)" using cnf2bhv_greater_llength by simp
+    with k_def show ?thesis by simp
+  qed
+  ultimately have "?lhs = lnth (inf_llist t') (\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n) - k)" using lnth_lappend2 by blast
+  moreover have "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n) - k = n - \<langle>c \<and> t\<rangle> - 1"
+  proof -
+    from cnf2bhv_def have "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n) - k = the_enat (llength (\<pi>\<^bsub>c\<^esub>inf_llist t)) - 1 + (n - \<langle>c \<and> t\<rangle>) - k"
+      by simp
+    also have "\<dots> = the_enat (llength (\<pi>\<^bsub>c\<^esub>inf_llist t)) - 1 + (n - \<langle>c \<and> t\<rangle>) -
+      the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))" using k_def by simp
+    also have "\<dots> = the_enat (llength (\<pi>\<^bsub>c\<^esub>inf_llist t)) + (n - \<langle>c \<and> t\<rangle>) - 1 -
+      the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))"
+    proof -
+      have "\<exists>i. enat i < llength (inf_llist t) \<and> \<parallel>c\<parallel>\<^bsub>lnth (inf_llist t) i\<^esub>" by (simp add: act)
+      hence "llength (\<pi>\<^bsub>c\<^esub>inf_llist t) \<ge> 1" using proj_one by simp
+      moreover from k_def have "llength (\<pi>\<^bsub>c\<^esub>inf_llist t) \<noteq> \<infinity>" by simp
+      ultimately have "the_enat (llength (\<pi>\<^bsub>c\<^esub>inf_llist t)) \<ge> 1" by (simp add: k_def one_enat_def)
+      thus ?thesis by simp
+    qed
+    also have "\<dots> = the_enat (llength (\<pi>\<^bsub>c\<^esub>inf_llist t)) + (n - \<langle>c \<and> t\<rangle>) -
+      the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1" by simp
+    also have "\<dots> = n - \<langle>c \<and> t\<rangle> - 1" by simp
+    finally show ?thesis .
+  qed
+  ultimately show ?thesis by simp
+qed    
+
+subsubsection "Behavior Trace to Configuration Trace"
+text {*
+  Next we define an operator to map a point in time of a behavior trace back to a corresponding point in time for a configuration trace.
+*}
+
+definition bhv2cnf :: "'id \<Rightarrow> (nat \<Rightarrow> 'cnf) \<Rightarrow> nat \<Rightarrow> nat" ("\<^bsub>_\<^esub>\<down>\<^bsub>_\<^esub>(_)" [150,150,150] 110)
+  where "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n) \<equiv> \<langle>c \<and> t\<rangle> + (n - (the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1))"
+
+lemma bhv2cnf_mono:
+  assumes "n'\<ge>n"
+  shows "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n') \<ge> \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)"
+  by (simp add: assms bhv2cnf_def diff_le_mono)    
+
+lemma bhv2cnf_mono_strict:
+  assumes "n'>n"
+    and "n \<ge> the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1"
+  shows "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n') > \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)"
+  using assms bhv2cnf_def by auto
+
+text "Note that the functions are nat, that means that also in the case the difference is negative they will return a 0!"
+lemma bhv2cnf_ge_lActive[simp]:
+  shows "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n) \<ge> \<langle>c \<and> t\<rangle>"
+  using bhv2cnf_def by simp
+
+lemma bhv2cnf_greater_lActive[simp]:
+  assumes "n>the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1"
+  shows "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n) > \<langle>c \<and> t\<rangle>"
+  using assms bhv2cnf_def by simp
+    
+lemma bhv2cnf_lActive[simp]:
+  assumes "\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
+    and "lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))"
+  shows "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))) = Suc (\<langle>c \<and> t\<rangle>)"
+proof -
+  from assms have "\<pi>\<^bsub>c\<^esub>(inf_llist t)\<noteq> []\<^sub>l" by simp
+  hence "llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)) > 0" by (simp add: lnull_def)
+  moreover from `lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))` have "llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)) \<noteq> \<infinity>"
+    using llength_eq_infty_conv_lfinite by auto
+  ultimately have "the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) > 0" using enat_0_iff(1) by fastforce
+  hence "the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - (the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1) = 1" by simp
+  thus ?thesis using bhv2cnf_def by simp
+qed
+  
+subsubsection "Relating the Mappings"
+text {*
+  In the following we provide some properties about the relationship between the two mapping operators.
+*}
+  
+lemma bhv2cnf_cnf2bhv:
+  assumes "n \<ge> \<langle>c \<and> t\<rangle>"
+  shows "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n)) = n" (is "?lhs = ?rhs")
+proof -
+  have "?lhs = \<langle>c \<and> t\<rangle> + ((\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n)) - (the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1))"
+    using bhv2cnf_def by simp
+  also have "\<dots> = \<langle>c \<and> t\<rangle> + (((the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))) - 1 + (n - \<langle>c \<and> t\<rangle>)) -
+    (the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1))" using cnf2bhv_def by simp
+  also have "(the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))) - 1 + (n - (\<langle>c \<and> t\<rangle>)) -
+    (the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1) = (the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))) - 1 -
+    ((the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))) - 1) + (n - (\<langle>c \<and> t\<rangle>))" by simp
+  also have "\<dots> = n - (\<langle>c \<and> t\<rangle>)" by simp
+  also have "(\<langle>c \<and> t\<rangle>) + (n - (\<langle>c \<and> t\<rangle>)) = (\<langle>c \<and> t\<rangle>) + n - \<langle>c \<and> t\<rangle>" using assms by simp
+  also have "\<dots> = ?rhs" by simp
+  finally show ?thesis .
+qed
+    
+lemma cnf2bhv_bhv2cnf:
+  assumes "n \<ge> the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1"
+  shows "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)) = n" (is "?lhs = ?rhs")
+proof -
+  have "?lhs = the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1 + ((\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)) - (\<langle>c \<and> t\<rangle>))"
+    using cnf2bhv_def by simp
+  also have "\<dots> = the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1 + (\<langle>c \<and> t\<rangle> +
+    (n - (the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1)) - (\<langle>c \<and> t\<rangle>))" using bhv2cnf_def by simp
+  also have "\<langle>c \<and> t\<rangle> + (n - (the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1)) - (\<langle>c \<and> t\<rangle>) =
+    \<langle>c \<and> t\<rangle> - (\<langle>c \<and> t\<rangle>) + (n - (the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1))" by simp
+  also have "\<dots> = n - (the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1)" by simp      
+  also have "the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1 + (n - (the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1)) =
+    n - (the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1) + (the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1)" by simp
+  also have "\<dots> = n + ((the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1) -
+    (the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1))" using assms by simp
+  also have "\<dots> = ?rhs" by simp
+  finally show ?thesis .
+qed
+  
+lemma p2c_mono_c2p:
+  assumes "n \<ge> \<langle>c \<and> t\<rangle>"
+      and "n' \<ge> \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n)"
+    shows "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n') \<ge> n"
+proof -
+  from `n' \<ge> \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n)` have "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n') \<ge> \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n))" using bhv2cnf_mono by simp
+  thus ?thesis using bhv2cnf_cnf2bhv `n \<ge> \<langle>c \<and> t\<rangle>` by simp
+qed
+  
+lemma c2p_mono_p2c:
+  assumes "n \<ge> the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1"
+      and "n' \<ge> \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)"
+    shows "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n') \<ge> n"
+proof -
+  from `n' \<ge> \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)` have "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n') \<ge> \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n))" using cnf2bhv_mono by simp
+  thus ?thesis using cnf2bhv_bhv2cnf `n \<ge> the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1` by simp
+qed
+
+lemma c2p_mono_p2c_strict:
+  assumes "n \<ge> the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1"
+      and "n<\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n')"
+  shows "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n) < n'"
+proof (rule ccontr)
+  assume "\<not> (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n) < n')"
+  hence "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n) \<ge> n'" by simp
+  with `n \<ge> the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1` have "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(nat (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n))) \<ge> \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n')"
+    using cnf2bhv_mono by simp
+  hence "\<not>(\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(nat (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n))) < \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n'))" by simp
+  with `n \<ge> the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1` have  "\<not>(n < \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n'))"
+    using "cnf2bhv_bhv2cnf" by simp
+  with assms show False by simp
+qed
+  
+end
 
 end
