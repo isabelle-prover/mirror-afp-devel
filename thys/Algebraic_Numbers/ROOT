@@ -22,6 +22,7 @@ session Algebraic_Numbers_Lib (AFP) = Pre_Algebraic_Numbers +
   sessions
     Show
     Sturm_Sequences
+    Algebraic_Numbers
   theories
     "Real_Factorization"
     "Show_Real_Approx"
