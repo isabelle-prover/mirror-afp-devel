@@ -3,6 +3,7 @@ chapter AFP
 session Sepref_Prereq (AFP) = Collections +
   options [document = false, timeout = 300]
   sessions
+    "HOL-Library"
     "HOL-Imperative_HOL"
     Separation_Logic_Imperative_HOL
   theories [document = false]
