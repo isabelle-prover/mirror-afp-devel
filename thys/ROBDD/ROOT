@@ -1,6 +1,6 @@
 chapter AFP
 
-session ROBDD (AFP) = HOL +
+session ROBDD (AFP) = Sepref_Prereq +
   options [timeout = 600]
   sessions
     "HOL-Imperative_HOL"
@@ -10,7 +10,6 @@ session ROBDD (AFP) = HOL +
     Automatic_Refinement
     Collections
     Native_Word
-    Sepref_Prereq
   theories [document = false]
     "../Automatic_Refinement/Lib/Refine_Lib"
     "../Separation_Logic_Imperative_HOL/Examples/Array_Blit"
