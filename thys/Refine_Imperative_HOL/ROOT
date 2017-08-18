@@ -17,7 +17,6 @@ session Refine_Imperative_HOL (AFP) = Sepref_Prereq +
     Collections_Examples
     DFS_Framework
     Dijkstra_Shortest_Path
-    Sepref_IICF
   theories [document = false]
     "Lib/Concl_Pres_Clarification"
     "Lib/Named_Theorems_Rev"
