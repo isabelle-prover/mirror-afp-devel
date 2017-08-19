@@ -21,7 +21,7 @@ lemma pbernpoly_of_int [simp]: "pbernpoly n (of_int a) = bernoulli n"
 
 lemma continuous_on_bernpoly' [continuous_intros]:
   assumes "continuous_on A f"
-  shows   "continuous_on A (\<lambda>x. bernpoly n (f x))"
+  shows   "continuous_on A (\<lambda>x. bernpoly n (f x) :: 'a :: real_normed_algebra_1)"
   using continuous_on_compose2[OF continuous_on_bernpoly assms, of UNIV n] by auto
 
 lemma filterlim_at_infinity_imp_norm_at_top:
