@@ -225,60 +225,72 @@ text \<open>
     \[\sum_{n=0}^\infty B_n^{-} \frac{x^n}{n!} = \frac{x}{e^x - 1}\]
     \[\sum_{n=0}^\infty B_n^{+} \frac{x^n}{n!} = \frac{x}{1 - e^{-1}}\]
 \<close> 
-definition bernoulli_fps :: "real fps" where "bernoulli_fps = X / (fps_exp 1 - 1)"
-definition bernoulli'_fps :: "real fps" where "bernoulli'_fps = X / (1 - (fps_exp (-1)))"
+definition bernoulli_fps :: "'a :: real_normed_field fps" 
+  where "bernoulli_fps = X / (fps_exp 1 - 1)"
+definition bernoulli'_fps :: "'a :: real_normed_field fps" 
+  where "bernoulli'_fps = X / (1 - (fps_exp (-1)))"
 
-lemma bernoulli_fps_altdef: "bernoulli_fps = Abs_fps (\<lambda>n. bernoulli n / fact n)"
-  and bernoulli_fps_aux:    "bernoulli_fps * (fps_exp 1 - 1) = X"
+lemma bernoulli_fps_altdef: "bernoulli_fps = Abs_fps (\<lambda>n. of_real (bernoulli n) / fact n :: 'a)"
+  and bernoulli_fps_aux:    "bernoulli_fps * (fps_exp 1 - 1 :: 'a :: real_normed_field fps) = X"
 proof -
-  have *: "Abs_fps (\<lambda>n. bernoulli n / fact n) * (fps_exp 1 - 1) = X"  
+  have *: "Abs_fps (\<lambda>n. of_real (bernoulli n) / fact n :: 'a) * (fps_exp 1 - 1) = X"  
   proof (rule fps_ext)
     fix n
-    have "(Abs_fps (\<lambda>n. bernoulli n / fact n) * (fps_exp 1 - 1)) $ n = 
-            (\<Sum>i = 0..n. bernoulli i * (1 / fact (n - i) - (if n = i then 1 else 0)) / fact i)"
-      by (simp add: fps_mult_nth split: if_splits)
-    also have "\<dots> = (\<Sum>i = 0..n. bernoulli i / (fact i * fact (n - i)) -
-                                    (if n = i then bernoulli i / fact i else 0))"
+    have "(Abs_fps (\<lambda>n. of_real (bernoulli n) / fact n :: 'a) * (fps_exp 1 - 1)) $ n = 
+            (\<Sum>i = 0..n. of_real (bernoulli i) * (1 / fact (n - i) - (if n = i then 1 else 0)) / fact i)"
+      by (auto simp: fps_mult_nth divide_simps split: if_splits intro!: sum.cong)
+    also have "\<dots> = (\<Sum>i = 0..n. of_real (bernoulli i) / (fact i * fact (n - i)) -
+                                    (if n = i then of_real (bernoulli i) / fact i else 0))"
       by (intro sum.cong) (simp_all add: field_simps)
-    also have "\<dots> = (\<Sum>i = 0..n. bernoulli i / (fact i * fact (n - i))) - bernoulli n / fact n" 
+    also have "\<dots> = (\<Sum>i = 0..n. of_real (bernoulli i) / (fact i * fact (n - i))) - 
+                      of_real (bernoulli n) / fact n" 
       unfolding sum_subtractf by (subst sum.delta') simp_all
-    also have "\<dots> = (\<Sum>i<n. bernoulli i / (fact i * fact (n - i)))"
+    also have "\<dots> = (\<Sum>i<n. of_real (bernoulli i) / (fact i * fact (n - i)))"
       by (cases n) (simp_all add: atLeast0AtMost lessThan_Suc_atMost [symmetric])
-    also have "\<dots> = (\<Sum>i<n. fact n * (bernoulli i / (fact i * fact (n - i)))) / fact n"
+    also have "\<dots> = (\<Sum>i<n. fact n * (of_real (bernoulli i) / (fact i * fact (n - i)))) / fact n"
       by (subst sum_distrib_left [symmetric]) simp_all
-    also have "(\<Sum>i<n. fact n * (bernoulli i / (fact i * fact (n - i)))) =
-                 (\<Sum>i<n. (n choose i) * bernoulli i)" 
+    also have "(\<Sum>i<n. fact n * (of_real (bernoulli i) / (fact i * fact (n - i)))) =
+                 (\<Sum>i<n. of_nat (n choose i) * of_real (bernoulli i) :: 'a)"
       by (intro sum.cong) (simp_all add: binomial_fact)
+    also have "\<dots> = of_real (\<Sum>i<n. (n choose i) * bernoulli i)"
+      by simp
     also have "\<dots> / fact n = X $ n" by (subst sum_binomial_times_bernoulli') simp_all
-    finally show "(Abs_fps (\<lambda>n. bernoulli n / fact n) * (fps_exp 1 - 1)) $ n = X $ n" .
+    finally show "(Abs_fps (\<lambda>n. of_real (bernoulli n) / fact n :: 'a) * (fps_exp 1 - 1)) $ n = 
+                     X $ n" .
   qed
-  moreover show "bernoulli_fps = Abs_fps (\<lambda>n. bernoulli n / fact n)"
+  moreover show "bernoulli_fps = Abs_fps (\<lambda>n. of_real (bernoulli n) / fact n :: 'a)"
     unfolding bernoulli_fps_def by (subst * [symmetric]) simp_all
-  ultimately show "bernoulli_fps * (fps_exp 1 - 1) = X" by simp
+  ultimately show "bernoulli_fps * (fps_exp 1 - 1 :: 'a fps) = X" by simp
 qed
   
-theorem fps_nth_bernoulli_fps [simp]: "fps_nth bernoulli_fps n = bernoulli n / fact n"
+theorem fps_nth_bernoulli_fps [simp]: 
+  "fps_nth bernoulli_fps n = of_real (bernoulli n) / fact n"
   by (simp add: bernoulli_fps_altdef)
 
-lemma bernoulli'_fps_aux:  "(fps_exp 1 - 1) * Abs_fps (\<lambda>n. bernoulli' n / fact n) = fps_exp 1 * X"
-  and bernoulli'_fps_aux': "(1 - fps_exp (-1)) * Abs_fps (\<lambda>n. bernoulli' n / fact n) = X"
-  and bernoulli'_fps_altdef: "bernoulli'_fps = Abs_fps (\<lambda>n. bernoulli' n / fact n)"
+lemma bernoulli'_fps_aux:  
+    "(fps_exp 1 - 1) * Abs_fps (\<lambda>n. of_real (bernoulli' n) / fact n :: 'a) = fps_exp 1 * X"
+  and bernoulli'_fps_aux': 
+    "(1 - fps_exp (-1)) * Abs_fps (\<lambda>n. of_real (bernoulli' n) / fact n :: 'a) = X"
+  and bernoulli'_fps_altdef: 
+    "bernoulli'_fps = Abs_fps (\<lambda>n. of_real (bernoulli' n) / fact n :: 'a :: real_normed_field)"
 proof -
-  have "Abs_fps (\<lambda>n. bernoulli' n / fact n) = bernoulli_fps + X"
+  have "Abs_fps (\<lambda>n. of_real (bernoulli' n) / fact n :: 'a) = bernoulli_fps + X"
     by (simp add: fps_eq_iff bernoulli'_def)
   also have "(fps_exp 1 - 1) * \<dots> = fps_exp 1 * X"
     using bernoulli_fps_aux by (simp add: algebra_simps)
-  finally show "(fps_exp 1 - 1) * Abs_fps (\<lambda>n. bernoulli' n / fact n) = fps_exp 1 * X" .
-  also have "(fps_exp 1 - 1) = fps_exp 1 * (1 - fps_exp (-1 :: real))" 
+  finally show "(fps_exp 1 - 1) * Abs_fps (\<lambda>n. of_real (bernoulli' n) / fact n :: 'a) = 
+                  fps_exp 1 * X" .
+  also have "(fps_exp 1 - 1) = fps_exp 1 * (1 - fps_exp (-1 :: 'a))" 
     by (simp add: algebra_simps fps_exp_add_mult [symmetric])
   also note mult.assoc
-  finally show *: "(1 - fps_exp (-1)) * Abs_fps (\<lambda>n. bernoulli' n / fact n) = X"
+  finally show *: "(1 - fps_exp (-1)) * Abs_fps (\<lambda>n. of_real (bernoulli' n) / fact n :: 'a) = X"
     by (subst (asm) mult_left_cancel) simp_all
-  show "bernoulli'_fps = Abs_fps (\<lambda>n. bernoulli' n / fact n)"
+  show "bernoulli'_fps = Abs_fps (\<lambda>n. of_real (bernoulli' n) / fact n :: 'a)"
     unfolding bernoulli'_fps_def by (subst * [symmetric]) simp_all
 qed
 
-theorem fps_nth_bernoulli'_fps [simp]: "fps_nth bernoulli'_fps n = bernoulli' n / fact n"
+theorem fps_nth_bernoulli'_fps [simp]: 
+  "fps_nth bernoulli'_fps n = of_real (bernoulli' n) / fact n"
   by (simp add: bernoulli'_fps_altdef)
   
 lemma bernoulli_fps_conv_bernoulli'_fps: "bernoulli_fps = bernoulli'_fps - X"
@@ -300,8 +312,10 @@ proof -
   also have "fps_exp 1 + 1 = fps_exp (1/2) * (fps_exp (1/2) + fps_exp (-1/2 :: real))" 
     by (simp add: algebra_simps fps_exp_add_mult [symmetric])
   finally have "fps_exp (1/2) * ((2 * bernoulli_fps + X) * (fps_exp (1/2) - fps_exp (- 1/2))) =
-                   fps_exp (1/2) * (X * (fps_exp (1/2) + fps_exp (-1/2)))" by (simp add: algebra_simps)
-  hence *: "(2 * bernoulli_fps + X) * (fps_exp (1/2) - fps_exp (- 1/2)) = X * (fps_exp (1/2) + fps_exp (-1/2))" 
+                   fps_exp (1/2) * (X * (fps_exp (1/2) + fps_exp (-1/2 :: real)))" 
+    by (simp add: algebra_simps)
+  hence *: "(2 * bernoulli_fps + X) * (fps_exp (1/2) - fps_exp (- 1/2)) = 
+              X * (fps_exp (1/2) + fps_exp (-1/2 :: real))" 
     (is "?lhs = ?rhs") by (subst (asm) mult_cancel_left) simp_all
   have "fps_compose ?lhs (-X) = fps_compose ?rhs (-X)" by (simp only: *)
   also have "fps_compose ?lhs (-X) = 
@@ -313,9 +327,10 @@ proof -
   also note * [symmetric]
   also have "- ((2 * bernoulli_fps + X) * (fps_exp (1/2) - fps_exp (-1/2))) = 
                ((-2 * bernoulli_fps - X) * (fps_exp (1/2) - fps_exp (-1/2)))" by (simp add: algebra_simps)
-  finally have "2 * (bernoulli_fps oo - X) = 2 * (bernoulli_fps + X)"
+  finally have "2 * (bernoulli_fps oo - X) = 2 * (bernoulli_fps + X :: real fps)"
     by (subst (asm) mult_cancel_right) (simp add: algebra_simps)
-  hence **: "bernoulli_fps oo -X = bernoulli_fps + X" by (subst (asm) mult_cancel_left) simp
+  hence **: "bernoulli_fps oo -X = (bernoulli_fps + X :: real fps)"
+    by (subst (asm) mult_cancel_left) simp
   
   from assms have "(bernoulli_fps oo -X) $ n = bernoulli n / fact n"
     by (subst **) simp
