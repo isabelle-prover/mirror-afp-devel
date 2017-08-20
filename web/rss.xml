@@ -9,7 +9,31 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>31 Jul 2017 00:00:00 +0000</pubDate>
+    <pubDate>20 Aug 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>Root-Balanced Tree</title>
+              <link>https://www.isa-afp.org/entries/Root_Balanced_Tree.html</link>
+       <guid>https://www.isa-afp.org/entries/Root_Balanced_Tree.html</guid>
+       <dc:creator> Tobias Nipkow       </dc:creator>
+       <pubDate>20 Aug 2017 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;
+Andersson introduced &lt;em&gt;general balanced trees&lt;/em&gt;,
+search trees based on the design principle of partial rebuilding:
+perform update operations naively until the tree becomes too
+unbalanced, at which point a whole subtree is rebalanced.  This article
+defines and analyzes a functional version of general balanced trees,
+which we call &lt;em&gt;root-balanced trees&lt;/em&gt;. Using a lightweight model
+of execution time, amortized logarithmic complexity is verified in
+the theorem prover Isabelle.
+&lt;/p&gt;
+&lt;p&gt;
+This is the Isabelle formalization of the material decribed in the APLAS 2017 article
+&lt;a href=&#34;http://www.in.tum.de/~nipkow/pubs/aplas17.html&#34;&gt;Verified Root-Balanced Trees&lt;/a&gt;
+by the same author, which also presents experimental results that show
+competitiveness of root-balanced with AVL and red-black trees.
+&lt;/p&gt;</description>
+    </item>
     <item>
        <title>Stewart's Theorem and Apollonius' Theorem</title>
               <link>https://www.isa-afp.org/entries/Stewart_Apollonius.html</link>
@@ -568,27 +592,6 @@ function or a query of a comparison oracle with a continuation
 containing the remaining computation. This makes it possible to force
 the algorithm to use only comparisons and to track the number of
 comparisons made.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>The Euler–MacLaurin Formula</title>
-              <link>https://www.isa-afp.org/entries/Euler_MacLaurin.html</link>
-       <guid>https://www.isa-afp.org/entries/Euler_MacLaurin.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>10 Mar 2017 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;The Euler-MacLaurin formula relates the value of a
-discrete sum to that of the corresponding integral in terms of the
-derivatives at the borders of the summation and a remainder term.
-Since the remainder term is often very small as the summation bounds
-grow, this can be used to compute asymptotic expansions for
-sums.&lt;/p&gt;  &lt;p&gt;This entry contains a proof of this formula
-for functions from the reals to an arbitrary Banach space. Two
-variants of the formula are given: the standard textbook version and a
-variant outlined in &lt;em&gt;Concrete Mathematics&lt;/em&gt; that is
-more useful for deriving asymptotic estimates.&lt;/p&gt;  &lt;p&gt;As
-example applications, we use that formula to derive the full
-asymptotic expansion of the harmonic numbers and the sum of inverse
-squares.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

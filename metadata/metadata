@@ -2134,6 +2134,30 @@ extra-history =
 	Change history:
 	[2016-07-12]: Moved splay heaps here from Amortized_Complexity
 
+[Root_Balanced_Tree]
+title = Root-Balanced Tree
+author = Tobias Nipkow <http://in.tum.de/~nipkow/>
+notify = nipkow@in.tum.de
+date = 2017-08-20
+topic = Computer Science/Data Structures
+abstract =
+ <p>
+ Andersson introduced <em>general balanced trees</em>,
+ search trees based on the design principle of partial rebuilding:
+ perform update operations naively until the tree becomes too
+ unbalanced, at which point a whole subtree is rebalanced.  This article
+ defines and analyzes a functional version of general balanced trees,
+ which we call <em>root-balanced trees</em>. Using a lightweight model
+ of execution time, amortized logarithmic complexity is verified in
+ the theorem prover Isabelle.
+ </p>
+ <p>
+ This is the Isabelle formalization of the material decribed in the APLAS 2017 article
+ <a href="http://www.in.tum.de/~nipkow/pubs/aplas17.html">Verified Root-Balanced Trees</a>
+ by the same author, which also presents experimental results that show
+ competitiveness of root-balanced with AVL and red-black trees.
+ </p>
+
 [Skew_Heap]
 title = Skew Heap
 author = Tobias Nipkow <http://in.tum.de/~nipkow/>
