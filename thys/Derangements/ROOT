@@ -3,9 +3,8 @@ chapter AFP
 session Derangements (AFP) = "HOL-Library" +
   options [timeout=600]
   sessions
-    Ordinary_Differential_Equations
+    "HOL-Library"
   theories [document = false]
-    "HOL-Decision_Procs.Approximation"
     "HOL-Library.Permutations"
   theories
     Derangements
