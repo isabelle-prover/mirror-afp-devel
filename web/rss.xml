@@ -35,6 +35,22 @@ competitiveness of root-balanced with AVL and red-black trees.
 &lt;/p&gt;</description>
     </item>
     <item>
+       <title>The LambdaMu-calculus</title>
+              <link>https://www.isa-afp.org/entries/LambdaMu.html</link>
+       <guid>https://www.isa-afp.org/entries/LambdaMu.html</guid>
+       <dc:creator> Cristina Matache, Victor B. F. Gomes, Dominic P. Mulligan       </dc:creator>
+       <pubDate>16 Aug 2017 00:00:00 +0000</pubDate>
+       <description>
+The propositions-as-types correspondence is ordinarily presented as
+linking the metatheory of typed λ-calculi and the proof theory of
+intuitionistic logic. Griffin observed that this correspondence could
+be extended to classical logic through the use of control operators.
+This observation set off a flurry of further research, leading to the
+development of Parigots λμ-calculus. In this work, we formalise λμ-
+calculus in Isabelle/HOL and prove several metatheoretical properties
+such as type preservation and progress.</description>
+    </item>
+    <item>
        <title>Stewart's Theorem and Apollonius' Theorem</title>
               <link>https://www.isa-afp.org/entries/Stewart_Apollonius.html</link>
        <guid>https://www.isa-afp.org/entries/Stewart_Apollonius.html</guid>
@@ -572,26 +588,6 @@ the expected number of comparisons of randomised QuickSort
 &lt;em&gt;2&amp;thinsp;n ln n&lt;/em&gt;; second, the number of
 comparisons performed by the classic non-randomised QuickSort has the
 same distribution in the average case as the randomised one.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Lower bound on comparison-based sorting algorithms</title>
-              <link>https://www.isa-afp.org/entries/Comparison_Sort_Lower_Bound.html</link>
-       <guid>https://www.isa-afp.org/entries/Comparison_Sort_Lower_Bound.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>15 Mar 2017 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This article contains a formal proof of the well-known fact
-that number of comparisons that a comparison-based sorting algorithm
-needs to perform to sort a list of length &lt;em&gt;n&lt;/em&gt; is at
-least &lt;em&gt;log&lt;sub&gt;2&lt;/sub&gt;&amp;nbsp;(n!)&lt;/em&gt;
-in the worst case, i.&amp;thinsp;e.&amp;nbsp;&lt;em&gt;Ω(n log
-n)&lt;/em&gt;.&lt;/p&gt;  &lt;p&gt;For this purpose, a shallow
-embedding for comparison-based sorting algorithms is defined: a
-sorting algorithm is a recursive datatype containing either a HOL
-function or a query of a comparison oracle with a continuation
-containing the remaining computation. This makes it possible to force
-the algorithm to use only comparisons and to track the number of
-comparisons made.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

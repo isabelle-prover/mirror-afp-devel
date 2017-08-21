@@ -5941,3 +5941,20 @@ abstract =
   conjectured relation. The formalization in Isabelle can closely follow
   the informal proofs described in the Wikipedia articles of those two
   theorems.
+
+[LambdaMu]
+title = The LambdaMu-calculus
+author = Cristina Matache <mailto:cris.matache@gmail.com>, Victor B. F. Gomes <mailto:victorborgesfg@gmail.com>, Dominic P. Mulligan <mailto:dominic.p.mulligan>
+topic = Computer Science/Programming Languages/Lambda Calculi, Logic
+date = 2017-08-16
+notify = victorborgesfg@gmail.com, dominic.p.mulligan@googlemail.com
+abstract = 
+  The propositions-as-types correspondence is ordinarily presented as
+  linking the metatheory of typed λ-calculi and the proof theory of
+  intuitionistic logic. Griffin observed that this correspondence could
+  be extended to classical logic through the use of control operators.
+  This observation set off a flurry of further research, leading to the
+  development of Parigots λμ-calculus. In this work, we formalise λμ-
+  calculus in Isabelle/HOL and prove several metatheoretical properties
+  such as type preservation and progress.
+
