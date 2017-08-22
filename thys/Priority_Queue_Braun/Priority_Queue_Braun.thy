@@ -3,6 +3,7 @@ section "Priority Queues Based on Braun Trees"
 theory Priority_Queue_Braun
 imports
   "HOL-Library.Tree_Multiset"
+  "HOL-Library.Pattern_Aliases"
 begin
 
 
@@ -21,7 +22,7 @@ subsection {* Braun predicate *}
 
 fun braun :: "'a tree \<Rightarrow> bool" where
 "braun Leaf = True" |
-"braun (Node l x r) = (size r \<le> size l \<and> size l \<le> Suc(size r) \<and> braun l \<and> braun r)"
+"braun (Node l x r) = (size r \<le> size l \<and> size l \<le> size r + 1 \<and> braun l \<and> braun r)"
 
 lemma height_size_braun: "braun t \<Longrightarrow> 2 ^ (height t) \<le> 2 * size t + 1"
 proof(induction t)
@@ -134,32 +135,36 @@ next
 next
 qed auto
 
+context includes pattern_aliases
+begin
 
 function (sequential) sift_down :: "'a::linorder tree \<Rightarrow> 'a \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
 "sift_down Leaf a Leaf = Node Leaf a Leaf" |
 "sift_down (Node Leaf x Leaf) a Leaf =
   (if a \<le> x then Node (Node Leaf x Leaf) a Leaf
    else Node (Node Leaf a Leaf) x Leaf)" |
-"sift_down (Node l1 x1 r1) a (Node l2 x2 r2) =
+"sift_down (Node l1 x1 r1 =: t1) a (Node l2 x2 r2 =: t2) =
   (if a \<le> x1 \<and> a \<le> x2
-   then Node (Node l1 x1 r1) a (Node l2 x2 r2)
-   else if x1 \<le> x2 then Node (sift_down l1 a r1) x1 (Node l2 x2 r2)
-        else Node (Node l1 x1 r1) x2 (sift_down l2 a r2))"
+   then Node t1 a t2
+   else if x1 \<le> x2 then Node (sift_down l1 a r1) x1 t2
+        else Node t1 x2 (sift_down l2 a r2))"
 by pat_completeness auto
 termination
 by (relation "measure (%(l,a,r). size l + size r)") auto
 
+end
+
 lemma size_sift_down:
   "braun(Node l a r) \<Longrightarrow> size(sift_down l a r) = size l + size r + 1"
-by(induction l a r rule: sift_down.induct) auto
+by(induction l a r rule: sift_down.induct) (auto simp: Let_def)
 
 lemma braun_sift_down:
   "braun(Node l a r) \<Longrightarrow> braun(sift_down l a r)"
-by(induction l a r rule: sift_down.induct) (auto simp: size_sift_down)
+by(induction l a r rule: sift_down.induct) (auto simp: size_sift_down Let_def)
 
 lemma mset_sift_down:
   "braun(Node l a r) \<Longrightarrow> mset_tree(sift_down l a r) = {#a#} + (mset_tree l + mset_tree r)"
-by(induction l a r rule: sift_down.induct) (auto simp: ac_simps)
+by(induction l a r rule: sift_down.induct) (auto simp: ac_simps Let_def)
 
 lemma set_sift_down: "braun(Node l a r)
   \<Longrightarrow> set_tree(sift_down l a r) = insert a (set_tree l \<union> set_tree r)"
@@ -167,7 +172,7 @@ by(drule arg_cong[where f=set_mset, OF mset_sift_down]) (simp)
 
 lemma heap_sift_down:
   "braun(Node l a r) \<Longrightarrow> heap l \<Longrightarrow> heap r \<Longrightarrow> heap(sift_down l a r)"
-by (induction l a r rule: sift_down.induct) (auto simp: set_sift_down ball_Un)
+by (induction l a r rule: sift_down.induct) (auto simp: set_sift_down ball_Un Let_def)
 
 fun del_min :: "'a::linorder tree \<Rightarrow> 'a tree" where
 "del_min Leaf = Leaf" |
