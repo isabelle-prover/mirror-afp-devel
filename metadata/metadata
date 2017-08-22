@@ -5767,7 +5767,10 @@ abstract =
   one, and one through their exponential generating function.</p>
   <p>In addition, we prove some basic facts, e.g. their relation
   to sums of powers of integers and that all odd Bernoulli numbers
-  except the first are zero. We also prove the correctness of the
+  except the first are zero, and some advanced facts like their
+  relationship to the Riemann zeta function on positive even
+  integers.</p>
+  <p>We also prove the correctness of the
   Akiyama&ndash;Tanigawa algorithm for computing Bernoulli numbers
   with reasonable efficiency, and we define the periodic Bernoulli
   polynomials (which appear e.g. in the Euler&ndash;MacLaurin
