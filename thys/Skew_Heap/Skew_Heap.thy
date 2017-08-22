@@ -13,11 +13,6 @@ their priorities. *}
 
 type_synonym 'a heap = "'a tree"
 
-fun heap :: "'a::linorder heap \<Rightarrow> bool" where
-"heap Leaf = True" |
-"heap (Node l m r) =
-  (heap l \<and> heap r \<and> (\<forall>x \<in> set_tree l \<union> set_tree r. m \<le> x))"
-
 
 subsection "Get Minimum"
 
