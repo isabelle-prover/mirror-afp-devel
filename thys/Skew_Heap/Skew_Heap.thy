@@ -1,7 +1,10 @@
 theory Skew_Heap
 imports
-  "HOL-Library.Tree_Multiset"
+  "~~/src/HOL/Library/Tree_Multiset"
+  "~~/src/HOL/Library/Pattern_Aliases"
 begin
+
+unbundle pattern_aliases
 
 section "Skew Heap"
 
@@ -33,9 +36,9 @@ subsection "Merge"
 function merge :: "('a::linorder) heap \<Rightarrow> 'a heap \<Rightarrow> 'a heap" where
 "merge Leaf h = h" |
 "merge h Leaf = h" |
-"merge (Node l1 a1 r1) (Node l2 a2 r2) =
-   (if a1 \<le> a2 then Node (merge (Node l2 a2 r2) r1) a1 l1
-    else Node (merge (Node l1 a1 r1) r2) a2 l2)" 
+"merge (Node l1 a1 r1 =: h1) (Node l2 a2 r2 =: h2) =
+   (if a1 \<le> a2 then Node (merge h2 r1) a1 l1
+    else Node (merge h1 r2) a2 l2)" 
 by pat_completeness auto
 termination
 by (relation "measure (\<lambda>(x, y). size x + size y)") auto
