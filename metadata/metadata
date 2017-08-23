@@ -5958,3 +5958,19 @@ abstract =
   calculus in Isabelle/HOL and prove several metatheoretical properties
   such as type preservation and progress.
 
+[Orbit_Stabiliser]
+title = Orbit-Stabiliser Theorem with Application to Rotational Symmetries
+author = Jonas Rädle <mailto:jonas.raedle@tum.de>
+topic = Mathematics/Algebra
+date = 2017-08-20
+notify = jonas.raedle@tum.de
+abstract = 
+  The Orbit-Stabiliser theorem is a basic result in the algebra of
+  groups that factors the order of a group into the sizes of its orbits
+  and stabilisers.  We formalize the notion of a group action and the
+  related concepts of orbits and stabilisers. This allows us to prove
+  the orbit-stabiliser theorem.  In the second part of this work, we
+  formalize the tetrahedral group and use the orbit-stabiliser theorem
+  to prove that there are twelve (orientation-preserving) rotations of
+  the tetrahedron.
+

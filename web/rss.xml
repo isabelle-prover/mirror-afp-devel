@@ -35,6 +35,22 @@ competitiveness of root-balanced with AVL and red-black trees.
 &lt;/p&gt;</description>
     </item>
     <item>
+       <title>Orbit-Stabiliser Theorem with Application to Rotational Symmetries</title>
+              <link>https://www.isa-afp.org/entries/Orbit_Stabiliser.html</link>
+       <guid>https://www.isa-afp.org/entries/Orbit_Stabiliser.html</guid>
+       <dc:creator> Jonas Rädle       </dc:creator>
+       <pubDate>20 Aug 2017 00:00:00 +0000</pubDate>
+       <description>
+The Orbit-Stabiliser theorem is a basic result in the algebra of
+groups that factors the order of a group into the sizes of its orbits
+and stabilisers.  We formalize the notion of a group action and the
+related concepts of orbits and stabilisers. This allows us to prove
+the orbit-stabiliser theorem.  In the second part of this work, we
+formalize the tetrahedral group and use the orbit-stabiliser theorem
+to prove that there are twelve (orientation-preserving) rotations of
+the tetrahedron.</description>
+    </item>
+    <item>
        <title>The LambdaMu-calculus</title>
               <link>https://www.isa-afp.org/entries/LambdaMu.html</link>
        <guid>https://www.isa-afp.org/entries/LambdaMu.html</guid>
@@ -571,23 +587,6 @@ bound on the expected height and the &lt;em&gt;Θ(n log n)&lt;/em&gt;
 closed-form solution for the expected internal path length in terms of
 the harmonic numbers. We also show how the internal path length
 relates to the average-case cost of a lookup in a BST.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>The number of comparisons in QuickSort</title>
-              <link>https://www.isa-afp.org/entries/Quick_Sort_Cost.html</link>
-       <guid>https://www.isa-afp.org/entries/Quick_Sort_Cost.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>15 Mar 2017 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;We give a formal proof of the well-known results about the
-number of comparisons performed by two variants of QuickSort: first,
-the expected number of comparisons of randomised QuickSort
-(i.&amp;thinsp;e.&amp;nbsp;QuickSort with random pivot choice) is
-&lt;em&gt;2&amp;thinsp;(n+1)&amp;thinsp;H&lt;sub&gt;n&lt;/sub&gt; -
-4&amp;thinsp;n&lt;/em&gt;, which is asymptotically equivalent to
-&lt;em&gt;2&amp;thinsp;n ln n&lt;/em&gt;; second, the number of
-comparisons performed by the classic non-randomised QuickSort has the
-same distribution in the average case as the randomised one.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
