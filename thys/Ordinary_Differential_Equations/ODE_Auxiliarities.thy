@@ -2239,16 +2239,21 @@ lemma norm_ivl_integral_le:
   fixes f :: "real \<Rightarrow> real"
   assumes "f integrable_on (closed_segment a b)"
     and "g integrable_on (closed_segment a b)"
-    and "\<forall>x\<in>closed_segment a b. f x \<le> g x"
-    and "\<forall>x\<in>closed_segment a b. 0 \<le> f x"
+    and "\<And>x. x \<in> closed_segment a b \<Longrightarrow> f x \<le> g x"
+    and "\<And>x. x \<in> closed_segment a b \<Longrightarrow> 0 \<le> f x"
   shows "abs (ivl_integral a b f) \<le> abs (ivl_integral a b g)"
-  using integral_le[OF assms(1-3)]
-  unfolding ivl_integral_def closed_segment_real
-  apply (split if_split_asm)
-  subgoal by (simp add: assms(1) assms(4) Henstock_Kurzweil_Integration.integral_nonneg real_Icc_closed_segment)
-  subgoal using assms
-    by (cases "a = b") (auto simp: Henstock_Kurzweil_Integration.integral_nonneg simp: closed_segment_real)
-  done
+proof (cases "a = b")
+  case True then show ?thesis
+    by simp
+next
+  case False
+  have "0 \<le> integral {a..b} f" "0 \<le> integral {b..a} f"
+    by (metis le_cases Henstock_Kurzweil_Integration.integral_nonneg assms(1) assms(4) closed_segment_real integral_emptyI(1))+
+  then show ?thesis
+    using integral_le[OF assms(1-3)]
+    unfolding ivl_integral_def closed_segment_real
+    by (simp split: if_split_asm)
+qed
 
 lemma ivl_integral_const [simp]:
   shows "ivl_integral a b (\<lambda>x. c) = (b - a) *\<^sub>R c"
