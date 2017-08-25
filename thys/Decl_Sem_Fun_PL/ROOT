@@ -1,6 +1,6 @@
 chapter AFP
 
-session Decl_Sem_Fun_PL = "HOL" +
+session Decl_Sem_Fun_PL (AFP) = "HOL" +
   options [timeout = 600]
   sessions
     "HOL-Library"
