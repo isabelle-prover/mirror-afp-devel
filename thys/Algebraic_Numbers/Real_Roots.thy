@@ -142,8 +142,8 @@ next
   }
   hence id: "div_ceiling x q = x div q + 1" 
     unfolding div_ceiling_def Let_def using q by auto
-  show ?thesis unfolding id using q
-    using floor_divide_of_int_eq floor_eq_iff le_less by blast
+  show ?thesis unfolding id
+    by (metis floor_divide_of_int_eq le_less add1_zle_eq floor_less_iff)
 qed
   
 lemma max_list_non_empty_map: assumes hom: "\<And> x y. max (f x) (f y) = f (max x y)"  
