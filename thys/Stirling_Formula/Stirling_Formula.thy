@@ -444,7 +444,7 @@ proof -
              intro!: derivative_eq_intros)
   from x have int2: "((\<lambda>x. -P x) has_integral integral {x..} (\<lambda>x. -P x)) {x..}"
     by (intro integrable_integral integrable_neg P_integrable) simp_all
-  from has_integral_union[OF int1 int2] x
+  from has_integral_Un[OF int1 int2] x
     have "((\<lambda>x. - P x) has_integral g x - g 1 - integral {x..} P) ({1..x} \<union> {x..})"
     by (simp add: max_def)
   also from x have "{1..x} \<union> {x..} = {1..}" by auto
