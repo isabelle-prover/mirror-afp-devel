@@ -194,6 +194,48 @@ proof (intro Cauchy_uniformly_convergent uniformly_Cauchy_onI', goal_cases)
   qed
 qed
 
+lemma uniformly_convergent_on_const [simp,intro]:
+  "uniformly_convergent_on A (\<lambda>_. c)"
+  by (auto simp: uniformly_convergent_on_def uniform_limit_iff intro!: exI[of _ c])
+
+lemma uniformly_convergent_cong:
+  assumes "eventually (\<lambda>x. \<forall>y\<in>A. f x y = g x y) sequentially" "A = B"
+  shows "uniformly_convergent_on A f \<longleftrightarrow> uniformly_convergent_on B g"
+  unfolding uniformly_convergent_on_def assms(2) [symmetric]
+  by (intro iff_exI uniform_limit_cong eventually_mono [OF assms(1)]) auto
+
+lemma uniformly_convergent_improper_integral':
+  fixes f :: "'b \<Rightarrow> real \<Rightarrow> 'a :: {banach, real_normed_algebra}"
+  assumes deriv: "\<And>x. x \<ge> a \<Longrightarrow> (G has_field_derivative g x) (at x within {a..})"
+  assumes integrable: "\<And>a' b x. x \<in> A \<Longrightarrow> a' \<ge> a \<Longrightarrow> b \<ge> a' \<Longrightarrow> f x integrable_on {a'..b}"
+  assumes G: "convergent G"
+  assumes le: "eventually (\<lambda>x. \<forall>y\<in>A. norm (f y x) \<le> g x) at_top"
+  shows   "uniformly_convergent_on A (\<lambda>b x. integral {a..b} (f x))"
+proof -
+  from le obtain a'' where le: "\<And>y x. y \<in> A \<Longrightarrow> x \<ge> a'' \<Longrightarrow> norm (f y x) \<le> g x"
+    by (auto simp: eventually_at_top_linorder)
+  define a' where "a' = max a a''"
+
+  have "uniformly_convergent_on A (\<lambda>b x. integral {a'..real b} (f x))"
+  proof (rule uniformly_convergent_improper_integral)
+    fix t assume t: "t \<ge> a'"
+    hence "(G has_field_derivative g t) (at t within {a..})"
+      by (intro deriv) (auto simp: a'_def)
+    moreover have "{a'..} \<subseteq> {a..}" unfolding a'_def by auto
+    ultimately show "(G has_field_derivative g t) (at t within {a'..})"
+      by (rule DERIV_subset)
+  qed (insert le, auto simp: a'_def intro: integrable G)
+  hence "uniformly_convergent_on A (\<lambda>b x. integral {a..a'} (f x) + integral {a'..real b} (f x))" 
+    (is ?P) by (intro uniformly_convergent_add) auto
+  also have "eventually (\<lambda>x. \<forall>y\<in>A. integral {a..a'} (f y) + integral {a'..x} (f y) =
+                   integral {a..x} (f y)) sequentially"
+    by (intro eventually_mono [OF eventually_ge_at_top[of "nat \<lceil>a'\<rceil>"]] ballI integral_combine)
+       (auto simp: a'_def intro: integrable)
+  hence "?P \<longleftrightarrow> ?thesis"
+    by (intro uniformly_convergent_cong) simp_all
+  finally show ?thesis .
+qed
+
 lemma (in bounded_linear) uniformly_convergent_on:
   assumes "uniformly_convergent_on A g"
   shows   "uniformly_convergent_on A (\<lambda>x y. f (g x y))"
@@ -551,12 +593,12 @@ proof -
 qed
 
 lemma uniformly_convergent_EM_remainder':
-  fixes f :: "'a \<Rightarrow> real \<Rightarrow> 'b :: {banach}"
+  fixes f :: "'a \<Rightarrow> real \<Rightarrow> 'b :: {banach,real_normed_algebra}"
   assumes deriv: "\<And>y. a \<le> y \<Longrightarrow> (G has_real_derivative g y) (at y within {a..})"
   assumes integrable: "\<And>a' b y. y \<in> A \<Longrightarrow>  a \<le> a' \<Longrightarrow> a' \<le> b \<Longrightarrow> 
                          (\<lambda>t. pbernpoly n t *\<^sub>R f y t) integrable_on {a'..b}"
   assumes conv: "convergent (\<lambda>y. G (real y))"
-  assumes bound: "\<And>x y. y \<in> A \<Longrightarrow> x \<ge> a \<Longrightarrow> norm (f y x) \<le> g x"
+  assumes bound: "eventually (\<lambda>x. \<forall>y\<in>A. norm (f y x) \<le> g x) at_top"
   shows   "uniformly_convergent_on A (\<lambda>b s. EM_remainder' n (f s) a b)"
 proof -
   interpret bounded_linear "\<lambda>x::'b. ((- 1) ^ Suc n / fact n) *\<^sub>R x"
@@ -566,7 +608,7 @@ proof -
   from C[of 0] have [simp]: "C \<ge> 0" by simp
 
   show ?thesis unfolding EM_remainder'_def
-  proof (intro uniformly_convergent_on uniformly_convergent_improper_integral)
+  proof (intro uniformly_convergent_on uniformly_convergent_improper_integral')
     fix x assume "x \<ge> a"
     thus "((\<lambda>x. C * G x) has_real_derivative C * g x) (at x within {a..})"
       by (intro DERIV_cmult deriv)
@@ -581,19 +623,19 @@ proof -
       show "convergent (\<lambda>y. C * G (real y))"
         by (auto simp: convergent_def)
   next
-    fix y x assume "y \<in> A" "x \<ge> a"
-    thus "norm (pbernpoly n x *\<^sub>R f y x) \<le> C * g x"
-      using C unfolding norm_scaleR by (intro mult_mono bound) auto
+    show "\<forall>\<^sub>F x in at_top. \<forall>y\<in>A. norm (pbernpoly n x *\<^sub>R f y x) \<le> C * g x"
+      using C unfolding norm_scaleR 
+      by (intro eventually_mono[OF bound] ballI mult_mono) auto
   qed
 qed
 
 lemma uniform_limit_EM_remainder:
-  fixes f :: "'a \<Rightarrow> real \<Rightarrow> 'b :: {banach}"
+  fixes f :: "'a \<Rightarrow> real \<Rightarrow> 'b :: {banach,real_normed_algebra}"
   assumes deriv: "\<And>y. a \<le> y \<Longrightarrow> (G has_real_derivative g y) (at y within {a..})"
   assumes integrable: "\<And>a' b y. y \<in> A \<Longrightarrow>  a \<le> a' \<Longrightarrow> a' \<le> b \<Longrightarrow> 
                          (\<lambda>t. pbernpoly n t *\<^sub>R f y t) integrable_on {a'..b}"
   assumes conv: "convergent (\<lambda>y. G (real y))"
-  assumes bound: "\<And>x y. y \<in> A \<Longrightarrow> x \<ge> a \<Longrightarrow> norm (f y x) \<le> g x"
+  assumes bound: "eventually (\<lambda>x. \<forall>y\<in>A. norm (f y x) \<le> g x) at_top"
   shows   "uniform_limit A (\<lambda>b s. EM_remainder' n (f s) a b) 
              (\<lambda>s. EM_remainder n (f s) a) sequentially"
 proof -
@@ -661,7 +703,7 @@ lemma
   assumes int: "\<And>a' x y. y \<in> U \<Longrightarrow> a \<le> a' \<Longrightarrow> a' \<le> x \<Longrightarrow>
                   (\<lambda>t. pbernpoly n t *\<^sub>R f y t) integrable_on {a'..x}"
   assumes conv: "convergent (\<lambda>y. G (real y))"
-  assumes bound: "\<And>x y. y \<in> U \<Longrightarrow> a \<le> x \<Longrightarrow> norm (f y x) \<le> g x"
+  assumes bound: "eventually (\<lambda>x. \<forall>y\<in>U. norm (f y x) \<le> g x) at_top"
   assumes "n \<noteq> 1" "open U" 
   shows analytic_EM_remainder: "(\<lambda>s::complex. EM_remainder n (f s) a) analytic_on U"
     and holomorphic_EM_remainder: "(\<lambda>s::complex. EM_remainder n (f s) a) holomorphic_on U"
@@ -694,9 +736,11 @@ proof -
       have "open (ball z \<epsilon>)" by simp
       with s obtain \<delta> where \<delta>: "\<delta> > 0" "cball s \<delta> \<subseteq> ball z \<epsilon>" 
         unfolding open_contains_cball by blast
-      moreover have "uniform_limit (cball s \<delta>) (\<lambda>x s. EM_remainder' n (f s) (real_of_int a) (real x))
+      moreover have bound': "eventually (\<lambda>x. \<forall>y\<in>cball s \<delta>. norm (f y x) \<le> g x) at_top"
+        by (intro eventually_mono [OF bound]) (insert \<delta> \<epsilon>, auto)
+      have "uniform_limit (cball s \<delta>) (\<lambda>x s. EM_remainder' n (f s) (real_of_int a) (real x))
                         (\<lambda>s. EM_remainder n (f s) a) sequentially"
-        by (rule uniform_limit_EM_remainder[OF deriv int conv bound]) (insert \<delta> \<epsilon> s, auto)
+        by (rule uniform_limit_EM_remainder[OF deriv int conv bound']) (insert \<delta> \<epsilon> s, auto)
       ultimately show "\<exists>\<delta>>0. cball s \<delta> \<subseteq> ball z \<epsilon> \<and> uniform_limit (cball s \<delta>)
                           (\<lambda>x s. EM_remainder' n (f s) (real_of_int a) (real x))
                           (\<lambda>s. EM_remainder n (f s) a) sequentially" by blast
