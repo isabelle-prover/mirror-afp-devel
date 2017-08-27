@@ -2221,7 +2221,7 @@ lemma ivl_integral_norm_bound_ivl_integral:
   fixes f :: "real \<Rightarrow> 'a::banach"
   assumes "f integrable_on (closed_segment a b)"
     and "g integrable_on (closed_segment a b)"
-    and "\<forall>x\<in>closed_segment a b. norm (f x) \<le> g x"
+    and "\<And>x. x \<in> closed_segment a b \<Longrightarrow> norm (f x) \<le> g x"
   shows "norm (ivl_integral a b f) \<le> abs (ivl_integral a b g)"
   using integral_norm_bound_integral[OF assms]
   by (auto simp: ivl_integral_def closed_segment_real split: if_split_asm)
@@ -2230,7 +2230,7 @@ lemma ivl_integral_norm_bound_integral:
   fixes f :: "real \<Rightarrow> 'a::banach"
   assumes "f integrable_on (closed_segment a b)"
     and "g integrable_on (closed_segment a b)"
-    and "\<forall>x\<in>closed_segment a b. norm (f x) \<le> g x"
+    and "\<And>x. x \<in> closed_segment a b \<Longrightarrow> norm (f x) \<le> g x"
   shows "norm (ivl_integral a b f) \<le> integral {a -- b} g"
   using integral_norm_bound_integral[OF assms]
   by (auto simp: ivl_integral_def closed_segment_real split: if_split_asm)
