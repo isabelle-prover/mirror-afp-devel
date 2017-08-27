@@ -40,26 +40,28 @@ qed simp
 
 subsection {* Insertion *}
 
-fun insert_pq :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
-"insert_pq a Leaf = Node Leaf a Leaf" |
-"insert_pq a (Node l x r) =
- (if a < x then Node (insert_pq x r) a l else Node (insert_pq a r) x l)"
+hide_const (open) insert
 
-value "fold insert_pq [0::int,1,2,3,-55,-5] Leaf"
+fun insert :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
+"insert a Leaf = Node Leaf a Leaf" |
+"insert a (Node l x r) =
+ (if a < x then Node (insert x r) a l else Node (insert a r) x l)"
 
-lemma size_insert_pq[simp]: "size(insert_pq x t) = size t + 1"
+value "fold insert [0::int,1,2,3,-55,-5] Leaf"
+
+lemma size_insert[simp]: "size(insert x t) = size t + 1"
 by(induction t arbitrary: x) auto
 
-lemma mset_insert_pq[simp]: "mset_tree(insert_pq x t) = {#x#} + mset_tree t"
+lemma mset_insert[simp]: "mset_tree(insert x t) = {#x#} + mset_tree t"
 by(induction t arbitrary: x) (auto simp: ac_simps)
 
-lemma set_insert_pq[simp]: "set_tree(insert_pq x t) = insert x (set_tree t)"
+lemma set_insert[simp]: "set_tree(insert x t) = Set.insert x (set_tree t)"
 by(induction t arbitrary: x) auto
 
-lemma braun_insert_pq: "braun t \<Longrightarrow> braun(insert_pq x t)"
+lemma braun_insert: "braun t \<Longrightarrow> braun(insert x t)"
 by(induction t arbitrary: x) auto
 
-lemma heap_insert_pq: "heap t \<Longrightarrow> heap(insert_pq x t)"
+lemma heap_insert: "heap t \<Longrightarrow> heap(insert x t)"
 by(induction t arbitrary: x) (auto  simp add: ball_Un)
 
 
@@ -89,7 +91,7 @@ done
 
 lemma del_left_set:
   "del_left t = (x,t') \<Longrightarrow> braun t \<Longrightarrow> t \<noteq> Leaf
-  \<Longrightarrow> set_tree t = insert x (set_tree t')"
+  \<Longrightarrow> set_tree t = Set.insert x (set_tree t')"
 apply(induction t arbitrary: x t' rule: del_left.induct)
 apply(fastforce split: prod.splits)+
 done
@@ -167,7 +169,7 @@ lemma mset_sift_down:
 by(induction l a r rule: sift_down.induct) (auto simp: ac_simps Let_def)
 
 lemma set_sift_down: "braun(Node l a r)
-  \<Longrightarrow> set_tree(sift_down l a r) = insert a (set_tree l \<union> set_tree r)"
+  \<Longrightarrow> set_tree(sift_down l a r) = Set.insert a (set_tree l \<union> set_tree r)"
 by(drule arg_cong[where f=set_mset, OF mset_sift_down]) (simp)
 
 lemma heap_sift_down:
@@ -223,7 +225,7 @@ next
 qed
 
 lemma set_del_min: "\<lbrakk> braun t; heap t; t \<noteq> Leaf \<rbrakk>
-  \<Longrightarrow> set_tree t = insert (root_val t) (set_tree(del_min t))"
+  \<Longrightarrow> set_tree t = Set.insert (root_val t) (set_tree(del_min t))"
 by(drule (2) arg_cong[where f=set_mset, OF mset_del_min]) (simp)
 
 
