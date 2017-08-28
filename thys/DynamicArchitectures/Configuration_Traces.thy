@@ -1062,6 +1062,21 @@ proof
   ultimately show False using assms(1) by auto
 qed
   
+lemma nAct_mono_nxtAct:
+  assumes "\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
+    and "\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub> \<le> n'"
+  shows "\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle> \<le> \<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle>"
+proof -
+  from assms have "\<langle>c #\<^bsub>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub> inf_llist t\<rangle> \<le> \<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle>" using nAct_mono assms by simp
+  moreover have "\<langle>c #\<^bsub>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub> inf_llist t\<rangle>=\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>"
+  proof -
+    from assms have "\<nexists>k. k\<ge>n \<and> k<\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>" and "n \<le> \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" using nxtActI by auto
+    moreover have "enat \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub> - 1 < llength (inf_llist t)" by (simp add: one_enat_def)
+    ultimately show ?thesis using nAct_not_active_same[of n "\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>"] by auto
+  qed
+  ultimately show ?thesis by simp
+qed
+  
 subsection "Last Activation"
 text {*
   In the following we introduce an operator to obtain the latest point in time where a certain component was activated within a certain configuration trace.
