@@ -1050,6 +1050,18 @@ lemma nxtAct_active:
   assumes "\<parallel>c\<parallel>\<^bsub>t i\<^esub>"
   shows "\<langle>c \<rightarrow> t\<rangle>\<^bsub>i\<^esub> = i" by (metis assms le_eq_less_or_eq nxtActI)
     
+lemma nxtActive_no_active:
+  assumes "\<exists>!i. i\<ge>n \<and> \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
+  shows "\<not> (\<exists>i'\<ge>Suc \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)"
+proof
+  assume "\<exists>i'\<ge>Suc \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>"
+  then obtain i' where "i'\<ge>Suc \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" and "\<parallel>c\<parallel>\<^bsub>t i'\<^esub>" by auto
+  moreover from assms(1) have "\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<ge>n" using nxtActI by auto
+  ultimately have "i'\<ge>n" and "\<parallel>c\<parallel>\<^bsub>t i'\<^esub>" and "i'\<noteq>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" by auto
+  moreover from assms(1) have "\<parallel>c\<parallel>\<^bsub>t \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>" and "\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<ge>n" using nxtActI by auto
+  ultimately show False using assms(1) by auto
+qed
+  
 subsection "Last Activation"
 text {*
   In the following we introduce an operator to obtain the latest point in time where a certain component was activated within a certain configuration trace.
@@ -1113,7 +1125,17 @@ lemma lActive_equality:
   assumes "\<parallel>c\<parallel>\<^bsub>t i\<^esub>"
     and "(\<And>x. \<parallel>c\<parallel>\<^bsub>t x\<^esub> \<Longrightarrow> x \<le> i)"
   shows "\<langle>c \<and> t\<rangle> = i" unfolding lActive_def using assms Greatest_equality[of "\<lambda>i'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>"] by simp
-
+    
+lemma nxtActive_lactive:
+  assumes "\<exists>!i. i\<ge>n \<and> \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
+  shows "\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>=\<langle>c \<and> t\<rangle>"
+proof -
+  from assms(1) have "\<parallel>c\<parallel>\<^bsub>t \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>" using nxtActI by auto
+  moreover from assms have "\<not> (\<exists>i'\<ge>Suc \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)" using nxtActive_no_active by simp
+  hence "(\<And>x. \<parallel>c\<parallel>\<^bsub>t x\<^esub> \<Longrightarrow> x \<le> \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>)" using not_less_eq_eq by auto
+  ultimately show ?thesis using `\<not> (\<exists>i'\<ge>Suc \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)` lActive_equality by simp
+qed
+    
 subsection "Mapping Time Points"
 text {*
   In the following we introduce two operators to map time-points between configuration traces and behavior traces.
@@ -1196,7 +1218,47 @@ proof -
     finally show ?thesis .
   qed
   ultimately show ?thesis by simp
-qed    
+qed
+
+lemma nAct_cnf2proj_Suc_dist:
+  assumes "\<exists>!i. i\<ge>n \<and> \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
+  shows "Suc (the_enat \<langle>c #\<^bsub>enat n\<^esub>inf_llist t\<rangle>)=\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(Suc \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>)"
+proof -
+  have "the_enat \<langle>c #\<^bsub>enat n\<^esub>inf_llist t\<rangle> = \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>)" (is "?LHS = ?RHS")
+  proof -
+    from assms have "?RHS = the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1" using nxtActive_lactive by simp
+    also have "llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)) = eSuc (\<langle>c #\<^bsub>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub> inf_llist t\<rangle>)"
+    proof -
+      from assms have "\<not> (\<exists>i'\<ge> Suc (\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>). \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)" using nxtActive_no_active by simp
+      hence "\<langle>c #\<^bsub>Suc (\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>)\<^esub> inf_llist t\<rangle> = llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))"
+        using nAct_eq_proj[of "Suc (\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>)" c "inf_llist t"] by simp
+      moreover from assms(1) have "\<parallel>c\<parallel>\<^bsub>t (\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>)\<^esub>" using nxtActI by blast
+      hence "\<langle>c #\<^bsub>Suc (\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>)\<^esub> inf_llist t\<rangle> = eSuc (\<langle>c #\<^bsub>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub> inf_llist t\<rangle>)" by simp
+      ultimately show ?thesis by simp
+    qed
+    also have "the_enat(eSuc (\<langle>c #\<^bsub>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub> inf_llist t\<rangle>)) - 1 = (\<langle>c #\<^bsub>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub> inf_llist t\<rangle>)"
+    proof -
+      have "\<langle>c #\<^bsub>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub> inf_llist t\<rangle> \<noteq> \<infinity>" by simp
+      hence "the_enat(eSuc (\<langle>c #\<^bsub>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub> inf_llist t\<rangle>)) = Suc(the_enat(\<langle>c #\<^bsub>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub> inf_llist t\<rangle>))"
+        using the_enat_eSuc by simp
+      thus ?thesis by simp
+    qed
+    also have "\<dots> = ?LHS"
+    proof -
+      have "enat \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub> - 1 < llength (inf_llist t)" by (simp add: one_enat_def)
+      moreover from assms(1) have "\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<ge>n" and
+        "\<nexists>k. enat n \<le> enat k \<and> enat k < enat \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<parallel>c\<parallel>\<^bsub>lnth (inf_llist t) k\<^esub>" using nxtActI by auto
+      ultimately have "\<langle>c #\<^bsub>enat \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>inf_llist t\<rangle> = \<langle>c #\<^bsub>enat n\<^esub>inf_llist t\<rangle>"
+        using nAct_not_active_same[of n "\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" "inf_llist t" c] by simp
+      moreover have "\<langle>c #\<^bsub>enat n\<^esub>inf_llist t\<rangle>\<noteq>\<infinity>" by simp
+      ultimately show ?thesis by auto
+    qed
+    finally show ?thesis by fastforce
+  qed      
+  moreover from assms have "\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>=\<langle>c \<and> t\<rangle>" using nxtActive_lactive by simp
+  hence "Suc (\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>)) = \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(Suc \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>)" using cnf2bhv_suc[where n="\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>"] by simp
+  ultimately show ?thesis by simp
+qed
 
 subsubsection "Behavior Trace to Configuration Trace"
 text {*
