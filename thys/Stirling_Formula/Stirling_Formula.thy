@@ -393,9 +393,9 @@ proof -
     from a have "P integrable_on {a..real n}"
       by (intro integrable_continuous_real P_continuous_on) auto
     hence "f n integrable_on {a..real n}"
-      by (rule integrable_eq [rotated]) (simp add: f_def)
+      by (rule integrable_eq) (simp add: f_def)
     thus "f n integrable_on {a..}"
-      by (rule integrable_on_superset [rotated 2]) (auto simp: f_def)
+      by (rule integrable_on_superset) (auto simp: f_def)
   next
     fix n :: nat
     show "\<forall>x\<in>{a..}. norm (f n x) \<le> of_real (1/12) * (1 / x^2)"
