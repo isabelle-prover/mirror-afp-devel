@@ -1142,7 +1142,8 @@ lemma lActive_equality:
   shows "\<langle>c \<and> t\<rangle> = i" unfolding lActive_def using assms Greatest_equality[of "\<lambda>i'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>"] by simp
     
 lemma nxtActive_lactive:
-  assumes "\<exists>!i. i\<ge>n \<and> \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
+  assumes "\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
+    and "\<not> (\<exists>i>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)"
   shows "\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>=\<langle>c \<and> t\<rangle>"
 proof -
   from assms(1) have "\<parallel>c\<parallel>\<^bsub>t \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>" using nxtActI by auto
@@ -1236,12 +1237,13 @@ proof -
 qed
 
 lemma nAct_cnf2proj_Suc_dist:
-  assumes "\<exists>!i. i\<ge>n \<and> \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
+  assumes "\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
+    and "\<not>(\<exists>i>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)"
   shows "Suc (the_enat \<langle>c #\<^bsub>enat n\<^esub>inf_llist t\<rangle>)=\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(Suc \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>)"
 proof -
   have "the_enat \<langle>c #\<^bsub>enat n\<^esub>inf_llist t\<rangle> = \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>)" (is "?LHS = ?RHS")
   proof -
-    from assms have "?RHS = the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1" using nxtActive_lactive by simp
+    from assms have "?RHS = the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1" using nxtActive_lactive[of n c t] by simp
     also have "llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)) = eSuc (\<langle>c #\<^bsub>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub> inf_llist t\<rangle>)"
     proof -
       from assms have "\<not> (\<exists>i'\<ge> Suc (\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>). \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)" using nxtActive_no_active by simp
