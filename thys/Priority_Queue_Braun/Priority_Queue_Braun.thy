@@ -7,9 +7,6 @@ imports
   "~~/src/HOL/Data_Structures/Priority_Queue"
 begin
 
-lemma mset_tree_empty_iff [simp]: "mset_tree t = {#} \<longleftrightarrow> t = Leaf"
-by (cases t) auto
-
 subsection "Introduction"
 
 text{* Braun, Rem and Hoogerwoord \cite{BraunRem,Hoogerwoord} used
