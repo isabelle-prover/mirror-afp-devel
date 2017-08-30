@@ -936,6 +936,11 @@ text {*
 definition lNAct :: "'id \<Rightarrow> (nat \<Rightarrow> 'cnf) \<Rightarrow> nat \<Rightarrow> nat" ("\<langle>_ \<leftarrow> _\<rangle>\<^bsub>_\<^esub>")
   where "\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<equiv> (LEAST n'. n=n' \<or> (n'<n \<and> (\<nexists>k. k\<ge>n' \<and> k<n \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)))"
 
+lemma lNact_least:
+  assumes "n=n' \<or> n'<n \<and> (\<nexists>k. k\<ge>n' \<and> k<n \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)"
+  shows "\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> n'"
+using Least_le[of "\<lambda>n'. n=n' \<or> (n'<n \<and> (\<nexists>k. k\<ge>n' \<and> k<n \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>))" n'] lNAct_def using assms by auto
+    
 lemma lNAct_ex: "\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub>=n \<or> \<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub><n \<and> (\<nexists>k. k\<ge>\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> k<n \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)"
 proof -
   let ?P="\<lambda>n'. n=n' \<or> n'<n \<and> (\<nexists>k. k\<ge>n' \<and> k<n \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)"
@@ -1010,7 +1015,7 @@ proof -
   ultimately have "\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>=\<langle>c #\<^bsub>\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub> inf_llist t\<rangle>" using nAct_not_active_same by simp
   thus ?thesis using nAct_mono assms by simp
 qed
-  
+ 
 subsection "Next Active"
 text {*
   In the following, we introduce an operator to obtain the next point in time when a component is activated.
@@ -1060,6 +1065,48 @@ proof
   ultimately have "i'\<ge>n" and "\<parallel>c\<parallel>\<^bsub>t i'\<^esub>" and "i'\<noteq>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" by auto
   moreover from assms(1) have "\<parallel>c\<parallel>\<^bsub>t \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>" and "\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<ge>n" using nxtActI by auto
   ultimately show False using assms(1) by auto
+qed
+  
+lemma active_geq_nxtAct:
+  assumes "\<parallel>c\<parallel>\<^bsub>t i\<^esub>"
+    and "the_enat (\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>)\<ge>the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)"
+  shows "i\<ge>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>"
+proof cases
+  assume "\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>=\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>"
+  show ?thesis
+  proof (rule ccontr)
+    assume "\<not> i\<ge>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>"
+    hence "i<\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" by simp
+    with `\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>=\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>` have "\<not> (\<exists>k\<ge>i. k < n \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)"
+      by (metis enat_ord_simps(1) leD leI nAct_same_not_active)
+    moreover have "\<not> (\<exists>k\<ge>n. k <\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)" using nxtActI by blast
+    ultimately have "\<not> (\<exists>k\<ge>i. k <\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)" by auto
+    with `i<\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>` show False using `\<parallel>c\<parallel>\<^bsub>t i\<^esub>` by simp
+  qed
+next
+  assume "\<not>\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>=\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>"
+  moreover from `the_enat (\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>)\<ge>the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)`
+  have "\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>\<ge>\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>"
+    by (metis enat.distinct(2) enat_ord_simps(1) nAct_enat_the_nat)
+  ultimately have "\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>>\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>" by simp
+  hence "i>n" using nAct_strict_mono_back[of c n "inf_llist t" i] by simp
+  with `\<parallel>c\<parallel>\<^bsub>t i\<^esub>` show ?thesis by (meson dual_order.strict_implies_order leI nxtActI)
+qed
+  
+lemma nAct_same:
+  assumes "\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> n'" and "n' < \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>"
+  shows "the_enat (\<langle>c #\<^bsub>enat n'\<^esub> inf_llist t\<rangle>) = the_enat (\<langle>c #\<^bsub>enat n\<^esub> inf_llist t\<rangle>)"
+proof cases
+  assume "n \<le> n'"
+  moreover have "n' - 1 < llength (inf_llist t)" by simp
+  moreover have "\<not> (\<exists>i\<ge>n. i < n' \<and> \<parallel>c\<parallel>\<^bsub>t i\<^esub>)" by (meson assms(2) dual_order.strict_trans nxtActI)
+  ultimately show ?thesis using nAct_not_active_same by (simp add: one_enat_def)
+next
+  assume "\<not> n \<le> n'"
+  hence "n' < n" by simp
+  moreover have "n - 1 < llength (inf_llist t)" by simp
+  moreover have "\<not> (\<exists>i\<ge>n'. i < n \<and> \<parallel>c\<parallel>\<^bsub>t i\<^esub>)" by (metis \<open>\<not> n \<le> n'\<close> assms(1) dual_order.trans lNAct_ex)
+  ultimately show ?thesis using nAct_not_active_same[of n' n] by (simp add: one_enat_def)
 qed
   
 lemma nAct_mono_nxtAct:
@@ -1368,6 +1415,21 @@ lemma p2c_mono_c2p:
 proof -
   from `n' \<ge> \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n)` have "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n') \<ge> \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n))" using bhv2cnf_mono by simp
   thus ?thesis using bhv2cnf_cnf2bhv `n \<ge> \<langle>c \<and> t\<rangle>` by simp
+qed
+  
+lemma p2c_mono_c2p_strict:
+  assumes "n \<ge> \<langle>c \<and> t\<rangle>"
+      and "n<\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n')"
+  shows "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n) < n'"
+proof (rule ccontr)
+  assume "\<not> (\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n) < n')"
+  hence "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n) \<ge> n'" by simp
+  with `n \<ge> \<langle>c \<and> t\<rangle>` have "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(nat (\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n))) \<ge> \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n')"
+    using bhv2cnf_mono by simp
+  hence "\<not>(\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(nat (\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n))) < \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n'))" by simp
+  with `n \<ge> \<langle>c \<and> t\<rangle>` have  "\<not>(n < \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n'))"
+    using "bhv2cnf_cnf2bhv" by simp
+  with assms show False by simp
 qed
   
 lemma c2p_mono_p2c:
