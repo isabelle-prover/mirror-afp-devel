@@ -1094,12 +1094,12 @@ next
 qed
   
 lemma nAct_same:
-  assumes "\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> n'" and "n' < \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>"
+  assumes "\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> n'" and "n' \<le> \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>"
   shows "the_enat (\<langle>c #\<^bsub>enat n'\<^esub> inf_llist t\<rangle>) = the_enat (\<langle>c #\<^bsub>enat n\<^esub> inf_llist t\<rangle>)"
 proof cases
   assume "n \<le> n'"
   moreover have "n' - 1 < llength (inf_llist t)" by simp
-  moreover have "\<not> (\<exists>i\<ge>n. i < n' \<and> \<parallel>c\<parallel>\<^bsub>t i\<^esub>)" by (meson assms(2) dual_order.strict_trans nxtActI)
+  moreover have "\<not> (\<exists>i\<ge>n. i <n' \<and> \<parallel>c\<parallel>\<^bsub>t i\<^esub>)" by (meson assms(2) less_le_trans nxtActI)
   ultimately show ?thesis using nAct_not_active_same by (simp add: one_enat_def)
 next
   assume "\<not> n \<le> n'"
@@ -1209,60 +1209,60 @@ text {*
   First we provide an operator which maps a point in time of a configuration trace to the corresponding point in time of a behavior trace.
 *}
   
-definition cnf2bhv :: "'id \<Rightarrow> (nat \<Rightarrow> 'cnf) \<Rightarrow> nat \<Rightarrow> nat" ("\<^bsub>_\<^esub>\<up>\<^bsub>_\<^esub>(_)" [150,150,150] 110)
-  where "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n) \<equiv> the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1 + (n - \<langle>c \<and> t\<rangle>)"
+definition cnf2bhv :: "'id \<Rightarrow> (nat \<Rightarrow> 'cnf) \<Rightarrow> nat \<Rightarrow> nat" ("\<^bsub>_\<^esub>\<down>\<^bsub>_\<^esub>(_)" [150,150,150] 110)
+  where "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n) \<equiv> the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1 + (n - \<langle>c \<and> t\<rangle>)"
 
 lemma cnf2bhv_mono:
   assumes "n'\<ge>n"
-  shows "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n') \<ge> \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n)"
+  shows "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n') \<ge> \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)"
   by (simp add: assms cnf2bhv_def diff_le_mono)
 
 lemma cnf2bhv_mono_strict:
   assumes "n\<ge>\<langle>c \<and> t\<rangle>" and "n'>n"
-  shows "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n') > \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n)"
+  shows "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n') > \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)"
   using assms cnf2bhv_def by auto
 
 text "Note that the functions are nat, that means that also in the case the difference is negative they will return a 0!"
 lemma cnf2bhv_ge_llength[simp]:
   assumes "n\<ge>\<langle>c \<and> t\<rangle>"
-  shows "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n) \<ge> the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1"
+  shows "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n) \<ge> the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1"
   using assms cnf2bhv_def by simp
 
 lemma cnf2bhv_greater_llength[simp]:
   assumes "n>\<langle>c \<and> t\<rangle>"
-  shows "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n) > the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1"
+  shows "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n) > the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1"
   using assms cnf2bhv_def by simp
 
 lemma cnf2bhv_suc[simp]:
   assumes "n\<ge>\<langle>c \<and> t\<rangle>"
-  shows "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(Suc n) = Suc (\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n))"
+  shows "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(Suc n) = Suc (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n))"
   using assms cnf2bhv_def by simp
 
 lemma cnf2bhv_lActive[simp]:
-  shows "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(\<langle>c \<and> t\<rangle>) = the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1"
+  shows "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(\<langle>c \<and> t\<rangle>) = the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1"
   using cnf2bhv_def by simp
     
 lemma cnf2bhv_lnth_lappend:
   assumes act: "\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
     and nAct: "\<nexists>i. i\<ge>n \<and> \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
-  shows "lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t')) (\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n)) = lnth (inf_llist t') (n - \<langle>c \<and> t\<rangle> - 1)"
+  shows "lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t')) (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)) = lnth (inf_llist t') (n - \<langle>c \<and> t\<rangle> - 1)"
     (is "?lhs = ?rhs")
 proof -
   from nAct have "lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))" using proj_finite2 by auto
   then obtain k where k_def: "llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)) = enat k" using lfinite_llength_enat by blast
-  moreover have "k \<le> \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n)"
+  moreover have "k \<le> \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)"
   proof -
     from nAct have "\<nexists>i. i>n-1 \<and> \<parallel>c\<parallel>\<^bsub>t i\<^esub>" by simp
     with act have "\<langle>c \<and> t\<rangle> \<le> n-1" using lActive_less by auto
     moreover have "n>0" using act nAct by auto
     ultimately have "\<langle>c \<and> t\<rangle> < n" by simp
-    hence "the_enat (llength (\<pi>\<^bsub>c\<^esub>inf_llist t)) - 1 < \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n)" using cnf2bhv_greater_llength by simp
+    hence "the_enat (llength (\<pi>\<^bsub>c\<^esub>inf_llist t)) - 1 < \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)" using cnf2bhv_greater_llength by simp
     with k_def show ?thesis by simp
   qed
-  ultimately have "?lhs = lnth (inf_llist t') (\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n) - k)" using lnth_lappend2 by blast
-  moreover have "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n) - k = n - \<langle>c \<and> t\<rangle> - 1"
+  ultimately have "?lhs = lnth (inf_llist t') (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n) - k)" using lnth_lappend2 by blast
+  moreover have "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n) - k = n - \<langle>c \<and> t\<rangle> - 1"
   proof -
-    from cnf2bhv_def have "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n) - k = the_enat (llength (\<pi>\<^bsub>c\<^esub>inf_llist t)) - 1 + (n - \<langle>c \<and> t\<rangle>) - k"
+    from cnf2bhv_def have "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n) - k = the_enat (llength (\<pi>\<^bsub>c\<^esub>inf_llist t)) - 1 + (n - \<langle>c \<and> t\<rangle>) - k"
       by simp
     also have "\<dots> = the_enat (llength (\<pi>\<^bsub>c\<^esub>inf_llist t)) - 1 + (n - \<langle>c \<and> t\<rangle>) -
       the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))" using k_def by simp
@@ -1286,9 +1286,9 @@ qed
 lemma nAct_cnf2proj_Suc_dist:
   assumes "\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
     and "\<not>(\<exists>i>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)"
-  shows "Suc (the_enat \<langle>c #\<^bsub>enat n\<^esub>inf_llist t\<rangle>)=\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(Suc \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>)"
+  shows "Suc (the_enat \<langle>c #\<^bsub>enat n\<^esub>inf_llist t\<rangle>)=\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(Suc \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>)"
 proof -
-  have "the_enat \<langle>c #\<^bsub>enat n\<^esub>inf_llist t\<rangle> = \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>)" (is "?LHS = ?RHS")
+  have "the_enat \<langle>c #\<^bsub>enat n\<^esub>inf_llist t\<rangle> = \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>)" (is "?LHS = ?RHS")
   proof -
     from assms have "?RHS = the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1" using nxtActive_lactive[of n c t] by simp
     also have "llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)) = eSuc (\<langle>c #\<^bsub>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub> inf_llist t\<rangle>)"
@@ -1320,7 +1320,7 @@ proof -
     finally show ?thesis by fastforce
   qed      
   moreover from assms have "\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>=\<langle>c \<and> t\<rangle>" using nxtActive_lactive by simp
-  hence "Suc (\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>)) = \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(Suc \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>)" using cnf2bhv_suc[where n="\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>"] by simp
+  hence "Suc (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>)) = \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(Suc \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>)" using cnf2bhv_suc[where n="\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>"] by simp
   ultimately show ?thesis by simp
 qed
 
@@ -1329,34 +1329,34 @@ text {*
   Next we define an operator to map a point in time of a behavior trace back to a corresponding point in time for a configuration trace.
 *}
 
-definition bhv2cnf :: "'id \<Rightarrow> (nat \<Rightarrow> 'cnf) \<Rightarrow> nat \<Rightarrow> nat" ("\<^bsub>_\<^esub>\<down>\<^bsub>_\<^esub>(_)" [150,150,150] 110)
-  where "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n) \<equiv> \<langle>c \<and> t\<rangle> + (n - (the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1))"
+definition bhv2cnf :: "'id \<Rightarrow> (nat \<Rightarrow> 'cnf) \<Rightarrow> nat \<Rightarrow> nat" ("\<^bsub>_\<^esub>\<up>\<^bsub>_\<^esub>(_)" [150,150,150] 110)
+  where "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n) \<equiv> \<langle>c \<and> t\<rangle> + (n - (the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1))"
 
 lemma bhv2cnf_mono:
   assumes "n'\<ge>n"
-  shows "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n') \<ge> \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)"
+  shows "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n') \<ge> \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n)"
   by (simp add: assms bhv2cnf_def diff_le_mono)    
 
 lemma bhv2cnf_mono_strict:
   assumes "n'>n"
     and "n \<ge> the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1"
-  shows "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n') > \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)"
+  shows "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n') > \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n)"
   using assms bhv2cnf_def by auto
 
 text "Note that the functions are nat, that means that also in the case the difference is negative they will return a 0!"
 lemma bhv2cnf_ge_lActive[simp]:
-  shows "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n) \<ge> \<langle>c \<and> t\<rangle>"
+  shows "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n) \<ge> \<langle>c \<and> t\<rangle>"
   using bhv2cnf_def by simp
 
 lemma bhv2cnf_greater_lActive[simp]:
   assumes "n>the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1"
-  shows "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n) > \<langle>c \<and> t\<rangle>"
+  shows "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n) > \<langle>c \<and> t\<rangle>"
   using assms bhv2cnf_def by simp
     
 lemma bhv2cnf_lActive[simp]:
   assumes "\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
     and "lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))"
-  shows "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))) = Suc (\<langle>c \<and> t\<rangle>)"
+  shows "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))) = Suc (\<langle>c \<and> t\<rangle>)"
 proof -
   from assms have "\<pi>\<^bsub>c\<^esub>(inf_llist t)\<noteq> []\<^sub>l" by simp
   hence "llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)) > 0" by (simp add: lnull_def)
@@ -1374,9 +1374,9 @@ text {*
   
 lemma bhv2cnf_cnf2bhv:
   assumes "n \<ge> \<langle>c \<and> t\<rangle>"
-  shows "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n)) = n" (is "?lhs = ?rhs")
+  shows "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)) = n" (is "?lhs = ?rhs")
 proof -
-  have "?lhs = \<langle>c \<and> t\<rangle> + ((\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n)) - (the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1))"
+  have "?lhs = \<langle>c \<and> t\<rangle> + ((\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)) - (the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1))"
     using bhv2cnf_def by simp
   also have "\<dots> = \<langle>c \<and> t\<rangle> + (((the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))) - 1 + (n - \<langle>c \<and> t\<rangle>)) -
     (the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1))" using cnf2bhv_def by simp
@@ -1391,9 +1391,9 @@ qed
     
 lemma cnf2bhv_bhv2cnf:
   assumes "n \<ge> the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1"
-  shows "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)) = n" (is "?lhs = ?rhs")
+  shows "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n)) = n" (is "?lhs = ?rhs")
 proof -
-  have "?lhs = the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1 + ((\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)) - (\<langle>c \<and> t\<rangle>))"
+  have "?lhs = the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1 + ((\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n)) - (\<langle>c \<and> t\<rangle>))"
     using cnf2bhv_def by simp
   also have "\<dots> = the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1 + (\<langle>c \<and> t\<rangle> +
     (n - (the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1)) - (\<langle>c \<and> t\<rangle>))" using bhv2cnf_def by simp
@@ -1410,48 +1410,48 @@ qed
   
 lemma p2c_mono_c2p:
   assumes "n \<ge> \<langle>c \<and> t\<rangle>"
-      and "n' \<ge> \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n)"
-    shows "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n') \<ge> n"
+      and "n' \<ge> \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)"
+    shows "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n') \<ge> n"
 proof -
-  from `n' \<ge> \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n)` have "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n') \<ge> \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n))" using bhv2cnf_mono by simp
+  from `n' \<ge> \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)` have "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n') \<ge> \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n))" using bhv2cnf_mono by simp
   thus ?thesis using bhv2cnf_cnf2bhv `n \<ge> \<langle>c \<and> t\<rangle>` by simp
 qed
   
 lemma p2c_mono_c2p_strict:
   assumes "n \<ge> \<langle>c \<and> t\<rangle>"
-      and "n<\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n')"
-  shows "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n) < n'"
+      and "n<\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n')"
+  shows "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n) < n'"
 proof (rule ccontr)
-  assume "\<not> (\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n) < n')"
-  hence "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n) \<ge> n'" by simp
-  with `n \<ge> \<langle>c \<and> t\<rangle>` have "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(nat (\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n))) \<ge> \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n')"
+  assume "\<not> (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n) < n')"
+  hence "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n) \<ge> n'" by simp
+  with `n \<ge> \<langle>c \<and> t\<rangle>` have "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(nat (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n))) \<ge> \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n')"
     using bhv2cnf_mono by simp
-  hence "\<not>(\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(nat (\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n))) < \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n'))" by simp
-  with `n \<ge> \<langle>c \<and> t\<rangle>` have  "\<not>(n < \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n'))"
+  hence "\<not>(\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(nat (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n))) < \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n'))" by simp
+  with `n \<ge> \<langle>c \<and> t\<rangle>` have  "\<not>(n < \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n'))"
     using "bhv2cnf_cnf2bhv" by simp
   with assms show False by simp
 qed
   
 lemma c2p_mono_p2c:
   assumes "n \<ge> the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1"
-      and "n' \<ge> \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)"
-    shows "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n') \<ge> n"
+      and "n' \<ge> \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n)"
+    shows "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n') \<ge> n"
 proof -
-  from `n' \<ge> \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)` have "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n') \<ge> \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n))" using cnf2bhv_mono by simp
+  from `n' \<ge> \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n)` have "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n') \<ge> \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n))" using cnf2bhv_mono by simp
   thus ?thesis using cnf2bhv_bhv2cnf `n \<ge> the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1` by simp
 qed
 
 lemma c2p_mono_p2c_strict:
   assumes "n \<ge> the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1"
-      and "n<\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n')"
-  shows "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n) < n'"
+      and "n<\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n')"
+  shows "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n) < n'"
 proof (rule ccontr)
-  assume "\<not> (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n) < n')"
-  hence "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n) \<ge> n'" by simp
-  with `n \<ge> the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1` have "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(nat (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n))) \<ge> \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n')"
+  assume "\<not> (\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n) < n')"
+  hence "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n) \<ge> n'" by simp
+  with `n \<ge> the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1` have "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(nat (\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n))) \<ge> \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n')"
     using cnf2bhv_mono by simp
-  hence "\<not>(\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(nat (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n))) < \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n'))" by simp
-  with `n \<ge> the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1` have  "\<not>(n < \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n'))"
+  hence "\<not>(\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(nat (\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n))) < \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n'))" by simp
+  with `n \<ge> the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1` have  "\<not>(n < \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n'))"
     using "cnf2bhv_bhv2cnf" by simp
   with assms show False by simp
 qed
