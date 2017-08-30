@@ -16,63 +16,59 @@ require the invariant but the amortized analysis (elsewhere) makes use of it.\<c
 
 datatype 'a heap = Empty | Hp 'a "'a heap list"
 
-fun get_min  :: "'a :: linorder heap \<Rightarrow> 'a" where
+fun get_min  :: "'a heap \<Rightarrow> 'a" where
 "get_min (Hp x _) = x"
 
-fun merge :: "'a :: linorder heap \<Rightarrow> 'a heap \<Rightarrow> 'a heap" where
+hide_const (open) insert
+
+context linorder
+begin
+
+fun merge :: "'a heap \<Rightarrow> 'a heap \<Rightarrow> 'a heap" where
 "merge h Empty = h" |
 "merge Empty h = h" |
 "merge (Hp x lx) (Hp y ly) = 
     (if x < y then Hp x (Hp y ly # lx) else Hp y (Hp x lx # ly))"
 
-hide_const (open) insert
-
-fun insert :: "'a \<Rightarrow> 'a :: linorder heap \<Rightarrow> 'a heap" where
+fun insert :: "'a \<Rightarrow> 'a heap \<Rightarrow> 'a heap" where
 "insert x h = merge (Hp x []) h"
 
-fun pass\<^sub>1 :: "'a :: linorder heap list \<Rightarrow> 'a heap list" where
+fun pass\<^sub>1 :: "'a heap list \<Rightarrow> 'a heap list" where
   "pass\<^sub>1 [] = []"
 | "pass\<^sub>1 [h] = [h]" 
 | "pass\<^sub>1 (h1#h2#hs) = merge h1 h2 # pass\<^sub>1 hs"
 
-fun pass\<^sub>2 :: "'a :: linorder heap list \<Rightarrow> 'a heap" where
+fun pass\<^sub>2 :: "'a heap list \<Rightarrow> 'a heap" where
   "pass\<^sub>2 [] = Empty"
 | "pass\<^sub>2 (h#hs) = merge h (pass\<^sub>2 hs)"
 
-fun mergepairs :: "'a :: linorder heap list \<Rightarrow> 'a heap" where
-  "mergepairs [] = Empty"
-| "mergepairs [h] = h" 
-| "mergepairs (h1 # h2 # hs) = merge (merge h1 h2) (mergepairs hs)"
+fun merge_pairs :: "'a  heap list \<Rightarrow> 'a heap" where
+  "merge_pairs [] = Empty"
+| "merge_pairs [h] = h" 
+| "merge_pairs (h1 # h2 # hs) = merge (merge h1 h2) (merge_pairs hs)"
 
-fun del_min :: "'a :: linorder heap \<Rightarrow> 'a heap" where
+fun del_min :: "'a heap \<Rightarrow> 'a heap" where
   "del_min Empty = Empty"
 | "del_min (Hp x hs) = pass\<^sub>2 (pass\<^sub>1 hs)"
+
+end (* linorder *)
 
 
 subsection \<open>Correctness Proofs\<close>
 
 text \<open>An optimization:\<close>
 
-lemma mergepairs_pass12: "mergepairs hs = pass\<^sub>2 (pass\<^sub>1 hs)"
-by (induction hs rule: mergepairs.induct) (auto split: option.split)
+lemma pass12_merge_pairs: "pass\<^sub>2 (pass\<^sub>1 hs) = merge_pairs hs"
+by (induction hs rule: merge_pairs.induct) (auto split: option.split)
 
-declare mergepairs_pass12[symmetric, code_unfold]
+declare pass12_merge_pairs[code_unfold]
 
 
 subsubsection \<open>Invariants\<close>
 
-fun pheap :: "'a :: linorder heap \<Rightarrow> bool" where
+fun pheap :: "('a :: linorder) heap \<Rightarrow> bool" where
 "pheap Empty = True" |
 "pheap (Hp x hs) = (\<forall>h \<in> set hs. (\<forall>y \<in> set_heap h. x \<le> y) \<and> pheap h)"
-(*
-fun no_Empty :: "'a :: linorder heap \<Rightarrow> bool" where
-"no_Empty Empty = False" |
-"no_Empty (Hp x hs) = (\<forall>h \<in> set hs. no_Empty h)"
-
-fun is_root :: "'a :: linorder heap \<Rightarrow> bool" where
-"is_root Empty = True" |
-"is_root (Hp x hs) = (\<forall>h \<in> set hs. no_Empty h)"
-*)
 
 lemma pheap_merge: "pheap h1 \<Longrightarrow> pheap h2 \<Longrightarrow> pheap (merge h1 h2)"
 by (induction h1 h2 rule: merge.induct) fastforce+
@@ -109,15 +105,11 @@ by(induction h1 h2 rule: merge.induct)(auto simp: add_ac)
 lemma mset_insert: "mset_heap (insert a h) = {#a#} + mset_heap h"
 by(cases h) (auto simp add: mset_merge insert_def add_ac)
 
-lemma mset_pass1:
-  "Union_mset(image_mset mset_heap (mset (pass\<^sub>1 hs))) = Union_mset(mset(map mset_heap hs))"
-by(induction hs rule: pass\<^sub>1.induct)(auto simp: mset_merge add_ac)
-
-lemma mset_pass2: "mset_heap (pass\<^sub>2 hs) = Union_mset(image_mset mset_heap(mset hs))"
-by(induction hs)(auto simp: mset_merge add_ac)
+lemma mset_merge_pairs: "mset_heap (merge_pairs hs) = Union_mset(image_mset mset_heap(mset hs))"
+by(induction hs rule: merge_pairs.induct)(auto simp: mset_merge)
 
 lemma mset_del_min: "h \<noteq> Empty \<Longrightarrow>
   mset_heap (del_min h) = mset_heap h - {#get_min h#}"
-by(induction h rule: del_min.induct) (auto simp: mset_pass1 mset_pass2)
+by(induction h rule: del_min.induct) (auto simp: pass12_merge_pairs mset_merge_pairs)
 
 end
