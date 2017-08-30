@@ -8,18 +8,18 @@ begin
 
 subsubsection "Analysis of splay"
 
-definition A :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> real" where
-"A a t = t_splay a t + \<Phi>(splay a t) - \<Phi> t"
+definition a_splay :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> real" where
+"a_splay a t = t_splay a t + \<Phi>(splay a t) - \<Phi> t"
 
-lemma A_simps[simp]: "A a (Node l a r) = 1"
- "a<b \<Longrightarrow> A a (Node (Node ll a lr) b r) = \<phi> (Node lr b r) - \<phi> (Node ll a lr) + 1"
- "b<a \<Longrightarrow> A a (Node l b (Node rl a rr)) = \<phi> (Node rl b l) - \<phi> (Node rl a rr) + 1"
-by(auto simp add: A_def algebra_simps)
+lemma a_splay_simps[simp]: "a_splay a (Node l a r) = 1"
+ "a<b \<Longrightarrow> a_splay a (Node (Node ll a lr) b r) = \<phi> (Node lr b r) - \<phi> (Node ll a lr) + 1"
+ "b<a \<Longrightarrow> a_splay a (Node l b (Node rl a rr)) = \<phi> (Node rl b l) - \<phi> (Node rl a rr) + 1"
+by(auto simp add: a_splay_def algebra_simps)
 
 text{* The following lemma is an attempt to prove a generic lemma that covers
 both zig-zig cases. However, the lemma is not as nice as one would like.
 Hence it is used only once, as a demo. Ideally the lemma would involve
-function @{const A}, but that is impossible because this involves @{const splay}
+function @{const a_splay}, but that is impossible because this involves @{const splay}
 and thus depends on the ordering. We would need a truly symmetric version of @{const splay}
 that takes the ordering as an explicit argument. Then we could define
 all the symmetric cases by one final equation
@@ -37,7 +37,7 @@ proof -
   define B' where [simp]: "B' = Node lb2 b A'"
   have "t_splay x lb + \<Phi> t' - \<Phi> t = t_splay x lb + \<Phi> lb1 + \<Phi> lb2 - \<Phi> lb + \<phi> B' + \<phi> A' - \<phi> B"
     using prems
-    by(auto simp: A_def size_if_splay algebra_simps in_set_tree_if split: tree.split)
+    by(auto simp: a_splay_def size_if_splay algebra_simps in_set_tree_if split: tree.split)
   also have "\<dots> \<le> 2 * \<phi> lb + \<phi> B' + \<phi> A' - \<phi> B - 3 * \<phi> X + 1"
     using IH prems(2) by(auto simp: algebra_simps)
   also have "\<dots> \<le> \<phi> lb + \<phi> B' + \<phi> A' - 3 * \<phi> X + 1" by(simp)
@@ -49,8 +49,8 @@ proof -
   finally show ?thesis by simp
 qed
 
-lemma A_ub: "\<lbrakk> bst t; Node lx x rx : subtrees t \<rbrakk>
-  \<Longrightarrow> A x t \<le> 3 * (\<phi> t - \<phi>(Node lx x rx)) + 1"
+lemma a_splay_ub: "\<lbrakk> bst t; Node lx x rx : subtrees t \<rbrakk>
+  \<Longrightarrow> a_splay x t \<le> 3 * (\<phi> t - \<phi>(Node lx x rx)) + 1"
 proof(induction x t rule: splay.induct)
   case 1 thus ?case by simp
 next
@@ -92,9 +92,9 @@ next
   let ?X = "Node lx x rx" let ?B = "Node lb b rb"  let ?A = "Node ?B a ra"
   let ?R = lb  let ?R' = "Node lu u ru"
   let ?A' = "Node rb a ra"  let ?B' = "Node ru b ?A'"
-  have "A x ?A = A x ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' + 1"
+  have "a_splay x ?A = a_splay x ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' + 1"
     using "6.prems" 1 sp
-    by(auto simp: A_def size_if_splay algebra_simps split: tree.split)
+    by(auto simp: a_splay_def size_if_splay algebra_simps split: tree.split)
   also have "\<dots> \<le> 3 * \<phi> ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' - 3 * \<phi> ?X + 2"
     using 6 0 by(auto simp: algebra_simps)
   also have "\<dots> = 2 * \<phi> ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - 3 * \<phi> ?X + 2"
@@ -116,9 +116,9 @@ next
   let ?X = "Node lx x rx" let ?B = "Node lb b rb"  let ?A = "Node ?B a ra"
   let ?R = rb  let ?R' = "Node lu u ru"
   let ?B' = "Node lb b lu"  let ?A' = "Node ru a ra"
-  have "A x ?A = A x ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' + 1"
+  have "a_splay x ?A = a_splay x ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' + 1"
     using "8.prems" 1 sp
-    by(auto simp: A_def size_if_splay algebra_simps split: tree.split)
+    by(auto simp: a_splay_def size_if_splay algebra_simps split: tree.split)
   also have "\<dots> \<le> 3 * \<phi> ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' - 3 * \<phi> ?X + 2"
     using 8 0 by(auto simp: algebra_simps)
   also have "\<dots> = 2 * \<phi> rb + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - 3 * \<phi> ?X + 2"
@@ -139,9 +139,9 @@ next
   let ?X = "Node lx x rx" let ?B = "Node lb b rb"  let ?A = "Node la a ?B"
   let ?R = lb  let ?R' = "Node lu u ru"
   let ?B' = "Node ru b rb"  let ?A' = "Node la a lu"
-  have "A x ?A = A x ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' + 1"
+  have "a_splay x ?A = a_splay x ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' + 1"
     using "11.prems" 1 sp
-    by(auto simp: A_def size_if_splay algebra_simps split: tree.split)
+    by(auto simp: a_splay_def size_if_splay algebra_simps split: tree.split)
   also have "\<dots> \<le> 3 * \<phi> ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' - 3 * \<phi> ?X + 2"
     using 11 0 by(auto simp: algebra_simps)
   also have "\<dots> = 2 * \<phi> ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - 3 * \<phi> ?X + 2"
@@ -160,11 +160,11 @@ next
   obtain lu u ru where sp: "splay x rb = Node lu u ru"
     using splay_not_Leaf[OF \<open>rb \<noteq> Leaf\<close>] by blast
   from zig_zig[of rb x ru lu lx rx _ b lb a la] 14 sp 0
-  show ?case by(auto simp: A_def size_if_splay algebra_simps)
+  show ?case by(auto simp: a_splay_def size_if_splay algebra_simps)
 (* The explicit version:
-  have "A x ?A = A x ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' + 1"
+  have "a_splay x ?A = a_splay x ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' + 1"
     using "14.prems" 1 sp
-    by(auto simp: A_def size_if_splay algebra_simps split: tree.split)
+    by(auto simp: a_splay_def size_if_splay algebra_simps split: tree.split)
   also have "\<dots> \<le> 3 * \<phi> ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' - 3 * \<phi> ?X + 2"
     using 14 0 by(auto simp: algebra_simps)
   also have "\<dots> = 2 * \<phi> rb + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - 3 * \<phi> ?X + 2"
@@ -179,39 +179,99 @@ next
 *)
 qed
 
-lemma A_ub2: assumes "bst t" "a : set_tree t"
-shows "A a t \<le> 3 * (\<phi> t - 1) + 1"
+lemma a_splay_ub2: assumes "bst t" "a : set_tree t"
+shows "a_splay a t \<le> 3 * (\<phi> t - 1) + 1"
 proof -
   from assms(2) obtain la ra where N: "Node la a ra : subtrees t"
     by (metis set_treeE)
-  have "A a t \<le> 3 * (\<phi> t - \<phi>(Node la a ra)) + 1" by(rule A_ub[OF assms(1) N])
+  have "a_splay a t \<le> 3 * (\<phi> t - \<phi>(Node la a ra)) + 1" by(rule a_splay_ub[OF assms(1) N])
   also have "\<dots> \<le> 3 * (\<phi> t - 1) + 1" by(simp add: field_simps)
   finally show ?thesis .
 qed
 
-lemma A_ub3: assumes "bst t" shows "A a t \<le> 3 * \<phi> t + 1"
+lemma a_splay_ub3: assumes "bst t" shows "a_splay a t \<le> 3 * \<phi> t + 1"
 proof cases
-  assume "t = Leaf" thus ?thesis by(simp add: A_def)
+  assume "t = Leaf" thus ?thesis by(simp add: a_splay_def)
 next
   assume "t \<noteq> Leaf"
   from ex_in_set_tree[OF this assms] obtain a' where
     a': "a' \<in> set_tree t"  "splay a' t = splay a t"  "t_splay a' t = t_splay a t"
     by blast
   have [arith]: "log 2 2 > 0" by simp
-  show ?thesis using A_ub2[OF assms a'(1)] by(simp add: A_def a' log_divide)
+  show ?thesis using a_splay_ub2[OF assms a'(1)] by(simp add: a_splay_def a' log_divide)
 qed
 
 
-definition Am :: "'a::linorder tree \<Rightarrow> real" where
-"Am t = t_splay_max t + \<Phi>(splay_max t) - \<Phi> t"
+subsubsection "Analysis of insert"
 
-lemma Am_ub: "\<lbrakk> bst t; t \<noteq> Leaf \<rbrakk> \<Longrightarrow> Am t \<le> 3 * (\<phi> t - 1) + 1"
+lemma amor_insert: assumes "bst t"
+shows "t_splay a t + \<Phi>(Splay_Tree.insert a t) - \<Phi> t \<le> 4 * log 2 (size1 t) + 2" (is "?l \<le> ?r")
+proof cases
+  assume "t = Leaf" thus ?thesis by(simp)
+next
+  assume "t \<noteq> Leaf"
+  then obtain l e r where [simp]: "splay a t = Node l e r"
+    by (metis tree.exhaust splay_Leaf_iff)
+  let ?t = "real(t_splay a t)"
+  let ?Plr = "\<Phi> l + \<Phi> r"  let ?Ps = "\<Phi> t"
+  let ?slr = "real(size1 l) + real(size1 r)" let ?LR = "log 2 (1 + ?slr)"
+  have opt: "?t + \<Phi> (splay a t) - ?Ps  \<le> 3 * log 2 (real (size1 t)) + 1"
+    using a_splay_ub3[OF \<open>bst t\<close>, simplified a_splay_def, of a] by (simp)
+  from less_linear[of e a]
+  show ?thesis
+  proof (elim disjE)
+    assume "e=a"
+    have nneg: "log 2 (1 + real (size t)) \<ge> 0" by simp
+    thus ?thesis using \<open>t \<noteq> Leaf\<close> opt \<open>e=a\<close>
+      apply(simp add: algebra_simps) using nneg by arith
+  next
+    let ?L = "log 2 (real(size1 l) + 1)"
+    assume "e<a" hence "e \<noteq> a" by simp
+    hence "?l = (?t + ?Plr - ?Ps) + ?L + ?LR"
+      using  \<open>t \<noteq> Leaf\<close> \<open>e<a\<close> by(simp)
+    also have "?t + ?Plr - ?Ps \<le> 2 * log 2 ?slr + 1"
+      using opt size_splay[of a t,symmetric] by(simp)
+    also have "?L \<le> log 2 ?slr" by(simp)
+    also have "?LR \<le> log 2 ?slr + 1"
+    proof -
+      have "?LR \<le> log 2 (2 * ?slr)" by (simp add:)
+      also have "\<dots> \<le> log 2 ?slr + 1"
+        by (simp add: log_mult del:distrib_left_numeral)
+      finally show ?thesis .
+    qed
+    finally show ?thesis using size_splay[of a t,symmetric] by (simp)
+  next
+    let ?R = "log 2 (2 + real(size r))"
+    assume "a<e" hence "e \<noteq> a" by simp
+    hence "?l = (?t + ?Plr - ?Ps) + ?R + ?LR"
+      using \<open>t \<noteq> Leaf\<close> \<open>a<e\<close> by(simp)
+    also have "?t + ?Plr - ?Ps \<le> 2 * log 2 ?slr + 1"
+      using opt size_splay[of a t,symmetric] by(simp)
+    also have "?R \<le> log 2 ?slr" by(simp)
+    also have "?LR \<le> log 2 ?slr + 1"
+    proof -
+      have "?LR \<le> log 2 (2 * ?slr)" by (simp add:)
+      also have "\<dots> \<le> log 2 ?slr + 1"
+        by (simp add: log_mult del:distrib_left_numeral)
+      finally show ?thesis .
+    qed
+    finally show ?thesis using size_splay[of a t, symmetric] by simp
+  qed
+qed
+
+
+subsubsection "Analysis of delete"
+
+definition a_splay_max :: "'a::linorder tree \<Rightarrow> real" where
+"a_splay_max t = t_splay_max t + \<Phi>(splay_max t) - \<Phi> t"
+
+lemma a_splay_max_ub: "\<lbrakk> bst t; t \<noteq> Leaf \<rbrakk> \<Longrightarrow> a_splay_max t \<le> 3 * (\<phi> t - 1) + 1"
 proof(induction t rule: splay_max.induct)
   case 1 thus ?case by (simp)
 next
   case (2 l b)
   thus ?case using one_le_log_cancel_iff[of 2 "size1 l + 1"]
-    by (simp add: Am_def del: one_le_log_cancel_iff)
+    by (simp add: a_splay_max_def del: one_le_log_cancel_iff)
 next
   case (3 l b rl c rr)
   show ?case
@@ -221,7 +281,7 @@ next
       using one_le_log_cancel_iff[of 2 "1 + size1 rl"]
         one_le_log_cancel_iff[of 2 "1 + size1 l + size1 rl"]
         log_le_cancel_iff[of 2 "size1 l + size1 rl" "1 + size1 l + size1 rl"]
-     by (auto simp: Am_def field_simps
+     by (auto simp: a_splay_max_def field_simps
            simp del: log_le_cancel_iff one_le_log_cancel_iff)
   next
     assume "rr \<noteq> Leaf"
@@ -231,8 +291,8 @@ next
       using size_splay_max[of rr,symmetric] by(simp)
     let ?C = "Node rl c rr"  let ?B = "Node l b ?C"
     let ?B' = "Node l b rl"  let ?C' = "Node ?B' c l'"
-    have "Am ?B = Am rr + \<phi> ?B' + \<phi> ?C' - \<phi> rr - \<phi> ?C + 1" using "3.prems" sp 1
-      by(auto simp add: Am_def)
+    have "a_splay_max ?B = a_splay_max rr + \<phi> ?B' + \<phi> ?C' - \<phi> rr - \<phi> ?C + 1" using "3.prems" sp 1
+      by(auto simp add: a_splay_max_def)
     also have "\<dots> \<le> 3 * (\<phi> rr - 1) + \<phi> ?B' + \<phi> ?C' - \<phi> rr - \<phi> ?C + 2"
       using 3 `rr \<noteq> Leaf` by auto
     also have "\<dots> = 2 * \<phi> rr + \<phi> ?B' + \<phi> ?C' - \<phi> ?C - 1" by simp
@@ -244,13 +304,65 @@ next
   qed
 qed
 
-lemma Am_ub3: assumes "bst t" shows "Am t \<le> 3 * \<phi> t + 1"
+lemma a_splay_max_ub3: assumes "bst t" shows "a_splay_max t \<le> 3 * \<phi> t + 1"
 proof cases
-  assume "t = Leaf" thus ?thesis by(simp add: Am_def)
+  assume "t = Leaf" thus ?thesis by(simp add: a_splay_max_def)
 next
   assume "t \<noteq> Leaf"
   have [arith]: "log 2 2 > 0" by simp
-  show ?thesis using Am_ub[OF assms `t \<noteq> Leaf`] by(simp add: Am_def)
+  show ?thesis using a_splay_max_ub[OF assms `t \<noteq> Leaf`] by(simp add: a_splay_max_def)
+qed
+
+lemma amor_delete: assumes "bst t"
+shows "t_delete a t + \<Phi>(Splay_Tree.delete a t) - \<Phi> t \<le> 6 * log 2 (size1 t) + 2"
+proof (cases t)
+  case Leaf thus ?thesis by(simp add: Splay_Tree.delete_def t_delete_def)
+next
+  case [simp]: (Node ls x rs)
+  then obtain l e r where sp[simp]: "splay a (Node ls x rs) = Node l e r"
+    by (metis tree.exhaust splay_Leaf_iff)
+  let ?t = "real(t_splay a t)"
+  let ?Plr = "\<Phi> l + \<Phi> r"  let ?Ps = "\<Phi> t"
+  let ?slr = "real(size1 l) + real(size1 r)" let ?LR = "log 2 (1 + ?slr)"
+  let ?lslr = "log 2 (real (size ls) + (real (size rs) + 2))"
+  have "?lslr \<ge> 0" by simp
+  have opt: "?t + \<Phi> (splay a t) - ?Ps  \<le> 3 * log 2 (real (size1 t)) + 1"
+    using a_splay_ub3[OF \<open>bst t\<close>, simplified a_splay_def, of a]
+    by (simp add: field_simps)
+  show ?thesis
+  proof (cases "e=a")
+    case False thus ?thesis
+      using opt apply(simp add: Splay_Tree.delete_def t_delete_def field_simps)
+      using `?lslr \<ge> 0` by arith
+  next
+    case [simp]: True
+    show ?thesis
+    proof (cases l)
+      case Leaf
+      have 1: "log 2 (real (size r) + 2) \<ge> 0" by(simp)
+      show ?thesis
+        using Leaf opt apply(simp add: Splay_Tree.delete_def t_delete_def field_simps)
+        using 1 `?lslr \<ge> 0` by arith
+    next
+      case (Node ll y lr)
+      then obtain l' y' r' where [simp]: "splay_max (Node ll y lr) = Node l' y' r'"
+      using splay_max_Leaf_iff tree.exhaust by blast
+      have "bst l" using bst_splay[OF \<open>bst t\<close>, of a] by simp
+      have "\<Phi> r' \<ge> 0" apply (induction r') by (auto)
+      have optm: "real(t_splay_max l) + \<Phi> (splay_max l) - \<Phi> l  \<le> 3 * \<phi> l + 1"
+        using a_splay_max_ub3[OF `bst l`, simplified a_splay_max_def] by (simp add: field_simps Node)
+      have 1: "log 2 (2+(real(size l')+real(size r))) \<le> log 2 (2+(real(size l)+real(size r)))"
+        using size_splay_max[of l] Node by simp
+      have 2: "log 2 (2 + (real (size l') + real (size r'))) \<ge> 0" by simp
+      have 3: "log 2 (size1 l' + size1 r) \<le> log 2 (size1 l' + size1 r') + log 2 ?slr"
+        apply simp using 1 2 by arith
+      have 4: "log 2 (real(size ll) + (real(size lr) + 2)) \<le> ?lslr"
+        using size_if_splay[OF sp] Node by simp
+      show ?thesis using add_mono[OF opt optm] Node 3
+        apply(simp add: Splay_Tree.delete_def t_delete_def field_simps)
+        using 4 `\<Phi> r' \<ge> 0` by arith
+    qed
+  qed
 qed
 
 
@@ -292,122 +404,19 @@ next
   case (4 ss f)
   show ?case (is "?l \<le> ?r")
   proof(cases f)
-    case Empty thus ?thesis using 4(2) by(simp add: A_def)
+    case Empty thus ?thesis using 4(2) by(simp add: a_splay_def)
   next
     case (Splay a)
     then obtain t where "ss = [t]" "bst t" using 4 by auto
-    thus ?thesis using Splay A_ub3[OF \<open>bst t\<close>] by(simp add: A_def)
+    thus ?thesis using Splay a_splay_ub3[OF \<open>bst t\<close>] by(simp add: a_splay_def)
   next
     case [simp]: (Insert a)
     then obtain t where [simp]: "ss = [t]" and "bst t" using 4 by auto
-    show ?thesis
-    proof cases
-      assume "t = Leaf" thus ?thesis by(simp)
-    next
-      assume "t \<noteq> Leaf"
-      then obtain l e r where [simp]: "splay a t = Node l e r"
-        by (metis tree.exhaust splay_Leaf_iff)
-      let ?t = "real(t_splay a t)"
-      let ?Plr = "\<Phi> l + \<Phi> r"  let ?Ps = "\<Phi> t"
-      let ?slr = "real(size1 l) + real(size1 r)" let ?LR = "log 2 (1 + ?slr)"
-      have opt: "?t + \<Phi> (splay a t) - ?Ps  \<le> 3 * log 2 (real (size1 t)) + 1"
-        using A_ub3[OF \<open>bst t\<close>, simplified A_def, of a] by (simp)
-      from less_linear[of e a]
-      show ?thesis
-      proof (elim disjE)
-        assume "e=a"
-        have nneg: "log 2 (1 + real (size t)) \<ge> 0" by simp
-        thus ?thesis using \<open>t \<noteq> Leaf\<close> opt \<open>e=a\<close>
-          apply(simp add: algebra_simps) using nneg by arith
-      next
-        let ?L = "log 2 (real(size1 l) + 1)"
-        assume "e<a" hence "e \<noteq> a" by simp
-        hence "?l = (?t + ?Plr - ?Ps) + ?L + ?LR"
-          using  \<open>t \<noteq> Leaf\<close> \<open>e<a\<close> by(simp)
-        also have "?t + ?Plr - ?Ps \<le> 2 * log 2 ?slr + 1"
-          using opt size_splay[of a t,symmetric] by(simp)
-        also have "?L \<le> log 2 ?slr" by(simp)
-        also have "?LR \<le> log 2 ?slr + 1"
-        proof -
-          have "?LR \<le> log 2 (2 * ?slr)" by (simp add:)
-          also have "\<dots> \<le> log 2 ?slr + 1"
-            by (simp add: log_mult del:distrib_left_numeral)
-          finally show ?thesis .
-        qed
-        finally show ?thesis using size_splay[of a t,symmetric] by (simp)
-      next
-        let ?R = "log 2 (2 + real(size r))"
-        assume "a<e" hence "e \<noteq> a" by simp
-        hence "?l = (?t + ?Plr - ?Ps) + ?R + ?LR"
-          using \<open>t \<noteq> Leaf\<close> \<open>a<e\<close> by(simp)
-        also have "?t + ?Plr - ?Ps \<le> 2 * log 2 ?slr + 1"
-          using opt size_splay[of a t,symmetric] by(simp)
-        also have "?R \<le> log 2 ?slr" by(simp)
-        also have "?LR \<le> log 2 ?slr + 1"
-        proof -
-          have "?LR \<le> log 2 (2 * ?slr)" by (simp add:)
-          also have "\<dots> \<le> log 2 ?slr + 1"
-            by (simp add: log_mult del:distrib_left_numeral)
-          finally show ?thesis .
-        qed
-        finally show ?thesis using size_splay[of a t,symmetric] by simp
-      qed
-    qed
+    thus ?thesis using amor_insert[of t a] by auto
   next
     case [simp]: (Delete a)
     then obtain t where [simp]: "ss = [t]" and "bst t" using 4 by auto
-    show ?thesis
-    proof (cases t)
-      case Leaf thus ?thesis by(simp add: Splay_Tree.delete_def t_delete_def)
-    next
-      case [simp]: (Node ls x rs)
-      then obtain l e r where sp[simp]: "splay a (Node ls x rs) = Node l e r"
-        by (metis tree.exhaust splay_Leaf_iff)
-      let ?t = "real(t_splay a t)"
-      let ?Plr = "\<Phi> l + \<Phi> r"  let ?Ps = "\<Phi> t"
-      let ?slr = "real(size1 l) + real(size1 r)" let ?LR = "log 2 (1 + ?slr)"
-      let ?lslr = "log 2 (real (size ls) + (real (size rs) + 2))"
-      have "?lslr \<ge> 0" by simp
-      have opt: "?t + \<Phi> (splay a t) - ?Ps  \<le> 3 * log 2 (real (size1 t)) + 1"
-        using A_ub3[OF \<open>bst t\<close>, simplified A_def, of a]
-        by (simp add: field_simps)
-      show ?thesis
-      proof (cases "e=a")
-        case False thus ?thesis
-          using opt apply(simp add: Splay_Tree.delete_def t_delete_def field_simps)
-          using `?lslr \<ge> 0` by arith
-      next
-        case [simp]: True
-        show ?thesis
-        proof (cases l)
-          case Leaf
-          have 1: "log 2 (real (size r) + 2) \<ge> 0" by(simp)
-          show ?thesis
-            using Leaf opt apply(simp add: Splay_Tree.delete_def t_delete_def field_simps)
-            using 1 `?lslr \<ge> 0` by arith
-        next
-          case (Node ll y lr)
-          then obtain l' y' r' where [simp]:
-            "splay_max (Node ll y lr) = Node l' y' r'"
-            using splay_max_Leaf_iff tree.exhaust by blast
-          have "bst l" using bst_splay[OF \<open>bst t\<close>, of a] by simp
-          have "\<Phi> r' \<ge> 0" apply (induction r') by (auto)
-          have optm: "real(t_splay_max l) + \<Phi> (splay_max l) - \<Phi> l  \<le> 3 * \<phi> l + 1"
-            using Am_ub3[OF `bst l`, simplified Am_def]
-            by (simp add: field_simps Node)
-          have 1: "log 2 (2+(real(size l')+real(size r))) \<le> log 2 (2+(real(size l)+real(size r)))"
-            using size_splay_max[of l] Node by simp
-          have 2: "log 2 (2 + (real (size l') + real (size r'))) \<ge> 0" by simp
-          have 3: "log 2 (size1 l' + size1 r) \<le> log 2 (size1 l' + size1 r') + log 2 ?slr"
-            apply simp using 1 2 by arith
-          have 4: "log 2 (real(size ll) + (real(size lr) + 2)) \<le> ?lslr"
-            using size_if_splay[OF sp] Node by simp
-          show ?thesis using add_mono[OF opt optm] Node 3
-            apply(simp add: Splay_Tree.delete_def t_delete_def field_simps)
-            using 4 `\<Phi> r' \<ge> 0` by arith
-        qed
-      qed
-    qed
+    thus ?thesis using amor_delete[of t a] by auto
   qed
 qed
 
