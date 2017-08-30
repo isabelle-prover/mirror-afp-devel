@@ -7,7 +7,7 @@
 section {* Models of Regular Algebra *}
 
 theory Regular_Algebra_Models
-  imports Regular_Algebras "../Kleene_Algebra/Kleene_Algebra_Models"
+  imports Regular_Algebras Kleene_Algebra.Kleene_Algebra_Models
 begin
 
 subsection {* Language Model of Salomaa Algebra *}

@@ -8,7 +8,7 @@ subsection \<open>Missing List\<close>
 text \<open>The provides some standard algorithms and lemmas on lists.\<close>
 theory Missing_List
 imports 
-  "../Matrix/Utility"
+  Matrix.Utility
 begin
 
 fun concat_lists :: "'a list list \<Rightarrow> 'a list list" where

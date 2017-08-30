@@ -1,7 +1,7 @@
 section {* Introduction *}
 (*<*) 
 theory Lam_ml
-imports Nominal "~~/src/HOL/Library/LaTeXsugar"
+imports "HOL-Nominal.Nominal" "HOL-Library.LaTeXsugar"
 begin (*>*)
 text_raw {* \label{chap:formal} *}
 

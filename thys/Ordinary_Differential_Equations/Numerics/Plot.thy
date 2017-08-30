@@ -1,6 +1,6 @@
 theory Plot
 imports
-  "Print"
+  Print
 begin
 
 datatype plotcomponent =

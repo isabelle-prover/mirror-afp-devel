@@ -6,8 +6,8 @@ chapter {* Implementation of bit operations on int by target language operations
 
 theory Code_Target_Bits_Int
 imports
-  "Bits_Integer"
-  "~~/src/HOL/Library/Code_Target_Int"
+  Bits_Integer
+  "HOL-Library.Code_Target_Int"
 begin
 
 declare [[code drop:

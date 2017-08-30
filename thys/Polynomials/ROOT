@@ -5,11 +5,11 @@ session Polynomials (AFP) = "Abstract-Rewriting" +
   sessions
     Matrix
   theories [document = false]
-    "../Abstract-Rewriting/SN_Orders"
-    "../Abstract-Rewriting/SN_Order_Carrier"
-    "~~/src/HOL/Library/AList"
+    "Abstract-Rewriting.SN_Orders"
+    "Abstract-Rewriting.SN_Order_Carrier"
+    "HOL-Library.AList"
   theories
-    "Poly_Lists"
+    Poly_Lists
     Polynomials
     NZM
   document_files

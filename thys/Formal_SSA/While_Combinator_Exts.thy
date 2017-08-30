@@ -6,7 +6,7 @@ section {* Code Generation *}
 subsection {* While Combinator Extensions *}
 
 theory While_Combinator_Exts imports
-  "~~/src/HOL/Library/While_Combinator"
+  "HOL-Library.While_Combinator"
 begin
 lemma while_option_None_invD:
   assumes "while_option b c s = None" and "wf r"

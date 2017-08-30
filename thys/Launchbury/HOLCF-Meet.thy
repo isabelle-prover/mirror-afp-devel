@@ -1,5 +1,5 @@
 theory "HOLCF-Meet"
-imports "~~/src/HOL/HOLCF/HOLCF"
+imports HOLCF
 begin
 
 text {*

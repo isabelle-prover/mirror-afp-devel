@@ -3,7 +3,7 @@ section \<open>dL Formalization\<close>
 theory "Differential_Dynamic_Logic" 
 imports
   Complex_Main
-  "../Ordinary_Differential_Equations/ODE_Analysis"
+  Ordinary_Differential_Equations.ODE_Analysis
   "./Ids"
   "./Lib"
   "./Syntax"

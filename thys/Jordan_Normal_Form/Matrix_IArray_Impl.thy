@@ -19,8 +19,8 @@ text \<open>In this theory we implement matrices as arrays of arrays.
 theory Matrix_IArray_Impl
 imports
   Matrix
-  "../Gauss_Jordan/IArray_Haskell"
-  "../Containers/Set_Impl"
+  Gauss_Jordan.IArray_Haskell
+  Containers.Set_Impl
 begin
 
 typedef 'a vec_impl = "{(n,v :: 'a iarray). IArray.length v = n}" by auto

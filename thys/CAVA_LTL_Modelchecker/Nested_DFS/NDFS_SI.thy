@@ -5,10 +5,10 @@
 section {* Nested DFS using Standard Invariants Approach *}
 theory NDFS_SI
 imports 
-  "../../CAVA_Automata/Automata_Impl"
-  "../../CAVA_Automata/Lasso"
-  "NDFS_SI_Statistics"
-  "../../CAVA_Automata/CAVA_Base/CAVA_Code_Target"
+  CAVA_Automata.Automata_Impl
+  CAVA_Automata.Lasso
+  NDFS_SI_Statistics
+  CAVA_Base.CAVA_Code_Target
 begin
 
 text {*

@@ -1,6 +1,6 @@
 theory Lib
 imports
-  "../Ordinary_Differential_Equations/ODE_Analysis"
+  Ordinary_Differential_Equations.ODE_Analysis
 begin
 section \<open>Generic Mathematical Lemmas\<close>
 text\<open>General lemmas that don't have anything to do with dL specifically and could be fit for 

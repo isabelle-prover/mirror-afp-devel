@@ -1,5 +1,5 @@
 theory Environment_Functor imports
-  "../Applicative_Lifting/Applicative_Environment"
+  Applicative_Lifting.Applicative_Environment
 begin
 
 subsection \<open>The environment functor\<close>

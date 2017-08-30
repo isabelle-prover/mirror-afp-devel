@@ -3,7 +3,7 @@
 subsection \<open>Combined beta and eta reduction of lambda terms\<close>
 
 theory Beta_Eta
-imports "~~/src/HOL/Proofs/Lambda/Eta" Joinable
+imports "HOL-Proofs-Lambda.Eta" Joinable
 begin
 
 subsubsection \<open>Auxiliary lemmas\<close>

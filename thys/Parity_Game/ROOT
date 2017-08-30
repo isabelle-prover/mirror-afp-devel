@@ -7,8 +7,8 @@ session Parity_Game (AFP) = HOL +
     Coinductive
     Graph_Theory
   theories [document = false]
-    "../Coinductive/Coinductive_List"
-    "../Graph_Theory/Digraph_Isomorphism"
+    Coinductive.Coinductive_List
+    Graph_Theory.Digraph_Isomorphism
   theories
     PositionalDeterminacy
     AttractorInductive

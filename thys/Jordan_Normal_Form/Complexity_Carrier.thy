@@ -10,10 +10,10 @@ text \<open>We define which properties a carrier of matrices must exhibit, so th
 
 theory Complexity_Carrier
 imports
-  "../Abstract-Rewriting/SN_Order_Carrier"
+  "Abstract-Rewriting.SN_Order_Carrier"
   Ring_Hom_Matrix
   Derivation_Bound
-  Real
+  HOL.Real
 begin
 
 class large_real_ordered_semiring_1 = large_ordered_semiring_1 + real_embedding

@@ -7,9 +7,9 @@ session Bell_Numbers_Spivey (AFP) = "HOL-Library" +
     Card_Number_Partitions
     Card_Partitions
   theories [document = false]
-    "../Card_Number_Partitions/Additions_to_Main"
+    Card_Number_Partitions.Additions_to_Main
   theories
-    "../Card_Partitions/Card_Partitions"
+    Card_Partitions.Card_Partitions
     Set_Partition
     Bell_Numbers
   document_files

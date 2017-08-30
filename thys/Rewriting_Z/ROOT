@@ -6,8 +6,8 @@ session Rewriting_Z (AFP) = Nominal2 +
     "HOL-Eisbach"
     "Abstract-Rewriting"
   theories [document = false]
-    "~~/src/HOL/Eisbach/Eisbach"
-    "../Abstract-Rewriting/Abstract_Rewriting"
+    "HOL-Eisbach.Eisbach"
+    "Abstract-Rewriting.Abstract_Rewriting"
   theories
     Z
     Lambda_Z

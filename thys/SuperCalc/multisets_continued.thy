@@ -2,7 +2,7 @@ theory multisets_continued
 
 (* N. Peltier - http://membres-lig.imag.fr/peltier/ *)
 
-imports Main "~~/src/HOL/Library/Multiset"
+imports Main "HOL-Library.Multiset"
 
 begin
 

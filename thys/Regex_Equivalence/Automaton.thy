@@ -4,7 +4,7 @@ section "Regular Expressions Equivalence Framework"
 
 (*<*)
 theory Automaton
-imports "../Regular-Sets/Regular_Exp" "~~/src/HOL/Library/While_Combinator"
+imports "Regular-Sets.Regular_Exp" "HOL-Library.While_Combinator"
 begin
 (*>*)
 

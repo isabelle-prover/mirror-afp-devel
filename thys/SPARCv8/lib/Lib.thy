@@ -15,7 +15,7 @@
 (*chapter "Library"*)
 
 theory Lib
-imports "~~/src/HOL/Main"
+imports Main
 begin
 
 lemma hd_map_simp:

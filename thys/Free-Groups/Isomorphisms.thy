@@ -2,11 +2,11 @@ section {* Isomorphisms of Free Groups *}
 
 theory "Isomorphisms"
 imports
-   "UnitGroup"
-   "~~/src/HOL/Algebra/IntRing"
-   "FreeGroups"
+   UnitGroup
+   "HOL-Algebra.IntRing"
+   FreeGroups
    C2
-   "~~/src/HOL/Cardinals/Cardinal_Order_Relation"
+   "HOL-Cardinals.Cardinal_Order_Relation"
 begin
 
 subsection {* The Free Group over the empty set *}

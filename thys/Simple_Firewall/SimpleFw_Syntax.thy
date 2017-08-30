@@ -1,10 +1,10 @@
 section\<open>Simple Firewall Syntax\<close>
 theory SimpleFw_Syntax
-imports "../IP_Addresses/Hs_Compat"
+imports IP_Addresses.Hs_Compat
         Firewall_Common_Decision_State
         "Primitives/Iface"
         "Primitives/L4_Protocol"
-        "Simple_Packet"
+        Simple_Packet
 begin
 
   text\<open>For for IP addresses of arbitrary length\<close>

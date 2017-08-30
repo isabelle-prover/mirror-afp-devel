@@ -1,7 +1,7 @@
 section \<open>Dyadic Rational Representation of Real\<close>
 theory Float_Real
 imports
-  "~~/src/HOL/Library/Float"
+  "HOL-Library.Float"
 begin
 text \<open>\label{sec:floatreal}\<close>
 

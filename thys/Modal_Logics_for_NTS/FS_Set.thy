@@ -1,6 +1,6 @@
 theory FS_Set
 imports
-  "../Nominal2/Nominal2"
+  Nominal2.Nominal2
 begin
 
 section \<open>Finitely Supported Sets\<close>

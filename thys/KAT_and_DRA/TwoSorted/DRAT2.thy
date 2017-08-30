@@ -6,7 +6,7 @@
 section {* Two sorted Demonic Refinement Algebras *}
 
 theory DRAT2
-  imports "../../Kleene_Algebra/DRA"
+  imports Kleene_Algebra.DRA
 begin
 
 text {*

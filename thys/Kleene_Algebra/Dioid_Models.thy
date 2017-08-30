@@ -7,7 +7,7 @@
 section {* Models of Dioids *}
 
 theory Dioid_Models
-imports Dioid Real
+imports Dioid HOL.Real
 begin
 
 text {* In this section we consider some well known models of

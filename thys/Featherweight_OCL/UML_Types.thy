@@ -43,7 +43,7 @@
 chapter{* Formalization I: OCL Types and Core Definitions \label{sec:focl-types}*}
 
 theory    UML_Types
-imports   Transcendental
+imports   HOL.Transcendental
 keywords "Assert" :: thy_decl
      and "Assert_local" :: thy_decl
 begin

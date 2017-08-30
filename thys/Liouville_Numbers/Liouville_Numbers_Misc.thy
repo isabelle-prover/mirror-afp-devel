@@ -9,7 +9,7 @@ subsection \<open>Preliminary lemmas\<close>
 theory Liouville_Numbers_Misc
 imports
   Complex_Main
-  "~~/src/HOL/Computational_Algebra/Polynomial"
+  "HOL-Computational_Algebra.Polynomial"
 begin
 
 text \<open>

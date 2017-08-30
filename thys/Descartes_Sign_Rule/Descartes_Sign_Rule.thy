@@ -10,7 +10,7 @@ section \<open>Sign changes and Descartes' Rule of Signs\<close>
 theory Descartes_Sign_Rule
 imports 
   Complex_Main
-  "~~/src/HOL/Computational_Algebra/Polynomial"
+  "HOL-Computational_Algebra.Polynomial"
 begin
 
 lemma op_plus_0: "(op + (0 :: 'a :: monoid_add)) = id"

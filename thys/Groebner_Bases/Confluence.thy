@@ -3,7 +3,7 @@
 section \<open>Properties of Binary Relations\<close>
 
 theory Confluence
-imports "../Abstract-Rewriting/Abstract_Rewriting"
+imports "Abstract-Rewriting.Abstract_Rewriting"
 begin
 
 text \<open>This theory formalizes some general properties of binary relations, in particular a very weak

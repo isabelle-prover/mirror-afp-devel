@@ -7,7 +7,7 @@
 section {* Matrices *}
 
 theory Matrix
-imports "~~/src/HOL/Word/Word" Dioid
+imports "HOL-Word.Word" Dioid
 begin
 
 text {* In this section we formalise a perhaps more natural version of

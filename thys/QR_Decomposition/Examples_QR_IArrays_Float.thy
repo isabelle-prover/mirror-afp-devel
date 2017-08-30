@@ -9,7 +9,7 @@ section{*Examples of execution using floats and IArrays*}
 theory Examples_QR_IArrays_Float
 imports
   QR_Decomposition_IArrays
-  "../Gauss_Jordan/Code_Real_Approx_By_Float_Haskell"
+  Gauss_Jordan.Code_Real_Approx_By_Float_Haskell
 begin
 
 subsection{*Examples*}

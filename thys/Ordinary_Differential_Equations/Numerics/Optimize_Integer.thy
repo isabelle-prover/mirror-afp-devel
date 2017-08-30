@@ -2,7 +2,7 @@ section \<open>Optimizations for Code Integer\<close>
 theory Optimize_Integer
 imports
   Complex_Main
-  "~~/src/HOL/Library/Code_Target_Numeral"
+  "HOL-Library.Code_Target_Numeral"
 begin
 
 text \<open>shallowly embed log and power\<close>

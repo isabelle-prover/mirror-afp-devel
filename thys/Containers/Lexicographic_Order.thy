@@ -3,7 +3,7 @@
 
 theory Lexicographic_Order imports
   List_Fusion
-  "~~/src/HOL/Library/Char_ord"
+  "HOL-Library.Char_ord"
 begin
 
 hide_const (open) List.lexordp

@@ -1,7 +1,7 @@
 theory Utility_Functions
 imports
   Complex_Main
-  "~~/src/HOL/Probability/Probability"
+  Probability
   Lotteries
   Preference_Profiles
 begin

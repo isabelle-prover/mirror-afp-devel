@@ -1,5 +1,5 @@
 theory Refine_Mono_Prover
-imports Main "../Automatic_Refinement/Lib/Refine_Lib"
+imports Main Automatic_Refinement.Refine_Lib
 begin
   ML_file "refine_mono_prover.ML"
 

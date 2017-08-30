@@ -1,8 +1,8 @@
 (* Author: Dmitriy Traytel *)
 
 theory WS1S_Examples
-imports WS1S_Equivalence_Checking "~~/src/HOL/Library/Char_ord"
-    "~~/src/HOL/Library/Product_Lexorder"
+imports MSO_Regex_Equivalence.WS1S_Equivalence_Checking "HOL-Library.Char_ord"
+    "HOL-Library.Product_Lexorder"
 begin
 
 abbreviation FALSE where "FALSE \<equiv> FExists (FLess 0 0)"

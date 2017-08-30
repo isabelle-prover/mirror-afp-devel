@@ -3,7 +3,7 @@
 section \<open>Executable Representation of Multivariate Polynomials as Association Lists\<close>
 
 theory Poly_Lists
-imports Abstract_Poly "~~/src/HOL/Library/AList"
+imports Abstract_Poly "HOL-Library.AList"
 begin
 
 text \<open>In this theory, power-products of type @{typ "'a pp"} and multivariate polynomials of type

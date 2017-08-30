@@ -7,7 +7,7 @@
 section {* Dioids, Powers and Finite Sums *}
 
 theory Dioid_Power_Sum
-  imports "../Kleene_Algebra/Dioid" "../Kleene_Algebra/Finite_Suprema"
+  imports Kleene_Algebra.Dioid Kleene_Algebra.Finite_Suprema
 
 begin
 

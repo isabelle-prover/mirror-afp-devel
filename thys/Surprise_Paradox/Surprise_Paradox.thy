@@ -1,7 +1,7 @@
 theory Surprise_Paradox
 imports
-  "../Incompleteness/Goedel_I"
-  "../Incompleteness/Pseudo_Coding"
+  Incompleteness.Goedel_I
+  Incompleteness.Pseudo_Coding
 begin
 
 text \<open>

@@ -2,7 +2,7 @@ section "Splay Heap"
 
 theory Splay_Heap
 imports
-  "~~/src/HOL/Library/Tree_Multiset"
+  "HOL-Library.Tree_Multiset"
 begin
 
 text{* Splay heaps were invented by Okasaki~\cite{Okasaki}. They represent

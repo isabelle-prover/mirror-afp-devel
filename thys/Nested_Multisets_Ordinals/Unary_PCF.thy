@@ -7,11 +7,11 @@ section \<open>Towards Decidability of Behavioral Equivalence for Unary PCF\<clo
 
 theory Unary_PCF
   imports
-    "~~/src/HOL/Library/FSet"
-    "~~/src/HOL/Library/Countable_Set_Type"
-    "~~/src/HOL/Library/Nat_Bijection"
+    "HOL-Library.FSet"
+    "HOL-Library.Countable_Set_Type"
+    "HOL-Library.Nat_Bijection"
     Hereditary_Multiset
-    "../List-Index/List_Index"
+    "List-Index.List_Index"
 begin
 
 subsection \<open>Preliminaries\<close>

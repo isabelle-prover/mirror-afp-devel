@@ -6,7 +6,7 @@ theory Separation_kernel_model
           "../../step/Step_vpeq"
           "../../step/Step_vpeq_locally_respects"
           "../../step/Step_vpeq_weakly_step_consistent"
-          "CISK"
+          CISK
 begin
 
 text {*

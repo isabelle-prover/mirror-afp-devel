@@ -3,8 +3,8 @@ section \<open>Verififcation of a Planarity Checker\<close>
 theory Check_Planarity_Verification
 imports
   "../Planarity/Graph_Genus"
-  "Setup_AutoCorres"
-  "~~/src/HOL/Library/Rewrite"
+  Setup_AutoCorres
+  "HOL-Library.Rewrite"
 begin
 
 subsection  \<open>Implementation Types\<close>

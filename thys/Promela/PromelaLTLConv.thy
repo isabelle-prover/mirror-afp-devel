@@ -1,7 +1,7 @@
 theory PromelaLTLConv
 imports 
   Promela
-  "../LTL/LTL"
+  LTL.LTL
 begin
 subsection {* Proposition types and conversion *}
 

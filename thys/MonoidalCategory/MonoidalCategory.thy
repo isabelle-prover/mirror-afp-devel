@@ -15,7 +15,7 @@ text {*
 *}
     
 theory MonoidalCategory
-imports "../Category3/EquivalenceOfCategories"
+imports Category3.EquivalenceOfCategories
 begin
 
   section "Monoidal Category"

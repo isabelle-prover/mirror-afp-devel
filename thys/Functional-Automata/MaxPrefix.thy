@@ -5,7 +5,7 @@
 section "Maximal prefix"
 
 theory MaxPrefix
-imports "~~/src/HOL/Library/Sublist"
+imports "HOL-Library.Sublist"
 begin
 
 definition

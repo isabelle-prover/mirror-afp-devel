@@ -9,7 +9,7 @@ section{*Examples of execution using floats*}
 theory Examples_QR_Abstract_Float
 imports
   QR_Decomposition
-  "../Gauss_Jordan/Code_Real_Approx_By_Float_Haskell"
+  Gauss_Jordan.Code_Real_Approx_By_Float_Haskell
 begin
 
 subsubsection{*Examples*}

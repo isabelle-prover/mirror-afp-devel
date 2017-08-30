@@ -1,7 +1,7 @@
 section {* HRB Slicing guarantees IFC Noninterference *}
 
 theory NonInterferenceInter 
-  imports "../HRB-Slicing/StaticInter/FundamentalProperty"
+  imports "HRB-Slicing.FundamentalProperty"
 begin
 
 subsection {* Assumptions of this Approach *}

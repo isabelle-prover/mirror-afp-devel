@@ -1,7 +1,7 @@
 section \<open>Invariants for SCCs\<close>
 theory DFS_Invars_SCC
 imports 
-  "DFS_Invars_Basic"
+  DFS_Invars_Basic
 begin
 
 definition scc_root' :: "('v \<times> 'v) set \<Rightarrow> ('v,'es) state_scheme  \<Rightarrow> 'v \<Rightarrow> 'v set \<Rightarrow> bool"

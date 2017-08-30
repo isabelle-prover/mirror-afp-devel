@@ -11,10 +11,10 @@ text \<open>This part contains a definition of the Mahler measure, it contains L
 
 theory Mahler_Measure
 imports
-  "../Sqrt_Babylonian/Sqrt_Babylonian"
+  Sqrt_Babylonian.Sqrt_Babylonian
   Poly_Mod_Finite_Field_Record_Based (* stuff about polynomials *)
-  "../Polynomial_Factorization/Fundamental_Theorem_Algebra_Factorized"
-  "../Polynomial_Factorization/Missing_Multiset"
+  Polynomial_Factorization.Fundamental_Theorem_Algebra_Factorized
+  Polynomial_Factorization.Missing_Multiset
 begin
 
 context comm_monoid_list begin

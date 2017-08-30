@@ -5,7 +5,7 @@ session "CAVA_Base" (AFP) = "Collections" +
   sessions
     Deriving
   theories
-    "../Deriving/Derive"
+    Deriving.Derive
     "CAVA_Base/CAVA_Base"
     "CAVA_Base/All_Of_CAVA_Base"
 

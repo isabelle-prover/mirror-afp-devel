@@ -13,11 +13,11 @@ square-free factorization, and that square-free factorizations can be lifted hom
 
 theory Square_Free_Factorization
 imports 
-  "../Matrix/Utility"
+  Matrix.Utility
   Polynomial_Divisibility
   Order_Polynomial
   Fundamental_Theorem_Algebra_Factorized
-  "../Polynomial_Interpolation/Ring_Hom_Poly"
+  Polynomial_Interpolation.Ring_Hom_Poly
 begin
 
 definition square_free :: "'a :: comm_semiring_1 poly \<Rightarrow> bool" where 

@@ -2,8 +2,8 @@ section {* Monotonic Boolean Transformers *}
 
 theory Mono_Bool_Tran
 imports
-  "../LatticeProperties/Complete_Lattice_Prop"
-  "../LatticeProperties/Conj_Disj"
+  LatticeProperties.Complete_Lattice_Prop
+  LatticeProperties.Conj_Disj
 begin
 
 text{*

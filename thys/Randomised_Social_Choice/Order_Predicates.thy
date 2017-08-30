@@ -9,9 +9,9 @@ section \<open>Order Relations as Binary Predicates\<close>
 theory Order_Predicates
 imports 
   Main
-  "~~/src/HOL/Library/Disjoint_Sets"
-  "~~/src/HOL/Library/Permutations"
-  "../List-Index/List_Index"
+  "HOL-Library.Disjoint_Sets"
+  "HOL-Library.Permutations"
+  "List-Index.List_Index"
 begin
 
 

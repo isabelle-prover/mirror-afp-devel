@@ -14,8 +14,8 @@ text \<open>Essentially, the idea is to use the JNF results to estimate the grow
 theory Ring_Hom_Matrix
 imports 
   Matrix
-  Real
-  "../Polynomial_Interpolation/Ring_Hom"
+  HOL.Real
+  Polynomial_Interpolation.Ring_Hom
 begin
 
 locale ord_ring_hom = idom_hom hom for 

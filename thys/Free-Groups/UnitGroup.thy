@@ -2,8 +2,8 @@ section {* The Unit Group *}
 
 theory "UnitGroup"
 imports
-   "~~/src/HOL/Algebra/Group"
-   "Generators"
+   "HOL-Algebra.Group"
+   Generators
 begin
 
 text {* There is, up to isomorphisms, only one group with one element. *}

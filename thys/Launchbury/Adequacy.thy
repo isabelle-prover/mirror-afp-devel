@@ -1,5 +1,5 @@
 theory Adequacy
-imports "ResourcedAdequacy" "Denotational-Related"
+imports ResourcedAdequacy "Denotational-Related"
 begin
 
 theorem adequacy:

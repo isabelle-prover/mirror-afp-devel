@@ -2,9 +2,9 @@
   Author: Andreas Lochbihler, ETH Zurich *)
 
 theory SUF_CMA imports
-  "../CryptHOL/Computational_Model"
-  "../CryptHOL/Negligible"
-  "../CryptHOL/Environment_Functor"
+  CryptHOL.Computational_Model
+  CryptHOL.Negligible
+  CryptHOL.Environment_Functor
 begin
 
 subsection {* Strongly existentially unforgeable signature scheme *}

@@ -1,7 +1,7 @@
 section \<open>Stutter Invariance of next-free LTL Formula\<close>
 
 theory LTL_Stutter
-  imports "../LTL/LTL" "../Stuttering_Equivalence/PLTL"
+  imports LTL.LTL Stuttering_Equivalence.PLTL
 begin
 
 text \<open>This theory builds on the AFP-entry by Stephan Merz\<close>

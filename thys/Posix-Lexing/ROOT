@@ -5,8 +5,8 @@ session "Posix-Lexing" (AFP) = "Regular-Sets" +
   options [timeout = 600]
 
   theories
-    "Lexer" 
-    "Simplifying"
+    Lexer 
+    Simplifying
     
   document_files
     "root.bib"

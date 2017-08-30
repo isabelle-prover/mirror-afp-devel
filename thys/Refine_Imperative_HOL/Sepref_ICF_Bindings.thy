@@ -1,6 +1,6 @@
 theory Sepref_ICF_Bindings
 imports Sepref_Tool 
-  "../Collections/Refine_Dflt_ICF"
+  Collections.Refine_Dflt_ICF
   "IICF/IICF"
 begin
   subsection \<open>Miscellaneous\<close>

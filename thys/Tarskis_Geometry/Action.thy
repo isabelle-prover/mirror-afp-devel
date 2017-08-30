@@ -8,7 +8,7 @@
 section "Right group actions"
 
 theory Action
-  imports "~~/src/HOL/Algebra/Group"
+  imports "HOL-Algebra.Group"
 begin
 
 locale action = group +

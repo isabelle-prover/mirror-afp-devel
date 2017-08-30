@@ -3,9 +3,9 @@ theory Gabow_GBG_Code
 imports
   Gabow_GBG 
   Gabow_Skeleton_Code 
-  "../CAVA_Automata/Automata_Impl"
+  CAVA_Automata.Automata_Impl
   Find_Path_Impl
-  "../CAVA_Automata/CAVA_Base/CAVA_Code_Target"
+  CAVA_Base.CAVA_Code_Target
 begin
 
 section {* Autoref Setup *}

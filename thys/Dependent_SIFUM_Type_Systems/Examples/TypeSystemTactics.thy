@@ -1,7 +1,7 @@
 theory TypeSystemTactics
 imports "../Compositionality"
         "../TypeSystem"
-        "~~/src/HOL/Eisbach/Eisbach_Tools"
+        "HOL-Eisbach.Eisbach_Tools"
 begin
 
 (* Some Eisbach magic to get around Eisbach and locales not getting along *)

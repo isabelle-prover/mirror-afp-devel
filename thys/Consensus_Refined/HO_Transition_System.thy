@@ -1,6 +1,6 @@
 (*<*)
 theory HO_Transition_System
-imports "../Heard_Of/HOModel" Refinement
+imports Heard_Of.HOModel Refinement
 begin
 (*>*)
 

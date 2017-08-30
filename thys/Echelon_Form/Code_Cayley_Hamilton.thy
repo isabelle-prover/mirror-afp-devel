@@ -8,9 +8,9 @@ section{*Code Cayley Hamilton*}
 
 theory Code_Cayley_Hamilton
   imports 
-  "~~/src/HOL/Computational_Algebra/Polynomial"
-  "Cayley_Hamilton_Compatible"
-  "../Gauss_Jordan/Code_Matrix"
+  "HOL-Computational_Algebra.Polynomial"
+  Cayley_Hamilton_Compatible
+  Gauss_Jordan.Code_Matrix
 begin
 
 subsection{*Code equations for the definitions presented in the Cayley-Hamilton development*}

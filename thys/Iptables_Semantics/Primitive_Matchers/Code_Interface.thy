@@ -1,20 +1,20 @@
 theory Code_Interface
 imports 
   Common_Primitive_toString
-  "../../IP_Addresses/IP_Address_Parser"
+  IP_Addresses.IP_Address_Parser
   "../Call_Return_Unfolding"
   Transform
   No_Spoof
   "../Simple_Firewall/SimpleFw_Compliance"
   "../../Simple_Firewall/SimpleFw_toString"
-  "../../Simple_Firewall/Service_Matrix"
+  Simple_Firewall.Service_Matrix
   "../Semantics_Ternary/Optimizing" (*do we use this?*)
   "../Semantics_Goto"
   "../../Simple_Firewall/SimpleFw_toString"
-  "../../Native_Word/Code_Target_Bits_Int"
-  "~~/src/HOL/Library/Code_Target_Nat"
-  "~~/src/HOL/Library/Code_Target_Int"
-  "~~/src/HOL/Library/Code_Char"
+  Native_Word.Code_Target_Bits_Int
+  "HOL-Library.Code_Target_Nat"
+  "HOL-Library.Code_Target_Int"
+  "HOL-Library.Code_Char"
 begin
 
 (*Note: common_primitive_match_expr_ipv4_toString can be really slow*)

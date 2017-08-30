@@ -3,7 +3,7 @@
 section {* Additions to Isabelle's Main Theories *}
 
 theory Additions_to_Main
-imports "~~/src/HOL/Library/Multiset"
+imports "HOL-Library.Multiset"
 begin
 
 subsection {* Addition to Finite-Set Theory *}

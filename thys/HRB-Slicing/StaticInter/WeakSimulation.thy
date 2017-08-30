@@ -1496,7 +1496,7 @@ proof -
           have "parent_node nx' = parent_node n'" by simp
           with `x \<in> Def\<^bsub>SDG\<^esub> nx'` `x \<in> Use\<^bsub>SDG\<^esub> n''` all path
           have "nx' influences x in n''" by(fastforce simp:data_dependence_def)
-          hence "nx' s-x\<rightarrow>\<^bsub>dd\<^esub> n''" by(rule sum_SDG_ddep_edge)
+          hence "nx' s-x\<rightarrow>\<^sub>d\<^sub>d n''" by(rule sum_SDG_ddep_edge)
           with `n'' \<in> HRB_slice S` have "nx' \<in> HRB_slice S"
             by(fastforce elim:combine_SDG_slices.cases 
                        intro:combine_SDG_slices.intros ddep_slice1 ddep_slice2 
@@ -1697,17 +1697,17 @@ proof
         \<longrightarrow> V \<notin> Def\<^bsub>SDG\<^esub> n''`
       have "(CFG_node (sourcenode a)) influences V in nx"
         by(fastforce intro:CFG_Def_SDG_Def simp:data_dependence_def)
-      hence "(CFG_node (sourcenode a)) s-V\<rightarrow>\<^bsub>dd\<^esub> nx" by(rule sum_SDG_ddep_edge)
-      from `nx \<in> HRB_slice S` `(CFG_node (sourcenode a)) s-V\<rightarrow>\<^bsub>dd\<^esub> nx`
+      hence "(CFG_node (sourcenode a)) s-V\<rightarrow>\<^sub>d\<^sub>d nx" by(rule sum_SDG_ddep_edge)
+      from `nx \<in> HRB_slice S` `(CFG_node (sourcenode a)) s-V\<rightarrow>\<^sub>d\<^sub>d nx`
       have "CFG_node (sourcenode a) \<in> HRB_slice S"
       proof(induct rule:HRB_slice_cases)
         case (phase1 n nx')
-        with `(CFG_node (sourcenode a)) s-V\<rightarrow>\<^bsub>dd\<^esub> nx` show ?case
+        with `(CFG_node (sourcenode a)) s-V\<rightarrow>\<^sub>d\<^sub>d nx` show ?case
           by(fastforce intro:intro:ddep_slice1 combine_SDG_slices.combSlice_refl 
                        simp:HRB_slice_def)
       next
         case (phase2 nx' n' n'' p n)
-        from `(CFG_node (sourcenode a)) s-V\<rightarrow>\<^bsub>dd\<^esub> n` `n \<in> sum_SDG_slice2 n'`
+        from `(CFG_node (sourcenode a)) s-V\<rightarrow>\<^sub>d\<^sub>d n` `n \<in> sum_SDG_slice2 n'`
         have "CFG_node (sourcenode a) \<in> sum_SDG_slice2 n'" by(rule ddep_slice2)
         with phase2 show ?thesis
           by(fastforce intro:combine_SDG_slices.combSlice_Return_parent_node 
@@ -2693,7 +2693,7 @@ proof(atomize_elim)
           `V \<in> Use\<^bsub>SDG\<^esub> (CFG_node (targetnode a))` `targetnode a = parent_node nx`
         have "Formal_in (targetnode a,i) influences V in (CFG_node (targetnode a))"
           by(fastforce simp:data_dependence_def sourcenodes_def)
-        hence ddep:"Formal_in (targetnode a,i) s-V\<rightarrow>\<^bsub>dd\<^esub> (CFG_node (targetnode a))"
+        hence ddep:"Formal_in (targetnode a,i) s-V\<rightarrow>\<^sub>d\<^sub>d (CFG_node (targetnode a))"
           by(rule sum_SDG_ddep_edge)
         from `targetnode a = parent_node nx` `nx \<in> HRB_slice S`
         have "CFG_node (targetnode a) \<in> HRB_slice S"
@@ -3041,7 +3041,7 @@ proof(atomize_elim)
           `V \<in> Use\<^bsub>SDG\<^esub> (CFG_node (targetnode a))` `targetnode a = parent_node nx`
         have "Actual_out(targetnode a,i) influences V in (CFG_node (targetnode a))"
           by(fastforce simp:data_dependence_def sourcenodes_def)
-        hence ddep:"Actual_out(targetnode a,i) s-V\<rightarrow>\<^bsub>dd\<^esub> (CFG_node (targetnode a))"
+        hence ddep:"Actual_out(targetnode a,i) s-V\<rightarrow>\<^sub>d\<^sub>d (CFG_node (targetnode a))"
           by(rule sum_SDG_ddep_edge)
         from `targetnode a = parent_node nx` `nx \<in> HRB_slice S`
         have "CFG_node (targetnode a) \<in> HRB_slice S"

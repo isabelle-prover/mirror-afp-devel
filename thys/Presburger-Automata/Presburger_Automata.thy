@@ -3,7 +3,7 @@
 *)
 
 theory Presburger_Automata
-imports DFS "~~/src/HOL/Library/Nat_Bijection"
+imports DFS "HOL-Library.Nat_Bijection"
 begin
 
 section {* General automata *}

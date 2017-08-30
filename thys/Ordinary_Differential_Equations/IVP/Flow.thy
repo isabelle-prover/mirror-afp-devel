@@ -2,7 +2,7 @@ section \<open>Flow\<close>
 theory Flow
 imports
   Picard_Lindeloef_Qualitative
-  "~~/src/HOL/Library/Diagonal_Subsequence"
+  "HOL-Library.Diagonal_Subsequence"
   "../Library/Bounded_Linear_Operator"
   "../Library/Multivariate_Taylor"
 begin
@@ -1601,13 +1601,13 @@ proof(safe)
           intro!: add_mono continuous_intros continuous_on_imp_absolutely_integrable_on)
       also have "... \<le> integral {0..s} (\<lambda>s. K * ?u s) + integral {0..s} (\<lambda>s. e)"
       proof (rule add_mono[OF integral_le integral_le])
-        show "\<forall>x\<in>{0..s}. norm (F x (XX x) - F x (Y x)) \<le> K * norm (XX x - Y x)"
+        show "\<And>x. x \<in> {0..s} \<Longrightarrow> norm (F x (XX x) - F x (Y x)) \<le> K * norm (XX x - Y x)"
           using F_lipschitz[unfolded lipschitz_def, THEN conjunct2]
             cont_statements(1,2,4)
             t0_s_in_existence F_iv_defined (* G.iv_defined *)
           by (metis F_lipschitz XX_def Y_def \<open>{0..s} \<subseteq> J\<close> lipschitz_norm_leI F.flow_in_domain
             G.flow_in_domain subsetCE)
-        show "\<forall>x\<in>{0..s}. norm (F x (Y x) - G x (Y x)) \<le> e"
+        show "\<And>x. x \<in> {0..s} \<Longrightarrow> norm (F x (Y x) - G x (Y x)) \<le> e"
           using F_G_norm_ineq cont_statements(2,3) t0_s_in_existence
           using Y_def \<open>{0..s} \<subseteq> J\<close> cont_statements(5) subset_iff G.flow_in_domain
           by (metis eucl_less_le_not_le)
@@ -1692,13 +1692,13 @@ proof(safe)
         by (auto simp add: XX_def Y_def intro!: continuous_intros continuous_on_imp_absolutely_integrable_on add_mono)
       also have "... \<le> integral {s..0} (\<lambda>s. K * ?u s) + integral {s..0} (\<lambda>s. e)"
       proof (rule add_mono[OF integral_le integral_le])
-        show "\<forall>x\<in>{s..0}. norm (F x (XX x) - F x (Y x)) \<le> K * norm (XX x - Y x)"
+        show "\<And>x. x \<in> {s..0} \<Longrightarrow> norm (F x (XX x) - F x (Y x)) \<le> K * norm (XX x - Y x)"
           using F_lipschitz[unfolded lipschitz_def, THEN conjunct2]
             cont_statements(1,2,4)
             t0_s_in_existence F_iv_defined (* G.iv_defined *)
           by (metis F_lipschitz XX_def Y_def \<open>{s..0} \<subseteq> J\<close> lipschitz_norm_leI F.flow_in_domain
             G.flow_in_domain subsetCE)
-        show "\<forall>x\<in>{s..0}. norm (F x (Y x) - G x (Y x)) \<le> e"
+        show "\<And>x. x \<in> {s..0} \<Longrightarrow> norm (F x (Y x) - G x (Y x)) \<le> e"
           using F_G_norm_ineq Y_def \<open>{s..0} \<subseteq> J\<close> cont_statements(5) subset_iff t0_s_in_existence(2)
           using Y_def \<open>{s..0} \<subseteq> J\<close> cont_statements(5) subset_iff G.flow_in_domain
           by (metis eucl_less_le_not_le)
@@ -2459,8 +2459,8 @@ proof-
             also have "... \<le> integral {a..b} (\<lambda>s. N * norm (Y (x - x0) s - XX x0 s - U (x - x0) s))"
               using J_in_existence_ivl[OF x_in_ball]
               by (intro integral_le)
-                (auto intro!: continuous_intros mult_right_mono
-                  dest!: N_ineq[OF \<open>{a..b} \<subseteq> J\<close>[THEN subsetD]])
+                 (force intro!: continuous_intros mult_right_mono
+                  dest!: N_ineq[OF \<open>{a..b} \<subseteq> J\<close>[THEN subsetD]])+
             also have "... = N * integral {a..b} (\<lambda>s. norm ((Y (x - x0) s - XX x0 s - U (x - x0) s)))"
               unfolding real_scaleR_def[symmetric]
               by(rule integral_cmul)
@@ -2957,7 +2957,6 @@ proof -
     by (auto simp: dist_prod_def real_sqrt_sum_squares_less e_def)
   also note e'(2)
   finally have subs: "ball x0 e \<times> ball t e \<subseteq> Sigma X existence_ivl0" .
-
 
   have d1: "((\<lambda>x0. flow0 x0 s) has_derivative blinfun_apply (local.W y s)) (at y within ball x0 e)"
     if "y \<in> ball x0 e" "s \<in> ball t e" for y s

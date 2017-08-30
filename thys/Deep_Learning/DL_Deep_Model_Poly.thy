@@ -3,7 +3,7 @@
 section \<open>Polynomials representing the Deep Network Model\<close>
 
 theory DL_Deep_Model_Poly
-imports DL_Deep_Model PP_More_MPoly "../Jordan_Normal_Form/Determinant"
+imports DL_Deep_Model PP_More_MPoly Jordan_Normal_Form.Determinant
 begin
 
 definition "polyfun N f = (\<exists>p. vars p \<subseteq> N \<and> (\<forall>x. insertion x p = f x))"

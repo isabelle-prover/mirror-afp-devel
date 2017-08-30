@@ -4,7 +4,7 @@ subsection \<open>Perron-Frobenius theorem via Brouwer's fixpoint theorem.\<clos
 
 theory Perron_Frobenius
 imports
-  "~~/src/HOL/Analysis/Brouwer_Fixpoint"
+  "HOL-Analysis.Brouwer_Fixpoint"
   Perron_Frobenius_Aux
 begin
 

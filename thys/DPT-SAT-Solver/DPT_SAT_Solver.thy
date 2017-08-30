@@ -4,7 +4,7 @@
 *)
 
 theory DPT_SAT_Solver
-imports SAT
+imports HOL.SAT
 begin
 
 ML_file "dpt_sat_solver.ML"

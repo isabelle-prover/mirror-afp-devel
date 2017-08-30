@@ -7,7 +7,7 @@ subsection \<open>Compare Instance for Rational Numbers\<close>
 theory Compare_Rat
 imports
   Compare_Generator
-  Rat
+  HOL.Rat
 begin
   
 derive (linorder) compare_order rat

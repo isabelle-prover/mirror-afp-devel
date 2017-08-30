@@ -1,7 +1,7 @@
 section {* Lassos *}
 (* Author: Peter Lammich *)
 theory Lasso
-imports "Automata"
+imports Automata
 begin
 
   record 'v lasso = 

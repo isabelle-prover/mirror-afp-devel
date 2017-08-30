@@ -24,8 +24,8 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 theory Ordered_Semiring 
 imports 
-  "~~/src/HOL/Algebra/Ring"
-  "../Abstract-Rewriting/SN_Orders"
+  "HOL-Algebra.Ring"
+  "Abstract-Rewriting.SN_Orders"
 begin
 
 record 'a ordered_semiring = "'a ring" +

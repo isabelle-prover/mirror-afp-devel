@@ -5,8 +5,8 @@ session Completeness (AFP) = HOL +
   sessions
     "HOL-Library"
   theories [document = false]
-    "~~/src/HOL/Library/Permutation"
-    "~~/src/HOL/Library/Multiset"
+    "HOL-Library.Permutation"
+    "HOL-Library.Multiset"
   theories
     Base
     (* NOTES omitted permutations and try to reuse library stuff *)

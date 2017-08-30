@@ -2,7 +2,7 @@ subsection \<open>A Comparator-Interface to Red-Black-Trees\<close>
 
 theory RBT_Comparator_Impl
 imports 
-  "~~/src/HOL/Library/RBT_Impl"
+  "HOL-Library.RBT_Impl"
   Comparator
 begin
 

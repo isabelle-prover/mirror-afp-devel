@@ -1,6 +1,6 @@
 section \<open>Counterclockwise\<close>
 theory Counterclockwise
-imports "~~/src/HOL/Analysis/Analysis"
+imports "HOL-Analysis.Analysis"
 begin
 text \<open>\label{sec:counterclockwise}\<close>
 

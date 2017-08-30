@@ -4,8 +4,8 @@ section {*Examples*}
 theory Partial_Function_MR_Examples
 imports 
   Partial_Function_MR
-  "~~/src/HOL/Library/Monad_Syntax"
-  Rat
+  "HOL-Library.Monad_Syntax"
+  HOL.Rat
 begin
 
 subsection {* Collatz function *}

@@ -5,7 +5,7 @@
 section {* Non-speculative prefixes of executions *}
 
 theory Non_Speculative imports
-  "JMM_Spec"
+  JMM_Spec
   "../Framework/FWLTS"
 begin
 

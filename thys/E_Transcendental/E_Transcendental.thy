@@ -9,9 +9,9 @@
 section \<open>Proof of the Transcendence of $e$\<close>
 theory E_Transcendental
   imports
-    "~~/src/HOL/Analysis/Analysis"
-    "~~/src/HOL/Number_Theory/Number_Theory"
-    "~~/src/HOL/Computational_Algebra/Polynomial"
+    "HOL-Analysis.Analysis"
+    "HOL-Number_Theory.Number_Theory"
+    "HOL-Computational_Algebra.Polynomial"
 begin
 
 (* TODO: Lots of stuff to move to the distribution *)

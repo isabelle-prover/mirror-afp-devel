@@ -6,8 +6,8 @@ section \<open>Polynomial mapping: combination of almost everywhere zero functio
 
 theory PP_Poly_Mapping
 imports
-  "~~/src/HOL/Library/Groups_Big_Fun"
-  "~~/src/HOL/Library/Fun_Lexorder"
+  "HOL-Library.Groups_Big_Fun"
+  "HOL-Library.Fun_Lexorder"
   PP_More_List2
 begin
 

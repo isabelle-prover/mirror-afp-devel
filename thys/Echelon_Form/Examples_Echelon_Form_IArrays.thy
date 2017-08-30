@@ -9,8 +9,8 @@ section{*Examples of computations using immutable arrays*}
 theory Examples_Echelon_Form_IArrays
 imports
   Echelon_Form_Inverse_IArrays
-  "~~/src/HOL/Library/Code_Target_Numeral"
-  "../Gauss_Jordan/Examples_Gauss_Jordan_Abstract"
+  "HOL-Library.Code_Target_Numeral"
+  Gauss_Jordan.Examples_Gauss_Jordan_Abstract
   Examples_Echelon_Form_Abstract
 begin
 

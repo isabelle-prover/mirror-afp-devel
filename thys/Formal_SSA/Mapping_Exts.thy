@@ -7,7 +7,7 @@ subsection "Mapping Extensions"
 text {* Some lifted definition on mapping and efficient implementations. *}
 
 theory Mapping_Exts
-imports "~~/src/HOL/Library/Mapping" FormalSSA_Misc
+imports "HOL-Library.Mapping" FormalSSA_Misc
 begin
 
 lift_definition mapping_delete_all :: "('a \<Rightarrow> bool) \<Rightarrow> ('a,'b) mapping \<Rightarrow> ('a,'b) mapping"

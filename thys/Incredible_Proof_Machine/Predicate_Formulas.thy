@@ -1,8 +1,8 @@
 theory Predicate_Formulas
 imports
-  "~~/src/HOL/Library/Countable"
-  "~~/src/HOL/Library/Infinite_Set"
-  "~~/src/HOL/Eisbach/Eisbach"
+  "HOL-Library.Countable"
+  "HOL-Library.Infinite_Set"
+  "HOL-Eisbach.Eisbach"
   Abstract_Formula
 begin
 

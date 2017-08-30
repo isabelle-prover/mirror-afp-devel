@@ -17,7 +17,7 @@ imports
   Square_Free_Factorization
   Rational_Root_Test
   Gcd_Rat_Poly
-  "../Show/Show_Poly"
+  Show.Show_Poly
 begin
 
 function roots_of_rat_poly_main :: "rat poly \<Rightarrow> rat list" where 

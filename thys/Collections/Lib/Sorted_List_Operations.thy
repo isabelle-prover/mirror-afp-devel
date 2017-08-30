@@ -1,6 +1,6 @@
 section {* \isaheader{Operations on sorted Lists} *}
 theory Sorted_List_Operations
-imports Main "../../Automatic_Refinement/Lib/Misc"
+imports Main Automatic_Refinement.Misc
 begin 
 
 fun inter_sorted :: "'a::{linorder} list \<Rightarrow> 'a list \<Rightarrow> 'a list" where

@@ -5,9 +5,9 @@
 
 theory SubgroupsAndNormalSubgroups
   imports
-  "../Secondary_Sylow/SndSylow"
-  "SndIsomorphismGrp"
-  "Coset"
+  Secondary_Sylow.SndSylow
+  SndIsomorphismGrp
+  "HOL-Algebra.Coset"
 begin
 
 section {* Preliminary lemmas *}

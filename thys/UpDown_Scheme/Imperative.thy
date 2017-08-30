@@ -1,7 +1,7 @@
 section \<open> Imperative Version \<close>
 
 theory Imperative
-imports UpDown_Scheme "../Separation_Logic_Imperative_HOL/Sep_Main"
+imports UpDown_Scheme Separation_Logic_Imperative_HOL.Sep_Main
 begin
 
 type_synonym pointmap = "grid_point \<Rightarrow> nat"

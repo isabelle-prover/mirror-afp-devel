@@ -5,8 +5,8 @@
 theory Code_String
 imports
   (*"~~/src/HOL/Library/List_lexord"*)
-  "../../Collections/Refine_Dflt"      
-  "~~/src/HOL/Library/Code_Char"
+  Collections.Refine_Dflt      
+  "HOL-Library.Code_Char"
 begin
 
 (* TODO: Move to Collections *)

@@ -5,7 +5,7 @@ section {* Locale Sort  *}
 
 theory Sort
 imports Main 
-  "~~/src/HOL/Library/Permutation"
+  "HOL-Library.Permutation"
 begin
 
 text {* 

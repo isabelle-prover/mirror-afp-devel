@@ -9,7 +9,7 @@ section {* Miscellaneous Mathematics *}
 
 theory Misc 
 imports 
-  Analysis
+  "HOL-Analysis.Analysis"
 begin
 
 text_raw {* \label{s:misc} *}

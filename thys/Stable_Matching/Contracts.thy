@@ -3,9 +3,9 @@ theory Contracts
 imports
   Choice_Functions
   Dual_Lattice
-  "~~/src/HOL/Library/Bourbaki_Witt_Fixpoint"
-  "~~/src/HOL/Library/While_Combinator"
-  "~~/src/HOL/Library/Product_Order"
+  "HOL-Library.Bourbaki_Witt_Fixpoint"
+  "HOL-Library.While_Combinator"
+  "HOL-Library.Product_Order"
 begin
 
 (*>*)

@@ -5,7 +5,7 @@ session Resolution_FOL (AFP) = HOL +
   sessions
     "HOL-Library"
   theories [document = false]
-     "~~/src/HOL/Library/Countable_Set" 
+     "HOL-Library.Countable_Set" 
   theories
     TermsAndLiterals
     Tree

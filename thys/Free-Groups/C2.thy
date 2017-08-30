@@ -1,5 +1,5 @@
 theory C2
-imports "~~/src/HOL/Algebra/Group"
+imports "HOL-Algebra.Group"
 begin
 
 section {* The group C2 *}

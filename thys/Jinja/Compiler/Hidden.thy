@@ -1,5 +1,5 @@
 theory Hidden
-imports "../../List-Index/List_Index"
+imports "List-Index.List_Index"
 begin
 
 definition hidden :: "'a list \<Rightarrow> nat \<Rightarrow> bool" where

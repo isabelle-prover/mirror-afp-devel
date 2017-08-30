@@ -5,7 +5,7 @@
 section {* Abstract heap locales for J1 programs *}
 
 theory J1Heap imports
-  "J1State"
+  J1State
   "../Common/Conform"
 begin
 

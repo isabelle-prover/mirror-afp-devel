@@ -1,6 +1,6 @@
 theory Indexed_FSet
 imports
-  "~~/src/HOL/Library/FSet"
+  "HOL-Library.FSet"
 begin
 
 text \<open>It is convenient to address the members of a finite set by a natural number, and

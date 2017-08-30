@@ -1,8 +1,8 @@
 section {* \isaheader{Additions to Distinct Lists} *}
 theory Dlist_add 
   imports 
-  "~~/src/HOL/Library/Dlist" 
-  "../../Automatic_Refinement/Lib/Misc"
+  "HOL-Library.Dlist" 
+  Automatic_Refinement.Misc
   "../Iterator/SetIteratorOperations" 
 begin
 

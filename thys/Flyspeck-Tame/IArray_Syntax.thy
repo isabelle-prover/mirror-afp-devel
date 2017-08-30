@@ -4,7 +4,7 @@
 section {* Syntax for operations on immutable arrays *}
 
 theory IArray_Syntax
-imports Main "~~/src/HOL/Library/IArray"
+imports Main "HOL-Library.IArray"
 begin
 
 subsection {* Tabulation *}

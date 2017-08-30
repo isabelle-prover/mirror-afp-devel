@@ -3,7 +3,7 @@
 
 theory Cyclic_Group_SPMF imports
   Cyclic_Group
-  SPMF
+  "HOL-Probability.SPMF"
 begin
 
 definition sample_uniform :: "nat \<Rightarrow> nat spmf"

@@ -1,7 +1,7 @@
 theory WordInterval_Sorted
 imports WordInterval
-        "../Automatic_Refinement/Lib/Misc" (*Mergesort. TODO: dependnecy! we need a mergesort afp entry!!*)
-        "~~/src/HOL/Library/Product_Lexorder"
+        Automatic_Refinement.Misc (*Mergesort. TODO: dependnecy! we need a mergesort afp entry!!*)
+        "HOL-Library.Product_Lexorder"
 begin
 
 

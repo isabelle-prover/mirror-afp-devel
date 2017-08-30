@@ -12,7 +12,7 @@
 theory CIMP_unbounded_buffer_ex
 imports
   CIMP
-  "~~/src/HOL/Library/Prefix_Order"
+  "HOL-Library.Prefix_Order"
 begin
 
 abbreviation

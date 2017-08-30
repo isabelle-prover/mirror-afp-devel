@@ -1,9 +1,13 @@
+section "Skew Heap"
+
 theory Skew_Heap
 imports
   "~~/src/HOL/Library/Tree_Multiset"
+  "~~/src/HOL/Library/Pattern_Aliases"
+  "~~/src/HOL/Data_Structures/Priority_Queue"
 begin
 
-section "Skew Heap"
+unbundle pattern_aliases
 
 text{* Skew heaps~\cite{SleatorT-SIAM86} are possibly the simplest functional
 priority queues that have logarithmic (albeit amortized) complexity.
@@ -12,11 +16,6 @@ The implementation below should be generalized to separate the elements from
 their priorities. *}
 
 type_synonym 'a heap = "'a tree"
-
-fun heap :: "'a::linorder heap \<Rightarrow> bool" where
-"heap Leaf = True" |
-"heap (Node l m r) =
-  (heap l \<and> heap r \<and> (\<forall>x \<in> set_tree l \<union> set_tree r. m \<le> x))"
 
 
 subsection "Get Minimum"
@@ -32,15 +31,17 @@ lemma get_min_min:
   "\<lbrakk> heap h; x \<in> set_tree h \<rbrakk> \<Longrightarrow> get_min h \<le> x"
 by(cases h)(auto)
 
+lemma get_min: "\<lbrakk> heap h;  h \<noteq> Leaf \<rbrakk> \<Longrightarrow> get_min h = Min_mset (mset_tree h)"
+by (auto simp add: eq_Min_iff get_min_in get_min_min)
 
 subsection "Merge"
 
 function merge :: "('a::linorder) heap \<Rightarrow> 'a heap \<Rightarrow> 'a heap" where
 "merge Leaf h = h" |
 "merge h Leaf = h" |
-"merge (Node l1 a1 r1) (Node l2 a2 r2) =
-   (if a1 \<le> a2 then Node (merge (Node l2 a2 r2) r1) a1 l1
-    else Node (merge (Node l1 a1 r1) r2) a2 l2)" 
+"merge (Node l1 a1 r1 =: h1) (Node l2 a2 r2 =: h2) =
+   (if a1 \<le> a2 then Node (merge h2 r1) a1 l1
+    else Node (merge h1 r2) a2 l2)" 
 by pat_completeness auto
 termination
 by (relation "measure (\<lambda>(x, y). size x + size y)") auto
@@ -88,15 +89,15 @@ by (induction h1 h2 rule: merge.induct)(auto simp: ball_Un set_merge)
 
 subsection "Insert"
 
+hide_const (open) insert
+
 definition insert :: "'a::linorder \<Rightarrow> 'a heap \<Rightarrow> 'a heap" where
 "insert a t = merge (Node Leaf a Leaf) t"
 
-hide_const (open) Skew_Heap.insert
-
-lemma heap_insert: "heap h \<Longrightarrow> heap (Skew_Heap.insert a h)"
+lemma heap_insert: "heap h \<Longrightarrow> heap (insert a h)"
 by (simp add: insert_def heap_merge)
 
-lemma mset_insert: "mset_tree (Skew_Heap.insert a h) = {#a#} + mset_tree h"
+lemma mset_insert: "mset_tree (insert a h) = {#a#} + mset_tree h"
 by (auto simp: mset_merge insert_def)
 
 
@@ -111,5 +112,30 @@ by (cases h) (auto simp: heap_merge)
 
 lemma mset_del_min: "mset_tree (del_min h) = mset_tree h - {# get_min h #}"
 by (cases h) (auto simp: mset_merge ac_simps)
+
+
+interpretation skew_heap: Priority_Queue
+where empty = Leaf and is_empty = "\<lambda>h. h = Leaf"
+and insert = insert and del_min = del_min
+and get_min = get_min and invar = heap
+and mset = mset_tree
+proof(standard, goal_cases)
+  case 1 show ?case by simp
+next
+  case (2 q) show ?case by (cases q) auto
+next
+  case 3 show ?case by(simp add: mset_insert)
+next
+  case 4 show ?case by(rule mset_del_min)
+next
+  case 5 thus ?case using get_min mset_tree.simps(1) by blast
+next
+  case 6 thus ?case by(simp)
+next
+  case 7 thus ?case by(simp add: heap_insert)
+next
+  case 8 thus ?case by(simp add: heap_del_min)
+qed
+
 
 end

@@ -5,8 +5,8 @@ session "Noninterference_Ipurge_Unwinding" (AFP) = Noninterference_CSP +
   sessions
     List_Interleaving
   theories [document = false]
-    "../Noninterference_CSP/CSPNoninterference"
-    "../List_Interleaving/ListInterleaving"
+    Noninterference_CSP.CSPNoninterference
+    List_Interleaving.ListInterleaving
   theories
     IpurgeUnwinding
     DeterministicProcesses

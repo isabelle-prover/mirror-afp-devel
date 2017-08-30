@@ -1,5 +1,5 @@
 theory Cardinal_Order_Relation_discontinued
-imports "~~/src/HOL/Cardinals/Cardinal_Order_Relation"
+imports "HOL-Cardinals.Cardinal_Order_Relation"
 begin
 
 text {*

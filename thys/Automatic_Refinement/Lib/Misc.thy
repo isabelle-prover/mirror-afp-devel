@@ -17,11 +17,11 @@ section {* Miscellaneous Definitions and Lemmas *}
 
 theory Misc
 imports Main
-  "~~/src/HOL/Library/Multiset"
-  "~~/src/HOL/ex/Quicksort"
-  "~~/src/HOL/Library/Option_ord"
-  "~~/src/HOL/Library/Infinite_Set"
-  "~~/src/HOL/Eisbach/Eisbach"
+  "HOL-Library.Multiset"
+  "HOL-ex.Quicksort"
+  "HOL-Library.Option_ord"
+  "HOL-Library.Infinite_Set"
+  "HOL-Eisbach.Eisbach"
 begin
 text_raw {*\label{thy:Misc}*}
 

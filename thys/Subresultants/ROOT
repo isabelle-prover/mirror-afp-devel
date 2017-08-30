@@ -6,7 +6,7 @@ session Subresultants (AFP) = "Jordan_Normal_Form" +
   sessions
     Polynomial_Factorization
   theories
-    "Subresultant_Gcd"
+    Subresultant_Gcd
   document_files
     "root.bib"
     "root.tex"

@@ -9,7 +9,7 @@ theory Robot
 imports
   ClockView
   SPRViewSingle
-  "~~/src/HOL/Library/Saturated"
+  "HOL-Library.Saturated"
 begin
 
 (*>*)

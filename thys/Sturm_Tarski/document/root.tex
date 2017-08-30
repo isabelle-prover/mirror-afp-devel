@@ -13,15 +13,13 @@
 
 \begin{document}
 
-\title{Sturm-Tarski Theorem}
+\title{The Sturm-Tarski Theorem}
 \author{Wenda Li}
 \maketitle
 
 \begin{abstract}
-  We have formalized the Sturm-Tarski theorem (also referred as the Tarski theorem): \[\sum_{x \in (a,b),P(x)=0} {\rm sign}(Q(x)) = {\rm Var}({\rm SRemS}(P,P'Q;a,b))\] 
-  where $a<b$ are elements of $\mathbb{R} \cup \{-\infty,\infty\}$ that are not roots of $P$, with $P,Q \in \mathbb{R}[x]$. Note, 
-  the usual Sturm theorem is an instance of the Sturm-Tarski theorem with $Q=1$. The proof is based on \cite{Basu:2006:ARA:1197095} and Cyril Cohen's work in Coq \cite{cohen_phd}. With the Sturm-Tarki theorem proved, it is possible to further build a quantifier elimination procedure for real numbers as Cyril Cohen does in Coq.
-  Another application of the Sturm-Tarski theorem is to build sign determination procedures for polynomials at real algebraic points, as described in our formalization of real algebraic numbers \cite{Li_CPP_16}.
+  We have formalised the Sturm-Tarski theorem (also referred as the Tarski theorem): Given polynomials $p, q \in \mathbb{R}[x]$, the Sturm-Tarski theorem computes the sum of the signs of $q$ over the roots of $p$ by calculating some remainder sequences. Note, the better-known Sturm theorem is an instance of the Sturm-Tarski theorem when $q=1$. The proof follows the classic book by Basu et al. \cite{Basu:2006:ARA:1197095} and Cyril Cohen's work in Coq \cite{cohen_phd}. With the Sturm-Tarski theorem proved, it is possible to further build a quantifier elimination procedure for real numbers as Cohen did in Coq.
+  Another application of the Sturm-Tarski theorem is to build sign determination procedures for polynomials at real algebraic points, as described in our formalisation of real algebraic numbers \cite{Li_CPP_16}.
 \end{abstract}
 
 %\tableofcontents

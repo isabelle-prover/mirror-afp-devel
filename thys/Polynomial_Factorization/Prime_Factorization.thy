@@ -11,7 +11,7 @@ text \<open>This theory contains not-completely naive algorithms to test primali
 
 theory Prime_Factorization
 imports
-  "~~/src/HOL/Computational_Algebra/Primes"
+  "HOL-Computational_Algebra.Primes"
   Missing_List
   Missing_Multiset
 begin

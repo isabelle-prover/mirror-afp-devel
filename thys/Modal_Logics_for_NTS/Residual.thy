@@ -1,6 +1,6 @@
 theory Residual
 imports
-  "../Nominal2/Nominal2"
+  Nominal2.Nominal2
 begin
 
 section \<open>Residuals\<close>

@@ -2,9 +2,9 @@
   Author: Andreas Lochbihler, ETH Zurich *)
 
 theory IND_CPA imports
-  "../CryptHOL/Generative_Probabilistic_Value"
-  "../CryptHOL/Computational_Model"
-  "../CryptHOL/Negligible"
+  CryptHOL.Generative_Probabilistic_Value
+  CryptHOL.Computational_Model
+  CryptHOL.Negligible
 begin
 
 subsection {* The IND-CPA game for symmetric encryption schemes *}

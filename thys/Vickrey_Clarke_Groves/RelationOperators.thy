@@ -21,7 +21,7 @@ section {* Additional operators on relations, going beyond Relations.thy,
 theory RelationOperators
 imports
   SetUtils
-  "~~/src/HOL/Library/Code_Target_Nat"
+  "HOL-Library.Code_Target_Nat"
 
 begin
 

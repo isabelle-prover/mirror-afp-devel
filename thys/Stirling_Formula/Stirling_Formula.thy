@@ -8,8 +8,8 @@
 section \<open>Stirling's Formula\<close>
 theory Stirling_Formula
 imports
-  Analysis
-  "../Landau_Symbols/Landau_Symbols"
+  "HOL-Analysis.Analysis"
+  Landau_Symbols.Landau_Symbols
 begin
 
 context
@@ -393,9 +393,9 @@ proof -
     from a have "P integrable_on {a..real n}"
       by (intro integrable_continuous_real P_continuous_on) auto
     hence "f n integrable_on {a..real n}"
-      by (rule integrable_eq [rotated]) (simp add: f_def)
+      by (rule integrable_eq) (simp add: f_def)
     thus "f n integrable_on {a..}"
-      by (rule integrable_on_superset [rotated 2]) (auto simp: f_def)
+      by (rule integrable_on_superset) (auto simp: f_def)
   next
     fix n :: nat
     show "\<forall>x\<in>{a..}. norm (f n x) \<le> of_real (1/12) * (1 / x^2)"
@@ -444,7 +444,7 @@ proof -
              intro!: derivative_eq_intros)
   from x have int2: "((\<lambda>x. -P x) has_integral integral {x..} (\<lambda>x. -P x)) {x..}"
     by (intro integrable_integral integrable_neg P_integrable) simp_all
-  from has_integral_union[OF int1 int2] x
+  from has_integral_Un[OF int1 int2] x
     have "((\<lambda>x. - P x) has_integral g x - g 1 - integral {x..} P) ({1..x} \<union> {x..})"
     by (simp add: max_def)
   also from x have "{1..x} \<union> {x..} = {1..}" by auto

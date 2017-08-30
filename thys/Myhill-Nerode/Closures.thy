@@ -1,6 +1,6 @@
 (* Author: Christian Urban, Xingyuan Zhang, Chunhan Wu *)
 theory Closures
-imports Myhill "~~/src/HOL/Library/Infinite_Set"
+imports Myhill "HOL-Library.Infinite_Set"
 begin
 
 section {* Closure properties of regular languages *}

@@ -3,9 +3,9 @@ chapter AFP
 session "Native_Word" (AFP) = "HOL-Word" +
   options [timeout = 1200]
   theories [document = false]
-    "~~/src/HOL/Library/Code_Target_Int"
-    "~~/src/HOL/Library/Code_Char"
-    "~~/src/HOL/Library/Code_Test"
+    "HOL-Library.Code_Target_Int"
+    "HOL-Library.Code_Char"
+    "HOL-Library.Code_Test"
   theories
     More_Bits_Int
     Bits_Integer

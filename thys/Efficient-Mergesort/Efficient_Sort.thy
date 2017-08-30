@@ -3,7 +3,7 @@
 *)
 
 theory Efficient_Sort
-imports "~~/src/HOL/Library/Multiset"
+imports "HOL-Library.Multiset"
 begin
 
 text \<open>

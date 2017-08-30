@@ -1,7 +1,7 @@
 section Parser
 theory IpRoute_Parser
 imports Routing_Table 
-  "../IP_Addresses/IP_Address_Parser"
+  IP_Addresses.IP_Address_Parser
 keywords "parse_ip_route" "parse_ip_6_route" :: thy_decl
 begin
 text\<open>This helps to read the output of the \texttt{ip route} command into a @{typ "32 routing_rule list"}.\<close>

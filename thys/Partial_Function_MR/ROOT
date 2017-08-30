@@ -5,7 +5,7 @@ session Partial_Function_MR (AFP) = HOL +
   sessions
     "HOL-Library"
   theories [document = false]
-    "~~/src/HOL/Library/Monad_Syntax"
+    "HOL-Library.Monad_Syntax"
   theories
     Partial_Function_MR_Examples
   document_files

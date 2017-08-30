@@ -5,7 +5,7 @@ session Jordan_Hoelder (AFP) = "HOL-Algebra" +
   sessions
     Secondary_Sylow
   theories [document = false]
-    "../Secondary_Sylow/SndSylow"
+    Secondary_Sylow.SndSylow
   theories
     JordanHolder
   document_files

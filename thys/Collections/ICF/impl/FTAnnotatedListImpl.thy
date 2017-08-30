@@ -1,7 +1,7 @@
 section {*\isaheader{Implementation of Annotated Lists by 2-3 Finger Trees}*}
 theory FTAnnotatedListImpl
 imports 
-  "../../../Finger-Trees/FingerTree" 
+  "Finger-Trees.FingerTree" 
   "../tools/Locale_Code"
   "../tools/Record_Intf"
   "../spec/AnnotatedListSpec"

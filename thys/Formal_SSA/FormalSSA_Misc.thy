@@ -7,7 +7,7 @@ section {* Prelude *}
 subsection {* Miscellaneous Lemmata *}
 
 theory FormalSSA_Misc
-imports Main "~~/src/HOL/Library/Sublist"
+imports Main "HOL-Library.Sublist"
 begin
 
 lemma length_1_last_hd: "length ns = 1 \<Longrightarrow> last ns = hd ns"

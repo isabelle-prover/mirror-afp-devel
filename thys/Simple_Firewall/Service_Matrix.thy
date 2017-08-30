@@ -10,8 +10,8 @@ imports "Common/List_Product_More"
         "Common/GroupF"
         "Common/IP_Addr_WordInterval_toString"
         "Primitives/Primitives_toString"
-        "SimpleFw_Semantics"
-        "../IP_Addresses/WordInterval_Sorted"
+        SimpleFw_Semantics
+        IP_Addresses.WordInterval_Sorted
 begin
 
 

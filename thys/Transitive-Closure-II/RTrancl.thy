@@ -26,7 +26,7 @@ section {* A work-list algorithm for reflexive-transitive closures *}
 
 
 theory RTrancl
-imports "../Regular-Sets/Regexp_Method"
+imports "Regular-Sets.Regexp_Method"
 begin
 
 text {* In previous work \cite{rtrancl_fin} we described a generic work-list

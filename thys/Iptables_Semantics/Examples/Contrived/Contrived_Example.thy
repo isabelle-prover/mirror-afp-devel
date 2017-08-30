@@ -1,7 +1,7 @@
 section\<open>Contrived Example\<close>
 theory Contrived_Example
 imports 
-  "../../Primitive_Matchers/Parser"
+  Iptables_Semantics.Parser
 begin
 
 (*

@@ -7,8 +7,8 @@ subsubsection {* Instantiation for a Simple While Language *}
 theory WhileGraphSSA imports
 Generic_Interpretation
 Disjoin_Transform
-"~~/src/HOL/Library/List_lexord"
-"~~/src/HOL/Library/Char_ord"
+"HOL-Library.List_lexord"
+"HOL-Library.Char_ord"
 begin
 
 instantiation w_node :: ord

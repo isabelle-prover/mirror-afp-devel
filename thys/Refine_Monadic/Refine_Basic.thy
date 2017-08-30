@@ -1,8 +1,8 @@
 section {* Basic Concepts *}
 theory Refine_Basic
 imports Main 
-  "~~/src/HOL/Library/Monad_Syntax" 
-  "Refine_Misc"
+  "HOL-Library.Monad_Syntax" 
+  Refine_Misc
   "Generic/RefineG_Recursion"
   "Generic/RefineG_Assert"
 begin

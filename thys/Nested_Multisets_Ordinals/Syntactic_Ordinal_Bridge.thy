@@ -4,7 +4,7 @@
 *)
 
 theory Syntactic_Ordinal_Bridge
-imports "~~/src/HOL/Library/Sublist" "../Ordinal/OrdinalOmega" Syntactic_Ordinal
+imports "HOL-Library.Sublist" Ordinal.OrdinalOmega Syntactic_Ordinal
 abbrevs
   "!h" = "\<^sub>h"
 begin

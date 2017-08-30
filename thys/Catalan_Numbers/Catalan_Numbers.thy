@@ -11,9 +11,9 @@ theory Catalan_Numbers
 imports
   Complex_Main
   Catalan_Auxiliary_Integral
-  "~~/src/HOL/Analysis/Analysis"
-  "~~/src/HOL/Computational_Algebra/Formal_Power_Series"
-  "../Landau_Symbols/Landau_Symbols"
+  "HOL-Analysis.Analysis"
+  "HOL-Computational_Algebra.Formal_Power_Series"
+  Landau_Symbols.Landau_Symbols
 begin
 
 subsection \<open> Other auxiliary lemmas\<close>
@@ -90,19 +90,18 @@ text \<open>
 
 definition "fps_catalan = Abs_fps (of_nat \<circ> catalan)"
 
-lemma fps_catalan_nth [simp]: "fps_catalan $ n = of_nat (catalan n)"
+lemma fps_catalan_nth [simp]: "fps_nth fps_catalan n = of_nat (catalan n)"
   by (simp add: fps_catalan_def)
-
 
 text \<open>
   Given their recursive definition, it is easy to see that the OGF of the Catalan numbers
   satisfies the following recursive equation:
 \<close>
 lemma fps_catalan_recurrence:
-  "fps_catalan = 1 + X * fps_catalan^2"
+  "fps_catalan = 1 + fps_X * fps_catalan^2"
 proof (rule fps_ext)
   fix n :: nat
-  show "fps_catalan $ n = (1 + X * fps_catalan^2) $ n"
+  show "fps_nth fps_catalan n = fps_nth (1 + fps_X * fps_catalan^2) n"
     by (cases n) (simp_all add: fps_square_nth catalan_Suc)
 qed
 
@@ -118,18 +117,18 @@ text \<open>
   $\sum_{n=0}^\infty {\alpha \choose n} z^n$.
 \<close>
 lemma fps_catalan_fps_binomial:
-  "fps_catalan = (1/2 * (1 - (fps_binomial (1/2) oo (-4*X)))) / X"
+  "fps_catalan = (1/2 * (1 - (fps_binomial (1/2) oo (-4*fps_X)))) / fps_X"
 proof (rule mult_eq_imp_eq_div)
   let ?F = "fps_catalan :: 'a fps"
-  have "X * (1 + X * ?F^2) = X * ?F" by (simp only: fps_catalan_recurrence [symmetric])
-  hence "(1 / 2 - X * ?F)\<^sup>2 = - X + 1 / 4"
+  have "fps_X * (1 + fps_X * ?F^2) = fps_X * ?F" by (simp only: fps_catalan_recurrence [symmetric])
+  hence "(1 / 2 - fps_X * ?F)\<^sup>2 = - fps_X + 1 / 4"
     by (simp add: algebra_simps power2_eq_square fps_numeral_simps)
-  also have "\<dots> = (1/2 * (fps_binomial (1/2) oo (-4*X)))^2"
+  also have "\<dots> = (1/2 * (fps_binomial (1/2) oo (-4*fps_X)))^2"
     by (simp add: power_mult_distrib div_power fps_binomial_1 fps_binomial_power
                   fps_compose_power fps_compose_add_distrib ring_distribs)
-  finally have "1/2 - X * ?F = 1/2 * (fps_binomial (1/2) oo (-4*X))"
+  finally have "1/2 - fps_X * ?F = 1/2 * (fps_binomial (1/2) oo (-4*fps_X))"
     by (rule fps_power_eqD) simp_all
-  thus "X*?F = 1/2 * (1 - (fps_binomial (1/2) oo (-4*X)))" by algebra
+  thus "fps_X*?F = 1/2 * (1 - (fps_binomial (1/2) oo (-4*fps_X)))" by algebra
 qed simp_all
 
 
@@ -142,10 +141,10 @@ text \<open>
 theorem catalan_closed_form_gbinomial:
   "real (catalan n) = 2 * (- 4) ^ n * (1/2 gchoose Suc n)"
 proof -
-  have "(catalan n :: real) = fps_catalan $ n" by simp
+  have "(catalan n :: real) = fps_nth fps_catalan n" by simp
   also have "\<dots> = 2 * (- 4) ^ n * (1/2 gchoose Suc n)"
     by (subst fps_catalan_fps_binomial)
-       (simp add: fps_div_X_nth numeral_fps_const fps_compose_linear)
+       (simp add: fps_div_fps_X_nth numeral_fps_const fps_compose_linear)
   finally show ?thesis .
 qed
 

@@ -1,7 +1,7 @@
 theory Closures2
 imports 
   Closures
-  "../Well_Quasi_Orders/Well_Quasi_Orders"
+  Well_Quasi_Orders.Well_Quasi_Orders
 begin
 
 section {* Closure under @{text SUBSEQ} and @{text SUPSEQ} *}

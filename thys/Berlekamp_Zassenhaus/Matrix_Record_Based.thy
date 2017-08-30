@@ -10,8 +10,8 @@ text \<open>We use our record based description of a field to perform matrix ope
 
 theory Matrix_Record_Based
 imports 
-  "../Jordan_Normal_Form/Gauss_Jordan_Elimination"
-  "../Jordan_Normal_Form/Gauss_Jordan_IArray_Impl"
+  Jordan_Normal_Form.Gauss_Jordan_Elimination
+  Jordan_Normal_Form.Gauss_Jordan_IArray_Impl
   Arithmetic_Record_Based   
 begin
 

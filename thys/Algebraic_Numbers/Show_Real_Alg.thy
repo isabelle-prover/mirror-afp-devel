@@ -13,7 +13,7 @@ text \<open>We just demand that there is some function from real algebraic numbe
 theory Show_Real_Alg
 imports 
   Real_Algebraic_Numbers
-  "../Show/Show_Real"
+  Show.Show_Real
 begin
 
 consts show_real_alg :: "real_alg \<Rightarrow> string"

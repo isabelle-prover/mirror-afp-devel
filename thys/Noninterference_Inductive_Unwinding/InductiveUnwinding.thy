@@ -8,7 +8,7 @@
 section "The Inductive Unwinding Theorem"
 
 theory InductiveUnwinding
-imports "../Noninterference_Ipurge_Unwinding/DeterministicProcesses"
+imports Noninterference_Ipurge_Unwinding.DeterministicProcesses
 begin
 
 text {*

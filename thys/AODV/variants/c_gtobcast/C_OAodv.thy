@@ -6,7 +6,7 @@
 section "The `open' AODV model"
 
 theory C_OAodv
-imports C_Aodv "../../../AWN/OAWN_SOS_Labels" "../../../AWN/OAWN_Convert"
+imports C_Aodv AWN.OAWN_SOS_Labels AWN.OAWN_Convert
 begin
 
 text \<open>Definitions for stating and proving global network properties over individual processes.\<close>

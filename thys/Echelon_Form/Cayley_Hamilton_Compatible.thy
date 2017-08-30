@@ -1,8 +1,8 @@
 theory Cayley_Hamilton_Compatible
   imports
     Rings2
-    "../Cayley_Hamilton/Cayley_Hamilton"
-    "../Gauss_Jordan/Determinants2"
+    Cayley_Hamilton.Cayley_Hamilton
+    Gauss_Jordan.Determinants2
 begin
 
 

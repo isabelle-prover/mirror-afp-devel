@@ -6,8 +6,8 @@ theory ShortestPathNeg
   shortest path theory
 *)
 imports 
-  "../Graph_Theory/Graph_Theory"
-  "ShortestPath"
+  Graph_Theory.Graph_Theory
+  ShortestPath
 
 begin
 section {*Shortest Path (with general edge costs)*}

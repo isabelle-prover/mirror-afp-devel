@@ -6,7 +6,7 @@
 section {* Propositional Hoare Logic *}
 
 theory PHL_DRAT
-  imports DRAT "../../Kleene_Algebra/PHL_DRA" PHL_KAT
+  imports DRAT Kleene_Algebra.PHL_DRA PHL_KAT
 begin
 
 sublocale drat < phl: at_it_pre_dioid where alpha = t and tau = t and it = strong_iteration ..

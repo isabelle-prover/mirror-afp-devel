@@ -17,9 +17,9 @@ theory Determinant
 imports 
   Missing_Permutations
   Column_Operations
-  "~~/src/HOL/Computational_Algebra/Polynomial_Factorial" (* Only for to_fract. Probably not the right place. *)
-  "../Polynomial_Interpolation/Ring_Hom"
-  "../Polynomial_Interpolation/Missing_Unsorted"
+  "HOL-Computational_Algebra.Polynomial_Factorial" (* Only for to_fract. Probably not the right place. *)
+  Polynomial_Interpolation.Ring_Hom
+  Polynomial_Interpolation.Missing_Unsorted
 begin
 
 definition det:: "'a mat \<Rightarrow> 'a :: comm_ring_1" where

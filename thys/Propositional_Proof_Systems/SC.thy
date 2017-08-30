@@ -2,7 +2,7 @@ section\<open>Proof Systems\<close>
 subsection\<open>Sequent Calculus\<close>
 
 theory SC
-imports Formulas "~~/src/HOL/Library/Multiset"
+imports Formulas "HOL-Library.Multiset"
 begin
 
 abbreviation msins ("_, _" [56,56] 56) where "x,M == add_mset x M"  

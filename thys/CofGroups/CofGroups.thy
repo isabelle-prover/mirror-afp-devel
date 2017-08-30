@@ -4,7 +4,7 @@
 *)
 
 theory CofGroups
-imports Main "~~/src/HOL/Library/Nat_Bijection"
+imports Main "HOL-Library.Nat_Bijection"
 begin
 
 section {* Introduction *}

@@ -11,8 +11,8 @@
 
 theory Model
 imports
-  "../ConcurrentIMP/CIMP"
-  "~~/src/HOL/Library/Monad_Syntax"
+  ConcurrentIMP.CIMP
+  "HOL-Library.Monad_Syntax"
 begin
 
 (*>*)

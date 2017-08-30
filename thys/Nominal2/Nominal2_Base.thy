@@ -5,11 +5,11 @@
     Nominal Isabelle. 
 *)
 theory Nominal2_Base
-imports "~~/src/HOL/Library/Old_Datatype"
-        "~~/src/HOL/Library/Infinite_Set"
-        "~~/src/HOL/Library/Multiset"
-        "~~/src/HOL/Library/FSet"
-        "../FinFun/FinFun"
+imports "HOL-Library.Old_Datatype"
+        "HOL-Library.Infinite_Set"
+        "HOL-Library.Multiset"
+        "HOL-Library.FSet"
+        FinFun.FinFun
 keywords
   "atom_decl" "equivariance" :: thy_decl 
 begin

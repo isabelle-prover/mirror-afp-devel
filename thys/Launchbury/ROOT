@@ -3,12 +3,12 @@ chapter AFP
 session "HOLCF-HOL-Library" (AFP) = HOLCF +
   options [document = false, timeout = 300]
   theories
-    "~~/src/HOL/Library/Quotient_Option"
-    "~~/src/HOL/Library/AList"
-    "~~/src/HOL/Library/FuncSet"
-    "~~/src/HOL/Library/Permutation"
-    "~~/src/HOL/Library/LaTeXsugar"
-    "~~/src/HOL/Library/Infinite_Set"
+    "HOL-Library.Quotient_Option"
+    "HOL-Library.AList"
+    "HOL-Library.FuncSet"
+    "HOL-Library.Permutation"
+    "HOL-Library.LaTeXsugar"
+    "HOL-Library.Infinite_Set"
 
 session "HOLCF-Nominal2" (AFP) = "HOLCF-HOL-Library" +
   options [document = false, timeout = 300]
@@ -16,14 +16,14 @@ session "HOLCF-Nominal2" (AFP) = "HOLCF-HOL-Library" +
     FinFun
     Nominal2
   theories
-    "../Nominal2/Nominal2"
-    "../Nominal2/Atoms"
-    "../Nominal2/Eqvt"
+    Nominal2.Nominal2
+    Nominal2.Atoms
+    Nominal2.Eqvt
 
 session Launchbury (AFP) = "HOLCF-Nominal2" +
   options [timeout = 300]
   theories
-    "EverythingAdequacy"
+    EverythingAdequacy
   document_files
     "map.tex"
     "mathpartir.sty"

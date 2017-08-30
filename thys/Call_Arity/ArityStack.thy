@@ -1,5 +1,5 @@
 theory ArityStack
-imports "Arity" SestoftConf
+imports Arity SestoftConf
 begin
 
 fun Astack :: "stack \<Rightarrow> Arity"

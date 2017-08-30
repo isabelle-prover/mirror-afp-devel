@@ -4,8 +4,8 @@ section {* Derangements *}
 
 theory Derangements
 imports
-  "~~/src/HOL/Library/Permutations"
-  "~~/src/HOL/Decision_Procs/Approximation"
+  Complex_Main
+  "HOL-Library.Permutations"
 begin
 
 subsection {* Preliminaries *}
@@ -392,7 +392,7 @@ qed
 subsubsection {* Closed-Form Characterization *}
 
 lemma count_derangements:
-  "count_derangements n = fact n * (\<Sum>k \<in> {0..n}. (-1) ^ k / fact k)"
+  "real (count_derangements n) = fact n * (\<Sum>k \<in> {0..n}. (-1) ^ k / fact k)"
 proof (induct n rule: count_derangements.induct)
   case (3 n)
   let ?f = "\<lambda>n. fact n * (\<Sum>k = 0..n. (- 1) ^ k / fact k)"
@@ -426,59 +426,90 @@ qed (auto)
 
 subsubsection {* Approximation of Cardinality *}
 
-lemma approximation:
+lemma two_power_fact_le_fact:
+  assumes "n \<ge> 1"
+  shows   "2^k * fact n \<le> (fact (n + k) :: 'a :: {semiring_char_0,linordered_semidom})"
+proof (induction k)
+  case (Suc k)
+  have "2 ^ Suc k * fact n = 2 * (2 ^ k * fact n)" by (simp add: algebra_simps)
+  also note Suc.IH
+  also from assms have "of_nat 1 + of_nat 1 \<le> of_nat n + (of_nat (Suc k) :: 'a)"
+    by (intro add_mono) (unfold of_nat_le_iff, simp_all)
+  hence "2 * (fact (n + k) :: 'a) \<le> of_nat (n + Suc k) * fact (n + k)"
+    by (intro mult_right_mono) (simp_all add: add_ac)
+  also have "\<dots> = fact (n + Suc k)" by simp
+  finally show ?case by - (simp add: mult_left_mono)
+qed simp_all
+
+lemma exp1_approx:
+  assumes "n > 0"
+  shows   "exp (1::real) - (\<Sum>k<n. 1 / fact k) \<in> {0..2 / fact n}"
+proof (unfold atLeastAtMost_iff, safe)
+  have "(\<lambda>k. 1^k / fact k) sums exp (1::real)"
+    using exp_converges[of "1::real"] by (simp add: field_simps)
+  from sums_split_initial_segment[OF this, of n]
+    have sums: "(\<lambda>k. 1 / fact (n+k)) sums (exp 1 - (\<Sum>k<n. 1 / fact k :: real))"
+    by (simp add:  algebra_simps power_add)
+  from assms show "(exp 1 - (\<Sum>k<n. 1 / fact k :: real)) \<ge> 0"
+    by (intro sums_le[OF _ sums_zero sums]) auto
+  show "(exp 1 - (\<Sum>k<n. 1 / fact k :: real)) \<le> 2 / fact n"
+  proof (rule sums_le[OF allI])
+    from assms have "(\<lambda>k. (1 / fact n) * (1 / 2)^k :: real) sums ((1 / fact n) * (1 / (1 - 1 / 2)))"
+      by (intro sums_mult geometric_sums) simp_all
+    also have "\<dots> = 2 / fact n" by simp
+    finally show "(\<lambda>k. 1 / fact n * (1 / 2) ^ k) sums (2 / fact n :: real)" .
+  next
+    fix k show "(1 / fact (n+k)) \<le> (1 / fact n) * (1 / 2 :: real)^k" for k
+      using two_power_fact_le_fact[of n k] assms by (auto simp: field_simps)
+  qed fact+
+qed
+
+lemma exp1_bounds: "exp 1 \<in> {8 / 3..11 / 4 :: real}"
+  using exp1_approx[of 4] by (simp add: eval_nat_numeral)
+
+lemma count_derangements_approximation:
   assumes "n \<noteq> 0"
   shows "abs(real (count_derangements n) - fact n / exp 1) < 1 / 2"
 proof (cases "n \<ge> 5")
   case False
   from assms this have n: "n = 1 \<or> n = 2 \<or> n = 3 \<or> n = 4" by auto
-  have numeral_4_eq_4: "4 = Suc (Suc (Suc (Suc 0)))" by auto
-  have "exp 1 > (2 :: real)" by (approximation 4)
-  have "exp 1 < (3 :: real)" by (approximation 6)
-  have "(2 :: real) < 6 / exp 1" by (approximation 6)
-  have "(12 :: real) / exp 1 < 5" by (approximation 5)
-  have "9 > 24 / exp (1 :: real)" by (approximation 9)
-  have "(17 :: real) < 48 / exp 1" by (approximation 8)
-  from `exp 1 > 2` have 1: "abs(real (count_derangements 1) - fact 1 / exp 1) < 1 / 2"
+  from exp1_bounds have 1: "abs(real (count_derangements 1) - fact 1 / exp 1) < 1 / 2"
     by simp
-  from  `exp 1 > 2` `exp 1 < 3` have 2: "abs(real (count_derangements 2) - fact 2 / exp 1) < 1 / 2"
-    by (auto simp add: numeral_2_eq_2 abs_real_def)
-  from `2 < 6 / exp 1` `12 / exp 1 < 5`  have 3: "abs(real (count_derangements 3) - fact 3 / exp 1) < 1 / 2"
-    by (simp add: numeral_3_eq_3)
-  from `9 > 24 / exp 1` `17 < 48 / exp 1` have 4: "abs(real (count_derangements 4) - fact 4 / exp 1) < 1 / 2"
-    by (simp add: numeral_4_eq_4)
+  from exp1_bounds have 2: "abs(real (count_derangements 2) - fact 2 / exp 1) < 1 / 2"
+    by (auto simp add: eval_nat_numeral abs_real_def)
+  from exp1_bounds have 3: "abs(real (count_derangements 3) - fact 3 / exp 1) < 1 / 2"
+    by (auto simp add: eval_nat_numeral abs_if field_simps)
+  from exp1_bounds have 4: "abs(real (count_derangements 4) - fact 4 / exp 1) < 1 / 2"
+    by (auto simp: abs_if field_simps eval_nat_numeral)
   from 1 2 3 4 n show ?thesis by auto
 next
   case True
-  have "exp 1 < (3 :: real)" by (approximation 6)
   from Maclaurin_exp_le[of "- 1" "n + 1"]
   obtain t where t: "abs (t :: real) \<le> abs (- 1)"
     and exp: "exp (- 1) = (\<Sum>m<n + 1. (- 1) ^ m / fact m) + exp t / fact (n + 1) * (- 1) ^ (n + 1)"
     by blast
-  from exp have sum_eq_exp: "(\<Sum>k = 0..n. (- 1) ^ k / fact k) = exp (- 1) - exp t / fact (n + 1) * (- 1) ^ (n + 1)"
+  from exp have sum_eq_exp: 
+    "(\<Sum>k = 0..n. (- 1) ^ k / fact k) = exp (- 1) - exp t / fact (n + 1) * (- 1) ^ (n + 1)"
     by (simp add: atLeast0AtMost ivl_disj_un(2)[symmetric])
   have fact_plus1: "fact (n + 1) = (n + 1) * fact n" by simp
   have eq: "\<bar>real (count_derangements n) - fact n / exp 1\<bar> = exp t / (n + 1)"
-    by (simp del: One_nat_def add: count_derangements sum_eq_exp exp_minus inverse_eq_divide algebra_simps abs_mult)
-      (simp add: fact_plus1)
-  from t `exp 1 < 3` have "exp t < 3" by auto
-    (metis abs_le_iff exp_less_cancel_iff le_less less_le_trans)
-  from this `n \<ge> 5` show ?thesis by (simp add: eq)
+    by (simp del: One_nat_def 
+             add: count_derangements sum_eq_exp exp_minus inverse_eq_divide algebra_simps abs_mult)
+       (simp add: fact_plus1)
+  from t have "exp t \<le> exp 1" by simp
+  also from exp1_bounds have "\<dots> < 3" by simp
+  finally show ?thesis using \<open>n \<ge> 5\<close> by (simp add: eq)
 qed
-
-definition round :: "real \<Rightarrow> real"
-where
-  "round x = floor (x +  1 / 2)"
-
-lemma round_eqI:
-  assumes "abs(real (n :: nat) - x) < 1 / 2"
-  shows "round x = real (n :: nat)"
-using assms unfolding round_def
-by (simp add: floor_eq[of n] abs_real_def split: if_split_asm)
 
 theorem derangements_formula:
   assumes "n \<noteq> 0" "finite S" "card S = n"
-  shows "card (derangements S) = round (fact n / exp 1)"
-using assms by (auto intro: round_eqI[symmetric] approximation simp add: card_derangements)
+  shows "int (card (derangements S)) = round (fact n / exp 1 :: real)"
+  using count_derangements_approximation[of n] assms
+  by (intro round_unique' [symmetric]) (auto simp: card_derangements abs_minus_commute)
+
+theorem derangements_formula':
+  assumes "n \<noteq> 0" "finite S" "card S = n"
+  shows "card (derangements S) = nat (round (fact n / exp 1 :: real))"
+  using derangements_formula[OF assms] by simp
 
 end

@@ -5,14 +5,14 @@ section \<open>Preliminaries\<close>
 theory Preliminaries
 imports
   Main
-  "~~/src/HOL/Library/Multiset"
-  "~~/src/HOL/Library/FuncSet"
-  "~~/src/HOL/Library/Permutations"
-  "~~/src/HOL/ex/Birthday_Paradox"
-  "../Card_Partitions/Card_Partitions"
-  "../Bell_Numbers_Spivey/Bell_Numbers"
-  "../Card_Multisets/Card_Multisets"
-  "../Card_Number_Partitions/Card_Number_Partitions"
+  "HOL-Library.Multiset"
+  "HOL-Library.FuncSet"
+  "HOL-Library.Permutations"
+  "HOL-ex.Birthday_Paradox"
+  Card_Partitions.Card_Partitions
+  Bell_Numbers_Spivey.Bell_Numbers
+  Card_Multisets.Card_Multisets
+  Card_Number_Partitions.Card_Number_Partitions
 begin
 
 subsection \<open>Additions to Finite Set Theory\<close>

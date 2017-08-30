@@ -1,10 +1,10 @@
 section \<open>The Euler--MacLaurin summation formula\<close>
 theory Euler_MacLaurin
 imports 
-  "~~/src/HOL/Analysis/Analysis"
-  "~~/src/HOL/Library/Multiset"
-  "../Bernoulli/Periodic_Bernpoly"
-  "../Bernoulli/Bernoulli_FPS"
+  "HOL-Analysis.Analysis"
+  "HOL-Library.Multiset"
+  Bernoulli.Periodic_Bernpoly
+  Bernoulli.Bernoulli_FPS
 begin
   
 subsection \<open>Auxiliary facts\<close>
@@ -21,7 +21,7 @@ lemma pbernpoly_of_int [simp]: "pbernpoly n (of_int a) = bernoulli n"
 
 lemma continuous_on_bernpoly' [continuous_intros]:
   assumes "continuous_on A f"
-  shows   "continuous_on A (\<lambda>x. bernpoly n (f x))"
+  shows   "continuous_on A (\<lambda>x. bernpoly n (f x) :: 'a :: real_normed_algebra_1)"
   using continuous_on_compose2[OF continuous_on_bernpoly assms, of UNIV n] by auto
 
 lemma filterlim_at_infinity_imp_norm_at_top:
@@ -358,7 +358,7 @@ proof (cases "\<lceil>a\<rceil> \<le> \<lfloor>b\<rfloor>")
   qed (insert *, auto intro!: continuous_intros integrable_continuous_real 
          continuous_on_subset[OF assms])
   have "(\<lambda>t. pbernpoly n t *\<^sub>R f t) integrable_on ({a..a'} \<union> {a'..b'} \<union> {b'..b})" using * A B C
-    by (intro integrable_union; (subst ivl_disj_un)?)
+    by (intro integrable_Un; (subst ivl_disj_un)?)
        (auto simp: ivl_disj_un max_def min_def)
   also have "{a..a'} \<union> {a'..b'} \<union> {b'..b} = {a..b}" using * by auto
   finally show ?thesis .
@@ -775,7 +775,7 @@ next
   hence *: "\<forall>I\<in>?A. ((\<lambda>x. (frac x - 1 / 2) *\<^sub>R f' x) has_integral d (\<lfloor>Inf I\<rfloor>)) I"
     by (auto simp: add_ac)
   have "((\<lambda>x::real. (frac x - 1 / 2) *\<^sub>R f' x) has_integral (\<Sum>I\<in>?A. d (\<lfloor>Inf I\<rfloor>))) (\<Union>?A)"
-    by (intro has_integral_unions * finite_imageI) (auto intro!: negligible_atLeastAtMostI)
+    by (intro has_integral_Union * finite_imageI) (auto intro!: negligible_atLeastAtMostI)
   also have "\<Union>?A = {of_int a..of_int b}"
     by (intro Union_atLeastAtMost_real_of_int ab)
   also have "(\<Sum>I\<in>?A. d (\<lfloor>Inf I\<rfloor>)) = (\<Sum>i=a..<b. d i)"

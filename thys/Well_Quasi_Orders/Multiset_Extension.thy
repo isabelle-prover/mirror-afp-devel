@@ -10,8 +10,8 @@ section \<open>Multiset Extension of Orders (as Binary Predicates)\<close>
 
 theory Multiset_Extension
 imports
-  "../Open_Induction/Restricted_Predicates"
-  "~~/src/HOL/Library/Multiset"
+  Open_Induction.Restricted_Predicates
+  "HOL-Library.Multiset"
 begin
 
 definition multisets :: "'a set \<Rightarrow> 'a multiset set" where

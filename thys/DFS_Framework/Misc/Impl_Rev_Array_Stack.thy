@@ -1,7 +1,7 @@
 section {* Stack by Reversed Array *}
 theory Impl_Rev_Array_Stack
 imports   
-  "../../CAVA_Automata/CAVA_Base/CAVA_Base"
+  CAVA_Base.CAVA_Base
   DFS_Framework_Refine_Aux
 begin
 (* TODO: Move theory to GenCF/Impl *)

@@ -10,8 +10,8 @@ Construct_SSA_code
 Construct_SSA_notriv_code
 RBT_Mapping_Exts
 SSA_Transfer_Rules
-"~~/src/HOL/Library/RBT_Set"
-"~~/src/HOL/Library/Code_Target_Numeral"
+"HOL-Library.RBT_Set"
+"HOL-Library.Code_Target_Numeral"
 begin
 
 record ('node, 'var, 'edge) gen_cfg =

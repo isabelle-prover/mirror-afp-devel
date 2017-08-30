@@ -3,7 +3,7 @@
 theory Labeled_Hoare_Examples
 imports
   Labeled_Hoare
-  "~~/src/HOL/Hoare/Arith2"
+  "HOL-Hoare.Arith2"
 begin
 
 

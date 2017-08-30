@@ -1,9 +1,9 @@
 theory Ipassmt
 imports Common_Primitive_Syntax
         "../Semantics_Ternary/Primitive_Normalization"
-        "../../Simple_Firewall/Primitives/Iface"
-        "../../Simple_Firewall/Common/IP_Addr_WordInterval_toString" (*for debug pretty-printing*)
-        "../../Automatic_Refinement/Lib/Misc" (*dependnecy!*)
+        Simple_Firewall.Iface
+        Simple_Firewall.IP_Addr_WordInterval_toString (*for debug pretty-printing*)
+        Automatic_Refinement.Misc (*dependnecy!*)
 begin
   hide_const Misc.uncurry
   hide_fact Misc.uncurry_def

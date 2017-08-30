@@ -6,8 +6,8 @@ section "Abstract Tree Automata Algorithms"
 theory AbsAlgo
 imports 
   Ta 
-  "../Collections/Examples/ICF/Exploration"
-  "../Collections/ICF/CollectionsV1"
+  Collections_Examples.Exploration
+  Collections.CollectionsV1
 begin
 
 no_notation fun_rel_syn (infixr "\<rightarrow>" 60)

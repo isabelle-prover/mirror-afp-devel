@@ -18,8 +18,13 @@ session Isabelle_Meta_Model (AFP) = "HOL-Library" +
     "toy_example/embedding/Generator_dynamic"
     "toy_example/generator/Design_deep"
     "toy_example/generator/Design_shallow"
-    "toy_example/document_generated/Design_generated_generated"
     "document/Rail"
+  theories
+    (* This part ensures that generated theories are accepted:
+       in general, if X..._generated_generated.thy is wellformed
+                   then we also have X..._generated.thy wellformed *)
+    "toy_example/document_generated/Design_generated"
+    "toy_example/document_generated/Design_generated_generated"
   document_files
     "root.bib"
     "root.tex"

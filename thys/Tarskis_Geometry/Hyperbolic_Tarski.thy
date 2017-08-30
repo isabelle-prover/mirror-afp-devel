@@ -8,7 +8,7 @@ section "The hyperbolic plane and Tarski's axioms"
 theory Hyperbolic_Tarski
 imports Euclid_Tarski
   Projective
-  "~~/src/HOL/Library/Quadratic_Discriminant"
+  "HOL-Library.Quadratic_Discriminant"
 begin
 
 subsection {* Characterizing a specific conic in the projective plane *}

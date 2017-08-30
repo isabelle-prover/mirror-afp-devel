@@ -1,7 +1,7 @@
 theory Setup_AutoCorres
 imports
-  "../../Case_Labeling/Case_Labeling"
-  "~~/src/HOL/Eisbach/Eisbach"
+  Case_Labeling.Case_Labeling
+  "HOL-Eisbach.Eisbach"
   AutoCorres_Misc
 begin
 

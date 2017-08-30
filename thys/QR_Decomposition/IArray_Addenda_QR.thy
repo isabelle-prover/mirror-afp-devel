@@ -8,7 +8,7 @@ section{*IArray Addenda QR*}
 
 theory IArray_Addenda_QR
 imports
-  "~~/src/HOL/Library/IArray"
+  "HOL-Library.IArray"
 begin
 
 text{*The new file about Iarrays, with different instantiations from the presented ones in the 

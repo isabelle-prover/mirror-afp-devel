@@ -10,7 +10,7 @@ section \<open>Social Decision Schemes\<close>
 theory Social_Decision_Schemes
 imports 
   Complex_Main 
-  "~~/src/HOL/Probability/Probability" 
+  Probability 
   Preference_Profiles
   Elections
   Order_Predicates

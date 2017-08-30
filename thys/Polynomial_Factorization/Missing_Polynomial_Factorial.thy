@@ -4,8 +4,8 @@ text \<open>This theory contains several results on content, gcd, primitive part
   Moreover, there is a slightly improved code-equation for computing the gcd.\<close>
 
 theory Missing_Polynomial_Factorial
-  imports "~~/src/HOL/Computational_Algebra/Polynomial_Factorial"
-   "../Polynomial_Interpolation/Missing_Polynomial"  
+  imports "HOL-Computational_Algebra.Polynomial_Factorial"
+   Polynomial_Interpolation.Missing_Polynomial  
 begin
 
 text \<open>Improved code equation for @{const gcd_poly_code}

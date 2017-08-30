@@ -4,7 +4,7 @@
 *)
 section "Tree Automata"
 theory Ta
-imports Main "../Automatic_Refinement/Lib/Misc" Tree
+imports Main Automatic_Refinement.Misc Tree
 begin
 text_raw {*\label{sec:ta}*}
 

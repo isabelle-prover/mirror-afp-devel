@@ -7,7 +7,7 @@
 section{*Serialization of real numbers in Haskell*}
 
 theory Code_Real_Approx_By_Float_Haskell
-imports "~~/src/HOL/Library/Code_Real_Approx_By_Float"
+imports "HOL-Library.Code_Real_Approx_By_Float"
 begin
 
 text{*\textbf{WARNING} This theory implements mathematical reals by machine

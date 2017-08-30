@@ -21,7 +21,7 @@ section {* Instances of the Show Class for Standard Types *}
 theory Old_Show_Instances
 imports
   Old_Show_Generator
-  "~~/src/HOL/Rat"
+  HOL.Rat
 begin
 
 text {*

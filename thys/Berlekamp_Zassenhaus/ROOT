@@ -11,14 +11,14 @@ session Pre_BZ (AFP) = "Subresultants" +
     "Efficient-Mergesort"
     Show
   theories
-    "../Jordan_Normal_Form/Matrix_Kernel"
-    "../Jordan_Normal_Form/Gauss_Jordan_IArray_Impl"
-    "../Efficient-Mergesort/Efficient_Sort"
-    "~~/src/HOL/Number_Theory/Residues"
-    "~~/src/HOL/Types_To_Sets/Types_To_Sets"
-    "../Native_Word/Uint32"
-    "../Native_Word/Code_Target_Bits_Int"
-    "../Polynomial_Factorization/Rational_Factorization" 
+    Jordan_Normal_Form.Matrix_Kernel
+    Jordan_Normal_Form.Gauss_Jordan_IArray_Impl
+    "Efficient-Mergesort.Efficient_Sort"
+    "HOL-Number_Theory.Residues"
+    "HOL-Types_To_Sets.Types_To_Sets"
+    Native_Word.Uint32
+    Native_Word.Code_Target_Bits_Int
+    Polynomial_Factorization.Rational_Factorization 
 
 session Berlekamp_Zassenhaus (AFP) = Pre_BZ +
   description {* Berlekamp-Zassenhaus's Factorization Algorithm *}

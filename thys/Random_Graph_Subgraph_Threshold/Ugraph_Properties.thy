@@ -3,7 +3,7 @@ section{* Classes and properties of graphs *}
 theory Ugraph_Properties
 imports
   Ugraph_Lemmas
-  "../Girth_Chromatic/Girth_Chromatic"
+  Girth_Chromatic.Girth_Chromatic
 begin
 
 text{* A ``graph property'' is a set of graphs which is closed under isomorphism. *}

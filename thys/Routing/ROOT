@@ -3,7 +3,7 @@ chapter AFP
 session Routing (AFP) = Simple_Firewall +
   options [timeout = 300]
   theories [document = false]
-    "~~/src/HOL/Library/Monad_Syntax"
+    "HOL-Library.Monad_Syntax"
   theories
     Routing_Table
     Linux_Router

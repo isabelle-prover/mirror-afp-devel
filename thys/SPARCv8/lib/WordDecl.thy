@@ -5,7 +5,7 @@
 section "Word Declarations"
 
 theory WordDecl
-imports Main "~~/src/HOL/Word/Word"
+imports Main "HOL-Word.Word"
 begin
 
 text {*

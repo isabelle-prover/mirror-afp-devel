@@ -7,7 +7,7 @@ begin
 context StrongPostdomination begin
 
 lemma standard_control_implies_weak_order: 
-  assumes "n controls\<^sub>s n'" shows "n \<longrightarrow>\<^bsub>wod\<^esub> n',(_Exit_)"
+  assumes "n controls\<^sub>s n'" shows "n \<longrightarrow>\<^sub>w\<^sub>o\<^sub>d n',(_Exit_)"
 proof -
   from `n controls\<^sub>s n'` obtain as a a' as' where "as = a#as'"
     and "n' \<notin> set(sourcenodes as)" and "n -as\<rightarrow>* n'"

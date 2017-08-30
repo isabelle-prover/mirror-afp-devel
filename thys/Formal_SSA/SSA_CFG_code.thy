@@ -5,7 +5,7 @@
 theory SSA_CFG_code imports
   SSA_CFG
   Mapping_Exts
-  "~~/src/HOL/Library/Product_Lexorder"
+  "HOL-Library.Product_Lexorder"
 begin
 
 definition Union_of :: "('a \<Rightarrow> 'b set) \<Rightarrow> 'a set \<Rightarrow> 'b set"

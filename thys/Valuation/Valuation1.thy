@@ -21,7 +21,7 @@
 
 
 theory Valuation1
-imports  "../Group-Ring-Module/Algebra9"
+imports  "Group-Ring-Module.Algebra9"
 begin
 
 chapter "Preliminaries"

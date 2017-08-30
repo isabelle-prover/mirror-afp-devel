@@ -1,5 +1,5 @@
 theory Relations
-  imports Main Order_Relation "~~/src/HOL/Library/LaTeXsugar" "~~/src/HOL/Library/OptionalSugar"
+  imports Main HOL.Order_Relation "HOL-Library.LaTeXsugar" "HOL-Library.OptionalSugar"
 begin
 
 section {* Relations *}

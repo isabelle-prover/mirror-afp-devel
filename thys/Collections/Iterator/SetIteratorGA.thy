@@ -4,7 +4,7 @@
 *)
 section {* General Algorithms for Iterators over Finite Sets *}
 theory SetIteratorGA
-imports Main "SetIteratorOperations"
+imports Main SetIteratorOperations
 begin
 
 subsection {* Quantification *}

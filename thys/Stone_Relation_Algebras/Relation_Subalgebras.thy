@@ -12,7 +12,7 @@ These elements form important subalgebras and substructures of relation algebras
 
 theory Relation_Subalgebras
 
-imports "../Stone_Algebras/Stone_Construction" Relation_Algebras
+imports Stone_Algebras.Stone_Construction Relation_Algebras
 
 begin
 

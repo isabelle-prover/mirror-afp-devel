@@ -2,7 +2,7 @@ theory Refine_Rigorous_Numerics_Aform
 imports
   Refine_Rigorous_Numerics
   Refine_Reachability_Analysis (* TODO: remove this dependency (options) *)
-  "../../Collections/ICF/tools/Locale_Code"
+  Collections.Locale_Code
 begin
 
 abbreviation "msum_aform' \<equiv> \<lambda>X. msum_aform (degree_aform X) X"

@@ -1,7 +1,7 @@
 section \<open>Formalization using Locales\<close>
 
 theory Elliptic_Locale
-imports "~~/src/HOL/Decision_Procs/Reflective_Field"
+imports "HOL-Decision_Procs.Reflective_Field"
 begin
 
 subsection \<open>Affine Coordinates\<close>

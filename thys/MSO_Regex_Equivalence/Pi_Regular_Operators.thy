@@ -4,7 +4,7 @@ section "Some Useful Regular Operators"
 
 (*<*)
 theory Pi_Regular_Operators
-imports Pi_Derivatives "~~/src/HOL/Library/While_Combinator"
+imports Pi_Derivatives "HOL-Library.While_Combinator"
 begin
 (*>*)
 

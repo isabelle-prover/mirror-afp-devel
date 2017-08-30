@@ -6,7 +6,7 @@
 section {* Correctness of Stage 2 *}
 
 theory Correctness2
-imports "~~/src/HOL/Library/Sublist" Compiler2
+imports "HOL-Library.Sublist" Compiler2
 begin
 
 (*<*)hide_const (open) Throw(*>*)

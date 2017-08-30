@@ -2,9 +2,9 @@ section \<open>Combining Spectral Radius Theory with Perron Frobenius theorem\<c
 
 theory Spectral_Radius_Theory
 imports 
-  "../Polynomial_Factorization/Square_Free_Factorization"
-  "../Jordan_Normal_Form/Spectral_Radius"
-  "../Jordan_Normal_Form/Char_Poly"
+  Polynomial_Factorization.Square_Free_Factorization
+  Jordan_Normal_Form.Spectral_Radius
+  Jordan_Normal_Form.Char_Poly
   Perron_Frobenius
 begin
 

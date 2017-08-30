@@ -9,7 +9,7 @@ theory Comparison_Sort_Lower_Bound
   imports 
     Complex_Main 
     Linorder_Relations
-    "../Stirling_Formula/Stirling_Formula"
+    Stirling_Formula.Stirling_Formula
 begin
   
 subsection \<open>Abstract description of sorting algorithms\<close>

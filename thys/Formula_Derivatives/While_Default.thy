@@ -1,5 +1,5 @@
 theory While_Default
-imports "~~/src/HOL/Library/While_Combinator"
+imports "HOL-Library.While_Combinator"
 begin
 
 context

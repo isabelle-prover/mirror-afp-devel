@@ -1,6 +1,6 @@
 theory Analyze_medium_sized_company
 imports 
-  "../../Primitive_Matchers/Parser"
+  Iptables_Semantics.Parser
 begin
 
 

@@ -1,7 +1,7 @@
 section "Semantics and type soundness for System F"
 
 theory SystemF
-  imports Main "~~/src/HOL/Library/FSet" 
+  imports Main "HOL-Library.FSet" 
 begin
 
 subsection "Syntax and values"

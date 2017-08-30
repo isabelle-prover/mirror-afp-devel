@@ -1,7 +1,7 @@
 theory Prob_Lemmas
 imports
   Probability
-  "../Girth_Chromatic/Girth_Chromatic"
+  Girth_Chromatic.Girth_Chromatic
   Ugraph_Misc
 begin
 

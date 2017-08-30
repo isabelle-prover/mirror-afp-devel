@@ -9,8 +9,8 @@ section{*Examples of execution using symbolic computation*}
 theory Examples_QR_Abstract_Symbolic
 imports
  QR_Decomposition
- "../Real_Impl/Real_Unique_Impl"
- "~~/src/HOL/Library/Code_Char"
+ Real_Impl.Real_Unique_Impl
+ "HOL-Library.Code_Char"
 begin
 
 subsection{*Execution of the QR decomposition using symbolic computation*}

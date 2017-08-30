@@ -1,7 +1,7 @@
 section {* The Same Vote Model *}
                                                                                             
 theory Same_Vote
-imports Voting Consensus_Misc Map
+imports Voting Consensus_Misc HOL.Map
 begin
 
 context quorum_process begin

@@ -6,9 +6,9 @@ session Applicative_Lifting (AFP) = "HOL-Probability" +
     "HOL-Nonstandard_Analysis"
     "HOL-Proofs-Lambda"
   theories [document = false]
-    "~~/src/HOL/Library/Function_Division"
-    "~~/src/HOL/Proofs/Lambda/Eta"
-    "~~/src/HOL/Nonstandard_Analysis/StarDef"
+    "HOL-Library.Function_Division"
+    "HOL-Proofs-Lambda.Eta"
+    "HOL-Nonstandard_Analysis.StarDef"
   theories
     Applicative
     Applicative_Functor

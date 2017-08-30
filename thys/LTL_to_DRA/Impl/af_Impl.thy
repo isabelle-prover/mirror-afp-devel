@@ -6,7 +6,7 @@
 section \<open>af - Unfolding Functions - Optimized Code Equations\<close>
 
 theory af_Impl
-  imports Main "../af" "LTL_Impl"
+  imports Main "../af" LTL_Impl
 begin
 
 text \<open>Provide optimized code definitions for @{term "\<up>af"} and other functions, which use heuristics to reduce the formula size\<close>

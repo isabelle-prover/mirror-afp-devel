@@ -9,27 +9,27 @@ session Pre_Polynomial_Factorization (AFP) = "JNF-AFP-Lib" +
     Show
     Sqrt_Babylonian
   theories
-    "../Partial_Function_MR/Partial_Function_MR"
-    "../Polynomial_Interpolation/Polynomial_Interpolation"
-    "../Sqrt_Babylonian/Sqrt_Babylonian"
-    "../Show/Show_Poly"
-    "~~/src/HOL/Library/RBT_Mapping"
-    "~~/src/HOL/Computational_Algebra/Polynomial"
+    Partial_Function_MR.Partial_Function_MR
+    Polynomial_Interpolation.Polynomial_Interpolation
+    Sqrt_Babylonian.Sqrt_Babylonian
+    Show.Show_Poly
+    "HOL-Library.RBT_Mapping"
+    "HOL-Computational_Algebra.Polynomial"
 
 session Polynomial_Factorization (AFP) = Pre_Polynomial_Factorization +
   description {* Algebraic Numbers *}
   options [timeout = 600]
   theories
-    "Missing_Multiset"
-    "Missing_List"
-    "Precomputation"
-    "Order_Polynomial"
-    "Explicit_Roots"
-    "Dvd_Int_Poly"
-    "Rational_Root_Test"
-    "Kronecker_Factorization"
-    "Square_Free_Factorization"
-    "Rational_Factorization"
+    Missing_Multiset
+    Missing_List
+    Precomputation
+    Order_Polynomial
+    Explicit_Roots
+    Dvd_Int_Poly
+    Rational_Root_Test
+    Kronecker_Factorization
+    Square_Free_Factorization
+    Rational_Factorization
   document_files
     "root.bib"
     "root.tex"

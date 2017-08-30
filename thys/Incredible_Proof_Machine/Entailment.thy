@@ -1,5 +1,5 @@
 theory Entailment
-imports Main "~~/src/HOL/Library/FSet"
+imports Main "HOL-Library.FSet"
 begin
 
 type_synonym 'form entailment = "('form fset \<times> 'form)"

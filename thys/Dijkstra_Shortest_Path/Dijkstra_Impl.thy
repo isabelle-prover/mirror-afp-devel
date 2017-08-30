@@ -4,7 +4,7 @@ imports
   Dijkstra 
   GraphSpec 
   HashGraphImpl 
-  "~~/src/HOL/Library/Code_Target_Numeral"
+  "HOL-Library.Code_Target_Numeral"
 begin 
 text{*
   In this second refinement step, we use interfaces from the 

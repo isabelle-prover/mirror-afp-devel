@@ -4,7 +4,7 @@ section \<open>Pairing Heap in Binary Tree Representation\<close>
 
 theory Pairing_Heap_Tree
 imports  
-  "~~/src/HOL/Library/Tree_Multiset"
+  "HOL-Library.Tree_Multiset"
 begin
 
 subsection \<open>Definitions\<close>
@@ -15,45 +15,50 @@ in their original representation as binary trees.\<close>
 fun get_min  :: "'a :: linorder tree \<Rightarrow> 'a" where
 "get_min (Node _ x _) = x"
 
-fun link :: "'a :: linorder tree \<Rightarrow> 'a tree" where
+context linorder
+begin
+
+fun link :: "'a tree \<Rightarrow> 'a tree" where
   "link Leaf = Leaf"
 | "link (Node lx x Leaf) = Node lx x Leaf"
 | "link (Node lx x (Node ly y ry)) = 
     (if x < y then Node (Node ly y lx) x ry else Node (Node lx x ly) y ry)"
 
-fun pass\<^sub>1 :: "'a :: linorder tree \<Rightarrow> 'a tree" where
+fun pass\<^sub>1 :: "'a tree \<Rightarrow> 'a tree" where
   "pass\<^sub>1 Leaf = Leaf"
 | "pass\<^sub>1 (Node lx x Leaf) = Node lx x Leaf" 
 | "pass\<^sub>1 (Node lx x (Node ly y ry)) = link (Node lx x (Node ly y (pass\<^sub>1 ry)))"
 
-fun pass\<^sub>2 :: "'a :: linorder tree \<Rightarrow> 'a tree" where
+fun pass\<^sub>2 :: "'a tree \<Rightarrow> 'a tree" where
   "pass\<^sub>2 Leaf = Leaf"
 | "pass\<^sub>2 (Node l x r) = link(Node l x (pass\<^sub>2 r))"
 
-fun mergepairs :: "'a :: linorder tree \<Rightarrow> 'a tree" where
-  "mergepairs Leaf = Leaf"
-| "mergepairs (Node lx x Leaf) = Node lx x Leaf" 
-| "mergepairs (Node lx x (Node ly y ry)) =
-   link (link (Node lx x (Node ly y (mergepairs ry))))"
+fun merge_pairs :: "'a tree \<Rightarrow> 'a tree" where
+  "merge_pairs Leaf = Leaf"
+| "merge_pairs (Node lx x Leaf) = Node lx x Leaf" 
+| "merge_pairs (Node lx x (Node ly y ry)) =
+   link (link (Node lx x (Node ly y (merge_pairs ry))))"
 
-fun del_min :: "'a :: linorder tree \<Rightarrow> 'a tree" where
+fun del_min :: "'a tree \<Rightarrow> 'a tree" where
   "del_min Leaf = Leaf"
 | "del_min (Node l _ Leaf) = pass\<^sub>2 (pass\<^sub>1 l)"
 
-fun merge :: "'a :: linorder tree \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
+fun merge :: "'a tree \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
   "merge Leaf h = h"
 | "merge h Leaf = h"
 | "merge (Node lx x Leaf) (Node ly y Leaf) = link (Node lx x (Node ly y Leaf))"
 
-fun insert :: "'a \<Rightarrow> 'a :: linorder tree \<Rightarrow> 'a tree" where
+fun insert :: "'a \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
   "insert x h = merge (Node Leaf x Leaf) h"
+
+end
 
 text \<open>The invariant is the conjunction of \<open>is_root\<close> and \<open>pheap\<close>:\<close>
 
-fun is_root :: "'a :: linorder tree \<Rightarrow> bool" where
+fun is_root :: "'a tree \<Rightarrow> bool" where
   "is_root h = (case h of Leaf \<Rightarrow> True | Node l x r \<Rightarrow> r = Leaf)"
 
-fun pheap :: "'a :: linorder tree \<Rightarrow> bool" where
+fun pheap :: "('a :: linorder) tree \<Rightarrow> bool" where
 "pheap Leaf = True" |
 "pheap (Node l x r) = (pheap l \<and> pheap r \<and> (\<forall>y \<in> set_tree l. x \<le> y))"
 
@@ -62,10 +67,10 @@ subsection \<open>Correctness Proofs\<close>
 
 text \<open>An optimization:\<close>
 
-lemma mergepairs_pass12: "mergepairs hs = pass\<^sub>2 (pass\<^sub>1 hs)"
-by (induction hs rule: mergepairs.induct) auto
+lemma pass12_merge_pairs: "pass\<^sub>2 (pass\<^sub>1 hs) = merge_pairs hs"
+by (induction hs rule: merge_pairs.induct) auto
 
-declare mergepairs_pass12[symmetric, code_unfold]
+declare pass12_merge_pairs[code_unfold]
 
 
 subsubsection \<open>Invariants\<close>
@@ -144,14 +149,11 @@ lemma mset_insert:
   "is_root h \<Longrightarrow> mset_tree (insert a h) = {#a#} + mset_tree h"
 by (simp add: mset_merge insert_def)
 
-lemma mset_pass1: "mset_tree (pass\<^sub>1 h) = mset_tree h"
-by(induction h rule: pass\<^sub>1.induct)(auto simp: add_ac)
-
-lemma mset_pass2: "mset_tree (pass\<^sub>2 h) = mset_tree h"
-by(induction h)(auto simp: mset_link add_ac)
+lemma mset_merge_pairs: "mset_tree (merge_pairs h) = mset_tree h"
+by(induction h rule: merge_pairs.induct)(auto simp: mset_link add_ac)
 
 lemma mset_del_min: "\<lbrakk> is_root h; t \<noteq> Leaf \<rbrakk> \<Longrightarrow>
   mset_tree (del_min h) = mset_tree h - {#get_min h#}"
-by(induction h rule: del_min.induct)(auto simp: mset_pass1 mset_pass2)
+by(induction h rule: del_min.induct)(auto simp: pass12_merge_pairs mset_merge_pairs)
 
 end

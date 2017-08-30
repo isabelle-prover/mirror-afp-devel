@@ -15,10 +15,10 @@ text \<open>We provide conversion functions between polynomials over the real an
 
 theory Complex_Roots_Real_Poly
 imports 
-  "~~/src/HOL/Library/Fundamental_Theorem_Algebra"
-  "../Polynomial_Factorization/Order_Polynomial"
-  "../Polynomial_Factorization/Explicit_Roots"
-  "../Polynomial_Interpolation/Ring_Hom_Poly"
+  "HOL-Computational_Algebra.Fundamental_Theorem_Algebra"
+  Polynomial_Factorization.Order_Polynomial
+  Polynomial_Factorization.Explicit_Roots
+  Polynomial_Interpolation.Ring_Hom_Poly
 begin
 
 interpretation of_real_poly_hom: map_poly_idom_hom complex_of_real..

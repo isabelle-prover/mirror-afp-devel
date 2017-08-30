@@ -13,7 +13,7 @@ theory
   Util
 imports
   Main
-  "~~/src/HOL/Library/Monad_Syntax"
+  "HOL-Library.Monad_Syntax"
 begin
 
 subsection\<open>Kleisli arrow composition\<close>

@@ -1,6 +1,6 @@
 theory Nominal_Wellfounded
 imports
-  "../Nominal2/Nominal2"
+  Nominal2.Nominal2
 begin
 
 section \<open>Lemmas about Well-Foundedness and Permutations\<close>

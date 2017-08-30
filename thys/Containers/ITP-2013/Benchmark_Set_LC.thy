@@ -1,8 +1,8 @@
 theory Benchmark_Set_LC
 imports 
   Benchmark_Set
-  "../Set_Impl"
-  "~~/src/HOL/Library/Code_Target_Nat"
+  Containers.Set_Impl
+  "HOL-Library.Code_Target_Nat"
 begin
 
 lemma [code_unfold del]: "card \<equiv> Cardinality.card'" by(simp)

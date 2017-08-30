@@ -19,7 +19,7 @@ session "DFS_Framework" (AFP) = "CAVA_Automata" +
     "Impl/Data/Simple_Impl"
     "Impl/Data/Restr_Impl"
 
-    "DFS_Framework"
+    DFS_Framework
 
     "Examples/DFS_Chapter_Examples"
     "Examples/DFS_All_Examples"

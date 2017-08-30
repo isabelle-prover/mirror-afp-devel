@@ -2,7 +2,7 @@ chapter {* Arctan Upper and Lower Bounds *}
 
 theory Atan_CF_Bounds
 imports Bounds_Lemmas  
-        "~~/src/HOL/Library/Sum_of_Squares"
+        "HOL-Library.Sum_of_Squares"
 
 begin
 

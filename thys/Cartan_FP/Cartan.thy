@@ -1,5 +1,5 @@
 theory Cartan
-imports "~~/src/HOL/Analysis/Analysis"
+imports "HOL-Analysis.Analysis"
 
 begin
 

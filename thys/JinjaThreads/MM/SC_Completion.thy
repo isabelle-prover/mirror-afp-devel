@@ -6,7 +6,7 @@ section {* Sequentially consistent completion of executions in the JMM *}
 
 theory SC_Completion 
 imports
-  "Non_Speculative"
+  Non_Speculative
 begin
 
 subsection {* Most recently written values *}

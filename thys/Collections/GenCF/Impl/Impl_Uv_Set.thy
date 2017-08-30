@@ -2,7 +2,7 @@ theory Impl_Uv_Set
 imports 
   "../../Iterator/Iterator" 
   "../Intf/Intf_Set" 
-  "../../../Native_Word/Uint"
+  Native_Word.Uint
 begin
 
   subsection {* Bit-Vectors as Lists of Words *}

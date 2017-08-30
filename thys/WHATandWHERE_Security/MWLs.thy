@@ -3,7 +3,7 @@ Title: WHATandWHERE-Security
 Authors: Sylvia Grewe, Alexander Lux, Heiko Mantel, Jens Sauer
 *)
 theory MWLs
-imports "../Strong_Security/Types"
+imports Strong_Security.Types
 begin
 
 --"type parameters not instantiated:"

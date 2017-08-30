@@ -12,9 +12,9 @@ chapter AFP
 session Complx (AFP) = Word_Lib +
   options [timeout = 2400]
   theories [document = false]
-    "../Word_Lib/Word_Lemmas_32"
+    Word_Lib.Word_Lemmas_32
   theories
-    "OG_Syntax"
+    OG_Syntax
     "ex/Examples"
     "ex/SumArr"
   document_files

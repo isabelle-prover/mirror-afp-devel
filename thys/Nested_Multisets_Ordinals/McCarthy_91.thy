@@ -6,7 +6,7 @@
 section \<open>Termination of McCarthy's 91 Function\<close>
 
 theory McCarthy_91
-imports "~~/src/HOL/Library/Multiset_Order"
+imports "HOL-Library.Multiset_Order"
 begin
 
 (* TODO: move to Isabelle *)

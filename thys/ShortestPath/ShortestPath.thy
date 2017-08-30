@@ -1,8 +1,8 @@
 theory ShortestPath
 imports
-  Complex   
-  "../Graph_Theory/Graph_Theory"
-  "~~/src/HOL/Library/Extended_Nat"
+  HOL.Complex   
+  Graph_Theory.Graph_Theory
+  "HOL-Library.Extended_Nat"
 begin
 
 section {*Shortest Path (with non-negative edge costs)*}

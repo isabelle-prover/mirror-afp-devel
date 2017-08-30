@@ -23,7 +23,7 @@ Lists are used to make recursive calls deterministic; otherwise sets would be su
 
 theory Matrix_Kleene_Algebras
 
-imports "../Stone_Relation_Algebras/Matrix_Relation_Algebras" Kleene_Relation_Algebras
+imports Stone_Relation_Algebras.Matrix_Relation_Algebras Kleene_Relation_Algebras
 
 begin
 

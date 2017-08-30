@@ -1,7 +1,7 @@
 theory Lehmer
 imports
   Main
-  "~~/src/HOL/Number_Theory/Residues"
+  "HOL-Number_Theory.Residues"
 begin
 
 section {* Lehmer's Theorem *}

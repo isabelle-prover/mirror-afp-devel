@@ -2,8 +2,8 @@ section {* Generators *}
 
 theory "Generators"
 imports
-   "~~/src/HOL/Algebra/Group"
-   "~~/src/HOL/Algebra/Lattice"
+   "HOL-Algebra.Group"
+   "HOL-Algebra.Lattice"
 begin
 
 

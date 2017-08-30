@@ -1,5 +1,5 @@
 theory FSet_More
-imports  "~~/src/HOL/Library/FSet"
+imports  "HOL-Library.FSet"
 begin
 
 lemma Suc_pred_image[simp]: "0 \<notin> P \<Longrightarrow> (\<lambda>x. Suc (x - Suc 0)) ` P = P"

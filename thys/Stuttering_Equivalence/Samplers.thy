@@ -1,5 +1,5 @@
 theory Samplers
-  imports Main "~~/src/HOL/Library/Omega_Words_Fun"
+  imports Main "HOL-Library.Omega_Words_Fun"
 begin
 
 section {* Utility Lemmas *}

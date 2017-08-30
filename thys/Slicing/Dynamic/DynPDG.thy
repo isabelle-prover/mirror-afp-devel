@@ -27,22 +27,22 @@ locale DynPDG =
 begin
 
 inductive cdep_edge :: "'node \<Rightarrow> 'edge list \<Rightarrow> 'node \<Rightarrow> bool" 
-    ("_ -_\<rightarrow>\<^bsub>cd\<^esub> _" [51,0,0] 80)
+    ("_ -_\<rightarrow>\<^sub>c\<^sub>d _" [51,0,0] 80)
   and ddep_edge :: "'node \<Rightarrow> 'var \<Rightarrow> 'edge list \<Rightarrow> 'node \<Rightarrow> bool"
-    ("_ -'{_'}_\<rightarrow>\<^bsub>dd\<^esub> _" [51,0,0,0] 80)
+    ("_ -'{_'}_\<rightarrow>\<^sub>d\<^sub>d _" [51,0,0,0] 80)
   and DynPDG_edge :: "'node \<Rightarrow> 'var option \<Rightarrow> 'edge list \<Rightarrow> 'node \<Rightarrow> bool"
 
 where
       -- "Syntax"
-  "n -as\<rightarrow>\<^bsub>cd\<^esub> n' == DynPDG_edge n None as n'"
-  | "n -{V}as\<rightarrow>\<^bsub>dd\<^esub> n' == DynPDG_edge n (Some V) as n'"
+  "n -as\<rightarrow>\<^sub>c\<^sub>d n' == DynPDG_edge n None as n'"
+  | "n -{V}as\<rightarrow>\<^sub>d\<^sub>d n' == DynPDG_edge n (Some V) as n'"
 
       -- "Rules"
   | DynPDG_cdep_edge:
-  "n controls n' via as \<Longrightarrow> n -as\<rightarrow>\<^bsub>cd\<^esub> n'"
+  "n controls n' via as \<Longrightarrow> n -as\<rightarrow>\<^sub>c\<^sub>d n'"
 
   | DynPDG_ddep_edge:
-  "n influences V in n' via as \<Longrightarrow> n -{V}as\<rightarrow>\<^bsub>dd\<^esub> n'"
+  "n influences V in n' via as \<Longrightarrow> n -{V}as\<rightarrow>\<^sub>d\<^sub>d n'"
 
 
 inductive DynPDG_path :: "'node \<Rightarrow> 'edge list \<Rightarrow> 'node \<Rightarrow> bool"
@@ -52,10 +52,10 @@ where DynPDG_path_Nil:
   "valid_node n \<Longrightarrow> n -[]\<rightarrow>\<^sub>d* n"
 
   | DynPDG_path_Append_cdep:
-  "\<lbrakk>n -as\<rightarrow>\<^sub>d* n''; n'' -as'\<rightarrow>\<^bsub>cd\<^esub> n'\<rbrakk> \<Longrightarrow> n -as@as'\<rightarrow>\<^sub>d* n'"
+  "\<lbrakk>n -as\<rightarrow>\<^sub>d* n''; n'' -as'\<rightarrow>\<^sub>c\<^sub>d n'\<rbrakk> \<Longrightarrow> n -as@as'\<rightarrow>\<^sub>d* n'"
 
   | DynPDG_path_Append_ddep:
-  "\<lbrakk>n -as\<rightarrow>\<^sub>d* n''; n'' -{V}as'\<rightarrow>\<^bsub>dd\<^esub> n'\<rbrakk> \<Longrightarrow> n -as@as'\<rightarrow>\<^sub>d* n'"
+  "\<lbrakk>n -as\<rightarrow>\<^sub>d* n''; n'' -{V}as'\<rightarrow>\<^sub>d\<^sub>d n'\<rbrakk> \<Longrightarrow> n -as@as'\<rightarrow>\<^sub>d* n'"
 
 
 lemma DynPDG_empty_path_eq_nodes:"n -[]\<rightarrow>\<^sub>d* n' \<Longrightarrow> n = n'"
@@ -65,13 +65,13 @@ apply - apply(erule DynPDG_path.cases)
 by(auto elim:DynPDG_edge.cases simp:dyn_data_dependence_def)
 
 
-lemma DynPDG_path_cdep:"n -as\<rightarrow>\<^bsub>cd\<^esub> n' \<Longrightarrow> n -as\<rightarrow>\<^sub>d* n'"
+lemma DynPDG_path_cdep:"n -as\<rightarrow>\<^sub>c\<^sub>d n' \<Longrightarrow> n -as\<rightarrow>\<^sub>d* n'"
 apply(subgoal_tac "n -[]@as\<rightarrow>\<^sub>d* n'")
  apply simp
 apply(rule DynPDG_path_Append_cdep, rule DynPDG_path_Nil)
 by(auto elim!:DynPDG_edge.cases dest:dyn_control_dependence_path path_valid_node)
 
-lemma DynPDG_path_ddep:"n -{V}as\<rightarrow>\<^bsub>dd\<^esub> n' \<Longrightarrow> n -as\<rightarrow>\<^sub>d* n'"
+lemma DynPDG_path_ddep:"n -{V}as\<rightarrow>\<^sub>d\<^sub>d n' \<Longrightarrow> n -as\<rightarrow>\<^sub>d* n'"
 apply(subgoal_tac "n -[]@as\<rightarrow>\<^sub>d* n'")
  apply simp
 apply(rule DynPDG_path_Append_ddep, rule DynPDG_path_Nil)
@@ -99,7 +99,7 @@ proof(induct rule:DynPDG_path.induct)
   thus ?case by simp
 next
   case (DynPDG_path_Append_cdep n as n'' as' n')
-  from `n'' -as'\<rightarrow>\<^bsub>cd\<^esub> n'` `\<not> inner_node n'` have False
+  from `n'' -as'\<rightarrow>\<^sub>c\<^sub>d n'` `\<not> inner_node n'` have False
     apply -
     apply(erule DynPDG_edge.cases) apply(auto simp:inner_node_def)
       apply(fastforce dest:dyn_control_dependence_path path_valid_node)
@@ -108,7 +108,7 @@ next
   thus ?case by simp
 next
   case (DynPDG_path_Append_ddep n as n'' V as' n')
-  from `n'' -{V}as'\<rightarrow>\<^bsub>dd\<^esub> n'` `\<not> inner_node n'` have False
+  from `n'' -{V}as'\<rightarrow>\<^sub>d\<^sub>d n'` `\<not> inner_node n'` have False
     apply -
     apply(erule DynPDG_edge.cases) 
     by(auto dest:path_valid_node simp:inner_node_def dyn_data_dependence_def)
@@ -117,13 +117,13 @@ qed
 
 
 lemma DynPDG_cdep_edge_CFG_path:
-  assumes "n -as\<rightarrow>\<^bsub>cd\<^esub> n'" shows "n -as\<rightarrow>* n'" and "as \<noteq> []"
-  using `n -as\<rightarrow>\<^bsub>cd\<^esub> n'`
+  assumes "n -as\<rightarrow>\<^sub>c\<^sub>d n'" shows "n -as\<rightarrow>* n'" and "as \<noteq> []"
+  using `n -as\<rightarrow>\<^sub>c\<^sub>d n'`
   by(auto elim:DynPDG_edge.cases dest:dyn_control_dependence_path)
 
 lemma DynPDG_ddep_edge_CFG_path:
-  assumes "n -{V}as\<rightarrow>\<^bsub>dd\<^esub> n'" shows "n -as\<rightarrow>* n'" and "as \<noteq> []"
-  using `n -{V}as\<rightarrow>\<^bsub>dd\<^esub> n'`
+  assumes "n -{V}as\<rightarrow>\<^sub>d\<^sub>d n'" shows "n -as\<rightarrow>* n'" and "as \<noteq> []"
+  using `n -{V}as\<rightarrow>\<^sub>d\<^sub>d n'`
   by(auto elim:DynPDG_edge.cases simp:dyn_data_dependence_def)
 
 lemma DynPDG_path_CFG_path:
@@ -132,12 +132,12 @@ proof(induct rule:DynPDG_path.induct)
   case DynPDG_path_Nil thus ?case by(rule empty_path)
 next
   case (DynPDG_path_Append_cdep n as n'' as' n')
-  from `n'' -as'\<rightarrow>\<^bsub>cd\<^esub> n'` have "n'' -as'\<rightarrow>* n'"
+  from `n'' -as'\<rightarrow>\<^sub>c\<^sub>d n'` have "n'' -as'\<rightarrow>* n'"
     by(rule DynPDG_cdep_edge_CFG_path(1))
   with `n -as\<rightarrow>* n''` show ?case by(rule path_Append)
 next
   case (DynPDG_path_Append_ddep n as n'' V as' n')
-  from `n'' -{V}as'\<rightarrow>\<^bsub>dd\<^esub> n'` have "n'' -as'\<rightarrow>* n'"
+  from `n'' -{V}as'\<rightarrow>\<^sub>d\<^sub>d n'` have "n'' -as'\<rightarrow>* n'"
     by(rule DynPDG_ddep_edge_CFG_path(1))
   with `n -as\<rightarrow>* n''` show ?case by(rule path_Append)
 qed
@@ -146,51 +146,51 @@ qed
 lemma DynPDG_path_split: 
   "n -as\<rightarrow>\<^sub>d* n' \<Longrightarrow>
   (as = [] \<and> n = n') \<or> 
-  (\<exists>n'' asx asx'. (n -asx\<rightarrow>\<^bsub>cd\<^esub> n'') \<and> (n'' -asx'\<rightarrow>\<^sub>d* n') \<and> 
+  (\<exists>n'' asx asx'. (n -asx\<rightarrow>\<^sub>c\<^sub>d n'') \<and> (n'' -asx'\<rightarrow>\<^sub>d* n') \<and> 
         (as = asx@asx')) \<or>
-  (\<exists>n'' V asx asx'. (n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n'') \<and> (n'' -asx'\<rightarrow>\<^sub>d* n') \<and> 
+  (\<exists>n'' V asx asx'. (n -{V}asx\<rightarrow>\<^sub>d\<^sub>d n'') \<and> (n'' -asx'\<rightarrow>\<^sub>d* n') \<and> 
         (as = asx@asx'))"
 proof(induct rule:DynPDG_path.induct)
   case (DynPDG_path_Nil n) thus ?case by auto
 next
   case (DynPDG_path_Append_cdep n as n'' as' n')
   note IH = `as = [] \<and> n = n'' \<or>
-    (\<exists>nx asx asx'. n -asx\<rightarrow>\<^bsub>cd\<^esub> nx \<and> nx -asx'\<rightarrow>\<^sub>d* n'' \<and> as = asx@asx') \<or>
-    (\<exists>nx V asx asx'. n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> nx \<and> nx -asx'\<rightarrow>\<^sub>d* n'' \<and> as = asx@asx')`
+    (\<exists>nx asx asx'. n -asx\<rightarrow>\<^sub>c\<^sub>d nx \<and> nx -asx'\<rightarrow>\<^sub>d* n'' \<and> as = asx@asx') \<or>
+    (\<exists>nx V asx asx'. n -{V}asx\<rightarrow>\<^sub>d\<^sub>d nx \<and> nx -asx'\<rightarrow>\<^sub>d* n'' \<and> as = asx@asx')`
   from IH show ?case
   proof
     assume "as = [] \<and> n = n''"
-    with `n'' -as'\<rightarrow>\<^bsub>cd\<^esub> n'` have "valid_node n'"
+    with `n'' -as'\<rightarrow>\<^sub>c\<^sub>d n'` have "valid_node n'"
       by(fastforce intro:path_valid_node(2) DynPDG_path_CFG_path 
                         DynPDG_path_cdep)
-    with `as = [] \<and> n = n''` `n'' -as'\<rightarrow>\<^bsub>cd\<^esub> n'`
-    have "\<exists>n'' asx asx'. n -asx\<rightarrow>\<^bsub>cd\<^esub> n'' \<and> n'' -asx'\<rightarrow>\<^sub>d* n' \<and> as@as' = asx@asx'"
+    with `as = [] \<and> n = n''` `n'' -as'\<rightarrow>\<^sub>c\<^sub>d n'`
+    have "\<exists>n'' asx asx'. n -asx\<rightarrow>\<^sub>c\<^sub>d n'' \<and> n'' -asx'\<rightarrow>\<^sub>d* n' \<and> as@as' = asx@asx'"
       by(auto intro:DynPDG_path_Nil)
     thus ?thesis by simp
   next
-    assume "(\<exists>nx asx asx'. n -asx\<rightarrow>\<^bsub>cd\<^esub> nx \<and> nx -asx'\<rightarrow>\<^sub>d* n'' \<and> as = asx@asx') \<or>
-      (\<exists>nx V asx asx'. n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> nx \<and> nx -asx'\<rightarrow>\<^sub>d* n'' \<and> as = asx@asx')"
+    assume "(\<exists>nx asx asx'. n -asx\<rightarrow>\<^sub>c\<^sub>d nx \<and> nx -asx'\<rightarrow>\<^sub>d* n'' \<and> as = asx@asx') \<or>
+      (\<exists>nx V asx asx'. n -{V}asx\<rightarrow>\<^sub>d\<^sub>d nx \<and> nx -asx'\<rightarrow>\<^sub>d* n'' \<and> as = asx@asx')"
     thus ?thesis
     proof
-      assume "\<exists>nx asx asx'. n -asx\<rightarrow>\<^bsub>cd\<^esub> nx \<and> nx -asx'\<rightarrow>\<^sub>d* n'' \<and> as = asx@asx'"
-      then obtain nx asx asx' where "n -asx\<rightarrow>\<^bsub>cd\<^esub> nx" and "nx -asx'\<rightarrow>\<^sub>d* n''"
+      assume "\<exists>nx asx asx'. n -asx\<rightarrow>\<^sub>c\<^sub>d nx \<and> nx -asx'\<rightarrow>\<^sub>d* n'' \<and> as = asx@asx'"
+      then obtain nx asx asx' where "n -asx\<rightarrow>\<^sub>c\<^sub>d nx" and "nx -asx'\<rightarrow>\<^sub>d* n''"
         and "as = asx@asx'" by auto
-      from `n'' -as'\<rightarrow>\<^bsub>cd\<^esub> n'` have "n'' -as'\<rightarrow>\<^sub>d* n'" by(rule DynPDG_path_cdep)
+      from `n'' -as'\<rightarrow>\<^sub>c\<^sub>d n'` have "n'' -as'\<rightarrow>\<^sub>d* n'" by(rule DynPDG_path_cdep)
       with `nx -asx'\<rightarrow>\<^sub>d* n''` have "nx -asx'@as'\<rightarrow>\<^sub>d* n'"
         by(fastforce intro:DynPDG_path_Append)
-      with `n -asx\<rightarrow>\<^bsub>cd\<^esub> nx` `as = asx@asx'`
-      have "\<exists>n'' asx asx'. n -asx\<rightarrow>\<^bsub>cd\<^esub> n'' \<and> n'' -asx'\<rightarrow>\<^sub>d* n' \<and> as@as' = asx@asx'"
+      with `n -asx\<rightarrow>\<^sub>c\<^sub>d nx` `as = asx@asx'`
+      have "\<exists>n'' asx asx'. n -asx\<rightarrow>\<^sub>c\<^sub>d n'' \<and> n'' -asx'\<rightarrow>\<^sub>d* n' \<and> as@as' = asx@asx'"
         by auto
       thus ?thesis by simp
     next
-      assume "\<exists>nx V asx asx'. n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> nx \<and> nx -asx'\<rightarrow>\<^sub>d* n'' \<and> as = asx@asx'"
-      then obtain nx V asx asx' where "n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> nx" and "nx -asx'\<rightarrow>\<^sub>d* n''"
+      assume "\<exists>nx V asx asx'. n -{V}asx\<rightarrow>\<^sub>d\<^sub>d nx \<and> nx -asx'\<rightarrow>\<^sub>d* n'' \<and> as = asx@asx'"
+      then obtain nx V asx asx' where "n -{V}asx\<rightarrow>\<^sub>d\<^sub>d nx" and "nx -asx'\<rightarrow>\<^sub>d* n''"
         and "as = asx@asx'" by auto
-      from `n'' -as'\<rightarrow>\<^bsub>cd\<^esub> n'` have "n'' -as'\<rightarrow>\<^sub>d* n'" by(rule DynPDG_path_cdep)
+      from `n'' -as'\<rightarrow>\<^sub>c\<^sub>d n'` have "n'' -as'\<rightarrow>\<^sub>d* n'" by(rule DynPDG_path_cdep)
       with `nx -asx'\<rightarrow>\<^sub>d* n''` have "nx -asx'@as'\<rightarrow>\<^sub>d* n'"
         by(fastforce intro:DynPDG_path_Append)
-      with `n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> nx` `as = asx@asx'`
-      have "\<exists>n'' V asx asx'. n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n'' \<and> n'' -asx'\<rightarrow>\<^sub>d* n' \<and> as@as' = asx@asx'"
+      with `n -{V}asx\<rightarrow>\<^sub>d\<^sub>d nx` `as = asx@asx'`
+      have "\<exists>n'' V asx asx'. n -{V}asx\<rightarrow>\<^sub>d\<^sub>d n'' \<and> n'' -asx'\<rightarrow>\<^sub>d* n' \<and> as@as' = asx@asx'"
         by auto
       thus ?thesis by simp
     qed
@@ -198,42 +198,42 @@ next
 next
   case (DynPDG_path_Append_ddep n as n'' V as' n')
   note IH = `as = [] \<and> n = n'' \<or>
-    (\<exists>nx asx asx'. n -asx\<rightarrow>\<^bsub>cd\<^esub> nx \<and> nx -asx'\<rightarrow>\<^sub>d* n'' \<and> as = asx@asx') \<or>
-    (\<exists>nx V asx asx'. n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> nx \<and> nx -asx'\<rightarrow>\<^sub>d* n'' \<and> as = asx@asx')`
+    (\<exists>nx asx asx'. n -asx\<rightarrow>\<^sub>c\<^sub>d nx \<and> nx -asx'\<rightarrow>\<^sub>d* n'' \<and> as = asx@asx') \<or>
+    (\<exists>nx V asx asx'. n -{V}asx\<rightarrow>\<^sub>d\<^sub>d nx \<and> nx -asx'\<rightarrow>\<^sub>d* n'' \<and> as = asx@asx')`
   from IH show ?case
   proof
     assume "as = [] \<and> n = n''"
-    with `n'' -{V}as'\<rightarrow>\<^bsub>dd\<^esub> n'` have "valid_node n'"
+    with `n'' -{V}as'\<rightarrow>\<^sub>d\<^sub>d n'` have "valid_node n'"
       by(fastforce intro:path_valid_node(2) DynPDG_path_CFG_path 
                         DynPDG_path_ddep)
-    with `as = [] \<and> n = n''` `n'' -{V}as'\<rightarrow>\<^bsub>dd\<^esub> n'`
-    have "\<exists>n'' V asx asx'. n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n'' \<and> n'' -asx'\<rightarrow>\<^sub>d* n' \<and> as@as' = asx@asx'"
+    with `as = [] \<and> n = n''` `n'' -{V}as'\<rightarrow>\<^sub>d\<^sub>d n'`
+    have "\<exists>n'' V asx asx'. n -{V}asx\<rightarrow>\<^sub>d\<^sub>d n'' \<and> n'' -asx'\<rightarrow>\<^sub>d* n' \<and> as@as' = asx@asx'"
       by(fastforce intro:DynPDG_path_Nil)
     thus ?thesis by simp
   next
-    assume "(\<exists>nx asx asx'. n -asx\<rightarrow>\<^bsub>cd\<^esub> nx \<and> nx -asx'\<rightarrow>\<^sub>d* n'' \<and> as = asx@asx') \<or>
-      (\<exists>nx V asx asx'. n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> nx \<and> nx -asx'\<rightarrow>\<^sub>d* n'' \<and> as = asx@asx')"
+    assume "(\<exists>nx asx asx'. n -asx\<rightarrow>\<^sub>c\<^sub>d nx \<and> nx -asx'\<rightarrow>\<^sub>d* n'' \<and> as = asx@asx') \<or>
+      (\<exists>nx V asx asx'. n -{V}asx\<rightarrow>\<^sub>d\<^sub>d nx \<and> nx -asx'\<rightarrow>\<^sub>d* n'' \<and> as = asx@asx')"
     thus ?thesis
     proof
-      assume "\<exists>nx asx asx'. n -asx\<rightarrow>\<^bsub>cd\<^esub> nx \<and> nx -asx'\<rightarrow>\<^sub>d* n'' \<and> as = asx@asx'"
-      then obtain nx asx asx' where "n -asx\<rightarrow>\<^bsub>cd\<^esub> nx" and "nx -asx'\<rightarrow>\<^sub>d* n''"
+      assume "\<exists>nx asx asx'. n -asx\<rightarrow>\<^sub>c\<^sub>d nx \<and> nx -asx'\<rightarrow>\<^sub>d* n'' \<and> as = asx@asx'"
+      then obtain nx asx asx' where "n -asx\<rightarrow>\<^sub>c\<^sub>d nx" and "nx -asx'\<rightarrow>\<^sub>d* n''"
         and "as = asx@asx'" by auto
-      from `n'' -{V}as'\<rightarrow>\<^bsub>dd\<^esub> n'` have "n'' -as'\<rightarrow>\<^sub>d* n'" by(rule DynPDG_path_ddep)
+      from `n'' -{V}as'\<rightarrow>\<^sub>d\<^sub>d n'` have "n'' -as'\<rightarrow>\<^sub>d* n'" by(rule DynPDG_path_ddep)
       with `nx -asx'\<rightarrow>\<^sub>d* n''` have "nx -asx'@as'\<rightarrow>\<^sub>d* n'"
         by(fastforce intro:DynPDG_path_Append)
-      with `n -asx\<rightarrow>\<^bsub>cd\<^esub> nx` `as = asx@asx'`
-      have "\<exists>n'' asx asx'. n -asx\<rightarrow>\<^bsub>cd\<^esub> n'' \<and> n'' -asx'\<rightarrow>\<^sub>d* n' \<and> as@as' = asx@asx'"
+      with `n -asx\<rightarrow>\<^sub>c\<^sub>d nx` `as = asx@asx'`
+      have "\<exists>n'' asx asx'. n -asx\<rightarrow>\<^sub>c\<^sub>d n'' \<and> n'' -asx'\<rightarrow>\<^sub>d* n' \<and> as@as' = asx@asx'"
         by auto
       thus ?thesis by simp
     next
-      assume "\<exists>nx V asx asx'. n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> nx \<and> nx -asx'\<rightarrow>\<^sub>d* n'' \<and> as = asx@asx'"
-      then obtain nx V' asx asx' where "n -{V'}asx\<rightarrow>\<^bsub>dd\<^esub> nx" and "nx -asx'\<rightarrow>\<^sub>d* n''"
+      assume "\<exists>nx V asx asx'. n -{V}asx\<rightarrow>\<^sub>d\<^sub>d nx \<and> nx -asx'\<rightarrow>\<^sub>d* n'' \<and> as = asx@asx'"
+      then obtain nx V' asx asx' where "n -{V'}asx\<rightarrow>\<^sub>d\<^sub>d nx" and "nx -asx'\<rightarrow>\<^sub>d* n''"
         and "as = asx@asx'" by auto
-      from `n'' -{V}as'\<rightarrow>\<^bsub>dd\<^esub> n'` have "n'' -as'\<rightarrow>\<^sub>d* n'" by(rule DynPDG_path_ddep)
+      from `n'' -{V}as'\<rightarrow>\<^sub>d\<^sub>d n'` have "n'' -as'\<rightarrow>\<^sub>d* n'" by(rule DynPDG_path_ddep)
       with `nx -asx'\<rightarrow>\<^sub>d* n''` have "nx -asx'@as'\<rightarrow>\<^sub>d* n'"
         by(fastforce intro:DynPDG_path_Append)
-      with `n -{V'}asx\<rightarrow>\<^bsub>dd\<^esub> nx` `as = asx@asx'`
-      have "\<exists>n'' V asx asx'. n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n'' \<and> n'' -asx'\<rightarrow>\<^sub>d* n' \<and> as@as' = asx@asx'"
+      with `n -{V'}asx\<rightarrow>\<^sub>d\<^sub>d nx` `as = asx@asx'`
+      have "\<exists>n'' V asx asx'. n -{V}asx\<rightarrow>\<^sub>d\<^sub>d n'' \<and> n'' -asx'\<rightarrow>\<^sub>d* n' \<and> as@as' = asx@asx'"
         by auto
       thus ?thesis by simp
     qed
@@ -244,9 +244,9 @@ qed
 lemma DynPDG_path_rev_cases [consumes 1,
   case_names DynPDG_path_Nil DynPDG_path_cdep_Append DynPDG_path_ddep_Append]:
   "\<lbrakk>n -as\<rightarrow>\<^sub>d* n'; \<lbrakk>as = []; n = n'\<rbrakk> \<Longrightarrow> Q;
-    \<And>n'' asx asx'. \<lbrakk>n -asx\<rightarrow>\<^bsub>cd\<^esub> n''; n'' -asx'\<rightarrow>\<^sub>d* n'; 
+    \<And>n'' asx asx'. \<lbrakk>n -asx\<rightarrow>\<^sub>c\<^sub>d n''; n'' -asx'\<rightarrow>\<^sub>d* n'; 
                        as = asx@asx'\<rbrakk> \<Longrightarrow> Q;
-    \<And>V n'' asx asx'. \<lbrakk>n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n''; n'' -asx'\<rightarrow>\<^sub>d* n'; 
+    \<And>V n'' asx asx'. \<lbrakk>n -{V}asx\<rightarrow>\<^sub>d\<^sub>d n''; n'' -asx'\<rightarrow>\<^sub>d* n'; 
                        as = asx@asx'\<rbrakk> \<Longrightarrow> Q\<rbrakk>
   \<Longrightarrow> Q"
 by(blast dest:DynPDG_path_split)
@@ -254,8 +254,8 @@ by(blast dest:DynPDG_path_split)
 
 
 lemma DynPDG_ddep_edge_no_shorter_ddep_edge:
-  assumes ddep:"n -{V}as\<rightarrow>\<^bsub>dd\<^esub> n'"
-  shows "\<forall>as' a as''. tl as = as'@a#as'' \<longrightarrow> \<not> sourcenode a -{V}a#as''\<rightarrow>\<^bsub>dd\<^esub> n'"
+  assumes ddep:"n -{V}as\<rightarrow>\<^sub>d\<^sub>d n'"
+  shows "\<forall>as' a as''. tl as = as'@a#as'' \<longrightarrow> \<not> sourcenode a -{V}a#as''\<rightarrow>\<^sub>d\<^sub>d n'"
 proof -
   from ddep have influence:"n influences V in n' via as"
     by(auto elim!:DynPDG_edge.cases)
@@ -267,7 +267,7 @@ proof -
     by(auto simp:dyn_data_dependence_def)
   { fix as' a' as'' 
     assume eq:"tl as = as'@a'#as''"
-      and ddep':"sourcenode a' -{V}a'#as''\<rightarrow>\<^bsub>dd\<^esub> n'"
+      and ddep':"sourcenode a' -{V}a'#as''\<rightarrow>\<^sub>d\<^sub>d n'"
     from eq as notin have noteq:"sourcenode a' \<noteq> n" by(auto simp:sourcenodes_def)
     from ddep' have "V \<in> Def (sourcenode a')"
       by(auto elim!:DynPDG_edge.cases simp:dyn_data_dependence_def)
@@ -279,7 +279,7 @@ qed
 
 lemma no_ddep_same_state:
   assumes path:"n -as\<rightarrow>* n'" and Uses:"V \<in> Use n'" and preds:"preds (kinds as) s"
-  and no_dep:"\<forall>as' a as''. as = as'@a#as'' \<longrightarrow> \<not> sourcenode a -{V}a#as''\<rightarrow>\<^bsub>dd\<^esub> n'"
+  and no_dep:"\<forall>as' a as''. as = as'@a#as'' \<longrightarrow> \<not> sourcenode a -{V}a#as''\<rightarrow>\<^sub>d\<^sub>d n'"
   shows "state_val (transfers (kinds as) s) V = state_val s V"
 proof -
   { fix n''
@@ -302,7 +302,7 @@ proof -
       by(simp add:dyn_data_dependence_def)
     hence "nx \<notin> set (sourcenodes as'')" by(rule dyn_influence_source_notin_tl_edges)
     with influence source
-    have "\<exists>asx a'. sourcenode a' -{V}a'#asx\<rightarrow>\<^bsub>dd\<^esub> n' \<and> sourcenode a' = nx \<and>
+    have "\<exists>asx a'. sourcenode a' -{V}a'#asx\<rightarrow>\<^sub>d\<^sub>d n' \<and> sourcenode a' = nx \<and>
           (\<exists>asx'. a#as'' = asx'@a'#asx)"
       by(fastforce intro:DynPDG_ddep_edge)
     with nodes no_dep as have False by(auto simp:sourcenodes_def) }
@@ -312,7 +312,7 @@ qed
 
 
 lemma DynPDG_ddep_edge_only_first_edge:
-  "\<lbrakk>n -{V}a#as\<rightarrow>\<^bsub>dd\<^esub> n'; preds (kinds (a#as)) s\<rbrakk> \<Longrightarrow> 
+  "\<lbrakk>n -{V}a#as\<rightarrow>\<^sub>d\<^sub>d n'; preds (kinds (a#as)) s\<rbrakk> \<Longrightarrow> 
     state_val (transfers (kinds (a#as)) s) V = state_val (transfer (kind a) s) V"
   apply -
   apply(erule DynPDG_edge.cases)
@@ -328,20 +328,20 @@ lemma Use_value_change_implies_DynPDG_ddep_edge:
   and "state_val (transfers (kinds as) s) V \<noteq> 
              state_val (transfers (kinds as) s') V"
   obtains as' a as'' where "as = as'@a#as''"
-  and "sourcenode a -{V}a#as''\<rightarrow>\<^bsub>dd\<^esub> n'"
+  and "sourcenode a -{V}a#as''\<rightarrow>\<^sub>d\<^sub>d n'"
   and "state_val (transfers (kinds as) s) V = 
        state_val (transfers (kinds (as'@[a])) s) V"
   and "state_val (transfers (kinds as) s') V = 
        state_val (transfers (kinds (as'@[a])) s') V"
 proof(atomize_elim)
   show "\<exists>as' a as''. as = as'@a#as'' \<and>
-                     sourcenode a -{V}a#as''\<rightarrow>\<^bsub>dd\<^esub> n' \<and>
+                     sourcenode a -{V}a#as''\<rightarrow>\<^sub>d\<^sub>d n' \<and>
              state_val (transfers (kinds as) s) V = 
              state_val (transfers (kinds (as'@[a])) s) V \<and>
              state_val (transfers (kinds as) s') V = 
              state_val (transfers (kinds (as'@[a])) s') V"
   proof(cases "\<forall>as' a as''. as = as'@a#as'' \<longrightarrow>
-                 \<not> sourcenode a -{V}a#as''\<rightarrow>\<^bsub>dd\<^esub> n'")
+                 \<not> sourcenode a -{V}a#as''\<rightarrow>\<^sub>d\<^sub>d n'")
     case True
     with `n -as\<rightarrow>* n'` `V \<in> Use n'` `preds (kinds as) s` `preds (kinds as) s'`
     have "state_val (transfers (kinds as) s) V = state_val s V"
@@ -353,17 +353,17 @@ proof(atomize_elim)
   next
     case False
     then obtain as' a as'' where [simp]:"as = as'@a#as''"
-      and "sourcenode a -{V}a#as''\<rightarrow>\<^bsub>dd\<^esub> n'" by auto
+      and "sourcenode a -{V}a#as''\<rightarrow>\<^sub>d\<^sub>d n'" by auto
     from `preds (kinds as) s` have "preds (kinds (a#as'')) (transfers (kinds as') s)"
       by(simp add:kinds_def preds_split)
-    with `sourcenode a -{V}a#as''\<rightarrow>\<^bsub>dd\<^esub> n'` have all:
+    with `sourcenode a -{V}a#as''\<rightarrow>\<^sub>d\<^sub>d n'` have all:
       "state_val (transfers (kinds (a#as'')) (transfers (kinds as') s)) V = 
        state_val (transfer (kind a) (transfers (kinds as') s)) V"
       by(auto dest!:DynPDG_ddep_edge_only_first_edge)
     from `preds (kinds as) s'` 
     have "preds (kinds (a#as'')) (transfers (kinds as') s')"
       by(simp add:kinds_def preds_split)
-    with `sourcenode a -{V}a#as''\<rightarrow>\<^bsub>dd\<^esub> n'` have all':
+    with `sourcenode a -{V}a#as''\<rightarrow>\<^sub>d\<^sub>d n'` have all':
       "state_val (transfers (kinds (a#as'')) (transfers (kinds as') s')) V = 
        state_val (transfer (kind a) (transfers (kinds as') s')) V"
       by(auto dest!:DynPDG_ddep_edge_only_first_edge)
@@ -377,7 +377,7 @@ proof(atomize_elim)
     from eq all' have "state_val (transfers (kinds as) s') V = 
                        state_val (transfers (kinds (as'@[a])) s') V"
       by(simp add:transfers_split kinds_def)
-    ultimately show ?thesis using `sourcenode a -{V}a#as''\<rightarrow>\<^bsub>dd\<^esub> n'` by simp blast
+    ultimately show ?thesis using `sourcenode a -{V}a#as''\<rightarrow>\<^sub>d\<^sub>d n'` by simp blast
   qed
 qed
 

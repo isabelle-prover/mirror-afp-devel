@@ -7,7 +7,7 @@ Authors: Toby Murray, Robert Sison, Edward Pierzchalski, Christine Rizkallah
 theory Example_TypeSystem
 imports 
   "../TypeSystem" 
-  "TypeSystemTactics"
+  TypeSystemTactics
 begin
 
 datatype addr = low_var | high_var | control_var | buffer | temp

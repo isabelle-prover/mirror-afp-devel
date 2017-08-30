@@ -1,7 +1,7 @@
 section \<open>Simple Cyclicity Checker\<close>
 theory Cyc_Check
 imports "../DFS_Framework"
-  "../../CAVA_Automata/Digraph_Impl"
+  CAVA_Automata.Digraph_Impl
   "../Misc/Impl_Rev_Array_Stack"
 begin
 text \<open>

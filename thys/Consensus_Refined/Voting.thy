@@ -1,6 +1,6 @@
 section {* The Voting Model *}
 
-theory Voting imports Map Refinement Consensus_Misc Quorums
+theory Voting imports HOL.Map Refinement Consensus_Misc Quorums
 begin
 
 subsection {* Model definition *}

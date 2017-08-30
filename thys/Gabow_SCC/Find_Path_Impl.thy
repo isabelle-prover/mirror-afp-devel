@@ -2,7 +2,7 @@ section {* Implementation of Safety Property Model Checker \label{sec:find_path_
 theory Find_Path_Impl
 imports 
   Find_Path
-  "../CAVA_Automata/Digraph_Impl"
+  CAVA_Automata.Digraph_Impl
 begin
 
   section {* Workset Algorithm *}

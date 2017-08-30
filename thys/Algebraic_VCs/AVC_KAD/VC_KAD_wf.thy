@@ -8,7 +8,7 @@ subsection{* Verification Component for Total Correctness *}
 
 theory VC_KAD_wf
 
-imports VC_KAD "../../KAD/Modal_Kleene_Algebra_Applications"
+imports VC_KAD KAD.Modal_Kleene_Algebra_Applications
 
 begin
 

@@ -6,7 +6,7 @@
 section \<open>Utilities for Lambda-Free Orders\<close>
 
 theory Lambda_Free_Util
-imports "~~/src/HOL/Library/Extended_Nat" "~~/src/HOL/Library/Multiset_Order"
+imports "HOL-Library.Extended_Nat" "HOL-Library.Multiset_Order"
 begin
 
 text \<open>

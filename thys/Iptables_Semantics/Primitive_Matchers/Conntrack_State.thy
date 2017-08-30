@@ -1,5 +1,5 @@
 theory Conntrack_State
-imports "../Common/Negation_Type" "../../Simple_Firewall/Common/Lib_Enum_toString"
+imports "../Common/Negation_Type" Simple_Firewall.Lib_Enum_toString
 begin
 
 

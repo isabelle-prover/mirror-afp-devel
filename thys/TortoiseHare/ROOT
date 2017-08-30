@@ -3,7 +3,7 @@ chapter AFP
 session "TortoiseHare" (AFP) = "HOL-Library" +
   options [timeout = 600]
   theories [document = false]
-    "~~/src/HOL/Library/While_Combinator"
+    "HOL-Library.While_Combinator"
   theories
     Basis
     TortoiseHare

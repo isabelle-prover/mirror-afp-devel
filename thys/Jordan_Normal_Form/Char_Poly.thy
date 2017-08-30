@@ -12,9 +12,9 @@ text \<open>We define eigenvalues, eigenvectors, and the characteristic polynomi
  
 theory Char_Poly
 imports 
-  "../Polynomial_Factorization/Fundamental_Theorem_Algebra_Factorized"
-  "../Polynomial_Interpolation/Missing_Polynomial"
-  "../Polynomial_Interpolation/Ring_Hom_Poly"
+  Polynomial_Factorization.Fundamental_Theorem_Algebra_Factorized
+  Polynomial_Interpolation.Missing_Polynomial
+  Polynomial_Interpolation.Ring_Hom_Poly
   Determinant
   Complex_Main
 begin

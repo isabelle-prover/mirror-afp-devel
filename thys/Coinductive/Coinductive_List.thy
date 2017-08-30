@@ -6,10 +6,10 @@ section {* Coinductive lists and their operations *}
 
 theory Coinductive_List
 imports
-  "~~/src/HOL/Library/Infinite_Set"
-  "~~/src/HOL/Library/Sublist"
-  "~~/src/HOL/Library/Simps_Case_Conv"
-  "Coinductive_Nat"
+  "HOL-Library.Infinite_Set"
+  "HOL-Library.Sublist"
+  "HOL-Library.Simps_Case_Conv"
+  Coinductive_Nat
 begin
 
 subsection {* Auxiliary lemmata *}

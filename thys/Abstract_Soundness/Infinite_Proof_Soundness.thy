@@ -1,6 +1,6 @@
 (*<*)
 theory Infinite_Proof_Soundness
-imports Finite_Proof_Soundness "~~/src/HOL/Library/BNF_Corec"
+imports Finite_Proof_Soundness "HOL-Library.BNF_Corec"
 begin
 
 (* Reference: A Generic Cyclic Theorem Prover

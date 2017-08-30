@@ -6,11 +6,11 @@ session Case_Labeling (AFP) = HOL +
     "HOL-Eisbach"
     "HOL-Hoare"
   theories [document = false]
-    "~~/src/HOL/Eisbach/Eisbach"
-    "~~/src/HOL/Hoare/Hoare_Logic"
+    "HOL-Eisbach.Eisbach"
+    "HOL-Hoare.Hoare_Logic"
   theories
-    "Case_Labeling"
-    "Case_Labeling_Examples"
+    Case_Labeling
+    Case_Labeling_Examples
   document_files
     "root.tex"
     "root.bib"

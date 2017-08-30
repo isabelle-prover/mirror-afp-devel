@@ -2,10 +2,10 @@ section \<open>Permutations as Products of Disjoint Cycles\<close>
 
 theory Executable_Permutations
 imports
-  "../../Graph_Theory/Funpow"
+  Graph_Theory.Funpow
   List_Aux
-  "~~/src/HOL/Library/Permutations"
-  "~~/src/HOL/Library/Rewrite"
+  "HOL-Library.Permutations"
+  "HOL-Library.Rewrite"
 begin
 
 subsection \<open>Cyclic Permutations\<close>

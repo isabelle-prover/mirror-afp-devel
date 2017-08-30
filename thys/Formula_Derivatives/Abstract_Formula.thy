@@ -5,8 +5,8 @@ section \<open>Derivatives of Abstract Formulas\<close>
 theory Abstract_Formula
 imports
   Automaton
-  "../Deriving/Comparator_Generator/Compare_Instances"
-  "~~/src/HOL/Library/Code_Target_Nat"
+  Deriving.Compare_Instances
+  "HOL-Library.Code_Target_Nat"
   While_Default
 begin
 (*>*)

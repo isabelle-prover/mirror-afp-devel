@@ -4,7 +4,7 @@ section "Initial Normalization of the Input"
 
 (*<*)
 theory Init_Normalization
-imports Pi_Regular_Exp "~~/src/HOL/Library/Simps_Case_Conv"
+imports Pi_Regular_Exp "HOL-Library.Simps_Case_Conv"
 begin
 (*>*)
 

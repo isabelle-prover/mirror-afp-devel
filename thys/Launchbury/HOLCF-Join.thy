@@ -1,5 +1,5 @@
 theory "HOLCF-Join"
-imports "~~/src/HOL/HOLCF/HOLCF"
+imports HOLCF
 begin
 
 subsubsection {* Binary Joins and compatibility *}

@@ -16,8 +16,8 @@ subsection \<open>Bivariate Polynomials\<close>
 
 theory Bivariate_Polynomials
 imports 
-  "../Polynomial_Interpolation/Ring_Hom_Poly"
-  "../Subresultants/More_Homomorphisms" 
+  Polynomial_Interpolation.Ring_Hom_Poly
+  Subresultants.More_Homomorphisms 
   Unique_Factorization_Poly (* Only for preserving sublocaling *)
 begin
 

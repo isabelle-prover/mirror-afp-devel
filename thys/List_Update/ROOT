@@ -6,16 +6,16 @@ session List_Update (AFP) = "HOL-Probability" +
     "List-Index"
     "Regular-Sets"
   theories [document = false]
-    "../List-Index/List_Index"
-    "../Regular-Sets/Equivalence_Checking"
+    "List-Index.List_Index"
+    "Regular-Sets.Equivalence_Checking"
   theories
-    "Move_to_Front"
-    "Competitive_Analysis"
-    "BIT"
-    "TS"
-    "BIT_pairwise"
-    "BIT_2comp_on2"
-    "Comb"
+    Move_to_Front
+    Competitive_Analysis
+    BIT
+    TS
+    BIT_pairwise
+    BIT_2comp_on2
+    Comb
   document_files
     "root.bib"
     "root.tex"

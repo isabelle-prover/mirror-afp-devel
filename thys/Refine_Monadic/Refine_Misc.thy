@@ -1,8 +1,8 @@
 section {* Miscellanneous Lemmas and Tools *}
 theory Refine_Misc
 imports 
-  "../Automatic_Refinement/Automatic_Refinement"
-  "Refine_Mono_Prover"
+  Automatic_Refinement.Automatic_Refinement
+  Refine_Mono_Prover
 begin
 
 text {* Basic configuration for monotonicity prover: *}

@@ -1,7 +1,7 @@
 section {* Framework Graph Lifting for Noninterference *}
 
 theory LiftingIntra 
-  imports NonInterferenceIntra "../Slicing/StaticIntra/CDepInstantiations" 
+  imports NonInterferenceIntra Slicing.CDepInstantiations 
 begin
 
 text {* In this section, we show how a valid CFG from the slicing framework in

@@ -1,7 +1,7 @@
 theory Benchmark_Set_Default 
 imports
   Benchmark_Set
-  "~~/src/HOL/Library/Code_Target_Nat"
+  "HOL-Library.Code_Target_Nat"
 begin
 
 text {* Implement set equality for all combinations of @{term "List.set"} and @{term "List.coset"} *}

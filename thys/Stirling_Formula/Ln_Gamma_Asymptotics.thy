@@ -7,9 +7,9 @@
 section \<open>Complete asymptotics of the logarithmic Gamma function\<close>
 theory Ln_Gamma_Asymptotics
 imports 
-  "~~/src/HOL/Analysis/Analysis"
-  "../Bernoulli/Bernoulli_FPS" 
-  "../Bernoulli/Periodic_Bernpoly" 
+  "HOL-Analysis.Analysis"
+  Bernoulli.Bernoulli_FPS 
+  Bernoulli.Periodic_Bernpoly 
   Stirling_Formula
 begin
   
@@ -305,7 +305,7 @@ proof -
   have "((\<lambda>x. - pbernpoly 1 x / (x + s)) has_integral
           (\<Sum>I\<in>?A. (Inf I + 1 / 2 + s) * (ln (Inf I + 1 + s) - ln (Inf I + s)) - 1))
           (\<Union>n\<in>{0..<N}. {real n..real (n + 1)})" (is "(_ has_integral ?i) _")
-    by (intro has_integral_unions * finite_imageI) (auto intro!: negligible_atLeastAtMostI)
+    by (intro has_integral_Union * finite_imageI) (auto intro!: negligible_atLeastAtMostI)
   hence has_integral: "((\<lambda>x. - pbernpoly 1 x / (x + s)) has_integral ?i) {0..real N}"
     by (rule has_integral_spike_set)
        (insert Union_atLeastAtMost[of N], cases "N = 0", simp_all add: Union_atLeastAtMost)

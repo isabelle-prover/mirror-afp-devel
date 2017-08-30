@@ -1,12 +1,12 @@
 theory Sepref_Misc
 imports 
-  "../../Refine_Monadic/Refine_Monadic"
+  Refine_Monadic.Refine_Monadic
   PO_Normalizer
-  "../../List-Index/List_Index"
-  "../../Separation_Logic_Imperative_HOL/Sep_Main"
+  "List-Index.List_Index"
+  Sepref_Prereq.Sep_Main
   Named_Theorems_Rev
-  "~~/src/HOL/Eisbach/Eisbach"
-  "../../Separation_Logic_Imperative_HOL/Examples/Array_Blit"
+  "HOL-Eisbach.Eisbach"
+  Sepref_Prereq.Array_Blit
 begin
 
   hide_const (open) CONSTRAINT

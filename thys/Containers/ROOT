@@ -8,7 +8,7 @@ session Containers (AFP) = "Deriving" +
     Automatic_Refinement
     Collections
   theories [document = false]
-    "../Regular-Sets/Regexp_Method"
+    "Regular-Sets.Regexp_Method"
   theories
     Containers_Auxiliary
     Card_Datatype

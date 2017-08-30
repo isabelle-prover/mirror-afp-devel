@@ -4,7 +4,7 @@ theory Conditionals
 imports
   Complex_Main
   "../Case_Labeling"
-  "~~/src/HOL/Eisbach/Eisbach"
+  "HOL-Eisbach.Eisbach"
 begin
 
 context begin

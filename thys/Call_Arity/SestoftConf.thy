@@ -1,5 +1,5 @@
 theory SestoftConf
-imports "../Launchbury/Terms" "../Launchbury/Substitution"
+imports Launchbury.Terms Launchbury.Substitution
 begin
 
 datatype stack_elem = Alts exp exp | Arg var | Upd var | Dummy var

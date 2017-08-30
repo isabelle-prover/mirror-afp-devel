@@ -1,6 +1,6 @@
 theory Natural_Deduction
 imports
-  "../Abstract_Completeness/Abstract_Completeness"
+  Abstract_Completeness.Abstract_Completeness
   Abstract_Rules
   Entailment
 begin

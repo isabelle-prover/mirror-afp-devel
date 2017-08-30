@@ -7,7 +7,7 @@ section {* The delay bisimulation between intermediate language and JVM *}
 theory J1JVMBisim imports 
   Execs
   "../BV/BVNoTypeError"
-  "J1"
+  J1
 begin
 
 declare Listn.lesub_list_impl_same_size[simp del]

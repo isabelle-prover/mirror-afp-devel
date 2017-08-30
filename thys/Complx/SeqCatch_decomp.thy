@@ -9,7 +9,7 @@
  *)
 text \<open>Helper lemmas for sequential reasoning about Seq and Catch\<close>
 theory SeqCatch_decomp 
-imports "SmallStep"
+imports SmallStep
 begin
 
 lemma redex_size[rule_format] :

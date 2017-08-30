@@ -6,8 +6,8 @@
 section {* Setup for Isabelle's quotient package for lazy lists *}
 
 theory Quotient_Coinductive_List imports
-  "~~/src/HOL/Library/Quotient_List"
-  "~~/src/HOL/Library/Quotient_Set"
+  "HOL-Library.Quotient_List"
+  "HOL-Library.Quotient_Set"
   Coinductive_List
 begin
 

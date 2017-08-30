@@ -8,7 +8,7 @@
 section "Propaedeutic definitions and lemmas"
 
 theory Propaedeutics
-imports Complex_Main "~~/src/HOL/Library/Countable"
+imports Complex_Main "HOL-Library.Countable"
 begin
 
 declare [[goals_limit = 20]]

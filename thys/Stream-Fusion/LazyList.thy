@@ -1,7 +1,7 @@
 section {* Lazy Lists *}
 
 theory LazyList
-imports HOLCF "~~/src/HOL/HOLCF/Library/Int_Discrete"
+imports HOLCF "HOLCF-Library.Int_Discrete"
 begin
 
 domain 'a LList = LNil | LCons (lazy 'a) (lazy "'a LList")

@@ -9,8 +9,8 @@
  *)
 
 theory Separata
-imports Main "../Separation_Algebra/Separation_Algebra" "~~/src/HOL/Eisbach/Eisbach_Tools"
- "~~/src/HOL/Library/Multiset"
+imports Main Separation_Algebra.Separation_Algebra "HOL-Eisbach.Eisbach_Tools"
+ "HOL-Library.Multiset"
 begin
 
 text {* The tactics in this file are a simple proof search procedure based on

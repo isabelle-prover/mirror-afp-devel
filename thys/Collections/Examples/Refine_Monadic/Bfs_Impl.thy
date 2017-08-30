@@ -1,8 +1,8 @@
 section {*\isaheader{Verified BFS Implementation in ML}*}
 theory Bfs_Impl
 imports 
-  "../../../Refine_Monadic/examples/Breadth_First_Search"
-  "../../Refine_Dflt_Only_ICF"
+  Refine_Monadic.Breadth_First_Search
+  Collections.Refine_Dflt_Only_ICF
 begin
   text {*
     Originally, this was part of our submission to the 

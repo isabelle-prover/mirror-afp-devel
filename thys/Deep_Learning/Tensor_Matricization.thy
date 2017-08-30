@@ -4,7 +4,7 @@ section \<open>Tensor Matricization\<close>
 
 theory Tensor_Matricization
 imports Tensor_Plus
-"../Jordan_Normal_Form/Matrix" DL_Missing_Sublist
+Jordan_Normal_Form.Matrix DL_Missing_Sublist
 begin
 
 fun digit_decode :: "nat list \<Rightarrow> nat list \<Rightarrow> nat" where

@@ -94,13 +94,15 @@ object AFP_Check_Roots extends isabelle.Isabelle_Tool.Body {
   def apply(args: List[String]): Unit =
   {
     val full_tree = Sessions.load(Options.init(), Nil, List(afp_dir))
-    val (selected, _) = full_tree.selection(Sessions.Selection(false, false, Nil, Nil, Nil, Nil))
+    val (selected, _) = full_tree.selection(Sessions.Selection.empty)
 
     val checks = List(
       check_timeout(full_tree, selected),
       check_paths(full_tree, selected),
       check_chapter(full_tree, selected),
       check_groups(full_tree, selected))
+
+    print_good(s"${selected.length} sessions have been checked")
 
     if (checks.exists(!_))
     {

@@ -10,7 +10,7 @@ section \<open>The Graceful Transfinite Knuth--Bendix Order with Subterm Coeffic
   Lambda-Free Higher-Order Terms\<close>
 
 theory Lambda_Free_TKBO_Coefs
-imports Lambda_Free_KBO_Util "../Nested_Multisets_Ordinals/Signed_Syntactic_Ordinal"
+imports Lambda_Free_KBO_Util Nested_Multisets_Ordinals.Signed_Syntactic_Ordinal
 abbrevs
   "=p" = "=\<^sub>p"
   ">p" = ">\<^sub>p"

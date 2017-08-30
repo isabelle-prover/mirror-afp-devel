@@ -11,8 +11,8 @@ section \<open>Preliminaries\<close>
 
 theory Decreasing_Diagrams_II_Aux
 imports
-  "../Well_Quasi_Orders/Multiset_Extension"
-  "../Well_Quasi_Orders/Well_Quasi_Orders"
+  Well_Quasi_Orders.Multiset_Extension
+  Well_Quasi_Orders.Well_Quasi_Orders
 begin
 
 subsection \<open>Trivialities\<close>

@@ -6,7 +6,7 @@
 section \<open>LTL Translation Layer\<close>
 
 theory LTL_Compat
-  imports Main "../../LTL/LTL" "../LTL_FGXU"
+  imports Main LTL.LTL "../LTL_FGXU"
 begin
 
 --\<open>The following infrastructure translates the generic @{datatype ltln} datatype to special structure used in this project\<close>

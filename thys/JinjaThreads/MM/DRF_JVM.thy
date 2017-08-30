@@ -9,7 +9,7 @@ imports
   JMM_Common
   JMM_JVM
   "../BV/BVProgressThreaded"
-  "SC_Legal"
+  SC_Legal
 begin
 
 subsection {* DRF guarantee for the JVM *}
