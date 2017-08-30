@@ -6,6 +6,7 @@ theory Pairing_Heap_List1
 imports
   "HOL-Library.Multiset"
   "HOL-Library.Pattern_Aliases"
+  "~~/src/HOL/Data_Structures/Priority_Queue"
 begin
 
 subsection \<open>Definitions\<close>
@@ -99,12 +100,20 @@ fun mset_heap :: "'a heap \<Rightarrow>'a multiset" where
 "mset_heap Empty = {#}" |
 "mset_heap (Hp x hs) = {#x#} + Union_mset(mset(map mset_heap hs))"
 
+lemma set_mset_mset_heap: "set_mset (mset_heap h) = set_heap h"
+by(induction h) auto
+
+lemma mset_heap_empty_iff: "mset_heap h = {#} \<longleftrightarrow> h = Empty"
+by (cases h) auto
+
 lemma get_min_in: "h \<noteq> Empty \<Longrightarrow> get_min h \<in> set_heap(h)"
 by(induction rule: get_min.induct)(auto)
 
 lemma get_min_min: "\<lbrakk> h \<noteq> Empty; pheap h; x \<in> set_heap(h) \<rbrakk> \<Longrightarrow> get_min h \<le> x"
 by(induction h rule: get_min.induct)(auto)
 
+lemma get_min: "\<lbrakk> pheap h;  h \<noteq> Empty \<rbrakk> \<Longrightarrow> get_min h = Min_mset (mset_heap h)"
+by (metis Min_eqI finite_set_mset get_min_in get_min_min set_mset_mset_heap)
 
 lemma mset_merge: "mset_heap (merge h1 h2) = mset_heap h1 + mset_heap h2"
 by(induction h1 h2 rule: merge.induct)(auto simp: add_ac)
@@ -118,5 +127,31 @@ by(induction hs rule: merge_pairs.induct)(auto simp: mset_merge)
 lemma mset_del_min: "h \<noteq> Empty \<Longrightarrow>
   mset_heap (del_min h) = mset_heap h - {#get_min h#}"
 by(induction h rule: del_min.induct) (auto simp: pass12_merge_pairs mset_merge_pairs)
+
+
+text \<open>Last step: prove all axioms of the priority queue specification:\<close>
+
+interpretation pairing: Priority_Queue
+where empty = Empty and is_empty = "\<lambda>h. h = Empty"
+and insert = insert and del_min = del_min
+and get_min = get_min and invar = pheap
+and mset = mset_heap
+proof(standard, goal_cases)
+  case 1 show ?case by simp
+next
+  case (2 q) show ?case by (cases q) auto
+next
+  case 3 show ?case by(simp add: mset_insert mset_merge)
+next
+  case 4 thus ?case by(simp add: mset_del_min mset_heap_empty_iff)
+next
+  case 5 thus ?case using get_min mset_heap.simps(1) by blast
+next
+  case 6 thus ?case by(simp)
+next
+  case 7 thus ?case by(rule pheap_insert)
+next
+  case 8 thus ?case by (simp add: pheap_del_min)
+qed
 
 end

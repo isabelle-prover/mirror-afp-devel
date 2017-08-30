@@ -240,6 +240,9 @@ next
   thus ?thesis by(auto split: prod.split)
 qed
 
+
+text \<open>Last step: prove all axioms of the priority queue specification:\<close>
+
 interpretation braun: Priority_Queue
 where empty = Leaf and is_empty = "\<lambda>h. h = Leaf"
 and insert = insert and del_min = del_min
