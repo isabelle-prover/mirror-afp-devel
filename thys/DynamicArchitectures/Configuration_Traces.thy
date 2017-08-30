@@ -8,7 +8,7 @@ text {*
   Since configuration traces may be finite as well as infinite, the theory depends on Lochbihler's theory of co-inductive lists~\cite{Lochbihler2010}.
 *}
 theory Configuration_Traces
-  imports Coinductive.Coinductive_List
+  imports "../Coinductive/Coinductive_List"
 begin
 text {*
   In the following we first provide some preliminary results for natural numbers, extended natural numbers, and lazy lists.
