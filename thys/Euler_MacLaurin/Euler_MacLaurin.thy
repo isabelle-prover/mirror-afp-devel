@@ -772,10 +772,10 @@ next
       by (simp add: g_def scaleR_add_right [symmetric] d_def)
     finally show "(h has_integral d i) {of_int i..of_int (i + 1)}" .
   qed simp_all
-  hence *: "\<forall>I\<in>?A. ((\<lambda>x. (frac x - 1 / 2) *\<^sub>R f' x) has_integral d (\<lfloor>Inf I\<rfloor>)) I"
+  hence *: "\<And>I. I\<in>?A \<Longrightarrow> ((\<lambda>x. (frac x - 1 / 2) *\<^sub>R f' x) has_integral d (\<lfloor>Inf I\<rfloor>)) I"
     by (auto simp: add_ac)
   have "((\<lambda>x::real. (frac x - 1 / 2) *\<^sub>R f' x) has_integral (\<Sum>I\<in>?A. d (\<lfloor>Inf I\<rfloor>))) (\<Union>?A)"
-    by (intro has_integral_Union * finite_imageI) (auto intro!: negligible_atLeastAtMostI)
+    by (intro has_integral_Union * finite_imageI) (force intro!: negligible_atLeastAtMostI)+
   also have "\<Union>?A = {of_int a..of_int b}"
     by (intro Union_atLeastAtMost_real_of_int ab)
   also have "(\<Sum>I\<in>?A. d (\<lfloor>Inf I\<rfloor>)) = (\<Sum>i=a..<b. d i)"
