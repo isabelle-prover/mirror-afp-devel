@@ -3,7 +3,9 @@
 section \<open>Pairing Heap According to Okasaki\<close>
 
 theory Pairing_Heap_List1
-imports "HOL-Library.Multiset"
+imports
+  "HOL-Library.Multiset"
+  "HOL-Library.Pattern_Aliases"
 begin
 
 subsection \<open>Definitions\<close>
@@ -24,11 +26,16 @@ hide_const (open) insert
 context linorder
 begin
 
+context includes pattern_aliases
+begin
+
 fun merge :: "'a heap \<Rightarrow> 'a heap \<Rightarrow> 'a heap" where
 "merge h Empty = h" |
 "merge Empty h = h" |
-"merge (Hp x lx) (Hp y ly) = 
-    (if x < y then Hp x (Hp y ly # lx) else Hp y (Hp x lx # ly))"
+"merge (Hp x lx =: hx) (Hp y ly =: hy) = 
+    (if x < y then Hp x (hy # lx) else Hp y (hx # ly))"
+
+end
 
 fun insert :: "'a \<Rightarrow> 'a heap \<Rightarrow> 'a heap" where
 "insert x h = merge (Hp x []) h"
