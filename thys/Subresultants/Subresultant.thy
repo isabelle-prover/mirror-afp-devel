@@ -281,7 +281,7 @@ proof -
     fix i j
     assume ij: "i < ?n" "j < ?n"
     have "(?S * ?M) $$ (i,j) = row ?S i \<bullet> col ?M j"
-      by (rule index_times_mat, insert ij dim, auto)
+      by (rule index_mult_mat, insert ij dim, auto)
     also have "\<dots> = (\<Sum>k = 0..<?n. row S i $ k * col ?M j $ k)" unfolding scalar_prod_def S_def[symmetric]
       by simp
     also have "\<dots> = (\<Sum>k = 0..<?n. S $$ (i,k) * ?M $$ (k,j))"

@@ -710,8 +710,8 @@ proof (rule mat_comp_allI)
     and jC: "j < dim_col C"
     using A B C by auto
   show "?AC $$ (i,j) \<succ> ?BC $$ (i,j)"
-    unfolding index_times_mat(1)[OF iA jC]
-    unfolding index_times_mat(1)[OF iB jC]
+    unfolding index_mult_mat(1)[OF iA jC]
+    unfolding index_mult_mat(1)[OF iB jC]
   proof(rule scalar_prod_left_mono)
     show "row A i \<in> carrier_vec n" using A by auto
     show "row B i \<in> carrier_vec n" using B by auto
@@ -740,8 +740,8 @@ proof (rule mat_comp_allI)
     and jC: "j < dim_col C"
     using A B C by auto
   show "?AB $$ (i,j) \<succ> ?AC $$ (i,j)"
-    unfolding index_times_mat(1)[OF iA jB]
-    unfolding index_times_mat(1)[OF iA jC]
+    unfolding index_mult_mat(1)[OF iA jB]
+    unfolding index_mult_mat(1)[OF iA jC]
   proof(rule scalar_prod_right_mono)
     show "row A i \<in> carrier_vec n" using A by auto
     show "col B j \<in> carrier_vec n" using B by auto
@@ -783,7 +783,7 @@ lemma mat_arc_pos_mult:
   and apB: "mat_arc_pos B"
   shows "mat_arc_pos (A * B)"
   unfolding mat_arc_posI_def
-  apply(subst index_times_mat(1))
+  apply(subst index_mult_mat(1))
 proof -
   let ?prod = "row A 0 \<bullet> col B 0"
   let ?head = "A $$ (0,0) * B $$ (0,0)"

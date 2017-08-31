@@ -396,7 +396,7 @@ proof -
     have "col A' 0 $ i = A' $$ (i, 0)" using A' i by auto
     also have "... = (W' * (A * W)) $$ (i, 0)" unfolding A'_def using W' A W by auto
     also have "... = row W' i \<bullet> col (A * W) 0"
-      apply (subst index_times_mat) using W W' A i by auto
+      apply (subst index_mult_mat) using W W' A i by auto
     also have "row W' i = vec_inv ?wsi"
       unfolding W'_def W_def unfolding corthogonal_inv_def using i ws by auto
     also have "col (A * W) 0 = A *\<^sub>v col W 0" using A W z A' by auto

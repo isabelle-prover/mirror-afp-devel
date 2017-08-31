@@ -761,7 +761,7 @@ lemma index_transpose_mat[simp]:
   "dim_row (transpose_mat A) = dim_col A" "dim_col (transpose_mat A) = dim_row A"
   unfolding transpose_mat_def by auto
 
-lemma index_times_mat[simp]: 
+lemma index_mult_mat[simp]: 
   "i < dim_row A \<Longrightarrow> j < dim_col B \<Longrightarrow> (A * B) $$ (i,j) = row A i \<bullet> col B j"
   "dim_row (A * B) = dim_row A" "dim_col (A * B) = dim_col B"
   by (auto simp: times_mat_def)
@@ -2320,5 +2320,49 @@ qed
 
 lemma (in semiring_hom) vec_hom_smult: "vec\<^sub>h (ev \<cdot>\<^sub>v v) = hom ev \<cdot>\<^sub>v vec\<^sub>h v"
   by (rule eq_vecI, auto simp: hom_distribs)
+
+lemma minus_scalar_prod_distrib: fixes v\<^sub>1 :: "'a :: ring vec" 
+  assumes v: "v\<^sub>1 \<in> carrier_vec n" "v\<^sub>2 \<in> carrier_vec n" "v\<^sub>3 \<in> carrier_vec n"
+  shows "(v\<^sub>1 - v\<^sub>2) \<bullet> v\<^sub>3 = v\<^sub>1 \<bullet> v\<^sub>3 - v\<^sub>2 \<bullet> v\<^sub>3"
+  unfolding minus_add_uminus_vec[OF v(1-2)]
+  by (subst add_scalar_prod_distrib[OF v(1)], insert v, auto)
+
+lemma scalar_prod_minus_distrib: fixes v\<^sub>1 :: "'a :: ring vec"
+  assumes v: "v\<^sub>1 \<in> carrier_vec n" "v\<^sub>2 \<in> carrier_vec n" "v\<^sub>3 \<in> carrier_vec n"
+  shows "v\<^sub>1 \<bullet> (v\<^sub>2 - v\<^sub>3) = v\<^sub>1 \<bullet> v\<^sub>2 - v\<^sub>1 \<bullet> v\<^sub>3"
+  unfolding minus_add_uminus_vec[OF v(2-3)]
+  by (subst scalar_prod_add_distrib[OF v(1)], insert v, auto)
+
+lemma uminus_add_minus_vec:
+  assumes "l \<in> carrier_vec n" "r \<in> carrier_vec n"
+  shows "- ((l::'a :: ab_group_add vec) + r) = (- l - r)"
+  using assms by auto
+
+lemma minus_add_minus_vec: fixes u :: "'a :: ab_group_add vec" 
+  assumes "u \<in> carrier_vec n" "v \<in> carrier_vec n" "w \<in> carrier_vec n"
+  shows "u - (v + w) = u - v - w"
+  using assms by auto
+
+lemma uminus_add_minus_mat:
+  assumes "l \<in> carrier_mat nr nc" "r \<in> carrier_mat nr nc"
+  shows "- ((l::'a :: ab_group_add mat) + r) = (- l - r)"
+  using assms by auto
+
+lemma minus_add_minus_mat: fixes u :: "'a :: ab_group_add mat" 
+  assumes "u \<in> carrier_mat nr nc" "v \<in> carrier_mat nr nc" "w \<in> carrier_mat nr nc"
+  shows "u - (v + w) = u - v - w"
+  using assms by auto
+
+lemma uminus_uminus_vec[simp]: "- (- (v::'a:: group_add vec)) = v" 
+  by auto
+
+lemma uminus_eq_vec[simp]: "- (v::'a:: group_add vec) = - w \<longleftrightarrow> v = w"
+  by (metis uminus_uminus_vec)
+
+lemma uminus_uminus_mat[simp]: "- (- (A::'a:: group_add mat)) = A" 
+  by auto
+
+lemma uminus_eq_mat[simp]: "- (A::'a:: group_add mat) = - B \<longleftrightarrow> A = B"
+  by (metis uminus_uminus_mat)
 
 end
