@@ -160,7 +160,7 @@ proof -
   qed
 qed (auto simp: class_ring_simps)
 
-lemmas matrix_vs_simps = mat_module_simps class_ring_simps
+lemmas matrix_vs_simps = module_mat_simps class_ring_simps
 
 definition class_field :: "'a :: field ring"
   where [class_ring_simps]: "class_field \<equiv> class_ring"
@@ -172,24 +172,24 @@ locale matrix_ring =
   fixes n :: nat
     and field_type :: "'a :: field itself"
 begin
-abbreviation R where "R \<equiv> ring\<^sub>m TYPE('a) n n"
+abbreviation R where "R \<equiv> ring_mat TYPE('a) n n"
 sublocale ring R
-  rewrites "carrier R = carrier\<^sub>m n n"
-    and "add R = op \<oplus>\<^sub>m"
-    and "mult R = op \<otimes>\<^sub>m"
-    and "one R = \<one>\<^sub>m n"
-    and "zero R = \<zero>\<^sub>m n n"
-  using mat_ring by (auto simp: mat_ring_simps)
+  rewrites "carrier R = carrier_mat n n"
+    and "add R = op +"
+    and "mult R = op *"
+    and "one R = 1\<^sub>m n"
+    and "zero R = 0\<^sub>m n n"
+  using ring_mat by (auto simp: ring_mat_simps)
 
 end
 
-lemma matrix_vs: "vectorspace (class_ring :: 'a :: field ring) (module\<^sub>m TYPE('a) nr nc)"
+lemma matrix_vs: "vectorspace (class_ring :: 'a :: field ring) (module_mat TYPE('a) nr nc)"
 proof -
-  interpret abelian_group "module\<^sub>m TYPE('a) nr nc"
-    by (rule mat_module_abelian_group)
+  interpret abelian_group "module_mat TYPE('a) nr nc"
+    by (rule abelian_group_mat)
   show ?thesis unfolding class_field_def
     by (unfold_locales, unfold matrix_vs_simps, 
-      auto simp: mat_add_scalar_distrib_left mat_add_scalar_distrib_right)
+      auto simp: add_smult_distrib_left_mat add_smult_distrib_right_mat)
 qed
 
 
@@ -198,13 +198,13 @@ locale vec_module =
   and n::"nat"
 begin
 
-abbreviation V where "V \<equiv> module\<^sub>v TYPE('a) n"
+abbreviation V where "V \<equiv> module_vec TYPE('a) n"
 
 sublocale module "class_ring :: 'a ring" V
-  rewrites "carrier V = carrier\<^sub>v n"
-    and "add V = op \<oplus>\<^sub>v"
-    and "zero V = \<zero>\<^sub>v n"
-    and "module.smult V = op \<odot>\<^sub>v"
+  rewrites "carrier V = carrier_vec n"
+    and "add V = op +"
+    and "zero V = 0\<^sub>v n"
+    and "module.smult V = op \<cdot>\<^sub>v"
     and "carrier class_ring = UNIV"
     and "monoid.mult class_ring = op *"
     and "add class_ring = op +"
@@ -221,7 +221,8 @@ sublocale module "class_ring :: 'a ring" V
     and "\<And>P. P \<and> True \<equiv> P"
     and "\<And>P. (True \<Longrightarrow> P) \<equiv> Trueprop P"
   apply unfold_locales
-  apply (auto simp: vec_module_simps class_ring_simps Units_def vec_smult_l_distr vec_smult_r_distr intro!:bexI[of _ "\<ominus>\<^sub>v _"])
+  apply (auto simp: module_vec_simps class_ring_simps Units_def add_smult_distrib_vec 
+      smult_add_distrib_vec intro!:bexI[of _ "- _"])
   done
 
 end
@@ -232,15 +233,15 @@ locale matrix_vs =
     and field_type :: "'a :: field itself"
 begin
 
-abbreviation V where "V \<equiv> module\<^sub>m TYPE('a) nr nc"
+abbreviation V where "V \<equiv> module_mat TYPE('a) nr nc"
 sublocale  
   vectorspace class_ring V
-  rewrites "carrier V = carrier\<^sub>m nr nc"
-    and "add V = op \<oplus>\<^sub>m"
-    and "mult V = op \<otimes>\<^sub>m"
-    and "one V = \<one>\<^sub>m nr"
-    and "zero V = \<zero>\<^sub>m nr nc"
-    and "smult V = op \<odot>\<^sub>m"
+  rewrites "carrier V = carrier_mat nr nc"
+    and "add V = op +"
+    and "mult V = op *"
+    and "one V = 1\<^sub>m nr"
+    and "zero V = 0\<^sub>m nr nc"
+    and "smult V = op \<cdot>\<^sub>m"
     and "carrier class_ring = UNIV"
     and "mult class_ring = op *"
     and "add class_ring = op +"
@@ -256,22 +257,22 @@ sublocale
   by (rule matrix_vs, auto simp: matrix_vs_simps class_field_def)
 end
 
-lemma vec_module: "module (class_ring :: 'a :: field ring) (module\<^sub>v TYPE('a) n)"
+lemma vec_module: "module (class_ring :: 'a :: field ring) (module_vec TYPE('a) n)"
 proof -
-  interpret abelian_group "module\<^sub>v TYPE('a) n"
+  interpret abelian_group "module_vec TYPE('a) n"
     apply (unfold_locales)
-    unfolding vec_module_def Units_def
-    using vec_add_inv_exists by auto
+    unfolding module_vec_def Units_def
+    using add_inv_exists_vec by auto
   show ?thesis
     unfolding class_field_def
     apply (unfold_locales)
     unfolding class_ring_simps
-    unfolding vec_module_simps
-    using vec_smult_l_distr
-    by (auto simp:  vec_smult_r_distr)
+    unfolding module_vec_simps
+    using add_smult_distrib_vec
+    by (auto simp: smult_add_distrib_vec)
 qed
 
-lemma vec_vs: "vectorspace (class_ring :: 'a :: field ring) (module\<^sub>v TYPE('a) n)"
+lemma vec_vs: "vectorspace (class_ring :: 'a :: field ring) (module_vec TYPE('a) n)"
   unfolding vectorspace_def
   using vec_module class_field 
   by (auto simp: class_field_def)
@@ -284,10 +285,10 @@ begin
   sublocale vec_module f_ty n.
 
   sublocale vectorspace class_ring V 
-  rewrites cV[simp]: "carrier V = carrier\<^sub>v n"
-    and [simp]: "add V = op \<oplus>\<^sub>v"
-    and [simp]: "zero V = \<zero>\<^sub>v n"
-    and [simp]: "smult V = op \<odot>\<^sub>v"
+  rewrites cV[simp]: "carrier V = carrier_vec n"
+    and [simp]: "add V = op +"
+    and [simp]: "zero V = 0\<^sub>v n"
+    and [simp]: "smult V = op \<cdot>\<^sub>v"
     and "carrier class_ring = UNIV"
     and "mult class_ring = op *"
     and "add class_ring = op +"
@@ -301,38 +302,38 @@ begin
     and "m_inv (class_ring :: 'a ring) x = (if x = 0 then div0 else inverse x)"
   using vec_vs
   unfolding class_field_def
-  by (auto simp: vec_module_simps class_ring_simps)
+  by (auto simp: module_vec_simps class_ring_simps)
 
 lemma finsum_vec[simp]: "finsum_vec TYPE('a) n = finsum V"
-  unfolding finsum_vec_def vec_monoid_def
+  unfolding finsum_vec_def monoid_vec_def
   unfolding finsum_def by simp
 
 lemma finsum_scalar_prod_sum:
-  assumes f: "f : U \<rightarrow> carrier\<^sub>v n"
-      and w: "w: carrier\<^sub>v n"
+  assumes f: "f : U \<rightarrow> carrier_vec n"
+      and w: "w: carrier_vec n"
   shows "finsum V f U \<bullet> w = sum (\<lambda>u. f u \<bullet> w) U"
   using w f
 proof (induct U rule: infinite_finite_induct)
   case (insert u U)
-    hence f: "f : U \<rightarrow> carrier\<^sub>v n" "f u : carrier\<^sub>v n"  by auto
+    hence f: "f : U \<rightarrow> carrier_vec n" "f u : carrier_vec n"  by auto
     show ?case
       unfolding finsum_insert[OF insert(1) insert(2) f]
-      apply (subst scalar_prod_left_distrib) using insert by auto
+      apply (subst add_scalar_prod_distrib) using insert by auto
 qed auto
 
-lemma vec_neg[simp]: assumes "x : carrier\<^sub>v n" shows "\<ominus>\<^bsub>V\<^esub> x = \<ominus>\<^sub>v x"
+lemma vec_neg[simp]: assumes "x : carrier_vec n" shows "\<ominus>\<^bsub>V\<^esub> x = - x"
   unfolding a_inv_def m_inv_def apply simp 
   apply (rule the_equality, intro conjI)
   using assms apply auto
-  using M.minus_unique vec_uminus_closed vec_uminus_r_inv by blast
+  using M.minus_unique uminus_carrier_vec uminus_r_inv_vec by blast
 
 lemma finsum_dim:
-  "finite A \<Longrightarrow> f \<in> A \<rightarrow> carrier\<^sub>v n \<Longrightarrow> dim\<^sub>v (finsum V f A) = n"
+  "finite A \<Longrightarrow> f \<in> A \<rightarrow> carrier_vec n \<Longrightarrow> dim_vec (finsum V f A) = n"
 proof(induct set:finite)
   case (insert a A)
-    hence dfa: "dim\<^sub>v (f a) = n" by auto
-    have f: "f \<in> A \<rightarrow> carrier\<^sub>v n" using insert by auto
-    hence fa: "f a \<in> carrier\<^sub>v n" using insert by auto
+    hence dfa: "dim_vec (f a) = n" by auto
+    have f: "f \<in> A \<rightarrow> carrier_vec n" using insert by auto
+    hence fa: "f a \<in> carrier_vec n" using insert by auto
     show ?case
       unfolding finsum_insert[OF insert(1) insert(2) f fa]
       using insert by auto
@@ -340,11 +341,11 @@ qed simp
 
 lemma lincomb_dim:
   assumes fin: "finite X"
-    and X: "X \<subseteq> carrier\<^sub>v n"
-  shows "dim\<^sub>v (lincomb a X) = n"
+    and X: "X \<subseteq> carrier_vec n"
+  shows "dim_vec (lincomb a X) = n"
 proof -
-  let ?f = "\<lambda>v. a v \<odot>\<^sub>v v"
-  have f: "?f \<in> X \<rightarrow> carrier\<^sub>v n" apply rule using X by auto
+  let ?f = "\<lambda>v. a v \<cdot>\<^sub>v v"
+  have f: "?f \<in> X \<rightarrow> carrier_vec n" apply rule using X by auto
   show ?thesis
     unfolding lincomb_def
     using finsum_dim[OF fin f].
@@ -353,8 +354,8 @@ qed
 
 lemma finsum_index:
   assumes i: "i < n"
-    and f: "f \<in> X \<rightarrow> carrier\<^sub>v n"
-    and X: "X \<subseteq> carrier\<^sub>v n"
+    and f: "f \<in> X \<rightarrow> carrier_vec n"
+    and X: "X \<subseteq> carrier_vec n"
   shows "finsum V f X $ i = sum (\<lambda>x. f x $ i) X"
   using X f
 proof (induct X rule: infinite_finite_induct)
@@ -363,29 +364,29 @@ proof (induct X rule: infinite_finite_induct)
   case (insert x X)
     then have Xf: "finite X"
       and xX: "x \<notin> X"
-      and x: "x \<in> carrier\<^sub>v n"
-      and X: "X \<subseteq> carrier\<^sub>v n"
-      and fx: "f x \<in> carrier\<^sub>v n"
-      and f: "f \<in> X \<rightarrow> carrier\<^sub>v n" by auto
-    have i2: "i < dim\<^sub>v (finsum V f X)"
+      and x: "x \<in> carrier_vec n"
+      and X: "X \<subseteq> carrier_vec n"
+      and fx: "f x \<in> carrier_vec n"
+      and f: "f \<in> X \<rightarrow> carrier_vec n" by auto
+    have i2: "i < dim_vec (finsum V f X)"
       using i finsum_closed[OF f] by auto
-    have ix: "i < dim\<^sub>v x" using x i by auto
+    have ix: "i < dim_vec x" using x i by auto
     show ?case
       unfolding finsum_insert[OF Xf xX f fx]
       unfolding sum.insert[OF Xf xX]
-      unfolding vec_index_add(1)[OF i2]
+      unfolding index_add_vec(1)[OF i2]
       using insert lincomb_def
       by auto
 qed (insert i, auto)
 
 lemma lincomb_index:
   assumes i: "i < n"
-    and X: "X \<subseteq> carrier\<^sub>v n"
+    and X: "X \<subseteq> carrier_vec n"
   shows "lincomb a X $ i = sum (\<lambda>x. a x * x $ i) X"
 proof -
-  let ?f = "\<lambda>x. a x \<odot>\<^sub>v x"
-  have f: "?f : X \<rightarrow> carrier\<^sub>v n" using X by auto
-  have point: "\<And>v. v \<in> X \<Longrightarrow> (a v \<odot>\<^sub>v v) $ i = a v * v $ i" using i X by auto
+  let ?f = "\<lambda>x. a x \<cdot>\<^sub>v x"
+  have f: "?f : X \<rightarrow> carrier_vec n" using X by auto
+  have point: "\<And>v. v \<in> X \<Longrightarrow> (a v \<cdot>\<^sub>v v) $ i = a v * v $ i" using i X by auto
   show ?thesis
     unfolding lincomb_def
     unfolding finsum_index[OF i f X]
@@ -396,11 +397,11 @@ lemma append_insert: "set (xs @ [x]) = insert x (set xs)" by simp
 
 lemma lincomb_units:
   assumes i: "i < n" 
-  shows "lincomb a (set (vec_units n)) $ i = a (vec_unit n i)"
-  unfolding lincomb_index[OF i vec_units_carrier]
-  unfolding vec_units_first
+  shows "lincomb a (set (unit_vecs n)) $ i = a (unit_vec n i)"
+  unfolding lincomb_index[OF i unit_vecs_carrier]
+  unfolding unit_vecs_first
 proof -
-  let ?f = "\<lambda>m i. \<Sum>x\<in>set (vec_units_first n m). a x * x $ i"
+  let ?f = "\<lambda>m i. \<Sum>x\<in>set (unit_vecs_first n m). a x * x $ i"
   have zero:"\<And>m j. m \<le> j \<Longrightarrow> j < n \<Longrightarrow> ?f m j = 0"
   proof -
     fix m
@@ -408,58 +409,58 @@ proof -
     proof (induction m)
       case (Suc m)
         hence mj:"m\<le>j" and mj':"m\<noteq>j" and jn:"j<n" and mn:"m<n" by auto
-        hence mem: "unit\<^sub>v n m \<notin> set (vec_units_first n m)"
-          apply(subst vec_units_first_distinct) by auto
+        hence mem: "unit_vec n m \<notin> set (unit_vecs_first n m)"
+          apply(subst unit_vecs_first_distinct) by auto
         show ?case
-          unfolding vec_units_first.simps
+          unfolding unit_vecs_first.simps
           unfolding append_insert
           unfolding sum.insert[OF finite_set mem]
-          unfolding vec_unit_index(1)[OF mn jn]
+          unfolding index_unit_vec(1)[OF mn jn]
           unfolding Suc(1)[OF mj jn] using mj' by simp
     qed simp
   qed
   { fix m
-    have "i < m \<Longrightarrow> m \<le> n \<Longrightarrow> ?f m i = a (unit\<^sub>v n i)"
+    have "i < m \<Longrightarrow> m \<le> n \<Longrightarrow> ?f m i = a (unit_vec n i)"
     proof (induction m arbitrary: i)
       case (Suc m)
         hence iSm: "i < Suc m" and i:"i<n" and mn: "m<n" by auto
-        hence mem: "unit\<^sub>v n m \<notin> set (vec_units_first n m)"
-          apply(subst vec_units_first_distinct) by auto
+        hence mem: "unit_vec n m \<notin> set (unit_vecs_first n m)"
+          apply(subst unit_vecs_first_distinct) by auto
         show ?case
-          unfolding vec_units_first.simps
+          unfolding unit_vecs_first.simps
           unfolding append_insert
           unfolding sum.insert[OF finite_set mem]
-          unfolding vec_unit_index(1)[OF mn i]
+          unfolding index_unit_vec(1)[OF mn i]
           using zero Suc by (cases "i = m",auto)
     qed auto
   }
-  thus "?f n i = a (unit\<^sub>v n i)" using assms by auto
+  thus "?f n i = a (unit_vec n i)" using assms by auto
 qed
 
 lemma lincomb_coordinates:
-  assumes v: "v : carrier\<^sub>v n"
-  defines "a \<equiv> (\<lambda>u. v $ (THE i. u = vec_unit n i))"
-  shows "lincomb a (set (vec_units n)) = v"
+  assumes v: "v : carrier_vec n"
+  defines "a \<equiv> (\<lambda>u. v $ (THE i. u = unit_vec n i))"
+  shows "lincomb a (set (unit_vecs n)) = v"
 proof -
-  have a: "a \<in> set (vec_units n) \<rightarrow> UNIV" by auto
-  have fvu: "\<And>i. i < n \<Longrightarrow> v $ i = a (vec_unit n i)"
-    unfolding a_def using vec_unit_eq by auto
+  have a: "a \<in> set (unit_vecs n) \<rightarrow> UNIV" by auto
+  have fvu: "\<And>i. i < n \<Longrightarrow> v $ i = a (unit_vec n i)"
+    unfolding a_def using unit_vec_eq by auto
   show ?thesis
     apply rule
-    unfolding lincomb_dim[OF finite_set vec_units_carrier]
+    unfolding lincomb_dim[OF finite_set unit_vecs_carrier]
     using v lincomb_units fvu
     by auto
 qed
 
-lemma span_vec_units_is_carrier: "span (set (vec_units n)) = carrier\<^sub>v n" (is "?L = ?R")
+lemma span_unit_vecs_is_carrier: "span (set (unit_vecs n)) = carrier_vec n" (is "?L = ?R")
 proof (rule;rule)
   fix v assume vsU: "v \<in> ?L" show "v \<in> ?R"
   proof -
     obtain a
-      where v: "v = lincomb a (set (vec_units n))"
+      where v: "v = lincomb a (set (unit_vecs n))"
       using vsU
-      unfolding finite_span[OF finite_set vec_units_carrier] by auto
-    thus ?thesis using lincomb_closed[OF vec_units_carrier] by auto
+      unfolding finite_span[OF finite_set unit_vecs_carrier] by auto
+    thus ?thesis using lincomb_closed[OF unit_vecs_carrier] by auto
   qed
   next fix v::"'a vec" assume v: "v \<in> ?R" show "v \<in> ?L"
     unfolding span_def
@@ -468,58 +469,58 @@ qed
 
 lemma fin_dim[simp]: "fin_dim"
   unfolding fin_dim_def
-  apply (intro eqTrueI exI conjI) using span_vec_units_is_carrier vec_units_carrier by auto
+  apply (intro eqTrueI exI conjI) using span_unit_vecs_is_carrier unit_vecs_carrier by auto
 
-lemma vec_units_basis: "basis (set (vec_units n))" unfolding basis_def span_vec_units_is_carrier
+lemma unit_vecs_basis: "basis (set (unit_vecs n))" unfolding basis_def span_unit_vecs_is_carrier
 proof (intro conjI)
-  show "\<not> lin_dep (set (vec_units n))" 
+  show "\<not> lin_dep (set (unit_vecs n))" 
   proof
-    assume "lin_dep (set (vec_units n))"
+    assume "lin_dep (set (unit_vecs n))"
     from this[unfolded lin_dep_def] obtain A a v where
-      fin: "finite A" and A: "A \<subseteq> set (vec_units n)"  
-      and lc: "lincomb a A = \<zero>\<^sub>v n" and v: "v \<in> A" and av: "a v \<noteq> 0"      
+      fin: "finite A" and A: "A \<subseteq> set (unit_vecs n)"  
+      and lc: "lincomb a A = 0\<^sub>v n" and v: "v \<in> A" and av: "a v \<noteq> 0"      
       by auto
-    from v A obtain i where i: "i < n" and vu: "v = unit\<^sub>v n i" unfolding vec_units_def by auto
+    from v A obtain i where i: "i < n" and vu: "v = unit_vec n i" unfolding unit_vecs_def by auto
     define b where "b = (\<lambda> x. if x \<in> A then a x else 0)"
-    have id: "A \<union> (set (vec_units n) - A) = set (vec_units n)" using A by auto
-    from lincomb_index[OF i vec_units_carrier]
-    have "lincomb b (set (vec_units n)) $ i = (\<Sum>x\<in> (A \<union> (set (vec_units n) - A)). b x * x $ i)" 
+    have id: "A \<union> (set (unit_vecs n) - A) = set (unit_vecs n)" using A by auto
+    from lincomb_index[OF i unit_vecs_carrier]
+    have "lincomb b (set (unit_vecs n)) $ i = (\<Sum>x\<in> (A \<union> (set (unit_vecs n) - A)). b x * x $ i)" 
       unfolding id .
-    also have "\<dots> = (\<Sum>x\<in> A. b x * x $ i) + (\<Sum>x\<in> set (vec_units n) - A. b x * x $ i)"
+    also have "\<dots> = (\<Sum>x\<in> A. b x * x $ i) + (\<Sum>x\<in> set (unit_vecs n) - A. b x * x $ i)"
       by (rule sum.union_disjoint, insert fin, auto)
     also have "(\<Sum>x\<in> A. b x * x $ i) = (\<Sum>x\<in> A. a x * x $ i)"
       by (rule sum.cong, auto simp: b_def)
     also have "\<dots> = lincomb a A $ i" 
-      by (subst lincomb_index[OF i], insert A vec_units_carrier, auto)
+      by (subst lincomb_index[OF i], insert A unit_vecs_carrier, auto)
     also have "\<dots> = 0" unfolding lc using i by simp
-    also have "(\<Sum>x\<in> set (vec_units n) - A. b x * x $ i) = 0"
+    also have "(\<Sum>x\<in> set (unit_vecs n) - A. b x * x $ i) = 0"
       by (rule sum.neutral, auto simp: b_def)
-    finally have "lincomb b (set (vec_units n)) $ i = 0" by simp
+    finally have "lincomb b (set (unit_vecs n)) $ i = 0" by simp
     from lincomb_units[OF i, of b, unfolded this]
     have "b v = 0" unfolding vu by simp
     with v av show False unfolding b_def by simp
   qed
-qed (insert vec_units_carrier, auto)
+qed (insert unit_vecs_carrier, auto)
 
-lemma vec_units_length[simp]: "length (vec_units n) = n"
-  unfolding vec_units_def by auto
+lemma unit_vecs_length[simp]: "length (unit_vecs n) = n"
+  unfolding unit_vecs_def by auto
 
-lemma vec_units_distinct: "distinct (vec_units n)"
-  unfolding distinct_conv_nth vec_units_length
+lemma unit_vecs_distinct: "distinct (unit_vecs n)"
+  unfolding distinct_conv_nth unit_vecs_length
 proof (intro allI impI)
   fix i j
   assume *: "i < n" "j < n" "i \<noteq> j"
-  show "vec_units n ! i \<noteq> vec_units n ! j"
+  show "unit_vecs n ! i \<noteq> unit_vecs n ! j"
   proof
-    assume "vec_units n ! i = vec_units n ! j"
+    assume "unit_vecs n ! i = unit_vecs n ! j"
     from arg_cong[OF this, of "\<lambda> v. v $ i"] 
-    show False using * unfolding vec_units_def by auto
+    show False using * unfolding unit_vecs_def by auto
   qed
 qed
 
 lemma dim_is_n: "dim = n"
-  unfolding dim_basis[OF finite_set vec_units_basis]
-  unfolding distinct_card[OF vec_units_distinct]
+  unfolding dim_basis[OF finite_set unit_vecs_basis]
+  unfolding distinct_card[OF unit_vecs_distinct]
   by simp
 
 end
@@ -528,7 +529,7 @@ locale mat_space =
   vec_space f_ty nc for f_ty::"'a::field itself" and nc::"nat" +
   fixes nr :: "nat"
 begin
-  abbreviation M where "M \<equiv> ring\<^sub>m TYPE('a) nc nr"
+  abbreviation M where "M \<equiv> ring_mat TYPE('a) nc nr"
 end
 
   

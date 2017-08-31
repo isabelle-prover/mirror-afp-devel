@@ -17,30 +17,30 @@ imports
   Matrix_Kernel
 begin
 
-lemma mat_similar_wit_char_matrix: assumes wit: "mat_similar_wit A B P Q"
-  shows "mat_similar_wit (char_matrix A ev) (char_matrix B ev) P Q"
+lemma similar_mat_wit_char_matrix: assumes wit: "similar_mat_wit A B P Q"
+  shows "similar_mat_wit (char_matrix A ev) (char_matrix B ev) P Q"
 proof -
-  define n where "n = dim\<^sub>r A"
-  let ?C = "carrier\<^sub>m n n"
-  from mat_similar_witD[OF refl wit, folded n_def] have
+  define n where "n = dim_row A"
+  let ?C = "carrier_mat n n"
+  from similar_mat_witD[OF refl wit, folded n_def] have
     A: "A \<in> ?C" and B: "B \<in> ?C" and P: "P \<in> ?C" and Q: "Q \<in> ?C"
-    and PQ: "P \<otimes>\<^sub>m Q = \<one>\<^sub>m n" and QP: "Q \<otimes>\<^sub>m P = \<one>\<^sub>m n"
-    and AB: "A = P \<otimes>\<^sub>m B \<otimes>\<^sub>m Q"
+    and PQ: "P * Q = 1\<^sub>m n" and QP: "Q * P = 1\<^sub>m n"
+    and AB: "A = P * B * Q"
     by auto
-  have "char_matrix A ev = (P \<otimes>\<^sub>m B \<otimes>\<^sub>m Q \<oplus>\<^sub>m (-ev) \<odot>\<^sub>m (P \<otimes>\<^sub>m Q))"
+  have "char_matrix A ev = (P * B * Q + (-ev) \<cdot>\<^sub>m (P * Q))"
     unfolding char_matrix_def n_def[symmetric] unfolding AB PQ 
-    by (intro mat_eqI, insert P B Q, auto)
-  also have "(-ev) \<odot>\<^sub>m (P \<otimes>\<^sub>m Q) = P \<otimes>\<^sub>m ((-ev) \<odot>\<^sub>m \<one>\<^sub>m n) \<otimes>\<^sub>m Q" using P Q
-    by (metis mat_mult_scalar_assoc mat_mult_scalar_comm mat_one_closed mat_right_mult_one)
-  also have "P \<otimes>\<^sub>m B \<otimes>\<^sub>m Q \<oplus>\<^sub>m \<dots> = (P \<otimes>\<^sub>m B \<oplus>\<^sub>m P \<otimes>\<^sub>m ((-ev) \<odot>\<^sub>m \<one>\<^sub>m n)) \<otimes>\<^sub>m Q" using P B
-    by (intro mat_mult_left_distrib[symmetric, OF _ _ Q, of _ n], auto)
-  also have "P \<otimes>\<^sub>m B \<oplus>\<^sub>m P \<otimes>\<^sub>m ((-ev) \<odot>\<^sub>m \<one>\<^sub>m n) = P \<otimes>\<^sub>m (B  \<oplus>\<^sub>m (-ev) \<odot>\<^sub>m \<one>\<^sub>m n)"
-    by (intro mat_mult_right_distrib[symmetric, OF P B], auto)
-  also have "(B  \<oplus>\<^sub>m (-ev) \<odot>\<^sub>m \<one>\<^sub>m n) = char_matrix B ev" unfolding char_matrix_def
-    by (intro mat_eqI, insert B, auto)
-  finally have AB: "char_matrix A ev = P \<otimes>\<^sub>m char_matrix B ev \<otimes>\<^sub>m Q" .
-  show "mat_similar_wit (char_matrix A ev) (char_matrix B ev) P Q"
-    by (intro mat_similar_witI[OF PQ QP AB _ _ P Q], insert A B, auto)
+    by (intro eq_matI, insert P B Q, auto)
+  also have "(-ev) \<cdot>\<^sub>m (P * Q) = P * ((-ev) \<cdot>\<^sub>m 1\<^sub>m n) * Q" using P Q
+    by (metis mult_smult_assoc_mat mult_smult_distrib one_carrier_mat right_mult_one_mat)
+  also have "P * B * Q + \<dots> = (P * B + P * ((-ev) \<cdot>\<^sub>m 1\<^sub>m n)) * Q" using P B
+    by (intro add_mult_distrib_mat[symmetric, OF _ _ Q, of _ n], auto)
+  also have "P * B + P * ((-ev) \<cdot>\<^sub>m 1\<^sub>m n) = P * (B  + (-ev) \<cdot>\<^sub>m 1\<^sub>m n)"
+    by (intro mult_add_distrib_mat[symmetric, OF P B], auto)
+  also have "(B  + (-ev) \<cdot>\<^sub>m 1\<^sub>m n) = char_matrix B ev" unfolding char_matrix_def
+    by (intro eq_matI, insert B, auto)
+  finally have AB: "char_matrix A ev = P * char_matrix B ev * Q" .
+  show "similar_mat_wit (char_matrix A ev) (char_matrix B ev) P Q"
+    by (intro similar_mat_witI[OF PQ QP AB _ _ P Q], insert A B, auto)
 qed
 
 context fixes ty :: "'a :: field itself"
@@ -48,14 +48,14 @@ begin
 
 lemma dim_kernel_non_zero_jordan_block_pow: assumes a: "a \<noteq> 0"
   shows "kernel.dim n (jordan_block n (a :: 'a) ^\<^sub>m k) = 0"
-  by (rule kernel_upper_triangular[OF mat_pow_closed[OF jordan_block_carrier]],
-  unfold jordan_block_pow, insert a, auto simp: mat_diag_def)
+  by (rule kernel_upper_triangular[OF pow_carrier_mat[OF jordan_block_carrier]],
+  unfold jordan_block_pow, insert a, auto simp: diag_mat_def)
 
 lemma dim_kernel_zero_jordan_block_pow: 
   "kernel.dim n ((jordan_block n (0 :: 'a)) ^\<^sub>m k) = min k n" (is "kernel.dim _ ?A = ?c")
 proof - 
-  have A: "?A \<in> carrier\<^sub>m n n" by auto
-  hence dim: "dim\<^sub>r ?A = n" by simp
+  have A: "?A \<in> carrier_mat n n" by auto
+  hence dim: "dim_row ?A = n" by simp
   let ?f = "\<lambda> i. min (k + i) n"
   have piv: "pivot_fun ?A ?f n" unfolding jordan_block_zero_pow
     by (intro pivot_funI, auto)
@@ -81,22 +81,22 @@ proof -
   let ?CM = "\<lambda> n_as. char_matrix (?JM n_as) ev"
   let ?A = "\<lambda> n_as. (?CM n_as) ^\<^sub>m k"
   let ?n = "\<lambda> n_as. sum_list (map fst n_as)"
-  let ?C = "\<lambda> n_as. carrier\<^sub>m (?n n_as) (?n n_as)"
+  let ?C = "\<lambda> n_as. carrier_mat (?n n_as) (?n n_as)"
   let ?sum = "\<lambda> n_as. \<Sum> n \<leftarrow> map fst [(n, e)\<leftarrow>n_as . e = ev]. min k n"
   let ?dim = "\<lambda> n_as. sum_list (map fst n_as)"
   let ?kdim = "\<lambda> n_as. kernel.dim (?dim n_as) (?A n_as)"
   have JM: "\<And> n_as. ?JM n_as \<in> ?C n_as" by auto
   have CM: "\<And> n_as. ?CM n_as \<in> ?C n_as" by auto
   have A: "\<And> n_as. ?A n_as \<in> ?C n_as" by auto  
-  have dimc: "dim\<^sub>c (?JM n_as) = ?dim n_as" by simp
+  have dimc: "dim_col (?JM n_as) = ?dim n_as" by simp
   interpret K: kernel "?dim n_as" "?dim n_as" "?A n_as"
     by (unfold_locales, rule A)
   show ?thesis unfolding dim_gen_eigenspace_def K.kernel_dim 
   proof (induct n_as)
     case Nil
-    have "?JM Nil = \<one>\<^sub>m 0" unfolding jordan_matrix_def
-      by (intro mat_eqI, auto)
-    hence id: "?A Nil = \<one>\<^sub>m 0" unfolding char_matrix_def by auto
+    have "?JM Nil = 1\<^sub>m 0" unfolding jordan_matrix_def
+      by (intro eq_matI, auto)
+    hence id: "?A Nil = 1\<^sub>m 0" unfolding char_matrix_def by auto
     show ?case unfolding id using kernel_one_mat[of 0] by auto
   next
     case (Cons ne n_as')
@@ -108,17 +108,17 @@ proof -
     let ?jb = "jordan_block n e"
     let ?cm = "char_matrix ?jb ev"
     let ?a = "?cm ^\<^sub>m k"
-    have a: "?a \<in> carrier\<^sub>m n n" by simp
-    from JM[of n_as'] have dim_rec: "dim\<^sub>r (?JM n_as') = ?d'" "dim\<^sub>c (?JM n_as') = ?d'" by auto
-    hence JM_id: "?JM ?n_as = four_block_mat ?jb (\<zero>\<^sub>m n ?d') (\<zero>\<^sub>m ?d' n) (?JM n_as')"
+    have a: "?a \<in> carrier_mat n n" by simp
+    from JM[of n_as'] have dim_rec: "dim_row (?JM n_as') = ?d'" "dim_col (?JM n_as') = ?d'" by auto
+    hence JM_id: "?JM ?n_as = four_block_mat ?jb (0\<^sub>m n ?d') (0\<^sub>m ?d' n) (?JM n_as')"
       unfolding ne jordan_matrix_def using JM[of n_as']
       by (simp add: Let_def)
-    have CM_id: "?CM ?n_as = four_block_mat ?cm (\<zero>\<^sub>m n ?d') (\<zero>\<^sub>m ?d' n) (?CM n_as')"
+    have CM_id: "?CM ?n_as = four_block_mat ?cm (0\<^sub>m n ?d') (0\<^sub>m ?d' n) (?CM n_as')"
       unfolding JM_id
       unfolding char_matrix_def
-      by (intro mat_eqI, auto)
-    have A_id: "?A ?n_as = four_block_mat ?a (\<zero>\<^sub>m n ?d') (\<zero>\<^sub>m ?d' n) (?A n_as')"
-      unfolding CM_id by (rule four_block_mat_pow[OF _ CM], auto)
+      by (intro eq_matI, auto)
+    have A_id: "?A ?n_as = four_block_mat ?a (0\<^sub>m n ?d') (0\<^sub>m ?d' n) (?A n_as')"
+      unfolding CM_id by (rule pow_four_block_mat[OF _ CM], auto)
     have kdim: "?kdim ?n_as = kernel.dim n ?a + ?kdim n_as'"
       unfolding dim A_id
       by (rule kernel_four_block_0_mat[OF refl a A])
@@ -134,27 +134,27 @@ proof -
 qed
 
   
-lemma dim_gen_eigenspace_similar: assumes sim: "mat_similar A B"
+lemma dim_gen_eigenspace_similar: assumes sim: "similar_mat A B"
   shows "dim_gen_eigenspace A = dim_gen_eigenspace B"
 proof (intro ext)
   fix ev k
-  define n where "n = dim\<^sub>r A"
-  from sim[unfolded mat_similar_def] obtain P Q where
-    wit: "mat_similar_wit A B P Q" by auto
-  let ?C = "carrier\<^sub>m n n"
-  from mat_similar_witD[OF refl wit, folded n_def]
+  define n where "n = dim_row A"
+  from sim[unfolded similar_mat_def] obtain P Q where
+    wit: "similar_mat_wit A B P Q" by auto
+  let ?C = "carrier_mat n n"
+  from similar_mat_witD[OF refl wit, folded n_def]
     have A: "A \<in> ?C" and B: "B \<in> ?C" and P: "P \<in> ?C" and Q: "Q \<in> ?C" 
-    and PQ: "P \<otimes>\<^sub>m Q = \<one>\<^sub>m n" and QP: "Q \<otimes>\<^sub>m P = \<one>\<^sub>m n"
+    and PQ: "P * Q = 1\<^sub>m n" and QP: "Q * P = 1\<^sub>m n"
     by auto
-  from mat_similar_wit_pow[OF mat_similar_wit_char_matrix[OF wit, of ev], of k]
-  have wit: "mat_similar_wit (char_matrix A ev ^\<^sub>m k) (char_matrix B ev ^\<^sub>m k) P Q" .
-  from A B have cA: "char_matrix A ev ^\<^sub>m k \<in> carrier\<^sub>m n n" 
-    and cB: "char_matrix B ev ^\<^sub>m k \<in> carrier\<^sub>m n n" by auto
-  hence dim: "dim\<^sub>c (char_matrix A ev ^\<^sub>m k) = n" "dim\<^sub>c (char_matrix B ev ^\<^sub>m k) = n" by auto
+  from similar_mat_wit_pow[OF similar_mat_wit_char_matrix[OF wit, of ev], of k]
+  have wit: "similar_mat_wit (char_matrix A ev ^\<^sub>m k) (char_matrix B ev ^\<^sub>m k) P Q" .
+  from A B have cA: "char_matrix A ev ^\<^sub>m k \<in> carrier_mat n n" 
+    and cB: "char_matrix B ev ^\<^sub>m k \<in> carrier_mat n n" by auto
+  hence dim: "dim_col (char_matrix A ev ^\<^sub>m k) = n" "dim_col (char_matrix B ev ^\<^sub>m k) = n" by auto
   have "dim_gen_eigenspace A ev k = kernel_dim (char_matrix A ev ^\<^sub>m k)"
     unfolding dim_gen_eigenspace_def using A by simp
   also have "\<dots> = kernel_dim (char_matrix B ev ^\<^sub>m k)" unfolding kernel_dim_def dim
-    by (rule mat_similar_wit_kernel_dim[OF cA wit])
+    by (rule similar_mat_wit_kernel_dim[OF cA wit])
   also have "\<dots> = dim_gen_eigenspace B ev k" 
     unfolding dim_gen_eigenspace_def using B by simp
   finally show "dim_gen_eigenspace A ev k = dim_gen_eigenspace B ev k" .
@@ -165,7 +165,7 @@ lemma dim_gen_eigenspace: assumes "jordan_nf A n_as"
     = (\<Sum> n \<leftarrow> map fst [(n, e)\<leftarrow>n_as . e = ev]. min k n)"
 proof -
   from assms[unfolded jordan_nf_def]
-  have sim: "mat_similar A (jordan_matrix n_as)" by auto
+  have sim: "similar_mat A (jordan_matrix n_as)" by auto
   from dim_gen_eigenspace_jordan_matrix[of n_as, folded dim_gen_eigenspace_similar[OF this]]
   show ?thesis .
 qed

@@ -57,7 +57,7 @@ lift_definition mat_of_fun :: "nat \<Rightarrow> nat \<Rightarrow> (nat \<times>
 lift_definition vec_index_impl :: "'a vec_impl \<Rightarrow> nat \<Rightarrow> 'a"
   is "\<lambda> (n,v). IArray.sub v" .
 
-lift_definition mat_index_impl :: "'a mat_impl \<Rightarrow> nat \<times> nat \<Rightarrow> 'a"
+lift_definition index_mat_impl :: "'a mat_impl \<Rightarrow> nat \<times> nat \<Rightarrow> 'a"
   is "\<lambda> (nr,nc,m) (i,j). if i < nr then IArray.sub (IArray.sub m i) j 
     else IArray.sub (IArray ([] ! (i - nr))) j" .
 
@@ -67,10 +67,10 @@ lift_definition vec_equal_impl :: "'a vec_impl \<Rightarrow> 'a vec_impl \<Right
 lift_definition mat_equal_impl :: "'a mat_impl \<Rightarrow> 'a mat_impl \<Rightarrow> bool"
   is "\<lambda> (nr1,nc1,m1) (nr2,nc2,m2). nr1 = nr2 \<and> nc1 = nc2 \<and> m1 = m2" .
 
-lift_definition vec_dim_impl :: "'a vec_impl \<Rightarrow> nat" is fst .
+lift_definition dim_vec_impl :: "'a vec_impl \<Rightarrow> nat" is fst .
 
-lift_definition mat_dim_row_impl :: "'a mat_impl \<Rightarrow> nat" is fst .
-lift_definition mat_dim_col_impl :: "'a mat_impl \<Rightarrow> nat" is "fst o snd" .
+lift_definition dim_row_impl :: "'a mat_impl \<Rightarrow> nat" is fst .
+lift_definition dim_col_impl :: "'a mat_impl \<Rightarrow> nat" is "fst o snd" .
 
 code_datatype vec_impl
 code_datatype mat_impl
@@ -80,7 +80,7 @@ lemma vec_code[code]: "vec n f = vec_impl (vec_of_fun n f)"
 
 lemma mat_code[code]: "mat nr nc f = mat_impl (mat_of_fun nr nc f)"
   by (transfer, auto simp: mk_mat_def, intro ext, clarsimp, 
-  auto intro: undef_mat_cong)
+  auto intro: undef_cong_mat)
 
 lemma vec_of_list[code]: "vec_of_list v = vec_impl (vec_of_list_impl v)"
   by (transfer, auto simp: mk_vec_def)
@@ -97,7 +97,7 @@ lemma undef_vec: "\<not> i < length x \<Longrightarrow> undef_vec (i - length x)
 lemma vec_index_code[code]: "(vec_impl v) $ i = vec_index_impl v i"
   by (transfer, auto simp: mk_vec_def, case_tac b, auto simp: undef_vec)
 
-lemma mat_index_code[code]: "(mat_impl m) $$ ij = (mat_index_impl m ij :: 'a)"
+lemma index_mat_code[code]: "(mat_impl m) $$ ij = (index_mat_impl m ij :: 'a)"
 proof (transfer, unfold o_def, clarify)
   fix m :: "'a iarray iarray" and i j nc
   assume all: "IArray.all (\<lambda>r. IArray.length r = nc) m"
@@ -139,7 +139,7 @@ lift_definition (code_dt) mat_of_rows_list_impl :: "nat \<Rightarrow> 'a list li
 
 lemma mat_of_rows_list_impl: "mat_of_rows_list_impl n rs = Some A \<Longrightarrow> mat_impl A = mat_of_rows_list n rs" 
   unfolding mat_of_rows_list_def
-  by (transfer, auto split: if_splits simp: list_all_iff intro!: mk_mat_cong)
+  by (transfer, auto split: if_splits simp: list_all_iff intro!: cong_mk_mat)
   
 lemma mat_of_rows_list_code[code]: "mat_of_rows_list nc vs = 
   (case mat_of_rows_list_impl nc vs of Some A \<Rightarrow> mat_impl A 
@@ -150,16 +150,16 @@ proof (cases "mat_of_rows_list_impl nc vs")
 next
   case None
   show ?thesis unfolding None unfolding mat_of_rows_list_def mat_of_rows_def
-    by (intro mat_eqI, auto)  
+    by (intro eq_matI, auto)  
 qed
 
-lemma dimv_code[code]: "dim\<^sub>v (vec_impl v) = vec_dim_impl v"
+lemma dim_vec_code[code]: "dim_vec (vec_impl v) = dim_vec_impl v"
   by (transfer, auto)
 
-lemma dimr_code[code]: "dim\<^sub>r (mat_impl m) = mat_dim_row_impl m"
+lemma dim_row_code[code]: "dim_row (mat_impl m) = dim_row_impl m"
   by (transfer, auto)
 
-lemma dimc_code[code]: "dim\<^sub>c (mat_impl m) = mat_dim_col_impl m"
+lemma dim_col_code[code]: "dim_col (mat_impl m) = dim_col_impl m"
   by (transfer, auto)
 
 instantiation vec :: (type)equal
@@ -176,7 +176,7 @@ instance
   by (intro_classes, auto simp: equal_mat_def)
 end
 
-lemma [code]: "HOL.equal (vec_impl (v1 :: 'a vec_impl)) (vec_impl v2) = vec_equal_impl v1 v2"
+lemma veq_equal_code[code]: "HOL.equal (vec_impl (v1 :: 'a vec_impl)) (vec_impl v2) = vec_equal_impl v1 v2"
 proof - 
   {
     fix x1 x2 :: "'a list"
@@ -194,7 +194,7 @@ proof -
     by (transfer, insert *, auto simp: mk_vec_def, case_tac b, case_tac ba, auto)
 qed
 
-lemma [code]: "HOL.equal (mat_impl (m1 :: 'a mat_impl)) (mat_impl m2) = mat_equal_impl m1 m2"
+lemma mat_equal_code[code]: "HOL.equal (mat_impl (m1 :: 'a mat_impl)) (mat_impl m2) = mat_equal_impl m1 m2"
 proof - 
   show ?thesis unfolding equal_mat_def
   proof (transfer, auto, case_tac b, case_tac ba, auto)
@@ -232,8 +232,8 @@ derive (no) ccompare mat vec
 derive (dlist) set_impl mat vec
 derive (no) cenum mat vec
 
-lemma mat_carrier_code[code]: "mat_carrier nr nc = Collect_set (\<lambda> A. dim\<^sub>r A = nr \<and> dim\<^sub>c A = nc)" by auto
-lemma vec_carrier_code[code]: "vec_carrier n = Collect_set (\<lambda> v. dim\<^sub>v v = n)" 
-  unfolding vec_carrier_def by auto
+lemma carrier_mat_code[code]: "carrier_mat nr nc = Collect_set (\<lambda> A. dim_row A = nr \<and> dim_col A = nc)" by auto
+lemma carrier_vec_code[code]: "carrier_vec n = Collect_set (\<lambda> v. dim_vec v = n)" 
+  unfolding carrier_vec_def by auto
 
 end

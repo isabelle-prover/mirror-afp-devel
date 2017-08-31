@@ -30,15 +30,15 @@ proof (auto split: if_splits, goal_cases)
   thus ?case by (cases A, auto)
 qed
 
-lemma [code]: "mat_swaprows k l (mat_impl A) = (let nr = mat_dim_row_impl A in
+lemma [code]: "mat_swaprows k l (mat_impl A) = (let nr = dim_row_impl A in
   if l < nr \<and> k < nr then 
   mat_impl (mat_swaprows_impl k l A) else Code.abort (STR ''index out of bounds in mat_swaprows'') 
   (\<lambda> _. mat_swaprows k l (mat_impl A)))" (is "?l = ?r")
-proof (cases "l < mat_dim_row_impl A \<and> k < mat_dim_row_impl A")
+proof (cases "l < dim_row_impl A \<and> k < dim_row_impl A")
   case True
   hence id: "?r = mat_impl (mat_swaprows_impl k l A)" by simp
   show ?thesis unfolding id unfolding mat_swaprows_def
-  proof (rule mat_eqI, goal_cases)
+  proof (rule eq_matI, goal_cases)
     case (1 i j)
     thus ?case using True
     proof (transfer, goal_cases)
@@ -75,7 +75,7 @@ qed
 
 lemma [code]: "mat_multrow_gen mul k a (mat_impl A) = mat_impl (mat_multrow_gen_impl mul k a A)"
   unfolding mat_multrow_gen_def
-proof (rule mat_eqI, goal_cases)
+proof (rule eq_matI, goal_cases)
   case (1 i j)
   thus ?case 
   proof (transfer, goal_cases)
@@ -116,14 +116,14 @@ proof (goal_cases)
   qed
 qed
 
-lemma mat_addrow_gen_impl[code]: "mat_addrow_gen ad mul a k l (mat_impl A) = (if l < mat_dim_row_impl A then
+lemma mat_addrow_gen_impl[code]: "mat_addrow_gen ad mul a k l (mat_impl A) = (if l < dim_row_impl A then
   mat_impl (mat_addrow_gen_impl ad mul a k l A) else Code.abort (STR ''index out of bounds in mat_addrow'') 
   (\<lambda> _. mat_addrow_gen ad mul a k l (mat_impl A)))" (is "?l = ?r")
-proof (cases "l < mat_dim_row_impl A")
+proof (cases "l < dim_row_impl A")
   case True
   hence id: "?r = mat_impl (mat_addrow_gen_impl ad mul a k l A)" by simp
   show ?thesis unfolding id unfolding mat_addrow_gen_def
-  proof (rule mat_eqI, goal_cases)
+  proof (rule eq_matI, goal_cases)
     case (1 i j)
     thus ?case using True
     proof (transfer, goal_cases)
@@ -145,7 +145,7 @@ proof (cases "l < mat_dim_row_impl A")
 qed simp
  
 lemma gauss_jordan_main_code[code]:
-  "gauss_jordan_main A B i j = (let nr = dim\<^sub>r A; nc = dim\<^sub>c A in
+  "gauss_jordan_main A B i j = (let nr = dim_row A; nc = dim_col A in
     if i < nr \<and> j < nc then let aij = A $$ (i,j) in if aij = 0 then
       (case [ i' . i' <- [Suc i ..< nr],  A $$ (i',j) \<noteq> 0] 
         of [] \<Rightarrow> gauss_jordan_main A B i (Suc j)
@@ -159,8 +159,8 @@ lemma gauss_jordan_main_code[code]:
     else (A,B))" (is "?l = ?r")
 proof -
   note simps = gauss_jordan_main.simps[of A B i j] Let_def
-  let ?nr = "dim\<^sub>r A" 
-  let ?nc = "dim\<^sub>c A"
+  let ?nr = "dim_row A" 
+  let ?nc = "dim_col A"
   let ?A' = "multrow i (inverse (A $$ (i,j))) A" 
   let ?B' = "multrow i (inverse (A $$ (i,j))) B" 
   show ?thesis

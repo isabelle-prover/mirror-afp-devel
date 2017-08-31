@@ -23,30 +23,30 @@ imports
 begin
 
 definition det:: "'a mat \<Rightarrow> 'a :: comm_ring_1" where
-  "det A = (if dim\<^sub>r A = dim\<^sub>c A then (\<Sum> p \<in> {p. p permutes {0 ..< dim\<^sub>r A}}. 
-     signof p * (\<Prod> i = 0 ..< dim\<^sub>r A. A $$ (i, p i))) else 0)"
+  "det A = (if dim_row A = dim_col A then (\<Sum> p \<in> {p. p permutes {0 ..< dim_row A}}. 
+     signof p * (\<Prod> i = 0 ..< dim_row A. A $$ (i, p i))) else 0)"
 
 lemma(in ring_hom) hom_signof[simp]: "hom (signof p) = signof p"
   unfolding signof_def by (auto simp: hom_distribs)
 
-lemma(in comm_ring_hom) hom_det[simp]: "det (map\<^sub>m hom A) = hom (det A)"
+lemma(in comm_ring_hom) hom_det[simp]: "det (map_mat hom A) = hom (det A)"
   unfolding det_def by (auto simp: hom_distribs)
 
-lemma det_def': "A \<in> carrier\<^sub>m n n \<Longrightarrow> 
+lemma det_def': "A \<in> carrier_mat n n \<Longrightarrow> 
   det A = (\<Sum> p \<in> {p. p permutes {0 ..< n}}. 
      signof p * (\<Prod> i = 0 ..< n. A $$ (i, p i)))" unfolding det_def by auto
 
-lemma det_smult[simp]: "det (a \<odot>\<^sub>m A) = a ^ dim\<^sub>c A * det A"
+lemma det_smult[simp]: "det (a \<cdot>\<^sub>m A) = a ^ dim_col A * det A"
 proof -
-  have [simp]: "(\<Prod>i = 0..<dim\<^sub>c A. a) = a ^ dim\<^sub>c A" by(subst prod_constant;simp)
+  have [simp]: "(\<Prod>i = 0..<dim_col A. a) = a ^ dim_col A" by(subst prod_constant;simp)
   show ?thesis
   unfolding det_def
-  unfolding mat_index_scalar_mult
+  unfolding index_smult_mat
   by (auto intro: sum.cong simp: sum_distrib_left prod.distrib)
 qed
 
-lemma det_transpose: assumes A: "A \<in> carrier\<^sub>m n n"
-  shows "det (transpose\<^sub>m A) = det A"
+lemma det_transpose: assumes A: "A \<in> carrier_mat n n"
+  shows "det (transpose_mat A) = det A"
 proof -
   let ?di = "\<lambda>A i j. A $$ (i,j)"
   let ?U = "{0 ..< n}"
@@ -62,7 +62,7 @@ proof -
     from permutes_inj[OF pU]
     have pi: "inj_on p ?U"
       by (blast intro: subset_inj_on)
-    let ?f = "\<lambda>i. transpose\<^sub>m A $$ (i, ?inv p i)"
+    let ?f = "\<lambda>i. transpose_mat A $$ (i, ?inv p i)"
     note pU_U = permutes_image[OF pU]
     note [simp] = permutes_less[OF pU]
     have "prod ?f ?U = prod ?f (p ` ?U)"
@@ -81,7 +81,7 @@ proof -
 qed
 
 lemma det_col:
-  assumes A: "A \<in> carrier\<^sub>m n n"
+  assumes A: "A \<in> carrier_mat n n"
   shows "det A = (\<Sum> p | p permutes {0 ..< n}. signof p * (\<Prod>j<n. A $$ (p j, j)))"
     (is "_ = (sum (\<lambda>p. _ * ?prod p) ?P)")
 proof -
@@ -113,19 +113,19 @@ proof -
   finally show ?thesis unfolding det_def'[OF A] by auto
 qed
 
-lemma mat_det_left_def: assumes A: "A \<in> carrier\<^sub>m n n"
-  shows "det A = (\<Sum>p\<in>{p. p permutes {0..<dim\<^sub>r A}}. signof p * (\<Prod>i = 0 ..< dim\<^sub>r A. A $$ (p i, i)))"
+lemma mat_det_left_def: assumes A: "A \<in> carrier_mat n n"
+  shows "det A = (\<Sum>p\<in>{p. p permutes {0..<dim_row A}}. signof p * (\<Prod>i = 0 ..< dim_row A. A $$ (p i, i)))"
 proof -
   have cong: "\<And> a b c. b = c \<Longrightarrow> a * b = a * c" by simp
   show ?thesis
   unfolding det_transpose[OF A, symmetric]
-  unfolding det_def mat_index_transpose using A by simp
+  unfolding det_def index_transpose_mat using A by simp
 qed
 
 lemma det_upper_triangular:
   assumes ut: "upper_triangular A"
-  and m: "A \<in> carrier\<^sub>m n n"
-  shows "det A = prod_list (mat_diag A)"
+  and m: "A \<in> carrier_mat n n"
+  shows "det A = prod_list (diag_mat A)"
 proof -
   note det_def = det_def'[OF m]
   let ?U = "{0..<n}"
@@ -151,7 +151,7 @@ proof -
   }
   then have p0: "\<And> p. p \<in> ?PU - {id} \<Longrightarrow> ?pp p = 0"
     by blast
-  from m have dim: "dim\<^sub>r A = n" by simp
+  from m have dim: "dim_row A = n" by simp
   have "det A = (\<Sum> p \<in> ?PU. ?pp p)" unfolding det_def by auto
   also have "\<dots> = ?pp id + (\<Sum> p \<in> ?PU - {id}. ?pp p)"
     by (rule sum.remove, insert id0 fPU m, auto simp: p0)
@@ -160,38 +160,38 @@ proof -
   finally show ?thesis using m by (auto simp: prod_list_diag_prod)
 qed
 
-lemma det_one[simp]: "det (\<one>\<^sub>m n) = 1"
+lemma det_one[simp]: "det (1\<^sub>m n) = 1"
 proof -
-  have "det (\<one>\<^sub>m n) = prod_list (mat_diag (\<one>\<^sub>m n))"
+  have "det (1\<^sub>m n) = prod_list (diag_mat (1\<^sub>m n))"
     by (rule det_upper_triangular[of _ n], auto)
   also have "\<dots> = 1" by (induct n, auto)
   finally show ?thesis .
 qed
 
-lemma det_zero[simp]: assumes "n > 0" shows "det (\<zero>\<^sub>m n n) = 0"
+lemma det_zero[simp]: assumes "n > 0" shows "det (0\<^sub>m n n) = 0"
 proof -
-  have "det (\<zero>\<^sub>m n n) = prod_list (mat_diag (\<zero>\<^sub>m n n))"
+  have "det (0\<^sub>m n n) = prod_list (diag_mat (0\<^sub>m n n))"
     by (rule det_upper_triangular[of _ n], auto)
   also have "\<dots> = 0" using `n > 0` by (cases n, auto)
   finally show ?thesis .
 qed
 
-lemma det_dim_zero[simp]: "A \<in> carrier\<^sub>m 0 0 \<Longrightarrow> det A = 1"
-  unfolding det_def mat_carrier_def signof_def sign_def by auto
+lemma det_dim_zero[simp]: "A \<in> carrier_mat 0 0 \<Longrightarrow> det A = 1"
+  unfolding det_def carrier_mat_def signof_def sign_def by auto
  
 
 lemma det_lower_triangular:
   assumes ld: "\<And>i j. i < j \<Longrightarrow> j < n \<Longrightarrow> A $$ (i,j) = 0"
-  and m: "A \<in> carrier\<^sub>m n n"
-  shows "det A = prod_list (mat_diag A)"
+  and m: "A \<in> carrier_mat n n"
+  shows "det A = prod_list (diag_mat A)"
 proof -
-  have "det A = det (transpose\<^sub>m A)" using det_transpose[OF m] by simp
-  also have "\<dots> = prod_list (mat_diag (transpose\<^sub>m A))"
+  have "det A = det (transpose_mat A)" using det_transpose[OF m] by simp
+  also have "\<dots> = prod_list (diag_mat (transpose_mat A))"
     by (rule det_upper_triangular, insert m ld, auto)
   finally show ?thesis using m by simp
 qed
 
-lemma det_permute_rows: assumes A: "A \<in> carrier\<^sub>m n n"
+lemma det_permute_rows: assumes A: "A \<in> carrier_mat n n"
   and p: "p permutes {0 ..< (n :: nat)}"
   shows "det (mat n n (\<lambda> (i,j). A $$ (p i, j))) = signof p * det A"
 proof -
@@ -234,12 +234,12 @@ proof (rule trans[OF det_lower_triangular[of n]], unfold prod_list_diag_prod)
     by (rule prod.remove, insert k, auto)
   also have "(\<Prod>i\<in>{0..<n} - {k}. ?f i) = 1" 
     by (rule prod.neutral, auto)
-  finally show "(\<Prod>i\<in>{0..<dim\<^sub>r (multrow_mat n k a)}. ?f i) = a" using k by simp
+  finally show "(\<Prod>i\<in>{0..<dim_row (multrow_mat n k a)}. ?f i) = a" using k by simp
 qed (insert k, auto)
 
 lemma swap_rows_mat_eq_permute: 
-  "k < n \<Longrightarrow> l < n \<Longrightarrow> swaprows_mat n k l = mat n n (\<lambda>(i, j). \<one>\<^sub>m n $$ (Fun.swap k l id i, j))"
-  by (rule mat_eqI, auto simp: swap_def)
+  "k < n \<Longrightarrow> l < n \<Longrightarrow> swaprows_mat n k l = mat n n (\<lambda>(i, j). 1\<^sub>m n $$ (Fun.swap k l id i, j))"
+  by (rule eq_matI, auto simp: swap_def)
 
 lemma det_swaprows_mat: assumes k: "k < n" and l: "l < n" and kl: "k \<noteq> l"
   shows "det (swaprows_mat n k l) = - 1"
@@ -249,7 +249,7 @@ proof -
   have p: "?p permutes ?n"
     by (rule permutes_swap_id, insert k l, auto)
   show ?thesis
-    by (rule trans[OF trans[OF _ det_permute_rows[OF mat_one_closed[of n] p]]],
+    by (rule trans[OF trans[OF _ det_permute_rows[OF one_carrier_mat[of n] p]]],
     subst swap_rows_mat_eq_permute[OF k l], auto simp: signof_def sign_swap_id kl)
 qed
   
@@ -257,7 +257,7 @@ lemma det_addrow_mat:
   assumes l: "k \<noteq> l"
   shows "det (addrow_mat n a k l) = 1"
 proof -
-  have "det (addrow_mat n a k l) = prod_list (mat_diag (addrow_mat n a k l))"
+  have "det (addrow_mat n a k l) = prod_list (diag_mat (addrow_mat n a k l))"
   proof (cases "k < l")
     case True
     show ?thesis
@@ -275,7 +275,7 @@ qed
 text \<open>The following proof is new, as it does not use $2 \neq 0$ as in Multivariate-Analysis.\<close>
 
 lemma det_identical_rows:
-  assumes A: "A \<in> carrier\<^sub>m n n"  
+  assumes A: "A \<in> carrier_mat n n"  
     and ij: "i \<noteq> j"
     and i: "i < n" and j: "j < n"
     and r: "row A i = row A j"
@@ -353,23 +353,23 @@ proof-
 qed
 
 lemma det_row_0: assumes k: "k < n"
-  and c: "c \<in> {0 ..< n} \<rightarrow> carrier\<^sub>v n"
-  shows "det (mat\<^sub>r n n (\<lambda>i. if i = k then \<zero>\<^sub>v n else c i)) = 0"
+  and c: "c \<in> {0 ..< n} \<rightarrow> carrier_vec n"
+  shows "det (mat\<^sub>r n n (\<lambda>i. if i = k then 0\<^sub>v n else c i)) = 0"
 proof -
   {
     fix p
     assume p: "p permutes {0 ..< n}"
-    have "(\<Prod>i\<in>{0..<n}. mat\<^sub>r n n (\<lambda>i. if i = k then \<zero>\<^sub>v n else c i) $$ (i, p i)) = 0" 
+    have "(\<Prod>i\<in>{0..<n}. mat\<^sub>r n n (\<lambda>i. if i = k then 0\<^sub>v n else c i) $$ (i, p i)) = 0" 
       by (rule prod_zero[OF _ bexI[of _ k]], 
-      insert k p c[unfolded vec_carrier_def], auto)
+      insert k p c[unfolded carrier_vec_def], auto)
   }
   thus ?thesis unfolding det_def by simp
 qed
 
 lemma det_row_add: 
-  assumes abc: "a k \<in> carrier\<^sub>v n" "b k \<in> carrier\<^sub>v n" "c \<in> {0..<n} \<rightarrow> carrier\<^sub>v n"
+  assumes abc: "a k \<in> carrier_vec n" "b k \<in> carrier_vec n" "c \<in> {0..<n} \<rightarrow> carrier_vec n"
     and k: "k < n"
-  shows "det(mat\<^sub>r n n (\<lambda> i. if i = k then a i \<oplus>\<^sub>v b i else c i)) =
+  shows "det(mat\<^sub>r n n (\<lambda> i. if i = k then a i + b i else c i)) =
     det(mat\<^sub>r n n (\<lambda> i. if i = k then a i else c i)) +
     det(mat\<^sub>r n n (\<lambda> i. if i = k then b i else c i))"
   (is "?lhs = ?rhs")
@@ -377,8 +377,8 @@ proof -
   let ?n = "{0..<n}"
   let ?m = "\<lambda> a b p i. mat\<^sub>r n n (\<lambda>i. if i = k then a i else b i) $$ (i, p i)"
   let ?c = "\<lambda> p i. mat\<^sub>r n n c $$ (i, p i)"
-  let ?ab = "\<lambda> i. a i \<oplus>\<^sub>v b i"
-  note intros = vec_add_closed[of _ n]
+  let ?ab = "\<lambda> i. a i + b i"
+  note intros = add_carrier_vec[of _ n]
   have "?rhs = (\<Sum>p\<in>{p. p permutes ?n}. 
     signof p * (\<Prod>i\<in>?n. ?m a c p i)) + (\<Sum>p\<in>{p. p permutes ?n}. signof p * (\<Prod>i\<in>?n. ?m b c p i))"
     unfolding det_def by simp
@@ -404,16 +404,16 @@ proof -
         by (rule split)
       have id: "\<And> a. (\<Prod>i\<in>?nk. ?m a c p i) = (\<Prod>i\<in>?nk. ?c p i)"
         by (rule prod.cong, insert abc k p, auto intro!: intros)
-      have ab: "?ab k \<in> carrier\<^sub>v n" using abc by (auto intro: intros)
+      have ab: "?ab k \<in> carrier_vec n" using abc by (auto intro: intros)
       {
         fix f
-        assume "f k \<in> (carrier\<^sub>v n :: 'a vec set)"
+        assume "f k \<in> (carrier_vec n :: 'a vec set)"
         hence "mat\<^sub>r n n (\<lambda>i. if i = k then f i else c i) $$ (k, p k) = f k $ p k"
           by (insert p k abc, auto)
       } note first = this
       note id' = id1 id2 id3
-      have dist: "(a k \<oplus>\<^sub>v b k) $ p k = a k $ p k + b k $ p k"  
-        by (rule vec_index_add(1), insert p k abc, force)
+      have dist: "(a k + b k) $ p k = a k $ p k + b k $ p k"  
+        by (rule index_add_vec(1), insert p k abc, force)
       show "(\<Prod>i\<in>?n. ?m a c p i) + (\<Prod>i\<in>?n. ?m b c p i) = (\<Prod>i\<in>?n. ?m ?ab c p i)"
         unfolding id' id first[of a, OF abc(1)] first[of b, OF abc(2)] first[of ?ab, OF ab] dist
         by (rule distrib_right[symmetric])
@@ -425,8 +425,8 @@ qed
 
 
 lemma det_linear_row_finsum:
-  assumes fS: "finite S" and c: "c \<in> {0..<n} \<rightarrow> carrier\<^sub>v n" and k: "k < n"
-  and a: "a k \<in> S \<rightarrow> carrier\<^sub>v n"
+  assumes fS: "finite S" and c: "c \<in> {0..<n} \<rightarrow> carrier_vec n" and k: "k < n"
+  and a: "a k \<in> S \<rightarrow> carrier_vec n"
   shows "det (mat\<^sub>r n n (\<lambda> i. if i = k then finsum_vec TYPE('a :: comm_ring_1) n (a i) S else c i)) =
     sum (\<lambda>j. det (mat\<^sub>r n n (\<lambda> i. if i = k then a  i j else c i))) S"
 proof -
@@ -438,7 +438,7 @@ proof -
       by (simp, unfold finsum_vec_empty, rule det_row_0[OF k c])
   next
     case (2 x F)
-    from 2(4) have ak: "a k \<in> F \<rightarrow> carrier\<^sub>v n" and akx: "a k x \<in> carrier\<^sub>v n" by auto    
+    from 2(4) have ak: "a k \<in> F \<rightarrow> carrier_vec n" and akx: "a k x \<in> carrier_vec n" by auto    
     {
       fix i
       note if_cong[OF refl finsum_vec_insert[OF 2(1-2)],
@@ -446,7 +446,7 @@ proof -
     } note * = this
     show ?case
     proof (subst *)
-      show "det (mat\<^sub>r n n (\<lambda>i. if i = k then a i x \<oplus>\<^sub>v ?sum (a i) F else c i)) =
+      show "det (mat\<^sub>r n n (\<lambda>i. if i = k then a i x + ?sum (a i) F else c i)) =
         (\<Sum>j\<in>insert x F. det (mat\<^sub>r n n (\<lambda>i. if i = k then a i j else c i)))"
       proof (subst det_row_add)
         show "det (mat\<^sub>r n n (\<lambda>i. if i = k then a i x else c i)) +
@@ -462,9 +462,9 @@ qed
 
 lemma det_linear_rows_finsum_lemma:
   assumes fS: "finite S"
-    and fT: "finite T" and c: "c \<in> {0..<n} \<rightarrow> carrier\<^sub>v n"
+    and fT: "finite T" and c: "c \<in> {0..<n} \<rightarrow> carrier_vec n"
     and T: "T \<subseteq> {0 ..< n}"
-    and a: "a \<in> T \<rightarrow> S \<rightarrow> carrier\<^sub>v n"
+    and a: "a \<in> T \<rightarrow> S \<rightarrow> carrier_vec n"
   shows "det (mat\<^sub>r n n (\<lambda> i. if i \<in> T then finsum_vec TYPE('a :: comm_ring_1) n (a i) S else c i)) =
     sum (\<lambda>f. det(mat\<^sub>r n n (\<lambda> i. if i \<in> T then a i (f i) else c i)))
       {f. (\<forall>i \<in> T. f i \<in> S) \<and> (\<forall>i. i \<notin> T \<longrightarrow> f i = i)}"
@@ -478,7 +478,7 @@ proof -
     show ?case by simp
   next
     case (insert z T a c)
-    hence z: "z < n" and azS: "a z \<in> S \<rightarrow> carrier\<^sub>v n" by auto
+    hence z: "z < n" and azS: "a z \<in> S \<rightarrow> carrier_vec n" by auto
     let ?F = "\<lambda>T. {f. (\<forall>i \<in> T. f i \<in> S) \<and> (\<forall>i. i \<notin> T \<longrightarrow> f i = i)}"
     let ?h = "\<lambda>(y,g) i. if i = z then y else g i"
     let ?k = "\<lambda>h. (h(z),(\<lambda>i. if i = z then i else h i))"
@@ -491,7 +491,7 @@ proof -
       by simp
     from `z \<notin> T` have nz: "\<And>i. i \<in> T \<Longrightarrow> i = z \<longleftrightarrow> False"
       by auto
-    from insert have c: "\<And> i. i < n \<Longrightarrow> c i \<in> carrier\<^sub>v n" by auto
+    from insert have c: "\<And> i. i < n \<Longrightarrow> c i \<in> carrier_vec n" by auto
     have fin: "finite {f. (\<forall>i\<in>T. f i \<in> S) \<and> (\<forall>i. i \<notin> T \<longrightarrow> f i = i)}"
       by (rule finite_bounded_functions[OF fS insert(1)])
     have "det (mat\<^sub>r n n (\<lambda> i. if i \<in> insert z T then ?sum (a i) S else c i)) =
@@ -525,7 +525,7 @@ qed
 
 lemma det_linear_rows_sum:
   assumes fS: "finite S"
-  and a: "a \<in> {0..<n} \<rightarrow> S \<rightarrow> carrier\<^sub>v n"
+  and a: "a \<in> {0..<n} \<rightarrow> S \<rightarrow> carrier_vec n"
   shows "det (mat\<^sub>r n n (\<lambda> i. finsum_vec TYPE('a :: comm_ring_1) n (a i) S)) =
     sum (\<lambda>f. det (mat\<^sub>r n n (\<lambda> i. a i (f i)))) 
     {f. (\<forall>i\<in>{0..<n}. f i \<in> S) \<and> (\<forall>i. i \<notin> {0..<n} \<longrightarrow> f i = i)}"
@@ -533,28 +533,28 @@ proof -
   let ?T = "{0..<n}"
   have fT: "finite ?T" by auto
   have th0: "\<And>x y. mat\<^sub>r n n (\<lambda> i. if i \<in> ?T then x i else y i) = mat\<^sub>r n n (\<lambda> i. x i)"
-    by (rule mat_row_eqI, auto)
-  have c: "(\<lambda> _. \<zero>\<^sub>v n) \<in> ?T \<rightarrow> carrier\<^sub>v n" by auto
+    by (rule eq_rowI, auto)
+  have c: "(\<lambda> _. 0\<^sub>v n) \<in> ?T \<rightarrow> carrier_vec n" by auto
   show ?thesis
     by (rule det_linear_rows_finsum_lemma[OF fS fT c subset_refl a, unfolded th0])
 qed
 
 lemma det_rows_mul:
-  assumes a: "a \<in> {0..<n} \<rightarrow> carrier\<^sub>v n"
-  shows "det(mat\<^sub>r n n (\<lambda> i. c i \<odot>\<^sub>v a i)) =
+  assumes a: "a \<in> {0..<n} \<rightarrow> carrier_vec n"
+  shows "det(mat\<^sub>r n n (\<lambda> i. c i \<cdot>\<^sub>v a i)) =
     prod c {0..<n} * det(mat\<^sub>r n n (\<lambda> i. a i))"
 proof -
-  have A: "mat\<^sub>r n n (\<lambda> i. c i \<odot>\<^sub>v a i) \<in> carrier\<^sub>m n n" 
-  and A': "mat\<^sub>r n n (\<lambda> i. a i) \<in> carrier\<^sub>m n n" using a unfolding mat_carrier_def by auto
+  have A: "mat\<^sub>r n n (\<lambda> i. c i \<cdot>\<^sub>v a i) \<in> carrier_mat n n" 
+  and A': "mat\<^sub>r n n (\<lambda> i. a i) \<in> carrier_mat n n" using a unfolding carrier_mat_def by auto
   show ?thesis unfolding det_def'[OF A] det_def'[OF A']
   proof (rule trans[OF sum.cong sum_distrib_left[symmetric]])
     fix p
     assume p: "p \<in> {p. p permutes {0..<n}}"
-    have id: "(\<Prod>ia\<in>{0..<n}. mat\<^sub>r n n (\<lambda>i. c i \<odot>\<^sub>v a i) $$ (ia, p ia))
+    have id: "(\<Prod>ia\<in>{0..<n}. mat\<^sub>r n n (\<lambda>i. c i \<cdot>\<^sub>v a i) $$ (ia, p ia))
       = prod c {0..<n} * (\<Prod>ia\<in>{0..<n}. mat\<^sub>r n n a $$ (ia, p ia))"
       unfolding prod.distrib[symmetric]
       by (rule prod.cong, insert p a, force+)
-    show "signof p * (\<Prod>ia\<in>{0..<n}. mat\<^sub>r n n (\<lambda>i. c i \<odot>\<^sub>v a i) $$ (ia, p ia)) =
+    show "signof p * (\<Prod>ia\<in>{0..<n}. mat\<^sub>r n n (\<lambda>i. c i \<cdot>\<^sub>v a i) $$ (ia, p ia)) =
            prod c {0..<n} * (signof p * (\<Prod>ia\<in>{0..<n}. mat\<^sub>r n n a $$ (ia, p ia)))"
       unfolding id by auto
   qed simp
@@ -562,14 +562,14 @@ qed
 
 
 lemma mat_mul_finsum_alt:
-  assumes A: "A \<in> carrier\<^sub>m nr n" and B: "B \<in> carrier\<^sub>m n nc"
-  shows "A \<otimes>\<^sub>m B = mat\<^sub>r nr nc (\<lambda> i. finsum_vec TYPE('a :: semiring_0) nc (\<lambda>k. A $$ (i,k) \<odot>\<^sub>v row B k) {0 ..< n})"
-  by (rule mat_eqI, insert A B, auto, subst finsum_vec_index, auto simp: scalar_prod_def intro: sum.cong)
+  assumes A: "A \<in> carrier_mat nr n" and B: "B \<in> carrier_mat n nc"
+  shows "A * B = mat\<^sub>r nr nc (\<lambda> i. finsum_vec TYPE('a :: semiring_0) nc (\<lambda>k. A $$ (i,k) \<cdot>\<^sub>v row B k) {0 ..< n})"
+  by (rule eq_matI, insert A B, auto, subst index_finsum_vec, auto simp: scalar_prod_def intro: sum.cong)
 
 
 lemma det_mult:
-  assumes A: "A \<in> carrier\<^sub>m n n" and B: "B \<in> carrier\<^sub>m n n"
-  shows "det (A \<otimes>\<^sub>m B) = det A * det (B :: 'a :: comm_ring_1 mat)"
+  assumes A: "A \<in> carrier_mat n n" and B: "B \<in> carrier_mat n n"
+  shows "det (A * B) = det A * det (B :: 'a :: comm_ring_1 mat)"
 proof -
   let ?U = "{0 ..< n}"
   let ?F = "{f. (\<forall>i\<in> ?U. f i \<in> ?U) \<and> (\<forall>i. i \<notin> ?U \<longrightarrow> f i = i)}"
@@ -592,9 +592,9 @@ proof -
       using fPU by auto
     from fPU have f: "\<forall>i \<in> ?U. f i \<in> ?U" "\<forall>i. i \<notin> ?U \<longrightarrow> f i = i" "\<not>(\<forall>y. \<exists>!x. f x = y)"
       unfolding permutes_def by auto
-    let ?A = "mat\<^sub>r n n (\<lambda> i. A $$ (i, f i) \<odot>\<^sub>v row B (f i))"
+    let ?A = "mat\<^sub>r n n (\<lambda> i. A $$ (i, f i) \<cdot>\<^sub>v row B (f i))"
     let ?B = "mat\<^sub>r n n (\<lambda> i. row B (f i))"
-    have B': "?B \<in> carrier\<^sub>m n n"
+    have B': "?B \<in> carrier_mat n n"
       by (intro mat_row_carrierI)
     {
       assume fi: "inj_on f ?U"
@@ -610,7 +610,7 @@ proof -
     have "det ?A = 0" 
       by (subst det_rows_mul, unfold det_identical_rows[OF B' ij(2-4) rth], insert f A B, auto)
   }
-  then have zth: "\<And> f. f \<in> ?F - ?PU \<Longrightarrow> det (mat\<^sub>r n n (\<lambda> i. A $$ (i, f i) \<odot>\<^sub>v row B (f i))) = 0"
+  then have zth: "\<And> f. f \<in> ?F - ?PU \<Longrightarrow> det (mat\<^sub>r n n (\<lambda> i. A $$ (i, f i) \<cdot>\<^sub>v row B (f i))) = 0"
     by simp
   {
     fix p
@@ -620,7 +620,7 @@ proof -
     let ?s = "\<lambda>p. (signof p) :: 'a"
     let ?f = "\<lambda>q. ?s p * (\<Prod> i\<in> ?U. A $$ (i,p i)) * (?s q * (\<Prod>i\<in> ?U. B $$ (i, q i)))"
     have "(sum (\<lambda>q. ?s q *
-        (\<Prod>i\<in> ?U. mat\<^sub>r n n (\<lambda> i. A $$ (i, p i) \<odot>\<^sub>v row B (p i)) $$ (i, q i))) ?PU) =
+        (\<Prod>i\<in> ?U. mat\<^sub>r n n (\<lambda> i. A $$ (i, p i) \<cdot>\<^sub>v row B (p i)) $$ (i, q i))) ?PU) =
       (sum (\<lambda>q. ?s p * (\<Prod> i\<in> ?U. A $$ (i,p i)) * (?s q * (\<Prod> i\<in> ?U. B $$ (i, q i)))) ?PU)"
       unfolding sum_permutations_compose_right[OF permutes_inv[OF p], of ?f]
     proof (rule sum.cong[OF refl])
@@ -633,28 +633,28 @@ proof -
       let ?inv = "Hilbert_Choice.inv"
       have th001: "prod (\<lambda>i. B$$ (i, q (?inv p i))) ?U = prod ((\<lambda>i. B$$ (i, q (?inv p i))) \<circ> p) ?U"
         by (rule prod.permute[OF p])
-      have thp: "prod (\<lambda>i. mat\<^sub>r n n (\<lambda> i. A$$(i,p i) \<odot>\<^sub>v row B (p i)) $$ (i, q i)) ?U =
+      have thp: "prod (\<lambda>i. mat\<^sub>r n n (\<lambda> i. A$$(i,p i) \<cdot>\<^sub>v row B (p i)) $$ (i, q i)) ?U =
         prod (\<lambda>i. A$$(i,p i)) ?U * prod (\<lambda>i. B$$ (i, q (?inv p i))) ?U"
         unfolding th001 o_def permutes_inverses[OF p]
         by (subst prod.distrib[symmetric], insert A p q B, auto intro: prod.cong)
       define AA where "AA = (\<Prod>i\<in>?U. A $$ (i, p i))"
       define BB where "BB = (\<Prod>ia\<in>{0..<n}. B $$ (ia, q (?inv p ia)))"
-      have "?s q * (\<Prod>ia\<in>{0..<n}. mat\<^sub>r n n (\<lambda>i. A $$ (i, p i) \<odot>\<^sub>v row B (p i)) $$ (ia, q ia)) =
+      have "?s q * (\<Prod>ia\<in>{0..<n}. mat\<^sub>r n n (\<lambda>i. A $$ (i, p i) \<cdot>\<^sub>v row B (p i)) $$ (ia, q ia)) =
          ?s p * (\<Prod>i\<in>{0..<n}. A $$ (i, p i)) * (?s (q \<circ> ?inv p) * (\<Prod>ia\<in>{0..<n}. B $$ (ia, q (?inv p ia))))"
         unfolding sign thp
         unfolding AA_def[symmetric] BB_def[symmetric]
         by (simp add: ac_simps signof_def)
-      thus "?s q * (\<Prod>i = 0..<n. mat\<^sub>r n n (\<lambda>i. A $$ (i, p i) \<odot>\<^sub>v row B (p i)) $$ (i, q i)) =
+      thus "?s q * (\<Prod>i = 0..<n. mat\<^sub>r n n (\<lambda>i. A $$ (i, p i) \<cdot>\<^sub>v row B (p i)) $$ (i, q i)) =
          ?s p * (\<Prod>i = 0..<n. A $$ (i, p i)) *
          (?s (q \<circ> ?inv p) * (\<Prod>i = 0..<n. B $$ (i, (q \<circ> ?inv p) i)))" by simp
     qed 
   } note * = this
-  have th2: "sum (\<lambda>f. det (mat\<^sub>r n n (\<lambda> i. A$$(i,f i) \<odot>\<^sub>v row B (f i)))) ?PU = det A * det B"
+  have th2: "sum (\<lambda>f. det (mat\<^sub>r n n (\<lambda> i. A$$(i,f i) \<cdot>\<^sub>v row B (f i)))) ?PU = det A * det B"
     unfolding det_def'[OF A] det_def'[OF B] det_def'[OF mat_row_carrierI]
-    unfolding sum_product mat_dim_row_mat
+    unfolding sum_product dim_row_mat
     by (rule sum.cong, insert A, force, subst *, insert A B, auto)
-  let ?f = "\<lambda> f. det (mat\<^sub>r n n (\<lambda> i. A $$ (i, f i) \<odot>\<^sub>v row B (f i)))"
-  have "det (A \<otimes>\<^sub>m B) = sum ?f ?F"
+  let ?f = "\<lambda> f. det (mat\<^sub>r n n (\<lambda> i. A $$ (i, f i) \<cdot>\<^sub>v row B (f i)))"
+  have "det (A * B) = sum ?f ?F"
     unfolding mat_mul_finsum_alt[OF A B]
     by (rule det_linear_rows_sum[OF fU], insert A B, auto)
   also have "\<dots> = sum ?f ((?F - ?PU) \<union> (?F \<inter> ?PU))"
@@ -669,47 +669,47 @@ proof -
   finally show ?thesis by simp
 qed
 
-lemma unit_imp_det_non_zero: assumes "A \<in> Units (ring\<^sub>m TYPE('a :: comm_ring_1) n b)"
+lemma unit_imp_det_non_zero: assumes "A \<in> Units (ring_mat TYPE('a :: comm_ring_1) n b)"
    shows "det A \<noteq> 0"
 proof -
-  from assms[unfolded Units_def mat_ring_def]
-  obtain B where A: "A \<in> carrier\<^sub>m n n" and B: "B \<in> carrier\<^sub>m n n" and BA: "B \<otimes>\<^sub>m A = \<one>\<^sub>m n" by auto
+  from assms[unfolded Units_def ring_mat_def]
+  obtain B where A: "A \<in> carrier_mat n n" and B: "B \<in> carrier_mat n n" and BA: "B * A = 1\<^sub>m n" by auto
   from arg_cong[OF BA, of det, unfolded det_mult[OF B A] det_one]
   show ?thesis by auto
 qed
 
 text \<open>The following proof is based on the Gauss-Jordan algorithm.\<close>
 
-lemma det_non_zero_imp_unit: assumes A: "A \<in> carrier\<^sub>m n n"
+lemma det_non_zero_imp_unit: assumes A: "A \<in> carrier_mat n n"
   and dA: "det A \<noteq> (0 :: 'a :: field)"
-  shows "A \<in> Units (ring\<^sub>m TYPE('a) n b)"
+  shows "A \<in> Units (ring_mat TYPE('a) n b)"
 proof (rule ccontr)
-  let ?g = "gauss_jordan A (\<zero>\<^sub>m n 0)"
+  let ?g = "gauss_jordan A (0\<^sub>m n 0)"
   let ?B = "fst ?g"
   obtain B C where B: "?g = (B,C)" by (cases ?g)
   assume "\<not> ?thesis"
-  from this[unfolded gauss_jordan_check_invertable[OF A mat_zero_closed[of n 0]] B]
-  have "B \<noteq> \<one>\<^sub>m n" by auto
+  from this[unfolded gauss_jordan_check_invertable[OF A zero_carrier_mat[of n 0]] B]
+  have "B \<noteq> 1\<^sub>m n" by auto
   with row_echelon_form_imp_1_or_0_row[OF gauss_jordan_carrier(1)[OF A _ B] gauss_jordan_row_echelon[OF A B], of 0]
-  have n: "0 < n" and row: "row B (n - 1) = \<zero>\<^sub>v n" by auto
+  have n: "0 < n" and row: "row B (n - 1) = 0\<^sub>v n" by auto
   let ?n = "n - 1"
   from n have n1: "?n < n" by auto
   from gauss_jordan_transform[OF A _ B, of 0 b] obtain P
-    where P: "P\<in>Units (ring\<^sub>m TYPE('a) n b)" and PA: "B = P \<otimes>\<^sub>m A" by auto
+    where P: "P\<in>Units (ring_mat TYPE('a) n b)" and PA: "B = P * A" by auto
   from unit_imp_det_non_zero[OF P] have dP: "det P \<noteq> 0" by auto
-  from P have P: "P \<in> carrier\<^sub>m n n" unfolding Units_def mat_ring_def by auto
+  from P have P: "P \<in> carrier_mat n n" unfolding Units_def ring_mat_def by auto
   from det_mult[OF P A] dP dA have "det B \<noteq> 0" unfolding PA by simp
   also have "det B = 0" 
   proof -
-    from gauss_jordan_carrier[OF A _ B, of 0] have B: "B \<in> carrier\<^sub>m n n" by auto
+    from gauss_jordan_carrier[OF A _ B, of 0] have B: "B \<in> carrier_mat n n" by auto
     {
       fix j
       assume j: "j < n"
-      from row_index(1)[symmetric, of ?n B j, unfolded row] B
+      from index_row(1)[symmetric, of ?n B j, unfolded row] B
       have "B $$ (?n, j) = 0" using B n j by auto
     }
-    hence "B = mat\<^sub>r n n (\<lambda>i. if i = ?n then \<zero>\<^sub>v n else row B i)"
-      by (intro mat_eqI, insert B, auto)
+    hence "B = mat\<^sub>r n n (\<lambda>i. if i = ?n then 0\<^sub>v n else row B i)"
+      by (intro eq_matI, insert B, auto)
     also have "det \<dots> = 0"
       by (rule det_row_0[OF n1], insert B, auto)
     finally show "det B = 0" .
@@ -717,61 +717,61 @@ proof (rule ccontr)
   finally show False by simp
 qed
 
-lemma mat_mult_left_right_inverse: assumes A: "(A :: 'a :: field mat) \<in> carrier\<^sub>m n n" 
-  and B: "B \<in> carrier\<^sub>m n n" and AB: "A \<otimes>\<^sub>m B = \<one>\<^sub>m n"
-  shows "B \<otimes>\<^sub>m A = \<one>\<^sub>m n"
+lemma mat_mult_left_right_inverse: assumes A: "(A :: 'a :: field mat) \<in> carrier_mat n n" 
+  and B: "B \<in> carrier_mat n n" and AB: "A * B = 1\<^sub>m n"
+  shows "B * A = 1\<^sub>m n"
 proof -
-  let ?R = "ring\<^sub>m TYPE('a) n undefined"
+  let ?R = "ring_mat TYPE('a) n undefined"
   from det_mult[OF A B, unfolded AB] have "det A \<noteq> 0" "det B \<noteq> 0" by auto
   from det_non_zero_imp_unit[OF A this(1)] det_non_zero_imp_unit[OF B this(2)]  
   have U: "A \<in> Units ?R" "B \<in> Units ?R" .
-  interpret ring ?R by (rule mat_ring)
-  from Units_inv_comm[unfolded mat_ring_simps, OF AB U] show ?thesis .
+  interpret ring ?R by (rule ring_mat)
+  from Units_inv_comm[unfolded ring_mat_simps, OF AB U] show ?thesis .
 qed
 
-lemma det_zero_imp_zero_row: assumes A: "(A :: 'a :: field mat) \<in> carrier\<^sub>m n n"
+lemma det_zero_imp_zero_row: assumes A: "(A :: 'a :: field mat) \<in> carrier_mat n n"
   and det: "det A = 0"
-  shows "\<exists> P. P \<in> Units (ring\<^sub>m TYPE('a) n b) \<and> row (P \<otimes>\<^sub>m A) (n - 1) = \<zero>\<^sub>v n \<and> 0 < n
-    \<and> row_echelon_form (P \<otimes>\<^sub>m A)"
+  shows "\<exists> P. P \<in> Units (ring_mat TYPE('a) n b) \<and> row (P * A) (n - 1) = 0\<^sub>v n \<and> 0 < n
+    \<and> row_echelon_form (P * A)"
 proof -
-  let ?R = "ring\<^sub>m TYPE('a) n b"
+  let ?R = "ring_mat TYPE('a) n b"
   let ?U = "Units ?R"
-  interpret m: ring ?R by (rule mat_ring)
+  interpret m: ring ?R by (rule ring_mat)
   let ?g = "gauss_jordan A A"
   obtain A' B' where g: "?g = (A', B')" by (cases ?g)
   from det unit_imp_det_non_zero[of A n b] have AU: "A \<notin> ?U" by auto
   with gauss_jordan_inverse_one_direction(1)[OF A A, of _ b]
-  have A'1: "A' \<noteq> \<one>\<^sub>m n" using g by auto
-  from gauss_jordan_carrier(1)[OF A A g] have A': "A' \<in> carrier\<^sub>m n n" by auto
+  have A'1: "A' \<noteq> 1\<^sub>m n" using g by auto
+  from gauss_jordan_carrier(1)[OF A A g] have A': "A' \<in> carrier_mat n n" by auto
   from gauss_jordan_row_echelon[OF A g] have re: "row_echelon_form A'" .
   from row_echelon_form_imp_1_or_0_row[OF A' this] A'1
-  have n: "0 < n" and row: "row A' (n - 1) = \<zero>\<^sub>v n" by auto
+  have n: "0 < n" and row: "row A' (n - 1) = 0\<^sub>v n" by auto
   from gauss_jordan_transform[OF A A g, of b] obtain P
-    where P: "P \<in> ?U" and A': "A' = P \<otimes>\<^sub>m A" by auto
+    where P: "P \<in> ?U" and A': "A' = P * A" by auto
   thus ?thesis using n row re by auto
 qed
 
-lemma det_0_iff_vec_prod_zero_field: assumes A: "(A :: 'a :: field mat) \<in> carrier\<^sub>m n n"
-  shows "det A = 0 \<longleftrightarrow> (\<exists> v. v \<in> carrier\<^sub>v n \<and> v \<noteq> \<zero>\<^sub>v n \<and> A \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v n)" (is "?l = (\<exists> v. ?P v)")
+lemma det_0_iff_vec_prod_zero_field: assumes A: "(A :: 'a :: field mat) \<in> carrier_mat n n"
+  shows "det A = 0 \<longleftrightarrow> (\<exists> v. v \<in> carrier_vec n \<and> v \<noteq> 0\<^sub>v n \<and> A *\<^sub>v v = 0\<^sub>v n)" (is "?l = (\<exists> v. ?P v)")
 proof -
-  let ?R = "ring\<^sub>m TYPE('a) n ()"
+  let ?R = "ring_mat TYPE('a) n ()"
   let ?U = "Units ?R"
-  interpret m: ring ?R by (rule mat_ring)
+  interpret m: ring ?R by (rule ring_mat)
   show ?thesis
   proof (cases "det A = 0")
     case False
     from det_non_zero_imp_unit[OF A this, of "()"]
     have "A \<in> ?U" .
-    then obtain B where unit: "B \<otimes>\<^sub>m A = \<one>\<^sub>m n" and B: "B \<in> carrier\<^sub>m n n"
-      unfolding Units_def mat_ring_def by auto
+    then obtain B where unit: "B * A = 1\<^sub>m n" and B: "B \<in> carrier_mat n n"
+      unfolding Units_def ring_mat_def by auto
     {
       fix v
       assume "?P v"
-      hence v: "v \<in> carrier\<^sub>v n" "v \<noteq> \<zero>\<^sub>v n" "A \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v n" by auto
-      have "v = (B \<otimes>\<^sub>m A) \<otimes>\<^sub>m\<^sub>v v" using v B unfolding unit by auto
-      also have "\<dots> = B \<otimes>\<^sub>m\<^sub>v (A \<otimes>\<^sub>m\<^sub>v v)" using B A v by simp
-      also have "\<dots> = B \<otimes>\<^sub>m\<^sub>v \<zero>\<^sub>v n" unfolding v ..
-      also have "\<dots> = \<zero>\<^sub>v n" using B by auto
+      hence v: "v \<in> carrier_vec n" "v \<noteq> 0\<^sub>v n" "A *\<^sub>v v = 0\<^sub>v n" by auto
+      have "v = (B * A) *\<^sub>v v" using v B unfolding unit by auto
+      also have "\<dots> = B *\<^sub>v (A *\<^sub>v v)" using B A v by simp
+      also have "\<dots> = B *\<^sub>v 0\<^sub>v n" unfolding v ..
+      also have "\<dots> = 0\<^sub>v n" using B by auto
       finally have False using v by simp
     }
     with False show ?thesis by blast
@@ -779,14 +779,14 @@ proof -
     case True
     let ?n = "n - 1"
     from det_zero_imp_zero_row[OF A True, of "()"]
-    obtain P where PU: "P \<in> ?U" and row: "row (P \<otimes>\<^sub>m A) ?n = \<zero>\<^sub>v n" and n: "0 < n" "?n < n"
-      and re: "row_echelon_form (P \<otimes>\<^sub>m A)" by auto
-    define PA where "PA = P \<otimes>\<^sub>m A"
+    obtain P where PU: "P \<in> ?U" and row: "row (P * A) ?n = 0\<^sub>v n" and n: "0 < n" "?n < n"
+      and re: "row_echelon_form (P * A)" by auto
+    define PA where "PA = P * A"
     note row = row[folded PA_def]
     note re = re[folded PA_def]
-    from PU obtain Q where P: "P \<in> carrier\<^sub>m n n" and Q: "Q \<in> carrier\<^sub>m n n"
-      and unit: "Q \<otimes>\<^sub>m P = \<one>\<^sub>m n" "P \<otimes>\<^sub>m Q =  \<one>\<^sub>m n" unfolding Units_def mat_ring_def by auto    
-    from P A have PA: "PA \<in> carrier\<^sub>m n n" and dimPA: "dim\<^sub>r PA = n" unfolding PA_def by auto
+    from PU obtain Q where P: "P \<in> carrier_mat n n" and Q: "Q \<in> carrier_mat n n"
+      and unit: "Q * P = 1\<^sub>m n" "P * Q =  1\<^sub>m n" unfolding Units_def ring_mat_def by auto    
+    from P A have PA: "PA \<in> carrier_mat n n" and dimPA: "dim_row PA = n" unfolding PA_def by auto
     from re[unfolded row_echelon_form_def] obtain p where p: "pivot_fun PA p n" using PA by auto 
     note piv = pivot_positions[OF PA p]
     note pivot = pivot_funD[OF dimPA p n(2)]
@@ -806,39 +806,39 @@ proof -
     hence "card (snd ` (set (pivot_positions PA))) < n" 
       using card_image_le[OF finite_set, of snd "pivot_positions PA"] by auto
     hence neq: "snd ` (set (pivot_positions PA)) \<noteq> {0 ..< n}" by auto
-    from find_base_vector[OF re PA neq] obtain v where v: "v \<in> carrier\<^sub>v n"
-      and v0: "v \<noteq> \<zero>\<^sub>v n" and pav: "PA \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v n" by auto
-    have "A \<otimes>\<^sub>m\<^sub>v v = Q \<otimes>\<^sub>m P \<otimes>\<^sub>m\<^sub>v (A \<otimes>\<^sub>m\<^sub>v v)" unfolding unit using A v by auto
-    also have "\<dots> = Q \<otimes>\<^sub>m\<^sub>v (PA \<otimes>\<^sub>m\<^sub>v v)" unfolding PA_def using Q P A v by auto
-    also have "PA \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v n" unfolding pav ..
-    also have "Q \<otimes>\<^sub>m\<^sub>v \<zero>\<^sub>v n = \<zero>\<^sub>v n" using Q by auto
-    finally have Av: "A \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v n" by auto
+    from find_base_vector[OF re PA neq] obtain v where v: "v \<in> carrier_vec n"
+      and v0: "v \<noteq> 0\<^sub>v n" and pav: "PA *\<^sub>v v = 0\<^sub>v n" by auto
+    have "A *\<^sub>v v = Q * P *\<^sub>v (A *\<^sub>v v)" unfolding unit using A v by auto
+    also have "\<dots> = Q *\<^sub>v (PA *\<^sub>v v)" unfolding PA_def using Q P A v by auto
+    also have "PA *\<^sub>v v = 0\<^sub>v n" unfolding pav ..
+    also have "Q *\<^sub>v 0\<^sub>v n = 0\<^sub>v n" using Q by auto
+    finally have Av: "A *\<^sub>v v = 0\<^sub>v n" by auto
     show ?thesis unfolding True using Av v0 v by auto
   qed
 qed
 
 text \<open>In order to get the result for integral domains, we embed the domain in its
   fraction field, and then apply the result for fields.\<close>
-lemma det_0_iff_vec_prod_zero: assumes A: "(A :: 'a :: idom mat) \<in> carrier\<^sub>m n n"
-  shows "det A = 0 \<longleftrightarrow> (\<exists> v. v \<in> carrier\<^sub>v n \<and> v \<noteq> \<zero>\<^sub>v n \<and> A \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v n)"
+lemma det_0_iff_vec_prod_zero: assumes A: "(A :: 'a :: idom mat) \<in> carrier_mat n n"
+  shows "det A = 0 \<longleftrightarrow> (\<exists> v. v \<in> carrier_vec n \<and> v \<noteq> 0\<^sub>v n \<and> A *\<^sub>v v = 0\<^sub>v n)"
 proof -
   let ?h = "to_fract :: 'a \<Rightarrow> 'a fract"
-  let ?A = "map\<^sub>m ?h A"
-  have A': "?A \<in> carrier\<^sub>m n n" using A by auto
+  let ?A = "map_mat ?h A"
+  have A': "?A \<in> carrier_mat n n" using A by auto
   interpret inj_comm_ring_hom ?h by (unfold_locales, auto)
   have "(det A = 0) = (?h (det A) = ?h 0)" by auto
   also have "\<dots> = (det ?A = 0)" unfolding hom_zero hom_det ..
-  also have "\<dots> = ((\<exists> v. v \<in> carrier\<^sub>v n \<and> v \<noteq> \<zero>\<^sub>v n \<and> ?A \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v n))"
+  also have "\<dots> = ((\<exists> v. v \<in> carrier_vec n \<and> v \<noteq> 0\<^sub>v n \<and> ?A *\<^sub>v v = 0\<^sub>v n))"
     unfolding det_0_iff_vec_prod_zero_field[OF A'] ..
-  also have "\<dots> = ((\<exists> v. v \<in> carrier\<^sub>v n \<and> v \<noteq> \<zero>\<^sub>v n \<and> A \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v n))" (is "?l = ?r")
+  also have "\<dots> = ((\<exists> v. v \<in> carrier_vec n \<and> v \<noteq> 0\<^sub>v n \<and> A *\<^sub>v v = 0\<^sub>v n))" (is "?l = ?r")
   proof
     assume ?r
-    then obtain v where v: "v \<in> carrier\<^sub>v n" "v \<noteq> \<zero>\<^sub>v n" "A \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v n" by auto
+    then obtain v where v: "v \<in> carrier_vec n" "v \<noteq> 0\<^sub>v n" "A *\<^sub>v v = 0\<^sub>v n" by auto
     show ?l
-      by (rule exI[of _ "map\<^sub>v ?h v"], insert v, auto simp: mat_vec_mult_hom[symmetric, OF A v(1)])
+      by (rule exI[of _ "map_vec ?h v"], insert v, auto simp: mult_mat_vec_hom[symmetric, OF A v(1)])
   next
     assume ?l
-    then obtain v where v: "v \<in> carrier\<^sub>v n" and v0: "v \<noteq> \<zero>\<^sub>v n" and Av: "?A \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v n" by auto
+    then obtain v where v: "v \<in> carrier_vec n" and v0: "v \<noteq> 0\<^sub>v n" and Av: "?A *\<^sub>v v = 0\<^sub>v n" by auto
     have "\<forall> i. \<exists> a b. v $ i = Fraction_Field.Fract a b \<and> b \<noteq> 0" using Fract_cases[of "v $ i" for i] by metis
     from choice[OF this] obtain a where "\<forall> i. \<exists> b. v $ i = Fraction_Field.Fract (a i) b \<and> b \<noteq> 0" by metis
     from choice[OF this] obtain b where vi: "\<And> i. v $ i = Fraction_Field.Fract (a i) (b i)" and bi: "\<And> i. b i \<noteq> 0" by auto
@@ -861,44 +861,44 @@ proof -
     hence "\<forall> i. \<exists> c. i < n \<longrightarrow> ?m * v $ i = ?h c" by auto
     from choice[OF this] obtain c where c: "\<And> i. i < n \<Longrightarrow> ?m * v $ i = ?h (c i)" by auto
     define w where "w = vec n c"
-    have w: "w \<in> carrier\<^sub>v n" unfolding w_def by simp
-    have mvw: "?m \<odot>\<^sub>v v = map_vec ?h w" unfolding w_def using c v
-      by (intro vec_eqI, auto)
+    have w: "w \<in> carrier_vec n" unfolding w_def by simp
+    have mvw: "?m \<cdot>\<^sub>v v = map_vec ?h w" unfolding w_def using c v
+      by (intro eq_vecI, auto)
     with m0 i c[OF i(1)] have "w $ i \<noteq> 0" unfolding w_def by auto
-    with i w have w0: "w \<noteq> \<zero>\<^sub>v n" by auto
-    from arg_cong[OF Av, of "\<lambda> v. ?m \<odot>\<^sub>v v"]
-    have "?m \<odot>\<^sub>v (?A \<otimes>\<^sub>m\<^sub>v v) = map\<^sub>v ?h (\<zero>\<^sub>v n)" by auto
-    also have "?m \<odot>\<^sub>v (?A \<otimes>\<^sub>m\<^sub>v v) = ?A \<otimes>\<^sub>m\<^sub>v (?m \<odot>\<^sub>v v)" using A v by auto
-    also have "\<dots> = ?A \<otimes>\<^sub>m\<^sub>v (map\<^sub>v ?h w)" unfolding mvw ..
-    also have "\<dots> = map\<^sub>v ?h (A \<otimes>\<^sub>m\<^sub>v w)" unfolding mat_vec_mult_hom[OF A w] ..
-    finally have "A \<otimes>\<^sub>m\<^sub>v w = \<zero>\<^sub>v n" by (rule vec_hom_inj)
+    with i w have w0: "w \<noteq> 0\<^sub>v n" by auto
+    from arg_cong[OF Av, of "\<lambda> v. ?m \<cdot>\<^sub>v v"]
+    have "?m \<cdot>\<^sub>v (?A *\<^sub>v v) = map_vec ?h (0\<^sub>v n)" by auto
+    also have "?m \<cdot>\<^sub>v (?A *\<^sub>v v) = ?A *\<^sub>v (?m \<cdot>\<^sub>v v)" using A v by auto
+    also have "\<dots> = ?A *\<^sub>v (map_vec ?h w)" unfolding mvw ..
+    also have "\<dots> = map_vec ?h (A *\<^sub>v w)" unfolding mult_mat_vec_hom[OF A w] ..
+    finally have "A *\<^sub>v w = 0\<^sub>v n" by (rule vec_hom_inj)
     with w w0 show ?r by blast
   qed
   finally show ?thesis .
 qed
 
-lemma det_0_negate: assumes  A: "(A :: 'a :: field mat) \<in> carrier\<^sub>m n n"
-  shows "(det (\<ominus>\<^sub>m A) = 0) = (det A = 0)"
+lemma det_0_negate: assumes  A: "(A :: 'a :: field mat) \<in> carrier_mat n n"
+  shows "(det (- A) = 0) = (det A = 0)"
 proof -
-  from A have mA: "\<ominus>\<^sub>m A \<in> carrier\<^sub>m n n" by auto
+  from A have mA: "- A \<in> carrier_mat n n" by auto
   {
     fix v :: "'a vec"
-    assume v: "v \<in> carrier\<^sub>v n"
-    hence Av: "A \<otimes>\<^sub>m\<^sub>v v \<in> carrier\<^sub>v n" using A by auto
-    have id: "\<ominus>\<^sub>m A \<otimes>\<^sub>m\<^sub>v v = \<ominus>\<^sub>v (A \<otimes>\<^sub>m\<^sub>v v)" using v A by simp
-    have "(\<ominus>\<^sub>m A \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v n) = (A \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v n)" unfolding id 
-      unfolding uminus_vec_zero_eq[OF Av] ..
+    assume v: "v \<in> carrier_vec n"
+    hence Av: "A *\<^sub>v v \<in> carrier_vec n" using A by auto
+    have id: "- A *\<^sub>v v = - (A *\<^sub>v v)" using v A by simp
+    have "(- A *\<^sub>v v = 0\<^sub>v n) = (A *\<^sub>v v = 0\<^sub>v n)" unfolding id 
+      unfolding uminus_zero_vec_eq[OF Av] ..
   }
   thus ?thesis unfolding det_0_iff_vec_prod_zero[OF A] det_0_iff_vec_prod_zero[OF mA] by auto
 qed
   
 lemma det_multrow: 
-  assumes k: "k < n" and A: "A \<in> carrier\<^sub>m n n"
+  assumes k: "k < n" and A: "A \<in> carrier_mat n n"
   shows "det (multrow k a A) = a * det A"
 proof -
-  have "multrow k a A = multrow_mat n k a \<otimes>\<^sub>m A"
+  have "multrow k a A = multrow_mat n k a * A"
     by (rule multrow_mat[OF A])
-  also have "det (multrow_mat n k a \<otimes>\<^sub>m A) = det (multrow_mat n k a) * det A"
+  also have "det (multrow_mat n k a * A) = det (multrow_mat n k a) * det A"
     by (rule det_mult[OF _ A], auto)
   also have "det (multrow_mat n k a) = a"
     by (rule det_multrow_mat[OF k])
@@ -906,7 +906,7 @@ proof -
 qed
 
 lemma det_multrow_div:
-  assumes k: "k < n" and A: "A \<in> carrier\<^sub>m n n" and a0: "a \<noteq> 0"
+  assumes k: "k < n" and A: "A \<in> carrier_mat n n" and a0: "a \<noteq> 0"
   shows "det (multrow k a A :: 'a :: ring_div mat) div a = det A"
 proof -
   have "det (multrow k a A) div a = a * det A div a" using k A by (simp add: det_multrow)
@@ -915,12 +915,12 @@ proof -
 qed
 
 lemma det_addrow: 
-  assumes l: "l < n" and k: "k \<noteq> l" and A: "A \<in> carrier\<^sub>m n n"
+  assumes l: "l < n" and k: "k \<noteq> l" and A: "A \<in> carrier_mat n n"
   shows "det (addrow a k l A) = det A"
 proof -
-  have "addrow a k l A = addrow_mat n a k l \<otimes>\<^sub>m A"
+  have "addrow a k l A = addrow_mat n a k l * A"
     by (rule addrow_mat[OF A l])
-  also have "det (addrow_mat n a k l \<otimes>\<^sub>m A) = det (addrow_mat n a k l) * det A"
+  also have "det (addrow_mat n a k l * A) = det (addrow_mat n a k l) * det A"
     by (rule det_mult[OF _ A], auto)
   also have "det (addrow_mat n a k l) = 1"
     by (rule det_addrow_mat[OF k])
@@ -928,44 +928,44 @@ proof -
 qed
 
 lemma det_swaprows: 
-  assumes *: "k < n" "l < n" and k: "k \<noteq> l" and A: "A \<in> carrier\<^sub>m n n"
+  assumes *: "k < n" "l < n" and k: "k \<noteq> l" and A: "A \<in> carrier_mat n n"
   shows "det (swaprows k l A) = - det A"
 proof -
-  have "swaprows k l A = swaprows_mat n k l \<otimes>\<^sub>m A"
+  have "swaprows k l A = swaprows_mat n k l * A"
     by (rule swaprows_mat[OF A *])
-  also have "det (swaprows_mat n k l \<otimes>\<^sub>m A) = det (swaprows_mat n k l) * det A"
+  also have "det (swaprows_mat n k l * A) = det (swaprows_mat n k l) * det A"
     by (rule det_mult[OF _ A], insert A, auto)
   also have "det (swaprows_mat n k l) = - 1"
     by (rule det_swaprows_mat[OF * k])
   finally show ?thesis using A by simp
 qed
 
-lemma det_similar: assumes "mat_similar A B" 
+lemma det_similar: assumes "similar_mat A B" 
   shows "det A = det B"
 proof -
-  from mat_similarD[OF assms] obtain n P Q where
-  carr: "{A, B, P, Q} \<subseteq> carrier\<^sub>m n n" (is "_ \<subseteq> ?C")
-  and PQ: "P \<otimes>\<^sub>m Q = \<one>\<^sub>m n" 
-  and AB: "A = P \<otimes>\<^sub>m B \<otimes>\<^sub>m Q" by blast
+  from similar_matD[OF assms] obtain n P Q where
+  carr: "{A, B, P, Q} \<subseteq> carrier_mat n n" (is "_ \<subseteq> ?C")
+  and PQ: "P * Q = 1\<^sub>m n" 
+  and AB: "A = P * B * Q" by blast
   hence A: "A \<in> ?C" and B: "B \<in> ?C" and P: "P \<in> ?C" and Q: "Q \<in> ?C" by auto  
   from det_mult[OF P Q, unfolded PQ] have PQ: "det P * det Q = 1" by auto
-  from det_mult[OF _ Q, of "P \<otimes>\<^sub>m B", unfolded det_mult[OF P B] AB[symmetric]] P B
+  from det_mult[OF _ Q, of "P * B", unfolded det_mult[OF P B] AB[symmetric]] P B
   have "det A = det P * det B * det Q" by auto
   also have "\<dots> = (det P * det Q) * det B" by (simp add: ac_simps)
   also have "\<dots> = det B" unfolding PQ by simp
   finally show ?thesis .
 qed
 
-lemma det_four_block_mat_upper_right_zero_col: assumes A1: "A1 \<in> carrier\<^sub>m n n"
-  and A20: "A2 = (\<zero>\<^sub>m n 1)" and A3: "A3 \<in> carrier\<^sub>m 1 n"
-  and A4: "A4 \<in> carrier\<^sub>m 1 1"
+lemma det_four_block_mat_upper_right_zero_col: assumes A1: "A1 \<in> carrier_mat n n"
+  and A20: "A2 = (0\<^sub>m n 1)" and A3: "A3 \<in> carrier_mat 1 n"
+  and A4: "A4 \<in> carrier_mat 1 1"
   shows "det (four_block_mat A1 A2 A3 A4) = det A1 * det A4" (is "det ?A = _")
 proof -
   let ?A = "four_block_mat A1 A2 A3 A4"
-  from A20 have A2: "A2 \<in> carrier\<^sub>m n 1" by auto  
+  from A20 have A2: "A2 \<in> carrier_mat n 1" by auto  
   define A where "A = ?A"
-  from four_block_mat_carrier[OF A1 A4] A1
-  have A: "A \<in> carrier\<^sub>m (Suc n) (Suc n)" and dim: "dim\<^sub>r A1 = n" unfolding A_def by auto
+  from four_block_carrier_mat[OF A1 A4] A1
+  have A: "A \<in> carrier_mat (Suc n) (Suc n)" and dim: "dim_row A1 = n" unfolding A_def by auto
   let ?Pn = "\<lambda> p. p permutes {0 ..< n}"
   let ?Psn = "\<lambda> p. p permutes {0 ..< Suc n}"
   let ?perm = "{p. ?Psn p}"
@@ -1023,16 +1023,16 @@ proof -
   finally show ?thesis by simp
 qed
   
-lemma det_swap_rows: assumes A: "A \<in> carrier\<^sub>m (k + n) (k + n)" 
+lemma det_swap_rows: assumes A: "A \<in> carrier_mat (k + n) (k + n)" 
   shows "det A = (-1)^(k * n) * det (mat (k + n) (k + n) (\<lambda> (i,j). 
     A $$ ((if i < k then i + n else i - k),j)))" (is "_ = _ * det ?B")
 proof -
   define sw where "sw = (\<lambda> (A :: 'a mat) xs. fold (\<lambda> (i,j). swaprows i j) xs A)"
-  have dim_sw[simp]: "dim\<^sub>r (sw A xs) = dim\<^sub>r A" "dim\<^sub>c (sw A xs) = dim\<^sub>c A" for xs A
+  have dim_sw[simp]: "dim_row (sw A xs) = dim_row A" "dim_col (sw A xs) = dim_col A" for xs A
     unfolding sw_def by (induct xs arbitrary: A, auto)
   {
     fix xs and A :: "'a mat"
-    assume "dim\<^sub>r A = dim\<^sub>c A" "\<And> i j. (i,j) \<in> set xs \<Longrightarrow> i < dim\<^sub>c A \<and> j < dim\<^sub>c A \<and> i \<noteq> j"
+    assume "dim_row A = dim_col A" "\<And> i j. (i,j) \<in> set xs \<Longrightarrow> i < dim_col A \<and> j < dim_col A \<and> i \<noteq> j"
     hence "det (sw A xs) = (-1)^(length xs) * det A"
       unfolding sw_def
     proof (induct xs arbitrary: A)
@@ -1047,49 +1047,49 @@ proof -
   define swb where "swb = (\<lambda> A i n. sw A (map (\<lambda> j. (j,Suc j)) [i ..< i + n]))"
   {
     fix k n and A :: "'a mat"
-    assume k_n: "k + n < dim\<^sub>r A"
-    hence "swb A k n = mat (dim\<^sub>r A) (dim\<^sub>c A) (\<lambda> (i,j). let r = 
+    assume k_n: "k + n < dim_row A"
+    hence "swb A k n = mat (dim_row A) (dim_col A) (\<lambda> (i,j). let r = 
       (if i < k \<or> i > k + n then i else if i = k + n then k else Suc i)
       in A $$ (r,j))"
     proof (induct n)
       case 0
-      show ?case unfolding swb_def sw_def by (rule mat_eqI, auto)
+      show ?case unfolding swb_def sw_def by (rule eq_matI, auto)
     next
       case (Suc n)
-      hence dim: "k + n < dim\<^sub>r A" by auto
+      hence dim: "k + n < dim_row A" by auto
       have id: "swb A k (Suc n) = swaprows (k + n) (Suc k + n) (swb A k n)" unfolding swb_def sw_def by simp
       show ?case unfolding id Suc(1)[OF dim]
-        by (rule mat_eqI, insert Suc(2), auto)
+        by (rule eq_matI, insert Suc(2), auto)
     qed
   } note swb = this
   define swbl where "swbl = (\<lambda> A k n. fold (\<lambda> i A. swb A i n) (rev [0 ..< k]) A)"
   {
     fix k n and A :: "'a mat"
-    assume k_n: "k + n \<le> dim\<^sub>r A"
-    hence "swbl A k n = mat (dim\<^sub>r A) (dim\<^sub>c A) (\<lambda> (i,j). let r = 
+    assume k_n: "k + n \<le> dim_row A"
+    hence "swbl A k n = mat (dim_row A) (dim_col A) (\<lambda> (i,j). let r = 
       (if i < n then i + k else if i < k + n then i - n else i)
       in A $$ (r,j))"
     proof (induct k arbitrary: A)
       case 0
-      thus ?case unfolding swbl_def by (intro mat_eqI, auto simp: swb)
+      thus ?case unfolding swbl_def by (intro eq_matI, auto simp: swb)
     next
       case (Suc k)
-      hence dim: "k + n < dim\<^sub>r A" by auto
+      hence dim: "k + n < dim_row A" by auto
       have id: "swbl A (Suc k) n = swbl (swb A k n) k n" unfolding swbl_def by simp
       show ?case unfolding id swb[OF dim]
-        by (subst Suc(1), insert dim, force, intro mat_eqI, auto simp: less_Suc_eq_le) 
+        by (subst Suc(1), insert dim, force, intro eq_matI, auto simp: less_Suc_eq_le) 
     qed
   } note swbl = this
   {
     fix k n and A :: "'a mat"
-    assume k_n: "k + n \<le> dim\<^sub>c A" "dim\<^sub>r A = dim\<^sub>c A" 
+    assume k_n: "k + n \<le> dim_col A" "dim_row A = dim_col A" 
     hence "det (swbl A k n) = (-1)^(k*n) * det A" 
     proof (induct k arbitrary: A)
       case 0
       thus ?case unfolding swbl_def by auto
     next
       case (Suc k)
-      hence dim: "k + n < dim\<^sub>r A" by auto
+      hence dim: "k + n < dim_row A" by auto
       have id: "swbl A (Suc k) n = swbl (swb A k n) k n" unfolding swbl_def by simp
       have det: "det (swb A k n) = (-1)^n * det A" unfolding swb_def
         by (subst sw, insert Suc(2-), auto)
@@ -1097,51 +1097,51 @@ proof -
         by (subst Suc(1), insert Suc(2-), auto simp: det, auto simp: swb power_add)
     qed
   } note det_swbl = this
-  from assms have le: "n + k \<le> dim\<^sub>r A" by auto
-  have B: "?B = swbl A n k" by (subst swbl[OF le], rule mat_eqI, insert assms, auto)
+  from assms have le: "n + k \<le> dim_row A" by auto
+  have B: "?B = swbl A n k" by (subst swbl[OF le], rule eq_matI, insert assms, auto)
   have det: "det ?B = (- 1) ^ (n * k) * det A" unfolding B
     by (rule det_swbl, insert assms, auto)
   show ?thesis unfolding det by (simp add: ac_simps)
 qed
   
-lemma det_swap_cols: assumes A: "A \<in> carrier\<^sub>m (k + n) (k + n)" 
+lemma det_swap_cols: assumes A: "A \<in> carrier_mat (k + n) (k + n)" 
   shows "det A = (-1)^(k * n) * det (mat (k + n) (k + n) (\<lambda> (i,j). 
    A $$ (i,(if j < k then j + n else j - k))))" (is "_ = _ * det ?B")
 proof -
-  let ?A = "transpose\<^sub>m A" 
+  let ?A = "transpose_mat A" 
   let ?C = "mat (k + n) (k + n) (\<lambda> (i,j). let r = 
       (if i < k then i + n else i - k)
       in ?A $$ (r,j))" 
   have "det A = (det ?A)" using det_transpose[OF A] by simp
   also have "\<dots> = (-1)^(k * n) * det ?C"
     by (subst det_swap_rows, insert A, auto)
-  also have "det ?C = det (transpose\<^sub>m ?C)" by (subst det_transpose, auto)
-  also have "transpose\<^sub>m ?C = ?B" 
-    by (rule mat_eqI, insert assms, auto)
+  also have "det ?C = det (transpose_mat ?C)" by (subst det_transpose, auto)
+  also have "transpose_mat ?C = ?B" 
+    by (rule eq_matI, insert assms, auto)
   finally show ?thesis .
 qed  
   
 lemma det_four_block_mat_upper_right_zero: fixes A1 :: "'a :: idom mat" 
-  assumes A1: "A1 \<in> carrier\<^sub>m n n"
-  and A20: "A2 = (\<zero>\<^sub>m n m)" and A3: "A3 \<in> carrier\<^sub>m m n"
-  and A4: "A4 \<in> carrier\<^sub>m m m"  
+  assumes A1: "A1 \<in> carrier_mat n n"
+  and A20: "A2 = (0\<^sub>m n m)" and A3: "A3 \<in> carrier_mat m n"
+  and A4: "A4 \<in> carrier_mat m m"  
 shows "det (four_block_mat A1 A2 A3 A4) = det A1 * det A4" 
   using assms(2-)
 proof (induct m arbitrary: A2 A3 A4)  
   case (0 A2 A3 A4)
   hence *: "four_block_mat A1 A2 A3 A4 = A1" using A1
-    by (intro mat_eqI, auto)
-  from 0 have 4: "A4 = \<one>\<^sub>m 0" by auto
+    by (intro eq_matI, auto)
+  from 0 have 4: "A4 = 1\<^sub>m 0" by auto
   show ?case unfolding * unfolding 4 by simp
 next
   case (Suc m A2 A3 A4)    
   let ?m = "Suc m" 
-  from Suc have A2: "A2 \<in> carrier\<^sub>m n ?m" by auto
+  from Suc have A2: "A2 \<in> carrier_mat n ?m" by auto
   note A20 = Suc(2)
   note A34 = Suc(3-4)
   let ?A = "four_block_mat A1 A2 A3 A4" 
   let ?P = "\<lambda> B3 B4 v k. v \<noteq> 0 \<and> v * det ?A = det (four_block_mat A1 A2 B3 B4)
-    \<and> v * det A4 = det B4 \<and> B3 \<in> carrier\<^sub>m ?m n \<and> B4 \<in> carrier\<^sub>m ?m ?m \<and> (\<forall> i < k. B4 $$ (i,m) = 0)" 
+    \<and> v * det A4 = det B4 \<and> B3 \<in> carrier_mat ?m n \<and> B4 \<in> carrier_mat ?m ?m \<and> (\<forall> i < k. B4 $$ (i,m) = 0)" 
   have "k \<le> m \<Longrightarrow> \<exists> B3 B4 v. ?P B3 B4 v k" for k
   proof (induct k)
     case 0
@@ -1151,7 +1151,7 @@ next
     case (Suc k)
     then obtain B3 B4 v where v: "v \<noteq> 0" and det: "v * det ?A = 
       det (four_block_mat A1 A2 B3 B4)" "v * det A4 = det B4" 
-     and B3: "B3 \<in> carrier\<^sub>m ?m n" and B4: "B4 \<in> carrier\<^sub>m ?m ?m"  and 0: "\<forall> i < k. B4 $$ (i,m) = 0" by auto
+     and B3: "B3 \<in> carrier_mat ?m n" and B4: "B4 \<in> carrier_mat ?m ?m"  and 0: "\<forall> i < k. B4 $$ (i,m) = 0" by auto
     show ?case
     proof (cases "B4 $$ (k,m) = 0")
       case True
@@ -1171,13 +1171,13 @@ next
         let ?v = "-v" 
         from det_swaprows[OF k B4] det have det1: "?v * det A4 = det ?B4" by simp
         from v have v: "?v \<noteq> 0" by auto
-        from B3 have B3': "?B3 \<in> carrier\<^sub>m ?m n" by auto
-        from B4 have B4': "?B4 \<in> carrier\<^sub>m ?m ?m" by auto
+        from B3 have B3': "?B3 \<in> carrier_mat ?m n" by auto
+        from B4 have B4': "?B4 \<in> carrier_mat ?m ?m" by auto
         have "?v * det ?A = - det (four_block_mat A1 A2 B3 B4)" using det by simp            
         also have "\<dots> = det (swaprows (n + k) (n + ?k) (four_block_mat A1 A2 B3 B4))" 
           by (rule sym, rule det_swaprows[of _ "n + ?m"], insert A1 A2 B3 B4 k, auto)
         also have "swaprows (n + k) (n + ?k) (four_block_mat A1 A2 B3 B4) = ?B" 
-        proof (rule mat_eqI, unfold four_block_mat_index mat_index_swaprows, goal_cases)
+        proof (rule eq_matI, unfold index_mat_four_block index_mat_swaprows, goal_cases)
           case (1 i j)
           show ?case
           proof (cases "i < n")
@@ -1206,17 +1206,17 @@ next
         with det(2)[symmetric] have det2: "?v * det A4 = det ?B4" by (auto simp: ac_simps)
         from 0 k(2) B4 have 0: "\<forall> i < Suc k. ?B4 $$ (i,m) = 0" unfolding less_Suc_eq by auto
         from False v have v: "?v \<noteq> 0" by auto
-        from B3 have B3': "?B3 \<in> carrier\<^sub>m ?m n" by auto
-        from B4 have B4': "?B4 \<in> carrier\<^sub>m ?m ?m" by auto
+        from B3 have B3': "?B3 \<in> carrier_mat ?m n" by auto
+        from B4 have B4': "?B4 \<in> carrier_mat ?m ?m" by auto
         let ?B' = "multrow (n + k) ?bk (four_block_mat A1 A2 B3 B4)" 
-        have B': "?B' \<in> carrier\<^sub>m (n + ?m) (n + ?m)" using A1 A2 B3 B4 k by auto          
+        have B': "?B' \<in> carrier_mat (n + ?m) (n + ?m)" using A1 A2 B3 B4 k by auto          
         let ?B = "four_block_mat A1 A2 ?B3 ?B4" 
         have "?v * det ?A = ?bk * det (four_block_mat A1 A2 B3 B4)" using det by simp            
         also have "\<dots> = det (addrow (- ?b) (n + k) (n + ?k) ?B')" 
           by (subst det_addrow[OF _ _ B'], insert k(2), force, force, rule sym, rule det_multrow[of _ "n + ?m"],
           insert A1 A2 B3 B4 k, auto)
         also have "addrow (- ?b) (n + k) (n + ?k) ?B' = ?B" 
-        proof (rule mat_eqI, unfold four_block_mat_index mat_index_multrow mat_index_addrow, goal_cases)
+        proof (rule eq_matI, unfold index_mat_four_block index_mat_multrow index_mat_addrow, goal_cases)
           case (1 i j)
           show ?case
           proof (cases "i < n")
@@ -1238,23 +1238,23 @@ next
   from this[OF le_refl] obtain B3 B4 v where P: "?P B3 B4 v m" by blast
   let ?B = "four_block_mat A1 A2 B3 B4" 
   from P have v: "v \<noteq> 0" and det: "v * det ?A = det ?B" "v * det A4 = det B4" 
-    and B3: "B3 \<in> carrier\<^sub>m ?m n" and B4: "B4 \<in> carrier\<^sub>m ?m ?m" and 0: "\<And> i. i < m \<Longrightarrow> B4 $$ (i, m) = 0" 
+    and B3: "B3 \<in> carrier_mat ?m n" and B4: "B4 \<in> carrier_mat ?m ?m" and 0: "\<And> i. i < m \<Longrightarrow> B4 $$ (i, m) = 0" 
     by auto
-  let ?A2 = "\<zero>\<^sub>m n m"  
+  let ?A2 = "0\<^sub>m n m"  
   let ?A3 = "mat m n (\<lambda> ij. B3 $$ ij)" 
   let ?A4 = "mat m m (\<lambda> ij. B4 $$ ij)" 
   let ?B1 = "four_block_mat A1 ?A2 ?A3 ?A4" 
-  let ?B2 = "\<zero>\<^sub>m (n + m) 1" 
+  let ?B2 = "0\<^sub>m (n + m) 1" 
   let ?B3 = "mat 1 (n + m) (\<lambda> (i,j). if j < n then B3 $$ (m,j) else B4 $$ (m,j - n))" 
   let ?B4 = "mat 1 1 (\<lambda> _. B4 $$ (m,m))" 
-  have B44: "B4 = four_block_mat ?A4 (\<zero>\<^sub>m m 1) (mat 1 m (\<lambda> (i,j). B4 $$ (m,j))) ?B4" 
-  proof (rule mat_eqI, unfold four_block_mat_index mat_dim_col_mat mat_dim_row_mat, goal_cases)
+  have B44: "B4 = four_block_mat ?A4 (0\<^sub>m m 1) (mat 1 m (\<lambda> (i,j). B4 $$ (m,j))) ?B4" 
+  proof (rule eq_matI, unfold index_mat_four_block dim_col_mat dim_row_mat, goal_cases)
     case (1 i j)
     hence [simp]: "\<not> i < m \<Longrightarrow> i = m" "\<not> j < m \<Longrightarrow> j = m" by auto
     from 1 show ?case using B4 0 by auto
   qed (insert B4, auto)
   have "?B = four_block_mat ?B1 ?B2 ?B3 ?B4"
-  proof (rule mat_eqI, unfold four_block_mat_index mat_dim_col_mat mat_dim_row_mat, goal_cases)
+  proof (rule eq_matI, unfold index_mat_four_block dim_col_mat dim_row_mat, goal_cases)
     case (1 i j)
     then consider (UL) "i < n + m" "j < n + m" | (UR) "i < n + m" "j = n + m" 
         | (LL) "i = n + m" "j < n + m" | (LR) "i = n + m" "j = n + m" using A1 by auto linarith
@@ -1292,14 +1292,14 @@ next
 qed
   
 lemma det_swapcols: 
-  assumes *: "k < n" "l < n" "k \<noteq> l" and A: "A \<in> carrier\<^sub>m n n"
+  assumes *: "k < n" "l < n" "k \<noteq> l" and A: "A \<in> carrier_mat n n"
   shows "det (swapcols k l A) = - det A"
 proof -
-  let ?B = "transpose\<^sub>m A"
+  let ?B = "transpose_mat A"
   let ?C = "swaprows k l ?B"
-  let ?D = "transpose\<^sub>m ?C"
-  have C: "?C \<in> carrier\<^sub>m n n" and B: "?B \<in> carrier\<^sub>m n n"
-    unfolding mat_transpose_closed swaprows_closed using A by auto
+  let ?D = "transpose_mat ?C"
+  have C: "?C \<in> carrier_mat n n" and B: "?B \<in> carrier_mat n n"
+    unfolding transpose_carrier_mat swaprows_carrier using A by auto
   show ?thesis 
     unfolding 
       swapcols_is_transp_swap_rows[OF A *(1-2)]
@@ -1307,28 +1307,28 @@ proof -
 qed
 
 
-lemma swap_row_to_front_det: "A \<in> carrier\<^sub>m n n \<Longrightarrow> I < n \<Longrightarrow> det (swap_row_to_front A I)
+lemma swap_row_to_front_det: "A \<in> carrier_mat n n \<Longrightarrow> I < n \<Longrightarrow> det (swap_row_to_front A I)
   = (-1)^I * det A"
 proof (induct I arbitrary: A)
   case (Suc I A)
   from Suc(3) have I: "I < n" by auto
   let ?I = "Suc I"
   let ?A = "swaprows I ?I A"
-  have AA: "?A \<in> carrier\<^sub>m n n" using Suc(2) by simp
+  have AA: "?A \<in> carrier_mat n n" using Suc(2) by simp
   have "det (swap_row_to_front A (Suc I)) = det (swap_row_to_front ?A I)" by simp
   also have "\<dots> = (-1)^I * det ?A" by (rule Suc(1)[OF AA I])
   also have "det ?A = -1 * det A" using det_swaprows[OF I Suc(3) _ Suc(2)] by simp
   finally show ?case by simp
 qed simp
 
-lemma swap_col_to_front_det: "A \<in> carrier\<^sub>m n n \<Longrightarrow> I < n \<Longrightarrow> det (swap_col_to_front A I)
+lemma swap_col_to_front_det: "A \<in> carrier_mat n n \<Longrightarrow> I < n \<Longrightarrow> det (swap_col_to_front A I)
   = (-1)^I * det A"
 proof (induct I arbitrary: A)
   case (Suc I A)
   from Suc(3) have I: "I < n" by auto
   let ?I = "Suc I"
   let ?A = "swapcols I ?I A"
-  have AA: "?A \<in> carrier\<^sub>m n n" using Suc(2) by simp
+  have AA: "?A \<in> carrier_mat n n" using Suc(2) by simp
   have "det (swap_col_to_front A (Suc I)) = det (swap_col_to_front ?A I)" by simp
   also have "\<dots> = (-1)^I * det ?A" by (rule Suc(1)[OF AA I])
   also have "det ?A = -1 * det A" using det_swapcols[OF I Suc(3) _ Suc(2)] by simp
@@ -1336,32 +1336,32 @@ proof (induct I arbitrary: A)
 qed simp
 
 
-lemma swap_row_to_front_four_block: assumes A1: "A1 \<in> carrier\<^sub>m n m1"
-  and A2: "A2 \<in> carrier\<^sub>m n m2" 
-  and A3: "A3 \<in> carrier\<^sub>m 1 m1" 
-  and A4: "A4 \<in> carrier\<^sub>m 1 m2"
+lemma swap_row_to_front_four_block: assumes A1: "A1 \<in> carrier_mat n m1"
+  and A2: "A2 \<in> carrier_mat n m2" 
+  and A3: "A3 \<in> carrier_mat 1 m1" 
+  and A4: "A4 \<in> carrier_mat 1 m2"
   shows "swap_row_to_front (four_block_mat A1 A2 A3 A4) n = four_block_mat A3 A4 A1 A2"
-  by (subst swap_row_to_front_result[OF four_block_mat_carrier[OF A1 A4]], force,
-  rule mat_eqI, insert A1 A2 A3 A4, auto)
+  by (subst swap_row_to_front_result[OF four_block_carrier_mat[OF A1 A4]], force,
+  rule eq_matI, insert A1 A2 A3 A4, auto)
 
-lemma swap_col_to_front_four_block: assumes A1: "A1 \<in> carrier\<^sub>m n1 m"
-  and A2: "A2 \<in> carrier\<^sub>m n1 1" 
-  and A3: "A3 \<in> carrier\<^sub>m n2 m" 
-  and A4: "A4 \<in> carrier\<^sub>m n2 1"
+lemma swap_col_to_front_four_block: assumes A1: "A1 \<in> carrier_mat n1 m"
+  and A2: "A2 \<in> carrier_mat n1 1" 
+  and A3: "A3 \<in> carrier_mat n2 m" 
+  and A4: "A4 \<in> carrier_mat n2 1"
   shows "swap_col_to_front (four_block_mat A1 A2 A3 A4) m = four_block_mat A2 A1 A4 A3"
-  by (subst swap_col_to_front_result[OF four_block_mat_carrier[OF A1 A4]], force,
-  rule mat_eqI, insert A1 A2 A3 A4, auto)
+  by (subst swap_col_to_front_result[OF four_block_carrier_mat[OF A1 A4]], force,
+  rule eq_matI, insert A1 A2 A3 A4, auto)
 
-lemma det_four_block_mat_lower_right_zero_col: assumes A1: "A1 \<in> carrier\<^sub>m 1 n"
-  and A2: "A2 \<in> carrier\<^sub>m 1 1"
-  and A3: "A3 \<in> carrier\<^sub>m n n"
-  and A40: "A4 = (\<zero>\<^sub>m n 1)" 
+lemma det_four_block_mat_lower_right_zero_col: assumes A1: "A1 \<in> carrier_mat 1 n"
+  and A2: "A2 \<in> carrier_mat 1 1"
+  and A3: "A3 \<in> carrier_mat n n"
+  and A40: "A4 = (0\<^sub>m n 1)" 
   shows "det (four_block_mat A1 A2 A3 A4) = (-1)^n * det A2 * det A3" (is "det ?A = _")
 proof -
   let ?B = "four_block_mat A3 A4 A1 A2"
-  from four_block_mat_carrier[OF A3 A2]
-  have B: "?B \<in> carrier\<^sub>m (Suc n) (Suc n)" by simp
-  from A40 have A4: "A4 \<in> carrier\<^sub>m n 1" by auto
+  from four_block_carrier_mat[OF A3 A2]
+  have B: "?B \<in> carrier_mat (Suc n) (Suc n)" by simp
+  from A40 have A4: "A4 \<in> carrier_mat n 1" by auto
   from arg_cong[OF swap_row_to_front_four_block[OF A3 A4 A1 A2], of det]
     swap_row_to_front_det[OF B, of n]
   have "det ?A = (-1)^n * det ?B" by auto
@@ -1370,16 +1370,16 @@ proof -
   finally show ?thesis by simp
 qed
   
-lemma det_four_block_mat_lower_left_zero_col: assumes A1: "A1 \<in> carrier\<^sub>m 1 1"
-  and A2: "A2 \<in> carrier\<^sub>m 1 n"
-  and A30: "A3 = (\<zero>\<^sub>m n 1)" 
-  and A4: "A4 \<in> carrier\<^sub>m n n"
+lemma det_four_block_mat_lower_left_zero_col: assumes A1: "A1 \<in> carrier_mat 1 1"
+  and A2: "A2 \<in> carrier_mat 1 n"
+  and A30: "A3 = (0\<^sub>m n 1)" 
+  and A4: "A4 \<in> carrier_mat n n"
   shows "det (four_block_mat A1 A2 A3 A4) = det A1 * det A4" (is "det ?A = _")
 proof -
-  from A30 have A3: "A3 \<in> carrier\<^sub>m n 1" by auto
+  from A30 have A3: "A3 \<in> carrier_mat n 1" by auto
   let ?B = "four_block_mat A2 A1 A4 A3"
-  from four_block_mat_carrier[OF A2 A3]
-  have B: "?B \<in> carrier\<^sub>m (Suc n) (Suc n)" by simp
+  from four_block_carrier_mat[OF A2 A3]
+  have B: "?B \<in> carrier_mat (Suc n) (Suc n)" by simp
   from arg_cong[OF swap_col_to_front_four_block[OF A2 A1 A4 A3], of det]
     swap_col_to_front_det[OF B, of n]
   have "det ?A = (-1)^n * det ?B" by auto
@@ -1391,12 +1391,12 @@ proof -
 qed
 
 lemma det_addcol[simp]: 
-  assumes l: "l < n" and k: "k \<noteq> l" and A: "A \<in> carrier\<^sub>m n n"
+  assumes l: "l < n" and k: "k \<noteq> l" and A: "A \<in> carrier_mat n n"
   shows "det (addcol a k l A) = det A"
 proof -
-  have "addcol a k l A = A \<otimes>\<^sub>m addrow_mat n a l k"
+  have "addcol a k l A = A * addrow_mat n a l k"
     using addcol_mat[OF A l].
-  also have "det (A \<otimes>\<^sub>m addrow_mat n a l k) = det A * det (addrow_mat n a l k)"
+  also have "det (A * addrow_mat n a l k) = det A * det (addrow_mat n a l k)"
     by(rule det_mult[OF A], auto)
   also have "det (addrow_mat n a l k) = 1"
     using det_addrow_mat[OF k[symmetric]].
@@ -2069,20 +2069,20 @@ proof(intro allI iffI)
 qed
 
 definition "mat_delete A i j \<equiv>
-  mat (dim\<^sub>r A - 1) (dim\<^sub>c A - 1) (\<lambda>(i',j').
+  mat (dim_row A - 1) (dim_col A - 1) (\<lambda>(i',j').
     A $$ (if i' < i then i' else Suc i', if j' < j then j' else Suc j'))"
 
 lemma mat_delete_dim[simp]:
-  "dim\<^sub>r (mat_delete A i j) = dim\<^sub>r A - 1"
-  "dim\<^sub>c (mat_delete A i j) = dim\<^sub>c A - 1"
+  "dim_row (mat_delete A i j) = dim_row A - 1"
+  "dim_col (mat_delete A i j) = dim_col A - 1"
   unfolding mat_delete_def by auto
 
 lemma mat_delete_carrier:
-  assumes A: "A \<in> carrier\<^sub>m m n"
-  shows "mat_delete A i j \<in> carrier\<^sub>m (m-1) (n-1)" unfolding mat_delete_def using A by auto
+  assumes A: "A \<in> carrier_mat m n"
+  shows "mat_delete A i j \<in> carrier_mat (m-1) (n-1)" unfolding mat_delete_def using A by auto
 
 lemma "mat_delete_index":
-  assumes A: "A \<in> carrier\<^sub>m (Suc n) (Suc n)"
+  assumes A: "A \<in> carrier_mat (Suc n) (Suc n)"
       and i: "i < Suc n" and j: "j < Suc n"
       and i': "i' < n" and j': "j' < n"
   shows "A $$ (insert_index i i', insert_index j j') = mat_delete A i j $$ (i', j')"
@@ -2095,12 +2095,12 @@ definition "cofactor A i j = (-1)^(i+j) * det (mat_delete A i j)"
 
 
 lemma laplace_expansion_column:
-  assumes A: "(A :: 'a :: comm_ring_1 mat) \<in> carrier\<^sub>m n n"
+  assumes A: "(A :: 'a :: comm_ring_1 mat) \<in> carrier_mat n n"
       and j: "j < n"
   shows "det A = (\<Sum>i<n. A $$ (i,j) * cofactor A i j)"
 proof -
   define l where "l = n-1"
-  have A: "A \<in> carrier\<^sub>m (Suc l) (Suc l)"
+  have A: "A \<in> carrier_mat (Suc l) (Suc l)"
    and jl: "j < Suc l" using A j unfolding l_def by auto
   let ?N = "{0 ..< Suc l}"
   define f where "f = (\<lambda>p i. A $$ (i, p i))"
