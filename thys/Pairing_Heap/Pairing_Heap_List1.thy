@@ -24,13 +24,10 @@ fun get_min  :: "'a heap \<Rightarrow> 'a" where
 
 hide_const (open) insert
 
-context linorder
-begin
-
 context includes pattern_aliases
 begin
 
-fun merge :: "'a heap \<Rightarrow> 'a heap \<Rightarrow> 'a heap" where
+fun merge :: "('a::linorder) heap \<Rightarrow> 'a heap \<Rightarrow> 'a heap" where
 "merge h Empty = h" |
 "merge Empty h = h" |
 "merge (Hp x lx =: hx) (Hp y ly =: hy) = 
@@ -38,28 +35,26 @@ fun merge :: "'a heap \<Rightarrow> 'a heap \<Rightarrow> 'a heap" where
 
 end
 
-fun insert :: "'a \<Rightarrow> 'a heap \<Rightarrow> 'a heap" where
+fun insert :: "('a::linorder) \<Rightarrow> 'a heap \<Rightarrow> 'a heap" where
 "insert x h = merge (Hp x []) h"
 
-fun pass\<^sub>1 :: "'a heap list \<Rightarrow> 'a heap list" where
+fun pass\<^sub>1 :: "('a::linorder) heap list \<Rightarrow> 'a heap list" where
   "pass\<^sub>1 [] = []"
 | "pass\<^sub>1 [h] = [h]" 
 | "pass\<^sub>1 (h1#h2#hs) = merge h1 h2 # pass\<^sub>1 hs"
 
-fun pass\<^sub>2 :: "'a heap list \<Rightarrow> 'a heap" where
+fun pass\<^sub>2 :: "('a::linorder) heap list \<Rightarrow> 'a heap" where
   "pass\<^sub>2 [] = Empty"
 | "pass\<^sub>2 (h#hs) = merge h (pass\<^sub>2 hs)"
 
-fun merge_pairs :: "'a  heap list \<Rightarrow> 'a heap" where
+fun merge_pairs :: "('a::linorder)  heap list \<Rightarrow> 'a heap" where
   "merge_pairs [] = Empty"
 | "merge_pairs [h] = h" 
 | "merge_pairs (h1 # h2 # hs) = merge (merge h1 h2) (merge_pairs hs)"
 
-fun del_min :: "'a heap \<Rightarrow> 'a heap" where
+fun del_min :: "('a::linorder) heap \<Rightarrow> 'a heap" where
   "del_min Empty = Empty"
 | "del_min (Hp x hs) = pass\<^sub>2 (pass\<^sub>1 hs)"
-
-end (* linorder *)
 
 
 subsection \<open>Correctness Proofs\<close>
@@ -131,11 +126,11 @@ by(induction h rule: del_min.induct) (auto simp: pass12_merge_pairs mset_merge_p
 
 text \<open>Last step: prove all axioms of the priority queue specification:\<close>
 
-interpretation pairing: Priority_Queue
+interpretation pairing: Priority_Queue_Merge
 where empty = Empty and is_empty = "\<lambda>h. h = Empty"
-and insert = insert and del_min = del_min
-and get_min = get_min and invar = pheap
-and mset = mset_heap
+and merge = merge and insert = insert
+and del_min = del_min and get_min = get_min
+and invar = pheap and mset = mset_heap
 proof(standard, goal_cases)
   case 1 show ?case by simp
 next
@@ -152,6 +147,10 @@ next
   case 7 thus ?case by(rule pheap_insert)
 next
   case 8 thus ?case by (simp add: pheap_del_min)
+next
+  case 9 thus ?case by (simp add: mset_merge)
+next
+  case 10 thus ?case by (simp add: pheap_merge)
 qed
 
 end
