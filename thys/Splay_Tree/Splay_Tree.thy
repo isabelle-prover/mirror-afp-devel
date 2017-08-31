@@ -71,7 +71,7 @@ lemma splay_code: "splay x (Node la a ra) =
                   else if rb=Leaf then Node (Node la a lb) b rb
                        else case splay x rb of
                          Node lc c rc \<Rightarrow> Node (Node (Node la a lb) b lc) c rc))"
-by(auto split: tree.split)
+by(auto split!: tree.split)
 
 definition is_root :: "'a \<Rightarrow> 'a tree \<Rightarrow> bool" where
 "is_root x t = (case t of Leaf \<Rightarrow> False | Node l a r \<Rightarrow> x = a)"
@@ -237,7 +237,7 @@ done
 lemma splay_bstR: "bst t \<Longrightarrow> splay a t = Node l e r \<Longrightarrow> x \<in> set_tree r \<Longrightarrow> a < x"
 apply(induction a t arbitrary: l e x r rule: splay.induct)
 apply auto
-apply (fastforce split: tree.splits)+
+apply (fastforce split!: tree.splits)+
 done
 
 lemma bst_splay: "bst t \<Longrightarrow> bst(splay a t)"
