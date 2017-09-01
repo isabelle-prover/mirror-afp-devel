@@ -53,11 +53,11 @@ definition vec_elements_h :: "'a ^ 'n \<Rightarrow> 'a set" where
 lemma vec_elements_h_def': "vec_elements_h v = {v $h i | i. True}"
   unfolding vec_elements_h_def by auto
 
-definition mat_elements_h :: "'a ^ 'nc ^ 'nr \<Rightarrow> 'a set" where
-  "mat_elements_h A = range (\<lambda> (i,j). A $h i $h j)"
+definition elements_mat_h :: "'a ^ 'nc ^ 'nr \<Rightarrow> 'a set" where
+  "elements_mat_h A = range (\<lambda> (i,j). A $h i $h j)"
 
-lemma mat_elements_h_def': "mat_elements_h A = {A $h i $h j | i j. True}"
-  unfolding mat_elements_h_def by auto
+lemma elements_mat_h_def': "elements_mat_h A = {A $h i $h j | i j. True}"
+  unfolding elements_mat_h_def by auto
 
 definition map_vector :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a ^'n \<Rightarrow> 'b ^'n" where 
   "map_vector f v \<equiv> \<chi> i. f (v $h i)"
@@ -66,19 +66,19 @@ definition map_matrix :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a ^ 'n ^ 'm \<Rig
   "map_matrix f A \<equiv> \<chi> i. map_vector f (A $h i)"
 
 definition normbound :: "'a :: real_normed_field ^ 'nc ^ 'nr \<Rightarrow> real \<Rightarrow> bool" where
-  "normbound A b \<equiv> \<forall> x \<in> mat_elements_h A. norm x \<le> b"
+  "normbound A b \<equiv> \<forall> x \<in> elements_mat_h A. norm x \<le> b"
 
 lemma spectral_radius_ev_def: "spectral_radius A = Max (norm ` (Collect (eigen_value A)))"
   unfolding spectral_radius_def eigen_value_def[abs_def]
   by (rule arg_cong[where f = Max], auto) 
 
-lemma mat_elements: "mat_elements A = {A $$ (i,j) | i j. i < dim\<^sub>r A \<and> j < dim\<^sub>c A}"
-  unfolding mat_elements_def by force
+lemma elements_mat: "elements_mat A = {A $$ (i,j) | i j. i < dim_row A \<and> j < dim_col A}"
+  unfolding elements_mat_def by force
 
 definition vec_elements :: "'a Matrix.vec \<Rightarrow> 'a set"
-  where "vec_elements v = set [v $ i. i <- [0 ..< dim\<^sub>v v]]"
+  where "vec_elements v = set [v $ i. i <- [0 ..< dim_vec v]]"
 
-lemma vec_elements: "vec_elements v = { v $ i | i. i < dim\<^sub>v v}"
+lemma vec_elements: "vec_elements v = { v $ i | i. i < dim_vec v}"
   unfolding vec_elements_def by auto
 
 
@@ -108,11 +108,11 @@ lemma to_hma_from_hma\<^sub>m[simp]: "to_hma\<^sub>m (from_hma\<^sub>m v) = v"
   by (auto simp: to_hma\<^sub>m_def from_hma\<^sub>m_def to_nat_less_card)
 
 lemma from_hma_to_hma\<^sub>v[simp]:
-  "v \<in> carrier\<^sub>v (CARD('n)) \<Longrightarrow> from_hma\<^sub>v (to_hma\<^sub>v v :: 'a ^ 'n) = v"
+  "v \<in> carrier_vec (CARD('n)) \<Longrightarrow> from_hma\<^sub>v (to_hma\<^sub>v v :: 'a ^ 'n) = v"
   by (auto simp: to_hma\<^sub>v_def from_hma\<^sub>v_def to_nat_from_nat_id)
 
 lemma from_hma_to_hma\<^sub>m[simp]:
-  "A \<in> carrier\<^sub>m (CARD('nr)) (CARD('nc)) \<Longrightarrow> from_hma\<^sub>m (to_hma\<^sub>m A :: 'a ^ 'nc  ^ 'nr) = A"
+  "A \<in> carrier_mat (CARD('nr)) (CARD('nc)) \<Longrightarrow> from_hma\<^sub>m (to_hma\<^sub>m A :: 'a ^ 'nc  ^ 'nr) = A"
   by (auto simp: to_hma\<^sub>m_def from_hma\<^sub>m_def to_nat_from_nat_id)
 
 lemma from_hma\<^sub>v_inj[simp]: "from_hma\<^sub>v x = from_hma\<^sub>v y \<longleftrightarrow> x = y"
@@ -134,12 +134,12 @@ context includes lifting_syntax
 begin
 
 lemma Domainp_HMA_V [transfer_domain_rule]: 
-  "Domainp (HMA_V :: 'a Matrix.vec \<Rightarrow> 'a ^ 'n \<Rightarrow> bool) = (\<lambda> v. v \<in> carrier\<^sub>v (CARD('n )))"
+  "Domainp (HMA_V :: 'a Matrix.vec \<Rightarrow> 'a ^ 'n \<Rightarrow> bool) = (\<lambda> v. v \<in> carrier_vec (CARD('n )))"
   by(intro ext iffI, insert from_hma_to_hma\<^sub>v[symmetric], auto simp: from_hma\<^sub>v_def HMA_V_def)
 
 lemma Domainp_HMA_M [transfer_domain_rule]: 
   "Domainp (HMA_M :: 'a Matrix.mat \<Rightarrow> 'a ^ 'nc  ^ 'nr  \<Rightarrow> bool) 
-  = (\<lambda> A. A \<in> carrier\<^sub>m CARD('nr) CARD('nc))"
+  = (\<lambda> A. A \<in> carrier_mat CARD('nr) CARD('nc))"
   by (intro ext iffI, insert from_hma_to_hma\<^sub>m[symmetric], auto simp: from_hma\<^sub>m_def HMA_M_def)
 
 lemma Domainp_HMA_I [transfer_domain_rule]: 
@@ -183,29 +183,29 @@ lemma HMA_M_index [transfer_rule]:
   "(HMA_M ===> HMA_I ===> HMA_I ===> op =) (\<lambda> A i j. A $$ (i,j)) index_hma"
   by (intro rel_funI, simp add: index_hma_def to_nat_less_card HMA_M_def HMA_I_def from_hma\<^sub>m_def)  
 
-lemma HMA_V_0 [transfer_rule]: "HMA_V (\<zero>\<^sub>v CARD('n)) (0 :: 'a :: zero ^ 'n)"
+lemma HMA_V_0 [transfer_rule]: "HMA_V (0\<^sub>v CARD('n)) (0 :: 'a :: zero ^ 'n)"
   unfolding HMA_V_def from_hma\<^sub>v_def by auto
 
 lemma HMA_M_0 [transfer_rule]: 
-  "HMA_M (\<zero>\<^sub>m CARD('nr) CARD('nc)) (0 :: 'a :: zero ^ 'nc  ^ 'nr )"
+  "HMA_M (0\<^sub>m CARD('nr) CARD('nc)) (0 :: 'a :: zero ^ 'nc  ^ 'nr )"
   unfolding HMA_M_def from_hma\<^sub>m_def by auto
 
 lemma HMA_M_1[transfer_rule]:
-  "HMA_M (\<one>\<^sub>m (CARD('n))) (mat 1 :: 'a::{zero,one}^'n^'n)"
+  "HMA_M (1\<^sub>m (CARD('n))) (mat 1 :: 'a::{zero,one}^'n^'n)"
   unfolding HMA_M_def
   by (auto simp add: mat_def from_hma\<^sub>m_def from_nat_inj)
 
-lemma from_hma\<^sub>v_add: "from_hma\<^sub>v v \<oplus>\<^sub>v from_hma\<^sub>v w = from_hma\<^sub>v (v + w)"
+lemma from_hma\<^sub>v_add: "from_hma\<^sub>v v + from_hma\<^sub>v w = from_hma\<^sub>v (v + w)"
   unfolding from_hma\<^sub>v_def by auto
 
-lemma HMA_V_add [transfer_rule]: "(HMA_V ===> HMA_V ===> HMA_V) (op \<oplus>\<^sub>v) (op +) "
+lemma HMA_V_add [transfer_rule]: "(HMA_V ===> HMA_V ===> HMA_V) (op +) (op +) "
   unfolding rel_fun_def HMA_V_def
   by (auto simp: from_hma\<^sub>v_add)
 
-lemma from_hma\<^sub>m_add: "from_hma\<^sub>m a \<oplus>\<^sub>m from_hma\<^sub>m b = from_hma\<^sub>m (a + b)"
+lemma from_hma\<^sub>m_add: "from_hma\<^sub>m a + from_hma\<^sub>m b = from_hma\<^sub>m (a + b)"
   unfolding from_hma\<^sub>m_def by auto
 
-lemma HMA_M_add [transfer_rule]: "(HMA_M ===> HMA_M ===> HMA_M) (op \<oplus>\<^sub>m) (op +) "
+lemma HMA_M_add [transfer_rule]: "(HMA_M ===> HMA_M ===> HMA_M) (op +) (op +) "
   unfolding rel_fun_def HMA_M_def
   by (auto simp: from_hma\<^sub>m_add)
 
@@ -214,18 +214,18 @@ definition hma_scalar_prod :: "'a :: semiring_1 ^ 'n \<Rightarrow> 'a ^ 'n \<Rig
 
 lemma hma_scalar_prod: fixes v :: "'a :: semiring_1 ^ 'n "
   shows "scalar_prod (from_hma\<^sub>v v) (from_hma\<^sub>v w) = hma_scalar_prod v w"
-  unfolding hma_scalar_prod_def scalar_prod_def from_hma\<^sub>v_def vec_dim_vec
+  unfolding hma_scalar_prod_def scalar_prod_def from_hma\<^sub>v_def dim_vec
   by (simp add: sum.reindex[OF inj_to_nat, unfolded range_to_nat])
 
 lemma [simp]:
-  "from_hma\<^sub>m (y :: 'a ^ 'nc  ^ 'nr) \<in> carrier\<^sub>m (CARD('nr)) (CARD('nc))"
-  "dim\<^sub>r (from_hma\<^sub>m (y :: 'a ^ 'nc  ^ 'nr )) = CARD('nr)"
-  "dim\<^sub>c (from_hma\<^sub>m (y :: 'a ^ 'nc  ^ 'nr )) = CARD('nc)"
+  "from_hma\<^sub>m (y :: 'a ^ 'nc  ^ 'nr) \<in> carrier_mat (CARD('nr)) (CARD('nc))"
+  "dim_row (from_hma\<^sub>m (y :: 'a ^ 'nc  ^ 'nr )) = CARD('nr)"
+  "dim_col (from_hma\<^sub>m (y :: 'a ^ 'nc  ^ 'nr )) = CARD('nc)"
   unfolding from_hma\<^sub>m_def by simp_all
 
 lemma [simp]:
-  "from_hma\<^sub>v (y :: 'a ^ 'n) \<in> carrier\<^sub>v (CARD('n))"
-  "dim\<^sub>v (from_hma\<^sub>v (y :: 'a ^ 'n)) = CARD('n)"
+  "from_hma\<^sub>v (y :: 'a ^ 'n) \<in> carrier_vec (CARD('n))"
+  "dim_vec (from_hma\<^sub>v (y :: 'a ^ 'n)) = CARD('n)"
   unfolding from_hma\<^sub>v_def by simp_all
 
 declare rel_funI [intro!]
@@ -283,46 +283,46 @@ lemma mat_mult_scalar: "A ** B = mk_mat (\<lambda> i j. hma_scalar_prod (row i A
   unfolding vec_eq_iff matrix_matrix_mult_def hma_scalar_prod_def mk_mat_def
   by (auto simp: row_def column_def)
 
-lemma mat_mult_vec_scalar: "A *v v = mk_vec (\<lambda> i. hma_scalar_prod (row i A) v)"
+lemma mult_mat_vec_scalar: "A *v v = mk_vec (\<lambda> i. hma_scalar_prod (row i A) v)"
   unfolding vec_eq_iff matrix_vector_mult_def hma_scalar_prod_def mk_mat_def mk_vec_def
   by (auto simp: row_def column_def)
 
 lemma dim_row_transfer_rule: 
-  "HMA_M A (A' :: 'a ^ 'nc ^ 'nr) \<Longrightarrow> (op =) (dim\<^sub>r A) (CARD('nr))"
+  "HMA_M A (A' :: 'a ^ 'nc ^ 'nr) \<Longrightarrow> (op =) (dim_row A) (CARD('nr))"
   unfolding HMA_M_def by auto
 
 lemma dim_col_transfer_rule: 
-  "HMA_M A (A' :: 'a ^ 'nc ^ 'nr) \<Longrightarrow> (op =) (dim\<^sub>c A) (CARD('nc))"
+  "HMA_M A (A' :: 'a ^ 'nc ^ 'nr) \<Longrightarrow> (op =) (dim_col A) (CARD('nc))"
   unfolding HMA_M_def by auto
 
-lemma HMA_M_mult [transfer_rule]: "(HMA_M ===> HMA_M ===> HMA_M) (op \<otimes>\<^sub>m) (op **)"
+lemma HMA_M_mult [transfer_rule]: "(HMA_M ===> HMA_M ===> HMA_M) (op *) (op **)"
 proof -
   {
     fix A B :: "'a :: semiring_1 mat" and A' :: "'a ^ 'n  ^ 'nr" and B' :: "'a ^ 'nc ^ 'n"
     assume 1[transfer_rule]: "HMA_M A A'" "HMA_M B B'"
     note [transfer_rule] = dim_row_transfer_rule[OF 1(1)] dim_col_transfer_rule[OF 1(2)]
-    have "HMA_M (A \<otimes>\<^sub>m B) (A' ** B')"
-      unfolding mat_mult_mat_def mat_mult_scalar
+    have "HMA_M (A * B) (A' ** B')"
+      unfolding times_mat_def mat_mult_scalar
       by (transfer_prover_start, transfer_step+, transfer, auto)
   }
   thus ?thesis by blast
 qed
       
 
-lemma HMA_V_scalar_mult [transfer_rule]: "(op = ===> HMA_V ===> HMA_V) (op \<odot>\<^sub>v) (op *s)"
-  unfolding vec_scalar_mult_def vector_scalar_mult_def
+lemma HMA_V_smult [transfer_rule]: "(op = ===> HMA_V ===> HMA_V) (op \<cdot>\<^sub>v) (op *s)"
+  unfolding smult_vec_def 
   unfolding rel_fun_def HMA_V_def from_hma\<^sub>v_def
   by auto
 
-lemma HMA_M_mult_vec [transfer_rule]: "(HMA_M ===> HMA_V ===> HMA_V) (op \<otimes>\<^sub>m\<^sub>v) (op *v)"
+lemma HMA_M_mult_vec [transfer_rule]: "(HMA_M ===> HMA_V ===> HMA_V) (op *\<^sub>v) (op *v)"
 proof -
   {
     fix A :: "'a :: semiring_1 mat" and v :: "'a Matrix.vec"
       and A' :: "'a ^ 'nc  ^ 'nr" and v' :: "'a ^ 'nc"
     assume 1[transfer_rule]: "HMA_M A A'" "HMA_V v v'"
     note [transfer_rule] = dim_row_transfer_rule
-    have "HMA_V (A \<otimes>\<^sub>m\<^sub>v v) (A' *v v')"
-      unfolding mat_mult_vec_def mat_mult_vec_scalar
+    have "HMA_V (A *\<^sub>v v) (A' *v v')"
+      unfolding mult_mat_vec_def mult_mat_vec_scalar
       by (transfer_prover_start, transfer_step+, transfer, auto)
   }
   thus ?thesis by blast  
@@ -437,21 +437,21 @@ proof -
     by (auto simp: from_hma\<^sub>m_def Determinant.det_def det_def)
 qed
 
-lemma HMA_mat[transfer_rule]: "(op = ===> HMA_M) (\<lambda> k. k \<odot>\<^sub>m \<one>\<^sub>m CARD('n)) 
+lemma HMA_mat[transfer_rule]: "(op = ===> HMA_M) (\<lambda> k. k \<cdot>\<^sub>m 1\<^sub>m CARD('n)) 
   (Cartesian_Euclidean_Space.mat :: 'a::semiring_1 \<Rightarrow> 'a^'n^'n)"
   unfolding Cartesian_Euclidean_Space.mat_def[abs_def] rel_fun_def HMA_M_def
   by (auto simp: from_hma\<^sub>m_def from_nat_inj)
 
 
 lemma HMA_mat_minus[transfer_rule]: "(HMA_M ===> HMA_M ===> HMA_M) 
-  (\<lambda> A B. A \<oplus>\<^sub>m map\<^sub>m uminus B) (op - :: 'a :: group_add ^'nc^'nr \<Rightarrow> 'a^'nc^'nr \<Rightarrow> 'a^'nc^'nr)"
+  (\<lambda> A B. A + map_mat uminus B) (op - :: 'a :: group_add ^'nc^'nr \<Rightarrow> 'a^'nc^'nr \<Rightarrow> 'a^'nc^'nr)"
   unfolding rel_fun_def HMA_M_def from_hma\<^sub>m_def by auto
 
 definition mat2matofpoly where "mat2matofpoly A = (\<chi> i j. [: A $ i $ j :])"
 
 definition charpoly where charpoly_def: "charpoly A = det (mat (monom 1 (Suc 0)) - mat2matofpoly A)"
 
-lemma HMA_mat2matofpoly[transfer_rule]: "(HMA_M ===> HMA_M) (\<lambda>x. map\<^sub>m (\<lambda>a. [:a:]) x) mat2matofpoly"
+lemma HMA_mat2matofpoly[transfer_rule]: "(HMA_M ===> HMA_M) (\<lambda>x. map_mat (\<lambda>a. [:a:]) x) mat2matofpoly"
   unfolding rel_fun_def HMA_M_def from_hma\<^sub>m_def mat2matofpoly_def by auto
 
 lemma HMA_char_poly [transfer_rule]: 
@@ -460,11 +460,11 @@ proof -
   {
     fix A :: "'a mat" and A' :: "'a^'n^'n"
     assume [transfer_rule]: "HMA_M A A'"
-    hence [simp]: "dim\<^sub>r A = CARD('n)" by (simp add: HMA_M_def)
+    hence [simp]: "dim_row A = CARD('n)" by (simp add: HMA_M_def)
     have [simp]: "monom 1 (Suc 0) = [:0, 1 :: 'a :]"
       by (simp add: monom_Suc)
-    have [simp]: "map\<^sub>m uminus (map\<^sub>m (\<lambda>a. [:a:]) A) = map\<^sub>m (\<lambda>a. [:-a:]) A"
-      by (rule mat_eqI, auto)
+    have [simp]: "map_mat uminus (map_mat (\<lambda>a. [:a:]) A) = map_mat (\<lambda>a. [:-a:]) A"
+      by (rule eq_matI, auto)
     have "char_poly A = charpoly A'"
       unfolding char_poly_def[abs_def] char_poly_matrix_def charpoly_def[abs_def]
       by (transfer, simp)
@@ -479,8 +479,8 @@ proof -
     fix A :: "'a mat" and v :: "'a Matrix.vec" 
     and A' :: "'a ^ 'n ^ 'n" and v' :: "'a ^ 'n" and k :: 'a
     assume 1[transfer_rule]: "HMA_M A A'" and 2[transfer_rule]: "HMA_V v v'"
-    hence [simp]: "dim\<^sub>r A = CARD('n)" "dim\<^sub>v v = CARD('n)" by (auto simp add: HMA_V_def HMA_M_def)
-    have [simp]: "v \<in> carrier\<^sub>v CARD('n)" using 2 unfolding HMA_V_def by simp
+    hence [simp]: "dim_row A = CARD('n)" "dim_vec v = CARD('n)" by (auto simp add: HMA_V_def HMA_M_def)
+    have [simp]: "v \<in> carrier_vec CARD('n)" using 2 unfolding HMA_V_def by simp
     have "eigenvector A v = eigen_vector A' v'" 
       unfolding eigenvector_def[abs_def] eigen_vector_def[abs_def] 
       by (transfer, simp)
@@ -494,7 +494,7 @@ proof -
   {
     fix A :: "'a mat" and A' :: "'a ^ 'n  ^ 'n" and k
     assume 1[transfer_rule]: "HMA_M A A'"
-    hence [simp]: "dim\<^sub>r A = CARD('n)" by (simp add: HMA_M_def)
+    hence [simp]: "dim_row A = CARD('n)" by (simp add: HMA_M_def)
     note [transfer_rule] = dim_row_transfer_rule[OF 1(1)]    
     have "(eigenvalue A k) = (eigen_value A' k)"
       unfolding eigenvalue_def[abs_def] eigen_value_def[abs_def] 
@@ -510,8 +510,8 @@ lemma HMA_spectral_radius [transfer_rule]:
     spectral_radius_ev_def[abs_def]
   by transfer_prover
 
-lemma HMA_mat_elements[transfer_rule]: "((HMA_M :: ('a mat \<Rightarrow> 'a ^ 'nc ^ 'nr \<Rightarrow> bool))  ===> op =) 
-  mat_elements mat_elements_h"
+lemma HMA_elements_mat[transfer_rule]: "((HMA_M :: ('a mat \<Rightarrow> 'a ^ 'nc ^ 'nr \<Rightarrow> bool))  ===> op =) 
+  elements_mat elements_mat_h"
 proof -
   {
     fix y :: "'a ^ 'nc ^ 'nr" and i j :: nat
@@ -528,7 +528,7 @@ proof -
         simp: to_nat_less_card)
   }
   ultimately show ?thesis
-    unfolding mat_elements[abs_def] mat_elements_h_def[abs_def] HMA_M_def
+    unfolding elements_mat[abs_def] elements_mat_h_def[abs_def] HMA_M_def
     by auto
 qed  
 
@@ -553,22 +553,22 @@ proof -
     by auto
 qed  
   
-lemma norm_bound_mat_elements: "norm_bound A b = (\<forall> x \<in> mat_elements A. norm x \<le> b)"
-  unfolding norm_bound_def mat_elements by auto
+lemma norm_bound_elements_mat: "norm_bound A b = (\<forall> x \<in> elements_mat A. norm x \<le> b)"
+  unfolding norm_bound_def elements_mat by auto
 
 lemma HMA_normbound [transfer_rule]: 
   "((HMA_M :: 'a :: real_normed_field mat \<Rightarrow> 'a ^ 'nc ^ 'nr \<Rightarrow> bool) ===> op = ===> op =)
   norm_bound normbound"
-  unfolding normbound_def[abs_def] norm_bound_mat_elements[abs_def]
+  unfolding normbound_def[abs_def] norm_bound_elements_mat[abs_def]
   by (transfer_prover)
 
 lemma HMA_map_matrix [transfer_rule]: 
-  "(op = ===> HMA_M ===> HMA_M) map\<^sub>m map_matrix"
-  unfolding map_vector_def map_matrix_def[abs_def] mat_map_def[abs_def] HMA_M_def from_hma\<^sub>m_def
+  "(op = ===> HMA_M ===> HMA_M) map_mat map_matrix"
+  unfolding map_vector_def map_matrix_def[abs_def] map_mat_def[abs_def] HMA_M_def from_hma\<^sub>m_def
   by auto
 
 lemma HMA_map_vector [transfer_rule]: 
-  "(op = ===> HMA_V ===> HMA_V) map\<^sub>v map_vector"
+  "(op = ===> HMA_V ===> HMA_V) map_vec map_vector"
   unfolding map_vector_def[abs_def] map_vec_def[abs_def] HMA_V_def from_hma\<^sub>v_def
   by auto
 end 
@@ -579,16 +579,16 @@ method transfer_hma uses rule = (
   (fold index_hma_def)?, (* prepare matrix access for transfer *)
   transfer,
   rule rule, 
-  (unfold vec_carrier_def mat_carrier_def)?, 
+  (unfold carrier_vec_def carrier_mat_def)?, 
   auto)
 
 text \<open>Now it becomes easy to transfer results which are not yet proven in HMA, such as:\<close>
 
 lemma matrix_add_vect_distrib: "(A + B) *v v = A *v v + B *v v"
-  by (transfer_hma rule: mat_mult_vec_left_distrib)
+  by (transfer_hma rule: add_mult_distrib_mat_vec)
 
 lemma matrix_vector_right_distrib: "M *v (v + w) = M *v v + M *v w"
-  by (transfer_hma rule: mat_mult_vec_right_distrib)
+  by (transfer_hma rule: mult_add_distrib_mat_vec)
 
 lemma eigen_value_root_charpoly: 
   "eigen_value A k \<longleftrightarrow> poly (charpoly (A :: 'a :: field ^ 'n ^ 'n)) k = 0"

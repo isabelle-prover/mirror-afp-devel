@@ -3,8 +3,8 @@ chapter AFP
 session Priority_Queue_Braun (AFP) = "HOL-Library" +
   options [timeout = 600]
   theories [document = false]
-  "HOL-Library.Tree"
-  "HOL-Library.Multiset"
+    "HOL-Library.Tree_Multiset"
+    "~~/src/HOL/Data_Structures/Priority_Queue"
   theories
     Priority_Queue_Braun
   document_files

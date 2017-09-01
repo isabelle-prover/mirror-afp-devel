@@ -114,11 +114,11 @@ lemma mset_del_min: "mset_tree (del_min h) = mset_tree h - {# get_min h #}"
 by (cases h) (auto simp: mset_merge ac_simps)
 
 
-interpretation skew_heap: Priority_Queue
+interpretation skew_heap: Priority_Queue_Merge
 where empty = Leaf and is_empty = "\<lambda>h. h = Leaf"
-and insert = insert and del_min = del_min
-and get_min = get_min and invar = heap
-and mset = mset_tree
+and merge = merge and insert = insert
+and del_min = del_min and get_min = get_min
+and invar = heap and mset = mset_tree
 proof(standard, goal_cases)
   case 1 show ?case by simp
 next
@@ -135,6 +135,10 @@ next
   case 7 thus ?case by(simp add: heap_insert)
 next
   case 8 thus ?case by(simp add: heap_del_min)
+next
+  case 9 thus ?case by(simp add: mset_merge)
+next
+  case 10 thus ?case by(simp add: heap_merge)
 qed
 
 

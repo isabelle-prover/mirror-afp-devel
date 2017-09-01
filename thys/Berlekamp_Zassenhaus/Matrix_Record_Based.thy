@@ -17,8 +17,8 @@ begin
 
 
 definition mat_rel :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a mat \<Rightarrow> 'b mat \<Rightarrow> bool" where
-  "mat_rel R A B \<equiv> dim\<^sub>r A = dim\<^sub>r B \<and> dim\<^sub>c A = dim\<^sub>c B \<and> 
-     (\<forall> i j. i < dim\<^sub>r B \<longrightarrow> j < dim\<^sub>c B \<longrightarrow> R (A $$ (i,j)) (B $$ (i,j)))"
+  "mat_rel R A B \<equiv> dim_row A = dim_row B \<and> dim_col A = dim_col B \<and> 
+     (\<forall> i j. i < dim_row B \<longrightarrow> j < dim_col B \<longrightarrow> R (A $$ (i,j)) (B $$ (i,j)))"
 
 lemma right_total_mat_rel: "right_total R \<Longrightarrow> right_total (mat_rel R)" 
   unfolding right_total_def
@@ -27,7 +27,7 @@ proof
   assume "\<forall> y. \<exists> x. R x y"
   from choice[OF this] obtain f where f: "\<And> x. R (f x) x" by auto
   show "\<exists> A. mat_rel R A B"
-    by (rule exI[of _ "mat_map f B"], unfold mat_rel_def, auto simp: f)
+    by (rule exI[of _ "map_mat f B"], unfold mat_rel_def, auto simp: f)
 qed
 
 lemma left_unique_mat_rel: "left_unique R \<Longrightarrow> left_unique (mat_rel R)"
@@ -45,7 +45,7 @@ lemma mat_rel_eq: "((R ===> R ===> op =)) op = op = \<Longrightarrow>
   unfolding mat_rel_def rel_fun_def mat_eq_iff by (auto, blast+)
 
 definition vec_rel :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a vec \<Rightarrow> 'b vec \<Rightarrow> bool" where
-  "vec_rel R A B \<equiv> dim\<^sub>v A = dim\<^sub>v B \<and> (\<forall> i. i < dim\<^sub>v B \<longrightarrow> R (A $ i) (B $ i))"
+  "vec_rel R A B \<equiv> dim_vec A = dim_vec B \<and> (\<forall> i. i < dim_vec B \<longrightarrow> R (A $ i) (B $ i))"
 
 lemma right_total_vec_rel: "right_total R \<Longrightarrow> right_total (vec_rel R)" 
   unfolding right_total_def
@@ -54,7 +54,7 @@ proof
   assume "\<forall> y. \<exists> x. R x y"
   from choice[OF this] obtain f where f: "\<And> x. R (f x) x" by auto
   show "\<exists> A. vec_rel R A B"
-    by (rule exI[of _ "map\<^sub>v f B"], unfold vec_rel_def, auto simp: f)
+    by (rule exI[of _ "map_vec f B"], unfold vec_rel_def, auto simp: f)
 qed
 
 lemma left_unique_vec_rel: "left_unique R \<Longrightarrow> left_unique (vec_rel R)"
@@ -74,13 +74,13 @@ lemma vec_rel_eq: "((R ===> R ===> op =)) op = op = \<Longrightarrow>
 lemma multrow_transfer[transfer_rule]: "((R ===> R ===> R) ===> op = ===> R
   ===> mat_rel R ===> mat_rel R) mat_multrow_gen mat_multrow_gen"
   unfolding mat_rel_def[abs_def] mat_multrow_gen_def[abs_def]
-  by (intro rel_funI conjI allI impI mat_eqI, auto simp: rel_fun_def) 
+  by (intro rel_funI conjI allI impI eq_matI, auto simp: rel_fun_def) 
 
 (* we need index restrictions, TODO: can this be incorporated into transfer rule? *)
-lemma swap_rows_transfer: "mat_rel R A B \<Longrightarrow> i < dim\<^sub>r B \<Longrightarrow> j < dim\<^sub>r B \<Longrightarrow> 
+lemma swap_rows_transfer: "mat_rel R A B \<Longrightarrow> i < dim_row B \<Longrightarrow> j < dim_row B \<Longrightarrow> 
   mat_rel R (mat_swaprows i j A) (mat_swaprows i j B)"
   unfolding mat_rel_def mat_swaprows_def
-  by (intro rel_funI conjI allI impI mat_eqI, auto)
+  by (intro rel_funI conjI allI impI eq_matI, auto)
 
 lemma pivot_positions_gen_transfer: assumes [transfer_rule]: "(R ===> R ===> op =) op = op =" 
   shows 
@@ -88,21 +88,21 @@ lemma pivot_positions_gen_transfer: assumes [transfer_rule]: "(R ===> R ===> op 
 proof (intro rel_funI, goal_cases)
   case (1 ze ze' A A')
   note trans[transfer_rule] = 1  
-  from 1 have dim: "dim\<^sub>r A = dim\<^sub>r A'" "dim\<^sub>c A = dim\<^sub>c A'" unfolding mat_rel_def by auto
-  obtain i j where id: "i = 0" "j = 0" and ij: "i \<le> dim\<^sub>r A'" "j \<le> dim\<^sub>c A'" by auto
-  have "pivot_positions_main_gen ze A (dim\<^sub>r A) (dim\<^sub>c A) i j =
-    pivot_positions_main_gen ze' A' (dim\<^sub>r A') (dim\<^sub>c A') i j"
+  from 1 have dim: "dim_row A = dim_row A'" "dim_col A = dim_col A'" unfolding mat_rel_def by auto
+  obtain i j where id: "i = 0" "j = 0" and ij: "i \<le> dim_row A'" "j \<le> dim_col A'" by auto
+  have "pivot_positions_main_gen ze A (dim_row A) (dim_col A) i j =
+    pivot_positions_main_gen ze' A' (dim_row A') (dim_col A') i j"
     using ij
-  proof (induct i j rule: pivot_positions_main_gen.induct[of "dim\<^sub>r A'" "dim\<^sub>c A'" A' ze'])
+  proof (induct i j rule: pivot_positions_main_gen.induct[of "dim_row A'" "dim_col A'" A' ze'])
     case (1 i j)    
     note simps[simp] = pivot_positions_main_gen.simps[of _ _ _ _ i j]
     show ?case 
-    proof (cases "i < dim\<^sub>r A' \<and> j < dim\<^sub>c A'")
+    proof (cases "i < dim_row A' \<and> j < dim_col A'")
       case False
       with dim show ?thesis by auto
     next
       case True
-      hence ij: "i < dim\<^sub>r A'" "j < dim\<^sub>c A'" and j: "Suc j \<le> dim\<^sub>c A'" by auto
+      hence ij: "i < dim_row A'" "j < dim_col A'" and j: "Suc j \<le> dim_col A'" by auto
       note IH = 1(1-2)[OF ij _ _ j]
       from ij True trans have [transfer_rule]:"R (A $$ (i,j)) (A' $$ (i,j))" 
         unfolding mat_rel_def by auto
@@ -110,12 +110,12 @@ proof (intro rel_funI, goal_cases)
       show ?thesis
       proof (cases "A' $$ (i,j) = ze'")
         case True
-        from ij have "i \<le> dim\<^sub>r A'" by auto
+        from ij have "i \<le> dim_row A'" by auto
         note IH = IH(1)[OF True this]
         thus ?thesis using True ij dim eq by simp
       next
         case False
-        from ij have "Suc i \<le> dim\<^sub>r A'" by auto
+        from ij have "Suc i \<le> dim_row A'" by auto
         note IH = IH(2)[OF False this]
         thus ?thesis using False ij dim eq by simp
       qed
@@ -140,10 +140,10 @@ lemma find_base_vectors_transfer: assumes [transfer_rule]: "(R ===> R ===> op =)
 proof (intro rel_funI, goal_cases)
   case (1 um um' ze ze' on on' A A')
   note trans[transfer_rule] = 1 pivot_positions_gen_transfer[OF assms]
-  from 1(4) have dim: "dim\<^sub>r A = dim\<^sub>r A'" "dim\<^sub>c A = dim\<^sub>c A'" unfolding mat_rel_def by auto
+  from 1(4) have dim: "dim_row A = dim_row A'" "dim_col A = dim_col A'" unfolding mat_rel_def by auto
   have id: "pivot_positions_gen ze A = pivot_positions_gen ze' A'" by transfer_prover
   obtain xs where xs: "map snd (pivot_positions_gen ze' A') = xs" by auto
-  obtain ys where ys: "[j\<leftarrow>[0..<dim\<^sub>c A'] . j \<notin> set xs] = ys" by auto
+  obtain ys where ys: "[j\<leftarrow>[0..<dim_col A'] . j \<notin> set xs] = ys" by auto
   show "list_all2 (vec_rel R) (find_base_vectors_gen um ze on A) 
     (find_base_vectors_gen um' ze' on' A')"
     unfolding find_base_vectors_gen_def Let_def id xs list_all2_conv_all_nth length_map ys dim
@@ -151,11 +151,11 @@ proof (intro rel_funI, goal_cases)
     fix i
     assume i: "i < length ys" 
     define y where "y = ys ! i" 
-    from i have y: "y < dim\<^sub>c A'" unfolding y_def ys[symmetric] using nth_mem by fastforce
+    from i have y: "y < dim_col A'" unfolding y_def ys[symmetric] using nth_mem by fastforce
     let ?map = "map_of (map prod.swap (pivot_positions_gen ze' A'))"
     {
       fix i
-      assume i: "i < dim\<^sub>c A'"
+      assume i: "i < dim_col A'"
       and neq: "i \<noteq> y" 
       have "R (case ?map i of None \<Rightarrow> ze | Some j \<Rightarrow> um (A $$ (j, y)))
           (case ?map i of None \<Rightarrow> ze' | Some j \<Rightarrow> um' (A' $$ (j, y)))"
@@ -166,7 +166,7 @@ proof (intro rel_funI, goal_cases)
         case (Some j)
         from map_of_SomeD[OF this] have "(j,i) \<in> set (pivot_positions_gen ze' A')" by auto
         from set_mp[OF set_pivot_positions_main_gen this[unfolded pivot_positions_gen_def]]
-        have j: "j < dim\<^sub>r A'" by auto
+        have j: "j < dim_row A'" by auto
         with trans(4) y have [transfer_rule]: "R (A $$ (j,y)) (A' $$ (j,y))" unfolding mat_rel_def by auto
         show ?thesis unfolding Some by (simp, transfer_prover)
       qed
@@ -182,8 +182,8 @@ qed
 
 lemma eliminate_entries_gen_transfer: assumes *[transfer_rule]: "(R ===> R ===> R) ad ad'"
   "(R ===> R ===> R) mul mul'"
-  and vs: "\<And> j. j < dim\<^sub>r B' \<Longrightarrow> R (vs j) (vs' j)" 
-  and i: "i < dim\<^sub>r B'"  
+  and vs: "\<And> j. j < dim_row B' \<Longrightarrow> R (vs j) (vs' j)" 
+  and i: "i < dim_row B'"  
   and B: "mat_rel R B B'"
   shows "mat_rel R 
    (eliminate_entries_gen ad mul vs B i j) 
@@ -193,14 +193,14 @@ proof -
   show ?thesis unfolding mat_rel_def dim_eliminate_entries_gen
   proof (intro conjI impI allI)
     fix i' j'
-    assume ij': "i' < dim\<^sub>r B'" "j' < dim\<^sub>c B'"
-    with BB have ij: "i'< dim\<^sub>r B" "j' < dim\<^sub>c B" by auto
+    assume ij': "i' < dim_row B'" "j' < dim_col B'"
+    with BB have ij: "i'< dim_row B" "j' < dim_col B" by auto
     have [transfer_rule]: "R (B $$ (i', j')) (B' $$ (i', j'))" using BB ij' by auto
     have [transfer_rule]: "R (B $$ (i, j')) (B' $$ (i, j'))" using BB ij' i by auto
     have [transfer_rule]: "R (vs i') (vs' i')" using ij' vs[of i'] by auto
     show "R (eliminate_entries_gen ad mul vs B i j $$ (i', j'))
         (eliminate_entries_gen ad' mul' vs' B' i j $$ (i', j'))" 
-      unfolding eliminate_entries_gen_def mat_index_mat(1)[OF ij] mat_index_mat(1)[OF ij'] split
+      unfolding eliminate_entries_gen_def index_mat(1)[OF ij] index_mat(1)[OF ij'] split
       by transfer_prover
   qed (insert BB, auto)
 qed
@@ -220,15 +220,15 @@ private abbreviation (input) modulo where "modulo \<equiv> arith_ops_record.modu
 private abbreviation (input) normalize where "normalize \<equiv> arith_ops_record.normalize ops"
 
 definition eliminate_entries_gen_zero :: "('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> (integer \<Rightarrow> 'a) \<Rightarrow> 'a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a mat" where
-  "eliminate_entries_gen_zero minu time z v A I J = mat (dim\<^sub>r A) (dim\<^sub>c A) (\<lambda> (i, j).
+  "eliminate_entries_gen_zero minu time z v A I J = mat (dim_row A) (dim_col A) (\<lambda> (i, j).
      if v (integer_of_nat i) \<noteq> z \<and> i \<noteq> I then minu (A $$ (i,j)) (time (v (integer_of_nat i)) (A $$ (I,j))) else A $$ (i,j))" 
   
 definition eliminate_entries_i where "eliminate_entries_i \<equiv> eliminate_entries_gen_zero minus times zero"
 definition multrow_i where "multrow_i \<equiv> mat_multrow_gen times"
   
 lemma dim_eliminate_entries_gen_zero[simp]:
-  "dim\<^sub>r (eliminate_entries_gen_zero mm tt z v B i as) = dim\<^sub>r B"
-  "dim\<^sub>c (eliminate_entries_gen_zero mm tt z v B i as) = dim\<^sub>c B"
+  "dim_row (eliminate_entries_gen_zero mm tt z v B i as) = dim_row B"
+  "dim_col (eliminate_entries_gen_zero mm tt z v B i as) = dim_col B"
   unfolding eliminate_entries_gen_zero_def by auto
 
 partial_function (tailrec) gauss_jordan_main_i :: "nat \<Rightarrow> nat \<Rightarrow> 'i mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'i mat" where
@@ -247,7 +247,7 @@ partial_function (tailrec) gauss_jordan_main_i :: "nat \<Rightarrow> nat \<Right
     else A)"
 
 definition gauss_jordan_single_i :: "'i mat \<Rightarrow> 'i mat" where
-  "gauss_jordan_single_i A \<equiv> gauss_jordan_main_i (dim\<^sub>r A) (dim\<^sub>c A) A 0 0"
+  "gauss_jordan_single_i A \<equiv> gauss_jordan_main_i (dim_row A) (dim_col A) A 0 0"
 
 definition find_base_vectors_i :: "'i mat \<Rightarrow> 'i vec list" where
   "find_base_vectors_i A \<equiv> find_base_vectors_gen uminus zero one A"
@@ -273,21 +273,21 @@ lemma multrow_i[transfer_rule]: "(op = ===> R ===> mat_rel R ===> mat_rel R)
   using multrow_transfer[of R] times unfolding multrow_i_def rel_fun_def by blast  
 
 lemma eliminate_entries_gen_zero[simp]:
-  assumes "mat_rel R A A'" "I < dim\<^sub>r A'" shows
+  assumes "mat_rel R A A'" "I < dim_row A'" shows
   "eliminate_entries_gen_zero minus times zero v A I J = eliminate_entries_gen minus times (v o integer_of_nat) A I J"
   unfolding eliminate_entries_gen_def eliminate_entries_gen_zero_def
 proof(standard,goal_cases)
   case (1 i j)
   have d1:"DP (A $$ (I, j))" and d2:"DP (A $$ (i, j))" using assms DPR 1
-    unfolding mat_rel_def mat_dim_col_mat mat_dim_row_mat
+    unfolding mat_rel_def dim_col_mat dim_row_mat
     by (metis Domainp.DomainI)+
   have e1:"\<And> x. (0::'a) * x = 0" and e2:"\<And> x. x - (0::'a) = x" by auto
   from e1[untransferred,OF d1] e2[untransferred,OF d2] 1 show ?case by auto
 qed auto
 
 lemma eliminate_entries_i: assumes  
-  vs: "\<And> j. j < dim\<^sub>r B' \<Longrightarrow> R (vs (integer_of_nat j)) (vs' j)" 
-  and i: "i < dim\<^sub>r B'"  
+  vs: "\<And> j. j < dim_row B' \<Longrightarrow> R (vs (integer_of_nat j)) (vs' j)" 
+  and i: "i < dim_row B'"  
   and B: "mat_rel R B B'"  
   shows "mat_rel R (eliminate_entries_i ops vs B i j) 
     (eliminate_entries vs' B' i j)"
@@ -295,13 +295,13 @@ lemma eliminate_entries_i: assumes
   by (rule eliminate_entries_gen_transfer, insert assms, auto simp: plus times minus)
 
 lemma gauss_jordan_main_i:  
-  "nr = dim\<^sub>r A' \<Longrightarrow> nc = dim\<^sub>c A' \<Longrightarrow> mat_rel R A A' \<Longrightarrow> i \<le> nr \<Longrightarrow> j \<le> nc \<Longrightarrow>
+  "nr = dim_row A' \<Longrightarrow> nc = dim_col A' \<Longrightarrow> mat_rel R A A' \<Longrightarrow> i \<le> nr \<Longrightarrow> j \<le> nc \<Longrightarrow>
     mat_rel R (gauss_jordan_main_i ops nr nc A i j) (fst (gauss_jordan_main A' B' i j))"
 proof -
   obtain P where P: "P = (A',i,j)" by auto
   let ?Rel = "measures [\<lambda> (A' :: 'a mat,i,j). nc - j, \<lambda> (A',i,j). if A' $$ (i,j) = 0 then 1 else 0]"
   have wf: "wf ?Rel" by simp
-  show "nr = dim\<^sub>r A' \<Longrightarrow> nc = dim\<^sub>c A' \<Longrightarrow> mat_rel R A A' \<Longrightarrow> i \<le> nr \<Longrightarrow> j \<le> nc \<Longrightarrow>
+  show "nr = dim_row A' \<Longrightarrow> nc = dim_col A' \<Longrightarrow> mat_rel R A A' \<Longrightarrow> i \<le> nr \<Longrightarrow> j \<le> nc \<Longrightarrow>
     mat_rel R (gauss_jordan_main_i ops nr nc A i j) (fst (gauss_jordan_main A' B' i j))"
     using P
   proof (induct P arbitrary: A' B' A i j rule: wf_induct[OF wf])
@@ -322,10 +322,10 @@ proof -
       hence id: "(i < nr \<and> j < nc) = True" "\<And> x y z. (if x = x then y else z) = y" by auto
       from True prems have ij [transfer_rule]:"R (A $$ (i,j)) (A' $$ (i,j))" 
         unfolding mat_rel_def by auto
-      from True prems have i: "i < dim\<^sub>r A'" "j < dim\<^sub>c A'" and i': "i < nr" "j < nc" by auto
+      from True prems have i: "i < dim_row A'" "j < dim_col A'" and i': "i < nr" "j < nc" by auto
       {
         fix i
-        assume "i < dim\<^sub>r A'"
+        assume "i < dim_row A'"
         with i True prems have R[transfer_rule]:"R (A $$ (i,j)) (A' $$ (i,j))" 
           unfolding mat_rel_def by auto
         have "(A $$ (i,j) = zero) = (A' $$ (i,j) = 0)" by transfer_prover
@@ -341,7 +341,7 @@ proof -
         let ?is = "[ i' . i' <- [Suc i ..< nr],  A $$ (i',j) \<noteq> zero]"
         let ?is' = "[ i' . i' <- [Suc i ..< nr],  A' $$ (i',j) \<noteq> 0]"
         define xs where "xs = [Suc i..<nr]" 
-        have xs: "set xs \<subseteq> {0 ..< dim\<^sub>r A'}" unfolding xs_def using prems by auto
+        have xs: "set xs \<subseteq> {0 ..< dim_row A'}" unfolding xs_def using prems by auto
         hence id': "?is = ?is'" unfolding xs_def[symmetric]
           by (induct xs, insert eq_gen, auto)
         show ?thesis
@@ -357,7 +357,7 @@ proof -
           case (Cons i' idx')
           from arg_cong[OF this, of set] i 
           have i': "i' < nr" "A' $$ (i', j) \<noteq> 0" by auto
-          with ij' prems(1-2) have *: "i' < dim\<^sub>r A'" "i < dim\<^sub>r A'" "j < dim\<^sub>c A'" by auto
+          with ij' prems(1-2) have *: "i' < dim_row A'" "i < dim_row A'" "j < dim_col A'" by auto
           have rel: "((swaprows i i' A', i, j), P) \<in> ?Rel"
             by (simp add: P True * i')
           have "?thesis = (mat_rel R (gauss_jordan_main_i ops nr nc (swaprows i i' A) i j)
@@ -372,12 +372,12 @@ proof -
         from False eq have neq: "(A $$ (i, j) = zero) = False" "(A' $$ (i, j) = 0) = False" by auto
         {
           fix B B' i
-          assume B[transfer_rule]: "mat_rel R B B'" and dim: "dim\<^sub>c B' = nc" and i: "i < dim\<^sub>r B'"
-          from dim i True have "j < dim\<^sub>c B'" by simp
+          assume B[transfer_rule]: "mat_rel R B B'" and dim: "dim_col B' = nc" and i: "i < dim_row B'"
+          from dim i True have "j < dim_col B'" by simp
           with B i have "R (B $$ (i,j)) (B' $$ (i,j))"
             by (simp add: mat_rel_def)
         } note vec_rel = this        
-        from prems have dim: "dim\<^sub>r A = dim\<^sub>r A'" unfolding mat_rel_def by auto
+        from prems have dim: "dim_row A = dim_row A'" unfolding mat_rel_def by auto
         show ?thesis 
         proof (cases "A' $$ (i, j) = 1")
           case True
@@ -454,43 +454,43 @@ proof(goal_cases)
 qed
 
 lemma eliminate_entries_gen_zero [simp]:
-  assumes "i<(dim\<^sub>r A)" "j<(dim\<^sub>c A)" shows
+  assumes "i<(dim_row A)" "j<(dim_col A)" shows
   "eliminate_entries_gen_zero mminus ttimes z v A I J $$ (i, j) =
    (if v (integer_of_nat i) = z \<or> i = I then A $$ (i,j) else mminus (A $$ (i,j)) (ttimes (v (integer_of_nat i)) (A $$ (I,j))))"
 using assms unfolding eliminate_entries_gen_zero_def by auto
 
 
 lemma eliminate_entries_gen [simp]:
-  assumes "i<(dim\<^sub>r A)" "j<(dim\<^sub>c A)" shows
+  assumes "i<(dim_row A)" "j<(dim_col A)" shows
   "eliminate_entries_gen mminus ttimes v A I J $$ (i, j) =
    (if i = I then A $$ (i,j) else mminus (A $$ (i,j)) (ttimes (v i) (A $$ (I,j))))"
 using assms unfolding eliminate_entries_gen_def by auto
 
 lemma dim_mat_impl [simp]:
-  "dim\<^sub>r (mat_impl x) = mat_dim_row_impl x"
-  "dim\<^sub>c (mat_impl x) = mat_dim_col_impl x"
-  by (cases "Rep_mat_impl x";auto simp:mat_impl.rep_eq mat_dim_row_def mat_dim_col_def mat_dim_row_impl.rep_eq mat_dim_col_impl.rep_eq)+
+  "dim_row (mat_impl x) = dim_row_impl x"
+  "dim_col (mat_impl x) = dim_col_impl x"
+  by (cases "Rep_mat_impl x";auto simp:mat_impl.rep_eq dim_row_def dim_col_def dim_row_impl.rep_eq dim_col_impl.rep_eq)+
 
 lemma dim_eliminate_entries_i2 [simp]:
-  "mat_dim_row_impl (eliminate_entries_i2 z mm tt v m i) = mat_dim_row_impl m"
-  "mat_dim_col_impl (eliminate_entries_i2 z mm tt v m i) = mat_dim_col_impl m"
+  "dim_row_impl (eliminate_entries_i2 z mm tt v m i) = dim_row_impl m"
+  "dim_col_impl (eliminate_entries_i2 z mm tt v m i) = dim_col_impl m"
   by (transfer, auto)+
 
 lemma tabulate_nth: "i < n \<Longrightarrow> tabulate'' f (integer_of_nat n) !! i = f (integer_of_nat i)" 
   using of_fun_nth[of i n] by auto
 
 lemma eliminate_entries_i2[code]:"eliminate_entries_gen_zero mm tt z v (mat_impl m) i j
-   = (if i < mat_dim_row_impl m 
+   = (if i < dim_row_impl m 
      then mat_impl (eliminate_entries_i2 z mm tt v m (integer_of_nat i))
      else (Code.abort (STR ''index out of range in eliminate_entries'') 
        (\<lambda> _. eliminate_entries_gen_zero mm tt z v (mat_impl m) i j)))"
-proof (cases "i < mat_dim_row_impl m")
+proof (cases "i < dim_row_impl m")
   case True
-  hence id: "(i < mat_dim_row_impl m) = True" by simp
+  hence id: "(i < dim_row_impl m) = True" by simp
   show ?thesis unfolding id if_True
   proof (standard;goal_cases)
     case (1 i j)
-    have dims: "i < dim\<^sub>r (mat_impl m)" "j < dim\<^sub>c (mat_impl m)" using 1 by (auto simp:eliminate_entries_i2.rep_eq)
+    have dims: "i < dim_row (mat_impl m)" "j < dim_col (mat_impl m)" using 1 by (auto simp:eliminate_entries_i2.rep_eq)
     then show ?case unfolding eliminate_entries_gen_zero[OF dims] using True
     proof(transfer, goal_cases)
       case (1 i m j ia v z mm tt)

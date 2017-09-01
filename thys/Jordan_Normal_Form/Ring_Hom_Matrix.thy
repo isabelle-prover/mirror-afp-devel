@@ -72,6 +72,6 @@ instance
   by (intro_classes, auto simp: real_of_rat_def of_rat_add of_rat_mult real_of_rat_ineq)
 end
 
-abbreviation mat_real ("mat\<^sub>\<real>") where "mat\<^sub>\<real> \<equiv> map\<^sub>m (real_of :: 'a :: real_embedding \<Rightarrow> real)"
+abbreviation mat_real ("mat\<^sub>\<real>") where "mat\<^sub>\<real> \<equiv> map_mat (real_of :: 'a :: real_embedding \<Rightarrow> real)"
 
 end

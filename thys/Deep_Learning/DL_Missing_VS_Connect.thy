@@ -23,9 +23,9 @@ proof -
 qed
 
 lemma (in vec_space) fin_dim_span_cols:
-assumes "A \<in> carrier\<^sub>m n nc"
+assumes "A \<in> carrier_mat n nc"
 shows "vectorspace.fin_dim class_ring (vs (span (set (cols A))))"
-using fin_dim_span cols_dim List.finite_set assms mat_carrierD(1) vec_module_simps(3) by force
+using fin_dim_span cols_dim List.finite_set assms carrier_matD(1) module_vec_simps(3) by force
 
 
 end

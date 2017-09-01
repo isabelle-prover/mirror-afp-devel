@@ -6,7 +6,7 @@ theory DL_Rank_CP_Rank
 imports Tensor_Rank DL_Rank Tensor_Matricization DL_Submatrix DL_Missing_Vector_Space
 begin
 
-abbreviation "mrank A == vec_space.rank (dim\<^sub>r A) A"
+abbreviation "mrank A == vec_space.rank (dim_row A) A"
 
 no_notation "normal_rel"  (infixl "\<lhd>" 60)
 
@@ -58,9 +58,9 @@ proof -
   qed
   def row_factor' == "\<lambda>r. row_factor (digit_encode (nths (Tensor.dims A) I) r)"
   def col_factor' == "\<lambda>c. col_factor (digit_encode (nths (Tensor.dims A) (-I)) c)"
-  have "\<And>r c. r<dim\<^sub>r (matricize I A) \<Longrightarrow> c<dim\<^sub>c (matricize I A) \<Longrightarrow> matricize I A $$ (r,c) = row_factor' r * col_factor' c"
+  have "\<And>r c. r<dim_row (matricize I A) \<Longrightarrow> c<dim_col (matricize I A) \<Longrightarrow> matricize I A $$ (r,c) = row_factor' r * col_factor' c"
   proof -
-    fix r c assume "r<dim\<^sub>r (matricize I A)" "c<dim\<^sub>c (matricize I A)"
+    fix r c assume "r<dim_row (matricize I A)" "c<dim_col (matricize I A)"
     then have "matricize I A $$ (r,c) = Tensor.lookup A (weave I
       (digit_encode (nths (Tensor.dims A) I) r)
       (digit_encode (nths (Tensor.dims A) (-I)) c)
@@ -68,8 +68,8 @@ proof -
     also have "... = row_factor' r * col_factor' c"
       using  \<open>\<And>is. is \<lhd> dims A \<Longrightarrow> lookup A is = row_factor (nths is I) * col_factor (nths is (- I))\<close>
       valid_index_weave[OF
-      digit_encode_valid_index[OF \<open>r < dim\<^sub>r (matricize I A)\<close>[unfolded dims_matricize]]
-      digit_encode_valid_index[OF \<open>c < dim\<^sub>c (matricize I A)\<close>[unfolded dims_matricize]]]
+      digit_encode_valid_index[OF \<open>r < dim_row (matricize I A)\<close>[unfolded dims_matricize]]
+      digit_encode_valid_index[OF \<open>c < dim_col (matricize I A)\<close>[unfolded dims_matricize]]]
       valid_index_weave(2) valid_index_weave(3) row_factor'_def col_factor'_def by metis
     finally show "matricize I A $$ (r,c) = row_factor' r * col_factor' c" .
   qed
@@ -83,7 +83,7 @@ shows "mrank (matricize I A) \<le> r"
 using assms
 proof (induction rule:cprank_max.induct)
   fix ds :: "nat list"
-  have "matricize I (tensor0 ds) = \<zero>\<^sub>m (dim\<^sub>r (matricize I (tensor0 ds))) (dim\<^sub>c (matricize I (tensor0 ds)))"
+  have "matricize I (tensor0 ds) = 0\<^sub>m (dim_row (matricize I (tensor0 ds))) (dim_col (matricize I (tensor0 ds)))"
     using matricize_0 by auto
   then show "mrank (matricize I (tensor0 ds)) \<le> 0"
     using eq_imp_le vec_space.rank_0I by metis
@@ -95,7 +95,7 @@ next
   have "mrank (matricize I A) \<le> 1" using `cprank_max1 A` matricize_cprank_max1 by auto
   have "mrank (matricize I (A + B)) \<le> mrank (matricize I A) + mrank (matricize I B)"
     using matricize_add vec_space.rank_subadditive dims_matricize
-    mat_carrierI mat_index_add(2) `dims A = dims B` by metis
+    carrier_matI index_add_mat(2) `dims A = dims B` by metis
   then show "mrank (matricize I (A + B)) \<le> Suc j"
     using \<open>mrank (matricize I A) \<le> 1\<close> `mrank (matricize I B) \<le> j` by linarith
 qed

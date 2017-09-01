@@ -4,6 +4,7 @@ session Pairing_Heap (AFP) = "HOL-Library" +
   options [timeout = 600]
   theories [document = false]
     "HOL-Library.Tree_Multiset"
+    "~~/src/HOL/Data_Structures/Priority_Queue"
   theories
     Pairing_Heap_Tree
     Pairing_Heap_List1

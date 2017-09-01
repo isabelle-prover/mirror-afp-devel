@@ -108,7 +108,7 @@ fun lookup_other_ev :: "'a \<Rightarrow> nat \<Rightarrow> 'a mat \<Rightarrow> 
 | "lookup_other_ev ev (Suc i) A = (if A $$ (i,i) \<noteq> ev then Some i else lookup_other_ev ev i A)"
 
 partial_function (tailrec) partition_ev_blocks :: "'a mat \<Rightarrow> 'a mat list \<Rightarrow> 'a mat list" where
-  [code]: "partition_ev_blocks A bs = (let n = dim\<^sub>r A in
+  [code]: "partition_ev_blocks A bs = (let n = dim_row A in
     if n = 0 then bs
     else (case lookup_other_ev (A $$ (n-1, n-1)) (n-1) A of 
       None \<Rightarrow> A # bs 
@@ -186,13 +186,13 @@ termination by (relation "measure (\<lambda> (k,A). n - k)") auto
 end
 
 definition step_1 :: "'a :: field mat \<Rightarrow> 'a mat" where
-  "step_1 A = step_1_main (dim\<^sub>r A) 0 0 A"
+  "step_1 A = step_1_main (dim_row A) 0 0 A"
 
 definition step_2 :: "'a :: field mat \<Rightarrow> 'a mat" where
-  "step_2 A = step_2_main (dim\<^sub>r A) 0 A"
+  "step_2 A = step_2_main (dim_row A) 0 A"
 
 definition step_3 :: "'a :: field mat \<Rightarrow> 'a mat" where
-  "step_3 A = step_3_main (dim\<^sub>r A) 1 A"
+  "step_3 A = step_3_main (dim_row A) 1 A"
 
 declare swap_cols_rows_block.simps[simp del]
 declare step_1_main.simps[simp del]
@@ -207,7 +207,7 @@ function jnf_vector_main :: "nat \<Rightarrow> 'a :: one mat \<Rightarrow> (nat 
   by pat_completeness auto
 
 definition jnf_vector :: "'a :: one mat \<Rightarrow> (nat \<times> 'a) list" where
-  "jnf_vector A = jnf_vector_main (dim\<^sub>r A) A"
+  "jnf_vector A = jnf_vector_main (dim_row A) A"
 
 definition triangular_to_jnf_vector :: "'a :: field mat \<Rightarrow> (nat \<times> 'a) list" where
   "triangular_to_jnf_vector A \<equiv> let B = step_2 (step_1 A)
@@ -216,7 +216,7 @@ definition triangular_to_jnf_vector :: "'a :: field mat \<Rightarrow> (nat \<tim
 subsection \<open>Preservation of Dimensions\<close>
 
 lemma swap_cols_rows_block_dims_main: 
-  "dim\<^sub>r (swap_cols_rows_block i j A) = dim\<^sub>r A \<and> dim\<^sub>c (swap_cols_rows_block i j A) = dim\<^sub>c A"
+  "dim_row (swap_cols_rows_block i j A) = dim_row A \<and> dim_col (swap_cols_rows_block i j A) = dim_col A"
 proof (induct i j A rule: swap_cols_rows_block.induct)
   case (1 i j A)
   thus ?case unfolding swap_cols_rows_block.simps[of i j A]
@@ -224,13 +224,13 @@ proof (induct i j A rule: swap_cols_rows_block.induct)
 qed
 
 lemma swap_cols_rows_block_dims[simp]: 
-  "dim\<^sub>r (swap_cols_rows_block i j A) = dim\<^sub>r A"
-  "dim\<^sub>c (swap_cols_rows_block i j A) = dim\<^sub>c A"
-  "A \<in> carrier\<^sub>m n n \<Longrightarrow> swap_cols_rows_block i j A \<in> carrier\<^sub>m n n"
-  using swap_cols_rows_block_dims_main unfolding mat_carrier_def by auto
+  "dim_row (swap_cols_rows_block i j A) = dim_row A"
+  "dim_col (swap_cols_rows_block i j A) = dim_col A"
+  "A \<in> carrier_mat n n \<Longrightarrow> swap_cols_rows_block i j A \<in> carrier_mat n n"
+  using swap_cols_rows_block_dims_main unfolding carrier_mat_def by auto
 
 lemma step_1_main_dims_main: 
-  "dim\<^sub>r (step_1_main n i j A) = dim\<^sub>r A \<and> dim\<^sub>c (step_1_main n i j A) = dim\<^sub>c A"
+  "dim_row (step_1_main n i j A) = dim_row A \<and> dim_col (step_1_main n i j A) = dim_col A"
 proof (induct i j A taking: n rule: step_1_main.induct)
   case (1 i j A)
   thus ?case unfolding step_1_main.simps[of n i j A]
@@ -238,12 +238,12 @@ proof (induct i j A taking: n rule: step_1_main.induct)
 qed
 
 lemma step_1_main_dims[simp]: 
-  "dim\<^sub>r (step_1_main n i j A) = dim\<^sub>r A"
-  "dim\<^sub>c (step_1_main n i j A) = dim\<^sub>c A"
+  "dim_row (step_1_main n i j A) = dim_row A"
+  "dim_col (step_1_main n i j A) = dim_col A"
   using step_1_main_dims_main by blast+
 
 lemma step_2_main_dims_main: 
-  "dim\<^sub>r (step_2_main n j A) = dim\<^sub>r A \<and> dim\<^sub>c (step_2_main n j A) = dim\<^sub>c A"
+  "dim_row (step_2_main n j A) = dim_row A \<and> dim_col (step_2_main n j A) = dim_col A"
 proof (induct j A taking: n rule: step_2_main.induct)
   case (1 j A)
   thus ?case unfolding step_2_main.simps[of n j A]
@@ -251,39 +251,39 @@ proof (induct j A taking: n rule: step_2_main.induct)
 qed
 
 lemma step_2_main_dims[simp]: 
-  "dim\<^sub>r (step_2_main n j A) = dim\<^sub>r A"
-  "dim\<^sub>c (step_2_main n j A) = dim\<^sub>c A"
+  "dim_row (step_2_main n j A) = dim_row A"
+  "dim_col (step_2_main n j A) = dim_col A"
   using step_2_main_dims_main by blast+
 
 lemma step_3_a_dims_main: 
-  "dim\<^sub>r (step_3_a i j A) = dim\<^sub>r A \<and> dim\<^sub>c (step_3_a i j A) = dim\<^sub>c A"
+  "dim_row (step_3_a i j A) = dim_row A \<and> dim_col (step_3_a i j A) = dim_col A"
   by (induct i j A rule: step_3_a.induct, auto split: if_splits simp: Let_def)
 
 lemma step_3_a_dims[simp]: 
-  "dim\<^sub>r (step_3_a i j A) = dim\<^sub>r A"
-  "dim\<^sub>c (step_3_a i j A) = dim\<^sub>c A"
+  "dim_row (step_3_a i j A) = dim_row A"
+  "dim_col (step_3_a i j A) = dim_col A"
   using step_3_a_dims_main by blast+
 
 lemma step_3_c_inner_loop_dims_main: 
-  "dim\<^sub>r (step_3_c_inner_loop val l i j A) = dim\<^sub>r A \<and> dim\<^sub>c (step_3_c_inner_loop val l i j A) = dim\<^sub>c A"
+  "dim_row (step_3_c_inner_loop val l i j A) = dim_row A \<and> dim_col (step_3_c_inner_loop val l i j A) = dim_col A"
   by (induct val l i j A rule: step_3_c_inner_loop.induct, auto)
 
 lemma step_3_c_inner_loop_dims[simp]: 
-  "dim\<^sub>r (step_3_c_inner_loop val l i j A) = dim\<^sub>r A"
-  "dim\<^sub>c (step_3_c_inner_loop val l i j A) = dim\<^sub>c A"
+  "dim_row (step_3_c_inner_loop val l i j A) = dim_row A"
+  "dim_col (step_3_c_inner_loop val l i j A) = dim_col A"
   using step_3_c_inner_loop_dims_main by blast+
 
 lemma step_3_c_dims_main: 
-  "dim\<^sub>r (step_3_c x l k i A) = dim\<^sub>r A \<and> dim\<^sub>c (step_3_c x l k i A) = dim\<^sub>c A"
+  "dim_row (step_3_c x l k i A) = dim_row A \<and> dim_col (step_3_c x l k i A) = dim_col A"
   by (induct x l k i A rule: step_3_c.induct, auto simp: Let_def)
 
 lemma step_3_c_dims[simp]: 
-  "dim\<^sub>r (step_3_c x l k i A) = dim\<^sub>r A"
-  "dim\<^sub>c (step_3_c x l k i A) = dim\<^sub>c A"
+  "dim_row (step_3_c x l k i A) = dim_row A"
+  "dim_col (step_3_c x l k i A) = dim_col A"
   using step_3_c_dims_main by blast+
   
 lemma step_3_main_dims_main: 
-  "dim\<^sub>r (step_3_main n k A) = dim\<^sub>r A \<and> dim\<^sub>c (step_3_main n k A) = dim\<^sub>c A"
+  "dim_row (step_3_main n k A) = dim_row A \<and> dim_col (step_3_main n k A) = dim_col A"
 proof (induct k A taking: n rule: step_3_main.induct)
   case (1 k A)
   thus ?case unfolding step_3_main.simps[of n k A]
@@ -291,17 +291,17 @@ proof (induct k A taking: n rule: step_3_main.induct)
 qed
 
 lemma step_3_main_dims[simp]: 
-  "dim\<^sub>r (step_3_main n j A) = dim\<^sub>r A"
-  "dim\<^sub>c (step_3_main n j A) = dim\<^sub>c A"
+  "dim_row (step_3_main n j A) = dim_row A"
+  "dim_col (step_3_main n j A) = dim_col A"
   using step_3_main_dims_main by blast+
 
 lemma triangular_to_jnf_steps_dims[simp]: 
-  "dim\<^sub>r (step_1 A) = dim\<^sub>r A"
-  "dim\<^sub>c (step_1 A) = dim\<^sub>c A"
-  "dim\<^sub>r (step_2 A) = dim\<^sub>r A"
-  "dim\<^sub>c (step_2 A) = dim\<^sub>c A"
-  "dim\<^sub>r (step_3 A) = dim\<^sub>r A"
-  "dim\<^sub>c (step_3 A) = dim\<^sub>c A"
+  "dim_row (step_1 A) = dim_row A"
+  "dim_col (step_1 A) = dim_col A"
+  "dim_row (step_2 A) = dim_row A"
+  "dim_col (step_2 A) = dim_col A"
+  "dim_row (step_3 A) = dim_row A"
+  "dim_col (step_3 A) = dim_col A"
   unfolding step_1_def step_2_def step_3_def o_def by auto
 
 subsection \<open>Properties of Auxiliary Algorithms\<close>
@@ -315,14 +315,14 @@ lemma lookup_ev_None: "lookup_ev ev j A = None \<Longrightarrow> i < j \<Longrig
   by (induct j, auto split: if_splits, case_tac "i = j", auto)
 
 lemma swap_cols_rows_block_index[simp]: 
-  "i < dim\<^sub>r A \<Longrightarrow> i < dim\<^sub>c A \<Longrightarrow> j < dim\<^sub>r A \<Longrightarrow> j < dim\<^sub>c A 
-  \<Longrightarrow> low \<le> high \<Longrightarrow> high < dim\<^sub>r A \<Longrightarrow> high < dim\<^sub>c A  
+  "i < dim_row A \<Longrightarrow> i < dim_col A \<Longrightarrow> j < dim_row A \<Longrightarrow> j < dim_col A 
+  \<Longrightarrow> low \<le> high \<Longrightarrow> high < dim_row A \<Longrightarrow> high < dim_col A  
   \<Longrightarrow> swap_cols_rows_block low high A $$ (i,j) = A $$ 
     (if i = low then high else if i > low \<and> i \<le> high then i - 1 else i,
      if j = low then high else if j > low \<and> j \<le> high then j - 1 else j)"
 proof (induct low high A rule: swap_cols_rows_block.induct)
   case (1 low high A)
-  let ?r = "dim\<^sub>r A" let ?c = "dim\<^sub>c A"
+  let ?r = "dim_row A" let ?c = "dim_col A"
   let ?A = "swap_cols_rows_block low high A"
   let ?B = "swap_cols_rows low high A"
   let ?C = "swap_cols_rows_block (Suc low) high ?B"
@@ -338,7 +338,7 @@ proof (induct low high A rule: swap_cols_rows_block.induct)
     case True
     hence A: "?A = ?C" by simp
     from True lh have "Suc low \<le> high" by simp
-    note IH = 1(1)[unfolded swap_cols_rows_dims, OF True 1(2-5) this 1(7-)]
+    note IH = 1(1)[unfolded swap_cols_rows_carrier, OF True 1(2-5) this 1(7-)]
     note * = 1(2-)
     let ?i = "if i = Suc low then high else if Suc low < i \<and> i \<le> high then i - 1 else i"
     let ?j = "if j = Suc low then high else if Suc low < j \<and> j \<le> high then j - 1 else j"
@@ -477,40 +477,40 @@ subsection \<open>Proving Similarity\<close>
 
 context
 begin
-private lemma swap_cols_rows_block_similar: assumes "A \<in> carrier\<^sub>m n n"
+private lemma swap_cols_rows_block_similar: assumes "A \<in> carrier_mat n n"
   and "j < n" and "i \<le> j"
-  shows "mat_similar (swap_cols_rows_block i j A) A"
+  shows "similar_mat (swap_cols_rows_block i j A) A"
   using assms
 proof (induct i j A rule: swap_cols_rows_block.induct)
   case (1 i j A)
-  hence A: "A \<in> carrier\<^sub>m n n"
+  hence A: "A \<in> carrier_mat n n"
     and jn: "j < n" and ij: "i \<le> j" by auto
   note [simp] = swap_cols_rows_block.simps[of i j]
   show ?case
   proof (cases "i < j")
     case False
-    thus ?thesis using mat_similar_refl[OF A] by simp
+    thus ?thesis using similar_mat_refl[OF A] by simp
   next
     case True note ij = this
     let ?B = "swap_cols_rows i j A"
     let ?C = "swap_cols_rows_block (Suc i) j ?B"
     from swap_cols_rows_similar[OF A _ jn, of i] ij jn
-    have BA: "mat_similar ?B A" by auto
-    have CB: "mat_similar ?C ?B"
+    have BA: "similar_mat ?B A" by auto
+    have CB: "similar_mat ?C ?B"
       by (rule 1(1)[OF ij _ jn], insert ij A, auto)
-    from mat_similar_trans[OF CB BA] show ?thesis using ij by simp
+    from similar_mat_trans[OF CB BA] show ?thesis using ij by simp
   qed
 qed
 
-private lemma step_1_main_similar: "i \<le> j \<Longrightarrow> A \<in> carrier\<^sub>m n n \<Longrightarrow> mat_similar (step_1_main n i j A) A"
+private lemma step_1_main_similar: "i \<le> j \<Longrightarrow> A \<in> carrier_mat n n \<Longrightarrow> similar_mat (step_1_main n i j A) A"
 proof (induct i j A taking: n rule: step_1_main.induct)
   case (1 i j A)
   note [simp] = step_1_main.simps[of n i j A]
-  from 1(3-) have ij: "i \<le> j" and A: "A \<in> carrier\<^sub>m n n" by auto
+  from 1(3-) have ij: "i \<le> j" and A: "A \<in> carrier_mat n n" by auto
   show ?case
   proof (cases "j \<ge> n")
     case True
-    thus ?thesis using mat_similar_refl[OF A] by simp
+    thus ?thesis using similar_mat_refl[OF A] by simp
   next
     case False 
     hence jn: "j < n" by simp
@@ -527,29 +527,29 @@ proof (induct i j A taking: n rule: step_1_main.induct)
       let ?B = "if ?evi \<noteq> ?evj \<and> A $$ (i - 1, j) \<noteq> 0 then 
         add_col_sub_row (A $$ (i - 1, j) / (?evj - ?evi)) (i - 1) j A else A"
       obtain B where B: "B = ?B" by auto
-      have Bn: "B \<in> carrier\<^sub>m n n" unfolding B using A by simp
+      have Bn: "B \<in> carrier_mat n n" unfolding B using A by simp
       from False ij jn have *: "i - 1 < n" "j < n" "i - 1 \<noteq> j" by auto
-      have BA: "mat_similar B A" unfolding B using mat_similar_refl[OF A]
+      have BA: "similar_mat B A" unfolding B using similar_mat_refl[OF A]
         add_col_sub_row_similar[OF A *] by auto
       from ij have "i - 1 \<le> j" by simp
       note IH = IH(2)[OF False refl refl refl refl B this Bn]
       from False jn have id: "step_1_main n i j A = step_1_main n (i - 1) j B"
         unfolding B by (simp add: Let_def)
       show ?thesis unfolding id
-        by (rule mat_similar_trans[OF IH BA])
+        by (rule similar_mat_trans[OF IH BA])
     qed
   qed
 qed
 
-private lemma step_2_main_similar: "A \<in> carrier\<^sub>m n n \<Longrightarrow> mat_similar (step_2_main n j A) A"
+private lemma step_2_main_similar: "A \<in> carrier_mat n n \<Longrightarrow> similar_mat (step_2_main n j A) A"
 proof (induct j A taking: n rule: step_2_main.induct)
   case (1 j A)
   note [simp] = step_2_main.simps[of n j A]
-  from 1(2) have A: "A \<in> carrier\<^sub>m n n" .
+  from 1(2) have A: "A \<in> carrier_mat n n" .
   show ?case
   proof (cases "j \<ge> n")
     case True
-    thus ?thesis using mat_similar_refl[OF A] by simp
+    thus ?thesis using similar_mat_refl[OF A] by simp
   next
     case False 
     hence jn: "j < n" by simp
@@ -560,11 +560,11 @@ proof (induct j A taking: n rule: step_2_main.induct)
         | Some i \<Rightarrow> swap_cols_rows_block (Suc i) j A"
     obtain B where B: "B = ?B" by auto
     have id: "step_2_main n j A = step_2_main n (Suc j) B" unfolding B using False by simp
-    have Bn: "B \<in> carrier\<^sub>m n n" unfolding B using A by (auto split: option.splits)
-    have BA: "mat_similar B A" 
+    have Bn: "B \<in> carrier_mat n n" unfolding B using A by (auto split: option.splits)
+    have BA: "similar_mat B A" 
     proof (cases ?look)
       case None
-      thus ?thesis unfolding B using mat_similar_refl[OF A] by simp
+      thus ?thesis unfolding B using similar_mat_refl[OF A] by simp
     next
       case (Some i)
       from lookup_ev_Some[OF this]
@@ -572,45 +572,45 @@ proof (induct j A taking: n rule: step_2_main.induct)
         by (auto intro: swap_cols_rows_block_similar[OF A jn])
     qed
     show ?thesis unfolding id
-      by (rule mat_similar_trans[OF IH[OF refl B Bn] BA])
+      by (rule similar_mat_trans[OF IH[OF refl B Bn] BA])
   qed
 qed
 
-private lemma step_3_a_similar: "A \<in> carrier\<^sub>m n n \<Longrightarrow> i < j \<Longrightarrow> j < n \<Longrightarrow> mat_similar (step_3_a i j A) A"
+private lemma step_3_a_similar: "A \<in> carrier_mat n n \<Longrightarrow> i < j \<Longrightarrow> j < n \<Longrightarrow> similar_mat (step_3_a i j A) A"
 proof (induct i j A rule: step_3_a.induct)
   case (1 j A)
-  thus ?case by (simp add: mat_similar_refl)
+  thus ?case by (simp add: similar_mat_refl)
 next
   case (2 i j A)
-  from 2(2-) have A: "A \<in> carrier\<^sub>m n n" and ij: "Suc i < j" and j: "j < n" by auto
+  from 2(2-) have A: "A \<in> carrier_mat n n" and ij: "Suc i < j" and j: "j < n" by auto
   let ?B = "if A $$ (i, i + 1) = 1 \<and> A $$ (i, j) \<noteq> 0 
     then add_col_sub_row (- A $$ (i, j)) (Suc i) j A else A"
   obtain B where B: "B = ?B" by auto
-  from A have Bn: "B \<in> carrier\<^sub>m n n" unfolding B by simp
+  from A have Bn: "B \<in> carrier_mat n n" unfolding B by simp
   note IH = 2(1)[OF refl B Bn _ j]
   have id: "step_3_a (Suc i) j A = step_3_a i j B" unfolding B by (simp add: Let_def)
   from ij j have *: "Suc i < n" "j < n" "Suc i \<noteq> j" by auto
-  have BA: "mat_similar B A" unfolding B
-    using mat_similar_refl[OF A] add_col_sub_row_similar[OF A *] by auto
+  have BA: "similar_mat B A" unfolding B
+    using similar_mat_refl[OF A] add_col_sub_row_similar[OF A *] by auto
   show ?case unfolding id
-    by (rule mat_similar_trans[OF IH BA], insert ij, auto)
+    by (rule similar_mat_trans[OF IH BA], insert ij, auto)
 qed
 
 private lemma step_3_c_inner_loop_similar: 
-  "A \<in> carrier\<^sub>m n n \<Longrightarrow> l \<noteq> i \<Longrightarrow> k - 1 \<le> l \<Longrightarrow> k - 1 \<le> i \<Longrightarrow> l < n \<Longrightarrow> i < n \<Longrightarrow> 
-  mat_similar (step_3_c_inner_loop val l i k A) A"
+  "A \<in> carrier_mat n n \<Longrightarrow> l \<noteq> i \<Longrightarrow> k - 1 \<le> l \<Longrightarrow> k - 1 \<le> i \<Longrightarrow> l < n \<Longrightarrow> i < n \<Longrightarrow> 
+  similar_mat (step_3_c_inner_loop val l i k A) A"
 proof (induct val l i k A rule: step_3_c_inner_loop.induct)
   case (1 val l i A)
-  thus ?case using mat_similar_refl[of A] by simp
+  thus ?case using similar_mat_refl[of A] by simp
 next
   case (2 val l i k A)
   let ?res = "step_3_c_inner_loop val l i (Suc k) A"
-  from 2(2-) have A: "A \<in> carrier\<^sub>m n n" and 
+  from 2(2-) have A: "A \<in> carrier_mat n n" and 
     *: "l \<noteq> i" "k \<le> l" "k \<le> i" "l < n" "i < n" by auto
   let ?B = "add_col_sub_row val i l A"
-  have BA: "mat_similar ?B A"
+  have BA: "similar_mat ?B A"
     by (rule add_col_sub_row_similar[OF A], insert *, auto)
-  have B: "?B \<in> carrier\<^sub>m n n" using A unfolding mat_carrier_def by simp
+  have B: "?B \<in> carrier_mat n n" using A unfolding carrier_mat_def by simp
   show ?case
   proof (cases k)
     case 0
@@ -621,21 +621,21 @@ next
     with * have "l - 1 \<noteq> i - 1" "k - 1 \<le> l - 1" "k - 1 \<le> i - 1" "l - 1 < n" "i - 1 < n" by auto
     note IH = 2(1)[OF B this]
     show ?thesis unfolding step_3_c_inner_loop.simps
-      by (rule mat_similar_trans[OF IH BA])
+      by (rule similar_mat_trans[OF IH BA])
   qed
 qed
 
 private lemma step_3_c_similar: 
-  "A \<in> carrier\<^sub>m n n \<Longrightarrow> l < k \<Longrightarrow> k < n 
+  "A \<in> carrier_mat n n \<Longrightarrow> l < k \<Longrightarrow> k < n 
   \<Longrightarrow> (\<And> i_begin i_end. (i_begin, i_end) \<in> set blocks \<Longrightarrow>  i_end \<le> k \<and> i_end - i_begin \<le> l)
-  \<Longrightarrow> mat_similar (step_3_c x l k blocks A) A"
+  \<Longrightarrow> similar_mat (step_3_c x l k blocks A) A"
 proof (induct x l k blocks A rule: step_3_c.induct)
   case (1 x l k A)
-  thus ?case using mat_similar_refl[OF 1(1)] by simp
+  thus ?case using similar_mat_refl[OF 1(1)] by simp
 next
   case (2 x l k i_begin i_end blocks A)
   let ?res = "step_3_c x l k ((i_begin,i_end) # blocks) A"
-  from 2(2-4) have A: "A \<in> carrier\<^sub>m n n" and lki: "l < k" "k < n" by auto
+  from 2(2-4) have A: "A \<in> carrier_mat n n" and lki: "l < k" "k < n" by auto
   from 2(5) have i: "i_end \<le> k" "i_end - i_begin \<le> l" by auto
   let ?y = "A $$ (i_end,k)"
   let ?inner = "step_3_c_inner_loop (?y / x) l i_end (Suc i_end - i_begin) A"
@@ -643,39 +643,39 @@ next
     "B = (if i_end = l then A else ?inner)" by auto    
   hence id: "?res = step_3_c x l k blocks B"
     by simp
-  have BA: "mat_similar B A" 
+  have BA: "similar_mat B A" 
   proof (cases "i_end = l")
     case True
-    thus ?thesis unfolding B using mat_similar_refl[OF A] by simp
+    thus ?thesis unfolding B using similar_mat_refl[OF A] by simp
   next
     case False
     hence B: "B = ?inner" and li: "l \<noteq> i_end" by (auto simp: B)      
     show ?thesis unfolding B 
       by (rule step_3_c_inner_loop_similar[OF A li], insert lki i, auto)
   qed
-  have Bn: "B \<in> carrier\<^sub>m n n" using A unfolding B mat_carrier_def by simp
+  have Bn: "B \<in> carrier_mat n n" using A unfolding B carrier_mat_def by simp
   note IH = 2(1)[OF B Bn lki(1-2) 2(5)]
   show ?case unfolding id
-    by (rule mat_similar_trans[OF IH BA], auto)
+    by (rule similar_mat_trans[OF IH BA], auto)
 qed
 
-private lemma step_3_main_similar: "A \<in> carrier\<^sub>m n n \<Longrightarrow> k > 0 \<Longrightarrow> mat_similar (step_3_main n k A) A"
+private lemma step_3_main_similar: "A \<in> carrier_mat n n \<Longrightarrow> k > 0 \<Longrightarrow> similar_mat (step_3_main n k A) A"
 proof (induct k A taking: n rule: step_3_main.induct)
   case (1 k A)
-  from 1(2-) have A: "A \<in> carrier\<^sub>m n n" and k: "k > 0" by auto
+  from 1(2-) have A: "A \<in> carrier_mat n n" and k: "k > 0" by auto
   note [simp] = step_3_main.simps[of n k A]
   show ?case
   proof (cases "k \<ge> n")
     case True
-    thus ?thesis using mat_similar_refl[OF A] by simp
+    thus ?thesis using similar_mat_refl[OF A] by simp
   next
     case False
     hence kn: "k < n" by simp
     obtain B where B: "B = step_3_a (k - 1) k A" by auto
     note IH = 1(1)[OF False B]
-    from A have Bn: "B \<in> carrier\<^sub>m n n" unfolding B mat_carrier_def by simp
+    from A have Bn: "B \<in> carrier_mat n n" unfolding B carrier_mat_def by simp
     from k have "k - 1 < k" by simp
-    from step_3_a_similar[OF A this kn] have BA: "mat_similar B A" unfolding B .
+    from step_3_a_similar[OF A this kn] have BA: "similar_mat B A" unfolding B .
     obtain all_blocks where ab: "all_blocks = identify_blocks B k" by simp
     obtain blocks where blocks: "blocks = filter (\<lambda> block. B $$ (snd block, k) \<noteq> 0) all_blocks" by simp
     obtain F where F: "F = (if blocks = [] then B
@@ -683,12 +683,12 @@ proof (induct k A taking: n rule: step_3_main.induct)
             D = mult_col_div_row (inverse x) k C; E = swap_cols_rows_block (Suc l) k D
         in E)" by simp
     note IH = IH[OF ab blocks F]
-    have Fn: "F \<in> carrier\<^sub>m n n" unfolding F Let_def mat_carrier_def using Bn 
+    have Fn: "F \<in> carrier_mat n n" unfolding F Let_def carrier_mat_def using Bn 
       by (simp split: prod.splits)
-    have FB: "mat_similar F B" 
+    have FB: "similar_mat F B" 
     proof (cases "blocks = []")
       case True
-      thus ?thesis unfolding F using mat_similar_refl[OF Bn] by simp
+      thus ?thesis unfolding F using similar_mat_refl[OF Bn] by simp
     next
       case False
       obtain l_start l where l: "find_largest_block (hd blocks) (tl blocks) = (l_start, l)" by force
@@ -709,8 +709,8 @@ proof (induct k A taking: n rule: step_3_main.induct)
       from block_bound[OF lb]
       have lk: "l < k" .
       from False have F: "F = E" unfolding E D C x F l Let_def by simp
-      from Bn have Cn: "C \<in> carrier\<^sub>m n n" unfolding C mat_carrier_def by simp
-      have CB: "mat_similar C B" unfolding C
+      from Bn have Cn: "C \<in> carrier_mat n n" unfolding C carrier_mat_def by simp
+      have CB: "similar_mat C B" unfolding C
       proof (rule step_3_c_similar[OF Bn lk kn])
         fix i_begin i_end
         assume i: "(i_begin, i_end) \<in> set blocks"
@@ -719,13 +719,13 @@ proof (induct k A taking: n rule: step_3_main.induct)
       qed
       from x0 have "inverse x \<noteq> 0" by simp
       from mult_col_div_row_similar[OF Cn kn this] 
-      have DC: "mat_similar D C" unfolding D .
-      from Cn have Dn: "D \<in> carrier\<^sub>m n n" unfolding D mat_carrier_def by simp
+      have DC: "similar_mat D C" unfolding D .
+      from Cn have Dn: "D \<in> carrier_mat n n" unfolding D carrier_mat_def by simp
       from lk have "Suc l \<le> k" by auto
       from swap_cols_rows_block_similar[OF Dn kn this] 
-      have ED: "mat_similar E D" unfolding E .
-      from mat_similar_trans[OF ED mat_similar_trans[OF DC 
-        mat_similar_trans[OF CB mat_similar_refl[OF Bn]]]]
+      have ED: "similar_mat E D" unfolding E .
+      from similar_mat_trans[OF ED similar_mat_trans[OF DC 
+        similar_mat_trans[OF CB similar_mat_refl[OF Bn]]]]
       show ?thesis unfolding F .
     qed
     have "0 < Suc k" by simp
@@ -733,17 +733,17 @@ proof (induct k A taking: n rule: step_3_main.induct)
     have id: "step_3_main n k A = step_3_main n (Suc k) F" using kn 
       by (simp add: F Let_def blocks ab B)
     show ?thesis unfolding id
-      by (rule mat_similar_trans[OF IH mat_similar_trans[OF FB BA]])
+      by (rule similar_mat_trans[OF IH similar_mat_trans[OF FB BA]])
   qed
 qed
 
-lemma step_1_similar: "A \<in> carrier\<^sub>m n n \<Longrightarrow> mat_similar (step_1 A) A"
+lemma step_1_similar: "A \<in> carrier_mat n n \<Longrightarrow> similar_mat (step_1 A) A"
   unfolding step_1_def by (rule step_1_main_similar, auto)
 
-lemma step_2_similar: "A \<in> carrier\<^sub>m n n \<Longrightarrow> mat_similar (step_2 A) A"
+lemma step_2_similar: "A \<in> carrier_mat n n \<Longrightarrow> similar_mat (step_2 A) A"
   unfolding step_2_def by (rule step_2_main_similar, auto)
 
-lemma step_3_similar: "A \<in> carrier\<^sub>m n n \<Longrightarrow> mat_similar (step_3 A) A"
+lemma step_3_similar: "A \<in> carrier_mat n n \<Longrightarrow> similar_mat (step_3 A) A"
   unfolding step_3_def by (rule step_3_main_similar, auto)
 
 end
@@ -1037,10 +1037,10 @@ definition ev_block :: "nat \<Rightarrow> 'a mat \<Rightarrow> bool" where
   "\<And> n. ev_block n A = (\<forall> i j. i < n \<longrightarrow> j < n \<longrightarrow> A $$ (i,i) = A $$ (j,j))"
 
 lemma ev_blockD: "\<And> n. ev_block n A \<Longrightarrow> i < n \<Longrightarrow> j < n \<Longrightarrow> A $$ (i,i) = A $$ (j,j)"
-  unfolding ev_block_def mat_carrier_def by blast
+  unfolding ev_block_def carrier_mat_def by blast
 
 lemma same_diag_ev_block: "same_diag A B \<Longrightarrow> ev_block n A \<Longrightarrow> ev_block n B"
-  unfolding ev_block_def mat_carrier_def same_diag_def by metis
+  unfolding ev_block_def carrier_mat_def same_diag_def by metis
 
 
 subsection \<open>Alternative Characterization of @{const identify_blocks} in Presence of @{const ev_block}\<close>
@@ -1157,17 +1157,17 @@ qed
 
 subsection \<open>Proving the Invariants\<close>
 
-private lemma add_col_sub_row_diag: assumes A: "A \<in> carrier\<^sub>m n n"
+private lemma add_col_sub_row_diag: assumes A: "A \<in> carrier_mat n n"
   and ut: "inv_all uppert A"
   and ijk: "i < j" "j < n" "k < n"
   shows "add_col_sub_row a i j A $$ (k,k) = A $$ (k,k)"
 proof -
   from inv_all_uppertD[OF ut]
   show ?thesis
-    by (subst add_col_sub_row_index, insert A ijk, auto)
+    by (subst add_col_sub_index_row, insert A ijk, auto)
 qed
 
-private lemma add_col_sub_row_diff_ev_part_old: assumes A: "A \<in> carrier\<^sub>m n n"
+private lemma add_col_sub_row_diff_ev_part_old: assumes A: "A \<in> carrier_mat n n"
   and ij: "i \<le> j" "i \<noteq> 0" "i < n" "j < n" "i' < n" "j' < n"
   and choice: "j' < j \<or> j' = j \<and> i' \<ge> i"
   and old: "inv_part diff_ev A i j"
@@ -1178,7 +1178,7 @@ proof (intro impI)
   assume ij': "i' < j'"
   let ?A = "add_col_sub_row a (i - 1) j A"
   assume neq: "?A $$ (i',i') \<noteq> ?A $$ (j',j')"
-  from A have dim: "dim\<^sub>r A = n" "dim\<^sub>c A = n" by auto
+  from A have dim: "dim_row A = n" "dim_col A = n" by auto
   note utd = inv_all_uppertD[OF ut]
   let ?i = "i - 1"
   have "?i < j" using `i \<le> j` `i \<noteq> 0` `i < n` by auto
@@ -1205,12 +1205,12 @@ proof (intro impI)
     have "A $$ (j, j') = 0" by auto
   } note 2 = this
   from ij' ij choice have "(i' = ?i \<and> j' = j) = False" by arith
-  note id = add_col_sub_row_index[of i' A j' j a ?i, unfolded dim this if_False, 
+  note id = add_col_sub_index_row[of i' A j' j a ?i, unfolded dim this if_False, 
     OF `i' < n` `i' < n` `j' < n` `j' < n` `j < n`]
   show "?A $$ (i',j') = 0" unfolding id zero using 1 2 by auto
 qed
 
-private lemma add_col_sub_row_uppert: assumes "A \<in> carrier\<^sub>m n n"
+private lemma add_col_sub_row_uppert: assumes "A \<in> carrier_mat n n"
   and "i < j"
   and "j < n"
   and inv: "inv_all uppert (A :: 'a mat)"
@@ -1221,11 +1221,11 @@ proof (intro allI impI)
   assume *: "i' < n" "j' < n" "j' < i'"
   note inv = inv_allD[OF inv, unfolded uppert_def]
   show "add_col_sub_row a i j A $$ (i', j') = 0"
-    by (subst add_col_sub_row_index, insert assms * inv, auto)
+    by (subst add_col_sub_index_row, insert assms * inv, auto)
 qed
 
 private lemma step_1_main_inv: "i \<le> j 
-  \<Longrightarrow> A \<in> carrier\<^sub>m n n 
+  \<Longrightarrow> A \<in> carrier_mat n n 
   \<Longrightarrow> inv_all uppert A 
   \<Longrightarrow> inv_part diff_ev A i j 
   \<Longrightarrow> inv_all uppert (step_1_main n i j A) \<and> inv_all diff_ev (step_1_main n i j A)"
@@ -1233,7 +1233,7 @@ proof (induct i j A taking: n rule: step_1_main.induct)
   case (1 i j A)
   let ?i = "i - 1"
   note [simp] = step_1_main.simps[of n i j A]
-  from 1(3-) have ij: "i \<le> j" and A: "A \<in> carrier\<^sub>m n n" and inv: "inv_all uppert A" 
+  from 1(3-) have ij: "i \<le> j" and A: "A \<in> carrier_mat n n" and inv: "inv_all uppert A" 
     "inv_part diff_ev A i j" by auto
   show ?case
   proof (cases "j \<ge> n")
@@ -1265,7 +1265,7 @@ proof (induct i j A taking: n rule: step_1_main.induct)
       let ?A = "add_col_sub_row (A $$ (?i, j) / (?evj - ?evi)) ?i j A"
       let ?B = "if ?choice then ?A else A"
       obtain B where B: "B = ?B" by auto
-      have Bn: "B \<in> carrier\<^sub>m n n" unfolding B using A by simp
+      have Bn: "B \<in> carrier_mat n n" unfolding B using A by simp
       from False ij jn have *: "?i < j" "j < n" "?i < n" by auto
       have inv1: "inv_all uppert B" unfolding B using inv add_col_sub_row_uppert[OF A *(1-2) inv(1)]
         by auto
@@ -1322,7 +1322,7 @@ proof (induct i j A taking: n rule: step_1_main.induct)
               have "?A $$ (?i, j) = 
                 A $$ (i', j) + (A $$ (i', j) * A $$ (i', i') -
                 A $$ (i', j) * A $$ (j, j)) / diff"
-                by (subst add_col_sub_row_index, insert A *, auto simp: diff[symmetric] i'[symmetric] field_simps)
+                by (subst add_col_sub_index_row, insert A *, auto simp: diff[symmetric] i'[symmetric] field_simps)
               also have "A $$ (i', j) * A $$ (i', i') - A $$ (i', j) * A $$ (j, j)
                 = - A $$ (i',j) * diff" by (simp add: diff i' field_simps)
               also have "\<dots> / diff = - A $$ (i',j)" by simp
@@ -1340,7 +1340,7 @@ proof (induct i j A taking: n rule: step_1_main.induct)
   qed
 qed
 
-private lemma step_2_main_inv: "A \<in> carrier\<^sub>m n n 
+private lemma step_2_main_inv: "A \<in> carrier_mat n n 
   \<Longrightarrow> inv_all uppert A 
   \<Longrightarrow> inv_all diff_ev A 
   \<Longrightarrow> ev_blocks_part j A 
@@ -1349,7 +1349,7 @@ private lemma step_2_main_inv: "A \<in> carrier\<^sub>m n n
 proof (induct j A taking: n rule: step_2_main.induct)
   case (1 j A)
   note [simp] = step_2_main.simps[of n j A]
-  from 1(2-) have A: "A \<in> carrier\<^sub>m n n" 
+  from 1(2-) have A: "A \<in> carrier_mat n n" 
     and inv: "inv_all uppert A" "inv_all diff_ev A" "ev_blocks_part j A" by auto
   show ?case
   proof (cases "j \<ge> n")
@@ -1368,7 +1368,7 @@ proof (induct j A taking: n rule: step_2_main.induct)
         | Some i \<Rightarrow> swap_cols_rows_block (Suc i) j A"
     obtain B where B: "B = ?B" by auto
     have id: "step_2_main n j A = step_2_main n (Suc j) B" unfolding B using False by simp
-    have Bn: "B \<in> carrier\<^sub>m n n" unfolding B using A by (auto split: option.splits)
+    have Bn: "B \<in> carrier_mat n n" unfolding B using A by (auto split: option.splits)
     have "inv_all uppert B \<and> inv_all diff_ev B \<and> ev_blocks_part (Suc j) B"
     proof (cases ?look)
       case None
@@ -1607,12 +1607,12 @@ proof (induct j A taking: n rule: step_2_main.induct)
 qed
 
 
-private lemma add_col_sub_row_same_upto: assumes "i < j" "j < n" "A \<in> carrier\<^sub>m n n" "inv_upto uppert A j"
+private lemma add_col_sub_row_same_upto: assumes "i < j" "j < n" "A \<in> carrier_mat n n" "inv_upto uppert A j"
   shows "same_upto j A (add_col_sub_row v i j A)"
-  by (intro same_uptoI, subst add_col_sub_row_index, insert assms, auto simp: uppert_def inv_upto_def)
+  by (intro same_uptoI, subst add_col_sub_index_row, insert assms, auto simp: uppert_def inv_upto_def)
 
 private lemma add_col_sub_row_inv_from_uppert: assumes *: "inv_from uppert A j"
-  and **: "A \<in> carrier\<^sub>m n n" "i < n" "i < j" "j < n" 
+  and **: "A \<in> carrier_mat n n" "i < n" "i < j" "j < n" 
   shows "inv_from uppert (add_col_sub_row v i j A) j"
 proof -
   note * = * **
@@ -1621,8 +1621,8 @@ proof -
   proof (intro allI impI)
     fix i' j'
     assume **: "i' < n" "j' < n" "j < j'"
-    from * ** have "i' < dim\<^sub>r A" "i' < dim\<^sub>c A" "j' < dim\<^sub>r A" "j' < dim\<^sub>c A" "j < dim\<^sub>r A" by auto
-    note id2 = add_col_sub_row_index[OF this]
+    from * ** have "i' < dim_row A" "i' < dim_col A" "j' < dim_row A" "j' < dim_col A" "j < dim_row A" by auto
+    note id2 = add_col_sub_index_row[OF this]
     show "uppert ?A i' j'" unfolding uppert_def
     proof (intro conjI impI)
       assume "j' < i'"
@@ -1632,7 +1632,7 @@ proof -
   qed
 qed
 
-private lemma step_3_a_inv: "A \<in> carrier\<^sub>m n n 
+private lemma step_3_a_inv: "A \<in> carrier_mat n n 
   \<Longrightarrow> i < j \<Longrightarrow> j < n 
   \<Longrightarrow> inv_upto jb A j 
   \<Longrightarrow> inv_from uppert A j 
@@ -1646,11 +1646,11 @@ proof (induct i j A rule: step_3_a.induct)
   thus ?case by (simp add: inv_from_bot_def inv_at_def)
 next
   case (2 i j A)
-  from 2(2-) have A: "A \<in> carrier\<^sub>m n n" and ij: "Suc i < j" "i < j" and j: "j < n" by auto
+  from 2(2-) have A: "A \<in> carrier_mat n n" and ij: "Suc i < j" "i < j" and j: "j < n" by auto
   let ?cond = "A $$ (i, i + 1) = 1 \<and> A $$ (i, j) \<noteq> 0"
   let ?B = "add_col_sub_row (- A $$ (i, j)) (Suc i) j A"
   obtain B where B: "B = (if ?cond then ?B else A)" by auto
-  from A have Bn: "B \<in> carrier\<^sub>m n n" unfolding B by simp
+  from A have Bn: "B \<in> carrier_mat n n" unfolding B by simp
   note IH = 2(1)[OF refl B Bn ij(2) j]
   have id: "step_3_a (Suc i) j A = step_3_a i j B" unfolding B by (simp add: Let_def)
   from ij j have *: "Suc i < n" "j < n" "Suc i \<noteq> j" by auto
@@ -1685,8 +1685,8 @@ next
     {
       fix k
       assume "k < n"
-      with A * have k: "k < dim\<^sub>r A" "k < dim\<^sub>c A" "j < dim\<^sub>r A" "j < dim\<^sub>c A" "j < dim\<^sub>r A" by auto
-      note id = B add_col_sub_row_index[OF k]
+      with A * have k: "k < dim_row A" "k < dim_col A" "j < dim_row A" "j < dim_col A" "j < dim_row A" by auto
+      note id = B add_col_sub_index_row[OF k]
       have "B $$ (k,j) = (if k = i then 0 else A $$ (k,j))" unfolding id
         using inv_uptoD[OF inv(1), of k "Suc i", unfolded jb_def]
         by (insert * Aji True ij `k < n`, auto simp: ev)
@@ -1781,7 +1781,7 @@ private lemma step_3_c_inner_result: assumes inv:
   "inv_at one_zero A k"
   "ev_block n A"
   and k: "k < n"
-  and A: "A \<in> carrier\<^sub>m n n"
+  and A: "A \<in> carrier_mat n n"
   and lbl: "(lb,l) \<in> set (identify_blocks A k)"
   and ib_block: "(i_begin,i_end) \<in> set (identify_blocks A k)"
   and il: "i_end \<noteq> l"
@@ -1809,7 +1809,7 @@ proof -
   from identify_blocks[OF ib_block] have ib: "i_begin \<le> i_end" "i_end < k" by auto
   from identify_blocks[OF lbl] have lb: "lb \<le> l" "l < k" by auto
   have mend: "?mat 0 (Suc ?idiff) = A"
-    by (rule mat_eqI, insert A ib, auto)
+    by (rule eq_matI, insert A ib, auto)
   {
     fix ll ii diff iter 
     assume "diff \<noteq> 0 \<Longrightarrow> ii + iter = i_end" "diff \<noteq> 0 \<Longrightarrow> ll + iter = l" "diff + iter = Suc ?idiff"
@@ -1820,7 +1820,7 @@ proof -
       have "step_3_c_inner_loop quot ll ii 0 (?mat iter 0) = ?mat (Suc ?idiff) 0" 
         unfolding iter step_3_c_inner_loop.simps ..
       also have "\<dots> = ?R"
-        by (rule mat_eqI, insert ib, auto simp: quot_def)
+        by (rule eq_matI, insert ib, auto simp: quot_def)
       finally show ?case .
     next
       case (Suc diff ii ll)
@@ -1831,7 +1831,7 @@ proof -
         by simp
       also have "add_col_sub_row quot ii ll ?B
         = ?mat (Suc iter) diff" (is "?C = ?D") 
-      proof (rule mat_eqI, unfold mat_dim_row_mat mat_dim_col_mat)
+      proof (rule eq_matI, unfold dim_row_mat dim_col_mat)
         fix i j
         assume i: "i < n" and j: "j < n"
         have ll: "ll < n" using prems lb k by auto
@@ -1850,7 +1850,7 @@ proof -
           else if i = ii \<and> j \<noteq> ll then B $$ (i, j) - quot * B $$ (ll, j) 
           else if i \<noteq> ii \<and> j = ll then B $$ (i, j) + quot * B $$ (i, ii) 
           else B $$ (i, j))" unfolding B_def
-          by (rule add_col_sub_row_index(1), insert i j ll, auto)
+          by (rule add_col_sub_index_row(1), insert i j ll, auto)
         from inv_from_upto_at_all_ev_block[OF inv(1-4) _ `k < n`] 
         have invA: "inv_all uppert A"
           unfolding one_zero_def uppert_def by auto
@@ -2234,7 +2234,7 @@ proof -
   finally show ?thesis unfolding suc .
 qed
 
-private lemma step_3_c_inv: "A \<in> carrier\<^sub>m n n 
+private lemma step_3_c_inv: "A \<in> carrier_mat n n 
   \<Longrightarrow> k < n 
   \<Longrightarrow> (lb,l) \<in> set (identify_blocks A k)
   \<Longrightarrow> inv_upto jb A k
@@ -2289,7 +2289,7 @@ next
       if i_begin \<le> i \<and> i \<le> i_end \<and> j > k then A $$ (i,j) - A $$ (i_end,k) / x * A $$ (l + i - i_end,j) else A $$ (i,j))"
       unfolding B_def x
       by (rule step_3_c_inner_result[OF inv kn A lbl ib_block il large], insert x, auto)
-    have Bn: "B \<in> carrier\<^sub>m n n" unfolding B by auto
+    have Bn: "B \<in> carrier_mat n n" unfolding B by auto
     have sdAB: "same_diag A B" unfolding B same_diag_def using ibe by auto
     have suAB: "same_upto k A B" using A kn unfolding B same_upto_def by auto
     have inv_ev: "ev_block n B" using same_diag_ev_block[OF sdAB inv(4)] .
@@ -2312,7 +2312,7 @@ next
   qed
 qed
 
-lemma step_3_main_inv: "A \<in> carrier\<^sub>m n n 
+lemma step_3_main_inv: "A \<in> carrier_mat n n 
   \<Longrightarrow> k > 0
   \<Longrightarrow> inv_all uppert A 
   \<Longrightarrow> ev_block n A 
@@ -2320,7 +2320,7 @@ lemma step_3_main_inv: "A \<in> carrier\<^sub>m n n
   \<Longrightarrow> inv_all jb (step_3_main n k A) \<and> same_diag A (step_3_main n k A)"
 proof (induct k A taking: n rule: step_3_main.induct)
   case (1 k A)
-  from 1(2-) have A: "A \<in> carrier\<^sub>m n n" and k: "k > 0" and
+  from 1(2-) have A: "A \<in> carrier_mat n n" and k: "k > 0" and
     inv: "inv_all uppert A" "ev_block n A" "inv_upto jb A k" by auto
   note [simp] = step_3_main.simps[of n k A]
   show ?case
@@ -2333,7 +2333,7 @@ proof (induct k A taking: n rule: step_3_main.induct)
     hence kn: "k < n" by simp
     obtain B where B: "B = step_3_a (k - 1) k A" by auto
     note IH = 1(1)[OF False B]
-    from A have Bn: "B \<in> carrier\<^sub>m n n" unfolding B mat_carrier_def by simp
+    from A have Bn: "B \<in> carrier_mat n n" unfolding B carrier_mat_def by simp
     from k have "k - 1 < k" by simp   
     {
       fix i
@@ -2355,7 +2355,7 @@ proof (induct k A taking: n rule: step_3_main.induct)
             D = mult_col_div_row (inverse x) k C; E = swap_cols_rows_block (Suc l) k D
         in E)" by simp
     note IH = IH[OF ab blocks F]
-    have Fn: "F \<in> carrier\<^sub>m n n" unfolding F Let_def mat_carrier_def using Bn 
+    have Fn: "F \<in> carrier_mat n n" unfolding F Let_def carrier_mat_def using Bn 
       by (simp split: prod.splits)
     have inv: "inv_all uppert F \<and> same_diag A F \<and> inv_upto jb F (Suc k)" 
     proof (cases "blocks = []")
@@ -2427,7 +2427,7 @@ proof (induct k A taking: n rule: step_3_main.induct)
       from evb[OF `l < n` `k < n`]
       have Bll: "B $$ (l,l) = B $$ (k,k)" .
       from False have F: "F = E" unfolding E D C x F l Let_def by simp
-      from Bn have Cn: "C \<in> carrier\<^sub>m n n" unfolding C mat_carrier_def by simp
+      from Bn have Cn: "C \<in> carrier_mat n n" unfolding C carrier_mat_def by simp
       {
         fix be
         assume nmem: "be \<notin> snd ` set blocks" and belk: "be \<notin> {l, k}" and be: "be < n"
@@ -2461,16 +2461,16 @@ proof (induct k A taking: n rule: step_3_main.induct)
       have inv: "inv_all uppert C" "ev_block n C"
         "inv_upto jb C k" "inv_at (single_non_zero l k x) C k" by auto
       from x0 have "inverse x \<noteq> 0" by simp
-      from Cn have Dn: "D \<in> carrier\<^sub>m n n" unfolding D mat_carrier_def by simp
+      from Cn have Dn: "D \<in> carrier_mat n n" unfolding D carrier_mat_def by simp
       {
         fix i j
         assume i: "i < n" and j: "j < n"
-        with Cn have dC: "i < dim\<^sub>r C" "i < dim\<^sub>c C" "j < dim\<^sub>r C" "j < dim\<^sub>c C" by auto
+        with Cn have dC: "i < dim_row C" "i < dim_col C" "j < dim_row C" "j < dim_col C" by auto
         let ?c = "C $$ (i,j)"
         let ?x = "inverse x"
         have "D $$ (i,j) = (if i = l \<and> j = k then 1 else if i = k \<and> j \<noteq> k then x * ?c else ?c)"
           unfolding D
-        proof (subst mult_col_div_row_index[OF dC `inverse x \<noteq> 0`], unfold inverse_inverse_eq)
+        proof (subst mult_col_div_index_row[OF dC `inverse x \<noteq> 0`], unfold inverse_inverse_eq)
           note at = inv_atD[OF inv(4) `i < n`, unfolded single_non_zero_def]
           show "(if i = k \<and> j \<noteq> i then x * ?c 
             else if j = k \<and> j \<noteq> i then ?x * ?c else ?c) =
@@ -2542,8 +2542,8 @@ proof (induct k A taking: n rule: step_3_main.induct)
         fix i j
         assume i: "i < n" and j: "j < n"
         with Dn lk `k < n`
-        have dims: "i < dim\<^sub>r D" "i < dim\<^sub>c D" "j < dim\<^sub>r D" "j < dim\<^sub>c D" 
-          "Suc l \<le> k" "k < dim\<^sub>r D" "k < dim\<^sub>c D" by auto
+        have dims: "i < dim_row D" "i < dim_col D" "j < dim_row D" "j < dim_col D" 
+          "Suc l \<le> k" "k < dim_row D" "k < dim_col D" by auto
         have "E $$ (i,j) = D $$ (?I i, ?I j)" 
           unfolding E by (rule subst swap_cols_rows_block_index[OF dims])
       } note E = this
@@ -2670,12 +2670,12 @@ proof (induct k A taking: n rule: step_3_main.induct)
 qed
 
 lemma step_1_2_inv: 
-  assumes A: "A \<in> carrier\<^sub>m n n"
+  assumes A: "A \<in> carrier_mat n n"
   and upper_t: "upper_triangular A"
   and Bid: "B = step_2 (step_1 A)"
   shows "inv_all uppert B" "inv_all diff_ev B" "ev_blocks B" 
 proof -
-  from A have d: "dim\<^sub>r A = n" by simp
+  from A have d: "dim_row A = n" by simp
   let ?B = "step_2 (step_1 A)"
   from upper_triangularD[OF upper_t] have inv: "inv_all uppert A"
     unfolding inv_all_def uppert_def using A by auto
@@ -2683,10 +2683,10 @@ proof -
     unfolding inv_part_def diff_ev_def by auto
   have inv3: "ev_blocks_part 0 (step_1 A)"
     by (rule ev_blocks_partI, auto)
-  have A1: "step_1 A \<in> carrier\<^sub>m n n" using A unfolding mat_carrier_def by auto
-  from A1 have d1: "dim\<^sub>r (step_1 A) = n" unfolding mat_carrier_def by simp
-  have B: "?B \<in> carrier\<^sub>m n n" using A unfolding mat_carrier_def by auto
-  from B have d2: "dim\<^sub>r ?B = n" unfolding mat_carrier_def by simp
+  have A1: "step_1 A \<in> carrier_mat n n" using A unfolding carrier_mat_def by auto
+  from A1 have d1: "dim_row (step_1 A) = n" unfolding carrier_mat_def by simp
+  have B: "?B \<in> carrier_mat n n" using A unfolding carrier_mat_def by auto
+  from B have d2: "dim_row ?B = n" unfolding carrier_mat_def by simp
   have "inv_all uppert (step_1 A) \<and> inv_all diff_ev (step_1 A)" unfolding step_1_def d
     by (rule step_1_main_inv[OF _ A inv inv2], simp)
   hence "inv_all uppert (step_1 A)" and "inv_all diff_ev (step_1 A)" by auto
@@ -2696,7 +2696,7 @@ proof -
 qed
 
 definition inv_all' :: "('a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> 'a mat \<Rightarrow> bool" where
-  "inv_all' p A \<equiv> \<forall> i j. i < dim\<^sub>r A \<longrightarrow> j < dim\<^sub>r A \<longrightarrow> p A i j"
+  "inv_all' p A \<equiv> \<forall> i j. i < dim_row A \<longrightarrow> j < dim_row A \<longrightarrow> p A i j"
 
 private lemma lookup_other_ev_None: assumes "lookup_other_ev ev k A = None"
   and "i < k"
@@ -2710,30 +2710,30 @@ private lemma lookup_other_ev_Some: assumes "lookup_other_ev ev k A = Some i"
   (insert less_SucE, blast)
 
 
-lemma partition_jb: assumes A: "(A :: 'a mat) \<in> carrier\<^sub>m n n"
+lemma partition_jb: assumes A: "(A :: 'a mat) \<in> carrier_mat n n"
   and inv: "inv_all uppert A" "inv_all diff_ev A" "ev_blocks A"
   and part: "partition_ev_blocks A [] = bs"
-  shows "A = diag_block_mat bs" "\<And> B. B \<in> set bs \<Longrightarrow> inv_all' uppert B \<and> ev_block (dim\<^sub>c B) B \<and> dim\<^sub>r B = dim\<^sub>c B"
+  shows "A = diag_block_mat bs" "\<And> B. B \<in> set bs \<Longrightarrow> inv_all' uppert B \<and> ev_block (dim_col B) B \<and> dim_row B = dim_col B"
 proof -
   have diag: "diag_block_mat [A] = A" using A by auto
   {
     fix cs 
-    assume *: "\<And> C. C \<in> set cs \<Longrightarrow> dim\<^sub>r C = dim\<^sub>c C \<and> inv_all' uppert C \<and> ev_block (dim\<^sub>c C) C" "partition_ev_blocks A cs = bs"
+    assume *: "\<And> C. C \<in> set cs \<Longrightarrow> dim_row C = dim_col C \<and> inv_all' uppert C \<and> ev_block (dim_col C) C" "partition_ev_blocks A cs = bs"
     from inv have inv: "inv_all' uppert A" "inv_all' diff_ev A" "ev_blocks_part n A"
       unfolding inv_all_def inv_all'_def ev_blocks_def using A by auto
-    hence "diag_block_mat (A # cs) = diag_block_mat bs \<and> (\<forall> B \<in> set bs. inv_all' uppert B \<and> ev_block (dim\<^sub>c B) B \<and> dim\<^sub>r B = dim\<^sub>c B)"
+    hence "diag_block_mat (A # cs) = diag_block_mat bs \<and> (\<forall> B \<in> set bs. inv_all' uppert B \<and> ev_block (dim_col B) B \<and> dim_row B = dim_col B)"
       using A *
     proof (induct n arbitrary: A cs bs rule: less_induct) 
       case (less n A cs bs)
-      from less(5) have A: "A \<in> carrier\<^sub>m n n" by auto
-      hence dim: "dim\<^sub>r A = n" "dim\<^sub>c A = n" by auto
-      let ?dim = "sum_list (map dim\<^sub>c cs)"
+      from less(5) have A: "A \<in> carrier_mat n n" by auto
+      hence dim: "dim_row A = n" "dim_col A = n" by auto
+      let ?dim = "sum_list (map dim_col cs)"
       let ?C = "diag_block_mat cs"
       define C where "C = ?C"
-      from less(6) have cs: "\<And> C. C \<in> set cs \<Longrightarrow> inv_all' uppert C \<and> ev_block (dim\<^sub>c C) C \<and> dim\<^sub>r C = dim\<^sub>c C" by auto
-      hence dimcs[simp]: "sum_list (map dim\<^sub>r cs) = ?dim" by (induct cs, auto)
-      from diag_block_mat_dim[of cs, unfolded dimcs] obtain nc where C: "?C \<in> carrier\<^sub>m nc nc" unfolding mat_carrier_def by auto
-      hence dimC: "dim\<^sub>r C = nc" "dim\<^sub>c C = nc" unfolding C_def by auto
+      from less(6) have cs: "\<And> C. C \<in> set cs \<Longrightarrow> inv_all' uppert C \<and> ev_block (dim_col C) C \<and> dim_row C = dim_col C" by auto
+      hence dimcs[simp]: "sum_list (map dim_row cs) = ?dim" by (induct cs, auto)
+      from dim_diag_block_mat[of cs, unfolded dimcs] obtain nc where C: "?C \<in> carrier_mat nc nc" unfolding carrier_mat_def by auto
+      hence dimC: "dim_row C = nc" "dim_col C = nc" unfolding C_def by auto
       note bs = less(7)[unfolded partition_ev_blocks.simps[of A cs] Let_def dim, symmetric]
       show ?case
       proof (cases "n = 0")
@@ -2763,18 +2763,18 @@ proof -
           from False i have nsi: "n = ?si + m" unfolding m_def by auto
           obtain UL UR LL LR where split: "split_block A ?si ?si = (UL, UR, LL, LR)" by (rule prod_cases4)
           from split_block[OF split dim[unfolded nsi]] 
-          have carr: "UL \<in> carrier\<^sub>m ?si ?si" "UR \<in> carrier\<^sub>m ?si m" "LL \<in> carrier\<^sub>m m ?si" "LR \<in> carrier\<^sub>m m m"
+          have carr: "UL \<in> carrier_mat ?si ?si" "UR \<in> carrier_mat ?si m" "LL \<in> carrier_mat m ?si" "LR \<in> carrier_mat m m"
             and Ablock: "A = four_block_mat UL UR LL LR" by auto          
-          hence dimLR: "dim\<^sub>r LR = m" "dim\<^sub>c LR = m" and dimUL: "dim\<^sub>c UL = ?si" "dim\<^sub>r UL = ?si" by auto
+          hence dimLR: "dim_row LR = m" "dim_col LR = m" and dimUL: "dim_col UL = ?si" "dim_row UL = ?si" by auto
           from less(3)[unfolded inv_all'_def diff_ev_def] dim
           have diff: "\<And> i j. i < n \<Longrightarrow> j < n \<Longrightarrow> i < j \<Longrightarrow> A $$ (i, i) \<noteq> A $$ (j, j) \<Longrightarrow> A $$ (i, j) = 0" by auto
           from less(2)[unfolded inv_all'_def uppert_def] dim
           have ut: "\<And> i j. i < n \<Longrightarrow> j < n \<Longrightarrow> j < i \<Longrightarrow> A $$ (i, j) = 0" by auto
-          let ?UR = "\<zero>\<^sub>m ?si m"
+          let ?UR = "0\<^sub>m ?si m"
           have UR: "UR = ?UR"
-          proof (rule mat_eqI)
+          proof (rule eq_matI)
             fix ia j
-            assume ij: "ia < dim\<^sub>r (\<zero>\<^sub>m (Suc i) m)" "j < dim\<^sub>c (\<zero>\<^sub>m (Suc i) m)"
+            assume ij: "ia < dim_row (0\<^sub>m (Suc i) m)" "j < dim_col (0\<^sub>m (Suc i) m)"
             let ?j = "?si + j"
             have "UL $$ (ia,ia) = A $$ (ia,ia)" using ij carr unfolding Ablock by auto
             also have "\<dots> \<noteq> A $$ (?j, ?j)" 
@@ -2787,26 +2787,26 @@ proof -
               finally show False using neq by auto
             qed
             also have "A $$ (?si + j, ?si + j) = LR $$ (j,j)" using ij carr unfolding Ablock by auto
-            finally show "UR $$ (ia, j) = \<zero>\<^sub>m (Suc i) m $$ (ia, j)"            
+            finally show "UR $$ (ia, j) = 0\<^sub>m (Suc i) m $$ (ia, j)"            
               using diff[of ia "?si + j", unfolded Ablock] ij nsi carr by auto
           qed (insert carr, auto)
-          let ?LL = "\<zero>\<^sub>m m ?si"
+          let ?LL = "0\<^sub>m m ?si"
           have LL: "LL = ?LL"
-          proof (rule mat_eqI)
+          proof (rule eq_matI)
             fix ia j
-            show "ia < dim\<^sub>r (\<zero>\<^sub>m m (Suc i)) \<Longrightarrow> j < dim\<^sub>c (\<zero>\<^sub>m m (Suc i)) \<Longrightarrow> LL $$ (ia, j) = \<zero>\<^sub>m m (Suc i) $$ (ia, j)"
+            show "ia < dim_row (0\<^sub>m m (Suc i)) \<Longrightarrow> j < dim_col (0\<^sub>m m (Suc i)) \<Longrightarrow> LL $$ (ia, j) = 0\<^sub>m m (Suc i) $$ (ia, j)"
               using ut[of "?si + ia" j, unfolded Ablock] nsi carr by auto
           qed (insert carr, auto)
           have utUL: "inv_all' uppert UL"unfolding inv_all'_def uppert_def
           proof (intro allI impI)
             fix i j
-            show "i < dim\<^sub>r UL \<Longrightarrow> j < dim\<^sub>r UL \<Longrightarrow> j < i \<Longrightarrow> UL $$ (i, j) = 0"
+            show "i < dim_row UL \<Longrightarrow> j < dim_row UL \<Longrightarrow> j < i \<Longrightarrow> UL $$ (i, j) = 0"
               using ut[of i j, unfolded Ablock] using nsi carr by auto
           qed
           have diffUL: "inv_all' diff_ev UL"unfolding inv_all'_def diff_ev_def
           proof (intro allI impI)
             fix i j
-            show "i < dim\<^sub>r UL \<Longrightarrow> j < dim\<^sub>r UL \<Longrightarrow> i < j \<Longrightarrow> UL $$ (i, i) \<noteq> UL $$ (j, j) \<Longrightarrow> UL $$ (i, j) = 0"
+            show "i < dim_row UL \<Longrightarrow> j < dim_row UL \<Longrightarrow> i < j \<Longrightarrow> UL $$ (i, i) \<noteq> UL $$ (j, j) \<Longrightarrow> UL $$ (i, j) = 0"
               using diff[of i j, unfolded Ablock] using nsi carr by auto
           qed
           have evbUL: "ev_blocks_part ?si UL"unfolding ev_blocks_part_def
@@ -2818,33 +2818,33 @@ proof -
           have utLR: "inv_all' uppert LR" unfolding inv_all'_def uppert_def
           proof (intro allI impI)
             fix i j
-            show "i < dim\<^sub>r LR \<Longrightarrow> j < dim\<^sub>r LR \<Longrightarrow> j < i \<Longrightarrow> LR $$ (i, j) = 0"
+            show "i < dim_row LR \<Longrightarrow> j < dim_row LR \<Longrightarrow> j < i \<Longrightarrow> LR $$ (i, j) = 0"
               using ut[of "?si + i" "?si + j", unfolded Ablock] nsi carr by auto
           qed
-          have evbLR: "ev_block (dim\<^sub>r LR) LR" unfolding ev_block_def
+          have evbLR: "ev_block (dim_row LR) LR" unfolding ev_block_def
           proof (intro allI impI)
             fix i j
-            show "i < dim\<^sub>r LR \<Longrightarrow> j < dim\<^sub>r LR \<Longrightarrow> LR $$ (i, i) = LR $$ (j, j)"
+            show "i < dim_row LR \<Longrightarrow> j < dim_row LR \<Longrightarrow> LR $$ (i, i) = LR $$ (j, j)"
               using between[of "?si + i"] between[of "?si + j"] carr nsi
               unfolding Ablock by auto (metis One_nat_def Suc_lessI diff_Suc_1)
           qed
           from False Some split have bs: "partition_ev_blocks UL (LR # cs) = bs" unfolding bs by auto
-          have IH: "diag_block_mat (UL # LR # cs) = diag_block_mat bs \<and> (\<forall>B\<in>set bs. inv_all' uppert B \<and> ev_block (dim\<^sub>c B) B \<and> dim\<^sub>r B = dim\<^sub>c B)"
+          have IH: "diag_block_mat (UL # LR # cs) = diag_block_mat bs \<and> (\<forall>B\<in>set bs. inv_all' uppert B \<and> ev_block (dim_col B) B \<and> dim_row B = dim_col B)"
             by (rule less(1)[OF si utUL diffUL evbUL carr(1) _ bs], insert dimLR evbLR utLR cs, auto)
           have "diag_block_mat (A # cs) = diag_block_mat (UL # LR # cs)" 
             unfolding diag_block_mat.simps dim C_def[symmetric] dimC dimLR dimUL Let_def
-              four_block_mat_index(2-3) Ablock UR LL
-            using four_block_mat_assoc[of UL LR C] dimC carr by simp
+              index_mat_four_block(2-3) Ablock UR LL
+            using assoc_four_block_mat[of UL LR C] dimC carr by simp
           with IH show ?thesis by auto
         qed
       qed
     qed
   }
-  from this[of Nil, OF _ part] show "A = diag_block_mat bs" "\<And> B. B \<in> set bs \<Longrightarrow> inv_all' uppert B \<and> ev_block (dim\<^sub>c B) B \<and> dim\<^sub>r B = dim\<^sub>c B"
+  from this[of Nil, OF _ part] show "A = diag_block_mat bs" "\<And> B. B \<in> set bs \<Longrightarrow> inv_all' uppert B \<and> ev_block (dim_col B) B \<and> dim_row B = dim_col B"
     unfolding diag by fastforce+
 qed
 
-lemma uppert_to_jb: assumes ut: "inv_all uppert A" and "A \<in> carrier\<^sub>m n n"
+lemma uppert_to_jb: assumes ut: "inv_all uppert A" and "A \<in> carrier_mat n n"
 shows "inv_upto jb A 1"
 proof (rule inv_uptoI)
   fix i j
@@ -2854,12 +2854,12 @@ proof (rule inv_uptoI)
     by auto
 qed
 
-lemma jnf_vector: assumes A: "A \<in> carrier\<^sub>m n n"
+lemma jnf_vector: assumes A: "A \<in> carrier_mat n n"
   and jb: "\<And> i j. i < n \<Longrightarrow> j < n \<Longrightarrow> jb A i j"
   and evb: "ev_block n A"
   shows "jordan_matrix (jnf_vector A) = (A :: 'a mat)"
 proof -
-  from A have "dim\<^sub>r A = n" by simp
+  from A have "dim_row A = n" by simp
   hence id: "jnf_vector A = jnf_vector_main n A" unfolding jnf_vector_def by auto
   let ?map = "map (\<lambda>(n, a). jordan_block n (a :: 'a))"
   let ?B = "\<lambda> k. diag_block_mat (?map (jnf_vector_main k A))"
@@ -2867,7 +2867,7 @@ proof -
     fix k
     assume "k \<le> n"
     hence "(\<forall> i j. i < k \<longrightarrow> j < k \<longrightarrow> ?B k $$ (i,j) = A $$ (i,j))
-      \<and> diag_block_mat (?map (jnf_vector_main k A)) \<in> carrier\<^sub>m k k"
+      \<and> diag_block_mat (?map (jnf_vector_main k A)) \<in> carrier_mat k k"
     proof (induct k rule: less_induct)
       case (less sk)
       show ?case
@@ -2879,25 +2879,25 @@ proof -
         let ?c = "Suc k - b"
         define B where "B = ?B b"
         define C where "C = jordan_block ?c ?ev"
-        have C: "C \<in> carrier\<^sub>m ?c ?c" unfolding C_def by auto
-        let ?FB = "\<lambda> Bb Cc. four_block_mat Bb (\<zero>\<^sub>m (dim\<^sub>r Bb) (dim\<^sub>c Cc)) (\<zero>\<^sub>m (dim\<^sub>r Cc) (dim\<^sub>c Bb)) Cc"
+        have C: "C \<in> carrier_mat ?c ?c" unfolding C_def by auto
+        let ?FB = "\<lambda> Bb Cc. four_block_mat Bb (0\<^sub>m (dim_row Bb) (dim_col Cc)) (0\<^sub>m (dim_row Cc) (dim_col Bb)) Cc"
         from identify_block_le'[OF ib] have bk: "b \<le> k" .
         with Suc less(2) have "b < sk" "b \<le> n" by auto
         note IH = less(1)[OF this, folded B_def]
-        have B: "B \<in> carrier\<^sub>m b b" using IH by simp
+        have B: "B \<in> carrier_mat b b" using IH by simp
         from bk Suc have sk: "sk = b + ?c" by auto
         show ?thesis unfolding id map_append list.simps diag_block_mat_last split B_def[symmetric] C_def[symmetric] Let_def
         proof (intro allI conjI impI)
-          show "?FB B C \<in> carrier\<^sub>m sk sk" unfolding sk using four_block_mat_carrier[OF B C] .
+          show "?FB B C \<in> carrier_mat sk sk" unfolding sk using four_block_carrier_mat[OF B C] .
           fix i j
           assume i: "i < sk" and j: "j < sk"
           with jb `sk \<le> n` 
           have jb: "jb A i j" by auto
           have ut: "uppert A i j" by (rule jb_imp_uppert[OF jb])
           have de: "diff_ev A i j" by (rule jb_imp_diff_ev[OF jb])
-          from B C have dim: "dim\<^sub>r B = b" "dim\<^sub>c B = b" "dim\<^sub>c C = ?c" "dim\<^sub>r C = ?c" by auto
-          from sk B C i j have "i < dim\<^sub>r B + dim\<^sub>r C" "j < dim\<^sub>c B + dim\<^sub>c C" by auto
-          note id = four_block_mat_index(1)[OF this, unfolded dim]
+          from B C have dim: "dim_row B = b" "dim_col B = b" "dim_col C = ?c" "dim_row C = ?c" by auto
+          from sk B C i j have "i < dim_row B + dim_row C" "j < dim_col B + dim_col C" by auto
+          note id = index_mat_four_block(1)[OF this, unfolded dim]
           have id: "?FB B C $$ (i,j) = 
           (if i < b then if j < b then B $$ (i, j) else 0 
             else if j < b then 0 else C $$ (i - b, j - b))" 
@@ -2977,25 +2977,25 @@ end
 
 
 lemma triangular_to_jnf_vector: 
-  assumes A: "A \<in> carrier\<^sub>m n n"
+  assumes A: "A \<in> carrier_mat n n"
   and upper_t: "upper_triangular A"
   shows "jordan_nf A (triangular_to_jnf_vector A)"
 proof -
-  from A have d: "dim\<^sub>r A = n" by simp
+  from A have d: "dim_row A = n" by simp
   let ?B = "step_2 (step_1 A)"
   let ?J = "triangular_to_jnf_vector A"
-  have A1: "step_1 A \<in> carrier\<^sub>m n n" using A unfolding mat_carrier_def by simp
-  from mat_similar_trans[OF step_2_similar step_1_similar, OF A1 A]
-  have sim: "mat_similar ?B A" .
-  have A1: "step_1 A \<in> carrier\<^sub>m n n" using A unfolding mat_carrier_def by auto
-  from A1 have d1: "dim\<^sub>r (step_1 A) = n" unfolding mat_carrier_def by simp
-  have B: "?B \<in> carrier\<^sub>m n n" using A unfolding mat_carrier_def by auto
-  from B have d2: "dim\<^sub>r ?B = n" unfolding mat_carrier_def by simp
+  have A1: "step_1 A \<in> carrier_mat n n" using A unfolding carrier_mat_def by simp
+  from similar_mat_trans[OF step_2_similar step_1_similar, OF A1 A]
+  have sim: "similar_mat ?B A" .
+  have A1: "step_1 A \<in> carrier_mat n n" using A unfolding carrier_mat_def by auto
+  from A1 have d1: "dim_row (step_1 A) = n" unfolding carrier_mat_def by simp
+  have B: "?B \<in> carrier_mat n n" using A unfolding carrier_mat_def by auto
+  from B have d2: "dim_row ?B = n" unfolding carrier_mat_def by simp
   define Cs where "Cs = partition_ev_blocks ?B []"
   from step_1_2_inv[OF A upper_t refl]
   have inv: "inv_all n uppert ?B" "inv_all n diff_ev ?B" "ev_blocks n ?B" by auto
   from partition_jb[OF B inv, of Cs] have BC: "?B = diag_block_mat Cs"
-    and Cs: "\<And> C. C \<in> set Cs \<Longrightarrow> inv_all' uppert C \<and> ev_block (dim\<^sub>c C) C \<and> dim\<^sub>r C = dim\<^sub>c C" unfolding Cs_def by auto
+    and Cs: "\<And> C. C \<in> set Cs \<Longrightarrow> inv_all' uppert C \<and> ev_block (dim_col C) C \<and> dim_row C = dim_col C" unfolding Cs_def by auto
   define D where "D = map step_3 Cs"
   let ?D = "diag_block_mat D"
   let ?CD = "map (\<lambda> C. (C, (jnf_vector o step_3) C)) Cs"
@@ -3004,12 +3004,12 @@ proof -
     assume mem: "(C,D) \<in> set ?CD"
     hence DC: "D = jnf_vector (step_3 C)" and C: "C \<in> set Cs" by auto
     let ?D = "step_3 C"
-    define n where "n = dim\<^sub>c C"
-    from Cs[OF C] have C: "inv_all n uppert C" "ev_block n C" "C \<in> carrier\<^sub>m n n" 
-      unfolding inv_all'_def inv_all_def n_def mat_carrier_def by auto
-    from step_3_similar[OF C(3)] have sim: "mat_similar C ?D" by (rule mat_similar_sym)
-    from mat_similarD[OF sim] C have D: "?D \<in> carrier\<^sub>m n n" unfolding mat_carrier_def by auto
-    from C(3) have dimC: "dim\<^sub>r C = n" by auto
+    define n where "n = dim_col C"
+    from Cs[OF C] have C: "inv_all n uppert C" "ev_block n C" "C \<in> carrier_mat n n" 
+      unfolding inv_all'_def inv_all_def n_def carrier_mat_def by auto
+    from step_3_similar[OF C(3)] have sim: "similar_mat C ?D" by (rule similar_mat_sym)
+    from similar_matD[OF sim] C have D: "?D \<in> carrier_mat n n" unfolding carrier_mat_def by auto
+    from C(3) have dimC: "dim_row C = n" by auto
     from step_3_main_inv[OF C(3) _ C(1,2) uppert_to_jb[OF C(1) C(3)]]
     have "inv_all n jb (step_3 C)" and sd: "same_diag n C (step_3 C)" unfolding step_3_def dimC by auto
     hence jbD: "\<And> i j. i < n \<Longrightarrow> j < n \<Longrightarrow> jb ?D i j" unfolding inv_all_def DC by auto
@@ -3023,11 +3023,11 @@ proof -
     triangular_to_jnf_vector_def Let_def Cs_def ..
   from jordan_nf_diag_block_mat[of ?CD, OF jnf_blocks, unfolded id id2]
   have "jordan_nf (diag_block_mat Cs) ?J" unfolding J .
-  hence "mat_similar (diag_block_mat Cs) (jordan_matrix ?J)" 
+  hence "similar_mat (diag_block_mat Cs) (jordan_matrix ?J)" 
     unfolding jordan_nf_def .
-  from mat_similar_trans[OF mat_similar_sym[OF this] sim[unfolded BC]]
+  from similar_mat_trans[OF similar_mat_sym[OF this] sim[unfolded BC]]
   show ?thesis unfolding jordan_nf_def 
-    by (rule mat_similar_sym)
+    by (rule similar_mat_sym)
 qed
 
 (* hide auxiliary definitions and functions *)
@@ -3052,27 +3052,27 @@ definition jordan_nf_via_factored_charpoly :: "'a :: conjugatable_ordered_field 
   where "jordan_nf_via_factored_charpoly A es = 
     triangular_to_jnf_vector (schur_upper_triangular A es)"
 
-lemma jordan_nf_via_factored_charpoly: assumes A: "A \<in> carrier\<^sub>m n n"
+lemma jordan_nf_via_factored_charpoly: assumes A: "A \<in> carrier_mat n n"
   and linear: "char_poly A = (\<Prod> a \<leftarrow> es. [:- a, 1:])"
   shows "jordan_nf A (jordan_nf_via_factored_charpoly A es)"
 proof -
   let ?B = "schur_upper_triangular A es"
   let ?J = "jordan_nf_via_factored_charpoly A es"
   from schur_upper_triangular[OF A linear]
-  have B: "?B \<in> carrier\<^sub>m n n" "upper_triangular ?B" and AB: "mat_similar A ?B" by auto
+  have B: "?B \<in> carrier_mat n n" "upper_triangular ?B" and AB: "similar_mat A ?B" by auto
   from triangular_to_jnf_vector[OF B] have "jordan_nf ?B ?J" 
     unfolding jordan_nf_via_factored_charpoly_def .
-  with mat_similar_trans[OF AB] show "jordan_nf A ?J" unfolding jordan_nf_def by blast
+  with similar_mat_trans[OF AB] show "jordan_nf A ?J" unfolding jordan_nf_def by blast
 qed
 
 
-lemma jordan_nf_exists: assumes A: "A \<in> carrier\<^sub>m n n"
+lemma jordan_nf_exists: assumes A: "A \<in> carrier_mat n n"
   and linear: "char_poly A = (\<Prod> (a :: 'a :: conjugatable_ordered_field) \<leftarrow> as. [:- a, 1:])"
   shows "\<exists>n_as. jordan_nf A n_as"
   using jordan_nf_via_factored_charpoly[OF A linear] by blast
 
 lemma jordan_nf_iff_linear_factorization: fixes A :: "'a :: conjugatable_ordered_field mat"
-  assumes A: "A \<in> carrier\<^sub>m n n" 
+  assumes A: "A \<in> carrier_mat n n" 
   shows "(\<exists> n_as. jordan_nf A n_as) = (\<exists> as. char_poly A = (\<Prod> a \<leftarrow> as. [:- a, 1:]))"
     (is "?l = ?r")
 proof
@@ -3089,7 +3089,7 @@ qed
 subsection \<open>Application for Complexity\<close>
 
 text \<open>We can estimate the complexity via the multiplicity of the eigenvalues with norm 1.\<close>
-lemma factored_char_poly_norm_bound_cof: assumes A: "A \<in> carrier\<^sub>m n n"
+lemma factored_char_poly_norm_bound_cof: assumes A: "A \<in> carrier_mat n n"
   and linear_factors: "char_poly A = (\<Prod> (a :: 'a :: {conjugatable_ordered_field, real_normed_field}) \<leftarrow> as. [:- a, 1:])"
   and le_1: "\<And> a. a \<in> set as \<Longrightarrow> norm a \<le> 1"
   and le_N: "\<And> a. a \<in> set as \<Longrightarrow> norm a = 1 \<Longrightarrow> length (filter (op = a) as) \<le> N"
@@ -3101,10 +3101,10 @@ text \<open>If we have an upper triangular matrix, then EVs are exactly the entr
   So then we don't need to explicitly compute the characteristic polynomial.\<close>
 lemma counting_ones_complexity: 
   fixes A :: "'a :: real_normed_field mat"
-  assumes A: "A \<in> carrier\<^sub>m n n"
+  assumes A: "A \<in> carrier_mat n n"
   and upper_t: "upper_triangular A"
-  and le_1: "\<And> a. a \<in> set (mat_diag A) \<Longrightarrow> norm a \<le> 1"
-  and le_N: "\<And> a. a \<in> set (mat_diag A) \<Longrightarrow> norm a = 1 \<Longrightarrow> length (filter (op = a) (mat_diag A)) \<le> N"
+  and le_1: "\<And> a. a \<in> set (diag_mat A) \<Longrightarrow> norm a \<le> 1"
+  and le_N: "\<And> a. a \<in> set (diag_mat A) \<Longrightarrow> norm a = 1 \<Longrightarrow> length (filter (op = a) (diag_mat A)) \<le> N"
   shows "\<exists> c1 c2. \<forall> k. norm_bound (A ^\<^sub>m k) (c1 + c2 * of_nat k ^ (N - 1))"
 proof -
   from triangular_to_jnf_vector[OF A upper_t] have jnf: "\<exists> n_as. jordan_nf A n_as" ..
@@ -3119,7 +3119,7 @@ text \<open>If we have an upper triangular matrix $A$ then we can compute a JNF-
   the size of the largest Jordan Block with Eigenvalue of norm 1.
   This method gives a precise complexity bound.\<close>
 lemma compute_jnf_complexity: 
-  assumes A: "A \<in> carrier\<^sub>m n n"
+  assumes A: "A \<in> carrier_mat n n"
   and upper_t: "upper_triangular (A :: 'a :: real_normed_field mat)"
   and le_1: "\<And> n a. (n,a) \<in> set (triangular_to_jnf_vector A) \<Longrightarrow> norm a \<le> 1"
   and le_N: "\<And> n a. (n,a) \<in> set (triangular_to_jnf_vector A) \<Longrightarrow> norm a = 1 \<Longrightarrow> n \<le> N"

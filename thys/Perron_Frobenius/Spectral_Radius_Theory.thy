@@ -34,9 +34,9 @@ text \<open>We combine both theorems in the following. To be more precise,
   The linkage between set-and type-based is performed via HMA-connect.\<close>
 
 lemma perron_frobenius_spectral_radius_complex: fixes A :: "complex mat"
-  assumes A: "A \<in> carrier\<^sub>m n n"
+  assumes A: "A \<in> carrier_mat n n"
   and real_nonneg: "real_nonneg_mat A"
-  and ev_le_1: "\<And> x. poly (char_poly (map\<^sub>m Re A)) x = 0 \<Longrightarrow> x \<le> 1"
+  and ev_le_1: "\<And> x. poly (char_poly (map_mat Re A)) x = 0 \<Longrightarrow> x \<le> 1"
   and ev_order: "\<And> x. norm x = 1 \<Longrightarrow> order x (char_poly A) \<le> d"
   shows "\<exists>c1 c2. \<forall>k. norm_bound (A ^\<^sub>m k) (c1 + c2 * real k ^ (d - 1))"
 proof (cases "n = 0")
@@ -49,17 +49,17 @@ proof (cases "n = 0")
     let ?cr = "complex_of_real"
     text \<open>here is the transition from type-based perron-frobenius to set-based\<close>
     from perron_frobenius[untransferred, cancel_card_constraint, OF A real_nonneg n(2)]
-      obtain v where v: "v \<in> carrier\<^sub>v n" and ev: "eigenvector A v (?cr sr)" and 
+      obtain v where v: "v \<in> carrier_vec n" and ev: "eigenvector A v (?cr sr)" and 
       rnn: "real_nonneg_vec v" unfolding sr_def by auto
-    define B where "B = map\<^sub>m Re A"
-    let ?A = "map\<^sub>m ?cr B"
+    define B where "B = map_mat Re A"
+    let ?A = "map_mat ?cr B"
     have AB: "A = ?A" unfolding B_def 
-      by (rule mat_eqI, insert real_nonneg[unfolded real_nonneg_mat_def mat_elements_def], auto)
-    define w where "w = map\<^sub>v Re v"
-    let ?v = "map\<^sub>v ?cr w"
+      by (rule eq_matI, insert real_nonneg[unfolded real_nonneg_mat_def elements_mat_def], auto)
+    define w where "w = map_vec Re v"
+    let ?v = "map_vec ?cr w"
     have vw: "v = ?v" unfolding w_def
-      by (rule vec_eqI, insert rnn[unfolded real_nonneg_vec_def vec_elements_def], auto)
-    have B: "B \<in> carrier\<^sub>m n n" unfolding B_def using A by auto
+      by (rule eq_vecI, insert rnn[unfolded real_nonneg_vec_def vec_elements_def], auto)
+    have B: "B \<in> carrier_mat n n" unfolding B_def using A by auto
     from AB vw ev have ev: "eigenvector ?A ?v (?cr sr)" by simp
     have "eigenvector B w sr"
       by (rule of_real_hom.eigenvector_hom_rev[OF B ev])
@@ -81,19 +81,19 @@ text \<open>The following lemma is the same as @{thm perron_frobenius_spectral_r
   except that now the type @{typ real} is used instead of @{typ complex}.\<close>
 
 lemma perron_frobenius_spectral_radius: fixes A :: "real mat"
-  assumes A: "A \<in> carrier\<^sub>m n n"
+  assumes A: "A \<in> carrier_mat n n"
   and nonneg: "nonneg_mat A"
   and ev_le_1: "\<forall> x. poly (char_poly A) x = 0 \<longrightarrow> x \<le> 1"
   and ev_order: "\<forall> x :: complex. norm x = 1 \<longrightarrow> order x (map_poly of_real (char_poly A)) \<le> d"
-  shows "\<exists>c1 c2. \<forall>k a. a \<in> mat_elements (A ^\<^sub>m k) \<longrightarrow> abs a \<le> (c1 + c2 * real k ^ (d - 1))"
+  shows "\<exists>c1 c2. \<forall>k a. a \<in> elements_mat (A ^\<^sub>m k) \<longrightarrow> abs a \<le> (c1 + c2 * real k ^ (d - 1))"
 proof -
   let ?cr = "complex_of_real"
-  let ?B = "map\<^sub>m ?cr A"
-  have B: "?B \<in> carrier\<^sub>m n n" using A by auto
+  let ?B = "map_mat ?cr A"
+  have B: "?B \<in> carrier_mat n n" using A by auto
   have rnn: "real_nonneg_mat ?B" using nonneg unfolding real_nonneg_mat_def nonneg_mat_def
-    by (auto simp: mat_elements_def)
-  have id: "map\<^sub>m Re ?B = A"
-    by (rule mat_eqI, auto)
+    by (auto simp: elements_mat_def)
+  have id: "map_mat Re ?B = A"
+    by (rule eq_matI, auto)
   have "\<exists>c1 c2. \<forall>k. norm_bound (?B ^\<^sub>m k) (c1 + c2 * real k ^ (d - 1))"
     by (rule perron_frobenius_spectral_radius_complex[OF B rnn], unfold id, 
     insert ev_le_1 ev_order, auto simp: of_real_hom.char_poly_hom[OF A])
@@ -101,9 +101,9 @@ proof -
   show ?thesis
   proof (rule exI[of _ c1], rule exI[of _ c2], intro allI impI)
     fix k a
-    assume "a \<in> mat_elements (A ^\<^sub>m k)"
-    with mat_pow_closed[OF A] obtain i j where a: "a = (A ^\<^sub>m k) $$ (i,j)" and ij: "i < n" "j < n"
-      unfolding mat_elements by force
+    assume "a \<in> elements_mat (A ^\<^sub>m k)"
+    with pow_carrier_mat[OF A] obtain i j where a: "a = (A ^\<^sub>m k) $$ (i,j)" and ij: "i < n" "j < n"
+      unfolding elements_mat by force
     from ij nb[of k] A have "norm ((?B ^\<^sub>m k) $$ (i,j)) \<le> c1 + c2 * real k ^ (d - 1)"
       unfolding norm_bound_def by auto
     also have "(?B ^\<^sub>m k) $$ (i,j) = ?cr a"
@@ -122,14 +122,14 @@ primrec matpow :: "'a::semiring_1^'n^'n \<Rightarrow> nat \<Rightarrow> 'a^'n^'n
 
 context includes lifting_syntax
 begin  
-lemma HMA_mat_pow[transfer_rule]:
-  "((HMA_M ::'a::{semiring_1} mat \<Rightarrow> 'a^'n^'n \<Rightarrow> bool) ===> op = ===> HMA_M) mat_pow matpow"
+lemma HMA_pow_mat[transfer_rule]:
+  "((HMA_M ::'a::{semiring_1} mat \<Rightarrow> 'a^'n^'n \<Rightarrow> bool) ===> op = ===> HMA_M) pow_mat matpow"
 proof -
   {
     fix A :: "'a mat" and A' :: "'a^'n^'n" and n :: nat
     assume [transfer_rule]: "HMA_M A A'"
-    hence [simp]: "dim\<^sub>r A = CARD('n)" unfolding HMA_M_def by simp
-    have "HMA_M (mat_pow A n) (matpow A' n)"
+    hence [simp]: "dim_row A = CARD('n)" unfolding HMA_M_def by simp
+    have "HMA_M (pow_mat A n) (matpow A' n)"
     proof (induct n)
       case (Suc n)
       note [transfer_rule] = this
@@ -144,7 +144,7 @@ lemma perron_frobenius_spectral_type_based:
   assumes "non_neg_mat (A :: real ^ 'n ^ 'n)"
   and "\<forall> x. poly (charpoly A) x = 0 \<longrightarrow> x \<le> 1"
   and "\<forall> x :: complex. norm x = 1 \<longrightarrow> order x (map_poly of_real (charpoly A)) \<le> d"
-  shows "\<exists>c1 c2. \<forall>k a. a \<in> mat_elements_h (matpow A k) \<longrightarrow> abs a \<le> (c1 + c2 * real k ^ (d - 1))"
+  shows "\<exists>c1 c2. \<forall>k a. a \<in> elements_mat_h (matpow A k) \<longrightarrow> abs a \<le> (c1 + c2 * real k ^ (d - 1))"
   using assms perron_frobenius_spectral_radius
   by (transfer, blast)
 
@@ -152,12 +152,12 @@ text \<open>And of course, we can also transfer the type-based lemma back to a s
   only that -- without further case-analysis -- 
   we get the additional assumption @{term "(n :: nat) \<noteq> 0"}.\<close>
 
-lemma assumes "A \<in> carrier\<^sub>m n n"
+lemma assumes "A \<in> carrier_mat n n"
   and "nonneg_mat A"
   and "\<forall> x. poly (char_poly A) x = 0 \<longrightarrow> x \<le> 1"
   and "\<forall> x :: complex. norm x = 1 \<longrightarrow> order x (map_poly of_real (char_poly A)) \<le> d"
   and "n \<noteq> 0"
-  shows "\<exists>c1 c2. \<forall>k a. a \<in> mat_elements (A ^\<^sub>m k) \<longrightarrow> abs a \<le> (c1 + c2 * real k ^ (d - 1))"
+  shows "\<exists>c1 c2. \<forall>k a. a \<in> elements_mat (A ^\<^sub>m k) \<longrightarrow> abs a \<le> (c1 + c2 * real k ^ (d - 1))"
   using perron_frobenius_spectral_type_based[untransferred, cancel_card_constraint, OF assms] .
    
 
@@ -170,7 +170,7 @@ text \<open>Note that the precondition eigenvalue-at-most-1 can easily be formul
 
 context 
   fixes A :: "real mat" and c :: real and fis and n :: nat
-  assumes A: "A \<in> carrier\<^sub>m n n"
+  assumes A: "A \<in> carrier_mat n n"
   and nonneg: "nonneg_mat A"
   and yun: "yun_factorization gcd (char_poly A) = (c,fis)"
   and ev_le_1: "card {x. poly (char_poly A) x = 0 \<and> x > 1} = 0"
@@ -182,7 +182,7 @@ lemma perron_frobenius_spectral_radius_yun:
   assumes bnd: "\<And> f\<^sub>i i. (f\<^sub>i,i) \<in> set fis 
     \<Longrightarrow> (\<exists> x :: complex. poly (map_poly of_real f\<^sub>i) x = 0 \<and> norm x = 1) 
     \<Longrightarrow> Suc i \<le> d"
-  shows "\<exists>c1 c2. \<forall>k a. a \<in> mat_elements (A ^\<^sub>m k) \<longrightarrow> abs a \<le> (c1 + c2 * real k ^ (d - 1))"
+  shows "\<exists>c1 c2. \<forall>k a. a \<in> elements_mat (A ^\<^sub>m k) \<longrightarrow> abs a \<le> (c1 + c2 * real k ^ (d - 1))"
 proof (rule perron_frobenius_spectral_radius[OF A nonneg]; intro allI impI)
   let ?cr = complex_of_real
   let ?cp = "map_poly ?cr (char_poly A)"
@@ -236,7 +236,7 @@ lemma perron_frobenius_spectral_radius_yun_real_roots:
   assumes bnd: "\<And> f\<^sub>i i. (f\<^sub>i,i) \<in> set fis 
     \<Longrightarrow> card { x. poly f\<^sub>i x = 0} \<noteq> degree f\<^sub>i \<or> poly f\<^sub>i 1 = 0 \<or> poly f\<^sub>i (-1) = 0 
     \<Longrightarrow> Suc i \<le> d"
-  shows "\<exists>c1 c2. \<forall>k a. a \<in> mat_elements (A ^\<^sub>m k) \<longrightarrow> abs a \<le> (c1 + c2 * real k ^ (d - 1))"
+  shows "\<exists>c1 c2. \<forall>k a. a \<in> elements_mat (A ^\<^sub>m k) \<longrightarrow> abs a \<le> (c1 + c2 * real k ^ (d - 1))"
 proof (rule perron_frobenius_spectral_radius_yun)
   fix fi i
   let ?cr = complex_of_real

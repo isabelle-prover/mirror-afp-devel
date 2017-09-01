@@ -48,13 +48,10 @@ no_syntax "_bracket" :: "types \<Rightarrow> type \<Rightarrow> type" ("([_]/ \<
 no_translations
   "[x<-xs . P]" == "CONST List.filter (%x. P) xs"
 
-no_syntax
+no_syntax (ASCII)
   "_filter" :: "pttrn \<Rightarrow> 'a List.list \<Rightarrow> bool \<Rightarrow> 'a List.list" ("(1[_<-_./ _])")
 
-no_syntax (xsymbols)
-  "_filter" :: "pttrn \<Rightarrow> 'a List.list \<Rightarrow> bool \<Rightarrow> 'a List.list" ("(1[_\<leftarrow>_ ./ _])")
-
-no_syntax (HTML output)
+no_syntax
   "_filter" :: "pttrn \<Rightarrow> 'a List.list \<Rightarrow> bool \<Rightarrow> 'a List.list" ("(1[_\<leftarrow>_ ./ _])")
 
 text \<open>Declarations that belong in HOLCF/Tr.thy:\<close>

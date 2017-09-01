@@ -299,13 +299,15 @@ proof -
         by (auto simp: pbernpoly_def bernpoly_def frac_def divide_simps add_eq_0_iff2)
     qed
   qed simp_all
-  hence *: "\<forall>I\<in>?A. ((\<lambda>x. -pbernpoly 1 x / (x + s)) has_integral 
+  hence *: "\<And>I. I\<in>?A \<Longrightarrow> ((\<lambda>x. -pbernpoly 1 x / (x + s)) has_integral 
               (Inf I + 1/2 + s) * (ln (Inf I + 1 + s) - ln (Inf I + s)) - 1) I"
     by (auto simp: add_ac)
   have "((\<lambda>x. - pbernpoly 1 x / (x + s)) has_integral
           (\<Sum>I\<in>?A. (Inf I + 1 / 2 + s) * (ln (Inf I + 1 + s) - ln (Inf I + s)) - 1))
           (\<Union>n\<in>{0..<N}. {real n..real (n + 1)})" (is "(_ has_integral ?i) _")
-    by (intro has_integral_Union * finite_imageI) (auto intro!: negligible_atLeastAtMostI)
+    apply (intro has_integral_Union * finite_imageI)
+      apply (force intro!: negligible_atLeastAtMostI)+
+    done
   hence has_integral: "((\<lambda>x. - pbernpoly 1 x / (x + s)) has_integral ?i) {0..real N}"
     by (rule has_integral_spike_set)
        (insert Union_atLeastAtMost[of N], cases "N = 0", simp_all add: Union_atLeastAtMost)
