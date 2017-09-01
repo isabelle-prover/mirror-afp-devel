@@ -1036,7 +1036,8 @@ lemma nxtActI:
   shows "\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub> \<ge> n \<and> \<parallel>c\<parallel>\<^bsub>t \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub> \<and> (\<nexists>k. k\<ge>n \<and> k<\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)"
 proof -
   let ?P = "THE n'. n'\<ge>n \<and> \<parallel>c\<parallel>\<^bsub>t n'\<^esub> \<and> (\<nexists>k. k\<ge>n \<and> k<n' \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)"
-  from assms obtain i where "i\<ge>n \<and> \<parallel>c\<parallel>\<^bsub>t i\<^esub> \<and> (\<nexists>k. k\<ge>n \<and> k<i \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)" using lActive_least[of n "inf_llist t" c] by auto
+  from assms obtain i where "i\<ge>n \<and> \<parallel>c\<parallel>\<^bsub>t i\<^esub> \<and> (\<nexists>k. k\<ge>n \<and> k<i \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)"
+    using lActive_least[of n "inf_llist t" c] by auto
   moreover have "(\<And>x. n \<le> x \<and> \<parallel>c\<parallel>\<^bsub>t x\<^esub> \<and> \<not> (\<exists>k\<ge>n. k < x \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>) \<Longrightarrow> x = i)"
   proof -
     fix x assume "n \<le> x \<and> \<parallel>c\<parallel>\<^bsub>t x\<^esub> \<and> \<not> (\<exists>k\<ge>n. k < x \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)"
@@ -1309,7 +1310,8 @@ lemma nAct_cnf2proj_Suc_dist:
 proof -
   have "the_enat \<langle>c #\<^bsub>enat n\<^esub>inf_llist t\<rangle> = \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>)" (is "?LHS = ?RHS")
   proof -
-    from assms have "?RHS = the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1" using nxtActive_lactive[of n c t] by simp
+    from assms have "?RHS = the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1"
+      using nxtActive_lactive[of n c t] by simp
     also have "llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)) = eSuc (\<langle>c #\<^bsub>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub> inf_llist t\<rangle>)"
     proof -
       from assms have "\<not> (\<exists>i'\<ge> Suc (\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>). \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)" using nxtActive_no_active by simp
