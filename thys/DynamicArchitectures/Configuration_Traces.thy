@@ -169,7 +169,7 @@ text {*
     \item cnf: a type for architecture configurations
   \end{itemize}
 *}
-locale dynamic_architectures =
+locale dynamic_component =
   fixes tCMP :: "'id \<Rightarrow> 'cnf \<Rightarrow> 'cmp" ("\<sigma>\<^bsub>_\<^esub>(_)" [0,110]60)
     and active :: "'id \<Rightarrow> 'cnf \<Rightarrow> bool" ("\<parallel>_\<parallel>\<^bsub>_\<^esub>" [0,110]60)
 begin

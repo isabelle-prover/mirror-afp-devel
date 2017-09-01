@@ -31,7 +31,7 @@ text {*
 lemma llength_geq_enat_lfiniteD: "llength xs \<le> enat n \<Longrightarrow> lfinite xs"
   using not_lfinite_llength by force
 
-context dynamic_architectures
+context dynamic_component
 begin
 
 subsection "Dynamic Evaluation of Temporal Operators"
