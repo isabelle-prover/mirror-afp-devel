@@ -936,6 +936,10 @@ text {*
 definition lNAct :: "'id \<Rightarrow> (nat \<Rightarrow> 'cnf) \<Rightarrow> nat \<Rightarrow> nat" ("\<langle>_ \<leftarrow> _\<rangle>\<^bsub>_\<^esub>")
   where "\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<equiv> (LEAST n'. n=n' \<or> (n'<n \<and> (\<nexists>k. k\<ge>n' \<and> k<n \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)))"
 
+lemma lNact0[simp]:
+  "\<langle>c \<leftarrow> t\<rangle>\<^bsub>0\<^esub> = 0"
+  by (simp add: lNAct_def)
+    
 lemma lNact_least:
   assumes "n=n' \<or> n'<n \<and> (\<nexists>k. k\<ge>n' \<and> k<n \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)"
   shows "\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> n'"
@@ -1047,6 +1051,12 @@ proof -
     using theI[of "\<lambda>n'. n'\<ge>n \<and> \<parallel>c\<parallel>\<^bsub>t n'\<^esub> \<and> (\<nexists>k. k\<ge>n \<and> k<n' \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)"] by blast
   thus ?thesis using nxtAct_def[of c t n] by metis
 qed
+  
+lemma nxtActLe:
+  fixes n n'
+  assumes "\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
+  shows "n \<le> \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>"
+  by (simp add: assms nxtActI)
 
 lemma nxtAct_active:
   fixes i::nat
@@ -1065,6 +1075,15 @@ proof
   ultimately have "i'\<ge>n" and "\<parallel>c\<parallel>\<^bsub>t i'\<^esub>" and "i'\<noteq>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" by auto
   moreover from assms(1) have "\<parallel>c\<parallel>\<^bsub>t \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>" and "\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<ge>n" using nxtActI by auto
   ultimately show False using assms(1) by auto
+qed
+  
+lemma nxt_geq_lNact[simp]:
+  assumes "\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
+  shows "\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<ge>\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub>"
+proof -
+  from assms have "n \<le> \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" using nxtActLe by simp
+  moreover have "\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<le>n" by simp
+  ultimately show ?thesis by arith
 qed
   
 lemma active_geq_nxtAct:
