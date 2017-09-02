@@ -46,8 +46,8 @@ session Iptables_Semantics (AFP) = Routing +
     "root.bib"
     "mathpartir.sty"
 
-session Iptables_Semantics_Examples (AFP slow) = Iptables_Semantics +
-  options [timeout = 10800]
+session Iptables_Semantics_Examples (AFP) = Iptables_Semantics +
+  options [timeout = 2400]
   theories
     "Examples/Parser_Test/Parser_Test"
     "Examples/Parser_Test/Parser6_Test"
@@ -60,10 +60,6 @@ session Iptables_Semantics_Examples (AFP slow) = Iptables_Semantics +
     "Examples/SQRL_Shorewall/SQRL_2015_nospoof"
     "Examples/sns.ias.edu/SNS_IAS_Eduroam_Spoofing"
     "Examples/medium-sized-company/Analyze_medium_sized_company"
-    "Examples/topoS_generated/Analyze_topos_generated"
-    "Examples/IPPartEval/IP_Address_Space_Examples_All_Small"
-    "Examples/TUM_Net_Firewall/Analyze_TUM_Net_Firewall"
-    "Examples/containern/Analyze_Containern"
   document_files
     "root.tex"
     "root.bib"
@@ -72,6 +68,10 @@ session Iptables_Semantics_Examples (AFP slow) = Iptables_Semantics +
 session Iptables_Semantics_Examples_Big (AFP slow very_slow) = Iptables_Semantics_Examples +
   options [timeout = 60000, theory_qualifier = "Iptables_Semantics_Examples"]
   theories
+    "Examples/topoS_generated/Analyze_topos_generated"
+    "Examples/IPPartEval/IP_Address_Space_Examples_All_Small"
+    "Examples/TUM_Net_Firewall/Analyze_TUM_Net_Firewall"
+    "Examples/containern/Analyze_Containern"
     "Examples/TUM_Net_Firewall/TUM_Spoofing_new3"
     "Examples/TUM_Net_Firewall/TUM_Simple_FW"
     "Examples/IPPartEval/IP_Address_Space_Examples_All_Large"
