@@ -7,7 +7,7 @@ Maintainer: <g.struth at sheffield.ac.uk>
 section {* C-Algebras*}
 
 theory C_Algebras
-imports "../Kleene_Algebra/Dioid" 
+imports Kleene_Algebra.Dioid 
 begin
 
 no_notation

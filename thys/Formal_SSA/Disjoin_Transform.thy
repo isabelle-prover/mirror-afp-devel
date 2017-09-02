@@ -3,7 +3,7 @@
 *)
 
 theory Disjoin_Transform imports
-"../Slicing/While/AdditionalLemmas"
+Slicing.AdditionalLemmas
 begin
 
 inductive subcmd :: "cmd \<Rightarrow> cmd \<Rightarrow> bool" where

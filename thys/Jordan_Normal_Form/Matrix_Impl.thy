@@ -15,7 +15,7 @@ imports
   Determinant_Impl
   Show_Matrix
   Jordan_Normal_Form_Existence
-  "../Show/Show_Instances"
+  Show.Show_Instances
 begin
 
 text \<open>For determinants we require class @{class idom_divide}, so integers, rationals, etc. can be used.\<close>
@@ -37,7 +37,7 @@ value[code] "triangular_to_jnf_vector (mat_of_rows_list 6 [
   [0,0,0,0,5,3], 
   [0,0,0,0,0,3 :: rat]])"
 
-value[code] "show (mat_of_rows_list 3 [[1, 4, 5], [3, 6, 8]] \<otimes>\<^sub>m mat 3 4 (\<lambda> (i,j). i + 2 * j))"
+value[code] "show (mat_of_rows_list 3 [[1, 4, 5], [3, 6, 8]] * mat 3 4 (\<lambda> (i,j). i + 2 * j))"
 
 text \<open>Inverses can only be computed for matrices over fields.\<close>
 

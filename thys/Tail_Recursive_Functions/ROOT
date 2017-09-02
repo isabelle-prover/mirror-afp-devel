@@ -3,7 +3,7 @@ chapter AFP
 session Tail_Recursive_Functions (AFP) = "HOL-Library" +
   options [timeout = 3600]
   theories [document = false]
-    "~~/src/HOL/Library/Multiset"
+    "HOL-Library.Multiset"
   theories
     Method
     CaseStudy1

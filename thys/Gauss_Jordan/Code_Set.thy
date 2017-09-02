@@ -8,7 +8,7 @@ section "Code set"
 
 theory Code_Set
 imports
-  "~~/src/HOL/Library/Cardinality"
+  "HOL-Library.Cardinality"
 begin
 
 text{*The following setup could help to get code generation for List.coset, 

@@ -14,12 +14,12 @@ imports
   Strassen_Algorithm
 begin
 
-text \<open>The aim is to replace the implementation of @{const mat_mult_mat} by @{const strassen_mat_mult}.\<close>
+text \<open>The aim is to replace the implementation of @{thm times_mat_def} by @{const strassen_mat_mult}.\<close>
 
 text \<open>We first need a copy of standard matrix multiplication to execute the base case.\<close>
 
-definition "basic_mat_mult = op \<otimes>\<^sub>m"
-lemma [code]: "basic_mat_mult A B = mat (dim\<^sub>r A) (dim\<^sub>c B) (\<lambda> (i,j). row A i \<bullet> col B j)"
+definition "basic_mat_mult = op *"
+lemma basic_mat_mult_code[code]: "basic_mat_mult A B = mat (dim_row A) (dim_col B) (\<lambda> (i,j). row A i \<bullet> col B j)"
   unfolding basic_mat_mult_def by auto
 
 text \<open>Next use this new matrix multiplication code within Strassen's algorithm.\<close>
@@ -27,7 +27,7 @@ lemmas strassen_mat_mult_code[code] = strassen_mat_mult.simps[folded basic_mat_m
 
 text \<open>And finally use Strassen's algorithm for implementing matrix-multiplication.\<close>
 
-lemma mat_mult_code[code]: "A \<otimes>\<^sub>m B = (if dim\<^sub>c A = dim\<^sub>r B then strassen_mat_mult A B else basic_mat_mult A B)"
+lemma mat_mult_code[code]: "A * B = (if dim_col A = dim_row B then strassen_mat_mult A B else basic_mat_mult A B)"
   using strassen_mat_mult[of A B] unfolding basic_mat_mult_def by auto
 
 end

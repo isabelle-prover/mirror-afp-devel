@@ -6,7 +6,7 @@ imports
   Containers_Auxiliary
   Lexicographic_Order
   Extend_Partial_Order
-  "~~/src/HOL/Library/Cardinality"
+  "HOL-Library.Cardinality"
 begin
 
 section {* An executable linear order on sets *}

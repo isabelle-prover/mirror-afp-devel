@@ -40,7 +40,7 @@ theory
   PolicyCore
   imports 
      NetworkCore 
-     "../../UPF/UPF"
+     UPF.UPF
 begin
 
 

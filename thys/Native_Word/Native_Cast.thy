@@ -5,7 +5,7 @@
 chapter {* Conversions between unsigned words and between char *}
 
 theory Native_Cast imports
-  "~~/src/HOL/Library/Code_Char"
+  "HOL-Library.Code_Char"
   Uint8
   Uint16
   Uint32

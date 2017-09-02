@@ -1,8 +1,8 @@
 section \<open>Affine Form\<close>
 theory Affine_Form
 imports
-  "~~/src/HOL/Analysis/Analysis"
-  "~~/src/HOL/Library/Permutation"
+  "HOL-Analysis.Analysis"
+  "HOL-Library.Permutation"
 begin
 
 subsection \<open>Auxiliary developments\<close>

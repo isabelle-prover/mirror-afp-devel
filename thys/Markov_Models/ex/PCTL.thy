@@ -3,9 +3,9 @@
 theory PCTL
 imports
   "../Discrete_Time_Markov_Chain"
-  "../../Gauss-Jordan-Elim-Fun/Gauss_Jordan_Elim_Fun"
-  "~~/src/HOL/Library/While_Combinator"
-  "~~/src/HOL/Library/Monad_Syntax"
+  "Gauss-Jordan-Elim-Fun.Gauss_Jordan_Elim_Fun"
+  "HOL-Library.While_Combinator"
+  "HOL-Library.Monad_Syntax"
 begin
 
 section {* Adapt Gauss-Jordan elimination to DTMCs *}

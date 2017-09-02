@@ -21,7 +21,7 @@ theory UniformTieBreaking
 imports 
 StrictCombinatorialAuction
 Universes
-"~~/src/HOL/Library/Code_Target_Nat"
+"HOL-Library.Code_Target_Nat"
 
 begin
 

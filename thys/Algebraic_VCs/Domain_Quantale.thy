@@ -7,7 +7,7 @@
 section {* Component for Recursive Programs *}
 
 theory Domain_Quantale
-  imports "../KAD/Modal_Kleene_Algebra"
+  imports KAD.Modal_Kleene_Algebra
 
 begin
 

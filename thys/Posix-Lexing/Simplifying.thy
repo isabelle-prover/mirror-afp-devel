@@ -6,7 +6,7 @@
 *) 
 
 theory Simplifying
-  imports "Lexer" 
+  imports Lexer 
 begin
 
 section {* Lexer including simplifications *}

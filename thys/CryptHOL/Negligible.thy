@@ -5,7 +5,7 @@ section {* Negligibility *}
 
 theory Negligible imports
   Complex_Main
-  "../Landau_Symbols/Landau_More"
+  Landau_Symbols.Landau_More
 begin
 
 named_theorems negligible_intros

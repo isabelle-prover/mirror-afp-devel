@@ -1,5 +1,5 @@
 theory PLTL
-  imports Main "../LTL/LTL" Samplers StutterEquivalence
+  imports Main LTL.LTL Samplers StutterEquivalence
 begin
 
 section {* Stuttering Invariant PLTL Formulas *}

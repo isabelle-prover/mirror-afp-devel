@@ -1,6 +1,6 @@
 theory SINVAR_DomainHierarchyNG
 imports "../TopoS_Helper"
-  "~~/src/HOL/Lattice/CompleteLattice" (* markarius lattice *)
+  "HOL-Lattice.CompleteLattice" (* markarius lattice *)
 begin
 
 

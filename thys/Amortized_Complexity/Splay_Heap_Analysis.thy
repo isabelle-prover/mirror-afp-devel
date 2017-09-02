@@ -2,7 +2,7 @@ section "Splay Heap"
 
 theory Splay_Heap_Analysis
 imports
-  "../Splay_Tree/Splay_Heap"
+  Splay_Tree.Splay_Heap
   Amortized_Framework
   Priority_Queue_ops
   Lemmas_log

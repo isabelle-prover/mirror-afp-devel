@@ -6,7 +6,7 @@
 section \<open>Example\<close>
 
 theory LTL_Example
-  imports Main "../LTL" "../LTL_Rewrite" "~~/src/HOL/Library/Code_Target_Numeral" "~~/src/HOL/Library/Code_Char"
+  imports Main "../LTL" "../LTL_Rewrite" "HOL-Library.Code_Target_Numeral" "HOL-Library.Code_Char"
 begin
 
 --\<open>The included parser always returns a @{typ "String.literal ltlc"}. If a different labelling is 

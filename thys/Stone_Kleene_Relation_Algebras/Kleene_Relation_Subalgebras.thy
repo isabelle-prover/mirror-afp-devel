@@ -11,7 +11,7 @@ In this theory we show that the regular elements of a Stone-Kleene relation alge
 
 theory Kleene_Relation_Subalgebras
 
-imports "../Stone_Relation_Algebras/Relation_Subalgebras" Kleene_Relation_Algebras
+imports Stone_Relation_Algebras.Relation_Subalgebras Kleene_Relation_Algebras
 
 begin
 

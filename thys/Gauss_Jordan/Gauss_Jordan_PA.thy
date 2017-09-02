@@ -9,7 +9,7 @@ section{*Obtaining explicitly the invertible matrix which transforms a matrix to
 theory Gauss_Jordan_PA
 imports
  Gauss_Jordan
- "../Rank_Nullity_Theorem/Miscellaneous"
+ Rank_Nullity_Theorem.Miscellaneous
  Linear_Maps (*Really, this file is not necessary, but it contains interesting properties about linear maps.*)
 begin
 

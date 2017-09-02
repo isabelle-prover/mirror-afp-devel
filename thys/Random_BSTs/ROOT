@@ -2,10 +2,12 @@ chapter AFP
 
 session Random_BSTs (AFP) = Quick_Sort_Cost +
   options [timeout = 300]
+  sessions
+    "HOL-Data_Structures"
   theories [document = false]
-    "~~/src/HOL/Probability/Random_Permutations"
-    "~~/src/HOL/Data_Structures/Tree_Set"
-    "../Quick_Sort_Cost/Quick_Sort_Average_Case"
+    "HOL-Probability.Random_Permutations"
+    "HOL-Data_Structures.Tree_Set"
+    Quick_Sort_Cost.Quick_Sort_Average_Case
   theories
     Random_BSTs
   document_files

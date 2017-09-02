@@ -1,7 +1,7 @@
 section \<open>Set of Reachable Nodes\<close>
 theory Reachable_Nodes
 imports "../DFS_Framework"
-  "../../CAVA_Automata/Digraph_Impl"
+  CAVA_Automata.Digraph_Impl
   "../Misc/Impl_Rev_Array_Stack"
 begin
 text \<open>

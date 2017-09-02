@@ -4,7 +4,7 @@ section {* Cardinality of Multisets *}
 
 theory Card_Multisets
 imports
-  "~~/src/HOL/Library/Multiset"
+  "HOL-Library.Multiset"
 begin
 
 subsection {* Additions to Multiset Theory *}

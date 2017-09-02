@@ -1,5 +1,5 @@
 theory Buchi_Graph_Basic
-imports Main "../../../Automatic_Refinement/Lib/Refine_Lib"
+imports Main Automatic_Refinement.Refine_Lib
 begin
 
 text {* Specification of a reachable accepting cycle: *}

@@ -1,6 +1,6 @@
 section {*\isaheader{Map Interface}*}
 theory Intf_Map
-imports "../../../Refine_Monadic/Refine_Monadic"
+imports Refine_Monadic.Refine_Monadic
 begin
 
 consts i_map :: "interface \<Rightarrow> interface \<Rightarrow> interface"

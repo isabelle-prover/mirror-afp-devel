@@ -3,7 +3,7 @@ section \<open>Examples for the WS1S/Presburger Mixture\<close>
 (*<*)
 theory WS1S_Presburger_Examples
 imports
-  WS1S_Presburger_Equivalence
+  Formula_Derivatives.WS1S_Presburger_Equivalence
 begin
 (*>*)
 

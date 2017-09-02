@@ -44,13 +44,13 @@ shows "cprank_max1 (tensors_from_net (insert_weights (shallow_model' Z M N) w) $
     using order1 by (metis One_nat_def eq_imp_le length_Cons list.size(3))
 next
   case (Suc N)
-  have y_le_IH:"y < dim\<^sub>v (tensors_from_net (insert_weights (shallow_model' Z M N) (\<lambda>i. w (i + (count_weights (shallow_model' Z M 0))))))"
+  have y_le_IH:"y < dim_vec (tensors_from_net (insert_weights (shallow_model' Z M N) (\<lambda>i. w (i + (count_weights (shallow_model' Z M 0))))))"
     using output_size_correct_tensors[of "insert_weights (shallow_model' Z M N) (\<lambda>i. w (i + (count_weights (shallow_model' Z M 0))))",
     unfolded remove_insert_weights, OF valid_shallow_model']
     using Suc.prems(1) output_size_shallow_model' by auto
   have cprank_max1_IH:"cprank_max1 (tensors_from_net (insert_weights (shallow_model' Z M N) (\<lambda>i. w (i + (count_weights (shallow_model' Z M 0))))) $ y)"
     using Suc.IH Suc.prems(1) output_size_shallow_model' by auto
-  have y_le_0:"y < dim\<^sub>v (tensors_from_net (insert_weights (shallow_model' Z M 0) w))"
+  have y_le_0:"y < dim_vec (tensors_from_net (insert_weights (shallow_model' Z M 0) w))"
     by (metis assms output_size_correct_tensors output_size_shallow_model' remove_insert_weights valid_shallow_model')
   have cprank_max1_0:"cprank_max1 (tensors_from_net (insert_weights (shallow_model' Z M 0) w) $ y)"
   proof -
@@ -72,9 +72,9 @@ proof -
   obtain w where "m = insert_weights (shallow_model Y Z M N) w" by (metis assms(1) insert_remove_weights)
   have "cprank_max Z (tensors_from_net m $ y)"
   proof -
-    have dim_extract: "dim\<^sub>r (extract_matrix w Y Z) = Y"
+    have dim_extract: "dim_row (extract_matrix w Y Z) = Y"
       using dim_extract_matrix(1) by force
-    have dimc_extract_matrix: "dim\<^sub>c (extract_matrix w Y Z) = Z"
+    have dimc_extract_matrix: "dim_col (extract_matrix w Y Z) = Z"
       using dim_extract_matrix(2) by force
     have input_sizes: "(input_sizes (insert_weights (shallow_model' Z M N) (\<lambda>i. w (i + Y * Z)))) = (input_sizes (shallow_model' Z M N))"
       using input_sizes_remove_weights remove_insert_weights by auto

@@ -1,8 +1,8 @@
 section\<open>Imparative implementation for Pointermap\<close>
 theory Pointer_Map_Impl
 imports Array_List 
-  "../Separation_Logic_Imperative_HOL/Sep_Main"
-  "../Separation_Logic_Imperative_HOL/Examples/Hash_Map_Impl"
+  Sepref_Prereq.Sep_Main
+  Sepref_Prereq.Hash_Map_Impl
   Pointer_Map
 begin
 

@@ -3,7 +3,7 @@
 section{* Presburger arithmetic *}
 
 theory PresArith
-imports QE "~~/src/HOL/Library/ListVector"
+imports QE "HOL-Library.ListVector"
 begin
 
 declare iprod_assoc[simp]

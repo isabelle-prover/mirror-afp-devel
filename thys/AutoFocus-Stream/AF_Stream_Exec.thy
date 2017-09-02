@@ -6,7 +6,7 @@
 section {* Processing of message streams *}
 
 theory AF_Stream_Exec
-imports AF_Stream "../List-Infinite/ListInf/ListInf_Prefix" "../List-Infinite/CommonSet/SetIntervalStep"
+imports AF_Stream "List-Infinite.ListInf_Prefix" "List-Infinite.SetIntervalStep"
 begin
 
 subsection {* Executing components with state transition functions *}

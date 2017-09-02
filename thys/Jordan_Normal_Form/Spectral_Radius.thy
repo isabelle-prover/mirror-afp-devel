@@ -15,11 +15,11 @@ begin
 
 definition "spectrum A = Collect (eigenvalue A)"
 
-lemma spectrum_root_char_poly: assumes A: "(A :: 'a :: field mat) \<in> carrier\<^sub>m n n"
+lemma spectrum_root_char_poly: assumes A: "(A :: 'a :: field mat) \<in> carrier_mat n n"
   shows "spectrum A = {k. poly (char_poly A) k = 0}"
   unfolding spectrum_def eigenvalue_root_char_poly[OF A, symmetric] by auto
 
-lemma card_finite_spectrum: assumes A: "(A :: 'a :: field mat) \<in> carrier\<^sub>m n n"
+lemma card_finite_spectrum: assumes A: "(A :: 'a :: field mat) \<in> carrier_mat n n"
   shows "finite (spectrum A)" "card (spectrum A) \<le> n"
 proof -
   define CP where "CP = char_poly A"
@@ -34,7 +34,7 @@ proof -
   show "card (spectrum A) \<le> n" unfolding id using d by simp
 qed
 
-lemma spectrum_non_empty: assumes A: "(A :: complex mat) \<in> carrier\<^sub>m n n"
+lemma spectrum_non_empty: assumes A: "(A :: complex mat) \<in> carrier_mat n n"
   and n: "n > 0"
   shows "spectrum A \<noteq> {}"
 proof - 
@@ -50,7 +50,7 @@ qed
 definition spectral_radius :: "complex mat \<Rightarrow> real" where 
   "spectral_radius A = Max (norm ` spectrum A)"
 
-lemma spectral_radius_mem_max: assumes A: "A \<in> carrier\<^sub>m n n"
+lemma spectral_radius_mem_max: assumes A: "A \<in> carrier_mat n n"
   and n: "n > 0"
   shows "spectral_radius A \<in> norm ` spectrum A" (is ?one)
   "a \<in> norm ` spectrum A \<Longrightarrow> a \<le> spectral_radius A"
@@ -69,7 +69,7 @@ qed
 
 text \<open>If spectral radius is at most 1, and JNF exists, then we have polynomial growth.\<close>
 
-lemma spectral_radius_jnf_norm_bound_le_1: assumes A: "A \<in> carrier\<^sub>m n n"
+lemma spectral_radius_jnf_norm_bound_le_1: assumes A: "A \<in> carrier_mat n n"
   and sr_1: "spectral_radius A \<le> 1"
   and jnf_exists: "\<exists> n_as. jordan_nf A n_as"
   shows "\<exists> c1 c2. \<forall> k. norm_bound (A ^\<^sub>m k) (c1 + c2 * of_nat k ^ (n - 1))"
@@ -94,7 +94,7 @@ qed
 
 text \<open>If spectral radius is smaller than 1, and JNF exists, then we have a constant bound.\<close>
 
-lemma spectral_radius_jnf_norm_bound_less_1: assumes A: "A \<in> carrier\<^sub>m n n"
+lemma spectral_radius_jnf_norm_bound_less_1: assumes A: "A \<in> carrier_mat n n"
   and sr_1: "spectral_radius A < 1"
   and jnf_exists: "\<exists> n_as. jordan_nf A n_as" 
   shows "\<exists> c. \<forall> k. norm_bound (A ^\<^sub>m k) c"
@@ -120,10 +120,10 @@ qed
 
 text \<open>If spectral radius is larger than 1, than we have exponential growth.\<close>
 
-lemma spectral_radius_gt_1: assumes A: "A \<in> carrier\<^sub>m n n"
+lemma spectral_radius_gt_1: assumes A: "A \<in> carrier_mat n n"
   and n: "n > 0"
   and sr_1: "spectral_radius A > 1"
-  shows "\<exists> v c. v \<in> carrier\<^sub>v n \<and> norm c > 1 \<and> v \<noteq> \<zero>\<^sub>v n \<and> A ^\<^sub>m k \<otimes>\<^sub>m\<^sub>v v = c^k \<odot>\<^sub>v v"
+  shows "\<exists> v c. v \<in> carrier_vec n \<and> norm c > 1 \<and> v \<noteq> 0\<^sub>v n \<and> A ^\<^sub>m k *\<^sub>v v = c^k \<cdot>\<^sub>v v"
 proof -
   from sr_1 spectral_radius_mem_max[OF A n] obtain ev 
     where ev: "ev \<in> spectrum A" and gt: "norm ev > 1" by auto
@@ -137,7 +137,7 @@ qed
 
 text \<open>If spectral radius is at most 1 for a complex matrix, then we have polynomial growth.\<close>
 
-lemma spectral_radius_jnf_norm_bound_le_1_upper_triangular: assumes A: "(A :: complex mat) \<in> carrier\<^sub>m n n"
+lemma spectral_radius_jnf_norm_bound_le_1_upper_triangular: assumes A: "(A :: complex mat) \<in> carrier_mat n n"
   and sr_1: "spectral_radius A \<le> 1"
   shows "\<exists> c1 c2. \<forall> k. norm_bound (A ^\<^sub>m k) (c1 + c2 * of_nat k ^ (n - 1))"
   by (rule spectral_radius_jnf_norm_bound_le_1[OF A sr_1],
@@ -145,7 +145,7 @@ lemma spectral_radius_jnf_norm_bound_le_1_upper_triangular: assumes A: "(A :: co
 
 text \<open>If spectral radius is less than 1 for a complex matrix, then we have a constant bound.\<close>
 
-lemma spectral_radius_jnf_norm_bound_less_1_upper_triangular: assumes A: "(A :: complex mat) \<in> carrier\<^sub>m n n"
+lemma spectral_radius_jnf_norm_bound_less_1_upper_triangular: assumes A: "(A :: complex mat) \<in> carrier_mat n n"
   and sr_1: "spectral_radius A < 1"
   shows "\<exists> c. \<forall> k. norm_bound (A ^\<^sub>m k) c"
   by (rule spectral_radius_jnf_norm_bound_less_1[OF A sr_1],
@@ -154,7 +154,7 @@ lemma spectral_radius_jnf_norm_bound_less_1_upper_triangular: assumes A: "(A :: 
 text \<open>And we can also get a quantative approximation via the multiplicity of the eigenvalues.\<close>
 
 lemma spectral_radius_poly_bound: fixes A :: "complex mat"
-  assumes A: "A \<in> carrier\<^sub>m n n" 
+  assumes A: "A \<in> carrier_mat n n" 
   and sr_1: "spectral_radius A \<le> 1"
   and eq_1: "\<And> ev k. poly (char_poly A) ev = 0 \<Longrightarrow> norm ev = 1 \<Longrightarrow> Polynomial.order ev (char_poly A) \<le> d"
   shows "\<exists> c1 c2. \<forall> k. norm_bound (A ^\<^sub>m k) (c1 + c2 * of_nat k ^ (d - 1))"

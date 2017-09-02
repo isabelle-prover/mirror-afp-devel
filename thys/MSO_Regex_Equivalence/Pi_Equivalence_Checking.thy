@@ -4,7 +4,7 @@ section {* Deciding Equivalence of $\Pi$-Extended Regular Expressions *}
 
 (*<*)
 theory Pi_Equivalence_Checking
-imports Pi_Regular_Exp "~~/src/HOL/Library/While_Combinator" List_More
+imports Pi_Regular_Exp "HOL-Library.While_Combinator" List_More
 begin
 (*>*)
 

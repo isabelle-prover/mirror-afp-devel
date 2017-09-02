@@ -2,7 +2,7 @@ chapter {* Square Root Upper and Lower Bounds *}
 
 theory Sqrt_Bounds
 imports Bounds_Lemmas
-        "~~/src/HOL/Library/Sum_of_Squares"
+        "HOL-Library.Sum_of_Squares"
 
 begin
 

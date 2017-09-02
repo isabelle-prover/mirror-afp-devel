@@ -7,7 +7,7 @@ section {* Euler's Partition Theorem *}
 theory Euler_Partition
 imports
   Main
-  "../Card_Number_Partitions/Number_Partition"
+  Card_Number_Partitions.Number_Partition
 begin
 
 subsection {* Preliminaries *}

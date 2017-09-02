@@ -2,8 +2,8 @@ section {* Directed Graphs *}
 (* Author: Peter Lammich *)
 theory Digraph
   imports 
-  "CAVA_Base/CAVA_Base"
-  "~~/src/HOL/Library/Omega_Words_Fun"
+  CAVA_Base.CAVA_Base
+  "HOL-Library.Omega_Words_Fun"
 begin
 
 subsection "Directed Graphs with Explicit Node Set and Set of Initial Nodes"

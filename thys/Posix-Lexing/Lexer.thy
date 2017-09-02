@@ -6,7 +6,7 @@
 *) 
 
 theory Lexer
-  imports "../Regular-Sets/Derivatives"
+  imports "Regular-Sets.Derivatives"
 begin
 
 section {* Values *}

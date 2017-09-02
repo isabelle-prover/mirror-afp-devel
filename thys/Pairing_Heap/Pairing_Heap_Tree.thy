@@ -4,7 +4,8 @@ section \<open>Pairing Heap in Binary Tree Representation\<close>
 
 theory Pairing_Heap_Tree
 imports  
-  "~~/src/HOL/Library/Tree_Multiset"
+  "HOL-Library.Tree_Multiset"
+  "~~/src/HOL/Data_Structures/Priority_Queue"
 begin
 
 subsection \<open>Definitions\<close>
@@ -15,45 +16,45 @@ in their original representation as binary trees.\<close>
 fun get_min  :: "'a :: linorder tree \<Rightarrow> 'a" where
 "get_min (Node _ x _) = x"
 
-fun link :: "'a :: linorder tree \<Rightarrow> 'a tree" where
+fun link :: "('a::linorder) tree \<Rightarrow> 'a tree" where
   "link Leaf = Leaf"
 | "link (Node lx x Leaf) = Node lx x Leaf"
 | "link (Node lx x (Node ly y ry)) = 
     (if x < y then Node (Node ly y lx) x ry else Node (Node lx x ly) y ry)"
 
-fun pass\<^sub>1 :: "'a :: linorder tree \<Rightarrow> 'a tree" where
+fun pass\<^sub>1 :: "('a::linorder) tree \<Rightarrow> 'a tree" where
   "pass\<^sub>1 Leaf = Leaf"
 | "pass\<^sub>1 (Node lx x Leaf) = Node lx x Leaf" 
 | "pass\<^sub>1 (Node lx x (Node ly y ry)) = link (Node lx x (Node ly y (pass\<^sub>1 ry)))"
 
-fun pass\<^sub>2 :: "'a :: linorder tree \<Rightarrow> 'a tree" where
+fun pass\<^sub>2 :: "('a::linorder) tree \<Rightarrow> 'a tree" where
   "pass\<^sub>2 Leaf = Leaf"
 | "pass\<^sub>2 (Node l x r) = link(Node l x (pass\<^sub>2 r))"
 
-fun mergepairs :: "'a :: linorder tree \<Rightarrow> 'a tree" where
-  "mergepairs Leaf = Leaf"
-| "mergepairs (Node lx x Leaf) = Node lx x Leaf" 
-| "mergepairs (Node lx x (Node ly y ry)) =
-   link (link (Node lx x (Node ly y (mergepairs ry))))"
+fun merge_pairs :: "('a::linorder) tree \<Rightarrow> 'a tree" where
+  "merge_pairs Leaf = Leaf"
+| "merge_pairs (Node lx x Leaf) = Node lx x Leaf" 
+| "merge_pairs (Node lx x (Node ly y ry)) =
+   link (link (Node lx x (Node ly y (merge_pairs ry))))"
 
-fun del_min :: "'a :: linorder tree \<Rightarrow> 'a tree" where
+fun del_min :: "('a::linorder) tree \<Rightarrow> 'a tree" where
   "del_min Leaf = Leaf"
 | "del_min (Node l _ Leaf) = pass\<^sub>2 (pass\<^sub>1 l)"
 
-fun merge :: "'a :: linorder tree \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
+fun merge :: "('a::linorder) tree \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
   "merge Leaf h = h"
 | "merge h Leaf = h"
 | "merge (Node lx x Leaf) (Node ly y Leaf) = link (Node lx x (Node ly y Leaf))"
 
-fun insert :: "'a \<Rightarrow> 'a :: linorder tree \<Rightarrow> 'a tree" where
+fun insert :: "('a::linorder) \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
   "insert x h = merge (Node Leaf x Leaf) h"
 
 text \<open>The invariant is the conjunction of \<open>is_root\<close> and \<open>pheap\<close>:\<close>
 
-fun is_root :: "'a :: linorder tree \<Rightarrow> bool" where
+fun is_root :: "'a tree \<Rightarrow> bool" where
   "is_root h = (case h of Leaf \<Rightarrow> True | Node l x r \<Rightarrow> r = Leaf)"
 
-fun pheap :: "'a :: linorder tree \<Rightarrow> bool" where
+fun pheap :: "('a :: linorder) tree \<Rightarrow> bool" where
 "pheap Leaf = True" |
 "pheap (Node l x r) = (pheap l \<and> pheap r \<and> (\<forall>y \<in> set_tree l. x \<le> y))"
 
@@ -62,10 +63,10 @@ subsection \<open>Correctness Proofs\<close>
 
 text \<open>An optimization:\<close>
 
-lemma mergepairs_pass12: "mergepairs hs = pass\<^sub>2 (pass\<^sub>1 hs)"
-by (induction hs rule: mergepairs.induct) auto
+lemma pass12_merge_pairs: "pass\<^sub>2 (pass\<^sub>1 hs) = merge_pairs hs"
+by (induction hs rule: merge_pairs.induct) auto
 
-declare mergepairs_pass12[symmetric, code_unfold]
+declare pass12_merge_pairs[code_unfold]
 
 
 subsubsection \<open>Invariants\<close>
@@ -140,18 +141,40 @@ lemma mset_merge: "\<lbrakk> is_root h1; is_root h2 \<rbrakk>
  \<Longrightarrow>  mset_tree (merge h1 h2) = mset_tree h1 + mset_tree h2"
 by (induction h1 h2 rule: merge.induct) (auto simp add: ac_simps)
 
-lemma mset_insert:
-  "is_root h \<Longrightarrow> mset_tree (insert a h) = {#a#} + mset_tree h"
-by (simp add: mset_merge insert_def)
-
-lemma mset_pass1: "mset_tree (pass\<^sub>1 h) = mset_tree h"
-by(induction h rule: pass\<^sub>1.induct)(auto simp: add_ac)
-
-lemma mset_pass2: "mset_tree (pass\<^sub>2 h) = mset_tree h"
-by(induction h)(auto simp: mset_link add_ac)
+lemma mset_merge_pairs: "mset_tree (merge_pairs h) = mset_tree h"
+by(induction h rule: merge_pairs.induct)(auto simp: mset_link add_ac)
 
 lemma mset_del_min: "\<lbrakk> is_root h; t \<noteq> Leaf \<rbrakk> \<Longrightarrow>
   mset_tree (del_min h) = mset_tree h - {#get_min h#}"
-by(induction h rule: del_min.induct)(auto simp: mset_pass1 mset_pass2)
+by(induction h rule: del_min.induct)(auto simp: pass12_merge_pairs mset_merge_pairs)
+
+text \<open>Last step: prove all axioms of the priority queue specification:\<close>
+
+interpretation pairing: Priority_Queue_Merge
+where empty = Leaf and is_empty = "\<lambda>h. h = Leaf"
+and merge = merge and insert = insert
+and del_min = del_min and get_min = get_min
+and invar = "\<lambda>h. is_root h \<and> pheap h" and mset = mset_tree
+proof(standard, goal_cases)
+  case 1 show ?case by simp
+next
+  case (2 q) show ?case by (cases q) auto
+next
+  case 3 thus ?case by(simp add: mset_merge)
+next
+  case 4 thus ?case by(simp add: mset_del_min)
+next
+  case 5 thus ?case by(simp add: eq_Min_iff get_min_in get_min_min)
+next
+  case 6 thus ?case by(simp)
+next
+  case 7 thus ?case using is_root_insert pheap_insert by blast
+next
+  case 8 thus ?case using is_root_del_min pheap_del_min by blast
+next
+  case 9 thus ?case by (simp add: mset_merge)
+next
+  case 10 thus ?case using is_root_merge pheap_merge by blast
+qed
 
 end

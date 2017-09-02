@@ -3,8 +3,8 @@ chapter AFP
 session PCF (AFP) = "HOLCF-Library" +
   options [timeout = 600, show_question_marks = false]
   theories [document = false]
-    "~~/src/HOL/HOLCF/HOLCF"
-    "~~/src/HOL/Library/Product_Order"
+    HOLCF
+    "HOL-Library.Product_Order"
     Dual_Lattice
     Basis
   theories

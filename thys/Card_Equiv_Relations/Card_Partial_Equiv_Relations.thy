@@ -24,7 +24,7 @@ using assms by auto
 
 method injectivity_solver uses rule =
   ((drule injectivity_solver_prep_assms)+)?;
-  rule disjoint_underI;
+  rule disjoint_family_onI;
   ((rule disjoint_bind | rule disjoint_bind')+)?;
   (erule disjoint_singleton | erule disjoint_terminal);
   (elim injectivity_solver_CollectE)?;
@@ -195,7 +195,7 @@ proof -
           using \<open>finite A'\<close> by (simp add: finite_equiv)
         ultimately have "finite ?expr \<and> card ?expr = Bell k" by blast
       } note inner = this
-      moreover have "disjoint_under ?comp ?S"
+      moreover have "disjoint_family_on ?comp ?S"
         by (injectivity_solver rule: injectivity(1))
       moreover have "card ?S = card A choose k"
         using \<open>finite A\<close> by (simp add: n_subsets)
@@ -206,7 +206,7 @@ proof -
       ultimately have "finite ?expr \<and> card ?expr = ?formula" by blast
     }
     moreover have "finite ?S" by simp
-    moreover have "disjoint_under ?comp ?S"
+    moreover have "disjoint_family_on ?comp ?S"
       by (injectivity_solver rule: injectivity(2))
     ultimately show "card ?expr = (\<Sum>k = 0..card A. (card A choose k) * Bell k)"
       by (subst card_bind) auto

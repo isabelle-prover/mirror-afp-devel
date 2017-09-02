@@ -1,7 +1,7 @@
 (*  Title:      Containers/Closure_set.thy
     Author:     Andreas Lochbihler, KIT *)
 
-theory Closure_Set imports "Equal" begin
+theory Closure_Set imports Equal begin
 
 section {* Sets implemented as Closures *}
 

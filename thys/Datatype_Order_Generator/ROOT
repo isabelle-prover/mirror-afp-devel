@@ -7,7 +7,7 @@ session Datatype_Order_Generator (AFP) = "HOL-Library" +
     Deriving
     Native_Word
   theories [document = false]
-    "../Collections/Lib/HashCode"
+    Collections.HashCode
   theories
     Derive
     Derive_Examples 

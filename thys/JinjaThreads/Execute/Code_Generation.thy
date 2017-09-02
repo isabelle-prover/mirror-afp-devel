@@ -6,15 +6,15 @@ section {* Code generator setup *}
 
 theory Code_Generation 
 imports
-  "J_Execute"
-  "JVM_Execute2" 
+  J_Execute
+  JVM_Execute2 
   "../Compiler/Preprocessor"
   "../BV/BCVExec"
   "../Compiler/Compiler"
-  "../../Coinductive/Lazy_TLList"
-  "~~/src/HOL/Library/Code_Target_Int"
-  "~~/src/HOL/Library/Code_Char"
-  "~~/src/HOL/Library/Code_Target_Numeral"
+  Coinductive.Lazy_TLList
+  "HOL-Library.Code_Target_Int"
+  "HOL-Library.Code_Char"
+  "HOL-Library.Code_Target_Numeral"
 begin
 
 text {* Avoid module dependency cycles. *}

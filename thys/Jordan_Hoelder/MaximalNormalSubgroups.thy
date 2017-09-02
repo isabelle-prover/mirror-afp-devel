@@ -5,8 +5,8 @@
 
 theory MaximalNormalSubgroups
 imports
-  "SubgroupsAndNormalSubgroups"
-  "SimpleGroups"
+  SubgroupsAndNormalSubgroups
+  SimpleGroups
 begin
 
 section {* Facts about maximal normal subgroups *}

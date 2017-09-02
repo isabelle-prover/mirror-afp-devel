@@ -27,8 +27,8 @@ section \<open>Abstract Rewrite Systems\<close>
 
 theory Abstract_Rewriting
 imports
-  "~~/src/HOL/Library/Infinite_Set"
-  "../Regular-Sets/Regexp_Method"
+  "HOL-Library.Infinite_Set"
+  "Regular-Sets.Regexp_Method"
   Seq
 begin
 

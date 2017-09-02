@@ -5,7 +5,7 @@ Author: Alexander Katovsky
 section "Universe"
 
 theory Universe
-imports "~~/src/HOL/ZF/MainZF"
+imports "HOL-ZF.MainZF"
 begin
 
 

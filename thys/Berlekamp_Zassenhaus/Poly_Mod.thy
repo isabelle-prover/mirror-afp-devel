@@ -12,7 +12,7 @@ text \<open>We use a locale to work with polynomials in some integer-modulo ring
 
 theory Poly_Mod
 imports 
-  "../Polynomial_Factorization/Square_Free_Factorization"
+  Polynomial_Factorization.Square_Free_Factorization
 begin
 
 locale poly_mod = fixes m :: "int" 

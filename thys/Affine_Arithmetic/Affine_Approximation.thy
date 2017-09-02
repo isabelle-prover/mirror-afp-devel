@@ -1,8 +1,8 @@
  section \<open>Approximation with Affine Forms\<close>
 theory Affine_Approximation
 imports
-  "~~/src/HOL/Library/Code_Target_Numeral"
-  "~~/src/HOL/Library/Monad_Syntax"
+  "HOL-Library.Code_Target_Numeral"
+  "HOL-Library.Monad_Syntax"
   Float_Real
   Executable_Euclidean_Space
   Euclidean_Space_Explicit

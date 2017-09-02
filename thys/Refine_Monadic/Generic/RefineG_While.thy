@@ -2,7 +2,7 @@ section {* Generic While-Combinator *}
 theory RefineG_While
 imports 
   RefineG_Recursion
-  "~~/src/HOL/Library/While_Combinator"
+  "HOL-Library.While_Combinator"
 begin
 
 definition

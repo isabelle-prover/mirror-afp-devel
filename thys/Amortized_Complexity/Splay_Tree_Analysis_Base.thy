@@ -5,7 +5,7 @@ subsection "Basics"
 theory Splay_Tree_Analysis_Base
 imports
   Lemmas_log
-  "../Splay_Tree/Splay_Tree"
+  Splay_Tree.Splay_Tree
 begin
 
 declare size1_def[simp]

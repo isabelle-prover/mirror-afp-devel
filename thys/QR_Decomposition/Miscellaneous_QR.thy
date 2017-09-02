@@ -8,7 +8,7 @@ section{*Miscellaneous file for the QR algorithm*}
 
 theory Miscellaneous_QR
 imports
- "../Gauss_Jordan/Examples_Gauss_Jordan_Abstract"
+ Gauss_Jordan.Examples_Gauss_Jordan_Abstract
 begin
 
 

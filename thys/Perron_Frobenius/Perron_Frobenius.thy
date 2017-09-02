@@ -4,7 +4,7 @@ subsection \<open>Perron-Frobenius theorem via Brouwer's fixpoint theorem.\<clos
 
 theory Perron_Frobenius
 imports
-  "~~/src/HOL/Analysis/Brouwer_Fixpoint"
+  "HOL-Analysis.Brouwer_Fixpoint"
   Perron_Frobenius_Aux
 begin
 
@@ -113,7 +113,7 @@ lemma (in semiring_hom) map_vector_vmult:
   "(map_matrix hom A) *v (map_vector hom v) = map_vector hom (A *v v)"
 proof -
   have *: "\<And> hom. semiring_hom hom \<Longrightarrow> (map_matrix hom A) *v (map_vector hom v) = map_vector hom (A *v v)"
-    by (transfer_hma rule: semiring_hom.mat_vec_mult_hom[symmetric])
+    by (transfer_hma rule: semiring_hom.mult_mat_vec_hom[symmetric])
   have "semiring_hom hom" ..
   from *[OF this] show ?thesis .
 qed
@@ -254,7 +254,7 @@ private lemma rv_0: "(rv v = 0) = (v = 0)"
 private lemma rv_mult: "A *v rv v = rv (B *v v)"
 proof -
   have "map_matrix r B = A"
-    using rnnA unfolding map_matrix_def B_def real_non_neg_mat_def map_vector_def mat_elements_h_def
+    using rnnA unfolding map_matrix_def B_def real_non_neg_mat_def map_vector_def elements_mat_h_def
     by vector
   thus ?thesis
     using of_real_hom.map_vector_vmult[of B, where 'a = complex]

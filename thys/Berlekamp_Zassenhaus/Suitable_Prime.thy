@@ -17,7 +17,7 @@ theory Suitable_Prime
 imports 
   Poly_Mod
   Finite_Field_Record_Based
-  "~~/src/HOL/Types_To_Sets/Types_To_Sets"
+  "HOL-Types_To_Sets.Types_To_Sets"
   Poly_Mod_Finite_Field_Record_Based
   Polynomial_Record_Based
   Square_Free_Int_To_Square_Free_GFp

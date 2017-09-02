@@ -6,7 +6,7 @@
 section \<open>Auxiliary Mapping Facts\<close>
 
 theory Mapping2
-  imports Main Map2 "~~/src/HOL/Library/Mapping"
+  imports Main Map2 "HOL-Library.Mapping"
 begin 
 
 lemma lookup_delete:

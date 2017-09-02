@@ -8,7 +8,7 @@ subsection \<open>Defining Comparators and Compare-Instances for Common Types\<c
 theory Compare_Instances
 imports
   Compare_Generator
-  "~~/src/HOL/Library/Char_ord"
+  "HOL-Library.Char_ord"
 begin
 
 

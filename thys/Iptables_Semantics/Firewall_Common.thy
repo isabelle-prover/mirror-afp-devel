@@ -1,6 +1,6 @@
 section\<open>Firewall Basic Syntax\<close>
 theory Firewall_Common
-imports Main "../Simple_Firewall/Firewall_Common_Decision_State" 
+imports Main Simple_Firewall.Firewall_Common_Decision_State 
   "Common/Repeat_Stabilize"
 begin
 

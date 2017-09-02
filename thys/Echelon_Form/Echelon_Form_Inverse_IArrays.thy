@@ -10,7 +10,7 @@ theory Echelon_Form_Inverse_IArrays
   imports 
     Echelon_Form_Inverse
     Code_Cayley_Hamilton_IArrays
-    "../Gauss_Jordan/Inverse_IArrays"
+    Gauss_Jordan.Inverse_IArrays
 begin
 
 subsection{*Computing the inverse of matrices over rings using immutable arrays*}

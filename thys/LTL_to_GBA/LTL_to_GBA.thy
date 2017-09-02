@@ -6,9 +6,9 @@ section \<open>LTL to GBA translation\<close>
 **)
 theory LTL_to_GBA
 imports
-  "../CAVA_Automata/CAVA_Base/CAVA_Base"
-  "../LTL/LTL" "../LTL/LTL_Rewrite"
-  "../CAVA_Automata/Automata"
+  CAVA_Base.CAVA_Base
+  LTL.LTL LTL.LTL_Rewrite
+  CAVA_Automata.Automata
 begin
 
 subsection \<open>Statistics\<close>

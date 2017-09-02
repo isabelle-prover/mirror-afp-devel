@@ -1,8 +1,8 @@
 section {* Proper Iterators *}
 theory Proper_Iterator
 imports 
-  "SetIteratorOperations" 
-  "../../Automatic_Refinement/Lib/Refine_Lib"
+  SetIteratorOperations 
+  Automatic_Refinement.Refine_Lib
 begin
   text {*
     Proper iterators provide a way to obtain polymorphic iterators even

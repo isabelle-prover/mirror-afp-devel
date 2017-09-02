@@ -7,7 +7,7 @@ section \<open>The Sum Type as Error Monad\<close>
 
 theory Error_Monad
 imports
-  "~~/src/HOL/Library/Monad_Syntax"
+  "HOL-Library.Monad_Syntax"
   Error_Syntax
 begin
 

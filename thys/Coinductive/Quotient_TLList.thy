@@ -7,9 +7,9 @@ section {* Setup for Isabelle's quotient package for terminated lazy lists *}
 
 theory Quotient_TLList imports
   TLList
-  "~~/src/HOL/Library/Quotient_Product"
-  "~~/src/HOL/Library/Quotient_Sum"
-  "~~/src/HOL/Library/Quotient_Set"
+  "HOL-Library.Quotient_Product"
+  "HOL-Library.Quotient_Sum"
+  "HOL-Library.Quotient_Set"
 begin
 
 subsection {* Rules for the Quotient package *}

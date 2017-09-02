@@ -1,7 +1,7 @@
 theory Coll_Test
 imports 
-  "../../Refine_Dflt" 
-  "Succ_Graph"
+  Collections.Refine_Dflt 
+  Succ_Graph
 begin
 
 declare [[autoref_trace_failed_id]]

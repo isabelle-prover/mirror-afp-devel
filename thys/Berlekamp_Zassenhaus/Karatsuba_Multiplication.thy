@@ -7,7 +7,7 @@
 subsection \<open>Karatsuba's Multiplication Algorithm for Polynomials\<close>
 theory Karatsuba_Multiplication
 imports 
-  "../Polynomial_Interpolation/Missing_Polynomial"
+  Polynomial_Interpolation.Missing_Polynomial
 begin
 
 lemma karatsuba_main_step: fixes f :: "'a :: comm_ring_1 poly"

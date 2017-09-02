@@ -4,7 +4,7 @@ subsection \<open>Okasaki's Pairing Heap (Modified)\<close>
 
 theory Pairing_Heap_List2_Analysis
 imports
-  "../Pairing_Heap/Pairing_Heap_List2"
+  Pairing_Heap.Pairing_Heap_List2
   Amortized_Framework
   Priority_Queue_ops_merge
   Lemmas_log

@@ -6,8 +6,8 @@
 chapter {* Unsigned words of default size *}
 
 theory Uint imports
-  "Word_Misc"
-  "Bits_Integer"
+  Word_Misc
+  Bits_Integer
 begin
 
 text {*

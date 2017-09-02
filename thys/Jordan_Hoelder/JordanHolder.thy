@@ -5,10 +5,10 @@
 
 theory JordanHolder
 imports
-  "CompositionSeries"
-  "MaximalNormalSubgroups"
-  "Multiset"
-  "GroupIsoClasses"
+  CompositionSeries
+  MaximalNormalSubgroups
+  "HOL-Library.Multiset"
+  GroupIsoClasses
 begin
 
 section {* The Jordan-H\"older Theorem *}

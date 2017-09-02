@@ -6,15 +6,15 @@ session "Nominal2" (AFP) = HOL +
     "HOL-Library"
     FinFun
   theories [document = false]
-    "~~/src/HOL/Library/Old_Datatype"
-    "~~/src/HOL/Library/Cardinality"
-    "~~/src/HOL/Library/Infinite_Set"
-    "~~/src/HOL/Library/Phantom_Type"
-    "~~/src/HOL/Library/FSet"
-    "../FinFun/FinFun"
+    "HOL-Library.Old_Datatype"
+    "HOL-Library.Cardinality"
+    "HOL-Library.Infinite_Set"
+    "HOL-Library.Phantom_Type"
+    "HOL-Library.FSet"
+    FinFun.FinFun
   theories
-    "Nominal2"
-    "Atoms"
-    "Eqvt"
+    Nominal2
+    Atoms
+    Eqvt
   document_files
     "root.tex"

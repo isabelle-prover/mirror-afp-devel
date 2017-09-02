@@ -11,7 +11,7 @@ theory Poly_Mod_Finite_Field
   imports
   Finite_Field
   Poly_Mod
-  "../Polynomial_Interpolation/Ring_Hom_Poly"
+  Polynomial_Interpolation.Ring_Hom_Poly
 begin
 
 abbreviation to_int_poly :: "'a :: finite mod_ring poly \<Rightarrow> int poly" where

@@ -5,7 +5,7 @@
 section "From regular expressions to nondeterministic automata with epsilon"
 
 theory RegExp2NAe
-imports "../Regular-Sets/Regular_Exp" NAe
+imports "Regular-Sets.Regular_Exp" NAe
 begin
 
 type_synonym 'a bitsNAe = "('a,bool list)nae"

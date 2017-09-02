@@ -6,7 +6,7 @@
 section {* Demonic Refinement Algebra with Tests *}
 
 theory DRAT
-  imports KAT "../../Kleene_Algebra/DRA"
+  imports KAT Kleene_Algebra.DRA
 begin
 
 text {*

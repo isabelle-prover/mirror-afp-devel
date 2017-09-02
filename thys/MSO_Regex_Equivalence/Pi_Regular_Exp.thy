@@ -4,8 +4,8 @@ section {* $\Pi$-Extended Regular Expressions *}
 
 (*<*)
 theory Pi_Regular_Exp
-imports Pi_Regular_Set "~~/src/HOL/Library/List_lexord" "~~/src/HOL/Library/Code_Target_Nat"
-  "../Deriving/Comparator_Generator/Compare_Instances"   
+imports Pi_Regular_Set "HOL-Library.List_lexord" "HOL-Library.Code_Target_Nat"
+  Deriving.Compare_Instances   
 begin
 (*>*)
 subsection {* Syntax of regular expressions *}

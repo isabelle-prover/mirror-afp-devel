@@ -1,8 +1,8 @@
 (* Author: Dmitriy Traytel *)
 
 theory M2L_Examples
-imports M2L_Equivalence_Checking "~~/src/HOL/Library/Char_ord"
-    "~~/src/HOL/Library/Product_Lexorder"
+imports MSO_Regex_Equivalence.M2L_Equivalence_Checking "HOL-Library.Char_ord"
+    "HOL-Library.Product_Lexorder"
 begin
 
 abbreviation FALSE where "FALSE \<equiv> FExists (FLess 0 0)"

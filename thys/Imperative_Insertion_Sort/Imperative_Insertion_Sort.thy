@@ -7,7 +7,7 @@ section \<open>Insertion Sort\<close>
 theory Imperative_Insertion_Sort
 imports
   Imperative_Loops
-  "~~/src/HOL/Library/Multiset"
+  "HOL-Library.Multiset"
 begin
 
 subsection \<open>The Algorithm\<close>

@@ -1,7 +1,7 @@
 section {* Boolean Programs *}
 theory BoolProgs
 imports 
-  "../../CAVA_Automata/CAVA_Base/CAVA_Base"
+  CAVA_Base.CAVA_Base
 begin
 
 subsection {* Syntax and Semantics *}

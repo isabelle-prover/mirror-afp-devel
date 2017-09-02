@@ -8,13 +8,13 @@ section \<open>The Almost-Full Property\<close>
 
 theory Almost_Full
 imports
-  "~~/src/HOL/Library/Sublist"
-  "~~/src/HOL/Library/Ramsey"
-  "../Regular-Sets/Regexp_Method"
-  "../Abstract-Rewriting/Seq"
+  "HOL-Library.Sublist"
+  "HOL-Library.Ramsey"
+  "Regular-Sets.Regexp_Method"
+  "Abstract-Rewriting.Seq"
   Least_Enum
   Infinite_Sequences
-  "../Open_Induction/Restricted_Predicates"
+  Open_Induction.Restricted_Predicates
 begin
 
 (*TODO: move*)

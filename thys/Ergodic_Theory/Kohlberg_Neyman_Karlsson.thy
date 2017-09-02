@@ -192,18 +192,18 @@ proof -
 
   have "compact (sphere (0::'a) 1)" by simp
   moreover have "V i \<in> sphere 0 1" for i using V(1) by auto
-  ultimately have "\<exists>v \<in> sphere 0 1. \<exists>r. subseq r \<and> (V o r) \<longlonglongrightarrow> v"
+  ultimately have "\<exists>v \<in> sphere 0 1. \<exists>r. strict_mono r \<and> (V o r) \<longlonglongrightarrow> v"
     using compact_eq_seq_compact_metric seq_compact_def by metis
-  then obtain v r where v: "v \<in> sphere 0 1" "subseq r" "(V o r) \<longlonglongrightarrow> v"
+  then obtain v r where v: "v \<in> sphere 0 1" "strict_mono r" "(V o r) \<longlonglongrightarrow> v"
     by auto
   have "v \<bullet> (T ^^ l) 0 \<le> - A * l" for l
   proof -
     have *: "(\<lambda>i. (-A + eps (r i)) * l - V (r i) \<bullet> (T ^^ l) 0) \<longlonglongrightarrow> (-A + 0) * l - v \<bullet> (T ^^ l) 0"
       apply (intro tendsto_intros)
-      using \<open>(V o r) \<longlonglongrightarrow> v\<close> \<open>eps \<longlonglongrightarrow> 0\<close> \<open>subseq r\<close> LIMSEQ_subseq_LIMSEQ unfolding comp_def by auto
+      using \<open>(V o r) \<longlonglongrightarrow> v\<close> \<open>eps \<longlonglongrightarrow> 0\<close> \<open>strict_mono r\<close> LIMSEQ_subseq_LIMSEQ unfolding comp_def by auto
     have "eventually (\<lambda>i. (-A + eps (r i)) * l - V (r i) \<bullet> (T ^^ l) 0 \<ge> 0) sequentially"
       unfolding eventually_sequentially apply (rule exI[of _ l])
-      using V(2)[of l] seq_suble[OF \<open>subseq r\<close>] apply auto using le_trans by blast
+      using V(2)[of l] seq_suble[OF \<open>strict_mono r\<close>] apply auto using le_trans by blast
     then have " (-A + 0) * l - v \<bullet> (T ^^ l) 0 \<ge> 0"
       using LIMSEQ_le_const[OF *, of 0] unfolding eventually_sequentially by auto
     then show ?thesis by auto

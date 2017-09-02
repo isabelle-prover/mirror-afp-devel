@@ -3,7 +3,7 @@ subsection \<open>Example: Modifying the Code-Equations of Red-Black-Trees\<clos
 theory RBT_Compare_Order_Impl
 imports
   Compare
-  "~~/src/HOL/Library/RBT_Impl"
+  "HOL-Library.RBT_Impl"
 begin
 
 text \<open>In the following, we modify all code-equations of the red-black-tree 

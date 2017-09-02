@@ -1,5 +1,5 @@
 theory "Abstract-Denotational-Props"
-  imports "AbstractDenotational" Substitution
+  imports AbstractDenotational Substitution
 begin
 
 context semantic_domain

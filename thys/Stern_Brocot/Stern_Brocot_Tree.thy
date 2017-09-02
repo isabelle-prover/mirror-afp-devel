@@ -5,10 +5,10 @@ section {* The Stern-Brocot Tree *}
 
 theory Stern_Brocot_Tree
 imports
-  "~~/src/HOL/Rat"
-  "~~/src/HOL/Library/Sublist"
+  HOL.Rat
+  "HOL-Library.Sublist"
   Cotree_Algebra
-  "../Applicative_Lifting/Stream_Algebra"
+  Applicative_Lifting.Stream_Algebra
 begin
 
 text{*

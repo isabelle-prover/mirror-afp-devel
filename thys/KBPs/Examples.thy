@@ -9,7 +9,7 @@ theory Examples
 imports
   MuddyChildren
   Robot
-  "~~/src/HOL/Library/AList_Mapping"
+  "HOL-Library.AList_Mapping"
 begin
 
 (* Just verify that code generation works. *)

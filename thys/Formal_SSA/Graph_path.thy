@@ -11,7 +11,7 @@ text {* We extend the Graph framework with inductively defined paths.
 
 theory Graph_path imports
   FormalSSA_Misc
-  "../Dijkstra_Shortest_Path/GraphSpec"
+  Dijkstra_Shortest_Path.GraphSpec
 begin
 
 hide_const "Omega_Words_Fun.prefix" "Omega_Words_Fun.suffix"

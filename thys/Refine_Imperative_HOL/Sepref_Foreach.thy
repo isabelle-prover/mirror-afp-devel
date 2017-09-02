@@ -1,6 +1,6 @@
 section \<open>Setup for Foreach Combinator\<close>
 theory Sepref_Foreach
-imports Sepref_HOL_Bindings "Lib/Pf_Add" "~~/src/HOL/Library/Rewrite"
+imports Sepref_HOL_Bindings "Lib/Pf_Add" "HOL-Library.Rewrite"
 begin
 
 subsection "Foreach Loops"

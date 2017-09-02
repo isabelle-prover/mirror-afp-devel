@@ -7,9 +7,9 @@
 section \<open>Randomised QuickSort\<close>
 theory Randomised_Quick_Sort
   imports 
-    "~~/src/HOL/Probability/Probability" 
-    "../Landau_Symbols/Landau_Symbols"
-    "../Comparison_Sort_Lower_Bound/Linorder_Relations"
+    Probability 
+    Landau_Symbols.Landau_Symbols
+    Comparison_Sort_Lower_Bound.Linorder_Relations
 begin
 
 subsection \<open>Deletion by index\<close>  

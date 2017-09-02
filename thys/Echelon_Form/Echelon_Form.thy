@@ -9,8 +9,8 @@ section{*Echelon Form*}
 theory Echelon_Form
 imports 
   Rings2
-  "../Gauss_Jordan/Determinants2"
-  "Cayley_Hamilton_Compatible"
+  Gauss_Jordan.Determinants2
+  Cayley_Hamilton_Compatible
 begin
 
 

@@ -823,7 +823,7 @@ lemma Lp_tendsto_AE_subseq:
           "tendsto_in\<^sub>N (\<LL> p M) f g"
           "\<And>n. f n \<in> space\<^sub>N (\<LL> p M)"
           "g \<in> space\<^sub>N (\<LL> p M)"
-  shows "\<exists>r. Topological_Spaces.subseq r \<and> (AE x in M. (\<lambda>n. f (r n) x) \<longlonglongrightarrow> g x)"
+  shows "\<exists>r. strict_mono r \<and> (AE x in M. (\<lambda>n. f (r n) x) \<longlonglongrightarrow> g x)"
 proof -
   have "f n - g \<in> space\<^sub>N (\<LL> p M)" for n
     using spaceN_diff[OF `\<And>n. f n \<in> space\<^sub>N (\<LL> p M)` `g \<in> space\<^sub>N (\<LL> p M)`] by simp
@@ -838,9 +838,9 @@ proof -
     apply (rule tendsto_zero_powrI[of _ _ _ p]) using `p > 0` * by auto
   then have **: "(\<lambda>n. (\<integral>x. \<bar>f n x - g x\<bar> powr p \<partial>M)) \<longlonglongrightarrow> 0"
     using powr_powr `p > 0` by auto
-  have "\<exists>r. Topological_Spaces.subseq r \<and> (AE x in M. (\<lambda>n. \<bar>f (r n) x - g x\<bar> powr p) \<longlonglongrightarrow> 0)"
+  have "\<exists>r. strict_mono r \<and> (AE x in M. (\<lambda>n. \<bar>f (r n) x - g x\<bar> powr p) \<longlonglongrightarrow> 0)"
     apply (rule tendsto_L1_AE_subseq) using int ** by auto
-  then obtain r where "Topological_Spaces.subseq r" "AE x in M. (\<lambda>n. \<bar>f (r n) x - g x\<bar> powr p) \<longlonglongrightarrow> 0"
+  then obtain r where "strict_mono r" "AE x in M. (\<lambda>n. \<bar>f (r n) x - g x\<bar> powr p) \<longlonglongrightarrow> 0"
     by blast
   moreover have "(\<lambda>n. f (r n) x) \<longlonglongrightarrow> g x" if "(\<lambda>n. \<bar>f (r n) x - g x\<bar> powr p) \<longlonglongrightarrow> 0" for x
   proof -
@@ -852,7 +852,7 @@ proof -
       by (simp add: \<open>(\<lambda>n. \<bar>f (r n) x - g x\<bar>) \<longlonglongrightarrow> 0\<close> Limits.LIM_zero_cancel tendsto_rabs_zero_cancel)
   qed
   ultimately have "AE x in M. (\<lambda>n. f (r n) x) \<longlonglongrightarrow> g x" by auto
-  then show ?thesis using `Topological_Spaces.subseq r` by auto
+  then show ?thesis using `strict_mono r` by auto
 qed
 
 subsection {*Specialization to $L^1$*}
@@ -1174,14 +1174,15 @@ next
   case False
   define le where "le = liminf (\<lambda>n. eNorm (\<LL> p M) (f n))"
   then have "le < \<infinity>" using False by (simp add: top.not_eq_extremum)
-  obtain r0 where r0: "Topological_Spaces.subseq r0" "(\<lambda>n. eNorm (\<LL> p M) (f (r0 n))) \<longlonglongrightarrow> le"
+  obtain r0 where r0: "strict_mono r0" "(\<lambda>n. eNorm (\<LL> p M) (f (r0 n))) \<longlonglongrightarrow> le"
     using liminf_subseq_lim unfolding comp_def le_def by force
   then have "eventually (\<lambda>n. eNorm (\<LL> p M) (f (r0 n)) < \<infinity>) sequentially"
     using False unfolding order_tendsto_iff le_def by (simp add: top.not_eq_extremum)
   then obtain N where N: "\<And>n. n \<ge> N \<Longrightarrow> eNorm (\<LL> p M) (f (r0 n)) < \<infinity>"
     unfolding eventually_sequentially by blast
   define r where "r = (\<lambda>n. r0 (n + N))"
-  have "Topological_Spaces.subseq r" unfolding r_def using `Topological_Spaces.subseq r0` by (simp add: subseq_Suc_iff)
+  have "strict_mono r" unfolding r_def using `strict_mono r0` 
+    by (simp add: strict_mono_Suc_iff)
   have *: "(\<lambda>n. eNorm (\<LL> p M) (f (r n))) \<longlonglongrightarrow> le"
     unfolding r_def using LIMSEQ_ignore_initial_segment[OF r0(2), of N].
   have "f (r n) \<in> space\<^sub>N (\<LL> p M)" for n
@@ -1207,7 +1208,7 @@ next
       using `\<And>n. f (r n) \<in> space\<^sub>N(\<LL> p M)` by auto
     have "liminf (\<lambda>n. ennreal(\<bar>f (r n) x\<bar> powr p2)) = \<bar>g x\<bar> powr p2" if "(\<lambda>n. f n x) \<longlonglongrightarrow> g x" for x
       apply (rule lim_imp_Liminf, auto intro!: tendsto_intros simp add: `p2 > 0`)
-      using LIMSEQ_subseq_LIMSEQ[OF that `Topological_Spaces.subseq r`] unfolding comp_def by auto
+      using LIMSEQ_subseq_LIMSEQ[OF that `strict_mono r`] unfolding comp_def by auto
     then have *: "AE x in M. liminf (\<lambda>n. ennreal(\<bar>f (r n) x\<bar> powr p2)) = \<bar>g x\<bar> powr p2"
       using `AE x in M. (\<lambda>n. f n x) \<longlonglongrightarrow> g x` by auto
 
@@ -1253,7 +1254,7 @@ next
     moreover have "\<bar>g x\<bar> \<le> l" if "\<forall>n. \<bar>f (r n) x\<bar> \<le> Norm (\<LL> \<infinity> M) (f (r n))" "(\<lambda>n. f n x) \<longlonglongrightarrow> g x" for x
     proof -
       have "(\<lambda>n. f (r n) x) \<longlonglongrightarrow> g x"
-        using that LIMSEQ_subseq_LIMSEQ[OF _ `Topological_Spaces.subseq r`] unfolding comp_def by auto
+        using that LIMSEQ_subseq_LIMSEQ[OF _ `strict_mono r`] unfolding comp_def by auto
       then have *: "(\<lambda>n. \<bar>f (r n) x\<bar>) \<longlonglongrightarrow> \<bar>g x\<bar>"
         by (auto intro!:tendsto_intros)
       show ?thesis

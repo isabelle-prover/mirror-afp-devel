@@ -3,7 +3,7 @@ section \<open>Deciding Regular Expression Equivalence\<close>
 theory Equivalence_Checking
 imports
   NDerivative
-  "~~/src/HOL/Library/While_Combinator"
+  "HOL-Library.While_Combinator"
 begin
 
 

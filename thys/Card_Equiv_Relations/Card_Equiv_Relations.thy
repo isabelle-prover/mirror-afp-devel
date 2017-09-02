@@ -4,8 +4,8 @@ section {* Cardinality of Equivalence Relations *}
 
 theory Card_Equiv_Relations
 imports
-  "../Card_Partitions/Card_Partitions"
-  "../Bell_Numbers_Spivey/Bell_Numbers"
+  Card_Partitions.Card_Partitions
+  Bell_Numbers_Spivey.Bell_Numbers
   More_Set_Partition
 begin
 

@@ -5,7 +5,7 @@
 chapter {* More about words *}
 
 theory Word_Misc imports
-  "~~/src/HOL/Word/Word"
+  "HOL-Word.Word"
   More_Bits_Int
 begin
 

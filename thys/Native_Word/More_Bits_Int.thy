@@ -6,8 +6,8 @@ chapter {* More bit operations on integers *}
 
 theory More_Bits_Int
 imports
-  "~~/src/HOL/Word/Bits_Bit"
-  "~~/src/HOL/Word/Bool_List_Representation"
+  "HOL-Word.Bits_Bit"
+  "HOL-Word.Bool_List_Representation"
 begin
 
 lemma last_rev' [simp]: "last (rev xs) = hd xs"

@@ -3,7 +3,7 @@
 *)
 
 theory PolyMisc imports
-  "~~/src/HOL/Computational_Algebra/Polynomial_Factorial"
+  "HOL-Computational_Algebra.Polynomial_Factorial"
 begin
   
 lemma coprime_poly_0:

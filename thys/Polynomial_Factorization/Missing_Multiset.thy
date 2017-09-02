@@ -11,7 +11,7 @@ text \<open>This theory provides some definitions and lemmas on multisets which 
 
 theory Missing_Multiset
 imports
-  "~~/src/HOL/Library/Multiset"
+  "HOL-Library.Multiset"
 begin
 
 lemma multiset_subset_insert: "{ps. ps \<subseteq># add_mset x xs} =

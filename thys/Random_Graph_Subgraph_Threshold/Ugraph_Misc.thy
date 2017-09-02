@@ -2,9 +2,9 @@ section{* Miscellaneous and contributed lemmas *}
 
 theory Ugraph_Misc
 imports
-  Limits
-  "~~/src/HOL/Probability/Probability"
-  "../Girth_Chromatic/Girth_Chromatic_Misc"
+  HOL.Limits
+  Probability
+  Girth_Chromatic.Girth_Chromatic_Misc
 begin
 
 lemma sum_square:

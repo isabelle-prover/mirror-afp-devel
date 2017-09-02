@@ -1,6 +1,6 @@
 section \<open>Tail-Recursive Implementation\<close>
 theory Tailrec_Impl
-imports "General_DFS_Structure"
+imports General_DFS_Structure
 begin
 
 locale tailrec_impl_defs =

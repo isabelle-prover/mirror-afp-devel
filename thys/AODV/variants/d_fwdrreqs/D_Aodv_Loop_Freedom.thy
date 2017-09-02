@@ -6,7 +6,7 @@
 section "Lift and transfer invariants to show loop freedom"
 
 theory D_Aodv_Loop_Freedom
-imports "../../../AWN/OClosed_Transfer" "../../../AWN/Qmsg_Lifting" D_Global_Invariants D_Loop_Freedom
+imports AWN.OClosed_Transfer AWN.Qmsg_Lifting D_Global_Invariants D_Loop_Freedom
 begin
 
 subsection \<open>Lift to parallel processes with queues\<close>

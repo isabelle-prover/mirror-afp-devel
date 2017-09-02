@@ -3,7 +3,7 @@
 *)
 
 theory SSA_CFG
-imports Main Relation Graph_path "~~/src/HOL/Library/Sublist"
+imports Main HOL.Relation Graph_path "HOL-Library.Sublist"
 begin
 
 subsection {* CFG *}

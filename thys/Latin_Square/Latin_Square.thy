@@ -4,7 +4,7 @@
 *)
 
 theory Latin_Square
-imports "../Marriage/Marriage"
+imports Marriage.Marriage
 begin
 
 text {*

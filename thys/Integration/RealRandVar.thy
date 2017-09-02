@@ -1,7 +1,7 @@
 section {* Real-Valued random variables \label{sec:realrandvar} *}
 
 theory RealRandVar
-imports Measure "~~/src/HOL/Library/Countable"
+imports Measure "HOL-Library.Countable"
 begin
 
 text {*While most of the above material was modeled after Hurd's work

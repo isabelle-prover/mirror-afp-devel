@@ -8,7 +8,7 @@ section \<open>Monadic Parser Combinators\<close>
 theory Parser_Monad
 imports
   Error_Monad
-  "../Show/Show"
+  Show.Show
 begin
 
 (*It might be nice to be able to enter things like CHR ''\t'', ... directly.*)

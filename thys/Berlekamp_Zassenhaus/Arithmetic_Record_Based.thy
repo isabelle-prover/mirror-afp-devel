@@ -11,9 +11,9 @@ text \<open>We create a locale for rings and fields based on a record
 
 theory Arithmetic_Record_Based
 imports 
-  "~~/src/HOL/Fields"
-  "~~/src/HOL/Library/More_List"
-  "~~/src/HOL/Computational_Algebra/Euclidean_Algorithm"
+  HOL.Fields
+  "HOL-Library.More_List"
+  "HOL-Computational_Algebra.Euclidean_Algorithm"
 begin
 datatype 'a arith_ops_record = Arith_Ops_Record
   (zero : 'a)

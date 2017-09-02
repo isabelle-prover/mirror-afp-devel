@@ -1,6 +1,6 @@
 section {* Exception-Aware Relational Framework *}
 theory Run
-imports "~~/src/HOL/Imperative_HOL/Imperative_HOL"
+imports "HOL-Imperative_HOL.Imperative_HOL"
 begin
 
   text {*

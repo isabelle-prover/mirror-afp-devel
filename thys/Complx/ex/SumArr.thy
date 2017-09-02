@@ -12,7 +12,7 @@ section \<open>Case-study\<close>
 theory SumArr
 imports
   "../OG_Syntax"
-  "../../Word_Lib/Word_Lemmas_32"
+  Word_Lib.Word_Lemmas_32
 begin
 
 type_synonym routine = nat

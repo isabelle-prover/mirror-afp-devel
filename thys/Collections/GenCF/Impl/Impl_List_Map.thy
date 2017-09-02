@@ -5,7 +5,7 @@ imports
   "../Gen/Gen_Map"
   "../Intf/Intf_Comp"
   "../Intf/Intf_Map"
-  List
+  HOL.List
 begin
 
 type_synonym ('k,'v) list_map = "('k\<times>'v) list"

@@ -8,7 +8,7 @@
 section "The Generic Unwinding Theorem"
 
 theory GenericUnwinding
-imports "../Noninterference_Ipurge_Unwinding/DeterministicProcesses"
+imports Noninterference_Ipurge_Unwinding.DeterministicProcesses
 begin
 
 text {*

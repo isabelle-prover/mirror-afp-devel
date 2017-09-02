@@ -2,7 +2,7 @@ section \<open>Coinductively Defined Operations Are Standard\<close>
 
 (*<*)
 theory Coinductive_Regular_Set
-imports "../Regular-Sets/Regular_Set" Coinductive_Language
+imports "Regular-Sets.Regular_Set" Coinductive_Language
 begin
 (*>*)
 

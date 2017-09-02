@@ -4,11 +4,11 @@
 section \<open>Cryptographic constructions and their security\<close>
 
 theory Elgamal imports
-  "../CryptHOL/Cyclic_Group_SPMF"
-  "../CryptHOL/Computational_Model"
-  "Diffie_Hellman"
-  "IND_CPA_PK_Single"
-  "../CryptHOL/Negligible"
+  CryptHOL.Cyclic_Group_SPMF
+  CryptHOL.Computational_Model
+  Diffie_Hellman
+  IND_CPA_PK_Single
+  CryptHOL.Negligible
 begin
 
 subsection {* Elgamal encryption scheme *}

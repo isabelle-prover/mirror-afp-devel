@@ -10,11 +10,11 @@ imports
   Finite_Field_Factorization 
   Matrix_Record_Based
   Poly_Mod_Finite_Field_Record_Based
-  "~~/src/HOL/Types_To_Sets/Types_To_Sets"
-  "../Jordan_Normal_Form/Matrix_IArray_Impl"
-  "../Jordan_Normal_Form/Gauss_Jordan_IArray_Impl"  
-  "../Polynomial_Interpolation/Improved_Code_Equations"
-  "../Polynomial_Factorization/Missing_List"
+  "HOL-Types_To_Sets.Types_To_Sets"
+  Jordan_Normal_Form.Matrix_IArray_Impl
+  Jordan_Normal_Form.Gauss_Jordan_IArray_Impl  
+  Polynomial_Interpolation.Improved_Code_Equations
+  Polynomial_Factorization.Missing_List
 begin
 
 hide_const(open) monom coeff
@@ -76,9 +76,9 @@ definition berlekamp_mat_i :: "'i list \<Rightarrow> 'i mat" where
 
 definition berlekamp_resulting_mat_i :: "'i list \<Rightarrow> 'i mat" where
 "berlekamp_resulting_mat_i u = (let Q = berlekamp_mat_i u;
-    n = dim\<^sub>r Q;
+    n = dim_row Q;
     QI = mat n n (\<lambda> (i,j). if i = j then arith_ops_record.minus ff_ops (Q $$ (i,j)) (arith_ops_record.one ff_ops) else Q $$ (i,j))
-    in (gauss_jordan_single_i ff_ops (mat_transpose QI)))"
+    in (gauss_jordan_single_i ff_ops (transpose_mat QI)))"
 
 definition berlekamp_basis_i :: "'i list \<Rightarrow> 'i list list" where
   "berlekamp_basis_i u = (map (poly_of_list_i ff_ops o list_of_vec) 
@@ -223,7 +223,7 @@ proof (intro rel_funI)
                 (power_polys (power_poly_f_mod f' [:0, 1:] (nat p)) f' 1 (degree f'))) $$
              (i, j))"           
         unfolding mat_of_rows_list_def length_map length_power_polys_i power_polys_works
-          length_power_polys mat_index_mat[OF i j] split
+          length_power_polys index_mat[OF i j] split
         unfolding poly_def cs_def poly'_def cs'_def using i
         by auto
   } note main = this

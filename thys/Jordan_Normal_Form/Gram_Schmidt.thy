@@ -21,29 +21,29 @@ begin
 subsection {* Conjugates of Vectors *}
 
 definition vec_conjugate::"'a :: conjugate vec \<Rightarrow> 'a vec" ("conjugate\<^sub>v")
-  where "conjugate\<^sub>v v = vec (dim\<^sub>v v) (\<lambda>i. conjugate (v $ i))"
+  where "conjugate\<^sub>v v = vec (dim_vec v) (\<lambda>i. conjugate (v $ i))"
 
 lemma vec_conjugate_index[simp]:
-  shows "i < dim\<^sub>v v \<Longrightarrow> conjugate\<^sub>v v $ i = conjugate (v $ i)"
-    and "dim\<^sub>v (conjugate\<^sub>v v) = dim\<^sub>v v"
+  shows "i < dim_vec v \<Longrightarrow> conjugate\<^sub>v v $ i = conjugate (v $ i)"
+    and "dim_vec (conjugate\<^sub>v v) = dim_vec v"
   unfolding vec_conjugate_def by auto
 
-lemma vec_conjugate_closed[simp]: "v : carrier\<^sub>v n \<Longrightarrow> conjugate\<^sub>v v : carrier\<^sub>v n"
+lemma vec_conjugate_closed[simp]: "v : carrier_vec n \<Longrightarrow> conjugate\<^sub>v v : carrier_vec n"
   unfolding vec_conjugate_def by auto
 
 lemma vec_conjugate_dist_add:
   fixes v w :: "'a :: conjugatable_ring vec"
-  assumes dim: "v : carrier\<^sub>v n" "w : carrier\<^sub>v n"
-  shows "conjugate\<^sub>v (v \<oplus>\<^sub>v w) = conjugate\<^sub>v v \<oplus>\<^sub>v conjugate\<^sub>v w"
+  assumes dim: "v : carrier_vec n" "w : carrier_vec n"
+  shows "conjugate\<^sub>v (v + w) = conjugate\<^sub>v v + conjugate\<^sub>v w"
   by (rule, insert dim, auto simp: conjugate_dist_add)
 
 lemma vec_conjugate_uminus:
   fixes v w :: "'a :: conjugatable_ring vec"
-  shows "\<ominus>\<^sub>v (conjugate\<^sub>v v) = conjugate\<^sub>v (\<ominus>\<^sub>v v)"
+  shows "- (conjugate\<^sub>v v) = conjugate\<^sub>v (- v)"
   by (rule, auto simp:conjugate_neg)
 
 lemma vec_conjugate_zero[simp]:
-  "conjugate\<^sub>v (\<zero>\<^sub>v n :: 'a :: conjugatable_ring vec) = \<zero>\<^sub>v n" by auto
+  "conjugate\<^sub>v (0\<^sub>v n :: 'a :: conjugatable_ring vec) = 0\<^sub>v n" by auto
 
 lemma vec_conjugate_id[simp]: "conjugate\<^sub>v (conjugate\<^sub>v v) = v"
   unfolding vec_conjugate_def by auto
@@ -53,9 +53,9 @@ lemma vec_conjugate_cancel_iff[simp]: "conjugate\<^sub>v v = conjugate\<^sub>v w
 proof(rule iffI)
   assume cvw: "?v = ?w" show "v = w"
   proof(rule)
-    have "dim\<^sub>v ?v = dim\<^sub>v ?w" using cvw by auto
-    thus dim: "dim\<^sub>v v = dim\<^sub>v w" by simp
-    fix i assume i: "i < dim\<^sub>v w"
+    have "dim_vec ?v = dim_vec ?w" using cvw by auto
+    thus dim: "dim_vec v = dim_vec w" by simp
+    fix i assume i: "i < dim_vec w"
     hence "conjugate\<^sub>v v $ i = conjugate\<^sub>v w $ i" using cvw by auto
     hence "conjugate (v$i) = conjugate (w $ i)" using i dim by auto
     thus "v $ i = w $ i" by auto
@@ -64,26 +64,26 @@ qed auto
 
 lemma vec_conjugate_zero_iff[simp]:
   fixes v :: "'a :: conjugatable_ring vec"
-  shows "conjugate\<^sub>v v = \<zero>\<^sub>v n \<longleftrightarrow> v = \<zero>\<^sub>v n"
-  using vec_conjugate_cancel_iff[of _ "\<zero>\<^sub>v n :: 'a vec"] by auto
+  shows "conjugate\<^sub>v v = 0\<^sub>v n \<longleftrightarrow> v = 0\<^sub>v n"
+  using vec_conjugate_cancel_iff[of _ "0\<^sub>v n :: 'a vec"] by auto
 
 lemma vec_conjugate_dist_smult:
   fixes k :: "'a :: conjugatable_ring"
-  shows "conjugate\<^sub>v (k \<odot>\<^sub>v v) = conjugate k \<odot>\<^sub>v conjugate\<^sub>v v"
+  shows "conjugate\<^sub>v (k \<cdot>\<^sub>v v) = conjugate k \<cdot>\<^sub>v conjugate\<^sub>v v"
   unfolding vec_conjugate_def
   apply(rule) using conjugate_dist_mul by auto
 
 lemma vec_conjugate_dist_sprod:
   fixes v w :: "'a :: conjugatable_ring vec"
-  assumes v[simp]: "v : carrier\<^sub>v n" and w[simp]: "w : carrier\<^sub>v n"
+  assumes v[simp]: "v : carrier_vec n" and w[simp]: "w : carrier_vec n"
   shows "conjugate (v \<bullet> w) = conjugate\<^sub>v v \<bullet> conjugate\<^sub>v w"
   unfolding scalar_prod_def
   apply (subst sum_conjugate[OF finite_atLeastLessThan])
   unfolding vec_conjugate_index
 proof (rule sum.cong[OF refl])
-  fix i assume "i : {0..<dim\<^sub>v w}"
-  hence [simp]:"i < dim\<^sub>v v" "i < dim\<^sub>v w"
-    unfolding vec_elemsD[OF v] vec_elemsD[OF w]
+  fix i assume "i : {0..<dim_vec w}"
+  hence [simp]:"i < dim_vec v" "i < dim_vec w"
+    unfolding carrier_vecD[OF v] carrier_vecD[OF w]
     using atLeastLessThan_iff by auto
   show "conjugate (v $ i * w $ i) = conjugate\<^sub>v v $ i * conjugate\<^sub>v w $ i"
     using conjugate_dist_mul vec_conjugate_index by auto
@@ -93,36 +93,36 @@ abbreviation cscalar_prod :: "'a vec \<Rightarrow> 'a vec \<Rightarrow> 'a :: co
   where "op \<bullet>c == \<lambda>v w. v \<bullet> conjugate\<^sub>v w"
 
 lemma vec_conjugate_conjugate_sprod[simp]:
-  assumes v[simp]: "v : carrier\<^sub>v n" and w[simp]: "w : carrier\<^sub>v n"
+  assumes v[simp]: "v : carrier_vec n" and w[simp]: "w : carrier_vec n"
   shows "conjugate (conjugate\<^sub>v v \<bullet> w) = v \<bullet>c w"
   apply (subst vec_conjugate_dist_sprod[of _ n]) by auto
 
 lemma vec_conjugate_sprod_comm:
   fixes v w :: "'a :: {conjugatable_ring, comm_ring} vec"
-  assumes "v : carrier\<^sub>v n" and "w : carrier\<^sub>v n"
+  assumes "v : carrier_vec n" and "w : carrier_vec n"
   shows "v \<bullet>c w = (conjugate\<^sub>v w \<bullet> v)"
   unfolding scalar_prod_def using assms by(subst sum_ivl_cong, auto simp: ac_simps)
 
 lemma vec_conjugate_square_zero:
   fixes v :: "'a :: {conjugatable_ordered_ring,semiring_no_zero_divisors} vec"
-  assumes v[simp]: "v : carrier\<^sub>v n"
-  shows "v \<bullet>c v = 0 \<longleftrightarrow> v = \<zero>\<^sub>v n"
+  assumes v[simp]: "v : carrier_vec n"
+  shows "v \<bullet>c v = 0 \<longleftrightarrow> v = 0\<^sub>v n"
 proof
-  have dim: "dim\<^sub>v v = dim\<^sub>v (\<zero>\<^sub>v n)" by auto
+  have dim: "dim_vec v = dim_vec (0\<^sub>v n)" by auto
   let ?f = "\<lambda>i. v$i * conjugate (v$i)"
-  let ?I = "{0..<dim\<^sub>v v}"
+  let ?I = "{0..<dim_vec v}"
   have f: "?f : ?I \<rightarrow> { y. y \<ge> 0 }" using conjugate_square_positive by auto
   assume vv0: "v \<bullet>c v = 0"
   hence fI0: "?f ` ?I \<subseteq> {0}"
     unfolding scalar_prod_def
     using positive_sum[OF _ f] by auto
-  { fix i assume i: "i < dim\<^sub>v v"
+  { fix i assume i: "i < dim_vec v"
     hence "?f i = 0" using fI0 by fastforce
     hence "v $ i = 0" using conjugate_square_0 by auto
-    hence "v $ i = \<zero>\<^sub>v n $ i" using i v by auto
+    hence "v $ i = 0\<^sub>v n $ i" using i v by auto
   }
-  from vec_eqI[OF this] show "v = \<zero>\<^sub>v n" by auto
-  next assume "v = \<zero>\<^sub>v n" thus "v \<bullet>c v = 0"
+  from eq_vecI[OF this] show "v = 0\<^sub>v n" by auto
+  next assume "v = 0\<^sub>v n" thus "v \<bullet>c v = 0"
     unfolding scalar_prod_def by auto
 qed
 
@@ -193,8 +193,8 @@ qed
 subsection{* The Algorithm  *}
 
 fun adjuster :: "nat \<Rightarrow> 'a :: conjugatable_field vec \<Rightarrow> 'a vec list \<Rightarrow> 'a vec"
-  where "adjuster n w [] = \<zero>\<^sub>v n"
-    |  "adjuster n w (u#us) = -(w \<bullet>c u)/(u \<bullet>c u) \<odot>\<^sub>v u \<oplus>\<^sub>v adjuster n w us"
+  where "adjuster n w [] = 0\<^sub>v n"
+    |  "adjuster n w (u#us) = -(w \<bullet>c u)/(u \<bullet>c u) \<cdot>\<^sub>v u + adjuster n w us"
 
 text {*
   The following formulation is easier to analyze,
@@ -204,7 +204,7 @@ text {*
 fun gram_schmidt_sub
   where "gram_schmidt_sub n us [] = us"
   | "gram_schmidt_sub n us (w # ws) =
-     gram_schmidt_sub n ((adjuster n w us \<oplus>\<^sub>v w) # us) ws"
+     gram_schmidt_sub n ((adjuster n w us + w) # us) ws"
 
 definition gram_schmidt :: "nat \<Rightarrow> 'a :: conjugatable_field vec list \<Rightarrow> 'a vec list"
   where "gram_schmidt n ws = rev (gram_schmidt_sub n [] ws)"
@@ -216,7 +216,7 @@ text {*
 fun gram_schmidt_sub2
   where "gram_schmidt_sub2 n us [] = []"
   | "gram_schmidt_sub2 n us (w # ws) =
-     (let u = adjuster n w us \<oplus>\<^sub>v w in
+     (let u = adjuster n w us + w in
       u # gram_schmidt_sub2 n (u # us) ws)"
 
 lemma gram_schmidt_sub_eq:
@@ -235,9 +235,9 @@ locale cof_vec_space = vec_space f_ty for
 begin
 
 lemma adjuster_finsum:
-  assumes U: "set us \<subseteq> carrier\<^sub>v n"
+  assumes U: "set us \<subseteq> carrier_vec n"
     and dist: "distinct (us :: 'a vec list)"
-  shows "adjuster n w us = finsum V (\<lambda>u. -(w \<bullet>c u)/(u \<bullet>c u) \<odot>\<^sub>v u) (set us)"
+  shows "adjuster n w us = finsum V (\<lambda>u. -(w \<bullet>c u)/(u \<bullet>c u) \<cdot>\<^sub>v u) (set us)"
   using assms
 proof (induct us)
   case Cons show ?case unfolding set_simps
@@ -245,16 +245,16 @@ proof (induct us)
 qed simp
 
 lemma adjuster_lincomb:
-  assumes w: "(w :: 'a vec) : carrier\<^sub>v n"
-    and us: "set (us :: 'a vec list) \<subseteq> carrier\<^sub>v n"
+  assumes w: "(w :: 'a vec) : carrier_vec n"
+    and us: "set (us :: 'a vec list) \<subseteq> carrier_vec n"
     and dist: "distinct us"
   shows "adjuster n w us = lincomb (\<lambda>u. -(w \<bullet>c u)/(u \<bullet>c u)) (set us)"
     (is "_ = lincomb ?a _")
   using us dist unfolding lincomb_def
 proof (induct us)
   case (Cons u us)
-    let ?f = "\<lambda>u. ?a u \<odot>\<^sub>v u"
-    have "?f : (set us) \<rightarrow> carrier\<^sub>v n" and "?f u : carrier\<^sub>v n" using w Cons by auto
+    let ?f = "\<lambda>u. ?a u \<cdot>\<^sub>v u"
+    have "?f : (set us) \<rightarrow> carrier_vec n" and "?f u : carrier_vec n" using w Cons by auto
     moreover have "u \<notin> set us" using Cons by auto
     ultimately show ?case
       unfolding adjuster.simps
@@ -263,108 +263,108 @@ proof (induct us)
 qed simp
 
 lemma adjuster_in_span:
-  assumes w: "(w :: 'a vec) : carrier\<^sub>v n"
-    and us: "set (us :: 'a vec list) \<subseteq> carrier\<^sub>v n"
+  assumes w: "(w :: 'a vec) : carrier_vec n"
+    and us: "set (us :: 'a vec list) \<subseteq> carrier_vec n"
     and dist: "distinct us"
   shows "adjuster n w us : span (set us)"
   using adjuster_lincomb[OF assms]
   unfolding finite_span[OF finite_set us] by auto
 
 lemma adjuster_carrier[simp]:
-  assumes w: "(w :: 'a vec) : carrier\<^sub>v n"
-    and us: "set (us :: 'a vec list) \<subseteq> carrier\<^sub>v n"
+  assumes w: "(w :: 'a vec) : carrier_vec n"
+    and us: "set (us :: 'a vec list) \<subseteq> carrier_vec n"
     and dist: "distinct us"
-  shows "adjuster n w us : carrier\<^sub>v n"
+  shows "adjuster n w us : carrier_vec n"
   using adjuster_in_span span_closed assms by auto
 
 lemma adjust_not_in_span:
-  assumes w[simp]: "(w :: 'a vec) : carrier\<^sub>v n"
-    and us: "set (us :: 'a vec list) \<subseteq> carrier\<^sub>v n"
+  assumes w[simp]: "(w :: 'a vec) : carrier_vec n"
+    and us: "set (us :: 'a vec list) \<subseteq> carrier_vec n"
     and dist: "distinct us"
     and ind: "w \<notin> span (set us)"
-  shows "adjuster n w us \<oplus>\<^sub>v w \<notin> span (set us)"
+  shows "adjuster n w us + w \<notin> span (set us)"
   using span_add[OF us adjuster_in_span[OF w us dist] w]
-  using vec_add_comm ind by auto
+  using comm_add_vec ind by auto
 
 lemma adjust_not_mem:
-  assumes w[simp]: "(w :: 'a vec) : carrier\<^sub>v n"
-    and us: "set (us :: 'a vec list) \<subseteq> carrier\<^sub>v n"
+  assumes w[simp]: "(w :: 'a vec) : carrier_vec n"
+    and us: "set (us :: 'a vec list) \<subseteq> carrier_vec n"
     and dist: "distinct us"
     and ind: "w \<notin> span (set us)"
-  shows "adjuster n w us \<oplus>\<^sub>v w \<notin> set us"
+  shows "adjuster n w us + w \<notin> set us"
   using adjust_not_in_span[OF assms] span_mem[OF us] by auto
 
 lemma adjust_in_span:
-  assumes w[simp]: "(w :: 'a vec) : carrier\<^sub>v n"
-    and us: "set (us :: 'a vec list) \<subseteq> carrier\<^sub>v n"
+  assumes w[simp]: "(w :: 'a vec) : carrier_vec n"
+    and us: "set (us :: 'a vec list) \<subseteq> carrier_vec n"
     and dist: "distinct us"
-  shows "adjuster n w us \<oplus>\<^sub>v w : span (insert w (set us))" (is "?v \<oplus>\<^sub>v _ : span ?U")
+  shows "adjuster n w us + w : span (insert w (set us))" (is "?v + _ : span ?U")
 proof -
   let ?a = "\<lambda>u. -(w \<bullet>c u)/(u \<bullet>c u)"
   have "?v = lincomb ?a (set us)" using adjuster_lincomb[OF assms].
   hence vU: "?v : span (set us)" unfolding finite_span[OF finite_set us] by auto
-  hence v[simp]: "?v : carrier\<^sub>v n" using span_closed[OF us] by auto
+  hence v[simp]: "?v : carrier_vec n" using span_closed[OF us] by auto
   have vU': "?v : span ?U" using vU span_is_monotone[OF subset_insertI] by auto
 
   have "{w} \<subseteq> ?U" by simp
   from span_is_monotone[OF this]
   have wU': "w : span ?U" using span_self[OF w] by auto
 
-  have "?U \<subseteq> carrier\<^sub>v n" using us w by simp
-  from span_add[OF this wU' v] vU' vec_add_comm[OF w]
+  have "?U \<subseteq> carrier_vec n" using us w by simp
+  from span_add[OF this wU' v] vU' comm_add_vec[OF w]
   show ?thesis by simp
 qed
 
 lemma adjust_not_lindep:
-  assumes w[simp]: "(w :: 'a vec) : carrier\<^sub>v n"
-    and us: "set (us :: 'a vec list) \<subseteq> carrier\<^sub>v n"
+  assumes w[simp]: "(w :: 'a vec) : carrier_vec n"
+    and us: "set (us :: 'a vec list) \<subseteq> carrier_vec n"
     and dist: "distinct us"
     and wus: "w \<notin> span (set us)"
     and ind: "~ lin_dep (set us)"
-  shows "~ lin_dep (insert (adjuster n w us \<oplus>\<^sub>v w) (set us))"
+  shows "~ lin_dep (insert (adjuster n w us + w) (set us))"
     (is "~ _ (insert ?v _)")
 proof -
-  have v: "?v : carrier\<^sub>v n" using assms by auto
+  have v: "?v : carrier_vec n" using assms by auto
   have "?v \<notin> span (set us)"
     using adjust_not_in_span[OF w us dist wus]
-    using vec_add_comm[OF adjuster_carrier[OF w us dist] w] by auto
+    using comm_add_vec[OF adjuster_carrier[OF w us dist] w] by auto
   thus ?thesis
     using lin_dep_iff_in_span[OF us ind v] adjust_not_mem[OF w us dist wus] by auto
 qed
 
 lemma adjust_preserves_span:
-  assumes w[simp]: "(w :: 'a vec) : carrier\<^sub>v n"
-    and us: "set (us :: 'a vec list) \<subseteq> carrier\<^sub>v n"
+  assumes w[simp]: "(w :: 'a vec) : carrier_vec n"
+    and us: "set (us :: 'a vec list) \<subseteq> carrier_vec n"
     and dist: "distinct us"
-  shows "w : span (set us) \<longleftrightarrow> adjuster n w us \<oplus>\<^sub>v w : span (set us)"
-    (is "_ \<longleftrightarrow> ?v \<oplus>\<^sub>v _ : _")
+  shows "w : span (set us) \<longleftrightarrow> adjuster n w us + w : span (set us)"
+    (is "_ \<longleftrightarrow> ?v + _ : _")
 proof -
   have "?v : span (set us)"
     using adjuster_lincomb[OF assms]
     unfolding finite_span[OF finite_set us] by auto
-  hence [simp]: "?v : carrier\<^sub>v n" using span_closed[OF us] by auto
+  hence [simp]: "?v : carrier_vec n" using span_closed[OF us] by auto
   show ?thesis
-    using span_add[OF us adjuster_in_span[OF w us] w] vec_add_comm[OF w] dist
+    using span_add[OF us adjuster_in_span[OF w us] w] comm_add_vec[OF w] dist
     by auto
 qed
 
 lemma in_span_adjust:
-  assumes w[simp]: "(w :: 'a vec) : carrier\<^sub>v n"
-    and us: "set (us :: 'a vec list) \<subseteq> carrier\<^sub>v n"
+  assumes w[simp]: "(w :: 'a vec) : carrier_vec n"
+    and us: "set (us :: 'a vec list) \<subseteq> carrier_vec n"
     and dist: "distinct us"
-  shows "w : span (insert (adjuster n w us \<oplus>\<^sub>v w) (set us))"
+  shows "w : span (insert (adjuster n w us + w) (set us))"
     (is "_ : span (insert ?v _)")
 proof -
-  have v: "?v : carrier\<^sub>v n" using assms by auto
-  have a[simp]: "adjuster n w us : carrier\<^sub>v n"
-   and neg: "\<ominus>\<^sub>v adjuster n w us : carrier\<^sub>v n" using assms by auto
-  hence vU: "insert ?v (set us) \<subseteq> carrier\<^sub>v n" using us by auto
+  have v: "?v : carrier_vec n" using assms by auto
+  have a[simp]: "adjuster n w us : carrier_vec n"
+   and neg: "- adjuster n w us : carrier_vec n" using assms by auto
+  hence vU: "insert ?v (set us) \<subseteq> carrier_vec n" using us by auto
   have aS: "adjuster n w us : span (insert ?v (set us))"
     using adjuster_in_span[OF w us] span_is_monotone[OF subset_insertI] dist
     by auto
-  have negS: "\<ominus>\<^sub>v adjuster n w us : span (insert ?v (set us))"
+  have negS: "- adjuster n w us : span (insert ?v (set us))"
     using span_neg[OF vU aS] us by simp
-  have [simp]:"\<ominus>\<^sub>v adjuster n w us \<oplus>\<^sub>v (adjuster n w us \<oplus>\<^sub>v w) = w"
+  have [simp]:"- adjuster n w us + (adjuster n w us + w) = w"
     unfolding a_assoc[OF neg a w,symmetric] by simp
   have "{?v} \<subseteq> insert ?v (set us)" by simp
   from span_is_monotone[OF this]
@@ -373,32 +373,32 @@ proof -
 qed
 
 lemma adjust_zero:
-  assumes U: "set (us :: 'a vec list) \<subseteq> carrier\<^sub>v n"
+  assumes U: "set (us :: 'a vec list) \<subseteq> carrier_vec n"
     and orth: "corthogonal us"
-    and w[simp]: "w : carrier\<^sub>v n"
+    and w[simp]: "w : carrier_vec n"
     and i: "i < length us"
-  shows "(adjuster n w us \<oplus>\<^sub>v w) \<bullet>c us!i = 0"
+  shows "(adjuster n w us + w) \<bullet>c us!i = 0"
 proof -
   define u where "u = us!i"
-  have u[simp]: "u : carrier\<^sub>v n" using i U u_def by auto
-  hence cu[simp]: "conjugate\<^sub>v u : carrier\<^sub>v n" by auto
+  have u[simp]: "u : carrier_vec n" using i U u_def by auto
+  hence cu[simp]: "conjugate\<^sub>v u : carrier_vec n" by auto
   have uU: "u : set us" using i u_def by auto
-  let ?g = "\<lambda>u'::'a vec. (-(w \<bullet>c u')/(u' \<bullet>c u') \<odot>\<^sub>v u')"
-  have g: "?g : set us \<rightarrow> carrier\<^sub>v n" using w U by auto
-  hence carrier: "finsum V ?g (set us) : carrier\<^sub>v n" by simp
+  let ?g = "\<lambda>u'::'a vec. (-(w \<bullet>c u')/(u' \<bullet>c u') \<cdot>\<^sub>v u')"
+  have g: "?g : set us \<rightarrow> carrier_vec n" using w U by auto
+  hence carrier: "finsum V ?g (set us) : carrier_vec n" by simp
   let ?f = "\<lambda>u'. ?g u' \<bullet>c u"
   let ?U = "set us - {u}"
-  { fix u' assume u': "(u'::'a vec) : carrier\<^sub>v n"
-    have [simp]: "dim\<^sub>v u = n" by auto
+  { fix u' assume u': "(u'::'a vec) : carrier_vec n"
+    have [simp]: "dim_vec u = n" by auto
     have "?f u' = (- (w \<bullet>c u') / (u' \<bullet>c u')) * (u' \<bullet>c u)"
-      using scalar_prod_scalar_left[of "u'" "conjugate\<^sub>v u"]
-      unfolding vec_elemsD[OF u] vec_elemsD[OF u'] by auto
+      using scalar_prod_smult_left[of "u'" "conjugate\<^sub>v u"]
+      unfolding carrier_vecD[OF u] carrier_vecD[OF u'] by auto
   } note conv = this
   have "?f : ?U \<rightarrow> {0}"
   proof (intro Pi_I)
     fix u' assume u'Uu: "u' : set us - {u}"
     hence u'U: "u' : set us" by auto
-    hence u'[simp]: "u' : carrier\<^sub>v n" using U by auto
+    hence u'[simp]: "u' : carrier_vec n" using U by auto
     obtain j where j: "j < length us" and u'j: "u' = us ! j"
       using u'U in_set_conv_nth by metis
     have "i \<noteq> j" using u'Uu u'j u_def by auto
@@ -425,43 +425,43 @@ proof -
   show ?thesis
     unfolding u_def[symmetric]
     unfolding adjuster_finsum[OF U corthogonal_distinct[OF orth]]
-    unfolding scalar_prod_left_distrib[OF carrier w cu]
+    unfolding add_scalar_prod_distrib[OF carrier w cu]
     unfolding finsum_scalar_prod_sum[OF g cu]
     unfolding main
-    unfolding scalar_prod_comm[OF cu w]
+    unfolding comm_scalar_prod[OF cu w]
     using left_minus by auto
 qed
 
 lemma adjust_nonzero:
-  assumes U: "set (us :: 'a vec list) \<subseteq> carrier\<^sub>v n"
+  assumes U: "set (us :: 'a vec list) \<subseteq> carrier_vec n"
     and dist: "distinct us"
-    and w[simp]: "w : carrier\<^sub>v n"
+    and w[simp]: "w : carrier_vec n"
     and wsU: "w \<notin> span (set us)"
-  shows "adjuster n w us \<oplus>\<^sub>v w \<noteq> \<zero>\<^sub>v n" (is "?a \<oplus>\<^sub>v _ \<noteq> _")
+  shows "adjuster n w us + w \<noteq> 0\<^sub>v n" (is "?a + _ \<noteq> _")
 proof
-  have [simp]: "?a : carrier\<^sub>v n" using U dist by auto
-  have [simp]: "\<ominus>\<^sub>v ?a : carrier\<^sub>v n" by auto
-  have [simp]: "?a \<oplus>\<^sub>v w : carrier\<^sub>v n" by auto
-  assume "?a \<oplus>\<^sub>v w = \<zero>\<^sub>v n"
-  hence "\<ominus>\<^sub>v ?a = \<ominus>\<^sub>v ?a \<oplus>\<^sub>v (?a \<oplus>\<^sub>v w)" by auto
-  also have "... = (\<ominus>\<^sub>v ?a \<oplus>\<^sub>v ?a) \<oplus>\<^sub>v w" apply(subst a_assoc) by auto
-  also have "\<ominus>\<^sub>v ?a \<oplus>\<^sub>v ?a = \<zero>\<^sub>v n" using r_neg[OF w] unfolding vec_neg[OF w] by auto
-  finally have "\<ominus>\<^sub>v ?a = w" by auto
-  moreover have "\<ominus>\<^sub>v ?a : span (set us)"
+  have [simp]: "?a : carrier_vec n" using U dist by auto
+  have [simp]: "- ?a : carrier_vec n" by auto
+  have [simp]: "?a + w : carrier_vec n" by auto
+  assume "?a + w = 0\<^sub>v n"
+  hence "- ?a = - ?a + (?a + w)" by auto
+  also have "... = (- ?a + ?a) + w" apply(subst a_assoc) by auto
+  also have "- ?a + ?a = 0\<^sub>v n" using r_neg[OF w] unfolding vec_neg[OF w] by auto
+  finally have "- ?a = w" by auto
+  moreover have "- ?a : span (set us)"
     using span_neg[OF U adjuster_in_span[OF w U dist]] by auto
   ultimately show "False" using wsU by auto
 qed
 
 lemma adjust_orthogonal:
-  assumes U: "set (us :: 'a vec list) \<subseteq> carrier\<^sub>v n"
+  assumes U: "set (us :: 'a vec list) \<subseteq> carrier_vec n"
     and orth: "corthogonal us"
-    and w[simp]: "w : carrier\<^sub>v n"
+    and w[simp]: "w : carrier_vec n"
     and wsU: "w \<notin> span (set us)"
-  shows "corthogonal ((adjuster n w us \<oplus>\<^sub>v w) # us)"
+  shows "corthogonal ((adjuster n w us + w) # us)"
     (is "corthogonal (?aw # _)")
 proof
   have dist: "distinct us" using corthogonal_distinct orth by auto
-  have aw[simp]: "?aw : carrier\<^sub>v n" using U dist by auto
+  have aw[simp]: "?aw : carrier_vec n" using U dist by auto
   note adjust_nonzero[OF U dist w] wsU
   hence aw0: "?aw \<bullet>c ?aw \<noteq> 0" using vec_conjugate_square_zero[OF aw] by auto
   fix i j assume i: "i < length (?aw # us)" and j: "j < length (?aw # us)"
@@ -482,8 +482,8 @@ proof
       define i' where "i' = i-1"
       hence ifold: "i = i'+1" using False by auto
       hence i': "i' < length us" using i by auto
-      have [simp]: "us ! i' : carrier\<^sub>v n" using U i' by auto
-      hence cu': "conjugate\<^sub>v (us ! i') : carrier\<^sub>v n" by auto
+      have [simp]: "us ! i' : carrier_vec n" using U i' by auto
+      hence cu': "conjugate\<^sub>v (us ! i') : carrier_vec n" by auto
       show ?thesis
       proof (cases "j = 0")
         case True
@@ -494,7 +494,7 @@ proof
           }
           thus ?thesis unfolding True ifold
           using adjust_zero[OF U orth w i']
-          by (subst scalar_prod_comm[of _ n], auto)
+          by (subst comm_scalar_prod[of _ n], auto)
         next case False
           define j' where "j' = j-1"
           hence jfold: "j = j'+1" using False by auto
@@ -507,10 +507,10 @@ proof
 qed
 
 lemma gram_schmidt_sub_span:
-  assumes w[simp]: "w : carrier\<^sub>v n"
-    and us: "set us \<subseteq> carrier\<^sub>v n"
+  assumes w[simp]: "w : carrier_vec n"
+    and us: "set us \<subseteq> carrier_vec n"
     and dist: "distinct us"
-  shows "span (set ((adjuster n w us \<oplus>\<^sub>v w) # us)) = span (set (w # us))"
+  shows "span (set ((adjuster n w us + w) # us)) = span (set (w # us))"
   (is "span (set (?v # _)) = span ?wU")
 proof (cases "w : span (set us)")
   case True
@@ -519,9 +519,9 @@ proof (cases "w : span (set us)")
     thus ?thesis using already_in_span[OF us] True by auto next
   case False show ?thesis
     proof
-      have wU: "?wU \<subseteq> carrier\<^sub>v n" using us by simp 
+      have wU: "?wU \<subseteq> carrier_vec n" using us by simp 
       have vswU: "?v : span ?wU" using adjust_in_span[OF assms] by auto
-      hence v: "?v : carrier\<^sub>v n" using span_closed[OF wU] by auto
+      hence v: "?v : carrier_vec n" using span_closed[OF wU] by auto
       have wsvU: "w : span (insert ?v (set us))" using in_span_adjust[OF assms].
       show "span ?wU \<subseteq> span (set (?v # us))"
         using span_swap[OF finite_set us w False v wsvU] by auto
@@ -534,12 +534,12 @@ qed
 
 lemma gram_schmidt_sub_result:
   assumes "gram_schmidt_sub n us ws = us'"
-    and "set ws \<subseteq> carrier\<^sub>v n"
-    and "set us \<subseteq> carrier\<^sub>v n"
+    and "set ws \<subseteq> carrier_vec n"
+    and "set us \<subseteq> carrier_vec n"
     and "distinct (us @ ws)"
     and "~ lin_dep (set (us @ ws))"
     and "corthogonal us"
-  shows "set us' \<subseteq> carrier\<^sub>v n \<and>
+  shows "set us' \<subseteq> carrier_vec n \<and>
          distinct us' \<and>
          corthogonal us' \<and>
          span (set (us @ ws)) = span (set us') \<and> length us' = length us + length ws"  
@@ -547,12 +547,12 @@ lemma gram_schmidt_sub_result:
 proof (induct ws arbitrary: us us')
 case (Cons w ws)
   let ?v = "adjuster n w us"
-  have wW[simp]: "set (w#ws) \<subseteq> carrier\<^sub>v n" using Cons by simp
-  hence W[simp]: "set ws \<subseteq> carrier\<^sub>v n"
-   and w[simp]: "w : carrier\<^sub>v n" by auto
-  have U[simp]: "set us \<subseteq> carrier\<^sub>v n" using Cons by simp
-  have UW: "set (us@ws) \<subseteq> carrier\<^sub>v n" by simp
-  have wU: "set (w#us) \<subseteq> carrier\<^sub>v n" by simp
+  have wW[simp]: "set (w#ws) \<subseteq> carrier_vec n" using Cons by simp
+  hence W[simp]: "set ws \<subseteq> carrier_vec n"
+   and w[simp]: "w : carrier_vec n" by auto
+  have U[simp]: "set us \<subseteq> carrier_vec n" using Cons by simp
+  have UW: "set (us@ws) \<subseteq> carrier_vec n" by simp
+  have wU: "set (w#us) \<subseteq> carrier_vec n" by simp
   have dist: "distinct (us @ w # ws)" using Cons by simp
   hence dist_U: "distinct us"
     and dist_W: "distinct ws"
@@ -567,28 +567,28 @@ case (Cons w ws)
     and ind_UW: "~ lin_dep (set (us @ ws))"
     by (subst subset_li_is_li[OF ind];auto)+
   have corth: "corthogonal us" using Cons by simp
-  have U'def: "gram_schmidt_sub n ((?v \<oplus>\<^sub>v w)#us) ws = us'" using Cons by simp
+  have U'def: "gram_schmidt_sub n ((?v + w)#us) ws = us'" using Cons by simp
 
-  have v: "?v : carrier\<^sub>v n" using dist_U by auto
-  hence vw: "?v \<oplus>\<^sub>v w : carrier\<^sub>v n" by auto
-  hence vwU: "set ((?v \<oplus>\<^sub>v w) # us) \<subseteq> carrier\<^sub>v n" by auto
+  have v: "?v : carrier_vec n" using dist_U by auto
+  hence vw: "?v + w : carrier_vec n" by auto
+  hence vwU: "set ((?v + w) # us) \<subseteq> carrier_vec n" by auto
   have vsU: "?v : span (set us)" using adjuster_in_span[OF w] dist by auto
   hence vsUW: "?v : span (set (us @ ws))"
     using span_is_monotone[of "set us" "set (us@ws)"] by auto
   have wsU: "w \<notin> span (set us)"
     using lin_dep_iff_in_span[OF U ind_U w w_U] ind_wU by auto
-  hence vwU: "?v \<oplus>\<^sub>v w \<notin> span (set us)" using adjust_not_in_span[OF w U dist_U] by auto
+  hence vwU: "?v + w \<notin> span (set us)" using adjust_not_in_span[OF w U dist_U] by auto
 
   have "w \<notin> span (set (us@ws))" using lin_dep_iff_in_span[OF _ ind_UW] dist ind by auto
-  hence span: "?v \<oplus>\<^sub>v w \<notin> span (set (us@ws))" using span_add[OF UW vsUW w] by auto
-  hence vwUS: "?v \<oplus>\<^sub>v w \<notin> set (us @ ws)" using span_mem by auto
-  hence ind2: "~ lin_dep (set (((?v \<oplus>\<^sub>v w) # us) @ ws))"
+  hence span: "?v + w \<notin> span (set (us@ws))" using span_add[OF UW vsUW w] by auto
+  hence vwUS: "?v + w \<notin> set (us @ ws)" using span_mem by auto
+  hence ind2: "~ lin_dep (set (((?v + w) # us) @ ws))"
     using lin_dep_iff_in_span[OF UW ind_UW vw] span by auto
 
-  have vwU: "set ((?v \<oplus>\<^sub>v w) # us) \<subseteq> carrier\<^sub>v n" using U w dist by auto
-  have dist2: "distinct (((?v \<oplus>\<^sub>v w) # us) @ ws)" using dist vwUS by simp
+  have vwU: "set ((?v + w) # us) \<subseteq> carrier_vec n" using U w dist by auto
+  have dist2: "distinct (((?v + w) # us) @ ws)" using dist vwUS by simp
 
-  have orth2: "corthogonal ((adjuster n w us \<oplus>\<^sub>v w) # us)"
+  have orth2: "corthogonal ((adjuster n w us + w) # us)"
     using adjust_orthogonal[OF U corth w wsU].
 
   show ?case
@@ -598,17 +598,17 @@ case (Cons w ws)
 qed simp
 
 lemma gram_schmidt_hd [simp]:
-  assumes [simp]: "w : carrier\<^sub>v n" shows "hd (gram_schmidt n (w#ws)) = w"
+  assumes [simp]: "w : carrier_vec n" shows "hd (gram_schmidt n (w#ws)) = w"
   unfolding gram_schmidt_code by simp
 
 theorem gram_schmidt_result:
-  assumes ws: "set ws \<subseteq> carrier\<^sub>v n"
+  assumes ws: "set ws \<subseteq> carrier_vec n"
     and dist: "distinct ws"
     and ind: "~ lin_dep (set ws)"
     and us: "us = gram_schmidt n ws"
   shows "span (set ws) = span (set us)"
     and "corthogonal us"
-    and "set us \<subseteq> carrier\<^sub>v n"
+    and "set us \<subseteq> carrier_vec n"
     and "length us = length ws"
 proof -
   have main: "gram_schmidt_sub n [] ws = rev us"
@@ -617,12 +617,12 @@ proof -
   have orth: "corthogonal []" by auto
   have "span (set ws) = span (set (rev us))"
    and orth2: "corthogonal (rev us)"
-   and "set us \<subseteq> carrier\<^sub>v n"
+   and "set us \<subseteq> carrier_vec n"
    and "length us = length ws"
     using gram_schmidt_sub_result[OF main ws]
     by (auto simp: assms orth)
   thus "span (set ws) = span (set us)" by simp
-  show "set us \<subseteq> carrier\<^sub>v n" by fact
+  show "set us \<subseteq> carrier_vec n" by fact
   show "length us = length ws" by fact
   show "corthogonal us"
     using corthogonal_distinct[OF orth2] unfolding distinct_rev

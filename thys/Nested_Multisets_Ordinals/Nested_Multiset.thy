@@ -7,7 +7,7 @@
 section \<open>Nested Multisets\<close>
 
 theory Nested_Multiset
-imports "~~/src/HOL/Library/Multiset_Order"
+imports "HOL-Library.Multiset_Order"
 begin
 
 declare multiset.map_comp [simp]

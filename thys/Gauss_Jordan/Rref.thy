@@ -8,8 +8,8 @@ section{*Reduced row echelon form*}
 
 theory Rref
 imports
-  "../Rank_Nullity_Theorem/Mod_Type"
-  "../Rank_Nullity_Theorem/Miscellaneous"
+  Rank_Nullity_Theorem.Mod_Type
+  Rank_Nullity_Theorem.Miscellaneous
 begin
 
 subsection{*Defining the concept of Reduced Row Echelon Form*}

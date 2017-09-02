@@ -1,5 +1,5 @@
 theory No_Spoof_Embeddings
-imports "Semantics_Embeddings"
+imports Semantics_Embeddings
         "Primitive_Matchers/No_Spoof"
 begin
 

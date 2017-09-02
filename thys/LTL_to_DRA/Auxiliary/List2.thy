@@ -6,7 +6,7 @@
 section \<open>Auxiliary List Facts\<close>
 
 theory List2                  
-  imports Main "~~/src/HOL/Library/Omega_Words_Fun" "../../List-Index/List_Index" 
+  imports Main "HOL-Library.Omega_Words_Fun" "List-Index.List_Index" 
 begin
 
 subsection \<open>remdups\_fwd\<close>

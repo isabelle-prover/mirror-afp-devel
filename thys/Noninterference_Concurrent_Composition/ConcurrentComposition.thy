@@ -8,7 +8,7 @@
 section "Concurrent composition and noninterference security"
 
 theory ConcurrentComposition
-imports "../Noninterference_Sequential_Composition/Propaedeutics"
+imports Noninterference_Sequential_Composition.Propaedeutics
 begin
 
 text {*

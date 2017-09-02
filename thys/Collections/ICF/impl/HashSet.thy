@@ -6,7 +6,7 @@ section {* \isaheader{Hash Set} *}
 theory HashSet
   imports 
   "../spec/SetSpec" 
-  "HashMap" 
+  HashMap 
   "../gen_algo/SetByMap" 
   "../gen_algo/SetGA"
 begin

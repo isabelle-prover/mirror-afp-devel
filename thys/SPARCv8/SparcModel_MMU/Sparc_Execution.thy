@@ -10,7 +10,7 @@
 
 theory Sparc_Execution
 imports Main Sparc_Instruction Sparc_State Sparc_Types 
-"~~/src/HOL/Eisbach/Eisbach_Tools"
+"HOL-Eisbach.Eisbach_Tools"
 begin
 
 primrec sum :: "nat \<Rightarrow> nat" where

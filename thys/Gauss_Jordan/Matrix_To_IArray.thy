@@ -8,7 +8,7 @@ section{*Matrices as nested IArrays*}
 
 theory Matrix_To_IArray
 imports 
-  "../Rank_Nullity_Theorem/Mod_Type"
+  Rank_Nullity_Theorem.Mod_Type
   Elementary_Operations
   IArray_Addenda
 begin

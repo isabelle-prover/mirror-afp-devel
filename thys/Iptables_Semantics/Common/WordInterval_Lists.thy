@@ -1,5 +1,5 @@
 theory WordInterval_Lists
-imports "../../IP_Addresses/WordInterval"
+imports IP_Addresses.WordInterval
   Negation_Type
 begin
 

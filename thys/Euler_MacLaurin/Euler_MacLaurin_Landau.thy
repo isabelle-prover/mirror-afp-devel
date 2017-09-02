@@ -2,7 +2,7 @@ section \<open>Connection of Euler--MacLaurin summation to Landau symbols\<close
 theory Euler_MacLaurin_Landau
 imports 
   Euler_MacLaurin
-  "../Landau_Symbols/Landau_Symbols"
+  Landau_Symbols.Landau_Symbols
 begin
 
 subsection \<open>$O$-bound for the remainder term\<close>  

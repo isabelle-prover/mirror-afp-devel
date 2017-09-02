@@ -9,13 +9,13 @@ session Collections (AFP) = Refine_Monadic +
     Trie
   theories [document = false]
   (* Prerequisites *)
-    "~~/src/HOL/Library/Code_Target_Numeral"
-    "~~/src/HOL/Library/While_Combinator"
-    "../Binomial-Heaps/BinomialHeap"
-    "../Binomial-Heaps/SkewBinomialHeap"
-    "../Finger-Trees/FingerTree"
-    "../Automatic_Refinement/Automatic_Refinement"
-    "../Refine_Monadic/Refine_Monadic"
+    "HOL-Library.Code_Target_Numeral"
+    "HOL-Library.While_Combinator"
+    "Binomial-Heaps.BinomialHeap"
+    "Binomial-Heaps.SkewBinomialHeap"
+    "Finger-Trees.FingerTree"
+    Automatic_Refinement.Automatic_Refinement
+    Refine_Monadic.Refine_Monadic
 
   (* Libraries and Tools *)
     "Lib/Sorted_List_Operations"
@@ -114,10 +114,10 @@ session Collections (AFP) = Refine_Monadic +
         "ICF/CollectionsV1"
 
   (* Overall Entry-Points *)
-    "Collections_Entrypoints_Chapter"
-    "Refine_Dflt"
-    "Refine_Dflt_ICF"
-    "Refine_Dflt_Only_ICF"
+    Collections_Entrypoints_Chapter
+    Refine_Dflt
+    Refine_Dflt_ICF
+    Refine_Dflt_Only_ICF
     
   (* Userguides *)
     "Userguides/Userguides_Chapter"

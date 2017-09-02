@@ -201,7 +201,7 @@ next
   apply (subst cons(1))
   apply (simp_all del: sorted_list_of_set_insert)
   apply (rule trans[OF pnPlus_singleton_PLUS])
-  apply (simp_all add: sorted_insort set_insort del: sorted_list_of_set_insert)
+  apply (simp_all add: sorted_insort set_insort_key del: sorted_list_of_set_insert)
   apply safe
   unfolding insert_commute[of x11]
   apply (auto simp only: Un_insert_left[of x11, symmetric] insert_absorb) []
@@ -227,9 +227,9 @@ lemma pnTimes_PLUS:
 proof (induct xs arbitrary: r rule: list_singleton_induct)
   case (cons x y xs) then show ?case unfolding rexp_of_list.simps pnTimes.simps
   apply (subst pnTimes_not_Zero_or_Plus)
-  apply (simp_all add: sorted_insort set_insort del: sorted_list_of_set_insert)
+  apply (simp_all add: sorted_insort set_insort_key del: sorted_list_of_set_insert)
   apply (subst pnPlus_singleton_PLUS)
-  apply (simp_all add: sorted_insort set_insort del: sorted_list_of_set_insert)
+  apply (simp_all add: sorted_insort set_insort_key del: sorted_list_of_set_insert)
   unfolding insert_commute[of "Times y r"]
   apply (simp del: sorted_list_of_set_insert)
   apply safe

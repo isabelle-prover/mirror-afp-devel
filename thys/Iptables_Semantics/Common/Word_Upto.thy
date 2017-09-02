@@ -1,8 +1,8 @@
 section\<open>Word Upto\<close>
 theory Word_Upto
 imports Main
-  "../../IP_Addresses/Hs_Compat"
-  "../../Word_Lib/Word_Lemmas"
+  IP_Addresses.Hs_Compat
+  Word_Lib.Word_Lemmas
 begin
 
 

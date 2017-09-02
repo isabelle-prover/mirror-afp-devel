@@ -6,7 +6,7 @@
 section {* Auxiliary Definitions *}
 
 theory Auxiliary
-imports Complex_Main "~~/src/HOL/Library/While_Combinator"
+imports Complex_Main "HOL-Library.While_Combinator"
 begin
 
 declare

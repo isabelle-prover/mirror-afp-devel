@@ -1,7 +1,7 @@
 theory IICF_List
 imports 
   "../../Sepref"
-  "../../../List-Index/List_Index"
+  "List-Index.List_Index"
 begin
 
 lemma param_index[param]: 

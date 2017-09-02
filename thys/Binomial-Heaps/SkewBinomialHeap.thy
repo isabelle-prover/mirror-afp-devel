@@ -1,7 +1,7 @@
 section "Skew Binomial Heaps"
 
 theory SkewBinomialHeap
-imports Main "~~/src/HOL/Library/Multiset"
+imports Main "HOL-Library.Multiset"
 begin
 
 text {* Skew Binomial Queues as specified by Brodal and Okasaki \cite{BrOk96}

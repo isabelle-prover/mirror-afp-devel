@@ -20,8 +20,8 @@ text \<open>At the core of HMA-connect, there has to be a translation between in
 
 theory Bij_Nat
 imports 
-  "~~/src/HOL/Library/Cardinality"
-  "~~/src/HOL/Library/Numeral_Type"
+  "HOL-Library.Cardinality"
+  "HOL-Library.Numeral_Type"
 begin
 
 lemma finite_set_to_list: "\<exists> xs :: 'a :: finite list. distinct xs \<and> set xs = Y"

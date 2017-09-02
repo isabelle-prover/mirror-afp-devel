@@ -1,7 +1,7 @@
 section \<open>Formulas\<close>
 
 theory Formulas
-imports Main "~~/src/HOL/Library/Countable"
+imports Main "HOL-Library.Countable"
 begin
 
 (* unrelated, but I need this in too many places. *)

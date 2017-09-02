@@ -5,7 +5,7 @@
 section "Modal Sequents"
 
 theory ModalSequents
-imports "~~/src/HOL/Library/Multiset"
+imports "HOL-Library.Multiset"
 
 begin
 

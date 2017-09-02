@@ -5,7 +5,7 @@ subsection \<open>State monad\<close>
 theory Applicative_State
 imports
   Applicative
-  "~~/src/HOL/Library/State_Monad"
+  "HOL-Library.State_Monad"
 begin
 
 applicative state for

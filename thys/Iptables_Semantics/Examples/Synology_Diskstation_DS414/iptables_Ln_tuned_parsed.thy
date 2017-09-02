@@ -1,5 +1,5 @@
 theory iptables_Ln_tuned_parsed
-imports "../../Primitive_Matchers/Code_Interface"
+imports Iptables_Semantics.Code_Interface
 begin
 definition "firewall_chains = [''DOS_PROTECT'' \<mapsto> [Rule (MatchAnd (Match (Src (IpAddrNetmask 0 0))) (MatchAnd (Match (Dst (IpAddrNetmask 0 0))) (MatchAnd (Match (Extra (''Prot icmp''))) (Match (Extra (''icmptype 8 limit: avg 1/sec burst 5'')))))) (action.Return),
 Rule (MatchAnd (Match (Src (IpAddrNetmask 0 0))) (MatchAnd (Match (Dst (IpAddrNetmask 0 0))) (MatchAnd (Match (Extra (''Prot icmp''))) (Match (Extra (''icmptype 8'')))))) (action.Drop),

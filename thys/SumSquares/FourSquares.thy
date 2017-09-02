@@ -5,7 +5,7 @@
 section {* Lagrange's four-square theorem *}
 
 theory FourSquares
-  imports "~~/src/HOL/Number_Theory/Number_Theory"
+  imports "HOL-Number_Theory.Number_Theory"
 begin
 
 context

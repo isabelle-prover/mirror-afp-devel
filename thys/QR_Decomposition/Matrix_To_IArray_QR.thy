@@ -8,8 +8,8 @@ section{*Matrices as nested IArrays*}
 
 theory Matrix_To_IArray_QR
 imports 
-  "../Rank_Nullity_Theorem/Mod_Type"
-  "../Gauss_Jordan/Elementary_Operations"
+  Rank_Nullity_Theorem.Mod_Type
+  Gauss_Jordan.Elementary_Operations
   IArray_Addenda_QR
 begin
 

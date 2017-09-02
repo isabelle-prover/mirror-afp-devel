@@ -1,6 +1,6 @@
 (*<*)
 theory CT_Proofs
-imports Three_Step_MRU "../HO_Transition_System" "../../Heard_Of/Majorities" "../Quorums" CT_Defs
+imports Three_Step_MRU "../HO_Transition_System" Heard_Of.Majorities "../Quorums" CT_Defs
 begin
 (*>*)
 

@@ -12,7 +12,7 @@ Safety and liveness.
 section{* More on llists *}
 
 theory LList2
-imports "../Coinductive/Coinductive_List"
+imports Coinductive.Coinductive_List
 begin
 
 subsection{*Preliminaries*}

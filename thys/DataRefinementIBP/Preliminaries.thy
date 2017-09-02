@@ -1,8 +1,8 @@
 section {*  Preliminaries  *}
 
 theory Preliminaries
-imports Main "../LatticeProperties/Complete_Lattice_Prop" 
-  "../LatticeProperties/Conj_Disj"
+imports Main LatticeProperties.Complete_Lattice_Prop 
+  LatticeProperties.Conj_Disj
 begin
 
 notation

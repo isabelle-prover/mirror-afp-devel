@@ -15,9 +15,9 @@ theory Finite_Field_Record_Based
 imports
   Finite_Field
   Arithmetic_Record_Based
-  "../Native_Word/Uint32" 
-  "../Native_Word/Code_Target_Bits_Int"
-  "~~/src/HOL/Library/Code_Target_Numeral"  
+  Native_Word.Uint32 
+  Native_Word.Code_Target_Bits_Int
+  "HOL-Library.Code_Target_Numeral"  
 begin
 
 (* mod on standard case which can immediately be mapped to 

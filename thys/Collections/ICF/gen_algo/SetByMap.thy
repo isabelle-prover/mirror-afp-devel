@@ -13,8 +13,8 @@ theory SetByMap
 imports 
   "../spec/SetSpec"
   "../spec/MapSpec"
-  "SetGA"
-  "MapGA"
+  SetGA
+  MapGA
 begin
 text_raw {*\label{thy:SetByMap}*}
 

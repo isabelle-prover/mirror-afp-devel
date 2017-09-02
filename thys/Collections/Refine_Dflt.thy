@@ -1,7 +1,7 @@
 section {* \isaheader{Default Setup} *}
 theory Refine_Dflt
 imports 
-  "../Refine_Monadic/Refine_Monadic"
+  Refine_Monadic.Refine_Monadic
   "GenCF/GenCF"
   "Lib/Code_Target_ICF"
 begin

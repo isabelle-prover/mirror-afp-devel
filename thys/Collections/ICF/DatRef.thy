@@ -6,7 +6,7 @@ section {* \isaheader{Deprecated: Data Refinement for the While-Combinator} *}
 theory DatRef
 imports 
   Main 
-  "~~/src/HOL/Library/While_Combinator"
+  "HOL-Library.While_Combinator"
 begin
 text_raw {*\label{thy:DatRef}*}
 

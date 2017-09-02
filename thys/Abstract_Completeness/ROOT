@@ -5,10 +5,10 @@ session Abstract_Completeness (AFP) = "HOL-Library" +
   sessions
     Collections
   theories [document = false]
-    "~~/src/HOL/Library/Stream"
-    "~~/src/HOL/Library/Linear_Temporal_Logic_on_Streams"
-    "../Collections/ICF/tools/Locale_Code"
-    "~~/src/HOL/Library/Code_Target_Nat"
+    "HOL-Library.Stream"
+    "HOL-Library.Linear_Temporal_Logic_on_Streams"
+    Collections.Locale_Code
+    "HOL-Library.Code_Target_Nat"
   theories
     Abstract_Completeness
     Propositional_Logic

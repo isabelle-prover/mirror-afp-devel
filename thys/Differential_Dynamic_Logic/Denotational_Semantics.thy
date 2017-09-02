@@ -1,6 +1,6 @@
 theory "Denotational_Semantics" 
 imports
-  "../Ordinary_Differential_Equations/ODE_Analysis"
+  Ordinary_Differential_Equations.ODE_Analysis
   "./Lib"
   "./Ids"
   "./Syntax"

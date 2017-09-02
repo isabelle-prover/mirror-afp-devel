@@ -3,6 +3,7 @@ chapter AFP
 session Sepref_Prereq (AFP) = Collections +
   options [document = false, timeout = 300]
   sessions
+    "HOL-Library"
     "HOL-Imperative_HOL"
     Separation_Logic_Imperative_HOL
   theories [document = false]
@@ -11,12 +12,12 @@ session Sepref_Prereq (AFP) = Collections +
 session Refine_Imperative_HOL (AFP) = Sepref_Prereq +
   options [timeout = 1200]
   sessions
+    Isar_Ref
     "HOL-Eisbach"
     "List-Index"
     Collections_Examples
     DFS_Framework
     Dijkstra_Shortest_Path
-    Sepref_IICF
   theories [document = false]
     "Lib/Concl_Pres_Clarification"
     "Lib/Named_Theorems_Rev"
@@ -28,17 +29,17 @@ session Refine_Imperative_HOL (AFP) = Sepref_Prereq +
     "Lib/Term_Synth"
     "Lib/User_Smashing"
 
-    "~~/src/HOL/Library/Code_Target_Numeral"
-    "../DFS_Framework/Misc/DFS_Framework_Refine_Aux"
+    "HOL-Library.Code_Target_Numeral"
+    DFS_Framework.DFS_Framework_Refine_Aux
 
-    "~~/src/Doc/Isar_Ref/Base"
+    Isar_Ref.Base
 
   theories
-    "Sepref_Chapter_Tool"
-      "Sepref_Tool"
+    Sepref_Chapter_Tool
+      Sepref_Tool
 
-    "Sepref_Chapter_Setup"
-      "Sepref"
+    Sepref_Chapter_Setup
+      Sepref
 
     "IICF/Sepref_Chapter_IICF"
       "IICF/IICF"
@@ -49,9 +50,9 @@ session Refine_Imperative_HOL (AFP) = Sepref_Prereq +
       "Userguides/Sepref_Guide_General_Util"
 
   theories [document = false]
-      "../Dijkstra_Shortest_Path/Dijkstra"
-      "../Dijkstra_Shortest_Path/Test"
-      "../Collections/Examples/Autoref/Nested_DFS"
+      Dijkstra_Shortest_Path.Dijkstra
+      Dijkstra_Shortest_Path.Test
+      Collections_Examples.Nested_DFS
       "Examples/Sepref_WGraph"
 
   theories
@@ -73,10 +74,13 @@ session Sepref_Basic (AFP) = Sepref_Prereq +
   sessions
     "HOL-Eisbach"
     "List-Index"
+    Refine_Imperative_HOL
   theories [document = false]
     Sepref
 
 session Sepref_IICF (AFP) = Sepref_Basic +
   options [document = false, timeout = 600, theory_qualifier = Refine_Imperative_HOL]
+  sessions
+    Refine_Imperative_HOL
   theories [document = false]
     "IICF/IICF"

@@ -1,6 +1,6 @@
 theory IP_Address_Space_Examples_All_Small
 imports
-  "../../Primitive_Matchers/Parser"
+  Iptables_Semantics.Parser
 begin
 
 

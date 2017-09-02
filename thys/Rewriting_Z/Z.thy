@@ -13,7 +13,7 @@
 section \<open>The Z property\<close>
 
 theory Z
-imports "../Abstract-Rewriting/Abstract_Rewriting"
+imports "Abstract-Rewriting.Abstract_Rewriting"
 begin
 
 locale z_property =

@@ -8,11 +8,11 @@ section \<open>The Berlekamp Algorithm\<close>
 
 theory Berlekamp_Type_Based
 imports
-  "../Jordan_Normal_Form/Matrix_Kernel"
-  "../Jordan_Normal_Form/Gauss_Jordan_Elimination"
-  "../Jordan_Normal_Form/Missing_VectorSpace"
-  "../Polynomial_Factorization/Square_Free_Factorization"
-  "../Polynomial_Factorization/Missing_Multiset"
+  Jordan_Normal_Form.Matrix_Kernel
+  Jordan_Normal_Form.Gauss_Jordan_Elimination
+  Jordan_Normal_Form.Missing_VectorSpace
+  Polynomial_Factorization.Square_Free_Factorization
+  Polynomial_Factorization.Missing_Multiset
   Finite_Field
   Chinese_Remainder_Poly
   Poly_Mod_Finite_Field
@@ -39,10 +39,10 @@ fixes a::"'b::semiring_gcd"
 shows "coprime a a = (is_unit a)"
 unfolding coprime using dvd_unit_imp_unit by auto
 
-lemma dim_vec_of_list[simp]: "dim\<^sub>v (vec_of_list x) = length x"
+lemma dim_vec_of_list[simp]: "dim_vec (vec_of_list x) = length x"
   by (transfer, auto)
 
-lemma length_list_of_vec[simp]: "length (list_of_vec A) = dim\<^sub>v A"
+lemma length_list_of_vec[simp]: "length (list_of_vec A) = dim_vec A"
   by (transfer', auto)
 
 lemma list_of_vec_vec_of_list[simp]: "list_of_vec (vec_of_list a) = a"
@@ -63,29 +63,29 @@ context
 assumes "SORT_CONSTRAINT('a::finite)"
 begin
 
-lemma inj_Poly_list_of_vec': "inj_on (Poly \<circ> list_of_vec) {v. dim\<^sub>v v = n}"
+lemma inj_Poly_list_of_vec': "inj_on (Poly \<circ> list_of_vec) {v. dim_vec v = n}"
 proof (rule comp_inj_on)
-  show "inj_on list_of_vec {v. dim\<^sub>v v = n}"
+  show "inj_on list_of_vec {v. dim_vec v = n}"
     by (auto simp add: inj_on_def, transfer, auto simp add: mk_vec_def)
-  show "inj_on Poly (list_of_vec ` {v. dim\<^sub>v v = n})"
+  show "inj_on Poly (list_of_vec ` {v. dim_vec v = n})"
   proof (auto simp add: inj_on_def)
-    fix x y::"'c vec" assume "n = dim\<^sub>v x" and dim_xy: "dim\<^sub>v y = dim\<^sub>v x"
+    fix x y::"'c vec" assume "n = dim_vec x" and dim_xy: "dim_vec y = dim_vec x"
     and Poly_eq: "Poly (list_of_vec x) = Poly (list_of_vec y)"
     show "list_of_vec x = list_of_vec y"
     proof (rule nth_equalityI, auto simp add: dim_xy)
       have length_eq: "length (list_of_vec x ) = length (list_of_vec y)"
         using dim_xy by (transfer, auto)
-      fix i assume "i < dim\<^sub>v x"
+      fix i assume "i < dim_vec x"
       thus "list_of_vec x ! i = list_of_vec y ! i" using Poly_eq unfolding poly_eq_iff coeff_Poly_eq
         using dim_xy unfolding nth_default_def by (auto, presburger)
      qed
   qed
 qed
 
-corollary inj_Poly_list_of_vec: "inj_on (Poly \<circ> list_of_vec) (carrier\<^sub>v n)"
-  using inj_Poly_list_of_vec' unfolding vec_carrier_def .
+corollary inj_Poly_list_of_vec: "inj_on (Poly \<circ> list_of_vec) (carrier_vec n)"
+  using inj_Poly_list_of_vec' unfolding carrier_vec_def .
 
-lemma list_of_vec_rw_map: "list_of_vec m = map (\<lambda>n. m $ n) [0..<dim\<^sub>v m]"
+lemma list_of_vec_rw_map: "list_of_vec m = map (\<lambda>n. m $ n) [0..<dim_vec m]"
     by (transfer, auto simp add: mk_vec_def)
 
 lemma degree_Poly':
@@ -102,7 +102,7 @@ assumes b: "b < length A"
 and nc: "\<forall>i. i < length A \<longrightarrow> length (A ! i) = nc"
 shows "(row (mat_of_rows_list nc A) b) = vec_of_list (A ! b)"
 proof (auto simp add: vec_eq_iff)
-  show "dim\<^sub>c (mat_of_rows_list nc A) = length (A ! b)"
+  show "dim_col (mat_of_rows_list nc A) = length (A ! b)"
     unfolding mat_of_rows_list_def using b nc by auto
   fix i assume i: "i < length (A ! b)"
   show "row (mat_of_rows_list nc A) b $ i = vec_of_list (A ! b) $ i"
@@ -112,11 +112,11 @@ proof (auto simp add: vec_eq_iff)
 qed
 
 lemma degree_Poly_list_of_vec:
-assumes n: "x \<in> carrier\<^sub>v n"
+assumes n: "x \<in> carrier_vec n"
 and n0: "n \<noteq> 0"
 shows "degree (Poly (list_of_vec x)) < n"
 proof -
-  have x_dim: "dim\<^sub>v x = n" using n by auto
+  have x_dim: "dim_vec x = n" using n by auto
   have l: "(list_of_vec x) \<noteq> []"
     by (auto simp add: list_of_vec_rw_map vec_of_dim_0[symmetric] n0 n x_dim)
   have "degree (Poly (list_of_vec x)) < length (list_of_vec x)" by (rule degree_Poly'[OF l])
@@ -125,24 +125,24 @@ proof -
 qed
 
 lemma list_of_vec_nth:
-  assumes i: "i < dim\<^sub>v x"
+  assumes i: "i < dim_vec x"
   shows "list_of_vec x ! i = x $ i"
   using i
   by (transfer, auto simp add: mk_vec_def)
 
 lemma coeff_Poly_list_of_vec_nth':
- assumes i: "i < dim\<^sub>v x"
+ assumes i: "i < dim_vec x"
  shows "coeff (Poly (list_of_vec x)) i = x $ i"
  using i
  by (auto simp add: list_of_vec_nth nth_default_def)
 
 lemma list_of_vec_row_nth:
-assumes x: "x < dim\<^sub>c A"
+assumes x: "x < dim_col A"
 shows "list_of_vec (row A i) ! x = A $$ (i, x)"
 using x unfolding row_def by (transfer', auto simp add: mk_vec_def)
 
 lemma coeff_Poly_list_of_vec_nth:
-assumes x: "x < dim\<^sub>c A"
+assumes x: "x < dim_col A"
 shows "coeff (Poly (list_of_vec (row A i))) x = A $$ (i, x)"
 proof -
   have "coeff (Poly (list_of_vec (row A i))) x  = nth_default 0 (list_of_vec (row A i)) x"
@@ -152,25 +152,25 @@ proof -
   finally show ?thesis .
 qed
 
-lemma inj_on_list_of_vec: "inj_on list_of_vec (carrier\<^sub>v n)"
+lemma inj_on_list_of_vec: "inj_on list_of_vec (carrier_vec n)"
  unfolding inj_on_def unfolding list_of_vec_rw_map by auto
 
-lemma vec_of_list_carrier[simp]: "vec_of_list x \<in> carrier\<^sub>v (length x)"
-  unfolding vec_carrier_def by simp
+lemma vec_of_list_carrier[simp]: "vec_of_list x \<in> carrier_vec (length x)"
+  unfolding carrier_vec_def by simp
 
-lemma card_carrier_vec: "card (carrier\<^sub>v n:: 'b::finite vec set) = CARD('b) ^ n"
+lemma card_carrier_vec: "card (carrier_vec n:: 'b::finite vec set) = CARD('b) ^ n"
 proof -
   let ?A = "UNIV::'b set"
   let ?B = "{xs. set xs \<subseteq> ?A \<and> length xs = n}"
-  let ?C = "(carrier\<^sub>v n:: 'b::finite vec set)"
+  let ?C = "(carrier_vec n:: 'b::finite vec set)"
   have "card ?C = card ?B"
   proof -
     have "bij_betw (list_of_vec) ?C ?B"
     proof (unfold bij_betw_def, auto)
-      show "inj_on list_of_vec (carrier\<^sub>v n)" by (rule inj_on_list_of_vec)
+      show "inj_on list_of_vec (carrier_vec n)" by (rule inj_on_list_of_vec)
       fix x::"'b list"
       assume n: "n = length x"
-      thus "x \<in> list_of_vec ` carrier\<^sub>v (length x)"
+      thus "x \<in> list_of_vec ` carrier_vec (length x)"
         unfolding image_def
         by auto (rule bexI[of _ "vec_of_list x"], auto)
     qed
@@ -182,26 +182,26 @@ proof -
 qed
 
 
-lemma finite_carrier_vec[simp]: "finite (carrier\<^sub>v n:: 'b::finite vec set)"
+lemma finite_carrier_vec[simp]: "finite (carrier_vec n:: 'b::finite vec set)"
   by (rule card_ge_0_finite, unfold card_carrier_vec, auto)
 
 
 lemma row_echelon_form_dim0_row:
-assumes "A \<in> carrier\<^sub>m 0 n"
+assumes "A \<in> carrier_mat 0 n"
 shows "row_echelon_form A"
 using assms
 unfolding row_echelon_form_def pivot_fun_def Let_def by auto
 
 lemma row_echelon_form_dim0_col:
-assumes "A \<in> carrier\<^sub>m n 0"
+assumes "A \<in> carrier_mat n 0"
 shows "row_echelon_form A"
 using assms
 unfolding row_echelon_form_def pivot_fun_def Let_def by auto
 
-lemma row_echelon_form_one_dim0[simp]: "row_echelon_form (\<one>\<^sub>m 0)"
+lemma row_echelon_form_one_dim0[simp]: "row_echelon_form (1\<^sub>m 0)"
   unfolding row_echelon_form_def pivot_fun_def Let_def by auto
 
-lemma Poly_list_of_vec_0[simp]: "Poly (list_of_vec (\<zero>\<^sub>v 0)) = [:0:]"
+lemma Poly_list_of_vec_0[simp]: "Poly (list_of_vec (0\<^sub>v 0)) = [:0:]"
   by (simp add: poly_eq_iff nth_default_def)
 
 lemma monic_normalize:
@@ -352,26 +352,18 @@ qed
 
 end
 
-abbreviation vec_minus :: "'a :: {plus,uminus} vec \<Rightarrow> 'a vec \<Rightarrow> 'a vec" (infixl "\<ominus>\<^sub>v" 65) where
-  "A \<ominus>\<^sub>v B \<equiv> A \<oplus>\<^sub>v \<ominus>\<^sub>v B"
-
-lemma transpose_one[simp]: "transpose\<^sub>m (\<one>\<^sub>m n) = (\<one>\<^sub>m n)"
-  by auto
-
-lemma vec_in_carrier[simp]: "v \<in> carrier\<^sub>v (dim\<^sub>v v)" unfolding vec_carrier_def by auto
-
 lemma gcd_monic_constant: "monic (f :: 'a :: {field,euclidean_ring_gcd} poly) \<Longrightarrow> degree g = 0 \<Longrightarrow> gcd f g \<in> {1,f}"
   by (metis coprime_1_right coprime_divisors gcd_0_right gcd_dvd1 insertCI is_unit_iff_degree normalize_monic)
 
 lemma distinct_find_base_vectors:
 fixes A::"'a::field mat"
 assumes ref: "row_echelon_form A"
-  and A: "A \<in> carrier\<^sub>m nr nc"
+  and A: "A \<in> carrier_mat nr nc"
 shows "distinct (find_base_vectors A)"
 proof -
   note non_pivot_base = non_pivot_base[OF ref A]
   let ?pp = "set (pivot_positions A)"
-  from A have dim: "dim\<^sub>r A = nr" "dim\<^sub>c A = nc" by auto
+  from A have dim: "dim_row A = nr" "dim_col A = nc" by auto
   {
     fix j j'
     assume j: "j < nc" "j \<notin> snd ` ?pp" and j': "j' < nc" "j' \<notin> snd ` ?pp" and neq: "j' \<noteq> j"
@@ -386,7 +378,7 @@ qed
 lemma length_find_base_vectors:
 fixes A::"'a::field mat"
 assumes ref: "row_echelon_form A"
-  and A: "A \<in> carrier\<^sub>m nr nc"
+  and A: "A \<in> carrier_mat nr nc"
 shows "length (find_base_vectors A) = card (set (find_base_vectors A))"
 using  distinct_card[OF distinct_find_base_vectors[OF ref A]] by auto
 
@@ -854,9 +846,9 @@ definition berlekamp_mat :: "'a mod_ring poly \<Rightarrow> 'a mod_ring mat" whe
 
 definition berlekamp_resulting_mat :: "('a mod_ring) poly \<Rightarrow> 'a mod_ring mat" where
 "berlekamp_resulting_mat u = (let Q = berlekamp_mat u;
-    n = dim\<^sub>r Q;
+    n = dim_row Q;
     QI = mat n n (\<lambda> (i,j). if i = j then Q $$ (i,j) - 1 else Q $$ (i,j))
-    in (gauss_jordan_single (mat_transpose QI)))"
+    in (gauss_jordan_single (transpose_mat QI)))"
 
 definition berlekamp_basis :: "'a mod_ring poly \<Rightarrow> 'a mod_ring poly list" where
   "berlekamp_basis u = (map (Poly o list_of_vec) (find_base_vectors (berlekamp_resulting_mat u)))"
@@ -997,22 +989,22 @@ proof -
     finally show ?thesis .
 qed
 
-corollary Poly_berlekamp_mat_cong:
+corollary Poly_berlekamp_cong_mat:
 assumes k: "k < degree u"
 shows "[Poly (list_of_vec (row (berlekamp_mat u) k)) = [:0,1:]^(CARD('a) * k)] (mod u)"
 using Poly_berlekamp_mat[OF k] unfolding cong_poly_def by auto
 
 lemma mat_of_rows_list_dim[simp]:
-  "mat_of_rows_list n vs \<in> carrier\<^sub>m (length vs) n"
-  "dim\<^sub>r (mat_of_rows_list n vs) = length vs"
-  "dim\<^sub>c (mat_of_rows_list n vs) = n"
+  "mat_of_rows_list n vs \<in> carrier_mat (length vs) n"
+  "dim_row (mat_of_rows_list n vs) = length vs"
+  "dim_col (mat_of_rows_list n vs) = n"
   unfolding mat_of_rows_list_def by auto
 
 lemma berlekamp_mat_closed[simp]:
-  "berlekamp_mat u \<in> carrier\<^sub>m (degree u) (degree u)"
-  "dim\<^sub>r (berlekamp_mat u) = degree u"
-  "dim\<^sub>c (berlekamp_mat u) = degree u"
- unfolding mat_carrier_def berlekamp_mat_def Let_def by auto
+  "berlekamp_mat u \<in> carrier_mat (degree u) (degree u)"
+  "dim_row (berlekamp_mat u) = degree u"
+  "dim_col (berlekamp_mat u) = degree u"
+ unfolding carrier_mat_def berlekamp_mat_def Let_def by auto
 
 
 lemma vec_of_list_coeffs_nth:
@@ -1177,7 +1169,7 @@ proof -
     fix x assume x: "x \<in> {..<degree u}"
     have "coeff ?p x = berlekamp_mat u $$ (i, x)"
     proof (rule coeff_Poly_list_of_vec_nth)
-      show "x < dim\<^sub>c (berlekamp_mat u)" using x by auto
+      show "x < dim_col (berlekamp_mat u)" using x by auto
     qed
     thus "monom (coeff ?p x) x = monom (berlekamp_mat u $$ (i, x)) x"
       by (simp add: poly_eq_iff)
@@ -1188,18 +1180,18 @@ qed
 
 
 lemma col_scalar_prod_as_sum:
-assumes "dim\<^sub>v v = dim\<^sub>r A"
-shows "col A j \<bullet> v = (\<Sum>i = 0..<dim\<^sub>v v. A $$ (i,j) * v $ i)"
+assumes "dim_vec v = dim_row A"
+shows "col A j \<bullet> v = (\<Sum>i = 0..<dim_vec v. A $$ (i,j) * v $ i)"
   using assms
   unfolding col_def scalar_prod_def
   by transfer' (rule sum.cong, transfer', auto simp add: mk_vec_def mk_mat_def )
 
 lemma row_transpose_scalar_prod_as_sum:
-assumes j: "j < dim\<^sub>c A" and dim_v: "dim\<^sub>v v = dim\<^sub>r A"
-shows "row (transpose\<^sub>m A) j \<bullet> v = (\<Sum>i = 0..<dim\<^sub>v v. A $$ (i,j) * v $ i)"
+assumes j: "j < dim_col A" and dim_v: "dim_vec v = dim_row A"
+shows "row (transpose_mat A) j \<bullet> v = (\<Sum>i = 0..<dim_vec v. A $$ (i,j) * v $ i)"
 proof -
-  have "row (transpose\<^sub>m A) j \<bullet> v = col A j \<bullet> v" using j row_transpose by auto
-  also have "... = (\<Sum>i = 0..<dim\<^sub>v v. A $$ (i,j) * v $ i)"
+  have "row (transpose_mat A) j \<bullet> v = col A j \<bullet> v" using j row_transpose by auto
+  also have "... = (\<Sum>i = 0..<dim_vec v. A $$ (i,j) * v $ i)"
     by (rule col_scalar_prod_as_sum[OF dim_v])
   finally show ?thesis .
 qed
@@ -1239,7 +1231,7 @@ qed
 
 lemma dim_vec_of_list_h:
 assumes "degree h < degree u"
-shows "dim\<^sub>v (vec_of_list ((coeffs h) @ replicate (degree u - length (coeffs h)) 0)) = degree u"
+shows "dim_vec (vec_of_list ((coeffs h) @ replicate (degree u - length (coeffs h)) 0)) = degree u"
 proof -
   have "length (coeffs h) \<le> degree u"
     by (metis Suc_leI assms coeffs_0_eq_Nil degree_0 length_coeffs_degree
@@ -1295,20 +1287,20 @@ lemma equation_13:
   fixes u h
   defines H: "H \<equiv> vec_of_list ((coeffs h) @ replicate (degree u - length (coeffs h)) 0)"
   assumes deg_le: "degree h < degree u" (*Mandatory from equation 8*)
-  shows "[h^CARD('a) = h] (mod u) \<longleftrightarrow> (transpose\<^sub>m (berlekamp_mat u)) \<otimes>\<^sub>m\<^sub>v H = H"
+  shows "[h^CARD('a) = h] (mod u) \<longleftrightarrow> (transpose_mat (berlekamp_mat u)) *\<^sub>v H = H"
   (is "?lhs = ?rhs")
 proof -
   have f: "finite {..degree u}" by auto
-  have [simp]: "dim\<^sub>v H = degree u" unfolding H using dim_vec_of_list_h deg_le by simp
+  have [simp]: "dim_vec H = degree u" unfolding H using dim_vec_of_list_h deg_le by simp
   let ?B = "(berlekamp_mat u)"
-  let ?f = "\<lambda>i. (transpose\<^sub>m ?B \<otimes>\<^sub>m\<^sub>v H) $ i"
+  let ?f = "\<lambda>i. (transpose_mat ?B *\<^sub>v H) $ i"
   show ?thesis
   proof
   assume rhs: ?rhs
-  have dimv_h_dimr_B: "dim\<^sub>v H = dim\<^sub>r ?B"
+  have dimv_h_dimr_B: "dim_vec H = dim_row ?B"
     by (metis berlekamp_mat_closed(2) berlekamp_mat_closed(3)
-        dim_mat_mult_vec mat_index_transpose(2) rhs)
-  have degree_h_less_dim_H: "degree h < dim\<^sub>v H" by (auto simp add: deg_le)
+        dim_mult_mat_vec index_transpose_mat(2) rhs)
+  have degree_h_less_dim_H: "degree h < dim_vec H" by (auto simp add: deg_le)
   have set_rw: "{..degree u - 1} = {..<degree u}" using deg_le by auto
   have "degree h \<le> degree u - 1" using deg_le by simp
   hence "h = (\<Sum>j\<le>degree u - 1. monom (coeff h j) j)" using poly_as_sum_of_monoms' by fastforce
@@ -1322,32 +1314,32 @@ proof -
       thus "monom (coeff h j) j = monom (?f j) j"
         by simp
     qed
-    also have "... = (\<Sum>j<degree u. monom (row (transpose\<^sub>m ?B) j \<bullet> H) j)"
+    also have "... = (\<Sum>j<degree u. monom (row (transpose_mat ?B) j \<bullet> H) j)"
       by (rule sum.cong, auto)
-    also have "... = (\<Sum>j<degree u. monom (\<Sum>i = 0..<dim\<^sub>v H. ?B $$ (i,j) * H $ i) j)"
+    also have "... = (\<Sum>j<degree u. monom (\<Sum>i = 0..<dim_vec H. ?B $$ (i,j) * H $ i) j)"
     proof (rule sum.cong, rule)
       fix x assume x: "x \<in> {..<degree u}"
-      show "monom (row (transpose\<^sub>m ?B) x \<bullet> H) x =
-      monom (\<Sum>i = 0..<dim\<^sub>v H. ?B $$ (i, x) * H $ i) x"
+      show "monom (row (transpose_mat ?B) x \<bullet> H) x =
+      monom (\<Sum>i = 0..<dim_vec H. ?B $$ (i, x) * H $ i) x"
       proof (unfold monom_eq_iff, rule row_transpose_scalar_prod_as_sum[OF _ dimv_h_dimr_B])
-        show "x < dim\<^sub>c ?B" using x deg_le by auto
+        show "x < dim_col ?B" using x deg_le by auto
       qed
     qed
-    also have "... = (\<Sum>j<degree u. \<Sum>i = 0..<dim\<^sub>v H. monom (?B $$ (i,j) * H $ i) j)"
+    also have "... = (\<Sum>j<degree u. \<Sum>i = 0..<dim_vec H. monom (?B $$ (i,j) * H $ i) j)"
       by (auto simp add: monom_sum)
-    also have "... = (\<Sum>i = 0..<dim\<^sub>v H. \<Sum>j<degree u. monom (?B $$ (i,j) * H $ i) j)"
+    also have "... = (\<Sum>i = 0..<dim_vec H. \<Sum>j<degree u. monom (?B $$ (i,j) * H $ i) j)"
       by (rule sum.commute)
-    also have "... = (\<Sum>i = 0..<dim\<^sub>v H. \<Sum>j<degree u.  monom (H $ i) 0 * monom (?B $$ (i,j)) j)"
+    also have "... = (\<Sum>i = 0..<dim_vec H. \<Sum>j<degree u.  monom (H $ i) 0 * monom (?B $$ (i,j)) j)"
     proof (rule sum.cong, rule, rule sum.cong, rule)
        fix x xa
        show "monom (?B $$ (x, xa) * H $ x) xa = monom (H $ x) 0 * monom (?B $$ (x, xa)) xa"
         by (simp add: mult_monom)
     qed
-    also have "... = (\<Sum>i = 0..<dim\<^sub>v H. (monom (H $ i) 0) * (\<Sum>j<degree u. monom (?B $$ (i,j)) j))"
+    also have "... = (\<Sum>i = 0..<dim_vec H. (monom (H $ i) 0) * (\<Sum>j<degree u. monom (?B $$ (i,j)) j))"
       by (rule sum.cong, auto simp: sum_distrib_left)
-    also have "... = (\<Sum>i = 0..<dim\<^sub>v H. (monom (H $ i) 0) * (monom 1 (CARD('a) * i) mod u))"
+    also have "... = (\<Sum>i = 0..<dim_vec H. (monom (H $ i) 0) * (monom 1 (CARD('a) * i) mod u))"
     proof (rule sum.cong, rule)
-      fix x assume x: "x \<in> {0..<dim\<^sub>v H}"
+      fix x assume x: "x \<in> {0..<dim_vec H}"
       have "(\<Sum>j<degree u. monom (?B $$ (x, j)) j) = (monom 1 (CARD('a) * x) mod u)"
       proof (rule monom_card_pow_mod_sum_berlekamp[symmetric])
         show "x < degree u" using x dimv_h_dimr_B by auto
@@ -1355,7 +1347,7 @@ proof -
       thus "monom (H $ x) 0 * (\<Sum>j<degree u. monom (?B $$ (x, j)) j) =
          monom (H $ x) 0 * (monom 1 (CARD('a) * x) mod u)" by presburger
     qed
-    also have "... =  (\<Sum>i = 0..<dim\<^sub>v H. monom (H $ i) (CARD('a) * i) mod u)"
+    also have "... =  (\<Sum>i = 0..<dim_vec H. monom (H $ i) (CARD('a) * i) mod u)"
     proof (rule sum.cong, rule)
       fix x
       have h_rw: "monom (H $ x) 0 mod u = monom (H $ x) 0"
@@ -1372,11 +1364,11 @@ proof -
       finally show "monom (H $ x) 0 * (monom 1 (CARD('a) * x) mod u)
         = monom (H $ x) (CARD('a) * x) mod u" ..
     qed
-    also have "... = (\<Sum>i = 0..<dim\<^sub>v H. monom (H $ i) (CARD('a) * i)) mod u"
+    also have "... = (\<Sum>i = 0..<dim_vec H. monom (H $ i) (CARD('a) * i)) mod u"
       by (simp add: poly_mod_sum)
-    also have "... = (\<Sum>i = 0..<dim\<^sub>v H. monom (coeff h i) (CARD('a) * i)) mod u"
+    also have "... = (\<Sum>i = 0..<dim_vec H. monom (coeff h i) (CARD('a) * i)) mod u"
     proof (rule arg_cong[of _ _ "\<lambda>x. x  mod u"], rule sum.cong, rule)
-       fix x assume x: "x \<in> {0..<dim\<^sub>v H}"
+       fix x assume x: "x \<in> {0..<dim_vec H}"
        have "H $ x = (coeff h x)"
        proof (unfold H, rule vec_of_list_coeffs_replicate_nth[OF _ deg_le])
           show "x \<in> {..<degree u}" using x by auto
@@ -1387,14 +1379,14 @@ proof -
     also have "... = (\<Sum>i\<le>degree h. monom (coeff h i) (CARD('a) * i)) mod u"
     proof (rule arg_cong[of _ _ "\<lambda>x. x mod u"])
       let ?f="\<lambda>i. monom (coeff h i) (CARD('a) * i)"
-      have ss0: "(\<Sum>i = degree h + 1 ..< dim\<^sub>v H. ?f i) = 0"
+      have ss0: "(\<Sum>i = degree h + 1 ..< dim_vec H. ?f i) = 0"
         by (rule sum.neutral, simp add: coeff_eq_0)
-      have set_rw: "{0..< dim\<^sub>v H} = {0..degree h} \<union> {degree h + 1 ..< dim\<^sub>v H}"
+      have set_rw: "{0..< dim_vec H} = {0..degree h} \<union> {degree h + 1 ..< dim_vec H}"
         using degree_h_less_dim_H by auto
-      have "(\<Sum>i = 0..<dim\<^sub>v H. ?f i) = (\<Sum>i = 0..degree h. ?f i) + (\<Sum>i = degree h + 1 ..< dim\<^sub>v H. ?f i)"
+      have "(\<Sum>i = 0..<dim_vec H. ?f i) = (\<Sum>i = 0..degree h. ?f i) + (\<Sum>i = degree h + 1 ..< dim_vec H. ?f i)"
         unfolding set_rw by (rule sum.union_disjoint, auto)
       also have "... = (\<Sum>i = 0..degree h. ?f i)" unfolding ss0 by auto
-      finally show "(\<Sum>i = 0..<dim\<^sub>v H. ?f i) = (\<Sum>i\<le>degree h. ?f i)"
+      finally show "(\<Sum>i = 0..<dim_vec H. ?f i) = (\<Sum>i\<le>degree h. ?f i)"
         by (simp add: atLeast0AtMost)
     qed
     also have "... = h^CARD('a) mod u"
@@ -1479,20 +1471,20 @@ next
       by (rule sum.cong, auto simp add: H deg_le vec_of_list_coeffs_replicate_nth)
     finally show "H $ i = (\<Sum>j<degree u. H $ j * ?B $$ (j, i))" .
   qed
-  show "(transpose\<^sub>m (?B)) \<otimes>\<^sub>m\<^sub>v H = H"
-  proof (rule vec_eqI)
+  show "(transpose_mat (?B)) *\<^sub>v H = H"
+  proof (rule eq_vecI)
     fix i
-    show "dim\<^sub>v (transpose\<^sub>m ?B \<otimes>\<^sub>m\<^sub>v H) = dim\<^sub>v (H)" by auto
-    assume i: "i < dim\<^sub>v (H)"
-    have "(transpose\<^sub>m ?B \<otimes>\<^sub>m\<^sub>v H) $ i = row (transpose\<^sub>m ?B) i \<bullet> H" using i by simp
-    also have "... = (\<Sum>j = 0..<dim\<^sub>v H. ?B $$ (j, i) * H $ j)"
+    show "dim_vec (transpose_mat ?B *\<^sub>v H) = dim_vec (H)" by auto
+    assume i: "i < dim_vec (H)"
+    have "(transpose_mat ?B *\<^sub>v H) $ i = row (transpose_mat ?B) i \<bullet> H" using i by simp
+    also have "... = (\<Sum>j = 0..<dim_vec H. ?B $$ (j, i) * H $ j)"
     proof (rule row_transpose_scalar_prod_as_sum)
-      show "i < dim\<^sub>c ?B" using i by simp
-      show "dim\<^sub>v H = dim\<^sub>r ?B" by simp
+      show "i < dim_col ?B" using i by simp
+      show "dim_vec H = dim_row ?B" by simp
     qed
     also have "... = (\<Sum>j<degree u. H $ j * ?B $$ (j, i))" by (rule sum.cong, auto)
     also have "... = H $ i" using coeff_eq_sum'[rule_format, symmetric, of i] i by simp
-    finally show "(transpose\<^sub>m ?B \<otimes>\<^sub>m\<^sub>v H) $ i = H $ i" .
+    finally show "(transpose_mat ?B *\<^sub>v H) $ i = H $ i" .
   qed
  qed
 qed
@@ -1604,74 +1596,58 @@ lemma W_eq_berlekamp_mat:
 fixes u::"'a mod_ring poly"
 shows "{v. [v^CARD('a) = v] (mod u) \<and> degree v < degree u}
   = {h. let H = vec_of_list ((coeffs h) @ replicate (degree u - length (coeffs h)) 0) in
-    (transpose\<^sub>m (berlekamp_mat u)) \<otimes>\<^sub>m\<^sub>v H = H \<and> degree h < degree u}"
+    (transpose_mat (berlekamp_mat u)) *\<^sub>v H = H \<and> degree h < degree u}"
   using equation_13 by (auto simp add: Let_def)
 
 lemma transpose_minus_1:
-  assumes "dim\<^sub>r Q = dim\<^sub>c Q"
-  shows "transpose\<^sub>m (Q \<ominus>\<^sub>m (\<one>\<^sub>m (dim\<^sub>r Q))) =  (transpose\<^sub>m Q \<ominus>\<^sub>m (\<one>\<^sub>m (dim\<^sub>r Q)))"
+  assumes "dim_row Q = dim_col Q"
+  shows "transpose_mat (Q - (1\<^sub>m (dim_row Q))) =  (transpose_mat Q - (1\<^sub>m (dim_row Q)))"
   using assms
   unfolding mat_eq_iff by auto
 
 lemma system_iff:
 fixes v::"'b::comm_ring_1 vec"
-assumes sq_Q: "dim\<^sub>r Q = dim\<^sub>c Q" and v: "dim\<^sub>r Q = dim\<^sub>v v"
-shows "(transpose\<^sub>m Q \<otimes>\<^sub>m\<^sub>v v = v) \<longleftrightarrow> ((transpose\<^sub>m Q \<ominus>\<^sub>m \<one>\<^sub>m (dim\<^sub>r Q)) \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v (dim\<^sub>v v))"
+assumes sq_Q: "dim_row Q = dim_col Q" and v: "dim_row Q = dim_vec v"
+shows "(transpose_mat Q *\<^sub>v v = v) \<longleftrightarrow> ((transpose_mat Q - 1\<^sub>m (dim_row Q)) *\<^sub>v v = 0\<^sub>v (dim_vec v))"
 proof -
-  have t1:"transpose\<^sub>m Q \<otimes>\<^sub>m\<^sub>v v \<ominus>\<^sub>v v = \<zero>\<^sub>v (dim\<^sub>v v) \<Longrightarrow> (transpose\<^sub>m Q \<ominus>\<^sub>m \<one>\<^sub>m (dim\<^sub>r Q)) \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v (dim\<^sub>v v)"
+  have t1:"transpose_mat Q *\<^sub>v v - v = 0\<^sub>v (dim_vec v) \<Longrightarrow> (transpose_mat Q - 1\<^sub>m (dim_row Q)) *\<^sub>v v = 0\<^sub>v (dim_vec v)"
+    by (subst minus_mult_distrib_mat_vec, insert sq_Q[symmetric] v, auto)
+  have t2:"(transpose_mat Q - 1\<^sub>m (dim_row Q)) *\<^sub>v v = 0\<^sub>v (dim_vec v) \<Longrightarrow> transpose_mat Q *\<^sub>v v - v = 0\<^sub>v (dim_vec v)"
+    by (subst (asm) minus_mult_distrib_mat_vec, insert sq_Q[symmetric] v, auto)
+  have "transpose_mat Q *\<^sub>v v - v = v - v \<Longrightarrow> transpose_mat Q *\<^sub>v v = v"
   proof -
-    assume a1: "transpose\<^sub>m Q \<otimes>\<^sub>m\<^sub>v v \<ominus>\<^sub>v v = \<zero>\<^sub>v (dim\<^sub>v v)"
-    have f2: "dim\<^sub>r (transpose\<^sub>m Q) = dim\<^sub>r Q"
-      by (simp add: sq_Q)
-    have f3: "v \<in> carrier\<^sub>v (dim\<^sub>v v)"
-      by (meson vec_elemsI)
-    have "\<ominus>\<^sub>v v = \<ominus>\<^sub>m \<one>\<^sub>m (dim\<^sub>r Q) \<otimes>\<^sub>m\<^sub>v v"
-      by (simp add: v)
-    then show ?thesis
-      using f3 f2 a1 
-      by (metis (no_types) mat_carrier_triv(1) mat_index_one(2) mat_index_one(3) mat_index_transpose(3) 
-          mat_index_uminus(2) mat_index_uminus(3) mat_mult_vec_left_distrib v)
-  qed    
-  have t2:"(transpose\<^sub>m Q \<ominus>\<^sub>m \<one>\<^sub>m (dim\<^sub>r Q)) \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v (dim\<^sub>v v) \<Longrightarrow> transpose\<^sub>m Q \<otimes>\<^sub>m\<^sub>v v \<ominus>\<^sub>v v = \<zero>\<^sub>v (dim\<^sub>v v)"
-    by 
-   (metis (no_types, lifting) mat_carrier_triv(1) mat_index_one(2) mat_index_one(3)
-     mat_index_transpose(2) mat_index_transpose(3) mat_index_uminus(2) mat_index_uminus(3)
-     mat_mult_vec_left_distrib mat_vec_mult_one negate_mat_vec_mult sq_Q v vec_elemsI)
-  have "transpose\<^sub>m Q \<otimes>\<^sub>m\<^sub>v v \<ominus>\<^sub>v v = v \<ominus>\<^sub>v v \<Longrightarrow> transpose\<^sub>m Q \<otimes>\<^sub>m\<^sub>v v = v"
-  proof -
-   assume a1: "transpose\<^sub>m Q \<otimes>\<^sub>m\<^sub>v v \<ominus>\<^sub>v v = v \<ominus>\<^sub>v v"
-   have f2: "transpose\<^sub>m Q \<otimes>\<^sub>m\<^sub>v v \<in> carrier\<^sub>v (dim\<^sub>v v)"
-     by (metis dim_mat_mult_vec mat_index_transpose(2) sq_Q v vec_in_carrier)
-   then have f3: "\<zero>\<^sub>v (dim\<^sub>v v) \<oplus>\<^sub>v transpose\<^sub>m Q \<otimes>\<^sub>m\<^sub>v v = transpose\<^sub>m Q \<otimes>\<^sub>m\<^sub>v v"
-     by (meson vec_left_zero)
-   have f4: "\<zero>\<^sub>v (dim\<^sub>v v) = transpose\<^sub>m Q \<otimes>\<^sub>m\<^sub>v v \<ominus>\<^sub>v v"
-     using a1 by (metis (no_types) vec_in_carrier vec_uminus_r_inv)
-   have f5: "\<ominus>\<^sub>v v \<in> carrier\<^sub>v (dim\<^sub>v v)"
+   assume a1: "transpose_mat Q *\<^sub>v v - v = v - v"
+   have f2: "transpose_mat Q *\<^sub>v v \<in> carrier_vec (dim_vec v)"
+     by (metis dim_mult_mat_vec index_transpose_mat(2) sq_Q v carrier_vec_dim_vec)
+   then have f3: "0\<^sub>v (dim_vec v) + transpose_mat Q *\<^sub>v v = transpose_mat Q *\<^sub>v v"
+     by (meson left_zero_vec)
+   have f4: "0\<^sub>v (dim_vec v) = transpose_mat Q *\<^sub>v v - v"
+     using a1 by auto
+   have f5: "- v \<in> carrier_vec (dim_vec v)"
      by simp
-   then have f6: "\<ominus>\<^sub>v v \<oplus>\<^sub>v transpose\<^sub>m Q \<otimes>\<^sub>m\<^sub>v v = v \<ominus>\<^sub>v v"
-     using f2 a1 by (metis vec_add_comm)
-   have "v \<ominus>\<^sub>v v = \<ominus>\<^sub>v v \<oplus>\<^sub>v v"
-     using f5 by (meson vec_add_comm vec_in_carrier)
-   then have "transpose\<^sub>m Q \<otimes>\<^sub>m\<^sub>v v = transpose\<^sub>m Q \<otimes>\<^sub>m\<^sub>v v \<ominus>\<^sub>v v \<oplus>\<^sub>v v"
-     using f6 f4 f3 f2 by simp
+   then have f6: "- v + transpose_mat Q *\<^sub>v v = v - v"
+     using f2 a1 using comm_add_vec minus_add_uminus_vec by fastforce
+   have "v - v = - v + v" by auto
+   then have "transpose_mat Q *\<^sub>v v = transpose_mat Q *\<^sub>v v - v + v"
+     using f6 f4 f3 f2 by (metis (no_types, lifting) a1 assoc_add_vec comm_add_vec f5 carrier_vec_dim_vec)
    then show ?thesis
-     using a1 by (metis (no_types) vec_in_carrier vec_left_zero vec_uminus_r_inv)
+     using a1 by auto
   qed
-  hence "(transpose\<^sub>m Q \<otimes>\<^sub>m\<^sub>v v = v) = ((transpose\<^sub>m Q \<otimes>\<^sub>m\<^sub>v v) \<ominus>\<^sub>v v = v \<ominus>\<^sub>v v)" by auto
-  also have "... = ((transpose\<^sub>m Q \<otimes>\<^sub>m\<^sub>v v) \<ominus>\<^sub>v v = \<zero>\<^sub>v (dim\<^sub>v v))" by auto
-  also have "... = ((transpose\<^sub>m Q \<ominus>\<^sub>m \<one>\<^sub>m (dim\<^sub>r Q)) \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v (dim\<^sub>v v))"
+  hence "(transpose_mat Q *\<^sub>v v = v) = ((transpose_mat Q *\<^sub>v v) - v = v - v)" by auto
+  also have "... = ((transpose_mat Q *\<^sub>v v) - v = 0\<^sub>v (dim_vec v))" by auto
+  also have "... = ((transpose_mat Q - 1\<^sub>m (dim_row Q)) *\<^sub>v v = 0\<^sub>v (dim_vec v))"
     using t1 t2 by auto
   finally show ?thesis.
 qed
 
 
 lemma system_if_mat_kernel:
-assumes sq_Q: "dim\<^sub>r Q = dim\<^sub>c Q" and v: "dim\<^sub>r Q = dim\<^sub>v v"
-shows "(transpose\<^sub>m Q \<otimes>\<^sub>m\<^sub>v v = v) \<longleftrightarrow> v \<in> mat_kernel (transpose\<^sub>m (Q \<ominus>\<^sub>m (\<one>\<^sub>m (dim\<^sub>r Q))))"
+assumes sq_Q: "dim_row Q = dim_col Q" and v: "dim_row Q = dim_vec v"
+shows "(transpose_mat Q *\<^sub>v v = v) \<longleftrightarrow> v \<in> mat_kernel (transpose_mat (Q - (1\<^sub>m (dim_row Q))))"
 proof -
-  have "(transpose\<^sub>m Q \<otimes>\<^sub>m\<^sub>v v = v) = ((transpose\<^sub>m Q \<ominus>\<^sub>m \<one>\<^sub>m (dim\<^sub>r Q)) \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v (dim\<^sub>v v))"
+  have "(transpose_mat Q *\<^sub>v v = v) = ((transpose_mat Q - 1\<^sub>m (dim_row Q)) *\<^sub>v v = 0\<^sub>v (dim_vec v))"
     using assms system_iff by blast
-  also have "... = (v \<in> mat_kernel (transpose\<^sub>m (Q \<ominus>\<^sub>m (\<one>\<^sub>m (dim\<^sub>r Q)))))"
+  also have "... = (v \<in> mat_kernel (transpose_mat (Q - (1\<^sub>m (dim_row Q)))))"
     unfolding mat_kernel_def unfolding transpose_minus_1[OF sq_Q] unfolding v by auto
   finally show ?thesis .
 qed
@@ -1742,19 +1718,19 @@ qed
 
 
 lemma berlekamp_resulting_mat_closed[simp]:
-  "berlekamp_resulting_mat u \<in> carrier\<^sub>m (degree u) (degree u)"
-  "dim\<^sub>r (berlekamp_resulting_mat u) = degree u"
-  "dim\<^sub>c (berlekamp_resulting_mat u) = degree u"
+  "berlekamp_resulting_mat u \<in> carrier_mat (degree u) (degree u)"
+  "dim_row (berlekamp_resulting_mat u) = degree u"
+  "dim_col (berlekamp_resulting_mat u) = degree u"
 proof -
-  let ?A="(transpose\<^sub>m (mat (degree u) (degree u)
+  let ?A="(transpose_mat (mat (degree u) (degree u)
              (\<lambda>(i, j). if i = j then berlekamp_mat u $$ (i, j) - 1 else berlekamp_mat u $$ (i, j))))"
   let ?G="(gauss_jordan_single ?A)"
-  have "?G \<in>carrier\<^sub>m (degree u) (degree u)"
+  have "?G \<in>carrier_mat (degree u) (degree u)"
     by (rule gauss_jordan_single(2)[of ?A], auto)
   thus
-    "berlekamp_resulting_mat u \<in> carrier\<^sub>m (degree u) (degree u)"
-    "dim\<^sub>r (berlekamp_resulting_mat u) = degree u"
-    "dim\<^sub>c (berlekamp_resulting_mat u) = degree u"
+    "berlekamp_resulting_mat u \<in> carrier_mat (degree u) (degree u)"
+    "dim_row (berlekamp_resulting_mat u) = degree u"
+    "dim_col (berlekamp_resulting_mat u) = degree u"
     unfolding berlekamp_resulting_mat_def Let_def by auto
 qed
 
@@ -1763,8 +1739,8 @@ qed
 lemma berlekamp_resulting_mat_basis:
 "kernel.basis (degree u) (berlekamp_resulting_mat u) (set (find_base_vectors (berlekamp_resulting_mat u)))"
 proof (rule find_base_vectors(3))
-  show "berlekamp_resulting_mat u \<in> carrier\<^sub>m (degree u) (degree u)" by simp
-  let ?A="(transpose\<^sub>m (mat (degree u) (degree u)
+  show "berlekamp_resulting_mat u \<in> carrier_mat (degree u) (degree u)" by simp
+  let ?A="(transpose_mat (mat (degree u) (degree u)
           (\<lambda>(i, j). if i = j then berlekamp_mat u $$ (i, j) - 1 else berlekamp_mat u $$ (i, j))))"
   have "row_echelon_form (gauss_jordan_single ?A)"
     by (rule gauss_jordan_single(3)[of ?A], auto)
@@ -1780,7 +1756,7 @@ lemma set_berlekamp_basis_eq: "(set (berlekamp_basis u))
 
 lemma berlekamp_resulting_mat_constant:
 assumes deg_u: "degree u = 0"
-shows "berlekamp_resulting_mat u = \<one>\<^sub>m 0"
+shows "berlekamp_resulting_mat u = 1\<^sub>m 0"
   by (unfold mat_eq_iff, auto simp add: deg_u)
 
 context
@@ -1791,13 +1767,13 @@ lemma set_berlekamp_basis_constant:
 assumes deg_u: "degree u = 0"
 shows "set (berlekamp_basis u) = {}"
 proof -
-  have one_carrier: "\<one>\<^sub>m 0 \<in> carrier\<^sub>m 0 0" by auto
-  have m: "mat_kernel (\<one>\<^sub>m 0) = {(\<zero>\<^sub>v 0) :: 'a mod_ring vec}" unfolding mat_kernel_def by auto
-  have r: "row_echelon_form (\<one>\<^sub>m 0 :: 'a mod_ring mat)"
+  have one_carrier: "1\<^sub>m 0 \<in> carrier_mat 0 0" by auto
+  have m: "mat_kernel (1\<^sub>m 0) = {(0\<^sub>v 0) :: 'a mod_ring vec}" unfolding mat_kernel_def by auto
+  have r: "row_echelon_form (1\<^sub>m 0 :: 'a mod_ring mat)"
     unfolding row_echelon_form_def pivot_fun_def Let_def by auto
-  have "set (find_base_vectors (\<one>\<^sub>m 0)) \<subseteq> {\<zero>\<^sub>v 0 :: 'a mod_ring vec}"
+  have "set (find_base_vectors (1\<^sub>m 0)) \<subseteq> {0\<^sub>v 0 :: 'a mod_ring vec}"
     using find_base_vectors(1)[OF r one_carrier] unfolding m .
-  hence "set (find_base_vectors (\<one>\<^sub>m 0) :: 'a mod_ring vec list) = {}"
+  hence "set (find_base_vectors (1\<^sub>m 0) :: 'a mod_ring vec list) = {}"
     using find_base_vectors(2)[OF r one_carrier]
     using subset_singletonD by fastforce
   thus ?thesis
@@ -1810,24 +1786,24 @@ lemma row_echelon_form_berlekamp_resulting_mat: "row_echelon_form (berlekamp_res
 
 lemma mat_kernel_berlekamp_resulting_mat_degree_0:
 assumes d: "degree u = 0"
-shows "mat_kernel (berlekamp_resulting_mat u) = {\<zero>\<^sub>v 0}"
-  by (auto simp add: mat_kernel_def mat_mult_vec_def d)
+shows "mat_kernel (berlekamp_resulting_mat u) = {0\<^sub>v 0}"
+  by (auto simp add: mat_kernel_def mult_mat_vec_def d)
 
 
 lemma in_mat_kernel_berlekamp_resulting_mat:
-assumes x: "transpose\<^sub>m (berlekamp_mat u) \<otimes>\<^sub>m\<^sub>v x = x"
-and x_dim: "x \<in> carrier\<^sub>v (degree u)"
+assumes x: "transpose_mat (berlekamp_mat u) *\<^sub>v x = x"
+and x_dim: "x \<in> carrier_vec (degree u)"
 shows "x \<in> mat_kernel (berlekamp_resulting_mat u)"
 proof -
- let ?QI="(mat(dim\<^sub>r (berlekamp_mat u)) (dim\<^sub>r (berlekamp_mat u))
+ let ?QI="(mat(dim_row (berlekamp_mat u)) (dim_row (berlekamp_mat u))
          (\<lambda>(i, j). if i = j then berlekamp_mat u $$ (i, j) - 1 else berlekamp_mat u $$ (i, j)))"
-  have *: "(transpose\<^sub>m (berlekamp_mat u) \<ominus>\<^sub>m \<one>\<^sub>m (degree u)) = transpose\<^sub>m  ?QI" by auto
-  have "(transpose\<^sub>m (berlekamp_mat u) \<ominus>\<^sub>m \<one>\<^sub>m (dim\<^sub>r (berlekamp_mat u))) \<otimes>\<^sub>m\<^sub>v x = \<zero>\<^sub>v (dim\<^sub>v x)"
+  have *: "(transpose_mat (berlekamp_mat u) - 1\<^sub>m (degree u)) = transpose_mat  ?QI" by auto
+  have "(transpose_mat (berlekamp_mat u) - 1\<^sub>m (dim_row (berlekamp_mat u))) *\<^sub>v x = 0\<^sub>v (dim_vec x)"
     using system_iff[of "berlekamp_mat u" x] x_dim x by auto
-  hence "transpose\<^sub>m ?QI \<otimes>\<^sub>m\<^sub>v x = \<zero>\<^sub>v (degree u)" using x_dim * by auto
-  hence "berlekamp_resulting_mat u \<otimes>\<^sub>m\<^sub>v x = \<zero>\<^sub>v (degree u)"
+  hence "transpose_mat ?QI *\<^sub>v x = 0\<^sub>v (degree u)" using x_dim * by auto
+  hence "berlekamp_resulting_mat u *\<^sub>v x = 0\<^sub>v (degree u)"
     unfolding berlekamp_resulting_mat_def Let_def
-    using gauss_jordan_single(1)[of "transpose\<^sub>m ?QI" "degree u" "degree u" _ x] x_dim by auto
+    using gauss_jordan_single(1)[of "transpose_mat ?QI" "degree u" "degree u" _ x] x_dim by auto
   thus ?thesis by (auto simp add: mat_kernel_def x_dim)
 qed
 
@@ -1844,34 +1820,34 @@ qed
 
 lemma linear_Poly_list_of_vec:
 shows "(Poly \<circ> list_of_vec) \<in> module_hom class_ring V (vector_space_poly.vs {v. [v^(CARD('a)) = v] (mod u)})"
-proof (auto simp add: module_hom_def Matrix.vec_module_def)
+proof (auto simp add: module_hom_def Matrix.module_vec_def)
   fix m1 m2::" 'a mod_ring vec"
   assume m1: "m1 \<in> mat_kernel (berlekamp_resulting_mat u)"
   and m2: "m2 \<in> mat_kernel (berlekamp_resulting_mat u)"
-  have m1_rw: "list_of_vec m1 = map (\<lambda>n. m1 $ n) [0..<dim\<^sub>v m1]"
+  have m1_rw: "list_of_vec m1 = map (\<lambda>n. m1 $ n) [0..<dim_vec m1]"
     by (transfer, auto simp add: mk_vec_def)
-  have m2_rw: "list_of_vec m2 = map (\<lambda>n. m2 $ n) [0..<dim\<^sub>v m2]"
+  have m2_rw: "list_of_vec m2 = map (\<lambda>n. m2 $ n) [0..<dim_vec m2]"
     by (transfer, auto simp add: mk_vec_def)
-  have "m1 \<in> carrier\<^sub>v (degree u)" by (rule mat_kernelD(1)[OF _ m1], auto)
-  moreover have "m2 \<in> carrier\<^sub>v (degree u)" by (rule mat_kernelD(1)[OF _ m2], auto)
-  ultimately have dim_eq: "dim\<^sub>v m1 = dim\<^sub>v m2" by auto
-  show "Poly (list_of_vec (m1 \<oplus>\<^sub>v m2)) = Poly (list_of_vec m1) + Poly (list_of_vec m2)"
-    unfolding poly_eq_iff m1_rw m2_rw vec_add_def
+  have "m1 \<in> carrier_vec (degree u)" by (rule mat_kernelD(1)[OF _ m1], auto)
+  moreover have "m2 \<in> carrier_vec (degree u)" by (rule mat_kernelD(1)[OF _ m2], auto)
+  ultimately have dim_eq: "dim_vec m1 = dim_vec m2" by auto
+  show "Poly (list_of_vec (m1 + m2)) = Poly (list_of_vec m1) + Poly (list_of_vec m2)"
+    unfolding poly_eq_iff m1_rw m2_rw plus_vec_def
     using dim_eq
     by (transfer', auto simp add: mk_vec_def nth_default_def)
 next
   fix r m assume m: "m \<in> mat_kernel (berlekamp_resulting_mat u)"
-  show "Poly (list_of_vec (r \<odot>\<^sub>v m)) = smult r (Poly (list_of_vec m))"
-    unfolding poly_eq_iff list_of_vec_rw_map[of m] vec_scalar_mult_def
+  show "Poly (list_of_vec (r \<cdot>\<^sub>v m)) = smult r (Poly (list_of_vec m))"
+    unfolding poly_eq_iff list_of_vec_rw_map[of m] smult_vec_def
     by (transfer', auto simp add: mk_vec_def nth_default_def)
 next
   fix x assume x: "x \<in> mat_kernel (berlekamp_resulting_mat u)"
   show "[Poly (list_of_vec x) ^ CARD('a) = Poly (list_of_vec x)] (mod u)"
   proof (cases "degree u = 0")
     case True
-    have "mat_kernel (berlekamp_resulting_mat u) = {\<zero>\<^sub>v 0}"
+    have "mat_kernel (berlekamp_resulting_mat u) = {0\<^sub>v 0}"
       by (rule mat_kernel_berlekamp_resulting_mat_degree_0[OF True])
-    hence x_0: "x = \<zero>\<^sub>v 0" using x by blast
+    hence x_0: "x = 0\<^sub>v 0" using x by blast
     show ?thesis by (auto simp add: zero_power x_0 cong_poly_def)
   next
     case False note deg_u = False
@@ -1880,12 +1856,12 @@ next
       let ?QI="(mat (degree u) (degree u)
       (\<lambda>(i, j). if i = j then berlekamp_mat u $$ (i, j) - 1 else berlekamp_mat u $$ (i, j)))"
       let ?H="vec_of_list (coeffs (Poly (list_of_vec x)) @ replicate (degree u - length (coeffs (Poly (list_of_vec x)))) 0)"
-      have x_dim: "dim\<^sub>v x = degree u" using x unfolding mat_kernel_def by auto
-      hence x_carrier[simp]: "x \<in> carrier\<^sub>v (degree u)" by (metis vec_in_carrier)
-      have x_kernel: "berlekamp_resulting_mat u \<otimes>\<^sub>m\<^sub>v x = \<zero>\<^sub>v (degree u)"
+      have x_dim: "dim_vec x = degree u" using x unfolding mat_kernel_def by auto
+      hence x_carrier[simp]: "x \<in> carrier_vec (degree u)" by (metis carrier_vec_dim_vec)
+      have x_kernel: "berlekamp_resulting_mat u *\<^sub>v x = 0\<^sub>v (degree u)"
         using x unfolding mat_kernel_def by auto
-      have t_QI_x_0: "(transpose\<^sub>m ?QI) \<otimes>\<^sub>m\<^sub>v x = \<zero>\<^sub>v (degree u)"
-        using gauss_jordan_single(1)[of "(transpose\<^sub>m ?QI)" "degree u" "degree u" "gauss_jordan_single (transpose\<^sub>m ?QI)" x]
+      have t_QI_x_0: "(transpose_mat ?QI) *\<^sub>v x = 0\<^sub>v (degree u)"
+        using gauss_jordan_single(1)[of "(transpose_mat ?QI)" "degree u" "degree u" "gauss_jordan_single (transpose_mat ?QI)" x]
         using x_kernel unfolding berlekamp_resulting_mat_def Let_def by auto
       have l: "(list_of_vec x) \<noteq> []"
         by (auto simp add: list_of_vec_rw_map vec_of_dim_0[symmetric] deg_u x_dim)
@@ -1894,19 +1870,19 @@ next
         using x_carrier deg_u by blast
       show "[Poly (list_of_vec x) ^ CARD('a) = Poly (list_of_vec x)] (mod u)"
       proof (unfold equation_13[OF deg_le])
-        have QR_rw: "?QI = berlekamp_mat u \<ominus>\<^sub>m \<one>\<^sub>m (dim\<^sub>r (berlekamp_mat u))" by auto
-        have "dim\<^sub>r (berlekamp_mat u) = dim\<^sub>v ?H"
+        have QR_rw: "?QI = berlekamp_mat u - 1\<^sub>m (dim_row (berlekamp_mat u))" by auto
+        have "dim_row (berlekamp_mat u) = dim_vec ?H"
           by (auto, metis le_add_diff_inverse length_list_of_vec length_strip_while_le x_dim)
-        moreover have "?H \<in> mat_kernel (transpose\<^sub>m (berlekamp_mat u \<ominus>\<^sub>m \<one>\<^sub>m (dim\<^sub>r (berlekamp_mat u))))"
+        moreover have "?H \<in> mat_kernel (transpose_mat (berlekamp_mat u - 1\<^sub>m (dim_row (berlekamp_mat u))))"
         proof -
            have Hx: "?H = x"
            proof (unfold vec_eq_iff, auto)
              let ?H'="vec_of_list (strip_while (op = 0) (list_of_vec x)
               @ replicate (degree u - length (strip_while (op = 0) (list_of_vec x))) 0)"
              show "length (strip_while (op = 0) (list_of_vec x))
-              + (degree u - length (strip_while (op = 0) (list_of_vec x))) = dim\<^sub>v x"
+              + (degree u - length (strip_while (op = 0) (list_of_vec x))) = dim_vec x"
                 by (metis le_add_diff_inverse length_list_of_vec length_strip_while_le x_dim)
-             fix i assume i: "i < dim\<^sub>v x"
+             fix i assume i: "i < dim_vec x"
              have "?H $ i =  coeff (Poly (list_of_vec x)) i"
              proof (rule vec_of_list_coeffs_replicate_nth[OF _ deg_le])
               show "i \<in> {..<degree u}"  using x_dim i by (auto, linarith)
@@ -1914,13 +1890,13 @@ next
              also have "... = x $ i" by (rule coeff_Poly_list_of_vec_nth'[OF i])
              finally show "?H' $ i = x $ i" by auto
            qed
-           have "?H \<in> carrier\<^sub>v (degree u)" using deg_le dim_vec_of_list_h vec_elems by blast
-           moreover have "transpose\<^sub>m (berlekamp_mat u \<ominus>\<^sub>m \<one>\<^sub>m (degree u)) \<otimes>\<^sub>m\<^sub>v ?H = \<zero>\<^sub>v (degree u)"
+           have "?H \<in> carrier_vec (degree u)" using deg_le dim_vec_of_list_h Hx by auto
+           moreover have "transpose_mat (berlekamp_mat u - 1\<^sub>m (degree u)) *\<^sub>v ?H = 0\<^sub>v (degree u)"
             using t_QI_x_0 Hx QR_rw by auto
            ultimately show ?thesis
             by (auto simp add: mat_kernel_def)
         qed
-        ultimately show "transpose\<^sub>m (berlekamp_mat u) \<otimes>\<^sub>m\<^sub>v ?H = ?H"
+        ultimately show "transpose_mat (berlekamp_mat u) *\<^sub>v ?H = ?H"
           using system_if_mat_kernel[of "berlekamp_mat u" ?H]
           by auto
         qed
@@ -1932,34 +1908,34 @@ qed
 lemma linear_Poly_list_of_vec':
   assumes "degree u \<noteq> 0"
   shows "(Poly \<circ> list_of_vec) \<in> module_hom R V W"
-proof (auto simp add: module_hom_def Matrix.vec_module_def)
+proof (auto simp add: module_hom_def Matrix.module_vec_def)
   fix m1 m2::" 'a mod_ring vec"
   assume m1: "m1 \<in> mat_kernel (berlekamp_resulting_mat u)"
   and m2: "m2 \<in> mat_kernel (berlekamp_resulting_mat u)"
-  have m1_rw: "list_of_vec m1 = map (\<lambda>n. m1 $ n) [0..<dim\<^sub>v m1]"
+  have m1_rw: "list_of_vec m1 = map (\<lambda>n. m1 $ n) [0..<dim_vec m1]"
     by (transfer, auto simp add: mk_vec_def)
-  have m2_rw: "list_of_vec m2 = map (\<lambda>n. m2 $ n) [0..<dim\<^sub>v m2]"
+  have m2_rw: "list_of_vec m2 = map (\<lambda>n. m2 $ n) [0..<dim_vec m2]"
     by (transfer, auto simp add: mk_vec_def)
-  have "m1 \<in> carrier\<^sub>v (degree u)" by (rule mat_kernelD(1)[OF _ m1], auto)
-  moreover have "m2 \<in> carrier\<^sub>v (degree u)" by (rule mat_kernelD(1)[OF _ m2], auto)
-  ultimately have dim_eq: "dim\<^sub>v m1 = dim\<^sub>v m2" by auto
-  show "Poly (list_of_vec (m1 \<oplus>\<^sub>v m2)) = Poly (list_of_vec m1) + Poly (list_of_vec m2)"
-    unfolding poly_eq_iff m1_rw m2_rw vec_add_def
+  have "m1 \<in> carrier_vec (degree u)" by (rule mat_kernelD(1)[OF _ m1], auto)
+  moreover have "m2 \<in> carrier_vec (degree u)" by (rule mat_kernelD(1)[OF _ m2], auto)
+  ultimately have dim_eq: "dim_vec m1 = dim_vec m2" by auto
+  show "Poly (list_of_vec (m1 + m2)) = Poly (list_of_vec m1) + Poly (list_of_vec m2)"
+    unfolding poly_eq_iff m1_rw m2_rw plus_vec_def
     using dim_eq
     by (transfer', auto simp add: mk_vec_def nth_default_def)
 next
   fix r m assume m: "m \<in> mat_kernel (berlekamp_resulting_mat u)"
-  show "Poly (list_of_vec (r \<odot>\<^sub>v m)) = smult r (Poly (list_of_vec m))"
-    unfolding poly_eq_iff list_of_vec_rw_map[of m] vec_scalar_mult_def
+  show "Poly (list_of_vec (r \<cdot>\<^sub>v m)) = smult r (Poly (list_of_vec m))"
+    unfolding poly_eq_iff list_of_vec_rw_map[of m] smult_vec_def
     by (transfer', auto simp add: mk_vec_def nth_default_def)
 next
   fix x assume x: "x \<in> mat_kernel (berlekamp_resulting_mat u)"
   show "[Poly (list_of_vec x) ^ CARD('a) = Poly (list_of_vec x)] (mod u)"
   proof (cases "degree u = 0")
     case True
-    have "mat_kernel (berlekamp_resulting_mat u) = {\<zero>\<^sub>v 0}"
+    have "mat_kernel (berlekamp_resulting_mat u) = {0\<^sub>v 0}"
       by (rule mat_kernel_berlekamp_resulting_mat_degree_0[OF True])
-    hence x_0: "x = \<zero>\<^sub>v 0" using x by blast
+    hence x_0: "x = 0\<^sub>v 0" using x by blast
     show ?thesis by (auto simp add: zero_power x_0 cong_poly_def)
   next
     case False note deg_u = False
@@ -1968,12 +1944,12 @@ next
       let ?QI="(mat (degree u) (degree u)
       (\<lambda>(i, j). if i = j then berlekamp_mat u $$ (i, j) - 1 else berlekamp_mat u $$ (i, j)))"
       let ?H="vec_of_list (coeffs (Poly (list_of_vec x)) @ replicate (degree u - length (coeffs (Poly (list_of_vec x)))) 0)"
-      have x_dim: "dim\<^sub>v x = degree u" using x unfolding mat_kernel_def by auto
-      hence x_carrier[simp]: "x \<in> carrier\<^sub>v (degree u)" by (metis vec_in_carrier)
-      have x_kernel: "berlekamp_resulting_mat u \<otimes>\<^sub>m\<^sub>v x = \<zero>\<^sub>v (degree u)"
+      have x_dim: "dim_vec x = degree u" using x unfolding mat_kernel_def by auto
+      hence x_carrier[simp]: "x \<in> carrier_vec (degree u)" by (metis carrier_vec_dim_vec)
+      have x_kernel: "berlekamp_resulting_mat u *\<^sub>v x = 0\<^sub>v (degree u)"
         using x unfolding mat_kernel_def by auto
-      have t_QI_x_0: "(transpose\<^sub>m ?QI) \<otimes>\<^sub>m\<^sub>v x = \<zero>\<^sub>v (degree u)"
-        using gauss_jordan_single(1)[of "(transpose\<^sub>m ?QI)" "degree u" "degree u" "gauss_jordan_single (transpose\<^sub>m ?QI)" x]
+      have t_QI_x_0: "(transpose_mat ?QI) *\<^sub>v x = 0\<^sub>v (degree u)"
+        using gauss_jordan_single(1)[of "(transpose_mat ?QI)" "degree u" "degree u" "gauss_jordan_single (transpose_mat ?QI)" x]
         using x_kernel unfolding berlekamp_resulting_mat_def Let_def by auto
       have l: "(list_of_vec x) \<noteq> []"
         by (auto simp add: list_of_vec_rw_map vec_of_dim_0[symmetric] deg_u x_dim)
@@ -1982,19 +1958,19 @@ next
         using x_carrier deg_u by blast
       show "[Poly (list_of_vec x) ^ CARD('a) = Poly (list_of_vec x)] (mod u)"
       proof (unfold equation_13[OF deg_le])
-        have QR_rw: "?QI = berlekamp_mat u \<ominus>\<^sub>m \<one>\<^sub>m (dim\<^sub>r (berlekamp_mat u))" by auto
-        have "dim\<^sub>r (berlekamp_mat u) = dim\<^sub>v ?H"
+        have QR_rw: "?QI = berlekamp_mat u - 1\<^sub>m (dim_row (berlekamp_mat u))" by auto
+        have "dim_row (berlekamp_mat u) = dim_vec ?H"
           by (auto, metis le_add_diff_inverse length_list_of_vec length_strip_while_le x_dim)
-        moreover have "?H \<in> mat_kernel (transpose\<^sub>m (berlekamp_mat u \<ominus>\<^sub>m \<one>\<^sub>m (dim\<^sub>r (berlekamp_mat u))))"
+        moreover have "?H \<in> mat_kernel (transpose_mat (berlekamp_mat u - 1\<^sub>m (dim_row (berlekamp_mat u))))"
         proof -
            have Hx: "?H = x"
            proof (unfold vec_eq_iff, auto)
              let ?H'="vec_of_list (strip_while (op = 0) (list_of_vec x)
               @ replicate (degree u - length (strip_while (op = 0) (list_of_vec x))) 0)"
              show "length (strip_while (op = 0) (list_of_vec x))
-              + (degree u - length (strip_while (op = 0) (list_of_vec x))) = dim\<^sub>v x"
+              + (degree u - length (strip_while (op = 0) (list_of_vec x))) = dim_vec x"
                 by (metis le_add_diff_inverse length_list_of_vec length_strip_while_le x_dim)
-             fix i assume i: "i < dim\<^sub>v x"
+             fix i assume i: "i < dim_vec x"
              have "?H $ i =  coeff (Poly (list_of_vec x)) i"
              proof (rule vec_of_list_coeffs_replicate_nth[OF _ deg_le])
               show "i \<in> {..<degree u}"  using x_dim i by (auto, linarith)
@@ -2002,13 +1978,13 @@ next
              also have "... = x $ i" by (rule coeff_Poly_list_of_vec_nth'[OF i])
              finally show "?H' $ i = x $ i" by auto
            qed
-           have "?H \<in> carrier\<^sub>v (degree u)" using deg_le dim_vec_of_list_h vec_elems by blast
-           moreover have "transpose\<^sub>m (berlekamp_mat u \<ominus>\<^sub>m \<one>\<^sub>m (degree u)) \<otimes>\<^sub>m\<^sub>v ?H = \<zero>\<^sub>v (degree u)"
+           have "?H \<in> carrier_vec (degree u)" using deg_le dim_vec_of_list_h Hx by auto
+           moreover have "transpose_mat (berlekamp_mat u - 1\<^sub>m (degree u)) *\<^sub>v ?H = 0\<^sub>v (degree u)"
             using t_QI_x_0 Hx QR_rw by auto
            ultimately show ?thesis
             by (auto simp add: mat_kernel_def)
         qed
-        ultimately show "transpose\<^sub>m (berlekamp_mat u) \<otimes>\<^sub>m\<^sub>v ?H = ?H"
+        ultimately show "transpose_mat (berlekamp_mat u) *\<^sub>v ?H = ?H"
           using system_if_mat_kernel[of "berlekamp_mat u" ?H]
           by auto
         qed
@@ -2031,12 +2007,12 @@ proof -
       proof (rule find_base_vectors(1))
         show "row_echelon_form (berlekamp_resulting_mat u)"
           by (rule row_echelon_form_berlekamp_resulting_mat)
-        show "berlekamp_resulting_mat u \<in> carrier\<^sub>m (degree u) (degree u)" by simp
+        show "berlekamp_resulting_mat u \<in> carrier_mat (degree u) (degree u)" by simp
       qed
       hence "x \<in> mat_kernel (berlekamp_resulting_mat u)" using x by auto
       hence "[Poly (list_of_vec x) ^ CARD('a) = Poly (list_of_vec x)] (mod u)"
         using linear_Poly_list_of_vec
-        unfolding module_hom_def Matrix.vec_module_def by auto
+        unfolding module_hom_def Matrix.module_vec_def by auto
   }
   thus "[v ^ CARD('a) = v] (mod u)" using v unfolding set_berlekamp_basis_eq by auto
 qed
@@ -2050,10 +2026,10 @@ proof (auto simp add: image_def)
   assume xa: "xa \<in> mat_kernel (berlekamp_resulting_mat u)"
   thus "[Poly (list_of_vec xa) ^ CARD('a) = Poly (list_of_vec xa)] (mod u)"
     using linear_Poly_list_of_vec
-    unfolding module_hom_def Matrix.vec_module_def by auto
+    unfolding module_hom_def Matrix.module_vec_def by auto
   show "degree (Poly (list_of_vec xa)) < degree u"
   proof (rule degree_Poly_list_of_vec[OF _ deg_u])
-    show "xa \<in> carrier\<^sub>v (degree u)" using xa unfolding mat_kernel_def by simp
+    show "xa \<in> carrier_vec (degree u)" using xa unfolding mat_kernel_def by simp
   qed
 next
   fix x assume x: "[x ^ CARD('a) = x] (mod u)"
@@ -2063,10 +2039,10 @@ next
     let ?X = "vec_of_list (coeffs x @ replicate (degree u - length (coeffs x)) 0)"
     show "x = Poly (list_of_vec (vec_of_list (coeffs x @ replicate (degree u - length (coeffs x)) 0)))"
       by auto
-    have X: "?X \<in> carrier\<^sub>v (degree u)" unfolding vec_carrier_def
+    have X: "?X \<in> carrier_vec (degree u)" unfolding carrier_vec_def
       by (auto, metis Suc_leI coeffs_0_eq_Nil deg_x degree_0 le_add_diff_inverse
         length_coeffs_degree linordered_semidom_class.add_diff_inverse list.size(3) order.asym)
-    have t: "transpose\<^sub>m (berlekamp_mat u) \<otimes>\<^sub>m\<^sub>v ?X = ?X"
+    have t: "transpose_mat (berlekamp_mat u) *\<^sub>v ?X = ?X"
       using equation_13[OF deg_x] x by auto
     show "vec_of_list (coeffs x @ replicate (degree u - length (coeffs x)) 0)
       \<in> mat_kernel (berlekamp_resulting_mat u)" by (rule in_mat_kernel_berlekamp_resulting_mat[OF t X])
@@ -2076,14 +2052,14 @@ qed
 
 lemma card_set_berlekamp_basis: "card (set (berlekamp_basis u)) = length (berlekamp_basis u)"
 proof -
-  have b: "berlekamp_resulting_mat u \<in> carrier\<^sub>m (degree u) (degree u)" by auto
+  have b: "berlekamp_resulting_mat u \<in> carrier_mat (degree u) (degree u)" by auto
   have "(set (berlekamp_basis u)) = (Poly \<circ> list_of_vec) ` set (find_base_vectors (berlekamp_resulting_mat u))"
     unfolding set_berlekamp_basis_eq ..
   also have " card ... = card (set (find_base_vectors (berlekamp_resulting_mat u)))"
   proof (rule card_image, rule subset_inj_on[OF inj_Poly_list_of_vec])
-    show "set (find_base_vectors (berlekamp_resulting_mat u)) \<subseteq> carrier\<^sub>v (degree u)"
+    show "set (find_base_vectors (berlekamp_resulting_mat u)) \<subseteq> carrier_vec (degree u)"
     using find_base_vectors(1)[OF row_echelon_form_berlekamp_resulting_mat b]
-    unfolding vec_carrier_def mat_kernel_def
+    unfolding carrier_vec_def mat_kernel_def
     by auto
   qed
   also have "... =  length (find_base_vectors (berlekamp_resulting_mat u))"
@@ -2118,7 +2094,7 @@ proof (unfold set_berlekamp_basis_eq, rule linear_map.linear_inj_image_is_basis)
     by (rule linear_map_Poly_list_of_vec')
   show "inj_on (Poly \<circ> list_of_vec) (carrier V)"
   proof (rule subset_inj_on[OF inj_Poly_list_of_vec])
-    show "carrier V \<subseteq> carrier\<^sub>v (degree u)"
+    show "carrier V \<subseteq> carrier_vec (degree u)"
       by (auto simp add: mat_kernel_def)
   qed
   show "(Poly \<circ> list_of_vec) ` carrier V = carrier W"
@@ -2424,10 +2400,10 @@ lemma exists_bijective_linear_map_W_vec:
   assumes finite_P: "finite P"
       and u_desc_square_free: "u = (\<Prod>a\<in>P. a)"
       and P: "P \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
-  shows "\<exists>f. linear_map class_ring W (module\<^sub>v TYPE('a mod_ring) (card P)) f
-  \<and> bij_betw f (carrier W) (carrier\<^sub>v (card P)::'a mod_ring vec set)"
+  shows "\<exists>f. linear_map class_ring W (module_vec TYPE('a mod_ring) (card P)) f
+  \<and> bij_betw f (carrier W) (carrier_vec (card P)::'a mod_ring vec set)"
 proof -
-  let ?B="carrier\<^sub>v (card P)::'a mod_ring vec set"
+  let ?B="carrier_vec (card P)::'a mod_ring vec set"
   have u_not_0: "u \<noteq> 0" using deg_u0 degree_0 by blast
   obtain m and n::nat where P_m: "P = m ` {i. i < n}" and inj_on_m: "inj_on m {i. i < n}"
     using finite_imp_nat_seg_image_inj_on[OF finite_P] by blast
@@ -2450,20 +2426,20 @@ proof -
     qed
   qed
   let ?f = "\<lambda>v. vec n (\<lambda>i. coeff (v mod (m i)) 0)"
-  interpret vec_VS: vectorspace class_ring "(module\<^sub>v TYPE('a mod_ring) n)"
+  interpret vec_VS: vectorspace class_ring "(module_vec TYPE('a mod_ring) n)"
     by (rule VS_Connect.vec_vs)
-  interpret linear_map class_ring W "(module\<^sub>v TYPE('a mod_ring) n)" ?f
+  interpret linear_map class_ring W "(module_vec TYPE('a mod_ring) n)" ?f
     by (intro_locales, unfold mod_hom_axioms_def module_hom_def,
-        auto simp add: vec_eq_iff vec_module_def mod_smult_left poly_mod_add_left)
-  have "linear_map class_ring W (module\<^sub>v TYPE('a mod_ring) n) ?f"
+        auto simp add: vec_eq_iff module_vec_def mod_smult_left poly_mod_add_left)
+  have "linear_map class_ring W (module_vec TYPE('a mod_ring) n) ?f"
     by (intro_locales)
   moreover have inj_f: "inj_on ?f (carrier W)"
   proof (rule Ke0_imp_inj, auto simp add: mod_hom.ker_def)
      show "[0 ^ CARD('a) = 0] (mod u)" by (simp add: cong_poly_def zero_power)
      show "0 < degree u" using deg_u0 by blast
-     show "vec n (\<lambda>i. 0) = \<zero>\<^bsub>module\<^sub>v TYPE('a mod_ring) n\<^esub>" by (auto simp add: vec_module_def)
+     show "vec n (\<lambda>i. 0) = \<zero>\<^bsub>module_vec TYPE('a mod_ring) n\<^esub>" by (auto simp add: module_vec_def)
      fix x assume x: "[x ^ CARD('a) = x] (mod u)" and deg_x: "degree x < degree u"
-     and v: "vec n (\<lambda>i. coeff (x mod m i) 0) = \<zero>\<^bsub>module\<^sub>v TYPE('a mod_ring) n\<^esub>"
+     and v: "vec n (\<lambda>i. coeff (x mod m i) 0) = \<zero>\<^bsub>module_vec TYPE('a mod_ring) n\<^esub>"
      have cong_0: "\<forall>i\<in>{i. i < n}. [x = (\<lambda>i. 0) i] (mod m i)"
      proof (rule, unfold cong_poly_def)
        fix i assume i: "i \<in> {i. i < n}"
@@ -2474,8 +2450,8 @@ proof -
        qed
        thus "x mod m i = 0 mod m i"
         using v
-        unfolding vec_module_def
-        by (auto, metis i leading_coeff_neq_0 mem_Collect_eq vec_index_vec vec_zero_index(1))
+        unfolding module_vec_def
+        by (auto, metis i leading_coeff_neq_0 mem_Collect_eq index_vec index_zero_vec(1))
      qed
      moreover have deg_x2: "degree x < (\<Sum>i\<in>{i. i < n}. degree (m i))"
       using deg_sum_eq deg_x by simp
@@ -2494,10 +2470,10 @@ proof -
   moreover have "?f ` (carrier W) = ?B"
   proof (auto simp add: image_def)
     fix xa
-    show "vec n (\<lambda>i. coeff (xa mod m i) 0) \<in> carrier\<^sub>v (card P)"
-      unfolding vec_carrier_def by (auto simp add: n)
+    show "vec n (\<lambda>i. coeff (xa mod m i) 0) \<in> carrier_vec (card P)"
+      unfolding carrier_vec_def by (auto simp add: n)
     next
-    fix x::"'a mod_ring vec" assume x: "x \<in> carrier\<^sub>v (card P)"
+    fix x::"'a mod_ring vec" assume x: "x \<in> carrier_vec (card P)"
     have " \<exists>!v. degree v < (\<Sum>i\<in>{i. i < n}. degree (m i)) \<and> (\<forall>i\<in>{i. i < n}. [v = (\<lambda>i. [:x $ i:]) i] (mod m i))"
     proof (rule chinese_remainder_unique_poly[OF not_zero coprime_mi_mj])
       show "0 < degree (prod m {i. i < n})"
@@ -2529,8 +2505,8 @@ proof -
       show "degree v < degree u" using deg_v deg_sum_eq degree_prod by presburger
       show "x = vec n (\<lambda>i. coeff (v mod m i) 0)"
       proof (unfold vec_eq_iff, rule conjI)
-         show "dim\<^sub>v x = dim\<^sub>v (vec n (\<lambda>i. coeff (v mod m i) 0))" using x n by simp
-         show "\<forall>i<dim\<^sub>v (vec n (\<lambda>i. coeff (v mod m i) 0)). x $ i = vec n (\<lambda>i. coeff (v mod m i) 0) $ i"
+         show "dim_vec x = dim_vec (vec n (\<lambda>i. coeff (v mod m i) 0))" using x n by simp
+         show "\<forall>i<dim_vec (vec n (\<lambda>i. coeff (v mod m i) 0)). x $ i = vec n (\<lambda>i. coeff (v mod m i) 0) $ i"
          proof (auto)
            fix i assume i: "i < n"
            have deg_mi: "0 < degree (m i)" using i P_m P unfolding irreducible\<^sub>d_def by fast
@@ -2576,8 +2552,8 @@ interpretation RV: vec_space "TYPE('a mod_ring)" "card P" .
 
 lemma Berlekamp_subspace_eq_dim_vec: "Berlekamp_subspace.dim = RV.dim"
 proof -
-  obtain f where lm_f: "linear_map class_ring W (module\<^sub>v TYPE('a mod_ring) (card P)) f"
-  and bij_f: "bij_betw f (carrier W) (carrier\<^sub>v (card P)::'a mod_ring vec set)"
+  obtain f where lm_f: "linear_map class_ring W (module_vec TYPE('a mod_ring) (card P)) f"
+  and bij_f: "bij_betw f (carrier W) (carrier_vec (card P)::'a mod_ring vec set)"
     using exists_bijective_linear_map_W_vec[OF finite_P u_desc_square_free P] by blast
   show ?thesis
   proof (rule linear_map.dim_eq[OF lm_f Berlekamp_subspace_fin_dim])

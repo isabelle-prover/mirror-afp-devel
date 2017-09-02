@@ -4,8 +4,8 @@ section \<open>WS1S Interpretations\<close>
 theory WS1S_Prelim
 imports
   FSet_More
-  "../Deriving/Comparator_Generator/Compare_Instances"
-  "../List-Index/List_Index"
+  Deriving.Compare_Instances
+  "List-Index.List_Index"
 begin
 
 hide_const (open) cut

@@ -1,7 +1,7 @@
 chapter \<open>The Hereditarily Finite Sets\<close>
 
 theory HF
-  imports "~~/src/HOL/Library/Nat_Bijection"
+  imports "HOL-Library.Nat_Bijection"
   abbrevs
     "<:" = "\<^bold>\<in>"
     "~<:" = "\<^bold>\<notin>"

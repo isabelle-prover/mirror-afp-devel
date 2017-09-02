@@ -1,6 +1,6 @@
 (*<*)
 theory EverythingAdequacy
-imports CorrectnessOriginal Adequacy "~~/src/HOL/Library/LaTeXsugar" 
+imports CorrectnessOriginal Adequacy "HOL-Library.LaTeXsugar" 
 begin
 
 (*

@@ -1,5 +1,5 @@
 theory Small_Examples
-imports "../Primitive_Matchers/Code_Interface"
+imports Iptables_Semantics.Code_Interface
 begin
 
 section\<open>Small Examples\<close>

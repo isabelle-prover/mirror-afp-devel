@@ -18,20 +18,20 @@ text \<open>We use matrices over ordered semirings to again define ordered semir
 theory Matrix_Comparison
 imports 
   Matrix
-  "../Matrix/Ordered_Semiring"
+  Matrix.Ordered_Semiring
 begin
 
 context ord
 begin
 definition mat_ge :: "'a mat \<Rightarrow> 'a mat \<Rightarrow> bool" (infix "\<ge>\<^sub>m" 50) where
-  "A \<ge>\<^sub>m B = (\<forall> i < dim\<^sub>r A. \<forall> j < dim\<^sub>c A. A $$ (i,j) \<ge> B $$ (i,j))"
+  "A \<ge>\<^sub>m B = (\<forall> i < dim_row A. \<forall> j < dim_col A. A $$ (i,j) \<ge> B $$ (i,j))"
 
-lemma mat_geI[intro]: assumes "A \<in> carrier\<^sub>m nr nc" 
+lemma mat_geI[intro]: assumes "A \<in> carrier_mat nr nc" 
   "\<And> i j. i < nr \<Longrightarrow> j < nc \<Longrightarrow> A $$ (i,j) \<ge> B $$ (i,j)"
   shows "A \<ge>\<^sub>m B"
   using assms unfolding mat_ge_def by auto
 
-lemma mat_geD[dest]: assumes "A \<ge>\<^sub>m B" and "i < dim\<^sub>r A" "j < dim\<^sub>c A"
+lemma mat_geD[dest]: assumes "A \<ge>\<^sub>m B" and "i < dim_row A" "j < dim_col A"
   shows "A $$ (i,j) \<ge> B $$ (i,j)" 
   using assms unfolding mat_ge_def by auto
 
@@ -48,25 +48,25 @@ lemma mat_gtD[dest]: assumes "mat_gt gt sd A B"
   using assms unfolding mat_gt_def by auto
 
 definition mat_max :: "'a mat \<Rightarrow> 'a mat \<Rightarrow> 'a mat" ("max\<^sub>m") where
-  "max\<^sub>m A B = mat (dim\<^sub>r A) (dim\<^sub>c A) (\<lambda> ij. max (A $$ ij) (B $$ ij))"
+  "max\<^sub>m A B = mat (dim_row A) (dim_col A) (\<lambda> ij. max (A $$ ij) (B $$ ij))"
 
 lemma mat_max_carrier[simp]:
-  "max\<^sub>m A B \<in> carrier\<^sub>m (dim\<^sub>r A) (dim\<^sub>c A)"
+  "max\<^sub>m A B \<in> carrier_mat (dim_row A) (dim_col A)"
   unfolding mat_max_def by auto
 
 lemma mat_max_closed[intro]:
-  "A \<in> carrier\<^sub>m nr nc \<Longrightarrow> B \<in> carrier\<^sub>m nr nc \<Longrightarrow> max\<^sub>m A B \<in> carrier\<^sub>m nr nc"
+  "A \<in> carrier_mat nr nc \<Longrightarrow> B \<in> carrier_mat nr nc \<Longrightarrow> max\<^sub>m A B \<in> carrier_mat nr nc"
   unfolding mat_max_def by auto
 
 lemma mat_max_index:
-  assumes "i < dim\<^sub>r A" "j < dim\<^sub>c A"
+  assumes "i < dim_row A" "j < dim_col A"
   shows "(mat_max A B) $$ (i,j) = max (A $$ (i,j)) (B $$ (i,j))"
-  unfolding mat_max_def using mat_index_mat assms by auto
+  unfolding mat_max_def using index_mat assms by auto
 
 definition (in zero) mat_default :: "'a \<Rightarrow> nat \<Rightarrow> 'a mat" ("default\<^sub>m") where
   "default\<^sub>m d n = mat n n (\<lambda> (i,j). if i = j then d else 0)"
 
-lemma mat_default_carrier[simp]: "default\<^sub>m d n \<in> carrier\<^sub>m n n"
+lemma mat_default_carrier[simp]: "default\<^sub>m d n \<in> carrier_mat n n"
   unfolding mat_default_def by auto
 end
 
@@ -77,37 +77,37 @@ where "mat_mono mon sd A = (\<forall> j < sd. \<exists> i < sd. mon (A $$ (i,j))
 context non_strict_order
 begin
 lemma mat_ge_trans: assumes "A \<ge>\<^sub>m B" "B \<ge>\<^sub>m C"
-  and "A \<in> carrier\<^sub>m nr nc" "B \<in> carrier\<^sub>m nr nc"
+  and "A \<in> carrier_mat nr nc" "B \<in> carrier_mat nr nc"
 shows "A \<ge>\<^sub>m C"
   using assms ge_trans[of "B $$ (i,j)" "A $$ (i,j)" for i j] 
-  unfolding mat_ge_def mat_carrier_def by auto
+  unfolding mat_ge_def carrier_mat_def by auto
 
 lemma mat_ge_refl: "A \<ge>\<^sub>m A"
   unfolding mat_ge_def by (auto simp: ge_refl)
 
-lemma mat_max_comm: "A \<in> carrier\<^sub>m nr nc \<Longrightarrow> B \<in> carrier\<^sub>m nr nc \<Longrightarrow> max\<^sub>m A B = max\<^sub>m B A"
-  unfolding mat_max_def by (intro mat_eqI, auto simp: max_comm)
+lemma mat_max_comm: "A \<in> carrier_mat nr nc \<Longrightarrow> B \<in> carrier_mat nr nc \<Longrightarrow> max\<^sub>m A B = max\<^sub>m B A"
+  unfolding mat_max_def by (intro eq_matI, auto simp: max_comm)
 
 lemma mat_max_ge: "max\<^sub>m A B \<ge>\<^sub>m A"
-  unfolding mat_max_def by (intro mat_geI[of _ "dim\<^sub>r A" "dim\<^sub>c A"], auto)
+  unfolding mat_max_def by (intro mat_geI[of _ "dim_row A" "dim_col A"], auto)
 
-lemma mat_max_ge_0: "A \<in> carrier\<^sub>m nr nc \<Longrightarrow> B \<in> carrier\<^sub>m nr nc \<Longrightarrow> A \<ge>\<^sub>m B \<Longrightarrow> max\<^sub>m A B = A"
-  unfolding mat_max_def by (intro mat_eqI, auto simp: max_id)
+lemma mat_max_ge_0: "A \<in> carrier_mat nr nc \<Longrightarrow> B \<in> carrier_mat nr nc \<Longrightarrow> A \<ge>\<^sub>m B \<Longrightarrow> max\<^sub>m A B = A"
+  unfolding mat_max_def by (intro eq_matI, auto simp: max_id)
 
 lemma mat_max_mono: "A \<ge>\<^sub>m B \<Longrightarrow>
-   A \<in> carrier\<^sub>m nr nc \<Longrightarrow> B \<in> carrier\<^sub>m nr nc \<Longrightarrow> C \<in> carrier\<^sub>m nr nc \<Longrightarrow> 
+   A \<in> carrier_mat nr nc \<Longrightarrow> B \<in> carrier_mat nr nc \<Longrightarrow> C \<in> carrier_mat nr nc \<Longrightarrow> 
    max\<^sub>m C A \<ge>\<^sub>m max\<^sub>m C B"
   by (intro mat_geI[of _ nr nc], auto simp: max_mono mat_max_def)
 end
 
 lemma mat_plus_left_mono: "A \<ge>\<^sub>m (B :: 'a :: ordered_ab_semigroup mat) 
-  \<Longrightarrow> A \<in> carrier\<^sub>m nr nc \<Longrightarrow> B \<in> carrier\<^sub>m nr nc \<Longrightarrow> C \<in> carrier\<^sub>m nr nc 
-  \<Longrightarrow> A \<oplus>\<^sub>m C \<ge>\<^sub>m B \<oplus>\<^sub>m C"
+  \<Longrightarrow> A \<in> carrier_mat nr nc \<Longrightarrow> B \<in> carrier_mat nr nc \<Longrightarrow> C \<in> carrier_mat nr nc 
+  \<Longrightarrow> A + C \<ge>\<^sub>m B + C"
   by (intro mat_geI[of _ nr nc], auto simp: plus_left_mono)
 
 lemma mat_plus_right_mono: "B \<ge>\<^sub>m (C :: 'a :: ordered_ab_semigroup mat) 
-  \<Longrightarrow> A \<in> carrier\<^sub>m nr nc \<Longrightarrow> B \<in> carrier\<^sub>m nr nc \<Longrightarrow> C \<in> carrier\<^sub>m nr nc 
-  \<Longrightarrow> A \<oplus>\<^sub>m B \<ge>\<^sub>m A \<oplus>\<^sub>m C"
+  \<Longrightarrow> A \<in> carrier_mat nr nc \<Longrightarrow> B \<in> carrier_mat nr nc \<Longrightarrow> C \<in> carrier_mat nr nc 
+  \<Longrightarrow> A + B \<ge>\<^sub>m A + C"
   by (intro mat_geI[of _ nr nc], auto simp: plus_right_mono)
 
 lemma plus_mono: "x\<^sub>1 \<ge> (x\<^sub>2 :: 'a :: ordered_ab_semigroup) \<Longrightarrow> 
@@ -150,27 +150,27 @@ proof -
 qed
 
 lemma scalar_left_mono: assumes 
-  "u \<in> carrier\<^sub>v n" "v \<in> carrier\<^sub>v n" "w \<in> carrier\<^sub>v n" 
+  "u \<in> carrier_vec n" "v \<in> carrier_vec n" "w \<in> carrier_vec n" 
   and "\<And> i. i < n \<Longrightarrow> u $ i \<ge> v $ i"
   and "\<And> i. i < n \<Longrightarrow> w $ i \<ge> (0 :: 'a :: ordered_semiring_0)"
   shows "u \<bullet> w \<ge> v \<bullet> w" unfolding scalar_prod_def
   by (intro sum_mono_ge times_left_mono, insert assms, auto)
 
 lemma scalar_right_mono: assumes 
-  "u \<in> carrier\<^sub>v n" "v \<in> carrier\<^sub>v n" "w \<in> carrier\<^sub>v n" 
+  "u \<in> carrier_vec n" "v \<in> carrier_vec n" "w \<in> carrier_vec n" 
   and "\<And> i. i < n \<Longrightarrow> v $ i \<ge> w $ i"
   and "\<And> i. i < n \<Longrightarrow> u $ i \<ge> (0 :: 'a :: ordered_semiring_0)"
   shows "u \<bullet> v \<ge> u \<bullet> w" 
 proof -
-  have dim: "dim\<^sub>v v = dim\<^sub>v w" using assms by auto
+  have dim: "dim_vec v = dim_vec w" using assms by auto
   show ?thesis unfolding scalar_prod_def dim
     by (intro sum_mono_ge times_right_mono, insert assms, auto)
 qed
 
-lemma mat_mult_left_mono: assumes C0: "C \<ge>\<^sub>m \<zero>\<^sub>m n n"
+lemma mat_mult_left_mono: assumes C0: "C \<ge>\<^sub>m 0\<^sub>m n n"
   and AB: "A \<ge>\<^sub>m (B :: 'a :: ordered_semiring_0 mat)"
-  and carr: "A \<in> carrier\<^sub>m n n" "B \<in> carrier\<^sub>m n n" "C \<in> carrier\<^sub>m n n"
-  shows "A \<otimes>\<^sub>m C \<ge>\<^sub>m B \<otimes>\<^sub>m C"
+  and carr: "A \<in> carrier_mat n n" "B \<in> carrier_mat n n" "C \<in> carrier_mat n n"
+  shows "A * C \<ge>\<^sub>m B * C"
 proof -
   {
     fix i j
@@ -182,10 +182,10 @@ proof -
     by (intro mat_geI[of _ n n], insert carr, auto)
 qed
 
-lemma mat_mult_right_mono: assumes A0: "A \<ge>\<^sub>m \<zero>\<^sub>m n n" 
+lemma mat_mult_right_mono: assumes A0: "A \<ge>\<^sub>m 0\<^sub>m n n" 
   and BC: "B \<ge>\<^sub>m (C :: 'a :: ordered_semiring_0 mat)"
-  and carr: "A \<in> carrier\<^sub>m n n" "B \<in> carrier\<^sub>m n n" "C \<in> carrier\<^sub>m n n"
-  shows "A \<otimes>\<^sub>m B \<ge>\<^sub>m A \<otimes>\<^sub>m C"
+  and carr: "A \<in> carrier_mat n n" "B \<in> carrier_mat n n" "C \<in> carrier_mat n n"
+  shows "A * B \<ge>\<^sub>m A * C"
 proof -
   {
     fix i j
@@ -197,13 +197,13 @@ proof -
     by (intro mat_geI[of _ n n], insert carr, auto)
 qed
 
-lemma mat_one_ge_zero: "(\<one>\<^sub>m n :: 'a :: ordered_semiring_1 mat) \<ge>\<^sub>m \<zero>\<^sub>m n n"
+lemma one_mat_ge_zero: "(1\<^sub>m n :: 'a :: ordered_semiring_1 mat) \<ge>\<^sub>m 0\<^sub>m n n"
   by (intro mat_geI[of _ n n], auto simp: one_ge_zero ge_refl)
 
 context order_pair
 begin
 lemma mat_ge_gt_trans: assumes sd: "sd \<le> n" and AB: "A \<ge>\<^sub>m B" and BC: "mat_gt gt sd B C"
-  and A: "A \<in> carrier\<^sub>m n n" and B: "B \<in> carrier\<^sub>m n n"
+  and A: "A \<in> carrier_mat n n" and B: "B \<in> carrier_mat n n"
 shows "mat_gt gt sd A C"
 proof -  
   from mat_gtD[OF BC] obtain i j where ij: "i < sd" "j < sd" and gt: "B $$ (i, j) \<succ> C $$ (i, j)" 
@@ -215,7 +215,7 @@ proof -
 qed
 
 lemma mat_gt_ge_trans: assumes sd: "sd \<le> n" and AB: "mat_gt gt sd A B" and BC: "B \<ge>\<^sub>m C"
-  and A: "A \<in> carrier\<^sub>m n n" and B: "B \<in> carrier\<^sub>m n n"
+  and A: "A \<in> carrier_mat n n" and B: "B \<in> carrier_mat n n"
 shows "mat_gt gt sd A C"
 proof -  
   from mat_gtD[OF AB] obtain i j where ij: "i < sd" "j < sd" and gt: "A $$ (i, j) \<succ> B $$ (i, j)" 
@@ -230,16 +230,16 @@ lemma mat_gt_imp_mat_ge: "mat_gt gt sd A B \<Longrightarrow> A \<ge>\<^sub>m B"
   by (rule mat_gtD)
 
 lemma mat_gt_trans: assumes sd: "sd \<le> n" and AB: "mat_gt gt sd A B" and BC: "mat_gt gt sd B C"
-  and A: "A \<in> carrier\<^sub>m n n" and B: "B \<in> carrier\<^sub>m n n"
+  and A: "A \<in> carrier_mat n n" and B: "B \<in> carrier_mat n n"
 shows "mat_gt gt sd A C"
   using mat_ge_gt_trans[OF sd mat_gt_imp_mat_ge[OF AB] BC A B] .
 
-lemma mat_default_ge_0: "default\<^sub>m default n \<ge>\<^sub>m \<zero>\<^sub>m n n"
+lemma mat_default_ge_0: "default\<^sub>m default n \<ge>\<^sub>m 0\<^sub>m n n"
   by (intro mat_geI[of _ n n], auto simp: mat_default_def default_ge_zero ge_refl)
 end
 
 definition mat_ordered_semiring :: "nat \<Rightarrow> nat \<Rightarrow> ('a :: ordered_semiring_1 \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'b \<Rightarrow> ('a mat,'b) ordered_semiring_scheme" where
-  "mat_ordered_semiring n sd gt b \<equiv> mat_ring TYPE('a) n \<lparr>
+  "mat_ordered_semiring n sd gt b \<equiv> ring_mat TYPE('a) n \<lparr>
     ordered_semiring.geq = op \<ge>\<^sub>m,
     gt = mat_gt gt sd,
     max = max\<^sub>m,
@@ -250,11 +250,11 @@ lemma (in one_mono_ordered_semiring_1) mat_ordered_semiring: assumes sd_n: "sd \
     (mat_ordered_semiring n sd op \<succ> b :: ('a mat,'b) ordered_semiring_scheme)" 
   (is "ordered_semiring ?R")
 proof -
-  interpret semiring ?R unfolding mat_ordered_semiring_def by (rule mat_semiring)
+  interpret semiring ?R unfolding mat_ordered_semiring_def by (rule semiring_mat)
   show ?thesis 
-    by (unfold_locales, unfold mat_ring_def mat_ordered_semiring_def ordered_semiring_record_simps,
+    by (unfold_locales, unfold ring_mat_def mat_ordered_semiring_def ordered_semiring_record_simps,
     auto intro: mat_ge_trans mat_ge_refl mat_ge_gt_trans[OF sd_n] mat_gt_ge_trans[OF sd_n] mat_max_comm
-    mat_max_ge mat_max_ge_0 mat_max_mono mat_one_ge_zero mat_gt_trans[OF sd_n] mat_gt_imp_mat_ge
+    mat_max_ge mat_max_ge_0 mat_max_mono one_mat_ge_zero mat_gt_trans[OF sd_n] mat_gt_imp_mat_ge
     mat_plus_left_mono mat_mult_left_mono mat_mult_right_mono)
 qed
 
@@ -262,9 +262,9 @@ context weak_SN_strict_mono_ordered_semiring_1
 begin
 
 lemma weak_mat_gt_mono: assumes sd_n: "sd \<le> n" and
-    orient: "\<And> A B. A \<in> carrier\<^sub>m n n \<Longrightarrow> B \<in> carrier\<^sub>m n n \<Longrightarrow> (A,B) \<in> set ABs \<Longrightarrow> mat_gt weak_gt sd A B"
+    orient: "\<And> A B. A \<in> carrier_mat n n \<Longrightarrow> B \<in> carrier_mat n n \<Longrightarrow> (A,B) \<in> set ABs \<Longrightarrow> mat_gt weak_gt sd A B"
    shows "\<exists> gt. SN_strict_mono_ordered_semiring_1 default gt mono \<and> 
-     (\<forall> A B. A \<in> carrier\<^sub>m n n \<longrightarrow> B \<in> carrier\<^sub>m n n \<longrightarrow> (A, B) \<in> set ABs \<longrightarrow> mat_gt gt sd A B)"
+     (\<forall> A B. A \<in> carrier_mat n n \<longrightarrow> B \<in> carrier_mat n n \<longrightarrow> (A, B) \<in> set ABs \<longrightarrow> mat_gt gt sd A B)"
 proof -
   let ?n = "[0 ..< n]"
   let ?m1x = "[ A $$ (i,j) . A <- map fst ABs, i <- ?n, j <- ?n]"
@@ -277,7 +277,7 @@ proof -
   show ?thesis
   proof (intro exI allI conjI impI, rule order)
     fix A B
-    assume A: "A \<in> carrier\<^sub>m n n" and B: "B \<in> carrier\<^sub>m n n"
+    assume A: "A \<in> carrier_mat n n" and B: "B \<in> carrier_mat n n"
       and AB: "(A, B) \<in> set ABs"          
     from orient[OF this] have "mat_gt weak_gt sd A B" by auto
     from mat_gtD[OF this] obtain i j where
@@ -291,34 +291,34 @@ proof -
 qed
 end
 
-lemma mat_sum_mono: 
-  assumes A: "A \<in> carrier\<^sub>m nr nc" and B: "B \<in> carrier\<^sub>m nr nc" 
+lemma sum_mat_mono: 
+  assumes A: "A \<in> carrier_mat nr nc" and B: "B \<in> carrier_mat nr nc" 
   and AB: "A \<ge>\<^sub>m (B :: 'a :: ordered_semiring_0 mat)"
-  shows "mat_sum A \<ge> mat_sum B"
+  shows "sum_mat A \<ge> sum_mat B"
 proof -
-  from A B have id: "dim\<^sub>r B = dim\<^sub>r A" "dim\<^sub>c B = dim\<^sub>c A" by auto
-  show ?thesis unfolding mat_sum_def id
+  from A B have id: "dim_row B = dim_row A" "dim_col B = dim_col A" by auto
+  show ?thesis unfolding sum_mat_def id
     by (rule sum_mono_ge, insert mat_geD[OF AB] id, auto)
 qed
 
 context one_mono_ordered_semiring_1
 begin
-lemma mat_sum_mono_gt: 
+lemma sum_mat_mono_gt: 
   assumes "sd \<le> n"
-  and A: "A \<in> carrier\<^sub>m n n" and B: "B \<in> carrier\<^sub>m n n"
+  and A: "A \<in> carrier_mat n n" and B: "B \<in> carrier_mat n n"
   and AB: "mat_gt op \<succ> sd A (B :: 'a mat)"
-  shows "mat_sum A \<succ> mat_sum B"
+  shows "sum_mat A \<succ> sum_mat B"
 proof -
-  from A B have id: "dim\<^sub>r B = dim\<^sub>r A" "dim\<^sub>c B = dim\<^sub>c A" by auto
+  from A B have id: "dim_row B = dim_row A" "dim_col B = dim_col A" by auto
   from mat_gtD[OF AB] obtain i j where AB: "A \<ge>\<^sub>m B" and 
     ij: "i < sd" "j < sd" and gt: "A $$ (i,j) \<succ> B $$ (i,j)" by auto
-  show ?thesis unfolding mat_sum_def id
+  show ?thesis unfolding sum_mat_def id
     by (rule sum_mono_gt[of _ _ _ "(i,j)"], insert ij gt mat_geD[OF AB] A B `sd \<le> n`, auto)
 qed
 
 lemma mat_plus_gt_left_mono: assumes sd_n: "sd \<le> n" and gt: "mat_gt op \<succ> sd A B"  
-  and A: "A \<in> carrier\<^sub>m n n" and B: "B \<in> carrier\<^sub>m n n" and C: "C \<in> carrier\<^sub>m n n"
-  shows "mat_gt op \<succ> sd (A \<oplus>\<^sub>m C) (B \<oplus>\<^sub>m C)"
+  and A: "A \<in> carrier_mat n n" and B: "B \<in> carrier_mat n n" and C: "C \<in> carrier_mat n n"
+  shows "mat_gt op \<succ> sd (A + C) (B + C)"
 proof -
   note wf = A B C
   from mat_gtD[OF gt] obtain i j 
@@ -330,16 +330,16 @@ qed
 
 lemma mat_gt_ge_mono: "sd \<le> n \<Longrightarrow> mat_gt gt sd A B \<Longrightarrow>
    mat_gt gt sd C D \<Longrightarrow>
-   A \<in> carrier\<^sub>m n n \<Longrightarrow>
-   B \<in> carrier\<^sub>m n n \<Longrightarrow>
-   C \<in> carrier\<^sub>m n n \<Longrightarrow>
-   D \<in> carrier\<^sub>m n n \<Longrightarrow>
-   mat_gt gt sd (A \<oplus>\<^sub>m C) (B \<oplus>\<^sub>m D)"
+   A \<in> carrier_mat n n \<Longrightarrow>
+   B \<in> carrier_mat n n \<Longrightarrow>
+   C \<in> carrier_mat n n \<Longrightarrow>
+   D \<in> carrier_mat n n \<Longrightarrow>
+   mat_gt gt sd (A + C) (B + D)"
   by (rule mat_gt_ge_trans[OF _ mat_plus_gt_left_mono mat_plus_right_mono[OF mat_gt_imp_mat_ge]],
   auto)
 
 lemma mat_default_gt_mat0: assumes sd_pos: "sd > 0" and sd_n: "sd \<le> n"
-  shows "mat_gt op \<succ> sd (default\<^sub>m default n) (\<zero>\<^sub>m n n)"
+  shows "mat_gt op \<succ> sd (default\<^sub>m default n) (0\<^sub>m n n)"
 proof -
   from assms have n: "n > 0" by auto
   show ?thesis
@@ -352,22 +352,22 @@ context SN_one_mono_ordered_semiring_1
 begin
 
 abbreviation mat_s :: "'a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a mat \<Rightarrow> bool" ("(_ \<succ>\<^sub>m _ _ _)" [51,51,51,51] 50)
- where "A \<succ>\<^sub>m n sd B \<equiv> (A \<in> carrier\<^sub>m n n \<and> B \<in> carrier\<^sub>m n n \<and> B \<ge>\<^sub>m \<zero>\<^sub>m n n \<and> mat_gt op \<succ> sd A B)"
+ where "A \<succ>\<^sub>m n sd B \<equiv> (A \<in> carrier_mat n n \<and> B \<in> carrier_mat n n \<and> B \<ge>\<^sub>m 0\<^sub>m n n \<and> mat_gt op \<succ> sd A B)"
 
 lemma mat_gt_SN: assumes sd_n: "sd \<le> n" shows "SN {(m1,m2) . m1 \<succ>\<^sub>m n sd m2}"
 proof 
   fix A
   assume "\<forall> i. (A i, A (Suc i)) \<in> {(m1,m2). m1 \<succ>\<^sub>m n sd m2}"
   hence "\<And> i. (A i, A (Suc i)) \<in> {(m1,m2). m1 \<succ>\<^sub>m n sd m2}" by blast
-  hence A: "\<And> i. A i \<in> carrier\<^sub>m n n" 
-    and ge: "\<And> i. A (Suc i) \<ge>\<^sub>m \<zero>\<^sub>m n n" 
+  hence A: "\<And> i. A i \<in> carrier_mat n n" 
+    and ge: "\<And> i. A (Suc i) \<ge>\<^sub>m 0\<^sub>m n n" 
     and gt: "\<And> i. mat_gt op \<succ> sd (A i) (A (Suc i))" by auto  
-  define s where "s = (\<lambda> i. mat_sum (A i))"
+  define s where "s = (\<lambda> i. sum_mat (A i))"
   {
     fix i
-    from mat_sum_mono_gt[OF sd_n A A gt[of i]]
+    from sum_mat_mono_gt[OF sd_n A A gt[of i]]
     have gt: "s i \<succ> s (Suc i)" unfolding s_def .
-    from mat_sum_mono[OF A _ ge[of i]]
+    from sum_mat_mono[OF A _ ge[of i]]
     have ge: "s (Suc i) \<ge> 0" unfolding s_def by auto
     note ge gt 
   }
@@ -378,9 +378,9 @@ end
 context SN_strict_mono_ordered_semiring_1
 begin 
 
-lemma mat_mono: assumes sd_n: "sd \<le> n" and A: "A \<in> carrier\<^sub>m n n" and B: "B \<in> carrier\<^sub>m n n" and C: "C \<in> carrier\<^sub>m n n" 
-  and gt: "mat_gt op \<succ> sd B C" and gez: "A \<ge>\<^sub>m \<zero>\<^sub>m n n" and mmono: "mat_mono mono sd A"
-  shows "mat_gt op \<succ> sd (A \<otimes>\<^sub>m B) (A \<otimes>\<^sub>m C)" (is "mat_gt _ _ ?AB ?AC")
+lemma mat_mono: assumes sd_n: "sd \<le> n" and A: "A \<in> carrier_mat n n" and B: "B \<in> carrier_mat n n" and C: "C \<in> carrier_mat n n" 
+  and gt: "mat_gt op \<succ> sd B C" and gez: "A \<ge>\<^sub>m 0\<^sub>m n n" and mmono: "mat_mono mono sd A"
+  shows "mat_gt op \<succ> sd (A * B) (A * C)" (is "mat_gt _ _ ?AB ?AC")
 proof -
   from mat_gtD[OF gt] obtain i j where 
     i: "i < sd" and j: "j < sd" and gt: "B $$ (i,j) \<succ> C $$ (i,j)" and BC: "B \<ge>\<^sub>m C" by auto
@@ -388,7 +388,7 @@ proof -
   from mmono[unfolded mat_mono_def] i obtain k where k: "k < sd" and mon: "mono (A $$ (k,i))" by auto
   from mat_geD[OF gez] k i sd_n A have "A $$ (k, i) \<ge> 0" by auto
   note mono = mono[OF mon gt this]
-  have id: "dim\<^sub>v (col B j) = n" "dim\<^sub>v (col C j) = n" using j sd_n B C by auto
+  have id: "dim_vec (col B j) = n" "dim_vec (col C j) = n" using j sd_n B C by auto
   {
     fix i
     assume "i < n"
@@ -404,17 +404,17 @@ end
 
 definition mat_comp_all :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a mat \<Rightarrow> 'a mat \<Rightarrow> bool"
 where "mat_comp_all r A B =
-   (\<forall> i < dim\<^sub>r A. \<forall> j < dim\<^sub>c A. r (A $$ (i,j)) (B $$ (i,j)))"
+   (\<forall> i < dim_row A. \<forall> j < dim_col A. r (A $$ (i,j)) (B $$ (i,j)))"
 
 lemma mat_comp_allI:
-  assumes "A \<in> carrier\<^sub>m nr nc" "B \<in> carrier\<^sub>m nr nc"
+  assumes "A \<in> carrier_mat nr nc" "B \<in> carrier_mat nr nc"
   and "\<And> i j. i < nr \<Longrightarrow> j < nc \<Longrightarrow> r (A $$(i,j)) (B $$ (i,j))"
   shows "mat_comp_all r A B"
   unfolding mat_comp_all_def using assms by simp
 
 lemma mat_comp_allE:
   assumes "mat_comp_all r A B"
-  and "A \<in> carrier\<^sub>m nr nc" "B \<in> carrier\<^sub>m nr nc"
+  and "A \<in> carrier_mat nr nc" "B \<in> carrier_mat nr nc"
   shows "\<And> i j. i < nr \<Longrightarrow> j < nc \<Longrightarrow> r (A $$ (i,j)) (B $$(i,j))"
   using assms unfolding mat_comp_all_def by auto
 
@@ -425,7 +425,7 @@ abbreviation weak_mat_gt_arc :: "'a mat \<Rightarrow> 'a mat \<Rightarrow> bool"
 where "weak_mat_gt_arc \<equiv> mat_comp_all weak_gt"
 
 lemma weak_mat_gt_both_mono:
-   assumes ABs: "set ABs \<subseteq> carrier\<^sub>m n n \<times> carrier\<^sub>m n n"
+   assumes ABs: "set ABs \<subseteq> carrier_mat n n \<times> carrier_mat n n"
    and orient: "\<forall>(A,B) \<in> set ABs. weak_mat_gt_arc A B"
    shows "\<exists> gt. SN_both_mono_ordered_semiring_1 default gt arc_pos \<and>
    (\<forall>(A,B) \<in> set ABs. mat_comp_all gt A B)"
@@ -440,7 +440,7 @@ proof -
     by auto
   {
     fix A B assume AB: "(A,B) \<in> set ABs"
-    hence A: "A \<in> carrier\<^sub>m n n" and B: "B \<in> carrier\<^sub>m n n"
+    hence A: "A \<in> carrier_mat n n" and B: "B \<in> carrier_mat n n"
       using AB ABs by auto
     have "mat_comp_all gt A B"
     proof (rule mat_comp_allI[OF A B])
@@ -460,7 +460,7 @@ qed
 end
 
 definition mat_both_ordered_semiring :: "nat \<Rightarrow> ('a :: ordered_semiring_1 \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'b \<Rightarrow> ('a mat,'b) ordered_semiring_scheme" where
-  "mat_both_ordered_semiring n gt b \<equiv> mat_ring TYPE('a) n \<lparr>
+  "mat_both_ordered_semiring n gt b \<equiv> ring_mat TYPE('a) n \<lparr>
     ordered_semiring.geq = mat_ge,
     gt = mat_comp_all gt,
     max = mat_max,
@@ -481,17 +481,17 @@ where "mat_arc_pos \<equiv> mat_arc_posI arc_pos"
 
 lemma mat_max_id: fixes A :: "'a mat"
   assumes ge: "mat_ge A B"
-  and A: "A \<in> carrier\<^sub>m nr nc"
-  and B: "B \<in> carrier\<^sub>m nr nc"
+  and A: "A \<in> carrier_mat nr nc"
+  and B: "B \<in> carrier_mat nr nc"
   shows "mat_max A B = A"
   using mat_max_ge_0[OF A B ge] .
 
 lemma mat_gt_arc_trans:
   assumes A_B: "mat_gt_arc A B"
   and B_C: "mat_gt_arc B C"
-  and A: "A \<in> carrier\<^sub>m nr nc"
-  and B: "B \<in> carrier\<^sub>m nr nc"
-  and C: "C \<in> carrier\<^sub>m nr nc"
+  and A: "A \<in> carrier_mat nr nc"
+  and B: "B \<in> carrier_mat nr nc"
+  and C: "C \<in> carrier_mat nr nc"
   shows "mat_gt_arc A C"
 proof (rule mat_comp_allI[OF A C])
   fix i j
@@ -503,9 +503,9 @@ qed
 lemma mat_gt_arc_compat:
   assumes ge: "mat_ge A B"
   and gt: "mat_gt_arc B C"
-  and A: "A \<in> carrier\<^sub>m nr nc"
-  and B: "B \<in> carrier\<^sub>m nr nc"
-  and C: "C \<in> carrier\<^sub>m nr nc"
+  and A: "A \<in> carrier_mat nr nc"
+  and B: "B \<in> carrier_mat nr nc"
+  and C: "C \<in> carrier_mat nr nc"
   shows "mat_gt_arc A C"
 proof (rule mat_comp_allI[OF A C])
   fix i j assume i: "i < nr" and j: "j < nc"
@@ -518,9 +518,9 @@ qed
 lemma mat_gt_arc_compat2:
   assumes gt: "mat_gt_arc A B"
   and ge: "mat_ge B C"
-  and A: "A \<in> carrier\<^sub>m nr nc"
-  and B: "B \<in> carrier\<^sub>m nr nc"
-  and C: "C \<in> carrier\<^sub>m nr nc"
+  and A: "A \<in> carrier_mat nr nc"
+  and B: "B \<in> carrier_mat nr nc"
+  and C: "C \<in> carrier_mat nr nc"
   shows "mat_gt_arc A C"
 proof (rule mat_comp_allI[OF A C])
   fix i j assume i: "i < nr" and j: "j < nc"
@@ -533,8 +533,8 @@ qed
 
 lemma mat_gt_arc_imp_mat_ge:
   assumes gt: "mat_gt_arc A B"
-  and A: "A \<in> carrier\<^sub>m nr nc"
-  and B: "B \<in> carrier\<^sub>m nr nc"
+  and A: "A \<in> carrier_mat nr nc"
+  and B: "B \<in> carrier_mat nr nc"
   shows "mat_ge A B"
   using subst mat_geI[OF A]
   using mat_comp_allE[OF gt A B] gt_imp_ge by auto
@@ -544,14 +544,14 @@ lemma (in both_mono_ordered_semiring_1) mat_both_ordered_semiring: assumes n: "n
     (mat_both_ordered_semiring n op \<succ> b :: ('a mat,'b) ordered_semiring_scheme)" 
   (is "ordered_semiring ?R")
 proof -
-  interpret semiring ?R unfolding mat_both_ordered_semiring_def by (rule mat_semiring)
+  interpret semiring ?R unfolding mat_both_ordered_semiring_def by (rule semiring_mat)
   show ?thesis 
     apply (unfold_locales)
-    unfolding mat_ring_def mat_both_ordered_semiring_def ordered_semiring_record_simps
+    unfolding ring_mat_def mat_both_ordered_semiring_def ordered_semiring_record_simps
     apply(
       auto intro: mat_max_comm mat_ge_trans
       mat_plus_left_mono mat_mult_left_mono mat_mult_right_mono mat_ge_refl
-      mat_one_ge_zero mat_max_mono mat_max_ge mat_max_id
+      one_mat_ge_zero mat_max_mono mat_max_ge mat_max_id
       mat_gt_arc_trans mat_gt_arc_imp_mat_ge
       mat_gt_arc_compat mat_gt_arc_compat2)
     done
@@ -559,20 +559,20 @@ qed
 
 
 lemma mat0_leastI:
-  assumes A: "A \<in> carrier\<^sub>m nr nc"
-  shows "mat_gt_arc A (\<zero>\<^sub>m nr nc)"
+  assumes A: "A \<in> carrier_mat nr nc"
+  shows "mat_gt_arc A (0\<^sub>m nr nc)"
 proof (rule mat_comp_allI[OF A])
   fix i j
   assume i: "i < nr" and j: "j < nc"
-  thus "A $$ (i,j) \<succ> \<zero>\<^sub>m nr nc $$ (i,j)" by (auto simp: zero_leastI)
+  thus "A $$ (i,j) \<succ> 0\<^sub>m nr nc $$ (i,j)" by (auto simp: zero_leastI)
 qed auto
 
 lemma mat0_leastII: 
-  assumes gt: "mat_gt_arc (\<zero>\<^sub>m nr nc) A"
-  and A: "A \<in> carrier\<^sub>m nr nc"
-  shows "A = \<zero>\<^sub>m nr nc"
-  apply (rule mat_eqI)
-  unfolding mat_index_zero
+  assumes gt: "mat_gt_arc (0\<^sub>m nr nc) A"
+  and A: "A \<in> carrier_mat nr nc"
+  shows "A = 0\<^sub>m nr nc"
+  apply (rule eq_matI)
+  unfolding index_zero_mat
   using A
 proof -
   fix i j
@@ -582,73 +582,73 @@ proof -
 qed auto
 
 lemma mat0_leastIII:
-  assumes A: "A \<in> carrier\<^sub>m nr nc"
-  shows "mat_ge A ((\<zero>\<^sub>m nr nc) :: 'a mat)"
-proof (rule mat_geI[OF A]; unfold mat_index_zero)
+  assumes A: "A \<in> carrier_mat nr nc"
+  shows "mat_ge A ((0\<^sub>m nr nc) :: 'a mat)"
+proof (rule mat_geI[OF A]; unfold index_zero_mat)
   fix i j
   assume i: "i < nr" and j: "j < nc"
   show "A $$ (i,j) \<ge> 0" using zero_leastIII by simp
 qed
 
 lemma mat_max_0_id: fixes A :: "'a mat"
-  assumes A: "A \<in> carrier\<^sub>m nr nc"
-  shows "mat_max (\<zero>\<^sub>m nr nc) A = A"
-  unfolding mat_max_comm[OF mat_zero_closed A]
+  assumes A: "A \<in> carrier_mat nr nc"
+  shows "mat_max (0\<^sub>m nr nc) A = A"
+  unfolding mat_max_comm[OF zero_carrier_mat A]
   by (rule mat_max_id[OF mat0_leastIII[OF A] A], simp)
 
 lemma mat_arc_pos_one:
   assumes n0: "n > 0"
-  shows "mat_arc_posI arc_pos (\<one>\<^sub>m n)"
+  shows "mat_arc_posI arc_pos (1\<^sub>m n)"
   unfolding mat_arc_posI_def
-  unfolding arc_pos_one mat_index_one(1)[OF n0 n0]
+  unfolding arc_pos_one index_one_mat(1)[OF n0 n0]
   using arc_pos_one by simp
 
 lemma mat_arc_pos_zero:
   assumes n0: "n > 0"
-  shows "\<not> mat_arc_posI arc_pos (\<zero>\<^sub>m n n)"
+  shows "\<not> mat_arc_posI arc_pos (0\<^sub>m n n)"
   unfolding mat_arc_posI_def
-  unfolding mat_index_zero(1)[OF n0 n0] using arc_pos_zero by simp
+  unfolding index_zero_mat(1)[OF n0 n0] using arc_pos_zero by simp
 
 lemma mat_gt_arc_plus_mono:
   assumes gt1: "mat_gt_arc A B"
   and gt2: "mat_gt_arc C D"
-  and A: "(A::'a mat) \<in> carrier\<^sub>m nr nc"
-  and B: "(B::'a mat) \<in> carrier\<^sub>m nr nc"
-  and C: "(C::'a mat) \<in> carrier\<^sub>m nr nc"
-  and D: "(D::'a mat) \<in> carrier\<^sub>m nr nc"
-  shows "mat_gt_arc (A \<oplus>\<^sub>m C) (B \<oplus>\<^sub>m D)" (is "mat_gt_arc ?AC ?BD")
+  and A: "(A::'a mat) \<in> carrier_mat nr nc"
+  and B: "(B::'a mat) \<in> carrier_mat nr nc"
+  and C: "(C::'a mat) \<in> carrier_mat nr nc"
+  and D: "(D::'a mat) \<in> carrier_mat nr nc"
+  shows "mat_gt_arc (A + C) (B + D)" (is "mat_gt_arc ?AC ?BD")
 proof -
   show ?thesis
   proof (rule mat_comp_allI)
     fix i j
     assume i: "i < nr" and j: "j < nc"
-    hence ijC: "i < dim\<^sub>r C" "j < dim\<^sub>c C"
-      and ijD: "i < dim\<^sub>r D" "j < dim\<^sub>c D"
+    hence ijC: "i < dim_row C" "j < dim_col C"
+      and ijD: "i < dim_row D" "j < dim_col D"
       using C D by auto
     show "?AC $$ (i,j) \<succ> ?BD $$ (i,j)"
-      unfolding mat_index_add(1)[OF ijC]
-      unfolding mat_index_add(1)[OF ijD]
+      unfolding index_add_mat(1)[OF ijC]
+      unfolding index_add_mat(1)[OF ijD]
       using plus_gt_both_mono
       using mat_comp_allE[OF gt1 A B] mat_comp_allE[OF gt2 C D] i j by auto
   qed (insert A B C D, auto)
 qed
 
 definition vec_comp_all :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a vec \<Rightarrow> 'a vec \<Rightarrow> bool"
-  where "vec_comp_all r v w \<equiv> \<forall>i < dim\<^sub>v v. r (v $ i) (w $ i)"
+  where "vec_comp_all r v w \<equiv> \<forall>i < dim_vec v. r (v $ i) (w $ i)"
 
 lemma vec_comp_allI:
-  assumes "\<And>i. i < dim\<^sub>v v \<Longrightarrow> r (v $ i) (w $ i)"
+  assumes "\<And>i. i < dim_vec v \<Longrightarrow> r (v $ i) (w $ i)"
   shows "vec_comp_all r v w"
   unfolding vec_comp_all_def using assms by auto
 
 lemma vec_comp_allE:
-  "vec_comp_all r v w \<Longrightarrow> i < dim\<^sub>v v \<Longrightarrow> r (v $ i) (w $ i)"
+  "vec_comp_all r v w \<Longrightarrow> i < dim_vec v \<Longrightarrow> r (v $ i) (w $ i)"
   unfolding vec_comp_all_def by auto
 
 lemma scalar_prod_left_mono:
-  assumes u: "u \<in> carrier\<^sub>v n"
-  and v: "v \<in> carrier\<^sub>v n"
-  and w: "w \<in> carrier\<^sub>v n"
+  assumes u: "u \<in> carrier_vec n"
+  and v: "v \<in> carrier_vec n"
+  and w: "w \<in> carrier_vec n"
   and uv: "vec_comp_all gt u v"
   shows "scalar_prod u w \<succ> scalar_prod v w"
 proof -
@@ -672,9 +672,9 @@ proof -
 qed
 
 lemma scalar_prod_right_mono:
-  assumes u: "u \<in> carrier\<^sub>v n"
-  and v: "v \<in> carrier\<^sub>v n"
-  and w: "w \<in> carrier\<^sub>v n"
+  assumes u: "u \<in> carrier_vec n"
+  and v: "v \<in> carrier_vec n"
+  and w: "w \<in> carrier_vec n"
   and vw: "vec_comp_all gt v w"
   shows "scalar_prod u v \<succ> scalar_prod u w"
 proof -
@@ -699,26 +699,26 @@ qed
 
 lemma mat_gt_arc_mult_left_mono:
   assumes gt1: "mat_gt_arc A B"
-  and A: "(A::'a mat) \<in> carrier\<^sub>m nr n"
-  and B: "(B::'a mat) \<in> carrier\<^sub>m nr n"
-  and C: "(C::'a mat) \<in> carrier\<^sub>m n nc"
-  shows "mat_gt_arc (A \<otimes>\<^sub>m C) (B \<otimes>\<^sub>m C)" (is "mat_gt_arc ?AC ?BC")
+  and A: "(A::'a mat) \<in> carrier_mat nr n"
+  and B: "(B::'a mat) \<in> carrier_mat nr n"
+  and C: "(C::'a mat) \<in> carrier_mat n nc"
+  shows "mat_gt_arc (A * C) (B * C)" (is "mat_gt_arc ?AC ?BC")
 proof (rule mat_comp_allI)
   fix i j assume i: "i < nr" and j: "j < nc"
-  hence iA: "i < dim\<^sub>r A"
-    and iB: "i < dim\<^sub>r B"
-    and jC: "j < dim\<^sub>c C"
+  hence iA: "i < dim_row A"
+    and iB: "i < dim_row B"
+    and jC: "j < dim_col C"
     using A B C by auto
   show "?AC $$ (i,j) \<succ> ?BC $$ (i,j)"
-    unfolding mat_index_mat_mult_mat(1)[OF iA jC]
-    unfolding mat_index_mat_mult_mat(1)[OF iB jC]
+    unfolding index_mult_mat(1)[OF iA jC]
+    unfolding index_mult_mat(1)[OF iB jC]
   proof(rule scalar_prod_left_mono)
-    show "row A i \<in> carrier\<^sub>v n" using A by auto
-    show "row B i \<in> carrier\<^sub>v n" using B by auto
-    show "col C j \<in> carrier\<^sub>v n" using C by auto
+    show "row A i \<in> carrier_vec n" using A by auto
+    show "row B i \<in> carrier_vec n" using B by auto
+    show "col C j \<in> carrier_vec n" using C by auto
     show rowAB: "vec_comp_all (op \<succ>) (row A i) (row B i)"
     proof (intro vec_comp_allI)
-      fix j assume j: "j < dim\<^sub>v (row A i)"
+      fix j assume j: "j < dim_vec (row A i)"
       have "A $$ (i,j) \<succ> B $$ (i,j)"
         using mat_comp_allE[OF gt1 A B i] j A by simp
       thus "row A i $ j \<succ> row B i $ j"
@@ -729,26 +729,26 @@ qed (insert A B C, auto)
 
 lemma mat_gt_arc_mult_right_mono:
   assumes gt1: "mat_gt_arc B C"
-  and A: "(A::'a mat) \<in> carrier\<^sub>m nr n"
-  and B: "(B::'a mat) \<in> carrier\<^sub>m n nc"
-  and C: "(C::'a mat) \<in> carrier\<^sub>m n nc"
-  shows "mat_gt_arc (A \<otimes>\<^sub>m B) (A \<otimes>\<^sub>m C)" (is "mat_gt_arc ?AB ?AC")
+  and A: "(A::'a mat) \<in> carrier_mat nr n"
+  and B: "(B::'a mat) \<in> carrier_mat n nc"
+  and C: "(C::'a mat) \<in> carrier_mat n nc"
+  shows "mat_gt_arc (A * B) (A * C)" (is "mat_gt_arc ?AB ?AC")
 proof (rule mat_comp_allI)
   fix i j assume i: "i < nr" and j: "j < nc"
-  hence iA: "i < dim\<^sub>r A"
-    and jB: "j < dim\<^sub>c B"
-    and jC: "j < dim\<^sub>c C"
+  hence iA: "i < dim_row A"
+    and jB: "j < dim_col B"
+    and jC: "j < dim_col C"
     using A B C by auto
   show "?AB $$ (i,j) \<succ> ?AC $$ (i,j)"
-    unfolding mat_index_mat_mult_mat(1)[OF iA jB]
-    unfolding mat_index_mat_mult_mat(1)[OF iA jC]
+    unfolding index_mult_mat(1)[OF iA jB]
+    unfolding index_mult_mat(1)[OF iA jC]
   proof(rule scalar_prod_right_mono)
-    show "row A i \<in> carrier\<^sub>v n" using A by auto
-    show "col B j \<in> carrier\<^sub>v n" using B by auto
-    show "col C j \<in> carrier\<^sub>v n" using C by auto
+    show "row A i \<in> carrier_vec n" using A by auto
+    show "col B j \<in> carrier_vec n" using B by auto
+    show "col C j \<in> carrier_vec n" using C by auto
     show rowAB: "vec_comp_all (op \<succ>) (col B j) (col C j)"
     proof (intro vec_comp_allI)
-      fix i assume i: "i < dim\<^sub>v (col B j)"
+      fix i assume i: "i < dim_vec (col B j)"
       have "B $$ (i,j) \<succ> C $$ (i,j)"
         using mat_comp_allE[OF gt1 B C] i j B by simp
       thus "col B j $ i \<succ> col C j $ i"
@@ -759,17 +759,17 @@ qed (insert A B C, auto)
 
 lemma mat_arc_pos_plus:
   assumes n0: "n > 0" 
-  and A: "A \<in> carrier\<^sub>m n n"
-  and B: "B \<in> carrier\<^sub>m n n"
+  and A: "A \<in> carrier_mat n n"
+  and B: "B \<in> carrier_mat n n"
   and arc_pos: "mat_arc_pos A"
-  shows "mat_arc_pos (A \<oplus>\<^sub>m B)"
+  shows "mat_arc_pos (A + B)"
   unfolding mat_arc_posI_def
-  apply (subst mat_index_add(1))
+  apply (subst index_add_mat(1))
   using arc_pos_plus[OF arc_pos[unfolded mat_arc_posI_def]]
   assms by auto
 
 lemma scalar_prod_split_head: assumes 
-  "A \<in> carrier\<^sub>m n n" "B \<in> carrier\<^sub>m n n" "n > 0" 
+  "A \<in> carrier_mat n n" "B \<in> carrier_mat n n" "n > 0" 
   shows "row A 0 \<bullet> col B 0 = A $$ (0,0) * B $$ (0,0) + (\<Sum>i = 1..<n. A $$ (0, i) * B $$ (i, 0))"
   unfolding scalar_prod_def
   using assms sum_head_upt_Suc by auto
@@ -777,13 +777,13 @@ lemma scalar_prod_split_head: assumes
 
 lemma mat_arc_pos_mult:
   assumes n0: "n > 0" 
-  and A: "A \<in> carrier\<^sub>m n n"
-  and B: "B \<in> carrier\<^sub>m n n"
+  and A: "A \<in> carrier_mat n n"
+  and B: "B \<in> carrier_mat n n"
   and apA: "mat_arc_pos A"
   and apB: "mat_arc_pos B"
-  shows "mat_arc_pos (A \<otimes>\<^sub>m B)"
+  shows "mat_arc_pos (A * B)"
   unfolding mat_arc_posI_def
-  apply(subst mat_index_mat_mult_mat(1))
+  apply(subst index_mult_mat(1))
 proof -
   let ?prod = "row A 0 \<bullet> col B 0"
   let ?head = "A $$ (0,0) * B $$ (0,0)"
@@ -803,15 +803,15 @@ lemma mat_arc_pos_mat_default:
   assumes n0: "n > 0" shows "mat_arc_pos (mat_default default n)"
   unfolding mat_arc_posI_def
   unfolding mat_default_def
-  unfolding mat_index_mat(1)[OF n0 n0]
+  unfolding index_mat(1)[OF n0 n0]
   using arc_pos_default by simp
 
 lemma mat_not_all_ge:
   assumes n_pos: "n > 0"
-  and A: "A \<in> carrier\<^sub>m n n"
-  and B: "B \<in> carrier\<^sub>m n n"
+  and A: "A \<in> carrier_mat n n"
+  and B: "B \<in> carrier_mat n n"
   and apB: "mat_arc_pos B"
-  shows "\<exists>C. C \<in> carrier\<^sub>m n n \<and> mat_ge C (\<zero>\<^sub>m n n) \<and> mat_arc_pos C \<and> \<not> mat_ge A (B \<otimes>\<^sub>m C)"
+  shows "\<exists>C. C \<in> carrier_mat n n \<and> mat_ge C (0\<^sub>m n n) \<and> mat_arc_pos C \<and> \<not> mat_ge A (B * C)"
 proof -
   define c where "c = A $$ (0,0)"
   from apB have "arc_pos (B $$ (0,0))" unfolding mat_arc_posI_def .
@@ -819,16 +819,16 @@ proof -
     and nc: "\<not> c \<ge> B $$ (0,0) * e" by auto
   let ?f = "\<lambda> i j. if i = 0 \<and> j = 0 then e else 0"
   let ?C = "mat n n (\<lambda> (i,j). ?f i j)"
-  have C: "?C \<in> carrier\<^sub>m n n" by auto
+  have C: "?C \<in> carrier_mat n n" by auto
   have C00: "?C $$ (0,0) = e" using n_pos by auto
   show ?thesis
   proof(intro exI conjI)
-    show "?C \<ge>\<^sub>m \<zero>\<^sub>m n n" 
+    show "?C \<ge>\<^sub>m 0\<^sub>m n n" 
       by (rule mat_geI[of _ n n], auto simp: ge_refl e0)
     show "mat_arc_pos ?C" 
       unfolding mat_arc_posI_def 
       unfolding C00 by (rule ae)
-    let ?mult = "B \<otimes>\<^sub>m ?C"
+    let ?mult = "B * ?C"
     from n_pos obtain nn where n: "n = Suc nn" by (cases n, auto)
     have col: "col ?C 0 = vec n (?f 0)" using n_pos by auto
     let ?prod = "row B 0 \<bullet> col ?C 0"
@@ -857,7 +857,7 @@ begin
 
 lemma mat_gt_arc_SN:
   assumes n_pos: "n > 0"
-  shows "SN {(A,B) \<in> carrier\<^sub>m n n \<times> carrier\<^sub>m n n. mat_arc_pos B \<and> mat_gt_arc A B}"
+  shows "SN {(A,B) \<in> carrier_mat n n \<times> carrier_mat n n. mat_arc_pos B \<and> mat_gt_arc A B}"
   (is "SN ?rel")
 proof (rule ccontr)
   assume "\<not> SN ?rel"
@@ -867,12 +867,12 @@ proof (rule ccontr)
   proof
     fix i
     from steps 
-    have wf1: "f i \<in> carrier\<^sub>m n n"
-      and wf2: "f (Suc i) \<in> carrier\<^sub>m n n"
+    have wf1: "f i \<in> carrier_mat n n"
+      and wf2: "f (Suc i) \<in> carrier_mat n n"
       and gt: "mat_gt_arc (f i) (f (Suc i))" by auto
     show "f i $$ (0,0) \<succ>  f (Suc i) $$ (0,0)"
       using mat_comp_allE[OF gt wf1 wf2]
-      using mat_index_zero n_pos by force
+      using index_zero_mat n_pos by force
   qed
   from pos gt SN show False unfolding SN_defs by force
 qed

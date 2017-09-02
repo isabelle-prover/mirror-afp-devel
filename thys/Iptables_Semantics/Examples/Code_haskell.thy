@@ -1,6 +1,6 @@
 theory Code_haskell
 imports
-  "../../Routing/IpRoute_Parser"
+  Routing.IpRoute_Parser
   "../Primitive_Matchers/Parser"
 begin
 

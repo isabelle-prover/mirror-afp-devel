@@ -9,7 +9,7 @@ section{*IArrays Addenda*}
 
 theory IArray_Addenda
   imports 
-  "$ISABELLE_HOME/src/HOL/Library/IArray"
+  "HOL-Library.IArray"
 begin
 
 subsection{*Some previous instances*}

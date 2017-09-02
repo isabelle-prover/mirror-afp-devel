@@ -9,7 +9,7 @@
 theory Cayley_Hamilton
 imports
   Square_Matrix
-  "~~/src/HOL/Computational_Algebra/Polynomial"  
+  "HOL-Computational_Algebra.Polynomial"  
 begin
 
 definition C :: "'a \<Rightarrow> 'a::ring_1 poly" where "C c = [:c:]"

@@ -8,8 +8,8 @@ section{*Rings*}
 
 theory Rings2
 imports
-   "~~/src/HOL/Analysis/Analysis"
-   "~~/src/HOL/Computational_Algebra/Polynomial_Factorial"
+   "HOL-Analysis.Analysis"
+   "HOL-Computational_Algebra.Polynomial_Factorial"
 begin
 
 subsection{*Previous lemmas and results*}

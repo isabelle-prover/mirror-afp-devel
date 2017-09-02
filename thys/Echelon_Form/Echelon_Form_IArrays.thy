@@ -9,7 +9,7 @@ section{*Echelon Form refined to immutable arrays*}
 theory Echelon_Form_IArrays
 imports
   Echelon_Form
-  "../Gauss_Jordan/Gauss_Jordan_IArrays"
+  Gauss_Jordan.Gauss_Jordan_IArrays
 begin
 
 subsection{*The algorithm over immutable arrays*}

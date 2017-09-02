@@ -1,10 +1,10 @@
 section {* \isaheader{Nested DFS (HPY improvement)} *}
 theory Nested_DFS
 imports 
-  "../../Refine_Dflt" 
+  Collections.Refine_Dflt 
   Buchi_Graph_Basic
   Succ_Graph
-  "../../Lib/Code_Target_ICF"
+  Collections.Code_Target_ICF
 begin
 
 text {*

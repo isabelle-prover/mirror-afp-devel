@@ -2,7 +2,7 @@
 *)
 
 theory Execute
-imports POPLmarkRecord "~~/src/HOL/Library/Code_Target_Numeral"
+imports POPLmarkRecord "HOL-Library.Code_Target_Numeral"
 begin
 
 section {* Executing the specification *}

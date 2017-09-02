@@ -1,8 +1,8 @@
 section "Hash-Tables"
 theory Hash_Table
 imports
-  "../../Collections/Lib/HashCode"
-  "../../Collections/Lib/Code_Target_ICF"
+  Collections.HashCode
+  Collections.Code_Target_ICF
   "../Sep_Main"
 begin
 

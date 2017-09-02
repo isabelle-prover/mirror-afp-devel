@@ -8,7 +8,7 @@
 section "Induction"
 
 theory Induction
-  imports Expectations Transformers Conditionally_Complete_Lattices
+  imports Expectations Transformers HOL.Conditionally_Complete_Lattices
 begin
 
 text_raw {* \label{s:induction} *}

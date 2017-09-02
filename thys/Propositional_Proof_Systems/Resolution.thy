@@ -1,6 +1,6 @@
 subsection\<open>Resolution\<close>
 theory Resolution
-imports CNF "~~/src/HOL/Library/While_Combinator"
+imports CNF "HOL-Library.While_Combinator"
 begin
 
 text\<open>Resolution is different from the other proof systems:

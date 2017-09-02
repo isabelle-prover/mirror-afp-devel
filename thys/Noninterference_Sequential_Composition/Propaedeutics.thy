@@ -8,7 +8,7 @@
 section "Propaedeutic definitions and lemmas"
 
 theory Propaedeutics
-imports "../Noninterference_Ipurge_Unwinding/DeterministicProcesses"
+imports Noninterference_Ipurge_Unwinding.DeterministicProcesses
 begin
 
 text {*

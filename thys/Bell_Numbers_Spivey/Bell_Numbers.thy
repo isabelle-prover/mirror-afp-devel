@@ -4,12 +4,12 @@ section {* Bell Numbers and Spivey's Generalized Recurrence *}
 
 theory Bell_Numbers
 imports
-  "~~/src/HOL/Library/FuncSet"
-  "~~/src/HOL/Library/Monad_Syntax"
-  "~~/src/HOL/Library/Stirling"
-  "../Card_Number_Partitions/Additions_to_Main"
-  "Set_Partition"
-  "~~/src/HOL/Eisbach/Eisbach"
+  "HOL-Library.FuncSet"
+  "HOL-Library.Monad_Syntax"
+  "HOL-Library.Stirling"
+  Card_Number_Partitions.Additions_to_Main
+  Set_Partition
+  "HOL-Eisbach.Eisbach"
 begin
 
 subsection {* Preliminaries *}
@@ -78,22 +78,18 @@ qed
 
 subsubsection {* Disjointness under Function Application *}
 
-definition disjoint_under :: "('a \<Rightarrow> 'b set) \<Rightarrow> 'a set \<Rightarrow> bool"
-where
-  "disjoint_under f S = (\<forall>s\<in>S. \<forall>t\<in>S. s \<noteq> t \<longrightarrow> (f s) \<inter> (f t) = {})"
-
-lemma disjoint_underI:
-  assumes "\<And>s t. s \<in> S \<and> t \<in> S \<Longrightarrow> s \<noteq> t \<Longrightarrow> (f s) \<inter> (f t) = {}"
-  shows "disjoint_under f S"
-using assms unfolding disjoint_under_def by auto
+lemma disjoint_family_onI:
+  assumes "\<And>i j. i \<in> I \<and> j \<in> I \<Longrightarrow> i \<noteq> j \<Longrightarrow> (A i) \<inter> (A j) = {}"
+  shows "disjoint_family_on A I"
+using assms unfolding disjoint_family_on_def by auto
 
 lemma disjoint_singleton: "\<And>s t X Y. s \<noteq> t \<Longrightarrow> (X = Y \<Longrightarrow> s = t) \<Longrightarrow> {X} \<inter> {Y} = {}"
 by auto
 
-lemma disjoint_bind: "\<And>S T f g. (\<And>s t. S s \<and> T t \<Longrightarrow> f s \<inter> g t = {}) \<Longrightarrow> ({s. S s} \<bind> f) \<inter> ({t. T t} \<bind> g)  = {}"
+lemma disjoint_bind: "\<And>S T f g. (\<And>s t. S s \<and> T t \<Longrightarrow> f s \<inter> g t = {}) \<Longrightarrow> ({s. S s} \<bind> f) \<inter> ({t. T t} \<bind> g) = {}"
 by fastforce
 
-lemma disjoint_bind': "\<And>S T f g. (\<And>s t. s \<in> S \<and> t \<in> T \<Longrightarrow> f s \<inter> g t = {}) \<Longrightarrow> (S \<bind> f) \<inter> (T \<bind> g)  = {}"
+lemma disjoint_bind': "\<And>S T f g. (\<And>s t. s \<in> S \<and> t \<in> T \<Longrightarrow> f s \<inter> g t = {}) \<Longrightarrow> (S \<bind> f) \<inter> (T \<bind> g) = {}"
 by fastforce
 
 lemma injectivity_solver_CollectE:
@@ -111,7 +107,7 @@ method injectivity_solver uses rule =
   insert method_facts,
   use nothing in \<open>
     ((drule injectivity_solver_prep_assms)+)?;
-    rule disjoint_underI;
+    rule disjoint_family_onI;
     (rule disjoint_bind | rule disjoint_bind')+; erule disjoint_singleton;
     (elim injectivity_solver_CollectE)?;
     rule rule;
@@ -129,13 +125,13 @@ using assms by (simp add: bind_UNION)
 lemma card_bind:
   assumes "finite S"
   assumes "\<forall>X \<in> S. finite (f X)"
-  assumes "disjoint_under f S"
+  assumes "disjoint_family_on f S"
   shows "card (S \<bind> f) = (\<Sum>x\<in>S. card (f x))"
 proof -
   have "card (S \<bind> f) = card (\<Union>(f ` S))"
     by (simp add: bind_UNION)
   also have "card (\<Union>(f ` S)) = (\<Sum>x\<in>S. card (f x))"
-    using assms unfolding disjoint_under_def
+    using assms unfolding disjoint_family_on_def
     by (subst card_Union_image) simp+
   finally show ?thesis .
 qed
@@ -143,7 +139,7 @@ qed
 lemma card_bind_constant:
   assumes "finite S"
   assumes "\<forall>X \<in> S. finite (f X)"
-  assumes "disjoint_under f S"
+  assumes "disjoint_family_on f S"
   assumes "\<And>x. x \<in> S \<Longrightarrow> card (f x) = k"
   shows "card (S \<bind> f) = card S * k"
 using assms by (simp add: card_bind)
@@ -511,8 +507,8 @@ proof -
               assume "f \<in> B - B' \<rightarrow>\<^sub>E P"
               let ?expr = "?comp f"
               let "?S \<bind> ?comp" = ?expr
-              have "disjoint_under ?comp ?S"
-                unfolding disjoint_under_def by auto
+              have "disjoint_family_on ?comp ?S"
+                by (auto intro: disjoint_family_onI)
               from this have "card ?expr = 1"
                 by (simp add: card_bind_constant)
               moreover have "finite ?expr"
@@ -521,7 +517,7 @@ proof -
             }
             moreover have "finite ?S"
               using \<open>finite B\<close> \<open>finite P\<close> by (auto intro: finite_PiE)
-            moreover have "disjoint_under ?comp ?S"
+            moreover have "disjoint_family_on ?comp ?S"
               using P B' Q
               by (injectivity_solver rule: local.injectivity(1))
             moreover have "card ?S = j ^ (n - k)"
@@ -542,7 +538,7 @@ proof -
           } note inner = this
           moreover have "card ?S = Bell k"
             using B' \<open>finite B'\<close> by (auto simp add: Bell_altdef[symmetric])
-          moreover have "disjoint_under ?comp ?S"
+          moreover have "disjoint_family_on ?comp ?S"
             using P B'
             by (injectivity_solver rule: local.injectivity(2))
           ultimately have "card ?expr = j ^ (n - k) * Bell k"
@@ -553,7 +549,7 @@ proof -
         } note inner = this
         moreover have "card ?S = n choose k"
           using \<open>card B = n\<close> \<open>finite B\<close> by (simp add: n_subsets)
-        moreover have "disjoint_under ?comp ?S"
+        moreover have "disjoint_family_on ?comp ?S"
           using P
           by (injectivity_solver rule: local.injectivity(3))
         ultimately have "card ?expr = j ^ (n - k) * (n choose k) * Bell k"
@@ -565,7 +561,7 @@ proof -
       moreover note \<open>finite ?S\<close>
       moreover have "card ?S = Stirling m j"
         using \<open>finite C\<close> \<open>card C = m\<close> by (simp add: card_partition_on)
-      moreover have "disjoint_under ?comp ?S"
+      moreover have "disjoint_family_on ?comp ?S"
         by (injectivity_solver rule: local.injectivity(4))
       ultimately have "card ?expr = j ^ (n - k) * Stirling m j * (n choose k) * Bell k"
         by (subst card_bind_constant) auto
@@ -574,7 +570,7 @@ proof -
       ultimately have "finite ?expr \<and> card ?expr = j ^ (n - k) * Stirling m j * (n choose k) * Bell k" by blast
     } note inner = this
     moreover have "finite ?S" by simp
-    moreover have "disjoint_under ?comp ?S"
+    moreover have "disjoint_family_on ?comp ?S"
       by (injectivity_solver rule: local.injectivity(5))
     ultimately have "card ?expr = (\<Sum>j\<le>m. j ^ (n - k) * Stirling m j * (n choose k) * Bell k)" (is "_ = ?formula")
       using \<open>card C = m\<close> by (subst card_bind) (auto intro: sum.cong)
@@ -583,7 +579,7 @@ proof -
     ultimately have "finite ?expr \<and> card ?expr = ?formula" by blast
   }
   moreover have "finite ?S" by simp
-  moreover have "disjoint_under ?comp ?S"
+  moreover have "disjoint_family_on ?comp ?S"
     by (injectivity_solver rule: local.injectivity(6))
   ultimately have step3: "card (construct_partition_on B C) = (\<Sum>k\<le>n. \<Sum>j\<le>m. j ^ (n - k) * Stirling m j * (n choose k) * Bell k)"
     unfolding construct_partition_on_def

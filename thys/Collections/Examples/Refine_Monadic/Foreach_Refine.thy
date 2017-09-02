@@ -1,7 +1,7 @@
 section {* \isaheader{Example for Foreach-Loops} *}
 theory Foreach_Refine
 imports 
-  "../../Refine_Dflt_Only_ICF" 
+  Collections.Refine_Dflt_Only_ICF 
 begin
 
 text {*

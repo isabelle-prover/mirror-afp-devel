@@ -8,7 +8,7 @@ theory Construct_SSA_code imports
   SSA_CFG_code
   Construct_SSA
   Mapping_Exts
-  "~~/src/HOL/Library/Product_Lexorder"
+  "HOL-Library.Product_Lexorder"
 begin
 
 definition[code]: "lookup_multimap m k \<equiv> (case_option {} id (Mapping.lookup m k))"

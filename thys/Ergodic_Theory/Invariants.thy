@@ -3,7 +3,7 @@
 *)
 
 theory Invariants
-imports Recurrence Conditional_Expectation
+imports Recurrence "HOL-Probability.Conditional_Expectation"
 begin
 
 
@@ -888,18 +888,19 @@ proof -
     obtain k where "x \<in> F k" using H(2) by auto
     then have "infinite {n. (T^^n) x \<in> E k}"
       unfolding F_def recurrent_subset_infty_inf_returns by auto
-    with infinite_enumerate[OF this] obtain r where r: "Topological_Spaces.subseq r" "\<And>n. r n \<in> {n. (T^^n) x \<in> E k}"
+    with infinite_enumerate[OF this] obtain r :: "nat \<Rightarrow> nat" 
+      where r: "strict_mono r" "\<And>n. r n \<in> {n. (T^^n) x \<in> E k}"
       by auto
     have A: "(\<lambda>n. k * (1/r n)) \<longlonglongrightarrow> real k * 0"
       apply (intro tendsto_intros)
-      using LIMSEQ_subseq_LIMSEQ[OF lim_1_over_n \<open>Topological_Spaces.subseq r\<close>] unfolding comp_def by auto
+      using LIMSEQ_subseq_LIMSEQ[OF lim_1_over_n \<open>strict_mono r\<close>] unfolding comp_def by auto
     have B: "\<bar>f((T^^(r n)) x) / r n\<bar> \<le> k / (r n)" for n
       using r(2) unfolding E_def by (auto simp add: divide_simps)
     have "(\<lambda>n. f((T^^(r n)) x) / r n) \<longlonglongrightarrow> 0"
       apply (rule tendsto_rabs_zero_cancel, rule tendsto_sandwich[of "\<lambda>n. 0" _ _ "\<lambda>n. k * (1/r n)"])
       using A B by auto
     moreover have "(\<lambda>n. f((T^^(r n)) x) / r n) \<longlonglongrightarrow> real_cond_exp M Invariants (\<lambda>x. f(T x) - f x) x"
-      using LIMSEQ_subseq_LIMSEQ[OF lim \<open>Topological_Spaces.subseq r\<close>] unfolding comp_def by auto
+      using LIMSEQ_subseq_LIMSEQ[OF lim \<open>strict_mono r\<close>] unfolding comp_def by auto
     ultimately have *: "real_cond_exp M Invariants (\<lambda>x. f(T x) - f x) x = 0"
       using LIMSEQ_unique by auto
     then have "(\<lambda>n. f((T^^n) x) / n) \<longlonglongrightarrow> 0" using lim by auto

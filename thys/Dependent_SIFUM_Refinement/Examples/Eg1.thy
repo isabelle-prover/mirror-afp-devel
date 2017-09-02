@@ -1,7 +1,7 @@
 theory Eg1
-imports "../../Dependent_SIFUM_Type_Systems/Compositionality"
-        "../../Dependent_SIFUM_Type_Systems/Language"
-        "../../Dependent_SIFUM_Type_Systems/Examples/TypeSystemTactics"
+imports Dependent_SIFUM_Type_Systems.Compositionality
+        Dependent_SIFUM_Type_Systems.Language
+        Dependent_SIFUM_Type_Systems.TypeSystemTactics
 begin
 
 datatype var = control_var | buffer | high_var | low_var | temp

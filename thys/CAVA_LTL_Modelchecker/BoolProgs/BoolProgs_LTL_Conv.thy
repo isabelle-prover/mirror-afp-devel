@@ -1,8 +1,8 @@
 theory BoolProgs_LTL_Conv
 imports
-  "BoolProgs_Extras"
-  "~~/src/HOL/Library/Mapping"
-  "../../LTL/LTL"
+  BoolProgs_Extras
+  "HOL-Library.Mapping"
+  LTL.LTL
 begin
 
 fun b2l :: "bexp \<Rightarrow> nat ltlc" where

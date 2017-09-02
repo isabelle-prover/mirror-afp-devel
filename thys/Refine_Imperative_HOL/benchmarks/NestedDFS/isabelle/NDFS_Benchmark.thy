@@ -1,8 +1,8 @@
 theory NDFS_Benchmark
 imports 
-  "../../../../Collections/Examples/Autoref/Nested_DFS"
+  Collections_Examples.Nested_DFS
   "../../../Examples/Sepref_NDFS"
-  "../../../../Separation_Logic_Imperative_HOL/Examples/From_List_GA"
+  Sepref_Prereq.From_List_GA
 begin
   (* We re-do some of the refinement here, to have a more direct control 
     of the exact data-structures that are used *)

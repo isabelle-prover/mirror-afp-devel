@@ -13,7 +13,7 @@ theory Jordan_Normal_Form
 imports 
   Matrix
   Char_Poly
-  "../Polynomial_Interpolation/Missing_Unsorted"
+  Polynomial_Interpolation.Missing_Unsorted
 begin
 
 definition jordan_block :: "nat \<Rightarrow> 'a :: {zero,one} \<Rightarrow> 'a mat" where 
@@ -21,20 +21,20 @@ definition jordan_block :: "nat \<Rightarrow> 'a :: {zero,one} \<Rightarrow> 'a 
 
 lemma jordan_block_index[simp]: "i < n \<Longrightarrow> j < n \<Longrightarrow> 
   jordan_block n a $$ (i,j) = (if i = j then a else if Suc i = j then 1 else 0)"
-  "dim\<^sub>r (jordan_block n k) = n"
-  "dim\<^sub>c (jordan_block n k) = n"
+  "dim_row (jordan_block n k) = n"
+  "dim_col (jordan_block n k) = n"
   unfolding jordan_block_def by auto
 
-lemma jordan_block_carrier[simp]: "jordan_block n k \<in> carrier\<^sub>m n n" 
-  unfolding mat_carrier_def by auto
+lemma jordan_block_carrier[simp]: "jordan_block n k \<in> carrier_mat n n" 
+  unfolding carrier_mat_def by auto
 
 lemma jordan_block_char_poly: "char_poly (jordan_block n a) = [: -a, 1:]^n"
   unfolding char_poly_defs by (subst det_upper_triangular[of _ n], auto simp: prod_list_diag_prod)
 
 lemma jordan_block_pow_carrier[simp]:
-  "jordan_block n a ^\<^sub>m r \<in> carrier\<^sub>m n n" by auto
+  "jordan_block n a ^\<^sub>m r \<in> carrier_mat n n" by auto
 lemma jordan_block_pow_dim[simp]:
-  "dim\<^sub>r (jordan_block n a ^\<^sub>m r) = n" "dim\<^sub>c (jordan_block n a ^\<^sub>m r) = n" by auto
+  "dim_row (jordan_block n a ^\<^sub>m r) = n" "dim_col (jordan_block n a ^\<^sub>m r) = n" by auto
 
 lemma jordan_block_pow: "(jordan_block n (a :: 'a :: comm_ring_1)) ^\<^sub>m r = 
   mat n n (\<lambda> (i,j). if i \<le> j then of_nat (r choose (j - i)) * a ^ (r + i - j) else 0)"
@@ -47,13 +47,13 @@ proof (induct r)
     hence "0 choose (j - i) = 0" by simp
   } note [simp] = this
   show ?case
-    by (simp, rule mat_eqI, auto)
+    by (simp, rule eq_matI, auto)
 next
   case (Suc r)
   let ?jb = "jordan_block n a"
   let ?rij = "\<lambda> r i j. of_nat (r choose (j - i)) * a ^ (r + i - j)"
   let ?v = "\<lambda> i j. if i \<le> j then of_nat (r choose (j - i)) * a ^ (r + i - j) else 0"
-  have "?jb ^\<^sub>m Suc r = mat n n (\<lambda> (i,j). if i \<le> j then ?rij r i j else 0) \<otimes>\<^sub>m ?jb" by (simp add: Suc)
+  have "?jb ^\<^sub>m Suc r = mat n n (\<lambda> (i,j). if i \<le> j then ?rij r i j else 0) * ?jb" by (simp add: Suc)
   also have "\<dots> = mat n n (\<lambda> (i,j). if i \<le> j then ?rij (Suc r) i j else 0)"
   proof -
     {
@@ -156,7 +156,7 @@ next
         = of_nat (Suc r choose (j - i)) * a ^ (Suc (r + i) - j)" .
     } note main_case = this
     show ?thesis
-      by (rule mat_eqI, insert easy_case main_case, auto)
+      by (rule eq_matI, insert easy_case main_case, auto)
   qed
   finally show ?case by simp
 qed
@@ -165,14 +165,14 @@ definition jordan_matrix :: "(nat \<times> 'a :: {zero,one})list \<Rightarrow> '
   "jordan_matrix n_as = diag_block_mat (map (\<lambda> (n,a). jordan_block n a) n_as)"
 
 lemma jordan_matrix_dim[simp]: 
-  "dim\<^sub>r (jordan_matrix n_as) = sum_list (map fst n_as)"
-  "dim\<^sub>c (jordan_matrix n_as) = sum_list (map fst n_as)"
+  "dim_row (jordan_matrix n_as) = sum_list (map fst n_as)"
+  "dim_col (jordan_matrix n_as) = sum_list (map fst n_as)"
   unfolding jordan_matrix_def
-  by (subst diag_block_mat_dim, auto, (induct n_as, auto simp: Let_def)+)
+  by (subst dim_diag_block_mat, auto, (induct n_as, auto simp: Let_def)+)
 
 lemma jordan_matrix_carrier[simp]: 
-  "jordan_matrix n_as \<in> carrier\<^sub>m (sum_list (map fst n_as)) (sum_list (map fst n_as))"
-  unfolding mat_carrier_def by auto
+  "jordan_matrix n_as \<in> carrier_mat (sum_list (map fst n_as)) (sum_list (map fst n_as))"
+  unfolding carrier_mat_def by auto
 
 lemma jordan_matrix_upper_triangular: "i < sum_list (map fst n_as)
   \<Longrightarrow> j < i \<Longrightarrow> jordan_matrix n_as $$ (i,j) = 0"
@@ -182,38 +182,38 @@ lemma jordan_matrix_upper_triangular: "i < sum_list (map fst n_as)
 lemma jordan_matrix_pow: "(jordan_matrix n_as) ^\<^sub>m r = 
   diag_block_mat (map (\<lambda> (n,a). (jordan_block n a) ^\<^sub>m r) n_as)"
   unfolding jordan_matrix_def
-  by (subst diag_block_mat_pow, force, rule arg_cong[of _ _ diag_block_mat], auto)
+  by (subst diag_block_pow_mat, force, rule arg_cong[of _ _ diag_block_mat], auto)
 
 lemma jordan_matrix_char_poly: 
   "char_poly (jordan_matrix n_as) = (\<Prod>(n, a)\<leftarrow>n_as. [:- a, 1:] ^ n)"
 proof -
   let ?n = "sum_list (map fst n_as)"
-  have "mat_diag
-     ([:0, 1:] \<odot>\<^sub>m \<one>\<^sub>m (sum_list (map fst n_as)) \<oplus>\<^sub>m map\<^sub>m (\<lambda>a. [:- a:]) (jordan_matrix n_as)) =
+  have "diag_mat
+     ([:0, 1:] \<cdot>\<^sub>m 1\<^sub>m (sum_list (map fst n_as)) + map_mat (\<lambda>a. [:- a:]) (jordan_matrix n_as)) =
     concat (map (\<lambda>(n, a). replicate n [:- a, 1:]) n_as)" unfolding jordan_matrix_def
   proof (induct n_as)
     case (Cons na n_as)
     obtain n a where na: "na = (n,a)" by force
     let ?n2 = "sum_list (map fst n_as)"
     note fbo = four_block_one_mat
-    note mz = mat_zero_closed
-    note mo = mat_one_closed
-    have mA: "\<And> A. A \<in> carrier\<^sub>m (dim\<^sub>r A) (dim\<^sub>c A)" unfolding mat_carrier_def by auto
+    note mz = zero_carrier_mat
+    note mo = one_carrier_mat
+    have mA: "\<And> A. A \<in> carrier_mat (dim_row A) (dim_col A)" unfolding carrier_mat_def by auto
     let ?Bs = "map (\<lambda>(x, y). jordan_block x y) n_as"
     let ?B = "diag_block_mat ?Bs"
     from jordan_matrix_dim[of n_as, unfolded jordan_matrix_def]
-    have dimB: "dim\<^sub>r ?B = ?n2" "dim\<^sub>c ?B = ?n2" by auto
-    hence B: "?B \<in> carrier\<^sub>m ?n2 ?n2" unfolding mat_carrier_def by simp
+    have dimB: "dim_row ?B = ?n2" "dim_col ?B = ?n2" by auto
+    hence B: "?B \<in> carrier_mat ?n2 ?n2" unfolding carrier_mat_def by simp
     show ?case unfolding na fbo
     apply (simp add: Let_def fbo[symmetric] del: fbo)
-    apply (subst four_block_scalar[OF mo mz mz mo])
-    apply (subst four_block_map[OF jordan_block_carrier mz mz mA])
-    apply (subst four_block_mat_add[of _ n n _ ?n2 _ ?n2], auto simp: dimB B)
-    apply (subst four_block_diag[of _ n _ ?n2], auto simp: dimB B)
-    apply (subst Cons, auto simp: jordan_block_def mat_diag_def, 
+    apply (subst smult_four_block_mat[OF mo mz mz mo])
+    apply (subst map_four_block_mat[OF jordan_block_carrier mz mz mA])
+    apply (subst add_four_block_mat[of _ n n _ ?n2 _ ?n2], auto simp: dimB B)
+    apply (subst diag_four_block_mat[of _ n _ ?n2], auto simp: dimB B)
+    apply (subst Cons, auto simp: jordan_block_def diag_mat_def, 
       intro nth_equalityI, auto)
     done
-  qed (force simp: mat_diag_def)
+  qed (force simp: diag_mat_def)
   also have "prod_list ... = (\<Prod>(n, a)\<leftarrow>n_as. [:- a, 1:] ^ n)"
     by (induct n_as, auto)
   finally
@@ -222,27 +222,27 @@ proof -
 qed
 
 definition jordan_nf :: "'a :: semiring_1 mat \<Rightarrow> (nat \<times> 'a)list \<Rightarrow> bool" where
-  "jordan_nf A n_as \<equiv> mat_similar A (jordan_matrix n_as)"
+  "jordan_nf A n_as \<equiv> similar_mat A (jordan_matrix n_as)"
 
-lemma jordan_nf_powE: assumes A: "A \<in> carrier\<^sub>m n n" and jnf: "jordan_nf A n_as" 
-  obtains P Q where "P \<in> carrier\<^sub>m n n" "Q \<in> carrier\<^sub>m n n" and 
+lemma jordan_nf_powE: assumes A: "A \<in> carrier_mat n n" and jnf: "jordan_nf A n_as" 
+  obtains P Q where "P \<in> carrier_mat n n" "Q \<in> carrier_mat n n" and 
   "char_poly A = (\<Prod>(na, a)\<leftarrow>n_as. [:- a, 1:] ^ na)"
-  "\<And> k. A ^\<^sub>m k = P \<otimes>\<^sub>m (jordan_matrix n_as)^\<^sub>m k \<otimes>\<^sub>m Q"
+  "\<And> k. A ^\<^sub>m k = P * (jordan_matrix n_as)^\<^sub>m k * Q"
 proof -
-  from A have dim: "dim\<^sub>r A = n" by auto
-  assume obt: "\<And>P Q. P \<in> carrier\<^sub>m n n \<Longrightarrow> Q \<in> carrier\<^sub>m n n \<Longrightarrow> 
+  from A have dim: "dim_row A = n" by auto
+  assume obt: "\<And>P Q. P \<in> carrier_mat n n \<Longrightarrow> Q \<in> carrier_mat n n \<Longrightarrow> 
     char_poly A = (\<Prod>(na, a)\<leftarrow>n_as. [:- a, 1:] ^ na) \<Longrightarrow> 
-    (\<And>k. A ^\<^sub>m k = P \<otimes>\<^sub>m jordan_matrix n_as ^\<^sub>m k \<otimes>\<^sub>m Q) \<Longrightarrow> thesis"
+    (\<And>k. A ^\<^sub>m k = P * jordan_matrix n_as ^\<^sub>m k * Q) \<Longrightarrow> thesis"
   from jnf[unfolded jordan_nf_def] obtain P Q where
-    simw: "mat_similar_wit A (jordan_matrix n_as) P Q"
-    and sim: "mat_similar A (jordan_matrix n_as)" unfolding mat_similar_def by blast
+    simw: "similar_mat_wit A (jordan_matrix n_as) P Q"
+    and sim: "similar_mat A (jordan_matrix n_as)" unfolding similar_mat_def by blast
   show thesis
   proof (rule obt)
-    show "\<And> k. A ^\<^sub>m k = P \<otimes>\<^sub>m jordan_matrix n_as ^\<^sub>m k \<otimes>\<^sub>m Q"
-      by (rule mat_similar_wit_pow_id[OF simw])
+    show "\<And> k. A ^\<^sub>m k = P * jordan_matrix n_as ^\<^sub>m k * Q"
+      by (rule similar_mat_wit_pow_id[OF simw])
     show "char_poly A = (\<Prod>(na, a)\<leftarrow>n_as. [:- a, 1:] ^ na)"
       unfolding char_poly_similar[OF sim] jordan_matrix_char_poly ..    
-  qed (insert simw[unfolded mat_similar_wit_def Let_def dim], auto)
+  qed (insert simw[unfolded similar_mat_wit_def Let_def dim], auto)
 qed
 
 lemma choose_poly_bound: assumes "i \<le> d"
@@ -418,10 +418,10 @@ next
 qed
 
 definition norm_bound :: "'a mat \<Rightarrow> real \<Rightarrow> bool" where
-  "norm_bound A b \<equiv> \<forall> i j. i < dim\<^sub>r A \<longrightarrow> j < dim\<^sub>c A \<longrightarrow> norm (A $$ (i,j)) \<le> b"
+  "norm_bound A b \<equiv> \<forall> i j. i < dim_row A \<longrightarrow> j < dim_col A \<longrightarrow> norm (A $$ (i,j)) \<le> b"
 
 lemma norm_boundI[intro]:
-  assumes "\<And> i j. i < dim\<^sub>r A \<Longrightarrow> j < dim\<^sub>c A \<Longrightarrow> norm (A $$ (i,j)) \<le> b"
+  assumes "\<And> i j. i < dim_row A \<Longrightarrow> j < dim_col A \<Longrightarrow> norm (A $$ (i,j)) \<le> b"
   shows "norm_bound A b"
   unfolding norm_bound_def using assms by blast
 
@@ -434,11 +434,11 @@ lemma jordan_matrix_poly_bound2:
   fixes n_as :: "(nat \<times> 'a) list"
   assumes n_as: "\<And> n a. (n,a) \<in> set n_as \<Longrightarrow> n > 0 \<Longrightarrow> norm a \<le> 1"
   and N: "\<And> n a. (n,a) \<in> set n_as \<Longrightarrow> norm a = 1 \<Longrightarrow> n \<le> N"
-  shows "\<exists>c1. \<forall>k. \<forall>e \<in> mat_elements (jordan_matrix n_as ^\<^sub>m k).
+  shows "\<exists>c1. \<forall>k. \<forall>e \<in> elements_mat (jordan_matrix n_as ^\<^sub>m k).
     norm e \<le> c1 + of_nat k ^ (N - 1)"
 proof -
   from jordan_matrix_carrier[of n_as] obtain d where
-    jm: "jordan_matrix n_as \<in> carrier\<^sub>m d d" by blast
+    jm: "jordan_matrix n_as \<in> carrier_mat d d" by blast
   define f where "f = (\<lambda>n (a::'a) i j k. norm ((jordan_block n a ^\<^sub>m k) $$ (i,j)))"
   let ?g = "\<lambda>k c1. c1 + of_nat k ^ (N-1)"
   let ?P = "\<lambda>n (a::'a) i j k c1. f n a i j k \<le> ?g k c1"
@@ -460,7 +460,7 @@ proof -
       let ?jbs = "map (\<lambda>(n,a). jordan_block n a) n_as"
       have sq_jbs: "Ball (set ?jbs) square_mat" by auto
       have "jordan_matrix n_as ^\<^sub>m k = diag_block_mat (map (\<lambda>A. A ^\<^sub>m k) ?jbs)"
-        unfolding jordan_matrix_def using diag_block_mat_pow[OF sq_jbs] by auto
+        unfolding jordan_matrix_def using diag_block_pow_mat[OF sq_jbs] by auto
       show "?P n a i j k c1"
       proof (cases "norm a = 1")
         case True {
@@ -503,37 +503,37 @@ proof -
   { fix k n a e
     assume na:"(n,a) \<in> set n_as"
     let ?jbk = "jordan_block n a ^\<^sub>m k"
-    assume "e \<in> mat_elements ?jbk"
-    from mat_elementsD[OF this] obtain i j
+    assume "e \<in> elements_mat ?jbk"
+    from elements_matD[OF this] obtain i j
       where "i < n" "j < n" and [simp]: "e = ?jbk $$ (i,j)"
-      by (simp only:mat_pow_dim_square[OF jordan_block_carrier],auto)
+      by (simp only:pow_mat_dim_square[OF jordan_block_carrier],auto)
     hence "norm e \<le> ?g k c" using Q[OF na] unfolding Q_def f_def by simp
   }
   hence norm_jordan:
-    "\<And>k. \<forall>(n,a) \<in> set n_as. \<forall>e \<in> mat_elements (jordan_block n a ^\<^sub>m k).
+    "\<And>k. \<forall>(n,a) \<in> set n_as. \<forall>e \<in> elements_mat (jordan_block n a ^\<^sub>m k).
      norm e \<le> ?g k c" by auto
   { fix k
     let ?jmk = "jordan_matrix n_as ^\<^sub>m k"
-    have "dim\<^sub>r ?jmk = d" "dim\<^sub>c ?jmk = d"
-      using jm by (simp only:mat_pow_dim_square[OF jm])+
+    have "dim_row ?jmk = d" "dim_col ?jmk = d"
+      using jm by (simp only:pow_mat_dim_square[OF jm])+
     let ?As = "(map (\<lambda>(n,a). jordan_block n a ^\<^sub>m k) n_as)"
-    have "\<And>e. e \<in> mat_elements ?jmk \<Longrightarrow> norm e \<le> ?g k c"
+    have "\<And>e. e \<in> elements_mat ?jmk \<Longrightarrow> norm e \<le> ?g k c"
     proof -
-      fix e assume e:"e \<in> mat_elements ?jmk"
+      fix e assume e:"e \<in> elements_mat ?jmk"
       obtain i j where ij: "i < d" "j < d" and "e = ?jmk $$ (i,j)"
-        using mat_elementsD[OF e] by (simp only:mat_pow_dim_square[OF jm],auto)
+        using elements_matD[OF e] by (simp only:pow_mat_dim_square[OF jm],auto)
       have "?jmk = diag_block_mat ?As"
         using jordan_matrix_pow[of n_as k] by auto
-      hence "mat_elements ?jmk \<subseteq> {0} \<union> \<Union> set (map mat_elements ?As)"
-        using diag_block_mat_elements[of ?As] by auto
-      hence e_mem: "e \<in> {0} \<union> \<Union> set (map mat_elements ?As)"
+      hence "elements_mat ?jmk \<subseteq> {0} \<union> \<Union> set (map elements_mat ?As)"
+        using elements_diag_block_mat[of ?As] by auto
+      hence e_mem: "e \<in> {0} \<union> \<Union> set (map elements_mat ?As)"
         using e by blast
       show "norm e \<le> ?g k c"
       proof (cases "e = 0")
         case False
-          then have "e \<in> \<Union> set (map mat_elements ?As)" using e_mem by auto
+          then have "e \<in> \<Union> set (map elements_mat ?As)" using e_mem by auto
           then obtain n a
-            where "e \<in> mat_elements (jordan_block n a ^\<^sub>m k)"
+            where "e \<in> elements_mat (jordan_block n a ^\<^sub>m k)"
             and na: "(n,a) \<in> set n_as" by force
           thus ?thesis using norm_jordan na by force
       qed (insert c0, auto)
@@ -543,22 +543,22 @@ proof -
 qed
 
 lemma norm_bound_bridge:
-  "\<forall>e \<in> mat_elements A. norm e \<le> b \<Longrightarrow> norm_bound A b"
+  "\<forall>e \<in> elements_mat A. norm e \<le> b \<Longrightarrow> norm_bound A b"
   unfolding norm_bound_def by force
 
-lemma norm_bound_mult: assumes A1: "A1 \<in> carrier\<^sub>m nr n"
-  and A2: "A2 \<in> carrier\<^sub>m n nc"
+lemma norm_bound_mult: assumes A1: "A1 \<in> carrier_mat nr n"
+  and A2: "A2 \<in> carrier_mat n nc"
   and b1: "norm_bound A1 b1"
   and b2: "norm_bound A2 b2"
-  shows "norm_bound (A1 \<otimes>\<^sub>m A2) (b1 * b2 * of_nat n)"
+  shows "norm_bound (A1 * A2) (b1 * b2 * of_nat n)"
 proof 
-  let ?A = "A1 \<otimes>\<^sub>m A2"
+  let ?A = "A1 * A2"
   let ?n = "of_nat n"
   fix i j
-  assume i: "i < dim\<^sub>r ?A" and j: "j < dim\<^sub>c ?A"
+  assume i: "i < dim_row ?A" and j: "j < dim_col ?A"
   define v1 where "v1 = (\<lambda> k. row A1 i $ k)"
   define v2 where "v2 = (\<lambda> k. col A2 j $ k)"
-  from assms(1-2) have dim: "dim\<^sub>r A1 = nr" "dim\<^sub>c A2 = nc" "dim\<^sub>c A1 = n" "dim\<^sub>r A2 = n" by auto
+  from assms(1-2) have dim: "dim_row A1 = nr" "dim_col A2 = nc" "dim_col A1 = n" "dim_row A2 = n" by auto
   {
     fix k
     assume k: "k < n"
@@ -579,12 +579,12 @@ proof
   finally show "norm (?A $$ (i,j)) \<le> b1 * b2 * ?n" .
 qed
 
-lemma norm_bound_max: "norm_bound A (Max {norm (A $$ (i,j)) | i j. i < dim\<^sub>r A \<and> j < dim\<^sub>c A})" 
+lemma norm_bound_max: "norm_bound A (Max {norm (A $$ (i,j)) | i j. i < dim_row A \<and> j < dim_col A})" 
   (is "norm_bound A (Max ?norms)")
 proof 
   fix i j
   have fin: "finite ?norms" by (simp add: finite_image_set2)
-  assume "i < dim\<^sub>r A" and "j < dim\<^sub>c A"     
+  assume "i < dim_row A" and "j < dim_col A"     
   hence "norm (A $$ (i,j)) \<in> ?norms" by auto
   from Max_ge[OF fin this] show "norm (A $$ (i,j)) \<le> Max ?norms" .
 qed
@@ -597,7 +597,7 @@ lemma jordan_matrix_poly_bound: fixes n_as :: "(nat \<times> 'a)list"
   by metis
 
 lemma jordan_nf_matrix_poly_bound: fixes n_as :: "(nat \<times> 'a)list"
-  assumes A: "A \<in> carrier\<^sub>m n n"
+  assumes A: "A \<in> carrier_mat n n"
   and n_as: "\<And> n a. (n,a) \<in> set n_as \<Longrightarrow> n > 0 \<Longrightarrow> norm a \<le> 1"
   and N: "\<And> n a. (n,a) \<in> set n_as \<Longrightarrow> norm a = 1 \<Longrightarrow> n \<le> N"
   and jnf: "jordan_nf A n_as"
@@ -606,12 +606,12 @@ proof -
   let ?cp2 = "\<Prod>(n, a)\<leftarrow>n_as. [:- a, 1:] ^ n"
   let ?J = "jordan_matrix n_as"
   from jnf[unfolded jordan_nf_def]
-  have sim: "mat_similar A ?J" .
-  then obtain P Q where sim_wit: "mat_similar_wit A ?J P Q" unfolding mat_similar_def by auto
-  from mat_similar_wit_pow_id[OF this] have pow: "\<And> k. A ^\<^sub>m k = P \<otimes>\<^sub>m ?J ^\<^sub>m k \<otimes>\<^sub>m Q" .
-  from sim_wit[unfolded mat_similar_wit_def Let_def] A 
-  have J: "?J \<in> carrier\<^sub>m n n" and P: "P \<in> carrier\<^sub>m n n" and Q: "Q \<in> carrier\<^sub>m n n"
-    unfolding mat_carrier_def by force+
+  have sim: "similar_mat A ?J" .
+  then obtain P Q where sim_wit: "similar_mat_wit A ?J P Q" unfolding similar_mat_def by auto
+  from similar_mat_wit_pow_id[OF this] have pow: "\<And> k. A ^\<^sub>m k = P * ?J ^\<^sub>m k * Q" .
+  from sim_wit[unfolded similar_mat_wit_def Let_def] A 
+  have J: "?J \<in> carrier_mat n n" and P: "P \<in> carrier_mat n n" and Q: "Q \<in> carrier_mat n n"
+    unfolding carrier_mat_def by force+
   have "\<exists>c1. \<forall> k. norm_bound (?J ^\<^sub>m k) (c1 + of_nat k ^ (N - 1))"
     by (rule jordan_matrix_poly_bound[OF n_as N])
   then obtain c1 where 
@@ -623,8 +623,8 @@ proof -
   let ?c1 = "?c2 * c1"
   {
     fix k
-    have Jk: "?J ^\<^sub>m k \<in> carrier\<^sub>m n n" using J by simp
-    from norm_bound_mult[OF mat_mult_mat_closed[OF P Jk] Q 
+    have Jk: "?J ^\<^sub>m k \<in> carrier_mat n n" using J by simp
+    from norm_bound_mult[OF mult_carrier_mat[OF P Jk] Q 
       norm_bound_mult[OF P Jk bP bound_pow] bQ, folded pow] 
     have "norm_bound (A ^\<^sub>m k) (?c1 + ?c2 * of_nat k ^ (N - 1))"  (is "norm_bound _ ?exp") 
       by (simp add: field_simps)
@@ -640,8 +640,8 @@ begin
 lemma char_matrix_jordan_block: "char_matrix (jordan_block n a) b = (jordan_block n (a - b))"
   unfolding char_matrix_def jordan_block_def by auto
 
-lemma diag_jordan_block_pow: "mat_diag (jordan_block n (a :: 'a) ^\<^sub>m k) = replicate n (a ^ k)"
-  unfolding mat_diag_def jordan_block_pow
+lemma diag_jordan_block_pow: "diag_mat (jordan_block n (a :: 'a) ^\<^sub>m k) = replicate n (a ^ k)"
+  unfolding diag_mat_def jordan_block_pow
   by (intro nth_equalityI, auto)
 
 lemma jordan_block_zero_pow: "(jordan_block n (0 :: 'a)) ^\<^sub>m k = 
@@ -659,7 +659,7 @@ proof -
       thus ?thesis by (simp add: binomial_eq_0)
     qed
   }
-  thus ?thesis unfolding jordan_block_pow by (intro mat_eqI, auto)
+  thus ?thesis unfolding jordan_block_pow by (intro eq_matI, auto)
 qed
 end
 
@@ -677,9 +677,9 @@ proof -
     fix A B
     assume "(A,B) \<in> set ?Ms"
     then obtain jbs where mem: "(A,jbs) \<in> set Ms" and B: "B = jordan_matrix jbs" by auto
-    from Ms[OF mem] have "mat_similar A B" unfolding B jordan_nf_def .
+    from Ms[OF mem] have "similar_mat A B" unfolding B jordan_nf_def .
   }
-  from mat_similar_diag_block_mat[of ?Ms, OF this, unfolded id id2]
+  from similar_diag_mat_block_mat[of ?Ms, OF this, unfolded id id2]
   show ?thesis
     unfolding jordan_nf_def jordan_matrix_concat_diag_block_mat by auto
 qed  
@@ -695,8 +695,8 @@ lemma jordan_nf_block_size_order_bound: assumes jnf: "jordan_nf A n_as"
   shows "n \<le> order a (char_poly A)"
 proof -
   from jnf[unfolded jordan_nf_def]
-  have "mat_similar A (jordan_matrix n_as)" .
-  from mat_similarD[OF this] obtain m where "A \<in> carrier\<^sub>m m m" by auto
+  have "similar_mat A (jordan_matrix n_as)" .
+  from similar_matD[OF this] obtain m where "A \<in> carrier_mat m m" by auto
   from degree_monic_char_poly[OF this] have A: "char_poly A \<noteq> 0" by auto
   from mem obtain as bs where nas: "n_as = as @ (n,a) # bs" 
     by (meson split_list)
@@ -711,7 +711,7 @@ qed
 
 subsection \<open>Application for Complexity\<close>
 
-lemma factored_char_poly_norm_bound: assumes A: "A \<in> carrier\<^sub>m n n"
+lemma factored_char_poly_norm_bound: assumes A: "A \<in> carrier_mat n n"
   and linear_factors: "char_poly A = (\<Prod> (a :: 'a :: real_normed_field) \<leftarrow> as. [:- a, 1:])"
   and jnf_exists: "\<exists> n_as. jordan_nf A n_as" 
   and le_1: "\<And> a. a \<in> set as \<Longrightarrow> norm a \<le> 1"
@@ -724,7 +724,7 @@ proof -
   let ?cp2 = "\<Prod>(n, a)\<leftarrow>n_as. [:- a, 1:] ^ n"
   let ?J = "jordan_matrix n_as"
   from jnf[unfolded jordan_nf_def]
-  have sim: "mat_similar A ?J" .
+  have sim: "similar_mat A ?J" .
   from char_poly_similar[OF sim, unfolded linear_factors jordan_matrix_char_poly]
   have cp: "?cp1 = ?cp2" .
   show ?thesis

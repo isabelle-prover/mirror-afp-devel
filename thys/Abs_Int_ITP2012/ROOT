@@ -2,9 +2,11 @@ chapter AFP
 
 session Abs_Int_ITP2012 (AFP) = "HOL-Library" +
   options [timeout = 600]
+  sessions
+    "HOL-IMP"
   theories [document = false]
-    "~~/src/HOL/IMP/Com"
-    "~~/src/HOL/IMP/Vars"
+    "HOL-IMP.Com"
+    "HOL-IMP.Vars"
   theories
     Abs_Int3
   theories [document = false]

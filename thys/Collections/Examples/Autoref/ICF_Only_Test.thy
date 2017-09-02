@@ -1,6 +1,6 @@
 theory ICF_Only_Test
 imports 
-  "../../Refine_Dflt_Only_ICF" 
+  Collections.Refine_Dflt_Only_ICF 
 begin
 
 declare [[autoref_trace_failed_id]]

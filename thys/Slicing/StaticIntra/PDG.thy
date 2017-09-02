@@ -25,22 +25,22 @@ begin
 
 
 inductive cdep_edge :: "'node \<Rightarrow> 'node \<Rightarrow> bool" 
-    ("_ \<longrightarrow>\<^bsub>cd\<^esub> _" [51,0] 80)
+    ("_ \<longrightarrow>\<^sub>c\<^sub>d _" [51,0] 80)
   and ddep_edge :: "'node \<Rightarrow> 'var \<Rightarrow> 'node \<Rightarrow> bool"
-    ("_ -_\<rightarrow>\<^bsub>dd\<^esub> _" [51,0,0] 80)
+    ("_ -_\<rightarrow>\<^sub>d\<^sub>d _" [51,0,0] 80)
   and PDG_edge :: "'node \<Rightarrow> 'var option \<Rightarrow> 'node \<Rightarrow> bool"
 
 where
     (* Syntax *)
-  "n \<longrightarrow>\<^bsub>cd\<^esub> n' == PDG_edge n None n'"
-  | "n -V\<rightarrow>\<^bsub>dd\<^esub> n' == PDG_edge n (Some V) n'"
+  "n \<longrightarrow>\<^sub>c\<^sub>d n' == PDG_edge n None n'"
+  | "n -V\<rightarrow>\<^sub>d\<^sub>d n' == PDG_edge n (Some V) n'"
 
     (* Rules *)
   | PDG_cdep_edge:
-  "n controls n' \<Longrightarrow> n \<longrightarrow>\<^bsub>cd\<^esub> n'"
+  "n controls n' \<Longrightarrow> n \<longrightarrow>\<^sub>c\<^sub>d n'"
 
   | PDG_ddep_edge:
-  "n influences V in n' \<Longrightarrow> n -V\<rightarrow>\<^bsub>dd\<^esub> n'"
+  "n influences V in n' \<Longrightarrow> n -V\<rightarrow>\<^sub>d\<^sub>d n'"
 
 
 inductive PDG_path :: "'node \<Rightarrow> 'node \<Rightarrow> bool"
@@ -50,18 +50,18 @@ where PDG_path_Nil:
   "valid_node n \<Longrightarrow> n \<longrightarrow>\<^sub>d* n"
 
   | PDG_path_Append_cdep:
-  "\<lbrakk>n \<longrightarrow>\<^sub>d* n''; n'' \<longrightarrow>\<^bsub>cd\<^esub> n'\<rbrakk> \<Longrightarrow> n \<longrightarrow>\<^sub>d* n'"
+  "\<lbrakk>n \<longrightarrow>\<^sub>d* n''; n'' \<longrightarrow>\<^sub>c\<^sub>d n'\<rbrakk> \<Longrightarrow> n \<longrightarrow>\<^sub>d* n'"
 
   | PDG_path_Append_ddep:
-  "\<lbrakk>n \<longrightarrow>\<^sub>d* n''; n'' -V\<rightarrow>\<^bsub>dd\<^esub> n'\<rbrakk> \<Longrightarrow> n \<longrightarrow>\<^sub>d* n'"
+  "\<lbrakk>n \<longrightarrow>\<^sub>d* n''; n'' -V\<rightarrow>\<^sub>d\<^sub>d n'\<rbrakk> \<Longrightarrow> n \<longrightarrow>\<^sub>d* n'"
 
 
-lemma PDG_path_cdep:"n \<longrightarrow>\<^bsub>cd\<^esub> n' \<Longrightarrow> n \<longrightarrow>\<^sub>d* n'"
+lemma PDG_path_cdep:"n \<longrightarrow>\<^sub>c\<^sub>d n' \<Longrightarrow> n \<longrightarrow>\<^sub>d* n'"
 apply -
 apply(rule PDG_path_Append_cdep, rule PDG_path_Nil)
 by(auto elim!:PDG_edge.cases dest:control_dependence_path path_valid_node)
 
-lemma PDG_path_ddep:"n -V\<rightarrow>\<^bsub>dd\<^esub> n' \<Longrightarrow> n \<longrightarrow>\<^sub>d* n'"
+lemma PDG_path_ddep:"n -V\<rightarrow>\<^sub>d\<^sub>d n' \<Longrightarrow> n \<longrightarrow>\<^sub>d* n'"
 apply -
 apply(rule PDG_path_Append_ddep, rule PDG_path_Nil)
 by(auto elim!:PDG_edge.cases dest:path_valid_node simp:data_dependence_def)
@@ -72,13 +72,13 @@ by(induct rule:PDG_path.induct,auto intro:PDG_path.intros)
 
 
 lemma PDG_cdep_edge_CFG_path:
-  assumes "n \<longrightarrow>\<^bsub>cd\<^esub> n'" obtains as where "n -as\<rightarrow>* n'" and "as \<noteq> []"
-  using `n \<longrightarrow>\<^bsub>cd\<^esub> n'`
+  assumes "n \<longrightarrow>\<^sub>c\<^sub>d n'" obtains as where "n -as\<rightarrow>* n'" and "as \<noteq> []"
+  using `n \<longrightarrow>\<^sub>c\<^sub>d n'`
   by(auto elim:PDG_edge.cases dest:control_dependence_path)
 
 lemma PDG_ddep_edge_CFG_path:
-  assumes "n -V\<rightarrow>\<^bsub>dd\<^esub> n'" obtains as where "n -as\<rightarrow>* n'" and "as \<noteq> []"
-  using `n -V\<rightarrow>\<^bsub>dd\<^esub> n'`
+  assumes "n -V\<rightarrow>\<^sub>d\<^sub>d n'" obtains as where "n -as\<rightarrow>* n'" and "as \<noteq> []"
+  using `n -V\<rightarrow>\<^sub>d\<^sub>d n'`
   by(auto elim!:PDG_edge.cases simp:data_dependence_def)
 
 lemma PDG_path_CFG_path:
@@ -91,14 +91,14 @@ proof(atomize_elim)
     thus ?case by blast
   next
     case (PDG_path_Append_cdep n n'' n')
-    from `n'' \<longrightarrow>\<^bsub>cd\<^esub> n'` obtain as where "n'' -as\<rightarrow>* n'"
+    from `n'' \<longrightarrow>\<^sub>c\<^sub>d n'` obtain as where "n'' -as\<rightarrow>* n'"
       by(fastforce elim:PDG_cdep_edge_CFG_path)
     with `\<exists>as. n -as\<rightarrow>* n''` obtain as' where "n -as'@as\<rightarrow>* n'"
       by(auto dest:path_Append)
     thus ?case by blast
   next
     case (PDG_path_Append_ddep n n'' V n')
-    from `n'' -V\<rightarrow>\<^bsub>dd\<^esub> n'` obtain as where "n'' -as\<rightarrow>* n'"
+    from `n'' -V\<rightarrow>\<^sub>d\<^sub>d n'` obtain as where "n'' -as\<rightarrow>* n'"
       by(fastforce elim:PDG_ddep_edge_CFG_path)
     with `\<exists>as. n -as\<rightarrow>* n''` obtain as' where "n -as'@as\<rightarrow>* n'"
       by(auto dest:path_Append)
@@ -120,7 +120,7 @@ proof(induct rule:PDG_path.induct)
   thus ?case by simp
 next
   case (PDG_path_Append_cdep n n'' n')
-  from `n'' \<longrightarrow>\<^bsub>cd\<^esub> n'` `\<not> inner_node n'` have False
+  from `n'' \<longrightarrow>\<^sub>c\<^sub>d n'` `\<not> inner_node n'` have False
     apply -
     apply(erule PDG_edge.cases) apply(auto simp:inner_node_def)
       apply(fastforce dest:control_dependence_path path_valid_node)
@@ -129,7 +129,7 @@ next
   thus ?case by simp
 next
   case (PDG_path_Append_ddep n n'' V n')
-  from `n'' -V\<rightarrow>\<^bsub>dd\<^esub> n'` `\<not> inner_node n'` have False
+  from `n'' -V\<rightarrow>\<^sub>d\<^sub>d n'` `\<not> inner_node n'` have False
     apply -
     apply(erule PDG_edge.cases) 
     by(auto dest:path_valid_node simp:inner_node_def data_dependence_def)

@@ -10,7 +10,7 @@ imports HMA_Connect
 begin
 
 definition real_nonneg_mat :: "complex mat \<Rightarrow> bool" where
-  "real_nonneg_mat A \<equiv> \<forall> a \<in> mat_elements A. a \<in> \<real> \<and> Re a \<ge> 0"
+  "real_nonneg_mat A \<equiv> \<forall> a \<in> elements_mat A. a \<in> \<real> \<and> Re a \<ge> 0"
 
 definition real_nonneg_vec :: "complex Matrix.vec \<Rightarrow> bool" where
   "real_nonneg_vec v \<equiv> \<forall> a \<in> vec_elements v. a \<in> \<real> \<and> Re a \<ge> 0"
@@ -19,17 +19,17 @@ definition real_non_neg_vec :: "complex ^ 'n \<Rightarrow> bool" where
   "real_non_neg_vec v \<equiv> (\<forall> a \<in> vec_elements_h v. a \<in> \<real> \<and> Re a \<ge> 0)" 
 
 definition real_non_neg_mat :: "complex ^ 'nr ^ 'nc \<Rightarrow> bool" where
-  "real_non_neg_mat A \<equiv> (\<forall> a \<in> mat_elements_h A. a \<in> \<real> \<and> Re a \<ge> 0)" 
+  "real_non_neg_mat A \<equiv> (\<forall> a \<in> elements_mat_h A. a \<in> \<real> \<and> Re a \<ge> 0)" 
 
 lemma real_non_neg_matD: assumes "real_non_neg_mat A"
   shows "A $h i $h j \<in> \<real>" "Re (A $h i $h j) \<ge> 0" 
-  using assms unfolding real_non_neg_mat_def mat_elements_h_def by auto
+  using assms unfolding real_non_neg_mat_def elements_mat_h_def by auto
 
 definition nonneg_mat :: "real mat \<Rightarrow> bool" where
-  "nonneg_mat A \<equiv> \<forall> a \<in> mat_elements A. a \<ge> 0"
+  "nonneg_mat A \<equiv> \<forall> a \<in> elements_mat A. a \<ge> 0"
 
 definition non_neg_mat :: "real ^ 'nr ^ 'nc \<Rightarrow> bool" where
-  "non_neg_mat A \<equiv> (\<forall> a \<in> mat_elements_h A. a \<ge> 0)" 
+  "non_neg_mat A \<equiv> (\<forall> a \<in> elements_mat_h A. a \<ge> 0)" 
 
 
 context includes lifting_syntax

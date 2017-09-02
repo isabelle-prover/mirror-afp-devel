@@ -4,7 +4,7 @@ subsection \<open>Sum types\<close>
 
 theory Applicative_Sum imports
   Applicative
-  "~~/src/Tools/Adhoc_Overloading"
+  "HOL-Library.Adhoc_Overloading"
 begin
 
 text \<open>

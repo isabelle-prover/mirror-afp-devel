@@ -1,8 +1,8 @@
 section {* Arrays with in-place updates *}
 theory Diff_Array imports
   Assoc_List
-  "../../Automatic_Refinement/Parametricity/Parametricity"
-  "~~/src/HOL/Library/Code_Target_Numeral"
+  Automatic_Refinement.Parametricity
+  "HOL-Library.Code_Target_Numeral"
 begin
 
 datatype 'a array = Array "'a list"

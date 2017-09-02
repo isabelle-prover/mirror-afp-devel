@@ -4,7 +4,7 @@
 *)
 
 theory Syntactic_Ordinal_Bridge
-imports "~~/src/HOL/Library/Sublist" "../Ordinal/OrdinalOmega" Syntactic_Ordinal
+imports "HOL-Library.Sublist" Ordinal.OrdinalOmega Syntactic_Ordinal
 abbrevs
   "!h" = "\<^sub>h"
 begin
@@ -106,7 +106,7 @@ proof (simp only: atomize_imp,
     have K_lt_L: "K < L"
       unfolding K L using k_lt_l by simp
 
-    define x where x: "x = Max (set_mset K)"
+    define x where x: "x = Max_mset K"
     define Ka where Ka: "Ka = K - {#x#}"
 
     have k_eq_xKa: "k = HMSet (add_mset x Ka)"
@@ -141,7 +141,7 @@ proof (simp only: atomize_imp,
         by force
     qed
 
-    define y where y: "y = Max (set_mset L)"
+    define y where y: "y = Max_mset L"
     define La where La: "La = L - {#y#}"
 
     have l_eq_yLa: "l = HMSet (add_mset y La)"
@@ -230,7 +230,7 @@ proof (simp only: atomize_imp,
         next
           show "k < \<omega>^y"
           proof -
-            have "\<And>m. x < Max (set_mset (add_mset y m))"
+            have "\<And>m. x < Max_mset (add_mset y m)"
               by (meson Max_ge finite_set_mset less_le_trans union_single_eq_member x_lt_y)
             then show ?thesis
               by (metis K x head_\<omega>_def head_\<omega>_lt_imp_lt hmsetmset_less hmultiset.sel k_nz

@@ -5,8 +5,8 @@ section {* Infinite lists as a codatatype *}
 
 theory Coinductive_Stream
 imports
-  "~~/src/HOL/Library/Stream"
-  "~~/src/HOL/Library/Linear_Temporal_Logic_on_Streams"
+  "HOL-Library.Stream"
+  "HOL-Library.Linear_Temporal_Logic_on_Streams"
   Coinductive_List
 begin
 

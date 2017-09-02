@@ -1,7 +1,7 @@
 section\<open>Option Helpers\<close>
 text\<open>These definitions were contributed by Peter Lammich.\<close>
 theory Option_Helpers
-imports Main "~~/src/HOL/Library/Monad_Syntax"
+imports Main "HOL-Library.Monad_Syntax"
 begin
 
 primrec oassert :: "bool \<Rightarrow> unit option" where

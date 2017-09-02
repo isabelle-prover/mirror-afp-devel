@@ -4,9 +4,9 @@ section \<open>Matrix Rank\<close>
 
 theory DL_Rank
 imports DL_Missing_VS_Connect DL_Missing_List
- "../Jordan_Normal_Form/Determinant"
-"../Jordan_Normal_Form/Missing_VectorSpace"
-"../Jordan_Normal_Form/Matrix"
+ Jordan_Normal_Form.Determinant
+Jordan_Normal_Form.Missing_VectorSpace
+Jordan_Normal_Form.Matrix
 begin
 
 lemma (in vectorspace) full_dim_span:
@@ -71,13 +71,13 @@ definition (in vec_space) rank ::"'a mat \<Rightarrow> nat"
 where "rank A = vectorspace.dim class_ring (span_vs (set (cols A)))"
 
 lemma (in vec_space) rank_card_indpt:
-assumes "A \<in> carrier\<^sub>m n nc"
+assumes "A \<in> carrier_mat n nc"
 assumes "maximal S (\<lambda>T. T \<subseteq> set (cols A) \<and> lin_indpt T)"
 shows "rank A = card S"
 proof -
-  have "set (cols A) \<subseteq> carrier\<^sub>v n" using cols_dim assms(1) by blast
+  have "set (cols A) \<subseteq> carrier_vec n" using cols_dim assms(1) by blast
   have "finite (set (cols A))" by blast
-  show ?thesis using dim_span[OF `set (cols A) \<subseteq> carrier\<^sub>v n` `finite (set (cols A))` assms(2)]
+  show ?thesis using dim_span[OF `set (cols A) \<subseteq> carrier_vec n` `finite (set (cols A))` assms(2)]
     unfolding rank_def by blast
 qed
 
@@ -105,7 +105,7 @@ proof -
 qed
 
 lemma (in vec_space) rank_ge_card_indpt:
-assumes "A \<in> carrier\<^sub>m n nc"
+assumes "A \<in> carrier_mat n nc"
 assumes "U \<subseteq> set (cols A)"
 assumes "lin_indpt U"
 shows "rank A \<ge> card U"
@@ -114,12 +114,12 @@ proof -
     using maximal_exists_superset[of "set (cols A)" "(\<lambda>T. T \<subseteq> set (cols A) \<and> lin_indpt T)" U]
     using List.finite_set assms(2) assms(3) maximal_exists_superset by blast
   then show ?thesis
-    unfolding rank_card_indpt[OF `A \<in> carrier\<^sub>m n nc` `maximal S (\<lambda>T. T \<subseteq> set (cols A) \<and> lin_indpt T)`]
+    unfolding rank_card_indpt[OF `A \<in> carrier_mat n nc` `maximal S (\<lambda>T. T \<subseteq> set (cols A) \<and> lin_indpt T)`]
     using card_mono by blast
 qed
 
 lemma (in vec_space) lin_indpt_full_rank:
-assumes "A \<in> carrier\<^sub>m n nc"
+assumes "A \<in> carrier_mat n nc"
 assumes "distinct (cols A)"
 assumes "lin_indpt (set (cols A))"
 shows "rank A = nc"
@@ -131,7 +131,7 @@ proof -
 qed
 
 lemma (in vec_space) rank_le_nc:
-assumes "A \<in> carrier\<^sub>m n nc"
+assumes "A \<in> carrier_mat n nc"
 shows "rank A \<le> nc"
 proof -
   obtain S where "maximal S (\<lambda>T. T \<subseteq> set (cols A) \<and> lin_indpt T)"
@@ -139,19 +139,19 @@ proof -
     by (meson List.finite_set card_mono empty_iff empty_subsetI finite_lin_indpt2 rev_finite_subset)
   then have "card S \<le> card (set (cols A))" by (simp add: card_mono maximal_def)
   then have "card S \<le> nc"
-    using assms(1) cols_length card_length mat_carrierD(2) by (metis dual_order.trans)
+    using assms(1) cols_length card_length carrier_matD(2) by (metis dual_order.trans)
   then show ?thesis
-    using rank_card_indpt[OF `A \<in> carrier\<^sub>m n nc` `maximal S (\<lambda>T. T \<subseteq> set (cols A) \<and> lin_indpt T)`]
+    using rank_card_indpt[OF `A \<in> carrier_mat n nc` `maximal S (\<lambda>T. T \<subseteq> set (cols A) \<and> lin_indpt T)`]
     by simp
 qed
 
 lemma (in vec_space) full_rank_lin_indpt:
-assumes "A \<in> carrier\<^sub>m n nc"
+assumes "A \<in> carrier_mat n nc"
 assumes "rank A = nc"
 assumes "distinct (cols A)"
 shows "lin_indpt (set (cols A))"
 proof -
-  have 1:"set (cols A) \<subseteq> carrier\<^sub>v n" using assms(1) cols_dim by blast
+  have 1:"set (cols A) \<subseteq> carrier_vec n" using assms(1) cols_dim by blast
   have 2:"finite (set (cols A))" by simp
   have "card (set (cols A)) = nc"
     using assms(1) assms(3) distinct_card by fastforce
@@ -163,16 +163,16 @@ qed
 
 
 lemma (in vec_space) mat_mult_eq_lincomb:
-assumes "A \<in> carrier\<^sub>m n nc"
+assumes "A \<in> carrier_mat n nc"
 assumes "distinct (cols A)"
-shows "A \<otimes>\<^sub>m\<^sub>v (vec nc (\<lambda>i. a (col A i))) = lincomb a (set (cols A))"
-proof (rule vec_eqI)
+shows "A *\<^sub>v (vec nc (\<lambda>i. a (col A i))) = lincomb a (set (cols A))"
+proof (rule eq_vecI)
   have "finite (set (cols A))" using assms(1) by simp
-  then show "dim\<^sub>v (A \<otimes>\<^sub>m\<^sub>v (vec nc (\<lambda>i. a (col A i)))) = dim\<^sub>v (lincomb a (set (cols A)))"
-    using assms cols_dim vec_space.lincomb_dim by (metis dim_mat_mult_vec mat_carrierD(1))
-  fix i assume "i < dim\<^sub>v (lincomb a (set (cols A)))"
-  then have "i < n" using \<open>dim\<^sub>v (A \<otimes>\<^sub>m\<^sub>v (vec nc (\<lambda>i. a (col A i)))) = dim\<^sub>v (lincomb a (set (cols A)))\<close> assms by auto
-  have "set (cols A) \<subseteq> carrier\<^sub>v n" using cols_dim `A \<in> carrier\<^sub>m n nc` mat_carrierD(1) by blast
+  then show "dim_vec (A *\<^sub>v (vec nc (\<lambda>i. a (col A i)))) = dim_vec (lincomb a (set (cols A)))"
+    using assms cols_dim vec_space.lincomb_dim by (metis dim_mult_mat_vec carrier_matD(1))
+  fix i assume "i < dim_vec (lincomb a (set (cols A)))"
+  then have "i < n" using \<open>dim_vec (A *\<^sub>v (vec nc (\<lambda>i. a (col A i)))) = dim_vec (lincomb a (set (cols A)))\<close> assms by auto
+  have "set (cols A) \<subseteq> carrier_vec n" using cols_dim `A \<in> carrier_mat n nc` carrier_matD(1) by blast
   have "bij_betw (nth (cols A)) {..<length (cols A)} (set (cols A))"
     unfolding bij_betw_def by (rule conjI, simp add: inj_on_nth `distinct (cols A)`;
     metis subset_antisym in_set_conv_nth lessThan_iff rev_image_eqI subsetI
@@ -184,17 +184,17 @@ proof (rule vec_eqI)
     using assms(1) assms(2) find_first_unique[OF `distinct (cols A)`] `i < n` by auto
   also have "... = (\<Sum>j\<in>{..<length (cols A)}. (cols A ! j) $ i * a (col A j))" by (metis mult_commute_abs)
   also have "... = (\<Sum>j\<in>{..<length (cols A)}. row A i $ j * a (col A j))" using \<open>i < n\<close> assms(1) assms(2) by auto
-  finally show "(A \<otimes>\<^sub>m\<^sub>v (vec nc (\<lambda>i. a (col A i)))) $ i = lincomb a (set (cols A)) $ i"
-    unfolding lincomb_index[OF `i < n` `set (cols A) \<subseteq> carrier\<^sub>v n`]
-    unfolding mat_mult_vec_def scalar_prod_def
-    using \<open>i < n\<close> assms(1) atLeast0LessThan lessThan_def mat_carrierD(1) vec_index_vec sum.cong by auto
+  finally show "(A *\<^sub>v (vec nc (\<lambda>i. a (col A i)))) $ i = lincomb a (set (cols A)) $ i"
+    unfolding lincomb_index[OF `i < n` `set (cols A) \<subseteq> carrier_vec n`]
+    unfolding mult_mat_vec_def scalar_prod_def
+    using \<open>i < n\<close> assms(1) atLeast0LessThan lessThan_def carrier_matD(1) index_vec sum.cong by auto
 qed
 
 lemma (in vec_space) lincomb_eq_mat_mult:
-assumes "A \<in> carrier\<^sub>m n nc"
-assumes "v \<in> carrier\<^sub>v nc"
+assumes "A \<in> carrier_mat n nc"
+assumes "v \<in> carrier_vec nc"
 assumes "distinct (cols A)"
-shows "lincomb (\<lambda>a. v $ find_first a (cols A)) (set (cols A)) = (A \<otimes>\<^sub>m\<^sub>v v)"
+shows "lincomb (\<lambda>a. v $ find_first a (cols A)) (set (cols A)) = (A *\<^sub>v v)"
 proof -
   have "\<And>i. i < nc \<Longrightarrow> find_first (col A i) (cols A) = i"
     using assms(1) assms(3) find_first_unique by fastforce
@@ -205,8 +205,8 @@ proof -
 qed
 
 lemma (in vec_space) lin_depI:
-assumes "A \<in> carrier\<^sub>m n nc"
-assumes "v \<in> carrier\<^sub>v nc" "v \<noteq> \<zero>\<^sub>v nc" "A \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v n"
+assumes "A \<in> carrier_mat n nc"
+assumes "v \<in> carrier_vec nc" "v \<noteq> 0\<^sub>v nc" "A *\<^sub>v v = 0\<^sub>v n"
 assumes "distinct (cols A)"
 shows "lin_dep (set (cols A))"
 proof -
@@ -214,49 +214,49 @@ proof -
   have 2: "set (cols A) \<subseteq> set (cols A)" by auto
   have 3: "(\<lambda>a. v $ find_first a (cols A)) \<in> set (cols A) \<rightarrow> UNIV" by simp
   obtain i where "v $ i \<noteq> 0" "i < nc"
-    using `v \<noteq> \<zero>\<^sub>v nc`
-    by (metis assms(2) vec_dim_vec vec_elemsD vec_eq_iff vec_zero_def vec_zero_index(1))
-  then have "i < dim\<^sub>c A" using assms(1) by blast
+    using `v \<noteq> 0\<^sub>v nc`
+    by (metis assms(2) dim_vec carrier_vecD vec_eq_iff zero_vec_def index_zero_vec(1))
+  then have "i < dim_col A" using assms(1) by blast
   have 4:"col A i \<in> set (cols A)"
-    using cols_nth[OF `i < dim\<^sub>c A`] \<open>i < dim\<^sub>c A\<close> in_set_conv_nth by fastforce
+    using cols_nth[OF `i < dim_col A`] \<open>i < dim_col A\<close> in_set_conv_nth by fastforce
   have 5:"v $ find_first (col A i) (cols A) \<noteq> 0"
-    using find_first_unique[OF `distinct (cols A)`] cols_nth[OF `i < dim\<^sub>c A`] \<open>i < nc\<close> \<open>v $ i \<noteq> 0\<close>
+    using find_first_unique[OF `distinct (cols A)`] cols_nth[OF `i < dim_col A`] \<open>i < nc\<close> \<open>v $ i \<noteq> 0\<close>
     assms(1) by auto
-  have 6:"lincomb (\<lambda>a. v $ find_first a (cols A)) (set (cols A)) = \<zero>\<^sub>v n"
+  have 6:"lincomb (\<lambda>a. v $ find_first a (cols A)) (set (cols A)) = 0\<^sub>v n"
     using assms(1) assms(2) assms(4) assms(5) lincomb_eq_mat_mult by auto
   show ?thesis using lin_dep_crit[OF 1 2 _ 4 5 6] by metis
 qed
 
 lemma (in vec_space) lin_depE:
-assumes "A \<in> carrier\<^sub>m n nc"
+assumes "A \<in> carrier_mat n nc"
 assumes "lin_dep (set (cols A))"
 assumes "distinct (cols A)"
-obtains v where "v \<in> carrier\<^sub>v nc" "v \<noteq> \<zero>\<^sub>v nc" "A \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v n"
+obtains v where "v \<in> carrier_vec nc" "v \<noteq> 0\<^sub>v nc" "A *\<^sub>v v = 0\<^sub>v n"
 proof -
   have "finite (set (cols A))" by simp
-  obtain a w where "a \<in> set (cols A) \<rightarrow> UNIV" "lincomb a (set (cols A)) = \<zero>\<^sub>v n" "w \<in> set (cols A)" "a w \<noteq> 0"
+  obtain a w where "a \<in> set (cols A) \<rightarrow> UNIV" "lincomb a (set (cols A)) = 0\<^sub>v n" "w \<in> set (cols A)" "a w \<noteq> 0"
     using finite_lin_dep[OF `finite (set (cols A))` `lin_dep (set (cols A))`]
-    using assms(1) cols_dim mat_carrierD(1) by blast
+    using assms(1) cols_dim carrier_matD(1) by blast
   def v == "vec nc (\<lambda>i. a (col A i))"
-  have 1:"v \<in> carrier\<^sub>v nc" by (simp add: v_def)
-  have 2:"v \<noteq> \<zero>\<^sub>v nc"
+  have 1:"v \<in> carrier_vec nc" by (simp add: v_def)
+  have 2:"v \<noteq> 0\<^sub>v nc"
   proof -
     obtain i where "w = col A i" "i < length (cols A)"
       by (metis \<open>w \<in> set (cols A)\<close> cols_length cols_nth in_set_conv_nth)
     have "v $ i \<noteq> 0"
       unfolding v_def
-      using `a w \<noteq> 0`[unfolded `w = col A i`] vec_index_vec[OF `i < length (cols A)`]
-      assms(1) cols_length mat_carrierD(2) by (metis (no_types) \<open>A \<in> carrier\<^sub>m n nc\<close>
-      \<open>\<And>f. vec (length (cols A)) f $ i = f i\<close> \<open>a (col A i) \<noteq> 0\<close> cols_length mat_carrierD(2))
+      using `a w \<noteq> 0`[unfolded `w = col A i`] index_vec[OF `i < length (cols A)`]
+      assms(1) cols_length carrier_matD(2) by (metis (no_types) \<open>A \<in> carrier_mat n nc\<close>
+      \<open>\<And>f. vec (length (cols A)) f $ i = f i\<close> \<open>a (col A i) \<noteq> 0\<close> cols_length carrier_matD(2))
     then show ?thesis using \<open>i < length (cols A)\<close> assms(1) by auto
   qed
-  have 3:"A \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v n" unfolding v_def
-    using `lincomb a (set (cols A)) = \<zero>\<^sub>v n` mat_mult_eq_lincomb[OF `A \<in> carrier\<^sub>m n nc` `distinct (cols A)`] by auto
+  have 3:"A *\<^sub>v v = 0\<^sub>v n" unfolding v_def
+    using `lincomb a (set (cols A)) = 0\<^sub>v n` mat_mult_eq_lincomb[OF `A \<in> carrier_mat n nc` `distinct (cols A)`] by auto
   show thesis using 1 2 3 by (simp add: that)
 qed
 
 lemma (in vec_space) non_distinct_low_rank:
-assumes "A \<in> carrier\<^sub>m n n"
+assumes "A \<in> carrier_mat n n"
 and "\<not> distinct (cols A)"
 shows "rank A < n"
 proof -
@@ -265,10 +265,10 @@ proof -
     by (meson List.finite_set card_mono empty_iff empty_subsetI finite_lin_indpt2 rev_finite_subset)
   then have "card S \<le> card (set (cols A))" by (simp add: card_mono maximal_def)
   then have "card S < n"
-    using assms(1) cols_length card_length `\<not> distinct (cols A)` card_distinct mat_carrierD(2) nat_less_le
+    using assms(1) cols_length card_length `\<not> distinct (cols A)` card_distinct carrier_matD(2) nat_less_le
     by (metis dual_order.antisym dual_order.trans)
   then show ?thesis
-    using rank_card_indpt[OF `A \<in> carrier\<^sub>m n n` `maximal S (\<lambda>T. T \<subseteq> set (cols A) \<and> lin_indpt T)`]
+    using rank_card_indpt[OF `A \<in> carrier_mat n n` `maximal S (\<lambda>T. T \<subseteq> set (cols A) \<and> lin_indpt T)`]
     by simp
 qed
 
@@ -276,19 +276,19 @@ text \<open>The theorem "det non-zero $\longleftrightarrow$ full rank" is practi
 but without an actual definition of the rank.\<close>
 
 lemma (in vec_space) det_zero_low_rank:
-assumes "A \<in> carrier\<^sub>m n n"
+assumes "A \<in> carrier_mat n n"
 and "det A = 0"
 shows "rank A < n"
 proof (rule ccontr)
   assume "\<not> rank A < n"
   then have "rank A = n" using rank_le_nc assms le_neq_implies_less by blast
-  obtain v where "v \<in> carrier\<^sub>v n" "v \<noteq> \<zero>\<^sub>v n" "A \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v n"
+  obtain v where "v \<in> carrier_vec n" "v \<noteq> 0\<^sub>v n" "A *\<^sub>v v = 0\<^sub>v n"
     using det_0_iff_vec_prod_zero_field[OF assms(1)] assms(2) by blast
   then show False
   proof (cases "distinct (cols A)")
     case True
     then have "lin_indpt (set (cols A))" using full_rank_lin_indpt using \<open>rank A = n\<close> assms(1) by auto
-    then show False using lin_depI[OF assms(1) `v \<in> carrier\<^sub>v n` `v \<noteq> \<zero>\<^sub>v n` `A \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v n`] True by blast
+    then show False using lin_depI[OF assms(1) `v \<in> carrier_vec n` `v \<noteq> 0\<^sub>v n` `A *\<^sub>v v = 0\<^sub>v n`] True by blast
   next
     case False
     then show False using non_distinct_low_rank `rank A = n` \<open>\<not> rank A < n\<close> assms(1) by blast
@@ -296,16 +296,16 @@ proof (rule ccontr)
 qed
 
 lemma det_identical_cols:
-  assumes A: "A \<in> carrier\<^sub>m n n"
+  assumes A: "A \<in> carrier_mat n n"
     and ij: "i \<noteq> j"
     and i: "i < n" and j: "j < n"
     and r: "col A i = col A j"
   shows "det A = 0"
   using det_identical_rows det_transpose
-  by (metis A i ij j mat_carrierD(2) mat_transpose_closed r row_transpose)
+  by (metis A i ij j carrier_matD(2) transpose_carrier_mat r row_transpose)
 
 lemma (in vec_space) low_rank_det_zero:
-assumes "A \<in> carrier\<^sub>m n n"
+assumes "A \<in> carrier_mat n n"
 and "det A \<noteq> 0"
 shows "rank A = n"
 proof -
@@ -318,14 +318,14 @@ proof -
     then have "det A = 0"  using det_identical_cols using \<open>i \<noteq> j\<close> assms(1) by blast
     then show False using `det A \<noteq> 0` by auto
   qed
-  have "\<And>v. v \<in> carrier\<^sub>v n \<Longrightarrow> v \<noteq> \<zero>\<^sub>v n \<Longrightarrow> A \<otimes>\<^sub>m\<^sub>v v \<noteq> \<zero>\<^sub>v n"
+  have "\<And>v. v \<in> carrier_vec n \<Longrightarrow> v \<noteq> 0\<^sub>v n \<Longrightarrow> A *\<^sub>v v \<noteq> 0\<^sub>v n"
     using det_0_iff_vec_prod_zero_field[OF assms(1)] assms(2) by auto
   then have "lin_indpt (set (cols A))" using lin_depE[OF assms(1) _ `distinct (cols A)`] by auto
   then show ?thesis using lin_indpt_full_rank[OF assms(1) `distinct (cols A)`] by metis
 qed
 
 lemma (in vec_space) det_rank_iff:
-assumes "A \<in> carrier\<^sub>m n n"
+assumes "A \<in> carrier_mat n n"
 shows "det A \<noteq> 0 \<longleftrightarrow> rank A = n"
   using assms det_zero_low_rank low_rank_det_zero by force
 
@@ -508,38 +508,38 @@ proof -
 qed
 
 lemma (in vec_space) rank_subadditive:
-assumes "A \<in> carrier\<^sub>m n nc"
-assumes "B \<in> carrier\<^sub>m n nc"
-shows "rank (A \<oplus>\<^sub>m B) \<le> rank A + rank B"
+assumes "A \<in> carrier_mat n nc"
+assumes "B \<in> carrier_mat n nc"
+shows "rank (A + B) \<le> rank A + rank B"
 proof -
   def W1 == "span (set (cols A))"
   def W2 == "span (set (cols B))"
-  have "set (cols (A \<oplus>\<^sub>m B)) \<subseteq> subspace_sum W1 W2"
+  have "set (cols (A + B)) \<subseteq> subspace_sum W1 W2"
   proof
-    fix x assume "x \<in> set (cols (A \<oplus>\<^sub>m B))"
-    obtain i where "x = col (A \<oplus>\<^sub>m B) i" "i < length (cols (A \<oplus>\<^sub>m B))"
-      using \<open>x \<in> set (cols (A \<oplus>\<^sub>m B))\<close> nth_find_first cols_nth find_first_le by (metis cols_length)
-    then have "x = col A i \<oplus>\<^sub>v col B i" using \<open>i < length (cols (A \<oplus>\<^sub>m B))\<close> assms(1) assms(2) by auto
+    fix x assume "x \<in> set (cols (A + B))"
+    obtain i where "x = col (A + B) i" "i < length (cols (A + B))"
+      using \<open>x \<in> set (cols (A + B))\<close> nth_find_first cols_nth find_first_le by (metis cols_length)
+    then have "x = col A i + col B i" using \<open>i < length (cols (A + B))\<close> assms(1) assms(2) by auto
     have "col A i \<in> span (set (cols A))" "col B i \<in> span (set (cols B))"
-      using \<open>i < length (cols (A \<oplus>\<^sub>m B))\<close> assms(1) assms(2) in_set_conv_nth
-      by (metis cols_dim cols_length cols_nth mat_carrierD(1) mat_carrierD(2) mat_index_add(3) span_mem)+
+      using \<open>i < length (cols (A + B))\<close> assms(1) assms(2) in_set_conv_nth
+      by (metis cols_dim cols_length cols_nth carrier_matD(1) carrier_matD(2) index_add_mat(3) span_mem)+
     then show "x \<in> subspace_sum W1 W2"
-      unfolding W1_def W2_def `x = col A i \<oplus>\<^sub>v col B i` submodule_sum_def by blast
+      unfolding W1_def W2_def `x = col A i + col B i` submodule_sum_def by blast
   qed
   have "subspace class_ring (subspace_sum W1 W2) V"
-    by (metis W1_def W2_def assms(1) assms(2) cols_dim mat_carrierD(1) span_is_submodule subspace_def sum_is_submodule vec_vs)
-  then have "span (set (cols (A \<oplus>\<^sub>m B))) \<subseteq> subspace_sum W1 W2"
-    by (simp add: \<open>set (cols (A \<oplus>\<^sub>m B)) \<subseteq> subspace_sum W1 W2\<close> span_is_subset)
-  have "subspace class_ring (span (set (cols (A \<oplus>\<^sub>m B)))) V" by (metis assms(2) cols_dim mat_add_closed mat_carrierD(1) span_is_subspace)
-  have subspace:"subspace class_ring (span (set (cols (A \<oplus>\<^sub>m B)))) (vs (subspace_sum W1 W2))"
-    using nested_subspaces[OF `subspace class_ring (subspace_sum W1 W2) V` `subspace class_ring (span (set (cols (A \<oplus>\<^sub>m B)))) V`
-    `span (set (cols (A \<oplus>\<^sub>m B))) \<subseteq> subspace_sum W1 W2`] .
+    by (metis W1_def W2_def assms(1) assms(2) cols_dim carrier_matD(1) span_is_submodule subspace_def sum_is_submodule vec_vs)
+  then have "span (set (cols (A + B))) \<subseteq> subspace_sum W1 W2"
+    by (simp add: \<open>set (cols (A + B)) \<subseteq> subspace_sum W1 W2\<close> span_is_subset)
+  have "subspace class_ring (span (set (cols (A + B)))) V" by (metis assms(2) cols_dim add_carrier_mat carrier_matD(1) span_is_subspace)
+  have subspace:"subspace class_ring (span (set (cols (A + B)))) (vs (subspace_sum W1 W2))"
+    using nested_subspaces[OF `subspace class_ring (subspace_sum W1 W2) V` `subspace class_ring (span (set (cols (A + B)))) V`
+    `span (set (cols (A + B))) \<subseteq> subspace_sum W1 W2`] .
   have "vectorspace.fin_dim class_ring (vs W1)" "vectorspace.fin_dim class_ring (vs W2)"
        "subspace class_ring W1 V" "subspace class_ring W2 V"
-    using span_is_subspace W1_def W2_def assms(1) assms(2) cols_dim mat_carrierD fin_dim_span_cols by auto
+    using span_is_subspace W1_def W2_def assms(1) assms(2) cols_dim carrier_matD fin_dim_span_cols by auto
   then have fin_dim: "vectorspace.fin_dim class_ring (vs (subspace_sum W1 W2))" using fin_dim_subspace_sum by auto
-  have "vectorspace.fin_dim class_ring (span_vs (set (cols (A \<oplus>\<^sub>m B))))" using assms(2) mat_add_closed vec_space.fin_dim_span_cols by blast
-  then have "rank (A \<oplus>\<^sub>m B) \<le> vectorspace.dim class_ring (vs (subspace_sum W1 W2))" unfolding rank_def
+  have "vectorspace.fin_dim class_ring (span_vs (set (cols (A + B))))" using assms(2) add_carrier_mat vec_space.fin_dim_span_cols by blast
+  then have "rank (A + B) \<le> vectorspace.dim class_ring (vs (subspace_sum W1 W2))" unfolding rank_def
     using vectorspace.subspace_dim[OF subspace_is_vs[OF `subspace class_ring (subspace_sum W1 W2) V`] subspace fin_dim] by auto
   also have "vectorspace.dim class_ring (vs (subspace_sum W1 W2)) \<le> rank A + rank B" unfolding rank_def
     using W1_def W2_def \<open>subspace class_ring W1 V\<close> \<open>subspace class_ring W2 V\<close> \<open>vectorspace.fin_dim class_ring (vs W1)\<close>
@@ -554,48 +554,48 @@ lemma (in vec_space) span_zero: "span {zero V} = {zero V}"
 lemma (in vec_space) dim_zero_vs: "vectorspace.dim class_ring (span_vs {}) = 0"
 proof -
   have "vectorspace class_ring (span_vs {})" using field.field_axioms span_is_submodule submodule_is_module vectorspace_def by auto
-  have "{} \<subseteq> carrier\<^sub>v n \<and> lin_indpt {}"
+  have "{} \<subseteq> carrier_vec n \<and> lin_indpt {}"
     by (metis (no_types) empty_subsetI fin_dim finite_basis_exists subset_li_is_li vec_vs vectorspace.basis_def)
   then have "vectorspace.basis class_ring (span_vs {}) {}" using vectorspace.basis_def
     by (simp add: \<open>vectorspace class_ring (vs (span {}))\<close> span_is_submodule span_li_not_depend(1) span_li_not_depend(2) vectorspace.basis_def)
   then show ?thesis using \<open>vectorspace class_ring (vs (span {}))\<close> vectorspace.dim_basis by fastforce
 qed
 
-lemma (in vec_space) rank_0I: "rank (\<zero>\<^sub>m n nc) = 0"
+lemma (in vec_space) rank_0I: "rank (0\<^sub>m n nc) = 0"
 proof -
-  have "set (cols (\<zero>\<^sub>m n nc)) \<subseteq> {\<zero>\<^sub>v n}"
-    by (metis col_zero cols_length cols_nth in_set_conv_nth insertCI mat_index_zero(3) subsetI)
-  have "set (cols (\<zero>\<^sub>m n nc::'a mat)) = {} \<or> set (cols (\<zero>\<^sub>m n nc)) = {\<zero>\<^sub>v n::'a vec}"
-    by (meson \<open>set (cols (\<zero>\<^sub>m n nc)) \<subseteq> {\<zero>\<^sub>v n}\<close> subset_singletonD)
-  then have "span (set (cols (\<zero>\<^sub>m n nc))) = {\<zero>\<^sub>v n}"
+  have "set (cols (0\<^sub>m n nc)) \<subseteq> {0\<^sub>v n}"
+    by (metis col_zero cols_length cols_nth in_set_conv_nth insertCI index_zero_mat(3) subsetI)
+  have "set (cols (0\<^sub>m n nc::'a mat)) = {} \<or> set (cols (0\<^sub>m n nc)) = {0\<^sub>v n::'a vec}"
+    by (meson \<open>set (cols (0\<^sub>m n nc)) \<subseteq> {0\<^sub>v n}\<close> subset_singletonD)
+  then have "span (set (cols (0\<^sub>m n nc))) = {0\<^sub>v n}"
     by (metis (no_types) span_empty span_zero vectorspace.span_empty vectorspace_axioms)
-  then show ?thesis unfolding rank_def `span (set (cols (\<zero>\<^sub>m n nc))) = {\<zero>\<^sub>v n}`
+  then show ?thesis unfolding rank_def `span (set (cols (0\<^sub>m n nc))) = {0\<^sub>v n}`
     using span_empty dim_zero_vs by simp
 qed
 
 
 lemma (in vec_space) rank_le_1_product_entries:
 fixes f g::"nat \<Rightarrow> 'a"
-assumes "A \<in> carrier\<^sub>m n nc"
-assumes "\<And>r c. r<dim\<^sub>r A \<Longrightarrow> c<dim\<^sub>c A \<Longrightarrow> A $$ (r,c) = f r * g c"
+assumes "A \<in> carrier_mat n nc"
+assumes "\<And>r c. r<dim_row A \<Longrightarrow> c<dim_col A \<Longrightarrow> A $$ (r,c) = f r * g c"
 shows "rank A \<le> 1"
 proof -
   have "set (cols A) \<subseteq> span {vec n f}"
   proof
     fix v assume "v \<in> set (cols A)"
-    then obtain c where "c < dim\<^sub>c A" "v = col A c" by (metis cols_length cols_nth in_set_conv_nth)
-    have "g c \<odot>\<^sub>v vec n f = v"
-    proof (rule vec_eqI)
-      show "dim\<^sub>v (g c \<odot>\<^sub>v Matrix.vec n f) = dim\<^sub>v v" using \<open>v = col A c\<close> assms(1) by auto
-      fix r assume "r < dim\<^sub>v v"
-      then have "r < dim\<^sub>v (Matrix.vec n f)" using \<open>dim\<^sub>v (g c \<odot>\<^sub>v Matrix.vec n f) = dim\<^sub>v v\<close> by auto
-      then have "r < n" "r < dim\<^sub>r A"using vec_index_scalar_mult(2) `A \<in> carrier\<^sub>m n nc` by auto
-      show "(g c \<odot>\<^sub>v Matrix.vec n f) $ r = v $ r"
-        unfolding \<open>v = col A c\<close> col_def vec_index_scalar_mult(1)[OF `r < dim\<^sub>v (Matrix.vec n f)`]
-        vec_index_vec[OF `r < n`] vec_index_vec[OF `r < dim\<^sub>r A`] by (simp add: \<open>c < dim\<^sub>c A\<close> \<open>r < dim\<^sub>r A\<close> assms(2))
+    then obtain c where "c < dim_col A" "v = col A c" by (metis cols_length cols_nth in_set_conv_nth)
+    have "g c \<cdot>\<^sub>v vec n f = v"
+    proof (rule eq_vecI)
+      show "dim_vec (g c \<cdot>\<^sub>v Matrix.vec n f) = dim_vec v" using \<open>v = col A c\<close> assms(1) by auto
+      fix r assume "r < dim_vec v"
+      then have "r < dim_vec (Matrix.vec n f)" using \<open>dim_vec (g c \<cdot>\<^sub>v Matrix.vec n f) = dim_vec v\<close> by auto
+      then have "r < n" "r < dim_row A"using index_smult_vec(2) `A \<in> carrier_mat n nc` by auto
+      show "(g c \<cdot>\<^sub>v Matrix.vec n f) $ r = v $ r"
+        unfolding \<open>v = col A c\<close> col_def index_smult_vec(1)[OF `r < dim_vec (Matrix.vec n f)`]
+        index_vec[OF `r < n`] index_vec[OF `r < dim_row A`] by (simp add: \<open>c < dim_col A\<close> \<open>r < dim_row A\<close> assms(2))
     qed
     then show "v \<in> span {vec n f}" using submodule.smult_closed[OF span_is_submodule]
-      using UNIV_I empty_subsetI insert_subset span_self vec_dim vec_module_simps(4) by auto
+      using UNIV_I empty_subsetI insert_subset span_self dim_vec module_vec_simps(4) by auto
   qed
   have "vectorspace class_ring (vs (span {Matrix.vec n f}))" using span_is_subspace[THEN subspace_is_vs, of "{vec n f}"] by auto
   have "submodule class_ring (span {Matrix.vec n f}) V" by (simp add: span_is_submodule)
@@ -605,7 +605,7 @@ proof -
     `set (cols A) \<subseteq> span {vec n f}` by auto
   have fin_dim:"vectorspace.fin_dim class_ring (vs (span {Matrix.vec n f}))"
        "vectorspace.fin_dim class_ring (vs (span {Matrix.vec n f})\<lparr>carrier := span (set (cols A))\<rparr>)"
-    using fin_dim_span fin_dim_span_cols `A \<in> carrier\<^sub>m n nc` by auto
+    using fin_dim_span fin_dim_span_cols `A \<in> carrier_mat n nc` by auto
   have "vectorspace.dim class_ring (vs (span {Matrix.vec n f})) \<le> 1"
     using vectorspace.dim_le1I[OF `vectorspace class_ring (vs (span {Matrix.vec n f}))`]
     span_mem span_li_not_depend(1)[OF _ `submodule class_ring (span {Matrix.vec n f}) V`] by simp

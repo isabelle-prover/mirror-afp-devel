@@ -26,7 +26,7 @@ section \<open>Infinite Sequences\<close>
 theory Seq
 imports
   Main
-  "~~/src/HOL/Library/Infinite_Set"
+  "HOL-Library.Infinite_Set"
 begin
 
 text \<open>Infinite sequences are represented by functions of type @{typ "nat \<Rightarrow> 'a"}.\<close>

@@ -10,7 +10,7 @@ text \<open>We proved the soundness of the Newton interpolation, i.e., a method 
   much faster than the Lagrange interpolation.\<close>
 theory Newton_Interpolation
 imports 
-  "~~/src/HOL/Library/Monad_Syntax"
+  "HOL-Library.Monad_Syntax"
   Ring_Hom_Poly
   Divmod_Int
   Is_Rat_To_Rat

@@ -8,7 +8,7 @@
 section \<open>Syntactic Ordinals in Cantor Normal Form\<close>
 
 theory Syntactic_Ordinal
-imports Hereditary_Multiset "~~/src/HOL/Library/Product_Order" "~~/src/HOL/Library/Extended_Nat"
+imports Hereditary_Multiset "HOL-Library.Product_Order" "HOL-Library.Extended_Nat"
 begin
 
 
@@ -407,7 +407,7 @@ lemma head_\<omega>_plus[simp]: "head_\<omega> (m + n) = sup (head_\<omega> m) (
 proof (cases m n rule: hmultiset.exhaust[case_product hmultiset.exhaust])
   case m_n: (HMSet_HMSet M N)
   show ?thesis
-  proof (cases "Max (set_mset M) < Max (set_mset N)")
+  proof (cases "Max_mset M < Max_mset N")
     case True
     thus ?thesis
       unfolding m_n head_\<omega>_def sup_hmultiset_def zero_hmultiset_def plus_hmultiset_def

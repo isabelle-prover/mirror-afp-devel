@@ -3,14 +3,14 @@
 section \<open>Matrix to Vector Conversion\<close>
 
 theory DL_Flatten_Matrix
-imports Real "../Jordan_Normal_Form/Matrix"
+imports HOL.Real Jordan_Normal_Form.Matrix
 begin
 
 definition extract_matrix :: "(nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a mat" where
 "extract_matrix a m n = mat m n (\<lambda>(i,j). a (i*n + j))"
 
 definition flatten_matrix :: "'a mat \<Rightarrow> (nat \<Rightarrow> 'a)" where
-"flatten_matrix A k = A $$ (k div dim\<^sub>c A, k mod dim\<^sub>c A)"
+"flatten_matrix A k = A $$ (k div dim_col A, k mod dim_col A)"
 
 lemma two_digit_le:
 fixes i j :: nat
@@ -33,14 +33,14 @@ proof -
 qed
 
 lemma extract_matrix_flatten_matrix:
-"extract_matrix (flatten_matrix A) (dim\<^sub>r A) (dim\<^sub>c A) = A"
+"extract_matrix (flatten_matrix A) (dim_row A) (dim_col A) = A"
 unfolding extract_matrix_def flatten_matrix_def by auto
 
 lemma flatten_matrix_extract_matrix:
 shows "\<And>k. k<m*n \<Longrightarrow> flatten_matrix (extract_matrix a m n) k = a k"
   unfolding extract_matrix_def flatten_matrix_def
-  by (metis (no_types, lifting) Divides.div_mult2_eq case_prod_conv div_eq_0_iff mat_dim_col_mat(1)
-  mat_index_mat(1) div_mult_mod_eq mod_less_divisor mult.commute mult_zero_right not_gr0 not_less0)
+  by (metis (no_types, lifting) Divides.div_mult2_eq case_prod_conv div_eq_0_iff dim_col_mat(1)
+  index_mat(1) div_mult_mod_eq mod_less_divisor mult.commute mult_zero_right not_gr0 not_less0)
 
 lemma index_extract_matrix:
 assumes "i<m" "j<n"
@@ -48,8 +48,8 @@ shows "extract_matrix a m n $$ (i,j) = a (i*n + j)"
   unfolding extract_matrix_def using assms by simp
 
 lemma dim_extract_matrix:
-shows "dim\<^sub>r (extract_matrix as m n) = m"
-and "dim\<^sub>c (extract_matrix as m n) = n"
+shows "dim_row (extract_matrix as m n) = m"
+and "dim_col (extract_matrix as m n) = n"
   unfolding extract_matrix_def by simp_all
 
 end

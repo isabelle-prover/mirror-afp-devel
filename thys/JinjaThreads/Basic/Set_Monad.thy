@@ -1,7 +1,7 @@
 theory Set_Monad
 imports 
   Main
-  "~~/src/HOL/Library/Monad_Syntax"
+  "HOL-Library.Monad_Syntax"
 begin
 
 lemma member_SUP: (* FIXME delete candidate: should be subsumed by default simpset as soon as SUP_apply is included *)

@@ -3,7 +3,7 @@
 section \<open>Fundamental Theorem of Network Capacity\<close>
 
 theory DL_Fundamental_Theorem_Network_Capacity
-imports DL_Rank_CP_Rank DL_Deep_Model_Poly Lebesgue_Zero_Set DL_Rank_Submatrix "~~/src/HOL/Analysis/Complete_Measure" DL_Shallow_Model
+imports DL_Rank_CP_Rank DL_Deep_Model_Poly Lebesgue_Zero_Set DL_Rank_Submatrix "HOL-Analysis.Complete_Measure" DL_Shallow_Model
 begin
 
 context deep_model_correct_params_y
@@ -33,10 +33,10 @@ lemma  if_polynomial_0_rank:
 assumes "polynomial_f w \<noteq> 0"
 shows "r ^ N_half \<le> cprank (A w)"
 proof -
-  have "r ^ N_half = dim\<^sub>r (submatrix (matricize {n. even n} (A w)) rows_with_1 rows_with_1)"
+  have "r ^ N_half = dim_row (submatrix (matricize {n. even n} (A w)) rows_with_1 rows_with_1)"
       by (metis (full_types) Aw'_def card_rows_with_1 dim_submatrix(1) dims_A dims_Aw dims_matricize(1) set_le_in)
   also have "... \<le> mrank (matricize {n. even n} (A w))"
-    using assms vec_space.rank_gt_minor[OF mat_carrierI[OF dims_A'_pow, unfolded weight_space_dim_def]]
+    using assms vec_space.rank_gt_minor[OF carrier_matI[OF dims_A'_pow, unfolded weight_space_dim_def]]
       by (metis (full_types) A'_def dim_submatrix(1) dims_A'_pow(1) polynomial_f_def)
   also have "... \<le> cprank (A w)" using matrix_rank_le_cp_rank by blast
   finally show ?thesis .
@@ -44,7 +44,7 @@ qed
 
 lemma  if_polynomial_0_evaluate:
 assumes "polynomial_f wd \<noteq> 0"
-assumes "\<forall>inputs. input_sizes (deep_model_l rs) = map dim\<^sub>v inputs \<longrightarrow> evaluate_net (insert_weights (deep_model_l rs) wd) inputs
+assumes "\<forall>inputs. input_sizes (deep_model_l rs) = map dim_vec inputs \<longrightarrow> evaluate_net (insert_weights (deep_model_l rs) wd) inputs
  = evaluate_net (insert_weights (shallow_model (rs ! 0) Z (last rs) (2*N_half-1)) ws) inputs"
 shows "Z \<ge> r ^ N_half"
 proof -
@@ -66,7 +66,7 @@ qed
 
 lemma  if_polynomial_0_evaluate_notex:
 assumes "polynomial_f wd \<noteq> 0"
-shows "\<not>(\<exists>weights_shallow Z. Z < r ^ N_half \<and> (\<forall>inputs. input_sizes (deep_model_l rs) = map dim\<^sub>v inputs \<longrightarrow>
+shows "\<not>(\<exists>weights_shallow Z. Z < r ^ N_half \<and> (\<forall>inputs. input_sizes (deep_model_l rs) = map dim_vec inputs \<longrightarrow>
 evaluate_net (insert_weights (deep_model_l rs) wd) inputs
  = evaluate_net (insert_weights (shallow_model (rs ! 0) Z (last rs) (2*N_half-1)) ws) inputs))"
   using assms if_polynomial_0_evaluate not_le by blast
@@ -78,7 +78,7 @@ using AE_I'[OF lebesgue_mpoly_zero_set[OF polynomial_p_not_0 vars_polynomial_p]]
 
 theorem fundamental_theorem_network_capacity_v2:
 shows "AE wd in lborel_f weight_space_dim.
-   \<not>(\<exists>ws Z. Z < r ^ N_half \<and>  (\<forall>inputs. input_sizes (deep_model_l rs) = map dim\<^sub>v inputs \<longrightarrow>
+   \<not>(\<exists>ws Z. Z < r ^ N_half \<and>  (\<forall>inputs. input_sizes (deep_model_l rs) = map dim_vec inputs \<longrightarrow>
 evaluate_net (insert_weights (deep_model_l rs) wd) inputs
  = evaluate_net (insert_weights (shallow_model (rs ! 0) Z (last rs) (2*N_half-1)) ws) inputs))"
   apply (rule AE_I'[OF lebesgue_mpoly_zero_set[OF polynomial_p_not_0 vars_polynomial_p], unfolded polynomial_pf])

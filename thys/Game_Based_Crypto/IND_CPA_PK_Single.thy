@@ -2,7 +2,7 @@
   Author: Andreas Lochbihler, ETH Zurich *)
 
 theory IND_CPA_PK_Single imports
-  "../CryptHOL/Computational_Model"
+  CryptHOL.Computational_Model
 begin
 
 subsection {* The IND-CPA game (public key, single instance) *}

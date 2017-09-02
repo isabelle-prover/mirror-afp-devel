@@ -3,7 +3,7 @@ section \<open>Examples for Presburger Arithmetics\<close>
 
 (*<*)
 theory Presburger_Examples
-imports Presburger_Formula
+imports Formula_Derivatives.Presburger_Formula
 begin
 (*>*)
 

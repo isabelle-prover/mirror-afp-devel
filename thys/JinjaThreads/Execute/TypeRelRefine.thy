@@ -9,7 +9,7 @@ section {* Tabulation for lookup functions *}
 theory TypeRelRefine
 imports
   "../Common/TypeRel"
-  "~~/src/HOL/Library/AList_Mapping"
+  "HOL-Library.AList_Mapping"
 begin
 
 subsection {* Auxiliary lemmata *}

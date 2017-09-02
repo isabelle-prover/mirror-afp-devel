@@ -1,5 +1,5 @@
 theory Vars
-imports "../Nominal2/Nominal2"
+imports Nominal2.Nominal2
 begin
 
 text {*

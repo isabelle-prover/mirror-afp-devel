@@ -1,7 +1,7 @@
 theory Semantics_OpenFlow
 imports List_Group Sort_Descending
-  "../IP_Addresses/IPv4"
-  "OpenFlow_Helpers"
+  IP_Addresses.IPv4
+  OpenFlow_Helpers
 begin
 
 datatype 'a flowtable_behavior = Action 'a | NoAction | Undefined

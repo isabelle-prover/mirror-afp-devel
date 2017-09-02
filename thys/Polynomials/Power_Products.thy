@@ -693,10 +693,10 @@ subsection \<open>Dickson's lemma for power-products in finitely many indetermin
 (*The following lemma was provided by Manuel Eberl*)
 lemma nat_incr_subsequence:
   fixes f :: "nat \<Rightarrow> nat"
-  obtains g where "subseq g" "incseq (f \<circ> g)"
+  obtains g where "strict_mono g" "incseq (f \<circ> g)"
 proof -
   from seq_monosub[of f] obtain g
-    where subseq: "subseq g" and mono: "monoseq (f \<circ> g)" by (auto simp: o_def)
+    where subseq: "strict_mono g" and mono: "monoseq (f \<circ> g)" by (auto simp: o_def)
   from mono show ?thesis unfolding monoseq_iff
   proof
     assume decseq: "decseq (f \<circ> g)"
@@ -704,7 +704,8 @@ proof -
     have "M \<in> range (f \<circ> g)" unfolding M_def by (rule LeastI_ex) blast
     then obtain n where n: "f (g n) = M" unfolding o_def by blast
 
-    have "subseq (g \<circ> (\<lambda>x. x + n))" by (intro subseq_o subseq) (auto simp: subseq_def)
+    have "strict_mono (g \<circ> (\<lambda>x. x + n))" 
+      by (intro strict_mono_o subseq) (auto simp: strict_mono_def)
     moreover {
       fix m assume "m \<ge> n"
       from \<open>m \<ge> n\<close> and decseq
@@ -721,27 +722,27 @@ qed
 lemma pp_incr_subsequence:
   fixes V::"'a set" and f::"nat \<Rightarrow> 'a pp"
   assumes fin: "finite V" and "\<forall>k. in_indets V (f k)"
-  shows "\<exists>m::nat \<Rightarrow> nat. (subseq m) \<and> (\<forall>i j. i < j \<longrightarrow> (f o m) i dvd (f o m) j)"
+  shows "\<exists>m::nat \<Rightarrow> nat. (strict_mono m) \<and> (\<forall>i j. i < j \<longrightarrow> (f o m) i dvd (f o m) j)"
   using assms
 proof (induct V arbitrary: f)
   fix f::"nat \<Rightarrow> 'a pp"
   assume "\<forall>k. in_indets {} (f k)"
   hence "\<forall>k. f k = 1" by (intro allI, simp_all only: empty_indets)
-  thus "\<exists>m. subseq m \<and> (\<forall>i j. i < j \<longrightarrow> (f o m) i dvd (f o m) j)" unfolding dvd_pp
+  thus "\<exists>m. strict_mono (m::nat\<Rightarrow>nat) \<and> (\<forall>i j. i < j \<longrightarrow> (f o m) i dvd (f o m) j)" unfolding dvd_pp
   proof transfer
     fix f::"nat \<Rightarrow> 'a \<Rightarrow> nat"
     assume all_one: "\<forall>k. f k = (\<lambda>_. 0)"
-    show "\<exists>m. subseq m \<and> (\<forall>i j. i < j \<longrightarrow> (\<forall>x. (f o m) i x \<le> (f o m) j x))"
+    show "\<exists>m. strict_mono (m::nat\<Rightarrow>nat) \<and> (\<forall>i j. i < j \<longrightarrow> (\<forall>x. (f o m) i x \<le> (f o m) j x))"
     proof
-      from all_one show "subseq id \<and> (\<forall>i j. i < j \<longrightarrow> (\<forall>x. (f o id) i x \<le> (f o id) j x))"
-        by (simp add: subseq_def)
+      from all_one show "strict_mono id \<and> (\<forall>i j. i < j \<longrightarrow> (\<forall>x. (f o id) i x \<le> (f o id) j x))"
+        by (simp add: strict_mono_def)
     qed
   qed
 next
   fix v::'a and F::"'a set" and f::"nat \<Rightarrow> 'a pp"
   assume "finite F" and "v \<notin> F"
     and IH: "(\<And>f. (\<forall>k. in_indets F (f k)) \<Longrightarrow>
-                (\<exists>m. subseq m \<and> ( \<forall>i j. i < j \<longrightarrow> (f o m) i dvd (f o m) j)))"
+                (\<exists>m. strict_mono (m::nat\<Rightarrow>nat) \<and> ( \<forall>i j. i < j \<longrightarrow> (f o m) i dvd (f o m) j)))"
     and seq_in_insert: "\<forall>k. in_indets (insert v F) (f k)"
 
   (*Construction of first mapping*)
@@ -751,23 +752,23 @@ next
     show "in_indets F ((truncate F o f) k)" by (simp add: truncate_in)
   qed
   from IH[OF IH_prem] obtain m1::"nat \<Rightarrow> nat" where
-    "subseq m1 \<and> (\<forall>i j. i < j \<longrightarrow> ((truncate F) o f o m1) i dvd ((truncate F) o f o m1) j)" ..
-  hence m1_subseq: "subseq m1"
+    "strict_mono m1 \<and> (\<forall>i j. i < j \<longrightarrow> ((truncate F) o f o m1) i dvd ((truncate F) o f o m1) j)" ..
+  hence m1_subseq: "strict_mono m1"
     and m1_div: "\<forall>i j. i < j \<longrightarrow> ((truncate F) o f o m1) i dvd ((truncate F) o f o m1) j"
     by simp_all
 
   (*Construction of second mapping (using lemma nat_incr_subsequence for backward reasoning)*)
-  show "\<exists>m. subseq m \<and> (\<forall>i j. i < j \<longrightarrow> ((f o m) i) dvd ((f o m) j))"
+  show "\<exists>m. strict_mono (m::nat\<Rightarrow>nat) \<and> (\<forall>i j. i < j \<longrightarrow> ((f o m) i) dvd ((f o m) j))"
   proof (rule nat_incr_subsequence[of "(\<lambda>x. exp x v) o f o m1"])
     fix m2::"nat \<Rightarrow> nat"
-    assume m2_subseq: "subseq m2" and "incseq ((\<lambda>x. exp x v) \<circ> f \<circ> m1 \<circ> m2)"
+    assume m2_subseq: "strict_mono m2" and "incseq ((\<lambda>x. exp x v) \<circ> f \<circ> m1 \<circ> m2)"
     hence m2_div: "\<forall>i j. i < j \<longrightarrow> ((\<lambda>x. exp x v) \<circ> f \<circ> (m1 o m2)) i \<le> ((\<lambda>x. exp x v) \<circ> f \<circ> (m1 o m2)) j"
       by (simp add: incseq_def)
     
     let ?m = "(m1 o m2)"
-    show "\<exists>m. subseq m \<and> (\<forall>i j. i < j \<longrightarrow> (f o m) i dvd (f o m) j)"
+    show "\<exists>m. strict_mono (m::nat\<Rightarrow>nat) \<and> (\<forall>i j. i < j \<longrightarrow> (f o m) i dvd (f o m) j)"
     proof (rule, rule)
-      show "subseq ?m" using m1_subseq m2_subseq by (intro subseq_o)
+      show "strict_mono ?m" using m1_subseq m2_subseq by (intro strict_mono_o)
     next
       show "\<forall>i j. i < j \<longrightarrow> (f o ?m) i dvd (f o ?m) j"
       proof (rule, rule, rule)
@@ -787,7 +788,7 @@ next
         from m1_div have m1_div_i_j: "m2 i < m2 j \<longrightarrow> ((truncate F) o f o ?m) i dvd ((truncate F) o f o ?m) j"
           by simp
         hence F_div: "truncate F ((f o ?m) i) dvd truncate F ((f o ?m) j)"
-          using i_less_j m2_subseq by (simp add: subseq_def)
+          using i_less_j m2_subseq by (simp add: strict_mono_def)
 
         show "(f o ?m) i dvd (f o ?m) j" using in_indets_i in_indets_j v_div F_div
           by (simp add: dvd_insert_indets)
@@ -804,12 +805,12 @@ lemma Dickson_pp:
   shows "\<exists>i j::nat. i < j \<and> seq i dvd seq j"
 proof -
   from pp_incr_subsequence[OF assms] obtain m::"nat \<Rightarrow> nat" where
-    "subseq m \<and> (\<forall>i j. i < j \<longrightarrow> (seq o m) i dvd (seq o m) j)" ..
-  hence m_subseq: "subseq m" and m_div: "\<forall>i j. i < j \<longrightarrow> (seq o m) i dvd (seq o m) j" by simp_all
+    "strict_mono m \<and> (\<forall>i j. i < j \<longrightarrow> (seq o m) i dvd (seq o m) j)" ..
+  hence m_subseq: "strict_mono m" and m_div: "\<forall>i j. i < j \<longrightarrow> (seq o m) i dvd (seq o m) j" by simp_all
   let ?i = "m 0" and ?j = "m 1"
   show "\<exists>i j::nat. i < j \<and> seq i dvd seq j"
   proof (rule, rule)
-    show "?i < ?j \<and> seq ?i dvd seq ?j" using m_subseq m_div by (simp add: subseq_def)
+    show "?i < ?j \<and> seq ?i dvd seq ?j" using m_subseq m_div by (simp add: strict_mono_def)
   qed
 qed
 

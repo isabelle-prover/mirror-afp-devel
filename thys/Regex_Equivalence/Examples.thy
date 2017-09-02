@@ -4,7 +4,7 @@ section {* Some Tests *}
 
 (*<*)
 theory Examples
-imports Regex_Equivalence
+imports Regex_Equivalence.Regex_Equivalence
 begin
 (*>*)
 

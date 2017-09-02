@@ -14,8 +14,8 @@ text \<open>This theory contains
 
 theory Resultant
 imports
-  "../Polynomial_Factorization/Rational_Factorization"
-  "../Subresultants/Subresultant_Gcd" 
+  Polynomial_Factorization.Rational_Factorization
+  Subresultants.Subresultant_Gcd 
   Unique_Factorization_Poly
   Bivariate_Polynomials
 begin
@@ -26,7 +26,7 @@ definition vec_of_poly_rev_shifted where
   "vec_of_poly_rev_shifted p n j \<equiv>
    vec n (\<lambda>i. if i \<le> j \<and> j \<le> degree p + i then coeff p (degree p + i - j) else 0)"
 
-lemma vec_of_poly_rev_shifted_dim[simp]: "dim\<^sub>v (vec_of_poly_rev_shifted p n j) = n"
+lemma vec_of_poly_rev_shifted_dim[simp]: "dim_vec (vec_of_poly_rev_shifted p n j) = n"
   unfolding vec_of_poly_rev_shifted_def by auto
 
 lemma col_sylvester:
@@ -37,12 +37,12 @@ lemma col_sylvester:
     vec_of_poly_rev_shifted p n j @\<^sub>v vec_of_poly_rev_shifted q m j" (is "?l = ?r")
 proof
   note [simp] = m_def[symmetric] n_def[symmetric]
-  show "dim\<^sub>v ?l = dim\<^sub>v ?r" by simp
-  fix i assume "i < dim\<^sub>v ?r" hence i: "i < m+n" by auto
+  show "dim_vec ?l = dim_vec ?r" by simp
+  fix i assume "i < dim_vec ?r" hence i: "i < m+n" by auto
   show "?l $ i = ?r $ i"
     unfolding vec_of_poly_rev_shifted_def
-    apply (subst col_index) using i apply simp using j apply simp
-    apply (subst sylvester_mat_index) using i apply simp using j apply simp
+    apply (subst index_col) using i apply simp using j apply simp
+    apply (subst sylvester_index_mat) using i apply simp using j apply simp
     apply (cases "i < n") apply force using i by simp
 qed
 
@@ -56,7 +56,7 @@ proof (intro allI iffI)
     by(intro bexI[of _ "n-x"],auto)
 qed auto
 
-lemma sylvester_mat_sum_upper:
+lemma sylvester_sum_mat_upper:
   fixes p q :: "'a :: comm_semiring_1 poly"
   defines "m \<equiv> degree p" and "n \<equiv> degree q"
   assumes i: "i < n"
@@ -75,7 +75,7 @@ proof -
   also {
     fix j assume j: "j\<le>l"
     have "?f j = ((\<lambda>j. monom (coeff (monom 1 (n-i) * p) (Suc j)) j) \<circ> ?p) j"
-      apply(subst sylvester_mat_index2)
+      apply(subst sylvester_index_mat2)
       using i j unfolding l_def m_def[symmetric] n_def[symmetric]
       by (auto simp add: Suc_diff_Suc)
     also have "... = (?g \<circ> ?p) j"
@@ -98,7 +98,7 @@ proof -
   finally show ?thesis.
 qed
 
-lemma sylvester_mat_sum_lower:
+lemma sylvester_sum_mat_lower:
   fixes p q :: "'a :: comm_semiring_1 poly"
   defines "m \<equiv> degree p" and "n \<equiv> degree q"
   assumes ni: "n \<le> i" and imn: "i < m+n"
@@ -116,7 +116,7 @@ proof -
   also {
     fix j assume j: "j\<le>l"
     have "?f j = ((\<lambda>j. monom (coeff (monom 1 (m+n-i) * q) (Suc j)) j) \<circ> ?p) j"
-      apply(subst sylvester_mat_index2)
+      apply(subst sylvester_index_mat2)
       using ni imn j unfolding l_def m_def[symmetric] n_def[symmetric]
       by (auto simp add: Suc_diff_Suc)
     also have "... = (?g \<circ> ?p) j"
@@ -139,29 +139,29 @@ qed
 
 definition "vec_of_poly p \<equiv> let m = degree p in vec (Suc m) (\<lambda>i. coeff p (m-i))"
 
-definition "poly_of_vec v \<equiv> let d = dim\<^sub>v v in \<Sum>i<d. monom (v $ (d - Suc i)) i"
+definition "poly_of_vec v \<equiv> let d = dim_vec v in \<Sum>i<d. monom (v $ (d - Suc i)) i"
 
 lemma poly_of_vec_of_poly[simp]:
   fixes p :: "'a :: comm_monoid_add poly"
   shows "poly_of_vec (vec_of_poly p) = p"
   unfolding poly_of_vec_def vec_of_poly_def Let_def
-  unfolding vec_dim_vec
+  unfolding dim_vec
   unfolding lessThan_Suc_atMost
   using poly_as_sum_of_monoms[of p] by auto
 
-lemma poly_of_vec_0[simp]: "poly_of_vec (\<zero>\<^sub>v n) = 0" unfolding poly_of_vec_def Let_def by auto
+lemma poly_of_vec_0[simp]: "poly_of_vec (0\<^sub>v n) = 0" unfolding poly_of_vec_def Let_def by auto
 
 lemma poly_of_vec_0_iff[simp]:
   fixes v  :: "'a :: comm_monoid_add vec"
-  shows "poly_of_vec v = 0 \<longleftrightarrow> v = \<zero>\<^sub>v (dim\<^sub>v v)" (is "?v = _ \<longleftrightarrow> _ = ?z")
+  shows "poly_of_vec v = 0 \<longleftrightarrow> v = 0\<^sub>v (dim_vec v)" (is "?v = _ \<longleftrightarrow> _ = ?z")
 proof
   assume "?v = 0"
-  hence "\<forall>i\<in>{..<dim\<^sub>v v}. v $ (dim\<^sub>v v - Suc i) = 0"
+  hence "\<forall>i\<in>{..<dim_vec v}. v $ (dim_vec v - Suc i) = 0"
     unfolding poly_of_vec_def Let_def
     by (subst sum_monom_0_iff[symmetric],auto)
-  hence a: "\<And>i. i < dim\<^sub>v v \<Longrightarrow> v $ (dim\<^sub>v v - Suc i) = 0" by auto
-  { fix i assume "i < dim\<^sub>v v"
-    hence "v $ i = 0" using a[of "dim\<^sub>v v - Suc i"] by auto
+  hence a: "\<And>i. i < dim_vec v \<Longrightarrow> v $ (dim_vec v - Suc i) = 0" by auto
+  { fix i assume "i < dim_vec v"
+    hence "v $ i = 0" using a[of "dim_vec v - Suc i"] by auto
   }
   thus "v = ?z" by auto
   next assume r: "v = ?z"
@@ -178,8 +178,8 @@ lemma degree_sum_smaller:
 
 lemma degree_poly_of_vec_less:
   fixes v :: "'a :: comm_monoid_add vec"
-  assumes dim: "dim\<^sub>v v > 0"
-  shows "degree (poly_of_vec v) < dim\<^sub>v v"
+  assumes dim: "dim_vec v > 0"
+  shows "degree (poly_of_vec v) < dim_vec v"
   unfolding poly_of_vec_def Let_def
   apply(rule degree_sum_smaller)
     using dim apply force
@@ -188,13 +188,13 @@ lemma degree_poly_of_vec_less:
   by (metis degree_0 degree_monom_eq dim monom_eq_0_iff)
 
 lemma coeff_poly_of_vec:
-  "coeff (poly_of_vec v) i = (if i < dim\<^sub>v v then v $ (dim\<^sub>v v - Suc i) else 0)"
+  "coeff (poly_of_vec v) i = (if i < dim_vec v then v $ (dim_vec v - Suc i) else 0)"
   (is "?l = ?r")
 proof -
-  have "?l = (\<Sum>x<dim\<^sub>v v. if x = i then v $ (dim\<^sub>v v - Suc x) else 0)" (is "_ = ?m")
+  have "?l = (\<Sum>x<dim_vec v. if x = i then v $ (dim_vec v - Suc x) else 0)" (is "_ = ?m")
     unfolding poly_of_vec_def Let_def coeff_sum coeff_monom ..
   also have "\<dots> = ?r"
-  proof (cases "i < dim\<^sub>v v")
+  proof (cases "i < dim_vec v")
     case False
     show ?thesis
       by (subst sum.neutral, insert False, auto)
@@ -209,7 +209,7 @@ qed
 lemma vec_of_poly_rev_shifted_scalar_prod:
   fixes p v
   defines "q \<equiv> poly_of_vec v"
-  assumes m[simp]: "degree p = m" and n: "dim\<^sub>v v = n"
+  assumes m[simp]: "degree p = m" and n: "dim_vec v = n"
   assumes j: "j < m+n"
   shows "vec_of_poly_rev_shifted p n (n+m-Suc j) \<bullet> v = coeff (p * q) j" (is "?l = ?r")
 proof -
@@ -302,14 +302,14 @@ lemma sylvester_vec_poly:
   fixes p q :: "'a :: comm_semiring_0 poly"
   defines "m \<equiv> degree p"
       and "n \<equiv> degree q"
-  assumes v: "v \<in> carrier\<^sub>v (m+n)"
-  shows "poly_of_vec (transpose\<^sub>m (sylvester_mat p q) \<otimes>\<^sub>m\<^sub>v v) =
+  assumes v: "v \<in> carrier_vec (m+n)"
+  shows "poly_of_vec (transpose_mat (sylvester_mat p q) *\<^sub>v v) =
     poly_of_vec (vec_first v n) * p + poly_of_vec (vec_last v m) * q" (is "?l = ?r")
 proof (rule poly_eqI)
   fix i
   note mn[simp] = m_def[symmetric] n_def[symmetric]
-  let ?Tv = "transpose\<^sub>m (sylvester_mat p q) \<otimes>\<^sub>m\<^sub>v v"
-  have dim: "dim\<^sub>v (vec_first v n) = n" "dim\<^sub>v (vec_last v m) = m" "dim\<^sub>v ?Tv = n + m" 
+  let ?Tv = "transpose_mat (sylvester_mat p q) *\<^sub>v v"
+  have dim: "dim_vec (vec_first v n) = n" "dim_vec (vec_last v m) = m" "dim_vec ?Tv = n + m" 
     using v by auto
   have if_distrib: "\<And> x y z. (if x then y else (0 :: 'a)) * z = (if x then y * z else 0)" 
     by auto
@@ -346,16 +346,16 @@ proof (rule poly_eqI)
         unfolding coeff_poly_of_vec dim sum.distrib[symmetric] by auto
       finally show ?thesis by auto
     next case True
-      hence "coeff ?l i = (transpose\<^sub>m (sylvester_mat p q) \<otimes>\<^sub>m\<^sub>v v) $ (n + m - Suc i)"
+      hence "coeff ?l i = (transpose_mat (sylvester_mat p q) *\<^sub>v v) $ (n + m - Suc i)"
         unfolding coeff_poly_of_vec dim sum.distrib[symmetric] by auto
       also have "... = coeff (p * poly_of_vec (vec_first v n) + q * poly_of_vec (vec_last v m)) i"
-        apply(subst index_mat_mult_vec) using True apply simp
+        apply(subst index_mult_mat_vec) using True apply simp
         apply(subst row_transpose) using True apply simp
         apply(subst col_sylvester)
         unfolding mn using True apply simp
         apply(subst vec_first_last_append[of v n m,symmetric]) using v apply(simp add: add.commute)
         apply(subst scalar_prod_append)
-        apply (rule vec_elemsI,simp)+
+        apply (rule carrier_vecI,simp)+
         apply (subst vec_of_poly_rev_shifted_scalar_prod,simp,simp) using True apply simp
         apply (subst add.commute[of n m])
         apply (subst vec_of_poly_rev_shifted_scalar_prod,simp,simp) using True apply simp
@@ -452,46 +452,46 @@ private fun mk_poly_sub where
   "mk_poly_sub A l 0 = A"
 | "mk_poly_sub A l (Suc j) = mat_addcol (monom 1 (Suc j)) l (l-Suc j) (mk_poly_sub A l j)"
 
-definition  "mk_poly A = mk_poly_sub (mat_map coeff_lift A) (dim\<^sub>c A - 1) (dim\<^sub>c A - 1)"
+definition  "mk_poly A = mk_poly_sub (map_mat coeff_lift A) (dim_col A - 1) (dim_col A - 1)"
 
 private lemma mk_poly_sub_dim[simp]:
-  "dim\<^sub>r (mk_poly_sub A l j) = dim\<^sub>r A"
-  "dim\<^sub>c (mk_poly_sub A l j) = dim\<^sub>c A"
+  "dim_row (mk_poly_sub A l j) = dim_row A"
+  "dim_col (mk_poly_sub A l j) = dim_col A"
   by (induct j,auto)
 
 private lemma mk_poly_sub_carrier:
-  assumes "A \<in> carrier\<^sub>m nr nc" shows "mk_poly_sub A l j \<in> carrier\<^sub>m nr nc"
-  apply (rule mat_carrierI) using assms by auto
+  assumes "A \<in> carrier_mat nr nc" shows "mk_poly_sub A l j \<in> carrier_mat nr nc"
+  apply (rule carrier_matI) using assms by auto
 
 private lemma mk_poly_dim[simp]:
-  "dim\<^sub>c (mk_poly A) = dim\<^sub>c A"
-  "dim\<^sub>r (mk_poly A) = dim\<^sub>r A"
+  "dim_col (mk_poly A) = dim_col A"
+  "dim_row (mk_poly A) = dim_row A"
   unfolding mk_poly_def by auto
 
 private lemma mk_poly_sub_others[simp]:
-  assumes "l \<noteq> j'" and "i < dim\<^sub>r A" and "j' < dim\<^sub>c A"
+  assumes "l \<noteq> j'" and "i < dim_row A" and "j' < dim_col A"
   shows "mk_poly_sub A l j $$ (i,j') = A $$ (i,j')"
   using assms by (induct j; simp)
 
 private lemma mk_poly_others[simp]:
-  assumes i: "i < dim\<^sub>r A" and j: "j < dim\<^sub>c A - 1"
+  assumes i: "i < dim_row A" and j: "j < dim_col A - 1"
   shows "mk_poly A $$ (i,j) = [: A $$ (i,j) :]"
   unfolding mk_poly_def
   apply(subst mk_poly_sub_others)
   using i j by auto
 
 private lemma mk_poly_delete[simp]:
-  assumes i: "i < dim\<^sub>r A"
-  shows "mat_delete (mk_poly A) i (dim\<^sub>c A - 1) = map\<^sub>m coeff_lift (mat_delete A i (dim\<^sub>c A - 1))"
-  apply(rule mat_eqI) unfolding mat_delete_def by auto
+  assumes i: "i < dim_row A"
+  shows "mat_delete (mk_poly A) i (dim_col A - 1) = map_mat coeff_lift (mat_delete A i (dim_col A - 1))"
+  apply(rule eq_matI) unfolding mat_delete_def by auto
 
 private lemma col_mk_poly_sub[simp]:
-  assumes "l \<noteq> j'" and "j' < dim\<^sub>c A"
+  assumes "l \<noteq> j'" and "j' < dim_col A"
   shows "col (mk_poly_sub A l j) j' = col A j'"
-  by(rule vec_eqI; insert assms; simp)
+  by(rule eq_vecI; insert assms; simp)
 
 private lemma det_mk_poly_sub:
-  assumes A: "(A :: 'a :: comm_ring_1 poly mat) \<in> carrier\<^sub>m n n" and i: "i < n"
+  assumes A: "(A :: 'a :: comm_ring_1 poly mat) \<in> carrier_mat n n" and i: "i < n"
   shows "det (mk_poly_sub A (n-1) i) = det A"
   using i
 proof (induct i)
@@ -507,21 +507,21 @@ qed simp
 private lemma det_mk_poly:
   fixes A :: "'a :: comm_ring_1 mat"
   shows "det (mk_poly A) = [: det A :]"
-proof (cases "dim\<^sub>r A = dim\<^sub>c A")
+proof (cases "dim_row A = dim_col A")
   case True
-    define n where "n = dim\<^sub>c A"
-    have "map\<^sub>m coeff_lift A \<in> carrier\<^sub>m (dim\<^sub>r A) (dim\<^sub>c A)" by simp
-    hence sq: "map\<^sub>m coeff_lift A \<in> carrier\<^sub>m (dim\<^sub>c A) (dim\<^sub>c A)" unfolding True.
+    define n where "n = dim_col A"
+    have "map_mat coeff_lift A \<in> carrier_mat (dim_row A) (dim_col A)" by simp
+    hence sq: "map_mat coeff_lift A \<in> carrier_mat (dim_col A) (dim_col A)" unfolding True.
     show ?thesis
-    proof(cases "dim\<^sub>c A = 0")
+    proof(cases "dim_col A = 0")
       case True thus ?thesis unfolding det_def by simp
       next case False thus ?thesis
       unfolding mk_poly_def
       by (subst det_mk_poly_sub[OF sq]; simp)
     qed
   next case False
-    hence f2: "dim\<^sub>r A = dim\<^sub>c A \<longleftrightarrow> False" by simp
-    hence f3: "dim\<^sub>r (mk_poly A) = dim\<^sub>c (mk_poly A) \<longleftrightarrow> False"
+    hence f2: "dim_row A = dim_col A \<longleftrightarrow> False" by simp
+    hence f3: "dim_row (mk_poly A) = dim_col (mk_poly A) \<longleftrightarrow> False"
       unfolding mk_poly_dim by auto
     show ?thesis unfolding det_def unfolding f2 f3 if_False by simp
 qed
@@ -534,18 +534,18 @@ private fun mk_poly2_row where
 private fun mk_poly2_col where
   "mk_poly2_col A pv 0 = pv"
 | "mk_poly2_col A pv (Suc m) =
-   mk_poly2_row A m (dim\<^sub>c A - Suc m) (mk_poly2_col A pv m) (dim\<^sub>r A)"
+   mk_poly2_row A m (dim_col A - Suc m) (mk_poly2_col A pv m) (dim_row A)"
 
-private definition "mk_poly2 A \<equiv> mk_poly2_col A (\<zero>\<^sub>v (dim\<^sub>r A)) (dim\<^sub>c A)"
+private definition "mk_poly2 A \<equiv> mk_poly2_col A (0\<^sub>v (dim_row A)) (dim_col A)"
 
-private lemma mk_poly2_row_dim[simp]: "dim\<^sub>v (mk_poly2_row A d j pv i) = dim\<^sub>v pv"
+private lemma mk_poly2_row_dim[simp]: "dim_vec (mk_poly2_row A d j pv i) = dim_vec pv"
   by(induct i arbitrary: pv, auto)
 
-private lemma mk_poly2_col_dim[simp]: "dim\<^sub>v (mk_poly2_col A pv j) = dim\<^sub>v pv"
+private lemma mk_poly2_col_dim[simp]: "dim_vec (mk_poly2_col A pv j) = dim_vec pv"
   by (induct j arbitrary: pv, auto)
 
 private lemma mk_poly2_row:
-  assumes n: "n \<le> dim\<^sub>v pv"
+  assumes n: "n \<le> dim_vec pv"
   shows "mk_poly2_row A d j pv n $ i =
     (if i < n then pv $ i + monom (A $$ (i,j)) d else pv $ i)"
   using n
@@ -555,14 +555,14 @@ proof (induct n arbitrary: pv)
 qed simp
 
 private lemma mk_poly2_row_col:
-  assumes dim[simp]: "dim\<^sub>v pv = n" "dim\<^sub>r A = n" and j: "j < dim\<^sub>c A"
-  shows "mk_poly2_row A d j pv n = pv \<oplus>\<^sub>v map\<^sub>v (\<lambda>a. monom a d) (col A j)"
+  assumes dim[simp]: "dim_vec pv = n" "dim_row A = n" and j: "j < dim_col A"
+  shows "mk_poly2_row A d j pv n = pv + map_vec (\<lambda>a. monom a d) (col A j)"
   apply rule using mk_poly2_row[of _ pv] j by auto
 
 private lemma mk_poly2_col:
   fixes pv :: "'a :: comm_semiring_1 poly vec" and A :: "'a mat"
-  assumes i: "i < dim\<^sub>r A" and dim: "dim\<^sub>r A = dim\<^sub>v pv"
-  shows "mk_poly2_col A pv j $ i = pv $ i + (\<Sum>j'<j. monom (A $$ (i, dim\<^sub>c A - Suc j')) j')"
+  assumes i: "i < dim_row A" and dim: "dim_row A = dim_vec pv"
+  shows "mk_poly2_col A pv j $ i = pv $ i + (\<Sum>j'<j. monom (A $$ (i, dim_col A - Suc j')) j')"
   using dim
 proof (induct j arbitrary: pv)
   case (Suc j) show ?case
@@ -575,20 +575,20 @@ qed simp
 
 private lemma mk_poly2_pre:
   fixes A :: "'a :: comm_semiring_1 mat"
-  assumes i: "i < dim\<^sub>r A"
-  shows "mk_poly2 A $ i = (\<Sum>j'<dim\<^sub>c A. monom (A $$ (i, dim\<^sub>c A - Suc j')) j')"
+  assumes i: "i < dim_row A"
+  shows "mk_poly2 A $ i = (\<Sum>j'<dim_col A. monom (A $$ (i, dim_col A - Suc j')) j')"
   unfolding mk_poly2_def
   apply(subst mk_poly2_col) using i by auto
 
 private lemma mk_poly2:
   fixes A :: "'a :: comm_semiring_1 mat"
-  assumes i: "i < dim\<^sub>r A"
-      and c: "dim\<^sub>c A > 0"
-  shows "mk_poly2 A $ i = (\<Sum>j'<dim\<^sub>c A. monom (A $$ (i,j')) (dim\<^sub>c A - Suc  j'))"
+  assumes i: "i < dim_row A"
+      and c: "dim_col A > 0"
+  shows "mk_poly2 A $ i = (\<Sum>j'<dim_col A. monom (A $$ (i,j')) (dim_col A - Suc  j'))"
     (is "?l = sum ?f ?S")
 proof -
-  define l where "l = dim\<^sub>c A - 1"
-  have dim: "dim\<^sub>c A = Suc l" unfolding l_def using i c by auto
+  define l where "l = dim_col A - 1"
+  have dim: "dim_col A = Suc l" unfolding l_def using i c by auto
   let ?g = "\<lambda>j. l - j"
   have "?l = sum (?f \<circ> ?g) ?S" unfolding l_def mk_poly2_pre[OF i] by auto
   also have "... = sum ?f ?S"
@@ -604,7 +604,7 @@ private lemma mk_poly2_sylvester_upper:
   shows "mk_poly2 (sylvester_mat p q) $ i = monom 1 (degree q - Suc i) * p"
   apply (subst mk_poly2)
     using i apply simp using i apply simp
-  apply (subst sylvester_mat_sum_upper[OF i,symmetric])
+  apply (subst sylvester_sum_mat_upper[OF i,symmetric])
   apply (rule sum.cong)
     unfolding sylvester_mat_dim lessThan_Suc_atMost apply simp
   by auto
@@ -616,43 +616,43 @@ private lemma mk_poly2_sylvester_lower:
   apply (subst mk_poly2)
     using imn apply simp using mi imn apply simp
   unfolding sylvester_mat_dim
-  using sylvester_mat_sum_lower[OF mi imn]
-  apply (subst sylvester_mat_sum_lower) using mi imn by auto
+  using sylvester_sum_mat_lower[OF mi imn]
+  apply (subst sylvester_sum_mat_lower) using mi imn by auto
 
 private lemma foo:
   fixes v :: "'a :: comm_semiring_1 vec"
-  shows "monom 1 d \<odot>\<^sub>v map\<^sub>v coeff_lift v = map\<^sub>v (\<lambda>a. monom a d) v"
-  apply (rule vec_eqI)
-  unfolding vec_index_map col_index
+  shows "monom 1 d \<cdot>\<^sub>v map_vec coeff_lift v = map_vec (\<lambda>a. monom a d) v"
+  apply (rule eq_vecI)
+  unfolding index_map_vec index_col
   by (auto simp add: Polynomial.smult_monom)
 
 private lemma mk_poly_sub_corresp:
-  assumes dimA[simp]: "dim\<^sub>c A = Suc l" and dimpv[simp]: "dim\<^sub>v pv = dim\<^sub>r A"
-      and j: "j < dim\<^sub>c A"
-  shows "pv \<oplus>\<^sub>v col (mk_poly_sub (mat_map coeff_lift A) l j) l =
+  assumes dimA[simp]: "dim_col A = Suc l" and dimpv[simp]: "dim_vec pv = dim_row A"
+      and j: "j < dim_col A"
+  shows "pv + col (mk_poly_sub (map_mat coeff_lift A) l j) l =
     mk_poly2_col A pv (Suc j)"
 proof(insert j, induct j)
-  have le: "dim\<^sub>r A \<le> dim\<^sub>v pv" using dimpv by simp
-  have l: "l < dim\<^sub>c A" using dimA by simp
+  have le: "dim_row A \<le> dim_vec pv" using dimpv by simp
+  have l: "l < dim_col A" using dimA by simp
   { case 0 show ?case
-      apply (rule vec_eqI)
+      apply (rule eq_vecI)
       using mk_poly2_row[OF le]
       by (auto simp add: monom_0)
   }
   { case (Suc j)
-      hence j: "j < dim\<^sub>c A" by simp
+      hence j: "j < dim_col A" by simp
       show ?case
         unfolding mk_poly_sub.simps
         apply(subst col_addcol)
           apply simp
           apply simp
-        apply(subst(2) vec_add_comm)
-          apply(rule vec_elemsI, simp)
-          apply(rule vec_elemsI, simp)
-        apply(subst vec_add_assoc[symmetric])
-          apply(rule vec_elemsI, rule refl)
-          apply(rule vec_elemsI, simp)
-          apply(rule vec_elemsI, simp)
+        apply(subst(2) comm_add_vec)
+          apply(rule carrier_vecI, simp)
+          apply(rule carrier_vecI, simp)
+        apply(subst assoc_add_vec[symmetric])
+          apply(rule carrier_vecI, rule refl)
+          apply(rule carrier_vecI, simp)
+          apply(rule carrier_vecI, simp)
         unfolding Suc(1)[OF j]
         apply(subst(2) mk_poly2_col.simps)
         apply(subst mk_poly2_row_col)
@@ -662,7 +662,7 @@ proof(insert j, induct j)
         apply(subst col_mk_poly_sub)
           using Suc apply simp
           using Suc apply simp
-        apply(subst col_mat_map)
+        apply(subst col_map_mat)
           using dimA apply simp
         unfolding foo dimA by simp
   }
@@ -670,30 +670,30 @@ qed
 
 private lemma col_mk_poly_mk_poly2:
   fixes A :: "'a :: comm_semiring_1 mat"
-  assumes dim: "dim\<^sub>c A > 0"
-  shows "col (mk_poly A) (dim\<^sub>c A - 1) = mk_poly2 A"
+  assumes dim: "dim_col A > 0"
+  shows "col (mk_poly A) (dim_col A - 1) = mk_poly2 A"
 proof -
-  define l where "l = dim\<^sub>c A - 1"
-  have dim: "dim\<^sub>c A = Suc l" unfolding l_def using dim by auto
+  define l where "l = dim_col A - 1"
+  have dim: "dim_col A = Suc l" unfolding l_def using dim by auto
   show ?thesis
     unfolding mk_poly_def mk_poly2_def dim
     apply(subst mk_poly_sub_corresp[symmetric])
       apply(rule dim)
       apply simp
       using dim apply simp
-    apply(subst vec_left_zero)
-      apply(rule vec_elemsI) using dim apply simp
+    apply(subst left_zero_vec)
+      apply(rule carrier_vecI) using dim apply simp
     apply simp
     done
 qed
 
 private lemma mk_poly_mk_poly2:
   fixes A :: "'a :: comm_semiring_1 mat"
-  assumes dim: "dim\<^sub>c A > 0" and i: "i < dim\<^sub>r A"
-  shows "mk_poly A $$ (i,dim\<^sub>c A - 1) = mk_poly2 A $ i"
+  assumes dim: "dim_col A > 0" and i: "i < dim_row A"
+  shows "mk_poly A $$ (i,dim_col A - 1) = mk_poly2 A $ i"
 proof -
-  have "mk_poly A $$ (i,dim\<^sub>c A - 1) = col (mk_poly A) (dim\<^sub>c A - 1) $ i"
-    apply (subst col_index(1)) using dim i by auto
+  have "mk_poly A $$ (i,dim_col A - 1) = col (mk_poly A) (dim_col A - 1) $ i"
+    apply (subst index_col(1)) using dim i by auto
   also note col_mk_poly_mk_poly2[OF dim] 
   finally show ?thesis.
 qed
@@ -705,8 +705,8 @@ lemma mk_poly_sylvester_upper:
   shows "mk_poly (sylvester_mat p q) $$ (i, m + n - 1) = monom 1 (n - Suc i) * p" (is "?l = ?r")
 proof -
   let ?S = "sylvester_mat p q"
-  have c: "m+n = dim\<^sub>c ?S" and r: "m+n = dim\<^sub>r ?S" unfolding m_def n_def by auto
-  hence "dim\<^sub>c ?S > 0" "i < dim\<^sub>r ?S" using i by auto
+  have c: "m+n = dim_col ?S" and r: "m+n = dim_row ?S" unfolding m_def n_def by auto
+  hence "dim_col ?S > 0" "i < dim_row ?S" using i by auto
   from mk_poly_mk_poly2[OF this]
   have "?l = mk_poly2 (sylvester_mat p q) $ i" unfolding m_def n_def by auto
   also have "... = ?r"
@@ -722,8 +722,8 @@ lemma mk_poly_sylvester_lower:
   shows "mk_poly (sylvester_mat p q) $$ (i, m + n - 1) = monom 1 (m + n - Suc i) * q" (is "?l = ?r")
 proof -
   let ?S = "sylvester_mat p q"
-  have c: "m+n = dim\<^sub>c ?S" and r: "m+n = dim\<^sub>r ?S" unfolding m_def n_def by auto
-  hence "dim\<^sub>c ?S > 0" "i < dim\<^sub>r ?S" using imn by auto
+  have c: "m+n = dim_col ?S" and r: "m+n = dim_row ?S" unfolding m_def n_def by auto
+  hence "dim_col ?S > 0" "i < dim_row ?S" using imn by auto
   from mk_poly_mk_poly2[OF this]
   have "?l = mk_poly2 (sylvester_mat p q) $ i" unfolding m_def n_def by auto
   also have "... = ?r"
@@ -741,7 +741,7 @@ lemma resultant_as_poly:
 proof (intro exI conjI)
   define m where "m = degree p"
   define n where "n = degree q"
-  define d where "d = dim\<^sub>r (mk_poly (sylvester_mat p q))"
+  define d where "d = dim_row (mk_poly (sylvester_mat p q))"
   define c where "c = (\<lambda>i. coeff_lift (cofactor (sylvester_mat p q) i (m+n-1)))"
   define p' where "p' = (\<Sum>i<n. monom 1 (n - Suc i) * c i)"
   define q' where "q' = (\<Sum>i<m. monom 1 (m - Suc i) * c (n+i))"
@@ -756,9 +756,9 @@ proof (intro exI conjI)
     unfolding det_mk_poly[symmetric]
     unfolding m_def n_def d_def
     apply(rule laplace_expansion_column[of _ _ "degree p + degree q - 1"])
-    apply(rule mat_carrierI) using degp by auto
+    apply(rule carrier_matI) using degp by auto
   also { fix i assume i: "i<d"
-    have d2: "d = dim\<^sub>r (sylvester_mat p q)" unfolding d_def by auto
+    have d2: "d = dim_row (sylvester_mat p q)" unfolding d_def by auto
     have "cofactor (mk_poly (sylvester_mat p q)) i (m+n-1) =
       (- 1) ^ (i + (m+n-1)) * det (mat_delete (mk_poly (sylvester_mat p q)) i (m+n-1))"
       using cofactor_def.
@@ -939,14 +939,14 @@ proof (cases "resultant p q = 0")
     using resultant_as_nonzero_poly_weak degp degq
     unfolding m_def n_def by auto
 next case True
-  define S where "S = transpose\<^sub>m (sylvester_mat p q)"
-  have S: "S \<in> carrier\<^sub>m (m+n) (m+n)" unfolding S_def m_def n_def by auto
+  define S where "S = transpose_mat (sylvester_mat p q)"
+  have S: "S \<in> carrier_mat (m+n) (m+n)" unfolding S_def m_def n_def by auto
   have "det S = 0" using True
     unfolding resultant_def S_def apply (subst det_transpose) by auto
   then obtain v
-    where v: "v \<in> carrier\<^sub>v (m+n)" and v0: "v \<noteq> \<zero>\<^sub>v (m+n)" and "S \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v (m+n)"
+    where v: "v \<in> carrier_vec (m+n)" and v0: "v \<noteq> 0\<^sub>v (m+n)" and "S *\<^sub>v v = 0\<^sub>v (m+n)"
     using det_0_iff_vec_prod_zero[OF S] by auto
-  hence "poly_of_vec (S \<otimes>\<^sub>m\<^sub>v v) = 0" by auto
+  hence "poly_of_vec (S *\<^sub>v v) = 0" by auto
   hence main: "poly_of_vec (vec_first v n) * p + poly_of_vec (vec_last v m) * q = 0"
     (is "?p * _ + ?q * _ = _")
     using sylvester_vec_poly[OF v[unfolded m_def n_def], folded m_def n_def S_def]
@@ -961,9 +961,9 @@ next case True
       assume p'0: "?p = 0"
       hence "?q * q = 0" using main by auto
       hence "?q = 0" using degq n_def by auto
-      hence "vec_last v m = \<zero>\<^sub>v m" unfolding poly_of_vec_0_iff by auto
-      also have "vec_first v n @\<^sub>v ... = \<zero>\<^sub>v (m+n)" using p'0 unfolding poly_of_vec_0_iff by auto
-      finally have "v = \<zero>\<^sub>v (m+n)" using split by auto
+      hence "vec_last v m = 0\<^sub>v m" unfolding poly_of_vec_0_iff by auto
+      also have "vec_first v n @\<^sub>v ... = 0\<^sub>v (m+n)" using p'0 unfolding poly_of_vec_0_iff by auto
+      finally have "v = 0\<^sub>v (m+n)" using split by auto
       thus False using v0 by auto
     qed
     show "?q \<noteq> 0"
@@ -971,9 +971,9 @@ next case True
       assume q'0: "?q = 0"
       hence "?p * p = 0" using main by auto
       hence "?p = 0" using degp m_def by auto
-      hence "vec_first v n = \<zero>\<^sub>v n" unfolding poly_of_vec_0_iff by auto
-      also have "... @\<^sub>v vec_last v m = \<zero>\<^sub>v (m+n)" using q'0 unfolding poly_of_vec_0_iff by auto
-      finally have "v = \<zero>\<^sub>v (m+n)" using split by auto
+      hence "vec_first v n = 0\<^sub>v n" unfolding poly_of_vec_0_iff by auto
+      also have "... @\<^sub>v vec_last v m = 0\<^sub>v (m+n)" using q'0 unfolding poly_of_vec_0_iff by auto
+      finally have "v = 0\<^sub>v (m+n)" using split by auto
       thus False using v0 by auto
     qed
     show "degree ?p < n" using degree_poly_of_vec_less[of "vec_first v n"] using degq by auto

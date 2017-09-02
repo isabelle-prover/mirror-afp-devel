@@ -4,7 +4,7 @@ Authors: Sylvia Grewe, Heiko Mantel, Daniel Schoepe
 *)
 section {* Preliminaries *}
 theory Preliminaries
-imports Main "~~/src/HOL/Library/Lattice_Syntax"
+imports Main "HOL-Library.Lattice_Syntax"
 begin
 
 text {* Possible modes for variables: *}

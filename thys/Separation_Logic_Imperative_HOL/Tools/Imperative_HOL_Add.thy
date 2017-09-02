@@ -1,6 +1,6 @@
 section {* Additions to Imperative/HOL *}
 theory Imperative_HOL_Add
-imports "~~/src/HOL/Imperative_HOL/Imperative_HOL" 
+imports "HOL-Imperative_HOL.Imperative_HOL" 
 begin 
 
 text {* This theory loads the Imperative HOL framework and provides 

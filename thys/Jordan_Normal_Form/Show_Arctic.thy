@@ -9,8 +9,8 @@ text \<open>We just instantiate arctic numbers in the show-class.\<close>
 
 theory Show_Arctic
 imports 
-  "../Abstract-Rewriting/SN_Order_Carrier"
-  "../Show/Show_Instances"
+  "Abstract-Rewriting.SN_Order_Carrier"
+  Show.Show_Instances
 begin
 
 instantiation arctic :: "show"

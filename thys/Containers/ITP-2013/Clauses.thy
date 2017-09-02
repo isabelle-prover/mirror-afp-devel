@@ -1,6 +1,6 @@
 theory Clauses imports
   Main
-  "../Containers"
+  Containers.Containers
 begin
 
 type_synonym literal = "nat \<times> bool"

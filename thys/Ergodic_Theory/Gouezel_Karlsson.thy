@@ -862,8 +862,8 @@ proof -
       then show ?thesis unfolding Nf_def by auto
     qed (auto simp add: Nf_def)
   qed
-  then have "Topological_Spaces.subseq Nf"
-    using subseq_Suc_iff by auto
+  then have "strict_mono Nf"
+    using strict_mono_Suc_iff by auto
 
   define On where "On = (\<lambda>(N::nat).
     (if (N = 1) then O1
@@ -973,7 +973,7 @@ proof -
   have "emeasure M Og > 1 - d" unfolding Og_def using K by simp
 
   have fin: "finite {N. Nf N \<le> n}" for n
-    using pseudo_inverse_finite_set[OF filterlim_subseq[OF \<open>Topological_Spaces.subseq Nf\<close>]] by auto
+    using pseudo_inverse_finite_set[OF filterlim_subseq[OF \<open>strict_mono Nf\<close>]] by auto
   define prev_N where "prev_N = (\<lambda>n. Max {N. Nf N \<le> n})"
   define delta where "delta = (\<lambda>l. if (prev_N l \<le> 1) then K else eps (prev_N l))"
   have "\<forall>l. delta l > 0"
@@ -981,7 +981,7 @@ proof -
 
   have "LIM n sequentially. prev_N n :> at_top"
     unfolding prev_N_def apply (rule tendsto_at_top_pseudo_inverse2)
-    using \<open>Topological_Spaces.subseq Nf\<close> by (simp add: filterlim_subseq)
+    using \<open>strict_mono Nf\<close> by (simp add: filterlim_subseq)
   then have "eventually (\<lambda>l. prev_N l > 1) sequentially"
     by (simp add: eventually_gt_at_top filterlim_iff)
   then have "eventually (\<lambda>l. delta l = eps(prev_N l)) sequentially"
@@ -1072,7 +1072,7 @@ proof -
 
     {
       fix N assume "N \<ge> B"
-      have "Nf N \<ge> B" using seq_suble[OF \<open>Topological_Spaces.subseq Nf\<close>, of N] \<open>N \<ge> B\<close> by simp
+      have "Nf N \<ge> B" using seq_suble[OF \<open>strict_mono Nf\<close>, of N] \<open>N \<ge> B\<close> by simp
       then have "{Nf N..} \<inter> {..<B} = {}" by auto
       then have "{n \<in> {Nf N..}. \<exists>l \<in> {Nf N..n}. u n x - u (n-l) x \<le> - (eps N * l)} \<inter> {..<B} = {}" by auto
     }
@@ -1121,7 +1121,7 @@ proof -
     proof (cases)
       assume "n < Nf 1"
       then have "{N. Nf N \<le> n} = {0}"
-        apply auto using \<open>Topological_Spaces.subseq Nf\<close> unfolding subseq_def
+        apply auto using \<open>strict_mono Nf\<close> unfolding strict_mono_def
         apply (metis le_trans less_Suc0 less_imp_le_nat linorder_neqE_nat not_less)
         unfolding Nf_def by auto
       then have "prev_N n = 0" unfolding prev_N_def by auto

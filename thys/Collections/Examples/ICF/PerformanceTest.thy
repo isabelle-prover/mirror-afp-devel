@@ -4,7 +4,7 @@
 *)
 section "Tests"
 theory PerformanceTest
-imports "../../ICF/Collections" "~~/src/HOL/Library/Code_Target_Numeral" 
+imports Collections.Collections "HOL-Library.Code_Target_Numeral" 
 begin
 text_raw {*\label{thy:PerformanceTest}*}
 

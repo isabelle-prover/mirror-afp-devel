@@ -26,7 +26,7 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 section {* Monotonicity criteria of Neurauter, Zankl, and Middeldorp *}
 
 theory NZM
-imports "../Abstract-Rewriting/SN_Order_Carrier" Polynomials
+imports "Abstract-Rewriting.SN_Order_Carrier" Polynomials
 begin
 
 text {* 
@@ -38,31 +38,46 @@ exact criterion for polynomials of degree 2 that is presented in \cite{NZM10}:
 \end{itemize}
 *}
 
+lemma var_monom_x_x [simp]: "var_monom x * var_monom x \<noteq> 1" 
+  by (unfold eq_monom_sum_var, auto simp: sum_var_monom_mult sum_var_monom_var)
+
+lemma monom_list_x_x[simp]: "monom_list (var_monom x * var_monom x) = [(x,2)]"
+  by (transfer, auto simp: monom_mult_list.simps)
+
 lemma assumes b: "b + a > 0" and a: "(a :: int) \<ge> 0"
   shows "check_poly_strict_mono_discrete (op >) (poly_of (PSum [PNum c, PMult [PNum b, PVar x], PMult [PNum a, PVar x, PVar x]])) x"
-proof (cases "a = 0")
-  case True
-  with b have b: "b > 0 \<and> b \<noteq> 0" by auto
-  show ?thesis using b True 
-    by (simp add: b True extract_def poly_add.simps eq_monom.simps poly_mult.simps monom_mult_poly.simps monom_mult.simps poly_subst.simps monom_subst.simps poly_power.simps one_poly_def zero_poly_def check_poly_gt_def check_poly_ge.simps check_poly_strict_mono_discrete_def poly_split_def, auto)
-next
-  case False
-  show ?thesis using False a b
-    by (simp add: b False extract_def poly_add.simps eq_monom.simps poly_mult.simps monom_mult_poly.simps monom_mult.simps poly_subst.simps monom_subst.simps poly_power.simps one_poly_def zero_poly_def check_poly_gt_def check_poly_ge.simps check_poly_strict_mono_discrete_def poly_split_def, auto)
+proof -
+  note [simp] = poly_add.simps poly_mult.simps monom_mult_poly.simps zero_poly_def one_poly_def 
+    extract_def check_poly_strict_mono_discrete_def poly_subst.simps monom_subst_def poly_power.simps
+    check_poly_gt_def poly_split_def check_poly_ge.simps
+  show ?thesis
+  proof (cases "a = 0")
+    case True
+    with b have b: "b > 0 \<and> b \<noteq> 0" by auto
+    show ?thesis using b True by simp
+  next
+    case False
+    have [simp]: "2 = Suc (Suc 0)" by simp
+    show ?thesis using False a b by simp
+  qed
 qed
 
 lemma assumes b: "b + a \<ge> 0" and a: "(a :: int) \<ge> 0" 
   shows "check_poly_weak_mono_discrete (poly_of (PSum [PNum c, PMult [PNum b, PVar x], PMult [PNum a, PVar x, PVar x]])) x"
-proof (cases "a = 0")
-  case True
-  with b have b: "0 \<le> b" by auto
-  show ?thesis using b True
-    by (simp add: b True extract_def poly_add.simps eq_monom.simps poly_mult.simps monom_mult_poly.simps monom_mult.simps poly_subst.simps monom_subst.simps poly_power.simps one_poly_def zero_poly_def check_poly_ge.simps check_poly_weak_mono_discrete_def, auto)
-next
-  case False
-  show ?thesis using False a b
-    by (simp add: b False extract_def poly_add.simps eq_monom.simps poly_mult.simps monom_mult_poly.simps monom_mult.simps poly_subst.simps monom_subst.simps poly_power.simps one_poly_def zero_poly_def check_poly_ge.simps check_poly_weak_mono_discrete_def, auto)
+proof -
+  note [simp] = poly_add.simps poly_mult.simps monom_mult_poly.simps zero_poly_def one_poly_def 
+    extract_def check_poly_weak_mono_discrete_def poly_subst.simps monom_subst_def poly_power.simps
+    check_poly_gt_def poly_split_def check_poly_ge.simps
+  show ?thesis
+  proof (cases "a = 0")
+    case True
+    with b have b: "0 \<le> b" by auto
+    show ?thesis using b True by simp
+  next
+    case False
+    have [simp]: "2 = Suc (Suc 0)" by simp
+    show ?thesis using False a b by simp
+  qed
 qed
-
 
 end

@@ -6,7 +6,7 @@
 section {* Density Predicates *}
 
 theory Density_Predicates
-imports  "~~/src/HOL/Probability/Probability"
+imports  Probability
 begin
 
 subsection {* Probability Densities *}

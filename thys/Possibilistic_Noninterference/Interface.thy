@@ -1,5 +1,5 @@
 theory Interface 
-imports "MyTactics"
+imports MyTactics
 begin
 
 end

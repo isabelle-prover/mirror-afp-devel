@@ -2,9 +2,12 @@ chapter AFP
 
 session "HOLCF-Prelude" (AFP) = HOLCF +
   options [show_question_marks = "false", timeout=3600]
+  sessions
+    "HOL-Computational_Algebra"
+    "HOLCF-Library"
   theories [document = false]
-    "~~/src/Tools/Adhoc_Overloading"
-    "~~/src/HOL/Computational_Algebra/Primes"
+    "HOL-Library.Adhoc_Overloading"
+    "HOL-Computational_Algebra.Primes"
   theories
     HOLCF_Main
     Type_Classes

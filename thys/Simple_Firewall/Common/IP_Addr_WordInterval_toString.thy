@@ -1,6 +1,6 @@
 section\<open>Helper: Pretty Printing Word Intervals which correspond to IP address Ranges\<close>
 theory IP_Addr_WordInterval_toString
-imports "../../IP_Addresses/IP_Address_toString"
+imports IP_Addresses.IP_Address_toString
 begin
 
 (*The "u" stands for union. I guess you may want to customize this pretty printing syntax :D*)

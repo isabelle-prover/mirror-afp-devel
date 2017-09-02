@@ -1,7 +1,7 @@
 theory FiniteListGraph
 imports 
   FiniteGraph
-  "../../Transitive-Closure/Transitive_Closure_List_Impl"
+  "Transitive-Closure.Transitive_Closure_List_Impl"
 begin
 
 section {*Specification of a finite graph, implemented by lists*}

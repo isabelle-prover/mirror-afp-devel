@@ -1,5 +1,5 @@
 theory ResourcedAdequacy
-imports "ResourcedDenotational" "Launchbury" "AList-Utils" "CorrectnessResourced"
+imports ResourcedDenotational Launchbury "AList-Utils" CorrectnessResourced
 begin
 
 lemma demand_not_0: "demand (\<N>\<lbrakk>e\<rbrakk>\<^bsub>\<rho>\<^esub>) \<noteq> \<bottom>"

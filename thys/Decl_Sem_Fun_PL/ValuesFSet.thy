@@ -1,5 +1,5 @@
 theory ValuesFSet
-  imports Main Lambda "~~/src/HOL/Library/FSet" 
+  imports Main Lambda "HOL-Library.FSet" 
 begin
 
 datatype val = VNat nat | VFun "(val \<times> val) fset"

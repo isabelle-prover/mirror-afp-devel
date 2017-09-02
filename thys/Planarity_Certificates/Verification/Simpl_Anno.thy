@@ -1,4 +1,4 @@
-theory Simpl_Anno imports Vcg begin
+theory Simpl_Anno imports Simpl.Vcg begin
 
 definition "named_loop name = UNIV"
 

@@ -6,9 +6,9 @@ section \<open>Refinement to Efficient Code\<close>
 theory LTL_to_GBA_impl
 imports 
   LTL_to_GBA
-  "../Deriving/Comparator_Generator/Compare_Instances"
-  "../CAVA_Automata/Automata_Impl"
-  "../CAVA_Automata/CAVA_Base/CAVA_Code_Target"
+  Deriving.Compare_Instances
+  CAVA_Automata.Automata_Impl
+  CAVA_Base.CAVA_Code_Target
 begin
 
 subsection \<open>Parametricity Setup Boilerplate\<close>

@@ -1,7 +1,7 @@
 theory Benchmark_Set
 imports
-  "~~/src/HOL/Word/Word"
-  "~~/src/HOL/Library/Cardinality"
+  "HOL-Word.Word"
+  "HOL-Library.Cardinality"
 begin
 
 instantiation word :: (len) card_UNIV begin

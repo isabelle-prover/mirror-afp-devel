@@ -6,7 +6,7 @@
 section {* Kleene Algebra with Tests *}
 
 theory KAT
-  imports "../../Kleene_Algebra/Kleene_Algebra" Conway_Tests
+  imports Kleene_Algebra.Kleene_Algebra Conway_Tests
 begin
 
 text {*

@@ -1,7 +1,7 @@
 theory Common_Primitive_Syntax
 imports "../Datatype_Selectors"
         IpAddresses
-        "../../Simple_Firewall/Primitives/Iface"
+        Simple_Firewall.Iface
         L4_Protocol_Flags Ports Tagged_Packet Conntrack_State
 begin
 

@@ -235,7 +235,7 @@ definition subresultant_mat :: "nat \<Rightarrow> 'a :: comm_ring_1 poly \<Right
 lemma subresultant_mat_dim[simp]:
   fixes j p q
   defines "S \<equiv> subresultant_mat j p q"
-  shows "dim\<^sub>r S = (degree p - j) + (degree q - j)" and "dim\<^sub>c S = (degree p - j) + (degree q - j)"
+  shows "dim_row S = (degree p - j) + (degree q - j)" and "dim_col S = (degree p - j) + (degree q - j)"
   unfolding S_def subresultant_mat_def Let_def by auto
 
 definition subresultant'_mat :: "nat \<Rightarrow> nat \<Rightarrow> 'a :: comm_ring_1 poly \<Rightarrow> 'a poly \<Rightarrow> 'a mat" where
@@ -246,7 +246,7 @@ definition subresultant'_mat :: "nat \<Rightarrow> nat \<Rightarrow> 'a :: comm_
       else let jj = j - (\<gamma> - J) in
        if i = n - 1 then (g (l - int (\<phi> - J - 1) + int jj)) else (g (\<gamma> - int i + int jj))))"  
 
-lemma subresultant_mat_index:
+lemma subresultant_index_mat:
   fixes F G
   assumes i: "i < (degree F - J) + (degree G - J)" and j: "j < (degree F - J) + (degree G - J)"
   shows "subresultant_mat J F G $$ (i,j) =
@@ -255,7 +255,7 @@ lemma subresultant_mat_index:
       else let jj = j - (degree G - J) in
        if i = (degree F - J) + (degree G - J) - 1 then monom 1 ( degree F - J - 1 - jj) * G else ([: coeff_int G (degree G - int i + int jj) :]))"
   unfolding subresultant_mat_def Let_def
-  unfolding mat_index_mat(1)[OF i j] split by auto
+  unfolding index_mat(1)[OF i j] split by auto
 
 definition subresultant :: "nat \<Rightarrow> 'a :: comm_ring_1 poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly" where
   "subresultant J F G = det (subresultant_mat J F G)"
@@ -272,16 +272,16 @@ proof -
   from `c \<noteq> 0` have deg: "degree (smult c f) = ?df" by simp
   let ?S = "subresultant_mat J f g"
   let ?cS = "subresultant_mat J (smult c f) g"
-  have dim: "dim\<^sub>r ?S = ?n" "dim\<^sub>c ?S = ?n"  "dim\<^sub>r ?cS = ?n" "dim\<^sub>c ?cS = ?n" using deg by auto
-  hence C: "?S \<in> carrier\<^sub>m ?n ?n" "?cS \<in> carrier\<^sub>m ?n ?n" "?M \<in> carrier\<^sub>m ?n ?n" by auto
-  have dim': "dim\<^sub>r (?S \<otimes>\<^sub>m ?M) = ?n" "dim\<^sub>c (?S \<otimes>\<^sub>m ?M) = ?n" using dim (1,2) by simp_all
+  have dim: "dim_row ?S = ?n" "dim_col ?S = ?n"  "dim_row ?cS = ?n" "dim_col ?cS = ?n" using deg by auto
+  hence C: "?S \<in> carrier_mat ?n ?n" "?cS \<in> carrier_mat ?n ?n" "?M \<in> carrier_mat ?n ?n" by auto
+  have dim': "dim_row (?S * ?M) = ?n" "dim_col (?S * ?M) = ?n" using dim (1,2) by simp_all
   define S where "S = ?S"
-  have "?cS = ?S \<otimes>\<^sub>m ?M"
-  proof (rule mat_eqI, unfold dim' dim)
+  have "?cS = ?S * ?M"
+  proof (rule eq_matI, unfold dim' dim)
     fix i j
     assume ij: "i < ?n" "j < ?n"
-    have "(?S \<otimes>\<^sub>m ?M) $$ (i,j) = row ?S i \<bullet> col ?M j"
-      by (rule mat_index_mat_mult_mat, insert ij dim, auto)
+    have "(?S * ?M) $$ (i,j) = row ?S i \<bullet> col ?M j"
+      by (rule index_mult_mat, insert ij dim, auto)
     also have "\<dots> = (\<Sum>k = 0..<?n. row S i $ k * col ?M j $ k)" unfolding scalar_prod_def S_def[symmetric]
       by simp
     also have "\<dots> = (\<Sum>k = 0..<?n. S $$ (i,k) * ?M $$ (k,j))"
@@ -290,9 +290,9 @@ proof -
       by (rule sum.remove, insert ij, auto)
     also have "\<dots> = S $$ (i,j) * ?M $$ (j,j)"
       by (subst sum.neutral, insert ij, auto)
-    also have "\<dots> = ?cS $$ (i,j)" unfolding subresultant_mat_index[OF ij] S_def
-      by (subst subresultant_mat_index, unfold deg, insert ij, auto)
-    finally show "?cS $$ (i,j) = (?S \<otimes>\<^sub>m ?M) $$ (i,j)" by simp
+    also have "\<dots> = ?cS $$ (i,j)" unfolding subresultant_index_mat[OF ij] S_def
+      by (subst subresultant_index_mat, unfold deg, insert ij, auto)
+    finally show "?cS $$ (i,j) = (?S * ?M) $$ (i,j)" by simp
   qed auto
   from arg_cong[OF this, of det] det_mult[OF C(1) C(3)]
   have "subresultant J (smult c f) g = subresultant J f g * det ?M"
@@ -301,7 +301,7 @@ proof -
   proof (subst det_upper_triangular[OF _ C(3)])
     show "upper_triangular ?M"
       by (rule upper_triangularI, auto)
-    have "prod_list (mat_diag ?M) = (\<Prod>k = 0..<?n. (?M $$ (k,k)))"
+    have "prod_list (diag_mat ?M) = (\<Prod>k = 0..<?n. (?M $$ (k,k)))"
       unfolding prod_list_diag_prod by simp
     also have "\<dots> = (\<Prod>k = 0..<?m. ?M $$ (k,k)) * (\<Prod>k = ?m..<?n. ?M $$ (k,k))"
       by (subst prod.union_disjoint[symmetric], (auto)[3], rule prod.cong, auto)
@@ -310,7 +310,7 @@ proof -
     also have "(\<Prod>k = 0..<?m. [: c :]) = [: c :] ^ ?m" by simp
     also have "(\<Prod>k = ?m..<?n. ?M $$ (k,k)) = (\<Prod>k = ?m..<?n. 1)"
       by (rule prod.cong, auto)
-    finally show "prod_list (mat_diag ?M) = [: c^?m :]" unfolding poly_const_pow by simp
+    finally show "prod_list (diag_mat ?M) = [: c^?m :]" unfolding poly_const_pow by simp
   qed
   finally show ?thesis by simp
 qed
@@ -330,8 +330,8 @@ proof -
     by (rule det_swap_cols, auto simp: subresultant_mat_def Let_def)
   also have "?B = subresultant_mat J g f"
     unfolding subresultant_mat_def Let_def
-    by (rule mat_eqI, unfold mat_dim_row_mat mat_dim_col_mat nk mat_index_mat split,
-      subst mat_index_mat, (auto)[2], unfold split, subst change, force,
+    by (rule eq_matI, unfold dim_row_mat dim_col_mat nk index_mat split,
+      subst index_mat, (auto)[2], unfold split, subst change, force,
       unfold if_conn, rule if_cong[OF refl if_cong if_cong], auto)
   also have "det \<dots> = subresultant J g f" unfolding subresultant_def ..
   also have "(-1)^(?k * ?n) * \<dots> = [: (-1)^(?k * ?n) :] * \<dots> " by (unfold hom_distribs, simp)
@@ -372,7 +372,7 @@ next
       fix i
       assume "i \<in> {0 ..< n - 1}"
       with p have i: "i \<noteq> n - 1" and "i < n" "p i < n" by (auto simp: n_def)
-      note id = subresultant_mat_index[OF this(2-3)[unfolded n_def], folded M_def n_def]
+      note id = subresultant_index_mat[OF this(2-3)[unfolded n_def], folded M_def n_def]
       show "degree (M $$ (i, p i)) = 0" unfolding id Let_def using i
         by (simp split: if_splits)
     qed
@@ -382,8 +382,8 @@ next
       fix i
       assume "i \<in> {0 ..< n - 1}"
       with p have i: "i \<noteq> n - 1" and ii: "i < n" "p i < n" by (auto simp: n_def)
-      note id = subresultant_mat_index[OF this(2-3)[unfolded n_def], folded M_def n_def]
-      note id' = L_def[unfolded subresultant'_mat_def Let_def, folded n_def] mat_index_mat[OF ii]
+      note id = subresultant_index_mat[OF this(2-3)[unfolded n_def], folded M_def n_def]
+      note id' = L_def[unfolded subresultant'_mat_def Let_def, folded n_def] index_mat[OF ii]
       show "coeff_int (M $$ (i, p i)) 0 = L $$ (i, p i)"
         unfolding id id' split using i proof (simp add: if_splits Let_def)
       qed
@@ -392,7 +392,7 @@ next
       (if p (n - 1) < degree G - J then
          coeff_int (monom 1 (degree G - J - 1 - p (n - 1)) * F) l
          else coeff_int (monom 1 (degree F - J - 1 - (p (n - 1) - (degree G - J))) * G) l)"
-      using subresultant_mat_index[OF n1[unfolded n_def], folded M_def n_def, unfolded idn if_True Let_def]
+      using subresultant_index_mat[OF n1[unfolded n_def], folded M_def n_def, unfolded idn if_True Let_def]
       by simp
     also have "\<dots> = (if p (n - 1) < degree G - J
       then coeff_int F (int l - int (degree G - J - 1 - p (n - 1)))
@@ -430,8 +430,8 @@ next
     by (rule sum.cong[OF refl], insert *, simp)
   also have "\<dots> = det L"
   proof -
-    have id: "dim\<^sub>r (subresultant'_mat J l F G) = n"
-      "dim\<^sub>c (subresultant'_mat J l F G) = n" unfolding subresultant'_mat_def Let_def n_def
+    have id: "dim_row (subresultant'_mat J l F G) = n"
+      "dim_col (subresultant'_mat J l F G) = n" unfolding subresultant'_mat_def Let_def n_def
       by auto
     show ?thesis unfolding det_def L_def id by simp
   qed
@@ -457,17 +457,17 @@ proof -
             else coeff_int g (int k - int (df - 1) + int (j - dg))
         else M i j))" (is "_ = det ?N")
     unfolding subresultant'_mat_def Let_def M_def
-    by (rule arg_cong[of _ _ det], rule mat_eqI, auto simp: df dg)
+    by (rule arg_cong[of _ _ det], rule eq_matI, auto simp: df dg)
   also have "?N = mat (df + dg) (df + dg)
     (\<lambda>(i, j).
         if i = df + dg - 1 then 0
         else M i j)"
-    by (rule mat_cong[OF refl refl], unfold split, rule if_cong[OF refl _ refl],
+    by (rule cong_mat[OF refl refl], unfold split, rule if_cong[OF refl _ refl],
       auto simp add: coeff_int_def df dg ddf intro!: coeff_eq_0, insert *(1),
       unfold ddf[symmetric] dg[symmetric] df[symmetric], linarith+)
-  also have "\<dots> = mat\<^sub>r (df + dg) (df + dg) (\<lambda>i. if i = df + dg - 1 then \<zero>\<^sub>v (df + dg) else
+  also have "\<dots> = mat\<^sub>r (df + dg) (df + dg) (\<lambda>i. if i = df + dg - 1 then 0\<^sub>v (df + dg) else
     vec (df + dg) (\<lambda> j. M i j))"
-    by (rule mat_eqI, auto)
+    by (rule eq_matI, auto)
   also have "det \<dots> = 0"
     by (rule det_row_0, insert *, auto simp: df[symmetric] dg[symmetric] ddf[symmetric])
   finally show ?thesis .
@@ -493,34 +493,34 @@ proof -
         if i = df + dg - 1 then N j
         else M i j)"
     unfolding subresultant'_mat_def Let_def
-    by (rule mat_eqI, auto simp: df dg M_def N_def)
+    by (rule eq_matI, auto simp: df dg M_def N_def)
   also have "\<dots> = mat (df + dg) (df + dg)
     (\<lambda>(i, j).
         if i = df + dg - 1 then N j
         else if i = degree f + dg - 1 - k then N j else M i j)" (is "_ = ?N")
     unfolding N_def
-    by (rule mat_cong[OF refl refl], unfold split, rule if_cong[OF refl refl], unfold M_def N_def,
+    by (rule cong_mat[OF refl refl], unfold split, rule if_cong[OF refl refl], unfold M_def N_def,
       insert J k, auto simp: df dg intro!: arg_cong[of _ _ "coeff_int _"])
   finally have id: "?M = ?N" .
   have deg: "degree f + dg - 1 - k < df + dg" "df + dg - 1 < df + dg"
     using k J unfolding df dg by auto
   have id: "row ?M (degree f + dg - 1 - k) = row ?M (df + dg - 1)"
     unfolding arg_cong[OF id, of row]
-    by (rule vec_eqI, insert deg, auto)
+    by (rule eq_vecI, insert deg, auto)
   show ?thesis
     by (rule det_identical_rows[OF _ _ _ _ id, of "df + dg"], insert deg assms,
       auto simp: subresultant'_mat_def Let_def df dg)
 qed
 
-lemma subresultant'_mat_sylvester_mat: "transpose\<^sub>m (subresultant'_mat 0 0 f g) = sylvester_mat f g"
+lemma subresultant'_mat_sylvester_mat: "transpose_mat (subresultant'_mat 0 0 f g) = sylvester_mat f g"
 proof -
   obtain dg where dg: "degree g = dg" by simp
   obtain df where df: "degree f = df" by simp
-  let ?M = "transpose\<^sub>m (subresultant'_mat 0 0 f g)"
+  let ?M = "transpose_mat (subresultant'_mat 0 0 f g)"
   let ?n = "degree f + degree g"
-  have dim: "dim\<^sub>r ?M = ?n" "dim\<^sub>c ?M = ?n" by (auto simp: subresultant'_mat_def Let_def)
+  have dim: "dim_row ?M = ?n" "dim_col ?M = ?n" by (auto simp: subresultant'_mat_def Let_def)
   show ?thesis
-  proof (rule mat_eqI, unfold sylvester_mat_dim dim df dg, goal_cases)
+  proof (rule eq_matI, unfold sylvester_mat_dim dim df dg, goal_cases)
     case ij: (1 i j)
     have "?M $$ (i,j) = (if i < dg
          then if j = df + dg - 1
@@ -543,7 +543,7 @@ proof -
     proof -
       have *: "i \<le> j \<Longrightarrow> j - i \<le> df \<Longrightarrow> nat (int df - int j + int i) = df - (j - i)" for j i df
         by simp
-      show ?thesis unfolding sylvester_mat_index[OF ij[folded df dg]] df dg
+      show ?thesis unfolding sylvester_index_mat[OF ij[folded df dg]] df dg
       proof (rule if_cong[OF refl])
         assume i: "i < dg"
         have "int df - int j + int i < 0 \<longrightarrow> \<not> j - i \<le> df" by auto
@@ -563,7 +563,7 @@ qed
 
 lemma coeff_subresultant_0_0_resultant: "coeff (subresultant 0 f g) 0 = resultant f g"
 proof -
-  let ?M = "transpose\<^sub>m (subresultant'_mat 0 0 f g)"
+  let ?M = "transpose_mat (subresultant'_mat 0 0 f g)"
   have "det (subresultant'_mat 0 0 f g) = det ?M"
     by (subst det_transpose, auto simp: subresultant'_mat_def Let_def)
   also have "?M = sylvester_mat f g"
@@ -616,12 +616,12 @@ proof -
   proof (rule arg_cong[of _ _ det])
     show "p.mat_hom (subresultant_mat J f g) =
       subresultant_mat J (map_poly hom f) (map_poly hom g)"
-    proof (rule mat_eqI, goal_cases)
+    proof (rule eq_matI, goal_cases)
       case (1 i j)
       hence ij: "i < degree f - J + (degree g - J)" "j < degree f - J + (degree g - J)"
         unfolding d degree_map_poly by auto
       show ?case
-        by (auto simp add: coeff_int_def d mat_map_def mat_index_mat(1)[OF ij] hom_distribs)
+        by (auto simp add: coeff_int_def d map_mat_def index_mat(1)[OF ij] hom_distribs)
     qed (auto simp: d)
   qed
 qed
@@ -729,19 +729,19 @@ proof -
     unfolding subresultant_swap[of _ F] d by simp
   also have "subresultant J G F = det ?G_F"
     unfolding subresultant_def n norm subresultant_mat_def g f Let_def d[symmetric] dfj_def dgj_def by simp
-  also have "\<dots> = det (?G_F \<otimes>\<^sub>m ?M)"
+  also have "\<dots> = det (?G_F * ?M)"
     by (subst det_mult[of _ n], unfold dM1, auto)
-  also have "?G_F \<otimes>\<^sub>m ?M = ?G_H"
-  proof (rule mat_eqI, unfold mat_dim_col_mat mat_dim_row_mat)
+  also have "?G_F * ?M = ?G_H"
+  proof (rule eq_matI, unfold dim_col_mat dim_row_mat)
     fix i j
     assume i: "i < n" and j: "j < n"
-    have "(?G_F \<otimes>\<^sub>m ?M) $$ (i,j) = row (?G_F) i \<bullet> col ?M j"
+    have "(?G_F * ?M) $$ (i,j) = row (?G_F) i \<bullet> col ?M j"
       using i j by simp
     also have "\<dots> = ?GH i j"
     proof (cases "j < dfj")
       case True
-      have id: "col ?M j = unit\<^sub>v n j"
-        by (rule vec_eqI, insert True i j, auto)
+      have id: "col ?M j = unit_vec n j"
+        by (rule eq_vecI, insert True i j, auto)
       show ?thesis unfolding id using True i j by simp
     next
       case False
@@ -774,7 +774,7 @@ proof -
       let ?Fb = "\<lambda> k. ?F k * [:?bi k:]"
       let ?Pj = "if i = n - 1 then  monom 1 (dgj - Suc d) * F else [:f (int df - int i + int d):]"
       from False have id: "col ?M j = vec n ?m"
-        using j i by (intro vec_eqI, auto)
+        using j i by (intro eq_vecI, auto)
       have "row ?G_F i \<bullet> col ?M j = sum ?P {0 ..< n}"
         using i j unfolding id by (simp add: scalar_prod_def)
       also have "{0 ..< n} = {0 ..< j} \<union> {j} \<union> {Suc j ..< n}" using j by auto
@@ -908,7 +908,7 @@ proof -
       show ?thesis using False unfolding d_def by simp
     qed
     also have "\<dots> = ?G_H $$ (i,j)" using i j by simp
-    finally show "(?G_F \<otimes>\<^sub>m ?M) $$ (i,j) = ?G_H $$ (i,j)" .
+    finally show "(?G_F * ?M) $$ (i,j) = ?G_H $$ (i,j)" .
   qed auto
   finally show eq_18: "subresultant J F G = smult ?m1 (det ?G_H)" unfolding dfj_def dgj_def .
   {
@@ -921,7 +921,7 @@ proof -
     assume *: "dh \<le> J" "J < dg"
     have n_dfj: "n > dfj" using * unfolding n dfj_def by auto
     note eq_18
-    also have "det ?G_H = prod_list (mat_diag ?G_H)"
+    also have "det ?G_H = prod_list (diag_mat ?G_H)"
     proof (rule det_lower_triangular[of n])
       fix i j
       assume ij: "i < j" and j: "j < n"
@@ -972,8 +972,8 @@ proof -
     define dhj where "dhj = dh - J"
     have n_add: "n = (df - dh) + (dhj + dgj)" unfolding dhj_def dgj_def n using J dfg dgh by auto
     let ?split = "split_block ?G_H (df - dh) (df - dh)"
-    have dim: "dim\<^sub>r ?G_H = (df - dh) + (dhj + dgj)"
-      "dim\<^sub>c ?G_H = (df - dh) + (dhj + dgj)"
+    have dim: "dim_row ?G_H = (df - dh) + (dhj + dgj)"
+      "dim_col ?G_H = (df - dh) + (dhj + dgj)"
       unfolding n_add by auto
     obtain UL UR LL LR where spl: "?split = (UL,UR,LL,LR)" by (cases ?split, auto)
     note spl' = spl[unfolded split_block_def Let_def, simplified]
@@ -983,7 +983,7 @@ proof -
       using spl' by (auto simp: n_add)
     also have "\<dots> = ?LR"
       unfolding subresultant_mat_def Let_def dhj_def dgj_def d[symmetric]
-    proof (rule mat_eqI, unfold mat_dim_row_mat mat_dim_col_mat mat_index_mat split dfj_def, goal_cases)
+    proof (rule eq_matI, unfold dim_row_mat dim_col_mat index_mat split dfj_def, goal_cases)
       case (1 i j)
       hence id1: "(j + (df - dh) < df - J) = (j < dh - J)" using dgh dfg J by auto
       have id2: "(i + (df - dh) = n - 1) = (i = dg - J + (dh - J) - 1)"
@@ -998,12 +998,12 @@ proof -
     qed auto
     finally have "LR = ?LR" .
     note spl = spl[unfolded this]
-    let ?UR = "\<zero>\<^sub>m (df - dh) (dgj + dhj)"
+    let ?UR = "0\<^sub>m (df - dh) (dgj + dhj)"
     have "UR = mat (df - dh) (dgj + dhj)
        (\<lambda> (i,j). ?GH i (j + (df - dh)))"
       using spl' by (auto simp: n_add)
     also have "\<dots> = ?UR"
-    proof (rule mat_eqI, unfold mat_dim_row_mat mat_dim_col_mat mat_index_mat split dfj_def mat_index_zero, goal_cases)
+    proof (rule eq_matI, unfold dim_row_mat dim_col_mat index_mat split dfj_def index_zero_mat, goal_cases)
       case (1 i j)
       hence in1: "i \<noteq> n - 1" using J unfolding dgj_def dhj_def n_add by auto
       {
@@ -1025,7 +1025,7 @@ proof -
     have "UL = mat (df - dh) (df - dh) (\<lambda> (i,j). ?GH i j)"
       using spl' by (auto simp: n_add)
     also have "\<dots> = ?UL"
-    proof (rule mat_eqI, unfold mat_dim_row_mat mat_dim_col_mat mat_index_mat split, goal_cases)
+    proof (rule eq_matI, unfold dim_row_mat dim_col_mat index_mat split, goal_cases)
       case (1 i j)
       {
         assume "i = j"
@@ -1049,16 +1049,16 @@ proof -
     note spl = spl[unfolded this]
     from split_block[OF spl dim]
     have GH: "?G_H = four_block_mat ?UL ?UR LL ?LR"
-      and C: "?UL \<in> carrier\<^sub>m (df - dh) (df - dh)"
-      "?UR \<in> carrier\<^sub>m (df - dh) (dhj + dgj)"
-      "LL \<in> carrier\<^sub>m (dhj + dgj) (df - dh)"
-      "?LR \<in> carrier\<^sub>m (dhj + dgj) (dhj + dgj)" by auto
+      and C: "?UL \<in> carrier_mat (df - dh) (df - dh)"
+      "?UR \<in> carrier_mat (df - dh) (dhj + dgj)"
+      "LL \<in> carrier_mat (dhj + dgj) (df - dh)"
+      "?LR \<in> carrier_mat (dhj + dgj) (dhj + dgj)" by auto
     from arg_cong[OF GH, of det]
     have "det ?G_H = det (four_block_mat ?UL ?UR LL ?LR)" unfolding GH[symmetric] ..
     also have "\<dots> = det ?UL * det ?LR"
       by (rule det_four_block_mat_upper_right_zero[OF _ refl], insert C, auto simp: ac_simps)
     also have "det ?LR = subresultant J G H" unfolding subresultant_def by simp
-    also have "det ?UL = prod_list (mat_diag ?UL)"
+    also have "det ?UL = prod_list (diag_mat ?UL)"
       by (rule det_lower_triangular[of "df - dh"], auto)
     also have "\<dots> = (\<Prod>i = 0..< (df - dh). [: lead_coeff G :])" unfolding prod_list_diag_prod by simp
     also have "\<dots> = [: lead_coeff G ^ (df - dh) :]" by (simp add: poly_const_pow)
@@ -1125,7 +1125,7 @@ next
               else [:coeff_int G (int (degree G) - int i + int j):])"
   have "subresultant J F G = det ?M"
     unfolding subresultant_def subresultant_mat_def Let_def dg * by auto
-  also have "det ?M = prod_list (mat_diag ?M)"
+  also have "det ?M = prod_list (diag_mat ?M)"
     by (rule det_lower_triangular[of ?n], auto intro: coeff_int_eq_0)
   also have "\<dots> = (\<Prod>i = 0..< ?n. ?M $$ (i,i))" unfolding prod_list_diag_prod by simp
   also have "\<dots> = (\<Prod>i = 0..< ?n. if i = ?n - 1 then G else [: lead_coeff G :])"

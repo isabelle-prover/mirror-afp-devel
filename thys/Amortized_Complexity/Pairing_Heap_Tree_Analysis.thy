@@ -6,7 +6,7 @@ subsection \<open>Binary Tree Representation\<close>
 
 theory Pairing_Heap_Tree_Analysis
 imports  
-  "../Pairing_Heap/Pairing_Heap_Tree"
+  Pairing_Heap.Pairing_Heap_Tree
   Amortized_Framework
   Priority_Queue_ops_merge
   Lemmas_log
@@ -122,11 +122,11 @@ proof (induction hs rule: pass\<^sub>2.induct)
 qed simp
 
 lemma \<Delta>\<Phi>_mergepairs: assumes "hs \<noteq> Leaf"
-  shows "\<Phi> (mergepairs hs) - \<Phi> hs \<le> 3 * log 2 (size hs) - len hs + 2"
+  shows "\<Phi> (merge_pairs hs) - \<Phi> hs \<le> 3 * log 2 (size hs) - len hs + 2"
 proof -
   have "pass\<^sub>1 hs \<noteq> Leaf" by (metis assms eq_size_0 size_pass\<^sub>1)
   with assms \<Delta>\<Phi>_pass1[of hs] \<Delta>\<Phi>_pass2[of "pass\<^sub>1 hs"]
-  show ?thesis by (auto simp add: size_pass\<^sub>1 mergepairs_pass12)
+  show ?thesis by (auto simp add: size_pass\<^sub>1 pass12_merge_pairs)
 qed
 
 lemma \<Delta>\<Phi>_del_min: assumes "lx \<noteq> Leaf"

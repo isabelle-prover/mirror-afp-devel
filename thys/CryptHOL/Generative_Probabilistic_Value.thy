@@ -4,7 +4,7 @@
 theory Generative_Probabilistic_Value imports
   Resumption
   Generat
-  "~~/src/HOL/Types_To_Sets/Types_To_Sets"
+  "HOL-Types_To_Sets.Types_To_Sets"
 begin
 
 hide_const (open) Done

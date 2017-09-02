@@ -1,8 +1,8 @@
 section {* Information Flow for While *}
 
 theory NonInterferenceWhile imports
-  "../Slicing/While/SemanticsWellFormed"
-  "../Slicing/While/StaticControlDependences"
+  Slicing.SemanticsWellFormed
+  Slicing.StaticControlDependences
   LiftingIntra
 begin
 

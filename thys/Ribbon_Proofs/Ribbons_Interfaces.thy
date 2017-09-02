@@ -3,7 +3,7 @@ section {* Ribbon proof interfaces *}
 theory Ribbons_Interfaces imports
   Ribbons_Basic
   Proofchain
-  "~~/src/HOL/Library/FSet"
+  "HOL-Library.FSet"
 begin
 
 text {* Interfaces are the top and bottom boundaries through which diagrams 

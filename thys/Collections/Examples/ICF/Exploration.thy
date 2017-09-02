@@ -4,7 +4,7 @@
 *)
 section {* \isaheader{State Space Exploration} *}
 theory Exploration
-imports Main "../../ICF/Collections"
+imports Main Collections.Collections
 begin
 text_raw {*\label{thy:Exploration}*}
   

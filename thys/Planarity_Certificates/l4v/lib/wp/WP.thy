@@ -9,7 +9,7 @@
  *)
 
 theory WP
-imports "~~/src/HOL/Main"
+imports Main
 begin
 
 definition

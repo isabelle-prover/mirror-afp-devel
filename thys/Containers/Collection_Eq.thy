@@ -4,7 +4,7 @@
 theory Collection_Eq imports
   Containers_Auxiliary
   Containers_Generator
-  "../Deriving/Equality_Generator/Equality_Instances"
+  Deriving.Equality_Instances
 begin
 
 section {* A type class for optional equality testing *}

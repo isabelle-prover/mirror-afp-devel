@@ -9,7 +9,7 @@ section{*Hermite Normal Form refined to immutable arrays*}
 theory Hermite_IArrays
 imports 
   Hermite
-  "../Echelon_Form/Echelon_Form_IArrays"
+  Echelon_Form.Echelon_Form_IArrays
 begin
 
 subsection{*Definition of the algorithm over immutable arrays*}

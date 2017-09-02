@@ -3,7 +3,7 @@ theory Dijkstra
   imports 
   Graph 
   Dijkstra_Misc 
-  "../Collections/Refine_Dflt_ICF"
+  Collections.Refine_Dflt_ICF
   Weight
 begin
 text {*

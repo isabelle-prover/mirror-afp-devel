@@ -12,7 +12,7 @@ theory allen
 imports
 
   Main axioms 
-  "$ISABELLE_HOME/src/HOL/Eisbach/Eisbach_Tools"
+  "HOL-Eisbach.Eisbach_Tools"
 
 
 begin

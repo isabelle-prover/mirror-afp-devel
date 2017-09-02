@@ -4,7 +4,7 @@
 *)
 
 theory Boolean_Expression_Checkers_AList_Mapping
-  imports Main "~~/src/HOL/Library/AList_Mapping" Boolean_Expression_Checkers
+  imports Main "HOL-Library.AList_Mapping" Boolean_Expression_Checkers
 begin
 
 section{* Tweaks for @{const AList_Mapping.Mapping} *}

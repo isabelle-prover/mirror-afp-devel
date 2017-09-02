@@ -6,7 +6,7 @@ The examples includes Example3 presented in the TACAS2017 draft.
 *)
 
 theory Example
-imports PSL "~~/src/HOL/Eisbach/Eisbach"
+imports PSL "HOL-Eisbach.Eisbach"
 begin
 
 (* The "Hammer" strategy invokes sledgehammer as a sub-tool. *)

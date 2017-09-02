@@ -2,8 +2,8 @@ section {* The Ping Pong lemma *}
 
 theory "PingPongLemma"
 imports
-   "~~/src/HOL/Algebra/Bij"
-   "FreeGroups"
+   "HOL-Algebra.Bij"
+   FreeGroups
 begin
 
 text {*

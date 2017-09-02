@@ -4,7 +4,7 @@ section "Abstract State with Computable Ordering"
 
 theory Abs_State
 imports Abs_Int0
-  "~~/src/HOL/Library/Char_ord" "~~/src/HOL/Library/List_lexord"
+  "HOL-Library.Char_ord" "HOL-Library.List_lexord"
   (* Library import merely to allow string lists to be sorted for output *)
 begin
 

@@ -28,7 +28,7 @@ USA
 
 section \<open>The Simpl Syntax\<close>
 
-theory Language imports "~~/src/HOL/Library/Old_Recdef" begin
+theory Language imports "HOL-Library.Old_Recdef" begin
 
 subsection \<open>The Core Language\<close>
 

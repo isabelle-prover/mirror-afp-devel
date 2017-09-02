@@ -3,8 +3,8 @@ section "Verification of a Non-Planarity Checker"
 theory Check_Non_Planarity_Verification imports
   Check_Non_Planarity_Impl
   "../Planarity/Kuratowski_Combinatorial"
-  "~~/src/HOL/Library/Rewrite"
-  "~~/src/HOL/Eisbach/Eisbach"
+  "HOL-Library.Rewrite"
+  "HOL-Eisbach.Eisbach"
 begin
 
 subsection {* Graph Basics and Implementation*}

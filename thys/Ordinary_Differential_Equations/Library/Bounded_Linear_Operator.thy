@@ -1,7 +1,7 @@
 section \<open>Bounded Linear Operator\<close>
 theory Bounded_Linear_Operator
 imports
-  "~~/src/HOL/Analysis/Analysis"
+  "HOL-Analysis.Analysis"
 begin
 
 typedef (overloaded) 'a blinop = "UNIV::('a, 'a) blinfun set"

@@ -738,7 +738,7 @@ proof(rule ccontr)
   with `nx \<noteq> m` `sourcenode a -as1\<rightarrow>* nx` `m \<notin> set(sourcenodes as1)` 
     `sourcenode a -as2\<rightarrow>* m` `nx \<notin> set(sourcenodes as2)` `valid_edge a` 
     `targetnode a -asx\<rightarrow>* nx`
-  have "sourcenode a \<longrightarrow>\<^bsub>wod\<^esub> nx,m" by(simp add:wod_def,blast)
+  have "sourcenode a \<longrightarrow>\<^sub>w\<^sub>o\<^sub>d nx,m" by(simp add:wod_def,blast)
   with `nx \<in> obs (sourcenode a) (?WOD_BS)` `m \<in> obs (sourcenode a) (?WOD_BS)` 
   have "sourcenode a \<in> ?WOD_BS" by(fastforce elim:cd_closed elim:obsE)
   with `sourcenode a \<notin> ?WOD_BS` show False by simp

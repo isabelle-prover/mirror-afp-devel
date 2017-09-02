@@ -7,7 +7,7 @@
 
 section {* Kripke Structures as Hierarchical Automata*}
 theory HAKripke
-imports HASem "Kripke"
+imports HASem Kripke
 begin
 
 type_synonym ('s,'e,'d)hakripke = "(('s,'e,'d)status,('s,'e,'d)atomar)kripke"

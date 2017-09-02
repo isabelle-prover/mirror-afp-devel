@@ -2,7 +2,7 @@ theory IP_Address_toString
 imports IP_Address IPv4 IPv6
         Lib_Word_toString
         Lib_List_toString
-        "~~/src/HOL/Library/Code_Target_Nat" (*!!*)
+        "HOL-Library.Code_Target_Nat" (*!!*)
 begin
 
 section\<open>Pretty Printing IP Addresses\<close>

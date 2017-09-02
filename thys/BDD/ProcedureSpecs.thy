@@ -28,7 +28,7 @@ USA
 
 section {* Definitions of Procedures *}
 theory ProcedureSpecs
-imports General "../Simpl/Vcg"
+imports General Simpl.Vcg
 begin
 
 record "globals" =

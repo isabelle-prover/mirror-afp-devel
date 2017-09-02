@@ -1,5 +1,5 @@
 theory Sepref_Constraints
-imports Main "../Automatic_Refinement/Lib/Refine_Lib" "Sepref_Basic"
+imports Main Automatic_Refinement.Refine_Lib Sepref_Basic
 begin
 
 definition "CONSTRAINT_SLOT (x::prop) \<equiv> x"

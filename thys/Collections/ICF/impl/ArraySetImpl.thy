@@ -2,7 +2,7 @@ section {* \isaheader{Set Implementation by Arrays} *}
 theory ArraySetImpl
 imports 
   "../spec/SetSpec" 
-  "ArrayMapImpl" 
+  ArrayMapImpl 
   "../gen_algo/SetByMap" 
   "../gen_algo/SetGA"
 begin

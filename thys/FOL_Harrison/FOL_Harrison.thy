@@ -11,7 +11,7 @@ chapter \<open>FOL-Harrison\<close>
 
 theory FOL_Harrison
 imports
-  "~~/src/HOL/Library/Code_Char"
+  "HOL-Library.Code_Char"
 begin
 
 section \<open>Module Proven\<close>

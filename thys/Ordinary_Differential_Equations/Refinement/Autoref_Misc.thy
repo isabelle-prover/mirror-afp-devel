@@ -1,8 +1,8 @@
 (* TODO: Integrate into Misc*)
 theory Autoref_Misc
 imports
-  "Refine_Dflt_No_Comp"
-  Analysis
+  "HOL-ODE-Refinement.Refine_Dflt_No_Comp"
+  "HOL-Analysis.Analysis"
 begin
 
 (*****************************)

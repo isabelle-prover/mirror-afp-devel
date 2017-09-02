@@ -10,8 +10,8 @@ section \<open>Linear orderings as relations\<close>
 theory Linorder_Relations
   imports 
     Complex_Main 
-    "~~/src/HOL/Library/Multiset_Permutations"
-    "../List-Index/List_Index"
+    "HOL-Library.Multiset_Permutations"
+    "List-Index.List_Index"
 begin
 
 subsection \<open>Auxiliary facts\<close>

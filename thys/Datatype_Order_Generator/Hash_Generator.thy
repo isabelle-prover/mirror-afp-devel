@@ -26,7 +26,7 @@ section {* Hash functions *}
 
 theory Hash_Generator
 imports 
-  "../Collections/Lib/HashCode"
+  Collections.HashCode
   Derive_Aux
 begin
 

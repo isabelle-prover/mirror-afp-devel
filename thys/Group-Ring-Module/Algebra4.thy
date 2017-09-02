@@ -25,7 +25,7 @@
  **)
 
 theory Algebra4
-imports Algebra3 Zorn
+imports Algebra3 HOL.Zorn
 begin
 
 section "Abelian groups"

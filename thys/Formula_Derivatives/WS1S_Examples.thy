@@ -2,7 +2,7 @@ section \<open>Examples for WS1S (Minimum Semantics)\<close>
 
 (*<*)
 theory WS1S_Examples
-imports WS1S_Formula
+imports Formula_Derivatives.WS1S_Formula
 begin
 (*>*)
 

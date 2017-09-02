@@ -2,8 +2,10 @@ chapter AFP
 
 session Category2 (AFP) = "HOL-Library" +
   options [timeout = 600]
+  sessions
+    "HOL-ZF"
   theories [document = false]
-    "~~/src/HOL/ZF/MainZF"
+    "HOL-ZF.MainZF"
   theories
     MonadicEquationalTheory
     Yoneda

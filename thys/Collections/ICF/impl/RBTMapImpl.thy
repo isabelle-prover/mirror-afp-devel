@@ -14,7 +14,7 @@ theory RBTMapImpl
 imports 
   "../spec/MapSpec"
   "../../Lib/RBT_add" 
-  "~~/src/HOL/Library/RBT"
+  "HOL-Library.RBT"
   "../gen_algo/MapGA"
 begin
 text_raw {*\label{thy:RBTMapImpl}*}

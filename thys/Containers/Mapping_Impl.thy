@@ -5,7 +5,7 @@
 theory Mapping_Impl imports 
   RBT_Mapping2
   AssocList
-  "~~/src/HOL/Library/Mapping"
+  "HOL-Library.Mapping"
   Set_Impl
   Containers_Generator
 begin

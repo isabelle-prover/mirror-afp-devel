@@ -1,7 +1,7 @@
 section {* The New Algorithm *}
 
 theory New_Algorithm_Defs
-imports "../../Heard_Of/HOModel" "../Consensus_Types" "../Consensus_Misc" Three_Steps
+imports Heard_Of.HOModel "../Consensus_Types" "../Consensus_Misc" Three_Steps
 begin
 
 subsection {* Model of the algorithm *}

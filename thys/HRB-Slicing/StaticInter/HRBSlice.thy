@@ -12,7 +12,7 @@ inductive_set sum_SDG_slice1 :: "'node SDG_node \<Rightarrow> 'node SDG_node set
   | cdep_slice1:
   "\<lbrakk>n'' s\<longrightarrow>\<^bsub>cd\<^esub> n'; n' \<in> sum_SDG_slice1 n\<rbrakk> \<Longrightarrow> n'' \<in> sum_SDG_slice1 n"
   | ddep_slice1: 
-  "\<lbrakk>n'' s-V\<rightarrow>\<^bsub>dd\<^esub> n'; n' \<in> sum_SDG_slice1 n\<rbrakk> \<Longrightarrow> n'' \<in> sum_SDG_slice1 n"
+  "\<lbrakk>n'' s-V\<rightarrow>\<^sub>d\<^sub>d n'; n' \<in> sum_SDG_slice1 n\<rbrakk> \<Longrightarrow> n'' \<in> sum_SDG_slice1 n"
   | call_slice1:
   "\<lbrakk>n'' s-p\<rightarrow>\<^bsub>call\<^esub> n'; n' \<in> sum_SDG_slice1 n\<rbrakk> \<Longrightarrow> n'' \<in> sum_SDG_slice1 n"
   | param_in_slice1: 
@@ -27,7 +27,7 @@ by(induct rule:sum_SDG_slice1.induct,
    auto intro:sum_SDG_slice1.intros sum_SDG_edge_valid_SDG_node)
 
 lemma slice1_ddep_slice1:
-  "\<lbrakk>nx \<in> sum_SDG_slice1 n; n s-V\<rightarrow>\<^bsub>dd\<^esub> n'\<rbrakk> \<Longrightarrow> nx \<in> sum_SDG_slice1 n'"
+  "\<lbrakk>nx \<in> sum_SDG_slice1 n; n s-V\<rightarrow>\<^sub>d\<^sub>d n'\<rbrakk> \<Longrightarrow> nx \<in> sum_SDG_slice1 n'"
 by(induct rule:sum_SDG_slice1.induct,
    auto intro:sum_SDG_slice1.intros sum_SDG_edge_valid_SDG_node)
 
@@ -60,7 +60,7 @@ next
 next
   case (isSp_Append_ddep n ns nx V n')
   note IH = `nx \<in> sum_SDG_slice1 n'' \<Longrightarrow> n \<in> sum_SDG_slice1 n''`
-  from `nx s-V\<rightarrow>\<^bsub>dd\<^esub> n'` `n' \<in> sum_SDG_slice1 n''`
+  from `nx s-V\<rightarrow>\<^sub>d\<^sub>d n'` `n' \<in> sum_SDG_slice1 n''`
   have "nx \<in> sum_SDG_slice1 n''" by(rule ddep_slice1)
   from IH[OF this] show ?case .
 next
@@ -80,7 +80,7 @@ inductive_set sum_SDG_slice2 :: "'node SDG_node \<Rightarrow> 'node SDG_node set
   | cdep_slice2:
   "\<lbrakk>n'' s\<longrightarrow>\<^bsub>cd\<^esub> n'; n' \<in> sum_SDG_slice2 n\<rbrakk> \<Longrightarrow> n'' \<in> sum_SDG_slice2 n"
   | ddep_slice2: 
-  "\<lbrakk>n'' s-V\<rightarrow>\<^bsub>dd\<^esub> n'; n' \<in> sum_SDG_slice2 n\<rbrakk> \<Longrightarrow> n'' \<in> sum_SDG_slice2 n"
+  "\<lbrakk>n'' s-V\<rightarrow>\<^sub>d\<^sub>d n'; n' \<in> sum_SDG_slice2 n\<rbrakk> \<Longrightarrow> n'' \<in> sum_SDG_slice2 n"
   | return_slice2:
   "\<lbrakk>n'' s-p\<rightarrow>\<^bsub>ret\<^esub> n'; n' \<in> sum_SDG_slice2 n\<rbrakk> \<Longrightarrow> n'' \<in> sum_SDG_slice2 n"
   | param_out_slice2: 
@@ -95,7 +95,7 @@ by(induct rule:sum_SDG_slice2.induct,
    auto intro:sum_SDG_slice2.intros sum_SDG_edge_valid_SDG_node)
 
 lemma slice2_ddep_slice2:
-  "\<lbrakk>nx \<in> sum_SDG_slice2 n; n s-V\<rightarrow>\<^bsub>dd\<^esub> n'\<rbrakk> \<Longrightarrow> nx \<in> sum_SDG_slice2 n'"
+  "\<lbrakk>nx \<in> sum_SDG_slice2 n; n s-V\<rightarrow>\<^sub>d\<^sub>d n'\<rbrakk> \<Longrightarrow> nx \<in> sum_SDG_slice2 n'"
 by(induct rule:sum_SDG_slice2.induct,
    auto intro:sum_SDG_slice2.intros sum_SDG_edge_valid_SDG_node)
 
@@ -128,7 +128,7 @@ next
 next
   case (isSp_Append_ddep n ns nx V n')
   note IH = `nx \<in> sum_SDG_slice2 n'' \<Longrightarrow> n \<in> sum_SDG_slice2 n''`
-  from `nx s-V\<rightarrow>\<^bsub>dd\<^esub> n'` `n' \<in> sum_SDG_slice2 n''`
+  from `nx s-V\<rightarrow>\<^sub>d\<^sub>d n'` `n' \<in> sum_SDG_slice2 n''`
   have "nx \<in> sum_SDG_slice2 n''" by(rule ddep_slice2)
   from IH[OF this] show ?case .
 next
@@ -154,7 +154,7 @@ next
   case (isSp_Append_ddep n ns nx V n')
   from `n'' \<in> sum_SDG_slice2 n \<Longrightarrow> n'' \<in> sum_SDG_slice2 nx` `n'' \<in> sum_SDG_slice2 n`
   have "n'' \<in> sum_SDG_slice2 nx" .
-  with `nx s-V\<rightarrow>\<^bsub>dd\<^esub> n'` show ?case by -(rule slice2_ddep_slice2)
+  with `nx s-V\<rightarrow>\<^sub>d\<^sub>d n'` show ?case by -(rule slice2_ddep_slice2)
 next
   case (isSp_Append_sum n ns nx p n')
   from `n'' \<in> sum_SDG_slice2 n \<Longrightarrow> n'' \<in> sum_SDG_slice2 nx` `n'' \<in> sum_SDG_slice2 n`
@@ -264,14 +264,14 @@ next
   proof(induct rule:HRB_slice_cases)
     case (phase1 n nx') 
     from `nx' \<in> {nx}` have "nx' = nx" by simp
-    with `n \<in> sum_SDG_slice1 nx'` `nx s-V\<rightarrow>\<^bsub>dd\<^esub> n'` have "n \<in> sum_SDG_slice1 n'"
+    with `n \<in> sum_SDG_slice1 nx'` `nx s-V\<rightarrow>\<^sub>d\<^sub>d n'` have "n \<in> sum_SDG_slice1 n'"
       by(fastforce intro:slice1_ddep_slice1)
     with `n' \<in> S` show ?case
       by(fastforce intro:combine_SDG_slices.combSlice_refl simp:HRB_slice_def)
   next
     case (phase2 nx'' nx' n'' p n)
     from `nx'' \<in> {nx}` have "nx'' = nx" by simp
-    with `nx' \<in> sum_SDG_slice1 nx''` `nx s-V\<rightarrow>\<^bsub>dd\<^esub> n'` have "nx' \<in> sum_SDG_slice1 n'"
+    with `nx' \<in> sum_SDG_slice1 nx''` `nx s-V\<rightarrow>\<^sub>d\<^sub>d n'` have "nx' \<in> sum_SDG_slice1 n'"
       by(fastforce intro:slice1_ddep_slice1)
     with `n'' s-p\<rightarrow>\<^bsub>ret\<^esub> CFG_node (parent_node nx')` `n \<in> sum_SDG_slice2 nx'` `n' \<in> S`
     show ?case by(fastforce intro:combine_SDG_slices.combSlice_Return_parent_node 
@@ -390,13 +390,13 @@ next
   proof
     assume "n'' \<in> set ns"
     from IH[OF this] have "n'' \<in> sum_SDG_slice2 nx" by simp
-    with `nx -V\<rightarrow>\<^bsub>dd\<^esub> n'` show ?thesis
+    with `nx -V\<rightarrow>\<^sub>d\<^sub>d n'` show ?thesis
       by(fastforce intro:slice2_ddep_slice2 SDG_edge_sum_SDG_edge)
   next
     assume "n'' = nx"
-    from `nx -V\<rightarrow>\<^bsub>dd\<^esub> n'` have "valid_SDG_node n'" by(rule SDG_edge_valid_SDG_node)
+    from `nx -V\<rightarrow>\<^sub>d\<^sub>d n'` have "valid_SDG_node n'" by(rule SDG_edge_valid_SDG_node)
     hence "n' \<in> sum_SDG_slice2 n'" by(rule refl_slice2)
-    with `nx -V\<rightarrow>\<^bsub>dd\<^esub> n'` have "nx \<in> sum_SDG_slice2 n'"
+    with `nx -V\<rightarrow>\<^sub>d\<^sub>d n'` have "nx \<in> sum_SDG_slice2 n'"
       by(fastforce intro:ddep_slice2 SDG_edge_sum_SDG_edge)
     with `n'' = nx` show ?thesis by simp
   qed
@@ -436,15 +436,15 @@ next
   proof
     assume "n'' \<in> set ns"
     from IH[OF `n'' \<in> set ns`] have "n'' \<in> HRB_slice {nx}" by simp
-    from this `nx -V\<rightarrow>\<^bsub>dd\<^esub> n'` `n' \<in> S` show ?case
+    from this `nx -V\<rightarrow>\<^sub>d\<^sub>d n'` `n' \<in> S` show ?case
       by(fastforce elim:HRB_slice_cases slice1_ddep_slice1
         intro:bexI[where x="n'"] combine_SDG_slices.intros SDG_edge_sum_SDG_edge 
         simp:HRB_slice_def)
   next
     assume "n'' = nx"
-    from `nx -V\<rightarrow>\<^bsub>dd\<^esub> n'` have "valid_SDG_node n'" by(rule SDG_edge_valid_SDG_node)
+    from `nx -V\<rightarrow>\<^sub>d\<^sub>d n'` have "valid_SDG_node n'" by(rule SDG_edge_valid_SDG_node)
     hence "n' \<in> sum_SDG_slice1 n'" by(rule refl_slice1)
-    with `nx -V\<rightarrow>\<^bsub>dd\<^esub> n'` have "nx \<in> sum_SDG_slice1 n'" 
+    with `nx -V\<rightarrow>\<^sub>d\<^sub>d n'` have "nx \<in> sum_SDG_slice1 n'" 
       by(fastforce intro:ddep_slice1 SDG_edge_sum_SDG_edge)
     with `n'' = nx` `n' \<in> S` show ?case 
       by(fastforce intro:combSlice_refl simp:HRB_slice_def)
@@ -793,7 +793,7 @@ proof(atomize_elim)
     qed
   next
     case (ddep_slice1 n'' V n)
-    from `n'' s-V\<rightarrow>\<^bsub>dd\<^esub> n` have "valid_SDG_node n''" by(rule sum_SDG_edge_valid_SDG_node)
+    from `n'' s-V\<rightarrow>\<^sub>d\<^sub>d n` have "valid_SDG_node n''" by(rule sum_SDG_edge_valid_SDG_node)
     hence "n'' ics-[]\<rightarrow>\<^sub>d* n''" by(rule icsSp_Nil)
     from `valid_SDG_node n''` have "valid_node (parent_node n'')"
       by(rule valid_SDG_CFG_node)
@@ -802,11 +802,11 @@ proof(atomize_elim)
       case True
       with `valid_SDG_node n''` have "n'' = CFG_node (_Exit_)"
         by(rule valid_SDG_node_parent_Exit)
-      with `n'' s-V\<rightarrow>\<^bsub>dd\<^esub> n` have False by(fastforce intro:Exit_no_sum_SDG_edge_source)
+      with `n'' s-V\<rightarrow>\<^sub>d\<^sub>d n` have False by(fastforce intro:Exit_no_sum_SDG_edge_source)
       thus ?thesis by simp
     next
       case False
-      from `n'' s-V\<rightarrow>\<^bsub>dd\<^esub> n` have "valid_SDG_node n''"
+      from `n'' s-V\<rightarrow>\<^sub>d\<^sub>d n` have "valid_SDG_node n''"
         by(rule sum_SDG_edge_valid_SDG_node)
       from this False obtain ns 
         where "CFG_node (_Entry_) cc-ns\<rightarrow>\<^sub>d* n''"
@@ -827,7 +827,7 @@ proof(atomize_elim)
         qed
       next
         case False
-        with `n'' s-V\<rightarrow>\<^bsub>dd\<^esub> n` `CFG_node (_Entry_) ics-ns\<rightarrow>\<^sub>d* n''`
+        with `n'' s-V\<rightarrow>\<^sub>d\<^sub>d n` `CFG_node (_Entry_) ics-ns\<rightarrow>\<^sub>d* n''`
         have "CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^sub>d* n"
           by -(rule icsSp_Append_ddep)
         from `n = n' \<or> (\<exists>ns. CFG_node (_Entry_) ics-ns\<rightarrow>\<^sub>d* n' \<and> n \<in> set ns)`

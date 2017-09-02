@@ -4,8 +4,8 @@ section {* Cardinality of Set Partitions *}
 
 theory Card_Partitions
 imports
-  "~~/src/HOL/Library/Stirling"
-  "~~/src/HOL/Library/Disjoint_Sets"
+  "HOL-Library.Stirling"
+  "HOL-Library.Disjoint_Sets"
 begin
 
 subsection {* Insertion of Elements into Set Partitions *}

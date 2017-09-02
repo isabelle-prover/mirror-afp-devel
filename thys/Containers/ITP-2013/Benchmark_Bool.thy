@@ -1,5 +1,5 @@
 theory Benchmark_Bool imports
-  "../Set_Impl" 
+  Containers.Set_Impl 
 begin
 
 definition bool_DList :: "bool set"

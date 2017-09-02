@@ -1,6 +1,6 @@
 theory "Frechet_Correctness"
 imports
-  "../Ordinary_Differential_Equations/ODE_Analysis"
+  Ordinary_Differential_Equations.ODE_Analysis
   "./Lib"
   "./Syntax"
   "./Denotational_Semantics"

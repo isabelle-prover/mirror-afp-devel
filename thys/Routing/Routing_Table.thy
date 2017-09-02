@@ -1,8 +1,8 @@
 section\<open>Routing Table\<close>
 theory Routing_Table
-imports "../IP_Addresses/Prefix_Match"
-        "../IP_Addresses/IPv4" "../IP_Addresses/IPv6"
-        "Linorder_Helper"
+imports IP_Addresses.Prefix_Match
+        IP_Addresses.IPv4 IP_Addresses.IPv6
+        Linorder_Helper
         "../IP_Addresses/Prefix_Match_toString"
 begin
 

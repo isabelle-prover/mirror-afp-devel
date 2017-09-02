@@ -1,7 +1,7 @@
 theory IICF_MS_Array_List
 imports 
   "../Intf/IICF_List" 
-  "../../../Separation_Logic_Imperative_HOL/Examples/Array_Blit"
+  Sepref_Prereq.Array_Blit
   "../../../Separation_Logic_Imperative_HOL/Examples/Default_Insts"
 begin
 

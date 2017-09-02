@@ -7,7 +7,7 @@ Authors: Toby Murray, Robert Sison, Edward Pierzchalski, Christine Rizkallah
 theory Example_Swap_Add
 imports 
   "../TypeSystem" 
-  "TypeSystemTactics"
+  TypeSystemTactics
 begin
 
 text {*

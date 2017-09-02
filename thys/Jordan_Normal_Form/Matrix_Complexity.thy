@@ -42,9 +42,9 @@ abbreviation weak_mat_gt :: "nat \<Rightarrow> 'a mat \<Rightarrow> 'a mat \<Rig
 where "weak_mat_gt \<equiv> mat_gt weak_gt"
 
 lemma weak_mat_gt_mono: assumes sd_n: "sd \<le> n" and
-    orient: "\<And> A B. A \<in> carrier\<^sub>m n n \<Longrightarrow> B \<in> carrier\<^sub>m n n \<Longrightarrow> (A,B) \<in> set ABs \<Longrightarrow> weak_mat_gt sd A B"
+    orient: "\<And> A B. A \<in> carrier_mat n n \<Longrightarrow> B \<in> carrier_mat n n \<Longrightarrow> (A,B) \<in> set ABs \<Longrightarrow> weak_mat_gt sd A B"
    shows "\<exists> gt bound. mono_matrix_carrier gt default bound mono 
-   \<and> (\<forall> A B. A \<in> carrier\<^sub>m n n \<longrightarrow> B \<in> carrier\<^sub>m n n \<longrightarrow> (A, B) \<in> set ABs \<longrightarrow> mat_gt gt sd A B)"
+   \<and> (\<forall> A B. A \<in> carrier_mat n n \<longrightarrow> B \<in> carrier_mat n n \<longrightarrow> (A, B) \<in> set ABs \<longrightarrow> mat_gt gt sd A B)"
 proof -
   let ?n = "[0 ..< n]"
   let ?m1x = "[ A $$ (i,j) . A <- map fst ABs, i <- ?n, j <- ?n]"
@@ -57,7 +57,7 @@ proof -
   show ?thesis
   proof (intro exI allI conjI impI, rule order)
     fix A B
-    assume A: "A \<in> carrier\<^sub>m n n" and B: "B \<in> carrier\<^sub>m n n"
+    assume A: "A \<in> carrier_mat n n" and B: "B \<in> carrier_mat n n"
       and AB: "(A, B) \<in> set ABs"          
     from orient[OF this] have "mat_gt weak_gt sd A B" by auto
     from mat_gtD[OF this] obtain i j where

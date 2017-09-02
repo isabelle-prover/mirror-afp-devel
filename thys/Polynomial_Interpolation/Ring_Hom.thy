@@ -7,10 +7,10 @@ section \<open>Several Locales for Homomorphisms Between Types.\<close>
 
 theory Ring_Hom
 imports 
-  Complex
+  HOL.Complex
   Main
-  "~~/src/HOL/Library/Multiset"
-  "~~/src/HOL/Computational_Algebra/Factorial_Ring"
+  "HOL-Library.Multiset"
+  "HOL-Computational_Algebra.Factorial_Ring"
 begin
 
 hide_const (open) mult

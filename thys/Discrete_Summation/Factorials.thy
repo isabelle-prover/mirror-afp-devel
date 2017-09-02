@@ -1,10 +1,10 @@
 
-(* Authors: Amine Chaieb & Florian Haftmann, TU Muenchen with a contribution by Lukas Bulwahn *)
+(* Authors: Amine Chaieb & Florian Haftmann, TU Muenchen with contributions by Lukas Bulwahn *)
 
 section {* Falling factorials *}
 
 theory Factorials
-  imports Complex_Main "~~/src/HOL/Library/Stirling"
+  imports Complex_Main "HOL-Library.Stirling"
 begin
 
 lemma pochhammer_0 [simp]: -- \<open>TODO move\<close>
@@ -65,7 +65,7 @@ next
   then show ?thesis
     by (simp add: ffact_nat_triv)
 qed
-     
+
 lemma fact_div_fact_ffact:
   "fact n div fact m = ffact (n - m) n" if "m \<le> n"
 proof -
@@ -76,7 +76,7 @@ proof -
   ultimately show ?thesis
     by simp
 qed
-      
+
 lemma ffact_fact:
   "ffact n (of_nat n) = (of_nat (fact n) :: 'a :: comm_ring_1)"
   by (induct n) (simp_all add: algebra_simps ffact_Suc)
@@ -115,7 +115,7 @@ next
       by (simp add: algebra_simps ffact_Suc_nat ffact_Suc)
   qed
 qed
-      
+
 lemma of_int_ffact:
   "of_int (ffact n k) = ffact n (of_int k :: 'a :: comm_ring_1)"
 proof (induct n arbitrary: k)
@@ -127,6 +127,19 @@ next
     by (simp add: ffact_Suc_nat ffact_Suc)
 qed
 
+lemma ffact_minus:
+  fixes x :: "'a :: comm_ring_1"
+  shows "ffact n (- x) = (- 1) ^ n * pochhammer x n"
+proof -
+  have "ffact n (- x) = pochhammer (- x + 1 - of_nat n) n"
+    unfolding ffact_def ..
+  also have "\<dots> = pochhammer (- x - of_nat n + 1) n"
+    by (simp add: diff_add_eq)
+  also have "\<dots> = (- 1) ^ n * pochhammer (- (- x)) n"
+    by (rule pochhammer_minus')
+  also have "\<dots> = (- 1) ^ n * pochhammer x n" by simp
+  finally show ?thesis .
+qed
 
 text {* Conversion of natural potences into falling factorials and back *}
 

@@ -10,7 +10,7 @@ section \<open>Periodic Bernoulli polynomials\<close>
 theory Periodic_Bernpoly
 imports 
   Bernoulli
-  "~~/src/HOL/Library/Periodic_Fun"
+  "HOL-Library.Periodic_Fun"
 begin
   
 text \<open>
@@ -210,6 +210,12 @@ next
   thus ?thesis by (rule continuous_on_subset) simp_all
 qed
 
+lemma continuous_on_pbernpoly' [continuous_intros]:
+  assumes "n \<noteq> 1" "continuous_on A f"
+  shows   "continuous_on A (\<lambda>x. pbernpoly n (f x))"
+  using continuous_on_compose[OF assms(2) continuous_on_pbernpoly[OF assms(1)]]
+  by (simp add: o_def)
+
 lemma isCont_pbernpoly [continuous_intros]: "n \<noteq> 1 \<Longrightarrow> isCont (pbernpoly n) x"
   using continuous_on_pbernpoly[of n UNIV] by (simp add: continuous_on_eq_continuous_at)   
 
@@ -277,10 +283,12 @@ lemmas has_field_derivative_pbernpoly_Suc' =
 
 lemma bounded_pbernpoly: obtains c where "\<And>x. norm (pbernpoly n x) \<le> c"
 proof -
-  have "\<exists>x\<in>{0..1}. \<forall>y\<in>{0..1}. norm (bernpoly n y) \<le> norm (bernpoly n x)"
+  have "\<exists>x\<in>{0..1}. \<forall>y\<in>{0..1}. norm (bernpoly n y :: real) \<le> norm (bernpoly n x :: real)"
     by (intro continuous_attains_sup) (auto intro!: continuous_intros)
-  then obtain x where x: "\<And>y. y \<in> {0..1} \<Longrightarrow> norm (bernpoly n y) \<le> norm (bernpoly n x)" by blast
-  have "norm (pbernpoly n y) \<le> norm (bernpoly n x)" for y
+  then obtain x where x: 
+    "\<And>y. y \<in> {0..1} \<Longrightarrow> norm (bernpoly n y :: real) \<le> norm (bernpoly n x :: real)" 
+    by blast
+  have "norm (pbernpoly n y) \<le> norm (bernpoly n x :: real)" for y
     unfolding pbernpoly_def using frac_lt_1[of y] by (intro x) simp_all
   thus ?thesis by (rule that)
 qed

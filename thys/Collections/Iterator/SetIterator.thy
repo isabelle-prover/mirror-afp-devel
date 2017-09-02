@@ -5,8 +5,8 @@
 section {* \isaheader{Iterators over Finite Sets} *}
 theory SetIterator
 imports 
-  "../../Automatic_Refinement/Lib/Misc" 
-  "../../Automatic_Refinement/Lib/Foldi" 
+  Automatic_Refinement.Misc 
+  Automatic_Refinement.Foldi 
   (*"../../Refine_Monadic/Refine_Monadic"*)
 begin
 

@@ -3,7 +3,7 @@ section {* Sums in monoids*}
 theory MonoidSums
 
 imports Main
-  "~~/src/HOL/Algebra/Module"
+  "HOL-Algebra.Module"
   RingModuleFacts
   FunctionLemmas
 begin

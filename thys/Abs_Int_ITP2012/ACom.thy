@@ -3,7 +3,7 @@
 section "Annotated Commands"
 
 theory ACom
-imports "~~/src/HOL/IMP/Com"
+imports "HOL-IMP.Com"
 begin
 
 datatype 'a acom =

@@ -7,7 +7,7 @@ Confluence of beta for ASP, based on the equally named file in HOL/Proofs/Lambda
 
 section {* Parallel reduction *}
 
-theory ParRed imports "~~/src/HOL/Proofs/Lambda/Commutation" Sigma begin
+theory ParRed imports "HOL-Proofs-Lambda.Commutation" Sigma begin
 
 subsection {* Parallel reduction *}
 inductive par_beta :: "[sterm,sterm] \<Rightarrow> bool"  (infixl "\<Rightarrow>\<^sub>\<beta>" 50)

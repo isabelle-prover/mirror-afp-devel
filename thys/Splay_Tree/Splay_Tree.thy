@@ -1,60 +1,39 @@
-theory Splay_Tree
-imports "~~/src/HOL/Library/Tree"
-begin
-
 section "Splay Tree"
 
-text{* Splay trees were invented by Sleator and
-Tarjan~\cite{SleatorT-JACM85}. *}
+theory Splay_Tree
+imports
+  "HOL-Library.Tree"
+  "~~/src/HOL/Data_Structures/Set_by_Ordered"
+  "~~/src/HOL/Data_Structures/Cmp"
+begin
 
-text{* This compensates for an incompleteness of the partial order prover: *}
-simproc_setup less_False ("(x::'a::order) < y") = {* fn _ => fn ctxt => fn ct =>
-  let
-    fun prp t thm = Thm.full_prop_of thm aconv t;
-
-    val eq_False_if_not = @{thm eq_False} RS iffD2
-
-    fun prove_less_False ((less as Const(_,T)) $ r $ s) =
-      let val prems = Simplifier.prems_of ctxt;
-          val le = Const (@{const_name less_eq}, T);
-          val t = HOLogic.mk_Trueprop(le $ s $ r);
-      in case find_first (prp t) prems of
-           NONE =>
-             let val t = HOLogic.mk_Trueprop(less $ s $ r)
-             in case find_first (prp t) prems of
-                  NONE => NONE
-                | SOME thm => SOME(mk_meta_eq((thm RS @{thm less_not_sym}) RS eq_False_if_not))
-             end
-         | SOME thm => NONE
-      end;
-  in prove_less_False (Thm.term_of ct) end
-*}
+text{* Splay trees were invented by Sleator and Tarjan~\cite{SleatorT-JACM85}. *}
 
 subsection "Function @{text splay}"
 
 function splay :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
-"splay a Leaf = Leaf" |
-"splay a (Node l a r) = Node l a r" |
-"a<b \<Longrightarrow> splay a (Node (Node la a ra) b rb) = Node la a (Node ra b rb)" |
-"a<b \<Longrightarrow> splay a (Node Leaf b r) = Node Leaf b r" |
-"x<a \<Longrightarrow> x<b \<Longrightarrow> splay x (Node (Node Leaf a ra) b rb) = Node Leaf a (Node ra b rb)" |
-"x<a \<Longrightarrow> x<b \<Longrightarrow> la \<noteq> Leaf \<Longrightarrow>
- splay x (Node (Node la a lr) b rb) =
- (case splay x la of Node lc c rc \<Rightarrow> Node lc c (Node rc a (Node lr b rb)))" |
-"x<b \<Longrightarrow> a<x \<Longrightarrow> splay x (Node (Node la a Leaf) b rb) = Node la a (Node Leaf b rb)" |
-"x<b \<Longrightarrow> a<x \<Longrightarrow> ra \<noteq> Leaf \<Longrightarrow>
- splay x (Node (Node la a ra) b rb) =
- (case splay x ra of Node lc c rc \<Rightarrow> Node (Node la a lc) c (Node rc b rb))" |
-"b<a \<Longrightarrow> splay a (Node lb b (Node la a ra)) = Node (Node lb b la) a ra" |
-"a<x \<Longrightarrow> splay x (Node l a Leaf) = Node l a Leaf" |
-"a<x \<Longrightarrow> x<b \<Longrightarrow> lb \<noteq> Leaf \<Longrightarrow>
- splay x (Node la a (Node lb b rb)) =
- (case splay x lb of Node lc c rc \<Rightarrow> Node (Node la a lc) c (Node rc b rb))" |
-"a<x \<Longrightarrow> x<b \<Longrightarrow> splay x (Node la a (Node Leaf b rb)) = Node (Node la a Leaf) b rb" |
-"a<x \<Longrightarrow> b<x \<Longrightarrow> splay x (Node la a (Node lb b Leaf)) = Node (Node la a lb) b Leaf" |
-"a<x \<Longrightarrow> b<x \<Longrightarrow> rb \<noteq> Leaf \<Longrightarrow>
- splay x (Node la a (Node lb b rb)) =
- (case splay x rb of Node lc c rc \<Rightarrow> Node (Node (Node la a lb) b lc) c rc)"
+"splay x Leaf = Leaf" |
+"splay x (Node A x B) = Node A x B" |
+"x<b \<Longrightarrow> splay x (Node (Node A x B) b C) = Node A x (Node B b C)" |
+"x<b \<Longrightarrow> splay x (Node Leaf b A) = Node Leaf b A" |
+"x<a \<Longrightarrow> x<b \<Longrightarrow> splay x (Node (Node Leaf a A) b B) = Node Leaf a (Node A b B)" |
+"x<b \<Longrightarrow> x<c \<Longrightarrow> AB \<noteq> Leaf \<Longrightarrow>
+ splay x (Node (Node AB b C) c D) =
+ (case splay x AB of Node A a B \<Rightarrow> Node A a (Node B b (Node C c D)))" |
+"x<b \<Longrightarrow> a<x \<Longrightarrow> splay x (Node (Node A a Leaf) b B) = Node A a (Node Leaf b B)" |
+"x<c \<Longrightarrow> a<x \<Longrightarrow> BC \<noteq> Leaf \<Longrightarrow>
+ splay x (Node (Node A a BC) c D) =
+ (case splay x BC of Node B b C \<Rightarrow> Node (Node A a B) b (Node C c D))" |
+"a<x \<Longrightarrow> splay x (Node A a (Node B x C)) = Node (Node A a B) x C" |
+"a<x \<Longrightarrow> splay x (Node A a Leaf) = Node A a Leaf" |
+"a<x \<Longrightarrow> x<c \<Longrightarrow> BC \<noteq> Leaf \<Longrightarrow>
+ splay x (Node A a (Node BC c D)) =
+ (case splay x BC of Node B b C \<Rightarrow> Node (Node A a B) b (Node C c D))" |
+"a<x \<Longrightarrow> x<b \<Longrightarrow> splay x (Node A a (Node Leaf b C)) = Node (Node A a Leaf) b C" |
+"a<x \<Longrightarrow> b<x \<Longrightarrow> splay x (Node A a (Node B b Leaf)) = Node (Node A a B) b Leaf" |
+"a<x \<Longrightarrow> b<x \<Longrightarrow> CD \<noteq> Leaf \<Longrightarrow>
+ splay x (Node A a (Node B b CD)) =
+ (case splay x CD of Node C c D \<Rightarrow> Node (Node (Node A a B) b C) c D)"
 apply(atomize_elim)
 apply(auto)
 (* 1 subgoal *)
@@ -92,13 +71,135 @@ lemma splay_code: "splay x (Node la a ra) =
                   else if rb=Leaf then Node (Node la a lb) b rb
                        else case splay x rb of
                          Node lc c rc \<Rightarrow> Node (Node (Node la a lb) b lc) c rc))"
-by(auto split: tree.split)
+by(auto split!: tree.split)
+
+definition is_root :: "'a \<Rightarrow> 'a tree \<Rightarrow> bool" where
+"is_root x t = (case t of Leaf \<Rightarrow> False | Node l a r \<Rightarrow> x = a)"
+
+definition "isin t x = is_root x (splay x t)"
+
+hide_const (open) insert
+
+fun insert :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
+"insert x t =
+  (if t = Leaf then Node Leaf x Leaf
+   else case splay x t of
+     Node l a r \<Rightarrow>
+      case cmp x a of
+        EQ \<Rightarrow> Node l a r |
+        LT \<Rightarrow> Node l x (Node Leaf a r) |
+        GT \<Rightarrow> Node (Node l a Leaf) x r)"
+
+
+fun splay_max :: "'a tree \<Rightarrow> 'a tree" where
+"splay_max Leaf = Leaf" |
+"splay_max (Node l b Leaf) = Node l b Leaf" |
+"splay_max (Node l b (Node rl c rr)) =
+  (if rr = Leaf then Node (Node l b rl) c Leaf
+   else case splay_max rr of
+     Node rrl m rrr \<Rightarrow> Node (Node (Node l b rl) c rrl) m rrr)"
+
+lemma splay_max_code: "splay_max t = (case t of
+  Leaf \<Rightarrow> t |
+  Node la a ra \<Rightarrow> (case ra of
+    Leaf \<Rightarrow> t |
+    Node lb b rb \<Rightarrow>
+      (if rb=Leaf then Node (Node la a lb) b rb
+       else case splay_max rb of
+              Node lc c rc \<Rightarrow> Node (Node (Node la a lb) b lc) c rc)))"
+by(auto simp: neq_Leaf_iff split: tree.split)
+
+definition delete :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
+"delete x t =
+  (if t = Leaf then Leaf
+   else case splay x t of Node l a r \<Rightarrow>
+     if x = a
+     then if l = Leaf then r else case splay_max l of Node l' m r' \<Rightarrow> Node l' m r
+     else Node l a r)"
+
+
+
+subsection "Functional Correctness Proofs I"
+
+text \<open>This subsection follows the automated method by Nipkow \cite{Nipkow-ITP16}.\<close>
 
 lemma splay_Leaf_iff[simp]: "(splay a t = Leaf) = (t = Leaf)"
-apply(induction a t rule: splay.induct)
-apply auto
- apply(auto split: tree.splits)
-done
+by(induction a t rule: splay.induct) (auto split: tree.splits)
+
+lemma splay_max_Leaf_iff[simp]: "(splay_max t = Leaf) = (t = Leaf)"
+by(induction t rule: splay_max.induct)(auto split: tree.splits)
+
+
+subsubsection "Verification of @{const isin}"
+
+lemma
+  "splay x t = Node l a r \<Longrightarrow> sorted(inorder t) \<Longrightarrow>
+  x \<in> elems (inorder t) \<longleftrightarrow> x=a"
+by(induction x t arbitrary: l a r rule: splay.induct)
+  (auto simp: elems_simps1 ball_Un split: tree.splits)
+
+lemma splay_elemsD:
+  "splay x t = Node l a r \<Longrightarrow> sorted(inorder t) \<Longrightarrow>
+  x \<in> elems (inorder t) \<longleftrightarrow> x=a"
+by(induction x t arbitrary: l a r rule: splay.induct)
+  (auto simp: elems_simps2 split: tree.splits)
+
+lemma isin_set: "sorted(inorder t) \<Longrightarrow> isin t x = (x \<in> elems (inorder t))"
+by (auto simp: isin_def is_root_def splay_elemsD split: tree.splits)
+
+
+subsubsection "Verification of @{const insert}"
+
+lemma inorder_splay: "inorder(splay x t) = inorder t"
+by(induction x t rule: splay.induct)
+  (auto simp: neq_Leaf_iff split: tree.split)
+
+lemma sorted_splay:
+  "sorted(inorder t) \<Longrightarrow> splay x t = Node l a r \<Longrightarrow>
+  sorted(inorder l @ x # inorder r)"
+unfolding inorder_splay[of x t, symmetric]
+by(induction x t arbitrary: l a r rule: splay.induct)
+  (auto simp: sorted_lems sorted_Cons_le sorted_snoc_le split: tree.splits)
+
+lemma inorder_insert:
+  "sorted(inorder t) \<Longrightarrow> inorder(insert x t) = ins_list x (inorder t)"
+using inorder_splay[of x t, symmetric] sorted_splay[of t x]
+by(auto simp: ins_list_simps ins_list_Cons ins_list_snoc neq_Leaf_iff split: tree.split)
+
+
+subsubsection "Verification of @{const delete}"
+
+lemma inorder_splay_maxD:
+  "splay_max t = Node l a r \<Longrightarrow> sorted(inorder t) \<Longrightarrow>
+  inorder l @ [a] = inorder t \<and> r = Leaf"
+by(induction t arbitrary: l a r rule: splay_max.induct)
+  (auto simp: sorted_lems split: tree.splits if_splits)
+
+lemma inorder_delete:
+  "sorted(inorder t) \<Longrightarrow> inorder(delete x t) = del_list x (inorder t)"
+using inorder_splay[of x t, symmetric] sorted_splay[of t x]
+by (auto simp: del_list_simps del_list_sorted_app delete_def
+  del_list_notin_Cons inorder_splay_maxD split: tree.splits)
+
+
+subsubsection "Overall Correctness"
+
+interpretation splay: Set_by_Ordered
+where empty = Leaf and isin = isin and insert = insert
+and delete = delete and inorder = inorder and inv = "\<lambda>_. True"
+proof (standard, goal_cases)
+  case 2 thus ?case by(simp add: isin_set)
+next
+  case 3 thus ?case by(simp add: inorder_insert del: insert.simps)
+next
+  case 4 thus ?case by(simp add: inorder_delete)
+qed auto
+
+
+subsection "Functional Correctness Proofs II"
+
+text \<open>This subsection follows the traditional approach, is less automated
+and is retained more for historic reasons.\<close>
 
 lemma size_splay[simp]: "size (splay a t) = size t"
 apply(induction a t rule: splay.induct)
@@ -136,7 +237,7 @@ done
 lemma splay_bstR: "bst t \<Longrightarrow> splay a t = Node l e r \<Longrightarrow> x \<in> set_tree r \<Longrightarrow> a < x"
 apply(induction a t arbitrary: l e x r rule: splay.induct)
 apply auto
-apply (fastforce split: tree.splits)+
+apply (fastforce split!: tree.splits)+
 done
 
 lemma bst_splay: "bst t \<Longrightarrow> bst(splay a t)"
@@ -175,70 +276,32 @@ next
 qed fastforce+
 
 
-subsection "Is-in Test"
+subsubsection "Verification of Is-in Test"
 
 text{* To test if an element @{text a} is in @{text t}, first perform
 @{term"splay a t"}, then check if the root is @{text a}. One could
 put this into one function that returns both a new tree and the test result. *}
 
-(* FIXME mv *)
-definition is_root :: "'a \<Rightarrow> 'a tree \<Rightarrow> bool" where
-"is_root a t = (case t of Leaf \<Rightarrow> False | Node _ x _ \<Rightarrow> x = a)"
-
 lemma is_root_splay: "bst t \<Longrightarrow> is_root a (splay a t) \<longleftrightarrow> a \<in> set_tree t"
 by(auto simp add: is_root_def splay_to_root split: tree.split)
 
 
-subsection "Function @{text insert}"
+subsubsection "Verification of @{const insert}"
 
-context
-begin
-
-qualified fun insert :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
-"insert x t =  (if t = Leaf then Node Leaf x Leaf
-  else case splay x t of
-    Node l a r \<Rightarrow> if x=a then Node l a r
-      else if x<a then Node l x (Node Leaf a r) else Node (Node l a Leaf) x r)"
-
-end
-
-lemma set_insert: "set_tree(Splay_Tree.insert a t) = insert a (set_tree t)"
+lemma set_insert: "set_tree(insert a t) = Set.insert a (set_tree t)"
 apply(cases t)
  apply simp
 using set_splay[of a t]
 by(simp split: tree.split) fastforce
 
-lemma bst_insert: "bst t \<Longrightarrow> bst(Splay_Tree.insert a t)"
+lemma bst_insert: "bst t \<Longrightarrow> bst(insert a t)"
 apply(cases t)
  apply simp
 using bst_splay[of t a] splay_bstL[of t a] splay_bstR[of t a]
 by(auto simp: ball_Un split: tree.split)
 
 
-subsection "Function @{text splay_max}"
-
-fun splay_max :: "'a::linorder tree \<Rightarrow> 'a tree" where
-"splay_max Leaf = Leaf" |
-"splay_max (Node la a Leaf) = Node la a Leaf" |
-"splay_max (Node la a (Node lb b rb)) =
-  (if rb = Leaf then Node (Node la a lb) b Leaf
-   else case splay_max rb of
-     Node lc c rc \<Rightarrow> Node (Node (Node la a lb) b lc) c rc)"
-
-lemma splay_max_Leaf_iff[simp]: "(splay_max t = Leaf) = (t = Leaf)"
-apply(induction t rule: splay_max.induct)
-  apply(auto split: tree.splits)
-done
-
-lemma splay_max_code: "splay_max t = (case t of
-  Leaf \<Rightarrow> t |
-  Node la a ra \<Rightarrow> (case ra of
-    Leaf \<Rightarrow> t |
-    Node lb b rb \<Rightarrow>
-      (if rb=Leaf then Node (Node la a lb) b rb
-       else case splay_max rb of
-              Node lc c rc \<Rightarrow> Node (Node (Node la a lb) b lc) c rc)))"
-by(auto simp: neq_Leaf_iff split: tree.split)
+subsubsection "Verification of @{text splay_max}"
 
 lemma size_splay_max: "size(splay_max t) = size t"
 apply(induction t rule: splay_max.induct)
@@ -298,17 +361,7 @@ next
 qed
 
 
-subsection "Function @{text delete}"
-
-context
-begin
-
-qualified definition delete :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
-"delete x t = (if t=Leaf then Leaf
-  else case splay x t of Node l a r \<Rightarrow>
-    if x=a
-    then if l = Leaf then r else case splay_max l of Node l' m r' \<Rightarrow> Node l' m r
-    else Node l a r)"
+subsubsection "Verification of @{const delete}"
 
 lemma set_delete: assumes "bst t"
 shows "set_tree (delete a t) = set_tree t - {a}"
@@ -374,7 +427,5 @@ next
       by(auto simp: delete_def split: tree.split prod.split)
   qed
 qed
-
-end
 
 end

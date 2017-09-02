@@ -2,7 +2,7 @@ theory equational_clausal_logic
 
 (* N. Peltier - http://membres-lig.imag.fr/peltier/ *)
 
-imports Main terms "~~/src/HOL/Library/Multiset"
+imports Main terms "HOL-Library.Multiset"
 
 begin
 

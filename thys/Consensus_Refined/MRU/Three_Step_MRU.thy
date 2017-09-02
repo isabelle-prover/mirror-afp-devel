@@ -1,6 +1,6 @@
 section {* Three-step Optimized MRU Model *}
 theory Three_Step_MRU
-imports "../MRU_Vote_Opt" "Three_Steps"
+imports "../MRU_Vote_Opt" Three_Steps
 begin            
 
 text {* To make the coming proofs of concrete algorithms easier, in this model we split 

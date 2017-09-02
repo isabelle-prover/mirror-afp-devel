@@ -5,7 +5,7 @@
 
 theory TwoSquares
 imports
-  "~~/src/HOL/Number_Theory/Number_Theory"
+  "HOL-Number_Theory.Number_Theory"
 begin
 
 context

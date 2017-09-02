@@ -3,8 +3,8 @@ section {* Compatibility with the Graph Theory Package *}
 theory Graph_TheoryCompatibility
 imports
   ParityGame
-  "../Graph_Theory/Digraph"
-  "../Graph_Theory/Digraph_Isomorphism"
+  Graph_Theory.Digraph
+  Graph_Theory.Digraph_Isomorphism
 begin
 
 text {*

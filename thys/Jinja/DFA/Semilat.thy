@@ -10,7 +10,7 @@ chapter {* Bytecode Verifier \label{cha:bv} *}
 section {* Semilattices *}
 
 theory Semilat
-imports Main "~~/src/HOL/Library/While_Combinator"
+imports Main "HOL-Library.While_Combinator"
 begin
 
 type_synonym 'a ord    = "'a \<Rightarrow> 'a \<Rightarrow> bool"

@@ -2,7 +2,7 @@ section {* \isaheader{Iterator by get and size } *}
 theory Idx_Iterator
 imports
   SetIterator
-  "../../Automatic_Refinement/Automatic_Refinement"
+  Automatic_Refinement.Automatic_Refinement
 begin
 
 fun idx_iteratei_aux 

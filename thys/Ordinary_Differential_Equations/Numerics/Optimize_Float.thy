@@ -1,7 +1,7 @@
 section \<open>Optimizations for Code Float\<close>
 theory Optimize_Float
 imports
-  "../ODE_Auxiliarities"
+  Ordinary_Differential_Equations.ODE_Auxiliarities
   Optimize_Integer
 begin
 

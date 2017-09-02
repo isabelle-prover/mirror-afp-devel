@@ -1,5 +1,5 @@
 theory Reduction
-imports HOModel "../Stuttering_Equivalence/StutterEquivalence"
+imports HOModel Stuttering_Equivalence.StutterEquivalence
 begin
 
 section {* Reduction Theorem *}

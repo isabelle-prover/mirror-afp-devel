@@ -3,7 +3,7 @@
 section \<open>Polynomials representing the Deep Network Model\<close>
 
 theory DL_Deep_Model_Poly
-imports DL_Deep_Model PP_More_MPoly "../Jordan_Normal_Form/Determinant"
+imports DL_Deep_Model PP_More_MPoly Jordan_Normal_Form.Determinant
 begin
 
 definition "polyfun N f = (\<exists>p. vars p \<subseteq> N \<and> (\<forall>x. insertion x p = f x))"
@@ -75,7 +75,7 @@ proof -
 qed
 
 lemma polyfun_det:
-assumes "\<And>x. (A x) \<in> carrier\<^sub>m n n"
+assumes "\<And>x. (A x) \<in> carrier_mat n n"
 assumes "\<And>x i j. i<n \<Longrightarrow> j<n \<Longrightarrow> polyfun N (\<lambda>x. (A x) $$ (i,j))"
 shows "polyfun N (\<lambda>x. det (A x))"
 proof -
@@ -98,37 +98,37 @@ assumes "i<m" "j<n"
 shows "polyfun {..<a + (m * n + c)} (\<lambda>f. extract_matrix (\<lambda>i. f (i + a)) m n $$ (i,j))"
 unfolding index_extract_matrix[OF assms] apply (rule polyfun_single) using two_digit_le[OF assms] by simp
 
-lemma polyfun_mat_mult_vec:
-assumes "\<And>x. v x \<in> carrier\<^sub>v n"
+lemma polyfun_mult_mat_vec:
+assumes "\<And>x. v x \<in> carrier_vec n"
 assumes "\<And>j. j<n \<Longrightarrow> polyfun N (\<lambda>x. v x $ j)"
-assumes "\<And>x. A x \<in> carrier\<^sub>m m n"
+assumes "\<And>x. A x \<in> carrier_mat m n"
 assumes "\<And>i j. i<m \<Longrightarrow> j<n \<Longrightarrow> polyfun N (\<lambda>x. A x $$ (i,j))"
 assumes "j < m"
-shows "polyfun N (\<lambda>x. ((A x) \<otimes>\<^sub>m\<^sub>v (v x)) $ j)"
+shows "polyfun N (\<lambda>x. ((A x) *\<^sub>v (v x)) $ j)"
 proof -
-  have "\<And>x. j < dim\<^sub>r (A x)" using `j < m` assms(3) mat_carrierD(1) by force
-  have "\<And>x. n = dim\<^sub>v (v x)" using assms(1) vec_elemsD by fastforce
+  have "\<And>x. j < dim_row (A x)" using `j < m` assms(3) carrier_matD(1) by force
+  have "\<And>x. n = dim_vec (v x)" using assms(1) carrier_vecD by fastforce
   {
     fix i assume "i \<in> {0..<n}"
     then have "i < n" by auto
     {
       fix x
-      have "i < dim\<^sub>v (v x)" using assms(1) vec_elemsD `i<n` by fastforce
-      have "j < dim\<^sub>r (A x)" using `j < m` assms(3) mat_carrierD(1) by force
-      have "dim\<^sub>c (A x) = dim\<^sub>v (v x)" by (metis assms(1) assms(3) mat_carrierD(2) vec_elemsD)
-      then have "row (A x) j $ i = A x $$ (j,i)" "i<n" using `j < dim\<^sub>r (A x)` `i<n` by (simp_all add: \<open>i < dim\<^sub>v (v x)\<close>)
+      have "i < dim_vec (v x)" using assms(1) carrier_vecD `i<n` by fastforce
+      have "j < dim_row (A x)" using `j < m` assms(3) carrier_matD(1) by force
+      have "dim_col (A x) = dim_vec (v x)" by (metis assms(1) assms(3) carrier_matD(2) carrier_vecD)
+      then have "row (A x) j $ i = A x $$ (j,i)" "i<n" using `j < dim_row (A x)` `i<n` by (simp_all add: \<open>i < dim_vec (v x)\<close>)
     }
     then have "polyfun N (\<lambda>x. row (A x) j $ i * v x $ i)"
       using polyfun_mult assms(4)[OF `j < m`] assms(2) by fastforce
   }
-  then show ?thesis unfolding index_mat_mult_vec[OF `\<And>x. j < dim\<^sub>r (A x)`] scalar_prod_def
-    using polyfun_Sum[of "{0..<n}" N "\<lambda>i x. row (A x) j $ i * v x $ i"] finite_atLeastLessThan[of 0 n] `\<And>x. n = dim\<^sub>v (v x)`
+  then show ?thesis unfolding index_mult_mat_vec[OF `\<And>x. j < dim_row (A x)`] scalar_prod_def
+    using polyfun_Sum[of "{0..<n}" N "\<lambda>i x. row (A x) j $ i * v x $ i"] finite_atLeastLessThan[of 0 n] `\<And>x. n = dim_vec (v x)`
     by simp
 qed
 
 (* The variable a has been inserted here to make the induction work:*)
 lemma polyfun_evaluate_net_plus_a:
-assumes "map dim\<^sub>v inputs = input_sizes m"
+assumes "map dim_vec inputs = input_sizes m"
 assumes "valid_net m"
 assumes "j < output_size m"
 shows "polyfun {..<a + count_weights m} (\<lambda>f. evaluate_net (insert_weights m (\<lambda>i. f (i + a))) inputs $ j)"
@@ -139,33 +139,33 @@ next
   case (Conv x m)
   then obtain x1 x2 where "x=(x1,x2)" by fastforce
   show ?case unfolding `x=(x1,x2)` insert_weights.simps evaluate_net.simps drop_map unfolding list_of_vec_index
-  proof (rule polyfun_mat_mult_vec)
+  proof (rule polyfun_mult_mat_vec)
     {
       fix f
       have 1:"valid_net' (insert_weights m (\<lambda>i. f (i + x1 * x2)))"
         using `valid_net (Conv x m)` valid_net.simps by (metis
         convnet.distinct(1) convnet.distinct(5) convnet.inject(2) remove_insert_weights)
-      have 2:"map dim\<^sub>v inputs = input_sizes (insert_weights m (\<lambda>i. f (i + x1 * x2)))"
+      have 2:"map dim_vec inputs = input_sizes (insert_weights m (\<lambda>i. f (i + x1 * x2)))"
         using input_sizes_remove_weights remove_insert_weights
         by (simp add: Conv.prems(1))
-      have "dim\<^sub>v (evaluate_net (insert_weights m (\<lambda>i. f (i + x1 * x2))) inputs) = output_size m"
+      have "dim_vec (evaluate_net (insert_weights m (\<lambda>i. f (i + x1 * x2))) inputs) = output_size m"
        using output_size_correct[OF 1 2] using remove_insert_weights by auto
-      then show "evaluate_net (insert_weights m (\<lambda>i. f (i + x1 * x2))) inputs \<in> carrier\<^sub>v (output_size m)"
-        using vec_carrier_def by (metis (full_types) mem_Collect_eq)
+      then show "evaluate_net (insert_weights m (\<lambda>i. f (i + x1 * x2))) inputs \<in> carrier_vec (output_size m)"
+        using carrier_vec_def by (metis (full_types) mem_Collect_eq)
     }
 
-    have "map dim\<^sub>v inputs = input_sizes m" by (simp add: Conv.prems(1))
+    have "map dim_vec inputs = input_sizes m" by (simp add: Conv.prems(1))
     have "valid_net m" using Conv.prems(2) valid_net.cases by fastforce
     show "\<And>j. j < output_size m \<Longrightarrow>  polyfun {..<a + count_weights (Conv (x1, x2) m)}
           (\<lambda>f. evaluate_net (insert_weights m (\<lambda>i. f (i + x1 * x2 + a))) inputs $ j)"
       unfolding vec_of_list_index count_weights.simps
-      using Conv(1)[OF `map dim\<^sub>v inputs = input_sizes m` `valid_net m`, of _ "x1 * x2 + a"]
+      using Conv(1)[OF `map dim_vec inputs = input_sizes m` `valid_net m`, of _ "x1 * x2 + a"]
       unfolding semigroup_add_class.add.assoc ab_semigroup_add_class.add.commute[of "x1 * x2" a]
       by blast
 
     have "output_size m = x2" using Conv.prems(2) \<open>x = (x1, x2)\<close> valid_net.cases by fastforce
-    show "\<And>f. extract_matrix (\<lambda>i. f (i + a)) x1 x2 \<in> carrier\<^sub>m x1 (output_size m)" unfolding `output_size m = x2` using dim_extract_matrix
-      using mat_carrierI by (metis (no_types, lifting))
+    show "\<And>f. extract_matrix (\<lambda>i. f (i + a)) x1 x2 \<in> carrier_mat x1 (output_size m)" unfolding `output_size m = x2` using dim_extract_matrix
+      using carrier_matI by (metis (no_types, lifting))
 
     show "\<And>i j. i < x1 \<Longrightarrow> j < output_size m \<Longrightarrow> polyfun {..<a + count_weights (Conv (x1, x2) m)} (\<lambda>f. extract_matrix (\<lambda>i. f (i + a)) x1 x2 $$ (i, j))"
       unfolding `output_size m = x2` count_weights.simps using polyfun_extract_matrix[of _ x1 _ x2 a "count_weights m"] by blast
@@ -174,9 +174,9 @@ next
   qed
 next
   case (Pool m1 m2 inputs j a)
-  have A2:"\<And>f. map dim\<^sub>v (take (length (input_sizes (insert_weights m1 (\<lambda>i. f (i + a))))) inputs) = input_sizes m1"
+  have A2:"\<And>f. map dim_vec (take (length (input_sizes (insert_weights m1 (\<lambda>i. f (i + a))))) inputs) = input_sizes m1"
     by (metis Pool.prems(1)  append_eq_conv_conj input_sizes.simps(3) input_sizes_remove_weights remove_insert_weights take_map)
-  have B2:"\<And>f. map dim\<^sub>v (drop (length (input_sizes (insert_weights m1 (\<lambda>i. f (i + a))))) inputs) = input_sizes m2"
+  have B2:"\<And>f. map dim_vec (drop (length (input_sizes (insert_weights m1 (\<lambda>i. f (i + a))))) inputs) = input_sizes m2"
     using Pool.prems(1) append_eq_conv_conj input_sizes.simps(3) input_sizes_remove_weights remove_insert_weights by (metis drop_map)
   have A3:"valid_net m1" and B3:"valid_net m2" using `valid_net (Pool m1 m2)` valid_net.simps by blast+
   have "output_size (Pool m1 m2) = output_size m2" unfolding output_size.simps
@@ -187,12 +187,12 @@ next
     (take (length (input_sizes (insert_weights m1 (\<lambda>i. f (i + a))))) inputs)"
   let ?net2 = "\<lambda>f. evaluate_net (insert_weights m2 (\<lambda>i. f (i + count_weights m1 + a)))
     (drop (length (input_sizes (insert_weights m1 (\<lambda>i. f (i + a))))) inputs)"
-  have length1: "\<And>f. output_size m1 = dim\<^sub>v (?net1 f)"
+  have length1: "\<And>f. output_size m1 = dim_vec (?net1 f)"
     by (metis A2 A3 input_sizes_remove_weights output_size_correct remove_insert_weights)
-  then have jlength1:"\<And>f. j < dim\<^sub>v (?net1 f)" using A4 by metis
-  have length2: "\<And>f. output_size m2 = dim\<^sub>v (?net2 f)"
+  then have jlength1:"\<And>f. j < dim_vec (?net1 f)" using A4 by metis
+  have length2: "\<And>f. output_size m2 = dim_vec (?net2 f)"
     by (metis B2 B3 input_sizes_remove_weights output_size_correct remove_insert_weights)
-  then have jlength2:"\<And>f. j < dim\<^sub>v (?net2 f)" using B4 by metis
+  then have jlength2:"\<And>f. j < dim_vec (?net2 f)" using B4 by metis
   have cong1:"\<And>xf. (\<lambda>f. evaluate_net (insert_weights m1 (\<lambda>i. f (i + a)))
         (take (length (input_sizes (insert_weights m1 (\<lambda>i. xf (i + a))))) inputs) $ j)
          = (\<lambda>f. ?net1 f $ j)"
@@ -212,7 +212,7 @@ next
 qed
 
 lemma polyfun_evaluate_net:
-assumes "map dim\<^sub>v inputs = input_sizes m"
+assumes "map dim_vec inputs = input_sizes m"
 assumes "valid_net m"
 assumes "j < output_size m"
 shows "polyfun {..<count_weights m} (\<lambda>f. evaluate_net (insert_weights m f) inputs $ j)"
@@ -244,8 +244,8 @@ qed
 lemma polyfun_matricize:
 assumes "\<And>x. dims (T x) = ds"
 assumes "\<And>is. is \<lhd> ds \<Longrightarrow> polyfun N (\<lambda>x. Tensor.lookup (T x) is)"
-assumes "\<And>x. dim\<^sub>r (matricize I (T x)) = nr"
-assumes "\<And>x. dim\<^sub>c (matricize I (T x)) = nc"
+assumes "\<And>x. dim_row (matricize I (T x)) = nr"
+assumes "\<And>x. dim_col (matricize I (T x)) = nc"
 assumes "i < nr"
 assumes "j < nc"
 shows "polyfun N (\<lambda>x. matricize I (T x) $$ (i,j))"
@@ -255,10 +255,10 @@ proof -
     (digit_encode (nths ds (-I )) j))"
   have 1:"\<And>x. matricize I (T x) $$ (i,j) = Tensor.lookup (T x) (?weave x)" unfolding matricize_def
     by (metis (no_types, lifting) assms(1) assms(3) assms(4) assms(5) assms(6) case_prod_conv
-    mat_dim_col_mat(1) mat_dim_row_mat(1) mat_index_mat(1) matricize_def)
+    dim_col_mat(1) dim_row_mat(1) index_mat(1) matricize_def)
   have "\<And>x. ?weave x \<lhd> ds"
-    using valid_index_weave(1) assms(2) digit_encode_valid_index mat_dim_row_mat(1) matricize_def
-    using assms digit_encode_valid_index matricize_def by (metis mat_dim_col_mat(1))
+    using valid_index_weave(1) assms(2) digit_encode_valid_index dim_row_mat(1) matricize_def
+    using assms digit_encode_valid_index matricize_def by (metis dim_col_mat(1))
   then have "polyfun N (\<lambda>x. Tensor.lookup (T x) (?weave x))" using assms(2) by simp
   then show ?thesis unfolding 1 using assms(1) by blast
 qed
@@ -267,7 +267,7 @@ lemma "(\<not> (a::nat) < b) = (a \<ge> b)"
 by (metis not_le)
 
 lemma polyfun_submatrix:
-assumes "\<And>x. (A x) \<in> carrier\<^sub>m m n"
+assumes "\<And>x. (A x) \<in> carrier_mat m n"
 assumes "\<And>x i j. i<m \<Longrightarrow> j<n \<Longrightarrow> polyfun N (\<lambda>x. (A x) $$ (i,j))"
 assumes "i < card {i. i < m \<and> i \<in> I}"
 assumes "j < card {j. j < n \<and> j \<in> J}"
@@ -275,7 +275,7 @@ assumes "infinite I" "infinite J"
 shows "polyfun N (\<lambda>x. (submatrix (A x) I J) $$ (i,j))"
 proof -
   have 1:"\<And>x. (submatrix (A x) I J) $$ (i,j) = (A x) $$ (pick I i, pick J j)"
-    using submatrix_index by (metis (no_types, lifting) Collect_cong assms(1) assms(3) assms(4) mat_carrierD(1) mat_carrierD(2))
+    using submatrix_index by (metis (no_types, lifting) Collect_cong assms(1) assms(3) assms(4) carrier_matD(1) carrier_matD(2))
   have "pick I i < m"  "pick J j < n" using card_le_pick_inf[OF `infinite I`] card_le_pick_inf[OF `infinite J`]
     `i < card {i. i < m \<and> i \<in> I}`[unfolded set_le_in] `j < card {j. j < n \<and> j \<in> J}`[unfolded set_le_in] not_less by metis+
   then show ?thesis unfolding 1 by (simp add: assms(2))
@@ -331,7 +331,7 @@ unfolding witness_submatrix_def
 proof (rule polyfun_submatrix)
   have 1:"\<And>f. remove_weights (insert_weights (deep_model_l rs) f) = deep_model_l rs"
     using remove_insert_weights by metis
-  show "\<And>f. A' f \<in> carrier\<^sub>m ((last rs) ^ N_half) ((last rs) ^ N_half)"
+  show "\<And>f. A' f \<in> carrier_mat ((last rs) ^ N_half) ((last rs) ^ N_half)"
     using "1" dims_A'_pow using weight_space_dim_def by auto
   show "\<And>f i j. i < last rs ^ N_half \<Longrightarrow> j < last rs ^ N_half \<Longrightarrow>
         polyfun {..<weight_space_dim} (\<lambda>f. A' f $$ (i, j))"
@@ -350,8 +350,8 @@ proof (rule polyfun_det)
   have "remove_weights (insert_weights (deep_model_l rs) f) = deep_model_l rs"
     using remove_insert_weights by metis
 
-  show "witness_submatrix f \<in> carrier\<^sub>m (r ^ N_half) (r ^ N_half)"
-    unfolding witness_submatrix_def apply (rule mat_carrierI) unfolding dim_submatrix[unfolded set_le_in]
+  show "witness_submatrix f \<in> carrier_mat (r ^ N_half) (r ^ N_half)"
+    unfolding witness_submatrix_def apply (rule carrier_matI) unfolding dim_submatrix[unfolded set_le_in]
     unfolding dims_A'_pow[unfolded weight_space_dim_def] using card_rows_with_1 dims_Aw'_pow by simp_all
   show "\<And>i j. i < r ^ N_half \<Longrightarrow> j < r ^ N_half \<Longrightarrow> polyfun {..<weight_space_dim} (\<lambda>f. witness_submatrix f $$ (i, j))"
     using polyfun_submatrix_deep_model by blast

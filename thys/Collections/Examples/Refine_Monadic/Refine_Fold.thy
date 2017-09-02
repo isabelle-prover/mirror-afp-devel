@@ -1,6 +1,6 @@
 section {* \isaheader{Fold-Combinator} *}
 theory Refine_Fold
-imports "../../Refine_Dflt_Only_ICF"
+imports Collections.Refine_Dflt_Only_ICF
 begin
   text {*
     In this theory, we explore the usage of the partial-function package, and

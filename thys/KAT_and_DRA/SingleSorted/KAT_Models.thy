@@ -6,7 +6,7 @@
 section {* Models for Kleene Algebra with Tests *}
 
 theory KAT_Models
-  imports "../../Kleene_Algebra/Kleene_Algebra_Models" KAT
+  imports Kleene_Algebra.Kleene_Algebra_Models KAT
 begin
 
 text {*

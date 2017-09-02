@@ -5,7 +5,7 @@ section {* Stream fusion for coinductive lists *}
 
 theory Stream_Fusion_LList imports
   Stream_Fusion_List
-  "../Coinductive/Coinductive_List"
+  Coinductive.Coinductive_List
 begin
 
 text {*

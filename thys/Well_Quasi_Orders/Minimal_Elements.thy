@@ -9,7 +9,7 @@ section \<open>Minimal elements of sets w.r.t. a well-founded and transitive rel
 theory Minimal_Elements
 imports
   Infinite_Sequences
-  "../Open_Induction/Restricted_Predicates"
+  Open_Induction.Restricted_Predicates
 begin
 
 locale minimal_element =
