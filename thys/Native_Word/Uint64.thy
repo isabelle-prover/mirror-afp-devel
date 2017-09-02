@@ -17,7 +17,7 @@ text \<open>
 
   The \verb$Eval$ target used by @{command value} and @{method eval} dynamically tests at
   runtime for the version of PolyML and uses PolyML's Word64 structure if it detects a 64-bit 
-  version which does not suffer from a division bug found in PolyML 5.6. }
+  version which does not suffer from a division bug found in PolyML 5.6.
 \<close>
 
 declare prod.Quotient[transfer_rule]
