@@ -25,7 +25,7 @@ text {*
   The first option causes the least overhead if you have to prove only
   little about the words you use and start a fresh formalisation.
   Just use the native type @{typ uint32} instead of @{typ "32 word"}
-  and similarly for @{text uint16} and @{text uint8}.
+  and similarly for @{text uint64}, @{text uint16}, and @{text uint8}.
   As native word types are meant only for code generation, the lemmas
   about @{typ "'a word"}  have not been duplicated, but you can transfer
   theorems between native word types and @{typ "'a word"} using the
@@ -57,12 +57,12 @@ text {*
 
   \textbf{There is a separate code target @{text "SML_word"} for SML.}
   If you use one of the native words that PolyML does not support
-  (such as @{text "uint16"}), but would like to map its operations
-  to the Standard Basis Library functions, make sure to use the target
-  @{text "SML_word"} instead of @{text "SML"};  if you only use native
-  word sizes that PolyML supports, you can stick with @{text "SML"}.
-  This ensures that code generation within Isabelle as used by 
-  @{text Quickcheck}, @{text value} and @\{code\} in ML blocks
+  (such as @{text "uint16"} and @{text uint64} in 32-bit mode), but would
+  like to map its operations to the Standard Basis Library functions,
+  make sure to use the target @{text "SML_word"} instead of @{text "SML"};
+  if you only use native word sizes that PolyML supports, you can stick
+  with @{text "SML"}.  This ensures that code generation within Isabelle
+  as used by @{text Quickcheck}, @{text value} and @\{code\} in ML blocks
   continues to work.
 *}
 

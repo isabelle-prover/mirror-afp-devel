@@ -4200,6 +4200,8 @@ extra-history =
 	[2014-10-06]:
 	proper test setup with compilation and execution of tests in all target languages
 	(revision 5d7a1c9ae047)
+        [2017-09-02]:
+        added 64-bit words (revision c89f86244e3c)
 notify = andreas.lochbihler@inf.ethz.ch
 
 [XML]
