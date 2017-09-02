@@ -9,6 +9,7 @@ theory Native_Cast imports
   Uint8
   Uint16
   Uint32
+  Uint64
 begin
 
 text {* Auxiliary stuff *}
@@ -95,14 +96,24 @@ code_printing constant uint8_of_char \<rightharpoonup>
 
 section {* Conversion between native words *}
 
-lift_definition uint8_of_uint32 :: "uint32 \<Rightarrow> uint8" is ucast .
 lift_definition uint8_of_uint16 :: "uint16 \<Rightarrow> uint8" is ucast .
+lift_definition uint8_of_uint32 :: "uint32 \<Rightarrow> uint8" is ucast .
+lift_definition uint8_of_uint64 :: "uint64 \<Rightarrow> uint8" is ucast .
 
 lift_definition uint16_of_uint8 :: "uint8 \<Rightarrow> uint16" is ucast .
 lift_definition uint16_of_uint32 :: "uint32 \<Rightarrow> uint16" is ucast .
+lift_definition uint16_of_uint64 :: "uint64 \<Rightarrow> uint16" is ucast .
 
 lift_definition uint32_of_uint8 :: "uint8 \<Rightarrow> uint32" is ucast .
 lift_definition uint32_of_uint16 :: "uint16 \<Rightarrow> uint32" is ucast .
+lift_definition uint32_of_uint64 :: "uint64 \<Rightarrow> uint32" is ucast .
+
+lift_definition uint64_of_uint8 :: "uint8 \<Rightarrow> uint64" is ucast .
+lift_definition uint64_of_uint16 :: "uint16 \<Rightarrow> uint64" is ucast .
+lift_definition uint64_of_uint32 :: "uint32 \<Rightarrow> uint64" is ucast .
+
+definition mask where "mask = (0xFFFFFFFF :: integer)"
+export_code mask in OCaml
 
 code_printing
   constant uint8_of_uint16 \<rightharpoonup>
@@ -113,12 +124,20 @@ code_printing
   (SML) "Word8.fromLarge (Word32.toLarge _)" and
   (Haskell) "(Prelude.fromIntegral _ :: Uint8.Word8)" and
   (Scala) "_.toByte"
+| constant uint8_of_uint64 \<rightharpoonup>
+  (SML) "Word8.fromLarge (Uint64.toLarge _)" and
+  (Haskell) "(Prelude.fromIntegral _ :: Uint8.Word8)" and
+  (Scala) "_.toByte"
 | constant uint16_of_uint8 \<rightharpoonup>
   (SML_word) "Word16.fromLarge (Word8.toLarge _)" and
   (Haskell) "(Prelude.fromIntegral _ :: Uint16.Word16)" and
   (Scala) "((_).toInt & 0xFF).toChar"
 | constant uint16_of_uint32 \<rightharpoonup>
   (SML_word) "Word16.fromLarge (Word32.toLarge _)" and
+  (Haskell) "(Prelude.fromIntegral _ :: Uint16.Word16)" and
+  (Scala) "_.toChar"
+| constant uint16_of_uint64 \<rightharpoonup>
+  (SML_word) "Word16.fromLarge (Uint64.toLarge _)" and
   (Haskell) "(Prelude.fromIntegral _ :: Uint16.Word16)" and
   (Scala) "_.toChar"
 | constant uint32_of_uint8 \<rightharpoonup>
@@ -129,6 +148,24 @@ code_printing
   (SML_word) "Word32.fromLarge (Word16.toLarge _)" and
   (Haskell) "(Prelude.fromIntegral _ :: Uint32.Word32)" and
   (Scala) "(_).toInt"
+| constant uint32_of_uint64 \<rightharpoonup>
+  (SML_word) "Word32.fromLarge (Uint64.toLarge _)" and
+  (Haskell) "(Prelude.fromIntegral _ :: Uint32.Word32)" and
+  (Scala) "(_).toInt" and
+  (OCaml) "Int64.to'_int32"
+| constant uint64_of_uint8 \<rightharpoonup>
+  (SML_word) "Word64.fromLarge (Word8.toLarge _)" and
+  (Haskell) "(Prelude.fromIntegral _ :: Uint64.Word64)" and
+  (Scala) "((_).toLong & 0xFF)"
+| constant uint64_of_uint16 \<rightharpoonup>
+  (SML_word) "Word64.fromLarge (Word16.toLarge _)" and
+  (Haskell) "(Prelude.fromIntegral _ :: Uint64.Word64)" and
+  (Scala) "_.toLong"
+| constant uint64_of_uint32 \<rightharpoonup>
+  (SML_word) "Word64.fromLarge (Word32.toLarge _)" and
+  (Haskell) "(Prelude.fromIntegral _ :: Uint64.Word64)" and
+  (Scala) "((_).toLong & 0xFFFFFFFFL)" and
+  (OCaml) "Int64.logand (Int64.of'_int32 _) (Int64.of'_string \"4294967295\")"
 
 text {* 
   Use @{const Abs_uint8'} etc. instead of @{const Rep_uint8} in code equations
@@ -144,6 +181,10 @@ lemma uint8_of_uint32_code [code]:
   "uint8_of_uint32 x = Abs_uint8' (ucast (Rep_uint32' x))"
 by transfer simp
 
+lemma uint8_of_uint64_code [code]:
+  "uint8_of_uint64 x = Abs_uint8' (ucast (Rep_uint64' x))"
+by transfer simp
+
 lemma uint16_of_uint8_code [code]:
   "uint16_of_uint8 x = Abs_uint16' (ucast (Rep_uint8' x))"
 by transfer simp
@@ -152,12 +193,32 @@ lemma uint16_of_uint32_code [code]:
   "uint16_of_uint32 x = Abs_uint16' (ucast (Rep_uint32' x))"
 by transfer simp
 
+lemma uint16_of_uint64_code [code]:
+  "uint16_of_uint64 x = Abs_uint16' (ucast (Rep_uint64' x))"
+by transfer simp
+
 lemma uint32_of_uint8_code [code]:
   "uint32_of_uint8 x = Abs_uint32' (ucast (Rep_uint8' x))"
 by transfer simp
 
 lemma uint32_of_uint16_code [code]:
   "uint32_of_uint16 x = Abs_uint32' (ucast (Rep_uint16' x))"
+by transfer simp
+
+lemma uint32_of_uint64_code [code]:
+  "uint32_of_uint64 x = Abs_uint32' (ucast (Rep_uint64' x))"
+by transfer simp
+
+lemma uint64_of_uint8_code [code]:
+  "uint64_of_uint8 x = Abs_uint64' (ucast (Rep_uint8' x))"
+by transfer simp
+
+lemma uint64_of_uint16_code [code]:
+  "uint64_of_uint16 x = Abs_uint64' (ucast (Rep_uint16' x))"
+by transfer simp
+
+lemma uint64_of_uint32_code [code]:
+  "uint64_of_uint32 x = Abs_uint64' (ucast (Rep_uint32' x))"
 by transfer simp
 
 end

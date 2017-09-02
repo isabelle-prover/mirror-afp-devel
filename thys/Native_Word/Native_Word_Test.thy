@@ -5,13 +5,13 @@
 chapter {* Test cases *}
 
 theory Native_Word_Test imports
-  Uint32 Uint16 Uint8 Uint Native_Cast
+  Uint64 Uint32 Uint16 Uint8 Uint Native_Cast
   "~~/src/HOL/Library/Code_Test"
 begin
 
 section {* Tests for @{typ uint32} *}
 
-context begin notation sshiftr_uint32 (infixl ">>>" 55)
+notation sshiftr_uint32 (infixl ">>>" 55)
 
 definition test_uint32 where
   "test_uint32 \<longleftrightarrow>
@@ -63,7 +63,7 @@ definition test_uint32 where
   =
    [0, 0x7FFFFFFF, 0x80000000, 0xAAAAAAAA])"
 
-end
+no_notation sshiftr_uint32 (infixl ">>>" 55)
 
 export_code test_uint32 checking SML Haskell? OCaml? Scala
 
@@ -92,7 +92,7 @@ by(simp add: fun_eq_iff)
 
 section {* Tests for @{typ uint16} *}
 
-context begin notation sshiftr_uint16 (infixl ">>>" 55)
+notation sshiftr_uint16 (infixl ">>>" 55)
 
 definition test_uint16 where
   "test_uint16 \<longleftrightarrow>
@@ -143,7 +143,8 @@ definition test_uint16 where
   ([integer_of_uint16 0, integer_of_uint16 0x7FFF, integer_of_uint16 0x8000, integer_of_uint16 0xAAAA]
   =
    [0, 0x7FFF, 0x8000, 0xAAAA])"
-end
+
+no_notation sshiftr_uint16 (infixl ">>>" 55)
 
 export_code test_uint16 checking Haskell? Scala
 export_code test_uint16 in SML_word
@@ -163,7 +164,8 @@ by(simp add: fun_eq_iff)
 
 section {* Tests for @{typ uint8} *}
 
-context begin notation sshiftr_uint8(infixl ">>>" 55)
+notation sshiftr_uint8 (infixl ">>>" 55)
+
 definition test_uint8 where
   "test_uint8 \<longleftrightarrow> 
   (([ 0x101, -1, -255, 0xFF, 0x12
@@ -213,7 +215,8 @@ definition test_uint8 where
   ([integer_of_uint8 0, integer_of_uint8 0x7F, integer_of_uint8 0x80, integer_of_uint8 0xAA]
   =
    [0, 0x7F, 0x80, 0xAA])"
-end
+
+no_notation sshiftr_uint8 (infixl ">>>" 55)
 
 export_code test_uint8 checking SML Haskell? Scala
 
@@ -243,7 +246,8 @@ by(simp add: fun_eq_iff)
 
 section {* Tests for @{typ "uint"} *}
 
-context begin notation sshiftr_uint (infixl ">>>" 55)
+notation sshiftr_uint (infixl ">>>" 55)
+
 definition "test_uint \<equiv> let 
   test_list1 = (let
       HS = uint_of_int ((2^(dflt_size - 1)))
@@ -307,7 +311,8 @@ definition "test_uint \<equiv> let
 in
   test_list1 = map uint_of_int test_list2
 \<and> test_list_c1 = test_list_c2"
-end
+
+no_notation sshiftr_uint (infixl ">>>" 55)
 
 export_code test_uint checking SML Haskell? OCaml? Scala
 
@@ -328,6 +333,90 @@ lemma "(f :: uint \<Rightarrow> unit) = g"
 quickcheck[narrowing, size=3, expect=no_counterexample]
 by(simp add: fun_eq_iff)
 
+section \<open> Tests for @{typ uint64} \<close>
+
+notation sshiftr_uint64 (infixl ">>>" 55)
+
+definition test_uint64 where
+  "test_uint64 \<longleftrightarrow>
+  (([ 0x10000000000000001, -1, -9223372036854775808, 0xFFFFFFFFFFFFFFFF, 0x1234567890ABCDEF
+    , 0x5A AND 0x36
+    , 0x5A OR 0x36
+    , 0x5A XOR 0x36
+    , NOT 0x5A
+    , 5 + 6, -5 + 6, -6 + 5, -5 + (- 6), 0xFFFFFFFFFFFFFFFFFF + 1
+    , 5 - 3, 3 - 5
+    , 5 * 3, -5 * 3, -5 * -4, 0x1234567890ABCDEF * 0xFEDCBA0987654321
+    , 5 div 3, -5 div 3, -5 div -3, 5 div -3
+    , 5 mod 3, -5 mod 3, -5 mod -3, 5 mod -3
+    , set_bit 5 4 True, set_bit (- 5) 2 True, set_bit 5 0 False, set_bit (- 5) 1 False
+    , set_bit 5 64 True, set_bit 5 64 False, set_bit (- 5) 64 True, set_bit (- 5) 64 False
+    , 1 << 2, -1 << 3, 1 << 64, 1 << 0
+    , 100 >> 3, -100 >> 3, 100 >> 64, -100 >> 64
+    , 100 >>> 3, -100 >>> 3, 100 >>> 64, -100 >>> 64] :: uint64 list)
+   =
+    [ 1, 18446744073709551615, 9223372036854775808, 18446744073709551615, 1311768467294899695
+    , 18
+    , 126
+    , 108
+    , 18446744073709551525
+    , 11, 1, 18446744073709551615, 18446744073709551605, 0
+    , 2, 18446744073709551614
+    , 15, 18446744073709551601, 20, 14000077364136384719
+    , 1, 6148914691236517203, 0, 0
+    , 2, 2, 18446744073709551611, 5 
+    , 21, 18446744073709551615, 4, 18446744073709551609
+    , 5, 5, 18446744073709551611, 18446744073709551611
+    , 4, 18446744073709551608, 0, 1
+    , 12, 2305843009213693939, 0, 0
+    , 12, 18446744073709551603, 0, 18446744073709551615]) \<and>
+  ([ (0x5 :: uint64) = 0x5, (0x5 :: uint64) = 0x6
+   , (0x5 :: uint64) < 0x5, (0x5 :: uint64) < 0x6, (-5 :: uint64) < 6, (6 :: uint64) < -5
+   , (0x5 :: uint64) \<le> 0x5, (0x5 :: uint64) \<le> 0x4, (-5 :: uint64) \<le> 6, (6 :: uint64) \<le> -5 
+   , (0x7FFFFFFFFFFFFFFF :: uint64) < 0x8000000000000000, (0xFFFFFFFFFFFFFFFF :: uint64) < 0, (0x8000000000000000 :: uint64) < 0x7FFFFFFFFFFFFFFF
+   , (0x7FFFFFFFFFFFFFFF :: uint64) !! 0, (0x7FFFFFFFFFFFFFFF :: uint64) !! 63, (0x8000000000000000 :: uint64) !! 63, (0x8000000000000000 :: uint64) !! 64
+   ]
+  =
+   [ True, False
+   , False, True, False, True
+   , True, False, False, True
+   , True, False, False
+   , True, False, True, False
+   ]) \<and>
+  ([integer_of_uint64 0, integer_of_uint64 0x7FFFFFFFFFFFFFFF, integer_of_uint64 0x8000000000000000, integer_of_uint64 0xAAAAAAAAAAAAAAAA]
+  =
+   [0, 0x7FFFFFFFFFFFFFFF, 0x8000000000000000, 0xAAAAAAAAAAAAAAAA])"
+
+value [nbe] "[0x10000000000000001, -1, -9223372036854775808, 0xFFFFFFFFFFFFFFFF, 0x1234567890ABCDEF
+    , 0x5A AND 0x36
+    , 0x5A OR 0x36
+    , 0x5A XOR 0x36
+    , NOT 0x5A
+    , 5 + 6, -5 + 6, -6 + 5, -5 + (- 6), 0xFFFFFFFFFFFFFFFFFF + 1
+    , 5 - 3, 3 - 5
+    , 5 * 3, -5 * 3, -5 * -4, 0x1234567890ABCDEF * 0xFEDCBA0987654321
+    , 5 div 3, -5 div 3, -5 div -3, 5 div -3
+    , 5 mod 3, -5 mod 3, -5 mod -3, 5 mod -3
+    , set_bit 5 4 True, set_bit (- 5) 2 True, set_bit 5 0 False, set_bit (- 5) 1 False
+    , set_bit 5 64 True, set_bit 5 64 False, set_bit (- 5) 64 True, set_bit (- 5) 64 False
+    , 1 << 2, -1 << 3, 1 << 64, 1 << 0
+    , 100 >> 3, -100 >> 3, 100 >> 64, -100 >> 64
+    , 100 >>> 3, -100 >>> 3, 100 >>> 64, -100 >>> 64] :: uint64 list"
+
+no_notation sshiftr_uint64 (infixl ">>>" 55)
+
+export_code test_uint64 checking SML Haskell? OCaml Scala
+
+notepad begin
+have test_uint64 by eval
+have test_uint64 by code_simp
+have test_uint64 by normalization
+end
+ML_val {* val true = @{code test_uint64} *}
+
+definition test_uint64' :: uint64
+where "test_uint64' = 0 + 10 - 14 * 3 div 6 mod 3 << 3 >> 2"
+
 section {* Tests for casts *}
 
 definition test_casts :: bool
@@ -335,25 +424,42 @@ where "test_casts \<longleftrightarrow>
   map uint8_of_char [CHR ''a'', 0, char_of_nat 255] = [97, 0, 255] \<and>
   map char_of_uint8 [65, 0, 255] = [CHR ''A'', 0, char_of_nat 255] \<and>
   map uint8_of_uint32 [10, 0, 0xFE, 0xFFFFFFFF] = [10, 0, 0xFE, 0xFF] \<and>
-  map uint32_of_uint8 [10, 0, 0xFF] = [10, 0, 0xFF]"
+  map uint8_of_uint64 [10, 0, 0xFE, 0xFFFFFFFFFFFFFFFF] = [10, 0, 0xFE, 0xFF] \<and>
+  map uint32_of_uint8 [10, 0, 0xFF] = [10, 0, 0xFF] \<and>
+  map uint64_of_uint8 [10, 0, 0xFF] = [10, 0, 0xFF]"
 
 definition test_casts' :: bool
 where "test_casts' \<longleftrightarrow>
   map uint8_of_uint16 [10, 0, 0xFE, 0xFFFF] = [10, 0, 0xFE, 0xFF] \<and>
   map uint16_of_uint8 [10, 0, 0xFF] = [10, 0, 0xFF] \<and>
   map uint16_of_uint32 [10, 0, 0xFFFE, 0xFFFFFFFF] = [10, 0, 0xFFFE, 0xFFFF] \<and>
-  map uint32_of_uint16 [10, 0, 0xFFFF] = [10, 0, 0xFFFF]"
+  map uint16_of_uint64 [10, 0, 0xFFFE, 0xFFFFFFFFFFFFFFFF] = [10, 0, 0xFFFE, 0xFFFF] \<and>
+  map uint32_of_uint16 [10, 0, 0xFFFF] = [10, 0, 0xFFFF] \<and>
+  map uint64_of_uint16 [10, 0, 0xFFFF] = [10, 0, 0xFFFF]"
 
-export_code test_casts checking SML Haskell? Scala
+definition test_casts'' :: bool
+where "test_casts'' \<longleftrightarrow>
+  map uint32_of_uint64 [10, 0, 0xFFFFFFFE, 0xFFFFFFFFFFFFFFFF] = [10, 0, 0xFFFFFFFE, 0xFFFFFFFF] \<and>
+  map uint64_of_uint32 [10, 0, 0xFFFFFFFF] = [10, 0, 0xFFFFFFFF]"
+
+
+export_code test_casts test_casts'' checking SML Haskell? Scala
+export_code test_casts'' checking OCaml?
 export_code test_casts' checking Haskell? Scala
 
 notepad begin
-have test_casts by eval
-have test_casts by normalization
-have test_casts by code_simp
-have test_casts' by normalization
-have test_casts' by code_simp
+  have test_casts by eval
+  have test_casts by normalization
+  have test_casts by code_simp
+  have test_casts' by normalization
+  have test_casts' by code_simp
+  have test_casts'' by eval
+  have test_casts'' by normalization
+  have test_casts'' by code_simp
 end
-ML {* val true = @{code test_casts} *}
+ML {* 
+  val true = @{code test_casts}
+  val true = @{code test_casts''}
+*}
 
 end
