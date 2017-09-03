@@ -245,13 +245,6 @@ end
 \<close>
 code_reserved SML Uint64
 
-ML \<open>
-\<close>
-
-ML \<open>String.isSuffix\<close>
-
-ML \<open>Exn.interruptible_capture\<close>
-
 setup \<open>
 let
   val polyml64 = LargeWord.wordSize > 63;
@@ -359,7 +352,7 @@ let
     "end (*struct Uint64*)"
   val target_SML64 = "SML_word";
 in
-  (if polyml64 then Code_Target.set_printings (Code_Symbol.Module ("Uint64", [(Code_Runtime.target, SOME (content, []))])) else I)
+  (if use_Word64 then Code_Target.set_printings (Code_Symbol.Module ("Uint64", [(Code_Runtime.target, SOME (content, []))])) else I)
   #> Code_Target.set_printings (Code_Symbol.Module ("Uint64", [(target_SML64, SOME (content, []))]))
 end
 \<close>
