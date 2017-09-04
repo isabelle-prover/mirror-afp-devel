@@ -389,6 +389,14 @@ lemma eval_var_monom[simp]: "eval_monom \<alpha> (var_monom x) = \<alpha> x"
 lemma sum_var_monom_var: "sum_var (var_monom x) y = (if x = y then 1 else 0)"
   by (transfer, auto simp: sum_var_list_def)
 
+instantiation monom :: ("{equal,linorder}")equal
+begin
+
+lift_definition equal_monom :: "'a monom \<Rightarrow> 'a monom \<Rightarrow> bool" is "op =" .
+
+instance by (standard, transfer, auto)
+end
+
 text {*
 Polynomials are represented with as sum of monomials multiplied by some coefficient 
 *}
