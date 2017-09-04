@@ -1,0 +1,14 @@
+(* License: LGPL *)
+session First_Welfare_Theorem = "HOL-Analysis" +
+  options [timeout = 600, document = pdf]
+  theories
+    Syntax
+    Argmax
+    Preferences
+    Utility_Functions
+    Consumers
+    Exchange_Economy
+    Private_Ownership_Economy
+  document_files
+    "root.bib"
+    "root.tex"
