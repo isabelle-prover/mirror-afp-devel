@@ -4,7 +4,7 @@ author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
 topic = Mathematics/Geometry, Mathematics/Number Theory
 date = 2017-07-13
 notify = eberlm@in.tum.de
-abstract = 
+abstract =
   <p>Minkowski's theorem relates a subset of
   &#8477;<sup>n</sup>, the Lebesgue measure, and the
   integer lattice &#8484;<sup>n</sup>: It states that
@@ -25,7 +25,7 @@ author = Michael Rawson <mailto:michaelrawson76@gmail.com>
 topic = Computer Science/Programming Languages/Type Systems
 date = 2017-07-09
 notify = mr644@cam.ac.uk, michaelrawson76@gmail.com
-abstract = 
+abstract =
   I formalise a Church-style simply-typed
   \(\lambda\)-calculus, extended with pairs, a unit value, and
   projection functions, and show some metatheory of the calculus, such
@@ -43,7 +43,7 @@ author = Julius Michaelis <http://liftm.de>, Tobias Nipkow <http://www21.in.tum.
 topic = Logic
 date = 2017-06-21
 notify = maintainafpppt@liftm.de
-abstract = 
+abstract =
   We formalize a range of proof systems for classical propositional
   logic (sequent calculus, natural deduction, Hilbert systems,
   resolution) and prove the most important meta-theoretic results about
@@ -4396,7 +4396,7 @@ author = Brijesh Dongol <mailto:brijesh.dongol@brunel.ac.uk>, Victor B. F. Gomes
 topic = Mathematics/Algebra
 date = 2017-06-13
 notify = g.struth@sheffield.ac.uk, victor.gomes@cl.cam.ac.uk
-abstract = 
+abstract =
    Partial Semigroups are relevant to the foundations of quantum
   mechanics and combinatorics as well as to interval and separation
   logics. Convolution algebras can be understood either as algebras of
@@ -5048,7 +5048,7 @@ abstract =
 
 [Nominal2]
 title = Nominal 2
-author = Christian Urban <http://www.inf.kcl.ac.uk/staff/urbanc/>, Stefan Berghofer <http://www.in.tum.de/~berghofe>, Cezary Kaliszyk <>
+author = Christian Urban <http://www.inf.kcl.ac.uk/staff/urbanc/>, Stefan Berghofer <http://www.in.tum.de/~berghofe>, Cezary Kaliszyk <http://cl-informatik.uibk.ac.at/users/cek/>
 date = 2013-02-21
 topic = Tools
 abstract =
@@ -5066,6 +5066,27 @@ abstract =
 	HOL/Nominal in the Isabelle distribution.
 	</p>
 notify = christian.urban@kcl.ac.uk
+
+[First_Welfare_Theorem]
+title = Microeconomics and the First Welfare Theorem
+author = Julian Parsert <mailto:julian.parsert@gmail.com>, Cezary Kaliszyk<http://cl-informatik.uibk.ac.at/users/cek/>
+topic = Mathematics/Economics
+license = LGPL
+date = 2017-09-01
+notify = julian.parsert@uibk.ac.at, cezary.kaliszyk@uibk.ac.at
+abstract =
+  Economic activity has always been a fundamental part of society. Due
+  to modern day politics, economic theory has gained even more influence
+  on our lives. Thus we want models and theories to be as precise as
+  possible. This can be achieved using certification with the help of
+  formal proof technology. Hence we will use Isabelle/HOL to construct
+  two economic models, that of the the pure exchange economy and a
+  version of the Arrow-Debreu Model. We will prove that the
+  <i>First Theorem of Welfare Economics</i> holds within
+  both. The theorem is the mathematical formulation of Adam Smith's
+  famous <i>invisible hand</i> and states that a group of
+  self-interested and rational actors will eventually achieve an
+  efficient allocation of goods and services.
 
 [Noninterference_Sequential_Composition]
 title = Conservation of CSP Noninterference Security under Sequential Composition
@@ -5517,7 +5538,7 @@ author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
 topic = Mathematics/Probability Theory, Mathematics/Geometry
 date = 2017-06-06
 notify = eberlm@in.tum.de
-abstract = 
+abstract =
   In the 18th century, Georges-Louis Leclerc, Comte de Buffon posed and
   later solved the following problem, which is often called the first
   problem ever solved in geometric probability: Given a floor divided
@@ -5836,7 +5857,7 @@ author = Victor B. F. Gomes <mailto:vb358@cam.ac.uk>, Martin Kleppmann<mailto:ma
 topic = Computer Science/Algorithms/Distributed, Computer Science/Data Structures
 date = 2017-07-07
 notify = vb358@cam.ac.uk, dominic.p.mulligan@googlemail.com
-abstract = 
+abstract =
   In this work, we focus on the correctness of Conflict-free Replicated
   Data Types (CRDTs), a class of algorithm that provides strong eventual
   consistency guarantees for replicated data. We develop a modular and
@@ -5858,7 +5879,7 @@ author = Joachim Breitner<mailto:joachim@cis.upenn.edu>, Brian Huffman<>, Neil M
 topic = Computer Science/Functional Programming
 date = 2017-07-15
 notify = c.sternagel@gmail.com, joachim@cis.upenn.edu, hupel@in.tum.de
-abstract = 
+abstract =
   The Isabelle/HOLCF-Prelude is a formalization of a large part of
   Haskell's standard prelude in Isabelle/HOLCF. We use it to prove
   the correctness of the Eratosthenes' Sieve, in its
@@ -5873,7 +5894,7 @@ author = Jeremy Siek <http://homes.soic.indiana.edu/jsiek/>
 topic = Computer Science/Programming Languages
 date = 2017-07-21
 notify = jsiek@indiana.edu
-abstract = 
+abstract =
   We present a semantics for an applied call-by-value lambda-calculus
   that is compositional, extensional, and elementary. We present four
   different views of the semantics: 1) as a relational (big-step)
@@ -5900,7 +5921,7 @@ author = Diego Marmsoler<>
 topic = Computer Science/System Description Languages
 date = 2017-07-28
 notify = diego.marmsoler@tum.de
-abstract = 
+abstract =
   The architecture of a system describes the system's overall
   organization into components and connections between those components.
   With the emergence of mobile computing, dynamic architectures have
@@ -5930,7 +5951,7 @@ author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
 topic = Mathematics/Geometry
 date = 2017-07-31
 notify = lukas.bulwahn@gmail.com
-abstract = 
+abstract =
   This entry formalizes the two geometric theorems, Stewart's and
   Apollonius' theorem. Stewart's Theorem relates the length of
   a triangle's cevian to the lengths of the triangle's two
@@ -5948,7 +5969,7 @@ author = Cristina Matache <mailto:cris.matache@gmail.com>, Victor B. F. Gomes <m
 topic = Computer Science/Programming Languages/Lambda Calculi, Logic
 date = 2017-08-16
 notify = victorborgesfg@gmail.com, dominic.p.mulligan@googlemail.com
-abstract = 
+abstract =
   The propositions-as-types correspondence is ordinarily presented as
   linking the metatheory of typed λ-calculi and the proof theory of
   intuitionistic logic. Griffin observed that this correspondence could
@@ -5964,7 +5985,7 @@ author = Jonas Rädle <mailto:jonas.raedle@tum.de>
 topic = Mathematics/Algebra
 date = 2017-08-20
 notify = jonas.raedle@tum.de
-abstract = 
+abstract =
   The Orbit-Stabiliser theorem is a basic result in the algebra of
   groups that factors the order of a group into the sizes of its orbits
   and stabilisers.  We formalize the notion of a group action and the

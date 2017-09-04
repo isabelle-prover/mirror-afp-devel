@@ -9,7 +9,27 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>20 Aug 2017 00:00:00 +0000</pubDate>
+    <pubDate>01 Sep 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>Microeconomics and the First Welfare Theorem</title>
+              <link>https://www.isa-afp.org/entries/First_Welfare_Theorem.html</link>
+       <guid>https://www.isa-afp.org/entries/First_Welfare_Theorem.html</guid>
+       <dc:creator> Julian Parsert, Cezary Kaliszyk       </dc:creator>
+       <pubDate>01 Sep 2017 00:00:00 +0000</pubDate>
+       <description>
+Economic activity has always been a fundamental part of society. Due
+to modern day politics, economic theory has gained even more influence
+on our lives. Thus we want models and theories to be as precise as
+possible. This can be achieved using certification with the help of
+formal proof technology. Hence we will use Isabelle/HOL to construct
+two economic models, that of the the pure exchange economy and a
+version of the Arrow-Debreu Model. We will prove that the
+&lt;i&gt;First Theorem of Welfare Economics&lt;/i&gt; holds within
+both. The theorem is the mathematical formulation of Adam Smith&#39;s
+famous &lt;i&gt;invisible hand&lt;/i&gt; and states that a group of
+self-interested and rational actors will eventually achieve an
+efficient allocation of goods and services.</description>
+    </item>
     <item>
        <title>Root-Balanced Tree</title>
               <link>https://www.isa-afp.org/entries/Root_Balanced_Tree.html</link>
@@ -570,23 +590,6 @@ We formalize the theory of subresultants and the subresultant
 polynomial remainder sequence as described by Brown and Traub. As a
 result, we obtain efficient certified algorithms for computing the
 resultant and the greatest common divisor of polynomials.</description>
-    </item>
-    <item>
-       <title>Expected Shape of Random Binary Search Trees</title>
-              <link>https://www.isa-afp.org/entries/Random_BSTs.html</link>
-       <guid>https://www.isa-afp.org/entries/Random_BSTs.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>04 Apr 2017 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This entry contains proofs for the textbook results about the
-distributions of the height and internal path length of random binary
-search trees (BSTs), i.&amp;thinsp;e. BSTs that are formed by taking
-an empty BST and inserting elements from a fixed set in random
-order.&lt;/p&gt;  &lt;p&gt;In particular, we prove a logarithmic upper
-bound on the expected height and the &lt;em&gt;Θ(n log n)&lt;/em&gt;
-closed-form solution for the expected internal path length in terms of
-the harmonic numbers. We also show how the internal path length
-relates to the average-case cost of a lookup in a BST.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
