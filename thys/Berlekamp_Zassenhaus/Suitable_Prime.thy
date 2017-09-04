@@ -142,10 +142,38 @@ proof -
     \<Longrightarrow> sf" by auto
 qed
 
+lemma square_free_impl_uint64: assumes 
+  p: "prime p" and
+  res: "square_free_impl_main p (finite_field_ops64 (uint64_of_int p)) f = sf" and
+  small: "p \<le> 4294967295"     
+  shows "sf \<Longrightarrow> poly_mod.square_free_m p f"
+    "nat p > poly_mod.degree_m p f \<Longrightarrow> nat p > square_free_bound f \<Longrightarrow> square_free f 
+    \<Longrightarrow> sf" 
+proof -
+  have ne: "{0..<p} \<noteq> {}" using prime_ge_2_int[OF p] by auto
+  {
+    assume "\<exists>(Rep :: 'b \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< p :: int}"
+    from prime_type_prime_card[OF p this]
+    have "class.prime_card TYPE('b)" and p: "p = int CARD('b)" by auto
+    from prime_field_gen.square_free_impl[OF 
+        prime_field.prime_field_finite_field_ops64, unfolded prime_field_def mod_ring_locale_def,
+      internalize_sort "'a :: prime_card", OF this small refl, of f]
+    have "sf \<Longrightarrow> poly_mod.square_free_m p f" 
+      "nat p > poly_mod.degree_m p f \<Longrightarrow> nat p > square_free_bound f \<Longrightarrow> square_free f \<Longrightarrow> 
+      sf" unfolding p res[symmetric] by auto
+  }
+  from this[cancel_type_definition, OF ne]
+  show "sf \<Longrightarrow> poly_mod.square_free_m p f" 
+    "nat p > poly_mod.degree_m p f \<Longrightarrow> nat p > square_free_bound f \<Longrightarrow> square_free f 
+    \<Longrightarrow> sf" by auto
+qed
+
 definition square_free_impl :: "int \<Rightarrow> int poly \<Rightarrow> bool" where
   "square_free_impl p = ( 
     if p \<le> 65535 
     then square_free_impl_main p (finite_field_ops32 (uint32_of_int p))
+    else if p \<le> 4294967295
+    then square_free_impl_main p (finite_field_ops64 (uint64_of_int p))
     else square_free_impl_main p (finite_field_ops p))" 
 
 lemma square_free_mod_imp_square_free: assumes 
@@ -189,7 +217,10 @@ proof -
   show one: "square_free_impl p f \<Longrightarrow> poly_mod.square_free_m p f" and
     "nat p > poly_mod.degree_m p f \<Longrightarrow> nat p > square_free_bound f \<Longrightarrow> square_free f 
     \<Longrightarrow> square_free_impl p f"
-    using square_free_impl_int[OF p refl, of f] square_free_impl_uint32[OF p refl, of f]
+    using 
+      square_free_impl_int[OF p refl, of f] 
+      square_free_impl_uint32[OF p refl, of f]
+      square_free_impl_uint64[OF p refl, of f]
     unfolding square_free_impl_def by (auto split: if_splits)
 qed
   

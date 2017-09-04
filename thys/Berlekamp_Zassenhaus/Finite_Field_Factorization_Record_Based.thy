@@ -616,10 +616,34 @@ proof -
   show ?thesis .
 qed
 
+lemma finite_field_factorization_main_uint64: 
+  assumes p: "prime p" "p \<le> 4294967295" 
+  and res: "finite_field_factorization_main p (finite_field_ops64 (uint64_of_int p)) f = (c,fs)"
+  and sq: "poly_mod.square_free_m p f"
+  shows "poly_mod.unique_factorization_m p f (c, mset fs)
+    \<and> c \<in> {0 ..< p} 
+    \<and> (\<forall> fi \<in> set fs. set (coeffs fi) \<subseteq> {0 ..< p})" 
+proof -
+  have ne: "{0..<p} \<noteq> {}" using prime_ge_2_int[OF p(1)] by auto
+  {
+    assume "\<exists>(Rep :: 'b \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< p :: int}"
+    from prime_type_prime_card[OF p(1) this]
+    have "class.prime_card TYPE('b)" "p = int CARD('b)" by auto
+    from prime_field_gen.finite_field_factorization_main[OF prime_field.prime_field_finite_field_ops64,
+      unfolded prime_field_def mod_ring_locale_def, internalize_sort "'a :: prime_card", OF this p(2) res sq]
+    have ?thesis .
+  }
+  from this[cancel_type_definition, OF ne]
+  show ?thesis .
+qed
+
+
 definition finite_field_factorization_int :: "int \<Rightarrow> int poly \<Rightarrow> int \<times> int poly list" where
   "finite_field_factorization_int p = (  
     if p \<le> 65535 
     then finite_field_factorization_main p (finite_field_ops32 (uint32_of_int p))
+    else if p \<le> 4294967295
+    then finite_field_factorization_main p (finite_field_ops64 (uint64_of_int p))
     else finite_field_factorization_main p (finite_field_ops p))"
  
 lemma finite_field_factorization_int: assumes p: "prime p" 
@@ -630,6 +654,7 @@ lemma finite_field_factorization_int: assumes p: "prime p"
     \<and> (\<forall> fi \<in> set fs. set (coeffs fi) \<subseteq> {0 ..< p})" 
   using finite_field_factorization_main_int[OF p  _ sq, of c fs]
     finite_field_factorization_main_uint32[OF p _ _ sq, of c fs]
+    finite_field_factorization_main_uint64[OF p _ _ sq, of c fs]
     result[unfolded finite_field_factorization_int_def]
   by (auto split: if_splits)
     
