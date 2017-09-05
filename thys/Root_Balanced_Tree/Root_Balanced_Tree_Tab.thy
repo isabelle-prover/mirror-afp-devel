@@ -7,10 +7,6 @@ imports
   "~~/src/HOL/Library/IArray"
 begin
 
-  (* FIXME compatibility lemma *)
-lemma All_less_Suc: "(\<forall>i < Suc n. P i) = (P n \<and> (\<forall>i < n. P i))"
-by (auto simp: less_Suc_eq)
-
 locale Min_tab =
 fixes p :: "nat \<Rightarrow> nat \<Rightarrow> bool"
 fixes tab :: "nat list"
