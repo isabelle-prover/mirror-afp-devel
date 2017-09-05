@@ -7,6 +7,7 @@ session Root_Balanced_Tree (AFP) = "HOL-Library" +
   theories [document = false]
     "~~/src/HOL/Decision_Procs/Approximation"
     "~~/src/HOL/Data_Structures/Tree_Set"
+    "~~/src/HOL/Data_Structures/Balance"
     "../Amortized_Complexity/Amortized_Framework0"
 
   theories

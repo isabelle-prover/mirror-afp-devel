@@ -5,7 +5,7 @@ imports
   "../Amortized_Complexity/Amortized_Framework0"
   "~~/src/HOL/Library/Tree_Multiset"
   "~~/src/HOL/Data_Structures/Tree_Set"
-  Balance
+  "~~/src/HOL/Data_Structures/Balance"
   Time_Monad
 begin
 
@@ -568,7 +568,7 @@ proof -
     hence "log 2 (size1 t) - 1/c < log 2 (size1 ?sh)"
       using c1 by(simp add: field_simps)
     from powr_less_mono[OF this, of 2] show ?thesis
-      by (simp add: powr_divide2[symmetric] powr_minus field_simps)
+      by (simp add: powr_diff powr_minus field_simps)
   qed
   also have "2 * real(size1 ?sh) - size1 t - 1
            = real(size1 ?sh) - (real(size1 t) - size1 ?sh) - 1"
@@ -595,7 +595,7 @@ proof -
   also have "1 / (2 powr (1 - 1 / c) - 1) = 2 powr (1/c) / (2 - 2 powr (1/c))"
   proof -
     have "1 / (2 powr (1 - 1 / c) - 1) = 1 / (2 / 2 powr (1/c) - 1)"
-      by(simp add: powr_divide2[symmetric])
+      by(simp add: powr_diff)
     also have "\<dots> = 2 powr (1/c) / (2 - 2 powr (1/c))"
       by(simp add: field_simps)
     finally show ?thesis .
@@ -1381,8 +1381,7 @@ by(auto simp add: delete.simps split: option.splits if_splits)
 lemma size_del_min:
   "\<lbrakk> del_min t = (a,t'); t \<noteq> Leaf \<rbrakk> \<Longrightarrow> size t' = size t - 1"
 by(induction t arbitrary: t')
-  (auto simp add: size_0_iff_Leaf zero_less_iff_neq_zero
-        split: if_splits prod.splits)
+  (auto simp add: zero_less_iff_neq_zero split: if_splits prod.splits)
 
 lemma height_del_min:
   "\<lbrakk> del_min t = (a,t'); t \<noteq> Leaf \<rbrakk> \<Longrightarrow> height t' \<le> height t"
@@ -1402,9 +1401,8 @@ next
     case ls
     with "2.prems" obtain l' where l': "del x l = Some l'"
       by(auto split: option.splits)
-    hence "size l \<noteq> 0" by(cases l) auto
-    thus ?thesis
-      using ls 2 l' by(auto)
+    hence [arith]: "size l \<noteq> 0" by(cases l) auto
+    show ?thesis using ls 2 l' by(auto)
   next
     case eq
     show ?thesis
@@ -1413,16 +1411,15 @@ next
     next
       case False
       thus ?thesis
-        using eq "2.prems" size_0_iff_Leaf[of r]
-        by (auto simp add: size_del_min split: prod.splits)
+        using eq "2.prems" eq_size_0[of r]
+        by (auto simp add: size_del_min simp del: eq_size_0 split: prod.splits)
     qed
   next
     case gr
     with "2.prems" obtain r' where r': "del x r = Some r'"
       by(auto split: option.splits)
-    hence "size r \<noteq> 0" by(cases r) auto
-    thus ?thesis
-      using gr 2 r' by(auto)
+    hence [arith]: "size r \<noteq> 0" by(cases r) auto
+    show ?thesis using gr 2 r' by(auto)
   qed
 qed
 
@@ -1741,9 +1738,8 @@ next
         thus ?thesis
           using Node.prems by(auto simp: imbal.simps of_nat_diff)
       next
-        case False
-        thus ?thesis
-          using Node.prems by(simp add: imbal.simps of_nat_diff algebra_simps)
+        case [arith]: False
+        show ?thesis using Node.prems by(simp add: imbal.simps of_nat_diff algebra_simps)
       qed
     next
       case False
@@ -1806,18 +1802,18 @@ next
       by(simp add: size_del delete2_def2 t_delete2_def2 algebra_simps add_divide_distrib)
   next
     case False
-    from Some have *: "size t \<noteq> 0" by(cases t) (auto)
+    from Some have [arith]: "size t \<noteq> 0" by(cases t) (auto)
     have "t_delete2 x (t, n, dl) + \<Phi>\<^sub>d (delete2 x (t,n,dl)) - \<Phi>\<^sub>d (t,n,dl) =
       t_delete2 x (t, n, dl) - \<Phi> t - 4*dl/cd"
       using False Some
       by(simp add: delete2_def2 t_delete2_def2 \<Phi>_wbalanced bal_tree)
     also have "\<dots> = t_del x t + 4 * size t - \<Phi> t - 4*dl/cd"
-      using False assms Some * by(simp add: t_delete2_def2 t_bal_tree size_del size1_def)
+      using False assms Some by(simp add: t_delete2_def2 t_bal_tree size_del size1_def)
     also have "\<dots> \<le> (6*e+1)*height t + 4*(size t - dl/cd + 1)"
       using amor_del_Some[OF Some] \<Phi>_nn[of t] \<Phi>_nn[of t']
       by(simp add: ring_distribs)
     also have "size t - dl/cd + 1 \<le> 1/cd + 1"
-      using assms False cd0 * unfolding bal_d_def
+      using assms False cd0 unfolding bal_d_def
       by(simp add: algebra_simps of_nat_diff)(simp add: field_simps)
     finally show ?thesis
       by(simp add: ring_distribs)
