@@ -115,6 +115,7 @@ FileRefinement
 FinFun
 Finite_Automata_HF
 Finger-Trees
+First_Welfare_Theorem
 Fisher_Yates
 Flow_Networks
 Floyd_Warshall
@@ -174,6 +175,7 @@ Kleene_Algebra
 Knot_Theory
 Koenigsberg_Friendship
 Lam-ml-Normalization
+LambdaMu
 Lambda_Free_KBOs
 Lambda_Free_RPOs
 Landau_Symbols
@@ -234,6 +236,7 @@ NormByEval
 No_FTL_observers
 Open_Induction
 Optics
+Orbit_Stabiliser
 Ordinal
 Ordinals_and_Cardinals
 Ordinary_Differential_Equations
@@ -297,6 +300,7 @@ Resolution_FOL
 Rewriting_Z
 Ribbon_Proofs
 Robbins-Conjecture
+Root_Balanced_Tree
 Routing
 Roy_Floyd_Warshall
 SATSolverVerification

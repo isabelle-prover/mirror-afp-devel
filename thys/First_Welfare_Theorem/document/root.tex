@@ -1,0 +1,72 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb}
+\usepackage{pdfsetup}
+
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{First Welfare Theorem \thanks{%
+This work is supported by the Austrian Science Fund (FWF) project P26201 and the European Research Council (ERC) grant no 714034 \emph{SMART}.}}
+
+\author{Julian Parsert \and Cezary Kaliszyk}
+
+\maketitle
+
+\begin{abstract}
+  Economic activity has always been a fundamental part of society.
+  Due to modern day politics, economic theory has gained even more
+  influence on our lives. Thus we want models and theories to be as
+  precise as possible. This can be achieved using
+  certification with the help of formal proof technology. Hence we
+  will use Isabelle/HOL to construct two economic models, that of the the pure
+  exchange economy and a version of the Arrow-Debreu Model. We will
+  prove that the \emph{First Theorem of Welfare Economics} holds
+  within both. The theorem is the mathematical formulation of Adam
+  Smith's famous \emph{invisible hand} and states that a group of
+  self-interested and rational actors will eventually achieve an
+  efficient allocation of goods and services.
+\end{abstract}
+
+\tableofcontents
+
+\parindent 0pt\parskip 0.5ex
+\input{session}
+
+\section{Related work}
+%
+There have been multiple attempts at formalizing economical concepts.
+Most notably the ForMaRE project~\cite{DBLP:conf/mkm/0002RK13}. The
+project intended to apply formal mathematical reasoning to economic
+results. One way of doing so, was the development of the ``Auction
+Theory Toolbox''~\cite{kerber2013developing}. This entailed the
+formalization of auction mechanisms such as the Combinatorial Vickrey
+auctions~\cite{DBLP:journals:corr:CaminatiK0R13}. Having proved the
+auction mechanisms' soundness among other properties, the team used
+Isabelle to generate executable code, which conforms with that formal
+specification~\cite{DBLP:journals:corr:CaminatiK0R13}.
+%
+Interestingly, there have been very few formalizations of results from
+\emph{Game Theory}. One of the few examples is St{\'{e}}phane Le
+Roux's~\cite{DBLP:conf/tphol/Roux09} formalization of \emph{Nash
+  Equilibria} in Coq. In \emph{Social Choice Theory}, another
+mathematical area with applications to economics, Freek
+Wiedijk~\cite{Wiedijk2009} formalized Arrow's famous
+\emph{Impossibility Theorem} using Mizar. The same theorem was also
+formalized by Tobias Nipkow in
+Isabelle~\cite{DBLP:journals/afp/Nipkow08b}. Furthermore, Peter
+Gammie~\cite{SenSocialChoice-AFP} formalized \emph{May's Theorem} and
+\emph{Sen's Theorem} as well as other \emph{Social Choice Theory}
+results. More recently, Manuel
+Eberl~\cite{Randomised_Social_Choice-AFP} formalized multiple basics
+of \emph{Randomised Social Choice Theory}. Finally, aspects of finance
+have been formalized by Peter J{\"a}ger~\cite{PeterJaeger2012} as well as 
+Echenim and Peltier~\cite{DBLP:conf/cade/EchenimP17}
+
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

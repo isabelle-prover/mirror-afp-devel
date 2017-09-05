@@ -9,7 +9,83 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>31 Jul 2017 00:00:00 +0000</pubDate>
+    <pubDate>01 Sep 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>Microeconomics and the First Welfare Theorem</title>
+              <link>https://www.isa-afp.org/entries/First_Welfare_Theorem.html</link>
+       <guid>https://www.isa-afp.org/entries/First_Welfare_Theorem.html</guid>
+       <dc:creator> Julian Parsert, Cezary Kaliszyk       </dc:creator>
+       <pubDate>01 Sep 2017 00:00:00 +0000</pubDate>
+       <description>
+Economic activity has always been a fundamental part of society. Due
+to modern day politics, economic theory has gained even more influence
+on our lives. Thus we want models and theories to be as precise as
+possible. This can be achieved using certification with the help of
+formal proof technology. Hence we will use Isabelle/HOL to construct
+two economic models, that of the the pure exchange economy and a
+version of the Arrow-Debreu Model. We will prove that the
+&lt;i&gt;First Theorem of Welfare Economics&lt;/i&gt; holds within
+both. The theorem is the mathematical formulation of Adam Smith&#39;s
+famous &lt;i&gt;invisible hand&lt;/i&gt; and states that a group of
+self-interested and rational actors will eventually achieve an
+efficient allocation of goods and services.</description>
+    </item>
+    <item>
+       <title>Root-Balanced Tree</title>
+              <link>https://www.isa-afp.org/entries/Root_Balanced_Tree.html</link>
+       <guid>https://www.isa-afp.org/entries/Root_Balanced_Tree.html</guid>
+       <dc:creator> Tobias Nipkow       </dc:creator>
+       <pubDate>20 Aug 2017 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;
+Andersson introduced &lt;em&gt;general balanced trees&lt;/em&gt;,
+search trees based on the design principle of partial rebuilding:
+perform update operations naively until the tree becomes too
+unbalanced, at which point a whole subtree is rebalanced.  This article
+defines and analyzes a functional version of general balanced trees,
+which we call &lt;em&gt;root-balanced trees&lt;/em&gt;. Using a lightweight model
+of execution time, amortized logarithmic complexity is verified in
+the theorem prover Isabelle.
+&lt;/p&gt;
+&lt;p&gt;
+This is the Isabelle formalization of the material decribed in the APLAS 2017 article
+&lt;a href=&#34;http://www.in.tum.de/~nipkow/pubs/aplas17.html&#34;&gt;Verified Root-Balanced Trees&lt;/a&gt;
+by the same author, which also presents experimental results that show
+competitiveness of root-balanced with AVL and red-black trees.
+&lt;/p&gt;</description>
+    </item>
+    <item>
+       <title>Orbit-Stabiliser Theorem with Application to Rotational Symmetries</title>
+              <link>https://www.isa-afp.org/entries/Orbit_Stabiliser.html</link>
+       <guid>https://www.isa-afp.org/entries/Orbit_Stabiliser.html</guid>
+       <dc:creator> Jonas Rädle       </dc:creator>
+       <pubDate>20 Aug 2017 00:00:00 +0000</pubDate>
+       <description>
+The Orbit-Stabiliser theorem is a basic result in the algebra of
+groups that factors the order of a group into the sizes of its orbits
+and stabilisers.  We formalize the notion of a group action and the
+related concepts of orbits and stabilisers. This allows us to prove
+the orbit-stabiliser theorem.  In the second part of this work, we
+formalize the tetrahedral group and use the orbit-stabiliser theorem
+to prove that there are twelve (orientation-preserving) rotations of
+the tetrahedron.</description>
+    </item>
+    <item>
+       <title>The LambdaMu-calculus</title>
+              <link>https://www.isa-afp.org/entries/LambdaMu.html</link>
+       <guid>https://www.isa-afp.org/entries/LambdaMu.html</guid>
+       <dc:creator> Cristina Matache, Victor B. F. Gomes, Dominic P. Mulligan       </dc:creator>
+       <pubDate>16 Aug 2017 00:00:00 +0000</pubDate>
+       <description>
+The propositions-as-types correspondence is ordinarily presented as
+linking the metatheory of typed λ-calculi and the proof theory of
+intuitionistic logic. Griffin observed that this correspondence could
+be extended to classical logic through the use of control operators.
+This observation set off a flurry of further research, leading to the
+development of Parigots λμ-calculus. In this work, we formalise λμ-
+calculus in Isabelle/HOL and prove several metatheoretical properties
+such as type preservation and progress.</description>
+    </item>
     <item>
        <title>Stewart's Theorem and Apollonius' Theorem</title>
               <link>https://www.isa-afp.org/entries/Stewart_Apollonius.html</link>
@@ -514,72 +590,6 @@ saturated. That means that for constructor calls occuring as arguments
 to higher-order functions, synthetic lambdas have to be inserted. This
 entry provides tooling to avoid this construction altogether by
 introducing constructor functions.</description>
-    </item>
-    <item>
-       <title>Lazifying case constants</title>
-              <link>https://www.isa-afp.org/entries/Lazy_Case.html</link>
-       <guid>https://www.isa-afp.org/entries/Lazy_Case.html</guid>
-       <dc:creator> Lars Hupel       </dc:creator>
-       <pubDate>18 Apr 2017 00:00:00 +0000</pubDate>
-       <description>
-Isabelle&#39;s code generator performs various adaptations for target
-languages. Among others, case statements are printed as match
-expressions. Internally, this is a sophisticated procedure, because in
-HOL, case statements are represented as nested calls to the case
-combinators as generated by the datatype package. Furthermore, the
-procedure relies on laziness of match expressions in the target
-language, i.e., that branches guarded by patterns that fail to match
-are not evaluated. Similarly, &lt;tt&gt;if-then-else&lt;/tt&gt; is
-printed to the corresponding construct in the target language. This
-entry provides tooling to replace these special cases in the code
-generator by ignoring these target language features, instead printing
-case expressions and &lt;tt&gt;if-then-else&lt;/tt&gt; as functions.</description>
-    </item>
-    <item>
-       <title>Subresultants</title>
-              <link>https://www.isa-afp.org/entries/Subresultants.html</link>
-       <guid>https://www.isa-afp.org/entries/Subresultants.html</guid>
-       <dc:creator> Sebastiaan Joosten, René Thiemann, Akihisa Yamada       </dc:creator>
-       <pubDate>06 Apr 2017 00:00:00 +0000</pubDate>
-       <description>
-We formalize the theory of subresultants and the subresultant
-polynomial remainder sequence as described by Brown and Traub. As a
-result, we obtain efficient certified algorithms for computing the
-resultant and the greatest common divisor of polynomials.</description>
-    </item>
-    <item>
-       <title>Expected Shape of Random Binary Search Trees</title>
-              <link>https://www.isa-afp.org/entries/Random_BSTs.html</link>
-       <guid>https://www.isa-afp.org/entries/Random_BSTs.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>04 Apr 2017 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This entry contains proofs for the textbook results about the
-distributions of the height and internal path length of random binary
-search trees (BSTs), i.&amp;thinsp;e. BSTs that are formed by taking
-an empty BST and inserting elements from a fixed set in random
-order.&lt;/p&gt;  &lt;p&gt;In particular, we prove a logarithmic upper
-bound on the expected height and the &lt;em&gt;Θ(n log n)&lt;/em&gt;
-closed-form solution for the expected internal path length in terms of
-the harmonic numbers. We also show how the internal path length
-relates to the average-case cost of a lookup in a BST.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>The number of comparisons in QuickSort</title>
-              <link>https://www.isa-afp.org/entries/Quick_Sort_Cost.html</link>
-       <guid>https://www.isa-afp.org/entries/Quick_Sort_Cost.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>15 Mar 2017 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;We give a formal proof of the well-known results about the
-number of comparisons performed by two variants of QuickSort: first,
-the expected number of comparisons of randomised QuickSort
-(i.&amp;thinsp;e.&amp;nbsp;QuickSort with random pivot choice) is
-&lt;em&gt;2&amp;thinsp;(n+1)&amp;thinsp;H&lt;sub&gt;n&lt;/sub&gt; -
-4&amp;thinsp;n&lt;/em&gt;, which is asymptotically equivalent to
-&lt;em&gt;2&amp;thinsp;n ln n&lt;/em&gt;; second, the number of
-comparisons performed by the classic non-randomised QuickSort has the
-same distribution in the average case as the randomised one.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
