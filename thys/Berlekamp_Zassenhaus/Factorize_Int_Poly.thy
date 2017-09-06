@@ -622,7 +622,6 @@ proof (atomize(full))
       thus ?thesis using one unfolding id by auto
     qed
   qed
-qed
+qed 
 
-  unused_thms
 end

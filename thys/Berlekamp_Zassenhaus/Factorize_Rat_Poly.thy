@@ -28,9 +28,6 @@ by (unfold_locales, auto simp: content_mult)
 lemma prod_dvd_1_imp_all_dvd_1:
   assumes "finite X" and "prod f X dvd 1" and "x \<in> X" shows "f x dvd 1"
 proof (insert assms, induct rule:finite_induct)
-  case empty
-  then show ?case by simp
-next
   case IH: (insert x' X)
   show ?case
   proof (cases "x = x'")
@@ -40,7 +37,7 @@ next
     case False
     then show ?thesis using IH by (auto intro!: IH(3) dvd_trans[of "prod f X" "_ * prod f X" 1])
   qed
-qed
+qed simp
 
 (* TODO: MOVE! *)
 lemma content_pCons[simp]: "content (pCons a p) = gcd a (content p)"
