@@ -37,7 +37,7 @@ proof -
     by (rule poly_rel_coeffs_Mp_of_int_poly[OF refl], simp add: g''_def)
   have id: "(gcd_poly_i ff_ops (of_int_poly_i ff_ops (Mp f)) (of_int_poly_i ff_ops (Mp g)) = one_poly_i ff_ops)
     = coprime f'' g''"
-    unfolding square_free_i_def by transfer_prover
+    unfolding square_free_i_def coprime_iff_gcd_one by transfer_prover
   have fF: "MP_Rel (Mp f) F" unfolding F MP_Rel_def
     by (simp add: Mp_f_representative)
   have gG: "MP_Rel (Mp g) G" unfolding G MP_Rel_def
@@ -45,7 +45,7 @@ proof -
   have "coprime f'' g'' = coprime F G" unfolding f''_def F g''_def G by simp
   also have "\<dots> = coprime_m (Mp f) (Mp g)"
     using coprime_MP_Rel[unfolded rel_fun_def, rule_format, OF fF gG] by simp
-  also have "\<dots> = coprime_m f g" unfolding coprime_m_def dvdm_def equivalent_def by simp
+  also have "\<dots> = coprime_m f g" unfolding coprime_m_def dvdm_def by simp
   finally have id2: "coprime f'' g'' = coprime_m f g" .
   show "coprime_approx_main p ff_ops f g \<Longrightarrow> coprime_m f g" unfolding coprime_approx_main_def
     id id2 by auto
@@ -97,13 +97,13 @@ lemma coprime_mod_imp_coprime: assumes
   shows "coprime f g"
 proof -
   interpret poly_mod_prime p by (standard, rule p)
-  from cop_m[unfolded coprime_m_def] have cop_m: "\<And> h. dvdm h f \<Longrightarrow> dvdm h g \<Longrightarrow> dvdm h 1"  by auto
+  from cop_m[unfolded coprime_m_def] have cop_m: "\<And> h. h dvdm f \<Longrightarrow> h dvdm g \<Longrightarrow> h dvdm 1"  by auto
   show ?thesis 
   proof (rule coprimeI)
     fix h
     assume dvd: "h dvd f" "h dvd g" 
-    hence "dvdm h f" "dvdm h g" unfolding dvdm_def equivalent_def dvd_def by auto
-    from cop_m[OF this] obtain k where unit: "Mp (h * Mp k) = 1" unfolding dvdm_def equivalent_def by auto
+    hence "h dvdm f" "h dvdm g" unfolding dvdm_def dvd_def by auto
+    from cop_m[OF this] obtain k where unit: "Mp (h * Mp k) = 1" unfolding dvdm_def by auto
     from content_dvd_contentI[OF dvd(1)] content_dvd_contentI[OF dvd(2)] cnt
     have cnt: "content h = 1" by auto 
     let ?k = "Mp k" 
@@ -113,9 +113,9 @@ proof -
     from dvd have "lead_coeff h dvd lead_coeff f" "lead_coeff h dvd lead_coeff g" 
       by (metis dvd_def lead_coeff_mult)+
     with cop have coph: "coprime (lead_coeff h) p"
-      by (metis coprime_divisors dvd_def mult.right_neutral)
+      by (meson dvd_trans not_coprime_iff_common_factor)
     let ?k = "Mp k"  
-    from arg_cong[OF unit, of degree] have degm0: "degree_m (h * ?k) = 0" unfolding degree_m_def by simp
+    from arg_cong[OF unit, of degree] have degm0: "degree_m (h * ?k) = 0" by simp
     have "lead_coeff ?k \<in> {0 ..< p}" unfolding Mp_coeff M_def using m1 by simp
     with k0 have lk: "lead_coeff ?k \<ge> 1" "lead_coeff ?k < p"
       by (auto simp add: int_one_le_iff_zero_less order.not_eq_order_implies_strict)

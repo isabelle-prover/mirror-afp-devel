@@ -44,14 +44,10 @@ proof -
   from dvd[OF this] show "degree h = 0".
 qed
 
-lemma irreducible\<^sub>d_square_free: "irreducible\<^sub>d p \<Longrightarrow> square_free p"
-proof (intro square_freeI)
-  fix q
-  show "irreducible\<^sub>d p \<Longrightarrow> degree q \<noteq> 0 \<Longrightarrow> q \<noteq> 0 \<Longrightarrow> q * q dvd p \<Longrightarrow> False"
-    using irreducible\<^sub>dD(2)[of p q] irreducible\<^sub>dD(1)[of p]
-    by (metis add_diff_cancel_left' degree_mult_eq degree_smult_eq 
-      dvd_mult_left irreducible\<^sub>d_dvd_smult linorder_neqE_nat not_less0 zero_less_diff)
-qed (auto simp: irreducible\<^sub>d_def)
+lemma irreducible\<^sub>d_square_free:
+  fixes p :: "'a :: {comm_semiring_1, semiring_no_zero_divisors} poly"
+  shows "irreducible\<^sub>d p \<Longrightarrow> square_free p"
+  by (metis degree_0 degree_mult_eq degree_mult_eq_0 irreducible\<^sub>dD(1) irreducible\<^sub>dD(2) irreducible\<^sub>d_dvd_smult irreducible\<^sub>d_smultI less_add_same_cancel2 not_gr_zero square_free_def)
 
 lemma square_free_factor: assumes dvd: "a dvd p"
   and sf: "square_free p"

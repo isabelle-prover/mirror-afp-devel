@@ -276,7 +276,8 @@ proof
     then have af: "a dvd f" and bf: "b dvd f" by auto
     with f0 have a0: "a \<noteq> 0" and b0: "b \<noteq> 0" by auto
     from irreducible\<^sub>dD(2)[OF l, of a] af dvd_imp_degree_le[OF af f0]
-    have "degree a = 0 \<or> degree a = degree f" by force
+    have "degree a = 0 \<or> degree a = degree f"
+      by (metis degree_smult_le irreducible\<^sub>d_dvd_smult l le_antisym)
     then show False
     proof(elim disjE)
       assume "degree a = 0"
@@ -305,8 +306,7 @@ next
     then have "f0 dvd 1" by (unfold normalize_1_iff)
     with r[unfolded f irreducible_const_poly_iff] show False by auto
   next
-    fix g assume deg_g: "degree g \<noteq> 0" and deg_gf: "degree g < degree f" and gf: "g dvd f"
-    from gf obtain h where fgh: "f = g * h" by (elim dvdE)
+    fix g h assume deg_g: "degree g \<noteq> 0" and deg_gf: "degree g < degree f" and fgh: "f = g * h"
     with r have "g dvd 1 \<or> h dvd 1" by auto
     with deg_g have "degree h = 0" by (auto simp: poly_dvd_1)
     with deg_gf[unfolded fgh] degree_mult_eq[of g h] show False by (cases "g = 0 \<or> h = 0", auto)

@@ -22,7 +22,7 @@ imports
   Polynomial_Record_Based
   Square_Free_Int_To_Square_Free_GFp
 begin
- 
+
 lemma square_free_coprime_pderiv_GFp: fixes f :: "'a :: prime_card mod_ring poly"
   assumes card: "CARD('a) > degree f"
   and sf: "square_free f" 
@@ -61,7 +61,7 @@ proof -
   define f'' where "f'' \<equiv> of_int_poly (Mp f) :: 'a mod_ring poly"
   have rel_f[transfer_rule]: "poly_rel ?f' f''" 
     by (rule poly_rel_coeffs_Mp_of_int_poly[OF refl], simp add: f''_def)
-  have id: "square_free_i ff_ops ?f' = coprime f'' (pderiv f'')"
+  have id: "square_free_i ff_ops ?f' \<longleftrightarrow> gcd f'' (pderiv f'') = 1"
     unfolding square_free_i_def by transfer_prover
   have Mprel [transfer_rule]: "MP_Rel (Mp f) F" unfolding F MP_Rel_def
     by (simp add: Mp_f_representative)
@@ -181,23 +181,23 @@ lemma square_free_mod_imp_square_free: assumes
   shows "square_free f"
 proof -
   interpret poly_mod p .
-  from sf[unfolded square_free_m_def] have f0: "Mp f \<noteq> 0" and ndvd: "\<And> g. degree_m g \<noteq> 0 \<Longrightarrow> \<not> dvdm (g * g) f" 
-    unfolding equivalent_def by auto
+  from sf[unfolded square_free_m_def] have f0: "Mp f \<noteq> 0" and ndvd: "\<And> g. degree_m g \<noteq> 0 \<Longrightarrow> \<not> (g * g) dvdm f" 
+    by auto
   from f0 have ff0: "f \<noteq> 0" by auto
   show "square_free f" unfolding square_free_def
   proof (intro conjI[OF ff0] allI impI notI)
     fix g
     assume deg: "degree g \<noteq> 0" and dvd: "g * g dvd f" 
     then obtain h where f: "f = g * g * h" unfolding dvd_def by auto
-    from arg_cong[OF this, of Mp] have "dvdm (g * g) f" unfolding dvdm_def equivalent_def by auto
+    from arg_cong[OF this, of Mp] have "(g * g) dvdm f" unfolding dvdm_def by auto
     with ndvd[of g] have deg0: "degree_m g = 0" by auto
     hence g0: "M (lead_coeff g) = 0" unfolding Mp_def using deg
-      by (metis p poly_mod.M_def poly_mod.degree_m_eq prime_gt_1_int)
+      by (metis M_def deg0 p poly_mod.degree_m_eq prime_gt_1_int)
     from p have p0: "p \<noteq> 0" by auto
     from arg_cong[OF f, of lead_coeff] have "lead_coeff f = lead_coeff g * lead_coeff g * lead_coeff h" 
       by (auto simp: lead_coeff_mult)
     hence "lead_coeff g dvd lead_coeff f" by auto
-    with cop have cop: "coprime (lead_coeff g) p" 
+    with cop have cop: "gcd (lead_coeff g) p = 1" unfolding coprime_iff_gcd_one
       by (metis coprime_divisors dvd_def mult.right_neutral)
     with p0 have "coprime (lead_coeff g mod p) p" by simp
     also have "lead_coeff g mod p = 0"
@@ -233,8 +233,8 @@ proof -
   {
     fix lc 
     assume assms:"0 < lc" "lc < p" 
-    from prime have "coprime lc p" 
-      by (metis (no_types) assms gcd.commute prime_imp_coprime zdvd_not_zless)
+    from prime have "coprime lc p"
+      by (metis (no_types) assms coprime_iff_gcd_one gcd.commute prime_imp_coprime zdvd_not_zless)
   } note main = this
   define lc where "lc = lead_coeff f" 
   from f have lc0: "lc \<noteq> 0" unfolding lc_def by auto

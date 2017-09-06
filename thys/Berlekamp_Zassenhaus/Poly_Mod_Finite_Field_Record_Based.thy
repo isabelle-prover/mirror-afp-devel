@@ -12,20 +12,6 @@ imports
   Polynomial_Record_Based
 begin
 
-lemma prime_type_prime_card: assumes p: "prime p" 
-  and "\<exists>(Rep :: 'a \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< p :: int}"
-  shows "class.prime_card (TYPE('a)) \<and> int CARD('a) = p"
-proof -
-  from p have p2: "p \<ge> 2" by (rule prime_ge_2_int)
-  from assms obtain rep :: "'a \<Rightarrow> int" and abs :: "int \<Rightarrow> 'a" where t: "type_definition rep abs {0 ..< p}" by auto
-  have "card (UNIV :: 'a set) = card {0 ..< p}" using t by (rule type_definition.card)
-  also have "\<dots> = p" using p2 by auto
-  finally have bn: "int CARD ('a) = p" .
-  hence "class.prime_card (TYPE('a))" unfolding class.prime_card_def
-    using p p2 by auto
-  with bn show ?thesis by blast
-qed
-
 definition of_int_poly_i :: "'i arith_ops_record \<Rightarrow> int poly \<Rightarrow> 'i list" where
   "of_int_poly_i ops f = map (arith_ops_record.of_int ops) (coeffs f)" 
 
@@ -42,10 +28,8 @@ begin
 
 lemma nat_p: "nat p = CARD('a)" unfolding p by simp
 
-sublocale poly_mod_type p "TYPE('a)"
+sublocale poly_mod_prime_type p "TYPE('a)"
   by (unfold_locales, rule p)
-
-notation equivalent (infixl "=m" 50)
 
 lemma coeffs_to_int_poly: "coeffs (to_int_poly (x :: 'a mod_ring poly)) = map to_int_mod_ring (coeffs x)" 
   by (rule coeffs_map_poly, auto)

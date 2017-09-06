@@ -573,7 +573,7 @@ begin
 
 lemma coprime_preserves: "coprime (#V :: 'p mod_ring poly) (#W)"
   apply (intro coprimeI,simp add: rebase_q_to_p.of_nat_CARD_eq_0[simplified] hom_distribs)
-  using coprime
+  using coprime[simplified]
   by (metis semiring_gcd_class.gcd_greatest_iff)
 
 lemma pre_unique:
@@ -587,7 +587,7 @@ proof(intro conjI)
   also have "... - v' * #w = (v''- v') * #w" by (auto simp: left_diff_distrib)
   finally have *: "(w' - w'') * #v = (v''- v') * #w" by (auto simp: left_diff_distrib)
   then have "#v dvd (v'' - v') * #w" by (auto intro: dvdI[of _ _ "w' - w''"] simp: ac_simps)
-  then have "#v dvd v'' - v'" by (rule coprime_dvd_mult[OF coprime])
+  then have "#v dvd v'' - v'" by (rule coprime_dvd_mult[OF coprime[simplified]])
   moreover have "degree (v'' - v') < degree v" by (rule degree_diff_less[OF degv'' degv'])
   ultimately have "v'' - v' = 0"
     by (metis deg_v degree_0 gr_implies_not_zero poly_divides_conv0)

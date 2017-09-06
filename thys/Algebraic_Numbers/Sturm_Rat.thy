@@ -12,6 +12,29 @@ imports
   Algebraic_Numbers_Prelim
 begin
 
+(* TODO: Move *)
+lemma root_primitive_part [simp]:
+  fixes p :: "'a :: {semiring_gcd, semiring_no_zero_divisors} poly"
+  shows  "poly (primitive_part p) x = 0 \<longleftrightarrow> poly p x = 0"
+proof(cases "p = 0")
+  case True
+  then show ?thesis by auto
+next
+  case False
+  have "poly p x = content p * poly (primitive_part p) x"
+    by (metis content_times_primitive_part poly_smult)
+  also have "\<dots> = 0 \<longleftrightarrow> poly (primitive_part p) x = 0" by (simp add: False)
+  finally show ?thesis by auto
+qed
+
+(*TODO: Move*)
+lemma irreducible_primitive_part:
+  assumes "irreducible p" and "degree p > 0"
+  shows "primitive_part p = p"
+  using irreducible_content[OF assms(1), unfolded content_free_iff_content_eq_1] assms(2)
+  by (auto simp: primitive_part_def abs_poly_def)
+
+
 subsection \<open>Interface for Separating Roots\<close>
 
 text \<open>For a given rational polynomial, we need to know how many real roots are in a given closed interval,
@@ -281,15 +304,16 @@ proof (cases "degree p = 1")
     unfolding id4 of_rat_divide[symmetric] of_rat_less_eq by auto
 next
   case False
-  with deg have deg: "degree p > 1" by auto
-  with irreducible_connect_rev[OF irr] have irr: "irreducible\<^sub>d p" by auto
-  from irreducible\<^sub>d_root_free[OF irreducible\<^sub>d_int_rat[OF irr]]
+  have irr_d: "irreducible\<^sub>d p" by (simp add: deg irr irreducible_connect_rev)
+  from irreducible\<^sub>d_int_rat[OF this]
+  have "irreducible (of_int_poly p :: rat poly)" by auto
+  from irreducible_root_free[OF this]
   have idd: "(poly (of_int_poly p) a = 0) = False" for a :: rat
-    unfolding root_free_def using deg by auto
+    unfolding root_free_def using False by auto
   have id: "root_info p = count_roots_interval_rat p"
-    unfolding root_info_def if_False count_roots_interval_rat_code Let_def idd using deg by auto
+    unfolding root_info_def if_False count_roots_interval_rat_code Let_def idd using False by auto
   show ?thesis unfolding id
-    by (rule count_roots_interval_rat[OF irreducible\<^sub>d_square_free[OF irr]])
+    by (rule count_roots_interval_rat[OF irreducible\<^sub>d_square_free[OF irr_d]])
 qed
 
 end

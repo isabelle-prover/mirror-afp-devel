@@ -37,7 +37,7 @@ end
 lemma coprime_id_is_unit:
 fixes a::"'b::semiring_gcd"
 shows "coprime a a = (is_unit a)"
-unfolding coprime using dvd_unit_imp_unit by auto
+  using dvd_unit_imp_unit by (auto simp: coprime)
 
 lemma dim_vec_of_list[simp]: "dim_vec (vec_of_list x) = length x"
   by (transfer, auto)
@@ -479,7 +479,7 @@ lemma coprime_h_c_poly:
 fixes h::"'a mod_ring poly"
 assumes "c1 \<noteq> c2"
 shows "coprime (h - [:c1:]) (h - [:c2:])"
-proof (unfold coprime, auto)
+proof (intro coprimeI)
   fix d assume "d dvd h - [:c1:]"
   and "d dvd h - [:c2:]"
   hence "h mod d = [:c1:] mod d" and "h mod d = [:c2:] mod d"
@@ -498,7 +498,7 @@ assumes "coprime (h - [:c1:]) (h - [:c2:])"
 and "\<not> is_unit (h - [:c1:])"
 shows "c1 \<noteq> c2"
 using assms
-by (unfold coprime, auto)
+by (unfold coprime_iff_gcd_one coprime, auto)
 
 
 lemma degree_minus_eq_right:
@@ -518,7 +518,7 @@ proof -
     case (insert x A)
     have "(\<Prod>c\<in>insert x A. g c) = (g x) * (\<Prod>c\<in>A. g c)"
       by (simp add: insert.hyps(2))
-    thus ?case by (simp add: coprime_mult insert.hyps(3) insert.prems)
+    with insert.prems show ?case by (auto simp: insert.hyps(3) prod_coprime' intro!:coprime_mult)
   qed auto
 qed
 
@@ -532,7 +532,7 @@ proof (induct A)
   case (insert x A)
   have "(\<Prod>c\<in>insert x A. c) = (x) * (\<Prod>c\<in>A. c)"
     by (simp add: insert.hyps)
-  thus ?case by (simp add: coprime_mult insert.hyps insert.prems)
+  with insert.prems show ?case by (simp add: coprime_mult insert.hyps prod_coprime')
 qed auto
 
 
@@ -553,10 +553,10 @@ proof -
     proof (rule divides_mult)
       show "g x dvd f" using insert.prems by auto
       show "prod g A dvd f" using insert.hyps(3) insert.prems by auto
-      show "coprime (g x) (prod g A)"
-      proof (rule coprime_prod, rule)
+      show "gcd (g x) (prod g A) = 1" using coprime_prod
+      proof (intro coprime_prod[unfolded coprime_iff_gcd_one] ballI)
         fix c assume "c \<in> A"
-        thus "coprime (g x) (g c)" using insert.hyps(2) insert.prems(1) by blast
+        thus "gcd (g x) (g c) = 1" using insert by auto
       qed
     qed
     finally show ?case .
@@ -584,8 +584,8 @@ proof -
     }
     thus "\<forall>x\<in>UNIV::'a mod_ring set. [:0, 1:] - [:x:] dvd monom 1 CARD('a) - monom 1 1" by fast
     show "\<forall>c1 c2. c1 \<in> UNIV \<and> c2 \<in> UNIV \<and> c1 \<noteq> (c2 :: 'a mod_ring) \<longrightarrow> coprime ([:0, 1:] - [:c1:]) ([:0, 1:] - [:c2:])"
-      by (auto, metis (no_types, lifting) coprimeI diff_pCons dvd_unit_imp_unit
-          eq_iff_diff_eq_0 gcd_diff1 is_unit_triv neg_equal_iff_equal)
+      apply (auto intro!: GCD.coprimeI)
+      by (metis (no_types, hide_lams) coprime_h_c_poly diff_0 diff_pCons diff_zero not_coprime_iff_common_factor)
   qed
   from this obtain g where g: "?lhs = ?rhs * g" using dvdE by blast
   have degree_lhs_card: "degree ?lhs = CARD('a)"
@@ -642,8 +642,8 @@ qed
 
 lemma coprime_gcd:
   fixes h::"'a mod_ring poly"
-  assumes "coprime (h-[:c1:]) (h-[:c2:])"
-  shows "coprime (gcd f(h-[:c1:])) (gcd f (h-[:c2:]))"
+  assumes "gcd (h-[:c1:]) (h-[:c2:]) = 1"
+  shows "gcd (gcd f(h-[:c1:])) (gcd f (h-[:c2:])) = 1"
   using assms coprime_divisors by blast
 
 
@@ -662,11 +662,12 @@ proof -
     proof (rule divides_mult)
       show "gcd f (h - [:x:]) dvd f" by simp
       show "(\<Prod>c\<in>A. gcd f (h - [:c:])) dvd f" using insert.hyps(3) insert.prems by auto
-      show "coprime (gcd f (h - [:x:])) (\<Prod>c\<in>A. gcd f (h - [:c:]))"
-        proof (rule coprime_prod, rule)
+      show "gcd (gcd f (h - [:x:])) (\<Prod>c\<in>A. gcd f (h - [:c:])) = 1"
+        proof (rule coprime_prod[unfolded coprime_iff_gcd_one], rule)
           fix c assume "c \<in> A"
-          thus "coprime (gcd f (h - [:x:])) (gcd f (h - [:c:]))"
-            by (metis coprime_gcd coprime_h_c_poly insert.hyps(2))
+          thus "gcd (gcd f (h - [:x:])) (gcd f (h - [:c:])) = 1"
+            using coprime_gcd insert
+            by (metis (no_types, hide_lams) coprime_h_c_poly coprime_iff_gcd_one)
         qed
     qed
     finally show ?case .
@@ -713,8 +714,8 @@ proof (induct A)
   also have "... dvd c"
   proof (rule divides_mult)
     show "x dvd c" by (simp add: insert.prems)
-    show "\<Prod>A dvd c" by (simp add: insert.prems insert.hyps)
-    show "coprime x (\<Prod>A)" using coprime_prod2 f insert.hyps insert.prems by auto
+    show "\<Prod>A dvd c" using insert by auto
+    show "gcd x (\<Prod>A) = 1" using coprime_prod2 f insert.hyps insert.prems by auto
   qed
   finally show ?case .
 qed auto
@@ -747,7 +748,7 @@ proof (rule ccontr)
         by fastforce
       hence "\<not> irreducible\<^sub>d a1"
         using degree_a2 a2_dvd_a1 degree_a2
-        unfolding irreducible\<^sub>d_def by blast
+        using irreducible\<^sub>d_dvd_smult by force
       thus False using irr_a1 by contradiction
     next
       case True
@@ -761,11 +762,12 @@ proof (rule ccontr)
   qed
   have b_not0: "?b \<noteq> 0" by (simp add: a2_not0)
   have degree_b: "degree ?b > 0"
-    using not_coprime b_not0 is_unit_gcd is_unit_iff_degree by blast
+    using not_coprime[simplified] b_not0 is_unit_gcd is_unit_iff_degree by blast
   have "degree ?b < degree a2"
    using euclidean_size_gcd_less2[of a2 a1] not_a2_dvd_a1 a2_not0
    unfolding euclidean_size_poly_def by auto
-  hence "\<not> irreducible\<^sub>d a2" using degree_a2 b_dvd_a2 degree_b unfolding irreducible\<^sub>d_def by auto
+  hence "\<not> irreducible\<^sub>d a2" using degree_a2 b_dvd_a2 degree_b
+    by (metis degree_smult_eq irreducible\<^sub>d_dvd_smult less_not_refl3)
   thus False using irr_a2 by contradiction
 qed
 
@@ -784,7 +786,7 @@ proof (cases "f=0")
   show ?thesis
   proof (rule poly_dvd_antisym)
     show "?rhs dvd f"
-      by (rule divides_prod_gcd, simp add: coprime_h_c_poly)
+      using coprime_h_c_poly by (intro divides_prod_gcd, auto)
     have "monic ?rhs" by (rule monic_prod_gcd[OF _ f_not_0], simp)
     thus "coeff f (degree f) = coeff ?rhs (degree ?rhs)"
       using monic_f by auto
@@ -1543,7 +1545,7 @@ show ?thesis
             hence "fi dvd (h - [:c:]) \<or> fi dvd (h - [:c2:])"
               using irreducible\<^sub>d_dvd_mult[OF irr_fi] by blast
             thus "c2 = c"
-            by (metis coprime_h_c_poly fi_dvd fi_dvd_hc2
+            by (metis coprime_h_c_poly[simplified] fi_dvd fi_dvd_hc2
                fi_not_unit semiring_gcd_class.gcd_greatest_iff)
           qed
 qed
@@ -1554,12 +1556,13 @@ by (rule exI[of _ 0], rule exI[of _ 1], auto)
 
 
 lemma coprime_cong_mult_factorization_poly:
-fixes f::"'b::{field} poly"
-    assumes finite_P: "finite P"
+  fixes f::"'b::{field} poly"
+    and a b p :: "'c :: {factorial_ring_gcd,field} poly"
+  assumes finite_P: "finite P"
     and P: "P \<subseteq> {q. irreducible\<^sub>d q}"
     and p: "\<forall>p\<in>P. [a=b] (mod p)"
     and coprime_P: "\<forall>p1 p2. p1 \<in> P \<and> p2 \<in> P \<and> p1 \<noteq> p2 \<longrightarrow> coprime p1 p2"
-shows "[a = b] (mod (\<Prod>a\<in>P. a))"
+  shows "[a = b] (mod (\<Prod>a\<in>P. a))"
 using finite_P P p coprime_P
 proof (induct P)
   case empty
@@ -1570,13 +1573,9 @@ next
   proof (rule coprime_cong_mult_poly)
     show "[a = b] (mod p)" using insert.prems by auto
     show "[a = b] (mod \<Prod>P)" using insert.prems insert.hyps by auto
-    show "coprime p (\<Prod>P)"
-    proof (rule coprime_prod2[OF _ insert.hyps(1)], rule ballI)
-      fix x assume x: "x \<in> P"
-      thus "coprime p x"
-        using insert.prems
-        using insert.hyps(2) insertI1 set_rev_mp subset_insertI by auto
-    qed
+    show "gcd p (\<Prod>P) = 1"
+      apply (rule coprime_prod2[OF _ insert.hyps(1), simplified])
+      using insert.prems insert.hyps(2) insertI1 set_rev_mp subset_insertI by auto
   qed
   thus ?case by (simp add: insert.hyps(1) insert.hyps(2))
 qed
@@ -2197,11 +2196,11 @@ proof -
   have degree_sj: "degree [:s_j:] = 0" by auto
   have "\<exists>!v. degree v < (\<Sum>i\<in>{i. i < n}. degree (m i)) \<and> (\<forall>a\<in>{i. i < n}. [v = ?u a] (mod m a))"
   proof (rule chinese_remainder_unique_poly)
-    show "\<forall>a\<in>{i. i < n}. \<forall>b\<in>{i. i < n}. a \<noteq> b \<longrightarrow> coprime (m a) (m b)"
+    show "\<forall>a\<in>{i. i < n}. \<forall>b\<in>{i. i < n}. a \<noteq> b \<longrightarrow> gcd (m a) (m b) = 1"
     proof (rule+)
       fix a b assume "a \<in> {i. i < n}" and "b \<in> {i. i < n}" and "a \<noteq> b"
-      thus "coprime (m a) (m b)"
-        using coprime_polynomial_factorization[OF P finite_P] P_m
+      thus "gcd (m a) (m b) = 1"
+        using coprime_polynomial_factorization[OF P finite_P, simplified] P_m
         by (metis image_eqI inj_onD inj_on_m)
     qed
     show "\<forall>i\<in>{i. i < n}. m i \<noteq> 0" by (rule not_zero)
@@ -2259,17 +2258,11 @@ proof -
       show "gcd w (v - [:s_i:]) \<noteq> w"
       proof (rule ccontr, simp)
         assume gcd_w: "gcd w (v - [:s_i:]) = w"
-        have "gcd w (v - [:s_j:]) = 1"
-          by (metis (no_types, lifting) coprime_1_right coprime_h_c_poly gcd.assoc gcd_w si_sj)
-        thus False using pj_dvd_v_sj pj_dvd_w
-          by (simp add: coprime_not_unit_not_dvd irr_pj irreducible\<^sub>dD(1) poly_dvd_1)
+        show False
+          by (metis \<open>v mod p_i = v mod p_j \<Longrightarrow> False\<close> degree_si dvd_gcdD2 gcd_w irr_pj irreducible\<^sub>dD(1) mod_eq_dvd_iff_poly mod_poly_less neq0_conv pj_dvd_w v_pi_si)
      qed
      show "gcd w (v - [:s_i:]) \<noteq> 1"
-     proof (rule ccontr, simp)
-        assume "coprime w (v - [:s_i:])"
-        thus False
-          by (meson coprime_not_unit_not_dvd irr_pi irreducible\<^sub>dD(1) pi_dvd_v_si pi_dvd_w poly_dvd_1)
-     qed
+       by (metis gcd_greatest_iff irr_pi irreducible\<^sub>dD(1) pi_dvd_v_si pi_dvd_w poly_dvd_1)
     qed
     show "degree v < degree u"
     proof -
@@ -2368,27 +2361,17 @@ proof -
   have "(\<exists>s. gcd w (v - [:s:]) \<noteq> w \<and> gcd w (v - [:s:]) \<noteq> 1)"
   proof (rule exI[of _ s_i], rule conjI)
     have pi_dvd_v_si: "p_i dvd v - [:s_i:]" by (metis mod_eq_dvd_iff_poly mod_mod_trivial v_pi_si)
-      have pj_dvd_v_sj: "p_j dvd v - [:s_j:]" by (metis mod_eq_dvd_iff_poly mod_mod_trivial v_pj_sj)
-      have w_eq: "w = prod (\<lambda>c. gcd w (v - [:c:])) (UNIV::'a mod_ring set)"
-      proof (rule Berlekamp_gcd_step)
-        show "[v ^ CARD('a) = v] (mod w)" using v cong_dvd_modulus_poly w_dvd_f by blast
-        show "square_free w" by (rule square_free_factor[OF w_dvd_f sf_f])
-        show "monic w" by (rule monic_w)
-      qed
-      show "gcd w (v - [:s_i:]) \<noteq> w"
-      proof (rule ccontr, simp)
-        assume gcd_w: "gcd w (v - [:s_i:]) = w"
-        have "gcd w (v - [:s_j:]) = 1"
-          by (metis (no_types, lifting) coprime_1_right coprime_h_c_poly gcd.assoc gcd_w si_sj)
-        thus False using pj_dvd_v_sj pj_dvd_w
-          by (simp add: coprime_not_unit_not_dvd irr_pj irreducible\<^sub>dD(1) poly_dvd_1)
-     qed
-     show "gcd w (v - [:s_i:]) \<noteq> 1"
-     proof (rule ccontr, simp)
-        assume "coprime w (v - [:s_i:])"
-        thus False
-          by (meson coprime_not_unit_not_dvd irr_pi irreducible\<^sub>dD(1) pi_dvd_v_si pi_dvd_w poly_dvd_1)
-     qed
+    have pj_dvd_v_sj: "p_j dvd v - [:s_j:]" by (metis mod_eq_dvd_iff_poly mod_mod_trivial v_pj_sj)
+    have w_eq: "w = prod (\<lambda>c. gcd w (v - [:c:])) (UNIV::'a mod_ring set)"
+    proof (rule Berlekamp_gcd_step)
+      show "[v ^ CARD('a) = v] (mod w)" using v cong_dvd_modulus_poly w_dvd_f by blast
+      show "square_free w" by (rule square_free_factor[OF w_dvd_f sf_f])
+      show "monic w" by (rule monic_w)
+    qed
+    show "gcd w (v - [:s_i:]) \<noteq> w"
+      by (metis deg_v_pi dvd_gcdD2 irr_pj irreducible\<^sub>dD(1) mod_eq_dvd_iff_poly mod_poly_less neq0_conv pj_dvd_w v_pi_pj v_pi_si)
+    show "gcd w (v - [:s_i:]) \<noteq> 1"
+      by (meson coprime irr_pi irreducible\<^sub>dD(1) pi_dvd_v_si pi_dvd_w poly_dvd_1)
   qed
   thus ?thesis using v_pi_pj vV deg_v_pi deg_v_pj by fast
 qed
@@ -2461,10 +2444,10 @@ proof -
       using degree_prod deg_sum_eq deg_u0 by force
      moreover have "\<exists>!x. degree x < (\<Sum>i\<in>{i. i < n}. degree (m i))
         \<and> (\<forall>i\<in>{i. i < n}. [x = (\<lambda>i. 0) i] (mod m i))"
-     proof (rule chinese_remainder_unique_poly[OF not_zero coprime_mi_mj])
+     proof (rule chinese_remainder_unique_poly[OF not_zero])
       show "0 < degree (prod m {i. i < n})"
         using deg_u0 degree_prod by linarith
-     qed
+     qed (insert coprime_mi_mj, auto)
      ultimately show "x = 0" by blast
   qed
   moreover have "?f ` (carrier W) = ?B"
@@ -2475,10 +2458,10 @@ proof -
     next
     fix x::"'a mod_ring vec" assume x: "x \<in> carrier_vec (card P)"
     have " \<exists>!v. degree v < (\<Sum>i\<in>{i. i < n}. degree (m i)) \<and> (\<forall>i\<in>{i. i < n}. [v = (\<lambda>i. [:x $ i:]) i] (mod m i))"
-    proof (rule chinese_remainder_unique_poly[OF not_zero coprime_mi_mj])
+    proof (rule chinese_remainder_unique_poly[OF not_zero])
       show "0 < degree (prod m {i. i < n})"
         using deg_u0 degree_prod by linarith
-    qed
+    qed (insert coprime_mi_mj, auto)
     from this obtain v where deg_v: "degree v < (\<Sum>i\<in>{i. i < n}. degree (m i))"
       and v_x_cong: "(\<forall>i \<in> {i. i < n}. [v = (\<lambda>i. [:x $ i:]) i] (mod m i))" by auto
     show "\<exists>xa. [xa ^ CARD('a) = xa] (mod u) \<and> degree xa < degree u
@@ -2499,8 +2482,8 @@ proof -
           by (metis mod_mod_trivial power_mod)
         thus "[v ^ CARD('a) = v] (mod y)" unfolding mi cong_poly_def v_mi_eq_xi xi_pow_xi by simp
         next
-        fix p1 p2 assume "p1 \<in> P" and "p2 \<in> P" and "p1 \<noteq> p2" thus "coprime p1 p2"
-          by (rule coprime_polynomial_factorization[OF P finite_P])
+        fix p1 p2 assume "p1 \<in> P" and "p2 \<in> P" and "p1 \<noteq> p2" thus "gcd p1 p2 = 1"
+          using coprime_polynomial_factorization[OF P finite_P] by auto
       qed
       show "degree v < degree u" using deg_v deg_sum_eq degree_prod by presburger
       show "x = vec n (\<lambda>i. coeff (v mod m i) 0)"
@@ -2695,28 +2678,22 @@ lemma berlekamp_basis_irreducible\<^sub>d: assumes f: "f = prod_list us"
   and u: "u \<in> set us"
   shows "irreducible\<^sub>d u"
 proof (intro irreducible\<^sub>dI[OF us[OF u]])
-  fix q :: "'a mod_ring poly"
-  assume dq: "degree q \<noteq> 0" and qu: "degree q < degree u"
-  show "\<not> q dvd u"
-  proof
-    assume "q dvd u"
-    then obtain r where uqr: "u = q * r" unfolding dvd_def by auto
-    with us[OF u] have q: "q \<noteq> 0" and r: "r \<noteq> 0" by auto
-    from qu[unfolded uqr degree_mult_eq[OF q r]] have dr: "degree r \<noteq> 0" by auto
-    from split_list[OF u] obtain xs ys where id: "us = xs @ u # ys" by auto
-    let ?us = "xs @ q # r # ys"
-    have f: "f = prod_list ?us" unfolding f id uqr by simp
-    {
-      fix x
-      assume "x \<in> set ?us"
-      with us[unfolded id] dr dq have "degree x \<noteq> 0" by auto
-    }
-    from berlekamp_basis_length_factorization[OF f this]
-    have "length ?us \<le> n" by simp
-    also have "\<dots> = length us" unfolding n_us by simp
-    also have "\<dots> < length ?us" unfolding id by simp
-    finally show False by simp
-  qed
+  fix q r :: "'a mod_ring poly"
+  assume dq: "degree q \<noteq> 0" and qu: "degree q < degree u" and dr: "degree r \<noteq> 0" and uqr: "u = q * r"
+  with us[OF u] have q: "q \<noteq> 0" and r: "r \<noteq> 0" by auto
+  from split_list[OF u] obtain xs ys where id: "us = xs @ u # ys" by auto
+  let ?us = "xs @ q # r # ys"
+  have f: "f = prod_list ?us" unfolding f id uqr by simp
+  {
+    fix x
+    assume "x \<in> set ?us"
+    with us[unfolded id] dr dq have "degree x \<noteq> 0" by auto
+  }
+  from berlekamp_basis_length_factorization[OF f this]
+  have "length ?us \<le> n" by simp
+  also have "\<dots> = length us" unfolding n_us by simp
+  also have "\<dots> < length ?us" unfolding id by simp
+  finally show False by simp
 qed
 end
 
@@ -3113,7 +3090,7 @@ proof -
   qed
 qed
 
-lemma berlekamp_monic_factorization: 
+lemma berlekamp_monic_factorization:
   fixes f::"'a mod_ring poly"
   assumes sf_f: "square_free f"
     and us: "berlekamp_monic_factorization d f = us"

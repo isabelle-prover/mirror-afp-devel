@@ -12,55 +12,20 @@ theory Poly_Mod_Finite_Field
   Finite_Field
   Poly_Mod
   Polynomial_Interpolation.Ring_Hom_Poly
+  "HOL-Types_To_Sets.Types_To_Sets"
 begin
 
 abbreviation to_int_poly :: "'a :: finite mod_ring poly \<Rightarrow> int poly" where
   "to_int_poly \<equiv> map_poly to_int_mod_ring"
 
-lemma irreducible\<^sub>d_def_lt: "irreducible\<^sub>d f = (degree f \<noteq> 0 \<and> 
-  (\<forall> g h. degree g < degree f \<longrightarrow> degree h < degree f \<longrightarrow> f \<noteq> g * h))" 
-proof (cases "degree f = 0")
-  case True
-  thus ?thesis unfolding irreducible\<^sub>d_def by auto
-next
-  case False
-  from False have f0: "f \<noteq> 0" by auto
-  {
-    fix g h
-    assume f: "f = g * h" 
-    with f0 have "g \<noteq> 0" "h \<noteq> 0" by auto
-    from degree_mult_eq[OF this]
-    have "degree (g * h) = degree g + degree h" by auto
-  } note deg = this
-  have "?thesis = ((\<forall> g h. degree g < degree f \<longrightarrow> degree h < degree f \<longrightarrow> f \<noteq> g * h)
-    = (\<forall> g h. degree g \<noteq> 0 \<longrightarrow> degree g < degree f \<longrightarrow> f \<noteq> g * h))" 
-    unfolding irreducible\<^sub>d_def dvd_def using False by auto
-  also have "\<dots> = True"
-    by (auto simp: deg, force+)
-  finally show ?thesis by simp
-qed
-
-lemma irreducible\<^sub>d_def_0: "irreducible\<^sub>d f = (degree f \<noteq> 0 \<and> 
-  (\<forall> g h. degree g \<noteq> 0 \<longrightarrow> degree h \<noteq> 0 \<longrightarrow> f \<noteq> g * h))" 
-proof (cases "degree f = 0")
-  case True
-  thus ?thesis unfolding irreducible\<^sub>d_def by auto
-next
-  case False
-  from False have f0: "f \<noteq> 0" by auto
-  {
-    fix g h
-    assume f: "f = g * h" 
-    with f0 have "g \<noteq> 0" "h \<noteq> 0" by auto
-    from degree_mult_eq[OF this]
-    have "degree (g * h) = degree g + degree h" by auto
-  } note deg = this
-  have "?thesis = ((\<forall> g h. degree g \<noteq> 0 \<longrightarrow> degree h \<noteq> 0 \<longrightarrow> f \<noteq> g * h)
-    = (\<forall> g h. degree g \<noteq> 0 \<longrightarrow> degree g < degree f \<longrightarrow> f \<noteq> g * h))" 
-    unfolding irreducible\<^sub>d_def dvd_def using False by auto
-  also have "\<dots> = True"
-    by (auto simp: deg, force+)
-  finally show ?thesis by simp
+lemma irreducible\<^sub>d_def_0:
+  fixes f :: "'a :: {comm_semiring_1,semiring_no_zero_divisors} poly"
+  shows "irreducible\<^sub>d f = (degree f \<noteq> 0 \<and> 
+  (\<forall> g h. degree g \<noteq> 0 \<longrightarrow> degree h \<noteq> 0 \<longrightarrow> f \<noteq> g * h))"
+proof-
+  have "degree g \<noteq> 0 \<Longrightarrow> g \<noteq> 0" for g :: "'a poly" by auto
+  note 1 = degree_mult_eq[OF this this, simplified]
+  then show ?thesis by (force elim!: irreducible\<^sub>dE)
 qed
 
 context poly_mod 
@@ -86,7 +51,7 @@ definition unique_factorization_m :: "int poly \<Rightarrow> (int \<times> int p
   "unique_factorization_m f cfs = (Mf ` Collect (factorization_m f) = {Mf cfs})"
 
 lemma Mp_irreducible\<^sub>d_m[simp]: "irreducible\<^sub>d_m (Mp f) = irreducible\<^sub>d_m f" 
-  unfolding irreducible\<^sub>d_m_def by simp
+  unfolding irreducible\<^sub>d_m_def dvdm_def by simp
 
 lemma Mf_factorization_m[simp]: "factorization_m f (Mf cfs) = factorization_m f cfs" 
   unfolding factorization_m_def Mf_def
@@ -96,7 +61,7 @@ proof (cases cfs, simp, goal_cases)
   also have "\<dots> = Mp (smult (M c) (Mp (prod_mset (image_mset Mp fs))))"
     unfolding Mp_prod_mset by simp
   also have "\<dots> = Mp (smult (M c) (prod_mset (image_mset Mp fs)))" unfolding Mp_smult ..
-  finally show ?case unfolding equivalent_def by auto
+  finally show ?case by auto
 qed    
 
 lemma unique_factorization_m_imp_factorization: assumes "unique_factorization_m f cfs" 
@@ -113,29 +78,34 @@ lemma unique_factorization_m_alt_def: "unique_factorization_m f cfs = (factoriza
   using unique_factorization_m_imp_factorization[of f cfs]
   unfolding unique_factorization_m_def by auto
 
-
 end
 
-locale poly_mod_type = poly_mod m for m :: int + 
-  fixes ty :: "'a :: prime_card itself"  
+
+subsection {* Transferring to class-based mod_ring *}
+
+locale poly_mod_type = poly_mod m
+  for m and ty :: "'a :: nontriv itself" +
   assumes m: "m = CARD('a)"
-begin 
-definition MP_Rel :: "int poly \<Rightarrow> 'a mod_ring poly \<Rightarrow> bool" where 
-  "MP_Rel f f' \<equiv> (Mp f = to_int_poly f')"
+begin
 
-definition M_Rel :: "int \<Rightarrow> 'a mod_ring \<Rightarrow> bool" where 
-  "M_Rel x x' \<equiv> (M x = to_int_mod_ring x')"
+lemma m1: "m > 1" using nontriv[where 'a = 'a] by (auto simp:m)
 
-definition "MF_Rel \<equiv> rel_prod M_Rel (rel_mset MP_Rel)" 
- 
-lemma to_int_mod_ring_plus: "to_int_mod_ring ((x :: 'a mod_ring) + y) = M (to_int_mod_ring x + to_int_mod_ring y)" 
+definition MP_Rel :: "int poly \<Rightarrow> 'a mod_ring poly \<Rightarrow> bool"
+  where "MP_Rel f f' \<equiv> (Mp f = to_int_poly f')"
+
+definition M_Rel :: "int \<Rightarrow> 'a mod_ring \<Rightarrow> bool"
+  where "M_Rel x x' \<equiv> (M x = to_int_mod_ring x')"
+
+definition "MF_Rel \<equiv> rel_prod M_Rel (rel_mset MP_Rel)"
+
+lemma to_int_mod_ring_plus: "to_int_mod_ring ((x :: 'a mod_ring) + y) = M (to_int_mod_ring x + to_int_mod_ring y)"
   unfolding M_def using m by (transfer, auto)
 
-lemma to_int_mod_ring_times: "to_int_mod_ring ((x :: 'a mod_ring) * y) = M (to_int_mod_ring x * to_int_mod_ring y)" 
+lemma to_int_mod_ring_times: "to_int_mod_ring ((x :: 'a mod_ring) * y) = M (to_int_mod_ring x * to_int_mod_ring y)"
   unfolding M_def using m by (transfer, auto)
 
-lemma degree_MP_Rel [transfer_rule]: "(MP_Rel ===> op =) degree_m degree" 
-  unfolding MP_Rel_def rel_fun_def degree_m_def
+lemma degree_MP_Rel [transfer_rule]: "(MP_Rel ===> op =) degree_m degree"
+  unfolding MP_Rel_def rel_fun_def 
   by (auto intro!: degree_map_poly)
 
 lemma eq_M_Rel[transfer_rule]: "(M_Rel ===> M_Rel ===> op =) (\<lambda> x y. M x = M y) (op =)"
@@ -144,13 +114,11 @@ lemma eq_M_Rel[transfer_rule]: "(M_Rel ===> M_Rel ===> op =) (\<lambda> x y. M x
 interpretation to_int_mod_ring_hom: map_poly_inj_zero_hom to_int_mod_ring..
 
 lemma eq_MP_Rel[transfer_rule]: "(MP_Rel ===> MP_Rel ===> op =) (op =m) (op =)"
-  unfolding MP_Rel_def rel_fun_def equivalent_def by auto
+  unfolding MP_Rel_def rel_fun_def by auto
 
 lemma eq_Mf_Rel[transfer_rule]: "(MF_Rel ===> MF_Rel ===> op =) (\<lambda> x y. Mf x = Mf y) (op =)"
 proof (intro rel_funI, goal_cases)
   case (1 cfs Cfs dgs Dgs)
-  have [transfer_rule]: "(MP_Rel ===> MP_Rel ===> op =) (\<lambda> x y. Mp x = Mp y) (op =)" 
-    using eq_MP_Rel unfolding equivalent_def[abs_def] .
   obtain c fs where cfs: "cfs = (c,fs)" by force
   obtain C Fs where Cfs: "Cfs = (C,Fs)" by force
   obtain d gs where dgs: "dgs = (d,gs)" by force
@@ -215,7 +183,6 @@ proof (intro rel_funI, goal_cases)
   show "(Mf cfs = Mf dgs) = (Cfs = Dgs)" unfolding pairs Mf_def split
     by (simp add: eq1 eq2)
 qed
-
 
 lemmas coeff_map_poly_of_int = coeff_map_poly[of of_int, OF of_int_0]
 
@@ -283,15 +250,19 @@ proof (intro rel_funI, goal_cases)
 qed
 
 lemma one_M_Rel[transfer_rule]: "M_Rel 1 1"
-  unfolding M_Rel_def poly_eq_iff Mp_coeff M_def 
+  unfolding M_Rel_def M_def
   unfolding m by auto
 
 lemma one_MP_Rel[transfer_rule]: "MP_Rel 1 1"
   unfolding MP_Rel_def poly_eq_iff Mp_coeff M_def 
   unfolding m by auto
 
-lemma zero_MP_Rel[transfer_rule]: "MP_Rel 0 0" 
-  unfolding MP_Rel_def poly_eq_iff Mp_coeff M_def 
+lemma zero_M_Rel[transfer_rule]: "M_Rel 0 0"
+  unfolding M_Rel_def M_def 
+  unfolding m by auto
+
+lemma zero_MP_Rel[transfer_rule]: "MP_Rel 0 0"
+  unfolding MP_Rel_def poly_eq_iff Mp_coeff M_def
   unfolding m by auto
 
 lemma listprod_MP_Rel[transfer_rule]: "(list_all2 MP_Rel ===> MP_Rel) prod_list prod_list"
@@ -379,23 +350,27 @@ qed
 
 lemma dvd_MP_Rel[transfer_rule]: "(MP_Rel ===> MP_Rel ===> op =) (op dvdm) (op dvd)"
   unfolding dvdm_def[abs_def] dvd_def[abs_def]
-  by (transfer_prover_start, transfer_step+, auto)
+  by transfer_prover
+
+lemma irreducible_MP_Rel [transfer_rule]: "(MP_Rel ===> op =) irreducible_m irreducible"
+  unfolding irreducible_m_def irreducible_def
+  by transfer_prover
 
 lemma irreducible\<^sub>d_MP_Rel [transfer_rule]: "(MP_Rel ===> op =) irreducible\<^sub>d_m irreducible\<^sub>d"
-  unfolding irreducible\<^sub>d_m_def[abs_def] irreducible\<^sub>d_def_lt[abs_def]
-  by (transfer_prover_start, transfer_step+, auto)
+  unfolding irreducible\<^sub>d_m_def[abs_def] irreducible\<^sub>d_def[abs_def]
+  by transfer_prover
 
-lemma UNIV_M_Rel[transfer_rule]: "rel_set M_Rel {0..<m} UNIV" 
+lemma UNIV_M_Rel[transfer_rule]: "rel_set M_Rel {0..<m} UNIV"
   unfolding rel_set_def M_Rel_def[abs_def] M_def 
   by (auto simp: M_def m, goal_cases, metis to_int_mod_ring_of_int_mod_ring, (transfer, auto)+)
 
-lemma coeff_MP_Rel [transfer_rule]: "(MP_Rel ===> op = ===> M_Rel) coeff coeff" 
+lemma coeff_MP_Rel [transfer_rule]: "(MP_Rel ===> op = ===> M_Rel) coeff coeff"
   unfolding rel_fun_def M_Rel_def MP_Rel_def Mp_coeff[symmetric] by auto
 
 lemma M_1_1[simp]: "M 1 = 1" unfolding M_def unfolding m by simp
 
-lemma factorization_MP_Rel [transfer_rule]: "(MP_Rel ===> MF_Rel ===> op =)
-  factorization_m (factorization Irr_Mon)"
+lemma factorization_MP_Rel [transfer_rule]:
+  "(MP_Rel ===> MF_Rel ===> op =) factorization_m (factorization Irr_Mon)"
   unfolding rel_fun_def
 proof (intro allI impI, goal_cases)
   case (1 f F cfs Cfs)
@@ -413,12 +388,12 @@ proof (intro allI impI, goal_cases)
       fix f
       assume "f \<in># fs" 
       have "monic (Mp f) \<longleftrightarrow> M (coeff f (degree_m f)) = M 1"
-        unfolding Mp_coeff[symmetric] degree_m_def by simp
+        unfolding Mp_coeff[symmetric] by simp
     }
     thus "(\<forall>f\<in>#fs. irreducible\<^sub>d_m f \<and> monic (Mp f)) = 
       (\<forall>x\<in>#fs. irreducible\<^sub>d_m x \<and> M (coeff x (degree_m x)) = M 1)" by auto
   qed
-  finally     
+  finally
   show "factorization_m f cfs = factorization Irr_Mon F Cfs" unfolding cfs Cfs
     factorization_m_def factorization_def split eq by simp
 qed
@@ -479,13 +454,66 @@ proof (intro allI impI, goal_cases)
   qed
 qed
 
-
 lemma square_free_MP_Rel [transfer_rule]: "(MP_Rel ===> op =) square_free_m square_free"
   unfolding square_free_m_def[abs_def] square_free_def[abs_def]
   by (transfer_prover_start, transfer_step+, auto)
 
 lemma coprime_MP_Rel [transfer_rule]: "(MP_Rel ===> MP_Rel ===> op =) coprime_m coprime"
-  unfolding coprime_m_def[abs_def] coprime[abs_def]
+  unfolding coprime_m_def[abs_def] coprime_def[abs_def]
   by (transfer_prover_start, transfer_step+, auto)
+
+lemma monic_degree_m[simp]: "monic p \<Longrightarrow> degree_m p = degree p"
+  by (simp add: degree_m_eq m1)
+
 end
+
+locale poly_mod_prime_type =
+  fixes m :: int and ty :: "'a :: prime_card itself"
+  assumes m: "m = CARD('a)"
+begin
+
+sublocale poly_mod_type m ty using m by unfold_locales
+
+lemma degree_m_mult_eq:
+  assumes p0: "\<not> p =m 0" and q0: "\<not> q =m 0"
+  shows "degree_m (p * q) = degree_m p + degree_m q"
+proof-
+  define P Q :: "'a mod_ring poly" where "P \<equiv> of_int_poly p" "Q \<equiv> of_int_poly q"
+  have [transfer_rule]: "MP_Rel p P" "MP_Rel q Q" by (auto simp: MP_Rel_def P_Q_def Mp_f_representative)
+  have P0: "P \<noteq> 0" apply transfer using p0.
+  have Q0: "Q \<noteq> 0" apply transfer using q0.
+  from degree_mult_eq[OF P0 Q0,untransferred] show ?thesis.
+qed
+
+end
+
+lemma prime_type_prime_card: assumes p: "prime p" 
+  and "\<exists>(Rep :: 'a \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< p :: int}"
+  shows "class.prime_card (TYPE('a)) \<and> int CARD('a) = p"
+proof -
+  from p have p2: "p \<ge> 2" by (rule prime_ge_2_int)
+  from assms obtain rep :: "'a \<Rightarrow> int" and abs :: "int \<Rightarrow> 'a" where t: "type_definition rep abs {0 ..< p}" by auto
+  have "card (UNIV :: 'a set) = card {0 ..< p}" using t by (rule type_definition.card)
+  also have "\<dots> = p" using p2 by auto
+  finally have bn: "int CARD ('a) = p" .
+  hence "class.prime_card (TYPE('a))" unfolding class.prime_card_def
+    using p p2 by auto
+  with bn show ?thesis by blast
+qed
+
+lemma(in poly_mod) degree_m_mult_eq:
+  assumes m: "prime m" and f: "\<not> f =m 0" and g: "\<not> g =m 0" shows "degree_m (f * g) = degree_m f + degree_m g"
+proof-
+  {
+    note poly_mod_prime_type.degree_m_mult_eq[unfolded class.prime_card_def poly_mod_prime_type_def, of m]
+    note main = this[internalize_sort "'a :: prime_card"]
+    assume "\<exists>(Rep :: 'b \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< m :: int}"
+    from prime_type_prime_card[OF m this]
+    have "class.prime_card TYPE('b)" "m = int CARD('b)" by auto
+    note main[OF this]
+  }
+  from this[cancel_type_definition, OF _ f g] prime_gt_1_int[OF m] show ?thesis by auto
+qed
+
+
 end

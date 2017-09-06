@@ -92,7 +92,7 @@ lemma prime_cop_exp_poly_mod: assumes prime: "prime p" and cop: "coprime c p" an
 proof -
   from prime have p1: "p > 1" by (simp add: prime_int_iff)
   interpret poly_mod_2 "p^n" unfolding poly_mod_2_def using p1 n by simp
-  from coprime_exp[OF cop, of n] have "M c \<noteq> 0" unfolding M_def using m1 by auto
+  from coprime_exp[OF cop[unfolded coprime_iff_gcd_one], of n] have "M c \<noteq> 0" unfolding M_def using m1 by auto
   moreover have "M c < p^n" "M c \<ge> 0" unfolding M_def using m1 by auto
   ultimately show ?thesis by auto
 qed
@@ -112,7 +112,7 @@ proof -
     fix f g 
     assume cop: "coprime (lead_coeff (f * g)) p" 
     from this[unfolded lead_coeff_mult]
-    have "coprime (lead_coeff f) p" using prime by (metis coprime_lmult gcd.commute)
+    have "coprime (lead_coeff f) p" using prime by (metis coprime_iff_gcd_one coprime_lmult gcd.commute)
   }
   from this[OF assms] this[of g f] assms
   show "coprime (lead_coeff f) p" "coprime (lead_coeff g) p" by (auto simp: ac_simps)
@@ -133,7 +133,7 @@ proof -
   note sf = p.square_free_m_factor[OF sf]
   note cop = coprime_lead_coeff_factor[OF cop]
   from cop have copm: "coprime (lead_coeff f) m" "coprime (lead_coeff g) m" 
-    unfolding m by (metis coprime_exp)+
+    unfolding m coprime_iff_gcd_one by (metis coprime_exp)+
   have df: "degree_m f = degree f" 
     by (rule degree_m_eq[OF _ m1], insert copm(1) m1, auto)  
   have dg: "degree_m g = degree g" 
@@ -218,21 +218,21 @@ lemma factorization_m_degree: assumes "factorization_m f (c,fs)"
 proof -
   note a = assms[unfolded factorization_m_def split] 
   hence deg: "degree_m f = degree_m (smult c (prod_mset fs))" 
-    and fs: "\<And> f. f \<in># fs \<Longrightarrow> monic (Mp f)" unfolding equivalent_def degree_m_def by auto
+    and fs: "\<And> f. f \<in># fs \<Longrightarrow> monic (Mp f)" by auto
   define gs where "gs \<equiv> Mp (prod_mset fs)" 
   from monic_Mp_prod_mset[OF fs] have mon_gs: "monic gs" unfolding gs_def .
   have d:"degree (Mp (Polynomial.smult c gs)) = degree gs"
   proof -
-    have f1: "0 \<noteq> c" by (metis "0" Mp_0 a(1) poly_mod.equivalent_def smult_eq_0_iff)
+    have f1: "0 \<noteq> c" by (metis "0" Mp_0 a(1) smult_eq_0_iff)
     then have "M c \<noteq> 0" by (metis (no_types) "0" assms(1) factorization_m_lead_coeff leading_coeff_0_iff)
     then show "degree (Mp (Polynomial.smult c gs)) = degree gs"
       unfolding monic_degree_Mp[OF mon_gs,symmetric]
-      using f1 by (metis coeff_smult degree_m_eq degree_smult_eq m1 mon_gs monic_degree_Mp mult_cancel_left1 poly_mod.M_def poly_mod.degree_m_def)
+      using f1 by (metis coeff_smult degree_m_eq degree_smult_eq m1 mon_gs monic_degree_Mp mult_cancel_left1 poly_mod.M_def)
   qed
   note deg
   also have "degree_m (smult c (prod_mset fs)) = degree_m (smult c gs)"
-    unfolding degree_m_def gs_def by simp
-  also have "\<dots> = degree gs" using d unfolding degree_m_def.
+    unfolding gs_def by simp
+  also have "\<dots> = degree gs" using d.
   also have "\<dots> = sum_mset (image_mset degree_m fs)" unfolding gs_def
     using fs
   proof (induct fs)
@@ -245,18 +245,18 @@ proof -
       by (rule degree_Mp_mult_monic[OF mon])
     also have "degree (Mp (prod_mset fs)) = sum_mset (image_mset degree_m fs)" 
       by (rule add(1), insert add(2), auto)
-    finally show ?case by (simp add: ac_simps) (simp add: degree_m_def)
+    finally show ?case by (simp add: ac_simps)
   qed simp
   finally show ?thesis .
 qed
 
 lemma degree_m_mult_le: "degree_m (f * g) \<le> degree_m f + degree_m g" 
-  unfolding degree_m_def using degree_m_mult_le equivalent_def poly_mod.degree_m_def by auto
+  using degree_m_mult_le by auto
 
 lemma degree_m_prod_mset_le: "degree_m (prod_mset fs) \<le> sum_mset (image_mset degree_m fs)" 
 proof (induct fs)
   case empty
-  show ?case by (simp add: degree_m_def)
+  show ?case by simp
 next
   case (add f fs)
   then show ?case using degree_m_mult_le[of f "prod_mset fs"] by auto
@@ -280,10 +280,10 @@ proof -
   have eq: "q.Mp C = q.Mp (Polynomial.smult c (prod_mset fs))" 
     and irr: "\<And> f. f \<in># fs \<Longrightarrow> q.irreducible\<^sub>d_m f" 
     and mon: "\<And> f. f \<in># fs \<Longrightarrow> monic (q.Mp f)" 
-    unfolding q.equivalent_def by auto
+    by auto
   from arg_cong[OF eq, of Mp]
-  have eq: "equivalent C (smult c (prod_mset fs))" 
-    by (simp add: equivalent_def Mp_Mp_pow_is_Mp m1 n)
+  have eq: "eq_m C (smult c (prod_mset fs))" 
+    by (simp add: Mp_Mp_pow_is_Mp m1 n)
   show ?thesis unfolding factorization_m_def split
   proof (rule conjI[OF eq], intro ballI conjI)
     fix f
@@ -295,12 +295,11 @@ proof -
     from irr[OF f] have irr: "q.irreducible\<^sub>d_m f" .
     hence "q.degree_m f \<noteq> 0" unfolding q.irreducible\<^sub>d_m_def by auto
     also have "q.degree_m f = degree_m f" using mon[OF f]
-      by (metis Mp_Mp_pow_is_Mp m1 monic_degree_Mp n poly_mod.degree_m_def)
+      by (metis Mp_Mp_pow_is_Mp m1 monic_degree_Mp n)
     finally have deg: "degree_m f \<noteq> 0" by auto
     from f obtain gs where fs: "fs = {#f#} + gs"
       by (metis mset_subset_eq_single subset_mset.add_diff_inverse)
-    from eq[unfolded fs] have "Mp C = Mp (f * smult c (prod_mset gs))"
-      unfolding equivalent_def by auto      
+    from eq[unfolded fs] have "Mp C = Mp (f * smult c (prod_mset gs))" by auto
     from square_free_m_factor[OF square_free_m_cong[OF sf this]]
     have sf_f: "square_free_m f" by simp
     have sf_Mf: "square_free_m (q.Mp f)"
@@ -311,7 +310,7 @@ proof -
       and "\<And> g. g \<in> set gs \<Longrightarrow> irreducible\<^sub>d_m g" by blast
     hence fact: "q.Mp f = q.Mp (prod_list gs)" 
       and gs: "\<And> g. g\<in> set gs \<Longrightarrow> irreducible\<^sub>d_m g \<and> q.irreducible\<^sub>d_m g \<and> monic (q.Mp g)" 
-      unfolding q.factorization_m_def q.equivalent_def by auto
+      unfolding q.factorization_m_def by auto
     from q.factorization_m_degree[OF qfact]
     have deg: "q.degree_m (q.Mp f) = sum_mset (image_mset q.degree_m (mset gs))"
       using mon_qf by fastforce
@@ -325,8 +324,8 @@ proof -
       have small: "q.degree_m g < q.degree_m f" 
         "q.degree_m h + sum_mset (image_mset q.degree_m (mset hs)) < q.degree_m f" 
         unfolding gs1 gs2 by auto
-      have "q.equivalent f (g * (h * prod_list hs))" 
-        using fact unfolding q.equivalent_def gs1 gs2 by simp
+      have "q.eq_m f (g * (h * prod_list hs))" 
+        using fact unfolding gs1 gs2 by simp
       with irr[unfolded q.irreducible\<^sub>d_m_def, THEN conjunct2, rule_format, of g "h * prod_list hs"]
         small(1) have "\<not> q.degree_m (h * prod_list hs) < q.degree_m f" by auto
       hence "q.degree_m f \<le> q.degree_m (h * prod_list hs)" by simp
@@ -341,7 +340,7 @@ proof -
     from arg_cong[OF this, of Mp] have eq: "Mp f = Mp g" 
       by (simp add: Mp_Mp_pow_is_Mp m1 n)
     from gs[unfolded gs1] have g: "irreducible\<^sub>d_m g" by auto
-    with eq show "irreducible\<^sub>d_m f" unfolding irreducible\<^sub>d_m_def degree_m_def equivalent_def by auto
+    with eq show "irreducible\<^sub>d_m f" unfolding irreducible\<^sub>d_m_def by auto
   qed
 qed
   
@@ -378,12 +377,12 @@ proof (induct Fs arbitrary: C rule: wf_induct[OF wf_measure[of size]])
   show ?case
   proof (cases Fs)
     case empty
-    with fact C have "Mp C = 1" unfolding factorization_m_def by (auto simp: equivalent_def)
+    with fact C have "Mp C = 1" unfolding factorization_m_def by auto
     hence "degree (Mp C) = 0" by simp
-    with degree_m_eq_monic[OF monC m1] have "degree C = 0" unfolding degree_m_def by simp
+    with degree_m_eq_monic[OF monC m1] have "degree C = 0" by simp
     with monC have C1: "C = 1" using monic_degree_0 by blast
     with fact have fact: "q.factorization_m C (1,{#})" 
-      by (auto simp: q.factorization_m_def q.equivalent_def)
+      by (auto simp: q.factorization_m_def)
     show ?thesis 
     proof (rule exI, rule q.unique_factorization_mI[OF fact])
       fix d gs
@@ -396,63 +395,63 @@ proof (induct Fs arbitrary: C rule: wf_induct[OF wf_measure[of size]])
     let ?D = "Mp D" 
     let ?H = "Mp (prod_mset H)"
     from fact have monFs: "\<And> F. F \<in># Fs \<Longrightarrow> monic (Mp F)" 
-      and prod: "equivalent C (prod_mset Fs)" unfolding factorization_m_def by auto
+      and prod: "eq_m C (prod_mset Fs)" unfolding factorization_m_def by auto
     hence monD: "monic ?D" unfolding FDH by auto
     from square_free_m_cong[OF sf, of "D * prod_mset H"] prod[unfolded FDH]
-    have "square_free_m (D * prod_mset H)" by (auto simp: equivalent_def ac_simps)
+    have "square_free_m (D * prod_mset H)" by (auto simp: ac_simps)
     from square_free_m_prod_imp_coprime_m[OF this]    
     have "coprime_m D (prod_mset H)" .
-    hence cop': "coprime_m ?D ?H" unfolding coprime_m_def dvdm_def equivalent_def Mp_Mp by simp
-    from fact have eq': "equivalent C (?D * ?H)" 
-      unfolding FDH by (simp add: factorization_m_def equivalent_def ac_simps)
-    from unique_hensel_binary[OF prime cop' eq' Mp_Mp Mp_Mp monD n]
-    obtain A B where CAB: "q.equivalent C (A * B)" and monA: "monic A" and DA: "equivalent ?D A"
-      and HB: "equivalent ?H B" and norm: "q.Mp A = A" "q.Mp B = B" 
-      and unique: "\<And> D' H'. q.equivalent C (D' * H') \<Longrightarrow>
+    hence cop': "coprime_m ?D ?H" unfolding coprime_m_def dvdm_def Mp_Mp by simp
+    from fact have eq': "eq_m (?D * ?H) C"
+      unfolding FDH by (simp add: factorization_m_def ac_simps)
+    note unique_hensel_binary[OF prime cop' eq' Mp_Mp Mp_Mp monD n]
+    from ex1_implies_ex[OF this] this
+    obtain A B where CAB: "q.eq_m (A * B) C" and monA: "monic A" and DA: "eq_m ?D A"
+      and HB: "eq_m ?H B" and norm: "q.Mp A = A" "q.Mp B = B" 
+      and unique: "\<And> D' H'. q.eq_m (D' * H') C \<Longrightarrow>
           monic D' \<Longrightarrow>
-          equivalent (Mp D) D' \<Longrightarrow> equivalent (Mp (prod_mset H)) H' \<Longrightarrow> q.Mp D' = D' \<Longrightarrow> q.Mp H' = H'
-        \<Longrightarrow> D' = A \<and> H' = B" by blast
+          eq_m (Mp D) D' \<Longrightarrow> eq_m (Mp (prod_mset H)) H' \<Longrightarrow> q.Mp D' = D' \<Longrightarrow> q.Mp H' = H'
+        \<Longrightarrow> D' = A \<and> H' = B" by (elim exE ex1E, fast)
     note hensel_bin_wit = CAB monA DA HB norm
     from monA have monA': "monic (q.Mp A)" by (rule q.monic_Mp)
-    from q.monic_Mp[OF monC] CAB have monicP:"monic (q.Mp (A * B))" unfolding q.equivalent_def by auto
+    from q.monic_Mp[OF monC] CAB have monicP:"monic (q.Mp (A * B))" by auto
     have f4: "\<And>p. coeff (A * p) (degree (A * p)) = coeff p (degree p)"
       by (simp add: coeff_degree_mult monA)
     have f2: "\<And>p n i. coeff p n mod i = coeff (poly_mod.Mp i p) n"
         using poly_mod.M_def poly_mod.Mp_coeff by presburger
     hence "coeff B (degree B) = 0 \<or> monic B"
-        using monicP f4 by (metis (no_types) norm(2) q.degree_m_def q.degree_m_eq q.m1)
+        using monicP f4 by (metis (no_types) norm(2) q.degree_m_eq q.m1)
     hence monB: "monic B"
         using f4 monicP by (metis norm(2) leading_coeff_0_iff)
     from monA monB have lcAB: "lead_coeff (A * B) = 1" by (rule monic_mult)
     hence copAB: "coprime (lead_coeff (A * B)) p" by auto
-    from arg_cong[OF CAB[unfolded q.equivalent_def], of Mp] 
-    have CAB': "equivalent C (A * B)" unfolding equivalent_def by auto
-    from sf CAB' have sfAB: "square_free_m (A * B)" using equivalent_def square_free_m_cong by blast
+    from arg_cong[OF CAB, of Mp]
+    have CAB': "eq_m C (A * B)" by auto
+    from sf CAB' have sfAB: "square_free_m (A * B)" using square_free_m_cong by blast
     from CAB' ufact have ufact: "unique_factorization_m (A * B) (1, Fs)"
-      using equivalent_def unique_factorization_m_cong by blast
+      using unique_factorization_m_cong by blast
     have "(1 :: nat) \<noteq> 0" "p = p ^ 1" by auto
     note u_factor = unique_factorization_factorI[OF prime ufact copAB sfAB this]
-    from fact DA have "irreducible\<^sub>d_m D" "equivalent A D" unfolding equivalent_def 
-      add factorization_m_def by auto
-    hence "irreducible\<^sub>d_m A" using Mp_irreducible\<^sub>d_m equivalent_def by fastforce
-    from irreducible\<^sub>d_lifting[OF m1 n _ this] have irrA: "q.irreducible\<^sub>d_m A" using monA
+    from fact DA have "irreducible\<^sub>d_m D" "eq_m A D" unfolding add factorization_m_def by auto
+    hence "irreducible\<^sub>d_m A" using Mp_irreducible\<^sub>d_m by fastforce
+    from irreducible\<^sub>d_lifting[OF prime n _ this] have irrA: "q.irreducible\<^sub>d_m A" using monA
       by (simp add: m1 poly_mod.degree_m_eq_monic q.m1)
     
     from add have lenH: "(H,Fs) \<in> measure size" by auto
     from HB fact have factB: "factorization_m B (1, H)" 
-      unfolding FDH factorization_m_def equivalent_def by auto
+      unfolding FDH factorization_m_def by auto
     from u_factor(2)[OF factB] have ufactB: "unique_factorization_m B (1, H)" .
 
     from sfAB have sfB: "square_free_m B" by (rule square_free_m_factor)
     from IH[OF lenH ufactB monB sfB] obtain Bs where
       IH2: "q.unique_factorization_m B (1, Bs)" by auto
     
-    from CAB have "q.Mp C = q.Mp (q.Mp A * q.Mp B)" unfolding q.equivalent_def by simp
+    from CAB have "q.Mp C = q.Mp (q.Mp A * q.Mp B)" by simp
     also have "q.Mp A * q.Mp B = q.Mp A * q.Mp (prod_mset Bs)" 
-      using IH2 unfolding q.unique_factorization_m_alt_def q.factorization_m_def q.equivalent_def by auto
+      using IH2 unfolding q.unique_factorization_m_alt_def q.factorization_m_def by auto
     also have "q.Mp \<dots> = q.Mp (A * prod_mset Bs)" by simp
     finally have factC: "q.factorization_m C (1, {# A #} + Bs)" using IH2 monA' irrA
-      by (auto simp: q.unique_factorization_m_alt_def q.factorization_m_def q.equivalent_def)
+      by (auto simp: q.unique_factorization_m_alt_def q.factorization_m_def)
     show ?thesis 
     proof (rule exI, rule q.unique_factorization_mI[OF factC])
       fix d gs
@@ -468,26 +467,25 @@ proof (induct Fs arbitrary: C rule: wf_induct[OF wf_measure[of size]])
       from dgs[unfolded q.factorization_m_def split] 
       have eq: "q.Mp C = q.Mp (smult d (prod_mset gs))" 
         and irr_mon: "\<And> g. g\<in>#gs \<Longrightarrow> q.irreducible\<^sub>d_m g \<and> monic (q.Mp g)"
-        unfolding q.equivalent_def using d1 by auto
+        using d1 by auto
       note eq
       also have "q.Mp (smult d (prod_mset gs)) = q.Mp (smult (q.M d) (prod_mset gs))" 
         by simp
       also have "\<dots> = q.Mp (prod_mset gs)" unfolding d1 by simp
-      finally have eq: "q.equivalent C (q.Mp g * q.Mp (prod_mset hs))" unfolding gs q.equivalent_def by simp
-      from gD have Dg: "equivalent (Mp D) (q.Mp g)" unfolding equivalent_def by simp
+      finally have eq: "q.eq_m (q.Mp g * q.Mp (prod_mset hs)) C" unfolding gs by simp
+      from gD have Dg: "eq_m (Mp D) (q.Mp g)" by simp
       have "Mp (prod_mset H) = Mp (prod_mset (image_mset Mp H))" by simp
       also have "\<dots> = Mp (prod_mset hs)" unfolding hsH[symmetric] by simp
-      finally have Hhs: "equivalent (Mp (prod_mset H)) (q.Mp (prod_mset hs))"
-        unfolding equivalent_def by simp
+      finally have Hhs: "eq_m (Mp (prod_mset H)) (q.Mp (prod_mset hs))" by simp
       from irr_mon[of g, unfolded gs] have mon_g: "monic (q.Mp g)" by auto
       from unique[OF eq mon_g Dg Hhs q.Mp_Mp q.Mp_Mp]
       have gA: "q.Mp g = A" and hsB: "q.Mp (prod_mset hs) = B" by auto
-      have "q.factorization_m B (1, hs)" unfolding q.factorization_m_def split q.equivalent_def
+      have "q.factorization_m B (1, hs)" unfolding q.factorization_m_def split
         by (simp add: hsB norm irr_mon[unfolded gs])
       with IH2 have hsBs: "q.Mf (1,hs) = q.Mf (1,Bs)" unfolding q.unique_factorization_m_alt_def by blast
       show "q.Mf (d, gs) = q.Mf (1, {# A #} + Bs)" 
         using gA hsBs d1 unfolding gs q.Mf_def by auto
-    qed      
+    qed
   qed
 qed
 end
@@ -511,7 +509,7 @@ proof -
     from prime have p1: "p > 1" by (simp add: prime_int_iff)
   let ?lc = "coeff f (degree f)" 
   define ilc where "ilc \<equiv> inverse_mod ?lc (p ^ n)"
-  from inverse_mod_pow[OF cop[unfolded] p1 n, folded ilc_def]
+  from inverse_mod_pow[OF cop[unfolded coprime_iff_gcd_one] p1 n, folded ilc_def]
   have inv: "q.M (ilc * ?lc) = 1" unfolding q.M_def .
   hence ilc0: "ilc \<noteq> 0" by (cases "ilc = 0", auto)
   {
@@ -522,7 +520,7 @@ proof -
     with inv have False by auto
   } note not_dvd = this
   let ?in = "q.Mp (smult ilc f)" 
-  have mon: "monic ?in" unfolding q.Mp_coeff coeff_smult q.degree_m_def[symmetric]
+  have mon: "monic ?in" unfolding q.Mp_coeff coeff_smult
     by (subst q.degree_m_eq[OF _ q.m1], insert not_dvd, auto simp: inv ilc0)
   have "q.Mp f = q.Mp (smult (q.M (?lc * ilc)) f)" using inv by (simp add: ac_simps)
   also have "\<dots> = q.Mp (smult ?lc (smult ilc f))" by simp
@@ -554,7 +552,7 @@ proof -
   have "q.factorization_m (smult (ilc * ?lc) f) (?lc, hs)" by (simp add: ac_simps)
   moreover have "q.Mp (smult (q.M (ilc * ?lc)) f) = q.Mp f" unfolding inv by simp
   ultimately have fact: "q.factorization_m f (?lc, hs)" 
-    unfolding q.factorization_m_def q.equivalent_def by auto
+    unfolding q.factorization_m_def by auto
   have "q.unique_factorization_m f (?lc, hs)" 
   proof (rule q.unique_factorization_mI[OF fact])
     fix d us

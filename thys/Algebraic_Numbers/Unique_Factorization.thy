@@ -6,8 +6,8 @@ theory Unique_Factorization
     "HOL-Computational_Algebra.Euclidean_Algorithm"
     "HOL-Algebra.Divisibility"
     Containers.Containers_Auxiliary (* only for a lemma *)
+    Berlekamp_Zassenhaus.Poly_Mod (* only for generalized coprime *)
 begin
-hide_const(open) prime
 hide_fact(open) Divisibility.irreducibleI
 hide_fact(open) Divisibility.irreducibleD
 hide_fact(open) Divisibility.irreducibleE
@@ -89,30 +89,6 @@ lemma is_unit_mult_iff[simp]:
   by (auto dest: dvd_mult_left dvd_mult_right)
 end
 
-(* coprime shouldn't need "gcd"... *)
-hide_const(open) coprime
-
-context comm_monoid_mult begin
-
-  definition coprime where "coprime p q \<equiv> \<forall>r. r dvd p \<longrightarrow> r dvd q \<longrightarrow> r dvd 1"
-
-  lemma coprimeI:
-    assumes "\<And>r. r dvd p \<Longrightarrow> r dvd q \<Longrightarrow> r dvd 1"
-    shows "coprime p q" using assms by (auto simp: coprime_def)
-
-  lemma coprimeE:
-    assumes "coprime p q"
-        and "(\<And>r. r dvd p \<Longrightarrow> r dvd q \<Longrightarrow> r dvd 1) \<Longrightarrow> thesis"
-    shows thesis using assms by (auto simp: coprime_def)
-
-  lemma coprime_commute[ac_simps]: "coprime p q \<longleftrightarrow> coprime q p" unfolding coprime_def by auto
-
-  lemma not_coprime_iff_common_factor:
-    "\<not> coprime p q \<longleftrightarrow> (\<exists>r. r dvd p \<and> r dvd q \<and> \<not> r dvd 1)"
-    unfolding coprime_def by auto
-
-end
-
 context comm_monoid_mult_isom begin
   lemma coprime_hom[simp]: "coprime (hom x) y' \<longleftrightarrow> coprime x (Hilbert_Choice.inv hom y')"
   proof-
@@ -124,12 +100,6 @@ context comm_monoid_mult_isom begin
     show ?thesis by simp
   qed
 end
-
-lemma(in semiring_gcd) coprime_iff_gcd_one[simp,code]:
-  "coprime = (\<lambda>x y. gcd x y = 1)" using coprime by (intro ext, auto simp: coprime_def)
-
-lemma(in comm_semiring_1) coprime_0[simp]: "coprime p 0 \<longleftrightarrow> p dvd 1" "coprime 0 p \<longleftrightarrow> p dvd 1"
-  by (auto intro: coprimeI elim: coprimeE dest: dvd_trans)
 
 lemma (in semidom) prod_list_zero_iff[simp]: "prod_list xs = 0 \<longleftrightarrow> 0 \<in> set xs" by (induction xs, auto)
 
@@ -1257,7 +1227,7 @@ locale gcd_condition =
 begin
   sublocale idom_gcd "op *" "1 :: 'a" "op +" 0 "op -" uminus some_gcd 
     rewrites "dvd.dvd (op *) = op dvd"
-        and "comm_monoid_mult.coprime (op * ) 1 = Unique_Factorization.coprime"
+        and "comm_monoid_mult.coprime (op * ) 1 = Poly_Mod.coprime"
   proof-
     have "is_gcd (some_gcd a b) a b" for a b :: 'a by (intro is_gcd_some_gcdI gcd_exists)
     from this[unfolded is_gcd_def]

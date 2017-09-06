@@ -164,8 +164,9 @@ definition dvd_poly_i :: "'i list \<Rightarrow> 'i list \<Rightarrow> bool" wher
   "dvd_poly_i xs ys = (\<exists> zs. is_poly zs \<and> ys = times_poly_i xs zs)"
 
 definition irreducible_i :: "'i list \<Rightarrow> bool" where
-  "irreducible_i xs = (degree_i xs \<noteq> 0 \<and> (\<forall>q. is_poly q \<longrightarrow> degree_i q \<noteq> 0 \<longrightarrow> degree_i q < degree_i xs 
-    \<longrightarrow> \<not> dvd_poly_i q xs))" 
+  "irreducible_i xs = (degree_i xs \<noteq> 0 \<and>
+  (\<forall>q r. is_poly q \<longrightarrow> is_poly r \<longrightarrow> degree_i q < degree_i xs \<longrightarrow> degree_i r < degree_i xs 
+    \<longrightarrow> xs \<noteq> times_poly_i q r))" 
 
 definition poly_ops :: "'i list arith_ops_record" where
   "poly_ops \<equiv> Arith_Ops_Record

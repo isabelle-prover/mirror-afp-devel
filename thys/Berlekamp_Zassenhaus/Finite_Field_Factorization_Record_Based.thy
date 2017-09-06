@@ -21,9 +21,9 @@ hide_const(open) monom coeff
 
 text \<open>Whereas @{thm finite_field_factorization} provides a result for a polynomials over GF(p),
   we now develop a theorem which speaks about integer polynomials modulo p.\<close>
-context poly_mod_type
-begin
-lemma finite_field_factorization_modulo_ring: assumes g: "(g :: 'a mod_ring poly) = of_int_poly f"
+
+lemma (in poly_mod_prime_type) finite_field_factorization_modulo_ring:
+  assumes g: "(g :: 'a mod_ring poly) = of_int_poly f"
   and sf: "square_free_m f"
   and fact: "finite_field_factorization g = (d,gs)"
   and c: "c = to_int_mod_ring d"
@@ -42,7 +42,6 @@ proof -
   have uf: "unique_factorization Irr_Mon g (d,mset gs)" by auto
   from uf[untransferred] show "unique_factorization_m f (c, mset fs)" .
 qed
-end
 
 text \<open>We now have to implement @{const finite_field_factorization}.\<close>  
 context

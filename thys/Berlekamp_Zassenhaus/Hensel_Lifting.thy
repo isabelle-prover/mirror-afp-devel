@@ -20,7 +20,6 @@ theory Hensel_Lifting
 imports 
   "HOL-Computational_Algebra.Euclidean_Algorithm"
   Poly_Mod_Finite_Field_Record_Based
-  "HOL-Types_To_Sets.Types_To_Sets"
   Polynomial_Factorization.Square_Free_Factorization
 begin
 
@@ -76,36 +75,36 @@ lemma monic_degree_m_lift: assumes "monic f" "k > 1" "m > 1"
   shows "monic (poly_mod.Mp (m * k) f)" 
 proof -
   have deg: "degree (poly_mod.Mp (m * k) f) = degree f" 
-    by (rule poly_mod.degree_m_eq_monic[of f "m * k", unfolded poly_mod.degree_m_def], 
-    insert assms, auto simp: less_1_mult)
+    by (rule poly_mod.degree_m_eq_monic[of f "m * k"], insert assms, auto simp: less_1_mult)
   show ?thesis unfolding poly_mod.Mp_coeff deg assms poly_mod.M_def using assms(2-)
     by (simp add: less_1_mult)
-qed  
+qed
+
 end
 
-
-
-lemma uniqueness_poly_equality: assumes cop: "coprime f g" 
+lemma uniqueness_poly_equality:
+  fixes f g :: "'a :: factorial_ring_gcd poly"
+  assumes cop: "coprime f g"
   and deg: "B = 0 \<or> degree B < degree f" "B' = 0 \<or> degree B' < degree f"
   and f: "f \<noteq> 0" and eq: "A * f + B * g = A' * f + B' * g" 
   shows "A = A'" "B = B'" 
 proof -
   from eq have *: "(A - A') * f = (B' - B) * g" by (simp add: field_simps)
   hence "f dvd (B' - B) * g" unfolding dvd_def by (intro exI[of _ "A - A'"], auto simp: field_simps)
-  with cop have dvd: "f dvd (B' - B)" by (rule coprime_dvd_mult)
+  with cop[simplified] have dvd: "f dvd (B' - B)" by (rule coprime_dvd_mult)
   from divides_degree[OF this] have "degree f \<le> degree (B' - B) \<or> B = B'" by auto
   with degree_diff_le_max[of B' B] deg have B: "B = B'" by auto
   with * f show "A = A'" "B = B'" by auto
 qed
 
-context poly_mod_type
+context poly_mod_prime_type
 begin
-lemma uniqueness_poly_equality_mod_int: assumes 
-    deg: "b =m 0 \<or> degree_m b < degree_m f" "b' =m 0 \<or> degree_m b' < degree_m f"
+lemma uniqueness_poly_equality_mod_int:
+  assumes deg: "b =m 0 \<or> degree_m b < degree_m f" "b' =m 0 \<or> degree_m b' < degree_m f"
   and f0: "\<not> (f =m 0)" 
   and cop: "coprime_m f g" 
   and eq: "a * f + b * g =m a' * f + b' * g" 
-  shows "a =m a'" "b =m b'" 
+  shows "a =m a'" "b =m b'"
 proof -
   obtain F G A B A' B' :: "'a mod_ring poly" where 
     f: "F = of_int_poly f"
@@ -151,7 +150,7 @@ proof -
     assume "\<exists>(Rep :: 'b \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< m :: int}"
     from prime_type_prime_card[OF p this]
     have "class.prime_card TYPE('b)" "m = int CARD('b)" by auto
-    from poly_mod_type.uniqueness_poly_equality_mod_int[unfolded prime_field_def poly_mod_type_def, 
+    from poly_mod_prime_type.uniqueness_poly_equality_mod_int[unfolded prime_field_def poly_mod_prime_type_def, 
       internalize_sort "'a :: prime_card", OF this deg f0 cop eq]
     have "a =m a' \<and> b =m b'" by auto
   }
@@ -169,7 +168,7 @@ lemma M_1[simp]: "M 1 = 1" unfolding M_def using m1 by auto
 lemma Mp_1[simp]: "Mp 1 = 1" unfolding Mp_def by simp
 
 lemma monic_degree_Mp: "monic f \<Longrightarrow> degree (Mp f) = degree f" 
-  using degree_m_eq_monic[of f] unfolding degree_m_def using m1 by auto
+  using degree_m_eq_monic[of f] using m1 by auto
 
 lemma monic_Mp: "monic f \<Longrightarrow> monic (Mp f)" 
   by (subst monic_degree_Mp, auto simp: Mp_coeff)
@@ -201,29 +200,26 @@ proof -
   also have "(S * U + H * q) * D + (T * U - D * q) * H = (D * S + H * T) * U"
     by (simp add: field_simps)
   also have "Mp \<dots> = Mp (Mp (D * S + H * T) * U)" by simp
-  also have "Mp (D * S + H * T) = 1" using 1 unfolding equivalent_def by simp  
-  finally show eq: "A * D + B * H =m U" unfolding equivalent_def by simp
-  have id: "degree_m (Mp r) = degree_m r" unfolding degree_m_def by simp
-  have id': "degree D = degree_m D" using monic_degree_Mp[OF mon] unfolding degree_m_def by simp
-  show degB: "B = 0 \<or> degree B < degree D" using deg unfolding B degree_m_def[symmetric] id id'
-    using degree_m_le[of r] by (cases "r = 0", auto)    
+  also have "Mp (D * S + H * T) = 1" using 1 by simp
+  finally show eq: "A * D + B * H =m U" by simp
+  have id: "degree_m (Mp r) = degree_m r" by simp
+  have id': "degree D = degree_m D" using monic_degree_Mp[OF mon] by simp
+  show degB: "B = 0 \<or> degree B < degree D" using deg unfolding B id id'
+    using degree_m_le[of r] by (cases "r = 0", auto)
   show Mp: "Mp A = A" "Mp B = B" unfolding A B by auto
   assume another: "A' * D + B' * H =m U" and degB': "B' = 0 \<or> degree B' < degree D" 
     and norm: "Mp A' = A'" "Mp B' = B'" and cop: "coprime_m D H" and D: "Mp D = D" 
     and prime: "prime m" 
-  from degB Mp D have degB: "B =m 0 \<or> degree_m B < degree_m D" 
-    unfolding degree_m_def equivalent_def by auto
-  from degB' Mp D norm have degB': "B' =m 0 \<or> degree_m B' < degree_m D" 
-    unfolding degree_m_def equivalent_def by auto
-  from mon D have D0: "\<not> (D =m 0)" unfolding equivalent_def by auto
-  from another eq have "A' * D + B' * H =m A * D + B * H" unfolding equivalent_def by simp
+  from degB Mp D have degB: "B =m 0 \<or> degree_m B < degree_m D" by auto
+  from degB' Mp D norm have degB': "B' =m 0 \<or> degree_m B' < degree_m D" by auto
+  from mon D have D0: "\<not> (D =m 0)" by auto
+  from another eq have "A' * D + B' * H =m A * D + B * H" by simp
   from uniqueness_poly_equality_mod[OF degB' degB D0 cop this prime]
-  show "A' = A \<and> B' = B" unfolding equivalent_def norm Mp by auto
+  show "A' = A \<and> B' = B" unfolding norm Mp by auto
 qed
 
 lemma Mp_0_smult_sdiv_poly: assumes "Mp f = 0" 
-  shows "smult m (sdiv_poly f m) = f" 
-  unfolding equivalent_def
+  shows "smult m (sdiv_poly f m) = f"
 proof (intro poly_eqI, unfold Mp_coeff coeff_smult sdiv_poly_def, subst coeff_map_poly, force)
   fix n
   from assms have "coeff (Mp f) n = 0" by simp
@@ -233,9 +229,10 @@ qed
 
 lemma Mp_product_modulus: "m' = m * k \<Longrightarrow> k > 0 \<Longrightarrow> Mp (poly_mod.Mp m' f) = Mp f" 
   by (intro poly_eqI, unfold poly_mod.Mp_coeff poly_mod.M_def, auto simp: mod_mod_cancel) 
+
 end
 
-lemma (in poly_mod) degree_m_eq_prime:  
+lemma (in poly_mod) degree_m_eq_prime:
   assumes f0: "Mp f \<noteq> 0"
   and deg: "degree_m f = degree f" 
   and eq: "f =m g * h" 
@@ -243,10 +240,10 @@ lemma (in poly_mod) degree_m_eq_prime:
   shows "degree_m f = degree_m g + degree_m h" 
 proof -
   interpret poly_mod_2 m using prime_ge_2_int[OF p] unfolding poly_mod_2_def by simp
-  from f0 eq have "Mp (Mp g * Mp h) \<noteq> 0" unfolding equivalent_def by auto
+  from f0 eq have "Mp (Mp g * Mp h) \<noteq> 0" by auto
   hence "Mp g * Mp h \<noteq> 0" using Mp_0 by (cases "Mp g * Mp h", auto)
   hence g0: "Mp g \<noteq> 0" and h0: "Mp h \<noteq> 0" by auto
-  have "degree (Mp (g * h)) = degree_m (Mp g * Mp h)" unfolding degree_m_def by simp
+  have "degree (Mp (g * h)) = degree_m (Mp g * Mp h)" by simp
   also have "\<dots> = degree (Mp g * Mp h)" 
   proof (rule degree_m_eq[OF _ m1], rule)
     have id: "\<And> g. coeff (Mp g) (degree (Mp g)) mod m = coeff (Mp g) (degree (Mp g))" 
@@ -260,8 +257,7 @@ proof -
   qed
   also have "\<dots> = degree (Mp g) + degree (Mp h)" 
     by (rule degree_mult_eq[OF g0 h0])
-  finally show ?thesis unfolding degree_m_def
-    using eq unfolding equivalent_def by simp
+  finally show ?thesis using eq by simp
 qed 
 
 lemma monic_smult_add_small: assumes "f = 0 \<or> degree f < degree g" and mon: "monic g" 
@@ -294,23 +290,22 @@ proof -
   have "monic (prod_mset (image_mset Mp fs))" by (rule monic_prod_mset, insert *, auto)
   hence "monic (Mp (prod_mset (image_mset Mp fs)))" by (rule monic_Mp)
   from this[unfolded Mp_prod_mset] have monic: "monic (Mp (prod_mset fs))" by simp
-  from * have "lead_coeff (Mp f) = lead_coeff (Mp (smult c (prod_mset fs)))" 
-    by (simp add: equivalent_def)
+  from * have "lead_coeff (Mp f) = lead_coeff (Mp (smult c (prod_mset fs)))" by simp
   also have "Mp (smult c (prod_mset fs)) = Mp (smult (M c) (Mp (prod_mset fs)))" by simp
   finally show ?thesis using monic
     by (metis M_M Mp_0 Mp_coeff degree_m_eq lead_coeff_smult m1 
-      mult_cancel_left2 poly_mod.M_def poly_mod.degree_m_def smult_eq_0_iff) (*takes time...*)
+      mult_cancel_left2 poly_mod.M_def smult_eq_0_iff) (*takes time...*)
 qed
 
 lemma factorization_m_smult: assumes "factorization_m f (c,fs)" 
   shows "factorization_m (smult d f) (c * d,fs)"
 proof -
   note * = assms[unfolded factorization_m_def split]
-  from * have f: "Mp f = Mp (smult c (prod_mset fs))" unfolding equivalent_def by simp
+  from * have f: "Mp f = Mp (smult c (prod_mset fs))" by simp
   have "Mp (smult d f) = Mp (smult d (Mp f))" by simp
   also have "\<dots> = Mp (smult (c * d) (prod_mset fs))" unfolding f by (simp add: ac_simps)
   finally show ?thesis using assms
-  unfolding factorization_m_def split by (auto simp: equivalent_def)
+  unfolding factorization_m_def split by auto
 qed
 
 lemma factorization_m_prod: assumes "factorization_m f (c,fs)" "factorization_m g (d,gs)" 
@@ -318,15 +313,15 @@ lemma factorization_m_prod: assumes "factorization_m f (c,fs)" "factorization_m 
 proof -
   note * = assms[unfolded factorization_m_def split]
   have "Mp (f * g) = Mp (Mp f * Mp g)" by simp
-  also have "Mp f = Mp (smult c (prod_mset fs))" using * unfolding equivalent_def by simp
-  also have "Mp g = Mp (smult d (prod_mset gs))" using * unfolding equivalent_def by simp
+  also have "Mp f = Mp (smult c (prod_mset fs))" using * by simp
+  also have "Mp g = Mp (smult d (prod_mset gs))" using * by simp
   finally have "Mp (f * g) = Mp (smult (c * d) (prod_mset (fs + gs)))" unfolding mult_Mp
     by (simp add: ac_simps)
-  with * show ?thesis unfolding factorization_m_def split equivalent_def by auto
+  with * show ?thesis unfolding factorization_m_def split by auto
 qed
 
 lemma Mp_factorization_m[simp]: "factorization_m (Mp f) cfs = factorization_m f cfs" 
-  unfolding factorization_m_def equivalent_def by simp
+  unfolding factorization_m_def by simp
 
 lemma Mp_unique_factorization_m[simp]: 
   "unique_factorization_m (Mp f) cfs = unique_factorization_m f cfs" 
@@ -377,8 +372,7 @@ proof -
   qed
 qed
 
-lemma degree_m_eq_lead_coeff: "degree_m f = degree f \<Longrightarrow> lead_coeff (Mp f) = M (lead_coeff f)" 
-  unfolding degree_m_def
+lemma degree_m_eq_lead_coeff: "degree_m f = degree f \<Longrightarrow> lead_coeff (Mp f) = M (lead_coeff f)"
   by (simp add: Mp_coeff)
 
 lemma unique_factorization_m_zero: assumes "unique_factorization_m f (c,fs)" 
@@ -386,11 +380,11 @@ lemma unique_factorization_m_zero: assumes "unique_factorization_m f (c,fs)"
 proof
   assume c: "M c = 0" 
   from unique_factorization_m_imp_factorization[OF assms]
-  have "Mp f = Mp (smult (M c) (prod_mset fs))" unfolding factorization_m_def equivalent_def split 
+  have "Mp f = Mp (smult (M c) (prod_mset fs))" unfolding factorization_m_def split 
     by simp
   from this[unfolded c] have f: "Mp f = 0" by simp
   have "factorization_m f (0,{#})" 
-    unfolding factorization_m_def split equivalent_def f by auto
+    unfolding factorization_m_def split f by auto
   moreover have "Mf (0,{#}) = (0,{#})" unfolding Mf_def by auto
   ultimately have fact1: "(0, {#}) \<in> Mf ` Collect (factorization_m f)" by force
   define g :: "int poly" where "g = [:0,1:]" 
@@ -399,7 +393,7 @@ proof
   {
     fix g h
     assume *: "degree (Mp g) = 0" "degree (Mp h) = 0" "[:0, 1:] = Mp (g * h)" 
-    from arg_cong[OF *(3), of degree] have "1 = degree_m (Mp g * Mp h)" by (simp add: degree_m_def)
+    from arg_cong[OF *(3), of degree] have "1 = degree_m (Mp g * Mp h)" by simp
     also have "\<dots> \<le> degree (Mp g * Mp h)" by (rule degree_m_le)
     also have "\<dots> \<le> degree (Mp g) + degree (Mp h)" by (rule degree_mult_le)
     also have "\<dots> \<le> 0" using * by simp
@@ -407,7 +401,7 @@ proof
   } note irr = this    
   have "factorization_m f (0,{# g #})" 
     unfolding factorization_m_def split using irr
-    by (auto simp: irreducible\<^sub>d_m_def degree_m_def equivalent_def f mpg)
+    by (auto simp: irreducible\<^sub>d_m_def f mpg)
   moreover have "Mf (0,{# g #}) = (0,{# g #})" unfolding Mf_def by (auto simp: mpg, simp add: g_def)
   ultimately have fact2: "(0, {#g#}) \<in> Mf ` Collect (factorization_m f)" by force
   note [simp] = assms[unfolded unique_factorization_m_def]
@@ -424,10 +418,10 @@ lemma dvdm_smult: assumes "f dvdm g"
   shows "f dvdm smult c g" 
 proof -
   from assms[unfolded dvdm_def] obtain h where g: "g =m f * h" by auto
-  show ?thesis unfolding dvdm_def equivalent_def
+  show ?thesis unfolding dvdm_def
   proof (intro exI[of _ "smult c h"])
     have "Mp (smult c g) = Mp (smult c (Mp g))" by simp
-    also have "Mp g = Mp (f * h)" using g[unfolded equivalent_def] by simp
+    also have "Mp g = Mp (f * h)" using g by simp
     finally show "Mp (smult c g) = Mp (f * smult c h)" by simp
   qed
 qed
@@ -436,10 +430,10 @@ lemma dvdm_factor: assumes "f dvdm g"
   shows "f dvdm g * h" 
 proof -
   from assms[unfolded dvdm_def] obtain k where g: "g =m f * k" by auto
-  show ?thesis unfolding dvdm_def equivalent_def
+  show ?thesis unfolding dvdm_def
   proof (intro exI[of _ "h * k"])
     have "Mp (g * h) = Mp (Mp g * h)" by simp
-    also have "Mp g = Mp (f * k)" using g[unfolded equivalent_def] by simp
+    also have "Mp g = Mp (f * k)" using g by simp
     finally show "Mp (g * h) = Mp (f * (h * k))" by (simp add: ac_simps)
   qed
 qed    
@@ -454,7 +448,7 @@ proof (intro conjI allI impI)
   thus "\<not> g * g dvdm f" using dvdm_smult[of "g * g" f c] by blast
 next
   from assms[unfolded square_free_m_def] have "\<not> smult c f =m 0" by simp
-  thus "\<not> f =m 0" unfolding equivalent_def 
+  thus "\<not> f =m 0" 
     by (metis Mp_smult(2) smult_0_right)
 qed
 
@@ -484,11 +478,11 @@ proof -
       fix h
       assume "degree_m h \<noteq> 0" 
       with sf[unfolded square_free_m_def] have "\<not> h * h dvdm f * g" by auto
-      thus "\<not> h * h dvdm f" using dvdm_factor[of "h * h" f g] by blast        
+      thus "\<not> h * h dvdm f" using dvdm_factor[of "h * h" f g] by blast
     next
       from sf[unfolded square_free_m_def] have "\<not> f * g =m 0" by simp
-      thus "\<not> f =m 0" unfolding equivalent_def
-        by (metis mult.commute mult_zero_right poly_mod.equivalent_def poly_mod.mult_Mp(2))
+      thus "\<not> f =m 0"
+        by (metis mult.commute mult_zero_right poly_mod.mult_Mp(2))
     qed
   }
   from this[of f g] this[of g f] assms 
@@ -496,7 +490,7 @@ proof -
 qed
 end
 
-context poly_mod_type
+context poly_mod_prime_type
 begin
 
 lemma bezout_coefficients_mod_int: assumes f: "(F :: 'a mod_ring poly) = of_int_poly f"
@@ -732,22 +726,22 @@ lemma linear_hensel_code[code]: "linear_hensel_main n = (if n \<le> 1 then (D1,H
   by (cases n, force, cases "n - 1", auto)
 
 
-lemma linear_hensel_main: assumes 1: "poly_mod.equivalent p (D1 * S + H1 * T) 1" 
-  and equiv: "poly_mod.equivalent p C (D1 * H1)"
+lemma linear_hensel_main: assumes 1: "poly_mod.eq_m p (D1 * S + H1 * T) 1" 
+  and equiv: "poly_mod.eq_m p (D1 * H1) C"
   and monD1: "monic D1" 
-  and normDH1: "poly_mod.Mp p D1 = D1" "poly_mod.Mp p H1 = H1"  
+  and normDH1: "poly_mod.Mp p D1 = D1" "poly_mod.Mp p H1 = H1"
   and res: "linear_hensel_main n = (D,H)" 
   and n: "n \<noteq> 0" 
   and prime: "prime p" (* p > 1 suffices if one does not need uniqueness *)
-  and cop: "poly_mod.coprime_m p D1 H1" 
-  shows "poly_mod.equivalent (p^n) C (D * H) 
+  and cop: "poly_mod.coprime_m p D1 H1"
+  shows "poly_mod.eq_m (p^n) (D * H) C
     \<and> monic D
-    \<and> poly_mod.equivalent p D1 D \<and> poly_mod.equivalent p H1 H
+    \<and> poly_mod.eq_m p D D1 \<and> poly_mod.eq_m p H H1
     \<and> poly_mod.Mp (p^n) D = D
     \<and> poly_mod.Mp (p^n) H = H \<and> 
-    (poly_mod.equivalent (p^n) C (D' * H') \<longrightarrow>
-     poly_mod.equivalent p D1 D' \<longrightarrow> 
-     poly_mod.equivalent p H1 H' \<longrightarrow>
+    (poly_mod.eq_m (p^n) (D' * H') C \<longrightarrow>
+     poly_mod.eq_m p D' D1 \<longrightarrow> 
+     poly_mod.eq_m p H' H1 \<longrightarrow>
      poly_mod.Mp (p^n) D' = D' \<longrightarrow>
      poly_mod.Mp (p^n) H' = H' \<longrightarrow> monic D' \<longrightarrow> D' = D \<and> H' = H)
      " 
@@ -757,7 +751,7 @@ proof (induct n arbitrary: D H D' H')
   show ?case
   proof (cases "n = 0")
     case True
-    with Suc equiv monD1 normDH1 show ?thesis by (auto simp: poly_mod.equivalent_def)
+    with Suc equiv monD1 normDH1 show ?thesis by auto
   next
     case False
     hence n: "n \<noteq> 0" by auto
@@ -775,22 +769,21 @@ proof (induct n arbitrary: D H D' H')
     obtain A B where dupe: "p.dupe_monic D1 H1 S T U = (A,B)" by force
     note IH = Suc(1)[OF rec n]
     from IH
-    have CDH: "q.equivalent C (D * H)" 
+    have CDH: "q.eq_m (D * H) C"
       and monD: "monic D"
-      and p_eq: "p.equivalent D1 D" "p.equivalent H1 H" 
+      and p_eq: "p.eq_m D D1" "p.eq_m H H1"
       and norm: "q.Mp D = D" "q.Mp H = H" by auto
     from n obtain k where n: "n = Suc k" by (cases n, auto)
     have qq: "?q * ?q = ?pq * p^k" unfolding n by simp
     from Suc(2)[unfolded n linear_hensel_main.simps, folded n, unfolded rec split Let_def U dupe]
     have D': "D' = D + smult ?q B" and H': "H' = H + smult ?q A" by auto
     note dupe = p.dupe_monic[OF 1 monD1 dupe]
-    from CDH[unfolded q.equivalent_def] have "q.Mp C - q.Mp (D * H) = 0" by simp
+    from CDH have "q.Mp C - q.Mp (D * H) = 0" by simp
     hence "q.Mp (q.Mp C - q.Mp (D * H)) = 0" by simp
     hence "q.Mp (C - D*H) = 0" by simp
     from q.Mp_0_smult_sdiv_poly[OF this] have CDHq: "smult ?q (sdiv_poly (C - D * H) ?q) = C - D * H" .
-    have ADBHU: "p.equivalent (A * D + B * H) U" using p_eq dupe(1) 
-      unfolding p.equivalent_def by (metis (mono_tags, lifting) p.mult_Mp(2) poly_mod.plus_Mp)
-    
+    have ADBHU: "p.eq_m (A * D + B * H) U" using p_eq dupe(1) 
+      by (metis (mono_tags, lifting) p.mult_Mp(2) poly_mod.plus_Mp)
     have "pq.Mp (D' * H') = pq.Mp ((D + smult ?q B) * (H + smult ?q A))" 
       unfolding D' H' by simp
     also have "(D + smult ?q B) * (H + smult ?q A) = (D * H + smult ?q (A * D + B * H)) + smult (?q * ?q) (A * B)" 
@@ -801,15 +794,15 @@ proof (induct n arbitrary: D H D' H')
       by (metis pq.Mp_smult_m_0 smult_smult)
     finally have DH': "pq.Mp (D' * H') = pq.Mp (D * H + pq.Mp (smult ?q (A * D + B * H)))" by simp
     also have "pq.Mp (smult ?q (A * D + B * H)) = pq.Mp (smult ?q U)"
-      using p.Mp_lift_modulus[OF ADBHU, of ?q] unfolding pq.equivalent_def by simp
+      using p.Mp_lift_modulus[OF ADBHU, of ?q] by simp
     also have "\<dots> = pq.Mp (C - D * H)" 
       unfolding arg_cong[OF CDHq, of pq.Mp, symmetric] U[symmetric] V
-      by (rule p.Mp_lift_modulus[of _ _ ?q, unfolded pq.equivalent_def], auto simp: p.equivalent_def) 
+      by (rule p.Mp_lift_modulus[of _ _ ?q], auto) 
     also have "pq.Mp (D * H + pq.Mp (C - D * H)) = pq.Mp C" by simp
-    finally have CDH: "pq.equivalent C (D' * H')" unfolding pq.equivalent_def by simp
+    finally have CDH: "pq.eq_m C (D' * H')" by simp
 
     have deg: "degree D1 = degree D" using p_eq(1) monD1 monD
-      by (metis p.equivalent_def p.monic_degree_Mp)
+      by (metis p.monic_degree_Mp)
     have mon: "monic D'" unfolding D' using dupe(2) monD unfolding deg by (rule monic_smult_add_small)
     have normD': "pq.Mp D' = D'" 
       unfolding D' pq.Mp_ident_iff poly_mod.Mp_coeff plus_poly.rep_eq coeff_smult 
@@ -827,12 +820,12 @@ proof (induct n arbitrary: D H D' H')
         unfolding p.Mp_ident_iff q.Mp_ident_iff by auto
       thus "coeff H i + ?q * coeff A i \<in> {0..< ?pq}" by (rule range_sum_prod)
     qed
-    have eq: "p.equivalent D D'" "p.equivalent H H'" unfolding D' H' p.equivalent_def n 
+    have eq: "p.eq_m D D'" "p.eq_m H H'" unfolding D' H' n 
         poly_eq_iff p.Mp_coeff p.M_def by (auto simp: field_simps)
-    with p_eq have eq: "p.equivalent D1 D'" "p.equivalent H1 H'" unfolding p.equivalent_def by auto
+    with p_eq have eq: "p.eq_m D' D1" "p.eq_m H' H1" by auto
     {
-      assume CDH'': "pq.equivalent C (D'' * H'')" 
-        and DH1'': "p.equivalent D1 D''" "p.equivalent H1 H''"
+      assume CDH'': "pq.eq_m C (D'' * H'')" 
+        and DH1'': "p.eq_m D1 D''" "p.eq_m H1 H''"
         and norm'': "pq.Mp D'' = D''" "pq.Mp H'' = H''" 
         and monD'': "monic D''" 
       from q.Dp_Mp_eq[of D''] obtain d B' where D'': "D'' = q.Mp d + smult ?q B'" by auto
@@ -887,7 +880,7 @@ proof (induct n arbitrary: D H D' H')
           unfolding D'' using eq 
           by (metis D'' coeff_smult monD'' plus_poly.rep_eq poly_mod.Dp_Mp_eq 
               poly_mod.degree_m_eq_monic poly_mod.plus_Mp(1) 
-              q.Mp_smult_m_0 q.degree_m_def q.m1 q.monic_Mp q.plus_Mp(2))
+              q.Mp_smult_m_0 q.m1 q.monic_Mp q.plus_Mp(2))
         ultimately have gt: "coeff D'' (degree ?d) > 1" by auto
         hence "coeff D'' (degree ?d) \<noteq> 0" by auto
         hence "degree D'' \<ge> degree ?d" by (rule le_degree)
@@ -901,16 +894,16 @@ proof (induct n arbitrary: D H D' H')
         by (metis add.right_neutral poly_mod.Mp_smult_m_0 poly_mod.plus_Mp)
       have h: "q.Mp H'' = ?h" unfolding H''
         by (metis add.right_neutral poly_mod.Mp_smult_m_0 poly_mod.plus_Mp)
-      from CDH'' have "pq.Mp C = pq.Mp (D'' * H'')" unfolding pq.equivalent_def by simp
+      from CDH'' have "pq.Mp C = pq.Mp (D'' * H'')" by simp
       from arg_cong[OF this, of q.Mp] 
       have "q.Mp C = q.Mp (D'' * H'')"
         using p.m1 q.Mp_product_modulus by auto
       also have "\<dots> = q.Mp (q.Mp D'' * q.Mp H'')" by simp
       also have "\<dots> = q.Mp (?d * ?h)" unfolding d h by simp
-      finally have eqC: "q.equivalent C (?d * ?h)" unfolding q.equivalent_def .
-      have d1: "p.equivalent D1 ?d" unfolding d[symmetric] using DH1'' unfolding p.equivalent_def
+      finally have eqC: "q.eq_m (?d * ?h) C" by auto
+      have d1: "p.eq_m ?d D1" unfolding d[symmetric] using DH1''
         using assms(4) n p.Mp_product_modulus p.m1 by auto
-      have h1: "p.equivalent H1 ?h" unfolding h[symmetric] using DH1'' unfolding p.equivalent_def
+      have h1: "p.eq_m ?h H1" unfolding h[symmetric] using DH1''
         using assms(5) n p.Mp_product_modulus p.m1 by auto
       have mond: "monic (q.Mp d)" using monD'' deg_dB2 unfolding D''
         using d monD'' q.monic_Mp by force
@@ -918,7 +911,7 @@ proof (induct n arbitrary: D H D' H')
       from deg_dB2[unfolded IH] have degB': "B' = 0 \<or> degree B' < degree D" by auto
       from IH have D'': "D'' = D + smult ?q B'" and H'': "H'' = H + smult ?q A'" 
         unfolding D'' H'' by auto
-      have "pq.Mp (D'' * H'') = pq.Mp (D' * H')" using CDH'' CDH unfolding pq.equivalent_def by simp
+      have "pq.Mp (D'' * H'') = pq.Mp (D' * H')" using CDH'' CDH  by simp
       also have "pq.Mp (D'' * H'') = pq.Mp ((D + smult ?q B') * (H + smult ?q A'))" 
         unfolding D'' H'' by simp
       also have "(D + smult ?q B') * (H + smult ?q A') = (D * H + smult ?q (A' * D + B' * H)) + smult (?q * ?q) (A' * B')" 
@@ -933,12 +926,12 @@ proof (induct n arbitrary: D H D' H')
         by (metis (no_types, lifting) add_diff_cancel_left' poly_mod.minus_Mp(1) poly_mod.plus_Mp(2))
       hence "p.Mp (A' * D + B' * H) = p.Mp (A * D + B * H)" unfolding poly_eq_iff p.Mp_coeff pq.Mp_coeff coeff_smult
         by (insert p, auto simp: p.M_def pq.M_def)
-      hence "p.Mp (A' * D1 + B' * H1) = p.Mp (A * D1 + B * H1)" using p_eq unfolding p.equivalent_def 
+      hence "p.Mp (A' * D1 + B' * H1) = p.Mp (A * D1 + B * H1)" using p_eq
         by (metis p.mult_Mp(2) poly_mod.plus_Mp)
-      hence eq: "p.equivalent (A' * D1 + B' * H1) U" using dupe(1) unfolding p.equivalent_def by auto
+      hence eq: "p.eq_m (A' * D1 + B' * H1) U" using dupe(1) by auto
       have "degree D = degree D1" using monD monD1 
-          arg_cong[OF p_eq(1)[unfolded p.equivalent_def], of degree] 
-          p.degree_m_eq_monic[OF _ p.m1, unfolded p.degree_m_def] by auto
+          arg_cong[OF p_eq(1), of degree] 
+          p.degree_m_eq_monic[OF _ p.m1] by auto
       hence "B' = 0 \<or> degree B' < degree D1" using degB' by simp
       from dupe(5)[OF cop eq this normDH1(1) normA' normB' prime] have "A' = A" "B' = B" by auto
       hence "D'' = D'" "H'' = H'" unfolding D'' H'' D' H' by auto
@@ -962,45 +955,50 @@ lemma M_M_pow_is_M: "n \<noteq> 0 \<Longrightarrow> p > 1 \<Longrightarrow> poly
   = poly_mod.M p f" using Mp_Mp_pow_is_Mp[of n p "[:f:]"]
   by (metis coeff_pCons_0 poly_mod.Mp_coeff)
 
-lemma irreducible\<^sub>d_lifting: assumes p1: "p > 1"
-  and n: "n \<noteq> 0" 
-  and deg: "poly_mod.degree_m (p^n) f = poly_mod.degree_m p f" 
-  and irr: "poly_mod.irreducible\<^sub>d_m p f"
-  shows "poly_mod.irreducible\<^sub>d_m (p^n) f" 
+lemma irreducible\<^sub>d_lifting:
+  assumes p: "prime p"
+    and n: "n \<noteq> 0"
+    and deg: "poly_mod.degree_m (p^n) f = poly_mod.degree_m p f"
+    and irr: "poly_mod.irreducible\<^sub>d_m p f"
+  shows "poly_mod.irreducible\<^sub>d_m (p^n) f"
 proof -
-  interpret poly_mod_2 "p^n" unfolding poly_mod_2_def using p1 n by simp
+  have p1: "p > 1" using prime_gt_1_int[OF p] by auto
+  interpret poly_mod_2 "p^n" unfolding poly_mod_2_def using n p1 by auto
   interpret p: poly_mod_2 p unfolding poly_mod_2_def using p1 by simp
-  note irr = irr[unfolded p.irreducible\<^sub>d_m_def]
-  show "irreducible\<^sub>d_m f" unfolding irreducible\<^sub>d_m_def dvdm_def
-  proof (intro conjI allI impI notI)
-    from deg irr show "degree_m f = 0 \<Longrightarrow> False" by simp
+  show "irreducible\<^sub>d_m f"
+  proof (rule irreducible\<^sub>d_mI)
+    from deg irr show "degree_m f \<noteq> 0" by (auto elim: p.irreducible\<^sub>d_mE)
+    then have pdeg_f: "p.degree_m f \<noteq> 0" by (simp add: deg)
     note pMp_Mp = Mp_Mp_pow_is_Mp[OF n p1]
-    fix h g
-    assume deg_g: "degree_m g < degree_m f" "degree_m h < degree_m f" and
-      eq: "equivalent f (g * h)" 
-    have le: "\<And> g. p.degree_m g \<le> degree_m g" 
-      by (metis pMp_Mp poly_mod.degree_m_def poly_mod.degree_m_le)
-    from deg_g le[of g] le[of h] deg 
-    have lt: "p.degree_m g < p.degree_m f" "p.degree_m h < p.degree_m f" by auto
-    from eq have eq: "Mp f = Mp (g * h)" unfolding equivalent_def by auto
-    from arg_cong[OF eq, of p.Mp]
-    have p_eq: "p.equivalent f (g * h)" 
-      by (auto simp: pMp_Mp p.equivalent_def ac_simps)
-    with irr[unfolded p.dvdm_def] lt show False by auto 
+    fix g h
+    assume [simp]: "Mp g = g" and deg_g: "degree g \<noteq> 0" "degree g < degree_m f"
+       and [simp]: "Mp h = h" and deg_h: "degree h \<noteq> 0" "degree h < degree_m f"
+       and eq: "eq_m f (g * h)"
+    from eq have p_f: "p.eq_m f (g * h)" using pMp_Mp by metis
+    have "\<not>p.eq_m g 0" and "\<not>p.eq_m h 0"
+      apply (metis degree_0 mult_zero_left p.Mp_0 p_f pdeg_f poly_mod.mult_Mp(1))
+      by (metis degree_0 mult_eq_0_iff p.Mp_0 p.mult_Mp(2) p_f pdeg_f)
+    note [simp] = p.degree_m_mult_eq[OF p this]
+    from p.degree_m_le[of g] deg_g
+    have 2: "p.degree_m g < p.degree_m f" by (fold deg, auto)
+    from p.degree_m_le[of h] deg_h
+    have 3: "p.degree_m h < p.degree_m f" by (fold deg, auto)
+    from p.irreducible\<^sub>d_mD(2)[OF irr 2 3] p_f
+    show False by auto
   qed
-qed  
+qed
 
 definition inverse_mod :: "int \<Rightarrow> int \<Rightarrow> int" where
   "inverse_mod x m = fst (bezout_coefficients x m)" 
 
 lemma inverse_mod:
-  assumes "coprime x m" "m > 1"
+  assumes "gcd x m = 1" "m > 1"
   shows "(inverse_mod x m * x) mod m = 1" 
 proof -
   from bezout_coefficients [of x m "inverse_mod x m" "snd (bezout_coefficients x m)"]
   have "inverse_mod x m * x + snd (bezout_coefficients x m) * m = gcd x m"
     by (simp add: inverse_mod_def)
-  also note \<open>coprime x m\<close>
+  also note assms(1)
   finally have "inverse_mod x m * x + snd (bezout_coefficients x m) * m = 1" .
   then have "(inverse_mod x m * x + snd (bezout_coefficients x m) * m) mod m = 1 mod m"
     by simp
@@ -1008,17 +1006,17 @@ proof -
     by simp
 qed
 
-lemma inverse_mod_pow: assumes "coprime x p" "p > 1" "n \<noteq> 0" 
+lemma inverse_mod_pow: assumes "gcd x p = 1" "p > 1" "n \<noteq> 0" 
   shows "(inverse_mod x (p^n) * x) mod (p^n) = 1" 
   by (rule inverse_mod[OF coprime_exp[OF assms(1)]], insert assms, simp) 
 
 lemma (in poly_mod) inverse_mod_coprime: assumes p: "prime m" 
-  and cop: "coprime x m" shows "M (inverse_mod x m * x) = 1" 
+  and cop: "gcd x m = 1" shows "M (inverse_mod x m * x) = 1" 
   unfolding M_def using inverse_mod_pow[OF cop, of 1] p
   by (auto simp: prime_int_iff)
 
 lemma (in poly_mod) inverse_mod_coprime_exp: assumes m: "m = p^n" and p: "prime p" 
-  and n: "n \<noteq> 0" and cop: "coprime x p" shows "M (inverse_mod x m * x) = 1" 
+  and n: "n \<noteq> 0" and cop: "gcd x p = 1" shows "M (inverse_mod x m * x) = 1" 
   unfolding M_def unfolding m using inverse_mod_pow[OF cop _ n] p
   by (auto simp: prime_int_iff)
 
@@ -1030,81 +1028,64 @@ sublocale poly_mod_2 p using prime unfolding poly_mod_2_def
   using prime_gt_1_int by force
 
 lemma square_free_m_prod_imp_coprime_m: assumes sf: "square_free_m (A * B)" 
-  shows "coprime_m A B" 
+  shows "coprime_m A B"
   unfolding coprime_m_def
-proof
+proof (intro allI impI)
   fix h
+  assume dvd: "h dvdm A" "h dvdm B"
+  then obtain ha hb where *: "Mp A = Mp (h * ha)" "Mp B = Mp (h * hb)" 
+    unfolding dvdm_def by auto
+  have AB: "Mp (A * B) = Mp (Mp A * Mp B)" by simp
+  from this[unfolded *, simplified] 
+  have eq: "Mp (A * B) = Mp (h * h * (ha * hb))" by (simp add: ac_simps)
+  hence dvd_hh: "(h * h) dvdm (A * B)" unfolding dvdm_def by auto
   {
-    assume "dvdm h 1"
-    then obtain k where 1: "Mp (h * k) = 1" unfolding dvdm_def equivalent_def by auto
-    hence "dvdm h A \<and> dvdm h B" unfolding dvdm_def equivalent_def 
-    proof (intro conjI exI) 
-      have "Mp A = Mp (Mp (h * k) * A)" unfolding 1 by simp
-      also have "\<dots> = Mp (h * (k * A))" by (simp add: ac_simps)
-      finally show "Mp A = Mp (h * (k * A))" .
-      have "Mp B = Mp (Mp (h * k) * B)" unfolding 1 by simp
-      also have "\<dots> = Mp (h * (k * B))" by (simp add: ac_simps)
-      finally show "Mp B = Mp (h * (k * B))" .
-    qed
+    assume "degree_m h \<noteq> 0" 
+    from sf[unfolded square_free_m_def, THEN conjunct2, rule_format, OF this]
+    have "\<not> h * h dvdm A * B" . 
+    with dvd_hh have False by simp
   }
-  moreover
+  hence "degree (Mp h) = 0" by auto
+  then obtain c where hc: "Mp h = [: c :]" by (rule degree_eq_zeroE)
   {
-    assume dvd: "dvdm h A" "dvdm h B" 
-    then obtain ha hb where *: "Mp A = Mp (h * ha)" "Mp B = Mp (h * hb)" 
-      unfolding dvdm_def equivalent_def by auto
-    have AB: "Mp (A * B) = Mp (Mp A * Mp B)" by simp
-    from this[unfolded *, simplified] 
-    have eq: "Mp (A * B) = Mp (h * h * (ha * hb))" by (simp add: ac_simps)
-    hence dvd_hh: "dvdm (h * h) (A * B)" unfolding dvdm_def equivalent_def by auto
-    {
-      assume "degree_m h \<noteq> 0" 
-      from sf[unfolded square_free_m_def, THEN conjunct2, rule_format, OF this]
-      have "\<not> dvdm (h * h) (A * B)" . 
-      with dvd_hh have False by simp
-    }
-    hence "degree (Mp h) = 0" unfolding degree_m_def by auto
-    then obtain c where hc: "Mp h = [: c :]" by (rule degree_eq_zeroE)
-    {
-      assume "c = 0" 
-      hence "Mp h = 0" unfolding hc by auto
-      with *(1) have "Mp A = 0"
-        by (metis Mp_0 mult_zero_left poly_mod.mult_Mp(1))
-      with sf[unfolded square_free_m_def, THEN conjunct1] have False unfolding equivalent_def
-        by (simp add: AB)
-    }
-    hence c0: "c \<noteq> 0" by auto    
-    with arg_cong[OF hc[symmetric], of "\<lambda> f. coeff f 0", unfolded Mp_coeff M_def] m1
-    have "c \<ge> 0" "c < p" by auto
-    with c0 have c_props:"c > 0" "c < p" by auto
-    with prime have "prime p" using prime_int_nat_transfer by auto
-    hence "coprime p c"
-      by (metis (no_types) c_props gcd_dvd1 gcd_ge_0_int gcd_le2_int not_less prime_int_iff)
-    hence "coprime c p" by (simp add: gcd.commute)
-    from inverse_mod_coprime[OF prime this]
-    obtain d where d: "M (c * d) = 1" by (auto simp: ac_simps)
-    have "dvdm h 1" unfolding dvdm_def equivalent_def 
-    proof (intro exI[of _ "[:d:]"])
-      have "Mp (h * [: d :]) = Mp (Mp h * [: d :])" by simp
-      also have "\<dots> = Mp ([: c * d :])" unfolding hc by (auto simp: ac_simps)
-      also have "\<dots> = [: M (c * d) :]" unfolding Mp_def
-        by (metis (no_types) M_0 map_poly_pCons Mp_0 Mp_def d zero_neq_one)
-      also have "\<dots> = 1" unfolding d by simp
-      finally show "Mp 1 = Mp (h * [:d:])" by simp
-    qed
+    assume "c = 0" 
+    hence "Mp h = 0" unfolding hc by auto
+    with *(1) have "Mp A = 0"
+      by (metis Mp_0 mult_zero_left poly_mod.mult_Mp(1))
+    with sf[unfolded square_free_m_def, THEN conjunct1] have False
+      by (simp add: AB)
   }
-  ultimately show "(dvdm h A \<and> dvdm h B) = dvdm h 1" by auto
+  hence c0: "c \<noteq> 0" by auto    
+  with arg_cong[OF hc[symmetric], of "\<lambda> f. coeff f 0", unfolded Mp_coeff M_def] m1
+  have "c \<ge> 0" "c < p" by auto
+  with c0 have c_props:"c > 0" "c < p" by auto
+  with prime have "prime p" using prime_int_nat_transfer by auto
+  hence "gcd p c = 1"
+    by (metis (no_types) c_props gcd_dvd1 gcd_ge_0_int gcd_le2_int not_less prime_int_iff)
+  hence "gcd c p = 1" by (simp add: gcd.commute)
+  from inverse_mod_coprime[OF prime this]
+  obtain d where d: "M (c * d) = 1" by (auto simp: ac_simps)
+  show "h dvdm 1" unfolding dvdm_def
+  proof (intro exI[of _ "[:d:]"])
+    have "Mp (h * [: d :]) = Mp (Mp h * [: d :])" by simp
+    also have "\<dots> = Mp ([: c * d :])" unfolding hc by (auto simp: ac_simps)
+    also have "\<dots> = [: M (c * d) :]" unfolding Mp_def
+      by (metis (no_types) M_0 map_poly_pCons Mp_0 Mp_def d zero_neq_one)
+    also have "\<dots> = 1" unfolding d by simp
+    finally show "Mp 1 = Mp (h * [:d:])" by simp
+  qed
 qed
 
 lemma unique_hensel_binary: 
   assumes prime: "prime p"
-  and cop: "coprime_m D H" and eq: "equivalent C (D * H)"
+  and cop: "coprime_m D H" and eq: "eq_m (D * H) C"
   and normalized_input: "Mp D = D" "Mp H = H"
   and monic_input: "monic D" 
   and n: "n \<noteq> 0" 
 shows "\<exists>! (D',H'). (* D', H' are computed via linear_hensel_binary *)
-      poly_mod.equivalent (p^n) C (D' * H') (* the main result: equivalence mod p^n *)
+      poly_mod.eq_m (p^n) (D' * H') C (* the main result: equivalence mod p^n *)
     \<and> monic D' (* monic output *)
-    \<and> equivalent D D' \<and> equivalent H H' (* apply `mod p` on D' and H' yields D and H again *)
+    \<and> eq_m D D' \<and> eq_m H H' (* apply `mod p` on D' and H' yields D and H again *)
     \<and> poly_mod.Mp (p^n) D' = D' \<and> poly_mod.Mp (p^n) H' = H'" (* output is normalized *)
 proof -
   obtain D' H' where hensel_result: "linear_hensel_binary p n C D H = (D',H')" by force
@@ -1115,7 +1096,7 @@ proof -
   have id: "D1 = D'" "H1 = H'" by auto
   from linear_hensel_main [OF euclid_ext_poly_mod [OF cop normalized_input prime ext]
     eq monic_input normalized_input main [unfolded id] n prime cop]
-  show ?thesis by auto
+  show ?thesis by (intro ex1I, auto)
 qed
 end
 
@@ -1126,13 +1107,13 @@ context
 begin
 
 lemma hensel_step_main: assumes 
-      one_q: "poly_mod.equivalent q (D * S + H * T) 1"
-  and one_p: "poly_mod.equivalent p (D1 * S1 + H1 * T1) 1"    
-  and CDHq: "poly_mod.equivalent q C (D * H)"
-  and D1: "poly_mod.Mp p D1 = poly_mod.Mp p D" 
-  and H1: "poly_mod.Mp p H1 = poly_mod.Mp p H" 
-  and S1: "poly_mod.Mp p S1 = poly_mod.Mp p S" 
-  and T1: "poly_mod.Mp p T1 = poly_mod.Mp p T" 
+      one_q: "poly_mod.eq_m q (D * S + H * T) 1"
+  and one_p: "poly_mod.eq_m p (D1 * S1 + H1 * T1) 1"
+  and CDHq: "poly_mod.eq_m q C (D * H)"
+  and D1: "poly_mod.eq_m p D1 D" 
+  and H1: "poly_mod.eq_m p H1 H" 
+  and S1: "poly_mod.eq_m p S1 S" 
+  and T1: "poly_mod.eq_m p T1 T" 
   and mon: "monic D" 
   and mon1: "monic D1" 
   and q: "q > 1" 
@@ -1149,10 +1130,10 @@ lemma hensel_step_main: assumes
   and pq: "p dvd q"  
   and S': "S' = poly_mod.Mp r (S - smult p A')"
   and T': "T' = poly_mod.Mp r (T - smult p B')" 
-shows "poly_mod.equivalent r C (D' * H')" 
+shows "poly_mod.eq_m r C (D' * H')" 
   "poly_mod.Mp r D' = D'" 
   "poly_mod.Mp r H' = H'" 
-  "poly_mod.equivalent r (D' * S' + H' * T') 1" 
+  "poly_mod.eq_m r (D' * S' + H' * T') 1" 
   "monic D'" 
   unfolding rq
 proof -
@@ -1166,14 +1147,14 @@ proof -
   interpret r: poly_mod_2 ?r using r unfolding poly_mod_2_def .  
   have Mp_conv: "Mp (q.Mp x) = Mp x" for x unfolding qp
     by (rule Mp_product_modulus[OF refl k0])
-  from arg_cong[OF CDHq[unfolded q.equivalent_def], of Mp, unfolded Mp_conv] have "Mp C = Mp (Mp D * Mp H)"
+  from arg_cong[OF CDHq, of Mp, unfolded Mp_conv] have "Mp C = Mp (Mp D * Mp H)"
     by simp
   also have "Mp D = Mp D1" using D1 by simp
   also have "Mp H = Mp H1" using H1 by simp
-  finally have CDHp: "equivalent C (D1 * H1)" unfolding equivalent_def by simp
+  finally have CDHp: "eq_m C (D1 * H1)" by simp
   note dupe1 = dupe_monic[OF one_p mon1 dupe1] 
   note dupe2 = q.dupe_monic[OF one_q mon dupe2]
-  from CDHq[unfolded q.equivalent_def] have "q.Mp C - q.Mp (D * H) = 0" by simp
+  from CDHq have "q.Mp C - q.Mp (D * H) = 0" by simp
   hence "q.Mp (q.Mp C - q.Mp (D * H)) = 0" by simp
   hence "q.Mp (C - D*H) = 0" by simp
   from q.Mp_0_smult_sdiv_poly[OF this] have CDHq: "smult q (sdiv_poly (C - D * H) q) = C - D * H" .
@@ -1195,15 +1176,15 @@ proof -
   also have "r.Mp (smult (q * q) (A * B)) = 0" unfolding qq
     by (metis r.Mp_smult_m_0 smult_smult)
   also have "r.Mp (smult q (A * D + B * H)) = r.Mp (smult q U1)" 
-  proof (rule Mp_lift_modulus[of _ _ q, unfolded poly_mod.equivalent_def])
-    show "Mp (A * D + B * H) = Mp U1" using dupe1(1) unfolding equivalent_def D1H1 by simp
+  proof (rule Mp_lift_modulus[of _ _ q])
+    show "Mp (A * D + B * H) = Mp U1" using dupe1(1) unfolding D1H1 by simp
   qed
   also have "\<dots> = r.Mp (C - D * H)" 
     unfolding arg_cong[OF CDHq, of r.Mp, symmetric]
-    using Mp_lift_modulus[of U1 "sdiv_poly (C - D * H) q" q] unfolding poly_mod.equivalent_def U1 
+    using Mp_lift_modulus[of U1 "sdiv_poly (C - D * H) q" q] unfolding U1 
     by simp
   also have "r.Mp (D * H + r.Mp (C - D * H) + 0) = r.Mp C" by simp
-  finally show CDH: "r.equivalent C (D' * H')" unfolding r.equivalent_def by simp
+  finally show CDH: "r.eq_m C (D' * H')" by simp
   have "degree D1 = degree (Mp D1)" using mon1 by (simp add: monic_degree_Mp)
   also have "\<dots> = degree D" unfolding D1 using mon by (simp add: monic_degree_Mp)
   finally have deg_eq: "degree D1 = degree D" by simp
@@ -1211,7 +1192,7 @@ proof -
   have "Mp (S * D' + T * H' - 1) = Mp (Mp (D * S + H * T) + (smult q (S * B + T * A) - 1))" 
     unfolding D' H' plus_Mp by (simp add: field_simps smult_distribs)
   also have "Mp (D * S + H * T) = Mp (Mp (D1 * Mp S) + Mp (H1 * Mp T))" using  D1H1[of S T] by (simp add: ac_simps)
-  also have "\<dots> = 1" using one_p[unfolded equivalent_def] unfolding S1[symmetric] T1[symmetric] by simp
+  also have "\<dots> = 1" using one_p unfolding S1[symmetric] T1[symmetric] by simp
   also have "Mp (1 + (smult q (S * B + T * A) - 1)) = Mp (smult q (S * B + T * A))" by simp
   also have "\<dots> = 0" unfolding qp by (metis Mp_smult_m_0 smult_smult)
   finally have "Mp (S * D' + T * H' - 1) = 0" .
@@ -1229,18 +1210,17 @@ proof -
     using r.plus_Mp r.minus_Mp by metis
   also have "r.Mp (smult ?r (A * B' + B * A')) = 0" by simp
   also have "r.Mp (smult p (A' * D + B' * H)) = r.Mp (smult p U2)" 
-    using q.Mp_lift_modulus[OF dupe2(1), of p] unfolding swap r.equivalent_def .
+    using q.Mp_lift_modulus[OF dupe2(1), of p] unfolding swap .
   also have "\<dots> = r.Mp (S * D' + T * H' - 1)" 
     unfolding arg_cong[OF SDTH, of r.Mp, symmetric] 
     using q.Mp_lift_modulus[of U2 "sdiv_poly (S * D' + T * H' - 1) p" p] 
-    unfolding poly_mod.equivalent_def U2 swap by simp
+    unfolding U2 swap by simp
   also have "S * D' + T * H' - 1 = S * D + T * H + smult q (B * S + A * T) - 1" 
     unfolding D' H' by (simp add: field_simps smult_distribs)
   also have "r.Mp (D * S + H * T + smult q (B * S + A * T) -
      r.Mp (S * D + T * H + smult q (B * S + A * T) - 1) - 0) 
        = 1" by simp
-  finally show 1: "r.equivalent (D' * S' + H' * T') 1" 
-    unfolding r.equivalent_def by simp
+  finally show 1: "r.eq_m (D' * S' + H' * T') 1" by simp
   show D': "r.Mp D' = D'" unfolding D' r.Mp_ident_iff poly_mod.Mp_coeff plus_poly.rep_eq
     coeff_smult 
   proof 
@@ -1281,15 +1261,15 @@ definition simple_hensel_step where (* do not compute new values S' and T' *)
      in (D',H'))" 
 
 lemma hensel_step: assumes step: "hensel_step p q S1 T1 D1 H1 S T D H = (S', T', D', H')"
-  and one_p: "poly_mod.equivalent p (D1 * S1 + H1 * T1) 1"
+  and one_p: "poly_mod.eq_m p (D1 * S1 + H1 * T1) 1"
   and mon1: "monic D1" 
   and p: "p > 1" 
-  and CDHq: "poly_mod.equivalent q C (D * H)"
-  and one_q: "poly_mod.equivalent q (D * S + H * T) 1"
-  and D1: "poly_mod.Mp p D1 = poly_mod.Mp p D" 
-  and H1: "poly_mod.Mp p H1 = poly_mod.Mp p H" 
-  and S1: "poly_mod.Mp p S1 = poly_mod.Mp p S" 
-  and T1: "poly_mod.Mp p T1 = poly_mod.Mp p T" 
+  and CDHq: "poly_mod.eq_m q C (D * H)"
+  and one_q: "poly_mod.eq_m q (D * S + H * T) 1"
+  and D1: "poly_mod.eq_m p D1 D"
+  and H1: "poly_mod.eq_m p H1 H"
+  and S1: "poly_mod.eq_m p S1 S"
+  and T1: "poly_mod.eq_m p T1 T"
   and mon: "monic D" 
   and q: "q > 1" 
   and D: "poly_mod.Mp q D = D" 
@@ -1297,8 +1277,8 @@ lemma hensel_step: assumes step: "hensel_step p q S1 T1 D1 H1 S T D H = (S', T',
   and rq: "r = p * q" 
   and pq: "p dvd q"  
 shows 
-  "poly_mod.equivalent r C (D' * H')" 
-  "poly_mod.equivalent r (D' * S' + H' * T') 1"
+  "poly_mod.eq_m r C (D' * H')" 
+  "poly_mod.eq_m r (D' * S' + H' * T') 1"
   "poly_mod.Mp r D' = D'" 
   "poly_mod.Mp r H' = H'" 
   "poly_mod.Mp p D1 = poly_mod.Mp p D'" 
@@ -1319,8 +1299,8 @@ proof -
   have S': "S' = poly_mod.Mp r (S - Polynomial.smult p A')" and
     T': "T' = poly_mod.Mp r (T - Polynomial.smult p B')" by auto
   from hensel_step_main[OF one_q one_p CDHq D1 H1 S1 T1 mon mon1 q p D H U dupe1 D' H' U' dupe2 rq pq S' T']
-  show "poly_mod.equivalent r (D' * S' + H' * T') 1"
-    "poly_mod.equivalent r C (D' * H')" 
+  show "poly_mod.eq_m r (D' * S' + H' * T') 1"
+    "poly_mod.eq_m r C (D' * H')" 
     "poly_mod.Mp r D' = D'" 
     "poly_mod.Mp r H' = H'" 
     "monic D'" by auto
@@ -1380,8 +1360,8 @@ lemma quadratic_hensel_main_code[code]: "quadratic_hensel_main j = (
 
 context
   fixes j :: nat 
-  assumes 1: "poly_mod.equivalent p (D1 * S1 + H1 * T1) 1"
-  and CDH1: "poly_mod.equivalent p C (D1 * H1)" 
+  assumes 1: "poly_mod.eq_m p (D1 * S1 + H1 * T1) 1"
+  and CDH1: "poly_mod.eq_m p C (D1 * H1)" 
   and mon1: "monic D1" 
   and p: "p > 1" 
   and D1: "poly_mod.Mp p D1 = D1" 
@@ -1391,10 +1371,10 @@ begin
 
 lemma quadratic_hensel_loop:
   assumes "quadratic_hensel_loop j = (q, S, T, D, H)"
-  shows "(poly_mod.equivalent q C (D * H) \<and> monic D
-    \<and> poly_mod.equivalent p D1 D \<and> poly_mod.equivalent p H1 H
-    \<and> poly_mod.equivalent p S1 S \<and> poly_mod.equivalent p T1 T
-    \<and> poly_mod.equivalent q (D * S + H * T) 1
+  shows "(poly_mod.eq_m q C (D * H) \<and> monic D
+    \<and> poly_mod.eq_m p D1 D \<and> poly_mod.eq_m p H1 H
+    \<and> poly_mod.eq_m p S1 S \<and> poly_mod.eq_m p T1 T
+    \<and> poly_mod.eq_m q (D * S + H * T) 1
     \<and> poly_mod.Mp q D = D \<and> poly_mod.Mp q H = H
     \<and> q = p^j)" 
   using j assms
@@ -1407,7 +1387,7 @@ proof (induct j arbitrary: q S T D H rule: less_induct)
   show ?case
   proof (cases "j = 1")
     case True
-    show ?thesis using res simp unfolding True using CDH1 1 mon1 D1 H1 by auto (auto simp: poly_mod.equivalent_def)
+    show ?thesis using res simp unfolding True using CDH1 1 mon1 D1 H1 by auto
   next
     case False
     with less(2) have False: "(j \<le> 1) = False" by auto
@@ -1428,13 +1408,13 @@ proof (induct j arbitrary: q S T D H rule: less_induct)
       obtain q S T D H where rec: "?hens ?j2 = (q, S, T, D, H)" by (cases "?hens ?j2", auto)
       note IH = less(1)[OF lt rec]
       from IH
-      have *: "poly_mod.equivalent q C (D * H)" 
-        "poly_mod.equivalent q (D * S + H * T) 1"
+      have *: "poly_mod.eq_m q C (D * H)" 
+        "poly_mod.eq_m q (D * S + H * T) 1"
         "monic D" 
-        "equivalent D1 D" 
-        "equivalent H1 H"
-        "equivalent S1 S" 
-        "equivalent T1 T"
+        "eq_m D1 D" 
+        "eq_m H1 H"
+        "eq_m S1 S" 
+        "eq_m T1 T"
         "poly_mod.Mp q D = D"
         "poly_mod.Mp q H = H"
         "q = p ^ ?j2"
@@ -1453,16 +1433,16 @@ proof (induct j arbitrary: q S T D H rule: less_induct)
         from arg_cong[OF this, of Mp] Mp_Mp_pow_is_Mp[of ?j2, OF _ p, folded *(10)] lt
         have "Mp D = Mp D2" by simp
       } note shrink = this
-      have **: "poly_mod.equivalent ?qq C (D2 * H2)" 
-        "poly_mod.equivalent ?qq (D2 * S2 + H2 * T2) 1" 
+      have **: "poly_mod.eq_m ?qq C (D2 * H2)" 
+        "poly_mod.eq_m ?qq (D2 * S2 + H2 * T2) 1" 
         "monic D2" 
-        "equivalent D1 D2"
-        "equivalent H1 H2" 
-        "equivalent S1 S2"
-        "equivalent T1 T2" 
+        "eq_m D1 D2"
+        "eq_m H1 H2" 
+        "eq_m S1 S2"
+        "eq_m T1 T2" 
         "poly_mod.Mp ?qq D2 = D2" 
         "poly_mod.Mp ?qq H2 = H2" 
-        using step shrink[of S S2] shrink[of T T2] shrink[of H H2] shrink[of D D2] *(4-7) by auto (auto simp: equivalent_def)
+        using step shrink[of S S2] shrink[of T T2] shrink[of H H2] shrink[of D D2] *(4-7) by auto
       note simp = simp False if_False rec split Let_def step_res option.simps
       from True have j: "p ^ j = p ^ (2 * ?j2)" by auto
       with *(10) have qq: "q * q = p ^ j"
@@ -1477,13 +1457,13 @@ proof (induct j arbitrary: q S T D H rule: less_induct)
       obtain q S T D H where rec: "?hens ?j2 = (q, S, T, D, H)" by (cases "?hens ?j2", auto)
       note IH = less(1)[OF lt rec]
       note simp = simp False if_False rec sum.simps split Let_def False' option.simps
-      from IH have *: "poly_mod.equivalent q C (D * H)" 
-          "poly_mod.equivalent q (D * S + H * T) 1"
+      from IH have *: "poly_mod.eq_m q C (D * H)" 
+          "poly_mod.eq_m q (D * S + H * T) 1"
           "monic D" 
-          "equivalent D1 D" 
-          "equivalent H1 H"
-          "equivalent S1 S" 
-          "equivalent T1 T"
+          "eq_m D1 D" 
+          "eq_m H1 H"
+          "eq_m S1 S" 
+          "eq_m T1 T"
           "poly_mod.Mp q D = D"
           "poly_mod.Mp q H = H"
           "q = p ^ ?j2"
@@ -1503,16 +1483,16 @@ proof (induct j arbitrary: q S T D H rule: less_induct)
         from arg_cong[OF this, of Mp] Mp_Mp_pow_is_Mp[of ?j2, OF _ p, folded *(10)] lt
         have "Mp D = Mp D2" by simp
       } note shrink = this
-      have **: "poly_mod.equivalent ?qq C (D2 * H2)" 
-        "poly_mod.equivalent ?qq (D2 * S2 + H2 * T2) 1" 
+      have **: "poly_mod.eq_m ?qq C (D2 * H2)" 
+        "poly_mod.eq_m ?qq (D2 * S2 + H2 * T2) 1" 
         "monic D2" 
-        "equivalent D1 D2"
-        "equivalent H1 H2" 
-        "equivalent S1 S2"
-        "equivalent T1 T2" 
+        "eq_m D1 D2"
+        "eq_m H1 H2" 
+        "eq_m S1 S2"
+        "eq_m T1 T2" 
         "poly_mod.Mp ?qq D2 = D2" 
         "poly_mod.Mp ?qq H2 = H2" 
-        using step shrink[of S S2] shrink[of T T2] shrink[of H H2] shrink[of D D2] *(4-7) by auto (auto simp: equivalent_def)
+        using step shrink[of S S2] shrink[of T T2] shrink[of H H2] shrink[of D D2] *(4-7) by auto
       note simp = simp False if_False rec split Let_def step_res option.simps
       from odd have j: "Suc j = 2 * ?j2" by auto
       from arg_cong[OF this, of "\<lambda> j. p ^ j div p"]
@@ -1533,26 +1513,25 @@ proof (induct j arbitrary: q S T D H rule: less_induct)
       have mon: "monic D'" using pj.monic_Mp[OF step(9)] unfolding id .
       have id': "Mp (pj.Mp D) = Mp D" for D using \<open>1 \<le> j\<close>
         by (simp add: Mp_Mp_pow_is_Mp p)
-      have eq: "equivalent D1 D2 \<Longrightarrow> equivalent D1 (pj.Mp D2)" for D1 D2 
-        unfolding equivalent_def id' by auto
+      have eq: "eq_m D1 D2 \<Longrightarrow> eq_m D1 (pj.Mp D2)" for D1 D2 
+        unfolding id' by auto
       have id'': "pj.Mp (poly_mod.Mp (q * q) D) = pj.Mp D" for D
         unfolding qq by (rule pj.Mp_product_modulus[OF refl], insert p, auto)
       {
         fix D1 D2
-        assume "poly_mod.equivalent (q * q) D1 D2" 
-        hence "poly_mod.Mp (q * q) D1 = poly_mod.Mp (q * q) D2" 
-          unfolding poly_mod.equivalent_def by simp               
+        assume "poly_mod.eq_m (q * q) D1 D2" 
+        hence "poly_mod.Mp (q * q) D1 = poly_mod.Mp (q * q) D2" by simp
         from arg_cong[OF this, of pj.Mp] 
         have "pj.Mp D1 = pj.Mp D2" unfolding id'' .
       } note eq' = this
-      from eq'[OF step(1)] have eq1: "pj.equivalent C (D' * H')" unfolding id pj.equivalent_def by simp
-      from eq'[OF step(2)] have eq2: "pj.equivalent (D' * S' + H' * T') 1" 
-        unfolding id pj.equivalent_def by (metis pj.mult_Mp pj.plus_Mp)
+      from eq'[OF step(1)] have eq1: "pj.eq_m C (D' * H')" unfolding id by simp
+      from eq'[OF step(2)] have eq2: "pj.eq_m (D' * S' + H' * T') 1" 
+        unfolding id by (metis pj.mult_Mp pj.plus_Mp)
       from **(4-7) have eq3: 
-        "equivalent D1 D'"  
-        "equivalent H1 H'" 
-        "equivalent S1 S'"
-        "equivalent T1 T'" 
+        "eq_m D1 D'"  
+        "eq_m H1 H'" 
+        "eq_m S1 S'"
+        "eq_m T1 T'" 
         unfolding id by (auto intro: eq)
       from norm mon eq1 eq2 eq3
       show ?thesis unfolding id by simp
@@ -1561,10 +1540,10 @@ proof (induct j arbitrary: q S T D H rule: less_induct)
 qed
 
 lemma quadratic_hensel_main: assumes res: "quadratic_hensel_main j = (D,H)" 
-  shows "poly_mod.equivalent (p^j) C (D * H)"
+  shows "poly_mod.eq_m (p^j) C (D * H)"
   "monic D" 
-  "poly_mod.equivalent p D1 D" 
-  "poly_mod.equivalent p H1 H" 
+  "poly_mod.eq_m p D1 D" 
+  "poly_mod.eq_m p H1 H" 
   "poly_mod.Mp (p^j) D = D" 
   "poly_mod.Mp (p^j) H = H" 
 proof (atomize(full), goal_cases)
@@ -1799,13 +1778,13 @@ abbreviation "hensel_binary \<equiv> quadratic_hensel_binary p n"
 abbreviation "hensel_main \<equiv> hensel_lifting_main p n" 
 
 lemma hensel_binary: 
-  assumes cop: "coprime_m D H" and eq: "equivalent C (D * H)"
+  assumes cop: "coprime_m D H" and eq: "eq_m C (D * H)"
   and normalized_input: "Mp D = D" "Mp H = H"
   and monic_input: "monic D" 
   and hensel_result: "hensel_binary C D H = (D',H')" 
-  shows "poly_mod.equivalent (p^n) C (D' * H') (* the main result: equivalence mod p^n *)
+  shows "poly_mod.eq_m (p^n) C (D' * H') (* the main result: equivalence mod p^n *)
     \<and> monic D' (* monic output *)
-    \<and> equivalent D D' \<and> equivalent H H' (* apply `mod p` on D' and H' yields D and H again *)
+    \<and> eq_m D D' \<and> eq_m H H' (* apply `mod p` on D' and H' yields D and H again *)
     \<and> poly_mod.Mp (p^n) D' = D' \<and> poly_mod.Mp (p^n) H' = H'" (* output is normalized *)
 proof -
   from m1 have p: "p > 1" .
@@ -1818,19 +1797,19 @@ proof -
 qed
 
 lemma hensel_main: 
-  assumes eq: "equivalent C (prod_mset (factors_of_factor_tree Fs))"
+  assumes eq: "eq_m C (prod_mset (factors_of_factor_tree Fs))"
   and "\<And> F. F \<in># factors_of_factor_tree Fs \<Longrightarrow> Mp F = F \<and> monic F"  
   and hensel_result: "hensel_main C Fs = Gs" 
   and C: "monic C" "poly_mod.Mp (p^n) C = C" 
   and sf: "square_free_m C" 
   and "\<And> f t. t \<in> sub_trees Fs \<Longrightarrow> factor_node_info t = f \<Longrightarrow> f = Mp (prod_mset (factors_of_factor_tree t))"
-  shows "poly_mod.equivalent (p^n) C (prod_list Gs) (* the main result: equivalence mod p^n *)
+  shows "poly_mod.eq_m (p^n) C (prod_list Gs) (* the main result: equivalence mod p^n *)
     \<and> factors_of_factor_tree Fs = mset (map Mp Gs)
     \<and> (\<forall> G. G \<in> set Gs \<longrightarrow> monic G \<and> poly_mod.Mp (p^n) G = G)"
   using assms
 proof (induct Fs arbitrary: C Gs)
   case (Factor_Leaf f fs C Gs)
-  thus ?case by (auto simp: poly_mod.equivalent_def)
+  thus ?case by auto
 next
   case (Factor_Node f l r C Gs) note * = this
   note simps = hensel_lifting_main.simps
@@ -1856,60 +1835,60 @@ next
   obtain BH where BH': "BH = hensel_main B r" by auto
   from inv[of l, OF _ refl] have D': "?D' = ?D" unfolding D_def by auto
   from inv[of r, OF _ refl] have H': "?H' = ?H" unfolding H_def by auto
-  from eq[unfolded equivalent_def, simplified]
+  from eq[simplified]
   have eq': "Mp C = Mp (?D * ?H)" unfolding D_def H_def by simp
   from square_free_m_cong[OF sf, of "?D * ?H", OF eq'] 
   have sf': "square_free_m (?D * ?H)" .
   from poly_mod_prime.square_free_m_prod_imp_coprime_m[OF _ this]
   have cop': "coprime_m ?D ?H" unfolding poly_mod_prime_def using prime .
-  from eq' have eq': "equivalent C (?D * ?H)" by (simp add: equivalent_def)
+  from eq' have eq': "eq_m C (?D * ?H)" by simp
   have monD: "monic D" unfolding D_def by (rule monic_prod_mset, insert Fs, auto)
   from hensel_binary[OF _ _ _ _ _ hen, unfolded D' H', OF cop' eq' Mp_Mp Mp_Mp monic_Mp[OF monD]] 
-  have step: "poly_mod.equivalent (p ^ n) C (A * B) \<and> monic A \<and> equivalent ?D A \<and>
-     equivalent ?H B \<and> ?Mp A = A \<and> ?Mp B = B" .
+  have step: "poly_mod.eq_m (p ^ n) C (A * B) \<and> monic A \<and> eq_m ?D A \<and>
+     eq_m ?H B \<and> ?Mp A = A \<and> ?Mp B = B" .
   from res have Gs: "Gs = AD @ BH" by (simp add: AD' BH')
-  have AD: "equivalent A ?D" "?Mp A = A" "equivalent A (prod_mset (factors_of_factor_tree l))"  
+  have AD: "eq_m A ?D" "?Mp A = A" "eq_m A (prod_mset (factors_of_factor_tree l))"  
     and monA: "monic A"
-    using step by (auto simp: equivalent_def D_def)
+    using step by (auto simp: D_def)
   note sf_fact = square_free_m_factor[OF sf']
-  from square_free_m_cong[OF sf_fact(1)] AD have sfA: "square_free_m A" unfolding equivalent_def by auto
-  have IH1: "poly_mod.equivalent (p ^ n) A (prod_list AD) \<and>
+  from square_free_m_cong[OF sf_fact(1)] AD have sfA: "square_free_m A" by auto
+  have IH1: "poly_mod.eq_m (p ^ n) A (prod_list AD) \<and>
     factors_of_factor_tree l = mset (map Mp AD) \<and>
     (\<forall>G. G \<in> set AD \<longrightarrow> monic G \<and> ?Mp G = G)"
     by (rule IH1[OF AD(3) Fs AD'[symmetric] monA AD(2) sfA inv], auto)
-  have BH: "equivalent B ?H" "pn.Mp B = B" "equivalent B (prod_mset (factors_of_factor_tree r))"
-      using step by (auto simp: equivalent_def H_def)
-  from step have "pn.equivalent C (A * B)" by simp
-  hence "?Mp C = ?Mp (A * B)" by (simp add: poly_mod.equivalent_def)
+  have BH: "eq_m B ?H" "pn.Mp B = B" "eq_m B (prod_mset (factors_of_factor_tree r))"
+      using step by (auto simp: H_def)
+  from step have "pn.eq_m C (A * B)" by simp
+  hence "?Mp C = ?Mp (A * B)" by simp
   with C AD(2) have "pn.Mp C = pn.Mp (A * pn.Mp B)" by simp
   from arg_cong[OF this, of lead_coeff] C
   have "monic (pn.Mp (A * B))" by (simp add: pn.monic_degree_Mp)
   then have "lead_coeff (pn.Mp A) * lead_coeff (pn.Mp B) = 1"
     by (metis lead_coeff_mult leading_coeff_neq_0 local.step mult_cancel_right2 pn.degree_m_eq pn.degree_m_eq_lead_coeff pn.m1 poly_mod.M_def poly_mod.Mp_coeff)
   with monA AD(2) BH(2) have monB: "monic B" by simp
-  from square_free_m_cong[OF sf_fact(2)] BH have sfB: "square_free_m B" unfolding equivalent_def by auto 
-  have IH2: "poly_mod.equivalent (p ^ n) B (prod_list BH) \<and>
+  from square_free_m_cong[OF sf_fact(2)] BH have sfB: "square_free_m B" by auto
+  have IH2: "poly_mod.eq_m (p ^ n) B (prod_list BH) \<and>
       factors_of_factor_tree r = mset (map Mp BH) \<and>
       (\<forall>G. G \<in> set BH \<longrightarrow> monic G \<and> ?Mp G = G)" 
     by (rule IH2[OF BH(3) Fs BH'[symmetric] monB BH(2) sfB inv], auto)
-  from step have "?Mp C = ?Mp (?Mp A * ?Mp B)" by (auto simp: poly_mod.equivalent_def) 
-  also have "?Mp A = ?Mp (prod_list AD)" using IH1 by (auto simp: poly_mod.equivalent_def)
-  also have "?Mp B = ?Mp (prod_list BH)" using IH2 by (auto simp: poly_mod.equivalent_def)
-  finally have "poly_mod.equivalent (p ^ n) C (prod_list AD * prod_list BH)" 
-    by (auto simp: poly_mod.equivalent_def poly_mod.mult_Mp)
-  thus ?case unfolding Gs using IH1 IH2 by (auto simp: poly_mod.equivalent_def)
+  from step have "?Mp C = ?Mp (?Mp A * ?Mp B)" by auto
+  also have "?Mp A = ?Mp (prod_list AD)" using IH1 by auto
+  also have "?Mp B = ?Mp (prod_list BH)" using IH2 by auto
+  finally have "poly_mod.eq_m (p ^ n) C (prod_list AD * prod_list BH)" 
+    by (auto simp: poly_mod.mult_Mp)
+  thus ?case unfolding Gs using IH1 IH2 by auto
 qed
 end
 
 lemma hensel_lifting_monic: 
-  assumes eq: "poly_mod.equivalent p C (prod_list Fs)"
+  assumes eq: "poly_mod.eq_m p C (prod_list Fs)"
   and Fs: "\<And> F. F \<in> set Fs \<Longrightarrow> poly_mod.Mp p F = F \<and> monic F"  
   and res: "hensel_lifting_monic p n C Fs = Gs" 
   and mon: "monic (poly_mod.Mp (p^n) C)" 
   and prime: "prime p" 
   and sf: "poly_mod.square_free_m p C"
   and n: "n \<noteq> 0" 
-  shows "poly_mod.equivalent (p^n) C (prod_list Gs)"
+  shows "poly_mod.eq_m (p^n) C (prod_list Gs)"
     "mset (map (poly_mod.Mp p) Gs) = mset Fs" 
     "G \<in> set Gs \<Longrightarrow> monic G \<and> poly_mod.Mp (p^n) G = G"
 proof -
@@ -1919,18 +1898,18 @@ proof -
   interpret poly_mod_prime_hensel p n
     by (unfold_locales, insert n prime, auto)
   interpret pn: poly_mod_2 "p^n" using m1 n poly_mod_2.intro by auto
-  from eq n have eq: "equivalent (?Mp C) (prod_list Fs)"
-    using Mp_Mp_pow_is_Mp eq m1 n poly_mod.equivalent_def by force
-  have "poly_mod.equivalent (p^n) C (prod_list Gs) \<and> mset (map (poly_mod.Mp p) Gs) = mset Fs
+  from eq n have eq: "eq_m (?Mp C) (prod_list Fs)"
+    using Mp_Mp_pow_is_Mp eq m1 n by force
+  have "poly_mod.eq_m (p^n) C (prod_list Gs) \<and> mset (map (poly_mod.Mp p) Gs) = mset Fs
     \<and> (G \<in> set Gs \<longrightarrow> monic G \<and> poly_mod.Mp (p^n) G = G)" 
   proof (cases "Fs = []")
     case True
     with res have Gs: "Gs = []" by auto
-    from eq have "Mp ?C = 1" unfolding True by (simp add: poly_mod.equivalent_def)
+    from eq have "Mp ?C = 1" unfolding True by simp
     hence "degree (Mp ?C) = 0" by simp
-    with degree_m_eq_monic[OF mon m1] have "degree ?C = 0" unfolding degree_m_def by simp
+    with degree_m_eq_monic[OF mon m1] have "degree ?C = 0" by simp
     with mon have "?C = 1" using monic_degree_0 by blast
-    thus ?thesis unfolding True Gs poly_mod.equivalent_def by auto
+    thus ?thesis unfolding True Gs by auto
   next
     case False
     let ?t = "create_factor_tree Fs" 
@@ -1940,15 +1919,15 @@ proof -
     from product_factor_tree[OF tree1 sub_trees_refl refl, of ?t]
     have id: "(factors_of_factor_tree (product_factor_tree p ?t)) =
         (factors_of_factor_tree ?t)" by auto
-    have eq: "equivalent ?C (prod_mset (factors_of_factor_tree (product_factor_tree p ?t)))"
+    have eq: "eq_m ?C (prod_mset (factors_of_factor_tree (product_factor_tree p ?t)))"
       unfolding id tree using eq by auto  
     have id': "Mp C = Mp ?C" using n by (simp add: Mp_Mp_pow_is_Mp m1)
-    have "pn.equivalent ?C (prod_list Gs) \<and> mset Fs = mset (map Mp Gs) \<and> (\<forall>G. G \<in> set Gs \<longrightarrow> monic G \<and> pn.Mp G = G)"
+    have "pn.eq_m ?C (prod_list Gs) \<and> mset Fs = mset (map Mp Gs) \<and> (\<forall>G. G \<in> set Gs \<longrightarrow> monic G \<and> pn.Mp G = G)"
       by (rule hensel_main[OF eq Fs hen mon pn.Mp_Mp square_free_m_cong[OF sf id'], unfolded id tree],
       insert product_factor_tree[OF tree1], auto)
-    thus ?thesis by (auto simp: poly_mod.equivalent_def)
+    thus ?thesis by auto
   qed
-  thus "poly_mod.equivalent (p^n) C (prod_list Gs)"
+  thus "poly_mod.eq_m (p^n) C (prod_list Gs)"
     "mset (map (poly_mod.Mp p) Gs) = mset Fs" 
     "G \<in> set Gs \<Longrightarrow> monic G \<and> poly_mod.Mp (p^n) G = G" by blast+
 qed
@@ -1976,7 +1955,7 @@ shows "poly_mod.factorization_m (p^n) f (lead_coeff f, mset gs)" (* factorizatio
 proof -
   interpret poly_mod_2 p using prime unfolding poly_mod_2_def using prime_gt_1_int by fastforce
   interpret q: poly_mod_2 "p^n" using m1 n unfolding poly_mod_2_def by auto
-  from fact have eq: "equivalent f (smult c (prod_list fs))"  
+  from fact have eq: "eq_m f (smult c (prod_list fs))"  
     and mon_fs: "(\<forall>fi\<in>set fs. monic (Mp fi) \<and> irreducible\<^sub>d_m fi)" 
     unfolding factorization_m_def by auto
   {
@@ -1993,7 +1972,7 @@ proof -
   from res[unfolded hensel_lifting_def Let_def] 
   have hen: "hensel_lifting_monic p n F fs = gs" 
     unfolding ilc_def F_def .
-  from inverse_mod_pow[OF cop m1 n, folded ilc_def]
+  from inverse_mod_pow[OF cop[simplified] m1 n, folded ilc_def]
   have inv: "q.M (ilc * ?lc) = 1" unfolding q.M_def .
   hence ilc0: "ilc \<noteq> 0" by (cases "ilc = 0", auto)
   {
@@ -2003,7 +1982,7 @@ proof -
       unfolding q.M_def by auto
     with inv have False by auto
   } note not_dvd = this
-  have mon: "monic (q.Mp F)" unfolding F_def q.Mp_coeff coeff_smult q.degree_m_def [symmetric]
+  have mon: "monic (q.Mp F)" unfolding F_def q.Mp_coeff coeff_smult
     by (subst q.degree_m_eq [OF _ q.m1]) (auto simp: inv ilc0 [symmetric] intro: not_dvd)
   have "q.Mp f = q.Mp (smult (q.M (?lc * ilc)) f)" using inv by (simp add: ac_simps)
   also have "\<dots> = q.Mp (smult ?lc F)" by (simp add: F_def)
@@ -2017,12 +1996,12 @@ proof -
   
   define c' where "c' \<equiv> M (c * ilc)"
   from factorization_m_smult[OF fact, of ilc, folded F_def] 
-  have fact: "factorization_m F (c', mset fs)" unfolding c'_def factorization_m_def equivalent_def by auto
-  hence eq: "equivalent F (smult c' (prod_list fs))" unfolding factorization_m_def by auto
+  have fact: "factorization_m F (c', mset fs)" unfolding c'_def factorization_m_def by auto
+  hence eq: "eq_m F (smult c' (prod_list fs))" unfolding factorization_m_def by auto
   from factorization_m_lead_coeff[OF fact] monic_Mp[OF mon, unfolded Mp_id] have "M c' = 1" 
     by auto
   hence c': "c' = 1" unfolding c'_def by auto
-  with eq have eq: "equivalent F (prod_list fs)" by auto 
+  with eq have eq: "eq_m F (prod_list fs)" by auto 
   {
     fix f
     assume "f \<in> set fs" 
@@ -2031,23 +2010,21 @@ proof -
   } note fs = this
   note hen = hensel_lifting_monic[OF eq fs hen mon prime sf n]
   from hen(2) have gs_fs: "mset (map Mp gs) = mset fs" by auto
-  have eq: "q.equivalent f (smult ?lc (prod_list gs))" 
-    unfolding q.equivalent_def f using arg_cong[OF hen(1)[unfolded q.equivalent_def], 
-    of "\<lambda> f. q.Mp (smult ?lc f)"] by simp
+  have eq: "q.eq_m f (smult ?lc (prod_list gs))" 
+    unfolding f using arg_cong[OF hen(1), of "\<lambda> f. q.Mp (smult ?lc f)"] by simp
   {
     fix g 
     assume g: "g \<in> set gs"
     from hen(3)[OF _ g] have mon_g: "monic g" and Mp_g: "q.Mp g = g" by auto
     from g have "Mp g \<in># mset (map Mp gs)" by auto
-    from this[unfolded gs_fs] obtain f where f: "f \<in> set fs" and fg: "equivalent f g" 
-      unfolding equivalent_def by auto
+    from this[unfolded gs_fs] obtain f where f: "f \<in> set fs" and fg: "eq_m f g" by auto
     from mon_fs f fs have irr_f: "irreducible\<^sub>d_m f" and mon_f: "monic f" and Mp_f: "Mp f = f" by auto
     have deg: "degree_m g = degree g" 
       by (rule degree_m_eq_monic[OF mon_g m1])
     from irr_f fg have irr_g: "irreducible\<^sub>d_m g" 
-      unfolding irreducible\<^sub>d_m_def degree_m_def equivalent_def dvdm_def by simp
+      unfolding irreducible\<^sub>d_m_def dvdm_def by simp
     have "q.irreducible\<^sub>d_m g"
-      by (rule irreducible\<^sub>d_lifting[OF m1 n _ irr_g], unfold deg, rule q.degree_m_eq_monic[OF mon_g q.m1])
+      by (rule irreducible\<^sub>d_lifting[OF prime n _ irr_g], unfold deg, rule q.degree_m_eq_monic[OF mon_g q.m1])
     note mon_g Mp_g deg irr_g this
   } note g = this
   {
@@ -2061,7 +2038,7 @@ proof -
     have "mset (map degree fs) = image_mset degree (mset fs)" by auto
     also have "\<dots> = image_mset degree (mset (map Mp gs))" unfolding gs_fs ..
     also have "\<dots> = mset (map degree (map Mp gs))" unfolding mset_map ..
-    also have "map degree (map Mp gs) = map degree_m gs" unfolding degree_m_def by auto
+    also have "map degree (map Mp gs) = map degree_m gs" by auto
     also have "\<dots> = map degree gs" using g(3) by auto
     finally show "mset (map degree fs) = mset (map degree gs)" .
   qed auto
