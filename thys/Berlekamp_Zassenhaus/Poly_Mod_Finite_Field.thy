@@ -28,59 +28,6 @@ proof-
   then show ?thesis by (force elim!: irreducible\<^sub>dE)
 qed
 
-context poly_mod 
-begin
-
-definition factorization_m :: "int poly \<Rightarrow> (int \<times> int poly multiset) \<Rightarrow> bool" where
-  "factorization_m f cfs \<equiv> (case cfs of (c,fs) \<Rightarrow> f =m (smult c (prod_mset fs)) \<and> 
-    (\<forall> f \<in> set_mset fs. irreducible\<^sub>d_m f \<and> monic (Mp f)))"  
-
-definition Mf :: "int \<times> int poly multiset \<Rightarrow> int \<times> int poly multiset" where
-  "Mf cfs \<equiv> case cfs of (c,fs) \<Rightarrow> (M c, image_mset Mp fs)" 
-
-lemma Mf_Mf[simp]: "Mf (Mf x) = Mf x" 
-proof (cases x, auto simp: Mf_def, goal_cases)
-  case (1 c fs)
-  show ?case by (induct fs, auto)
-qed
-
-definition equivalent_fact_m :: "int \<times> int poly multiset \<Rightarrow> int \<times> int poly multiset \<Rightarrow> bool" where
-  "equivalent_fact_m cfs dgs = (Mf cfs = Mf dgs)" 
-
-definition unique_factorization_m :: "int poly \<Rightarrow> (int \<times> int poly multiset) \<Rightarrow> bool" where
-  "unique_factorization_m f cfs = (Mf ` Collect (factorization_m f) = {Mf cfs})"
-
-lemma Mp_irreducible\<^sub>d_m[simp]: "irreducible\<^sub>d_m (Mp f) = irreducible\<^sub>d_m f" 
-  unfolding irreducible\<^sub>d_m_def dvdm_def by simp
-
-lemma Mf_factorization_m[simp]: "factorization_m f (Mf cfs) = factorization_m f cfs" 
-  unfolding factorization_m_def Mf_def
-proof (cases cfs, simp, goal_cases)
-  case (1 c fs)
-  have "Mp (smult c (prod_mset fs)) = Mp (smult (M c) (Mp (prod_mset fs)))" by simp
-  also have "\<dots> = Mp (smult (M c) (Mp (prod_mset (image_mset Mp fs))))"
-    unfolding Mp_prod_mset by simp
-  also have "\<dots> = Mp (smult (M c) (prod_mset (image_mset Mp fs)))" unfolding Mp_smult ..
-  finally show ?case by auto
-qed    
-
-lemma unique_factorization_m_imp_factorization: assumes "unique_factorization_m f cfs" 
-  shows "factorization_m f cfs" 
-proof -
-  from assms[unfolded unique_factorization_m_def] obtain dfs where
-     fact: "factorization_m f dfs" and id: "Mf cfs = Mf dfs" by blast
-  from fact have "factorization_m f (Mf dfs)" by simp
-  from this[folded id] show ?thesis by simp
-qed
-
-lemma unique_factorization_m_alt_def: "unique_factorization_m f cfs = (factorization_m f cfs
-  \<and> (\<forall> dgs. factorization_m f dgs \<longrightarrow> Mf dgs = Mf cfs))" 
-  using unique_factorization_m_imp_factorization[of f cfs]
-  unfolding unique_factorization_m_def by auto
-
-end
-
-
 subsection {* Transferring to class-based mod-ring *}
 
 locale poly_mod_type = poly_mod m
@@ -466,10 +413,6 @@ qed
 lemma coprime_MP_Rel [transfer_rule]: "(MP_Rel ===> MP_Rel ===> op =) coprime_m coprime"
   unfolding coprime_m_def[abs_def] coprime_def[abs_def]
   by (transfer_prover_start, transfer_step+, auto)
-
-lemma monic_degree_m[simp]: "monic p \<Longrightarrow> degree_m p = degree p"
-  by (simp add: degree_m_eq m1)
-
 
 lemma degree_m_mult_eq:
   assumes p0: "\<not> p =m 0" and q0: "\<not> q =m 0"

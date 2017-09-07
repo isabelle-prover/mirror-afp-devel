@@ -210,7 +210,7 @@ qed
 
 lemma degree_Mp_mult_monic: assumes "monic f" "monic g"
   shows "degree (Mp (f * g)) = degree f + degree g"
-  by (metis zero_neq_one assms degree_monic_mult leading_coeff_0_iff monic_degree_Mp monic_mult)
+  by (metis zero_neq_one assms degree_monic_mult leading_coeff_0_iff monic_degree_m monic_mult)
   
 lemma factorization_m_degree: assumes "factorization_m f (c,fs)" 
   and 0: "Mp f \<noteq> 0" 
@@ -226,8 +226,8 @@ proof -
     have f1: "0 \<noteq> c" by (metis "0" Mp_0 a(1) smult_eq_0_iff)
     then have "M c \<noteq> 0" by (metis (no_types) "0" assms(1) factorization_m_lead_coeff leading_coeff_0_iff)
     then show "degree (Mp (Polynomial.smult c gs)) = degree gs"
-      unfolding monic_degree_Mp[OF mon_gs,symmetric]
-      using f1 by (metis coeff_smult degree_m_eq degree_smult_eq m1 mon_gs monic_degree_Mp mult_cancel_left1 poly_mod.M_def)
+      unfolding monic_degree_m[OF mon_gs,symmetric]
+      using f1 by (metis coeff_smult degree_m_eq degree_smult_eq m1 mon_gs monic_degree_m mult_cancel_left1 poly_mod.M_def)
   qed
   note deg
   also have "degree_m (smult c (prod_mset fs)) = degree_m (smult c gs)"
@@ -295,7 +295,7 @@ proof -
     from irr[OF f] have irr: "q.irreducible\<^sub>d_m f" .
     hence "q.degree_m f \<noteq> 0" unfolding q.irreducible\<^sub>d_m_def by auto
     also have "q.degree_m f = degree_m f" using mon[OF f]
-      by (metis Mp_Mp_pow_is_Mp m1 monic_degree_Mp n)
+      by (metis Mp_Mp_pow_is_Mp m1 monic_degree_m n)
     finally have deg: "degree_m f \<noteq> 0" by auto
     from f obtain gs where fs: "fs = {#f#} + gs"
       by (metis mset_subset_eq_single subset_mset.add_diff_inverse)
@@ -411,7 +411,7 @@ proof (induct Fs arbitrary: C rule: wf_induct[OF wf_measure[of size]])
       and unique: "\<And> D' H'. q.eq_m (D' * H') C \<Longrightarrow>
           monic D' \<Longrightarrow>
           eq_m (Mp D) D' \<Longrightarrow> eq_m (Mp (prod_mset H)) H' \<Longrightarrow> q.Mp D' = D' \<Longrightarrow> q.Mp H' = H'
-        \<Longrightarrow> D' = A \<and> H' = B" by (elim exE ex1E, fast)
+        \<Longrightarrow> D' = A \<and> H' = B" by blast
     note hensel_bin_wit = CAB monA DA HB norm
     from monA have monA': "monic (q.Mp A)" by (rule q.monic_Mp)
     from q.monic_Mp[OF monC] CAB have monicP:"monic (q.Mp (A * B))" by auto
