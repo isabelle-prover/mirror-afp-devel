@@ -81,7 +81,7 @@ lemma unique_factorization_m_alt_def: "unique_factorization_m f cfs = (factoriza
 end
 
 
-subsection {* Transferring to class-based mod_ring *}
+subsection {* Transferring to class-based mod-ring *}
 
 locale poly_mod_type = poly_mod m
   for m and ty :: "'a :: nontriv itself" +
