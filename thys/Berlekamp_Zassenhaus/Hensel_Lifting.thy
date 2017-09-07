@@ -23,43 +23,6 @@ imports
   Polynomial_Factorization.Square_Free_Factorization
 begin
 
-definition pdivmod_monic :: "'a::comm_ring_1 poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly \<times> 'a poly" where
-  "pdivmod_monic f g \<equiv> let cg = coeffs g; cf = coeffs f; 
-     (q, r) = divmod_poly_one_main_list [] (rev cf) (rev cg) (1 + length cf - length cg)
-         in (poly_of_list q, poly_of_list (rev r))"
-
-lemma pseudo_divmod_main_list_1_is_divmod_poly_one_main_list: 
-  "pseudo_divmod_main_list (1 :: 'a :: comm_ring_1) q f g n = divmod_poly_one_main_list q f g n"
-  by (induct n arbitrary: q f g, auto simp: Let_def)
-
-lemma pdivmod_monic_pseudo_divmod: assumes g: "monic g" shows "pdivmod_monic f g = pseudo_divmod f g" 
-proof -
-  from g have id: "(coeffs g = []) = False" by auto
-  from g have mon: "hd (rev (coeffs g)) = 1" by (metis coeffs_eq_Nil hd_rev id last_coeffs_eq_coeff_degree)
-  show ?thesis
-    unfolding pseudo_divmod_impl pseudo_divmod_list_def id if_False pdivmod_monic_def Let_def mon
-      pseudo_divmod_main_list_1_is_divmod_poly_one_main_list by (auto split: prod.splits)
-qed
-
-lemma pdivmod_monic: assumes g: "monic g" and res: "pdivmod_monic f g = (q, r)"
-  shows "f = g * q + r" "r = 0 \<or> degree r < degree g"
-proof -
-  from g have g0: "g \<noteq> 0" by auto
-  from pseudo_divmod[OF g0 res[unfolded pdivmod_monic_pseudo_divmod[OF g]], unfolded g]
-  show "f = g * q + r" "r = 0 \<or> degree r < degree g" by auto
-qed
-
-context poly_mod
-begin
-
-definition dupe_monic :: "int poly \<Rightarrow> int poly \<Rightarrow> int poly \<Rightarrow> int poly \<Rightarrow> int poly \<Rightarrow> 
-  int poly * int poly" where
-  "dupe_monic D H S T U = (case pdivmod_monic (Mp (T * U)) D of (q,r) \<Rightarrow>
-     (Mp (S * U + H * q), Mp r))"
-
-end
-
-declare poly_mod.dupe_monic_def[code]
 
 lemma uniqueness_poly_equality:
   fixes f g :: "'a :: factorial_ring_gcd poly"
@@ -134,6 +97,44 @@ proof -
   show "a =m a'" "b =m b'" by auto
 qed
 end
+
+definition pdivmod_monic :: "'a::comm_ring_1 poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly \<times> 'a poly" where
+  "pdivmod_monic f g \<equiv> let cg = coeffs g; cf = coeffs f; 
+     (q, r) = divmod_poly_one_main_list [] (rev cf) (rev cg) (1 + length cf - length cg)
+         in (poly_of_list q, poly_of_list (rev r))"
+
+lemma pseudo_divmod_main_list_1_is_divmod_poly_one_main_list: 
+  "pseudo_divmod_main_list (1 :: 'a :: comm_ring_1) q f g n = divmod_poly_one_main_list q f g n"
+  by (induct n arbitrary: q f g, auto simp: Let_def)
+
+lemma pdivmod_monic_pseudo_divmod: assumes g: "monic g" shows "pdivmod_monic f g = pseudo_divmod f g" 
+proof -
+  from g have id: "(coeffs g = []) = False" by auto
+  from g have mon: "hd (rev (coeffs g)) = 1" by (metis coeffs_eq_Nil hd_rev id last_coeffs_eq_coeff_degree)
+  show ?thesis
+    unfolding pseudo_divmod_impl pseudo_divmod_list_def id if_False pdivmod_monic_def Let_def mon
+      pseudo_divmod_main_list_1_is_divmod_poly_one_main_list by (auto split: prod.splits)
+qed
+
+lemma pdivmod_monic: assumes g: "monic g" and res: "pdivmod_monic f g = (q, r)"
+  shows "f = g * q + r" "r = 0 \<or> degree r < degree g"
+proof -
+  from g have g0: "g \<noteq> 0" by auto
+  from pseudo_divmod[OF g0 res[unfolded pdivmod_monic_pseudo_divmod[OF g]], unfolded g]
+  show "f = g * q + r" "r = 0 \<or> degree r < degree g" by auto
+qed
+
+context poly_mod
+begin
+
+definition dupe_monic :: "int poly \<Rightarrow> int poly \<Rightarrow> int poly \<Rightarrow> int poly \<Rightarrow> int poly \<Rightarrow> 
+  int poly * int poly" where
+  "dupe_monic D H S T U = (case pdivmod_monic (Mp (T * U)) D of (q,r) \<Rightarrow>
+     (Mp (S * U + H * q), Mp r))"
+
+end
+
+declare poly_mod.dupe_monic_def[code]
 
 lemma (in poly_mod_2) dupe_monic: assumes 1: "D*S + H*T =m 1" 
   and mon: "monic D" 
@@ -384,8 +385,7 @@ fun linear_hensel_main where
 | "linear_hensel_main (Suc n) = (
       let (D,H) = linear_hensel_main n;
         q = p ^ n;
-        U = sdiv_poly (C - D * H) q;   (* H2 *)
-        U = poly_mod.Mp p U;          (* H3 *)
+        U = poly_mod.Mp p (sdiv_poly (C - D * H) q);   (* H2 + H3 *)
         (A,B) = poly_mod.dupe_monic p D1 H1 S T U
       in (D + smult q B, H + smult q A))" (* H4 *)
     | "linear_hensel_main 0 = (D1,H1)" 
@@ -820,10 +820,14 @@ definition hensel_step where
         T' = poly_mod.Mp q' (T - smult p B')
      in (S',T',D',H'))" 
 
-definition simple_hensel_step where (* do not compute new values S' and T' *)
-  "simple_hensel_step p q S1 T1 D1 H1 D H = (
-      let U = poly_mod.Mp p (sdiv_poly (C - D * H) q); (* Z2 + Z3 *)
-        (A,B) = poly_mod.dupe_monic p D1 H1 S1 T1 U;
+definition "quadratic_hensel_step q S T D H = hensel_step q q S T D H S T D H" 
+
+lemmas quadratic_hensel_step_code[code] = quadratic_hensel_step_def[unfolded hensel_step_def]
+
+definition simple_quadratic_hensel_step where (* do not compute new values S' and T' *)
+  "simple_quadratic_hensel_step q S T D H = (
+      let U = poly_mod.Mp q (sdiv_poly (C - D * H) q); (* Z2 + Z3 *)
+        (A,B) = poly_mod.dupe_monic q D H S T U;
         D' = D + smult q B; (* Z4 *)
         H' = H + smult q A
      in (D',H'))" 
@@ -884,6 +888,30 @@ proof -
     by (metis group_add_class.diff_0_right poly_mod.Mp_smult_m_0 poly_mod.minus_Mp(2))+  
 qed
 
+lemma quadratic_hensel_step: assumes step: "quadratic_hensel_step q S T D H = (S', T', D', H')"
+  and CDH: "poly_mod.eq_m q C (D * H)"
+  and one: "poly_mod.eq_m q (D * S + H * T) 1"
+  and D: "poly_mod.Mp q D = D" 
+  and H: "poly_mod.Mp q H = H"
+  and mon: "monic D" 
+  and q: "q > 1" 
+  and rq: "r = q * q" 
+shows 
+  "poly_mod.eq_m r C (D' * H')" 
+  "poly_mod.eq_m r (D' * S' + H' * T') 1"
+  "poly_mod.Mp r D' = D'" 
+  "poly_mod.Mp r H' = H'" 
+  "poly_mod.Mp q D = poly_mod.Mp q D'" 
+  "poly_mod.Mp q H = poly_mod.Mp q H'" 
+  "poly_mod.Mp q S = poly_mod.Mp q S'" 
+  "poly_mod.Mp q T = poly_mod.Mp q T'" 
+  "monic D'" 
+proof (atomize(full), goal_cases)
+  case 1
+  from hensel_step[OF step[unfolded quadratic_hensel_step_def] one mon q CDH one refl refl refl refl mon q D H rq]
+  show ?case by auto
+qed
+
 context
   fixes p :: int and S1 T1 D1 H1 :: "int poly" 
 begin
@@ -896,12 +924,12 @@ fun quadratic_hensel_loop where
           (case quadratic_hensel_loop (j div 2) of
              (q, S, T, D, H) \<Rightarrow>
           let qq = q * q in 
-          (case hensel_step q q S T D H S T D H of (* quadratic step *)
+          (case quadratic_hensel_step q S T D H of (* quadratic step *)
             (S', T', D', H') \<Rightarrow> (qq, S', T', D', H')))
      else (* odd j *)
         (case quadratic_hensel_loop (j div 2 + 1) of
            (q, S, T, D, H) \<Rightarrow>       
-          (case hensel_step q q S T D H S T D H of (* quadratic step *)
+          (case quadratic_hensel_step q S T D H of (* quadratic step *)
             (S', T', D', H') \<Rightarrow> 
                 let qq = q * q; pj = qq div p; down = poly_mod.Mp pj in
                   (pj, down S', down T', down D', down H'))))"
@@ -917,13 +945,13 @@ lemma quadratic_hensel_main_code[code]: "quadratic_hensel_main j = (
       else if even j
       then (case quadratic_hensel_loop (j div 2) of
             (q, S, T, D, H) \<Rightarrow>
-               simple_hensel_step q q S T D H D H)            
+               simple_quadratic_hensel_step q S T D H)            
        else (case quadratic_hensel_loop (j div 2 + 1) of
             (q, S, T, D, H) \<Rightarrow>
-              (case simple_hensel_step q q S T D H D H of 
+              (case simple_quadratic_hensel_step q S T D H of 
                 (D', H') \<Rightarrow> let down = poly_mod.Mp (q * q div p) in (down D', down H'))))"
   unfolding quadratic_hensel_loop.simps[of j] quadratic_hensel_main_def Let_def 
-  by (simp split: if_splits prod.splits option.splits sum.splits add: hensel_step_def simple_hensel_step_def Let_def)
+  by (simp split: if_splits prod.splits option.splits sum.splits add: quadratic_hensel_step_code simple_quadratic_hensel_step_def Let_def)
 
 
 context
@@ -941,7 +969,6 @@ lemma quadratic_hensel_loop:
   assumes "quadratic_hensel_loop j = (q, S, T, D, H)"
   shows "(poly_mod.eq_m q C (D * H) \<and> monic D
     \<and> poly_mod.eq_m p D1 D \<and> poly_mod.eq_m p H1 H
-    \<and> poly_mod.eq_m p S1 S \<and> poly_mod.eq_m p T1 T
     \<and> poly_mod.eq_m q (D * S + H * T) 1
     \<and> poly_mod.Mp q D = D \<and> poly_mod.Mp q H = H
     \<and> q = p^j)" 
@@ -981,8 +1008,6 @@ proof (induct j arbitrary: q S T D H rule: less_induct)
         "monic D" 
         "eq_m D1 D" 
         "eq_m H1 H"
-        "eq_m S1 S" 
-        "eq_m T1 T"
         "poly_mod.Mp q D = D"
         "poly_mod.Mp q H = H"
         "q = p ^ ?j2"
@@ -990,15 +1015,14 @@ proof (induct j arbitrary: q S T D H rule: less_induct)
       hence norm: "poly_mod.Mp (p ^ j) D = D" "poly_mod.Mp (p ^ j) H = H" 
         using lift_norm[OF lt(2)] by auto
       from lt p have q: "q > 1" unfolding * by simp
-      have dvd: "q dvd q" by auto
-      let ?step = "hensel_step q q S T D H S T D H" 
+      let ?step = "quadratic_hensel_step q S T D H" 
       obtain S2 T2 D2 H2 where step_res: "?step = (S2, T2, D2, H2)" by (cases ?step, auto)
-      note step = hensel_step[OF step_res *(2,3) q *(1,2) refl refl refl refl *(3) q *(8,9) refl dvd]         
+      note step = quadratic_hensel_step[OF step_res *(1,2,6,7,3) q refl]
       let ?qq = "q * q"
       {
         fix D D2
         assume "poly_mod.Mp q D = poly_mod.Mp q D2" 
-        from arg_cong[OF this, of Mp] Mp_Mp_pow_is_Mp[of ?j2, OF _ p, folded *(10)] lt
+        from arg_cong[OF this, of Mp] Mp_Mp_pow_is_Mp[of ?j2, OF _ p, folded *(8)] lt
         have "Mp D = Mp D2" by simp
       } note shrink = this
       have **: "poly_mod.eq_m ?qq C (D2 * H2)" 
@@ -1006,14 +1030,12 @@ proof (induct j arbitrary: q S T D H rule: less_induct)
         "monic D2" 
         "eq_m D1 D2"
         "eq_m H1 H2" 
-        "eq_m S1 S2"
-        "eq_m T1 T2" 
         "poly_mod.Mp ?qq D2 = D2" 
         "poly_mod.Mp ?qq H2 = H2" 
-        using step shrink[of S S2] shrink[of T T2] shrink[of H H2] shrink[of D D2] *(4-7) by auto
+        using step shrink[of H H2] shrink[of D D2] *(4-7) by auto
       note simp = simp False if_False rec split Let_def step_res option.simps
       from True have j: "p ^ j = p ^ (2 * ?j2)" by auto
-      with *(10) have qq: "q * q = p ^ j"
+      with *(8) have qq: "q * q = p ^ j"
         by (simp add: power_mult_distrib semiring_normalization_rules(30-))
       from res[unfolded simp] True have id': "q' = ?qq" "S' = S2" "T' = T2" "D' = D2" "H' = H2" by auto 
       show ?thesis unfolding id' using ** by (auto simp: qq)
@@ -1030,8 +1052,6 @@ proof (induct j arbitrary: q S T D H rule: less_induct)
           "monic D" 
           "eq_m D1 D" 
           "eq_m H1 H"
-          "eq_m S1 S" 
-          "eq_m T1 T"
           "poly_mod.Mp q D = D"
           "poly_mod.Mp q H = H"
           "q = p ^ ?j2"
@@ -1040,15 +1060,15 @@ proof (induct j arbitrary: q S T D H rule: less_induct)
         using lift_norm[OF lt(2)] lt by auto
       from lt p have q: "q > 1" unfolding *
         using mod_2 poly_mod_2.m1 by blast
-      let ?step = "hensel_step q q S T D H S T D H" 
+      let ?step = "quadratic_hensel_step q S T D H" 
       obtain S2 T2 D2 H2 where step_res: "?step = (S2, T2, D2, H2)" by (cases ?step, auto)
       have dvd: "q dvd q" by auto
-      note step = hensel_step[OF step_res *(2,3) q *(1,2) refl refl refl refl *(3) q *(8,9) refl dvd]         
+      note step = quadratic_hensel_step[OF step_res *(1,2,6,7,3) q refl]         
       let ?qq = "q * q"
       {
         fix D D2
         assume "poly_mod.Mp q D = poly_mod.Mp q D2" 
-        from arg_cong[OF this, of Mp] Mp_Mp_pow_is_Mp[of ?j2, OF _ p, folded *(10)] lt
+        from arg_cong[OF this, of Mp] Mp_Mp_pow_is_Mp[of ?j2, OF _ p, folded *(8)] lt
         have "Mp D = Mp D2" by simp
       } note shrink = this
       have **: "poly_mod.eq_m ?qq C (D2 * H2)" 
@@ -1056,15 +1076,13 @@ proof (induct j arbitrary: q S T D H rule: less_induct)
         "monic D2" 
         "eq_m D1 D2"
         "eq_m H1 H2" 
-        "eq_m S1 S2"
-        "eq_m T1 T2" 
         "poly_mod.Mp ?qq D2 = D2" 
         "poly_mod.Mp ?qq H2 = H2" 
-        using step shrink[of S S2] shrink[of T T2] shrink[of H H2] shrink[of D D2] *(4-7) by auto
+        using step shrink[of H H2] shrink[of D D2] *(4-5) by auto
       note simp = simp False if_False rec split Let_def step_res option.simps
       from odd have j: "Suc j = 2 * ?j2" by auto
       from arg_cong[OF this, of "\<lambda> j. p ^ j div p"]
-      have pj: "p ^ j = q * q div p" and qq: "q * q = p ^ j * p" unfolding *(10) using p
+      have pj: "p ^ j = q * q div p" and qq: "q * q = p ^ j * p" unfolding *(8) using p
         by (simp add: power_mult_distrib semiring_normalization_rules(30-))+
       let ?pj = "p ^ j" 
       from res[unfolded simp] pj
@@ -1095,11 +1113,7 @@ proof (induct j arbitrary: q S T D H rule: less_induct)
       from eq'[OF step(1)] have eq1: "pj.eq_m C (D' * H')" unfolding id by simp
       from eq'[OF step(2)] have eq2: "pj.eq_m (D' * S' + H' * T') 1" 
         unfolding id by (metis pj.mult_Mp pj.plus_Mp)
-      from **(4-7) have eq3: 
-        "eq_m D1 D'"  
-        "eq_m H1 H'" 
-        "eq_m S1 S'"
-        "eq_m T1 T'" 
+      from **(4-5) have eq3: "eq_m D1 D'" "eq_m H1 H'" 
         unfolding id by (auto intro: eq)
       from norm mon eq1 eq2 eq3
       show ?thesis unfolding id by simp
