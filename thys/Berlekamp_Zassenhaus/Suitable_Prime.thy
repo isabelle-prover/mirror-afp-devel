@@ -60,7 +60,7 @@ proof -
   let ?f' = "of_int_poly_i ff_ops (Mp f)" 
   define f'' where "f'' \<equiv> of_int_poly (Mp f) :: 'a mod_ring poly"
   have rel_f[transfer_rule]: "poly_rel ?f' f''" 
-    by (rule poly_rel_coeffs_Mp_of_int_poly[OF refl], simp add: f''_def)
+    by (rule poly_rel_of_int_poly[OF refl], simp add: f''_def)
   have id: "square_free_i ff_ops ?f' \<longleftrightarrow> gcd f'' (pderiv f'') = 1"
     unfolding square_free_i_def by transfer_prover
   have Mprel [transfer_rule]: "MP_Rel (Mp f) F" unfolding F MP_Rel_def

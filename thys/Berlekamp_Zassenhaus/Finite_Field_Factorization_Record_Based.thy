@@ -504,7 +504,7 @@ lemma finite_field_i_sound:
 proof -
   define f'' :: "'a mod_ring poly" where "f'' = of_int_poly (Mp f)"
   have rel_f[transfer_rule]: "poly_rel f' f''" 
-    by (rule poly_rel_coeffs_Mp_of_int_poly[OF f'], simp add: f''_def)
+    by (rule poly_rel_of_int_poly[OF f'], simp add: f''_def)
   interpret pff: idom_ops "poly_ops ff_ops" poly_rel 
     by (rule idom_ops_poly)
   obtain c'' fs'' where berl: "finite_field_factorization f'' = (c'',fs'')" by force

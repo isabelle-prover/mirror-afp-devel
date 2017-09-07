@@ -35,8 +35,9 @@ proof -
   hence "f dvd (B' - B) * g" unfolding dvd_def by (intro exI[of _ "A - A'"], auto simp: field_simps)
   with cop[simplified] have dvd: "f dvd (B' - B)" by (rule coprime_dvd_mult)
   from divides_degree[OF this] have "degree f \<le> degree (B' - B) \<or> B = B'" by auto
-  with degree_diff_le_max[of B' B] deg have B: "B = B'" by auto
-  with * f show "A = A'" "B = B'" by auto
+  with degree_diff_le_max[of B' B] deg 
+  show "B = B'" by auto
+  with * f show "A = A'" by auto
 qed
 
 lemma (in poly_mod_prime_type) uniqueness_poly_equality_mod_int: 
@@ -123,29 +124,30 @@ proof -
   from pseudo_divmod[OF g0 res[unfolded pdivmod_monic_pseudo_divmod[OF g]], unfolded g]
   show "f = g * q + r" "r = 0 \<or> degree r < degree g" by auto
 qed
+ 
 
 context poly_mod
 begin
 
-definition dupe_monic :: "int poly \<Rightarrow> int poly \<Rightarrow> int poly \<Rightarrow> int poly \<Rightarrow> int poly \<Rightarrow> 
+definition dupe_monic_int :: "int poly \<Rightarrow> int poly \<Rightarrow> int poly \<Rightarrow> int poly \<Rightarrow> int poly \<Rightarrow> 
   int poly * int poly" where
-  "dupe_monic D H S T U = (case pdivmod_monic (Mp (T * U)) D of (q,r) \<Rightarrow>
+  "dupe_monic_int D H S T U = (case pdivmod_monic (Mp (T * U)) D of (q,r) \<Rightarrow>
      (Mp (S * U + H * q), Mp r))"
 
 end
 
-declare poly_mod.dupe_monic_def[code]
+declare poly_mod.dupe_monic_int_def[code]
 
-lemma (in poly_mod_2) dupe_monic: assumes 1: "D*S + H*T =m 1" 
+lemma (in poly_mod_2) dupe_monic_int: assumes 1: "D*S + H*T =m 1" 
   and mon: "monic D" 
-  and dupe: "dupe_monic D H S T U = (A,B)" 
+  and dupe: "dupe_monic_int D H S T U = (A,B)" 
   shows "A * D + B * H =m U" "B = 0 \<or> degree B < degree D" "Mp A = A" "Mp B = B" 
     "coprime_m D H \<Longrightarrow> A' * D + B' * H =m U \<Longrightarrow> B' = 0 \<or> degree B' < degree D \<Longrightarrow> Mp D = D 
     \<Longrightarrow> Mp A' = A' \<Longrightarrow> Mp B' = B' \<Longrightarrow> prime m
     \<Longrightarrow> A' = A \<and> B' = B"
 proof -
   obtain q r where div: "pdivmod_monic (Mp (T * U)) D = (q,r)" by force
-  from dupe[unfolded dupe_monic_def div split]
+  from dupe[unfolded dupe_monic_int_def div split]
   have A: "A = Mp (S * U + H * q)" and B: "B = Mp r" by auto
   from pdivmod_monic[OF mon div] have TU: "Mp (T * U) = D * q + r" and 
     deg: "r = 0 \<or> degree r < degree D" by auto
@@ -243,12 +245,12 @@ proof -
   define f'' where "f'' \<equiv> of_int_poly (Mp f) :: 'a mod_ring poly"
   have f'': "f'' = of_int_poly f" unfolding f''_def f by simp
   have rel_f[transfer_rule]: "poly_rel f' f''" 
-    by (rule poly_rel_coeffs_Mp_of_int_poly[OF f'], simp add: f'' f)
+    by (rule poly_rel_of_int_poly[OF f'], simp add: f'' f)
   from g have g': "g' = of_int_poly_i ff_ops (Mp g)" by simp
   define g'' where "g'' \<equiv> of_int_poly (Mp g) :: 'a mod_ring poly"
   have g'': "g'' = of_int_poly g" unfolding g''_def g by simp
   have rel_g[transfer_rule]: "poly_rel g' g''"     
-    by (rule poly_rel_coeffs_Mp_of_int_poly[OF g'], simp add: g'' g)
+    by (rule poly_rel_of_int_poly[OF g'], simp add: g'' g)
   obtain a'' b'' where eucl: "bezout_coefficients f'' g'' = (a'',b'')" by force
   from bezout_coefficients_i[unfolded rel_fun_def rel_prod_conv, rule_format, OF rel_f rel_g,
     unfolded res split eucl]
@@ -386,7 +388,7 @@ fun linear_hensel_main where
       let (D,H) = linear_hensel_main n;
         q = p ^ n;
         U = poly_mod.Mp p (sdiv_poly (C - D * H) q);   (* H2 + H3 *)
-        (A,B) = poly_mod.dupe_monic p D1 H1 S T U
+        (A,B) = poly_mod.dupe_monic_int p D1 H1 S T U
       in (D + smult q B, H + smult q A))" (* H4 *)
     | "linear_hensel_main 0 = (D1,H1)" 
 
@@ -430,7 +432,7 @@ proof (induct n arbitrary: D H D' H')
     obtain D H where rec: "linear_hensel_main n = (D,H)" by force
     obtain V where V: "sdiv_poly (C - D * H) ?q = V" by force
     obtain U where U: "p.Mp (sdiv_poly (C - D * H) ?q) = U" by auto
-    obtain A B where dupe: "p.dupe_monic D1 H1 S T U = (A,B)" by force
+    obtain A B where dupe: "p.dupe_monic_int D1 H1 S T U = (A,B)" by force
     note IH = Suc(1)[OF rec n]
     from IH
     have CDH: "q.eq_m (D * H) C"
@@ -441,7 +443,7 @@ proof (induct n arbitrary: D H D' H')
     have qq: "?q * ?q = ?pq * p^k" unfolding n by simp
     from Suc(2)[unfolded n linear_hensel_main.simps, folded n, unfolded rec split Let_def U dupe]
     have D': "D' = D + smult ?q B" and H': "H' = H + smult ?q A" by auto
-    note dupe = p.dupe_monic[OF 1 monD1 dupe]
+    note dupe = p.dupe_monic_int[OF 1 monD1 dupe]
     from CDH have "q.Mp C - q.Mp (D * H) = 0" by simp
     hence "q.Mp (q.Mp C - q.Mp (D * H)) = 0" by simp
     hence "q.Mp (C - D*H) = 0" by simp
@@ -689,11 +691,11 @@ lemma hensel_step_main: assumes
   and D: "poly_mod.Mp q D = D" 
   and H: "poly_mod.Mp q H = H"
   and U1: "U1 = poly_mod.Mp p (sdiv_poly (C - D * H) q)"
-  and dupe1: "poly_mod.dupe_monic p D1 H1 S1 T1 U1 = (A,B)" 
+  and dupe1: "poly_mod.dupe_monic_int p D1 H1 S1 T1 U1 = (A,B)" 
   and D': "D' = D + smult q B"
   and H': "H' = H + smult q A" 
   and U2: "U2 = poly_mod.Mp q (sdiv_poly (S*D' + T*H' - 1) p)" 
-  and dupe2: "poly_mod.dupe_monic q D H S T U2 = (A',B')" 
+  and dupe2: "poly_mod.dupe_monic_int q D H S T U2 = (A',B')" 
   and rq: "r = p * q" 
   and pq: "p dvd q"  
   and S': "S' = poly_mod.Mp r (S - smult p A')"
@@ -720,8 +722,8 @@ proof -
   also have "Mp D = Mp D1" using D1 by simp
   also have "Mp H = Mp H1" using H1 by simp
   finally have CDHp: "eq_m C (D1 * H1)" by simp
-  note dupe1 = dupe_monic[OF one_p mon1 dupe1] 
-  note dupe2 = q.dupe_monic[OF one_q mon dupe2]
+  note dupe1 = dupe_monic_int[OF one_p mon1 dupe1] 
+  note dupe2 = q.dupe_monic_int[OF one_q mon dupe2]
   from CDHq have "q.Mp C - q.Mp (D * H) = 0" by simp
   hence "q.Mp (q.Mp C - q.Mp (D * H)) = 0" by simp
   hence "q.Mp (C - D*H) = 0" by simp
@@ -810,11 +812,11 @@ qed
 definition hensel_step where 
   "hensel_step p q S1 T1 D1 H1 S T D H = (
       let U = poly_mod.Mp p (sdiv_poly (C - D * H) q); (* Z2 and Z3 *)        
-        (A,B) = poly_mod.dupe_monic p D1 H1 S1 T1 U;
+        (A,B) = poly_mod.dupe_monic_int p D1 H1 S1 T1 U;
         D' = D + smult q B; (* Z4 *)
         H' = H + smult q A;
         U' = poly_mod.Mp q (sdiv_poly (S*D' + T*H' - 1) p); (* Z5 + Z6 *)
-        (A',B') = poly_mod.dupe_monic q D H S T U';
+        (A',B') = poly_mod.dupe_monic_int q D H S T U';
         q' = p * q;
         S' = poly_mod.Mp q' (S - smult p A'); (* Z7 *)
         T' = poly_mod.Mp q' (T - smult p B')
@@ -827,7 +829,7 @@ lemmas quadratic_hensel_step_code[code] = quadratic_hensel_step_def[unfolded hen
 definition simple_quadratic_hensel_step where (* do not compute new values S' and T' *)
   "simple_quadratic_hensel_step q S T D H = (
       let U = poly_mod.Mp q (sdiv_poly (C - D * H) q); (* Z2 + Z3 *)
-        (A,B) = poly_mod.dupe_monic q D H S T U;
+        (A,B) = poly_mod.dupe_monic_int q D H S T U;
         D' = D + smult q B; (* Z4 *)
         H' = H + smult q A
      in (D',H'))" 
@@ -861,12 +863,12 @@ shows
 proof -
   define U where U: "U = poly_mod.Mp p (sdiv_poly (C - D * H) q)" 
   note step = step[unfolded hensel_step_def Let_def, folded U]
-  obtain A B where dupe1: "poly_mod.dupe_monic p D1 H1 S1 T1 U = (A,B)" by force
+  obtain A B where dupe1: "poly_mod.dupe_monic_int p D1 H1 S1 T1 U = (A,B)" by force
   note step = step[unfolded dupe1 split]  
   from step have D': "D' = D + smult q B" and H': "H' = H + smult q A"
     by (auto split: prod.splits)
   define U' where U': "U' = poly_mod.Mp q (sdiv_poly (S * D' + T * H' - 1) p)" 
-  obtain A' B' where dupe2: "poly_mod.dupe_monic q D H S T U' = (A',B')" by force
+  obtain A' B' where dupe2: "poly_mod.dupe_monic_int q D H S T U' = (A',B')" by force
   from step[folded D' H', folded U', unfolded dupe2 split, folded rq]  
   have S': "S' = poly_mod.Mp r (S - Polynomial.smult p A')" and
     T': "T' = poly_mod.Mp r (T - Polynomial.smult p B')" by auto

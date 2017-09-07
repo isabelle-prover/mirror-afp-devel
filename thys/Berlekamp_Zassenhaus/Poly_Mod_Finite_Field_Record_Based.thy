@@ -47,7 +47,7 @@ proof -
     strip_while_coeffs..
 qed
 
-lemma poly_rel_coeffs_Mp_of_int_poly: assumes id: "f' = of_int_poly_i ff_ops (Mp f)" "f'' = of_int_poly (Mp f)" 
+lemma poly_rel_of_int_poly: assumes id: "f' = of_int_poly_i ff_ops (Mp f)" "f'' = of_int_poly (Mp f)" 
   shows "poly_rel f' f''" unfolding id poly_rel_def
   unfolding list_all2_conv_all_nth coeffs_of_int_poly of_int_poly_i_def length_map
   by (rule conjI[OF refl], intro allI impI, simp add: nth_coeffs_coeff Mp_coeff M_def, rule of_int,

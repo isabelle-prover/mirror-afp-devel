@@ -32,9 +32,9 @@ proof -
   define f'' where "f'' \<equiv> of_int_poly (Mp f) :: 'a mod_ring poly"
   define g'' where "g'' \<equiv> of_int_poly (Mp g) :: 'a mod_ring poly"
   have rel_f[transfer_rule]: "poly_rel ?f' f''" 
-    by (rule poly_rel_coeffs_Mp_of_int_poly[OF refl], simp add: f''_def)
+    by (rule poly_rel_of_int_poly[OF refl], simp add: f''_def)
   have rel_f[transfer_rule]: "poly_rel ?g' g''" 
-    by (rule poly_rel_coeffs_Mp_of_int_poly[OF refl], simp add: g''_def)
+    by (rule poly_rel_of_int_poly[OF refl], simp add: g''_def)
   have id: "(gcd_poly_i ff_ops (of_int_poly_i ff_ops (Mp f)) (of_int_poly_i ff_ops (Mp g)) = one_poly_i ff_ops)
     = coprime f'' g''"
     unfolding square_free_i_def coprime_iff_gcd_one by transfer_prover

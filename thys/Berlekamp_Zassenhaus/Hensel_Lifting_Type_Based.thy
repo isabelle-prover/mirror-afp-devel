@@ -646,12 +646,6 @@ definition
    let (a, b) = dupe_monic (#v::'p mod_ring poly) (#w) s t 1 in
    (Knuth_ex_4_6_2_22_main.V TYPE('q) b u v w, Knuth_ex_4_6_2_22_main.W TYPE('q) a b u v w)"
 
-fun hensel ::
-  "'p :: prime_card itself \<Rightarrow> 'pq :: nontriv mod_ring poly \<Rightarrow> 'q :: nontriv mod_ring poly list \<Rightarrow>
-   'pq mod_ring poly list"
-where "hensel ty U [] = []"
-  |   "hensel ty U (v#ws) = (let (V,W) = hensel_1 ty U v (prod_list ws) in V # hensel ty W ws)"
-
 lemma hensel_1:
   fixes u :: "'pq :: nontriv mod_ring poly"
     and v w :: "'q :: nontriv mod_ring poly"
