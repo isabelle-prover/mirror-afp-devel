@@ -706,17 +706,6 @@ fun linear_hensel_main where
         (A,B) = poly_mod.dupe_monic p D1 H1 S T U
       in (D + smult q B, H + smult q A))" (* H4 *)
     | "linear_hensel_main 0 = (D1,H1)" 
-  
-lemma linear_hensel_code[code]: "linear_hensel_main n = (if n \<le> 1 then (D1,H1) else
-  let n1 = n - 1;
-    (D,H) = linear_hensel_main n1;
-        q = p ^ n1;
-        U = sdiv_poly (C - D * H) q;  
-        U = poly_mod.Mp p U;         
-        (A,B) = poly_mod.dupe_monic p D1 H1 S T U
-      in (D + smult q B, H + smult q A))"
-  by (cases n, force, cases "n - 1", auto)
-
 
 lemma linear_hensel_main: assumes 1: "poly_mod.eq_m p (D1 * S + H1 * T) 1" 
   and equiv: "poly_mod.eq_m p (D1 * H1) C"
