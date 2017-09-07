@@ -97,9 +97,7 @@ proof -
   with * f show "A = A'" "B = B'" by auto
 qed
 
-context poly_mod_prime_type
-begin
-lemma uniqueness_poly_equality_mod_int:
+lemma (in poly_mod_prime_type) uniqueness_poly_equality_mod_int: 
   assumes deg: "b =m 0 \<or> degree_m b < degree_m f" "b' =m 0 \<or> degree_m b' < degree_m f"
   and f0: "\<not> (f =m 0)" 
   and cop: "coprime_m f g" 
@@ -132,7 +130,6 @@ proof -
   from cop have "coprime F G" using coprime_MP_Rel[unfolded rel_fun_def, rule_format, OF f g] by auto
   from uniqueness_poly_equality[OF this degB degB' 0 eq, untransferred] show "a =m a'" "b =m b'" .
 qed
-end
 
 context poly_mod
 begin
@@ -150,7 +147,7 @@ proof -
     assume "\<exists>(Rep :: 'b \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< m :: int}"
     from prime_type_prime_card[OF p this]
     have "class.prime_card TYPE('b)" "m = int CARD('b)" by auto
-    from poly_mod_prime_type.uniqueness_poly_equality_mod_int[unfolded prime_field_def poly_mod_prime_type_def, 
+    from poly_mod_prime_type.uniqueness_poly_equality_mod_int[unfolded poly_mod_type_simps,
       internalize_sort "'a :: prime_card", OF this deg f0 cop eq]
     have "a =m a' \<and> b =m b'" by auto
   }
@@ -490,10 +487,7 @@ proof -
 qed
 end
 
-context poly_mod_prime_type
-begin
-
-lemma bezout_coefficients_mod_int: assumes f: "(F :: 'a mod_ring poly) = of_int_poly f"
+lemma (in poly_mod_prime_type) bezout_coefficients_mod_int: assumes f: "(F :: 'a mod_ring poly) = of_int_poly f"
   and g: "(G :: 'a mod_ring poly) = of_int_poly g" 
   and cop: "coprime_m f g" 
   and fact: "bezout_coefficients F G = (A,B)" 
@@ -511,8 +505,6 @@ proof -
   from this [untransferred]
   show ?thesis by (simp add: ac_simps)
 qed
-
-end
   
 definition bezout_coefficients_i :: "'i arith_ops_record \<Rightarrow> 'i list \<Rightarrow> 'i list \<Rightarrow> 'i list \<times> 'i list" where
   "bezout_coefficients_i ff_ops f g = fst (euclid_ext_poly_i ff_ops f g)"

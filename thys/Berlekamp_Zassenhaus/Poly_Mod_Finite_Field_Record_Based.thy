@@ -18,8 +18,8 @@ definition of_int_poly_i :: "'i arith_ops_record \<Rightarrow> int poly \<Righta
 definition to_int_poly_i :: "'i arith_ops_record \<Rightarrow> 'i list \<Rightarrow> int poly" where
   "to_int_poly_i ops f = poly_of_list (map (arith_ops_record.to_int ops) f)" 
 
-locale prime_field_gen = field_ops ff_ops R for ff_ops :: "'i arith_ops_record" and
-  R :: "'i \<Rightarrow> 'a :: prime_card mod_ring \<Rightarrow> bool" +
+locale mod_ring_gen = ring_ops ff_ops R for ff_ops :: "'i arith_ops_record" and
+  R :: "'i \<Rightarrow> 'a :: nontriv mod_ring \<Rightarrow> bool" +
   fixes p :: int 
   assumes p: "p = int CARD('a)"
   and of_int: "0 \<le> x \<Longrightarrow> x < p \<Longrightarrow> R (arith_ops_record.of_int ff_ops x) (of_int x)" 
@@ -28,7 +28,7 @@ begin
 
 lemma nat_p: "nat p = CARD('a)" unfolding p by simp
 
-sublocale poly_mod_prime_type p "TYPE('a)"
+sublocale poly_mod_type p "TYPE('a)"
   by (unfold_locales, rule p)
 
 lemma coeffs_to_int_poly: "coeffs (to_int_poly (x :: 'a mod_ring poly)) = map to_int_mod_ring (coeffs x)" 
@@ -52,6 +52,14 @@ lemma poly_rel_coeffs_Mp_of_int_poly: assumes id: "f' = of_int_poly_i ff_ops (Mp
   unfolding list_all2_conv_all_nth coeffs_of_int_poly of_int_poly_i_def length_map
   by (rule conjI[OF refl], intro allI impI, simp add: nth_coeffs_coeff Mp_coeff M_def, rule of_int,
     insert p, auto)
+end
+
+locale prime_field_gen = field_ops ff_ops R + mod_ring_gen ff_ops R p for ff_ops :: "'i arith_ops_record" and
+  R :: "'i \<Rightarrow> 'a :: prime_card mod_ring \<Rightarrow> bool" and p :: int
+begin
+
+sublocale poly_mod_prime_type p "TYPE('a)"
+  by (unfold_locales, rule p)
 
 end
 
@@ -103,6 +111,71 @@ proof -
     by (rule finite_field_ops64, insert *)
   interpret int: prime_field_gen "finite_field_ops p" mod_ring_rel
     by (rule prime_field_finite_field_ops)
+  show ?thesis
+  proof (unfold_locales, rule p, auto simp: finite_field_ops64_def)
+    fix x
+    assume x: "0 \<le> x" "x < p" 
+    from int.of_int[OF this] have "mod_ring_rel x (of_int x)" by (simp add: finite_field_ops_def)
+    thus "mod_ring_rel64 (uint64_of_int x) (of_int x)" unfolding mod_ring_rel64_def[OF *]
+      by (intro exI[of _ x], auto simp: urel64_def[OF *], subst int_of_uint64_inv, insert * x, auto)
+  next
+    fix y z
+    assume "mod_ring_rel64 y z" 
+    from this[unfolded mod_ring_rel64_def[OF *]] obtain x where yx: "urel64 y x" and xz: "mod_ring_rel x z" by auto
+    from int.to_int[OF xz] have zx: "to_int_mod_ring z = x" by (simp add: finite_field_ops_def)
+    show "int_of_uint64 y = to_int_mod_ring z" unfolding zx using yx unfolding urel64_def[OF *] by simp
+  qed
+qed
+end
+
+context mod_ring_locale
+begin
+lemma mod_ring_finite_field_ops: "mod_ring_gen (finite_field_ops p) mod_ring_rel p" 
+proof -
+  interpret ring_ops "finite_field_ops p" mod_ring_rel by (rule ring_finite_field_ops)
+  show ?thesis
+    by (unfold_locales, rule p, 
+      auto simp: finite_field_ops_def p mod_ring_rel_def of_int_of_int_mod_ring)
+qed
+
+lemma mod_ring_finite_field_ops32: assumes small: "p \<le> 65535" 
+  shows "mod_ring_gen (finite_field_ops32 (uint32_of_int p)) mod_ring_rel32 p" 
+proof -
+  let ?pp = "uint32_of_int p" 
+  have ppp: "p = int_of_uint32 ?pp"
+    by (subst int_of_uint32_inv, insert small p2, auto)
+  note * = ppp small 
+  interpret ring_ops "finite_field_ops32 ?pp" mod_ring_rel32 
+    by (rule ring_finite_field_ops32, insert *)
+  interpret int: mod_ring_gen "finite_field_ops p" mod_ring_rel
+    by (rule mod_ring_finite_field_ops)
+  show ?thesis
+  proof (unfold_locales, rule p, auto simp: finite_field_ops32_def)
+    fix x
+    assume x: "0 \<le> x" "x < p" 
+    from int.of_int[OF this] have "mod_ring_rel x (of_int x)" by (simp add: finite_field_ops_def)
+    thus "mod_ring_rel32 (uint32_of_int x) (of_int x)" unfolding mod_ring_rel32_def[OF *]
+      by (intro exI[of _ x], auto simp: urel32_def[OF *], subst int_of_uint32_inv, insert * x, auto)
+  next
+    fix y z
+    assume "mod_ring_rel32 y z" 
+    from this[unfolded mod_ring_rel32_def[OF *]] obtain x where yx: "urel32 y x" and xz: "mod_ring_rel x z" by auto
+    from int.to_int[OF xz] have zx: "to_int_mod_ring z = x" by (simp add: finite_field_ops_def)
+    show "int_of_uint32 y = to_int_mod_ring z" unfolding zx using yx unfolding urel32_def[OF *] by simp
+  qed
+qed
+
+lemma mod_ring_finite_field_ops64: assumes small: "p \<le> 4294967295" 
+  shows "mod_ring_gen (finite_field_ops64 (uint64_of_int p)) mod_ring_rel64 p" 
+proof -
+  let ?pp = "uint64_of_int p" 
+  have ppp: "p = int_of_uint64 ?pp"
+    by (subst int_of_uint64_inv, insert small p2, auto)
+  note * = ppp small 
+  interpret ring_ops "finite_field_ops64 ?pp" mod_ring_rel64 
+    by (rule ring_finite_field_ops64, insert *)
+  interpret int: mod_ring_gen "finite_field_ops p" mod_ring_rel
+    by (rule mod_ring_finite_field_ops)
   show ?thesis
   proof (unfold_locales, rule p, auto simp: finite_field_ops64_def)
     fix x

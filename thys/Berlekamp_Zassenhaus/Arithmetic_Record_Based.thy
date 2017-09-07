@@ -88,8 +88,8 @@ declare arith_ops.euclid_ext_aux_i.simps[code]
  
 unbundle lifting_syntax
                                                        
-locale idom_ops = arith_ops ops for ops :: "'i arith_ops_record" +
-  fixes R :: "'i \<Rightarrow> 'a :: idom \<Rightarrow> bool" 
+locale ring_ops = arith_ops ops for ops :: "'i arith_ops_record" +
+  fixes R :: "'i \<Rightarrow> 'a :: comm_ring_1 \<Rightarrow> bool" 
   assumes bi_unique[transfer_rule]: "bi_unique R" 
   and right_total[transfer_rule]: "right_total R"
   and zero[transfer_rule]: "R zero 0"
@@ -115,6 +115,9 @@ proof (intro rel_funI, goal_cases)
   qed (simp add: one)
 qed
 end
+
+locale idom_ops = ring_ops ops R for ops :: "'i arith_ops_record" and
+  R :: "'i \<Rightarrow> 'a :: idom \<Rightarrow> bool"
 
 locale idom_divide_ops = idom_ops ops R for ops :: "'i arith_ops_record" and
   R :: "'i \<Rightarrow> 'a :: idom_divide \<Rightarrow> bool" +

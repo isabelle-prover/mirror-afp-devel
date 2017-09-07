@@ -21,7 +21,6 @@ hide_const(open) monom coeff
 
 text \<open>Whereas @{thm finite_field_factorization} provides a result for a polynomials over GF(p),
   we now develop a theorem which speaks about integer polynomials modulo p.\<close>
-
 lemma (in poly_mod_prime_type) finite_field_factorization_modulo_ring:
   assumes g: "(g :: 'a mod_ring poly) = of_int_poly f"
   and sf: "square_free_m f"

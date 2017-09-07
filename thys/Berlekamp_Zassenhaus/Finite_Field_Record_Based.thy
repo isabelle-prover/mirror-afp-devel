@@ -189,6 +189,8 @@ locale mod_ring_locale =
   assumes p: "p = int CARD('a)"
 begin
 lemma nat_p: "nat p = CARD('a)" unfolding p by simp
+lemma p2: "p \<ge> 2" unfolding p using nontriv[where 'a = 'a] by auto
+lemma p2_ident: "int (CARD('a) - 2) = p - 2" using p2 unfolding p by simp
 
 definition mod_ring_rel :: "int \<Rightarrow> 'a mod_ring \<Rightarrow> bool" where
   "mod_ring_rel x x' = (x = to_int_mod_ring x')"
@@ -334,6 +336,19 @@ qed
 
 declare power_p.simps[simp del]
 
+lemma ring_finite_field_ops: "ring_ops (finite_field_ops p) mod_ring_rel"
+  by (unfold_locales, auto simp:
+  finite_field_ops_def
+  bi_unique_mod_ring_rel
+  right_total_mod_ring_rel
+  mod_ring_plus
+  mod_ring_minus
+  mod_ring_uminus
+  mod_ring_mult
+  mod_ring_eq
+  mod_ring_0
+  mod_ring_1
+  Domainp_mod_ring_rel)
 end
 
 locale prime_field = mod_ring_locale p ty for p and ty :: "'a :: prime_card itself"
@@ -379,9 +394,6 @@ proof -
 qed
 
 (* inverse *)
-lemma p2: "p \<ge> 2" using prime_ge_2_int[OF prime] by auto
-lemma p2_ident: "int (CARD('a) - 2) = p - 2" using p2 unfolding p by simp
-
 lemma mod_ring_inverse[transfer_rule]: "(mod_ring_rel ===> mod_ring_rel) (inverse_p p) inverse"
 proof (intro rel_funI)
   fix x y
@@ -442,8 +454,8 @@ text \<open>Once we have proven the soundness of the implementation, we do not c
 lifting_forget mod_ring.lifting
 
 text \<open>For soundness of the 32-bit implementation, we mainly prove that this implementation
-  implements the int-based implementation of GF(p).\<close>
-context prime_field
+  implements the int-based implementation of the mod-ring.\<close>
+context mod_ring_locale
 begin
 
 context fixes pp :: "uint32" 
@@ -651,25 +663,8 @@ lemma mod_ring_minus32: "(mod_ring_rel32 ===> mod_ring_rel32 ===> mod_ring_rel32
 lemma mod_ring_mult32: "(mod_ring_rel32 ===> mod_ring_rel32 ===> mod_ring_rel32) (mult_p32 pp) (op *)"
   using urel32_mult mod_ring_mult unfolding mod_ring_rel32_def rel_fun_def by blast
 
-lemma mod_ring_normalize32: "(mod_ring_rel32 ===> mod_ring_rel32) (\<lambda>x. if x = 0 then 0 else 1) normalize" 
-  using urel32_normalize mod_ring_normalize  unfolding mod_ring_rel32_def rel_fun_def by blast
-
-lemma mod_ring_mod32: "(mod_ring_rel32 ===> mod_ring_rel32 ===> mod_ring_rel32) (\<lambda>x y. if y = 0 then x else 0) op mod" 
-  using urel32_mod mod_ring_mod unfolding mod_ring_rel32_def rel_fun_def by blast
-
-lemma mod_ring_unit_factor32: "(mod_ring_rel32 ===> mod_ring_rel32) (\<lambda>x. x) unit_factor" 
-  using mod_ring_unit_factor unfolding mod_ring_rel32_def rel_fun_def by blast
-
 lemma mod_ring_eq32: "(mod_ring_rel32 ===> mod_ring_rel32 ===> op =) op = op =" 
   using urel32_eq mod_ring_eq unfolding mod_ring_rel32_def rel_fun_def by blast
-
-lemma mod_ring_inverse32: "(mod_ring_rel32 ===> mod_ring_rel32) (inverse_p32 pp) inverse"
-  using urel32_inverse mod_ring_inverse unfolding mod_ring_rel32_def rel_fun_def by blast
-
-lemma mod_ring_divide32: "(mod_ring_rel32 ===> mod_ring_rel32 ===> mod_ring_rel32) (divide_p32 pp) op /"
-  using mod_ring_inverse32 mod_ring_mult32
-  unfolding divide_p32_def divide_mod_ring_def inverse_mod_ring_def[symmetric]
-    rel_fun_def by blast
 
 lemma urel32_inj: "urel32 x y \<Longrightarrow> urel32 x z \<Longrightarrow> y = z" 
   using urel32_eq[of x y x z] by auto
@@ -726,24 +721,53 @@ proof
   qed
 qed
 
-lemma finite_field_ops32: "field_ops (finite_field_ops32 pp) mod_ring_rel32"
+lemma ring_finite_field_ops32: "ring_ops (finite_field_ops32 pp) mod_ring_rel32"
   by (unfold_locales, auto simp:
   finite_field_ops32_def
   bi_unique_mod_ring_rel32
   right_total_mod_ring_rel32
-  mod_ring_divide32
   mod_ring_plus32
   mod_ring_minus32
   mod_ring_uminus32
-  mod_ring_inverse32
-  mod_ring_mod32
-  mod_ring_unit_factor32
-  mod_ring_normalize32
   mod_ring_mult32
   mod_ring_eq32
   mod_ring_0_32
   mod_ring_1_32
   Domainp_mod_ring_rel32)
+end
+end
+
+context prime_field
+begin
+context fixes pp :: "uint32" 
+  assumes *: "p = int_of_uint32 pp" "p \<le> 65535" 
+begin
+
+lemma mod_ring_normalize32: "(mod_ring_rel32 ===> mod_ring_rel32) (\<lambda>x. if x = 0 then 0 else 1) normalize" 
+  using urel32_normalize[OF *] mod_ring_normalize unfolding mod_ring_rel32_def[OF *] rel_fun_def by blast
+
+lemma mod_ring_mod32: "(mod_ring_rel32 ===> mod_ring_rel32 ===> mod_ring_rel32) (\<lambda>x y. if y = 0 then x else 0) op mod" 
+  using urel32_mod[OF *] mod_ring_mod unfolding mod_ring_rel32_def[OF *] rel_fun_def by blast
+
+lemma mod_ring_unit_factor32: "(mod_ring_rel32 ===> mod_ring_rel32) (\<lambda>x. x) unit_factor" 
+  using mod_ring_unit_factor unfolding mod_ring_rel32_def[OF *] rel_fun_def by blast
+
+lemma mod_ring_inverse32: "(mod_ring_rel32 ===> mod_ring_rel32) (inverse_p32 pp) inverse"
+  using urel32_inverse[OF *] mod_ring_inverse unfolding mod_ring_rel32_def[OF *] rel_fun_def by blast
+
+lemma mod_ring_divide32: "(mod_ring_rel32 ===> mod_ring_rel32 ===> mod_ring_rel32) (divide_p32 pp) op /"
+  using mod_ring_inverse32 mod_ring_mult32[OF *]
+  unfolding divide_p32_def divide_mod_ring_def inverse_mod_ring_def[symmetric]
+    rel_fun_def by blast
+
+lemma finite_field_ops32: "field_ops (finite_field_ops32 pp) mod_ring_rel32"
+  by (unfold_locales, insert ring_finite_field_ops32[OF *], auto simp:
+  ring_ops_def
+  finite_field_ops32_def
+  mod_ring_divide32
+  mod_ring_inverse32
+  mod_ring_mod32
+  mod_ring_normalize32)
 
 end
 end
@@ -841,9 +865,9 @@ end
 lemma shiftr_uint64_code [code_unfold]: "shiftr x 1 = (uint64_shiftr x 1)"
   unfolding shiftr_uint64_code using integer_of_nat_1 by auto
 
-text \<open>For soundness of the 32-bit implementation, we mainly prove that this implementation
+text \<open>For soundness of the 64-bit implementation, we mainly prove that this implementation
   implements the int-based implementation of GF(p).\<close>
-context prime_field
+context mod_ring_locale
 begin
 
 context fixes pp :: "uint64" 
@@ -1051,25 +1075,8 @@ lemma mod_ring_minus64: "(mod_ring_rel64 ===> mod_ring_rel64 ===> mod_ring_rel64
 lemma mod_ring_mult64: "(mod_ring_rel64 ===> mod_ring_rel64 ===> mod_ring_rel64) (mult_p64 pp) (op *)"
   using urel64_mult mod_ring_mult unfolding mod_ring_rel64_def rel_fun_def by blast
 
-lemma mod_ring_normalize64: "(mod_ring_rel64 ===> mod_ring_rel64) (\<lambda>x. if x = 0 then 0 else 1) normalize" 
-  using urel64_normalize mod_ring_normalize  unfolding mod_ring_rel64_def rel_fun_def by blast
-
-lemma mod_ring_mod64: "(mod_ring_rel64 ===> mod_ring_rel64 ===> mod_ring_rel64) (\<lambda>x y. if y = 0 then x else 0) op mod" 
-  using urel64_mod mod_ring_mod unfolding mod_ring_rel64_def rel_fun_def by blast
-
-lemma mod_ring_unit_factor64: "(mod_ring_rel64 ===> mod_ring_rel64) (\<lambda>x. x) unit_factor" 
-  using mod_ring_unit_factor unfolding mod_ring_rel64_def rel_fun_def by blast
-
 lemma mod_ring_eq64: "(mod_ring_rel64 ===> mod_ring_rel64 ===> op =) op = op =" 
   using urel64_eq mod_ring_eq unfolding mod_ring_rel64_def rel_fun_def by blast
-
-lemma mod_ring_inverse64: "(mod_ring_rel64 ===> mod_ring_rel64) (inverse_p64 pp) inverse"
-  using urel64_inverse mod_ring_inverse unfolding mod_ring_rel64_def rel_fun_def by blast
-
-lemma mod_ring_divide64: "(mod_ring_rel64 ===> mod_ring_rel64 ===> mod_ring_rel64) (divide_p64 pp) op /"
-  using mod_ring_inverse64 mod_ring_mult64
-  unfolding divide_p64_def divide_mod_ring_def inverse_mod_ring_def[symmetric]
-    rel_fun_def by blast
 
 lemma urel64_inj: "urel64 x y \<Longrightarrow> urel64 x z \<Longrightarrow> y = z" 
   using urel64_eq[of x y x z] by auto
@@ -1126,31 +1133,72 @@ proof
   qed
 qed
 
-lemma finite_field_ops64: "field_ops (finite_field_ops64 pp) mod_ring_rel64"
+lemma ring_finite_field_ops64: "ring_ops (finite_field_ops64 pp) mod_ring_rel64"
   by (unfold_locales, auto simp:
   finite_field_ops64_def
   bi_unique_mod_ring_rel64
   right_total_mod_ring_rel64
-  mod_ring_divide64
   mod_ring_plus64
   mod_ring_minus64
   mod_ring_uminus64
-  mod_ring_inverse64
-  mod_ring_mod64
-  mod_ring_unit_factor64
-  mod_ring_normalize64
   mod_ring_mult64
   mod_ring_eq64
   mod_ring_0_64
   mod_ring_1_64
   Domainp_mod_ring_rel64)
-
+end
 end
 
-thm (* three implementations of modular integer arithmetic *)
-  finite_field_ops64 
+context prime_field
+begin
+context fixes pp :: "uint64" 
+  assumes *: "p = int_of_uint64 pp" "p \<le> 4294967295" 
+begin
+
+lemma mod_ring_normalize64: "(mod_ring_rel64 ===> mod_ring_rel64) (\<lambda>x. if x = 0 then 0 else 1) normalize" 
+  using urel64_normalize[OF *] mod_ring_normalize unfolding mod_ring_rel64_def[OF *] rel_fun_def by blast
+
+lemma mod_ring_mod64: "(mod_ring_rel64 ===> mod_ring_rel64 ===> mod_ring_rel64) (\<lambda>x y. if y = 0 then x else 0) op mod" 
+  using urel64_mod[OF *] mod_ring_mod unfolding mod_ring_rel64_def[OF *] rel_fun_def by blast
+
+lemma mod_ring_unit_factor64: "(mod_ring_rel64 ===> mod_ring_rel64) (\<lambda>x. x) unit_factor" 
+  using mod_ring_unit_factor unfolding mod_ring_rel64_def[OF *] rel_fun_def by blast
+
+lemma mod_ring_inverse64: "(mod_ring_rel64 ===> mod_ring_rel64) (inverse_p64 pp) inverse"
+  using urel64_inverse[OF *] mod_ring_inverse unfolding mod_ring_rel64_def[OF *] rel_fun_def by blast
+
+lemma mod_ring_divide64: "(mod_ring_rel64 ===> mod_ring_rel64 ===> mod_ring_rel64) (divide_p64 pp) op /"
+  using mod_ring_inverse64 mod_ring_mult64[OF *]
+  unfolding divide_p64_def divide_mod_ring_def inverse_mod_ring_def[symmetric]
+    rel_fun_def by blast
+
+lemma finite_field_ops64: "field_ops (finite_field_ops64 pp) mod_ring_rel64"
+  by (unfold_locales, insert ring_finite_field_ops64[OF *], auto simp:
+  ring_ops_def
+  finite_field_ops64_def
+  mod_ring_divide64
+  mod_ring_inverse64
+  mod_ring_mod64
+  mod_ring_normalize64)
+end
+end
+
+context prime_field
+begin
+ (* three implementations of modular integer arithmetic for finite fields *)
+thm 
+  finite_field_ops64
   finite_field_ops32
   finite_field_ops
+end
+
+context mod_ring_locale
+begin
+ (* three implementations of modular integer arithmetic for finite rings *)
+thm 
+  ring_finite_field_ops64
+  ring_finite_field_ops32
+  ring_finite_field_ops
 end
 
 no_notation shiftr (infixl ">>" 55) (* to avoid conflict with bind *)

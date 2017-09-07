@@ -35,7 +35,7 @@ private abbreviation (input) DP where "DP \<equiv> arith_ops_record.DP ops"
 
 definition is_poly :: "'i list \<Rightarrow> bool" where
   "is_poly xs \<longleftrightarrow> list_all DP xs \<and> no_trailing (HOL.eq zero) xs"
-
+                                        
 definition cCons_i :: "'i \<Rightarrow> 'i list \<Rightarrow> 'i list" 
 where
   "cCons_i x xs = (if xs = [] \<and> x = zero then [] else x # xs)"
@@ -61,7 +61,7 @@ definition one_poly_i :: "'i list" where
   [code_unfold]: "one_poly_i = [one]"
 
 definition smult_i :: "'i \<Rightarrow> 'i list \<Rightarrow> 'i list" where
-  "smult_i a pp = (if a = zero then [] else map (times a) pp)"
+  "smult_i a pp = (if a = zero then [] else strip_while (op = zero) (map (times a) pp))"
 
 definition poly_of_list_i :: "'i list \<Rightarrow> 'i list" where
   "poly_of_list_i = strip_while (op = zero)"
@@ -200,9 +200,12 @@ end
 (* **************************************************************************** *)
 subsubsection \<open>Properties\<close>
 
+lemma coeffs_smult': "coeffs (smult a p) = (if a = 0 then [] else strip_while (op = 0) (map (Groups.times a) (coeffs p)))" 
+   by (simp add: coeffs_map_poly smult_conv_map_poly)
+
 lifting_forget poly.lifting
 
-context idom_ops
+context ring_ops
 begin
 
 definition poly_rel :: "'i list \<Rightarrow> 'a poly \<Rightarrow> bool" where
@@ -349,7 +352,7 @@ qed
 
 (* smult *)
 lemma poly_rel_smult[transfer_rule]: "(R ===> poly_rel ===> poly_rel) (smult_i ops) smult"
-  unfolding rel_fun_def poly_rel_def coeffs_smult smult_i_def
+  unfolding rel_fun_def poly_rel_def coeffs_smult' smult_i_def
 proof (intro allI impI, goal_cases)
   case (1 x y xs ys)
   note [transfer_rule] = 1
@@ -605,6 +608,30 @@ proof (induct N arbitrary: x X y Y)
   qed (transfer_prover+)
 qed simp
 
+lemma poly_rel_dvd[transfer_rule]: "(poly_rel ===> poly_rel ===> op =) (dvd_poly_i ops) (op dvd)"
+  unfolding dvd_poly_i_def[abs_def] dvd_def[abs_def] 
+  by (transfer_prover_start, transfer_step+, auto)
+
+lemma poly_rel_monic[transfer_rule]: "(poly_rel ===> op =) (monic_i ops) monic"
+  unfolding monic_i_def lead_coeff_i_def' by transfer_prover
+
+lemma ring_ops_poly: "ring_ops (poly_ops ops) poly_rel"
+  by (unfold_locales, auto simp: poly_ops_def  
+  bi_unique_poly_rel 
+  right_total_poly_rel
+  poly_rel_times
+  poly_rel_zero 
+  poly_rel_one
+  poly_rel_minus
+  poly_rel_uminus
+  poly_rel_plus
+  poly_rel_eq
+  Domainp_is_poly)
+end
+
+context idom_ops
+begin
+
 (* pderiv *)
 lemma poly_rel_pderiv [transfer_rule]: "(poly_rel ===> poly_rel) (pderiv_i ops) pderiv"
 proof (intro rel_funI, unfold poly_rel_def coeffs_pderiv_code pderiv_i_def pderiv_coeffs_def)
@@ -625,29 +652,12 @@ proof (intro rel_funI, unfold poly_rel_def coeffs_pderiv_code pderiv_i_def pderi
   qed simp
 qed 
 
-lemma poly_rel_dvd[transfer_rule]: "(poly_rel ===> poly_rel ===> op =) (dvd_poly_i ops) (op dvd)"
-  unfolding dvd_poly_i_def[abs_def] dvd_def[abs_def] 
-  by (transfer_prover_start, transfer_step+, auto)
-
 lemma poly_rel_irreducible[transfer_rule]: "(poly_rel ===> op =) (irreducible_i ops) irreducible\<^sub>d"
   unfolding irreducible_i_def[abs_def] irreducible\<^sub>d_def[abs_def] 
   by (transfer_prover_start, transfer_step+, auto)
 
-lemma poly_rel_monic[transfer_rule]: "(poly_rel ===> op =) (monic_i ops) monic"
-  unfolding monic_i_def lead_coeff_i_def' by transfer_prover
-
 lemma idom_ops_poly: "idom_ops (poly_ops ops) poly_rel"
-  by (unfold_locales, auto simp: poly_ops_def  
-  bi_unique_poly_rel 
-  right_total_poly_rel
-  poly_rel_times
-  poly_rel_zero 
-  poly_rel_one
-  poly_rel_minus
-  poly_rel_uminus
-  poly_rel_plus
-  poly_rel_eq
-  Domainp_is_poly)
+  using ring_ops_poly unfolding ring_ops_def idom_ops_def by auto
 end
 
 context field_ops
@@ -780,14 +790,15 @@ end
 
 (* ********************************************************** *)
 
-context idom_ops
+context ring_ops
 begin
-lemma assumes "poly_rel xs x" "poly_rel ys y" 
-  shows "times_poly_i ops xs ys = times_poly_i ops ys xs"
-proof -
-  note [transfer_rule] = assms
+notepad (* checking transfer rules *)
+begin
+  fix xs x ys y
+  assume [transfer_rule]: "poly_rel xs x" "poly_rel ys y" 
   have "x * y = y * x" by simp
-  from this[untransferred] show ?thesis .
-qed
+  from this[untransferred]
+  have "times_poly_i ops xs ys = times_poly_i ops ys xs" .
+end
 end
 end

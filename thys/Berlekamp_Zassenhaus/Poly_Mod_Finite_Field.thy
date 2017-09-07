@@ -369,6 +369,15 @@ lemma coeff_MP_Rel [transfer_rule]: "(MP_Rel ===> op = ===> M_Rel) coeff coeff"
 
 lemma M_1_1[simp]: "M 1 = 1" unfolding M_def unfolding m by simp
 
+lemma square_free_MP_Rel [transfer_rule]: "(MP_Rel ===> op =) square_free_m square_free"
+  unfolding square_free_m_def[abs_def] square_free_def[abs_def]
+  by (transfer_prover_start, transfer_step+, auto)
+end
+
+locale poly_mod_prime_type = poly_mod_type m ty for m :: int and
+  ty :: "'a :: prime_card itself"  
+begin 
+
 lemma factorization_MP_Rel [transfer_rule]:
   "(MP_Rel ===> MF_Rel ===> op =) factorization_m (factorization Irr_Mon)"
   unfolding rel_fun_def
@@ -454,10 +463,6 @@ proof (intro allI impI, goal_cases)
   qed
 qed
 
-lemma square_free_MP_Rel [transfer_rule]: "(MP_Rel ===> op =) square_free_m square_free"
-  unfolding square_free_m_def[abs_def] square_free_def[abs_def]
-  by (transfer_prover_start, transfer_step+, auto)
-
 lemma coprime_MP_Rel [transfer_rule]: "(MP_Rel ===> MP_Rel ===> op =) coprime_m coprime"
   unfolding coprime_m_def[abs_def] coprime_def[abs_def]
   by (transfer_prover_start, transfer_step+, auto)
@@ -465,14 +470,6 @@ lemma coprime_MP_Rel [transfer_rule]: "(MP_Rel ===> MP_Rel ===> op =) coprime_m 
 lemma monic_degree_m[simp]: "monic p \<Longrightarrow> degree_m p = degree p"
   by (simp add: degree_m_eq m1)
 
-end
-
-locale poly_mod_prime_type =
-  fixes m :: int and ty :: "'a :: prime_card itself"
-  assumes m: "m = CARD('a)"
-begin
-
-sublocale poly_mod_type m ty using m by unfold_locales
 
 lemma degree_m_mult_eq:
   assumes p0: "\<not> p =m 0" and q0: "\<not> q =m 0"
@@ -486,6 +483,12 @@ proof-
 qed
 
 end
+
+lemma poly_mod_type_simps: "poly_mod_type TYPE('a :: nontriv) m = (m = int CARD('a))" 
+  "poly_mod_prime_type TYPE('b) m = (m = int CARD('b))"
+  "class.prime_card TYPE('b :: prime_card) = prime CARD('b :: prime_card)" 
+  unfolding poly_mod_type_def class.prime_card_def poly_mod_prime_type_def by auto
+
 
 lemma prime_type_prime_card: assumes p: "prime p" 
   and "\<exists>(Rep :: 'a \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< p :: int}"
@@ -505,7 +508,7 @@ lemma(in poly_mod) degree_m_mult_eq:
   assumes m: "prime m" and f: "\<not> f =m 0" and g: "\<not> g =m 0" shows "degree_m (f * g) = degree_m f + degree_m g"
 proof-
   {
-    note poly_mod_prime_type.degree_m_mult_eq[unfolded class.prime_card_def poly_mod_prime_type_def, of m]
+    note poly_mod_prime_type.degree_m_mult_eq[unfolded poly_mod_type_simps, of m]
     note main = this[internalize_sort "'a :: prime_card"]
     assume "\<exists>(Rep :: 'b \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< m :: int}"
     from prime_type_prime_card[OF m this]
