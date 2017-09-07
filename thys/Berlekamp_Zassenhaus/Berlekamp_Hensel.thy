@@ -22,31 +22,32 @@ hide_const coeff monom
 
 definition berlekamp_hensel :: "int \<Rightarrow> nat \<Rightarrow> int poly \<Rightarrow> int poly list" where
   "berlekamp_hensel p n f = (case finite_field_factorization_int p f of
-    (_,fs) \<Rightarrow> hensel_lifting p n f fs)"           
+    (_,fs) \<Rightarrow> hensel_lifting p n f fs)"
 
 text \<open>Finite field factorization in combination with Hensel-lifting delivers 
   factorization modulo $p^k$ where factors are irreducible modulo $p$.
   Assumptions: input polynomial is square-free modulo $p$.\<close>
 
-lemma berlekamp_hensel_main: assumes 
-  prime: "prime p" 
-  and n: "n \<noteq> 0" 
-  and res: "berlekamp_hensel p n f = gs" 
-  and cop: "coprime (lead_coeff f) p" 
-  and sf: "poly_mod.square_free_m p f" 
-  and berl: "finite_field_factorization_int p f = (c,fs)" 
-shows "poly_mod.factorization_m (p ^ n) f (lead_coeff f, mset gs)" (* factorization mod p^n *)
-    "sort (map degree fs) = sort (map degree gs)"
-    "\<And> g. g \<in> set gs \<Longrightarrow> monic g \<and> poly_mod.Mp (p^n) g = g \<and>  (* monic and normalized *)
-      poly_mod.irreducible\<^sub>d_m p g \<and> (* irreducibility even mod p *)
-      poly_mod.degree_m p g = degree g"   (* mod p does not change degree of g *)     
+context poly_mod_prime begin
+
+lemma berlekamp_hensel_main:
+  assumes n: "n \<noteq> 0"
+    and res: "berlekamp_hensel p n f = gs" 
+    and cop: "coprime (lead_coeff f) p" 
+    and sf: "square_free_m f" 
+    and berl: "finite_field_factorization_int p f = (c,fs)" 
+  shows "poly_mod.factorization_m (p ^ n) f (lead_coeff f, mset gs)" (* factorization mod p^n *)
+    and "sort (map degree fs) = sort (map degree gs)"
+    and "\<And> g. g \<in> set gs \<Longrightarrow> monic g \<and> poly_mod.Mp (p^n) g = g \<and>  (* monic and normalized *)
+        poly_mod.irreducible\<^sub>d_m p g \<and> (* irreducibility even mod p *)
+        poly_mod.degree_m p g = degree g"   (* mod p does not change degree of g *)
 proof -
   from res[unfolded berlekamp_hensel_def berl split] 
   have hen: "hensel_lifting p n f fs = gs" .
-  note bh = finite_field_factorization_int[OF prime sf berl]
+  note bh = finite_field_factorization_int[OF sf berl]
   from bh have "poly_mod.factorization_m p f (c, mset fs)" "c \<in> {0..<p}" "(\<forall>fi\<in>set fs. set (coeffs fi) \<subseteq> {0..<p})" 
     by (auto simp: poly_mod.unique_factorization_m_alt_def)
-  note hen = hensel_lifting[OF prime n hen cop sf, OF this]
+  note hen = hensel_lifting[OF n hen cop sf, OF this]
   show "poly_mod.factorization_m (p ^ n) f (lead_coeff f, mset gs)" 
     "sort (map degree fs) = sort (map degree gs)"
     "\<And> g. g \<in> set gs \<Longrightarrow> monic g \<and> poly_mod.Mp (p^n) g = g \<and>  
@@ -54,40 +55,40 @@ proof -
       poly_mod.degree_m p g = degree g" using hen by auto
 qed
 
-theorem berlekamp_hensel: assumes 
-  prime: "prime p" 
-  and cop: "coprime (lead_coeff f) p" 
-  and sf: "poly_mod.square_free_m p f" 
-  and res: "berlekamp_hensel p n f = gs"
-  and n: "n \<noteq> 0" 
+theorem berlekamp_hensel:
+  assumes cop: "coprime (lead_coeff f) p"
+    and sf: "square_free_m f"
+    and res: "berlekamp_hensel p n f = gs"
+    and n: "n \<noteq> 0"
   shows "poly_mod.factorization_m (p^n) f (lead_coeff f, mset gs)" (* factorization mod p^n *)
-    "\<And> g. g \<in> set gs \<Longrightarrow> poly_mod.Mp (p^n) g = g \<and> poly_mod.irreducible\<^sub>d_m p g"   
+    and "\<And> g. g \<in> set gs \<Longrightarrow> poly_mod.Mp (p^n) g = g \<and> poly_mod.irreducible\<^sub>d_m p g"
    (* normalized and irreducible\<^sub>d even mod p *)
 proof -
   obtain c fs where "finite_field_factorization_int p f = (c,fs)" by force
-  from berlekamp_hensel_main[OF prime n res cop sf this]
+  from berlekamp_hensel_main[OF n res cop sf this]
   show "poly_mod.factorization_m (p^n) f (lead_coeff f, mset gs)" 
     "\<And> g. g \<in> set gs \<Longrightarrow> poly_mod.Mp (p^n) g = g \<and> poly_mod.irreducible\<^sub>d_m p g" by auto
 qed
 
-lemma berlekamp_and_hensel_separated: assumes 
-  prime: "prime p" 
-  and cop: "coprime (lead_coeff f) p" 
-  and sf: "poly_mod.square_free_m p f" 
-  and res: "hensel_lifting p n f fs = gs"  
-  and berl: "finite_field_factorization_int p f = (c,fs)" 
-  and n: "n \<noteq> 0" 
-shows "berlekamp_hensel p n f = gs" 
-  "sort (map degree fs) = sort (map degree gs)" 
+lemma berlekamp_and_hensel_separated:
+  assumes cop: "coprime (lead_coeff f) p"
+    and sf: "square_free_m f"
+    and res: "hensel_lifting p n f fs = gs"
+    and berl: "finite_field_factorization_int p f = (c,fs)"
+    and n: "n \<noteq> 0"
+  shows "berlekamp_hensel p n f = gs"
+    and "sort (map degree fs) = sort (map degree gs)"
 proof -
   show "berlekamp_hensel p n f = gs" unfolding res[symmetric]
     berlekamp_hensel_def hensel_lifting_def berl split Let_def ..
-  from berlekamp_hensel_main[OF prime n this cop sf berl] show "sort (map degree fs) = sort (map degree gs)"
+  from berlekamp_hensel_main[OF n this cop sf berl] show "sort (map degree fs) = sort (map degree gs)"
     by auto 
 qed
 
-  
-lemma prime_cop_exp_poly_mod: assumes prime: "prime p" and cop: "coprime c p" and n: "n \<noteq> 0"
+end
+
+lemma prime_cop_exp_poly_mod:
+  assumes prime: "prime p" and cop: "coprime c p" and n: "n \<noteq> 0"
   shows "poly_mod.M (p^n) c \<in> {1 ..< p^n}"
 proof -
   from prime have p1: "p > 1" by (simp add: prime_int_iff)
@@ -96,14 +97,16 @@ proof -
   moreover have "M c < p^n" "M c \<ge> 0" unfolding M_def using m1 by auto
   ultimately show ?thesis by auto
 qed
-  
+
 context poly_mod_2
 begin
 
 context
   fixes p :: int
-  assumes prime: "prime p" 
+  assumes prime: "prime p"
 begin
+
+interpretation p: poly_mod_prime p using prime by unfold_locales
 
 lemma coprime_lead_coeff_factor: assumes "coprime (lead_coeff (f * g)) p"
   shows "coprime (lead_coeff f) p" "coprime (lead_coeff g) p" 
@@ -120,7 +123,7 @@ qed
 
 lemma unique_factorization_m_factor: assumes uf: "unique_factorization_m (f * g) (c,hs)"
   and cop: "coprime (lead_coeff (f * g)) p"  
-  and sf: "poly_mod.square_free_m p (f * g)" 
+  and sf: "p.square_free_m (f * g)" 
   and n: "n \<noteq> 0" 
   and m: "m = p^n" 
   shows "\<exists> fs gs. unique_factorization_m f (lead_coeff f,fs) 
@@ -140,10 +143,10 @@ proof -
     by (rule degree_m_eq[OF _ m1], insert copm(2) m1, auto)  
   define fs where "fs \<equiv> mset (berlekamp_hensel p n f)"
   define gs where "gs \<equiv> mset (berlekamp_hensel p n g)"
-  from berlekamp_hensel[OF prime cop(1) sf(1) refl n, folded m]
+  from p.berlekamp_hensel[OF cop(1) sf(1) refl n, folded m]
   have f: "factorization_m f (lead_coeff f,fs)" 
     and f_id: "\<And> f. f \<in># fs \<Longrightarrow> Mp f = f" unfolding fs_def by auto
-  from berlekamp_hensel[OF prime cop(2) sf(2) refl n, folded m]
+  from p.berlekamp_hensel[OF cop(2) sf(2) refl n, folded m]
   have g: "factorization_m g (lead_coeff g,gs)" 
     and g_id: "\<And> f. f \<in># gs \<Longrightarrow> Mp f = f" unfolding gs_def by auto
   from factorization_m_prod[OF f g] uf[unfolded unique_factorization_m_alt_def]
@@ -175,13 +178,14 @@ proof -
   from uff ufg eq[symmetric] idf idg show ?thesis by auto
 qed
 
-lemma unique_factorization_factorI: assumes ufact: "unique_factorization_m (f * g) FG"
-  and cop: "coprime (lead_coeff (f * g)) p"  
-  and sf: "poly_mod.square_free_m p (f * g)" 
-  and n: "n \<noteq> 0" 
-  and m: "m = p^n" 
-shows "factorization_m f F \<Longrightarrow> unique_factorization_m f F"
-    "factorization_m g G \<Longrightarrow> unique_factorization_m g G"
+lemma unique_factorization_factorI:
+  assumes ufact: "unique_factorization_m (f * g) FG"
+    and cop: "coprime (lead_coeff (f * g)) p"
+    and sf: "poly_mod.square_free_m p (f * g)"
+    and n: "n \<noteq> 0" 
+    and m: "m = p^n" 
+  shows "factorization_m f F \<Longrightarrow> unique_factorization_m f F"
+    and "factorization_m g G \<Longrightarrow> unique_factorization_m g G"
 proof -
   obtain c fg where FG: "FG = (c,fg)" by force
   from unique_factorization_m_factor[OF ufact[unfolded FG] cop sf n m]
@@ -192,11 +196,8 @@ proof -
   from ufact(2) show "factorization_m g G \<Longrightarrow> unique_factorization_m g G"
     by (metis unique_factorization_m_alt_def)
 qed
-end
-end
 
-context poly_mod_2
-begin
+end
 
 lemma monic_Mp_prod_mset: assumes fs: "\<And> f. f \<in># fs \<Longrightarrow> monic (Mp f)" 
   shows "monic (Mp (prod_mset fs))"
@@ -261,9 +262,9 @@ next
   case (add f fs)
   then show ?case using degree_m_mult_le[of f "prod_mset fs"] by auto
 qed
-  
+
 end
-  
+
 
 context poly_mod_prime
 begin
@@ -305,7 +306,7 @@ proof -
     have sf_Mf: "square_free_m (q.Mp f)"
       by (rule square_free_m_cong[OF sf_f], auto simp: Mp_Mp_pow_is_Mp n m1) 
     have "coprime (lead_coeff (q.Mp f)) p" using mon[OF f] prime by simp
-    from berlekamp_hensel[OF prime this sf_Mf refl n, unfolded lc] obtain gs where
+    from berlekamp_hensel[OF this sf_Mf refl n, unfolded lc] obtain gs where
       qfact: "q.factorization_m (q.Mp f) (1, mset gs)"
       and "\<And> g. g \<in> set gs \<Longrightarrow> irreducible\<^sub>d_m g" by blast
     hence fact: "q.Mp f = q.Mp (prod_list gs)" 
@@ -343,8 +344,7 @@ proof -
     with eq show "irreducible\<^sub>d_m f" unfolding irreducible\<^sub>d_m_def by auto
   qed
 qed
-  
-    
+
 lemma unique_monic_hensel_factorization: 
   assumes ufact: "unique_factorization_m C (1,Fs)"
   and C: "monic C" "square_free_m C" 
@@ -434,7 +434,7 @@ proof (induct Fs arbitrary: C rule: wf_induct[OF wf_measure[of size]])
     note u_factor = unique_factorization_factorI[OF prime ufact copAB sfAB this]
     from fact DA have "irreducible\<^sub>d_m D" "eq_m A D" unfolding add factorization_m_def by auto
     hence "irreducible\<^sub>d_m A" using Mp_irreducible\<^sub>d_m by fastforce
-    from irreducible\<^sub>d_lifting[OF prime n _ this] have irrA: "q.irreducible\<^sub>d_m A" using monA
+    from irreducible\<^sub>d_lifting[OF n _ this] have irrA: "q.irreducible\<^sub>d_m A" using monA
       by (simp add: m1 poly_mod.degree_m_eq_monic q.m1)
     
     from add have lenH: "(H,Fs) \<in> measure size" by auto
@@ -488,19 +488,16 @@ proof (induct Fs arbitrary: C rule: wf_induct[OF wf_measure[of size]])
     qed
   qed
 qed
-end
 
-theorem berlekamp_hensel_unique: assumes 
-  prime: "prime p" 
-  and cop: "coprime (lead_coeff f) p" 
-  and sf: "poly_mod.square_free_m p f" 
-  and res: "berlekamp_hensel p n f = gs" 
-  and n: "n \<noteq> 0" 
+theorem berlekamp_hensel_unique:
+  assumes cop: "coprime (lead_coeff f) p"
+  and sf: "poly_mod.square_free_m p f"
+  and res: "berlekamp_hensel p n f = gs"
+  and n: "n \<noteq> 0"
   shows "poly_mod.unique_factorization_m (p^n) f (lead_coeff f, mset gs)" (* unique factorization mod p^n *)
     "\<And> g. g \<in> set gs \<Longrightarrow> poly_mod.Mp (p^n) g = g"   (* normalized *)
 proof -
   let ?q = "p^n" 
-  interpret poly_mod_prime p by (standard, rule prime)
   interpret q: poly_mod_2 ?q unfolding poly_mod_2_def using m1 n by simp
   from berlekamp_hensel[OF assms]
   have bh_fact: "q.factorization_m f (lead_coeff f, mset gs)" by auto
@@ -536,7 +533,7 @@ proof -
   from Mp_square_free_m[of ?in, unfolded Mp_in] sf have sf: "square_free_m ?in"
     unfolding Mp_square_free_m by simp
   obtain a b where "finite_field_factorization_int p ?in = (a,b)" by force
-  from finite_field_factorization_int[OF prime sf this]
+  from finite_field_factorization_int[OF sf this]
   have ufact: "unique_factorization_m ?in (a, mset b)" by auto
   from unique_factorization_m_imp_factorization[OF this]
   have fact: "factorization_m ?in (a, mset b)" .
@@ -568,9 +565,8 @@ proof -
     unfolding q.unique_factorization_m_alt_def by metis
 qed
 
-lemma hensel_lifting_unique: assumes 
-  prime: "prime p" 
-  and n: "n \<noteq> 0" 
+lemma hensel_lifting_unique:
+  assumes n: "n \<noteq> 0" 
   and res: "hensel_lifting p n f fs = gs"                        (* result of hensel is fact. gs *)
   and cop: "coprime (lead_coeff f) p" 
   and sf: "poly_mod.square_free_m p f" 
@@ -588,10 +584,12 @@ proof -
     "\<And> g. g \<in> set gs \<Longrightarrow> monic g \<and> poly_mod.Mp (p^n) g = g \<and> 
       poly_mod.irreducible\<^sub>d_m p g \<and>                            
       poly_mod.degree_m p g = degree g" using hensel by auto
-  from berlekamp_hensel_unique[OF prime cop sf refl n]
+  from berlekamp_hensel_unique[OF cop sf refl n]
   have "poly_mod.unique_factorization_m (p ^ n) f (lead_coeff f, mset (berlekamp_hensel p n f))"  by auto
   with hensel(1) show "poly_mod.unique_factorization_m (p^n) f (lead_coeff f, mset gs)" 
     by (metis poly_mod.unique_factorization_m_alt_def)
 qed
+
+end
 
 end

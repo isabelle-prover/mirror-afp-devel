@@ -12,8 +12,7 @@ text \<open>We adapt the integer polynomial gcd algorithm so that it
 
 theory Gcd_Finite_Field_Impl
 imports 
-  Suitable_Prime 
-  Hensel_Lifting (* for poly_mod_prime *)
+  Suitable_Prime
   Code_Abort_Gcd
   Code_Target_Int (* to be able to efficiently primality of medium large numbers *)
 begin
@@ -23,11 +22,10 @@ definition coprime_approx_main :: "int \<Rightarrow> 'i arith_ops_record \<Right
      (of_int_poly_i ff_ops (poly_mod.Mp p g)) = one_poly_i ff_ops)" 
 
 lemma (in prime_field_gen) coprime_approx_main: 
-  assumes F: "(F :: 'a mod_ring poly) = of_int_poly (Mp f)"
-    and G: "(G :: 'a mod_ring poly) = of_int_poly (Mp g)"
-  shows "coprime_approx_main p ff_ops f g \<Longrightarrow> coprime_m f g" 
+  shows "coprime_approx_main p ff_ops f g \<Longrightarrow> coprime_m f g"
 proof -
-  let ?f' = "of_int_poly_i ff_ops (Mp f)" 
+  define F where F: "(F :: 'a mod_ring poly) = of_int_poly (Mp f)"
+  define G where G: "(G :: 'a mod_ring poly) = of_int_poly (Mp g)"  let ?f' = "of_int_poly_i ff_ops (Mp f)" 
   let ?g' = "of_int_poly_i ff_ops (Mp g)" 
   define f'' where "f'' \<equiv> of_int_poly (Mp f) :: 'a mod_ring poly"
   define g'' where "g'' \<equiv> of_int_poly (Mp g) :: 'a mod_ring poly"
@@ -51,43 +49,17 @@ proof -
     id id2 by auto
 qed
 
-lemma coprime_approx_main_uint32: assumes 
-  p: "prime p" and
-  res: "coprime_approx_main p (finite_field_ops32 (uint32_of_int p)) f g" and
-  small: "p \<le> 65535"     
-  shows "poly_mod.coprime_m p f g"
-proof -
-  have ne: "{0..<p} \<noteq> {}" using prime_ge_2_int[OF p] by auto
-  {
-    assume "\<exists>(Rep :: 'b \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< p :: int}"
-    from prime_type_prime_card[OF p this]
-    have "class.prime_card TYPE('b)" and p: "p = int CARD('b)" by auto
-    from prime_field_gen.coprime_approx_main[OF 
-        prime_field.prime_field_finite_field_ops32, unfolded prime_field_def mod_ring_locale_def,
-      internalize_sort "'a :: prime_card", OF this small refl refl res]
-    have ?thesis .
-  }
-  from this[cancel_type_definition, OF ne] show ?thesis .
-qed
+context poly_mod_prime begin
 
-lemma coprime_approx_main_uint64: assumes 
-  p: "prime p" and
-  res: "coprime_approx_main p (finite_field_ops64 (uint64_of_int p)) f g" and
-  small: "p \<le> 4294967295"     
-  shows "poly_mod.coprime_m p f g"
-proof -
-  have ne: "{0..<p} \<noteq> {}" using prime_ge_2_int[OF p] by auto
-  {
-    assume "\<exists>(Rep :: 'b \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< p :: int}"
-    from prime_type_prime_card[OF p this]
-    have "class.prime_card TYPE('b)" and p: "p = int CARD('b)" by auto
-    from prime_field_gen.coprime_approx_main[OF 
-        prime_field.prime_field_finite_field_ops64, unfolded prime_field_def mod_ring_locale_def,
-      internalize_sort "'a :: prime_card", OF this small refl refl res]
-    have ?thesis .
-  }
-  from this[cancel_type_definition, OF ne] show ?thesis .
-qed
+lemmas coprime_approx_main_uint32 = prime_field_gen.coprime_approx_main[OF 
+        prime_field.prime_field_finite_field_ops32, unfolded prime_field_def mod_ring_locale_def
+   poly_mod_type_simps, internalize_sort "'a :: prime_card", OF prime_type_prime_card, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
+
+lemmas coprime_approx_main_uint64 = prime_field_gen.coprime_approx_main[OF 
+        prime_field.prime_field_finite_field_ops64, unfolded prime_field_def mod_ring_locale_def
+   poly_mod_type_simps, internalize_sort "'a :: prime_card", OF prime_type_prime_card, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
+
+end
 
 lemma coprime_mod_imp_coprime: assumes 
   p: "prime p" and 
@@ -183,7 +155,8 @@ proof (cases "find (\<lambda>p. (coprime (lead_coeff f) p \<or> coprime (lead_co
   from find_Some_D[OF Some] gcd_primes64 have p: "prime p" and small: "p \<le> 4294967295" 
     and cop: "coprime (lead_coeff f) p \<or> coprime (lead_coeff g) p" 
     and copp: "coprime_approx_main p (finite_field_ops64 (uint64_of_int p)) f g" by auto
-  from coprime_approx_main_uint64[OF p copp small] have "poly_mod.coprime_m p f g" by auto
+  interpret poly_mod_prime p using p by unfold_locales
+  from coprime_approx_main_uint64[OF small copp] have "poly_mod.coprime_m p f g" by auto
   from coprime_mod_imp_coprime[OF p this cop assms(2)] show "coprime f g" .
 qed (insert assms(1)[unfolded coprime_heuristic_def], auto simp: Let_def)
 

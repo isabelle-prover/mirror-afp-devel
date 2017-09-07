@@ -23,7 +23,6 @@ imports
   Polynomial_Factorization.Square_Free_Factorization
 begin
 
-
 lemma uniqueness_poly_equality:
   fixes f g :: "'a :: factorial_ring_gcd poly"
   assumes cop: "coprime f g"
@@ -73,30 +72,8 @@ proof -
   from uniqueness_poly_equality[OF this degB degB' 0 eq, untransferred] show "a =m a'" "b =m b'" .
 qed
 
-context poly_mod
-begin
-
-lemma uniqueness_poly_equality_mod: assumes 
-    deg: "b =m 0 \<or> degree_m b < degree_m f" "b' =m 0 \<or> degree_m b' < degree_m f"
-  and f0: "\<not> (f =m 0)" 
-  and cop: "coprime_m f g" 
-  and eq: "a * f + b * g =m a' * f + b' * g" 
-  and p: "prime m" 
-  shows "a =m a'" "b =m b'" 
-proof -
-  have ne: "{0..<m} \<noteq> {}" using prime_ge_2_int[OF p] by auto
-  {
-    assume "\<exists>(Rep :: 'b \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< m :: int}"
-    from prime_type_prime_card[OF p this]
-    have "class.prime_card TYPE('b)" "m = int CARD('b)" by auto
-    from poly_mod_prime_type.uniqueness_poly_equality_mod_int[unfolded poly_mod_type_simps,
-      internalize_sort "'a :: prime_card", OF this deg f0 cop eq]
-    have "a =m a' \<and> b =m b'" by auto
-  }
-  from this[cancel_type_definition, OF ne]
-  show "a =m a'" "b =m b'" by auto
-qed
-end
+lemmas (in poly_mod_prime) uniqueness_poly_equality_mod = poly_mod_prime_type.uniqueness_poly_equality_mod_int
+  [unfolded poly_mod_type_simps, internalize_sort "'a :: prime_card", OF prime_type_prime_card, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
 
 definition pdivmod_monic :: "'a::comm_ring_1 poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly \<times> 'a poly" where
   "pdivmod_monic f g \<equiv> let cg = coeffs g; cf = coeffs f; 
@@ -172,12 +149,13 @@ proof -
   show Mp: "Mp A = A" "Mp B = B" unfolding A B by auto
   assume another: "A' * D + B' * H =m U" and degB': "B' = 0 \<or> degree B' < degree D" 
     and norm: "Mp A' = A'" "Mp B' = B'" and cop: "coprime_m D H" and D: "Mp D = D" 
-    and prime: "prime m" 
+    and prime: "prime m"
   from degB Mp D have degB: "B =m 0 \<or> degree_m B < degree_m D" by auto
   from degB' Mp D norm have degB': "B' =m 0 \<or> degree_m B' < degree_m D" by auto
   from mon D have D0: "\<not> (D =m 0)" by auto
+  from prime interpret poly_mod_prime m by unfold_locales
   from another eq have "A' * D + B' * H =m A * D + B * H" by simp
-  from uniqueness_poly_equality_mod[OF degB' degB D0 cop this prime]
+  from uniqueness_poly_equality_mod[OF degB' degB D0 cop this]
   show "A' = A \<and> B' = B" unfolding norm Mp by auto
 qed
 
@@ -270,80 +248,31 @@ proof -
     by (rule bezout_coefficients_i_sound[OF refl f refl g cop res'], insert
     res [unfolded euclid_ext_poly_mod_main_def res'], auto)
 qed
+
 end
 
-context poly_mod
-begin
+context poly_mod_prime begin
 
-lemma euclid_ext_poly_mod_int: assumes cop: "coprime_m f g" 
-  and f: "Mp f = f" and g: "Mp g = g" 
-  and p: "prime m" 
-  and res: "euclid_ext_poly_mod_main m (finite_field_ops m) f g = (a,b)" 
+lemmas euclid_ext_poly_mod_int = prime_field_gen.euclid_ext_poly_mod_main
+  [OF prime_field.prime_field_finite_field_ops,
+  unfolded prime_field_def mod_ring_locale_def poly_mod_type_simps, internalize_sort "'a :: prime_card", OF prime_type_prime_card, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
+
+lemmas euclid_ext_poly_mod_uint32 = prime_field_gen.euclid_ext_poly_mod_main
+  [OF prime_field.prime_field_finite_field_ops32,
+  unfolded prime_field_def mod_ring_locale_def poly_mod_type_simps, internalize_sort "'a :: prime_card", OF prime_type_prime_card, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
+
+lemmas euclid_ext_poly_mod_uint64 = prime_field_gen.euclid_ext_poly_mod_main[OF prime_field.prime_field_finite_field_ops64,
+  unfolded prime_field_def mod_ring_locale_def poly_mod_type_simps, internalize_sort "'a :: prime_card", OF prime_type_prime_card, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
+
+lemma euclid_ext_poly_mod:
+  assumes cop: "coprime_m f g" and f: "Mp f = f" and g: "Mp g = g"
+    and res: "euclid_ext_poly_mod p f g = (a,b)" 
   shows "f * a + g * b =m 1" 
-proof -
-  have ne: "{0..<m} \<noteq> {}" using prime_ge_2_int[OF p] by auto
-  {
-    assume "\<exists>(Rep :: 'b \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< m :: int}"
-    from prime_type_prime_card[OF p this]
-    have "class.prime_card TYPE('b)" "m = int CARD('b)" by auto
-    from prime_field_gen.euclid_ext_poly_mod_main[OF prime_field.prime_field_finite_field_ops,
-      unfolded prime_field_def mod_ring_locale_def,
-      internalize_sort "'a :: prime_card", OF this cop f g res]
-    have ?thesis.
-  }
-  from this[cancel_type_definition, OF ne]
-  show ?thesis .
-qed
-
-lemma euclid_ext_poly_mod_uint32: assumes cop: "coprime_m f g" 
-  and f: "Mp f = f" and g: "Mp g = g" 
-  and p: "prime m" and small: "m \<le> 65535" 
-  and res: "euclid_ext_poly_mod_main m (finite_field_ops32 (uint32_of_int m)) f g = (a,b)" 
-  shows "f * a + g * b =m 1" 
-proof -
-  have ne: "{0..<m} \<noteq> {}" using prime_ge_2_int[OF p] by auto
-  {
-    assume "\<exists>(Rep :: 'b \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< m :: int}"
-    from prime_type_prime_card[OF p this]
-    have "class.prime_card TYPE('b)" "m = int CARD('b)" by auto
-    from prime_field_gen.euclid_ext_poly_mod_main[OF prime_field.prime_field_finite_field_ops32,
-      unfolded prime_field_def mod_ring_locale_def, 
-      internalize_sort "'a :: prime_card", OF this small cop f g res]
-    have ?thesis .
-  }
-  from this[cancel_type_definition, OF ne]
-  show ?thesis .
-qed
-
-lemma euclid_ext_poly_mod_uint64: assumes cop: "coprime_m f g" 
-  and f: "Mp f = f" and g: "Mp g = g" 
-  and p: "prime m" and small: "m \<le> 4294967295" 
-  and res: "euclid_ext_poly_mod_main m (finite_field_ops64 (uint64_of_int m)) f g = (a,b)" 
-  shows "f * a + g * b =m 1" 
-proof -
-  have ne: "{0..<m} \<noteq> {}" using prime_ge_2_int[OF p] by auto
-  {
-    assume "\<exists>(Rep :: 'b \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< m :: int}"
-    from prime_type_prime_card[OF p this]
-    have "class.prime_card TYPE('b)" "m = int CARD('b)" by auto
-    from prime_field_gen.euclid_ext_poly_mod_main[OF prime_field.prime_field_finite_field_ops64,
-      unfolded prime_field_def mod_ring_locale_def, 
-      internalize_sort "'a :: prime_card", OF this small cop f g res]
-    have ?thesis .
-  }
-  from this[cancel_type_definition, OF ne]
-  show ?thesis .
-qed
-
-lemma euclid_ext_poly_mod: assumes cop: "coprime_m f g" 
-  and f: "Mp f = f" and g: "Mp g = g" 
-  and p: "prime m" 
-  and res: "euclid_ext_poly_mod m f g = (a,b)" 
-shows "f * a + g * b =m 1" 
-  using euclid_ext_poly_mod_int[OF cop f g p, of a b]
-    euclid_ext_poly_mod_uint32[OF cop f g p, of a b]
-    euclid_ext_poly_mod_uint64[OF cop f g p, of a b]
+  using euclid_ext_poly_mod_int[OF cop f g, of p a b]
+    euclid_ext_poly_mod_uint32[OF _ cop f g, of p a b]
+    euclid_ext_poly_mod_uint64[OF _ cop f g, of p a b]
     res[unfolded euclid_ext_poly_mod_def] by (auto split: if_splits)
+
 end
 
 lemma range_sum_prod: assumes xy: "x \<in> {0..<q}" "(y :: int) \<in> {0..<p}" 
@@ -611,40 +540,6 @@ definition linear_hensel_binary :: "int \<Rightarrow> nat \<Rightarrow> int poly
      (S,T) = euclid_ext_poly_mod p D H
      in linear_hensel_main C p S T D H n)"
 
-lemma irreducible\<^sub>d_lifting:
-  assumes p: "prime p"
-    and n: "n \<noteq> 0"
-    and deg: "poly_mod.degree_m (p^n) f = poly_mod.degree_m p f"
-    and irr: "poly_mod.irreducible\<^sub>d_m p f"
-  shows "poly_mod.irreducible\<^sub>d_m (p^n) f"
-proof -
-  have p1: "p > 1" using prime_gt_1_int[OF p] by auto
-  interpret poly_mod_2 "p^n" unfolding poly_mod_2_def using n p1 by auto
-  interpret p: poly_mod_2 p unfolding poly_mod_2_def using p1 by simp
-  show "irreducible\<^sub>d_m f"
-  proof (rule irreducible\<^sub>d_mI)
-    from deg irr show "degree_m f \<noteq> 0" by (auto elim: p.irreducible\<^sub>d_mE)
-    then have pdeg_f: "p.degree_m f \<noteq> 0" by (simp add: deg)
-    note pMp_Mp = Mp_Mp_pow_is_Mp[OF n p1]
-    fix g h
-    assume [simp]: "Mp g = g" and deg_g: "degree g \<noteq> 0" "degree g < degree_m f"
-       and [simp]: "Mp h = h" and deg_h: "degree h \<noteq> 0" "degree h < degree_m f"
-       and eq: "eq_m f (g * h)"
-    from eq have p_f: "p.eq_m f (g * h)" using pMp_Mp by metis
-    have "\<not>p.eq_m g 0" and "\<not>p.eq_m h 0"
-      apply (metis degree_0 mult_zero_left p.Mp_0 p_f pdeg_f poly_mod.mult_Mp(1))
-      by (metis degree_0 mult_eq_0_iff p.Mp_0 p.mult_Mp(2) p_f pdeg_f)
-    note [simp] = p.degree_m_mult_eq[OF p this]
-    from p.degree_m_le[of g] deg_g
-    have 2: "p.degree_m g < p.degree_m f" by (fold deg, auto)
-    from p.degree_m_le[of h] deg_h
-    have 3: "p.degree_m h < p.degree_m f" by (fold deg, auto)
-    from p.irreducible\<^sub>d_mD(2)[OF irr 2 3] p_f
-    show False by auto
-  qed
-qed
-
-
 lemma (in poly_mod_prime) unique_hensel_binary: 
   assumes prime: "prime p"
   and cop: "coprime_m D H" and eq: "eq_m (D * H) C"
@@ -663,7 +558,7 @@ proof -
   obtain D1 H1 where main: "linear_hensel_main C p S T D H n = (D1,H1)" by force
   from hensel_result[unfolded linear_hensel_binary_def ext split Let_def main]
   have id: "D1 = D'" "H1 = H'" by auto
-  from linear_hensel_main [OF euclid_ext_poly_mod [OF cop normalized_input prime ext]
+  from linear_hensel_main [OF euclid_ext_poly_mod [OF cop normalized_input ext]
     eq monic_input normalized_input main [unfolded id] n prime cop]
   show ?thesis by (intro ex1I, auto)
 qed
@@ -1327,6 +1222,7 @@ qed
 context
   fixes p :: int and n :: nat
 begin
+
 definition quadratic_hensel_binary :: "int poly \<Rightarrow> int poly \<Rightarrow> int poly \<Rightarrow> int poly \<times> int poly" where
   "quadratic_hensel_binary C D H = (
      case euclid_ext_poly_mod p D H of 
@@ -1339,21 +1235,28 @@ fun hensel_lifting_main :: "int poly \<Rightarrow> int poly factor_tree \<Righta
     w = factor_node_info r;
     (V,W) = quadratic_hensel_binary U v w
     in hensel_lifting_main V l @ hensel_lifting_main W r)"
-end
 
-definition hensel_lifting_monic :: "int \<Rightarrow> nat \<Rightarrow> int poly \<Rightarrow> int poly list \<Rightarrow> int poly list" where
-  "hensel_lifting_monic p n u vs = (if vs = [] then [] else let 
+definition hensel_lifting_monic :: "int poly \<Rightarrow> int poly list \<Rightarrow> int poly list" where
+  "hensel_lifting_monic u vs = (if vs = [] then [] else let 
      pn = p^n; 
      C = poly_mod.Mp pn u;
      tree = product_factor_tree p (create_factor_tree vs)
-     in hensel_lifting_main p n C tree)" 
+     in hensel_lifting_main C tree)" 
 
-locale poly_mod_prime_hensel = poly_mod p for p :: int +
+definition hensel_lifting :: "int poly \<Rightarrow> int poly list \<Rightarrow> int poly list" where 
+  "hensel_lifting f gs = (let lc = lead_coeff f; 
+     ilc = inverse_mod lc (p^n);
+     g = smult ilc f
+     in hensel_lifting_monic g gs)"
+
+end
+
+context poly_mod_prime begin
+
+context
   fixes n :: nat
-  assumes prime: "prime p"
-  and n: "n \<noteq> 0" 
-begin 
-sublocale poly_mod_2 p unfolding poly_mod_2_def using prime_gt_1_int[OF prime] by auto
+  assumes n: "n \<noteq> 0" 
+begin
 
 abbreviation "hensel_binary \<equiv> quadratic_hensel_binary p n" 
 
@@ -1374,7 +1277,7 @@ proof -
   obtain D1 H1 where main: "quadratic_hensel_main C p S T D H n = (D1,H1)" by force
   note hen = hensel_result[unfolded quadratic_hensel_binary_def ext split Let_def main]
   from n have "n \<ge> 1" by simp
-  note main = quadratic_hensel_main[OF euclid_ext_poly_mod[OF cop normalized_input prime ext] eq monic_input p normalized_input this main]
+  note main = quadratic_hensel_main[OF euclid_ext_poly_mod[OF cop normalized_input ext] eq monic_input p normalized_input this main]
   show ?thesis using hen main by auto
 qed
 
@@ -1460,16 +1363,13 @@ next
     by (auto simp: poly_mod.mult_Mp)
   thus ?case unfolding Gs using IH1 IH2 by auto
 qed
-end
 
 lemma hensel_lifting_monic: 
   assumes eq: "poly_mod.eq_m p C (prod_list Fs)"
   and Fs: "\<And> F. F \<in> set Fs \<Longrightarrow> poly_mod.Mp p F = F \<and> monic F"  
   and res: "hensel_lifting_monic p n C Fs = Gs" 
   and mon: "monic (poly_mod.Mp (p^n) C)" 
-  and prime: "prime p" 
   and sf: "poly_mod.square_free_m p C"
-  and n: "n \<noteq> 0" 
   shows "poly_mod.eq_m (p^n) C (prod_list Gs)"
     "mset (map (poly_mod.Mp p) Gs) = mset Fs" 
     "G \<in> set Gs \<Longrightarrow> monic G \<and> poly_mod.Mp (p^n) G = G"
@@ -1477,7 +1377,7 @@ proof -
   note res = res[unfolded hensel_lifting_monic_def Let_def]
   let ?Mp = "poly_mod.Mp (p ^ n)" 
   let ?C = "?Mp C" 
-  interpret poly_mod_prime_hensel p n
+  interpret poly_mod_prime p
     by (unfold_locales, insert n prime, auto)
   interpret pn: poly_mod_2 "p^n" using m1 n poly_mod_2.intro by auto
   from eq n have eq: "eq_m (?Mp C) (prod_list Fs)"
@@ -1514,31 +1414,23 @@ proof -
     "G \<in> set Gs \<Longrightarrow> monic G \<and> poly_mod.Mp (p^n) G = G" by blast+
 qed
 
-definition hensel_lifting :: "int \<Rightarrow> nat \<Rightarrow> int poly \<Rightarrow> int poly list \<Rightarrow> int poly list" where 
-  "hensel_lifting p n f gs = (let lc = lead_coeff f; 
-     ilc = inverse_mod lc (p^n);
-     g = smult ilc f
-     in hensel_lifting_monic p n g gs)"     
-  
-lemma hensel_lifting: assumes 
-  prime: "prime p" 
-  and n: "n \<noteq> 0" 
-  and res: "hensel_lifting p n f fs = gs"                        (* result of hensel is fact. gs *)
-  and cop: "coprime (lead_coeff f) p" 
-  and sf: "poly_mod.square_free_m p f" 
-  and fact: "poly_mod.factorization_m p f (c, mset fs)"          (* input is fact. fs mod p *)
-  and c: "c \<in> {0..<p}" 
-  and norm: "(\<forall>fi\<in>set fs. set (coeffs fi) \<subseteq> {0..<p})" 
-shows "poly_mod.factorization_m (p^n) f (lead_coeff f, mset gs)" (* factorization mod p^n *)
-    "sort (map degree fs) = sort (map degree gs)"                (* degrees stay the same *)
-    "\<And> g. g \<in> set gs \<Longrightarrow> monic g \<and> poly_mod.Mp (p^n) g = g \<and>    (* monic and normalized *)
-      poly_mod.irreducible\<^sub>d_m p g \<and>                               (* irreducibility even mod p *)
-      poly_mod.degree_m p g = degree g"   (* mod p does not change degree of g *)     
+lemma hensel_lifting:
+  assumes res: "hensel_lifting p n f fs = gs"                      (* result of hensel is fact. gs *)
+    and cop: "coprime (lead_coeff f) p"
+    and sf: "poly_mod.square_free_m p f"
+    and fact: "poly_mod.factorization_m p f (c, mset fs)"          (* input is fact. fs mod p *)
+    and c: "c \<in> {0..<p}"
+    and norm: "(\<forall>fi\<in>set fs. set (coeffs fi) \<subseteq> {0..<p})"
+  shows "poly_mod.factorization_m (p^n) f (lead_coeff f, mset gs)" (* factorization mod p^n *)
+      "sort (map degree fs) = sort (map degree gs)"                (* degrees stay the same *)
+      "\<And> g. g \<in> set gs \<Longrightarrow> monic g \<and> poly_mod.Mp (p^n) g = g \<and>    (* monic and normalized *)
+        poly_mod.irreducible\<^sub>d_m p g \<and>                               (* irreducibility even mod p *)
+        poly_mod.degree_m p g = degree g"   (* mod p does not change degree of g *)
 proof -
-  interpret poly_mod_2 p using prime unfolding poly_mod_2_def using prime_gt_1_int by fastforce
+  interpret poly_mod_prime p using prime by unfold_locales
   interpret q: poly_mod_2 "p^n" using m1 n unfolding poly_mod_2_def by auto
   from fact have eq: "eq_m f (smult c (prod_list fs))"  
-    and mon_fs: "(\<forall>fi\<in>set fs. monic (Mp fi) \<and> irreducible\<^sub>d_m fi)" 
+    and mon_fs: "(\<forall>fi\<in>set fs. monic (Mp fi) \<and> irreducible\<^sub>d_m fi)"
     unfolding factorization_m_def by auto
   {
     fix f
@@ -1590,7 +1482,7 @@ proof -
     with mon_fs' norm have "Mp f = f \<and> monic f" unfolding Mp_ident_iff'
       by auto
   } note fs = this
-  note hen = hensel_lifting_monic[OF eq fs hen mon prime sf n]
+  note hen = hensel_lifting_monic[OF eq fs hen mon sf]
   from hen(2) have gs_fs: "mset (map Mp gs) = mset fs" by auto
   have eq: "q.eq_m f (smult ?lc (prod_list gs))" 
     unfolding f using arg_cong[OF hen(1), of "\<lambda> f. q.Mp (smult ?lc f)"] by simp
@@ -1606,7 +1498,7 @@ proof -
     from irr_f fg have irr_g: "irreducible\<^sub>d_m g" 
       unfolding irreducible\<^sub>d_m_def dvdm_def by simp
     have "q.irreducible\<^sub>d_m g"
-      by (rule irreducible\<^sub>d_lifting[OF prime n _ irr_g], unfold deg, rule q.degree_m_eq_monic[OF mon_g q.m1])
+      by (rule irreducible\<^sub>d_lifting[OF n _ irr_g], unfold deg, rule q.degree_m_eq_monic[OF mon_g q.m1])
     note mon_g Mp_g deg irr_g this
   } note g = this
   {
@@ -1627,4 +1519,9 @@ proof -
   show "q.factorization_m f (lead_coeff f, mset gs)" 
     using eq g unfolding q.factorization_m_def by auto
 qed
+
+end
+
+end
+
 end

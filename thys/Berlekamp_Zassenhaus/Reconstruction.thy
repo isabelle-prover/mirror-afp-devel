@@ -819,8 +819,9 @@ proof
     by (cases "c \<ge> 1"; insert tedious, auto)
   finally show False by simp
 qed
-  
-  
+
+interpretation p: poly_mod_prime p using prime by unfold_locales
+
 lemma zassenhaus_reconstruction_generic: 
   assumes sl_impl: "correct_subseqs_foldr_impl (\<lambda>v. map_prod (poly_mod.mul_const (p^n) v) (Cons v)) sl_impl sli"
   and res: "zassenhaus_reconstruction_generic sl_impl hs p n f = fs" 
@@ -836,9 +837,9 @@ proof -
   from subseqs_foldr[OF slc] have state: "sli (lead_coeff f, []) hs 0 state" by auto
   from res[unfolded zassenhaus_reconstruction_generic_def bh split Let_def slc fst_conv]
   have res: "reconstruction sl_impl (?q div 2) state f ?ff ?lc 0 (length hs) hs [] [] = fs" by auto
-  from berlekamp_hensel_unique[OF prime cop sf bh n]
+  from p.berlekamp_hensel_unique[OF cop sf bh n]
   have ufact: "unique_factorization_m f (?lc, mset hs)" by simp
-  note bh = berlekamp_hensel[OF prime cop sf bh n]
+  note bh = p.berlekamp_hensel[OF cop sf bh n]
   from deg have f0: "f \<noteq> 0" and lf0: "?lc \<noteq> 0" by auto
   hence ff0: "?ff \<noteq> 0" by auto
   have bnd: "\<forall>g k. g dvd ?ff \<longrightarrow> degree g \<le> degree_bound hs \<longrightarrow> 2 * \<bar>coeff g k\<bar> < p ^ n"
@@ -869,13 +870,9 @@ qed
 lemma zassenhaus_reconstruction: 
   assumes res: "zassenhaus_reconstruction hs p n f = fs" 
   shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. irreducible\<^sub>d fi)" 
-proof -
-  interpret poly_mod_prime by (unfold_locales, rule prime)
-  from m1 n have pn: "p^n > 1" by simp
-  show ?thesis
-    by (rule zassenhaus_reconstruction_generic[OF my_subseqs.impl_correct 
-        res[unfolded zassenhaus_reconstruction_def Let_def]])
-qed
+  by (rule zassenhaus_reconstruction_generic[OF my_subseqs.impl_correct 
+      res[unfolded zassenhaus_reconstruction_def Let_def]])
+
 end
 
 end

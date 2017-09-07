@@ -553,10 +553,8 @@ definition finite_field_factorization_main :: "int \<Rightarrow> 'i arith_ops_re
   "finite_field_factorization_main p f_ops f \<equiv> 
     let (c',fs') = finite_field_factorization_i p f_ops (of_int_poly_i f_ops (poly_mod.Mp p f))
       in (arith_ops_record.to_int f_ops c', map (to_int_poly_i f_ops) fs')"
-  
-context prime_field_gen
-begin
-lemma finite_field_factorization_main: 
+
+lemma(in prime_field_gen) finite_field_factorization_main: 
   assumes res: "finite_field_factorization_main p ff_ops f = (c,fs)"
   and sq: "square_free_m f" 
   shows "unique_factorization_m f (c, mset fs)
@@ -569,72 +567,6 @@ proof -
     by (rule finite_field_i_sound[OF refl res' sq], 
       insert res[unfolded finite_field_factorization_main_def res'], auto)
 qed
-end
-
-lemma finite_field_factorization_main_int: 
-  assumes p: "prime p" 
-  and res: "finite_field_factorization_main p (finite_field_ops p) f = (c,fs)"
-  and sq: "poly_mod.square_free_m p f"
-  shows "poly_mod.unique_factorization_m p f (c, mset fs)
-    \<and> c \<in> {0 ..< p} 
-    \<and> (\<forall> fi \<in> set fs. set (coeffs fi) \<subseteq> {0 ..< p})" 
-proof -
-  have ne: "{0..<p} \<noteq> {}" using prime_ge_2_int[OF p] by auto
-  {
-    assume "\<exists>(Rep :: 'b \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< p :: int}"
-    from prime_type_prime_card[OF p this]
-    have "class.prime_card TYPE('b)" "p = int CARD('b)" by auto
-    from prime_field_gen.finite_field_factorization_main[OF prime_field.prime_field_finite_field_ops, 
-      unfolded prime_field_def mod_ring_locale_def, internalize_sort "'a :: prime_card", 
-      OF this res sq]
-    have ?thesis .
-  }
-  from this[cancel_type_definition, OF ne]
-  show ?thesis .
-qed
-
-lemma finite_field_factorization_main_uint32: 
-  assumes p: "prime p" "p \<le> 65535" 
-  and res: "finite_field_factorization_main p (finite_field_ops32 (uint32_of_int p)) f = (c,fs)"
-  and sq: "poly_mod.square_free_m p f"
-  shows "poly_mod.unique_factorization_m p f (c, mset fs)
-    \<and> c \<in> {0 ..< p} 
-    \<and> (\<forall> fi \<in> set fs. set (coeffs fi) \<subseteq> {0 ..< p})" 
-proof -
-  have ne: "{0..<p} \<noteq> {}" using prime_ge_2_int[OF p(1)] by auto
-  {
-    assume "\<exists>(Rep :: 'b \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< p :: int}"
-    from prime_type_prime_card[OF p(1) this]
-    have "class.prime_card TYPE('b)" "p = int CARD('b)" by auto
-    from prime_field_gen.finite_field_factorization_main[OF prime_field.prime_field_finite_field_ops32,
-      unfolded prime_field_def mod_ring_locale_def, internalize_sort "'a :: prime_card", OF this p(2) res sq]
-    have ?thesis .
-  }
-  from this[cancel_type_definition, OF ne]
-  show ?thesis .
-qed
-
-lemma finite_field_factorization_main_uint64: 
-  assumes p: "prime p" "p \<le> 4294967295" 
-  and res: "finite_field_factorization_main p (finite_field_ops64 (uint64_of_int p)) f = (c,fs)"
-  and sq: "poly_mod.square_free_m p f"
-  shows "poly_mod.unique_factorization_m p f (c, mset fs)
-    \<and> c \<in> {0 ..< p} 
-    \<and> (\<forall> fi \<in> set fs. set (coeffs fi) \<subseteq> {0 ..< p})" 
-proof -
-  have ne: "{0..<p} \<noteq> {}" using prime_ge_2_int[OF p(1)] by auto
-  {
-    assume "\<exists>(Rep :: 'b \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< p :: int}"
-    from prime_type_prime_card[OF p(1) this]
-    have "class.prime_card TYPE('b)" "p = int CARD('b)" by auto
-    from prime_field_gen.finite_field_factorization_main[OF prime_field.prime_field_finite_field_ops64,
-      unfolded prime_field_def mod_ring_locale_def, internalize_sort "'a :: prime_card", OF this p(2) res sq]
-    have ?thesis .
-  }
-  from this[cancel_type_definition, OF ne]
-  show ?thesis .
-qed
-
 
 definition finite_field_factorization_int :: "int \<Rightarrow> int poly \<Rightarrow> int \<times> int poly list" where
   "finite_field_factorization_int p = (  
@@ -643,17 +575,32 @@ definition finite_field_factorization_int :: "int \<Rightarrow> int poly \<Right
     else if p \<le> 4294967295
     then finite_field_factorization_main p (finite_field_ops64 (uint64_of_int p))
     else finite_field_factorization_main p (finite_field_ops p))"
- 
-lemma finite_field_factorization_int: assumes p: "prime p" 
-  and sq: "poly_mod.square_free_m p f" 
+
+context poly_mod_prime begin
+lemmas finite_field_factorization_main_int = prime_field_gen.finite_field_factorization_main
+  [OF prime_field.prime_field_finite_field_ops, unfolded prime_field_def mod_ring_locale_def,
+  unfolded poly_mod_type_simps, internalize_sort "'a :: prime_card", OF prime_type_prime_card, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
+
+lemmas finite_field_factorization_main_uint32 = prime_field_gen.finite_field_factorization_main
+  [OF prime_field.prime_field_finite_field_ops32, unfolded prime_field_def mod_ring_locale_def,
+  unfolded poly_mod_type_simps, internalize_sort "'a :: prime_card", OF prime_type_prime_card, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
+
+lemmas finite_field_factorization_main_uint64 = prime_field_gen.finite_field_factorization_main
+  [OF prime_field.prime_field_finite_field_ops64, unfolded prime_field_def mod_ring_locale_def,
+  unfolded poly_mod_type_simps, internalize_sort "'a :: prime_card", OF prime_type_prime_card, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
+
+lemma finite_field_factorization_int:
+  assumes sq: "poly_mod.square_free_m p f" 
   and result: "finite_field_factorization_int p f = (c,fs)"
   shows "poly_mod.unique_factorization_m p f (c, mset fs)
     \<and> c \<in> {0 ..< p} 
     \<and> (\<forall> fi \<in> set fs. set (coeffs fi) \<subseteq> {0 ..< p})" 
-  using finite_field_factorization_main_int[OF p  _ sq, of c fs]
-    finite_field_factorization_main_uint32[OF p _ _ sq, of c fs]
-    finite_field_factorization_main_uint64[OF p _ _ sq, of c fs]
+  using finite_field_factorization_main_int[OF  _ sq, of c fs]
+    finite_field_factorization_main_uint32[OF _ _ sq, of c fs]
+    finite_field_factorization_main_uint64[OF _ _ sq, of c fs]
     result[unfolded finite_field_factorization_int_def]
   by (auto split: if_splits)
-    
+
+end
+
 end

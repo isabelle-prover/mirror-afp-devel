@@ -93,14 +93,13 @@ proof -
   note res = res[unfolded berlekamp_zassenhaus_factorization_def Let_def, folded p_def,
     unfolded berl split, folded]
   from suitable_prime_bz[OF sf refl]
-  have prime: "prime p" and cop: "coprime ?lc p" 
-    and sf: "poly_mod.square_free_m p f" 
+  have prime: "prime p" and cop: "coprime ?lc p" and sf: "poly_mod.square_free_m p f" 
     unfolding p_def by auto
-  have p1: "p > 1" using prime unfolding prime_int_iff by simp
+  from prime interpret poly_mod_prime p by unfold_locales
   define n where "n = find_exponent p (2 * abs ?lc * factor_bound f (degree_bound gs))" 
-  note n = find_exponent[OF p1, of "2 * abs ?lc * factor_bound f (degree_bound gs)",
+  note n = find_exponent[OF m1, of "2 * abs ?lc * factor_bound f (degree_bound gs)",
     folded n_def]
-  note bh = berlekamp_and_hensel_separated[OF prime cop sf refl berl n(2)]
+  note bh = berlekamp_and_hensel_separated[OF cop sf refl berl n(2)]
   have db: "degree_bound (berlekamp_hensel p n f) = degree_bound gs" unfolding bh
     degree_bound_def max_factor_degree_def by simp
   note res = res[folded n_def bh(1)]

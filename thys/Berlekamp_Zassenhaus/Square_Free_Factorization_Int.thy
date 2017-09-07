@@ -452,9 +452,9 @@ next
   case (Some p)
   from res[unfolded square_free_factorization_int_main_def Some] have fs: "fs = [(f,0)]" by auto
   from lc have f0: "f \<noteq> 0" by auto
-  from square_free_heuristic[OF Some] square_free_impl(1)[of p f] square_free_mod_imp_square_free[of p f] deg
+  from square_free_heuristic[OF Some] poly_mod_prime.square_free_impl(1)[of p f] square_free_mod_imp_square_free[of p f] deg
   show ?thesis unfolding fs
-    by (auto simp: ct lc square_free_factorization_def f0)
+    by (auto simp: ct lc square_free_factorization_def f0 poly_mod_prime_def)
 qed
 
 definition square_free_factorization_int' :: "int poly \<Rightarrow> int \<times> (int poly \<times> nat)list" where
