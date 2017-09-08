@@ -863,6 +863,7 @@ proof (intro allI impI)
     finally show "Mp 1 = Mp (h * [:d:])" by simp
   qed
 qed
+
 end
 
 end

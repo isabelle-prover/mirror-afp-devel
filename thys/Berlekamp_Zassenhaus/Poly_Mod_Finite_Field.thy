@@ -322,7 +322,7 @@ lemma square_free_MP_Rel [transfer_rule]: "(MP_Rel ===> op =) square_free_m squa
 end
 
 locale poly_mod_prime_type = poly_mod_type m ty for m :: int and
-  ty :: "'a :: prime_card itself"  
+  ty :: "'a :: prime_card itself"
 begin 
 
 lemma factorization_MP_Rel [transfer_rule]:
@@ -432,34 +432,64 @@ lemma poly_mod_type_simps: "poly_mod_type TYPE('a :: nontriv) m = (m = int CARD(
   "class.prime_card TYPE('b :: prime_card) = prime CARD('b :: prime_card)" 
   unfolding poly_mod_type_def class.prime_card_def poly_mod_prime_type_def by auto
 
+lemma remove_duplicate_premise: "(PROP P \<Longrightarrow> PROP P \<Longrightarrow> PROP Q) \<equiv> (PROP P \<Longrightarrow> PROP Q)" (is "?l \<equiv> ?r")
+proof (intro Pure.equal_intr_rule)
+  assume p: "PROP P" and ppq: "PROP ?l"
+  from ppq[OF p p] show "PROP Q".
+next
+  assume p: "PROP P" and pq: "PROP ?r"
+  from pq[OF p] show "PROP Q".
+qed
 
-lemma prime_type_prime_card: assumes p: "prime p" 
-  and "\<exists>(Rep :: 'a \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< p :: int}"
-  shows "class.prime_card (TYPE('a)) \<and> int CARD('a) = p"
+context poly_mod_prime begin
+
+lemma non_empty: "{0..<p} \<noteq> {}" using m1 by auto
+
+lemma prime_type_prime_card:
+  assumes type_def: "\<exists>(Rep :: 'b \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< p :: int}"
+  shows "class.prime_card (TYPE('b))" (is ?a) and "p = int CARD('b)" (is ?b)
 proof -
-  from p have p2: "p \<ge> 2" by (rule prime_ge_2_int)
-  from assms obtain rep :: "'a \<Rightarrow> int" and abs :: "int \<Rightarrow> 'a" where t: "type_definition rep abs {0 ..< p}" by auto
-  have "card (UNIV :: 'a set) = card {0 ..< p}" using t by (rule type_definition.card)
+  from prime have p2: "p \<ge> 2" by (rule prime_ge_2_int)
+  from type_def obtain rep :: "'b \<Rightarrow> int" and abs :: "int \<Rightarrow> 'b" where t: "type_definition rep abs {0 ..< p}" by auto
+  have "card (UNIV :: 'b set) = card {0 ..< p}" using t by (rule type_definition.card)
   also have "\<dots> = p" using p2 by auto
-  finally have bn: "int CARD ('a) = p" .
-  hence "class.prime_card (TYPE('a))" unfolding class.prime_card_def
-    using p p2 by auto
-  with bn show ?thesis by blast
+  finally show ?b ..
+  then show ?a unfolding class.prime_card_def using prime p2 by auto
 qed
 
-lemma(in poly_mod) degree_m_mult_eq:
-  assumes m: "prime m" and f: "\<not> f =m 0" and g: "\<not> g =m 0" shows "degree_m (f * g) = degree_m f + degree_m g"
-proof-
-  {
-    note poly_mod_prime_type.degree_m_mult_eq[unfolded poly_mod_type_simps, of m]
-    note main = this[internalize_sort "'a :: prime_card"]
-    assume "\<exists>(Rep :: 'b \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< m :: int}"
-    from prime_type_prime_card[OF m this]
-    have "class.prime_card TYPE('b)" "m = int CARD('b)" by auto
-    note main[OF this]
-  }
-  from this[cancel_type_definition, OF _ f g] prime_gt_1_int[OF m] show ?thesis by auto
+lemmas degree_m_mult_eq = poly_mod_prime_type.degree_m_mult_eq
+(* it will be nice to be able to abbreviate this: *)
+  [unfolded poly_mod_type_simps, internalize_sort "'a :: prime_card", OF prime_type_prime_card, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
+
+lemma irreducible\<^sub>d_lifting:
+  assumes n: "n \<noteq> 0"
+    and deg: "poly_mod.degree_m (p^n) f = degree_m f"
+    and irr: "irreducible\<^sub>d_m f"
+  shows "poly_mod.irreducible\<^sub>d_m (p^n) f"
+proof -
+  interpret q: poly_mod_2 "p^n" unfolding poly_mod_2_def using n m1 by auto
+  show "q.irreducible\<^sub>d_m f"
+  proof (rule q.irreducible\<^sub>d_mI)
+    from deg irr show "q.degree_m f \<noteq> 0" by (auto elim: irreducible\<^sub>d_mE)
+    then have pdeg_f: "degree_m f \<noteq> 0" by (simp add: deg)
+    note pMp_Mp = Mp_Mp_pow_is_Mp[OF n m1]
+    fix g h
+    assume deg_g: "degree g < q.degree_m f" and deg_h: "degree h < q.degree_m f"
+      and eq: "q.eq_m f (g * h)"
+    from eq have p_f: "f =m (g * h)" using pMp_Mp by metis
+    have "\<not>g =m 0" and "\<not>h =m 0"
+      apply (metis degree_0 mult_zero_left Mp_0 p_f pdeg_f poly_mod.mult_Mp(1))
+      by (metis degree_0 mult_eq_0_iff Mp_0 mult_Mp(2) p_f pdeg_f)
+    note [simp] = degree_m_mult_eq[OF this]
+    from degree_m_le[of g] deg_g
+    have 2: "degree_m g < degree_m f" by (fold deg, auto)
+    from degree_m_le[of h] deg_h
+    have 3: "degree_m h < degree_m f" by (fold deg, auto)
+    from irreducible\<^sub>d_mD(2)[OF irr 2 3] p_f
+    show False by auto
+  qed
 qed
 
+end
 
 end
