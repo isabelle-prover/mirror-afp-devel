@@ -23,6 +23,7 @@ imports
   Polynomial_Factorization.Square_Free_Factorization
 begin
 
+
 lemma uniqueness_poly_equality:
   fixes f g :: "'a :: factorial_ring_gcd poly"
   assumes cop: "coprime f g"

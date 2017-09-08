@@ -497,8 +497,7 @@ fixes h::"'a mod_ring poly"
 assumes "coprime (h - [:c1:]) (h - [:c2:])"
 and "\<not> is_unit (h - [:c1:])"
 shows "c1 \<noteq> c2"
-using assms
-by (unfold coprime_iff_gcd_one coprime, auto)
+using assms coprime_id_is_unit by blast
 
 
 lemma degree_minus_eq_right:
@@ -584,8 +583,7 @@ proof -
     }
     thus "\<forall>x\<in>UNIV::'a mod_ring set. [:0, 1:] - [:x:] dvd monom 1 CARD('a) - monom 1 1" by fast
     show "\<forall>c1 c2. c1 \<in> UNIV \<and> c2 \<in> UNIV \<and> c1 \<noteq> (c2 :: 'a mod_ring) \<longrightarrow> coprime ([:0, 1:] - [:c1:]) ([:0, 1:] - [:c2:])"
-      apply (auto intro!: GCD.coprimeI)
-      by (metis (no_types, hide_lams) coprime_h_c_poly diff_0 diff_pCons diff_zero not_coprime_iff_common_factor)
+      by (auto dest!: coprime_h_c_poly[of _ _ "[:0,1:]"])
   qed
   from this obtain g where g: "?lhs = ?rhs * g" using dvdE by blast
   have degree_lhs_card: "degree ?lhs = CARD('a)"
@@ -632,7 +630,9 @@ qed
 lemma poly_identity_mod_p:
   "v^(CARD('a)) - v = prod (\<lambda>x. v - [:x:]) (UNIV::'a mod_ring set)"
  proof -
-  have id: "monom 1 1 \<circ>\<^sub>p v = v" "[:0, 1:] \<circ>\<^sub>p v = v" unfolding pcompose_def by auto
+  have id: "monom 1 1 \<circ>\<^sub>p v = v" "[:0, 1:] \<circ>\<^sub>p v = v" unfolding pcompose_def
+    apply (auto)
+    by (simp add: fold_coeffs_def)
   have id2: "monom 1 (CARD('a)) \<circ>\<^sub>p v = v ^ (CARD('a))" by (metis id(1) pcompose_hom.hom_power x_pow_n)
   show ?thesis using arg_cong[OF poly_monom_identity_mod_p, of "\<lambda> f. f \<circ>\<^sub>p v"]
     unfolding pcompose_hom.hom_minus pcompose_hom.hom_prod id pcompose_const id2 .
@@ -939,33 +939,35 @@ proof -
   have "row (berlekamp_mat u) k = row (mat_of_rows_list (degree u) ?map) k"
     by (simp add: berlekamp_mat_def Let_def)
   also have "... = vec_of_list (?map ! k)"
-  proof (rule row_mat_of_rows_list, auto)
-    show "k < degree u" by (rule k)
-    fix i assume i: "i < degree u"
-    let ?c= "power_polys (power_poly_f_mod u [:0, 1:] CARD('a)) u 1 (degree u) ! i"
-    let ?coeffs_c="(coeffs ?c)"
-    have "length ?coeffs_c \<le> degree u"
-    proof -
+  proof-
+    {
+      fix i assume i: "i < degree u"
+      let ?c= "power_polys (power_poly_f_mod u [:0, 1:] CARD('a)) u 1 (degree u) ! i"
+      let ?coeffs_c="(coeffs ?c)"
       have "?c = 1*([:0, 1:] ^ CARD('a) mod u)^i mod u"
       proof (unfold power_poly_f_mod_def, rule power_polys_works[OF i])
         show "1 = 1 mod u" using k mod_poly_less by force
       qed
       also have "... = [:0, 1:] ^ (CARD('a) * i) mod u" by (simp add: power_mod power_mult)
       finally have c_rw: "?c = [:0, 1:] ^ (CARD('a) * i) mod u" .
-      show ?thesis
-      proof (cases "?c = 0")
-        case True thus ?thesis by auto
-        next
-        case False
-        have "length ?coeffs_c = degree (?c) + 1" by (rule length_coeffs[OF False])
-        also have "... = degree ([:0, 1:] ^ (CARD('a) * i) mod u) + 1" by (simp add: c_rw)
-        also have "... \<le> degree u"
-          by (metis One_nat_def add.right_neutral add_Suc_right c_rw calculation coeffs_def degree_0
-            degree_mod_less discrete gr_implies_not0 k list.size(3) one_neq_zero)
-        finally show ?thesis .
+      have "length ?coeffs_c \<le> degree u"
+      proof -
+        show ?thesis
+        proof (cases "?c = 0")
+          case True thus ?thesis by auto
+          next
+          case False
+          have "length ?coeffs_c = degree (?c) + 1" by (rule length_coeffs[OF False])
+          also have "... = degree ([:0, 1:] ^ (CARD('a) * i) mod u) + 1" using c_rw by simp
+          also have "... \<le> degree u"
+            by (metis One_nat_def add.right_neutral add_Suc_right c_rw calculation coeffs_def degree_0
+              degree_mod_less discrete gr_implies_not0 k list.size(3) one_neq_zero)
+          finally show ?thesis .
+        qed
       qed
-    qed
-      thus "length ?coeffs_c + (degree u - length ?coeffs_c) = degree u" by auto
+      then have "length ?coeffs_c + (degree u - length ?coeffs_c) = degree u" by auto
+    }
+    with k show ?thesis by (intro row_mat_of_rows_list, auto)
   qed
   finally have row_rw: "row (berlekamp_mat u) k = vec_of_list (?map ! k)" .
   have "Poly (list_of_vec (row (berlekamp_mat u) k)) = Poly (list_of_vec (vec_of_list (?map ! k)))"

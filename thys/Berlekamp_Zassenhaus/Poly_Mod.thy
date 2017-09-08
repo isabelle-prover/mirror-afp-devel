@@ -11,42 +11,11 @@ subsection \<open>Polynomials in Rings\<close>
 text \<open>We use a locale to work with polynomials in some integer-modulo ring.\<close>
 
 theory Poly_Mod
-imports 
-  Polynomial_Factorization.Square_Free_Factorization
+  imports
   "HOL-Computational_Algebra.Primes"
+  Polynomial_Factorization.Square_Free_Factorization
+  Unique_Factorization_Poly
 begin
-
-(**** coprime shouldn't need "gcd" ****)
-hide_const(open) coprime
-
-context comm_monoid_mult begin
-
-  definition coprime where "coprime p q \<equiv> \<forall>r. r dvd p \<longrightarrow> r dvd q \<longrightarrow> r dvd 1"
-
-  lemma coprimeI:
-    assumes "\<And>r. r dvd p \<Longrightarrow> r dvd q \<Longrightarrow> r dvd 1"
-    shows "coprime p q" using assms by (auto simp: coprime_def)
-
-  lemma coprimeE:
-    assumes "coprime p q"
-        and "(\<And>r. r dvd p \<Longrightarrow> r dvd q \<Longrightarrow> r dvd 1) \<Longrightarrow> thesis"
-    shows thesis using assms by (auto simp: coprime_def)
-
-  lemma coprime_commute[ac_simps]: "coprime p q \<longleftrightarrow> coprime q p" unfolding coprime_def by auto
-
-  lemma not_coprime_iff_common_factor:
-    "\<not> coprime p q \<longleftrightarrow> (\<exists>r. r dvd p \<and> r dvd q \<and> \<not> r dvd 1)"
-    unfolding coprime_def by auto
-
-end
-
-lemma(in semiring_gcd) coprime_iff_gcd_one[simp,code]:
-  "coprime = (\<lambda>x y. gcd x y = 1)" using coprime by (intro ext, auto simp: coprime_def)
-
-lemma(in comm_semiring_1) coprime_0[simp]: "coprime p 0 \<longleftrightarrow> p dvd 1" "coprime 0 p \<longleftrightarrow> p dvd 1"
-  by (auto intro: coprimeI elim: coprimeE dest: dvd_trans)
-
-(**** until here ****)
 
 locale poly_mod = fixes m :: "int" 
 begin
@@ -261,6 +230,14 @@ qed
 
 lemma degree_m_smult_le: "degree_m (smult c f) \<le> degree_m f"
   by (metis Mp_0 coeff_0 degree_le degree_m_le degree_smult_eq poly_mod.Mp_smult(2) smult_eq_0_iff)
+
+lemma irreducible_m_Mp[simp]: "irreducible_m (Mp f) \<longleftrightarrow> irreducible_m f" by (simp add: irreducible_m_def)
+
+lemma eq_m_irreducible_m: "f =m g \<Longrightarrow> irreducible_m f \<longleftrightarrow> irreducible_m g"
+  using irreducible_m_Mp by metis
+
+definition mset_factors_m where "mset_factors_m F p \<equiv>
+  F \<noteq> {#} \<and> (\<forall>f. f \<in># F \<longrightarrow> irreducible_m f) \<and> p =m prod_mset F"
 
 end
 

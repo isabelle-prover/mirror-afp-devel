@@ -126,7 +126,7 @@ definition reconstruct_poly::"'a::idom \<Rightarrow> 'a list \<Rightarrow> 'a po
 
 lemma reconstruct_is_original_poly:
   "reconstruct_poly (lead_coeff p) (complex_roots_complex p) = p"
-  by (simp add:complex_roots(1) reconstruct_poly_def)
+  using complex_roots(1) by (simp add: reconstruct_poly_def)
 
 lemma reconstruct_with_type_conversion:
   "smult (lead_coeff (map_poly of_int f)) (prod_list (map (\<lambda> a. [:- a, 1:]) (complex_roots_int f)))
@@ -138,7 +138,7 @@ lemma reconstruct_prod:
         = reconstruct_poly (a * b) (as @ bs)"
 unfolding reconstruct_poly_def by auto
 
-lemma linear_term_inj[simp]: "inj (\<lambda> a. [:- a, 1::'a::idom:])"
+lemma linear_term_inj[simplified,simp]: "inj (\<lambda> a. [:- a, 1::'a::idom:])"
   unfolding inj_on_def by simp
 
 lemma reconstruct_poly_monic_defines_mset:
@@ -149,9 +149,9 @@ proof -
   let ?bs = "mset (map (\<lambda> a. [:- a, 1:]) bs)"
   have eq_smult:"prod_mset ?as = prod_mset ?bs" using assms by (metis prod_mset_prod_list)
   have irr:"\<And> as. set_mset (mset (map (\<lambda> a. [:- a, 1:]) as)) \<subseteq> {q. irreducible\<^sub>d q \<and> monic q}"
-    by auto
+    using linear_term_irreducible\<^sub>d by auto
   from monic_factorization_unique_mset[OF eq_smult irr irr]
-  show ?thesis by (simp add: inj_eq multiset.inj_map)
+  show ?thesis apply (subst inj_eq[OF multiset.inj_map,symmetric]) by auto
 qed
 
 lemma reconstruct_poly_defines_mset_of_argument:
@@ -406,7 +406,7 @@ proof -
   show ?thesis unfolding mahler_measure_poly_def main by auto
 qed
   
-lemma mahler_measure_factor[simp]: "mahler_measure_poly [:- a, 1:] = max 1 (cmod a)" 
+lemma mahler_measure_factor[simplified,simp]: "mahler_measure_poly [:- a, 1:] = max 1 (cmod a)" 
 proof -
   have main: "complex_roots_complex [:- a, 1:] = [a]" unfolding complex_roots_complex_def
   proof (rule some_equality, auto, goal_cases)
@@ -706,7 +706,8 @@ proof -
   obtain c where c: "(((- 1) ^ degree f) :: 'a) = c" by auto
   have c': "(((- 1) ^ degree f) :: 'b) = hom c" unfolding c[symmetric] by (simp add:hom_distribs)
   show ?thesis unfolding graeffe_poly_impl_def degree_map_poly_hom c c'
-  by (induct m arbitrary: f; simp add: map_poly_poly_square_subst map_poly_pcompose graeffe_one_step_def hom_distribs)
+  apply (induct m arbitrary: f; simp)
+  by (unfold graeffe_one_step_def hom_distribs map_poly_poly_square_subst map_poly_pcompose,simp)
 qed
 end
 

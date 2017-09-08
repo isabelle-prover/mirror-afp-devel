@@ -53,12 +53,8 @@ proof(induct lst arbitrary:i)
   show ?case
   proof (cases "xs = []")
     case True
-    show ?thesis unfolding True 
-    proof (auto simp: coeff_int_def choose_int_def, cases "nat i", auto, cases "nat (i - 1)", auto, goal_cases)
-      case (1 n nn)
-      then obtain k where n: "n = Suc k" by (cases n, auto)
-      thus ?case by auto
-    qed
+    show ?thesis unfolding True
+      by (cases "nat i", cases "nat (i - 1)", auto simp: coeff_int_def choose_int_def)
   next
     case False
     hence id: "length (v # xs) - 1 = Suc (length xs - 1)" by auto
