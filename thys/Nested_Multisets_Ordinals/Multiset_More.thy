@@ -1,6 +1,7 @@
 (*  Title:       More about Multisets
     Author:      Mathias Fleury <mathias.fleury at mpi-inf.mpg.de>, 2015
     Author:      Jasmin Blanchette <blanchette at in.tum.de>, 2014, 2015
+    Author:      Anders Schlichtkrull <andschl at dtu.dk>, 2017
     Author:      Dmitriy Traytel <traytel at in.tum.de>, 2014
     Maintainer:  Mathias Fleury <mathias.fleury at mpi-inf.mpg.de>
 *)
@@ -192,16 +193,6 @@ lemma sum_mset_dvd:
   shows "k dvd (\<Sum>m \<in># M. f m)"
   using assms by (induct M) auto
 
-(* TODO: Move to Main? *)
-lemma div_plus_div_distrib_dvd_left: "k dvd x \<Longrightarrow> (x + y) div k = (x div k) + (y div k)"
-  for k :: "'a::semiring_div"
-  by (metis (no_types) add.commute add_cancel_left_left div_by_0 div_mult_self1 dvd_div_mult_self)
-
-(* TODO: Move to Main? *)
-lemma div_plus_div_distrib_dvd_right: "k dvd y \<Longrightarrow> (x + y) div k = (x div k) + (y div k)"
-  for k :: "'a::semiring_div"
-  by (metis add.commute div_plus_div_distrib_dvd_left)
-
 lemma sum_mset_distrib_div_if_dvd:
   fixes k :: "'a::semiring_div"
   assumes "\<forall>m \<in># M. k dvd f m"
@@ -377,19 +368,13 @@ lemma count_mset_set_if: "count (mset_set A) a = (if a \<in> A \<and> finite A t
   by auto
 
 lemma mset_set_set_mset_empty_mempty[iff]: "mset_set (set_mset D) = {#} \<longleftrightarrow> D = {#}"
-  by (auto dest: arg_cong[of _ _ set_mset])
+  by (simp add: mset_set_empty_iff)
 
 lemma count_mset_set_le_one: "count (mset_set A) x \<le> 1"
   by (simp add: count_mset_set_if)
 
-lemma mset_set_subseteq_mset_set[iff]:
-  assumes "finite A" "finite B"
-  shows "mset_set A \<subseteq># mset_set B \<longleftrightarrow> A \<subseteq> B"
-  by (metis assms contra_subsetD count_mset_set(1,3) count_mset_set_le_one finite_set_mset_mset_set
-    less_eq_nat.simps(1) mset_subset_eqI set_mset_mono)
-
 lemma mset_set_set_mset_subseteq[simp]: "mset_set (set_mset A) \<subseteq># A"
-  by (simp add: subseteq_mset_def count_mset_set_if)
+  by (simp add: mset_set_set_mset_msubset)
 
 lemma mset_sorted_list_of_set[simp]: "mset (sorted_list_of_set A) = mset_set A"
   by (metis mset_sorted_list_of_multiset sorted_list_of_mset_set)
@@ -492,7 +477,7 @@ lemma distinct_mset_set_mset_ident[simp]: "distinct_mset M \<Longrightarrow> mse
 lemma distinct_finite_set_mset_subseteq_iff[iff]:
   assumes "distinct_mset M" "finite N"
   shows "set_mset M \<subseteq> N \<longleftrightarrow> M \<subseteq># mset_set N"
-  by (metis assms distinct_mset_set_mset_ident finite_set_mset mset_set_subseteq_mset_set)
+  by (metis assms distinct_mset_set_mset_ident finite_set_mset msubset_mset_set_iff)
 
 lemma distinct_mem_diff_mset:
   assumes dist: "distinct_mset M" and mem: "x \<in> set_mset (M - N)"
@@ -825,5 +810,162 @@ lemma Sigma_mset_transfer[transfer_rule]:
   "(rel_fun (rel_mset R) (rel_fun (rel_fun R (rel_mset S)) (rel_mset (rel_prod R S))))
      Sigma_mset Sigma_mset"
   by (unfold Sigma_mset_def) transfer_prover
+
+
+subsection \<open>Even More about Multisets\<close>
+
+subsubsection \<open>Multisets and functions\<close>
+
+lemma range_image_mset:
+  assumes "set_mset Ds \<subseteq> range f"
+  shows "Ds \<in> range (image_mset f)"
+proof -
+  have "\<forall>D. D \<in># Ds \<longrightarrow> (\<exists>C. f C = D)" using assms by blast
+  then obtain f_i where f_p: "\<forall>D. D \<in># Ds \<longrightarrow> (f (f_i D) = D)" by metis
+  define Cs where "Cs \<equiv> image_mset f_i Ds"
+  from f_p Cs_def have "image_mset f Cs = Ds" by auto
+  then show ?thesis by blast
+qed
+
+
+subsubsection \<open>Multisets and lists\<close>
+
+definition list_of_mset :: "'a multiset \<Rightarrow> 'a list" where
+  "list_of_mset m = (SOME l. m = mset l)"
+
+lemma list_of_mset_exi: "\<exists>l. m = mset l"
+  using ex_mset by metis
+
+lemma [simp]: "mset (list_of_mset m) = m"
+  by (metis (mono_tags, lifting) ex_mset list_of_mset_def someI_ex)
+
+lemma range_mset_map:
+  assumes "set_mset Ds \<subseteq> range f"
+  shows "Ds \<in> range (\<lambda>Cl. mset (map f Cl))"
+proof -
+  have "Ds \<in> range (image_mset f)" by (simp add: assms range_image_mset)
+  then obtain Cs where Cs_p: "image_mset f Cs = Ds" by auto
+  define Cl where "Cl = list_of_mset Cs"
+  then have "mset Cl = Cs" by auto
+  then have "image_mset f (mset Cl) = Ds" using Cs_p by auto
+  then have "mset (map f Cl) = Ds" by auto
+  then show ?thesis by auto
+qed
+
+lemma list_of_mset_empty[iff]: "list_of_mset m = [] \<longleftrightarrow> m = {#}"
+  by (metis (mono_tags, lifting) ex_mset list_of_mset_def mset_zero_iff_right someI_ex)
+
+lemma in_mset_conv_nth: "(x \<in># mset xs) = (\<exists>i<length xs. xs ! i = x)"
+  by (auto simp: in_set_conv_nth)
+
+lemma in_mset_sum_list:
+  assumes "L \<in># LL"
+  assumes "LL \<in> set Ci"
+  shows "L \<in># sum_list Ci"
+  using assms by (induction Ci) auto
+
+lemma in_mset_sum_list2:
+  assumes "L \<in># sum_list Ci"
+  obtains LL where
+    "LL \<in> set Ci"
+    "L \<in># LL"
+  using assms by (induction Ci) auto
+
+lemma subseteq_list_Union_mset:
+  assumes "length Ci = n"
+  assumes "length CAi = n"
+  assumes "\<forall>i<n.  Ci ! i \<subseteq># CAi ! i "
+  shows "\<Union>#mset Ci \<subseteq># \<Union>#mset CAi"
+  using assms proof (induction n arbitrary: Ci CAi)
+  case 0
+  then show ?case by auto
+next
+  case (Suc n)
+  from Suc have "\<forall>i<n. tl Ci ! i \<subseteq># tl CAi ! i"
+    by (simp add: nth_tl)
+  hence "\<Union>#mset (tl Ci) \<subseteq># \<Union>#mset (tl CAi)" using Suc by auto
+  moreover
+  have "hd Ci \<subseteq># hd CAi" using Suc
+    by (metis hd_conv_nth length_greater_0_conv zero_less_Suc)
+  ultimately
+  show "\<Union>#mset Ci \<subseteq># \<Union>#mset CAi"
+    using Suc by (cases Ci; cases CAi) (auto intro: subset_mset.add_mono)
+qed
+
+
+subsubsection \<open>More on multisets and functions\<close>
+
+lemma image_mset_of_subset_list:
+  assumes "image_mset \<eta> C' = mset lC"
+  shows "\<exists>qC'. map \<eta> qC' = lC \<and> mset qC' = C'"
+  using assms apply (induction lC arbitrary: C')
+  subgoal by simp
+  subgoal by (fastforce dest!: msed_map_invR intro: exI[of _ \<open>_ # _\<close>])
+  done
+
+lemma image_mset_of_subset:
+  assumes "A \<subseteq># image_mset \<eta> C'"
+  shows "\<exists>A'. image_mset \<eta> A' = A \<and> A' \<subseteq># C'"
+proof -
+  define C where "C = image_mset \<eta> C'"
+
+  define lA where "lA = list_of_mset A"
+  define lD where "lD = list_of_mset (C-A)"
+  define lC where "lC = lA @ lD"
+
+  have "mset lC = C"
+    using C_def assms unfolding lD_def lC_def lA_def by auto
+  then have "\<exists>qC'. map \<eta> qC' = lC \<and> mset qC' = C'"
+    using assms image_mset_of_subset_list unfolding C_def by metis
+  then obtain qC' where qC'_p: "map \<eta> qC' = lC \<and> mset qC' = C'"
+    by auto
+  let ?lA' = "take (length lA) qC'"
+  have m: "map \<eta> ?lA' = lA"
+    using qC'_p lC_def
+    by (metis append_eq_conv_conj take_map)
+  let ?A' = "mset ?lA'"
+
+  have "image_mset \<eta> ?A' = A"
+    using m using lA_def
+    by (metis (full_types) ex_mset list_of_mset_def mset_map someI_ex)
+  moreover
+  have "?A' \<subseteq># C'"
+    using qC'_p unfolding lA_def
+    using mset_take_subseteq by blast
+  ultimately show ?thesis by blast
+qed
+
+lemma all_the_same: "\<forall>x \<in># X. x = y \<Longrightarrow> card (set_mset X) \<le> Suc 0"
+  by (metis card.empty card.insert card_mono finite.intros(1) finite_insert le_SucI singletonI subsetI)
+
+lemma Melem_subseteq_Union_mset[simp]:
+  assumes "x \<in># T"
+  shows "x \<subseteq># \<Union>#T"
+  using assms sum_mset.remove by force
+
+lemma Melem_subset_eq_sum_list [simp]:
+  assumes "x \<in># mset T"
+  shows "x \<subseteq># sum_list T"
+  using assms by (metis mset_subset_eq_add_left sum_mset.remove sum_mset_sum_list)
+
+lemma less_subset_eq_Union_mset[simp]:
+  assumes "i < length CAi"
+  shows "CAi ! i \<subseteq># \<Union>#mset CAi"
+proof -
+  from assms have "CAi ! i \<in># mset CAi"
+    by auto
+  then show "CAi ! i \<subseteq># \<Union>#mset CAi"
+    by auto
+qed
+
+lemma less_subset_eq_sum_list[simp]:
+  assumes "i < length CAi"
+  shows "CAi ! i \<subseteq># sum_list CAi"
+proof -
+  from assms have "CAi ! i \<in># mset CAi"
+    by auto
+  then show "CAi ! i \<subseteq># sum_list CAi"
+    by auto
+qed
 
 end
