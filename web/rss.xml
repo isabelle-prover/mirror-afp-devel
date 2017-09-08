@@ -9,7 +9,19 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>01 Sep 2017 00:00:00 +0000</pubDate>
+    <pubDate>06 Sep 2017 00:00:00 +0000</pubDate>
+    <item>
+       <title>Anselm's God in Isabelle/HOL</title>
+              <link>https://www.isa-afp.org/entries/AnselmGod.html</link>
+       <guid>https://www.isa-afp.org/entries/AnselmGod.html</guid>
+       <dc:creator> Ben Blumson       </dc:creator>
+       <pubDate>06 Sep 2017 00:00:00 +0000</pubDate>
+       <description>
+Paul Oppenheimer and Edward Zalta&#39;s formalisation of
+Anselm&#39;s ontological argument for the existence of God is
+automated by embedding a free logic for definite descriptions within
+Isabelle/HOL.</description>
+    </item>
     <item>
        <title>Microeconomics and the First Welfare Theorem</title>
               <link>https://www.isa-afp.org/entries/First_Welfare_Theorem.html</link>
@@ -578,18 +590,6 @@ printed to the corresponding construct in the target language. This
 entry provides tooling to replace these special cases in the code
 generator by ignoring these target language features, instead printing
 case expressions and &lt;tt&gt;if-then-else&lt;/tt&gt; as functions.</description>
-    </item>
-    <item>
-       <title>Subresultants</title>
-              <link>https://www.isa-afp.org/entries/Subresultants.html</link>
-       <guid>https://www.isa-afp.org/entries/Subresultants.html</guid>
-       <dc:creator> Sebastiaan Joosten, René Thiemann, Akihisa Yamada       </dc:creator>
-       <pubDate>06 Apr 2017 00:00:00 +0000</pubDate>
-       <description>
-We formalize the theory of subresultants and the subresultant
-polynomial remainder sequence as described by Brown and Traub. As a
-result, we obtain efficient certified algorithms for computing the
-resultant and the greatest common divisor of polynomials.</description>
     </item>
   </channel>
 </rss>

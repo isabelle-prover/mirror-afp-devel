@@ -4310,6 +4310,18 @@ abstract =
   We then utilize the embedded logic for the formalisation of
   Fitting's argument. (See also the earlier AFP entry ``Gödel's God in Isabelle/HOL''.)
 
+[AnselmGod]
+title = Anselm's God in Isabelle/HOL
+author = Ben Blumson <https://philpapers.org/profile/805>
+topic = Logic
+date = 2017-09-06
+notify = benblumson@gmail.com
+abstract =
+  Paul Oppenheimer and Edward Zalta's formalisation of
+  Anselm's ontological argument for the existence of God is
+  automated by embedding a free logic for definite descriptions within
+  Isabelle/HOL.
+
 [Tail_Recursive_Functions]
 title = A General Method for the Proof of Theorems on Tail-recursive Functions
 author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
