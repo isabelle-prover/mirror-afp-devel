@@ -53,11 +53,11 @@ context poly_mod_prime begin
 
 lemmas coprime_approx_main_uint32 = prime_field_gen.coprime_approx_main[OF 
         prime_field.prime_field_finite_field_ops32, unfolded prime_field_def mod_ring_locale_def
-   poly_mod_type_simps, internalize_sort "'a :: prime_card", OF prime_type_prime_card, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
+   poly_mod_type_simps, internalize_sort "'a :: prime_card", OF type_to_set, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
 
 lemmas coprime_approx_main_uint64 = prime_field_gen.coprime_approx_main[OF 
         prime_field.prime_field_finite_field_ops64, unfolded prime_field_def mod_ring_locale_def
-   poly_mod_type_simps, internalize_sort "'a :: prime_card", OF prime_type_prime_card, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
+   poly_mod_type_simps, internalize_sort "'a :: prime_card", OF type_to_set, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
 
 end
 

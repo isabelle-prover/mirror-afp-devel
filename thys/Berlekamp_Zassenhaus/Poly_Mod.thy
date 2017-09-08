@@ -118,6 +118,9 @@ definition irreducible\<^sub>d_m :: "int poly \<Rightarrow> bool" where "irreduc
    degree_m f \<noteq> 0 \<and>
    (\<forall> g h. degree_m g < degree_m f \<longrightarrow> degree_m h < degree_m f \<longrightarrow> \<not> f =m g * h)"
 
+definition prime_elem_m
+  where "prime_elem_m f \<equiv> \<not> f =m 0 \<and> \<not> f dvdm 1 \<and> (\<forall>g h. f dvdm g * h \<longrightarrow> f dvdm g \<or> f dvdm h)"
+
 lemma degree_m_le_degree [intro!]: "degree_m f \<le> degree f"
   by (simp add: Mp_def degree_map_poly_le)
 
