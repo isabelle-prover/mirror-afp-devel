@@ -6,3 +6,4 @@ session AnselmGod (AFP) = HOL +
     AnselmGod
   document_files
     "root.tex"
+    "root.bib"
