@@ -16,7 +16,7 @@ theory Resultant
 imports
   Polynomial_Factorization.Rational_Factorization
   Subresultants.Subresultant_Gcd 
-  Unique_Factorization_Poly
+  Berlekamp_Zassenhaus.Unique_Factorization_Poly
   Bivariate_Polynomials
 begin
 

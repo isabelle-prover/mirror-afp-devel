@@ -18,7 +18,7 @@ theory Bivariate_Polynomials
 imports 
   Polynomial_Interpolation.Ring_Hom_Poly
   Subresultants.More_Homomorphisms 
-  Unique_Factorization_Poly (* Only for preserving sublocaling *)
+  Berlekamp_Zassenhaus.Unique_Factorization_Poly (* Only for preserving sublocaling *)
 begin
 
 subsubsection \<open>Evaluation of Bivariate Polynomials\<close>

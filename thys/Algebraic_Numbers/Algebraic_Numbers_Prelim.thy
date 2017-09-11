@@ -30,7 +30,7 @@ imports
   "HOL-Computational_Algebra.Fundamental_Theorem_Algebra"
   Polynomial_Factorization.Rational_Factorization
   Berlekamp_Zassenhaus.Factorize_Int_Poly
-  Unique_Factorization_Poly
+  Berlekamp_Zassenhaus.Unique_Factorization_Poly
 begin
 
 text \<open>For algebraic numbers, it turned out that @{const gcd_int_poly} is not

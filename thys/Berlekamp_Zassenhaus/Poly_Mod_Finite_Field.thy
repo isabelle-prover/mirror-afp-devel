@@ -10,13 +10,36 @@ text \<open>We connect polynomials in a prime field with integer polynomials mod
 theory Poly_Mod_Finite_Field
   imports
   Finite_Field
-  Poly_Mod
   Polynomial_Interpolation.Ring_Hom_Poly
   "HOL-Types_To_Sets.Types_To_Sets"
+  Missing_Multiset2
+  Poly_Mod
 begin
+
+(* TODO: Move -- General transfer rule *)
+declare rel_mset_Zero[transfer_rule]
+
+lemma mset_transfer[transfer_rule]: "(list_all2 rel ===> rel_mset rel) mset mset"
+proof (intro rel_funI)
+  show "list_all2 rel xs ys \<Longrightarrow> rel_mset rel (mset xs) (mset ys)" for xs ys
+  proof (induct xs arbitrary: ys)
+    case Nil
+    then show ?case by auto
+  next
+    case IH: (Cons x xs)
+    then show ?case by (auto dest!:msed_rel_invL simp: list_all2_Cons1 intro!:rel_mset_Plus)
+  qed
+qed
+
+abbreviation "rel_some r x Y \<equiv> \<exists>y \<in> Y. r x y"
+
+
+
 
 abbreviation to_int_poly :: "'a :: finite mod_ring poly \<Rightarrow> int poly" where
   "to_int_poly \<equiv> map_poly to_int_mod_ring"
+
+interpretation to_int_poly_hom: map_poly_inj_zero_hom to_int_mod_ring ..
 
 lemma irreducible\<^sub>d_def_0:
   fixes f :: "'a :: {comm_semiring_1,semiring_no_zero_divisors} poly"
@@ -36,6 +59,8 @@ locale poly_mod_type = poly_mod m
 begin
 
 lemma m1: "m > 1" using nontriv[where 'a = 'a] by (auto simp:m)
+
+sublocale poly_mod_2 using m1 by unfold_locales
 
 definition MP_Rel :: "int poly \<Rightarrow> 'a mod_ring poly \<Rightarrow> bool"
   where "MP_Rel f f' \<equiv> (Mp f = to_int_poly f')"
@@ -295,6 +320,52 @@ proof
     by (auto simp: Mp_f_representative)
 qed
 
+
+lemma mem_MP_Rel[transfer_rule]: "(MP_Rel ===> rel_set MP_Rel ===> op =) (rel_some eq_m) (op \<in>)"
+proof (intro rel_funI iffI)
+  fix x y X Y assume xy: "MP_Rel x y" and XY: "rel_set MP_Rel X Y"
+  { assume "\<exists>x' \<in> X. x =m x'"
+    then obtain x' where x'X: "x' \<in> X" and xx': "x =m x'" by auto
+    with xy have x'y: "MP_Rel x' y" by (auto simp: MP_Rel_def)
+    from rel_setD1[OF XY x'X] obtain y' where "MP_Rel x' y'" and "y' \<in> Y" by auto
+    with x'y
+    show "y \<in> Y" by (auto simp: MP_Rel_def)
+  }
+  assume "y \<in> Y"
+  from rel_setD2[OF XY this] obtain x' where x'X: "x' \<in> X" and x'y: "MP_Rel x' y" by auto
+  from xy x'y have "x =m x'" by (auto simp: MP_Rel_def)
+  with x'X show "\<exists>x' \<in> X. x =m x'" by auto
+qed
+
+lemma conversep_MP_Rel_OO_MP_Rel [simp]: "MP_Rel\<inverse>\<inverse> OO MP_Rel = (op =)"
+  using Mp_to_int_poly by (intro ext, auto simp: OO_def MP_Rel_def)
+
+lemma MP_Rel_OO_conversep_MP_Rel [simp]: "MP_Rel OO MP_Rel\<inverse>\<inverse> = eq_m"
+  by (intro ext, auto simp: OO_def MP_Rel_def Mp_f_representative)
+
+lemma conversep_MP_Rel_OO_eq_m [simp]: "MP_Rel\<inverse>\<inverse> OO eq_m = MP_Rel\<inverse>\<inverse>"
+  by (intro ext, auto simp: OO_def MP_Rel_def)
+
+lemma eq_m_OO_MP_Rel [simp]: "eq_m OO MP_Rel = MP_Rel"
+  by (intro ext, auto simp: OO_def MP_Rel_def)
+
+lemma eq_mset_MP_Rel [transfer_rule]: "(rel_mset MP_Rel ===> rel_mset MP_Rel ===> op =) (rel_mset eq_m) (op =)"
+proof (intro rel_funI iffI)
+  fix A B X Y
+  assume AX: "rel_mset MP_Rel A X" and BY: "rel_mset MP_Rel B Y"
+  {
+    assume AB: "rel_mset eq_m A B"
+    from AX have "rel_mset MP_Rel\<inverse>\<inverse> X A" by (simp add: multiset.rel_flip)
+    note rel_mset_OO[OF this AB]
+    note rel_mset_OO[OF this BY]
+    then show "X = Y" by (simp add: multiset.rel_eq)
+  }
+  assume "X = Y"
+  with BY have "rel_mset MP_Rel\<inverse>\<inverse> X B" by (simp add: multiset.rel_flip)
+  from rel_mset_OO[OF AX this]
+  show "rel_mset eq_m A B" by simp
+qed
+
 lemma dvd_MP_Rel[transfer_rule]: "(MP_Rel ===> MP_Rel ===> op =) (op dvdm) (op dvd)"
   unfolding dvdm_def[abs_def] dvd_def[abs_def]
   by transfer_prover
@@ -319,6 +390,35 @@ lemma M_1_1[simp]: "M 1 = 1" unfolding M_def unfolding m by simp
 lemma square_free_MP_Rel [transfer_rule]: "(MP_Rel ===> op =) square_free_m square_free"
   unfolding square_free_m_def[abs_def] square_free_def[abs_def]
   by (transfer_prover_start, transfer_step+, auto)
+
+lemma mset_factors_m_MP_Rel [transfer_rule]: "(rel_mset MP_Rel ===> MP_Rel ===> op =) mset_factors_m mset_factors"
+  unfolding mset_factors_def mset_factors_m_def
+  by (transfer_prover_start, transfer_step+, auto dest:eq_m_irreducible_m)
+
+lemma coprime_MP_Rel [transfer_rule]: "(MP_Rel ===> MP_Rel ===> op =) coprime_m coprime"
+  unfolding coprime_m_def[abs_def] coprime_def[abs_def]
+  by (transfer_prover_start, transfer_step+, auto)
+
+lemma prime_elem_MP_Rel [transfer_rule]: "(MP_Rel ===> op =) prime_elem_m prime_elem"
+  unfolding prime_elem_m_def prime_elem_def by transfer_prover
+
+end
+
+context poly_mod_2 begin
+
+lemma non_empty: "{0..<m} \<noteq> {}" using m1 by auto
+
+lemma type_to_set:
+  assumes type_def: "\<exists>(Rep :: 'b \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< m :: int}"
+  shows "class.nontriv (TYPE('b))" (is ?a) and "m = int CARD('b)" (is ?b)
+proof -
+  from type_def obtain rep :: "'b \<Rightarrow> int" and abs :: "int \<Rightarrow> 'b" where t: "type_definition rep abs {0 ..< m}" by auto
+  have "card (UNIV :: 'b set) = card {0 ..< m}" using t by (rule type_definition.card)
+  also have "\<dots> = m" using m1 by auto
+  finally show ?b ..
+  then show ?a unfolding class.nontriv_def using m1 by auto
+qed
+
 end
 
 locale poly_mod_prime_type = poly_mod_type m ty for m :: int and
@@ -410,27 +510,20 @@ proof (intro allI impI, goal_cases)
   qed
 qed
 
-lemma coprime_MP_Rel [transfer_rule]: "(MP_Rel ===> MP_Rel ===> op =) coprime_m coprime"
-  unfolding coprime_m_def[abs_def] coprime_def[abs_def]
-  by (transfer_prover_start, transfer_step+, auto)
-
-lemma degree_m_mult_eq:
-  assumes p0: "\<not> p =m 0" and q0: "\<not> q =m 0"
-  shows "degree_m (p * q) = degree_m p + degree_m q"
-proof-
-  define P Q :: "'a mod_ring poly" where "P \<equiv> of_int_poly p" "Q \<equiv> of_int_poly q"
-  have [transfer_rule]: "MP_Rel p P" "MP_Rel q Q" by (auto simp: MP_Rel_def P_Q_def Mp_f_representative)
-  have P0: "P \<noteq> 0" apply transfer using p0.
-  have Q0: "Q \<noteq> 0" apply transfer using q0.
-  from degree_mult_eq[OF P0 Q0,untransferred] show ?thesis.
-qed
-
 end
 
-lemma poly_mod_type_simps: "poly_mod_type TYPE('a :: nontriv) m = (m = int CARD('a))" 
-  "poly_mod_prime_type TYPE('b) m = (m = int CARD('b))"
-  "class.prime_card TYPE('b :: prime_card) = prime CARD('b :: prime_card)" 
-  unfolding poly_mod_type_def class.prime_card_def poly_mod_prime_type_def by auto
+context begin
+private lemma 1: "poly_mod_type TYPE('a :: nontriv) m = (m = int CARD('a))"
+  and 2: "class.nontriv TYPE('a) = (CARD('a) \<ge> 2)"
+  unfolding poly_mod_type_def class.prime_card_def class.nontriv_def poly_mod_prime_type_def by auto
+
+private lemma 3: "poly_mod_prime_type TYPE('b) m = (m = int CARD('b))"
+  and 4: "class.prime_card TYPE('b :: prime_card) = prime CARD('b :: prime_card)" 
+  unfolding poly_mod_type_def class.prime_card_def class.nontriv_def poly_mod_prime_type_def by auto
+
+lemmas poly_mod_type_simps = 1 2 3 4
+end
+
 
 lemma remove_duplicate_premise: "(PROP P \<Longrightarrow> PROP P \<Longrightarrow> PROP Q) \<equiv> (PROP P \<Longrightarrow> PROP Q)" (is "?l \<equiv> ?r")
 proof (intro Pure.equal_intr_rule)
@@ -443,9 +536,7 @@ qed
 
 context poly_mod_prime begin
 
-lemma non_empty: "{0..<p} \<noteq> {}" using m1 by auto
-
-lemma prime_type_prime_card:
+lemma type_to_set:
   assumes type_def: "\<exists>(Rep :: 'b \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< p :: int}"
   shows "class.prime_card (TYPE('b))" (is ?a) and "p = int CARD('b)" (is ?b)
 proof -
@@ -456,12 +547,21 @@ proof -
   finally show ?b ..
   then show ?a unfolding class.prime_card_def using prime p2 by auto
 qed
+end
 
-lemmas degree_m_mult_eq = poly_mod_prime_type.degree_m_mult_eq
-(* it will be nice to be able to abbreviate this: *)
-  [unfolded poly_mod_type_simps, internalize_sort "'a :: prime_card", OF prime_type_prime_card, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
+(* it will be nice to be able to automate this *)
 
-lemma irreducible\<^sub>d_lifting:
+lemmas (in poly_mod_type) prime_elem_m_dvdm_multD = prime_elem_dvd_multD
+  [where 'a = "'a mod_ring poly",untransferred]
+lemmas (in poly_mod_2) prime_elem_m_dvdm_multD = poly_mod_type.prime_elem_m_dvdm_multD
+  [unfolded poly_mod_type_simps, internalize_sort "'a :: nontriv", OF type_to_set, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
+
+lemmas(in poly_mod_prime_type) degree_m_mult_eq = degree_mult_eq
+  [where 'a = "'a mod_ring", untransferred]
+lemmas(in poly_mod_prime) degree_m_mult_eq = poly_mod_prime_type.degree_m_mult_eq
+  [unfolded poly_mod_type_simps, internalize_sort "'a :: prime_card", OF type_to_set, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
+
+lemma(in poly_mod_prime) irreducible\<^sub>d_lifting:
   assumes n: "n \<noteq> 0"
     and deg: "poly_mod.degree_m (p^n) f = degree_m f"
     and irr: "irreducible\<^sub>d_m f"
@@ -490,6 +590,20 @@ proof -
   qed
 qed
 
-end
+(* Lifting UFD properties *)
+lemmas (in poly_mod_prime_type) mset_factors_exist =
+  mset_factors_exist[where 'a = "'a mod_ring poly",untransferred]
+lemmas (in poly_mod_prime) mset_factors_exist = poly_mod_prime_type.mset_factors_exist
+  [unfolded poly_mod_type_simps, internalize_sort "'a :: prime_card", OF type_to_set, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
+
+lemmas (in poly_mod_prime_type) mset_factors_unique =
+  mset_factors_unique[where 'a = "'a mod_ring poly",untransferred]
+lemmas (in poly_mod_prime) mset_factors_unique = poly_mod_prime_type.mset_factors_unique
+  [unfolded poly_mod_type_simps, internalize_sort "'a :: prime_card", OF type_to_set, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
+
+lemmas (in poly_mod_prime_type) prime_elem_iff_irreducible =
+  prime_elem_iff_irreducible[where 'a = "'a mod_ring poly",untransferred]
+lemmas (in poly_mod_prime) prime_elem_iff_irreducible[simp] = poly_mod_prime_type.prime_elem_iff_irreducible
+  [unfolded poly_mod_type_simps, internalize_sort "'a :: prime_card", OF type_to_set, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
 
 end

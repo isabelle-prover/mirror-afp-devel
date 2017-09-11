@@ -23,6 +23,7 @@ imports
   Polynomial_Factorization.Square_Free_Factorization
 begin
 
+
 lemma uniqueness_poly_equality:
   fixes f g :: "'a :: factorial_ring_gcd poly"
   assumes cop: "coprime f g"
@@ -74,7 +75,7 @@ proof -
 qed
 
 lemmas (in poly_mod_prime) uniqueness_poly_equality_mod = poly_mod_prime_type.uniqueness_poly_equality_mod_int
-  [unfolded poly_mod_type_simps, internalize_sort "'a :: prime_card", OF prime_type_prime_card, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
+  [unfolded poly_mod_type_simps, internalize_sort "'a :: prime_card", OF type_to_set, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
 
 definition pdivmod_monic :: "'a::comm_ring_1 poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly \<times> 'a poly" where
   "pdivmod_monic f g \<equiv> let cg = coeffs g; cf = coeffs f; 
@@ -257,14 +258,14 @@ context poly_mod_prime begin
 
 lemmas euclid_ext_poly_mod_int = prime_field_gen.euclid_ext_poly_mod_main
   [OF prime_field.prime_field_finite_field_ops,
-  unfolded prime_field_def mod_ring_locale_def poly_mod_type_simps, internalize_sort "'a :: prime_card", OF prime_type_prime_card, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
+  unfolded prime_field_def mod_ring_locale_def poly_mod_type_simps, internalize_sort "'a :: prime_card", OF type_to_set, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
 
 lemmas euclid_ext_poly_mod_uint32 = prime_field_gen.euclid_ext_poly_mod_main
   [OF prime_field.prime_field_finite_field_ops32,
-  unfolded prime_field_def mod_ring_locale_def poly_mod_type_simps, internalize_sort "'a :: prime_card", OF prime_type_prime_card, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
+  unfolded prime_field_def mod_ring_locale_def poly_mod_type_simps, internalize_sort "'a :: prime_card", OF type_to_set, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
 
 lemmas euclid_ext_poly_mod_uint64 = prime_field_gen.euclid_ext_poly_mod_main[OF prime_field.prime_field_finite_field_ops64,
-  unfolded prime_field_def mod_ring_locale_def poly_mod_type_simps, internalize_sort "'a :: prime_card", OF prime_type_prime_card, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
+  unfolded prime_field_def mod_ring_locale_def poly_mod_type_simps, internalize_sort "'a :: prime_card", OF type_to_set, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
 
 lemma euclid_ext_poly_mod:
   assumes cop: "coprime_m f g" and f: "Mp f = f" and g: "Mp g = g"
@@ -1426,8 +1427,8 @@ lemma hensel_lifting:
   shows "poly_mod.factorization_m (p^n) f (lead_coeff f, mset gs)" (* factorization mod p^n *)
       "sort (map degree fs) = sort (map degree gs)"                (* degrees stay the same *)
       "\<And> g. g \<in> set gs \<Longrightarrow> monic g \<and> poly_mod.Mp (p^n) g = g \<and>    (* monic and normalized *)
-        poly_mod.irreducible\<^sub>d_m p g \<and>                               (* irreducibility even mod p *)
-        poly_mod.degree_m p g = degree g"   (* mod p does not change degree of g *)
+        irreducible\<^sub>d_m g \<and>                               (* irreducibility even mod p *)
+        degree_m g = degree g"   (* mod p does not change degree of g *)
 proof -
   interpret poly_mod_prime p using prime by unfold_locales
   interpret q: poly_mod_2 "p^n" using m1 n unfolding poly_mod_2_def by auto

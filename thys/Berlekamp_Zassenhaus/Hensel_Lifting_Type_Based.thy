@@ -573,8 +573,7 @@ begin
 
 lemma coprime_preserves: "coprime (#V :: 'p mod_ring poly) (#W)"
   apply (intro coprimeI,simp add: rebase_q_to_p.of_nat_CARD_eq_0[simplified] hom_distribs)
-  using coprime[simplified]
-  by (metis semiring_gcd_class.gcd_greatest_iff)
+  using coprime by (elim coprimeE, auto)
 
 lemma pre_unique:
   assumes f2: "w'' * #v + v'' * #w = f"

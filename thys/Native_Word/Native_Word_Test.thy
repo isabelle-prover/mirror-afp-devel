@@ -405,7 +405,7 @@ value [nbe] "[0x10000000000000001, -1, -9223372036854775808, 0xFFFFFFFFFFFFFFFF,
 
 no_notation sshiftr_uint64 (infixl ">>>" 55)
 
-export_code test_uint64 checking SML Haskell? OCaml Scala
+export_code test_uint64 checking SML Haskell? OCaml? Scala
 
 notepad begin
 have test_uint64 by eval
