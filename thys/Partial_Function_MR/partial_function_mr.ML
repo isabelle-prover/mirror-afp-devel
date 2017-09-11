@@ -210,7 +210,7 @@ fun gen_add_partial_function_mr prep mode fixes_raw eqns_raw lthy =
     val glob_binding = Binding.name (glob_fname) 
     val glob_attrib_binding = Binding.empty_atts
     val _ = writeln "invoking partial_function on global function"
-    val lthy = Partial_Function.add_partial_function mode [(glob_binding,SOME glob_constT,NoSyn)] (glob_attrib_binding,eq) lthy
+    val (_, lthy) = Partial_Function.add_partial_function mode [(glob_binding,SOME glob_constT,NoSyn)] (glob_attrib_binding,eq) lthy
     val _ = writeln "deriving simp rules for separate functions from global function"
     (* TODO: the creation of the global constant does not work properly within contexts:
          the call above creates the constant outside the context (on theory-level), but we require the constant
