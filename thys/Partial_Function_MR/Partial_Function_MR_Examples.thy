@@ -20,9 +20,13 @@ partial_function_mr (tailrec) collatz and even_case and odd_case where
     (if (x mod 2 = 0) then even_case x (x # xs)
      else odd_case x xs))"
 | "even_case x xs = collatz (x div 2) xs"
-| "odd_case x xs = collatz (3 * x + 1) (x # xs)"
+| [simp]: "odd_case x xs = collatz (3 * x + 1) (x # xs)"
 
-value "collatz 327 []"
+text \<open>The equations are registered as code-equations.\<close>
+lemma "length (collatz 327 []) = 144" by eval
+
+text \<open>The equations are accessible via .simps, but are not put in the standard simpset.\<close>
+lemma "collatz 5 [] = [5,16,8,4,2,1]" by (simp add: collatz.simps even_case.simps)
 
 subsection {* Evaluating expressions *}
 text {* Note that we also provide a least fixpoint operator.

@@ -210,7 +210,7 @@ fun gen_add_partial_function_mr prep mode fixes_raw eqns_raw lthy =
     val rhs = combine_cases all_cases inTs $ glob_x;
     val lhs = glob_const $ glob_x
     val eq = HOLogic.mk_Trueprop (HOLogic.mk_eq (lhs,rhs))
-    val glob_binding = Binding.name (glob_fname) 
+    val glob_binding = Binding.name (glob_fname) |> Binding.concealed
     val glob_attrib_binding = Binding.empty_atts
     val _ = writeln "invoking partial_function on global function"
     val ((glob_const, glob_simp_thm),lthy') = Partial_Function.add_partial_function mode 
@@ -228,7 +228,7 @@ fun gen_add_partial_function_mr prep mode fixes_raw eqns_raw lthy =
         val rhs = curry_n arity (lambda x post)
         val f_def_binding = Binding.name (Thm.def_name fname)
         val ((f, (_, f_def)),lthy') = 
-          Local_Theory.define ((fbinding,mixfix), ((f_def_binding, []), rhs)) lthy
+          Local_Theory.define_internal ((fbinding,mixfix), ((f_def_binding, []), rhs)) lthy
       in 
         (f :: fs, f_def :: fdefs,rhs :: rhss,lthy')
       end
@@ -281,7 +281,7 @@ fun gen_add_partial_function_mr prep mode fixes_raw eqns_raw lthy =
         |-> (fn (_, simps) => 
           Spec_Rules.add Spec_Rules.Equational ([f], simps)
           #> Local_Theory.note 
-            ((Binding.qualify true fname (Binding.name "simps"), 
+            ((Binding.qualify true fname @{binding "simps"}, 
               @{attributes [code]}), simps) #> snd)
       end
   in fold register nums lthy''
