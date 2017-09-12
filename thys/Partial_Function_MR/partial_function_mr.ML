@@ -213,20 +213,11 @@ fun gen_add_partial_function_mr prep mode fixes_raw eqns_raw lthy =
     val glob_binding = Binding.name (glob_fname) 
     val glob_attrib_binding = Binding.empty_atts
     val _ = writeln "invoking partial_function on global function"
-    val ((f,f_simp),lthy') = Partial_Function.add_partial_function mode 
+    val ((glob_const, glob_simp_thm),lthy') = Partial_Function.add_partial_function mode 
       [(glob_binding,SOME glob_constT,NoSyn)] (glob_attrib_binding,eq) lthy
     val _ = writeln "deriving simp rules for separate functions from global function"
-    (* TODO: the creation of the global constant does not work properly within contexts:
-         the call above creates the constant outside the context (on theory-level), but we require the constant
-         within the context. Similarly, once this has been fixed, one needs to check whether the extraction of the simp-theorem 
-         works properly within contexts *)
-    val glob_const = Const (Local_Theory.full_name lthy' glob_binding, glob_constT)
-    val thm_ref = Facts.named 
-      (Local_Theory.full_name lthy' (Binding.qualify true glob_fname (Binding.name "simps")))    
-    val thms = Proof_Context.get_fact lthy' thm_ref
-    val thm = if length thms = 1 then hd thms else error "could not find simp-thm"
-    fun define_f n (fs,f's, fdefs,rhss,lthy) = let
-        val ((fbinding,mixfix),fT) = nth bindings_types n
+    fun define_f n (fs, fdefs,rhss,lthy) = let
+        val ((fbinding,mixfix),_) = nth bindings_types n
         val fname = nth fnames n
         val inT = nth inTs n;
         val arity = nth arities n;
@@ -236,40 +227,12 @@ fun gen_add_partial_function_mr prep mode fixes_raw eqns_raw lthy =
         val post = nth res_proj n call 
         val rhs = curry_n arity (lambda x post)
         val f_def_binding = Binding.name (Thm.def_name fname)
-        val ((f', (_, f_def)),lthy') = 
+        val ((f, (_, f_def)),lthy') = 
           Local_Theory.define ((fbinding,mixfix), ((f_def_binding, []), rhs)) lthy
-        val _ = f_def (* TODO: how can we use these definition theorems? Using these theorems in the 
-                 unfolding tactic below does not work, which is the reason why we access the theorems via get_fact
-                 calls below *)
-        val f = Const (Local_Theory.full_name lthy' fbinding, fT);
       in 
-        (f :: fs,f' :: f's, f_def_binding :: fdefs,rhs :: rhss,lthy')
+        (f :: fs, f_def :: fdefs,rhs :: rhss,lthy')
       end
-    val (fs,f's,f_def_bindings,f_rhss,lthy'') = fold_rev define_f nums ([],[],[],[],lthy') 
-    (* TODO: is there a smarter way to access the definition thms? *)
-    val fdefs = map (fn f_def_binding => 
-        hd (Proof_Context.get_fact lthy'' (Facts.named (Local_Theory.full_name lthy' f_def_binding)))) 
-      f_def_bindings;
-    fun mk_case_new n = let
-        val F = nth Fs n
-        val arity = nth arities n
-        val Finst = uncurry_n arity (Term.betapplys (F,fs))
-        val xs = nth xss n
-        val res = lambda xs (nth res_inj n (Finst $ xs))
-      in res
-      end;
-    val new_cases = map mk_case_new nums;
-    val rhs = combine_cases new_cases inTs $ glob_x;
-    val lhs = glob_const $ glob_x
-    val eq = HOLogic.mk_Trueprop (HOLogic.mk_eq (lhs,rhs))
-    val glob_simp_thm = Goal.prove lthy'' [glob_x_name] [] eq (fn {prems = _, context = ctxt} => let
-      (* TODO: is there some easier way to write 'simp_thm = thm[of glob_x]' *)
-      val schematic_x =
-        Thm.prop_of thm |> HOLogic.dest_Trueprop |> HOLogic.dest_eq |> fst |> Term.dest_comb |> snd
-      val simp_thm = 
-        infer_instantiate ctxt [(#1 (dest_Var schematic_x), Thm.cterm_of ctxt glob_x)] thm
-      in unfold_tac ctxt [simp_thm] THEN unfold_tac ctxt fdefs
-      end)
+    val (fs,fdefs,f_rhss,lthy'') = fold_rev define_f nums ([],[],[],lthy') 
     fun mk_simp_thm n = let
       val args = nth all_args n
       val arg_names = map (dest_Free #> fst) args
@@ -283,18 +246,36 @@ fun gen_add_partial_function_mr prep mode fixes_raw eqns_raw lthy =
       val eq2 = HOLogic.mk_Trueprop (HOLogic.mk_eq (mhs,rhs))      
       val simp_thm1 = Goal.prove lthy'' arg_names [] eq1 
         (fn {prems = _, context = ctxt} => unfold_tac ctxt [fdef])
+      fun mk_case_new n = let
+          val F = nth Fs n
+          val arity = nth arities n
+          val Finst = uncurry_n arity (Term.betapplys (F,fs))
+          val xs = nth xss n
+          val res = lambda xs (nth res_inj n (Finst $ xs))
+        in res
+        end;
+      val new_cases = map mk_case_new nums;
+      val rhs = combine_cases new_cases inTs $ glob_x;
+      val lhs = glob_const $ glob_x
+      val eq = HOLogic.mk_Trueprop (HOLogic.mk_eq (lhs,rhs))
+      val glob_simp_thm' = Goal.prove lthy'' [glob_x_name] [] eq (fn {prems = _, context = ctxt} => let
+        val simp_thm = Thm.instantiate' [] [SOME (Thm.cterm_of ctxt glob_x)] glob_simp_thm
+        in unfold_tac ctxt [simp_thm] THEN unfold_tac ctxt fdefs
+        end)
+
       val simp_thm2 = Goal.prove lthy'' arg_names [] eq2 (fn {prems = _, context = ctxt} => 
-          unfold_tac ctxt [glob_simp_thm]
+          unfold_tac ctxt [glob_simp_thm']
           THEN unfold_tac ctxt @{thms sum.simps curry_def split}
           THEN unfold_tac ctxt (@{thm o_def} :: monad_map_comp)
           THEN unfold_tac ctxt (monad_map_id @ @{thms sum.sel}))        
-      in @{thm trans} OF [simp_thm1,simp_thm2] end
+      val simp_thm = @{thm trans} OF [simp_thm1,simp_thm2]
+      in simp_thm end
     val simp_thms = map mk_simp_thm nums
     fun register n lthy = let
       val simp_thm = nth simp_thms n
       val eq_abinding = nth eq_abinding_eqns n |> fst
       val fname = nth fnames n
-      val f = nth f's n
+      val f = nth fs n
       in lthy
         |> Local_Theory.note (eq_abinding, [simp_thm])
         |-> (fn (_, simps) => 

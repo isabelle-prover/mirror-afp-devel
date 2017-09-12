@@ -95,4 +95,18 @@ definition
 
 value five_minus_two
 
+
+subsection \<open>An example with contexts\<close>
+
+text \<open>Mutual recursive partial functions also work within contexts.\<close>
+
+context
+  fixes y :: int
+begin
+partial_function_mr (tailrec) foo and bar where
+  "foo x = (if x = y then foo (x - 1) else (bar x (y - 1):: bool))" 
+| "bar x z = foo (x + (1 :: int) + y)" 
+end
+
+
 end
