@@ -16,10 +16,10 @@ sig
     thm list -> declaration
 
   val add_partial_function_mr: string -> (binding * typ option * mixfix) list ->
-    Specification.multi_specs -> local_theory -> local_theory
+    Specification.multi_specs -> local_theory -> thm list * local_theory
 
   val add_partial_function_mr_cmd: string -> (binding * string option * mixfix) list ->
-    Specification.multi_specs_cmd -> local_theory -> local_theory
+    Specification.multi_specs_cmd -> local_theory -> thm list * local_theory
 end;
 
 
@@ -112,7 +112,7 @@ fun mk_proj [_] t _ = t
 
 fun get_head ctxt (_,(_,eqn)) =
   let
-    val ((_, plain_eqn), _) = Variable.focus NONE eqn ctxt; (* TODO: clarify with MW *)
+    val ((_, plain_eqn), _) = Variable.focus NONE eqn ctxt;
     val lhs = HOLogic.dest_eq (HOLogic.dest_Trueprop plain_eqn) |> #1;
     val head = strip_comb lhs |> #1;
   in 
@@ -120,7 +120,7 @@ fun get_head ctxt (_,(_,eqn)) =
   end;
 
 fun get_infos lthy heads (fix,(_,eqn)) = let
-    val ((_, plain_eqn), _) = Variable.focus NONE eqn lthy; (* TODO: clarify with MW *)
+    val ((_, plain_eqn), _) = Variable.focus NONE eqn lthy;
     val ((f_binding, fT), mixfix) = fix;
     val fname = Binding.name_of f_binding;
     val (lhs, rhs) = HOLogic.dest_eq (HOLogic.dest_Trueprop plain_eqn);
@@ -229,15 +229,13 @@ fun gen_add_partial_function_mr prep mode fixes_raw eqns_raw lthy =
     val glob_binding = Binding.name (glob_fname) |> Binding.concealed
     val glob_attrib_binding = Binding.empty_atts
     val _ = trace lthy "invoking partial_function on global function"
-    (* currently scoping via open_target does not work here, which is why it is disabled *)
-    val priv_lthy = lthy (* |> Local_Theory.open_target |-> Proof_Context.private_scope *)
-    val ((glob_const0, glob_simp_thm0),priv_lthy') = priv_lthy
+    val priv_lthy = lthy
+      |> Proof_Context.private_scope (Binding.new_scope())
+    val ((glob_const, glob_simp_thm),priv_lthy') = priv_lthy
       |> Partial_Function.add_partial_function mode 
         [(glob_binding,SOME glob_constT,NoSyn)] (glob_attrib_binding,eq)
-    val glob_lthy = priv_lthy' (* |> Local_Theory.close_target *)
-    val phi = Morphism.identity (* Proof_Context.export_morphism priv_lthy' glob_lthy *)
-    val glob_simp_thm = Morphism.thm phi glob_simp_thm0
-    val glob_const = Morphism.term phi glob_const0
+    val glob_lthy = priv_lthy' 
+      |> Proof_Context.restore_naming lthy
     val _ = trace lthy "deriving simp rules for separate functions from global function"
     fun define_f n (fs, fdefs,rhss,lthy) = let
         val ((fbinding,mixfix),_) = nth bindings_types n
@@ -314,10 +312,11 @@ fun gen_add_partial_function_mr prep mode fixes_raw eqns_raw lthy =
           Spec_Rules.add Spec_Rules.Equational ([f], simps)
           #> Local_Theory.note 
             ((Binding.qualify true fname @{binding "simps"}, 
-              @{attributes [code]}), simps) #> snd)
+              @{attributes [code]}), simps) #>> snd #>> hd)
       end
   in 
-    fold register nums local_lthy
+    fold (fn i => fn (simps, lthy) => case register i lthy of
+       (simp, lthy') => (simps @ [simp], lthy')) nums ([], local_lthy)
   end;
 
 val add_partial_function_mr = gen_add_partial_function_mr Specification.check_multi_specs;
@@ -329,6 +328,6 @@ val _ =
   Outer_Syntax.local_theory @{command_keyword partial_function_mr} 
     "define mutually recursive partial functions"
     (mode -- Parse_Spec.specification
-      >> (fn (mode, (fixes, specs)) => add_partial_function_mr_cmd mode fixes specs));
+      >> (fn (mode, (fixes, specs)) => add_partial_function_mr_cmd mode fixes specs #> #2));
 
 end

@@ -108,7 +108,7 @@ context
   fixes y :: int
 begin
 partial_function_mr (tailrec) foo and bar where
-  "foo x = (if x = y then foo (x - 1) else (bar x (y - 1):: bool))" 
+  "foo x = (if x = y then foo (x - 1) else (bar x (y - 1)))" 
 | "bar x z = foo (x + (1 :: int) + y)" 
 end
 
