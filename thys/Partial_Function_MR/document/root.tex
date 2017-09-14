@@ -32,7 +32,8 @@
 
 \begin{document}
 
-\title{Mutually Recursive Partial Functions\thanks{This research is supported by FWF (Austrian Science Fund) project P22767-N13.}}
+\title{Mutually Recursive Partial Functions\thanks{This research is supported by FWF (Austrian Science Fund) project P22767-N13. 
+We thank Makarius Wenzel for several hints on how to properly localize our wrapper.}}
 \author{Ren\'e Thiemann}
 \maketitle
 
@@ -71,7 +72,7 @@ To be more precise, a specification of a partial function has to be of the follo
 \label{nmr}
 f\ \vect{\xs} = F\ f\ \vect{\xs}
 \end{equation}
-where $\vect{\xs}$ is a sequence of distinct variables and $F$ is a an 
+where $\vect{\xs}$ is a sequence of distinct variables and $F$ is an 
 arbitrary monotone functional that may depend on $f$ and $\vect{\xs}$.
 
 For mutually recursive functions we would like to specify functions in the more general form
