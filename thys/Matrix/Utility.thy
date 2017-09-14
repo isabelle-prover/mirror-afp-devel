@@ -31,8 +31,25 @@ begin
 
 subsection {* Miscellaneous *}
 
+lemma ballI2[Pure.intro]:
+  assumes "\<And>x y. (x, y) \<in> A \<Longrightarrow> P x y"
+  shows "\<forall>(x, y)\<in>A. P x y"
+  using assms by auto
+
+
 lemma infinite_imp_elem: "\<not> finite A \<Longrightarrow> \<exists> x. x \<in> A"
   by (cases "A = {}", auto)
+
+lemma infinite_imp_many_elems:
+  "infinite A \<Longrightarrow> \<exists> xs. set xs \<subseteq> A \<and> length xs = n \<and> distinct xs"
+proof (induct n arbitrary: A)
+  case (Suc n)
+  from infinite_imp_elem[OF Suc(2)] obtain x where x: "x \<in> A" by auto
+  from Suc(2) have "infinite (A - {x})" by auto
+  from Suc(1)[OF this] obtain xs where "set xs \<subseteq> A - {x}" and "length xs = n" and "distinct xs" by auto
+  with x show ?case by (intro exI[of _ "x # xs"], auto)
+qed auto
+
 
 lemma inf_pigeonhole_principle:
   assumes "\<forall>k::nat. \<exists>i<n::nat. f k i"
@@ -230,5 +247,26 @@ qed
       
 lemma max_list_eq_set: "set xs = set ys \<Longrightarrow> max_list xs = max_list ys"
   unfolding max_list_set by simp
+
+lemma all_less_two: "(\<forall> i < Suc (Suc 0). P i) = (P 0 \<and> P (Suc 0))" (is "?l = ?r")
+proof
+  assume ?r
+  show ?l
+  proof(intro allI impI)
+    fix i
+    assume "i < Suc (Suc 0)"
+    hence "i = 0 \<or> i = Suc 0" by auto
+    with \<open>?r\<close> show "P i" by auto
+  qed
+qed auto
+
+text \<open>Induction over a finite set of natural numbers.\<close>
+lemma bound_nat_induct[consumes 1]:
+  assumes "n \<in> {l..u}" and "P l" and "\<And>n. \<lbrakk>P n; n \<in> {l..<u}\<rbrakk> \<Longrightarrow> P (Suc n)"
+  shows "P n"
+using assms
+proof (induct n)
+ case (Suc n) thus ?case by (cases "Suc n = l") auto
+qed simp
 
 end

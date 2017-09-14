@@ -2473,6 +2473,287 @@ using assms by (auto simp: join_def) (metis NF_not_suc rtrancl_converseD)
 
 lemma conversion_O_conversion [simp]:
   "A\<^sup>\<leftrightarrow>\<^sup>* O A\<^sup>\<leftrightarrow>\<^sup>* = A\<^sup>\<leftrightarrow>\<^sup>*"
-by (force simp: converse_def)
+  by (force simp: converse_def)
+
+lemma trans_O_iff: "trans A \<longleftrightarrow> A O A \<subseteq> A" unfolding trans_def by auto
+lemma refl_O_iff: "refl A \<longleftrightarrow> Id \<subseteq> A" unfolding refl_on_def by auto
+
+lemma relpow_Suc: "r ^^ Suc n = r O r ^^ n"
+  using relpow_add[of 1 n r] by auto
+
+lemma converse_power: fixes r :: "'a rel" shows "(r\<inverse>)^^n = (r^^n)\<inverse>"
+proof (induct n)
+  case (Suc n)
+  show ?case unfolding relpow.simps(2)[of _ "r\<inverse>"] relpow_Suc[of _ r]
+    by (simp add: Suc converse_relcomp)
+qed simp
+
+lemma conversion_mono: "A \<subseteq> B \<Longrightarrow> A\<^sup>\<leftrightarrow>\<^sup>* \<subseteq> B\<^sup>\<leftrightarrow>\<^sup>*"
+by (auto simp: conversion_def intro!: rtrancl_mono)
+
+lemma conversion_conversion_idemp [simp]: "(A\<^sup>\<leftrightarrow>\<^sup>*)\<^sup>\<leftrightarrow>\<^sup>* = A\<^sup>\<leftrightarrow>\<^sup>*"
+  by auto
+
+lemma lower_set_imp_not_SN_on:
+  assumes "s \<in> X" "\<forall>t \<in> X. \<exists>u \<in> X. (t,u) \<in> R" shows "\<not> SN_on R {s}"
+  by (meson SN_on_imp_on_minimal assms)
+
+
+lemma SN_on_Image_rtrancl_iff[simp]: "SN_on R (R\<^sup>* `` X) \<longleftrightarrow> SN_on R X" (is "?l = ?r")
+proof(intro iffI)
+  assume "?l" show "?r" by (rule SN_on_subset2[OF _ `?l`], auto)
+qed (fact SN_on_Image_rtrancl)
+
+lemma O_mono1: "R \<subseteq> R' \<Longrightarrow> S O R \<subseteq> S O R'" by auto
+lemma O_mono2: "R \<subseteq> R' \<Longrightarrow> R O T \<subseteq> R' O T" by auto
+
+lemma rtrancl_O_shift: "(S O R)\<^sup>* O S = S O (R O S)\<^sup>*"
+  (* regexp does not work, since R is of type 'a x 'b set, not 'a rel *)
+proof(intro equalityI subrelI)
+  fix x y
+  assume "(x,y) \<in> (S O R)\<^sup>* O S"
+  then obtain n where "(x,y) \<in> (S O R)^^n O S" by blast
+  then show "(x,y) \<in> S O (R O S)\<^sup>*"
+  proof(induct n arbitrary: y)
+    case IH: (Suc n)
+    then obtain z where xz: "(x,z) \<in> (S O R)^^n O S" and zy: "(z,y) \<in> R O S" by auto
+    from IH.hyps[OF xz] zy have "(x,y) \<in> S O (R O S)\<^sup>* O R O S" by auto
+    then show ?case by(fold trancl_unfold_right, auto)
+  qed auto
+next
+  fix x y
+  assume "(x,y) \<in> S O (R O S)\<^sup>*"
+  then obtain n where "(x,y) \<in> S O (R O S)^^n" by blast
+  then show "(x,y) \<in> (S O R)\<^sup>* O S"
+  proof(induct n arbitrary: y)
+    case IH: (Suc n)
+    then obtain z where xz: "(x,z) \<in> S O (R O S)^^n" and zy: "(z,y) \<in> R O S" by auto
+    from IH.hyps[OF xz] zy have "(x,y) \<in> ((S O R)\<^sup>* O S O R) O S" by auto
+    from this[folded trancl_unfold_right]
+    show ?case by (rule rev_subsetD[OF _ O_mono2], auto simp: O_assoc)
+  qed auto
+qed
+
+lemma O_rtrancl_O_O: "R O (S O R)\<^sup>* O S = (R O S)\<^sup>+"
+  by (unfold rtrancl_O_shift trancl_unfold_left, auto)
+
+lemma SN_on_subset_SN_terms:
+  assumes SN: "SN_on R X" shows "X \<subseteq> {x. SN_on R {x}}"
+proof(intro subsetI, unfold mem_Collect_eq)
+  fix x assume x: "x \<in> X"
+  show "SN_on R {x}" by (rule SN_on_subset2[OF _ SN], insert x, auto)
+qed
+
+lemma SN_on_Un2:
+  assumes "SN_on R X" and "SN_on R Y" shows "SN_on R (X \<union> Y)"
+  using assms by fast
+
+lemma SN_on_UN:
+  assumes "\<And>x. SN_on R (X x)" shows "SN_on R (\<Union>x. X x)"
+  using assms by fast
+
+lemma Image_subsetI: "R \<subseteq> R' \<Longrightarrow> R `` X \<subseteq> R' `` X" by auto
+
+lemma SN_on_O_comm:
+  assumes SN: "SN_on ((R :: ('a\<times>'b) set) O (S :: ('b\<times>'a) set)) (S `` X)"
+  shows "SN_on (S O R) X"
+proof
+  fix seq :: "nat \<Rightarrow> 'b" assume seq0: "seq 0 \<in> X" and chain: "chain (S O R) seq"
+  from SN have SN: "SN_on (R O S) ((R O S)\<^sup>* `` S `` X)" by simp
+  { fix i a
+    assume ia: "(seq i,a) \<in> S" and aSi: "(a,seq (Suc i)) \<in> R"
+    have "seq i \<in> (S O R)\<^sup>* `` X"
+    proof (induct i)
+      case 0 from seq0 show ?case by auto
+    next
+      case (Suc i) with chain have "seq (Suc i) \<in> ((S O R)\<^sup>* O S O R) `` X" by blast
+      also have "... \<subseteq> (S O R)\<^sup>* `` X" by (fold trancl_unfold_right, auto)
+      finally show ?case.
+    qed
+    with ia have "a \<in> ((S O R)\<^sup>* O S) `` X" by auto
+    then have a: "a \<in> ((R O S)\<^sup>*) `` S `` X" by (auto simp: rtrancl_O_shift)
+    with ia aSi have False
+    proof(induct "a" arbitrary: i rule: SN_on_induct[OF SN])
+      case 1 show ?case by (fact a)
+    next
+      case IH: (2 a)
+      from chain obtain b
+      where *: "(seq (Suc i), b) \<in> S" "(b, seq (Suc (Suc i))) \<in> R" by auto
+      with IH have ab: "(a,b) \<in> R O S" by auto
+      with \<open>a \<in> (R O S)\<^sup>* `` S `` X\<close> have "b \<in> ((R O S)\<^sup>* O R O S) `` S `` X" by auto
+      then have "b \<in> (R O S)\<^sup>* `` S `` X"
+        by (rule rev_subsetD, intro Image_subsetI, fold trancl_unfold_right, auto)
+      from IH.hyps[OF ab * this] IH.prems ab show False by auto
+    qed
+  }
+  with chain show False by auto
+qed
+
+lemma SN_O_comm: "SN (R O S) \<longleftrightarrow> SN (S O R)"
+  by (intro iffI; rule SN_on_O_comm[OF SN_on_subset2], auto)
+
+lemma chain_mono: assumes "R' \<subseteq> R" "chain R' seq" shows "chain R seq"
+  using assms by auto
+
+context
+  fixes S R
+  assumes push: "S O R \<subseteq> R O S\<^sup>*"
+begin
+
+lemma rtrancl_O_push: "S\<^sup>* O R \<subseteq> R O S\<^sup>*"
+proof-
+  { fix n
+    have "\<And>s t. (s,t) \<in> S ^^ n O R \<Longrightarrow> (s,t) \<in> R O S\<^sup>*"
+    proof(induct n)
+      case (Suc n)
+        then obtain u where "(s,u) \<in> S" "(u,t) \<in> R O S\<^sup>*" unfolding relpow_Suc by blast
+        then have "(s,t) \<in> S O R O S\<^sup>*" by auto
+        also have "... \<subseteq> R O S\<^sup>* O S\<^sup>*" using push by blast
+        also have "... \<subseteq> R O S\<^sup>*" by auto
+        finally show ?case.
+    qed auto
+  }
+  thus ?thesis by blast
+qed
+
+lemma rtrancl_U_push: "(S \<union> R)\<^sup>* = R\<^sup>* O S\<^sup>*"
+proof(intro equalityI subrelI)
+  fix x y
+  assume "(x,y) \<in> (S \<union> R)\<^sup>*"
+  also have "... \<subseteq> (S\<^sup>* O R)\<^sup>* O S\<^sup>*" by regexp
+  finally obtain z where xz: "(x,z) \<in> (S\<^sup>* O R)\<^sup>*" and zy: "(z,y) \<in> S\<^sup>*" by auto
+  from xz have "(x,z) \<in> R\<^sup>* O S\<^sup>*"
+  proof (induct rule: rtrancl_induct)
+    case (step z w)
+      then have "(x,w) \<in> R\<^sup>* O S\<^sup>* O S\<^sup>* O R" by auto
+      also have "... \<subseteq> R\<^sup>* O S\<^sup>* O R" by regexp
+      also have "... \<subseteq> R\<^sup>* O R O S\<^sup>*" using rtrancl_O_push by auto
+      also have "... \<subseteq> R\<^sup>* O S\<^sup>*" by regexp
+      finally show ?case.
+  qed auto
+  with zy show "(x,y) \<in> R\<^sup>* O S\<^sup>*" by auto
+qed regexp
+
+lemma SN_on_O_push:
+  assumes SN: "SN_on R X" shows "SN_on (R O S\<^sup>*) X"
+proof
+  fix seq
+  have SN: "SN_on R (R\<^sup>* `` X)" using SN_on_Image_rtrancl[OF SN].
+  moreover assume "seq (0::nat) \<in> X"
+    then have "seq 0 \<in> R\<^sup>* `` X" by auto
+  ultimately show "chain (R O S\<^sup>*) seq \<Longrightarrow> False"
+  proof(induct "seq 0" arbitrary: seq rule: SN_on_induct)
+    case IH
+    then have 01: "(seq 0, seq 1) \<in> R O S\<^sup>*"
+          and 12: "(seq 1, seq 2) \<in> R O S\<^sup>*"
+          and 23: "(seq 2, seq 3) \<in> R O S\<^sup>*" by (auto simp: eval_nat_numeral)
+    then obtain s t
+    where s: "(seq 0, s) \<in> R" and s1: "(s, seq 1) \<in> S\<^sup>*"
+      and t: "(seq 1, t) \<in> R" and t2: "(t, seq 2) \<in> S\<^sup>*" by auto
+    from s1 t have "(s,t) \<in> S\<^sup>* O R" by auto
+    with rtrancl_O_push have st: "(s,t) \<in> R O S\<^sup>*" by auto
+    from t2 23 have "(t, seq 3) \<in> S\<^sup>* O R O S\<^sup>*" by auto
+    also from rtrancl_O_push have "... \<subseteq> R O S\<^sup>* O S\<^sup>*" by blast
+    finally have t3: "(t, seq 3) \<in> R O S\<^sup>*" by regexp
+    let ?seq = "\<lambda>i. case i of 0 \<Rightarrow> s | Suc 0 \<Rightarrow> t | i \<Rightarrow> seq (Suc i)"
+    show ?case
+    proof(rule IH)
+      from s show "(seq 0, ?seq 0) \<in> R" by auto
+      show "chain (R O S\<^sup>*) ?seq"
+      proof (intro allI)
+        fix i show "(?seq i, ?seq (Suc i)) \<in> R O S\<^sup>*"
+        proof (cases i)
+          case 0 with st show ?thesis by auto
+        next
+          case (Suc i) with t3 IH show ?thesis by (cases i, auto simp: eval_nat_numeral)
+        qed
+      qed
+    qed
+  qed
+qed
+
+lemma SN_on_Image_push:
+  assumes SN: "SN_on R X" shows "SN_on R (S\<^sup>* `` X)"
+proof-
+  { fix n
+    have "SN_on R ((S^^n) `` X)"
+    proof(induct n)
+      case 0 from SN show ?case by auto
+      case (Suc n)
+        from SN_on_O_push[OF this] have "SN_on (R O S\<^sup>*) ((S ^^ n) `` X)".
+        from SN_on_Image[OF this]
+        have "SN_on (R O S\<^sup>*) ((R O S\<^sup>*) `` (S ^^ n) `` X)".
+        then have "SN_on R ((R O S\<^sup>*) `` (S ^^ n) `` X)" by (rule SN_on_mono, auto)
+        from SN_on_subset2[OF Image_mono[OF push subset_refl] this]
+        have "SN_on R (R `` (S ^^ Suc n) `` X)" by (auto simp: relcomp_Image)
+        then show ?case by fast
+    qed
+  }
+  then show ?thesis by fast
+qed
+
+end
+
+lemma not_SN_onI[intro]: "f 0 \<in> X \<Longrightarrow> chain R f \<Longrightarrow> \<not> SN_on R X"
+  by (unfold SN_on_def not_not, intro exI conjI)
+lemma shift_comp[simp]: "shift (f \<circ> seq) n = f \<circ> (shift seq n)" by auto
+
+lemma Id_on_union: "Id_on (A \<union> B) = Id_on A \<union> Id_on B" unfolding Id_on_def by auto
+
+lemma relpow_union_cases: "(a,d) \<in> (A \<union> B)^^n \<Longrightarrow> (a,d) \<in> B^^n \<or> (\<exists> b c k m. (a,b) \<in> B^^k \<and> (b,c) \<in> A \<and> (c,d) \<in> (A \<union> B)^^m \<and> n = Suc (k + m))"
+proof (induct n arbitrary: a d)
+  case (Suc n a e)
+  let ?AB = "A \<union> B"
+  from Suc(2) obtain b where ab: "(a,b) \<in> ?AB" and be: "(b,e) \<in> ?AB^^n" by (rule relpow_Suc_E2)
+  from ab
+  show ?case
+  proof
+    assume "(a,b) \<in> A"
+    show ?thesis
+    proof (rule disjI2, intro exI conjI)
+      show "Suc n = Suc (0 + n)" by simp
+      show "(a,b) \<in> A" by fact
+    qed (insert be, auto)
+  next
+    assume ab: "(a,b) \<in> B"
+    from Suc(1)[OF be]
+    show ?thesis
+    proof
+      assume "(b,e) \<in> B ^^ n"
+      with ab show ?thesis
+        by (intro disjI1 relpow_Suc_I2)
+    next
+      assume "\<exists> c d k m. (b, c) \<in> B ^^ k \<and> (c, d) \<in> A \<and> (d, e) \<in> ?AB ^^ m \<and> n = Suc (k + m)"
+      then obtain c d k m where "(b, c) \<in> B ^^ k" and *: "(c, d) \<in> A" "(d, e) \<in> ?AB ^^ m" "n = Suc (k + m)" by blast
+      with ab have ac: "(a,c) \<in> B ^^ (Suc k)" by (intro relpow_Suc_I2)
+      show ?thesis
+        by (intro disjI2 exI conjI, rule ac, (rule *)+, simp add: *)
+    qed
+  qed
+qed simp
+
+lemma trans_refl_imp_rtrancl_id:
+  assumes "trans r" "refl r"
+  shows "r\<^sup>* = r"
+proof
+  show "r\<^sup>* \<subseteq> r"
+  proof
+    fix x y
+    assume "(x,y) \<in> r\<^sup>*"
+    thus "(x,y) \<in> r"
+      by (induct, insert assms, unfold refl_on_def trans_def, blast+)
+  qed
+qed regexp
+
+lemma trans_refl_imp_O_id:
+  assumes "trans r" "refl r"
+  shows "r O r = r"
+proof(intro equalityI)
+  show "r O r \<subseteq> r" by(fact trans_O_subset[OF assms(1)])
+  have "r \<subseteq> r O Id" by auto
+  moreover have "Id \<subseteq> r" by(fact assms(2)[unfolded refl_O_iff])
+  ultimately show "r \<subseteq> r O r" by auto
+qed
+
 
 end
