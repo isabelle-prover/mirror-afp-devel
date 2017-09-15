@@ -39,7 +39,7 @@ text {*
   In the following we introduce a function to evaluate a behavior trace assertion over a given configuration trace.
 *}
 
-definition eval:: "'id \<Rightarrow> (nat \<Rightarrow> 'cnf) \<Rightarrow> (nat \<Rightarrow> 'cmp) \<Rightarrow> nat
+definition eval:: "'id \<Rightarrow> (nat \<Rightarrow> cnf) \<Rightarrow> (nat \<Rightarrow> 'cmp) \<Rightarrow> nat
   \<Rightarrow> ((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> bool"
   where "eval cid t t' n \<gamma> \<equiv>
     (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>) \<and> \<gamma> (lnth ((\<pi>\<^bsub>cid\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (the_enat(\<langle>cid #\<^bsub>n\<^esub> inf_llist t\<rangle>)) \<or>
@@ -659,7 +659,7 @@ definition ass :: "('cmp \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> '
   
 lemma assIA[intro]:
   fixes c::'id
-    and t::"nat \<Rightarrow> 'cnf"
+    and t::"nat \<Rightarrow> cnf"
     and t'::"nat \<Rightarrow> 'cmp"
     and n::nat
   assumes "\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
@@ -710,7 +710,7 @@ qed
 
 lemma assIN1[intro]:
   fixes c::'id
-    and t::"nat \<Rightarrow> 'cnf"
+    and t::"nat \<Rightarrow> cnf"
     and t'::"nat \<Rightarrow> 'cmp"
     and n::nat  
   assumes act: "\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
@@ -727,7 +727,7 @@ qed
     
 lemma assIN2[intro]:
   fixes c::'id
-    and t::"nat \<Rightarrow> 'cnf"
+    and t::"nat \<Rightarrow> cnf"
     and t'::"nat \<Rightarrow> 'cmp"
     and n::nat  
   assumes nAct: "\<nexists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
@@ -758,7 +758,7 @@ qed
   
 lemma assEA[elim]:
   fixes c::'id
-    and t::"nat \<Rightarrow> 'cnf"
+    and t::"nat \<Rightarrow> cnf"
     and t'::"nat \<Rightarrow> 'cmp"
     and n::nat
     and i::nat    
@@ -804,7 +804,7 @@ qed
 
 lemma assEN1[elim]:
   fixes c::'id
-    and t::"nat \<Rightarrow> 'cnf"
+    and t::"nat \<Rightarrow> cnf"
     and t'::"nat \<Rightarrow> 'cmp"
     and n::nat  
   assumes act: "\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
@@ -823,7 +823,7 @@ qed
 
 lemma assEN2[elim]:
   fixes c::'id
-    and t::"nat \<Rightarrow> 'cnf"
+    and t::"nat \<Rightarrow> cnf"
     and t'::"nat \<Rightarrow> 'cmp"
     and n::nat  
   assumes nAct: "\<nexists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
@@ -860,7 +860,7 @@ definition nxt :: "((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> boo
 
 lemma nxtIA[intro]:
   fixes c::'id
-    and t::"nat \<Rightarrow> 'cnf"
+    and t::"nat \<Rightarrow> cnf"
     and t'::"nat \<Rightarrow> 'cmp"
     and n::nat
   assumes "\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
@@ -909,7 +909,7 @@ qed
   
 lemma nxtIN[intro]:
   fixes c::'id
-    and t::"nat \<Rightarrow> 'cnf"
+    and t::"nat \<Rightarrow> cnf"
     and t'::"nat \<Rightarrow> 'cmp"
     and n::nat  
   assumes "\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)"
@@ -935,7 +935,7 @@ qed
   
 lemma nxtEA1[elim]:
   fixes c::'id
-    and t::"nat \<Rightarrow> 'cnf"
+    and t::"nat \<Rightarrow> cnf"
     and t'::"nat \<Rightarrow> 'cmp"
     and n::nat
   assumes "\<exists>i>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
@@ -970,7 +970,7 @@ qed
   
 lemma nxtEA2[elim]:
   fixes c::'id
-    and t::"nat \<Rightarrow> 'cnf"
+    and t::"nat \<Rightarrow> cnf"
     and t'::"nat \<Rightarrow> 'cmp"
     and n::nat
     and "i"
@@ -991,7 +991,7 @@ qed
 
 lemma NxtEN[elim]:
   fixes c::'id
-    and t::"nat \<Rightarrow> 'cnf"
+    and t::"nat \<Rightarrow> cnf"
     and t'::"nat \<Rightarrow> 'cmp"
     and n::nat 
   assumes "\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)"
@@ -1021,7 +1021,7 @@ definition evt :: "((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> boo
 
 lemma evtIA[intro]:
   fixes c::'id
-    and t::"nat \<Rightarrow> 'cnf"
+    and t::"nat \<Rightarrow> cnf"
     and t'::"nat \<Rightarrow> 'cmp"
     and n::nat
     and n'::nat
@@ -1083,7 +1083,7 @@ qed
     
 lemma evtIN[intro]:
   fixes c::'id
-    and t::"nat \<Rightarrow> 'cnf"
+    and t::"nat \<Rightarrow> cnf"
     and t'::"nat \<Rightarrow> 'cmp"
     and n::nat
     and n'::nat
@@ -1110,7 +1110,7 @@ qed
   
 lemma evtEA[elim]:
   fixes c::'id
-    and t::"nat \<Rightarrow> 'cnf"
+    and t::"nat \<Rightarrow> cnf"
     and t'::"nat \<Rightarrow> 'cmp"
     and n::nat  
   assumes "\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
@@ -1206,7 +1206,7 @@ qed
     
 lemma evtEN[elim]:
   fixes c::'id
-    and t::"nat \<Rightarrow> 'cnf"
+    and t::"nat \<Rightarrow> cnf"
     and t'::"nat \<Rightarrow> 'cmp"
     and n::nat
     and n'::nat  
@@ -1262,7 +1262,7 @@ definition glob :: "((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bo
     
 lemma globIA[intro]:
   fixes c::'id
-    and t::"nat \<Rightarrow> 'cnf"
+    and t::"nat \<Rightarrow> cnf"
     and t'::"nat \<Rightarrow> 'cmp"
     and n::nat  
   assumes "\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
@@ -1348,7 +1348,7 @@ qed
   
 lemma globIN[intro]:
   fixes c::'id
-    and t::"nat \<Rightarrow> 'cnf"
+    and t::"nat \<Rightarrow> cnf"
     and t'::"nat \<Rightarrow> 'cmp"
     and n::nat  
   assumes "\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)"
@@ -1400,7 +1400,7 @@ qed
       
 lemma globEA[elim]:
   fixes c::'id
-    and t::"nat \<Rightarrow> 'cnf"
+    and t::"nat \<Rightarrow> cnf"
     and t'::"nat \<Rightarrow> 'cmp"
     and n::nat
     and n'::nat
@@ -1440,7 +1440,7 @@ qed
 
 lemma globEN[elim]:
   fixes c::'id
-    and t::"nat \<Rightarrow> 'cnf"
+    and t::"nat \<Rightarrow> cnf"
     and t'::"nat \<Rightarrow> 'cmp"
     and n::nat
     and n'::nat
@@ -1475,7 +1475,7 @@ definition until :: "((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> b
     
 lemma untilIA[intro]:
   fixes c::'id
-    and t::"nat \<Rightarrow> 'cnf"
+    and t::"nat \<Rightarrow> cnf"
     and t'::"nat \<Rightarrow> 'cmp"
     and n::nat
     and n'::nat
@@ -1683,7 +1683,7 @@ qed
   
 lemma untilIN[intro]:
   fixes c::'id
-    and t::"nat \<Rightarrow> 'cnf"
+    and t::"nat \<Rightarrow> cnf"
     and t'::"nat \<Rightarrow> 'cmp"
     and n::nat
     and n'::nat
@@ -1733,7 +1733,7 @@ qed
 lemma untilEA[elim]:
   fixes n::nat
     and n'::nat
-    and t::"nat \<Rightarrow> 'cnf"
+    and t::"nat \<Rightarrow> cnf"
     and t'::"nat \<Rightarrow> 'cmp"
     and c::'id
   assumes "\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
@@ -1900,7 +1900,7 @@ qed
 lemma untilEN[elim]:
   fixes n::nat
     and n'::nat
-    and t::"nat \<Rightarrow> 'cnf"
+    and t::"nat \<Rightarrow> cnf"
     and t'::"nat \<Rightarrow> 'cmp"
     and c::'id
   assumes "\<nexists>i. i\<ge>n \<and> \<parallel>c\<parallel>\<^bsub>t i\<^esub>"

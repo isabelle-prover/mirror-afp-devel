@@ -70,7 +70,7 @@ lemma enat_min:
     and "enat n < m - enat n'"
   shows "enat n + enat n' < m" 
   using assms by (metis add.commute enat.simps(3) enat_add_mono enat_add_sub_same le_iff_add)
-  
+
 subsection "Lazy Lists"
 text {*
   In the following we provide some additional notation and properties for lazy lists.
@@ -157,6 +157,11 @@ proof -
 qed
 
 subsection "A Model of Dynamic Architectures"
+
+typedecl cnf
+type_synonym trace = "nat \<Rightarrow> cnf"
+consts arch:: "trace set"
+
 text {*
   In the following we formalize dynamic architectures in terms of configuration traces, i.e., sequences of architecture configurations.
 *}
@@ -170,8 +175,8 @@ text {*
   \end{itemize}
 *}
 locale dynamic_component =
-  fixes tCMP :: "'id \<Rightarrow> 'cnf \<Rightarrow> 'cmp" ("\<sigma>\<^bsub>_\<^esub>(_)" [0,110]60)
-    and active :: "'id \<Rightarrow> 'cnf \<Rightarrow> bool" ("\<parallel>_\<parallel>\<^bsub>_\<^esub>" [0,110]60)
+  fixes tCMP :: "'id \<Rightarrow> cnf \<Rightarrow> 'cmp" ("\<sigma>\<^bsub>_\<^esub>(_)" [0,110]60)
+    and active :: "'id \<Rightarrow> cnf \<Rightarrow> bool" ("\<parallel>_\<parallel>\<^bsub>_\<^esub>" [0,110]60)
 begin
   
 text {*
@@ -195,7 +200,7 @@ text {*
 *}
 
 lemma nact_active:
-  fixes t::"nat \<Rightarrow> 'cnf"
+  fixes t::"nat \<Rightarrow> cnf"
     and n::nat
     and n''
     and id
@@ -206,7 +211,7 @@ lemma nact_active:
   using assms le_eq_less_or_eq by auto
 
 lemma nact_exists:
-  fixes t::"nat \<Rightarrow> 'cnf"
+  fixes t::"nat \<Rightarrow> cnf"
   assumes "\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
   shows "\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub> \<and> (\<nexists>k. n\<le>k \<and> k<i \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)"
 proof -
@@ -232,7 +237,7 @@ text {*
   In the following we introduce an operator which extracts the behavior of a certain component out of a given configuration trace.
 *}
 
-definition proj:: "'id \<Rightarrow> ('cnf llist) \<Rightarrow> ('cmp llist)" ("\<pi>\<^bsub>_\<^esub>(_)" [0,110]60) 
+definition proj:: "'id \<Rightarrow> (cnf llist) \<Rightarrow> ('cmp llist)" ("\<pi>\<^bsub>_\<^esub>(_)" [0,110]60) 
   where "proj c = lmap (\<lambda>cnf. (\<sigma>\<^bsub>c\<^esub>(cnf))) \<circ> (lfilter (active c))"
 
 lemma proj_lnil [simp,intro]:
@@ -542,7 +547,7 @@ text {*
   We also introduce an operator to obtain the number of activations of a certain component within a given configuration trace.
 *}
 
-definition nAct :: "'id \<Rightarrow> enat \<Rightarrow> ('cnf llist) \<Rightarrow> enat" ("\<langle>_ #\<^bsub>_\<^esub>_\<rangle>") where
+definition nAct :: "'id \<Rightarrow> enat \<Rightarrow> (cnf llist) \<Rightarrow> enat" ("\<langle>_ #\<^bsub>_\<^esub>_\<rangle>") where
 "\<langle>c #\<^bsub>n\<^esub> t\<rangle> \<equiv> llength (\<pi>\<^bsub>c\<^esub>(ltake n t))"
 
 lemma nAct_0[simp]:
@@ -646,7 +651,7 @@ subsubsection "Not Active"
 lemma nAct_not_active[simp]:
   fixes n::nat
     and n'::nat
-    and t::"('cnf llist)"
+    and t::"(cnf llist)"
     and c::'id
   assumes "enat i < llength t"
     and "\<not> \<parallel>c\<parallel>\<^bsub>lnth t i\<^esub>"
@@ -673,7 +678,7 @@ subsubsection "Active"
 lemma nAct_active[simp]:
   fixes n::nat
     and n'::nat
-    and t::"('cnf llist)"
+    and t::"(cnf llist)"
     and c::'id
   assumes "enat i < llength t"
     and "\<parallel>c\<parallel>\<^bsub>lnth t i\<^esub>"
@@ -693,7 +698,7 @@ qed
 lemma nAct_active_suc:
   fixes n::nat
     and n'::enat
-    and t::"('cnf llist)"
+    and t::"(cnf llist)"
     and c::'id
   assumes "\<not> lfinite t \<or> n'-1 < llength t"
     and "n \<le> i"
@@ -933,7 +938,7 @@ text {*
   In the following, we introduce an operator to obtain the least point in time before a certain point in time where a component was deactivated.
 *}
 
-definition lNAct :: "'id \<Rightarrow> (nat \<Rightarrow> 'cnf) \<Rightarrow> nat \<Rightarrow> nat" ("\<langle>_ \<leftarrow> _\<rangle>\<^bsub>_\<^esub>")
+definition lNAct :: "'id \<Rightarrow> (nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> nat" ("\<langle>_ \<leftarrow> _\<rangle>\<^bsub>_\<^esub>")
   where "\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<equiv> (LEAST n'. n=n' \<or> (n'<n \<and> (\<nexists>k. k\<ge>n' \<and> k<n \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)))"
 
 lemma lNact0[simp]:
@@ -1025,12 +1030,12 @@ text {*
   In the following, we introduce an operator to obtain the next point in time when a component is activated.
 *}
   
-definition nxtAct :: "'id \<Rightarrow> (nat \<Rightarrow> 'cnf) \<Rightarrow> nat \<Rightarrow> nat" ("\<langle>_ \<rightarrow> _\<rangle>\<^bsub>_\<^esub>")
+definition nxtAct :: "'id \<Rightarrow> (nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> nat" ("\<langle>_ \<rightarrow> _\<rangle>\<^bsub>_\<^esub>")
   where "\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub> \<equiv> (THE n'. n'\<ge>n \<and> \<parallel>c\<parallel>\<^bsub>t n'\<^esub> \<and> (\<nexists>k. k\<ge>n \<and> k<n' \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>))"
 
 lemma nxtActI:
   fixes n::nat
-    and t::"nat \<Rightarrow> 'cnf"
+    and t::"nat \<Rightarrow> cnf"
     and c::'id
   assumes "\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
   shows "\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub> \<ge> n \<and> \<parallel>c\<parallel>\<^bsub>t \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub> \<and> (\<nexists>k. k\<ge>n \<and> k<\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)"
@@ -1061,7 +1066,7 @@ lemma nxtActLe:
 
 lemma nxtAct_active:
   fixes i::nat
-    and t::"nat \<Rightarrow> 'cnf"
+    and t::"nat \<Rightarrow> cnf"
     and c::'id
   assumes "\<parallel>c\<parallel>\<^bsub>t i\<^esub>"
   shows "\<langle>c \<rightarrow> t\<rangle>\<^bsub>i\<^esub> = i" by (metis assms le_eq_less_or_eq nxtActI)
@@ -1149,7 +1154,7 @@ text {*
   In the following we introduce an operator to obtain the latest point in time where a certain component was activated within a certain configuration trace.
 *}
 
-definition lActive :: "'id \<Rightarrow> (nat \<Rightarrow> 'cnf) \<Rightarrow> nat" ("\<langle>_ \<and> _\<rangle>")
+definition lActive :: "'id \<Rightarrow> (nat \<Rightarrow> cnf) \<Rightarrow> nat" ("\<langle>_ \<and> _\<rangle>")
   where "\<langle>c \<and> t\<rangle> \<equiv> (GREATEST i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)"
 
 lemma lActive_active:
@@ -1229,7 +1234,7 @@ text {*
   First we provide an operator which maps a point in time of a configuration trace to the corresponding point in time of a behavior trace.
 *}
   
-definition cnf2bhv :: "'id \<Rightarrow> (nat \<Rightarrow> 'cnf) \<Rightarrow> nat \<Rightarrow> nat" ("\<^bsub>_\<^esub>\<down>\<^bsub>_\<^esub>(_)" [150,150,150] 110)
+definition cnf2bhv :: "'id \<Rightarrow> (nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> nat" ("\<^bsub>_\<^esub>\<down>\<^bsub>_\<^esub>(_)" [150,150,150] 110)
   where "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n) \<equiv> the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1 + (n - \<langle>c \<and> t\<rangle>)"
 
 lemma cnf2bhv_mono:
@@ -1350,7 +1355,7 @@ text {*
   Next we define an operator to map a point in time of a behavior trace back to a corresponding point in time for a configuration trace.
 *}
 
-definition bhv2cnf :: "'id \<Rightarrow> (nat \<Rightarrow> 'cnf) \<Rightarrow> nat \<Rightarrow> nat" ("\<^bsub>_\<^esub>\<up>\<^bsub>_\<^esub>(_)" [150,150,150] 110)
+definition bhv2cnf :: "'id \<Rightarrow> (nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> nat" ("\<^bsub>_\<^esub>\<up>\<^bsub>_\<^esub>(_)" [150,150,150] 110)
   where "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n) \<equiv> \<langle>c \<and> t\<rangle> + (n - (the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1))"
 
 lemma bhv2cnf_mono:
