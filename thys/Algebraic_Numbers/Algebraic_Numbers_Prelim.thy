@@ -122,11 +122,11 @@ qed
 
 lemma irreducible_connect_rev:
   fixes p :: "'a :: {comm_semiring_1,semiring_no_zero_divisors} poly"
-  assumes irr: "irreducible p" and deg: "degree p \<noteq> 0"
+  assumes irr: "irreducible p" and deg: "degree p > 0"
   shows "irreducible\<^sub>d p"
 proof(intro irreducible\<^sub>dI deg)
   fix q r
-  assume degq: "degree q \<noteq> 0" and diff: "degree q < degree p" and p: "p = q * r"
+  assume degq: "degree q > 0" and diff: "degree q < degree p" and p: "p = q * r"
   from degq have nu: "\<not> q dvd 1" by (auto simp: poly_dvd_1)
   from irreducibleD[OF irr p] nu have "r dvd 1" by auto
   then have "degree r = 0" by (auto simp: poly_dvd_1)

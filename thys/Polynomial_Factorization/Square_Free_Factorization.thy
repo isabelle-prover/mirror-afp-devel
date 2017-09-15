@@ -21,10 +21,10 @@ imports
 begin
 
 definition square_free :: "'a :: comm_semiring_1 poly \<Rightarrow> bool" where 
-  "square_free p = (p \<noteq> 0 \<and> (\<forall> q. degree q \<noteq> 0 \<longrightarrow> \<not> (q * q dvd p)))"
+  "square_free p = (p \<noteq> 0 \<and> (\<forall> q. degree q > 0 \<longrightarrow> \<not> (q * q dvd p)))"
 
 lemma square_freeI:  
-  assumes "\<And> q. degree q \<noteq> 0 \<Longrightarrow> q \<noteq> 0 \<Longrightarrow> q * q dvd p \<Longrightarrow> False"
+  assumes "\<And> q. degree q > 0 \<Longrightarrow> q \<noteq> 0 \<Longrightarrow> q * q dvd p \<Longrightarrow> False"
   and p: "p \<noteq> 0"
   shows "square_free p" unfolding square_free_def
 proof (intro allI conjI[OF p] impI notI, goal_cases)
@@ -54,14 +54,14 @@ lemma square_free_factor: assumes dvd: "a dvd p"
   shows "square_free a"
 proof (intro square_freeI)
   fix q
-  assume q: "degree q \<noteq> 0" and "q * q dvd a"
+  assume q: "degree q > 0" and "q * q dvd a"
   hence "q * q dvd p" using dvd dvd_trans sf square_free_def by blast
   with sf[unfolded square_free_def] q show False by auto
 qed (insert dvd sf, auto simp: square_free_def)
 
 lemma square_free_prod_list_distinct: 
   assumes sf: "square_free (prod_list us :: 'a :: idom poly)"
-  and us: "\<And> u. u \<in> set us \<Longrightarrow> degree u \<noteq> 0"
+  and us: "\<And> u. u \<in> set us \<Longrightarrow> degree u > 0"
   shows "distinct us"
 proof (rule ccontr)
   assume "\<not> distinct us"
@@ -137,7 +137,7 @@ lemma rsquarefree_square_free_complex: assumes "rsquarefree (p :: complex poly)"
   shows "square_free p"
 proof (rule square_freeI)
   fix q
-  assume d: "degree q \<noteq> 0" and dvd: "q * q dvd p"
+  assume d: "degree q > 0" and dvd: "q * q dvd p"
   from d have "\<not> constant (poly q)" by (simp add: constant_degree)
   from fundamental_theorem_of_algebra[OF this] obtain x where "poly q x = 0" by auto
   hence "[:-x,1:] dvd q" by (simp add: poly_eq_0_iff_dvd)
@@ -159,7 +159,7 @@ proof -
   define G where "G = ?g"
   from poly_gcd_monic[of f "pderiv f"] f have mon: "monic ?g"
     by auto
-  have deg: "degree G \<noteq> 0" 
+  have deg: "degree G > 0" 
   proof (cases "degree G")
     case 0
     from degree0_coeffs[OF this] cop mon show ?thesis
@@ -224,7 +224,7 @@ definition square_free_factorization :: "'a poly \<Rightarrow> 'a \<times> ('a p
   "square_free_factorization p cbs \<equiv> case cbs of (c,bs) \<Rightarrow>
     (p = smult c (\<Prod>(a, i)\<in> set bs. a ^ Suc i))
   \<and> (p = 0 \<longrightarrow> c = 0 \<and> bs = [])
-  \<and> (\<forall> a i. (a,i) \<in> set bs \<longrightarrow> square_free a \<and> degree a \<noteq> 0)
+  \<and> (\<forall> a i. (a,i) \<in> set bs \<longrightarrow> square_free a \<and> degree a > 0)
   \<and> (\<forall> a i b j. (a,i) \<in> set bs \<longrightarrow> (b,j) \<in> set bs \<longrightarrow> (a,i) \<noteq> (b,j) \<longrightarrow> gcd a b = 1)
   \<and> distinct bs"
 
@@ -367,23 +367,23 @@ proof -
     note bs_monic = as_monic[OF set_mp[OF bs]]
     from dvd(1) single have k: "k \<noteq> 0" by auto
     show "k dvd 1"
-    proof (cases "degree k = 0")
-      case True
+    proof (cases "degree k > 0")
+      case False
       with k obtain c where "k = [:c:]"
-        by (metis degree_0_id)
+        by (auto dest: degree0_coeffs)
       with k have "c \<noteq> 0"
         by auto
       with \<open>k = [:c:]\<close> show "is_unit k"
         using dvdI [of 1 "[:c:]" "[:1 / c:]"] by auto
     next
-      case False
+      case True
       from irreducible\<^sub>d_factor[OF this]
       obtain p q where k: "k = p * q" and p: "irreducible\<^sub>d p" by auto
       from k dvd have dvd: "p dvd ?single" "p dvd ?onederiv" unfolding dvd_def by auto
       from irreducible\<^sub>d_dvd_prod[OF p dvd(1)] obtain a i where ai: "(a,i) \<in> bs" and pa: "p dvd a"
         by force
       then obtain q where a: "a = p * q" unfolding dvd_def by auto
-      from p[unfolded irreducible\<^sub>d_def] have p0: "degree p \<noteq> 0" by auto
+      from p[unfolded irreducible\<^sub>d_def] have p0: "degree p > 0" by auto
       from irreducible\<^sub>d_dvd_smult[OF p0 as_irred pa] ai bs
         obtain c where c: "c \<noteq> 0" and ap: "a = smult c p" by auto
       hence ap': "p = smult (1/c) a" by auto
@@ -431,7 +431,7 @@ proof -
         hence "p dvd (pderiv a)" unfolding fi using dvd_smult_cancel of_nat_eq_0_iff by blast
         from this[unfolded ap] have "p dvd pderiv p" using c
           by (metis `p dvd pderiv a` ap' dvd_trans dvd_triv_right mult.left_neutral pderiv_smult smult_dvd_cancel)
-        with not_dvd_pderiv[OF p0] show False by auto
+        with not_dvd_pderiv p0 show False by auto
       qed
       thus "k dvd 1" by simp
     qed
@@ -626,18 +626,18 @@ proof (rule gcdI[symmetric])
     by (rule nonzero_gen, auto)
   with dvd have k: "k \<noteq> 0" by auto
   show "k dvd 1"
-  proof (cases "degree k = 0")
-    case True
-    then obtain c where kc: "k = [: c :]" by (metis degree_0_id)
+  proof (cases "degree k > 0")
+    case False
+    then obtain c where kc: "k = [: c :]" by (auto dest: degree0_coeffs)
     with k have "1 = k * [:1 / c:]"
       by simp
     thus ?thesis unfolding dvd_def by blast
   next
-    case False
+    case True
     from irreducible\<^sub>d_monic_factor[OF this]
     obtain q r where k: "k = q * r" and q: "irreducible\<^sub>d q" and mq: "monic q" by auto
     with dvd have dvd: "q dvd A i" "q dvd A j" unfolding dvd_def by auto
-    from q have q0: "degree q \<noteq> 0" unfolding irreducible\<^sub>d_def by auto
+    from q have q0: "degree q > 0" unfolding irreducible\<^sub>d_def by auto
     from irreducible\<^sub>d_dvd_prod[OF q dvd(1)[unfolded A]]
       obtain a where ai: "(a,i) \<in> as" and qa: "q dvd a" by auto
     from irreducible\<^sub>d_dvd_prod[OF q dvd(2)[unfolded A]]
@@ -661,7 +661,7 @@ proof (rule square_freeI)
   fix q k
   have mon: "monic (A i)" by (rule A_monic)
   hence Ai: "A i \<noteq> 0" by auto
-  assume q: "degree q \<noteq> 0" and dvd: "q * q dvd A i"
+  assume q: "degree q > 0" and dvd: "q * q dvd A i"
   from irreducible\<^sub>d_monic_factor[OF q] obtain r s where q: "q = r * s" and 
     irr: "irreducible\<^sub>d r" and mr: "monic r" by auto
   from dvd[unfolded q] have dvd2: "r * r dvd A i" and dvd1: "r dvd A i" unfolding dvd_def by auto
@@ -1098,7 +1098,7 @@ proof -
     from bs have "\<And> b. b \<in> set (map fst bs) \<Longrightarrow> b \<noteq> 0" by fastforce
     thus "prod_list (map fst bs) \<noteq> 0" unfolding prod_list_zero_iff by auto
     fix q
-    assume "degree q \<noteq> 0" "q * q dvd prod_list (map fst bs)"
+    assume "degree q > 0" "q * q dvd prod_list (map fst bs)"
     from irreducible\<^sub>d_factor[OF this(1)] this(2) obtain q where 
       irr: "irreducible\<^sub>d q" and dvd: "q * q dvd prod_list (map fst bs)" unfolding dvd_def by auto
     hence dvd': "q dvd prod_list (map fst bs)" unfolding dvd_def by auto
@@ -1106,7 +1106,7 @@ proof -
       mem: "(b,i) \<in> set bs" and dvd1: "q dvd b" by auto
     from dvd1 obtain k where b: "b = q * k" unfolding dvd_def by auto
     from split_list[OF mem] b obtain bs1 bs2 where bs: "bs = bs1 @ (b, i) # bs2" by auto
-    from irr have q0: "q \<noteq> 0" and dq: "degree q \<noteq> 0" unfolding irreducible\<^sub>d_def by auto
+    from irr have q0: "q \<noteq> 0" and dq: "degree q > 0" unfolding irreducible\<^sub>d_def by auto
     from sf(2)[OF mem, unfolded b] have "square_free (q * k)" by auto
     from this[unfolded square_free_def, THEN conjunct2, rule_format, OF dq] 
     have qk: "\<not> q dvd k" by simp
@@ -1117,7 +1117,7 @@ proof -
     from irreducible\<^sub>d_dvd_prod_list[OF irr this] obtain b' i' where 
       mem': "(b',i') \<in> set (bs1 @ bs2)" and dvd2: "q dvd b'" by fastforce
     from dvd1 dvd2 have "q dvd gcd b b'" by auto
-    with dq have cop: "\<not> coprime b b'" by (metis is_unit_iff_degree q0)
+    with dq is_unit_iff_degree[OF q0] have cop: "\<not> coprime b b'" by force
     from mem' have "(b',i') \<in> set bs" unfolding bs by auto
     from sf(3)[OF mem this] cop have b': "(b',i') = (b,i)" by auto
     with mem' sf(5)[unfolded bs] show False by auto
@@ -1128,7 +1128,7 @@ qed
 lemma square_free_factorizationI': fixes p :: "'a poly"
   assumes prod: "p = smult c (\<Prod>(a, i) \<leftarrow> bs. a ^ Suc i)"
     and sf: "square_free (prod_list (map fst bs))"
-    and deg: "\<And> b i. (b,i) \<in> set bs \<Longrightarrow> degree b \<noteq> 0"
+    and deg: "\<And> b i. (b,i) \<in> set bs \<Longrightarrow> degree b > 0"
     and 0: "p = 0 \<Longrightarrow> c = 0 \<and> bs = []"
   shows "square_free_factorization p (c, bs)"
   unfolding square_free_factorization_def split
@@ -1137,7 +1137,7 @@ proof (intro conjI impI allI)
   {
     fix b i
     assume bi: "(b,i) \<in> set bs"
-    from deg[OF this] show "degree b \<noteq> 0" .
+    from deg[OF this] show "degree b > 0" .
     have "b dvd prod_list (map fst bs)"
       by (intro prod_list_dvd, insert bi, force)
     from square_free_factor[OF this sf] show "square_free b" .
@@ -1168,7 +1168,7 @@ proof (intro conjI impI allI)
     have gcd: "gcd a b * gcd a b dvd prod_list (map fst bs)" 
       unfolding lp by (simp add: mult_dvd_mono)
     {
-      assume "degree (gcd a b) \<noteq> 0" 
+      assume "degree (gcd a b) > 0"
       from sf[unfolded square_free_def, THEN conjunct2, rule_format, OF this] gcd
       have False by simp
     }
@@ -1181,14 +1181,14 @@ lemma square_free_factorization_def': fixes p :: "'a poly"
   shows "square_free_factorization p (c,bs) \<longleftrightarrow>
   (p = smult c (\<Prod>(a, i) \<leftarrow> bs. a ^ Suc i)) \<and>
   (square_free (prod_list (map fst bs))) \<and>
-  (\<forall> b i. (b,i) \<in> set bs \<longrightarrow> degree b \<noteq> 0) \<and>
+  (\<forall> b i. (b,i) \<in> set bs \<longrightarrow> degree b > 0) \<and>
   (p = 0 \<longrightarrow> c = 0 \<and> bs = [])"
   using square_free_factorizationD'[of p c bs]
   square_free_factorizationI'[of p c bs] by blast
 
 lemma square_free_factorization_smult_prod_listI: fixes p :: "'a poly"
   assumes sff: "square_free_factorization p (c, bs1 @ (smult b (prod_list bs),i) # bs2)"
-  and bs: "\<And> b. b \<in> set bs \<Longrightarrow> degree b \<noteq> 0"
+  and bs: "\<And> b. b \<in> set bs \<Longrightarrow> degree b > 0"
   shows "square_free_factorization p (c * b^(Suc i), bs1 @ map (\<lambda> b. (b,i)) bs @ bs2)"
 proof -
   from square_free_factorizationD'(3)[OF sff, of "smult b (prod_list bs)" i]
@@ -1213,7 +1213,7 @@ qed
 lemma square_free_factorization_further_factorization: fixes p :: "'a poly"
   assumes sff: "square_free_factorization p (c, bs)"
   and bs: "\<And> b i d fs. (b,i) \<in> set bs \<Longrightarrow> f b = (d,fs) 
-    \<Longrightarrow> b = smult d (prod_list fs) \<and> (\<forall> f \<in> set fs. degree f \<noteq> 0)"
+    \<Longrightarrow> b = smult d (prod_list fs) \<and> (\<forall> f \<in> set fs. degree f > 0)"
   and h: "h = (\<lambda> (b,i). case f b of (d,fs) \<Rightarrow> (d^Suc i,map (\<lambda> f. (f,i)) fs))"
   and gs: "gs = map h bs"
   and d: "d = c * prod_list (map fst gs)"
@@ -1247,7 +1247,7 @@ proof -
     from G[unfolded gs] obtain b i where bi: "(b,i) \<in> set bs" 
       and G: "G = snd (h (b,i))" by auto 
     obtain d fs where f: "f b = (d,fs)" by force
-    show "degree fi \<noteq> 0" 
+    show "degree fi > 0"
       by (rule bs[THEN conjunct2, rule_format, OF bi f], insert fi G f, unfold h, auto)
   next
     have id: "\<exists> c. prod_list (map fst bs) = smult c (prod_list (map fst es))"
@@ -1272,7 +1272,7 @@ qed
 
 lemma square_free_factorization_prod_listI: fixes p :: "'a poly"
   assumes sff: "square_free_factorization p (c, bs1 @ ((prod_list bs),i) # bs2)"
-  and bs: "\<And> b. b \<in> set bs \<Longrightarrow> degree b \<noteq> 0"
+  and bs: "\<And> b. b \<in> set bs \<Longrightarrow> degree b > 0"
   shows "square_free_factorization p (c, bs1 @ map (\<lambda> b. (b,i)) bs @ bs2)"
   using square_free_factorization_smult_prod_listI[of p c bs1 1 bs i bs2] sff bs by auto
 

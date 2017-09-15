@@ -265,13 +265,13 @@ qed
 
 
 lemma rational_proper_factor: 
-  "degree p \<noteq> 0 \<Longrightarrow> rational_proper_factor p = None \<Longrightarrow> irreducible\<^sub>d p" 
+  "degree p > 0 \<Longrightarrow> rational_proper_factor p = None \<Longrightarrow> irreducible\<^sub>d p" 
   "rational_proper_factor p = Some q \<Longrightarrow> q dvd p \<and> degree q \<ge> 1 \<and> degree q < degree p"
 proof -
   let ?rp = "rational_proper_factor p"
   let ?rr = "rational_root_test"
   note d = rational_proper_factor_def[of p]
-  have "(degree p \<noteq> 0 \<longrightarrow> ?rp = None \<longrightarrow> irreducible\<^sub>d p) \<and> 
+  have "(degree p > 0 \<longrightarrow> ?rp = None \<longrightarrow> irreducible\<^sub>d p) \<and> 
         (?rp = Some q \<longrightarrow> q dvd p \<and> degree q \<ge> 1 \<and> degree q < degree p)"
   proof (cases "degree p = 0")
     case True
@@ -297,7 +297,7 @@ proof -
           have "irreducible\<^sub>d p"
           proof (rule irreducible\<^sub>dI)
             fix q r :: "rat poly"
-            assume "degree q \<noteq> 0" "degree q < degree p" and p: "p = q * r"
+            assume "degree q > 0" "degree q < degree p" and p: "p = q * r"
             with True have dq: "degree q = 1" by auto
             have "\<not> q dvd p" by (rule degree_1_dvd_root[OF dq], insert nex, auto)
             with p show False by auto
@@ -324,7 +324,7 @@ proof -
             have "irreducible\<^sub>d p"
             proof (rule irreducible\<^sub>dI2)
               fix q :: "rat poly"
-              assume "degree q \<ge> 1" "degree q \<le> degree p div 2"
+              assume "degree q > 0" "degree q \<le> degree p div 2"
               with True have dq: "degree q = 1" by auto
               show "\<not> q dvd p" 
                 by (rule degree_1_dvd_root[OF dq], insert nex, auto)
@@ -354,7 +354,7 @@ proof -
       qed
     qed
   qed
-  thus "degree p \<noteq> 0 \<Longrightarrow> rational_proper_factor p = None \<Longrightarrow> irreducible\<^sub>d p" 
+  thus "degree p > 0 \<Longrightarrow> rational_proper_factor p = None \<Longrightarrow> irreducible\<^sub>d p" 
     "rational_proper_factor p = Some q \<Longrightarrow> q dvd p \<and> degree q \<ge> 1 \<and> degree q < degree p" by auto
 qed
 
@@ -433,7 +433,7 @@ next
     proof (cases ?rf)
       case None
       with res have res: "?f c (p # irr) ps = (d,qs)" by auto
-      from rational_proper_factor(1)[OF `degree p \<noteq> 0` None] 
+      from rational_proper_factor(1)[OF _ None] False
       have irp: "irreducible\<^sub>d p" by auto
       note IH(1)[OF None res, unfolded atomize_imp imp_conjR, simplified]
       note 1 = conjunct1[OF this, rule_format] conjunct2[OF this, rule_format]

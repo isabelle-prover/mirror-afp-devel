@@ -370,8 +370,9 @@ context idom begin
 
   lemma irred_idom_nz:
     assumes x0: "(x::'a) \<noteq> 0"
-    shows "irred x \<longleftrightarrow> \<not> x dvd 1 \<and> (\<forall> b. b dvd x \<longrightarrow> \<not> x dvd b \<longrightarrow> b dvd 1)"
-    using x0 by (auto simp: Divisibility.irreducible_def properfactor_nz)
+    shows "irred x \<longleftrightarrow> irreducible x"
+    using x0 by (auto simp: irreducible_altdef Divisibility.irreducible_def properfactor_nz)
+
 
   lemma dvd_dvd_imp_unit_mult:
     assumes xy: "x dvd y" and yx: "y dvd x"

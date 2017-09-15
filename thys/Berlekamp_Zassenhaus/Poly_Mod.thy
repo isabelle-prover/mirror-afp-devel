@@ -115,7 +115,7 @@ definition irreducible_m
   where "irreducible_m f = (\<not>f =m 0 \<and> \<not> f dvdm 1 \<and> (\<forall>a b. f =m a * b \<longrightarrow> a dvdm 1 \<or> b dvdm 1))"
 
 definition irreducible\<^sub>d_m :: "int poly \<Rightarrow> bool" where "irreducible\<^sub>d_m f \<equiv>
-   degree_m f \<noteq> 0 \<and>
+   degree_m f > 0 \<and>
    (\<forall> g h. degree_m g < degree_m f \<longrightarrow> degree_m h < degree_m f \<longrightarrow> \<not> f =m g * h)"
 
 definition prime_elem_m
@@ -125,8 +125,8 @@ lemma degree_m_le_degree [intro!]: "degree_m f \<le> degree f"
   by (simp add: Mp_def degree_map_poly_le)
 
 lemma irreducible\<^sub>d_mI:
-  assumes f0: "degree_m f \<noteq> 0"
-      and main: "\<And>g h. Mp g = g \<Longrightarrow> Mp h = h \<Longrightarrow> degree g \<noteq> 0 \<Longrightarrow> degree g < degree_m f \<Longrightarrow> degree h \<noteq> 0 \<Longrightarrow> degree h < degree_m f \<Longrightarrow> f =m g * h \<Longrightarrow> False"
+  assumes f0: "degree_m f > 0"
+      and main: "\<And>g h. Mp g = g \<Longrightarrow> Mp h = h \<Longrightarrow> degree g > 0 \<Longrightarrow> degree g < degree_m f \<Longrightarrow> degree h > 0 \<Longrightarrow> degree h < degree_m f \<Longrightarrow> f =m g * h \<Longrightarrow> False"
     shows "irreducible\<^sub>d_m f"
 proof (unfold irreducible\<^sub>d_m_def, intro conjI allI impI f0 notI)
   fix g h
@@ -139,13 +139,13 @@ qed
 
 lemma irreducible\<^sub>d_mE:
   assumes "irreducible\<^sub>d_m f"
-    and "degree_m f \<noteq> 0 \<Longrightarrow> (\<And>g h. degree_m g < degree_m f \<Longrightarrow> degree_m h < degree_m f \<Longrightarrow> \<not> f =m g * h) \<Longrightarrow> thesis"
+    and "degree_m f > 0 \<Longrightarrow> (\<And>g h. degree_m g < degree_m f \<Longrightarrow> degree_m h < degree_m f \<Longrightarrow> \<not> f =m g * h) \<Longrightarrow> thesis"
   shows thesis
   using assms by (unfold irreducible\<^sub>d_m_def, auto)
 
 lemma irreducible\<^sub>d_mD:
   assumes "irreducible\<^sub>d_m f"
-  shows "degree_m f \<noteq> 0" and "\<And>g h. degree_m g < degree_m f \<Longrightarrow> degree_m h < degree_m f \<Longrightarrow> \<not> f =m g * h"
+  shows "degree_m f > 0" and "\<And>g h. degree_m g < degree_m f \<Longrightarrow> degree_m h < degree_m f \<Longrightarrow> \<not> f =m g * h"
   using assms by (auto elim: irreducible\<^sub>d_mE)
 
 definition square_free_m :: "int poly \<Rightarrow> bool" where 
@@ -242,6 +242,7 @@ lemma eq_m_irreducible_m: "f =m g \<Longrightarrow> irreducible_m f \<longleftri
 definition mset_factors_m where "mset_factors_m F p \<equiv>
   F \<noteq> {#} \<and> (\<forall>f. f \<in># F \<longrightarrow> irreducible_m f) \<and> p =m prod_mset F"
 
+term factors
 end
 
 declare poly_mod.M_def[code]

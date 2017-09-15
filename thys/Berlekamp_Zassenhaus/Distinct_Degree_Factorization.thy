@@ -34,7 +34,7 @@ proof -
     with **(1) deg_h have "degree h2 = 0" by auto
     from degree0_coeffs[OF this] obtain c where h2: "h2 = [:c:]" by auto
     with gh g0 have g: "g = smult c h1" "c \<noteq> 0" by auto
-    with irr **(2) irreducible\<^sub>d_smult[of c h1] have False by auto
+    with irr **(2) irreducible\<^sub>d_smult_field[of c h1] have False by auto
   }
   ultimately show "irreducible\<^sub>d g = (degree g = i)" by auto
 qed

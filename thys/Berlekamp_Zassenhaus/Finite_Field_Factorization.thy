@@ -48,7 +48,7 @@ proof (cases "degree f = 0")
     by (metis c c0 field_class.field_inverse lead_coeff_smult)
   from sf_f have sf_g: "square_free g" unfolding g_def by (simp add: c0)
   from c0 have f: "f = smult c g" unfolding g_def by auto
-  have "g = prod_list (map snd gs) \<and> (\<forall> (i,f) \<in> set gs. degree f \<noteq> 0 \<and> monic f \<and> (\<forall> h. h dvd f \<longrightarrow> degree h = i \<longrightarrow> irreducible\<^sub>d h))" 
+  have "g = prod_list (map snd gs) \<and> (\<forall> (i,f) \<in> set gs. degree f > 0 \<and> monic f \<and> (\<forall> h. h dvd f \<longrightarrow> degree h = i \<longrightarrow> irreducible\<^sub>d h))" 
   proof (cases exercise_16_finished)
     case True
     with dist have "distinct_degree_factorization g = gs" by auto
@@ -60,7 +60,7 @@ proof (cases "degree f = 0")
       assume "(i,f) \<in> set gs" 
       with dist have "factors_of_same_degree i f" by auto
       from factors_of_same_degreeD[OF this] 
-      show "degree f \<noteq> 0 \<and> monic f \<and> (\<forall>h. h dvd f \<longrightarrow> degree h = i \<longrightarrow> irreducible\<^sub>d h)" by auto
+      show "degree f > 0 \<and> monic f \<and> (\<forall>h. h dvd f \<longrightarrow> degree h = i \<longrightarrow> irreducible\<^sub>d h)" by auto
     qed
   next
     case False
@@ -68,7 +68,7 @@ proof (cases "degree f = 0")
     show ?thesis unfolding gs using deg_g mon_g linear_irreducible\<^sub>d by auto
   qed
   hence g_gs: "g = prod_list (map snd gs)" 
-    and mon_gs: "\<And> i f. (i, f) \<in> set gs \<Longrightarrow> monic f \<and> degree f \<noteq> 0" 
+    and mon_gs: "\<And> i f. (i, f) \<in> set gs \<Longrightarrow> monic f \<and> degree f > 0" 
     and irrI: "\<And> i f h . (i, f) \<in> set gs \<Longrightarrow> h dvd f \<Longrightarrow> degree h = i \<Longrightarrow> irreducible\<^sub>d h" by auto
   have g: "g = prod_list (map snd irr) * prod_list (map snd hs)" unfolding g_gs
     using prod_list_map_partition[OF part] .
@@ -91,7 +91,7 @@ proof (cases "degree f = 0")
     note IH = Cons(1)[OF sub]
     from mem have "h \<in> set (map snd gs)" by force
     from square_free_factor[OF prod_list_dvd[OF this], folded g_gs, OF sf_g] have sf: "square_free h" .
-    from mon_gs[OF mem] irrI[OF mem] have *: "degree h \<noteq> 0" "monic h" 
+    from mon_gs[OF mem] irrI[OF mem] have *: "degree h > 0" "monic h" 
       "\<And> g. g dvd h \<Longrightarrow> degree g = i \<Longrightarrow> irreducible\<^sub>d g" by auto
     from berlekamp_monic_factorization[OF sf refl *(3) *(1-2), of i]
     have berl: "prod_list (berlekamp_monic_factorization i h) = h" 

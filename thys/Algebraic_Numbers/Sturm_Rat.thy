@@ -282,7 +282,7 @@ definition root_info :: "int poly \<Rightarrow> root_info" where
       (\<lambda> a. sign_changes_neg_number_rootat ps - sign_changes_rat ps a)))" 
 
 lemma root_info:
-  assumes irr: "irreducible p" and deg: "degree p \<noteq> 0"
+  assumes irr: "irreducible p" and deg: "degree p > 0"
   shows "root_info_cond (root_info p) p"
 proof (cases "degree p = 1")
   case deg: True

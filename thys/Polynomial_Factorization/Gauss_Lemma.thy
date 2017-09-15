@@ -197,7 +197,7 @@ lemma irreducible\<^sub>d_primitive_part:
   shows "irreducible\<^sub>d (primitive_part p) \<longleftrightarrow> irreducible\<^sub>d p" (is "?l \<longleftrightarrow> ?r")
 proof (rule iffI, rule irreducible\<^sub>dI)
   assume l: ?l
-  show "degree p \<noteq> 0" using l by auto
+  show "degree p > 0" using l by auto
   have dpp: "degree (primitive_part p) = degree p" by simp
   fix q r
   assume deg: "degree q < degree p" "degree r < degree p" and "p = q * r"
@@ -386,10 +386,10 @@ proof (rule irreducible\<^sub>dI)
   have p: "degree p \<noteq> 0" and irr: "\<And> q r. degree q < degree p \<Longrightarrow> degree r < degree p \<Longrightarrow> p \<noteq> q * r" by auto
   let ?r = "rat_of_int"
   let ?rp = "map_poly ?r"
-  from p show rp: "degree (?rp p) \<noteq> 0" by auto
+  from p show rp: "degree (?rp p) > 0" by auto
   from p have p0: "p \<noteq> 0" by auto
   fix g h :: "rat poly"
-  assume deg: "degree g \<noteq> 0" "degree g < degree (?rp p)" "degree h \<noteq> 0" "degree h < degree (?rp p)" and pgh: "?rp p = g * h"
+  assume deg: "degree g > 0" "degree g < degree (?rp p)" "degree h > 0" "degree h < degree (?rp p)" and pgh: "?rp p = g * h"
   from rat_to_int_factor[OF pgh] obtain g' h' where p: "p = g' * h'" and dg: "degree g' = degree g" "degree h' = degree h"
     by auto
   from irr[of g' h'] deg[unfolded dg]
@@ -403,8 +403,7 @@ corollary irreducible\<^sub>d_rat_to_normalized_int_poly:
 proof -
   from rat_to_normalized_int_poly[OF rp] 
   have rp: "rp = smult a (map_poly rat_of_int ip)" and a: "a \<noteq> 0" by auto
-  from irreducible\<^sub>d_int_rat[OF ip] show ?thesis
-    unfolding rp irreducible\<^sub>d_smult[OF a] .
+  with irreducible\<^sub>d_int_rat[OF ip] show ?thesis by auto
 qed
 
 lemma dvd_content_dvd: assumes dvd: "content f dvd content g" "primitive_part f dvd primitive_part g"

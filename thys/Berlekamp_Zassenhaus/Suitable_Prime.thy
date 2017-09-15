@@ -119,18 +119,18 @@ lemma square_free_mod_imp_square_free: assumes
   shows "square_free f"
 proof -
   interpret poly_mod p .
-  from sf[unfolded square_free_m_def] have f0: "Mp f \<noteq> 0" and ndvd: "\<And> g. degree_m g \<noteq> 0 \<Longrightarrow> \<not> (g * g) dvdm f" 
+  from sf[unfolded square_free_m_def] have f0: "Mp f \<noteq> 0" and ndvd: "\<And> g. degree_m g > 0 \<Longrightarrow> \<not> (g * g) dvdm f" 
     by auto
   from f0 have ff0: "f \<noteq> 0" by auto
   show "square_free f" unfolding square_free_def
   proof (intro conjI[OF ff0] allI impI notI)
     fix g
-    assume deg: "degree g \<noteq> 0" and dvd: "g * g dvd f" 
+    assume deg: "degree g > 0" and dvd: "g * g dvd f" 
     then obtain h where f: "f = g * g * h" unfolding dvd_def by auto
     from arg_cong[OF this, of Mp] have "(g * g) dvdm f" unfolding dvdm_def by auto
     with ndvd[of g] have deg0: "degree_m g = 0" by auto
     hence g0: "M (lead_coeff g) = 0" unfolding Mp_def using deg
-      by (metis M_def deg0 p poly_mod.degree_m_eq prime_gt_1_int)
+      by (metis M_def deg0 p poly_mod.degree_m_eq prime_gt_1_int neq0_conv)
     from p have p0: "p \<noteq> 0" by auto
     from arg_cong[OF f, of lead_coeff] have "lead_coeff f = lead_coeff g * lead_coeff g * lead_coeff h" 
       by (auto simp: lead_coeff_mult)

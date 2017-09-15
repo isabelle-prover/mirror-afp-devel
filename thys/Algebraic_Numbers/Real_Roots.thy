@@ -150,7 +150,7 @@ lemma max_list_non_empty_map: assumes hom: "\<And> x y. max (f x) (f y) = f (max
   shows "xs \<noteq> [] \<Longrightarrow> max_list_non_empty (map f xs) = f (max_list_non_empty xs)" 
   by (induct xs rule: max_list_non_empty.induct, auto simp: hom)
 
-lemma root_bound: assumes "root_bound p = B" and deg: "degree p \<noteq> 0"
+lemma root_bound: assumes "root_bound p = B" and deg: "degree p > 0"
   shows "ipoly p (x :: real) = 0 \<Longrightarrow> norm x \<le> of_rat B" "B \<ge> 0" 
 proof -
   let ?r = real_of_rat
@@ -199,7 +199,7 @@ fun pairwise_disjoint :: "'a set list \<Rightarrow> bool" where
   "pairwise_disjoint [] = True" 
 | "pairwise_disjoint (x # xs) = ((x \<inter> (\<Union> y \<in> set xs. y) = {}) \<and> pairwise_disjoint xs)" 
 
-lemma roots_of_2_irr: assumes pc: "poly_cond p" and deg: "degree p \<noteq> 0"
+lemma roots_of_2_irr: assumes pc: "poly_cond p" and deg: "degree p > 0"
   shows "real_of_2 ` set (roots_of_2_irr p) = {x. ipoly p x = 0}" (is ?one)
     "Ball (set (roots_of_2_irr p)) invariant_2" (is ?two)
     "distinct (map real_of_2 (roots_of_2_irr p))" (is ?three)
@@ -433,7 +433,7 @@ proof -
       s: "s \<in> set (factors_of_int_poly p)" and
       q: "q \<in> set (roots_of_2_irr s)"
       unfolding d by auto
-    from frp1(1)[OF refl s] have "poly_cond s" "degree s \<noteq> 0" by (auto simp: poly_cond_def)
+    from frp1(1)[OF refl s] have "poly_cond s" "degree s > 0" by (auto simp: poly_cond_def)
     from roots_of_2_irr[OF this] q
     have "invariant_2 q" by auto
   }
@@ -453,7 +453,7 @@ proof -
           s: "s \<in> set (factors_of_int_poly p)" and
           q: "q \<in> set (roots_of_2_irr s)" and
           x: "x = real_of_2 q" by auto
-        from frp1(1)[OF refl s] have s0: "s \<noteq> 0" and pt: "poly_cond s" "degree s \<noteq> 0"
+        from frp1(1)[OF refl s] have s0: "s \<noteq> 0" and pt: "poly_cond s" "degree s > 0"
           by (auto simp: poly_cond_def)
         from roots_of_2_irr[OF pt] q have rt: "ipoly s x = 0" unfolding x by auto
         from frp1(2)[OF refl p, of x] rt s have rt: "ipoly p x = 0" by auto
@@ -464,7 +464,7 @@ proof -
         assume rt: "ipoly p x = 0"
         from rt frp1(2)[OF refl p, of x] obtain s where s: "s \<in> set (factors_of_int_poly p)" 
           and rt: "ipoly s x = 0" by auto
-        from frp1(1)[OF refl s] have s0: "s \<noteq> 0" and ty: "poly_cond s" "degree s \<noteq> 0"
+        from frp1(1)[OF refl s] have s0: "s \<noteq> 0" and ty: "poly_cond s" "degree s > 0"
           by (auto simp: poly_cond_def)
         from roots_of_2_irr(1)[OF ty] rt obtain q where 
           q: "q \<in> set (roots_of_2_irr s)" and
@@ -503,8 +503,8 @@ proof -
         by auto
       from * have mem: "?fp ! j1 \<in> set ?fp" "?fp ! j2 \<in> set ?fp" by auto
       from frp1(1)[OF mem(1)] frp1(1)[OF mem(2)]
-      have pc1: "poly_cond (?fp ! j1)" "degree (?fp ! j1) \<noteq> 0" and pc10: "?fp ! j1 \<noteq> 0" 
-        and pc2: "poly_cond (?fp ! j2)" "degree (?fp ! j2) \<noteq> 0" 
+      have pc1: "poly_cond (?fp ! j1)" "degree (?fp ! j1) > 0" and pc10: "?fp ! j1 \<noteq> 0" 
+        and pc2: "poly_cond (?fp ! j2)" "degree (?fp ! j2) > 0" 
         by (auto simp: poly_cond_def)
       show False
       proof (cases "j1 = j2")

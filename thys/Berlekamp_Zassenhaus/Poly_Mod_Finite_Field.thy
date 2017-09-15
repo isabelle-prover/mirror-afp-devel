@@ -570,7 +570,7 @@ proof -
   interpret q: poly_mod_2 "p^n" unfolding poly_mod_2_def using n m1 by auto
   show "q.irreducible\<^sub>d_m f"
   proof (rule q.irreducible\<^sub>d_mI)
-    from deg irr show "q.degree_m f \<noteq> 0" by (auto elim: irreducible\<^sub>d_mE)
+    from deg irr show "q.degree_m f > 0" by (auto elim: irreducible\<^sub>d_mE)
     then have pdeg_f: "degree_m f \<noteq> 0" by (simp add: deg)
     note pMp_Mp = Mp_Mp_pow_is_Mp[OF n m1]
     fix g h

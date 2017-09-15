@@ -56,7 +56,7 @@ proof(intro square_freeI)
   from irr show p0: "p \<noteq> 0" by auto
   fix a assume "a * a dvd p"
   then obtain b where paab: "p = a * (a * b)" by (elim dvdE, auto)
-  assume "degree a \<noteq> 0"
+  assume "degree a > 0"
   then have a1: "\<not> a dvd 1" by (auto simp: poly_dvd_1)
   then have ab1: "\<not> a * b dvd 1" using dvd_mult_left by auto
   from paab irr a1 ab1 show False by force
@@ -107,7 +107,7 @@ proof -
       fix a i
       assume "(a,i) \<in> set fs"
       from irreducible_imp_square_free internal_int_poly_factorization_mem[OF res this]
-      show "square_free a" "degree a \<noteq> 0" by auto
+      show "square_free a" "degree a > 0" by auto
     }
     have eq: "f = smult c (\<Prod>(a, i)\<leftarrow>fs. a ^ Suc i)" unfolding 
       prod.distinct_set_conv_list[OF sff'(5)]
@@ -116,7 +116,7 @@ proof -
       case (Cons pi psi)
       obtain p i where pi: "pi = (p,i)" by force  
       obtain gs where gs: "berlekamp_zassenhaus_factorization p = gs" by auto
-      from Cons(2)[of p i] have p: "square_free p" "degree p \<noteq> 0" unfolding pi by auto
+      from Cons(2)[of p i] have p: "square_free p" "degree p > 0" unfolding pi by auto
       from berlekamp_zassenhaus_factorization_irreducible\<^sub>d[OF gs this] have pgs: "p = prod_list gs" by auto
       have fact: "fact (p,i) = map (\<lambda> g. (g,i)) gs" unfolding fact split gs by auto
       have cong: "\<And> x y X Y. x = X \<Longrightarrow> y = Y \<Longrightarrow> x * y = X * Y" by auto
@@ -135,7 +135,7 @@ proof -
       from * have psi: "psi ! j \<in> set psi" by auto
       obtain d k where dk: "psi ! j = (d,k)" by force
       with * have psij: "psi ! j = (d,i)" unfolding fact split by auto
-      from sff'(2)[OF psi[unfolded psij]] have d: "square_free d" "degree d \<noteq> 0" by auto
+      from sff'(2)[OF psi[unfolded psij]] have d: "square_free d" "degree d > 0" by auto
       from * psij fact
       have bz: "berlekamp_zassenhaus_factorization d = map fst (fact (psi ! j))" by (auto simp: o_def)
       from berlekamp_zassenhaus_factorization_irreducible[OF bz d cnt[OF psi[unfolded dk]]]
@@ -219,7 +219,7 @@ proof -
       obtain fi i Fi I where f: "fs ! k = (fi,i)" "fs ! K = (Fi,I)" by force+
       from cop[OF k f diff] have cop: "coprime fi Fi" .
       from k(1) f(1) have "(fi,i) \<in> set fs" unfolding set_conv_nth by force
-      from internal_int_poly_factorization_mem[OF res this] have "degree fi \<noteq> 0" by auto
+      from internal_int_poly_factorization_mem[OF res this] have "degree fi > 0" by auto
       hence "\<not> is_unit fi" by (simp add: poly_dvd_1)
       with cop coprime_id_is_unit[of fi] have "fi \<noteq> Fi" by auto
       thus "fs ! k \<noteq> fs ! K" unfolding f by auto
@@ -328,7 +328,7 @@ next
       and irr: "irreducible\<^sub>d (?r f)"
       have "irreducible\<^sub>d f"
       proof
-        from irr degree_reflect_poly_eq[OF nz] show "degree f \<noteq> 0" by auto
+        from irr degree_reflect_poly_eq[OF nz] show "degree f > 0" by auto
         fix g h
         assume deg: "degree g < degree f" "degree h < degree f" and fgh: "f = g * h"
         from arg_cong[OF fgh, of "\<lambda> f. coeff f 0"] nz 
@@ -466,7 +466,7 @@ proof (atomize(full))
         {
           fix fi i
           assume "(fi, i) \<in> set fs"
-          from irr[OF this] show "square_free fi" "degree fi \<noteq> 0" 
+          from irr[OF this] show "square_free fi" "degree fi > 0" 
             by (auto intro!: irreducible_imp_square_free)
         }
         show dist: "distinct fs" unfolding fs distinct_map
@@ -590,7 +590,7 @@ proof (atomize(full))
       proof (intro conjI allI impI, rule refl)
         fix a i 
         assume ai: "(a,i) \<in> set fs" 
-        thus "square_free a" "degree a \<noteq> 0" using sf(2) sfx degx unfolding id by auto
+        thus "square_free a" "degree a > 0" using sf(2) sfx degx unfolding id by auto
         fix b j
         assume bj: "(b,j) \<in> set fs" and diff: "(a,i) \<noteq> (b,j)" 
         consider (hs_hs) "(a,i) \<in> set hs" "(b,j) \<in> set hs" 

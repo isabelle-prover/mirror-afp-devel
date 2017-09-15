@@ -1807,7 +1807,7 @@ proof -
     fix q ri
     assume "(q,ri) \<in> set polys"
     hence ri: "ri = root_info q" and q: "q \<in> set qs" unfolding polys_def by auto
-    from fact'(1)[OF q] have *: "lead_coeff q > 0" "irreducible q" "degree q \<noteq> 0" by auto
+    from fact'(1)[OF q] have *: "lead_coeff q > 0" "irreducible q" "degree q > 0" by auto
     from * have q0: "q \<noteq> 0" by auto
     from root_info[OF *(2-3)] ri have ri: "root_info_cond ri q" by auto
     note ri q0 *

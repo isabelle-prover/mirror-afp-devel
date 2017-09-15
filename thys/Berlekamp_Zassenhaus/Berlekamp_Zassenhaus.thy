@@ -83,7 +83,7 @@ definition berlekamp_zassenhaus_factorization :: "int poly \<Rightarrow> int pol
 theorem berlekamp_zassenhaus_factorization_irreducible\<^sub>d:  
   assumes res: "berlekamp_zassenhaus_factorization f = fs" 
   and sf: "square_free f"
-  and deg: "degree f \<noteq> 0" 
+  and deg: "degree f > 0" 
   shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. irreducible\<^sub>d fi)" 
 proof -
   let ?lc = "lead_coeff f" 
@@ -110,7 +110,7 @@ qed
 corollary berlekamp_zassenhaus_factorization_irreducible:
   assumes res: "berlekamp_zassenhaus_factorization f = fs" 
   and sf: "square_free f"
-  and deg: "degree f \<noteq> 0"
+  and deg: "degree f > 0"
   and cf: "content_free f"
   shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. irreducible fi \<and> degree fi > 0 \<and> content_free fi)" 
 proof (intro conjI ballI)

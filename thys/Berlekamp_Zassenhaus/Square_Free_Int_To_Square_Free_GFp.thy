@@ -24,7 +24,7 @@ proof -
   proof (rule square_freeI)
     show "?r f \<noteq> 0" using f0 by auto
     fix q
-    assume dq: "degree q \<noteq> 0" and dvd: "q * q dvd ?r f" 
+    assume dq: "degree q > 0" and dvd: "q * q dvd ?r f" 
     hence q0: "q \<noteq> 0" by auto
     obtain q' c where norm: "rat_to_normalized_int_poly q = (c,q')" by force
     from rat_to_normalized_int_poly[OF norm] have c0: "c \<noteq> 0" by auto

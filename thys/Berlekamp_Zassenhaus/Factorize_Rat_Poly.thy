@@ -109,7 +109,7 @@ next
       note [simp] = irreducible_content_free_connect[OF cf_gi] irreducible_content_free_connect[OF this]
       show "irreducible fi"
       using irr[OF gi] fi irreducible\<^sub>d_int_rat[of gi,simplified] by auto
-      then show "degree fi \<noteq> 0" "square_free fi" unfolding fi
+      then show "degree fi > 0" "square_free fi" unfolding fi
         by (auto intro: irreducible_imp_square_free)
     }
     {

@@ -210,9 +210,9 @@ proof -
         have "irreducible xi"
           apply (rule irreducible_connect)
         proof (rule irreducible\<^sub>dI)
-          show "degree xi \<noteq> 0" unfolding xi by auto
+          show "degree xi > 0" unfolding xi by auto
           fix q p :: "real poly" 
-          assume "degree q \<noteq> 0" "degree q < degree xi" and qp: "xi = q * p"
+          assume "degree q > 0" "degree q < degree xi" and qp: "xi = q * p"
           hence dq: "degree q = 1" unfolding xi by auto
           have dxi: "degree xi = 2" "xi \<noteq> 0" unfolding xi by auto
           with qp have "q \<noteq> 0" "p \<noteq> 0" by auto

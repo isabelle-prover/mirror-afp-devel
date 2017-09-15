@@ -402,7 +402,7 @@ proof (cases "square_free_heuristic f")
       from ab obtain c where rel: "yun_rel a c b" unfolding yun_erel_def by auto
       note aa = yun_relD[OF this]
       from aa have c0: "c \<noteq> 0" by auto
-      from b' aa(3) show "degree a \<noteq> 0" by simp
+      from b' aa(3) show "degree a > 0" by simp
       from square_free_smult[OF c0 b'(1), folded aa(2)]
       show "square_free a" unfolding square_free_def by (force simp: dvd_def hom_distribs)
       show cnt: "content a = 1" and lc: "lead_coeff a > 0" using aa by auto
@@ -671,7 +671,7 @@ proof -
     proof (intro conjI allI impI, rule refl)
       fix a i 
       assume ai: "(a,i) \<in> set fs" 
-      thus "square_free a" "degree a \<noteq> 0" using sf(2) sfx degx unfolding fs by auto
+      thus "square_free a" "degree a > 0" using sf(2) sfx degx unfolding fs by auto
       fix b j
       assume bj: "(b,j) \<in> set fs" and diff: "(a,i) \<noteq> (b,j)" 
       consider (hs_hs) "(a,i) \<in> set hs" "(b,j) \<in> set hs" 

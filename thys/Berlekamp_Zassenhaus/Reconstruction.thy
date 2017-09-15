@@ -258,7 +258,7 @@ lemma reconstruction: assumes
     size ws < d \<or> size ws = d \<and> ws \<notin> (mset o snd) ` set cands 
     \<Longrightarrow> test_dvd u ws"
   and irr: "\<And> f. f \<in> set res \<Longrightarrow> irreducible\<^sub>d f" 
-  and deg: "degree u \<noteq> 0" 
+  and deg: "degree u > 0" 
   and cands_ne: "cands \<noteq> [] \<Longrightarrow> d < r" 
   and large: "\<forall> v n. v dvd smult lu u \<longrightarrow> degree v \<le> degree_bound vs 
     \<longrightarrow> 2 * abs (coeff v n) < m" 
@@ -305,11 +305,11 @@ proof -
     also have "\<dots> \<le> degree v" by (rule degree_m_le)
     also have "\<dots> \<le> degree_m u" by (rule deg_v)
     also have "\<dots> \<le> degree u" by (rule degree_m_le)
-    finally have "degree u \<noteq> 0" by auto
+    finally have "degree u > 0" by auto
   } note deg_non_zero = this
   {
     fix u :: "int poly" and vs :: "int poly list" and d :: nat
-    assume deg_u: "degree u \<noteq> 0"
+    assume deg_u: "degree u > 0"
     and cop: "coprime (lead_coeff u) p"
     and uf: "unique_factorization_m u (lead_coeff u, mset vs)" 
     and sf: "p.square_free_m u"
@@ -320,7 +320,7 @@ proof -
     have "irreducible\<^sub>d u"
     proof (rule irreducible\<^sub>dI[OF deg_u])
       fix q q' :: "int poly"
-      assume deg: "degree q \<noteq> 0" "degree q < degree u" "degree q' \<noteq> 0" "degree q' < degree u"
+      assume deg: "degree q > 0" "degree q < degree u" "degree q' > 0" "degree q' < degree u"
          and uq: "u = q * q'"
       then have qu: "q dvd u" and q'u: "q' dvd u" by auto
       from u0 have deg_u: "degree u = degree q + degree q'" unfolding uq 
@@ -660,23 +660,23 @@ proof -
         with d0 have size_ws0: "size (mset ws) \<noteq> 0" by auto
         then obtain w ws' where ws_w: "ws = w # ws'" by (cases ws, auto)
         from Mp_vb have Mp_vb': "Mp vb = Mp (smult lu (prod_mset (mset ws)))" by auto
-        have deg_vb: "degree vb \<noteq> 0" 
+        have deg_vb: "degree vb > 0"
           by (rule deg_non_zero[OF Mp_vb' cop size_ws0 vs_mi], insert vs_split, auto)
         also have "degree vb = degree pp_vb" using arg_cong[OF pp_vb_vb, of degree]
           unfolding degree_smult_eq using vb0 by auto
-        finally have deg_pp: "degree pp_vb \<noteq> 0" by auto
+        finally have deg_pp: "degree pp_vb > 0" by auto
         hence pp_vb0: "pp_vb \<noteq> 0" by auto
         from factors(1)[unfolded unique_factorization_m_alt_def factorization_m_def]
         have eq_u': "Mp u' = Mp (smult lu' (prod_mset (mset vs')))" by auto 
         from r'[unfolded ws(2)] dr have "length vs' + d = r" by auto
         from this cands_empty[unfolded Cons] have "size (mset vs') \<noteq> 0" by auto
         from deg_non_zero[OF eq_u' cop_lu' this vs_mi] 
-        have deg_u': "degree u' \<noteq> 0" unfolding vs_split by auto
+        have deg_u': "degree u' > 0" unfolding vs_split by auto
         have irr_pp: "irreducible\<^sub>d pp_vb" 
         proof (rule irreducible\<^sub>dI[OF deg_pp])
           fix q r :: "int poly"
-          assume deg_q: "degree q \<noteq> 0" "degree q < degree pp_vb"
-            and deg_r:  "degree r \<noteq> 0" "degree r < degree pp_vb"
+          assume deg_q: "degree q > 0" "degree q < degree pp_vb"
+            and deg_r:  "degree r > 0" "degree r < degree pp_vb"
             and pp_qr: "pp_vb = q * r"
           then have qvb: "q dvd pp_vb" by auto
           from dvd_trans[OF qvb ppu] have qu: "q dvd u" .
@@ -790,7 +790,7 @@ context
   assumes prime: "prime p" 
   and cop: "coprime (lead_coeff f) p"
   and sf: "poly_mod.square_free_m p f"
-  and deg: "degree f \<noteq> 0" 
+  and deg: "degree f > 0" 
   and bh: "berlekamp_hensel p n f = hs" 
   and bnd: "2 * \<bar>lead_coeff f\<bar> * factor_bound f (degree_bound hs) < p ^ n" 
 begin
