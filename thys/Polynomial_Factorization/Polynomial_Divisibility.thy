@@ -39,7 +39,7 @@ proof (intro conjI impI allI)
   with p have f: "f \<noteq> 0" and g: "g \<noteq> 0" by auto
   show "is_unit f \<or> is_unit g" unfolding is_unit_iff_degree[OF f] is_unit_iff_degree[OF g]
     using irreducible\<^sub>dD(2)[OF irr, unfolded pfg] deg[unfolded pfg] f g
-    using degree_mult_eq by fastforce
+    using degree_mult_eq by force
 qed
 
 lemma irreducible\<^sub>d_prime_elem:

@@ -1597,4 +1597,129 @@ next
   with IH show ?case by auto
 qed
 
+lemma not_SN_on_rel_succ:
+  assumes "\<not> SN_on (relto R E) {s}"
+  shows "\<exists>t u. (s, t) \<in> E\<^sup>* \<and> (t, u) \<in> R \<and> \<not> SN_on (relto R E) {u}"
+proof -
+  obtain v where "(s, v) \<in> relto R E" and v: "\<not> SN_on (relto R E) {v}"
+    using assms by fast
+  moreover then obtain t and u
+    where "(s, t) \<in> E^*" and "(t, u) \<in> R" and uv: "(u, v) \<in> E\<^sup>*" by auto
+  moreover from uv have uv: "(u,v) \<in> (R \<union> E)^*" by regexp
+  moreover have "\<not> SN_on (relto R E) {u}" using
+    v steps_preserve_SN_on_relto[OF uv] by auto
+  ultimately show ?thesis by auto
+qed
+
+lemma SN_on_relto_relcomp: "SN_on (relto R S) T = SN_on (S\<^sup>* O R) T" (is "?L T = ?R T")
+proof
+  assume L: "?L T"
+  { fix t assume "t \<in> T" hence "?L {t}" using L by fast }
+  thus "?R T" by fast
+  next
+  { fix s
+    have "SN_on (relto R S) {s} = SN_on (S\<^sup>* O R) {s}"
+    proof
+      let ?X = "{s. \<not>SN_on (relto R S) {s}}"
+      { assume "\<not> ?L {s}"
+        hence "s \<in> ?X" by auto
+        hence "\<not> ?R {s}"
+        proof(rule lower_set_imp_not_SN_on, intro ballI)
+          fix s assume "s \<in> ?X"
+          then obtain t u where "(s,t) \<in> S\<^sup>*" "(t,u) \<in> R" and u: "u \<in> ?X"
+            unfolding mem_Collect_eq by (metis not_SN_on_rel_succ)
+          hence "(s,u) \<in> S\<^sup>* O R" by auto
+          with u show "\<exists>u \<in> ?X. (s,u) \<in> S\<^sup>* O R" by auto
+        qed
+      }
+      thus "?R {s} \<Longrightarrow> ?L {s}" by auto
+      assume "?L {s}" thus "?R {s}" by(rule SN_on_mono, auto)
+    qed
+  } note main = this
+  assume R: "?R T"
+  { fix t assume "t \<in> T" hence "?L {t}" unfolding main using R by fast }
+  thus "?L T" by fast
+qed
+
+lemma trans_relto:
+  assumes trans: "trans R" and "S O R \<subseteq> R O S"
+  shows "trans (relto R S)"
+proof
+  fix a b c
+  assume ab: "(a, b) \<in> S\<^sup>* O R O S\<^sup>*" and bc: "(b, c) \<in> S\<^sup>* O R O S\<^sup>*"
+  from rtrancl_O_push [of S R] assms(2) have comm: "S\<^sup>* O R \<subseteq> R O S\<^sup>*" by blast
+  from ab obtain d e where de: "(a, d) \<in> S\<^sup>*" "(d, e) \<in> R" "(e, b) \<in> S\<^sup>*" by auto
+  from bc obtain f g where fg: "(b, f) \<in> S\<^sup>*" "(f, g) \<in> R" "(g, c) \<in> S\<^sup>*" by auto
+  from de(3) fg(1) have "(e, f) \<in> S\<^sup>*" by auto
+  with fg(2) comm have "(e, g) \<in> R O S\<^sup>*" by blast
+  then obtain h where h: "(e, h) \<in> R" "(h, g) \<in> S\<^sup>*" by auto
+  with de(2) trans have dh: "(d, h) \<in> R" unfolding trans_def by blast
+  from fg(3) h(2) have "(h, c) \<in> S\<^sup>*" by auto
+  with de(1) dh(1) show "(a, c) \<in> S\<^sup>* O R O S\<^sup>*" by auto
+qed
+
+lemma relative_ending: (* general version of non_strict_ending *)
+  assumes chain: "chain (R \<union> S) t"
+    and t0: "t 0 \<in> X"
+    and SN: "SN_on (relto R S) X"
+  shows "\<exists>j. \<forall>i\<ge>j. (t i, t (Suc i)) \<in> S - R"
+proof (rule ccontr)
+  assume "\<not> ?thesis"
+  with chain have "\<forall>i. \<exists>j. j \<ge> i \<and> (t j, t (Suc j)) \<in> R" by blast
+  from choice [OF this] obtain f where R_steps: "\<forall>i. i \<le> f i \<and> (t (f i), t (Suc (f i))) \<in> R" ..
+  let ?t = "\<lambda>i. t (((Suc \<circ> f) ^^ i) 0)"
+  have "\<forall>i. (t i, t (Suc (f i))) \<in> (relto R S)\<^sup>+"
+  proof
+    fix i
+    from R_steps have leq: "i\<le>f i" and step: "(t(f i), t(Suc(f i))) \<in> R" by auto
+    from chain_imp_rtrancl [OF chain leq] have "(t i, t(f i)) \<in> (R \<union> S)\<^sup>*" .
+    with step have "(t i, t(Suc(f i))) \<in> (R \<union> S)\<^sup>* O R" by auto
+    then show "(t i, t(Suc(f i))) \<in> (relto R S)\<^sup>+" by regexp
+  qed
+  then have "chain ((relto R S)\<^sup>+) ?t" by simp
+  with t0 have "\<not> SN_on ((relto R S)\<^sup>+) X" by (unfold SN_on_def, auto intro: exI[of _ ?t])
+  with SN_on_trancl[OF SN] show False by auto
+qed
+
+text {* from Geser's thesis [p.32, Corollary-1], generalized for @{term SN_on}. *}
+lemma SN_on_relto_Un:
+  assumes closure: "relto (R \<union> R') S `` X \<subseteq> X"
+  shows "SN_on (relto (R \<union> R') S) X \<longleftrightarrow> SN_on (relto R (R' \<union> S)) X \<and> SN_on (relto R' S) X"
+  (is "?c \<longleftrightarrow> ?a \<and> ?b")
+proof(safe)
+  assume SN: "?a" and SN': "?b"
+  from SN have SN: "SN_on (relto (relto R S) (relto R' S)) X" by (rule SN_on_subset1) regexp
+  show "?c"
+  proof
+    fix f
+    assume f0: "f 0 \<in> X" and chain: "chain (relto (R \<union> R') S) f"
+    then have "chain (relto R S \<union> relto R' S) f" by auto
+    from relative_ending[OF this f0 SN]
+    have "\<exists> j. \<forall> i \<ge> j. (f i, f (Suc i)) \<in> relto R' S - relto R S" by auto
+    then obtain j where "\<forall>i \<ge> j. (f i, f (Suc i)) \<in> relto R' S" by auto
+    then have "chain (relto R' S) (shift f j)" by auto
+    moreover have "f j \<in> X"
+    proof(induct j)
+      case 0 from f0 show ?case by simp
+    next
+      case (Suc j)
+      let ?s = "(f j, f (Suc j))"
+      from chain have "?s \<in> relto (R \<union> R') S" by auto
+      with Image_closed_trancl[OF closure] Suc show "f (Suc j) \<in> X" by blast
+    qed
+    then have "shift f j 0 \<in> X" by auto
+    ultimately have "\<not> SN_on (relto R' S) X" by (intro not_SN_onI)
+    with SN' show False by auto
+  qed
+next
+  assume SN: "?c"
+  then show "?b" by (rule SN_on_subset1, auto)
+  moreover
+    from SN have "SN_on ((relto (R \<union> R') S)\<^sup>+) X" by (unfold SN_on_trancl_SN_on_conv)
+    then show "?a" by (rule SN_on_subset1) regexp
+qed
+
+lemma SN_on_Un: "(R \<union> R')``X \<subseteq> X \<Longrightarrow> SN_on (R \<union> R') X \<longleftrightarrow> SN_on (relto R R') X \<and> SN_on R' X"
+  using SN_on_relto_Un[of "{}"] by simp
+
 end

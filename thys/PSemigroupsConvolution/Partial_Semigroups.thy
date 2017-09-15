@@ -183,6 +183,9 @@ lemma add_canc1: "D x y \<Longrightarrow> rquot (x \<cdot> y) x = y"
 lemma add_canc2: "x \<preceq>\<^sub>R y \<Longrightarrow> x \<cdot> (rquot y x) = y"
   using gR_rel_def add_canc1 by force
     
+lemma add_canc2_prop: "x \<preceq>\<^sub>R y \<Longrightarrow> rquot y x \<preceq>\<^sub>L y"
+  using gL_rel_mult rquot_D rquot_mult by fastforce
+
 text \<open>The next set of lemmas establishes standard Galois connections for cancellative partial semigroups.\<close>
   
 lemma gR_galois_imp1: "D x z \<Longrightarrow> x \<cdot> z \<preceq>\<^sub>R y \<Longrightarrow> z \<preceq>\<^sub>R rquot y x"    
@@ -203,6 +206,8 @@ lemma gR_rel_defined: "x \<preceq>\<^sub>R y \<Longrightarrow> D x (rquot y x)"
 lemma ex_add_galois: "D x z \<Longrightarrow> (\<exists>y. x \<cdot> z = y \<longleftrightarrow> rquot y x = z)"
   using add_canc1 by force
     
+
+             
 end
   
   

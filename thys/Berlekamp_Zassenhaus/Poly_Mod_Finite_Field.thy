@@ -10,132 +10,74 @@ text \<open>We connect polynomials in a prime field with integer polynomials mod
 theory Poly_Mod_Finite_Field
   imports
   Finite_Field
-  Poly_Mod
   Polynomial_Interpolation.Ring_Hom_Poly
+  "HOL-Types_To_Sets.Types_To_Sets"
+  Missing_Multiset2
+  Poly_Mod
 begin
+
+(* TODO: Move -- General transfer rule *)
+declare rel_mset_Zero[transfer_rule]
+
+lemma mset_transfer[transfer_rule]: "(list_all2 rel ===> rel_mset rel) mset mset"
+proof (intro rel_funI)
+  show "list_all2 rel xs ys \<Longrightarrow> rel_mset rel (mset xs) (mset ys)" for xs ys
+  proof (induct xs arbitrary: ys)
+    case Nil
+    then show ?case by auto
+  next
+    case IH: (Cons x xs)
+    then show ?case by (auto dest!:msed_rel_invL simp: list_all2_Cons1 intro!:rel_mset_Plus)
+  qed
+qed
+
+abbreviation "rel_some r x Y \<equiv> \<exists>y \<in> Y. r x y"
+
+
+
 
 abbreviation to_int_poly :: "'a :: finite mod_ring poly \<Rightarrow> int poly" where
   "to_int_poly \<equiv> map_poly to_int_mod_ring"
 
-lemma irreducible\<^sub>d_def_lt: "irreducible\<^sub>d f = (degree f \<noteq> 0 \<and> 
-  (\<forall> g h. degree g < degree f \<longrightarrow> degree h < degree f \<longrightarrow> f \<noteq> g * h))" 
-proof (cases "degree f = 0")
-  case True
-  thus ?thesis unfolding irreducible\<^sub>d_def by auto
-next
-  case False
-  from False have f0: "f \<noteq> 0" by auto
-  {
-    fix g h
-    assume f: "f = g * h" 
-    with f0 have "g \<noteq> 0" "h \<noteq> 0" by auto
-    from degree_mult_eq[OF this]
-    have "degree (g * h) = degree g + degree h" by auto
-  } note deg = this
-  have "?thesis = ((\<forall> g h. degree g < degree f \<longrightarrow> degree h < degree f \<longrightarrow> f \<noteq> g * h)
-    = (\<forall> g h. degree g \<noteq> 0 \<longrightarrow> degree g < degree f \<longrightarrow> f \<noteq> g * h))" 
-    unfolding irreducible\<^sub>d_def dvd_def using False by auto
-  also have "\<dots> = True"
-    by (auto simp: deg, force+)
-  finally show ?thesis by simp
+interpretation to_int_poly_hom: map_poly_inj_zero_hom to_int_mod_ring ..
+
+lemma irreducible\<^sub>d_def_0:
+  fixes f :: "'a :: {comm_semiring_1,semiring_no_zero_divisors} poly"
+  shows "irreducible\<^sub>d f = (degree f \<noteq> 0 \<and> 
+  (\<forall> g h. degree g \<noteq> 0 \<longrightarrow> degree h \<noteq> 0 \<longrightarrow> f \<noteq> g * h))"
+proof-
+  have "degree g \<noteq> 0 \<Longrightarrow> g \<noteq> 0" for g :: "'a poly" by auto
+  note 1 = degree_mult_eq[OF this this, simplified]
+  then show ?thesis by (force elim!: irreducible\<^sub>dE)
 qed
 
-lemma irreducible\<^sub>d_def_0: "irreducible\<^sub>d f = (degree f \<noteq> 0 \<and> 
-  (\<forall> g h. degree g \<noteq> 0 \<longrightarrow> degree h \<noteq> 0 \<longrightarrow> f \<noteq> g * h))" 
-proof (cases "degree f = 0")
-  case True
-  thus ?thesis unfolding irreducible\<^sub>d_def by auto
-next
-  case False
-  from False have f0: "f \<noteq> 0" by auto
-  {
-    fix g h
-    assume f: "f = g * h" 
-    with f0 have "g \<noteq> 0" "h \<noteq> 0" by auto
-    from degree_mult_eq[OF this]
-    have "degree (g * h) = degree g + degree h" by auto
-  } note deg = this
-  have "?thesis = ((\<forall> g h. degree g \<noteq> 0 \<longrightarrow> degree h \<noteq> 0 \<longrightarrow> f \<noteq> g * h)
-    = (\<forall> g h. degree g \<noteq> 0 \<longrightarrow> degree g < degree f \<longrightarrow> f \<noteq> g * h))" 
-    unfolding irreducible\<^sub>d_def dvd_def using False by auto
-  also have "\<dots> = True"
-    by (auto simp: deg, force+)
-  finally show ?thesis by simp
-qed
+subsection {* Transferring to class-based mod-ring *}
 
-context poly_mod 
+locale poly_mod_type = poly_mod m
+  for m and ty :: "'a :: nontriv itself" +
+  assumes m: "m = CARD('a)"
 begin
 
-definition factorization_m :: "int poly \<Rightarrow> (int \<times> int poly multiset) \<Rightarrow> bool" where
-  "factorization_m f cfs \<equiv> (case cfs of (c,fs) \<Rightarrow> f =m (smult c (prod_mset fs)) \<and> 
-    (\<forall> f \<in> set_mset fs. irreducible\<^sub>d_m f \<and> monic (Mp f)))"  
+lemma m1: "m > 1" using nontriv[where 'a = 'a] by (auto simp:m)
 
-definition Mf :: "int \<times> int poly multiset \<Rightarrow> int \<times> int poly multiset" where
-  "Mf cfs \<equiv> case cfs of (c,fs) \<Rightarrow> (M c, image_mset Mp fs)" 
+sublocale poly_mod_2 using m1 by unfold_locales
 
-lemma Mf_Mf[simp]: "Mf (Mf x) = Mf x" 
-proof (cases x, auto simp: Mf_def, goal_cases)
-  case (1 c fs)
-  show ?case by (induct fs, auto)
-qed
+definition MP_Rel :: "int poly \<Rightarrow> 'a mod_ring poly \<Rightarrow> bool"
+  where "MP_Rel f f' \<equiv> (Mp f = to_int_poly f')"
 
-definition equivalent_fact_m :: "int \<times> int poly multiset \<Rightarrow> int \<times> int poly multiset \<Rightarrow> bool" where
-  "equivalent_fact_m cfs dgs = (Mf cfs = Mf dgs)" 
+definition M_Rel :: "int \<Rightarrow> 'a mod_ring \<Rightarrow> bool"
+  where "M_Rel x x' \<equiv> (M x = to_int_mod_ring x')"
 
-definition unique_factorization_m :: "int poly \<Rightarrow> (int \<times> int poly multiset) \<Rightarrow> bool" where
-  "unique_factorization_m f cfs = (Mf ` Collect (factorization_m f) = {Mf cfs})"
+definition "MF_Rel \<equiv> rel_prod M_Rel (rel_mset MP_Rel)"
 
-lemma Mp_irreducible\<^sub>d_m[simp]: "irreducible\<^sub>d_m (Mp f) = irreducible\<^sub>d_m f" 
-  unfolding irreducible\<^sub>d_m_def by simp
-
-lemma Mf_factorization_m[simp]: "factorization_m f (Mf cfs) = factorization_m f cfs" 
-  unfolding factorization_m_def Mf_def
-proof (cases cfs, simp, goal_cases)
-  case (1 c fs)
-  have "Mp (smult c (prod_mset fs)) = Mp (smult (M c) (Mp (prod_mset fs)))" by simp
-  also have "\<dots> = Mp (smult (M c) (Mp (prod_mset (image_mset Mp fs))))"
-    unfolding Mp_prod_mset by simp
-  also have "\<dots> = Mp (smult (M c) (prod_mset (image_mset Mp fs)))" unfolding Mp_smult ..
-  finally show ?case unfolding equivalent_def by auto
-qed    
-
-lemma unique_factorization_m_imp_factorization: assumes "unique_factorization_m f cfs" 
-  shows "factorization_m f cfs" 
-proof -
-  from assms[unfolded unique_factorization_m_def] obtain dfs where
-     fact: "factorization_m f dfs" and id: "Mf cfs = Mf dfs" by blast
-  from fact have "factorization_m f (Mf dfs)" by simp
-  from this[folded id] show ?thesis by simp
-qed
-
-lemma unique_factorization_m_alt_def: "unique_factorization_m f cfs = (factorization_m f cfs
-  \<and> (\<forall> dgs. factorization_m f dgs \<longrightarrow> Mf dgs = Mf cfs))" 
-  using unique_factorization_m_imp_factorization[of f cfs]
-  unfolding unique_factorization_m_def by auto
-
-
-end
-
-locale poly_mod_type = poly_mod m for m :: int + 
-  fixes ty :: "'a :: prime_card itself"  
-  assumes m: "m = CARD('a)"
-begin 
-definition MP_Rel :: "int poly \<Rightarrow> 'a mod_ring poly \<Rightarrow> bool" where 
-  "MP_Rel f f' \<equiv> (Mp f = to_int_poly f')"
-
-definition M_Rel :: "int \<Rightarrow> 'a mod_ring \<Rightarrow> bool" where 
-  "M_Rel x x' \<equiv> (M x = to_int_mod_ring x')"
-
-definition "MF_Rel \<equiv> rel_prod M_Rel (rel_mset MP_Rel)" 
- 
-lemma to_int_mod_ring_plus: "to_int_mod_ring ((x :: 'a mod_ring) + y) = M (to_int_mod_ring x + to_int_mod_ring y)" 
+lemma to_int_mod_ring_plus: "to_int_mod_ring ((x :: 'a mod_ring) + y) = M (to_int_mod_ring x + to_int_mod_ring y)"
   unfolding M_def using m by (transfer, auto)
 
-lemma to_int_mod_ring_times: "to_int_mod_ring ((x :: 'a mod_ring) * y) = M (to_int_mod_ring x * to_int_mod_ring y)" 
+lemma to_int_mod_ring_times: "to_int_mod_ring ((x :: 'a mod_ring) * y) = M (to_int_mod_ring x * to_int_mod_ring y)"
   unfolding M_def using m by (transfer, auto)
 
-lemma degree_MP_Rel [transfer_rule]: "(MP_Rel ===> op =) degree_m degree" 
-  unfolding MP_Rel_def rel_fun_def degree_m_def
+lemma degree_MP_Rel [transfer_rule]: "(MP_Rel ===> op =) degree_m degree"
+  unfolding MP_Rel_def rel_fun_def 
   by (auto intro!: degree_map_poly)
 
 lemma eq_M_Rel[transfer_rule]: "(M_Rel ===> M_Rel ===> op =) (\<lambda> x y. M x = M y) (op =)"
@@ -144,13 +86,11 @@ lemma eq_M_Rel[transfer_rule]: "(M_Rel ===> M_Rel ===> op =) (\<lambda> x y. M x
 interpretation to_int_mod_ring_hom: map_poly_inj_zero_hom to_int_mod_ring..
 
 lemma eq_MP_Rel[transfer_rule]: "(MP_Rel ===> MP_Rel ===> op =) (op =m) (op =)"
-  unfolding MP_Rel_def rel_fun_def equivalent_def by auto
+  unfolding MP_Rel_def rel_fun_def by auto
 
 lemma eq_Mf_Rel[transfer_rule]: "(MF_Rel ===> MF_Rel ===> op =) (\<lambda> x y. Mf x = Mf y) (op =)"
 proof (intro rel_funI, goal_cases)
   case (1 cfs Cfs dgs Dgs)
-  have [transfer_rule]: "(MP_Rel ===> MP_Rel ===> op =) (\<lambda> x y. Mp x = Mp y) (op =)" 
-    using eq_MP_Rel unfolding equivalent_def[abs_def] .
   obtain c fs where cfs: "cfs = (c,fs)" by force
   obtain C Fs where Cfs: "Cfs = (C,Fs)" by force
   obtain d gs where dgs: "dgs = (d,gs)" by force
@@ -215,7 +155,6 @@ proof (intro rel_funI, goal_cases)
   show "(Mf cfs = Mf dgs) = (Cfs = Dgs)" unfolding pairs Mf_def split
     by (simp add: eq1 eq2)
 qed
-
 
 lemmas coeff_map_poly_of_int = coeff_map_poly[of of_int, OF of_int_0]
 
@@ -283,15 +222,19 @@ proof (intro rel_funI, goal_cases)
 qed
 
 lemma one_M_Rel[transfer_rule]: "M_Rel 1 1"
-  unfolding M_Rel_def poly_eq_iff Mp_coeff M_def 
+  unfolding M_Rel_def M_def
   unfolding m by auto
 
 lemma one_MP_Rel[transfer_rule]: "MP_Rel 1 1"
   unfolding MP_Rel_def poly_eq_iff Mp_coeff M_def 
   unfolding m by auto
 
-lemma zero_MP_Rel[transfer_rule]: "MP_Rel 0 0" 
-  unfolding MP_Rel_def poly_eq_iff Mp_coeff M_def 
+lemma zero_M_Rel[transfer_rule]: "M_Rel 0 0"
+  unfolding M_Rel_def M_def 
+  unfolding m by auto
+
+lemma zero_MP_Rel[transfer_rule]: "MP_Rel 0 0"
+  unfolding MP_Rel_def poly_eq_iff Mp_coeff M_def
   unfolding m by auto
 
 lemma listprod_MP_Rel[transfer_rule]: "(list_all2 MP_Rel ===> MP_Rel) prod_list prod_list"
@@ -377,25 +320,113 @@ proof
     by (auto simp: Mp_f_representative)
 qed
 
+
+lemma mem_MP_Rel[transfer_rule]: "(MP_Rel ===> rel_set MP_Rel ===> op =) (rel_some eq_m) (op \<in>)"
+proof (intro rel_funI iffI)
+  fix x y X Y assume xy: "MP_Rel x y" and XY: "rel_set MP_Rel X Y"
+  { assume "\<exists>x' \<in> X. x =m x'"
+    then obtain x' where x'X: "x' \<in> X" and xx': "x =m x'" by auto
+    with xy have x'y: "MP_Rel x' y" by (auto simp: MP_Rel_def)
+    from rel_setD1[OF XY x'X] obtain y' where "MP_Rel x' y'" and "y' \<in> Y" by auto
+    with x'y
+    show "y \<in> Y" by (auto simp: MP_Rel_def)
+  }
+  assume "y \<in> Y"
+  from rel_setD2[OF XY this] obtain x' where x'X: "x' \<in> X" and x'y: "MP_Rel x' y" by auto
+  from xy x'y have "x =m x'" by (auto simp: MP_Rel_def)
+  with x'X show "\<exists>x' \<in> X. x =m x'" by auto
+qed
+
+lemma conversep_MP_Rel_OO_MP_Rel [simp]: "MP_Rel\<inverse>\<inverse> OO MP_Rel = (op =)"
+  using Mp_to_int_poly by (intro ext, auto simp: OO_def MP_Rel_def)
+
+lemma MP_Rel_OO_conversep_MP_Rel [simp]: "MP_Rel OO MP_Rel\<inverse>\<inverse> = eq_m"
+  by (intro ext, auto simp: OO_def MP_Rel_def Mp_f_representative)
+
+lemma conversep_MP_Rel_OO_eq_m [simp]: "MP_Rel\<inverse>\<inverse> OO eq_m = MP_Rel\<inverse>\<inverse>"
+  by (intro ext, auto simp: OO_def MP_Rel_def)
+
+lemma eq_m_OO_MP_Rel [simp]: "eq_m OO MP_Rel = MP_Rel"
+  by (intro ext, auto simp: OO_def MP_Rel_def)
+
+lemma eq_mset_MP_Rel [transfer_rule]: "(rel_mset MP_Rel ===> rel_mset MP_Rel ===> op =) (rel_mset eq_m) (op =)"
+proof (intro rel_funI iffI)
+  fix A B X Y
+  assume AX: "rel_mset MP_Rel A X" and BY: "rel_mset MP_Rel B Y"
+  {
+    assume AB: "rel_mset eq_m A B"
+    from AX have "rel_mset MP_Rel\<inverse>\<inverse> X A" by (simp add: multiset.rel_flip)
+    note rel_mset_OO[OF this AB]
+    note rel_mset_OO[OF this BY]
+    then show "X = Y" by (simp add: multiset.rel_eq)
+  }
+  assume "X = Y"
+  with BY have "rel_mset MP_Rel\<inverse>\<inverse> X B" by (simp add: multiset.rel_flip)
+  from rel_mset_OO[OF AX this]
+  show "rel_mset eq_m A B" by simp
+qed
+
 lemma dvd_MP_Rel[transfer_rule]: "(MP_Rel ===> MP_Rel ===> op =) (op dvdm) (op dvd)"
   unfolding dvdm_def[abs_def] dvd_def[abs_def]
-  by (transfer_prover_start, transfer_step+, auto)
+  by transfer_prover
+
+lemma irreducible_MP_Rel [transfer_rule]: "(MP_Rel ===> op =) irreducible_m irreducible"
+  unfolding irreducible_m_def irreducible_def
+  by transfer_prover
 
 lemma irreducible\<^sub>d_MP_Rel [transfer_rule]: "(MP_Rel ===> op =) irreducible\<^sub>d_m irreducible\<^sub>d"
-  unfolding irreducible\<^sub>d_m_def[abs_def] irreducible\<^sub>d_def_lt[abs_def]
-  by (transfer_prover_start, transfer_step+, auto)
+  unfolding irreducible\<^sub>d_m_def[abs_def] irreducible\<^sub>d_def[abs_def]
+  by transfer_prover
 
-lemma UNIV_M_Rel[transfer_rule]: "rel_set M_Rel {0..<m} UNIV" 
+lemma UNIV_M_Rel[transfer_rule]: "rel_set M_Rel {0..<m} UNIV"
   unfolding rel_set_def M_Rel_def[abs_def] M_def 
   by (auto simp: M_def m, goal_cases, metis to_int_mod_ring_of_int_mod_ring, (transfer, auto)+)
 
-lemma coeff_MP_Rel [transfer_rule]: "(MP_Rel ===> op = ===> M_Rel) coeff coeff" 
+lemma coeff_MP_Rel [transfer_rule]: "(MP_Rel ===> op = ===> M_Rel) coeff coeff"
   unfolding rel_fun_def M_Rel_def MP_Rel_def Mp_coeff[symmetric] by auto
 
 lemma M_1_1[simp]: "M 1 = 1" unfolding M_def unfolding m by simp
 
-lemma factorization_MP_Rel [transfer_rule]: "(MP_Rel ===> MF_Rel ===> op =)
-  factorization_m (factorization Irr_Mon)"
+lemma square_free_MP_Rel [transfer_rule]: "(MP_Rel ===> op =) square_free_m square_free"
+  unfolding square_free_m_def[abs_def] square_free_def[abs_def]
+  by (transfer_prover_start, transfer_step+, auto)
+
+lemma mset_factors_m_MP_Rel [transfer_rule]: "(rel_mset MP_Rel ===> MP_Rel ===> op =) mset_factors_m mset_factors"
+  unfolding mset_factors_def mset_factors_m_def
+  by (transfer_prover_start, transfer_step+, auto dest:eq_m_irreducible_m)
+
+lemma coprime_MP_Rel [transfer_rule]: "(MP_Rel ===> MP_Rel ===> op =) coprime_m coprime"
+  unfolding coprime_m_def[abs_def] coprime_def[abs_def]
+  by (transfer_prover_start, transfer_step+, auto)
+
+lemma prime_elem_MP_Rel [transfer_rule]: "(MP_Rel ===> op =) prime_elem_m prime_elem"
+  unfolding prime_elem_m_def prime_elem_def by transfer_prover
+
+end
+
+context poly_mod_2 begin
+
+lemma non_empty: "{0..<m} \<noteq> {}" using m1 by auto
+
+lemma type_to_set:
+  assumes type_def: "\<exists>(Rep :: 'b \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< m :: int}"
+  shows "class.nontriv (TYPE('b))" (is ?a) and "m = int CARD('b)" (is ?b)
+proof -
+  from type_def obtain rep :: "'b \<Rightarrow> int" and abs :: "int \<Rightarrow> 'b" where t: "type_definition rep abs {0 ..< m}" by auto
+  have "card (UNIV :: 'b set) = card {0 ..< m}" using t by (rule type_definition.card)
+  also have "\<dots> = m" using m1 by auto
+  finally show ?b ..
+  then show ?a unfolding class.nontriv_def using m1 by auto
+qed
+
+end
+
+locale poly_mod_prime_type = poly_mod_type m ty for m :: int and
+  ty :: "'a :: prime_card itself"
+begin 
+
+lemma factorization_MP_Rel [transfer_rule]:
+  "(MP_Rel ===> MF_Rel ===> op =) factorization_m (factorization Irr_Mon)"
   unfolding rel_fun_def
 proof (intro allI impI, goal_cases)
   case (1 f F cfs Cfs)
@@ -413,12 +444,12 @@ proof (intro allI impI, goal_cases)
       fix f
       assume "f \<in># fs" 
       have "monic (Mp f) \<longleftrightarrow> M (coeff f (degree_m f)) = M 1"
-        unfolding Mp_coeff[symmetric] degree_m_def by simp
+        unfolding Mp_coeff[symmetric] by simp
     }
     thus "(\<forall>f\<in>#fs. irreducible\<^sub>d_m f \<and> monic (Mp f)) = 
       (\<forall>x\<in>#fs. irreducible\<^sub>d_m x \<and> M (coeff x (degree_m x)) = M 1)" by auto
   qed
-  finally     
+  finally
   show "factorization_m f cfs = factorization Irr_Mon F Cfs" unfolding cfs Cfs
     factorization_m_def factorization_def split eq by simp
 qed
@@ -479,13 +510,100 @@ proof (intro allI impI, goal_cases)
   qed
 qed
 
-
-lemma square_free_MP_Rel [transfer_rule]: "(MP_Rel ===> op =) square_free_m square_free"
-  unfolding square_free_m_def[abs_def] square_free_def[abs_def]
-  by (transfer_prover_start, transfer_step+, auto)
-
-lemma coprime_MP_Rel [transfer_rule]: "(MP_Rel ===> MP_Rel ===> op =) coprime_m coprime"
-  unfolding coprime_m_def[abs_def] coprime[abs_def]
-  by (transfer_prover_start, transfer_step+, auto)
 end
+
+context begin
+private lemma 1: "poly_mod_type TYPE('a :: nontriv) m = (m = int CARD('a))"
+  and 2: "class.nontriv TYPE('a) = (CARD('a) \<ge> 2)"
+  unfolding poly_mod_type_def class.prime_card_def class.nontriv_def poly_mod_prime_type_def by auto
+
+private lemma 3: "poly_mod_prime_type TYPE('b) m = (m = int CARD('b))"
+  and 4: "class.prime_card TYPE('b :: prime_card) = prime CARD('b :: prime_card)" 
+  unfolding poly_mod_type_def class.prime_card_def class.nontriv_def poly_mod_prime_type_def by auto
+
+lemmas poly_mod_type_simps = 1 2 3 4
+end
+
+
+lemma remove_duplicate_premise: "(PROP P \<Longrightarrow> PROP P \<Longrightarrow> PROP Q) \<equiv> (PROP P \<Longrightarrow> PROP Q)" (is "?l \<equiv> ?r")
+proof (intro Pure.equal_intr_rule)
+  assume p: "PROP P" and ppq: "PROP ?l"
+  from ppq[OF p p] show "PROP Q".
+next
+  assume p: "PROP P" and pq: "PROP ?r"
+  from pq[OF p] show "PROP Q".
+qed
+
+context poly_mod_prime begin
+
+lemma type_to_set:
+  assumes type_def: "\<exists>(Rep :: 'b \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< p :: int}"
+  shows "class.prime_card (TYPE('b))" (is ?a) and "p = int CARD('b)" (is ?b)
+proof -
+  from prime have p2: "p \<ge> 2" by (rule prime_ge_2_int)
+  from type_def obtain rep :: "'b \<Rightarrow> int" and abs :: "int \<Rightarrow> 'b" where t: "type_definition rep abs {0 ..< p}" by auto
+  have "card (UNIV :: 'b set) = card {0 ..< p}" using t by (rule type_definition.card)
+  also have "\<dots> = p" using p2 by auto
+  finally show ?b ..
+  then show ?a unfolding class.prime_card_def using prime p2 by auto
+qed
+end
+
+(* it will be nice to be able to automate this *)
+
+lemmas (in poly_mod_type) prime_elem_m_dvdm_multD = prime_elem_dvd_multD
+  [where 'a = "'a mod_ring poly",untransferred]
+lemmas (in poly_mod_2) prime_elem_m_dvdm_multD = poly_mod_type.prime_elem_m_dvdm_multD
+  [unfolded poly_mod_type_simps, internalize_sort "'a :: nontriv", OF type_to_set, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
+
+lemmas(in poly_mod_prime_type) degree_m_mult_eq = degree_mult_eq
+  [where 'a = "'a mod_ring", untransferred]
+lemmas(in poly_mod_prime) degree_m_mult_eq = poly_mod_prime_type.degree_m_mult_eq
+  [unfolded poly_mod_type_simps, internalize_sort "'a :: prime_card", OF type_to_set, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
+
+lemma(in poly_mod_prime) irreducible\<^sub>d_lifting:
+  assumes n: "n \<noteq> 0"
+    and deg: "poly_mod.degree_m (p^n) f = degree_m f"
+    and irr: "irreducible\<^sub>d_m f"
+  shows "poly_mod.irreducible\<^sub>d_m (p^n) f"
+proof -
+  interpret q: poly_mod_2 "p^n" unfolding poly_mod_2_def using n m1 by auto
+  show "q.irreducible\<^sub>d_m f"
+  proof (rule q.irreducible\<^sub>d_mI)
+    from deg irr show "q.degree_m f \<noteq> 0" by (auto elim: irreducible\<^sub>d_mE)
+    then have pdeg_f: "degree_m f \<noteq> 0" by (simp add: deg)
+    note pMp_Mp = Mp_Mp_pow_is_Mp[OF n m1]
+    fix g h
+    assume deg_g: "degree g < q.degree_m f" and deg_h: "degree h < q.degree_m f"
+      and eq: "q.eq_m f (g * h)"
+    from eq have p_f: "f =m (g * h)" using pMp_Mp by metis
+    have "\<not>g =m 0" and "\<not>h =m 0"
+      apply (metis degree_0 mult_zero_left Mp_0 p_f pdeg_f poly_mod.mult_Mp(1))
+      by (metis degree_0 mult_eq_0_iff Mp_0 mult_Mp(2) p_f pdeg_f)
+    note [simp] = degree_m_mult_eq[OF this]
+    from degree_m_le[of g] deg_g
+    have 2: "degree_m g < degree_m f" by (fold deg, auto)
+    from degree_m_le[of h] deg_h
+    have 3: "degree_m h < degree_m f" by (fold deg, auto)
+    from irreducible\<^sub>d_mD(2)[OF irr 2 3] p_f
+    show False by auto
+  qed
+qed
+
+(* Lifting UFD properties *)
+lemmas (in poly_mod_prime_type) mset_factors_exist =
+  mset_factors_exist[where 'a = "'a mod_ring poly",untransferred]
+lemmas (in poly_mod_prime) mset_factors_exist = poly_mod_prime_type.mset_factors_exist
+  [unfolded poly_mod_type_simps, internalize_sort "'a :: prime_card", OF type_to_set, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
+
+lemmas (in poly_mod_prime_type) mset_factors_unique =
+  mset_factors_unique[where 'a = "'a mod_ring poly",untransferred]
+lemmas (in poly_mod_prime) mset_factors_unique = poly_mod_prime_type.mset_factors_unique
+  [unfolded poly_mod_type_simps, internalize_sort "'a :: prime_card", OF type_to_set, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
+
+lemmas (in poly_mod_prime_type) prime_elem_iff_irreducible =
+  prime_elem_iff_irreducible[where 'a = "'a mod_ring poly",untransferred]
+lemmas (in poly_mod_prime) prime_elem_iff_irreducible[simp] = poly_mod_prime_type.prime_elem_iff_irreducible
+  [unfolded poly_mod_type_simps, internalize_sort "'a :: prime_card", OF type_to_set, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
+
 end

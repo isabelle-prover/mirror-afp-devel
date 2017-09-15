@@ -584,28 +584,37 @@ next
 qed
 
 text \<open>Degree based version of irreducibility.\<close>
-definition irreducible\<^sub>d :: "'a :: idom poly \<Rightarrow> bool" where
-  "irreducible\<^sub>d p = (degree p \<noteq> 0 \<and> (\<forall> q. degree q \<noteq> 0 \<longrightarrow> degree q < degree p \<longrightarrow> \<not> q dvd p))"
+definition irreducible\<^sub>d :: "'a :: comm_semiring_1 poly \<Rightarrow> bool" where
+  "irreducible\<^sub>d p = (degree p \<noteq> 0 \<and> (\<forall> q r. degree q < degree p \<longrightarrow> degree r < degree p \<longrightarrow> p \<noteq> q * r))"
 
-lemma irreducible\<^sub>dI: assumes 
-  "degree p \<noteq> 0" "\<And> q. degree q \<noteq> 0 \<Longrightarrow> degree q < degree p \<Longrightarrow> \<not> q dvd p"
-  shows "irreducible\<^sub>d p" using assms unfolding irreducible\<^sub>d_def by auto
+lemma irreducible\<^sub>dI [intro]:
+  assumes 1: "degree p \<noteq> 0"
+    and 2: "\<And>q r. degree q \<noteq> 0 \<Longrightarrow> degree q < degree p \<Longrightarrow> degree r \<noteq> 0 \<Longrightarrow> degree r < degree p \<Longrightarrow> p = q * r \<Longrightarrow> False"
+  shows "irreducible\<^sub>d p"
+proof (unfold irreducible\<^sub>d_def, intro conjI allI impI notI)
+  show "degree p = 0 \<Longrightarrow> False" using 1 by auto
+next
+  fix q r
+  assume "degree q < degree p" and "degree r < degree p" and "p = q * r"
+  with degree_mult_le[of q r]
+  show False by (intro 2, auto)
+qed
 
-lemma irreducible\<^sub>dI2: assumes 
-  deg: "degree p \<noteq> 0" and ndvd: "\<And> q. degree q \<ge> 1 \<Longrightarrow> degree q \<le> degree p div 2 \<Longrightarrow> \<not> q dvd p"
+lemma irreducible\<^sub>dI2:
+  fixes p :: "'a::{comm_semiring_1,semiring_no_zero_divisors} poly"
+  assumes deg: "degree p \<noteq> 0" and ndvd: "\<And> q. degree q \<ge> 1 \<Longrightarrow> degree q \<le> degree p div 2 \<Longrightarrow> \<not> q dvd p"
   shows "irreducible\<^sub>d p"
 proof (rule ccontr)
   assume "\<not> ?thesis"
-  from this[unfolded irreducible\<^sub>d_def] deg obtain q where dq: "degree q \<noteq> 0" "degree q < degree p"
-    and dvd: "q dvd p" by auto
-  from dvd obtain r where p: "p = q * r" unfolding dvd_def by auto
+  from this[unfolded irreducible\<^sub>d_def] deg obtain q r where dq: "degree q < degree p" and dr: "degree r < degree p"
+    and p: "p = q * r" by auto
   from deg have p0: "p \<noteq> 0" by auto
   with p have "q \<noteq> 0" "r \<noteq> 0" by auto
   from degree_mult_eq[OF this] p have dp: "degree p = degree q + degree r" by simp
   show False
   proof (cases "degree q \<le> degree p div 2")
     case True
-    from ndvd[OF _ True] dq dvd show False by auto
+    from ndvd[OF _ True] dq dr dp p show False by auto
   next
     case False
     with dp have dr: "degree r \<le> degree p div 2" by auto
@@ -613,23 +622,52 @@ proof (rule ccontr)
     from ndvd[OF _ dr] dvd dp dq show False by auto
   qed
 qed
-    
 
-lemma irreducible\<^sub>dD: assumes "irreducible\<^sub>d p"
-  shows "degree p \<noteq> 0" "\<And> q. degree q \<noteq> 0 \<Longrightarrow> degree q < degree p \<Longrightarrow> \<not> q dvd p"
+lemma reducible\<^sub>dI:
+  assumes "degree p \<noteq> 0 \<Longrightarrow> \<exists>q r. degree q < degree p \<and> degree r < degree p \<and> p = q * r"
+  shows "\<not> irreducible\<^sub>d p"
+  using assms by (auto simp: irreducible\<^sub>d_def)
+
+lemma irreducible\<^sub>dE [elim]:
+  assumes "irreducible\<^sub>d p"
+    and "degree p \<noteq> 0 \<Longrightarrow> (\<And>q r. degree q < degree p \<Longrightarrow> degree r < degree p \<Longrightarrow> p \<noteq> q * r) \<Longrightarrow> thesis"
+  shows thesis
+  using assms by (auto simp: irreducible\<^sub>d_def)
+
+lemma reducible\<^sub>dE [elim]:
+  assumes red: "\<not> irreducible\<^sub>d p"
+    and 1: "degree p = 0 \<Longrightarrow> thesis"
+    and 2: "\<And>q r. degree q \<noteq> 0 \<Longrightarrow> degree q < degree p \<Longrightarrow> degree r \<noteq> 0 \<Longrightarrow> degree r < degree p \<Longrightarrow> p = q * r \<Longrightarrow> thesis"
+  shows thesis
+  using red[unfolded irreducible\<^sub>d_def de_Morgan_conj not_not not_all not_imp]
+proof (elim disjE exE conjE)
+  show "degree p = 0 \<Longrightarrow> thesis" using 1.
+next
+  fix q r
+  assume "degree q < degree p" and "degree r < degree p" and "p = q * r"
+  with degree_mult_le[of q r]
+  show thesis by (intro 2, auto)
+qed
+
+lemma irreducible\<^sub>dD:
+  assumes "irreducible\<^sub>d p"
+  shows "degree p \<noteq> 0" "\<And>q r. degree q < degree p \<Longrightarrow> degree r < degree p \<Longrightarrow> p \<noteq> q * r"
   using assms unfolding irreducible\<^sub>d_def by auto
 
-lemma irreducible\<^sub>d_factor: assumes
-  "degree p \<noteq> 0" 
+lemma irreducible\<^sub>d_factor:
+  fixes p :: "'a::{comm_semiring_1,semiring_no_zero_divisors} poly"
+  assumes "degree p \<noteq> 0" 
   shows "\<exists> q r. irreducible\<^sub>d q \<and> p = q * r \<and> degree r < degree p" using assms
 proof (induct "degree p" arbitrary: p rule: less_induct)
   case (less p)
   show ?case
   proof (cases "irreducible\<^sub>d p")
     case False
-    with less(2) obtain q where q: "degree q < degree p" "degree q \<noteq> 0"  and dvd: "q dvd p"
-      unfolding irreducible\<^sub>d_def by auto
-    from dvd obtain r where p: "p = q * r" unfolding dvd_def by auto
+    with less(2) obtain q r
+    where q: "degree q < degree p" "degree q \<noteq> 0"
+      and r: "degree r < degree p" "degree r \<noteq> 0"
+      and p: "p = q * r"
+      by auto
     from less(1)[OF q] obtain s t where IH: "irreducible\<^sub>d s" "q = s * t" by auto
     from p have p: "p = s * (t * r)" unfolding IH by (simp add: ac_simps)
     from less(2) have "p \<noteq> 0" by auto
@@ -645,12 +683,38 @@ proof (induct "degree p" arbitrary: p rule: less_induct)
 qed
 
 lemma irreducible\<^sub>d_smultI: 
-  "irreducible\<^sub>d (smult c p) \<Longrightarrow> c \<noteq> 0 \<Longrightarrow> irreducible\<^sub>d p" 
-  using dvd_smult[of _ p c] unfolding irreducible\<^sub>d_def by auto
+  fixes p :: "'a::{comm_semiring_1,semiring_no_zero_divisors} poly"
+  assumes irr: "irreducible\<^sub>d (smult c p)" and c0: "c \<noteq> 0"
+    shows "irreducible\<^sub>d p"
+proof (intro irreducible\<^sub>dI)
+  from irr degree_smult_eq[of c p] c0 show "degree p \<noteq> 0" by auto
+  fix q r
+  assume p: "p = q * r"
+  assume dq0: "degree q \<noteq> 0" and dr0: "degree r \<noteq> 0"
+  then have "q \<noteq> 0" and "r \<noteq> 0" by auto
+  note dqr = degree_mult_eq[OF this]
+  note dcp = degree_smult_eq[of c p, unfolded if_not_P[OF c0]]
+  assume dq: "degree q < degree p" and dr: "degree r < degree p"
+  have "\<not>irreducible\<^sub>d (smult c p)"
+    by (rule reducible\<^sub>dI, rule exI[of _ "smult c q"], rule exI[of _ "r"], insert dq dq0 dr dr0 p, auto)
+  with irr
+  show False by auto
+qed
 
-lemma irreducible\<^sub>d_smult[simp]: fixes c :: "'a :: field" assumes "c \<noteq> 0"
-  shows "irreducible\<^sub>d (smult c p) = irreducible\<^sub>d p" using `c \<noteq> 0`
-  unfolding irreducible\<^sub>d_def by (auto simp: dvd_smult_iff[OF `c \<noteq> 0`])
+lemma irreducible\<^sub>d_smult[simp]: fixes c :: "'a :: field" assumes c0: "c \<noteq> 0"
+  shows "irreducible\<^sub>d (smult c p) = irreducible\<^sub>d p"
+  apply (rule iffI, fact irreducible\<^sub>d_smultI[OF _ assms])
+proof (intro irreducible\<^sub>dI, unfold degree_smult_eq if_not_P[OF c0])
+  assume irr: "irreducible\<^sub>d p"
+  show "degree p \<noteq> 0" using irr by auto
+  fix q r
+  from c0 have "p = smult (1/c) (smult c p)" by simp
+  also assume "smult c p = q * r"
+  finally have [simp]: "p = smult (1/c) \<dots>".
+  assume main: "degree q < degree p" "degree r < degree p"
+  have "\<not>irreducible\<^sub>d p" by (rule reducible\<^sub>dI, rule exI[of _ "smult (1/c) q"], rule exI[of _ r], insert irr c0 main, simp)
+  with irr show False by auto
+qed
 
 lemma irreducible\<^sub>d_monic_factor: fixes p :: "'a :: field poly" 
   assumes "degree p \<noteq> 0" 
@@ -732,11 +796,15 @@ lemma linear_irreducible\<^sub>d: assumes "degree p = 1"
   by (rule irreducible\<^sub>dI, insert assms, auto)
 
 lemma irreducible\<^sub>d_dvd_smult:
+  fixes p :: "'a::{comm_semiring_1,semiring_no_zero_divisors} poly"
   assumes "degree p \<noteq> 0" "irreducible\<^sub>d q" "p dvd q"
   shows "\<exists> c. c \<noteq> 0 \<and> q = smult c p"
 proof -
-  from assms have "\<not> degree p < degree q" 
-  and nz: "p \<noteq> 0" "q \<noteq> 0" unfolding irreducible\<^sub>d_def by auto
+  from assms obtain r where q: "q = p * r" by (elim dvdE, auto)
+  from degree_mult_eq[of p r] assms(1) q
+  have "\<not> degree p < degree q" and nz: "p \<noteq> 0" "q \<noteq> 0"
+    apply (metis assms(2) degree_mult_eq_0 gr_implies_not_zero irreducible\<^sub>dD(2) less_add_same_cancel2 linorder_neqE_nat)
+    using assms by auto
   hence deg: "degree p \<ge> degree q" by auto
   from `p dvd q` obtain k where q: "q = k * p" unfolding dvd_def by (auto simp: ac_simps)
   with nz have "k \<noteq> 0" by auto
@@ -906,11 +974,11 @@ lemma order_prod_list: "(\<And> p. p \<in> set ps \<Longrightarrow> p \<noteq> 0
   by (induct ps, auto, subst order_mult, auto simp: prod_list_zero_iff)
 
 lemma irreducible\<^sub>d_dvd_eq:
-assumes "irreducible\<^sub>d a"
-and "irreducible\<^sub>d b"
-and "a dvd b"
-and "monic a" and "monic b" 
-shows "a = b"
+  fixes a b :: "'a::{comm_semiring_1,semiring_no_zero_divisors} poly"
+  assumes "irreducible\<^sub>d a" and "irreducible\<^sub>d b"
+    and "a dvd b"
+    and "monic a" and "monic b" 
+  shows "a = b"
   using assms
   by (metis (no_types, lifting) coeff_smult degree_smult_eq irreducible\<^sub>dD(1) irreducible\<^sub>d_dvd_smult 
     mult.right_neutral smult_1_left)

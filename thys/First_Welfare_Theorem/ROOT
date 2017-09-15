@@ -1,0 +1,16 @@
+(* License: LGPL *)
+chapter AFP
+
+session First_Welfare_Theorem (AFP) = "HOL-Analysis" +
+  options [timeout = 600]
+  theories
+    Syntax
+    Argmax
+    Preferences
+    Utility_Functions
+    Consumers
+    Exchange_Economy
+    Private_Ownership_Economy
+  document_files
+    "root.bib"
+    "root.tex"

@@ -12,9 +12,9 @@ text \<open>We adapt the integer polynomial gcd algorithm so that it
 
 theory Gcd_Finite_Field_Impl
 imports 
-  Suitable_Prime 
-  Hensel_Lifting (* for poly_mod_prime *)
+  Suitable_Prime
   Code_Abort_Gcd
+  Code_Target_Int (* to be able to efficiently primality of medium large numbers *)
 begin
 
 definition coprime_approx_main :: "int \<Rightarrow> 'i arith_ops_record \<Rightarrow> int poly \<Rightarrow> int poly \<Rightarrow> bool" where
@@ -22,21 +22,20 @@ definition coprime_approx_main :: "int \<Rightarrow> 'i arith_ops_record \<Right
      (of_int_poly_i ff_ops (poly_mod.Mp p g)) = one_poly_i ff_ops)" 
 
 lemma (in prime_field_gen) coprime_approx_main: 
-  assumes F: "(F :: 'a mod_ring poly) = of_int_poly (Mp f)"
-    and G: "(G :: 'a mod_ring poly) = of_int_poly (Mp g)"
-  shows "coprime_approx_main p ff_ops f g \<Longrightarrow> coprime_m f g" 
+  shows "coprime_approx_main p ff_ops f g \<Longrightarrow> coprime_m f g"
 proof -
-  let ?f' = "of_int_poly_i ff_ops (Mp f)" 
+  define F where F: "(F :: 'a mod_ring poly) = of_int_poly (Mp f)"
+  define G where G: "(G :: 'a mod_ring poly) = of_int_poly (Mp g)"  let ?f' = "of_int_poly_i ff_ops (Mp f)" 
   let ?g' = "of_int_poly_i ff_ops (Mp g)" 
   define f'' where "f'' \<equiv> of_int_poly (Mp f) :: 'a mod_ring poly"
   define g'' where "g'' \<equiv> of_int_poly (Mp g) :: 'a mod_ring poly"
   have rel_f[transfer_rule]: "poly_rel ?f' f''" 
-    by (rule poly_rel_coeffs_Mp_of_int_poly[OF refl], simp add: f''_def)
+    by (rule poly_rel_of_int_poly[OF refl], simp add: f''_def)
   have rel_f[transfer_rule]: "poly_rel ?g' g''" 
-    by (rule poly_rel_coeffs_Mp_of_int_poly[OF refl], simp add: g''_def)
+    by (rule poly_rel_of_int_poly[OF refl], simp add: g''_def)
   have id: "(gcd_poly_i ff_ops (of_int_poly_i ff_ops (Mp f)) (of_int_poly_i ff_ops (Mp g)) = one_poly_i ff_ops)
     = coprime f'' g''"
-    unfolding square_free_i_def by transfer_prover
+    unfolding square_free_i_def coprime_iff_gcd_one by transfer_prover
   have fF: "MP_Rel (Mp f) F" unfolding F MP_Rel_def
     by (simp add: Mp_f_representative)
   have gG: "MP_Rel (Mp g) G" unfolding G MP_Rel_def
@@ -44,31 +43,23 @@ proof -
   have "coprime f'' g'' = coprime F G" unfolding f''_def F g''_def G by simp
   also have "\<dots> = coprime_m (Mp f) (Mp g)"
     using coprime_MP_Rel[unfolded rel_fun_def, rule_format, OF fF gG] by simp
-  also have "\<dots> = coprime_m f g" unfolding coprime_m_def dvdm_def equivalent_def by simp
+  also have "\<dots> = coprime_m f g" unfolding coprime_m_def dvdm_def by simp
   finally have id2: "coprime f'' g'' = coprime_m f g" .
   show "coprime_approx_main p ff_ops f g \<Longrightarrow> coprime_m f g" unfolding coprime_approx_main_def
     id id2 by auto
 qed
 
-lemma coprime_approx_main_uint32: assumes 
-  p: "prime p" and
-  res: "coprime_approx_main p (finite_field_ops32 (uint32_of_int p)) f g" and
-  small: "p \<le> 65535"     
-  shows "poly_mod.coprime_m p f g"
-proof -
-  have ne: "{0..<p} \<noteq> {}" using prime_ge_2_int[OF p] by auto
-  {
-    assume "\<exists>(Rep :: 'b \<Rightarrow> int) Abs. type_definition Rep Abs {0 ..< p :: int}"
-    from prime_type_prime_card[OF p this]
-    have "class.prime_card TYPE('b)" and p: "p = int CARD('b)" by auto
-    from prime_field_gen.coprime_approx_main[OF 
-        prime_field.prime_field_finite_field_ops32, unfolded prime_field_def mod_ring_locale_def,
-      internalize_sort "'a :: prime_card", OF this small refl refl res]
-    have ?thesis .
-  }
-  from this[cancel_type_definition, OF ne] show ?thesis .
-qed
+context poly_mod_prime begin
 
+lemmas coprime_approx_main_uint32 = prime_field_gen.coprime_approx_main[OF 
+        prime_field.prime_field_finite_field_ops32, unfolded prime_field_def mod_ring_locale_def
+   poly_mod_type_simps, internalize_sort "'a :: prime_card", OF type_to_set, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
+
+lemmas coprime_approx_main_uint64 = prime_field_gen.coprime_approx_main[OF 
+        prime_field.prime_field_finite_field_ops64, unfolded prime_field_def mod_ring_locale_def
+   poly_mod_type_simps, internalize_sort "'a :: prime_card", OF type_to_set, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
+
+end
 
 lemma coprime_mod_imp_coprime: assumes 
   p: "prime p" and 
@@ -78,13 +69,13 @@ lemma coprime_mod_imp_coprime: assumes
   shows "coprime f g"
 proof -
   interpret poly_mod_prime p by (standard, rule p)
-  from cop_m[unfolded coprime_m_def] have cop_m: "\<And> h. dvdm h f \<Longrightarrow> dvdm h g \<Longrightarrow> dvdm h 1"  by auto
+  from cop_m[unfolded coprime_m_def] have cop_m: "\<And> h. h dvdm f \<Longrightarrow> h dvdm g \<Longrightarrow> h dvdm 1"  by auto
   show ?thesis 
   proof (rule coprimeI)
     fix h
     assume dvd: "h dvd f" "h dvd g" 
-    hence "dvdm h f" "dvdm h g" unfolding dvdm_def equivalent_def dvd_def by auto
-    from cop_m[OF this] obtain k where unit: "Mp (h * Mp k) = 1" unfolding dvdm_def equivalent_def by auto
+    hence "h dvdm f" "h dvdm g" unfolding dvdm_def dvd_def by auto
+    from cop_m[OF this] obtain k where unit: "Mp (h * Mp k) = 1" unfolding dvdm_def by auto
     from content_dvd_contentI[OF dvd(1)] content_dvd_contentI[OF dvd(2)] cnt
     have cnt: "content h = 1" by auto 
     let ?k = "Mp k" 
@@ -94,9 +85,9 @@ proof -
     from dvd have "lead_coeff h dvd lead_coeff f" "lead_coeff h dvd lead_coeff g" 
       by (metis dvd_def lead_coeff_mult)+
     with cop have coph: "coprime (lead_coeff h) p"
-      by (metis coprime_divisors dvd_def mult.right_neutral)
+      by (meson dvd_trans not_coprime_iff_common_factor)
     let ?k = "Mp k"  
-    from arg_cong[OF unit, of degree] have degm0: "degree_m (h * ?k) = 0" unfolding degree_m_def by simp
+    from arg_cong[OF unit, of degree] have degm0: "degree_m (h * ?k) = 0" by simp
     have "lead_coeff ?k \<in> {0 ..< p}" unfolding Mp_coeff M_def using m1 by simp
     with k0 have lk: "lead_coeff ?k \<ge> 1" "lead_coeff ?k < p"
       by (auto simp add: int_one_le_iff_zero_less order.not_eq_order_implies_strict)
@@ -128,34 +119,44 @@ proof -
   qed
 qed
 
-text \<open>We have did not try to optimize the set of chosen primes. They have just been picked 
+text \<open>We did not try to optimize the set of chosen primes. They have just been picked 
   randomly from a list of primes.\<close>
 
-definition gcd_primes :: "int list" where
-  "gcd_primes = [383, 467, 811, 983, 997]" 
+definition gcd_primes32 :: "int list" where
+  "gcd_primes32 = [383, 1409, 19213, 22003, 41999]" 
   
-lemma gcd_primes: "p \<in> set (gcd_primes) \<Longrightarrow> prime p \<and> p \<le> 65535" 
+lemma gcd_primes32: "p \<in> set gcd_primes32 \<Longrightarrow> prime p \<and> p \<le> 65535" 
 proof -
-  have "list_all (\<lambda> p. prime p \<and> p \<le> 65535) gcd_primes" by eval
-  thus "p \<in> set (gcd_primes) \<Longrightarrow> prime p \<and> p \<le> 65535" by (auto simp: list_all_iff)
+  have "list_all (\<lambda> p. prime p \<and> p \<le> 65535) gcd_primes32" by eval
+  thus "p \<in> set gcd_primes32 \<Longrightarrow> prime p \<and> p \<le> 65535" by (auto simp: list_all_iff)
+qed
+
+definition gcd_primes64 :: "int list" where
+  "gcd_primes64 = [383, 21984191, 50329901, 80329901, 219849193]" 
+
+lemma gcd_primes64: "p \<in> set gcd_primes64 \<Longrightarrow> prime p \<and> p \<le> 4294967295" 
+proof -
+  have "list_all (\<lambda> p. prime p \<and> p \<le> 4294967295) gcd_primes64" by eval
+  thus "p \<in> set gcd_primes64 \<Longrightarrow> prime p \<and> p \<le> 4294967295" by (auto simp: list_all_iff)
 qed
 
 definition coprime_heuristic :: "int poly \<Rightarrow> int poly \<Rightarrow> bool" where
   "coprime_heuristic f g = (let lcf = lead_coeff f; lcg = lead_coeff g in 
-    find (\<lambda> p. (coprime lcf p \<or> coprime lcg p) \<and> coprime_approx_main p (finite_field_ops32 (uint32_of_int p)) f g) 
-    gcd_primes \<noteq> None)" 
+    find (\<lambda> p. (coprime lcf p \<or> coprime lcg p) \<and> coprime_approx_main p (finite_field_ops64 (uint64_of_int p)) f g) 
+    gcd_primes64 \<noteq> None)" 
 
 lemma coprime_heuristic: assumes "coprime_heuristic f g" 
   and "content f = 1 \<or> content g = 1" 
   shows "coprime f g" 
 proof (cases "find (\<lambda>p. (coprime (lead_coeff f) p \<or> coprime (lead_coeff g) p) \<and>
-            coprime_approx_main p (finite_field_ops32 (uint32_of_int p)) f g)
-   gcd_primes")
+            coprime_approx_main p (finite_field_ops64 (uint64_of_int p)) f g)
+   gcd_primes64")
   case (Some p)
-  from find_Some_D[OF Some] gcd_primes have p: "prime p" and small: "p \<le> 65535" 
+  from find_Some_D[OF Some] gcd_primes64 have p: "prime p" and small: "p \<le> 4294967295" 
     and cop: "coprime (lead_coeff f) p \<or> coprime (lead_coeff g) p" 
-    and copp: "coprime_approx_main p (finite_field_ops32 (uint32_of_int p)) f g" by auto
-  from coprime_approx_main_uint32[OF p copp small] have "poly_mod.coprime_m p f g" by auto
+    and copp: "coprime_approx_main p (finite_field_ops64 (uint64_of_int p)) f g" by auto
+  interpret poly_mod_prime p using p by unfold_locales
+  from coprime_approx_main_uint64[OF small copp] have "poly_mod.coprime_m p f g" by auto
   from coprime_mod_imp_coprime[OF p this cop assms(2)] show "coprime f g" .
 qed (insert assms(1)[unfolded coprime_heuristic_def], auto simp: Let_def)
 

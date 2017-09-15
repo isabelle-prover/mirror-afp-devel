@@ -208,7 +208,7 @@ proof -
         from cnt[unfolded gc content_def, simplified] have "abs c = 1" 
           by (cases "c = 0", auto)
         with g gc have "gcd fi Fi \<in> {1,-1}" by fastforce
-        thus "coprime fi Fi" by (metis coprime_1_left gcd_neg1 gcd_right_idem insertE singletonD)
+        thus "coprime fi Fi" by (metis coprime_iff_gcd_one coprime_1_left gcd_neg1 gcd_right_idem insertE singletonD)
       qed
     } note cop = this
     
@@ -319,34 +319,28 @@ next
     show ?thesis unfolding content_free_reflect_poly by auto
   next
     case cf: True
-    from nz have nz': "coeff (reflect_poly f) 0 \<noteq> 0" by auto
+    let ?r = "reflect_poly"
+    from nz have nz': "coeff (?r f) 0 \<noteq> 0" by auto
     let ?ir = irreducible\<^sub>d
     {
-      fix f :: "'a poly" 
-      assume nz: "coeff f 0 \<noteq> 0" 
-      and irr: "\<forall>q. degree q \<noteq> 0 \<longrightarrow> degree q < degree f \<longrightarrow> \<not> q dvd reflect_poly f" 
-      have "\<forall>q. degree q \<noteq> 0 \<longrightarrow> degree q < degree f \<longrightarrow> \<not> q dvd f" 
-      proof (intro allI impI notI)
-        fix g
-        assume deg: "degree g \<noteq> 0" "degree g < degree f" and dvd: "g dvd f" 
-        from dvd obtain h where fgh: "f = g * h" unfolding dvd_def by auto
-        from arg_cong[OF this, of "\<lambda> f. coeff f 0"] nz 
+      fix f :: "'a poly"
+      assume nz: "coeff f 0 \<noteq> 0"
+      and irr: "irreducible\<^sub>d (?r f)"
+      have "irreducible\<^sub>d f"
+      proof
+        from irr degree_reflect_poly_eq[OF nz] show "degree f \<noteq> 0" by auto
+        fix g h
+        assume deg: "degree g < degree f" "degree h < degree f" and fgh: "f = g * h"
+        from arg_cong[OF fgh, of "\<lambda> f. coeff f 0"] nz 
         have nz': "coeff g 0 \<noteq> 0" by (auto simp: coeff_mult_0)
-        from arg_cong[OF fgh, of reflect_poly] reflect_poly_mult[of g h]
-        have dvd: "reflect_poly g dvd reflect_poly f" by auto
-        from deg have "degree (reflect_poly g) \<noteq> 0" "degree (reflect_poly g) < degree f" 
-          unfolding degree_reflect_poly_eq[OF nz'] by auto
-        from irr[rule_format, OF this] dvd show False by auto
+        note rfgh = arg_cong[OF fgh, of reflect_poly, unfolded reflect_poly_mult[of g h]]
+        from deg degree_reflect_poly_le[of g] degree_reflect_poly_le[of h] degree_reflect_poly_eq[OF nz]
+        have "degree (?r h) < degree (?r f)" "degree (?r g) < degree (?r f)" by auto
+        with irr rfgh show False by auto
       qed
     }
-    from this[OF nz] this[OF nz']
-    have "(\<forall>q. degree q \<noteq> 0 \<longrightarrow> degree q < degree f \<longrightarrow> \<not> q dvd reflect_poly f)
-      = (\<forall>q. degree q \<noteq> 0 \<longrightarrow> degree q < degree f \<longrightarrow> \<not> q dvd f)"
-      unfolding degree_primitive_part degree_reflect_poly_eq[OF nz]
-      unfolding primitive_part_reflect_poly reflect_poly_reflect_poly[OF nz] by auto
-    then have "?ir f \<longleftrightarrow> ?ir (reflect_poly f)"
-      unfolding irreducible\<^sub>d_def primitive_part_reflect_poly
-      unfolding degree_reflect_poly_eq[OF nz] by auto
+    from this[OF nz] this[OF nz'] nz
+    have "?ir f \<longleftrightarrow> ?ir (reflect_poly f)" by auto
     also have "... \<longleftrightarrow> irreducible (reflect_poly f)"
       by (rule irreducible_content_free_connect, unfold content_free_reflect_poly, fact cf)
     finally show ?thesis
@@ -622,7 +616,6 @@ proof (atomize(full))
       thus ?thesis using one unfolding id by auto
     qed
   qed
-qed
+qed 
 
-  unused_thms
 end

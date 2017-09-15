@@ -14,7 +14,7 @@ theory Misc_CryptHOL imports
   Monomorphic_Monad.Monomorphic_Monad
 begin
 
-hide_const (open) Henstock_Kurzweil_Integration.negligible Max_Flow_Min_Cut_Countable.terminal
+hide_const (open) Henstock_Kurzweil_Integration.negligible
 
 subsection \<open>HOL\<close>
 

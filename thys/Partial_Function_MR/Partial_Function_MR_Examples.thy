@@ -15,14 +15,18 @@ As second argument we store the intermediate values.
 It is currently unknown whether this function is terminating for all inputs or not.*}
 
 partial_function_mr (tailrec) collatz and even_case and odd_case where
-  "collatz x xs = 
+  "collatz (x :: int) xs = 
     (if (x \<le> 1) then rev (x # xs) else 
     (if (x mod 2 = 0) then even_case x (x # xs)
      else odd_case x xs))"
 | "even_case x xs = collatz (x div 2) xs"
-| "odd_case x xs = collatz (3 * x + 1) (x # xs)"
+| [simp]: "odd_case x xs = collatz (3 * x + 1) (x # xs)"
 
-value "collatz (327 :: int) []"
+text \<open>The equations are registered as code-equations.\<close>
+lemma "length (collatz 327 []) = 144" by eval
+
+text \<open>The equations are accessible via .simps, but are not put in the standard simpset.\<close>
+lemma "collatz 5 [] = [5,16,8,4,2,1]" by (simp add: collatz.simps even_case.simps)
 
 subsection {* Evaluating expressions *}
 text {* Note that we also provide a least fixpoint operator.
@@ -94,5 +98,19 @@ definition
   "five_minus_two = a_eval (Mu (\<lambda> x. Eq (AConst 5) (AConst x)) (\<lambda> x. Plus (AConst x) (AConst 1)) (AConst (2 :: rat)))"
 
 value five_minus_two
+
+
+subsection \<open>An example with contexts\<close>
+
+text \<open>Mutual recursive partial functions also work within contexts.\<close>
+
+context
+  fixes y :: int
+begin
+partial_function_mr (tailrec) foo and bar where
+  "foo x = (if x = y then foo (x - 1) else (bar x (y - 1)))" 
+| "bar x z = foo (x + (1 :: int) + y)" 
+end
+
 
 end

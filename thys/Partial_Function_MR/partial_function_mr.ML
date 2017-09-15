@@ -3,7 +3,8 @@
 signature PARTIAL_FUNCTION_MR =
 sig
   val init: string -> 
-    (* make monad_map: monad term * funs * monad as typ * monad bs typ * a->b typs -> map_monad funs monad term *)
+    (* make monad_map: monad term * funs * monad as typ * monad bs typ * a->b typs 
+        -> map_monad funs monad term *)
     (term * term list * typ * typ * typ list -> term) -> 
     (* make monad type: fixed and flexible types *)
     (typ list * typ list -> typ) -> 
@@ -15,15 +16,23 @@ sig
     thm list -> declaration
 
   val add_partial_function_mr: string -> (binding * typ option * mixfix) list ->
-    Specification.multi_specs -> local_theory -> local_theory
+    Specification.multi_specs -> local_theory -> thm list * local_theory
 
   val add_partial_function_mr_cmd: string -> (binding * string option * mixfix) list ->
-    Specification.multi_specs_cmd -> local_theory -> local_theory
+    Specification.multi_specs_cmd -> local_theory -> thm list * local_theory
 end;
 
 
 structure Partial_Function_MR: PARTIAL_FUNCTION_MR =
 struct
+
+val partial_function_mr_trace =
+  Attrib.setup_config_bool @{binding partial_function_mr_trace} (K false);
+
+fun trace ctxt msg =
+  if Config.get ctxt partial_function_mr_trace 
+  then tracing msg
+  else ()
 
 datatype setup_data = Setup_Data of 
  {mk_monad_map: term * term list * typ * typ * typ list -> term,
@@ -101,6 +110,35 @@ fun mk_proj [_] t _ = t
   end
   | mk_proj _ _ _ = error "mk_proj [] _ _"
 
+fun get_head ctxt (_,(_,eqn)) =
+  let
+    val ((_, plain_eqn), _) = Variable.focus NONE eqn ctxt;
+    val lhs = HOLogic.dest_eq (HOLogic.dest_Trueprop plain_eqn) |> #1;
+    val head = strip_comb lhs |> #1;
+  in 
+    head 
+  end;
+
+fun get_infos lthy heads (fix,(_,eqn)) = let
+    val ((_, plain_eqn), _) = Variable.focus NONE eqn lthy;
+    val ((f_binding, fT), mixfix) = fix;
+    val fname = Binding.name_of f_binding;
+    val (lhs, rhs) = HOLogic.dest_eq (HOLogic.dest_Trueprop plain_eqn);
+    val (_, args) = strip_comb lhs;
+    val F = fold_rev lambda (heads @ args) rhs;
+    val arity = length args;
+    val (aTs, bTs) = chop arity (binder_types fT);    
+    val tupleT = foldl1 HOLogic.mk_prodT aTs;
+    val fT_uc = tupleT :: bTs ---> body_type fT;
+    val (inT,resT) = dest_funT fT_uc;
+    val f_uc = Free (fname, fT_uc);
+    val f_cuc = curry_n arity f_uc
+  in 
+    (fname, f_cuc, f_uc, inT, resT, ((f_binding,mixfix),fT), F, arity, args)
+  end;
+
+fun fresh_var ctxt name = Name.variant name (Variable.names_of ctxt) |> #1
+
 (* partial_function_mr definition *)
 fun gen_add_partial_function_mr prep mode fixes_raw eqns_raw lthy =
   let
@@ -111,30 +149,8 @@ fun gen_add_partial_function_mr prep mode fixes_raw eqns_raw lthy =
     val _ = if length eqns_raw < 2 then error "require at least two function definitions" else ();
     val ((fixes, eq_abinding_eqns), _) = prep fixes_raw eqns_raw lthy;
     val fix_eq_abinding_eqns = fixes ~~ eq_abinding_eqns;
-    fun gethead (_,(_,eqn)) = let
-        val ((_, plain_eqn), _) = Variable.focus NONE eqn lthy;
-        val lhs = HOLogic.dest_eq (HOLogic.dest_Trueprop plain_eqn) |> #1;
-        val head = strip_comb lhs |> #1;
-      in head end;
-    val heads = map gethead fix_eq_abinding_eqns;
-    fun get_infos (fix,(_,eqn)) = let
-        val ((_, plain_eqn), _) = Variable.focus NONE eqn lthy;
-        val ((f_binding, fT), mixfix) = fix;
-        val fname = Binding.name_of f_binding;
-        val (lhs, rhs) = HOLogic.dest_eq (HOLogic.dest_Trueprop plain_eqn);
-        val (_, args) = strip_comb lhs;
-        val F = fold_rev lambda (heads @ args) rhs;
-        val arity = length args;
-        val (aTs, bTs) = chop arity (binder_types fT);    
-        val tupleT = foldl1 HOLogic.mk_prodT aTs;
-        val fT_uc = tupleT :: bTs ---> body_type fT;
-        val (inT,resT) = dest_funT fT_uc;
-        val f_uc = Free (fname, fT_uc);
-        val f_cuc = curry_n arity f_uc
-      in 
-        (fname, f_cuc, f_uc, inT, resT, ((f_binding,mixfix),fT), F, arity, args)
-      end;
-    val all = map get_infos fix_eq_abinding_eqns
+    val heads = map (get_head lthy) fix_eq_abinding_eqns;
+    val all = map (get_infos lthy heads) fix_eq_abinding_eqns
     val fnames = map #1 all
     val f_cucs = map #2 all
     val f_ucs = map #3 all
@@ -147,7 +163,7 @@ fun gen_add_partial_function_mr prep mode fixes_raw eqns_raw lthy =
     val glob_inT = mk_choiceT inTs
     val glob_resT = mk_choice_resT mk_monadT dest_monadT resTs
     val inj = mk_inj inTs
-    val glob_fname = foldl1 (fn (a,b) => a ^ "_" ^ b) fnames
+    val glob_fname = fresh_var lthy (foldl1 (fn (a,b) => a ^ "_" ^ b) (fnames @ [serial_string ()]))
     val glob_constT = glob_inT --> glob_resT;
     val glob_const = Free (glob_fname, glob_constT)
     val nums = 0 upto (length all - 1)
@@ -176,7 +192,7 @@ fun gen_add_partial_function_mr prep mode fixes_raw eqns_raw lthy =
     fun mk_global_fun n = let
         val fname = nth fnames n
         val inT = nth inTs n
-        val xs = Free ("x_" ^ fname, inT)
+        val xs = Free (fresh_var lthy ("x_" ^ fname), inT)
         val inj_xs = inj xs n
         val glob_inj_xs = glob_const $ inj_xs
         val glob_inj_xs_map = nth res_proj n glob_inj_xs 
@@ -196,104 +212,111 @@ fun gen_add_partial_function_mr prep mode fixes_raw eqns_raw lthy =
       in res end;
     val all_cases = map mk_cases nums;
     fun combine_cases [cs] [_] = cs
-      | combine_cases (cs :: more) (inT :: moreTy) = let
-        val moreT = mk_choiceT moreTy
-        val sumT = mk_sumT (inT, moreT)
-        val case_const = Const (@{const_name case_sum},(inT --> glob_resT) --> (moreT --> glob_resT) --> sumT --> glob_resT)        
-      in case_const $ cs $ combine_cases more moreTy end
+      | combine_cases (cs :: more) (inT :: moreTy) = 
+          let
+            val moreT = mk_choiceT moreTy
+            val sumT = mk_sumT (inT, moreT)
+            val case_const = Const 
+              (@{const_name case_sum},
+               (inT --> glob_resT) --> (moreT --> glob_resT) --> sumT --> glob_resT)        
+          in case_const $ cs $ combine_cases more moreTy end
       | combine_cases _ _ = error "combine_cases with incompatible argument lists";
-    val glob_x_name = "x_" ^ glob_fname
+    val glob_x_name = fresh_var lthy ("x_" ^ glob_fname)
     val glob_x = Free (glob_x_name,glob_inT)
     val rhs = combine_cases all_cases inTs $ glob_x;
     val lhs = glob_const $ glob_x
     val eq = HOLogic.mk_Trueprop (HOLogic.mk_eq (lhs,rhs))
-    val glob_binding = Binding.name (glob_fname) 
+    val glob_binding = Binding.name (glob_fname) |> Binding.concealed
     val glob_attrib_binding = Binding.empty_atts
-    val _ = writeln "invoking partial_function on global function"
-    val lthy = Partial_Function.add_partial_function mode [(glob_binding,SOME glob_constT,NoSyn)] (glob_attrib_binding,eq) lthy
-    val _ = writeln "deriving simp rules for separate functions from global function"
-    (* TODO: the creation of the global constant does not work properly within contexts:
-         the call above creates the constant outside the context (on theory-level), but we require the constant
-         within the context. Similarly, once this has been fixed, one needs to check whether the extraction of the simp-theorem 
-         works properly within contexts *)
-    val glob_const = Const (Local_Theory.full_name lthy glob_binding, glob_constT)
-    val thm_ref = Facts.named (Local_Theory.full_name lthy (Binding.qualify true glob_fname (Binding.name "simps")))    
-    val thms = Proof_Context.get_fact lthy thm_ref
-    val thm = if length thms = 1 then hd thms else error "could not find simp-thm"
-    fun define_f n (fs,f's, fdefs,rhss,lthy) = let
-        val ((fbinding,mixfix),fT) = nth bindings_types n
+    val _ = trace lthy "invoking partial_function on global function"
+    val priv_lthy = lthy
+      |> Proof_Context.private_scope (Binding.new_scope())
+    val ((glob_const, glob_simp_thm),priv_lthy') = priv_lthy
+      |> Partial_Function.add_partial_function mode 
+        [(glob_binding,SOME glob_constT,NoSyn)] (glob_attrib_binding,eq)
+    val glob_lthy = priv_lthy' 
+      |> Proof_Context.restore_naming lthy
+    val _ = trace lthy "deriving simp rules for separate functions from global function"
+    fun define_f n (fs, fdefs,rhss,lthy) = let
+        val ((fbinding,mixfix),_) = nth bindings_types n
         val fname = nth fnames n
         val inT = nth inTs n;
         val arity = nth arities n;
-        val x = Free ("x_" ^ fname, inT)
+        val x = Free (fresh_var lthy ("x_" ^ fname), inT)
         val inj_argsProd = inj x n
         val call = glob_const $ inj_argsProd
         val post = nth res_proj n call 
         val rhs = curry_n arity (lambda x post)
-        val f_def_binding = Binding.name (Thm.def_name fname)
-        val ((f', (_, f_def)),lthy) = Local_Theory.define ((fbinding,mixfix), ((f_def_binding, []), rhs)) lthy
-        val _ = f_def (* TODO: how can we use these definition theorems? Using these theorems in the 
-                 unfolding tactic below does not work, which is the reason why we access the theorems via get_fact
-                 calls below *)
-        val f = Const ( Local_Theory.full_name lthy fbinding, fT);
+        val ((f, (_, f_def)),lthy') = 
+          Local_Theory.define_internal ((fbinding,mixfix), (Binding.empty_atts, rhs)) lthy
       in 
-        (f :: fs,f' :: f's, f_def_binding :: fdefs,rhs :: rhss,lthy)
+        (f :: fs, f_def :: fdefs,rhs :: rhss,lthy')
       end
-    val (fs,f's,f_def_bindings,f_rhss,lthy) = fold_rev define_f nums ([],[],[],[],lthy) 
-    (* TODO: is there a smarter way to access the definition thms? *)
-    val fdefs = map (fn f_def_binding => hd (Proof_Context.get_fact lthy (Facts.named (Local_Theory.full_name lthy f_def_binding)))) f_def_bindings;
-    fun mk_case_new n = let
+    val (fs,fdefs,f_rhss,local_lthy) = fold_rev define_f nums ([],[],[],glob_lthy) 
+    val glob_simp_thm' = 
+      let
+        fun mk_case_new n = 
+          let
+            val F = nth Fs n
+            val arity = nth arities n
+            val Finst = uncurry_n arity (Term.betapplys (F,fs))
+            val xs = nth xss n
+            val res = lambda xs (nth res_inj n (Finst $ xs))
+          in 
+            res
+          end;
+        val new_cases = map mk_case_new nums;
+        val rhs = combine_cases new_cases inTs $ glob_x;
+        val lhs = glob_const $ glob_x
+        val eq = HOLogic.mk_Trueprop (HOLogic.mk_eq (lhs,rhs))
+      in 
+        Goal.prove local_lthy [glob_x_name] [] eq (fn {prems = _, context = ctxt} => 
+            Thm.instantiate' [] [SOME (Thm.cterm_of ctxt glob_x)] glob_simp_thm
+            |> (fn simp_thm => unfold_tac ctxt [simp_thm] THEN unfold_tac ctxt fdefs))
+      end
+
+    fun mk_simp_thm n = 
+      let
+        val args = nth all_args n
+        val arg_names = map (dest_Free #> fst) args
+        val f = nth fs n
         val F = nth Fs n
-        val arity = nth arities n
-        val Finst = uncurry_n arity (Term.betapplys (F,fs))
-        val xs = nth xss n
-        val res = lambda xs (nth res_inj n (Finst $ xs))
-      in res
-      end;
-    val new_cases = map mk_case_new nums;
-    val rhs = combine_cases new_cases inTs $ glob_x;
-    val lhs = glob_const $ glob_x
-    val eq = HOLogic.mk_Trueprop (HOLogic.mk_eq (lhs,rhs))
-    val glob_simp_thm = Goal.prove lthy [glob_x_name] [] eq (fn {prems = _, context = ctxt} => let
-      (* TODO: is there some easier way to write 'simp_thm = thm[of glob_x]' *)
-      val schematic_x =
-        Thm.prop_of thm |> HOLogic.dest_Trueprop |> HOLogic.dest_eq |> fst |> Term.dest_comb |> snd
-      val simp_thm = infer_instantiate ctxt [(#1 (dest_Var schematic_x), Thm.cterm_of ctxt glob_x)] thm
-      in (
-        unfold_tac ctxt [simp_thm]
-      THEN unfold_tac ctxt fdefs
-      ) end)
-    fun mk_simp_thm n = let
-      val args = nth all_args n
-      val arg_names = map (dest_Free #> fst) args
-      val f = nth fs n
-      val F = nth Fs n
-      val fdef = nth fdefs n
-      val lhs = list_comb (f,args);
-      val mhs = Term.betapplys (nth f_rhss n, args)
-      val rhs = list_comb (list_comb (F,fs), args);
-      val eq1 = HOLogic.mk_Trueprop (HOLogic.mk_eq (lhs,mhs))
-      val eq2 = HOLogic.mk_Trueprop (HOLogic.mk_eq (mhs,rhs))      
-      val simp_thm1 = Goal.prove lthy arg_names [] eq1 (fn {prems = _, context = ctxt} => unfold_tac ctxt [fdef])
-      val simp_thm2 = Goal.prove lthy arg_names [] eq2 (fn {prems = _, context = ctxt} => 
-          unfold_tac ctxt [glob_simp_thm]
-          THEN unfold_tac ctxt @{thms sum.simps curry_def split}
-          THEN unfold_tac ctxt (@{thm o_def} :: monad_map_comp)
-          THEN unfold_tac ctxt (monad_map_id @ @{thms sum.sel}))        
-      in @{thm trans} OF [simp_thm1,simp_thm2] end
+        val fdef = nth fdefs n
+        val lhs = list_comb (f,args);
+        val mhs = Term.betapplys (nth f_rhss n, args)
+        val rhs = list_comb (list_comb (F,fs), args);
+        val eq1 = HOLogic.mk_Trueprop (HOLogic.mk_eq (lhs,mhs))
+        val eq2 = HOLogic.mk_Trueprop (HOLogic.mk_eq (mhs,rhs))      
+        val simp_thm1 = Goal.prove local_lthy arg_names [] eq1 
+          (fn {prems = _, context = ctxt} => unfold_tac ctxt [fdef])
+  
+        val simp_thm2 = Goal.prove local_lthy arg_names [] eq2 (fn {prems = _, context = ctxt} => 
+            unfold_tac ctxt [glob_simp_thm']
+            THEN unfold_tac ctxt @{thms sum.simps curry_def split}
+            THEN unfold_tac ctxt (@{thm o_def} :: monad_map_comp)
+            THEN unfold_tac ctxt (monad_map_id @ @{thms sum.sel}))        
+      in 
+        @{thm trans} OF [simp_thm1,simp_thm2]
+      end
     val simp_thms = map mk_simp_thm nums
-    fun register n lthy = let
-      val simp_thm = nth simp_thms n
-      val eq_abinding = nth eq_abinding_eqns n |> fst
-      val fname = nth fnames n
-      val f = nth f's n
-      in lthy
+    fun register n lthy = 
+      let
+        val simp_thm = nth simp_thms n
+        val eq_abinding = nth eq_abinding_eqns n |> fst
+        val fname = nth fnames n
+        val f = nth fs n
+      in 
+        lthy
         |> Local_Theory.note (eq_abinding, [simp_thm])
         |-> (fn (_, simps) => 
           Spec_Rules.add Spec_Rules.Equational ([f], simps)
-          #> Local_Theory.note ((Binding.qualify true fname (Binding.name "simps"), @{attributes [code]}), simps) #> snd)
+          #> Local_Theory.note 
+            ((Binding.qualify true fname @{binding "simps"}, 
+              @{attributes [code]}), simps) #>> snd #>> hd)
       end
-  in fold register nums lthy
+  in 
+    fold (fn i => fn (simps, lthy) => case register i lthy of
+       (simp, lthy') => (simps @ [simp], lthy')) nums ([], local_lthy)
   end;
 
 val add_partial_function_mr = gen_add_partial_function_mr Specification.check_multi_specs;
@@ -302,8 +325,9 @@ val add_partial_function_mr_cmd = gen_add_partial_function_mr Specification.read
 val mode = @{keyword "("} |-- Parse.name --| @{keyword ")"};
 
 val _ =
-  Outer_Syntax.local_theory @{command_keyword partial_function_mr} "define mutually recursive partial functions"
+  Outer_Syntax.local_theory @{command_keyword partial_function_mr} 
+    "define mutually recursive partial functions"
     (mode -- Parse_Spec.specification
-      >> (fn (mode, (fixes, specs)) => add_partial_function_mr_cmd mode fixes specs));
+      >> (fn (mode, (fixes, specs)) => add_partial_function_mr_cmd mode fixes specs #> #2));
 
 end

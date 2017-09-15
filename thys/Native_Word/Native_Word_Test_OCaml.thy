@@ -9,8 +9,10 @@ begin
 section {* Test with OCaml *}
 
 test_code
+  test_uint64 "test_uint64' = 0x12"
   test_uint32 "test_uint32' = 0x12"
   test_uint
+  test_casts''
 in OCaml
 
 end

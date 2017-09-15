@@ -211,31 +211,26 @@ proof -
           apply (rule irreducible_connect)
         proof (rule irreducible\<^sub>dI)
           show "degree xi \<noteq> 0" unfolding xi by auto
-          fix q :: "real poly" 
-          assume "degree q \<noteq> 0" "degree q < degree xi"
+          fix q p :: "real poly" 
+          assume "degree q \<noteq> 0" "degree q < degree xi" and qp: "xi = q * p"
           hence dq: "degree q = 1" unfolding xi by auto
-          show "\<not> q dvd xi"
-          proof 
-            assume "q dvd xi"
-            then obtain p where qp: "xi = q * p" unfolding dvd_def by auto
-            have dxi: "degree xi = 2" "xi \<noteq> 0" unfolding xi by auto
-            with qp have "q \<noteq> 0" "p \<noteq> 0" by auto
-            hence "degree xi = degree q + degree p" unfolding qp
-              by (rule degree_mult_eq)
-            with dq have dp: "degree p = 1" unfolding dxi by simp
-            {
-              fix c :: complex
-              assume rt: "poly (?cp xi) c = 0"
-              hence "poly (?cp q * ?cp p) c = 0" by (simp add: qp hom_distribs)
-              hence "(poly (?cp q) c = 0 \<or> poly (?cp p) c = 0)" by auto
-              hence "c = roots1 (?cp q) \<or> c = roots1 (?cp p)"
-                using roots1[of "?cp q"] roots1[of "?cp p"] dp dq by auto
-              hence "c \<in> \<real>" unfolding roots1_def by auto
-              hence "c \<noteq> x" using False by auto
-            }
-            hence "poly (?cp xi) x \<noteq> 0" by auto
-            thus False unfolding cpxi by simp
-          qed
+          have dxi: "degree xi = 2" "xi \<noteq> 0" unfolding xi by auto
+          with qp have "q \<noteq> 0" "p \<noteq> 0" by auto
+          hence "degree xi = degree q + degree p" unfolding qp
+            by (rule degree_mult_eq)
+          with dq have dp: "degree p = 1" unfolding dxi by simp
+          {
+            fix c :: complex
+            assume rt: "poly (?cp xi) c = 0"
+            hence "poly (?cp q * ?cp p) c = 0" by (simp add: qp hom_distribs)
+            hence "(poly (?cp q) c = 0 \<or> poly (?cp p) c = 0)" by auto
+            hence "c = roots1 (?cp q) \<or> c = roots1 (?cp p)"
+              using roots1[of "?cp q"] roots1[of "?cp p"] dp dq by auto
+            hence "c \<in> \<real>" unfolding roots1_def by auto
+            hence "c \<noteq> x" using False by auto
+          }
+          hence "poly (?cp xi) x \<noteq> 0" by auto
+          thus False unfolding cpxi by simp
         qed
         hence xi': "irreducible xi" "monic xi" "degree xi = 2"
           unfolding xi by auto

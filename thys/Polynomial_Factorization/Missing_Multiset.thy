@@ -12,7 +12,37 @@ text \<open>This theory provides some definitions and lemmas on multisets which 
 theory Missing_Multiset
 imports
   "HOL-Library.Multiset"
+  Missing_List
 begin
+
+lemma remove_nth_soundness:
+  assumes "n < length as"
+  shows "mset (remove_nth n as) = mset as - {#(as!n)#}"
+using assms 
+proof (induct as arbitrary: n)
+  case (Cons a as)
+  note [simp] = remove_nth_def
+  show ?case
+  proof (cases n)
+    case (Suc n)
+    with Cons have n_bd: "n < length as" by auto
+    with Cons have "mset (remove_nth n as) = mset as - {#as ! n#}" by auto
+    hence G: "mset (remove_nth (Suc n) (a # as)) = mset as - {#as ! n#} + {#a#}"
+      by simp
+    thus ?thesis
+    proof (cases "a = as!n")
+      case True
+      with G and Suc and insert_DiffM2[symmetric]
+        and insert_DiffM2[of _ "{#as ! n#}"]
+        and nth_mem_mset[of n as] and n_bd
+      show ?thesis by auto
+    next
+      case False
+      from G and Suc and diff_union_swap[OF this[symmetric], symmetric] show ?thesis by simp
+    qed
+  qed auto
+qed auto
+
 
 lemma multiset_subset_insert: "{ps. ps \<subseteq># add_mset x xs} =
     {ps. ps \<subseteq># xs} \<union> add_mset x ` {ps. ps \<subseteq># xs}" (is "?l = ?r")

@@ -93,14 +93,13 @@ proof -
   note res = res[unfolded berlekamp_zassenhaus_factorization_def Let_def, folded p_def,
     unfolded berl split, folded]
   from suitable_prime_bz[OF sf refl]
-  have prime: "prime p" and cop: "coprime ?lc p" 
-    and sf: "poly_mod.square_free_m p f" 
+  have prime: "prime p" and cop: "coprime ?lc p" and sf: "poly_mod.square_free_m p f" 
     unfolding p_def by auto
-  have p1: "p > 1" using prime unfolding prime_int_iff by simp
+  from prime interpret poly_mod_prime p by unfold_locales
   define n where "n = find_exponent p (2 * abs ?lc * factor_bound f (degree_bound gs))" 
-  note n = find_exponent[OF p1, of "2 * abs ?lc * factor_bound f (degree_bound gs)",
+  note n = find_exponent[OF m1, of "2 * abs ?lc * factor_bound f (degree_bound gs)",
     folded n_def]
-  note bh = berlekamp_and_hensel_separated[OF prime cop sf refl berl n(2)]
+  note bh = berlekamp_and_hensel_separated[OF cop sf refl berl n(2)]
   have db: "degree_bound (berlekamp_hensel p n f) = degree_bound gs" unfolding bh
     degree_bound_def max_factor_degree_def by simp
   note res = res[folded n_def bh(1)]
@@ -112,15 +111,15 @@ corollary berlekamp_zassenhaus_factorization_irreducible:
   assumes res: "berlekamp_zassenhaus_factorization f = fs" 
   and sf: "square_free f"
   and deg: "degree f \<noteq> 0"
-  and cf: "content_free f"                        
+  and cf: "content_free f"
   shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. irreducible fi \<and> degree fi > 0 \<and> content_free fi)" 
 proof (intro conjI ballI)
   note * = berlekamp_zassenhaus_factorization_irreducible\<^sub>d[OF res sf deg]
   from * show f: "f = prod_list fs" by auto
   fix fi assume fi: "fi \<in> set fs"
   with content_free_prod_list[OF cf[unfolded f]] show "content_free fi" by auto
-  with * cf[unfolded f] fi
-  show "irreducible fi" by (auto simp: irreducible_content_free_connect)
-  from * fi show "degree fi > 0" by (auto simp: irreducible\<^sub>d_def)
+  from irreducible_content_free_connect[OF this] * cf[unfolded f] fi
+  show "irreducible fi" by auto
+  from * fi show "degree fi > 0" by (auto)
 qed
 end

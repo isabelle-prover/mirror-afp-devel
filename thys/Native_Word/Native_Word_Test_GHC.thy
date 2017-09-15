@@ -11,14 +11,23 @@ section {* Test with GHC *}
 declare [[code_test_ghc = "-XTypeSynonymInstances"]]
 
 test_code
+  test_uint64 "test_uint64' = 0x12"
   test_uint32 "test_uint32' = 0x12"
   test_uint16
   test_uint8 "test_uint8' = 0x12"
   test_uint
-  test_casts test_casts'
+  test_casts test_casts' test_casts''
 in GHC
 
 subsection {* Test quickcheck narrowing *}
+
+lemma "(x :: uint64) AND y = x OR y"
+quickcheck[narrowing, expect=counterexample]
+oops
+
+lemma "(f :: uint64 \<Rightarrow> bool) = g"
+quickcheck[narrowing, size=3, expect=counterexample]
+oops
 
 lemma "(x :: uint32) AND y = x OR y"
 quickcheck[narrowing, expect=counterexample]

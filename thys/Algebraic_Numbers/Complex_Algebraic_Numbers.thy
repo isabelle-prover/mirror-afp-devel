@@ -346,7 +346,7 @@ definition complex_roots_of_int_poly3 :: "int poly \<Rightarrow> complex list" w
         crts' = map pair_to_complex 
            (filter_list_length (map_prod tighten_bounds_3 tighten_bounds_3) 
               (\<lambda> (r, i). 0 \<in>\<^sub>c ipoly_complex_interval p (Complex_Interval (get_itvl_3 r) (get_itvl_3 i))) nr_pos_crts rts)
-    in crts @ crts' @ map cnj crts'"
+    in crts @ (concat (map (\<lambda> x. [x, cnj x]) crts'))"
 
 definition complex_roots_of_int_poly_all :: "int poly \<Rightarrow> complex list" where
   "complex_roots_of_int_poly_all p = (let n = degree p in 
@@ -474,7 +474,10 @@ proof -
       let ?rts = "[(rx,ix). rx <- cpxR, ix <- cpxI]" 
       define cpx where "cpx = map pair_to_complex (filter (\<lambda> c. ipoly p (pair_to_complex c) = 0) 
          ?rts)"
-      let ?ll = "rrts @ cpx @ map cnj cpx" 
+      let ?LL = "cpx @ map cnj cpx" 
+      let ?LL' = "concat (map (\<lambda> x. [x,cnj x]) cpx)" 
+      let ?ll = "rrts @ ?LL" 
+      let ?ll' = "rrts @ ?LL'" 
       have cpx: "set cpx \<subseteq> ?r" unfolding cpx_def by auto
       have ccpx: "cnj ` set cpx \<subseteq> ?r" using cpx unfolding r 
         by (auto intro!: complex_conjugate_root[of ?q] simp: Reals_def) 
@@ -602,10 +605,16 @@ proof -
         show "?P (?f x) = ?P x" for x 
           by (cases x, auto simp: pair_to_complex_def tighten_bounds_3(1)) 
       qed
-      have l: "complex_roots_of_int_poly3 p = ?ll" 
+      have l: "complex_roots_of_int_poly3 p = ?ll'" 
         unfolding d filter cpx_def[symmetric] cpxI_def[symmetric] cpxR_def[symmetric] using False oFalse
-        by auto      
-      with lr dist show ?thesis by auto
+        by auto   
+      have "distinct ?ll' = (distinct rrts \<and> distinct ?LL' \<and> set rrts \<inter> set ?LL' = {})" 
+        unfolding distinct_append ..
+      also have "set ?LL' = set ?LL" by auto
+      also have "distinct ?LL' = distinct ?LL" by (induct cpx, auto)
+      finally have "distinct ?ll' = distinct ?ll" unfolding distinct_append by auto
+      with dist have "distinct ?ll'" by auto
+      with lr l show ?thesis by auto
     next
       case True
       let ?cr = "map_poly of_real :: real poly \<Rightarrow> complex poly"

@@ -17,9 +17,6 @@ begin
 hide_const (open) module.smult
 hide_const (open) Divisibility.irreducible
 
-lemma is_unit_field_poly[simp]: "(p::'a::field poly) dvd 1 \<longleftrightarrow> p \<noteq> 0 \<and> degree p = 0"
-  by (auto dest!: degree0_coeffs simp: is_unit_poly_iff dvd_field_iff)
-
 instantiation fract :: (idom) euclidean_ring
 begin
 

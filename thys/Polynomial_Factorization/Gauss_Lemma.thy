@@ -192,41 +192,38 @@ next
   thus dvd: "?n q dvd p" unfolding dvd_def by blast
 qed
 
-lemma irreducible\<^sub>d_smult_int[simp]: fixes c :: int assumes c: "c \<noteq> 0"
-  shows "irreducible\<^sub>d (smult c p) = irreducible\<^sub>d p" (is "?l = ?r")
-proof
-  assume ?l
-  thus ?r by (rule irreducible\<^sub>d_smultI[OF _ c])
+lemma irreducible\<^sub>d_primitive_part:
+  fixes p :: "int poly" (* can be relaxed but primitive_part_mult has bad type constraint *)
+  shows "irreducible\<^sub>d (primitive_part p) \<longleftrightarrow> irreducible\<^sub>d p" (is "?l \<longleftrightarrow> ?r")
+proof (rule iffI, rule irreducible\<^sub>dI)
+  assume l: ?l
+  show "degree p \<noteq> 0" using l by auto
+  have dpp: "degree (primitive_part p) = degree p" by simp
+  fix q r
+  assume deg: "degree q < degree p" "degree r < degree p" and "p = q * r"
+  then have pp: "primitive_part p = primitive_part q * primitive_part r" by (simp add: primitive_part_mult)
+  have "\<not> irreducible\<^sub>d (primitive_part p)"
+    apply (intro reducible\<^sub>dI, rule exI[of _ "primitive_part q"], rule exI[of _ "primitive_part r"], unfold dpp)
+    using deg pp by auto
+  with l show False by auto
 next
-  let ?cp = "smult c p"
-  assume ?r
-  from irreducible\<^sub>dD[OF this]
-  have dp: "degree p \<noteq> 0" and p0: "p \<noteq> 0" 
-    and irr: "\<And> q. degree q \<noteq> 0 \<Longrightarrow> degree q < degree p \<Longrightarrow> \<not> q dvd p" by auto
-  show ?l
-  proof (rule irreducible\<^sub>dI)
-    from dp c show "degree ?cp \<noteq> 0" by auto 
-    fix q :: "int poly"
-    let ?nq = "primitive_part q"
-    assume deg: "degree q \<noteq> 0" "degree q < degree ?cp"
-    hence deg: "degree q \<noteq> 0" "degree q < degree p" using c by auto
-    show "\<not> q dvd ?cp"
-    proof
-      assume "q dvd ?cp" 
-      from dvd_smult_int[OF c this] have dvd: "?nq dvd p" by auto
-      with deg have "degree ?nq \<noteq> 0" "degree ?nq < degree p" by auto
-      from irr[OF this] dvd show False by auto
-    qed
-  qed
+  show "?r \<Longrightarrow> ?l" by (metis irreducible\<^sub>d_smultI normalize_non_0_smult)
 qed
 
-lemma irreducible\<^sub>d_primitive_part[simp]: "irreducible\<^sub>d (primitive_part (p :: int poly)) =
-  irreducible\<^sub>d p"
-proof (cases "p = 0")
-  case False
-  thus ?thesis using irreducible\<^sub>d_smult_int[of "content p" "primitive_part p",
-    unfolded content_times_primitive_part[of p]] by auto
-qed simp
+lemma irreducible\<^sub>d_smult_int:
+  fixes c :: int assumes c: "c \<noteq> 0"
+  shows "irreducible\<^sub>d (smult c p) = irreducible\<^sub>d p" (is "?l = ?r")
+  using irreducible\<^sub>d_primitive_part[of "smult c p", unfolded primitive_part_smult] c
+  apply (cases "c < 0", simp)
+  apply (metis add.inverse_inverse add.inverse_neutral c irreducible\<^sub>d_smultI normalize_non_0_smult smult_1_left smult_minus_left)
+  apply (simp add: irreducible\<^sub>d_primitive_part)
+  done
+
+lemma irreducible\<^sub>d_as_irreducible:
+  fixes p :: "int poly"
+  shows "irreducible\<^sub>d p \<longleftrightarrow> irreducible (primitive_part p)"
+  using irreducible_content_free_connect[of "primitive_part p"]
+  by (cases "p = 0", auto simp: irreducible\<^sub>d_primitive_part)
 
 
 lemma rat_to_int_factor_content_1: fixes p :: "int poly" 
@@ -330,11 +327,29 @@ qed
 
 lemma rat_to_int_factor: fixes p :: "int poly" 
   assumes pgh: "map_poly rat_of_int p = g * h"
-  shows "\<exists> g' h'. p = g' * h' \<and> degree g' = degree g"
-proof -
-  obtain r rg where ri: "rat_to_normalized_int_poly g = (r,rg)" by force
-  from rat_to_int_factor_explicit[OF pgh ri] rat_to_normalized_int_poly(4)[OF ri]
-  show ?thesis by blast
+  shows "\<exists> g' h'. p = g' * h' \<and> degree g' = degree g \<and> degree h' = degree h"
+proof(cases "p = 0")
+  case True
+  with pgh have "g = 0 \<or> h = 0" by auto
+  then show ?thesis
+    by (metis True degree_0 mult_hom.hom_zero mult_zero_left rat_to_normalized_int_poly(4) surj_pair)
+next
+  case False
+  obtain r rg where ri: "rat_to_normalized_int_poly (smult (1 / of_int (content p)) g) = (r,rg)" by force
+  obtain q qh where ri2: "rat_to_normalized_int_poly h = (q,qh)" by force
+  show ?thesis
+  proof (intro exI conjI)
+    have "of_int_poly (primitive_part p) = smult (1 / of_int (content p)) (g * h)"
+      apply (auto simp: primitive_part_def pgh[symmetric] smult_map_poly map_poly_map_poly o_def intro!: map_poly_cong)
+      by (metis (no_types, lifting) content_dvd_coeffs div_by_0 dvd_mult_div_cancel floor_of_int nonzero_mult_div_cancel_left of_int_hom.hom_zero of_int_mult)
+    also have "\<dots> = smult (1 / of_int (content p)) g * h" by simp
+    finally have "of_int_poly (primitive_part p) = \<dots>".
+    note main = rat_to_int_factor_content_1[OF _ this ri ri2, simplified, OF False]
+    show "p = smult (content p) rg * qh" by (simp add: main[symmetric])
+    from ri2 show "degree qh = degree h" by (fact rat_to_normalized_int_poly)
+    from rat_to_normalized_int_poly(4)[OF ri] False
+    show "degree (smult (content p) rg) = degree g" by auto
+  qed
 qed
 
 lemma rat_to_int_factor_normalized_int_poly: fixes p :: "rat poly" 
@@ -346,9 +361,20 @@ proof -
   have p: "p = smult i (map_poly rat_of_int ip)" and i: "i \<noteq> 0" by auto
   from arg_cong[OF p, of "smult (inverse i)", unfolded pgh] i
   have "map_poly rat_of_int ip = g * smult (inverse i) h" by auto
-  from rat_to_int_factor[OF this] show ?thesis .
+  from rat_to_int_factor[OF this] show ?thesis by auto
 qed
 
+lemma irreducible_field_connect [simp]:
+  fixes p :: "'a :: {field,semiring_gcd} poly"
+  shows "irreducible\<^sub>d p \<longleftrightarrow> irreducible p"
+  apply (cases "p = 0", force, rule irreducible_content_free_connect)
+  by (meson const_poly_dvd_1 content_eq_zero_iff content_free_iff_content_eq_1 is_unit_content_iff is_unit_triv)
+
+(* TODO: move *)
+lemma irreducible_smult [simp]:
+  fixes c :: "'a :: field"
+  shows "irreducible (smult c p) \<longleftrightarrow> irreducible p \<and> c \<noteq> 0"
+  using irreducible_mult_unit_left[of "[:c:]", simplified] by force
 
 text \<open>A polynomial with integer coefficients is
    irreducible over the rationals, if it is irreducible over the integers.\<close>
@@ -356,22 +382,18 @@ theorem irreducible\<^sub>d_int_rat: fixes p :: "int poly"
   assumes p: "irreducible\<^sub>d p"
   shows "irreducible\<^sub>d (map_poly rat_of_int p)"
 proof (rule irreducible\<^sub>dI)
-  from irreducible\<^sub>dD[OF p] have p: "degree p \<noteq> 0" and 
-    irr: "\<And> q. degree q \<noteq> 0 \<Longrightarrow> degree q < degree p \<Longrightarrow> \<not> q dvd p" by auto
+  from irreducible\<^sub>dD[OF p]
+  have p: "degree p \<noteq> 0" and irr: "\<And> q r. degree q < degree p \<Longrightarrow> degree r < degree p \<Longrightarrow> p \<noteq> q * r" by auto
   let ?r = "rat_of_int"
   let ?rp = "map_poly ?r"
   from p show rp: "degree (?rp p) \<noteq> 0" by auto
   from p have p0: "p \<noteq> 0" by auto
-  fix g :: "rat poly"
-  assume deg: "degree g \<noteq> 0" "degree g < degree (?rp p)"
-  show "\<not> g dvd (?rp p)"
-  proof
-    assume "g dvd (?rp p)"
-    then obtain h where pgh: "(?rp p) = g * h" unfolding dvd_def by auto
-    from rat_to_int_factor[OF pgh] obtain g' where g': "g' dvd p" and dg: "degree g' = degree g"
-      by (auto intro: dvdI)
-    with irr[of g'] deg[unfolded dg] show False by auto
-  qed
+  fix g h :: "rat poly"
+  assume deg: "degree g \<noteq> 0" "degree g < degree (?rp p)" "degree h \<noteq> 0" "degree h < degree (?rp p)" and pgh: "?rp p = g * h"
+  from rat_to_int_factor[OF pgh] obtain g' h' where p: "p = g' * h'" and dg: "degree g' = degree g" "degree h' = degree h"
+    by auto
+  from irr[of g' h'] deg[unfolded dg]
+  show False using degree_mult_eq[of g' h'] by (auto simp: p dg)
 qed
 
 corollary irreducible\<^sub>d_rat_to_normalized_int_poly: 

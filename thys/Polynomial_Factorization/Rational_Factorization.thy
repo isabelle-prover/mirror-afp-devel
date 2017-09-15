@@ -129,17 +129,25 @@ qed
 definition root_free :: "'a :: comm_semiring_0 poly \<Rightarrow> bool" where
   "root_free p = (degree p = 1 \<or> (\<forall> x. poly p x \<noteq> 0))"
 
-lemma irreducible\<^sub>d_root_free: assumes irr: "irreducible\<^sub>d p" shows "root_free p"
-proof (cases "degree p = 1")
-  case False
+lemma irreducible_root_free:
+  fixes p :: "'a :: idom poly"
+  assumes "irreducible p" shows "root_free p"
+proof-
+  from assms have p0: "p \<noteq> 0" by auto
   {
     fix x
-    assume "poly p x = 0"
+    assume "poly p x = 0" and degp: "degree p \<noteq> 1"
     hence "[:-x,1:] dvd p" using poly_eq_0_iff_dvd by blast
-    with False irr[unfolded irreducible\<^sub>d_def] have False by auto
+    then obtain q where p: "p = [:-x,1:] * q" by (elim dvdE)
+    with p0 have q0: "q \<noteq> 0" by auto
+    from irreducibleD[OF assms p]
+    have "q dvd 1" by (metis one_neq_zero poly_1 poly_eq_0_iff_dvd)
+    then have "degree q = 0" by (simp add: poly_dvd_1)
+    with degree_mult_eq[of "[:-x,1:]" q, folded p] q0 degp
+    have False by auto
   }
   thus ?thesis unfolding root_free_def by auto
-qed (auto simp: root_free_def)
+qed
 
 partial_function (tailrec) factorize_root_free_main :: "rat poly \<Rightarrow> rat list \<Rightarrow> rat poly list \<Rightarrow> rat \<times> rat poly list" where
   [code]: "factorize_root_free_main p xs fs = (case xs of Nil \<Rightarrow> 
@@ -288,11 +296,11 @@ proof -
           from Nil rat_roots2[OF True] have nex: "\<not> (\<exists> x. poly p x = 0)" by auto
           have "irreducible\<^sub>d p"
           proof (rule irreducible\<^sub>dI)
-            fix q :: "rat poly"
-            assume "degree q \<noteq> 0" "degree q < degree p"
+            fix q r :: "rat poly"
+            assume "degree q \<noteq> 0" "degree q < degree p" and p: "p = q * r"
             with True have dq: "degree q = 1" by auto
-            show "\<not> q dvd p" 
-              by (rule degree_1_dvd_root[OF dq], insert nex, auto)
+            have "\<not> q dvd p" by (rule degree_1_dvd_root[OF dq], insert nex, auto)
+            with p show False by auto
           qed (insert True, auto)
           with rp show ?thesis by auto
         next
@@ -394,11 +402,12 @@ qed
 
 declare factorize_rat_poly_main.simps[simp del]
 
-lemma factorize_rat_poly_main: assumes "factorize_rat_poly_main c irr ps = (d,qs)"
-  and "Ball (set irr) irreducible\<^sub>d"
-  shows "Ball (set qs) irreducible\<^sub>d \<and> smult c (prod_list (irr @ ps)) = smult d (prod_list qs)"
-  using assms
-proof (induct c irr ps rule: factorize_rat_poly_main.induct)
+lemma factorize_rat_poly_main:
+  assumes "factorize_rat_poly_main c irr ps = (d,qs)"
+    and "Ball (set irr) irreducible\<^sub>d"
+  shows "Ball (set qs) irreducible\<^sub>d" (is ?g1)
+    and "smult c (prod_list (irr @ ps)) = smult d (prod_list qs)" (is ?g2)
+proof (atomize(full), insert assms, induct c irr ps rule: factorize_rat_poly_main.induct)
   case (1 c irr)
   thus ?case by (auto simp: factorize_rat_poly_main.simps)
 next
@@ -426,7 +435,9 @@ next
       with res have res: "?f c (p # irr) ps = (d,qs)" by auto
       from rational_proper_factor(1)[OF `degree p \<noteq> 0` None] 
       have irp: "irreducible\<^sub>d p" by auto
-      from IH(1)[OF None res] irr irp show ?thesis by (auto simp: ac_simps)
+      note IH(1)[OF None res, unfolded atomize_imp imp_conjR, simplified]
+      note 1 = conjunct1[OF this, rule_format] conjunct2[OF this, rule_format]
+      from irr irp show ?thesis by (auto intro:1 simp: ac_simps)
     next
       case (Some q)
       define pq where "pq = p div q" 

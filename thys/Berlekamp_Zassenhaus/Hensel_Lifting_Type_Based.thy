@@ -573,8 +573,7 @@ begin
 
 lemma coprime_preserves: "coprime (#V :: 'p mod_ring poly) (#W)"
   apply (intro coprimeI,simp add: rebase_q_to_p.of_nat_CARD_eq_0[simplified] hom_distribs)
-  using coprime
-  by (metis semiring_gcd_class.gcd_greatest_iff)
+  using coprime by (elim coprimeE, auto)
 
 lemma pre_unique:
   assumes f2: "w'' * #v + v'' * #w = f"
@@ -587,7 +586,7 @@ proof(intro conjI)
   also have "... - v' * #w = (v''- v') * #w" by (auto simp: left_diff_distrib)
   finally have *: "(w' - w'') * #v = (v''- v') * #w" by (auto simp: left_diff_distrib)
   then have "#v dvd (v'' - v') * #w" by (auto intro: dvdI[of _ _ "w' - w''"] simp: ac_simps)
-  then have "#v dvd v'' - v'" by (rule coprime_dvd_mult[OF coprime])
+  then have "#v dvd v'' - v'" by (rule coprime_dvd_mult[OF coprime[simplified]])
   moreover have "degree (v'' - v') < degree v" by (rule degree_diff_less[OF degv'' degv'])
   ultimately have "v'' - v' = 0"
     by (metis deg_v degree_0 gr_implies_not_zero poly_divides_conv0)
@@ -645,12 +644,6 @@ definition
    let (s, t) = bezout_coefficients (#v :: 'p mod_ring poly) (#w) in
    let (a, b) = dupe_monic (#v::'p mod_ring poly) (#w) s t 1 in
    (Knuth_ex_4_6_2_22_main.V TYPE('q) b u v w, Knuth_ex_4_6_2_22_main.W TYPE('q) a b u v w)"
-
-fun hensel ::
-  "'p :: prime_card itself \<Rightarrow> 'pq :: nontriv mod_ring poly \<Rightarrow> 'q :: nontriv mod_ring poly list \<Rightarrow>
-   'pq mod_ring poly list"
-where "hensel ty U [] = []"
-  |   "hensel ty U (v#ws) = (let (V,W) = hensel_1 ty U v (prod_list ws) in V # hensel ty W ws)"
 
 lemma hensel_1:
   fixes u :: "'pq :: nontriv mod_ring poly"

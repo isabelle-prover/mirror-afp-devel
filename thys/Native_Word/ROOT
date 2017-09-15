@@ -2,10 +2,13 @@ chapter AFP
 
 session "Native_Word" (AFP) = "HOL-Word" +
   options [timeout = 1200]
+  sessions
+    "HOL-Imperative_HOL"
   theories [document = false]
     "HOL-Library.Code_Target_Int"
     "HOL-Library.Code_Char"
     "HOL-Library.Code_Test"
+    "HOL-Imperative_HOL.Heap_Monad"
   theories
     More_Bits_Int
     Bits_Integer
@@ -16,10 +19,13 @@ session "Native_Word" (AFP) = "HOL-Word" +
     Uint8
     Uint
     Native_Cast
+    Native_Word_Imperative_HOL
     Native_Word_Test_Emu
     Native_Word_Test_PolyML
     Native_Word_Test_PolyML2
     Native_Word_Test_Scala
+  theories [condition = ML_SYSTEM_64]
+    Native_Word_Test_PolyML64
   theories [condition = ISABELLE_GHC]
     Native_Word_Test_GHC
   theories [condition = ISABELLE_MLTON]

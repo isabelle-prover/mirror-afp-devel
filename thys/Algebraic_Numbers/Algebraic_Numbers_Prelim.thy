@@ -30,7 +30,7 @@ imports
   "HOL-Computational_Algebra.Fundamental_Theorem_Algebra"
   Polynomial_Factorization.Rational_Factorization
   Berlekamp_Zassenhaus.Factorize_Int_Poly
-  Unique_Factorization_Poly
+  Berlekamp_Zassenhaus.Unique_Factorization_Poly
 begin
 
 text \<open>For algebraic numbers, it turned out that @{const gcd_int_poly} is not
@@ -120,15 +120,15 @@ proof (intro irreducibleI)
     by (cases; insert a1 b1, auto simp: content_free_imp_unit_iff)
 qed
 
-(* TODO: remove *)
 lemma irreducible_connect_rev:
+  fixes p :: "'a :: {comm_semiring_1,semiring_no_zero_divisors} poly"
   assumes irr: "irreducible p" and deg: "degree p \<noteq> 0"
   shows "irreducible\<^sub>d p"
-proof(intro irreducible\<^sub>dI deg notI)
-  fix q assume degq: "degree q \<noteq> 0" and diff: "degree q < degree p" and qp: "q dvd p"
+proof(intro irreducible\<^sub>dI deg)
+  fix q r
+  assume degq: "degree q \<noteq> 0" and diff: "degree q < degree p" and p: "p = q * r"
   from degq have nu: "\<not> q dvd 1" by (auto simp: poly_dvd_1)
-  from qp obtain r where p: "p = q * r" by (elim dvdE)
-  from irreducibleD[OF irr this] nu have "r dvd 1" by auto
+  from irreducibleD[OF irr p] nu have "r dvd 1" by auto
   then have "degree r = 0" by (auto simp: poly_dvd_1)
   with degq diff show False unfolding p using degree_mult_le[of q r] by auto
 qed
@@ -420,24 +420,7 @@ lemma irreducible_connect_int:
   fixes p :: "int poly"
   assumes ir: "irreducible\<^sub>d p" and c: "content p = 1"
   shows "irreducible p"
-proof(intro irreducibleI)
-  note * = ir[unfolded irreducible\<^sub>d_def]
-  from * have p0: "p \<noteq> 0" by auto
-  then show "p \<noteq> 0" by auto
-  from * show "\<not> p dvd 1" unfolding poly_dvd_1 by auto
-  fix a b assume p: "p = a * b"
-  from c[unfolded p content_mult] have cab:"content a * content b = 1" by auto
-  from cab have ca: "content a dvd 1" by (intro dvdI, auto)
-  from cab have cb: "content b dvd 1" by (intro dvdI, auto simp: ac_simps)
-  show "a dvd 1 \<or> b dvd 1"
-  proof (rule ccontr)
-    assume "\<not>?thesis"
-    with ca cb have deg: "degree a \<noteq> 0" "degree b \<noteq> 0" by (auto simp: content_free_imp_unit_iff)
-    then have "degree p > degree a" by (unfold p, subst degree_mult_eq, auto)
-    with * deg have "\<not> a dvd p" by auto
-    with p show False by auto
-  qed
-qed
+  using c content_free_iff_content_eq_1 ir irreducible_content_free_connect by blast
 
 lemma
   fixes x :: "'a :: {idom,ring_char_0}"
@@ -1272,7 +1255,7 @@ proof (rule ccontr)
   from x have ax: "algebraic x" unfolding algebraic_altdef_ipoly represents_def by blast
   assume "\<not> ?thesis"
   from this irreducible_connect_int[of q] cf have "\<not> irreducible\<^sub>d q" by auto
-  from this[unfolded irreducible\<^sub>d_def] dq obtain r where
+  from this dq obtain r where
     r: "degree r \<noteq> 0" "degree r < degree q" and "r dvd q" by auto
   then obtain rr where q: "q = r * rr" unfolding dvd_def by auto
   have "degree q = degree r + degree rr" using dq unfolding q

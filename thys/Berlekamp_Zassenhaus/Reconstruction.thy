@@ -120,7 +120,7 @@ lemma not_irreducible\<^sub>d_lead_coeff_factors: assumes "\<not> irreducible\<^
   shows "\<exists> f g. smult (lead_coeff u) u = f * g \<and> lead_coeff f = lead_coeff u \<and> lead_coeff g = lead_coeff u
   \<and> degree f < degree u \<and> degree g < degree u" 
 proof -
-  from assms[unfolded irreducible\<^sub>d_def_lt, simplified] 
+  from assms[unfolded irreducible\<^sub>d_def, simplified] 
   obtain v w where deg: "degree v < degree u" "degree w < degree u" and u: "u = v * w" by auto
   define f where "f = smult (lead_coeff w) v" 
   define g where "g = smult (lead_coeff v) w" 
@@ -237,7 +237,7 @@ proof -
 qed
 
 lemma coprime_exp_mod: "coprime lu p \<Longrightarrow> prime p \<Longrightarrow> n \<noteq> 0 \<Longrightarrow> lu mod p ^ n \<noteq> 0" 
-  by (metis coprime_exp inverse_mod m m1 mod_0 mod_mult_eq mult_zero_right zero_neq_one)
+  by (metis coprime_iff_gcd_one coprime_exp inverse_mod m m1 mod_0 mod_mult_eq mult_zero_right zero_neq_one)
 
 interpretation correct_subseqs_foldr_impl "\<lambda>x. map_prod (mul_const x) (Cons x)" sl_impl sli by fact
 
@@ -294,8 +294,7 @@ proof -
     have deg_ws: "degree_m (smult lu (prod_mset vs)) = degree (smult lu (prod_mset vs))"
       by (rule degree_m_eq[OF _ m1], unfold lead_coeff_smult,
       insert cop n p.m1 l_vs, auto simp: m)
-    with eq have "degree_m u = degree (smult lu (prod_mset vs))" unfolding degree_m_def
-      equivalent_def by auto
+    with eq have "degree_m u = degree (smult lu (prod_mset vs))" by auto
     also have "\<dots> = degree (prod_mset vs' * v)" unfolding degree_smult_eq vs_v using lu0 by (simp add:ac_simps)
     also have "\<dots> = degree (prod_mset vs') + degree v" 
       by (rule degree_mult_eq, insert vs0[unfolded vs_v], auto)
@@ -318,15 +317,14 @@ proof -
     and d: "size (mset vs) < d + d"
     and tests: "\<And> ws. ws \<subseteq># mset vs \<Longrightarrow> ws \<noteq> {#} \<Longrightarrow> size ws < d \<Longrightarrow> test_dvd u ws" 
     from deg_u have u0: "u \<noteq> 0" by auto
-    have "irreducible\<^sub>d u" 
-    proof (rule irreducible\<^sub>dI[OF deg_u], intro notI)
-      fix q :: "int poly"  
-      assume deg: "degree q \<noteq> 0" "degree q < degree u" and qu: "q dvd u"
-      hence deg_q: "0 < degree q" "degree q < degree u" by auto
-      from qu obtain q' where uq: "u = q * q'" unfolding dvd_def by auto
-      from u0 have deg: "degree u = degree q + degree q'" unfolding uq 
+    have "irreducible\<^sub>d u"
+    proof (rule irreducible\<^sub>dI[OF deg_u])
+      fix q q' :: "int poly"
+      assume deg: "degree q \<noteq> 0" "degree q < degree u" "degree q' \<noteq> 0" "degree q' < degree u"
+         and uq: "u = q * q'"
+      then have qu: "q dvd u" and q'u: "q' dvd u" by auto
+      from u0 have deg_u: "degree u = degree q + degree q'" unfolding uq 
         by (subst degree_mult_eq, auto)
-      with deg_q have deg_q': "0 < degree q'" "degree q' < degree u" unfolding uq by auto
       from coprime_lead_coeff_factor[OF prime cop[unfolded uq]]
       have cop_q: "coprime (lead_coeff q) p" "coprime (lead_coeff q') p" by auto
       from unique_factorization_m_factor[OF prime uf[unfolded uq] _ _ n m, folded uq, 
@@ -345,18 +343,16 @@ proof -
       have "degree_m q = degree q" 
         by (rule degree_m_eq[OF _ m1], insert cop_q(1) n p.m1, unfold m, 
           auto simp:)
-      with q_eq have degm_q: "degree q = degree (Mp (smult (lead_coeff q) (prod_mset fs)))" 
-        unfolding degree_m_def equivalent_def by auto
-      with deg_q have fs_nempty: "fs \<noteq> {#}" 
+      with q_eq have degm_q: "degree q = degree (Mp (smult (lead_coeff q) (prod_mset fs)))" by auto
+      with deg have fs_nempty: "fs \<noteq> {#}" 
         by (cases fs; cases "lead_coeff q = 0"; auto simp: Mp_def)
       from uf_q'[unfolded unique_factorization_m_alt_def factorization_m_def split]
       have q'_eq: "q' =m smult (lead_coeff q') (prod_mset gs)" by auto
       have "degree_m q' = degree q'" 
         by (rule degree_m_eq[OF _ m1], insert cop_q(2) n p.m1, unfold m, 
           auto simp:)
-      with q'_eq have degm_q': "degree q' = degree (Mp (smult (lead_coeff q') (prod_mset gs)))" 
-        unfolding degree_m_def equivalent_def by auto
-      with deg_q' have gs_nempty: "gs \<noteq> {#}" 
+      with q'_eq have degm_q': "degree q' = degree (Mp (smult (lead_coeff q') (prod_mset gs)))" by auto
+      with deg have gs_nempty: "gs \<noteq> {#}" 
         by (cases gs; cases "lead_coeff q' = 0"; auto simp: Mp_def)
   
       from eq have size: "size fs + size gs = size (mset vs)" by auto
@@ -367,13 +363,13 @@ proof -
         from eq have sub: "fs \<subseteq># mset vs" using mset_subset_eq_add_left[of fs gs] by auto
         have "test_dvd u fs"
           by (rule tests[OF sub fs_nempty, unfolded Nil], insert fs, auto)
-        from this[unfolded test_dvd_def, rule_format, OF qu deg_q] q_eq show False by auto
+        from this[unfolded test_dvd_def] uq deg q_eq show False by auto
       next
         assume gs: "size gs < d"
         from eq have sub: "gs \<subseteq># mset vs" using mset_subset_eq_add_left[of fs gs] by auto
         have "test_dvd u gs"
           by (rule tests[OF sub gs_nempty, unfolded Nil], insert gs, auto)
-        from this[unfolded test_dvd_def, rule_format, OF _ deg_q'] q'_eq show False unfolding uq by auto
+        from this[unfolded test_dvd_def] uq deg q'_eq show False unfolding uq by auto
       qed
     qed
   } note irreducible\<^sub>d_via_tests = this
@@ -506,7 +502,7 @@ proof -
               define v' where "v' = smult (lead_coeff w) v" 
               define w' where "w' = smult (lead_coeff v) w" 
               let ?ws = "smult (lead_coeff w * l) (prod_mset ws')" 
-              from arg_cong[OF 1(4)[unfolded equivalent_def], of "\<lambda> f. Mp (smult (lead_coeff w) f)"]
+              from arg_cong[OF 1(4), of "\<lambda> f. Mp (smult (lead_coeff w) f)"]
               have v'_ws': "Mp v' = Mp ?ws" unfolding v'_def 
                 by simp
               from lead_coeff_factor[OF u, folded v'_def w'_def]
@@ -523,7 +519,7 @@ proof -
               have deg_m_v': "degree_m v' = degree v'" 
                 by (rule degree_m_eq[OF _ m1], unfold lc m, 
                 insert cop prime n coprime_exp_mod, auto)
-              with v'_ws' have "degree v' = degree_m ?ws" unfolding degree_m_def by simp
+              with v'_ws' have "degree v' = degree_m ?ws" by simp
               also have "\<dots> \<le> degree_m (prod_mset ws')" by (rule degree_m_smult_le)
               also have "\<dots> = degree_m (prod_list ws)" unfolding True by simp
               also have "\<dots> \<le> degree (prod_list ws)" by (rule degree_m_le)
@@ -611,30 +607,30 @@ proof -
         from dvd have "lead_coeff vb dvd lead_coeff (smult lu u)" 
           by (metis dvd_def lead_coeff_mult)
         hence ldvd: "lead_coeff vb dvd lu * lu" unfolding lead_coeff_smult lu by simp
-        from cop have cop_lu: "coprime (lu * lu) p" unfolding coprime_mul_eq' by simp
-        from coprime_divisors[OF ldvd dvd_refl cop_lu]
-        have cop_lvb: "coprime (lead_coeff vb) p" .
-        have cop_vb: "coprime (content vb) p" 
-          by (rule coprime_divisors[OF content_dvd_coeff dvd_refl cop_lvb])
+        from cop have cop_lu: "coprime (lu * lu) p" unfolding coprime_iff_gcd_one coprime_mul_eq' by simp
+        from coprime_divisors[OF ldvd dvd_refl cop_lu[unfolded coprime_iff_gcd_one]]
+        have cop_lvb: "coprime (lead_coeff vb) p" by simp
+        then have cop_vb: "coprime (content vb) p" 
+          by (auto intro: coprime_divisors[OF content_dvd_coeff dvd_refl])
         from u have "u' dvd u" unfolding dvd_def by auto
         hence "lead_coeff u' dvd lu" unfolding lu by (metis dvd_def lead_coeff_mult)
-        from coprime_divisors[OF this dvd_refl cop]
-        have "coprime (lead_coeff u') p" .
+        from coprime_divisors[OF this dvd_refl] cop
+        have "coprime (lead_coeff u') p" by simp
         hence "coprime (lu * lead_coeff u') p" and cop_lu': "coprime lu' p" 
-          using cop unfolding coprime_mul_eq' lu'_def by auto
+          using cop by (auto simp: coprime_mul_eq' lu'_def)
         hence cop': "coprime (lead_coeff (?fact * u')) p" 
           unfolding lead_coeff_mult lead_coeff_smult l_ws by simp
-        have "p.square_free_m (smult (content vb) u)" 
-          by (rule p.square_free_m_smultI[OF sf p_inv[OF cop_vb]])
+        have "p.square_free_m (smult (content vb) u)" using cop_vb sf p_inv
+          by (auto intro!: p.square_free_m_smultI)
         from p.square_free_m_cong[OF this prod']
         have sf': "p.square_free_m (?fact * u')" by simp
         from p.square_free_m_factor[OF this] 
         have sf_u': "p.square_free_m u'" by simp
-        have "unique_factorization_m (smult (content vb) u) (lu * content vb, mset vs)" 
-          by (rule unique_factorization_m_smult[OF factors inv[OF cop_vb]])
+        have "unique_factorization_m (smult (content vb) u) (lu * content vb, mset vs)"
+          using cop_vb factors inv by (auto intro: unique_factorization_m_smult)
         from unique_factorization_m_cong[OF this prod]
         have uf: "unique_factorization_m (?fact * u') (lu * content vb, mset vs)" .
-        {          
+        {
           from unique_factorization_m_factor[OF prime uf cop' sf' n m] 
           obtain fs gs where uf1: "unique_factorization_m ?fact (lu, fs)"
             and uf2: "unique_factorization_m u' (lu', gs)"
@@ -642,7 +638,7 @@ proof -
             unfolding lead_coeff_smult l_ws lu'_def
             by auto
           have "factorization_m ?fact (lu, mset ws)"
-            unfolding factorization_m_def split equivalent_def using set_vs vs_mi norm by auto
+            unfolding factorization_m_def split using set_vs vs_mi norm by auto
           with uf1[unfolded unique_factorization_m_alt_def] have "Mf (lu,mset ws) = Mf (lu, fs)"
             by blast
           hence fs_ws: "image_mset Mp fs = image_mset Mp (mset ws)" unfolding Mf_def split by auto
@@ -670,31 +666,30 @@ proof -
           unfolding degree_smult_eq using vb0 by auto
         finally have deg_pp: "degree pp_vb \<noteq> 0" by auto
         hence pp_vb0: "pp_vb \<noteq> 0" by auto
-        from factors(1)[unfolded unique_factorization_m_alt_def factorization_m_def equivalent_def]
+        from factors(1)[unfolded unique_factorization_m_alt_def factorization_m_def]
         have eq_u': "Mp u' = Mp (smult lu' (prod_mset (mset vs')))" by auto 
         from r'[unfolded ws(2)] dr have "length vs' + d = r" by auto
         from this cands_empty[unfolded Cons] have "size (mset vs') \<noteq> 0" by auto
         from deg_non_zero[OF eq_u' cop_lu' this vs_mi] 
         have deg_u': "degree u' \<noteq> 0" unfolding vs_split by auto
         have irr_pp: "irreducible\<^sub>d pp_vb" 
-        proof (rule irreducible\<^sub>dI[OF deg_pp], intro notI)
-          fix q :: "int poly"
-          assume deg: "degree q \<noteq> 0" "degree q < degree pp_vb" and qvb: "q dvd pp_vb"
-          from deg dvd_imp_degree_le[OF ppu u0]
-          have deg_q: "0 < degree q" "degree q < degree u" by auto
+        proof (rule irreducible\<^sub>dI[OF deg_pp])
+          fix q r :: "int poly"
+          assume deg_q: "degree q \<noteq> 0" "degree q < degree pp_vb"
+            and deg_r:  "degree r \<noteq> 0" "degree r < degree pp_vb"
+            and pp_qr: "pp_vb = q * r"
+          then have qvb: "q dvd pp_vb" by auto
           from dvd_trans[OF qvb ppu] have qu: "q dvd u" .
-          from qvb obtain r where pp_qr: "pp_vb = q * r" unfolding dvd_def by auto
           have "degree pp_vb = degree q + degree r" unfolding pp_qr
             by (subst degree_mult_eq, insert pp_qr pp_vb0, auto)
-          with deg have deg_r: "degree r \<noteq> 0" by auto
           have uf: "unique_factorization_m (smult (content vb) pp_vb) (lu, mset ws)" 
             unfolding pp_vb_vb
             by (rule unique_factorization_m_cong[OF factors(2)], insert Mp_vb, auto)
-          from unique_factorization_m_smultD[OF uf inv[OF cop_vb]] 
+          from unique_factorization_m_smultD[OF uf inv] cop_vb
           have uf: "unique_factorization_m pp_vb (lu * inverse_mod (content vb) m, mset ws)" by auto
           from ppu have "lead_coeff pp_vb dvd lu" unfolding lu by (metis dvd_def lead_coeff_mult)
-          from coprime_divisors[OF this dvd_refl cop]
-          have cop_pp: "coprime (lead_coeff pp_vb) p" .
+          from coprime_divisors[OF this dvd_refl] cop
+          have cop_pp: "coprime (lead_coeff pp_vb) p" by simp
           from coprime_lead_coeff_factor[OF prime cop_pp[unfolded pp_qr]]
           have cop_qr: "coprime (lead_coeff q) p" "coprime (lead_coeff r) p" by auto
           from p.square_free_m_factor[OF sf[unfolded u]]
@@ -716,8 +711,7 @@ proof -
           have "degree_m q = degree q" 
             by (rule degree_m_eq[OF _ m1], insert cop_qr(1) n p.m1, unfold m, 
               auto simp:)
-          with q_eq have degm_q: "degree q = degree (Mp (smult (lead_coeff q) (prod_mset fs)))" 
-            unfolding degree_m_def equivalent_def by auto
+          with q_eq have degm_q: "degree q = degree (Mp (smult (lead_coeff q) (prod_mset fs)))" by auto
           with deg_q have fs_nempty: "fs \<noteq> {#}" 
             by (cases fs; cases "lead_coeff q = 0"; auto simp: Mp_def)
           from uf_r[unfolded unique_factorization_m_alt_def factorization_m_def split]
@@ -725,15 +719,16 @@ proof -
           have "degree_m r = degree r" 
             by (rule degree_m_eq[OF _ m1], insert cop_qr(2) n p.m1, unfold m, 
               auto simp:)
-          with r_eq have degm_r: "degree r = degree (Mp (smult (lead_coeff r) (prod_mset gs)))" 
-            unfolding degree_m_def equivalent_def by auto
+          with r_eq have degm_r: "degree r = degree (Mp (smult (lead_coeff r) (prod_mset gs)))" by auto
           with deg_r have gs_nempty: "gs \<noteq> {#}" 
             by (cases gs; cases "lead_coeff r = 0"; auto simp: Mp_def)
           from gs_nempty have "size gs \<noteq> 0" by auto
           with size have size_fs: "size fs < d" by linarith
-          from tests[unfolded test_dvd_def, rule_format, OF _ fs_nempty _ qu deg_q, of "lead_coeff q"]
-            q_eq size_fs 
-          have "\<not> fs \<subseteq># mset vs" by auto
+          note * = tests[unfolded test_dvd_def, rule_format, OF _ fs_nempty _ qu, of "lead_coeff q"]
+          from ppu have "degree pp_vb \<le> degree u"
+            using dvd_imp_degree_le u0 by blast
+          with deg_q q_eq size_fs
+          have "\<not> fs \<subseteq># mset vs" by (auto dest!:*)
           thus False unfolding vs_split eq fs_id gs_id using mset_subset_eq_add_left[of fs "mset vs' + gs"] 
             by (auto simp: ac_simps)
         qed
@@ -824,8 +819,9 @@ proof
     by (cases "c \<ge> 1"; insert tedious, auto)
   finally show False by simp
 qed
-  
-  
+
+interpretation p: poly_mod_prime p using prime by unfold_locales
+
 lemma zassenhaus_reconstruction_generic: 
   assumes sl_impl: "correct_subseqs_foldr_impl (\<lambda>v. map_prod (poly_mod.mul_const (p^n) v) (Cons v)) sl_impl sli"
   and res: "zassenhaus_reconstruction_generic sl_impl hs p n f = fs" 
@@ -841,9 +837,9 @@ proof -
   from subseqs_foldr[OF slc] have state: "sli (lead_coeff f, []) hs 0 state" by auto
   from res[unfolded zassenhaus_reconstruction_generic_def bh split Let_def slc fst_conv]
   have res: "reconstruction sl_impl (?q div 2) state f ?ff ?lc 0 (length hs) hs [] [] = fs" by auto
-  from berlekamp_hensel_unique[OF prime cop sf bh n]
+  from p.berlekamp_hensel_unique[OF cop sf bh n]
   have ufact: "unique_factorization_m f (?lc, mset hs)" by simp
-  note bh = berlekamp_hensel[OF prime cop sf bh n]
+  note bh = p.berlekamp_hensel[OF cop sf bh n]
   from deg have f0: "f \<noteq> 0" and lf0: "?lc \<noteq> 0" by auto
   hence ff0: "?ff \<noteq> 0" by auto
   have bnd: "\<forall>g k. g dvd ?ff \<longrightarrow> degree g \<le> degree_bound hs \<longrightarrow> 2 * \<bar>coeff g k\<bar> < p ^ n"
@@ -858,7 +854,7 @@ proof -
   note bh' = bh[unfolded factorization_m_def split]
   have deg_f: "degree_m f = degree f" 
     by (rule degree_m_eq[OF _ m1], 
-    insert coprime_exp[OF cop, of n] m1, auto)
+    insert coprime_exp[OF cop[simplified], of n] m1, auto)
   have mon_hs: "monic (prod_list hs)" using bh' by (auto intro: monic_prod_list)
   have Mlc: "M ?lc \<in> {1 ..< p^n}" 
     by (rule prime_cop_exp_poly_mod[OF prime cop n])
@@ -874,13 +870,9 @@ qed
 lemma zassenhaus_reconstruction: 
   assumes res: "zassenhaus_reconstruction hs p n f = fs" 
   shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. irreducible\<^sub>d fi)" 
-proof -
-  interpret poly_mod_prime by (unfold_locales, rule prime)
-  from m1 n have pn: "p^n > 1" by simp
-  show ?thesis
-    by (rule zassenhaus_reconstruction_generic[OF my_subseqs.impl_correct 
-        res[unfolded zassenhaus_reconstruction_def Let_def]])
-qed
+  by (rule zassenhaus_reconstruction_generic[OF my_subseqs.impl_correct 
+      res[unfolded zassenhaus_reconstruction_def Let_def]])
+
 end
 
 end

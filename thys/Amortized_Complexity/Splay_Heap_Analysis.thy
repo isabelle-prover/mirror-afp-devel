@@ -103,7 +103,7 @@ proof -
   thus ?thesis using assms 1 2 by (simp add: algebra_simps)
 qed
 
-lemma amor_partition: "bst_eq t \<Longrightarrow> partition p t = (l',r')
+lemma amor_partition: "bst_wrt (op \<le>) t \<Longrightarrow> partition p t = (l',r')
   \<Longrightarrow> t_part p t + \<Phi> l' + \<Phi> r' - \<Phi> t \<le> 2 * log 2 (size1 t) + 1"
 proof(induction p t arbitrary: l' r' rule: partition.induct)
   case 1 thus ?case by simp
@@ -189,7 +189,7 @@ fun U where
 "U Del_min [t] = 2 * \<phi> t + 1"
 
 interpretation Amortized
-where arity = arity and exec = exec and inv = "bst_eq"
+where arity = arity and exec = exec and inv = "bst_wrt (op \<le>)"
 and cost = cost and \<Phi> = \<Phi> and U = U
 proof (standard, goal_cases)
   case (1 _ f) thus ?case
@@ -208,10 +208,10 @@ next
     case Del_min with 4 show ?thesis by(auto simp: amor_del_min)
   next
     case [simp]: (Insert x)
-    then obtain t where [simp]: "s = [t]" "bst_eq t" using 4 by auto
+    then obtain t where [simp]: "s = [t]" "bst_wrt (op \<le>) t" using 4 by auto
     { fix l r assume 1: "partition x t = (l,r)"
       have "log 2 (1 + size t) < log 2 (2 + size t)" by simp
-      with 1 amor_partition[OF \<open>bst_eq t\<close> 1] size_partition[OF 1] have ?thesis
+      with 1 amor_partition[OF \<open>bst_wrt (op \<le>) t\<close> 1] size_partition[OF 1] have ?thesis
         by(simp add: t_in_def insert_def algebra_simps size1_def
              del: log_less_cancel_iff) }
     thus ?thesis by(simp add: insert_def split: prod.split)
