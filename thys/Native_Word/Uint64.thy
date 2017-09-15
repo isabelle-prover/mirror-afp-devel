@@ -256,7 +256,7 @@ let
   val test_code = 
    "val _ = if Word64.div (0w18446744073709551611 : Word64.word, 0w3) = 0w6148914691236517203 then ()\n" ^
    "else raise (Fail \"" ^ error_msg ^ "\");";
-  val f = Exn.interruptible_capture (fn () => ML_Compiler.eval ML_Compiler.flags @{here} (ML_Lex.tokenize test_code))
+  val f = Exn.interruptible_capture (fn () => ML_Compiler.eval ML_Compiler.flags Position.none (ML_Lex.tokenize test_code))
   val use_Word64 = polyml64 andalso
     (case f () of 
        Exn.Res _ => true
