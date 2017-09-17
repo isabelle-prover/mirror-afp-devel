@@ -66,7 +66,7 @@ session Iptables_Semantics_Examples (AFP) = Iptables_Semantics +
     "mathpartir.sty"
 
 session Iptables_Semantics_Examples_Big (AFP slow very_slow) = Iptables_Semantics_Examples +
-  options [timeout = 60000, theory_qualifier = "Iptables_Semantics_Examples"]
+  options [timeout = 60000]
   theories
     "Examples/topoS_generated/Analyze_topos_generated"
     "Examples/IPPartEval/IP_Address_Space_Examples_All_Small"

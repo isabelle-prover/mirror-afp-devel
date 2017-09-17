@@ -1,6 +1,6 @@
 theory IP_Address_Space_Examples_All_Large
 imports 
-  "IP_Address_Space_Examples_All_Small"
+  IP_Address_Space_Examples_All_Small
 begin
 
 

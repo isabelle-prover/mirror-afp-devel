@@ -6,7 +6,7 @@ section \<open>Compatibility with Imperative/HOL\<close>
 
 theory Native_Word_Imperative_HOL imports
   Word_Misc
-  "~~/src/HOL/Imperative_HOL/Heap_Monad"
+  "HOL-Imperative_HOL.Heap_Monad"
 begin
 
 text \<open>
