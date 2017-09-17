@@ -3,8 +3,8 @@ section "Tabulating the Balanced Predicate"
 theory Root_Balanced_Tree_Tab
 imports
   Root_Balanced_Tree
-  "~~/src/HOL/Decision_Procs/Approximation"
-  "~~/src/HOL/Library/IArray"
+  "HOL-Decision_Procs.Approximation"
+  "HOL-Library.IArray"
 begin
 
 locale Min_tab =

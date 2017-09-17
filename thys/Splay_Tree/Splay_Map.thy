@@ -5,7 +5,7 @@ section "Splay Tree Implementation of Maps"
 theory Splay_Map
 imports
   Splay_Tree
-  "~~/src/HOL/Data_Structures/Map_by_Ordered"
+  "HOL-Data_Structures.Map_by_Ordered"
 begin
 
 function splay :: "'a::linorder \<Rightarrow> ('a*'b) tree \<Rightarrow> ('a*'b) tree" where

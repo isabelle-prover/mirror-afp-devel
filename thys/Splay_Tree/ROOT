@@ -2,10 +2,12 @@ chapter AFP
 
 session Splay_Tree (AFP) = "HOL-Library" +
   options [timeout = 600]
+  sessions
+    "HOL-Data_Structures"
   theories [document = false]
-    "~~/src/HOL/Data_Structures/Set_by_Ordered"
-    "~~/src/HOL/Data_Structures/Map_by_Ordered"
-    "~~/src/HOL/Data_Structures/Cmp"
+    "HOL-Data_Structures.Set_by_Ordered"
+    "HOL-Data_Structures.Map_by_Ordered"
+    "HOL-Data_Structures.Cmp"
   theories
     Splay_Tree
     Splay_Map

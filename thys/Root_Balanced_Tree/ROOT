@@ -4,11 +4,16 @@ session Root_Balanced_Tree (AFP) = "HOL-Library" +
 
   options [timeout = 600]
 
+  sessions
+    Amortized_Complexity
+    "HOL-Data_Structures"
+    "HOL-Decision_Procs"
+
   theories [document = false]
-    "~~/src/HOL/Decision_Procs/Approximation"
-    "~~/src/HOL/Data_Structures/Tree_Set"
-    "~~/src/HOL/Data_Structures/Balance"
-    "../Amortized_Complexity/Amortized_Framework0"
+    "HOL-Decision_Procs.Approximation"
+    "HOL-Data_Structures.Tree_Set"
+    "HOL-Data_Structures.Balance"
+    Amortized_Complexity.Amortized_Framework0
 
   theories
     Root_Balanced_Tree_Tab

@@ -5,7 +5,7 @@ section "Skew Heap Analysis"
 theory Skew_Heap_Analysis
 imports
   Complex_Main
-  "Skew_Heap.Skew_Heap"
+  Skew_Heap.Skew_Heap
   Amortized_Framework
   Priority_Queue_ops_merge
 begin

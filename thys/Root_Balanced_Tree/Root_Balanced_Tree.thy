@@ -2,10 +2,10 @@ section "Root Balanced Tree"
 
 theory Root_Balanced_Tree
 imports
-  "../Amortized_Complexity/Amortized_Framework0"
-  "~~/src/HOL/Library/Tree_Multiset"
-  "~~/src/HOL/Data_Structures/Tree_Set"
-  "~~/src/HOL/Data_Structures/Balance"
+  Amortized_Complexity.Amortized_Framework0
+  "HOL-Library.Tree_Multiset"
+  "HOL-Data_Structures.Tree_Set"
+  "HOL-Data_Structures.Balance"
   Time_Monad
 begin
 

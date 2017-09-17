@@ -2,9 +2,9 @@ section "Skew Heap"
 
 theory Skew_Heap
 imports
-  "~~/src/HOL/Library/Tree_Multiset"
-  "~~/src/HOL/Library/Pattern_Aliases"
-  "~~/src/HOL/Data_Structures/Priority_Queue"
+  "HOL-Library.Tree_Multiset"
+  "HOL-Library.Pattern_Aliases"
+  "HOL-Data_Structures.Priority_Queue"
 begin
 
 unbundle pattern_aliases

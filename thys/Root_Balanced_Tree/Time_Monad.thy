@@ -3,7 +3,7 @@ section \<open>Time Monad\<close>
 theory Time_Monad
 imports
   Main
-  "~~/src/HOL/Library/Monad_Syntax"
+  "HOL-Library.Monad_Syntax"
 begin
 
 datatype 'a tm = TM (val: 'a) nat

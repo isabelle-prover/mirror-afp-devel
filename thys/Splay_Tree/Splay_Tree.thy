@@ -3,8 +3,8 @@ section "Splay Tree"
 theory Splay_Tree
 imports
   "HOL-Library.Tree"
-  "~~/src/HOL/Data_Structures/Set_by_Ordered"
-  "~~/src/HOL/Data_Structures/Cmp"
+  "HOL-Data_Structures.Set_by_Ordered"
+  "HOL-Data_Structures.Cmp"
 begin
 
 text{* Splay trees were invented by Sleator and Tarjan~\cite{SleatorT-JACM85}. *}
