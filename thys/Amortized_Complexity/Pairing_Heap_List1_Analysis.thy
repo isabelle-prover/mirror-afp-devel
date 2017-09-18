@@ -286,16 +286,14 @@ proof (standard, goal_cases)
 next
   case (2 s) show ?case by (cases s) (auto simp: \<Phi>_hps_ge0)
 next
-  case (3 f) thus ?case by (cases f) (auto)
-next
-  case (4 ss f) show ?case
+  case (3 ss f) show ?case
   proof (cases f)
-    case Empty with 4 show ?thesis by(auto)
+    case Empty with 3 show ?thesis by(auto)
   next
-    case Insert thus ?thesis using \<Delta>\<Phi>_insert 4 by auto
+    case Insert thus ?thesis using \<Delta>\<Phi>_insert 3 by auto
   next
     case [simp]: Del_min
-    then obtain h where [simp]: "ss = [h]" using 4 by auto
+    then obtain h where [simp]: "ss = [h]" using 3 by auto
     show ?thesis
     proof (cases h)
       case [simp]: (Hp x hs)
@@ -306,9 +304,9 @@ next
       proof (cases "hs = []")
         case False
         hence "\<Phi> (del_min h) - \<Phi> h \<le> 3*log 2 (size_hps hs) - length hs + 2"
-          using  \<Delta>\<Phi>_del_min[of h] 4(1) by simp
+          using  \<Delta>\<Phi>_del_min[of h] 3(1) by simp
         also have "\<dots> \<le> 3*log 2 (size_hp h + 1) - length hs + 2"
-          using False 4(1) size_hps_pass2 by fastforce
+          using False 3(1) size_hps_pass2 by fastforce
         finally show ?thesis .
       qed simp
       ultimately show ?thesis by simp
@@ -316,7 +314,7 @@ next
   next
     case [simp]: Merge
     then obtain h1 h2 where [simp]: "ss = [h1, h2]"
-      using 4 by(auto simp: numeral_eq_Suc)
+      using 3 by(auto simp: numeral_eq_Suc)
     show ?thesis
     proof (cases "h1 = heap.Empty \<or> h2 = heap.Empty")
       case True thus ?thesis by auto

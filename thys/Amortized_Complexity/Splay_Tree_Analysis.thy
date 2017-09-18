@@ -399,23 +399,21 @@ proof (standard, goal_cases)
 next
   case (2 t) thus ?case by (induction t) auto
 next
-  case (3 f) thus ?case by (cases f) auto
-next
-  case (4 ss f)
+  case (3 ss f)
   show ?case (is "?l \<le> ?r")
   proof(cases f)
-    case Empty thus ?thesis using 4(2) by(simp add: a_splay_def)
+    case Empty thus ?thesis using 3(2) by(simp add: a_splay_def)
   next
     case (Splay a)
-    then obtain t where "ss = [t]" "bst t" using 4 by auto
+    then obtain t where "ss = [t]" "bst t" using 3 by auto
     thus ?thesis using Splay a_splay_ub3[OF \<open>bst t\<close>] by(simp add: a_splay_def)
   next
     case [simp]: (Insert a)
-    then obtain t where [simp]: "ss = [t]" and "bst t" using 4 by auto
+    then obtain t where [simp]: "ss = [t]" and "bst t" using 3 by auto
     thus ?thesis using amor_insert[of t a] by auto
   next
     case [simp]: (Delete a)
-    then obtain t where [simp]: "ss = [t]" and "bst t" using 4 by auto
+    then obtain t where [simp]: "ss = [t]" and "bst t" using 3 by auto
     thus ?thesis using amor_delete[of t a] by auto
   qed
 qed

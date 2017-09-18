@@ -189,20 +189,18 @@ fun U :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap list \<Rightar
 interpretation pairing: Amortized
 where arity = arity and exec = exec and cost = cost and inv = "\<lambda>_. True"
 and \<Phi> = \<Phi> and U = U
-proof
-  case goal2 show ?case by (cases s) (auto simp: \<Phi>_hps_ge0)
+proof (standard, goal_cases)
+  case (2 s) show ?case by (cases s) (auto simp: \<Phi>_hps_ge0)
 next
-  case goal3 thus ?case by (cases f) (auto)
-next
-  case goal4 show ?case
+  case (3 ss f) show ?case
   proof (cases f)
-    case Empty with goal4 show ?thesis by(auto)
+    case Empty with 3 show ?thesis by(auto)
   next
     case Insert
-    thus ?thesis using Insert \<Delta>\<Phi>_insert goal4 by auto
+    thus ?thesis using Insert \<Delta>\<Phi>_insert 3 by auto
   next
     case [simp]: Del_min
-    then obtain ho where [simp]: "ss = [ho]" using goal4 by auto
+    then obtain ho where [simp]: "ss = [ho]" using 3 by auto
     show ?thesis
     proof (cases ho)
       case [simp]: (Some h)
@@ -227,7 +225,7 @@ next
   next
     case [simp]: Merge
     then obtain ho1 ho2 where [simp]: "ss = [ho1, ho2]"
-      using goal4 by(auto simp: numeral_eq_Suc)
+      using 3 by(auto simp: numeral_eq_Suc)
     show ?thesis
     proof (cases "ho1 = None \<or> ho2 = None")
       case True thus ?thesis by auto

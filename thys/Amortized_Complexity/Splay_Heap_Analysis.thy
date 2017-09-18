@@ -198,17 +198,15 @@ proof (standard, goal_cases)
 next
   case (2 h) thus ?case by(induction h) (auto simp: size1_def)
 next
-  case (3 f) thus ?case by(cases f)(auto)
-next
-  case (4 s f)
+  case (3 s f)
   show ?case
   proof (cases f)
-    case Empty with 4 show ?thesis by(auto)
+    case Empty with 3 show ?thesis by(auto)
   next
-    case Del_min with 4 show ?thesis by(auto simp: amor_del_min)
+    case Del_min with 3 show ?thesis by(auto simp: amor_del_min)
   next
     case [simp]: (Insert x)
-    then obtain t where [simp]: "s = [t]" "bst_wrt (op \<le>) t" using 4 by auto
+    then obtain t where [simp]: "s = [t]" "bst_wrt (op \<le>) t" using 3 by auto
     { fix l r assume 1: "partition x t = (l,r)"
       have "log 2 (1 + size t) < log 2 (2 + size t)" by simp
       with 1 amor_partition[OF \<open>bst_wrt (op \<le>) t\<close> 1] size_partition[OF 1] have ?thesis

@@ -169,20 +169,18 @@ proof (standard, goal_cases)
 next
   case (2 h) show ?case using \<Phi>_nneg[of h] by linarith
 next
-  case (3 f) thus ?case by(cases f)(auto)
-next
-  case (4 ss f)
+  case (3 ss f)
   show ?case
   proof (cases f)
-    case Empty thus ?thesis using 4(2) by (auto)
+    case Empty thus ?thesis using 3(2) by (auto)
   next
     case [simp]: (Insert a)
-    obtain h where [simp]: "ss = [h]" using 4(2) by (auto)
+    obtain h where [simp]: "ss = [h]" using 3(2) by (auto)
     thus ?thesis using a_merge[of "Node Leaf a Leaf" "h"]
       by (simp add: numeral_eq_Suc insert_def rh_def of_nat_nat[OF t_merge_nneg])
   next
     case [simp]: Del_min
-    obtain h where [simp]: "ss = [h]" using 4(2) by (auto)
+    obtain h where [simp]: "ss = [h]" using 3(2) by (auto)
     thus ?thesis
     proof (cases h)
       case Leaf with Del_min show ?thesis by simp
@@ -195,7 +193,7 @@ next
     qed
   next
     case [simp]: Merge
-    obtain h1 h2 where "ss = [h1,h2]" using 4(2) by (auto simp: numeral_eq_Suc)
+    obtain h1 h2 where "ss = [h1,h2]" using 3(2) by (auto simp: numeral_eq_Suc)
     thus ?thesis using a_merge[of h1 h2] by (simp add: of_nat_nat[OF t_merge_nneg])
   qed
 qed

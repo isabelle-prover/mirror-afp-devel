@@ -53,9 +53,7 @@ proof (standard, goal_cases)
 next
   case 2 show ?case by(simp add: \<Phi>_def)
 next
-  case (3 f) thus ?case by(cases f)(auto simp: \<Phi>_def)
-next
-  case 4 thus ?case using a_incr by(auto simp: \<Phi>_def split: ops.split)
+  case 3 thus ?case using a_incr by(auto simp: \<Phi>_def split: ops.split)
 qed
 
 end (* Bin_Counter *)
@@ -93,9 +91,7 @@ proof (standard, goal_cases)
 next
   case 2 thus ?case by simp
 next
-  case (3 f) thus ?case by (cases f) auto
-next
-  case 4 thus ?case by (auto split: ops.split)
+  case 3 thus ?case by (auto split: ops.split)
 qed
 
 end (* Multipop *)
@@ -132,9 +128,7 @@ proof (standard, goal_cases)
 next
   case 2 thus ?case by(auto split: prod.splits)
 next
-  case (3 f) thus ?case by(cases f)(auto split: if_splits)
-next
-  case 4 thus ?case by (auto split: ops.split) linarith
+  case 3 thus ?case by (auto split: ops.split) linarith
 qed
 
 end (* Dyn_Tab1 *)
@@ -233,27 +227,25 @@ proof (standard, goal_cases)
 next
   case 2 thus ?case by(auto simp: field_simps split: if_splits prod.splits)
 next
-  case (3 f) show ?case by(cases f)(auto)
-next
-  case (4 ss f)
+  case (3 ss f)
   show ?case
   proof (cases f)
-    case Empty thus ?thesis using 4(2) by simp
+    case Empty thus ?thesis using 3(2) by simp
   next
     case [simp]: Ins
-    obtain n l where [simp]: "ss = [(n,l)]" using 4(2) by (auto)
+    obtain n l where [simp]: "ss = [(n,l)]" using 3(2) by (auto)
     show ?thesis
     proof cases
-      assume "l=0" thus ?thesis using 4 by (simp)
+      assume "l=0" thus ?thesis using 3 by (simp)
     next
       assume [arith]: "l\<noteq>0"
       show ?thesis
       proof cases
         assume "n<l"
-        thus ?thesis using 4 ac by(simp add: algebra_simps b_def)
+        thus ?thesis using 3 ac by(simp add: algebra_simps b_def)
       next
         assume "\<not> n<l"
-        hence [simp]: "n=l" using 4 by simp
+        hence [simp]: "n=l" using 3 by simp
         have "cost Ins [(n,l)] + \<Phi> (ins (n,l)) - \<Phi>(n,l) = l + a + 1 + (- b*ceiling(c*l)) + b*l"
           using `l\<noteq>0`
           by(simp add: algebra_simps less_trans[of "-1::real" 0])
@@ -305,9 +297,7 @@ proof (standard, goal_cases)
 next
   case 2 thus ?case by(auto split: prod.splits)
 next
-  case (3 f) thus ?case by(cases f)(auto)
-next
-  case (4 _ f) thus ?case
+  case (3 _ f) thus ?case
     by (cases f)(auto simp: field_simps split: prod.splits)
 qed
 
@@ -349,9 +339,7 @@ proof (standard, goal_cases)
 next
   case 2 thus ?case by (auto split: prod.splits)
 next
-  case (3 f) thus ?case by (cases f) auto
-next
-  case 4 thus ?case by(auto split: ops.split)
+  case 3 thus ?case by(auto split: ops.split)
 qed
 
 end (* Queue *)
@@ -391,9 +379,7 @@ proof (standard, goal_cases)
 next
   case 2 thus ?case by (auto)
 next
-  case (3 f) thus ?case by (cases f) (auto)
-next
-  case (4 _ f) thus ?case by(cases f) (auto split: prod.splits)
+  case (3 _ f) thus ?case by(cases f) (auto split: prod.splits)
 qed
 
 end (* Queue2 *)

@@ -19,7 +19,6 @@ fixes \<Phi> :: "'s \<Rightarrow> real"
 fixes U :: "'op \<Rightarrow> 's list \<Rightarrow> real"
 assumes inv_exec: "\<lbrakk>\<forall>s \<in> set ss. inv s; length ss = arity f \<rbrakk> \<Longrightarrow> inv(exec f ss)"
 assumes ppos: "inv s \<Longrightarrow> \<Phi> s \<ge> 0"
-assumes p0: "arity f = 0 \<Longrightarrow> \<Phi> (exec f []) = 0"
 assumes U: "\<lbrakk> \<forall>s \<in> set ss. inv s; length ss = arity f \<rbrakk>
  \<Longrightarrow> cost f ss + \<Phi>(exec f ss) - sum_list (map \<Phi> ss) \<le> U f ss"
 begin
@@ -47,7 +46,7 @@ fun U_sum :: "'op rose_tree \<Rightarrow> real" where
 
 lemma t_sum_a_sum: "wf ot \<Longrightarrow> cost_sum ot = acost_sum ot - \<Phi>(state ot)"
 apply(induction ot)
-apply (auto simp: acost_def p0 Let_def sum_list_subtractf cong: sum_list_cong)
+apply (auto simp: acost_def Let_def sum_list_subtractf cong: sum_list_cong)
 apply (simp add: o_def)
 done
 
@@ -104,9 +103,7 @@ proof (standard, goal_cases)
 next
   case 2 thus ?case by(simp add: inv_hom ppos)
 next
-  case 3 thus ?case by(simp add: exec' p0 inv_exec)
-next
-  case 4 thus ?case
+  case 3 thus ?case
     by(simp add: U exec' U' map_map[symmetric] cost' inv_exec inv_hom del: map_map)
 qed
 

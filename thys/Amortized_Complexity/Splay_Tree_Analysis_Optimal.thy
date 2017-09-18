@@ -364,20 +364,18 @@ proof (standard, goal_cases)
 next
   case (2 t) show ?case by(induction t)(simp_all add: S34.\<phi>_def)
 next
-  case (3 f) thus ?case by (cases f) auto
-next
-  case (4 ss f)
+  case (3 ss f)
   show ?case (is "?l \<le> ?r")
   proof(cases f)
-    case Empty thus ?thesis using 4(2) by(simp add: S34.A_def)
+    case Empty thus ?thesis using 3(2) by(simp add: S34.A_def)
   next
     case (Splay a)
-    then obtain t where "ss = [t]" "bst t" using 4 by auto
+    then obtain t where "ss = [t]" "bst t" using 3 by auto
     thus ?thesis using S34.A_ub3[OF \<open>bst t\<close>] Splay
       by(simp add: S34.A_def log4_log2)
   next
     case [simp]: (Insert a)
-    obtain t where [simp]: "ss = [t]" and "bst t" using 4 by auto
+    obtain t where [simp]: "ss = [t]" and "bst t" using 3 by auto
     show ?thesis
     proof cases
       assume "t = Leaf" thus ?thesis by(simp add: S34.\<phi>_def log4_log2)
@@ -436,7 +434,7 @@ next
     qed
   next
     case [simp]: (Delete a)
-    obtain t where [simp]: "ss = [t]" and "bst t" using 4 by auto
+    obtain t where [simp]: "ss = [t]" and "bst t" using 3 by auto
     show ?thesis
     proof (cases t)
       case Leaf thus ?thesis

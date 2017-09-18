@@ -208,18 +208,16 @@ proof (standard, goal_cases)
 next
   case (2 s) show ?case by (induct s) simp_all
 next
-  case (3 f) thus ?case by(cases f) auto
-next
-  case (4 ss f) show ?case 
+  case (3 ss f) show ?case 
   proof (cases f)
-    case Empty with 4 show ?thesis by(auto)
+    case Empty with 3 show ?thesis by(auto)
   next
     case (Insert x)
-    then obtain h where "ss = [h]" "is_root h" using 4 by auto
-    thus ?thesis using Insert \<Delta>\<Phi>_insert 4 by auto
+    then obtain h where "ss = [h]" "is_root h" using 3 by auto
+    thus ?thesis using Insert \<Delta>\<Phi>_insert 3 by auto
   next
     case [simp]: (Del_min)
-    then obtain h where [simp]: "ss = [h]" using 4 by auto
+    then obtain h where [simp]: "ss = [h]" using 3 by auto
     show ?thesis
     proof (cases h)
       case [simp]: (Node lx x rx)
@@ -230,16 +228,16 @@ next
       proof (cases lx)
         case [simp]: (Node ly y ry) 
         have "\<Phi> (del_min h) - \<Phi> h \<le> 3*log 2 (size lx) - len lx + 2"
-          using  \<Delta>\<Phi>_del_min[of "lx" "x"] 4 by simp
+          using  \<Delta>\<Phi>_del_min[of "lx" "x"] 3 by simp
         also have "\<dots> \<le> 3*log 2 (size h + 1) - len lx + 2" by fastforce
         finally show ?thesis by blast
-      qed (insert 4, simp)
+      qed (insert 3, simp)
       ultimately show ?thesis by auto
     qed simp
   next
     case [simp]: Merge
     then obtain h1 h2 where [simp]: "ss = [h1,h2]" and 1: "is_root h1" "is_root h2"
-      using 4 by (auto simp: numeral_eq_Suc)
+      using 3 by (auto simp: numeral_eq_Suc)
     show ?thesis
     proof (cases h1)
       case Leaf thus ?thesis by (cases h2) auto
