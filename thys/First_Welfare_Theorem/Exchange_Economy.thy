@@ -7,11 +7,11 @@ Author: Cezary Kaliszyk
 
 theory Exchange_Economy
   imports
-    "~~/src/HOL/Analysis/Analysis"
-    "Preferences"
-    "Utility_Functions"
-    "Argmax"
-    "Consumers"
+    "HOL-Analysis.Analysis"
+    Preferences
+    Utility_Functions
+    Argmax
+    Consumers
 begin
 
 section \<open> Pareto Ordering \<close>

@@ -9,7 +9,7 @@ section \<open>Preference Relations\<close>
 text \<open> Preferences modeled as a set of pairs \<close>
 
 theory Preferences
-  imports "~~/src/HOL/Analysis/Analysis"
+  imports "HOL-Analysis.Analysis"
     Syntax
 begin
 

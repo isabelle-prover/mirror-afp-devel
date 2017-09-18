@@ -14,7 +14,7 @@ theory Gcd_Finite_Field_Impl
 imports 
   Suitable_Prime
   Code_Abort_Gcd
-  Code_Target_Int (* to be able to efficiently primality of medium large numbers *)
+  "HOL-Library.Code_Target_Int" (* to be able to efficiently primality of medium large numbers *)
 begin
 
 definition coprime_approx_main :: "int \<Rightarrow> 'i arith_ops_record \<Rightarrow> int poly \<Rightarrow> int poly \<Rightarrow> bool" where

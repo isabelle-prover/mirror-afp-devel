@@ -13,7 +13,7 @@ Title:      HOL/Lattices-Big.thy
 
 theory Argmax
   imports
-    "~~/src/HOL/Analysis/Analysis"
+    "HOL-Analysis.Analysis"
 begin
 
 

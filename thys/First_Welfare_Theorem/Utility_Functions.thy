@@ -12,7 +12,7 @@ text \<open> Utility functions and results involving them. \<close>
 theory Utility_Functions
   imports
     Preferences
-    "~~/src/HOL/Analysis/Analysis"
+    "HOL-Analysis.Analysis"
     Syntax
 begin
 

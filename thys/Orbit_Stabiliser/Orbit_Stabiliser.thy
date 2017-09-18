@@ -7,9 +7,9 @@ In this Theory we will prove the orbit-stabiliser theorem, a basic result in the
 theory Orbit_Stabiliser
   imports
     Main
-    "~~/src/HOL/Algebra/Group"
-    "Left_Coset"
-    "~~/src/HOL/Fun"
+    "HOL-Algebra.Group"
+    Left_Coset
+    HOL.Fun
 
 begin
 

@@ -1,6 +1,6 @@
 theory Left_Coset
 imports
-  "~~/src/HOL/Algebra/Coset"
+  "HOL-Algebra.Coset"
 
 begin
 

@@ -12,9 +12,9 @@ text \<open> Consumption sets \<close>
 
 theory Consumers
   imports
-    "~~/src/HOL/Analysis/Analysis"
+    "HOL-Analysis.Analysis"
     Syntax
-    Ordered_Euclidean_Space
+    "HOL-Analysis.Ordered_Euclidean_Space"
 begin
 
 subsection \<open> Pre Arrow-Debreu consumption set \<close>

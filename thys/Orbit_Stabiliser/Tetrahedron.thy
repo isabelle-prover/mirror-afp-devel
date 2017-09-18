@@ -1,7 +1,7 @@
 chapter "Rotational Symmetries of the Tetrahedron"
 
 theory Tetrahedron
-imports "Orbit_Stabiliser"
+imports Orbit_Stabiliser
 begin
 
 section "Definition of the Tetrahedron and its Rotations"

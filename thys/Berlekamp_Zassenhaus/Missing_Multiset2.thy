@@ -1,5 +1,5 @@
 theory Missing_Multiset2
-  imports Multiset Permutation Permutations
+  imports "HOL-Library.Multiset" "HOL-Library.Permutation" "HOL-Library.Permutations"
     Containers.Containers_Auxiliary (* only for a lemma *)
 begin
 

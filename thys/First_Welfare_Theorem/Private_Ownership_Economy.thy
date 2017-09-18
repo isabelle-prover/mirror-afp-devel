@@ -13,13 +13,13 @@ text \<open> Model similar to Arrow-Debreu model but with fewer assumptions,
 
 theory Private_Ownership_Economy
   imports
-    "~~/src/HOL/Analysis/Analysis"
-    "Preferences"
-    "Consumers"
-    "Real_Vector_Spaces"
-    "Preferences"
-    "Utility_Functions"
-    "Argmax"
+    "HOL-Analysis.Analysis"
+    Preferences
+    Consumers
+    HOL.Real_Vector_Spaces
+    Preferences
+    Utility_Functions
+    Argmax
     Exchange_Economy
 begin
 
