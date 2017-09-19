@@ -1,6 +1,8 @@
 (*<*)
 theory TAO_5_MetaSolver
-imports TAO_4_BasicDefinitions "~~/src/HOL/Eisbach/Eisbach"
+imports 
+  TAO_4_BasicDefinitions 
+  "HOL-Eisbach.Eisbach"
 begin
 (*>*)
 

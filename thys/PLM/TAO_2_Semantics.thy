@@ -1,6 +1,8 @@
 (*<*)
 theory TAO_2_Semantics
-imports TAO_1_Embedding "~~/src/HOL/Eisbach/Eisbach"
+imports 
+  TAO_1_Embedding 
+  "HOL-Eisbach.Eisbach"
 begin
 (*>*)
 

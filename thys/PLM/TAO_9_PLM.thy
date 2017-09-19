@@ -1,6 +1,8 @@
 (*<*)
 theory TAO_9_PLM
-imports TAO_8_Definitions "~~/src/HOL/Eisbach/Eisbach_Tools"
+imports 
+  TAO_8_Definitions 
+  "HOL-Eisbach.Eisbach_Tools"
 begin
 (*>*)
 

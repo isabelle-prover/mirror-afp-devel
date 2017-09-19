@@ -5,8 +5,12 @@ session "PLM" (AFP) = "HOL" +
     show_question_marks = false,
     timeout = 600,
     names_short = true]
+  sessions
+    "HOL-Eisbach"
+    "HOL-Library"
   theories [document = false]
-    "~~/src/HOL/Eisbach/Eisbach"
+    "HOL-Eisbach.Eisbach"
+    "HOL-Library.OptionalSugar"
   theories
 	TAO_1_Embedding
 	TAO_2_Semantics

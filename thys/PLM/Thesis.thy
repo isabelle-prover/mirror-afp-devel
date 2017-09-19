@@ -1,8 +1,8 @@
 (*<*)
 theory Thesis
 imports TAO_9_PLM TAO_98_ArtificialTheorems TAO_99_SanityTests TAO_99_Paradox TAO_10_PossibleWorlds
-    "~~/src/HOL/Library/LaTeXsugar"
-    "~~/src/HOL/Library/OptionalSugar"
+    "HOL-Library.LaTeXsugar"
+    "HOL-Library.OptionalSugar"
 begin
 (*>*)
 
