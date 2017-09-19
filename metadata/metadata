@@ -6007,3 +6007,47 @@ abstract =
   to prove that there are twelve (orientation-preserving) rotations of
   the tetrahedron.
 
+[PLM]
+title = Representation and Partial Automation of the Principia Logico-Metaphysica in Isabelle/HOL
+author = Daniel Kirchner <mailto:daniel@ekpyron.org>
+topic = Logic
+date = 2017-09-17
+notify = daniel@ekpyron.org
+abstract = 
+  <p> We present an embedding of the second-order fragment of the
+  Theory of Abstract Objects as described in Edward Zalta's
+  upcoming work <a
+  href="https://mally.stanford.edu/principia.pdf">Principia
+  Logico-Metaphysica (PLM)</a> in the automated reasoning
+  framework Isabelle/HOL. The Theory of Abstract Objects is a
+  metaphysical theory that reifies property patterns, as they for
+  example occur in the abstract reasoning of mathematics, as
+  <b>abstract objects</b> and provides an axiomatic
+  framework that allows to reason about these objects. It thereby serves
+  as a fundamental metaphysical theory that can be used to axiomatize
+  and describe a wide range of philosophical objects, such as Platonic
+  forms or Leibniz' concepts, and has the ambition to function as a
+  foundational theory of mathematics. The target theory of our embedding
+  as described in chapters 7-9 of PLM employs a modal relational type
+  theory as logical foundation for which a representation in functional
+  type theory is <a
+  href="https://mally.stanford.edu/Papers/rtt.pdf">known to
+  be challenging</a>. </p> <p> Nevertheless we arrive
+  at a functioning representation of the theory in the functional logic
+  of Isabelle/HOL based on a semantical representation of an Aczel-model
+  of the theory. Based on this representation we construct an
+  implementation of the deductive system of PLM which allows to
+  automatically and interactively find and verify theorems of PLM.
+  </p> <p> Our work thereby supports the concept of shallow
+  semantical embeddings of logical systems in HOL as a universal tool
+  for logical reasoning <a
+  href="http://www.mi.fu-berlin.de/inf/groups/ag-ki/publications/Universal-Reasoning/1703_09620_pd.pdf">as
+  promoted by Christoph Benzm&uuml;ller</a>. </p>
+  <p> The most notable result of the presented work is the
+  discovery of a previously unknown paradox in the formulation of the
+  Theory of Abstract Objects. The embedding of the theory in
+  Isabelle/HOL played a vital part in this discovery. Furthermore it was
+  possible to immediately offer several options to modify the theory to
+  guarantee its consistency. Thereby our work could provide a
+  significant contribution to the development of a proper grounding for
+  object theory. </p>
