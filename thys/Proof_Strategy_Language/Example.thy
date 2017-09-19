@@ -2,11 +2,12 @@
     Author:     Yutaka Nagashima, Data61, CSIRO
 
 This file contains small examples showing how to use PSL and its default strategy try-hard.
-The examples includes Example3 presented in the TACAS2017 draft.
+These examples are kept intentionally simple for illustration purposes.
+See other files from AFP for more involved examples.
 *)
 
 theory Example
-imports PSL "HOL-Eisbach.Eisbach"
+imports "PSL" "HOL-Eisbach.Eisbach" 
 begin
 
 (* The "Hammer" strategy invokes sledgehammer as a sub-tool. *)
@@ -110,7 +111,7 @@ oops
 
 (* By combining "Defer" and "Hammer", we can discharge some proof obligations automatically with
  * sledgehammer, while deferring "difficult" problems.  *)
-strategy Hammers =  RepeatN ( Ors [Hammer, Defer]  )
+strategy Hammer_Or_Defer =  RepeatN ( Ors [Hammer, Thens[Quickcheck, Defer]])
 definition "safe_state x y \<equiv> True"
 lemma state_safety:"safe_state (x::bool) (y::bool) = True"
 apply normalization done
@@ -122,8 +123,7 @@ lemma cnjct2:
 shows 1:"ps_safe p s"
  and  2:"valid_trans p s s' x"
  and  3:"ps_safe p s'"
-try_hard1
-(* find_proof Hammers *)  (* FIXME very slow?? *)
+find_proof Hammer_Or_Defer (* very slow *)
 oops
 
 (* The "Cut" combinator restricts non-determinism by pruning branches. *)

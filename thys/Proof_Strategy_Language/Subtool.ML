@@ -40,12 +40,11 @@ fun nontac (state:Proof.state) =
     fun trace_cexm _    = show_trace "Quickcheck.quickcheck found a  counterexample";
     fun trace_scexn _   = show_trace ("Quickcheck.quickcheck found a potentially spurious " ^
                                       "counterexample due to underspecified functions");
-    fun trace_error str = show_trace ("Quickcheck did not work well because " ^ str);
-    fun result _        =  (case quickcheck [] 1 state of
+    fun get_result _    =  (case quickcheck [] 1 state of
       NONE => (trace_no_cexm (); single)
     | SOME (genuine, _) => if genuine then (trace_cexm (); Seq.empty) else (trace_scexn (); single));
   in
-    result () handle ERROR msg => (trace_error msg; single) : Proof.state Seq.seq
+    Utils.try_with single get_result state
   end;
 
 val state_stttac = Dynamic_Utils.log_n_nontac_to_stttac ([], nontac);
@@ -131,7 +130,7 @@ let
     let
       val app = case node of
         Dynamic_Utils.Apply app_node => app_node
-      | _ => error "app in Sledgehammer_Tacctic panics.";
+      | _ => error "app in Sledgehammer_Tactic panics.";
       fun tracing1 _ = tracing ("methN in node is " ^ #methN app);
       fun tracing2 _ = tracing "using_strings are ...";
       fun tracing3 _ = map tracing using_strings;
@@ -145,12 +144,7 @@ let
                       |> Seq.filter_results
                      (*Why Seq.try Seq.hd? Because we want to evaluate the head of
                        sequence strictly here to catch errors immediately.*)
-                      |> Seq.try Seq.hd
-                      handle THM _ => Seq.empty
-                           | Empty => Seq.empty
-                           | TERM _ => Seq.empty
-                           | TYPE _ => Seq.empty
-                           | ERROR _ => Seq.empty : Proof.state Seq.seq;
+                      |> Utils.try_with Seq.empty (Seq.try Seq.hd): Proof.state Seq.seq;
   val results_w_log = Seq.map (fn x => ([node], x)) tac_results : (Dynamic_Utils.log * Proof.state) Seq.seq;
 in
   results_w_log : (Dynamic_Utils.log * Proof.state) Seq.seq
@@ -164,7 +158,8 @@ fun hammer_logtac (pstate:Proof.state) =
     val valOf              = Option.valOf;
     val omap               = Option.map;
     val thy                = Proof.theory_of pstate : theory;
-    val params             = Sledgehammer_Commands.default_params thy [];
+    val params             = Sledgehammer_Commands.default_params thy
+                             [("isar_proofs", "false"),("smt_proofs", "false")]
     val Auto_Try           = Sledgehammer_Prover.Auto_Try;
     val fact_override      = Sledgehammer_Fact.no_fact_override;
     val run_sledgehammer   = Sledgehammer.run_sledgehammer params Auto_Try NONE 1 fact_override
@@ -178,9 +173,14 @@ fun hammer_logtac (pstate:Proof.state) =
     val orig_string        = result <$> snd <$> snd <$> hd handle Empty =>
                              (if Utils.debug then tracing "Empty in orig_string/hammer_logtac" else (); 
                               NONE) : string option;
+    fun did_smt_timeout (out::timed::_) = (Utils.are_same ("out)", out)) andalso
+                                          (Utils.are_same ("timed", timed))
+     |  did_smt_timeout _ = error "Something went wrong in Subtool.ML";
     val one_line_apply     = orig_string <$> space_explode " "
                             <$> drop 2                           (* drop "Try this:"*)
-                            <$> rev <$> drop 2 <$> rev           (* drop "(0.1 ms)." and such.*)
+                            <$> rev <$> (fn tokens =>
+                                if did_smt_timeout tokens then drop 5 tokens else drop 2 tokens)
+                            <$> rev           (* drop "(0.1 ms)." and such.*)
                             <$> String.concatWith " "            : string option;
     val apply_script_cntnt = omap YXML.content_of one_line_apply : string option;
     val sh_returned        = if is_some apply_script_cntnt
@@ -211,12 +211,11 @@ val to_stttac  = Dynamic_Utils.log_n_nontac_to_stttac;
 
 fun is_solved_nontac(state:Proof.state) =
   let
-    val single  = Seq.single;
-    val empty   = Seq.empty;
     val done    = Proof.local_done_proof;
     val goal    = state |> Proof.goal |> #goal : thm;
     val no_goal = Thm.nprems_of goal = 0 : bool;
-    val result  = if no_goal then state |> done |> single handle ERROR _ => single state else empty;
+    val result  = if no_goal then state |> done |> Seq.single
+      handle ERROR _ => Seq.single state else Seq.empty;
   in
     result : Proof.state Seq.seq
   end;
