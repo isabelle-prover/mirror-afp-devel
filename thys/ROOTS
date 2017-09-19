@@ -13,6 +13,7 @@ Abstract_Soundness
 Abs_Int_ITP2012
 Algebraic_Numbers
 Allen_Calculus
+AnselmGod
 Applicative_Lifting
 ArrowImpossibilityGS
 AutoFocus-Stream
@@ -251,6 +252,7 @@ Perron_Frobenius
 Pi_Calculus
 pGCL
 Planarity_Certificates
+PLM
 POPLmark-deBruijn
 Polynomial_Interpolation
 Polynomial_Factorization
