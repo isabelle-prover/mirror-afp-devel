@@ -2,11 +2,18 @@ chapter AFP
 
 session Affine_Arithmetic (AFP) = "HOL-Analysis" +
   options [timeout = 1200]
+  sessions
+    "HOL-Decision_Procs"
+    "List-Index"
+    Deriving
+    Show
   theories [document = false]
     "HOL-Library.Code_Target_Numeral"
     "HOL-Library.Monad_Syntax"
     "HOL-Library.Permutation"
     "HOL-Library.Float"
+    "Deriving.Derive"
+    "Show.Show_Instances"
   theories
     Affine_Arithmetic
   document_files

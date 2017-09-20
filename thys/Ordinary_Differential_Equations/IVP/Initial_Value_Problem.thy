@@ -1,6 +1,7 @@
 section\<open>Initial Value Problems\<close>
 theory Initial_Value_Problem
-imports "../ODE_Auxiliarities"
+  imports
+    "../ODE_Auxiliarities"
 begin
 
 lemma clamp_le[simp]: "x \<le> a \<Longrightarrow> clamp a b x = a" for x::"'a::ordered_euclidean_space"
@@ -295,6 +296,75 @@ lemma bounded_vderiv_on_imp_lipschitz:
   by (auto simp: has_vderiv_on_def has_vector_derivative_def onorm_scaleR_left onorm_id
     intro!: bounded_derivative_imp_lipschitz[where f' = "\<lambda>x d. d *\<^sub>R f' x"])
 
+lemma lipschitz_leI:
+  assumes "\<And>x (y::'a::{linorder_topology, ordered_real_vector, metric_space}).
+      x \<in> t \<Longrightarrow> y \<in> t \<Longrightarrow> x \<le> y \<Longrightarrow> dist (f x) (f y) \<le> L * dist x y"
+  assumes "0 \<le> L"
+  shows "lipschitz t f L"
+proof (rule lipschitzI)
+  fix x y assume xy: "x \<in> t" "y \<in> t"
+  consider "y \<le> x" | "x \<le> y"
+    by (rule le_cases)
+  then show "dist (f x) (f y) \<le> L * dist x y"
+  proof cases
+    case 1
+    then have "dist (f y) (f x) \<le> L * dist y x"
+      by (auto intro!: assms xy)
+    then show ?thesis
+      by (simp add: dist_commute)
+  qed (auto intro!: assms xy)
+qed fact
+
+proposition lipschitz_concat:
+  fixes a b c::real
+  assumes f: "lipschitz {a .. b} f L"
+  assumes g: "lipschitz {b .. c} g L"
+  assumes fg: "f b = g b"
+  shows "lipschitz {a .. c} (\<lambda>x. if x \<le> b then f x else g x) L"
+    (is "lipschitz _ ?f _")
+proof (rule lipschitz_leI)
+  fix x y
+  assume x: "x \<in> {a..c}" and y: "y \<in> {a..c}" and xy: "x \<le> y"
+  consider "x \<le> b \<and> b < y" | "x \<ge> b \<or> y \<le> b" by arith
+  then show "dist (?f x) (?f y) \<le> L * dist x y"
+  proof cases
+    case 1
+    have "dist (f x) (g y) \<le> dist (f x) (f b) + dist (g b) (g y)"
+      unfolding fg by (rule dist_triangle)
+    also have "dist (f x) (f b) \<le> L * dist x b"
+      using 1 x
+      by (auto intro!: lipschitzD[OF f])
+    also have "dist (g b) (g y) \<le> L * dist b y"
+      using 1 x y
+      by (auto intro!: lipschitzD[OF g] lipschitzD[OF f])
+    finally have "dist (f x) (g y) \<le> L * dist x b + L * dist b y"
+      by simp
+    also have "\<dots> = L * (dist x b + dist b y)"
+      by (simp add: algebra_simps)
+    also have "dist x b + dist b y = dist x y"
+      using 1 x y
+      by (auto simp: dist_real_def abs_real_def)
+    finally show ?thesis
+      using 1 by simp
+  next
+    case 2
+    with lipschitzD[OF f, of x y] lipschitzD[OF g, of x y] x y xy
+    show ?thesis
+      by (auto simp: fg)
+  qed
+qed (rule lipschitz_nonneg[OF f])
+
+proposition lipschitz_concat_max:
+  fixes a b c::real
+  assumes f: "lipschitz {a .. b} f L"
+  assumes g: "lipschitz {b .. c} g M"
+  assumes fg: "f b = g b"
+  shows "lipschitz {a .. c} (\<lambda>x. if x \<le> b then f x else g x) (max L M)"
+proof -
+  have "lipschitz {a .. b} f (max L M)" "lipschitz {b .. c} g (max L M)"
+    by (auto intro!: lipschitz_mono[OF f order_refl] lipschitz_mono[OF g order_refl])
+  from lipschitz_concat[OF this fg] show ?thesis .
+qed
 
 subsection \<open>Local Lipschitz continuity (uniformly for a family of functions)\<close>
 

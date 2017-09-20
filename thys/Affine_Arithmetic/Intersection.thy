@@ -1,9 +1,10 @@
 section \<open>Intersection\<close>
 theory Intersection
 imports
+  "HOL-Library.Monad_Syntax"
   Polygon
   Counterclockwise_2D_Arbitrary
-  Affine_Code
+  Affine_Form
 begin
 text \<open>\label{sec:intersection}\<close>
 
@@ -178,16 +179,6 @@ subsection \<open>Orient all entries\<close>
 
 lift_definition nlex_pdevs::"point pdevs \<Rightarrow> point pdevs"
   is "\<lambda>x n. if lex 0 (x n) then - x n else x n" by simp
-
-lift_definition nlex_slist::"(nat, point) slist \<Rightarrow> (nat, point) slist" is
-  "map (\<lambda>(i, x). (i, if lex 0 x then - x else x))"
-  by (auto simp: o_def split_beta')
-
-lemma Pdevs_raw_map: "f 0 = 0 \<Longrightarrow> Pdevs_raw (map (\<lambda>(i, x). (i, f x)) xs) i = f (Pdevs_raw xs i)"
-  by (auto simp: Pdevs_raw_def map_of_map split: option.split)
-
-lemma compute_nlex_pdevs[code]: "nlex_pdevs (Pdevs x) = Pdevs (nlex_slist x)"
-  by transfer (auto simp: Pdevs_raw_map)
 
 lemma pdevs_apply_nlex_pdevs[simp]: "pdevs_apply (nlex_pdevs x) n =
   (if lex 0 (pdevs_apply x n) then - pdevs_apply x n else pdevs_apply x n)"
@@ -1520,6 +1511,7 @@ lemma segments_of_aform_strict:
   using assms
   by (auto simp: segments_of_aform_def Let_def mirror_half_segments_of_aform
     half_segments_of_aform_strict_all)
+  
 
 lemma mirror_point_aform_val[simp]: "mirror_point (fst X) (aform_val e X) = aform_val (- e) X"
   by (auto simp: mirror_point_def aform_val_def pdevs_val_sum algebra_simps scaleR_2 sum_negf)
@@ -1624,7 +1616,7 @@ lemma fst_compose_pairself: "fst o pairself f = f o fst"
   by (auto simp: pairself_apply)
 
 lemma in_set_butlastI: "xs \<noteq> [] \<Longrightarrow> x \<in> set xs \<Longrightarrow> x \<noteq> last xs \<Longrightarrow> x \<in> set (butlast xs)"
-  by (induct xs) auto
+  by (induct xs) (auto split: if_splits)
 
 lemma distinct_in_set_butlastD:
   "x \<in> set (butlast xs) \<Longrightarrow> distinct xs \<Longrightarrow> x \<noteq> last xs"
@@ -2644,17 +2636,6 @@ proof -
   also note inter_aform_plane_ortho_overappr[OF assms]
   finally show ?thesis .
 qed
-
-
-subsection \<open>Example\<close>
-
-value [code]
-  "inter_aform_plane_ortho 53
-    (0, pdevs_of_list [(5::real, 10::real, 20::real), (2, 0, 0), (0, 1, 0)])
-    (0::real, 0::real, 1::real) 0
-    ::
-    (real \<times> real \<times> real) aform option"
-
 
 subsection \<open>``Completeness'' of Intersection\<close>
 

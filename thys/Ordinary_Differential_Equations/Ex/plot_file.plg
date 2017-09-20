@@ -1,0 +1,12 @@
+# call me with gnuplot -c plot_file.plg infile xlabel ylabel
+filename=ARG1
+xl=ARG2
+yl=ARG3
+infile=filename.".out"
+outfile=filename.".pdf"
+set size ratio 0
+set term pdfcairo size 15cm,10cm
+set output outfile
+set xlabel xl
+set ylabel yl
+plot infile using 1:2:3:4:5 with vectors nohead lc rgb variable notitle

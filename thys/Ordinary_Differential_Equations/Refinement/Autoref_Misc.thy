@@ -1,7 +1,7 @@
 (* TODO: Integrate into Misc*)
 theory Autoref_Misc
 imports
-  "HOL-ODE-Refinement.Refine_Dflt_No_Comp"
+  "Refine_Dflt_No_Comp"
   "HOL-Analysis.Analysis"
 begin
 
@@ -330,6 +330,20 @@ lemmas [refine_transfer_post_simp] = dres_monad_laws
 
 subsection \<open>things added by Fabian\<close>
 
+bundle art = [[goals_limit=1, autoref_trace, autoref_trace_failed_id, autoref_keep_goal]]
+
+definition [simp, autoref_tag_defs]: "TRANSFER_tag P == P"
+lemma TRANSFER_tagI: "P ==> TRANSFER_tag P" by simp
+abbreviation "TRANSFER P \<equiv> PREFER_tag (TRANSFER_tag P)"
+declaration
+\<open>
+let
+  val _ = ()
+in Tagged_Solver.declare_solver @{thms TRANSFER_tagI} @{binding TRANSFER}
+        "transfer"
+        (RefineG_Transfer.post_transfer_tac [])
+end\<close>
+
 (* TODO: check for usage in Autoref? *)
 method_setup refine_vcg =
   \<open>Attrib.thms >> (fn add_thms => fn ctxt => SIMPLE_METHOD' (
@@ -394,31 +408,36 @@ end
 concrete_definition THE_DRES uses THE_NRES_impl
 lemmas [autoref_rules] = THE_DRES.refine
 
-definition "CHECK P = (if P then RETURN () else SUCCEED)"
-definition "CHECK_dres P = (if P then dRETURN () else dSUCCEED)"
+lemma THE_NRES_refine[THEN order_trans, refine_vcg]:
+  "THE_NRES x \<le> SPEC (\<lambda>r. x = Some r)"
+  by (auto simp: THE_NRES_def split: option.splits)
+
+definition "CHECK f P = (if P then RETURN () else let _ = f () in SUCCEED)"
+definition "CHECK_dres f P = (if P then dRETURN () else let _ = f () in dSUCCEED)"
 context begin interpretation autoref_syn .
 lemma CHECK_refine[refine_transfer]:
-  "nres_of (CHECK_dres x) \<le> CHECK x"
+  "nres_of (CHECK_dres f x) \<le> CHECK f x"
   by (auto simp: CHECK_dres_def CHECK_def)
 
 lemma CHECK_impl[autoref_rules]:
-  "(CHECK, CHECK) \<in> bool_rel \<rightarrow> \<langle>unit_rel\<rangle>nres_rel"
+  "(CHECK, CHECK) \<in> (unit_rel \<rightarrow> A) \<rightarrow> bool_rel \<rightarrow> \<langle>unit_rel\<rangle>nres_rel"
   by (auto simp add: CHECK_def nres_rel_def)
 
-definition [simp]: "op_nres_CHECK_bnd \<Phi> m \<equiv> do {CHECK \<Phi>; m}"
+definition [simp]: "op_nres_CHECK_bnd f \<Phi> m \<equiv> do {CHECK f \<Phi>; m}"
 lemma id_CHECK[autoref_op_pat_def]:
-  "do {CHECK \<Phi>; m} \<equiv> OP op_nres_CHECK_bnd $ \<Phi> $m"
+  "do {CHECK f \<Phi>; m} \<equiv> OP op_nres_CHECK_bnd $ f $ \<Phi> $m"
   by simp
 
 lemma op_nres_CHECK_bnd[autoref_rules]:
   "(\<Phi> \<Longrightarrow> (m', m) \<in> \<langle>R\<rangle>nres_rel) \<Longrightarrow>
     (\<Phi>', \<Phi>) \<in> bool_rel \<Longrightarrow>
-    (do {CHECK \<Phi>'; m'}, op_nres_CHECK_bnd $ \<Phi> $ m) \<in> \<langle>R\<rangle>nres_rel"
+    (f', f) \<in> unit_rel \<rightarrow> A \<Longrightarrow>
+    (do {CHECK f' \<Phi>'; m'}, op_nres_CHECK_bnd $ f $ \<Phi> $ m) \<in> \<langle>R\<rangle>nres_rel"
   by (simp add: CHECK_def nres_rel_def)
 
 lemma CHECK_rule[refine_vcg]:
   assumes "P \<Longrightarrow> RETURN () \<le> R"
-  shows "CHECK P \<le> R"
+  shows "CHECK f P \<le> R"
   using assms
   by (auto simp: CHECK_def)
 
@@ -441,6 +460,11 @@ lemma map_option_param[param]: "(map_option, map_option) \<in> (R \<rightarrow> 
 lemma those_param[param]: "(those, those) \<in> \<langle>\<langle>R\<rangle>option_rel\<rangle>list_rel \<rightarrow> \<langle>\<langle>R\<rangle>list_rel\<rangle>option_rel"
   unfolding those_def
   by parametricity
+
+lemma image_param[param]:
+  shows "single_valued A \<Longrightarrow> single_valued B \<Longrightarrow>
+    (op `, op `) \<in> (A \<rightarrow> B) \<rightarrow> \<langle>A\<rangle>set_rel \<rightarrow> \<langle>B\<rangle>set_rel"
+  by (force simp: set_rel_def fun_rel_def elim!: single_valued_as_brE)
 
 end
 

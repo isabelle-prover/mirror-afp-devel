@@ -4,9 +4,9 @@ session "Ordinary_Differential_Equations" (AFP) = "HOL-Analysis" +
   options [timeout = 600]
   sessions
     "HOL-Decision_Procs"
-  theories [document = false]
-    "HOL-Decision_Procs.Approximation"
-    "HOL-Library.Diagonal_Subsequence"
+    Triangle
+    "List-Index"
+    Affine_Arithmetic
   theories
     ODE_Analysis
   document_files
@@ -19,33 +19,43 @@ session "HOL-ODE" (AFP) = "Ordinary_Differential_Equations" +
     Ordinary_Differential_Equations.ODE_Analysis
 
 session "HOL-ODE-Refinement" (AFP) = "HOL-ODE" +
-  options [timeout = 600, document = false]
+  options [timeout = 1200, document = false]
   sessions
-    "HOL-Word"
-    Automatic_Refinement
     Collections
-    Native_Word
-    Refine_Monadic
+    Show
+    Affine_Arithmetic
+    Deriving
   theories
-    "Refinement/Refine_Dflt_No_Comp"
+    "HOL-Decision_Procs.Approximation"
+    "List-Index.List_Index"
+    "Show.Show_Instances"
+    "Affine_Arithmetic.Affine_Arithmetic"
+    "Refinement/Autoref_Misc"
+    "Refinement/Weak_Set"
+    "Refinement/Refine_String"
+    "Refinement/Refine_Folds"
 
 session "HOL-ODE-Numerics" (AFP) = "HOL-ODE-Refinement" +
   options [timeout = 3600, document = false]
   sessions
-    Affine_Arithmetic
-    Collections
-    Deriving
-    Show
-  theories
-    "HOL-Library.Lattice_Algebras"
-    "HOL-Library.Monad_Syntax"
-    "HOL-Library.Quotient_Set"
-    "HOL-Library.While_Combinator"
-    Affine_Arithmetic.Affine_Arithmetic
-    "HOL-Decision_Procs.Approximation"
+    "HOL-Types_To_Sets"
   theories
     ODE_Numerics
+
+session "Lorenz_Approximation" (AFP) = "HOL-ODE-Numerics" +
+  options [timeout = 1000, document = false]
+  theories "Ex/Lorenz/Lorenz_Approximation"
 
 session "HOL-ODE-Examples" (AFP slow) = "HOL-ODE-Numerics" +
   options [timeout = 8000, document = false]
   theories ODE_Examples
+
+session "Lorenz_C0" (AFP slow) = "Lorenz_Approximation" +
+  options [timeout = 8000, document = false]
+  theories
+    "Ex/Lorenz/Lorenz_C0"
+
+session "Lorenz_C1" (AFP slow) = "Lorenz_Approximation" +
+  options [timeout = 500000, document = false]
+  theories
+    "Ex/Lorenz/Lorenz_C1"

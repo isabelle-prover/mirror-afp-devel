@@ -4,8 +4,8 @@ imports
   "HOL-Analysis.Analysis"
   One_Step_Method
   "HOL-Library.Float"
-  Affine_Arithmetic.Executable_Euclidean_Space
-  Ordinary_Differential_Equations.Multivariate_Taylor
+  "Affine_Arithmetic.Executable_Euclidean_Space"
+  "Ordinary_Differential_Equations.Multivariate_Taylor"
 begin
 
 subsection \<open>aux\<close>
@@ -553,11 +553,11 @@ context begin
 interpretation blinfun_syntax .
 
 definition "heun_remainder1 x f f' f'' t h s
-  = (h ^ 3 / 6) *\<^sub>R (f'' (h * s + t, x (h * s + t)) $ (1, f (h * s + t, x (h * s + t))) $ (1, f (h * s + t, x (h * s + t))) +
-                    f' (h * s + t, x (h * s + t)) $ (0, f' (h * s + t, x (h * s + t)) $ (1, f (h * s + t, x (h * s + t)))))"
+  = (h ^ 3 / 6) *\<^sub>R (f'' (h * s + t, x (h * s + t)) $ (1::real, f (h * s + t, x (h * s + t))) $ (1::real, f (h * s + t, x (h * s + t))) +
+                    f' (h * s + t, x (h * s + t)) $ (0::real, f' (h * s + t, x (h * s + t)) $ (1, f (h * s + t, x (h * s + t)))))"
 
-definition "heun_remainder2 p x f f' f'' t h s =
-  (h ^ 3 * p / 4) *\<^sub>R f'' (t + s * h * p, x t + (s * h * p) *\<^sub>R f (t, (x t))) $ (1, f (t, (x t))) $ (1, f (t, (x t)))"
+definition "heun_remainder2 p x f f'' t h s =
+  (h ^ 3 * p / 4) *\<^sub>R f'' (t + s * h * p, x t + (s * h * p) *\<^sub>R f (t, (x t))) $ (1::real, f (t, (x t))) $ (1::real, f (t, (x t)))"
 
 lemma rk2_consistent_traj_set:
   fixes x ::"real \<Rightarrow> 'a::banach" and t
@@ -580,7 +580,7 @@ lemma rk2_consistent_traj_set:
   assumes R: "\<And>s1 s2. 0 \<le> s1 \<Longrightarrow> s1 \<le> 1 \<Longrightarrow> 0 \<le> s2 \<Longrightarrow> s2 \<le> 1 \<Longrightarrow>
     discrete_evolution (rk2_increment p (\<lambda>t x. f (t, x))) (t + h) t (x t) +
       heun_remainder1   x f f' f'' t h s1 -
-      heun_remainder2 p x f f' f'' t h s2 \<in> R"
+      heun_remainder2 p x f    f'' t h s2 \<in> R"
   shows "x (t + h) \<in> R"
 proof cases
   assume "h = 0"
@@ -724,8 +724,25 @@ next
       using that
       by (force simp: closed_segment_def algebra_simps
         intro: image_eqI[where x = "1 - x" for x])
-    from multivariate_taylor2[OF f' f'', OF * *, of x "x + h"] show ?thesis
-      by simp
+    define Df where "Df x i h1 h2 = (if i = 0 then f x else if i = 1 then f' x h2 else f'' x h2 h1)"
+      for x h1 h2 and i::nat
+    have "((\<lambda>y. ((1 - y) ^ (2 - 1) / fact (2 - 1)) *\<^sub>R Df (x + y *\<^sub>R h) 2 h h) has_integral
+     f (x + h) - (\<Sum>i<2. (1 / fact i) *\<^sub>R Df x i h h)) {0..1}"
+      apply (rule multivariate_taylor_has_integral[of 2 Df h f x "T \<times> X"])
+      subgoal by simp
+      subgoal by (simp add: Df_def)
+      subgoal premises prems for a i d
+      proof -
+        consider "i = 0" | "i = 1" | "i = 2" using prems by arith
+        then show ?thesis
+          by cases
+            (use prems in \<open>auto simp: Df_def[abs_def] blinfun.bilinear_simps
+                intro!: derivative_eq_intros intro: *\<close>)
+      qed
+      subgoal using "*" by blast
+      done
+    then show ?thesis
+      by (simp add: Df_def eval_nat_numeral algebra_simps)
   qed
 
   let ?k = "\<lambda>t. f ((t, x t) + (h * p) *\<^sub>R (1, f (t, x t)))"
@@ -1007,7 +1024,7 @@ proof
         using T \<open>s \<in> _\<close>
         by (force intro!: mult_mono f'_bounded f_bounded f'_bound_nonneg x order_trans[OF norm_Pair_le])
       finally have "f' (s, x s) (1, f s (x s)) \<in> cball 0 (B' * (B + 1))"
-        by (auto simp: dist_norm)
+        by (auto simp: dist_norm mem_cball)
       also note cball_in_cbox
       finally show "f' (s, x s) (1, f s (x s)) \<in> cbox (- (B' * (B + 1)) *\<^sub>R One) ((B' * (B + 1)) *\<^sub>R One)"
         by simp
@@ -1027,7 +1044,7 @@ proof
   note centered_cbox_in_cball
   finally show "dist (x (t + h)) (discrete_evolution (euler_increment f) (t + h) t (x t))
       \<le> euler_C(TYPE('a)) * h ^ (1 + 1)"
-    by (auto simp: euler_C_def dist_norm algebra_simps norm_minus_commute power2_eq_square)
+    by (auto simp: euler_C_def dist_norm algebra_simps norm_minus_commute power2_eq_square mem_cball)
 qed
 
 lemma derivative_norm_bounded_subset:
@@ -1101,20 +1118,21 @@ locale ivp_rectangle_bounded_derivative =
   assumes positive_time: "0 < e"
 
 sublocale ivp_rectangle_bounded_derivative \<subseteq> unique_on_cylinder t0 T x0 b X f B B'
-  by unfold_locales (insert subset_cylinders positive_time, auto intro!: lipschitz_subset[OF lipschitz])
+  by unfold_locales (insert subset_cylinders positive_time,
+      auto intro!: lipschitz_subset[OF lipschitz] simp: mem_cball)
 
 sublocale ivp_rectangle_bounded_derivative \<subseteq> euler_consistent T f X "cball x0 r" B f' B' solution t0 x0 "r - b" e
 proof -
   interpret derivative_norm_bounded T X f f' B B'
     using b_pos subset_cylinders
-    by (intro outer.derivative_norm_bounded_subset) (auto simp: X_def)
+    by (intro outer.derivative_norm_bounded_subset) (auto simp: X_def mem_cball)
   show "euler_consistent T f X (cball x0 r) B f' B' solution t0 x0 (r - b) e"
     apply unfold_locales
     subgoal by (rule solution_solves_ode)
     subgoal by (rule solution_iv)
     subgoal by (rule initial_time_in)
-    subgoal using subset_cylinders by (auto simp: X_def)
-    subgoal by (auto simp add: T_def dist_real_def)
+    subgoal using subset_cylinders by (auto simp: X_def mem_cball)
+    subgoal by (auto simp add: T_def dist_real_def mem_cball)
     subgoal premises prems for t
     proof safe
       fix x
@@ -1124,17 +1142,17 @@ proof -
       assume "x \<in> cball (solution t) \<bar>r - b\<bar>"
       then have "dist x (solution t) \<le> r - b"
         using subset_cylinders
-        by (simp add: dist_commute)
+        by (simp add: dist_commute mem_cball)
       also
       have "{t0--t} \<subseteq> T" by (rule subset_T[OF prems])
       then have "dist x0 (solution t) \<le> B * \<bar>t - t0\<bar>"
         using subset_cylinders is_solution_in_cone[of t, OF prems solves_ode_on_subset[OF solution_solves_ode _ order_refl] solution_iv]
-        by simp
+        by (simp add: mem_cball)
       also have "B * abs (t - t0) \<le> b"
         using e_bounded[OF prems] b_pos B_nonneg
         by (auto simp: dist_real_def divide_simps ac_simps split: if_splits)
       finally
-      show "x \<in> cball x0 r" by (simp add: dist_commute)
+      show "x \<in> cball x0 r" by (simp add: dist_commute mem_cball)
     qed
     done
 qed

@@ -73,12 +73,6 @@ lemma Pair1_in_Basis: "i \<in> Basis \<Longrightarrow> (i, 0) \<in> Basis"
  and Pair2_in_Basis: "i \<in> Basis \<Longrightarrow> (0, i) \<in> Basis"
   by (auto simp: Basis_prod_def)
 
-lemma Basis_prodD:
-  assumes "(i, j) \<in> Basis"
-  shows "i \<in> Basis \<and> j = 0 \<or> i = 0 \<and> j \<in> Basis"
-  using assms
-  by (auto simp: Basis_prod_def)
-
 lemma le_real_sqrt_sumsq' [simp]: "y \<le> sqrt (x * x + y * y)"
   by (simp add: power2_eq_square [symmetric])
 
@@ -169,7 +163,7 @@ definition "csol t0 x0 = (SOME csol. \<forall>t \<in> existence_ivl t0 x0. (csol
 
 text \<open>unique flow\<close>
 
-definition flow where "flow t0 x0 = restrict (\<lambda>t. csol t0 x0 t t) (existence_ivl t0 x0)"
+definition flow where "flow t0 x0 = (\<lambda>t. if t \<in> existence_ivl t0 x0 then csol t0 x0 t t else 0)"
 
 end
 
@@ -268,8 +262,8 @@ lemma existence_ivl_empty1[simp]: "t0 \<notin> T \<Longrightarrow> existence_ivl
   by (auto simp: existence_ivl_def)
 
 lemma flow_undefined:
-  shows "t0 \<notin> T \<Longrightarrow> flow t0 x0 = (\<lambda>_. undefined)"
-    "x0 \<notin> X \<Longrightarrow> flow t0 x0 = (\<lambda>_. undefined)"
+  shows "t0 \<notin> T \<Longrightarrow> flow t0 x0 = (\<lambda>_. 0)"
+    "x0 \<notin> X \<Longrightarrow> flow t0 x0 = (\<lambda>_. 0)"
   using existence_ivl_empty_iff
   by (auto simp: flow_def)
 
@@ -444,7 +438,7 @@ lemma segment_subset_existence_ivl:
   unfolding is_interval_convex_1
   by (rule closed_segment_subset)
 
-lemma flow_initial_time_if: "flow t0 x0 t0 = (if t0 \<in> T \<and> x0 \<in> X then x0 else undefined)"
+lemma flow_initial_time_if: "flow t0 x0 t0 = (if t0 \<in> T \<and> x0 \<in> X then x0 else 0)"
   by (simp add: flow_def csol(3))
 
 lemma flow_initial_time[simp]: "t0 \<in> T \<Longrightarrow> x0 \<in> X \<Longrightarrow> flow t0 x0 t0 = x0"

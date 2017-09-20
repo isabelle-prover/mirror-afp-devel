@@ -1,7 +1,8 @@
 section \<open>Implementation\<close>
 theory Affine_Code
-imports
-  Affine_Approximation
+  imports
+    Affine_Approximation
+    Intersection
 begin
 
 text \<open>Implementing partial deviations as sorted lists of coefficients.\<close>
@@ -77,78 +78,78 @@ lemma compute_degree[code]: "degree (Pdevs xs) = degree_slist xs"
 subsection \<open>Auxiliary Definitions\<close>
 
 fun binop where
-  "binop f z [] [] = []"
-| "binop f z ((i, x)#xs) [] = (i, f x z) # binop f z xs []"
-| "binop f z [] ((i, y)#ys) = (i, f z y) # binop f z [] ys"
-| "binop f z ((i, x)#xs) ((j, y)#ys) =
-    (if (i = j)     then (i, f x y) # binop f z xs ys
-    else if (i > j) then (i, f x z) # binop f z xs ((j, y)#ys)
-    else                 (j, f z y) # binop f z ((i, x)#xs) ys)"
+  "binop f z1 z2 [] [] = []"
+| "binop f z1 z2 ((i, x)#xs) [] = (i, f x z2) # binop f z1 z2 xs []"
+| "binop f z1 z2 [] ((i, y)#ys) = (i, f z1 y) # binop f z1 z2 [] ys"
+| "binop f z1 z2 ((i, x)#xs) ((j, y)#ys) =
+    (if (i = j)     then (i, f x y) # binop f z1 z2 xs ys
+    else if (i > j) then (i, f x z2) # binop f z1 z2 xs ((j, y)#ys)
+    else                 (j, f z1 y) # binop f z1 z2 ((i, x)#xs) ys)"
 
 lemma set_binop_elemD1:
-  "(a, b) \<in> set (binop f z xs ys) \<Longrightarrow> (a \<in> set (map fst xs) \<or> a \<in> set (map fst ys))"
-  by (induct f z xs ys rule: binop.induct) (auto split: if_split_asm)
+  "(a, b) \<in> set (binop f z1 z2 xs ys) \<Longrightarrow> (a \<in> set (map fst xs) \<or> a \<in> set (map fst ys))"
+  by (induct f z1 z2 xs ys rule: binop.induct) (auto split: if_split_asm)
 
 lemma set_binop_elemD2:
-  "(a, b) \<in> set (binop f z xs ys) \<Longrightarrow>
-    (\<exists>x\<in>set (map snd xs). b = f x z) \<or>
-    (\<exists>y\<in>set (map snd ys). b = f z y) \<or>
+  "(a, b) \<in> set (binop f z1 z2 xs ys) \<Longrightarrow>
+    (\<exists>x\<in>set (map snd xs). b = f x z2) \<or>
+    (\<exists>y\<in>set (map snd ys). b = f z1 y) \<or>
     (\<exists>x\<in>set (map snd xs). \<exists>y\<in>set (map snd ys). b = f x y)"
-  by (induct f z xs ys rule: binop.induct) (auto split: if_split_asm)
+  by (induct f z1 z2 xs ys rule: binop.induct) (auto split: if_split_asm)
 
 abbreviation "rsorted\<equiv>\<lambda>x. sorted (rev x)"
 
 lemma rsorted_binop:
-  fixes xs ys::"('a::linorder * 'b) list"
+  fixes xs::"('a::linorder * 'b) list" and ys::"('a::linorder * 'c) list"
   assumes "rsorted ((map fst xs))"
   assumes "rsorted ((map fst ys))"
-  shows "rsorted ((map fst (binop f z xs ys)))"
+  shows "rsorted ((map fst (binop f z1 z2 xs ys)))"
   using assms
-  by (induct f z xs ys rule: binop.induct) (force simp: sorted_append dest!: set_binop_elemD1)+
+  by (induct f z1 z2 xs ys rule: binop.induct) (force simp: sorted_append dest!: set_binop_elemD1)+
 
 lemma distinct_binop:
-  fixes xs ys::"('a::linorder * 'b) list"
+  fixes xs::"('a::linorder * 'b) list" and ys::"('a::linorder * 'c) list"
   assumes "distinct (map fst xs)"
   assumes "distinct (map fst ys)"
   assumes "rsorted ((map fst xs))"
   assumes "rsorted ((map fst ys))"
-  shows "distinct (map fst (binop f z xs ys))"
+  shows "distinct (map fst (binop f z1 z2 xs ys))"
   using assms
-  by (induct f z xs ys rule: binop.induct)
+  by (induct f z1 z2 xs ys rule: binop.induct)
     (force dest!: set_binop_elemD1 simp: sorted_append)+
 
 lemma binop_plus:
   fixes b::"(nat * 'a::euclidean_space) list"
   shows
-    "(\<Sum>(i, y)\<leftarrow>binop op + 0 b ba. e i *\<^sub>R y) = (\<Sum>(i, y)\<leftarrow>b. e i *\<^sub>R y) + (\<Sum>(i, y)\<leftarrow>ba. e i *\<^sub>R y)"
-  by (induct "op +::'a\<Rightarrow>_" "0::'a" b ba rule: binop.induct)
+    "(\<Sum>(i, y)\<leftarrow>binop op + 0 0 b ba. e i *\<^sub>R y) = (\<Sum>(i, y)\<leftarrow>b. e i *\<^sub>R y) + (\<Sum>(i, y)\<leftarrow>ba. e i *\<^sub>R y)"
+  by (induct "op +::'a\<Rightarrow>_" "0::'a" "0::'a" b ba rule: binop.induct)
     (auto simp: algebra_simps)
 
 lemma binop_compose:
-  "binop (\<lambda>x y. f (g x y)) z xs ys = map (apsnd f) (binop g z xs ys)"
-  by (induct "\<lambda>x y. f (g x y)" z xs ys rule: binop.induct) auto
+  "binop (\<lambda>x y. f (g x y)) z1 z2 xs ys = map (apsnd f) (binop g z1 z2 xs ys)"
+  by (induct "\<lambda>x y. f (g x y)" z1 z2 xs ys rule: binop.induct) auto
 
 lemma linear_cmul_left[intro, simp]: "linear (op * x::real \<Rightarrow> _)"
   by (auto intro!: linearI simp: algebra_simps)
 
 lemma length_merge_sorted_eq:
-  "length (binop f z xs ys) = length (binop g y xs ys)"
-  by (induction f z xs ys rule: binop.induct) auto
+  "length (binop f z1 z2 xs ys) = length (binop g y1 y2 xs ys)"
+  by (induction f z1 z2 xs ys rule: binop.induct) auto
 
 
 subsection \<open>Pointswise Addition\<close>
 
 lift_definition add_slist::"(nat, 'a::{plus, zero}) slist \<Rightarrow> (nat, 'a) slist \<Rightarrow> (nat, 'a) slist" is
-  "\<lambda>xs ys. binop op + 0 xs ys"
+  "\<lambda>xs ys. binop op + 0 0 xs ys"
   by (auto simp: intro!: distinct_binop rsorted_binop)
 
 lemma map_of_binop[simp]: "rsorted (map fst xs) \<Longrightarrow> rsorted (map fst ys) \<Longrightarrow>
   distinct (map fst xs) \<Longrightarrow> distinct (map fst ys) \<Longrightarrow>
-  map_of (binop f z xs ys) i =
+  map_of (binop f z1 z2 xs ys) i =
   (case map_of xs i of
-    Some x \<Rightarrow> Some (f x (case map_of ys i of Some x \<Rightarrow> x | None \<Rightarrow> z))
-  | None \<Rightarrow> (case map_of ys i of Some y \<Rightarrow> Some (f z y) | None \<Rightarrow> None))"
-  by (induct f z xs ys rule: binop.induct)
+    Some x \<Rightarrow> Some (f x (case map_of ys i of Some x \<Rightarrow> x | None \<Rightarrow> z2))
+  | None \<Rightarrow> (case map_of ys i of Some y \<Rightarrow> Some (f z1 y) | None \<Rightarrow> None))"
+  by (induct f z1 z2 xs ys rule: binop.induct)
     (auto split: option.split option.split_asm simp: sorted_append)
 
 lemma pdevs_apply_Pdevs_add_slist[simp]:
@@ -158,6 +159,19 @@ lemma pdevs_apply_Pdevs_add_slist[simp]:
   by (transfer) (auto simp: Pdevs_raw_def split: option.split)
 
 lemma compute_add_pdevs[code]: "add_pdevs (Pdevs xs) (Pdevs ys) = Pdevs (add_slist xs ys)"
+  by (rule pdevs_eqI) simp
+
+subsection \<open>prod of pdevs\<close>
+
+lift_definition prod_slist::"(nat, 'a::zero) slist \<Rightarrow> (nat, 'b::zero) slist \<Rightarrow> (nat, ('a \<times> 'b)) slist" is
+  "\<lambda>xs ys. binop Pair 0 0 xs ys"
+  by (auto simp: intro!: distinct_binop rsorted_binop)
+
+lemma pdevs_apply_Pdevs_prod_slist[simp]:
+  "pdevs_apply (Pdevs (prod_slist xs ys)) i = (pdevs_apply (Pdevs xs) i, pdevs_apply (Pdevs ys) i)"
+  by transfer (auto simp: Pdevs_raw_def zero_prod_def split: option.splits)
+
+lemma compute_prod_of_pdevs[code]: "prod_of_pdevs (Pdevs xs) (Pdevs ys) = Pdevs (prod_slist xs ys)"
   by (rule pdevs_eqI) simp
 
 
@@ -342,6 +356,7 @@ lemma pdevs_apply_map_slist:
 lemma compute_scaleR_pdves[code]: "scaleR_pdevs r (Pdevs xs) = Pdevs (map_slist (\<lambda>x. r *\<^sub>R x) xs)"
   and compute_pdevs_scaleR[code]: "pdevs_scaleR (Pdevs rs) x = Pdevs (map_slist (\<lambda>r. r *\<^sub>R x) rs)"
   and compute_uminus_pdevs[code]: "uminus_pdevs (Pdevs xs) = Pdevs (map_slist (\<lambda>x. - x) xs)"
+  and compute_abs_pdevs[code]: "abs_pdevs (Pdevs xs) = Pdevs (map_slist abs xs)"
   and compute_pdevs_inner[code]: "pdevs_inner (Pdevs xs) b = Pdevs (map_slist (\<lambda>x. x \<bullet> b) xs)"
   and compute_pdevs_inner2[code]:
     "pdevs_inner2 (Pdevs xs) b c = Pdevs (map_slist (\<lambda>x. (x \<bullet> b, x \<bullet> c)) xs)"
@@ -351,8 +366,9 @@ lemma compute_scaleR_pdves[code]: "scaleR_pdevs r (Pdevs xs) = Pdevs (map_slist 
     "trunc_pdevs p (Pdevs xs) = Pdevs (map_slist (\<lambda>x. eucl_truncate_down p x) xs)"
   and compute_trunc_err_pdevs[code]:
     "trunc_err_pdevs p (Pdevs xs) = Pdevs (map_slist (\<lambda>x. eucl_truncate_down p x - x) xs)"
-  by (auto intro!: pdevs_eqI simp: pdevs_apply_map_slist zero_prod_def)
+  by (auto intro!: pdevs_eqI simp: pdevs_apply_map_slist zero_prod_def abs_pdevs_def)
 
+  
 subsection \<open>Filter\<close>
 
 lift_definition filter_slist::"(nat \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> (nat, 'a) slist \<Rightarrow> (nat, 'a) slist"
@@ -386,8 +402,8 @@ lift_definition One_slist::"(nat, 'a::executable_euclidean_space) slist"
 
 lemma
   map_of_rev_zip_upto_length_eq_nth:
-  assumes "i < length B"
-  shows "(map_of (rev (zip [0..<length B] B)) i) = Some (B ! i)"
+  assumes "i < length B" "d = length B"
+  shows "(map_of (rev (zip [0..<d] B)) i) = Some (B ! i)"
 proof -
   have "length (rev [0..<length B]) = length (rev B)"
     by simp
@@ -397,13 +413,14 @@ proof -
   hence "y = B ! i"
     by (auto simp: in_set_zip rev_nth)
   with y show ?thesis
-    by (simp add: zip_rev)
+    by (simp add: zip_rev assms)
 qed
 
 lemma
   map_of_rev_zip_upto_length_eq_None:
   assumes "\<not>i < length B"
-  shows "(map_of (rev (zip [0..<length B] B)) i) = None"
+  assumes "d = length B"
+  shows "(map_of (rev (zip [0..<d] B)) i) = None"
   using assms
   by (auto simp: map_of_eq_None_iff in_set_zip)
 
@@ -412,12 +429,16 @@ lemma pdevs_apply_One_slist:
     (if i < length (Basis_list::'a::executable_euclidean_space list)
     then (Basis_list::'a list) ! i
     else 0)"
-  by transfer
-    (auto simp: Pdevs_raw_def map_of_rev_zip_upto_length_eq_nth map_of_rev_zip_upto_length_eq_None
-      split: option.split)
-
+  by transfer (auto simp: Pdevs_raw_def map_of_rev_zip_upto_length_eq_nth map_of_rev_zip_upto_length_eq_None
+      in_set_zip split: option.split)
+  
 lemma compute_One_pdevs[code]: "One_pdevs = Pdevs One_slist"
   by (rule pdevs_eqI) (simp add: pdevs_apply_One_slist)
+
+lift_definition coord_slist::"nat \<Rightarrow> (nat, real) slist" is "\<lambda>i. [(i, 1)]" by simp
+
+lemma compute_coord_pdevs[code]: "coord_pdevs i = Pdevs (coord_slist i)"
+  by transfer (auto simp: Pdevs_raw_def)
 
 
 subsection \<open>Update\<close>
@@ -513,10 +534,37 @@ lift_definition slist_of_list::"'a::zero list \<Rightarrow> (nat, 'a) slist"
 
 lemma slist_apply_slist_of_list:
   "slist_apply (slist_of_list xs) i = (if i < length xs then xs ! i else 0)"
-  by transfer (auto simp: map_of_rev_zip_upto_length_eq_nth map_of_rev_zip_upto_length_eq_None)
+  by transfer (auto simp: in_set_zip map_of_rev_zip_upto_length_eq_nth map_of_rev_zip_upto_length_eq_None)
 
 lemma compute_pdevs_of_list[code]: "pdevs_of_list xs = Pdevs (slist_of_list xs)"
   by (rule pdevs_eqI)
     (auto simp: compute_pdevs_apply slist_apply_slist_of_list pdevs_apply_pdevs_of_list)
+
+text \<open>abstraction function which can be used in code equations\<close>
+
+lift_definition abs_slist_if::"('a::linorder\<times>'b) list \<Rightarrow> ('a, 'b) slist"
+  is "\<lambda>list. if distinct (map fst list) \<and> rsorted (map fst list) then list else []"
+  by auto
+
+definition "slist \<equiv> Abs_slist"
+
+lemma [code_post]: "Abs_slist \<equiv> slist"
+  by (simp add: slist_def)
+
+lemma [code]: "slist \<equiv> (\<lambda>xs.
+  (if distinct (map fst xs) \<and> rsorted (map fst xs) then abs_slist_if xs else Code.abort (STR '''') (\<lambda>_. slist xs)))"
+  by (auto simp add: slist_def abs_slist_if.abs_eq intro!: ext eq_reflection)
+
+abbreviation "pdevs \<equiv> (\<lambda>x. Pdevs (slist x))"
+
+lift_definition nlex_slist::"(nat, point) slist \<Rightarrow> (nat, point) slist" is
+  "map (\<lambda>(i, x). (i, if lex 0 x then - x else x))"
+  by (auto simp: o_def split_beta')
+
+lemma Pdevs_raw_map: "f 0 = 0 \<Longrightarrow> Pdevs_raw (map (\<lambda>(i, x). (i, f x)) xs) i = f (Pdevs_raw xs i)"
+  by (auto simp: Pdevs_raw_def map_of_map split: option.split)
+
+lemma compute_nlex_pdevs[code]: "nlex_pdevs (Pdevs x) = Pdevs (nlex_slist x)"
+  by transfer (auto simp: Pdevs_raw_map)
 
 end

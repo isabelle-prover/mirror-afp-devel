@@ -2,6 +2,7 @@ section \<open>Dyadic Rational Representation of Real\<close>
 theory Float_Real
 imports
   "HOL-Library.Float"
+  "Optimize_Float"
 begin
 text \<open>\label{sec:floatreal}\<close>
 
@@ -107,5 +108,7 @@ lemma [code]: "real_divl p (real_of_float x) (real_of_float y) = real_of_float (
 
 lemma [code]: "real_divr p (real_of_float x) (real_of_float y) = real_of_float (float_divr p x y)"
   by (simp add: float_divr.rep_eq real_divr_def)
+
+lemmas [code] = real_of_float_inverse
 
 end

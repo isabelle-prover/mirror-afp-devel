@@ -11,6 +11,26 @@ text \<open>TODO: extend theorems for dependence on initial time\<close>
 
 subsection \<open>simp rules for integrability (TODO: move)\<close>
 
+lemma blinfun_ext: "x = y \<longleftrightarrow> (\<forall>i. blinfun_apply x i = blinfun_apply y i)"
+  by transfer auto
+
+notation id_blinfun ("1\<^sub>L")
+
+lemma blinfun_inverse_left:
+  fixes f::"'a::euclidean_space \<Rightarrow>\<^sub>L 'a" and f'
+  shows "f o\<^sub>L f' = 1\<^sub>L \<longleftrightarrow> f' o\<^sub>L f = 1\<^sub>L"
+  by transfer
+    (auto dest!: bounded_linear.linear simp: id_def[symmetric]
+      linear_inverse_left)
+
+lemma onorm_zero_blinfun[simp]: "onorm (blinfun_apply 0) = 0"
+  by transfer (simp add: onorm_zero)
+
+lemma blinfun_compose_1_left[simp]: "x o\<^sub>L 1\<^sub>L = x"
+  and blinfun_compose_1_right[simp]: "1\<^sub>L o\<^sub>L y = y"
+  by (auto intro!: blinfun_eqI)
+
+
 named_theorems integrable_on_simps
 
 lemma integrable_on_refl_ivl[intro, simp]: "g integrable_on {b .. (b::'b::ordered_euclidean_space)}"
@@ -1504,6 +1524,15 @@ lemma flow_unique:
   subgoal by fact
   done
 
+lemma flow_unique_on:
+  assumes "t \<in> existence_ivl t0 x0"
+  assumes "phi t0 = x0"
+  assumes "(phi has_vderiv_on (\<lambda>t. f t (phi t))) (existence_ivl t0 x0)"
+  assumes "\<And>t. t \<in> existence_ivl t0 x0 \<Longrightarrow> phi t \<in> X"
+  shows "flow t0 x0 t = phi t"
+  using flow_unique[where phi=phi, OF assms(1,2) _ assms(4)] assms(3)
+  by (auto simp: has_vderiv_on_open)
+
 end \<comment>\<open>@{thm local_lipschitz}\<close>
 
 locale two_ll_on_open =
@@ -1529,18 +1558,18 @@ lemma e_pos: "0 < e"
   using le_less_trans[OF norm_ge_zero F_G_norm_ineq[OF t0_in_J F_iv_defined(2)]]
   by assumption
 
-qualified definition "XX t = F.flow 0 x0 t"
+qualified definition "flow0 t = F.flow 0 x0 t"
 qualified definition "Y t = G.flow 0 x0 t"
 
 lemma norm_X_Y_bound:
-shows "\<forall>t \<in> J \<inter> G.existence_ivl 0 x0. norm (XX t - Y t) \<le> e / K * (exp(K * \<bar>t\<bar>) - 1)"
+shows "\<forall>t \<in> J \<inter> G.existence_ivl 0 x0. norm (flow0 t - Y t) \<le> e / K * (exp(K * \<bar>t\<bar>) - 1)"
 proof(safe)
   fix t assume "t \<in> J"
   assume tG: "t \<in> G.existence_ivl 0 x0"
   have "0 \<in> J" by (simp add: t0_in_J)
 
-  let ?u="\<lambda>t. norm (XX t - Y t)"
-  show "norm (XX t - Y t) \<le> e / K * (exp (K * \<bar>t\<bar>) - 1)"
+  let ?u="\<lambda>t. norm (flow0 t - Y t)"
+  show "norm (flow0 t - Y t) \<le> e / K * (exp (K * \<bar>t\<bar>) - 1)"
   proof(cases "0 \<le> t")
     assume "0 \<le> t"
     hence [simp]: "\<bar>t\<bar> = t" by simp
@@ -1584,47 +1613,47 @@ proof(safe)
         using t0_s_in_existence
         by (auto intro!: continuous_intros integrable_continuous_real)
 
-      have "XX s - Y s = integral {0..s} (\<lambda>s. F s (XX s) - G s (Y s))"
+      have "flow0 s - Y s = integral {0..s} (\<lambda>s. F s (flow0 s) - G s (Y s))"
         using \<open>0 \<le> s\<close>
-        by (simp add: XX_def Y_def Henstock_Kurzweil_Integration.integral_diff integrable_on_simps ivl_integral_def
+        by (simp add: flow0_def Y_def Henstock_Kurzweil_Integration.integral_diff integrable_on_simps ivl_integral_def
                F.flow_fixed_point[OF s_in_existence(1)]
                G.flow_fixed_point[OF s_in_existence(2)])
-      also have "... = integral {0..s} (\<lambda>s. (F s (XX s) - F s (Y s)) + (F s (Y s) - G s (Y s)))"
+      also have "... = integral {0..s} (\<lambda>s. (F s (flow0 s) - F s (Y s)) + (F s (Y s) - G s (Y s)))"
         by simp
-      also have "... = integral {0..s} (\<lambda>s. F s (XX s) - F s (Y s)) + integral {0..s} (\<lambda>s. F s (Y s) - G s (Y s))"
-        by (simp add: Henstock_Kurzweil_Integration.integral_diff Henstock_Kurzweil_Integration.integral_add XX_def Y_def integrable_on_simps)
-      finally have "?u s \<le> norm (integral {0..s} (\<lambda>s. F s (XX s) - F s (Y s))) + norm (integral {0..s} (\<lambda>s. F s (Y s) - G s (Y s)))"
+      also have "... = integral {0..s} (\<lambda>s. F s (flow0 s) - F s (Y s)) + integral {0..s} (\<lambda>s. F s (Y s) - G s (Y s))"
+        by (simp add: Henstock_Kurzweil_Integration.integral_diff Henstock_Kurzweil_Integration.integral_add flow0_def Y_def integrable_on_simps)
+      finally have "?u s \<le> norm (integral {0..s} (\<lambda>s. F s (flow0 s) - F s (Y s))) + norm (integral {0..s} (\<lambda>s. F s (Y s) - G s (Y s)))"
         by (simp add: norm_triangle_ineq)
-      also have "... \<le> integral {0..s} (\<lambda>s. norm (F s (XX s) - F s (Y s))) + integral {0..s} (\<lambda>s. norm (F s (Y s) - G s (Y s)))"
+      also have "... \<le> integral {0..s} (\<lambda>s. norm (F s (flow0 s) - F s (Y s))) + integral {0..s} (\<lambda>s. norm (F s (Y s) - G s (Y s)))"
         using t0_s_in_existence
-        by (auto simp add: XX_def Y_def
+        by (auto simp add: flow0_def Y_def
           intro!: add_mono continuous_intros continuous_on_imp_absolutely_integrable_on)
       also have "... \<le> integral {0..s} (\<lambda>s. K * ?u s) + integral {0..s} (\<lambda>s. e)"
       proof (rule add_mono[OF integral_le integral_le])
-        show "\<And>x. x \<in> {0..s} \<Longrightarrow> norm (F x (XX x) - F x (Y x)) \<le> K * norm (XX x - Y x)"
-          using F_lipschitz[unfolded lipschitz_def, THEN conjunct2]
+        show "norm (F x (flow0 x) - F x (Y x)) \<le> K * norm (flow0 x - Y x)" if "x \<in> {0..s}" for x
+          using F_lipschitz[unfolded lipschitz_def, THEN conjunct2] that
             cont_statements(1,2,4)
             t0_s_in_existence F_iv_defined (* G.iv_defined *)
-          by (metis F_lipschitz XX_def Y_def \<open>{0..s} \<subseteq> J\<close> lipschitz_norm_leI F.flow_in_domain
+          by (metis F_lipschitz flow0_def Y_def \<open>{0..s} \<subseteq> J\<close> lipschitz_norm_leI F.flow_in_domain
             G.flow_in_domain subsetCE)
         show "\<And>x. x \<in> {0..s} \<Longrightarrow> norm (F x (Y x) - G x (Y x)) \<le> e"
           using F_G_norm_ineq cont_statements(2,3) t0_s_in_existence
           using Y_def \<open>{0..s} \<subseteq> J\<close> cont_statements(5) subset_iff G.flow_in_domain
           by (metis eucl_less_le_not_le)
-      qed (simp_all add: t0_s_in_existence continuous_intros integrable_on_simps XX_def Y_def)
+      qed (simp_all add: t0_s_in_existence continuous_intros integrable_on_simps flow0_def Y_def)
       also have "... = K * integral {0..s} (\<lambda>s. ?u s + e / K)"
         using K_pos t0_s_in_existence
-        by (simp_all add: algebra_simps Henstock_Kurzweil_Integration.integral_add XX_def Y_def continuous_intros
+        by (simp_all add: algebra_simps Henstock_Kurzweil_Integration.integral_add flow0_def Y_def continuous_intros
           continuous_on_imp_absolutely_integrable_on)
       finally show "?u s + e / K \<le> e / K + K * integral {0..s} (\<lambda>s. ?u s + e / K)"
         by simp
     next
-      show "continuous_on {0..t} (\<lambda>t. norm (XX t - Y t) + e / K)"
+      show "continuous_on {0..t} (\<lambda>t. norm (flow0 t - Y t) + e / K)"
         using t0_t_in_J J_subset G.ivl_subset_existence_ivl[OF tG]
-        by (auto simp add: XX_def Y_def intro!: continuous_intros)
+        by (auto simp add: flow0_def Y_def intro!: continuous_intros)
     next
       fix s assume "0 \<le> s" "s \<le> t"
-      show "0 \<le> norm (XX s - Y s) + e / K"
+      show "0 \<le> norm (flow0 s - Y s) + e / K"
         using e_pos K_pos by simp
     next
       show "0 < e / K" using e_pos K_pos by simp
@@ -1673,48 +1702,48 @@ proof(safe)
         "s \<le> x \<Longrightarrow> x \<le> 0 \<Longrightarrow> x \<in> F.existence_ivl 0 x0"
         "s \<le> x \<Longrightarrow> x \<le> 0 \<Longrightarrow> x \<in> G.existence_ivl 0 x0" for x
         using t0_s_in_existence
-        by auto
-      have "XX s - Y s = - integral {s..0} (\<lambda>s. F s (XX s) - G s (Y s))"
+        by (auto simp: )
+      have "flow0 s - Y s = - integral {s..0} (\<lambda>s. F s (flow0 s) - G s (Y s))"
         using t0_s_in_existence \<open>s \<le> 0\<close>
-        by (simp add: XX_def Y_def ivl_integral_def
+        by (simp add: flow0_def Y_def ivl_integral_def
                F.flow_fixed_point[OF s_in_existence(1)]
                G.flow_fixed_point[OF s_in_existence(2)]
                continuous_intros integrable_on_simps Henstock_Kurzweil_Integration.integral_diff)
-      also have "... = - integral {s..0} (\<lambda>s. (F s (XX s) - F s (Y s)) + (F s (Y s) - G s (Y s)))"
+      also have "... = - integral {s..0} (\<lambda>s. (F s (flow0 s) - F s (Y s)) + (F s (Y s) - G s (Y s)))"
         by simp
-      also have "... = - (integral {s..0} (\<lambda>s. F s (XX s) - F s (Y s)) + integral {s..0} (\<lambda>s. F s (Y s) - G s (Y s)))"
+      also have "... = - (integral {s..0} (\<lambda>s. F s (flow0 s) - F s (Y s)) + integral {s..0} (\<lambda>s. F s (Y s) - G s (Y s)))"
         using t0_s_in_existence
-        by (subst Henstock_Kurzweil_Integration.integral_add) (simp_all add: integral_add XX_def Y_def continuous_intros integrable_on_simps)
-      finally have "?u s \<le> norm (integral {s..0} (\<lambda>s. F s (XX s) - F s (Y s))) + norm (integral {s..0} (\<lambda>s. F s (Y s) - G s (Y s)))"
+        by (subst Henstock_Kurzweil_Integration.integral_add) (simp_all add: integral_add flow0_def Y_def continuous_intros integrable_on_simps)
+      finally have "?u s \<le> norm (integral {s..0} (\<lambda>s. F s (flow0 s) - F s (Y s))) + norm (integral {s..0} (\<lambda>s. F s (Y s) - G s (Y s)))"
         by (metis (no_types, lifting) norm_minus_cancel norm_triangle_ineq)
-      also have "... \<le> integral {s..0} (\<lambda>s. norm (F s (XX s) - F s (Y s))) + integral {s..0} (\<lambda>s. norm (F s (Y s) - G s (Y s)))"
+      also have "... \<le> integral {s..0} (\<lambda>s. norm (F s (flow0 s) - F s (Y s))) + integral {s..0} (\<lambda>s. norm (F s (Y s) - G s (Y s)))"
         using t0_s_in_existence
-        by (auto simp add: XX_def Y_def intro!: continuous_intros continuous_on_imp_absolutely_integrable_on add_mono)
+        by (auto simp add: flow0_def Y_def intro!: continuous_intros continuous_on_imp_absolutely_integrable_on add_mono)
       also have "... \<le> integral {s..0} (\<lambda>s. K * ?u s) + integral {s..0} (\<lambda>s. e)"
       proof (rule add_mono[OF integral_le integral_le])
-        show "\<And>x. x \<in> {s..0} \<Longrightarrow> norm (F x (XX x) - F x (Y x)) \<le> K * norm (XX x - Y x)"
+        show "norm (F x (flow0 x) - F x (Y x)) \<le> K * norm (flow0 x - Y x)" if "x\<in>{s..0}" for x
           using F_lipschitz[unfolded lipschitz_def, THEN conjunct2]
-            cont_statements(1,2,4)
+            cont_statements(1,2,4) that
             t0_s_in_existence F_iv_defined (* G.iv_defined *)
-          by (metis F_lipschitz XX_def Y_def \<open>{s..0} \<subseteq> J\<close> lipschitz_norm_leI F.flow_in_domain
+          by (metis F_lipschitz flow0_def Y_def \<open>{s..0} \<subseteq> J\<close> lipschitz_norm_leI F.flow_in_domain
             G.flow_in_domain subsetCE)
         show "\<And>x. x \<in> {s..0} \<Longrightarrow> norm (F x (Y x) - G x (Y x)) \<le> e"
           using F_G_norm_ineq Y_def \<open>{s..0} \<subseteq> J\<close> cont_statements(5) subset_iff t0_s_in_existence(2)
           using Y_def \<open>{s..0} \<subseteq> J\<close> cont_statements(5) subset_iff G.flow_in_domain
           by (metis eucl_less_le_not_le)
-      qed (simp_all add: t0_s_in_existence continuous_intros integrable_on_simps XX_def Y_def)
+      qed (simp_all add: t0_s_in_existence continuous_intros integrable_on_simps flow0_def Y_def)
       also have "... = K * integral {s..0} (\<lambda>s. ?u s + e / K)"
         using K_pos t0_s_in_existence
-        by (simp_all add: algebra_simps Henstock_Kurzweil_Integration.integral_add t0_s_in_existence continuous_intros integrable_on_simps XX_def Y_def)
+        by (simp_all add: algebra_simps Henstock_Kurzweil_Integration.integral_add t0_s_in_existence continuous_intros integrable_on_simps flow0_def Y_def)
       finally show "?u s + e / K \<le> e / K + K * integral {s..0} (\<lambda>s. ?u s + e / K)"
         by simp
     next
-      show "continuous_on {t..0} (\<lambda>t. norm (XX t - Y t) + e / K)"
+      show "continuous_on {t..0} (\<lambda>t. norm (flow0 t - Y t) + e / K)"
         using t0_t_in_J J_subset G.ivl_subset_existence_ivl'[OF tG] F_iv_defined
-        by (auto simp add: XX_def Y_def intro!: continuous_intros)
+        by (auto simp add: flow0_def Y_def intro!: continuous_intros)
     next
       fix s assume "t \<le> s" "s \<le> 0"
-      show "0 \<le> norm (XX s - Y s) + e / K"
+      show "0 \<le> norm (flow0 s - Y s) + e / K"
         using e_pos K_pos by simp
     next
       show "0 < e / K" using e_pos K_pos by simp
@@ -1778,7 +1807,6 @@ proof -
     qed
     done
   show "(s \<in> op + t ` S) = (s - t \<in> S)" by force
-  (* fix P show P sorry *)
 qed
 \<comment>\<open> at this point, there should be no theorems about \<open>existence_ivl\<close>, only \<open>existence_ivl0\<close>.
 Moreover, \<open>op + _ ` _\<close> and \<open>_ + _ - _\<close> etc should have been removed\<close>
@@ -1911,107 +1939,113 @@ locale c1_on_open_euclidean = c1_on_open f f' X
 begin
 lemma c1_on_open_euclidean_anchor: True ..
 
-context begin
+definition "vareq x0 t = f' (flow0 x0 t)"
 
-qualified definition "XX x0 = flow0 x0"
-qualified definition "A x0 t = f' (XX x0 t)"
+interpretation var: ll_on_open "existence_ivl0 x0" "vareq x0" UNIV
+  apply standard
+  apply (auto intro!: c1_implies_local_lipschitz[where f' = "\<lambda>(t, x). vareq x0 t"] continuous_intros
+      derivative_eq_intros
+      simp: split_beta' blinfun.bilinear_simps vareq_def)
+  using local.mem_existence_ivl_iv_defined(2) apply blast
+  using local.existence_ivl_reverse local.mem_existence_ivl_iv_defined(2) apply blast
+  using local.mem_existence_ivl_iv_defined(2) apply blast
+  using local.existence_ivl_reverse local.mem_existence_ivl_iv_defined(2) apply blast
+  done
+
+context begin
 
 lemma continuous_on_A[continuous_intros]:
   assumes "continuous_on S a"
   assumes "continuous_on S b"
   assumes "\<And>s. s \<in> S \<Longrightarrow> a s \<in> X"
   assumes "\<And>s. s \<in> S \<Longrightarrow> b s \<in> existence_ivl0 (a s)"
-  shows "continuous_on S (\<lambda>s. A (a s) (b s))"
+  shows "continuous_on S (\<lambda>s. vareq (a s) (b s))"
 proof -
   have "continuous_on S (\<lambda>x. f' (flow0 (a x) (b x)))"
     by (auto intro!: continuous_intros assms flow_in_domain)
   then show ?thesis
-    by (rule continuous_on_eq) (auto simp: assms A_def XX_def)
+    by (rule continuous_on_eq) (auto simp: assms vareq_def)
 qed
+
+lemmas [intro] = mem_existence_ivl_iv_defined
 
 context
   fixes x0::'a
-  assumes x0_def[continuous_intros]: "x0 \<in> X"
 begin
 
-lemma XX_defined: "xa \<in> existence_ivl0 x0 \<Longrightarrow> XX x0 xa \<in> X"
-  by (auto simp: XX_def flow_in_domain x0_def)
+lemma flow0_defined: "xa \<in> existence_ivl0 x0 \<Longrightarrow> flow0 x0 xa \<in> X"
+  by (auto simp: flow_in_domain)
 
-lemma continuous_on_XX: "continuous_on (existence_ivl0 x0) (XX x0)"
-  by (auto simp: XX_def intro!: continuous_intros )
+lemma continuous_on_flow0: "continuous_on (existence_ivl0 x0) (flow0 x0)"
+  by (auto simp: intro!: continuous_intros)
 
-lemmas continuous_on_XX_comp[continuous_intros] = continuous_on_compose2[OF continuous_on_XX]
-
-interpretation var: ll_on_open "existence_ivl0 x0" "A x0" UNIV
-  by standard
-    (auto intro!: c1_implies_local_lipschitz[where f' = "\<lambda>(t, x). A x0 t"] continuous_intros
-      derivative_eq_intros
-      simp: split_beta' blinfun.bilinear_simps)
+lemmas continuous_on_flow0_comp[continuous_intros] = continuous_on_compose2[OF continuous_on_flow0]
 
 lemma varexivl_eq_exivl:
   assumes "t \<in> existence_ivl0 x0"
-  shows "var.existence_ivl t a = existence_ivl0 x0"
+  shows "var.existence_ivl x0 t a = existence_ivl0 x0"
 proof (rule var.existence_ivl_eq_domain)
   fix s t x
   assume s: "s \<in> existence_ivl0 x0" and t: "t \<in> existence_ivl0 x0"
   then have "{s .. t} \<subseteq> existence_ivl0 x0"
     by (metis atLeastatMost_empty_iff2 empty_subsetI real_Icc_closed_segment var.closed_segment_subset_domain)
-  then have "continuous_on {s .. t} (A x0)"
-    by (auto simp: closed_segment_real intro!: continuous_intros)
-  then have "compact ((A x0) ` {s .. t})"
+  then have "continuous_on {s .. t} (vareq x0)"
+    by (auto simp: closed_segment_real intro!: continuous_intros flow0_defined)
+  then have "compact ((vareq x0) ` {s .. t})"
     using compact_Icc
     by (rule compact_continuous_image)
-  then obtain B where B: "\<And>u. u \<in> {s .. t} \<Longrightarrow> norm (A x0 u) \<le> B"
+  then obtain B where B: "\<And>u. u \<in> {s .. t} \<Longrightarrow> norm (vareq x0 u) \<le> B"
     by (force dest!: compact_imp_bounded simp: bounded_iff)
-  show "\<exists>M L. \<forall>t\<in>{s .. t}. \<forall>x\<in>UNIV. norm (blinfun_apply (A x0 t) x) \<le> M + L * norm x"
+  show "\<exists>M L. \<forall>t\<in>{s..t}. \<forall>x\<in>UNIV. norm (blinfun_apply (vareq x0 t) x) \<le> M + L * norm x"
     by (rule exI[where x=0], rule exI[where x=B])
-      (auto intro!: order_trans[OF norm_blinfun] mult_right_mono B)
+      (auto intro!: order_trans[OF norm_blinfun] mult_right_mono B simp:)
 qed (auto intro: assms)
 
-qualified definition "U u0 t = var.flow 0 u0 t"
+definition "vector_Dflow u0 t \<equiv> var.flow x0 0 u0 t"
 
-qualified definition "Y z t = flow0 (x0 + z) t"
+qualified abbreviation "Y z t \<equiv> flow0 (x0 + z) t"
 
 text \<open>Linearity of the solution to the variational equation.
   TODO: generalize this and some other things for arbitrary linear ODEs\<close>
-lemma U_linear:
+lemma vector_Dflow_linear:
 assumes "t \<in> existence_ivl0 x0"
-shows "U (\<alpha> *\<^sub>R a + \<beta> *\<^sub>R b) t = \<alpha> *\<^sub>R U a t + \<beta> *\<^sub>R U b t"
+shows "vector_Dflow (\<alpha> *\<^sub>R a + \<beta> *\<^sub>R b) t = \<alpha> *\<^sub>R vector_Dflow a t + \<beta> *\<^sub>R vector_Dflow b t"
 proof -
-  note x0_def[intro, simp]
-  have "((\<lambda>c. \<alpha> *\<^sub>R var.flow 0 a c + \<beta> *\<^sub>R var.flow 0 b c) solves_ode (\<lambda>x. A x0 x)) (existence_ivl0 x0) UNIV"
+  note mem_existence_ivl_iv_defined[OF assms, intro, simp]
+  have "((\<lambda>c. \<alpha> *\<^sub>R var.flow x0 0 a c + \<beta> *\<^sub>R var.flow x0 0 b c) solves_ode (\<lambda>x. vareq x0 x)) (existence_ivl0 x0) UNIV"
     by (auto intro!: derivative_intros var.flow_has_vector_derivative solves_odeI
-      simp: blinfun.bilinear_simps varexivl_eq_exivl)
+      simp: blinfun.bilinear_simps varexivl_eq_exivl vareq_def[symmetric])
   moreover
-  have "\<alpha> *\<^sub>R var.flow 0 a 0 + \<beta> *\<^sub>R var.flow 0 b 0 = \<alpha> *\<^sub>R a + \<beta> *\<^sub>R b" by simp
+  have "\<alpha> *\<^sub>R var.flow x0 0 a 0 + \<beta> *\<^sub>R var.flow x0 0 b 0 = \<alpha> *\<^sub>R a + \<beta> *\<^sub>R b" by simp
   moreover note is_interval_existence_ivl[of x0]
   ultimately show ?thesis
-    unfolding U_def
+    unfolding vareq_def[symmetric] vector_Dflow_def
     by (rule var.maximal_existence_flow) (auto simp: assms)
 qed
 
-lemma linear_U:
+lemma linear_vector_Dflow:
 assumes "t \<in> existence_ivl0 x0"
-shows "linear (\<lambda>z. U z t)"
-using U_linear[OF assms, of 1 _ 1] U_linear[OF assms, of _ _ 0]
+shows "linear (\<lambda>z. vector_Dflow z t)"
+using vector_Dflow_linear[OF assms, of 1 _ 1] vector_Dflow_linear[OF assms, of _ _ 0]
 by (auto intro!: linearI)
 
-lemma bounded_linear_U:
+lemma bounded_linear_vector_Dflow:
 assumes "t \<in> existence_ivl0 x0"
-shows "bounded_linear (\<lambda>z. U z t)"
-by (simp add: linear_linear linear_U assms)
+shows "bounded_linear (\<lambda>z. vector_Dflow z t)"
+by (simp add: linear_linear linear_vector_Dflow assms)
 
-lemma U_continuous_on_time: "continuous_on (existence_ivl0 x0) (\<lambda>t. U z t)"
-unfolding U_def
-using var.flow_continuous_on[of 0 z]
-by (auto simp: x0_def varexivl_eq_exivl)
+lemma vector_Dflow_continuous_on_time: "x0 \<in> X \<Longrightarrow> continuous_on (existence_ivl0 x0) (\<lambda>t. vector_Dflow z t)"
+  using var.flow_continuous_on[of x0 0 z] varexivl_eq_exivl
+  unfolding vector_Dflow_def
+  by (auto simp:  )
 
 proposition proposition_17_6_weak:
   \<comment>\<open>from "Differential Equations, Dynamical Systems, and an Introduction to Chaos",
     Hirsch/Smale/Devaney\<close>
 assumes "t \<in> existence_ivl0 x0"
-shows "(\<lambda>y. (Y (y - x0) t - XX x0 t - U (y - x0) t) /\<^sub>R norm (y - x0)) \<midarrow> x0 \<rightarrow> 0"
+shows "(\<lambda>y. (Y (y - x0) t - flow0 x0 t - vector_Dflow (y - x0) t) /\<^sub>R norm (y - x0)) \<midarrow> x0 \<rightarrow> 0"
 proof-
+  note x0_def = mem_existence_ivl_iv_defined[OF assms]
   have "0 \<in> existence_ivl0 x0"
     by (simp add: x0_def)
 
@@ -2030,12 +2064,12 @@ proof-
     assume assms: "x0 + z \<in> X" "S \<subseteq> existence_ivl0 (x0 + z)"
     have "continuous_on S (Y z)"
       using flow_continuous_on assms(1)
-      by (intro continuous_on_subset[OF _ assms(2)]) (simp add: Y_def)
+      by (intro continuous_on_subset[OF _ assms(2)]) (simp add:)
   }
   note [continuous_intros] = this integrable_continuous_real blinfun.continuous_on
 
-  have U_continuous[continuous_intros]: "\<And>z. continuous_on J (U z)"
-    by(rule continuous_on_subset[OF U_continuous_on_time J_in_existence])
+  have U_continuous[continuous_intros]: "\<And>z. continuous_on J (vector_Dflow z)"
+    by(rule continuous_on_subset[OF vector_Dflow_continuous_on_time[OF \<open>x0 \<in> X\<close>] J_in_existence])
 
   from \<open>t \<in> J\<close>
   have "t0 \<le> t"
@@ -2052,8 +2086,8 @@ proof-
     "ball x0 u \<subseteq> X"
     "\<And>y. y \<in> ball x0 u \<Longrightarrow> t0 \<in> existence_ivl0 y"
     "\<And>y. y \<in> ball x0 u \<Longrightarrow> t1 \<in> existence_ivl0 y"
-    "\<And>t y. y \<in> ball x0 u \<Longrightarrow> t \<in> J \<Longrightarrow> dist (XX x0 t) (Y (y - x0) t) \<le> dist x0 y * exp (K * \<bar>t\<bar>)"
-    by (auto simp add: J_def XX_def Y_def)
+    "\<And>t y. y \<in> ball x0 u \<Longrightarrow> t \<in> J \<Longrightarrow> dist (flow0 x0 t) (Y (y - x0) t) \<le> dist x0 y * exp (K * \<bar>t\<bar>)"
+    by (auto simp add: J_def)
 
   have J_in_existence_ivl: "\<And>y. y \<in> ball x0 u \<Longrightarrow> J \<subseteq> existence_ivl0 y"
     unfolding J_def
@@ -2063,15 +2097,15 @@ proof-
     using uK_def(3)
     by (auto simp: dist_norm)
 
-  have XX_J_props: "XX x0 ` J \<noteq> {}" "compact (XX x0 ` J)" "XX x0` J \<subseteq> X"
+  have flow0_J_props: "flow0 x0 ` J \<noteq> {}" "compact (flow0 x0 ` J)" "flow0 x0` J \<subseteq> X"
     using \<open>t0 \<le> t1\<close>
     using J_def(1) J_in_existence
-    by (auto simp add: J_def XX_def intro!:
+    by (auto simp add: J_def intro!:
       compact_continuous_image continuous_intros flow_in_domain)
 
-  have [continuous_intros]: "continuous_on J (\<lambda>s. f' (XX x0 s))"
+  have [continuous_intros]: "continuous_on J (\<lambda>s. f' (flow0 x0 s))"
     using J_in_existence
-    by (auto intro!: continuous_intros flow_in_domain simp: XX_def)
+    by (auto intro!: continuous_intros flow_in_domain simp:)
 
   text \<open> Show the thesis via cases \<open>t = 0\<close>, \<open>0 < t\<close> and \<open>t < 0\<close>. \<close>
   show ?thesis
@@ -2084,10 +2118,10 @@ proof-
       hence "x \<in> X"
         using uK_def(3)
         by (auto simp: dist_commute)
-      hence "inverse (norm (x - x0)) * norm (Y (x - x0) 0 - XX x0 0 - U (x - x0) 0) = 0"
+      hence "inverse (norm (x - x0)) * norm (Y (x - x0) 0 - flow0 x0 0 - vector_Dflow (x - x0) 0) = 0"
         using x0_def
-        by (simp add: XX_def Y_def U_def)
-      thus "inverse (norm (x - x0)) * norm (Y (x - x0) 0 - XX x0 0 - U (x - x0) 0) < e"
+        by (simp add: vector_Dflow_def)
+      thus "inverse (norm (x - x0)) * norm (flow0 x 0 - flow0 x0 0 - vector_Dflow (x - x0) 0) < e"
         using \<open>0 < e\<close> by auto
     qed
   next
@@ -2099,15 +2133,15 @@ proof-
         using dense by auto
 
       obtain N
-        where N_ge_SupS: "Sup { norm (f' (XX x0 s)) |s. s \<in> J } \<le> N" (is "Sup ?S \<le> N")
+        where N_ge_SupS: "Sup { norm (f' (flow0 x0 s)) |s. s \<in> J } \<le> N" (is "Sup ?S \<le> N")
           and N_gr_0: "0 < N"
         \<comment>\<open> We need N to be an upper bound of @{term ?S}, but also larger than zero. \<close>
         by (meson le_cases less_le_trans linordered_field_no_ub)
-      have N_ineq: "\<And>s. s \<in> J \<Longrightarrow> norm (f' (XX x0 s)) \<le> N"
+      have N_ineq: "\<And>s. s \<in> J \<Longrightarrow> norm (f' (flow0 x0 s)) \<le> N"
         proof-
           fix s assume "s \<in> J"
-          have "?S = (norm o f' o XX x0) ` J" by auto
-          moreover have "continuous_on J (norm o f' o XX x0)"
+          have "?S = (norm o f' o flow0 x0) ` J" by auto
+          moreover have "continuous_on J (norm o f' o flow0 x0)"
             using J_in_existence
             by (auto intro!: continuous_intros)
           ultimately have  "\<exists>a b. ?S = {a..b} \<and> a \<le> b"
@@ -2116,18 +2150,18 @@ proof-
           then obtain a b where "?S = {a..b}" and "a \<le> b" by auto
           hence "bdd_above ?S" by simp
           from \<open>s \<in> J\<close>  cSup_upper[OF _ this]
-          have "norm (f' (XX x0 s)) \<le> Sup ?S"
+          have "norm (f' (flow0 x0 s)) \<le> Sup ?S"
             by auto
-          thus "norm (f' (XX x0 s)) \<le> N"
+          thus "norm (f' (flow0 x0 s)) \<le> N"
             using N_ge_SupS by simp
         qed
 
-      text \<open> Define a small region around \<open>XX ` J\<close>, that is a subset of the domain \<open>X\<close>. \<close>
-      from compact_in_open_separated[OF XX_J_props(1,2) auto_open_domain XX_J_props(3)]
-        obtain e_domain where e_domain_def: "0 < e_domain" "{x. infdist x (XX x0 ` J) \<le> e_domain} \<subseteq> X"
+      text \<open> Define a small region around \<open>flow0 ` J\<close>, that is a subset of the domain \<open>X\<close>. \<close>
+      from compact_in_open_separated[OF flow0_J_props(1,2) auto_open_domain flow0_J_props(3)]
+        obtain e_domain where e_domain_def: "0 < e_domain" "{x. infdist x (flow0 x0 ` J) \<le> e_domain} \<subseteq> X"
         by auto
-      define G where "G \<equiv> {x\<in>X. infdist x (XX x0 ` J) < e_domain}"
-      have G_vimage: "G = ((\<lambda>x. infdist x (XX x0 ` J)) -` {..<e_domain}) \<inter> X"
+      define G where "G \<equiv> {x\<in>X. infdist x (flow0 x0 ` J) < e_domain}"
+      have G_vimage: "G = ((\<lambda>x. infdist x (flow0 x0 ` J)) -` {..<e_domain}) \<inter> X"
         by (auto simp: G_def)
       have "open G" "G \<subseteq> X"
         unfolding G_vimage
@@ -2138,12 +2172,12 @@ proof-
       define e_domain2 where "e_domain2 \<equiv> e_domain / 2"
       have "e_domain2 > 0" "e_domain2 < e_domain" using \<open>e_domain > 0\<close>
         by (simp_all add: e_domain2_def)
-      define H where "H \<equiv> {x. infdist x (XX x0 ` J) \<le> e_domain2}"
+      define H where "H \<equiv> {x. infdist x (flow0 x0 ` J) \<le> e_domain2}"
       have H_props: "H \<noteq> {}" "compact H" "H \<subseteq> G"
         proof-
-          have "x0 \<in> XX x0 ` J"
+          have "x0 \<in> flow0 x0 ` J"
             unfolding image_iff
-            using XX_def \<open>0 \<in> J\<close>  x0_def
+            using \<open>0 \<in> J\<close>  x0_def
             by force
 
           hence "x0 \<in> H"
@@ -2154,13 +2188,13 @@ proof-
         next
           show "compact H"
             unfolding H_def
-            using \<open>0 < e_domain2\<close> XX_J_props
+            using \<open>0 < e_domain2\<close> flow0_J_props
             by (intro compact_infdist_le) simp_all
         next
           show "H \<subseteq> G"
           proof
             fix x assume "x \<in> H"
-            then have *: "infdist x (XX x0 ` J) < e_domain"
+            then have *: "infdist x (flow0 x0 ` J) < e_domain"
               using \<open>0 < e_domain\<close>
               by (simp add: H_def e_domain2_def)
             then have "x \<in> X"
@@ -2206,8 +2240,8 @@ proof-
       obtain d_ivl where d_ivl_def:
         "0 < d_ivl"
         "\<And>x. 0 < dist x x0 \<Longrightarrow> dist x x0 < d_ivl \<Longrightarrow>
-          (\<forall>t\<in>J. dist (XX x0 t) (Y (x - x0) t) < min (e_domain / 2) d_taylor)"
-        by (auto simp: dist_commute XX_def Y_def J_def)
+          (\<forall>t\<in>J. dist (flow0 x0 t) (Y (x - x0) t) < min (e_domain / 2) d_taylor)"
+        by (auto simp: dist_commute J_def)
 
       define d where "d \<equiv> min u d_ivl"
       have "0 < d" using \<open>0 < u\<close> \<open>0 < d_ivl\<close>
@@ -2223,42 +2257,42 @@ proof-
           proof(cases)
             assume "y = x0"
             from assms(2)
-            have "x \<in> XX x0 ` J"
-              by (simp add: XX_def Y_def \<open>y = x0\<close>)
+            have "x \<in> flow0 x0 ` J"
+              by (simp add: \<open>y = x0\<close>)
             thus "x \<in> G"
-              using \<open>0 < e_domain\<close> \<open>XX x0 ` J \<subseteq> X\<close>
+              using \<open>0 < e_domain\<close> \<open>flow0 x0 ` J \<subseteq> X\<close>
               by (auto simp: G_def)
           next
             assume "y \<noteq> x0"
             hence "0 < dist y x0"
               by (simp add: dist_norm)
             from d_ivl_def(2)[OF this] \<open>d \<le> d_ivl\<close>  \<open>0 < e_domain\<close> assms(1)
-            have dist_XX_Y: "\<And>t. t \<in> J \<Longrightarrow> dist (XX x0 t) (Y (y - x0) t) < e_domain"
-              by (auto simp: XX_def Y_def dist_commute)
+            have dist_flow0_Y: "\<And>t. t \<in> J \<Longrightarrow> dist (flow0 x0 t) (Y (y - x0) t) < e_domain"
+              by (auto simp: dist_commute)
 
             from assms(2)
             obtain t where t_def: "t \<in> J" "x = Y (y - x0) t"
               by auto
             have "x \<in> X"
-              unfolding t_def(2) Y_def
+              unfolding t_def(2)
               using uK_def(3) assms(1) \<open>d \<le> u\<close> subsetD[OF J_in_existence_ivl t_def(1)]
               by (auto simp: intro!: flow_in_domain)
 
-            have "XX x0 t \<in> XX x0 ` J" using t_def by auto
-            from dist_XX_Y[OF t_def(1)]
-            have "dist x (XX x0 t) < e_domain"
+            have "flow0 x0 t \<in> flow0 x0 ` J" using t_def by auto
+            from dist_flow0_Y[OF t_def(1)]
+            have "dist x (flow0 x0 t) < e_domain"
               by (simp add: t_def(2) dist_commute)
-            from le_less_trans[OF infdist_le[OF \<open>XX x0 t \<in> XX x0 ` J\<close>] this] \<open>x \<in> X\<close>
+            from le_less_trans[OF infdist_le[OF \<open>flow0 x0 t \<in> flow0 x0 ` J\<close>] this] \<open>x \<in> X\<close>
             show "x \<in> G"
               by (auto simp: G_def)
           qed
         qed
       from this[of x0] \<open>0 < d\<close>
-      have X_in_G: "XX x0 ` J \<subseteq> G"
-        by (simp add: XX_def Y_def)
+      have X_in_G: "flow0 x0 ` J \<subseteq> G"
+        by (simp add: )
 
       show "\<exists>d>0. \<forall>x. 0 < dist x x0 \<and> dist x x0 < d \<longrightarrow>
-                     dist ((Y (x - x0) t - XX x0 t - U (x - x0) t) /\<^sub>R norm (x - x0)) 0 < e"
+                     dist ((Y (x - x0) t - flow0 x0 t - vector_Dflow (x - x0) t) /\<^sub>R norm (x - x0)) 0 < e"
       proof(rule exI, rule conjI[OF \<open>0 < d\<close>], safe, unfold norm_conv_dist[symmetric])
         fix x assume x_x0_dist: "0 < dist x x0" "dist x x0 < d"
         hence x_in_ball': "x \<in> ball x0 d"
@@ -2281,16 +2315,16 @@ proof-
         have x_in_X[continuous_intros]: "x \<in> X"
           by simp
 
-        text \<open> On all of \<open>J\<close>, we can find upper bounds for the distance of \<open>XX\<close> and \<open>Y\<close>. \<close>
-        have dist_XX_Y: "\<And>s. s \<in> J \<Longrightarrow> dist (XX x0 s) (Y (x - x0) s) \<le> dist x0 x * exp (K * \<bar>t\<bar>)"
+        text \<open> On all of \<open>J\<close>, we can find upper bounds for the distance of \<open>flow0\<close> and \<open>Y\<close>. \<close>
+        have dist_flow0_Y: "\<And>s. s \<in> J \<Longrightarrow> dist (flow0 x0 s) (Y (x - x0) s) \<le> dist x0 x * exp (K * \<bar>t\<bar>)"
           using t0_def t1_def uK_def(2)
           by (intro order_trans[OF uK_def(6)[OF x_in_ball] mult_left_mono])
-             (auto simp add: XX_def Y_def J_def intro!: mult_mono)
+             (auto simp add: J_def intro!: mult_mono)
         from d_ivl_def x_x0_dist \<open>d \<le> d_ivl\<close>
-        have dist_XX_Y2: "\<And>t. t \<in> J \<Longrightarrow> dist (XX x0 t) (Y (x - x0) t) < min (e_domain2) d_taylor"
-          by (auto simp: XX_def Y_def e_domain2_def)
+        have dist_flow0_Y2: "\<And>t. t \<in> J \<Longrightarrow> dist (flow0 x0 t) (Y (x - x0) t) < min (e_domain2) d_taylor"
+          by (auto simp: e_domain2_def)
 
-        let ?g = "\<lambda>t. norm (Y (x - x0) t - XX x0 t - U (x - x0) t)"
+        let ?g = "\<lambda>t. norm (Y (x - x0) t - flow0 x0 t - vector_Dflow (x - x0) t)"
         let ?C = "\<bar>t\<bar> * dist x0 x * exp (K * \<bar>t\<bar>) * e1"
         text \<open> Find an upper bound to \<open>?g\<close>, i.e. show that
              \<open>?g s \<le> ?C + N * integral {a..b} ?g\<close>
@@ -2315,9 +2349,9 @@ proof-
           text \<open>Prove continuities beforehand.\<close>
           note continuous_on_0_s[continuous_intros] = continuous_on_subset[OF _ \<open>{a..b} \<subseteq> J\<close>]
 
-          have[continuous_intros]: "continuous_on J (XX x0)"
+          have[continuous_intros]: "continuous_on J (flow0 x0)"
             using J_in_existence
-            by (auto intro!: continuous_intros simp: XX_def)
+            by (auto intro!: continuous_intros simp:)
           {
             fix z S
             assume assms: "x0 + z \<in> X" "S \<subseteq> existence_ivl0 (x0 + z)"
@@ -2325,149 +2359,153 @@ proof-
             proof(rule continuous_on_subset[OF _ assms(2)])
               show "continuous_on (existence_ivl0 (x0 + z)) (\<lambda>s. f (Y z s))"
                 using assms
-                by (auto intro!: continuous_intros flow_in_domain flow_continuous_on simp: Y_def)
+                by (auto intro!: continuous_intros flow_in_domain flow_continuous_on simp:)
             qed
           }
           note [continuous_intros] = this
 
-          have [continuous_intros]: "continuous_on J (\<lambda>s. f (XX x0 s))"
+          have [continuous_intros]: "continuous_on J (\<lambda>s. f (flow0 x0 s))"
             by(rule continuous_on_subset[OF _ J_in_existence])
-              (auto intro!: continuous_intros flow_continuous_on flow_in_domain simp: XX_def x0_def)
+              (auto intro!: continuous_intros flow_continuous_on flow_in_domain simp: x0_def)
 
-          have [continuous_intros]: "\<And>z. continuous_on J (\<lambda>s. f' (XX x0 s) (U z s))"
+          have [continuous_intros]: "\<And>z. continuous_on J (\<lambda>s. f' (flow0 x0 s) (vector_Dflow z s))"
           proof-
             fix z
-            have a1: "continuous_on J (XX x0)"
+            have a1: "continuous_on J (flow0 x0)"
               by (auto intro!: continuous_intros)
 
-            have a2: "(\<lambda>s. (XX x0 s, U z s)) ` J \<subseteq> (XX x0 ` J) \<times> ((\<lambda>s. U z s) ` J)"
+            have a2: "(\<lambda>s. (flow0 x0 s, vector_Dflow z s)) ` J \<subseteq> (flow0 x0 ` J) \<times> ((\<lambda>s. vector_Dflow z s) ` J)"
               by auto
-            have a3: "continuous_on ((\<lambda>s. (XX x0 s, U z s)) ` J) (\<lambda>(x, u). f' x u)"
-              using assms XX_J_props
+            have a3: "continuous_on ((\<lambda>s. (flow0 x0 s, vector_Dflow z s)) ` J) (\<lambda>(x, u). f' x u)"
+              using assms flow0_J_props
               by (auto intro!: continuous_intros simp: split_beta')
             from continuous_on_compose[OF continuous_on_Pair[OF a1 U_continuous] a3]
-            show "continuous_on J (\<lambda>s. f' (XX x0 s) (U z s))"
+            show "continuous_on J (\<lambda>s. f' (flow0 x0 s) (vector_Dflow z s))"
               by simp
           qed
 
-          have [continuous_intros]: "continuous_on J (\<lambda>s. R (XX x0 s) (Y (x - x0) s))"
+          have [continuous_intros]: "continuous_on J (\<lambda>s. R (flow0 x0 s) (Y (x - x0) s))"
             using J_in_existence J_in_existence_ivl[OF x_in_ball] X_in_G \<open>{a..b} \<subseteq> J\<close> Y_in_G
               x_x0_dist
             by (auto intro!: continuous_intros continuous_on_compose_Pair[OF taylor_expansion(4)]
               simp: dist_commute subset_iff)
           hence [continuous_intros]:
-            "(\<lambda>s. R (XX x0 s) (Y (x - x0) s)) integrable_on J"
+            "(\<lambda>s. R (flow0 x0 s) (Y (x - x0) s)) integrable_on J"
             unfolding J_def
             by (rule integrable_continuous_real)
 
-          have i1: "integral {a..b} (\<lambda>s. f (Y (x - x0) s)) - integral {a..b} (\<lambda>s. f (XX x0 s)) =
-              integral {a..b} (\<lambda>s. f (Y (x - x0) s) - f (XX x0 s))"
+          have i1: "integral {a..b} (\<lambda>s. f (flow0 x s)) - integral {a..b} (\<lambda>s. f (flow0 x0 s)) =
+              integral {a..b} (\<lambda>s. f (flow0 x s) - f (flow0 x0 s))"
             using J_in_existence_ivl[OF x_in_ball]
-            by (intro Henstock_Kurzweil_Integration.integral_diff[symmetric]) (auto intro!: continuous_intros)
-
+            apply (intro Henstock_Kurzweil_Integration.integral_diff[symmetric])
+             by (auto intro!: continuous_intros existence_ivl_reverse)
           have i2:
-            "integral {a..b} (\<lambda>s. f (Y (x - x0) s) - f (XX x0 s) - (f' (XX x0 s)) (U (x - x0) s)) =
-              integral {a..b} (\<lambda>s. f (Y (x - x0) s) - f (XX x0 s)) -
-              integral {a..b} (\<lambda>s. f' (XX x0 s) (U (x - x0) s))"
+            "integral {a..b} (\<lambda>s. f (flow0 x s) - f (flow0 x0 s) - (f' (flow0 x0 s)) (vector_Dflow (x - x0) s)) =
+              integral {a..b} (\<lambda>s. f (flow0 x s) - f (flow0 x0 s)) -
+              integral {a..b} (\<lambda>s. f' (flow0 x0 s) (vector_Dflow (x - x0) s))"
             using J_in_existence_ivl[OF x_in_ball]
-            by (intro Henstock_Kurzweil_Integration.integral_diff[OF Henstock_Kurzweil_Integration.integrable_diff]) (auto intro!: continuous_intros)
-
+            by (intro Henstock_Kurzweil_Integration.integral_diff[OF Henstock_Kurzweil_Integration.integrable_diff])
+              (auto intro!: continuous_intros existence_ivl_reverse)
           from ab_cases
-          have "?g s = norm (integral {a..b} (\<lambda>s'. f (Y (x - x0) s')) - integral {a..b} (\<lambda>s'. f (XX x0 s')) - integral {a..b} (\<lambda>s'. (f' (XX x0 s')) (U (x - x0) s')))"
+          have "?g s = norm (integral {a..b} (\<lambda>s'. f (Y (x - x0) s')) -
+            integral {a..b} (\<lambda>s'. f (flow0 x0 s')) -
+            integral {a..b} (\<lambda>s'. (f' (flow0 x0 s')) (vector_Dflow (x - x0) s')))"
           proof(safe)
             assume "a = 0" "b = s"
             hence "0 \<le> s" using \<open>s \<in> {a..b}\<close> by simp
 
-            text\<open> Integral equations for XX, Y and U. \<close>
-            have XX_integral_eq: "XX x0 s = x0 + ivl_integral 0 s (\<lambda>s. f (XX x0 s))"
-              unfolding XX_def
+            text\<open> Integral equations for flow0, Y and U. \<close>
+            have flow0_integral_eq: "flow0 x0 s = x0 + ivl_integral 0 s (\<lambda>s. f (flow0 x0 s))"
               by (rule flow_fixed_point[OF s_in_existence_ivl_x0])
-            have Y_integral_eq: "Y (x - x0) s = x0 + (x - x0) + ivl_integral 0 s (\<lambda>s. f (Y (x - x0) s))"
+            have Y_integral_eq: "flow0 x s = x0 + (x - x0) + ivl_integral 0 s (\<lambda>s. f (Y (x - x0) s))"
               using flow_fixed_point \<open>0 \<le> s\<close> s_in_existence_ivl2[OF z_in_ball] ball_in_X[OF z_in_ball]
-              by (simp add: Y_def)
-            have U_integral_eq: "U (x - x0) s = (x - x0) + ivl_integral 0 s (\<lambda>s. f' (XX x0 s) (U (x - x0) s))"
-              unfolding U_def A_def[symmetric]
+              by (simp add:)
+            have U_integral_eq: "vector_Dflow (x - x0) s = (x - x0) + ivl_integral 0 s (\<lambda>s. vareq x0 s (vector_Dflow (x - x0) s))"
+              unfolding vector_Dflow_def
               by (rule var.flow_fixed_point)
                 (auto simp: \<open>0 \<le> s\<close> x0_def varexivl_eq_exivl s_in_existence_ivl_x0)
-            show "?g s = norm (integral {0..s} (\<lambda>s'. f (Y (x - x0) s')) - integral {0..s} (\<lambda>s'. f (XX x0 s')) -
-                integral {0..s} (\<lambda>s'. blinfun_apply (f' (XX x0 s')) (U (x - x0) s')))"
+            show "?g s = norm (integral {0..s} (\<lambda>s'. f (Y (x - x0) s')) -
+                integral {0..s} (\<lambda>s'. f (flow0 x0 s')) -
+                integral {0..s} (\<lambda>s'. blinfun_apply (f' (flow0 x0 s')) (vector_Dflow (x - x0) s')))"
               using \<open>0 \<le> s\<close>
-              by (simp add: XX_integral_eq Y_integral_eq U_integral_eq ivl_integral_def)
+              unfolding vareq_def[symmetric]
+              by (simp add: flow0_integral_eq Y_integral_eq U_integral_eq ivl_integral_def)
           next
             assume "a = s" "b = 0"
             hence "s \<le> 0" using \<open>s \<in> {a..b}\<close> by simp
 
-            have XX_integral_eq_left: "XX x0 s = x0 + ivl_integral 0 s (\<lambda>s. f (XX x0 s))"
-              unfolding XX_def
+            have flow0_integral_eq_left: "flow0 x0 s = x0 + ivl_integral 0 s (\<lambda>s. f (flow0 x0 s))"
               by (rule flow_fixed_point[OF s_in_existence_ivl_x0])
             have Y_integral_eq_left: "Y (x - x0) s = x0 + (x - x0) + ivl_integral 0 s (\<lambda>s. f (Y (x - x0) s))"
               using flow_fixed_point \<open>s \<le> 0\<close> s_in_existence_ivl2[OF z_in_ball] ball_in_X[OF z_in_ball]
-              by (simp add: Y_def)
-            have U_integral_eq_left: "U (x - x0) s = (x - x0) + ivl_integral 0 s (\<lambda>s. f' (XX x0 s) (U (x - x0) s))"
-              unfolding U_def A_def[symmetric]
+              by (simp add: )
+            have U_integral_eq_left: "vector_Dflow (x - x0) s = (x - x0) + ivl_integral 0 s (\<lambda>s. vareq x0 s (vector_Dflow (x - x0) s))"
+              unfolding vector_Dflow_def
               by (rule var.flow_fixed_point)
                 (auto simp: \<open>s \<le> 0\<close> x0_def varexivl_eq_exivl s_in_existence_ivl_x0)
 
             have "?g s =
               norm (- integral {s..0} (\<lambda>s'. f (Y (x - x0) s')) +
-                integral {s..0} (\<lambda>s'. f (XX x0 s')) +
-                integral {s..0} (\<lambda>s'. (f' (XX x0 s')) (U (x - x0) s')))"
-              unfolding XX_integral_eq_left Y_integral_eq_left U_integral_eq_left
+                integral {s..0} (\<lambda>s'. f (flow0 x0 s')) +
+                integral {s..0} (\<lambda>s'. vareq x0 s' (vector_Dflow (x - x0) s')))"
+              unfolding flow0_integral_eq_left Y_integral_eq_left U_integral_eq_left
               using \<open>s \<le> 0\<close>
               by (simp add: ivl_integral_def)
             also have "... = norm (integral {s..0} (\<lambda>s'. f (Y (x - x0) s')) -
-                integral {s..0} (\<lambda>s'. f (XX x0 s')) -
-                integral {s..0} (\<lambda>s'. (f' (XX x0 s')) (U (x - x0) s')))"
+                integral {s..0} (\<lambda>s'. f (flow0 x0 s')) -
+                integral {s..0} (\<lambda>s'. vareq x0 s' (vector_Dflow (x - x0) s')))"
               by (subst norm_minus_cancel[symmetric], simp)
             finally show "?g s =
               norm (integral {s..0} (\<lambda>s'. f (Y (x - x0) s')) -
-                integral {s..0} (\<lambda>s'. f (XX x0 s')) -
-                integral {s..0} (\<lambda>s'. blinfun_apply (f' (XX x0 s')) (U (x - x0) s')))"
-              .
+                integral {s..0} (\<lambda>s'. f (flow0 x0 s')) -
+                integral {s..0} (\<lambda>s'. blinfun_apply (f' (flow0 x0 s')) (vector_Dflow (x - x0) s')))"
+              unfolding vareq_def .
           qed
           also have "... =
-            norm (integral {a..b} (\<lambda>s. f (Y (x - x0) s) - f (XX x0 s) - (f' (XX x0 s)) (U (x - x0) s)))"
+            norm (integral {a..b} (\<lambda>s. f (Y (x - x0) s) - f (flow0 x0 s) - (f' (flow0 x0 s)) (vector_Dflow (x - x0) s)))"
             by (simp add: i1 i2)
           also have "... \<le>
-            integral {a..b} (\<lambda>s. norm (f (Y (x - x0) s) - f (XX x0 s) - f' (XX x0 s) (U (x - x0) s)))"
+            integral {a..b} (\<lambda>s. norm (f (Y (x - x0) s) - f (flow0 x0 s) - f' (flow0 x0 s) (vector_Dflow (x - x0) s)))"
             using x_in_X J_in_existence_ivl_x J_in_existence \<open>{a..b} \<subseteq> J\<close>
-            by (auto intro!: continuous_intros continuous_on_imp_absolutely_integrable_on)
+            by (auto intro!: continuous_intros continuous_on_imp_absolutely_integrable_on
+                existence_ivl_reverse)
           also have "... = integral {a..b}
-              (\<lambda>s. norm (f' (XX x0 s) (Y (x - x0) s - XX x0 s - U (x - x0) s) + R (XX x0 s) (Y (x - x0) s)))"
+              (\<lambda>s. norm (f' (flow0 x0 s) (Y (x - x0) s - flow0 x0 s - vector_Dflow (x - x0) s) + R (flow0 x0 s) (Y (x - x0) s)))"
           proof (safe intro!: integral_spike[OF negligible_empty, simplified] arg_cong[where f=norm])
             fix s' assume "s' \<in> {a..b}"
-            show "f' (XX x0 s') (Y (x - x0) s' - XX x0 s' - U (x - x0) s') + R (XX x0 s') (Y (x - x0) s') =
-              f (Y (x - x0) s') - f (XX x0 s') - f' (XX x0 s') (U (x - x0) s')"
-              by (simp add: blinfun.diff_right taylor_expansion(2)[of "Y (x - x0) s'" "XX x0 s'"])
+            show "f' (flow0 x0 s') (Y (x - x0) s' - flow0 x0 s' - vector_Dflow (x - x0) s') + R (flow0 x0 s') (Y (x - x0) s') =
+              f (Y (x - x0) s') - f (flow0 x0 s') - f' (flow0 x0 s') (vector_Dflow (x - x0) s')"
+              by (simp add: blinfun.diff_right taylor_expansion(2)[of "flow0 x s'" "flow0 x0 s'"])
           qed
           also have "... \<le> integral {a..b}
-            (\<lambda>s. norm (f' (XX x0 s) (Y (x - x0) s - XX x0 s - U (x - x0) s)) +
-              norm (R (XX x0 s) (Y (x - x0) s)))"
+            (\<lambda>s. norm (f' (flow0 x0 s) (Y (x - x0) s - flow0 x0 s - vector_Dflow (x - x0) s)) +
+              norm (R (flow0 x0 s) (Y (x - x0) s)))"
             using J_in_existence_ivl[OF x_in_ball] norm_triangle_ineq
+            using \<open>continuous_on J (\<lambda>s. R (flow0 x0 s) (Y (x - x0) s))\<close>
             by (auto intro!: continuous_intros integral_le)
           also have "... =
-            integral {a..b} (\<lambda>s. norm (f' (XX x0 s) (Y (x - x0) s - XX x0 s - U (x - x0) s))) +
-            integral {a..b} (\<lambda>s. norm (R (XX x0 s) (Y (x - x0) s)))"
+            integral {a..b} (\<lambda>s. norm (f' (flow0 x0 s) (Y (x - x0) s - flow0 x0 s - vector_Dflow (x - x0) s))) +
+            integral {a..b} (\<lambda>s. norm (R (flow0 x0 s) (Y (x - x0) s)))"
             using J_in_existence_ivl[OF x_in_ball]
+            using \<open>continuous_on J (\<lambda>s. R (flow0 x0 s) (Y (x - x0) s))\<close>
             by (auto intro!: continuous_intros Henstock_Kurzweil_Integration.integral_add)
           also have "... \<le> N * integral {a..b} ?g + ?C" (is "?l1 + ?r1 \<le> _")
           proof(rule add_mono)
-            have "?l1 \<le> integral {a..b} (\<lambda>s. norm (f' (XX x0 s)) * norm (Y (x - x0) s - XX x0 s - U (x - x0) s))"
+            have "?l1 \<le> integral {a..b} (\<lambda>s. norm (f' (flow0 x0 s)) * norm (Y (x - x0) s - flow0 x0 s - vector_Dflow (x - x0) s))"
               using norm_blinfun J_in_existence_ivl[OF x_in_ball]
               by (auto intro!: continuous_intros integral_le)
 
-            also have "... \<le> integral {a..b} (\<lambda>s. N * norm (Y (x - x0) s - XX x0 s - U (x - x0) s))"
-              using J_in_existence_ivl[OF x_in_ball]
-              by (intro integral_le)
-                 (force intro!: continuous_intros mult_right_mono
-                  dest!: N_ineq[OF \<open>{a..b} \<subseteq> J\<close>[THEN subsetD]])+
-            also have "... = N * integral {a..b} (\<lambda>s. norm ((Y (x - x0) s - XX x0 s - U (x - x0) s)))"
+            also have "... \<le> integral {a..b} (\<lambda>s. N * norm (Y (x - x0) s - flow0 x0 s - vector_Dflow (x - x0) s))"
+              using J_in_existence_ivl[OF x_in_ball] N_ineq[OF \<open>{a..b} \<subseteq> J\<close>[THEN subsetD]]
+              by (intro integral_le) (auto intro!: continuous_intros mult_right_mono)
+              
+            also have "... = N * integral {a..b} (\<lambda>s. norm ((Y (x - x0) s - flow0 x0 s - vector_Dflow (x - x0) s)))"
               unfolding real_scaleR_def[symmetric]
               by(rule integral_cmul)
             finally show "?l1 \<le> N * integral {a..b} ?g" .
           next
-            have "?r1 \<le> integral {a..b} (\<lambda>s. e1 * dist (XX x0 s) (Y (x - x0) s))"
-              using J_in_existence_ivl[OF x_in_ball] \<open>0 < e_domain\<close> dist_XX_Y2 \<open>0 < e_domain2\<close>
+            have "?r1 \<le> integral {a..b} (\<lambda>s. e1 * dist (flow0 x0 s) (Y (x - x0) s))"
+              using J_in_existence_ivl[OF x_in_ball] \<open>0 < e_domain\<close> dist_flow0_Y2 \<open>0 < e_domain2\<close>
               by (intro integral_le)
                 (force
                   intro!: continuous_intros taylor_expansion(3) order_trans[OF infdist_le]
@@ -2479,7 +2517,7 @@ proof-
               subgoal using J_in_existence_ivl[OF x_in_ball] by (force intro!: continuous_intros)
               subgoal by force
               subgoal by (force dest!: \<open>{a..b} \<subseteq> J\<close>[THEN subsetD]
-                intro!: less_imp_le[OF \<open>0 < e1\<close>] mult_left_mono[OF dist_XX_Y])
+                intro!: less_imp_le[OF \<open>0 < e1\<close>] mult_left_mono[OF dist_flow0_Y])
               done
             also have "... \<le> ?C"
               using \<open>s \<in> J\<close> x_x0_dist \<open>0 < e1\<close> \<open>{a..b} \<subseteq> J\<close> \<open>0 < \<bar>t\<bar>\<close> t0_def t1_def
@@ -2502,20 +2540,26 @@ proof-
         proof
           assume "0 \<le> t"
           moreover
-          have "norm (Y (x - x0) t - XX x0 t - U (x - x0) t) \<le>
+          have "continuous_on {0..t} (vector_Dflow (x - x0))"
+            using U_continuous
+            by (rule continuous_on_subset) (auto simp: J_def t0_def t1_def)
+          then have "norm (Y (x - x0) t - flow0 x0 t - vector_Dflow (x - x0) t) \<le>
             \<bar>t\<bar> * dist x0 x * exp (K * \<bar>t\<bar>) * e1 * exp (N * t)"
-            using \<open>t \<in> J\<close> J_def \<open>t0 \<le> 0\<close>
+            using \<open>t \<in> J\<close> J_def \<open>t0 \<le> 0\<close> J_in_existence J_in_existence_ivl_x
             by (intro gronwall[OF g_bound _ _ C_gr_zero \<open>0 < N\<close> \<open>0 \<le> t\<close> order.refl])
-              (auto intro!: continuous_intros simp: )
+               (auto intro!: continuous_intros simp: )
           ultimately show ?thesis by simp
         next
           assume "t \<le> 0"
           moreover
-          have "norm (Y (x - x0) t - XX x0 t - U (x - x0) t) \<le>
+          have "continuous_on {t .. 0} (vector_Dflow (x - x0))"
+            using U_continuous
+            by (rule continuous_on_subset) (auto simp: J_def t0_def t1_def)
+          then have "norm (Y (x - x0) t - flow0 x0 t - vector_Dflow (x - x0) t) \<le>
             \<bar>t\<bar> * dist x0 x * exp (K * \<bar>t\<bar>) * e1 * exp (- N * t)"
-            using \<open>t \<in> J\<close> J_def \<open>0 \<le> t1\<close>
+            using \<open>t \<in> J\<close> J_def \<open>0 \<le> t1\<close> J_in_existence J_in_existence_ivl_x
             by (intro gronwall_left[OF g_bound _ _ C_gr_zero \<open>0 < N\<close> order.refl \<open>t \<le> 0\<close>])
-              (auto intro!: continuous_intros)
+                (auto intro!: continuous_intros)
           ultimately show ?thesis
             by simp
         qed
@@ -2525,7 +2569,7 @@ proof-
           unfolding e1_def
           using \<open>e' < e\<close> \<open>0 < \<bar>t\<bar>\<close> \<open>0 < e1\<close> x_x0_dist(1)
           by (simp add: dist_norm)
-        finally show "norm ((Y (x - x0) t - XX x0 t - U (x - x0) t) /\<^sub>R norm (x - x0)) < e"
+        finally show "norm ((Y (x - x0) t - flow0 x0 t - vector_Dflow (x - x0) t) /\<^sub>R norm (x - x0)) < e"
           by (simp, metis x_x0_dist(1) dist_norm divide_inverse mult.commute pos_divide_less_eq)
       qed
     qed
@@ -2533,36 +2577,40 @@ proof-
 qed
 
 lemma local_lipschitz_A:
-  "OT \<subseteq> existence_ivl0 x0 \<Longrightarrow> local_lipschitz OT (OS::('a \<Rightarrow>\<^sub>L 'a) set) (\<lambda>t. op o\<^sub>L (A x0 t))"
+  "OT \<subseteq> existence_ivl0 x0 \<Longrightarrow> local_lipschitz OT (OS::('a \<Rightarrow>\<^sub>L 'a) set) (\<lambda>t. op o\<^sub>L (vareq x0 t))"
   by (rule local_lipschitz_on_subset[OF _ _ subset_UNIV, where T="existence_ivl0 x0"])
-     (auto simp: split_beta' A_def XX_def
+     (auto simp: split_beta' vareq_def
       intro!: c1_implies_local_lipschitz[where f'="\<lambda>(t, x). comp3 (f' (flow0 x0 t))"]
         derivative_eq_intros blinfun_eqI ext
         continuous_intros flow_in_domain)
 
 lemma total_derivative_ll_on_open:
-  "ll_on_open (existence_ivl0 x0) (\<lambda>t. blinfun_compose (A x0 t)) (UNIV::('a \<Rightarrow>\<^sub>L 'a) set)"
+  "ll_on_open (existence_ivl0 x0) (\<lambda>t. blinfun_compose (vareq x0 t)) (UNIV::('a \<Rightarrow>\<^sub>L 'a) set)"
   by standard (auto intro!: continuous_intros local_lipschitz_A[OF order_refl])
 
-interpretation mvar: ll_on_open "existence_ivl0 x0" "\<lambda>t. blinfun_compose (A x0 t)" "UNIV::('a \<Rightarrow>\<^sub>L 'a) set"
+end
+
+end
+
+sublocale mvar: ll_on_open "existence_ivl0 x0" "\<lambda>t. blinfun_compose (vareq x0 t)" "UNIV::('a \<Rightarrow>\<^sub>L 'a) set" for x0
   by (rule total_derivative_ll_on_open)
 
-lemma wholevar_existence_ivl_eq_existence_ivl:\<comment>\<open>TODO: unify with @{thm varexivl_eq_exivl}\<close>
+lemma mvar_existence_ivl_eq_existence_ivl[simp]:\<comment>\<open>TODO: unify with @{thm varexivl_eq_exivl}\<close>
   assumes "t \<in> existence_ivl0 x0"
-  shows "mvar.existence_ivl t = (\<lambda>_. existence_ivl0 x0)"
+  shows "mvar.existence_ivl x0 t = (\<lambda>_. existence_ivl0 x0)"
 proof (rule ext, rule mvar.existence_ivl_eq_domain)
   fix s t x
   assume s: "s \<in> existence_ivl0 x0" and t: "t \<in> existence_ivl0 x0"
   then have "{s .. t} \<subseteq> existence_ivl0 x0"
     by (meson atLeastAtMost_iff is_interval_1 is_interval_existence_ivl subsetI)
-  then have "continuous_on {s .. t} (A x0)"
+  then have "continuous_on {s .. t} (vareq x0)"
     by (auto intro!: continuous_intros)
-  then have "compact (A x0 ` {s .. t})"
+  then have "compact (vareq x0 ` {s .. t})"
     using compact_Icc
     by (rule compact_continuous_image)
-  then obtain B where B: "\<And>u. u \<in> {s .. t} \<Longrightarrow> norm (A x0 u) \<le> B"
+  then obtain B where B: "\<And>u. u \<in> {s .. t} \<Longrightarrow> norm (vareq x0 u) \<le> B"
     by (force dest!: compact_imp_bounded simp: bounded_iff)
-  show "\<exists>M L. \<forall>t\<in>{s .. t}. \<forall>x\<in>UNIV. norm (A x0 t o\<^sub>L x) \<le> M + L * norm x"
+  show "\<exists>M L. \<forall>t\<in>{s .. t}. \<forall>x\<in>UNIV. norm (vareq x0 t o\<^sub>L x) \<le> M + L * norm x"
     unfolding o_def
     by (rule exI[where x=0], rule exI[where x=B])
       (auto intro!: order_trans[OF norm_blinfun_compose] mult_right_mono B)
@@ -2570,52 +2618,50 @@ qed (auto intro: assms)
 
 lemma
   assumes "t \<in> existence_ivl0 x0"
-  shows "continuous_on (UNIV \<times> existence_ivl0 x0) (\<lambda>(x, ta). mvar.flow t x ta)"
+  shows "continuous_on (UNIV \<times> existence_ivl0 x0) (\<lambda>(x, ta). mvar.flow x0 t x ta)"
 proof -
-  from mvar.flow_continuous_on_state_space[of t, unfolded wholevar_existence_ivl_eq_existence_ivl[OF assms]]
-  show "continuous_on (UNIV \<times> existence_ivl0 x0) (\<lambda>(x, ta). mvar.flow t x ta)" .
+  from mvar.flow_continuous_on_state_space[of x0 t, unfolded mvar_existence_ivl_eq_existence_ivl[OF assms]]
+  show "continuous_on (UNIV \<times> existence_ivl0 x0) (\<lambda>(x, ta). mvar.flow x0 t x ta)" .
 qed
 
-qualified definition "W = mvar.flow 0 id_blinfun"
+definition "Dflow x0 = mvar.flow x0 0 id_blinfun"
 
 lemma var_eq_mvar:
   assumes "t0 \<in> existence_ivl0 x0"
   assumes "t \<in> existence_ivl0 x0"
-  shows "var.flow t0 i t = mvar.flow t0 id_blinfun t i"
+  shows "var.flow x0 t0 i t = mvar.flow x0 t0 id_blinfun t i"
   by (rule var.flow_unique)
      (auto intro!: assms derivative_eq_intros mvar.flow_has_derivative
-       simp: varexivl_eq_exivl assms has_vector_derivative_def blinfun.bilinear_simps
-        wholevar_existence_ivl_eq_existence_ivl)
+       simp: varexivl_eq_exivl assms has_vector_derivative_def blinfun.bilinear_simps)
 
-end
+lemma Dflow_zero[simp]: "x \<in> X \<Longrightarrow> Dflow x 0 = 1\<^sub>L"
+  unfolding Dflow_def
+  by (subst mvar.flow_initial_time) auto
+
 
 subsection \<open>Differentiability of the flow0\<close>
 
 text \<open> \<open>U t\<close>, i.e. the solution of the variational equation, is the space derivative at the initial
   value \<open>x0\<close>. \<close>
 lemma flow_dx_derivative:
-assumes "x0 \<in> X"
 assumes "t \<in> existence_ivl0 x0"
-shows "((\<lambda>x0. flow0 x0 t) has_derivative (\<lambda>z. local.U x0 z t)) (at x0)"
+shows "((\<lambda>x0. flow0 x0 t) has_derivative (\<lambda>z. vector_Dflow x0 z t)) (at x0)"
   unfolding has_derivative_at
   using assms
-  by (intro iffD1[OF LIM_equal proposition_17_6_weak[OF assms]] conjI[OF bounded_linear_U[OF assms]])
-    (simp add: diff_diff_add XX_def local.Y_def local.U_def inverse_eq_divide)
+  by (intro iffD1[OF LIM_equal proposition_17_6_weak[OF assms]] conjI[OF bounded_linear_vector_Dflow[OF assms]])
+    (simp add: diff_diff_add inverse_eq_divide)
 
 lemma flow_dx_derivative_blinfun:
-assumes "x0 \<in> X"
 assumes "t \<in> existence_ivl0 x0"
-shows "((\<lambda>x. flow0 x t) has_derivative Blinfun (\<lambda>z. local.U x0 z t)) (at x0)"
+shows "((\<lambda>x. flow0 x t) has_derivative Blinfun (\<lambda>z. vector_Dflow x0 z t)) (at x0)"
 by (rule has_derivative_Blinfun[OF flow_dx_derivative[OF assms]])
 
-definition "flowderiv x0 t = comp12 (local.W x0 t) (blinfun_scaleR_left (f (flow0 x0 t)))"
+definition "flowderiv x0 t = comp12 (Dflow x0 t) (blinfun_scaleR_left (f (flow0 x0 t)))"
 
-lemma flowderiv_eq: "flowderiv x0 t (\<xi>\<^sub>1, \<xi>\<^sub>2) = (local.W x0 t) \<xi>\<^sub>1 + \<xi>\<^sub>2 *\<^sub>R f (flow0 x0 t)"
+lemma flowderiv_eq: "flowderiv x0 t (\<xi>\<^sub>1, \<xi>\<^sub>2) = (Dflow x0 t) \<xi>\<^sub>1 + \<xi>\<^sub>2 *\<^sub>R f (flow0 x0 t)"
   by (auto simp: flowderiv_def)
 
-end
-
-lemma W_continuous_on: "continuous_on (Sigma X existence_ivl0) (\<lambda>(x0, t). local.W x0 t)"
+lemma W_continuous_on: "continuous_on (Sigma X existence_ivl0) (\<lambda>(x0, t). Dflow x0 t)"
   \<comment>\<open>TODO: somewhere here is hidden continuity wrt rhs of ODE, extract it!\<close>
   unfolding continuous_on split_beta'
 proof (safe intro!: tendstoI)
@@ -2631,13 +2677,17 @@ proof (safe intro!: tendstoI)
     and dt: "dt > 0" "cball t dt \<subseteq> OT"
     by (force simp: open_contains_cball)
 
-  from OXOT dt dx have "cball t dt \<subseteq> existence_ivl0 x" "cball x dx \<subseteq> X" by auto
+  from OXOT dt dx have "cball t dt \<subseteq> existence_ivl0 x" "cball x dx \<subseteq> X"
+    apply (auto simp: subset_iff)
+    subgoal for ta
+      apply (drule spec[where x=ta])
+      apply (drule spec[where x=t])+
+      apply auto
+      done
+    done
 
-  interpret one: ll_on_open "existence_ivl0 x" "(\<lambda>t. op o\<^sub>L (local.A x t))" "UNIV::('a\<Rightarrow>\<^sub>L'a) set"
-    by (rule total_derivative_ll_on_open) fact
-
-  have one_exivl: "one.existence_ivl 0 = (\<lambda>_. existence_ivl0 x)"
-    by (rule wholevar_existence_ivl_eq_existence_ivl[OF \<open>x \<in> X\<close> existence_ivl_zero[OF \<open>x \<in> X\<close>]])
+  have one_exivl: "mvar.existence_ivl x 0 = (\<lambda>_. existence_ivl0 x)"
+    by (rule mvar_existence_ivl_eq_existence_ivl[OF existence_ivl_zero[OF \<open>x \<in> X\<close>]])
 
   have *: "closed ({t .. 0} \<union> {0 .. t})" "{t .. 0} \<union> {0 .. t} \<noteq> {}"
     by auto
@@ -2648,48 +2698,48 @@ proof (safe intro!: tendstoI)
     by (intro Un_least ivl_subset_existence_ivl' ivl_subset_existence_ivl \<open>x \<in> X\<close>
       \<open>t \<in> existence_ivl0 x\<close> \<open>cball t dt \<subseteq> existence_ivl0 x\<close>)
 
-  have "compact (one.flow 0 id_blinfun ` ?T)"
+  have "compact (mvar.flow x 0 id_blinfun ` ?T)"
     using \<open>?T \<subseteq> _\<close> \<open>x \<in> X\<close>
-      wholevar_existence_ivl_eq_existence_ivl[OF \<open>x \<in> X\<close> existence_ivl_zero[OF \<open>x \<in> X\<close>]]
+      mvar_existence_ivl_eq_existence_ivl[OF existence_ivl_zero[OF \<open>x \<in> X\<close>]]
     by (auto intro!: \<open>0 < dx\<close> compact_continuous_image \<open>compact ?T\<close>
-      continuous_on_subset[OF one.flow_continuous_on])
+      continuous_on_subset[OF mvar.flow_continuous_on])
 
-  let ?line = "one.flow 0 id_blinfun ` ?T"
+  let ?line = "mvar.flow x 0 id_blinfun ` ?T"
   let ?X = "{x. infdist x ?line \<le> dx}"
   have "compact ?X"
     using \<open>?T \<subseteq> _\<close> \<open>x \<in> X\<close>
-      wholevar_existence_ivl_eq_existence_ivl[OF \<open>x \<in> X\<close> existence_ivl_zero[OF \<open>x \<in> X\<close>]]
+      mvar_existence_ivl_eq_existence_ivl[OF existence_ivl_zero[OF \<open>x \<in> X\<close>]]
     by (auto intro!: compact_infdist_le \<open>0 < dx\<close> compact_continuous_image compact_Un
-      continuous_on_subset[OF one.flow_continuous_on ])
+      continuous_on_subset[OF mvar.flow_continuous_on ])
 
-  from one.local_lipschitz \<open>?T \<subseteq> _\<close>
-  have llc: "local_lipschitz ?T ?X (\<lambda>t. op o\<^sub>L (local.A x t))"
+  from mvar.local_lipschitz \<open>?T \<subseteq> _\<close>
+  have llc: "local_lipschitz ?T ?X (\<lambda>t. op o\<^sub>L (vareq x t))"
     by (rule local_lipschitz_on_subset) auto
 
-  have cont: "\<And>xa. xa \<in> ?X \<Longrightarrow> continuous_on ?T (\<lambda>t. local.A x t o\<^sub>L xa)"
+  have cont: "\<And>xa. xa \<in> ?X \<Longrightarrow> continuous_on ?T (\<lambda>t. vareq x t o\<^sub>L xa)"
     using \<open>?T \<subseteq> _\<close>
     by (auto intro!: continuous_intros \<open>x \<in> X\<close>)
 
   from local_lipschitz_on_compact_implies_lipschitz[OF llc \<open>compact ?X\<close> \<open>compact ?T\<close> cont]
-  obtain K' where K': "\<And>ta. ta \<in> ?T \<Longrightarrow> lipschitz ?X (op o\<^sub>L (local.A x ta)) K'"
+  obtain K' where K': "\<And>ta. ta \<in> ?T \<Longrightarrow> lipschitz ?X (op o\<^sub>L (vareq x ta)) K'"
     by blast
   define K where "K \<equiv> abs K' + 1"
   have "K > 0"
     by (simp add: K_def)
-  have K: "\<And>ta. ta \<in> ?T \<Longrightarrow> lipschitz ?X (op o\<^sub>L (local.A x ta)) K"
+  have K: "\<And>ta. ta \<in> ?T \<Longrightarrow> lipschitz ?X (op o\<^sub>L (vareq x ta)) K"
     by (auto intro!: lipschitzI mult_right_mono order_trans[OF lipschitzD[OF K']] simp: K_def)
 
   have ex_ivlI: "\<And>y. y \<in> cball x dx \<Longrightarrow> ?T \<subseteq> existence_ivl0 y"
     using dx dt OXOT
     by (intro Un_least ivl_subset_existence_ivl' ivl_subset_existence_ivl; force)
 
-  have cont: "continuous_on ((?T \<times> ?X) \<times> cball x dx) (\<lambda>((ta, xa), y). (local.A y ta o\<^sub>L xa))"
+  have cont: "continuous_on ((?T \<times> ?X) \<times> cball x dx) (\<lambda>((ta, xa), y). (vareq y ta o\<^sub>L xa))"
     using \<open>cball x dx \<subseteq> X\<close> ex_ivlI
     by (force intro!: continuous_intros simp: split_beta' )
 
-  have "one.flow 0 id_blinfun t \<in> one.flow 0 id_blinfun ` ({t..0} \<union> {0..t} \<union> cball t dt)"
+  have "mvar.flow x 0 id_blinfun t \<in> mvar.flow x 0 id_blinfun ` ({t..0} \<union> {0..t} \<union> cball t dt)"
     by auto
-  then have mem: "(t, one.flow 0 id_blinfun t, x) \<in> ?T \<times> ?X \<times> cball x dx"
+  then have mem: "(t, mvar.flow x 0 id_blinfun t, x) \<in> ?T \<times> ?X \<times> cball x dx"
     by (auto simp: \<open>0 < dx\<close> less_imp_le)
 
   define e where "e \<equiv> min e' (dx / 2) / 2"
@@ -2703,12 +2753,12 @@ proof (safe intro!: tendstoI)
 
   have compact_line: "compact ?line"
     using \<open>{t..0} \<union> {0..t} \<union> cball t dt \<subseteq> existence_ivl0 x\<close> one_exivl
-    by (force intro!: compact_continuous_image \<open>compact ?T\<close> continuous_on_subset[OF one.flow_continuous_on] simp: \<open>x \<in> X\<close>)
+    by (force intro!: compact_continuous_image \<open>compact ?T\<close> continuous_on_subset[OF mvar.flow_continuous_on] simp: \<open>x \<in> X\<close>)
 
   from continuous_on_compact_product_lemma[OF cont cmpct(2) compact_cball \<open>0 < d\<close>]
   obtain d' where d': "d' > 0"
     "\<And>ta xa xa' y. ta \<in> ?T \<Longrightarrow> xa \<in> ?X \<Longrightarrow> xa'\<in>cball x dx \<Longrightarrow> y\<in>cball x dx \<Longrightarrow> dist xa' y < d' \<Longrightarrow>
-      dist (local.A xa' ta o\<^sub>L xa) (local.A y ta o\<^sub>L xa) < d"
+      dist (vareq xa' ta o\<^sub>L xa) (vareq y ta o\<^sub>L xa) < d"
     by auto
 
   {
@@ -2718,22 +2768,20 @@ proof (safe intro!: tendstoI)
     then have "y \<in> X"
       using dx dt OXOT by force+
 
-    interpret two: ll_on_open "existence_ivl0 y" "(\<lambda>t. op o\<^sub>L (local.A y t))" "UNIV::('a\<Rightarrow>\<^sub>L'a) set"
-      by (rule total_derivative_ll_on_open) fact
-    have two_exivl: "two.existence_ivl 0 = (\<lambda>_. existence_ivl0 y)"
-      by (rule wholevar_existence_ivl_eq_existence_ivl[OF \<open>y \<in> X\<close> existence_ivl_zero[OF \<open>y \<in> X\<close>]])
+    have two_exivl: "mvar.existence_ivl y 0 = (\<lambda>_. existence_ivl0 y)"
+      by (rule mvar_existence_ivl_eq_existence_ivl[OF existence_ivl_zero[OF \<open>y \<in> X\<close>]])
 
     let ?X' = "\<Union>x \<in> ?line. ball x dx"
     have "open ?X'" by auto
     have "?X' \<subseteq> ?X"
       by (auto intro!: infdist_le2 simp: dist_commute)
 
-    interpret oneR: ll_on_open "existence_ivl0 x" "(\<lambda>t. op o\<^sub>L (local.A x t))" ?X'
-      by standard (auto intro!: \<open>x \<in> X\<close> continuous_intros local_lipschitz_A[OF \<open>x \<in> X\<close> order_refl])
-    interpret twoR: ll_on_open "existence_ivl0 y" "(\<lambda>t. op o\<^sub>L (local.A y t))" ?X'
-      by standard (auto intro!: \<open>y \<in> X\<close> continuous_intros local_lipschitz_A[OF \<open>y \<in> X\<close> order_refl])
+    interpret oneR: ll_on_open "existence_ivl0 x" "(\<lambda>t. op o\<^sub>L (vareq x t))" ?X'
+      by standard (auto intro!: \<open>x \<in> X\<close> continuous_intros local_lipschitz_A[OF order_refl])
+    interpret twoR: ll_on_open "existence_ivl0 y" "(\<lambda>t. op o\<^sub>L (vareq y t))" ?X'
+      by standard (auto intro!: \<open>y \<in> X\<close> continuous_intros local_lipschitz_A[OF order_refl])
     interpret both:
-      two_ll_on_open "(\<lambda>t. op o\<^sub>L (local.A x t))" "existence_ivl0 x" "(\<lambda>t. op o\<^sub>L (local.A y t))" "existence_ivl0 y" ?X' ?T "id_blinfun" d K
+      two_ll_on_open "(\<lambda>t. op o\<^sub>L (vareq x t))" "existence_ivl0 x" "(\<lambda>t. op o\<^sub>L (vareq y t))" "existence_ivl0 y" ?X' ?T "id_blinfun" d K
     proof unfold_locales
       show "0 < K" by (simp add: \<open>0 < K\<close>)
       show iv_defined: "0 \<in> {t..0} \<union> {0..t} \<union> cball t dt"
@@ -2741,10 +2789,10 @@ proof (safe intro!: tendstoI)
       show "is_interval ({t..0} \<union> {0..t} \<union> cball t dt)"
         by (auto simp: is_interval_def dist_real_def)
       show "{t..0} \<union> {0..t} \<union> cball t dt \<subseteq> oneR.existence_ivl 0 id_blinfun"
-        apply (rule oneR.maximal_existence_flow[where x="one.flow 0 id_blinfun"])
+        apply (rule oneR.maximal_existence_flow[where x="mvar.flow x 0 id_blinfun"])
         subgoal
           apply (rule solves_odeI)
-          apply (rule has_vderiv_on_subset[OF solves_odeD(1)[OF one.flow_solves_ode[of 0 id_blinfun]]])
+          apply (rule has_vderiv_on_subset[OF solves_odeD(1)[OF mvar.flow_solves_ode[of 0 x id_blinfun]]])
           subgoal using \<open>x \<in> X\<close> \<open>?T \<subseteq> _\<close> \<open>0 < dx\<close> by simp
           subgoal by simp
           subgoal by (simp add: \<open>cball t dt \<subseteq> existence_ivl0 x\<close> ivl_subset_existence_ivl ivl_subset_existence_ivl' one_exivl tx)
@@ -2756,10 +2804,10 @@ proof (safe intro!: tendstoI)
         subgoal using \<open>{t..0} \<union> {0..t} \<union> cball t dt \<subseteq> existence_ivl0 x\<close> by blast
         done
       fix s assume s: "s \<in> ?T"
-      then show "lipschitz ?X' (op o\<^sub>L (local.A x s)) K"
+      then show "lipschitz ?X' (op o\<^sub>L (vareq x s)) K"
         by (intro lipschitz_subset[OF K \<open>?X' \<subseteq> ?X\<close>]) auto
       fix j assume j: "j \<in> ?X'"
-      show "norm ((local.A x s o\<^sub>L j) - (local.A y s o\<^sub>L j)) < d"
+      show "norm ((vareq x s o\<^sub>L j) - (vareq y s o\<^sub>L j)) < d"
         unfolding dist_norm[symmetric]
         apply (rule d')
         subgoal by (rule s)
@@ -2769,7 +2817,7 @@ proof (safe intro!: tendstoI)
         subgoal using dxy by simp
         done
     qed
-    have less_e: "norm (local.W x s - both.Y s) < e"
+    have less_e: "norm (Dflow x s - both.Y s) < e"
       if s: "s \<in> ?T \<inter> twoR.existence_ivl 0 id_blinfun" for s
     proof -
       from s have s_less: "\<bar>s\<bar> < \<bar>t\<bar> + \<bar>dt\<bar> + 1"
@@ -2784,12 +2832,12 @@ proof (safe intro!: tendstoI)
       also have "\<dots> = e" by simp
       also
       from s have s: "s \<in> ?T" by simp
-      have "both.XX s = local.W x s"
-        unfolding both.XX_def local.W_def[OF \<open>x \<in> X\<close>]
+      have "both.flow0 s = Dflow x s"
+        unfolding both.flow0_def Dflow_def
         apply (rule oneR.maximal_existence_flow[where K="?T"])
         subgoal
           apply (rule solves_odeI)
-          apply (rule has_vderiv_on_subset[OF solves_odeD(1)[OF one.flow_solves_ode[of 0 id_blinfun]]])
+          apply (rule has_vderiv_on_subset[OF solves_odeD(1)[OF mvar.flow_solves_ode[of 0 x id_blinfun]]])
           subgoal using \<open>x \<in> X\<close> \<open>0 < dx\<close> by simp
           subgoal by simp
           subgoal by (simp add: \<open>cball t dt \<subseteq> existence_ivl0 x\<close> ivl_subset_existence_ivl ivl_subset_existence_ivl' one_exivl tx)
@@ -2806,12 +2854,12 @@ proof (safe intro!: tendstoI)
 
     have "e < dx" using \<open>dx > 0\<close> by (auto simp: e_def)
 
-    let ?i = "{x. infdist x (one.flow 0 id_blinfun ` ?T) \<le> e}"
-    have 1: "?i \<subseteq> (\<Union>x\<in>one.flow 0 id_blinfun ` ?T. ball x dx)"
+    let ?i = "{y. infdist y (mvar.flow x 0 id_blinfun ` ?T) \<le> e}"
+    have 1: "?i \<subseteq> (\<Union>x\<in>mvar.flow x 0 id_blinfun ` ?T. ball x dx)"
     proof -
       have cl: "closed ?line" "?line \<noteq> {}" using compact_line
         by (auto simp: compact_imp_closed)
-      have "?i \<subseteq> (\<Union>x\<in>one.flow 0 id_blinfun ` ?T. cball x e)"
+      have "?i \<subseteq> (\<Union>y\<in>mvar.flow x 0 id_blinfun ` ?T. cball y e)"
       proof safe
         fix x
         assume H: "infdist x ?line \<le> e"
@@ -2832,8 +2880,8 @@ proof (safe intro!: tendstoI)
       from that have sT: "s \<in> ?T \<inter> twoR.existence_ivl 0 id_blinfun"
         by force
       from less_e[OF this]
-      have "dist (twoR.flow 0 id_blinfun s) (one.flow 0 id_blinfun s) \<le> e"
-        unfolding local.W_def[OF \<open>x \<in> X\<close>] both.Y_def dist_commute dist_norm by simp
+      have "dist (twoR.flow 0 id_blinfun s) (mvar.flow x 0 id_blinfun s) \<le> e"
+        unfolding Dflow_def both.Y_def dist_commute dist_norm by simp
       then show ?thesis
         using sT by (force intro: infdist_le2)
     qed
@@ -2851,12 +2899,12 @@ proof (safe intro!: tendstoI)
     also have "twoR.existence_ivl 0 id_blinfun \<subseteq> existence_ivl0 y"
       by (rule twoR.existence_ivl_subset)
     finally have "?T \<subseteq> existence_ivl0 y" .
-    have "norm (local.W x s - local.W y s) < e" if s: "s \<in> ?T" for s
+    have "norm (Dflow x s - Dflow y s) < e" if s: "s \<in> ?T" for s
     proof -
       from s have "s \<in> ?T \<inter> twoR.existence_ivl 0 id_blinfun" using T_subset by force
-      from less_e[OF this] have "norm (local.W x s - both.Y s) < e" .
-      also have "two.flow 0 id_blinfun s = twoR.flow 0 id_blinfun s"
-        apply (rule two.maximal_existence_flow[where K="?T"])
+      from less_e[OF this] have "norm (Dflow x s - both.Y s) < e" .
+      also have "mvar.flow y 0 id_blinfun s = twoR.flow 0 id_blinfun s"
+        apply (rule mvar.maximal_existence_flow[where K="?T"])
         subgoal
           apply (rule solves_odeI)
           apply (rule has_vderiv_on_subset[OF solves_odeD(1)[OF twoR.flow_solves_ode[of 0 id_blinfun]]])
@@ -2871,8 +2919,8 @@ proof (safe intro!: tendstoI)
         subgoal using \<open>{t..0} \<union> {0..t} \<union> cball t dt \<subseteq> existence_ivl0 y\<close> by blast
         subgoal using s by blast
         done
-      then have "both.Y s = local.W y s"
-        unfolding both.Y_def local.W_def[OF \<open>y \<in> X\<close>]
+      then have "both.Y s = Dflow y s"
+        unfolding both.Y_def Dflow_def
         by simp
       finally show ?thesis .
     qed
@@ -2896,40 +2944,40 @@ proof (safe intro!: tendstoI)
       (auto simp: eventually_at less_imp_le dist_commute)
   moreover
   have "0 \<in> existence_ivl0 x" by (simp add: \<open>x \<in> X\<close>)
-  have "\<forall>\<^sub>F x in at t within existence_ivl0 x. dist (one.flow 0 id_blinfun x) (one.flow 0 id_blinfun t) < e"
-    using one.flow_continuous_on[of 0 id_blinfun]
+  have "\<forall>\<^sub>F y in at t within existence_ivl0 x. dist (mvar.flow x 0 id_blinfun y) (mvar.flow x 0 id_blinfun t) < e"
+    using mvar.flow_continuous_on[of x 0 id_blinfun]
     using \<open>0 < e\<close> tx
     by (auto simp add: continuous_on one_exivl dest!: tendstoD)
-  then have "\<forall>\<^sub>F (y, s) in at (x, t) within ?S. dist (local.W x s) (local.W x t) < e"
+  then have "\<forall>\<^sub>F (y, s) in at (x, t) within ?S. dist (Dflow x s) (Dflow x t) < e"
     using \<open>0 < e\<close>
-    unfolding at_within_open[OF \<open>(x, t) \<in> ?S\<close> open_state_space] UNIV_Times_UNIV[symmetric] local.W_def[OF \<open>x \<in> X\<close>]
+    unfolding at_within_open[OF \<open>(x, t) \<in> ?S\<close> open_state_space] UNIV_Times_UNIV[symmetric] Dflow_def
     by (intro eventually_at_Pair_within_TimesI2)
       (auto simp: at_within_open[OF tx open_existence_ivl])
   ultimately
-  have "\<forall>\<^sub>F (y, s) in at (x, t) within ?S. dist (local.W y s) (local.W x t) < e'"
+  have "\<forall>\<^sub>F (y, s) in at (x, t) within ?S. dist (Dflow y s) (Dflow x t) < e'"
     apply eventually_elim
   proof (safe del: UnE, goal_cases)
     case (1 y s)
-    have "dist (local.W y s) (local.W x t) \<le> dist (local.W y s) (local.W x s) + dist (local.W x s) (local.W x t)"
+    have "dist (Dflow y s) (Dflow x t) \<le> dist (Dflow y s) (Dflow x s) + dist (Dflow x s) (Dflow x t)"
       by (rule dist_triangle)
     also
-    have "dist (local.W x s) (local.W x t) < e"
+    have "dist (Dflow x s) (Dflow x t) < e"
       by (rule 1)
-    also have "dist (local.W y s) (local.W x s) < e"
+    also have "dist (Dflow y s) (Dflow x s) < e"
       unfolding dist_norm norm_minus_commute
       using 1
       by (intro cont_data)
     also have "e + e \<le> e'" by (simp add: e_def)
-    finally show "dist (local.W y s) (local.W x t) < e'" by arith
+    finally show "dist (Dflow y s) (Dflow x t) < e'" by arith
   qed
-  then show "\<forall>\<^sub>F ys in at (x, t) within ?S. dist (local.W (fst ys) (snd ys)) (local.W (fst (x, t)) (snd (x, t))) < e'"
+  then show "\<forall>\<^sub>F ys in at (x, t) within ?S. dist (Dflow (fst ys) (snd ys)) (Dflow (fst (x, t)) (snd (x, t))) < e'"
     by (simp add: split_beta')
 qed
 
 lemma W_continuous_on_comp[continuous_intros]:
   assumes h: "continuous_on S h" and g: "continuous_on S g"
   shows "(\<And>s. s \<in> S \<Longrightarrow> h s \<in> X) \<Longrightarrow> (\<And>s. s \<in> S \<Longrightarrow> g s \<in> existence_ivl0 (h s)) \<Longrightarrow>
-    continuous_on S (\<lambda>s. local.W (h s) (g s))"
+    continuous_on S (\<lambda>s. Dflow (h s) (g s))"
   using continuous_on_compose[OF continuous_on_Pair[OF h g] continuous_on_subset[OF W_continuous_on]]
   by auto
 
@@ -2939,16 +2987,19 @@ lemma f_flow_continuous_on: "continuous_on (Sigma X existence_ivl0) (\<lambda>(x
 
 lemma
   flow_has_space_derivative:
-  assumes "t \<in> existence_ivl0 x0" "x0 \<in> X"
-  shows "((\<lambda>x0. flow0 x0 t) has_derivative local.W x0 t) (at x0)"
+  assumes "t \<in> existence_ivl0 x0"
+  shows "((\<lambda>x0. flow0 x0 t) has_derivative Dflow x0 t) (at x0)"
   by (rule flow_dx_derivative_blinfun[THEN has_derivative_eq_rhs])
-    (simp_all add: var_eq_mvar assms local.U_def blinfun.blinfun_apply_inverse local.W_def)
+    (simp_all add: var_eq_mvar assms blinfun.blinfun_apply_inverse Dflow_def vector_Dflow_def
+      mem_existence_ivl_iv_defined[OF assms])
 
 lemma
   flow_has_flowderiv:
-  assumes "t \<in> existence_ivl0 x0" "x0 \<in> X"
-  shows "((\<lambda>(x0, t). flow0 x0 t) has_derivative flowderiv x0 t) (at (x0, t) within Sigma X existence_ivl0)"
+  assumes "t \<in> existence_ivl0 x0"
+  shows "((\<lambda>(x0, t). flow0 x0 t) has_derivative flowderiv x0 t) (at (x0, t) within S)"
 proof -
+  have Sigma: "(x0, t) \<in> Sigma X existence_ivl0"
+    using assms by auto
   from open_state_space assms obtain e' where e': "e' > 0" "ball (x0, t) e' \<subseteq> Sigma X existence_ivl0"
     by (force simp: open_contains_ball)
   define e where "e = e' / sqrt 2"
@@ -2958,7 +3009,8 @@ proof -
   also note e'(2)
   finally have subs: "ball x0 e \<times> ball t e \<subseteq> Sigma X existence_ivl0" .
 
-  have d1: "((\<lambda>x0. flow0 x0 s) has_derivative blinfun_apply (local.W y s)) (at y within ball x0 e)"
+
+  have d1: "((\<lambda>x0. flow0 x0 s) has_derivative blinfun_apply (Dflow y s)) (at y within ball x0 e)"
     if "y \<in> ball x0 e" "s \<in> ball t e" for y s
     using subs that
     by (subst at_within_open; force intro!: flow_has_space_derivative)
@@ -2970,17 +3022,119 @@ proof -
   have "((\<lambda>(x0, t). flow0 x0 t) has_derivative flowderiv x0 t) (at (x0, t) within ball x0 e \<times> ball t e)"
     using subs
     unfolding UNIV_Times_UNIV[symmetric]
-    by (intro has_derivative_partialsI[OF d1 d2, THEN has_derivative_eq_rhs])
-      (auto intro!: \<open>0 < e\<close> continuous_intros flow_in_domain simp: flowderiv_def split_beta')
-  then show ?thesis
-    by (auto simp: at_within_open[OF _ open_state_space] at_within_open[OF _ open_Times] assms \<open>0 < e\<close>)
+    by (intro Derivative.has_derivative_partialsI[OF d1 d2, THEN has_derivative_eq_rhs])
+      (auto intro!: \<open>0 < e\<close> continuous_intros flow_in_domain simp: flowderiv_def split_beta'
+        mem_ball)
+  then have "((\<lambda>(x0, t). flow0 x0 t) has_derivative flowderiv x0 t) (at (x0, t) within Sigma X existence_ivl0)"
+    by (auto simp: at_within_open[OF _ open_state_space] at_within_open[OF _ open_Times] assms \<open>0 < e\<close>
+        mem_existence_ivl_iv_defined[OF assms])
+  then show ?thesis unfolding at_within_open[OF Sigma open_state_space]
+    by (rule has_derivative_at_within)
 qed
+
+lemma flow0_comp_has_derivative:
+  assumes h: "h s \<in> existence_ivl0 (g s)"
+  assumes [derivative_intros]: "(g has_derivative g') (at s within S)"
+  assumes [derivative_intros]: "(h has_derivative h') (at s within S)"
+  shows "((\<lambda>x. flow0 (g x) (h x)) has_derivative (\<lambda>x. blinfun_apply (flowderiv (g s) (h s)) (g' x, h' x)))
+     (at s within S)"
+  by (rule has_derivative_compose[where f="\<lambda>x. (g x, h x)" and s=S,
+        OF _ flow_has_flowderiv[OF h], simplified])
+    (auto intro!: derivative_eq_intros)
 
 lemma flowderiv_continuous_on: "continuous_on (Sigma X existence_ivl0) (\<lambda>(x0, t). flowderiv x0 t)"
   unfolding flowderiv_def split_beta'
-  by (subst blinfun_of_matrix_works[where f="comp12 (local.W (fst x) (snd x))
+  by (subst blinfun_of_matrix_works[where f="comp12 (Dflow (fst x) (snd x))
             (blinfun_scaleR_left (f (flow0 (fst x) (snd x))))" for x, symmetric])
     (auto intro!: continuous_intros flow_in_domain)
+
+lemma flowderiv_continuous_on_comp[continuous_intros]:
+  assumes "continuous_on S x"
+  assumes "continuous_on S t"
+  assumes "\<And>s. s \<in> S \<Longrightarrow> x s \<in> X" "\<And>s. s \<in> S \<Longrightarrow> t s \<in> existence_ivl0 (x s)"
+  shows "continuous_on S (\<lambda>xa. flowderiv (x xa) (t xa))"
+  by (rule continuous_on_compose2[OF flowderiv_continuous_on, where f="\<lambda>s. (x s, t s)",
+        unfolded split_beta' fst_conv snd_conv])
+    (auto intro!: continuous_intros assms)
+
+lemmas [intro] = flow_in_domain
+
+lemma vareq_trans: "t0 \<in> existence_ivl0 x0 \<Longrightarrow> t \<in> existence_ivl0 (flow0 x0 t0) \<Longrightarrow>
+  vareq (flow0 x0 t0) t = vareq x0 (t0 + t)"
+  by (auto simp: vareq_def flow_trans)
+
+lemma diff_existence_ivl_trans:
+  "t0 \<in> existence_ivl0 x0 \<Longrightarrow> t \<in> existence_ivl0 x0 \<Longrightarrow> t - t0 \<in> existence_ivl0 (flow0 x0 t0)" for t
+  by (metis (no_types, hide_lams) add.left_neutral diff_add_eq
+      local.existence_ivl_reverse local.existence_ivl_trans local.flows_reverse)
+
+lemma has_vderiv_on_blinfun_compose_right[derivative_intros]:
+  assumes "(g has_vderiv_on g') T"
+  assumes "\<And>x. x \<in> T \<Longrightarrow> gd' x = g' x o\<^sub>L d"
+  shows "((\<lambda>x. g x o\<^sub>L d) has_vderiv_on gd') T"
+  using assms
+  by (auto simp: has_vderiv_on_def has_vector_derivative_def blinfun_ext blinfun.bilinear_simps
+      intro!: derivative_eq_intros ext)
+
+lemma has_vderiv_on_blinfun_compose_left[derivative_intros]:
+  assumes "(g has_vderiv_on g') T"
+  assumes "\<And>x. x \<in> T \<Longrightarrow> gd' x = d o\<^sub>L g' x"
+  shows "((\<lambda>x. d o\<^sub>L g x) has_vderiv_on gd') T"
+  using assms
+  by (auto simp: has_vderiv_on_def has_vector_derivative_def blinfun_ext blinfun.bilinear_simps
+      intro!: derivative_eq_intros ext)
+
+lemma mvar_flow_shift:
+  assumes "t0 \<in> existence_ivl0 x0" "t1 \<in> existence_ivl0 x0"
+  shows "mvar.flow x0 t0 d t1 = Dflow (flow0 x0 t0) (t1 - t0) o\<^sub>L d"
+proof -
+  have "mvar.flow x0 t0 d t1 = mvar.flow x0 t0 d (t0 + (t1 - t0))"
+    by simp
+  also have "\<dots> = mvar.flow x0 t0 (mvar.flow x0 t0 d t0) t1"
+    by (subst mvar.flow_trans) (auto simp add: assms)
+  also have "\<dots> = Dflow (flow0 x0 t0) (t1 - t0) o\<^sub>L d"
+    apply (rule mvar.flow_unique_on)
+       apply (auto simp add: assms mvar.flow_initial_time_if blinfun_ext Dflow_def
+        intro!: derivative_intros derivative_eq_intros)
+      apply (auto simp: assms has_vderiv_on_open has_vector_derivative_def
+        intro!: derivative_eq_intros blinfun_eqI)
+     apply (subst mvar_existence_ivl_eq_existence_ivl)
+    by (auto simp add: vareq_trans assms diff_existence_ivl_trans)
+  finally show ?thesis .
+qed
+
+lemma Dflow_trans:
+  assumes "h \<in> existence_ivl0 x0"
+  assumes "i \<in> existence_ivl0 (flow0 x0 h)"
+  shows "Dflow x0 (h + i) = Dflow (flow0 x0 h) i o\<^sub>L (Dflow x0 h)"
+proof -
+  have [intro, simp]: "h + i \<in> existence_ivl0 x0" "i + h \<in> existence_ivl0 x0" "x0 \<in> X"
+    using assms
+    by (auto simp add: add.commute existence_ivl_trans)
+  show ?thesis
+    unfolding Dflow_def
+    apply (subst mvar.flow_trans[where s=h and t=i])
+    subgoal by (auto simp: assms)
+    subgoal by (auto simp: assms)
+    by (subst mvar_flow_shift) (auto simp: assms Dflow_def )
+qed
+
+lemma Dflow_trans_apply:
+  assumes "h \<in> existence_ivl0 x0"
+  assumes "i \<in> existence_ivl0 (flow0 x0 h)"
+  shows "Dflow x0 (h + i) d0 = Dflow (flow0 x0 h) i (Dflow x0 h d0)"
+proof -
+  have [intro, simp]: "h + i \<in> existence_ivl0 x0" "i + h \<in> existence_ivl0 x0" "x0 \<in> X"
+    using assms
+    by (auto simp add: add.commute existence_ivl_trans)
+  show ?thesis
+    unfolding Dflow_def
+    apply (subst mvar.flow_trans[where s=h and t=i])
+    subgoal by (auto simp: assms)
+    subgoal by (auto simp: assms)
+    by (subst mvar_flow_shift) (auto simp: assms Dflow_def )
+qed
+
 
 end \<comment>\<open>@{thm c1_on_open_euclidean_anchor}\<close>
 

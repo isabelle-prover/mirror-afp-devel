@@ -30,6 +30,12 @@ lemma list_set_rel_sv[relator_props]:
 
 lemmas [autoref_rel_intf] = REL_INTFI[of list_wset_rel i_set]
 
+lemma list_wset_relD:
+  assumes "(a, b) \<in> \<langle>R\<rangle>list_wset_rel"
+  shows "(set a, b) \<in> \<langle>R\<rangle>set_rel"
+  using assms
+  by (auto simp: list_wset_rel_def br_def)
+
 
 subsection \<open>operations\<close>
 
@@ -404,14 +410,14 @@ concrete_definition FORWEAK_LIST_plain for xs f g uses FORWEAK_LIST_transfer_pla
 lemmas [refine_transfer] = FORWEAK_LIST_plain.refine
 
 schematic_goal FORWEAK_LIST_transfer_ne_plain:
-  assumes "SIDE_PRECOND (xs \<noteq> [])"
+  assumes "SIDE_PRECOND_OPT (xs \<noteq> [])"
   assumes [refine_transfer]: "\<And>x. RETURN (f x) \<le> f' x"
   assumes [refine_transfer]: "\<And>x y. RETURN (g x y) \<le> g' x y"
   shows "RETURN ?f \<le> FORWEAK_LIST xs d' f' g'"
   using assms
   by (simp add: FORWEAK_LIST_def) refine_transfer
 concrete_definition FORWEAK_LIST_ne_plain for xs f g uses FORWEAK_LIST_transfer_ne_plain
-lemmas [refine_transfer] = FORWEAK_LIST_ne_plain.refine
+
 
 lemma FORWEAK_empty[simp]: "FORWEAK {} = (\<lambda>d _ _. d)"
   by (auto simp: FORWEAK_def[abs_def])
@@ -507,7 +513,7 @@ lemma FORWEAK_mono_rule:
   fixes f::"'d \<Rightarrow> 'e nres" and c::"'e \<Rightarrow> 'e \<Rightarrow> 'e nres" and I::"'d set \<Rightarrow> 'e \<Rightarrow> bool"
   assumes empty: "S = {} \<Longrightarrow> d \<le> SPEC P"
   assumes I0[THEN order_trans]: "\<And>s. s \<in> S \<Longrightarrow> f s \<le> SPEC (I {s})"
-  assumes I_mono: "\<And>it it' \<sigma>. I it \<sigma> \<Longrightarrow> it' \<subseteq> it \<Longrightarrow> I it' \<sigma>"
+  assumes I_mono: "\<And>it it' \<sigma>. I it \<sigma> \<Longrightarrow> it' \<subseteq> it \<Longrightarrow> it \<subseteq> S \<Longrightarrow> I it' \<sigma>"
   assumes IP[THEN order_trans]:
     "\<And>x it \<sigma>. \<lbrakk> x\<in>S; it\<subseteq>S; I it \<sigma> \<rbrakk> \<Longrightarrow> f x \<le> SPEC (\<lambda>f'. c \<sigma> f' \<le> SPEC (I (insert x it)))"
   assumes II: "\<And>\<sigma>. I S \<sigma> \<Longrightarrow> P \<sigma>"
@@ -515,7 +521,9 @@ lemma FORWEAK_mono_rule:
   apply (rule FORWEAK_invarI[where I="\<lambda>b X. X \<subseteq> S \<and> I (S - X) b"])
   subgoal by (rule empty)
   subgoal by (auto simp: Diff_Diff_Int intro!: I0)
-  subgoal by (drule I0) (auto simp: I_mono)
+  subgoal
+    by (metis (mono_tags, lifting) Diff_cancel I0 I_mono Refine_Basic.RES_sng_eq_RETURN iSPEC_rule
+        less_eq_nres.simps(2) nres_order_simps(21) subset_insertI subset_refl)
   subgoal for a b it
     apply (rule IP[of _ "S - it" b])
     subgoal by force
@@ -701,6 +709,14 @@ lemma
     subgoal by auto (meson in_hd_or_tl_conv)
     done
   done
+
+definition [simp, refine_vcg_def]: "isEmpty_spec X = SPEC (\<lambda>b. b \<longrightarrow> X = {})"
+
+lemma [autoref_itype]: "isEmpty_spec::\<^sub>i A \<rightarrow>\<^sub>i \<langle>i_bool\<rangle>\<^sub>ii_nres"
+  by simp
+lemma op_wset_isEmpty_list_wset_rel[autoref_rules]:
+  "(\<lambda>x. RETURN (x = []), isEmpty_spec) \<in> \<langle>A\<rangle>list_wset_rel \<rightarrow> \<langle>bool_rel\<rangle>nres_rel"
+  by (auto simp: nres_rel_def list_wset_rel_def set_rel_def br_def)
 
 end
 

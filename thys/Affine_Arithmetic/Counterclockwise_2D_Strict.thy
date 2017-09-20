@@ -1,6 +1,8 @@
 section \<open>CCW for Nonaligned Points in the Plane\<close>
 theory Counterclockwise_2D_Strict
-imports Counterclockwise_Vector
+  imports
+    Counterclockwise_Vector
+    Affine_Arithmetic_Auxiliarities
 begin
 text \<open>\label{sec:counterclockwise2d}\<close>
 
@@ -447,12 +449,6 @@ proof (induct xs)
     by (cases "xs = []") (auto intro!: add_pos_pos)
 qed simp
 
-lemma fst_sum_list: "fst (sum_list xs) = sum_list (map fst xs)"
-  by (induct xs) auto
-
-lemma snd_sum_list: "snd (sum_list xs) = sum_list (map snd xs)"
-  by (induct xs) auto
-
 lemma nonzero_fstI[intro, simp]: "fst x \<noteq> 0 \<Longrightarrow> x \<noteq> 0"
   and nonzero_sndI[intro, simp]: "snd x \<noteq> 0 \<Longrightarrow> x \<noteq> 0"
   by auto
@@ -507,10 +503,11 @@ proof -
     fix i assume i: "i < length xs"
     hence nth: "xs ! i \<in> set xs" by simp
     note coll_scale[OF coll[OF nth] \<open>z \<noteq> 0\<close>]
-  } then obtain r where r: "\<And>i. i < length xs \<Longrightarrow> xs ! i = r i *\<^sub>R z"
+  } then obtain r where r: "\<And>i. i < length xs \<Longrightarrow> r i *\<^sub>R z = xs ! i"
     by metis
   have "xs = map (op ! xs) [0..<length xs]" by (simp add: map_nth)
-  also have "\<dots> = map (\<lambda>i. r i *\<^sub>R z) [0..<length xs]" by (simp add: r)
+  also have "\<dots> = map (\<lambda>i. r i *\<^sub>R z) [0..<length xs]"
+    by (auto simp: r)
   also have "sum_list \<dots> = (\<Sum>i\<leftarrow>[0..<length xs]. r i) *\<^sub>R z"
     by (simp add: sum_list_sum_nth scaleR_sum_left)
   finally show ?thesis ..

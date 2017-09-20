@@ -10,17 +10,18 @@ notation blinfun_apply (infixl "$" 999)
 
 lemma
   fixes f::"'a::real_normed_vector \<Rightarrow> 'b::banach"
-    and Df::"'a \<Rightarrow> 'a list \<Rightarrow> 'b"
+    and Df::"'a \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'b"
   assumes "n > 0"
-  assumes Df_Nil: "\<And>a. Df a [] = f a"
-  assumes Df_Cons: "\<And>a ds. a \<in> closed_segment X (X + H) \<Longrightarrow> length ds < n \<Longrightarrow>
-      ((\<lambda>a. Df a ds) has_derivative (\<lambda>d. Df a (d#ds))) (at a)"
+  assumes Df_Nil: "\<And>a x. Df a 0 H H = f a"
+  assumes Df_Cons: "\<And>a i d. a \<in> closed_segment X (X + H) \<Longrightarrow> i < n \<Longrightarrow>
+      ((\<lambda>a. Df a i H H) has_derivative (Df a (Suc i) H)) (at a within G)"
+  assumes cs: "closed_segment X (X + H) \<subseteq> G"
   defines "i \<equiv> \<lambda>x.
-      ((1 - x) ^ (n - 1) / fact (n - 1)) *\<^sub>R Df (X + x *\<^sub>R H) (replicate n H)"
+      ((1 - x) ^ (n - 1) / fact (n - 1)) *\<^sub>R Df (X + x *\<^sub>R H) n H H"
   shows multivariate_taylor_has_integral:
-    "(i has_integral f (X + H) - (\<Sum>i<n. (1 / fact i) *\<^sub>R Df X (replicate i H))) {0..1}"
+    "(i has_integral f (X + H) - (\<Sum>i<n. (1 / fact i) *\<^sub>R Df X i H H)) {0..1}"
   and multivariate_taylor:
-    "f (X + H) = (\<Sum>i<n. (1 / fact i) *\<^sub>R Df X (replicate i H)) + integral {0..1} i"
+    "f (X + H) = (\<Sum>i<n. (1 / fact i) *\<^sub>R Df X i H H) + integral {0..1} i"
   and multivariate_taylor_integrable:
     "i integrable_on {0..1}"
 proof goal_cases
@@ -32,7 +33,7 @@ proof goal_cases
   have line_deriv: "\<And>x. (line has_derivative (\<lambda>t. t *\<^sub>R H)) (at x)"
     by (auto intro!: derivative_eq_intros simp: line_def [abs_def])
   define g where "g = f o line"
-  define Dg where "Dg n t = Df (line t) (replicate n H)" for n :: nat and t :: real
+  define Dg where "Dg n t = Df (line t) n H H" for n :: nat and t :: real
   note \<open>n > 0\<close>
   moreover
   have Dg0: "Dg 0 = g" by (auto simp add: Dg_def Df_Nil g_def)
@@ -42,15 +43,15 @@ proof goal_cases
   proof -
     from that have [intro]: "line t \<in> ?G" using assms
       by (auto simp: segment_eq)
-    note [derivative_intros] = has_derivative_compose[OF _ Df_Cons]
-    interpret Df: linear "(\<lambda>d. Df (line t) (d#replicate m H))"
+    note [derivative_intros] = has_derivative_in_compose[OF _ has_derivative_within_subset[OF Df_Cons]]
+    interpret Df: linear "(\<lambda>d. Df (line t) (Suc m) H d)"
       by (auto intro!: has_derivative_linear derivative_intros \<open>m < n\<close>)
     note [derivative_intros] =
       has_derivative_compose[OF _ line_deriv]
     show ?thesis
       using Df.scaleR \<open>m < n\<close>
-      by (auto simp: Dg_def [abs_def] has_vector_derivative_def g_def
-         intro!: derivative_eq_intros)
+      by (auto simp: Dg_def [abs_def] has_vector_derivative_def g_def segment_eq
+         intro!: derivative_eq_intros set_mp[OF cs])
   qed
   ultimately
   have g_taylor: "(i has_integral g 1 - (\<Sum>i<n. ((1 - 0) ^ i / fact i) *\<^sub>R Dg i 0)) {0 .. 1}"
@@ -60,76 +61,6 @@ proof goal_cases
   case 2 show ?case using c
     by (simp add: integral_unique add.commute)
   case 3 show ?case using c by force
-qed
-
-text \<open>in particular...\<close>
-
-lemma
-  multivariate_taylor2:
-  fixes f::"'a::real_normed_vector \<Rightarrow> 'b::banach"
-  assumes f'[derivative_intros]:
-    "\<And>y. y \<in> closed_segment a x \<Longrightarrow> (f has_derivative op $ (f' y)) (at y)"
-  assumes f''[derivative_intros]:
-    "\<And>y. y \<in> closed_segment a x \<Longrightarrow> (f' has_derivative op $ (f'' y)) (at y)"
-  shows "((\<lambda>xa. (1 - xa) *\<^sub>R f'' (a + xa *\<^sub>R (x - a)) (x - a) (x - a)) has_integral f x - f a - f' a (x - a)) {0 .. 1}"
-proof -
-  let ?G = "closed_segment a x"
-  define Df where "Df x ds =
-    (case ds of [] \<Rightarrow> f x
-    | [d] \<Rightarrow> f' x d
-    | [d1, d2] \<Rightarrow> f'' x d1 d2)" for x ds
-  have Df_Nil: "\<And>a. Df a [] = f a"
-    by (auto simp: Df_def)
-  have Df_Cons: "((\<lambda>a. Df a ds) has_derivative (\<lambda>d. Df a (d # ds))) (at a)"
-    if "a \<in> ?G" "length ds < 2" for a::'a and ds::"'a list"
-    using that
-    by (cases ds)
-       (auto simp add: Df_def assms blinfun.zero_right
-        intro!: derivative_eq_intros)
-  from multivariate_taylor_has_integral[of 2 Df f a "x - a", OF _ Df_Nil Df_Cons]
-  show ?thesis
-    by (simp add: assms numeral_eq_Suc Df_def algebra_simps)
-qed
-
-lemma
-  multivariate_taylor3:
-  fixes f::"'a::real_normed_vector \<Rightarrow> 'b::banach"
-  assumes f'[derivative_intros]:
-    "\<And>y. y \<in> closed_segment a x \<Longrightarrow> (f has_derivative op $ (f' y)) (at y)"
-  assumes f''[derivative_intros]:
-    "\<And>y. y \<in> closed_segment a x \<Longrightarrow> (f' has_derivative op $ (f'' y)) (at y)"
-  assumes f'''[derivative_intros]:
-    "\<And>y. y \<in> closed_segment a x \<Longrightarrow> (f'' has_derivative op $ (f''' y)) (at y)"
-  shows
-    "((\<lambda>xa. ((1 - xa)\<^sup>2/2) *\<^sub>R f''' (a + xa *\<^sub>R (x - a)) (x - a) (x - a) (x - a))
-      has_integral
-        f x - f a - f' a (x - a) - f'' a (x - a) (x - a) /\<^sub>R 2) {0..1}"
-proof -
-  let ?G = "closed_segment a x"
-  define Df where "Df x ds =
-    (case ds of [] \<Rightarrow> f x
-    | [d] \<Rightarrow> f' x d
-    | [d1, d2] \<Rightarrow> f'' x d1 d2
-    | [d1, d2, d3] \<Rightarrow> f''' x d1 d2 d3)" for x ds
-  have Df_Nil: "\<And>a. Df a [] = f a"
-    by (auto simp: Df_def)
-  have Df_Cons: "((\<lambda>a. Df a ds) has_derivative (\<lambda>d. Df a (d # ds))) (at a)"
-    if "a \<in> ?G" "length ds < 3" for a::'a and ds::"'a list"
-  proof -
-    from that consider "ds = []" | "\<exists>d1. ds = [d1]" | "\<exists>d1 d2. ds = [d1, d2]"
-      apply (cases ds)
-      subgoal by simp
-      subgoal for d ds by (cases ds) auto
-      done
-    then show ?thesis
-      apply cases
-      using \<open>a \<in> ?G\<close>
-      by (auto simp add: Df_def assms blinfun.zero_right
-          intro!: derivative_eq_intros)
-  qed
-  from multivariate_taylor_has_integral[of 3 Df f a "x - a", OF _ Df_Nil Df_Cons]
-  show ?thesis
-    by (simp add: assms numeral_eq_Suc Df_def algebra_simps)
 qed
 
 

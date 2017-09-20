@@ -1,7 +1,12 @@
 section \<open>Examples: Intersection of Zonotopes with Hyperplanes\<close>
 theory Ex_Inter
-imports Intersection
+  imports
+    Intersection
+    Affine_Code
+    Print
 begin
+
+subsection \<open>Example\<close>
 
 definition zono1::"(real*real*real) aform"
   where "zono1 = msum_aform 53 (aform_of_ivl ((0,0,0)::real*real*real) ((1,2,0)::real*real*real))
@@ -9,8 +14,6 @@ definition zono1::"(real*real*real) aform"
 
 definition interzono1::"(real*real*real) aform"
   where "interzono1 = the (inter_aform_plane_ortho 53 zono1 (0, 0, 1) 3)"
-
-value[code] "interzono1"
 
 text \<open>10-dimensional zonotope with 50 generators\<close>
 

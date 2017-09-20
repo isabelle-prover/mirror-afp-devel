@@ -3,9 +3,10 @@ theory ODE_Auxiliarities
 imports
   "HOL-Analysis.Analysis"
   "HOL-Library.Float"
+  "List-Index.List_Index"
+  "Affine_Arithmetic.Affine_Arithmetic_Auxiliarities"
+  "Affine_Arithmetic.Executable_Euclidean_Space"
 begin
-
-sledgehammer_params [fact_filter=mepo]
 
 instantiation prod :: (zero_neq_one, zero_neq_one) zero_neq_one
 begin
@@ -55,159 +56,6 @@ lemma "(norm (fstzero + zerosnd))\<^sup>2 + (norm (fstzero - zerosnd))\<^sup>2 \
   by (simp add: fstzero_add_zerosnd norm_fstzero_zerosnd)
 
 end
-
-subsection \<open>bounded linear functions\<close>
-
-locale blinfun_syntax
-begin
-no_notation vec_nth (infixl "$" 90)
-notation blinfun_apply (infixl "$" 999)
-end
-
-lemma bounded_linear_via_derivative:
-  fixes f::"'a::real_normed_vector \<Rightarrow> 'b::euclidean_space \<Rightarrow>\<^sub>L 'c::real_normed_vector" \<comment>\<open>TODO: generalize?\<close>
-  assumes "\<And>i. ((\<lambda>x. blinfun_apply (f x) i) has_derivative (\<lambda>x. f' y x i)) (at y)"
-  shows "bounded_linear (f' y x)"
-proof -
-  interpret linear "f' y x"
-  proof (unfold_locales, goal_cases)
-    case (1 v w)
-    from has_derivative_unique[OF assms[of "v + w", unfolded blinfun.bilinear_simps]
-      has_derivative_add[OF assms[of v] assms[of w]], THEN fun_cong, of x]
-    show ?case .
-  next
-    case (2 r v)
-    from has_derivative_unique[OF assms[of "r *\<^sub>R v", unfolded blinfun.bilinear_simps]
-      has_derivative_scaleR_right[OF assms[of v], of r], THEN fun_cong, of x]
-    show ?case .
-  qed
-  let ?bnd = "\<Sum>i\<in>Basis. norm (f' y x i)"
-  {
-    fix v
-    have "f' y x v = (\<Sum>i\<in>Basis. (v \<bullet> i) *\<^sub>R f' y x i)"
-      by (subst euclidean_representation[symmetric]) (simp add: sum scaleR)
-    also have "norm \<dots> \<le> norm v * ?bnd"
-      by (auto intro!: order.trans[OF norm_sum] sum_mono mult_right_mono
-        simp: sum_distrib_left Basis_le_norm)
-    finally have "norm (f' y x v) \<le> norm v * ?bnd" .
-  }
-  then show ?thesis by unfold_locales auto
-qed
-
-definition blinfun_scaleR::"('a::real_normed_vector \<Rightarrow>\<^sub>L real) \<Rightarrow> 'b::real_normed_vector \<Rightarrow> ('a \<Rightarrow>\<^sub>L 'b)"
-  where "blinfun_scaleR a b = blinfun_scaleR_left b o\<^sub>L a"
-
-lemma blinfun_scaleR_transfer[transfer_rule]:
-  "rel_fun (pcr_blinfun op = op =) (rel_fun op = (pcr_blinfun op = op =))
-    (\<lambda>a b c. a c *\<^sub>R b) blinfun_scaleR"
-  by (auto simp: blinfun_scaleR_def rel_fun_def pcr_blinfun_def cr_blinfun_def OO_def)
-
-lemma blinfun_scaleR_rep_eq[simp]:
-  "blinfun_scaleR a b c = a c *\<^sub>R b"
-  by (simp add: blinfun_scaleR_def)
-
-lemma bounded_linear_blinfun_scaleR: "bounded_linear (blinfun_scaleR a)"
-  unfolding blinfun_scaleR_def[abs_def]
-  by (auto intro!: bounded_linear_intros)
-
-lemma blinfun_scaleR_has_derivative[derivative_intros]:
-  assumes "(f has_derivative f') (at x within s)"
-  shows "((\<lambda>x. blinfun_scaleR a (f x)) has_derivative (\<lambda>x. blinfun_scaleR a (f' x))) (at x within s)"
-  using bounded_linear_blinfun_scaleR assms
-  by (rule bounded_linear.has_derivative)
-
-lemma blinfun_componentwise:
-  fixes f::"'a::real_normed_vector \<Rightarrow> 'b::euclidean_space \<Rightarrow>\<^sub>L 'c::real_normed_vector"
-  shows "f = (\<lambda>x. \<Sum>i\<in>Basis. blinfun_scaleR (blinfun_inner_left i) (f x i))"
-  by (auto intro!: blinfun_eqI
-    simp: blinfun.sum_left euclidean_representation blinfun.scaleR_right[symmetric]
-      blinfun.sum_right[symmetric])
-
-lemma
-  blinfun_has_derivative_componentwiseI:
-  fixes f::"'a::real_normed_vector \<Rightarrow> 'b::euclidean_space \<Rightarrow>\<^sub>L 'c::real_normed_vector"
-  assumes "\<And>i. i \<in> Basis \<Longrightarrow> ((\<lambda>x. f x i) has_derivative blinfun_apply (f' i)) (at x)"
-  shows "(f has_derivative (\<lambda>x. \<Sum>i\<in>Basis. blinfun_scaleR (blinfun_inner_left i) (f' i x))) (at x)"
-  by (subst blinfun_componentwise) (force intro: derivative_eq_intros assms simp: blinfun.bilinear_simps)
-
-lemma
-  has_derivative_BlinfunI:
-  fixes f::"'a::real_normed_vector \<Rightarrow> 'b::euclidean_space \<Rightarrow>\<^sub>L 'c::real_normed_vector"
-  assumes "\<And>i. ((\<lambda>x. f x i) has_derivative (\<lambda>x. f' y x i)) (at y)"
-  shows "(f has_derivative (\<lambda>x. Blinfun (f' y x))) (at y)"
-proof -
-  have 1: "f = (\<lambda>x. \<Sum>i\<in>Basis. blinfun_scaleR (blinfun_inner_left i) (f x i))"
-    by (rule blinfun_componentwise)
-  moreover have 2: "(\<dots> has_derivative (\<lambda>x. \<Sum>i\<in>Basis. blinfun_scaleR (blinfun_inner_left i) (f' y x i))) (at y)"
-    by (force intro: assms derivative_eq_intros)
-  moreover
-  interpret f': bounded_linear "f' y x" for x
-    by (rule bounded_linear_via_derivative) (rule assms)
-  have 3: "(\<Sum>i\<in>Basis. blinfun_scaleR (blinfun_inner_left i) (f' y x i)) i = f' y x i" for x i
-    by (auto simp: if_distrib cond_application_beta blinfun.bilinear_simps
-      f'.scaleR[symmetric] f'.sum[symmetric] euclidean_representation
-      intro!: blinfun_euclidean_eqI)
-  have 4: "blinfun_apply (Blinfun (f' y x)) = f' y x" for x
-    apply (subst bounded_linear_Blinfun_apply)
-    subgoal by unfold_locales
-    subgoal by simp
-    done
-  show ?thesis
-    apply (subst 1)
-    apply (rule 2[THEN has_derivative_eq_rhs])
-    apply (rule ext)
-    apply (rule blinfun_eqI)
-    apply (subst 3)
-    apply (subst 4)
-    apply (rule refl)
-    done
-qed
-
-lemma
-  has_derivative_Blinfun:
-  assumes "(f has_derivative f') F"
-  shows "(f has_derivative Blinfun f') F"
-  using assms
-  by (subst bounded_linear_Blinfun_apply) auto
-
-lift_definition flip_blinfun::
-  "('a::real_normed_vector \<Rightarrow>\<^sub>L 'b::real_normed_vector \<Rightarrow>\<^sub>L 'c::real_normed_vector) \<Rightarrow> 'b \<Rightarrow>\<^sub>L 'a \<Rightarrow>\<^sub>L 'c" is
-  "\<lambda>f x y. f y x"
-  using bounded_bilinear.bounded_linear_left bounded_bilinear.bounded_linear_right bounded_bilinear.flip
-  by auto
-
-lemma flip_blinfun_apply[simp]: "flip_blinfun f a b = f b a"
-  by transfer simp
-
-lemma le_norm_blinfun:
-  shows "norm (blinfun_apply f x) / norm x \<le> norm f"
-  by transfer (rule le_onorm)
-
-lemma norm_flip_blinfun[simp]: "norm (flip_blinfun x) = norm x" (is "?l = ?r")
-proof (rule antisym)
-  from order_trans[OF norm_blinfun, OF mult_right_mono, OF norm_blinfun, OF norm_ge_zero, of x]
-  show "?l \<le> ?r"
-    by (auto intro!: norm_blinfun_bound simp: ac_simps)
-  have "norm (x a b) \<le> norm (flip_blinfun x) * norm a * norm b" for a b
-  proof -
-    have "norm (x a b) / norm a \<le> norm (flip_blinfun x b)"
-      by (rule order_trans[OF _ le_norm_blinfun]) auto
-    also have "\<dots> \<le> norm (flip_blinfun x) * norm b"
-      by (rule norm_blinfun)
-    finally show ?thesis
-      by (auto simp add: divide_simps blinfun.bilinear_simps sign_simps  split: if_split_asm)
-  qed
-  then show "?r \<le> ?l"
-    by (auto intro!: norm_blinfun_bound)
-qed
-
-lemma bounded_linear_flip_blinfun[bounded_linear]: "bounded_linear flip_blinfun"
-  by unfold_locales (auto simp: blinfun.bilinear_simps intro!: blinfun_eqI exI[where x=1])
-
-lemma dist_swap2_swap2[simp]: "dist (flip_blinfun f) (flip_blinfun g) = dist f g"
-  by (metis (no_types) bounded_linear_flip_blinfun dist_blinfun_def linear_simps(2)
-    norm_flip_blinfun)
-
 
 subsection \<open>Topology\<close>
 
@@ -338,7 +186,7 @@ lemma open_neg_translation:
 
 subsection \<open>Balls\<close>
 
-text \<open>I think that @{thm mem_ball} etc. are not \<open>[simp]\<close> rules:
+text \<open>sometimes @{thm mem_ball} etc. are not good \<open>[simp]\<close> rules (although they are often useful):
   not sure that inequalities are ``simpler'' than set membership (distorts automatic reasoning
   when only sets are involved)\<close>
 lemmas [simp del] = mem_ball mem_cball mem_sphere mem_ball_0 mem_cball_0
@@ -356,6 +204,7 @@ lemma cball_subset_cball: "x \<in> cball y e \<Longrightarrow> e < f \<Longright
 subsection \<open>Intervals\<close>
 
 notation closed_segment ("(1{_--_})")
+notation open_segment ("(1{_<--<_})")
 
 lemma open_closed_segment_subset: "open_segment a b \<subseteq> closed_segment a b"
   by (simp add: open_closed_segment subsetI)
@@ -1224,6 +1073,19 @@ proof -
   } ultimately show ?thesis by arith
 qed
 
+lemma IVT_strict:
+  fixes f :: "'a::linear_continuum_topology \<Rightarrow> 'b::linorder_topology"
+  assumes "f a < y" "y < f b" "a \<le> b" "(\<forall>x. a \<le> x \<and> x \<le> b \<longrightarrow> isCont f x)"
+  shows "\<exists>x. a < x \<and> x < b \<and> f x = y"
+proof -
+  from IVT[OF less_imp_le less_imp_le, OF assms]
+  obtain x where x: "x \<ge> a" "x \<le> b" "f x = y"
+    by auto
+  then have "x \<noteq> a" "x \<noteq> b" using assms by auto
+  then show ?thesis using x
+    by force
+qed
+
 lemma continuous_on_subset_comp:
   "continuous_on s f \<Longrightarrow> continuous_on t g \<Longrightarrow> g ` t \<subseteq> s \<Longrightarrow> continuous_on t (\<lambda>x. f (g x))"
   by (rule continuous_on_compose2)
@@ -1348,24 +1210,226 @@ lemma has_vector_derivative_If:
   subgoal by (rule g'[unfolded has_vector_derivative_def]; assumption)
   by (auto simp: assms)
 
+subsection \<open>Vector derivative on a set\<close>
+  \<comment>\<open>TODO: also for the other derivatives?!\<close>
+  \<comment>\<open>TODO: move to repository and rewrite assumptions of common lemmas\<close>
+
+definition
+  has_vderiv_on :: "(real \<Rightarrow> 'a::real_normed_vector) \<Rightarrow> (real \<Rightarrow> 'a) \<Rightarrow> real set \<Rightarrow> bool"
+  (infix "(has'_vderiv'_on)" 50)
+where
+  "(f has_vderiv_on f') S \<longleftrightarrow> (\<forall>x \<in> S. (f has_vector_derivative f' x) (at x within S))"
+
+lemma has_vderiv_on_empty[intro, simp]: "(f has_vderiv_on f') {}"
+  by (auto simp: has_vderiv_on_def)
+
+lemma has_vderiv_on_subset:
+  assumes "(f has_vderiv_on f') S"
+  assumes "T \<subseteq> S"
+  shows "(f has_vderiv_on f') T"
+  by (meson assms(1) assms(2) contra_subsetD has_vderiv_on_def has_vector_derivative_within_subset)
+
+lemma has_vderiv_on_compose:
+  assumes "(f has_vderiv_on f') (g ` T)"
+  assumes "(g has_vderiv_on g') T"
+  shows "(f o g has_vderiv_on (\<lambda>x. g' x *\<^sub>R f' (g x))) T"
+  using assms
+  unfolding has_vderiv_on_def
+  by (auto intro!: vector_diff_chain_within)
+
+lemma has_vderiv_on_open:
+  assumes "open T"
+  shows "(f has_vderiv_on f') T \<longleftrightarrow> (\<forall>t \<in> T. (f has_vector_derivative f' t) (at t))"
+  by (auto simp: has_vderiv_on_def at_within_open[OF _ \<open>open T\<close>])
+
+lemma has_vderiv_on_eq_rhs:\<comment>\<open>TODO: integrate intro \<open>derivative_eq_intros\<close>\<close>
+  "(f has_vderiv_on g') T \<Longrightarrow> (\<And>x. x \<in> T \<Longrightarrow> g' x = f' x) \<Longrightarrow> (f has_vderiv_on f') T"
+  by (auto simp: has_vderiv_on_def)
+
+lemma [THEN has_vderiv_on_eq_rhs, derivative_intros]:
+  shows has_vderiv_on_id: "((\<lambda>x. x) has_vderiv_on (\<lambda>x. 1)) T"
+    and has_vderiv_on_const: "((\<lambda>x. c) has_vderiv_on (\<lambda>x. 0)) T"
+  by (auto simp: has_vderiv_on_def intro!: derivative_eq_intros)
+
+lemma [THEN has_vderiv_on_eq_rhs, derivative_intros]:
+  fixes f::"real \<Rightarrow> 'a::real_normed_vector"
+  assumes "(f has_vderiv_on f') T"
+  shows has_vderiv_on_uminus: "((\<lambda>x. - f x) has_vderiv_on (\<lambda>x. - f' x)) T"
+  using assms
+  by (auto simp: has_vderiv_on_def intro!: derivative_eq_intros)
+
+lemma [THEN has_vderiv_on_eq_rhs, derivative_intros]:
+  fixes f g::"real \<Rightarrow> 'a::real_normed_vector"
+  assumes "(f has_vderiv_on f') T"
+  assumes "(g has_vderiv_on g') T"
+  shows has_vderiv_on_add: "((\<lambda>x. f x + g x) has_vderiv_on (\<lambda>x. f' x + g' x)) T"
+   and has_vderiv_on_diff: "((\<lambda>x. f x - g x) has_vderiv_on (\<lambda>x. f' x - g' x)) T"
+  using assms
+  by (auto simp: has_vderiv_on_def intro!: derivative_eq_intros)
+
+lemma [THEN has_vderiv_on_eq_rhs, derivative_intros]:
+  fixes f::"real \<Rightarrow> real" and g::"real \<Rightarrow> 'a::real_normed_vector"
+  assumes "(f has_vderiv_on f') T"
+  assumes "(g has_vderiv_on g') T"
+  shows has_vderiv_on_scaleR: "((\<lambda>x. f x *\<^sub>R g x) has_vderiv_on (\<lambda>x. f x *\<^sub>R g' x + f' x *\<^sub>R g x)) T"
+  using assms
+  by (auto simp: has_vderiv_on_def has_field_derivative_iff_has_vector_derivative
+    intro!: derivative_eq_intros)
+
+lemma [THEN has_vderiv_on_eq_rhs, derivative_intros]:
+  fixes f g::"real \<Rightarrow> 'a::real_normed_algebra"
+  assumes "(f has_vderiv_on f') T"
+  assumes "(g has_vderiv_on g') T"
+  shows has_vderiv_on_mult: "((\<lambda>x. f x * g x) has_vderiv_on (\<lambda>x. f x * g' x + f' x * g x)) T"
+  using assms
+  by (auto simp: has_vderiv_on_def intro!: derivative_eq_intros)
+
+lemma has_vderiv_on_ln[THEN has_vderiv_on_eq_rhs, derivative_intros]:
+  fixes g::"real \<Rightarrow> real"
+  assumes "\<And>x. x \<in> s \<Longrightarrow> 0 < g x"
+  assumes "(g has_vderiv_on g') s"
+  shows "((\<lambda>x. ln (g x)) has_vderiv_on (\<lambda>x. g' x / g x)) s"
+  using assms
+  unfolding has_vderiv_on_def
+  by (auto simp: has_vderiv_on_def has_field_derivative_iff_has_vector_derivative[symmetric]
+    intro!: derivative_eq_intros)
+
+
+lemma fundamental_theorem_of_calculus':
+  fixes f :: "real \<Rightarrow> 'a::banach"
+  shows "a \<le> b \<Longrightarrow> (f has_vderiv_on f') {a .. b} \<Longrightarrow> (f' has_integral (f b - f a)) {a .. b}"
+  by (auto intro!: fundamental_theorem_of_calculus simp: has_vderiv_on_def)
+
+lemma has_vderiv_on_If:
+  assumes "U = S \<union> T"
+  assumes "(f has_vderiv_on f') (S \<union> (closure T \<inter> closure S))"
+  assumes "(g has_vderiv_on g') (T \<union> (closure T \<inter> closure S))"
+  assumes "\<And>x. x \<in> closure T \<Longrightarrow> x \<in> closure S \<Longrightarrow> f x = g x"
+  assumes "\<And>x. x \<in> closure T \<Longrightarrow> x \<in> closure S \<Longrightarrow> f' x = g' x"
+  shows "((\<lambda>t. if t \<in> S then f t else g t) has_vderiv_on (\<lambda>t. if t \<in> S then f' t else g' t)) U"
+  using assms
+  by (auto simp: has_vderiv_on_def ac_simps intro!: has_vector_derivative_If split del: if_split)
+
+lemma mvt_very_simple_closed_segmentE:
+  fixes f::"real\<Rightarrow>real"
+  assumes "(f has_vderiv_on f') (closed_segment a b)"
+  obtains y where "y \<in> closed_segment a b"  "f b - f a = (b - a) * f' y"
+proof cases
+  assume "a \<le> b"
+  with mvt_very_simple[of a b f "\<lambda>x i. i *\<^sub>R f' x"] assms
+  obtain y where "y \<in> closed_segment a b"  "f b - f a = (b - a) * f' y"
+    by (auto simp: has_vector_derivative_def closed_segment_real has_vderiv_on_def)
+  thus ?thesis ..
+next
+  assume "\<not> a \<le> b"
+  with mvt_very_simple[of b a f "\<lambda>x i. i *\<^sub>R f' x"] assms
+  obtain y where "y \<in> closed_segment a b"  "f b - f a = (b - a) * f' y"
+    by (force simp: has_vector_derivative_def has_vderiv_on_def closed_segment_real algebra_simps)
+  thus ?thesis ..
+qed
+
+
+lemma mvt_simple_closed_segmentE:
+  fixes f::"real\<Rightarrow>real"
+  assumes "(f has_vderiv_on f') (closed_segment a b)"
+  assumes "a \<noteq> b"
+  obtains y where "y \<in> open_segment a b"  "f b - f a = (b - a) * f' y"
+proof cases
+  assume "a \<le> b"
+  with assms have "a < b" by simp
+  with mvt_simple[of a b f "\<lambda>x i. i *\<^sub>R f' x"] assms
+  obtain y where "y \<in> open_segment a b"  "f b - f a = (b - a) * f' y"
+    by (auto simp: has_vector_derivative_def closed_segment_real has_vderiv_on_def open_segment_real)
+  thus ?thesis ..
+next
+  assume "\<not> a \<le> b"
+  then have "b < a" by simp
+  with mvt_simple[of b a f "\<lambda>x i. i *\<^sub>R f' x"] assms
+  obtain y where "y \<in> open_segment a b"  "f b - f a = (b - a) * f' y"
+    by (force simp: has_vector_derivative_def has_vderiv_on_def closed_segment_real algebra_simps
+      open_segment_real)
+  thus ?thesis ..
+qed
+
+lemma differentiable_bound_general_open_segment:
+  fixes a :: "real"
+    and b :: "real"
+    and f :: "real \<Rightarrow> 'a::real_normed_vector"
+    and f' :: "real \<Rightarrow> 'a"
+  assumes "continuous_on (closed_segment a b) f"
+  assumes "continuous_on (closed_segment a b) g"
+    and "(f has_vderiv_on f') (open_segment a b)"
+    and "(g has_vderiv_on g') (open_segment a b)"
+    and "\<And>x. x \<in> open_segment a b \<Longrightarrow> norm (f' x) \<le> g' x"
+  shows "norm (f b - f a) \<le> abs (g b - g a)"
+proof -
+  {
+    assume "a = b"
+    hence ?thesis by simp
+  } moreover {
+    assume "a < b"
+    with assms
+    have "continuous_on {a .. b} f"
+      and "continuous_on {a .. b} g"
+      and "\<And>x. x\<in>{a<..<b} \<Longrightarrow> (f has_vector_derivative f' x) (at x)"
+      and "\<And>x. x\<in>{a<..<b} \<Longrightarrow> (g has_vector_derivative g' x) (at x)"
+      and "\<And>x. x\<in>{a<..<b} \<Longrightarrow> norm (f' x) \<le> g' x"
+      by (auto simp: open_segment_real closed_segment_real has_vderiv_on_def
+        at_within_open[where S="{a<..<b}"])
+    from differentiable_bound_general[OF \<open>a < b\<close> this]
+    have ?thesis by auto
+  } moreover {
+    assume "b < a"
+    with assms
+    have "continuous_on {b .. a} f"
+      and "continuous_on {b .. a} g"
+      and "\<And>x. x\<in>{b<..<a} \<Longrightarrow> (f has_vector_derivative f' x) (at x)"
+      and "\<And>x. x\<in>{b<..<a} \<Longrightarrow> (g has_vector_derivative g' x) (at x)"
+      and "\<And>x. x\<in>{b<..<a} \<Longrightarrow> norm (f' x) \<le> g' x"
+      by (auto simp: open_segment_real closed_segment_real has_vderiv_on_def
+        at_within_open[where S="{b<..<a}"])
+    from differentiable_bound_general[OF \<open>b < a\<close> this]
+    have "norm (f a - f b) \<le> g a - g b" by simp
+    also have "\<dots> \<le> abs (g b - g a)" by simp
+    finally have ?thesis by (simp add: norm_minus_commute)
+  } ultimately show ?thesis by arith
+qed
+
+lemma has_vderiv_on_union:
+  assumes "(f has_vderiv_on g) (s \<union> closure s \<inter> closure t)"
+  assumes "(f has_vderiv_on g) (t \<union> closure s \<inter> closure t)"
+  shows "(f has_vderiv_on g) (s \<union> t)"
+  unfolding has_vderiv_on_def
+proof
+  fix x assume "x \<in> s \<union> t"
+  with has_vector_derivative_If[of x s t "s \<union> t" f g f g] assms
+  show "(f has_vector_derivative g x) (at x within s \<union> t)"
+    by (auto simp: has_vderiv_on_def)
+qed
+
+lemma has_vderiv_on_union_closed:
+  assumes "(f has_vderiv_on g) s"
+  assumes "(f has_vderiv_on g) t"
+  assumes "closed s" "closed t"
+  shows "(f has_vderiv_on g) (s \<union> t)"
+  using assms
+  by (auto simp: Un_absorb2 intro: has_vderiv_on_union)
+
+lemma vector_differentiable_bound_linearization:
+  fixes f::"real \<Rightarrow> 'b::real_normed_vector"
+  assumes f'[derivative_intros]: "(f has_vderiv_on f') S"
+  assumes "{a -- b} \<subseteq> S"
+  assumes B: "\<forall>x\<in>S. norm (f' x - f' x0) \<le> B"
+  assumes "x0 \<in> S"
+  shows "norm (f b - f a - (b - a) *\<^sub>R f' x0) \<le> norm (b - a) * B"
+  using assms
+  by (intro differentiable_bound_linearization[of a b S f "\<lambda>x h. h *\<^sub>R f' x" x0 B])
+    (force simp: closed_segment_real_eq has_vderiv_on_def has_vector_derivative_def
+      scaleR_diff_right[symmetric] mult.commute[of B]
+      intro!: onorm_le mult_left_mono)+
+
 
 subsection \<open>Derivatives\<close>
-
-text \<open>TODO: include this into the attribute \<open>derivative_intros\<close>?\<close>
-
-lemma DERIV_compose_FDERIV:
-  fixes f::"real\<Rightarrow>real"
-  assumes "DERIV f (g x) :> f'"
-  assumes "(g has_derivative g') (at x within s)"
-  shows "((\<lambda>x. f (g x)) has_derivative (\<lambda>x. g' x * f')) (at x within s)"
-  using assms has_derivative_compose[of g g' x s f "op * f'"]
-  by (auto simp: has_field_derivative_def ac_simps)
-
-lemmas has_derivative_sin[derivative_intros] = DERIV_sin[THEN DERIV_compose_FDERIV]
-  and  has_derivative_cos[derivative_intros] = DERIV_cos[THEN DERIV_compose_FDERIV]
-  and  has_derivative_exp[derivative_intros] = DERIV_exp[THEN DERIV_compose_FDERIV]
-  and  has_derivative_ln[derivative_intros] = DERIV_ln[THEN DERIV_compose_FDERIV]
-  and  has_derivative_tan[derivative_intros] = DERIV_tan[THEN DERIV_compose_FDERIV]
 
 lemma has_derivative_continuous_on:
   "(\<And>x. x \<in> s \<Longrightarrow> (f has_derivative f' x) (at x within s)) \<Longrightarrow> continuous_on s f"
@@ -1536,82 +1600,225 @@ lemma
   using has_derivative_zero_constant[of s f] assms
   by (auto simp: has_vector_derivative_def)
 
-
-subsection \<open>Differentiability\<close>
-
-lemma differentiable_Pair [simp]:
-  "f differentiable at x within s \<Longrightarrow> g differentiable at x within s \<Longrightarrow>
-    (\<lambda>x. (f x, g x)) differentiable at x within s"
-  unfolding differentiable_def by (blast intro: has_derivative_Pair)
-
-lemma (in bounded_linear)
-  differentiable:
-  assumes "g differentiable (at x within s)"
-  shows " (\<lambda>x. f (g x)) differentiable (at x within s)"
-  using assms[simplified frechet_derivative_works]
-  by (intro differentiableI) (rule has_derivative)
-
-context begin
-private lemmas diff = bounded_linear.differentiable
-lemmas differentiable_mult_right[intro] = diff[OF bounded_linear_mult_right]
-  and differentiable_mult_left[intro]   = diff[OF bounded_linear_mult_left]
-  and differentiable_inner_right[intro] = diff[OF bounded_linear_inner_right]
-  and differentiable_inner_left[intro]  = diff[OF bounded_linear_inner_left]
-end
-
-lemma (in bounded_bilinear)
-  differentiable:
-  assumes f: "f differentiable at x within s" and g: "g differentiable at x within s"
-  shows "(\<lambda>x. prod (f x) (g x)) differentiable at x within s"
-  using assms[simplified frechet_derivative_works]
-  by (intro differentiableI) (rule FDERIV)
-
-context begin
-private lemmas bdiff = bounded_bilinear.differentiable
-lemmas differentiable_mult[intro] = bdiff[OF bounded_bilinear_mult]
-  and differentiable_scaleR[intro] = bdiff[OF bounded_bilinear_scaleR]
-end
-
-lemma differentiable_transform_within_weak:
-  assumes "x \<in> s" "\<And>x'. x'\<in>s \<Longrightarrow> g x' = f x'" "f differentiable at x within s"
-  shows "g differentiable at x within s"
-  using assms by (intro differentiable_transform_within[OF _ zero_less_one, where g=g]) auto
-
-lemma differentiable_compose_at:
-  "f differentiable (at x) \<Longrightarrow> g differentiable (at (f x)) \<Longrightarrow>
-  (\<lambda>x. g (f x)) differentiable (at x)"
-  unfolding o_def[symmetric]
-  by (rule differentiable_chain_at)
-
-lemma differentiable_compose_within:
-  "f differentiable (at x within s) \<Longrightarrow>
-  g differentiable (at(f x) within (f ` s)) \<Longrightarrow>
-  (\<lambda>x. g (f x)) differentiable (at x within s)"
-  unfolding o_def[symmetric]
-  by (rule differentiable_chain_within)
-
-lemma differentiable_sum[intro, simp]:
-  assumes "finite s" "\<forall>a\<in>s. (f a) differentiable net"
-  shows "(\<lambda>x. sum (\<lambda>a. f a x) s) differentiable net"
+lemma has_derivative_transform_eventually:
+  assumes "(f has_derivative f') (at x within s)"
+    "(\<forall>\<^sub>F x' in at x within s. f x' = g x')"
+  assumes "f x = g x" "x \<in> s"
+  shows "(g has_derivative f') (at x within s)"
+  using assms
 proof -
-  from bchoice[OF assms(2)[unfolded differentiable_def]]
-  show ?thesis
-    by (auto intro!: has_derivative_sum simp: differentiable_def)
+  from assms(2,3) obtain d where "d > 0" "\<And>x'. x' \<in> s \<Longrightarrow> dist x' x < d \<Longrightarrow> f x' = g x'"
+    by (force simp: eventually_at)
+  from has_derivative_transform_within[OF assms(1) this(1) assms(4) this(2)]
+  show ?thesis .
 qed
 
+lemma
+  if_eventually_has_derivative:
+  assumes "(f has_derivative F') (at x within S)"
+  assumes "\<forall>\<^sub>F x in at x within S. P x" "P x" "x \<in> S"
+  shows "((\<lambda>x. if P x then f x else g x) has_derivative F') (at x within S)"
+  using assms(1)
+  apply (rule has_derivative_transform_eventually)
+  subgoal using assms(2) by eventually_elim auto
+  by (auto simp: assms)
 
-subsection \<open>Vector derivative on a set\<close>
-  \<comment>\<open>TODO: also for the other derivatives?!\<close>
-  \<comment>\<open>TODO: move to repository and rewrite assumptions of common lemmas\<close>
+lemma has_derivative_partialsI:\<comment>\<open>TODO: MOVE and generalize @{thm has_derivative_partialsI}\<close>
+  fixes f::"'a::real_normed_vector \<Rightarrow> 'b::real_normed_vector \<Rightarrow> 'c::real_normed_vector"
+  assumes fx: "((\<lambda>x. f x y) has_derivative fx x y) (at x within X)"
+  assumes fy: "\<And>x y. x \<in> X \<Longrightarrow> y \<in> Y \<Longrightarrow> ((\<lambda>y. f x y) has_derivative blinfun_apply (fy x y)) (at y within Y)"
+  assumes fy_cont: "((\<lambda>(x, y). fy x y) \<longlongrightarrow> fy x y) (at (x, y) within X \<times> Y)"
+  assumes "y \<in> Y" "convex Y"
+  shows "((\<lambda>(x, y). f x y) has_derivative (\<lambda>(tx, ty). fx x y tx + fy x y ty)) (at (x, y) within X \<times> Y)"
+proof (safe intro!: has_derivativeI tendstoI, goal_cases)
+  case (2 e')
+  interpret fx: bounded_linear "fx x y" using fx by (rule has_derivative_bounded_linear)
+  define e where "e = e' / 9"
+  have "e > 0" using \<open>e' > 0\<close> by (simp add: e_def)
 
-definition
-  has_vderiv_on :: "(real \<Rightarrow> 'a::real_normed_vector) \<Rightarrow> (real \<Rightarrow> 'a) \<Rightarrow> real set \<Rightarrow> bool"
-  (infix "(has'_vderiv'_on)" 50)
-where
-  "(f has_vderiv_on f') S \<longleftrightarrow> (\<forall>x \<in> S. (f has_vector_derivative f' x) (at x within S))"
+  from fy_cont[THEN tendstoD, OF \<open>e > 0\<close>]
+  have "\<forall>\<^sub>F (x', y') in at (x, y) within X \<times> Y. dist (fy x' y') (fy x y) < e"
+    by (auto simp: split_beta')
+  from this[unfolded eventually_at] obtain d' where
+    "d' > 0"
+    "\<And>x' y'. x' \<in> X \<Longrightarrow> y' \<in> Y \<Longrightarrow> (x', y') \<noteq> (x, y) \<Longrightarrow> dist (x', y') (x, y) < d' \<Longrightarrow>
+      dist (fy x' y') (fy x y) < e"
+    by auto
+  then
+  have d': "x' \<in> X \<Longrightarrow> y' \<in> Y \<Longrightarrow> dist (x', y') (x, y) < d' \<Longrightarrow> dist (fy x' y') (fy x y) < e"
+    for x' y'
+    using \<open>0 < e\<close>
+    by (cases "(x', y') = (x, y)") auto
+  define d where "d = d' / sqrt 2"
+  have "d > 0" using \<open>0 < d'\<close> by (simp add: d_def)
+  have d: "x' \<in> X \<Longrightarrow> y' \<in> Y \<Longrightarrow> dist x' x < d \<Longrightarrow> dist y' y < d \<Longrightarrow> dist (fy x' y') (fy x y) < e"
+    for x' y'
+    by (auto simp: dist_prod_def d_def intro!: d' real_sqrt_sum_squares_less)
 
-lemma has_vderiv_on_empty[intro, simp]: "(f has_vderiv_on f') {}"
-  by (auto simp: has_vderiv_on_def)
+  let ?S = "ball y d \<inter> Y"
+  have "convex ?S"
+    by (auto intro!: convex_Int \<open>convex Y\<close>)
+  {
+    fix x'::'a and y'::'b
+    assume x': "x' \<in> X" and y': "y' \<in> Y"
+    assume dx': "dist x' x < d" and dy': "dist y' y < d"
+    have "norm (fy x' y' - fy x' y) \<le> dist (fy x' y') (fy x y) + dist (fy x' y) (fy x y)"
+      by norm
+    also have "dist (fy x' y') (fy x y) < e"
+      by (rule d; fact)
+    also have "dist (fy x' y) (fy x y) < e"
+      by (auto intro!: d simp: dist_prod_def x' \<open>d > 0\<close> \<open>y \<in> Y\<close> dx')
+    finally
+    have "norm (fy x' y' - fy x' y) < e + e"
+      by arith
+    then have "onorm (blinfun_apply (fy x' y') - blinfun_apply (fy x' y)) < e + e"
+      by (auto simp: norm_blinfun.rep_eq blinfun.diff_left[abs_def] fun_diff_def)
+  } note onorm = this
+
+  have ev_mem: "\<forall>\<^sub>F (x', y') in at (x, y) within X \<times> Y. (x', y') \<in> X \<times> Y"
+    using \<open>y \<in> Y\<close>
+    by (auto simp: eventually_at intro!: zero_less_one)
+  moreover
+  have ev_dist: "\<forall>\<^sub>F xy in at (x, y) within X \<times> Y. dist xy (x, y) < d" if "d > 0" for d
+    using eventually_at_ball[OF that]
+    by (rule eventually_elim2) (auto simp: dist_commute mem_ball intro!: eventually_True)
+  note ev_dist[OF \<open>0 < d\<close>]
+  ultimately
+  have "\<forall>\<^sub>F (x', y') in at (x, y) within X \<times> Y.
+    norm (f x' y' - f x' y - (fy x' y) (y' - y)) \<le> norm (y' - y) * (e + e)"
+  proof (eventually_elim, safe)
+    fix x' y'
+    assume "x' \<in> X" and y': "y' \<in> Y"
+    assume dist: "dist (x', y') (x, y) < d"
+    then have dx: "dist x' x < d" and dy: "dist y' y < d"
+      unfolding dist_prod_def fst_conv snd_conv atomize_conj
+      by (metis le_less_trans real_sqrt_sum_squares_ge1 real_sqrt_sum_squares_ge2)
+    {
+      fix t::real
+      assume "t \<in> {0 .. 1}"
+      then have "y + t *\<^sub>R (y' - y) \<in> closed_segment y y'"
+        by (auto simp: closed_segment_def algebra_simps intro!: exI[where x=t])
+      also
+      have "\<dots> \<subseteq> ball y d \<inter> Y"
+        using \<open>y \<in> Y\<close> \<open>0 < d\<close> dy y'
+        by (intro \<open>convex ?S\<close>[unfolded convex_contains_segment, rule_format, of y y'])
+          (auto simp: dist_commute mem_ball)
+      finally have "y + t *\<^sub>R (y' - y) \<in> ?S" .
+    } note seg = this
+
+    have "\<forall>x\<in>ball y d \<inter> Y. onorm (blinfun_apply (fy x' x) - blinfun_apply (fy x' y)) \<le> e + e"
+      by (safe intro!: onorm less_imp_le \<open>x' \<in> X\<close> dx) (auto simp: mem_ball dist_commute \<open>0 < d\<close> \<open>y \<in> Y\<close>)
+    with seg has_derivative_within_subset[OF assms(2)[OF \<open>x' \<in> X\<close>]]
+    show "norm (f x' y' - f x' y - (fy x' y) (y' - y)) \<le> norm (y' - y) * (e + e)"
+      by (rule differentiable_bound_linearization[where S="?S"])
+        (auto intro!: \<open>0 < d\<close> \<open>y \<in> Y\<close>)
+  qed
+  moreover
+  let ?le = "\<lambda>x'. norm (f x' y - f x y - (fx x y) (x' - x)) \<le> norm (x' - x) * e"
+  from fx[unfolded has_derivative_within, THEN conjunct2, THEN tendstoD, OF \<open>0 < e\<close>]
+  have "\<forall>\<^sub>F x' in at x within X. ?le x'"
+    by eventually_elim
+       (auto simp: dist_norm divide_simps blinfun.bilinear_simps field_simps fx.zero split: if_split_asm)
+  then have "\<forall>\<^sub>F (x', y') in at (x, y) within X \<times> Y. ?le x'"
+    by (rule eventually_at_Pair_within_TimesI1)
+       (simp add: blinfun.bilinear_simps fx.zero)
+  moreover have "\<forall>\<^sub>F (x', y') in at (x, y) within X \<times> Y. norm ((x', y') - (x, y)) \<noteq> 0"
+    unfolding norm_eq_zero right_minus_eq
+    by (auto simp: eventually_at intro!: zero_less_one)
+  moreover
+  from fy_cont[THEN tendstoD, OF \<open>0 < e\<close>]
+  have "\<forall>\<^sub>F x' in at x within X. norm (fy x' y - fy x y) < e"
+    unfolding eventually_at
+    using \<open>y \<in> Y\<close>
+    by (auto simp: dist_prod_def dist_norm)
+  then have "\<forall>\<^sub>F (x', y') in at (x, y) within X \<times> Y. norm (fy x' y - fy x y) < e"
+    by (rule eventually_at_Pair_within_TimesI1)
+       (simp add: blinfun.bilinear_simps \<open>0 < e\<close>)
+  ultimately
+  have "\<forall>\<^sub>F (x', y') in at (x, y) within X \<times> Y.
+            norm ((f x' y' - f x y - (fx x y (x' - x) + fy x y (y' - y))) /\<^sub>R
+              norm ((x', y') - (x, y)))
+            < e'"
+    apply eventually_elim
+  proof safe
+    fix x' y'
+    have "norm (f x' y' - f x y - (fx x y (x' - x) + fy x y (y' - y))) \<le>
+        norm (f x' y' - f x' y - fy x' y (y' - y)) +
+        norm (fy x y (y' - y) - fy x' y (y' - y)) +
+        norm (f x' y - f x y - fx x y (x' - x))"
+      by norm
+    also
+    assume nz: "norm ((x', y') - (x, y)) \<noteq> 0"
+      and nfy: "norm (fy x' y - fy x y) < e"
+    assume "norm (f x' y' - f x' y - blinfun_apply (fy x' y) (y' - y)) \<le> norm (y' - y) * (e + e)"
+    also assume "norm (f x' y - f x y - (fx x y) (x' - x)) \<le> norm (x' - x) * e"
+    also
+    have "norm ((fy x y) (y' - y) - (fy x' y) (y' - y)) \<le> norm ((fy x y) - (fy x' y)) * norm (y' - y)"
+      by (auto simp: blinfun.bilinear_simps[symmetric] intro!: norm_blinfun)
+    also have "\<dots> \<le> (e + e) * norm (y' - y)"
+      using \<open>e > 0\<close> nfy
+      by (auto simp: norm_minus_commute intro!: mult_right_mono)
+    also have "norm (x' - x) * e \<le> norm (x' - x) * (e + e)"
+      using \<open>0 < e\<close> by simp
+    also have "norm (y' - y) * (e + e) + (e + e) * norm (y' - y) + norm (x' - x) * (e + e) \<le>
+        (norm (y' - y) + norm (x' - x)) * (4 * e)"
+      using \<open>e > 0\<close>
+      by (simp add: algebra_simps)
+    also have "\<dots> \<le> 2 * norm ((x', y') - (x, y)) * (4 * e)"
+      using \<open>0 < e\<close> real_sqrt_sum_squares_ge1[of "norm (x' - x)" "norm (y' - y)"]
+        real_sqrt_sum_squares_ge2[of "norm (y' - y)" "norm (x' - x)"]
+      by (auto intro!: mult_right_mono simp: norm_prod_def
+        simp del: real_sqrt_sum_squares_ge1 real_sqrt_sum_squares_ge2)
+    also have "\<dots> \<le> norm ((x', y') - (x, y)) * (8 * e)"
+      by simp
+    also have "\<dots> < norm ((x', y') - (x, y)) * e'"
+      using \<open>0 < e'\<close> nz
+      by (auto simp: e_def)
+    finally show "norm ((f x' y' - f x y - (fx x y (x' - x) + fy x y (y' - y))) /\<^sub>R norm ((x', y') - (x, y))) < e'"
+      by (auto simp: divide_simps dist_norm mult.commute)
+  qed
+  then show ?case
+    by eventually_elim (auto simp: dist_norm field_simps)
+next
+  from has_derivative_bounded_linear[OF fx]
+  obtain fxb where "fx x y = blinfun_apply fxb"
+    by (metis bounded_linear_Blinfun_apply)
+  then show "bounded_linear (\<lambda>(tx, ty). fx x y tx + blinfun_apply (fy x y) ty)"
+    by (auto intro!: bounded_linear_intros simp: split_beta')
+qed
+
+lemma
+  Ball_eventually_less_choiceE:
+  fixes f::"'a \<Rightarrow> 'b \<Rightarrow> 'c::linorder"
+  assumes "\<forall>i \<in> B. \<exists>c. \<forall>\<^sub>F x in F. f i x < c"
+  assumes B: "finite B"
+  obtains c where "\<forall>\<^sub>F x in F. \<forall>i\<in>B. f i x < c"
+proof -
+  obtain cc where cc: "\<forall>\<^sub>F x in F. f i x < cc i" if "i \<in> B" for i
+    using that assms by metis
+  have "\<forall>\<^sub>F x in F. f i x < Max (cc ` B)" if "i \<in> B" for i
+    using cc[OF that]
+  proof (eventually_elim)
+    case (elim x)
+    also have "cc i \<le> Max (cc ` B)" using that B by simp
+    finally show ?case by simp
+  qed
+  then have "\<forall>i\<in>B. \<forall>\<^sub>F x in F. f i x < Max (cc ` B)" by simp
+  from \<open>finite B\<close> this have "\<forall>\<^sub>F x in F. \<forall>i\<in>B. f i x < Max (cc ` B)"
+    by (rule eventually_ball_finite)
+  then show ?thesis ..
+qed
+
+lemma norm_norm: "norm (norm x) = norm x" by simp
+
+lemma norm_le_in_cubeI: "norm x \<le> norm y" if "\<And>i. i \<in> Basis \<Longrightarrow> abs (x \<bullet> i) \<le> abs (y \<bullet> i)" for x y
+  unfolding norm_eq_sqrt_inner
+  apply (subst euclidean_inner)
+  apply (subst (3) euclidean_inner)
+  using that
+  by (auto intro!: sum_mono simp: abs_le_square_iff power2_eq_square[symmetric])
+
+
 
 lemma vderiv_on_continuous_on: "(f has_vderiv_on f') S \<Longrightarrow> continuous_on S f"
   by (auto intro!: has_vector_derivative_continuous_on simp: has_vderiv_on_def)
@@ -1632,20 +1839,6 @@ lemma has_vderiv_eq:
   shows "(g has_vderiv_on g') T"
   using assms by simp
 
-lemma has_vderiv_on_subset:
-  assumes "(f has_vderiv_on f') S"
-  assumes "T \<subseteq> S"
-  shows "(f has_vderiv_on f') T"
-  by (meson assms(1) assms(2) contra_subsetD has_vderiv_on_def has_vector_derivative_within_subset)
-
-lemma has_vderiv_on_compose:
-  assumes "(f has_vderiv_on f') (g ` T)"
-  assumes "(g has_vderiv_on g') T"
-  shows "(f o g has_vderiv_on (\<lambda>x. g' x *\<^sub>R f' (g x))) T"
-  using assms
-  unfolding has_vderiv_on_def
-  by (auto intro!: vector_diff_chain_within)
-
 lemma has_vderiv_on_compose':
   assumes "(f has_vderiv_on f') (g ` T)"
   assumes "(g has_vderiv_on g') T"
@@ -1660,74 +1853,6 @@ lemma has_vderiv_on_compose2:
   shows "((\<lambda>x. f (g x)) has_vderiv_on (\<lambda>x. g' x *\<^sub>R f' (g x))) T"
   using has_vderiv_on_compose[OF has_vderiv_on_subset[OF assms(1)] assms(2)] assms(3)
   by force
-
-lemma has_vderiv_on_eq_rhs:\<comment>\<open>TODO: integrate intro \<open>derivative_eq_intros\<close>\<close>
-  "(f has_vderiv_on g') T \<Longrightarrow> (\<And>x. x \<in> T \<Longrightarrow> g' x = f' x) \<Longrightarrow> (f has_vderiv_on f') T"
-  by (auto simp: has_vderiv_on_def)
-
-lemma [THEN has_vderiv_on_eq_rhs, derivative_intros]:
-  shows has_vderiv_on_id: "((\<lambda>x. x) has_vderiv_on (\<lambda>x. 1)) T"
-    and has_vderiv_on_const: "((\<lambda>x. c) has_vderiv_on (\<lambda>x. 0)) T"
-  by (auto simp: has_vderiv_on_def intro!: derivative_eq_intros)
-
-lemma [THEN has_vderiv_on_eq_rhs, derivative_intros]:
-  fixes f::"real \<Rightarrow> 'a::real_normed_vector"
-  assumes "(f has_vderiv_on f') T"
-  shows has_vderiv_on_uminus: "((\<lambda>x. - f x) has_vderiv_on (\<lambda>x. - f' x)) T"
-  using assms
-  by (auto simp: has_vderiv_on_def intro!: derivative_eq_intros)
-
-lemma [THEN has_vderiv_on_eq_rhs, derivative_intros]:
-  fixes f g::"real \<Rightarrow> 'a::real_normed_vector"
-  assumes "(f has_vderiv_on f') T"
-  assumes "(g has_vderiv_on g') T"
-  shows has_vderiv_on_add: "((\<lambda>x. f x + g x) has_vderiv_on (\<lambda>x. f' x + g' x)) T"
-   and has_vderiv_on_diff: "((\<lambda>x. f x - g x) has_vderiv_on (\<lambda>x. f' x - g' x)) T"
-  using assms
-  by (auto simp: has_vderiv_on_def intro!: derivative_eq_intros)
-
-lemma [THEN has_vderiv_on_eq_rhs, derivative_intros]:
-  fixes f::"real \<Rightarrow> real" and g::"real \<Rightarrow> 'a::real_normed_vector"
-  assumes "(f has_vderiv_on f') T"
-  assumes "(g has_vderiv_on g') T"
-  shows has_vderiv_on_scaleR: "((\<lambda>x. f x *\<^sub>R g x) has_vderiv_on (\<lambda>x. f x *\<^sub>R g' x + f' x *\<^sub>R g x)) T"
-  using assms
-  by (auto simp: has_vderiv_on_def has_field_derivative_iff_has_vector_derivative
-    intro!: derivative_eq_intros)
-
-lemma [THEN has_vderiv_on_eq_rhs, derivative_intros]:
-  fixes f g::"real \<Rightarrow> 'a::real_normed_algebra"
-  assumes "(f has_vderiv_on f') T"
-  assumes "(g has_vderiv_on g') T"
-  shows has_vderiv_on_mult: "((\<lambda>x. f x * g x) has_vderiv_on (\<lambda>x. f x * g' x + f' x * g x)) T"
-  using assms
-  by (auto simp: has_vderiv_on_def intro!: derivative_eq_intros)
-
-lemma has_vderiv_on_ln[THEN has_vderiv_on_eq_rhs, derivative_intros]:
-  fixes g::"real \<Rightarrow> real"
-  assumes "\<And>x. x \<in> s \<Longrightarrow> 0 < g x"
-  assumes "(g has_vderiv_on g') s"
-  shows "((\<lambda>x. ln (g x)) has_vderiv_on (\<lambda>x. g' x / g x)) s"
-  using assms
-  unfolding has_vderiv_on_def
-  by (auto simp: has_vderiv_on_def has_field_derivative_iff_has_vector_derivative[symmetric]
-    intro!: derivative_eq_intros)
-
-
-lemma fundamental_theorem_of_calculus':
-  fixes f :: "real \<Rightarrow> 'a::banach"
-  shows "a \<le> b \<Longrightarrow> (f has_vderiv_on f') {a .. b} \<Longrightarrow> (f' has_integral (f b - f a)) {a .. b}"
-  by (auto intro!: fundamental_theorem_of_calculus simp: has_vderiv_on_def)
-
-lemma has_vderiv_on_If:
-  assumes "U = S \<union> T"
-  assumes "(f has_vderiv_on f') (S \<union> (closure T \<inter> closure S))"
-  assumes "(g has_vderiv_on g') (T \<union> (closure T \<inter> closure S))"
-  assumes "\<And>x. x \<in> closure T \<Longrightarrow> x \<in> closure S \<Longrightarrow> f x = g x"
-  assumes "\<And>x. x \<in> closure T \<Longrightarrow> x \<in> closure S \<Longrightarrow> f' x = g' x"
-  shows "((\<lambda>t. if t \<in> S then f t else g t) has_vderiv_on (\<lambda>t. if t \<in> S then f' t else g' t)) U"
-  using assms
-  by (auto simp: has_vderiv_on_def ac_simps intro!: has_vector_derivative_If split del: if_split)
 
 lemma has_vderiv_on_singleton: "(y has_vderiv_on y') {t0}"
   by (auto simp: has_vderiv_on_def has_vector_derivative_singletonI)
@@ -1813,111 +1938,6 @@ proof -
   finally show ?thesis using t by (auto simp: euclidean_representation)
 qed
 
-lemma mvt_very_simple_closed_segmentE:
-  fixes f::"real\<Rightarrow>real"
-  assumes "(f has_vderiv_on f') (closed_segment a b)"
-  obtains y where "y \<in> closed_segment a b"  "f b - f a = (b - a) * f' y"
-proof cases
-  assume "a \<le> b"
-  with mvt_very_simple[of a b f "\<lambda>x i. i *\<^sub>R f' x"] assms
-  obtain y where "y \<in> closed_segment a b"  "f b - f a = (b - a) * f' y"
-    by (auto simp: has_vector_derivative_def closed_segment_real has_vderiv_on_def)
-  thus ?thesis ..
-next
-  assume "\<not> a \<le> b"
-  with mvt_very_simple[of b a f "\<lambda>x i. i *\<^sub>R f' x"] assms
-  obtain y where "y \<in> closed_segment a b"  "f b - f a = (b - a) * f' y"
-    by (force simp: has_vector_derivative_def has_vderiv_on_def closed_segment_real algebra_simps)
-  thus ?thesis ..
-qed
-
-
-lemma mvt_simple_closed_segmentE:
-  fixes f::"real\<Rightarrow>real"
-  assumes "(f has_vderiv_on f') (closed_segment a b)"
-  assumes "a \<noteq> b"
-  obtains y where "y \<in> open_segment a b"  "f b - f a = (b - a) * f' y"
-proof cases
-  assume "a \<le> b"
-  with assms have "a < b" by simp
-  with mvt_simple[of a b f "\<lambda>x i. i *\<^sub>R f' x"] assms
-  obtain y where "y \<in> open_segment a b"  "f b - f a = (b - a) * f' y"
-    by (auto simp: has_vector_derivative_def closed_segment_real has_vderiv_on_def open_segment_real)
-  thus ?thesis ..
-next
-  assume "\<not> a \<le> b"
-  then have "b < a" by simp
-  with mvt_simple[of b a f "\<lambda>x i. i *\<^sub>R f' x"] assms
-  obtain y where "y \<in> open_segment a b"  "f b - f a = (b - a) * f' y"
-    by (force simp: has_vector_derivative_def has_vderiv_on_def closed_segment_real algebra_simps
-      open_segment_real)
-  thus ?thesis ..
-qed
-
-lemma differentiable_bound_general_open_segment:
-  fixes a :: "real"
-    and b :: "real"
-    and f :: "real \<Rightarrow> 'a::real_normed_vector"
-    and f' :: "real \<Rightarrow> 'a"
-  assumes "continuous_on (closed_segment a b) f"
-  assumes "continuous_on (closed_segment a b) g"
-    and "(f has_vderiv_on f') (open_segment a b)"
-    and "(g has_vderiv_on g') (open_segment a b)"
-    and "\<And>x. x \<in> open_segment a b \<Longrightarrow> norm (f' x) \<le> g' x"
-  shows "norm (f b - f a) \<le> abs (g b - g a)"
-proof -
-  {
-    assume "a = b"
-    hence ?thesis by simp
-  } moreover {
-    assume "a < b"
-    with assms
-    have "continuous_on {a .. b} f"
-      and "continuous_on {a .. b} g"
-      and "\<And>x. x\<in>{a<..<b} \<Longrightarrow> (f has_vector_derivative f' x) (at x)"
-      and "\<And>x. x\<in>{a<..<b} \<Longrightarrow> (g has_vector_derivative g' x) (at x)"
-      and "\<And>x. x\<in>{a<..<b} \<Longrightarrow> norm (f' x) \<le> g' x"
-      by (auto simp: open_segment_real closed_segment_real has_vderiv_on_def
-        at_within_open[where S="{a<..<b}"])
-    from differentiable_bound_general[OF \<open>a < b\<close> this]
-    have ?thesis by auto
-  } moreover {
-    assume "b < a"
-    with assms
-    have "continuous_on {b .. a} f"
-      and "continuous_on {b .. a} g"
-      and "\<And>x. x\<in>{b<..<a} \<Longrightarrow> (f has_vector_derivative f' x) (at x)"
-      and "\<And>x. x\<in>{b<..<a} \<Longrightarrow> (g has_vector_derivative g' x) (at x)"
-      and "\<And>x. x\<in>{b<..<a} \<Longrightarrow> norm (f' x) \<le> g' x"
-      by (auto simp: open_segment_real closed_segment_real has_vderiv_on_def
-        at_within_open[where S="{b<..<a}"])
-    from differentiable_bound_general[OF \<open>b < a\<close> this]
-    have "norm (f a - f b) \<le> g a - g b" by simp
-    also have "\<dots> \<le> abs (g b - g a)" by simp
-    finally have ?thesis by (simp add: norm_minus_commute)
-  } ultimately show ?thesis by arith
-qed
-
-lemma has_vderiv_on_union:
-  assumes "(f has_vderiv_on g) (s \<union> closure s \<inter> closure t)"
-  assumes "(f has_vderiv_on g) (t \<union> closure s \<inter> closure t)"
-  shows "(f has_vderiv_on g) (s \<union> t)"
-  unfolding has_vderiv_on_def
-proof
-  fix x assume "x \<in> s \<union> t"
-  with has_vector_derivative_If[of x s t "s \<union> t" f g f g] assms
-  show "(f has_vector_derivative g x) (at x within s \<union> t)"
-    by (auto simp: has_vderiv_on_def)
-qed
-
-lemma has_vderiv_on_union_closed:
-  assumes "(f has_vderiv_on g) s"
-  assumes "(f has_vderiv_on g) t"
-  assumes "closed s" "closed t"
-  shows "(f has_vderiv_on g) (s \<union> t)"
-  using assms
-  by (auto simp: Un_absorb2 intro: has_vderiv_on_union)
-
 lemma
   has_vderiv_on_zero_constant:
   assumes "convex s"
@@ -1925,6 +1945,367 @@ lemma
   obtains c where "\<And>x. x \<in> s \<Longrightarrow> f x = c"
   using has_vector_derivative_zero_constant[of s f] assms
   by (auto simp: has_vderiv_on_def)
+
+lemma closed_segment_abs_le: "y \<in> {x--x'} \<Longrightarrow> \<bar>y - x\<bar> \<le> \<bar>x'- x\<bar>" for y x x'::real
+  by (auto simp: abs_real_def closed_segment_real)
+
+lemma has_derivative_partials_euclidean_convexI:
+  fixes f::"'a::euclidean_space \<Rightarrow> 'b::real_normed_vector"
+  assumes f': "\<And>i x xi. i \<in> Basis \<Longrightarrow> (\<forall>j\<in>Basis. x \<bullet> j \<in> X j) \<Longrightarrow> xi = x \<bullet> i \<Longrightarrow>
+    ((\<lambda>p. f (x + (p - x \<bullet> i) *\<^sub>R i)) has_vector_derivative f' i x) (at xi within X i)"
+  assumes df_cont: "\<And>i. i \<in> Basis \<Longrightarrow> (f' i \<longlongrightarrow> (f' i x)) (at x within {x. \<forall>j\<in>Basis. x \<bullet> j \<in> X j})"
+  assumes "\<And>i. i \<in> Basis \<Longrightarrow> x \<bullet> i \<in> X i"
+  assumes "\<And>i. i \<in> Basis \<Longrightarrow> convex (X i)"
+  shows "(f has_derivative (\<lambda>h. \<Sum>j\<in>Basis. (h \<bullet> j) *\<^sub>R f' j x)) (at x within {x. \<forall>j\<in>Basis. x \<bullet> j \<in> X j})"
+    (is "_ (at x within ?S)")
+proof (rule has_derivativeI)
+  show "bounded_linear (\<lambda>h. \<Sum>j\<in>Basis. (h \<bullet> j) *\<^sub>R f' j x)"
+    by (auto intro!: bounded_linear_intros)
+
+  obtain E where [simp]: "set E = (Basis::'a set)" "distinct E"
+    using finite_distinct_list[OF finite_Basis] by blast
+
+  have [simp]: "length E = DIM('a)"
+    using \<open>distinct E\<close> distinct_card by fastforce
+  have [simp]: "E ! j \<in> Basis" if "j < DIM('a)" for j
+    by (metis \<open>length E = DIM('a)\<close> \<open>set E = Basis\<close> nth_mem that)
+  have "convex ?S"
+    by (rule convex_prod) (use assms in auto)
+
+  have sum_Basis_E: "sum g Basis = (\<Sum>j<DIM('a). g (E ! j))" for g
+    apply (rule sum.reindex_cong[OF _ _ refl])
+    apply (auto simp: inj_on_nth)
+    by (metis \<open>distinct E\<close> \<open>length E = DIM('a)\<close> \<open>set E = Basis\<close> bij_betw_def bij_betw_nth)
+
+  have segment: "\<forall>\<^sub>F x' in at x within ?S. x' \<in> ?S" "\<forall>\<^sub>F x' in at x within ?S. x' \<noteq> x"
+    unfolding eventually_at_filter by auto
+
+
+  show "((\<lambda>y. (f y - f x - (\<Sum>j\<in>Basis. ((y - x) \<bullet> j) *\<^sub>R f' j x)) /\<^sub>R norm (y - x)) \<longlongrightarrow> 0) (at x within {x. \<forall>j\<in>Basis. x \<bullet> j \<in> X j})"
+    apply (rule tendstoI)
+    unfolding norm_conv_dist[symmetric]
+  proof -
+    fix e::real
+    assume "e > 0"
+    define B where "B = e / norm (2*DIM('a) + 1)"
+    with \<open>e > 0\<close> have B_thms: "B > 0" "2 * DIM('a) * B < e" "B \<ge> 0"
+      by (auto simp: divide_simps algebra_simps B_def)
+    define B' where "B' = B / 2"
+    have "B' > 0" by (simp add: B'_def \<open>0 < B\<close>)
+    have "\<forall>i \<in> Basis. \<forall>\<^sub>F xa in at x within {x. \<forall>j\<in>Basis. x \<bullet> j \<in> X j}. dist (f' i xa) (f' i x) < B'"
+      apply (rule ballI)
+      subgoal premises prems using df_cont[OF prems, THEN tendstoD, OF \<open>0 < B'\<close>] .
+      done
+    from eventually_ball_finite[OF finite_Basis this]
+    have "\<forall>\<^sub>F x' in at x within {x. \<forall>j\<in>Basis. x \<bullet> j \<in> X j}. \<forall>j\<in>Basis. dist (f' j x') (f' j x) < B'" .
+    then obtain d where "d > 0"
+      and "\<And>x' j. x' \<in> {x. \<forall>j\<in>Basis. x \<bullet> j \<in> X j} \<Longrightarrow> x' \<noteq> x \<Longrightarrow> dist x' x < d \<Longrightarrow> j \<in> Basis \<Longrightarrow> dist (f' j x') (f' j x) < B'"
+      using \<open>0 < B'\<close>
+      by (auto simp: eventually_at)
+    then have B': "x' \<in> {x. \<forall>j\<in>Basis. x \<bullet> j \<in> X j} \<Longrightarrow> dist x' x < d \<Longrightarrow> j \<in> Basis \<Longrightarrow> dist (f' j x') (f' j x) < B'" for x' j
+      by (cases "x' = x", auto simp add: \<open>0 < B'\<close>)
+    then have B: "norm (f' j x' - f' j y) < B" if
+      "(\<And>j. j \<in> Basis \<Longrightarrow> x' \<bullet> j \<in> X j)"
+      "(\<And>j. j \<in> Basis \<Longrightarrow> y \<bullet> j \<in> X j)"
+      "dist x' x < d"
+      "dist y x < d"
+      "j \<in> Basis"
+      for x' y j
+    proof -
+      have "dist (f' j x') (f' j x) < B'" "dist (f' j y) (f' j x) < B'"
+        using that
+        by (auto intro!: B')
+      then have "dist (f' j x') (f' j y) < B' + B'" by norm
+      also have "\<dots> = B" by (simp add: B'_def)
+      finally show ?thesis by (simp add: dist_norm)
+    qed
+    have "\<forall>\<^sub>F x' in at x within {x. \<forall>j\<in>Basis. x \<bullet> j \<in> X j}. dist x' x < d"
+      by (rule tendstoD[OF tendsto_ident_at \<open>d > 0\<close>])
+    with segment
+    show "\<forall>\<^sub>F x' in at x within {x. \<forall>j\<in>Basis. x \<bullet> j \<in> X j}.
+      norm ((f x' - f x - (\<Sum>j\<in>Basis. ((x' - x) \<bullet> j) *\<^sub>R f' j x)) /\<^sub>R norm (x' - x)) < e"
+    proof eventually_elim
+      case (elim x')
+      then have os_subset: "{x<--<x'} \<subseteq> ?S"
+        using \<open>convex ?S\<close> assms(3)
+        unfolding convex_contains_open_segment
+        by auto
+      then have cs_subset: "{x--x'} \<subseteq> ?S"
+        using elim assms(3) by (auto simp add: open_segment_def)
+      have csc_subset: "{x' \<bullet> i--x \<bullet> i} \<subseteq> X i" if i: "i \<in> Basis" for i
+        apply (rule closed_segment_subset)
+        using cs_subset elim assms(3,4) that
+        by (auto )
+      have osc_subset: "{x' \<bullet> i<--<x \<bullet> i} \<subseteq> X i" if i: "i \<in> Basis" for i
+        using segment_open_subset_closed csc_subset[OF i]
+        by (rule order_trans)
+
+      define h where "h = x' - x"
+      define z where "z j = (\<Sum>k<j. (h \<bullet> E ! k) *\<^sub>R (E ! k))" for j
+      define g where "g j t = (f (x + z j + (t - x \<bullet> E ! j) *\<^sub>R E ! j))" for j t
+      have z: "z j \<bullet> E ! j = 0" if "j < DIM('a)" for j
+        using that
+        by (auto simp: z_def h_def algebra_simps inner_sum_left inner_Basis if_distrib
+            nth_eq_iff_index
+            sum.delta index_nth_id
+            intro!: euclidean_eqI[where 'a='a]
+            cong: if_cong)
+      have z_inner: "z j \<bullet> i = (if j \<le> index E i then 0 else h \<bullet> i)" if "j < DIM('a)" "i \<in> Basis" for j i
+        using that
+        by (auto simp: z_def h_def algebra_simps inner_sum_left inner_Basis if_distrib
+            nth_eq_iff_index
+            sum.delta index_nth_id
+            intro!: euclidean_eqI[where 'a='a]
+            cong: if_cong)
+      have z_mem: "j < DIM('a) \<Longrightarrow> ja \<in> Basis \<Longrightarrow> x \<bullet> ja + z j \<bullet> ja \<in> X ja" for j ja
+        using csc_subset
+        by (auto simp: z_inner h_def algebra_simps)
+      have "norm (x' - x) < d"
+        using elim by (simp add: dist_norm)
+      have norm_z': "y \<in> {x \<bullet> E ! j--x' \<bullet> E ! j} \<Longrightarrow> norm (z j + y *\<^sub>R E ! j - (x \<bullet> E ! j) *\<^sub>R E ! j) < d"
+        if "j < DIM('a)"
+        for j y
+        apply (rule le_less_trans[OF _ \<open>norm (x' - x) < d\<close>])
+        apply (rule norm_le_in_cubeI)
+        apply (auto simp: inner_diff_left inner_add_left inner_Basis that z)
+        subgoal by (rule closed_segment_abs_le)
+        subgoal for i
+          using that
+          by (auto simp: z_inner h_def algebra_simps)
+        done
+      have norm_z: "norm (z j) < d" if "j < DIM('a)" for j
+        using norm_z'[OF that ends_in_segment(1)]
+        by (auto simp: z_def)
+      {
+        fix j
+        assume j: "j < DIM('a)"
+        have eq: "(x + z j + ((y - (x + z j)) \<bullet> E ! j) *\<^sub>R E ! j +
+          (p - (x + z j + ((y - (x + z j)) \<bullet> E ! j) *\<^sub>R E ! j) \<bullet> E ! j) *\<^sub>R
+          E ! j) = (x + z j + (p - (x \<bullet> E ! j)) *\<^sub>R E ! j)" for y p
+          by (auto simp: algebra_simps j z)
+        have f_has_derivative: "((\<lambda>p. f (x + z j + (p - x \<bullet> E ! j) *\<^sub>R E ! j)) has_derivative (\<lambda>xa. xa *\<^sub>R f' (E ! j) (x + z j + ((y *\<^sub>R E ! j - (x + z j)) \<bullet> E ! j) *\<^sub>R E ! j)))
+            (at y within {x \<bullet> E ! j--x' \<bullet> E ! j})"
+          if "y \<in> {x \<bullet> E ! j--x' \<bullet> E ! j}"
+          for y
+          apply (rule has_derivative_within_subset)
+           apply (rule f'[unfolded has_vector_derivative_def,
+                where x= "x + z j + ((y *\<^sub>R E!j - (x + z j))\<bullet> E!j) *\<^sub>R E ! j" and i="E ! j", unfolded eq])
+          subgoal by (simp add: j)
+          subgoal
+            using that
+            apply (auto simp: algebra_simps z j inner_Basis)
+            using closed_segment_commute \<open>E ! j \<in> Basis\<close> csc_subset apply blast
+            by (simp add: z_mem j)
+          subgoal by (auto simp: algebra_simps z j inner_Basis)
+          subgoal
+            apply (auto simp: algebra_simps z j inner_Basis)
+            using closed_segment_commute \<open>\<And>j. j < DIM('a) \<Longrightarrow> E ! j \<in> Basis\<close> csc_subset j apply blast
+            done
+          done
+        have *: "((xa *\<^sub>R E ! j - (x + z j)) \<bullet> E ! j) = xa - x \<bullet> E ! j" for xa
+          by (auto simp: algebra_simps z j)
+        have g': "(g j has_vderiv_on (\<lambda>xa. (f' (E ! j) (x + z j + (xa - x \<bullet> E ! j) *\<^sub>R E ! j)))) {(x\<bullet>E!j)--(x'\<bullet>E!j)}"
+          (is "(_ has_vderiv_on ?g' j) _")
+          by (auto simp: has_vderiv_on_def has_vector_derivative_def g_def *
+              intro!: derivative_eq_intros f_has_derivative[THEN has_derivative_eq_rhs])
+        define g' where "g' j = ?g' j" for j
+        with g' have g': "(g j has_vderiv_on g' j) {(x\<bullet>E!j)--(x'\<bullet>E!j)}"
+          by simp
+        have cont_bound: "\<forall>y\<in>{x \<bullet> E ! j--x' \<bullet> E ! j}. norm (g' j y - g' j (x \<bullet> E ! j)) \<le> B"
+          apply (auto simp add: g'_def j algebra_simps inner_Basis z dist_norm
+              intro!: less_imp_le B z_mem norm_z norm_z')
+          using closed_segment_commute \<open>\<And>j. j < DIM('a) \<Longrightarrow> E ! j \<in> Basis\<close> csc_subset j apply blast
+          done
+        from vector_differentiable_bound_linearization[OF g' order_refl cont_bound ends_in_segment(1)]
+        have n: "norm (g j (x' \<bullet> E ! j) - g j (x \<bullet> E ! j) - (x' \<bullet> E ! j - x \<bullet> E ! j) *\<^sub>R g' j (x \<bullet> E ! j)) \<le> norm (x' \<bullet> E ! j - x \<bullet> E ! j) * B"
+          .
+        have "z (Suc j) = z j + (x' \<bullet> E ! j - x \<bullet> E ! j) *\<^sub>R E ! j"
+          by (auto simp: z_def h_def algebra_simps)
+        then have "f (x + z (Suc j)) = f (x + z j + (x' \<bullet> E ! j - x \<bullet> E ! j) *\<^sub>R E ! j) "
+          by (simp add: ac_simps)
+        with n have "norm (f (x + z (Suc j)) - f (x + z j) - (x' \<bullet> E ! j - x \<bullet> E ! j) *\<^sub>R f' (E ! j) (x + z j)) \<le> \<bar>x' \<bullet> E ! j - x \<bullet> E ! j\<bar> * B"
+          by (simp add: g_def g'_def)
+      } note B_le = this
+      have B': "norm (f' (E ! j) (x + z j) - f' (E ! j) x) \<le> B" if "j < DIM('a)" for j
+        using that assms(3)
+        by (auto simp add: algebra_simps inner_Basis z dist_norm \<open>0 < d\<close>
+            intro!: less_imp_le B z_mem norm_z)
+      have "(\<Sum>j\<le>DIM('a) - 1. f (x + z j) - f (x + z (Suc j))) = f (x + z 0) - f (x + z (Suc (DIM('a) - 1)))"
+        by (rule sum_telescope)
+      moreover have "z DIM('a) = h"
+        by (auto simp: z_def h_def algebra_simps inner_sum_left inner_Basis if_distrib
+            nth_eq_iff_index
+            sum.delta index_nth_id
+            intro!: euclidean_eqI[where 'a='a]
+            cong: if_cong)
+      moreover have "z 0 = 0"
+        by (auto simp: z_def)
+      moreover have "{..DIM('a) - 1} = {..<DIM('a)}"
+        using le_imp_less_Suc by fastforce
+      ultimately have "f x - f (x + h) = (\<Sum>j<DIM('a). f (x + z j) - f (x + z (Suc j)))"
+        by (auto simp: )
+      then have "norm (f (x + h) - f x - (\<Sum>j\<in>Basis. ((x' - x) \<bullet> j) *\<^sub>R f' j x)) =
+        norm(
+          (\<Sum>j<DIM('a). f (x + z (Suc j)) - f (x + z j) - (x' \<bullet> E ! j - x \<bullet> E ! j) *\<^sub>R f' (E ! j) (x + z j)) +
+          (\<Sum>j<DIM('a). (x' \<bullet> E ! j - x \<bullet> E ! j) *\<^sub>R (f' (E ! j) (x + z j) - f' (E ! j) x)))"
+        (is "_ = norm (sum ?a ?E + sum ?b ?E)")
+        by (intro arg_cong[where f=norm]) (simp add: sum_negf sum_subtractf sum.distrib algebra_simps sum_Basis_E)
+      also have "\<dots> \<le> norm (sum ?a ?E) + norm (sum ?b ?E)" by (norm)
+      also have "norm (sum ?a ?E) \<le> sum (\<lambda>x. norm (?a x)) ?E"
+        by (rule norm_sum)
+      also have "\<dots> \<le> sum (\<lambda>j. norm \<bar>x' \<bullet> E ! j - x \<bullet> E ! j\<bar> * B) ?E"
+        by (auto intro!: sum_mono B_le)
+      also have "\<dots> \<le> sum (\<lambda>j. norm (x' - x) * B) ?E"
+        apply (rule sum_mono)
+        apply (auto intro!: mult_right_mono \<open>0 \<le> B\<close>)
+        by (metis (full_types) \<open>\<And>j. j < DIM('a) \<Longrightarrow> E ! j \<in> Basis\<close> inner_diff_left norm_bound_Basis_le order_refl)
+      also have "\<dots> = norm (x' - x) * DIM('a) * B"
+        by simp
+      also have "norm (sum ?b ?E) \<le> sum (\<lambda>x. norm (?b x)) ?E"
+        by (rule norm_sum)
+      also have "\<dots> \<le> sum (\<lambda>j. norm (x' - x) * B) ?E"
+        apply (intro sum_mono)
+        apply (auto intro!: mult_mono B')
+         apply (metis (full_types) \<open>\<And>j. j < DIM('a) \<Longrightarrow> E ! j \<in> Basis\<close> inner_diff_left norm_bound_Basis_le order_refl)
+        done
+      also have "\<dots> = norm (x' - x) * DIM('a) * B"
+        by simp
+      finally have "norm (f (x + h) - f x - (\<Sum>j\<in>Basis. ((x' - x) \<bullet> j) *\<^sub>R f' j x)) \<le> norm (x' - x) * real DIM('a) * B + norm (x' - x) * real DIM('a) * B"
+        by arith
+      also have "\<dots> /\<^sub>R norm (x' - x) \<le> norm (2 * DIM('a) * B)"
+        using \<open>B \<ge> 0\<close>
+        by (simp add: divide_simps abs_mult)
+      also have "\<dots> < e" using B_thms by simp
+      finally show ?case by (auto simp: divide_simps abs_mult h_def)
+    qed
+  qed
+qed
+
+lemma has_derivative_partials_euclideanI:
+  fixes f::"'a::euclidean_space \<Rightarrow> 'b::real_normed_vector"
+  assumes f': "\<And>i. i \<in> Basis \<Longrightarrow>
+    (\<forall>\<^sub>F x in nhds x. ((\<lambda>p. f (x + (p - x \<bullet> i) *\<^sub>R i)) has_vector_derivative f' i x) (at (x \<bullet> i)))"
+  assumes df_cont: "\<And>i. i \<in> Basis \<Longrightarrow> (f' i \<longlongrightarrow> (f' i x)) (at x)"
+  shows "(f has_derivative (\<lambda>h. \<Sum>j\<in>Basis. (h \<bullet> j) *\<^sub>R f' j x)) (at x)"
+proof -
+  from f' have "\<forall>i \<in> Basis. (\<forall>\<^sub>F x in nhds x. ((\<lambda>p. f (x + (p - x \<bullet> i) *\<^sub>R i)) has_vector_derivative f' i x) (at (x \<bullet> i)))"
+    by simp
+  from eventually_ball_finite[OF finite_Basis this, unfolded eventually_nhds_metric]
+  obtain d where d: "d > 0" "\<forall>xa. dist xa x < d \<longrightarrow> (\<forall>y\<in>Basis. ((\<lambda>p. f (xa + (p - xa \<bullet> y) *\<^sub>R y)) has_vector_derivative f' y xa) (at (xa \<bullet> y)))"
+    by auto
+  from rational_boxes[OF \<open>d > 0\<close>, of x] obtain a b where "x \<in> box a b" "box a b \<subseteq> ball x d"
+    by auto
+  with d have f': "\<And>x' y x'y. x' \<in> box a b \<Longrightarrow> y \<in> Basis \<Longrightarrow> x'y = (x' \<bullet> y) \<Longrightarrow> ((\<lambda>p. f (x' + (p - x' \<bullet> y) *\<^sub>R y)) has_vector_derivative f' y x') (at x'y)"
+    by (fastforce simp: dist_commute subset_iff mem_ball)
+
+  have "at x = at x within box a b" unfolding at_within_open[OF \<open>x \<in> box a b\<close> open_box] ..
+  also have "box a b = {x. \<forall>j\<in>Basis. x \<bullet> j \<in> {a \<bullet> j<..<b\<bullet>j}}"
+    by (auto simp: box_def)
+  finally have at_eq: "at x = at x within {x. \<forall>j\<in>Basis. x \<bullet> j \<in> {a \<bullet> j<..<b \<bullet> j}}" .
+  show ?thesis
+    unfolding at_eq
+    apply (rule has_derivative_partials_euclidean_convexI)
+    subgoal by (subst at_within_open)(auto intro!: f' simp: box_def)
+    subgoal unfolding at_eq[symmetric] by (rule df_cont)
+    subgoal using \<open>x \<in> box a b\<close> by (auto simp: box_def)
+    subgoal by simp
+    done
+qed
+
+lemma
+  frechet_derivative_equals_partial_derivative:
+  fixes f::"'a::euclidean_space \<Rightarrow> 'a"
+  assumes Df: "\<And>x. (f has_derivative Df x) (at x)"
+  assumes f': "((\<lambda>p. f (x + (p - x \<bullet> i) *\<^sub>R i) \<bullet> b) has_real_derivative f' x i b) (at (x \<bullet> i))"
+  shows "Df x i \<bullet> b = f' x i b"
+proof -
+  define Dfb where "Dfb x = Blinfun (Df x)" for x
+  have Dfb_apply: "blinfun_apply (Dfb x) = Df x" for x
+    unfolding Dfb_def
+    apply (rule bounded_linear_Blinfun_apply)
+    apply (rule has_derivative_bounded_linear)
+    apply (rule assms)
+    done
+  have "Dfb x = blinfun_of_matrix (\<lambda>i b. Dfb x b \<bullet> i)" for x
+    using blinfun_of_matrix_works[of "Dfb x"] by auto
+  have Dfb: "\<And>x. (f has_derivative Dfb x) (at x)"
+    by (auto simp: Dfb_apply Df)
+  note [derivative_intros] = diff_chain_at[OF _ Dfb, unfolded o_def]
+  have "((\<lambda>p. f (x + (p - x \<bullet> i) *\<^sub>R i) \<bullet> b) has_real_derivative Dfb x i \<bullet> b) (at (x \<bullet> i))"
+    by (auto intro!: derivative_eq_intros ext simp: has_field_derivative_def blinfun.bilinear_simps)
+  from DERIV_unique[OF f' this]
+  show ?thesis by (simp add: Dfb_apply)
+qed
+
+lemma
+  has_vector_derivative_componentwiseI:
+  assumes "\<And>i. i \<in> Basis \<Longrightarrow> ((\<lambda>x. f x \<bullet> i) has_real_derivative f' i) (at x within S)"
+  shows "((\<lambda>x. f x) has_vector_derivative (\<Sum>i\<in>Basis. f' i *\<^sub>R i)) (at x within S)"
+  using assms
+  by (subst euclidean_representation[symmetric, of "f x" for x]) (auto intro!: derivative_eq_intros)
+
+
+subsection \<open>Differentiability\<close>
+
+lemma differentiable_Pair [simp]:
+  "f differentiable at x within s \<Longrightarrow> g differentiable at x within s \<Longrightarrow>
+    (\<lambda>x. (f x, g x)) differentiable at x within s"
+  unfolding differentiable_def by (blast intro: has_derivative_Pair)
+
+lemma (in bounded_linear)
+  differentiable:
+  assumes "g differentiable (at x within s)"
+  shows " (\<lambda>x. f (g x)) differentiable (at x within s)"
+  using assms[simplified frechet_derivative_works]
+  by (intro differentiableI) (rule has_derivative)
+
+context begin
+private lemmas diff = bounded_linear.differentiable
+lemmas differentiable_mult_right[intro] = diff[OF bounded_linear_mult_right]
+  and differentiable_mult_left[intro]   = diff[OF bounded_linear_mult_left]
+  and differentiable_inner_right[intro] = diff[OF bounded_linear_inner_right]
+  and differentiable_inner_left[intro]  = diff[OF bounded_linear_inner_left]
+end
+
+lemma (in bounded_bilinear)
+  differentiable:
+  assumes f: "f differentiable at x within s" and g: "g differentiable at x within s"
+  shows "(\<lambda>x. prod (f x) (g x)) differentiable at x within s"
+  using assms[simplified frechet_derivative_works]
+  by (intro differentiableI) (rule FDERIV)
+
+context begin
+private lemmas bdiff = bounded_bilinear.differentiable
+lemmas differentiable_mult[intro] = bdiff[OF bounded_bilinear_mult]
+  and differentiable_scaleR[intro] = bdiff[OF bounded_bilinear_scaleR]
+end
+
+lemma differentiable_transform_within_weak:
+  assumes "x \<in> s" "\<And>x'. x'\<in>s \<Longrightarrow> g x' = f x'" "f differentiable at x within s"
+  shows "g differentiable at x within s"
+  using assms by (intro differentiable_transform_within[OF _ zero_less_one, where g=g]) auto
+
+lemma differentiable_compose_at:
+  "f differentiable (at x) \<Longrightarrow> g differentiable (at (f x)) \<Longrightarrow>
+  (\<lambda>x. g (f x)) differentiable (at x)"
+  unfolding o_def[symmetric]
+  by (rule differentiable_chain_at)
+
+lemma differentiable_compose_within:
+  "f differentiable (at x within s) \<Longrightarrow>
+  g differentiable (at(f x) within (f ` s)) \<Longrightarrow>
+  (\<lambda>x. g (f x)) differentiable (at x within s)"
+  unfolding o_def[symmetric]
+  by (rule differentiable_chain_within)
+
+lemma differentiable_sum[intro, simp]:
+  assumes "finite s" "\<forall>a\<in>s. (f a) differentiable net"
+  shows "(\<lambda>x. sum (\<lambda>a. f a x) s) differentiable net"
+proof -
+  from bchoice[OF assms(2)[unfolded differentiable_def]]
+  show ?thesis
+    by (auto intro!: has_derivative_sum simp: differentiable_def)
+qed
 
 
 subsection \<open>Integration\<close>
@@ -2288,7 +2669,7 @@ lemma ivl_integral_has_vderiv_on:
   using ivl_integral_has_vector_derivative[OF assms]
   by (auto simp: has_vderiv_on_def)
 
-lemma ivl_integral_has_vderiv_on_subset:
+lemma ivl_integral_has_vderiv_on_subset_segment:
   fixes f :: "real \<Rightarrow> 'a::banach"
   assumes "continuous_on (closed_segment a b) f"
     and "c \<in> closed_segment a b"
@@ -2310,7 +2691,7 @@ lemma ivl_integral_has_vector_derivative_subset:
     and "x \<in> closed_segment a b"
     and "c \<in> closed_segment a b"
   shows "((\<lambda>u. ivl_integral c u f) has_vector_derivative f x) (at x within closed_segment a b)"
-  using ivl_integral_has_vderiv_on_subset[OF assms(1)] assms(2-)
+  using ivl_integral_has_vderiv_on_subset_segment[OF assms(1)] assms(2-)
   by (auto simp: has_vderiv_on_def)
 
 lemma
@@ -2338,7 +2719,7 @@ proof -
   finally have *: "A = {Inf A -- Sup A}" .
   show ?thesis
     apply (subst *)
-    apply (rule ivl_integral_has_vderiv_on_subset)
+    apply (rule ivl_integral_has_vderiv_on_subset_segment)
     unfolding *[symmetric]
     by fact+
 qed

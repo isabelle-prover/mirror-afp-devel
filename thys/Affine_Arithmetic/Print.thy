@@ -2,12 +2,14 @@ section \<open>Target Language debug messages\<close>
 theory Print
 imports
   "HOL-Decision_Procs.Approximation"
-  Affine_Arithmetic.Affine_Arithmetic
+  Affine_Code
   Show.Show_Instances
   "HOL-Library.Monad_Syntax"
-  Optimize_Integer
   "HOL-Library.Code_Char"
+  Optimize_Float
 begin
+
+hide_const (open) floatarith.Max
 
 subsection \<open>Printing\<close>
 
@@ -24,13 +26,11 @@ code_printing constant print \<rightharpoonup> (SML) "TextIO.print"
 
 subsection \<open>Write to File\<close>
 
-definition file_append::"String.literal \<Rightarrow> String.literal \<Rightarrow> unit" where "file_append x y = ()"
-code_printing constant file_append \<rightharpoonup> (SML) "(File.append o Path.explode)"
+definition file_output::"String.literal \<Rightarrow> ((String.literal \<Rightarrow> unit) \<Rightarrow> 'a) \<Rightarrow> 'a" where
+  "file_output _ f = f (\<lambda>_. ())"
+code_printing constant file_output \<rightharpoonup> (SML) "(fn s => fn f => File.open'_output (fn os => f (File.output os)) (Path.explode s))"
 
-definition file_write::"String.literal \<Rightarrow> String.literal \<Rightarrow> unit" where "file_write x y = ()"
-code_printing constant file_write \<rightharpoonup> (SML) "(File.write o Path.explode)"
 
-  
 subsection \<open>Show for Floats\<close>
 
 definition showsp_float :: "float showsp"
@@ -164,64 +164,61 @@ local_setup \<open>Show_Generator.register_foreign_showsp @{typ float10} @{term 
 
 derive "show" float10
 
+definition "showsp_real p x = showsp_float10 p (lfloat10 x)"
+
+lemma show_law_real[show_law_intros]: "show_law showsp_real x"
+  using show_law_float10[of "lfloat10 x"]
+  by (auto simp: showsp_real_def[abs_def] Let_def show_law_def
+      simp del: showsp_float10.simps intro!: show_law_intros)
+
+local_setup \<open>Show_Generator.register_foreign_showsp @{typ real} @{term "showsp_real"} @{thm show_law_real}\<close>
+derive "show" real
 
 subsection \<open>gnuplot output\<close>
-
-definition lshows_eucl::"'a::executable_euclidean_space \<Rightarrow> shows"
-where "lshows_eucl x = shows_words (map (\<lambda>i. lfloat10 (x \<bullet> i)) (Basis_list::'a list))"
-abbreviation "lshow_eucl x \<equiv> lshows_eucl x ''''"
-definition ushows_eucl::"'a::executable_euclidean_space \<Rightarrow> shows"
-where "ushows_eucl x = shows_words (map (\<lambda>i. ufloat10 (x \<bullet> i)) (Basis_list::'a list))"
-abbreviation "ushow_eucl x \<equiv> ushows_eucl x ''''"
-
 
 subsubsection \<open>vector output of 2D zonotope\<close>
 
 definition shows_segments_of_aform
-where "shows_segments_of_aform a b x =
-  shows_list_gen id '''' '''' ''\<newline>'' ''\<newline>'' (map (\<lambda>((x0, y0), (x1, y1)). shows_words (map lfloat10 [x0, y0, x1 - x0, y1 - y0]))
-    (segments_of_aform (inner2_aform x a b)))"
-abbreviation "show_segments_of_aform a b x \<equiv> shows_segments_of_aform a b x ''''"
+  where "shows_segments_of_aform a b xs color =
+  shows_list_gen id '''' '''' ''\<newline>'' ''\<newline>'' (map (\<lambda>((x0, y0), (x1, y1)).
+      shows_words (map lfloat10 [x0, y0, x1 - x0, y1 - y0]) o shows_space o shows_string color)
+    (segments_of_aform (prod_of_aforms (xs ! a) (xs ! b))))"
+abbreviation "show_segments_of_aform a b x c \<equiv> shows_segments_of_aform a b x c ''''"
 
-definition shows_box_of_aform\<comment>\<open>box and some further information\<close>
-where "shows_box_of_aform X = (let
-    R = Radius' 20 X;
-    l = fst X - R;
-    u = fst X + R
-    in shows_list_gen id '''' '''' '' '' '''' (lshows_eucl l # map ushows_eucl [u, R, snd (max_pdev (snd X))]) o shows_space o
-      shows (ufloat10 (infnorm R)) o shows_space o
-      shows (length (list_of_pdevs (snd X))) o
-      shows_nl
+definition shows_box_of_aforms\<comment>\<open>box and some further information\<close>
+where "shows_box_of_aforms (XS::real aform list) = (let
+    RS = map (Radius' 20) XS;
+    l = map (Inf_aform' 20) XS;
+    u = map (Sup_aform' 20) XS
+    in shows_words
+      (l @ u @ RS) o shows_space o
+      shows (card (\<Union>((\<lambda>x. pdevs_domain (snd x)) ` (set XS))))
     )"
-abbreviation "show_box_of_aform x \<equiv> shows_box_of_aform x ''''"
+abbreviation "show_box_of_aforms x \<equiv> shows_box_of_aforms x ''''"
 
-definition shows_box_of_aform_hr\<comment>\<open>human readable\<close>
-where "shows_box_of_aform_hr X = (let
-    R = Radius' 20 X;
-    l = fst X - R;
-    u = fst X + R
-    in shows_paren (lshows_eucl l) o shows_string '' .. '' o shows_paren (ushows_eucl u) o
-      shows_string ''; devs: '' o shows (length (list_of_pdevs (snd X))) o
-      shows_string ''; width: '' o shows (ufloat10 (infnorm R)) o
-      shows_string ''; tdev: '' o shows_paren (ushows_eucl R) o
-      shows_string ''; maxdev: '' o shows_paren (lshows_eucl (snd (max_pdev (snd X)))) o
-      shows_nl
+definition "pdevs_domains ((XS::real aform list)) = (\<Union>((\<lambda>x. pdevs_domain (snd x)) ` (set XS)))"
+
+definition "generators XS =
+    (let
+      is = sorted_list_of_set (pdevs_domains XS);
+      rs = map (\<lambda>i. (i, map (\<lambda>x. pdevs_apply (snd x) i) XS)) is
+    in
+      (map fst XS, rs))"
+
+definition shows_box_of_aforms_hr\<comment>\<open>human readable\<close>
+where "shows_box_of_aforms_hr XS = (let
+    RS = map (Radius' 20) XS;
+    l = map (Inf_aform' 20) XS;
+    u = map (Sup_aform' 20) XS
+    in shows_paren (shows_words l) o shows_string '' .. '' o shows_paren (shows_words u) o
+      shows_string ''; devs: '' o shows (card (pdevs_domains XS)) o
+      shows_string ''; tdev: '' o shows_paren (shows_words RS)
     )"
-abbreviation "show_box_of_aform_hr x \<equiv> shows_box_of_aform_hr x ''''"
+abbreviation "show_box_of_aforms_hr x \<equiv> shows_box_of_aforms_hr x ''''"
 
-definition shows_aform_hr\<comment>\<open>human readable\<close>
-where "shows_aform_hr X =
-    shows_paren (lshows_eucl (fst X)) o shows_string '' ++ '' o
-    shows_list_gen id ''[]'' ''[('' ''), ('' '')]'' (map (lshows_eucl o snd) (list_of_pdevs (snd X))) o
-    shows_nl"
+definition shows_aforms_hr\<comment>\<open>human readable\<close>
+where "shows_aforms_hr XS = shows (generators XS)"
 
-abbreviation "show_aform_hr x \<equiv> shows_aform_hr x ''''"
-
-subsection \<open>Tracing for ODE solver\<close>
-
-definition "trace_verbose msg X =
-  print (String.implode
-    ((shows_string msg o shows_nl o
-      (case X of Some X \<Rightarrow> shows_box_of_aform_hr X o shows_aform_hr X | None \<Rightarrow> id)) ''\<newline>''))"
+abbreviation "show_aform_hr x \<equiv> shows_aforms_hr x ''''"
 
 end

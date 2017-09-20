@@ -1,228 +1,76 @@
  section \<open>Approximation with Affine Forms\<close>
 theory Affine_Approximation
 imports
-  "HOL-Library.Code_Target_Numeral"
+  "HOL-Decision_Procs.Approximation"
   "HOL-Library.Monad_Syntax"
-  Float_Real
+  "HOL-Library.Mapping"
   Executable_Euclidean_Space
-  Euclidean_Space_Explicit
   Affine_Form
-keywords
-  "approximate_affine" :: thy_decl
+  Straight_Line_Program
 begin
 text \<open>\label{sec:approxaffine}\<close>
 
+lemma convex_on_imp_above_tangent:\<comment>\<open>TODO: generalizes @{thm convex_on_imp_above_tangent}\<close>
+  assumes convex: "convex_on A f" and connected: "connected A"
+  assumes c: "c \<in> A" and x : "x \<in> A"
+  assumes deriv: "(f has_field_derivative f') (at c within A)"
+  shows   "f x - f c \<ge> f' * (x - c)"
+proof (cases x c rule: linorder_cases)
+  assume xc: "x > c"
+  let ?A' = "{c<..<x}"
+  have subs: "?A' \<subseteq> A" using xc x c
+    by (simp add: connected connected_contains_Ioo)
+  have "at c within ?A' \<noteq> bot"
+    using xc
+    by (simp add: at_within_eq_bot_iff)
+  moreover from deriv have "((\<lambda>y. (f y - f c) / (y - c)) \<longlongrightarrow> f') (at c within ?A')"
+    unfolding DERIV_within_iff using subs
+    by (blast intro: tendsto_mono at_le)
+  moreover from eventually_at_right_real[OF xc]
+    have "eventually (\<lambda>y. (f y - f c) / (y - c) \<le> (f x - f c) / (x - c)) (at_right c)"
+  proof eventually_elim
+    fix y assume y: "y \<in> {c<..<x}"
+    with convex connected x c have "f y \<le> (f x - f c) / (x - c) * (y - c) + f c"
+      using interior_subset[of A]
+      by (intro convex_onD_Icc' convex_on_subset[OF convex] connected_contains_Icc) auto
+    hence "f y - f c \<le> (f x - f c) / (x - c) * (y - c)" by simp
+    thus "(f y - f c) / (y - c) \<le> (f x - f c) / (x - c)" using y xc by (simp add: divide_simps)
+  qed
+  hence "eventually (\<lambda>y. (f y - f c) / (y - c) \<le> (f x - f c) / (x - c)) (at c within ?A')"
+    by (simp add: eventually_at_filter eventually_mono)
+  ultimately have "f' \<le> (f x - f c) / (x - c)" by (simp add: tendsto_upperbound)
+  thus ?thesis using xc by (simp add: field_simps)
+next
+  assume xc: "x < c"
+  let ?A' = "{x<..<c}"
+  have subs: "?A' \<subseteq> A" using xc x c
+    by (simp add: connected connected_contains_Ioo)
+  have "at c within ?A' \<noteq> bot"
+    using xc
+    by (simp add: at_within_eq_bot_iff)
+  moreover from deriv have "((\<lambda>y. (f y - f c) / (y - c)) \<longlongrightarrow> f') (at c within ?A')"
+    unfolding DERIV_within_iff using subs
+    by (blast intro: tendsto_mono at_le)
+  moreover from eventually_at_left_real[OF xc]
+    have "eventually (\<lambda>y. (f y - f c) / (y - c) \<ge> (f x - f c) / (x - c)) (at_left c)"
+  proof eventually_elim
+    fix y assume y: "y \<in> {x<..<c}"
+    with convex connected x c have "f y \<le> (f x - f c) / (c - x) * (c - y) + f c"
+      using interior_subset[of A]
+      by (intro convex_onD_Icc'' convex_on_subset[OF convex] connected_contains_Icc) auto
+    hence "f y - f c \<le> (f x - f c) * ((c - y) / (c - x))" by simp
+    also have "(c - y) / (c - x) = (y - c) / (x - c)" using y xc by (simp add: field_simps)
+    finally show "(f y - f c) / (y - c) \<ge> (f x - f c) / (x - c)" using y xc
+      by (simp add: divide_simps)
+  qed
+  hence "eventually (\<lambda>y. (f y - f c) / (y - c) \<ge> (f x - f c) / (x - c)) (at c within ?A')"
+    by (simp add: eventually_at_filter eventually_mono)
+  ultimately have "f' \<ge> (f x - f c) / (x - c)" by (simp add: tendsto_lowerbound)
+  thus ?thesis using xc by (simp add: field_simps)
+qed simp_all
+
+
 text \<open>Approximate operations on affine forms.\<close>
-
-subsection \<open>Intervals\<close>
-
-definition One_pdevs_raw::"nat \<Rightarrow> 'a::executable_euclidean_space"
-  where "One_pdevs_raw i = (if i < length (Basis_list::'a list) then Basis_list ! i else 0)"
-
-lemma zeros_One_pdevs_raw:
-  "One_pdevs_raw -` {0::'a::executable_euclidean_space} = {length (Basis_list::'a list)..}"
-  by (auto simp: One_pdevs_raw_def split: if_split_asm dest!: nth_mem)
-
-lemma nonzeros_One_pdevs_raw:
-  "{i. One_pdevs_raw i \<noteq> (0::'a::executable_euclidean_space)} = - {length (Basis_list::'a list)..}"
-  using zeros_One_pdevs_raw
-  by blast
-
-lift_definition One_pdevs::"'a::executable_euclidean_space pdevs" is One_pdevs_raw
-  by (auto simp: nonzeros_One_pdevs_raw)
-
-lemma pdevs_apply_One_pdevs[simp]: "pdevs_apply One_pdevs i =
-  (if i < length (Basis_list::'a::executable_euclidean_space list) then Basis_list ! i else 0::'a)"
-  by transfer (simp add: One_pdevs_raw_def)
-
-lemma length_Basis_list_pos[simp]: "length Basis_list > 0"
-  by (metis length_pos_if_in_set Basis_list SOME_Basis)
-
-lemma Basis_list_nth_nonzero:
-  "i < length (Basis_list::'a::executable_euclidean_space list) \<Longrightarrow> (Basis_list::'a list) ! i \<noteq> 0"
-  by (auto dest!: nth_mem)
-
-lemma Max_Collect_less_nat: "Max {i::nat. i < k} = (if k = 0 then Max {} else k - 1)"
-  by (auto intro!: Max_eqI)
-
-lemma degree_One_pdevs[simp]: "degree (One_pdevs::'a pdevs) =
-    length (Basis_list::'a::executable_euclidean_space list)"
-  by (auto simp: degree_eq_Suc_max Basis_list_nth_nonzero Max_Collect_less_nat intro!: Max_eqI)
-
-definition inner_scaleR_pdevs::"'a::euclidean_space \<Rightarrow> 'a pdevs \<Rightarrow> 'a pdevs"
-  where "inner_scaleR_pdevs b x = unop_pdevs (\<lambda>x. (b \<bullet> x) *\<^sub>R x) x"
-
-lemma pdevs_apply_inner_scaleR_pdevs[simp]:
-  "pdevs_apply (inner_scaleR_pdevs a x) i = (a \<bullet> (pdevs_apply x i)) *\<^sub>R (pdevs_apply x i)"
-  by (simp add: inner_scaleR_pdevs_def)
-
-lemma degree_inner_scaleR_pdevs_le:
-  "degree (inner_scaleR_pdevs (l::'a::executable_euclidean_space) One_pdevs) \<le>
-    degree (One_pdevs::'a pdevs)"
-  by (rule degree_leI) (auto simp: inner_scaleR_pdevs_def One_pdevs_raw_def)
-
-definition "pdevs_of_ivl l u = scaleR_pdevs (1/2) (inner_scaleR_pdevs (u - l) One_pdevs)"
-
-lemma degree_pdevs_of_ivl_le:
-  "degree (pdevs_of_ivl l u::'a::executable_euclidean_space pdevs) \<le> length (Basis_list::'a list)"
-  using degree_inner_scaleR_pdevs_le
-  by (simp add: pdevs_of_ivl_def)
-
-lemma pdevs_apply_pdevs_of_ivl:
-  defines "B \<equiv> Basis_list::'a::executable_euclidean_space list"
-  shows "pdevs_apply (pdevs_of_ivl l u) i = (if i < length B then ((u - l)\<bullet>(B!i)/2)*\<^sub>R(B!i) else 0)"
-  by (auto simp: pdevs_of_ivl_def B_def)
-
-lemma deg_length_less_imp[simp]:
-  "k < degree (pdevs_of_ivl l u::'a::executable_euclidean_space pdevs) \<Longrightarrow>
-    k < length (Basis_list::'a list)"
-  by (metis degree_pdevs_of_ivl_le dual_order.strict_trans nat_neq_iff not_le)
-
-lemma tdev_pdevs_of_ivl: "tdev (pdevs_of_ivl l u) = \<bar>u - l\<bar> /\<^sub>R 2"
-proof -
-  have "tdev (pdevs_of_ivl l u) =
-    (\<Sum>i <degree (pdevs_of_ivl l u). \<bar>pdevs_apply (pdevs_of_ivl l u) i\<bar>)"
-    by (auto simp: tdev_def)
-  also have "\<dots> = (\<Sum>i = 0..<length (Basis_list::'a list). \<bar>pdevs_apply (pdevs_of_ivl l u) i\<bar>)"
-    by (rule sum.mono_neutral_cong_left) (auto simp: degree_pdevs_of_ivl_le)
-  also have "\<dots> = (\<Sum>i = 0..<length (Basis_list::'a list).
-      \<bar>((u - l) \<bullet> Basis_list ! i / 2) *\<^sub>R Basis_list ! i\<bar>)"
-    by (auto simp: pdevs_apply_pdevs_of_ivl)
-  also have "\<dots> = (\<Sum>b \<leftarrow> Basis_list. \<bar>((u - l) \<bullet> b / 2) *\<^sub>R b\<bar>)"
-    by (auto simp: sum_list_sum_nth)
-  also have "\<dots> = (\<Sum>b\<in>Basis. \<bar>((u - l) \<bullet> b / 2) *\<^sub>R b\<bar>)"
-    by (auto simp: sum_list_distinct_conv_sum_set)
-  also have "\<dots> = \<bar>u - l\<bar> /\<^sub>R 2"
-    by (subst euclidean_representation[symmetric, of "\<bar>u - l\<bar> /\<^sub>R 2"])
-      (simp add:  abs_inner abs_scaleR)
-  finally show ?thesis .
-qed
-
-definition "aform_of_ivl l u = ((l + u)/\<^sub>R2, pdevs_of_ivl l u)"
-
-definition "aform_of_point x = aform_of_ivl x x"
-
-lemma Elem_affine_of_ivl_le:
-  assumes "e \<in> UNIV \<rightarrow> {-1 .. 1}"
-  assumes "l \<le> u"
-  shows "l \<le> aform_val e (aform_of_ivl l u)"
-proof -
-  have "l =  (1 / 2) *\<^sub>R l + (1 / 2) *\<^sub>R l"
-    by (simp add: scaleR_left_distrib[symmetric])
-  also have "\<dots> = (l + u)/\<^sub>R2 - tdev (pdevs_of_ivl l u)"
-    by (auto simp: assms tdev_pdevs_of_ivl algebra_simps)
-  also have "\<dots> \<le> aform_val e (aform_of_ivl l u)"
-    using abs_pdevs_val_le_tdev[OF assms(1), of "pdevs_of_ivl l u"]
-    by (auto simp: aform_val_def aform_of_ivl_def minus_le_iff dest!: abs_le_D2)
-  finally show ?thesis .
-qed
-
-lemma Elem_affine_of_ivl_ge:
-  assumes "e \<in> UNIV \<rightarrow> {-1 .. 1}"
-  assumes "l \<le> u"
-  shows "aform_val e (aform_of_ivl l u) \<le> u"
-proof -
-  have "aform_val e (aform_of_ivl l u) \<le>  (l + u)/\<^sub>R2 + tdev (pdevs_of_ivl l u)"
-    using abs_pdevs_val_le_tdev[OF assms(1), of "pdevs_of_ivl l u"]
-    by (auto simp: aform_val_def aform_of_ivl_def minus_le_iff dest!: abs_le_D1)
-  also have "\<dots> = (1 / 2) *\<^sub>R u + (1 / 2) *\<^sub>R u"
-    by (auto simp: assms tdev_pdevs_of_ivl algebra_simps)
-  also have "\<dots> = u"
-    by (simp add: scaleR_left_distrib[symmetric])
-  finally show ?thesis .
-qed
-
-lemma
-  map_of_zip_upto_length_eq_nth:
-  assumes "i < length B"
-  shows "(map_of (zip [0..<length B] B) i) = Some (B ! i)"
-proof -
-  have "length [0..<length B] = length B"
-    by simp
-  from map_of_zip_is_Some[OF this, of i] assms
-  have "map_of (zip [0..<length B] B) i = Some (B ! i)"
-    by (auto simp: in_set_zip)
-  thus ?thesis by simp
-qed
-
-lemma in_ivl_affine_of_ivlE:
-  assumes "k \<in> {l .. u}"
-  obtains e where "e \<in> UNIV \<rightarrow> {-1 .. 1}" "k = aform_val e (aform_of_ivl l u)"
-proof atomize_elim
-  define e where [abs_def]: "e i = (let b = if i <length (Basis_list::'a list) then
-    (the (map_of (zip [0..<length (Basis_list::'a list)] (Basis_list::'a list)) i)) else 0 in
-      ((k - (l + u) /\<^sub>R 2) \<bullet> b) / (((u - l) /\<^sub>R 2) \<bullet> b))" for i
-  let ?B = "Basis_list::'a list"
-
-  have "k = (1 / 2) *\<^sub>R (l + u) +
-      (\<Sum>b \<in> Basis. (if (u - l) \<bullet> b = 0 then 0 else ((k - (1 / 2) *\<^sub>R (l + u)) \<bullet> b)) *\<^sub>R b)"
-    (is "_ = _ + ?dots")
-    using assms
-    by (force simp add: algebra_simps eucl_le[where 'a='a] intro!: euclidean_eqI[where 'a='a])
-  also have
-    "?dots = (\<Sum>b \<in> Basis. (if (u - l) \<bullet> b = 0 then 0 else ((k - (1 / 2) *\<^sub>R (l + u)) \<bullet> b) *\<^sub>R b))"
-    by (auto intro!: sum.cong)
-  also have "\<dots> = (\<Sum>b \<leftarrow> ?B. (if (u - l) \<bullet> b = 0 then 0 else ((k - (1 / 2) *\<^sub>R (l + u)) \<bullet> b) *\<^sub>R b))"
-    by (auto simp: sum_list_distinct_conv_sum_set)
-  also have "\<dots> =
-    (\<Sum>i = 0..<length ?B.
-        (if (u - l) \<bullet> ?B ! i = 0 then 0 else ((k - (1 / 2) *\<^sub>R (l + u)) \<bullet> ?B ! i) *\<^sub>R ?B ! i))"
-    by (auto simp: sum_list_sum_nth)
-  also have "\<dots> =
-    (\<Sum>i = 0..<degree (inner_scaleR_pdevs (u - l) One_pdevs).
-        (if (u - l) \<bullet> Basis_list ! i = 0 then 0
-        else ((k - (1 / 2) *\<^sub>R (l + u)) \<bullet> Basis_list ! i) *\<^sub>R Basis_list ! i))"
-    using degree_inner_scaleR_pdevs_le[of "u - l"]
-    by (intro sum.mono_neutral_cong_right) (auto dest!: degree)
-  also have "(1 / 2) *\<^sub>R (l + u) +
-    (\<Sum>i = 0..<degree (inner_scaleR_pdevs (u - l) One_pdevs).
-        (if (u - l) \<bullet> Basis_list ! i = 0 then 0
-        else ((k - (1 / 2) *\<^sub>R (l + u)) \<bullet> Basis_list ! i) *\<^sub>R Basis_list ! i)) =
-      aform_val e (aform_of_ivl l u)"
-    by (auto simp: aform_val_def aform_of_ivl_def pdevs_of_ivl_def map_of_zip_upto_length_eq_nth
-      e_def Let_def pdevs_val_sum field_simps
-      intro!: sum.cong)
-  finally have "k = aform_val e (aform_of_ivl l u)" .
-
-  moreover
-  {
-    fix k l u::real assume *: "l \<le> k" "k \<le> u"
-    let ?m = "l / 2 + u / 2"
-    have "\<bar>k - ?m\<bar> \<le> \<bar>if k \<le> ?m then ?m - l else u - ?m\<bar>"
-      using * by auto
-    also have "\<dots> \<le> \<bar>u / 2 - l / 2\<bar>"
-      by (auto simp: abs_real_def)
-    finally have "\<bar>k - (l / 2 + u / 2)\<bar> \<le> \<bar>u / 2 - l/2\<bar>" .
-  } note midpoint_abs = this
-  have "e \<in> UNIV \<rightarrow> {- 1..1}"
-    using assms
-    unfolding e_def Let_def
-    by (intro Pi_I divide_atLeastAtMost_1_absI)
-      (auto simp: map_of_zip_upto_length_eq_nth eucl_le[where 'a='a]
-        divide_le_eq_1 not_less inner_Basis algebra_simps intro!: midpoint_abs
-        dest!: nth_mem)
-  ultimately show "\<exists>e. e \<in> UNIV \<rightarrow> {- 1..1} \<and> k = aform_val e (aform_of_ivl l u)"
-    by blast
-qed
-
-lemma Inf_aform_aform_of_ivl:
-  assumes "l \<le> u"
-  shows "Inf_aform (aform_of_ivl l u) = l"
-  using assms
-  by (auto simp: Inf_aform_def aform_of_ivl_def tdev_pdevs_of_ivl abs_diff_eq1 algebra_simps)
-    (metis real_sum_of_halves scaleR_add_left scaleR_one)
-
-lemma Sup_aform_aform_of_ivl:
-  assumes "l \<le> u"
-  shows "Sup_aform (aform_of_ivl l u) = u"
-  using assms
-  by (auto simp: Sup_aform_def aform_of_ivl_def tdev_pdevs_of_ivl abs_diff_eq1 algebra_simps)
-    (metis real_sum_of_halves scaleR_add_left scaleR_one)
-
-lemma Affine_aform_of_ivl:
-  "a \<le> b \<Longrightarrow> Affine (aform_of_ivl a b) = {a .. b}"
-  by (force simp: Affine_def valuate_def intro!: Elem_affine_of_ivl_ge Elem_affine_of_ivl_le
-    elim!: in_ivl_affine_of_ivlE)
 
 lemma Affine_notempty[intro, simp]: "Affine X \<noteq> {}"
   by (auto simp: Affine_def valuate_def)
@@ -264,10 +112,48 @@ proof -
   thus ?thesis ..
 qed
 
+lift_definition coord_pdevs::"nat \<Rightarrow> real pdevs" is "\<lambda>n i. if i = n then 1 else 0" by auto
+
+lemma pdevs_apply_coord_pdevs [simp]: "pdevs_apply (coord_pdevs i) x = (if x = i then 1 else 0)"
+  by transfer simp
+
+lemma degree_coord_pdevs[simp]: "degree (coord_pdevs i) = Suc i"
+  by (auto intro!: degree_eqI)
+
+lemma pdevs_val_coord_pdevs[simp]: "pdevs_val e (coord_pdevs i) = e i"
+  by (auto simp: pdevs_val_sum if_distrib sum.delta cong: if_cong)
+
+definition "aforms_of_ivls ls us = map
+    (\<lambda>(i, (l, u)). ((l + u)/2, scaleR_pdevs ((u - l)/2) (coord_pdevs i)))
+    (zip [0..<length ls] (zip ls us))"
+
+lemma
+  aforms_of_ivls:
+  assumes "length ls = length us" "length xs = length ls"
+  assumes "\<And>i. i < length xs \<Longrightarrow> xs ! i \<in> {ls ! i .. us ! i}"
+  shows "xs \<in> Joints (aforms_of_ivls ls us)"
+proof -
+  {
+    fix i assume "i < length xs"
+    then have "\<exists>e. e \<in> {-1 .. 1} \<and> xs ! i = (ls ! i + us ! i) / 2 + e * (us ! i - ls ! i) / 2"
+      using assms
+      by (force intro!: exI[where x="(xs ! i - (ls ! i + us ! i) / 2) / (us ! i - ls ! i) * 2"]
+          simp: divide_simps algebra_simps)
+  } then obtain e where e: "e i \<in> {-1 .. 1}"
+    "xs ! i = (ls ! i + us ! i) / 2 + e i * (us ! i - ls ! i) / 2" 
+    if "i < length xs" for i
+    using that by metis
+  define e' where "e' i = (if i < length xs then e i else 0)" for i
+  show ?thesis
+    using e assms
+    by (auto simp: aforms_of_ivls_def Joints_def valuate_def e'_def aform_val_def
+        intro!: image_eqI[where x=e'] nth_equalityI)
+qed
+
 
 subsection \<open>Approximate Operations\<close>
 
-definition "max_pdev x = fold (\<lambda>x y. if infnorm (snd x) > infnorm (snd y) then x else y) (list_of_pdevs x) (0, 0)"
+definition "max_pdev x = fold (\<lambda>x y. if infnorm (snd x) \<ge> infnorm (snd y) then x else y) (list_of_pdevs x) (0, 0)"
 
 
 subsubsection \<open>set of generated endpoints\<close>
@@ -381,6 +267,8 @@ lift_definition trunc_err_pdevs::"nat \<Rightarrow> 'a::executable_euclidean_spa
   is trunc_err_pdevs_raw
   by (auto intro!: finite_subset[OF nonzeros_trunc_err_pdevs_raw])
 
+term float_plus_down
+
 lemma pdevs_apply_trunc_pdevs[simp]:
   fixes x y::"'a::euclidean_space"
   shows "pdevs_apply (trunc_pdevs p X) n = eucl_truncate_down p (pdevs_apply X n)"
@@ -478,22 +366,14 @@ proof atomize_elim
     by auto
 qed
 
+lemma
+  degree_add_pdevs_le:
+  assumes "degree X \<le> n"
+  assumes "degree Y \<le> n"
+  shows "degree (add_pdevs X Y) \<le> n"
+  using assms
+  by (auto intro!: degree_le)
 
-subsubsection \<open>Addition\<close>
-
-definition add_aform::"'a::real_vector aform \<Rightarrow> 'a aform \<Rightarrow> 'a aform"
-  where "add_aform x y = (fst x + fst y, add_pdevs (snd x) (snd y))"
-
-lemma aform_val_add_aform:
-  shows "aform_val e (add_aform X Y) = aform_val e X + aform_val e Y"
-  by (auto simp: add_aform_def aform_val_def)
-
-definition add_aform'::"nat \<Rightarrow> nat \<Rightarrow> 'a::executable_euclidean_space aform \<Rightarrow> 'a aform \<Rightarrow> 'a aform"
-  where "add_aform' p n x y =
-    (let
-      z0 = trunc_bound_eucl p (fst x + fst y);
-      z = trunc_bound_pdevs p (add_pdevs (snd x) (snd y))
-      in (fst z0, pdev_upd (fst z) n (sum_list' p [snd z0, snd z])))"
 
 lemma truncate_aform_error_aform_cancel:
   "aform_val e (truncate_aform p z) = aform_val e z + aform_val e (truncate_error_aform p z) "
@@ -526,170 +406,132 @@ lemma
     (rule aform_val_consume_error assms aform_val_consume_error exI conjI
       divide_atLeastAtMost_1_absI)+
 
-lemma add_aform'E:
-  fixes X Y::"real aform"
-  assumes e: "e \<in> UNIV \<rightarrow> {- 1..1}"
-    and xn: "pdevs_apply (snd X) n = 0"
-    and yn: "pdevs_apply (snd Y) n = 0"
-  obtains err
-  where "aform_val e (add_aform X Y) = aform_val (e(n:=err)) (add_aform' p n X Y)" "err \<in> {-1 .. 1}"
-proof atomize_elim
-  let ?t1 = "trunc_bound_eucl p (fst X + fst Y)"
-  from trunc_bound_euclE
-  obtain e1 where abs_e1: "\<bar>e1\<bar> \<le> snd ?t1" and e1: "fst ?t1 = fst X + fst Y + e1"
-    by blast
-  let ?t2 = "trunc_bound_pdevs p (add_pdevs (snd X) (snd Y))"
-  from trunc_bound_pdevsE[OF e, of p "add_pdevs (snd X) (snd Y)"]
-  obtain e2 where abs_e2: "\<bar>e2\<bar> \<le> snd (?t2)"
-    and e2: "pdevs_val e (fst ?t2) = pdevs_val e (add_pdevs (snd X) (snd Y)) + e2"
-    by blast
+lemma
+  degree_trunc_pdevs_le:
+  assumes "degree X \<le> n"
+  shows "degree (trunc_pdevs p X) \<le> n"
+  using assms
+  by (auto intro!: degree_le)
 
-  have e_le: "\<bar>-(e1 + e2)\<bar> \<le> \<bar>pdevs_apply (snd (add_aform' p n X Y)) n\<bar>"
-    by (auto simp: add_aform'_def Let_def assms
-      intro!: order.trans[OF _ abs_ge_self] order.trans[OF abs_triangle_ineq4]
-        sum_list'_sum_list_le add_mono abs_e1 abs_e2)
+lemma pdevs_val_sum_less_degree:
+  "pdevs_val e X = (\<Sum>i<d. e i *\<^sub>R pdevs_apply X i)" if "degree X \<le> d"
+  unfolding pdevs_val_pdevs_domain
+  apply (rule sum.mono_neutral_cong_left)
+  using that
+  by force+
 
-  have "aform_val e (add_aform X Y) = aform_val (e(n:=0)) (add_aform' p n X Y) + -(e1 + e2)"
-    by (simp add: aform_val_def add_aform_def add_aform'_def Let_def e1 e2 assms)
-  also obtain en where "\<dots> = aform_val (e(n:=en)) (add_aform' p n X Y)" and en: "en \<in> {-1 .. 1}"
-    using e_le
-    by (rule aform_val_consume_errorE)
-  note this(1)
-  finally
-  show "\<exists>err. aform_val e (add_aform X Y) = aform_val (e(n := err)) (add_aform' p n X Y) \<and>
-      err \<in> {- 1..1}"
-    by (blast intro: en)
+
+subsubsection \<open>general affine operation\<close>
+
+definition "affine_binop (X::real aform) Y a b c d k =
+  (a * fst X + b * fst Y + c,
+    pdev_upd (add_pdevs (scaleR_pdevs a (snd X)) (scaleR_pdevs b (snd Y))) k d)"
+
+lemma pdevs_domain_One_pdevs[simp]: "pdevs_domain (One_pdevs::'a::executable_euclidean_space pdevs) =
+  {0..<DIM('a)}"
+  apply (auto simp: length_Basis_list split: if_splits)
+  subgoal for i
+    using nth_Basis_list_in_Basis[of i, where 'a='a]
+    by (auto simp: length_Basis_list)
+  done
+
+lemma pdevs_val_One_pdevs:
+  "pdevs_val e (One_pdevs::'a::executable_euclidean_space pdevs) = (\<Sum>i<DIM('a). e i *\<^sub>R Basis_list ! i)"
+  by (auto simp: pdevs_val_pdevs_domain length_Basis_list intro!:sum.cong)
+
+lemma affine_binop:
+  assumes "degree_aforms [X, Y] \<le> k"
+  shows "aform_val e (affine_binop X Y a b c d k) =
+    a * aform_val e X + b * aform_val e Y + c + e k * d"
+  using assms
+  by (auto simp: aform_val_def affine_binop_def degrees_def
+      pdevs_val_msum_pdevs degree_add_pdevs_le pdevs_val_One_pdevs Basis_list_real_def
+      algebra_simps)
+
+definition "affine_binop' p (X::real aform) Y a b c d k =
+  (let
+    (* TODO: more round-off operations here? *)
+    (r, e1) = trunc_bound_eucl p (a * fst X + b * fst Y + c);
+    (Z, e2) = trunc_bound_pdevs p (add_pdevs (scaleR_pdevs a (snd X)) (scaleR_pdevs b (snd Y)))
+  in
+    (r, pdev_upd Z k (sum_list' p [e1, e2, d]))
+  )"
+
+lemma sum_list'_noneg_eq_zero_iff: "sum_list' p xs = 0 \<longleftrightarrow> (\<forall>x\<in>set xs. x = 0)" if "\<And>x. x \<in> set xs \<Longrightarrow> x \<ge> 0"
+proof safe
+  fix x assume x: "sum_list' p xs = 0" "x \<in> set xs"
+  from that have "0 \<le> sum_list xs" by (auto intro!: sum_list_nonneg)
+  with that x have "sum_list xs = 0"
+    by (metis antisym sum_list_le_sum_list')
+  then have "(\<Sum>i<length xs.  xs ! i) = 0"
+    by (auto simp: sum_list_sum_nth atLeast0LessThan)
+  then show "x = 0" using x(2) that
+    by (subst (asm) sum_nonneg_eq_0_iff) (auto simp: in_set_conv_nth)
+next
+  show "\<forall>x\<in>set xs. x = 0 \<Longrightarrow> sum_list' p xs = 0"
+    by (induction xs) (auto simp: sum_list'_def)
 qed
 
-
-subsubsection \<open>Scaling\<close>
-
-definition aform_scaleR::"real aform \<Rightarrow> 'a::real_vector \<Rightarrow> 'a aform"
-  where "aform_scaleR x y = (fst x *\<^sub>R y, pdevs_scaleR (snd x) y)"
-
-lemma aform_val_scaleR_aform[simp]:
-  shows "aform_val e (aform_scaleR X y) = aform_val e X *\<^sub>R y"
-  by (auto simp: aform_scaleR_def aform_val_def scaleR_left_distrib)
-
-
-subsubsection \<open>Multiplication\<close>
-
-definition mult_aform::"nat \<Rightarrow> real aform \<Rightarrow> real aform \<Rightarrow> real aform"
-  where "mult_aform n x y = (fst x * fst y,
-    pdev_upd (add_pdevs (scaleR_pdevs (fst y) (snd x)) (scaleR_pdevs (fst x) (snd y)))
-      n (tdev (snd x) * tdev (snd y)))"
-
-lemma mult_aformE:
-  fixes X Y::"real aform"
+lemma affine_binop'E:
+  assumes deg: "degree_aforms [X, Y] \<le> k"
   assumes e: "e \<in> UNIV \<rightarrow> {- 1..1}"
-    and xn: "pdevs_apply (snd X) n = 0" and yn: "pdevs_apply (snd Y) n = 0"
-  obtains err
-  where "aform_val (e(n:=err)) (mult_aform n X Y) = aform_val e X * aform_val e Y" "err \<in> {-1 .. 1}"
-proof atomize_elim
-  have err_le:
-    "\<bar>pdevs_val e (snd X) * pdevs_val e (snd Y)\<bar> \<le> \<bar>pdevs_apply (snd (mult_aform n X Y)) n\<bar>"
-    by (auto simp: abs_mult mult_aform_def assms
-      intro!: mult_mono abs_pdevs_val_le_tdev[OF e] abs_ge_zero order_trans[OF _ abs_ge_self])
-  have "aform_val e X * aform_val e Y = (fst X)*(fst Y) +
-      pdevs_val e (scaleR_pdevs (fst X) (snd Y)) +
-      pdevs_val e (scaleR_pdevs (fst Y) (snd X)) +
-      pdevs_val e (snd X) * pdevs_val e (snd Y)"
-    by (simp add: aform_val_def algebra_simps)
-  also
-  have "\<dots> = aform_val (e(n:=0)) (mult_aform n X Y) + pdevs_val e (snd X) * pdevs_val e (snd Y)"
-    by (simp add: aform_val_def mult_aform_def assms)
-  also obtain err where  "\<dots> = aform_val (e(n:=err)) (mult_aform n X Y)" and err: "err \<in> {-1 .. 1}"
-    using err_le
-    by (rule aform_val_consume_errorE)
-  note this(1)
-  finally have "aform_val e X * aform_val e Y = aform_val (e(n:=err)) (mult_aform n X Y)" .
-  with err show "\<exists>err. aform_val (e(n := err)) (mult_aform n X Y) = aform_val e X * aform_val e Y \<and>
-    err \<in> {- 1..1}"
-    by auto
+  assumes d: "abs u \<le> d"
+  obtains ek where
+    "a * aform_val e X + b * aform_val e Y + c + u = aform_val (e(k:=ek)) (affine_binop' p X Y a b c d k)"
+    "ek \<in> {-1 .. 1}"
+proof -
+  have "a * aform_val e X + b * aform_val e Y + c + u =
+    (a * fst X + b * fst Y + c) + pdevs_val e (add_pdevs (scaleR_pdevs a (snd X)) (scaleR_pdevs b (snd Y))) + u"
+    (is "_ = ?c + pdevs_val _ ?ps + _")
+    by (auto simp: aform_val_def algebra_simps)
+
+  from trunc_bound_euclE[of p ?c] obtain ec where ec: "abs ec \<le> snd (trunc_bound_eucl p ?c)"
+    "fst (trunc_bound_eucl p ?c) - ec = ?c"
+    by (auto simp: algebra_simps)
+
+  moreover
+
+  from trunc_bound_pdevsE[OF e, of p ?ps]
+  obtain eps where eps: "\<bar>eps\<bar> \<le> snd (trunc_bound_pdevs p ?ps)"
+    "pdevs_val e (fst (trunc_bound_pdevs p ?ps)) - eps = pdevs_val e ?ps"
+    by (auto simp: algebra_simps)
+
+  moreover
+  define ek where "ek = (u - ec - eps)/
+        sum_list' p [snd (trunc_bound_eucl p ?c), snd (trunc_bound_pdevs p ?ps), d]"
+  have "degree (fst (trunc_bound_pdevs p ?ps)) \<le>
+      degree_aforms [X, Y]"
+    by (auto simp: trunc_bound_pdevs_def degrees_def intro!: degree_trunc_pdevs_le degree_add_pdevs_le)
+  moreover
+  from this have "pdevs_apply (fst (trunc_bound_pdevs p ?ps)) k = 0"
+    using deg order_trans by blast
+  ultimately have "a * aform_val e X + b * aform_val e Y + c + u =
+    aform_val (e(k:=ek)) (affine_binop' p X Y a b c d k)"
+    apply (auto simp: affine_binop'_def algebra_simps aform_val_def split: prod.splits)
+    subgoal for x y z
+      apply (cases "sum_list' p [x, z, d] = 0")
+      subgoal
+        apply simp
+        apply (subst (asm) sum_list'_noneg_eq_zero_iff)
+        using d deg
+        by auto
+      subgoal
+        apply (simp add: divide_simps algebra_simps ek_def)
+        using \<open>pdevs_apply (fst (trunc_bound_pdevs p (add_pdevs (scaleR_pdevs a (snd X)) (scaleR_pdevs b (snd Y))))) k = 0\<close> by auto
+      done
+    done
+  moreover have "ek \<in> {-1 .. 1}"
+    unfolding ek_def
+    apply (rule divide_atLeastAtMost_1_absI)
+    apply (rule abs_triangle_ineq4[THEN order_trans])
+    apply (rule order_trans)
+     apply (rule add_right_mono)
+     apply (rule abs_triangle_ineq4)
+    using ec(1) eps(1)
+    by (auto simp: sum_list'_def eucl_truncate_up_real_def add.assoc
+        intro!: order_trans[OF _ abs_ge_self] order_trans[OF _ truncate_up_le] add_mono d )
+  ultimately show ?thesis ..
 qed
-
-definition mult_aform'::"nat \<Rightarrow> nat \<Rightarrow> real aform \<Rightarrow> real aform \<Rightarrow> real aform"
-  where "mult_aform' p n x y = (
-    let
-      z0 = trunc_bound_eucl p (fst x * fst y);
-      u = trunc_bound_pdevs p (scaleR_pdevs (fst y) (snd x));
-      v = trunc_bound_pdevs p (scaleR_pdevs (fst x) (snd y));
-      w = trunc_bound_pdevs p (add_pdevs (fst u) (fst v));
-      l = trunc_bound_eucl p (tdev (snd x) * tdev (snd y))
-    in
-      (fst z0, pdev_upd (fst w) n (sum_list' p [fst l, snd l, snd z0, snd u, snd v, snd w])))"
-
-lemma mult_aform'E:
-  fixes X Y::"real aform"
-  assumes e: "e \<in> UNIV \<rightarrow> {- 1..1}"
-    and xn: "pdevs_apply (snd X) n = 0" and yn: "pdevs_apply (snd Y) n = 0"
-  obtains err
-  where
-    "aform_val (e(n:=err)) (mult_aform' p n X Y) = aform_val e X * aform_val e Y"
-    "err \<in> {-1 .. 1}"
-proof atomize_elim
-  let ?z0 = "trunc_bound_eucl p (fst X * fst Y)"
-  from trunc_bound_euclE
-  obtain e1 where abs_e1: "\<bar>e1\<bar> \<le> snd ?z0" and e1: "fst ?z0 = fst X * fst Y + e1"
-    by blast
-  let ?u = "trunc_bound_pdevs p (scaleR_pdevs (fst Y) (snd X))"
-  from trunc_bound_pdevsE[OF e]
-  obtain e2 where abs_e2: "\<bar>e2\<bar> \<le> snd (?u)"
-    and e2: "pdevs_val e (fst ?u) = pdevs_val e (scaleR_pdevs (fst Y) (snd X)) + e2"
-    by blast
-  let ?v = "trunc_bound_pdevs p (scaleR_pdevs (fst X) (snd Y))"
-  from trunc_bound_pdevsE[OF e]
-  obtain e3 where abs_e3: "\<bar>e3\<bar> \<le> snd (?v)"
-    and e3: "pdevs_val e (fst ?v) = pdevs_val e (scaleR_pdevs (fst X) (snd Y)) + e3"
-    by blast
-  let ?w = "trunc_bound_pdevs p (add_pdevs (fst ?u) (fst ?v))"
-  from trunc_bound_pdevsE[OF e]
-  obtain e4 where abs_e4: "\<bar>e4\<bar> \<le> snd (?w)"
-    and e4: "pdevs_val e (fst ?w) = pdevs_val e (add_pdevs (fst ?u) (fst ?v)) + e4"
-    by blast
-  let ?l = "trunc_bound_eucl p (tdev (snd X) * tdev (snd Y))"
-  from trunc_bound_euclE
-  obtain e5 where abs_e5: "\<bar>e5\<bar> \<le> snd ?l" and e5: "fst ?l = tdev (snd X) * tdev (snd Y) + e5"
-    by blast
-
-  let ?err = "pdevs_val e (snd X) * pdevs_val e (snd Y) - e1 - e2 - e3 - e4"
-  have "abs ?err \<le> \<bar>pdevs_val e (snd X) * pdevs_val e (snd Y)\<bar> + abs e1 + abs e2 + abs e3 + abs e4"
-    by simp
-  also have "\<dots> \<le> tdev (snd X) * tdev (snd Y) + snd ?z0 + snd ?u + snd ?v + snd ?w"
-    unfolding abs_mult
-    by (blast intro!: add_mono mult_mono e abs_pdevs_val_le_tdev abs_ge_zero abs_e1 abs_e2 abs_e3
-      abs_e4 abs_e5)
-  also have "tdev (snd X) * tdev (snd Y) \<le> fst ?l + snd ?l"
-    using abs_e5
-    by (auto simp add: e5)
-  also have "fst ?l + snd ?l + snd ?z0 + snd ?u + snd ?v + snd ?w \<le>
-      sum_list' p [fst ?l, snd ?l, snd ?z0, snd ?u, snd ?v, snd ?w]"
-    by (rule order_trans[OF _ sum_list_le_sum_list']) simp
-  also have "\<dots> \<le> \<bar>pdevs_apply (snd (mult_aform' p n X Y)) n\<bar>"
-    by (simp add: mult_aform'_def Let_def assms)
-  finally have err_le: "abs ?err \<le> \<bar>pdevs_apply (snd (mult_aform' p n X Y)) n\<bar>" by arith
-
-  have "aform_val e X * aform_val e Y = (fst X)*(fst Y) +
-      pdevs_val e (scaleR_pdevs (fst X) (snd Y)) +
-      pdevs_val e (scaleR_pdevs (fst Y) (snd X)) +
-      pdevs_val e (snd X) * pdevs_val e (snd Y)"
-    by (simp add: aform_val_def algebra_simps)
-  also have "\<dots> =
-      aform_val (e(n:=0)) (mult_aform' p n X Y) + (pdevs_val e (snd X) * pdevs_val e (snd Y) -
-        e1 - e2 - e3 - e4)"
-    by (simp add: aform_val_def mult_aform'_def Let_def e1 e2 e3 e4 e5 assms)
-  also obtain err
-  where "\<dots> = aform_val (e(n:=err)) (mult_aform' p n X Y)" and err: "err \<in> {-1 .. 1}"
-    using err_le
-    by (rule aform_val_consume_errorE)
-  note this(1)
-  finally have "aform_val (e(n := err)) (mult_aform' p n X Y) = aform_val e X * aform_val e Y"
-    by simp
-  with err show "\<exists>err. aform_val (e(n := err)) (mult_aform' p n X Y) =
-      aform_val e X * aform_val e Y \<and> err \<in> {- 1..1}"
-    by blast
-qed
-
 
 subsubsection \<open>Inf/Sup\<close>
 
@@ -715,26 +557,46 @@ lemma Inf_aform'_le_Sup_aform'[intro]:
   "Inf_aform' p X \<le> Sup_aform' p X"
   by (metis Inf_aform' Inf_aform_le_Sup_aform Sup_aform' order.trans)
 
+definition
+  "ivls_of_aforms prec = map (\<lambda>a. Some (float_of (Inf_aform' prec a), float_of(Sup_aform' prec a)))"
 
-subsubsection \<open>Inverse\<close>
+lemma
+  assumes "\<And>i. e'' i \<le> 1"
+  assumes "\<And>i. -1 \<le> e'' i"
+  shows Inf_aform'_le: "Inf_aform' p r \<le> aform_val e'' r"
+    and Sup_aform'_le: "aform_val e'' r \<le> Sup_aform' p r"
+  by (auto intro!: order_trans[OF Inf_aform'] order_trans[OF _ Sup_aform'] Inf_aform Sup_aform
+    simp: Affine_def valuate_def intro!: image_eqI[where x=e''] assms)
 
-definition inverse_aform'::"nat \<Rightarrow> nat \<Rightarrow> real aform \<Rightarrow> real aform" where
-  "inverse_aform' p n X = (
-    let l = Inf_aform' p X in
-    let u = Sup_aform' p X in
-    let a = min (abs l) (abs u) in
-    let b = max (abs l) (abs u) in
-    let sq = truncate_up p (b * b) in
-    let alpha = - real_divl p 1 sq in
-    let dmax = truncate_up p (real_divr p 1 a - alpha * a) in
-    let dmin = truncate_down p (real_divl p 1 b - alpha * b) in
-    let zeta' = truncate_up p ((dmin + dmax) / 2) in
-    let zeta = if l < 0 then - zeta' else zeta' in
-    let delta = truncate_up p (zeta - dmin) in
-    let res1 = trunc_bound_eucl p (alpha * fst X) in
-    let res2 = trunc_bound_eucl p (fst res1 + zeta) in
-    let zs = trunc_bound_pdevs p (scaleR_pdevs alpha (snd X)) in
-    (fst res2, pdev_upd (fst zs) n (sum_list' p [delta, snd res1, snd res2, snd zs])))"
+
+lemma InfSup_aform'_in_float[intro, simp]:
+  "Inf_aform' p X \<in> float" "Sup_aform' p X \<in> float"
+  by (auto simp: Inf_aform'_def eucl_truncate_down_real_def
+      Sup_aform'_def eucl_truncate_up_real_def)
+
+theorem ivls_of_aforms: "xs \<in> Joints XS \<Longrightarrow> bounded_by xs (ivls_of_aforms prec XS)"
+  by (auto simp: bounded_by_def ivls_of_aforms_def Affine_def valuate_def Pi_iff
+      intro!: Inf_aform'_le Sup_aform'_le
+      dest!: nth_in_AffineI split: option.splits)
+
+definition "isFDERIV_aform prec N xs fas AS = isFDERIV_approx prec N xs fas (ivls_of_aforms prec AS)"
+
+theorem isFDERIV_aform:
+  assumes "isFDERIV_aform prec N xs fas AS"
+  assumes "vs \<in> Joints AS"
+  shows "isFDERIV N xs fas vs"
+  apply (rule isFDERIV_approx)
+  apply (rule ivls_of_aforms)
+  apply (rule assms)
+  apply (rule assms[unfolded isFDERIV_aform_def])
+  done
+
+definition "env_len env l = (\<forall>xs \<in> env. length xs = l)"
+
+lemma env_len_takeI: "env_len xs d1 \<Longrightarrow> d1 \<ge> d \<Longrightarrow> env_len (take d ` xs) d"
+  by (auto simp: env_len_def)
+
+subsection \<open>Min Range approximation\<close>
 
 lemma
   linear_lower:
@@ -752,6 +614,26 @@ proof -
     by (auto simp: Bex_def ac_simps)
   moreover hence "f' y \<le> u" using assms by auto
   ultimately have "f b - f x \<le> (b - x) * u"
+    by (auto intro!: mult_left_mono)
+  thus ?thesis by (simp add: algebra_simps)
+qed
+
+lemma
+  linear_lower2:
+  fixes x::real
+  assumes "\<And>x. x \<in> {a .. b} \<Longrightarrow> (f has_field_derivative f' x) (at x within {a .. b})"
+  assumes "\<And>x. x \<in> {a .. b} \<Longrightarrow> l \<le> f' x"
+  assumes "x \<in> {a .. b}"
+  shows "f x \<ge> f a + l * (x - a)"
+proof -
+  from assms(2-)
+    mvt_very_simple[of a x f "\<lambda>x. op * (f' x)",
+      rule_format,
+      OF _ has_derivative_subset[OF assms(1)[simplified has_field_derivative_def]]]
+  obtain y where "y \<in> {a .. x}"  "f x - f a = (x - a) * f' y"
+    by (auto simp: Bex_def ac_simps)
+  moreover hence "l \<le> f' y" using assms by auto
+  ultimately have "(x - a) * l \<le> f x - f a"
     by (auto intro!: mult_left_mono)
   thus ?thesis by (simp add: algebra_simps)
 qed
@@ -777,6 +659,291 @@ proof -
 qed
 
 lemma
+  linear_upper2:
+  fixes x::real
+  assumes "\<And>x. x \<in> {a .. b} \<Longrightarrow> (f has_field_derivative f' x) (at x within {a .. b})"
+  assumes "\<And>x. x \<in> {a .. b} \<Longrightarrow> l \<le> f' x"
+  assumes "x \<in> {a .. b}"
+  shows "f x \<le> f b + l * (x - b)"
+proof -
+  from assms(2-)
+    mvt_very_simple[of x b f "\<lambda>x. op * (f' x)",
+      rule_format,
+      OF _ has_derivative_subset[OF assms(1)[simplified has_field_derivative_def]]]
+  obtain y where "y \<in> {x .. b}"  "f b - f x = (b - x) * f' y"
+    by (auto simp: Bex_def ac_simps)
+  moreover hence "l \<le> f' y" using assms by auto
+  ultimately have "f b - f x \<ge> (b - x) * l"
+    by (auto intro!: mult_left_mono)
+  thus ?thesis by (simp add: algebra_simps)
+qed
+
+lemma linear_enclosure:
+  fixes x::real
+  assumes "\<And>x. x \<in> {a .. b} \<Longrightarrow> (f has_field_derivative f' x) (at x within {a .. b})"
+  assumes "\<And>x. x \<in> {a .. b} \<Longrightarrow> f' x \<le> u"
+  assumes "x \<in> {a .. b}"
+  shows "f x \<in> {f b + u * (x - b) .. f a + u * (x - a)}"
+  using linear_lower[OF assms] linear_upper[OF assms]
+  by auto
+
+definition "mid_err ivl = ((fst ivl + snd ivl::float)/2, (snd ivl - fst ivl)/2)"
+
+lemma degree_aform_uminus_aform[simp]: "degree_aform (uminus_aform X) = degree_aform X"
+  by (auto simp: uminus_aform_def)
+
+
+subsubsection \<open>Addition\<close>
+
+definition add_aform::"'a::real_vector aform \<Rightarrow> 'a aform \<Rightarrow> 'a aform"
+  where "add_aform x y = (fst x + fst y, add_pdevs (snd x) (snd y))"
+
+lemma aform_val_add_aform:
+  shows "aform_val e (add_aform X Y) = aform_val e X + aform_val e Y"
+  by (auto simp: add_aform_def aform_val_def)
+
+type_synonym aform_err = "real aform \<times> real"
+
+definition add_aform'::"nat \<Rightarrow> aform_err \<Rightarrow> aform_err \<Rightarrow> aform_err"
+  where "add_aform' p x y =
+    (let
+      z0 = trunc_bound_eucl p (fst (fst x) + fst (fst y));
+      z = trunc_bound_pdevs p (add_pdevs (snd (fst x)) (snd (fst y)))
+      in ((fst z0, fst z), (sum_list' p [snd z0, snd z, abs (snd x), abs (snd y)])))"
+
+abbreviation degree_aform_err::"aform_err \<Rightarrow> nat"
+  where "degree_aform_err X \<equiv> degree_aform (fst X)"
+
+lemma degree_aform_err_add_aform':
+  assumes "degree_aform_err x \<le> n"
+  assumes "degree_aform_err y \<le> n"
+  shows "degree_aform_err (add_aform' p x y) \<le> n"
+  using assms
+  by (auto simp: add_aform'_def Let_def trunc_bound_pdevs_def
+      intro!: degree_pdev_upd_le degree_trunc_pdevs_le degree_add_pdevs_le)
+
+definition "aform_err e Xe = {aform_val e (fst Xe) - snd Xe .. aform_val e (fst Xe) + snd Xe::real}"
+
+lemma aform_errI: "x \<in> aform_err e Xe"
+  if "abs (x - aform_val e (fst Xe)) \<le> snd Xe"
+  using that by (auto simp: aform_err_def abs_real_def algebra_simps split: if_splits)
+
+lemma add_aform':
+  assumes e: "e \<in> UNIV \<rightarrow> {- 1..1}"
+  assumes x: "x \<in> aform_err e X"
+  assumes y: "y \<in> aform_err e Y"
+  shows "x + y \<in> aform_err e (add_aform' p X Y)"
+proof -
+  let ?t1 = "trunc_bound_eucl p (fst (fst X) + fst (fst Y))"
+  from trunc_bound_euclE
+  obtain e1 where abs_e1: "\<bar>e1\<bar> \<le> snd ?t1" and e1: "fst ?t1 = fst (fst X) + fst (fst Y) + e1"
+    by blast
+  let ?t2 = "trunc_bound_pdevs p (add_pdevs (snd (fst X)) (snd (fst Y)))"
+  from trunc_bound_pdevsE[OF e, of p "add_pdevs (snd (fst X)) (snd (fst Y))"]
+  obtain e2 where abs_e2: "\<bar>e2\<bar> \<le> snd (?t2)"
+    and e2: "pdevs_val e (fst ?t2) = pdevs_val e (add_pdevs (snd (fst X)) (snd (fst Y))) + e2"
+    by blast
+
+  have e_le: "\<bar>e1 + e2 + snd X + snd Y\<bar> \<le> snd (add_aform' p (X) Y)"
+    apply (auto simp: add_aform'_def Let_def )
+    apply (rule sum_list'_sum_list_le)
+    apply (simp add: add.assoc)
+    by (intro order.trans[OF abs_triangle_ineq] add_mono abs_e1 abs_e2 order_refl)
+  then show ?thesis
+    apply (intro aform_errI)
+    using x y abs_e1 abs_e2
+    apply (simp add: aform_val_def aform_err_def add_aform_def add_aform'_def Let_def e1 e2 assms)
+    by (auto intro!: order_trans[OF _ sum_list_le_sum_list'] )
+qed
+
+
+subsubsection \<open>Scaling\<close>
+
+definition aform_scaleR::"real aform \<Rightarrow> 'a::real_vector \<Rightarrow> 'a aform"
+  where "aform_scaleR x y = (fst x *\<^sub>R y, pdevs_scaleR (snd x) y)"
+
+lemma aform_val_scaleR_aform[simp]:
+  shows "aform_val e (aform_scaleR X y) = aform_val e X *\<^sub>R y"
+  by (auto simp: aform_scaleR_def aform_val_def scaleR_left_distrib)
+
+
+subsubsection \<open>Multiplication\<close>
+
+lemma aform_val_mult_exact:
+  "aform_val e x * aform_val e y =
+    fst x * fst y +
+    pdevs_val e (add_pdevs (scaleR_pdevs (fst y) (snd x)) (scaleR_pdevs (fst x) (snd y))) +
+    (\<Sum>i<d. e i *\<^sub>R pdevs_apply (snd x) i)*(\<Sum>i<d. e i *\<^sub>R pdevs_apply (snd y) i)"
+   if "degree (snd x) \<le> d" "degree (snd y) \<le> d"
+   using that
+  by (auto simp: pdevs_val_sum_less_degree[where d=d] aform_val_def algebra_simps)
+
+lemma sum_times_bound:\<comment>\<open>TODO: this gives better bounds for the remainder of multiplication\<close>
+  "(\<Sum>i<d. e i * f i::real) * (\<Sum>i<d. e i * g i) =
+   (\<Sum>i<d. (e i)\<^sup>2 * (f i * g i)) +
+   (\<Sum>(i, j) | i < j \<and> j < d. (e i * e j) * (f j * g i + f i * g j))" for d::nat
+proof -
+  have "(\<Sum>i<d. e i * f i)*(\<Sum>i<d. e i * g i) = (\<Sum>(i, j)\<in>{..<d} \<times> {..<d}. e i * f i * (e j * g j))"
+    unfolding sum_product sum.cartesian_product ..
+  also have "\<dots> = (\<Sum>(i, j)\<in>{..<d} \<times> {..<d} \<inter> {(i, j). i = j}. e i * f i * (e j * g j)) +
+    ((\<Sum>(i, j)\<in>{..<d} \<times> {..<d} \<inter> {(i, j). i < j}. e i * f i * (e j * g j)) +
+    (\<Sum>(i, j)\<in>{..<d} \<times> {..<d} \<inter> {(i, j). j < i}. e i * f i * (e j * g j)))"
+    (is "_ = ?a + (?b + ?c)")
+    by (subst sum.union_disjoint[symmetric], force, force, force)+ (auto intro!: sum.cong)
+  also have "?c = (\<Sum>(i, j)\<in>{..<d} \<times> {..<d} \<inter> {(i, j). i < j}. e i * f j * (e j * g i))"
+    by (rule sum.reindex_cong[of "\<lambda>(x, y). (y, x)"]) (auto intro!: inj_onI)
+  also have "?b + \<dots> = (\<Sum>(i, j)\<in>{..<d} \<times> {..<d} \<inter> {(i, j). i < j}. (e i * e j) * (f j * g i + f i * g j))"
+    by (auto simp: algebra_simps sum.distrib split_beta')
+  also have "\<dots> = (\<Sum>(i, j) | i < j \<and> j < d. (e i * e j) * (f j * g i + f i * g j))"
+    by (rule sum.cong) auto
+  also have "?a = (\<Sum>i<d. (e i)\<^sup>2 * (f i * g i))"
+    by (rule sum.reindex_cong[of "\<lambda>i. (i, i)"]) (auto simp: power2_eq_square intro!: inj_onI)
+  finally show ?thesis by simp
+qed
+
+definition mult_aform::"aform_err \<Rightarrow> aform_err \<Rightarrow> aform_err"
+  where "mult_aform x y = ((fst (fst x) * fst (fst y),
+    (add_pdevs (scaleR_pdevs (fst (fst y)) (snd (fst x))) (scaleR_pdevs (fst (fst x)) (snd (fst y))))),
+     (tdev (snd (fst x)) * tdev (snd (fst y)) +
+      abs (snd x) * (abs (fst (fst y)) + Radius (fst y)) +
+      abs (snd y) * (abs (fst (fst x)) + Radius (fst x)) + abs (snd x) * abs (snd y)
+     ))"
+
+lemma mult_aformE:
+  fixes X Y::"aform_err"
+  assumes e: "e \<in> UNIV \<rightarrow> {- 1..1}"
+  assumes x: "x \<in> aform_err e X"
+  assumes y: "y \<in> aform_err e Y"
+  shows "x * y \<in> aform_err e (mult_aform X Y)"
+proof -
+  define ex where "ex \<equiv> x - aform_val e (fst X)"
+  define ey where "ey \<equiv> y - aform_val e (fst Y)"
+
+  have [intro, simp]: "\<bar>ex\<bar> \<le> \<bar>snd X\<bar>" "\<bar>ey\<bar> \<le> \<bar>snd Y\<bar>"
+    using x y
+    by (auto simp: ex_def ey_def aform_err_def)
+  have "x * y =
+    fst (fst X) * fst (fst Y) +
+    fst (fst Y) * pdevs_val e (snd (fst X)) +
+    fst (fst X) * pdevs_val e (snd (fst Y)) +
+
+    (pdevs_val e (snd (fst X)) * pdevs_val e (snd (fst Y)) +
+    ex * (fst (fst Y) + pdevs_val e (snd (fst Y))) +
+    ey * (fst (fst X) + pdevs_val e (snd (fst X))) +
+    ex * ey)"
+    (is "_ = ?c + ?d + ?e + ?err")
+    by (auto simp: ex_def ey_def algebra_simps aform_val_def)
+
+  have abs_err: "abs ?err \<le> snd (mult_aform X Y)"
+    by (auto simp: mult_aform_def abs_mult
+        intro!: abs_triangle_ineq[THEN order_trans] add_mono mult_mono
+          abs_pdevs_val_le_tdev e)
+  show ?thesis
+    apply (auto simp: intro!: aform_errI order_trans[OF _ abs_err])
+    apply (subst mult_aform_def)
+    apply (auto simp: aform_val_def ex_def ey_def algebra_simps)
+    done
+qed
+
+definition mult_aform'::"nat \<Rightarrow> aform_err \<Rightarrow> aform_err \<Rightarrow> aform_err"
+  where "mult_aform' p x y = (
+    let
+      (fx, sx) = x;
+      (fy, sy) = y;
+      ex = abs sx;
+      ey = abs sy;
+      z0 = trunc_bound_eucl p (fst fx * fst fy);
+      u = trunc_bound_pdevs p (scaleR_pdevs (fst fy) (snd fx));
+      v = trunc_bound_pdevs p (scaleR_pdevs (fst fx) (snd fy));
+      w = trunc_bound_pdevs p (add_pdevs (fst u) (fst v));
+      tx = tdev' p (snd fx);
+      ty = tdev' p (snd fy);
+      l = truncate_up p (tx * ty);
+      ee = truncate_up p (ex * ey);
+      e1 = truncate_up p (ex * truncate_up p (abs (fst fy) + ty));
+      e2 = truncate_up p (ey * truncate_up p (abs (fst fx) + tx))
+    in
+      ((fst z0, (fst w)), (sum_list' p [ee, e1, e2, l, snd z0, snd u, snd v, snd w])))"
+
+lemma aform_errE:
+  "abs (x - aform_val e (fst X)) \<le> snd X"
+  if "x \<in> aform_err e X"
+  using that by (auto simp: aform_err_def)
+
+lemma mult_aform'E:
+  fixes X Y::"aform_err"
+  assumes e: "e \<in> UNIV \<rightarrow> {- 1..1}"
+  assumes x: "x \<in> aform_err e X"
+  assumes y: "y \<in> aform_err e Y"
+  shows "x * y \<in> aform_err e (mult_aform' p X Y)"
+proof -
+  let ?z0 = "trunc_bound_eucl p (fst (fst X) * fst (fst Y))"
+  from trunc_bound_euclE
+  obtain e1 where abs_e1: "\<bar>e1\<bar> \<le> snd ?z0" and e1: "fst ?z0 = fst (fst X) * fst (fst Y) + e1"
+    by blast
+  let ?u = "trunc_bound_pdevs p (scaleR_pdevs (fst (fst Y)) (snd (fst X)))"
+  from trunc_bound_pdevsE[OF e]
+  obtain e2 where abs_e2: "\<bar>e2\<bar> \<le> snd (?u)"
+    and e2: "pdevs_val e (fst ?u) = pdevs_val e (scaleR_pdevs (fst (fst Y)) (snd (fst X))) + e2"
+    by blast
+  let ?v = "trunc_bound_pdevs p (scaleR_pdevs (fst (fst X)) (snd (fst Y)))"
+  from trunc_bound_pdevsE[OF e]
+  obtain e3 where abs_e3: "\<bar>e3\<bar> \<le> snd (?v)"
+    and e3: "pdevs_val e (fst ?v) = pdevs_val e (scaleR_pdevs (fst (fst X)) (snd (fst Y))) + e3"
+    by blast
+  let ?w = "trunc_bound_pdevs p (add_pdevs (fst ?u) (fst ?v))"
+  from trunc_bound_pdevsE[OF e]
+  obtain e4 where abs_e4: "\<bar>e4\<bar> \<le> snd (?w)"
+    and e4: "pdevs_val e (fst ?w) = pdevs_val e (add_pdevs (fst ?u) (fst ?v)) + e4"
+    by blast
+  let ?tx = "tdev' p (snd (fst X))" and ?ty = "tdev' p (snd (fst Y))"
+  let ?l = "truncate_up p (?tx * ?ty)"
+  let ?ee = "truncate_up p (abs (snd X) * abs (snd Y))"
+  let ?e1 = "truncate_up p (abs (snd X) * truncate_up p (\<bar>fst (fst Y)\<bar> + ?ty))"
+  let ?e2 = "truncate_up p (abs (snd Y) * truncate_up p (\<bar>fst (fst X)\<bar> + ?tx))"
+
+  let ?e0 = "x * y - fst (fst X) * fst (fst Y) -
+      fst (fst X) * pdevs_val e (snd (fst Y)) -
+      fst (fst Y) * pdevs_val e (snd (fst X))"
+  let ?err = "?e0 - (e1 + e2  + e3 + e4)"
+  have "abs ?err \<le> abs ?e0 + abs e1 + abs e2 + abs e3 + abs e4"
+    by arith
+  also have "\<dots> \<le> abs ?e0 + snd ?z0 + snd ?u + snd ?v + snd ?w"
+    unfolding abs_mult
+    by (auto intro!: add_mono mult_mono e abs_pdevs_val_le_tdev' abs_ge_zero abs_e1 abs_e2 abs_e3
+      abs_e4 intro: tdev'_le)
+  also
+  have asdf: "snd (mult_aform X Y) \<le> tdev' p (snd (fst X)) * tdev' p (snd (fst Y)) + ?e1 + ?e2 + ?ee"
+    by (auto simp: mult_aform_def intro!: add_mono mult_mono order_trans[OF _ tdev'] truncate_up_le)
+  have "abs ?e0 \<le> ?ee + ?e1 + ?e2 + tdev' p (snd (fst X)) * tdev' p (snd (fst Y))"
+    using mult_aformE[OF e x y, THEN aform_errE, THEN order_trans, OF asdf]
+    by (simp add: aform_val_def mult_aform_def) arith
+  also have "tdev' p (snd (fst X)) * tdev' p (snd (fst Y)) \<le> ?l"
+    by (auto intro!: truncate_up_le)
+  also have "?ee + ?e1 + ?e2 + ?l + snd ?z0 + snd ?u + snd ?v + snd ?w \<le>
+      sum_list' p [?ee, ?e1, ?e2, ?l, snd ?z0, snd ?u, snd ?v, snd ?w]"
+    by (rule order_trans[OF _ sum_list_le_sum_list']) simp
+  also have "\<dots> \<le> (snd (mult_aform' p X Y))"
+    by (auto simp: mult_aform'_def Let_def assms split: prod.splits)
+  finally have err_le: "abs ?err \<le> (snd (mult_aform' p X Y))" by arith
+
+  show ?thesis
+    apply (rule aform_errI[OF order_trans[OF _ err_le]])
+    apply (subst mult_aform'_def)
+    using e1 e2 e3 e4
+    apply (auto simp: aform_val_def Let_def assms split: prod.splits)
+    done
+qed
+
+lemma degree_aform_mult_aform':
+  assumes "degree_aform_err x \<le> n"
+  assumes "degree_aform_err y \<le> n"
+  shows "degree_aform_err (mult_aform' p x y) \<le> n"
+  using assms
+  by (auto simp: mult_aform'_def Let_def trunc_bound_pdevs_def split: prod.splits
+      intro!: degree_pdev_upd_le degree_trunc_pdevs_le degree_add_pdevs_le)
+
+lemma
   fixes x a b::real
   assumes "a > 0"
   assumes "x \<in> {a ..b}"
@@ -798,15 +965,34 @@ proof -
         (auto simp: mult_mono intro!:  order_trans[OF _ assms(3)])
 qed
 
+
+subsubsection \<open>Inverse\<close>
+
+definition inverse_aform'::"nat \<Rightarrow> real aform \<Rightarrow> real aform \<times> real" where
+  "inverse_aform' p X = (
+    let l = Inf_aform' p X in
+    let u = Sup_aform' p X in
+    let a = min (abs l) (abs u) in
+    let b = max (abs l) (abs u) in
+    let sq = truncate_up p (b * b) in
+    let alpha = - real_divl p 1 sq in
+    let dmax = truncate_up p (real_divr p 1 a - alpha * a) in
+    let dmin = truncate_down p (real_divl p 1 b - alpha * b) in
+    let zeta' = truncate_up p ((dmin + dmax) / 2) in
+    let zeta = if l < 0 then - zeta' else zeta' in
+    let delta = truncate_up p (zeta - dmin) in
+    let res1 = trunc_bound_eucl p (alpha * fst X) in
+    let res2 = trunc_bound_eucl p (fst res1 + zeta) in
+    let zs = trunc_bound_pdevs p (scaleR_pdevs alpha (snd X)) in
+    ((fst res2, fst zs), (sum_list' p [delta, snd res1, snd res2, snd zs])))"
+
 lemma inverse_aform'E:
   fixes X::"real aform"
-  assumes Inf_pos: "Inf_aform' p X > 0"
   assumes e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
-    and xn: "pdevs_apply (snd X) n = 0"
-  obtains err where
-    "aform_val (e(n:=err)) (inverse_aform' p n X) = inverse (aform_val e X)"
-    "err \<in> {-1 .. 1}"
-proof atomize_elim
+  assumes Inf_pos: "Inf_aform' p X > 0"
+  assumes "x = aform_val e X"
+  shows "inverse x \<in> aform_err e (inverse_aform' p X)"
+proof -
   define l where "l = Inf_aform' p X"
   define u where "u = Sup_aform' p X"
   define a where "a = min (abs l) (abs u)"
@@ -922,7 +1108,7 @@ proof atomize_elim
     by blast
 
   have "alpha * (aform_val e X) + zeta =
-      aform_val (e(n:=0)) (inverse_aform' p n X) + (- e1 - e1' - e2)"
+      aform_val e (fst (inverse_aform' p X)) + (- e1 - e1' - e2)"
     unfolding inverse_aform'_def Let_def vars[symmetric]
     using \<open>0 < l\<close>
     by (simp add: aform_val_def assms e1') (simp add: e1 e2 algebra_simps)
@@ -933,35 +1119,31 @@ proof atomize_elim
       by simp
     also have "\<dots> \<le> delta + snd ?z0 + snd ?z1 + snd ?zs"
       by (blast intro: add_mono linerr_le abs_e1 abs_e1' abs_e2)
-    also have "\<dots> \<le> pdevs_apply (snd (inverse_aform' p n X)) n"
+    also have "\<dots> \<le> (snd (inverse_aform' p X))"
       unfolding inverse_aform'_def Let_def vars[symmetric]
       using \<open>0 < l\<close>
       by (auto simp add: inverse_aform'_def pdevs_apply_trunc_pdevs assms vars[symmetric]
         intro!: order.trans[OF _ sum_list'_sum_list_le])
-    finally have "abs ?err \<le> abs (pdevs_apply (snd (inverse_aform' p n X)) n)" by simp
+    finally have "abs ?err \<le> snd (inverse_aform' p X)" by simp
   } note err_le = this
-  have "aform_val (e(n := 0)) (inverse_aform' p n X) + (- e1 - e1' - e2) +
+  have "aform_val (e) (fst (inverse_aform' p X)) + (- e1 - e1' - e2) +
     (inverse (aform_val e X) - alpha * aform_val e X - zeta) =
-    aform_val (e(n := 0)) (inverse_aform' p n X) + ?err"
+    aform_val e (fst (inverse_aform' p X)) + ?err"
     by simp
-  also obtain err where "\<dots> = aform_val (e(n:=err)) (inverse_aform' p n X)"
-    and err: "err \<in> {-1 .. 1}"
+  finally
+  show ?thesis
+    apply (intro aform_errI)
     using err_le
-    by (rule aform_val_consume_errorE)
-  note this(1)
-  finally show "\<exists>err. aform_val (e(n := err)) (inverse_aform' p n X) = inverse (aform_val e X) \<and>
-    err \<in> {- 1..1}"
-    using err
-    by auto
+    by (auto simp: assms)
 qed
 
-definition "inverse_aform p d a =
+definition "inverse_aform p a =
   do {
     let l = Inf_aform' p a;
     let u = Sup_aform' p a;
     if (l \<le> 0 \<and> 0 \<le> u) then None
-    else if (l \<le> 0) then (Some (uminus_aform (inverse_aform' p d (uminus_aform a))))
-    else Some (inverse_aform' p d a)
+    else if (l \<le> 0) then (Some (apfst uminus_aform (inverse_aform' p (uminus_aform a))))
+    else Some (inverse_aform' p a)
   }"
 
 lemma eucl_truncate_up_eq_eucl_truncate_down:
@@ -971,12 +1153,10 @@ lemma eucl_truncate_up_eq_eucl_truncate_down:
 lemma inverse_aformE:
   fixes X::"real aform"
   assumes e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
-    and xn: "pdevs_apply (snd X) n = 0"
     and disj: "Inf_aform' p X > 0 \<or> Sup_aform' p X < 0"
-  obtains err Y where
-    "inverse_aform p n X = Some Y"
-    "aform_val (e(n:=err)) Y = inverse (aform_val e X)"
-    "err \<in> {-1 .. 1}"
+  obtains Y where
+    "inverse_aform p X = Some Y"
+    "inverse (aform_val e X) \<in> aform_err e Y"
 proof -
   {
     assume neg: "Sup_aform' p X < 0"
@@ -984,32 +1164,193 @@ proof -
       by (metis Inf_aform'_le_Sup_aform' dual_order.strict_trans1 less_asym not_less)
     from neg disj have "0 < Inf_aform' p (uminus_aform X)"
       by (auto simp: Inf_aform'_def Sup_aform'_def eucl_truncate_up_eq_eucl_truncate_down ac_simps)
-    from inverse_aform'E[OF this e(1)] xn
-    obtain err where err:
-      "aform_val (e(n := err)) (inverse_aform' p n (uminus_aform X)) =
-        inverse (aform_val e (uminus_aform X))"
-       "err \<in>{-1..1}"
-      by (auto simp: uminus_aform_def)
-    let ?Y = "uminus_aform (inverse_aform' p n (uminus_aform X))"
-    have "inverse_aform p n X = Some ?Y"
-      "aform_val (e(n:=err)) ?Y = inverse (aform_val e X)"
-      using err neg by (auto simp: inverse_aform_def)
-    from this \<open>err \<in> _\<close> have ?thesis ..
+    from inverse_aform'E[OF e(1) this]
+    have iin: "inverse (aform_val e (uminus_aform X)) \<in> aform_err e (inverse_aform' p (uminus_aform X))"
+      by simp
+    let ?Y = "apfst uminus_aform (inverse_aform' p (uminus_aform X))"
+    have "inverse_aform p X = Some ?Y"
+      "inverse (aform_val e X) \<in> aform_err e ?Y"
+      using neg iin by (auto simp: inverse_aform_def aform_err_def)
+    then have ?thesis ..
   } moreover {
     assume pos: "Inf_aform' p X > 0"
-    from pos have eq: "inverse_aform p n X = Some (inverse_aform' p n X)"
+    from pos have eq: "inverse_aform p X = Some (inverse_aform' p X)"
       by (auto simp: inverse_aform_def)
-    from inverse_aform'E[OF pos e(1) xn]
-    obtain err where err:
-      "aform_val (e(n := err)) (inverse_aform' p n X) = inverse (aform_val e X)"
-       "err \<in> {-1..1}"
-       by auto
-    have "aform_val (e(n:=err)) (inverse_aform' p n X) = inverse (aform_val e X)"
-      using err by (auto simp: inverse_aform_def)
-    from eq this \<open>err \<in> _\<close> have ?thesis ..
+    moreover
+    from inverse_aform'E[OF e(1) pos refl]
+    have "inverse (aform_val e X) \<in> aform_err e (inverse_aform' p X)" .
+    ultimately have ?thesis ..
   } ultimately show ?thesis
     using assms by auto
 qed
+
+definition aform_err_to_aform::"aform_err \<Rightarrow> nat \<Rightarrow> real aform"
+  where "aform_err_to_aform X n = (fst (fst X),  pdev_upd (snd (fst X)) n (snd X))"
+
+lemma aform_err_to_aformE:
+  assumes "x \<in> aform_err e X"
+  assumes deg: "degree_aform_err X \<le> n"
+  obtains err where "x = aform_val (e(n:=err)) (aform_err_to_aform X n)"
+    "-1 \<le> err" "err \<le> 1"
+proof -
+  from aform_errE[OF assms(1)] have "\<bar>x - aform_val e (fst X)\<bar> \<le> snd X" by auto
+  from error_absE[OF this] obtain err where err:
+    "x - aform_val e (fst X) = err * snd X" "err \<in> {- 1..1}"
+    by auto
+  have "x = aform_val (e(n:=err)) (aform_err_to_aform X n)"
+    "-1 \<le> err" "err \<le> 1"
+    using err deg
+    by (auto simp: aform_val_def aform_err_to_aform_def)
+  then show ?thesis ..
+qed
+
+definition aform_to_aform_err::"real aform \<Rightarrow> nat \<Rightarrow> aform_err"
+  where "aform_to_aform_err X n = ((fst X,  pdev_upd (snd X) n 0), abs (pdevs_apply (snd X) n))"
+
+lemma aform_to_aform_err: "aform_val e X \<in> aform_err e (aform_to_aform_err X n)"
+  if "e \<in> UNIV \<rightarrow> {-1 .. 1}"
+proof -
+  from that have abs_e[simp]: "\<And>i. \<bar>e i\<bar> \<le> 1" by (auto simp: abs_real_def)
+  have "- e n * pdevs_apply (snd X) n \<le> \<bar>pdevs_apply (snd X) n\<bar>"
+  proof -
+    have "- e n * pdevs_apply (snd X) n \<le> \<bar>- e n * pdevs_apply (snd X) n\<bar>"
+      by auto
+    also have "\<dots> \<le> abs (pdevs_apply (snd X) n)"
+      using that
+      by (auto simp: abs_mult intro!: mult_left_le_one_le)
+    finally show ?thesis .
+  qed
+  moreover have "e n * pdevs_apply (snd X) n \<le> \<bar>pdevs_apply (snd X) n\<bar>"
+  proof -
+    have "e n * pdevs_apply (snd X) n \<le> \<bar>e n * pdevs_apply (snd X) n\<bar>"
+      by auto
+    also have "\<dots> \<le> abs (pdevs_apply (snd X) n)"
+      using that
+      by (auto simp: abs_mult intro!: mult_left_le_one_le)
+    finally show ?thesis .
+  qed
+  ultimately
+  show ?thesis
+    by (auto simp: aform_to_aform_err_def aform_err_def aform_val_def)
+qed
+
+definition "acc_err p x e \<equiv> (fst x, truncate_up p (snd x + e))"
+
+definition "ivl_err l u \<equiv> (((u + l)/2, zero_pdevs::real pdevs), (u - l) / 2)"
+
+lemma inverse_aform:
+  fixes X::"real aform"
+  assumes e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
+  assumes "inverse_aform p X = Some Y"
+  shows "inverse (aform_val e X) \<in> aform_err e Y"
+proof -
+  from assms have "Inf_aform' p X > 0 \<or> 0 > Sup_aform' p X"
+    by (auto simp: inverse_aform_def Let_def bind_eq_Some_conv split: if_splits)
+  from inverse_aformE[OF e this] obtain Y where
+    "inverse_aform p X = Some Y" "inverse (aform_val e X) \<in> aform_err e Y"
+    by auto
+  with assms show ?thesis by auto
+qed
+
+lemma aform_err_acc_err_leI:
+  "fx \<in> aform_err e (acc_err p X err)"
+  if "aform_val e (fst X) - (snd X + err) \<le> fx" "fx \<le> aform_val e (fst X) + (snd X + err)"
+  using truncate_up[of "(snd X + err)" p] truncate_down[of p "(snd X + err)"] that
+  by (auto simp: aform_err_def acc_err_def)
+
+lemma aform_err_acc_errI:
+  "fx \<in> aform_err e (acc_err p X err)"
+  if "fx \<in> aform_err e (fst X, snd X + err)"
+  using truncate_up[of "(snd X + err)" p] truncate_down[of p "(snd X + err)"] that
+  by (auto simp: aform_err_def acc_err_def)
+
+lemma minus_times_le_abs: "- (err * B) \<le> \<bar>B\<bar>" if "-1 \<le> err" "err \<le> 1" for err::real
+proof -
+  have [simp]: "abs err \<le> 1" using that by (auto simp: )
+  have "- (err * B) \<le> abs (- err * B)" by auto
+  also have "\<dots> \<le> abs B"
+    by (auto simp: abs_mult intro!: mult_left_le_one_le)
+  finally show ?thesis by simp
+qed
+
+lemma times_le_abs: "err * B \<le> \<bar>B\<bar>" if "-1 \<le> err" "err \<le> 1" for err::real
+proof -
+  have [simp]: "abs err \<le> 1" using that by (auto simp: )
+  have "err * B \<le> abs (err * B)" by auto
+  also have "\<dots> \<le> abs B"
+    by (auto simp: abs_mult intro!: mult_left_le_one_le)
+  finally show ?thesis by simp
+qed
+
+lemma aform_err_lemma1: "- 1 \<le> err \<Longrightarrow> err \<le> 1 \<Longrightarrow>
+  X1 + (A - e d * B + err * B) - e1 \<le> x \<Longrightarrow>
+  X1 + (A - e d * B) - truncate_up p (\<bar>B\<bar> + e1) \<le> x"
+  apply (rule order_trans)
+   apply (rule diff_mono)
+    apply (rule order_refl)
+   apply (rule truncate_up_le[where x="e1 - err * B"])
+  by (auto simp: minus_times_le_abs)
+  
+lemma aform_err_lemma2: "- 1 \<le> err \<Longrightarrow> err \<le> 1 \<Longrightarrow>
+    x \<le> X1 + (A - e d * B + err * B) + e1 \<Longrightarrow>
+    x \<le> X1 + (A - e d * B) + truncate_up p (\<bar>B\<bar> + e1)"
+  apply (rule order_trans[rotated])
+   apply (rule add_mono)
+    apply (rule order_refl)
+   apply (rule truncate_up_le[where x="e1 + err * B"])
+  by (auto simp: times_le_abs)
+
+lemma aform_err_acc_err_aform_to_aform_errI:
+  "x \<in> aform_err e (acc_err p (aform_to_aform_err X1 d) e1)"
+  if "-1 \<le> err" "err \<le> 1" "x \<in> aform_err (e(d := err)) (X1, e1)"
+  using that
+  by (auto simp: acc_err_def aform_err_def aform_val_def aform_to_aform_err_def
+      aform_err_to_aform_def aform_err_lemma1 aform_err_lemma2)
+
+definition "map_aform_err I p X =
+  (do {
+    let X0 = aform_err_to_aform X (degree_aform_err X);
+    (X1, e1) \<leftarrow> I X0;
+    Some (acc_err p (aform_to_aform_err X1 (degree_aform_err X)) e1)
+  })"
+
+lemma map_aform_err:
+  "i x \<in> aform_err e Y"
+  if I: "\<And>e X Y. e \<in> UNIV \<rightarrow> {-1 .. 1} \<Longrightarrow> I X = Some Y \<Longrightarrow> i (aform_val e X) \<in> aform_err e Y"
+  and e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
+  and Y: "map_aform_err I p X = Some Y"
+  and x: "x \<in> aform_err e X"
+proof -
+  obtain X1 e1 where
+    X1: "(I (aform_err_to_aform X (degree_aform_err X))) = Some (X1, e1)"
+    and Y: "Y = acc_err p (aform_to_aform_err X1 (degree_aform (fst X))) e1"
+    using Y by (auto simp: map_aform_err_def bind_eq_Some_conv Let_def)
+  from aform_err_to_aformE[OF x] obtain err where
+    err: "x = aform_val (e(degree_aform_err X := err)) (aform_err_to_aform X  (degree_aform_err X)) "
+    (is "_ = aform_val ?e _")
+    and "- 1 \<le> err" "err \<le> 1"
+    by auto
+  then have e': "?e \<in> UNIV \<rightarrow> {-1 .. 1}" using e by auto
+  from err have "i x =
+      i (aform_val (e(degree_aform_err X := err)) (aform_err_to_aform X  (degree_aform_err X)))"
+    by simp
+  also note I[OF e' X1]
+  also have "aform_err (e(degree_aform_err X := err)) (X1, e1) \<subseteq> aform_err e Y"
+    apply rule
+    unfolding Y using \<open>-1 \<le> err\<close> \<open>err \<le> 1\<close>
+    by (rule aform_err_acc_err_aform_to_aform_errI)
+  finally show ?thesis .
+qed
+
+definition "inverse_aform_err p X = map_aform_err (inverse_aform p) p X"
+
+lemma inverse_aform_err:
+  "inverse x \<in> aform_err e Y"
+  if  e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
+  and Y: "inverse_aform_err p X = Some Y"
+  and x: "x \<in> aform_err e X"
+  using map_aform_err[OF inverse_aform[where p=p] e Y[unfolded inverse_aform_err_def] x]
+  by auto
 
 subsection \<open>Reduction (Summarization of Coefficients)\<close>
 text \<open>\label{sec:affinesummarize}\<close>
@@ -1022,31 +1363,14 @@ lemma pdevs_of_centered_ivl_eq_pdevs_of_ivl[simp]: "pdevs_of_centered_ivl r = pd
 lemma filter_pdevs_raw_nonzeros: "{i. filter_pdevs_raw s f i \<noteq> 0} = {i. f i \<noteq> 0} \<inter> {x. s x (f x)}"
   by (auto simp: filter_pdevs_raw_def)
 
-lift_definition filter_pdevs::"(nat \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a::real_vector pdevs \<Rightarrow> 'a pdevs" is filter_pdevs_raw
-  by (simp add: filter_pdevs_raw_nonzeros)
-
-lemma pdevs_apply_filter_pdevs[simp]:
-  "pdevs_apply (filter_pdevs I x) i = (if I i (pdevs_apply x i) then pdevs_apply x i else 0)"
-  by transfer (auto simp: filter_pdevs_raw_def)
-
-lemma degree_filter_pdevs_le: "degree (filter_pdevs I x) \<le> degree x"
-  by (rule degree_leI) (simp split: if_split_asm)
-
-lemma pdevs_val_filter_pdevs:
-  "pdevs_val e (filter_pdevs I x) = (\<Sum>i \<in> {..<degree x} \<inter> {i. I i (pdevs_apply x i)}. e i *\<^sub>R pdevs_apply x i)"
-  by (auto simp: pdevs_val_sum if_distrib sum.inter_restrict degree_filter_pdevs_le degree_gt
-    intro!: sum.mono_neutral_cong_left split: if_split_asm)
-
 definition summarize_pdevs::
   "nat \<Rightarrow> (nat \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> 'a::executable_euclidean_space pdevs \<Rightarrow> 'a pdevs"
   where "summarize_pdevs p I d x =
     (let t = tdev' p (filter_pdevs (-I) x)
      in msum_pdevs d (filter_pdevs I x) (pdevs_of_centered_ivl t))"
 
-definition summarize_threshold::
-  "nat \<Rightarrow> real \<Rightarrow> nat \<Rightarrow> 'a::executable_euclidean_space pdevs \<Rightarrow> 'a pdevs"
-  where "summarize_threshold p t d x = summarize_pdevs p
-    (\<lambda>i y. infnorm y \<ge> t * infnorm (eucl_truncate_up p (tdev' p x))) d x"
+definition summarize_threshold
+  where "summarize_threshold p t x y \<longleftrightarrow> infnorm y \<ge> t * infnorm (eucl_truncate_up p (tdev' p x))"
 
 lemma error_abs_euclE:
   fixes err::"'a::ordered_euclidean_space"
@@ -1090,7 +1414,7 @@ proof atomize_elim
   also have "?large = pdevs_val e (filter_pdevs I x)"
     by (simp add: pdevs_val_filter_pdevs)
   also have "?small = pdevs_val e (filter_pdevs (-I) x)"
-    by (simp add: pdevs_val_filter_pdevs Diff_eq Collect_neg_eq)
+    by (simp add: pdevs_val_filter_pdevs Collect_neg_eq Diff_eq)
   also
   have "abs \<dots> \<le> tdev' p (filter_pdevs (-I) x)" (is "abs ?r \<le> ?t")
     using e by (rule abs_pdevs_val_le_tdev')
@@ -1099,7 +1423,7 @@ proof atomize_elim
   from in_ivl_affine_of_ivlE[OF this] obtain e2
     where "?r = aform_val e2 (aform_of_ivl (- ?t) ?t)"
       and e2: "e2 \<in> UNIV \<rightarrow> {- 1..1}"
-    by auto
+    by metis
   note this(1)
   also
   define e' where "e' i = (if i < d then e i else e2 (i - d))" for i
@@ -1123,302 +1447,2108 @@ proof atomize_elim
     by auto
 qed
 
+definition "summarize_pdevs_list p I d xs =
+  map (\<lambda>(d, x). summarize_pdevs p (\<lambda>i _. I i (pdevs_applys xs i)) d x) (zip [d..<d + length xs] xs)"
+
+lemma filter_pdevs_cong[cong]:
+  assumes "x = y"
+  assumes "\<And>i. i \<in> pdevs_domain y \<Longrightarrow> P i (pdevs_apply x i) = Q i (pdevs_apply y i)"
+  shows "filter_pdevs P x = filter_pdevs Q y"
+  using assms
+  by (force intro!: pdevs_eqI)
+
+lemma summarize_pdevs_cong[cong]:
+  assumes "p = q" "a = c" "b = d"
+  assumes PQ: "\<And>i. i \<in> pdevs_domain d \<Longrightarrow> P i (pdevs_apply b i) = Q i (pdevs_apply d i)"
+  shows "summarize_pdevs p P a b = summarize_pdevs q Q c d"
+proof -
+  have "(filter_pdevs P b) = filter_pdevs Q d"
+    "(filter_pdevs (\<lambda>a b. \<not> P a b) b) = filter_pdevs (\<lambda>a b. \<not> Q a b) d"
+    using assms
+    by (auto intro!: filter_pdevs_cong)
+  then show ?thesis by (auto simp add: assms summarize_pdevs_def Let_def)
+qed
+
+lemma lookup_eq_None_iff: "(Mapping.lookup M x = None) = (x \<notin> Mapping.keys M)"
+  by (transfer) auto
+
+lemma lookup_eq_SomeD:
+  "(Mapping.lookup M x = Some y) \<Longrightarrow> (x \<in> Mapping.keys M)"
+  by transfer auto
+
+definition "domain_pdevs xs = (\<Union>(pdevs_domain ` (set xs)))"
+
+definition "pdevs_mapping xs =
+  (let
+    D = sorted_list_of_set (domain_pdevs xs);
+    M = Mapping.tabulate D (pdevs_applys xs);
+    zeroes = replicate (length xs) 0
+  in Mapping.lookup_default zeroes M)"
+
+lemma pdevs_mapping_eq[simp]: "pdevs_mapping xs = pdevs_applys xs"
+  unfolding pdevs_mapping_def pdevs_applys_def
+  apply (auto simp: Mapping.lookup_default_def lookup_eq_None_iff domain_pdevs_def
+      split: option.splits intro!: ext)
+  subgoal by (auto intro!: nth_equalityI)
+  subgoal apply (auto intro!: nth_equalityI dest: )
+    subgoal
+      apply (frule lookup_eq_SomeD)
+      apply auto
+      by (metis distinct_sorted_list_of_set keys_tabulate length_map lookup_eq_SomeD lookup_tabulate option.inject)
+    subgoal
+      apply (frule lookup_eq_SomeD)
+      apply (auto simp: map_nth)
+      by (metis (mono_tags, lifting) List.finite_set finite_UN finite_pdevs_domain keys_tabulate
+          lookup_eq_SomeD lookup_tabulate option.inject sorted_list_of_set)
+    done
+  done
+
+lemma compute_summarize_pdevs_list[code]:
+  "summarize_pdevs_list p I d xs =
+    (let M = pdevs_mapping xs
+    in map (\<lambda>(x, y). summarize_pdevs p (\<lambda>i _. I i (M i)) x y) (zip [d..<d + length xs] xs))"
+  unfolding summarize_pdevs_list_def pdevs_mapping_eq
+  by auto
+
+lemma
+  in_centered_ivlE:
+  fixes r t::real
+  assumes "r \<in> {-t .. t}"
+  obtains e where "e \<in> {-1 .. 1}" "r = e * t"
+  using assms
+  by (atomize_elim) (auto intro!: exI[where x="r / t"] simp: divide_simps)
+
+lift_definition singleton_pdevs::"'a \<Rightarrow> 'a::real_normed_vector pdevs" is "\<lambda>x i. if i = 0 then x else 0"
+  by auto
+lemmas [simp] = singleton_pdevs.rep_eq
+
+lemma singleton_0[simp]: "singleton_pdevs 0 = zero_pdevs"
+  by (auto intro!: pdevs_eqI)
+
+lemma degree_singleton_pdevs[simp]: "degree (singleton_pdevs x) = (if x = 0 then 0 else Suc 0)"
+  by (auto simp: intro!: degree_eqI)
+
+lemma pdevs_val_singleton_pdevs[simp]: "pdevs_val e (singleton_pdevs x) = e 0 *\<^sub>R x"
+  by (auto simp: pdevs_val_sum if_distrib sum.delta cong: if_cong)
+
+lemma pdevs_of_ivl_real:
+  fixes a b::real
+  shows "pdevs_of_ivl a b = singleton_pdevs ((b - a) / 2)"
+  by (auto simp: pdevs_of_ivl_def Basis_list_real_def intro!: pdevs_eqI)
+
+lemma summarize_pdevs_listE:
+  fixes X::"real pdevs list"
+  assumes e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
+  assumes d: "degrees X \<le> d"
+  obtains e' where "pdevs_vals e X = pdevs_vals e' (summarize_pdevs_list p I d X)"
+    "\<And>i. i < d \<Longrightarrow> e i = e' i"
+    "e' \<in> UNIV \<rightarrow> {-1 .. 1}"
+proof -
+  let ?I = "{i. I i (pdevs_applys X i)}"
+  let ?J = "\<lambda>i x. I i (pdevs_applys X i)"
+
+  have "pdevs_vals e X = map (\<lambda>x. \<Sum>i<degree x. e i *\<^sub>R pdevs_apply x i) X"
+    using d
+    by (auto simp: pdevs_vals_def
+        simp del: real_scaleR_def
+        intro!: pdevs_val_sum_le
+        dest!: degrees_leD)
+  also have "\<dots> = map (\<lambda>x.
+      (\<Sum>i\<in>{..<degree x} \<inter> ?I. e i * pdevs_apply x i) +
+      (\<Sum>i\<in>{..<degree x} - ?I. e i * pdevs_apply x i)) X"
+    by (rule map_cong[OF refl], subst sum.union_disjoint[symmetric]) (auto intro!: sum.cong)
+  also
+  have "\<dots> = map (\<lambda>x. pdevs_val e (filter_pdevs ?J x) + pdevs_val e (filter_pdevs (-?J) x)) X"
+    (is "_ = map (\<lambda>x. ?large x + ?small x) _")
+    by (auto simp: pdevs_val_filter_pdevs Diff_eq Compl_eq)
+  also have "\<dots> = map snd (zip [d..<d + length X] \<dots>)" by simp
+  also have "\<dots> = map (\<lambda>(d, x). ?large x + ?small x) (zip [d..<d + length X] X)"
+    (is "_ = map _ ?z")
+    unfolding map_zip_map2
+    by simp
+  also have "\<dots> = map (\<lambda>(d', x). ?large x + ?small (snd (?z ! (d' - d)))) ?z"
+    by (auto simp: in_set_zip)
+  also
+  let ?t = "\<lambda>x. tdev' p (filter_pdevs (-?J) x)"
+  let ?x = "\<lambda>d'. snd (?z ! (d' - d))"
+  {
+    fix d' assume "d \<le> d'" "d' < d + length X"
+    have "abs (?small (?x d')) \<le> ?t (?x d')"
+      using \<open>e \<in> _\<close> by (rule abs_pdevs_val_le_tdev')
+    then have "?small (?x d') \<in> {-?t (?x d') .. ?t (?x d')}"
+      by auto
+    from in_centered_ivlE[OF this] have "\<exists>e\<in>{-1 .. 1}. ?small (?x d') = e * ?t (?x d')" by blast
+  } then obtain e'' where e'':
+    "e'' d' \<in> {-1 .. 1}"
+    "?small (?x d') = e'' d' * ?t (?x d')"
+    if "d' \<in> {d ..< d + length X}" for d'
+    apply atomize_elim
+    unfolding all_conj_distrib[symmetric] imp_conjR[symmetric]
+    unfolding Ball_def[symmetric] atLeastAtMost_iff[symmetric]
+    apply (rule bchoice)
+    apply (auto simp: Bex_def )
+    done
+  define e' where "e' \<equiv> \<lambda>i. if i < d then e i else if i < d + length X then e'' i else 0"
+  have e': "e' d' \<in> {-1 .. 1}"
+    "?small (?x d') = e' d' * ?t (?x d')"
+    if "d' \<in> {d ..< d + length X}" for d'
+    using e'' that
+    by (auto simp: e'_def split: if_splits)
+  then have *: "pdevs_val e (filter_pdevs (\<lambda>a b. \<not> I a (pdevs_applys X a)) (?x d')) =
+    e' d' * ?t (?x d')" if "d' \<in> {d ..< d + length X}" for d'
+    using that
+    by auto
+  have "map (\<lambda>(d', x). ?large x + ?small (?x d')) ?z =
+      map (\<lambda>(d', x). ?large x + e' d' * ?t (?x d')) ?z"
+    apply (auto simp: in_set_zip)
+    subgoal for n
+      using e'(2)[of "d + n"]
+      by auto
+    done
+  also have "\<dots> = map (\<lambda>(d', x). pdevs_val e' (summarize_pdevs p ?J d' x)) (zip [d..<d + length X] X)"
+    apply (auto simp: summarize_pdevs_def pdevs_val_msum_pdevs Let_def in_set_zip)
+    apply (subst pdevs_val_msum_pdevs)
+    using d
+     apply (auto intro!: degree_filter_pdevs_le[THEN order_trans])
+    subgoal by (auto dest!: degrees_leD nth_mem)
+    apply (auto simp: pdevs_of_ivl_real intro!: )
+    subgoal premises prems
+    proof -
+      have "degree (filter_pdevs (\<lambda>i x. I i (pdevs_applys X i)) (X ! n)) \<le> d" if "n < length X" for n
+        using d that
+        by (intro degree_filter_pdevs_le[THEN order_trans]) (simp add: degrees_leD)
+      then show ?thesis
+        using prems e''
+        apply (intro pdevs_val_degree_cong)
+         apply (auto dest!: )
+        apply (auto simp: e'_def)
+        apply (meson \<open>\<And>n. \<lbrakk>n < length X; degrees X \<le> d\<rbrakk> \<Longrightarrow> degree (X ! n) \<le> d + n\<close> degree_filter_pdevs_le less_le_trans)
+        by (meson less_le_trans trans_less_add1)
+    qed
+    done
+  also have "\<dots> = pdevs_vals e' (summarize_pdevs_list p I d X)"
+    by (auto simp: summarize_pdevs_list_def pdevs_vals_def)
+  finally have "pdevs_vals e X = pdevs_vals e' (summarize_pdevs_list p I d X)" .
+  moreover have "(\<And>i. i < d \<Longrightarrow> e i = e' i)" "e' \<in> UNIV \<rightarrow> {- 1..1}"
+    using \<open>e \<in> _\<close> e''
+    by (auto simp: e'_def)
+  ultimately show ?thesis ..
+qed
+
+fun list_ex2 where
+  "list_ex2 P [] xs = False"
+| "list_ex2 P xs [] = False"
+| "list_ex2 P (x#xs) (y#ys) = (P x y \<or> list_ex2 P xs ys)"
+
+lemma list_ex2_iff:
+  "list_ex2 P xs ys \<longleftrightarrow> (\<not>list_all2 (-P) (take (length ys) xs) (take (length xs) ys))"
+  by (induction P xs ys rule: list_ex2.induct) auto
+
+definition "summarize_aforms p C d (X::real aform list) =
+  (zip (map fst X) (summarize_pdevs_list p (C X) d (map snd X)))"
+
+lemma aform_vals_pdevs_vals:
+  "aform_vals e X = map (\<lambda>(x, y). x + y) (zip (map fst X) (pdevs_vals e (map snd X)))"
+  by (auto simp: pdevs_vals_def aform_vals_def aform_val_def[abs_def]
+      map_zip_map map_zip_map2 split_beta' zip_same_conv_map)
+
+lemma summarize_aformsE:
+  fixes X::"real aform list"
+  assumes e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
+  assumes d: "degree_aforms X \<le> d"
+  obtains e' where "aform_vals e X = aform_vals e' (summarize_aforms p C d X)"
+    "\<And>i. i < d \<Longrightarrow> e i = e' i"
+    "e' \<in> UNIV \<rightarrow> {-1 .. 1}"
+proof -
+  define Xs where "Xs = map snd X"
+  have "aform_vals e X = map (\<lambda>(x, y). x + y) (zip (map fst X) (pdevs_vals e Xs))"
+    by (auto simp: aform_vals_pdevs_vals Xs_def)
+  also obtain e' where e': "e' \<in> UNIV \<rightarrow> {-1 .. 1}"
+    "\<And>i. i < d \<Longrightarrow> e i = e' i"
+    "pdevs_vals e Xs = pdevs_vals e' (summarize_pdevs_list p (C X) d Xs)"
+    using summarize_pdevs_listE[OF e d, of p "C X"]
+    by (metis Xs_def)
+  note this(3)
+  also have "map (\<lambda>(x, y). x + y) (zip (map fst X) \<dots>) = aform_vals e' (summarize_aforms p C d X)"
+    unfolding aform_vals_pdevs_vals
+    by (simp add: summarize_aforms_def Let_def Xs_def summarize_pdevs_list_def
+        split_beta')
+  finally have "aform_vals e X = aform_vals e' (summarize_aforms p C d X)"
+    "\<And>i. i < d \<Longrightarrow> e i = e' i"
+    "e' \<in> UNIV \<rightarrow> {-1 .. 1}"
+    using e' d
+    by (auto simp: Xs_def)
+  then show ?thesis ..
+qed
+
+text \<open>Different reduction strategies:\<close>
+
+definition "collect_threshold p ta t (X::real aform list) =
+  (let
+    Xs = map snd X;
+    as = map (\<lambda>X. max ta (t * tdev' p X)) Xs
+  in (\<lambda>(i::nat) xs. list_ex2 op \<le> as (map abs xs)))"
+
+definition "collect_girard p m (X::real aform list) =
+  (let
+    Xs = map snd X;
+    M = pdevs_mapping Xs;
+    D = domain_pdevs Xs;
+    N = length X
+  in if card D \<le> m then (\<lambda>_ _. True) else
+    let
+      Ds = sorted_list_of_set D;
+      ortho_indices = map fst (take (2 * N) (sort_key (\<lambda>(i, r). r) (map (\<lambda>i. let xs = M i in (i, sum_list' p xs - fold max xs 0)) Ds)));
+      _ = ()
+    in (\<lambda>i (xs::real list). i \<in> set ortho_indices))"
+
+
 
 subsection \<open>Splitting with heuristics\<close>
 
-definition "split_aform_largest_uncond X =
-    (let (i, x) = max_pdev (snd X) in split_aform X i)"
+definition "abs_pdevs = unop_pdevs abs"
 
-definition "split_aform_largest p t X =
-  split_aform_largest_uncond (fst X, summarize_threshold p t (degree_aform X) (snd X))"
+definition "abssum_of_pdevs_list X = fold (\<lambda>a b. (add_pdevs (abs_pdevs a) b)) X zero_pdevs"
+
+definition "split_aforms xs i = (let splits = map (\<lambda>x. split_aform x i) xs in (map fst splits, map snd splits))"
+
+definition "split_aforms_largest_uncond X =
+  (let (i, x) = max_pdev (abssum_of_pdevs_list (map snd X)) in split_aforms X i)"
+
+definition "Inf_aform_err p Rd = (float_of (truncate_down p (Inf_aform' p (fst Rd) - (snd Rd))))"
+definition "Sup_aform_err p Rd = (float_of (truncate_up p (Sup_aform' p (fst Rd) + (snd Rd))))"
+
+definition "approx_un p f a = do {
+  (rd) \<leftarrow> a;
+  (l, u) \<leftarrow> f (Inf_aform_err p rd) (Sup_aform_err p rd);
+  Some (ivl_err (real_of_float l) ((real_of_float u)))
+}"
+
+definition interval_extension1::"(float \<Rightarrow> float \<Rightarrow> (float * float) option) \<Rightarrow> (real \<Rightarrow> real) \<Rightarrow> bool"
+  where "interval_extension1 F f \<longleftrightarrow> (\<forall>l u i s. F l u = Some (i, s) \<longrightarrow> f ` {l .. u} \<subseteq> {i .. s})"
+
+lemma interval_extension1D:
+  assumes "interval_extension1 F f"
+  assumes "F l u = Some (i, s)"
+  shows "f ` {l .. u} \<subseteq> {i .. s}"
+  using assms by (auto simp: interval_extension1_def)
+
+lemma approx_un_argE:
+  assumes au: "approx_un p F X = Some Y"
+  obtains X' where "X = Some X'"
+  using assms
+  by (auto simp: approx_un_def bind_eq_Some_conv)
+
+lemma degree_aform_independent_from:
+  "degree_aform (independent_from d1 X) \<le> d1 + degree_aform X"
+  by (auto simp: independent_from_def degree_msum_pdevs_le)
+
+lemma degree_aform_of_ivl:
+  fixes a b::"'a::executable_euclidean_space"
+  shows "degree_aform (aform_of_ivl a b) \<le> length (Basis_list::'a list)"
+  by (auto simp: aform_of_ivl_def degree_pdevs_of_ivl_le)
+
+lemma aform_err_ivl_err[simp]: "aform_err e (ivl_err (l') (u')) = {l'..u'}"
+  by (auto simp: aform_err_def ivl_err_def aform_val_def divide_simps)
+
+lemma Inf_Sup_aform_err:
+  fixes X
+  assumes e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
+  defines "X' \<equiv> fst X"
+  shows "aform_err e X \<subseteq> {Inf_aform_err p X .. Sup_aform_err p X}"
+  using Inf_aform[OF e, of X'] Sup_aform[OF e, of X'] Inf_aform'[of p X'] Sup_aform'[of X' p]
+  by (auto simp: aform_err_def X'_def Inf_aform_err_def Sup_aform_err_def
+      intro!: truncate_down_le truncate_up_le)
+
+lemma approx_unE:
+  assumes ie: "interval_extension1 F f"
+  assumes e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
+  assumes au: "approx_un p F X'err = Some Ye"
+  assumes x: "case X'err of None \<Rightarrow> True | Some X'err \<Rightarrow> x \<in> aform_err e (X'err)"
+  shows "f x \<in> aform_err e Ye"
+proof -
+  from au obtain l' u' X' err
+    where F: " F (Inf_aform_err p (X', err)) (Sup_aform_err p (X', err)) = Some (l', u')"
+        (is "F ?i ?s = _")
+      and Y: "Ye = ivl_err (real_of_float l') (real_of_float u')"
+         (is "_ = (ivl_err ?l'  ?u')")
+     and X'err: "X'err = Some (X', err)"
+    by (auto simp: approx_un_def bind_eq_Some_conv)
+
+  from x
+  have "x \<in> aform_err e (X', err)" by (auto simp: X'err)
+  also note Inf_Sup_aform_err[OF e, where p=p]
+  finally have "x \<in> {?i .. ?s}" .
+  then have "f x \<in> f ` {real_of_float ?i .. real_of_float ?s}" by (rule imageI)
+  also note interval_extension1D[OF ie F]
+  also have "{real_of_float l'..real_of_float u'} = aform_err e Ye" unfolding Y aform_err_ivl_err ..
+  finally show ?thesis .
+qed
+
+definition "approx_bin p f rd sd = do {
+  (l, u) \<leftarrow> f (Inf_aform_err p rd) (Sup_aform_err p rd)
+             (Inf_aform_err p sd) (Sup_aform_err p sd);
+  Some (ivl_err (real_of_float l) ((real_of_float u)))
+}"
+
+definition interval_extension2::"(float \<Rightarrow> float \<Rightarrow> float \<Rightarrow> float \<Rightarrow> (float * float) option) \<Rightarrow> (real \<Rightarrow> real \<Rightarrow> real) \<Rightarrow> bool"
+  where "interval_extension2 F f \<longleftrightarrow> (\<forall>l u l' u' i s. F l u l' u' = Some (i, s) \<longrightarrow>
+    (\<lambda>(x, y). f x y) ` ({l .. u} \<times> {l' .. u'}) \<subseteq> {i .. s})"
+
+lemma interval_extension2D:
+  assumes "interval_extension2 F f"
+  assumes "F l u l' u' = Some (i, s)"
+  shows "(\<lambda>(x, y). f x y) ` ({l .. u} \<times> {l' .. u'}) \<subseteq> {i .. s}"
+  using assms by (auto simp: interval_extension2_def)
+
+lemma approx_binE:
+  assumes ie: "interval_extension2 F f"
+  assumes w: "w \<in> aform_err e (W', errw)"
+  assumes x: "x \<in> aform_err e (X', errx)"
+  assumes ab: "approx_bin p F ((W', errw)) ((X', errx)) = Some Ye"
+  assumes e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
+  shows "f w x \<in> aform_err e Ye"
+proof -
+  from ab obtain l' u'
+    where F: "F (Inf_aform_err p (W', errw)) (Sup_aform_err p (W', errw))
+        (Inf_aform_err p (X', errx)) (Sup_aform_err p (X', errx)) = Some (l', u')"
+             (is "F ?i ?s ?i' ?s' = _")
+      and Y: "Ye = ivl_err (real_of_float l') (real_of_float u')"
+      (is "_ = ivl_err ?l' ?u'")
+    by (auto simp: approx_bin_def bind_eq_Some_conv max_def)
+  { note w
+    also note Inf_Sup_aform_err[OF e, where p=p]
+    finally have "w \<in> {?i .. ?s}" .
+  } moreover {
+    note x
+    also note Inf_Sup_aform_err[OF e, where p=p]
+    finally have "x \<in> {?i' .. ?s'}" .
+  } ultimately
+  have "f w x \<in> (\<lambda>(a, b). f a b) ` ({real_of_float ?i .. ?s} \<times> {real_of_float ?i' .. ?s'})"
+    by auto
+  also note interval_extension2D[OF ie F]
+  also have "{real_of_float l'..real_of_float u'} = aform_err e Ye" unfolding Y aform_err_ivl_err ..
+  finally show ?thesis .
+qed
+
+definition "min_aform_err p a1 (a2::aform_err) =
+  (let
+    i1 = Inf_aform_err p a1;
+    s1 = Sup_aform_err p a1;
+    i2 = Inf_aform_err p a2;
+    s2 = Sup_aform_err p a2
+  in if s1 < i2 then a1
+      else if s2 < i1 then a2
+      else ivl_err (min i1 i2) (min s1 s2))"
+
+definition "max_aform_err p a1 (a2::aform_err) =
+  (let
+    i1 = Inf_aform_err p a1;
+    s1 = Sup_aform_err p a1;
+    i2 = Inf_aform_err p a2;
+    s2 = Sup_aform_err p a2
+   in if s1 < i2 then (a2)
+        else if s2 < i1 then (a1)
+        else ivl_err (max i1 i2) (max s1 s2))"
 
 
-subsection \<open>Approximating Expressions\<close>
-text \<open>\label{sec:affineexpr}\<close>
+subsection \<open>Approximate Min Range - Kind Of Trigonometric Functions\<close>
 
-datatype 'a realarith
-  = Add "'a realarith" "'a realarith"
-  | Minus "'a realarith"
-  | Mult "'a realarith" "'a realarith"
-  | Inverse "'a realarith"
-  | Var nat 'a
-  | Num real
+definition affine_unop :: "nat \<Rightarrow> real \<Rightarrow> real \<Rightarrow> real \<Rightarrow> aform_err \<Rightarrow> aform_err" where
+"affine_unop p a b d X = (let
+    ((x, xs), xe) = X;
+    (ax, axe) = trunc_bound_eucl p (a * x);
+    (y, ye) = trunc_bound_eucl p (ax + b);
+    (ys, yse) = trunc_bound_pdevs p (scaleR_pdevs a xs)
+    in ((y, ys), sum_list' p [truncate_up p (\<bar>a\<bar> * xe), axe, ye, yse, d]))"
+  \<comment>\<open>TODO: also do binop\<close>
 
-datatype ('a, 'b) euclarith
-  = AddE "('a, 'b) euclarith" "('a, 'b) euclarith"
-  | ScaleR "'a realarith" 'b
+lemma aform_err_leI:
+  "y \<in> aform_err e (c, d)"
+  if "y \<in> aform_err e (c, d')" "d' \<le> d"
+  using that by (auto simp: aform_err_def)
 
-fun interpret_realarith :: "'a::real_inner realarith \<Rightarrow> 'a list \<Rightarrow> real" where
-  "interpret_realarith (Add a b) vs = interpret_realarith a vs + interpret_realarith b vs"
-| "interpret_realarith (Minus a) vs = - interpret_realarith a vs"
-| "interpret_realarith (Mult a b) vs = interpret_realarith a vs * interpret_realarith b vs"
-| "interpret_realarith (Inverse a) vs = inverse (interpret_realarith a vs)"
-| "interpret_realarith (Var i b) vs = (vs ! i) \<bullet> b"
-| "interpret_realarith (Num r) vs = r"
+lemma aform_err_eqI:
+  "y \<in> aform_err e (c, d)"
+  if "y \<in> aform_err e (c, d')" "d' = d"
+  using that by (auto simp: aform_err_def)
 
-fun interpret_euclarith ::
-  "('a::{real_inner, scaleR, plus}, 'b) euclarith \<Rightarrow> 'a list \<Rightarrow> 'b::{plus, scaleR}"
-where
-  "interpret_euclarith (AddE a b) vs = interpret_euclarith a vs +\<^sub>E interpret_euclarith b vs"
-| "interpret_euclarith (ScaleR a b) vs = (interpret_realarith a vs) *\<^sub>R b"
+lemma sum_list'_append[simp]: "sum_list' p (ds@[d]) = truncate_up p (d + sum_list' p ds)"
+  unfolding sum_list'_def
+  by (simp add: eucl_truncate_up_real_def)
+
+lemma aform_err_sum_list':
+  "y \<in> aform_err e (c, sum_list' p ds)"
+  if "y \<in> aform_err e (c, sum_list ds)"
+  using that(1)
+  apply (rule aform_err_leI)
+  by (rule sum_list_le_sum_list')
+
+lemma aform_err_trunc_bound_eucl:
+  "y \<in> aform_err e ((fst (trunc_bound_eucl p X), xs), snd (trunc_bound_eucl p X) + d)"
+  if y: "y \<in> aform_err e ((X, xs), d)"
+  using that
+proof -
+  from aform_errE[OF y]
+  have "\<bar>y - aform_val e (X, xs)\<bar> \<le> d" by auto
+  then show ?thesis
+    apply (intro aform_errI)
+    apply (rule trunc_bound_euclE[of p X])
+    by (auto simp: aform_val_def)
+qed
+
+lemma trunc_err_pdevsE:
+  assumes "e \<in> UNIV \<rightarrow> {-1 .. 1}"
+  obtains err where
+  "\<bar>err\<bar> \<le> tdev' p (trunc_err_pdevs p xs)"
+  "pdevs_val e (trunc_pdevs p xs) = pdevs_val e xs + err"
+  using trunc_bound_pdevsE[of e p xs]
+  by (auto simp: trunc_bound_pdevs_def assms)
+
+lemma aform_err_trunc_bound_pdevsI:
+  "y \<in> aform_err e ((c, fst (trunc_bound_pdevs p xs)), snd (trunc_bound_pdevs p xs) + d)"
+  if y: "y \<in> aform_err e ((c, xs), d)"
+  and e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
+  using that
+proof -
+  define exs where "exs = trunc_err_pdevs p xs"
+  from aform_errE[OF y]
+  have "\<bar>y - aform_val e (c, xs)\<bar> \<le> d" by auto
+  then show ?thesis
+    apply (intro aform_errI)
+    apply (rule trunc_err_pdevsE[OF e, of p xs])
+    by (auto simp: aform_val_def trunc_bound_pdevs_def)
+qed
+
+lemma aform_err_addI:
+  "y \<in> aform_err e ((a + b, xs), d)"
+  if "y - b \<in> aform_err e ((a, xs), d)"
+  using that
+  by (auto simp: aform_err_def aform_val_def)
+
+theorem affine_unop:
+  assumes x: "x \<in> aform_err e X"
+  assumes f: "\<bar>f x - (a * x + b)\<bar> \<le> d"
+    and e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
+  shows "f x \<in> aform_err e (affine_unop p a b d X)"
+proof -
+  show ?thesis
+    unfolding affine_unop_def Let_def
+    apply (auto simp: split_beta')
+    apply (rule aform_err_sum_list')
+    apply simp
+    apply (rule aform_err_eqI)
+     apply (rule aform_err_trunc_bound_eucl)
+     apply (rule aform_err_addI)
+     apply (rule aform_err_trunc_bound_eucl)
+     apply (rule aform_err_trunc_bound_pdevsI)
+    using e
+      apply auto
+    apply (rule aform_errI)
+    apply (auto simp: aform_val_def)
+  proof -
+    define x' where "x' = (fst (fst X) + pdevs_val e (snd (fst X)))"
+    have x_x': "\<bar>x - x'\<bar> \<le> snd X"
+      using aform_errE[OF x]
+      by (auto simp: x'_def aform_val_def)
+    have "\<bar>f x - b - (a * fst (fst X) + a * pdevs_val e (snd (fst X)))\<bar> =
+      \<bar>f x - (a * x + b) + a * (x - x')\<bar>"
+      by (simp add: algebra_simps x'_def)
+    also have "\<dots> \<le> \<bar>f x - (a * x + b)\<bar> + \<bar>a * (x - x')\<bar>"
+      by (rule abs_triangle_ineq)
+    also note f
+    also have "\<bar>a * (x - x')\<bar> \<le> truncate_up p (\<bar>a\<bar> * snd X)"
+      by (rule truncate_up_le)
+        (auto simp: abs_mult intro!: mult_left_mono x_x')
+    finally show "\<bar>f x - b - (a * fst (fst X) + a * pdevs_val e (snd (fst X)))\<bar> \<le>
+        truncate_up p (\<bar>a\<bar> * snd X) + d"
+      by auto
+  qed
+qed
+
+lemma min_range_coeffs_ge:
+  "\<bar>f x - (a * x + b)\<bar> \<le> d"
+  if l: "l \<le> x" and u: "x \<le> u"
+    and f': "\<And>y. y \<in> {l .. u} \<Longrightarrow> (f has_real_derivative f' y) (at y)"
+    and a: "\<And>y. y \<in> {l..u} \<Longrightarrow> a \<le> f' y"
+    and d: "d \<ge> (f u - f l - a * (u - l)) / 2 + \<bar>(f l + f u - a * (l + u)) / 2 - b\<bar>"
+  for a b d::real
+proof (rule order_trans[OF _ d])
+  note f'_at = has_field_derivative_at_within[OF f']
+  from l u have lu: "x \<in> {l .. u}" and llu: "l \<in> {l .. u}" by simp_all
+
+  define m where "m = (f l + f u - a * (l + u)) / 2"
+  have "\<bar>f x - (a * x + b)\<bar> = \<bar>f x - (a * x + m) + (m - b)\<bar>" by (simp add: algebra_simps)
+  also have "\<dots> \<le> \<bar>f x - (a * x + m)\<bar> + \<bar>m - b\<bar>" by (rule abs_triangle_ineq)
+  also have "\<bar>f x - (a * x + m)\<bar> \<le> (f u - f l - a * (u - l)) / 2"
+  proof (rule abs_leI)
+    have "f x \<ge> f l + a * (x - l)" (is "?l \<ge> ?r")
+      apply (rule order_trans) prefer 2
+       apply (rule linear_lower2[OF f'_at, of l u a])
+      subgoal by assumption
+      subgoal by (rule a)
+      subgoal
+        using lu
+        by (auto intro!: mult_right_mono)
+      subgoal using lu by auto
+      done
+    also have "a * x + m - (f u - f l - a * (u - l)) / 2 \<le> ?r"
+      by (simp add: algebra_simps m_def field_simps)
+    finally (xtrans) show "- (f x - (a * x + m)) \<le> (f u - f l - a * (u - l)) / 2"
+      by (simp add: algebra_simps m_def divide_simps)
+  next
+    have "f x \<le> f u + a * (x - u)"
+      apply (rule order_trans)
+       apply (rule linear_upper2[OF f'_at, of l u a])
+      subgoal by assumption
+      subgoal by (rule a)
+      subgoal
+        using lu
+        by (auto intro!: mult_right_mono)
+      subgoal using lu by auto
+      done
+    also have "\<dots> \<le> a * x + m + (f u - f l - a * (u - l)) / 2"
+      by (simp add: m_def divide_simps algebra_simps)
+    finally show "f x - (a * x + m) \<le> (f u - f l - a * (u - l)) / 2"
+      by (simp add: algebra_simps m_def divide_simps)
+  qed
+  also have "\<bar>m - b\<bar> = abs ((f l + f u - a * (l + u)) / 2 - b)"
+    unfolding m_def ..
+  finally show "\<bar>f x - (a * x + b)\<bar> \<le> (f u - f l - a * (u - l)) / 2 + \<bar>(f l + f u - a * (l + u)) / 2 - b\<bar>"
+    by (simp)
+qed
+
+lemma min_range_coeffs_le:
+  "\<bar>f x - (a * x + b)\<bar> \<le> d"
+  if l: "l \<le> x" and u: "x \<le> u"
+    and f': "\<And>y. y \<in> {l .. u} \<Longrightarrow> (f has_real_derivative f' y) (at y)"
+    and a: "\<And>y. y \<in> {l .. u} \<Longrightarrow> f' y \<le> a"
+    and d: "d \<ge> (f l - f u + a * (u - l)) / 2 + \<bar>(f l + f u - a * (l + u)) / 2 - b\<bar>"
+  for a b d::real
+proof (rule order_trans[OF _ d])
+  note f'_at = has_field_derivative_at_within[OF f']
+  from l u have lu: "x \<in> {l .. u}" and llu: "l \<in> {l .. u}" by simp_all
+
+  define m where "m = (f l + f u - a * (l + u)) / 2"
+  have "\<bar>f x - (a * x + b)\<bar> = \<bar>f x - (a * x + m) + (m - b)\<bar>" by (simp add: algebra_simps)
+  also have "\<dots> \<le> \<bar>f x - (a * x + m)\<bar> + \<bar>m - b\<bar>" by (rule abs_triangle_ineq)
+  also have "\<bar>f x - (a * x + m)\<bar> \<le> (f l - f u + a * (u - l)) / 2"
+  proof (rule abs_leI)
+    have "f x \<ge> f u + a * (x - u)" (is "?l \<ge> ?r")
+      apply (rule order_trans) prefer 2
+       apply (rule linear_lower[OF f'_at, of l u a])
+      subgoal by assumption
+      subgoal by (rule a)
+      subgoal
+        using lu
+        by (auto intro!: mult_right_mono)
+      subgoal using lu by auto
+      done
+    also have "a * x + m - (f l - f u + a * (u - l)) / 2 \<le> ?r"
+      using lu
+      by (auto simp add: algebra_simps m_def field_simps intro!: mult_left_mono_neg)
+    finally (xtrans) show "- (f x - (a * x + m)) \<le> (f l - f u + a * (u - l)) / 2"
+      by (simp add: algebra_simps m_def divide_simps)
+  next
+    have "f x \<le> f l + a * (x - l)"
+      apply (rule order_trans)
+       apply (rule linear_upper[OF f'_at, of l u a])
+      subgoal by assumption
+      subgoal by (rule a)
+      subgoal
+        using lu
+        by (auto intro!: mult_right_mono)
+      subgoal using lu by auto
+      done
+    also have "\<dots> \<le> a * x + m + (f l - f u + a * (u - l)) / 2"
+      using lu
+      by (auto simp add: algebra_simps m_def field_simps intro!: mult_left_mono_neg)
+    finally show "f x - (a * x + m) \<le> (f l - f u + a * (u - l)) / 2"
+      by (simp add: algebra_simps m_def divide_simps)
+  qed
+  also have "\<bar>m - b\<bar> = abs ((f l + f u - a * (l + u)) / 2 - b)"
+    unfolding m_def ..
+  finally show "\<bar>f x - (a * x + b)\<bar> \<le> (f l - f u + a * (u - l)) / 2 + \<bar>(f l + f u - a * (l + u)) / 2 - b\<bar>"
+    by (simp)
+qed
+
+definition "range_reducer p l =
+  (if l < 0 \<or> l > 2 * lb_pi p
+  then approx p (Pi\<^sub>e * (Num (-2)) * (Floor (Num (l * Float 1 (-1)) / Pi\<^sub>e))) []
+  else Some 0)"
+
+lemmas approx_emptyD = approx[OF bounded_by_None[of Nil] sym, simplified]
+
+lemma range_reducerE:
+  assumes "range_reducer p l = Some (r, r')"
+  obtains n::int where "r \<le> n * (2 * pi)" "n * (2 * pi) \<le> r'"
+proof (cases "l \<ge> 0 \<and> l \<le> 2 * lb_pi p")
+  case False
+  with assms have
+    "r \<le> - \<lfloor>l / (2 * pi)\<rfloor> * (2 * pi)"
+    "- \<lfloor>l / (2 * pi)\<rfloor> * (2 * pi) \<le> r'"
+    by (auto simp: range_reducer_def bind_eq_Some_conv inverse_eq_divide
+        algebra_simps dest!: approx_emptyD)
+  then show ?thesis ..
+next
+  case True then have "r \<le> real_of_int 0 * (2 * pi)" "real_of_int 0 * (2 * pi) \<le> r'" using assms
+    by (auto simp: range_reducer_def zero_prod_def)
+  then show ?thesis ..
+qed
+
+definition "range_reduce_aform_err p X = do {
+  let l = Inf_aform_err p X;
+  let u = Sup_aform_err p X;
+  (r, r') \<leftarrow> range_reducer p l;
+  Some (add_aform' p X (ivl_err (real_of_float r) (real_of_float r')))
+}"
+
+lemma range_reduce_aform_errE:
+  assumes e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
+  assumes x: "x \<in> aform_err e X"
+  assumes "range_reduce_aform_err p X = Some Y"
+  obtains n::int where "x + n * (2 * pi) \<in> aform_err e Y"
+proof -
+  from assms obtain r r'
+    where x: "x \<in> aform_err e X"
+     and r: "range_reducer p (Inf_aform_err p X) = Some (r, r')"
+     and Y:  "Y = add_aform' p X (ivl_err (real_of_float r) (real_of_float r'))"
+    by (auto simp: range_reduce_aform_err_def bind_eq_Some_conv mid_err_def split: prod.splits)
+  from range_reducerE[OF r]
+  obtain n::int where "r \<le> n * (2 * pi)" "n * (2 * pi) \<le> r'"
+    by auto
+  then have "n * (2 * pi) \<in> aform_err e (ivl_err (real_of_float r) (real_of_float r'))"
+    by (auto simp: aform_val_def ac_simps divide_simps abs_real_def intro!: aform_errI)
+  from add_aform'[OF e x this, of p]
+  have "x + n * (2 * pi) \<in> aform_err e Y"
+    by (auto simp: Y)
+  then show ?thesis ..
+qed
+
+definition "min_range_mono p F DF l u X = do {
+  let L = Num l;
+  let U = Num u;
+  (a, _) \<leftarrow> approx p (Min\<^sub>e (DF L) (DF U)) [];
+  let A = Num a;
+  bivl \<leftarrow> approx p (Half (F L + F U - A * (L + U))) [];
+  let (b, be) = mid_err bivl;
+  let (B, Be) = (Num (float_of b), Num (float_of be));
+  (_, d) \<leftarrow> approx p ((Half (F U - F L - A * (U - L))) + Be) [];
+  Some (affine_unop p a b (real_of_float d) X)
+}"
+
+lemma min_range_mono:
+  assumes x: "x \<in> aform_err e X"
+  assumes "l \<le> x" "x \<le> u"
+  assumes "min_range_mono p F DF l u X = Some Y"
+  assumes e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
+  assumes F: "\<And>x. x \<in> {real_of_float l .. u} \<Longrightarrow> interpret_floatarith (F (Num x)) [] = f x"
+  assumes DF: "\<And>x. x \<in> {real_of_float l .. u} \<Longrightarrow> interpret_floatarith (DF (Num x)) [] = f' x"
+  assumes f': "\<And>x. x \<in> {real_of_float l .. u} \<Longrightarrow> (f has_real_derivative f' x) (at x)"
+  assumes f'_le: "\<And>x. x \<in> {real_of_float l .. u} \<Longrightarrow> min (f' l) (f' u) \<le> f' x"
+  shows "f x \<in> aform_err e Y"
+proof -
+  from assms obtain a bl bu du
+    where bl: "bl \<le> (f l + f u - a * (l + u)) / 2"
+      and bu: "(f l + f u - a * (l + u))/2 \<le> bu"
+      and Y: "Y = affine_unop p (a) ((bl + bu) / 2) (du) X"
+      and du: "(f u - f l - a * (u - l)) / 2 + (bu - bl) / 2 \<le> du"
+      and a: "a \<le> f' l" "a \<le> f' u"
+    by (auto simp: min_range_mono_def Let_def bind_eq_Some_conv mid_err_def
+        split: prod.splits if_splits dest!: approx_emptyD)
+  then obtain b be where b_def: "b = (bl + bu) / 2" and be_def: "be = (bu - bl) / 2"
+    by blast
+  have diff_le: "real_of_float a \<le> f' y" if "real_of_float l \<le> y" "y \<le> u" for y
+    using f'_le[of y] that a
+    by auto
+  have le_be: "\<bar>(f (l) + f (u) - a * (real_of_float l + u)) / 2 - b\<bar> \<le> be"
+    using bl bu
+    unfolding b_def be_def
+    by (auto simp: abs_real_def divide_simps)
+  have "\<bar>f x - (a * x + b)\<bar> \<le> du"
+    apply (rule min_range_coeffs_ge)
+        apply (rule \<open>l \<le> x\<close>)
+       apply (rule \<open>x \<le> u\<close>)
+      apply (rule f') apply assumption
+    using diff_le apply force
+    apply (rule order_trans[OF add_mono[OF order_refl]])
+     apply (rule le_be)
+    using du bl bu
+    unfolding b_def[symmetric] be_def[symmetric]
+    by auto
+  from affine_unop[where f=f and p = p, OF \<open>x \<in> _\<close> this e]
+  have "f x \<in> aform_err e (affine_unop p (real_of_float a) b du X)"
+    by (auto simp: Y)
+  then show ?thesis
+    by (simp add: Y b_def)
+qed
+
+definition "min_range_antimono p F DF l u X = do {
+  let L = Num l;
+  let U = Num u;
+  (_, a) \<leftarrow> approx p (Max\<^sub>e (DF L) (DF U)) [];
+  let A = Num a;
+  bivl \<leftarrow> approx p (Half (F L + F U - A * (L + U))) [];
+  let (b, be) = mid_err bivl;
+  let (B, Be) = (Num (float_of b), Num (float_of be));
+  (_, d) \<leftarrow> approx p (Add (Half (F L - F U + A * (U - L))) Be) [];
+  Some (affine_unop p a b (real_of_float d) X)
+}"
+
+lemma min_range_antimono:
+  assumes x: "x \<in> aform_err e X"
+  assumes "l \<le> x" "x \<le> u"
+  assumes "min_range_antimono p F DF l u X = Some Y"
+  assumes e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
+  assumes F: "\<And>x. x \<in> {real_of_float l .. u} \<Longrightarrow> interpret_floatarith (F (Num x)) [] = f x"
+  assumes DF: "\<And>x. x \<in> {real_of_float l .. u} \<Longrightarrow> interpret_floatarith (DF (Num x)) [] = f' x"
+  assumes f': "\<And>x. x \<in> {real_of_float l .. u} \<Longrightarrow> (f has_real_derivative f' x) (at x)"
+  assumes f'_le: "\<And>x. x \<in> {real_of_float l .. u} \<Longrightarrow> f' x \<le> max (f' l) (f' u)"
+  shows "f x \<in> aform_err e Y"
+proof -
+  from assms obtain a bl bu du
+    where bl: "bl \<le> (f l + f u - a * (l + u)) / 2"
+      and bu: "(f l + f u - a * (l + u))/2 \<le> bu"
+      and Y: "Y = affine_unop p (a) ((bl + bu) / 2) (du) X"
+      and du: "(f l - f u + a * (u - l)) / 2 + (bu - bl) / 2 \<le> du"
+      and a: "f' l \<le> a" "f' u \<le> a"
+    by (auto simp: min_range_antimono_def Let_def bind_eq_Some_conv mid_err_def
+        split: prod.splits if_splits dest!: approx_emptyD)
+  then obtain b be where b_def: "b = (bl + bu) / 2" and be_def: "be = (bu - bl) / 2"
+    by blast
+  have diff_le: "f' y \<le> real_of_float a" if "real_of_float l \<le> y" "y \<le> u" for y
+    using f'_le[of y] that a
+    by auto
+  have le_be: "\<bar>(f (l) + f (u) - a * (real_of_float l + u)) / 2 - b\<bar> \<le> be"
+    using bl bu
+    unfolding b_def be_def
+    by (auto simp: abs_real_def divide_simps)
+  have "\<bar>f x - (a * x + b)\<bar> \<le> du"
+    apply (rule min_range_coeffs_le)
+        apply (rule \<open>l \<le> x\<close>)
+       apply (rule \<open>x \<le> u\<close>)
+      apply (rule f') apply assumption
+    using diff_le apply force
+    apply (rule order_trans[OF add_mono[OF order_refl]])
+     apply (rule le_be)
+    using du bl bu
+    unfolding b_def[symmetric] be_def[symmetric]
+    by auto
+  from affine_unop[where f=f and p = p, OF \<open>x \<in> _\<close> this e]
+  have "f x \<in> aform_err e (affine_unop p (real_of_float a) b du X)"
+    by (auto simp: Y)
+  then show ?thesis
+    by (simp add: Y b_def)
+qed
+
+definition "cos_aform_err p X = do {
+  X \<leftarrow> range_reduce_aform_err p X;
+  let l = Inf_aform_err p X;
+  let u = Sup_aform_err p X;
+  let L = Num l;
+  let U = Num u;
+  if l \<ge> 0 \<and> u \<le> lb_pi p then
+   min_range_antimono p Cos (\<lambda>x. (Minus (Sin x))) l u X
+  else if l \<ge> ub_pi p \<and> u \<le> 2 * lb_pi p then
+   min_range_mono p Cos (\<lambda>x. (Minus (Sin x))) l u X
+  else do {
+    let (a, b) = (bnds_cos p l u);
+    Some (ivl_err a b)
+  }
+}"
+
+lemma abs_half_enclosure:
+  fixes r::real
+  assumes "bl \<le> r" "r \<le> bu"
+  shows "\<bar>r - (bl + bu) / 2\<bar> \<le> (bu - bl) / 2"
+  using assms
+  by (auto simp: abs_real_def divide_simps)
+
+lemma cos_aform_err:
+  assumes x: "x \<in> aform_err e X0"
+  assumes "cos_aform_err p X0 = Some Y"
+  assumes e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
+  shows "cos x \<in> aform_err e Y"
+proof -
+  from assms obtain X l u where
+    X: "range_reduce_aform_err p X0 = Some X"
+    and l: "l = Inf_aform_err p X"
+    and u: "u = Sup_aform_err p X"
+    by (auto simp: cos_aform_err_def bind_eq_Some_conv)
+  from range_reduce_aform_errE[OF e x X]
+  obtain n where xn: "x + real_of_int n * (2 * pi) \<in> aform_err e X"
+    by auto
+  define xn where "xn = x + n * (2 * pi)"
+  with xn have xn: "xn \<in> aform_err e X" by auto
+  with l u have lxn: "l \<le> xn" and uxn: "xn \<le> u"
+    using Inf_Sup_aform_err[OF e, of X p]
+    by auto
+  consider "l \<ge> 0" "u \<le> lb_pi p"
+    | "l < 0 \<or> u > lb_pi p" "l \<ge> ub_pi p" "u \<le> 2 * lb_pi p"
+    | "l < 0 \<or> u > lb_pi p" "l < ub_pi p \<or> u > 2 * lb_pi p"
+    by arith
+  then show ?thesis
+  proof cases
+    case 1
+    then have min_eq_Some: "min_range_antimono p Cos (\<lambda>x. Minus (Sin x)) l u X = Some Y"
+      and bounds: "0 \<le> l" "u \<le> (lb_pi p)"
+      using assms(2)
+      unfolding cos_aform_err_def X l u
+      by (auto simp: X l[symmetric] u[symmetric] split: prod.splits)
+    have bounds: "0 \<le> l" "u \<le> pi" using bounds pi_boundaries[of p] by auto
+    have diff_le: "- sin y \<le> max (- sin (real_of_float l)) (- sin (real_of_float u))"
+      if "real_of_float l \<le> y" "y \<le> real_of_float u" for y
+    proof -
+      consider "y \<le> pi / 2" | "y \<ge> pi / 2" by arith
+      then show ?thesis
+      proof cases
+        case 1
+        then have "- sin y \<le> - sin l"
+          using that bounds
+          by (auto intro!: sin_monotone_2pi_le)
+        then show ?thesis by auto
+      next
+        case 2
+        then have "- sin y \<le> - sin u"
+          using that bounds
+          unfolding sin_minus_pi[symmetric]
+          apply (intro sin_monotone_2pi_le)
+          by (auto intro!: )
+        then show ?thesis by auto
+      qed
+    qed
+    have "cos xn \<in> aform_err e Y"
+      apply (rule min_range_antimono[OF xn lxn uxn min_eq_Some e, where f'="\<lambda>x. - sin x"])
+      subgoal by simp
+      subgoal by simp
+      subgoal by (auto intro!: derivative_eq_intros)
+      subgoal by (rule diff_le) auto
+      done
+    then show ?thesis
+      unfolding xn_def
+      by (simp add: )
+  next
+    case 2
+    then have min_eq_Some: "min_range_mono p Cos (\<lambda>x. Minus (Sin x)) l u X = Some Y"
+      and bounds: "ub_pi p \<le> l" "u \<le> 2 * lb_pi p"
+      using assms(2)
+      unfolding cos_aform_err_def X l u
+      by (auto simp: X l[symmetric] u[symmetric] split: prod.splits)
+    have bounds: "pi \<le> l" "u \<le> 2 * pi" using bounds pi_boundaries[of p] by auto
+    have diff_le: "min (- sin (real_of_float l)) (- sin (real_of_float u)) \<le> - sin y"
+      if "real_of_float l \<le> y" "y \<le> real_of_float u" for y
+    proof -
+      consider "y \<le> 3 * pi / 2" | "y \<ge> 3 * pi / 2" by arith
+      then show ?thesis
+      proof cases
+        case 1
+        then have "- sin l \<le> - sin y"
+          unfolding sin_minus_pi[symmetric]
+          apply (intro sin_monotone_2pi_le)
+          using that bounds
+          by (auto)
+        then show ?thesis by auto
+      next
+        case 2
+        then have "- sin u \<le> - sin y"
+          unfolding sin_2pi_minus[symmetric]
+          using that bounds
+          apply (intro sin_monotone_2pi_le)
+          by (auto intro!: )
+        then show ?thesis by auto
+      qed
+    qed
+    have "cos xn \<in> aform_err e Y"
+      apply (rule min_range_mono[OF xn lxn uxn min_eq_Some e, where f'="\<lambda>x. - sin x"])
+      subgoal by simp
+      subgoal by simp
+      subgoal by (auto intro!: derivative_eq_intros)
+      subgoal by (rule diff_le) auto
+      done
+    then show ?thesis
+      unfolding xn_def
+      by (simp add: )
+  next
+    case 3
+    then obtain l' u' where
+      "bnds_cos p l u = (l', u')"
+      "Y = ivl_err (real_of_float l') (real_of_float u')"
+      using assms(2)
+      unfolding cos_aform_err_def X l u
+      by (auto simp: X l[symmetric] u[symmetric] split: prod.splits)
+    with bnds_cos[of l' u' p, rule_format, of l u xn] lxn uxn
+    show ?thesis
+      by (auto simp: xn_def)
+  qed
+qed
+
+definition "sqrt_aform_err p X = do {
+  let l = Inf_aform_err p X;
+  let u = Sup_aform_err p X;
+  if 0 < l then min_range_mono p Sqrt (\<lambda>x. Half (Inverse (Sqrt x))) l u X
+  else Some (ivl_err (lb_sqrt p l) (ub_sqrt p u))
+}"
+
+lemma sqrt_aform_err:
+  assumes x: "x \<in> aform_err e X"
+  assumes "sqrt_aform_err p X = Some Y"
+  assumes e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
+  shows "sqrt x \<in> aform_err e Y"
+proof -
+  obtain l u where l: "l = Inf_aform_err p X"
+    and u: "u = Sup_aform_err p X"
+    by auto
+  from x l u have lx: "l \<le> x" and ux: "x \<le> u"
+    using Inf_Sup_aform_err[OF e, of X p]
+    by auto
+  consider "l > 0" | "l \<le> 0"
+    by arith
+  then show ?thesis
+  proof cases
+    case 1
+    then have min_eq_Some: "min_range_mono p Sqrt (\<lambda>x. Half (Inverse (Sqrt x))) l u X = Some Y"
+      and bounds: "0 < l"
+      using assms(2)
+      unfolding sqrt_aform_err_def l u
+      by (auto simp: l[symmetric] u[symmetric] split: prod.splits if_splits)
+    have "sqrt x \<in> aform_err e Y"
+      apply (rule min_range_mono[OF x lx ux min_eq_Some e, where f'="\<lambda>x. 1 / (2 * sqrt x)"])
+      subgoal by simp
+      subgoal by (simp add: divide_simps)
+      subgoal using bounds by (auto intro!: derivative_eq_intros simp: inverse_eq_divide)
+      subgoal using \<open>l > 0\<close> by (auto simp: inverse_eq_divide min_def divide_simps)
+      done
+    then show ?thesis
+      by (simp add: )
+  next
+    case 2
+    then have "Y = ivl_err (lb_sqrt p l) (ub_sqrt p u)"
+      using assms(2)
+      unfolding sqrt_aform_err_def l u
+      by (auto simp: l[symmetric] u[symmetric] split: prod.splits)
+    with bnds_sqrt[rule_format, OF conjI[OF refl], of x l u p] lx ux
+    show ?thesis
+      by (auto simp: )
+  qed
+qed
+
+definition "ln_aform_err p X = do {
+  let l = Inf_aform_err p X;
+  let u = Sup_aform_err p X;
+  if 0 < l then min_range_mono p Ln\<^sub>e inverse l u X
+  else None
+}"
+
+lemma ln_aform_err:
+  assumes x: "x \<in> aform_err e X"
+  assumes "ln_aform_err p X = Some Y"
+  assumes e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
+  shows "ln x \<in> aform_err e Y"
+proof -
+  obtain l u where l: "l = Inf_aform_err p X"
+    and u: "u = Sup_aform_err p X"
+    by auto
+  from x l u have lx: "l \<le> x" and ux: "x \<le> u"
+    using Inf_Sup_aform_err[OF e, of X p]
+    by auto
+  consider "l > 0" | "l \<le> 0"
+    by arith
+  then show ?thesis
+  proof cases
+    case 1
+    then have min_eq_Some: "min_range_mono p Ln\<^sub>e inverse l u X = Some Y"
+      and bounds: "0 < l"
+      using assms(2)
+      unfolding ln_aform_err_def l u
+      by (auto simp: l[symmetric] u[symmetric] split: prod.splits if_splits)
+    have "ln x \<in> aform_err e Y"
+      apply (rule min_range_mono[OF x lx ux min_eq_Some e, where f'=inverse])
+      subgoal by simp
+      subgoal by (simp add: divide_simps)
+      subgoal using bounds by (auto intro!: derivative_eq_intros simp: inverse_eq_divide)
+      subgoal using \<open>l > 0\<close> by (auto simp: inverse_eq_divide min_def divide_simps)
+      done
+    then show ?thesis
+      by (simp add: )
+  next
+    case 2
+    then show ?thesis using assms
+      by (auto simp: ln_aform_err_def Let_def l[symmetric])
+  qed
+qed
+
+definition "exp_aform_err p X = do {
+  let l = Inf_aform_err p X;
+  let u = Sup_aform_err p X;
+  min_range_mono p Exp Exp l u X
+}"
+
+lemma exp_aform_err:
+  assumes x: "x \<in> aform_err e X"
+  assumes "exp_aform_err p X = Some Y"
+  assumes e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
+  shows "exp x \<in> aform_err e Y"
+proof -
+  obtain l u where l: "l = Inf_aform_err p X"
+    and u: "u = Sup_aform_err p X"
+    by auto
+  from x l u have lx: "l \<le> x" and ux: "x \<le> u"
+    using Inf_Sup_aform_err[OF e, of X p]
+    by auto
+  have min_eq_Some: "min_range_mono p Exp Exp l u X = Some Y"
+    using assms(2)
+    unfolding exp_aform_err_def l u
+    by (auto simp: l[symmetric] u[symmetric] split: prod.splits if_splits)
+  have "exp x \<in> aform_err e Y"
+    apply (rule min_range_mono[OF x lx ux min_eq_Some e, where f'=exp])
+    subgoal by simp
+    subgoal by (simp add: divide_simps)
+    subgoal by (auto intro!: derivative_eq_intros simp: inverse_eq_divide)
+    subgoal by (auto simp: inverse_eq_divide min_def divide_simps)
+    done
+  then show ?thesis
+    by (simp add: )
+qed
+
+definition "arctan_aform_err p X = do {
+  let l = Inf_aform_err p X;
+  let u = Sup_aform_err p X;
+  min_range_mono p Arctan\<^sub>e (\<lambda>x. 1 / (Num 1 + x * x)) l u X
+}"
+
+lemma pos_add_nonneg_ne_zero: "a > 0 \<Longrightarrow> b \<ge> 0 \<Longrightarrow> a + b \<noteq> 0"
+  for a b::real
+  by arith
+
+lemma arctan_aform_err:
+  assumes x: "x \<in> aform_err e X"
+  assumes "arctan_aform_err p X = Some Y"
+  assumes e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
+  shows "arctan x \<in> aform_err e Y"
+proof -
+  obtain l u where l: "l = Inf_aform_err p X"
+    and u: "u = Sup_aform_err p X"
+    by auto
+  from x l u have lx: "l \<le> x" and ux: "x \<le> u"
+    using Inf_Sup_aform_err[OF e, of X p]
+    by auto
+  have min_eq_Some: "min_range_mono p Arctan\<^sub>e (\<lambda>x. 1 / (Num 1 + x * x))  l u X = Some Y"
+    using assms(2)
+    unfolding arctan_aform_err_def l u
+    by (auto simp: l[symmetric] u[symmetric] split: prod.splits if_splits)
+  have "arctan x \<in> aform_err e Y"
+    apply (rule min_range_mono[OF x lx ux min_eq_Some e, where f'="\<lambda>x. inverse (1 + x\<^sup>2)"])
+    subgoal by simp
+    subgoal by (simp add: power2_eq_square inverse_eq_divide)
+    subgoal by (auto intro!: derivative_eq_intros simp: inverse_eq_divide)
+    subgoal for x
+      apply (cases "x \<le> 0")
+      subgoal
+        apply (rule min.coboundedI1)
+        apply (rule deriv_nonneg_imp_mono[of "real_of_float l" x])
+        by (auto intro!: derivative_eq_intros simp: mult_le_0_iff pos_add_nonneg_ne_zero)
+      subgoal
+        apply (rule min.coboundedI2)
+        apply (rule le_imp_inverse_le)
+        by (auto intro!: power_mono add_pos_nonneg)
+      done
+    done
+  then show ?thesis
+    by (simp add: )
+qed
+
+subsection \<open>Power, TODO: compare with Min-range approximation?!\<close>
+
+definition "power_aform_err p (X::aform_err) n =
+  (if n = 0 then ((1, zero_pdevs), 0)
+  else if n = 1 then X
+  else
+    let x0 = float_of (fst (fst X));
+      xs = snd (fst X);
+      xe = float_of (snd X);
+      C = the (approx p (Num x0 ^\<^sub>e n) []);
+      (c, ce) = mid_err C;
+      NX = the (approx p (Num (of_nat n) * (Num x0 ^\<^sub>e (n - 1))) []);
+      (nx, nxe) = mid_err NX;
+      Y = scaleR_pdevs nx xs;
+      (Y', Y_err) = trunc_bound_pdevs p Y;
+      t = tdev' p xs;
+      Ye = truncate_up p (nxe * t);
+      (_, ERR) = the (approx p
+        (Num (of_nat n) * Num xe * Abs (Num x0) ^\<^sub>e (n - 1) + 
+        (Sum\<^sub>e (\<lambda>k. Num (of_nat (n choose k)) * Abs (Num x0) ^\<^sub>e (n - k) * (Num xe + Num (float_of t)) ^\<^sub>e k)
+          [2..<Suc n])) [])
+    in ((c, Y'), sum_list' p [ce, Y_err, Ye, real_of_float ERR]))"
+
+lemma bounded_by_Nil: "bounded_by [] []"
+  by (auto simp: bounded_by_def)
+
+lemma plain_floatarith_approx:
+  assumes "plain_floatarith 0 f"
+  shows "interpret_floatarith f [] \<in>
+    {real_of_float (fst (the (approx p f []))) .. real_of_float (snd (the (approx p f [])))}"
+proof -
+  from plain_floatarith_approx_not_None[OF assms(1), of Nil p]
+  obtain l u where "Some (l, u) = approx p f []"
+    by auto
+  from this[symmetric] approx[OF bounded_by_Nil this]
+  show ?thesis
+    by auto
+qed
+
+lemma plain_floatarith_Sum\<^sub>e:
+  "plain_floatarith n (Sum\<^sub>e f xs) \<longleftrightarrow> list_all (\<lambda>i. plain_floatarith n (f i)) xs"
+  by (induction xs) (auto simp: zero_floatarith_def plus_floatarith_def)
+
+lemma sum_list'_float[simp]: "sum_list' p xs \<in> float"
+  by (induction xs rule: rev_induct) (auto simp: sum_list'_def eucl_truncate_up_real_def)
+
+lemma tdev'_float[simp]: "tdev' p xs \<in> float"
+  by (auto simp: tdev'_def)
+
+lemma
+  fixes x y::real
+  assumes "abs (x - y) \<le> e"
+  obtains err where "x = y + err" "abs err \<le> e"
+  using assms
+  apply atomize_elim
+  apply (rule exI[where x="x - y"])
+  by (auto simp: abs_real_def)
+
+theorem power_aform_err:
+  assumes "x \<in> aform_err e X"
+  assumes floats[simp]: "fst (fst X) \<in> float" "snd X \<in> float"
+  assumes e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
+  shows "x ^ n \<in> aform_err e (power_aform_err p X n)"
+proof -
+  consider "n = 0" | "n = 1" | "n \<ge> 2"
+    by arith
+  then show ?thesis
+  proof cases
+    case 1
+    then show ?thesis by (auto simp: aform_err_def power_aform_err_def aform_val_def)
+  next
+    case 2
+    then show ?thesis
+      using assms
+      by (auto simp: aform_err_def power_aform_err_def aform_val_def)
+  next
+    case n: 3
+    define x0 where "x0 = (fst (fst X))"
+    define xs where "xs = snd (fst X)"
+    define xe where "xe = (snd X)"
+    have [simp]: "x0 \<in> float" "xe \<in> float" using assms by (auto simp: x0_def xe_def)
+  
+    define xe' where "xe' = x - aform_val e (x0, xs)"
+    from aform_errE[OF assms(1)]
+    have xe': "\<bar>xe'\<bar> \<le> xe"
+      by (auto simp: x0_def xs_def xe_def xe'_def)
+    then have xe_nonneg: "0 \<le> xe"
+      by (auto simp: )
+  
+    define t where "t = tdev' p xs"
+    have t: "tdev xs \<le> t" "t \<in> float" by (auto simp add: t_def tdev'_le)
+    then have t_nonneg: "0 \<le> t" using tdev_nonneg[of xs] by arith
+    note t_pdevs = abs_pdevs_val_le_tdev[OF e, THEN order_trans, OF t(1)]
+  
+    have rewr1: "{0..n} = (insert 0 (insert 1 {2..n}))" using n by auto
+    have "x = (pdevs_val e xs + xe') + x0"
+      by (simp add: xe'_def aform_val_def)
+    also have "\<dots> ^ n = x0 ^ n + n * x0 ^ (n - Suc 0) * pdevs_val e xs +
+      (n * xe' * x0 ^ (n - Suc 0) +
+        (\<Sum>k = 2..n. real (n choose k) * (pdevs_val e xs + xe') ^ k * x0 ^ (n - k)))"
+      (is "_ = _ + ?err")
+      apply (subst binomial_ring)
+      unfolding rewr1
+      using n
+      apply (simp add: algebra_simps)
+      done
+    also
+  
+    let ?ERR = "(Num (of_nat n) * Num (float_of xe) * Abs (Num (float_of x0)) ^\<^sub>e (n - 1) + 
+          (Sum\<^sub>e (\<lambda>k. Num (of_nat (n choose k)) * Abs (Num (float_of x0)) ^\<^sub>e (n - k) *
+            (Num (float_of xe) + Num (float_of t)) ^\<^sub>e k)
+            [2..<Suc n]))"
+    define ERR where "ERR = snd (the (approx p ?ERR []))"
+    have ERR: "abs ?err \<le> ERR"
+    proof -
+      have err_aerr: "abs (?err) \<le> n * xe * abs x0 ^ (n - Suc 0) +
+          (\<Sum>k = 2..n. real (n choose k) * (t + xe) ^ k * abs x0 ^ (n - k))"
+        (is "_ \<le> ?aerr")
+        by (auto simp: abs_mult power_abs intro!: sum_mono mult_mono power_mono xe'
+            mult_nonneg_nonneg zero_le_power t_nonneg xe_nonneg add_nonneg_nonneg
+            sum_abs[THEN order_trans] abs_triangle_ineq[THEN order_trans] add_mono t_pdevs)
+      also
+      have rewr: "{2 .. n} = {2 ..<Suc n}"
+        using n
+        by (auto simp: )
+      have "plain_floatarith 0 ?ERR"
+        by (auto simp add: zero_floatarith_def plain_floatarith_Sum\<^sub>e times_floatarith_def
+            plus_floatarith_def intro!: list_allI)
+      from plain_floatarith_approx[OF this, of p]
+      have "ERR \<ge> ?aerr"
+        using n
+        by (auto simp: ERR_def sum_list_distinct_conv_sum_set rewr t x0_def algebra_simps)
+      finally show ?thesis .
+    qed
+  
+    let ?x0n = "Num (float_of x0) ^\<^sub>e n"
+    define C where "C = the (approx p ?x0n [])"
+    have "plain_floatarith 0 ?x0n" by simp
+    from plain_floatarith_approx[OF this, of p]
+    have C: "x0 ^ n \<in> {fst C .. snd C}"
+      by (auto simp: C_def x0_def)
+    
+    define c where "c = fst (mid_err C)"
+    define ce where "ce = snd (mid_err C)"
+    define ce' where "ce' = x0 ^ n - c"
+    have ce': "abs (ce') \<le> ce"
+      using C
+      by (auto simp: ce'_def c_def ce_def abs_diff_le_iff mid_err_def divide_simps)
+    have "x0 ^ n = c + ce'" by (simp add: ce'_def)
+    also
+  
+    let ?NX = "(Num (of_nat n) * (Num (float_of x0) ^\<^sub>e (n - 1)))"
+    define NX where "NX = the (approx p ?NX [])"
+    have "plain_floatarith 0 ?NX" by (simp add: times_floatarith_def)
+    from plain_floatarith_approx[OF this, of p]
+    have NX: "n * x0 ^ (n - 1) \<in> {fst NX .. snd NX}"
+      by (auto simp: NX_def x0_def)
+    
+    define nx where "nx = fst (mid_err NX)"
+    define nxe where "nxe = snd (mid_err NX)"
+    define nx' where "nx' = n * x0 ^ (n - 1) - nx"
+    define Ye where "Ye = truncate_up p (nxe * t)"
+    have Ye: "Ye \<ge> nxe * t" by (auto simp: Ye_def truncate_up_le)
+    have nx: "abs (nx') \<le> nxe" "0 \<le> nxe"
+      using NX
+      by (auto simp: nx_def nxe_def abs_diff_le_iff mid_err_def divide_simps nx'_def)
+    have Ye: "abs (nx' * pdevs_val e xs) \<le> Ye"
+      by (auto simp: Ye_def abs_mult intro!: truncate_up_le mult_mono nx t_pdevs)
+    have "n * x0 ^ (n - Suc 0) = nx + nx'" by (simp add: nx'_def)
+    also
+  
+    define Y where "Y = scaleR_pdevs nx xs"
+    have Y: "pdevs_val e Y = nx * pdevs_val e xs"
+      by (simp add: Y_def)
+    have "(nx + nx') * pdevs_val e xs = pdevs_val e Y + nx' * pdevs_val e xs"
+      unfolding Y by (simp add: algebra_simps)
+    also
+  
+    define Y' where "Y' = fst (trunc_bound_pdevs p Y)"
+    define Y_err where "Y_err = snd (trunc_bound_pdevs p Y)"
+    have Y_err: "abs (- pdevs_val e (trunc_err_pdevs p Y)) \<le> Y_err"
+      by (auto simp: Y_err_def trunc_bound_pdevs_def abs_pdevs_val_le_tdev' e)
+    have "pdevs_val e Y = pdevs_val e Y' + - pdevs_val e (trunc_err_pdevs p Y)"
+      by (simp add: Y'_def trunc_bound_pdevs_def pdevs_val_trunc_err_pdevs)
+    finally
+    have "\<bar>x ^ n - aform_val e (c, Y') \<bar> =
+      \<bar>ce' + - pdevs_val e (trunc_err_pdevs p Y) + nx' * pdevs_val e xs + ?err\<bar>"
+      by (simp add: algebra_simps aform_val_def)
+    also have "\<dots> \<le> ce + Y_err + Ye + ERR"
+      by (intro ERR abs_triangle_ineq[THEN order_trans] add_mono ce' Ye Y_err)
+    also have "\<dots> \<le> sum_list' p [ce, Y_err, Ye, real_of_float ERR]"
+      by (auto intro!: sum_list'_sum_list_le)
+    finally show ?thesis
+      using n
+      by (intro aform_errI)
+        (auto simp: power_aform_err_def c_def Y'_def C_def Y_def ERR_def x0_def nx_def xs_def NX_def
+          ce_def Y_err_def Ye_def xe_def nxe_def t_def Let_def split_beta')
+  qed
+qed
+
+definition [code_abbrev]: "is_float r \<longleftrightarrow> r \<in> float"
+lemma [code]: "is_float (real_of_float f) = True"
+  by (auto simp: is_float_def)
+
+definition "powr_aform_err p X A = (
+    if Inf_aform_err p X > 0 then do {
+      L \<leftarrow> ln_aform_err p X;
+      exp_aform_err p (mult_aform' p A L)
+    }
+    else approx_bin p (bnds_powr p) X A)"
+
+lemma interval_extension_powr: "interval_extension2 (bnds_powr p) op powr"
+  using bnds_powr[of _ _ p]
+  by (force simp: interval_extension2_def)
+
+theorem powr_aform_err:
+  assumes x: "x \<in> aform_err e X"
+  assumes a: "a \<in> aform_err e A"
+  assumes e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
+  assumes Y: "powr_aform_err p X A = Some Y"
+  shows "x powr a \<in> aform_err e Y"
+proof cases
+  assume pos: "Inf_aform_err p X > 0"
+  with Inf_Sup_aform_err[OF e, of X p] x
+  have "x > 0" by auto
+  then have "x powr a = exp (a * ln x)"
+    by (simp add: powr_def)
+  also
+  from pos obtain L where L: "ln_aform_err p X = Some L"
+    and E: "exp_aform_err p (mult_aform' p A L) = Some Y"
+    using Y
+    by (auto simp: bind_eq_Some_conv powr_aform_err_def)
+  from ln_aform_err[OF x L e] have "ln x \<in> aform_err e L" .
+  from mult_aform'E[OF e a this] have "a * ln x \<in> aform_err e (mult_aform' p A L)" .
+  from exp_aform_err[OF this E e]
+  have "exp (a * ln x) \<in> aform_err e Y" .
+  finally show ?thesis .
+next
+  from x a have xa: "x \<in> aform_err e (fst X, snd X)" "a \<in> aform_err e (fst A, snd A)" by simp_all
+  assume "\<not> Inf_aform_err p X > 0"
+  then have "approx_bin p (bnds_powr p) (fst X, snd X) (fst A, snd A) = Some Y"
+    using Y by (auto simp: powr_aform_err_def)
+  from approx_binE[OF interval_extension_powr xa this e]
+  show "x powr a \<in> aform_err e Y" .
+qed
 
 fun
-  approx_realarith :: "nat \<Rightarrow> 'a::ordered_euclidean_space realarith \<Rightarrow> 'a aform list \<Rightarrow> nat \<Rightarrow>
-    real aform option"
+  approx_floatarith :: "nat \<Rightarrow> floatarith \<Rightarrow> aform_err list \<Rightarrow> (aform_err) option"
 where
-  "approx_realarith p (Add a b) vs l =
+  "approx_floatarith p (Add a b) vs =
     do {
-      a1 \<leftarrow> approx_realarith p a vs l;
-      let d1 = max l (degree_aform a1);
-      a2 \<leftarrow> approx_realarith p b vs d1;
-      let d1 = max d1 (degree_aform a2);
-      Some (add_aform' p d1 a1 a2)
+      a1 \<leftarrow> approx_floatarith p a vs;
+      a2 \<leftarrow> approx_floatarith p b vs;
+      Some (add_aform' p a1 a2)
     }"
-| "approx_realarith p (Mult a b) vs l =
+| "approx_floatarith p (Mult a b) vs =
     do {
-      a1 \<leftarrow> approx_realarith p a vs l;
-      let d1 = max l (degree_aform a1);
-      a2 \<leftarrow> approx_realarith p b vs (d1);
-      let d2 = max d1 (degree_aform a2);
-      Some (mult_aform' p d2 a1 a2)
+      a1 \<leftarrow> approx_floatarith p a vs;
+      a2 \<leftarrow> approx_floatarith p b vs;
+      Some (mult_aform' p a1 a2)
     }"
-| "approx_realarith p (Inverse a) vs m =
+| "approx_floatarith p (Inverse a) vs =
     do {
-      a \<leftarrow> approx_realarith p a vs m;
-      let d = max m (degree (snd a));
-      inverse_aform p d a}"
-| "approx_realarith p (Minus a) vs m =
-    map_option uminus_aform (approx_realarith p a vs m)"
-| "approx_realarith p (Num f) vs m =
-    Some (num_aform f)"
-| "approx_realarith p (Var i b) vs m =
-  (if i < length vs
-  then Some (inner_aform (vs ! i) b)
-  else None)"
+      a \<leftarrow> approx_floatarith p a vs;
+      inverse_aform_err p a
+    }"
+| "approx_floatarith p (Minus a) vs =
+    map_option (apfst uminus_aform) (approx_floatarith p a vs)"
+| "approx_floatarith p (Num f) vs =
+    Some (num_aform (real_of_float f), 0)"
+| "approx_floatarith p (Var i) vs =
+  (if i < length vs then Some (vs ! i) else None)"
+| "approx_floatarith p (Abs a) vs =
+    do {
+      r \<leftarrow> approx_floatarith p a vs;
+      let i = Inf_aform_err p r;
+      let s = Sup_aform_err p r;
+      if i > 0 then Some r
+      else if s < 0 then Some (apfst uminus_aform r)
+      else do {
+        Some (ivl_err 0 (max (- i) \<bar>s\<bar>))
+      }
+    }"
+| "approx_floatarith p (Min\<^sub>e a b) vs =
+    do {
+      a1 \<leftarrow> approx_floatarith p a vs;
+      a2 \<leftarrow> approx_floatarith p b vs;
+      Some (min_aform_err p a1 a2)
+    }"
+| "approx_floatarith p (floatarith.Max a b) vs =
+    do {
+      a1 \<leftarrow> approx_floatarith p a vs;
+      a2 \<leftarrow> approx_floatarith p b vs;
+      Some (max_aform_err p a1 a2)
+    }"
+| "approx_floatarith p (Floor a) vs =
+    approx_un p (\<lambda>l u. Some (floor_fl l, floor_fl u)) (approx_floatarith p a vs)"
+| "approx_floatarith p (Cos a) vs =
+    do {
+      a \<leftarrow> approx_floatarith p a vs;
+      cos_aform_err p a
+    }"
+| "approx_floatarith p Pi\<^sub>e vs = Some (ivl_err (lb_pi p) (ub_pi p))"
+| "approx_floatarith p (Sqrt a) vs =
+    do {
+      a \<leftarrow> approx_floatarith p a vs;
+      sqrt_aform_err p a
+    }"
+| "approx_floatarith p (Ln\<^sub>e a) vs =
+    do {
+      a \<leftarrow> approx_floatarith p a vs;
+      ln_aform_err p a
+    }"
+| "approx_floatarith p (Arctan\<^sub>e a) vs =
+    do {
+      a \<leftarrow> approx_floatarith p a vs;
+      arctan_aform_err p a
+    }"
+| "approx_floatarith p (Exp a) vs =
+    do {
+      a \<leftarrow> approx_floatarith p a vs;
+      exp_aform_err p a
+    }"
+| "approx_floatarith p (Power a n) vs =
+    do {
+      ((a, as), e) \<leftarrow> approx_floatarith p a vs;
+      if is_float a \<and> is_float e then Some (power_aform_err p ((a, as), e) n)
+      else None
+    }"
+| "approx_floatarith p (Powr a b) vs =
+    do {
+      ae1 \<leftarrow> approx_floatarith p a vs;
+      ae2 \<leftarrow> approx_floatarith p b vs;
+      powr_aform_err p ae1 ae2
+    }"
 
 lemma uminus_aform_uminus_aform[simp]: "uminus_aform (uminus_aform z) = (z::'a::real_vector aform)"
   by (auto intro!: prod_eqI pdevs_eqI simp: uminus_aform_def)
 
-lemma approx_realarith_Elem:
-  assumes "vs = map (aform_val e') VS"
-  assumes "e' \<in> UNIV \<rightarrow> {-1 .. 1}"
-  assumes "approx_realarith p ra VS d = Some X"
-  assumes "\<And>V. V \<in> set VS \<Longrightarrow> degree (snd V) \<le> d"
-  shows
-    "\<exists>e. e \<in> UNIV \<rightarrow> {-1 .. 1} \<and> (\<forall>i < d. e i = e' i) \<and> interpret_realarith ra vs = aform_val e X"
-  using assms(1-4)
-proof (induction ra arbitrary: X d e')
+lemma interval_extension_cos: "interval_extension1 (\<lambda>l u. Some (bnds_cos p l u)) cos"
+  using bnds_cos
+  by (auto simp: interval_extension1_def) metis+
+
+lemma interval_extension_power: "interval_extension1 (\<lambda>l u. Some (float_power_bnds p n l u)) (\<lambda>x. x ^ n)"
+  using bnds_power
+  by (auto simp: interval_extension1_def bind_eq_Some_conv; metis)
+
+lemma interval_extension_ln: "interval_extension1 (\<lambda>l u. do {l' \<leftarrow> lb_ln p l; u' \<leftarrow> ub_ln p u; Some (l', u')}) ln"
+  using bnds_ln[of _ _ p]
+  by (auto simp del: lb_ln.simps ub_ln.simps simp: interval_extension1_def bind_eq_Some_conv; metis)
+
+lemma interval_extension_arctan: "interval_extension1 (\<lambda>l u. Some (lb_arctan p l, ub_arctan p u)) arctan"
+  using bnds_arctan
+  by (auto simp del: lb_arctan.simps ub_arctan.simps simp: interval_extension1_def; metis)
+
+lemma interval_extension_exp: "interval_extension1 (\<lambda>l u. Some (lb_exp p l, ub_exp p u)) exp"
+  using bnds_exp
+  by (auto simp: interval_extension1_def; metis)
+
+lemma interval_extension_sqrt: "interval_extension1 (\<lambda>l u. Some (lb_sqrt p l, ub_sqrt p u)) sqrt"
+  using bnds_sqrt
+  by (auto simp: interval_extension1_def; metis)
+
+lemma interval_extension_floor: "interval_extension1 (\<lambda>l u. Some (floor_fl l, floor_fl u)) floor"
+  by (auto simp: interval_extension1_def floor_fl.rep_eq floor_mono)
+
+lemma degree_aform_inverse_aform':
+  "degree_aform X \<le> n \<Longrightarrow> degree_aform (fst (inverse_aform' p X)) \<le> n"
+  unfolding inverse_aform'_def
+  by (auto simp: Let_def trunc_bound_pdevs_def intro!: degree_pdev_upd_le degree_trunc_pdevs_le)
+
+lemma degree_aform_inverse_aform:
+  assumes "inverse_aform p X = Some Y"
+  assumes "degree_aform X \<le> n"
+  shows "degree_aform (fst Y) \<le> n"
+  using assms 
+  by (auto simp: inverse_aform_def Let_def degree_aform_inverse_aform' split: if_splits)
+
+lemma degree_aform_ivl_err[simp]: "degree_aform (fst (ivl_err a b)) = 0"
+  by (auto simp: ivl_err_def)
+
+lemma degree_aform_approx_bin:
+  assumes "approx_bin p ivl X Y = Some Z"
+  assumes "degree_aform (fst X) \<le> m"
+  assumes "degree_aform (fst Y) \<le> m"
+  shows "degree_aform (fst Z) \<le> m"
+  using assms
+  by (auto simp: approx_bin_def bind_eq_Some_conv Basis_list_real_def
+      intro!: order_trans[OF degree_aform_independent_from]
+      order_trans[OF degree_aform_of_ivl])
+
+lemma degree_aform_approx_un:
+  assumes "approx_un p ivl X = Some Y"
+  assumes "case X of None \<Rightarrow> True | Some X \<Rightarrow> degree_aform (fst X) \<le> d1"
+  shows "degree_aform (fst Y) \<le> d1"
+  using assms
+  by (auto simp: approx_un_def bind_eq_Some_conv Basis_list_real_def
+      intro!: order_trans[OF degree_aform_independent_from]
+      order_trans[OF degree_aform_of_ivl])
+
+lemma degree_aform_num_aform[simp]: "degree_aform (num_aform x) = 0"
+  by (auto simp: num_aform_def)
+
+lemma degree_max_aform:
+  assumes "degree_aform_err x \<le> d"
+  assumes "degree_aform_err y \<le> d"
+  shows "degree_aform_err (max_aform_err p x y) \<le> d"
+  using assms
+  by (auto simp: max_aform_err_def Let_def Basis_list_real_def split: prod.splits
+      intro!: order_trans[OF degree_aform_independent_from] order_trans[OF degree_aform_of_ivl])
+
+lemma degree_min_aform:
+  assumes "degree_aform_err x \<le> d"
+  assumes "degree_aform_err y \<le> d"
+  shows "degree_aform_err ((min_aform_err p x y)) \<le> d"
+  using assms
+  by (auto simp: min_aform_err_def Let_def Basis_list_real_def split: prod.splits
+      intro!: order_trans[OF degree_aform_independent_from] order_trans[OF degree_aform_of_ivl])
+
+lemma degree_aform_acc_err:
+  "degree_aform (fst (acc_err p X e)) \<le> d"
+  if "degree_aform (fst X) \<le> d"
+  using that by (auto simp: acc_err_def)
+
+lemma degree_pdev_upd_degree:
+  assumes "degree b \<le> Suc n"
+  assumes "degree b \<le> Suc (degree_aform_err X)"
+  assumes "degree_aform_err X \<le> n"
+  shows "degree (pdev_upd b (degree_aform_err X) 0) \<le> n"
+  using assms
+  by (auto intro!: degree_le)
+
+lemma degree_aform_err_inverse_aform_err:
+  assumes "inverse_aform_err p X = Some Y"
+  assumes "degree_aform_err X \<le> n"
+  shows "degree_aform_err Y \<le> n"
+  using assms
+  apply (auto simp: inverse_aform_err_def bind_eq_Some_conv aform_to_aform_err_def
+      acc_err_def map_aform_err_def
+      aform_err_to_aform_def
+      intro!: degree_aform_acc_err)
+  apply (rule degree_pdev_upd_degree)
+    apply (auto dest!: degree_aform_inverse_aform)
+  apply (meson degree_pdev_upd_le nat_le_linear not_less_eq_eq order_trans)
+  apply (meson degree_pdev_upd_le nat_le_linear not_less_eq_eq order_trans)
+  done
+
+lemma degree_aform_err_affine_unop:
+  "degree_aform_err (affine_unop p a b d X) \<le> n"
+  if "degree_aform_err X \<le> n"
+  using that
+  by (auto simp: affine_unop_def trunc_bound_pdevs_def degree_trunc_pdevs_le split: prod.splits)
+
+
+lemma degree_aform_err_min_range_mono:
+  assumes "min_range_mono p F D l u X = Some Y"
+  assumes "degree_aform_err X \<le> n"
+  shows "degree_aform_err Y \<le> n"
+  using assms
+  by (auto simp: min_range_mono_def bind_eq_Some_conv aform_to_aform_err_def
+      acc_err_def map_aform_err_def mid_err_def range_reduce_aform_err_def
+      aform_err_to_aform_def Let_def split: if_splits prod.splits
+      intro!: degree_aform_err_affine_unop)
+
+lemma degree_aform_err_min_range_antimono:
+  assumes "min_range_antimono p F D l u X = Some Y"
+  assumes "degree_aform_err X \<le> n"
+  shows "degree_aform_err Y \<le> n"
+  using assms
+  by (auto simp: min_range_antimono_def bind_eq_Some_conv aform_to_aform_err_def
+      acc_err_def map_aform_err_def mid_err_def range_reduce_aform_err_def
+      aform_err_to_aform_def Let_def split: if_splits prod.splits
+      intro!: degree_aform_err_affine_unop)
+
+lemma degree_aform_err_cos_aform_err:
+  assumes "cos_aform_err p X = Some Y"
+  assumes "degree_aform_err X \<le> n"
+  shows "degree_aform_err Y \<le> n"
+  using assms
+  apply (auto simp: cos_aform_err_def bind_eq_Some_conv aform_to_aform_err_def
+      acc_err_def map_aform_err_def mid_err_def range_reduce_aform_err_def
+      aform_err_to_aform_def Let_def split: if_splits prod.splits
+      intro!: degree_aform_err_affine_unop)
+  apply (metis degree_aform_err_add_aform' degree_aform_err_min_range_antimono degree_aform_ivl_err zero_le)
+  apply (metis degree_aform_err_add_aform' degree_aform_err_min_range_mono degree_aform_ivl_err zero_le)
+  apply (metis degree_aform_err_add_aform' degree_aform_err_min_range_mono degree_aform_ivl_err zero_le)
+  apply (metis degree_aform_err_add_aform' degree_aform_err_min_range_antimono degree_aform_ivl_err zero_le)
+  apply (metis degree_aform_err_add_aform' degree_aform_err_min_range_antimono degree_aform_ivl_err zero_le)
+  apply (metis degree_aform_err_add_aform' degree_aform_err_min_range_antimono degree_aform_ivl_err zero_le)
+  done
+
+lemma degree_aform_err_sqrt_aform_err:
+  assumes "sqrt_aform_err p X = Some Y"
+  assumes "degree_aform_err X \<le> n"
+  shows "degree_aform_err Y \<le> n"
+  using assms
+  apply (auto simp: sqrt_aform_err_def Let_def split: if_splits)
+  apply (metis degree_aform_err_min_range_mono)
+  done
+
+lemma degree_aform_err_arctan_aform_err:
+  assumes "arctan_aform_err p X = Some Y"
+  assumes "degree_aform_err X \<le> n"
+  shows "degree_aform_err Y \<le> n"
+  using assms
+  apply (auto simp: arctan_aform_err_def bind_eq_Some_conv)
+  apply (metis degree_aform_err_min_range_mono)
+  done
+
+lemma degree_aform_err_exp_aform_err:
+  assumes "exp_aform_err p X = Some Y"
+  assumes "degree_aform_err X \<le> n"
+  shows "degree_aform_err Y \<le> n"
+  using assms
+  apply (auto simp: exp_aform_err_def bind_eq_Some_conv)
+  apply (metis degree_aform_err_min_range_mono)
+  done
+
+lemma degree_aform_err_ln_aform_err:
+  assumes "ln_aform_err p X = Some Y"
+  assumes "degree_aform_err X \<le> n"
+  shows "degree_aform_err Y \<le> n"
+  using assms
+  apply (auto simp: ln_aform_err_def Let_def split: if_splits)
+  apply (metis degree_aform_err_add_aform' degree_aform_err_min_range_mono degree_aform_ivl_err zero_le)
+  done
+
+lemma degree_aform_err_power_aform_err:
+  assumes "degree_aform_err X \<le> n"
+  shows "degree_aform_err (power_aform_err p X m) \<le> n"
+  using assms
+  by (auto simp: power_aform_err_def Let_def trunc_bound_pdevs_def degree_trunc_pdevs_le
+      split: if_splits prod.splits)
+
+lemma degree_aform_err_powr_aform_err:
+  assumes "powr_aform_err p X Z = Some Y"
+  assumes "degree_aform_err X \<le> n"
+  assumes "degree_aform_err Z \<le> n"
+  shows "degree_aform_err Y \<le> n"
+  using assms
+  apply (auto simp: powr_aform_err_def bind_eq_Some_conv degree_aform_mult_aform'
+      dest!: degree_aform_err_ln_aform_err degree_aform_err_exp_aform_err
+      split: if_splits)
+  apply (metis degree_aform_mult_aform' fst_conv order_trans snd_conv)
+  apply (rule degree_aform_approx_bin, assumption)
+  apply auto
+  done
+
+lemma approx_floatarith_degree:
+  assumes "approx_floatarith p ra VS = Some X"
+  assumes "\<And>V. V \<in> set VS \<Longrightarrow> degree_aform_err V \<le> d"
+  shows "degree_aform_err X \<le> d"
+  using assms
+proof (induction ra arbitrary: X)
   case (Add ra1 ra2)
-  thus ?case
-  proof (cases "approx_realarith p ra1 VS d")
-    fix Y1
-    assume Y1: "approx_realarith p ra1 VS d = Some Y1"
-    define d1 where "d1 = max d (degree_aform Y1)"
-    from Y1
-    show ?case
-    proof (cases "approx_realarith p ra2 VS d1")
-      fix Y2
-      assume Y2: "approx_realarith p ra2 VS d1 = Some Y2"
-      from Add(1)[OF Add(3-4) Y1 Add(6)] obtain e1 where e1:
-        "e1 \<in> UNIV \<rightarrow> {-1..1}"
-        "(\<forall>i<d. e1 i = e' i)"
-        "interpret_realarith ra1 vs = aform_val e1 Y1" by blast
-      from this(2) have "vs = map (\<lambda>x. aform_val e1 x) VS"
-        using Add(3,6)
-        by (auto simp: aform_val_def pdevs_val_sum intro!: sum.cong)
-          (metis dual_order.order_iff_strict less_trans)
-      from Add(2)[OF this e1(1) Y2 order_trans[OF Add(6)]]
-      obtain e2 where e2:
-        "e2 \<in> UNIV \<rightarrow> {-1..1}"
-        "(\<forall>i<d1. e2 i = e1 i)"
-        "interpret_realarith ra2 vs = aform_val e2 Y2"
-        by (auto simp: d1_def)
-      hence e1Y1: "aform_val e1 Y1 = aform_val e2 Y1" using e1
-        by (auto simp: aform_val_def pdevs_val_sum d1_def)
-      define d2 where "d2 = max d1 (degree_aform Y2)"
-      have "pdevs_apply (snd Y1) d2 = 0" "pdevs_apply (snd Y2) d2 = 0"
-        by (auto simp: d1_def d2_def)
-      from add_aform'E[of e2 Y1 d2 Y2, OF e2(1) this]
-      obtain err where err:
-        "aform_val e2 (add_aform Y1 Y2) = aform_val (e2(d2 := err)) (add_aform' p d2 Y1 Y2)"
-         "err \<in> {-1..1}"
-         by blast
-      define e3 where "e3 = e2(d2 := err)"
-      have "e2(max (max d (degree_aform Y1)) (degree_aform Y2) := err) =
-        (\<lambda>a. if a = max (max d (degree_aform Y1)) (degree_aform Y2)
-          then err else e2 a)"
-        by auto
-      thus ?case
-        using err e2 e1 Add Y1 Y2
-        by (auto intro!: exI[where x=e3] simp: e3_def d2_def d1_def aform_val_add_aform e1Y1)
-    qed (insert Add, simp add: d1_def)
-  qed simp
-next
-  case (Mult ra1 ra2)
-  thus ?case
-  proof (cases "approx_realarith p ra1 VS d")
-    fix Y1
-    assume Y1: "approx_realarith p ra1 VS d = Some Y1"
-    define d1 where "d1 = max d (degree_aform Y1)"
-    from Y1 show ?case
-    proof (cases "approx_realarith p ra2 VS d1")
-      fix Y2
-      assume Y2: "approx_realarith p ra2 VS d1 = Some Y2"
-      from Mult(1)[OF Mult(3-4) Y1 Mult(6)] obtain e1 where e1:
-        "e1 \<in> UNIV \<rightarrow> {-1..1}"
-        "(\<forall>i<d. e1 i = e' i)"
-        "interpret_realarith ra1 vs = aform_val e1 Y1" by blast
-      from this(2) have "vs = map (\<lambda>x. aform_val e1 x) VS"
-        using Mult(3,6)
-        by (auto simp: aform_val_def pdevs_val_sum intro!: sum.cong)
-          (metis dual_order.order_iff_strict less_trans)
-      from Mult(2)[OF this e1(1) Y2 order_trans[OF Mult(6)]]
-      obtain e2 where e2:
-        "e2 \<in> UNIV \<rightarrow> {-1..1}"
-        "(\<forall>i<d1. e2 i = e1 i)"
-        "interpret_realarith ra2 vs = aform_val e2 Y2"
-        by (auto simp: d1_def)
-      hence e1Y1: "aform_val e1 Y1 = aform_val e2 Y1" using e1
-        by (auto simp: aform_val_def pdevs_val_sum d1_def)
-      define d2 where "d2 = max d1 (degree_aform Y2)"
-      have "pdevs_apply (snd Y1) d2 = 0" "pdevs_apply (snd Y2) d2 = 0"
-        by (auto simp: d1_def d2_def)
-      from mult_aform'E[of e2 Y1 d2 Y2,OF e2(1) this]
-      obtain err where err:
-        "aform_val (e2(d2 := err)) (mult_aform' p d2 Y1 Y2) =
-          aform_val e2 Y1 * aform_val e2 Y2"
-        "err \<in> {-1 .. 1}" by blast
-      define e3 where "e3 = e2(d2 := err)"
-      have "e2(max (max d (degree_aform Y1)) (degree_aform Y2) := err) =
-        (\<lambda>a. if a = max (max d (degree_aform Y1)) (degree_aform Y2)
-          then err else e2 a)"
-        by auto
-      thus ?case
-        using err e2 e1 Mult Y1 Y2
-        by (auto intro!: exI[where x=e3] simp: e3_def d2_def d1_def e1Y1)
-    qed (insert Mult, simp add: d1_def)
-  qed simp
+  then show ?case 
+    by (auto simp: bind_eq_Some_conv intro!: degree_aform_err_add_aform' degree_aform_acc_err)
 next
   case (Minus ra)
-  have "approx_realarith p ra VS d = Some (uminus_aform X)"
-    using Minus by auto
-  from Minus(1)[OF Minus(2-3) this Minus(5)] obtain e where e:
-    "e \<in> UNIV \<rightarrow> {-1..1}" "(\<forall>i<d. e i = e' i)"
-    "interpret_realarith ra vs = aform_val e (uminus_aform X)"
-    by auto
-  thus ?case
-    by (auto simp: aform_val_def uminus_aform_def)
+  then show ?case
+    by (auto simp: bind_eq_Some_conv)
 next
-  case (Num f)
-  thus ?case
-    by (auto simp: num_aform_def aform_val_def)
-next
-  case (Var x y)
-  thus ?case
-    by (auto simp: aform_val_def inner_aform_def inner_add_left split: if_split_asm
-      intro!: exI[where x=e'])
+  case (Mult ra1 ra2)
+  then show ?case
+    by (auto simp: bind_eq_Some_conv intro!: degree_aform_mult_aform' degree_aform_acc_err)
 next
   case (Inverse ra)
-  thus ?case
-  proof (cases "approx_realarith p ra VS d")
-    fix Y
-    assume Y: "approx_realarith p ra VS d = Some Y"
-    define d1 where "d1 = max d (degree_aform Y)"
-    have d1: "pdevs_apply (snd Y) d1 = 0"
-      by (auto simp: d1_def uminus_aform_def)
-    from Inverse(1)[OF Inverse(2-3) Y Inverse (5)]
-    obtain e where e: "e \<in> UNIV \<rightarrow> {-1..1}" "(\<forall>i<d. e i = e' i)" and affine_pos:
-      "interpret_realarith ra vs = aform_val e Y"
-      by auto
-    have "Inf_aform' p Y > 0 \<or> Sup_aform' p Y < 0"
-      using Inverse Y
-      by (auto split: if_split_asm simp: Let_def inverse_aform_def)
-    from inverse_aformE[OF e(1) d1 this]
-    obtain err Z where Z:
-      "inverse_aform p d1 Y = Some Z"
-      "aform_val (e(d1 := err)) Z = inverse (aform_val e Y)"
-      "err \<in> {- 1..1}" .
-    with Inverse(4) have "X = Z"
-      by (auto simp: d1_def Y)
-    show ?case
-      using e \<open>err \<in> _\<close>
-      by (auto simp: affine_pos d1_def fun_upd_def \<open>X = Z\<close> Z(2)[symmetric]
-          intro!: exI[where x="e(d1:=err)"])
-  qed simp
+  then show ?case
+    by (auto simp: bind_eq_Some_conv intro: degree_aform_err_inverse_aform_err)
+next
+  case (Cos ra)
+  then show ?case
+    by (auto simp: bind_eq_Some_conv intro: degree_aform_err_cos_aform_err)
+next
+  case (Arctan ra)
+  then show ?case
+    by (auto simp: bind_eq_Some_conv intro: degree_aform_err_arctan_aform_err)
+next
+  case (Abs ra)
+  then show ?case
+    by (auto simp: bind_eq_Some_conv Let_def Basis_list_real_def
+        intro!: order_trans[OF degree_aform_independent_from] order_trans[OF degree_aform_of_ivl]
+          degree_aform_acc_err
+        split: if_splits) 
+next
+  case (Max ra1 ra2)
+  then show ?case
+    by (auto simp: bind_eq_Some_conv intro!: degree_max_aform degree_aform_acc_err)
+next
+  case (Min ra1 ra2)
+  then show ?case
+    by (auto simp: bind_eq_Some_conv intro!: degree_min_aform degree_aform_acc_err)
+next
+  case Pi
+  then show ?case
+    by (auto simp: bind_eq_Some_conv Let_def Basis_list_real_def
+        intro!: order_trans[OF degree_aform_independent_from] order_trans[OF degree_aform_of_ivl]
+          degree_aform_acc_err
+        split: if_splits)
+next
+  case (Sqrt ra)
+  then show ?case
+    by (auto simp: bind_eq_Some_conv intro: degree_aform_err_sqrt_aform_err)
+next
+  case (Exp ra)
+  then show ?case
+    by (auto simp: bind_eq_Some_conv intro: degree_aform_err_exp_aform_err)
+next
+  case (Powr ra1 ra2)
+  then show ?case
+    by (auto simp: bind_eq_Some_conv intro: degree_aform_err_powr_aform_err)
+next
+  case (Ln ra)
+  then show ?case
+    by (auto simp: bind_eq_Some_conv intro: degree_aform_err_ln_aform_err)
+next
+  case (Power ra x2a)
+  then show ?case
+    by (auto intro!: degree_aform_err_power_aform_err simp: bind_eq_Some_conv split: if_splits)
+next
+  case (Floor ra)
+  then show ?case
+    apply -
+    by (rule degree_aform_approx_un) (auto split: option.splits)
+next
+  case (Var x)
+  then show ?case
+    by (auto simp: max_def split: if_splits)
+      (use Var.prems(2) nat_le_linear nth_mem order_trans in blast)+
+next
+  case (Num x)
+  then show ?case by auto
 qed
 
-fun approx_euclarith ::
-  "nat \<Rightarrow> ('a::ordered_euclidean_space, 'b::ordered_euclidean_space) euclarith \<Rightarrow> 'a aform list \<Rightarrow>
-    nat \<Rightarrow> 'b aform option"
-where
-  "approx_euclarith p (AddE a b) vs l =
-    do {
-      a1 \<leftarrow> approx_euclarith p a vs l;
-      let d1 = max l (degree_aform a1);
-      a2 \<leftarrow> approx_euclarith p b vs d1;
-      let d1 = max d1 (degree_aform a2);
-      Some (add_aform a1 a2)
-    }"
-| "approx_euclarith p (ScaleR a b) vs m =
-    map_option (\<lambda>a. aform_scaleR a b) (approx_realarith p a vs m::real aform option)"
+definition affine_extension2 where
+  "affine_extension2 fnctn_aff fnctn \<longleftrightarrow> (
+    \<forall>d a1 a2 X e2.
+      fnctn_aff d a1 a2 = Some X \<longrightarrow>
+      e2 \<in> UNIV \<rightarrow> {- 1..1} \<longrightarrow>
+      d \<ge> degree_aform a1 \<longrightarrow>
+      d \<ge> degree_aform a2 \<longrightarrow>
+      (\<exists>e3 \<in> UNIV \<rightarrow> {- 1..1}.
+        (fnctn (aform_val e2 a1) (aform_val e2 a2) = aform_val e3 X \<and>
+          (\<forall>n. n < d \<longrightarrow> e3 n = e2 n) \<and>
+          aform_val e2 a1 = aform_val e3 a1 \<and> aform_val e2 a2 = aform_val e3 a2)))"
 
-lemma approx_euclarith_Elem:
-  assumes "vs = map (aform_val e') VS"
-  assumes "e' \<in> UNIV \<rightarrow> {-1 .. 1}"
-  assumes "approx_euclarith p ra VS d = Some X"
-  assumes "\<And>V. V \<in> set VS \<Longrightarrow> degree_aform V \<le> d"
-  shows
-    "\<exists>e. e \<in> UNIV \<rightarrow> {-1 .. 1} \<and> (\<forall>i < d. e i = e' i) \<and> interpret_euclarith ra vs = aform_val e X"
+lemma affine_extension2E:
+  assumes "affine_extension2 fnctn_aff fnctn"
+  assumes "fnctn_aff d a1 a2 = Some X"
+    "e \<in> UNIV \<rightarrow> {- 1..1}"
+    "d \<ge> degree_aform a1"
+    "d \<ge> degree_aform a2"
+  obtains e' where "e' \<in> UNIV \<rightarrow> {- 1..1}"
+    "fnctn (aform_val e a1) (aform_val e a2) = aform_val e' X"
+    "\<And>n. n < d \<Longrightarrow> e' n = e n"
+    "aform_val e a1 = aform_val e' a1"
+    "aform_val e a2 = aform_val e' a2"
   using assms
-proof (induction ra arbitrary: X d e')
-  case (AddE ra1 ra2)
-  thus ?case
-  proof (cases "approx_euclarith p ra1 VS d")
-    fix Y1
-    assume Y1: "approx_euclarith p ra1 VS d = Some Y1"
-    define d1 where "d1 = max d (degree_aform Y1)"
-    from Y1 show ?case
-    proof (cases "approx_euclarith p ra2 VS d1")
-      fix Y2
-      assume Y2: "approx_euclarith p ra2 VS d1 = Some Y2"
-      from AddE(1)[OF AddE(3-4) Y1 AddE(6)] obtain e1 where e1:
-        "e1 \<in> UNIV \<rightarrow> {-1..1}"
-        "(\<forall>i<d. e1 i = e' i)"
-        "interpret_euclarith ra1 vs = aform_val e1 Y1" by blast
-      from this(2) have "vs = map (\<lambda>x. aform_val e1 x) VS"
-        using AddE(3,6)
-        by (auto simp: aform_val_def pdevs_val_sum intro!: sum.cong)
-          (metis dual_order.order_iff_strict less_trans)
-      from AddE(2)[OF this e1(1) Y2 order_trans[OF AddE(6)]]
-      obtain e2 where e2:
-        "e2 \<in> UNIV \<rightarrow> {-1..1}"
-        "(\<forall>i<d1. e2 i = e1 i)"
-        "interpret_euclarith ra2 vs = aform_val e2 Y2"
-        by (auto simp: d1_def)
-      hence e1Y1: "aform_val e1 Y1 = aform_val e2 Y1" using e1
-        by (auto simp: aform_val_def pdevs_val_sum d1_def)
-      define d2 where "d2 = max d1 (degree_aform Y2)"
-      have "pdevs_apply (snd Y1) d2 = 0" "pdevs_apply (snd Y2) d2 = 0"
-        by (auto simp: d1_def d2_def)
-      from aform_val_add_aform[of e2 Y1 Y2]
-      have "aform_val e2 (add_aform Y1 Y2) = aform_val e2 Y1 + aform_val e2 Y2"
-        by blast
-      thus ?case
-        using e2 e1 AddE Y1 Y2
-        by (auto intro!: exI[where x=e2] simp: plusE_def d2_def d1_def aform_val_add_aform e1Y1)
-    qed (insert AddE, simp add: d1_def)
-  qed simp
+  unfolding affine_extension2_def
+  by metis
+
+lemma aform_err_uminus_aform:
+  "- x \<in> aform_err e (uminus_aform X, ba)"
+  if "e \<in> UNIV \<rightarrow> {-1 .. 1}" "x \<in> aform_err e (X, ba)"
+  using that by (auto simp: aform_err_def)
+
+definition "aforms_err e (xs::aform_err list) = listset (map (aform_err e) xs)"
+
+lemma aforms_err_Nil[simp]: "aforms_err e [] = {[]}"
+  and aforms_err_Cons: "aforms_err e (x#xs) = set_Cons (aform_err e x) (aforms_err e xs)"
+  by (auto simp: aforms_err_def)
+
+lemma in_set_ConsI: "a#b \<in> set_Cons A B"
+  if "a \<in> A" and "b \<in> B"
+  using that
+  by (auto simp: set_Cons_def)
+
+lemma mem_aforms_err_Cons_iff[simp]: "x#xs \<in> aforms_err e (X#XS) \<longleftrightarrow> x \<in> aform_err e X \<and> xs \<in> aforms_err e XS"
+  by (auto simp: aforms_err_Cons set_Cons_def)
+
+lemma mem_aforms_err_Cons_iff_Ex_conv: "x \<in> aforms_err e (X#XS) \<longleftrightarrow> (\<exists>y ys. x = y#ys \<and> y \<in> aform_err e X \<and> ys \<in> aforms_err e XS)"
+  by (auto simp: aforms_err_Cons set_Cons_def)
+
+lemma listset_Cons_mem_conv:
+  "a # vs \<in> listset AVS \<longleftrightarrow> (\<exists>A VS. AVS = A # VS \<and> a \<in> A \<and> vs \<in> listset VS)"
+  by (induction AVS) (auto simp: set_Cons_def)
+
+lemma listset_Nil_mem_conv[simp]:
+  "[] \<in> listset AVS \<longleftrightarrow> AVS = []"
+  by (induction AVS) (auto simp: set_Cons_def)
+
+lemma listset_nthD: "vs \<in> listset VS \<Longrightarrow> i < length vs \<Longrightarrow> vs ! i \<in> VS ! i"
+  by (induction vs arbitrary: VS i)
+     (auto simp: nth_Cons listset_Cons_mem_conv split: nat.splits)
+
+lemma length_listsetD:
+  "vs \<in> listset VS \<Longrightarrow> length vs = length VS"
+  by (induction vs arbitrary: VS) (auto simp: listset_Cons_mem_conv)
+
+lemma length_aforms_errD:
+  "vs \<in> aforms_err e VS \<Longrightarrow> length vs = length VS"
+  by (auto simp: aforms_err_def length_listsetD)
+
+lemma nth_aforms_errI:
+  "vs ! i \<in> aform_err e (VS ! i)"
+  if "vs \<in> aforms_err e VS" "i < length vs"
+  using that
+  unfolding aforms_err_def
+  apply -
+  apply (frule listset_nthD, assumption)
+  by (auto simp: aforms_err_def length_listsetD )
+
+lemma eucl_truncate_down_float[simp]: "eucl_truncate_down p x \<in> float"
+  by (auto simp: eucl_truncate_down_def)
+
+lemma eucl_truncate_up_float[simp]: "eucl_truncate_up p x \<in> float"
+  by (auto simp: eucl_truncate_up_def)
+
+lemma trunc_bound_eucl_float[simp]: "fst (trunc_bound_eucl p x) \<in> float"
+  "snd (trunc_bound_eucl p x) \<in> float"
+  by (auto simp: trunc_bound_eucl_def Let_def)
+
+lemma add_aform'_float:
+  "add_aform' p x y = ((a, b), ba) \<Longrightarrow> a \<in> float"
+  "add_aform' p x y = ((a, b), ba) \<Longrightarrow> ba \<in> float"
+  by (auto simp: add_aform'_def Let_def)
+
+lemma uminus_aform_float: "uminus_aform (aa, bb) = (a, b) \<Longrightarrow> aa \<in> float \<Longrightarrow> a \<in> float"
+  by (auto simp: uminus_aform_def)
+
+lemma mult_aform'_float: "mult_aform' p x y = ((a, b), ba) \<Longrightarrow> a \<in> float"
+   "mult_aform' p x y = ((a, b), ba) \<Longrightarrow> ba \<in> float"
+  by (auto simp: mult_aform'_def Let_def split_beta')
+
+lemma inverse_aform'_float: "inverse_aform' p x = ((a, bb), baa) \<Longrightarrow> a \<in> float"
+  unfolding inverse_aform'_def
+  by (auto simp: inverse_aform'_def Let_def split!: if_splits)
+
+lemma inverse_aform_float:
+  "inverse_aform p x = Some ((a, bb), baa) \<Longrightarrow> a \<in> float"
+  by (auto simp: inverse_aform_def Let_def apfst_def map_prod_def uminus_aform_def
+      inverse_aform'_float
+      split: if_splits prod.splits)
+
+lemma inverse_aform_err_float: "inverse_aform_err p x = Some ((a, b), ba) \<Longrightarrow> a \<in> float"
+   "inverse_aform_err p x = Some ((a, b), ba) \<Longrightarrow> ba \<in> float"
+  by (auto simp: inverse_aform_err_def map_aform_err_def acc_err_def bind_eq_Some_conv
+      aform_err_to_aform_def aform_to_aform_err_def inverse_aform_float)
+
+lemma affine_unop_float:
+  "affine_unop p asdf aaa bba h = ((a, b), ba) \<Longrightarrow> a \<in> float"
+  "affine_unop p asdf aaa bba h = ((a, b), ba) \<Longrightarrow> ba \<in> float"
+  by (auto simp: affine_unop_def trunc_bound_eucl_def Let_def split: prod.splits)
+
+lemma min_range_antimono_float:
+  "min_range_antimono p f f' i g h = Some ((a, b), ba) \<Longrightarrow> a \<in> float"
+  "min_range_antimono p f f' i g h = Some ((a, b), ba) \<Longrightarrow> ba \<in> float"
+  by (auto simp: min_range_antimono_def Let_def bind_eq_Some_conv mid_err_def
+      affine_unop_float split: prod.splits)
+  
+lemma min_range_mono_float:
+  "min_range_mono p f f' i g h = Some ((a, b), ba) \<Longrightarrow> a \<in> float"
+  "min_range_mono p f f' i g h = Some ((a, b), ba) \<Longrightarrow> ba \<in> float"
+  by (auto simp: min_range_mono_def Let_def bind_eq_Some_conv mid_err_def
+      affine_unop_float split: prod.splits)
+
+lemma ivl_err_float:
+  assumes "ivl_err x y = ((a, b), ba)" "x \<in> float" "y \<in> float" 
+  shows "a \<in> float" "ba \<in> float"
+proof -
+  from assms(1) have "a = (x + y) / 2" "ba = (y - x) / 2"
+    by (auto simp: ivl_err_def)
+  moreover have "(x + y) / 2 \<in> float" "(y - x) / 2 \<in> float"
+    using assms
+    by (auto intro!: )
+  ultimately show "a \<in> float" "ba \<in> float" by blast+
+qed
+
+lemma in_float_timesI: "a \<in> float" if "b = a * 2" "b \<in> float"
+proof -
+  from that have "a = b / 2" by simp
+  also have "\<dots> \<in> float" using that(2) by auto
+  finally show ?thesis .
+qed
+
+lemma approx_floatarith_Elem:
+  assumes "approx_floatarith p ra VS = Some X"
+  assumes e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
+  assumes "vs \<in> aforms_err e VS"
+  shows "interpret_floatarith ra vs \<in> aform_err e X"
+  using assms(1)
+proof (induction ra arbitrary: X)
+  case (Add ra1 ra2)
+  then show ?case
+    by (auto simp: bind_eq_Some_conv intro!: add_aform'[OF e])
 next
-  case (ScaleR a b)
-  then obtain Y where Y: "approx_realarith p a VS d = Some Y"
-    and X: "X = aform_scaleR Y b" by auto
-  from approx_realarith_Elem[OF ScaleR(1-2) Y ScaleR(4)]
-  obtain e where e: "e \<in> UNIV \<rightarrow> {-1..1}" "(\<forall>i<d. e i = e' i)"
-      "interpret_realarith a vs = aform_val e Y"
+  case (Minus ra)
+  then show ?case
+    by (auto intro!: aform_err_uminus_aform[OF e])
+next
+  case (Mult ra1 ra2)
+  then show ?case
+    by (auto simp: bind_eq_Some_conv intro!: mult_aform'E[OF e])
+next
+  case (Inverse ra)
+  then show ?case
+    by (auto simp: bind_eq_Some_conv intro!: inverse_aform_err[OF e])
+next
+  case (Cos ra)
+  then show ?case
+    by (auto simp: bind_eq_Some_conv intro!: cos_aform_err[OF _ _ e])
+next
+  case (Arctan ra)
+  then show ?case
+    by (auto simp: bind_eq_Some_conv intro!: arctan_aform_err[OF _ _ e])
+next
+  case (Abs fa)
+  from Abs.prems
+  obtain a where a: "approx_floatarith p fa VS = Some a"
+    by (auto simp add: Let_def bind_eq_Some_conv)
+  from Abs.IH[OF a]
+  have mem: "interpret_floatarith fa vs \<in> aform_err e a"
     by auto
-  show ?case
-    using e X Y
-    by (auto intro!: exI[where x=e])
+  let ?i = "Inf_aform_err p a"
+  let ?s = "Sup_aform_err p a"
+  consider "?i > 0" | "?i \<le> 0" "?s < 0" | "?i \<le> 0" "?s \<ge> 0"
+    by arith
+  then show ?case
+  proof cases
+    case hyps: 1
+    then show ?thesis
+      using Abs.prems mem Inf_Sup_aform_err[OF e, of a p]
+      by (auto simp: a)
+  next
+    case hyps: 2
+    then show ?thesis
+      using Abs.prems mem Inf_Sup_aform_err[OF e, of "apfst uminus_aform a" p]
+          Inf_Sup_aform_err[OF e, of "a" p]
+      by (cases a) (auto simp: a abs_real_def intro!: aform_err_uminus_aform[OF e])
+  next
+    case hyps: 3
+    then show ?thesis
+      using Abs.prems mem Inf_Sup_aform_err[OF e, of a p]
+      by (auto simp: a abs_real_def max_def Let_def)
+  qed
+next
+  case (Max ra1 ra2)
+  from Max.prems
+  obtain a b where a: "approx_floatarith p ra1 VS = Some a"
+    and b: "approx_floatarith p ra2 VS = Some b"
+    by (auto simp add: Let_def bind_eq_Some_conv)
+  from Max.IH(1)[OF a] Max.IH(2)[OF b]
+  have mem: "interpret_floatarith ra1 vs \<in> aform_err e a"
+    "interpret_floatarith ra2 vs \<in> aform_err e b"
+    by auto
+  let ?ia = "Inf_aform_err p a"
+  let ?sa = "Sup_aform_err p a"
+  let ?ib = "Inf_aform_err p b"
+  let ?sb = "Sup_aform_err p b"
+  consider "?sa < ?ib" | "?sa \<ge> ?ib" "?sb < ?ia" | "?sa \<ge> ?ib" "?sb \<ge> ?ia"
+    by arith
+  then show ?case
+  proof cases
+    case hyps: 1
+    then show ?thesis
+      using Max.prems mem Inf_Sup_aform_err[OF e, of a p] Inf_Sup_aform_err[OF e, of b p]
+      by (force simp: a b max_def max_aform_err_def)
+  next
+    case hyps: 2
+    then show ?thesis
+      using Max.prems mem Inf_Sup_aform_err[OF e, of a p] Inf_Sup_aform_err[OF e, of b p]
+          Inf_Sup_aform_err[OF e, of "a" p]
+      by (force simp: a b max_def max_aform_err_def)
+  next
+    case hyps: 3
+    then show ?thesis
+      using Max.prems mem
+      apply (simp add: a b max_aform_err_def)
+      apply auto
+      using Inf_Sup_aform_err[OF e, of a p] Inf_Sup_aform_err[OF e, of b p]
+      by (auto simp: max_def)
+  qed
+next
+  case (Min ra1 ra2)
+  from Min.prems
+  obtain a b where a: "approx_floatarith p ra1 VS = Some a"
+    and b: "approx_floatarith p ra2 VS = Some b"
+    by (auto simp add: Let_def bind_eq_Some_conv)
+  from Min.IH(1)[OF a] Min.IH(2)[OF b]
+  have mem: "interpret_floatarith ra1 vs \<in> aform_err e a"
+    "interpret_floatarith ra2 vs \<in> aform_err e b"
+    by auto
+  let ?ia = "Inf_aform_err p a"
+  let ?sa = "Sup_aform_err p a"
+  let ?ib = "Inf_aform_err p b"
+  let ?sb = "Sup_aform_err p b"
+  consider "?sa < ?ib" | "?sa \<ge> ?ib" "?sb < ?ia" | "?sa \<ge> ?ib" "?sb \<ge> ?ia"
+    by arith
+  then show ?case
+  proof cases
+    case hyps: 1
+    then show ?thesis
+      using Min.prems mem Inf_Sup_aform_err[OF e, of a p] Inf_Sup_aform_err[OF e, of b p]
+      by (force simp: a b min_def min_aform_err_def)
+  next
+    case hyps: 2
+    then show ?thesis
+      using Min.prems mem Inf_Sup_aform_err[OF e, of a p] Inf_Sup_aform_err[OF e, of b p]
+        Inf_Sup_aform_err[OF e, of "a" p]
+      by (force simp: a b min_def min_aform_err_def)
+  next
+    case hyps: 3
+    then show ?thesis
+      using Min.prems mem
+      apply (simp add: a b min_aform_err_def)
+      apply auto
+      using Inf_Sup_aform_err[OF e, of a p] Inf_Sup_aform_err[OF e, of b p]
+      by (auto simp: min_def)
+  qed
+next
+  case Pi
+  then show ?case using pi_boundaries
+    by (auto simp: )
+next
+  case (Sqrt ra)
+  then show ?case
+    by (auto simp: bind_eq_Some_conv intro!: sqrt_aform_err[OF _ _ e])
+next
+  case (Exp ra)
+  then show ?case
+    by (auto simp: bind_eq_Some_conv intro!: exp_aform_err[OF _ _ e])
+next
+  case (Powr ra1 ra2)
+  then show ?case
+    by (auto simp: bind_eq_Some_conv intro!: powr_aform_err[OF _ _ e])
+next
+  case (Ln ra)
+  then show ?case
+    by (auto simp: bind_eq_Some_conv intro!: ln_aform_err[OF _ _ e])
+next
+  case (Power ra x2a)
+  then show ?case
+    by (auto simp: bind_eq_Some_conv is_float_def
+        intro!: power_aform_err[OF _ _ _ e] split: if_splits)
+next
+  case (Floor ra)
+  then show ?case
+    by (auto simp: bind_eq_Some_conv intro!: approx_unE[OF interval_extension_floor e]
+        split: option.splits)
+next
+  case (Var x)
+  then show ?case
+    using assms(3)
+    apply -
+    apply (frule length_aforms_errD)
+    by (auto split: if_splits simp: aform_err_def dest!: nth_aforms_errI[where i=x])
+next
+  case (Num x)
+  then show ?case
+    by (auto split: if_splits simp: aform_err_def num_aform_def aform_val_def)
+qed
+
+primrec approx_floatariths_aformerr ::
+  "nat \<Rightarrow> floatarith list \<Rightarrow> aform_err list \<Rightarrow> aform_err list option"
+  where
+    "approx_floatariths_aformerr _ [] _ = Some []"
+  | "approx_floatariths_aformerr p (a#bs) vs =
+      do {
+        a \<leftarrow> approx_floatarith p a vs;
+        r \<leftarrow> approx_floatariths_aformerr p bs vs;
+        Some (a#r)
+      }"
+
+
+lemma approx_floatariths_Elem:
+  assumes "e \<in> UNIV \<rightarrow> {-1 .. 1}"
+  assumes "approx_floatariths_aformerr p ra VS = Some X"
+  assumes "vs \<in> aforms_err e VS"
+  shows "interpret_floatariths ra vs \<in> aforms_err e X"
+  using assms(2)
+proof (induction ra arbitrary: X)
+  case Nil then show ?case by simp
+next
+  case (Cons ra ras)
+  from Cons.prems
+  obtain a r where a: "approx_floatarith p ra VS = Some a"
+    and r: "approx_floatariths_aformerr p ras VS = Some r"
+    and X: "X = a # r"
+    by (auto simp: bind_eq_Some_conv)
+  then show ?case
+    using assms(1)
+    by (auto simp: X Cons.IH intro!: approx_floatarith_Elem assms)
 qed
 
 lemma fold_max_mono:
@@ -1436,428 +3566,192 @@ lemma fold_max_le:
   shows "x \<in> set xs \<Longrightarrow> x \<le> fold max xs z"
   by (induct xs arbitrary: x z) (auto intro: order_trans[OF _ fold_max_le_self])
 
-definition "approx_euclarith_outer p t ea as =
-  do {
-    let d = (fold max (map degree_aform as) 0);
-    s \<leftarrow> approx_euclarith p ea as d;
-    Some (apsnd (summarize_threshold p t (max d (degree_aform s))) s)
-  }"
+abbreviation "degree_aforms_err \<equiv> degrees o map (snd o fst)"
 
-lemma approx_euclarith_outer2_shift:
-  assumes "approx_euclarith_outer p t ea VS' = Some X"
-  assumes "vs \<in> Joints VS"
-  assumes "length vs' = length VS'"
-  assumes "length VS = length VS'"
-  assumes "set (zip vs' VS') = set (zip vs VS)"
-  shows "(vs, interpret_euclarith ea vs') \<in> Joints2 VS X"
-proof -
-  from assms
-  have subset: "set (zip vs VS) \<subseteq> set (zip vs' VS')"
-    and l1: "length vs' = length VS'"
-    and l2: "length vs = length VS"
-    by (auto simp: Joints_def valuate_def)
-  have vs': "vs' \<in> Joints VS'"
-    using assms(2-5)
-    by (rule Joints_set_zip)
-  define d where "d = fold max (map degree_aform (VS')) 0"
-  from assms obtain a b where approx: "approx_euclarith p ea VS' d = Some (a, b)"
-    and X: "X = (a, summarize_threshold p t (max d (degree_aform (a, b))) b)"
-    by (cases "approx_euclarith p ea VS' (fold max (map degree_aform (VS')) 0)")
-      (force simp: approx_euclarith_outer_def d_def)+
-  from assms obtain e' where vs: "vs = (map (aform_val e') VS)" and e': "e' \<in> UNIV \<rightarrow> {-1 .. 1}"
-    by (auto simp: Joints_def valuate_def)
-  from approx_euclarith_Elem[OF refl e' approx]
-  obtain e where e: "e \<in> UNIV \<rightarrow> {- 1..1}"
-     and e_eq: "\<And>i. i<d \<Longrightarrow> e i = e' i"
-     and aform_val: "interpret_euclarith ea (map (aform_val e') VS') = aform_val e (a, b)"
-     by (auto simp: d_def fold_max_le)
-  let ?summ = "\<lambda>i y. t * infnorm (eucl_truncate_up p (tdev' p b)) \<le> infnorm y"
-  have d: "degree b \<le> max (fold max (map degree_aform (VS')) 0) (degree b)"
-    by simp
-  obtain e''' where
-    e''': "e''' \<in> UNIV \<rightarrow> {- 1..1}"
-      "\<And>i. i < max (fold max (map degree_aform (VS')) 0) (degree b) \<Longrightarrow> e i = e''' i"
-      "pdevs_val e b = pdevs_val e''' (snd (the (approx_euclarith_outer p t ea VS')))"
-    by (rule summarize_pdevsE[OF e d, of p ?summ])
-      (auto simp: assms X d_def summarize_threshold_def)
-  have e'_eq_e''': "\<And>i. i <d \<Longrightarrow> e' i = e''' i"
-    using e_eq e'''(2)
-    by (auto simp: d_def)
-  have VS_degreeD: "\<And>a b. (a, b) \<in> set VS' \<Longrightarrow> degree b \<le> d"
-    unfolding d_def
-    by (rule fold_max_le) force
-  have "vs' = map (aform_val e') VS'"
-    using e' e''' assms
-    by (intro zipped_subset_mapped_Elem[OF vs]) (auto simp: l2)
-  hence "(vs', interpret_euclarith ea vs') \<in> Joints2 VS' X"
-    using e''' vs e' X aform_val approx
-    by (auto simp: Joints2_def Joints_def valuate_def aform_val_def approx_euclarith_outer_def
-        Let_def d_def
-      intro!: pdevs_val_degree_cong[OF refl] max.strict_coboundedI1 image_eqI[where x=e''']
-      dest!: VS_degreeD intro!: e'_eq_e''')
-  then obtain e
-  where e: "vs' = (map (aform_val e) VS')" "interpret_euclarith ea vs' = aform_val e X"
-    "\<And>i. e i \<in> {-1..1}"
-    by (force simp: Joints2_def valuate_def)
-  thus ?thesis
-    using zipped_subset_mapped_Elem[OF e(1,3)  l1 l2 subset]
-    by (auto simp: Joints2_def valuate_def intro!: exI[where x=e])
+definition "aforms_err_to_aforms d xs =
+  (map (\<lambda>(d, x). aform_err_to_aform x d) (zip [d..<d + length xs] xs))"
+
+lemma aform_vals_empty[simp]: "aform_vals e' [] = []"
+  by (auto simp: aform_vals_def)
+lemma aforms_err_to_aforms_Nil[simp]: "(aforms_err_to_aforms n []) = []"
+  by (auto simp: aforms_err_to_aforms_def)
+
+lemma aforms_err_to_aforms_Cons[simp]:
+  "aforms_err_to_aforms n (X # XS) = aform_err_to_aform X n # aforms_err_to_aforms (Suc n) XS"
+  by (auto simp: aforms_err_to_aforms_def not_le nth_append nth_Cons 
+      intro!: nth_equalityI split: nat.splits)
+
+lemma degree_aform_err_to_aform_le:
+  "degree_aform (aform_err_to_aform X n) \<le> max (degree_aform_err X) (Suc n)"
+  by (auto simp: aform_err_to_aform_def intro!: degree_le)
+
+lemma less_degree_aform_aform_err_to_aformD: "i < degree_aform (aform_err_to_aform X n) \<Longrightarrow> i < max (Suc n) (degree_aform_err X)"
+  using degree_aform_err_to_aform_le[of X n] by auto
+
+lemma pdevs_domain_aform_err_to_aform:
+  "pdevs_domain (snd (aform_err_to_aform X n)) = pdevs_domain (snd (fst X)) \<union> (if snd X = 0 then {} else {n})"
+  if "n \<ge> degree_aform_err X"
+  using that
+  by (auto simp: aform_err_to_aform_def split: if_splits)
+
+lemma length_aforms_err_to_aforms[simp]: "length (aforms_err_to_aforms i XS) = length XS"
+  by (auto simp: aforms_err_to_aforms_def)
+
+lemma aforms_err_to_aforms_ex:
+  assumes X: "x \<in> aforms_err e X"
+  assumes deg: "degree_aforms_err X \<le> n"
+  assumes e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
+  shows "\<exists>e'\<in> UNIV \<rightarrow> {-1 .. 1}. x = aform_vals e' (aforms_err_to_aforms n X) \<and>
+    (\<forall>i < n. e' i = e i)"
+  using X deg
+proof (induction X arbitrary: x n)
+  case Nil then show ?case using e
+    by (auto simp: o_def degrees_def intro!: bexI[where x="\<lambda>i. e i"])
+next
+  case (Cons X XS)
+  from Cons.prems obtain y ys where ys:
+    "degree_aform_err X \<le> n"
+    "degree_aforms_err XS \<le> n"
+    "x = y # ys" "y \<in> aform_err e X" "ys \<in> aforms_err e XS"
+    by (auto simp: mem_aforms_err_Cons_iff_Ex_conv degrees_def)
+  then have "degree_aforms_err XS \<le> Suc n" by auto
+  from Cons.IH[OF ys(5) this]
+  obtain e' where e': "e'\<in>UNIV \<rightarrow> {- 1..1}" "ys = aform_vals e' (aforms_err_to_aforms (Suc n) XS)"
+    "(\<forall>i<n. e' i = e i)"
+    by auto
+  from aform_err_to_aformE[OF ys(4,1)] obtain err where err:
+    "y = aform_val (e(n := err)) (aform_err_to_aform X n)" "- 1 \<le> err" "err \<le> 1"
+    by auto
+  show ?case
+  proof (safe intro!: bexI[where x="e'(n:=err)"], goal_cases)
+    case 1
+    then show ?case
+      unfolding ys e' err
+      apply (auto simp: aform_vals_def  aform_val_def simp del:  pdevs_val_upd)
+       apply (rule pdevs_val_degree_cong)
+        apply simp
+      subgoal
+        using ys e'
+        by (auto dest!: less_degree_aform_aform_err_to_aformD simp: max_def split: if_splits)
+      subgoal premises prems for a b
+      proof -
+        have "pdevs_val (\<lambda>a. if a = n then err else e' a) b = pdevs_val (e'(n:=err)) b"
+          unfolding fun_upd_def by simp
+        also have "\<dots> = pdevs_val e' b - e' n * pdevs_apply b n + err * pdevs_apply b n"
+          by simp
+        also
+        from prems
+        obtain i where i: "aforms_err_to_aforms (Suc n) XS ! i = (a, b)"
+          "i < length (aforms_err_to_aforms (Suc n) XS)"
+          by (auto simp: in_set_conv_nth )
+        { note i(1)[symmetric]
+          also have "aforms_err_to_aforms (Suc n) XS ! i = aform_err_to_aform (XS ! i) (Suc n + i) "
+            unfolding aforms_err_to_aforms_def
+            using i
+            by (simp del: upt_Suc)
+          finally have "b = snd (aform_err_to_aform (XS ! i) (Suc n + i))" by (auto simp: prod_eq_iff)
+        } note b = this
+        have "degree_aform_err (XS ! i) \<le> n"
+          using ys(2) i by (auto simp:  degrees_def)
+        then have "n \<notin> pdevs_domain b" unfolding b
+          apply (subst pdevs_domain_aform_err_to_aform)
+          by (auto intro!: degree)
+        then have "pdevs_apply b n = 0" by simp
+        finally
+        show ?thesis by simp
+      qed
+      done
+  next
+    case (2 i)
+    then show ?case
+      using e' by auto
+  next
+    case (3 i)
+    then show ?case
+      using e' err
+      by auto
+  qed
 qed
 
-lemma approx_euclarith_outer:
-  assumes "approx_euclarith_outer p t e VS = Some R"
-  assumes "vs \<in> Joints VS"
-  shows "(vs, interpret_euclarith e vs) \<in> Joints2 VS R"
-  using approx_euclarith_outer2_shift[OF assms, of vs] assms
-  by (auto simp: Joints2_def Joints_def valuate_def)
+lemma aforms_err_to_aformsE:
+  assumes X: "x \<in> aforms_err e X"
+  assumes deg: "degree_aforms_err X \<le> n"
+    assumes e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
+  obtains e' where "x = aform_vals e' (aforms_err_to_aforms n X)" "e' \<in> UNIV \<rightarrow> {-1 .. 1}"
+    "\<And>i. i < n \<Longrightarrow> e' i = e i"
+  using aforms_err_to_aforms_ex[OF X deg e]
+  by blast
+
+definition "approx_floatariths p ea as =
+  do {
+    let da = (degree_aforms as);
+    let aes = (map (\<lambda>x. (x, 0)) as);
+    rs \<leftarrow> approx_floatariths_aformerr p ea aes;
+    let d = max da (degree_aforms_err (rs));
+    Some (aforms_err_to_aforms d rs)
+  }"
+
+lemma listset_sings[simp]:
+  "listset (map (\<lambda>x. {f x}) as) = {map f as}"
+  by (induction as) (auto simp: set_Cons_def)
+
+lemma approx_floatariths_outer:
+  assumes "approx_floatariths p ea as = Some XS"
+  assumes "vs \<in> Joints as"
+  shows "(interpret_floatariths ea vs @ vs) \<in> Joints (XS @ as)"
+proof -
+  from assms obtain da aes rs d where
+     da: "da = degree_aforms as"
+    and aes: "aes = (map (\<lambda>x. (x, 0)) as)"
+    and rs: "approx_floatariths_aformerr p ea aes = Some rs"
+    and d: "d = max da (degree_aforms_err (rs))"
+    and XS: "aforms_err_to_aforms d rs = XS"
+    by (auto simp: approx_floatariths_def Let_def bind_eq_Some_conv)
+  have abbd: "(a, b) \<in> set as \<Longrightarrow> degree b \<le> degree_aforms as" for a b
+    apply (rule degrees_leD[OF order_refl]) by force
+  from da d have i_less: "(a, b) \<in> set as \<Longrightarrow> i < degree b \<Longrightarrow> i < min d da" for i a b
+    by (auto dest!: abbd)
+
+  have abbd: "(a, b) \<in> set as \<Longrightarrow> degree b \<le> degree_aforms as" for a b
+    apply (rule degrees_leD[OF order_refl]) by force
+  from assms obtain e' where vs: "vs = (map (aform_val e') as)" and e': "e' \<in> UNIV \<rightarrow> {-1 .. 1}"
+    by (auto simp: Joints_def valuate_def)
+  note vs
+  also
+  have vs_aes: "vs \<in> aforms_err e' aes"
+    unfolding aes
+    by (auto simp: vs aforms_err_def o_def aform_err_def)
+  from approx_floatariths_Elem[OF e' rs this]
+  have iars: "interpret_floatariths ea (map (aform_val e') as) \<in> aforms_err e' rs"
+    by (auto simp: vs)
+  have "degree_aforms_err rs \<le> d"
+    by (auto simp: d da)
+  from aforms_err_to_aformsE[OF iars this e'] obtain e where
+    "interpret_floatariths ea (map (aform_val e') as) = aform_vals e XS"
+    and e: "e \<in> UNIV \<rightarrow> {- 1..1}" "\<And>i. i < d \<Longrightarrow> e i = e' i"
+    by (auto simp: XS)
+  note this (1)
+  finally have "interpret_floatariths ea vs = aform_vals e XS" .
+
+  moreover
+
+  from e have e'_eq: "e' i = e i" if "i < min d da" for i
+    using that
+    by (auto simp: min_def split: if_splits)
+  then have "vs = aform_vals e as"
+    by (auto simp: vs aform_vals_def aform_val_def intro!: pdevs_val_degree_cong e'_eq i_less)
+
+  ultimately show ?thesis
+    using e(1)
+    by (auto simp: Joints_def valuate_def aform_vals_def intro!: image_eqI[where x=e])
+qed
 
 lemma length_eq_NilI: "length [] = length []"
   and length_eq_ConsI: "length xs = length ys \<Longrightarrow> length (x#xs) = length (y#ys)"
   by auto
 
 
-subsection \<open>Definition of Approximating Function using Affine Arithmetic\<close>
-
-lemma interpret_Floatreal: "interpret_realarith (realarith.Num (real_of_float f)) vs = (real_of_float f)"
-  by simp
-lemmas reify_euclarith_eqs =
-
-  interpret_euclarith.simps
-  interpret_realarith.simps(1-5)
-  interpret_Floatreal
-
-lemma floatify_thms: "1 \<equiv> real_of_float 1" "0 \<equiv> real_of_float 0"
-  "numeral k \<equiv> real_of_float (numeral k)"
-  by simp_all
-
-primrec max_Var_realarith where
-  "max_Var_realarith (Add a b) = max (max_Var_realarith a) (max_Var_realarith b)"
-| "max_Var_realarith (Mult a b) = max (max_Var_realarith a) (max_Var_realarith b)"
-| "max_Var_realarith (Inverse a) = max_Var_realarith a"
-| "max_Var_realarith (Minus a) = max_Var_realarith a"
-| "max_Var_realarith (Num a) = 0"
-| "max_Var_realarith (Var i c) = Suc i"
-
-primrec max_Var_euclarith where
-  "max_Var_euclarith (AddE a b) = max (max_Var_euclarith a) (max_Var_euclarith b)"
-| "max_Var_euclarith (ScaleR x a) = max_Var_realarith x"
-
-lemma take_greater_eqI: "take c xs = take c ys \<Longrightarrow> c \<ge> a \<Longrightarrow> take a xs = take a ys"
-proof (induct xs arbitrary: a c ys)
-  case (Cons x xs) note ICons = Cons
-  thus ?case
-  proof (cases a)
-    case (Suc b)
-    thus ?thesis using Cons(2,3)
-    proof (cases ys)
-      case (Cons z zs)
-      from ICons obtain d where c: "c = Suc d"
-        by (auto simp: Cons Suc dest!: Suc_le_D)
-      show ?thesis
-        using ICons(2,3)
-        by (auto simp: Suc Cons c intro: ICons(1))
-    qed simp
-  qed simp
-qed (metis le_0_eq take_eq_Nil)
-
-lemma take_max_eqD:
-  "take (max a b) xs = take (max a b) ys \<Longrightarrow> take a xs = take a ys \<and> take b xs = take b ys"
-  by (metis max.cobounded1 max.cobounded2 take_greater_eqI)
-
-lemma take_Suc_eq: "take (Suc n) xs = (if n < length xs then take n xs @ [xs ! n] else xs)"
-  by (auto simp: take_Suc_conv_app_nth)
-
-lemma
-  interpret_realarith_eq_take_max_VarI:
-  assumes "take (max_Var_realarith ra) ys = take (max_Var_realarith ra) zs"
-  shows "interpret_realarith ra ys = interpret_realarith ra zs"
-  using assms
-  by (induct ra) (auto dest!: take_max_eqD simp: take_Suc_eq split: if_split_asm)
-
-lemma
-  interpret_euclarith_eq_take_max_VarI:
-  assumes "take (max_Var_euclarith ea) ys = take (max_Var_euclarith ea) zs"
-  shows "interpret_euclarith ea ys = interpret_euclarith ea zs"
-  using assms
-  by (induct ea) (auto dest!: take_max_eqD interpret_realarith_eq_take_max_VarI)
-
-lemma approx_euclarith_outer2_shift_addvars:
-  assumes "approx_euclarith_outer p t ea VS' = Some X"
-  assumes "vs \<in> Joints VS"
-  assumes "length vs' = length VS'"
-  assumes "length VS = length VS'"
-  assumes "set (zip vs' VS') = set (zip vs VS)"
-  assumes "take (max_Var_euclarith ea) vs'' = take (max_Var_euclarith ea) vs'"
-  shows "(vs, interpret_euclarith ea vs'') \<in> Joints2 VS X"
-  using approx_euclarith_outer2_shift[OF assms(1-5)]
-    interpret_euclarith_eq_take_max_VarI[OF assms(6)]
-  by simp
-
-ML \<open>
-fun dest_interpret_euclarith (Const (@{const_name "interpret_euclarith"}, _) $ b $ xs) = (b, xs)
-  | dest_interpret_euclarith t = raise TERM ("interpret_euclarith", [t])
-
-fun euclarithT aty bty = Type (@{type_name "euclarith"}, [aty, bty])
-
-fun aformT aty = HOLogic.mk_prodT (aty, Type (@{type_name "pdevs"}, [aty]))
-
-fun mk_optionT ty = Type (@{type_name "option"}, [ty])
-
-fun mk_None ty = Const (@{const_name "None"}, mk_optionT ty)
-fun mk_Some ty x = Const (@{const_name "Some"}, ty --> mk_optionT ty) $ x
-
-fun approx_euclarith_const aty bty = (Const (@{const_name "approx_euclarith_outer"},
-  @{typ nat} --> @{typ real} --> euclarithT aty bty --> HOLogic.listT (aformT aty) -->
-  mk_optionT (aformT bty)))
-
-fun dest_approx_euclarith (Const (@{const_name "approx_euclarith_outer"}, _) $ p $ t $ ea $ xs) =
-      (p, t, ea, xs)
-  | dest_approx_euclarith t = raise TERM ("approx_euclarith_outer", [t])
-
-fun Joints_const aty = (Const (@{const_name "Joints"},
-  (aty |> aformT |> HOLogic.listT) --> (aty |> HOLogic.listT |> HOLogic.mk_setT)))
-
-fun Joints2_const aty bty = (Const (@{const_name "Joints2"},
-  (aty |> aformT |> HOLogic.listT) --> (bty |> aformT) -->
-    (HOLogic.mk_prodT(aty |> HOLogic.listT, bty) |> HOLogic.mk_setT)))
-
-fun length_const ty = Const (@{const_name size}, HOLogic.listT ty --> @{typ nat})
-
-fun floatify_conv ctxt = Raw_Simplifier.rewrite ctxt true @{thms floatify_thms}
-
-fun conss ty xs t = fold_rev (fn t => fn ts => HOLogic.cons_const ty $ t $ ts) xs t
-
-fun print_term ctxt t = Pretty.writeln (Syntax.pretty_term ctxt t)
-
-fun approximate_affine (name, term) lthy =
-  let
-    val t_in = Syntax.read_term lthy term
-    val euclidify_thm = t_in |> Thm.cterm_of lthy |> euclidify lthy
-    val t = euclidify_thm |> Thm.prop_of |> Logic.dest_equals |> snd
-    val ty = fastype_of t
-    val (atys, bty) = strip_type ty
-    val aty = case distinct (fn (x, y) => x = y) atys of
-        [aty] => aty
-      | _ => error "Only one type for arguments supported"
-    fun free aty n = Free (n, aty)
-    val (prec::thres::qs::args, ctxt') =
-      Variable.variant_fixes ("prec"::"thres"::"qs"::map (fn _ => "x") atys) lthy
-    val t_beta = fold (fn x => fn t => betapply (t, x)) (map (free aty) args) t
-    val ct = Thm.cterm_of ctxt' t_beta
-    val atypat = (("'a", 0), @{sort "{real_inner, scaleR, plus}" })
-    val btypat = (("'b", 0), @{sort "{scaleR, plus}" })
-    val thms = map (Thm.instantiate (
-      [(atypat, Thm.ctyp_of ctxt' aty), (btypat, Thm.ctyp_of ctxt' bty)], [])) @{thms reify_euclarith_eqs}
-    val thm = (floatify_conv ctxt' then_conv Reification.conv ctxt' thms) ct
-    val interpret = Thm.prop_of thm |> Logic.dest_equals |> snd
-    val (ea, xs) = dest_interpret_euclarith interpret
-    val xs_aform = (map (fn t => Free (apsnd aformT (dest_Free t))) (HOLogic.dest_list xs))
-    val approx = approx_euclarith_const aty bty $
-      Free (prec, @{typ nat}) $
-      Free (thres, @{typ real}) $
-      ea $
-      conss (aformT aty) xs_aform (Free (qs, HOLogic.listT (aformT aty)))
-    val approx_raw = fold_rev absfree
-      (prec::thres::args@[qs] ~~
-        (@{typ nat}::(@{typ real})::map aformT atys@[HOLogic.listT (aformT aty)]))
-      approx
-    val ((approx, (_, def_raw)), lthy') =
-      Local_Theory.define ((name, NoSyn), (Binding.empty_atts, approx_raw)) lthy
-    val lthy'' =
-      lthy'
-      |> Local_Theory.notes
-          [((Thm.def_binding name, []), [([def_raw], [])])]
-      |-> (fn [(_, [defn])] => Code.declare_default_eqns [(defn, true)])
-    (* correctness theorem *)
-    (* shows "(vs, interpret_euclarith ea vs) \<in> Joints2 VS X" *)
-    val (prec::thres::R::qs::QS::args, lthy3) =
-      Variable.variant_fixes ("prec"::"thres"::"R"::"qs"::"QS"::map (fn _ => "x") atys) lthy''
-    val (ARGS, lthy4) = Variable.variant_fixes (map (fn _ => "X") args) lthy3
-    val vs = (map (fn n => Free (n, aty)) args)
-    val VS = (map (fn n => Free (n, aformT aty)) ARGS)
-    val xsqs = conss aty (HOLogic.dest_list xs) (Free (qs, HOLogic.listT aty))
-    val vsqs = conss aty vs (Free (qs, HOLogic.listT aty))
-    val VSQS = conss (aformT aty) VS (Free (QS, HOLogic.listT (aformT aty)))
-    val joints = HOLogic.mk_mem (vsqs, Joints_const aty $ VSQS)
-      |> HOLogic.mk_Trueprop
-      |> Thm.cterm_of lthy4
-    val approx_args = Free (prec, HOLogic.natT) :: Free (thres, @{typ real}) :: VS @
-      [Free (QS, HOLogic.listT (aformT aty))]
-    val approx_term = betapplys (approx, approx_args)
-    val approx_eq = HOLogic.mk_eq (approx_term, mk_Some (aformT bty) (Free (R, aformT bty)))
-      |> HOLogic.mk_Trueprop |> Thm.cterm_of lthy4
-
-    val interpret_eq = HOLogic.mk_mem (HOLogic.mk_prod (vsqs, betapplys (t_in, vs)),
-      Joints2_const aty bty $ VSQS $ Free (R, aformT bty))
-      |> HOLogic.mk_Trueprop
-    val len_qs_eq =
-      HOLogic.mk_eq
-        (length_const aty $ Free (qs, HOLogic.listT aty),
-          length_const (aformT aty) $ Free (QS, HOLogic.listT (aformT aty)))
-      |> HOLogic.mk_Trueprop |> Thm.cterm_of lthy4
-    val ([joints_thm, approx_eq_thm, len_qs_eq_thm], lthy5) =
-      Assumption.add_assumes [joints, approx_eq, len_qs_eq] lthy4
-    val thm' = singleton (Proof_Context.export ctxt' lthy) thm
-    val approx_eq_thm' = approx_eq_thm
-      |> Conv.fconv_rule (Conv.bottom_conv (fn _ => Conv.try_conv (Conv.rewr_conv def_raw)) lthy5)
-
-    fun len_tac ctxt =
-      TRY (REPEAT (resolve_tac ctxt @{thms length_eq_ConsI} 1))
-      THEN resolve_tac ctxt [len_qs_eq_thm, refl] 1
-    val (_, _, _, XSQS) = betapplys (approx_raw, approx_args) |> dest_approx_euclarith
-    val len_eq =
-      HOLogic.mk_eq (length_const aty $ xsqs, length_const (aformT aty) $ XSQS)
-      |> HOLogic.mk_Trueprop
-    val len_thm = Goal.prove lthy5 [] [] len_eq (len_tac o #context)
-
-    val interpret_eq_thm = Goal.prove lthy5 [] [] interpret_eq
-      (fn {context = ctxt, ...} =>
-        CONVERSION
-          (Conv.bottom_conv (fn _ => Conv.try_conv (Conv.rewr_conv euclidify_thm)) ctxt) 1
-        THEN CONVERSION (Conv.bottom_conv (fn _ => Conv.try_conv (Conv.rewr_conv thm')) ctxt) 1
-        THEN resolve_tac ctxt [approx_eq_thm' RS @{thm approx_euclarith_outer2_shift_addvars}] 1
-        THEN resolve_tac ctxt [joints_thm] 1
-        THEN resolve_tac ctxt [len_thm] 1 (* instantiates *)
-        THEN len_tac ctxt
-        THEN Local_Defs.unfold_tac ctxt @{thms zip_Cons_Cons zip_Nil set_simps}
-        THEN blast_tac ctxt 1
-        THEN simp_tac ctxt 1
-        )
-    val correct_thm = singleton (Proof_Context.export lthy5 lthy'') interpret_eq_thm
-    val (_, lthy''') = Local_Theory.notes [((name, []), [([correct_thm], [])])] lthy''
-  in
-     lthy'''
-  end
-\<close>
-
-ML \<open>
-val _ =
-  Outer_Syntax.local_theory @{command_keyword approximate_affine}
-    "define approximation of term"
-    (Parse.binding -- Parse.term >> approximate_affine)
-\<close>
-
-
 subsection \<open>Generic operations on Affine Forms in Euclidean Space\<close>
-
-lemma sum_list_Basis_list[simp]: "sum_list (map f Basis_list) = (\<Sum>b\<in>Basis. f b)"
-  by (subst sum_list_distinct_conv_sum_set) (auto simp: Basis_list distinct_Basis_list)
-
-subsubsection \<open> Binary operations \<close>
-
-fun binary_componentwise'::
-  "'a::zero list \<Rightarrow> ('a realarith \<Rightarrow> 'a realarith \<Rightarrow> 'a realarith) \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ('a, 'a) euclarith"
-where
-  "binary_componentwise' [] f i j = ScaleR (Num 0) 0"
-| "binary_componentwise' (b#bs) f i j = AddE (ScaleR (f (Var i b) (Var j b)) b) (binary_componentwise' bs f i j)"
-
-lemma interpret_binary_componentwise':
-  shows "interpret_euclarith (binary_componentwise' Bs f i j) xs =
-    (\<Sum>b\<leftarrow>Bs. ((interpret_realarith (f (Var i b) (Var j b)) xs) *\<^sub>R b))"
-  by (induct Bs) (auto simp: algebra_simps plusE_def)
-
-
-subsubsection \<open>Adding\<close>
-
-definition "add_ea = binary_componentwise' Basis_list Add"
-
-lemma interpret_add_ea[simp]:
-  "interpret_euclarith (add_ea i j) xs = xs!i + xs!j"
-  unfolding interpret_binary_componentwise' add_ea_def
-  by (auto simp: euclidean_representation inner_add_left[symmetric])
-
-definition "add_aform_componentwise prec tol X Y YS =
-  approx_euclarith_outer prec tol (add_ea 0 1) (X # Y # YS)"
-
-lemma
-  add_aform_componentwise:
-  assumes "add_aform_componentwise prec tol X Y YS = Some R"
-  assumes "x # y # xs \<in> Joints (X # Y # YS)"
-  shows "((x + y) # x # y # xs) \<in> Joints (R # X # Y # YS)"
-  using assms
-    approx_euclarith_outer2_shift[OF
-      assms[simplified add_aform_componentwise_def],
-      where vs'="x # y # xs"]
-  by (auto simp: valuate_def Joints2_def Joints_def)
-
-
-subsubsection \<open> pointwise multiplication \<close>
-
-context euclidean_space begin
-
-definition hadamard::"'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix "\<odot>" 70) where
-  "hadamard a b = (\<Sum>i\<in>Basis. ((a \<bullet> i) * (b \<bullet> i)) *\<^sub>R i)"
-
-end
-
-interpretation hadamard: comm_semiring_0_cancel "op +" "op -" 0 "op \<odot>"
-  by standard (simp_all add: hadamard_def algebra_simps sum.distrib)
-
-lemma hadamard_inner_Basis: "c \<in> Basis \<Longrightarrow> (a \<odot> b) \<bullet> c = (a \<bullet> c) * (b \<bullet> c)"
-  by (auto simp: hadamard_def inner_sum_left inner_Basis if_distrib sum.delta cong: if_cong)
-
-lemma hadamard_real[simp]: "(op \<odot>::real\<Rightarrow>real\<Rightarrow>real) = op *"
-  by (force simp: hadamard_def)
-
-definition "hadamard_ea = binary_componentwise' Basis_list Mult"
-
-lemma interpret_hadamard_ea[simp]:
-  "interpret_euclarith (hadamard_ea i j) xs = (xs ! i) \<odot> (xs ! j)"
-  unfolding interpret_binary_componentwise' hadamard_ea_def hadamard_def
-  by (auto simp: euclidean_representation)
-
-
-subsubsection \<open>Unary operations\<close>
-
-fun unary_componentwise'::
-  "'a::zero list \<Rightarrow> ('a realarith \<Rightarrow> 'a realarith) \<Rightarrow> nat \<Rightarrow> ('a, 'a) euclarith"
-where
-  "unary_componentwise' [] f i = ScaleR (Num 0) 0"
-| "unary_componentwise' (b#bs) f i = AddE (ScaleR (f (Var i b)) b) (unary_componentwise' bs f i)"
-
-lemma interpret_unary_componentwise':
-  shows "interpret_euclarith (unary_componentwise' Bs f i) xs =
-    (\<Sum>b\<leftarrow>Bs. ((interpret_realarith (f (Var i b)) xs) *\<^sub>R b))"
-  by (induct Bs) (auto simp: algebra_simps plusE_def)
-
-
-subsection \<open>Scale with expression\<close>
-
-definition scaleR_ea::"'a realarith \<Rightarrow> nat \<Rightarrow> ('a, 'a::executable_euclidean_space) euclarith"
-where "scaleR_ea x i = unary_componentwise' Basis_list (Mult x) i"
-
-lemma interpret_scaleR_ea[simp]:
-  "interpret_euclarith (scaleR_ea x i) xs = interpret_realarith x xs *\<^sub>R (xs!i)"
-  unfolding scaleR_ea_def interpret_unary_componentwise' sum_list_Basis_list euclidean_representation
-  by (auto simp: divide_simps intro!: euclidean_eqI[where 'a='a])
-
-
-subsubsection \<open>Scale with fraction\<close>
-
-definition "scaleQ_aform_componentwise prec tol x z Y YS =
-  approx_euclarith_outer prec tol (scaleR_ea (Mult (Num x) (Inverse (Num z))) 0) (Y # YS)"
-
-lemma
-  scaleQ_aform_componentwise:
-  assumes "scaleQ_aform_componentwise prec tol x z Y YS = Some R"
-  assumes "y # ys \<in> Joints (Y # YS)"
-  shows "(((x / z) *\<^sub>R y) # y # ys) \<in> Joints (R # Y # YS)"
-  using assms
-    approx_euclarith_outer2_shift[OF assms[simplified scaleQ_aform_componentwise_def], of "y#ys"]
-  by (auto simp: valuate_def Joints2_def Joints_def inverse_eq_divide)
-
-
-subsubsection \<open>scale with an interval\<close>
-
-definition "scaleR_aform_ivl prec tol a b Y YS =
-  (let c = hd Basis_list
-  in
-  approx_euclarith_outer prec tol (scaleR_ea (Var 0 c) 1)
-    ((((a + b)/2) *\<^sub>R c, pdev_upd zero_pdevs (fold max (map degree_aform (Y#YS)) 0) ((\<bar>b-a\<bar>/2)*\<^sub>Rc)) # Y # YS))"
-
-lemma hd_Basis_list[simp]: "hd Basis_list \<in> Basis"
-  unfolding Basis_list[symmetric]
-  by (rule hd_in_set) (auto simp: set_empty[symmetric])
 
 lemma pdevs_val_domain_cong:
   assumes "b = d"
@@ -1889,433 +3783,137 @@ proof safe
       (auto simp: aform_val_def list_all_iff Pi_iff intro!: pdevs_val_domain_cong)
 qed
 
-lemma
-  scaleR_aform_ivl:
-  assumes "scaleR_aform_ivl prec tol a b Y YS = Some R"
-  assumes "y # ys \<in> Joints (Y#YS)"
-  assumes "c \<in> {a ..b}"
-  shows "((c *\<^sub>R y) # y # ys) \<in> Joints (R # Y # YS)"
-proof -
-  have deg_le_one: "degree (pdevs_of_ivl a b) \<le> 1"
-    by (rule order_trans[OF degree_pdevs_of_ivl_le]) (auto simp: Basis_list_real_def)
-  define i where "i = fold max (map degree_aform (Y#YS)) 0"
-  have i: "\<And>Z. Z \<in> set (Y#YS) \<Longrightarrow> degree_aform Z \<le> i"
-    unfolding i_def
-    by (rule fold_max_le) auto
-  let ?ivl = "(((a + b)/2)*\<^sub>R(hd Basis_list::'a),
-      pdev_upd zero_pdevs i (((b - a)/2)*\<^sub>R(hd Basis_list::'a)))"
-  from in_ivl_affine_of_ivlE[OF \<open>c\<in>{a..b}\<close>] obtain e where e: "e \<in> UNIV \<rightarrow> {- 1..1}"
-    and c: "c = aform_val e (aform_of_ivl a b)"
+
+primrec approx_slp::"nat \<Rightarrow> slp \<Rightarrow> aform_err list \<Rightarrow> aform_err list option"
+where
+  "approx_slp p [] xs = Some xs"
+| "approx_slp p (ea # eas) xs =
+    do {
+      r \<leftarrow> approx_floatarith p ea xs;
+      approx_slp p eas (r#xs)
+    }"
+
+lemma Nil_mem_Joints[intro, simp]: "[] \<in> Joints []"
+  by (force simp: Joints_def valuate_def)
+
+lemma map_nth_Joints: "xs \<in> Joints XS \<Longrightarrow> (\<And>i. i \<in> set is \<Longrightarrow> i < length XS) \<Longrightarrow> map (nth xs) is @ xs \<in> Joints (map (nth XS) is @ XS)"
+  by (auto simp: Joints_def valuate_def)
+
+lemma map_nth_Joints': "xs \<in> Joints XS \<Longrightarrow> (\<And>i. i \<in> set is \<Longrightarrow> i < length XS) \<Longrightarrow> map (nth xs) is \<in> Joints (map (nth XS) is)"
+  by (rule Joints_appendD2[OF map_nth_Joints]) auto
+
+lemma approx_slp_Elem:
+  assumes e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
+  assumes "vs \<in> aforms_err e VS"
+  assumes "approx_slp p ra VS = Some X"
+  shows "interpret_slp ra vs \<in> aforms_err e X"
+  using assms(2-)
+proof (induction ra arbitrary: X vs VS)
+  case (Cons ra ras)
+  from Cons.prems
+  obtain a where a: "approx_floatarith p ra VS = Some a"
+    and r: "approx_slp p ras (a # VS) = Some X"
+    by (auto simp: bind_eq_Some_conv)
+  from approx_floatarith_Elem[OF a e Cons.prems(1)]
+  have "interpret_floatarith ra vs \<in> aform_err e a"
     by auto
-  note c
-  also have "\<dots> = aform_val (\<lambda>i. if i = 0 then e i else 0) (aform_of_ivl a b)"
-    using deg_le_one
-    by (auto simp: aform_val_def aform_of_ivl_def intro!: pdevs_val_degree_cong)
-  also have "\<dots> = (a + b)/2 +
-      (\<Sum>i<degree (pdevs_of_ivl a b).
-        (if i = 0 then e i else 0) * pdevs_apply (pdevs_of_ivl a b) i)"
-    by (auto simp: aform_val_def aform_of_ivl_def pdevs_val_sum)
-  also have
-    "(\<Sum>i<degree (pdevs_of_ivl a b). (if i = 0 then e i else 0) * pdevs_apply (pdevs_of_ivl a b) i) =
-    (\<Sum>i\<in>{0}. (if i = 0 then e i else 0) * pdevs_apply (pdevs_of_ivl a b) i)"
-    by (cases "degree (pdevs_of_ivl a b)", simp)
-      (rule sum.mono_neutral_cong_right, auto)
-  also have "\<dots> = e 0 * (b - a)/2"
-    by (simp add: pdevs_of_ivl_def Basis_list_real_def)
-  finally have "c = (a + b)/2 + e 0 * (b - a)/2" by simp
-  from this
-  have in_Aff: "c*\<^sub>Rhd Basis_list \<in> Affine ?ivl"
-    using assms e
-    by (auto simp: Affine_def valuate_def simp: aform_val_def algebra_simps Basis_list_real_def
-      intro!: image_eqI[where x="(\<lambda>_. 0)(i:=e 0)"])
+  then have 1: "interpret_floatarith ra vs#vs \<in> aforms_err e (a#VS)"
+    unfolding mem_aforms_err_Cons_iff
+    using Cons.prems(1)
+    by auto
+  show ?case
+    by (auto intro!: Cons.IH 1 r)
+qed auto
 
-  have "pdevs_domain (snd ?ivl) \<inter> pdevs_domain (snd Y) = {}"
-    using i[of Y] by (auto split: if_split_asm)
-  moreover
-  have "list_all (\<lambda>Y. pdevs_domain (snd ?ivl) \<inter> pdevs_domain (snd Y) = {}) YS"
-    using i
-    by (force split: if_split_asm simp: list_all_iff)
-  ultimately have Joints: "c*\<^sub>Rhd Basis_list#y#ys \<in> Joints (?ivl#Y#YS)"
-    by (auto intro!: fresh_JointsI[OF assms(2) _ in_Aff])
-  with approx_euclarith_outer2_shift[OF assms(1)[simplified scaleR_aform_ivl_def Let_def] Joints,
-    of "c*\<^sub>R(hd Basis_list)#y#ys"] assms
-  have "(c *\<^sub>R hd Basis_list # y # ys,
-      interpret_euclarith (scaleR_ea (Var 0 (hd Basis_list)) 1) (c *\<^sub>R hd Basis_list # y # ys))
-    \<in> Joints2 (?ivl # Y # YS) R"
-    by (force simp: valuate_def Joints2_def Joints_def i_def)
-  thus ?thesis
-    by (auto simp: valuate_def Joints2_def Joints_def)
-qed
+definition "approx_slp_outer p n slp XS =
+  do {
+    let d = degree_aforms XS;
+    let XSe = (map (\<lambda>x. (x, 0)) XS);
+    rs \<leftarrow> approx_slp p slp XSe;
+    let rs' = take n rs;
+    let d' = max d (degree_aforms_err rs');
+    Some (aforms_err_to_aforms d' rs')
+  }"
 
-lemma scaleR_aform_ivl_commute:
-  "scaleR_aform_ivl prec tol a b Y YS = scaleR_aform_ivl prec tol b a Y YS"
-  by (simp add: scaleR_aform_ivl_def abs_minus_commute add.commute)
+lemma take_in_listsetI: "xs \<in> listset XS \<Longrightarrow> take n xs \<in> listset (take n XS)"
+  by (induction XS arbitrary: xs n) (auto simp: take_Cons listset_Cons_mem_conv set_Cons_def split: nat.splits)
 
-lemma
-  scaleR_aform_ivl_segment:
-  assumes "scaleR_aform_ivl prec tol a b Y YS = Some R"
-  assumes "y # ys \<in> Joints (Y#YS)"
-  assumes "c \<in> closed_segment a b"
-  shows "((c *\<^sub>R y) # y # ys) \<in> Joints (R # Y # YS)"
-  using assms scaleR_aform_ivl_commute[of prec tol "max a b" "min a b" Y YS]
-  by (auto split: if_split_asm
-      simp: closed_segment_eq_real_ivl min_def max_def
-      intro: scaleR_aform_ivl
-      dest: scaleR_aform_ivl)
+lemma take_in_aforms_errI: "take n xs \<in> aforms_err e (take n XS)"
+  if "xs \<in> aforms_err e XS"
+  using that
+  by (auto simp: aforms_err_def take_map[symmetric] intro!: take_in_listsetI)
 
-subsection \<open>operations on expressions\<close>
-
-definition "minus_ea = binary_componentwise' Basis_list (\<lambda>i j. Add i (Minus j))"
-definition "scaleR_eas i   j = scaleR_ea (Var i (hd Basis_list)) j"
-definition "scaleQ_eas i d j = scaleR_ea (Mult (Var i (hd Basis_list)) (Inverse (Num d))) j"
-
-lemma interpret_minus_ea[simp]:
-  "interpret_euclarith (minus_ea i j) xs = (xs ! i) - (xs ! j)"
-  unfolding interpret_binary_componentwise' minus_ea_def
-  by (auto simp: euclidean_representation inner_diff_left[symmetric])
-
-lemma interpret_scaleR_ea_Var[simp]:
-  "interpret_euclarith (scaleR_eas i j) xs = (xs ! i \<bullet> hd Basis_list) *\<^sub>R (xs ! j)"
-  by (auto simp: scaleR_eas_def)
-
-lemma interpret_scaleQ[simp]:
-  "interpret_euclarith (scaleQ_eas i d j) xs = (xs ! i \<bullet> hd Basis_list / d) *\<^sub>R xs ! j"
-  by (auto simp: scaleQ_eas_def inverse_eq_divide)
-
-subsection \<open>encoding of reals in Euclidean space\<close>
-
-definition eor::"real \<Rightarrow> 'a::ordered_euclidean_space"
-  where "eor r = r *\<^sub>R One"
-definition "roe e = e \<bullet> (hd Basis_list)"
-
-lemma roe_eor[simp]: "roe (eor r) = r"
-  by (auto simp: eor_def roe_def)
-
-lemma roe_scaleR[simp]: "roe (r *\<^sub>R One) = r"
-  by (auto simp: roe_def)
-
-lemma eor_nonneg_iff[simp]: "0 \<le> eor h \<longleftrightarrow> 0 \<le> h"
-  by (auto simp: eucl_le[where 'a='a] eor_def)
-
-lemma eor_le_iff[simp]: "eor a \<le> eor b \<longleftrightarrow> a \<le> b"
-  by (auto simp: eucl_le[where 'a='a] eor_def)
-
-lemma eor_inner_Basis_le_iff[simp]: "i \<in> Basis \<Longrightarrow> eor x \<bullet> i \<le> eor y \<bullet> i \<longleftrightarrow> x \<le> y"
-  by (auto simp: eucl_le[where 'a='a] eor_def)
-
-lemma le_roe[simp]: "eor a \<le> h \<Longrightarrow> a \<le> roe h"
-  and roe_le[simp]: "h \<le> eor a \<Longrightarrow> roe h \<le> a"
-  by (auto simp: eucl_le[where 'a = 'a] roe_def eor_def)
-
-lemma Bex_Icc_zero_scaleR_One_iff_old: "(\<forall>h\<in>{eor a .. eor b}. P (roe h)) \<longleftrightarrow> (\<forall>h\<in>{a..b}. P h)"
-proof safe
-  fix h
-  assume "h \<in> {a .. b}"
-  then have "eor h \<in> {eor a .. eor b}"
+theorem approx_slp_outer:
+  assumes "approx_slp_outer p n slp XS = Some RS"
+  assumes slp: "slp = slp_of_fas fas" "n = length fas"
+  assumes "xs \<in> Joints XS"
+  shows "interpret_floatariths fas xs @ xs \<in> Joints (RS @ XS)"
+proof -
+  from assms obtain d XSe rs rs' d' where
+    d: "d = degree_aforms XS"
+    and XSe: "XSe = (map (\<lambda>x. (x, 0)) XS)"
+    and rs: "approx_slp p (slp_of_fas fas) XSe = Some rs"
+    and rs': "rs' = take (length fas) rs"
+    and d': "d' = max d (degree_aforms_err rs')"
+    and RS: "aforms_err_to_aforms d' rs' = RS"
+    by (auto simp: approx_slp_outer_def Let_def bind_eq_Some_conv)
+  have abbd: "(a, b) \<in> set XS \<Longrightarrow> degree b \<le> degree_aforms XS" for a b
+    apply (rule degrees_leD[OF order_refl]) by force
+  from d' d have i_less: "(a, b) \<in> set XS \<Longrightarrow> i < degree b \<Longrightarrow> i < min d d'" for i a b
+    by (auto dest!: abbd)
+  from assms obtain e' where vs: "xs = (map (aform_val e') XS)" and e': "e' \<in> UNIV \<rightarrow> {-1 .. 1}"
+    by (auto simp: Joints_def valuate_def)
+  from d have d: "V \<in> set XS \<Longrightarrow> degree_aform V \<le> d" for V
+    by (auto intro!: degrees_leD)
+  have xs_XSe: "xs \<in> aforms_err e' XSe"
+    by (auto simp: vs aforms_err_def XSe o_def aform_err_def)
+  from approx_slp_Elem[OF e' xs_XSe rs]
+  have aforms_err: "interpret_slp (slp_of_fas fas) xs \<in> aforms_err e' rs" .
+  have "interpret_floatariths fas xs = take (length fas) (interpret_slp (slp_of_fas fas) xs)"
+    using assms by (simp add: slp_of_fas)
+  also
+  from aforms_err
+  have "take (length fas) (interpret_slp (slp_of_fas fas) xs) \<in> aforms_err e' rs'"
+    unfolding rs'
+    by (auto simp: take_map intro!: take_in_aforms_errI)
+  finally have ier: "interpret_floatariths fas xs \<in> aforms_err e' rs'" .
+  have "degree_aforms_err rs' \<le> d'" using d' by auto
+  from aforms_err_to_aformsE[OF ier this e'] obtain e where
+    "interpret_floatariths fas xs = aform_vals e RS"
+    and e: "e \<in> UNIV \<rightarrow> {- 1..1}" "\<And>i. i < d' \<Longrightarrow> e i = e' i"
+    unfolding RS
     by (auto simp: )
   moreover
-  assume "\<forall>h::'a\<in>{eor a .. eor b}. P (roe h)"
-  ultimately have "P (roe (eor h::'a))"
-    by (auto simp del: roe_eor)
-  then show "P h" by simp
-qed simp
 
-lemma Bex_Icc_zero_scaleR_One_iff[simp]:
-  assumes "\<And>h. P (eor (roe h)) = P h"
-  shows "Ball {eor a .. eor b} (\<lambda>h. P h) \<longleftrightarrow> (\<forall>h\<in>{a..b}. P (eor h))"
-  using assms
-  by (meson atLeastAtMost_iff eor_le_iff le_roe roe_le)
+  from e have e'_eq: "e' i = e i" if "i < min d d'" for i
+    using that
+    by (auto simp: min_def split: if_splits)
+  then have "xs = aform_vals e XS"
+    by (auto simp: vs aform_vals_def aform_val_def intro!: pdevs_val_degree_cong e'_eq i_less)
 
-definition "ra_of_ea v = Var v (hd Basis_list)"
+  ultimately show ?thesis
+    using e(1)
+    by (auto simp: Joints_def valuate_def aform_vals_def intro!: image_eqI[where x=e])
 
-lemma interpret_ra_of_ea[simp]: "interpret_realarith (ra_of_ea v) xs = (xs ! v) \<bullet> hd Basis_list"
-  by (auto simp: ra_of_ea_def)
+qed
 
-
-subsection \<open>fresh Variables\<close>
-
-fun fresh_realarith where
-  "fresh_realarith (Add a b) x \<longleftrightarrow> fresh_realarith a x \<and> fresh_realarith b x"
-| "fresh_realarith (Mult a b) x \<longleftrightarrow> fresh_realarith a x \<and> fresh_realarith b x"
-| "fresh_realarith (Minus a) x \<longleftrightarrow> fresh_realarith a x"
-| "fresh_realarith (Inverse a) x \<longleftrightarrow> fresh_realarith a x"
-| "fresh_realarith (Num a) x \<longleftrightarrow> True"
-| "fresh_realarith (Var y b) x \<longleftrightarrow> (x \<noteq> y)"
-
-lemma fresh_realarith_subst:
-  assumes "fresh_realarith e x"
-  assumes "x < length vs"
-  shows "interpret_realarith e (vs[x:=v]) = interpret_realarith e vs"
-  using assms
-  by (induction e) auto
-
-lemma fresh_realarith_max_Var:
-  assumes "max_Var_realarith ea \<le> i"
-  shows "fresh_realarith ea i"
-  using assms
-  by (induction ea) auto
-
-fun fresh_euclarith where
-  "fresh_euclarith (AddE a b) x \<longleftrightarrow> fresh_euclarith a x \<and> fresh_euclarith b x"
-| "fresh_euclarith (ScaleR a b) x \<longleftrightarrow> fresh_realarith a x"
-
-lemma fresh_euclarith_subst:
-  assumes "fresh_euclarith ea i"
-  assumes "i < length xs"
-  shows "interpret_euclarith ea (xs[i:=x]) = interpret_euclarith ea xs"
-  using assms
-  by (induction ea) (auto simp: fresh_realarith_subst)
-
-lemma fresh_euclarith_max_Var:
-  assumes "max_Var_euclarith ea \<le> i"
-  shows "fresh_euclarith ea i"
-  using assms
-  by (induction ea) (auto simp: fresh_realarith_max_Var)
-
-lemma
-  interpret_euclarith_take_eqI:
-  assumes "take n ys = take n zs"
-  assumes "max_Var_euclarith ea \<le> n"
-  shows "interpret_euclarith ea ys = interpret_euclarith ea zs"
-  by (rule interpret_euclarith_eq_take_max_VarI) (rule take_greater_eqI[OF assms])
-
-lemma
-  interpret_realarith_fresh_eqI:
-  assumes "\<And>i. fresh_realarith ea i \<or> (i < length ys \<and> i < length zs \<and> ys ! i = zs ! i)"
-  shows "interpret_realarith ea ys = interpret_realarith ea zs"
-  using assms
-  by (induction ea) force+
-
-lemma
-  interpret_euclarith_fresh_eqI:
-  assumes "\<And>i. fresh_euclarith ea i \<or> (i < length ys \<and> i < length zs \<and> ys ! i = zs ! i)"
-  shows "interpret_euclarith ea ys = interpret_euclarith ea zs"
-  using assms
-  apply (induction ea)
-  subgoal by (force simp: interpret_realarith_fresh_eqI intro: interpret_realarith_fresh_eqI)
-  subgoal by simp (metis interpret_realarith_fresh_eqI)
-  done
-
-subsection \<open>Derivatives\<close>
-
-fun derive_realarith where
-  "derive_realarith (Add a b) x dx = Add (derive_realarith a x dx) (derive_realarith b x dx)"
-| "derive_realarith (Minus a) x dx = Minus (derive_realarith a x dx)"
-| "derive_realarith (Mult a b) x dx = Add (Mult (derive_realarith a x dx) b) (Mult a (derive_realarith b x dx))"
-| "derive_realarith (Inverse a) x dx = Minus (Mult (derive_realarith a x dx) (Inverse (Mult a a)))"
-| "derive_realarith (Var y b) x dx = (if x = y then (Var dx b) else Num 0)"
-| "derive_realarith (Num r) x dx = Num 0"
-
-fun isdiff_realarith where
-  "isdiff_realarith (Add a b) xs \<longleftrightarrow> isdiff_realarith a xs \<and> isdiff_realarith b xs"
-| "isdiff_realarith (Mult a b) xs \<longleftrightarrow> isdiff_realarith a xs \<and> isdiff_realarith b xs"
-| "isdiff_realarith (Minus a) xs \<longleftrightarrow> isdiff_realarith a xs"
-| "isdiff_realarith (Inverse a) xs \<longleftrightarrow> isdiff_realarith a xs \<and> interpret_realarith a xs \<noteq> 0"
-| "isdiff_realarith (Num a) xs \<longleftrightarrow> True"
-| "isdiff_realarith (Var y b) xs \<longleftrightarrow> True"
-
-lemma
-  assumes "\<And>i. e'' i \<le> 1"
-  assumes "\<And>i. -1 \<le> e'' i"
-  shows Inf_aform'_le: "Inf_aform' p r \<le> aform_val e'' r"
-    and Sup_aform'_le: "aform_val e'' r \<le> Sup_aform' p r"
-  by (auto intro!: order_trans[OF Inf_aform'] order_trans[OF _ Sup_aform'] Inf_aform Sup_aform
-    simp: Affine_def valuate_def intro!: image_eqI[where x=e''] assms)
-
-lemma derive_realarith:
-  assumes "fresh_realarith e j"
-  assumes "i < length vs"
-  assumes "j < length vs"
-  assumes "isdiff_realarith e vs"
-  shows "((\<lambda>x. interpret_realarith e (vs[i:=x])) has_derivative
-    (\<lambda>dx. interpret_realarith (derive_realarith e i j) (vs[j:=dx]))) (at (vs ! i))"
-  using assms
-  by (induct e) (auto intro!: derivative_eq_intros simp: fresh_realarith_subst)
-
-fun derive_euclarith where
-  "derive_euclarith (AddE a b) x dx = AddE (derive_euclarith a x dx) (derive_euclarith b x dx)"
-| "derive_euclarith (ScaleR a b) x dx = ScaleR (derive_realarith a x dx) b"
-
-fun isdiff_euclarith where
-  "isdiff_euclarith (AddE a b) x \<longleftrightarrow> isdiff_euclarith a x \<and> isdiff_euclarith b x"
-| "isdiff_euclarith (ScaleR a b) x \<longleftrightarrow> isdiff_realarith a x"
-
-fun isndiff_euclarith where
-  "isndiff_euclarith 0       _ _  _       xs \<longleftrightarrow> True"
-| "isndiff_euclarith _       _ _  []      xs \<longleftrightarrow> False"
-| "isndiff_euclarith (Suc n) e x (dx#dxs) xs \<longleftrightarrow>
-    isdiff_euclarith e xs \<and>
-    isndiff_euclarith n (derive_euclarith e x dx) x dxs xs"
-
-lemma derive_euclarith:
-  assumes "fresh_euclarith e j"
-  assumes "i < length vs"
-  assumes "j < length vs"
-  assumes "isdiff_euclarith e vs"
-  shows "((\<lambda>x. interpret_euclarith e (vs[i:=x])) has_derivative
-    (\<lambda>dx. interpret_euclarith (derive_euclarith e i j) (vs[j:=dx]))) (at (vs ! i))"
-  using assms
-  by (induct e) (auto intro!: derivative_eq_intros derive_realarith simp: plusE_def)
-
-lemma isdiff_realarithI:
-  assumes vs: "vs = map (aform_val e') VS"
-  assumes e': "e' \<in> funcset UNIV {-1 .. 1}"
-  assumes "approx_realarith p e VS d \<noteq> None"
-  assumes "\<And>V. V \<in> set VS \<Longrightarrow> degree (snd V) \<le> d"
-  shows "isdiff_realarith e vs"
-  using assms
-proof (induction e arbitrary: d)
-  case (Inverse a)
-  from \<open>approx_realarith p (Inverse a) VS d \<noteq> None\<close>
-  obtain r s
-  where Some: "approx_realarith p a VS d = Some (r, s)"
-    and nonzero: "Inf_aform' p (r, s) \<le> 0 \<and> Sup_aform' p (r, s) < 0 \<or> Inf_aform' p (r, s) > 0"
-    by (auto simp: bind_eq_Some_conv Let_def inverse_aform_def split: if_split_asm)
-  from approx_realarith_Elem[OF vs e' Some Inverse(5)]
-  obtain e'' where e'': "e'' \<in> funcset UNIV {- 1..1}"
-    and "interpret_realarith a vs = aform_val e'' (r, s)"
-    by auto
-  note this(2)
-  also have "aform_val e'' (r, s) \<in> {Inf_aform' p (r, s) .. Sup_aform' p (r, s)}"
-    using e'' by (auto intro!: Inf_aform'_le Sup_aform'_le)
-  also have "\<dots> \<subseteq> UNIV - {0}" using nonzero by auto
-  finally have "interpret_realarith a vs \<noteq> 0" by auto
-  with Some Inverse(1)[of d] Inverse(2-)
-  show ?case by auto
-qed (force simp: Let_def bind_eq_Some_conv)+
-
-lemma isdiff_euclarithI:
-  assumes vs: "vs = map (aform_val e') VS"
-  assumes e': "e' \<in> funcset UNIV {-1 .. 1}"
-  assumes "approx_euclarith p e VS d \<noteq> None"
-  assumes "\<And>V. V \<in> set VS \<Longrightarrow> degree (snd V) \<le> d"
-  shows "isdiff_euclarith e vs"
-  using assms
-  by (induction e arbitrary: d) (force intro!: isdiff_realarithI simp: bind_eq_Some_conv)+
-
-lemma fresh_realarith_derive_realarith:
-  assumes "fresh_realarith ea n"
-  assumes "fresh_realarith ea k"
-  assumes "n \<noteq> k"
-  shows "fresh_realarith (derive_realarith ea i n) k"
-  using assms
-  by (induction ea) auto
-
-lemma fresh_euclarith_derive_realarith:
-  assumes "fresh_euclarith ea n"
-  assumes "fresh_euclarith ea k"
-  assumes "n \<noteq> k"
-  shows "fresh_euclarith (derive_euclarith ea i n) k"
-  using assms
-  by (induction ea) (auto simp: fresh_realarith_derive_realarith)
-
-lemma max_Var_realarith_derive_realarith:
-  assumes "max_Var_realarith ea \<le> n"
-  shows "max_Var_realarith (derive_realarith ea i n) \<le> Suc (max i n)"
-  using assms
-  by (induction ea) auto
-
-lemma max_Var_euclarith_derive_euclarith:
-  assumes "max_Var_euclarith ea \<le> n"
-  shows "max_Var_euclarith (derive_euclarith ea i n) \<le> Suc (max i n)"
-  using assms
-  by (induction ea) (auto simp: max_Var_realarith_derive_realarith)
-
-lemma
-  isdiff_realarith_eq_take_max_VarI:
-  assumes "take (max_Var_realarith ra) ys = take (max_Var_realarith ra) zs"
-  shows "isdiff_realarith ra ys = isdiff_realarith ra zs"
-  using assms
-  by (induct ra) (auto dest: take_max_eqD interpret_realarith_eq_take_max_VarI)
-
-lemma isdiff_euclarith_eq_take_max_VarI:
-  "take (max_Var_euclarith ea) ys = take (max_Var_euclarith ea) zs \<Longrightarrow>
-    isdiff_euclarith ea ys = isdiff_euclarith ea zs"
-  by (induct ea) (auto dest!: take_max_eqD isdiff_realarith_eq_take_max_VarI)
-
-lemma
-  isdiff_euclarith_take_eqI:
-  assumes "take n ys = take n zs"
-  assumes "max_Var_euclarith ea \<le> n"
-  shows "isdiff_euclarith ea ys = isdiff_euclarith ea zs"
-  by (rule isdiff_euclarith_eq_take_max_VarI) (rule take_greater_eqI[OF assms])
-
-lemma
-  isdiff_realarith_freshI:
-  assumes "\<And>i. fresh_realarith ea i \<or> (i < length ys \<and> i < length zs \<and> ys ! i = zs ! i)"
-  assumes "isdiff_realarith ea zs"
-  shows "isdiff_realarith ea ys"
-  using assms
-  apply (induction ea)
-  subgoal by auto
-  subgoal by auto
-  subgoal by auto
-  subgoal by auto (metis interpret_realarith_fresh_eqI)
-  subgoal by auto
-  subgoal by auto
-  done
-
-lemma
-  isdiff_euclarith_freshI:
-  assumes "\<And>i. fresh_euclarith ea i \<or> (i < length ys \<and> i < length zs \<and> ys ! i = zs ! i)"
-  assumes "isdiff_euclarith ea zs"
-  shows "isdiff_euclarith ea ys"
-  using assms
-  apply (induction ea)
-  subgoal by auto
-  subgoal using isdiff_realarith_freshI by auto
-  done
-
-
-subsection \<open>Proving Formulas with AA\<close>
-
-datatype ('a, 'b) euclarithform =
-  Pos "('a, 'b) euclarith"
-| Nonneg "('a, 'b) euclarith"
-| Conj "('a, 'b) euclarithform" "('a, 'b) euclarithform"
-| Disj "('a, 'b) euclarithform" "('a, 'b) euclarithform"
-
-fun interpret_euclarithform :: "('a::real_inner, 'b::ordered_euclidean_space) euclarithform \<Rightarrow> 'a list \<Rightarrow> bool" where
-"interpret_euclarithform (Pos a) vs      = (eucl_less 0 (interpret_euclarith a vs))" |
-"interpret_euclarithform (Nonneg a) vs = (interpret_euclarith a vs \<ge> 0)" |
-"interpret_euclarithform (Conj f g) vs \<longleftrightarrow> interpret_euclarithform f vs \<and> interpret_euclarithform g vs" |
-"interpret_euclarithform (Disj f g) vs \<longleftrightarrow> interpret_euclarithform f vs \<or> interpret_euclarithform g vs"
-
-fun approx_euclarithform :: "nat \<Rightarrow> real \<Rightarrow> ('a::ordered_euclidean_space, 'b::executable_euclidean_space) euclarithform \<Rightarrow> 'a aform list \<Rightarrow> bool" where
-"approx_euclarithform p t  (Pos a) vs = (case approx_euclarith_outer p t a vs of None \<Rightarrow> False | Some a' \<Rightarrow> (eucl_less 0 (Inf_aform' p a')))" |
-"approx_euclarithform p t (Nonneg a) vs = (case approx_euclarith_outer p t a vs of None \<Rightarrow> False | Some a' \<Rightarrow> (0 \<le> Inf_aform' p a'))" |
-"approx_euclarithform p t (Conj f g) vs \<longleftrightarrow> approx_euclarithform p t f vs \<and> approx_euclarithform p t g vs" |
-"approx_euclarithform p t (Disj f g) vs \<longleftrightarrow> approx_euclarithform p t f vs \<or> approx_euclarithform p t g vs"
-
-lemma eucl_less_le_trans:
-  fixes x y::"'a :: ordered_euclidean_space"
-  shows "eucl_less x y \<Longrightarrow> y \<le> z \<Longrightarrow> eucl_less x z"
-  by (force simp: eucl_less_def eucl_le[where 'a='a])
-
-lemma approx_euclarithform:
+theorem approx_slp_outer_plain:
+  assumes "approx_slp_outer p n slp XS = Some RS"
+  assumes slp: "slp = slp_of_fas fas" "n = length fas"
   assumes "xs \<in> Joints XS"
-  assumes "approx_euclarithform p t f XS"
-  shows "interpret_euclarithform f xs"
-  using assms
-  by (induction f)
-    (auto
-      split: option.split_asm
-      dest!: approx_euclarith_outer
-      elim!: Joints2E
-      intro!: eucl_less_le_trans[OF _ Inf_aform'_le] order.trans[OF _ Inf_aform'_le])
-
-primrec max_Var_euclarithform where
-  "max_Var_euclarithform (Pos a) = max_Var_euclarith a"
-| "max_Var_euclarithform (Nonneg a) = max_Var_euclarith a"
-| "max_Var_euclarithform (Conj f g) = max (max_Var_euclarithform f) (max_Var_euclarithform g)"
-| "max_Var_euclarithform (Disj f g) = max (max_Var_euclarithform f) (max_Var_euclarithform g)"
-
-definition true_euclarithform :: "nat \<Rightarrow> ('a, 'b::ordered_real_vector) euclarithform"
-  where "true_euclarithform _ = Nonneg (ScaleR (Num (real_of_float 0)) 0)"
-
-lemma interpret_euclarithform_euclarithform[simp]:
-  "interpret_euclarithform (true_euclarithform i) xs = True"
-  by (auto simp: true_euclarithform_def)
+  shows "interpret_floatariths fas xs \<in> Joints RS"
+proof -
+  have "length fas = length RS"
+  proof -
+    have f1: "length xs = length XS"
+      using Joints_imp_length_eq assms(4) by blast
+    have "interpret_floatariths fas xs @ xs \<in> Joints (RS @ XS)"
+      using approx_slp_outer assms(1) assms(2) assms(3) assms(4) by blast
+    then show ?thesis
+      using f1 Joints_imp_length_eq by fastforce
+  qed
+  with Joints_appendD2[OF approx_slp_outer[OF assms]] show ?thesis by simp
+qed
 
 end
 
