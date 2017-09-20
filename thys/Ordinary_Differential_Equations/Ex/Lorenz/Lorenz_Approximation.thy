@@ -2849,7 +2849,8 @@ definition "ordered_lines = alternating (rev [0..<222]) ([222..<400])"
   \<comment>\<open>the hard ones ``first'', potentially useless due to nondeterministic \<open>Parallel.map\<close>\<close>
 
 definition "parallel_check filename m n c1 ns =
-  Parallel.forall (\<lambda>i. check_line_lookup_out (filename @ show i) (Some m) (Some n) c1 i) ns"
+  Parallel.forall (\<lambda>i. check_line_lookup_out (if filename = '''' then '''' else filename @ show i)
+    (Some m) (Some n) c1 i) ns"
 
 ML \<open>val check_line = @{computation_check
   terms:
