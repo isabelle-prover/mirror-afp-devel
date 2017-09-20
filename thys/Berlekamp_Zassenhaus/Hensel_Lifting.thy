@@ -239,13 +239,13 @@ definition dupe_monic_dynamic
     then dupe_monic_i_int (finite_field_ops32 (uint32_of_int p))
     else if p \<le> 4294967295
     then dupe_monic_i_int (finite_field_ops64 (uint64_of_int p))
-    else dupe_monic_i_int (finite_field_ops p))" 
+    else dupe_monic_i_int (finite_field_ops_integer (integer_of_int p)))" 
 
 context poly_mod_2
 begin
 
-lemma dupe_monic_i_int_finite_field_ops: assumes 
-      dupe_i: "dupe_monic_i_int (finite_field_ops m) D H S T U = (A,B)" 
+lemma dupe_monic_i_int_finite_field_ops_integer: assumes 
+      dupe_i: "dupe_monic_i_int (finite_field_ops_integer (integer_of_int m)) D H S T U = (A,B)" 
   and 1: "D*S + H*T =m 1" 
   and mon: "monic D" 
   and norm: "Mp D = D" "Mp H = H" "Mp S = S" "Mp T = T" "Mp U = U" 
@@ -255,7 +255,7 @@ shows
   "Mp A = A" 
   "Mp B = B" 
   using m1 mod_ring_gen.dupe_monic_i_int[OF 
-        mod_ring_locale.mod_ring_finite_field_ops[unfolded mod_ring_locale_def], 
+        mod_ring_locale.mod_ring_finite_field_ops_integer[unfolded mod_ring_locale_def], 
         internalize_sort "'a :: nontriv", OF type_to_set, unfolded remove_duplicate_premise, 
         cancel_type_definition, OF _ assms] by auto
 
@@ -303,7 +303,7 @@ shows
   using dupe
     dupe_monic_i_int_finite_field_ops32[OF _ _ 1 mon norm, of A B]
     dupe_monic_i_int_finite_field_ops64[OF _ _ 1 mon norm, of A B]
-    dupe_monic_i_int_finite_field_ops[OF _ 1 mon norm, of A B]
+    dupe_monic_i_int_finite_field_ops_integer[OF _ 1 mon norm, of A B]
   unfolding dupe_monic_dynamic_def by (auto split: if_splits)
 end
 
@@ -411,7 +411,7 @@ definition euclid_ext_poly_dynamic :: "int \<Rightarrow> int poly \<Rightarrow> 
     then euclid_ext_poly_mod_main p (finite_field_ops32 (uint32_of_int p))
     else if p \<le> 4294967295
     then euclid_ext_poly_mod_main p (finite_field_ops64 (uint64_of_int p))
-    else euclid_ext_poly_mod_main p (finite_field_ops p))" 
+    else euclid_ext_poly_mod_main p (finite_field_ops_integer (integer_of_int p)))" 
   
 context prime_field_gen
 begin
@@ -469,8 +469,8 @@ end
 
 context poly_mod_prime begin
 
-lemmas euclid_ext_poly_mod_int = prime_field_gen.euclid_ext_poly_mod_main
-  [OF prime_field.prime_field_finite_field_ops,
+lemmas euclid_ext_poly_mod_integer = prime_field_gen.euclid_ext_poly_mod_main
+  [OF prime_field.prime_field_finite_field_ops_integer,
   unfolded prime_field_def mod_ring_locale_def poly_mod_type_simps, internalize_sort "'a :: prime_card", OF type_to_set, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
 
 lemmas euclid_ext_poly_mod_uint32 = prime_field_gen.euclid_ext_poly_mod_main
@@ -485,7 +485,7 @@ lemma euclid_ext_poly_dynamic:
     and res: "euclid_ext_poly_dynamic p f g = (a,b)" 
   shows "f * a + g * b =m 1" 
     "Mp a = a" "Mp b = b"
-  using euclid_ext_poly_mod_int[OF cop f g, of p a b]
+  using euclid_ext_poly_mod_integer[OF cop f g, of p a b]
     euclid_ext_poly_mod_uint32[OF _ cop f g, of p a b]
     euclid_ext_poly_mod_uint64[OF _ cop f g, of p a b]
     res[unfolded euclid_ext_poly_dynamic_def] by (auto split: if_splits)

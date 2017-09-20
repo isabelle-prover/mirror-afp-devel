@@ -340,7 +340,7 @@ proof (intro rel_funI, clarify, goal_cases)
       by (simp add: o_def facts'_def nat_p)
     have len: "length xs = length xs'" by transfer_prover
     have id3: "(y = [?on]) = (y' = 1)" 
-      by (transfer_prover_start, transfer_step+, simp add: one_poly_i_def finite_field_ops_def)
+      by (transfer_prover_start, transfer_step+, simp add: one_poly_i_def finite_field_ops_int_def)
     show ?case
     proof (cases "y' = 1")
       case True
@@ -397,7 +397,7 @@ proof (induct f g d res arbitrary: F G Res rule: dist_degree_factorize_main.indu
   have res[transfer_rule]: "list_all2 (rel_prod op = poly_rel) Res res" by (rule 1)
   have [transfer_rule]: "poly_rel [?on] 1"
     by (simp add: one poly_rel_def)
-  have id1: "(V = [?on]) = (v = 1)" unfolding finite_field_ops_def by transfer_prover
+  have id1: "(V = [?on]) = (v = 1)" unfolding finite_field_ops_int_def by transfer_prover
   have id2: "degree_i V = degree v" by transfer_prover
   note simp = simp[unfolded id1 id2]
   note IH = 1(1,2)
@@ -574,11 +574,11 @@ definition finite_field_factorization_int :: "int \<Rightarrow> int poly \<Right
     then finite_field_factorization_main p (finite_field_ops32 (uint32_of_int p))
     else if p \<le> 4294967295
     then finite_field_factorization_main p (finite_field_ops64 (uint64_of_int p))
-    else finite_field_factorization_main p (finite_field_ops p))"
+    else finite_field_factorization_main p (finite_field_ops_integer (integer_of_int p)))"
 
 context poly_mod_prime begin
-lemmas finite_field_factorization_main_int = prime_field_gen.finite_field_factorization_main
-  [OF prime_field.prime_field_finite_field_ops, unfolded prime_field_def mod_ring_locale_def,
+lemmas finite_field_factorization_main_integer = prime_field_gen.finite_field_factorization_main
+  [OF prime_field.prime_field_finite_field_ops_integer, unfolded prime_field_def mod_ring_locale_def,
   unfolded poly_mod_type_simps, internalize_sort "'a :: prime_card", OF type_to_set, unfolded remove_duplicate_premise, cancel_type_definition, OF non_empty]
 
 lemmas finite_field_factorization_main_uint32 = prime_field_gen.finite_field_factorization_main
@@ -595,7 +595,7 @@ lemma finite_field_factorization_int:
   shows "poly_mod.unique_factorization_m p f (c, mset fs)
     \<and> c \<in> {0 ..< p} 
     \<and> (\<forall> fi \<in> set fs. set (coeffs fi) \<subseteq> {0 ..< p})" 
-  using finite_field_factorization_main_int[OF  _ sq, of c fs]
+  using finite_field_factorization_main_integer[OF  _ sq, of c fs]
     finite_field_factorization_main_uint32[OF _ _ sq, of c fs]
     finite_field_factorization_main_uint64[OF _ _ sq, of c fs]
     result[unfolded finite_field_factorization_int_def]

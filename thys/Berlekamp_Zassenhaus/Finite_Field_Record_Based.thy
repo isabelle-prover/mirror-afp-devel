@@ -6,8 +6,8 @@
 *)
 subsection \<open>Finite Fields\<close>
 
-text \<open>We provide two implementations for $GF(p)$ -- the field with $p$ elements for some
-  prime $p$ -- one by integers and one by bit-vectors. 
+text \<open>We provide four implementations for $GF(p)$ -- the field with $p$ elements for some
+  prime $p$ -- one by int, one by integers, one by 32-bit numbers and one 64-bit implementation. 
   Correctness of the implementations is proven by
   transfer rules to the type-based version of $GF(p)$.\<close>
 
@@ -71,8 +71,8 @@ definition inverse_p :: "int \<Rightarrow> int" where
 definition divide_p :: "int \<Rightarrow> int \<Rightarrow> int"  where
   "divide_p x y = mult_p x (inverse_p y)"
 
-definition finite_field_ops :: "int arith_ops_record" where
-  "finite_field_ops \<equiv> Arith_Ops_Record
+definition finite_field_ops_int :: "int arith_ops_record" where
+  "finite_field_ops_int \<equiv> Arith_Ops_Record
       0
       1
       plus_p
@@ -336,9 +336,9 @@ qed
 
 declare power_p.simps[simp del]
 
-lemma ring_finite_field_ops: "ring_ops (finite_field_ops p) mod_ring_rel"
+lemma ring_finite_field_ops_int: "ring_ops (finite_field_ops_int p) mod_ring_rel"
   by (unfold_locales, auto simp:
-  finite_field_ops_def
+  finite_field_ops_int_def
   bi_unique_mod_ring_rel
   right_total_mod_ring_rel
   mod_ring_plus
@@ -427,9 +427,9 @@ proof -
   qed
 qed
 
-lemma finite_field_ops: "field_ops (finite_field_ops p) mod_ring_rel"
+lemma finite_field_ops_int: "field_ops (finite_field_ops_int p) mod_ring_rel"
   by (unfold_locales, auto simp:
-  finite_field_ops_def
+  finite_field_ops_int_def
   bi_unique_mod_ring_rel
   right_total_mod_ring_rel
   mod_ring_divide
@@ -1183,22 +1183,432 @@ lemma finite_field_ops64: "field_ops (finite_field_ops64 pp) mod_ring_rel64"
 end
 end
 
+(* and a final implementation via integer *)
+context
+  fixes p :: integer
+begin
+definition plus_p_integer :: "integer \<Rightarrow> integer \<Rightarrow> integer" where
+  "plus_p_integer x y \<equiv> let z = x + y in if z \<ge> p then z - p else z"
+
+definition minus_p_integer :: "integer \<Rightarrow> integer \<Rightarrow> integer" where
+  "minus_p_integer x y \<equiv> if y \<le> x then x - y else (x + p) - y"
+
+definition uminus_p_integer :: "integer \<Rightarrow> integer" where
+  "uminus_p_integer x = (if x = 0 then 0 else p - x)"
+
+definition mult_p_integer :: "integer \<Rightarrow> integer \<Rightarrow> integer" where
+  "mult_p_integer x y = (x * y mod p)"
+
+lemma int_of_integer_0_iff: "int_of_integer n = 0 \<longleftrightarrow> n = 0"
+  using integer_eqI by auto
+  
+lemma int_of_integer_0: "int_of_integer 0 = 0" unfolding int_of_integer_0_iff by simp
+
+lemma int_of_integer_plus: "int_of_integer (x + y) = (int_of_integer x + int_of_integer y)" 
+  by simp
+
+lemma int_of_integer_minus: "int_of_integer (x - y) = (int_of_integer x - int_of_integer y)"
+  by simp
+
+lemma int_of_integer_mult: "int_of_integer (x * y) = (int_of_integer x * int_of_integer y)" 
+  by simp  
+
+lemma int_of_integer_mod: "int_of_integer (x mod y) = (int_of_integer x mod int_of_integer y)" 
+  by simp  
+
+lemma int_of_integer_inv: "int_of_integer (integer_of_int x) = x" by simp
+
+lemma int_of_integer_shift: "int_of_integer (shiftr n k) = (int_of_integer n) div (2 ^ k)" 
+  by (simp add: shiftr_int_def shiftr_integer.rep_eq)
+
+
+function power_p_integer :: "integer \<Rightarrow> integer \<Rightarrow> integer" where
+  "power_p_integer x n = (if n \<le> 0 then 1 else
+    let rec = power_p_integer (mult_p_integer x x) (shiftr n 1) in
+    if n AND 1 = 0 then rec else mult_p_integer rec x)"
+  by pat_completeness auto
+
+termination 
+proof -
+  {
+    fix n :: integer
+    assume "\<not> (n \<le> 0)" 
+    hence "n > 0" by auto
+    hence "int_of_integer n > 0"
+      by (simp add: less_integer.rep_eq)
+    hence "0 < int_of_integer n" "int_of_integer n div 2 < int_of_integer n" by auto
+  } note * = this
+  show ?thesis
+    by (relation "measure (\<lambda> (x,n). nat (int_of_integer n))", auto simp: * int_of_integer_shift) 
+qed
+
+text \<open>In experiments with Berlekamp-factorization (where the prime $p$ is usually small),
+  it turned out that taking the below implementation of inverse via exponentiation
+  is faster than the one based on the extended Euclidean algorithm.\<close>
+
+definition inverse_p_integer :: "integer \<Rightarrow> integer" where
+  "inverse_p_integer x = (if x = 0 then 0 else power_p_integer x (p - 2))"
+
+definition divide_p_integer :: "integer \<Rightarrow> integer \<Rightarrow> integer"  where
+  "divide_p_integer x y = mult_p_integer x (inverse_p_integer y)"
+
+definition finite_field_ops_integer :: "integer arith_ops_record" where
+  "finite_field_ops_integer \<equiv> Arith_Ops_Record
+      0
+      1
+      plus_p_integer
+      mult_p_integer
+      minus_p_integer
+      uminus_p_integer
+      divide_p_integer
+      inverse_p_integer
+      (\<lambda> x y . if y = 0 then x else 0)
+      (\<lambda> x . if x = 0 then 0 else 1)
+      (\<lambda> x . x)
+      integer_of_int
+      int_of_integer
+      (\<lambda> x. 0 \<le> x \<and> x < p)"
+end 
+
+lemma shiftr_integer_code [code_unfold]: "shiftr x 1 = (integer_shiftr x 1)"
+  unfolding shiftr_integer_code using integer_of_nat_1 by auto
+
+text \<open>For soundness of the integer implementation, we mainly prove that this implementation
+  implements the int-based implementation of GF(p).\<close>
+context mod_ring_locale
+begin
+
+context fixes pp :: "integer" 
+  assumes ppp: "p = int_of_integer pp" 
+begin
+
+lemmas integer_simps = 
+  int_of_integer_0
+  int_of_integer_plus 
+  int_of_integer_minus
+  int_of_integer_mult
+  
+
+definition urel_integer :: "integer \<Rightarrow> int \<Rightarrow> bool" where "urel_integer x y = (y = int_of_integer x \<and> y \<ge> 0 \<and> y < p)" 
+
+definition mod_ring_rel_integer :: "integer \<Rightarrow> 'a mod_ring \<Rightarrow> bool" where
+  "mod_ring_rel_integer x y = (\<exists> z. urel_integer x z \<and> mod_ring_rel z y)" 
+
+lemma urel_integer_0: "urel_integer 0 0" unfolding urel_integer_def using p2 by simp
+
+lemma urel_integer_1: "urel_integer 1 1" unfolding urel_integer_def using p2 by simp
+
+lemma le_int_of_integer: "(x \<le> y) = (int_of_integer x \<le> int_of_integer y)" 
+  by (rule less_eq_integer.rep_eq)
+
+lemma urel_integer_plus: assumes "urel_integer x y" "urel_integer x' y'"
+  shows "urel_integer (plus_p_integer pp x x') (plus_p p y y')"
+proof -    
+  let ?x = "int_of_integer x" 
+  let ?x' = "int_of_integer x'" 
+  let ?p = "int_of_integer pp" 
+  from assms have id: "y = ?x" "y' = ?x'" 
+    and rel: "0 \<le> ?x" "?x < p" 
+      "0 \<le> ?x'" "?x' \<le> p" unfolding urel_integer_def by auto
+  have le: "(pp \<le> x + x') = (?p \<le> ?x + ?x')" unfolding le_int_of_integer
+    using rel by auto
+  show ?thesis
+  proof (cases "?p \<le> ?x + ?x'")
+    case True
+    hence True: "(?p \<le> ?x + ?x') = True" by simp
+    show ?thesis unfolding id 
+      using rel unfolding plus_p_integer_def plus_p_def Let_def urel_integer_def 
+      unfolding ppp le True if_True
+      using True by auto
+  next
+    case False
+    hence False: "(?p \<le> ?x + ?x') = False" by simp
+    show ?thesis unfolding id 
+      using rel unfolding plus_p_integer_def plus_p_def Let_def urel_integer_def 
+      unfolding ppp le False if_False
+      using False by auto
+  qed
+qed
+  
+lemma urel_integer_minus: assumes "urel_integer x y" "urel_integer x' y'"
+  shows "urel_integer (minus_p_integer pp x x') (minus_p p y y')"
+proof -    
+  let ?x = "int_of_integer x" 
+  let ?x' = "int_of_integer x'" 
+  from assms have id: "y = ?x" "y' = ?x'" 
+    and rel: "0 \<le> ?x" "?x < p" 
+      "0 \<le> ?x'" "?x' \<le> p" unfolding urel_integer_def by auto
+  have le: "(x' \<le> x) = (?x' \<le> ?x)" unfolding le_int_of_integer
+    using rel by auto
+  show ?thesis
+  proof (cases "?x' \<le> ?x")
+    case True
+    hence True: "(?x' \<le> ?x) = True" by simp
+    show ?thesis unfolding id 
+      using rel unfolding minus_p_integer_def minus_p_def Let_def urel_integer_def 
+      unfolding ppp le True if_True
+      using True by auto
+  next
+    case False
+    hence False: "(?x' \<le> ?x) = False" by simp
+    show ?thesis unfolding id 
+      using rel unfolding minus_p_integer_def minus_p_def Let_def urel_integer_def 
+      unfolding ppp le False if_False
+      using False by auto
+  qed
+qed
+
+lemma urel_integer_uminus: assumes "urel_integer x y"
+  shows "urel_integer (uminus_p_integer pp x) (uminus_p p y)"
+proof -    
+  let ?x = "int_of_integer x"  
+  from assms have id: "y = ?x" 
+    and rel: "0 \<le> ?x" "?x < p" 
+      unfolding urel_integer_def by auto
+  have le: "(x = 0) = (?x = 0)" unfolding int_of_integer_0_iff
+    using rel by auto
+  show ?thesis
+  proof (cases "?x = 0")
+    case True
+    hence True: "(?x = 0) = True" by simp
+    show ?thesis unfolding id 
+      using rel unfolding uminus_p_integer_def uminus_p_def Let_def urel_integer_def 
+      unfolding ppp le True if_True
+      using True by auto
+  next
+    case False
+    hence False: "(?x = 0) = False" by simp
+    show ?thesis unfolding id 
+      using rel unfolding uminus_p_integer_def uminus_p_def Let_def urel_integer_def 
+      unfolding ppp le False if_False
+      using False by auto
+  qed
+qed
+
+lemma pp_pos: "int_of_integer pp > 0" 
+  using ppp nontriv[where 'a = 'a]  unfolding p
+  by (simp add: less_integer.rep_eq)
+
+lemma urel_integer_mult: assumes "urel_integer x y" "urel_integer x' y'"
+  shows "urel_integer (mult_p_integer pp x x') (mult_p p y y')"
+proof -    
+  let ?x = "int_of_integer x" 
+  let ?x' = "int_of_integer x'" 
+  from assms  have id: "y = ?x" "y' = ?x'" 
+    and rel: "0 \<le> ?x" "?x < p" 
+      "0 \<le> ?x'" "?x' < p" unfolding urel_integer_def by auto
+  from rel(1,3) have xx: "0 \<le> ?x * ?x'" by simp
+  show ?thesis unfolding id
+    using rel unfolding mult_p_integer_def mult_p_def Let_def urel_integer_def     
+    unfolding ppp mod_nonneg_pos_int[OF xx pp_pos] using xx pp_pos by simp        
+qed
+
+lemma urel_integer_eq: assumes "urel_integer x y" "urel_integer x' y'" 
+  shows "(x = x') = (y = y')" 
+proof -    
+  let ?x = "int_of_integer x" 
+  let ?x' = "int_of_integer x'" 
+  from assms have id: "y = ?x" "y' = ?x'" 
+    unfolding urel_integer_def by auto
+  show ?thesis unfolding id integer_eq_iff ..
+qed
+
+lemma urel_integer_normalize: 
+assumes x: "urel_integer x y"
+shows "urel_integer (if x = 0 then 0 else 1) (if y = 0 then 0 else 1)"
+ unfolding urel_integer_eq[OF x urel_integer_0] using urel_integer_0 urel_integer_1 by auto
+
+lemma urel_integer_mod: 
+assumes x: "urel_integer x x'" and y: "urel_integer y y'" 
+shows "urel_integer (if y = 0 then x else 0) (if y' = 0 then x' else 0)"
+  unfolding urel_integer_eq[OF y urel_integer_0] using urel_integer_0 x by auto 
+
+lemma urel_integer_power: "urel_integer x x' \<Longrightarrow> urel_integer y (int y') \<Longrightarrow> urel_integer (power_p_integer pp x y) (power_p p x' y')"
+proof (induct x' y' arbitrary: x y rule: power_p.induct[of _ p])
+  case (1 x' y' x y)
+  note x = 1(2) note y = 1(3)
+  show ?case
+  proof (cases "y' \<le> 0")
+    case True
+    hence y: "y = 0" "y' = 0" using urel_integer_eq[OF y urel_integer_0] by auto
+    show ?thesis unfolding y True by (simp add: power_p.simps urel_integer_1)
+  next
+    case False
+    hence id: "(y \<le> 0) = False" "(y' = 0) = False" using False y unfolding urel_integer_def
+      by ((metis eq_iff nat_int nat_of_integer.rep_eq nat_of_integer_code)+)
+    obtain d' r' where dr': "Divides.divmod_nat y' 2 = (d',r')" by force
+    from divmod_nat_div_mod[of y' 2, unfolded dr']
+    have r': "r' = y' mod 2" and d': "d' = y' div 2" by auto
+    have aux: "\<And> y'. int (y' mod 2) = int y' mod 2" by presburger
+    have "urel_integer (y AND 1) r'" unfolding r' using y unfolding urel_integer_def 
+      unfolding ppp
+      by (smt aux bitAND_int_code int_and_1 mod2_gr_0 of_nat_0_le_iff of_nat_0_less_iff of_nat_1 one_integer.rep_eq p2 ppp) 
+    from urel_integer_eq[OF this urel_integer_0]     
+    have rem: "(y AND 1 = 0) = (r' = 0)" by simp
+    have div: "urel_integer (shiftr y 1) (int d')" unfolding d' using y unfolding urel_integer_def
+      unfolding ppp shiftr_integer_conv_div_pow2 by auto
+    from id have "y' \<noteq> 0" by auto
+    note IH = 1(1)[OF this refl dr'[symmetric] urel_integer_mult[OF x x] div]
+    show ?thesis unfolding power_p.simps[of _ _ "y'"] power_p_integer.simps[of _ _ y] dr' id if_False rem
+      using IH urel_integer_mult[OF IH x] by (auto simp: Let_def)
+  qed
+qed
+  
+
+lemma urel_integer_inverse: assumes x: "urel_integer x x'" 
+  shows "urel_integer (inverse_p_integer pp x) (inverse_p p x')" 
+proof -
+  have p: "urel_integer (pp - 2) (int (nat (p - 2)))" using p2 unfolding urel_integer_def unfolding ppp
+    by auto
+  show ?thesis
+    unfolding inverse_p_integer_def inverse_p_def urel_integer_eq[OF x urel_integer_0] using urel_integer_0 urel_integer_power[OF x p]
+    by auto
+qed
+
+lemma mod_ring_0__integer: "mod_ring_rel_integer 0 0"
+  using urel_integer_0 mod_ring_0 unfolding mod_ring_rel_integer_def by blast
+
+lemma mod_ring_1__integer: "mod_ring_rel_integer 1 1"
+  using urel_integer_1 mod_ring_1 unfolding mod_ring_rel_integer_def by blast
+
+lemma mod_ring_uminus_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer) (uminus_p_integer pp) uminus"
+  using urel_integer_uminus mod_ring_uminus unfolding mod_ring_rel_integer_def rel_fun_def by blast
+
+lemma mod_ring_plus_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer ===> mod_ring_rel_integer) (plus_p_integer pp) (op +)"
+  using urel_integer_plus mod_ring_plus unfolding mod_ring_rel_integer_def rel_fun_def by blast
+
+lemma mod_ring_minus_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer ===> mod_ring_rel_integer) (minus_p_integer pp) (op -)"
+  using urel_integer_minus mod_ring_minus unfolding mod_ring_rel_integer_def rel_fun_def by blast
+
+lemma mod_ring_mult_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer ===> mod_ring_rel_integer) (mult_p_integer pp) (op *)"
+  using urel_integer_mult mod_ring_mult unfolding mod_ring_rel_integer_def rel_fun_def by blast
+
+lemma mod_ring_eq_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer ===> op =) op = op =" 
+  using urel_integer_eq mod_ring_eq unfolding mod_ring_rel_integer_def rel_fun_def by blast
+
+lemma urel_integer_inj: "urel_integer x y \<Longrightarrow> urel_integer x z \<Longrightarrow> y = z" 
+  using urel_integer_eq[of x y x z] by auto
+
+lemma urel_integer_inj': "urel_integer x z \<Longrightarrow> urel_integer y z \<Longrightarrow> x = y" 
+  using urel_integer_eq[of x z y z] by auto
+
+lemma bi_unique_mod_ring_rel_integer:
+  "bi_unique mod_ring_rel_integer" "left_unique mod_ring_rel_integer" "right_unique mod_ring_rel_integer"
+  using bi_unique_mod_ring_rel urel_integer_inj'
+  unfolding mod_ring_rel_integer_def bi_unique_def left_unique_def right_unique_def
+  by (auto simp: urel_integer_def)  
+
+lemma right_total_mod_ring_rel_integer: "right_total mod_ring_rel_integer"
+  unfolding mod_ring_rel_integer_def right_total_def
+proof 
+  fix y :: "'a mod_ring" 
+  from right_total_mod_ring_rel[unfolded right_total_def, rule_format, of y]
+  obtain z where zy: "mod_ring_rel z y" by auto  
+  hence zp: "0 \<le> z" "z < p" unfolding mod_ring_rel_def p using range_to_int_mod_ring[where 'a = 'a] by auto
+  hence "urel_integer (integer_of_int z) z" unfolding urel_integer_def unfolding ppp 
+    by auto 
+  with zy show "\<exists> x z. urel_integer x z \<and> mod_ring_rel z y" by blast
+qed
+
+lemma Domainp_mod_ring_rel_integer: "Domainp mod_ring_rel_integer = (\<lambda>x. 0 \<le> x \<and> x < pp)"
+proof 
+  fix x
+  show "Domainp mod_ring_rel_integer x = (0 \<le> x \<and> x < pp)"   
+    unfolding Domainp.simps
+    unfolding mod_ring_rel_integer_def
+  proof
+    let ?i = "int_of_integer" 
+    assume *: "0 \<le> x \<and> x < pp"     
+    hence "0 \<le> ?i x \<and> ?i x < p" unfolding ppp 
+      by (simp add: le_int_of_integer less_integer.rep_eq)
+    hence "?i x \<in> {0 ..< p}" by auto
+    with Domainp_mod_ring_rel
+    have "Domainp mod_ring_rel (?i x)" by auto
+    from this[unfolded Domainp.simps]
+    obtain b where b: "mod_ring_rel (?i x) b" by auto
+    show "\<exists>a b. x = a \<and> (\<exists>z. urel_integer a z \<and> mod_ring_rel z b)" 
+    proof (intro exI, rule conjI[OF refl], rule exI, rule conjI[OF _ b])
+      show "urel_integer x (?i x)" unfolding urel_integer_def using * unfolding ppp
+        by (simp add: le_int_of_integer less_integer.rep_eq)
+    qed
+  next
+    assume "\<exists>a b. x = a \<and> (\<exists>z. urel_integer a z \<and> mod_ring_rel z b)" 
+    then obtain b z where xz: "urel_integer x z" and zb: "mod_ring_rel z b" by auto
+    hence "Domainp mod_ring_rel z"  by auto
+    with Domainp_mod_ring_rel have "0 \<le> z" "z < p" by auto
+    with xz show "0 \<le> x \<and> x < pp" unfolding urel_integer_def unfolding ppp
+      by (simp add: le_int_of_integer less_integer.rep_eq)
+  qed
+qed
+
+lemma ring_finite_field_ops_integer: "ring_ops (finite_field_ops_integer pp) mod_ring_rel_integer"
+  by (unfold_locales, auto simp:
+  finite_field_ops_integer_def
+  bi_unique_mod_ring_rel_integer
+  right_total_mod_ring_rel_integer
+  mod_ring_plus_integer
+  mod_ring_minus_integer
+  mod_ring_uminus_integer
+  mod_ring_mult_integer
+  mod_ring_eq_integer
+  mod_ring_0__integer
+  mod_ring_1__integer
+  Domainp_mod_ring_rel_integer)
+end
+end
+
 context prime_field
 begin
- (* three implementations of modular integer arithmetic for finite fields *)
+context fixes pp :: "integer" 
+  assumes *: "p = int_of_integer pp"  
+begin
+
+lemma mod_ring_normalize_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer) (\<lambda>x. if x = 0 then 0 else 1) normalize" 
+  using urel_integer_normalize[OF *] mod_ring_normalize unfolding mod_ring_rel_integer_def[OF *] rel_fun_def by blast
+
+lemma mod_ring_mod_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer ===> mod_ring_rel_integer) (\<lambda>x y. if y = 0 then x else 0) op mod" 
+  using urel_integer_mod[OF *] mod_ring_mod unfolding mod_ring_rel_integer_def[OF *] rel_fun_def by blast
+
+lemma mod_ring_unit_factor_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer) (\<lambda>x. x) unit_factor" 
+  using mod_ring_unit_factor unfolding mod_ring_rel_integer_def[OF *] rel_fun_def by blast
+
+lemma mod_ring_inverse_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer) (inverse_p_integer pp) inverse"
+  using urel_integer_inverse[OF *] mod_ring_inverse unfolding mod_ring_rel_integer_def[OF *] rel_fun_def by blast
+
+lemma mod_ring_divide_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer ===> mod_ring_rel_integer) (divide_p_integer pp) op /"
+  using mod_ring_inverse_integer mod_ring_mult_integer[OF *]
+  unfolding divide_p_integer_def divide_mod_ring_def inverse_mod_ring_def[symmetric]
+    rel_fun_def by blast
+
+lemma finite_field_ops_integer: "field_ops (finite_field_ops_integer pp) mod_ring_rel_integer"
+  by (unfold_locales, insert ring_finite_field_ops_integer[OF *], auto simp:
+  ring_ops_def
+  finite_field_ops_integer_def
+  mod_ring_divide_integer
+  mod_ring_inverse_integer
+  mod_ring_mod_integer
+  mod_ring_normalize_integer)
+end
+end
+
+context prime_field
+begin
+ (* four implementations of modular integer arithmetic for finite fields *)
 thm 
   finite_field_ops64
   finite_field_ops32
-  finite_field_ops
+  finite_field_ops_integer
+  finite_field_ops_int
 end
 
 context mod_ring_locale
 begin
- (* three implementations of modular integer arithmetic for finite rings *)
+ (* four implementations of modular integer arithmetic for finite rings *)
 thm 
   ring_finite_field_ops64
   ring_finite_field_ops32
-  ring_finite_field_ops
+  ring_finite_field_ops_integer
+  ring_finite_field_ops_int
 end
 
 no_notation shiftr (infixl ">>" 55) (* to avoid conflict with bind *)

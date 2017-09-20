@@ -138,13 +138,24 @@ context prime_field
 begin
 
 
-
-lemma prime_field_finite_field_ops: "prime_field_gen (finite_field_ops p) mod_ring_rel p" 
+lemma prime_field_finite_field_ops_int: "prime_field_gen (finite_field_ops_int p) mod_ring_rel p" 
 proof -
-  interpret field_ops "finite_field_ops p" mod_ring_rel by (rule finite_field_ops)
+  interpret field_ops "finite_field_ops_int p" mod_ring_rel by (rule finite_field_ops_int)
   show ?thesis
     by (unfold_locales, rule p, 
-      auto simp: finite_field_ops_def p mod_ring_rel_def of_int_of_int_mod_ring)
+    auto simp: finite_field_ops_int_def p mod_ring_rel_def of_int_of_int_mod_ring)
+qed
+
+lemma prime_field_finite_field_ops_integer: "prime_field_gen (finite_field_ops_integer (integer_of_int p)) mod_ring_rel_integer p" 
+proof -
+  interpret field_ops "finite_field_ops_integer (integer_of_int p)" mod_ring_rel_integer by (rule finite_field_ops_integer, simp)
+  have pp: "p = int_of_integer (integer_of_int p)" by auto
+  interpret int: prime_field_gen "finite_field_ops_int p" mod_ring_rel
+    by (rule prime_field_finite_field_ops_int)
+  show ?thesis
+    by (unfold_locales, rule p, auto simp: finite_field_ops_integer_def 
+      mod_ring_rel_integer_def[OF pp] urel_integer_def[OF pp] mod_ring_rel_of_int
+      int.to_int[symmetric] finite_field_ops_int_def) 
 qed
 
 lemma prime_field_finite_field_ops32: assumes small: "p \<le> 65535" 
@@ -156,20 +167,20 @@ proof -
   note * = ppp small 
   interpret field_ops "finite_field_ops32 ?pp" mod_ring_rel32 
     by (rule finite_field_ops32, insert *)
-  interpret int: prime_field_gen "finite_field_ops p" mod_ring_rel
-    by (rule prime_field_finite_field_ops)
+  interpret int: prime_field_gen "finite_field_ops_int p" mod_ring_rel
+    by (rule prime_field_finite_field_ops_int)
   show ?thesis
   proof (unfold_locales, rule p, auto simp: finite_field_ops32_def)
     fix x
     assume x: "0 \<le> x" "x < p" 
-    from int.of_int[OF this] have "mod_ring_rel x (of_int x)" by (simp add: finite_field_ops_def)
+    from int.of_int[OF this] have "mod_ring_rel x (of_int x)" by (simp add: finite_field_ops_int_def)
     thus "mod_ring_rel32 (uint32_of_int x) (of_int x)" unfolding mod_ring_rel32_def[OF *]
       by (intro exI[of _ x], auto simp: urel32_def[OF *], subst int_of_uint32_inv, insert * x, auto)
   next
     fix y z
     assume "mod_ring_rel32 y z" 
     from this[unfolded mod_ring_rel32_def[OF *]] obtain x where yx: "urel32 y x" and xz: "mod_ring_rel x z" by auto
-    from int.to_int[OF xz] have zx: "to_int_mod_ring z = x" by (simp add: finite_field_ops_def)
+    from int.to_int[OF xz] have zx: "to_int_mod_ring z = x" by (simp add: finite_field_ops_int_def)
     show "int_of_uint32 y = to_int_mod_ring z" unfolding zx using yx unfolding urel32_def[OF *] by simp
   next
     fix y
@@ -188,20 +199,20 @@ proof -
   note * = ppp small 
   interpret field_ops "finite_field_ops64 ?pp" mod_ring_rel64
     by (rule finite_field_ops64, insert *)
-  interpret int: prime_field_gen "finite_field_ops p" mod_ring_rel
-    by (rule prime_field_finite_field_ops)
+  interpret int: prime_field_gen "finite_field_ops_int p" mod_ring_rel
+    by (rule prime_field_finite_field_ops_int)
   show ?thesis
   proof (unfold_locales, rule p, auto simp: finite_field_ops64_def)
     fix x
     assume x: "0 \<le> x" "x < p" 
-    from int.of_int[OF this] have "mod_ring_rel x (of_int x)" by (simp add: finite_field_ops_def)
+    from int.of_int[OF this] have "mod_ring_rel x (of_int x)" by (simp add: finite_field_ops_int_def)
     thus "mod_ring_rel64 (uint64_of_int x) (of_int x)" unfolding mod_ring_rel64_def[OF *]
       by (intro exI[of _ x], auto simp: urel64_def[OF *], subst int_of_uint64_inv, insert * x, auto)
   next
     fix y z
     assume "mod_ring_rel64 y z" 
     from this[unfolded mod_ring_rel64_def[OF *]] obtain x where yx: "urel64 y x" and xz: "mod_ring_rel x z" by auto
-    from int.to_int[OF xz] have zx: "to_int_mod_ring z = x" by (simp add: finite_field_ops_def)
+    from int.to_int[OF xz] have zx: "to_int_mod_ring z = x" by (simp add: finite_field_ops_int_def)
     show "int_of_uint64 y = to_int_mod_ring z" unfolding zx using yx unfolding urel64_def[OF *] by simp
   next
     fix y
@@ -214,13 +225,26 @@ end
 
 context mod_ring_locale
 begin
-lemma mod_ring_finite_field_ops: "mod_ring_gen (finite_field_ops p) mod_ring_rel p" 
+lemma mod_ring_finite_field_ops_int: "mod_ring_gen (finite_field_ops_int p) mod_ring_rel p" 
 proof -
-  interpret ring_ops "finite_field_ops p" mod_ring_rel by (rule ring_finite_field_ops)
+  interpret ring_ops "finite_field_ops_int p" mod_ring_rel by (rule ring_finite_field_ops_int)
   show ?thesis
     by (unfold_locales, rule p, 
-      auto simp: finite_field_ops_def p mod_ring_rel_def of_int_of_int_mod_ring)
+      auto simp: finite_field_ops_int_def p mod_ring_rel_def of_int_of_int_mod_ring)
 qed
+
+lemma mod_ring_finite_field_ops_integer: "mod_ring_gen (finite_field_ops_integer (integer_of_int p)) mod_ring_rel_integer p" 
+proof -
+  interpret ring_ops "finite_field_ops_integer (integer_of_int p)" mod_ring_rel_integer by (rule ring_finite_field_ops_integer, simp)
+  have pp: "p = int_of_integer (integer_of_int p)" by auto
+  interpret int: mod_ring_gen "finite_field_ops_int p" mod_ring_rel
+    by (rule mod_ring_finite_field_ops_int)
+  show ?thesis
+    by (unfold_locales, rule p, auto simp: finite_field_ops_integer_def 
+      mod_ring_rel_integer_def[OF pp] urel_integer_def[OF pp] mod_ring_rel_of_int
+      int.to_int[symmetric] finite_field_ops_int_def) 
+qed
+
 
 lemma mod_ring_finite_field_ops32: assumes small: "p \<le> 65535" 
   shows "mod_ring_gen (finite_field_ops32 (uint32_of_int p)) mod_ring_rel32 p" 
@@ -231,20 +255,20 @@ proof -
   note * = ppp small 
   interpret ring_ops "finite_field_ops32 ?pp" mod_ring_rel32 
     by (rule ring_finite_field_ops32, insert *)
-  interpret int: mod_ring_gen "finite_field_ops p" mod_ring_rel
-    by (rule mod_ring_finite_field_ops)
+  interpret int: mod_ring_gen "finite_field_ops_int p" mod_ring_rel
+    by (rule mod_ring_finite_field_ops_int)
   show ?thesis
   proof (unfold_locales, rule p, auto simp: finite_field_ops32_def)
     fix x
     assume x: "0 \<le> x" "x < p" 
-    from int.of_int[OF this] have "mod_ring_rel x (of_int x)" by (simp add: finite_field_ops_def)
+    from int.of_int[OF this] have "mod_ring_rel x (of_int x)" by (simp add: finite_field_ops_int_def)
     thus "mod_ring_rel32 (uint32_of_int x) (of_int x)" unfolding mod_ring_rel32_def[OF *]
       by (intro exI[of _ x], auto simp: urel32_def[OF *], subst int_of_uint32_inv, insert * x, auto)
   next
     fix y z
     assume "mod_ring_rel32 y z" 
     from this[unfolded mod_ring_rel32_def[OF *]] obtain x where yx: "urel32 y x" and xz: "mod_ring_rel x z" by auto
-    from int.to_int[OF xz] have zx: "to_int_mod_ring z = x" by (simp add: finite_field_ops_def)
+    from int.to_int[OF xz] have zx: "to_int_mod_ring z = x" by (simp add: finite_field_ops_int_def)
     show "int_of_uint32 y = to_int_mod_ring z" unfolding zx using yx unfolding urel32_def[OF *] by simp
   next
     fix y
@@ -263,20 +287,20 @@ proof -
   note * = ppp small 
   interpret ring_ops "finite_field_ops64 ?pp" mod_ring_rel64 
     by (rule ring_finite_field_ops64, insert *)
-  interpret int: mod_ring_gen "finite_field_ops p" mod_ring_rel
-    by (rule mod_ring_finite_field_ops)
+  interpret int: mod_ring_gen "finite_field_ops_int p" mod_ring_rel
+    by (rule mod_ring_finite_field_ops_int)
   show ?thesis
   proof (unfold_locales, rule p, auto simp: finite_field_ops64_def)
     fix x
     assume x: "0 \<le> x" "x < p" 
-    from int.of_int[OF this] have "mod_ring_rel x (of_int x)" by (simp add: finite_field_ops_def)
+    from int.of_int[OF this] have "mod_ring_rel x (of_int x)" by (simp add: finite_field_ops_int_def)
     thus "mod_ring_rel64 (uint64_of_int x) (of_int x)" unfolding mod_ring_rel64_def[OF *]
       by (intro exI[of _ x], auto simp: urel64_def[OF *], subst int_of_uint64_inv, insert * x, auto)
   next
     fix y z
     assume "mod_ring_rel64 y z" 
     from this[unfolded mod_ring_rel64_def[OF *]] obtain x where yx: "urel64 y x" and xz: "mod_ring_rel x z" by auto
-    from int.to_int[OF xz] have zx: "to_int_mod_ring z = x" by (simp add: finite_field_ops_def)
+    from int.to_int[OF xz] have zx: "to_int_mod_ring z = x" by (simp add: finite_field_ops_int_def)
     show "int_of_uint64 y = to_int_mod_ring z" unfolding zx using yx unfolding urel64_def[OF *] by simp
   next
     fix y

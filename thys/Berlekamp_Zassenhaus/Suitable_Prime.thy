@@ -92,8 +92,8 @@ qed
 
 context poly_mod_prime begin
 
-lemmas square_free_impl_int = prime_field_gen.square_free_impl
-  [OF prime_field.prime_field_finite_field_ops, unfolded prime_field_def mod_ring_locale_def,
+lemmas square_free_impl_integer = prime_field_gen.square_free_impl
+  [OF prime_field.prime_field_finite_field_ops_integer, unfolded prime_field_def mod_ring_locale_def,
   unfolded poly_mod_type_simps, internalize_sort "'a :: prime_card", OF type_to_set, unfolded remove_duplicate_premise,cancel_type_definition, OF non_empty]
 
 lemmas square_free_impl_uint32 = prime_field_gen.square_free_impl
@@ -112,7 +112,7 @@ definition square_free_impl :: "int \<Rightarrow> int poly \<Rightarrow> bool" w
     then square_free_impl_main p (finite_field_ops32 (uint32_of_int p))
     else if p \<le> 4294967295
     then square_free_impl_main p (finite_field_ops64 (uint64_of_int p))
-    else square_free_impl_main p (finite_field_ops p))" 
+    else square_free_impl_main p (finite_field_ops_integer (integer_of_int p)))" 
 
 lemma square_free_mod_imp_square_free: assumes 
   p: "prime p" and sf: "poly_mod.square_free_m p f" and cop: "coprime (lead_coeff f) p" 
@@ -151,7 +151,7 @@ lemma(in poly_mod_prime) square_free_impl:
     "nat p > degree_m f \<Longrightarrow> nat p > square_free_bound f \<Longrightarrow> square_free f 
     \<Longrightarrow> square_free_impl p f" 
   using
-    square_free_impl_int[of f] 
+    square_free_impl_integer[of f] 
     square_free_impl_uint32[of f]
     square_free_impl_uint64[of f]
   unfolding square_free_impl_def by (auto split: if_splits)
