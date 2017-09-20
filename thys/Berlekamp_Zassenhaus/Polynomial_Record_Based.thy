@@ -63,6 +63,9 @@ definition one_poly_i :: "'i list" where
 definition smult_i :: "'i \<Rightarrow> 'i list \<Rightarrow> 'i list" where
   "smult_i a pp = (if a = zero then [] else strip_while (op = zero) (map (times a) pp))"
 
+definition sdiv_i :: "'i list \<Rightarrow> 'i \<Rightarrow> 'i list" where
+  "sdiv_i pp a = (strip_while (op = zero) (map (\<lambda> c. divide c a) pp))"
+
 definition poly_of_list_i :: "'i list \<Rightarrow> 'i list" where
   "poly_of_list_i = strip_while (op = zero)"
 
@@ -133,6 +136,30 @@ fun mod_poly_one_main_i :: "'i list \<Rightarrow> 'i list
      in mod_poly_one_main_i rr d n)"
 | "mod_poly_one_main_i r d 0 = r"
 
+definition pdivmod_monic_i :: "'i list \<Rightarrow> 'i list \<Rightarrow> 'i list \<times> 'i list" where
+  "pdivmod_monic_i cf cg \<equiv> case 
+     divmod_poly_one_main_i [] (rev cf) (rev cg) (1 + length cf - length cg)
+     of (q,r) \<Rightarrow> (poly_of_list_i q, poly_of_list_i (rev r))"
+
+definition dupe_monic_i :: "'i list \<Rightarrow> 'i list \<Rightarrow> 'i list \<Rightarrow> 'i list \<Rightarrow> 'i list \<Rightarrow> 'i list \<times> 'i list" where
+  "dupe_monic_i D H S T U = (case pdivmod_monic_i (times_poly_i T U) D of (Q,R) \<Rightarrow>
+     (plus_poly_i (times_poly_i S U) (times_poly_i H Q), R))"
+
+definition of_int_poly_i :: "int poly \<Rightarrow> 'i list" where
+  "of_int_poly_i f = map (arith_ops_record.of_int ops) (coeffs f)" 
+
+definition to_int_poly_i :: "'i list \<Rightarrow> int poly" where
+  "to_int_poly_i f = poly_of_list (map (arith_ops_record.to_int ops) f)" 
+
+definition dupe_monic_i_int :: "int poly \<Rightarrow> int poly \<Rightarrow> int poly \<Rightarrow> int poly \<Rightarrow> int poly \<Rightarrow> int poly \<times> int poly" where
+  "dupe_monic_i_int D H S T = (let 
+      d = of_int_poly_i D;
+      h = of_int_poly_i H;
+      s = of_int_poly_i S;
+      t = of_int_poly_i T 
+    in (\<lambda> U. case dupe_monic_i d h s t (of_int_poly_i U) of
+       (D',H') \<Rightarrow> (to_int_poly_i D', to_int_poly_i H')))"
+
 definition div_field_poly_i :: "'i list \<Rightarrow> 'i list \<Rightarrow> 'i list" where 
   "div_field_poly_i cf cg = (
       if cg = [] then zero_poly_i
@@ -200,8 +227,16 @@ end
 (* **************************************************************************** *)
 subsubsection \<open>Properties\<close>
 
+definition pdivmod_monic :: "'a::comm_ring_1 poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly \<times> 'a poly" where
+  "pdivmod_monic f g \<equiv> let cg = coeffs g; cf = coeffs f; 
+     (q, r) = divmod_poly_one_main_list [] (rev cf) (rev cg) (1 + length cf - length cg)
+         in (poly_of_list q, poly_of_list (rev r))"
+
 lemma coeffs_smult': "coeffs (smult a p) = (if a = 0 then [] else strip_while (op = 0) (map (Groups.times a) (coeffs p)))" 
    by (simp add: coeffs_map_poly smult_conv_map_poly)
+
+lemma coeffs_sdiv: "coeffs (sdiv_poly p a) = (strip_while (op = 0) (map (\<lambda> x. x div a) (coeffs p)))"
+  unfolding sdiv_poly_def by (rule coeffs_map_poly)
 
 lifting_forget poly.lifting
 
@@ -215,8 +250,11 @@ lemma right_total_poly_rel[transfer_rule]:
   "right_total poly_rel"
   using list.right_total_rel[of R] right_total unfolding poly_rel_def right_total_def by auto
 
+lemma poly_rel_inj: "poly_rel x y \<Longrightarrow> poly_rel x z \<Longrightarrow> y = z" 
+  using list.bi_unique_rel[OF bi_unique] unfolding poly_rel_def coeffs_eq_iff bi_unique_def by auto
+
 lemma bi_unique_poly_rel[transfer_rule]: "bi_unique poly_rel"
-  using list.bi_unique_rel[of R] bi_unique unfolding poly_rel_def bi_unique_def coeffs_eq_iff by auto
+  using list.bi_unique_rel[OF bi_unique] unfolding poly_rel_def bi_unique_def coeffs_eq_iff by auto
 
 lemma Domainp_is_poly [transfer_domain_rule]: 
   "Domainp poly_rel = is_poly ops"
@@ -615,6 +653,23 @@ lemma poly_rel_dvd[transfer_rule]: "(poly_rel ===> poly_rel ===> op =) (dvd_poly
 lemma poly_rel_monic[transfer_rule]: "(poly_rel ===> op =) (monic_i ops) monic"
   unfolding monic_i_def lead_coeff_i_def' by transfer_prover
 
+lemma poly_rel_pdivmod_monic: assumes mon: "monic Y" 
+  and x: "poly_rel x X" and y: "poly_rel y Y"
+  shows "rel_prod poly_rel poly_rel (pdivmod_monic_i ops x y) (pdivmod_monic X Y)"
+proof -
+  note [transfer_rule] = x y
+  note listall = this[unfolded poly_rel_def]
+  note defs = pdivmod_monic_def pdivmod_monic_i_def Let_def
+  from mon obtain k where len: "length (coeffs Y) = Suc k" unfolding poly_rel_def list_all2_iff 
+      by (cases "coeffs Y", auto)
+  have [transfer_rule]: 
+    "rel_prod (list_all2 R) (list_all2 R)
+       (divmod_poly_one_main_i ops [] (rev x) (rev y) (1 + length x - length y))
+       (divmod_poly_one_main_list [] (rev (coeffs X)) (rev (coeffs Y)) (1 + length (coeffs X) - length (coeffs Y)))" 
+    by (rule divmod_poly_one_main_i, insert x y listall, auto, auto simp: poly_rel_def list_all2_iff len)
+  show ?thesis unfolding defs by transfer_prover
+qed
+
 lemma ring_ops_poly: "ring_ops (poly_ops ops) poly_rel"
   by (unfold_locales, auto simp: poly_ops_def  
   bi_unique_poly_rel 
@@ -658,6 +713,18 @@ lemma poly_rel_irreducible[transfer_rule]: "(poly_rel ===> op =) (irreducible_i 
 
 lemma idom_ops_poly: "idom_ops (poly_ops ops) poly_rel"
   using ring_ops_poly unfolding ring_ops_def idom_ops_def by auto
+end
+
+context idom_divide_ops
+begin
+(* sdiv *)
+lemma poly_rel_sdiv[transfer_rule]: "(poly_rel ===> R ===> poly_rel) (sdiv_i ops) sdiv_poly"
+  unfolding rel_fun_def poly_rel_def coeffs_sdiv sdiv_i_def
+proof (intro allI impI, goal_cases)
+  case (1 x y xs ys)
+  note [transfer_rule] = 1
+  show ?case by transfer_prover
+qed
 end
 
 context field_ops

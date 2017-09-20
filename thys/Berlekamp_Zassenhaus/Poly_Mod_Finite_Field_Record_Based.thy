@@ -12,11 +12,19 @@ imports
   Polynomial_Record_Based
 begin
 
-definition of_int_poly_i :: "'i arith_ops_record \<Rightarrow> int poly \<Rightarrow> 'i list" where
-  "of_int_poly_i ops f = map (arith_ops_record.of_int ops) (coeffs f)" 
+locale arith_ops_record = arith_ops ops + poly_mod m for ops :: "'i arith_ops_record" and m :: int
+begin
+definition M_rel_i :: "'i \<Rightarrow> int \<Rightarrow> bool" where 
+  "M_rel_i f F = (arith_ops_record.to_int ops f = M F)" 
 
-definition to_int_poly_i :: "'i arith_ops_record \<Rightarrow> 'i list \<Rightarrow> int poly" where
-  "to_int_poly_i ops f = poly_of_list (map (arith_ops_record.to_int ops) f)" 
+definition Mp_rel_i :: "'i list \<Rightarrow> int poly \<Rightarrow> bool" where 
+  "Mp_rel_i f F = (map (arith_ops_record.to_int ops) f = coeffs (Mp F))" 
+
+lemma Mp_rel_i_Mp[simp]: "Mp_rel_i f (Mp F) = Mp_rel_i f F" unfolding Mp_rel_i_def by auto
+
+lemma Mp_rel_i_Mp_to_int_poly_i: "Mp_rel_i f F \<Longrightarrow> Mp (to_int_poly_i ops f) = to_int_poly_i ops f" 
+  unfolding Mp_rel_i_def to_int_poly_i_def by simp
+end
 
 locale mod_ring_gen = ring_ops ff_ops R for ff_ops :: "'i arith_ops_record" and
   R :: "'i \<Rightarrow> 'a :: nontriv mod_ring \<Rightarrow> bool" +
@@ -24,6 +32,8 @@ locale mod_ring_gen = ring_ops ff_ops R for ff_ops :: "'i arith_ops_record" and
   assumes p: "p = int CARD('a)"
   and of_int: "0 \<le> x \<Longrightarrow> x < p \<Longrightarrow> R (arith_ops_record.of_int ff_ops x) (of_int x)" 
   and to_int: "R y z \<Longrightarrow> arith_ops_record.to_int ff_ops y = to_int_mod_ring z" 
+  and to_int': "0 \<le> arith_ops_record.to_int ff_ops y \<Longrightarrow> arith_ops_record.to_int ff_ops y < p \<Longrightarrow> 
+    R y (of_int (arith_ops_record.to_int ff_ops y))" 
 begin
 
 lemma nat_p: "nat p = CARD('a)" unfolding p by simp
@@ -52,6 +62,62 @@ lemma poly_rel_of_int_poly: assumes id: "f' = of_int_poly_i ff_ops (Mp f)" "f'' 
   unfolding list_all2_conv_all_nth coeffs_of_int_poly of_int_poly_i_def length_map
   by (rule conjI[OF refl], intro allI impI, simp add: nth_coeffs_coeff Mp_coeff M_def, rule of_int,
     insert p, auto)
+
+sublocale arith_ops_record ff_ops p .
+
+lemma Mp_rel_iI: "poly_rel f1 f2 \<Longrightarrow> MP_Rel f3 f2 \<Longrightarrow> Mp_rel_i f1 f3" 
+  unfolding Mp_rel_i_def MP_Rel_def poly_rel_def
+  by (simp add: list_all2_conv_all_nth nth_equalityI to_int)
+
+lemma M_rel_iI: "R f1 f2 \<Longrightarrow> M_Rel f3 f2 \<Longrightarrow> M_rel_i f1 f3" 
+  unfolding M_rel_i_def M_Rel_def by (simp add: to_int)
+
+lemma M_rel_iI': assumes "R f1 f2" 
+  shows "M_rel_i f1 (arith_ops_record.to_int ff_ops f1)" 
+  by (rule M_rel_iI[OF assms], simp add: to_int[OF assms] M_Rel_def M_to_int_mod_ring)
+
+lemma Mp_rel_iI': assumes "poly_rel f1 f2" 
+  shows "Mp_rel_i f1 (to_int_poly_i ff_ops f1)" 
+proof (rule Mp_rel_iI[OF assms], unfold to_int_poly_i[OF assms]) 
+  show "MP_Rel (to_int_poly f2) f2" unfolding MP_Rel_def by (simp add: Mp_to_int_poly)
+qed
+
+lemma M_rel_iD: assumes "M_rel_i f1 f3"
+  shows 
+    "R f1 (of_int (M f3))"
+    "M_Rel f3 (of_int (M f3))"  
+proof -
+  show "M_Rel f3 (of_int (M f3))"
+    using M_Rel_def to_int_mod_ring_of_int_M by auto
+  from assms show "R f1 (of_int (M f3))" 
+    unfolding M_rel_i_def
+    by (metis int_one_le_iff_zero_less leD linear m1 poly_mod.M_def pos_mod_conj to_int')
+qed
+
+lemma Mp_rel_iD: assumes "Mp_rel_i f1 f3"
+  shows 
+    "poly_rel f1 (of_int_poly (Mp f3))"
+    "MP_Rel f3 (of_int_poly (Mp f3))"  
+proof -
+  show Rel: "MP_Rel f3 (of_int_poly (Mp f3))"
+    using MP_Rel_def Mp_Mp Mp_f_representative by auto
+  let ?ti = "arith_ops_record.to_int ff_ops" 
+  from assms[unfolded Mp_rel_i_def] have
+    *: "coeffs (Mp f3) = map ?ti f1" by auto
+  {
+    fix x
+    assume "x \<in> set f1"
+    hence "?ti x \<in> set (map ?ti f1)" by auto
+    from this[folded *] have "?ti x \<in> range M"
+      by (metis (no_types, lifting) MP_Rel_def M_to_int_mod_ring Rel coeffs_to_int_poly ex_map_conv range_eqI)    
+    hence "?ti x \<ge> 0" "?ti x < p" unfolding M_def using m1 by auto
+    hence "R x (of_int (?ti x))"
+      by (rule to_int')
+  }
+  thus "poly_rel f1 (of_int_poly (Mp f3))" using *
+    unfolding poly_rel_def coeffs_of_int_poly
+    by (auto simp: list_all2_map2 list_all2_same)
+qed
 end
 
 locale prime_field_gen = field_ops ff_ops R + mod_ring_gen ff_ops R p for ff_ops :: "'i arith_ops_record" and
@@ -63,8 +129,16 @@ sublocale poly_mod_prime_type p "TYPE('a)"
 
 end
 
+lemma (in mod_ring_locale) mod_ring_rel_of_int: 
+  "0 \<le> x \<Longrightarrow> x < p \<Longrightarrow> mod_ring_rel x (of_int x)" 
+  unfolding mod_ring_rel_def
+  by (transfer, auto simp: p)
+
 context prime_field
 begin
+
+
+
 lemma prime_field_finite_field_ops: "prime_field_gen (finite_field_ops p) mod_ring_rel p" 
 proof -
   interpret field_ops "finite_field_ops p" mod_ring_rel by (rule finite_field_ops)
@@ -97,6 +171,11 @@ proof -
     from this[unfolded mod_ring_rel32_def[OF *]] obtain x where yx: "urel32 y x" and xz: "mod_ring_rel x z" by auto
     from int.to_int[OF xz] have zx: "to_int_mod_ring z = x" by (simp add: finite_field_ops_def)
     show "int_of_uint32 y = to_int_mod_ring z" unfolding zx using yx unfolding urel32_def[OF *] by simp
+  next
+    fix y
+    show "0 \<le> int_of_uint32 y \<Longrightarrow> int_of_uint32 y < p \<Longrightarrow> mod_ring_rel32 y (of_int (int_of_uint32 y))"
+      unfolding mod_ring_rel32_def[OF *] urel32_def[OF *]
+      by (intro exI[of _ "int_of_uint32 y"], auto simp: mod_ring_rel_of_int)
   qed
 qed
 
@@ -124,6 +203,11 @@ proof -
     from this[unfolded mod_ring_rel64_def[OF *]] obtain x where yx: "urel64 y x" and xz: "mod_ring_rel x z" by auto
     from int.to_int[OF xz] have zx: "to_int_mod_ring z = x" by (simp add: finite_field_ops_def)
     show "int_of_uint64 y = to_int_mod_ring z" unfolding zx using yx unfolding urel64_def[OF *] by simp
+  next
+    fix y
+    show "0 \<le> int_of_uint64 y \<Longrightarrow> int_of_uint64 y < p \<Longrightarrow> mod_ring_rel64 y (of_int (int_of_uint64 y))"
+      unfolding mod_ring_rel64_def[OF *] urel64_def[OF *]
+      by (intro exI[of _ "int_of_uint64 y"], auto simp: mod_ring_rel_of_int)
   qed
 qed
 end
@@ -162,6 +246,11 @@ proof -
     from this[unfolded mod_ring_rel32_def[OF *]] obtain x where yx: "urel32 y x" and xz: "mod_ring_rel x z" by auto
     from int.to_int[OF xz] have zx: "to_int_mod_ring z = x" by (simp add: finite_field_ops_def)
     show "int_of_uint32 y = to_int_mod_ring z" unfolding zx using yx unfolding urel32_def[OF *] by simp
+  next
+    fix y
+    show "0 \<le> int_of_uint32 y \<Longrightarrow> int_of_uint32 y < p \<Longrightarrow> mod_ring_rel32 y (of_int (int_of_uint32 y))"
+      unfolding mod_ring_rel32_def[OF *] urel32_def[OF *]
+      by (intro exI[of _ "int_of_uint32 y"], auto simp: mod_ring_rel_of_int)
   qed
 qed
 
@@ -189,6 +278,11 @@ proof -
     from this[unfolded mod_ring_rel64_def[OF *]] obtain x where yx: "urel64 y x" and xz: "mod_ring_rel x z" by auto
     from int.to_int[OF xz] have zx: "to_int_mod_ring z = x" by (simp add: finite_field_ops_def)
     show "int_of_uint64 y = to_int_mod_ring z" unfolding zx using yx unfolding urel64_def[OF *] by simp
+  next
+    fix y
+    show "0 \<le> int_of_uint64 y \<Longrightarrow> int_of_uint64 y < p \<Longrightarrow> mod_ring_rel64 y (of_int (int_of_uint64 y))"
+      unfolding mod_ring_rel64_def[OF *] urel64_def[OF *]
+      by (intro exI[of _ "int_of_uint64 y"], auto simp: mod_ring_rel_of_int)
   qed
 qed
 end
