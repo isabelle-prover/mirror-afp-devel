@@ -60,8 +60,8 @@ value [code] "show (factorize_real_poly [:sqrt 2,1,3:])" text \<open>does not fa
 text \<open>A sequence of calculations.\<close>
 
 value [code] "show (- sqrt 2 - sqrt 3)"
-value [code] "root 3 4 > sqrt (root 4 3) + \<lfloor>1/10 * root 3 7\<rfloor>"
-value [code] "csqrt (4 + 3 * \<i>) \<in> \<real>"
+lemma "root 3 4 > sqrt (root 4 3) + \<lfloor>1/10 * root 3 7\<rfloor>" by eval
+lemma "csqrt (4 + 3 * \<i>) \<notin> \<real>" by eval
 value [code] "show (csqrt (4 + 3 * \<i>))"
 value [code] "show (csqrt (1 + \<i>))"
 

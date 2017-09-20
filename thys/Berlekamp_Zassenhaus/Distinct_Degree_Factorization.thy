@@ -39,8 +39,7 @@ proof -
   }
   ultimately show "irreducible\<^sub>d g = (degree g = i)" by auto
 qed
-  
-definition "exercise_16_finished = False" 
+
 (* Exercise 16 in Knuth, pages 457 and 682 *)
 
 hide_const order
@@ -156,14 +155,11 @@ next
 qed
 
 (*This lemma is a generalization of the theorem fermat_theorem_mod_ring 
-  which appears in Belekamp_Type_Based.thy*)
+  which appears in Berlekamp_Type_Based.thy*)
 lemma fermat_theorem_mod_ring2[simp]:
 fixes a::"'a::{prime_card} mod_ring"
 shows "a ^ (CARD('a)^n) = a"
 proof (induct n arbitrary: a)
-  case 0
-  then show ?case by auto
-next
   case (Suc n)
   define p where "p = CARD('a)"
   have "a ^ p ^ Suc n = a ^ (p * (p ^ n))" by simp
@@ -171,7 +167,7 @@ next
   also have "... = a^(p ^ n)" using fermat_theorem_mod_ring[of "a^p"] unfolding p_def by auto
   also have "... = a" using Suc.hyps p_def by auto
   finally show ?case by (simp add: p_def)
-qed
+qed auto
 
 lemma fermat_theorem_power_poly[simp]:
   fixes a::"'a::prime_card mod_ring"
@@ -217,30 +213,27 @@ lemma x_power_aq_minus_1_rw:
     and b: "b > 0"
   shows "x ^ (a * q) - 1 = ((x^a) - 1) * sum (op ^ (x^a)) {..<q}"
 proof (cases "q=0")
-  case True
-  then show ?thesis by auto
-next
   case False
   note q0 = False     
-   have xa: "(x ^ a) > 0" using x by auto
-    have int_rw1: "int (x ^ a) - 1 = int ((x ^ a) - 1)"
-      using xa by linarith
-    have int_rw2: "sum (op ^ (int (x ^ a))) {..<q} = int (sum (op ^ ((x ^ a))) {..<q})" 
-      unfolding int_sum by simp
-    have "int (x ^ a) ^ q = int (Suc ((x ^ a) ^ q - 1))" using xa by auto
-    hence "int ((x ^ a) ^ q - 1) = int (x ^ a) ^ q - 1" using xa by presburger    
-    also have "... = (int (x ^ a) - 1) * sum (op ^ (int (x ^ a))) {..<q}" 
-      by (rule power_diff_1_eq[OF q0])
-    also have "... = (int ((x ^ a) - 1)) * int (sum (op ^ ( (x ^ a))) {..<q})" 
-      unfolding int_rw1 int_rw2 by simp
-    also have "... = int (((x ^ a) - 1) * (sum (op ^ ( (x ^ a))) {..<q}))" by auto
-    finally have aux: "int ((x ^ a) ^ q - 1) = int (((x ^ a) - 1) * sum (op ^ (x ^ a)) {..<q})" .     
-    have "x ^ (a * q) - 1 = (x^a)^q - 1"
-      by (simp add: power_mult)
-    also have "... = ((x^a) - 1) * sum (op ^ (x^a)) {..<q}" 
-      using aux unfolding int_int_eq .
-    finally show ?thesis .
-qed
+  have xa: "(x ^ a) > 0" using x by auto
+  have int_rw1: "int (x ^ a) - 1 = int ((x ^ a) - 1)"
+    using xa by linarith
+  have int_rw2: "sum (op ^ (int (x ^ a))) {..<q} = int (sum (op ^ ((x ^ a))) {..<q})" 
+    unfolding int_sum by simp
+  have "int (x ^ a) ^ q = int (Suc ((x ^ a) ^ q - 1))" using xa by auto
+  hence "int ((x ^ a) ^ q - 1) = int (x ^ a) ^ q - 1" using xa by presburger    
+  also have "... = (int (x ^ a) - 1) * sum (op ^ (int (x ^ a))) {..<q}" 
+    by (rule power_diff_1_eq[OF q0])
+  also have "... = (int ((x ^ a) - 1)) * int (sum (op ^ ( (x ^ a))) {..<q})" 
+    unfolding int_rw1 int_rw2 by simp
+  also have "... = int (((x ^ a) - 1) * (sum (op ^ ( (x ^ a))) {..<q}))" by auto
+  finally have aux: "int ((x ^ a) ^ q - 1) = int (((x ^ a) - 1) * sum (op ^ (x ^ a)) {..<q})" .     
+  have "x ^ (a * q) - 1 = (x^a)^q - 1"
+    by (simp add: power_mult)
+  also have "... = ((x^a) - 1) * sum (op ^ (x^a)) {..<q}" 
+    using aux unfolding int_int_eq .
+  finally show ?thesis .
+qed auto
 
 lemma dvd_power_minus_1_conv1:
   fixes x::nat
@@ -341,9 +334,6 @@ lemma ab_mod_f0:
     and b: "degree b < degree f" 
   shows "a = 0 \<or> b = 0"
 proof (cases "b=0")
-  case True
-  then show ?thesis by simp
-next
   case False
   note b0 = False
   show ?thesis
@@ -359,7 +349,7 @@ next
       by (simp add: b dvd_eq_mod_eq_0 mod_poly_less)
     ultimately show False by simp
   qed
-qed
+qed simp
 
 
 lemma irreducible\<^sub>dD2:
@@ -814,7 +804,6 @@ qed auto
 declare dist_degree_factorize_main.simps[simp del]
   
 lemma dist_degree_factorize_main: assumes 
-  ex16: exercise_16_finished and 
   dist: "dist_degree_factorize_main v w d res = facts" and
   w: "w = (monom 1 1)^(CARD('a)^d) mod v" and
   sf: "square_free u" and  
@@ -1004,7 +993,6 @@ definition distinct_degree_factorization
      (if degree f = 1 then [(1,f)] else dist_degree_factorize_main f (monom 1 1) 0 [])"
   
 lemma distinct_degree_factorization: assumes 
-  ex16: exercise_16_finished and
   dist: "distinct_degree_factorization f = facts" and
   u: "square_free f" and  
   mon: "monic f" 
@@ -1019,7 +1007,7 @@ proof -
     hence *: "monom 1 (Suc 0) = monom 1 (Suc 0) mod f"
       by (simp add: degree_monom_eq mod_poly_less)
     show ?thesis
-      by (rule dist_degree_factorize_main[OF ex16 dist _ u mon], insert *, auto simp: irreducible\<^sub>d_def)
+      by (rule dist_degree_factorize_main[OF dist _ u mon], insert *, auto simp: irreducible\<^sub>d_def)
   next
     case True
     hence "degree f = 0 \<or> degree f = 1" by auto
@@ -1043,6 +1031,5 @@ proof -
   qed
 qed
 end
-
 
 end

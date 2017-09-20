@@ -15,6 +15,19 @@ imports Berlekamp_Type_Based
   Distinct_Degree_Factorization
 begin
 
+text \<open>Whether distinct degree factorization preprocessing is
+   suitable seems to be target language dependent.\<close>
+
+consts use_distinct_degree_factorization :: bool
+
+code_printing
+  constant use_distinct_degree_factorization \<rightharpoonup>
+        (SML) "true"
+    and (Haskell) "False"
+    and (Eval) "true" 
+    and (OCaml) "true"
+    and (Scala) "true"
+
 context
 assumes "SORT_CONSTRAINT('a::prime_card)"
 begin
@@ -23,7 +36,7 @@ definition finite_field_factorization :: "'a mod_ring poly \<Rightarrow> 'a mod_
   "finite_field_factorization f = (if degree f = 0 then (lead_coeff f,[]) else let
      a = lead_coeff f;
      u = smult (inverse a) f;
-     gs = (if exercise_16_finished then distinct_degree_factorization u else [(1,u)]);
+     gs = (if use_distinct_degree_factorization then distinct_degree_factorization u else [(1,u)]);
      (irr,hs) = partition (\<lambda> (i,f). degree f = i) gs
     in (a,map snd irr @ concat (map (\<lambda> (i,g). berlekamp_monic_factorization i g) hs)))"
 
@@ -35,7 +48,7 @@ lemma finite_field_factorization_explicit:
 proof (cases "degree f = 0")
   case False note f = this
   define g where "g = smult (inverse c) f"    
-  obtain gs where dist: "(if exercise_16_finished then distinct_degree_factorization g else [(1,g)]) = gs" by auto
+  obtain gs where dist: "(if use_distinct_degree_factorization then distinct_degree_factorization g else [(1,g)]) = gs" by auto
   note us = us[unfolded finite_field_factorization_def Let_def]
   from us f have c: "c = lead_coeff f" by auto
   obtain irr hs where part: "partition (\<lambda> (i, f). degree f = i) gs = (irr,hs)" by force
@@ -49,10 +62,10 @@ proof (cases "degree f = 0")
   from sf_f have sf_g: "square_free g" unfolding g_def by (simp add: c0)
   from c0 have f: "f = smult c g" unfolding g_def by auto
   have "g = prod_list (map snd gs) \<and> (\<forall> (i,f) \<in> set gs. degree f > 0 \<and> monic f \<and> (\<forall> h. h dvd f \<longrightarrow> degree h = i \<longrightarrow> irreducible\<^sub>d h))" 
-  proof (cases exercise_16_finished)
+  proof (cases use_distinct_degree_factorization)
     case True
     with dist have "distinct_degree_factorization g = gs" by auto
-    note dist = distinct_degree_factorization[OF True this sf_g mon_g]
+    note dist = distinct_degree_factorization[OF this sf_g mon_g]
     from dist have g: "g = prod_list (map snd gs)" by auto
     show ?thesis
     proof (intro conjI[OF g] ballI, clarify)
