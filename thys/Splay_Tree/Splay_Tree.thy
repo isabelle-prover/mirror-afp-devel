@@ -93,11 +93,11 @@ fun insert :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
 
 fun splay_max :: "'a tree \<Rightarrow> 'a tree" where
 "splay_max Leaf = Leaf" |
-"splay_max (Node l b Leaf) = Node l b Leaf" |
-"splay_max (Node l b (Node rl c rr)) =
-  (if rr = Leaf then Node (Node l b rl) c Leaf
-   else case splay_max rr of
-     Node rrl m rrr \<Rightarrow> Node (Node (Node l b rl) c rrl) m rrr)"
+"splay_max (Node A a Leaf) = Node A a Leaf" |
+"splay_max (Node A a (Node B b C)) =
+  (if C = Leaf then Node (Node A a B) b Leaf
+   else case splay_max C of
+     Node C\<^sub>1 m C\<^sub>2 \<Rightarrow> Node (Node (Node A a B) b C\<^sub>1) m C\<^sub>2)"
 
 lemma splay_max_code: "splay_max t = (case t of
   Leaf \<Rightarrow> t |
