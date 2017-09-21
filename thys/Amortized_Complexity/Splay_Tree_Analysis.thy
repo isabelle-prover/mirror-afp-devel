@@ -107,7 +107,7 @@ next
     using sp by(simp add: size_if_splay)
   finally show ?case by simp
 next
-  case (8 x a b rb lb ra)
+  case (8 b x a rb lb ra)
   hence 0: "x \<notin> set_tree lb \<and> x \<notin> set_tree ra"
     using "8.prems"(1) `x < a` by(auto)
   hence 1: "x \<in> set_tree rb" using "8.prems" `b<x` `x<a` by (auto)

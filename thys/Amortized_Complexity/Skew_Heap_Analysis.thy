@@ -39,7 +39,7 @@ by (induction h) (auto simp: rh_def)
 corollary Dlog: "rlh h \<le> log 2 (size1 h)"
 by (metis Dexp le_log2_of_power size1_def)
 
-function t_merge :: "'a::linorder heap \<Rightarrow> 'a heap \<Rightarrow> int" where
+function t_merge :: "'a::linorder heap \<Rightarrow> 'a heap \<Rightarrow> nat" where
 "t_merge Leaf h = 1" |
 "t_merge h Leaf = 1" |
 "t_merge (Node l1 a1 r1) (Node l2 a2 r2) =
@@ -151,9 +151,9 @@ fun exec :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap list \<Righta
 
 fun cost :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap list \<Rightarrow> nat" where
 "cost Empty [] = 1" |
-"cost (Insert a) [h] = nat(t_merge (Node Leaf a Leaf) h)" |
-"cost Del_min [h] = (case h of Leaf \<Rightarrow> 1 | Node t1 a t2 \<Rightarrow> nat(t_merge t1 t2))" |
-"cost Merge [h1,h2] = nat(t_merge h1 h2)"
+"cost (Insert a) [h] = t_merge (Node Leaf a Leaf) h" |
+"cost Del_min [h] = (case h of Leaf \<Rightarrow> 1 | Node t1 a t2 \<Rightarrow> t_merge t1 t2)" |
+"cost Merge [h1,h2] = t_merge h1 h2"
 
 fun U where
 "U Empty [] = 1" |
@@ -177,7 +177,7 @@ next
     case [simp]: (Insert a)
     obtain h where [simp]: "ss = [h]" using 3(2) by (auto)
     thus ?thesis using a_merge[of "Node Leaf a Leaf" "h"]
-      by (simp add: numeral_eq_Suc insert_def rh_def of_nat_nat[OF t_merge_nneg])
+      by (simp add: numeral_eq_Suc insert_def rh_def t_merge_nneg)
   next
     case [simp]: Del_min
     obtain h where [simp]: "ss = [h]" using 3(2) by (auto)
@@ -189,12 +189,12 @@ next
       have [arith]: "log 2 (2 + (real (size t1) + real (size t2))) \<le>
                log 2 (4 + (real (size t1) + real (size t2)))" by simp
       from Del_min Node show ?thesis using a_merge[of t1 t2]
-        by (simp add: size1_def of_nat_nat[OF t_merge_nneg])
+        by (simp add: size1_def t_merge_nneg)
     qed
   next
     case [simp]: Merge
     obtain h1 h2 where "ss = [h1,h2]" using 3(2) by (auto simp: numeral_eq_Suc)
-    thus ?thesis using a_merge[of h1 h2] by (simp add: of_nat_nat[OF t_merge_nneg])
+    thus ?thesis using a_merge[of h1 h2] by (simp add: t_merge_nneg)
   qed
 qed
 
