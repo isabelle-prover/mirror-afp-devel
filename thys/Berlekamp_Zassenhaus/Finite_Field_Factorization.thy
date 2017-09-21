@@ -15,18 +15,10 @@ imports Berlekamp_Type_Based
   Distinct_Degree_Factorization
 begin
 
-text \<open>Whether distinct degree factorization preprocessing is
-   suitable seems to be target language dependent.\<close>
-
+text \<open>We prove soundness of the finite field factorization,
+  indepedendent on whether distinct-degree-factorization is
+  applied as preprocessing or not.\<close>
 consts use_distinct_degree_factorization :: bool
-
-code_printing
-  constant use_distinct_degree_factorization \<rightharpoonup>
-        (SML) "true"
-    and (Haskell) "False"
-    and (Eval) "true" 
-    and (OCaml) "true"
-    and (Scala) "true"
 
 context
 assumes "SORT_CONSTRAINT('a::prime_card)"
@@ -138,5 +130,15 @@ proof -
   from exactly_one_factorization[OF this] fact
   show ?thesis unfolding unique_factorization_def by auto
 qed
+end
+
+text \<open>Experiments revealed that preprocessing via 
+  distinct-degree-factorization slows down the factorization
+  algorithm (statement for implementation in AFP 2017)\<close>
+
+overloading use_distinct_degree_factorization \<equiv> use_distinct_degree_factorization
+begin
+  definition use_distinct_degree_factorization
+    where [code_unfold]: "use_distinct_degree_factorization = False"
 end
 end

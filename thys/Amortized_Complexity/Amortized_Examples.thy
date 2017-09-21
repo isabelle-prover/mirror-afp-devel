@@ -280,7 +280,7 @@ fun arity :: "ops \<Rightarrow> nat" where
 fun exec :: "ops \<Rightarrow> tab list \<Rightarrow> tab" where
 "exec Empty [] = (0::nat,0::nat)" |
 "exec Ins [(n,l)] = (n+1, if n<l then l else if l=0 then 1 else 2*l)" |
-"exec Del [(n,l)] = (n-1, if n=1 then 0 else if 4*(n - 1)<l then l div 2 else l)"
+"exec Del [(n,l)] = (n-1, if n\<le>1 then 0 else if 4*(n - 1)<l then l div 2 else l)"
 
 fun cost :: "ops \<Rightarrow> tab list \<Rightarrow> nat" where
 "cost Empty _ = 1" |
