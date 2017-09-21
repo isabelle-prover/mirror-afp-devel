@@ -232,7 +232,16 @@ definition "print_lorenz_aform_std print_fun =
     [''0xa66f00'', ''0x06266f'', ''0xc60000'']
     [''0xffaa00'', ''0x1240ab'', ''0xc60000'']"
 
-definition "lorenz_optns print_fun =
+definition "lorenz_optns print_funo =
+  (let
+    pf = the_default (\<lambda>_ _. ()) (map_option print_lorenz_aform_std print_funo);
+    tf = the_default (\<lambda>_ _. ()) (map_option (\<lambda>print_fun a b.
+          let
+            _ = print_fun (String.implode (''# '' @ a @ ''\<newline>''))
+          in case b of Some b \<Rightarrow>
+            (print_fun (String.implode (''# '' @ shows_box_of_aforms_hr (b) '''' @ ''\<newline>'')))
+            | None \<Rightarrow> ()) print_funo)
+  in
     \<lparr>
     precision = 30,
     reduce = correct_girard 30 50 25,
@@ -244,20 +253,9 @@ definition "lorenz_optns print_fun =
     halve_stepsizes = 10,
     widening_mod = 40,
     rk2_param = FloatR 1 0,
-    printing_fun = print_lorenz_aform_std print_fun,
-    tracing_fun = (\<lambda>a b.
-      let
-        _ = print_fun (String.implode (''# '' @ a @ ''\<newline>''))
-      in case b of Some b \<Rightarrow>
-        (let
-(*           _ = print_fun (String.implode (shows_segments_of_aform 0 1 b ''0x000000'' ''\<newline>''));
-          _ = print_fun (String.implode (shows_segments_of_aform 0 2 b ''0x000000'' ''\<newline>''));
-          _ = print_fun (String.implode (shows_segments_of_aform 1 2 b ''0x000000'' ''\<newline>'')) *)
-          _ = ()
-        in print_fun (String.implode (''# '' @ shows_box_of_aforms_hr (b) '''' @ ''\<newline>'')))
-        | None \<Rightarrow> ()
-    )
-  \<rparr>"
+    printing_fun = pf,
+    tracing_fun = tf
+  \<rparr>)"
 
 definition lorenz_optns'
   where "lorenz_optns' pf m N rk2p a = lorenz_optns pf \<lparr>
@@ -1800,7 +1798,7 @@ lemmas [autoref_rules] = return_of_res_impl.refine
 
 lemma lorenz_optns'_impl[autoref_rules]: includes autoref_syntax shows
   "(lorenz_optns', lorenz_optns') \<in>
-    (Id \<rightarrow> unit_rel) \<rightarrow> nat_rel \<rightarrow> nat_rel \<rightarrow> rnv_rel \<rightarrow> rnv_rel \<rightarrow> num_optns_rel"
+    \<langle>Id \<rightarrow> unit_rel\<rangle>option_rel \<rightarrow> nat_rel \<rightarrow> nat_rel \<rightarrow> rnv_rel \<rightarrow> rnv_rel \<rightarrow> num_optns_rel"
   by auto
 lemma [autoref_rules]:
   includes autoref_syntax shows
@@ -1868,7 +1866,7 @@ lemma [autoref_rules]:  includes autoref_syntax shows
 
 schematic_goal check_line_impl:
   includes autoref_syntax
-  assumes [autoref_rules]: "(pfi, pf) \<in> (Id \<rightarrow> unit_rel)"
+  assumes [autoref_rules]: "(pfi, pf) \<in> \<langle>Id \<rightarrow> unit_rel\<rangle>option_rel"
     "(c1i, c1) \<in> bool_rel" "(res0i, res0) \<in> Id"
     "(m0i, m0) \<in> \<langle>nat_rel\<rangle>option_rel" "(n0i, n0) \<in> \<langle>nat_rel\<rangle>option_rel"
   shows
@@ -1955,11 +1953,12 @@ lemma print_lorenz_color_impl[autoref_rules]: includes autoref_syntax shows
   by auto
 
 definition check_line_core where
- "check_line_core print_fun m0 n0 c1 i =
+ "check_line_core print_funo m0 n0 c1 i =
   do {
+      let print_fun = the_default (\<lambda>_. ()) print_funo;
       CHECK (\<lambda>_. print_fun (String.implode ''Hey, out of bounds!'')) (i < length results);
       let res = ((results:::\<langle>Id\<rangle>list_rel) ! (i:::nat_rel));
-      (r, P, B) \<leftarrow> check_line_nres print_fun m0 n0 c1 res;
+      (r, P, B) \<leftarrow> check_line_nres print_funo m0 n0 c1 res;
       let _ = print_sets_color print_fun (ST ''0x007f00'') (aform.sets_of_ivls B);
       (_, Pu) \<leftarrow> aform.scaleR2_rep_coll P;
       let _ = print_sets_color print_fun (ST ''0x7f0000'')
@@ -1982,7 +1981,7 @@ lemma [autoref_rules]: includes autoref_syntax shows
   by (auto simp: string_rel_def)
 schematic_goal check_line_core_impl:
   includes autoref_syntax
-  assumes [autoref_rules]: "(pfi, pf) \<in> Id \<rightarrow> unit_rel"
+  assumes [autoref_rules]: "(pfi, pf) \<in> \<langle>Id \<rightarrow> unit_rel\<rangle>option_rel"
     "(c1i, c1) \<in> bool_rel" "(ii, i) \<in> nat_rel"
     "(m0i, m0) \<in> \<langle>nat_rel\<rangle>option_rel" "(n0i, n0) \<in> \<langle>nat_rel\<rangle>option_rel"
   shows "(nres_of ?f, check_line_core $ pf $ m0 $ n0 $ c1 $ i) \<in> \<langle>bool_rel\<rangle>nres_rel"
@@ -2838,8 +2837,13 @@ lemma compute_float_plus_down[code]:
 
 subsection \<open>Codegen\<close>
 
+definition "is_dRETURN_True x = (case x of dRETURN b \<Rightarrow> b | _ \<Rightarrow> False)"
+definition "file_output_option s f =
+  (case s of None \<Rightarrow> f None
+  | Some s \<Rightarrow> file_output (String.implode s) (\<lambda>pf. f (Some pf)))"
+
 definition "check_line_lookup_out s m0 n0 c1 i =
-  file_output (String.implode s) (\<lambda>pf. case check_line_core_impl pf m0 n0 c1 i of dRETURN b \<Rightarrow> b | _ \<Rightarrow> False)"
+  is_dRETURN_True (file_output_option s (\<lambda>pf. check_line_core_impl pf m0 n0 c1 i))"
 
 fun alternating where "alternating [] xs = xs"
   | "alternating xs [] = xs"
@@ -2848,8 +2852,8 @@ fun alternating where "alternating [] xs = xs"
 definition "ordered_lines = alternating (rev [0..<222]) ([222..<400])"
   \<comment>\<open>the hard ones ``first'', potentially useless due to nondeterministic \<open>Parallel.map\<close>\<close>
 
-definition "parallel_check filename m n c1 ns =
-  Parallel.forall (\<lambda>i. check_line_lookup_out (if filename = '''' then '''' else filename @ show i)
+definition "parallel_check filenameo m n c1 ns =
+  Parallel.forall (\<lambda>i. check_line_lookup_out (map_option (\<lambda>f. f @ show i) filenameo)
     (Some m) (Some n) c1 i) ns"
 
 ML \<open>val check_line = @{computation_check
@@ -2886,6 +2890,8 @@ ML \<open>val check_line = @{computation_check
     (* Option *)
     "None::nat option"
     "Some::_\<Rightarrow>nat option"
+    "None::string option"
+    "Some::_\<Rightarrow>string option"
 
     (* Lists *)
     "Nil::real list"
@@ -2932,21 +2938,25 @@ ML \<open>val check_line = @{computation_check
 
   }\<close>
 
+
+lemma is_dRETURN_True_iff[simp]: "is_dRETURN_True x \<longleftrightarrow> (x = dRETURN True)"
+  by (auto simp: is_dRETURN_True_def split: dres.splits)
+
+lemma check_line_core_impl_True:
+  "check_line_core_impl pfo m n True i = dRETURN True \<Longrightarrow> NF \<Longrightarrow> correct_res (results ! i)"
+  apply (cases "check_line_core_impl pfo m n True i")
+  using check_line_core_correct[of pfo m n i]
+    check_line_core_impl.refine[of pfo pfo True True i i m m n n]
+    apply (auto simp: nres_rel_def)
+  apply (drule order_trans[where y="check_line_core pfo m n True i"])
+   apply assumption
+  by auto
+
 lemma check_line_lookup_out: "correct_res (results ! i)"
   if "\<exists>s m n. check_line_lookup_out s m n True i" NF
   using that
-  apply (auto simp: check_line_lookup_out_def file_output_iff split: dres.splits)
-  subgoal for m n
-    apply (cases "check_line_core_impl (\<lambda>_. ()) m n True i")
-    using check_line_core_correct[of "\<lambda>_. ()" m n i]
-      check_line_core_impl.refine[of "\<lambda>_. ()" "\<lambda>_. ()" True True i i m m n n]
-      apply (auto simp: nres_rel_def)
-    apply (drule order_trans[where y="check_line_core (\<lambda>_. ()) m n True i"])
-     apply assumption
-    apply auto
-    done
-  done
-
+  by (auto simp: check_line_lookup_out_def file_output_iff check_line_core_impl_True
+      file_output_option_def split: dres.splits option.splits)
 
 definition "check_lines c1 ns = list_all (\<lambda>i. \<exists>s m n. check_line_lookup_out s m n c1 i) ns"
 
@@ -2971,12 +2981,17 @@ lemma Ball_coarseI: "Ball (set coarse_results) correct_res"
   by (force simp: check_lines_def list_all_iff in_set_conv_nth
       intro!: correct_res_coarse_resultsI check_line_lookup_out)
 
-
+ML \<open>map_option (using_master_directory_term @{context}) (SOME "a")\<close>
 ML \<open>
+fun mk_optionT ty = Type (@{type_name "option"}, [ty])
+fun mk_None ty = Const (@{const_name "None"}, mk_optionT ty)
+fun mk_Some ty x = Const (@{const_name "Some"}, ty --> mk_optionT ty) $ x
+fun mk_option ty _ NONE = mk_None ty
+  | mk_option ty f (SOME x) = mk_Some ty (f x)
 fun check_lines_tac' s m n ctxt =
   resolve_tac ctxt
     [Thm.instantiate ([],
-      [("s", @{typ string}, using_master_directory_term ctxt s),
+      [("s", @{typ "string option"}, mk_option @{typ string} (using_master_directory_term ctxt) s),
        ("m", @{typ nat}, HOLogic.mk_nat m),
        ("n", @{typ nat}, HOLogic.mk_nat n)]
         |> map (fn (s, ty, t) => (((s, 0), ty), Thm.cterm_of ctxt t)))
@@ -2986,7 +3001,7 @@ fun check_lines_tac' s m n ctxt =
 \<close>
 
 method_setup parallel_check = \<open>
-  Scan.lift Parse.string -- Scan.lift Parse.nat -- Scan.lift Parse.nat
+  Scan.lift (Parse.maybe Parse.string) -- Scan.lift Parse.nat -- Scan.lift Parse.nat
   >> (fn ((s, m), n) => fn ctxt => SIMPLE_METHOD' (check_lines_tac' s m n ctxt))
 \<close>
 
