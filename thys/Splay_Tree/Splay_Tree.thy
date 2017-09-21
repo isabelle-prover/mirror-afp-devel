@@ -20,8 +20,8 @@ function splay :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" whe
 "x<b \<Longrightarrow> x<c \<Longrightarrow> AB \<noteq> Leaf \<Longrightarrow>
  splay x (Node (Node AB b C) c D) =
  (case splay x AB of Node A a B \<Rightarrow> Node A a (Node B b (Node C c D)))" |
-"x<b \<Longrightarrow> a<x \<Longrightarrow> splay x (Node (Node A a Leaf) b B) = Node A a (Node Leaf b B)" |
-"x<c \<Longrightarrow> a<x \<Longrightarrow> BC \<noteq> Leaf \<Longrightarrow>
+"a<x \<Longrightarrow> x<b \<Longrightarrow> splay x (Node (Node A a Leaf) b B) = Node A a (Node Leaf b B)" |
+"a<x \<Longrightarrow> x<c \<Longrightarrow> BC \<noteq> Leaf \<Longrightarrow>
  splay x (Node (Node A a BC) c D) =
  (case splay x BC of Node B b C \<Rightarrow> Node (Node A a B) b (Node C c D))" |
 "a<x \<Longrightarrow> splay x (Node A a (Node B x C)) = Node (Node A a B) x C" |
@@ -94,10 +94,10 @@ fun insert :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
 fun splay_max :: "'a tree \<Rightarrow> 'a tree" where
 "splay_max Leaf = Leaf" |
 "splay_max (Node A a Leaf) = Node A a Leaf" |
-"splay_max (Node A a (Node B b C)) =
-  (if C = Leaf then Node (Node A a B) b Leaf
-   else case splay_max C of
-     Node C\<^sub>1 m C\<^sub>2 \<Rightarrow> Node (Node (Node A a B) b C\<^sub>1) m C\<^sub>2)"
+"splay_max (Node A a (Node B b CD)) =
+  (if CD = Leaf then Node (Node A a B) b Leaf
+   else case splay_max CD of
+     Node C c D \<Rightarrow> Node (Node (Node A a B) b C) c D)"
 
 lemma splay_max_code: "splay_max t = (case t of
   Leaf \<Rightarrow> t |
@@ -218,7 +218,7 @@ proof(induction a t rule: splay.induct)
   case (6 a)
   with splay_not_Leaf[OF 6(3), of a] show ?case by(fastforce)
 next
-  case (8 a)
+  case (8 _ a)
   with splay_not_Leaf[OF 8(3), of a] show ?case by(fastforce)
 next
   case (11 _ a)
@@ -246,7 +246,7 @@ proof(induction a t rule: splay.induct)
   with splay_not_Leaf[OF 6(3), of a] set_splay[of a ll,symmetric]
   show ?case by (fastforce)
 next
-  case (8 a _ _ t)
+  case (8 _ a _ t)
   with splay_not_Leaf[OF 8(3), of a] set_splay[of a t,symmetric]
   show ?case by fastforce
 next
@@ -265,7 +265,7 @@ proof(induction a t arbitrary: t' rule: splay.induct)
   case (6 a)
   with splay_not_Leaf[OF 6(3), of a] show ?case by auto
 next
-  case (8 a)
+  case (8 _ a)
   with splay_not_Leaf[OF 8(3), of a] show ?case by auto
 next
   case (11 _ a)

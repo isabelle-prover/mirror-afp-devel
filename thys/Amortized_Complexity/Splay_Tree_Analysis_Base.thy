@@ -79,7 +79,7 @@ proof(induction a t rule: splay.induct)
   moreover hence "e<b" using "6.prems"(2) by auto
   ultimately show ?case using `a<c` `a<b` `b<c` `bst ll` by force
 next
-  case (8 a c b lr)
+  case (8 b a c lr)
   hence "splay a lr \<noteq> Leaf" by simp
   then obtain lrl u lrr where [simp]: "splay a lr = Node lrl u lrr"
     by (metis tree.exhaust)

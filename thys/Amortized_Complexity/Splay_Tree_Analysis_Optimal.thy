@@ -95,7 +95,7 @@ next
   thus ?case using 6 0 1 sp
     by(auto simp: A_def \<phi>_def size_if_splay algebra_simps log_divide)
 next
-  case (8 x a b rb lb ra)
+  case (8 b x a rb lb ra)
   hence 0: "x \<notin> set_tree lb \<and> x \<notin> set_tree ra" using "8.prems"(1) by(auto)
   hence 1: "x \<in> set_tree rb" using "8.prems" `b<x` `x<a` by (auto)
   then obtain lu u ru where sp: "splay x rb = Node lu u ru"
