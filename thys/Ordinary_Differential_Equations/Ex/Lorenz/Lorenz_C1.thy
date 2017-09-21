@@ -30,6 +30,6 @@ end
 interpretation check_lines_c1
   apply unfold_locales
   oops\<comment>\<open>very very slow: about 150 CPU hours\<close>
-    \<comment>\<open>\<open>by (parallel_check (* "output_c1/lorenz_c1_" *) _ 40 20)\<close>\<close>
+    \<comment>\<open>\<open>by (parallel_check (* "output_c1/lorenz_c1_" *) _ 60 20)\<close>\<close>
 
 end

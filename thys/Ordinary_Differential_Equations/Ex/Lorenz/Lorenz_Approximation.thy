@@ -589,31 +589,26 @@ definition "compute_cube_exit p t XDX =
     Xlumpies)"
 
 
-(*
-# Actual Interrupt: 
-# (-8.127034e-2 -1.231031e-4 9.999996e-2 9.999995e-1 0e-1 0e-1 6.511337e-4 0e-1 0e-1 0e-1 0e-1 0e-1) ..
-   (7.722789e-2  1.124452e-4 9.999996e-2 1.591651 0e-1 0e-1 1.685352e-3 0e-1 0e-1 0e-1 0e-1 0e-1)
-
-*)
 definition "cube_enteri = (map ldec [-0.1, -0.00015, 0.1,   0.8,0,0,       0.0005,0,0,   0,0,0],
-                             map udec [ 0.1,  0.00015,   0.1,   1.6,0,0,      0.002,0,0,   0,0,0])"
+                             map udec [ 0.1,  0.00015,   0.1,   1.7,0,0,      0.002,0,0,   0,0,0])"
 definition "cube_enter = set_of_ivl (pairself eucl_of_list cube_enteri)"
 
-value [code] "println ((show) (map (ivls_of_aforms' 30 o list_of_appr1e_aform) (compute_cube_exit 30 (FloatR 1 (-10)) ((ereal 50, ereal 60),
-  (aforms_of_ivls (take 3 (fst cube_enteri))
-                  (take 3 (snd cube_enteri)),
-  Some (aforms_of_ivls (drop 3 (fst cube_enteri))
+value [code] "println ((show) (map (ivls_of_aforms' 100 o list_of_appr1e_aform)
+  (compute_cube_exit 30 (FloatR 1 (-10)) ((ereal 1, ereal 1),
+    (aforms_of_ivls (take 3 (fst cube_enteri))
+                    (take 3 (snd cube_enteri)),
+      Some (aforms_of_ivls (drop 3 (fst cube_enteri))
                        (drop 3 (snd cube_enteri))))))))"
 
 definition "cube_exiti =
   [(aforms_of_ivls (map ldec [-0.12,  -0.024, -0.012])
                    (map udec [-0.088,  0.024,  0.13]),
-     Some (aforms_of_ivls (map ldec [0,0,0,  -0.53,0,0,  -0.57,0,0])
-                          (map udec [0,0,0,   0.53,0,0,  -0.08,0,0]))),
+     Some (aforms_of_ivls (map ldec [0,0,0,  -0.56,0,0,  -0.6,0,0])
+                          (map udec [0,0,0,   0.56,0,0,  -0.08,0,0]))),
   (aforms_of_ivls (map ldec [ 0.088,  -0.024, -0.012])
                   (map udec [ 0.12,   0.024,  0.13]),
      Some (aforms_of_ivls (map ldec [0,0,0,  -0.53,0,0,   0.08,0,0])
-                          (map udec [0,0,0,   0.53,0,0,   0.57,0,0])))]"
+                          (map udec [0,0,0,   0.56,0,0,   0.6,0,0])))]"
 definition "cube_exitv = aform.c1_info_of_apprs cube_exiti"
 
 lemma cube_enteri[autoref_rules]: "(cube_enteri, cube_enter::'a set) \<in> aform.lvivl_rel"
@@ -642,7 +637,7 @@ definition "lorenz_interrupt (optns::real aform numeric_options) b (eX::3 eucl1 
     if \<not>b \<or> \<not>interrupt then RETURN (op_empty_coll, mk_coll eX)
     else do {
       vX \<leftarrow> aform.vec1rep X;
-      let _ = (if b then aform.trace_set (ST ''Actual Interrupt: '') vX else ());
+      let _ = (if b then aform.trace_set1e (ST ''Actual Interrupt: '') (Some eX) else ());
       let l = (eucl_of_list [-1/2/2,-1/2/2,-1/2/2]::3 rvec);
       let u = eucl_of_list [1/2/2, 1/2/2, 1/2/2];
       ASSERT (l \<le> u);
@@ -2853,8 +2848,17 @@ definition "ordered_lines = alternating (rev [0..<222]) ([222..<400])"
   \<comment>\<open>the hard ones ``first'', potentially useless due to nondeterministic \<open>Parallel.map\<close>\<close>
 
 definition "parallel_check filenameo m n c1 ns =
-  Parallel.forall (\<lambda>i. check_line_lookup_out (map_option (\<lambda>f. f @ show i) filenameo)
-    (Some m) (Some n) c1 i) ns"
+  Parallel.forall (\<lambda>i.
+    let
+      _ = print (String.implode (''# Starting '' @ show i @ ''\<newline>''));
+      b =
+      check_line_lookup_out (map_option (\<lambda>f. f @ show i) filenameo)
+        (Some m) (Some n) c1 i;
+      _ = if b
+        then print (String.implode (''# Success: '' @ show i @ ''\<newline>''))
+        else print (String.implode (''# Failed:  '' @ show i @ ''\<newline>''))
+    in b
+    ) ns"
 
 ML \<open>val check_line = @{computation_check
   terms:
