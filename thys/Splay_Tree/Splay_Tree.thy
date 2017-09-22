@@ -45,32 +45,32 @@ done
 termination splay
 by lexicographic_order
 
-lemma splay_code: "splay x (Node la a ra) =
-  (if x=a
-   then Node la a ra
-   else if x < a
-        then case la of
-          Leaf \<Rightarrow> Node la a ra |
-          Node lb b rb \<Rightarrow>
-            (if x=b then Node lb x (Node rb a ra)
-             else if x < b
-                  then if lb = Leaf then Node lb b (Node rb a ra)
-                       else case splay x lb of
-                         Node lc c rc \<Rightarrow> Node lc c (Node rc b (Node rb a ra))
-                  else if rb = Leaf then Node lb b (Node rb a ra)
-                       else case splay x rb of
-                         Node lc c rc \<Rightarrow> Node (Node lb b lc) c (Node rc a ra))
-        else case ra of
-          Leaf \<Rightarrow> Node la a ra |
-          Node lb b rb \<Rightarrow>
-            (if x=b then Node (Node la a lb) x rb
-             else if x < b
-                  then if lb = Leaf then Node (Node la a lb) b rb
-                       else case splay x lb of
-                         Node lc c rc \<Rightarrow> Node (Node la a lc) c (Node rc b rb)
-                  else if rb=Leaf then Node (Node la a lb) b rb
-                       else case splay x rb of
-                         Node lc c rc \<Rightarrow> Node (Node (Node la a lb) b lc) c rc))"
+lemma splay_code: "splay x (Node AB b CD) =
+  (if x=b
+   then Node AB b CD
+   else if x < b
+        then case AB of
+          Leaf \<Rightarrow> Node AB b CD |
+          Node A a B \<Rightarrow>
+            (if x=a then Node A a (Node B b CD)
+             else if x < a
+                  then if A = Leaf then Node A a (Node B b CD)
+                       else case splay x A of
+                         Node A\<^sub>1 a' A\<^sub>2 \<Rightarrow> Node A\<^sub>1 a' (Node A\<^sub>2 a (Node B b CD))
+                  else if B = Leaf then Node A a (Node B b CD)
+                       else case splay x B of
+                         Node B\<^sub>1 b' B\<^sub>2 \<Rightarrow> Node (Node A a B\<^sub>1) b' (Node B\<^sub>2 b CD))
+        else case CD of
+          Leaf \<Rightarrow> Node AB b CD |
+          Node C c D \<Rightarrow>
+            (if x=c then Node (Node AB b C) c D
+             else if x < c
+                  then if C = Leaf then Node (Node AB b C) c D
+                       else case splay x C of
+                         Node C\<^sub>1 c' C\<^sub>2 \<Rightarrow> Node (Node AB b C\<^sub>1) c' (Node C\<^sub>2 c D)
+                  else if D=Leaf then Node (Node AB b C) c D
+                       else case splay x D of
+                         Node D\<^sub>1 d D\<^sub>2 \<Rightarrow> Node (Node (Node AB b C) c D\<^sub>1) d D\<^sub>2))"
 by(auto split!: tree.split)
 
 definition is_root :: "'a \<Rightarrow> 'a tree \<Rightarrow> bool" where
