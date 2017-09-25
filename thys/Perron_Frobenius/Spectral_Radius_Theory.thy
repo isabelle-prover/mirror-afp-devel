@@ -116,30 +116,6 @@ qed
 text \<open>We can also convert the set-based lemma @{thm perron_frobenius_spectral_radius}
   to a type-based version.\<close>
 
-primrec matpow :: "'a::semiring_1^'n^'n \<Rightarrow> nat \<Rightarrow> 'a^'n^'n" where
-  matpow_0:   "matpow A 0 = mat 1" |
-  matpow_Suc: "matpow A (Suc n) = (matpow A n) ** A"
-
-context includes lifting_syntax
-begin  
-lemma HMA_pow_mat[transfer_rule]:
-  "((HMA_M ::'a::{semiring_1} mat \<Rightarrow> 'a^'n^'n \<Rightarrow> bool) ===> op = ===> HMA_M) pow_mat matpow"
-proof -
-  {
-    fix A :: "'a mat" and A' :: "'a^'n^'n" and n :: nat
-    assume [transfer_rule]: "HMA_M A A'"
-    hence [simp]: "dim_row A = CARD('n)" unfolding HMA_M_def by simp
-    have "HMA_M (pow_mat A n) (matpow A' n)"
-    proof (induct n)
-      case (Suc n)
-      note [transfer_rule] = this
-      show ?case by (simp, transfer_prover)
-    qed (simp, transfer_prover)
-  }
-  thus ?thesis by blast
-qed
-end
-
 lemma perron_frobenius_spectral_type_based: 
   assumes "non_neg_mat (A :: real ^ 'n ^ 'n)"
   and "\<forall> x. poly (charpoly A) x = 0 \<longrightarrow> x \<le> 1"
