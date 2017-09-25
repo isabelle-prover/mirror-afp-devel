@@ -202,12 +202,26 @@ lemma HMA_V_add [transfer_rule]: "(HMA_V ===> HMA_V ===> HMA_V) (op +) (op +) "
   unfolding rel_fun_def HMA_V_def
   by (auto simp: from_hma\<^sub>v_add)
 
+lemma from_hma\<^sub>v_diff: "from_hma\<^sub>v v - from_hma\<^sub>v w = from_hma\<^sub>v (v - w)"
+  unfolding from_hma\<^sub>v_def by auto
+
+lemma HMA_V_diff [transfer_rule]: "(HMA_V ===> HMA_V ===> HMA_V) (op -) (op -)"
+  unfolding rel_fun_def HMA_V_def
+  by (auto simp: from_hma\<^sub>v_diff)
+
 lemma from_hma\<^sub>m_add: "from_hma\<^sub>m a + from_hma\<^sub>m b = from_hma\<^sub>m (a + b)"
   unfolding from_hma\<^sub>m_def by auto
 
 lemma HMA_M_add [transfer_rule]: "(HMA_M ===> HMA_M ===> HMA_M) (op +) (op +) "
   unfolding rel_fun_def HMA_M_def
   by (auto simp: from_hma\<^sub>m_add)
+
+lemma from_hma\<^sub>m_diff: "from_hma\<^sub>m a - from_hma\<^sub>m b = from_hma\<^sub>m (a - b)"
+  unfolding from_hma\<^sub>m_def by auto
+
+lemma HMA_M_diff [transfer_rule]: "(HMA_M ===> HMA_M ===> HMA_M) (op -) (op -) "
+  unfolding rel_fun_def HMA_M_def
+  by (auto simp: from_hma\<^sub>m_diff)
 
 definition hma_scalar_prod :: "'a :: semiring_1 ^ 'n \<Rightarrow> 'a ^ 'n \<Rightarrow> 'a" where
   "hma_scalar_prod v w = (\<Sum> i \<in> UNIV. v $h i * w $h i)"
@@ -589,6 +603,9 @@ lemma matrix_add_vect_distrib: "(A + B) *v v = A *v v + B *v v"
 
 lemma matrix_vector_right_distrib: "M *v (v + w) = M *v v + M *v w"
   by (transfer_hma rule: mult_add_distrib_mat_vec)
+
+lemma matrix_vector_right_distrib_diff: "(M :: 'a :: ring_1 ^ 'nr ^ 'nc) *v (v - w) = M *v v - M *v w"
+  by (transfer_hma rule: mult_minus_distrib_mat_vec)
 
 lemma eigen_value_root_charpoly: 
   "eigen_value A k \<longleftrightarrow> poly (charpoly (A :: 'a :: field ^ 'n ^ 'n)) k = 0"
