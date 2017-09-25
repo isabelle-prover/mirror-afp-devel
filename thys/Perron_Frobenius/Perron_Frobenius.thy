@@ -107,16 +107,9 @@ lemma matrix_vect_scaleR: "(A :: 'a :: real_normed_algebra_1 ^ 'n ^ 'k) *v (a *\
 lemma (in inj_semiring_hom) map_vector_0: "(map_vector hom v = 0) = (v = 0)"
   unfolding vec_eq_iff map_vector_def by auto
 
-(* TODO: transfer does not work as expected, since it generalizes over hom.
-  how can one tell transfer, not to perform this generalization? *)
 lemma (in semiring_hom) map_vector_vmult:
   "(map_matrix hom A) *v (map_vector hom v) = map_vector hom (A *v v)"
-proof -
-  have *: "\<And> hom. semiring_hom hom \<Longrightarrow> (map_matrix hom A) *v (map_vector hom v) = map_vector hom (A *v v)"
-    by (transfer_hma rule: semiring_hom.mult_mat_vec_hom[symmetric])
-  have "semiring_hom hom" ..
-  from *[OF this] show ?thesis .
-qed
+  by (transfer fixing: hom, auto simp: mult_mat_vec_hom)
 
 text \<open>Now the real proof of Perron Frobenius starts, where we follow
   the textbook proof of Serre \cite[Theorem 5.2.1]{SerreMatrices}.\<close>
