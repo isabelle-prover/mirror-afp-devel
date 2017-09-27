@@ -107,9 +107,16 @@ lemma matrix_vect_scaleR: "(A :: 'a :: real_normed_algebra_1 ^ 'n ^ 'k) *v (a *\
 lemma (in inj_semiring_hom) map_vector_0: "(map_vector hom v = 0) = (v = 0)"
   unfolding vec_eq_iff map_vector_def by auto
 
-lemma (in semiring_hom) map_vector_vmult:
+lemma (in inj_semiring_hom) map_vector_inj: "(map_vector hom v = map_vector hom w) = (v = w)"
+  unfolding vec_eq_iff map_vector_def by auto
+
+lemma (in semiring_hom) matrix_vector_mult_hom:
   "(map_matrix hom A) *v (map_vector hom v) = map_vector hom (A *v v)"
   by (transfer fixing: hom, auto simp: mult_mat_vec_hom)
+
+lemma (in semiring_hom) vector_smult_hom:
+  "hom x *s (map_vector hom v) = map_vector hom (x *s v)"
+  by (transfer fixing: hom, auto simp: vec_hom_smult)
 
 text \<open>Now the real proof of Perron Frobenius starts, where we follow
   the textbook proof of Serre \cite[Theorem 5.2.1]{SerreMatrices}.\<close>
@@ -250,7 +257,7 @@ proof -
     using rnnA unfolding map_matrix_def B_def real_non_neg_mat_def map_vector_def elements_mat_h_def
     by vector
   thus ?thesis
-    using of_real_hom.map_vector_vmult[of B, where 'a = complex]
+    using of_real_hom.matrix_vector_mult_hom[of B, where 'a = complex]
     unfolding map_vector_def by auto
 qed
 
