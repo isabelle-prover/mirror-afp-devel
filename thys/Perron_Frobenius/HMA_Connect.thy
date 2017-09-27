@@ -581,6 +581,10 @@ lemma HMA_map_matrix [transfer_rule]:
   unfolding map_vector_def map_matrix_def[abs_def] map_mat_def[abs_def] HMA_M_def from_hma\<^sub>m_def
   by auto
 
+lemma HMA_transpose_matrix [transfer_rule]: 
+  "(HMA_M ===> HMA_M) transpose_mat transpose"
+  unfolding transpose_mat_def transpose_def HMA_M_def from_hma\<^sub>m_def by auto
+
 lemma HMA_map_vector [transfer_rule]: 
   "(op = ===> HMA_V ===> HMA_V) map_vec map_vector"
   unfolding map_vector_def[abs_def] map_vec_def[abs_def] HMA_V_def from_hma\<^sub>v_def
@@ -619,6 +623,10 @@ lemma non_empty_spectrum: fixes A :: "complex ^ 'n ^ 'n"
   shows "Collect (eigen_value A) \<noteq> {}"
   by (transfer_hma rule: spectrum_non_empty[unfolded spectrum_def])
 
+lemma charpoly_transpose: "charpoly (transpose A :: 'a :: field ^ 'n ^ 'n) = charpoly A"
+  by (transfer_hma rule: char_poly_transpose_mat)
 
+lemma eigen_value_transpose: "eigen_value (transpose A :: 'a :: field ^ 'n ^ 'n) v = eigen_value A v" 
+  unfolding eigen_value_root_charpoly charpoly_transpose by simp
 
 end
