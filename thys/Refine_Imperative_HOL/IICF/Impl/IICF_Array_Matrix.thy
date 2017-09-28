@@ -1,6 +1,6 @@
 section \<open>Matrices by Array (Row-Major)\<close>
 theory IICF_Array_Matrix
-imports "../Intf/IICF_Matrix" Sepref_Prereq.Array_Blit
+imports "../Intf/IICF_Matrix" Separation_Logic_Imperative_HOL.Array_Blit
 begin
 
   definition "is_amtx N M c mtx \<equiv> \<exists>\<^sub>Al. mtx \<mapsto>\<^sub>a l * \<up>( 

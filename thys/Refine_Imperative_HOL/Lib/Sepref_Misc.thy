@@ -3,10 +3,10 @@ imports
   Refine_Monadic.Refine_Monadic
   PO_Normalizer
   "List-Index.List_Index"
-  Sepref_Prereq.Sep_Main
+  Separation_Logic_Imperative_HOL.Sep_Main
   Named_Theorems_Rev
   "HOL-Eisbach.Eisbach"
-  Sepref_Prereq.Array_Blit
+  Separation_Logic_Imperative_HOL.Array_Blit
 begin
 
   hide_const (open) CONSTRAINT

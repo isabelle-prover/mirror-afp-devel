@@ -4,7 +4,7 @@
 theory IPv6
 imports IP_Address
         NumberWang_IPv6
-        (* include "~~/src/HOL/Library/Code_Target_Nat" if you need to work with actual numbers.*)
+        (* include "HOL-Library.Code_Target_Nat" if you need to work with actual numbers.*)
 begin
 
 

@@ -1,7 +1,7 @@
 theory Array_Set_Impl
 imports 
   "../Sep_Main" Imp_Set_Spec Array_Blit
-  "~~/src/HOL/Library/Code_Target_Numeral"
+  "HOL-Library.Code_Target_Numeral"
 begin
   subsection "Array Set"
 

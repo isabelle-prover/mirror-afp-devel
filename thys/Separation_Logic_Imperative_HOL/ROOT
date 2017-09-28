@@ -28,6 +28,8 @@ session "Separation_Logic_Imperative_HOL" (AFP) = "HOL-Library" +
     "Examples/To_List_GA"
     "Examples/Union_Find"
     "Examples/Idioms"
+  theories [document = false]
+    Sep_Examples
   document_files
     "root.bib"
     "root.tex"

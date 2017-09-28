@@ -2,7 +2,7 @@ section{* Reactive processes *}
 
 theory Reactive_Processes
 imports Designs "HOL-Library.Sublist"
-(* isabelle2012 "~~/src/HOL/Library/List_Prefix" *)
+(* isabelle2012 "HOL-Library.List_Prefix" *)
 begin
 
 
