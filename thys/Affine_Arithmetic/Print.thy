@@ -178,11 +178,16 @@ subsection \<open>gnuplot output\<close>
 
 subsubsection \<open>vector output of 2D zonotope\<close>
 
+fun polychain_of_segments::"((real \<times> real) \<times> (real \<times> real)) list \<Rightarrow> (real \<times> real) list"
+  where
+    "polychain_of_segments [] = []"
+  | "polychain_of_segments (((x0, y0), z)#segs) = (x0, y0)#z#map snd segs"
+
 definition shows_segments_of_aform
   where "shows_segments_of_aform a b xs color =
-  shows_list_gen id '''' '''' ''\<newline>'' ''\<newline>'' (map (\<lambda>((x0, y0), (x1, y1)).
-      shows_words (map lfloat10 [x0, y0, x1 - x0, y1 - y0]) o shows_space o shows_string color)
-    (segments_of_aform (prod_of_aforms (xs ! a) (xs ! b))))"
+  shows_list_gen id '''' '''' ''\<newline>'' ''\<newline>'' (map (\<lambda>(x0, y0).
+      shows_words (map lfloat10 [x0, y0]) o shows_space o shows_string color)
+    (polychain_of_segments (segments_of_aform (prod_of_aforms (xs ! a) (xs ! b)))))"
 abbreviation "show_segments_of_aform a b x c \<equiv> shows_segments_of_aform a b x c ''''"
 
 definition shows_box_of_aforms\<comment>\<open>box and some further information\<close>

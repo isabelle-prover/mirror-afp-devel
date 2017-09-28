@@ -208,7 +208,7 @@ definition
 definition "print_lorenz_aform print_fun cx cy cz
     cd1 cd2
   = (\<lambda>a b.
-        let (s1, n) = ((-7), True);
+        let (s1, n) = ((-6), False);
             _ = print_fun (String.implode (''# gen(''@ show a@''): ''@ shows_aforms_hr (b) '''' @ ''\<newline>''));
             _ = print_fun (String.implode (''# box(''@ show a@''): ''@ shows_box_of_aforms_hr (b) '''' @ ''\<newline>''));
             ((x0, y0, z0), (x1, y1, z1)) = case (map (Inf_aform' 30) (take 3 b), map (Sup_aform' 30) (take 3 b)) of

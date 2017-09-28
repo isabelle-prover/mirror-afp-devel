@@ -25,6 +25,12 @@ lemma poincare_section_rep[poincare_tac_theorems]:
   "{(1, FloatR 9 (-2))..(2::real, FloatR 9 (-2))} = {eucl_of_list [1, FloatR 9 (-2)]..eucl_of_list [2, FloatR 9 (-2)]}"
   by (auto simp: eucl_of_list_prod)
 
+lemma poincare_section_le[poincare_tac_theorems]:
+  "{(x::real, y::real). y \<le> FloatR 9 (- 2)} =
+    {x. if True then x \<bullet> Basis_list ! 1 \<le> [1, FloatR 9 (- 2)] ! 1
+        else [1, FloatR 9 (- 2)] ! 1 \<le> x \<bullet> Basis_list ! 1}"
+  by (auto simp: Basis_list_prod_def Basis_list_real_def)
+
 abbreviation "vdp_ro \<equiv> ro 2 10 7 2 2 2"
 
 lemma vdp_ro: "TAG_reach_optns vdp_ro" by simp
@@ -38,6 +44,94 @@ subsection \<open>No intermediate Poincare map\<close>
 
 lemma vdp_pi_0: "vdp.guards_invar DIM(real \<times> real) []"
   by (auto simp: vdp.guards_invar_def)
+
+lemma vanderpol_derivative_bounds:
+  notes [poincare_tac_theorems] = vdp_pi_0 vdp_ro vdp_start
+  defines "\<Sigma> \<equiv> {(1::real, 2.25::real) .. (2, 2.25)}"
+  shows "\<forall>x\<in>{(1.41, 2.25) .. (1.42, 2.25)}.
+  vdp.returns_to \<Sigma> x \<and>
+  vdp.return_time \<Sigma> differentiable at x within {(x, y). y \<le> 2.25} \<and>
+  (\<exists>D. (vdp.poincare_map \<Sigma> has_derivative blinfun_apply D) (at x within {(x, y). y \<le> 2.25}) \<and>
+        vdp.poincare_map \<Sigma> x \<in> {(1.41, 2.25) .. (1.42, 2.25)} \<and>
+        D o\<^sub>L blinfun_of_list [1, 0,
+                             0, 1] \<in> vdp.blinfuns_of_lvivl ([-0.016, -0.024, 0, 0], [0.021, 0.031, 0, 0]))
+  "
+  unfolding ninequarters \<Sigma>_def
+  by (tactic \<open>poincare'_bnds_tac @{thm vdp_fas_def} 30 50 20 14 [(0, 1, "0x000000")] "" (* "out_p0_vdp_0.out" *)  @{context} 1\<close>)
+
+lemma blinfun_of_list_id2: "blinfun_of_list [1, 0, 0, 1] = (id_blinfun::(real*real)\<Rightarrow>\<^sub>L(real*real))"
+  apply (auto intro!: blinfun_euclidean_eqI simp: Basis_prod_def)
+  apply (auto simp: blinfun_of_list_def blinfun_of_matrix_apply)
+   apply (auto simp: Basis_prod_def Basis_list_real_def)
+  done
+
+lemma norm_blinfun_of_list:
+  "norm (blinfun_of_list xs::'a::executable_euclidean_space\<Rightarrow>\<^sub>L'a) \<le> (\<Sum>x\<leftarrow>xs. abs x)"
+  if "length xs = DIM('a)*DIM('a)"\<comment>\<open>should work for all lists\<close>
+  unfolding blinfun_of_list_def
+  apply (rule norm_blinfun_of_matrix[le])
+  apply (auto simp: sum_Basis_sum_nth_Basis_list)
+  apply (subst add.commute)
+  apply (subst sum_mult_product[symmetric])
+  by (auto simp: sum_list_sum_nth that atLeast0LessThan)
+
+lemma norm_blinfuns_of_ivl2:
+  "norm x \<le> (\<Sum>i<DIM('a)*DIM('a). max (abs (xs!i)) (abs (ys!i)))"
+  if "x \<in> vdp.blinfuns_of_lvivl (xs, ys)" "length xs = DIM('a)*DIM('a)" "length ys = DIM('a)*DIM('a)"
+  for x::"'a::executable_euclidean_space\<Rightarrow>\<^sub>L'a"
+proof -
+  from that
+  obtain es where xs: "x = blinfun_of_list es"
+    "es \<in> list_interval xs ys"
+    by (auto simp: vdp.blinfuns_of_lvivl_def)
+  have [simp]: "length es = DIM('a)*DIM('a)"
+    using xs that
+    by (auto simp: list_interval_def dest!: list_all2_lengthD )
+  note xs(1)
+  also have "norm (blinfun_of_list es::'a\<Rightarrow>\<^sub>L'a) \<le> (\<Sum>x\<leftarrow>es. abs x)"
+    by (rule norm_blinfun_of_list) simp
+  also have "\<dots> \<le> (\<Sum>i<DIM('a)*DIM('a). max (abs (xs!i)) (abs (ys!i)))"
+    using xs(2)
+    by (auto simp: sum_list_sum_nth atLeast0LessThan list_interval_def
+        list_all2_conv_all_nth max_def that dest!: spec
+        intro!: sum_mono)
+  finally show ?thesis .
+qed
+
+lemma unique_Poincare:
+  defines "\<Sigma> \<equiv> {(1::real, 2.25::real) .. (2, 2.25)}"
+  shows "\<exists>!x. x \<in> {(1.41::real, 2.25::real) .. (1.42, 2.25)} \<and> vdp.poincare_map \<Sigma> x = x"
+proof -
+  let ?S = "{(x, y). y \<le> 225 / 10\<^sup>2}"
+  define S where "S \<equiv> {(1.41::real, 2.25::real) .. (1.42, 2.25)}"
+  have "convex S" "complete S" "S \<noteq> {}"  "S \<subseteq> ?S"
+    unfolding S_def
+    by (auto intro!: compact_imp_complete)
+  then show ?thesis
+    unfolding S_def[symmetric]
+  proof (rule vdp.Poincare_Banach_fixed_pointI)
+    show "\<forall>x\<in>S. vdp.poincare_map \<Sigma> x \<in> S \<and>
+           (\<exists>D. (vdp.poincare_map \<Sigma> has_derivative D) (at x within {(x, y). y \<le> 225 / 10\<^sup>2}) \<and>
+                onorm D \<le> 0.06)"
+    proof
+      fix x
+      assume "x \<in> S"
+      from vanderpol_derivative_bounds[folded S_def \<Sigma>_def, rule_format, OF this]
+      obtain D where D: "vdp.returns_to \<Sigma> x"
+        "vdp.poincare_map \<Sigma> x \<in> S"
+        "vdp.return_time \<Sigma> differentiable at x within ?S"
+        "(vdp.poincare_map \<Sigma> has_derivative blinfun_apply D) (at x within ?S)"
+        "D \<in> vdp.blinfuns_of_lvivl ([-0.016, -0.024, 0, 0], [0.021, 0.031, 0, 0])"
+        by (auto simp: blinfun_of_list_id2)
+      have "onorm D = norm D" by transfer simp
+      also from norm_blinfuns_of_ivl2[OF D(5)]
+      have "norm D \<le> 0.06" by (simp add: max_def)
+      finally show "vdp.poincare_map \<Sigma> x \<in> S \<and>
+        (\<exists>D. (vdp.poincare_map \<Sigma> has_derivative D) (at x within ?S) \<and> onorm D \<le> 0.06)"
+        using D by auto
+    qed
+  qed simp
+qed
 
 lemma
   notes [poincare_tac_theorems] = vdp_pi_0 vdp_ro vdp_start

@@ -2788,4 +2788,168 @@ lemma isFDERIV_compute: "isFDERIV D vs fas xs \<longleftrightarrow>
   unfolding isFDERIV_def
   by (auto simp: list.pred_set)
 
+
+theorem (in ode_interpretation) solves_poincare_map_aform'_derivI'[solves_one_step_ivl_thms]:
+\<comment>\<open>TODO: replace @{thm solves_poincare_map_aform'_derivI}\<close>
+  assumes "TAG_optns optns"
+  assumes "TAG_reach_optns roi"
+  assumes "TAG_sctn mirrored"
+    and D: "D = DIM('a)"
+  assumes DS: "list_interval lDR uDR \<subseteq> list_interval lDS uDS"
+    and ode_fas: "length ode_fas = DIM('a)"
+    and guards: "guards_invar DIM('a) guards"
+    and P: "P = {eucl_of_list lP .. eucl_of_list uP}"
+    and plane: "uP ! n = lP ! n"
+    and X0: "X0 \<subseteq> {eucl_of_list lX0 .. eucl_of_list uX0}"
+    and nD: "n < DIM('a)"
+    and R: "{eucl_of_list lR .. eucl_of_list uR} \<subseteq> R"
+    and lens:
+    "length (lP) = DIM('a)" "length (uP) = DIM('a)"
+    "length (lX0) = DIM('a)" "length (uX0) = DIM('a)"
+    "length (lR) = DIM('a)" "length (uR) = DIM('a)"
+    "length DX0 = DIM('a)*DIM('a)"
+    "length lDR = CARD('n) * CARD('n)"
+    "length uDR = CARD('n) * CARD('n)"
+    and SS: "SS = {x::'a. if mirrored then x \<bullet> Basis_list ! n \<le> lP ! n
+        else x \<bullet> Basis_list ! n \<ge> lP ! n}"
+  assumes solves:
+    "solves_poincare_map_aform'_fo optns ode_fas safe_form
+      (mirrored_sctn (\<not>mirrored) (Sctn (unit_list D n) (lP ! n)))
+      guards
+      (lP, uP)
+      (mirrored_sctn mirrored (Sctn (unit_list D n) (lP ! n)))
+      roi
+      [((1,1), aforms_of_ivls lX0 uX0, Some (aforms_of_point DX0))]
+      (lR, uR)
+      (Some (lDR, uDR))"
+  shows "\<forall>x\<in>X0. returns_to P x \<and>
+    return_time P differentiable at x within SS \<and>
+    (\<exists>D. (poincare_map P has_derivative blinfun_apply D) (at x within SS) \<and>
+         poincare_map P x \<in> R \<and> D o\<^sub>L blinfun_of_list DX0 \<in> blinfuns_of_lvivl (lDS, uDS))"
+proof (rule ballI)
+  fix x assume "x \<in> X0"
+  then have la2: "list_all2 op \<le> lX0 uX0"
+    using X0
+    by (force simp: subset_iff eucl_of_list_le_iff le_eucl_of_list_iff lens list_all2_conv_all_nth)
+  have 1: "\<And>X. X \<in> set [((1::ereal, 1::ereal), aforms_of_ivls lX0 uX0, Some (aforms_of_point DX0))] \<Longrightarrow>
+      aform.c1_info_invare DIM('a) X"
+    for X
+    by (auto simp: aform.c1_info_invare_def aform.c1_info_invar_def lens power2_eq_square)
+  have 2: "length (normal (mirrored_sctn (\<not>mirrored) (Sctn (unit_list D n) (lP ! n)))) = DIM('a)"
+    by (auto simp: D mirrored_sctn_def)
+  have 3: "length (fst (lP, uP)) = DIM('a)" "length (snd (lP, uP)) = DIM('a)"
+    by (auto simp: lens)
+  have 4: "length (normal (mirrored_sctn mirrored (Sctn (unit_list D n) (lP ! n)))) = DIM('a)"
+    by (auto simp: D mirrored_sctn_def)
+  have 5: "length (fst (lR, uR)) = CARD('n)" "length (snd (lR, uR)) = CARD('n)"
+    "aform.lvivl'_invar (CARD('n) * CARD('n)) (Some (lDR, uDR))"
+    by (auto simp: lens aform.lvivl'_invar_def)
+  note solves = solves[unfolded solves_poincare_map_aform'_fo_def file_output_iff]
+  have "poincare_mapsto
+     (set_of_lvivl (lP, uP) \<inter>
+      plane_of (map_sctn eucl_of_list (mirrored_sctn mirrored (Sctn (unit_list D n) (lP ! n)))))
+     (aform.c1_info_of_apprse [((1, 1), aforms_of_ivls lX0 uX0, Some (aforms_of_point DX0))])
+     (below_halfspace (map_sctn eucl_of_list (mirrored_sctn (\<not>mirrored) (Sctn (unit_list D n) (lP ! n)))))
+     (aform.Csafe ode_fas safe_form -
+      set_of_lvivl (lP, uP) \<inter>
+      plane_of (map_sctn eucl_of_list (mirrored_sctn mirrored (Sctn (unit_list D n) (lP ! n)))))
+     (set_of_lvivl (lR, uR) \<times> blinfuns_of_lvivl' (Some (lDR, uDR)))"
+    by (rule solves_poincare_map_aform'[OF solves, OF 1 ode_fas 4 3 2 _ 5])
+      (use guards in \<open>auto simp: guards_invar_def\<close>)
+  then have "poincare_mapsto P (X0 \<times> {blinfun_of_list DX0}::('a \<times> ('a \<Rightarrow>\<^sub>L 'a)) set) SS UNIV
+    (R \<times> blinfuns_of_lvivl (lDS, uDS))"
+    apply (rule poincare_mapsto_subset)
+    subgoal using X0
+      apply (auto simp: aform.c1_info_of_appre_def aform.c1_info_of_appr_def
+          aform.c1_info_of_apprse_def)
+      subgoal for x0
+        apply (rule image_eqI[where x="list_of_eucl x0@DX0"])
+        using lens
+         apply (auto simp: flow1_of_list_def aforms_of_point_def aform.set_of_appr_of_ivl_append_point)
+        apply (rule imageI)
+        using X0
+        by (auto simp: Joints_aforms_of_ivls la2 list_of_eucl_in_list_interval_iff)
+      done
+    subgoal by simp
+    subgoal using R DS
+      by (auto simp: set_of_lvivl_def set_of_ivl_def blinfuns_of_lvivl'_def blinfuns_of_lvivl_def
+          lens)
+    subgoal
+      using assms
+      by (auto simp:
+          below_halfspace_def le_halfspace_def[abs_def] mirrored_sctn_def mirror_sctn_def)
+    subgoal
+      using assms
+      by (fastforce simp add: P set_of_lvivl_def set_of_ivl_def plane_of_def
+          le_eucl_of_list_iff eucl_of_list_le_iff mirrored_sctn_def mirror_sctn_def)
+    done
+  then show "returns_to P x \<and>
+    return_time P differentiable at x within SS \<and>
+    (\<exists>D. (poincare_map P has_derivative blinfun_apply D) (at x within SS) \<and>
+         poincare_map P x \<in> R \<and> D o\<^sub>L blinfun_of_list DX0 \<in> blinfuns_of_lvivl (lDS, uDS))"
+    using \<open>x \<in> X0\<close>
+    by (auto simp: poincare_mapsto_def)
+qed
+
+ML \<open>
+fun poincare'_bnds_tac ode_def p m N atol projs filename ctxt =
+  let
+    val ctxt = Context.proof_map (Named_Theorems.add_thm @{named_theorems DIM_simps} ode_def) ctxt
+  in
+         resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems solves_one_step_ivl_thms})
+    THEN' resolve_tac ctxt [TAG_optns_thm p m N atol projs filename ctxt]
+    THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems poincare_tac_theorems})
+    THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems poincare_tac_theorems})
+    THEN' SOLVED' (DIM_tac ctxt)
+    THEN' approx_subset_list_tac ctxt p
+    THEN' SOLVED' (DIM_tac ctxt)
+    THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems poincare_tac_theorems})
+    THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems poincare_tac_theorems})
+    THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems nth_list_eq_theorems})
+    THEN' SOLVED' (eucl_subset_approx_tac ctxt p)
+    THEN' (DIM_tac ctxt)
+    THEN' SOLVED' (approx_subset_eucl_tac ctxt p)
+    THEN' SOLVED' (DIM_tac ctxt)
+    THEN' SOLVED' (DIM_tac ctxt)
+    THEN' SOLVED' (DIM_tac ctxt)
+    THEN' SOLVED' (DIM_tac ctxt)
+    THEN' SOLVED' (DIM_tac ctxt)
+    THEN' SOLVED' (DIM_tac ctxt)
+    THEN' SOLVED' (DIM_tac ctxt)
+    THEN' SOLVED' (DIM_tac ctxt)
+    THEN' SOLVED' (DIM_tac ctxt)
+    THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems poincare_tac_theorems})
+    THEN' CONVERSION (Simplifier.rewrite
+      (empty_simpset ctxt addsimps [ode_def]))
+    THEN' ode_numerics_tac ctxt
+  end
+\<close>
+
+lemma (in auto_ll_on_open) Poincare_Banach_fixed_pointI:
+  assumes "convex S" and c: "complete S" "S \<noteq> {}" and "S \<subseteq> T"
+  assumes derivative_bounded: "\<forall>x\<in>S.
+    poincare_map \<Sigma> x \<in> S \<and> (\<exists>D. (poincare_map \<Sigma> has_derivative D) (at x within T) \<and> onorm D \<le> B)"
+  assumes B: "B < 1"
+  shows "\<exists>!x. x \<in> S \<and> poincare_map \<Sigma> x = x"
+  using c _ B
+proof (rule banach_fix)
+  from derivative_bounded c show "0 \<le> B"
+    by (auto dest!: has_derivative_bounded_linear onorm_pos_le)
+  from derivative_bounded show "poincare_map \<Sigma> ` S \<subseteq> S" by auto
+  obtain D where D:
+    "\<forall>x \<in> S. (poincare_map \<Sigma> has_derivative D x) (at x within T) \<and>
+      onorm (D x) \<le> B"
+    apply atomize_elim
+    apply (rule bchoice)
+    using derivative_bounded
+    by auto
+  with \<open>S \<subseteq> T\<close> have "(\<And>x. x \<in> S \<Longrightarrow> (poincare_map \<Sigma> has_derivative D x) (at x within S))"
+    by (auto intro: has_derivative_within_subset)
+  from bounded_derivative_imp_lipschitz[of S "poincare_map \<Sigma>" D B, OF this] \<open>convex S\<close> D c
+    \<open>0 \<le> B\<close>
+  have "lipschitz S (poincare_map \<Sigma>) B" by auto
+  then show "\<forall>x\<in>S. \<forall>y\<in>S. dist (poincare_map \<Sigma> x) (poincare_map \<Sigma> y) \<le> B * dist x y"
+    by (auto simp: lipschitz_def)
+qed
+
 end
