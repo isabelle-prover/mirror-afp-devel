@@ -1,7 +1,7 @@
 (* Author: Andreas Lochbihler, ETH Zurich *)
 
 theory MFMC_Finite imports
-  "EdmondsKarp_Maxflow.EdmondsKarp_Termination_Abstract"
+  EdmondsKarp_Maxflow.EdmondsKarp_Termination_Abstract
   "HOL-Library.While_Combinator"
 begin
 

@@ -1,8 +1,8 @@
 section "Topological Ordering of Graphs"
 theory Graph_Topological_Ordering
 imports 
-  "../Refine_Imperative_HOL/Lib/Sepref_Misc"
-  "../List-Index/List_Index"
+  Refine_Imperative_HOL.Sepref_Misc
+  "List-Index.List_Index"
 begin
 
 subsection \<open>List-Before Relation\<close>  

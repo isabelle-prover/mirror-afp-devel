@@ -2,8 +2,8 @@ section \<open>Implementation of the Edmonds-Karp Algorithm\<close>
 theory EdmondsKarp_Impl
 imports 
   EdmondsKarp_Algo
-  "Augmenting_Path_BFS"
-  "../Refine_Imperative_HOL/IICF/IICF"
+  Augmenting_Path_BFS
+  Refine_Imperative_HOL.IICF
 begin
 
   text \<open>We now implement the Edmonds-Karp algorithm.

@@ -7,7 +7,7 @@ matrices with given marginals based on a proof by Georg Kellerer
 (Funktionen auf Produkträumen mit vorgegebenen Marginal-Funktionen).\<close>
 
 theory Matrix_For_Marginals
-  imports "MFMC_Misc" "HOL-Library.Diagonal_Subsequence" "MFMC_Finite"
+  imports MFMC_Misc "HOL-Library.Diagonal_Subsequence" MFMC_Finite
 begin
 
 lemma bounded_matrix_for_marginals_finite:

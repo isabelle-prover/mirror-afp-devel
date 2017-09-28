@@ -1,10 +1,10 @@
 section \<open>Checking for Valid Network\<close>
 theory NetCheck
 imports 
-  "Lib/Refine_Add_Fofu"
-  "Network"
-  "Graph_Impl"
-  "../DFS_Framework/Examples/Reachable_Nodes"
+  Maxflow_Lib.Refine_Add_Fofu
+  Network
+  Graph_Impl
+  DFS_Framework.Reachable_Nodes
 begin
 text \<open>
   This theory contains code to read a network from an edge list, 

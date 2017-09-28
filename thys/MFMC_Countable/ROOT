@@ -7,7 +7,7 @@ session "MFMC_Countable" (AFP) = "HOL-Probability" +
     "HOL-Library.Transitive_Closure_Table"
     "HOL-Library.Bourbaki_Witt_Fixpoint"
     "HOL-Library.While_Combinator"
-    "EdmondsKarp_Maxflow.EdmondsKarp_Termination_Abstract"
+    EdmondsKarp_Maxflow.EdmondsKarp_Termination_Abstract
   theories
     Max_Flow_Min_Cut_Countable
     Rel_PMF_Characterisation

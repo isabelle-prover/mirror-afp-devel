@@ -1,6 +1,6 @@
 theory Prpu_Common_Inst
 imports 
-  "../Flow_Networks/Lib/Refine_Add_Fofu"
+  Maxflow_Lib.Refine_Add_Fofu
   Generic_Push_Relabel
 begin
 

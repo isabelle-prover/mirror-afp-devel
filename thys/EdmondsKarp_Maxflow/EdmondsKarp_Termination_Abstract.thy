@@ -1,7 +1,7 @@
 section \<open>Edmonds-Karp Algorithm\<close>
 
 theory EdmondsKarp_Termination_Abstract imports
-  "../Flow_Networks/Ford_Fulkerson"
+  Flow_Networks.Ford_Fulkerson
 begin
 
 lemma mlex_fst_decrI:

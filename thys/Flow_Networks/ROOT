@@ -8,8 +8,8 @@ session Maxflow_Lib (AFP) = Sepref_IICF +
     DFS_Framework
     Refine_Imperative_HOL
   theories
-    "../DFS_Framework/DFS_Framework"
-    "../DFS_Framework/Examples/Reachable_Nodes"
+    DFS_Framework.DFS_Framework
+    DFS_Framework.Reachable_Nodes
     "Lib/Fofu_Abs_Base"
     "Lib/Fofu_Impl_Base"
     "Lib/Refine_Add_Fofu"

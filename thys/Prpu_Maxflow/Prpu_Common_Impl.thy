@@ -2,8 +2,8 @@ section \<open>Tools for Implementing Push-Relabel Algorithms\<close>
 theory Prpu_Common_Impl
 imports
   Prpu_Common_Inst
-  "../Flow_Networks/Network_Impl" 
-  "../Flow_Networks/NetCheck"
+  Flow_Networks.Network_Impl 
+  Flow_Networks.NetCheck
 begin
   
 subsection \<open>Basic Operations\<close>

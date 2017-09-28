@@ -1,10 +1,10 @@
 theory Fofu_Abs_Base
 imports 
   Complex_Main 
-  "~~/src/HOL/Library/Rewrite"
-  "../../Automatic_Refinement/Lib/Misc"
-  "../../Refine_Imperative_HOL/Lib/Sepref_Misc"
-  "../../Program-Conflict-Analysis/LTS"
+  "HOL-Library.Rewrite"
+  Automatic_Refinement.Misc
+  Refine_Imperative_HOL.Sepref_Misc
+  "Program-Conflict-Analysis.LTS"
 begin  
 
   (* TODO: Move *)

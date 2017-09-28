@@ -3,7 +3,7 @@ chapter AFP
 session Prpu_Maxflow (AFP) = Flow_Networks +
   options [timeout = 600]
   theories [document = false]
-    "../Net_Check/NetCheck"
+    Flow_Networks.NetCheck
   theories
     Generic_Push_Relabel
     Prpu_Common_Inst

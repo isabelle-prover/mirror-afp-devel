@@ -1,7 +1,7 @@
 theory Refine_Add_Fofu
 imports 
   Fofu_Impl_Base 
-  "../../DFS_Framework/Misc/DFS_Framework_Refine_Aux"
+  DFS_Framework.DFS_Framework_Refine_Aux
 begin
 
   hide_type (open) List_Seg.node    

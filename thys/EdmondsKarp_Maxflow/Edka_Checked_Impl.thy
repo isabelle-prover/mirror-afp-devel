@@ -1,6 +1,6 @@
 section \<open>Combination with Network Checker\<close>
 theory Edka_Checked_Impl
-imports "../Flow_Networks/NetCheck" EdmondsKarp_Impl
+imports Flow_Networks.NetCheck EdmondsKarp_Impl
 begin
 text \<open>
   In this theory, we combine the Edmonds-Karp implementation with the 

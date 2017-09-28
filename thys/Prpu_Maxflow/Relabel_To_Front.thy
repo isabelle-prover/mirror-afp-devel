@@ -2,7 +2,7 @@ section \<open>Relabel-to-Front Algorithm\<close>
 theory Relabel_To_Front
 imports 
   Prpu_Common_Inst 
-  "Graph_Topological_Ordering"
+  Graph_Topological_Ordering
 begin
   text \<open>As an example for an implementation, Cormen et al.\ discuss the 
     relabel-to-front algorithm.

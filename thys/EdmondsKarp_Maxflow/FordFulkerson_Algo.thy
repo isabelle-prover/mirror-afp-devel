@@ -1,8 +1,8 @@
 section \<open>The Ford-Fulkerson Method\<close>
 theory FordFulkerson_Algo
 imports 
-  "../Flow_Networks/Ford_Fulkerson"
-  "../Flow_Networks/Lib/Refine_Add_Fofu"
+  Flow_Networks.Ford_Fulkerson
+  Maxflow_Lib.Refine_Add_Fofu
 begin
 text \<open>In this theory, we formalize the abstract Ford-Fulkerson
   method, which is independent of how an augmenting path is chosen\<close>
