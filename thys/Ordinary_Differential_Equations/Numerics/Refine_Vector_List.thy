@@ -1,10 +1,10 @@
 theory Refine_Vector_List
   imports
-  "Ordinary_Differential_Equations.Reachability_Analysis"
-  "Affine_Arithmetic.Affine_Arithmetic"
+  Ordinary_Differential_Equations.Reachability_Analysis
+  Affine_Arithmetic.Affine_Arithmetic
   "HOL-ODE-Refinement.Autoref_Misc" (* TODO: what is still needed there? *)
   "HOL-ODE-Refinement.Weak_Set"
-  "Runge_Kutta"
+  Runge_Kutta
 begin
 
 subsection \<open>Id on euclidean space, real etc\<close>

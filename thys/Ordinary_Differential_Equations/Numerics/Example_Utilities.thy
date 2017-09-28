@@ -1,10 +1,10 @@
 theory Example_Utilities
 imports
-  "Ordinary_Differential_Equations.ODE_Analysis"
-  "Affine_Arithmetic.Print"
-  "Refine_Rigorous_Numerics_Aform"
-  "Transfer_Euclidean_Space_Vector"
-  "Affine_Arithmetic.Float_Real"
+  Ordinary_Differential_Equations.ODE_Analysis
+  Affine_Arithmetic.Print
+  Refine_Rigorous_Numerics_Aform
+  Transfer_Euclidean_Space_Vector
+  Affine_Arithmetic.Float_Real
 begin
 
 declare [[ cd_patterns "_ = interpret_floatariths ?fas _" "_ = interpret_floatarith ?fa _"]]

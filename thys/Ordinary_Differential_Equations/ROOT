@@ -28,8 +28,8 @@ session "HOL-ODE-Refinement" (AFP) = "HOL-ODE" +
   theories
     "HOL-Decision_Procs.Approximation"
     "List-Index.List_Index"
-    "Show.Show_Instances"
-    "Affine_Arithmetic.Affine_Arithmetic"
+    Show.Show_Instances
+    Affine_Arithmetic.Affine_Arithmetic
     "Refinement/Autoref_Misc"
     "Refinement/Weak_Set"
     "Refinement/Refine_String"

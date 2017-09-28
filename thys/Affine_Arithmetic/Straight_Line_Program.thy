@@ -2,7 +2,7 @@ section \<open>Straight Line Programs\<close>
 theory Straight_Line_Program
   imports
     Floatarith_Expression
-    "Deriving.Derive"
+    Deriving.Derive
     "HOL-Library.Monad_Syntax"
     "HOL-Library.RBT_Mapping"
 begin

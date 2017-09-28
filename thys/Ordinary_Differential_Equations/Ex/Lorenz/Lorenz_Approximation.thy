@@ -2,7 +2,7 @@ section"Example: Lorenz attractor"
 theory Lorenz_Approximation
 imports
   "HOL-ODE-Numerics.ODE_Numerics"
-  "Result_File_Coarse"
+  Result_File_Coarse
 begin
 text \<open>\label{sec:lorenz}\<close>
 

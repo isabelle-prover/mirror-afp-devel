@@ -12,8 +12,8 @@ session Affine_Arithmetic (AFP) = "HOL-Analysis" +
     "HOL-Library.Monad_Syntax"
     "HOL-Library.Permutation"
     "HOL-Library.Float"
-    "Deriving.Derive"
-    "Show.Show_Instances"
+    Deriving.Derive
+    Show.Show_Instances
   theories
     Affine_Arithmetic
   document_files

@@ -2,8 +2,8 @@ section \<open>Operations on Expressions\<close>
 theory Floatarith_Expression
 imports
   "HOL-Decision_Procs.Approximation"
-  "Affine_Arithmetic_Auxiliarities"
-  "Executable_Euclidean_Space"
+  Affine_Arithmetic_Auxiliarities
+  Executable_Euclidean_Space
 begin
 
 text \<open>Much of this could move to the distribution...\<close>

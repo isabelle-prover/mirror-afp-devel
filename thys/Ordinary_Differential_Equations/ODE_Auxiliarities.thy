@@ -4,8 +4,8 @@ imports
   "HOL-Analysis.Analysis"
   "HOL-Library.Float"
   "List-Index.List_Index"
-  "Affine_Arithmetic.Affine_Arithmetic_Auxiliarities"
-  "Affine_Arithmetic.Executable_Euclidean_Space"
+  Affine_Arithmetic.Affine_Arithmetic_Auxiliarities
+  Affine_Arithmetic.Executable_Euclidean_Space
 begin
 
 instantiation prod :: (zero_neq_one, zero_neq_one) zero_neq_one

@@ -2,7 +2,7 @@ section \<open>Dyadic Rational Representation of Real\<close>
 theory Float_Real
 imports
   "HOL-Library.Float"
-  "Optimize_Float"
+  Optimize_Float
 begin
 text \<open>\label{sec:floatreal}\<close>
 

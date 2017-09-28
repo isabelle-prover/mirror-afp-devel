@@ -1,7 +1,7 @@
 theory Cones
 imports
-  Analysis
-  "Triangle.Triangle"
+  "HOL-Analysis.Analysis"
+  Triangle.Triangle
   "../ODE_Auxiliarities"
 begin
 

@@ -1,6 +1,6 @@
 theory Refine_String
 imports
-  "Autoref_Misc"
+  Autoref_Misc
 begin
 
 subsection \<open>Setup for literals\<close>

@@ -1,6 +1,6 @@
 theory Refine_Folds
 imports
-  "Autoref_Misc"
+  Autoref_Misc
 begin
 
 section \<open>Fold binary predicate over finite nonempty set\<close>

@@ -7,7 +7,7 @@ See other files from AFP for more involved examples.
 *)
 
 theory Example
-imports "PSL" "HOL-Eisbach.Eisbach" 
+imports PSL "HOL-Eisbach.Eisbach" 
 begin
 
 (* The "Hammer" strategy invokes sledgehammer as a sub-tool. *)

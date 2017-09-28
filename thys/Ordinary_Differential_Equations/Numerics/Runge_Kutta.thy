@@ -4,8 +4,8 @@ imports
   "HOL-Analysis.Analysis"
   One_Step_Method
   "HOL-Library.Float"
-  "Affine_Arithmetic.Executable_Euclidean_Space"
-  "Ordinary_Differential_Equations.Multivariate_Taylor"
+  Affine_Arithmetic.Executable_Euclidean_Space
+  Ordinary_Differential_Equations.Multivariate_Taylor
 begin
 
 subsection \<open>aux\<close>
