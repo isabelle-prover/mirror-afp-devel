@@ -44,8 +44,19 @@ definition eigen_vector :: "'a::comm_ring_1 ^ 'n ^ 'n \<Rightarrow> 'a ^ 'n \<Ri
 definition eigen_value :: "'a :: comm_ring_1 ^ 'n ^ 'n \<Rightarrow> 'a \<Rightarrow> bool" where
   "eigen_value A k = (\<exists> v. eigen_vector A v k)"
 
+definition similar_matrix_wit 
+  :: "'a :: semiring_1 ^ 'n ^ 'n \<Rightarrow> 'a ^ 'n ^ 'n \<Rightarrow> 'a ^ 'n ^ 'n \<Rightarrow> 'a ^ 'n ^ 'n \<Rightarrow> bool" where
+  "similar_matrix_wit A B P Q = (P ** Q = mat 1 \<and> Q ** P = mat 1 \<and> A = P ** B ** Q)"
+
+definition similar_matrix 
+  :: "'a :: semiring_1 ^ 'n ^ 'n \<Rightarrow> 'a ^ 'n ^ 'n \<Rightarrow> bool" where
+  "similar_matrix A B = (\<exists> P Q. similar_matrix_wit A B P Q)"
+
 definition spectral_radius :: "complex ^ 'n ^ 'n \<Rightarrow> real" where
   "spectral_radius A = Max { norm ev | v ev. eigen_vector A v ev}"
+
+definition Spectrum :: "'a :: field ^ 'n ^ 'n \<Rightarrow> 'a set" where
+  "Spectrum A = Collect (eigen_value A)" 
 
 definition vec_elements_h :: "'a ^ 'n \<Rightarrow> 'a set" where
   "vec_elements_h v = range (vec_nth v)"
@@ -589,7 +600,41 @@ lemma HMA_map_vector [transfer_rule]:
   "(op = ===> HMA_V ===> HMA_V) map_vec map_vector"
   unfolding map_vector_def[abs_def] map_vec_def[abs_def] HMA_V_def from_hma\<^sub>v_def
   by auto
-end 
+
+lemma HMA_similar_mat_wit [transfer_rule]: 
+  "((HMA_M :: _ \<Rightarrow> 'a :: comm_ring_1 ^ 'n ^ 'n \<Rightarrow> _) ===> HMA_M ===> HMA_M ===> HMA_M ===> op =) 
+  similar_mat_wit similar_matrix_wit"
+proof (intro rel_funI, goal_cases)
+  case (1 a A b B c C d D)  
+  note [transfer_rule] = this
+  hence id: "dim_row a = CARD('n)" by (auto simp: HMA_M_def)
+  have *: "(c * d = 1\<^sub>m (dim_row a) \<and> d * c = 1\<^sub>m (dim_row a) \<and> a = c * b * d) =
+    (C ** D = mat 1 \<and> D ** C = mat 1 \<and> A = C ** B ** D)" unfolding id
+    by (transfer, simp)
+  show ?case unfolding similar_mat_wit_def Let_def similar_matrix_wit_def *
+    using 1 by (auto simp: HMA_M_def)
+qed
+
+lemma HMA_similar_mat [transfer_rule]: 
+  "((HMA_M :: _ \<Rightarrow> 'a :: comm_ring_1 ^ 'n ^ 'n \<Rightarrow> _) ===> HMA_M ===> op =) 
+  similar_mat similar_matrix"
+proof (intro rel_funI, goal_cases)
+  case (1 a A b B)
+  note [transfer_rule] = this
+  hence id: "dim_row a = CARD('n)" by (auto simp: HMA_M_def)
+  {
+    fix c d
+    assume "similar_mat_wit a b c d" 
+    hence "{c,d} \<subseteq> carrier_mat CARD('n) CARD('n)" unfolding similar_mat_wit_def id Let_def by auto
+  } note * = this
+  show ?case unfolding similar_mat_def similar_matrix_def
+    by (transfer, insert *, blast)
+qed
+
+lemma HMA_spectrum[transfer_rule]: "(HMA_M ===> op =) spectrum Spectrum"
+  unfolding spectrum_def[abs_def] Spectrum_def[abs_def]
+  by transfer_prover
+end
 
 text \<open>Setup a method to easily convert theorems from JNF into HMA.\<close>
 
@@ -628,5 +673,11 @@ lemma charpoly_transpose: "charpoly (transpose A :: 'a :: field ^ 'n ^ 'n) = cha
 
 lemma eigen_value_transpose: "eigen_value (transpose A :: 'a :: field ^ 'n ^ 'n) v = eigen_value A v" 
   unfolding eigen_value_root_charpoly charpoly_transpose by simp
+
+lemma matrix_diff_vect_distrib: "(A - B) *v v = A *v v - B *v (v :: 'a :: ring_1 ^ 'n)"
+  by (transfer_hma rule: minus_mult_distrib_mat_vec)
+
+lemma similar_matrix_charpoly: "similar_matrix A B \<Longrightarrow> charpoly A = charpoly B" 
+  by (transfer_hma rule: char_poly_similar)
 
 end

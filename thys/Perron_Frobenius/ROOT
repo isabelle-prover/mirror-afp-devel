@@ -7,6 +7,8 @@ session "Pre_Perron_Frobenius" (AFP) = "Jordan_Normal_Form" +
     "HOL-Analysis"
     Polynomial_Factorization
     Pre_BZ
+    Rank_Nullity_Theorem
+    Graph_Theory
   theories
     "HOL-Analysis.Brouwer_Fixpoint"
     "HOL-Analysis.Determinants"
@@ -14,6 +16,8 @@ session "Pre_Perron_Frobenius" (AFP) = "Jordan_Normal_Form" +
     "HOL-Types_To_Sets.Types_To_Sets"
     Jordan_Normal_Form.Spectral_Radius
     Polynomial_Factorization.Square_Free_Factorization
+    Rank_Nullity_Theorem.Miscellaneous
+    Graph_Theory.Shortest_Path
 
 session "Perron_Frobenius" (AFP) = "Pre_Perron_Frobenius" +
   options [timeout = 1800]
@@ -21,6 +25,7 @@ session "Perron_Frobenius" (AFP) = "Pre_Perron_Frobenius" +
     Cancel_Card_Constraint
     HMA_Connect
     Perron_Frobenius
+    Perron_Frobenius_2
     Spectral_Radius_Theory
   document_files
     "root.bib"
