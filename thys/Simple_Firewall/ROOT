@@ -9,6 +9,7 @@ session Simple_Firewall (AFP) = IP_Addresses +
     Generic_SimpleFw
     Shadowed
     Service_Matrix
+    SimpleFw_toString
   document_files
     "root.tex"
     "root.bib"

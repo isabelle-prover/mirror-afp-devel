@@ -24,5 +24,6 @@ session "IP_Addresses" (AFP) = Word_Lib +
     WordInterval_Sorted (* depends on mergesort *)
     IP_Address_Parser
     IP_Address_toString
+    Prefix_Match_toString
   document_files
     "root.tex"

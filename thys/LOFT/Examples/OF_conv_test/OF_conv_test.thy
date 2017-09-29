@@ -1,7 +1,7 @@
 theory OF_conv_test
 imports 
   Iptables_Semantics.Parser
-  Iptables_Semantics.SimpleFw_toString
+  Simple_Firewall.SimpleFw_toString
   Routing.IpRoute_Parser
   "../../LinuxRouter_OpenFlow_Translation"
   "../../OpenFlow_Serialize"
