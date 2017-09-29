@@ -9,7 +9,7 @@ begin
 (* A truly generic Trie would be parameterized by the data type for mappings
 in each node. For this purpose the mapping type needs to become a bnf.
 
-import "~~/src/HOL/Library/Mapping"
+import "HOL-Library.Mapping"
 
 lift_definition all_mapping :: "('b \<Rightarrow> bool) \<Rightarrow> ('a, 'b) mapping \<Rightarrow> bool"
 is "\<lambda>p m. \<forall>a b. m a = Some b \<longrightarrow> p b" .

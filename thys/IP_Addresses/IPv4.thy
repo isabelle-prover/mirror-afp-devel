@@ -4,7 +4,7 @@
 theory IPv4
 imports IP_Address
         NumberWang_IPv4
-        (* include "~~/src/HOL/Library/Code_Target_Nat" if you need to work with actual numbers.*)
+        (* include "HOL-Library.Code_Target_Nat" if you need to work with actual numbers.*)
 begin
 
 
@@ -58,7 +58,7 @@ subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
   text\<open>Examples:\<close>
   lemma "ipv4addr_of_dotdecimal (192, 168, 0, 1) = 3232235521"
     by(simp add: ipv4addr_of_dotdecimal.simps ipv4addr_of_nat_def)
-    (*could be solved by eval, but needs "~~/src/HOL/Library/Code_Target_Nat"*)
+    (*could be solved by eval, but needs "HOL-Library.Code_Target_Nat"*)
   lemma "dotdecimal_of_ipv4addr 3232235521 = (192, 168, 0, 1)"
     by(simp add: dotdecimal_of_ipv4addr.simps nat_of_ipv4addr_def)
 

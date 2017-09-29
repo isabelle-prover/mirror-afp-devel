@@ -2,7 +2,7 @@ section {* Bit Block Transfer and Other Array Optimizations *}
 theory Array_Blit
 imports 
   "../Sep_Main" 
-  "~~/src/HOL/Library/Code_Target_Numeral"
+  "HOL-Library.Code_Target_Numeral"
 begin
 
 subsection "Definition"
