@@ -2,7 +2,7 @@ section \<open>Basic Definitions\<close>
 theory Sepref_Basic
 imports 
   "HOL-Eisbach.Eisbach"
-  Sepref_Prereq.Sep_Main
+  Separation_Logic_Imperative_HOL.Sep_Main
   Refine_Monadic.Refine_Monadic
   "Lib/Sepref_Misc"
   "Lib/Structured_Apply"

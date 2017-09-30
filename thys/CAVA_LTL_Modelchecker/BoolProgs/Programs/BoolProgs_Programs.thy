@@ -5,7 +5,7 @@ imports
   BoolProgs_Simple
   BoolProgs_LeaderFilters
   CAVA_Base.Code_String
-  (*"~~/src/HOL/Library/List_lexord"*)
+  (*"HOL-Library.List_lexord"*)
 begin
 
 definition progs :: "(String.literal, String.literal \<times> String.literal \<times> (nat \<Rightarrow> (bprog \<times> config) \<times> const_map \<times> fun_map)) mapping"

@@ -7,7 +7,7 @@ session Sepref_Prereq (AFP) = Collections +
     "HOL-Imperative_HOL"
     Separation_Logic_Imperative_HOL
   theories [document = false]
-    "../Separation_Logic_Imperative_HOL/Sep_Examples"
+    Separation_Logic_Imperative_HOL.Sep_Examples
 
 session Refine_Imperative_HOL (AFP) = Sepref_Prereq +
   options [timeout = 1200]

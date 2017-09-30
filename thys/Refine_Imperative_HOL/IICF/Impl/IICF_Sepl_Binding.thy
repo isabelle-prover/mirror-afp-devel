@@ -1,19 +1,19 @@
 section \<open>Sepref Bindings for Imp/HOL Collections\<close>
 theory IICF_Sepl_Binding
 imports 
-  Sepref_Prereq.Imp_Map_Spec
-  Sepref_Prereq.Imp_Set_Spec
-  Sepref_Prereq.Imp_List_Spec
+  Separation_Logic_Imperative_HOL.Imp_Map_Spec
+  Separation_Logic_Imperative_HOL.Imp_Set_Spec
+  Separation_Logic_Imperative_HOL.Imp_List_Spec
 
-  Sepref_Prereq.Hash_Map_Impl
-  Sepref_Prereq.Array_Map_Impl
+  Separation_Logic_Imperative_HOL.Hash_Map_Impl
+  Separation_Logic_Imperative_HOL.Array_Map_Impl
 
-  Sepref_Prereq.To_List_GA
-  Sepref_Prereq.Hash_Set_Impl
-  Sepref_Prereq.Array_Set_Impl
+  Separation_Logic_Imperative_HOL.To_List_GA
+  Separation_Logic_Imperative_HOL.Hash_Set_Impl
+  Separation_Logic_Imperative_HOL.Array_Set_Impl
 
-  Sepref_Prereq.Open_List
-  Sepref_Prereq.Circ_List
+  Separation_Logic_Imperative_HOL.Open_List
+  Separation_Logic_Imperative_HOL.Circ_List
 
   "../Intf/IICF_Map"
   "../Intf/IICF_Set"

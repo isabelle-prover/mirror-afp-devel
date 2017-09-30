@@ -2,7 +2,7 @@ section\<open>Array List\<close>
 text\<open>Most of this has been contributed by Peter Lammich.\<close>
 theory Array_List
 imports
-  Sepref_Prereq.Array_Blit
+  Separation_Logic_Imperative_HOL.Array_Blit
 begin
   text\<open>
     This implements a datastructure that efficiently supports two operations: appending an element and looking up the nth element. 

@@ -1,5 +1,5 @@
 theory ReversePathFiltering
-imports Routing_Table "../Simple_Firewall/Simple_Packet"
+imports Routing_Table Simple_Firewall.Simple_Packet
 begin
 
 text\<open>RFC3704 style RPF\<close>

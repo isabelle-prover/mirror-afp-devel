@@ -51,7 +51,7 @@ lemma "serialize_of_matches pids of_matches=
   (intersperse (CHR '','') (map (serialize_of_match pids) (sorted_list_of_set of_matches)))"
 by (simp add: serialize_of_matches_def)
 
-export_code serialize_of_matches checking SML (*needs "~~/src/HOL/Library/Code_Char"*)
+export_code serialize_of_matches checking SML (*needs "HOL-Library.Code_Char"*)
 
 lemma "serialize_of_matches (\<lambda>oif. ''42'') (ofe_fields serialization_test_entry) =
   ''hard_timeout=0,idle_timeout=0,in_port=42,dl_type=0x800,dl_dst=00:00:00:00:00:01,nw_proto=6,nw_dst=10.0.2.1/32,tp_src=1024/0x03ff,tp_dst=80/0x0000''"

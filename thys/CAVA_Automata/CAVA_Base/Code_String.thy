@@ -4,7 +4,7 @@
  *)
 theory Code_String
 imports
-  (*"~~/src/HOL/Library/List_lexord"*)
+  (*"HOL-Library.List_lexord"*)
   Collections.Refine_Dflt      
   "HOL-Library.Code_Char"
 begin

@@ -13,7 +13,7 @@ imports
   Inverse_IArrays
   Code_Bit
   "HOL-Library.Code_Target_Numeral"
-(*"~~/src/HOL/Library/Code_Real_Approx_By_Float"*)
+(*"HOL-Library.Code_Real_Approx_By_Float"*)
 begin
 
 subsection{*Transformations between nested lists nested IArrays*}

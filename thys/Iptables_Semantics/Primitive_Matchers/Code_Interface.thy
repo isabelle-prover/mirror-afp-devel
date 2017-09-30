@@ -6,11 +6,10 @@ imports
   Transform
   No_Spoof
   "../Simple_Firewall/SimpleFw_Compliance"
-  "../../Simple_Firewall/SimpleFw_toString"
+  Simple_Firewall.SimpleFw_toString
   Simple_Firewall.Service_Matrix
   "../Semantics_Ternary/Optimizing" (*do we use this?*)
   "../Semantics_Goto"
-  "../../Simple_Firewall/SimpleFw_toString"
   Native_Word.Code_Target_Bits_Int
   "HOL-Library.Code_Target_Nat"
   "HOL-Library.Code_Target_Int"
