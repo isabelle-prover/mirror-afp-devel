@@ -8,6 +8,19 @@ imports
     this import is incompatible with field_simps, ac_simps *)
 begin 
 
+context includes lifting_syntax
+begin
+lemma HMA_M_smult[transfer_rule]: "(op = ===> HMA_M ===> HMA_M) (op \<cdot>\<^sub>m) (op *k)" 
+  unfolding smult_mat_def 
+  unfolding rel_fun_def HMA_M_def from_hma\<^sub>m_def
+  by (auto simp: matrix_scalar_mult_def)
+end
+
+lemma order_charpoly_smult: fixes A :: "complex ^ 'n ^ 'n" 
+  assumes k: "k \<noteq> 0" 
+  shows "order x (charpoly (k *k A)) = order (x / k) (charpoly A)" 
+  by (transfer fixing: k, rule order_char_poly_smult[OF _ k])
+
 (* use field, since the *k-lemmas have been stated for fields *)
 lemma smult_eigen_vector: fixes a :: "'a :: field"  
   assumes "eigen_vector A v x" 
@@ -923,9 +936,10 @@ proof -
   from le_vec_A_mu[OF v this] ev show ?thesis by auto
 qed
 
-lemma similar_matrix_rotation: assumes ev: "eigen_vector cA y \<alpha>" and \<alpha>: "cmod \<alpha> = sr"
+lemma similar_matrix_rotation: assumes ev: "eigen_value cA \<alpha>" and \<alpha>: "cmod \<alpha> = sr"
   shows "similar_matrix (cis (arg \<alpha>) *k cA) cA" 
 proof -
+  from ev obtain y where ev: "eigen_vector cA y \<alpha>" unfolding eigen_value_def by auto
   let ?y = "norm_v y"
   note maps = map_vector_def map_matrix_def
   define yp where "yp = norm_v y" 
@@ -997,6 +1011,28 @@ proof -
   thus ?thesis unfolding \<phi>_def .
 qed
 
+lemma maximal_eigen_value_order_1: assumes ev: "eigen_value cA \<alpha>" and \<alpha>: "cmod \<alpha> = sr"
+  shows "order \<alpha> (charpoly cA) = 1" 
+proof -
+  let ?a = "cis (arg \<alpha>)" 
+  let ?p = "charpoly cA" 
+  from similar_matrix_rotation[OF ev \<alpha>]
+  have "similar_matrix (?a *k cA) cA" .
+  from similar_matrix_charpoly[OF this] 
+  have id: "charpoly (?a *k cA) = ?p" .
+  have p: "?p = map_poly c (charpoly A)" 
+    by (transfer_hma rule: of_real_hom.char_poly_hom)
+  have a: "?a \<noteq> 0" by simp
+  from order_charpoly_smult[OF this, of _ cA, unfolded id]
+  have "order x ?p = order (x / ?a) ?p" for x .
+  note this[of \<alpha>]
+  also have "\<alpha> / ?a = sr" unfolding \<alpha>[symmetric]
+    by (metis a cis_mult_cmod_id nonzero_mult_div_cancel_left)
+  also have "order \<dots> ?p = 1" unfolding multiplicity_sr_1[symmetric] p
+    by (rule field_hom.order_hom, unfold_locales, transfer, drule degree_monic_char_poly, auto)
+  finally show ?thesis .
+qed
+
 
 lemmas pf_main =
   eigen_vector_z_sr (* sr is eigenvalue *)
@@ -1006,6 +1042,7 @@ lemmas pf_main =
   multiplicity_sr_1 (* the algebr. multiplicity is 1 *)
   nonnegative_eigenvector_has_ev_sr (* every non-negative eigenvector has sr as eigenvalue *)
   similar_matrix_rotation (* maximal eigenvectors are rotated *)
+  maximal_eigen_value_order_1 (* all maximal eigenvalues have order 1 *)
  
 end
 end

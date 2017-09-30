@@ -574,14 +574,166 @@ proof -
   finally show ?thesis .
 qed
 
-lemma jordan_matrix_Cons: "jordan_matrix (Cons (n,a) n_as) = four_block_mat (jordan_block n a) (0\<^sub>m n (sum_list (map fst n_as))) (0\<^sub>m (sum_list (map fst n_as)) n)
-     (jordan_matrix n_as)" 
+definition mat_diag :: "nat \<Rightarrow> (nat \<Rightarrow> 'a :: zero) \<Rightarrow> 'a mat" where
+  "mat_diag n f = Matrix.mat n n (\<lambda> (i,j). if i = j then f j else 0)" 
+
+lemma mat_diag_dim[simp]: "mat_diag n f \<in> carrier_mat n n" 
+  unfolding mat_diag_def by auto
+
+lemma mat_diag_mult_left: assumes A: "A \<in> carrier_mat n nr" 
+  shows "mat_diag n f * A = Matrix.mat n nr (\<lambda> (i,j). f i * A $$ (i,j))" 
+proof (rule eq_matI, insert A, auto simp: mat_diag_def scalar_prod_def, goal_cases)
+  case (1 i j)
+  thus ?case by (subst sum.remove[of _ i], auto)
+qed
+
+lemma mat_diag_mult_right: assumes A: "A \<in> carrier_mat nr n" 
+  shows "A * mat_diag n f = Matrix.mat nr n (\<lambda> (i,j). A $$ (i,j) * f j)" 
+proof (rule eq_matI, insert A, auto simp: mat_diag_def scalar_prod_def, goal_cases)
+  case (1 i j)
+  thus ?case by (subst sum.remove[of _ j], auto)
+qed
+
+lemma mat_diag_diag[simp]: "mat_diag n f * mat_diag n g = mat_diag n (\<lambda> i. f i * g i)" 
+  by (subst mat_diag_mult_left[of _ n n], auto simp: mat_diag_def)
+
+lemma mat_diag_one[simp]: "mat_diag n (\<lambda> x. 1) = 1\<^sub>m n" unfolding mat_diag_def by auto
+
+lemma similar_mat_wit_smult: fixes A :: "'a :: comm_ring_1 mat" 
+  assumes "similar_mat_wit A B P Q" 
+  shows "similar_mat_wit (k \<cdot>\<^sub>m A) (k \<cdot>\<^sub>m B) P Q" 
+proof -
+  define n where "n = dim_row A" 
+  note main = similar_mat_witD[OF n_def assms]
+  show ?thesis
+    by (rule similar_mat_witI[OF main(1-2) _ _ _ main(6-7)], insert main(3-), auto
+      simp: mult_smult_distrib mult_smult_assoc_mat[of _ n n _ n]) 
+qed
+
+lemma similar_mat_smult: fixes A :: "'a :: comm_ring_1 mat" 
+  assumes "similar_mat A B" 
+  shows "similar_mat (k \<cdot>\<^sub>m A) (k \<cdot>\<^sub>m B)" 
+  using similar_mat_wit_smult assms unfolding similar_mat_def by blast
+
+
+lemma similar_mat_jordan_block_smult: fixes A :: "'a :: field mat" 
+  assumes "similar_mat A (jordan_block n a)" 
+   and k: "k \<noteq> 0" 
+  shows "similar_mat (k \<cdot>\<^sub>m A) (jordan_block n (k * a))" 
+proof -
+  let ?J = "jordan_block n a" 
+  let ?Jk = "jordan_block n (k * a)" 
+  let ?kJ = "k \<cdot>\<^sub>m jordan_block n a" 
+  from k have inv: "k ^ i \<noteq> 0" for i by auto
+  let ?A = "mat_diag n (\<lambda> i. k^i)" 
+  let ?B = "mat_diag n (\<lambda> i. inverse (k^i))"
+  have "similar_mat_wit ?Jk ?kJ ?A ?B" 
+  proof (rule similar_mat_witI)
+    show "jordan_block n (k * a) = ?A * ?kJ * ?B"
+      by (subst mat_diag_mult_left[of _ _ n], force, subst mat_diag_mult_right[of _ n],
+       insert k inv, auto simp: jordan_block_def field_simps intro!: eq_matI)
+  qed (auto simp: inv field_simps k)
+  hence kJ: "similar_mat ?Jk ?kJ" 
+    unfolding similar_mat_def by auto
+  have "similar_mat A ?J" by fact
+  hence "similar_mat (k \<cdot>\<^sub>m A) (k \<cdot>\<^sub>m ?J)" by (rule similar_mat_smult)
+  with kJ show ?thesis
+    using similar_mat_sym similar_mat_trans by blast
+qed
+
+lemma jordan_matrix_Cons:  "jordan_matrix (Cons (n,a) n_as) = four_block_mat 
+  (jordan_block n a)                 (0\<^sub>m n (sum_list (map fst n_as))) 
+  (0\<^sub>m (sum_list (map fst n_as)) n)   (jordan_matrix n_as)" 
   unfolding jordan_matrix_def by (simp, simp add: jordan_matrix_def[symmetric])
 
-lemma jordan_nf_smult: assumes "jordan_nf A n_as" 
+lemma smult_zero_mat[simp]: "(k :: 'a :: mult_zero) \<cdot>\<^sub>m 0\<^sub>m nr nc = 0\<^sub>m nr nc" 
+  by (intro eq_matI, auto)
+
+lemma similar_mat_jordan_matrix_smult:  fixes n_as :: "(nat \<times> 'a :: field) list"
+  assumes k: "k \<noteq> 0" 
+  shows "similar_mat (k \<cdot>\<^sub>m jordan_matrix n_as) (jordan_matrix (map (\<lambda> (n,a). (n, k * a)) n_as))" 
+proof (induct n_as)
+  case Nil
+  show ?case by (auto simp: jordan_matrix_def intro!: similar_mat_refl)
+next
+  case (Cons na n_as)
+  obtain n a where na: "na = (n,a)" by force
+  let ?l = "map (\<lambda> (n,a). (n, k * a))" 
+  let ?n = "sum_list (map fst n_as)" 
+  have "k \<cdot>\<^sub>m jordan_matrix (Cons na n_as) = k \<cdot>\<^sub>m four_block_mat 
+     (jordan_block n a) (0\<^sub>m n ?n)
+     (0\<^sub>m ?n n) (jordan_matrix n_as)" (is "?M = _ \<cdot>\<^sub>m four_block_mat ?A ?B ?C ?D")
+    by (simp add: na jordan_matrix_Cons)
+  also have "\<dots> = four_block_mat (k \<cdot>\<^sub>m ?A) ?B ?C (k \<cdot>\<^sub>m ?D)" 
+    by (subst smult_four_block_mat, auto)
+  finally have jm: "?M = four_block_mat (k \<cdot>\<^sub>m ?A) ?B ?C (k \<cdot>\<^sub>m ?D)" .
+  have [simp]: "fst (case x of (n :: nat, a) \<Rightarrow> (n, k * a)) = fst x" for x by (cases x, auto)
+  have jmk: "jordan_matrix (?l (Cons na n_as)) = four_block_mat
+     (jordan_block n (k * a)) ?B
+     ?C (jordan_matrix (?l n_as))" (is "?kM = four_block_mat ?kA _ _ ?kD")
+    by (simp add: na jordan_matrix_Cons o_def)
+  show ?case unfolding jmk jm
+    by (rule similar_mat_four_block_0_0[OF similar_mat_jordan_block_smult[OF _ k] Cons],
+      auto intro!: similar_mat_refl)
+qed
+
+lemma jordan_nf_smult: fixes k :: "'a :: field" 
+  assumes jn: "jordan_nf A n_as" 
+  and k: "k \<noteq> 0" 
   shows "jordan_nf (k \<cdot>\<^sub>m A) (map (\<lambda> (n,a). (n, k * a)) n_as)" 
 proof -
   let ?l = "map (\<lambda> (n,a). (n, k * a))" 
-  from assms[unfolded jordan_nf_def] have sim: "similar_mat A (jordan_matrix n_as)" .
-  oops
+  from jn[unfolded jordan_nf_def] have sim: "similar_mat A (jordan_matrix n_as)" .
+  from similar_mat_smult[OF this, of k] similar_mat_jordan_matrix_smult[OF k, of n_as]
+  show ?thesis using jordan_nf_def similar_mat_trans by blast
+qed
+
+lemma order_char_poly_smult: fixes A :: "complex mat" 
+  assumes A: "A \<in> carrier_mat n n" 
+  and k: "k \<noteq> 0" 
+shows "order x (char_poly (k \<cdot>\<^sub>m A)) = order (x / k) (char_poly A)" 
+proof -
+  from char_poly_factorized[OF A] obtain as where "char_poly A = (\<Prod>a\<leftarrow>as. [:- a, 1:])" by auto
+  from jordan_nf_exists[OF A this] obtain n_as where jnf: "jordan_nf A n_as" ..
+  show ?thesis unfolding jordan_nf_order[OF jnf] jordan_nf_order[OF jordan_nf_smult[OF jnf k]]
+    by (induct n_as, auto simp: k)
+qed
+
+lemma (in field_hom) order_hom: assumes "f \<noteq> 0" 
+  shows "order (hom x) (map_poly hom f) = order x f"
+proof -
+  let ?h = "map_poly hom" 
+  interpret poly: map_poly_comm_semiring_hom ..
+  define n where "n = degree f" 
+  show ?thesis using n_def assms
+  proof (induct n arbitrary: f rule: less_induct)
+    case (less n f)
+    note f0 = less(3)
+    let ?f = "?h f" 
+    from f0 have id: "(f = 0) = False" "(?f = 0) = False" by auto
+    have id': "(poly ?f (hom x) = 0) = (poly f x = 0)" by auto
+    show ?case 
+    proof (subst (1 2) order_code, unfold id if_False id', rule if_cong[OF refl refl], 
+      rule arg_cong[of _ _ Suc])
+      assume "\<not> poly f x \<noteq> 0" 
+      hence "poly f x = 0" by simp
+      from this[unfolded poly_eq_0_iff_dvd dvd_def] obtain g where 
+        fg: "f = g * [: -x , 1:]" by auto
+      let ?g = "?h g" 
+      from fg have "?f = ?g * ?h [: -x, 1:]" unfolding poly.hom_mult[symmetric] by simp
+      also have "?h [: -x, 1 :] = [: - hom x, 1 :]" by (simp add: hom_uminus)
+      finally have hfg: "?f = ?g * [: - hom x, 1 :]" .
+      have fg': "f div [: - x, 1 :] = g" unfolding fg
+        by (rule divide_poly, auto)
+      have hfg': "?f div [: - hom x, 1 :] = ?g" unfolding hfg
+        by (rule divide_poly, auto)
+      show "order (hom x) (map_poly hom f div [:- hom x, 1:]) = order x (f div [:- x, 1:])" 
+        unfolding fg' hfg'
+      proof (rule less(1)[OF _ refl])
+        from f0 show "degree g < n" "g \<noteq> 0" unfolding less(2) fg
+          by (subst degree_mult_eq, auto)
+      qed
+    qed
+  qed
+qed
 end
