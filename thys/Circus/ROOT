@@ -3,8 +3,6 @@ chapter AFP
 session Circus (AFP) = HOLCF +
   description {* Circus Denotational Semantics and Refinements *}
   options [timeout = 600]
-  theories [document = false]
-    "HOL-Library.Sublist"
   theories
     Refinement_Example
   document_files
