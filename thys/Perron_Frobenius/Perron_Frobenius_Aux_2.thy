@@ -770,4 +770,85 @@ begin
 sublocale inj_idom_divide_hom ..
 end
 
+lemma rcis_mult_cis[simp]: "rcis n a * cis b = rcis n (a + b)" unfolding cis_rcis_eq rcis_mult by simp
+lemma rcis_div_cis[simp]: "rcis n a / cis b = rcis n (a - b)" unfolding cis_rcis_eq rcis_divide by simp
+
+lemma cis_plus_2pi[simp]: "cis (x + 2 * pi) = cis x" by (auto simp: complex_eq_iff)
+lemma cis_times_2pi[simp]: "cis (of_nat n * 2 * pi) = 1" 
+proof (induct n)
+  case (Suc n)
+  have "of_nat (Suc n) * 2 * pi = of_nat n * 2 * pi + 2 * pi" by (simp add: distrib_right)
+  also have "cis \<dots> = 1" unfolding cis_plus_2pi Suc ..
+  finally show ?case .
+qed simp
+
+lemma rcis_2pi[simp]: "rcis y (x + 2 * pi) = rcis y x" unfolding rcis_def by simp
+
+lemma arg_rcis_cis: assumes n: "n > 0" shows "arg (rcis n x) = arg (cis x)"
+  using arg_bounded arg_unique cis_arg complex_mod_rcis n rcis_def sgn_eq by auto
+
+lemma arg_eqD: assumes "arg (cis x) = arg (cis y)" "-pi < x" "x \<le> pi" "-pi < y" "y \<le> pi" 
+  shows "x = y" 
+  using assms(1) unfolding arg_unique[OF sgn_cis assms(2-3)] arg_unique[OF sgn_cis assms(4-5)] .
+
+lemma rcis_inj_on: assumes n: "n \<noteq> 0" and S: "S \<subseteq> {0 ..< 2 * pi}" shows "inj_on (rcis n) S" 
+proof (rule inj_onI, goal_cases)
+  case (1 x y)
+  from arg_cong[OF 1(3), of "\<lambda> x. x / n"] have "cis x = cis y" using n by (simp add: rcis_def) 
+  from arg_cong[OF this, of "\<lambda> x. inverse x"] have "cis (-x) = cis (-y)" by simp
+  from arg_cong[OF this, of uminus] have *: "cis (-x + pi) = cis (-y + pi)"
+    by (auto simp: complex_eq_iff)
+  have "- x + pi = - y + pi" 
+    by (rule arg_eqD[OF arg_cong[OF *, of arg]], insert 1(1-2) S, auto)
+  thus ?case by simp
+qed
+
+lemma roots_of_unity: assumes n: "n \<noteq> 0" 
+  shows "(\<lambda> i. (cis (of_nat i * 2 * pi / n))) ` {0 ..< n} = { x :: complex. x ^ n = 1}" (is "?prod = ?Roots")
+proof (rule card_subset_eq)
+  let ?one = "1 :: complex"
+  let ?p = "monom ?one n - 1" 
+  have degM: "degree (monom ?one n) = n" by (rule degree_monom_eq, simp)
+  have "degree ?p = degree (monom ?one n + (-1))" by simp
+  also have "\<dots> = degree (monom ?one n)" 
+    by (rule degree_add_eq_left, insert n, simp add: degM) 
+  finally have degp: "degree ?p = n" unfolding degM .
+  with n have p: "?p \<noteq> 0" by auto
+  have roots: "?Roots = {x. poly ?p x = 0}" 
+    unfolding poly_diff poly_monom by simp
+  also have "finite \<dots>" by (rule poly_roots_finite[OF p])
+  finally show fin: "finite ?Roots" .
+  show sub: "?prod \<subseteq> ?Roots" 
+  proof
+    fix x
+    assume "x \<in> ?prod" 
+    then obtain i where x: "x = cis (real i * 2 * pi / n)" by auto
+    have "x ^ n = cis (real i * 2 * pi)" unfolding x DeMoivre using n by simp
+    also have "\<dots> = 1" by simp
+    finally show "x \<in> ?Roots" by auto
+  qed
+  have "card ?Roots \<le> n" unfolding roots
+    by (rule poly_roots_degree[of ?p, unfolded degp, OF p])
+  also have "\<dots> = card {0 ..< n}" by simp
+  also have "\<dots> = card ?prod" 
+  proof (rule card_image[symmetric], rule inj_onI, goal_cases)
+    case (1 x y)
+    {
+      fix m
+      assume "m < n" 
+      hence "real m < real n" by simp
+      from mult_strict_right_mono[OF this, of "2 * pi / real n"] n
+      have "real m * 2 * pi / real n < real n * 2 * pi / real n" by simp
+      hence "real m * 2 * pi / real n < 2 * pi" using n by simp
+    } note [simp] = this      
+    have 0: "(1 :: real) \<noteq> 0" using n by auto
+    have "real x * 2 * pi / real n = real y * 2 * pi / real n" 
+      by (rule inj_onD[OF rcis_inj_on[OF _ subset_refl] 1(3)[unfolded cis_rcis_eq]], insert 1(1-2), auto)
+    with n show "x = y" by auto
+  qed
+  finally have "card ?prod \<ge> card ?Roots" .
+  with card_mono[OF fin sub] show "card ?prod = card ?Roots" by auto
+qed
+
+
 end
