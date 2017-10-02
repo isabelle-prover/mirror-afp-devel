@@ -1068,7 +1068,7 @@ qed
 lemma maximal_eigen_value_roots_one: assumes M: "M = {ev :: complex. eigen_value cA ev \<and> cmod ev = sr}" 
   shows "\<exists> k \<le> CARD('n). k \<noteq> 0 \<and> 
     M = op * (c sr) ` (\<lambda> i. (cis (of_nat i * 2 * pi / k))) ` {0 ..< k}
-  \<and> M = op * (c sr) ` { x :: complex. x ^ card M = 1}"
+  \<and> M = op * (c sr) ` { x :: complex. x ^ k = 1}"
 proof (intro exI[of _ "card M"], intro conjI)
   let ?M = "card M" 
   note fin = finite_spectrum[of cA]  
