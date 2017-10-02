@@ -1,16 +1,6 @@
 chapter AFP
 
-session "HOLCF-HOL-Library" (AFP) = HOLCF +
-  options [document = false, timeout = 300]
-  theories
-    "HOL-Library.Quotient_Option"
-    "HOL-Library.AList"
-    "HOL-Library.FuncSet"
-    "HOL-Library.Permutation"
-    "HOL-Library.LaTeXsugar"
-    "HOL-Library.Infinite_Set"
-
-session "HOLCF-Nominal2" (AFP) = "HOLCF-HOL-Library" +
+session "HOLCF-Nominal2" (AFP) = HOLCF +
   options [document = false, timeout = 300]
   sessions
     FinFun
