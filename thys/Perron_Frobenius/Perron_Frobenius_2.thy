@@ -1065,11 +1065,16 @@ proof -
   from *(2)[OF b, of "rcis sr \<alpha>"] a show "rcis sr (\<alpha> - \<beta>) \<in> M" unfolding M by auto
 qed 
 
-lemma maximal_eigen_value_roots_one: assumes M: "M = {ev :: complex. eigen_value cA ev \<and> cmod ev = sr}" 
-  shows "\<exists> k \<le> CARD('n). k \<noteq> 0 \<and> 
-    M = op * (c sr) ` (\<lambda> i. (cis (of_nat i * 2 * pi / k))) ` {0 ..< k}
-  \<and> M = op * (c sr) ` { x :: complex. x ^ k = 1}"
-proof (intro exI[of _ "card M"], intro conjI)
+lemma maximal_eigen_value_roots_of_unity_rotation: 
+  assumes M: "M = {ev :: complex. eigen_value cA ev \<and> cmod ev = sr}" 
+   and k: "k = card M" 
+  shows "k \<noteq> 0" 
+    "M = op * (c sr) ` (\<lambda> i. (cis (of_nat i * 2 * pi / k))) ` {0 ..< k}"
+    "M = op * (c sr) ` { x :: complex. x ^ k = 1}"
+    "op * (cis (2 * pi / k)) ` Spectrum cA = Spectrum cA"
+    "k \<le> CARD('n)"
+  unfolding k 
+proof -
   let ?M = "card M" 
   note fin = finite_spectrum[of cA]  
   note char = degree_monic_charpoly[of cA]
@@ -1209,13 +1214,45 @@ proof (intro exI[of _ "card M"], intro conjI)
   }
   hence Min: "Min = ?piM" by auto
   show cM: "?M \<noteq> 0" unfolding card using k by auto
+  let ?f = "(\<lambda> i. cis (of_nat i * 2 * pi / ?M))" 
   note M_list
   also have "set ?list = op * (c sr) ` (\<lambda> i. cis (of_nat i * Min)) ` {0 ..< ?k}" 
     unfolding set_map image_image 
     by (rule image_cong, insert sr_pos, auto simp: rcis_mult rcis_def)
-  finally show M_cis: "M = op * (c sr) ` (\<lambda> i. cis (of_nat i * 2 * pi / ?M)) ` {0 ..< ?M}" 
+  finally show M_cis: "M = op * (c sr) ` ?f ` {0 ..< ?M}" 
     unfolding card Min by simp
   thus "M = op * (c sr) ` { x :: complex. x ^ ?M = 1}" using roots_of_unity[OF cM] by simp
+  let ?rphi = "rcis sr (2 * pi / ?M)" 
+  let ?phi = "cis (2 * pi / ?M)" 
+  from Min_M[unfolded Min] 
+  have ev: "eigen_value cA ?rphi" unfolding M by auto
+  have cm: "cmod ?rphi = sr" using sr_pos by simp
+  have id: "cis (arg ?rphi) = cis (arg ?phi) * cmod ?phi" 
+    unfolding arg_rcis_cis[OF sr_pos] by simp
+  also have "\<dots> = ?phi" unfolding cis_mult_cmod_id ..
+  finally have id: "cis (arg ?rphi) = ?phi" .
+  define phi where "phi = ?phi" 
+  have phi: "phi \<noteq> 0" unfolding phi_def by auto
+  note max = maximal_eigen_value_rotation[OF ev cm, unfolded id phi_def[symmetric]]
+  have "(op * phi) ` Spectrum cA = Spectrum cA" (is "?L = ?R")
+  proof -
+    {
+      fix x
+      have *: "x \<in> ?L \<Longrightarrow> x \<in> ?R" for x using max(2)[of x] phi unfolding Spectrum_def by auto
+      moreover
+      {
+        assume "x \<in> ?R" 
+        hence "eigen_value cA x" unfolding Spectrum_def by auto
+        from this[folded max(2)[of x]] have "x / phi \<in> ?R" unfolding Spectrum_def by auto      
+        from imageI[OF this, of "op * phi"]
+        have "x \<in> ?L" using phi by auto
+      }
+      note this *
+    }
+    thus ?thesis by blast
+  qed
+  from this[unfolded phi_def]
+  show "op * (cis (2 * pi / real (card M))) ` Spectrum cA = Spectrum cA" .
 qed
   
 lemmas pf_main =
@@ -1226,8 +1263,7 @@ lemmas pf_main =
   multiplicity_sr_1 (* the algebr. multiplicity is 1 *)
   nonnegative_eigenvector_has_ev_sr (* every non-negative real eigenvector has sr as eigenvalue *)
   maximal_eigen_value_order_1 (* all maximal eigenvalues have order 1 *)
-  maximal_eigen_value_roots_one (* the maximal eigenvalues are precisely the k-th roots of unity  
-     for some k \<le> dim A *)
- 
+  maximal_eigen_value_roots_of_unity_rotation 
+   (* the maximal eigenvalues are precisely the k-th roots of unity for some k \<le> dim A *)
 end
 end
