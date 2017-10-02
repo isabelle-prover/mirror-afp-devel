@@ -1029,11 +1029,10 @@ proof -
   also have "\<alpha> / ?a = sr" unfolding \<alpha>[symmetric]
     by (metis a cis_mult_cmod_id nonzero_mult_div_cancel_left)
   also have "order \<dots> ?p = 1" unfolding multiplicity_sr_1[symmetric] p
-    by (rule field_hom.order_hom, unfold_locales, transfer, drule degree_monic_char_poly, auto)
+    by (rule map_poly_inj_idom_divide_hom.order_hom, unfold_locales)
   finally show ?thesis .
 qed
-
-
+  
 lemmas pf_main =
   eigen_vector_z_sr (* sr is eigenvalue *)
   norm_sr  (* it is maximal among all complex eigenvalues *)
