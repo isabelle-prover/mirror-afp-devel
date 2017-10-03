@@ -62,10 +62,13 @@ lemma reachable1_transpose:
   "reachable1 (fixed_mat.G (transpose A)) i j = reachable1 (fixed_mat.G A) j i"
   unfolding arcs_ends_transpose trancl_converse by auto 
 
-locale nonneg_mat = fixed_mat A for 
+locale pf_nonneg_mat = fixed_mat A for 
   A :: "'a :: linordered_idom ^ 'n ^ 'n" + 
-  assumes nonneg: "A $ i $ j \<ge> 0" 
+  assumes non_neg_mat: "non_neg_mat A"  
 begin 
+lemma nonneg: "A $ i $ j \<ge> 0" 
+  using non_neg_mat unfolding non_neg_mat_def elements_mat_h_def by auto
+
 lemma nonneg_matpow: "matpow A n $ i $ j \<ge> 0" 
   by (induct n arbitrary: i j, insert nonneg, 
     auto intro!: sum_nonneg simp: matrix_matrix_mult_def mat_def)
@@ -129,7 +132,7 @@ proof -
 qed
 end
 
-locale perron_frobenius = nonneg_mat A 
+locale perron_frobenius = pf_nonneg_mat A 
   for A :: "real ^ 'n ^ 'n" +
   assumes irr: irreducible
 begin
@@ -140,7 +143,7 @@ proof
     unfolding fixed_mat.irreducible_def reachable1_transpose using irr[unfolded irreducible_def] 
     by auto
   fix i j
-qed (insert nonneg, auto simp: transpose_def)
+qed (insert nonneg, auto simp: transpose_def non_neg_mat_def elements_mat_h_def)
 
 abbreviation le_vec :: "real ^ 'n \<Rightarrow> real ^ 'n \<Rightarrow> bool" where
   "le_vec x y \<equiv> (\<forall> i. x $ i \<le> y $ i)" 
@@ -592,6 +595,9 @@ end
 lemma eigen_vector_z_sr: "eigen_vector A z sr" 
   using sr_imp_eigen_vector[OF zX refl] by auto
 
+lemma eigen_value_sr: "eigen_value A sr" 
+  using eigen_vector_z_sr unfolding eigen_value_def by auto
+
 abbreviation "c \<equiv> complex_of_real" 
 abbreviation "cA \<equiv> map_matrix c A" 
 abbreviation "norm_v \<equiv> map_vector (norm :: complex \<Rightarrow> real)" 
@@ -641,8 +647,13 @@ proof -
   show "r (norm_v v) \<le> sr" .
 qed
 
-lemma norm_sr: "norm \<alpha> \<le> sr" using ev_inequalities by auto
+lemma eigen_vector_norm_sr: "norm \<alpha> \<le> sr" using ev_inequalities by auto
 end
+
+lemma eigen_value_norm_sr: assumes "eigen_value cA \<alpha>" 
+  shows "norm \<alpha> \<le> sr" 
+  using eigen_vector_norm_sr[of _ \<alpha>] assms unfolding eigen_value_def by auto
+
 
 lemma le_vec_trans: "le_vec x y \<Longrightarrow> le_vec y u \<Longrightarrow> le_vec x u" 
   using order.trans[of "x $ i" "y $ i" "u $ i" for i] by auto
@@ -671,9 +682,7 @@ proof -
     finally have "eigen_value (t.cA) x = eigen_value cA x" .
   } note ev_id = this
   with ev have ev: "eigen_value t.cA (c sr)" "eigen_value cA (c t.sr)" by auto
-  then obtain v1 v2 where ev: "eigen_vector t.cA v1 (c sr)" "eigen_vector cA v2 (c t.sr)"
-    unfolding eigen_value_def by auto
-  from norm_sr[OF ev(2)] t.norm_sr[OF ev(1)] 
+  from eigen_value_norm_sr[OF ev(2)] t.eigen_value_norm_sr[OF ev(1)] 
   show id: "t.sr = sr" by auto
   from t.eigen_vector_z_sr[unfolded id, folded w_def] show "transpose A *v w = sr *s w" 
     unfolding eigen_vector_def by auto
@@ -839,7 +848,7 @@ proof -
     unfolding eigen_value_def by auto
   from spectral_radius_max[OF this] 
   have sr: "sr \<le> spectral_radius cA" by auto
-  with spectral_radius_ev[of cA] norm_sr
+  with spectral_radius_ev[of cA] eigen_vector_norm_sr
   show ?thesis by force
 qed
 
@@ -918,7 +927,7 @@ proof -
     assume "A *v y = mu *s y" 
     with y have "eigen_vector A y mu" unfolding X_def eigen_vector_def by auto
     hence "eigen_vector cA (map_vector c y) (c mu)" unfolding of_real_hom.eigen_vector_hom .
-    from norm_sr[OF this] * have "mu = sr" by auto
+    from eigen_vector_norm_sr[OF this] * have "mu = sr" by auto
   }
   with ** have mu_sr: "mu = sr" by auto
   from eq1[folded vector_smult_distrib]
@@ -1256,14 +1265,201 @@ proof -
 qed
   
 lemmas pf_main =
-  eigen_vector_z_sr (* sr is eigenvalue *)
-  norm_sr  (* it is maximal among all complex eigenvalues *)
-  sr_spectral_radius (* so it is the spectral radius *)
+  eigen_value_sr eigen_vector_z_sr (* sr is eigenvalue *)
+  eigen_value_norm_sr  (* it is maximal among all complex eigenvalues *)
   z_pos    (* it's eigenvector is positive *)
   multiplicity_sr_1 (* the algebr. multiplicity is 1 *)
   nonnegative_eigenvector_has_ev_sr (* every non-negative real eigenvector has sr as eigenvalue *)
   maximal_eigen_value_order_1 (* all maximal eigenvalues have order 1 *)
   maximal_eigen_value_roots_of_unity_rotation 
    (* the maximal eigenvalues are precisely the k-th roots of unity for some k \<le> dim A *)
+
+lemmas pf_main_connect = pf_main(1,3,5,7,10,12)[unfolded sr_spectral_radius] 
+  sr_pos[unfolded sr_spectral_radius]
 end
+
+subsection \<open>Handling non-irreducible matrices\<close>
+
+text \<open>We will need to take sub-matrices and permutes matrices where the former can best be done
+  via JNF-matrices. So, we first need the Perron-Frobenius theorem in the JNF-world. 
+  So, we first define irreducibility of a JNF-matrix.\<close>
+
+definition graph_of_mat where
+  "graph_of_mat A = (let n = dim_row A; U = {..<n} in
+     \<lparr> pre_digraph.verts = U, arcs = { ij. A $$ ij \<noteq> 0} \<inter> U \<times> U, tail = snd, head = fst \<rparr>)" 
+
+definition irreducible_mat where
+  "irreducible_mat A = (let n = dim_row A in 
+    (\<forall> i j. i < n \<longrightarrow> j < n \<longrightarrow> reachable1 (graph_of_mat A) i j))" 
+
+definition "nonneg_irreducible_mat A = (nonneg_mat A \<and> irreducible_mat A)"
+
+
+text \<open>Next, we have to install transfer rules\<close>
+
+lemma trancl_image: 
+  "(i,j) \<in> R\<^sup>+ \<Longrightarrow> (f i, f j) \<in> (map_prod f f ` R)\<^sup>+" 
+proof (induct rule: trancl_induct)
+  case (step j k)
+  from step(2) have "(f j, f k) \<in> map_prod f f ` R" by auto
+  from step(3) this show ?case by auto
+qed auto
+
+lemma inj_trancl_image: assumes inj: "inj f" 
+  shows "(f i, f j) \<in> (map_prod f f ` R)\<^sup>+ = ((i,j) \<in> R\<^sup>+)" (is "?l = ?r")
+proof
+  assume ?r from trancl_image[OF this] show ?l .
+next
+  assume ?l from trancl_image[OF this, of "the_inv f"]
+  show ?r unfolding image_image prod.map_comp o_def the_inv_f_f[OF inj] by auto
+qed
+
+context 
+  includes lifting_syntax
+begin
+lemma HMA_irreducible[transfer_rule]: "((HMA_M :: _ \<Rightarrow> _ ^ 'n ^ 'n \<Rightarrow> _) ===> op =) 
+  irreducible_mat fixed_mat.irreducible" 
+proof (intro rel_funI, goal_cases)
+  case (1 a A)
+  interpret fixed_mat A .
+  let ?t = "Bij_Nat.to_nat :: 'n \<Rightarrow> nat" 
+  let ?f = "Bij_Nat.from_nat :: nat \<Rightarrow> 'n" 
+  from 1[unfolded HMA_M_def]
+  have a: "a = from_hma\<^sub>m A" (is "_ = ?A") by auto
+  let ?n = "CARD('n)" 
+  have dim: "dim_row a = ?n" unfolding a by simp
+  have id: "{..<?n} = {0..<?n}" by auto
+  have Aij: "A $ i $ j = ?A $$ (?t i, ?t j)" for i j
+    by (metis (no_types, lifting) to_hma\<^sub>m_def to_hma_from_hma\<^sub>m vec_lambda_beta)
+  have graph: "graph_of_mat a = 
+    \<lparr> pre_digraph.verts = range ?t, arcs = {(?t i,?t j) | i j. A $ i $ j \<noteq> 0}, 
+    tail = snd, head = fst \<rparr>" (is "?G = _") unfolding graph_of_mat_def dim Let_def id range_to_nat[symmetric] 
+    unfolding a Aij by auto
+  have "irreducible_mat a = (\<forall>i j. i \<in> range ?t \<longrightarrow> j \<in> range ?t \<longrightarrow> i \<rightarrow>\<^sup>+\<^bsub>?G\<^esub> j)" 
+    unfolding irreducible_mat_def dim Let_def range_to_nat by auto
+  also have "\<dots> = (\<forall> i j. ?t i \<rightarrow>\<^sup>+\<^bsub>?G\<^esub> ?t j)" by auto
+  also note part1 = calculation
+  have arcs: "arcs ?G = map_prod ?t ?t ` arcs G" unfolding graph G_def by auto
+  have arcs_end: "arc_to_ends ?G (map_prod ?t ?t ij) = map_prod ?t ?t (arc_to_ends G ij)" for ij
+    unfolding arc_to_ends_def G_def graph by auto
+  define R where "R = arc_to_ends G ` arcs G" 
+  have id': "(\<lambda>x. map_prod ?t ?t (arc_to_ends G x)) ` arcs G = map_prod ?t ?t ` (arc_to_ends G ` arcs G)" 
+    unfolding image_image ..
+  have part2: "?t i \<rightarrow>\<^sup>+\<^bsub>?G\<^esub> ?t j \<longleftrightarrow> i \<rightarrow>\<^sup>+\<^bsub>G\<^esub> j" for i j 
+    unfolding arcs_ends_def arcs image_image arcs_end unfolding id' R_def[symmetric]
+    by (rule inj_trancl_image, simp add: inj_on_def)
+  show ?case unfolding part1 part2 irreducible_def ..
+qed
+
+lemma HMA_nonneg_irreducible_mat[transfer_rule]: "(HMA_M ===> op =) nonneg_irreducible_mat perron_frobenius" 
+  unfolding perron_frobenius_def pf_nonneg_mat_def perron_frobenius_axioms_def 
+    nonneg_irreducible_mat_def
+  by transfer_prover
+end
+
+text \<open>The main statements of Perron-Frobenius can now be transferred to JNF-matrices\<close>
+
+lemma perron_frobenius_irreducible: fixes A :: "real Matrix.mat" and cA :: "complex Matrix.mat" 
+  assumes A: "A \<in> carrier_mat n n" and n: "n \<noteq> 0" and irr: "nonneg_irreducible_mat A" 
+    and cA: "cA = map_mat of_real A"
+    and sr: "sr = Spectral_Radius.spectral_radius cA" 
+  shows 
+    "eigenvalue A sr"
+    "order sr (char_poly A) = 1"
+    "0 < sr"
+    "eigenvalue cA \<alpha> \<Longrightarrow> cmod \<alpha> \<le> sr"
+    "eigenvalue cA \<alpha> \<Longrightarrow> cmod \<alpha> = sr \<Longrightarrow> order \<alpha> (char_poly cA) = 1" 
+    "\<exists> k \<le> n. {\<alpha>. eigenvalue cA \<alpha> \<and> cmod \<alpha> = sr} = (op * sr) ` { x :: complex. x ^ k = 1}" 
+proof (atomize (full), goal_cases)
+  case 1
+  note main = perron_frobenius.pf_main_connect[untransferred, cancel_card_constraint, OF A irr, 
+    folded sr cA] 
+  note main = main(1,3,7)[OF n] main(2)[OF _ n] main(4,5,6)[OF _ _ n]
+  from main(6-7)[OF refl refl]  main show ?case by blast
+qed
+
+text \<open>We now need permutations on matrices to show that a matrix if a matrix is not irreducible,
+  then it can be turned into a four-block-matrix by a permutation, where the lower left block is 0.\<close>
+
+definition permutation_mat :: "nat \<Rightarrow> (nat \<Rightarrow> nat) \<Rightarrow> 'a :: semiring_1 mat" where
+  "permutation_mat n p = Matrix.mat n n (\<lambda> (i,j). (if i = p j then 1 else 0))" 
+
+no_notation m_inv ("inv\<index> _" [81] 80)
+
+lemma permutation_mat_dim[simp]: "permutation_mat n p \<in> carrier_mat n n" 
+  "dim_row (permutation_mat n p) = n"
+  "dim_col (permutation_mat n p) = n"
+  unfolding permutation_mat_def by auto
+
+lemma permutation_mat_row[simp]: "p permutes {..<n} \<Longrightarrow> i < n \<Longrightarrow>
+  Matrix.row (permutation_mat n p) i = unit_vec n (inv p i)"
+  unfolding permutation_mat_def unit_vec_def by (intro eq_vecI, auto simp: permutes_inverses)
+
+lemma permutation_mat_col[simp]: "p permutes {..<n} \<Longrightarrow> i < n \<Longrightarrow>
+  Matrix.col (permutation_mat n p) i = unit_vec n (p i)"
+  unfolding permutation_mat_def unit_vec_def by (intro eq_vecI, auto simp: permutes_inverses)
+
+lemma permutation_mat_left: assumes A: "A \<in> carrier_mat n nc" and p: "p permutes {..<n}" 
+  shows "permutation_mat n p * A = Matrix.mat n nc (\<lambda> (i,j). A $$ (inv p i, j))"
+proof -
+  {
+    fix i j
+    assume ij: "i < n" "j < nc" 
+    from p ij(1) have i: "inv p i < n" by (simp add: permutes_def)
+    have "(permutation_mat n p * A) $$ (i,j) = scalar_prod (unit_vec n (inv p i)) (col A j)" 
+      by (subst index_mult_mat, insert ij A p, auto)
+    also have "\<dots> = A $$ (inv p i, j)"
+      by (subst scalar_prod_left_unit, insert A ij i, auto) 
+    also note calculation
+  }
+  thus ?thesis using A
+    by (intro eq_matI, auto)
+qed
+
+lemma permutation_mat_right: assumes A: "A \<in> carrier_mat nr n" and p: "p permutes {..<n}" 
+  shows "A * permutation_mat n p = Matrix.mat nr n (\<lambda> (i,j). A $$ (i, p j))"
+proof -
+  {
+    fix i j
+    assume ij: "i < nr" "j < n" 
+    from p ij(2) have j: "p j < n" by (simp add: permutes_def)
+    have "(A * permutation_mat n p) $$ (i,j) = scalar_prod (Matrix.row A i) (unit_vec n (p j))" 
+      by (subst index_mult_mat, insert ij A p, auto)
+    also have "\<dots> = A $$ (i, p j)"
+      by (subst scalar_prod_right_unit, insert A ij j, auto) 
+    also note calculation
+  }
+  thus ?thesis using A
+    by (intro eq_matI, auto)
+qed
+
+lemma permutes_lt: "p permutes {..<n} \<Longrightarrow> i < n \<Longrightarrow> p i < n"
+  by (meson lessThan_iff permutes_in_image)
+
+lemma permutes_iff: "p permutes {..<n} \<Longrightarrow> i < n \<Longrightarrow> j < n \<Longrightarrow> p i = p j \<longleftrightarrow> i = j" 
+  by (metis permutes_inverses(2))
+
+lemma permutation_mat_id_1: assumes p: "p permutes {..<n}" 
+  shows "permutation_mat n p * permutation_mat n (inv p) = 1\<^sub>m n" 
+  by (subst permutation_mat_left[OF _ p, of _ n], force, unfold permutation_mat_def, rule eq_matI, 
+   auto simp: permutes_lt[OF permutes_inv[OF p]] permutes_iff[OF permutes_inv[OF p]])
+
+lemma permutation_mat_id_2: assumes p: "p permutes {..<n}" 
+  shows "permutation_mat n (inv p) * permutation_mat n p = 1\<^sub>m n" 
+  by (subst permutation_mat_right[OF _ p, of _ n], force, unfold permutation_mat_def, rule eq_matI, 
+   insert p, auto simp: permutes_lt[OF p] permutes_iff[OF p] permutes_inverses)
+
+lemma permutation_mat_both: assumes A: "A \<in> carrier_mat n n" and p: "p permutes {..<n}" 
+  shows "permutation_mat n p * Matrix.mat n n (\<lambda> (i,j). A $$ (p i, p j)) * permutation_mat n (inv p) = A" 
+  unfolding permutation_mat_left[OF mat_carrier p]
+    by (subst permutation_mat_right[OF _ permutes_inv[OF p], of _ n], force, insert A p, 
+        auto intro!: eq_matI simp: permutes_inverses permutes_lt[OF permutes_inv[OF p]])
+
+lemma permutation_similar_mat: assumes A: "A \<in> carrier_mat n n" and p: "p permutes {..<n}"
+  shows "similar_mat A (Matrix.mat n n (\<lambda> (i,j). A $$ (p i, p j)))" 
+  by (rule similar_matI[OF _ permutation_mat_id_1[OF p] permutation_mat_id_2[OF p] 
+  permutation_mat_both[symmetric, OF A p]], insert A, auto)
+
+
+
 end

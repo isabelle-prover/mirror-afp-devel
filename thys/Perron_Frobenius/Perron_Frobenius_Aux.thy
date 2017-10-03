@@ -25,10 +25,10 @@ lemma real_non_neg_matD: assumes "real_non_neg_mat A"
   shows "A $h i $h j \<in> \<real>" "Re (A $h i $h j) \<ge> 0" 
   using assms unfolding real_non_neg_mat_def elements_mat_h_def by auto
 
-definition nonneg_mat :: "real mat \<Rightarrow> bool" where
+definition nonneg_mat :: "'a :: linordered_idom mat \<Rightarrow> bool" where
   "nonneg_mat A \<equiv> \<forall> a \<in> elements_mat A. a \<ge> 0"
 
-definition non_neg_mat :: "real ^ 'nr ^ 'nc \<Rightarrow> bool" where
+definition non_neg_mat :: "'a :: linordered_idom ^ 'nr ^ 'nc \<Rightarrow> bool" where
   "non_neg_mat A \<equiv> (\<forall> a \<in> elements_mat_h A. a \<ge> 0)" 
 
 
@@ -48,7 +48,7 @@ lemma HMA_real_non_neg_vec [transfer_rule]:
   by transfer_prover
 
 lemma HMA_non_neg_mat [transfer_rule]:
-  "((HMA_M :: real mat \<Rightarrow> real ^ 'nc ^ 'nr \<Rightarrow> bool) ===> op =) 
+  "((HMA_M :: 'a :: linordered_idom mat \<Rightarrow> 'a ^ 'nc ^ 'nr \<Rightarrow> bool) ===> op =) 
   nonneg_mat non_neg_mat"
   unfolding nonneg_mat_def[abs_def] non_neg_mat_def[abs_def]
   by transfer_prover
